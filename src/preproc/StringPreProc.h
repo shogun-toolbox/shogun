@@ -34,6 +34,6 @@ public:
 	/** return feature type with which objects derived 
 	*         from CPreProc can deal
 	*             */
-	virtual EType get_feature_type() { return F_STRING; }
+	virtual EFeatureType get_feature_type() { return F_STRING; }
 };
 #endif

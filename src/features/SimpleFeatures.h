@@ -14,6 +14,7 @@
 
 
 template <class ST> class CSimpleFeatures;
+template <class ST> class CSimplePreProc;
 
 template <class ST> class CSimpleFeatures: public CFeatures
 {
@@ -56,14 +57,11 @@ template <class ST> class CSimpleFeatures: public CFeatures
 
 	  if (feature_matrix)
 	  {
-		  //      CIO::message("returning %i th column of feature_matrix\n", (int)num) ;
 		  free=false ;
 		  return &feature_matrix[num*num_features];
 	  } 
 	  else
 	  {
-		  //CIO::message("computing %i th feature vector\n", (int)num) ;
-
 		  ST* feat=NULL;
 		  free=false;
 
@@ -86,8 +84,6 @@ template <class ST> class CSimpleFeatures: public CFeatures
 
 		  if (get_num_preproc())
 		  {
-			  //CIO::message("preprocessing %i th feature vector\n", (int)num) ;
-
 			  int tmp_len=len;
 			  ST* tmp_feat_before = feat;
 			  ST* tmp_feat_after = NULL;
@@ -103,7 +99,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 
 			  memcpy(feat, tmp_feat_after, sizeof(ST)*tmp_len);
 			  delete[] tmp_feat_after;
-			  //len=num_features=len2 ;
+
 			  len=tmp_len ;
 			  CIO::message(stderr, "len: %d len2: %d\n", len, num_features);
 		  }
@@ -139,7 +135,6 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	  feature_matrix=fm;
 	  num_features=num_feat;
 	  num_vectors=num_vec;
-
   }
 
   /// preprocess the feature_matrix
@@ -196,7 +191,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
   }
   
   /// return that we are simple minded features (just fixed size matrices)
-  inline virtual EClass get_feature_class() { return C_SIMPLE; }
+  inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
   
   virtual bool reshape(int num_features, int num_vectors)
   {

@@ -29,6 +29,7 @@ class CGUIFeatures
 		CFeatures *get_test_features() { return test_features; }
 
 		bool convert_full_to_sparse(char* param);
+		bool convert_sparse_to_full(char* param);
 		
 		bool load(char* param);
 		bool save(char* param);

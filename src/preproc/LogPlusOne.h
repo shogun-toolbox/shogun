@@ -15,6 +15,7 @@ public:
 
 	/// initialize preprocessor from features
 	virtual bool init(CFeatures* f);
+
 	/// initialize preprocessor from file
 	virtual bool load_init_data(FILE* src);
 	/// save init-data (like transforamtion matrices etc) to file

@@ -23,11 +23,11 @@ public:
 	/// and the file is treated as if it has a header/[typeheader,data]+
 	/// else a the files header will be checked to contain the specified
 	/// fourcc (e.g. 'RFEA')
-	CFile(char* fname, char rw, EType type, char fourcc[4]=NULL);
+	CFile(char* fname, char rw, EFeatureType type, char fourcc[4]=NULL);
 	~CFile();
 
-	int parse_first_header(EType &type);
-	int parse_next_header(EType &type);
+	int parse_first_header(EFeatureType &type);
+	int parse_next_header(EFeatureType &type);
 
 	// set target to NULL to get it automagically allocated
 	// set num to 0 if whole file is to be read
@@ -59,7 +59,7 @@ protected:
 	bool status;
 	char task;
 	char* fname;
-	EType expected_type;
+	EFeatureType expected_type;
 	int num_header;
 	char fourcc[4];
 };

@@ -9,5 +9,8 @@ class CShortKernel : public CSimpleKernel<SHORT>
 		CShortKernel(long cachesize) : CSimpleKernel<SHORT>(cachesize)
 		{
 		}
+		/** return feature type the kernel can deal with
+		  */
+		inline virtual EFeatureType get_feature_type() { return F_SHORT; }
 };
 #endif

@@ -16,9 +16,9 @@ CGaussianKernel::~CGaussianKernel()
 {
 }
   
-void CGaussianKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+void CGaussianKernel::init(CRealFeatures* l, CRealFeatures* r, bool do_init)
 {
-	CRealKernel::init((CRealFeatures*) l, (CRealFeatures*) r, do_init); 
+	CRealKernel::init(l, r, do_init); 
 
 	if (do_init)
 		init_rescale() ;
@@ -63,11 +63,6 @@ bool CGaussianKernel::save_init(FILE* dest)
 	return false;
 }
   
-bool CGaussianKernel::check_features(CFeatures* f) 
-{
-  return (f->get_feature_type()==F_REAL);
-}
-
 REAL CGaussianKernel::compute(long idx_a, long idx_b)
 {
   long alen, blen;

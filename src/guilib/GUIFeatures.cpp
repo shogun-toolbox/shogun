@@ -418,8 +418,6 @@ bool CGUIFeatures::reshape(char* param)
 bool CGUIFeatures::convert_full_to_sparse(char* param)
 {
 	bool result=false;
-	long num_feat=0;
-	long num_vec=0;
 	char target[1024];
 
 	CFeatures** f_ptr=NULL;
@@ -441,8 +439,6 @@ bool CGUIFeatures::convert_full_to_sparse(char* param)
 
 	if (f_ptr)
 	{
-		result=(*f_ptr)->reshape(num_feat, num_vec);
-
 		if ( ((*f_ptr)->get_feature_class()) == C_SIMPLE)
 		{
 			if ( ((*f_ptr)->get_feature_type()) == F_REAL)
@@ -460,6 +456,56 @@ bool CGUIFeatures::convert_full_to_sparse(char* param)
 		}
 		else
 			CIO::message("no Simple features available\n");
+
+		if (!result)
+			CIO::message("conversion failed");
+	}
+
+	return result;
+}
+
+bool CGUIFeatures::convert_sparse_to_full(char* param)
+{
+	bool result=false;
+	char target[1024];
+
+	CFeatures** f_ptr=NULL;
+
+	param=CIO::skip_spaces(param);
+	if ((sscanf(param, "%s", target))==1)
+	{
+		if (strcmp(target,"TRAIN")==0)
+		{
+			f_ptr=&train_features;
+		}
+		else if (strcmp(target,"TEST")==0)
+		{
+			f_ptr=&test_features;
+		}
+	}
+	else
+		CIO::message("see help for params\n");
+
+	if (f_ptr)
+	{
+		if ( ((*f_ptr)->get_feature_class()) == C_SPARSE)
+		{
+			if ( ((*f_ptr)->get_feature_type()) == F_REAL)
+			{
+				//create dense features with 0 cache
+				CIO::message("attempting to convert sparse feature matrix to a dense one\n");
+				CRealFeatures* sf=new CRealFeatures(0l);
+				long num_f=0;
+				long num_v=0;
+				REAL* feats=((CSparseRealFeatures*)(*f_ptr))->get_full_feature_matrix(num_f, num_v);
+				result=(feats!=NULL);
+				sf->set_feature_matrix(feats, num_f, num_v);
+				delete (*f_ptr);
+				(*f_ptr)=sf;
+			}
+		}
+		else
+			CIO::message("no sparse features available\n");
 
 		if (!result)
 			CIO::message("conversion failed");

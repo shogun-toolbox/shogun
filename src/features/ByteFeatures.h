@@ -12,7 +12,7 @@ class CByteFeatures: public CSimpleFeatures<BYTE>
 		CByteFeatures(const CByteFeatures & orig);
 		CByteFeatures(char* fname);
 
-		virtual EType get_feature_type() { return F_BYTE; }
+		virtual EFeatureType get_feature_type() { return F_BYTE; }
 
 		virtual CFeatures* duplicate() const;
 		virtual bool load(char* fname);

@@ -17,9 +17,9 @@ CPolyKernel::~CPolyKernel()
 {
 }
   
-void CPolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+void CPolyKernel::init(CRealFeatures* l, CRealFeatures* r, bool do_init)
 {
-	CRealKernel::init((CRealFeatures*) l, (CRealFeatures*) r, do_init); 
+	CRealKernel::init(l, r, do_init); 
 
 	if (do_init)
 		init_rescale() ;
@@ -65,11 +65,6 @@ bool CPolyKernel::save_init(FILE* dest)
 	return false;
 }
   
-bool CPolyKernel::check_features(CFeatures* f) 
-{
-  return (f->get_feature_type()==F_REAL);
-}
-
 REAL CPolyKernel::compute(long idx_a, long idx_b)
 {
   long alen, blen;

@@ -16,9 +16,9 @@ CLinearByteKernel::~CLinearByteKernel()
 {
 }
   
-void CLinearByteKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+void CLinearByteKernel::init(CByteFeatures* l, CByteFeatures* r, bool do_init)
 {
-	CByteKernel::init((CByteFeatures*) l, (CByteFeatures*) r, do_init); 
+	CByteKernel::init(l, r, do_init); 
 
 	if (do_init)
 		init_rescale() ;
@@ -80,11 +80,6 @@ bool CLinearByteKernel::save_init(FILE* dest)
 	return true;
 }
   
-bool CLinearByteKernel::check_features(CFeatures* f) 
-{
-  return (f->get_feature_type()==F_BYTE);
-}
-
 REAL CLinearByteKernel::compute(long idx_a, long idx_b)
 {
   long alen, blen;

@@ -19,6 +19,7 @@ class CGUIKernel
 	bool save_kernel(char* param);
 
  protected:
+	bool do_init_kernel(CFeatures* lhs, CFeatures* rhs, bool do_init);
 	CKernel* kernel;
 	CGUI* gui ;
 };

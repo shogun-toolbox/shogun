@@ -3,6 +3,7 @@
 
 #include "RealPreProc.h"
 #include "features/Features.h"
+#include "features/RealFeatures.h"
 #include "lib/common.h"
 
 #include <stdio.h>

@@ -4,8 +4,6 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-//#include "lib/f77blas.h"
-
 #include <assert.h>
 
 CLinearKernel::CLinearKernel(long size)
@@ -17,9 +15,9 @@ CLinearKernel::~CLinearKernel()
 {
 }
   
-void CLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+void CLinearKernel::init(CRealFeatures* l, CRealFeatures* r, bool do_init)
 {
-	CRealKernel::init((CRealFeatures*) l, (CRealFeatures*) r, do_init); 
+	CRealKernel::init(l, r, do_init); 
 
 	if (do_init)
 		init_rescale() ;
@@ -78,17 +76,11 @@ bool CLinearKernel::save_init(FILE* dest)
 	return true;
 }
   
-bool CLinearKernel::check_features(CFeatures* f) 
-{
-  return (f->get_feature_type()==F_REAL);
-}
-
 REAL CLinearKernel::compute(long idx_a, long idx_b)
 {
   long alen, blen;
   bool afree, bfree;
 
-  //fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
   double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
   double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   
@@ -103,11 +95,11 @@ REAL CLinearKernel::compute(long idx_a, long idx_b)
     for (int i=0; i<ialen; i++)
       result+=avec[i]*bvec[i];
   }
+  result/=scale;
 #else
   REAL result=ddot_(&ialen, avec, &skip, bvec, &skip)/scale;
 #endif // NO_LAPACK
 
-//  REAL result=sum/scale;
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 

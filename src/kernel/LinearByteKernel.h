@@ -11,14 +11,15 @@ class CLinearByteKernel: public CByteKernel
   CLinearByteKernel(long size);
   ~CLinearByteKernel() ;
   
-  virtual void init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual void init(CByteFeatures* l, CByteFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data
   virtual bool load_init(FILE* src);
   virtual bool save_init(FILE* dest);
 
-  virtual bool check_features(CFeatures* f);
+  // return what type of kernel we are Linear,Polynomial, Gaussian,...
+  virtual EKernelType get_kernel_type() { return K_LINEAR; }
 
   // return the name of a kernel
   virtual const char* get_name() { return "Linear" ; } ;

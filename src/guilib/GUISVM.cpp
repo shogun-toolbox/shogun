@@ -165,7 +165,6 @@ bool CGUISVM::test(char* param)
 	((CKernelMachine*) svm)->set_labels(testlabels);
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
 
-	//MISSING testfeatures, trainfeatures) ;
 	REAL* output= svm->test();
 
 	CIO::message("out !!!\n");

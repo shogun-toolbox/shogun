@@ -19,6 +19,7 @@ public:
 	
 	/// initialize preprocessor from file
 	virtual bool load_init_data(FILE* src)=0;
+
 	/// save init-data (like transforamtion matrices etc) to file
 	virtual bool save_init_data(FILE* dst)=0;
 
@@ -27,7 +28,12 @@ public:
 	
 	/** return feature type with which objects derived 
 	from CPreProc can deal */
-	virtual EType get_feature_type()=0;
+	virtual EFeatureType get_feature_type()=0;
+
+	/** return feature class
+	    like Sparse,Simple,...
+	*/
+	virtual EFeatureClass get_feature_class()=0;
 
 	/// return the name of the preprocessor
 	const char * get_name() const { return preproc_name; }

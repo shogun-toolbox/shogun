@@ -1,0 +1,24 @@
+#!/bin/bash
+
+KERNELNAME=`uname`
+MACHINE=`uname -m`
+SRCDIR=.
+
+cat > .config <<EOF
+SRCDIR 		= .
+EXT_C_SRC 	= c
+EXT_CPP_SRC = cpp
+KERNELNAME  = ${KERNELNAME}
+MACHINE  	= ${MACHINE}
+EXESUFFIX	= -${KERNELNAME}-${MACHINE}
+EXT_OBJ_CPP = cpp.o
+EXT_OBJ_C   = c.o
+EXT_CPP_SRC = cpp
+EXT_C_SRC   = c
+GDB			= gdb
+COMP_C		= gcc
+COMP_CPP	= g++
+INCLUDES	= -I${SRCDIR}
+LINK		= g++
+LINKFLAGS 	= -llapack -llapack_atlas -L /usr/lib/3dnow -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c -lm
+EOF

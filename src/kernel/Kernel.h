@@ -17,18 +17,9 @@ class CKernel
 		 */
 		REAL kernel(long x, long y);
 
-		/** initialize your kernel
-		 * where l are feature vectors to occur on left hand side
-		 * and r the feature vectors to occur on right hand side
-		 *
-		 * when training data is supplied as both l and r do_init should
-		 * be true; when testing it must be false and thus no further
-		 * initialization of the preprocessor in the kernl
-		 * will be done (like determining the scale factor when rescaling the kernel).
-		 * instead the previous values will be used (which where hopefully obtained
-		 * on training data/loaded)
+		/** initialize kernel cache
 		 */
-		virtual void init(CFeatures* l, CFeatures* r, bool do_init);
+		virtual void init();
 
 		/// clean up your kernel
 		virtual void cleanup()=0;
@@ -41,8 +32,20 @@ class CKernel
 		virtual bool load_init(FILE* src)=0;
 		virtual bool save_init(FILE* dest)=0;
 		
-		// check the feature object
-		virtual bool check_features(CFeatures* f)=0 ;
+		/// get left/right hand side of features used in kernel
+		virtual CFeatures* get_lhs()=0;
+		virtual CFeatures* get_rhs()=0;
+
+		// return what type of kernel we are Linear,Polynomial, Gaussian,...
+		virtual EKernelType get_kernel_type()=0 ;
+
+		/** return feature type the kernel can deal with
+		  */
+		virtual EFeatureType get_feature_type()=0;
+
+		/** return feature class the kernel can deal with
+		  */
+		virtual EFeatureClass get_feature_class()=0;
 
 		// return the name of a kernel
 		virtual const char* get_name()=0 ;
@@ -111,12 +114,8 @@ class CKernel
 			long   buffsize;
 			//			long   r_offs;
 		};
-	protected:
-		/// feature vectors to occur on left hand side
-		CFeatures* lhs;
-		/// feature vectors to occur on right hand side
-		CFeatures* rhs;
 
+	protected:
 		/// kernel cache
 		KERNEL_CACHE kernel_cache;
 

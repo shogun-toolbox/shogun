@@ -11,14 +11,15 @@ class CPolyKernel: public CRealKernel
   CPolyKernel(long size, int degree, bool inhomogene);
   ~CPolyKernel() ;
   
-  virtual void init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual void init(CRealFeatures* l, CRealFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data
   virtual bool load_init(FILE* src);
   virtual bool save_init(FILE* dest);
 
-  virtual bool check_features(CFeatures* f);
+  // return what type of kernel we are Linear,Polynomial, Gaussian,...
+  virtual EKernelType get_kernel_type() { return K_POLY; }
 
   // return the name of a kernel
   virtual const char* get_name() { return "Poly" ; } ;
@@ -35,7 +36,6 @@ class CPolyKernel: public CRealKernel
  protected:
   int degree;
   bool inhomogene ;
-  bool allow_init ;
   double scale ;
 };
 

@@ -9,5 +9,9 @@ class CRealKernel : public CSimpleKernel<REAL>
 		CRealKernel(long cachesize) : CSimpleKernel<REAL>(cachesize)
 		{
 		}
+
+		/** return feature type the kernel can deal with
+		  */
+		inline virtual EFeatureType get_feature_type() { return F_REAL; }
 };
 #endif

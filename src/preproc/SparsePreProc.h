@@ -25,5 +25,9 @@ public:
 	/// apply preproc on single feature vector
 	/// result in feature matrix
 	virtual TSparse<ST>* apply_to_sparse_feature_vector(TSparse<ST>* f, int &len)=0;
+
+  /// return that we are simple minded features (just fixed size matrices)
+  inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
+  
 };
 #endif

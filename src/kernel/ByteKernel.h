@@ -10,5 +10,9 @@ class CByteKernel : public CSimpleKernel<BYTE>
 		CByteKernel(long cachesize) : CSimpleKernel<BYTE>(cachesize)
 		{
 		}
+
+		/** return feature type the kernel can deal with
+		  */
+		inline virtual EFeatureType get_feature_type() { return F_BYTE; }
 };
 #endif

@@ -35,15 +35,8 @@ REAL CKernel::kernel(long idx_a, long idx_b)
 	return compute(idx_a, idx_b);
 }
 
-void CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+void CKernel::init()
 {
-	assert(l!=0);
-	assert(r!=0);
-	lhs=l;
-	rhs=r;
-
-	CIO::message("initialising kernel with TEST DATA, train: %d test %d\n",l,r );
-
 	// allocate kernel cache but clean up beforehand
 	kernel_cache_cleanup();
 	kernel_cache_init(cache_size);
@@ -54,7 +47,7 @@ void CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 void CKernel::kernel_cache_init(long buffsize)
 {
 	long i;
-	long totdoc=lhs->get_num_vectors();
+	long totdoc=get_lhs()->get_num_vectors();
 
 	kernel_cache.index = new long[totdoc];
 	kernel_cache.occu = new long[totdoc];
@@ -67,7 +60,6 @@ void CKernel::kernel_cache_init(long buffsize)
 	kernel_cache.buffsize=(long)(buffsize*1024*1024/sizeof(REAL));
 
 	kernel_cache.max_elems=(long)(kernel_cache.buffsize/totdoc);
-	//kernel_cache.r_offs=lhs->get_num_vectors();
 
 	if(kernel_cache.max_elems>totdoc) {
 		kernel_cache.max_elems=totdoc;
@@ -317,8 +309,8 @@ bool CKernel::load(char* fname)
 bool CKernel::save(char* fname)
 {
 	long i=0;
-	long num_left=lhs->get_num_vectors();
-	long num_right=rhs->get_num_vectors();
+	long num_left=get_lhs()->get_num_vectors();
+	long num_right=get_rhs()->get_num_vectors();
 	long num_total=num_left*num_right;
 
 	CFile f(fname, 'w', F_REAL);

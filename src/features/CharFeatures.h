@@ -18,7 +18,7 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
 			return maptable[c];
 		}
 
-		virtual EType get_feature_type() { return F_CHAR; }
+		virtual EFeatureType get_feature_type() { return F_CHAR; }
 
 		virtual CFeatures* duplicate() const;
 		virtual bool load(char* fname);

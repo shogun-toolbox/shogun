@@ -4,7 +4,7 @@
 #include "lib/File.h"
 #include "lib/SimpleFile.h"
 
-CFile::CFile(char* fname, char rw, EType typ, char fourcc[4])
+CFile::CFile(char* fname, char rw, EFeatureType typ, char fourcc[4])
 {
 	status=false;
 	task=rw;
@@ -116,12 +116,12 @@ SHORT* CFile::load_short_data(SHORT* target, long& num)
 	return target;
 }
 
-int parse_first_header(EType &type)
+int parse_first_header(EFeatureType &type)
 {
 	return -1;
 }
 
-int parse_next_header(EType &type)
+int parse_next_header(EFeatureType &type)
 {
 	return -1;
 }

@@ -2,11 +2,14 @@
 #define _CSIMPLEPREPROC__H__
 
 #include "features/Features.h"
+#include "features/SimpleFeatures.h"
 #include "lib/common.h"
 #include "preproc/PreProc.h"
 
 #include <stdio.h>
 
+
+template <class ST> class CSimpleFeatures;
 
 template <class ST> class CSimplePreProc : public CPreProc
 {
@@ -24,5 +27,9 @@ public:
 	/// result in feature matrix
 
 	virtual ST* apply_to_feature_vector(ST* f, int &len)=0;
+
+  /// return that we are simple minded features (just fixed size matrices)
+  inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+  
 };
 #endif

@@ -17,13 +17,16 @@ CPruneVarSubMean::~CPruneVarSubMean()
 }
 
 /// initialize preprocessor from features
-bool CPruneVarSubMean::init(CFeatures* f_)
+bool CPruneVarSubMean::init(CFeatures* f)
 {
 	if (!initialized)
 	{
+		assert(f->get_feature_class() == C_SIMPLE);
+		assert(f->get_feature_type() == F_REAL);
+
 		CIO::message("calling CPruneVarSubMean::init\n") ;
 
-		CRealFeatures *f=(CRealFeatures*) f_ ;
+		CRealFeatures *f=(CRealFeatures*) f ;
 		int num_examples=f->get_num_vectors() ;
 		int num_features=((CRealFeatures*)f)->get_num_features() ;
 

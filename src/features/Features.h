@@ -34,12 +34,12 @@ public:
 	/** return feature type with which objects derived 
 	    from CFeatures can deal
 	*/
-	virtual EType get_feature_type()=0;
+	virtual EFeatureType get_feature_type()=0;
 
 	/** return feature class
 	    like Sparse,Simple,...
 	*/
-	virtual EClass get_feature_class()=0;
+	virtual EFeatureClass get_feature_class()=0;
 		
 	/// set preprocessor
 	virtual int add_preproc(CPreProc* p);

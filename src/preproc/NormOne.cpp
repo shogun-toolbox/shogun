@@ -16,6 +16,8 @@ CNormOne::~CNormOne()
 /// initialize preprocessor from features
 bool CNormOne::init(CFeatures* f)
 {
+	assert(f->get_feature_class() == C_SIMPLE);
+	assert(f->get_feature_type() == F_REAL);
 	return true;
 }
 

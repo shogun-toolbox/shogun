@@ -19,7 +19,7 @@ class CShortFeatures: public CSimpleFeatures<SHORT>
 
 		bool obtain_from_char_features(CCharFeatures* cf, E_OBS_ALPHABET alphabet, int start, int order);
 
-		virtual EType get_feature_type() { return F_SHORT; }
+		virtual EFeatureType get_feature_type() { return F_SHORT; }
 
 		virtual CFeatures* duplicate() const;
 		virtual bool load(char* fname);

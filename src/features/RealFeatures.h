@@ -21,7 +21,7 @@ class CRealFeatures: public CSimpleFeatures<REAL>
   }
 
   virtual CFeatures* duplicate() const;
-  virtual EType get_feature_type() { return F_REAL; }
+  virtual EFeatureType get_feature_type() { return F_REAL; }
 
   virtual bool load(char* fname);
   virtual bool save(char* fname);

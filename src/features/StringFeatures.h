@@ -19,7 +19,7 @@ class CStringFeatures: public CFeatures
 
 		virtual ~CStringFeatures();
 
-		virtual EType get_feature_type() { return F_STRING ; } ;
+		virtual EFeatureType get_feature_type() { return F_STRING ; } ;
 
 		/** get feature vector for sample num
 		  @param num index of feature vector

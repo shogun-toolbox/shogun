@@ -61,6 +61,7 @@ static const char* N_CHOP=			"chop";
 static const char* N_CONVERGENCE_CRITERIA=	"convergence_criteria";
 static const char* N_PSEUDO=			"pseudo";
 static const char* N_CONVERT_TO_SPARSE=	"convert_to_sparse";
+static const char* N_CONVERT_TO_DENSE=	"convert_to_dense";
 static const char* N_C=			     	"c";
 static const char* N_ADD_STATES=	        "add_states";
 static const char* N_APPEND_HMM=		"append_hmm";
@@ -137,7 +138,7 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- save svm\n",N_SAVE_SVM);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- save kernel init data\n",N_SAVE_KERNEL_INIT);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- save preproc init data\n",N_SAVE_PREPROC);
-	CIO::message("\033[1;31m%s\033[0m <filename> <TRAIN|TEST>\t- save features\n",N_SAVE_FEATURES);
+	CIO::message("\033[1;31m%s\033[0m <filename> <TRAIN|TEST> <REAL|...>\t- save features\n",N_SAVE_FEATURES);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- save likelihood for each sequence\n",N_SAVE_LIKELIHOOD);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- save state sequence of viterbi path\n",N_SAVE_PATH);
 	CIO::message("\n[HMM]\n");
@@ -176,11 +177,12 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m <NUM>\t\t\t- delete preprocessor\n", N_DEL_PREPROC);
 	CIO::message("\033[1;31m%s\033[0m <TRAIN|TEST> <NUM_FEAT> <NUM_VEC>\t\t\t- reshape feature matrix for simple features\n", N_RESHAPE);
 	CIO::message("\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert dense features to sparse feature matrix\n", N_CONVERT_TO_SPARSE);
+	CIO::message("\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert sparse features to dense feature matrix\n", N_CONVERT_TO_DENSE);
 	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> [<0|1>] - preprocesses the feature_matrix, 1 to force preprocessing of already processed\n",N_PREPROCESS);
 	CIO::message("\n[SVM]\n");
 	CIO::message("\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
 	CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
-	CIO::message("\033[1;31m%s\033[0m <LINEAR|GAUSSIAN|POLY> [<CACHESIZE> [OPTS]]\t\t\t- set kernel type\n", N_SET_KERNEL);
+	CIO::message("\033[1;31m%s\033[0m <LINEAR|GAUSSIAN|POLY> <REAL|BYTE|SPARSEREAL> [<CACHESIZE> [OPTS]]\t\t\t- set kernel type\n", N_SET_KERNEL);
 	CIO::message("\033[1;31m%s\033[0m\t\t- obtains svm from TRAINFEATURES\n",N_SVM_TRAIN);
 	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> - init kernel for training/testingn\n",N_INIT_KERNEL);
 	CIO::message("\n[CLASSIFICATION]\n");
@@ -266,6 +268,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	else if (!strncmp(input, N_CONVERT_TO_SPARSE, strlen(N_CONVERT_TO_SPARSE)))
 	{
 		guifeatures.convert_full_to_sparse(input+strlen(N_CONVERT_TO_SPARSE));
+	} 
+	else if (!strncmp(input, N_CONVERT_TO_DENSE, strlen(N_CONVERT_TO_DENSE)))
+	{
+		guifeatures.convert_sparse_to_full(input+strlen(N_CONVERT_TO_DENSE));
 	} 
 	else if (!strncmp(input, N_LOAD_SVM, strlen(N_LOAD_SVM)))
 	{
