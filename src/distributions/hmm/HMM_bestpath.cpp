@@ -166,7 +166,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 		
 		for (T_STATES j=0; j<N; j++)
 		{
-			if (finite(SEQ(j,t))==-1)
+			if (SEQ(j,t)<-1e20)
 			{ // if we cannot observe the symbol here, then we can omit the rest
 				for (short int k=0; k<nbest; k++)
 				{
@@ -212,7 +212,11 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 							ok=true ;
 						else if (pos[ts]!=-1 && (pos[t]-pos[ts])%3==orf_target)
 						{
+								
 							ok=extend_orf(genestr_stop, orf_from, orf_to, pos[ts], last_pos, pos[t]) ;
+							//if (pos[t]==1141)
+							//fprintf(stderr,"orf_from=%i orf_to=%i start=%i last=%i to=%i ok=%i penalty=%1.2f\n", orf_from, orf_to, pos[ts], last_pos, pos[t], (INT)ok,lookup_penalty(penalty, pos[t]-pos[ts])) ;
+							
 							if (!ok) 
 								break ;
 						} else
@@ -223,8 +227,13 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 							for (short int diff=0; diff<nbest; diff++)
 							{
 								REAL  val        = DELTA(ts,ii,diff) + elem_val[i] ;
-								if (finite(val)>=0)
+								if (val>=-1e20)
+								{
+									//if (orf_target!=-1 && pos[t]==1141 && j==4)
+									//fprintf(stderr, "j=%i ii=%i t=%i ts=%i val=%1.2f pen=%1.2f\n", j,ii,pos[t],pos[ts],val, lookup_penalty(penalty, pos[t]-pos[ts])) ;
 									val          += lookup_penalty(penalty, pos[t]-pos[ts]) ;
+								} ;
+								
 								tempvv[list_len] = -val ;
 								tempii[list_len] =  ii + diff*N + ts*N*nbest;
 								list_len++ ;
