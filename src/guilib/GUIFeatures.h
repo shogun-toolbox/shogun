@@ -13,7 +13,11 @@ public:
   ~CGUIFeatures();
 
   CFeatures *get_train_features() { return train_features ; } ;
-  
+
+  void set_hmms(CHMM *pos, CHMM* neg) 
+    {
+      top_features.set_models(pos,neg) ;
+    } ;
  protected:
   CGUI* gui ;
   CFeatures *train_features ;
