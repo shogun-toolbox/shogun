@@ -22,19 +22,14 @@ template <class ST> struct TSparseEntry
 {
 	int feat_index;
 	ST entry;
-
-	TSparseEntry(const TSparseEntry& orig) : feat_index(e.feat_index), entry(e.entry) {};
-	TSparseEntry() {};
 };
 
 template <class ST> struct TSparse
 {
+public:
 	int vec_index;
 	int num_feat_entries;
 	TSparseEntry<ST>* features;
-
-	TSparse() {};
-	TSparse(const TSparse& orig) : vec_index(orig.vec_index), num_feat_entries(orig.num_feat_entries), features(orig.features) {};
 };
 
 template <class ST> class CSparseFeatures: public CFeatures
@@ -164,7 +159,6 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 					memcpy(feat, tmp_feat_after, sizeof(CSparseEntry)*tmp_len);
 					delete[] tmp_feat_after;
-					//len=num_features=len2 ;
 					len=tmp_len ;
 					CIO::message(stderr, "len: %d len2: %d\n", len, num_features);
 				}
@@ -230,9 +224,9 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 						if (sparse_vec_idx<num_sparse_vectors)
 						{
-							if ( ( sparse_feat_idx < sparse_feature_matrix[sparse_vec_idx].num_feat_entries ) &&  ( sparse_feature_matrix[sparse_feat_idx].vec_index == i ) )
+							if ( ( sparse_feat_idx < sparse_feature_matrix[sparse_vec_idx].num_feat_entries ) &&  ( sparse_feature_matrix[sparse_vec_idx].vec_index == i ) )
 							{
-								fm[i*num_feat+ j]=sparse_feature_matrix[sparse_feat_idx].features[sparse_feat_idx].entry;
+								fm[i*num_feat+ j]=sparse_feature_matrix[sparse_vec_idx].features[sparse_feat_idx].entry;
 								sparse_feat_idx++;
 							}
 						}
@@ -241,6 +235,8 @@ template <class ST> class CSparseFeatures: public CFeatures
 						sparse_feat_idx++;
 				}
 			}
+			else
+				CIO::message("error allocating memory for dense feature matrix\n");
 
 			return fm;
 		}
@@ -340,26 +336,28 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 		virtual bool preproc_sparse_feature_matrix(bool force_preprocessing=false)
 		{
-			//////FIXME
-			//CIO::message("force: %d\n", force_preprocessing);
+			CIO::message("force: %d\n", force_preprocessing);
 
-			//if ( sparse_feature_matrix && get_num_preproc() && (!preprocessed || force_preprocessing) )
-			//{
-			//	preprocessed=true;	
-
-			//	for (int i=0; i<get_num_preproc(); i++)
-			//	{
-			//		CIO::message("preprocessing using preproc %s\n", get_preproc(i)->get_name());
-			//		if (((CSparsePreProc<ST>*) get_preproc(i))->apply_to_sparse_feature_matrix(this) == NULL)
-			//			return false;
-			//	}
-			//	return true;
-			//}
-			//else
-			//{
-			//	CIO::message("no sparse feature matrix available or features already preprocessed - skipping.\n");
-			return false;
-			//}
+			if ( sparse_feature_matrix && get_num_preproc() )
+			{
+				for (int i=0; i<get_num_preproc(); i++)
+				{
+					if ( (!is_preprocessed(i) || force_preprocessing) )
+					{
+						set_preprocessed(i);
+						CIO::message("preprocessing using preproc %s\n", get_preproc(i)->get_name());
+						if (((CSparsePreProc<ST>*) get_preproc(i))->apply_to_sparse_feature_matrix(this) == NULL)
+							return false;
+					}
+					return true;
+				}
+				return true;
+			}
+			else
+			{
+				CIO::message("no sparse feature matrix available or features already preprocessed - skipping.\n");
+				return false;
+			}
 		}
 
 		virtual int get_size() { return sizeof(ST); }
