@@ -9,7 +9,7 @@
 #include <assert.h>
 
 CSparsePolyKernel::CSparsePolyKernel(long size, int d, bool inhom)
-  : CSparseRealKernel(size),degree(d),inhomogene(inhom),scale(1.0)
+  : CSparseRealKernel(size),degree(d),inhomogene(inhom)
 {
 }
 
@@ -17,66 +17,18 @@ CSparsePolyKernel::~CSparsePolyKernel()
 {
 }
   
-bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
-{
-	CSparseRealKernel::init(l,  r, do_init); 
-
-	if (do_init)
-		init_rescale() ;
-
-	CIO::message("rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
-	return true;
-}
-
-void CSparsePolyKernel::init_rescale()
-{
-	double sum=0;
-	scale=1.0;
-	for (long i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
-			sum+=compute(i, i);
-
-	scale=sum/math.min(lhs->get_num_vectors(), rhs->get_num_vectors());
-}
-
 void CSparsePolyKernel::cleanup()
 {
 }
 
 bool CSparsePolyKernel::load_init(FILE* src)
 {
-    assert(src!=NULL);
-    unsigned int intlen=0;
-    unsigned int endian=0;
-    unsigned int fourcc=0;
-    unsigned int doublelen=0;
-    double s=1;
-
-    assert(fread(&intlen, sizeof(unsigned char), 1, src)==1);
-    assert(fread(&doublelen, sizeof(unsigned char), 1, src)==1);
-    assert(fread(&endian, (unsigned int) intlen, 1, src)== 1);
-    assert(fread(&fourcc, (unsigned int) intlen, 1, src)==1);
-    assert(fread(&s, (unsigned int) doublelen, 1, src)==1);
-    CIO::message("detected: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, s);
-
-	scale=s;
-	return true;
+	return false;
 }
 
 bool CSparsePolyKernel::save_init(FILE* dest)
 {
-    unsigned char intlen=sizeof(unsigned int);
-    unsigned char doublelen=sizeof(double);
-    unsigned int endian=0x12345678;
-    unsigned int fourcc='LINK'; //id for linear kernel
-
-    assert(fwrite(&intlen, sizeof(unsigned char), 1, dest)==1);
-    assert(fwrite(&doublelen, sizeof(unsigned char), 1, dest)==1);
-    assert(fwrite(&endian, sizeof(unsigned int), 1, dest)==1);
-    assert(fwrite(&fourcc, sizeof(unsigned int), 1, dest)==1);
-    assert(fwrite(&scale, sizeof(double), 1, dest)==1);
-    CIO::message("wrote: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, scale);
-
-	return true;
+	return false;
 }
   
 REAL CSparsePolyKernel::compute(long idx_a, long idx_b)
@@ -91,10 +43,20 @@ REAL CSparsePolyKernel::compute(long idx_a, long idx_b)
   TSparseEntry<REAL>* bvec=((CSparseRealFeatures*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
   
   REAL result=0;
+  REAL anormalize=0;
+  REAL bnormalize=0;
 
   //result remains zero when one of the vectors is non existent
   if (avec && bvec)
   {
+	  long i;
+	  for (i=0; i<alen; i++)
+		  anormalize+= avec[i].entry*avec[i].entry;
+
+	  for (i=0; i<blen; i++)
+		  bnormalize+= bvec[i].entry*bvec[i].entry;
+
+
 	  if (alen<=blen)
 	  {
 	      long j=0;
@@ -134,16 +96,22 @@ REAL CSparsePolyKernel::compute(long idx_a, long idx_b)
 		  result+=1;
 
 	  REAL re=result;
+	  REAL ano=anormalize;
+	  REAL bno=bnormalize;
 
 	  for (int j=1; j<degree; j++)
+	  {
 		  result*=re;
+		  ano*=anormalize;
+		  bno*=bnormalize;
+	  }
 
-	  result/=scale;
+	  result/=sqrt(ano*bno);
   }
   else
   {
 	  if (inhomogene)
-		  result=1.0/scale;
+		  result=1.0;
   }
 
   ((CSparseRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);

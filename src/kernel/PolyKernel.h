@@ -11,7 +11,6 @@ class CPolyKernel: public CRealKernel
   CPolyKernel(long size, int degree, bool inhomogene);
   ~CPolyKernel() ;
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -29,14 +28,10 @@ class CPolyKernel: public CRealKernel
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
   virtual REAL compute(long idx_a, long idx_b);
-  /*    compute_kernel*/
 
-  virtual void init_rescale();
-  
  protected:
   int degree;
   bool inhomogene ;
-  double scale ;
 };
 
 #endif

@@ -11,7 +11,6 @@ class CSparsePolyKernel: public CSparseRealKernel
   CSparsePolyKernel(long size, int degree, bool inhomogene);
   ~CSparsePolyKernel();
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -34,12 +33,9 @@ class CSparsePolyKernel: public CSparseRealKernel
   /// in the corresponding feature object
   virtual REAL compute(long idx_a, long idx_b);
   /*    compute_kernel*/
-
-  virtual void init_rescale();
   
  protected:
   int degree;
   bool inhomogene ;
-  double scale ;
 };
 #endif
