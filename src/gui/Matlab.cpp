@@ -130,6 +130,72 @@ bool CMatlab::set_hmm(const mxArray* vals[])
 	return false;
 }
 
+bool CMatlab::get_svm(mxArray* retvals[])
+{
+	CSVM* svm=gui->guisvm.get_svm();
+
+	if (svm)
+	{
+		mxArray* mx_alphas=mxCreateDoubleMatrix(svm->get_num_support_vectors(), 2, mxREAL);
+		mxArray* mx_b=mxCreateDoubleMatrix(1, 1, mxREAL);
+
+		if (mx_alphas && mx_b)
+		{
+			double* b=mxGetPr(mx_b);
+			double* alphas=mxGetPr(mx_alphas);
+
+			p[0]=svm->get_bias();
+
+			for (int i=0; i< svm->get_num_support_vectors(); i++)
+			{
+				alphas[i]=svm->get_alpha(i);
+				alphas[i+svm->get_num_support_vectors()]=svm->get_support_vector(i);
+			}
+
+			retvals[0]=mx_b;
+			retvals[1]=mx_alphas;
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CMatlab::set_hmm(const mxArray* vals[])
+{
+	SVM* svm=gui->guisvm.get_svm();
+
+	if (svm)
+	{
+		const mxArray* mx_b=vals[1];
+		const mxArray* mx_alphas=vals[2];
+
+		if (
+				mx_b && mx_alphas &&
+				mxGetN(mx_b) == 1 && mxGetM(mx_b) == 1 &&
+				mxGetN(mx_alphas) == 2
+			)
+		{
+			double* b=mxGetPr(mx_b);
+			double* alphas=mxGetPr(mx_alphas);
+
+			svm->create_new_model(mxGetM(mx_alphas));
+			svm->set_bias(*b);
+
+			for (int i=0; i< svm->get_num_support_vectors(); i++)
+			{
+				svm->set_alpha(i, alphas[i]);
+				svm->set_support_vector(i, alphas[i+svm->get_num_support_vectors()]);
+			}
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
 char* CMatlab::get_mxString(const mxArray* s)
 {
 	if ( (mxIsChar(s)) && (mxGetM(s)==1) )
@@ -178,12 +244,21 @@ void CMatlab::real_mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *
 		}
 		else if (!strncmp(action, N_GET_SVM, strlen(N_GET_SVM)))
 		{
-			if (nlhs==3)
+			if (nlhs==2)
 			{
 				gf_matlab.get_svm(plhs);
 			}
 			else
-				mexErrMsgTxt("usage is []=gf('get_hmm')");
+				mexErrMsgTxt("usage is [b,alphas]=gf('get_svm')");
+		}
+		else if (!strncmp(action, N_SET_SVM, strlen(N_SET_SVM)))
+		{
+			if (nrhs==3)
+			{
+				gf_matlab.set_svm(prhs);
+			}
+			else
+				mexErrMsgTxt("usage is gf('set_svm', [ b, alphas])");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_INIT, strlen(N_GET_KERNEL_INIT)))
 		{

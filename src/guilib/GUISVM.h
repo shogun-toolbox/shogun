@@ -25,6 +25,8 @@ public:
 	bool save(char* param);
 	bool set_C(char* param);
 
+	inline CSVM* get_svm() { return svm; }
+
  protected:
 	CGUI* gui;
 	CSVM* svm;

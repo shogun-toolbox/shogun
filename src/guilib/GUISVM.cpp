@@ -169,11 +169,11 @@ bool CGUISVM::test(char* param)
 	REAL* output=NULL;
 	///REAL* output= svm->test();
 
-	CIO::message("out !!!\n");
 	long len=0;
 	long total=	testfeatures->get_num_vectors();
 	int* label=	testlabels->get_labels(len);
 
+	CIO::message("out !!! %ld %ld\n", total, len);
 	assert(label);
 	assert(len==total);
 
