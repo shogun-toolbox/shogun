@@ -19,6 +19,7 @@
 #include "kernel/WeightedDegreePositionCharKernel.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/CommWordStringKernel.h"
+#include "kernel/CustomKernel.h"
 #include "classifier/svm/SVM.h"
 
 
@@ -933,6 +934,29 @@ bool CGUIMatlab::set_kernel_parameters(const mxArray* mx_arg)
 		if (k)
 		{
 			return (k->set_kernel_parameters(mxGetN(mx_arg), arg));
+		}
+	}
+
+	return false;
+}
+
+bool CGUIMatlab::set_custom_kernel(const mxArray* vals[])
+{
+	const mxArray* mx_kernel=vals[2];
+	const mxArray* mx_diag=vals[3];
+
+	if (mxIsDouble(mx_kernel) && mxIsDouble(mx_diag) && mxGetN(mx_kernel) == mxGetM(mx_kernel))
+	{
+		const double* km=mxGetPr(mx_kernel);
+
+		CKernel* k=gui->guikernel.get_kernel();
+
+		if (k && k->get_kernel_type() == K_CUSTOM)
+		{
+			if (*mxGetPr(mx_diag) == 0)
+				return k->set_kernel_matrix(km, mxGetM(mx_kernel));
+			else
+				return k->set_kernel_matrix_diag(km, mxGetM(mx_kernel));
 		}
 	}
 

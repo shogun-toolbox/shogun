@@ -21,6 +21,7 @@
 #include "kernel/SimpleLocalityImprovedCharKernel.h"
 #include "kernel/PolyKernel.h"
 #include "kernel/CharPolyKernel.h"
+#include "kernel/CustomKernel.h"
 #include "kernel/PolyMatchWordKernel.h"
 #include "kernel/WordMatchKernel.h"
 #include "kernel/CommWordKernel.h"
@@ -1112,7 +1113,17 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 			}
 		}
-		else 
+		else if (strcmp(kern_type,"CUSTOM")==0)
+		{
+			delete k;
+			k = new CCustomKernel();
+			if (k)
+			{
+				CIO::message(M_INFO, "Custom Kernel created\n");
+				return k;
+			}
+		}
+		else
 			CIO::not_implemented();
 	}
 	else 

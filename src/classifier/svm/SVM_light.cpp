@@ -54,8 +54,10 @@ CSVMLight::CSVMLight()
 	num_precomputed_subkernels = 0 ;
 	use_kernel_cache = true ;
 
+#ifdef USE_CPLEX
 	lp = NULL ;
 	env = NULL ;
+#endif
 	
 }
 
@@ -294,8 +296,8 @@ bool CSVMLight::train()
 				}
 			}
 		}
-#endif
 	}
+#endif
 	
 	if (precomputed_subkernels != NULL)
 	{

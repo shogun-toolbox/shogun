@@ -114,7 +114,8 @@ enum EKernelType
 	K_COMMWORDSTRING = 120 | K_OPTIMIZABLE,
 	K_SPARSENORMSQUARED = 130,
 	K_COMBINED = 140 | K_OPTIMIZABLE,
-	K_AUC = 150 | K_OPTIMIZABLE
+	K_AUC = 150 | K_OPTIMIZABLE,
+	K_CUSTOM = 160
 };
 
 enum EKernelProperty
@@ -132,7 +133,8 @@ enum EFeatureType
 	F_CHAR = 30,
 	F_INT = 40,
 	F_BYTE = 50,
-	F_WORD = 60
+	F_WORD = 60,
+	F_ANY = 70
 };
 
 enum EFeatureClass
@@ -141,7 +143,8 @@ enum EFeatureClass
 	C_SIMPLE = 10,
 	C_SPARSE = 20,
 	C_STRING = 30,
-	C_COMBINED = 40
+	C_COMBINED = 40,
+	C_ANY = 50
 };
 
 /// Alphabet of charfeatures/observations

@@ -43,6 +43,7 @@ static const CHAR* N_BEST_PATH_NO_B=			"best_path_no_b";
 static const CHAR* N_APPEND_HMM=			"append_hmm";
 static const CHAR* N_SET_SVM=			"set_svm";
 static const CHAR* N_SET_KERNEL_PARAMETERS=	        "set_kernel_parameters";
+static const CHAR* N_SET_CUSTOM_KERNEL=	        "set_custom_kernel";
 static const CHAR* N_SET_KERNEL_INIT=	        "set_kernel_init";
 static const CHAR* N_SET_FEATURES=		"set_features";
 static const CHAR* N_ADD_FEATURES=		"add_features";
@@ -481,7 +482,11 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		{
 			if (nlhs!=0 || nrhs!=2 || !gf_matlab.set_kernel_parameters(prhs[1]))
 				mexErrMsgTxt("usage is gf('set_kernel_parameters',[parm])");
-
+		}
+		else if (!strncmp(action, N_SET_CUSTOM_KERNEL, strlen(N_SET_CUSTOM_KERNEL)))
+		{
+			if (nlhs!=0 || nrhs!=1+2 || !gf_matlab.set_custom_kernel(prhs))
+				mexErrMsgTxt("usage is gf('set_custom_kernel',[kernelmatrix, is_upperdiag])");
 		}
 		else if (!strncmp(action, N_SET_KERNEL_INIT, strlen(N_SET_KERNEL_INIT)))
 		{
