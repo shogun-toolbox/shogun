@@ -7,7 +7,8 @@
 #include <assert.h>
 
 CPolyMatchWordKernel::CPolyMatchWordKernel(LONG size, INT d, bool inhom)
-  : CWordKernel(size),degree(d),inhomogene(inhom), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
+  : CWordKernel(size),degree(d),inhomogene(inhom),
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
 }
 

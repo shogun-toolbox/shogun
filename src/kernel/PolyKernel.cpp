@@ -13,7 +13,8 @@ extern "C" {
 #include <assert.h>
 
 CPolyKernel::CPolyKernel(LONG size, INT d, bool inhom)
-  : CRealKernel(size),degree(d),inhomogene(inhom), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
+  : CRealKernel(size),degree(d),inhomogene(inhom),
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
 }
 

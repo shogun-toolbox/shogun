@@ -7,7 +7,8 @@
 #include <assert.h>
 
 CCharPolyKernel::CCharPolyKernel(LONG size, INT d, bool inhom)
-  : CCharKernel(size),degree(d),inhomogene(inhom), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
+  : CCharKernel(size),degree(d),inhomogene(inhom),
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
 }
 
