@@ -1,6 +1,6 @@
 #define NRANSI
 #include "nrutil.h"
-#define TOL 2.0e-4
+#define TOL 2.0e-3
 
 int ncom;
 REAL *pcom,*xicom,*xt ;

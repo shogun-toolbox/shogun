@@ -44,6 +44,7 @@ public:
 	inline CHMM* get_pos() { return pos; }
 	inline CHMM* get_neg() { return neg; }
 	inline CHMM* get_test() { return test; }
+	bool CGUIHMM::gradient_step(char* param) ;
 
 protected:
 

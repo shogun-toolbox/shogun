@@ -76,6 +76,7 @@ static const char* N_SVM_TEST=			"svm_test";
 static const char* N_ONE_CLASS_HMM_TEST=	"one_class_hmm_test";
 static const char* N_HMM_TEST=			"hmm_test";
 static const char* N_SET_ORDER=			"set_order";
+static const char* N_GRADIENT_STEP=		"do_grad_step";
 
 
 	CTextGUI::CTextGUI(int argc, const char** argv)
@@ -429,6 +430,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	else if (!strncmp(input, N_C, strlen(N_C)))
 	{
 		guisvm.set_C(input+strlen(N_C));
+	} 
+	else if (!strncmp(input, N_GRADIENT_STEP, strlen(N_GRADIENT_STEP)))
+	{
+     	        guihmm.gradient_step(input+strlen(N_GRADIENT_STEP)) ;
 	} 
 	else if (!strncmp(input, N_SET_ORDER, strlen(N_SET_ORDER)))
 	{

@@ -11,7 +11,6 @@ double get_objective(CHMM* pos)
   //for (int num=0; num<no_of_examples; num++)
   //    lik+=pos->model_probability(num);
   //lik/=no_of_examples ;
-  printf("objective=%e\n",lik) ;
 
   return lik ;
 

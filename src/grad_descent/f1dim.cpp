@@ -12,15 +12,18 @@ void set_param_vector(CHMM* pos, REAL* params) ;
 float f1dim(REAL x)
 {
 	int j;
-
-	for (j=1;j<=ncom;j++) 
-	  xt[j]=pcom[j]+x*xicom[j];
+	
+	for (j=0;j<ncom;j++) 
+	  xt[j] = pcom[j] + x*xicom[j];
 	
 	set_param_vector(hmmcom, xt) ;
 	hmmcom->normalize() ;
 	hmmcom->invalidate_model() ;
 
-	return -get_objective(hmmcom) ;
+	REAL obj=-get_objective(hmmcom) ;
+
+	printf("delta=%e  objective=%e\n",x,obj) ;
+	return obj ;
 }
 #undef NRANSI
 /* (C) Copr. 1986-92 Numerical Recipes Software .). */
