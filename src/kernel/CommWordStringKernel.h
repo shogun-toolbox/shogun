@@ -5,10 +5,17 @@
 #include "kernel/StringKernel.h"
 #include "kernel/OptimizableKernel.h"
 
+enum E_NormalizationType
+{
+	E_NO_NORMALIZATION,
+	E_SQRT_NORMALIZATION,
+	E_FULL_NORMALIZATION 
+} ;
+
 class CCommWordStringKernel: public CStringKernel<WORD>
 {
  public:
-  CCommWordStringKernel(LONG size, bool use_sign) ;
+  CCommWordStringKernel(LONG size, bool use_sign, E_NormalizationType normalization_=E_FULL_NORMALIZATION ) ;
   ~CCommWordStringKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -51,6 +58,8 @@ class CCommWordStringKernel: public CStringKernel<WORD>
   REAL * dictionary_weights ;
   
   bool use_sign ;
+  E_NormalizationType normalization ;
+  
 };
 
 #endif
