@@ -14,6 +14,9 @@ mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     mxArray *array_ptr;
     int status;
     
+	if (!gui)
+		gui=new CTextGUI(0, NULL);
+
     /* Check for proper number of input and output arguments */    
     if (nrhs !=0) {
         mexErrMsgTxt("No input arguments required.");
