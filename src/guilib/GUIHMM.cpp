@@ -212,8 +212,8 @@ bool CGUIHMM::one_class_test(char* param)
 	param=CIO::skip_spaces(param);
 
 	numargs=sscanf(param, "%le %s %s", &tresh, outputname, rocfname);
-
 	CIO::message("Tresholding at:%f\n",tresh);
+
 	if (numargs>=2)
 	{
 		outputfile=fopen(outputname, "w");
@@ -289,6 +289,7 @@ bool CGUIHMM::test_hmm(char* param)
 	param=CIO::skip_spaces(param);
 
 	numargs=sscanf(param, "%le %s %s", &tresh, outputname, rocfname);
+	CIO::message("Tresholding at:%f\n",tresh);
 
 	if (numargs>=2)
 	{
@@ -331,7 +332,7 @@ bool CGUIHMM::test_hmm(char* param)
 
 			for (int dim=0; dim<total; dim++)
 			{
-				output[dim]=pos->model_probability(dim)-neg->model_probability(dim)+tresh;
+				output[dim]=pos->model_probability(dim)-neg->model_probability(dim);
 				label[dim]= obs->get_label(dim);
 			}
 			

@@ -23,7 +23,7 @@ public:
 
 	/// get line from user/stdin/file input
 	/// @return true at EOF
-	bool get_line(FILE* infile=stdin);
+	bool get_line(FILE* infile=stdin, bool show_prompt=true);
 
 };
 #endif

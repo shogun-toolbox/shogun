@@ -205,12 +205,13 @@ void CTextGUI::print_prompt()
     //CIO::message("genefinder >> ");
 }
 
-bool CTextGUI::get_line(FILE* infile)
+bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 {
     int i;
     char input[2000];
 
-    print_prompt();
+    if (show_prompt)
+		print_prompt();
 
     char* b=fgets(input, sizeof(input), infile);
     if ((b==NULL) || !strlen(input) || (input[0]==N_COMMENT1) || (input[0]==N_COMMENT2) || (input[0]=='\n'))
@@ -392,7 +393,7 @@ bool CTextGUI::get_line(FILE* infile)
 
 	if (file)
 	{
-	    while(!feof(file) && gui->get_line(file));
+	    while(!feof(file) && gui->get_line(file,false));
 	    fclose(file);
 	}
 	else
@@ -525,7 +526,7 @@ int main(int argc, const char* argv[])
 		}
 		else
 		{
-		    while(!feof(file) && gui->get_line(file));
+		    while(!feof(file) && gui->get_line(file, false));
 		    fclose(file);
 		}
 	    }
