@@ -1,4 +1,5 @@
 #include "NormOne.h"
+#include "RealPreProc.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
@@ -79,10 +80,3 @@ REAL* CNormOne::apply_to_feature_vector(REAL* f, int len)
 
 	return vec;
 }
-
-short int* CNormOne::apply_to_feature_vector(short int* f, int len)
-{
-	return NULL;
-}
-
-

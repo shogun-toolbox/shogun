@@ -1,5 +1,5 @@
-#ifndef _CNORM_ONE__H__
-#define _CNORM_ONE__H__
+#ifndef _CPRUNE_VAR_SUB_MEAN__H__
+#define _CPRUNE_VAR_SUB_MEAN__H__
 
 #include "RealPreProc.h"
 #include "features/Features.h"
@@ -7,11 +7,11 @@
 
 #include <stdio.h>
 
-class CNormOne : public CRealPreProc
+class CPruneVarSubMean : public CRealPreProc
 {
 public:
-	CNormOne();
-	virtual ~CNormOne();
+	CPruneVarSubMean();
+	virtual ~CPruneVarSubMean();
 
 	/// initialize preprocessor from features
 	virtual bool init(CFeatures* f);

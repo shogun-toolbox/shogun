@@ -1,5 +1,5 @@
-#ifndef _CNORM_ONE__H__
-#define _CNORM_ONE__H__
+#ifndef _CNORM_DERIVATIVE_LEM3__H__
+#define _CNORM_DERIVATIVE_LEM3__H__
 
 #include "RealPreProc.h"
 #include "features/Features.h"
@@ -7,11 +7,11 @@
 
 #include <stdio.h>
 
-class CNormOne : public CRealPreProc
+class CNormDerivativeLem3 : public CRealPreProc
 {
 public:
-	CNormOne();
-	virtual ~CNormOne();
+	CNormDerivativeLem3();
+	virtual ~CNormDerivativeLem3();
 
 	/// initialize preprocessor from features
 	virtual bool init(CFeatures* f);

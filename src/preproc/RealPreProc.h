@@ -1,17 +1,18 @@
-#ifndef _CNORM_ONE__H__
-#define _CNORM_ONE__H__
+#ifndef _CREALPREPROC__H__
+#define _CREALPREPROC__H__
 
-#include "RealPreProc.h"
 #include "features/Features.h"
 #include "lib/common.h"
 
 #include <stdio.h>
 
-class CNormOne : public CRealPreProc
+class CFeatures;
+
+class CRealPreProc
 {
 public:
-	CNormOne();
-	virtual ~CNormOne();
+	CRealPreProc();
+	virtual ~CRealPreProc();
 
 	/// initialize preprocessor from features
 	virtual bool init(CFeatures* f);
@@ -25,10 +26,14 @@ public:
 	/// apply preproc on feature matrix
 	/// result in feature matrix
 	/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-	virtual REAL* apply_to_feature_matrix(CFeatures* f);
-
+	virtual REAL* apply_to_feature_matrix(CFeatures* f)=0;
 	/// apply preproc on single feature vector
 	/// result in feature matrix
-	virtual REAL* apply_to_feature_vector(REAL* f, int len);
+	virtual REAL* apply_to_feature_vector(REAL* f, int len)=0;
+	
+	/** return feature type with which objects derived 
+	*         from CPreProc can deal
+	*             */
+	virtual CFeatures::EType get_feature_type() { return CFeatures::F_REAL; }
 };
 #endif

@@ -1,4 +1,55 @@
+#include "NormDerivativeLem3.h"
+#include "RealPreProc.h"
+#include "features/Features.h"
+#include "features/RealFeatures.h"
 
+CNormDerivativeLem3::CNormDerivativeLem3()
+{
+}
+
+CNormDerivativeLem3::~CNormDerivativeLem3()
+{
+}
+
+/// initialize preprocessor from features
+bool CNormDerivativeLem3::init(CFeatures* f)
+{
+	return true;
+}
+
+/// initialize preprocessor from features
+void CNormDerivativeLem3::cleanup()
+{
+}
+
+/// initialize preprocessor from file
+bool CNormDerivativeLem3::load(FILE* f)
+{
+	return false;
+}
+
+/// save preprocessor init-data to file
+bool CNormDerivativeLem3::save(FILE* f)
+{
+	return false;
+}
+
+/// apply preproc on feature matrix
+/// result in feature matrix
+/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
+REAL* CNormDerivativeLem3::apply_to_feature_matrix(CFeatures* f)
+{
+	return NULL;
+}
+
+/// apply preproc on single feature vector
+/// result in feature matrix
+REAL* CNormDerivativeLem3::apply_to_feature_vector(REAL* f, int len)
+{
+	return NULL;
+}
+
+#warning TODO implement jahau 
 #ifdef JaaHau
  //this is the normalization used in jaahau
     int o_p=1;
