@@ -11,6 +11,9 @@ extern double* theta;
 long   kernel_cache_statistic;
 double normalizer=1;
 
+#ifdef SUNOS
+ extern "C" int exit(int);
+#endif
 /* calculate the kernel function */
 CFLOAT kernel(KERNEL_PARM *kernel_parm,DOC* a,DOC* b)
 {

@@ -2,17 +2,21 @@
 // $Id$
 //////////////////////////////////////////////////////////////////////
 
+#include <math.h>
 #include "hmm/HMM.h"
 #include "lib/Mathmatics.h"
 #include "lib/io.h"
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
 #include <time.h>
 #include <ctype.h>
 
 #define ARRAY_SIZE 65336
+
+#ifdef SUNOS
+extern "C" int	finite(double);
+#endif
 
 #ifdef PARALLEL 
  #include <unistd.h>
@@ -230,12 +234,12 @@ bool CHMM::alloc_state_dependend_arrays()
 #ifdef PARALLEL
 	for (int i=0; i<NUM_PARALLEL; i++)
 	{
-		arrayN1[i]=new REAL[this->N];
-		arrayN2[i]=new REAL[this->N];
+		arrayN1[i]=new REAL[N];
+		arrayN2[i]=new REAL[N];
 	}
 #else //PARALLEL
-	arrayN1=new REAL[this->N];
-	arrayN2=new REAL[this->N];
+	arrayN1=new REAL[N];
+	arrayN2=new REAL[N];
 #endif //PARALLEL
 
 #ifdef LOG_SUMARRAY
@@ -252,21 +256,21 @@ bool CHMM::alloc_state_dependend_arrays()
 	if (p_observations)
 	{
 #ifdef PARALLEL
-		if (alpha_cache[0].table!=NULL)
+	    if (alpha_cache[0].table!=NULL)
 #else
-			if (alpha_cache.table!=NULL)
+		if (alpha_cache.table!=NULL)
 #endif
 
 
-				set_observations(p_observations);
-			else
-				set_observation_nocache(p_observations);
+		    set_observations(p_observations);
+		else
+		    set_observation_nocache(p_observations);
 	}
 	else
 	{
 
-		CIO::message("setting observations\n");
-		set_observations(p_observations);
+	    CIO::message("setting observations\n");
+	    set_observations(p_observations);
 	}
 	
 	this->invalidate_model();
@@ -366,7 +370,10 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 	//initialize parameters
 	this->M= M;
 	this->N= N;
-	
+	this->transition_matrix_a=NULL;
+        this->observation_matrix_b=NULL;
+        this->initial_state_distribution_p=NULL;
+        this->end_state_distribution_q=NULL;
 	this->ORDER=ORDER_;
 	this->PSEUDO= PSEUDO;
 	this->model= model;
