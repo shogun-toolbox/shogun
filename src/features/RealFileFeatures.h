@@ -14,12 +14,7 @@ class CRealFileFeatures: public CRealFeatures
 
   virtual ~CRealFileFeatures();
   
-  /** set feature matrix
-      necessary to set feature_matrix, num_features, num_vectors, where
-      num_features is the column offset, and columns are linear in memory
-      see below for definition of feature_matrix
-  */
-  virtual REAL* set_feature_matrix();
+  virtual REAL* load_feature_matrix();
   virtual CFeatures* duplicate() const;
 
   int get_label(long idx);

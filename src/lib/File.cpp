@@ -40,56 +40,62 @@ CFile::CFile(char* fname, char rw, EType typ, char fourcc[4])
 	}
 }
 
-INT* CFile::load_int_data(int num, INT* target)
+CFile::~CFile()
+{
+	fclose(file);
+	file=NULL;
+}
+
+INT* CFile::load_int_data(INT* target, int& num)
 {
 	assert(expected_type==F_INT);
 	CSimpleFile<INT> f(fname, file);
-	target=f.load(num, target);
+	target=f.load(target, num);
 	status=(target!=NULL);
 	return target;
 }
 
-REAL* CFile::load_real_data(int num, REAL* target)
+REAL* CFile::load_real_data(REAL* target, int& num)
 {
 	assert(expected_type==F_REAL);
 	CSimpleFile<REAL> f(fname, file);
-	target=f.load(num, target);
+	target=f.load(target, num);
 	status=(target!=NULL);
 	return target;
 }
 
-CHAR* CFile::load_char_data(int num, CHAR* target)
+CHAR* CFile::load_char_data(CHAR* target, int& num)
 {
 	assert(expected_type==F_CHAR);
 	CSimpleFile<CHAR> f(fname, file);
-	target=f.load(num, target);
+	target=f.load(target, num);
 	status=(target!=NULL);
 	return target;
 }
 
-BYTE* CFile::load_byte_data(int num, BYTE* target)
+BYTE* CFile::load_byte_data(BYTE* target, int& num)
 {
 	assert(expected_type==F_BYTE);
 	CSimpleFile<BYTE> f(fname, file);
-	target=f.load(num, target);
+	target=f.load(target, num);
 	status=(target!=NULL);
 	return target;
 }
 
-WORD* CFile::load_word_data(int num, WORD* target)
+WORD* CFile::load_word_data(WORD* target, int& num)
 {
 	assert(expected_type==F_WORD);
 	CSimpleFile<WORD> f(fname, file);
-	target=f.load(num, target);
+	target=f.load(target, num);
 	status=(target!=NULL);
 	return target;
 }
 
-SHORT* CFile::load_short_data(int num, SHORT* target)
+SHORT* CFile::load_short_data(SHORT* target, int& num)
 {
 	assert(expected_type==F_SHORT);
 	CSimpleFile<SHORT> f(fname, file);
-	target=f.load(num, target);
+	target=f.load(target, num);
 	status=(target!=NULL);
 	return target;
 }
@@ -125,12 +131,11 @@ bool CFile::write_header()
     unsigned char intlen=sizeof(unsigned int);
     unsigned char doublelen=sizeof(double);
     unsigned int endian=0x12345678;
-    unsigned int fourcc='RFEA'; //id for ST features
 
     assert(fwrite(&intlen, sizeof(unsigned char), 1, file)==1);
     assert(fwrite(&doublelen, sizeof(unsigned char), 1, file)==1);
     assert(fwrite(&endian, sizeof(unsigned int), 1, file)==1);
-    assert(fwrite(&fourcc, sizeof(unsigned int), 1, file)==1);
+    assert(fwrite(&fourcc, 4*sizeof(char), 1, file)==1);
 
 	return false;
 }

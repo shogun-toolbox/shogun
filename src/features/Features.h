@@ -23,6 +23,12 @@ public:
 	// copy constructor
 	CFeatures(const CFeatures& orig);
 
+	/** load features from file
+	 * fname - filename
+	 */
+
+	CFeatures(char* fname);
+
 	virtual ~CFeatures();
 
 	/** return feature type with which objects derived 
@@ -67,8 +73,8 @@ public:
 	*/
 	virtual int get_size()=0;
 
-	virtual bool load(char* fname)=0;
-	virtual bool save(char* fname)=0;
+	virtual bool load(char* fname);
+	virtual bool save(char* fname);
 	
 private:
 	/// size of cache in MB

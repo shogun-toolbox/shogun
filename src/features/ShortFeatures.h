@@ -7,22 +7,24 @@
 
 class CShortFeatures: public CSimpleFeatures<SHORT>
 {
- public:
-  CShortFeatures(long size) : CSimpleFeatures<SHORT>(size)
-  {
-  }
+	public:
+		CShortFeatures(long size);
+		CShortFeatures(const CShortFeatures & orig);
 
-  CShortFeatures(const CShortFeatures & orig) : CSimpleFeatures<SHORT>(orig)
-  {
-  }
+		/** load features from file
+		 * fname - filename
+		 */
 
-  bool obtain_from_char_features(CCharFeatures* cf, E_OBS_ALPHABET alphabet, int order);
+		CShortFeatures(char* fname);
 
-  virtual EType get_feature_type() { return F_SHORT; }
+		bool obtain_from_char_features(CCharFeatures* cf, E_OBS_ALPHABET alphabet, int start, int order);
 
-  virtual bool load(char* fname);
-  virtual bool save(char* fname);
- protected:
-  
+		virtual EType get_feature_type() { return F_SHORT; }
+
+		virtual bool load(char* fname);
+		virtual bool save(char* fname);
+	protected:
+		void translate_from_single_order(SHORT* obs, int sequence_length, int start, int order, int max_val);
+
 };
 #endif

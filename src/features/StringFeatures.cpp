@@ -4,7 +4,7 @@
 #include "features/StringFeatures.h"
 #include "lib/common.h"
 
-CStringFeatures::CStringFeatures() : CFeatures(0), num_vectors(0), features(NULL)
+CStringFeatures::CStringFeatures() : CFeatures(0l), num_vectors(0), features(NULL)
 {
 }
 

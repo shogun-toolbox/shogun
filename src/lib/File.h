@@ -29,12 +29,14 @@ public:
 	int parse_first_header(EType &type);
 	int parse_next_header(EType &type);
 
-	INT* load_int_data(int num, INT* target);
-	REAL* load_real_data(int num, REAL* target);
-	CHAR* load_char_data(int num, CHAR* target);
-	BYTE* load_byte_data(int num, BYTE* target);
-	WORD* load_word_data(int num, WORD* target);
-	SHORT* load_short_data(int num, SHORT* target);
+	// set target to NULL to get it automagically allocated
+	// set num to 0 if whole file is to be read
+	INT*   load_int_data(INT* target, int& num);
+	REAL*  load_real_data(REAL* target, int& num);
+	CHAR*  load_char_data(CHAR* target, int& num);
+	BYTE*  load_byte_data(BYTE* target, int& num);
+	WORD*  load_word_data(WORD* target, int& num);
+	SHORT* load_short_data(SHORT* target, int& num);
 
 	bool save_int_data(int num, INT* src);
 	bool save_real_data(int num, REAL* src);

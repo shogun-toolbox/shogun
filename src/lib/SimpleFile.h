@@ -20,11 +20,22 @@ public:
 	{
 	}
 
-	T* load(int num, T* target)
+	//num is the number of read elements
+	T* load(T* target, int& num=0)
 	{
 		if (status)
 		{
 			status=false;
+
+			if (num==0)
+			{
+				if (!fseek(file, 0, SEEK_END))
+				{
+					if ((num=(int)ftell(file)) != -1)
+						num/=sizeof(T);
+				}
+			}
+
 			if (num>0)
 			{
 				if (!target)
@@ -35,8 +46,13 @@ public:
 					status=(fread((void*) target, sizeof(T), num, file) == (unsigned int) num);
 				}
 			}
+			return target;
 		}
-		return target;
+		else 
+		{
+			num=-1;
+			return NULL;
+		}
 	}
 
 	bool save(T* target, int num)

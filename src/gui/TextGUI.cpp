@@ -124,7 +124,7 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
 	CIO::message("\033[1;31m%s\033[0m <filename> <LINEAR|MPI|CPLEX>\t- load svm\n",N_LOAD_SVM);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- load kernel init data\n",N_LOAD_KERNEL_INIT);
-	CIO::message("\033[1;31m%s\033[0m <filename> <REAL|SHORT|STRING> <TRAIN|TEST> [<CACHE SIZE> [0|1]]\t- load features\n",N_LOAD_FEATURES);
+	CIO::message("\033[1;31m%s\033[0m <filename> <REAL|SHORT|CHAR> <TRAIN|TEST> [<CACHE SIZE> [0|1]]\t- load features\n",N_LOAD_FEATURES);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- load preproc init data\n",N_LOAD_PREPROC);
 	CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
 	CIO::message("\033[1;31m%s\033[0m <filename> <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [<ORDER> [<START> [<WIDTH>]]\t- load observed data\n",N_LOAD_OBSERVATIONS);

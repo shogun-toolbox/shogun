@@ -30,6 +30,10 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 }
 	 }
 
+	CSimpleFeatures(char* fname) : CFeatures(fname)
+	{
+	}
+
 	 virtual ~CSimpleFeatures()
 	 {
 		 delete[] feature_matrix;
@@ -128,8 +132,12 @@ template <class ST> class CSimpleFeatures: public CFeatures
       num_features is the column offset, and columns are linear in memory
       see below for definition of feature_matrix
   */
-  virtual ST* set_feature_matrix()=0;
-
+  virtual void set_feature_matrix(ST* fm, long num_feat, long num_vec)
+  {
+	  feature_matrix=fm;
+	  num_features=num_feat;
+	  num_vectors=num_vec;
+  }
 
   virtual bool preproc_feature_matrix(bool force_preprocessing=false)
   {
@@ -182,7 +190,11 @@ protected:
   /// compute feature vector for sample num
   /// if target is set the vector is written to target
   /// len is returned by reference
-  virtual ST* compute_feature_vector(long num, long& len, ST* target=NULL)=0;
+  virtual ST* compute_feature_vector(long num, long& len, ST* target=NULL)
+  {
+	  len=0;
+	  return NULL;
+  }
 
   /// number of vectors in cache
   long num_vectors;

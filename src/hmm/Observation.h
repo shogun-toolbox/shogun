@@ -6,14 +6,6 @@
 #include "lib/common.h"
 #include "lib/Mathmatics.h"
 
-//define numbers for the bases 
-const unsigned char B_A=0;
-const unsigned char B_C=1;
-const unsigned char B_G=2;
-const unsigned char B_T=3;
-const unsigned char B_N=4;
-const unsigned char B_n=5;
-
 /** type that is used for observations - can be BYTE or WORD.
  * Probably BYTE is enough if you have at most 256 observations
  * however WORD is also possible although you might quickly run into memory problems

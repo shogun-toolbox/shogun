@@ -72,7 +72,7 @@ REAL* CRealFileFeatures::compute_feature_vector(long num, long &len, REAL* targe
     return featurevector;
 }
 
-REAL* CRealFileFeatures::set_feature_matrix()
+REAL* CRealFileFeatures::load_feature_matrix()
 {
     assert(working_file!=NULL);
     fseek(working_file, filepos, SEEK_SET);

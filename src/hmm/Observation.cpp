@@ -13,6 +13,15 @@ T_OBSERVATIONS CObservation::maptable[MAPTABLE_LENGTH];
 
 #define MAPTABLE_UNDEF ((1<<(8*sizeof(T_OBSERVATIONS)))-1)
 
+//define numbers for the bases 
+const unsigned char B_A=0;
+const unsigned char B_C=1;
+const unsigned char B_G=2;
+const unsigned char B_T=3;
+const unsigned char B_N=4;
+const unsigned char B_n=5;
+
+
 CObservation::CObservation(E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M_, int M_, int ORDER_)
 {
 	full_observation=NULL;

@@ -12,6 +12,11 @@ CFeatures::CFeatures(const CFeatures& orig)
 {
 }
 
+CFeatures::CFeatures(char* fname)
+{
+	load(fname);
+}
+
 CFeatures::~CFeatures()
 {
   CIO::message("Feature object destroyed\n") ;
@@ -86,3 +91,12 @@ int* CFeatures::get_labels(long &len)
   return labels ;
 }
 
+bool CFeatures::load(char* fname)
+{
+	return false;
+}
+
+bool CFeatures::save(char* fname)
+{
+	return false;
+}

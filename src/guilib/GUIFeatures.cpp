@@ -5,6 +5,9 @@
 #include "features/RealFileFeatures.h"
 #include "features/TOPFeatures.h"
 #include "features/FKFeatures.h"
+#include "features/CharFeatures.h"
+#include "features/ShortFeatures.h"
+#include "features/RealFeatures.h"
 
 CGUIFeatures::CGUIFeatures(CGUI * gui_)
   : gui(gui_), train_features(NULL), test_features(NULL), train_obs(NULL), test_obs(NULL)
@@ -181,7 +184,7 @@ bool CGUIFeatures::set_features(char* param)
 				CIO::not_implemented();
 
 			if (comp_features)
-				((CRealFeatures*) *f_ptr)->set_feature_matrix() ;
+				((CRealFileFeatures*) *f_ptr)->load_feature_matrix() ;
 		}
 		else
 			CIO::message("observations not correctly assigned!\n");
@@ -225,16 +228,25 @@ bool CGUIFeatures::load(char* param)
 
 	if (strcmp(type,"REAL")==0)
 	{
-	    CIO::message("opening file...\n");
-	    *f_ptr=new CRealFileFeatures(size, filename);
+		CIO::message("opening file...\n");
+		*f_ptr=new CRealFileFeatures(size, filename);
+
+		if (comp_features)
+			((CRealFileFeatures*) *f_ptr)->load_feature_matrix() ;
+	}
+	else if (strcmp(type, "CHAR")==0)
+	{
+		*f_ptr=new CCharFeatures(filename);
+	}
+	else if (strcmp(type, "SHORT")==0)
+	{
+		*f_ptr=new CShortFeatures(filename);
 	}
 	else
 	{
 	    CIO::message("unknown type\n");
 	    return false;
 	}
-	if (comp_features)
-		((CRealFeatures*) *f_ptr)->set_feature_matrix() ;
 
     } else
 	CIO::message("see help for params\n");
