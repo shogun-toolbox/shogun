@@ -34,6 +34,6 @@ public:
 
 protected:
 	FILE* out_file;
-	CHAR input[2000];
+	CHAR input[10000];
 };
 #endif

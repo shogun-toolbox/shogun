@@ -719,7 +719,7 @@ int main(int argc, const CHAR* argv[])
 				int s2=accept(s, NULL, NULL);
 				CIO::message(M_INFO, "accepting connection\n");
 
-				CHAR input[2000];
+				CHAR input[5000];
 				do
 				{
 					bzero(input, sizeof(input));

@@ -1020,7 +1020,7 @@ bool CGUIKernel::add_kernel(CHAR* param)
 
 	if (kernel)
 	{
-		char newparam[1000] ;
+		char newparam[10000] ;
 		double weight=1 ;
 		
 		int ret = sscanf(param, "%le %[a-zA-Z _*/+-0-9]", &weight, newparam) ;
