@@ -2608,7 +2608,7 @@ void CSVMLight::write_model(FILE *modelfl, MODEL *model)
   fprintf(modelfl,"%ld # number of training documents \n",model->totdoc);
  
   fprintf(modelfl,"%ld # number of support vectors plus 1 \n",model->sv_num);
-  fprintf(modelfl,"%.8g # threshold b \n",model->b);
+  fprintf(modelfl,"%.8g # threshold b \n",-model->b);
 
   for(i=1;i<model->sv_num;i++) {
 ////    fprintf(modelfl,"%.32g ",model->alpha[i]);

@@ -1,7 +1,7 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#ifdef SUNOS_CC
+#ifdef SUNOS
 #define bool int
 #define false 0
 #define true 1

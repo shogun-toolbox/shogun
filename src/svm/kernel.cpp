@@ -14,9 +14,9 @@ extern double* theta;
 long   kernel_cache_statistic;
 double normalizer=1;
 
-#ifdef SUNOS
- extern "C" int exit(int);
-#endif
+//#ifdef SUNOS
+// extern "C" int exit(int);
+//#endif
 /* calculate the kernel function */
 CFLOAT kernel(KERNEL_PARM *kernel_parm,DOC* a,DOC* b)
 {
@@ -224,7 +224,7 @@ void kernel_cache_shrink(KERNEL_CACHE *kernel_cache, long totdoc, long numshrink
     kernel_cache->max_elems=totdoc;
   }
 
-  free(keep);
+  delete[] keep;
 
   if(verbosity>=2) {
    CIO::message("done.\n");
@@ -248,13 +248,13 @@ void kernel_cache_reset_lru(KERNEL_CACHE *kernel_cache)
 
 void kernel_cache_cleanup(KERNEL_CACHE *kernel_cache)
 {
-  free(kernel_cache->index);
-  free(kernel_cache->occu);
-  free(kernel_cache->lru);
-  free(kernel_cache->invindex);
-  free(kernel_cache->active2totdoc);
-  free(kernel_cache->totdoc2active);
-  free(kernel_cache->buffer);
+  delete[] kernel_cache->index;
+  delete[] kernel_cache->occu;
+  delete[] kernel_cache->lru;
+  delete[] kernel_cache->invindex;
+  delete[] kernel_cache->active2totdoc;
+  delete[] kernel_cache->totdoc2active;
+  delete[] kernel_cache->buffer;
 }
 
 long kernel_cache_malloc(KERNEL_CACHE *kernel_cache)
