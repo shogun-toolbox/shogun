@@ -35,9 +35,7 @@ REAL *buffer)     // y_i * y_j * a_i * a_j
   for(i=0;(j=active2dnum[i])>=0;i++) {
     buffer[j]=(REAL)kernel(train, docnum, train, j);
   }
-#warning check get_kernel_row
 }
-
 /****************************** Cache handling *******************************/
 /*
 void CKernel::kernel_cache_init(KERNEL_CACHE *kernel_cache, long totdoc, long buffsize)

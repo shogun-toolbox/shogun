@@ -1,4 +1,3 @@
-#ifdef NORMALIZE_TO_ONE
 	double sum=0;
 	sum+=featurevector[0]*featurevector[0];
 
@@ -47,6 +46,3 @@
 	sum=sqrt(sum);
 	for (p=0; p<1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()); p++)
 		featurevector[p]/=sum;
-
-
-#endif

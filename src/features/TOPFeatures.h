@@ -8,44 +8,16 @@ class CTOPFeatures: public CRealFeatures
 {
  public:
   CTOPFeatures(CHMM* p, CHMM* n);
-  CTOPFeatures(const CTOPFeatures &orig): CRealFeatures(orig), pos(orig.pos), neg(orig.neg)
-    { } ;
-
+  CTOPFeatures(const CTOPFeatures &orig);
+  
   virtual ~CTOPFeatures();
 
-  void set_models(CHMM* p, CHMM* n)
-    {
-      pos=p ; 
-      neg=n ;
-      delete[] feature_matrix  ;
-      feature_matrix=NULL ;
-      //set_feature_matrix() ;
-      num_vectors=get_number_of_examples() ;
-    };
-
+  void set_models(CHMM* p, CHMM* n);
   virtual REAL* set_feature_matrix();
-
-  virtual int get_label(long idx) 
-    {
-	return pos->get_observations()->get_label(idx) ;
-#warning check here
-    } ;
-  virtual long get_number_of_examples() 
-    {
-      if (pos)
-	if (pos->get_observations())
-	  return pos->get_observations()->get_DIMENSION();
-	else 
-	  return 0 ;
-      else
-	return 0;
-#warning check here
-    } ;
-
-  virtual CFeatures* duplicate() const
-    {
-      return new CTOPFeatures(*this) ;
-    }
+  virtual int get_label(long idx);
+  virtual long get_number_of_examples();
+  
+  virtual CFeatures* duplicate() const;
 
  protected:
   virtual REAL* compute_feature_vector(long num, long& len);

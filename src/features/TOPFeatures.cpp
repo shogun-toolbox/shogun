@@ -7,9 +7,42 @@ CTOPFeatures::CTOPFeatures(CHMM* p, CHMM* n)
   neg=n;
   num_vectors=get_number_of_examples() ;
 }
+CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig): 
+	CRealFeatures(orig), pos(orig.pos), neg(orig.neg)
+{ 
+}
 
 CTOPFeatures::~CTOPFeatures()
 {
+}
+
+void CTOPFeatures::set_models(CHMM* p, CHMM* n)
+{
+	pos=p ; 
+	neg=n ;
+	delete[] feature_matrix  ;
+	feature_matrix=NULL ;
+	//set_feature_matrix() ;
+	num_vectors=get_number_of_examples() ;
+}
+
+int CTOPFeatures::get_label(long idx)
+{
+	if (pos && pos->get_observations())
+		return pos->get_observations()->get_label(idx) ;
+}
+
+long CTOPFeatures::get_number_of_examples()
+{
+	if (pos && pos->get_observations())
+			return pos->get_observations()->get_DIMENSION();
+
+	return 0;
+}
+  
+CFeatures* CTOPFeatures::duplicate() const
+{
+	return new CTOPFeatures(*this);
 }
 
 REAL* CTOPFeatures::compute_feature_vector(long num, long &len)
@@ -34,6 +67,8 @@ void CTOPFeatures::compute_feature_vector(REAL* featurevector, long num, long& l
   double posx=pos->model_probability(x);
   double negx=neg->model_probability(x);
   
+  len=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
+
   featurevector[p++]=(posx-negx);
   
   //first do positive model

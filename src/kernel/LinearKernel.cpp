@@ -2,6 +2,7 @@
 #include "kernel/LinearKernel.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
+#include "lib/io.h"
 
 #include <assert.h>
 
@@ -44,9 +45,15 @@ REAL CLinearKernel::compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)
   REAL* bvec=((CRealFeatures*) b)->get_feature_vector(idx_b, blen, bfree);
   
   assert(alen==blen);
-  fprintf(stderr, "LinKernel.compute(%ld,%ld) %d\n", idx_a, idx_b, alen) ;
+  //fprintf(stderr, "LinKernel.compute(%ld,%ld) %d\n", idx_a, idx_b, alen) ;
 
-  REAL result=ddot_(alen, avec, 1, bvec, 1) ;
+  double sum=0;
+  for (long i=0; i<alen; i++)
+	  sum+=avec[i]*bvec[i];
+
+//  CIO::message("%ld,%ld -> %f\n",idx_a, idx_b, sum);
+
+  REAL result=sum;//ddot_(alen, avec, 1, bvec, 1) ;
   ((CRealFeatures*) a)->free_feature_vector(avec, afree);
   ((CRealFeatures*) b)->free_feature_vector(bvec, bfree);
 
