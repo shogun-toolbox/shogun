@@ -392,14 +392,14 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (!strncmp(action, N_SET_FEATURES, strlen(N_SET_FEATURES)))
 		{
-			if (nrhs==3)
+			if (nrhs>=3)
 			{
 				CHAR* target=CGUIMatlab::get_mxString(prhs[1]);
 
 				if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
 						(!strncmp(target, "TEST", strlen("TEST"))) ) 
 				{
-					CFeatures* features=gf_matlab.set_features(prhs);
+					CFeatures* features=gf_matlab.set_features(prhs, nrhs);
 
 					if (features && target)
 					{
@@ -432,7 +432,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
 						(!strncmp(target, "TEST", strlen("TEST"))) ) 
 				{
-					CFeatures* features=gf_matlab.set_features(prhs);
+					CFeatures* features=gf_matlab.set_features(prhs, nrhs);
 
 					if (features && target)
 					{

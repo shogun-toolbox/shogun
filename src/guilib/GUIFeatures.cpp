@@ -710,9 +710,30 @@ bool CGUIFeatures::convert(CHAR* param)
 						((CCharFeatures*) (*f_ptr))->free_feature_vector(str, i, to_free);
 					}
 
-					/// FIXME the 4
-					CStringFeatures<CHAR>* string_feat= new CStringFeatures<CHAR>(4);
-					string_feat->set_features(strings, num_vec, max_len, 4, ((CCharFeatures*) (*f_ptr))->get_alphabet());
+
+					int num_symbols = 4; //DNA is default
+
+					switch (((CCharFeatures*) (*f_ptr))->get_alphabet())
+					{
+						case DNA:
+							num_symbols = 4;
+							break;
+						case PROTEIN:
+							num_symbols = 26;
+						case ALPHANUM:
+							num_symbols = 36;
+						case CUBE:
+							num_symbols = 6;
+							break;
+						case NONE:
+							num_symbols = 0;
+							break;
+						default:
+							num_symbols = 4;
+					}
+
+					CStringFeatures<CHAR>* string_feat= new CStringFeatures<CHAR>(num_symbols);
+					string_feat->set_features(strings, num_vec, max_len, num_symbols, ((CCharFeatures*) (*f_ptr))->get_alphabet());
 
 					delete (*f_ptr);
 					(*f_ptr)=string_feat;
@@ -795,7 +816,7 @@ bool CGUIFeatures::convert(CHAR* param)
 						if ( ( ((*f_ptr)->get_feature_class()) == C_STRING)  && ( ((*f_ptr)->get_feature_type()) == F_CHAR) )
 						{
 							//create dense features with 0 cache
-							CIO::message(M_ERROR, "converting CHAR STRING features to WORD STRING ones\n");
+							CIO::message(M_INFO, "converting CHAR STRING features to WORD STRING ones\n");
 
 							CStringFeatures<WORD>* sf=new CStringFeatures<WORD>();
 							result=(sf!=NULL);

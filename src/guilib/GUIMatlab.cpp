@@ -91,6 +91,8 @@ bool CGUIMatlab::best_path(mxArray* retvals[], int dim)
 
 			WORD* fv = ((CStringFeatures<WORD>*) f)->get_feature_vector(dim, num_feat);
 
+			CIO::message(M_DEBUG, "computing viterbi path for vector %d (length %d)\n", dim, num_feat);
+
 			if (fv && num_feat>0)
 			{
 				mxArray* mx_path = mxCreateDoubleMatrix(1, num_feat, mxREAL);
@@ -917,7 +919,7 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 	return false;
 }
 
-CFeatures* CGUIMatlab::set_features(const mxArray* vals[])
+CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 {
 	const mxArray* mx_feat=vals[2];
 	CFeatures* f=NULL;
@@ -947,15 +949,40 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[])
 				((CRealFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
 			}
 			else if (mxIsChar(mx_feat))
-			  {
-			    f= new CCharFeatures(DNA, (LONG) 0);
-			    INT num_vec=mxGetN(mx_feat);
-			    INT num_feat=mxGetM(mx_feat);
-			    CHAR* fm=new char[num_vec*num_feat+10];
-			    assert(fm);
-			    mxGetString(mx_feat, fm, num_vec*num_feat+5);
-			    
-			    ((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+			{
+
+				E_ALPHABET alpha = DNA;
+
+				if (nrhs==4)
+				{
+					CHAR* al = CGUIMatlab::get_mxString(vals[3]);
+
+						if (!strncmp(al, "DNA", strlen("DNA")))
+						{
+							alpha = DNA;
+						}
+						else if (!strncmp(al, "PROTEIN", strlen("PROTEIN")))
+						{
+							alpha = PROTEIN;
+						}
+						else if (!strncmp(al, "ALPHANUM", strlen("ALPHANUM")))
+						{
+							alpha = ALPHANUM;
+						}
+						else if (!strncmp(al, "CUBE", strlen("CUBE")))
+						{
+							alpha = CUBE;
+						}
+				}
+
+				f= new CCharFeatures(alpha, (LONG) 0);
+				INT num_vec=mxGetN(mx_feat);
+				INT num_feat=mxGetM(mx_feat);
+				CHAR* fm=new char[num_vec*num_feat+10];
+				assert(fm);
+				mxGetString(mx_feat, fm, num_vec*num_feat+5);
+
+				((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
 			}
 			///and so on
 			else
