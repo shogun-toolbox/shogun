@@ -65,7 +65,7 @@ void kernel_cache_init(KERNEL_CACHE *kernel_cache, long totdoc, long buffsize)
   kernel_cache->invindex = new long[totdoc];
   kernel_cache->active2totdoc = new long[totdoc];
   kernel_cache->totdoc2active = new long[totdoc];
-  kernel_cache->buffer = new CFLOAT[buffsize*1024*1024];
+  kernel_cache->buffer = new CFLOAT[buffsize*1024*1024/sizeof(CFLOAT)];
 
   kernel_cache->buffsize=(long)(buffsize*1024*1024/sizeof(CFLOAT));
 
