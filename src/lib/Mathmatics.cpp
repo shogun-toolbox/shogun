@@ -13,6 +13,8 @@
 #include <math.h>
 #include <time.h>
 #include <unistd.h>
+#include <assert.h>
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -306,6 +308,29 @@ void CMath::qsort_backward(REAL* output, INT* index, INT size)
 	}
 }
 
+void CMath::min(REAL* output, INT* index, INT size)
+{
+	REAL min_elem = output[0] ;
+	INT min_index = 0 ;
+	for (INT i=1; i<size; i++)
+		if (output[i]<min_elem)
+		{
+			min_index=i ;
+			min_elem=output[i] ;
+		}
+	swap(output[0], output[min_index]) ;
+	swap(index[0], index[min_index]) ;
+}
+
+void CMath::nmin(REAL* output, INT* index, INT size, INT n)
+{
+	if (6*n*size<13*size*log(size))
+		for (INT i=0; i<n; i++)
+			min(&output[i], &index[i], size) ;
+	else
+		qsort(output, index, size) ;
+}
+
 //plot x- axis false positives (fp) 1-Specificity
 //plot y- axis true positives (tp) Sensitivity
 INT CMath::calcroc(REAL* fp, REAL* tp, REAL* output, INT* label, INT& size, INT& possize, INT& negsize, REAL& tresh, FILE* rocfile)
@@ -504,38 +529,4 @@ double CMath::entropy(REAL* p, INT len)
 		e-=exp(p[i])*p[i];
 
 	return e;
-}
-
-INT CMath::fast_find(WORD* output, INT size, WORD elem)
-{
-	INT start=0, end=size-1, middle=size/2 ;
-	
-	if (output[start]>elem || output[end]<elem)
-		return -1 ;
-	
-	while (1)
-	{
-		//CIO::message(M_DEBUG, "start=%i middle=%i end=%i\n", start, middle, end) ;
-		//CIO::message(M_DEBUG, "elem=%i start=%i middle=%i end=%i\n", elem, output[start], output[middle], output[end]) ;
-		if (output[middle]>elem)
-		{
-			end = middle ;
-			middle=start+(end-start)/2 ;
-		} ;
-		if (output[middle]<elem)
-		{
-			start = middle ;
-			middle=start+(end-start)/2 ;
-		}
-		if (output[middle]==elem)
-			return middle ;
-		if (end-start<=1)
-		{
-			if (output[start]==elem)
-				return start ;
-			if (output[end]==elem)
-				return end ;
-			return -1 ;
-		}
-	} ;
 }

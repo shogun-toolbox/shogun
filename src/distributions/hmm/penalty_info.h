@@ -18,6 +18,8 @@ struct penalty_struct
 	INT len ;
 	REAL *limits ;
 	REAL *penalties ;
+	INT max_len ;
+	REAL *cache ;
 	enum ETransformType transform ;
 	INT id ;
 	char * name ;
@@ -58,23 +60,27 @@ inline REAL lookup_step_penalty(INT id, INT len)
 	return -math.INFTY ;
 }
 
-inline REAL lookup_penalty(struct penalty_struct *PEN, REAL value)
+inline REAL lookup_penalty(const struct penalty_struct *PEN, INT value)
 {
 	//fprintf(stderr, "penalty: name=%s id=%i  value=%1.2f  len=%i\n", PEN->name, PEN->id, value, PEN->len) ;
 	if (PEN==NULL)
 		return 0 ;
+	if (PEN->cache && value>0 && value<=PEN->max_len)
+		return PEN->cache[value] ;
+
+	REAL d_value = (REAL) value ;
 	switch (PEN->transform)
 	{
 	case T_LINEAR:
 		break ;
 	case T_LOG:
-		value = log(value) ;
+		d_value = log(d_value) ;
 		break ;
 	case T_LOG_PLUS3:
-		value = log(value+3) ;
+		d_value = log(d_value+3) ;
 		break ;
 	case T_LINEAR_PLUS3:
-		value = value+3 ;
+		d_value = d_value+3 ;
 		break ;
 	default:
 		CIO::message(M_ERROR, "unknown transform\n") ;
@@ -83,17 +89,16 @@ inline REAL lookup_penalty(struct penalty_struct *PEN, REAL value)
 	INT i=0 ;
 	
 	REAL ret ;
-	for (i=0; i< PEN->len; i++)
-		if (PEN->limits[i]>=value)
-			break ;
-	if (i==0)
+
+	i = math.fast_find_range(PEN->limits, PEN->len, value) ;
+	if (i==-1)
 		ret=PEN->penalties[0] ;
-	else if (i==PEN->len)
+	else if (i==PEN->len-1)
 		ret=PEN->penalties[PEN->len-1] ;
 	else
 	{
-		INT i_smaller = i-1 ;
-		INT i_larger  = i ;
+		INT i_smaller = i ;
+		INT i_larger  = i+1 ;
 		
 		
 		if (PEN->limits[i_larger]==PEN->limits[i_smaller])

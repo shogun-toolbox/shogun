@@ -205,6 +205,13 @@ public:
 	void qsort(REAL* output, INT* index, INT size) ;
 	void qsort_backward(REAL* output, INT* index, INT size) ;
 
+     /* finds the smallest element in output and puts that element as the 
+		first element  */
+	void min(REAL* output, INT* index, INT size) ;
+     /* finds the n smallest elements in output and puts these elements as the 
+		first n elements  */
+	void nmin(REAL* output, INT* index, INT size, INT n) ;
+
 	/* performs a inplace unique of a WORD vector using quicksort 
 	 * returns the new number of elements */
 	INT unique(WORD* output, INT size) 
@@ -218,7 +225,11 @@ public:
 		}
 	/* finds an element in a sorted array via binary search
      * returns -1 if not found */
-	INT fast_find(WORD* output, INT size, WORD elem) ;
+	inline INT fast_find(WORD* output, INT size, WORD elem) ;
+
+	/* finds an element in a sorted array via binary search
+	 * that is smaller-equal elem und the next element is larger-equal  */
+	inline INT fast_find_range(REAL* output, INT size, REAL elem) ;
 
 	/** calculates ROC into (fp,tp)
 	 * from output and label of length size 
@@ -373,6 +384,73 @@ protected:
 	static CHAR rand_state[256];
 };
 
+
+
+inline INT CMath::fast_find(WORD* output, INT size, WORD elem)
+{
+	INT start=0, end=size-1, middle=size/2 ;
+	
+	if (output[start]>elem || output[end]<elem)
+		return -1 ;
+	
+	while (1)
+	{
+		if (output[middle]>elem)
+		{
+			end = middle ;
+			middle=start+(end-start)/2 ;
+		} ;
+		if (output[middle]<elem)
+		{
+			start = middle ;
+			middle=start+(end-start)/2 ;
+		}
+		if (output[middle]==elem)
+			return middle ;
+		if (end-start<=1)
+		{
+			if (output[start]==elem)
+				return start ;
+			if (output[end]==elem)
+				return end ;
+			return -1 ;
+		}
+	} ;
+}
+
+inline INT CMath::fast_find_range(REAL* output, INT size, REAL elem)
+{
+	INT start=0, end=size-2, middle=(size-2)/2 ;
+	
+	if (output[start]>elem)
+		return -1 ;
+	if (output[end]<=elem)
+		return size-1 ;
+	
+	while (1)
+	{
+		if (output[middle]>elem)
+		{
+			end = middle ;
+			middle=start+(end-start)/2 ;
+		} ;
+		if (output[middle]<elem)
+		{
+			start = middle ;
+			middle=start+(end-start)/2 ;
+		}
+		if (output[middle]<=elem && output[middle+1]>=elem)
+			return middle ;
+		if (end-start<=1)
+		{
+			if (output[start]<=elem && output[start+1]>=elem)
+				return start ;
+			return end ;
+		}
+	} ;
+}
+
+ 
 #endif
 
 extern CMath math;

@@ -14,6 +14,22 @@ void init_penalty_struct(struct penalty_struct &PEN)
 	PEN.id=-1 ;
 	PEN.transform = T_LINEAR ;
 	PEN.name = NULL ;
+	PEN.max_len=0 ;
+	PEN.cache=NULL ;
+}
+
+void init_penalty_struct_cache(struct penalty_struct &PEN)
+{
+	if (PEN.cache)
+		return ;
+		
+	REAL* cache=new REAL[PEN.max_len+1] ;
+	if (cache)
+	{
+		for (INT i=0; i<=PEN.max_len; i++)
+			cache[i] = lookup_penalty(&PEN, i) ;
+		PEN.cache = cache ;
+	}
 }
 
 void delete_penalty_struct(struct penalty_struct &PEN)
@@ -23,6 +39,7 @@ void delete_penalty_struct(struct penalty_struct &PEN)
 		delete[] PEN.limits ;
 		delete[] PEN.penalties ;
 		delete[] PEN.name ;
+		delete[] PEN.cache ;
 	}
 }
 
@@ -91,6 +108,14 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 			delete_penalty_struct_array(PEN,P) ;
 			return NULL ;
 		}
+		const mxArray* mx_max_len_field = mxGetField(mx_elem, 0, "max_len") ;
+		if (mx_max_len_field==NULL || !mxIsNumeric(mx_max_len_field) ||
+			mxGetM(mx_max_len_field)!=1 || mxGetN(mx_max_len_field)!=1)
+		{
+			CIO::message(M_ERROR, "missing max_len field\n") ;
+			delete_penalty_struct_array(PEN,P) ;
+			return NULL ;
+		}
 		
 		INT id = (INT) mxGetScalar(mx_id_field)-1 ;
 		if (i<0 || i>P-1)
@@ -99,6 +124,14 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 			delete_penalty_struct_array(PEN,P) ;
 			return NULL ;
 		}
+		INT max_len = (INT) mxGetScalar(mx_max_len_field) ;
+		if (max_len<0 || max_len>1024*1024*100)
+		{
+			CIO::message(M_ERROR, "max_len out of range\n") ;
+			delete_penalty_struct_array(PEN,P) ;
+			return NULL ;
+		}
+		PEN[id].max_len = max_len ;
 		if (PEN[id].id!=-1)
 		{
 			CIO::message(M_ERROR, "penalty id already used\n") ;
@@ -137,9 +170,17 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 		}
 		PEN[id].name = new char[strlen(name_str)+1] ;
 		strcpy(PEN[id].name, name_str) ;
-		fprintf(stderr, "penalty_info: name=%s id=%i len=%i transform=%s\n", PEN[id].name,
-				PEN[id].id, PEN[id].len, transform_str) ;
 
+		init_penalty_struct_cache(PEN[id]) ;
+
+		if (PEN->cache)
+			fprintf(stderr, "penalty_info: name=%s id=%i len=%i max_len=%i transform='%s' (cache initialized)\n", PEN[id].name,
+					PEN[id].id, PEN[id].len, PEN[id].max_len, transform_str) ;
+		else
+			fprintf(stderr, "penalty_info: name=%s id=%i len=%i max_len=%i transform='%s'\n", PEN[id].name,
+					PEN[id].id, PEN[id].len, PEN[id].max_len, transform_str) ;
+
+		
 		mxFree(transform_str) ;
 		mxFree(name_str) ;
 	}

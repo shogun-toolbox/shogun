@@ -316,12 +316,12 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (!strncmp(action, N_BEST_PATH_TRANS, strlen(N_BEST_PATH_TRANS)))
 		{
-			if ((nrhs==1+7) & (nlhs==3))
+			if ((nrhs==1+10) & (nlhs==3))
 			{
 				gf_matlab.best_path_trans(prhs,plhs);
 			}
 			else
-				mexErrMsgTxt("usage is [prob,path,pos]=gf('best_path_trans',p,q,a_trans,seq,pos,penalties, penalty_info, nbest)");
+				mexErrMsgTxt("usage is [prob,path,pos]=gf('best_path_trans',p,q,a_trans,seq,pos,orf_info, genestr, penalties, penalty_info, nbest)");
 		}
 		else if (!strncmp(action, N_MODEL_PROB_NO_B_TRANS, strlen(N_MODEL_PROB_NO_B_TRANS)))
 		{
