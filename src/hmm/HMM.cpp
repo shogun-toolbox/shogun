@@ -249,8 +249,14 @@ bool CHMM::alloc_state_dependend_arrays()
 #endif //LOG_SUMARRAY
 	transition_matrix_A=new REAL[this->N*this->N];
 	observation_matrix_B=new REAL[this->N*this->M];
-
-	set_observations(p_observations);
+#ifdef PARALLEL
+	if (p_observations && alpha_cache[0].table!=NULL)
+#else
+	if (p_observations && alpha_cache.table!=NULL)
+#endif
+		set_observations(p_observations);
+	else
+		set_observation_nocache(p_observations);
 
 	return ((transition_matrix_A != NULL) && (observation_matrix_B != NULL) && 
 			(transition_matrix_a != NULL) && (observation_matrix_b != NULL) && (initial_state_distribution_p != NULL) &&
@@ -323,7 +329,6 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 {
 	//yes optimistic
 	bool files_ok=true;
-	int i;
 
 	if  (M!=0)	
 	{
@@ -390,6 +395,8 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 #endif //LOG_SUMARRAY
 
 	alloc_state_dependend_arrays();
+
+	set_observations(p_observations);
 
 	return	((files_ok) &&
 			(transition_matrix_A != NULL) && (observation_matrix_B != NULL) && 
@@ -4335,16 +4342,17 @@ bool CHMM::check_path_derivatives()
 void CHMM::normalize()
 {
     int i,j;
-    REAL sum_p =-math.INFTY ;
-    REAL sum_q =-math.INFTY ;
+    const REAL INF=-1e10;
+    REAL sum_p =INF;
+    REAL sum_q =INF;
 
     for (i=0; i<N; i++)
     {
 	sum_p=math.logarithmic_sum(sum_p, get_p(i));
 	sum_q=math.logarithmic_sum(sum_q, get_q(i));
 	
-	REAL sum_a =-math.INFTY ;
-	REAL sum_b =-math.INFTY ;
+	REAL sum_a =INF;
+	REAL sum_b =INF;
 
 	for (j=0; j<N; j++)
 	    sum_a=math.logarithmic_sum(sum_a, get_a(i,j));
@@ -4363,10 +4371,11 @@ void CHMM::normalize()
 	set_q(i, get_q(i)-sum_q);
     }
 }
-bool CHMM::append_model(CHMM* append_model, T_OBSERVATIONS* cur_out, T_OBSERVATIONS* app_out)
+bool CHMM::append_model(CHMM* append_model, REAL* cur_out, REAL* app_out)
 {
 	bool result=false;
-	int num_states=append_model->get_N()+2;
+	const int num_states=append_model->get_N()+2;
+	int i,j;
 
 	if (append_model->get_M() == get_M())
 	{
@@ -4374,6 +4383,19 @@ bool CHMM::append_model(CHMM* append_model, T_OBSERVATIONS* cur_out, T_OBSERVATI
 		REAL* n_q=new REAL[N+num_states];
 		REAL* n_a=new REAL[(N+num_states)*(N+num_states)];
 		REAL* n_b=new REAL[(N+num_states)*M];
+
+		//clear n_x 
+		for (i=0; i<N+num_states; i++)
+		{
+			n_p[i]=-math.INFTY;
+			n_q[i]=-math.INFTY;
+
+			for (j=0; j<N+num_states; j++)
+				n_a[(N+num_states)*j+i]=-math.INFTY;
+
+			for (j=0; j<M; j++)
+				n_b[M*i+j]=-math.INFTY;
+		}
 
 		//copy models first
 		// warning pay attention to the ordering of 
@@ -4383,80 +4405,59 @@ bool CHMM::append_model(CHMM* append_model, T_OBSERVATIONS* cur_out, T_OBSERVATI
 		for (i=0; i<N; i++)
 		{
 			n_p[i]=get_p(i);
-			n_q[i]=get_q(i);
 
 			for (j=0; j<N; j++)
 				n_a[(N+num_states)*j+i]=get_a(i,j);
 
 			for (j=0; j<M; j++)
-				n_b[(N+num_states)*j+i]=get_b(i,j);
+			{
+				n_b[M*i+j]=get_b(i,j);
+				//CIO::message("bef: %f =", n_b[(N+num_states)*j+i]);
+				//CIO::message("(i,j) = (%d,%d) := %f\n", i,j, get_b(i,j));
+			}
 		}
 
 		// append_model
 		for (i=0; i<append_model->get_N(); i++)
 		{
-			n_p[i+num_states]=append_model->get_p(i);
-			n_q[i+num_states]=append_model->get_q(i);
+			n_q[i+N+2]=append_model->get_q(i);
 
 			for (j=0; j<append_model->get_N(); j++)
-				n_a[(N+num_states)*(j+num_states)+(i+num_states)]=append_model->get_a(i,j);
+				n_a[(N+num_states)*(j+N+2)+(i+N+2)]=append_model->get_a(i,j);
 			for (j=0; j<append_model->get_M(); j++)
-				n_a[(N+num_states)*(j+num_states)+(i+num_states)]=append_model->get_a(i,j);
+				n_b[M*(i+N+2)+j]=append_model->get_b(i,j);
 		}
-
+		
 		//initialize the two special states
 
 		// output
 		for (i=0; i<M; i++)
 		{
-			n_b[(N+num_states)*i+N]=cur_out[i];
-			n_b[(N+num_states)*i+(N+1)]=app_out[i];
+			n_b[M*N+i]=cur_out[i];
+			n_b[M*(N+1)+i]=app_out[i];
 		}
 	
 		// transition to the two and back
 		for (i=0; i<N+num_states; i++)
 		{
 			// the first state is only connected to the second
-			if (i!=N+1)
-				n_b[(N+num_states)*i+N]=-math.INFTY;
-			else
-				n_b[(N+num_states)*i+N]=0;
+			if (i==N+1)
+				n_a[(N+num_states)*i + N]=0;
 
 			// only states of the cur_model can reach the
 			// first state 
 			if (i<N)
 				n_a[(N+num_states)*N+i]=get_q(i);
-			else
-			{
-				if (i!=N+1)
-					n_a[(N+num_states)*N+i]=-math.INFTY;
-			}
 
 			// the second state is only connected to states of
 			// the append_model (with probab app->p(i))
 			if (i>=N+2)
-				n_a[(N+num_states)*i+(N+1)]=append->get_q(i-(N+2));
-			else
-				n_a[(N+num_states)*i+(N+1)]=-math.INFTY;
+				n_a[(N+num_states)*i+(N+1)]=append_model->get_p(i-(N+2));
 		}
 
-		for (i=N; i<N+num_states; i++)
-		{
-			n_p[i]=-math.INFTY;
-			n_q[i]=-math.INFTY;
-
-			for (j=0; j<N; j++)
-				n_a[(N+num_states)*i+j]=VAL_MACRO;
-
-			for (j=0; j<N+num_states; j++)
-				n_a[(N+num_states)*j+i]=VAL_MACRO;
-
-			for (j=0; j<M; j++)
-				n_b[(N+num_states)*j+i]=VAL_MACRO;
-		}
 		free_state_dependend_arrays();
 		N+=num_states;
-
+		
 		alloc_state_dependend_arrays();
 
 		//delete + adjust pointers
@@ -4470,8 +4471,8 @@ bool CHMM::append_model(CHMM* append_model, T_OBSERVATIONS* cur_out, T_OBSERVATI
 		initial_state_distribution_p=n_p;
 		end_state_distribution_q=n_q;
 
-		normalize();
 		invalidate_model();
+		normalize();
 	}
 
 	return result;
@@ -4500,7 +4501,7 @@ void CHMM::add_states(int num_states, REAL default_value)
 			n_a[(N+num_states)*j+i]=get_a(i,j);
 
 		for (j=0; j<M; j++)
-			n_b[(N+num_states)*j+i]=get_b(i,j);
+			n_b[M*i+j]=get_b(i,j);
 	}
 
 	for (i=N; i<N+num_states; i++)
@@ -4515,7 +4516,7 @@ void CHMM::add_states(int num_states, REAL default_value)
 			n_a[(N+num_states)*j+i]=VAL_MACRO;
 
 		for (j=0; j<M; j++)
-			n_b[(N+num_states)*j+i]=VAL_MACRO;
+			n_b[M*i+j]=VAL_MACRO;
 	}
 	free_state_dependend_arrays();
 	N+=num_states;

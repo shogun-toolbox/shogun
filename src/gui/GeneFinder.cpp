@@ -65,6 +65,7 @@ static const char* N_CONVERGENCE_CRITERIA=	        "convergence_criteria";
 static const char* N_PSEUDO=				"pseudo";
 static const char* N_C=					"c";
 static const char* N_ADD_STATES=			"add_states";
+static const char* N_APPEND_MODEL=			"append_model";
 static const char* N_BAUM_WELCH_TRAIN=		        "bw";
 static const char* N_BAUM_WELCH_TRAIN_DEFINED=		"bw_def";
 static const char* N_LIKELIHOOD=			"likelihood";
@@ -230,6 +231,7 @@ static void help()
    CIO::message("%s - make current model the negative model; then free current model \n",N_SET_NEG_MODEL);
    CIO::message("%s <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
    CIO::message("%s <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)", N_ADD_STATES);
+   CIO::message("%s <filename> <[ACGT][ACGT]>\t\t\t- append model <filename> to current model", N_ADD_STATES);
    CIO::message("%s [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
    CIO::message("%s <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [PROTEIN|DNA|ALPHANUM|CUBE]\t\t\t- changes alphabet type\n", N_ALPHABET);
    CIO::message("%s [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms (%i,%e)\n",N_CONVERGENCE_CRITERIA,ITERATIONS,EPSILON);
@@ -1276,6 +1278,8 @@ static bool prompt(FILE* infile=stdin)
 		    ORDER=lambda->get_ORDER();
 		    delete(lambda_train);
 		    delete(lambda);
+		    lambda=NULL;
+		    lambda_train=NULL;
 		}
 
 		switch (alphabet)
@@ -2158,6 +2162,40 @@ static bool prompt(FILE* infile=stdin)
 	}
 	else
 	   CIO::message("assign positive and negative models first!\n");
+    } 
+    else if (!strncmp(input, N_APPEND_MODEL, strlen(N_APPEND_MODEL)))
+    {
+	    if (lambda)
+	    {
+		    for (i=strlen(N_APPEND_MODEL); isspace(input[i]); i++);
+
+		    FILE* model_file=fopen(&input[i], "r");
+
+		    if (model_file)
+		    {
+			    CHMM* h=new CHMM(model_file,PSEUDO);
+			    if (h && h->get_status())
+			    {
+				    printf("file successfully read\n");
+				    fclose(model_file);
+
+				    REAL cur_o[]= {0, -math.INFTY, -math.INFTY, -math.INFTY};
+				    REAL app_o[]= {-math.INFTY, -math.INFTY, 0, -math.INFTY};
+
+				    lambda->append_model(h, cur_o, app_o);
+				    lambda_train->append_model(h, cur_o, app_o);
+				    CIO::message("new model has %i states\n", lambda->get_N());
+				    delete h;
+			    }
+			    else
+				    CIO::message("reading file %s failed\n", &input[i]);
+		    }
+		    else
+			    CIO::message("opening file %s failed\n", &input[i]);
+	    }
+	    else
+		    CIO::message("create model first\n");
+
     } 
     else if (!strncmp(input, N_ADD_STATES, strlen(N_ADD_STATES)))
     {

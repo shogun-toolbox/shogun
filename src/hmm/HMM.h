@@ -635,7 +635,7 @@ public:
 	/// the current hmm with outputs cur_out (of size M) and
 	/// the other state is the start state of the append_model.
 	/// transition probability from state 1 to states 1 is 1
-	bool append_model(CHMM* append_model, T_OBSERVATIONS* cur_out, T_OBSERVATIONS* app_out);
+	bool append_model(CHMM* append_model, REAL* cur_out, REAL* app_out);
 
 	/// set any model parameter with probability smaller than value to ZERO
 	void chop(REAL value);
