@@ -27,6 +27,7 @@ TMPC="./configure-$RANDOM-$$.c"
 TMPCPP="./configure-$RANDOM-$$.cpp"
 TMPO="./configure-$RANDOM-$$.o"
 TMPS="./configure-$RANDOM-$$.S"
+TMPSS="./configure-$RANDOM-$$.s"
 
 detect_cc()
 {
@@ -51,20 +52,24 @@ EOF
 		if cc_check
 		then
 			COMP_CPP=$_cc
+			LINK=$_cc
 			_cppveropts='-v'
 			"$_cc" "$_cppveropts" >/dev/null 2>&1 || _cppveropts='-V'
 			break;
 		fi
 	done
 
+
 	if test -n "$COMP_C" ; then
-		echores "detected: $COMP_C ( `$COMP_C $_ccveropts 2>&1 | egrep -ve '^(Reading specs from|Configured with:|Thread model:)'` )."
+		COMP_C_VER=`$COMP_C $_ccveropts 2>&1 | egrep -ve '^(Reading specs from|Configured with:|Thread model:)'`
+		echores "detected: $COMP_C ( $COMP_C_VER )"
 	else
 		echores "no C compiler detected - cannot do anything"
 		exit 1
 	fi
 	if test -n "$COMP_CPP" ; then
-		echores "detected: $COMP_CPP ( `$COMP_CPP $_cppveropts 2>&1 | egrep -ve '^(Reading specs from|Configured with:|Thread model:)'` )."
+		COMP_CPP_VER=`$COMP_CPP $_cppveropts 2>&1 | egrep -ve '^(Reading specs from|Configured with:|Thread model:)'`
+		echores "detected: $COMP_CPP ( $COMP_CPP_VER )"
 	else
 		echores "no C++ compiler detected - cannot do anything"
 		exit 1
@@ -151,7 +156,7 @@ determine_march_mcpu()
 	  # OS name
 	  system_name=`( uname -s ) 2>&1`
 	  case "$system_name" in
-	  Linux|FreeBSD|NetBSD|BSD/OS|OpenBSD|SunOS|QNX|Darwin|GNU)
+	  Linux|FreeBSD|NetBSD|BSD/OS|OpenBSD|SunOS|QNX|Darwin|GNU|OSF1)
 		;;
 	  IRIX*)
 		system_name=IRIX
@@ -221,7 +226,7 @@ determine_march_mcpu()
 		COMP_OPTS="-O2 -g -Wall"
 	fi
 
-	OS=`echo "-D$system_name" | tr 'a-z' 'A-Z'`
+	OS="-D`echo $system_name | tr 'a-z-' 'A-Z_'`"
 	echo "Detected operating system: $system_name"
 	echo "Detected host architecture: $host_arch"
 
@@ -493,16 +498,35 @@ EOF
 
 	if [ "$host_arch" = alpha ]; then
 	  echocheck "CPU type"
-	cat > $TMPC << EOF
-int main() {
-	unsigned long ver, mask;
-	asm ("implver %0" : "=r" (ver));
-	asm ("amask %1, %0" : "=r" (mask) : "r" (-1));
-	printf("%ld-%x\n", ver, ~mask);
-	return 0;
-}
+	cat > $TMPSS << EOF
+.data
+
+\$Lformat:
+	.byte 37,100,45,37,120,10,0   # "%d-%x\n"
+
+	.text
+	.globl main
+	.ent main
+	.align 8
+
+main:
+	.frame \$30,16,\$26,0
+	ldgp \$29,0(\$27)
+	.prologue 1
+	implver \$0
+	lda \$2,-1
+	amask \$2,\$1
+	lda \$16,\$Lformat
+	mov \$0,\$17
+	not \$1,\$18
+
+	jsr \$26,printf
+	ldgp \$29,0(\$26)
+	mov 0,\$16
+	jsr \$26,exit
+	.end main
 EOF
-	  $COMP_C -o "$TMPO" "$TMPC"
+	  $COMP_C -o "$TMPO" "$TMPSS"
 	  case `"$TMPO"` in
 		0-0) proc="ev4" ;;
 		1-0) proc="ev5" ;;
@@ -514,7 +538,6 @@ EOF
 	  esac
 	  echores "$proc"
 	fi
-
 
 # x86/x86pc is used by QNX
 	case "$host_arch" in
@@ -739,13 +762,25 @@ EOF
 		iproc='alpha'
 		_march=''
 		echocheck "GCC & CPU optimization abilities"
-		if test "$proc" = "ev68" ; then
-		  cc_check -mcpu=$proc || proc=ev67
+
+		if  echo "$COMP_CPP_VER" | grep 'Compaq C' >/dev/null
+		then
+			if test "$proc" = "ev68" ; then
+			  cc_check -arch $proc || proc=ev67
+			fi
+			if test "$proc" = "ev67" ; then
+			  cc_check -arch $proc || proc=ev6
+			fi
+			_mcpu="-arch $proc"
+		else
+			if test "$proc" = "ev68" ; then
+			  cc_check -mcpu=$proc || proc=ev67
+			fi
+			if test "$proc" = "ev67" ; then
+			  cc_check -mcpu=$proc || proc=ev6
+			fi
+			_mcpu="-mcpu=$proc"
 		fi
-		if test "$proc" = "ev67" ; then
-		  cc_check -mcpu=$proc || proc=ev6
-		fi
-		_mcpu="-mcpu=$proc"
 		echores "$proc"
 		;;
 
@@ -872,7 +907,7 @@ EOF
 
 clean_up()
 {
-	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS"
+	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS" "$TMPSS"
 }
 
 #TODO
