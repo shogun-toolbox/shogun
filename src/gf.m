@@ -19,7 +19,7 @@ function [o1,o2,o3,o4]=gf(i1,i2) ;
 %  gf('set_preproc_init', parms);
 %  gf('set_hmm_defs', p,q,a,b);
 %  gf('set_plugin_estimate', emmission_prob, model_sizes);
-
+%
 %  out = gf('hmm_classify');
 %  out = gf('hmm_classify_example');
 %  out = gf('one_class_hmm_classify');
@@ -29,8 +29,8 @@ function [o1,o2,o3,o4]=gf(i1,i2) ;
 %  out = gf('svm_classify_example');
 %  out = gf('plugin_estimate_classify');
 %  out = gf('plugin_estimate_classify_example');
-
-
+%
+%
 %%%%TODO comment these functions%%%%%
 %else if (!strncmp(action, N_GET_KERNEL_OPTIMIZATION, strlen(N_GET_KERNEL_OPTIMIZATION)))
 %else if (!strncmp(action, N_GET_KERNEL_MATRIX, strlen(N_GET_KERNEL_MATRIX)))
