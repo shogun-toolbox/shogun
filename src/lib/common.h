@@ -1,88 +1,124 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
+#include <stdlib.h> 
+#include <stdio.h> 
+
 #ifdef SUNOS
 #define bool int
 #define false 0
 #define true 1
 #endif
 
+#ifndef LINUX
+#define RANDOM_MAX 2147483647
+#else
+#define RANDOM_MAX RAND_MAX
+#endif
+
 /**@name Standard Types 
  * Definition of Platform independent Types
 */
 //@{
-/// Type WORD is 2 bytes in size
-typedef unsigned short int WORD ;
+
+/// Type CHAR
+typedef char CHAR;
+typedef CHAR* P_CHAR;
 
 /// Type BYTE 
-typedef unsigned char BYTE ;
+typedef unsigned char BYTE;
+typedef BYTE* P_BYTE;
 
-/// Type REAL (can be float/double/long double...)
-//typedef long double REAL ;
-typedef double REAL ;
-//typedef float REAL ;
-//typedef double REAL ;
-typedef REAL* P_REAL ;
+/// Type SHORT is 2 bytes in size
+typedef short int SHORT;
+typedef SHORT* P_SHORT;
+
+/// Type WORD is 2 bytes in size
+typedef unsigned short int WORD;
+typedef WORD* P_WORD;
+
+/// Type INT is 4 bytes in size
+typedef int INT;
+typedef INT* P_INT;
+
+/// Type INT is 4 bytes in size
+typedef unsigned int UINT;
+typedef UINT* P_UINT;
+
+/// Type LONG is 8 bytes in size
+typedef long LONG;
+typedef LONG* P_LONG;
+
+/// Type REAL (can be float/double/LONG double...)
+typedef double REAL;
+typedef REAL* P_REAL;
+
+typedef long double LONGREAL;
+typedef LONGREAL* P_LONGREAL;
+
+enum EKernelType
+{
+	K_UNKNOWN = 0,
+	K_LINEAR = 10,
+	K_POLY	= 20,
+	K_GAUSSIAN = 30,
+	K_HISTOGRAM = 40,
+	K_SALZBERG = 41,
+	K_LOCALITYIMPROVED = 50,
+	K_SIMPLELOCALITYIMPROVED = 60,
+	K_FIXEDDEGREE = 70,
+	K_WEIGHTEDDEGREE = 80,
+	K_WEIGHTEDDEGREEPOS = 81,
+	K_COMMWORD = 90,
+	K_POLYMATCH = 100,
+	K_ALIGNMENT = 110,
+	K_COMMWORDSTRING = 120,
+	K_SPARSENORMSQUARED = 130,
+	K_COMBINED = 140
+};
+
+enum EFeatureType
+{
+	F_UNKNOWN = 0,
+	F_REAL = 10,
+	F_SHORT = 20,
+	F_CHAR = 30,
+	F_INT = 40,
+	F_BYTE = 50,
+	F_WORD = 60
+};
+
+enum EFeatureClass
+{
+	C_UNKNOWN = 0,
+	C_SIMPLE = 10,
+	C_SPARSE = 20,
+	C_STRING = 30,
+	C_COMBINED = 40
+};
+
+/// Alphabet of charfeatures/observations
+enum E_ALPHABET
+{
+	/// DNA - letters A,C,G,T,*,N,n
+	DNA=0,
+
+	/// PROTEIN - letters a-z
+	PROTEIN=1,
+
+	/// ALPHANUM - [0-9a-z]
+	ALPHANUM=2,
+
+	/// CUBE - [1-6]
+	CUBE=3,
+
+	/// NONE - type has no alphabet
+	NONE=4
+};
+
 //@}
 
-/** SVM type of float to use for caching
-  * kernel evaluations. Using float saves
-  * us some memory, but you can use double, too */
-typedef float  CFLOAT;                  
+#define TMP_DIR "/tmp/"
+//#define TMP_DIR "/short/x46/tmp/"
 
-/** the type used for storing feature ids */
-typedef long FNUM;
-
-/** the type used for storing feature values */
-typedef float FVAL;  
-
-typedef struct learn_parm {
-  double svm_c;                /* upper bound C on alphas */
-  double svm_costratio;        /* factor to multiply C for positive examples */
-  double transduction_posratio;/* fraction of unlabeled examples to be */
-                               /* classified as positives */
-  long   biased_hyperplane;    /* if nonzero, use hyperplane w*x+b=0 
-				  otherwise w*x=0 */
-  long   svm_maxqpsize;        /* size q of working set */
-  long   svm_newvarsinqp;      /* new variables to enter the working set 
-				  in each iteration */
-  double epsilon_crit;         /* tolerable error for distances used 
-				  in stopping criterion */
-  double epsilon_shrink;       /* how much a multiplier should be above 
-				  zero for shrinking */
-  long   svm_iter_to_shrink;   /* iterations h after which an example can
-				  be removed by shrinking */
-  long   remove_inconsistent;  /* exclude examples with alpha at C and 
-				  retrain */
-  long   skip_final_opt_check; /* do not check KT-Conditions at the end of
-				  optimization for examples removed by 
-				  shrinking. WARNING: This might lead to 
-				  sub-optimal solutions! */
-  long   compute_loo;          /* if nonzero, computes leave-one-out
-				  estimates */
-  double rho;                  /* parameter in xi/alpha-estimates and for
-				  pruning leave-one-out range [1..2] */
-  long   xa_depth;             /* parameter in xi/alpha-estimates upper
-				  bounding the number of SV the current
-				  alpha_t is distributed over */
-  char predfile[200];          /* file for predicitions on unlabeled examples
-				  in transduction */
-  char alphafile[200];         /* file to store optimal alphas in. use  
-				  empty string if alphas should not be 
-				  output */
-
-  /* you probably do not want to touch the following */
-  double epsilon_const;        /* tolerable error on eq-constraint */
-  double epsilon_a;            /* tolerable error on alphas at bounds */
-  double opt_precision;        /* precision of solver, set to e.g. 1e-21 
-				  if you get convergence problems */
-
-  /* the following are only for internal use */
-  long   svm_c_steps;          /* do so many steps for finding optimal C */
-  double svm_c_factor;         /* increase C by this factor every step */
-  double svm_costratio_unlab;
-  double svm_unlabbound;
-  double *svm_cost;            /* individual upper bounds for each var */
-////  long   totwords;             /* number of features */
-} LEARN_PARM;
 #endif

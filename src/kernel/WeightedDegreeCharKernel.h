@@ -1,0 +1,74 @@
+#ifndef _WEIGHTEDDEGREECHARKERNEL_H___
+#define _WEIGHTEDDEGREECHARKERNEL_H___
+
+#include "lib/common.h"
+#include "kernel/CharKernel.h"
+
+struct SuffixTree
+{
+	unsigned short has_floats ;
+	unsigned short usage ;
+	float weight ;
+	union 
+	{
+		float child_weights[4] ;
+		struct SuffixTree *childs[4] ;
+	} ;
+} ;
+
+class CWeightedDegreeCharKernel: public CCharKernel
+{
+ public:
+  CWeightedDegreeCharKernel(LONG size, REAL* weights, INT degree, INT max_mismatch) ;
+  ~CWeightedDegreeCharKernel() ;
+  
+  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual void cleanup();
+
+  /// load and save kernel init_data
+  bool load_init(FILE* src);
+  bool save_init(FILE* dest);
+
+  // return what type of kernel we are Linear,Polynomial, Gaussian,...
+  virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREE; }
+
+  // return the name of a kernel
+  virtual const CHAR* get_name() { return "WeightedDegree" ; } ;
+
+  void add_example_to_tree(INT idx, REAL weight) ;
+  REAL compute_by_tree(INT idx) ;
+  void prune_tree(struct SuffixTree * p_tree=NULL, int min_usage=2) ;
+  void count_tree_usage(INT idx)  ;
+  REAL *compute_abs_weights(INT & len)  ;
+  REAL compute_abs_weights_tree(struct SuffixTree * p_tree)  ;
+
+  void delete_tree(struct SuffixTree * p_tree=NULL) ;
+  INT tree_size(struct SuffixTree * p_tree=NULL) ;
+  bool is_tree_initialized() { return tree_initialized ; } ;
+  INT get_max_mismatch() { return max_mismatch ; } ;
+  
+ protected:
+  /// compute kernel function for features a and b
+  /// idx_{a,b} denote the index of the feature vectors
+  /// in the corresponding feature object
+  REAL compute(INT idx_a, INT idx_b);
+  /*    compute_kernel*/
+
+ protected:
+  REAL* weights;
+  INT degree;
+  INT max_mismatch ;
+  INT seq_length ;
+
+  double* sqrtdiag_lhs;
+  double* sqrtdiag_rhs;
+
+  bool initialized ;
+  bool *match_vector ;
+
+  struct SuffixTree **trees ;
+  bool tree_initialized ;
+  
+};
+
+#endif

@@ -1,0 +1,1227 @@
+#!/bin/bash
+
+#missing purify, condor, ddd
+#DEFINES="-DMPICH_SKIP_MPICXX -D_LARGEFILE64_SOURCE -DDEBUG -DSVMMPI -DWITHMATLAB -DNO_LOG_CACHE -DBIGOBS -DBIGSTATES -DNORMALIZE_DERIVATIVE -DNORMALIZE_TO_ONE -DUSE_KERNEL_CACHE -DPARALLEL_STRUCTURES -DLOG_SUM_ARRAY -DTMP_SAVE  -DCHECK_BW_NORMALIZATION"
+#"-llapack -llapack_atlas -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c -lm"
+
+# some hopefully reasonable defaults
+SRCDIR=.
+EXT_SRC_C=c
+EXT_SRC_CPP=cpp
+KERNELNAME=`uname`
+MACHINE=`uname -m | tr ' ' '-'`
+EXESUFFIX=${KERNELNAME}-${MACHINE}
+EXT_OBJ_CPP=cpp.o
+EXT_OBJ_C=c.o
+
+#the defaults are
+_matlab=no
+_svm_mpi=no
+_tmpsave=no
+_cplex=no
+_logcache=no
+_logsumarray=no
+_parallel=no
+_largefile=yes
+_lapack=yes
+_bigobs=yes
+_bigstates=yes
+_kernelcache=yes
+_cache=no
+_debug=no
+_pathdebug=no
+_profile=
+_prefix="/usr/local"
+_bindir="$_prefix/bin"
+_datadir="$_prefix/share/mplayer"
+_mandir="$_prefix/man"
+_confdir="$_prefix/etc/mplayer"
+_libdir="$_prefix/lib"
+
+# these ones will be autodetected
+GDB=gdb
+MAKE=make
+COMP_C=cc
+COMP_CPP=c++
+COMPFLAGS_C=
+COMPFLAGS_CPP=
+INCLUDES=-I${SRCDIR}
+LINK=c++
+LINKFLAGS="-lm"
+TARGET="genefinder-${EXESUFFIX}"
+COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -fkeep-inline-functions  -finline-functions -fschedule-insns2 -fthread-jumps -fforce-mem -fforce-addr -fstrength-reduce -fomit-frame-pointer -unroll-loops"
+#most defines are simply design bugs, use the ./configure --{disable,enable}-<options>
+DEFINES=
+
+# stuff needed for autodetections (definitely needs cleanup)
+TMPLOG="configure.log"
+rm -f "$TMPLOG"
+TMPC="./configure-$RANDOM-$$.c"
+TMPCPP="./configure-$RANDOM-$$.cpp"
+TMPO="./configure-$RANDOM-$$.o"
+TMPS="./configure-$RANDOM-$$.S"
+TMPSS="./configure-$RANDOM-$$.s"
+
+detect_cc()
+{
+		echocheck "c/c++ compiler"
+cat > $TMPC << EOF
+int main(void) { return 0; }
+EOF
+
+	for _cc in gcc-3.3 gcc-3.2 gcc3 cc gcc
+	do
+		if cc_check
+		then
+			COMP_C=$_cc
+			_ccveropts='-v'
+			"$_cc" "$_ccveropts" >/dev/null 2>&1 || _ccveropts='-V'
+			break;
+		fi
+	done
+
+	for _cc in g++-3.3 g++-3.2 g++3 cxx CC c++ g++
+	do
+		if cc_check
+		then
+			COMP_CPP=$_cc
+			LINK=$_cc
+			_cppveropts='-v'
+			"$_cc" "$_cppveropts" >/dev/null 2>&1 || _cppveropts='-V'
+			break;
+		fi
+	done
+
+
+	if test -n "$COMP_C" ; then
+		COMP_C_VER=`$COMP_C $_ccveropts 2>&1 | egrep -ve '^(Reading specs from|Configured with:|Thread model:)'`
+		echores "detected: $COMP_C ( $COMP_C_VER )"
+	else
+		echores "no C compiler detected - cannot do anything"
+		exit 1
+	fi
+	if test -n "$COMP_CPP" ; then
+		COMP_CPP_VER=`$COMP_CPP $_cppveropts 2>&1 | egrep -ve '^(Reading specs from|Configured with:|Thread model:)'`
+		echores "detected: $COMP_CPP ( $COMP_CPP_VER )"
+	else
+		echores "no C++ compiler detected - cannot do anything"
+		exit 1
+	fi
+}
+
+check_make()
+{
+	echocheck "GNU Make"
+	if make --version 2>&1 | grep GNU
+	then
+		echores "GNU Make detected"
+		MAKE=make
+	else
+		echores "non GNU Make detected expect trouble (try running GNU make manually in case of trouble)"
+		MAKE=gmake
+	fi
+}
+
+cc_check() {
+  echo >> "$TMPLOG"
+  cat "$TMPC" >> "$TMPLOG"
+  echo >> "$TMPLOG"
+  echo "$_cc $TMPC -o $TMPO $@" >> "$TMPLOG"
+  rm -f "$TMPO"
+  ( "$_cc" "$TMPC" -o "$TMPO" "$@" ) >> "$TMPLOG" 2>&1
+  TMP="$?"
+  if test -f "$TMPO"
+  then
+	  echo >> "$TMPLOG"
+	  echo "ldd $TMPO" >> "$TMPLOG"
+	  ( ldd "$TMPO" ) >> "$TMPLOG" 2>&1
+  else
+	  echo "no object file created" >> "$TMPLOG"
+  fi
+	  echo >> "$TMPLOG"
+  return "$TMP"
+}
+
+# Display error message, flushes tempfile, exit
+die () {
+  echo
+  echo "Error: $@" >&2
+  echo >&2
+  rm -f "$TMPO" "$TMPC" "$TMPS" "$TMPCPP"
+  echo "Check "$TMPLOG" if you do not understand why it failed."
+  exit 1
+}
+
+# OS test booleans functions
+issystem() {
+  test "`echo $system_name | tr A-Z a-z`" = "`echo $1 | tr A-Z a-z`"
+}
+linux()   { issystem "Linux"   ; return "$?" ; }
+sunos()   { issystem "SunOS"   ; return "$?" ; }
+hpux()    { issystem "HP-UX"   ; return "$?" ; }
+irix()    { issystem "IRIX"    ; return "$?" ; }
+cygwin()  { issystem "CYGWIN"  ; return "$?" ; }
+freebsd() { issystem "FreeBSD" ; return "$?" ; }
+netbsd()  { issystem "NetBSD"  ; return "$?" ; }
+bsdos()   { issystem "BSD/OS"  ; return "$?" ; }
+openbsd() { issystem "OpenBSD" ; return "$?" ; }
+bsd()     { freebsd || netbsd || bsdos || openbsd ; return "$?" ; }
+qnx()     { issystem "QNX"     ; return "$?" ; }
+darwin()  { issystem "Darwin"  ; return "$?" ; }
+gnu()     { issystem "GNU"     ; return "$?" ; }
+osf1()     { issystem "OSF1"    ; return "$?" ; }
+
+# arch test boolean functions
+# x86/x86pc is used by QNX
+x86() {
+  case "$host_arch" in
+    i[3-9]86|x86|x86pc|k5|k6|k6-2|k6-3|pentium*|athlon*|i586-i686) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+ppc() {
+  case "$host_arch" in
+    ppc) return 0;;
+    *) return 1;;
+  esac
+}
+
+# Use this before starting a check
+echocheck() {
+  echo "============ Checking for $@ ============" >> "$TMPLOG"
+  echo ${_echo_n} "Checking for $@ ... ${_echo_c}"
+}
+
+# Use this to echo the results of a check
+echores() {
+  echo "Result is: $@" >> "$TMPLOG"
+  echo "##########################################" >> "$TMPLOG"
+  echo "" >> "$TMPLOG"
+  echo "$@"
+}
+
+for parm in "$@" ; do
+  if test "$parm" = "--help" || test "$parm" = "-help" || test "$parm" = "-h" ; then
+    cat << EOF
+
+Usage: $0 [OPTIONS]...
+
+Configuration:
+  -h, --help             display this help and exit
+
+Installation directories:
+  --prefix=DIR           use this prefix for installing genefinder [/usr/local]
+  --bindir=DIR           use this prefix for installing genefinder binary
+                         [PREFIX/bin]
+  --datadir=DIR          use this prefix for installing machine independent
+                         data files (fonts, skins) [PREFIX/share/genefinder]
+  --mandir=DIR           use this prefix for installing manpages [PREFIX/man]
+  --confdir=DIR          use this prefix for installing configuration files
+                         [same as datadir]
+  --libdir=DIR           use this prefix for object code libraries [PREFIX/lib]
+
+Optional features:
+  --enable-matlab        enable matlab (genefiner can be called from within matlab) support [disable]
+  --enable-svmmpi    	 enable multiprocessor svm support [disabled]
+  --enable-tmpsave    	 enable save HMM on each optimization step to temporary file [disabled]
+  --enable-cplex    	 enable code using CPLEX  [disabled]
+  --enable-logcache      enable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
+  --enable-logsum-array  enable log sum array supposed to be a bit more accurate [disabled]
+  --enable-parallel      enable parallel structures in svm training. genefinder will then run as many threads as the machine has (much faster) [disabled]
+
+  --disable-largefile    disable large file support (64bit file acces routines) [enabled]
+  --disable-lapack    	 disable lapack math routines and use built in ones (slower!) [enabled]
+  --disable-bigobs		 disable big (16bit) observation [enabled]
+  --disable-bigstates	 disable big (16bit) state [enabled]
+  --disable-kernel-cache disable kernel cache [enabled]
+  --disable-cache 		 disable HMM cache [enabled]
+
+Miscellaneous options:
+  --enable-debug	     enable debugging [disabled]
+  --enable-path-debug	 enable viterbi path debugging [disabled]
+  --enable-profile       compile profiling information into genefinder [disable]
+  --enable-static        build a statically linked binary. Set further linking
+                         options with --enable-static="-lslang -lncurses"
+  --cc=COMPILER          use this C compiler to build genefinder [gcc]
+  --target=PLATFORM      target platform (i386-linux, arm-linux, etc)
+  --install-path=PATH    the path to a custom install program (useful if
+                         your OS uses a GNU-incompatible install utility by
+                         default and you want to point to the GNU version)
+EOF
+    exit 0
+  fi
+done # for parm in ...
+
+# 1st pass checking for vital options
+_install=install
+_ranlib=ranlib
+_cc=gcc
+test "$CC" && _cc="$CC"
+_as=auto
+_runtime_cpudetection=no
+for ac_option do
+  case "$ac_option" in
+  --target=*)
+    _target=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --cc=*)
+    _cc=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --as=*)
+    _as=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --enable-static)
+    _ld_static='-static'
+    ;;
+  --disable-static)
+    _ld_static=''
+    ;;
+  --enable-static=*)
+    _ld_static="-static `echo $ac_option | cut -d '=' -f 2`"
+    ;;
+  --with-extraincdir=*)
+    _inc_extra=-I`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -I,g'`
+    ;;
+  --with-extralibdir=*)
+    _ld_extra=-L`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -L,g'`
+#    _ld_extra="${_ld_extra} -Wl,-R"`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -Wl\,-R,g'`" -L"`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -L,g'`
+    ;;
+  --install-path=*)
+    _install=`echo $ac_option | cut -d '=' -f 2 | sed 's/\/$//'`"/install"
+    ;;
+  --disable-matlab)		_matlab=no	;;
+  --enable-matlab)		_matlab=yes	;;
+  --disable-svmmpi)		_svmmpi=no	;;
+  --enable-svmmpi)		_svmmpi=yes	;;
+  --disable-tmpsave)	_tmpsave=no	;;
+  --enable-tmpsave)		_tmpsave=yes	;;
+  --disable-cplex)		_cplex=no	;;
+  --enable-cplex)		_cplex=yes	;;
+  --disable-logcache)	_logcache=no	;;
+  --enable-logcache)	_logcache=yes	;;
+  --disable-logsum-array)_logsumarray=no	;;
+  --enable-logsum-array)_logsumarray=yes	;;
+  --disable-parallel)	_parallel=no	;;
+  --enable-parallel)	_parallel=yes	;;
+  --disable-largefile)	_largefile=no	;;
+  --enable-largefile)	_largefile=yes	;;
+  --disable-lapack)		_lapack=no	;;
+  --enable-lapack)		_lapack=yes	;;
+  --disable-bigobs)		_bigobs=no	;;
+  --enable-bigobs)		_bigobs=yes	;;
+  --disable-bigstates)	_bigstates=no	;;
+  --enable-bigstates)	_bigstates=yes	;;
+  --disable-kernel-cache)_kernelcache=no	;;
+  --enable-kernel-cache)_kernelcache=yes	;;
+  --disable-cache)		_cache=no	;;
+  --enable-cache)		_cache=yes	;;
+  --disable-debug) 		_debug=no ;;
+  --enable-debug) 		_debug=yes ;;
+  --enable-path-debug)  _pathdebug=no ;;
+  --enable-path-debug)  _pathdebug=yes ;;
+  --disable-profile) 	_profile= ;;
+  --enable-profile) 	_profile='-p' ;;
+  --prefix=*)
+    _prefix=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --bindir=*)
+    _bindir=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --datadir=*)
+    _datadir=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --mandir=*)
+    _mandir=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --confdir=*)
+    _confdir=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --libdir=*)
+    _libdir=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+
+  *)
+    echo "Unknown parameter: $ac_option"
+    exit 1
+    ;;
+  esac
+done
+
+determine_march_mcpu()
+{
+	# Determine our OS name and CPU architecture
+	if test -z "$_target" ; then
+	  # OS name
+	  system_name=`( uname -s ) 2>&1`
+	  case "$system_name" in
+	  Linux|FreeBSD|NetBSD|BSD/OS|OpenBSD|SunOS|QNX|Darwin|GNU|OSF1)
+		;;
+	  IRIX*)
+		system_name=IRIX
+		;;
+	  HP-UX*)
+		system_name=HP-UX
+		;;
+	  [cC][yY][gG][wW][iI][nN]*)
+		system_name=CYGWIN
+		;;
+	  *)
+		system_name="$system_name-UNKNOWN"
+		;;
+	  esac
+
+
+	  # host's CPU/instruction set
+	   host_arch=`( uname -p ) 2>&1`
+	   case "$host_arch" in
+	   i386|sparc|ppc|alpha|arm|mips)
+		 ;;
+	   powerpc) # Darwin returns 'powerpc'
+		 host_arch=ppc
+		 ;;
+	   *) # uname -p on Linux returns 'unknown' for the processor type,
+		  # OpenBSD returns 'Intel Pentium/MMX ("Genuine Intel" 586-class)'
+
+		  # Maybe uname -m (machine hardware name) returns something we
+		  # recognize.
+
+		  # x86/x86pc is used by QNX
+		  case "`( uname -m ) 2>&1`" in
+		  i[3-9]86*|x86|x86pc|k5|k6|k6_2|k6_3|k6-2|k6-3|pentium*|athlon*|i586_i686|i586-i686) host_arch=i386 ;;
+		  ia64) host_arch=ia64 ;;
+		  x86_64) host_arch=x86_64 ;;
+		  ppc) host_arch=ppc ;;
+		  alpha) host_arch=alpha ;;
+		  sparc*) host_arch=sparc ;;
+		  9000*) host_arch=hppa ;;
+		  arm*) host_arch=arm ;;
+		  s390) host_arch=s390 ;;
+		  s390x) host_arch=s390x ;;
+		  mips) host_arch=mips ;;
+		  *) host_arch=UNKNOWN ;;
+		esac
+		;;
+	  esac
+	else
+	  system_name=`echo $_target | cut -d '-' -f 2`
+	  case "`echo $system_name | tr A-Z a-z`" in
+		linux) system_name=Linux ;;
+		freebsd) system_name=FreeBSD ;;
+		netbsd) system_name=NetBSD ;;
+		bsd/os) system_name=BSD/OS ;;
+		openbsd) system_name=OpenBSD ;;
+		sunos) system_name=SunOS ;;
+		qnx) system_name=QNX ;;
+	  esac
+	  # We need to convert underscores so that values like k6-2 and pentium-mmx can be passed
+	  host_arch=`echo $_target | cut -d '-' -f 1 | tr '_' '-'`
+	fi
+
+	if sunos
+	then
+		COMP_C=cc
+		COMP_CPP=CC
+		COMP_OPTS="-fast -xchip=native -xarch=v9 -xO5 -g +w2"
+		LINKFLAGS="-fast -xchip=native -xarch=v9 -xO5 -g +w2 -lm"
+	elif osf1
+	then
+		COMP_OPTS="-O5 -inline speed -pthread -om"
+		LINKFLAGS="-pthread -lmpi -lm"
+	elif darwin
+	then
+		COMP_OPTS="-Wno-long-double $COMP_OPTS"
+		LINKFLAGS="-lm"
+	fi
+
+	OS="-D`echo $system_name | tr 'a-z-' 'A-Z_'`"
+	echo "Detected operating system: $system_name"
+	echo "Detected host architecture: $host_arch"
+
+# Try to find the available options for the current CPU
+	if x86 || ppc; then
+	if test -r /proc/cpuinfo ; then
+		# linux with /proc mounted, extract cpu information from it
+		_cpuinfo="cat /proc/cpuinfo"
+	elif test -r /compat/linux/proc/cpuinfo ; then
+		# FreeBSD with linux emulation /proc mounted,
+		# extract cpu information from it
+		_cpuinfo="cat /compat/linux/proc/cpuinfo"
+	elif x86; then
+		# all other OS try to extract cpu information from a small helper
+		# program TOOLS/cpuinfo instead
+
+	cat >.cpuinfo.c <<EOF
+#include <stdio.h>
+#include <sys/time.h>
+
+#ifdef M_UNIX
+	typedef long long int64_t;
+#define	MISSING_USLEEP
+#else
+#include <inttypes.h>
+#endif
+
+
+	typedef struct cpuid_regs {
+		unsigned int eax;
+		unsigned int ebx;
+		unsigned int ecx;
+		unsigned int edx;
+	} cpuid_regs_t;
+
+	static cpuid_regs_t
+	cpuid(int func) {
+		cpuid_regs_t regs;
+#define	CPUID	".byte 0x0f, 0xa2; "
+		asm("movl %4,%%eax; " CPUID
+			"movl %%eax,%0; movl %%ebx,%1; movl %%ecx,%2; movl %%edx,%3"
+			: "=m" (regs.eax), "=m" (regs.ebx), "=m" (regs.ecx), "=m" (regs.edx)
+			: "g" (func)
+			: "%eax", "%ebx", "%ecx", "%edx");
+		return regs;
+	}
+
+
+	static int64_t
+	rdtsc(void)
+	{
+		unsigned int i, j;
+#define	RDTSC	".byte 0x0f, 0x31; "
+		asm(RDTSC : "=a"(i), "=d"(j) : );
+		return ((int64_t)j<<32) + (int64_t)i;
+	}
+
+
+	static void
+	store32(char *d, unsigned int v)
+	{
+		d[0] =  v        & 0xff;
+		d[1] = (v >>  8) & 0xff;
+		d[2] = (v >> 16) & 0xff;
+		d[3] = (v >> 24) & 0xff;
+	}
+
+
+	int
+	main(int argc, char **argv)
+	{
+		cpuid_regs_t regs, regs_ext;
+		char idstr[13];
+		unsigned max_cpuid;
+		unsigned max_ext_cpuid;
+		unsigned int amd_flags;
+		char *model_name = "Unknown CPU";
+		int i;
+		char processor_name[49];
+
+		regs = cpuid(0);
+		max_cpuid = regs.eax;
+		/* printf("%d CPUID function codes\n", max_cpuid+1); */
+
+		store32(idstr+0, regs.ebx);
+		store32(idstr+4, regs.edx);
+		store32(idstr+8, regs.ecx);
+		idstr[12] = 0;
+		printf("vendor_id\t: %s\n", idstr); 
+
+		if (strcmp(idstr, "GenuineIntel") == 0)
+			model_name = "Unknown Intel CPU";
+		else if (strcmp(idstr, "AuthenticAMD") == 0)
+			model_name = "Unknown AMD CPU";
+
+		regs_ext = cpuid((1<<31) + 0);
+		max_ext_cpuid = regs_ext.eax;
+		if (max_ext_cpuid >= (1<<31) + 1) {
+			regs_ext = cpuid((1<<31) + 1);
+			amd_flags = regs_ext.edx;
+
+			if (max_ext_cpuid >= (1<<31) + 4) {
+			for (i = 2; i <= 4; i++) {
+				regs_ext = cpuid((1<<31) + i);
+				store32(processor_name + (i-2)*16, regs_ext.eax);
+				store32(processor_name + (i-2)*16 + 4, regs_ext.ebx);
+				store32(processor_name + (i-2)*16 + 8, regs_ext.ecx);
+				store32(processor_name + (i-2)*16 + 12, regs_ext.edx);
+			}
+			processor_name[48] = 0;
+			model_name = processor_name;
+			}
+		} else {
+			amd_flags = 0;
+		}
+
+		if (max_cpuid >= 1) {
+			static struct {
+				int bit;
+				char *desc;;
+				char *description;
+			} cap[] = {
+				{ 0,  "fpu",   "Floating-point unit on-chip" },
+				{ 1,  "vme",   "Virtual Mode Enhancements" },
+				{ 2,  "de",    "Debugging Extension" },
+				{ 3,  "pse",   "Page Size Extension" },
+				{ 4,  "tsc",   "Time Stamp Counter" },
+				{ 5,  "msr",   "Pentium Processor MSR" },
+				{ 6,  "pae",   "Physical Address Extension" },
+				{ 7,  "mce",   "Machine Check Exception" },
+				{ 8,  "cx8",   "CMPXCHG8B Instruction Supported" },
+				{ 9,  "apic",  "On-chip CPIC Hardware Enabled" },
+				{ 11, "sep",   "SYSENTER and SYSEXIT" },
+				{ 12, "mtrr",  "Memory Type Range Registers" },
+				{ 13, "pge",   "PTE Global Bit" },
+				{ 14, "mca",   "Machine Check Architecture" },
+				{ 15, "cmov",  "Conditional Move/Compare Instruction" },
+				{ 16, "pat",   "Page Attribute Table" },
+				{ 17, "pse36", "Page Size Extension 36-bit" },
+				{ 18, "psn",   "Processor Serial Number" },
+				{ 19, "cflsh", "CFLUSH instruction" },
+				{ 21, "ds",    "Debug Store" },
+				{ 22, "acpi",  "Thermal Monitor and Clock Ctrl" },
+				{ 23, "mmx",   "MMX Technology" },
+				{ 24, "fxsr",  "FXSAVE/FXRSTOR" },
+				{ 25, "sse",   "SSE Extensions" },
+				{ 26, "sse2",  "SSE2 Extensions" },
+				{ 27, "ss",    "Self Snoop" },
+				{ 29, "tm",    "Therm. Monitor" },
+				{ -1 }
+			};
+			static struct {
+				int bit;
+				char *desc;;
+				char *description;
+			} cap_amd[] = {
+					{ 22, "mmxext","MMX Technology (AMD Extensions)" },
+				{ 30, "3dnowext","3Dnow! Extensions" },
+				{ 31, "3dnow", "3Dnow!" },
+				{ -1 }
+			};
+			int i;
+
+			regs = cpuid(1);
+			printf("cpu family\t: %d\n"
+				   "model\t\t: %d\n"
+				   "stepping\t: %d\n" ,
+				(regs.eax >>  8) & 0xf,
+				(regs.eax >>  4) & 0xf,
+				 regs.eax        & 0xf);
+			
+			printf("flags\t\t:");
+			for (i = 0; cap[i].bit >= 0; i++) {
+				if (regs.edx & (1 << cap[i].bit)) {
+					printf(" %s", cap[i].desc);
+				}
+			}
+			for (i = 0; cap_amd[i].bit >= 0; i++) {
+				if (amd_flags & (1 << cap_amd[i].bit)) {
+					printf(" %s", cap_amd[i].desc);
+				}
+			}
+			printf("\n");
+
+			if (regs.edx & (1 << 4)) {
+				int64_t tsc_start, tsc_end;
+				struct timeval tv_start, tv_end;
+				int usec_delay;
+
+				tsc_start = rdtsc();
+				gettimeofday(&tv_start, NULL);
+#ifdef	MISSING_USLEEP
+				sleep(1);
+#else
+				usleep(100000);
+#endif
+				tsc_end = rdtsc();
+				gettimeofday(&tv_end, NULL);
+
+				usec_delay = 1000000 * (tv_end.tv_sec - tv_start.tv_sec)
+					+ (tv_end.tv_usec - tv_start.tv_usec);
+
+				printf("cpu MHz\t\t: %.3f\n", 
+					(double)(tsc_end-tsc_start) / usec_delay);
+			}
+		}
+
+		printf("model name\t: %s\n", model_name);
+
+		exit(0);
+	}
+EOF
+		$COMP_C -o .cpuinfo .cpuinfo.c
+		_cpuinfo=".cpuinfo"
+	fi
+
+	  pname=`$_cpuinfo | grep 'model name' | cut -d ':' -f 2 | head -1`
+	  pvendor=`$_cpuinfo | grep 'vendor_id' | cut -d ':' -f 2  | cut -d ' ' -f 2 | head -1`
+	  pfamily=`$_cpuinfo | grep 'cpu family' | cut -d ':' -f 2 | cut -d ' ' -f 2 | head -1`
+	  pmodel=`$_cpuinfo | grep -v 'model name' | grep 'model' | cut -d ':' -f 2 | cut -d ' ' -f 2 | head -1`
+	  pstepping=`$_cpuinfo | grep 'stepping' | cut -d ':' -f 2 | cut -d ' ' -f 2 | head -1`
+
+	  pparam=`$_cpuinfo | grep 'features' | cut -d ':' -f 2 | head -1`
+	  if test -z "$pparam" ; then
+		pparam=`$_cpuinfo | grep '^flags' | cut -d ':' -f 2 | head -1`
+	  fi
+
+	  if test -z "$pparam" ; then
+		pparam=`$_cpuinfo | grep 'cpu' | cut -d ':' -f 2 | head -1`
+	  fi
+
+	  if test -z "$pname" ; then
+		pname=`$_cpuinfo | grep 'cpu' | cut -d ':' -f 2 | head -1`
+	  fi
+
+	  _mmx=no
+	  _3dnow=no
+	  _3dnowex=no
+	  _mmx2=no
+	  _sse=no
+	  _sse2=no
+	  _mtrr=no
+	  _altivec=no
+
+	  for i in $pparam ; do
+		case "$i" in
+		3dnow)        _3dnow=yes               ;;
+		3dnowext)     _3dnow=yes  _3dnowex=yes ;;
+		mmx)          _mmx=yes                 ;;
+		altivec)      _altivec=yes             ;;
+		mmxext)       _mmx2=yes                ;;
+		mtrr|k6_mtrr|cyrix_arr)   _mtrr=yes    ;;
+		xmm|sse|kni)  _sse=yes    _mmx2=yes    ;;
+		sse2)         _sse2=yes                ;;
+		esac
+	  done
+
+	  if [ -n "$pvendor" ]
+	  then
+		  echocheck "CPU vendor"
+		  echores "$pvendor ($pfamily:$pmodel:$pstepping)"
+	  fi
+
+	  echocheck "CPU type"
+	  echores "$pname"
+
+	fi
+
+
+	if [ "$host_arch" = alpha ]; then
+	  echocheck "CPU type"
+	cat > $TMPSS << EOF
+.data
+
+\$Lformat:
+	.byte 37,100,45,37,120,10,0   # "%d-%x\n"
+
+	.text
+	.globl main
+	.ent main
+	.align 8
+
+main:
+	.frame \$30,16,\$26,0
+	ldgp \$29,0(\$27)
+	.prologue 1
+	implver \$0
+	lda \$2,-1
+	amask \$2,\$1
+	lda \$16,\$Lformat
+	mov \$0,\$17
+	not \$1,\$18
+
+	jsr \$26,printf
+	ldgp \$29,0(\$26)
+	mov 0,\$16
+	jsr \$26,exit
+	.end main
+EOF
+	  $COMP_C -o "$TMPO" "$TMPSS"
+	  case `"$TMPO"` in
+		0-0) proc="ev4" ;;
+		1-0) proc="ev5" ;;
+		1-1) proc="ev56" ;;
+		1-101) proc="pca56" ;;
+		2-303) proc="ev6" ;;
+		2-307) proc="ev67" ;;
+		2-1307) proc="ev68" ;;
+	  esac
+	  echores "$proc"
+	fi
+
+# x86/x86pc is used by QNX
+	case "$host_arch" in
+	  i[3-9]86|x86|x86pc|k5|k6|k6-2|k6-3|pentium*|athlon*|i586-i686)
+	  _def_arch="#define ARCH_X86 1"
+	  _target_arch="TARGET_ARCH_X86 = yes"
+
+	  case "$pvendor" in
+	  AuthenticAMD)
+		case "$pfamily" in
+		3) proc=i386 iproc=386 ;;
+		4) proc=i486 iproc=486 ;;
+		5) iproc=586       # LGB: models are: K5/SSA5 K5 K5 K5 ? ? K6 K6 K6-2 K6-3
+		# TODO: how to determine if model 13 is a k6-2 or a k6-3? Couldn't find anything on amd.com
+		if test "$pmodel" -eq 9; then
+			proc=k6-3
+		elif test "$pmodel" -ge 8; then
+			proc=k6-2
+		elif test "$pmodel" -ge 6; then
+			proc=k6
+		else
+			proc=i586
+			iproc=586
+		fi
+		;;
+		6) iproc=686
+		if test "$pmodel" -ge 7; then
+			proc=athlon-4
+		elif test "$pmodel" -ge 6; then
+			# only Athlon XP supports ssem MP, Duron etc not
+			# but most of them are cpuid 666, so check if sse detected
+			# btw. there is also athlon-mp opt, but we need extended
+			# cpuid to detect if cpu is SMP capable -> athlon-mp ::atmos
+			if test "$_sse" = yes && test "$pstepping" -ge 2; then
+				proc=athlon-xp
+			else
+				proc=athlon-4
+			fi
+		elif test "$pmodel" -ge 4; then
+			proc=athlon-tbird
+		else
+			proc=athlon # TODO: should the Duron Spitfire be considered a Thunderbird instead?
+		fi
+		;;
+		
+		*) proc=athlon-xp iproc=686 ;;
+		esac
+		;;
+	  GenuineIntel)
+		case "$pfamily" in
+		3) proc=i386 iproc=386 ;;
+		4) proc=i486 iproc=486 ;;
+		5) iproc=586
+		if test "$pmodel" -eq 4 || test "$pmodel" -eq 8; then
+			proc=pentium-mmx # 4 is desktop, 8 is mobile
+		else
+			proc=i586
+		fi
+		;;
+		6) iproc=686
+		if test "$pmodel" -ge 7; then
+			proc=pentium3
+		elif test "$pmodel" -ge 3; then
+			proc=pentium2
+		else
+			proc=i686
+		fi
+		;;
+		15) proc=pentium4 iproc=686 ;;
+		*) proc=pentium4 iproc=686 ;;
+		esac
+		;;
+	  unknown)
+		case "$pfamily" in
+		3) proc=i386 iproc=386 ;;
+		4) proc=i486 iproc=486 ;;
+		*) proc=i586 iproc=586 ;;
+		esac
+		;;
+	  *)
+		proc=i586 iproc=586 ;;
+	  esac
+
+		# check that gcc supports our cpu, if not, fallback to earlier ones
+		# LGB: check -mcpu and -march swithing step by step with enabling
+		# to fall back till 386.
+
+		echocheck "GCC & CPU optimization abilities"
+cat > $TMPC << EOF
+int main(void) { return 0; }
+EOF
+		if test "$proc" = "athlon-xp" || test "$proc" = "athlon-4" || test "$proc" = "athlon-tbird"; then
+		  cc_check -march=$proc -mcpu=$proc || proc=athlon
+		fi
+		if test "$proc" = "k6-3" || test "$proc" = "k6-2"; then
+		  cc_check -march=$proc -mcpu=$proc  || proc=k6
+		fi
+		if test "$proc" = "k6"; then
+		  if not cc_check -march=$proc -mcpu=$proc; then
+			if cc_check -march=i586 -mcpu=i686; then
+			  proc=i586-i686
+			else 
+			  proc=i586
+		fi
+		  fi
+		fi
+		if test "$proc" = "pentium4" || test "$proc" = "pentium3" || test "$proc" = "pentium2" || test "$proc" = "athlon"; then
+		  cc_check -march=$proc -mcpu=$proc  || proc=i686
+		fi
+		if test "$proc" = "i686" || test "$proc" = "pentium-mmx"; then
+		  cc_check -march=$proc -mcpu=$proc  || proc=i586
+		fi
+		if test "$proc" = "i586" ; then
+		  cc_check -march=$proc -mcpu=$proc  || proc=i486
+		fi
+		if test "$proc" = "i486" ; then
+		  cc_check -march=$proc -mcpu=$proc  || proc=i386
+		fi
+		if test "$proc" = "i386" ; then
+		  cc_check -march=$proc -mcpu=$proc  || proc=error
+		fi
+		if test "$proc" = "error" ; then
+		  echores "Your $COMP_C does not support even \"i386\" for '-march' and '-mcpu'."
+		  _mcpu=""
+		  _march=""
+		  _optimizing=""
+		elif test "$proc" = "i586-i686"; then
+		  _march="-march=i586"
+		  _mcpu="-mcpu=i686"
+		  _optimizing=""
+		else
+		  _march="-march=$proc"
+		  _mcpu="-mcpu=$proc"
+		  _optimizing=""
+		fi
+
+		## Gabucino : --target takes effect here (hopefully...) by overwriting
+		##             autodetected mcpu/march parameters
+		if test "$_target" ; then
+		  # TODO: it may be a good idea to check GCC and fallback in all cases
+		  if test "$host_arch" = "i586-i686"; then
+			_march="-march=i586"
+			_mcpu="-mcpu=i686"
+		  else      
+			_march="-march=$host_arch"
+			_mcpu="-mcpu=$host_arch"
+		  fi
+		
+		  proc="$host_arch"
+
+		  case "$proc" in
+			i386) iproc=386 ;;
+			i486) iproc=486 ;;
+			i586|k5|k6|k6-2|k6-3|pentium|pentium-mmx) iproc=586 ;;
+			i686|athlon*|pentium*) iproc=686 ;;
+			*) iproc=586 ;;
+		  esac
+		fi
+
+		echores "$proc"
+		;;
+
+	  ia64)
+		_def_arch='#define ARCH_IA64 1'
+		_target_arch='TARGET_ARCH_IA64 = yes'
+		iproc='ia64'
+		proc=''
+		_march=''
+		_mcpu=''
+		;;
+
+	  x86_64)
+		_def_arch='#define ARCH_X86_64 1'
+		_target_arch='TARGET_ARCH_X86_64 = yes'
+		iproc='x86_64'
+		proc=''
+		_march=''
+		_mcpu=''
+		;;
+
+	  sparc)
+		_def_arch='#define ARCH_SPARC 1'
+		_target_arch='TARGET_ARCH_SPARC = yes'
+		iproc='sparc'
+		proc='v8'
+		_march=''
+		_mcpu=''
+		;;
+
+	  arm)
+		_def_arch='#define ARCH_ARM 1'
+		_target_arch='TARGET_ARCH_ARM = yes'
+		iproc=arm
+		proc=''
+		_march=''
+		_mcpu=''
+		;;
+
+	  ppc)
+		_def_arch='#define ARCH_POWERPC 1'
+		_target_arch='TARGET_ARCH_POWERPC = yes'
+		iproc='ppc'
+		proc=''
+		_march=''
+		_mcpu=''
+		cpu750=`$_cpuinfo | grep "cpu.*750"`
+		if test -n "$cpu750"; then
+		_march='-mcpu=750'
+		_mcpu='-mtune=750'
+		fi
+		cpu745x=`$_cpuinfo | grep "cpu.*745."`
+		if test -n "$cpu745x"; then
+		_march='-mcpu=7450'
+		_mcpu='-mtune=7450'
+		_optimizing='-maltivec -mabi=altivec'
+		fi
+		;;
+
+	  alpha)
+		_def_arch='#define ARCH_ALPHA 1'
+		_target_arch='TARGET_ARCH_ALPHA = yes'
+		iproc='alpha'
+		_march=''
+		echocheck "GCC & CPU optimization abilities"
+
+		if  echo "$COMP_CPP_VER" | grep 'Compaq C' >/dev/null
+		then
+			if test "$proc" = "ev68" ; then
+			  cc_check -arch $proc || proc=ev67
+			fi
+			if test "$proc" = "ev67" ; then
+			  cc_check -arch $proc || proc=ev6
+			fi
+			_mcpu="-arch $proc"
+		else
+			if test "$proc" = "ev68" ; then
+			  cc_check -mcpu=$proc || proc=ev67
+			fi
+			if test "$proc" = "ev67" ; then
+			  cc_check -mcpu=$proc || proc=ev6
+			fi
+			_mcpu="-mcpu=$proc"
+		fi
+		echores "$proc"
+		;;
+
+	  mips)
+		_def_arch='#define ARCH_SGI_MIPS 1'
+		_target_arch='TARGET_ARCH_SGI_MIPS = yes'
+		iproc='sgi-mips'
+		proc=''
+		_march=''
+		_mcpu=''
+		;;
+
+	  hppa)
+		_def_arch='#define ARCH_PA_RISC 1'
+		_target_arch='TARGET_ARCH_PA_RISC = yes'
+		iproc='PA-RISC'
+		proc=''
+		_march=''
+		_mcpu=''
+		;;
+
+	  s390)
+		_def_arch='#define ARCH_S390 1'
+		_target_arch='TARGET_ARCH_S390 = yes'
+		iproc='390'
+		proc=''
+		_march=''
+		_mcpu=''
+		;;
+
+	  s390x)
+		_def_arch='#define ARCH_S390X 1'
+		_target_arch='TARGET_ARCH_S390X = yes'
+		iproc='390x'
+		proc=''
+		_march=''
+		_mcpu=''
+		;;
+
+	  *)
+		echo "The architecture of your CPU ($host_arch) is not supported by this configure script"
+		echo "It seems nobody has ported MPlayer to your OS or CPU type yet."
+		die "unsupported architecture $host_arch"
+		;;
+	esac
+
+
+	if x86; then
+	  extcheck() {
+		if test "$1" = yes ; then
+		  echocheck "CPU and kernel support of $2"
+		  cat > $TMPC <<EOF
+#include <signal.h>
+void catch() { exit(1); }
+int main(void){
+  signal(SIGILL, catch);
+  __asm__ __volatile__ ("$3":::"memory");return(0);
+}
+EOF
+
+		  if ( cc_check -m$2 && $TMPO ) > /dev/null 2>&1 ; then
+			echores "yes"
+		_optimizing="$_optimizing -m$2"
+			return 0
+		  else
+			echores "no"
+		return 1
+		  fi
+		fi
+		return 0
+	  }
+
+	  extcheck $_mmx "mmx" "emms" || _mmx=no
+	  extcheck $_mmx2 "mmx2" "sfence" || _mmx2=no
+	  extcheck $_3dnow "3dnow" "femms" || _3dnow=no
+	  extcheck $_3dnowex "3dnowex" "pswapd %%mm0, %%mm0" || _3dnowex=no
+	  extcheck $_sse "sse" "xorps %%xmm0, %%xmm0" || _sse=no _gcc3_ext="$_gcc3_ext -mno-sse"
+	  extcheck $_sse2 "sse2" "xorpd %%xmm0, %%xmm0" || _sse2=no _gcc3_ext="$_gcc3_ext -mno-sse2"
+
+	  if test "$_gcc3_ext" != ""; then
+		# if we had to disable sse/sse2 because the active kernel does not
+		# support this instruction set extension, we also have to tell
+		# gcc3 to not generate sse/sse2 instructions for normal C code
+cat > $TMPC << EOF
+int main(void) { return 0; }
+EOF
+		cc_check $_march $_gcc3_ext && _march="$_march $_gcc3_ext"
+	  fi
+
+	fi
+}
+
+set_opts()
+{
+	if test "$_matlab" = yes
+	then
+		DEFINES="$DEFINES -DMATLAB"
+
+		if osf1
+		then
+#LINKFLAGS="-pthread -L/opt/matlab-6/extern/lib/alpha -rpath /opt/matlab-6/extern/lib/alpha -rpath /opt/matlab-6/bin/alpha -lmpi -lm  -lcxml_ev6 -lUfor -lfor -lFutil -lm -lots -lm_c32 -lmld -lexc -lm"
+			LINKFLAGS="-pthread -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*' -L/opt/matlab-6.5-13/bin/alpha -lmx -lmex -lmat -lm"
+			TARGET="gf.mexaxp"
+			INCLUDES="$INCLUDES -I/opt/matlab-6.5-13/extern/include"
+			DEFINES="$DEFINES -DMATLAB_MEX_FILE"
+			COMPFLAGS_CPP="$COMPFLAGS_CPP -shared -ieee -pthread -std1"
+			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -pthread -std1"
+		elif darwin
+		then
+			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -undefined suppress -L/Applications/MATLAB6p5/bin/mac -lmx -lmex -lmat -lm"
+			INCLUDES="$INCLUDES -I/Applications/MATLAB6p5/extern/include"
+			TARGET="gf.mexmac"
+		else
+			LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
+			INCLUDES="$INCLUDES -I/home/matrix/matlab/extern/include/"
+			TARGET="gf.mexglx"
+		fi
+	fi
+	if test "$_svm_mpi" = yes
+	then
+		DEFINES="$DEFINES -DSVMMPI"
+	fi
+	if test "$_tmpsave" = yes
+	then
+		DEFINES="$DEFINES -DTMPSAVE"
+	fi
+	if test "$_cplex" = yes
+	then
+		DEFINES="$DEFINES -DCPLEX"
+	fi
+	if test "$_logcache" = no
+	then
+		DEFINES="$DEFINES -DNO_LOG_CACHE"
+	fi
+	if test "$_logsumarray" = yes
+	then
+		DEFINES="$DEFINES -DLOG_SUM_ARRAY"
+	fi
+	if test "$_parallel" = yes
+	then
+		DEFINES="$DEFINES -DPARALLEL_STRUCTURES"
+	fi
+	if test "$_lapack" = no
+	then
+		DEFINES="$DEFINES -DNO_LAPACK"
+	else
+		if sunos
+		then
+			LINKFLAGS="$LINKFLAGS -lsunperf -Bstatic -xlic_lib=sunperf -Bdynamic -lF77 -lM77 -lsunmath -mt -lsocket -lnsl"
+		elif darwin
+		then
+			LINKFLAGS="$LINKFLAGS"
+		elif osf1
+		then
+			LINKFLAGS="$LINKFLAGS"
+		else
+			LINKFLAGS="$LINKFLAGS -llapack_pic -llapack_atlas -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c"
+		fi
+	fi
+	if test "$_bigobs" = yes
+	then
+		DEFINES="$DEFINES -DBIGOBS"
+	fi
+	if test "$_bigstates" = yes
+	then
+		DEFINES="$DEFINES -DBIGSTATES"
+	fi
+	if test "$_kernelcache" = yes
+	then
+		DEFINES="$DEFINES -DUSE_KERNEL_CACHE"
+	fi
+	if test "$_cache" = yes
+	then
+		DEFINES="$DEFINES -DNOCACHE"
+	fi
+	if test "$_debug" = yes
+	then
+		DEFINES="$DEFINES -DDEBUG"
+		COMPFLAGS_CPP="$COMPFLAGS_CPP -g"
+		TARGET="genefinder-${EXESUFFIX}.debug"
+	fi
+	if test "$_pathdebug" = yes
+	then
+		DEFINES="$DEFINES -DPATHDEBUG"
+		COMPFLAGS_CPP="$COMPFLAGS_CPP -g"
+		TARGET="genefinder-${EXESUFFIX}.debug"
+	fi
+	if test "$_profile" = yes
+	then
+		COMPFLAGS_CPP="$COMPFLAGS_CPP -g -p"
+	fi
+}
+
+#write the actual config
+
+write_dot_config()
+{
+
+#set autodetected options
+COMPFLAGS_CPP="$COMPFLAGS_CPP $OS $_march $_mcpu $_optimizing $COMP_OPTS"
+COMPFLAGS_C="$COMPFLAGS_CPP"
+
+cat > .config <<EOF
+MAKE 			= ${MAKE}
+EXT_SRC_C 		= ${EXT_SRC_C}
+EXT_SRC_CPP 	= ${EXT_SRC_CPP}
+KERNELNAME  	= ${KERNELNAME}
+MACHINE  		= ${MACHINE}
+TARGET			= ${TARGET}
+EXT_OBJ_CPP 	= ${EXT_OBJ_CPP}
+EXT_OBJ_C   	= ${EXT_OBJ_C}
+EXT_SRC_CPP 	= ${EXT_SRC_CPP}
+EXT_SRC_C   	= ${EXT_SRC_C}
+GDB				= ${GDB}
+COMP_C			= ${COMP_C}
+COMP_CPP		= ${COMP_CPP}
+DEFINES			= ${DEFINES}
+COMPFLAGS_C		= ${COMPFLAGS_C}
+COMPFLAGS_CPP	= ${COMPFLAGS_CPP}
+INCLUDES		= ${INCLUDES}
+LINK			= ${LINK}
+LINKFLAGS 		= ${LINKFLAGS}
+EOF
+}
+
+clean_up()
+{
+	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS" "$TMPSS"
+}
+
+detect_cc
+check_make
+determine_march_mcpu
+set_opts
+write_dot_config
+clean_up

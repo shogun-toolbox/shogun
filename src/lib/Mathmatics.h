@@ -1,15 +1,22 @@
-#ifndef __MATH_H_
-#define __MATH_H_
+#ifndef __MATHMATICS_H_
+#define __MATHMATICS_H_
 
 #include "lib/common.h"
+#include "lib/io.h"
 
 #include <math.h>
 #include <stdio.h>
 
 //define finite for win32
 #ifdef _WIN32
-	#include <float.h>
-	#define finite _finite
+#include <float.h>
+#define finite _finite
+#define isnan _isnan
+#endif
+
+#ifndef NAN
+#include <stdlib.h>
+#define NAN (strtod("NAN",NULL))
 #endif
 
 #ifdef SUNOS
@@ -32,66 +39,78 @@ public:
 	virtual ~CMath();
 	//@}
 
-	/**@name min/max functions.
+	/**@name min/max/abs functions.
 	*/
 	//@{
-	///return the maximum of two integers
-	inline int max(int a, int b) 
-	{
-	  return ((a)>=(b))?(a):(b) ;
-	} ;
 
 	///return the minimum of two integers
-	inline int min(int a, int b) 
+	inline INT min(INT a, INT b) 
 	{
-	  return ((a)<=(b))?(a):(b) ;
+		return ((a)<=(b))?(a):(b);
 	}
-	///return the maximum of two floating point numbers
-	inline REAL max(REAL a, REAL b) 
-	{
-	  return ((a)>=(b))?(a):(b) ;
-	} ;
 
-	///return the minimum of two floating point numbers
+	///return the maximum of two integers
+	inline INT max(INT a, INT b) 
+	{
+		return ((a)>=(b))?(a):(b);
+	}
+
+	///return the maximum of two integers
+	inline INT abs(INT a)
+	{
+		return ((a)>=(0))?(a):(-a);
+	}
+
+	///return the minimum of two integers
+	inline LONG min(LONG a, LONG b) 
+	{
+		return ((a)<=(b))?(a):(b);
+	}
+
+	///return the maximum of two integers
+	inline LONG max(LONG a, LONG b) 
+	{
+		return ((a)>=(b))?(a):(b);
+	}
+
+	///return the maximum of two integers
+	inline LONG abs(LONG a)
+	{
+		return ((a)>=(0))?(a):(-a);
+	}
+
+	///return the minimum of two integers
 	inline REAL min(REAL a, REAL b) 
 	{
-	  return ((a)<=(b))?(a):(b) ;
+		return ((a)<=(b))?(a):(b);
 	}
-	
-	///return the maximum of two long
-	inline long max(long a, long b) 
-	{
-	  return ((a)>=(b))?(a):(b) ;
-	} ;
 
-	///return the minimum of two longs
-	inline long min(long a, long b) 
+	///return the maximum of two integers
+	inline REAL max(REAL a, REAL b) 
 	{
-	  return ((a)<=(b))?(a):(b) ;
+		return ((a)>=(b))?(a):(b);
 	}
-	
+
+	///return the maximum of two integers
+	inline REAL abs(REAL a)
+	{
+		return ((a)>=(0))?(a):(-a);
+	}
 	//@}
-
-#ifdef _WIN32
-	inline int isnan(REAL a)
-	{
-	    return(_isnan(a));
-	}
-#else
-	inline int isnan(REAL a)
-	{
-	    return(isnan(a));
-	}
-#endif
 
 	/**@name misc functions */
 	//@{
 
 	/// crc32
-	unsigned int crc32(unsigned char *data, int len);
+	UINT crc32(BYTE *data, INT len);
+
+	inline REAL round(REAL d)
+	{
+		return floor(d+0.5);
+	}
 
 	/// signum of int a 
-	inline int sign(int a)
+	inline INT sign(INT a)
 	  {
 	      if (a==0)
 		  return 0;
@@ -112,29 +131,83 @@ public:
 	    REAL c=a ;
 	    a=b; b=c ;
 	  }
+
 	/// swap integers a and b
-	inline void swap(int & a,int &b)
+	inline void swap(INT & a, INT &b)
 	  {
-	    int c=a ;
+	    INT c=a ;
 	    a=b; b=c ;
 	  } 
+
+	/// swap integers a and b
+	inline void swap(WORD &a, WORD &b)
+	  {
+	    WORD c=a ;
+	    a=b; b=c ;
+	  } 
+
+	/// x^2
+	inline REAL sq(REAL x)
+	{
+		return x*x;
+	}
+
+	inline LONG factorial(INT n)
+		{
+			LONG res=1 ;
+			for (int i=2; i<=n; i++)
+				res*=i ;
+			return res ;
+		} ;
+
+	inline LONG nchoosek(INT n, INT k)
+		{
+			long res=1 ;
+			
+			for (INT i=n-k+1; i<=n; i++)
+				res*=i ;
+			
+			return res/factorial(k) ;
+		} ;
+	
+	
+	 
 
 	/** performs a bubblesort on a given matrix a.
 	 * it is sorted from in ascending order from top to bottom
 	 * and left to right */
-	void sort(int *a, int cols, int sort_col=0) ;
+	void sort(INT *a, INT cols, INT sort_col=0) ;
+	void sort(REAL *a, INT*idx, INT N) ;
 	
 	/** performs a quicksort on an array output of length size
 	 * it is sorted from in ascending order from top to bottom
-	 * and left to right */
-	void qsort(REAL* output, int size) ;
+	 * and left to right (for REAL) */
+	void qsort(REAL* output, INT size) ;
+
+	/** performs a quicksort on an array output of length size
+	 * it is sorted from in ascending order from top to bottom
+	 * and left to right (for WORD) */
+	void qsort(WORD* output, INT size) ;
+	void qsort(REAL* output, INT* index, INT size) ;
+	void qsort_backward(REAL* output, INT* index, INT size) ;
 
 	/** calculates ROC into (fp,tp)
 	 * from output and label of length size 
 	 * returns index with smallest error=fp+fn
 	 */
-	int calcroc(REAL* fp, REAL* tp, REAL* output, int* label, int size, int& possize, int& negsize, FILE* rocfile);
+	INT calcroc(REAL* fp, REAL* tp, REAL* output, INT* label, INT& size, INT& possize, INT& negsize, REAL& tresh, FILE* rocfile);
 	//@}
+
+	/// returns the mutual information of p which is given in logspace
+	/// where p,q are given in logspace
+	double mutual_info(REAL* p1, REAL* p2, INT len);
+
+	/// returns the relative entropy H(P||Q), 
+	/// where p,q are given in logspace
+	double relative_entropy(REAL* p, REAL* q, INT len);
+
+	/// returns entropy of p which is given in logspace
+	double entropy(REAL* p, INT len);
 
 	/**@name summing functions */
 	//@{ 
@@ -167,7 +240,8 @@ public:
 						return  q + logtable[(int)(-diff*LOGACCURACY)];
 				}
 			}
-			return p;
+			CIO::message("INVALID second operand to logsum(%f,%f) expect undefined results\n", p, q);
+			return NAN;
 		}
 		else 
 			return q;
@@ -176,11 +250,11 @@ public:
 	///init log table of form log(1+exp(x))
 	void init_log_table();
 	
-	/// determine int x for that log(1+exp(-x)) == 0
-	static int determine_logrange();
+	/// determine INT x for that log(1+exp(-x)) == 0
+	static INT determine_logrange();
 
 	/// determine accuracy, such that the thing fits into MAX_LOG_TABLE_SIZE, needs logrange as argument
-	static int determine_logaccuracy(int range);
+	static INT determine_logaccuracy(INT range);
 #else
 	/*
 	inline REAL logarithmic_sum(REAL p, REAL q)
@@ -199,17 +273,16 @@ public:
 			{
 
 				register REAL diff=p-q;
-
 				if (diff>0)		//p>q
 				{
-					if (diff > 73)
+					if (diff > LOGRANGE)
 						return p;
 					else
 						return  p + log(1+exp(-diff));
 				}
 				else			//p<=q
 				{
-					if (-diff > 73)
+					if (-diff > LOGRANGE)
 						return  q;
 					else
 						return  q + log(1+exp(diff));
@@ -227,7 +300,7 @@ public:
 	 * each of the elements to some variable. Instead array neighbours are summed up until one element remains.
 	 * Whilst the number of additions remains the same, the error is only in the order of log(N) instead N.
 	 */
-	inline REAL logarithmic_sum_array(REAL *p, int len)
+	inline REAL logarithmic_sum_array(REAL *p, INT len)
 	  {
 	    if (len<=2)
 	      {
@@ -241,7 +314,7 @@ public:
 	      {
 		register REAL *pp=p ;
 		if (len%2==1) pp++ ;
-		for (register int j=0; j < len>>1; j++)
+		for (register INT j=0; j < len>>1; j++)
 		  pp[j]=logarithmic_sum(pp[j<<1], pp[1+(j<<1)]) ;
 	      }
 	    return logarithmic_sum_array(p,len%2+len>>1) ;
@@ -256,17 +329,19 @@ public:
 	
 	/// almost neg (log) infinity
 	static const REAL ALMOST_NEG_INFTY;
-#ifndef NO_LOG_CACHE	
+
 	/// range for logtable: log(1+exp(x))  -LOGRANGE <= x <= 0
-	static int LOGRANGE;
+	static INT LOGRANGE;
 	
+#ifndef NO_LOG_CACHE	
 	/// number of steps per integer
-	static int LOGACCURACY;
+	static INT LOGACCURACY;
 	//@}
 protected:
 	///table with log-values
 	REAL* logtable;	
 #endif
+	static CHAR rand_state[256];
 };
 
 #endif
