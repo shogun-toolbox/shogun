@@ -4,8 +4,6 @@
 /*                                                                      */
 /*   User defined kernel function. Feel free to plug in your own.       */
 /*                                                                      */
-/*   Copyright: Thorsten Joachims                                       */
-/*   Date: 16.12.97                                                     */
 /*                                                                      */
 /************************************************************************/
 

@@ -32,7 +32,8 @@ static mexFunctionTableEntry function_table[4]
       { "qp_solve", mlxQp_solve, -1, -1, &_local_function_table_qp_solve },
       { "spdiag", mlxSpdiag, 1, 1, &_local_function_table_spdiag } };
 
-static const char * path_list_[1] = { "/opt/home/raetsch/CANDY/matlab/cplex" };
+static const char * path_list_[2] = { "/opt/home/raetsch/CANDY/matlab/cplex", 
+				      "/home/neuro/raetsch/CANDY/matlab/cplex" };
 
 static _mexInitTermTableEntry init_term_table[5]
   = { { libmmfileInitialize, libmmfileTerminate },
@@ -43,9 +44,9 @@ static _mexInitTermTableEntry init_term_table[5]
         TerminateModule_qp_solve_mex_interface },
       { InitializeModule_spdiag, TerminateModule_spdiag } };
 
-static _mex_information _main_info
-  = { 1, 4, function_table, 1, global_table, 1,
-      path_list_, 5, init_term_table };
+/*static _mex_information _main_info
+  = { 1, 4, function_table, 1, global_table, 2,
+  path_list_, 5, init_term_table };*/
 
 /*
  * The function "main" is a Compiler-generated main wrapper, suitable for

@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <unistd.h>
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
@@ -12,10 +13,14 @@
 //#include <termios.h>
 #endif
 
+#include <libmmfile.h>
+
 #include "hmm/HMM.h"
 #include "lib/Observation.h"
 #include "lib/Mathmatics.h"
 #include "svm/SVM.h"
+#include "svm/SVM_light.h"
+#include "svm_cplex/SVM_cplex.h"
 
 //names of menu commands
 static const char* N_SET_POS_MODEL=			"set_pos_model";
@@ -74,6 +79,8 @@ static const char* N_TEST=				"test";
 static const char* N_LINEAR_SVM_TRAIN=			"linear_svm_train";
 static const char* N_SVM_TRAIN=				"svm_train";
 static const char* N_SVM_TEST=				"svm_test";
+static const char* N_SET_SVM_LIGHT=			 "set_svm_light";
+static const char* N_SET_SVM_CPLEX=			 "set_svm_cplex";
 static const char* N_HMM_TEST=				"hmm_test";
 static const char* N_LINEAR_HMM_TEST=			"linear_hmm_test";
 
@@ -106,7 +113,10 @@ CObservation* obs_test=NULL;	//observations
 
 CHMM* pos=NULL;	//positive model 
 CHMM* neg=NULL;	//negative model
-CSVM svm;	//support vector machine
+
+CSVMLight svm_light;	//support vector machine
+CSVMCplex svm_cplex;	//support vector machine
+CSVM* svm=&svm_cplex;	//support vector machine
 
 double* theta; //full parameter vector
 
@@ -162,19 +172,21 @@ static void initialize()
     lambda_train=NULL ;
     fprintf(stdout,"Learning uses %i threads\n", NUM_PARALLEL) ;
     fflush(stdout);
+    libmmfileInitialize() ;
 }
 
 //cleanup
 static void cleanup()
 {
-    if (pos)
-	delete pos;
-    if (neg)
-	delete neg;
-    if (lambda)
-	delete lambda;
-    if (lambda_train)
-	delete lambda_train;
+  libmmfileTerminate() ;
+  if (pos)
+    delete pos;
+  if (neg)
+    delete neg;
+  if (lambda)
+    delete lambda;
+  if (lambda_train)
+    delete lambda_train;
 }
 
 static void help()
@@ -240,6 +252,8 @@ static void help()
     printf("%s <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
     printf("%s <srcsvm> <output>\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
     printf("%s <dstsvm> \t\t- obtains svm from pos/neg linear models\n",N_LINEAR_SVM_TRAIN);
+    printf("%s - enables SVM Light \n",N_SET_SVM_LIGHT);
+    printf("%s - enables SVM CPLEX \n",N_SET_SVM_CPLEX);
     printf("\n[SYSTEM]\n");
     printf("%s <filename>\t- load and execute a script\n",N_EXEC);
     printf("%s\t- exit genfinder\n",N_QUIT);
@@ -1420,87 +1434,98 @@ static bool prompt(FILE* infile=stdin)
 		else
 			printf("create model first!\n");
     } 
+    else if (!strncmp(input, N_SET_SVM_LIGHT, strlen(N_SET_SVM_LIGHT)))
+      svm=&svm_light ;
+    else if (!strncmp(input, N_SET_SVM_CPLEX, strlen(N_SET_SVM_CPLEX)))
+      svm=&svm_cplex ;
     else if (!strncmp(input, N_SVM_TRAIN, strlen(N_SVM_TRAIN)))
     {
 	char name[1024];
 
 	for (i=strlen(N_SVM_TRAIN); isspace(input[i]); i++);
-	if (sscanf(&input[i], "%s", name) == 1)
-	{
-	    if (pos && neg)
-	    {
-		if (obs_postrain && obs_negtrain)
-		{
-		    CObservation* obs=new CObservation(obs_postrain, obs_negtrain);
-
-		    CObservation* old_pos=pos->get_observations();
-		    CObservation* old_neg=neg->get_observations();
-
-		    pos->set_observations(obs);
-		    neg->set_observations(obs);
-
-		    int larger_N=math.max(pos->get_N(), neg->get_N());
-		    int larger_M=math.max(pos->get_M(), neg->get_M());
-
-		    theta=new double[1+larger_N*(1+larger_N+1+larger_M)];
-		    svm.svm_train(name,obs, 4, C);
-		    delete theta;
-		    theta=NULL;
-
-		    pos->set_observations(old_pos);
-		    neg->set_observations(old_neg);
-
-		    delete obs;
-		}
-		else
-		    printf("assign postrain and negtrain observations first!\n");
-	    }
+	if (sscanf(&input[i], "%s", name) == 0)
+	  strcpy(name,"") ;
+	if (pos && neg)
+	  {
+	    if (obs_postrain && obs_negtrain)
+	      {
+		CObservation* obs=new CObservation(obs_postrain, obs_negtrain);
+		
+		CObservation* old_pos=pos->get_observations();
+		CObservation* old_neg=neg->get_observations();
+		
+		pos->set_observations(obs);
+		neg->set_observations(obs);
+		
+		int larger_N=math.max(pos->get_N(), neg->get_N());
+		int larger_M=math.max(pos->get_M(), neg->get_M());
+		
+		theta=new double[1+larger_N*(1+larger_N+1+larger_M)];
+		svm->svm_train(obs, 4, C);
+		if (strlen(name)>0)
+		  {
+		    FILE * fd=fopen(name,"w+") ;
+		    svm->save_svm(fd) ;
+		    fclose(fd) ;
+		  } 
+		delete[] theta;
+		theta=NULL;
+		
+		pos->set_observations(old_pos);
+		neg->set_observations(old_neg);
+		
+		delete obs;
+	      }
 	    else
-		printf("assign positive and negative models first!\n");
-	}
+	      printf("assign postrain and negtrain observations first!\n");
+	  }
 	else
-	    printf("see help for parameters\n");
+	  printf("assign positive and negative models first!\n");
     } 
     else if (!strncmp(input, N_LINEAR_SVM_TRAIN, strlen(N_LINEAR_SVM_TRAIN)))
     {
 	char name[1024];
 
 	for (i=strlen(N_LINEAR_SVM_TRAIN); isspace(input[i]); i++);
-	if (sscanf(&input[i], "%s", name) == 1)
-	{
-	    if (pos && neg)
-	    {
-		if (obs_postrain && obs_negtrain)
-		{
-		    CObservation* obs=new CObservation(obs_postrain, obs_negtrain);
-
-		    CObservation* old_pos=pos->get_observations();
-		    CObservation* old_neg=neg->get_observations();
-
-		    pos->set_observation_nocache(obs);
-		    neg->set_observation_nocache(obs);
-
-		    theta=new double[pos->get_N()*pos->get_M() + neg->get_N()*neg->get_M()];
-		    svm.svm_train(name,obs, 5, C);
-		    delete theta;
-		    theta=NULL;
-
-		    pos->set_observations(old_pos);
-		    neg->set_observations(old_neg);
-
-		    delete obs;
-		}
-		else
-		    printf("assign postrain and negtrain observations first!\n");
-	    }
+	if (sscanf(&input[i], "%s", name) == 0)
+	  strcpy(name,"") ;
+	
+	if (pos && neg)
+	  {
+	    if (obs_postrain && obs_negtrain)
+	      {
+		CObservation* obs=new CObservation(obs_postrain, obs_negtrain);
+		
+		CObservation* old_pos=pos->get_observations();
+		CObservation* old_neg=neg->get_observations();
+		
+		pos->set_observation_nocache(obs);
+		neg->set_observation_nocache(obs);
+		
+		theta=new double[pos->get_N()*pos->get_M() + neg->get_N()*neg->get_M()];
+		svm->svm_train(obs, 5, C);
+		if (strlen(name)>0)
+		  {
+		    FILE * fd=fopen(name,"w+") ;
+		    svm->save_svm(fd) ;
+		    fclose(fd) ;
+		  } 
+		delete[] theta;
+		theta=NULL;
+		
+		pos->set_observations(old_pos);
+		neg->set_observations(old_neg);
+		
+		delete obs;
+	      }
 	    else
-		printf("assign positive and negative models first!\n");
-	}
+	      printf("assign postrain and negtrain observations first!\n");
+	  }
 	else
-	    printf("see help for parameters\n");
+	  printf("assign positive and negative models first!\n");
     } 
     else if (!strncmp(input, N_SVM_TEST, strlen(N_SVM_TEST)))
-    {
+      {
 	char svmname[1024];
 	char outputname[1024];
 	FILE* outputfile=stdout;
@@ -1529,20 +1554,18 @@ static bool prompt(FILE* infile=stdin)
 		    if (obs_postest && obs_negtest)
 		    {
 			CObservation* obs=new CObservation(obs_postest, obs_negtest);
-			svm.load_svm(svm_file, obs);
+			svm->load_svm(svm_file, obs);
 
 			CObservation* old_pos=pos->get_observations();
 			CObservation* old_neg=neg->get_observations();
 
 			pos->set_observations(obs);
 			neg->set_observations(obs);
-
 			int larger_N=math.max(pos->get_N(), neg->get_N());
 			int larger_M=math.max(pos->get_M(), neg->get_M());
 
 			theta=new double[(1+larger_N*(1+larger_N+1+larger_M))];
-
-			svm.svm_test(obs, outputfile);
+			svm->svm_test(obs, outputfile);
 			delete[] theta;
 			theta=NULL;
 
@@ -1774,12 +1797,12 @@ static bool prompt(FILE* infile=stdin)
 }
 //------------------------------------------------------------------------------------//
 
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 {
-    initialize() ;
-    if (argc<=1)
-	while (prompt());
-    else
+  initialize() ;
+  if (argc<=1)
+    while (prompt());
+  else
     {
 	if (argc>=2)
 	{

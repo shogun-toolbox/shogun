@@ -324,6 +324,4 @@ double cached_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in yo
 #endif
     return result;
 }
-
-
 #endif
