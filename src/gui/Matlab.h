@@ -43,13 +43,13 @@ public:
 
 	//bool get_kernel_init();
 	//bool get_features();
-	//bool get_labels();
+	bool get_labels(mxArray* retvals[]);
 	//bool get_preproc_init();
 	//bool get_hmm_defs();
 
 	//bool set_kernel_init();
 	//bool set_features();
-	//bool set_labels();
+	bool set_labels(const mxArray* vals[]);
 	//bool set_preproc_init();
 	//bool set_hmm_defs();
 	

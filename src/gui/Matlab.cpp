@@ -5,7 +5,7 @@
 #include "lib/io.h"
 #include "mex.h"
 #include "hmm/HMM.h"
-#include "hmm/HMM.h"
+#include "svm/SVM.h"
 
 #include "gui/Matlab.h"
 #include "gui/TextGUI.h"
@@ -144,7 +144,7 @@ bool CMatlab::get_svm(mxArray* retvals[])
 			double* b=mxGetPr(mx_b);
 			double* alphas=mxGetPr(mx_alphas);
 
-			p[0]=svm->get_bias();
+			*b=svm->get_bias();
 
 			for (int i=0; i< svm->get_num_support_vectors(); i++)
 			{
@@ -162,9 +162,9 @@ bool CMatlab::get_svm(mxArray* retvals[])
 	return false;
 }
 
-bool CMatlab::set_hmm(const mxArray* vals[])
+bool CMatlab::set_svm(const mxArray* vals[])
 {
-	SVM* svm=gui->guisvm.get_svm();
+	CSVM* svm=gui->guisvm.get_svm();
 
 	if (svm)
 	{
@@ -186,7 +186,7 @@ bool CMatlab::set_hmm(const mxArray* vals[])
 			for (int i=0; i< svm->get_num_support_vectors(); i++)
 			{
 				svm->set_alpha(i, alphas[i]);
-				svm->set_support_vector(i, alphas[i+svm->get_num_support_vectors()]);
+				svm->set_support_vector(i, (int) alphas[i+svm->get_num_support_vectors()]);
 			}
 
 			return true;
@@ -195,6 +195,39 @@ bool CMatlab::set_hmm(const mxArray* vals[])
 
 	return false;
 }
+
+bool CMatlab::get_labels(mxArray* retvals[])
+{
+	CLabels* lab=gui->guilabels.get_train_labels();
+
+	//if (svm)
+	//{
+	//	mxArray* mx_alphas=mxCreateDoubleMatrix(svm->get_num_support_vectors(), 2, mxREAL);
+	//	mxArray* mx_b=mxCreateDoubleMatrix(1, 1, mxREAL);
+
+	//	if (mx_alphas && mx_b)
+	//	{
+	//		double* b=mxGetPr(mx_b);
+	//		double* alphas=mxGetPr(mx_alphas);
+
+	//		*b=svm->get_bias();
+
+	//		for (int i=0; i< svm->get_num_support_vectors(); i++)
+	//		{
+	//			alphas[i]=svm->get_alpha(i);
+	//			alphas[i+svm->get_num_support_vectors()]=svm->get_support_vector(i);
+	//		}
+
+	//		retvals[0]=mx_b;
+	//		retvals[1]=mx_alphas;
+
+	//		return true;
+	//	}
+	//}
+
+	return false;
+}
+
 
 char* CMatlab::get_mxString(const mxArray* s)
 {
