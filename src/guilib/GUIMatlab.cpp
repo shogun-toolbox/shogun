@@ -1180,6 +1180,9 @@ bool CGUIMatlab::compute_WD_by_levels(mxArray* retvals[])
 		
 		mxArray* mx_result=mxCreateDoubleMatrix(degree*len, num, mxREAL);
 		double* result=mxGetPr(mx_result);
+
+		for (int i=0; i<num*degree*len; i++)
+			result[i]=0 ;
 		
 		for (int i=0; i<num; i++)
 			kernel->compute_by_tree(i,&result[i*degree*len]) ;

@@ -116,7 +116,7 @@ bool CSVMLight::train()
 {
 	//certain setup params
 	
-	verbosity=2 ;
+	verbosity=1 ;
 	init_margin=0.15;
 	init_iter=500;
 	precision_violations=0;
@@ -193,10 +193,7 @@ void CSVMLight::svm_learn()
 	rho=0 ;
 	w_gap = 1 ;
 	count = 0 ;
-	alpha_converged = 0 ;
-	max_num_rows=0 ;
 	num_rows=0 ;
-	row_inactive_since=NULL ;
 	
 	if (get_kernel()->has_property(KP_KERNCOMBINATION))
 	{
@@ -489,11 +486,8 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 
                             /* repeat this loop until we have convergence */
 //  for(;w_gap>0.1;iteration++){//retrain && (!terminate);iteration++) {
-  for(;(retrain && (!terminate))||(w_gap>0.1);iteration++){
-	  
-	  if (w_gap<0.10 && iteration>10000) // XXX extremly hacky
-		  break ;
-	  
+  for(;(retrain && (!terminate))||(w_gap>1e-5);iteration++){
+	  	  
 	  if(!get_kernel()->has_property(KP_LINADD)) 
 		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
 	  
@@ -1087,7 +1081,6 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			INT len    = -1;
 			INT num_kernels = get_kernel()->get_num_subkernels() ;
 			REAL* w    = k->get_weights(degree,len);
-			REAL* W_upd= new REAL[num*num_kernels];
 			REAL* sumw = new REAL[num_kernels];
 			REAL* w_backup = new REAL[num_kernels] ;
 			
@@ -1115,32 +1108,24 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			
 			// determine contributions of different levels/lengths
 			for (int i=0; i<num; i++)
-				k->compute_by_tree(i,&W_upd[i*num_kernels]) ;
+				k->compute_by_tree(i,&W[i*num_kernels]) ;
 			
-			// update W with normalized W_upd and compute sumw and compute objective
 			REAL objective=0;
 			for (int d=0; d<num_kernels; d++)
 			{
 				sumw[d]=0;
-				
-				//for(INT ii=0,i=0;;(i=active2dnum[ii])>=0;ii++) 
 				for(int i=0; i<num; i++)
-				{
-					W[i*num_kernels+d] += W_upd[i*num_kernels+d];
 					sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d] - 1);
-				}
 				objective   += w[d]*sumw[d];
-				if (count%100==0)
-					CIO::message(M_DEBUG, "w[%i]=%f  sumw[%i]=%f\n", d, w[d], d, sumw[d]) ;
+				//if (count%100==0)
+				//CIO::message(M_DEBUG, "w[%i]=%f  sumw[%i]=%f\n", d, w[d], d, sumw[d]) ;
 			}
-			if (count%100==0)
-				CIO::message(M_DEBUG, "objective=%f\n", objective) ;
+
 			count++ ;
-			//if (count>3) 
-			//	exit(0) ;
 
 #ifdef USE_CPLEX			
 			//if (mymaxdiff<w_gap*100)
+			//if (CMath::abs(rho-objective)>1)
 			{
 				if (rho==0)
 				{
@@ -1225,15 +1210,6 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					}
 				}
 				
-				// have at most 100 rows 
-				if (0)//(count>=100) 
-				{
-					INT status = CPXdelrows (env, lp, 2, 2) ;
-					if ( status ) {
-						fprintf (stderr, "Failed to remove an old row.\n");
-					}
-				}
-				
 				{ // optimize
 					//CIO::message(M_INFO, "solving the problem\n") ;
 					INT status = CPXlpopt (env, lp);
@@ -1248,74 +1224,51 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					
 					REAL *x = new REAL[cur_numcols] ;
 					REAL *slack = new REAL[cur_numrows] ;
-					REAL *dj = new REAL[cur_numcols] ;
 					REAL *pi = new REAL[cur_numrows] ;
 					
 					if ( x     == NULL ||
 						 slack == NULL ||
-						 dj    == NULL ||
 						 pi    == NULL   ) {
 						status = CPXERR_NO_MEMORY;
 						fprintf (stderr, "Could not allocate memory for solution.\n");
 					}
 					INT solstat = 0 ;
 					REAL objval = 0 ;
-					status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, dj);
+					status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
 					if ( status ) {
 						fprintf (stderr, "Failed to obtain solution.\n");
 					}
 					
-					if (count%100==0)
-						printf ("Solution value  = %f\n\n", objval);
-					
-					if (num_rows>max_num_rows)
-					{
-						INT * tmp=row_inactive_since ;
-						row_inactive_since = new INT[num_rows] ;
-						memcpy(row_inactive_since,tmp,max_num_rows*sizeof(INT)) ;
-						delete[] tmp ;
-						max_num_rows=num_rows ;
-					}
-						
 					num_active_rows=0 ;
+					REAL max_slack = -CMath::INFTY ;
+					INT max_idx = -1 ;
 					for (INT i = 1; i < cur_numrows; i++)  // skip first
 						if ((pi[i]!=0))
-						{
-							row_inactive_since[i]=-1 ;
 							num_active_rows++ ;
-						}
 						else
 						{
-							if (row_inactive_since[i]==-1)
-								row_inactive_since[i]=count ;
-							if ((row_inactive_since[i]>100) &&
-								(slack[i]>0.1))
+							if (slack[i]>max_slack)
 							{
-								fprintf(stderr,"deleting row %i\n",i) ;
-								CPXdelrows (env, lp, i, i) ;
-								memmove(&row_inactive_since[i],&row_inactive_since[i-1],(cur_numrows-i)*sizeof(INT)) ;
-								num_rows-- ;
+								max_slack=slack[i] ;
+								max_idx=i ;
 							}
 						}
+					
+					// have at most max(100,num_active_rows*2) rows 
+					if ( (num_rows>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
+					{
+						INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
+						if ( status ) {
+							fprintf (stderr, "Failed to remove an old row.\n");
+						}
+					}
 
-					if (0)//(count%100==0)
-						for (INT i = 0; i < cur_numrows; i++) {
-							printf ("Row %d:  Slack = %10f  Pi = %10f\n", i, slack[i], pi[i]);
-						}
-					
-					if (count%100==0)
-						for (INT j = 0; j < cur_numcols; j++) {
-							printf ("Column %d:  Value = %10f  Reduced cost = %10f\n",
-									j, x[j], dj[j]);
-						}
-					
 					w_gap = CMath::abs(1-rho/objective) ;
 					for (INT j = 0; j < cur_numcols-1; j++) 
 						w[j]=x[j] ;
 					rho = -x[num_kernels] ;
 					
 					delete[] x ;
-					delete[] dj ;
 					delete[] slack ;
 					delete[] pi ;
 				}
@@ -1324,21 +1277,27 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 #endif
 			
 			// update lin
+#ifdef HAVE_ATLAS_shit
+// crashes, why?? SSE?
+			ATL_dgemv(AtlasNoTrans, num_kernels, num, 1.0,
+					  W, num_kernels, w, 1, 0.0, lin, 1) ; 
+#else
 			for(int i=0; i<num; i++)
-			{
-				REAL s=0;
-				for (int d=0; d<num_kernels; d++)
-					s+= w[d]*W[i*num_kernels+d] ;
-				lin[i]=s;
-			}
+				lin[i]=0 ;
+
+			for (int d=0; d<num_kernels; d++)
+				if (w[d]!=0)
+					for(int i=0; i<num; i++)
+						lin[i] += w[d]*W[i*num_kernels+d] ;
+#endif
 			
+			// count actives
 			INT jj ;
 			for(jj=0;active2dnum[jj]>=0;jj++);
 
-			//if (count%10==0)
-				CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f (activeset=%i; active rows=%i/%i/%i)\n", count, objective,rho,w_gap,jj,num_active_rows,num_rows,max_num_rows);
+			if (count%10==0)
+				CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows);
 			
-			delete[] W_upd;
 			delete[] sumw;
 		}
 		else
