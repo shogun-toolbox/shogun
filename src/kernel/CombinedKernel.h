@@ -65,6 +65,11 @@ class CCombinedKernel : public CKernel
 			return kernel_list->get_first_element();
 		}
 
+		inline CKernel* get_last_kernel()
+		{
+			return kernel_list->get_last_element();
+		}
+
 		inline CKernel* get_next_kernel(const CKernel* current)
 		{
 			assert(kernel_list->get_current_element()==current) ;

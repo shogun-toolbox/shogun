@@ -1019,6 +1019,11 @@ bool CGUIMatlab::set_custom_kernel(const mxArray* vals[], bool source_is_diag, b
 		const double* km=mxGetPr(mx_kernel);
 
 		CCustomKernel* k=(CCustomKernel*)gui->guikernel.get_kernel();
+		if  (k && k->get_kernel_type() == K_COMBINED)
+		{
+			CIO::message(M_DEBUG, "identified combined kernel\n") ;
+			k = (CCustomKernel*)((CCombinedKernel*)k)->get_last_kernel() ;
+		}
 
 		if (k && k->get_kernel_type() == K_CUSTOM)
 		{
@@ -1030,7 +1035,8 @@ bool CGUIMatlab::set_custom_kernel(const mxArray* vals[], bool source_is_diag, b
 				return k->set_full_kernel_matrix_from_full(km, mxGetM(mx_kernel), mxGetN(mx_kernel));
 			else
 				CIO::message(M_ERROR,"not defined / general error\n");
-		}
+		}  else
+			CIO::message(M_ERROR, "not a custom kernel\n") ;
 	}
 	else
 		CIO::message(M_ERROR,"kernel matrix must by given as double matrix\n");
