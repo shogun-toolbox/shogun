@@ -927,7 +927,7 @@ bool CWeightedDegreePositionCharKernel::set_weights(REAL* ws, INT d, INT len)
 	degree = d ;
 	length=len;
 	
-	if (len == 0)
+	if (len <= 0)
 		len=1;
 	
 	delete[] weights;
