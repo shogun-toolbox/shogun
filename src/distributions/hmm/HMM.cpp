@@ -1471,6 +1471,7 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 		INT* sort_idx=new INT[max_iter*nbest] ;
 		INT i=0 ;
 		
+		//fprintf(stdout, "path_probs = [") ;
 		for (INT iter=0; iter<max_iter-1; iter++)
 			for (INT k=0; k<nbest; k++)
 			{
@@ -1478,8 +1479,12 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 				sort_k[i]=k ;
 				sort_t[i]=iter+1 ;
 				sort_idx[i]=i ;
+				//if (DELTA_END(iter,k)>-1e5)
+				//fprintf(stdout, "%1.3f\n", -DELTA_END(iter,k)) ;
 				i++ ;
 			}
+		//fprintf(stdout, "]\n") ;
+		
 		math.qsort(sort_delta_end, sort_idx, (max_iter-1)*nbest) ;
 		
 		for (INT n=0; n<nbest; n++)
