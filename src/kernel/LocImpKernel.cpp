@@ -4,7 +4,7 @@
 #include "features/ShortFeatures.h"
 
 CLocImpKernel::CLocImpKernel(long size, int width_, int degree1_, int degree2_) 
-  : CKernel(size), width(width_), degree1(degree1_), degree2(degree2_), dim(0)
+  : CShortKernel(size), width(width_), degree1(degree1_), degree2(degree2_), dim(0)
 {
   
 } ;
@@ -13,7 +13,7 @@ CLocImpKernel::~CLocImpKernel()
 {
 }
   
-void CLocImpKernel::init(CFeatures* f)
+void CLocImpKernel::init(CShortFeatures* f)
 {
 
   PYRAL=0 ; 
@@ -60,7 +60,7 @@ void CLocImpKernel::cleanup()
   delete[] stage1 ;
 } ;
 
-REAL CLocImpKernel::compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)
+REAL CLocImpKernel::compute(CShortFeatures* a, long idx_a, CShortFeatures* b, long idx_b)
 {
   long alen, blen;
   bool afree, bfree;
@@ -75,8 +75,8 @@ REAL CLocImpKernel::compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)
   
   dot_pyr(&dpt, avec, bvec, 1, 1) ;
   
-  ((CShortFeatures*) a)->free_feature_vector(avec, afree);
-  ((CShortFeatures*) b)->free_feature_vector(bvec, bfree);
+  ((CShortFeatures*) a)->free_feature_vector(avec, idx_a, afree);
+  ((CShortFeatures*) b)->free_feature_vector(bvec, idx_b, bfree);
 
   return dpt ;
   

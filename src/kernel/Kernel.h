@@ -41,9 +41,9 @@ class CKernel
 		virtual const char* get_name()=0 ;
 
 		void get_kernel_row(long docnum, long *active2dnum, REAL *buffer) ;
-		void   cache_kernel_row(long x);
-		void   cache_multiple_kernel_rows(long* key, long varnum);
-		void   kernel_cache_reset_lru();
+		void cache_kernel_row(long x);
+		void cache_multiple_kernel_rows(long* key, long varnum);
+		void kernel_cache_reset_lru();
 
 		/// set the time used for lru	
 		inline void set_time(long t)

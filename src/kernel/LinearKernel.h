@@ -2,15 +2,16 @@
 #define _LINEARKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/Kernel.h"
+#include "kernel/RealKernel.h"
+#include "features/RealFeatures.h"
 
-class CLinearKernel: public CKernel
+class CLinearKernel: public CRealKernel
 {
  public:
   CLinearKernel(long size, bool rescale) ;
   ~CLinearKernel() ;
   
-  virtual void init(CFeatures* l, CFeatures* r);
+  virtual void init(CRealFeatures* l, CRealFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data

@@ -8,7 +8,7 @@
 #include <assert.h>
 
 CLinearKernel::CLinearKernel(long size, bool rescale_) 
-  : CKernel(size),rescale(rescale_),scale(1.0)
+  : CRealKernel(size),rescale(rescale_),scale(1.0)
 {
 }
 
@@ -16,9 +16,9 @@ CLinearKernel::~CLinearKernel()
 {
 }
   
-void CLinearKernel::init(CFeatures* l, CFeatures* r)
+void CLinearKernel::init(CRealFeatures* l, CRealFeatures* r)
 {
-	CKernel::init(l,r); 
+	CRealKernel::init(l,r); 
 
 	if (rescale)
 		init_rescale() ;

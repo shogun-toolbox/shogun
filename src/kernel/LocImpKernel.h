@@ -2,22 +2,23 @@
 #define _LOCIMPKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/Kernel.h"
+#include "kernel/ShortKernel.h"
+#include "features/ShortFeatures.h"
 
-class CLocImpKernel: public CKernel
+class CLocImpKernel: public CShortKernel
 {
   public:
     CLocImpKernel(long size, int width_, int degree1_, int degree2_) ;
     ~CLocImpKernel() ;
 
-    virtual void init(CFeatures* f);
+    virtual void init(CShortFeatures* f);
     virtual void cleanup();
     
  protected:
     /// compute kernel function for features a and b
     /// idx_{a,b} denote the index of the feature vectors
     /// in the corresponding feature object
-    virtual REAL compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b);
+    virtual REAL compute(CShortFeatures* a, long idx_a, CShortFeatures* b, long idx_b);
     /*    compute_kernel*/
 
     void dot_pyr (double* dpt, const short int* const data1,
