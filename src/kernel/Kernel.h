@@ -129,8 +129,10 @@ class CKernel
 
 		virtual bool set_kernel_parameters(INT num, const double* param) { return false; }
 
-		void set_precompute_matrix(bool flag) { 
+		virtual void set_precompute_matrix(bool flag, bool subkernel_flag) { 
 			precompute_matrix = flag ; 
+			precompute_subkernel_matrix = subkernel_flag ; 
+
 			if (!precompute_matrix)
 			{
 				delete[] precomputed_matrix ;
@@ -200,6 +202,7 @@ class CKernel
 
 		// matrix precomputation
 		bool precompute_matrix ;
+		bool precompute_subkernel_matrix ;
 		REAL * precomputed_matrix ;
 		void do_precompute_matrix() ;
 };

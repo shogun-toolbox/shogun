@@ -104,6 +104,22 @@ class CCombinedKernel : public CKernel
 		virtual const REAL* get_subkernel_weights(INT& num_weights);
 		virtual void set_subkernel_weights(REAL* weights, INT num_weights);
 
+		virtual void set_precompute_matrix(bool flag, bool subkernel_flag) { 
+			precompute_matrix = flag ; 
+			precompute_subkernel_matrix = subkernel_flag ; 
+
+			if (!precompute_matrix)
+			{
+				delete[] precomputed_matrix ;
+				precomputed_matrix = NULL ;
+			}
+			CKernel *kn = get_first_kernel() ;
+			while (kn)
+			{
+				kn->set_precompute_matrix(subkernel_flag,false) ;
+				kn = get_next_kernel() ;
+			}
+		} ;
 	protected:
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors

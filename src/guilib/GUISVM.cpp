@@ -17,11 +17,15 @@
 CGUISVM::CGUISVM(CGUI * gui_)
   : gui(gui_)
 {
-	use_mkl = true;
 	svm=NULL;
 	C1=-1;
 	C2=-1;
 	weight_epsilon=-1;
+
+    // MKL stuff
+	use_mkl = false ;
+	use_precompute = false ;
+	use_precompute_subkernel = false ;
 }
 
 CGUISVM::~CGUISVM()
@@ -122,11 +126,11 @@ bool CGUISVM::train(CHAR* param)
 	svm->set_linadd_enabled(use_linadd);
 	((CKernelMachine*) svm)->set_labels(trainlabels);
 	((CKernelMachine*) svm)->set_kernel(kernel);
-	kernel->set_precompute_matrix(use_precompute);
+	kernel->set_precompute_matrix(use_precompute, use_precompute_subkernel);
 	
 	bool result = svm->train();
 
-	kernel->set_precompute_matrix(false);
+	kernel->set_precompute_matrix(false,false);
 	return result ;	
 }
 
@@ -202,7 +206,7 @@ bool CGUISVM::test(CHAR* param)
 	CIO::message(M_INFO, "starting svm testing\n") ;
 	((CKernelMachine*) svm)->set_labels(testlabels);
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
-	gui->guikernel.get_kernel()->set_precompute_matrix(false);
+	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
 
 	if ( (gui->guikernel.get_kernel()->is_optimizable()) && (gui->guikernel.get_kernel()->get_is_initialized()))
 		CIO::message(M_DEBUG, "using kernel optimization\n");
@@ -366,11 +370,17 @@ bool CGUISVM::set_precompute_enabled(CHAR* param)
 	sscanf(param, "%d", &precompute) ;
 
 	use_precompute = (precompute==1);
+	use_precompute_subkernel = (precompute==2);
 
 	if (use_precompute)
 		CIO::message(M_INFO, "Enabling Kernel Matrix Precomputation\n") ;
 	else
 		CIO::message(M_INFO, "Disabling Kernel Matrix Precomputation\n") ;
+
+	if (use_precompute_subkernel)
+		CIO::message(M_INFO, "Enabling Subkernel Matrix Precomputation\n") ;
+	else
+		CIO::message(M_INFO, "Disabling Subkernel Matrix Precomputation\n") ;
 
 	return true ;  
 }
@@ -396,7 +406,7 @@ CLabels* CGUISVM::classify(CLabels* output)
 {
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
-	gui->guikernel.get_kernel()->set_precompute_matrix(false);
+	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
 
 	if (!svm)
 	{
@@ -434,7 +444,7 @@ bool CGUISVM::classify_example(INT idx, REAL &result)
 {
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
-	gui->guikernel.get_kernel()->set_precompute_matrix(false);
+	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
 
 	if (!svm)
 	{

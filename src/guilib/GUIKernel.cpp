@@ -146,7 +146,7 @@ bool CGUIKernel::save_kernel_init(CHAR* param)
 
 bool CGUIKernel::init_kernel_optimization(CHAR* param)
 {
-	kernel->set_precompute_matrix(false);
+	kernel->set_precompute_matrix(false, false);
 
 	if (gui->guisvm.get_svm()!=NULL)
 	{
@@ -216,7 +216,7 @@ bool CGUIKernel::init_kernel(CHAR* param)
 	    return false ;
 	  } ;
 
-	kernel->set_precompute_matrix(false);
+	kernel->set_precompute_matrix(false, false);
 
 	if ((sscanf(param, "%s", target))==1)
 	{

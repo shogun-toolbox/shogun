@@ -1112,26 +1112,43 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 	INT num_weights = -1;
 	INT num_kernels = k->get_num_subkernels() ;
 	const REAL* w   = k->get_subkernel_weights(num_weights);
-	
+
 	assert(num_weights==num_kernels) ;
 	REAL* sumw = new REAL[num_kernels];
 	{
 		CKernel* kn = k->get_first_kernel() ;
-		INT n = 0, jj, i, j, ii ;
+		INT n = 0, i, j ;
+		/*INT jj, ii ;
 		REAL tec ;
+		LONG *all2dnum = new LONG[num+1] ;
+		for (i=0; i<num; i++)
+			all2dnum[i]=i ;
+			all2dnum[num]=-1 ;*/
+		
 		while (kn!=NULL)
 		{
-			for(jj=0;(i=working2dnum[jj])>=0;jj++) 
+			for(i=0;i<num;i++) 
+			{
 				if(a[i] != a_old[i]) 
 				{
-					CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
-					for(ii=0;(j=active2dnum[ii])>=0;ii++) {
-						tec=aicache[j];
-						W[j*num_kernels+n]+=(((a[i]*tec)-(a_old[i]*tec))*(double)label[i]);
-					}
+					for(j=0;j<num;j++) 
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*kn->kernel(i,j)*(double)label[i];
 				}
+			}
+            /* // somehow this does not work :-(
+			   for(jj=0;(i=all2dnum[jj])>=0;jj++) 
+			   if(a[i] != a_old[i]) 
+			   {
+			   CKernelMachine::get_kernel()->get_kernel_row(i,all2dnum,aicache);
+			   for(ii=0;(j=all2dnum[ii])>=0;ii++) {
+			   tec=aicache[j];
+			   W[j*num_kernels+n]+=(((a[i]*tec)-(a_old[i]*tec))*(double)label[i]);
+			   }
+			   }*/
 			kn = k->get_next_kernel() ;
+			n++ ;
 		}
+		//delete[] all2dnum ;
 	}
 	REAL objective=0;
 #ifdef HAVE_ATLAS
@@ -1165,10 +1182,10 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 #ifdef USE_CPLEX			
 	w_gap = CMath::abs(1-rho/objective) ;
 
-	if ((w_gap >= 0.9999*get_weight_epsilon()))// && (mymaxdiff < prev_mymaxdiff/2.0))
+	if ((w_gap >= 0.9999*get_weight_epsilon()))
 	{
 		CIO::message(M_INFO, "*") ;
-		if (rho==0)
+		if (count == 1)
 		{
 			CIO::message(M_INFO, "creating LP\n") ;
 			

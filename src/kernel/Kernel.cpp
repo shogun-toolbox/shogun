@@ -7,7 +7,11 @@
 #include <string.h>
 #include <assert.h>
 
-CKernel::CKernel(KERNELCACHE_IDX size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1), optimization_initialized(false), properties(KP_NONE), precompute_matrix(false), precomputed_matrix(NULL)
+CKernel::CKernel(KERNELCACHE_IDX size) 
+: kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1), 
+  optimization_initialized(false), properties(KP_NONE), 
+  precompute_matrix(false), precompute_subkernel_matrix(false),
+  precomputed_matrix(NULL)
 {
 	if (size<10)
 		size=10;
@@ -560,13 +564,13 @@ void CKernel::do_precompute_matrix()
 
 	for (INT i=0; i<num; i++)
 	{
-		if (i%10==0)
-			CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
+		CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
 		for (INT j=0; j<=i; j++)
 		{
 			precomputed_matrix[i*num+j] = compute(i,j) ;
 			precomputed_matrix[j*num+i] = precomputed_matrix[i*num+j] ;
 		}
 	}
+	CIO::message(M_INFO, "\r %1.2f%% ", 100.0) ;
 	CIO::message(M_INFO, "done.\n") ;
 }
