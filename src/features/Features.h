@@ -25,9 +25,7 @@ class CFeatures
 		@param len length is returned by reference
 	*/
 	REAL* get_feature_vector(int num, int& len, bool& free);
-
-
-	bool free_feature_vector(bool free);
+	bool free_feature_vector(void* feat_vec, bool free);
 	
 	/// get the pointer to the feature matrix
 	/// num_feat,num_vectors are returned by reference

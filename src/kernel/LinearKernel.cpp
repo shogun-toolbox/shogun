@@ -26,6 +26,16 @@ void CLinearKernel::cleanup()
   
 REAL CLinearKernel::compute(CFeatures* a, int idx_a, CFeatures* b, int idx_b)
 {
-  
+  int alen, blen, afree, bfree ;
+  REAL* avec=a->get_feature_vector(idx_a, alen, afree);
+  REAL* avec=b->get_feature_vector(idx_b, blen, bfree);
+  assert(alen==blen) ;
+
+  REAL result=ddot_(alen, avec, 1, bvec, 1) ;
+  a->free_feature_vector(avec, afree);
+  b->free_feature_vector(bvec, bfree);
+
+  return result ;
+
 }
 
