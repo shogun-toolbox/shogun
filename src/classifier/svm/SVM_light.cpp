@@ -246,7 +246,7 @@ bool CSVMLight::train()
 						 (get_linadd_enabled() && get_kernel()->has_property(KP_LINADD)) ||
 						 (get_mkl_enabled() && get_kernel()->has_property(KP_KERNCOMBINATION))||
 						 get_kernel()->get_precompute_matrix() || 
-						 get_kernel()->get_precompute_subkernel_matrix()||true) ;
+						 get_kernel()->get_precompute_subkernel_matrix()) ;
 
 	CIO::message(M_DEBUG, "get_kernel()->get_precompute_matrix() = %i\n", get_kernel()->get_precompute_matrix()) ;
 	CIO::message(M_DEBUG, "get_kernel()->get_precompute_subkernel_matrix() = %i\n", get_kernel()->get_precompute_subkernel_matrix()) ;
