@@ -65,12 +65,12 @@ class CHMM : private CDistribution
 {
     private:
 
-  INT trans_list_len ;
-  INT **trans_list_forward  ;
-  INT *trans_list_forward_cnt  ;
+  T_STATES trans_list_len ;
+  T_STATES **trans_list_forward  ;
+  T_STATES *trans_list_forward_cnt  ;
   REAL **trans_list_forward_val ;
-  INT **trans_list_backward  ;
-  INT *trans_list_backward_cnt  ;
+  T_STATES **trans_list_backward  ;
+  T_STATES *trans_list_backward_cnt  ;
   bool mem_initialized ;
 
 #ifdef PARALLEL_STRUCTURES
@@ -554,7 +554,7 @@ public:
 	 */
 	REAL best_path(INT dimension);
 	REAL best_path_no_b(INT max_iter, INT & best_iter, INT *my_path) ;
-	void best_path_no_b_trans(INT max_iter, INT & max_best_iter, INT nbest, REAL *prob_nbest, INT *my_paths) ;
+	void best_path_no_b_trans(INT max_iter, INT & max_best_iter, short int nbest, REAL *prob_nbest, INT *my_paths) ;
 	//void best_path_no_b_trans1(INT max_iter, INT & max_best_iter, REAL *prob_nbest, INT *my_paths) ;
 	void model_prob_no_b_trans(INT max_iter, REAL *prob_iter) ;
 	

@@ -263,11 +263,9 @@ CHMM::CHMM(INT N, double *p, double*q, int num_trans, double* a_trans)
 
 	trans_list_forward_cnt=NULL ;
 	trans_list_len = N ;
-	trans_list_forward = new INT*[N] ;
+	trans_list_forward = new T_STATES*[N] ;
 	trans_list_forward_val = new REAL*[N] ;
-	trans_list_forward_cnt = new INT[N] ;
-	
-	//INT num_forward_transitions = 0 ;
+	trans_list_forward_cnt = new T_STATES[N] ;
 	
 	INT start_idx=0;
 	for (INT j=0; j<N; j++)
@@ -292,7 +290,7 @@ CHMM::CHMM(INT N, double *p, double*q, int num_trans, double* a_trans)
 		
 		if (len>0)
 		{
-			trans_list_forward[j]     = new INT[len] ;
+			trans_list_forward[j]     = new T_STATES[len] ;
 			trans_list_forward_val[j] = new REAL[len] ;
 		}
 		else
@@ -307,7 +305,7 @@ CHMM::CHMM(INT N, double *p, double*q, int num_trans, double* a_trans)
 		INT from = (INT)a_trans[i+num_trans] ;
 		INT to   = (INT)a_trans[i] ;
 		REAL val = a_trans[i+num_trans*2] ;
-		//fprintf(stderr,"from=%i to=%i val=%1.3e\n", from, to, val) ;
+		//fprintf(stderr,"from=%i to=%i val=%1.3e %i\n", from, to, val, N) ;
 		
 		assert(from>=0 && from<N) ;
 		assert(to>=0 && to<N) ;
@@ -1313,7 +1311,7 @@ REAL CHMM::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 	return best_iter_prob ;
 }
 
-void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REAL *prob_nbest, INT *my_paths)
+void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int nbest, REAL *prob_nbest, INT *my_paths)
 {
 /*	if (nbest==1)
 	{
@@ -1332,22 +1330,31 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 #define PATH_ENDS(t,k) path_ends[(t)*nbest+k]
 
 	T_STATES *psi=new T_STATES[max_iter*N*nbest] ;
-	INT *ktable=new INT[max_iter*N*nbest] ;
-	INT *ktable_ends=new INT[max_iter*nbest] ;
+	assert(psi!=NULL) ;
+	short int *ktable=new short int[max_iter*N*nbest] ;
+	assert(ktable!=NULL) ;
+	short int *ktable_ends=new short int[max_iter*nbest] ;
+	assert(ktable_ends!=NULL) ;
 
 	REAL* tempvv=new REAL[nbest*N] ;
+	assert(tempvv!=NULL) ;
 	INT* tempii=new INT[nbest*N] ;
+	assert(tempii!=NULL) ;
 
-	INT* path_ends = new INT[max_iter*nbest] ;
+	T_STATES* path_ends = new T_STATES[max_iter*nbest] ;
+	assert(path_ends!=NULL) ;
 	REAL* delta= new REAL[N*nbest] ;
+	assert(delta!=NULL) ;
 	REAL* delta_new= new REAL[N*nbest] ;
+	assert(delta_new!=NULL) ;
 	REAL* delta_end= new REAL[max_iter*nbest] ;
+	assert(delta_end!=NULL) ;
 
 	{ // initialization
-		for (INT i=0; i<N; i++)
+		for (T_STATES i=0; i<N; i++)
 		{
 			DELTA(i,0) = get_p(i) ;
-			for (INT k=1; k<nbest; k++)
+			for (short int k=1; k<nbest; k++)
 			{
 				DELTA(i,k)=-math.INFTY ;
 				KTAB(0,i,k)=0 ;
@@ -1360,18 +1367,18 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 	{
 		REAL* dummy;
 
-		for (INT j=0; j<N; j++)
+		for (T_STATES j=0; j<N; j++)
 		{
-			const INT num_elem   = trans_list_forward_cnt[j] ;
-			const INT *elem_list = trans_list_forward[j] ;
+			const T_STATES num_elem   = trans_list_forward_cnt[j] ;
+			const T_STATES *elem_list = trans_list_forward[j] ;
 			const REAL *elem_val = trans_list_forward_val[j] ;
 			
 			INT list_len=0 ;
-			for (INT diff=0; diff<nbest; diff++)
+			for (short int diff=0; diff<nbest; diff++)
 			{
 				for (INT i=0; i<num_elem; i++)
 				{
-					INT ii = elem_list[i] ;
+					T_STATES ii = elem_list[i] ;
 					
 					tempvv[list_len] = -(DELTA(ii,diff) + elem_val[i]) ;
 					tempii[list_len] = diff*N + ii ;
@@ -1380,7 +1387,7 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 			}
 			math.qsort(tempvv, tempii, list_len) ;
 			
-			for (INT k=0; k<nbest; k++)
+			for (short int k=0; k<nbest; k++)
 			{
 				if (k<list_len)
 				{
@@ -1403,9 +1410,9 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 		
 		{ //termination
 			INT list_len = 0 ;
-			for (INT diff=0; diff<nbest; diff++)
+			for (short int diff=0; diff<nbest; diff++)
 			{
-				for (INT i=0; i<N; i++)
+				for (T_STATES i=0; i<N; i++)
 				{
 					tempvv[list_len] = -(DELTA(i,diff)+get_q(i));
 					tempii[list_len] = diff*N + i ;
@@ -1414,7 +1421,7 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 			}
 			math.qsort(tempvv, tempii, list_len) ;
 			
-			for (INT k=0; k<nbest; k++)
+			for (short int k=0; k<nbest; k++)
 			{
 				DELTA_END(t-1,k) = -tempvv[k] ;
 				PATH_ENDS(t-1,k) = (tempii[k]%N) ;
@@ -1427,13 +1434,17 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 		max_best_iter=0 ;
 		
 		REAL* sort_delta_end=new REAL[max_iter*nbest] ;
-		INT* sort_k=new INT[max_iter*nbest] ;
+		assert(sort_delta_end!=NULL) ;
+		short int* sort_k=new short int[max_iter*nbest] ;
+		assert(sort_k!=NULL) ;
 		INT* sort_t=new INT[max_iter*nbest] ;
+		assert(sort_t!=NULL) ;
 		INT* sort_idx=new INT[max_iter*nbest] ;
+		assert(sort_idx!=NULL) ;
 		
 		INT i=0 ;
 		for (INT iter=0; iter<max_iter-1; iter++)
-			for (INT k=0; k<nbest; k++)
+			for (short int k=0; k<nbest; k++)
 			{
 				sort_delta_end[i]=-DELTA_END(iter,k) ;
 				sort_k[i]=k ;
@@ -1444,12 +1455,10 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 		
 		math.qsort(sort_delta_end, sort_idx, (max_iter-1)*nbest) ;
 
-		//for (INT j=0; j<i; j++)
-		//fprintf(stdout, "%1.2f  %i %i\n", sort_delta_end[j], sort_k[sort_idx[j]], sort_t[sort_idx[j]]) ;
-		
-		for (INT n=0; n<nbest; n++)
+		for (short int n=0; n<nbest; n++)
 		{
-			INT k=sort_k[sort_idx[n]], iter=sort_t[sort_idx[n]] ;
+			short int k=sort_k[sort_idx[n]] ;
+			INT iter=sort_t[sort_idx[n]] ;
 			prob_nbest[n]=-sort_delta_end[n] ;
 
 			if (iter>max_best_iter)
@@ -1459,17 +1468,12 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 			assert(iter<max_iter) ;
 			
 			PATHS(iter,n) = PATH_ENDS(iter-1, k) ;
-			INT q         = KTAB_ENDS(iter-1, k) ;
+			short int q   = KTAB_ENDS(iter-1, k) ;
 			
 			for (INT t = iter; t>0; t--)
 			{
 				PATHS(t-1,n)=PSI(t, PATHS(t,n), q);
 				q = KTAB(t, PATHS(t,n), q) ;
-
-				//assert(q>=0) ;
-				//assert(q<nbest) ;
-				//assert(PATHS(t-1,n)>=0) ;
-				//assert(PATHS(t-1,n)<N) ;
 			}
 		}
 		delete[] sort_delta_end ;
@@ -1478,14 +1482,16 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 		delete[] sort_idx ;
 	}
 
-	delete[] delta ;
-	delete[] delta_new ;
-	delete[] tempvv ;
-	delete[] tempii ;
 	delete[] psi ;
 	delete[] ktable;
 	delete[] ktable_ends;
+
+	delete[] tempvv ;
+	delete[] tempii ;
+
 	delete[] path_ends ;
+	delete[] delta ;
+	delete[] delta_new ;
 	delete[] delta_end ;
 }
 
@@ -1610,8 +1616,8 @@ void CHMM::model_prob_no_b_trans(INT max_iter, REAL *prob_iter)
 	{
 		for (INT j=0; j<N; j++)
 		{
-			const INT num_elem   = trans_list_forward_cnt[j] ;
-			const INT *elem_list = trans_list_forward[j] ;
+			const T_STATES num_elem   = trans_list_forward_cnt[j] ;
+			const T_STATES *elem_list = trans_list_forward[j] ;
 			const REAL *elem_val = trans_list_forward_val[j] ;
 
 			delta_new[j] = math.ALMOST_NEG_INFTY ;
@@ -3407,15 +3413,15 @@ void CHMM::invalidate_model()
 	    } ;
 
 	  trans_list_len = N ;
-	  trans_list_forward = new INT*[N] ;
-	  trans_list_forward_cnt = new INT[N] ;
+	  trans_list_forward = new T_STATES*[N] ;
+	  trans_list_forward_cnt = new T_STATES[N] ;
 
 	  //INT num_forward_transitions = 0 ;
 
 	  for (INT j=0; j<N; j++)
 	    {
 	      trans_list_forward_cnt[j]= 0 ;
-	      trans_list_forward[j]= new INT[N] ;
+	      trans_list_forward[j]= new T_STATES[N] ;
 	      for (INT i=0; i<N; i++)
 		if (get_a(i,j)>math.ALMOST_NEG_INFTY)
 		  {
@@ -3425,14 +3431,14 @@ void CHMM::invalidate_model()
 		  } 
 	    } ;
 	  
-	  trans_list_backward = new INT*[N] ;
-	  trans_list_backward_cnt = new INT[N] ;
+	  trans_list_backward = new T_STATES*[N] ;
+	  trans_list_backward_cnt = new T_STATES[N] ;
 	  
 	  //INT num_backward_transitions = 0 ;
 	  for (INT i=0; i<N; i++)
 	    {
 	      trans_list_backward_cnt[i]= 0 ;
-	      trans_list_backward[i]= new INT[N] ;
+	      trans_list_backward[i]= new T_STATES[N] ;
 	      for (INT j=0; j<N; j++)
 		if (get_a(i,j)>math.ALMOST_NEG_INFTY)
 		  {
