@@ -239,6 +239,9 @@ typedef struct shrink_state {
   double model_b;
   double opt_precision;
   REAL* W;
+  REAL rho ;
+  REAL *rhos ;
+  REAL sumabsgammas ;
 };
 
 #endif

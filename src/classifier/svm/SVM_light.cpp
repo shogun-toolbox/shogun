@@ -24,6 +24,8 @@ CSVMLight::CSVMLight()
 	init_iter=500;
 	precision_violations=0;
 	opt_precision=DEF_PRECISION_LINEAR;
+
+	rho=0 ;
 }
 
 CSVMLight::~CSVMLight()
@@ -114,11 +116,16 @@ void CSVMLight::svm_learn()
 	LONG* docs=new long[totdoc];
 	delete[] W;
 	W=NULL;
+	rho=0 ;
+	sumabsgammas=0 ;
 
 	if (get_kernel()->has_property(KP_KERNCOMBINATION))
 	{
 		W = new REAL[totdoc*get_kernel()->get_num_subkernels()];
+		rhos=new REAL[get_kernel()->get_num_subkernels()] ;
 
+		for (i=0; i<get_kernel()->get_num_subkernels(); i++)
+			rhos[i]=0 ;
 		for (i=0; i<totdoc*get_kernel()->get_num_subkernels(); i++)
 			W[i]=0;
 	}
@@ -1025,12 +1032,26 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				objective+=w[d]*sumw[d];
 				meanabssumw+=CMath::abs(sumw[d]);
 			}
-
+			if (rho==0)
+			{
+				REAL maxsumw = sumw[0] ;
+				for (int d=0; d<degree; d++)
+					if (sumw[d]>maxsumw)
+						maxsumw=sumw[d] ;
+				rho=1.1*maxsumw ;
+			}
+			
 			meanabssumw/=degree;
 			bound = 1.0 / meanabssumw;
+			REAL gamma=50*bound; //fixme
 
-			REAL gamma=0.05*bound; //fixme
-
+			rho=CMath::INFTY ;
+			sumabsgammas = sumabsgammas + CMath::abs(gamma) ;
+			for (INT d=0; d<degree; d++)
+			{
+				rhos[d]       = rhos[d] + gamma*(-sumw[d]) ;
+				rho = -CMath::min(rho,rhos[d]/sumabsgammas) ;
+			}
 
 			// update w
 			REAL s=0;
@@ -1055,7 +1076,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				lin[i]=s;
 			}
 
-			CIO::message(M_DEBUG,"gamma: %f OBJ: %f\n", gamma, objective);
+			CIO::message(M_DEBUG,"gamma: %f OBJ: %f RHO: %f\n", gamma, objective,rho);
 
 			delete[] W_upd;
 			delete[] sumw;
