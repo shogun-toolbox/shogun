@@ -79,6 +79,8 @@ public:
 
 	virtual bool load(CHAR* fname);
 	virtual bool save(CHAR* fname);
+
+	static bool check_feature_compatibility(CFeatures* f1, CFeatures* f2);
 	
 private:
 	/// size of cache in MB

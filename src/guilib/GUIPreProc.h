@@ -26,7 +26,6 @@ class CGUIPreProc
 		bool attach_preproc(CHAR* param);
 
 	protected:
-		bool attach_to_features(CFeatures* trainfeat, CFeatures* testfeat, bool force);
 		bool preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force);
 		bool preproc_all_features(CFeatures* f, bool force);
 

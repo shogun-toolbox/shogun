@@ -17,6 +17,7 @@ EXT_OBJ_C=c.o
 #the defaults are
 _readline=yes
 _matlab=no
+_octave=no
 _svm_mpi=no
 _cplex=no
 _logcache=no
@@ -223,7 +224,8 @@ Installation directories:
   --libdir=DIR           use this prefix for object code libraries [PREFIX/lib]
 
 Optional features:
-  --enable-matlab        enable matlab (genefiner can be called from within matlab) support [disable]
+  --enable-matlab        enable matlab (genefiner can be called from within matlab) support [disabled]
+  --enable-octave        enable octave (genefiner can be called from within octave) support [disabled]
   --enable-svmmpi    	 enable multiprocessor svm support [disabled]
   --enable-svmcplex    	 enable code using CPLEX  [disabled]
   --enable-logcache      enable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
@@ -290,6 +292,8 @@ for ac_option do
     ;;
   --disable-matlab)		_matlab=no	;;
   --enable-matlab)		_matlab=yes	;;
+  --disable-octave)		_octave=no	;;
+  --enable-octave)		_octave=yes	;;
   --disable-svmmpi)		_svmmpi=no	;;
   --enable-svmmpi)		_svmmpi=yes	;;
   --disable-readline)		_readline=no	;;
@@ -1104,6 +1108,15 @@ set_opts()
 		fi
 	fi
 
+	if test "$_octave" = yes
+	then
+		LINKFLAGS="-shared -L/usr/lib/octave-2.1.57 -loctinterp -loctave -lcruft -s /usr/lib/liblapack-3.so /usr/lib/libblas-3.so -lfftw3 -lreadline -lncurses -ldl -lhdf5 -lz -lm -L/usr/lib/gcc-lib/powerpc-linux/3.3.4 -L/usr/lib/gcc-lib/powerpc-linux/3.3.4/../../.. -lhdf5 -lz -lfrtbegin -lg2c -lm -lgcc_s $LINKFLAGS"
+		TARGET="gf.oct"
+		INCLUDES="$INCLUDES -I/usr/include/octave-2.1.57 -I/usr/include/octave-2.1.57/octave"
+		COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC"
+		COMPFLAGS_C="$COMPFLAGS_C -fPIC"
+	fi
+
 	if test "$_profile" = yes
 	then
 		COMPFLAGS_CPP="$COMPFLAGS_CPP -g -p"
@@ -1118,6 +1131,11 @@ set_opts()
 	if test "$_matlab" = yes
 	then
 		HAVE_MATLAB='#define HAVE_MATLAB 1'
+	fi
+
+	if test "$_octave" = yes
+	then
+		HAVE_MATLAB='#define HAVE_OCTAVE 1'
 	fi
 
 	if test "$_cplex" = yes

@@ -166,3 +166,13 @@ bool CFeatures::save(CHAR* fname)
 {
 	return false;
 }
+
+static bool CFeatures::check_feature_compatibility(CFeatures* f1, CFeatures* f2)
+{
+	bool result=false;
+
+	if (f1 && f2)
+		result= ( (f1->get_feature_class() == f2->get_feature_class()) &&
+				(f1->get_feature_type() == f2->get_feature_type()));
+	return result;
+}

@@ -220,16 +220,38 @@ bool CGUIPreProc::attach_preproc(CHAR* param)
 			}
 			else if (strcmp(target,"TEST")==0)
 			{
-				CFeatures* fe = gui->guifeatures.get_test_features();
-				CFeatures* f  = gui->guifeatures.get_train_features();
+				CFeatures* f_test = gui->guifeatures.get_test_features();
+				CFeatures* f_train  = gui->guifeatures.get_train_features();
 
-				if ((f->get_feature_class()==C_COMBINED) && 
-					(fe->get_feature_class()==C_COMBINED))
-					((CCombinedFeatures*)fe)->get_last_feature_pair(fe,f);
-				
-				preprocess_features(f, fe, force==1);
-				gui->guifeatures.invalidate_test();
-				result=true;
+				if (f_train->get_feature_class() == f_test->get_feature_class())
+				{
+					if (f_train->get_feature_class() == C_COMBINED)
+					{
+						if (f_train->check_feature_obj_compatibility(f_test))
+						{
+							CFeatures* tr_feat ((CCombinedFeatures*) f_train)->get_first_feature_obj();
+							CFeatures* te_feat ((CCombinedFeatures*) f_test)->get_first_feature_obj();
+							if (tr_feat && te_feat)
+								preproc_features(tr_feat, te_feat, force);
+
+							while ( ((tr_feat = ((CCombinedFeatures*) train_feat)->get_next_feature_obj()) != NULL) &&
+									((te_feat = ((CCombinedFeatures*) test_feat)->get_next_feature_obj()) != NULL))
+								preproc_features(tr_feat, te_feat, force);
+
+							result=true;
+						}
+						else
+							CIO::message(M_ERROR, "combined features not compatible\n");
+					}
+					else
+					{
+						preprocess_features(f_train, f_test, force==1);
+						gui->guifeatures.invalidate_test();
+						result=true;
+					}
+				}
+				else
+					CIO::message(M_ERROR, "features not compatible\n");
 			}
 			else
 				CIO::message(M_ERROR, "see help for parameters\n");
@@ -260,7 +282,6 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 		{
 			for (INT i=0; i<trainfeat->get_num_preproc();  i++)
 			{
-				///PROBLEM
 				CPreProc* preproc = trainfeat->get_preproc(i);
 				preproc->init(trainfeat);
 				testfeat->add_preproc(trainfeat->get_preproc(i));
@@ -334,6 +355,17 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 				default:
 					CIO::not_implemented();
 			};
+			break;
+		case C_COMBINED:
+			CFeatures* feat ((CCombinedFeatures*) f)->get_first_feature_obj();
+
+			if (feat)
+				preproc_all_features(feat, force);
+
+			while ( (feat = ((CCombinedFeatures*) f)->get_next_feature_obj()) != NULL)
+			{
+				preproc_all_features(feat, force);
+			}
 			break;
 		default:
 			CIO::not_implemented();

@@ -46,6 +46,7 @@ public:
 	}
 
 	void list_feature_objs();
+	bool check_feature_obj_compatibility(CCombinedFeatures* comb_feat);
 
 	inline CFeatures* get_first_feature_obj()
 	{
@@ -60,25 +61,6 @@ public:
 	inline CFeatures* get_last_feature_obj()
 	{
 		return feature_list->get_last_element();
-	}
-
-	inline void get_last_feature_pair(CFeatures* &test, CFeatures* &train)
-	{
-		CFeatures * ntrain = ((CCombinedFeatures*)train) -> feature_list->get_first_element();
-		CFeatures * ntest  = ((CCombinedFeatures*)test)  -> feature_list->get_first_element();
-		CFeatures * ntrain2 = ntrain ;
-		CFeatures * ntest2 = ntest ;
-		
-		while ((ntest!=NULL) && (ntrain!=NULL))
-		{
-			ntrain2 = ntrain ;
-			ntest2 = ntest ;
-			ntrain = ((CCombinedFeatures*)train) -> feature_list->get_next_element();
-			ntest  = ((CCombinedFeatures*)test)  -> feature_list->get_next_element();
-		}
-		
-		test=ntest2 ;
-		train=ntrain2 ;
 	}
 
 	inline bool insert_feature_obj(CFeatures* obj)
