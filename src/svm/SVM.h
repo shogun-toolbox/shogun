@@ -14,7 +14,7 @@ public:
     CSVM();
     ~CSVM();
 
-    bool svm_train(char* svm, CObservation* train, int kernel_type);
+    bool svm_train(char* svm, CObservation* train, int kernel_type, double C);
     bool svm_test(CObservation* test, FILE* output);
     bool load_svm(FILE* svm_file, CObservation* test);
 

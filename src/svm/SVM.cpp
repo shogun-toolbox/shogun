@@ -14,7 +14,7 @@ CSVM::~CSVM()
 {
 }
 
-bool CSVM::svm_train(char* svm, CObservation* train, int kernel_type)
+bool CSVM::svm_train(char* svm, CObservation* train, int kernel_type, double C)
 {
 	int totdoc=train->get_DIMENSION();
 
@@ -44,7 +44,7 @@ bool CSVM::svm_train(char* svm, CObservation* train, int kernel_type)
 	learn_parm.svm_maxqpsize=8;
 	learn_parm.svm_newvarsinqp=0;
 	learn_parm.svm_iter_to_shrink=100;
-	learn_parm.svm_c=1;
+	learn_parm.svm_c=C;
 	learn_parm.transduction_posratio=0.5;
 	learn_parm.svm_costratio=1.0;
 	learn_parm.svm_costratio_unlab=1.0;

@@ -46,12 +46,13 @@ static const char* N_SAVE_MODEL_DERIVATIVES_BIN=        "save_bw_deriv_bin";
 static const char* N_SAVE_LIKELIHOOD=                   "save_likelihood";
 static const char* N_SAVE_LIKELIHOOD_BIN=               "save_likelihood_bin";
 static const char* N_LOAD_OBSERVATIONS=		        "load_obs";
-static const char* N_ASSIGN_OBSERVATION=	"assign_obs";
+static const char* N_ASSIGN_OBSERVATION=		"assign_obs";
 static const char* N_NEW=				"new";
 static const char* N_CLEAR=				"clear";
 static const char* N_CHOP=				"chop";
 static const char* N_CONVERGENCE_CRITERIA=	        "convergence_criteria";
 static const char* N_PSEUDO=				"pseudo";
+static const char* N_C=					"c";
 static const char* N_BAUM_WELCH_TRAIN=		        "bw";
 static const char* N_BAUM_WELCH_TRAIN_DEFINED=		"bw_def";
 static const char* N_LIKELIHOOD=			"likelihood";
@@ -91,6 +92,7 @@ double EPSILON    = 1e-6;
 double PSEUDO     = 1e-3 ;
 int ORDER=1;
 int M=4;
+double C=1.0; //SVM C
 
 CHMM* lambda=NULL;
 CHMM* lambda_train=NULL;	//model and training model
@@ -234,6 +236,7 @@ static void help()
     printf("%s\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
     printf("%s <negtest> <postest> [<width> <upto>]\t- calculate svm output from obs using linear model\n",N_LINEAR_HMM_TEST);
     printf("\n[Hybrid HMM-<TOP-Kernel>-SVM]\n");
+    printf("%s [c-value]\t\t\t- changes svm_c value\n", N_C);
     printf("%s <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
     printf("%s <srcsvm> <output>\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
     printf("%s <dstsvm> \t\t- obtains svm from pos/neg linear models\n",N_LINEAR_SVM_TRAIN);
@@ -1431,7 +1434,7 @@ static bool prompt(FILE* infile=stdin)
 		    neg->set_observations(obs);
 
 		    theta=new double[pos->get_N()*(pos->get_N()+2)+pos->get_N()*pos->get_M() + neg->get_N()*(neg->get_N()+2)+neg->get_N()*neg->get_M()];
-		    svm.svm_train(name,obs, 4);
+		    svm.svm_train(name,obs, 4, C);
 		    delete theta;
 		    theta=NULL;
 
@@ -1469,7 +1472,7 @@ static bool prompt(FILE* infile=stdin)
 		    neg->set_observation_nocache(obs);
 
 		    theta=new double[pos->get_N()*pos->get_M() + neg->get_N()*neg->get_M()];
-		    svm.svm_train(name,obs, 5);
+		    svm.svm_train(name,obs, 5, C);
 		    delete theta;
 		    theta=NULL;
 
@@ -1739,6 +1742,17 @@ static bool prompt(FILE* infile=stdin)
 	//}
 	//else
 	//    printf("see help for parameters\n");
+    } 
+    else if (!strncmp(input, N_C, strlen(N_C)))
+    {
+	double new_C;
+	for (i=strlen(N_C); isspace(input[i]); i++);
+	if (sscanf(&input[i], "%le", &new_C) == 1)
+	{
+	    C=new_C;
+	}
+	else
+		printf("current setting: C=%e\n", C);
     } 
     else
 	printf("unrecognized command. type help for options\n");

@@ -100,7 +100,11 @@ svm/SVM.o: /usr/include/bits/types.h /usr/include/libio.h
 svm/SVM.o: /usr/include/_G_config.h /usr/include/wchar.h
 svm/SVM.o: /usr/include/bits/wchar.h /usr/include/gconv.h
 svm/SVM.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h lib/common.h
-svm/SVM.o: lib/Observation.h
+svm/SVM.o: lib/Observation.h svm/svm_common.h /usr/include/ctype.h
+svm/SVM.o: /usr/include/endian.h /usr/include/bits/endian.h
+svm/SVM.o: /usr/include/string.h /usr/include/stdlib.h /usr/include/time.h
+svm/SVM.o: /usr/include/bits/time.h
+svm/SVM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
 svm/kernel.o: svm/svm_common.h /usr/include/stdio.h /usr/include/features.h
 svm/kernel.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 svm/kernel.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
@@ -145,7 +149,8 @@ gui/GeneFinder.o: /usr/include/math.h /usr/include/bits/huge_val.h
 gui/GeneFinder.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
 gui/GeneFinder.o: /usr/include/fcntl.h /usr/include/bits/fcntl.h
 gui/GeneFinder.o: /usr/include/sys/types.h hmm/HMM.h lib/Mathmatics.h
-gui/GeneFinder.o: lib/common.h lib/Observation.h svm/SVM.h
+gui/GeneFinder.o: lib/common.h lib/Observation.h svm/SVM.h svm/svm_common.h
+gui/GeneFinder.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
 hmm/HMM.o: hmm/HMM.h /usr/include/math.h /usr/include/features.h
 hmm/HMM.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 hmm/HMM.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
