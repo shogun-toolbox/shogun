@@ -1200,8 +1200,8 @@ bool CGUIMatlab::get_WD_weights(mxArray* retvals[])
 	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 	{
 		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
-		const REAL* weights = kernel->get_weights(degree, length) ;
 
+		const REAL* weights = kernel->get_weights(degree, length) ;
 		if (length == 0)
 			length = 1;
 		
@@ -1234,7 +1234,7 @@ bool CGUIMatlab::set_WD_weights(const mxArray* mx_arg)
 		INT len = mxGetN(mx_arg);
 
 		if (len ==  1)
-			len=0;
+			len = 0;
 
 		return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), len);
 		

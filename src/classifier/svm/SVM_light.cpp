@@ -10,6 +10,13 @@
 //#include <ilcplex/ilocplex.h>
 //ILOSTLBEGIN
 
+
+#ifdef USE_CPLEX
+extern "C" {
+#include <ilcplex/cplex.h>
+}
+#endif
+
 #ifdef HAVE_ATLAS
 extern "C" {
 #include <atlas_enum.h>
@@ -20,6 +27,37 @@ extern "C" {
 
 CSVMLight::CSVMLight()
 {
+#ifdef USE_CPLEX
+	CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
+	
+	env = NULL;
+	int status = 0;
+	env = CPXopenCPLEX (&status);
+	
+	if ( env == NULL ) {
+		char  errmsg[1024];
+		CIO::message(M_ERROR, "Could not open CPLEX environment.\n");
+		CPXgeterrorstring (env, status, errmsg);
+		CIO::message(M_ERROR, "%s", errmsg);
+	}
+	status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2);
+	if ( status ) {
+		CIO::message(M_ERROR, 
+					 "Failure to select dual lp optimization, error %d.\n", status);
+	}
+	status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
+	if ( status ) {
+		CIO::message(M_ERROR,
+					 "Failure to turn on data checking, error %d.\n", status);
+	}	
+	lp = CPXcreateprob (env, &status, "light");
+	if ( lp == NULL ) {
+		fprintf (stderr, "Failed to create LP.\n");
+	}
+	
+	CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
+#endif
+	
 	W=NULL;
 	model=new MODEL[1];
 	learn_parm=new LEARN_PARM[1];
@@ -42,6 +80,25 @@ CSVMLight::CSVMLight()
 
 CSVMLight::~CSVMLight()
 {
+#ifdef USE_CPLEX
+	if ( lp != NULL ) {
+		INT status = CPXfreeprob (env, &lp);
+		if ( status ) {
+			fprintf (stderr, "CPXfreeprob failed, error code %d.\n", status);
+		}
+	}
+	if ( env != NULL ) {
+		INT status = CPXcloseCPLEX (&env);
+		
+		if ( status ) {
+			char  errmsg[1024];
+			fprintf (stderr, "Could not close CPLEX environment.\n");
+			CPXgeterrorstring (env, status, errmsg);
+			fprintf (stderr, "%s", errmsg);
+		}
+	}
+#endif
+
   delete[] model->supvec;
   delete[] model->alpha;
   delete[] model->index;
@@ -49,60 +106,61 @@ CSVMLight::~CSVMLight()
   delete[] learn_parm;
   delete[] primal;
   delete[] dual;
+  delete[] W ;
 }
 
 bool CSVMLight::train()
 {
-  //certain setup params
+	//certain setup params
 	
-	verbosity=1 ;
-  init_margin=0.15;
-  init_iter=500;
-  precision_violations=0;
-  opt_precision=DEF_PRECISION_LINEAR;
-
-  strcpy (learn_parm->predfile, "");
-  learn_parm->biased_hyperplane=1;
-  learn_parm->sharedslack=0;
-  learn_parm->remove_inconsistent=0;
-  learn_parm->skip_final_opt_check=1;
-  learn_parm->svm_maxqpsize=50;
-  learn_parm->svm_newvarsinqp=learn_parm->svm_maxqpsize-1;
-  learn_parm->maxiter=100000;
-  learn_parm->svm_iter_to_shrink=100;
-  learn_parm->svm_c=C1;
-  learn_parm->eps=-1.0;      /* equivalent regression epsilon for classification */
-  learn_parm->transduction_posratio=-1.0;
-  learn_parm->svm_costratio=C2/C1;
-  learn_parm->svm_costratio_unlab=1.0;
-  learn_parm->svm_unlabbound=1E-5;
-  learn_parm->epsilon_crit=1E-6; // GU: better decrease it ... ??
-  learn_parm->epsilon_a=1E-15;
-  learn_parm->compute_loo=0;
-  learn_parm->rho=1.0;
-  learn_parm->xa_depth=0;
-  
-  if (!CKernelMachine::get_kernel())
-  {
-      CIO::message(M_ERROR, "SVM_light can not proceed without kernel!\n");
-      return false ;
-  }
-
-  if (get_kernel()->has_property(KP_LINADD))
-	  get_kernel()->clear_normal();
-      
-  svm_learn();
-
-  //brain damaged svm light work around
-  create_new_model(model->sv_num-1);
-  set_bias(-model->b);
-  for (INT i=0; i<model->sv_num-1; i++)
-  {
-	  set_alpha(i, model->alpha[i+1]);
-	  set_support_vector(i, model->supvec[i+1]);
-  }
-  
-  return true ;
+	verbosity=2 ;
+	init_margin=0.15;
+	init_iter=500;
+	precision_violations=0;
+	opt_precision=DEF_PRECISION_LINEAR;
+	
+	strcpy (learn_parm->predfile, "");
+	learn_parm->biased_hyperplane=1;
+	learn_parm->sharedslack=0;
+	learn_parm->remove_inconsistent=0;
+	learn_parm->skip_final_opt_check=1;
+	learn_parm->svm_maxqpsize=50;
+	learn_parm->svm_newvarsinqp=learn_parm->svm_maxqpsize-1;
+	learn_parm->maxiter=100000;
+	learn_parm->svm_iter_to_shrink=100;
+	learn_parm->svm_c=C1;
+	learn_parm->eps=-1.0;      /* equivalent regression epsilon for classification */
+	learn_parm->transduction_posratio=-1.0;
+	learn_parm->svm_costratio=C2/C1;
+	learn_parm->svm_costratio_unlab=1.0;
+	learn_parm->svm_unlabbound=1E-5;
+	learn_parm->epsilon_crit=1E-6; // GU: better decrease it ... ??
+	learn_parm->epsilon_a=1E-15;
+	learn_parm->compute_loo=0;
+	learn_parm->rho=1.0;
+	learn_parm->xa_depth=0;
+	
+	if (!CKernelMachine::get_kernel())
+	{
+		CIO::message(M_ERROR, "SVM_light can not proceed without kernel!\n");
+		return false ;
+	}
+	
+	if (get_kernel()->has_property(KP_LINADD))
+		get_kernel()->clear_normal();
+	
+	svm_learn();
+	
+	//brain damaged svm light work around
+	create_new_model(model->sv_num-1);
+	set_bias(-model->b);
+	for (INT i=0; i<model->sv_num-1; i++)
+	{
+		set_alpha(i, model->alpha[i+1]);
+		set_support_vector(i, model->supvec[i+1]);
+	}
+	
+	return true ;
 }
 
 LONG CSVMLight::get_runtime() 
@@ -130,19 +188,13 @@ void CSVMLight::svm_learn()
 	delete[] W;
 	W=NULL;
 	rho=0 ;
-	rhom=0 ;
-	sumabsgammas=0 ;
-	w_gap=1 ;
+	w_gap = 0 ;
 	count = 0 ;
 	alpha_converged = 0 ;
 	
 	if (get_kernel()->has_property(KP_KERNCOMBINATION))
 	{
 		W = new REAL[totdoc*get_kernel()->get_num_subkernels()];
-		rhos=new REAL[get_kernel()->get_num_subkernels()] ;
-
-		for (i=0; i<get_kernel()->get_num_subkernels(); i++)
-			rhos[i]=0 ;
 		for (i=0; i<totdoc*get_kernel()->get_num_subkernels(); i++)
 			W[i]=0;
 	}
@@ -414,7 +466,8 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
   terminate=0;
   
   CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
-  CKernelMachine::get_kernel()->kernel_cache_reset_lru();
+  if(!get_kernel()->has_property(KP_LINADD)) 
+	  CKernelMachine::get_kernel()->kernel_cache_reset_lru();
 
 
   for(i=0;i<totdoc;i++) {    /* various inits */
@@ -432,10 +485,11 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 //  for(;w_gap>0.1;iteration++){//retrain && (!terminate);iteration++) {
   for(;(retrain && (!terminate))||(w_gap>0.1);iteration++){
 	  
-	  if (w_gap<0.25 && iteration>1000) // XXX extremly hacky
+	  if (w_gap<0.10 && iteration>10000) // XXX extremly hacky
 		  break ;
 	  
-	  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
+	  if(!get_kernel()->has_property(KP_LINADD)) 
+		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
 	  
 	  CIO::message(M_MESSAGEONLY, ".");
 	  
@@ -1015,13 +1069,6 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 
 	if (get_kernel()->has_property(KP_LINADD)) {
 
-		get_kernel()->clear_normal();
-		
-		for(ii=0;(i=working2dnum[ii])>=0;ii++) {
-			if(a[i] != a_old[i]) {
-				get_kernel()->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
-			}
-		}
 		
 		if (get_kernel()->has_property(KP_KERNCOMBINATION)) {
 			//HACK ASSUME KERNEL IS WEIGHTEDDEGREE WE NEED SOME GENERIC KERNEL INTERFACE
@@ -1029,133 +1076,238 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			CWeightedDegreeCharKernel* k = (CWeightedDegreeCharKernel*) get_kernel();
 			INT num    = k->get_rhs()->get_num_vectors() ;
 			INT degree = -1;
-			INT len = -1;
+			INT len    = -1;
+			INT num_kernels = get_kernel()->get_num_subkernels() ;
 			REAL* w    = k->get_weights(degree,len);
-			REAL* W_upd= new REAL[num*degree];
-			REAL* sumw = new REAL[degree];
-			REAL meanabssumw = 0;
-			REAL bound=0;
+			REAL* W_upd= new REAL[num*num_kernels];
+			REAL* sumw = new REAL[num_kernels];
+			REAL* w_backup = new REAL[num_kernels] ;
+			
+			// backup and set to one
+			for (INT i=0; i<num_kernels; i++)
+			{
+				w_backup[i]=w[i] ;
+				w[i]=1 ;
+			}
+
+			// recreate tree
+			get_kernel()->clear_normal();
+			for(INT ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
+				if(a[i] != a_old[i]) {
+					get_kernel()->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
+				}
+			}
+
+			// restore old weights
+			for (INT i=0; i<num_kernels; i++)
+				w[i]=w_backup[i] ;
+
+			
+			//CIO::message(M_DEBUG, "num_kernels=%i\n", num_kernels) ;
 			
 			// determine contributions of different levels/lengths
-			//for(INT ii=0,i=0;;(i=active2dnum[ii])>=0;ii++) 
 			for (int i=0; i<num; i++)
-				k->compute_by_tree(i,&W_upd[i*degree]) ;
+				k->compute_by_tree(i,&W_upd[i*num_kernels]) ;
 			
 			// update W with normalized W_upd and compute sumw and compute objective
 			REAL objective=0;
-			for (int d=0; d<degree; d++)
+			for (int d=0; d<num_kernels; d++)
 			{
 				sumw[d]=0;
 				
 				//for(INT ii=0,i=0;;(i=active2dnum[ii])>=0;ii++) 
 				for(int i=0; i<num; i++)
 				{
-					REAL W_norm = W_upd[i*degree+d]/w[d];
-					W[i*degree+d] += W_norm;
-					sumw[d] += a[i]*(0.5*label[i]*W[i*degree+d] - 1);
+					W[i*num_kernels+d] += W_upd[i*num_kernels+d];
+					sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d] - 1);
 				}
 				objective   += w[d]*sumw[d];
-				meanabssumw += CMath::abs(sumw[d]);
+				if (count%100==0)
+					CIO::message(M_DEBUG, "w[%i]=%f  sumw[%i]=%f\n", d, w[d], d, sumw[d]) ;
 			}
-			
-			if (rho==0)
-			{
-				REAL maxsumw = sumw[0] ;
-				for (int d=0; d<degree; d++)
-					if (sumw[d]>maxsumw)
-						maxsumw=sumw[d] ;
-				rho  = maxsumw + 1 ;
-				rhom = maxsumw + 1 ;
-			} else
-				rho=objective+0.1 ;
-			
-			meanabssumw/=degree;
-			bound = 1.0 / meanabssumw;
+			if (count%100==0)
+				CIO::message(M_DEBUG, "objective=%f\n", objective) ;
+			count++ ;
+			//if (count>3) 
+			//	exit(0) ;
 
-			REAL gamma ;
-			if (0)
+#ifdef USE_CPLEX			
+			//if (count%10==9)
 			{
-				gamma=0.1*bound; //fixme
-				REAL min_s=CMath::INFTY ;
-				for (int i=0; i<20; i++)
+				if (rho==0)
 				{
-					//E=sum(PAR.w.*exp( gamma*PAR.sumw - gamma*PAR.rho)) ;
-					REAL s=0;
-					for (int d=0; d<degree; d++)
-						s+= w[d]*exp(gamma*sumw[d] - gamma*rho);
-					//CIO::message(M_DEBUG, "%f  ", s) ;
-					if (s<1e-100)
+					CIO::message(M_INFO, "creating LP\n") ;
+					
+					INT NUMCOLS = num_kernels + 1 ;
+					double   obj[NUMCOLS];
+					double   lb[NUMCOLS];
+					double   ub[NUMCOLS];
+					for (INT i=0; i<num_kernels; i++)
 					{
-						gamma/=2 ;
-						break ;
+						obj[i]=0 ;
+						lb[i]=0 ;
+						ub[i]=1 ;
+					}
+					obj[num_kernels]=1 ;
+					lb[num_kernels]=-CPX_INFBOUND ;
+					ub[num_kernels]=CPX_INFBOUND ;
+					
+					INT status = CPXnewcols (env, lp, NUMCOLS, obj, lb, ub, NULL, NULL);
+					if ( status ) {
+						char  errmsg[1024];
+						CPXgeterrorstring (env, status, errmsg);
+						fprintf (stderr, "%s", errmsg);
 					}
 					
-					if (s<min_s)
-						min_s=s ;
-					else
-					{
-						gamma/=2 ;
-						break ;
-					} ;
+					// add constraint sum(w)=1 ;
+					CIO::message(M_INFO, "add the first row\n") ;
+					int rmatbeg[1] ;
+					int rmatind[num_kernels+1] ;
+					double rmatval[num_kernels+1] ;
+					double rhs[1] ;
+					char sense[1] ;
 					
-					gamma*=2 ;
+					rmatbeg[0] = 0;
+					rhs[0]=1 ; // rhs=1 ;
+					sense[0]='E' ; // equality
+					
+					for (INT i=0; i<num_kernels; i++)
+					{
+						rmatind[i]=i ;
+						rmatval[i]=1 ;
+					}
+					rmatind[num_kernels]=num_kernels ;
+					rmatval[num_kernels]=0 ;
+				
+					status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+										 rhs, sense, rmatbeg,
+										 rmatind, rmatval, NULL, NULL);
+					if ( status ) {
+						fprintf (stderr, "Failed to add the first row.\n");
+					}
+					
+				} ;
+			
+				{ // add the new row
+					//CIO::message(M_INFO, "add the new row\n") ;
+				
+					int rmatbeg[1] ;
+					int rmatind[num_kernels+1] ;
+					double rmatval[num_kernels+1] ;
+					double rhs[1] ;
+					char sense[1] ;
+				
+					rmatbeg[0] = 0;
+					rhs[0]=0 ;
+					sense[0]='L' ;
+					
+					for (INT i=0; i<num_kernels; i++)
+					{
+						rmatind[i]=i ;
+						rmatval[i]=-sumw[i] ;
+					}
+					rmatind[num_kernels]=num_kernels ;
+					rmatval[num_kernels]=-1 ;
+					
+					INT status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+											 rhs, sense, rmatbeg,
+											 rmatind, rmatval, NULL, NULL);
+					if ( status ) {
+						fprintf (stderr, "Failed to add the new row.\n");
+					}
 				}
-				CIO::message(M_DEBUG, "\n") ;
+				
+				// have at most 100 rows 
+				if (count>=100) {
+					INT status = CPXdelrows (env, lp, 2, 2) ;
+					if ( status ) {
+						fprintf (stderr, "Failed to remove an old row.\n");
+					}
+				}
+				
+				{ // optimize
+					//CIO::message(M_INFO, "solving the problem\n") ;
+					INT status = CPXlpopt (env, lp);
+					if ( status ) {
+						fprintf (stderr, "Failed to optimize LP.\n");
+					}
+					
+					// obtain solution
+					INT cur_numrows = CPXgetnumrows (env, lp);
+					INT cur_numcols = CPXgetnumcols (env, lp);
+					
+					REAL *x = new REAL[cur_numcols] ;
+					REAL *slack = new REAL[cur_numrows] ;
+					REAL *dj = new REAL[cur_numcols] ;
+					REAL *pi = new REAL[cur_numrows] ;
+					
+					if ( x     == NULL ||
+						 slack == NULL ||
+						 dj    == NULL ||
+						 pi    == NULL   ) {
+						status = CPXERR_NO_MEMORY;
+						fprintf (stderr, "Could not allocate memory for solution.\n");
+					}
+					INT solstat = 0 ;
+					REAL objval = 0 ;
+					status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, dj);
+					if ( status ) {
+						fprintf (stderr, "Failed to obtain solution.\n");
+					}
+					
+					if (count%100==0)
+						printf ("Solution value  = %f\n\n", objval);
+					
+					if (0)//(count%100==0)
+						for (INT i = 0; i < cur_numrows; i++) {
+							printf ("Row %d:  Slack = %10f  Pi = %10f\n", i, slack[i], pi[i]);
+						}
+					
+					if (count%100==0)
+						for (INT j = 0; j < cur_numcols; j++) {
+							printf ("Column %d:  Value = %10f  Reduced cost = %10f\n",
+									j, x[j], dj[j]);
+						}
+					
+					w_gap = CMath::abs(1+rho/objective) ;
+					for (INT j = 0; j < cur_numcols-1; j++) 
+						w[j]=x[j] ;
+					rho = x[num_kernels] ;
+					
+					delete[] x ;
+					delete[] dj ;
+					delete[] slack ;
+					delete[] pi ;
+				}
 			}
 			
-			count ++ ;
-
-			gamma = bound; //fixme
-
-			rhom = CMath::INFTY ;
-			sumabsgammas = sumabsgammas + CMath::abs(gamma) ;
-			for (INT d=0; d<degree; d++)
-			{
-				rhos[d] = rhos[d] - gamma*sumw[d] ;
-				rhom    = CMath::min(rhom, rhos[d]/(1e-10+sumabsgammas)) ;
-			}
-			rhom *= -1 ;
-			w_gap = CMath::abs(1-rhom/objective) ;
-			
-			// update w
-			REAL s=0;
-			for (int d=0; d<degree; d++)
-			{
-				w[d] *= exp(gamma*sumw[d]-gamma*rho);
-				s+=w[d];
-			}
-			for (int d=0; d<degree; d++)
-			{
-				w[d]/=s;
-				// handle the equal 0 case
-				if (w[d]<1e-10) 
-					w[d]=1e-10 ;
-			}
+#endif
 			
 			// update lin
-#ifdef HAVE_ATLAS_crash
-// crashes, why?? SSE?
-			ATL_dgemv(AtlasTrans, degree, num, 1.0,
-					  W, degree, w, 1, 0.0, lin, 1) ; 
-#else
-			//for(INT i=0,ii=0;(i=active2dnum[ii])>=0;ii++) 
 			for(int i=0; i<num; i++)
 			{
-	
 				REAL s=0;
-				for (int d=0; d<degree; d++)
-					s+= w[d]*W[i*degree+d] ;
+				for (int d=0; d<num_kernels; d++)
+					s+= w[d]*W[i*num_kernels+d] ;
 				lin[i]=s;
 			}
-#endif
-			if (count%100==0)
-				CIO::message(M_DEBUG,"\ngamma: %f  OBJ: %f  RHOM: %f  RHO: %f  wgap=%f  numactive: %i\n", gamma, objective,rhom,rho,w_gap,ii);
+
+			//if (count%10==0)
+				CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f\n", count, objective,rho,w_gap);
 			
 			delete[] W_upd;
 			delete[] sumw;
 		}
 		else
 		{
+			get_kernel()->clear_normal();
+			
+			for(ii=0;(i=working2dnum[ii])>=0;ii++) {
+				if(a[i] != a_old[i]) {
+					get_kernel()->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
+				}
+			}
+			
 			for(jj=0;(j=active2dnum[jj])>=0;jj++) {
 				lin[j]+=get_kernel()->compute_optimized(docs[j]);
 			}
@@ -1177,88 +1329,89 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 /*************************** Working set selection ***************************/
 
 long CSVMLight::select_next_qp_subproblem_grad(INT* label, 
-				    double *a, double *lin, 
-				    double *c, long int totdoc, 
-				    long int qp_size, 
-				    long int *inconsistent, 
-				    long int *active2dnum, 
-				    long int *working2dnum, 
-				    double *selcrit, 
-				    long int *select, 
-				    long int cache_only,
-				    long int *key, long int *chosen)
-     /* Use the feasible direction approach to select the next
-      qp-subproblem (see chapter 'Selecting a good working set'). If
-      'cache_only' is true, then the variables are selected only among
-      those for which the kernel evaluations are cached. */
+											   double *a, double *lin, 
+											   double *c, long int totdoc, 
+											   long int qp_size, 
+											   long int *inconsistent, 
+											   long int *active2dnum, 
+											   long int *working2dnum, 
+											   double *selcrit, 
+											   long int *select, 
+											   long int cache_only,
+											   long int *key, long int *chosen)
+	/* Use the feasible direction approach to select the next
+	   qp-subproblem (see chapter 'Selecting a good working set'). If
+	   'cache_only' is true, then the variables are selected only among
+	   those for which the kernel evaluations are cached. */
 {
-  long choosenum,i,j,k,activedoc,inum,valid;
-  double s;
-
-  for(inum=0;working2dnum[inum]>=0;inum++); /* find end of index */
-  choosenum=0;
-  activedoc=0;
-  for(i=0;(j=active2dnum[i])>=0;i++) {
-    s=-label[j];
-    if(cache_only) 
-      valid=(get_kernel()->kernel_cache_check(j));
-    else
-      valid=1;
-    if(valid
-       && (!((a[j]<=(0+learn_parm->epsilon_a)) && (s<0)))
-       && (!((a[j]>=(learn_parm->svm_cost[j]-learn_parm->epsilon_a)) 
-	     && (s>0)))
-       && (!chosen[j]) 
-       && (label[j])
-       && (!inconsistent[j]))
-      {
-      selcrit[activedoc]=(double)label[j]*(learn_parm->eps-(double)label[j]*c[j]+(double)label[j]*lin[j]);
-      key[activedoc]=j;
-      activedoc++;
-    }
-  }
-  select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
-  for(k=0;(choosenum<(qp_size/2)) && (k<(qp_size/2)) && (k<activedoc);k++) {
-      i=key[select[k]];
-      chosen[i]=1;
-      working2dnum[inum+choosenum]=i;
-      choosenum+=1;
-	CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
-                                        /* out of cache */
-  }
-
-  activedoc=0;
-  for(i=0;(j=active2dnum[i])>=0;i++) {
-    s=label[j];
-    if(cache_only) 
-      valid=(get_kernel()->kernel_cache_check(j));
-    else
-      valid=1;
-    if(valid
-       && (!((a[j]<=(0+learn_parm->epsilon_a)) && (s<0)))
-       && (!((a[j]>=(learn_parm->svm_cost[j]-learn_parm->epsilon_a)) 
-	     && (s>0))) 
-       && (!chosen[j]) 
-       && (label[j])
-       && (!inconsistent[j])) 
-      {
-      selcrit[activedoc]=-(double)label[j]*(learn_parm->eps-(double)label[j]*c[j]+(double)label[j]*lin[j]);
-      /*  selcrit[activedoc]=-(double)(label[j]*(-1.0+(double)label[j]*lin[j])); */
-      key[activedoc]=j;
-      activedoc++;
-    }
-  }
-  select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
-  for(k=0;(choosenum<qp_size) && (k<(qp_size/2)) && (k<activedoc);k++) {
-    i=key[select[k]];
-    chosen[i]=1;
-    working2dnum[inum+choosenum]=i;
-    choosenum+=1;
-	CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
-                                        /* out of cache */
-  } 
-  working2dnum[inum+choosenum]=-1; /* complete index */
-  return(choosenum);
+	long choosenum,i,j,k,activedoc,inum,valid;
+	double s;
+	
+	for(inum=0;working2dnum[inum]>=0;inum++); /* find end of index */
+	choosenum=0;
+	activedoc=0;
+	for(i=0;(j=active2dnum[i])>=0;i++) {
+		s=-label[j];
+		if(cache_only) 
+			valid=(get_kernel()->kernel_cache_check(j));
+		else
+			valid=1;
+		if(valid
+		   && (!((a[j]<=(0+learn_parm->epsilon_a)) && (s<0)))
+		   && (!((a[j]>=(learn_parm->svm_cost[j]-learn_parm->epsilon_a)) 
+				 && (s>0)))
+		   && (!chosen[j]) 
+		   && (label[j])
+		   && (!inconsistent[j]))
+		{
+			selcrit[activedoc]=(double)label[j]*(learn_parm->eps-(double)label[j]*c[j]+(double)label[j]*lin[j]);
+			key[activedoc]=j;
+			activedoc++;
+		}
+	}
+	select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
+	for(k=0;(choosenum<(qp_size/2)) && (k<(qp_size/2)) && (k<activedoc);k++) {
+		i=key[select[k]];
+		chosen[i]=1;
+		working2dnum[inum+choosenum]=i;
+		choosenum+=1;
+		CKernelMachine::get_kernel()->kernel_cache_touch(i); 
+        /* make sure it does not get kicked */
+		/* out of cache */
+	}
+	
+	activedoc=0;
+	for(i=0;(j=active2dnum[i])>=0;i++) {
+		s=label[j];
+		if(cache_only) 
+			valid=(get_kernel()->kernel_cache_check(j));
+		else
+			valid=1;
+		if(valid
+		   && (!((a[j]<=(0+learn_parm->epsilon_a)) && (s<0)))
+		   && (!((a[j]>=(learn_parm->svm_cost[j]-learn_parm->epsilon_a)) 
+				 && (s>0))) 
+		   && (!chosen[j]) 
+		   && (label[j])
+		   && (!inconsistent[j])) 
+		{
+			selcrit[activedoc]=-(double)label[j]*(learn_parm->eps-(double)label[j]*c[j]+(double)label[j]*lin[j]);
+			/*  selcrit[activedoc]=-(double)(label[j]*(-1.0+(double)label[j]*lin[j])); */
+			key[activedoc]=j;
+			activedoc++;
+		}
+	}
+	select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
+	for(k=0;(choosenum<qp_size) && (k<(qp_size/2)) && (k<activedoc);k++) {
+		i=key[select[k]];
+		chosen[i]=1;
+		working2dnum[inum+choosenum]=i;
+		choosenum+=1;
+		CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
+		/* out of cache */
+	} 
+	working2dnum[inum+choosenum]=-1; /* complete index */
+	return(choosenum);
 }
 
 long CSVMLight::select_next_qp_subproblem_rand(INT* label, 

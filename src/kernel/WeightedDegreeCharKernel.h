@@ -63,7 +63,9 @@ class CWeightedDegreeCharKernel: public CCharKernel
 
   inline virtual INT get_num_subkernels()
   {
-	  return get_degree();
+	  if (length==0)
+		  return get_degree();
+	  return get_degree()*length ;
   }
 
   // other kernel tree operations  

@@ -13,8 +13,16 @@
 #include <time.h> 
 #include <float.h>
 
-# define VERSION       "V3.50"
-# define VERSION_DATE  "01.11.00"
+#define USE_CPLEX
+
+#ifdef USE_CPLEX
+extern "C" {
+#include <ilcplex/cplex.h>
+}
+#endif
+
+# define VERSION       "V3.50 -- correct??"
+# define VERSION_DATE  "01.11.00 -- correct??"
 
 # define DEF_PRECISION_LINEAR    1E-8
 # define DEF_PRECISION_NONLINEAR 1E-14
@@ -240,12 +248,15 @@ typedef struct shrink_state {
   double opt_precision;
   REAL* W;
   REAL rho ;
-  REAL rhom ;
-  REAL *rhos ;
-  REAL sumabsgammas ;
   REAL w_gap ;
   INT count ;
   INT alpha_converged ;
+
+#ifdef USE_CPLEX
+  CPXENVptr     env ;
+  CPXLPptr      lp ;
+#endif
+
 };
 
 #endif

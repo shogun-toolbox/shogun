@@ -262,7 +262,7 @@ bool CWeightedDegreeCharKernel::save_init(FILE* dest)
 }
   
 
-bool CWeightedDegreeCharKernel::init_optimization(INT count, INT * IDX, REAL * weights)
+bool CWeightedDegreeCharKernel::init_optimization(INT count, INT * IDX, REAL * alphas)
 {
 	if (max_mismatch!=0)
 	{
@@ -278,7 +278,7 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT * IDX, REAL * w
 	{
 		if ( (i % (count/10+1)) == 0)
 			CIO::message(M_PROGRESS, "%3i%%  \r", 100*i/(count+1)) ;
-		add_example_to_tree(IDX[i], weights[i]) ;
+		add_example_to_tree(IDX[i], alphas[i]) ;
 	}
 	CIO::message(M_PROGRESS, "done.           \n");
 	
@@ -364,7 +364,7 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
   return (double) sum/sqrt_both;
 }
 
-void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight) 
+void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha) 
 {
 	INT len ;
 	bool free ;
@@ -373,7 +373,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight)
 	INT *vec = new INT[len] ;
 
 	if (use_normalization)
-		weight /=  sqrtdiag_lhs[idx] ;
+		alpha /=  sqrtdiag_lhs[idx] ;
 	
 	for (INT i=0; i<len; i++)
 	{
@@ -398,11 +398,11 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight)
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
 					tree=tree->childs[vec[i+j]] ;
-					tree->weight += weight*weights[j];
+					tree->weight += alpha*weights[j];
 				} else 
 					if ((j==degree-1) && (tree->has_floats))
 					{
-						tree->child_weights[vec[i+j]] += weight*weights[j];
+						tree->child_weights[vec[i+j]] += alpha*weights[j];
 						break ;
 					}
 					else
@@ -416,7 +416,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight)
 								assert(tree->childs[k]==NULL) ;
 								tree->child_weights[k] =0 ;
 							}
-							tree->child_weights[vec[i+j]] += weight*weights[j];
+							tree->child_weights[vec[i+j]] += alpha*weights[j];
 							break ;
 						}
 						else
@@ -427,7 +427,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight)
 							tree=tree->childs[vec[i+j]] ;
 							for (INT k=0; k<4; k++)
 								tree->childs[k]=NULL ;
-							tree->weight = weight*weights[j] ;
+							tree->weight = alpha*weights[j] ;
 							tree->has_floats=false ;
 							tree->usage=0 ;
 						} ;
@@ -445,11 +445,11 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight)
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
 					tree=tree->childs[vec[i+j]] ;
-					tree->weight += weight*weights[i*degree + j];
+					tree->weight += alpha*weights[i*degree + j];
 				} else 
 					if ((j==degree-1) && (tree->has_floats))
 					{
-						tree->child_weights[vec[i+j]] += weight*weights[i*degree + j];
+						tree->child_weights[vec[i+j]] += alpha*weights[i*degree + j];
 						break ;
 					}
 					else
@@ -463,7 +463,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight)
 								assert(tree->childs[k]==NULL) ;
 								tree->child_weights[k] =0 ;
 							}
-							tree->child_weights[vec[i+j]] += weight*weights[i*degree + j];
+							tree->child_weights[vec[i+j]] += alpha*weights[i*degree + j];
 							break ;
 						}
 						else
@@ -474,7 +474,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight)
 							tree=tree->childs[vec[i+j]] ;
 							for (INT k=0; k<4; k++)
 								tree->childs[k]=NULL ;
-							tree->weight = weight*weights[i*degree + j] ;
+							tree->weight = alpha*weights[i*degree + j] ;
 							tree->has_floats=false ;
 							tree->usage=0 ;
 						} ;
@@ -800,16 +800,16 @@ bool CWeightedDegreeCharKernel::set_weights(REAL* ws, INT d, INT len)
 {
 	degree=d;
 	length=len;
-
+	
 	if (len == 0)
 		len=1;
-
+	
 	delete[] weights;
 	weights=new REAL[d*len];
-
+	
 	if (weights)
 	{
-		for (int i=0; i<degree*length; i++)
+		for (int i=0; i<degree*len; i++)
 			weights[i]=ws[i];
 		return true;
 	}
