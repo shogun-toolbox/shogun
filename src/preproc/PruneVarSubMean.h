@@ -17,10 +17,6 @@ class CPruneVarSubMean : public CRealPreProc
   virtual bool init(CFeatures* f);
   /// cleanup
   virtual void cleanup();
-  /// initialize preprocessor from file
-  virtual bool load(FILE* f);
-  /// save preprocessor init-data to file
-  virtual bool save(FILE* f);
   
   /// apply preproc on feature matrix
   /// result in feature matrix

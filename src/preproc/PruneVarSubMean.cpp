@@ -89,18 +89,6 @@ void CPruneVarSubMean::cleanup()
   idx=NULL ;
 }
 
-/// initialize preprocessor from file
-bool CPruneVarSubMean::load(FILE* f)
-{
-  return false;
-}
-
-/// save preprocessor init-data to file
-bool CPruneVarSubMean::save(FILE* f)
-{
-  return false;
-}
-
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();

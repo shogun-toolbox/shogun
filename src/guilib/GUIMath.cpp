@@ -54,10 +54,7 @@ void CGUIMath::current_results(REAL* output, int* label, int total, REAL tresh, 
 			if (label[dim]>0)
 				fn++;
 			else
-			{
 				fp++;
-				CIO::message("output:%+.18g\n", output[dim]-tresh);
-			}
 		}
 	}
 
