@@ -17,9 +17,9 @@ CSVMLight::CSVMLight()
 
 CSVMLight::~CSVMLight()
 {
-  free(mymodel.supvec);
-  free(mymodel.alpha);
-  free(mymodel.index) ;
+  delete[] mymodel.supvec;
+  delete[] mymodel.alpha;
+  delete[] mymodel.index;
   delete[] docs;
   delete[] label;
 }
@@ -30,9 +30,9 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 	delete[] label;
 	docs=NULL;
 	label=NULL;
-	free(mymodel.supvec);
-	free(mymodel.alpha);
-	free(mymodel.index);
+	delete[] mymodel.supvec;
+	delete[] mymodel.alpha;
+	delete[] mymodel.index;
 	memset(&mymodel, 0x0, sizeof(MODEL));
 	memset(&mymodel, 0x0, sizeof(MODEL));
 	memset(&mykernel_cache, 0x0, sizeof(KERNEL_CACHE));
@@ -305,7 +305,7 @@ void CSVMLight::read_model(char *modelfile, MODEL *model,long max_words, long ll
    CIO::message("Reading model...");
   }
 ////  words = (WORD *)my_malloc(sizeof(WORD)*(max_words+10));
-  line = (char *)my_malloc(sizeof(char)*ll);
+  line = new char[ll];
 
   if ((modelfl = fopen (modelfile, "r")) == NULL)
   { perror (modelfile); exit (1); }
@@ -340,7 +340,7 @@ void CSVMLight::read_model(char *modelfile, MODEL *model,long max_words, long ll
 ////      words[wpos].weight=weight; 
       wpos++;
     } 
-    model->supvec[i] = (DOC *)my_malloc(sizeof(DOC));
+    model->supvec[i] = new DOC;
 ////    (model->supvec[i])->words = (WORD *)my_malloc(sizeof(WORD)*(wpos+1));
     for(j=0;j<wpos;j++) {
 ////      (model->supvec[i])->words[j]=words[j]; 
@@ -352,7 +352,7 @@ void CSVMLight::read_model(char *modelfile, MODEL *model,long max_words, long ll
   }
 
   fclose(modelfl);
-  free(line);
+  delete[] line;
 	////  free(words);
   if(verbosity>=1) {
     CIO::message( "OK. (%d support vectors read)\n",(int)(model->sv_num-1));
@@ -416,16 +416,16 @@ MODEL *model)              /* Returns learning result (assumed empty before
 
   init_shrink_state(&shrink_state,totdoc,(long)10000);
 
-  inconsistent = (long *)my_malloc(sizeof(long)*totdoc);
-  unlabeled = (long *)my_malloc(sizeof(long)*totdoc);
-  a = (double *)my_malloc(sizeof(double)*totdoc);
-  a_fullset = (double *)my_malloc(sizeof(double)*totdoc);
-  xi_fullset = (double *)my_malloc(sizeof(double)*totdoc);
-  lin = (double *)my_malloc(sizeof(double)*totdoc);
-  learn_parm->svm_cost = (double *)my_malloc(sizeof(double)*totdoc);
-  model->supvec = (DOC **)my_malloc(sizeof(DOC *)*(totdoc+2));
-  model->alpha = (double *)my_malloc(sizeof(double)*(totdoc+2));
-  model->index = (long *)my_malloc(sizeof(long)*(totdoc+2));
+  inconsistent = new long[totdoc];
+  unlabeled = new long[totdoc];
+  a = new double[totdoc];
+  a_fullset = new double[totdoc];
+  xi_fullset = new double[totdoc];
+  lin = new double[totdoc];
+  learn_parm->svm_cost = new double[totdoc];
+  model->supvec = new DOC*[totdoc+2];
+  model->alpha = new double[totdoc+2];
+  model->index = new long[totdoc+2];
 
   model->at_upper_bound=0;
   model->b=0;	       
@@ -720,13 +720,13 @@ MODEL *model)              /* Returns learning result (assumed empty before
     write_alphas(learn_parm->alphafile,a,label,totdoc);
   
   shrink_state_cleanup(&shrink_state);
-  free(inconsistent);
-  free(unlabeled);
-  free(a);
-  free(a_fullset);
-  free(xi_fullset);
-  free(lin);
-  free(learn_parm->svm_cost);
+  delete[] inconsistent;
+  delete[] unlabeled;
+  delete[] a;
+  delete[] a_fullset;
+  delete[] xi_fullset;
+  delete[] lin;
+  delete[] learn_parm->svm_cost;
 }
 
 long CSVMLight::optimize_to_convergence(
@@ -775,23 +775,22 @@ long retrain)
 
 ////  learn_parm->totwords=totwords;
 
-  chosen = (long *)my_malloc(sizeof(long)*totdoc);
-  last_suboptimal_at = (long *)my_malloc(sizeof(long)*totdoc);
-  key = (long *)my_malloc(sizeof(long)*(totdoc+11)); 
-  selcrit = (double *)my_malloc(sizeof(double)*totdoc);
-  selexam = (long *)my_malloc(sizeof(long)*totdoc);
-  a_old = (double *)my_malloc(sizeof(double)*totdoc);
-  aicache = (CFLOAT *)my_malloc(sizeof(CFLOAT)*totdoc);
-  working2dnum = (long *)my_malloc(sizeof(long)*(totdoc+11));
-  active2dnum = (long *)my_malloc(sizeof(long)*(totdoc+11));
-  qp.opt_ce = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  qp.opt_ce0 = (double *)my_malloc(sizeof(double));
-  qp.opt_g = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize
-				 *learn_parm->svm_maxqpsize);
-  qp.opt_g0 = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  qp.opt_xinit = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  qp.opt_low=(double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  qp.opt_up=(double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  chosen = new long[totdoc];
+  last_suboptimal_at =new long[totdoc];
+  key =new long[totdoc+11];
+  selcrit =new double[totdoc];
+  selexam =new long[totdoc];
+  a_old =new double[totdoc];
+  aicache =new CFLOAT[totdoc];
+  working2dnum =new long[totdoc+11];
+  active2dnum =new long[totdoc+11];
+  qp.opt_ce =new double[learn_parm->svm_maxqpsize];
+  qp.opt_ce0 =new double;
+  qp.opt_g =new double[learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize];
+  qp.opt_g0 =new double[learn_parm->svm_maxqpsize];
+  qp.opt_xinit =new double[learn_parm->svm_maxqpsize];
+  qp.opt_low=new double[learn_parm->svm_maxqpsize];
+  qp.opt_up=new double[learn_parm->svm_maxqpsize];
 ////  weights=(double *)my_malloc(sizeof(double)*(totwords+1));
 
   choosenum=0;
@@ -1090,22 +1089,22 @@ long retrain)
     }
   } /* end of loop */
 
-  free(chosen);
-  free(last_suboptimal_at);
-  free(key);
-  free(selcrit);
-  free(selexam);
-  free(a_old);
-  free(aicache);
-  free(working2dnum);
-  free(active2dnum);
-  free(qp.opt_ce);
-  free(qp.opt_ce0);
-  free(qp.opt_g);
-  free(qp.opt_g0);
-  free(qp.opt_xinit);
-  free(qp.opt_low);
-  free(qp.opt_up);
+  delete[] chosen;
+  delete[] last_suboptimal_at;
+  delete[] key;
+  delete[] selcrit;
+  delete[] selexam;
+  delete[] a_old;
+  delete[] aicache;
+  delete[] working2dnum;
+  delete[] active2dnum;
+  delete[] qp.opt_ce;
+  delete[] qp.opt_ce0;
+  delete[] qp.opt_g;
+  delete[] qp.opt_g0;
+  delete[] qp.opt_xinit;
+  delete[] qp.opt_low;
+  delete[] qp.opt_up;
 ////  free(weights);
 
   learn_parm->epsilon_crit=epsilon_crit_org; /* restore org */
@@ -2068,9 +2067,9 @@ void CSVMLight::init_shrink_state(SHRINK_STATE *shrink_state, long totdoc, long 
   long i;
 
   shrink_state->deactnum=0;
-  shrink_state->active = (long *)my_malloc(sizeof(long)*totdoc);
-  shrink_state->inactive_since = (long *)my_malloc(sizeof(long)*totdoc);
-  shrink_state->a_history = (double **)my_malloc(sizeof(double *)*10000);
+  shrink_state->active = new long[totdoc];
+  shrink_state->inactive_since = new long[totdoc];
+  shrink_state->a_history = new double*[10000];
 
   for(i=0;i<totdoc;i++) { 
     shrink_state->active[i]=1;
@@ -2080,11 +2079,11 @@ void CSVMLight::init_shrink_state(SHRINK_STATE *shrink_state, long totdoc, long 
 
 void CSVMLight::shrink_state_cleanup(SHRINK_STATE *shrink_state)
 {
-  free(shrink_state->active);
-  free(shrink_state->inactive_since);
+  delete[] shrink_state->active;
+  delete[] shrink_state->inactive_since;
   if(shrink_state->deactnum > 0) 
-    free(shrink_state->a_history[shrink_state->deactnum-1]);
-  free(shrink_state->a_history);
+    delete[] shrink_state->a_history[shrink_state->deactnum-1];
+  delete[] shrink_state->a_history;
 }
 
 /* shrink some variables away */
@@ -2113,7 +2112,7 @@ long CSVMLight::shrink_problem(LEARN_PARM *learn_parm, SHRINK_STATE *shrink_stat
     if(verbosity>=2) {
      CIO::message(" Shrinking...");
     }
-    a_old=(double *)my_malloc(sizeof(double)*totdoc);
+    a_old=new double[totdoc];
     shrink_state->a_history[shrink_state->deactnum]=a_old;
     for(i=0;i<totdoc;i++) {
       a_old[i]=a[i];
@@ -2160,10 +2159,10 @@ double *weights, double* maxdiff)
   register double kernel_val,*a_old,dist;
   double ex_c;
 
-  changed=(long *)my_malloc(sizeof(long)*totdoc);
-  changed2dnum=(long *)my_malloc(sizeof(long)*(totdoc+11));
-  inactive=(long *)my_malloc(sizeof(long)*totdoc);
-  inactive2dnum=(long *)my_malloc(sizeof(long)*(totdoc+11));
+  changed=new long[totdoc];
+  changed2dnum=new long[totdoc+11];
+  inactive=new long[totdoc];
+  inactive2dnum=new long[totdoc+11];
   for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) {
     if(verbosity>=2) {
      CIO::message("%ld..",t);
@@ -2230,13 +2229,13 @@ double *weights, double* maxdiff)
     (shrink_state->a_history[shrink_state->deactnum-1])[i]=a[i];
   }
   for(t=shrink_state->deactnum-2;(t>=0) && shrink_state->a_history[t];t--) {
-      free(shrink_state->a_history[t]);
+      delete[] shrink_state->a_history[t];
       shrink_state->a_history[t]=0;
   }
-  free(changed);
-  free(changed2dnum);
-  free(inactive);
-  free(inactive2dnum);
+ delete[] changed;
+ delete[] changed2dnum;
+ delete[] inactive;
+ delete[] inactive2dnum;
 }
 
 /************************** Compute estimates ******************************/
@@ -2266,7 +2265,7 @@ double *error, double* recall, double* precision)
   svnum=0;
 
   if(learn_parm->xa_depth > 0) {
-    sv = (long *)my_malloc(sizeof(long)*(totdoc+11));
+    sv = new long[totdoc+11];
     for(i=0;i<totdoc;i++) 
       sv[i]=0;
     for(i=1;i<model->sv_num;i++) 
@@ -2276,7 +2275,7 @@ double *error, double* recall, double* precision)
 	sv[model->supvec[i]->docnum]=1;
 	svnum++;
       }
-    sv2dnum = (long *)my_malloc(sizeof(long)*(totdoc+11));
+    sv2dnum = new long[totdoc+11];
     clear_index(sv2dnum);
     compute_index(sv,totdoc,sv2dnum);
   }
@@ -2318,8 +2317,8 @@ double *error, double* recall, double* precision)
   (*precision)=(((double)totposex-(double)looposerror)
     /((double)totposex-(double)looposerror+(double)loonegerror))*100.0;
 
-  free(sv);
-  free(sv2dnum);
+  delete[] sv;
+  delete[] sv2dnum;
 }
 
 
@@ -2340,8 +2339,8 @@ double thresh)
   long best_ex[101];
   CFLOAT *cache,*trow;
 
-  cache=(CFLOAT *)my_malloc(sizeof(CFLOAT)*learn_parm->xa_depth*svnum);
-  trow = (CFLOAT *)my_malloc(sizeof(CFLOAT)*svnum);
+  cache= new CFLOAT[learn_parm->xa_depth*svnum];
+  trow = new CFLOAT[svnum];
 
   for(k=0;k<svnum;k++) {
     trow[k]=kernel(kernel_parm,&(docs[docnum]),&(docs[sv2dnum[k]]));
@@ -2403,8 +2402,8 @@ double thresh)
     }
   }    
 
-  free(cache);
-  free(trow);
+  delete[] cache;
+  delete[] trow;
 
   /* CIO::message("Distribute[%ld](%ld)=%f, ",docnum,best_depth,best); */
   return(best);

@@ -55,28 +55,17 @@ CFLOAT kernel(KERNEL_PARM *kernel_parm,DOC* a,DOC* b)
 }
 
 /****************************** Cache handling *******************************/
-void* my_malloc(long size)
-{
-  void *ptr;
-  ptr=(void *)malloc(size);
-  if(!ptr) { 
-    perror ("Out of memory!\n"); 
-    exit (1); 
-  }
-  return(ptr);
-}
-
 void kernel_cache_init(KERNEL_CACHE *kernel_cache, long totdoc, long buffsize)
 {
   long i;
 
-  kernel_cache->index = (long *)my_malloc(sizeof(long)*totdoc);
-  kernel_cache->occu = (long *)my_malloc(sizeof(long)*totdoc);
-  kernel_cache->lru = (long *)my_malloc(sizeof(long)*totdoc);
-  kernel_cache->invindex = (long *)my_malloc(sizeof(long)*totdoc);
-  kernel_cache->active2totdoc = (long *)my_malloc(sizeof(long)*totdoc);
-  kernel_cache->totdoc2active = (long *)my_malloc(sizeof(long)*totdoc);
-  kernel_cache->buffer = (CFLOAT *)my_malloc(buffsize*1024*1024);
+  kernel_cache->index = new long[totdoc];
+  kernel_cache->occu = new long[totdoc];
+  kernel_cache->lru = new long[totdoc];
+  kernel_cache->invindex = new long[totdoc];
+  kernel_cache->active2totdoc = new long[totdoc];
+  kernel_cache->totdoc2active = new long[totdoc];
+  kernel_cache->buffer = new CFLOAT[buffsize*1024*1024];
 
   kernel_cache->buffsize=(long)(buffsize*1024*1024/sizeof(CFLOAT));
 
@@ -191,7 +180,7 @@ void kernel_cache_shrink(KERNEL_CACHE *kernel_cache, long totdoc, long numshrink
    CIO::message(" Reorganizing cache...");
   }
 
-  keep=(long *)my_malloc(sizeof(long)*totdoc);
+  keep=new long[totdoc];
   for(j=0;j<totdoc;j++) {
     keep[j]=1;
   }
