@@ -1396,19 +1396,25 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 
   if(get_kernel()->has_property(KP_LINADD)) { /* special linear case */
 	  a_old=shrink_state->last_a;    
-	  get_kernel()->clear_normal();
-	  for(i=0;i<totdoc;i++) {
-		  if(a[i] != a_old[i]) {
-			  get_kernel()->add_to_normal(docs[i], ((a[i]-a_old[i])*(double)label[i]));
-			  a_old[i]=a[i];
+
+	  if (!get_kernel()->has_property(KP_KERNCOMBINATION)) {
+	  {
+		  get_kernel()->clear_normal();
+		  for(i=0;i<totdoc;i++) {
+			  if(a[i] != a_old[i]) {
+				  get_kernel()->add_to_normal(docs[i], ((a[i]-a_old[i])*(double)label[i]));
+				  a_old[i]=a[i];
+			  }
+		  }
+		  for(i=0;i<totdoc;i++) {
+			  if(!shrink_state->active[i]) {
+				  lin[i]=shrink_state->last_lin[i]+get_kernel()->compute_optimized(docs[i]);
+			  }
+			  shrink_state->last_lin[i]=lin[i];
 		  }
 	  }
-	  for(i=0;i<totdoc;i++) {
-		  if(!shrink_state->active[i]) {
-			  lin[i]=shrink_state->last_lin[i]+get_kernel()->compute_optimized(docs[i]);
-		  }
+	  else
 		  shrink_state->last_lin[i]=lin[i];
-	  }
   }
   else {
 	  changed=new long[totdoc];
