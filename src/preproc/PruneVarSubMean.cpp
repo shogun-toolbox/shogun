@@ -7,7 +7,7 @@
 #include <math.h>
 #include <assert.h>
 CPruneVarSubMean::CPruneVarSubMean(bool divide)
-  : CRealPreProc("PruneVarSubMean","PVSM"), idx(NULL), mean(0), num_idx(0), divide_by_std(divide)
+  : CRealPreProc("PruneVarSubMean","PVSM"), idx(NULL), mean(0), std(NULL), num_idx(0), divide_by_std(divide)
 {
 }
 
