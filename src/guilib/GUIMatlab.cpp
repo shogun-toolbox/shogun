@@ -328,6 +328,52 @@ bool CGUIMatlab::best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[])
 }
 
 
+bool CGUIMatlab::model_prob_no_b_trans(const mxArray* vals[], mxArray* retvals[])
+{
+	const mxArray* mx_p=vals[1];
+	const mxArray* mx_q=vals[2];
+	const mxArray* mx_a_trans=vals[3];
+	const mxArray* mx_max_iter=vals[4];
+
+	INT max_iter = (INT)mxGetScalar(mx_max_iter) ;
+	if (max_iter<1)
+		return false ;
+	
+	INT N=mxGetN(mx_p);
+
+	if ( mx_p && mx_q && mx_a_trans)
+	{
+		if (
+			mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
+			mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
+			mxGetN(mx_a_trans) == 3
+			)
+		{
+			double* p=mxGetPr(mx_p);
+			double* q=mxGetPr(mx_q);
+			double* a=mxGetPr(mx_a_trans);
+			
+			CHMM* h=new CHMM(N, p, q, mxGetM(mx_a_trans), a);
+			
+			mxArray* mx_prob = mxCreateDoubleMatrix(1, max_iter, mxREAL);
+			double* p_prob = mxGetPr(mx_prob);
+			
+			h->model_prob_no_b_trans(max_iter, p_prob) ;
+
+			retvals[0]=mx_prob ;
+			
+			delete h ;
+			return true;
+		}
+		else
+			CIO::message("model matricies not matching in size\n");
+	}
+
+	return false;
+}
+
+
+
 bool CGUIMatlab::hmm_classify(mxArray* retvals[])
 {
 	CFeatures* f=gui->guifeatures.get_test_features();
@@ -747,4 +793,30 @@ CHAR* CGUIMatlab::get_mxString(const mxArray* s)
 	else
 		return NULL;
 }
+
+bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
+{
+	CFeatures* f=gui->guifeatures.get_train_features();
+	CFeatures* fe=gui->guifeatures.get_test_features();
+	CKernel *k = gui->guikernel.get_kernel() ;
+	
+	if (f && fe)
+	{
+		int num_vece=fe->get_num_vectors();
+		int num_vec=f->get_num_vectors();
+
+		mxArray* mx_result=mxCreateDoubleMatrix(num_vec, num_vece, mxREAL);
+		double* result=mxGetPr(mx_result);
+		for (int i=0; i<num_vec; i++)
+			for (int j=0; j<num_vece; j++)
+				result[i+j*num_vec]=k->kernel(i,j) ;
+		
+		retvals[0]=mx_result;
+		return true;
+	}
+	return false;
+}
+
 #endif
+
+

@@ -555,6 +555,7 @@ public:
 	REAL best_path(INT dimension);
 	REAL best_path_no_b(INT max_iter, INT & best_iter, INT *my_path) ;
 	void best_path_no_b_trans(INT max_iter, INT & max_best_iter, INT nbest, REAL *prob_nbest, INT *my_paths) ;
+	void model_prob_no_b_trans(INT max_iter, REAL *prob_iter) ;
 	
 #endif
 

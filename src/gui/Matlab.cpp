@@ -19,11 +19,13 @@ static const CHAR* N_CRC=			"crc";
 static const CHAR* N_GET_HMM=			"get_hmm";
 static const CHAR* N_GET_SVM=			"get_svm";
 static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
+static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
 static const CHAR* N_GET_FEATURES=		"get_features";
 static const CHAR* N_GET_LABELS=		"get_labels";
 static const CHAR* N_GET_PREPROC_INIT=	        "get_preproc_init";
 static const CHAR* N_GET_HMM_DEFS=		"get_hmm_defs";
 static const CHAR* N_SET_HMM=			"set_hmm";
+static const CHAR* N_MODEL_PROB_NO_B_TRANS=			"model_prob_no_b_trans";
 static const CHAR* N_BEST_PATH_NO_B_TRANS=			"best_path_no_b_trans";
 static const CHAR* N_BEST_PATH_NO_B=			"best_path_no_b";
 static const CHAR* N_APPEND_HMM=			"append_hmm";
@@ -226,6 +228,13 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				mexErrMsgTxt("usage is [result]=gf('plugin_estimate_classify')");
 		}
+		else if (!strncmp(action, N_GET_KERNEL_MATRIX, strlen(N_GET_KERNEL_MATRIX)))
+		{
+			if ((nlhs==1) && (nrhs==1))
+				gf_matlab.get_kernel_matrix(plhs);
+			else
+				mexErrMsgTxt("usage is K=gf('get_kernel_matrix')");
+		}
 		else if (!strncmp(action, N_GET_KERNEL_INIT, strlen(N_GET_KERNEL_INIT)))
 		{
 		}
@@ -293,6 +302,15 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				mexErrMsgTxt("usage is [prob,path]=gf('best_path_no_b_trans',p,q,a_trans,max_iter,nbest)");
+		}
+		else if (!strncmp(action, N_MODEL_PROB_NO_B_TRANS, strlen(N_MODEL_PROB_NO_B_TRANS)))
+		{
+			if ((nrhs==1+4) & (nlhs==1))
+			{
+				gf_matlab.model_prob_no_b_trans(prhs,plhs);
+			}
+			else
+				mexErrMsgTxt("usage is probs=gf('model_prob_no_b_trans',p,q,a_trans,max_iter)");
 		}
 		else if (!strncmp(action, N_BEST_PATH_NO_B, strlen(N_BEST_PATH_NO_B)))
 		{

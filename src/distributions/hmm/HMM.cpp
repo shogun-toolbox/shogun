@@ -1525,6 +1525,43 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 	delete[] delta_end ;
 }
 
+void CHMM::model_prob_no_b_trans(INT max_iter, REAL *prob_iter)
+{
+	REAL* delta= new REAL[N] ;
+	REAL* delta_new= new REAL[N] ;
+
+	for (INT i=0; i<N; i++)
+		delta[i] = get_p(i) ;
+	
+	for (INT t=0; t<max_iter; t++)
+	{
+		for (INT j=0; j<N; j++)
+		{
+			const INT num_elem   = trans_list_forward_cnt[j] ;
+			const INT *elem_list = trans_list_forward[j] ;
+			const REAL *elem_val = trans_list_forward_val[j] ;
+
+			delta_new[j] = math.ALMOST_NEG_INFTY ;
+			
+			for (INT i=0; i<num_elem; i++)
+			{
+				INT ii = elem_list[i] ;
+				delta_new[j] = math.logarithmic_sum(delta_new[j], (delta[ii] + elem_val[i])) ;
+			} ;
+		} ;
+		
+		prob_iter[t]=math.ALMOST_NEG_INFTY ;
+		for (INT j=0; j<N; j++)
+			prob_iter[t] = math.logarithmic_sum(prob_iter[t], delta_new[j]+get_q(j)) ;
+
+		REAL* tmp=delta_new ;
+		delta_new=delta ;
+		delta=tmp ;
+	} ;
+	delete[] delta ;
+	delete[] delta_new ;
+}
+
 
 #endif // NOVIT
 

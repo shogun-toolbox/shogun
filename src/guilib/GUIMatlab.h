@@ -42,6 +42,7 @@ public:
 	bool get_hmm(mxArray* retvals[]);
 	bool set_hmm(const mxArray* vals[]);
 	bool best_path_no_b(const mxArray* vals[], mxArray* retvals[]) ;
+	bool model_prob_no_b_trans(const mxArray* vals[], mxArray* retvals[]) ;
 	bool best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[]) ;
 	bool append_hmm(const mxArray* vals[]);
 	bool hmm_classify_example(mxArray* retvals[], int idx);
@@ -62,6 +63,8 @@ public:
 	//bool get_kernel_init();
 	bool get_features(mxArray* retvals[], CFeatures* features);
 	CFeatures* set_features(const mxArray* vals[]);
+
+	bool get_kernel_matrix(mxArray* retvals[]);
 
 	bool get_labels(mxArray* retvals[], CLabels* label);
 	CLabels* set_labels(const mxArray* vals[]);
