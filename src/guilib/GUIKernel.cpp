@@ -159,6 +159,28 @@ bool CGUIKernel::init_kernel_tree(CHAR* param)
 				kernel_->add_example_to_tree(gui->guisvm.get_svm()->get_support_vector(i), gui->guisvm.get_svm()->get_alpha(i)) ;
 			}
 		}
+		if (kernel->get_kernel_type() == K_COMBINED) 
+		{
+			CCombinedKernel * ckernel = (CCombinedKernel*)kernel ;
+			kernel = ckernel->get_first_kernel() ;
+			kernel_= (CWeightedDegreeCharKernel*)kernel ;
+
+			while (kernel!=NULL)
+			{
+				if ((kernel->get_kernel_type() == K_WEIGHTEDDEGREE) && 
+					(kernel_->get_max_mismatch()==0))
+				{
+					for(INT i=0; i<gui->guisvm.get_svm()->get_num_support_vectors(); i++)
+					{
+						if (i%1000==0)
+						CIO::message(M_MESSAGEONLY, ".") ;
+						kernel_->add_example_to_tree(gui->guisvm.get_svm()->get_support_vector(i), gui->guisvm.get_svm()->get_alpha(i)) ;
+					}
+				}
+				kernel = ckernel->get_next_kernel() ;
+				kernel_= (CWeightedDegreeCharKernel*)kernel ;
+			}
+		}
 	}
 	else
 	{
@@ -178,6 +200,23 @@ bool CGUIKernel::delete_kernel_tree(CHAR* param)
 	{
 		kernel_->delete_tree() ;
 	} ;
+		if (kernel->get_kernel_type() == K_COMBINED) 
+		{
+			CCombinedKernel * ckernel = (CCombinedKernel*)kernel ;
+			kernel = ckernel->get_first_kernel() ;
+			kernel_= (CWeightedDegreeCharKernel*)kernel;
+
+			while (kernel!=NULL)
+			{
+				if ((kernel->get_kernel_type() == K_WEIGHTEDDEGREE) && 
+					(kernel_->get_max_mismatch()==0))
+				{
+					kernel_->delete_tree() ;
+				}
+				kernel = ckernel->get_next_kernel() ;
+				kernel_= (CWeightedDegreeCharKernel*)kernel ;
+			}
+		}
 	return true ;
 }
 
@@ -771,6 +810,7 @@ bool CGUIKernel::add_kernel(CHAR* param)
 		double weight=1 ;
 		
 		int ret = sscanf(param, "%le %[a-zA-Z _*/+-0-9]", &weight, newparam) ;
+		//fprintf(stderr,"ret=%i  weight=%le  rest=%s\n", ret, weight, newparam) ;
 		
 		if (ret!=2)
 		{

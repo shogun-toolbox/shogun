@@ -38,11 +38,20 @@ bool CGUIFeatures::preprocess(CHAR* param)
 		{
 			if (strcmp(target,"TRAIN")==0)
 			{
-				preprocess_features(train_features, NULL, force==1);
+				CFeatures *f = train_features ;
+				if (f->get_feature_class()==C_COMBINED)
+					f=((CCombinedFeatures*)f)->get_last_feature_obj() ;
+
+				preprocess_features(f, NULL, force==1);
 			}
 			else if (strcmp(target,"TEST")==0)
 			{
-				preprocess_features(train_features, test_features, force==1);
+				CFeatures *fe = test_features, *f=train_features ;
+				if ((f->get_feature_class()==C_COMBINED) && 
+					(fe->get_feature_class()==C_COMBINED))
+					((CCombinedFeatures*)fe)->get_last_feature_pair(fe,f) ;
+				
+				preprocess_features(f, fe, force==1);
 			}
 			else
 				CIO::message(M_ERROR, "see help for parameters\n");
@@ -58,6 +67,8 @@ bool CGUIFeatures::preprocess(CHAR* param)
 
 bool CGUIFeatures::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force)
 {
+	//fprintf(stderr, "preprocessing: train=0x%x  test=0x%x\n", trainfeat, testfeat) ;
+	
 	INT num_preproc=0;
 	CPreProc** preprocs;
 	if ((preprocs=gui->guipreproc.get_preprocs(num_preproc))!=NULL)
@@ -66,6 +77,8 @@ bool CGUIFeatures::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat
 		{
 			if (testfeat)
 			{
+				//fprintf(stderr, "%i %i\n", trainfeat->get_num_preproc(),num_preproc) ;
+				
 				assert(trainfeat->get_num_preproc()==num_preproc);
 
 				for (INT i=0; i<trainfeat->get_num_preproc();  i++)
@@ -457,6 +470,7 @@ bool CGUIFeatures::convert_char_to_word(CHAR* param)
 	E_ALPHABET alphabet=DNA;
 
 	CFeatures** f_ptr=NULL;
+	CFeatures* f=NULL;
 	
 	param=CIO::skip_spaces(param);
 	if ((sscanf(param, "%s %s %d %d", target, alpha, &order, &start))>=3)
@@ -464,10 +478,12 @@ bool CGUIFeatures::convert_char_to_word(CHAR* param)
 		if (strcmp(target,"TRAIN")==0)
 		{
 			f_ptr=&train_features;
+			f=train_features;
 		}
 		else if (strcmp(target,"TEST")==0)
 		{
 			f_ptr=&test_features;
+			f=test_features;
 		}
 
 		if (strcmp(alpha,"PROTEIN")==0)
@@ -486,24 +502,50 @@ bool CGUIFeatures::convert_char_to_word(CHAR* param)
 
 	if (f_ptr)
 	{
-		if ( (*f_ptr) && ( ((*f_ptr)->get_feature_class()) == C_SIMPLE)  && ( ((*f_ptr)->get_feature_type()) == F_CHAR) )
+		if ((f->get_feature_class()) == C_COMBINED)
 		{
-			//create dense features with 0 cache
-			CIO::message(M_INFO, "converting CHAR features to WORD ones\n");
-
-			CWordFeatures* wf=new CWordFeatures(0l);
-			result=(wf!=NULL);
-
-			if (result)
+			CFeatures *f2 = ((CCombinedFeatures*)f)->get_last_feature_obj() ;
+			
+			if ( f2 && ( (f2->get_feature_class()) == C_SIMPLE)  && ( (f2->get_feature_type()) == F_CHAR) )
 			{
-				wf->obtain_from_char_features((CCharFeatures*) (*f_ptr), alphabet, start, order);
-				delete (*f_ptr);
-				(*f_ptr)=wf;
+				//create dense features with 0 cache
+				CIO::message(M_INFO, "converting CHAR features to WORD ones\n");
+				
+				CWordFeatures* wf=new CWordFeatures(0l);
+				result=(wf!=NULL);
+				
+				if (result)
+				{
+					wf->obtain_from_char_features((CCharFeatures*) f2, alphabet, start, order);
+					((CCombinedFeatures*)f)->delete_feature_obj() ;
+					delete f2 ;
+					((CCombinedFeatures*)f)->append_feature_obj(wf) ;
+				}
 			}
+			else
+				CIO::message(M_ERROR, "no CHAR features at last position of combined features available\n");
 		}
 		else
-			CIO::message(M_ERROR, "no CHAR features available\n");
-
+		{
+			if ( (*f_ptr) && ( ((*f_ptr)->get_feature_class()) == C_SIMPLE)  && ( ((*f_ptr)->get_feature_type()) == F_CHAR) )
+			{
+				//create dense features with 0 cache
+				CIO::message(M_INFO, "converting CHAR features to WORD ones\n");
+				
+				CWordFeatures* wf=new CWordFeatures(0l);
+				result=(wf!=NULL);
+				
+				if (result)
+				{
+					wf->obtain_from_char_features((CCharFeatures*) (*f_ptr), alphabet, start, order);
+					delete (*f_ptr);
+					(*f_ptr)=wf;
+				}
+			}
+			else
+				CIO::message(M_ERROR, "no CHAR features available\n");
+		}
+		
 		if (!result)
 			CIO::message(M_ERROR, "conversion failed\n");
 		else
