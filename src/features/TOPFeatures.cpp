@@ -23,7 +23,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
   neg=n ;
   delete[] feature_matrix  ;
   feature_matrix=NULL ;
-  //set_feature_matrix() ;
+  set_feature_matrix() ;
   num_vectors=get_number_of_examples() ;
   num_features=get_num_features() ;
 }
@@ -174,6 +174,9 @@ REAL* CTOPFeatures::set_feature_matrix()
 	}
 
 	printf(".done.\n");
+	
+	num_vectors=get_number_of_examples() ;
+	num_features=get_num_features() ;
 
 	return feature_matrix;
 }
