@@ -134,13 +134,13 @@ bool CGUIKernel::init_kernel(char* param)
 					CIO::message("kernel can not process this feature type\n");
 					return false ;
 				}
-				kernel->init(gui->guifeatures.get_train_features(),gui->guifeatures.get_train_features()) ;
+				
+				// lhs -> always train_features; rhs -> alway test_features
+				kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features()) ;
 			}
 			else
 				CIO::message("assign train and test features first\n");
 
-			// lhs -> always train_features; rhs -> alway test_features
-			kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features()) ;
 		}
 		else
 			CIO::not_implemented();
