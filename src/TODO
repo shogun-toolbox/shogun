@@ -13,3 +13,4 @@ TOP TEN+ ANNOYANCES
 * put things (== estimator/svm/hmm/features/kernel...) in some kind of list to be able to use/select them/many
   for certain purposes
 * make unified testing possible, e.g. set_classifier XXX ; calc_output ; get_results etc.
+* fix linear HMM to be equiv. with MMs
