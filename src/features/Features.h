@@ -39,6 +39,11 @@ public:
 
 	virtual bool set_label(int idx, int label) { return false ; }
 	virtual int get_label(int idx)=0 ;
+	// caller cleans
+	int* get_labels(int idx, int &len) ;
+
+	// we do not not yet anything about observations!?
+	virtual int get_number_of_examples()=0 ;
 	
 protected:
 	/// Preprocessor
