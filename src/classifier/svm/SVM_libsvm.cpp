@@ -1362,7 +1362,7 @@ decision_function svm_train_one(
 			break;
 	}
 
-	info("obj = %f, rho = %f\n",si.obj,si.rho);
+	info("obj = %.16f, rho = %.16f\n",si.obj,si.rho);
 
 	// output SVs
 

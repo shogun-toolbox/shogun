@@ -495,7 +495,7 @@ LONG retrain)
 
   if(verbosity>=1) {
 	  criterion=compute_objective_function(a,lin,label,active2dnum);
-	  CIO::message("\nobj = %.16f\n",criterion);
+	  CIO::message("\nobj = %.16f, rho = %.16f\n",criterion,model->b);
   }
 
   delete[] chosen;
