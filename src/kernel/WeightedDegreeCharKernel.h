@@ -163,6 +163,7 @@ class CWeightedDegreeCharKernel: public CCharKernel
 
   bool set_weights(REAL* weights, INT d, INT len=0);
   bool set_position_weights(REAL* position_weights, INT len=0);
+  bool init_matching_weights_wd();
   bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
  protected:
@@ -179,6 +180,7 @@ class CWeightedDegreeCharKernel: public CCharKernel
   REAL compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
   REAL compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
   REAL compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
+  REAL compute_using_block(CHAR* avec, INT alen, CHAR* bvec, INT blen);
 
   virtual void remove_lhs() ;
   virtual void remove_rhs() ;
@@ -206,6 +208,6 @@ class CWeightedDegreeCharKernel: public CCharKernel
   struct SuffixTree **trees ;
   bool tree_initialized ;
   bool use_normalization ;
-  
+  REAL* matching_weights;
 };
 #endif

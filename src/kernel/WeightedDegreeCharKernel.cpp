@@ -13,6 +13,7 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d
 	properties |= KP_LINADD | KP_KERNCOMBINATION;
 	lhs=NULL;
 	rhs=NULL;
+	matching_weights=NULL;
 
 	weights=new REAL[d*(1+max_mismatch)];
 	assert(weights!=NULL);
@@ -34,7 +35,6 @@ CWeightedDegreeCharKernel::~CWeightedDegreeCharKernel()
 	position_weights=NULL ;
 	delete[] weights_buffer ;
 	weights_buffer = NULL ;
-	
 }
 
 void CWeightedDegreeCharKernel::remove_lhs() 
@@ -130,6 +130,8 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	initialized = false ;
 	INT i;
 
+	init_matching_weights_wd();
+
 	if (use_normalization)
 	{
 		if (rhs_changed)
@@ -206,6 +208,9 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 void CWeightedDegreeCharKernel::cleanup()
 {
+	delete[] matching_weights;
+	matching_weights=NULL;
+
 	delete_optimization();
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
@@ -334,6 +339,28 @@ REAL CWeightedDegreeCharKernel::compute_with_mismatch(CHAR* avec, INT alen, CHAR
 	return sum ;
 }
 
+REAL CWeightedDegreeCharKernel::compute_using_block(CHAR* avec, INT alen, CHAR* bvec, INT blen)
+{
+	REAL sum=0;
+
+	INT match_len=-1;
+
+	for (INT i=0; i<alen; i++)
+	{
+		if (avec[i]==bvec[i])
+			match_len++;
+		else
+		{
+			if (match_len>=0)
+				sum+=matching_weights[match_len];
+			match_len=-1;
+		}
+	}
+
+	if (match_len>=0)
+		sum+=matching_weights[match_len];
+}
+
 REAL CWeightedDegreeCharKernel::compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen)
 {
 	REAL sum = 0.0 ;
@@ -402,15 +429,20 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 
   double result=0;
 
-  for (INT i=0; i<alen; i++)
-	  match_vector[i]=(avec[i]!=bvec[i]) ;
-  
-  if (max_mismatch > 0)
-	  result = compute_with_mismatch(avec, alen, bvec, blen) ;
-  else if (length==0)
-	  result = compute_without_mismatch(avec, alen, bvec, blen) ;
+  if (max_mismatch == 0 && length == 0)
+	  result = compute_using_block(avec, alen, bvec, blen) ;
   else
-	  result = compute_without_mismatch_matrix(avec, alen, bvec, blen) ;
+  {
+	  for (INT i=0; i<alen; i++)
+		  match_vector[i]=(avec[i]!=bvec[i]) ;
+
+	  if (max_mismatch > 0)
+		  result = compute_with_mismatch(avec, alen, bvec, blen) ;
+	  else if (length==0)
+		  result = compute_without_mismatch(avec, alen, bvec, blen) ;
+	  else
+		  result = compute_without_mismatch_matrix(avec, alen, bvec, blen) ;
+  }
   
   ((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
@@ -933,4 +965,22 @@ bool CWeightedDegreeCharKernel::set_position_weights(REAL* pws, INT len)
 	}
 	else
 		return false;
+}
+
+bool CWeightedDegreeCharKernel::init_matching_weights_wd()
+{
+	delete[] matching_weights;
+	matching_weights=new REAL[seq_length];
+
+	if (matching_weights)
+	{
+		double deg=degree;
+		INT k;
+		for (k=0; k<degree ; k++)
+			matching_weights[k]=(-pow(k,3) + (3*deg-3)*pow(k,2) + (9*deg-2)*k + 6*deg) / (3*deg*(deg+1));
+		for (k=degree; k<seq_length ; k++)
+			matching_weights[k]=(-deg+3*k+4)/3;
+	}
+
+	return (matching_weights!=NULL);
 }
