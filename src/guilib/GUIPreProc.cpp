@@ -268,7 +268,7 @@ bool CGUIPreProc::attach_preproc(CHAR* param)
 	{
 		attached_preprocs_lists->get_last_element();
 		attached_preprocs_lists->append_element(preprocs);
-		preprocs=NULL;
+		preprocs=new CList<CPreProc*>(true);
 	}
 
 	return result;
