@@ -5,8 +5,10 @@
 
 CFKFeatures::CFKFeatures(long size, CHMM* p, CHMM* n) : CRealFeatures(size)
 {
-  weight_a=-1;
-  set_models(p,n);
+	pos_prob=NULL;
+	neg_prob=NULL;
+	weight_a=-1;
+	set_models(p,n);
 }
 
  CFKFeatures::CFKFeatures(const CFKFeatures &orig): 
@@ -28,8 +30,10 @@ double CFKFeatures::deriv_a(double a, int dimension)
 	{
 		for (i=0; i<Obs->get_DIMENSION(); i++)
 		{
-			double pp=pos->model_probability(i) ;
-			double pn=neg->model_probability(i) ;
+			//double pp=pos->model_probability(i) ;
+			//double pn=neg->model_probability(i) ;
+			double pp=(pos_prob) ? pos_prob[i] : pos->model_probability(i);
+			double pn=(neg_prob) ? neg_prob[i] : neg->model_probability(i);
 			double sub=pp ;
 			if (pn>pp) sub=pn ;
 			pp-=sub ;
@@ -69,6 +73,16 @@ double CFKFeatures::set_opt_a(double a)
 	if (a==-1)
 	{
 		CIO::message("estimating a.\n");
+		pos_prob=new double[pos->get_observations()->get_DIMENSION()];
+		neg_prob=new double[pos->get_observations()->get_DIMENSION()];
+		assert(pos_prob!=NULL);
+		assert(neg_prob!=NULL);
+		for (int i=0; i<pos->get_observations()->get_DIMENSION(); i++)
+		{
+			pos_prob[i]=pos->model_probability(i) ;
+			neg_prob[i]=neg->model_probability(i) ;
+		}
+
 		double la=0;
 		double ua=1;
 		a=(la+ua)/2;
@@ -82,6 +96,10 @@ double CFKFeatures::set_opt_a(double a)
 			a=(la+ua)/2;
 			CIO::message("opt_a: a=%1.3e  deriv=%1.3e  la=%1.3e  ua=%1.3e\n", a, da, la ,ua);
 		}
+		delete[] pos_prob;
+		delete[] neg_prob;
+		pos_prob=NULL;
+		neg_prob=NULL;
 	}
 
 	weight_a=a;
@@ -91,21 +109,21 @@ double CFKFeatures::set_opt_a(double a)
 
 void CFKFeatures::set_models(CHMM* p, CHMM* n)
 {
-  assert(p!=NULL && n!=NULL);
+	assert(p!=NULL && n!=NULL);
 
-  pos=p; 
-  neg=n;
-  set_num_vectors(0);
+	pos=p; 
+	neg=n;
+	set_num_vectors(0);
 
-  delete[] feature_matrix  ;
-  feature_matrix=NULL ;
-  
-  CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
-  
-  if (pos && pos->get_observations())
-	set_num_vectors(pos->get_observations()->get_DIMENSION());
-  if (pos && neg)
-	num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
+	delete[] feature_matrix  ;
+	feature_matrix=NULL ;
+
+	CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
+
+	if (pos && pos->get_observations())
+		set_num_vectors(pos->get_observations()->get_DIMENSION());
+	if (pos && neg)
+		num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
 }
 
 int CFKFeatures::get_label(long idx)

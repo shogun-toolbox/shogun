@@ -46,6 +46,8 @@ class CFKFeatures: public CRealFeatures
  protected:
   CHMM* pos;
   CHMM* neg;
+  double* pos_prob;
+  double* neg_prob;
   REAL weight_a;
 };
 #endif
