@@ -24,7 +24,7 @@ CPCACut::~CPCACut()
 bool CPCACut::init(CFeatures* f_)
 {
   CIO::message("calling CPCACut::init\n") ;
-
+ 
   CRealFeatures *f=(CRealFeatures*) f_ ;
   int num_examples=f->get_number_of_examples() ;
   int num_features=((CRealFeatures*)f)->get_num_features() ;
@@ -180,6 +180,11 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 REAL* CPCACut::apply_to_feature_vector(REAL* f, int &len)
 {
   //  CIO::message("preprocessing vector of length %i to length %i\n", len, num_dim) ;
+
+//    REAL *ret=new REAL[len] ;
+//    for (int i=0; i<len; i++)
+//      ret[i]=f[i] ;
+//    return ret ;
 
   REAL *ret=new REAL[num_dim] ;
   int onei=1 ;

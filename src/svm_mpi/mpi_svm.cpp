@@ -176,14 +176,14 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
 
   double zval = 0.0;
   double dr = 1.0;
-  CMatrix<double> b(1, 1, &zval, false, donothing);
-  CMatrix<double> l(zeros<double>(m_full, 1));
-  CMatrix<double> u(ones<double>(m_full, 1));
+  CMatrix<double> *b=new CMatrix<double>(1, 1, &zval, false, donothing);
+  CMatrix<double> *l=new CMatrix<double>(zeros<double>(m_full, 1));
+  CMatrix<double> *u=new CMatrix<double>(ones<double>(m_full, 1));
   CIO::message("C=%e\n", C) ;
-  u = C * u;
-  CMatrix<double> c(-ones<double>(m_full, 1));
-  CMatrix<double> r(1, 1, &dr, false, donothing);
-  CMatrix<double> A(1, num_examples, dlabels, false, my_delete);
+  *u = C * *u;
+  CMatrix<double> *c=new CMatrix<double>(-ones<double>(m_full, 1));
+  CMatrix<double> *r=new CMatrix<double>(1, 1, &dr, false, donothing);
+  CMatrix<double> *A=new CMatrix<double>(1, num_examples, dlabels, false, my_delete);
   
   CIntPointPR optimizer;
   optimizer.SetBound(10);
@@ -193,10 +193,12 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
   MPI_Comm_rank(MPI_COMM_WORLD, (int *)&my_rank);
   const char * how ;
 
-  CMatrix<double> primal, dual ;
+  CMatrix<double> *primal=new CMatrix<double>(), 
+    *dual=new CMatrix<double>() ;
 
   CIO::message("starting optimizer\n") ;
 
+#ifdef save_input
   #define HOME "/opt/home/raetsch/"
   {
     CIO::message("saving Z matrix to ~/Z.dat\n") ;    
@@ -247,14 +249,14 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
     fwrite(d, sizeof(double), b.GetNumRows()*b.GetNumColumns(), f) ;
     fclose(f) ;
   } 
+#endif
       
-  optimize_smw2mpi_core<double>(optimizer, c, Z, A, b, l, u,
-				r, m_prime, m_last, my_rank,
-				num_nodes, res, primal,
-				dual, &how);
-  
-  double *prim = primal.GetDataPointer();
-  double *dua = dual.GetDataPointer();
+  optimize_smw2mpi_core<double>(optimizer, *c, Z, *A, *b, *l, *u,
+				*r, m_prime, m_last, my_rank,
+				num_nodes, res, *primal,
+				*dual, &how);
+  double *prim = primal->GetDataPointer();
+  double *dua = dual->GetDataPointer();
   double *Zd = Z.GetDataPointer();
 
   REAL *w=new REAL[num_rows] ;
@@ -282,6 +284,14 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
     //      CIO::message("out[%i]=%e\n", i, out[i]-*dua) ;
   } ;
 
+  delete c; 
+  delete A; 
+  delete b; 
+  delete l; 
+  delete u; 
+  delete r;
+  //  delete dual ;
+  // delete primal ;
 } ;
 
 
