@@ -52,8 +52,8 @@ bool CGUISVM::train(char* param)
 	param=CIO::skip_spaces(param);
 
 	CFeatures* features=gui->guifeatures.get_train_features();
-	//CPreProc * preproc=gui->guipreproc.get_preproc() ;
-	CPreProc * preproc=NULL;
+	CPreProc * preproc=gui->guipreproc.get_preproc() ;
+	//CPreProc * preproc=NULL;
 
 	if (!svm)
 	{

@@ -14,7 +14,6 @@ CGUIFeatures::~CGUIFeatures()
 		
 bool CGUIFeatures::set_features(char* param)
 {
-				//gui->guifeatures.set_hmms(pos, neg) ;
 	bool result=false;
 	param=CIO::skip_spaces(param);
 	char target[1024];
