@@ -84,7 +84,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 								seq_len*(sizeof(T_STATES)+sizeof(INT))+
 								genestr_len*sizeof(bool))/(1024*1024)
 		 ;
-    bool is_big = (mem_use>30) || (seq_len>1000) ;
+    bool is_big = (mem_use>200) || (seq_len>5000) ;
 
 	if (is_big)
 	{
@@ -266,6 +266,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 				list_len++ ;
 			}
 		}
+		
 		math.nmin(tempvv, tempii, list_len, nbest) ;
 		
 		for (short int k=0; k<nbest; k++)
@@ -288,19 +289,21 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 
 			while (pos_seq[i]>0)
 			{
+				//fprintf(stderr,"s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
 				state_seq[i+1] = PSI(pos_seq[i], state_seq[i], q);
 				pos_seq[i+1]   = PTAB(pos_seq[i], state_seq[i], q) ;
 				q              = KTAB(pos_seq[i], state_seq[i], q) ;
 				i++ ;
 			}
+			//fprintf(stderr,"s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
 			INT num_states = i+1 ;
 			for (i=0; i<num_states;i++)
 			{
 				my_state_seq[i+k*seq_len] = state_seq[num_states-i-1] ;
 				my_pos_seq[i+k*seq_len]   = pos_seq[num_states-i-1] ;
 			}
-			my_state_seq[num_states]=-1 ;
-			my_pos_seq[num_states]=-1 ;
+			my_state_seq[num_states+k*seq_len]=-1 ;
+			my_pos_seq[num_states+k*seq_len]=-1 ;
 		}
 	}
 	if (is_big)

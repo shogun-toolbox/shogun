@@ -192,13 +192,13 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 
 		init_penalty_struct_cache(PEN[id]) ;
 
-		if (PEN->cache)
-			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_len=%i max_len=%i transform='%s' (cache initialized)\n", PEN[id].name,
+/*		if (PEN->cache)
+/			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_len=%i max_len=%i transform='%s' (cache initialized)\n", PEN[id].name,
 					PEN[id].id, PEN[id].len, PEN[id].min_len, PEN[id].max_len, transform_str) ;
 		else
 			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_len=%i max_len=%i transform='%s'\n", PEN[id].name,
 					PEN[id].id, PEN[id].len, PEN[id].min_len, PEN[id].max_len, transform_str) ;
-
+*/
 		
 		mxFree(transform_str) ;
 		mxFree(name_str) ;

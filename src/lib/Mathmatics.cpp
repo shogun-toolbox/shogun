@@ -38,7 +38,7 @@ INT CMath::LOGRANGE            = 0; // range for logtable: log(1+exp(x))  -25 <=
 #ifdef USE_PATHDEBUG
 const REAL CMath::INFTY            =  1e11;	        // infinity
 #else
-const REAL CMath::INFTY            =  1e10; //-log(0.0);	// infinity
+const REAL CMath::INFTY            =  -log(0.0);	// infinity
 #endif
 const REAL CMath::ALMOST_NEG_INFTY =  -1000;	
 
@@ -310,6 +310,8 @@ void CMath::qsort_backward(REAL* output, INT* index, INT size)
 
 void CMath::min(REAL* output, INT* index, INT size)
 {
+	if (size<=0)
+		return ;
 	REAL min_elem = output[0] ;
 	INT min_index = 0 ;
 	for (INT i=1; i<size; i++)
@@ -326,7 +328,7 @@ void CMath::nmin(REAL* output, INT* index, INT size, INT n)
 {
 	if (6*n*size<13*size*log(size))
 		for (INT i=0; i<n; i++)
-			min(&output[i], &index[i], size) ;
+			min(&output[i], &index[i], size-i) ;
 	else
 		qsort(output, index, size) ;
 }

@@ -62,30 +62,24 @@ inline REAL lookup_penalty(const struct penalty_struct *PEN, INT p_value)
 		CIO::message(M_ERROR, "unknown transform\n") ;
 		break ;
 	}
-	INT i=0 ;
-	
+
+	INT idx = 0 ;
 	REAL ret ;
+	for (INT i=0; i<PEN->len; i++)
+		if (PEN->limits[i]<=d_value)
+			idx++ ;
 	
-	i = math.fast_find_range(PEN->limits, PEN->len, d_value) ;
-	if (i==-1)
+	if (idx==0)
 		ret=PEN->penalties[0] ;
-	else if (i==PEN->len-1)
+	else if (idx==PEN->len)
 		ret=PEN->penalties[PEN->len-1] ;
 	else
 	{
-		INT i_smaller = i ;
-		INT i_larger  = i+1 ;
-		
-		
-		if (PEN->limits[i_larger]==PEN->limits[i_smaller])
-			ret=(PEN->penalties[i_smaller]/2+PEN->penalties[i_larger]/2) ;
-		else
-			ret= (PEN->penalties[i_smaller]*(PEN->limits[i_larger]-d_value) + 
-				  PEN->penalties[i_larger]*(d_value-PEN->limits[i_smaller]))/
-				(PEN->limits[i_larger]-PEN->limits[i_smaller]) ;
+		ret = (PEN->penalties[idx]*(d_value-PEN->limits[idx-1]) + PEN->penalties[idx-1]*
+			   (PEN->limits[idx]-d_value)) / (PEN->limits[idx]-PEN->limits[idx-1]) ;  
 	}
-	if (p_value>=30 && p_value<150)
-		fprintf(stderr, "%s %i(%i) -> %1.2f\n", PEN->name, p_value, i, ret) ;
+	//if (p_value>=30 && p_value<150)
+	//fprintf(stderr, "%s %i(%i) -> %1.2f\n", PEN->name, p_value, idx, ret) ;
 	
 	
 	return ret ;

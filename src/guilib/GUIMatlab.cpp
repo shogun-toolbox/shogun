@@ -346,7 +346,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 		INT P=mxGetN(mx_penalty_info) ;
 		INT L=mxGetN(mx_genestr) ;
 		
-		CIO::message(M_DEBUG, "N=%i, M=%i, P=%i, L=%i\n", N, M, P, L) ;
+		//CIO::message(M_DEBUG, "N=%i, M=%i, P=%i, L=%i, nbest=%i\n", N, M, P, L, nbest) ;
 		
 		if (
 			mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
