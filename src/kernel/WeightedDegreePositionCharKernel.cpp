@@ -146,7 +146,7 @@ bool CWeightedDegreePositionCharKernel::load_init(FILE* src)
 	return true;
 }
 
-bool CWeightedDegreePositionCharKernel::save_init(FILE* dest)
+bool CWeightedDegreePositionCharKernel::save_init(FILE* /*dest*/)
 {
 	return false;
 }
