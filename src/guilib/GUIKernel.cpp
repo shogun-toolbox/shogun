@@ -1059,7 +1059,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				INT degree=2;
 				INT normalize=1;
 
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
+				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
 				delete k;
 				k=new CCharPolyKernel(size, degree, inhomogene==1, normalize==1);
 
@@ -1075,7 +1075,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				INT degree=2;
 				INT normalize=1;
 
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
+				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
 				delete k;
 				k=new CSparsePolyKernel(size, degree, inhomogene==1, normalize==1);
 
