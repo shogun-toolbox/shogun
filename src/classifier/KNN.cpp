@@ -87,7 +87,6 @@ REAL* CKNN::test()
 		for (j=0; j<k; j++)
 			classes[train_lab[j]]++;
 
-
 		//choose the class that got 'outputted' most often
 		INT out_idx=0;
 		INT out_max=0;
