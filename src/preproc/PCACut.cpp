@@ -67,11 +67,11 @@ bool CPCACut::init(CFeatures* f_)
 	feature[j]-=mean[j] ;
 
       double oned=1.0 ; int onei=1 ;
-      //      dger_(&num_features,&num_features, &oned, feature, &onei, feature, &onei, cov, &num_features) ;
+      dger_(&num_features,&num_features, &oned, feature, &onei, feature, &onei, cov, &num_features) ;
 
-      for (int k=0; k<num_features; k++)
-	for (int l=0; l<num_features; l++)
-	  cov[k*num_features+l]+=feature[l]*feature[k] ;
+      //for (int k=0; k<num_features; k++)
+      //	for (int l=0; l<num_features; l++)
+      //          cov[k*num_features+l]+=feature[l]*feature[k] ;
 
       f->free_feature_vector(feature, free) ;
       feature=NULL ;
@@ -81,7 +81,9 @@ bool CPCACut::init(CFeatures* f_)
     for (int l=0; l<num_features; l++)
       cov[k*num_features+l]/=num_examples ;
 
+  CIO::message("done\n") ;
 
+  CIO::message("Computing Eigenvalues ...") ;
   REAL *values=new REAL[num_features] ;
   REAL *vectors=new REAL[num_features*num_features] ;
   //  int fl ;
@@ -105,19 +107,15 @@ bool CPCACut::init(CFeatures* f_)
       double *work=new double[lwork] ;
       int info ; char V='V', U='U' ;
       dsyev_(&V, &U, &num_features, cov, &num_features, values, work, &lwork, &info) ;
+
       int num_ok=0 ;
       for (int i=0; i<num_features; i++)
 	{
-	  CIO::message("EV[%i]=%e\n", i, values[i]) ;
+	  //	  CIO::message("EV[%i]=%e\n", i, values[i]) ;
 	  if (values[i]>1e-4)
 	    num_ok++ ;
 	} ;
-//        for (int k=0; k<num_features; k++)
-//  	{
-//  	  for (int l=0; l< num_features; l++)
-//  	    CIO::message("%e ", cov[k*num_features+l]) ;
-//  	  CIO::message("\n") ;
-//  	} ;
+      CIO::message("Done\nReducing from %i to %i features..", num_features, num_ok) ;
       T=new REAL[num_ok*num_features] ;
       int num_ok2=0 ;
       num_dim=num_ok ;
@@ -130,24 +128,8 @@ bool CPCACut::init(CFeatures* f_)
 	      num_ok2++ ;
 	    } ;
 	} ;
-//  	  CIO::message("\n") ;
-//        for (int k=0; k<num_features; k++)
-//  	{
-//  	  for (int l=0; l< num_dim; l++)
-//  	    CIO::message("%e ", T[l+k*num_dim]) ;
-//  	  CIO::message("\n") ;
-//  	} ;
-//  	  CIO::message("\n") ;
-//        for (int k=0; k<num_features; k++)
-//  	{
-//  	  for (int l=0; l< num_dim; l++)
-//  	    CIO::message("%e ", T2[l+k*num_dim]) ;
-//  	  CIO::message("\n") ;
-//  	} ;
-      
+      CIO::message("Done\n") ;
     }
-
-
   return true ;
 }
 
@@ -175,7 +157,6 @@ bool CPCACut::save(FILE* f)
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 {
-#warning crashes right here!
   long num_vectors=0;
   long num_features=0;
   

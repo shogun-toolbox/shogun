@@ -33,6 +33,7 @@ class CSVMMPI: public CSVM
   unsigned m_full, m_last, m_prime;
   unsigned my_rank, num_nodes, num_rows;
   CMatrix<double> Z ;
+  double svm_b, *svm_w ;
   
   CBlockCache<double> bcache_d;
   CBlockCache<int> bcache_i;
