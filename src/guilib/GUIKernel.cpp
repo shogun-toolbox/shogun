@@ -1,6 +1,7 @@
 #include "guilib/GUIKernel.h"
 #include "kernel/Kernel.h"
 #include "kernel/LinearKernel.h"
+#include "lib/io.h"
 
 CGUIKernel::CGUIKernel(CGUI * gui_): gui(gui_)
 {
