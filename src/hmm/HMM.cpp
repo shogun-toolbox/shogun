@@ -890,7 +890,6 @@ void CHMM::ab_buf_comp(REAL *a_buf, REAL* b_buf, int dim)
 void CHMM::estimate_model_baum_welch(CHMM* train)
 {
     int i,j,t,dim;
-    REAL a_sum_num, b_sum_num;		//numerator
     REAL a_sum_denom, b_sum_denom;	//denominator
     REAL dimmodprob=-math.INFTY;	//model probability for dim
     REAL fullmodprob=-math.INFTY;	//for all dims
@@ -4901,6 +4900,7 @@ void CHMM::invalidate_top_feature_cache(E_TOP_FEATURE_CACHE_VALIDITY v)
     };
 }
 
+#ifndef PARALLEL
 
 bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 {
@@ -4976,3 +4976,127 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
     }
 
 }
+
+#else
+
+struct S_THREAD_PARAM2
+{
+  REAL* dest;
+  CHMM * pos, *neg ;
+  int    dim ;
+}  ;
+
+typedef struct S_THREAD_PARAM2 T_THREAD_PARAM2 ;
+
+void *compute_top_feature_vector_helper(void * p)
+{
+  T_THREAD_PARAM2* params=((T_THREAD_PARAM2*)p) ;
+  CHMM::compute_top_feature_vector(params->pos, params->neg, params->dim, params->dest) ;
+  return NULL ;
+} ;
+
+bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
+{
+  pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
+  T_THREAD_PARAM2 *params=new T_THREAD_PARAM2[NUM_PARALLEL] ;
+
+  num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
+    
+  if (!feature_cache_sv || !feature_cache_obs || feature_cache_in_question )
+    {
+      check_and_update_crc(pos, neg);
+      
+      if (!feature_cache_sv)
+	{
+	  printf("refreshing top_sv_feature_cache...........\n"); fflush(stdout);
+	  
+	  int totobs=pos->get_observations()->get_support_vector_num();
+	  feature_cache_sv=new double[num_features*totobs];
+	  
+	  printf("precalculating top feature vectors for support vectors\n"); fflush(stdout);
+	  
+	  for (int x=0; x<totobs; x++)
+	    {
+	      if (!(x % (totobs/10+1)))
+		printf("%02d%%.", (int) (100.0*x/totobs));
+	      else if (!(x % (totobs/200+1)))
+		printf(".");
+	      
+	      fflush(stdout);
+
+	      /* The following code calls the function
+  		   compute_top_feature_vector(pos, neg, x, &feature_cache_sv[x*num_features]);
+		 NUM_PARALLEL times (in parallel).
+	      */
+	      if (x%NUM_PARALLEL==0)
+		{
+		  int i ;
+		  for (i=0; i<NUM_PARALLEL; i++)
+		    if (x+i<pos->p_observations->get_DIMENSION())
+		      {
+			params[i].pos=pos ;
+			params[i].neg=neg ;
+			params[i].dim=x+i ;
+			params[i].dest=&feature_cache_sv[x*num_features] ;
+#ifdef SUNOS
+			thr_create(NULL,0,compute_top_feature_vector_helper, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
+#else // SUNOS
+			pthread_create(&threads[i], NULL, compute_top_feature_vector_helper, (void*)&params[i]) ;
+#endif // SUNOS
+		      } ;
+		  for (i=0; i<NUM_PARALLEL; i++)
+		    if (x+i<pos->p_observations->get_DIMENSION())
+		      {
+			void * ret ;
+			pthread_join(threads[i], &ret) ;
+		      } ;
+		} ;
+	    }
+	  
+	  printf(".done.\n");
+	  fflush(stdout);
+	}
+      else
+	printf("WARNING: using previous top_sv_feature_cache NOT recalculating\n"); fflush(stdout);
+      
+      if (!feature_cache_obs)
+	{
+	  printf("refreshing top_obs_feature_cache...........\n"); fflush(stdout);
+	  
+	  int totobs=pos->get_observations()->get_DIMENSION();
+	  feature_cache_obs=new double[num_features*totobs];
+	  
+	  printf("precalculating top feature vectors for observations\n"); fflush(stdout);
+	  
+	  for (int x=0; x<totobs; x++)
+	    {
+	      if (!(x % (totobs/10+1)))
+		printf("%02d%%.", (int) (100.0*x/totobs));
+	      else if (!(x % (totobs/200+1)))
+		printf(".");
+	      
+	      fflush(stdout);
+	      
+	      compute_top_feature_vector(pos, neg, x, &feature_cache_obs[x*num_features]);
+	    }
+	  
+	  printf(".done.\n");
+	  fflush(stdout);
+	}
+      else
+	printf("WARNING: using previous top_obs_feature_cache NOT recalculating\n"); fflush(stdout);
+      
+      if ((feature_cache_obs!=NULL) && (feature_cache_sv!=NULL || pos->get_observations()->get_support_vector_num() <= 0))
+	return true;
+      else 
+	return false;
+    }
+  else
+    {
+      printf("WARNING: using previous top_feature_cache NOT recalculating\n"); fflush(stdout);
+      return true;
+    }
+  
+}
+
+#endif
