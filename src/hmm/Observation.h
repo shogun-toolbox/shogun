@@ -57,23 +57,6 @@ enum E_OBS_TYPE
 	NONE
 };
 
-/// Alphabet of observations
-enum E_OBS_ALPHABET
-{
-	/// DNA - letters A,C,G,T
-	DNA=0,
-
-	/// PROTEIN - letters a-z
-	PROTEIN=1,
-
-	/// ALPHANUM - [0-9a-z]
-	ALPHANUM=2,
-
-	/// CUBE - [1-6]
-	CUBE=3
-};
-
-
 /** Observation related Functions.
  * Class which collects generic observation functions
  */

@@ -62,6 +62,11 @@ public:
 
 	virtual CFeatures* duplicate() const=0 ;
 
+	/** return size (in bytes) a single element (e.g. sizeof(float))
+	    requires
+	*/
+	virtual int get_size()=0;
+
 	virtual bool load(char* fname)=0;
 	virtual bool save(char* fname)=0;
 	

@@ -154,6 +154,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	}
   }
 
+  virtual int get_size() { return sizeof(ST); }
   virtual inline long  get_num_vectors() { return num_vectors; }
   inline long  get_num_features() { return num_features; }
   inline void set_num_features(int num)
