@@ -180,8 +180,8 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				else
 					CIO::message("no estimator set\n");
 				
-				((CSalzbergWordKernel*)kernel)->set_prior_probs(num_pos/(num_pos+num_neg), 
-																num_neg/(num_pos+num_neg)) ;
+				((CSalzbergWordKernel*)kernel)->set_prior_probs((REAL)num_pos/(num_pos+num_neg), 
+																(REAL)num_neg/(num_pos+num_neg)) ;
 				
 				if (kernel)
 				{
