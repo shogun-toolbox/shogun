@@ -88,6 +88,7 @@ EOF
 			LINK=$_cc
 			_cppveropts='-v'
 			"$_cc" "$_cppveropts" >/dev/null 2>&1 || _cppveropts='-V'
+			echores $_cc
 			break;
 		fi
 	done
@@ -176,6 +177,13 @@ osf1()     { issystem "OSF1"    ; return "$?" ; }
 x86() {
   case "$host_arch" in
     i[3-9]86|x86|x86pc|k5|k6|k6-2|k6-3|pentium*|athlon*|i586-i686) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+x86_64() {
+  case "$host_arch" in
+    x86_64) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -446,7 +454,7 @@ determine_march_mcpu()
 	echo "Detected host architecture: $host_arch"
 
 # Try to find the available options for the current CPU
-	if x86 || ppc; then
+	if x86 || x86_64 || ppc; then
 	if test -r /proc/cpuinfo ; then
 		# linux with /proc mounted, extract cpu information from it
 		_cpuinfo="cat /proc/cpuinfo"
@@ -924,13 +932,26 @@ EOF
 		_mcpu=''
 		;;
 
-	  x86_64)
+	  x86_64|amd64)
 		_def_arch='#define ARCH_X86_64 1'
 		_target_arch='TARGET_ARCH_X86_64 = yes'
 		iproc='x86_64'
 		proc=''
 		_march=''
 		_mcpu=''
+
+		case "$pvendor" in
+			AuthenticAMD)
+			case "$pfamily" in
+				15) proc=k8 iproc=k8;;
+				*) proc=k8 iproc=k8 ;;
+			esac
+			;;
+			*)
+			proc=x86-64 iproc=x86-64;;
+		esac
+
+		cc_check -march=$proc -mcpu=$proc  || proc=x86-64
 		;;
 
 	  sparc)
@@ -1105,6 +1126,22 @@ set_opts()
 			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -undefined suppress -L/Applications/MATLAB7/bin/mac -lmx -lmex -lmat $LINKFLAGS"
 			INCLUDES="$INCLUDES -I/Applications/MATLAB7/extern/include"
 			TARGET="gf.mexmac"
+		elif linux
+		then
+			case "$host_arch" in
+			  x86_64|amd64)
+				COMPFLAGS_C="$COMPFLAGS_C -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE -pthread"
+				COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE -pthread"
+				LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/fml/ag-raetsch/share/software/matlab64/extern/lib/glnxa64/mexFunction.map -Wl,--rpath-link,/fml/ag-raetsch/share/software/matlab64/bin/glnxa64 -L/fml/ag-raetsch/share/software/matlab64/bin/glnxa64 -lmx -lmex -lmat -lm -lstdc++"
+				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/matlab64/extern/include/"
+				TARGET="gf.mexa64"
+			  ;;
+			  *)
+				LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
+				INCLUDES="$INCLUDES -I/home/matrix/matlab/extern/include/"
+				TARGET="gf.mexglx"
+				;;
+			esac
 		else
 			LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
 			INCLUDES="$INCLUDES -I/home/matrix/matlab/extern/include/"
