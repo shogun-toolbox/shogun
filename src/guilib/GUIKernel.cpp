@@ -215,9 +215,13 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				INT i=0;
 				INT length = 0 ;
 				INT center = 0 ;
-				INT step = 0 ;
+				REAL step = 0 ;
 
-				sscanf(param, "%s %s %d %d %d %d %d %d", kern_type, data_type, &size, &d, &max_mismatch, &length, &center, &step);
+				sscanf(param, "%s %s %d %d %d %d %d %le", 
+					   kern_type, data_type, &size, &d, &max_mismatch, 
+					   &length, &center, &step);
+				CIO::message("step = %le\n") ;
+				
 				REAL* weights=new REAL[d*(1+max_mismatch)];
 				REAL sum=0;
 
@@ -245,19 +249,24 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				
 				INT *shift = new INT[length] ;
 				for (INT i=center; i<length; i++)
-					shift[i] = (int)floor((i-center)/step) ;
+					shift[i] = (int)floor(((REAL)(i-center))/step) ;
 
 				for (INT i=center; i>=0; i--)
-					shift[i] = (int)floor((center-i)/step) ;
+					shift[i] = (int)floor(((REAL)(center-i))/step) ;
 
 				for (INT i=0; i<length; i++)
-					CIO::message("shift[%i]=%i\n", i, shift[i]) ;
+					if (shift[i]>length)
+						shift[i]=length ;
+
+				for (INT i=0; i<length; i++)
+				  CIO::message("shift[%i]=%i\n", i, shift[i]) ;
 				
 				delete kernel;
 				kernel=new CWeightedDegreePositionCharKernel(size, weights, 
 															 d, max_mismatch, 
 															 shift, length);
-
+				delete[] shift ;
+				
 				if (kernel)
 				{
 					CIO::message("WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);

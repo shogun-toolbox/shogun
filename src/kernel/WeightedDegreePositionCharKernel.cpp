@@ -18,7 +18,7 @@ CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, 
 	for (INT i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
 
-	shift_len = shift_len ;
+	shift_len = shift_len_ ;
 	shift = new INT[shift_len] ;
 	max_shift = 0 ;
 	
@@ -28,7 +28,7 @@ CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, 
 		if (shift[i]>max_shift)
 			max_shift = shift[i] ;
 	} ;
-	assert(max_shift>0 && max_shift<=shift_len) ;
+	assert(max_shift>=0 && max_shift<=shift_len) ;
 }
 
 CWeightedDegreePositionCharKernel::~CWeightedDegreePositionCharKernel() 
@@ -170,7 +170,7 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
 
   // can only deal with strings of same length
   assert(alen == blen);
-  assert(shift_len == alen - degree) ;
+  assert(shift_len == alen) ;
 
   REAL sqrt_a= 1 ;
   REAL sqrt_b= 1 ;
@@ -213,7 +213,6 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
 	  for (INT k=1; (k<=shift[i]) && (i<alen-degree-k); k++)
 	  {
 		  INT mismatches=0;
-		  INT pos = k + max_shift ;
 		  for (INT j=0; j<degree && mismatches<=max_mismatch; j++)
 		  {
 			  if (avec[i+j+k]!=bvec[i+j])
@@ -222,7 +221,7 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
 				  if (mismatches>max_mismatch)
 					  break ;
 			  } ;
-			  sum1[pos] += weights[j+degree*mismatches];
+			  sum1[k-1] += weights[j+degree*mismatches];
 		  }
 	  } ;
   }
@@ -233,7 +232,6 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
 	  for (INT k=1; (k<=shift[i]) && (i<alen-degree-k); k++)
 	  {
 		  INT mismatches=0;
-		  INT pos = k + max_shift ;
 		  for (INT j=0; j<degree && mismatches<=max_mismatch; j++)
 		  {
 			  if (avec[i+j]!=bvec[i+j+k])
@@ -242,7 +240,7 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
 				  if (mismatches>max_mismatch)
 					  break ;
 			  } ;
-			  sum2[pos] += weights[j+degree*mismatches];
+			  sum2[k-1] += weights[j+degree*mismatches];
 		  }
 	  } ;
   }

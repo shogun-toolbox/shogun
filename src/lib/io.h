@@ -24,7 +24,7 @@ public:
 
 	static CHAR* skip_spaces(CHAR* str);
 protected:
-	void static check_target();
+	static void check_target();
 
 protected:
 	static FILE* target;

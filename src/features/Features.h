@@ -68,7 +68,7 @@ public:
 	virtual CFeatures* duplicate() const=0 ;
 
 	//in case there is a feature matrix allow for reshaping
-	virtual bool reshape(INT num_features, INT num_vectors) { return false; }
+	virtual bool reshape(INT /*num_features*/, INT /*num_vectors*/) { return false; }
 
 	/** return size (in bytes) a single element (e.g. sizeof(float))
 	    requires
