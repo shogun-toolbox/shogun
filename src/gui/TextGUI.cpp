@@ -55,6 +55,7 @@ static const CHAR* N_SAVE_KERNEL_INIT=	"save_kernel_init";
 static const CHAR* N_LOAD_LABELS=		"load_labels";
 static const CHAR* N_LOAD_FEATURES=		"load_features";
 static const CHAR* N_SAVE_FEATURES=		"save_features";
+static const CHAR* N_CLEAN_FEATURES=	"clean_features";
 static const CHAR* N_RESHAPE=			"reshape";
 static const CHAR* N_LOAD_DEFINITIONS=	"load_defs";
 static const CHAR* N_SAVE_KERNEL=		"save_kernel";
@@ -65,8 +66,10 @@ static const CHAR* N_ENTROPY=			"entropy";
 static const CHAR* N_PERMUTATION_ENTROPY="permutation_entropy";
 static const CHAR* N_SET_KERNEL=		"set_kernel";
 static const CHAR* N_ADD_KERNEL=		"add_kernel";
+static const CHAR* N_CLEAN_KERNEL=		"clean_kernel";
 static const CHAR* N_ADD_PREPROC=		"add_preproc";
 static const CHAR* N_DEL_PREPROC=		"del_preproc";
+static const CHAR* N_CLEAN_PREPROC=		"clean_preproc";
 static const CHAR* N_PREPROCESS=		"preprocess";
 static const CHAR* N_INIT_KERNEL=		"init_kernel";
 static const CHAR* N_DELETE_KERNEL_OPTIMIZATION=		"delete_kernel_optimization";
@@ -199,6 +202,7 @@ void CTextGUI::print_help()
 	CIO::message(M_MESSAGEONLY, "\n[FEATURES]\n");
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|LOGPLUSONE>\t\t\t- add preprocessor of type\n", N_ADD_PREPROC);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <NUM>\t\t\t- delete preprocessor\n", N_DEL_PREPROC);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <NUM>\t\t\t- delete all preprocessors\n", N_CLEAN_PREPROC);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <TRAIN|TEST> <NUM_FEAT> <NUM_VEC>\t\t\t- reshape feature matrix for simple features\n", N_RESHAPE);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert dense features to sparse feature matrix\n", N_CONVERT_TO_SPARSE);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert sparse features to dense feature matrix\n", N_CONVERT_TO_DENSE);
@@ -348,6 +352,10 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_SAVE_FEATURES, strlen(N_SAVE_FEATURES)))
 	{
 		guifeatures.save(input+strlen(N_SAVE_FEATURES));
+	} 
+	else if (!strncmp(input, N_CLEAN_FEATURES, strlen(N_CLEAN_FEATURES)))
+	{
+		guifeatures.clean(input+strlen(N_CLEAN_FEATURES));
 	} 
 	else if (!strncmp(input, N_RESHAPE, strlen(N_RESHAPE)))
 	{
@@ -579,9 +587,17 @@ bool CTextGUI::parse_line(CHAR* input)
 	{
 		guikernel.add_kernel(input+strlen(N_ADD_KERNEL));
 	} 
+	else if (!strncmp(input, N_CLEAN_KERNEL, strlen(N_CLEAN_KERNEL)))
+	{
+		guikernel.clean_kernel(input+strlen(N_CLEAN_KERNEL));
+	} 
 	else if (!strncmp(input, N_DEL_PREPROC, strlen(N_DEL_PREPROC)))
 	{
 		guipreproc.del_preproc(input+strlen(N_DEL_PREPROC));
+	} 
+	else if (!strncmp(input, N_CLEAN_PREPROC, strlen(N_CLEAN_PREPROC)))
+	{
+		guipreproc.clean_preproc(input+strlen(N_CLEAN_PREPROC));
 	} 
 	else if (!strncmp(input, N_ADD_PREPROC, strlen(N_ADD_PREPROC)))
 	{

@@ -13,6 +13,8 @@ class CGUIPreProc
 
 		bool add_preproc(CHAR* param);
 		bool del_preproc(CHAR* param);
+		bool clean_preproc(CHAR* param);
+
 		inline CPreProc** get_preprocs(INT &num) { num=num_preprocs; return preprocs; }
 		bool load(CHAR* param);
 		bool save(CHAR* param);

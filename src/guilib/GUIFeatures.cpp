@@ -325,6 +325,44 @@ bool CGUIFeatures::save(CHAR* param)
 	return result;
 }
 
+bool CGUIFeatures::clean(CHAR* param)
+{
+	bool result=false;
+	param=CIO::skip_spaces(param);
+	CHAR target[1024]="";
+
+	if ((sscanf(param, "%s", target))==1)
+	{
+		CFeatures** f_ptr=NULL;
+
+		if (strcmp(target,"TRAIN")==0)
+		{
+			f_ptr=&train_features;
+		}
+		else if (strcmp(target,"TEST")==0)
+		{
+			f_ptr=&test_features;
+		}
+		else
+		{
+			CIO::message(M_ERROR, "see help for parameters\n");
+			return false;
+		}
+
+		if (*f_ptr)
+		{
+			delete *f_ptr ;
+			*f_ptr = NULL ;
+			return true ;
+		} else
+			CIO::message(M_DEBUG, "feature already = NULL\n") ;
+		return false ;
+	} else
+		CIO::message(M_ERROR, "see help for params\n");
+
+	return false ;
+}
+
 bool CGUIFeatures::reshape(CHAR* param)
 {
 	bool result=false;

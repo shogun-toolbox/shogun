@@ -893,6 +893,18 @@ bool CGUIKernel::add_kernel(CHAR* param)
 	return false;
 }
 
+bool CGUIKernel::clean_kernel(CHAR* param)
+{
+	if (kernel!=NULL) 
+	{
+		delete kernel;
+		kernel= NULL ;
+		return true ;
+	}
+	CIO::message(M_DEBUG, "kernel already =NULL\n") ;
+	return false;
+}
+
 bool CGUIKernel::del_kernel(CHAR* param)
 {
 	return false;

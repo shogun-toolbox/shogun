@@ -77,6 +77,14 @@ bool CGUIPreProc::add_preproc(CHAR* param)
 	return add_preproc(preproc);
 }
 
+bool CGUIPreProc::clean_preproc(CHAR* param)
+{
+	while (num_preprocs>0) 
+		del_preproc(param) ;
+	
+	return true ;
+}
+
 bool CGUIPreProc::del_preproc(CHAR* param)
 {
 	INT i,j;

@@ -34,6 +34,7 @@ class CGUIFeatures
 		
 		bool load(CHAR* param);
 		bool save(CHAR* param);
+		bool clean(CHAR* param);
 
 		bool reshape(CHAR* param);
 
