@@ -254,43 +254,45 @@ bool CGUIPreProc::attach_preproc(CHAR* param)
 
 bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force)
 {
-	INT num_preproc=preprocs->get_num_elements();
-	CPreProc** preprocs = NULL ;
-	if (num_preproc > 0)
+	if (trainfeat)
 	{
-		if (trainfeat)
+		if (testfeat)
 		{
-			if (testfeat)
+			for (INT i=0; i<trainfeat->get_num_preproc();  i++)
 			{
-				assert(trainfeat->get_num_preproc()==num_preproc);
-
-				for (INT i=0; i<trainfeat->get_num_preproc();  i++)
-				{
-					preprocs[i]->init(trainfeat);
-					testfeat->add_preproc(trainfeat->get_preproc(i));
-				}
-
-				preproc_all_features(testfeat, force);
-			}
-			else
-			{
-				for (INT i=0; i<num_preproc; i++)
-				{
-					preprocs[i]->init(trainfeat);
-					trainfeat->add_preproc(preprocs[i]);
-
-					preproc_all_features(trainfeat, force);
-				}
+				///PROBLEM
+				CPreProc* preproc = trainfeat->get_preproc(i);
+				preproc->init(trainfeat);
+				testfeat->add_preproc(trainfeat->get_preproc(i));
 			}
 
-			return true;
+			preproc_all_features(testfeat, force);
 		}
 		else
-			CIO::message(M_ERROR, "no features for preprocessing available!\n");
+		{
+			CPreProc* preproc = preprocs->get_first_element();
+
+			if (preproc)
+			{
+				preproc->init(trainfeat);
+				trainfeat->add_preproc(preproc);
+
+				preproc_all_features(trainfeat, force);
+			}
+
+			while ( (preproc = preprocs->get_next_element()) !=NULL )
+			{
+				preproc->init(trainfeat);
+				trainfeat->add_preproc(preproc);
+
+				preproc_all_features(trainfeat, force);
+			}
+		}
+
+		return true;
 	}
 	else
-		CIO::message(M_ERROR, "no preprocessors available!\n");
-
+		CIO::message(M_ERROR, "no features for preprocessing available!\n");
 	return false;
 }
 

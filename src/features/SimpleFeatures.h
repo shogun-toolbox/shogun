@@ -168,7 +168,11 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	}
 	else
 	{
-		CIO::message(M_ERROR, "no feature matrix available or features already preprocessed - skipping.\n");
+		if (!feature_matrix)
+			CIO::message(M_ERROR, "no feature matrix\n");
+
+		if (!get_num_preproc())
+			CIO::message(M_ERROR, "no preprocessors available\n");
 		return false;
 	}
   }

@@ -81,7 +81,7 @@ bool CWDCharKernel::init_matching_weights_const()
 	if (matching_weights)
 	{
 		for (int i=1; i<seq_length+1 ; i++)
-			matching_weights[i-1]=1;
+			matching_weights[i-1]=1.0/seq_length;
 	}
 
 	return (matching_weights!=NULL);
@@ -106,8 +106,11 @@ bool CWDCharKernel::init_matching_weights_sqpoly()
 
 	if (matching_weights)
 	{
-		for (int i=1; i<seq_length+1 ; i++)
-			matching_weights[i-1]=((double) i)*i+degree*i;
+		for (int i=1; i<degree+1 ; i++)
+			matching_weights[i-1]=((double) i)*i;
+
+		for (int i=degree+1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=i;
 	}
 
 	return (matching_weights!=NULL);
@@ -119,8 +122,11 @@ bool CWDCharKernel::init_matching_weights_cubicpoly()
 
 	if (matching_weights)
 	{
-		for (int i=1; i<seq_length+1 ; i++)
-			matching_weights[i-1]=((double) i)*i*i+degree*i*i;
+		for (int i=1; i<degree+1 ; i++)
+			matching_weights[i-1]=((double) i)*i*i;
+
+		for (int i=degree+1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=i;
 	}
 
 	return (matching_weights!=NULL);
@@ -132,8 +138,11 @@ bool CWDCharKernel::init_matching_weights_exp()
 
 	if (matching_weights)
 	{
-		for (int i=1; i<seq_length+1 ; i++)
-			matching_weights[i-1]=exp(((double) i)*degree/seq_length);
+		for (int i=1; i<degree+1 ; i++)
+			matching_weights[i-1]=exp(((double) i/10.0));
+
+		for (int i=degree+1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=i;
 	}
 
 	return (matching_weights!=NULL);
@@ -145,8 +154,11 @@ bool CWDCharKernel::init_matching_weights_log()
 
 	if (matching_weights)
 	{
-		for (int i=1; i<seq_length+1 ; i++)
-			matching_weights[i-1]=log(((double) i)*degree);
+		for (int i=1; i<degree+1 ; i++)
+			matching_weights[i-1]=pow(log(i),2);
+
+		for (int i=degree+1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=i;
 	}
 
 	return (matching_weights!=NULL);
