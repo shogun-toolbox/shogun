@@ -216,7 +216,6 @@ bool CHMM::alloc_state_dependend_arrays()
 
 #endif //PARALLEL
 
-	this->invalidate_model();
 
 	if (!transition_matrix_a && !observation_matrix_b && !initial_state_distribution_p && !end_state_distribution_q)
 	{
@@ -249,14 +248,28 @@ bool CHMM::alloc_state_dependend_arrays()
 #endif //LOG_SUMARRAY
 	transition_matrix_A=new REAL[this->N*this->N];
 	observation_matrix_B=new REAL[this->N*this->M];
+	
+	if (p_observations)
+	{
 #ifdef PARALLEL
-	if (p_observations && alpha_cache[0].table!=NULL)
+		if (alpha_cache[0].table!=NULL)
 #else
-	if (p_observations && alpha_cache.table!=NULL)
+			if (alpha_cache.table!=NULL)
 #endif
-		set_observations(p_observations);
+
+
+				set_observations(p_observations);
+			else
+				set_observation_nocache(p_observations);
+	}
 	else
-		set_observation_nocache(p_observations);
+	{
+
+		CIO::message("setting observations\n");
+		set_observations(p_observations);
+	}
+	
+	this->invalidate_model();
 
 	return ((transition_matrix_A != NULL) && (observation_matrix_B != NULL) && 
 			(transition_matrix_a != NULL) && (observation_matrix_b != NULL) && (initial_state_distribution_p != NULL) &&
@@ -280,6 +293,7 @@ void CHMM::free_state_dependend_arrays()
 	arrayN1=NULL;
 	arrayN2=NULL;
 #endif
+
 	delete[] transition_matrix_A;
 	delete[] observation_matrix_B;
 	delete[] transition_matrix_a;
@@ -346,18 +360,22 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 		//map higher order to alphabet
 		M=	M << (MAX_M * (ORDER_-1));
 	}
+	else
+		MAX_M=0;
 	
 	//initialize parameters
 	this->M= M;
 	this->N= N;
-	//this->T= 0; 
+	
 	this->ORDER=ORDER_;
 	this->PSEUDO= PSEUDO;
 	this->model= model;
 	this->p_observations=NULL;
 	this->reused_caches=false;
+	
+	if (modelfile)
+		files_ok= files_ok && load_model(modelfile);
 	  
-
 #ifdef PARALLEL
 	  path_prob_updated=new bool[NUM_PARALLEL];
 	  path_prob_dimension=new int[NUM_PARALLEL];
@@ -379,10 +397,6 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 	this->loglikelihood=false;
 	this->invalidate_model();
 
-	//all the in out model and train files needed for io  ////!!!!!!!!!!!!!!!!
-	if (modelfile)
-		files_ok= files_ok && load_model(modelfile);
-
 #ifdef PARALLEL
 	arrayN1=new P_REAL[NUM_PARALLEL];
 	arrayN2=new P_REAL[NUM_PARALLEL];
@@ -395,9 +409,7 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 #endif //LOG_SUMARRAY
 
 	alloc_state_dependend_arrays();
-
-	set_observations(p_observations);
-
+	
 	return	((files_ok) &&
 			(transition_matrix_A != NULL) && (observation_matrix_B != NULL) && 
 			(transition_matrix_a != NULL) && (observation_matrix_b != NULL) && (initial_state_distribution_p != NULL) &&
@@ -4465,9 +4477,9 @@ bool CHMM::append_model(CHMM* append_model, REAL* cur_out, REAL* app_out)
 		delete[] end_state_distribution_q;
 		delete[] transition_matrix_a;
 		delete[] observation_matrix_b;
+		
 		transition_matrix_a=n_a;
 		observation_matrix_b=n_b;
-
 		initial_state_distribution_p=n_p;
 		end_state_distribution_q=n_q;
 
@@ -4528,9 +4540,9 @@ void CHMM::add_states(int num_states, REAL default_value)
 	delete[] end_state_distribution_q;
 	delete[] transition_matrix_a;
 	delete[] observation_matrix_b;
+
 	transition_matrix_a=n_a;
 	observation_matrix_b=n_b;
-
 	initial_state_distribution_p=n_p;
 	end_state_distribution_q=n_q;
 

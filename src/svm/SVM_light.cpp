@@ -73,7 +73,7 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 	mylearn_parm.svm_costratio=1.0;
 	mylearn_parm.svm_costratio_unlab=1.0;
 	mylearn_parm.svm_unlabbound=1E-5;
-	mylearn_parm.epsilon_crit=1E-6;
+	mylearn_parm.epsilon_crit=1E-5;
 	mylearn_parm.epsilon_a=1E-15;
 	mylearn_parm.compute_loo=0;
 	mylearn_parm.rho=1.0;
