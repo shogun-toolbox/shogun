@@ -268,6 +268,7 @@ typedef struct shrink_state {
   REAL lp_C ;          // regularization parameter for w smoothing
   INT count ;          // number of iteration
   REAL mymaxdiff ;     // current alpha gap
+  REAL prev_mymaxdiff ;     // current alpha gap
   INT num_rows ;       // number of alpha constraint rows 
   INT num_active_rows ;// number of active alpha constraint rows
   REAL *buffer_num ;   // a buffer of length num

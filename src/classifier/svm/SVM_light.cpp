@@ -19,7 +19,8 @@ extern "C" {
 }
 #endif
 
-const INT num_zero_rounds_to_deactivate = 50 ;
+const INT num_zero_rounds_to_deactivate = 50000 ;
+const INT num_round_check_deactivated = 100000 ;
 
 CSVMLight::CSVMLight()
 {
@@ -44,6 +45,7 @@ CSVMLight::CSVMLight()
 	// MKL stuff
 	rho=0 ;
 	mymaxdiff=1 ;
+	prev_mymaxdiff = 1 ;
 	num_rows=0 ;
 	num_active_rows=0 ;
 	weight_epsilon=0 ;
@@ -678,11 +680,8 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  }
 	  
 	  if(verbosity>=2) t3=get_runtime();
-	  if (1)
-		  update_linear_component(docs,label,active2dnum,a,a_old,working2dnum,totdoc,
-								  lin,aicache);
-	  else
-		  update_linear_component_mkl_reactivate_inactive_variables(docs,label,lin,a) ;
+	  update_linear_component(docs,label,active2dnum,a,a_old,working2dnum,totdoc,
+							  lin,aicache);
 	  
 	  if(verbosity>=2) t4=get_runtime();
 	  supvecnum=calculate_svm_model(docs,label,lin,a,a_old,c,working2dnum,active2dnum,model);
@@ -764,6 +763,10 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		  
 	  }
 	  mymaxdiff=*maxdiff ;
+	  if (prev_mymaxdiff==-2)
+		  prev_mymaxdiff = mymaxdiff ;
+	  if (prev_mymaxdiff==-1)
+		  prev_mymaxdiff = -2 ;
 
 	  if(verbosity>=3) {
 		  CIO::message(M_MESSAGEONLY, "\n");
@@ -1149,13 +1152,13 @@ void CSVMLight::update_linear_component_mkl_reactivate_inactive_variables(LONG* 
 	// preparation
 	REAL* sumw      = new REAL[num_kernels];
 	REAL* w_backup  = new REAL[num_kernels] ;
-	INT num_weights = -1;
-	const REAL* w   = k->get_subkernel_weights(num_weights);
-	assert(num_weights==num_kernels) ;
 	
 	{ // recompute and add all alpha constraints
 		REAL* w1        = new REAL[num_kernels] ;
 		REAL* Wtmp      = new REAL[num_kernels*num] ;
+		INT num_weights = -1;
+		const REAL* w   = k->get_subkernel_weights(num_weights);
+		assert(num_weights==num_kernels) ;
 		
 		// backup and set to one
 		INT num_reactivated = 0 ;
@@ -1174,22 +1177,28 @@ void CSVMLight::update_linear_component_mkl_reactivate_inactive_variables(LONG* 
 					CIO::message (M_ERROR, "Failed to deactivate variable.\n");
 			}
 		}
-		CIO::message(M_INFO, "reactivating %i of %i MKL variables\n", num_reactivated, num_weights) ;
+		// set the kernel weights
+		k->set_subkernel_weights(w1, num_weights) ;
+
+		CIO::message(M_INFO, "reactivated %i of %i MKL variables\n", num_reactivated, num_weights) ;
 		
+		CIO::message(M_INFO, "recompute %i constraints ", cur_num_rows-start_row) ;
 		for (INT row = start_row; row<cur_num_rows; row++)
 		{
-			// set the kernel weights
-			k->set_subkernel_weights(w1, num_weights) ;
-			
+			CIO::message(M_INFO, ".") ;			
 			// create update of normal (with changed alphas only; relative to a)
 			k->clear_normal();
 			for(INT i=0;i<num;i++) 
-				if (orig_alphas_by_row[row-start_row][i]!=a[i])
-					k->add_to_normal(docs[i], (orig_alphas_by_row[row-start_row][i]-a[i]) * (double)label[i] );
+				k->add_to_normal(docs[i], orig_alphas_by_row[row-start_row][i] * (double)label[i] );
+			//if (orig_alphas_by_row[row-start_row][i]!=a[i])
+			//	k->add_to_normal(docs[i], (orig_alphas_by_row[row-start_row][i]-a[i]) * (double)label[i] );	
 			
 			// determine contributions of different kernels
-			memcpy(Wtmp, W, num_kernels*num*sizeof(REAL)) ;
-			for (int i=0; i<num; i++)
+			//memcpy(Wtmp, W, num_kernels*num*sizeof(REAL)) ;
+			//memset(Wtmp, 0, num_kernels*num*sizeof(REAL)) ;
+			for (INT i=0; i<num*num_kernels; i++)
+				Wtmp[i]=0.0 ;
+			for (INT i=0; i<num; i++)
 				k->compute_by_subkernel(i,&Wtmp[i*num_kernels]) ;
 			
 			{ // compute sumw
@@ -1243,7 +1252,8 @@ void CSVMLight::update_linear_component_mkl_reactivate_inactive_variables(LONG* 
 		delete[] w1 ;
 		delete[] Wtmp ;
 	}
-
+	CIO::message(M_INFO, "\nOptimizing LP\n") ;
+	
 	{ // optimize LP
 		INT status = CPXlpopt (env, lp);
 		if ( status ) 
@@ -1268,7 +1278,6 @@ void CSVMLight::update_linear_component_mkl_reactivate_inactive_variables(LONG* 
 		if ( status ) 
 			CIO::message(M_ERROR, "Failed to obtain solution.\n");
 		
-		num_active_rows=0 ;
 		if (solution_ok)
 		{
 			// set weights, store new rho and compute new w gap
@@ -1282,15 +1291,16 @@ void CSVMLight::update_linear_component_mkl_reactivate_inactive_variables(LONG* 
 
 			// output x and old x for verification
 			for (INT i=0; i<num_kernels; i++)
-				CIO::message(M_DEBUG, "x[%i] = %1.3f  x_old[i] = %1.3f \n", i, x[i], i, w_backup[i]) ;
+				CIO::message(M_DEBUG, "x[%i] = %1.3f  x_old[%i] = %1.3f \n", i, x[i], i, w_backup[i]) ;
 		} else
 			w_gap = 0 ; // then something is wrong and we rather 
    		                // stop sooner than later
-		delete[] x ;
+		//delete[] x ;
 	}
-	
+
+	CIO::message(M_INFO, "Deactivating unused variables\n") ;
 	{ // deactivate variables
-		INT num_deactivated = 0 ;
+		INT num_reactivated = 0 ;
 		for (INT i=0; i<num_kernels; i++)
 			if ((w_zero_rounds[i]>=num_zero_rounds_to_deactivate) && (w_deactivated[i]==0))
 			{
@@ -1301,18 +1311,60 @@ void CSVMLight::update_linear_component_mkl_reactivate_inactive_variables(LONG* 
 				INT status = CPXchgbds(env, lp, 1, &i, &type, &ubnd);
 				if ( status ) 
 					CIO::message (M_ERROR, "Failed to deactivate variable.\n");
-				num_deactivated++ ;
 			} else
-				if (w_deactivated[i]!=0)
+				if ((w_deactivated[i]!=0) && (w_zero_rounds[i]<num_zero_rounds_to_deactivate))
 				{					
 					w_deactivated[i]=0 ;
 					num_w_deactivated-- ;
+					num_reactivated++ ;
+					fprintf(stderr,"rectivate %i\n", i) ;
 				} ;
+		INT num_deactivated = 0 ;
+		for (INT i=0; i<num_kernels; i++)
+			if (w_deactivated[i]!=0)
+				num_deactivated++ ;
 		
+		CIO::message(M_INFO, "reactivated %i variables\n", num_reactivated) ;
 		CIO::message(M_INFO, "deactivated %i variables after reactivation\n", num_deactivated) ;
 	}
 	
+
+	{ // update W
+		REAL* w1        = new REAL[num_kernels] ;
+		INT num_weights = -1;
+		const REAL* w   = k->get_subkernel_weights(num_weights);
+		assert(num_weights==num_kernels) ;
+		
+		// backup and set to one
+		for (INT i=0; i<num_kernels; i++)
+		{
+			w_backup[i] = w[i] ;
+			//if (w_deactivated[i])
+				w1[i] = 1.0 ;
+				//else
+				//w1[1] = 0.0 ;
+		}
+		// set the kernel weights
+		k->set_subkernel_weights(w1, num_weights) ;
+
+		k->clear_normal();
+		for(INT i=0;i<num;i++) 
+			k->add_to_normal(docs[i], a[i] * (double)label[i] );
+		
+		// determine contributions of different kernels
+		for (INT i=0; i<num*num_kernels; i++)
+			W[i]=0.0 ;
+		for (INT i=0; i<num; i++)
+			k->compute_by_subkernel(i,&W[i*num_kernels]) ;
+
+		// restore original weights
+		k->set_subkernel_weights(w_backup, num_weights) ;
+	}
+
+	CIO::message(M_INFO, "Update lin\n") ;
 	{ // update lin
+		INT num_weights = -1;
+		const REAL* w   = k->get_subkernel_weights(num_weights);
 #ifdef HAVE_ATLAS
 		cblas_dgemv(CblasColMajor,
 					CblasTrans, num_kernels, num,
@@ -1327,8 +1379,9 @@ void CSVMLight::update_linear_component_mkl_reactivate_inactive_variables(LONG* 
 #endif
 	}
 
+	//CIO::message(M_INFO, "Recompute objective (for old weights)\n") ;
 	{ // recompute objective and output some stuff
-		REAL objective=0;
+		/*REAL objective=0;
 #ifdef HAVE_ATLAS
 		REAL *alphay  = buffer_num ;
 		REAL sumalpha = 0 ;
@@ -1344,21 +1397,22 @@ void CSVMLight::update_linear_component_mkl_reactivate_inactive_variables(LONG* 
 					0.5, W, num_kernels, alphay, 1, 1.0, sumw, 1) ;
 		
 		for (int i=0; i<num_kernels; i++)
-			objective+=w[i]*sumw[i] ;
+			objective+=w_backup[i]*sumw[i] ;
 #else
 		for (int d=0; d<num_kernels; d++)
 		{
 			sumw[d]=0;
 			for(int i=0; i<num; i++)
 				sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d] - 1);
-			objective   += w[d]*sumw[d];
+			objective   += w_backup[d]*sumw[d];
 		}
 #endif
 		// update w gap
 		w_gap = CMath::abs(1-rho/objective) ;
-		
+		*/
+
 		// output something
-		CIO::message(M_INFO,"\nU%i. Objective: %f  RHO: %f  wgap=%f agap=%f (active rows=%i/%i)\n", count, objective, rho, w_gap,mymaxdiff,num_active_rows,num_rows-start_row);
+		CIO::message(M_INFO,"\n*%i. RHO: %f \n", count, rho);
 	}
 
 	delete[] w_backup ;
@@ -1389,8 +1443,12 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 		for (INT i=0; i<num_kernels; i++)
 		{
 			w_backup[i] = w[i] ;
-			w1[i]=(w_deactivated[i]!=0) ; // set weight to zero if inactivated, 
+            // set weight to zero if inactivated, 
 			// leave optimization to kernel implementation
+			if (w_deactivated[i]==0)
+				w1[i]=1.0 ; 
+			else
+				w1[i]=0.0 ;
 		}
 		// set the kernel weights
 		k->set_subkernel_weights(w1, num_weights) ;
@@ -1406,7 +1464,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 		// determine contributions of different kernels
 		for (int i=0; i<num; i++)
 			k->compute_by_subkernel(i,&W[i*num_kernels]) ;
-		
+
 		// restore old weights
 		k->set_subkernel_weights(w_backup,num_weights) ;
 		
@@ -1444,9 +1502,11 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 	count++ ;
 #ifdef USE_CPLEX			
 	w_gap = CMath::abs(1-rho/objective) ;
-	
-	if (w_gap >= 0.9999*get_weight_epsilon())
+	//fprintf(stderr, "%f %f", mymaxdiff, prev_mymaxdiff) ;
+	if ((w_gap >= 0.9999*get_weight_epsilon()) && (mymaxdiff < prev_mymaxdiff/2.0))
 	{
+		prev_mymaxdiff = -1 ;
+		
 		CIO::message(M_INFO, "*") ;
 		if (rho==0)
 		{
@@ -1587,8 +1647,8 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 				memcpy(tmp, orig_alphas_by_row, orig_alphas_by_row_num*sizeof(REAL*)) ;
 				delete[] orig_alphas_by_row ;
 				orig_alphas_by_row = tmp ;
+				orig_alphas_by_row_num = numrows+1 ;
 			}
-			assert(orig_alphas_by_row[numrows]==NULL) ;
 			orig_alphas_by_row[numrows] = new REAL[num] ;
 			memcpy(orig_alphas_by_row[numrows], a, num*sizeof(double)) ;
 		}
@@ -1605,14 +1665,14 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 			
 			if (!buffer_numcols)
 				buffer_numcols  = new REAL[cur_numcols] ;
-			if (!buffer1_numrows)
-				buffer1_numrows = new REAL[cur_numrows] ;
-			if (!buffer2_numrows)
-				buffer2_numrows = new REAL[cur_numrows] ;
+			//if (!buffer1_numrows)
+			//buffer1_numrows = new REAL[cur_numrows] ;
+			//if (!buffer2_numrows)
+			//	buffer2_numrows = new REAL[cur_numrows] ;
 					
 			REAL *x     = buffer_numcols ;
-			REAL *slack = buffer1_numrows ;
-			REAL *pi    = buffer1_numrows ;
+			REAL *slack = new REAL[cur_numrows] ;
+			REAL *pi    = new REAL[cur_numrows] ;
 			
 			if ( x     == NULL ||
 				 slack == NULL ||
@@ -1661,7 +1721,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 					delete[] orig_alphas_by_row[max_idx - start_row] ;
 					for (INT i = max_idx-start_row+1; i<orig_alphas_by_row_num; i++)
 						orig_alphas_by_row[i-1] = orig_alphas_by_row[i] ;
-					orig_alphas_by_row[orig_alphas_by_row_num] = NULL ;
+					orig_alphas_by_row[orig_alphas_by_row_num-1] = NULL ;
 				}
 
 				// set weights, store new rho and compute new w gap
@@ -1679,6 +1739,8 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 						w_zero_rounds[i]=0 ;
 				}
 				//fprintf(stderr,"\n") ;
+				delete[] pi ;
+				delete[] slack ;
 			} else
 				w_gap = 0 ; // then something is wrong and we rather 
 				            // stop sooner than later
@@ -1726,7 +1788,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 	INT jj ;
 	for(jj=0;active2dnum[jj]>=0;jj++);
 	
-	if (count%100==0)
+	if (count%10==0)
 	{
 		INT start_row = 1 ;
 		if (C_mkl!=0.0)
@@ -1735,6 +1797,9 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 	}
 	
 	delete[] sumw;
+
+	if (count%num_round_check_deactivated==0)
+		  update_linear_component_mkl_reactivate_inactive_variables(docs,label,lin,a) ;
 }
 
 
