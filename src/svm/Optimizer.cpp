@@ -16,9 +16,12 @@
 /*                                                                     */
 /***********************************************************************/
 
-# include <math.h>
-# include "svm/pr_loqo.h"
-# include "svm/svm_common.h"
+#include "svm/pr_loqo.h"
+#include "svm/Optimizer.h"
+#include "svm/SVM.h"
+#include "lib/common.h"
+
+#include <math.h>
 
 /* Common Block Declarations */
 
@@ -38,8 +41,6 @@ double opt_precision=DEF_PRECISION_LINEAR;
 
 /* /////////////////////////////////////////////////////////////// */
 
-void *my_malloc();
-
 double *optimize_qp(
 QP *qp,
 double *epsilon_crit,
@@ -54,8 +55,8 @@ LEARN_PARM *learn_parm)
   int iter;
  
   if(!primal) { /* allocate memory at first call */
-    primal=(double *)my_malloc(sizeof(double)*nx*3);
-    dual=(double *)my_malloc(sizeof(double)*(nx*2+1));
+    primal=new double[nx*3];
+    dual=new double[nx*2+1];
   }
   
   if(verbosity>=4) { /* really verbose */

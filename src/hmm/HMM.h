@@ -943,8 +943,8 @@ public:
 	inline void set_psi(int time, T_STATES state, T_STATES value, int dimension)
 	{
 #ifdef DEBUG
-	  if ((time>=get_obs_max_T())||(state>N))
-	    fprintf(stderr,"index out of range in set_psi(%i,%i,.) [%i,%i]\n",time,state,get_obs_max_T(),N) ;
+	  if ((time>=p_observations->get_obs_max_T())||(state>N))
+	    fprintf(stderr,"index out of range in set_psi(%i,%i,.) [%i,%i]\n",time,state,p_observations->get_obs_max_T(),N) ;
 #endif
 	  STATES_PER_OBSERVATION_PSI(dimension)[time*N+state]=value;
 	}
@@ -1042,8 +1042,8 @@ public:
 	inline T_STATES get_psi(int time, T_STATES state, int dimension) const
 	{
 #ifdef DEBUG
-	  if ((time>=get_obs_max_T())||(state>N))
-	    fprintf(stderr,"index out of range in get_psi(%i,%i) [%i,%i]\n",time,state,get_obs_max_T(),N) ;
+	  if ((time>=p_observations->get_obs_max_T())||(state>N))
+	    fprintf(stderr,"index out of range in get_psi(%i,%i) [%i,%i]\n",time,state,p_observations->get_obs_max_T(),N) ;
 #endif
 	  return STATES_PER_OBSERVATION_PSI(dimension)[time*N+state];
 	}
@@ -1320,6 +1320,27 @@ public:
 	    prepare_path_derivative(dimension) ;
 	    return (get_B(i,j)==0) ? (0) : (get_B(i,j)*exp(-get_b(i,j))) ;
 	  } 
+
+	//@}
+
+	/**@name functions for TOP feature vector
+	 * computes the TOP featurevector
+	 * @param pos positive model
+	 * @param neg negative model
+	 */ 
+	//@{
+	   
+	    /// compute featurevectors for all observations and return a cache of size num_features*num_observations
+	    double* compute_top_feature_cache(CHMM* pos, CHMM* neg, int & num_features);
+	    
+	    /**@name compute featurevector for observation dim
+	     * Computes the featurevector for one observation 
+	     * @param dim specifies the observation for which the featurevector is calculated
+	     * @param featurevector if not NULL the vector will be written to that address
+	     * @return returns the featurevector or NULL if unsuccessfull
+	     */ 
+	    double* compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* featurevector=NULL);
+	//@}
 
 protected:
 	/**@name input helper functions.

@@ -205,7 +205,7 @@ static void help()
     printf("%s - make current model the negative model; then free current model \n",N_SET_NEG_MODEL);
     printf("%s <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
     printf("%s [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
-    printf("%s [PROTEIN|DNA|ALPHANUM]\t\t\t- changes alphabet type\n", N_ALPHABET);
+    printf("%s <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [PROTEIN|DNA|ALPHANUM|CUBE]\t\t\t- changes alphabet type\n", N_ALPHABET);
     printf("%s [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms (%i,%e)\n",N_CONVERGENCE_CRITERIA,ITERATIONS,EPSILON);
 #ifdef FIX_POS
     printf("%s position state\t- sets the state which has to be passed at a certain position\n",N_FIX_POS_STATE);
@@ -750,7 +750,7 @@ static bool prompt(FILE* infile=stdin)
 	char obs_type[1024];
 	char target[1024];
 
-	sscanf(&input[i], "%s %s", obs_type, target);
+	sscanf(&input[i], "%s %s", target, obs_type);
 	CObservation* obs=NULL;
 
 	if (strcmp(target,"POSTRAIN")==0)
@@ -776,19 +776,22 @@ static bool prompt(FILE* infile=stdin)
 	else
 		printf("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
 
-	if (obs_type[0]=='P' || obs_type[0]=='D' || obs_type[0]=='A')
+	if (obs_type[0]=='P' || obs_type[0]=='D' || obs_type[0]=='A' || obs_type[0]=='C')
 	{
 	    if (obs_type[0]=='P')
 		alphabet=PROTEIN;
-	    if (obs_type[0]=='A')
+	    else if (obs_type[0]=='A')
 		alphabet=ALPHANUM;
 	    else if (obs_type[0]=='D')
 		alphabet=DNA;
+	    else if (obs_type[0]=='C')
+		alphabet=CUBE;
 	}
 	else
 	{
 	    if (obs)
-			printf("see help for parameters. current setting: alphabet=%s\n",(obs->get_alphabet()==0) ? "DNA":(obs->get_alphabet()==1 ? "PROTEIN":"ALPHANUM"));		    
+		printf("see help for parameters. current setting: alphabet=%s\n",
+			(obs->get_alphabet()==DNA) ?  "DNA":  (obs->get_alphabet()==PROTEIN) ? "PROTEIN" : (obs->get_alphabet()==CUBE) ? "CUBE":"ALPHANUM" );		    
 	}
     } 
     else if (!strncmp(input, N_CONVERGENCE_CRITERIA, strlen(N_CONVERGENCE_CRITERIA)))
@@ -1225,6 +1228,9 @@ static bool prompt(FILE* infile=stdin)
 		    case PROTEIN:
 			M=26;
 			break;
+		    case CUBE:
+			M=6;
+			break;
 		    case ALPHANUM:
 			M=36;
 			break;
@@ -1433,7 +1439,10 @@ static bool prompt(FILE* infile=stdin)
 		    pos->set_observations(obs);
 		    neg->set_observations(obs);
 
-		    theta=new double[pos->get_N()*(pos->get_N()+2)+pos->get_N()*pos->get_M() + neg->get_N()*(neg->get_N()+2)+neg->get_N()*neg->get_M()];
+		    int larger_N=math.max(pos->get_N(), neg->get_N());
+		    int larger_M=math.max(pos->get_M(), neg->get_M());
+
+		    theta=new double[1+larger_N*(1+larger_N+1+larger_M)];
 		    svm.svm_train(name,obs, 4, C);
 		    delete theta;
 		    theta=NULL;
@@ -1526,11 +1535,15 @@ static bool prompt(FILE* infile=stdin)
 			CObservation* old_neg=neg->get_observations();
 
 			pos->set_observations(obs);
-			neg->set_observations(obs,pos);
+			neg->set_observations(obs);
 
-			theta=new double[pos->get_N()*(pos->get_N()+2)+pos->get_N()*pos->get_M() + neg->get_N()*(neg->get_N()+2)+neg->get_N()*neg->get_M()];
+			int larger_N=math.max(pos->get_N(), neg->get_N());
+			int larger_M=math.max(pos->get_M(), neg->get_M());
+
+			theta=new double[(1+larger_N*(1+larger_N+1+larger_M))];
+
 			svm.svm_test(obs, outputfile);
-			delete theta;
+			delete[] theta;
 			theta=NULL;
 
 			pos->set_observations(old_pos);

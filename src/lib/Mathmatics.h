@@ -45,7 +45,32 @@ public:
 	{
 	  return ((a)<=(b))?(a):(b) ;
 	}
+	
+	///return the maximum of two long
+	inline long max(long a, long b) 
+	{
+	  return ((a)>=(b))?(a):(b) ;
+	} ;
+
+	///return the minimum of two longs
+	inline long min(long a, long b) 
+	{
+	  return ((a)<=(b))?(a):(b) ;
+	}
+	
 	//@}
+
+#ifdef _WIN32
+	inline int isnan(double a)
+	{
+	    return(_isnan(a));
+	}
+#else
+	inline int isnan(double a)
+	{
+	    return(isnan(a));
+	}
+#endif
 
 	/**@name misc functions */
 	//@{

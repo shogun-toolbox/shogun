@@ -90,7 +90,8 @@ lib/Observation.o: /usr/include/bits/stdio_lim.h lib/common.h
 lib/Observation.o: lib/Mathmatics.h /usr/include/math.h
 lib/Observation.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 lib/Observation.o: /usr/include/bits/mathcalls.h
-svm/SVM.o: hmm/HMM.h /usr/include/math.h /usr/include/features.h
+svm/Optimizer.o: lib/common.h
+svm/SVM.o: svm/kernel.h hmm/HMM.h /usr/include/math.h /usr/include/features.h
 svm/SVM.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 svm/SVM.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 svm/SVM.o: /usr/include/bits/mathcalls.h /usr/include/stdio.h
@@ -100,40 +101,22 @@ svm/SVM.o: /usr/include/bits/types.h /usr/include/libio.h
 svm/SVM.o: /usr/include/_G_config.h /usr/include/wchar.h
 svm/SVM.o: /usr/include/bits/wchar.h /usr/include/gconv.h
 svm/SVM.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h lib/common.h
-svm/SVM.o: lib/Observation.h svm/svm_common.h /usr/include/ctype.h
+svm/SVM.o: lib/Observation.h svm/Optimizer.h /usr/include/ctype.h
 svm/SVM.o: /usr/include/endian.h /usr/include/bits/endian.h
 svm/SVM.o: /usr/include/string.h /usr/include/stdlib.h /usr/include/time.h
 svm/SVM.o: /usr/include/bits/time.h
 svm/SVM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
-svm/kernel.o: svm/svm_common.h /usr/include/stdio.h /usr/include/features.h
+svm/kernel.o: hmm/HMM.h /usr/include/math.h /usr/include/features.h
 svm/kernel.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+svm/kernel.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+svm/kernel.o: /usr/include/bits/mathcalls.h /usr/include/stdio.h
 svm/kernel.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
 svm/kernel.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
 svm/kernel.o: /usr/include/bits/types.h /usr/include/libio.h
 svm/kernel.o: /usr/include/_G_config.h /usr/include/wchar.h
 svm/kernel.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-svm/kernel.o: /usr/include/bits/stdio_lim.h /usr/include/ctype.h
-svm/kernel.o: /usr/include/endian.h /usr/include/bits/endian.h
-svm/kernel.o: /usr/include/math.h /usr/include/bits/huge_val.h
-svm/kernel.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-svm/kernel.o: /usr/include/string.h /usr/include/stdlib.h /usr/include/time.h
-svm/kernel.o: /usr/include/bits/time.h
-svm/kernel.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
-svm/kernel.o: hmm/HMM.h lib/Mathmatics.h lib/common.h lib/Observation.h
-svm/svm_common.o: /usr/include/stdio.h /usr/include/features.h
-svm/svm_common.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-svm/svm_common.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm/svm_common.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm/svm_common.o: /usr/include/bits/types.h /usr/include/libio.h
-svm/svm_common.o: /usr/include/_G_config.h /usr/include/wchar.h
-svm/svm_common.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-svm/svm_common.o: /usr/include/bits/stdio_lim.h /usr/include/ctype.h
-svm/svm_common.o: /usr/include/endian.h /usr/include/bits/endian.h
-svm/svm_common.o: /usr/include/math.h /usr/include/bits/huge_val.h
-svm/svm_common.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-svm/svm_common.o: /usr/include/string.h /usr/include/stdlib.h
-svm/svm_common.o: /usr/include/time.h /usr/include/bits/time.h
-svm/svm_common.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
+svm/kernel.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h lib/common.h
+svm/kernel.o: lib/Observation.h
 gui/GeneFinder.o: /usr/include/stdio.h /usr/include/features.h
 gui/GeneFinder.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 gui/GeneFinder.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
@@ -149,7 +132,8 @@ gui/GeneFinder.o: /usr/include/math.h /usr/include/bits/huge_val.h
 gui/GeneFinder.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
 gui/GeneFinder.o: /usr/include/fcntl.h /usr/include/bits/fcntl.h
 gui/GeneFinder.o: /usr/include/sys/types.h hmm/HMM.h lib/Mathmatics.h
-gui/GeneFinder.o: lib/common.h lib/Observation.h svm/SVM.h svm/svm_common.h
+gui/GeneFinder.o: lib/common.h lib/Observation.h svm/SVM.h svm/kernel.h
+gui/GeneFinder.o: svm/Optimizer.h
 gui/GeneFinder.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
 hmm/HMM.o: hmm/HMM.h /usr/include/math.h /usr/include/features.h
 hmm/HMM.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
@@ -187,37 +171,51 @@ lib/Observation.o: /usr/include/bits/stdio_lim.h lib/Observation.h
 lib/Observation.o: lib/common.h lib/Mathmatics.h /usr/include/math.h
 lib/Observation.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 lib/Observation.o: /usr/include/bits/mathcalls.h
-svm/SVM.o: svm/SVM.h hmm/HMM.h /usr/include/math.h /usr/include/features.h
-svm/SVM.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-svm/SVM.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-svm/SVM.o: /usr/include/bits/mathcalls.h /usr/include/stdio.h
+svm/Optimizer.o: svm/pr_loqo.h svm/Optimizer.h lib/common.h svm/SVM.h
+svm/Optimizer.o: svm/kernel.h hmm/HMM.h /usr/include/math.h
+svm/Optimizer.o: /usr/include/features.h /usr/include/sys/cdefs.h
+svm/Optimizer.o: /usr/include/gnu/stubs.h /usr/include/bits/huge_val.h
+svm/Optimizer.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+svm/Optimizer.o: /usr/include/stdio.h
+svm/Optimizer.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
+svm/Optimizer.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
+svm/Optimizer.o: /usr/include/bits/types.h /usr/include/libio.h
+svm/Optimizer.o: /usr/include/_G_config.h /usr/include/wchar.h
+svm/Optimizer.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+svm/Optimizer.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h
+svm/Optimizer.o: lib/Observation.h /usr/include/ctype.h /usr/include/endian.h
+svm/Optimizer.o: /usr/include/bits/endian.h /usr/include/string.h
+svm/Optimizer.o: /usr/include/stdlib.h /usr/include/time.h
+svm/Optimizer.o: /usr/include/bits/time.h
+svm/Optimizer.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
+svm/SVM.o: svm/SVM.h svm/kernel.h hmm/HMM.h /usr/include/math.h
+svm/SVM.o: /usr/include/features.h /usr/include/sys/cdefs.h
+svm/SVM.o: /usr/include/gnu/stubs.h /usr/include/bits/huge_val.h
+svm/SVM.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+svm/SVM.o: /usr/include/stdio.h
 svm/SVM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
 svm/SVM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
 svm/SVM.o: /usr/include/bits/types.h /usr/include/libio.h
 svm/SVM.o: /usr/include/_G_config.h /usr/include/wchar.h
 svm/SVM.o: /usr/include/bits/wchar.h /usr/include/gconv.h
 svm/SVM.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h lib/common.h
-svm/SVM.o: lib/Observation.h svm/svm_common.h /usr/include/ctype.h
+svm/SVM.o: lib/Observation.h svm/Optimizer.h /usr/include/ctype.h
 svm/SVM.o: /usr/include/endian.h /usr/include/bits/endian.h
 svm/SVM.o: /usr/include/string.h /usr/include/stdlib.h /usr/include/time.h
 svm/SVM.o: /usr/include/bits/time.h
 svm/SVM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
-svm/SVM.o: svm/svm_learn.h svm/kernel.h
-svm/kernel.o: svm/svm_common.h /usr/include/stdio.h /usr/include/features.h
-svm/kernel.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
+svm/kernel.o: svm/kernel.h hmm/HMM.h /usr/include/math.h
+svm/kernel.o: /usr/include/features.h /usr/include/sys/cdefs.h
+svm/kernel.o: /usr/include/gnu/stubs.h /usr/include/bits/huge_val.h
+svm/kernel.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+svm/kernel.o: /usr/include/stdio.h
 svm/kernel.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
 svm/kernel.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
 svm/kernel.o: /usr/include/bits/types.h /usr/include/libio.h
 svm/kernel.o: /usr/include/_G_config.h /usr/include/wchar.h
 svm/kernel.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-svm/kernel.o: /usr/include/bits/stdio_lim.h /usr/include/ctype.h
-svm/kernel.o: /usr/include/endian.h /usr/include/bits/endian.h
-svm/kernel.o: /usr/include/math.h /usr/include/bits/huge_val.h
-svm/kernel.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-svm/kernel.o: /usr/include/string.h /usr/include/stdlib.h /usr/include/time.h
-svm/kernel.o: /usr/include/bits/time.h
-svm/kernel.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
-svm/kernel.o: hmm/HMM.h lib/Mathmatics.h lib/common.h lib/Observation.h
+svm/kernel.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h lib/common.h
+svm/kernel.o: lib/Observation.h
 svm/pr_loqo.o: /usr/include/math.h /usr/include/features.h
 svm/pr_loqo.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 svm/pr_loqo.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
@@ -230,52 +228,3 @@ svm/pr_loqo.o: /usr/include/libio.h /usr/include/_G_config.h
 svm/pr_loqo.o: /usr/include/wchar.h /usr/include/bits/wchar.h
 svm/pr_loqo.o: /usr/include/gconv.h /usr/include/bits/stdio_lim.h
 svm/pr_loqo.o: svm/pr_loqo.h
-svm/svm_common.o: svm/svm_common.h /usr/include/stdio.h
-svm/svm_common.o: /usr/include/features.h /usr/include/sys/cdefs.h
-svm/svm_common.o: /usr/include/gnu/stubs.h
-svm/svm_common.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm/svm_common.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm/svm_common.o: /usr/include/bits/types.h /usr/include/libio.h
-svm/svm_common.o: /usr/include/_G_config.h /usr/include/wchar.h
-svm/svm_common.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-svm/svm_common.o: /usr/include/bits/stdio_lim.h /usr/include/ctype.h
-svm/svm_common.o: /usr/include/endian.h /usr/include/bits/endian.h
-svm/svm_common.o: /usr/include/math.h /usr/include/bits/huge_val.h
-svm/svm_common.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-svm/svm_common.o: /usr/include/string.h /usr/include/stdlib.h
-svm/svm_common.o: /usr/include/time.h /usr/include/bits/time.h
-svm/svm_common.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
-svm/svm_common.o: svm/kernel.h hmm/HMM.h lib/Mathmatics.h lib/common.h
-svm/svm_common.o: lib/Observation.h
-svm/svm_learn.o: svm/svm_common.h /usr/include/stdio.h
-svm/svm_learn.o: /usr/include/features.h /usr/include/sys/cdefs.h
-svm/svm_learn.o: /usr/include/gnu/stubs.h
-svm/svm_learn.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm/svm_learn.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm/svm_learn.o: /usr/include/bits/types.h /usr/include/libio.h
-svm/svm_learn.o: /usr/include/_G_config.h /usr/include/wchar.h
-svm/svm_learn.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-svm/svm_learn.o: /usr/include/bits/stdio_lim.h /usr/include/ctype.h
-svm/svm_learn.o: /usr/include/endian.h /usr/include/bits/endian.h
-svm/svm_learn.o: /usr/include/math.h /usr/include/bits/huge_val.h
-svm/svm_learn.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-svm/svm_learn.o: /usr/include/string.h /usr/include/stdlib.h
-svm/svm_learn.o: /usr/include/time.h /usr/include/bits/time.h
-svm/svm_learn.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
-svm/svm_learn.o: svm/svm_learn.h hmm/HMM.h lib/Mathmatics.h lib/common.h
-svm/svm_learn.o: lib/Observation.h
-svm/svm_loqo.o: /usr/include/math.h /usr/include/features.h
-svm/svm_loqo.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-svm/svm_loqo.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-svm/svm_loqo.o: /usr/include/bits/mathcalls.h svm/pr_loqo.h svm/svm_common.h
-svm/svm_loqo.o: /usr/include/stdio.h
-svm/svm_loqo.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm/svm_loqo.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm/svm_loqo.o: /usr/include/bits/types.h /usr/include/libio.h
-svm/svm_loqo.o: /usr/include/_G_config.h /usr/include/wchar.h
-svm/svm_loqo.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-svm/svm_loqo.o: /usr/include/bits/stdio_lim.h /usr/include/ctype.h
-svm/svm_loqo.o: /usr/include/endian.h /usr/include/bits/endian.h
-svm/svm_loqo.o: /usr/include/string.h /usr/include/stdlib.h
-svm/svm_loqo.o: /usr/include/time.h /usr/include/bits/time.h
-svm/svm_loqo.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h

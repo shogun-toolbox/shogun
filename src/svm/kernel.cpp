@@ -1,30 +1,51 @@
-/************************************************************************/
-/*                                                                      */
-/*   kernel.h                                                           */
-/*                                                                      */
-/*   User defined kernel function. Feel free to plug in your own.       */
-/*                                                                      */
-/*   Copyright: Thorsten Joachims                                       */
-/*   Date: 16.12.97                                                     */
-/*                                                                      */
-/************************************************************************/
-
-/* KERNEL_PARM is defined in svm_common.h The field 'custom' is reserved for */
-/* parameters of the user defined kernel. You can also access and use */
-/* the parameters of the other kernels. */
-
 #ifndef _KERNEL_H___
 #define _KERNEL_H___
 
-#include "svm/svm_common.h"
+#include "svm/kernel.h"
 #include "hmm/HMM.h"
-#include "lib/Observation.h"
 
 extern CHMM* pos;
 extern CHMM* neg;
 extern double* theta;
+extern double* featurespace;
+extern int num_features;
 
+long   kernel_cache_statistic;
 double normalizer=1;
+
+/* calculate the kernel function */
+CFLOAT kernel(KERNEL_PARM *kernel_parm,DOC* a,DOC* b)
+{
+  
+    kernel_cache_statistic++;
+
+    if (a->docnum < 0 || b ->docnum <0)
+    {
+#ifdef DEBUG
+	printf("ERROR: (%d,%d)\n", a->docnum, b->docnum);
+#endif
+	return 0;
+    }
+
+  switch(kernel_parm->kernel_type) {
+////    case 0: /* linear */ 
+////            return((CFLOAT)sprod_ss(a->words,b->words)); 
+////    case 1: /* polynomial */
+////            return((CFLOAT)pow(kernel_parm->coef_lin*sprod_ss(a->words,b->words)+kernel_parm->coef_const,(double)kernel_parm->poly_degree)); 
+////    case 2: /* radial basis function */
+////            return((CFLOAT)exp(-kernel_parm->rbf_gamma*(a->twonorm_sq-2*sprod_ss(a->words,b->words)+b->twonorm_sq)));
+////    case 3: /* sigmoid neural net */
+////            return((CFLOAT)tanh(kernel_parm->coef_lin*sprod_ss(a->words,b->words)+kernel_parm->coef_const)); 
+		case 4: /* TOP Kernel */
+	        return((CFLOAT)top_kernel(kernel_parm,a,b)); 
+		case 5: 
+			return ((CFLOAT)linear_top_kernel(kernel_parm,a,b)); 
+		case 6:
+			return ((CFLOAT)cached_top_kernel(kernel_parm,a,b)); 
+
+	    default: printf("Error: Unknown kernel function\n"); exit(1);
+	}
+}
 
 void tester(KERNEL_PARM *kernel_parm)
 {
@@ -93,7 +114,6 @@ double linear_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in yo
 
 	int x=a->docnum;
 	int y=b->docnum;
-	int i,j;
 
 	//calculate TOP Kernel
 	if (x>=0 && y>=0)
@@ -108,7 +128,7 @@ double linear_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in yo
 		T_OBSERVATIONS* obs_x=(pos->get_observations())->get_obs_vector(x);
 		T_OBSERVATIONS* obs_y=(pos->get_observations())->get_obs_vector(y);
 
-		for (i=0; i<pos->get_N(); i++)
+		for (int i=0; i<pos->get_N(); i++)
 		{
 		    if (*obs_x==*obs_y)
 			result+=(exp(-pos->get_b(i, *obs_x))-exp(-neg->get_b(i, *obs_x)))*
@@ -117,28 +137,6 @@ double linear_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in yo
 		    obs_y++;
 		}
 
-		/*int p=0;
-		for (i=0; i<pos->get_N(); i++)
-		{
-			for (j=0; j<pos->get_M(); j++)
-				theta[p++]=exp(pos->linear_model_derivative(i, j, x)-posx);
-		}
-		for (i=0; i<neg->get_N(); i++)
-		{
-			for (j=0; j<neg->get_M(); j++)
-				theta[p++]=exp(neg->linear_model_derivative(i, j, x)-negx);
-		}
-		p=0;
-		for (i=0; i<pos->get_N(); i++)
-		{
-			for (j=0; j<pos->get_M(); j++)
-				result+=theta[p++]*exp(pos->linear_model_derivative(i, j, y)-posy);
-		}
-		for (i=0; i<neg->get_N(); i++)
-		{
-			for (j=0; j<neg->get_M(); j++)
-				result+=theta[p++]*exp(neg->linear_model_derivative(i, j, y)-negy);
-		}*/
 	}
 	return result/normalizer;
 }
@@ -146,69 +144,186 @@ double linear_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in yo
 
 double top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in your favorite kernel */
 {
-	double result=0;
+    double result=0;
 
-	int x=a->docnum;
-	int y=b->docnum;
-	int i,j;
+    int x=a->docnum;
+    int y=b->docnum;
 
-	//calculate TOP Kernel
-	if (x>=0 && y>=0)
+    int i,j,p=0;
+    double posx=pos->model_probability(x);
+    double negx=neg->model_probability(x);
+    
+    int smaller_N=math.min(pos->get_N(), neg->get_N());
+    int smaller_M=math.min(pos->get_M(), neg->get_M());
+
+    int larger_N=math.max(pos->get_N(), neg->get_N());
+    int larger_M=math.max(pos->get_M(), neg->get_M());
+
+
+    theta[p++]=(posx-negx);
+
+    //first do all derivatives of parameters that are in both hmms on sequence x
+    for (i=0; i<smaller_N; i++)
+    {
+	theta[p++]=exp(pos->model_derivative_p(i, x)-posx) - exp(neg->model_derivative_p(i, x)-negx);
+	theta[p++]=exp(pos->model_derivative_q(i, x)-posx) - exp(neg->model_derivative_q(i, x)-negx);
+
+	for (j=0; j<smaller_N; j++)
+	    theta[p++]=exp(pos->model_derivative_a(i, j, x)-posx) - exp(neg->model_derivative_a(i, j, x)-negx);
+
+	for (j=0; j<smaller_M; j++)
+	    theta[p++]=exp(pos->model_derivative_b(i, j, x)-posx) - exp(neg->model_derivative_b(i, j, x)-negx);
+
+    }
+
+    //this hmm has more states
+    if (larger_N==pos->get_N())
+    {
+	for (i=smaller_N; i<pos->get_N(); i++)
 	{
-		double posx=pos->model_probability(x);
-		double posy=pos->model_probability(y);
-		double negx=neg->model_probability(x);
-		double negy=neg->model_probability(y);
+	    theta[p++]=exp(pos->model_derivative_p(i, x)-posx);
+	    theta[p++]=exp(pos->model_derivative_q(i, x)-posx);
 
-		result=(posx-negx)*(posy-negy);
-		
-		int p=0;
-		for (i=0; i<pos->get_N(); i++)
-		{
-			theta[p++]=exp(pos->model_derivative_p(i, x)-posx);
-			theta[p++]=exp(pos->model_derivative_q(i, x)-posx);
+	    for (j=0; j<smaller_N; j++)
+		theta[p++]=exp(pos->model_derivative_a(i, j, x)-posx);
 
-			for (j=0; j<pos->get_N(); j++)
-				theta[p++]=exp(pos->model_derivative_a(i, j, x)-posx);
-
-			for (j=0; j<pos->get_M(); j++)
-				theta[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
-		}
-		for (i=0; i<neg->get_N(); i++)
-		{
-			theta[p++]=exp(neg->model_derivative_p(i, x)-negx);
-			theta[p++]=exp(neg->model_derivative_q(i, x)-negx);
-
-			for (j=0; j<neg->get_N(); j++)
-				theta[p++]=exp(neg->model_derivative_a(i, j, x)-negx);
-
-			for (j=0; j<neg->get_M(); j++)
-				theta[p++]=exp(neg->model_derivative_b(i, j, x)-negx);
-		}
-		p=0;
-		for (i=0; i<pos->get_N(); i++)
-		{
-			result+=theta[p++]*exp(pos->model_derivative_p(i, y)-posy);
-			result+=theta[p++]*exp(pos->model_derivative_q(i, y)-posy);
-
-			for (j=0; j<pos->get_N(); j++)
-				result+=theta[p++]*exp(pos->model_derivative_a(i, j, y)-posy);
-
-			for (j=0; j<pos->get_M(); j++)
-				result+=theta[p++]*exp(pos->model_derivative_b(i, j, y)-posy);
-		}
-		for (i=0; i<neg->get_N(); i++)
-		{
-			result+=theta[p++]*exp(neg->model_derivative_p(i, y)-negy);
-			result+=theta[p++]*exp(neg->model_derivative_q(i, y)-negy);
-
-			for (j=0; j<neg->get_N(); j++)
-				result+=theta[p++]*exp(neg->model_derivative_a(i, j, y)-negy);
-
-			for (j=0; j<neg->get_M(); j++)
-				result+=theta[p++]*exp(neg->model_derivative_b(i, j, y)-negy);
-		}
+	    for (j=0; j<pos->get_N(); j++)
+		theta[p++]=exp(pos->model_derivative_a(j, i, x)-posx);
+	
+	    for (j=0; j<pos->get_M(); j++)
+		theta[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
 	}
-	return result/normalizer;
+    }
+    else
+    {
+	for (i=smaller_N; i<neg->get_N(); i++)
+	{
+	    theta[p++]=-exp(neg->model_derivative_p(i, x)-negx);
+	    theta[p++]=-exp(neg->model_derivative_q(i, x)-negx);
+
+	    for (j=0; j<smaller_N; j++)
+		theta[p++]=-exp(neg->model_derivative_a(i, j, x)-negx);
+	    
+	    for (j=0; j<neg->get_N(); j++)
+		theta[p++]=-exp(neg->model_derivative_a(j, i, x)-negx);
+
+	    for (j=0; j<neg->get_M(); j++)
+		theta[p++]=-exp(neg->model_derivative_b(i, j, x)-negx);
+	}
+    }
+
+    //this hmm has more observations
+    if (larger_M==pos->get_M())
+    {
+	for (i=0; i<smaller_N; i++)
+	{
+	    for (j=smaller_M; j<pos->get_M(); j++)
+		theta[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
+	}
+    }
+    else
+    {
+	for (i=0; i<smaller_N; i++)
+	{
+	    for (j=smaller_M; j<neg->get_M(); j++)
+		theta[p++]=-exp(neg->model_derivative_b(i, j, x)-negx);
+	}
+    }
+
+    p=0;  
+    double posy=pos->model_probability(y);
+    double negy=neg->model_probability(y);
+
+    result=theta[p++]*(posy-negy);
+
+    //second do all derivatives of parameters that are in both hmms on sequence y
+    for (i=0; i<smaller_N; i++)
+    {
+	result+=theta[p++]*(exp(pos->model_derivative_p(i, y)-posy) - exp(neg->model_derivative_p(i, y)-negy));
+	result+=theta[p++]*(exp(pos->model_derivative_q(i, y)-posy) - exp(neg->model_derivative_q(i, y)-negy));
+
+	for (j=0; j<smaller_N; j++)
+	    result+=theta[p++]*(exp(pos->model_derivative_a(i, j, y)-posy) - exp(neg->model_derivative_a(i, j, y)-negy));
+
+	for (j=0; j<smaller_M; j++)
+	    result+=theta[p++]*(exp(pos->model_derivative_b(i, j, y)-posy) - exp(neg->model_derivative_b(i, j, y)-negy));
+
+    }
+
+    //this hmm has more states
+    if (larger_N==pos->get_N())
+    {
+	for (i=smaller_N; i<pos->get_N(); i++)
+	{
+	    result+=theta[p++]*exp(pos->model_derivative_p(i, y)-posy);
+	    result+=theta[p++]*exp(pos->model_derivative_q(i, y)-posy);
+
+	    for (j=0; j<smaller_N; j++)
+		result+=theta[p++]*exp(pos->model_derivative_a(i, j, y)-posy);
+	    
+	    for (j=0; j<pos->get_N(); j++)
+		result+=theta[p++]*exp(pos->model_derivative_a(j, i, y)-posy);
+
+	    for (j=0; j<pos->get_M(); j++)
+		result+=theta[p++]*exp(pos->model_derivative_b(i, j, y)-posy);
+	}
+    }
+    else
+    {
+	for (i=smaller_N; i<neg->get_N(); i++)
+	{
+	    result+=-theta[p++]*exp(neg->model_derivative_p(i, y)-negy);
+	    result+=-theta[p++]*exp(neg->model_derivative_q(i, y)-negy);
+
+	    for (j=0; j<smaller_N; j++)
+		result+=-theta[p++]*exp(neg->model_derivative_a(i, j, y)-negy);
+	    
+	    for (j=0; j<neg->get_N(); j++)
+		result+=-theta[p++]*exp(neg->model_derivative_a(j, i, y)-negy);
+
+	    for (j=0; j<neg->get_M(); j++)
+		result+=-theta[p++]*exp(neg->model_derivative_b(i, j, y)-negy);
+	}
+    }
+
+    //this hmm has more observations
+    if (larger_M==pos->get_M())
+    {
+	for (i=0; i<smaller_N; i++)
+	{
+	    for (j=smaller_M; j<pos->get_M(); j++)
+		result+=theta[p++]*exp(pos->model_derivative_b(i, j, y)-posy);
+	}
+    }
+    else
+    {
+	for (i=0; i<smaller_N; i++)
+	{
+	    for (j=smaller_M; j<neg->get_M(); j++)
+		result+=-theta[p++]*exp(neg->model_derivative_b(i, j, y)-negy);
+	}
+    }
+    return result/normalizer;
 }
+
+double cached_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in your favorite kernel */
+{
+    double* features_a=&featurespace[num_features*a->docnum];
+    double* features_b=&featurespace[num_features*b->docnum];
+    double result=0;
+    int i=num_features;
+
+    while (i--)
+	result+= *features_a++ * *features_b++;
+
+    result/=normalizer;
+#ifdef DEBUG
+    double top_res=top_kernel(kernel_parm,a,b);
+    if (fabs(top_res-result)>1e-6)
+	printf("cached kernel bug:%e == %e\n", top_kernel(kernel_parm,a,b), result);
+#endif
+    return result;
+}
+
+
 #endif

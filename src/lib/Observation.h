@@ -5,6 +5,19 @@
 #include "lib/common.h"
 #include "lib/Mathmatics.h"
 
+/*
+typedef struct word {
+  FNUM    wnum;	
+  FVAL    weight;
+} WORD;*/
+
+
+typedef struct doc {
+  long    docnum;
+  double  twonorm_sq;
+//  WORD    *words;
+} DOC;
+
 //define numbers for the bases 
 const unsigned char B_A=0;
 const unsigned char B_C=1;
@@ -66,7 +79,10 @@ enum E_OBS_ALPHABET
 	PROTEIN=1,
 
 	/// ALPHANUM - [0-9a-z]
-	ALPHANUM=2
+	ALPHANUM=2,
+
+	/// CUBE - [1-6]
+	CUBE=3
 };
 
 

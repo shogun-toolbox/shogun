@@ -33,7 +33,7 @@ CObservation::CObservation(E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M, 
 CObservation::CObservation(CObservation* pos, CObservation* neg)
 {
 	sv_idx=-1;
-	sv_num=-1;
+	sv_num=0;
 	this->full_content=NULL;
 	this->MAX_M=-1;
 	this->M=-1;
@@ -295,6 +295,22 @@ void CObservation::init_map_table()
 
   switch (alphabet_type)
     {
+	case CUBE:
+	    maptable['1']=0;
+	    maptable['2']=1;
+	    maptable['3']=2;
+	    maptable['4']=3;	
+	    maptable['5']=4;	
+	    maptable['6']=5;	//Translation '123456' -> 012345
+
+	    maptable[0]='1';
+	    maptable[1]='2';
+	    maptable[2]='3';
+	    maptable[3]='4';
+	    maptable[4]='5';
+	    maptable[5]='6';	//Translation 012345->'123456'
+
+	    break;
     case PROTEIN:
       {
 	int skip=0 ;
