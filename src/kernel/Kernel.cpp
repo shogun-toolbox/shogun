@@ -571,10 +571,12 @@ void CKernel::do_precompute_matrix()
 
 	for (INT i=0; i<num; i++)
 	{
-		CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
+		//CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
+		CIO::progress(i*i,0,num*num);
 		for (INT j=0; j<=i; j++)
 			precomputed_matrix[i*(i+1)/2+j] = compute(i,j) ;
 	}
-	CIO::message(M_INFO, "\r %1.2f%% ", 100.0) ;
-	CIO::message(M_INFO, "done.\n") ;
+	CIO::progress(num*num,0,num*num);
+	//CIO::message(M_INFO, "\r %1.2f%% ", 100.0) ;
+	CIO::message(M_INFO, "\ndone.\n") ;
 }
