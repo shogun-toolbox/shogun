@@ -4,15 +4,12 @@
 #include "lib/common.h"
 #include "features/Features.h"
 
-typedef REAL CACHE_ELEM ;
-typedef LONG CACHE_IDX ;
-
 #include <stdio.h>
 
 class CKernel
 {
 	public:
-		CKernel(CACHE_IDX size);
+		CKernel(KERNELCACHE_IDX size);
 		virtual ~CKernel();
 
 		/** get kernel function for lhs feature vector x 
@@ -66,12 +63,12 @@ class CKernel
 		// return the size of the kernel cache
 		int get_cache_size() { return cache_size; }
 
-		void get_kernel_row(CACHE_IDX docnum, LONG *active2dnum, REAL *buffer) ;
-		void cache_kernel_row(CACHE_IDX x);
+		void get_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, REAL *buffer) ;
+		void cache_kernel_row(KERNELCACHE_IDX x);
 		void cache_multiple_kernel_rows(LONG* key, INT varnum);
 		void kernel_cache_reset_lru();
 
-		void resize_kernel_cache(CACHE_IDX size) ;
+		void resize_kernel_cache(KERNELCACHE_IDX size) ;
 		
 		/// set the time used for lru	
 		inline void set_time(LONG t)
@@ -80,7 +77,7 @@ class CKernel
 		}
 
 		// Update lru time to avoid removal from cache.
-		CACHE_IDX kernel_cache_touch(CACHE_IDX cacheidx)
+		KERNELCACHE_IDX kernel_cache_touch(KERNELCACHE_IDX cacheidx)
 		{
 			if(kernel_cache.index[cacheidx] != -1)
 			{
@@ -117,37 +114,37 @@ class CKernel
 		/**@ cache kernel evalutations to improve speed
 		 */
 		//@{
-		void   kernel_cache_shrink(CACHE_IDX, CACHE_IDX, CACHE_IDX *);
+		void   kernel_cache_shrink(KERNELCACHE_IDX, KERNELCACHE_IDX, KERNELCACHE_IDX *);
 
 		/// init kernel cache of size megabytes
-		void   kernel_cache_init(CACHE_IDX size);
+		void   kernel_cache_init(KERNELCACHE_IDX size);
 		void   kernel_cache_cleanup();
-		CACHE_IDX   kernel_cache_malloc();
-		void   kernel_cache_free(CACHE_IDX cacheidx);
-		CACHE_IDX   kernel_cache_free_lru();
-		CACHE_ELEM *kernel_cache_clean_and_malloc(CACHE_IDX);
+		KERNELCACHE_IDX   kernel_cache_malloc();
+		void   kernel_cache_free(KERNELCACHE_IDX cacheidx);
+		KERNELCACHE_IDX   kernel_cache_free_lru();
+		KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(KERNELCACHE_IDX);
 
 
 		/// Is that row cached?
-		inline CACHE_IDX kernel_cache_check(CACHE_IDX cacheidx)
+		inline KERNELCACHE_IDX kernel_cache_check(KERNELCACHE_IDX cacheidx)
 		{
 			return(kernel_cache.index[cacheidx] != -1);
 		}
 		//@}
 
 		struct KERNEL_CACHE {
-			CACHE_IDX   *index;  
-			CACHE_ELEM  *buffer; 
-			CACHE_IDX   *invindex;
-			CACHE_IDX   *active2totdoc;
-			CACHE_IDX   *totdoc2active;
-			CACHE_IDX   *lru;
-			CACHE_IDX   *occu;
-			CACHE_IDX   elems;
-			CACHE_IDX   max_elems;
-			CACHE_IDX   time;
-			CACHE_IDX   activenum;
-			CACHE_IDX   buffsize;
+			KERNELCACHE_IDX   *index;  
+			KERNELCACHE_ELEM  *buffer; 
+			KERNELCACHE_IDX   *invindex;
+			KERNELCACHE_IDX   *active2totdoc;
+			KERNELCACHE_IDX   *totdoc2active;
+			KERNELCACHE_IDX   *lru;
+			KERNELCACHE_IDX   *occu;
+			KERNELCACHE_IDX   elems;
+			KERNELCACHE_IDX   max_elems;
+			KERNELCACHE_IDX   time;
+			KERNELCACHE_IDX   activenum;
+			KERNELCACHE_IDX   buffsize;
 			//			LONG   r_offs;
 		};
 
@@ -156,11 +153,11 @@ class CKernel
 		KERNEL_CACHE kernel_cache;
 
 		/// cache_size in MB
-		CACHE_IDX cache_size;
+		KERNELCACHE_IDX cache_size;
 
 		/// this *COULD* store the whole kernel matrix
 		/// usually not applicable / faster
-		CACHE_ELEM* kernel_matrix;
+		KERNELCACHE_ELEM* kernel_matrix;
 
 		/// feature vectors to occur on left hand side
 		CFeatures* lhs;

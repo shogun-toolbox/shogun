@@ -3,6 +3,7 @@
 
 #include <stdlib.h> 
 #include <stdio.h> 
+#include "lib/config.h"
 
 #ifdef SUNOS
 #define bool int
@@ -49,12 +50,27 @@ typedef UINT* P_UINT;
 typedef long LONG;
 typedef LONG* P_LONG;
 
-/// Type REAL (can be float/double/LONG double...)
+/// Type SHORTREAL is 4 bytes in size
+typedef float SHORTREAL;
+typedef SHORTREAL* P_SHORTREAL;
+
+/// Type REAL is 8 bytes in size
 typedef double REAL;
 typedef REAL* P_REAL;
 
+/// Type LONGREAL is 16 bytes in size
 typedef long double LONGREAL;
 typedef LONGREAL* P_LONGREAL;
+
+#ifdef USE_SHORTREAL_KERNELCACHE
+	typedef SHORTREAL KERNELCACHE_ELEM;
+#else
+	typedef REAL KERNELCACHE_ELEM;
+#endif
+
+typedef KERNELCACHE_ELEM P_KERNELCACHE_ELEM;
+
+typedef LONG KERNELCACHE_IDX;
 
 /// The io libs output [DEBUG] etc in front of every CIO::message
 /// 'higher' messages filter output depending on the loglevel, i.e. CRITICAL messages

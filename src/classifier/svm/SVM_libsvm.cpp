@@ -1,6 +1,7 @@
 #include "classifier/svm/SVM_libsvm.h"
 #include "kernel/Kernel.h"
 #include "lib/io.h"
+#include "lib/common.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -9,8 +10,8 @@
 #include <float.h>
 #include <string.h>
 #include <stdarg.h>
-typedef double Qfloat;
-typedef double schar;
+typedef KERNELCACHE_ELEM Qfloat;
+typedef REAL schar;
 #ifndef min
 template <class T> inline T min(T x,T y) { return (x<y)?x:y; }
 #endif
