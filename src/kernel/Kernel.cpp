@@ -527,8 +527,8 @@ void CKernel::clear_normal()
 
 INT CKernel::get_num_subkernels()
 {
-	CIO::message(M_ERROR, "kernel get_num_subkernels not implemented\n") ;
-	return -1;
+	//CIO::message(M_ERROR, "kernel get_num_subkernels not implemented\n") ;
+	return 1;
 }
 
 void CKernel::compute_by_subkernel(INT idx, REAL * subkernel_contrib)
@@ -538,14 +538,16 @@ void CKernel::compute_by_subkernel(INT idx, REAL * subkernel_contrib)
 
 const REAL* CKernel::get_subkernel_weights(INT &num_weights)
 {
-	num_weights=-1 ;
-	CIO::message(M_ERROR, "kernel get_subkernel_weights not implemented\n") ;
-	return NULL ;
+	num_weights=1 ;
+	//CIO::message(M_ERROR, "kernel get_subkernel_weights not implemented\n") ;
+	return &combined_kernel_weight ;
 }
 
 void CKernel::set_subkernel_weights(REAL* weights, INT num_weights)
 {
-	CIO::message(M_ERROR, "kernel set_subkernel_weights not implemented\n") ;
+	combined_kernel_weight = weights[0] ;
+	if (num_weights!=1)
+		CIO::message(M_ERROR, "should be one ...\n") ;
 }
 
 void CKernel::do_precompute_matrix()

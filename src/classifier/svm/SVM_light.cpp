@@ -244,7 +244,7 @@ bool CSVMLight::train()
 			assert(precomputed_subkernels[n]!=NULL) ;
 			REAL * matrix = precomputed_subkernels[n] ;
 			
-			CIO::message(M_INFO, "precomputing kernel matrix (%ix%i)\n", num, num) ;
+			CIO::message(M_INFO, "precomputing kernel matrix %i (%ix%i)\n", n, num, num) ;
 			for (INT i=0; i<num; i++)
 			{
 				CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
@@ -1196,27 +1196,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 	assert(num_weights==num_kernels) ;
 	REAL* sumw = new REAL[num_kernels];
 
-	if (get_kernel()->get_kernel_type()==K_COMBINED) // for combined kernel
-	{
-		CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
-		CKernel* kn = k->get_first_kernel() ;
-		INT n = 0, i, j ;
-		
-		while (kn!=NULL)
-		{
-			for(i=0;i<num;i++) 
-			{
-				if(a[i] != a_old[i]) 
-				{
-					for(j=0;j<num;j++) 
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*kn->kernel(i,j)*(double)label[i];
-				}
-			}
-			kn = k->get_next_kernel() ;
-			n++ ;
-		}
-	}
-	else if (use_precomputed_subkernels) // everything is already precomputed
+	if (use_precomputed_subkernels) // everything is already precomputed
 	{
 		assert(precomputed_subkernels!=NULL) ;
 		for (INT n=0; n<num_kernels; n++)
@@ -1233,6 +1213,26 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 			}
 		}
 	} 
+	else if (get_kernel()->get_kernel_type()==K_COMBINED) // for combined kernel
+	{
+		CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
+		CKernel* kn = k->get_first_kernel() ;
+		INT n = 0, i, j ;
+		
+		while (kn!=NULL)
+		{
+			for(i=0;i<num;i++) 
+			{
+				if(a[i] != a_old[i]) 
+				{
+					for(j=0;j<num;j++) 
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*kn->kernel(i,j)*(double)label[i];
+				}
+			}
+			kn = k->get_next_kernel(kn) ;
+			n++ ;
+		}
+	}
 	else // hope the kernel is fast ...
 	{
 		REAL* w_backup = new REAL[num_kernels] ;

@@ -298,18 +298,32 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 	CHAR data_type[1024]="";
 	param=CIO::skip_spaces(param);
 	CKernel* k=NULL;
+	INT append_subkernel_weights = 0 ;
 
 	//note the different args COMBINED <cachesize>
-	if (sscanf(param, "%s %d", kern_type, &size) == 2)
+	if (sscanf(param, "%s %d %i", kern_type, &size, &append_subkernel_weights) == 3)
 	{
 		if (strcmp(kern_type,"COMBINED")==0)
 		{
 			delete k;
-			k= new CCombinedKernel(size);
+			k= new CCombinedKernel(size, append_subkernel_weights!=0);
 			if (kernel)
 				CIO::message(M_INFO, "CombinedKernel created\n");
 			return k;
-		}
+		} else
+			CIO::message(M_ERROR, "in this format I only expect Combined kernels\n") ;
+	} 
+	else if (sscanf(param, "%s %d", kern_type, &size) == 2)
+	{
+		if (strcmp(kern_type,"COMBINED")==0)
+		{
+			delete k;
+			k= new CCombinedKernel(size,false);
+			if (kernel)
+				CIO::message(M_INFO, "CombinedKernel created\n");
+			return k;
+		} else
+			CIO::message(M_ERROR, "in this format I only expect Combined kernels\n") ;
 	} 
 	//compared with <KERNTYPE> <DATATYPE> <CACHESIZE>
 	else if (sscanf(param, "%s %s %d", kern_type, data_type, &size) >= 2)
@@ -667,7 +681,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				sscanf(param, "%s %s %d %d %d %d %d %[0-9 .+-]", 
 					   kern_type, data_type, &size, &d, &max_mismatch, 
 					   &length, &mkl_stepsize, rest);
-
+				
 				INT *shift = new INT[length] ;
 				for (i=0; i<length; i++)
 				{
@@ -729,7 +743,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				if (k)
 				{
-					CIO::message(M_INFO, "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
+					CIO::message(M_INFO, "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d,%d) created\n",size, d, max_mismatch, length,mkl_stepsize);
 					return k;
 				}
 			}
@@ -1089,7 +1103,7 @@ bool CGUIKernel::add_kernel(CHAR* param)
 	if ((kernel==NULL) || (kernel && kernel->get_kernel_type()!=K_COMBINED))
 	{
 		delete kernel;
-		kernel= new CCombinedKernel(20);
+		kernel= new CCombinedKernel(20,false);
 		assert(kernel);
 	}
 

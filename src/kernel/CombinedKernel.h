@@ -1,6 +1,7 @@
 #ifndef _COMBINEDKERNEL_H___
 #define _COMBINEDKERNEL_H___
 
+#include <assert.h>
 #include "lib/List.h"
 #include "kernel/Kernel.h"
 #include "lib/io.h"
@@ -8,7 +9,7 @@
 class CCombinedKernel : public CKernel
 {
 	public:
-		CCombinedKernel(LONG size);
+		CCombinedKernel(LONG size, bool append_subkernel_weights);
 		virtual ~CCombinedKernel();
 
 		/** initialize kernel cache
@@ -64,8 +65,9 @@ class CCombinedKernel : public CKernel
 			return kernel_list->get_first_element();
 		}
 
-		inline CKernel* get_next_kernel()
+		inline CKernel* get_next_kernel(const CKernel* current)
 		{
+			assert(kernel_list->get_current_element()==current) ;
 			return kernel_list->get_next_element();
 		}
 
@@ -86,7 +88,19 @@ class CCombinedKernel : public CKernel
 
 		inline int get_num_subkernels()
 		{
-			return kernel_list->get_num_elements();
+			if (append_subkernel_weights)
+			{
+				INT num_subkernels = 0 ;
+				CKernel * kn = get_first_kernel() ;
+				while(kn)
+				{
+					num_subkernels += kn->get_num_subkernels() ;
+					kn = get_next_kernel(kn) ;
+				}
+				return num_subkernels ;
+			}
+			else
+				return kernel_list->get_num_elements();
 		}
 
 		/// takes all necessary steps if the lhs is removed from kernel
@@ -104,22 +118,23 @@ class CCombinedKernel : public CKernel
 		virtual const REAL* get_subkernel_weights(INT& num_weights);
 		virtual void set_subkernel_weights(REAL* weights, INT num_weights);
 
-		virtual void set_precompute_matrix(bool flag, bool subkernel_flag) { 
-			precompute_matrix = flag ; 
-			precompute_subkernel_matrix = subkernel_flag ; 
-
-			if (!precompute_matrix)
-			{
-				delete[] precomputed_matrix ;
-				precomputed_matrix = NULL ;
-			}
-			CKernel *kn = get_first_kernel() ;
-			while (kn)
-			{
-				kn->set_precompute_matrix(subkernel_flag,false) ;
-				kn = get_next_kernel() ;
-			}
-		} ;
+		virtual void set_precompute_matrix(bool flag, bool subkernel_flag) 
+			{ 
+				precompute_matrix = flag ; 
+				precompute_subkernel_matrix = subkernel_flag ; 
+				
+				if (!precompute_matrix)
+				{
+					delete[] precomputed_matrix ;
+					precomputed_matrix = NULL ;
+				}
+				CKernel *kn = get_first_kernel() ;
+				while (kn)
+				{
+					kn->set_precompute_matrix(subkernel_flag,false) ;
+					kn = get_next_kernel(kn) ;
+				}
+			} ;
 	protected:
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
@@ -132,5 +147,6 @@ class CCombinedKernel : public CKernel
 		INT*  sv_idx;
 		REAL* sv_weight;
 		REAL* subkernel_weights_buffer ;
+		bool append_subkernel_weights ;		
 };
 #endif
