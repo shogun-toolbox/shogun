@@ -4888,7 +4888,7 @@ void CHMM::invalidate_top_feature_cache(E_TOP_FEATURE_CACHE_VALIDITY v)
 	    feature_cache_sv=NULL;
 	    break;
 	case QUESTIONABLE:
-	    feature_cache_in_question=false;
+	    feature_cache_in_question=true;
 	    break;
 	case INVALID:
 	    delete[] feature_cache_obs;
@@ -4928,7 +4928,7 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 
 		    fflush(stdout);
 
-		    compute_top_feature_vector(pos, neg, x, &feature_cache_sv[x*num_features]);
+		    compute_top_feature_vector(pos, neg, pos->get_observations()->get_support_vector_idx(x), &feature_cache_sv[x*num_features]);
 		}
 	    
 		printf(".done.\n");

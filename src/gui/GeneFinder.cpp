@@ -496,14 +496,14 @@ static bool prompt(FILE* infile=stdin)
 	char filename[1024];
 	char target[1024];
 
-	CHMM::invalidate_top_feature_cache(CHMM::INVALID);
-
 	if ((sscanf(&input[i], "%s %s", filename, target))==2)
 	{
 	    FILE* trn_file=fopen(filename, "r");
 
 	    if (trn_file)
 	    {
+		CHMM::invalidate_top_feature_cache(CHMM::INVALID);
+
 		if (strcmp(target,"POSTRAIN")==0)
 		{
 			delete obs_postrain;
@@ -1618,11 +1618,14 @@ static bool prompt(FILE* infile=stdin)
 		    else
 			printf("assign postrain and negtrain observations first!\n");
 		    
-		    if (outputfile)
-			fclose(outputfile);
-		    
-		    if (rocfile)
-			fclose(rocfile);
+		    if ( numargs>=2 )
+		    {
+			if (outputfile)
+			    fclose(outputfile);
+
+			if (rocfile)
+			    fclose(rocfile);
+		    }
 		}
 		else
 		    printf("assign positive and negative models first!\n");
@@ -1807,98 +1810,93 @@ static bool prompt(FILE* infile=stdin)
 
 	numargs=sscanf(&input[i], "%s %s", outputname, rocfname);
 
-	if (numargs <= 2)
+	if (numargs>=1)
 	{
-	    if (numargs>=2)
+	    outputfile=fopen(outputname, "w");
+
+	    if (!outputfile)
 	    {
-		outputfile=fopen(outputname, "w");
-
-		if (!outputfile)
-		{
-		    fprintf(stderr,"ERROR: could not open %s\n",outputname);
-		    return false;
-		}
-
-		if (numargs==2) 
-		{
-		    rocfile=fopen(rocfname, "w");
-
-		    if (!rocfile)
-		    {
-			fprintf(stderr,"ERROR: could not open %s\n",rocfname);
-			return false;
-		    }
-		}
+		fprintf(stderr,"ERROR: could not open %s\n",outputname);
+		return false;
 	    }
 
-	    if (pos && neg)
+	    if (numargs==2) 
 	    {
-		if (obs_postest && obs_negtest)
+		rocfile=fopen(rocfname, "w");
+
+		if (!rocfile)
 		{
-		    CObservation* obs=new CObservation(obs_postest, obs_negtest);
+		    fprintf(stderr,"ERROR: could not open %s\n",rocfname);
+		    return false;
+		}
+	    }
+	}
 
-		    CObservation* old_pos=pos->get_observations();
-		    CObservation* old_neg=neg->get_observations();
+	if (pos && neg)
+	{
+	    if (obs_postest && obs_negtest)
+	    {
+		CObservation* obs=new CObservation(obs_postest, obs_negtest);
 
-		    pos->set_observations(obs);
-		    neg->set_observations(obs);
+		CObservation* old_pos=pos->get_observations();
+		CObservation* old_neg=neg->get_observations();
 
-		    int total=obs->get_DIMENSION();
+		pos->set_observations(obs);
+		neg->set_observations(obs);
 
-		    double *output = new double[total];	
-		    int* label= new int[total];	
+		int total=obs->get_DIMENSION();
 
+		double *output = new double[total];	
+		int* label= new int[total];	
+
+		for (int dim=0; dim<total; dim++)
+		{
+		    output[dim]=pos->model_probability(dim)-neg->model_probability(dim);
+		    label[dim]=obs->get_label(dim);
+		}
+
+		double *fp= new double[total];	
+		double *tp= new double[total];	
+
+		{
 		    for (int dim=0; dim<total; dim++)
 		    {
 			output[dim]=pos->model_probability(dim)-neg->model_probability(dim);
-			label[dim]=obs->get_label(dim);
-		    }
+			label[dim]= obs->get_label(dim);
 
-		    double *fp= new double[total];	
-		    double *tp= new double[total];	
-
-		    {
-		      for (int dim=0; dim<total; dim++)
-			{
-			  output[dim]=pos->model_probability(dim)-neg->model_probability(dim);
-			  label[dim]= obs->get_label(dim);
-			  
-			  if (math.sign(output[dim])==label[dim])
+			if (math.sign(output[dim])==label[dim])
 			    fprintf(outputfile,"%+.8g (%+d)\n",output[dim], label[dim]);
-			  else
+			else
 			    fprintf(outputfile,"%+.8g (%+d)(*)\n",output[dim], label[dim]);
-			}
-		    } 
-		    int possize,negsize;
-		    int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize, rocfile);
+		    }
+		} 
+		int possize,negsize;
+		int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize, rocfile);
 
-		    double correct=possize*tp[pointeven]+(1-fp[pointeven])*negsize;
-		    double fpo=fp[pointeven]*negsize;
-		    double fne=(1-tp[pointeven])*possize;
+		double correct=possize*tp[pointeven]+(1-fp[pointeven])*negsize;
+		double fpo=fp[pointeven]*negsize;
+		double fne=(1-tp[pointeven])*possize;
 
-		    printf("classified:\n");
-		    printf("\tcorrect:%i\n", int (correct));
-		    printf("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
-		    printf("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, fp[pointeven], tp[pointeven]);
+		printf("classified:\n");
+		printf("\tcorrect:%i\n", int (correct));
+		printf("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
+		printf("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, fp[pointeven], tp[pointeven]);
 
-		    delete[] fp;
-		    delete[] tp;
-		    delete[] output;
-		    delete[] label;
+		delete[] fp;
+		delete[] tp;
+		delete[] output;
+		delete[] label;
 
-		    pos->set_observations(old_pos);
-		    neg->set_observations(old_neg);
+		pos->set_observations(old_pos);
+		neg->set_observations(old_neg);
 
-		    delete obs;
-		}
-		else
-		    printf("assign postrain and negtrain observations first!\n");
+		delete obs;
 	    }
 	    else
-		printf("assign positive and negative models first!\n");
+		printf("assign postrain and negtrain observations first!\n");
 	}
 	else
-	    printf("see help for parameters\n");
+	    printf("assign positive and negative models first!\n");
     } 
     else if (!strncmp(input, N_C, strlen(N_C)))
     {
