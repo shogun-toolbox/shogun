@@ -18,10 +18,10 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
   bool save_init(FILE* dest);
 
   // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREE; }
+  virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREEPOS; }
 
   // return the name of a kernel
-  virtual const CHAR* get_name() { return "WeightedDegree" ; } ;
+  virtual const CHAR* get_name() { return "WeightedDegreePos" ; } ;
 
  protected:
   /// compute kernel function for features a and b
