@@ -61,8 +61,8 @@ bool CGUIFeatures::set_features(char* param)
 						*f_ptr= new CTOPFeatures(gui->guihmm.get_pos(), gui->guihmm.get_neg());
 						((CTOPFeatures*) *f_ptr)->set_feature_matrix();
 
-						gui->guihmm.get_pos()->set_observations(old_obs_pos);
-						gui->guihmm.get_neg()->set_observations(old_obs_neg);
+//						gui->guihmm.get_pos()->set_observations(old_obs_pos);
+//						gui->guihmm.get_neg()->set_observations(old_obs_neg);
 
 					}
 					else

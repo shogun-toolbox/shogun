@@ -24,8 +24,6 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
   delete[] feature_matrix  ;
   feature_matrix=NULL ;
   set_feature_matrix() ;
-  num_vectors=get_number_of_examples() ;
-  num_features=get_num_features() ;
 }
 
 int CTOPFeatures::get_num_features()
@@ -159,6 +157,7 @@ REAL* CTOPFeatures::set_feature_matrix()
 
 	num_vectors=pos->get_observations()->get_DIMENSION();
 	CIO::message("allocating top feature cache of size %.2fM for sv\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
+	delete[] feature_matrix;
 	feature_matrix=new REAL[num_features*num_vectors];
 
 	CIO::message("calculating top feature matrix\n");
