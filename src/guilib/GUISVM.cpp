@@ -105,16 +105,20 @@ bool CGUISVM::train(char* param)
 
 bool CGUISVM::test(char* param)
 {
-	param=CIO::skip_spaces(param);
 	char outputname[1024];
 	char rocfname[1024];
 	FILE* outputfile=stdout;
 	FILE* rocfile=NULL;
 	int numargs=-1;
 
-	numargs=sscanf(param, "%s %s", outputname, rocfname);
+	double tresh=0;
 
-	if (numargs>=1)
+	param=CIO::skip_spaces(param);
+
+	numargs=sscanf(param, "%le %s %s", &tresh, outputname, rocfname);
+	CIO::message("Tresholding at:%f\n",tresh);
+
+	if (numargs>=2)
 	{
 		outputfile=fopen(outputname, "w");
 
@@ -197,36 +201,8 @@ bool CGUISVM::test(char* param)
 	REAL* output= svm->svm_test(testfeatures, trainfeatures) ;
 	
 	int total=testfeatures->get_num_vectors();
-
 	int* label= new int[total];	
-
-	REAL* fp= new REAL[total];	
-	REAL* tp= new REAL[total];	
-
-	for (int dim=0; dim<total; dim++)
-	{
-		label[dim]= testfeatures->get_label(dim);
-
-		if (math.sign((REAL) output[dim])==label[dim])
-			fprintf(outputfile,"%+.8g (%+d)\n",(double) output[dim], label[dim]);
-		else
-			fprintf(outputfile,"%+.8g (%+d)(*)\n",(double) output[dim], label[dim]);
-	}
-
-	int possize,negsize;
-	int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize, rocfile);
-
-	double correct=possize*tp[pointeven]+(1-fp[pointeven])*negsize;
-	double fpo=fp[pointeven]*negsize;
-	double fne=(1-tp[pointeven])*possize;
-
-	printf("classified:\n");
-	printf("\tcorrect:%i\n", int (correct));
-	printf("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
-	printf("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, (double) fp[pointeven], (double) tp[pointeven]);
-
-	delete[] fp;
-	delete[] tp;
+	gui->guimath.evaluate_results(output, label, total, tresh, outputfile, rocfile);
 	delete[] output;
 	delete[] label;
 	return true;
@@ -294,6 +270,7 @@ bool CGUISVM::load(char* param)
     }
     else
 	CIO::message("see help for parameters\n");
+	return false;
 }
 
 bool CGUISVM::save(char* param)

@@ -176,7 +176,7 @@ void CTextGUI::print_help()
 //   CIO::message("\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM);
    CIO::message("\n[HMM-classification]\n");
    CIO::message("\033[1;31m%s\033[0m[<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_HMM_TEST);
-   CIO::message("\033[1;31m%s\033[0m[<output> [<rocfile>]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
+   CIO::message("\033[1;31m%s\033[0m[<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
 //   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_LINEAR_HMM_TEST);
 //   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate hmm output from obs using linear HMM\n",N_LINEAR_HMM_TEST);
    CIO::message("\n[FEATURES]\n");
@@ -187,10 +187,9 @@ void CTextGUI::print_help()
    CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
    CIO::message("\033[1;31m%s\033[0m <LINEAR>\t\t\t- set kernel type\n", N_SET_KERNEL);
    CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|NONE>\t\t\t- set preprocessor type\n", N_SET_PREPROC);
-//   CIO::message("\033[1;31m%s\033[0m <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
-//   CIO::message("\033[1;31m%s\033[0m <srcsvm> [<output> [<rocfile>]]\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
-//   CIO::message("\033[1;31m%s\033[0m <dstsvm> \t\t- obtains svm from pos/neg linear HMMs\n",N_LINEAR_SVM_TRAIN);
-//#endif
+   CIO::message("\033[1;31m%s\033[0m\t\t- obtains svm from TRAINFEATURES\n",N_SVM_TRAIN);
+   CIO::message("\033[1;31m%s\033[0m [[<treshhold> [<output> [<rocfile>]]]\t\t- calculate svm output on TESTFEATURES\n",N_SVM_TEST);
+   //CIO::message("\033[1;31m%s\033[0m <dstsvm> \t\t- obtains svm from pos/neg linear HMMs\n",N_LINEAR_SVM_TRAIN);
    CIO::message("\n[SYSTEM]\n");
    CIO::message("\033[1;31m%s\033[0m <filename>\t- load and execute a script\n",N_EXEC);
    CIO::message("\033[1;31m%s\033[0m\t- exit genfinder\n",N_QUIT);

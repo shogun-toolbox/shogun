@@ -7,6 +7,7 @@
 #include "guilib/GUIObservation.h"
 #include "guilib/GUIPreProc.h"
 #include "guilib/GUIFeatures.h"
+#include "guilib/GUIMath.h"
 
 class CGUI
 {
@@ -21,6 +22,7 @@ class CGUI
   CGUIObservation guiobs;
   CGUIPreProc guipreproc;
   CGUIFeatures guifeatures;
+  CGUIMath guimath;
 
   int argc ;
   const char **argv ;
