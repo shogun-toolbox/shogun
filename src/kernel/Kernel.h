@@ -29,6 +29,7 @@ public:
 	// check the feature object
 	virtual bool check_features(CFeatures* f)=0 ;
 
+	/*
 protected:
 	/// compute kernel function for features a and b
 	/// idx_{a,b} denote the index of the feature vectors
@@ -38,7 +39,7 @@ protected:
 	/**@ cache kernel evalutations to improve speed
 	*/
 	//@{
-	void   get_kernel_row(DOC *, long, long, long *, REAL *);
+	/*	void   get_kernel_row(DOC *, long, long, long *, REAL *);
 	void   cache_kernel_row(DOC *, long);
 	void   cache_multiple_kernel_rows(DOC *, long *, long);
 	void   kernel_cache_shrink(long, long, long *);
@@ -50,13 +51,13 @@ protected:
 	long   kernel_cache_free_lru();
 	REAL *kernel_cache_clean_and_malloc(long);
 	long   kernel_cache_touch(long);
-	long   kernel_cache_check(long);
+	long   kernel_cache_check(long);*/
 	//@}
 	
-	
+	/*
 	typedef struct kernel_cache {
-		long   *index;  /* cache some kernel evalutations */
-		REAL *buffer; /* to improve speed */
+		long   *index;  
+		REAL *buffer; 
 		long   *invindex;
 		long   *active2totdoc;
 		long   *totdoc2active;
@@ -68,7 +69,7 @@ protected:
 		long   activenum;
 		long   buffsize;
 	} KERNEL_CACHE;
-
+*/
 protected:
 	long    kernel_type;   /* 0=linear, 1=poly, 2=rbf, 3=sigmoid, 4=custom */
 	long    poly_degree;
