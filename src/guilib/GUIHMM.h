@@ -15,6 +15,7 @@ public:
 	bool load(char* param);
 	bool save(char* param);
 	
+	bool set_num_hmm_tables(char* param) ;
 	bool baum_welch_train(char* param);
 	bool baum_welch_train_defined(char* param);
 	bool viterbi_train_defined(char* param);
@@ -45,6 +46,8 @@ public:
 	inline CHMM* get_neg() { return neg; }
 	inline CHMM* get_test() { return test; }
 	bool gradient_step(char* param) ;
+
+	int number_of_hmm_tables ;
 
 protected:
 

@@ -20,6 +20,7 @@ CTextGUI *gui=NULL;
 //names of menu commands
 static const char* N_NEW_HMM=			"new_hmm";
 static const char* N_NEW_SVM=			"new_svm";
+static const char* N_SET_NUM_TABLES=		"set_num_tables";
 static const char* N_LOAD_PREPROC=		"load_preproc";
 static const char* N_SAVE_PREPROC=		"save_preproc";
 static const char* N_LOAD_HMM=			"load_hmm";
@@ -78,8 +79,7 @@ static const char* N_HMM_TEST=			"hmm_test";
 static const char* N_SET_ORDER=			"set_order";
 static const char* N_GRADIENT_STEP=		"do_grad_step";
 
-
-	CTextGUI::CTextGUI(int argc, const char** argv)
+CTextGUI::CTextGUI(int argc, const char** argv)
 : CGUI(argc, argv)
 {
 #ifdef WITHMATLAB
@@ -93,7 +93,7 @@ static const char* N_GRADIENT_STEP=		"do_grad_step";
 	CIO::message("undef'd MPI\n");
 #endif
 
-	CIO::message("HMM Learning uses %i threads\n", NUM_PARALLEL) ;
+	CIO::message("HMM uses %i separate tables\n", guihmm.number_of_hmm_tables) ;
 }
 
 CTextGUI::~CTextGUI()
@@ -200,6 +200,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	if (!strncmp(input, N_NEW_HMM, strlen(N_NEW_HMM)))
 	{
 		guihmm.new_hmm(input+strlen(N_NEW_HMM));
+	} 
+	else if (!strncmp(input, N_SET_NUM_TABLES, strlen(N_SET_NUM_TABLES)))
+	{
+		guihmm.set_num_hmm_tables(input+strlen(N_SET_NUM_TABLES));
 	} 
 	else if (!strncmp(input, N_NEW_SVM, strlen(N_NEW_SVM)))
 	{

@@ -7,6 +7,11 @@
 
 CGUIHMM::CGUIHMM(CGUI * gui_): gui(gui_)
 {
+#ifdef PARALLEL
+	number_of_hmm_tables = sysconf( _SC_NPROCESSORS_ONLN );
+#else
+	number_of_hmm_tables=1 ;
+#endif
 	working=NULL;
 
 	pos=NULL;
@@ -27,6 +32,24 @@ CGUIHMM::~CGUIHMM()
 
 }
 
+bool CGUIHMM::set_num_hmm_tables(char* param)
+{
+  param=CIO::skip_spaces(param);
+  
+  int tmp;
+  if (sscanf(param, "%d", &tmp) == 1)
+    {
+      if (tmp>0)
+	{
+	  number_of_hmm_tables=tmp ;
+	  CIO::message("using %i separate tables\n",number_of_hmm_tables) ;
+	  return true ;
+	} ;
+    } ;
+    
+  return false;
+}
+
 bool CGUIHMM::new_hmm(char* param)
 {
 	param=CIO::skip_spaces(param);
@@ -40,7 +63,7 @@ bool CGUIHMM::new_hmm(char* param)
 	  if (order>1)
 	     CIO::message("WARNING: no order > 1 supported\n"); 
 
-	  working=new CHMM(n,m,order,NULL,PSEUDO);
+	  working=new CHMM(n,m,order,NULL,PSEUDO, number_of_hmm_tables);
 	  ORDER=order;
 	  M=m;
 	  return true;
@@ -84,7 +107,7 @@ bool CGUIHMM::baum_welch_train(char* param)
 	{
 		if (working->get_observations())
 		{
-			CHMM* working_estimate=new CHMM(working);
+			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
 			
 			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
 
@@ -144,7 +167,7 @@ bool CGUIHMM::baum_welch_train_defined(char* param)
 	{
 		if (working->get_observations())
 		{
-			CHMM* working_estimate=new CHMM(working);
+			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
 			
 			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
 
@@ -204,7 +227,7 @@ bool CGUIHMM::viterbi_train(char* param)
 	{
 		if (working->get_observations())
 		{
-			CHMM* working_estimate=new CHMM(working);
+			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
 			
 			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
 
@@ -265,7 +288,7 @@ bool CGUIHMM::viterbi_train_defined(char* param)
 	{
 		if (working->get_observations())
 		{
-			CHMM* working_estimate=new CHMM(working);
+			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
 			
 			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
 
@@ -395,7 +418,7 @@ bool CGUIHMM::linear_train_from_file(char* param)
 		};
 	    }
 
-	    working=new CHMM(UPTO,M,ORDER,NULL,PSEUDO);
+	    working=new CHMM(UPTO,M,ORDER,NULL,PSEUDO,number_of_hmm_tables);
 
 	    if (working)
 	    {
@@ -647,7 +670,8 @@ bool CGUIHMM::append_model(char* param)
 
 			if (model_file)
 			{
-				CHMM* h=new CHMM(model_file,PSEUDO);
+
+				CHMM* h=new CHMM(model_file,PSEUDO,number_of_hmm_tables);
 				if (h && h->get_status())
 				{
 					printf("file successfully read\n");
@@ -871,7 +895,7 @@ bool CGUIHMM::load(char* param)
 
 	if (model_file)
 	{
-		working=new CHMM(model_file,PSEUDO);
+		working=new CHMM(model_file,PSEUDO,number_of_hmm_tables);
 		fclose(model_file);
 
 		if (working && working->get_status())
