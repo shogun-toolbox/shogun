@@ -463,7 +463,7 @@ REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx)
 	return sum/sqrtdiag_rhs[idx] ;
 }
 
-REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib) 
+void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib) 
 {
 	INT len ;
 	bool free ;
@@ -484,7 +484,6 @@ REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 		vec[i]=0 ;
 	} ;
 		
-	REAL sum=0 ;
 	for (INT j=0; j<degree; j++)
 		LevelContrib[j]=0 ;
 	
@@ -498,12 +497,10 @@ REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 			if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 			{
 				tree=tree->childs[vec[i+j]] ;
-				sum += tree->weight ;
 				LevelContrib[j] += tree->weight ;
 			} else
 				if (tree->has_floats)
 				{
-					sum += tree->child_weights[vec[i+j]] ;
 					LevelContrib[j] += tree->child_weights[vec[i+j]] ;
 					break ;
 				} else
@@ -515,8 +512,6 @@ REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 
 	for (INT j=0; j<degree; j++)
 		LevelContrib[j] /= sqrtdiag_rhs[idx] ;
-
-	return sum/sqrtdiag_rhs[idx] ;
 }
 
 REAL CWeightedDegreeCharKernel::compute_abs_weights_tree(struct SuffixTree* p_tree) 

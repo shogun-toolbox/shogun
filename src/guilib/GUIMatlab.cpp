@@ -1171,12 +1171,12 @@ bool CGUIMatlab::compute_WD_by_levels(mxArray* retvals[])
 		}
 		INT num    = kernel->get_rhs()->get_num_vectors() ;
 		INT degree = kernel->get_degree() ;
-
-		mxArray* mx_result=mxCreateDoubleMatrix(degree+1, num, mxREAL);
+		
+		mxArray* mx_result=mxCreateDoubleMatrix(degree, num, mxREAL);
 		double* result=mxGetPr(mx_result);
-
+		
 		for (int i=0; i<num; i++)
-			result[i*(degree+1)]=kernel->compute_by_tree(i,&result[i*(degree+1)+1]) ;
+			kernel->compute_by_tree(i,&result[i*degree]) ;
 		
 		retvals[0]=mx_result;
 		return true;

@@ -51,7 +51,7 @@ class CWeightedDegreeCharKernel: public CCharKernel
   void count_tree_usage(INT idx)  ;
   REAL *compute_abs_weights(INT & len)  ;
   REAL compute_abs_weights_tree(struct SuffixTree * p_tree)  ;
-  REAL compute_by_tree(INT idx, REAL *LevelContrib) ;
+  void compute_by_tree(INT idx, REAL *LevelContrib) ;
 
   INT tree_size(struct SuffixTree * p_tree=NULL) ;
   bool is_tree_initialized() { return tree_initialized ; } ;
