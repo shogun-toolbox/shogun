@@ -18,12 +18,14 @@
  * Unauthorized commercial use of this software is not allowed
  */
 
+#include "lib/common.h"
+#include "svm/pr_loqo.h"
+#include "lib/io.h"
+
 #include <math.h>
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "lib/common.h"
-#include "pr_loqo.h"
 
 #define	max(A, B)	((A) > (B) ? (A) : (B))
 #define	min(A, B)	((A) < (B) ? (A) : (B))
@@ -40,7 +42,7 @@
 
 void nrerror(char error_text[])
 {
-  printf("ERROR: terminating optimizer - %s\n", error_text);
+ CIO::message("ERROR: terminating optimizer - %s\n", error_text);
  // exit(1); 
 }
 
@@ -406,10 +408,10 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
 
   /* the main loop */
   if (verb >= STATUS) {
-    printf("counter | pri_inf  | dual_inf  | pri_obj   | dual_obj  | ");
-    printf("sigfig | alpha  | nu \n");
-    printf("-------------------------------------------------------");
-    printf("---------------------------\n");
+   CIO::message("counter | pri_inf  | dual_inf  | pri_obj   | dual_obj  | ");
+   CIO::message("sigfig | alpha  | nu \n");
+   CIO::message("-------------------------------------------------------");
+   CIO::message("---------------------------\n");
   }
   
   while (status == STILL_RUNNING) {
@@ -487,7 +489,7 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
 
     /* generate report */
     if ((verb >= FLOOD) | ((verb == STATUS) & (status != 0)))
-      printf("%7i | %.2e | %.2e | % .2e | % .2e | %6.3f | %.4f | %.2e\n",
+     CIO::message("%7i | %.2e | %.2e | % .2e | % .2e | %6.3f | %.4f | %.2e\n",
 	     counter, primal_inf, dual_inf, primal_obj, dual_obj,
 	     sigfig, alfa, mu);
 
@@ -587,8 +589,8 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
     }
   }
   if ((status == 1) && (verb >= STATUS)) {
-    printf("----------------------------------------------------------------------------------\n");
-    printf("optimization converged\n");
+   CIO::message("----------------------------------------------------------------------------------\n");
+   CIO::message("optimization converged\n");
   }
   
   /* free memory */

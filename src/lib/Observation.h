@@ -2,6 +2,7 @@
 #define __OBSERVATION_H_
 
 #include <stdio.h>
+#include "lib/io.h"
 #include "lib/common.h"
 #include "lib/Mathmatics.h"
 
@@ -255,7 +256,7 @@ public:
 	inline void set_dimension(int dim) 
 	{
 	    DIMENSION=math.min(dim,REALDIMENSION) ;
-	    fprintf(stdout,"setting number of patterns to %i/%i (virtually)\n", DIMENSION,REALDIMENSION) ;
+	    CIO::message("setting number of patterns to %i/%i (virtually)\n", DIMENSION,REALDIMENSION) ;
 	}
 
 	/// remap observations e.g translate ACGT to 0123

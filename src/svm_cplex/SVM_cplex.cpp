@@ -1,6 +1,7 @@
 #ifdef SVMCPLEX
 
 #include "svm_cplex/SVM_cplex.h"
+#include "lib/io.h"
 #include <matrix.h>
 extern "C" {
 #include "svm_cplex/train_svm.h"
@@ -30,31 +31,31 @@ bool CSVMCplex::svm_train(CObservation* train, int, double C)
 {
   int number_of_examples = train->get_DIMENSION();
   int number_of_params   = 1+pos->get_N()*(2+pos->get_N()+pos->get_M())+neg->get_N()*(2+neg->get_N()+neg->get_M());
-  fprintf(stderr, "SVM cplex ell=%i, d=%i\n", number_of_examples, number_of_params) ;
+  CIO::message(stderr, "SVM cplex ell=%i, d=%i\n", number_of_examples, number_of_params) ;
   
   double * XT=(double*)malloc(number_of_examples*number_of_params*sizeof(double)) ;
   double * LT=(double*)malloc(number_of_examples*sizeof(double)) ;
   
-  fprintf(stderr, "generating features\n") ;
+  CIO::message(stderr, "generating features\n") ;
   for (int i=0; i<number_of_examples; i++)
     {
       top_feature(i, &XT[i*number_of_params]) ;
       LT[i]=train->get_label(i) ;
       if (i%100==0)
-	fprintf(stderr, "%i..", i) ;
-      /*	    fprintf(stderr, "LT[i]=%1.2e\n", LT[i]) ;*/
+	CIO::message(stderr, "%i..", i) ;
+      /*	    CIO::message(stderr, "LT[i]=%1.2e\n", LT[i]) ;*/
     } ;
-  fprintf(stderr, "%i. Done.", number_of_examples) ;
+  CIO::message(stderr, "%i. Done.", number_of_examples) ;
   
-  fprintf(stderr, "training SVM\n") ;
+  CIO::message(stderr, "training SVM\n") ;
   if (w)
     free(w) ;
   w=(double*)malloc(number_of_params*sizeof(double)) ;
   train_svm_main(XT, LT, C, number_of_examples, number_of_params, w, &b) ;
   
-  fprintf(stderr, "b=%e\n", b) ;
+  CIO::message(stderr, "b=%e\n", b) ;
   /*for (int i=0; i<number_of_params; i++)
-    fprintf(stderr, "w[i]=%1.2e\n", w[i]) ;*/
+    CIO::message(stderr, "w[i]=%1.2e\n", w[i]) ;*/
   
   /*
     for (int i=0; i<number_of_examples; i++) 
@@ -62,7 +63,7 @@ bool CSVMCplex::svm_train(CObservation* train, int, double C)
       double out=b ;
       for (int j=0; j<number_of_params; j++)
 	out+=XT[i*number_of_params+j]*w[j] ;
-      fprintf(stderr,"label[%i]=%i, out[%i]=%1.2f\n", i, train->get_label(i), i, out) ;
+      CIO::message(stderr,"label[%i]=%i, out[%i]=%1.2f\n", i, train->get_label(i), i, out) ;
     } ;
   */
   free(XT) ;
@@ -107,10 +108,10 @@ bool CSVMCplex::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
   double fpo=fp[pointeven]*negsize;
   double fne=(1-tp[pointeven])*possize;
   
-  printf("classified:\n");
-  printf("\tcorrect:%i\n", int (correct));
-  printf("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
-  printf("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",number_of_examples, correct/number_of_examples, 1-correct/number_of_examples, fp[pointeven], tp[pointeven]);
+ CIO::message("classified:\n");
+ CIO::message("\tcorrect:%i\n", int (correct));
+ CIO::message("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
+ CIO::message("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",number_of_examples, correct/number_of_examples, 1-correct/number_of_examples, fp[pointeven], tp[pointeven]);
 
   delete[] fp;
   delete[] tp;
@@ -130,7 +131,7 @@ bool CSVMCplex::load_svm(FILE* modelfl, CObservation*)
 	exit (1); 
     }
     fscanf(modelfl,"%le\n",&b);
-    fprintf(stderr, "b=%e\n", b) ;
+    CIO::message(stderr, "b=%e\n", b) ;
     int number_of_params2;
     fscanf(modelfl,"%i\n",&number_of_params2);
     int number_of_params   = 1+pos->get_N()*(2+pos->get_N()+pos->get_M())+neg->get_N()*(2+neg->get_N()+neg->get_M());
@@ -147,7 +148,7 @@ bool CSVMCplex::load_svm(FILE* modelfl, CObservation*)
 	double d ;
 	fscanf(modelfl,"%le\n", &d) ;
 	w[i]=d ;
-	/*fprintf(stderr, "w[i]=%e\n", w[i]) ;*/
+	/*CIO::message(stderr, "w[i]=%e\n", w[i]) ;*/
       } ;
     return result ;
 }

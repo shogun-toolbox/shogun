@@ -2,9 +2,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include <stdio.h>
 #include "lib/Observation.h"
 #include "lib/Mathmatics.h"
+#include "lib/io.h"
+
+#include <stdio.h>
 
 const int MAPTABLE_LENGTH = 1 << (sizeof(T_MAPTABLE)*8) ;
 T_OBSERVATIONS CObservation::maptable[MAPTABLE_LENGTH];
@@ -173,7 +175,7 @@ bool CObservation::load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET
 			DIMENSION=lines ;
 
 			printf("found %i sequences\nallocating memory...", lines) ;
-			fflush(stdout);
+			
 
 			// count letters per line
 			int line=0 ;
@@ -189,7 +191,7 @@ bool CObservation::load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET
 					full_content[i]='\0';
 
 					if (translate_from_single_order(observations[line], time) < 0)
-						fprintf(stderr,"wrong character(s) in line %i\n", line) ;
+						CIO::message(stderr,"wrong character(s) in line %i\n", line) ;
 
 					if (time>max_T)
 						max_T=time;
@@ -202,7 +204,7 @@ bool CObservation::load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET
 
 			printf("done\n") ;
 			printf("maximum length %i \n", max_T) ;
-			fflush(stdout);
+			
 
 		}
     }
@@ -261,7 +263,7 @@ bool CObservation::add_support_vectors(FILE* file, int num_sv)
 #ifdef DEBUG
 		printf(">");
 		for (int j=0; j<line_length; j++)
-		    printf("%d",(int) observations[i][j]);
+		   CIO::message("%d",(int) observations[i][j]);
 		printf("<\n");
 #endif
 		if (line_length>max_T_SVM)
@@ -277,7 +279,7 @@ bool CObservation::add_support_vectors(FILE* file, int num_sv)
     if (max_T < max_T_SVM)
 	max_T=max_T_SVM;
 
-    printf("read %d support vectors\n", i-DIMENSION);
+   CIO::message("read %d support vectors\n", i-DIMENSION);
 
     sv_num=num_sv;
     sv_idx=DIMENSION;
@@ -373,7 +375,7 @@ int CObservation::translate_from_single_order(T_OBSERVATIONS* observations_, int
 	{
 	  if ((maptable[observations_[j]]>=M) || (maptable[observations_[j]]==MAPTABLE_UNDEF))
 	    {
-	      fprintf(stderr,"wrong: %c -> %i\n",(char)observations_[j],(int)maptable[observations_[j]]) ;
+	      CIO::message(stderr,"wrong: %c -> %i\n",(char)observations_[j],(int)maptable[observations_[j]]) ;
 	      fac=-1 ;
 	    } ;
 	  value= (value >> MAX_M) | (maptable[observations_[j]] << (MAX_M * (ORDER-1)));

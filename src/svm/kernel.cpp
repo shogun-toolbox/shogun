@@ -41,7 +41,7 @@ CFLOAT kernel(KERNEL_PARM *kernel_parm,DOC* a,DOC* b)
 		case 6:
 			return ((CFLOAT)cached_top_kernel(kernel_parm,a,b)); 
 
-	    default: printf("Error: Unknown kernel function\n"); exit(1);
+	    default:CIO::message("Error: Unknown kernel function\n"); exit(1);
 	}
   return 0 ;
 }

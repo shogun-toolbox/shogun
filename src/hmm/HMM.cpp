@@ -4,6 +4,7 @@
 
 #include "hmm/HMM.h"
 #include "lib/Mathmatics.h"
+#include "lib/io.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -58,7 +59,7 @@ void *vit_dim_prefetch(void * params)
 
 REAL CHMM::prefetch(int dim, bool bw, REAL* a_buf, REAL* b_buf)
 {
-  /*fprintf(stderr, "prefetch called\n") ;*/
+  /*CIO::message(stderr, "prefetch called\n") ;*/
   if (bw)
     {
       forward_comp(p_observations->get_obs_T(dim), N-1, dim) ;
@@ -81,8 +82,6 @@ REAL CHMM::prefetch(int dim, bool bw, REAL* a_buf, REAL* b_buf)
 #endif
 
 extern "C" int	finite(double);
-
-void error(int line, char* str);
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -287,14 +286,14 @@ bool CHMM::initialize(int N_, int M_, int ORDER_, CModel* model_,
 	bool files_ok=true;
 	
 	if (N_>(1<<(8*sizeof(T_STATES))))
-	  fprintf(stderr, "########\nNUMBER OF STATES TOO LARGE. Maximum is %i\n########\n", (1<<(8*sizeof(T_STATES)))) ;
+	  CIO::message(stderr, "########\nNUMBER OF STATES TOO LARGE. Maximum is %i\n########\n", (1<<(8*sizeof(T_STATES)))) ;
 
 	MAX_M=(BYTE)ceil(log(M_)/log(2)) ;
 	if (M_>(1<<MAX_M))
-	  fprintf(stderr, "########\nALPHABET TOO LARGE. Maximum is %i\n########\n", (int)(1<<MAX_M)) ;
+	  CIO::message(stderr, "########\nALPHABET TOO LARGE. Maximum is %i\n########\n", (int)(1<<MAX_M)) ;
 
 	if ( (unsigned)MAX_M*ORDER_> (unsigned)8*sizeof(T_OBSERVATIONS) )
-	  fprintf(stderr, "########\nORDER TOO LARGE. Maximum is %i\n########\n", (int)(((REAL)8*sizeof(T_OBSERVATIONS))/((REAL)MAX_M))) ;
+	  CIO::message(stderr, "########\nORDER TOO LARGE. Maximum is %i\n########\n", (int)(((REAL)8*sizeof(T_OBSERVATIONS))/((REAL)MAX_M))) ;
 
 	//map higher order to alphabet
 	M_=	M_ << (MAX_M * (ORDER_-1));
@@ -753,7 +752,7 @@ REAL CHMM::best_path(int dimension)
 
 		if (best<-CMath::INFTY/2)
 		  {
-		    printf("worst case at %i: %e:%e\n", t, best, worst) ;
+		   CIO::message("worst case at %i: %e:%e\n", t, best, worst) ;
 		    worst=best ;
 		  } ;
 #endif		
@@ -804,19 +803,19 @@ REAL CHMM::model_probability_comp()
 #endif
 
   //for faster calculation cache model probability
-  printf("computing full model probablity\n") ;
+ CIO::message("computing full model probablity\n") ;
   mod_prob=-math.INFTY ;
   for (int dim=0; dim<p_observations->get_DIMENSION(); dim++)		//sum in log space
     {
 #ifdef PARALLEL
-      //fprintf(stderr,"dim=%i\n",dim) ;
+      //CIO::message(stderr,"dim=%i\n",dim) ;
       if (dim%NUM_PARALLEL==0)
 	{
 	  int i ;
 	  for (i=0; i<NUM_PARALLEL; i++)
 	    if (dim+i<p_observations->get_DIMENSION())
 	      {
-		/*fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;*/
+		/*CIO::message(stderr,"creating thread for dim=%i\n",dim+i) ;*/
 		
 		params[i].hmm=this ;
 		params[i].dim=dim+i ;
@@ -831,7 +830,7 @@ REAL CHMM::model_probability_comp()
 	      {
 		void * ret ;
 		pthread_join(threads[i], &ret) ;
-		/* fprintf(stderr,"thread for dim=%i returned: %i\n",dim+i,ALPHA_CACHE(dim+i).dimension) ;*/
+		/* CIO::message(stderr,"thread for dim=%i returned: %i\n",dim+i,ALPHA_CACHE(dim+i).dimension) ;*/
 	      } ;
 	} ;
 #endif 
@@ -928,7 +927,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	  for (i=0; i<NUM_PARALLEL; i++)
 	    if (dim+i<p_observations->get_DIMENSION())
 	      {
-		/*fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;*/
+		/*CIO::message(stderr,"creating thread for dim=%i\n",dim+i) ;*/
 		params[i].hmm=train ;
 		params[i].dim=dim+i ;
 #ifdef SUNOS
@@ -1172,7 +1171,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 	  for (i=0; i<NUM_PARALLEL; i++)
 	    if (dim+i<p_observations->get_DIMENSION())
 	      {
-		/*fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;*/
+		/*CIO::message(stderr,"creating thread for dim=%i\n",dim+i) ;*/
 		params[i].hmm=train ;
 		params[i].dim=dim+i ;
 #ifdef SUNOS
@@ -1187,7 +1186,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 		void * ret ;
 		pthread_join(threads[i], &ret) ;
 		dimmodprob = params[i].ret ;
-		/*fprintf(stderr,"thread for dim=%i returned: %e\n",dim+i,dimmodprob) ;*/
+		/*CIO::message(stderr,"thread for dim=%i returned: %e\n",dim+i,dimmodprob) ;*/
 	      } ;
 	}
 #else
@@ -1337,7 +1336,7 @@ void CHMM::estimate_model_viterbi(CHMM* train)
 	      for (i=0; i<NUM_PARALLEL; i++)
 		if (dim+i<p_observations->get_DIMENSION())
 		  {
-		    /*fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;*/
+		    /*CIO::message(stderr,"creating thread for dim=%i\n",dim+i) ;*/
 		    params[i].hmm=train ;
 		    params[i].dim=dim+i ;
 #ifdef SUNOS
@@ -1352,7 +1351,7 @@ void CHMM::estimate_model_viterbi(CHMM* train)
 		    void * ret ;
 		    pthread_join(threads[i], &ret) ;
 		    allpatprob += params[i].ret ;
-		    /*fprintf(stderr,"thread for dim=%i returned: %e\n",dim+i,params[i].ret) ;*/
+		    /*CIO::message(stderr,"thread for dim=%i returned: %e\n",dim+i,params[i].ret) ;*/
 		  } ;
 	    } ;
 #else
@@ -1463,7 +1462,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* train)
 	      for (i=0; i<NUM_PARALLEL; i++)
 		if (dim+i<p_observations->get_DIMENSION())
 		  {
-		    /*		    fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;*/
+		    /*		    CIO::message(stderr,"creating thread for dim=%i\n",dim+i) ;*/
 		    params[i].hmm=train ;
 		    params[i].dim=dim+i ;
 #ifdef SUNOS
@@ -1478,7 +1477,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* train)
 		    void * ret ;
 		    pthread_join(threads[i], &ret) ;
 		    allpatprob += params[i].ret ;
-		    /*		    fprintf(stderr,"thread for dim=%i returned: %e\n",dim+i,params[i].ret) ;*/
+		    /*		    CIO::message(stderr,"thread for dim=%i returned: %e\n",dim+i,params[i].ret) ;*/
 		  } ;
 	    } ;
 #else // PARALLEL
@@ -1512,7 +1511,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* train)
 	train->all_pat_prob=allpatprob ;
 	train->all_path_prob_updated=true ;
 
-	//fprintf(stderr, "q=%e, tt=%e\n", q, allpatprob) ;
+	//CIO::message(stderr, "q=%e, tt=%e\n", q, allpatprob) ;
 
 	//copy old model
 	for (i=0; i<N; i++)
@@ -1640,9 +1639,9 @@ void CHMM::output_model(bool verbose)
 					printf("\n");
 			}
 			if (fabs(checksum)>1e-5)
-			  printf(" checksum % E ******* \n",checksum);
+			 CIO::message(" checksum % E ******* \n",checksum);
 			else
-			  printf(" checksum % E\n",checksum);
+			 CIO::message(" checksum % E\n",checksum);
 		}
 
 		// distribution of start states p
@@ -1656,9 +1655,9 @@ void CHMM::output_model(bool verbose)
 				printf("\n");
 		}
 		if (fabs(checksum)>1e-5)
-		  printf(" checksum % E ******* \n",checksum);
+		 CIO::message(" checksum % E ******* \n",checksum);
 		else
-		  printf(" checksum=% E\n", checksum);
+		 CIO::message(" checksum=% E\n", checksum);
 
 		// distribution of terminal states p
 		printf("\ndistribution of terminal states\n");
@@ -1671,9 +1670,9 @@ void CHMM::output_model(bool verbose)
 				printf("\n");
 		}
 		if (fabs(checksum)>1e-5)
-		  printf(" checksum % E ******* \n",checksum);
+		 CIO::message(" checksum % E ******* \n",checksum);
 		else
-		  printf(" checksum=% E\n", checksum);
+		 CIO::message(" checksum=% E\n", checksum);
 
 		// distribution of observations given the state b
 		printf("\ndistribution of observations given the state\n");
@@ -1688,9 +1687,9 @@ void CHMM::output_model(bool verbose)
 					printf("\n");
 			}
 			if (fabs(checksum)>1e-5)
-			  printf(" checksum % E ******* \n",checksum);
+			 CIO::message(" checksum % E ******* \n",checksum);
 			else
-			  printf(" checksum % E\n",checksum);
+			 CIO::message(" checksum % E\n",checksum);
 		}
 	}
 	printf("\n");
@@ -1826,22 +1825,22 @@ void CHMM::output_model_sequence(bool verbose, int from, int to)
 		  }
 		
 		if (p_observations->get_obs_T(q)>outlen)
-		  printf("%s...\n",buf) ; 
+		 CIO::message("%s...\n",buf) ; 
 		else
-		  printf("%s\n",buf) ; 
+		 CIO::message("%s\n",buf) ; 
 		
 		for (j=0; j<outlen-1; j++) 
-		  printf("-"); 
+		 CIO::message("-"); 
 		printf("\n");
 		
 		for (i=1; i<ORDER+1; i++) 
 		  if (p_observations->get_obs_T(q)>outlen)
-		    printf("%s...\n",&buf[outlen*i]); 
+		   CIO::message("%s...\n",&buf[outlen*i]); 
 		  else
-		    printf("%s\n",&buf[outlen*i]); 
+		   CIO::message("%s\n",&buf[outlen*i]); 
 		
 		for (j=0; j<outlen-1; j++)
-		  printf("-"); 
+		 CIO::message("-"); 
 		printf("\n") ;
 		
 		for (j=0; j<outlen-1; j++)
@@ -1856,25 +1855,25 @@ void CHMM::output_model_sequence(bool verbose, int from, int to)
 			  output=k;
 			}
 		    if ((p_observations->get_obs(q,j) & ((1 << MAX_M ) -1 )) != (output & ((1 << MAX_M ) -1 ) ))
-		      printf("%c",p_observations->remap(p_observations->get_obs(q,j) & ((1 << MAX_M ) -1 ) ));
+		     CIO::message("%c",p_observations->remap(p_observations->get_obs(q,j) & ((1 << MAX_M ) -1 ) ));
 		    else
-		      printf(" ");
+		     CIO::message(" ");
 		  }
 		if (p_observations->get_obs_T(q)>outlen)
-		  printf("...\n") ; 
+		 CIO::message("...\n") ; 
 		else
-		  printf("\n") ; 
+		 CIO::message("\n") ; 
 		
 		for (j=0; j<outlen-1; j++) 
-		  printf("-"); 
+		 CIO::message("-"); 
 		printf("\n") ;
 		
 		for (j=0; j<outlen-1; j++)
-		  printf("%c",p_observations->remap(p_observations->get_obs(q,j) & ((1 << MAX_M ) -1 ) ));
+		 CIO::message("%c",p_observations->remap(p_observations->get_obs(q,j) & ((1 << MAX_M ) -1 ) ));
 		if (p_observations->get_obs_T(q)>outlen)
-		  printf("...\n\n") ; 
+		 CIO::message("...\n\n") ; 
 		else
-		  printf("\n\n") ; 
+		 CIO::message("\n\n") ; 
 		
 		if (p_observations->get_obs_T(q)>outlen)
 		  {
@@ -1899,18 +1898,18 @@ void CHMM::output_model_sequence(bool verbose, int from, int to)
 			else
 			  buf[j]='a'-10+PATH(q)[j] ;
 		      }
-		    printf("...%s\n   ",buf) ; 
+		   CIO::message("...%s\n   ",buf) ; 
 		    for (j=0; j<outlen-1; j++)
-		      printf("-");
-		    printf("\n") ;
+		     CIO::message("-");
+		   CIO::message("\n") ;
 		    
 		    for (i=1; i<ORDER+1; i++) 
-		      printf("...%s\n",&buf[outlen*i]) ; 
-		    printf("   ") ;
+		     CIO::message("...%s\n",&buf[outlen*i]) ; 
+		   CIO::message("   ") ;
 		    
 		    for (j=0; j<outlen-1; j++)
-		      printf("-");
-		    printf("\n...") ;
+		     CIO::message("-");
+		   CIO::message("\n...") ;
 		    
 		    for (j=0; j<outlen-1; j++)
 		      {
@@ -1927,19 +1926,19 @@ void CHMM::output_model_sequence(bool verbose, int from, int to)
 			  }
 			
 			if ((p_observations->get_obs(q,j+p_observations->get_obs_T(q)-outlen) & ((1 << MAX_M ) -1 )) != (output & ((1 << MAX_M ) -1 ) ))
-			  printf("%c",p_observations->remap(p_observations->get_obs(q,j+p_observations->get_obs_T(q)-outlen) & ((1 << MAX_M ) -1 ) ));
+			 CIO::message("%c",p_observations->remap(p_observations->get_obs(q,j+p_observations->get_obs_T(q)-outlen) & ((1 << MAX_M ) -1 ) ));
 			else
-			  printf(" ");
+			 CIO::message(" ");
 		      }
-		    printf("\n   ") ; 
+		   CIO::message("\n   ") ; 
 		    
 		    for (j=0; j<outlen-1; j++) 
-		      printf("-"); 
-		    printf("\n...") ;
+		     CIO::message("-"); 
+		   CIO::message("\n...") ;
 		    
 		    for (j=0; j<outlen-1; j++)
-		      printf("%c",p_observations->remap(p_observations->get_obs(q,j+p_observations->get_obs_T(q)-outlen) & ((1 << MAX_M ) -1 ) ));
-		    printf("\n\n") ;
+		     CIO::message("%c",p_observations->remap(p_observations->get_obs(q,j+p_observations->get_obs_T(q)-outlen) & ((1 << MAX_M ) -1 ) ));
+		   CIO::message("\n\n") ;
 		  }
 	      } ;
 	    delete[] buf;
@@ -2388,7 +2387,7 @@ bool CHMM::comma_or_space(FILE* file)
   if (value==']')
     {
       ungetc(value, file);
-      printf("found ']' instead of ';' or ','\n") ;
+     CIO::message("found ']' instead of ';' or ','\n") ;
       return false ;
     } ;
   
@@ -2480,7 +2479,7 @@ bool CHMM::get_numbuffer(FILE* file, char* buffer, int length)
 	    case '6': case '7': case'8': case '9': case '0': break ;
 	    case '.': case 'e': case '-': break ;
 	    default:
-	      printf("found crap: %i %c (pos:%li)\n",i,value,ftell(file)) ;
+	     CIO::message("found crap: %i %c (pos:%li)\n",i,value,ftell(file)) ;
 	    };
 	  buffer[i++]=value;
 	}
@@ -2962,7 +2961,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 		  int i=0;
 		  
 		  if (verbose) 
-		    printf("\nlearn for transition matrix: ") ;
+		   CIO::message("\nlearn for transition matrix: ") ;
 		  while (!finished)
 		    {
 		      open_bracket(file);
@@ -2978,13 +2977,13 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 			      break;
 			    }
 			  if (value>=N)
-			    printf("invalid value for learn_a(%i,0): %i\n",i/2,(int)value) ;
+			   CIO::message("invalid value for learn_a(%i,0): %i\n",i/2,(int)value) ;
 			}
 		      else
 			break;
 		      
 		      //if (verbose)
-		      //  printf("(%i,",value) ;
+		      // CIO::message("(%i,",value) ;
 		      
 		      comma_or_space(file);
 		      
@@ -2999,18 +2998,18 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 			      break;
 			    }
 			  if (value>=N)
-			    printf("invalid value for learn_a(%i,1): %i\n",i/2-1,(int)value) ;
+			   CIO::message("invalid value for learn_a(%i,1): %i\n",i/2-1,(int)value) ;
 			  
 			}
 		      else
 			break;
 		      close_bracket(file);
 		      //if (verbose)
-		      //  printf("%i)",(int)value) ;
+		      // CIO::message("%i)",(int)value) ;
 		    }
 		  close_bracket(file);
 		  if (verbose) 
-		    printf("%i Entries",(int)(i/2)) ;
+		   CIO::message("%i Entries",(int)(i/2)) ;
 		  
 		  if (finished)
 		    {
@@ -3029,7 +3028,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 		  int i=0;
 		  
 		  if (verbose) 
-		    printf("\nlearn for emission matrix:   ") ;
+		   CIO::message("\nlearn for emission matrix:   ") ;
 		  while (!finished)
 		    {
 		      open_bracket(file);
@@ -3052,7 +3051,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 				      break;
 				    }
 				  if (value>=N)
-				    printf("invalid value for learn_b(%i,0): %i\n",i/2,(int)value) ;
+				   CIO::message("invalid value for learn_b(%i,0): %i\n",i/2,(int)value) ;
 				}
 			      else 
 				combine= (combine << MAX_M) | value;
@@ -3071,7 +3070,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 		    }
 		  close_bracket(file);
 		  if (verbose) 
-		    printf("%i Entries",(int)(i/2-1)) ;
+		   CIO::message("%i Entries",(int)(i/2-1)) ;
 		  
 		  if (finished)
 		    {
@@ -3090,7 +3089,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 		  int i=0;
 		  
 		  if (verbose) 
-		    printf("\nlearn start states: ") ;
+		   CIO::message("\nlearn start states: ") ;
 		  while (!finished)
 		    {
 		      if (get_numbuffer(file, buffer, 4))	//get num
@@ -3105,7 +3104,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 			      break;
 			    }
 			  if (value>=N)
-			    printf("invalid value for learn_p(%i): %i\n",i-1,(int)value) ;
+			   CIO::message("invalid value for learn_p(%i): %i\n",i-1,(int)value) ;
 			}
 		      else
 			break;
@@ -3115,7 +3114,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 		  
 		  close_bracket(file);
 		  if (verbose) 
-		    printf("%i Entries",i-1) ;
+		   CIO::message("%i Entries",i-1) ;
 		  
 		  if (finished)
 		    {
@@ -3134,7 +3133,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 		  int i=0;
 		  
 		  if (verbose) 
-		    printf("\nlearn terminal states: ") ;
+		   CIO::message("\nlearn terminal states: ") ;
 		  while (!finished)
 		    {
 		      if (get_numbuffer(file, buffer, 4))	//get num
@@ -3148,7 +3147,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 			      break;
 			    }
 			  if (value>=N)
-			    printf("invalid value for learn_q(%i): %i\n",i-1,(int)value) ;
+			   CIO::message("invalid value for learn_q(%i): %i\n",i-1,(int)value) ;
 			}
 		      else
 			break;
@@ -3158,7 +3157,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 		  
 		  close_bracket(file);
 		  if (verbose) 
-		    printf("%i Entries",i-1) ;
+		   CIO::message("%i Entries",i-1) ;
 		  
 		  if (finished)
 		    {
@@ -3178,9 +3177,9 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 		  
 		  if (verbose) 
 #ifdef DEBUG
-		    printf("\nconst for transition matrix: \n") ;
+		   CIO::message("\nconst for transition matrix: \n") ;
 #else
-		  printf("\nconst for transition matrix: ") ;
+		 CIO::message("\nconst for transition matrix: ") ;
 #endif
 		  while (!finished)
 		    {
@@ -3199,7 +3198,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 			      break;
 			    }
 			  if (value>=N)
-			    printf("invalid value for const_a(%i,0): %i\n",i/2,(int)value) ;
+			   CIO::message("invalid value for const_a(%i,0): %i\n",i/2,(int)value) ;
 			}
 		      else
 			break;
@@ -3218,7 +3217,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 			      break;
 			    }
 			  if (value>=N)
-			    printf("invalid value for const_a(%i,1): %i\n",i/2-1,(int)value) ;
+			   CIO::message("invalid value for const_a(%i,1): %i\n",i/2-1,(int)value) ;
 			}
 		      else
 			break;
@@ -3236,7 +3235,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 				break;
 			      }
 			    if ((dvalue>1.0) || (dvalue<0.0))
-			      printf("invalid value for const_a_val(%i): %e\n",(int)i/2-1,dvalue) ;
+			     CIO::message("invalid value for const_a_val(%i): %e\n",(int)i/2-1,dvalue) ;
 			  }
 			else
 			  model->set_const_a_val((int)i/2 - 1, 1.0);
@@ -3249,7 +3248,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 		    }
 		  close_bracket(file);
 		  if (verbose) 
-		    printf("%i Entries",(int)i/2-1) ;
+		   CIO::message("%i Entries",(int)i/2-1) ;
 		  
 		  if (finished)
 		    {
@@ -3269,9 +3268,9 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 		  
 		  if (verbose) 
 #ifdef DEBUG
-		    printf("\nconst for emission matrix:   \n") ;
+		   CIO::message("\nconst for emission matrix:   \n") ;
 #else
-		  printf("\nconst for emission matrix:   ") ;
+		 CIO::message("\nconst for emission matrix:   ") ;
 #endif
 		  while (!finished)
 		    {
@@ -3295,7 +3294,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 				      break;
 				    }
 				  if (value>=N)
-				    printf("invalid value for const_b(%i,0): %i\n",i/2-1,(int)value) ;
+				   CIO::message("invalid value for const_b(%i,0): %i\n",i/2-1,(int)value) ;
 				}
 			      else if (j==ORDER+1)
 				{
@@ -3307,7 +3306,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 				      break;
 				    } ;
 				  if ((dvalue>1.0) || (dvalue<0.0))
-				    printf("invalid value for const_b_val(%i,1): %e\n",i/2-1,dvalue) ;
+				   CIO::message("invalid value for const_b_val(%i,1): %e\n",i/2-1,dvalue) ;
 				}
 			      else
 				{
@@ -3339,7 +3338,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 		    }
 		  close_bracket(file);
 		  if (verbose) 
-		    printf("%i Entries",(int)i/2-1) ;
+		   CIO::message("%i Entries",(int)i/2-1) ;
 		  
 		  if (finished)
 		    {
@@ -3359,9 +3358,9 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 		  
 		  if (verbose) 
 #ifdef DEBUG
-		    printf("\nconst for start states:     \n") ;
+		   CIO::message("\nconst for start states:     \n") ;
 #else
-		  printf("\nconst for start states:     ") ;
+		 CIO::message("\nconst for start states:     ") ;
 #endif
 		  while (!finished)
 		    {
@@ -3379,7 +3378,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 			      break;
 			    }
 			  if (value>=N)
-			    printf("invalid value for const_p(%i): %i\n",i,(int)value) ;
+			   CIO::message("invalid value for const_p(%i): %i\n",i,(int)value) ;
 
 			}
 		      else
@@ -3398,7 +3397,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 				break;
 			      }
 			    if ((dvalue>1) || (dvalue<0))
-			      printf("invalid value for const_p_val(%i): %e\n",i,dvalue) ;
+			     CIO::message("invalid value for const_p_val(%i): %e\n",i,dvalue) ;
 			  }
 			else
 			  model->set_const_p_val(i++, 1.0);
@@ -3411,7 +3410,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 #endif
 		    }
 		  if (verbose) 
-		    printf("%i Entries",i-1) ;
+		   CIO::message("%i Entries",i-1) ;
 		  
 		  close_bracket(file);
 		  
@@ -3431,9 +3430,9 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 		  bool finished=false;
 		  if (verbose) 
 #ifdef DEBUG
-		    printf("\nconst for terminal states: \n") ;
+		   CIO::message("\nconst for terminal states: \n") ;
 #else
-		  printf("\nconst for terminal states: ") ;
+		 CIO::message("\nconst for terminal states: ") ;
 #endif
 		  int i=0;
 		  
@@ -3451,7 +3450,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 			      break;
 			    }
 			  if (value>=N)
-			    printf("invalid value for const_q(%i): %i\n",i,(int)value) ;
+			   CIO::message("invalid value for const_q(%i): %i\n",i,(int)value) ;
 			}
 		      else
 			break;
@@ -3481,7 +3480,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 #endif
 		    }
 		  if (verbose)
-		    printf("%i Entries",i-1) ;
+		   CIO::message("%i Entries",i-1) ;
 		  
 		  close_bracket(file);
 		  
@@ -3523,7 +3522,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 	} ;
     }
   if (verbose)
-    printf("\n") ;
+   CIO::message("\n") ;
   return result;
 }
 
@@ -3733,22 +3732,22 @@ bool CHMM::save_model_bin(FILE* file)
 	  //derivates log(dp),log(dq)
 	  for (i=0; i<N; i++)
 	    FLOATWRITE(file, get_p(i));	  
-	  printf("wrote %i parameters for p\n",N) ;
+	 CIO::message("wrote %i parameters for p\n",N) ;
 	  
 	  for (i=0; i<N; i++)
 	    FLOATWRITE(file, get_q(i)) ;   
-	  printf("wrote %i parameters for q\n",N) ;
+	 CIO::message("wrote %i parameters for q\n",N) ;
 	  
 	  //derivates log(da),log(db)
 	  for (i=0; i<N; i++)
 	    for (j=0; j<N; j++)
 	      FLOATWRITE(file, get_a(i,j));
-	  printf("wrote %i parameters for a\n",N*N) ;
+	 CIO::message("wrote %i parameters for a\n",N*N) ;
 	  
 	  for (i=0; i<N; i++)
 	    for (j=0; j<M; j++)
 	      FLOATWRITE(file, get_b(i,j));
-	  printf("wrote %i parameters for b\n",N*M) ;
+	 CIO::message("wrote %i parameters for b\n",N*M) ;
 
 	  // write id
 	  FLOATWRITE(file, (float)CMath::INFTY);	  
@@ -3775,12 +3774,12 @@ bool CHMM::save_model_bin(FILE* file)
 	  for (i=0; model->get_learn_p(i)>=0; i++)
 	    FLOATWRITE(file, get_p(model->get_learn_p(i)));	  
 	  num_p=i ;
-	  printf("wrote %i parameters for p\n",num_p) ;
+	 CIO::message("wrote %i parameters for p\n",num_p) ;
 	  
 	  for (i=0; model->get_learn_q(i)>=0; i++)
 	    FLOATWRITE(file, get_q(model->get_learn_q(i)));    
 	  num_q=i ;
-	  printf("wrote %i parameters for q\n",num_q) ;
+	 CIO::message("wrote %i parameters for q\n",num_q) ;
 	  
 	  //derivates log(da),log(db)
 	  for (q=0; model->get_learn_a(q,1)>=0; q++)
@@ -3792,7 +3791,7 @@ bool CHMM::save_model_bin(FILE* file)
 	      FLOATWRITE(file, get_a(i,j));
 	    } ;
 	  num_a=q ;
-	  printf("wrote %i parameters for a\n",num_a) ;		  
+	 CIO::message("wrote %i parameters for a\n",num_a) ;		  
 	  
 	  for (q=0; model->get_learn_b(q,0)>=0; q++)
 	    {
@@ -3803,7 +3802,7 @@ bool CHMM::save_model_bin(FILE* file)
 	      FLOATWRITE(file, get_b(i,j));
 	    } ;
 	  num_b=q ;
-	  printf("wrote %i parameters for b\n",num_b) ;
+	 CIO::message("wrote %i parameters for b\n",num_b) ;
 
 	  // write id
 	  FLOATWRITE(file, (float)CMath::INFTY);	  
@@ -3879,16 +3878,16 @@ bool CHMM::save_path_derivatives_bin(FILE* logfile)
   
   REAL sum_prob=0.0 ;
   if (!model)
-    printf("No definitions loaded -- writing derivatives of all weights\n") ;
+   CIO::message("No definitions loaded -- writing derivatives of all weights\n") ;
   else
-    printf("writing derivatives of changed weights only\n") ;
+   CIO::message("writing derivatives of changed weights only\n") ;
   
   for (dim=0; dim<p_observations->get_DIMENSION(); dim++)
     {		      
       if (dim%100==0)
 	{
-	  printf(".") ; 
-	  fflush(stdout) ;
+	 CIO::message(".") ; 
+	  
 	} ;
       
       prob=best_path(dim);
@@ -3949,7 +3948,7 @@ bool CHMM::save_path_derivatives_bin(FILE* logfile)
   save_model_bin(logfile) ;
   
   result=true;
-  printf("\n") ;
+ CIO::message("\n") ;
   return result;
 }
 #endif // NOVIT
@@ -3961,9 +3960,9 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
   int num_floats=0 ;
   
   if (!model)
-    printf("No definitions loaded -- writing derivatives of all weights\n") ;
+   CIO::message("No definitions loaded -- writing derivatives of all weights\n") ;
   else
-    printf("writing derivatives of changed weights only\n") ;
+   CIO::message("writing derivatives of changed weights only\n") ;
   
 #ifdef PARALLEL
   pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
@@ -3974,8 +3973,8 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
     {		      
       if (dim%20==0)
 	{
-	  printf(".") ; 
-	  fflush(stdout) ;
+	 CIO::message(".") ; 
+	  
 	} ;
       
 #ifdef PARALLEL
@@ -3985,7 +3984,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 	  for (i=0; i<NUM_PARALLEL; i++)
 	    if (dim+i<p_observations->get_DIMENSION())
 	      {
-		/*fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;*/
+		/*CIO::message(stderr,"creating thread for dim=%i\n",dim+i) ;*/
 		
 		params[i].hmm=this ;
 		params[i].dim=dim+i ;
@@ -4000,7 +3999,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 	      {
 		void * ret ;
 		pthread_join(threads[i], &ret) ;
-		/*fprintf(stderr,"thread for dim=%i returned: %i\n",dim+i,ALPHA_CACHE(dim+i).dimension) ;*/
+		/*CIO::message(stderr,"thread for dim=%i returned: %i\n",dim+i,ALPHA_CACHE(dim+i).dimension) ;*/
 	      } ;
 	} ;
 #endif
@@ -4073,7 +4072,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 #endif
   
   result=true;
-  printf("\n") ;
+ CIO::message("\n") ;
   return result;
 }
 
@@ -4155,7 +4154,7 @@ bool CHMM::check_model_derivatives()
 		    invalidate_model() ;
 		    REAL deriv_calc=exp(model_derivative_a(i, j, dim)) ;
 		    
-		    fprintf(stderr,"da(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j, deriv_calc,  deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
+		    CIO::message(stderr,"da(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j, deriv_calc,  deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
 		  } ;
 	      } ;
 	    for (i=0; i<N; i++)
@@ -4178,7 +4177,7 @@ bool CHMM::check_model_derivatives()
 		    invalidate_model() ;
 		    REAL deriv_calc=exp(model_derivative_b(i, j, dim));
 		    
-		    fprintf(stderr,"db(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/(deriv_calc));		
+		    CIO::message(stderr,"db(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/(deriv_calc));		
 		  } ;
 	      } ;
 
@@ -4200,7 +4199,7 @@ bool CHMM::check_model_derivatives()
 		REAL deriv_calc=exp(model_derivative_p(i, dim));
 		
 		//if (fabs(deriv_calc_old-deriv)>1e-4)
-		  fprintf(stderr,"dp(%i) = %e:%e\t (%1.5f%%)\n", i, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
+		  CIO::message(stderr,"dp(%i) = %e:%e\t (%1.5f%%)\n", i, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
 	      } ;
 	    for (i=0; i<N; i++)
 	      {
@@ -4221,7 +4220,7 @@ bool CHMM::check_model_derivatives()
 		REAL deriv_calc=exp(model_derivative_q(i, dim)); 
 		
 		//if (fabs(deriv_calc_old-deriv)>1e-4)
-		  fprintf(stderr,"dq(%i) = %e:%e\t (%1.5f%%)\n", i, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
+		  CIO::message(stderr,"dq(%i) = %e:%e\t (%1.5f%%)\n", i, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
 	      } ;
 	  }
 	return result;
@@ -4256,7 +4255,7 @@ bool CHMM::check_path_derivatives()
 		    invalidate_model() ;
 		    REAL deriv_calc=path_derivative_a(i, j, dim) ;
 		    
-		    fprintf(stderr,"da(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j, deriv_calc,  deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
+		    CIO::message(stderr,"da(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j, deriv_calc,  deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
 		  } ;
 	      } ;
 	    for (i=0; i<N; i++)
@@ -4279,7 +4278,7 @@ bool CHMM::check_path_derivatives()
 		    invalidate_model() ;
 		    REAL deriv_calc=path_derivative_b(i, j, dim);
 		    
-		    fprintf(stderr,"db(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/(deriv_calc));		
+		    CIO::message(stderr,"db(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/(deriv_calc));		
 		  } ;
 	      } ;
 
@@ -4301,7 +4300,7 @@ bool CHMM::check_path_derivatives()
 		REAL deriv_calc=path_derivative_p(i, dim);
 		
 		//if (fabs(deriv_calc_old-deriv)>1e-4)
-		  fprintf(stderr,"dp(%i) = %e:%e\t (%1.5f%%)\n", i, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
+		  CIO::message(stderr,"dp(%i) = %e:%e\t (%1.5f%%)\n", i, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
 	      } ;
 	    for (i=0; i<N; i++)
 	      {
@@ -4322,7 +4321,7 @@ bool CHMM::check_path_derivatives()
 		REAL deriv_calc=path_derivative_q(i, dim); 
 		
 		//if (fabs(deriv_calc_old-deriv)>1e-4)
-		  fprintf(stderr,"dq(%i) = %e:%e\t (%1.5f%%)\n", i, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
+		  CIO::message(stderr,"dq(%i) = %e:%e\t (%1.5f%%)\n", i, deriv_calc, deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
 		  } ;
 	  }
 	return result;
@@ -4493,12 +4492,12 @@ REAL CHMM::linear_likelihood(FILE* file, int WIDTH, int UPTO, bool singleline)
 		d+=hist[i*256+line_[i]];
 	    }
 
-	    //fprintf(stdout,"P_AVG=%e\n",mod_prob);
+	    //CIO::message("P_AVG=%e\n",mod_prob);
 	    mod_prob=math.logarithmic_sum(mod_prob, d);
 	    total++;
 	}
 	mod_prob-=log(total);
-	//fprintf(stdout,"P_AVG=%e\n",mod_prob);
+	//CIO::message("P_AVG=%e\n",mod_prob);
 	delete[] line_;
 	delete[] hist;
 
@@ -4680,7 +4679,7 @@ void CHMM::set_observations(CObservation* obs, CHMM* lambda)
 		{
 			this->reused_caches=false;
 #ifdef PARALLEL
-		    printf("allocating mem for path-table of size %.2f Megabytes (%d*%d) each:\n", ((float)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
+		   CIO::message("allocating mem for path-table of size %.2f Megabytes (%d*%d) each:\n", ((float)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
 			for (int i=0; i<NUM_PARALLEL; i++)
 			{
 			  if ((states_per_observation_psi[i]=new T_STATES[max_T*N])!=NULL)
@@ -4699,7 +4698,7 @@ void CHMM::set_observations(CObservation* obs, CHMM* lambda)
 			path=new T_STATES[max_T];
 #endif // PARALLEL
 #ifndef NOCACHE
-		    printf("allocating mem for caches each of size %.2f Megabytes (%d*%d) ....\n", ((float)max_T)*N*sizeof(T_ALPHA_BETA_TABLE)/(1024*1024), max_T, N);
+		   CIO::message("allocating mem for caches each of size %.2f Megabytes (%d*%d) ....\n", ((float)max_T)*N*sizeof(T_ALPHA_BETA_TABLE)/(1024*1024), max_T, N);
 
 #ifdef PARALLEL
 			for (int i=0; i<NUM_PARALLEL; i++)
@@ -4921,7 +4920,7 @@ void CHMM::check_and_update_crc(CHMM* pos, CHMM* neg)
 	  unsigned int crc=math.crc32( (unsigned char*) o->get_obs_vector(idx), o->get_obs_T(idx) ); 
 	  
 #ifdef DEBUG
-	  printf("SV:idx: %d maxl: %d crc: %x\n", idx, o->get_support_vector_idx(0)+o->get_support_vector_num(), crc);
+	 CIO::message("SV:idx: %d maxl: %d crc: %x\n", idx, o->get_support_vector_idx(0)+o->get_support_vector_num(), crc);
 #endif
 	  
 	  if (features_crc32[i+CRCSIZEHALF]!=crc)
@@ -4989,12 +4988,12 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 	
 	if (!feature_cache_sv)
 	{
-	    printf("refreshing top_sv_feature_cache...........\n"); fflush(stdout);
+	   CIO::message("refreshing top_sv_feature_cache...........\n");
 
 	    int totobs=pos->get_observations()->get_support_vector_num();
 	    feature_cache_sv=new double[num_features*totobs];
 
-	    printf("precalculating top feature vectors for support vectors\n"); fflush(stdout);
+	   CIO::message("precalculating top feature vectors for support vectors\n");
 
 		for (int x=0; x<totobs; x++)
 		{
@@ -5003,43 +5002,43 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 		    else if (!(x % (totobs/200+1)))
 			printf(".");
 
-		    fflush(stdout);
+		   
 
 		    compute_top_feature_vector(pos, neg, pos->get_observations()->get_support_vector_idx(x), &feature_cache_sv[x*num_features]);
 		}
 	    
 		printf(".done.\n");
-		fflush(stdout);
+		
 	}
 	else
-	    printf("WARNING: using previous top_sv_feature_cache NOT recalculating\n"); fflush(stdout);
+	   CIO::message("WARNING: using previous top_sv_feature_cache NOT recalculating\n");
 
 	if (!feature_cache_obs)
 	{
-	    printf("refreshing top_obs_feature_cache...........\n"); fflush(stdout);
+	   CIO::message("refreshing top_obs_feature_cache...........\n");
 
 	    int totobs=pos->get_observations()->get_DIMENSION();
 	    feature_cache_obs=new double[num_features*totobs];
 
-	    printf("precalculating top feature vectors for observations\n"); fflush(stdout);
+	   CIO::message("precalculating top feature vectors for observations\n");
 	    
 	    for (int x=0; x<totobs; x++)
 	    {
 		if (!(x % (totobs/10+1)))
-		    printf("%02d%%.", (int) (100.0*x/totobs));
+		   CIO::message("%02d%%.", (int) (100.0*x/totobs));
 		else if (!(x % (totobs/200+1)))
-		    printf(".");
+		   CIO::message(".");
 
-		fflush(stdout);
+		
 
 		compute_top_feature_vector(pos, neg, x, &feature_cache_obs[x*num_features]);
 	    }
 
-	    printf(".done.\n");
-	    fflush(stdout);
+	   CIO::message(".done.\n");
+	   
 	}
 	else
-	    printf("WARNING: using previous top_obs_feature_cache NOT recalculating\n"); fflush(stdout);
+	   CIO::message("WARNING: using previous top_obs_feature_cache NOT recalculating\n");
    
 	if ((feature_cache_obs!=NULL) && (feature_cache_sv!=NULL || pos->get_observations()->get_support_vector_num() <= 0))
 		return true;
@@ -5048,7 +5047,7 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
     }
     else
     {
-	    printf("WARNING: using previous top_feature_cache NOT recalculating\n"); fflush(stdout);
+	   CIO::message("WARNING: using previous top_feature_cache NOT recalculating\n");
 	    return true;
     }
 
@@ -5085,12 +5084,12 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
       
       if (!feature_cache_sv)
 	{
-	  printf("refreshing top_sv_feature_cache...........\n"); fflush(stdout);
+	 CIO::message("refreshing top_sv_feature_cache...........\n");
 	  
 	  int totobs=pos->get_observations()->get_support_vector_num();
 	  feature_cache_sv=new double[num_features*totobs];
 	  
-	  printf("precalculating top feature vectors for support vectors\n"); fflush(stdout);
+	 CIO::message("precalculating top feature vectors for support vectors\n");
 	  
 	  for (int x=0; x<totobs; x++)
 	    {
@@ -5099,7 +5098,7 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 	      else if (!(x % (totobs/200+1)))
 		printf(".");
 	      
-	      fflush(stdout);
+	     
 
 	      /* The following code calls the function
   		   compute_top_feature_vector(pos, neg, x, &feature_cache_sv[x*num_features]);
@@ -5130,20 +5129,20 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 		} ;
 	    }
 	  
-	  printf(".done.\n");
-	  fflush(stdout);
+	 CIO::message(".done.\n");
+	 
 	}
       else
-	printf("WARNING: using previous top_sv_feature_cache NOT recalculating\n"); fflush(stdout);
+	printf("WARNING: using previous top_sv_feature_cache NOT recalculating\n");
       
       if (!feature_cache_obs)
 	{
-	  printf("refreshing top_obs_feature_cache...........\n"); fflush(stdout);
+	 CIO::message("refreshing top_obs_feature_cache...........\n");
 	  
 	  int totobs=pos->get_observations()->get_DIMENSION();
 	  feature_cache_obs=new double[num_features*totobs];
 	  
-	  printf("precalculating top feature vectors for observations\n"); fflush(stdout);
+	 CIO::message("precalculating top feature vectors for observations\n");
 	  
 	  for (int x=0; x<totobs; x++)
 	    {
@@ -5152,16 +5151,16 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 	      else if (!(x % (totobs/200+1)))
 		printf(".");
 	      
-	      fflush(stdout);
+	     
 	      
 	      compute_top_feature_vector(pos, neg, x, &feature_cache_obs[x*num_features]);
 	    }
 	  
-	  printf(".done.\n");
-	  fflush(stdout);
+	 CIO::message(".done.\n");
+	 
 	}
       else
-	printf("WARNING: using previous top_obs_feature_cache NOT recalculating\n"); fflush(stdout);
+	printf("WARNING: using previous top_obs_feature_cache NOT recalculating\n");
       
       if ((feature_cache_obs!=NULL) && (feature_cache_sv!=NULL || pos->get_observations()->get_support_vector_num() <= 0))
 	return true;
@@ -5170,7 +5169,7 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
     }
   else
     {
-      printf("WARNING: using previous top_feature_cache NOT recalculating\n"); fflush(stdout);
+     CIO::message("WARNING: using previous top_feature_cache NOT recalculating\n");
       return true;
     }
   

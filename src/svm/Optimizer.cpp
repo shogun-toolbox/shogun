@@ -20,6 +20,7 @@
 #include "svm/Optimizer.h"
 #include "svm/SVM.h"
 #include "lib/common.h"
+#include "lib/io.h"
 
 #include <math.h>
 
@@ -60,16 +61,16 @@ LEARN_PARM *learn_parm)
   }
   
   if(verbosity>=4) { /* really verbose */
-    printf("\n\n");
+   CIO::message("\n\n");
     for(i=0;i<qp->opt_n;i++) {
-      printf("%f: ",qp->opt_g0[i]);
+     CIO::message("%f: ",qp->opt_g0[i]);
       for(j=0;j<qp->opt_n;j++) {
 	printf("%f ",qp->opt_g[i*qp->opt_n+j]);
       }
-      printf(": a=%.30f",qp->opt_xinit[i]);
-      printf(": y=%f\n",qp->opt_ce[i]);
+     CIO::message(": a=%.30f",qp->opt_xinit[i]);
+     CIO::message(": y=%f\n",qp->opt_ce[i]);
     }
-    printf("\n");
+   CIO::message("\n");
   }
 
   obj_before=0; /* calculate objective before optimization */
@@ -138,7 +139,7 @@ LEARN_PARM *learn_parm)
     for(j=i;j<qp->opt_n;j++) {
       dist+=(primal[j]*qp->opt_g[i*qp->opt_n+j]);
     }
-    /* printf("LOQO: a[%d]=%f, dist=%f, b=%f\n",i,primal[i],dist,dual[0]); */
+    /*CIO::message("LOQO: a[%d]=%f, dist=%f, b=%f\n",i,primal[i],dist,dual[0]); */
     if((primal[i]<(qp->opt_up[i]-epsilon_loqo)) && (dist < (1.0-(*epsilon_crit)))) {
       epsilon_loqo=(qp->opt_up[i]-primal[i])*2.0;
     }
@@ -169,21 +170,21 @@ LEARN_PARM *learn_parm)
     (opt_precision)/=100.0;
     precision_violations++;
     if(verbosity>=2) {
-      printf("NOTICE: Increasing Precision of PR_LOQO.\n");
+     CIO::message("NOTICE: Increasing Precision of PR_LOQO.\n");
     }
   }
 
   if(precision_violations > 50) { 
     (*epsilon_crit)*=10.0;
     if(verbosity>=1) {
-      printf("\nWARNING: Relaxing epsilon on KT-Conditions.\n");
+     CIO::message("\nWARNING: Relaxing epsilon on KT-Conditions.\n");
     }
   }	  
 
   (*threshold)=model_b;
 
   if(result!=OPTIMAL_SOLUTION) {
-    printf("\nERROR: PR_LOQO did not converge. \n");
+   CIO::message("\nERROR: PR_LOQO did not converge. \n");
     return(qp->opt_xinit);
   }
   else {

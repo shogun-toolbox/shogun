@@ -1,10 +1,10 @@
 #ifndef __MATH_H_
 #define __MATH_H_
 
-#include <math.h>
-#include <stdlib.h>
-
 #include "lib/common.h"
+
+#include <math.h>
+#include <stdio.h>
 
 /** Mathematical Functions.
  * Class which collects generic mathematical functions

@@ -1,3 +1,13 @@
+#include "lib/io.h"
+#include "lib/Observation.h"
+#include "lib/Mathmatics.h"
+#include "hmm/HMM.h"
+#include "svm/SVM.h"
+#include "svm/SVM_light.h"
+
+#ifdef SVMCPLEX
+ #include "svm_cplex/SVM_cplex.h"
+#endif
 
 #include <stdio.h>
 #include <unistd.h>
@@ -16,15 +26,6 @@
 #ifdef SVMCPLEX
 #include <libmmfile.h>
 #endif // SVMCPLEX
-
-#include "hmm/HMM.h"
-#include "lib/Observation.h"
-#include "lib/Mathmatics.h"
-#include "svm/SVM.h"
-#include "svm/SVM_light.h"
-#ifdef SVMCPLEX
- #include "svm_cplex/SVM_cplex.h"
-#endif
 
 //names of menu commands
 static const char* N_SET_POS_MODEL=			"set_pos_model";
@@ -94,13 +95,6 @@ static const char* N_LINEAR_HMM_TEST=			"linear_hmm_test";
 
 clock_t current_time;
 
-/*		-format specs: out_file 
-		train messages
-		learned model (looks like model_file)
-		state sequence (looks like in_file)
- */
-FILE* out_file=stdout;
-
 // initial parameters
 int    ITERATIONS = 100;
 double EPSILON    = 1e-6;
@@ -134,31 +128,22 @@ double* theta; //full parameter vector
 static int iteration_count=ITERATIONS ;
 static int conv_it=5 ;
 
-void error(int line, char* str)
-{
-    if (line)
-	fprintf(out_file,"error in line %d %s\n", line, str);
-    else
-	fprintf(out_file,"error %s\n", str);
-
-    fflush(out_file);
-
-    //	exit(1);
-}
-
 //convergence criteria  -tobeadjusted-
 bool converge(double x, double y)
 {
-    printf("\n #%03d\tbest result so far: %G (eps: %f", iteration_count, y, (float) y-x);
-    if (y-x<0)
-	printf(" ***") ;
-    printf(")") ;
-    if (fabs(x-y)<EPSILON)
+    double diff=y-x;
+    double absdiff=fabs(diff);
+
+    CIO::message("\n #%03d\tbest result so far: %G (eps: %f", iteration_count, y, diff);
+    if (diff<0.0)
+	CIO::message(" ***") ;
+    CIO::message(")") ;
+    if (absdiff<EPSILON)
 	conv_it-- ;
-    if (iteration_count-- == 0 || (fabs(x-y)<EPSILON && conv_it<=0))
+    if (iteration_count-- == 0 || (absdiff<EPSILON && conv_it<=0))
     {
 	iteration_count=ITERATIONS;
-	printf("...finished\n");
+	CIO::message("...finished\n");
 	conv_it=5 ;
 	return true;
     }
@@ -181,8 +166,8 @@ static void initialize()
 {
     lambda=NULL ;
     lambda_train=NULL ;
-    fprintf(stdout,"Learning uses %i threads\n", NUM_PARALLEL) ;
-    fflush(stdout);
+    CIO::message("Learning uses %i threads\n", NUM_PARALLEL) ;
+   
 #ifdef SVMCPLEX
     libmmfileInitialize() ;
 #endif
@@ -206,78 +191,78 @@ static void cleanup()
 
 static void help()
 {
-    printf("\n[LOAD]\n");
-    printf("%s <filename>\t- load hmm\n",N_LOAD_MODEL);
-    printf("%s <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
-    printf("%s <filename>\t- load observed data\n",N_LOAD_OBSERVATIONS);
-    printf("\n[SAVE]\n");
-    printf("%s <filename>\t- save hmm\n",N_SAVE_MODEL);
-    printf("%s <filename>\t- save hmm in binary format\n",N_SAVE_MODEL_BIN);
+   CIO::message("\n[LOAD]\n");
+   CIO::message("%s <filename>\t- load hmm\n",N_LOAD_MODEL);
+   CIO::message("%s <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
+   CIO::message("%s <filename>\t- load observed data\n",N_LOAD_OBSERVATIONS);
+   CIO::message("\n[SAVE]\n");
+   CIO::message("%s <filename>\t- save hmm\n",N_SAVE_MODEL);
+   CIO::message("%s <filename>\t- save hmm in binary format\n",N_SAVE_MODEL_BIN);
 #ifndef NOVIT
-    printf("%s <filename>\t- save state sequence of viterbi path\n",N_SAVE_PATH);
-    printf("%s <filename>\t- save derivatives of log P[O,Q_best|model]\n",N_SAVE_PATH_DERIVATIVES);
-    printf("%s <filename>\t- save derivatives of log P[O,Q_best|model] in binary format\n",N_SAVE_PATH_DERIVATIVES_BIN);
+   CIO::message("%s <filename>\t- save state sequence of viterbi path\n",N_SAVE_PATH);
+   CIO::message("%s <filename>\t- save derivatives of log P[O,Q_best|model]\n",N_SAVE_PATH_DERIVATIVES);
+   CIO::message("%s <filename>\t- save derivatives of log P[O,Q_best|model] in binary format\n",N_SAVE_PATH_DERIVATIVES_BIN);
 #endif // NOVIT
-    printf("%s <filename>\t- save log derivatives of P[O|model]\n",N_SAVE_MODEL_DERIVATIVES);
-    printf("%s <filename>\t- save log derivatives of P[O|model] in binary format\n",N_SAVE_MODEL_DERIVATIVES_BIN);
-    printf("%s <filename>\t- save P[O|model]\n",N_SAVE_LIKELIHOOD);
-    printf("%s <filename>\t- save P[O|model]\n",N_SAVE_LIKELIHOOD_BIN);
-    printf("%s <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear model from file\n",N_SAVE_LINEAR_LIKELIHOOD);
-    printf("%s <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear model from file\n",N_SAVE_LINEAR_LIKELIHOOD_BIN);
-    printf("\n[MODEL]\n");
-    printf("%s - frees all models and observations\n",N_CLEAR);
-    printf("%s #states #oberservations #order\t- frees previous model and creates an empty new one\n",N_NEW);
-    printf("%s <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> - assign observation to current model\n",N_ASSIGN_OBSERVATION);
-    printf("%s - make current model the positive model; then free current model \n",N_SET_POS_MODEL);
-    printf("%s - make current model the negative model; then free current model \n",N_SET_NEG_MODEL);
-    printf("%s <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
-    printf("%s [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
-    printf("%s <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [PROTEIN|DNA|ALPHANUM|CUBE]\t\t\t- changes alphabet type\n", N_ALPHABET);
-    printf("%s [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms (%i,%e)\n",N_CONVERGENCE_CRITERIA,ITERATIONS,EPSILON);
+   CIO::message("%s <filename>\t- save log derivatives of P[O|model]\n",N_SAVE_MODEL_DERIVATIVES);
+   CIO::message("%s <filename>\t- save log derivatives of P[O|model] in binary format\n",N_SAVE_MODEL_DERIVATIVES_BIN);
+   CIO::message("%s <filename>\t- save P[O|model]\n",N_SAVE_LIKELIHOOD);
+   CIO::message("%s <filename>\t- save P[O|model]\n",N_SAVE_LIKELIHOOD_BIN);
+   CIO::message("%s <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear model from file\n",N_SAVE_LINEAR_LIKELIHOOD);
+   CIO::message("%s <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear model from file\n",N_SAVE_LINEAR_LIKELIHOOD_BIN);
+   CIO::message("\n[MODEL]\n");
+   CIO::message("%s - frees all models and observations\n",N_CLEAR);
+   CIO::message("%s #states #oberservations #order\t- frees previous model and creates an empty new one\n",N_NEW);
+   CIO::message("%s <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> - assign observation to current model\n",N_ASSIGN_OBSERVATION);
+   CIO::message("%s - make current model the positive model; then free current model \n",N_SET_POS_MODEL);
+   CIO::message("%s - make current model the negative model; then free current model \n",N_SET_NEG_MODEL);
+   CIO::message("%s <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
+   CIO::message("%s [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
+   CIO::message("%s <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [PROTEIN|DNA|ALPHANUM|CUBE]\t\t\t- changes alphabet type\n", N_ALPHABET);
+   CIO::message("%s [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms (%i,%e)\n",N_CONVERGENCE_CRITERIA,ITERATIONS,EPSILON);
 #ifdef FIX_POS
-    printf("%s position state\t- sets the state which has to be passed at a certain position\n",N_FIX_POS_STATE);
+   CIO::message("%s position state\t- sets the state which has to be passed at a certain position\n",N_FIX_POS_STATE);
 #endif
-    printf("%s <max_dim>\t - set maximum number of patterns\n",N_SET_MAX_DIM);
-    printf("\n[TRAIN]\n");
-    printf("%s <filename> [<width> <upto>]\t\t- obtains new linear model from file\n",N_LINEAR_TRAIN);
-    printf("%s <filename> [<width> <upto>]\t\t- computes likelihood for linear model from file\n",N_LINEAR_LIKELIHOOD);
+   CIO::message("%s <max_dim>\t - set maximum number of patterns\n",N_SET_MAX_DIM);
+   CIO::message("\n[TRAIN]\n");
+   CIO::message("%s <filename> [<width> <upto>]\t\t- obtains new linear model from file\n",N_LINEAR_TRAIN);
+   CIO::message("%s <filename> [<width> <upto>]\t\t- computes likelihood for linear model from file\n",N_LINEAR_LIKELIHOOD);
 #ifndef NOVIT
-    printf("%s\t\t- does viterbi training on the current model\n",N_VITERBI_TRAIN);
-    printf("%s\t\t- does viterbi training only on defined transitions etc\n",N_VITERBI_TRAIN_DEFINED);
-    printf("%s [pseudo_start [in_steps]]\t\t- does viterbi training only on defined transitions with annealing\n",N_VITERBI_TRAIN_DEFINED_ANNEALED);
-    printf("%s [pseudo_start [step [eps_add]]]\t\t- does viterbi training only on defined transitions with addiabatic annealing\n",N_VITERBI_TRAIN_DEFINED_ADDIABATIC);
+   CIO::message("%s\t\t- does viterbi training on the current model\n",N_VITERBI_TRAIN);
+   CIO::message("%s\t\t- does viterbi training only on defined transitions etc\n",N_VITERBI_TRAIN_DEFINED);
+   CIO::message("%s [pseudo_start [in_steps]]\t\t- does viterbi training only on defined transitions with annealing\n",N_VITERBI_TRAIN_DEFINED_ANNEALED);
+   CIO::message("%s [pseudo_start [step [eps_add]]]\t\t- does viterbi training only on defined transitions with addiabatic annealing\n",N_VITERBI_TRAIN_DEFINED_ADDIABATIC);
 #endif //NOVIT
-    printf("%s\t\t- does baum welch training on current model\n",N_BAUM_WELCH_TRAIN);
-    printf("%s\t\t- does baum welch training only on defined transitions etc.\n",N_BAUM_WELCH_TRAIN_DEFINED);
+   CIO::message("%s\t\t- does baum welch training on current model\n",N_BAUM_WELCH_TRAIN);
+   CIO::message("%s\t\t- does baum welch training only on defined transitions etc.\n",N_BAUM_WELCH_TRAIN_DEFINED);
 #ifndef NOVIT
-    printf("%s\t- find the best path using viterbi\n",N_BEST_PATH);
+   CIO::message("%s\t- find the best path using viterbi\n",N_BEST_PATH);
 #endif //NOVIT
-    printf("%s\t- find model likelihood\n",N_LIKELIHOOD);
-    printf("%s [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms (%i,%e)\n",N_CONVERGENCE_CRITERIA,ITERATIONS,EPSILON);
-    printf("\n[OUTPUT]\n");
+   CIO::message("%s\t- find model likelihood\n",N_LIKELIHOOD);
+   CIO::message("%s [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms (%i,%e)\n",N_CONVERGENCE_CRITERIA,ITERATIONS,EPSILON);
+   CIO::message("\n[OUTPUT]\n");
 #ifndef NOVIT
-    printf("%s [from to]\t- outputs best path\n",N_OUTPUT_PATH);
+   CIO::message("%s [from to]\t- outputs best path\n",N_OUTPUT_PATH);
 #endif //NOVIT
-    printf("%s\t- output whole model\n",N_OUTPUT_MODEL);
-    printf("\n[HMM-classification]\n");
-    printf("%s[<output> [<rocfile>]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
-    printf("%s <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate svm output from obs using linear model\n",N_LINEAR_HMM_TEST);
-    printf("\n[Hybrid HMM-<TOP-Kernel>-SVM]\n");
-    printf("%s [c-value]\t\t\t- changes svm_c value\n", N_C);
-    printf("%s <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
-    printf("%s <srcsvm> [<output> [<rocfile>]]\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
-    printf("%s <dstsvm> \t\t- obtains svm from pos/neg linear models\n",N_LINEAR_SVM_TRAIN);
-    printf("%s - enables SVM Light \n",N_SET_SVM_LIGHT);
+   CIO::message("%s\t- output whole model\n",N_OUTPUT_MODEL);
+   CIO::message("\n[HMM-classification]\n");
+   CIO::message("%s[<output> [<rocfile>]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
+   CIO::message("%s <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate svm output from obs using linear model\n",N_LINEAR_HMM_TEST);
+   CIO::message("\n[Hybrid HMM-<TOP-Kernel>-SVM]\n");
+   CIO::message("%s [c-value]\t\t\t- changes svm_c value\n", N_C);
+   CIO::message("%s <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
+   CIO::message("%s <srcsvm> [<output> [<rocfile>]]\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
+   CIO::message("%s <dstsvm> \t\t- obtains svm from pos/neg linear models\n",N_LINEAR_SVM_TRAIN);
+   CIO::message("%s - enables SVM Light \n",N_SET_SVM_LIGHT);
 #ifdef SVMCPLEX
-    printf("%s - enables SVM CPLEX \n",N_SET_SVM_CPLEX);
+   CIO::message("%s - enables SVM CPLEX \n",N_SET_SVM_CPLEX);
 #endif
-    printf("\n[SYSTEM]\n");
-    printf("%s <filename>\t- load and execute a script\n",N_EXEC);
-    printf("%s\t- exit genfinder\n",N_QUIT);
-    printf("%s\t- exit genfinder\n",N_EXIT);
-    printf("%s\t- this message\n",N_HELP);
-    printf("%s <commands>\t- execute system functions \n",N_SYSTEM);
-    fflush(stdout);
+   CIO::message("\n[SYSTEM]\n");
+   CIO::message("%s <filename>\t- load and execute a script\n",N_EXEC);
+   CIO::message("%s\t- exit genfinder\n",N_QUIT);
+   CIO::message("%s\t- exit genfinder\n",N_EXIT);
+   CIO::message("%s\t- this message\n",N_HELP);
+   CIO::message("%s <commands>\t- execute system functions \n",N_SYSTEM);
+   
 }
 
 
@@ -286,7 +271,7 @@ static bool prompt(FILE* infile=stdin)
     int i;
     char input[2000];
 
-    printf("genefinder >> ");fflush(stdout);
+   CIO::message("genefinder >> ");
     char* b=fgets(input, sizeof(input), infile);
     if (!strlen(input) || (b==NULL) || (input[0]==N_COMMENT1) || (input[0]==N_COMMENT2) || (input[0]=='\n'))
 	return true;
@@ -323,7 +308,7 @@ static bool prompt(FILE* infile=stdin)
 	    fclose(model_file);
 	}
 	else
-	    printf("opening file %s failed\n", &input[i]);
+	   CIO::message("opening file %s failed\n", &input[i]);
     } 
     else if (!strncmp(input, N_SET_NEG_MODEL, strlen(N_SET_NEG_MODEL)))
     {
@@ -342,7 +327,7 @@ static bool prompt(FILE* infile=stdin)
 	    CHMM::invalidate_top_feature_cache(CHMM::INVALID);
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
     else if (!strncmp(input, N_SET_POS_MODEL, strlen(N_SET_POS_MODEL)))
     {
@@ -361,7 +346,7 @@ static bool prompt(FILE* infile=stdin)
 	    CHMM::invalidate_top_feature_cache(CHMM::INVALID);
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
     else if (!strncmp(input, N_SAVE_MODEL_BIN, strlen(N_SAVE_MODEL_BIN)))
     {
@@ -379,7 +364,7 @@ static bool prompt(FILE* infile=stdin)
 		fclose(file);
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
     else if (!strncmp(input, N_CHOP, strlen(N_CHOP)))
     {
@@ -395,7 +380,7 @@ static bool prompt(FILE* infile=stdin)
 	    }
 	}
 	else
-	    printf("see help for parameters/create model first\n");
+	   CIO::message("see help for parameters/create model first\n");
     } 
     else if (!strncmp(input, N_SAVE_MODEL, strlen(N_SAVE_MODEL)))
     {
@@ -413,14 +398,14 @@ static bool prompt(FILE* infile=stdin)
 		fclose(file);
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
     else if (!strncmp(input, N_LOAD_DEFINITIONS, strlen(N_LOAD_DEFINITIONS)))
     {
 	for (i=strlen(N_LOAD_DEFINITIONS); isspace(input[i]); i++);
 
 	if ((!lambda) || (!lambda_train)) 
-	    printf("load or create model first\n");
+	   CIO::message("load or create model first\n");
 	else
 	{
 	    char file_name[1024]="" ;
@@ -439,7 +424,7 @@ static bool prompt(FILE* infile=stdin)
 		ok=ok && lambda_train->load_definitions(def_file,false,(initialize!=0)) ;
 
 		if (ok)
-		    printf("file successfully read\n");
+		   CIO::message("file successfully read\n");
 
 		fclose(def_file);
 	    }
@@ -530,7 +515,7 @@ static bool prompt(FILE* infile=stdin)
 			obs_test= new CObservation(trn_file, TEST, alphabet, 8*sizeof(T_OBSERVATIONS), M, ORDER);
 		}
 		else
-		    printf("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
+		   CIO::message("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
 	
 		fclose(trn_file);
 	    }
@@ -538,7 +523,7 @@ static bool prompt(FILE* infile=stdin)
 		printf("opening file %s failed\n", filename);
 	}
 	else
-	    printf("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
+	   CIO::message("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
     }
 #ifndef NOVIT
     else if (!strncmp(input, N_SAVE_PATH, strlen(N_SAVE_PATH)))
@@ -553,7 +538,7 @@ static bool prompt(FILE* infile=stdin)
 	    fclose(file);
 	}
 	else
-	    printf("opening file %s for writing failed\n", &input[i]);
+	   CIO::message("opening file %s for writing failed\n", &input[i]);
     } 
 #endif // NOVIT
     else if (!strncmp(input, N_SAVE_LIKELIHOOD_BIN, strlen(N_SAVE_LIKELIHOOD_BIN)))
@@ -568,7 +553,7 @@ static bool prompt(FILE* infile=stdin)
 	    fclose(file);
 	}
 	else
-	    printf("opening file %s for writing failed\n", &input[i]);
+	   CIO::message("opening file %s for writing failed\n", &input[i]);
     } 
     else if (!strncmp(input, N_SAVE_LIKELIHOOD, strlen(N_SAVE_LIKELIHOOD)))
     {
@@ -582,7 +567,7 @@ static bool prompt(FILE* infile=stdin)
 	    fclose(file);
 	}
 	else
-	    printf("opening file %s for writing failed\n", &input[i]);
+	   CIO::message("opening file %s for writing failed\n", &input[i]);
     } 
 #ifndef NOVIT
     else if (!strncmp(input, N_SAVE_PATH_DERIVATIVES_BIN, strlen(N_SAVE_PATH_DERIVATIVES_BIN)))
@@ -597,10 +582,10 @@ static bool prompt(FILE* infile=stdin)
 	{
 	    lambda->save_path_derivatives_bin(file);
 	    fclose(file);
-	    printf("successfully written vit_derivatives into \"%s\" !\n", &input[i]);
+	   CIO::message("successfully written vit_derivatives into \"%s\" !\n", &input[i]);
 	}
 	else
-	    printf("opening file %s for writing failed\n", &input[i]);
+	   CIO::message("opening file %s for writing failed\n", &input[i]);
     } 
     else if (!strncmp(input, N_SAVE_PATH_DERIVATIVES, strlen(N_SAVE_PATH_DERIVATIVES)))
     {
@@ -613,10 +598,10 @@ static bool prompt(FILE* infile=stdin)
 	{
 	    lambda->save_path_derivatives(file);
 	    fclose(file);
-	    printf("successfully written vit_derivatives into \"%s\" !\n", &input[i]);
+	   CIO::message("successfully written vit_derivatives into \"%s\" !\n", &input[i]);
 	} 
 	else
-	    printf("opening file %s for writing failed\n", &input[i]);
+	   CIO::message("opening file %s for writing failed\n", &input[i]);
     } 
 #endif // NOVIT
     else if (!strncmp(input, N_SAVE_MODEL_DERIVATIVES_BIN, strlen(N_SAVE_MODEL_DERIVATIVES_BIN)))
@@ -631,10 +616,10 @@ static bool prompt(FILE* infile=stdin)
 	{
 	    lambda->save_model_derivatives_bin(file);
 	    fclose(file);
-	    printf("successfully written bw_derivatives into \"%s\" !\n", &input[i]);
+	   CIO::message("successfully written bw_derivatives into \"%s\" !\n", &input[i]);
 	} 
 	else
-	    printf("opening file %s for writing failed\n", &input[i]);
+	   CIO::message("opening file %s for writing failed\n", &input[i]);
     } 
     else if (!strncmp(input, N_SAVE_MODEL_DERIVATIVES, strlen(N_SAVE_MODEL_DERIVATIVES)))
     {
@@ -647,10 +632,10 @@ static bool prompt(FILE* infile=stdin)
 	{
 	    lambda->save_model_derivatives(file);
 	    fclose(file);
-	    printf("successfully written bw_derivatives into \"%s\" !\n", &input[i]);
+	   CIO::message("successfully written bw_derivatives into \"%s\" !\n", &input[i]);
 	}
 	else
-	    printf("opening file %s for writing failed\n", &input[i]);
+	   CIO::message("opening file %s for writing failed\n", &input[i]);
     } 
 #ifdef FIX_POS
     else if (!strncmp(input, N_FIX_POS_STATE, strlen(N_FIX_POS_STATE)))
@@ -665,13 +650,13 @@ static bool prompt(FILE* infile=stdin)
 		bool ok=lambda->set_fix_pos_state(pos,state,value) ;
 		ok= ok && lambda_train->set_fix_pos_state(pos,state,value) ;
 		if (!ok)
-		    printf("%s failed\n",N_FIX_POS_STATE);
+		   CIO::message("%s failed\n",N_FIX_POS_STATE);
 	    }
 	    else
 		printf("create model first!\n");
 	}
 	else
-	    printf("see help for parameters\n");
+	   CIO::message("see help for parameters\n");
     } 
 #endif
     else if (!strncmp(input, N_SET_MAX_DIM, strlen(N_SET_MAX_DIM)))
@@ -716,7 +701,7 @@ static bool prompt(FILE* infile=stdin)
 			printf("load observation first!\n");
 	}
 	else
-	    printf("see help for parameters\n");
+	   CIO::message("see help for parameters\n");
     } 
     else if (!strncmp(input, N_CLEAR, strlen(N_CLEAR)))
     {
@@ -757,7 +742,7 @@ static bool prompt(FILE* infile=stdin)
 		M=m;
 	}
 	else
-	    printf("see help for parameters\n");
+	   CIO::message("see help for parameters\n");
     } 
     else if (!strncmp(input, N_PSEUDO, strlen(N_PSEUDO)))
     {
@@ -845,7 +830,7 @@ static bool prompt(FILE* infile=stdin)
 	    EPSILON=f;
 	}
 	else
-	    printf("see help for parameters. current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
+	   CIO::message("see help for parameters. current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
     } 
 #ifndef NOVIT
     else if (!strncmp(input, N_VITERBI_TRAIN_DEFINED_ANNEALED, strlen(N_VITERBI_TRAIN_DEFINED_ANNEALED)))
@@ -882,7 +867,7 @@ static bool prompt(FILE* infile=stdin)
 	    }
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
     else if (!strncmp(input, N_VITERBI_TRAIN_DEFINED_ADDIABATIC, strlen(N_VITERBI_TRAIN_DEFINED_ADDIABATIC)))
     {
@@ -908,7 +893,7 @@ static bool prompt(FILE* infile=stdin)
 	    lambda->set_pseudo(act_pseudo) ;
 	    lambda_train->set_pseudo(act_pseudo) ;
 	    iteration_count=ITERATIONS ;
-	    printf("pseudo=%e  \n",act_pseudo) ; 
+	   CIO::message("pseudo=%e  \n",act_pseudo) ; 
 	    prob=lambda->best_path(-1) ;
 	    prob_train=lambda_train->best_path(-1) ;
 	    while ((iteration_count>0) && (act_pseudo>PSEUDO))
@@ -924,12 +909,12 @@ static bool prompt(FILE* infile=stdin)
 		    act_pseudo*=step ;
 		    lambda->set_pseudo(act_pseudo) ;
 		    lambda_train->set_pseudo(act_pseudo) ;
-		    printf("   pseudo=%e",act_pseudo) ; 
+		   CIO::message("   pseudo=%e",act_pseudo) ; 
 		} ;
 	    }
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
     else if (!strncmp(input, N_VITERBI_TRAIN_DEFINED, strlen(N_VITERBI_TRAIN_DEFINED)))
     {
@@ -951,18 +936,18 @@ static bool prompt(FILE* infile=stdin)
 		FILE* file=fopen(templname, "w");
 		if (prob>prob_train)
 		{
-		    printf("\nsaving model with filename %s ... ", templname) ;
+		   CIO::message("\nsaving model with filename %s ... ", templname) ;
 		    lambda->save_model(file) ;
 		    fclose(file) ;
-		    printf("done.") ;
+		   CIO::message("done.") ;
 		}
 		else
-		    printf("\nskipping TMP_SAVE. model got worse.");
+		   CIO::message("\nskipping TMP_SAVE. model got worse.");
 #endif
 	    }
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
     else if (!strncmp(input, N_VITERBI_TRAIN, strlen(N_VITERBI_TRAIN)))
     {
@@ -984,18 +969,18 @@ static bool prompt(FILE* infile=stdin)
 		FILE* file=fopen(templname, "w");
 		if (prob>prob_train)
 		{
-		    printf("\nsaving model with filename %s ... ", templname) ;
+		   CIO::message("\nsaving model with filename %s ... ", templname) ;
 		    lambda->save_model(file) ;
 		    fclose(file) ;
-		    printf("done.") ;
+		   CIO::message("done.") ;
 		}
 		else
-		    printf("\nskipping TMP_SAVE. model got worse.");
+		   CIO::message("\nskipping TMP_SAVE. model got worse.");
 #endif
 	    }
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     }
 #endif // NOVIT
     else if (!strncmp(input, N_BAUM_WELCH_TRAIN_DEFINED, strlen(N_BAUM_WELCH_TRAIN_DEFINED)))
@@ -1045,7 +1030,7 @@ static bool prompt(FILE* infile=stdin)
 
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
     else if (!strncmp(input, N_BAUM_WELCH_TRAIN, strlen(N_BAUM_WELCH_TRAIN)))
     {
@@ -1094,7 +1079,7 @@ static bool prompt(FILE* infile=stdin)
 			printf("assign observation first\n");
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
 #ifndef NOVIT
     else if (!strncmp(input, N_BEST_PATH, strlen(N_BEST_PATH)))
@@ -1104,7 +1089,7 @@ static bool prompt(FILE* infile=stdin)
 	    lambda->output_model_sequence(false);
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
 #endif //NOVIT
     else if (!strncmp(input, N_LIKELIHOOD, strlen(N_LIKELIHOOD)))
@@ -1114,7 +1099,7 @@ static bool prompt(FILE* infile=stdin)
 	    lambda->output_model(false);
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
     else if (!strncmp(input, N_OUTPUT_MODEL_DEFINED, strlen(N_OUTPUT_MODEL_DEFINED)))
     {
@@ -1123,7 +1108,7 @@ static bool prompt(FILE* infile=stdin)
 	    lambda->output_model_defined(true);
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
 #ifndef NOVIT
     else if (!strncmp(input, N_OUTPUT_PATH, strlen(N_OUTPUT_PATH)))
@@ -1142,7 +1127,7 @@ static bool prompt(FILE* infile=stdin)
 	    lambda->output_model_sequence(true,from,to);
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
     else if (!strncmp(input, N_OUTPUT_GENES, strlen(N_OUTPUT_GENES)))
     {
@@ -1151,7 +1136,7 @@ static bool prompt(FILE* infile=stdin)
 	    lambda->output_gene_positions(true);
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
 #endif //NOVIT
     else if (!strncmp(input, N_OUTPUT_MODEL, strlen(N_OUTPUT_MODEL)))
@@ -1162,7 +1147,7 @@ static bool prompt(FILE* infile=stdin)
 	    lambda_train->output_model(true);
 	}
 	else
-	    printf("create model first\n");
+	   CIO::message("create model first\n");
     } 
     else if (!strncmp(input, N_EXEC, strlen(N_EXEC)))
     {
@@ -1172,7 +1157,7 @@ static bool prompt(FILE* infile=stdin)
 
 	if (!file)
 	{
-	    printf("error opening/reading file: \"%s\"",&input[i]);
+	   CIO::message("error opening/reading file: \"%s\"",&input[i]);
 	    return true;
 	}
 	else
@@ -1230,7 +1215,7 @@ static bool prompt(FILE* infile=stdin)
 			{
 			    WIDTH=i+1;
 			    UPTO=i;
-			    printf("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
+			   CIO::message("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
 			    break;
 			}
 		    }
@@ -1287,16 +1272,16 @@ static bool prompt(FILE* infile=stdin)
 		if (lambda && lambda_train)
 		{
 		    lambda->linear_train(file, WIDTH, UPTO);
-		    printf("done.\n");
+		   CIO::message("done.\n");
 		}
 		else
-		    printf("model creation failed\n");
+		   CIO::message("model creation failed\n");
 	    }
 
 	    fclose(file);
 	}
 	else
-	    printf("opening file %s failed!\n", fname);
+	   CIO::message("opening file %s failed!\n", fname);
 
     } 
     else if (!strncmp(input, N_LINEAR_LIKELIHOOD, strlen(N_LINEAR_LIKELIHOOD)))
@@ -1349,7 +1334,7 @@ static bool prompt(FILE* infile=stdin)
 
 	}
 	else
-	    printf("create model first!\n");
+	   CIO::message("create model first!\n");
 
     } 
     else if (!strncmp(input, N_SAVE_LINEAR_LIKELIHOOD_BIN, strlen(N_SAVE_LINEAR_LIKELIHOOD_BIN)))
@@ -1403,7 +1388,7 @@ static bool prompt(FILE* infile=stdin)
 
 	}
 	else
-	    printf("create model first!\n");
+	   CIO::message("create model first!\n");
     } 
     else if (!strncmp(input, N_SAVE_LINEAR_LIKELIHOOD, strlen(N_SAVE_LINEAR_LIKELIHOOD)))
     {
@@ -1502,10 +1487,10 @@ static bool prompt(FILE* infile=stdin)
 		delete obs;
 	      }
 	    else
-	      printf("assign postrain and negtrain observations first!\n");
+	     CIO::message("assign postrain and negtrain observations first!\n");
 	  }
 	else
-	  printf("assign positive and negative models first!\n");
+	 CIO::message("assign positive and negative models first!\n");
     } 
     else if (!strncmp(input, N_LINEAR_SVM_TRAIN, strlen(N_LINEAR_SVM_TRAIN)))
     {
@@ -1544,10 +1529,10 @@ static bool prompt(FILE* infile=stdin)
 		delete obs;
 	      }
 	    else
-	      printf("assign postrain and negtrain observations first!\n");
+	     CIO::message("assign postrain and negtrain observations first!\n");
 	  }
 	else
-	  printf("assign positive and negative models first!\n");
+	 CIO::message("assign positive and negative models first!\n");
     } 
     else if (!strncmp(input, N_SVM_TEST, strlen(N_SVM_TEST)))
       {
@@ -1572,7 +1557,7 @@ static bool prompt(FILE* infile=stdin)
 
 		    if (!outputfile)
 		    {
-			fprintf(stderr,"ERROR: could not open %s\n",outputname);
+			CIO::message(stderr,"ERROR: could not open %s\n",outputname);
 			return false;
 		    }
 		   
@@ -1582,14 +1567,14 @@ static bool prompt(FILE* infile=stdin)
 
 			if (!rocfile)
 			{
-			    fprintf(stderr,"ERROR: could not open %s\n",rocfname);
+			    CIO::message(stderr,"ERROR: could not open %s\n",rocfname);
 			    return false;
 			}
 		    }
 		}
 
 		printf("testing\n");
-		fflush(stdout);
+		
 		if (pos && neg)
 		{
 		    if (obs_postest && obs_negtest)
@@ -1628,7 +1613,7 @@ static bool prompt(FILE* infile=stdin)
 		    }
 		}
 		else
-		    printf("assign positive and negative models first!\n");
+		   CIO::message("assign positive and negative models first!\n");
 
 		fclose(svm_file);
 	    }
@@ -1636,7 +1621,7 @@ static bool prompt(FILE* infile=stdin)
 		printf("could not open svm model\n");
 	}
 	else
-	    printf("see help for parameters\n");
+	   CIO::message("see help for parameters\n");
     } 
     else if (!strncmp(input, N_LINEAR_HMM_TEST, strlen(N_LINEAR_HMM_TEST)))
     {
@@ -1662,7 +1647,7 @@ static bool prompt(FILE* infile=stdin)
 
 		if (!outputfile)
 		{
-		    fprintf(stderr,"ERROR: could not open %s\n",outputname);
+		    CIO::message(stderr,"ERROR: could not open %s\n",outputname);
 		    return false;
 		}
 
@@ -1672,7 +1657,7 @@ static bool prompt(FILE* infile=stdin)
 
 		    if (!rocfile)
 		    {
-			fprintf(stderr,"ERROR: could not open %s\n",rocfname);
+			CIO::message(stderr,"ERROR: could not open %s\n",rocfname);
 			return false;
 		    }
 		}
@@ -1684,7 +1669,7 @@ static bool prompt(FILE* infile=stdin)
 
 		if (posfile && negfile)
 		{
-		    printf("opened %s and %s\n",posname,negname);
+		   CIO::message("opened %s and %s\n",posname,negname);
 		    if (WIDTH < 0 || UPTO < 0 )
 		    {
 			char buf[1024];
@@ -1696,8 +1681,8 @@ static bool prompt(FILE* infile=stdin)
 				{
 				    WIDTH=i+1;
 				    UPTO=i;
-				    printf("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
-				    fflush(stdout);
+				   CIO::message("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
+				   
 				    break;
 				}
 			    }
@@ -1718,7 +1703,7 @@ static bool prompt(FILE* infile=stdin)
 
 			    if ( ((posfsize/WIDTH)*WIDTH!=posfsize) || ((negfsize/WIDTH)*WIDTH!=negfsize))
 			    {
-				fprintf(stderr,"ERROR: file has wrong size");
+				CIO::message(stderr,"ERROR: file has wrong size");
 				return false;
 			    }
 			    	    
@@ -1726,7 +1711,7 @@ static bool prompt(FILE* infile=stdin)
 			    int negsize=negfsize/WIDTH;
 			    int total=possize+negsize;
 
-			    printf("p:%d,n:%d,t:%d\n",possize,negsize,total);
+			   CIO::message("p:%d,n:%d,t:%d\n",possize,negsize,total);
 			    double *output = new double[total];	
 			    int* label= new int[total];	
 
@@ -1769,10 +1754,10 @@ static bool prompt(FILE* infile=stdin)
 			    double fpo=fp[pointeven]*negsize;
 			    double fne=(1-tp[pointeven])*possize;
 
-			    printf("classified:\n");
-			    printf("\tcorrect:%i\n", int (correct));
-			    printf("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
-			    printf("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, fp[pointeven], tp[pointeven]);
+			   CIO::message("classified:\n");
+			   CIO::message("\tcorrect:%i\n", int (correct));
+			   CIO::message("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
+			   CIO::message("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, fp[pointeven], tp[pointeven]);
 			    delete[] fp;
 			    delete[] tp;
 			    delete[] output;
@@ -1780,12 +1765,12 @@ static bool prompt(FILE* infile=stdin)
 
 			}
 			else
-			    printf("model has wrong size\n");
+			   CIO::message("model has wrong size\n");
 		    }
 
 		}
 		else
-		    printf("assign postrain and negtrain observations first!\n");
+		   CIO::message("assign postrain and negtrain observations first!\n");
 		
 		if (posfile)
 		    fclose(posfile);
@@ -1796,7 +1781,7 @@ static bool prompt(FILE* infile=stdin)
 		printf("assign positive and negative models first!\n");
 	}
 	else
-	    printf("see help for parameters\n");
+	   CIO::message("see help for parameters\n");
     } 
     else if (!strncmp(input, N_HMM_TEST, strlen(N_HMM_TEST)))
     {
@@ -1816,7 +1801,7 @@ static bool prompt(FILE* infile=stdin)
 
 	    if (!outputfile)
 	    {
-		fprintf(stderr,"ERROR: could not open %s\n",outputname);
+		CIO::message(stderr,"ERROR: could not open %s\n",outputname);
 		return false;
 	    }
 
@@ -1826,7 +1811,7 @@ static bool prompt(FILE* infile=stdin)
 
 		if (!rocfile)
 		{
-		    fprintf(stderr,"ERROR: could not open %s\n",rocfname);
+		    CIO::message(stderr,"ERROR: could not open %s\n",rocfname);
 		    return false;
 		}
 	    }
@@ -1896,7 +1881,7 @@ static bool prompt(FILE* infile=stdin)
 		printf("assign postrain and negtrain observations first!\n");
 	}
 	else
-	    printf("assign positive and negative models first!\n");
+	   CIO::message("assign positive and negative models first!\n");
     } 
     else if (!strncmp(input, N_C, strlen(N_C)))
     {
@@ -1938,7 +1923,7 @@ int main(int argc, const char* argv[])
 
 		if (!file)
 		{
-		    printf("error opening/reading file: \"%s\"",argv[1]);
+		   CIO::message("error opening/reading file: \"%s\"",argv[1]);
 		    return 1;
 		}
 		else

@@ -5,17 +5,18 @@
 #ifndef __CHMM_H__
 #define __CHMM_H__
 
-#include <math.h>
-#include <stdio.h>
-
 #include "lib/Mathmatics.h"
 #include "lib/common.h"
 #include "lib/Observation.h"
+#include "lib/io.h"
+
+#include <math.h>
+#include <stdio.h>
 
 extern int NUM_PARALLEL ;
 
 /// START macro for time measurements
-#define START { current_time = clock(); printf("started\n");}
+#define START { current_time = clock();CIO::message("started\n");}
 
 /// STOP macros for time measurements
 #define STOP {printf( "%2.1f seconds\n", (double)(clock() - current_time) / CLOCKS_PER_SEC);}
@@ -230,7 +231,7 @@ class CHMM
 		{
 #ifdef DEBUG
 		  if ((pos<0)||(pos*num_states+state>65336))
-		    fprintf(stderr,"index out of range in get_fix_pos_state(%i,%i,%i) \n", pos,state,num_states) ;
+		    CIO::message(stderr,"index out of range in get_fix_pos_state(%i,%i,%i) \n", pos,state,num_states) ;
 #endif
 		  return fix_pos_state[pos*num_states+state] ;
 		}
@@ -318,7 +319,7 @@ class CHMM
 		{
 #ifdef DEBUG
        		  if ((pos<0)||(pos*num_states+state>65336))
-		    fprintf(stderr,"index out of range in set_fix_pos_state(%i,%i,%i,%i) [%i]\n", pos,state,num_states,(int)value, pos*num_states+state) ;
+		    CIO::message(stderr,"index out of range in set_fix_pos_state(%i,%i,%i,%i) [%i]\n", pos,state,num_states,(int)value, pos*num_states+state) ;
 #endif
 		  fix_pos_state[pos*num_states+state]=value;
 		  if (value==FIX_ALLOWED)
@@ -902,7 +903,7 @@ public:
 	{
 #ifdef DEBUG
 	  if (offset>=N)
-	    fprintf(stderr,"index out of range in set_q(%i,%e) [%i]\n", offset,value,N) ;
+	    CIO::message(stderr,"index out of range in set_q(%i,%e) [%i]\n", offset,value,N) ;
 #endif
 		end_state_distribution_q[offset]=value;
 	}
@@ -915,7 +916,7 @@ public:
 	{
 #ifdef DEBUG
 	  if (offset>=N)
-	    fprintf(stderr,"index out of range in set_p(%i,.) [%i]\n", offset,N) ;
+	    CIO::message(stderr,"index out of range in set_p(%i,.) [%i]\n", offset,N) ;
 #endif
 		initial_state_distribution_p[offset]=value;
 	}
@@ -929,7 +930,7 @@ public:
 	{
 #ifdef DEBUG
 	  if ((line_>N)||(column>N))
-	    fprintf(stderr,"index out of range in set_A(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
+	    CIO::message(stderr,"index out of range in set_A(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
 #endif
 		transition_matrix_A[line_+column*N]=value;
 	}
@@ -943,7 +944,7 @@ public:
 	{
 #ifdef DEBUG
 	  if ((line_>N)||(column>N))
-	    fprintf(stderr,"index out of range in set_a(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
+	    CIO::message(stderr,"index out of range in set_a(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
 #endif
 	  transition_matrix_a[line_+column*N]=value; // look also best_path!
 	}
@@ -957,7 +958,7 @@ public:
 	{
 #ifdef DEBUG
 	  if ((line_>=N)||(column>=M))
-	    fprintf(stderr,"index out of range in set_B(%i,%i) [%i,%i]\n", line_, column,N,M) ;
+	    CIO::message(stderr,"index out of range in set_B(%i,%i) [%i,%i]\n", line_, column,N,M) ;
 #endif
 	  observation_matrix_B[line_*M+column]=value;
 	}
@@ -971,7 +972,7 @@ public:
 	{
 #ifdef DEBUG
 	  if ((line_>=N)||(column>=M))
-	    fprintf(stderr,"index out of range in set_b(%i,%i) [%i,%i]\n", line_, column,N,M) ;
+	    CIO::message(stderr,"index out of range in set_b(%i,%i) [%i,%i]\n", line_, column,N,M) ;
 #endif
 		observation_matrix_b[line_*M+column]=value;
 	}
@@ -987,7 +988,7 @@ public:
 	{
 #ifdef DEBUG
 	  if ((time>=p_observations->get_obs_max_T())||(state>N))
-	    fprintf(stderr,"index out of range in set_psi(%i,%i,.) [%i,%i]\n",time,state,p_observations->get_obs_max_T(),N) ;
+	    CIO::message(stderr,"index out of range in set_psi(%i,%i,.) [%i,%i]\n",time,state,p_observations->get_obs_max_T(),N) ;
 #endif
 	  STATES_PER_OBSERVATION_PSI(dimension)[time*N+state]=value;
 	}
@@ -1001,7 +1002,7 @@ public:
 	{
 #ifdef DEBUG
 	  if (offset>=N)
-	    fprintf(stderr,"index out of range in %e=get_q(%i) [%i]\n", end_state_distribution_q[offset],offset,N) ;
+	    CIO::message(stderr,"index out of range in %e=get_q(%i) [%i]\n", end_state_distribution_q[offset],offset,N) ;
 #endif
 		return end_state_distribution_q[offset];
 	}
@@ -1014,7 +1015,7 @@ public:
 	{
 #ifdef DEBUG
 	  if (offset>=N)
-	    fprintf(stderr,"index out of range in get_p(%i,.) [%i]\n", offset,N) ;
+	    CIO::message(stderr,"index out of range in get_p(%i,.) [%i]\n", offset,N) ;
 #endif
 		return initial_state_distribution_p[offset];
 	}
@@ -1028,7 +1029,7 @@ public:
 	{
 #ifdef DEBUG
 	  if ((line_>N)||(column>N))
-	    fprintf(stderr,"index out of range in get_A(%i,%i) [%i,%i]\n",line_,column,N,N) ;
+	    CIO::message(stderr,"index out of range in get_A(%i,%i) [%i,%i]\n",line_,column,N,N) ;
 #endif
 		return transition_matrix_A[line_+column*N];
 	}
@@ -1042,7 +1043,7 @@ public:
 	{
 #ifdef DEBUG
 	  if ((line_>N)||(column>N))
-	    fprintf(stderr,"index out of range in get_a(%i,%i) [%i,%i]\n",line_,column,N,N) ;
+	    CIO::message(stderr,"index out of range in get_a(%i,%i) [%i,%i]\n",line_,column,N,N) ;
 #endif
 	  return transition_matrix_a[line_+column*N]; // look also best_path()!
 	}
@@ -1056,7 +1057,7 @@ public:
 	{
 #ifdef DEBUG
 	  if ((line_>=N)||(column>=M))
-	    fprintf(stderr,"index out of range in get_B(%i,%i) [%i,%i]\n", line_, column,N,M) ;
+	    CIO::message(stderr,"index out of range in get_B(%i,%i) [%i,%i]\n", line_, column,N,M) ;
 #endif
 		return observation_matrix_B[line_*M+column];
 	}
@@ -1070,7 +1071,7 @@ public:
 	{
 #ifdef DEBUG
 	  if ((line_>=N)||(column>=M))
-	    fprintf(stderr,"index out of range in get_b(%i,%i) [%i,%i]\n", line_, column,N,M) ;
+	    CIO::message(stderr,"index out of range in get_b(%i,%i) [%i,%i]\n", line_, column,N,M) ;
 #endif
 	  return observation_matrix_b[line_*M+column];
 	}
@@ -1086,7 +1087,7 @@ public:
 	{
 #ifdef DEBUG
 	  if ((time>=p_observations->get_obs_max_T())||(state>N))
-	    fprintf(stderr,"index out of range in get_psi(%i,%i) [%i,%i]\n",time,state,p_observations->get_obs_max_T(),N) ;
+	    CIO::message(stderr,"index out of range in get_psi(%i,%i) [%i,%i]\n",time,state,p_observations->get_obs_max_T(),N) ;
 #endif
 	  return STATES_PER_OBSERVATION_PSI(dimension)[time*N+state];
 	}
@@ -1336,7 +1337,7 @@ public:
 		  sum= math.logarithmic_sum(sum, forward(t,i,dimension)+backward(t,i,dimension)-get_b(i,p_observations->get_obs(dimension,t)));
 	      }
 	    //if (sum==-math.INFTY)
-	    //  printf("log derivative is -inf: dim=%i, state=%i, obs=%i\n",dimension, i, j) ;
+	    // CIO::message("log derivative is -inf: dim=%i, state=%i, obs=%i\n",dimension, i, j) ;
 	    return sum;
 	  } 
 	//@}
@@ -1442,6 +1443,15 @@ protected:
 	
 	/// expect comma or space.
 	bool comma_or_space(FILE* file);
+
+	/// parse error messages
+	inline void error(int line, char* str)
+	{
+	    if (line)
+		CIO::message(stderr,"error in line %d %s\n", line, str);
+	    else
+		CIO::message(stderr,"error %s\n", str);
+	}
 	//@}
 
 	/// initialization function that is called before path_derivatives are calculated

@@ -2,12 +2,14 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+
+#include "lib/Mathmatics.h"
+#include "lib/io.h"
+
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
 #include <stdlib.h>
-
-#include "Mathmatics.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -20,7 +22,7 @@ CMath math;
 //const int CMath::LOGRANGE            = 25 ;		// range for logtable: log(1+exp(x))  -25 <= x <= 0
 //const int CMath::LOGACCURACY         = 2e6;	        // 100000 steps per integer
 const int CMath::LOGRANGE            = 20 ;		// range for logtable: log(1+exp(x))  -25 <= x <= 0
-const int CMath::LOGACCURACY         = 1e6;	        // 100000 steps per integer
+const int CMath::LOGACCURACY         = 1000000;	        // 100000 steps per integer
 #else
 const int CMath::LOGRANGE            = 30 ;		// range for logtable: log(1+exp(x))  -25 <= x <= 0
 const int CMath::LOGACCURACY         = 40000;	        // 100000 steps per integer
@@ -36,12 +38,12 @@ const REAL CMath::ALMOST_NEG_INFTY =  -1000;
 CMath::CMath()
 {
     srand(time(NULL));
-    fprintf(stdout,"Initializing log-table (size=%i*%i*%i=%2.1fMB) ...",LOGRANGE,LOGACCURACY,sizeof(REAL),LOGRANGE*LOGACCURACY*sizeof(REAL)/(1024.0*1024.0)) ;
-    fflush(stdout);
+    CIO::message("Initializing log-table (size=%i*%i*%i=%2.1fMB) ...",LOGRANGE,LOGACCURACY,sizeof(REAL),LOGRANGE*LOGACCURACY*sizeof(double)/(1024.0*1024.0)) ;
+   
     CMath::logtable=new REAL[LOGRANGE*LOGACCURACY];
     init_log_table();
-    fprintf(stdout,"Done.\n") ;
-    fflush(stdout);
+    CIO::message("Done.\n") ;
+   
 }
 
 CMath::~CMath()
