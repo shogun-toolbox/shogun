@@ -6,8 +6,9 @@
 #include <string.h>
 #include <assert.h>
 
-CKernel::CKernel()
+CKernel::CKernel(long size)
 {
+	cache_size=size;
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 }
 
@@ -38,7 +39,7 @@ void CKernel::init(CFeatures* l, CFeatures* r)
 	rhs=r;
 
 	// 100MB kernel cache
-	kernel_cache_init(500);
+	kernel_cache_init(100);
 }
 
 /****************************** Cache handling *******************************/

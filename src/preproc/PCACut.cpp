@@ -56,7 +56,7 @@ bool CPCACut::init(CFeatures* f)
 	    {
 		mean[j]+= vec[j];
 	    }
-	    ((CRealFeatures*) f)->free_feature_vector(vec, free);
+	    ((CRealFeatures*) f)->free_feature_vector(vec, i, free);
 	}
 
 	//divide
@@ -96,7 +96,7 @@ bool CPCACut::init(CFeatures* f)
 	    //	for (int l=0; l<num_features; l++)
 	    //          cov[k*num_features+l]+=feature[l]*feature[k] ;
 
-	    ((CRealFeatures*) f)->free_feature_vector(vec, free) ;
+	    ((CRealFeatures*) f)->free_feature_vector(vec, i, free) ;
 	}
 
 	for (i=0; i<num_features; i++)

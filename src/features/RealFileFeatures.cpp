@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <string.h>
 
-CRealFileFeatures::CRealFileFeatures(char* fname) : CRealFeatures()
+CRealFileFeatures::CRealFileFeatures(long size, char* fname) : CRealFeatures(size)
 {
     working_file=fopen(fname, "r");
     working_filename=strdup(fname);
@@ -21,7 +21,7 @@ CRealFileFeatures::CRealFileFeatures(char* fname) : CRealFeatures()
     status=load_base_data();
 }
 
-CRealFileFeatures::CRealFileFeatures(FILE* file) : CRealFeatures(), working_file(file), working_filename(NULL)
+CRealFileFeatures::CRealFileFeatures(long size, FILE* file) : CRealFeatures(size), working_file(file), working_filename(NULL)
 {
     assert(working_file!=NULL);
     intlen=0;
@@ -62,7 +62,7 @@ REAL* CRealFileFeatures::compute_feature_vector(long num, long &len, REAL* targe
     assert(num<num_vectors);
     //CIO::message("f:%ld\n", num);
     len=num_features;
-    REAL* featurevector= target;
+    REAL* featurevector=target;
 	if (!featurevector)
 	  featurevector=new REAL[num_features];
     assert(featurevector!=NULL);
@@ -129,8 +129,5 @@ bool CRealFileFeatures::load_base_data()
     labels= new int[num_vec];
     assert(labels!=NULL);
     assert(fread(labels, intlen, num_vec, working_file) == num_vec);
-	
-	feature_cache= new CCache<REAL>(100, num_features, num_vectors);
-	assert (feature_cache!=NULL);
     return true;
 }

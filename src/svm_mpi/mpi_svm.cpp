@@ -76,7 +76,7 @@ bool CSVMMPI::svm_train(CFeatures* train_)
   bool free ; long len ;
   double * column=NULL ;
   column=train->get_feature_vector(0, len, free);
-  train->free_feature_vector(column, free);
+  train->free_feature_vector(column, 0, free);
   num_rows=len ;
 
   //CIO::message(" [%ix%i] ", num_cols, len) ;
@@ -104,7 +104,7 @@ bool CSVMMPI::svm_train(CFeatures* train_)
     for (int kk=0; kk<len; kk++)
       col[kk]=column[kk] ; 
 
-    train->free_feature_vector(column, free);
+    train->free_feature_vector(column, j, free);
 
     assert(len==num_rows) ;
     svm_mpi_set_Z_block(col, 1, start_idx, rank) ; 
@@ -135,7 +135,7 @@ REAL* CSVMMPI::svm_test(CFeatures* test_, CFeatures*)
 
 		output[i]=ddot_(&length,feature,&onei, svm_w, &onei)-svm_b ;
 
-		test->free_feature_vector(feature, free) ;
+		test->free_feature_vector(feature, i, free) ;
 	}
 
 	return output;  
@@ -410,7 +410,7 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
 	  svm_w[j]+= prim[i]*feat[j];
 	
 	    //daxpy_(&length, &prim[i], feat, &onei, svm_w, &onei) ;
-	train->free_feature_vector(feat, free) ;
+	train->free_feature_vector(feat, i, free) ;
       } 
   } 
 #ifdef DEBUG      

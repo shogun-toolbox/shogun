@@ -25,8 +25,9 @@ bool CGUIFeatures::preprocess(char* param)
     param=CIO::skip_spaces(param);
     char target[1024];
 	int force=0;
+	int cache_size=100;
 
-    if ((sscanf(param, "%s %d", target, &force))>=1)
+    if ((sscanf(param, "%s %d %d", target, &cache_size, &force))>=1)
     {
 	if ( strcmp(target, "TRAIN")==0 || strcmp(target, "TEST")==0 )
 	{
@@ -78,9 +79,10 @@ bool CGUIFeatures::set_features(char* param)
     param=CIO::skip_spaces(param);
     char target[1024];
     char type[1024];
-    int comp_features=1 ;
+    int comp_features=1;
+    int size=100;
 
-    if ((sscanf(param, "%s %s %i", type, target, &comp_features))>=2)
+    if ((sscanf(param, "%s %s %i", type, target, &size, &comp_features))>=2)
     {
 	if ( (strcmp(target, "TRAIN")==0 && gui->guiobs.get_obs("POSTRAIN") && gui->guiobs.get_obs("NEGTRAIN")) ||
 		(strcmp(target, "TEST")==0 && gui->guiobs.get_obs("POSTEST") && gui->guiobs.get_obs("NEGTEST")))
@@ -121,7 +123,7 @@ bool CGUIFeatures::set_features(char* param)
 			gui->guihmm.get_neg()->set_observations(*o_ptr);
 
 			delete (*f_ptr);
-			*f_ptr= new CTOPFeatures(gui->guihmm.get_pos(), gui->guihmm.get_neg());		      
+			*f_ptr= new CTOPFeatures(size, gui->guihmm.get_pos(), gui->guihmm.get_neg());		      
 
 
 			//						gui->guihmm.get_pos()->set_observations(old_obs_pos);
@@ -147,7 +149,7 @@ bool CGUIFeatures::set_features(char* param)
 				gui->guihmm.get_neg()->set_observations(*o_ptr);
 
 				delete (*f_ptr);
-				*f_ptr= new CFKFeatures(gui->guihmm.get_pos(), gui->guihmm.get_neg(), a);
+				*f_ptr= new CFKFeatures(size, gui->guihmm.get_pos(), gui->guihmm.get_neg(), a);
 
 				//						gui->guihmm.get_pos()->set_observations(old_obs_pos);
 				//						gui->guihmm.get_neg()->set_observations(old_obs_neg);
@@ -179,8 +181,9 @@ bool CGUIFeatures::load(char* param)
     char type[1024];
     bool result=false;
 	int comp_features=0;
+	int size=100;
 
-    if ((sscanf(param, "%s %s %s %d", filename, type, target, &comp_features))>=3)
+    if ((sscanf(param, "%s %s %s %d", filename, type, target, &size, &comp_features))>=3)
     {
 	CFeatures** f_ptr=NULL;
 
@@ -204,7 +207,7 @@ bool CGUIFeatures::load(char* param)
 	if (strcmp(type,"REAL")==0)
 	{
 	    CIO::message("opening file...\n");
-	    *f_ptr=new CRealFileFeatures(filename);
+	    *f_ptr=new CRealFileFeatures(size, filename);
 	}
 	else
 	{

@@ -3,9 +3,8 @@
 #include "kernel/LocImpKernel.h"
 #include "features/ShortFeatures.h"
 
-CLocImpKernel::CLocImpKernel(int width_, int degree1_, 
-			     int degree2_) 
-  : CKernel(), width(width_), degree1(degree1_), degree2(degree2_), dim(0)
+CLocImpKernel::CLocImpKernel(long size, int width_, int degree1_, int degree2_) 
+  : CKernel(size), width(width_), degree1(degree1_), degree2(degree2_), dim(0)
 {
   
 } ;

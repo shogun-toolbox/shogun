@@ -8,7 +8,7 @@
 class CRealFeatures: public CFeatures
 {
  public:
-  CRealFeatures();
+  CRealFeatures(long size);
   CRealFeatures(const CRealFeatures & orig);
 
   virtual ~CRealFeatures();
@@ -23,7 +23,7 @@ class CRealFeatures: public CFeatures
       @param len length is returned by reference
   */
   REAL* get_feature_vector(long num, long& len, bool& free);
-  void free_feature_vector(REAL* feat_vec, bool free);
+  void free_feature_vector(REAL* feat_vec, int num, bool free);
   
   /// get the pointer to the feature matrix
   /// num_feat,num_vectors are returned by reference
@@ -41,8 +41,26 @@ class CRealFeatures: public CFeatures
 
   virtual inline long  get_num_vectors() { return num_vectors; }
   inline long  get_num_features() { return num_features; }
-  inline void set_num_features(int num) { num_features= num; }
-  inline void set_num_vectors(int num) { num_vectors= num; }
+  inline void set_num_features(int num)
+  { 
+	  num_features= num; 
+
+	  if (num_features && num_vectors)
+	  {
+		  delete feature_cache;
+		  feature_cache= new CCache<REAL>(cache_size, num_features, num_vectors);
+	  }
+  }
+
+  inline void set_num_vectors(int num)
+  {
+	  num_vectors= num;
+	  if (num_features && num_vectors)
+	  {
+		  delete feature_cache;
+		  feature_cache= new CCache<REAL>(cache_size, num_features, num_vectors);
+	  }
+  }
 	
   virtual bool save(FILE* dest);
 

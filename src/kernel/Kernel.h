@@ -9,12 +9,12 @@
 class CKernel
 {
 	public:
-		CKernel();
+		CKernel(long size);
 		virtual ~CKernel();
 
 		/** get kernel function for lhs feature vector x 
 		  and rhs feature vector y
-		  */
+		 */
 		REAL kernel(long x, long y);
 
 		/** initialize your kernel
@@ -44,7 +44,7 @@ class CKernel
 		/// set the time used for lru	
 		inline void set_time(long t)
 		{
-		    kernel_cache.time=t;
+			kernel_cache.time=t;
 		}
 
 		// Update lru time to avoid removal from cache.
@@ -65,7 +65,7 @@ class CKernel
 		virtual REAL compute(long x, long y)=0;
 
 		/**@ cache kernel evalutations to improve speed
-		*/
+		 */
 		//@{
 		void   kernel_cache_shrink(long, long, long *);
 
@@ -98,7 +98,7 @@ class CKernel
 			long   time;
 			long   activenum;
 			long   buffsize;
-//			long   r_offs;
+			//			long   r_offs;
 		};
 	protected:
 		/// feature vectors to occur on left hand side
@@ -108,5 +108,8 @@ class CKernel
 
 		/// kernel cache
 		KERNEL_CACHE kernel_cache;
+
+		/// cache_size in MB
+		long cache_size;
 };
 #endif

@@ -17,7 +17,7 @@ public:
 	 * or STRINGs, FILES, or...
 	*/
 
-	CFeatures();
+	CFeatures(long size);
 	// copy constructor
 	CFeatures(const CFeatures& orig);
 
@@ -58,5 +58,8 @@ protected:
 
 	/// true if features were already preprocessed
 	bool preprocessed;
+
+	/// size of cache in MB
+	long cache_size;
 };
 #endif

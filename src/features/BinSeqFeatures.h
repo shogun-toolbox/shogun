@@ -8,7 +8,7 @@
 class CBinSeqFeatures: public CShortFeatures
 {
  public:
-  CBinSeqFeatures(CObservation *pos, CObservation *neg) ;
+  CBinSeqFeatures(long size, CObservation *pos, CObservation *neg) ;
   virtual ~CBinSeqFeatures() ;
 
   virtual int get_label(long idx) ;

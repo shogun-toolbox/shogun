@@ -5,8 +5,8 @@
 
 #include <assert.h>
 
-CLinearKernel::CLinearKernel(bool rescale_) 
-  : CKernel(),rescale(rescale_),scale(1.0)
+CLinearKernel::CLinearKernel(long size, bool rescale_) 
+  : CKernel(size),rescale(rescale_),scale(1.0)
 {
 }
 
@@ -66,8 +66,8 @@ REAL CLinearKernel::compute(long idx_a, long idx_b)
 
   REAL result=ddot_(&ialen, avec, &skip, bvec, &skip)/scale;
 //  REAL result=sum/scale;
-  ((CRealFeatures*) lhs)->free_feature_vector(avec, afree);
-  ((CRealFeatures*) rhs)->free_feature_vector(bvec, bfree);
+  ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+  ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return result;
 }

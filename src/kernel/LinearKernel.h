@@ -7,7 +7,7 @@
 class CLinearKernel: public CKernel
 {
  public:
-  CLinearKernel(bool rescale) ;
+  CLinearKernel(long size, bool rescale) ;
   ~CLinearKernel() ;
   
   virtual void init(CFeatures* l, CFeatures* r);

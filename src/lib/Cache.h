@@ -1,6 +1,8 @@
 #ifndef _CACHE_H__
 #define _CACHE_H__
 
+#include "lib/Mathmatics.h"
+#include "lib/io.h"
 #include <assert.h>
 #include <stdlib.h>
 
@@ -9,10 +11,11 @@ template<class T> class CCache
 	struct TEntry
 	{
 		long usage_count;
+		bool locked;
 		T* obj;
 	};
 
-public:
+	public:
 	/// create cache of cache_size Megabytes.
 	/// num_entries objects can be cached
 	/// whose lookup table of 
@@ -26,7 +29,9 @@ public:
 		assert(num_entries !=NULL);
 
 		entry_size=obj_size;
-		nr_cache_lines=cache_size*1024*1024/obj_size;
+		nr_cache_lines=math.min(cache_size*1024*1024/obj_size/sizeof(T), num_entries+1);
+
+		CIO::message("creating %d cache lines (total size: %ld byte)\n", nr_cache_lines, nr_cache_lines*obj_size*sizeof(T));
 		cache_block=new T[obj_size*nr_cache_lines];
 		lookup_table=new TEntry[num_entries];
 		cache_table=new TEntry*[nr_cache_lines];
@@ -37,18 +42,16 @@ public:
 
 		long i;
 		for (i=0; i<nr_cache_lines; i++)
-			cache_table[i]=&lookup_table[i];
+			cache_table[i]=NULL;
 
 		for (i=0; i<num_entries; i++)
 		{
 			lookup_table[i].usage_count=-1;
+			lookup_table[i].locked=false;
 			lookup_table[i].obj=NULL;
 		}
 		cache_is_full=false;
 
-		min=-1;
-		min_idx=0;
-		
 		//reserve the very last cache line
 		//as scratch buffer
 		nr_cache_lines--;
@@ -62,16 +65,18 @@ public:
 	}
 
 	/// returns a cache entry or NULL when not cached
-	inline T* get_entry(long number)
+	inline T* lock_entry(long number)
 	{
-		//CIO::message("G:%5d: %5d\n", lookup_table[number].usage_count, number);
+		//CIO::message("G:%5d: %5d %10d\n", lookup_table[number].usage_count, number, lookup_table[number].obj);
 		lookup_table[number].usage_count++;
-		if (lookup_table[number].usage_count>min)
-		{
-			min=lookup_table[number].usage_count;
-			min_idx=number;
-		}
+		lookup_table[number].locked=true;
 		return lookup_table[number].obj;
+	}
+	
+	/// unlocks a cache entry
+	inline void unlock_entry(long number)
+	{
+		lookup_table[number].locked=false;
 	}
 
 	/// returns the address of a free cache entry
@@ -80,49 +85,67 @@ public:
 	T* set_entry(long number)
 	{
 		// first look for the element with smallest usage count
-		long s_min_idx=((nr_cache_lines-1)*rand())/(RAND_MAX+1); //avoid the last elem and the scratch line
-		long s_min=(*cache_table[min_idx]).usage_count;
+		//long min_idx=((nr_cache_lines-1)*rand())/(RAND_MAX+1); //avoid the last elem and the scratch line
+		long min_idx=0;
+		long min=-1;
+		bool found_free_line=false;
 
-		for (long i=0; i<nr_cache_lines; i++)
+		if (cache_table[min_idx])
 		{
-			long v=(*cache_table[i]).usage_count;
+			min=cache_table[min_idx]->usage_count;
 
-			if (v<s_min && min_idx!=i)
+			for (long i=0; i<nr_cache_lines; i++)
 			{
-				s_min=v;
-				s_min_idx=i;
+				if (!cache_table[i])
+				{
+					min_idx=i;
+					min=-1;
+					found_free_line=true;
+					break;
+				}
+				else
+				{
+					long v=cache_table[i]->usage_count;
+
+					if (v<min && !cache_table[i]->locked)
+					{
+						min=v;
+						min_idx=i;
+						found_free_line=true;
+					}
+				}
 			}
 		}
+		else
+			found_free_line=true;
 
-		if (s_min_idx==nr_cache_lines-1 || min_idx==nr_cache_lines-1) //since this is an indicator for a full cache
+		if (cache_table[nr_cache_lines-1]) //since this is an indicator for a full cache
 			cache_is_full=true;
 
-		if (  (s_min-min) < 5 && cache_is_full)
-			number=nr_cache_lines;
-		else
+		if (found_free_line)
 		{
-			min_idx=s_min_idx;
-			min=s_min;
+			// and overwrite it.
+			if ( (lookup_table[number].usage_count-min) < 5 && cache_is_full && ! (cache_table[nr_cache_lines] && cache_table[nr_cache_lines]->locked))
+				min_idx=nr_cache_lines; //scratch entry
+
+			if (cache_table[min_idx])
+				cache_table[min_idx]->obj=NULL;
+
+			cache_table[min_idx]=&lookup_table[number];
+			lookup_table[number].obj=&cache_block[entry_size*min_idx];
+			//CIO::message("S:%5d: %5d(Y)\n", min, number);
+
+			return lookup_table[number].obj;
 		}
-
-		// and overwrite it.
-		CIO::message("S:%5d: %5d(*)\n", min, number);
-		(*cache_table[min_idx]).obj=NULL;
-		cache_table[min_idx]=&lookup_table[number];
-
-		lookup_table[number].obj=&cache_block[entry_size*min_idx];
-		return lookup_table[number].obj;
+		else
+			return NULL;
 	}
 
 	bool cache_is_full;
-
-	long min;
-	long min_idx;
-
 	long entry_size;
 	long nr_cache_lines;
-	T* cache_block;
 	TEntry* lookup_table;
 	TEntry** cache_table;
+	T* cache_block;
 };
 #endif

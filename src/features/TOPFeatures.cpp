@@ -2,7 +2,7 @@
 #include "lib/io.h"
 #include <assert.h>
 
-CTOPFeatures::CTOPFeatures(CHMM* p, CHMM* n)
+CTOPFeatures::CTOPFeatures(long size, CHMM* p, CHMM* n) : CRealFeatures(size)
 {
   set_models(p,n);
 }
@@ -33,9 +33,6 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	set_num_vectors(pos->get_observations()->get_DIMENSION());
   if (pos && neg)
 	num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
-
-  delete feature_cache;
-  feature_cache= new CCache<REAL>(100, num_features, num_vectors);
 }
 
 int CTOPFeatures::get_label(long idx)

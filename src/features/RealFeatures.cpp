@@ -6,7 +6,7 @@
 #include <string.h>
 #include <assert.h>
 
-CRealFeatures::CRealFeatures() : CFeatures(), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
+CRealFeatures::CRealFeatures(long size) : CFeatures(size), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
 {
 }
 
@@ -43,12 +43,11 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
 	//CIO::message("computing %i th feature vector\n", (int)num) ;
 	
 	REAL* feat=NULL;
-	free=true ;
+	free=false;
 
 	if (feature_cache)
 	{
-	  free=false;
-	  feat=feature_cache->get_entry(num);
+	  feat=feature_cache->lock_entry(num);
 
 	  if (feat)
 		return feat;
@@ -58,6 +57,8 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
 	  }
 	}
 
+	if (!feat)
+		free=true;
 	feat=compute_feature_vector(num, len, feat);
 
 	if (preproc)
@@ -75,12 +76,13 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
   }
 }
 
-void CRealFeatures::free_feature_vector(REAL* feat, bool free)
+void CRealFeatures::free_feature_vector(REAL* feat, int num, bool free)
 {
-  if (free)
-    delete[] feat ;
+	if (feature_cache)
+		feature_cache->unlock_entry(num);
 
-  delete feature_cache;
+	if (free)
+		delete[] feat ;
 } 
 
 /// get the pointer to the feature matrix
@@ -115,7 +117,7 @@ bool CRealFeatures::save(FILE* dest)
 	bool free;
 #warning num_features must not correspond with the length of a feature vectore since that one might be preprocessed
 	double* f=get_feature_vector(0, len, free);
-	free_feature_vector(f, free) ;
+	free_feature_vector(f, 0, free) ;
 
     unsigned char intlen=sizeof(unsigned int);
     unsigned char doublelen=sizeof(double);
@@ -143,7 +145,7 @@ bool CRealFeatures::save(FILE* dest)
 
 	f=get_feature_vector(i, len, free);
 	assert(fwrite(f, sizeof(double), len, dest)==len) ;
-	free_feature_vector(f, free) ;
+	free_feature_vector(f, i, free) ;
     }
 
     long num_lab=0;

@@ -1,8 +1,8 @@
 #include "features/ShortFeatures.h"
 #include "preproc/ShortPreProc.h"
 
-CShortFeatures::CShortFeatures()
-: CFeatures(),  num_features(0), num_vectors(0),
+CShortFeatures::CShortFeatures(long size)
+: CFeatures(size),  num_features(0), num_vectors(0),
   feature_matrix(NULL)
 {
 }

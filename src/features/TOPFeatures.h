@@ -7,7 +7,7 @@
 class CTOPFeatures: public CRealFeatures
 {
  public:
-  CTOPFeatures(CHMM* p, CHMM* n);
+  CTOPFeatures(long size, CHMM* p, CHMM* n);
   CTOPFeatures(const CTOPFeatures &orig);
   
   virtual ~CTOPFeatures();

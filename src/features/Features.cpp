@@ -2,8 +2,8 @@
 #include "preproc/PreProc.h"
 #include "lib/io.h"
 
-CFeatures::CFeatures()
-: preproc(NULL), preprocessed(false)
+CFeatures::CFeatures(long size)
+: cache_size(size), preproc(NULL), preprocessed(false)
 {
 }
 

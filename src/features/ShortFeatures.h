@@ -7,7 +7,7 @@
 class CShortFeatures: public CFeatures
 {
  public:
-  CShortFeatures() ;
+  CShortFeatures(long size) ;
   virtual ~CShortFeatures() ;
   
   virtual EType get_feature_type() { return F_SHORT ; } ;

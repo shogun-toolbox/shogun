@@ -2,7 +2,7 @@
 #include "lib/io.h"
 #include <assert.h>
 
-CFKFeatures::CFKFeatures(CHMM* p, CHMM* n, REAL a)
+CFKFeatures::CFKFeatures(long size, CHMM* p, CHMM* n, REAL a) : CRealFeatures(size)
 {
   set_models(p,n,a);
 }
@@ -34,9 +34,6 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n, REAL a)
 	set_num_vectors(pos->get_observations()->get_DIMENSION());
   if (pos && neg)
 	num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
-
-  delete feature_cache;
-  feature_cache= new CCache<REAL>(100, num_features, num_vectors);
 }
 
 int CFKFeatures::get_label(long idx)

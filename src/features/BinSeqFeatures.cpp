@@ -1,8 +1,8 @@
 #include <assert.h>
 #include "BinSeqFeatures.h"
 
-CBinSeqFeatures::CBinSeqFeatures(CObservation *pos_, CObservation *neg_)
-  : CShortFeatures(), pos(pos_), neg(neg_)
+CBinSeqFeatures::CBinSeqFeatures(long size, CObservation *pos_, CObservation *neg_)
+  : CShortFeatures(size), pos(pos_), neg(neg_)
 {
   assert(pos!=NULL) ;
   assert(neg!=NULL) ;
