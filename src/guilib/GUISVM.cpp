@@ -124,7 +124,10 @@ bool CGUISVM::train(CHAR* param)
 	((CKernelMachine*) svm)->set_kernel(kernel);
 	kernel->set_precompute_matrix(use_precompute);
 	
-	return svm->train();
+	bool result = svm->train();
+
+	kernel->set_precompute_matrix(false);
+	return result ;	
 }
 
 bool CGUISVM::test(CHAR* param)

@@ -1107,50 +1107,32 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 											long int totdoc,
 											double *lin, REAL *aicache)
 {
-	INT i, j, ii, jj ;
-	REAL tec ;
+	CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
+	INT num         = k->get_rhs()->get_num_vectors() ;
+	INT num_weights = -1;
+	INT num_kernels = k->get_num_subkernels() ;
+	const REAL* w   = k->get_subkernel_weights(num_weights);
 	
-	/* general case  generic kernel combination
-	   works only for CombinedKernel (assumes kernel has functions of CombinedKernel)
-	   pray that we have enough memory for kernel cache / only very few examples*/
-	
-	INT num    = get_kernel()->get_rhs()->get_num_vectors() ;
-	//CCombinedKernel* k = (CCombinedKernel*) get_kernel();
-	
-	CIO::message(M_ERROR, "FIX MKL CombinedKernel Learning\n");
-	
-	INT num_kernels = get_kernel()->get_num_subkernels() ;
-	REAL* w    = new REAL[num_kernels];
-	
+	assert(num_weights==num_kernels) ;
 	REAL* sumw = new REAL[num_kernels];
-	REAL* w_backup = new REAL[num_kernels] ;
-	
-	// backup and set to one
-	for (i=0; i<num_kernels; i++)
 	{
-		w_backup[i]=w[i] ;
-		w[i]=1 ;
-	}
-	
-	for(jj=0;(i=working2dnum[jj])>=0;jj++) {
-		if(a[i] != a_old[i]) {
-			CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
-			for(ii=0;(j=active2dnum[ii])>=0;ii++) {
-				tec=aicache[j];
-				lin[j]+=(((a[i]*tec)-(a_old[i]*tec))*(double)label[i]);
-			}
+		CKernel* kn = k->get_first_kernel() ;
+		INT n = 0, jj, i, j, ii ;
+		REAL tec ;
+		while (kn!=NULL)
+		{
+			for(jj=0;(i=working2dnum[jj])>=0;jj++) 
+				if(a[i] != a_old[i]) 
+				{
+					CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
+					for(ii=0;(j=active2dnum[ii])>=0;ii++) {
+						tec=aicache[j];
+						W[j*num_kernels+n]+=(((a[i]*tec)-(a_old[i]*tec))*(double)label[i]);
+					}
+				}
+			kn = k->get_next_kernel() ;
 		}
 	}
-	
-	// restore old weights
-	for (INT i=0; i<num_kernels; i++)
-		w[i]=w_backup[i] ;
-	
-	// determine contributions of different levels/lengths FIXME
-	for (int j=0; j<num_kernels; j++)
-		for (int i=0; i<num; i++)
-			W[i*num_kernels+j]=1;
-	
 	REAL objective=0;
 #ifdef HAVE_ATLAS
 	REAL *alphay  = buffer_num ;
@@ -1182,25 +1164,31 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 	count++ ;
 #ifdef USE_CPLEX			
 	w_gap = CMath::abs(1-rho/objective) ;
-	if (w_gap >= 0.9999*get_weight_epsilon())
+
+	if ((w_gap >= 0.9999*get_weight_epsilon()))// && (mymaxdiff < prev_mymaxdiff/2.0))
 	{
+		CIO::message(M_INFO, "*") ;
 		if (rho==0)
 		{
 			CIO::message(M_INFO, "creating LP\n") ;
 			
-			INT NUMCOLS = num_kernels + 1 ;
+			INT NUMCOLS = 2*num_kernels + 1 ;
 			double   obj[NUMCOLS];
 			double   lb[NUMCOLS];
 			double   ub[NUMCOLS];
-			for (INT i=0; i<num_kernels; i++)
+			for (INT i=0; i<2*num_kernels; i++)
 			{
 				obj[i]=0 ;
 				lb[i]=0 ;
 				ub[i]=1 ;
 			}
-			obj[num_kernels]=1 ;
-			lb[num_kernels]=-CPX_INFBOUND ;
-			ub[num_kernels]=CPX_INFBOUND ;
+			for (INT i=num_kernels; i<2*num_kernels; i++)
+			{
+				obj[i]= C_mkl ;
+			}
+			obj[2*num_kernels]=1 ;
+			lb[2*num_kernels]=-CPX_INFBOUND ;
+			ub[2*num_kernels]=CPX_INFBOUND ;
 			
 			INT status = CPXnewcols (env, lp, NUMCOLS, obj, lb, ub, NULL, NULL);
 			if ( status ) {
@@ -1218,7 +1206,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 			char sense[1] ;
 			
 			rmatbeg[0] = 0;
-			rhs[0]=1 ; // rhs=1 ;
+			rhs[0]=1 ;     // rhs=1 ;
 			sense[0]='E' ; // equality
 			
 			for (INT i=0; i<num_kernels; i++)
@@ -1226,7 +1214,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 				rmatind[i]=i ;
 				rmatval[i]=1 ;
 			}
-			rmatind[num_kernels]=num_kernels ;
+			rmatind[num_kernels]=2*num_kernels ;
 			rmatval[num_kernels]=0 ;
 			
 			status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
@@ -1235,7 +1223,51 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 			if ( status ) {
 				CIO::message(M_ERROR, "Failed to add the first row.\n");
 			}
-			
+			if (C_mkl!=0.0)
+			{
+				for (INT q=0; q<num_kernels-1; q++)
+				{
+					// add constraint w[i]-w[i+1]<s[i] ;
+					// add constraint w[i+1]-w[i]<s[i] ;
+					int rmatbeg[1] ;
+					int rmatind[3] ;
+					double rmatval[3] ;
+					double rhs[1] ;
+					char sense[1] ;
+					
+					rmatbeg[0] = 0;
+					rhs[0]=0 ;     // rhs=1 ;
+					sense[0]='L' ; // equality
+					rmatind[0]=q ;
+					rmatval[0]=1 ;
+					rmatind[1]=q+1 ;
+					rmatval[1]=-1 ;
+					rmatind[2]=num_kernels+q ;
+					rmatval[2]=-1 ;
+					status = CPXaddrows (env, lp, 0, 1, 3, 
+										 rhs, sense, rmatbeg,
+										 rmatind, rmatval, NULL, NULL);
+					if ( status ) {
+						CIO::message(M_ERROR, "Failed to add a smothness row (1).\n");
+					}
+					
+					rmatbeg[0] = 0;
+					rhs[0]=0 ;     // rhs=1 ;
+					sense[0]='L' ; // equality
+					rmatind[0]=q ;
+					rmatval[0]=-1 ;
+					rmatind[1]=q+1 ;
+					rmatval[1]=1 ;
+					rmatind[2]=num_kernels+q ;
+					rmatval[2]=-1 ;
+					status = CPXaddrows (env, lp, 0, 1, 3, 
+										 rhs, sense, rmatbeg,
+										 rmatind, rmatval, NULL, NULL);
+					if ( status ) {
+						CIO::message(M_ERROR, "Failed to add a smothness row (2).\n");
+					}
+				}
+			}
 		}
 		
 		{ // add the new row
@@ -1256,42 +1288,47 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 				rmatind[i]=i ;
 				rmatval[i]=-sumw[i] ;
 			}
-			rmatind[num_kernels]=num_kernels ;
+			rmatind[num_kernels]=2*num_kernels ;
 			rmatval[num_kernels]=-1 ;
 			
 			INT status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
 									 rhs, sense, rmatbeg,
 									 rmatind, rmatval, NULL, NULL);
-			if ( status ) {
+			if ( status ) 
 				CIO::message(M_ERROR, "Failed to add the new row.\n");
-			}
 		}
 		
 		{ // optimize
 			INT status = CPXlpopt (env, lp);
-			if ( status ) {
+			if ( status ) 
 				CIO::message(M_ERROR, "Failed to optimize LP.\n");
-			}
 			
 			// obtain solution
 			INT cur_numrows = CPXgetnumrows (env, lp);
 			INT cur_numcols = CPXgetnumcols (env, lp);
 			num_rows = cur_numrows ;
 			
-			REAL *x = new REAL[cur_numcols] ;
+			if (!buffer_numcols)
+				buffer_numcols  = new REAL[cur_numcols] ;
+			//if (!buffer1_numrows)
+			//buffer1_numrows = new REAL[cur_numrows] ;
+			//if (!buffer2_numrows)
+			//	buffer2_numrows = new REAL[cur_numrows] ;
+					
+			REAL *x     = buffer_numcols ;
 			REAL *slack = new REAL[cur_numrows] ;
-			REAL *pi = new REAL[cur_numrows] ;
+			REAL *pi    = new REAL[cur_numrows] ;
 			
 			if ( x     == NULL ||
 				 slack == NULL ||
 				 pi    == NULL   ) {
 				status = CPXERR_NO_MEMORY;
-				CIO::message(M_ERROR, "Could not allocate memory for solution.\n");
+				CIO::message(M_ERROR, "Could not allocate memory for solution.\n") ;
 			}
 			INT solstat = 0 ;
 			REAL objval = 0 ;
 			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
-			INT solution_ok=(!status) ;
+			INT solution_ok = (!status) ;
 			if ( status ) {
 				CIO::message(M_ERROR, "Failed to obtain solution.\n");
 			}
@@ -1301,7 +1338,11 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 			{
 				REAL max_slack = -CMath::INFTY ;
 				INT max_idx = -1 ;
-				for (INT i = 1; i < cur_numrows; i++)  // skip first
+				INT start_row = 1 ;
+				if (C_mkl!=0.0)
+					start_row+=2*(num_kernels-1);
+
+				for (INT i = start_row; i < cur_numrows; i++)  // skip first
 					if ((pi[i]!=0))
 						num_active_rows++ ;
 					else
@@ -1313,31 +1354,27 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 						}
 					}
 				
-				// have at most max(100,num_active_rows*2) rows 
-				if ( (num_rows>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
+				// have at most max(100,num_active_rows*2) rows, if not, remove one
+				if ( (num_rows-start_row>CMath::max(10,2*num_active_rows)) && (max_idx!=-1))
 				{
+					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_row,num_rows) ;
 					INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
-					if ( status ) {
+					if ( status ) 
 						CIO::message(M_ERROR, "Failed to remove an old row.\n");
-					}
 				}
-				
-				for (INT j = 0; j < cur_numcols-1; j++) 
-					w[j]=x[j] ;
-				rho = -x[num_kernels] ;
+
+				// set weights, store new rho and compute new w gap
+				k->set_subkernel_weights(x, num_kernels) ;
+				rho = -x[2*num_kernels] ;
 				w_gap = CMath::abs(1-rho/objective) ;
 				
+				delete[] pi ;
+				delete[] slack ;
 			} else
-			{
 				w_gap = 0 ; // then something is wrong and we rather 
-				// stop sooner than later
-			}
-			delete[] x ;
-			delete[] slack ;
-			delete[] pi ;
+				            // stop sooner than later
 		}
 	}
-	
 #endif
 	
 	// update lin
@@ -1348,24 +1385,25 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 #else
 	for(int i=0; i<num; i++)
 		lin[i]=0 ;
-	
 	for (int d=0; d<num_kernels; d++)
 		if (w[d]!=0)
 			for(int i=0; i<num; i++)
 				lin[i] += w[d]*W[i*num_kernels+d] ;
 #endif
 	
-	{ // count actives
-		INT jj ;
-		for(jj=0;active2dnum[jj]>=0;jj++);
-		
-		if (count%10==0)
-			CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows);
-		
+	// count actives
+	INT jj ;
+	for(jj=0;active2dnum[jj]>=0;jj++);
+	
+	if (count%10==0)
+	{
+		INT start_row = 1 ;
+		if (C_mkl!=0.0)
+			start_row+=2*(num_kernels-1);
+		CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
 	}
 	
 	delete[] sumw;
-	delete[] w_backup ;
 }
 
 

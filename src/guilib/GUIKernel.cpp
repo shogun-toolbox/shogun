@@ -146,6 +146,8 @@ bool CGUIKernel::save_kernel_init(CHAR* param)
 
 bool CGUIKernel::init_kernel_optimization(CHAR* param)
 {
+	kernel->set_precompute_matrix(false);
+
 	if (gui->guisvm.get_svm()!=NULL)
 	{
 		if (kernel->is_optimizable())
@@ -213,6 +215,8 @@ bool CGUIKernel::init_kernel(CHAR* param)
 	    CIO::message(M_ERROR, "no kernel available\n") ;
 	    return false ;
 	  } ;
+
+	kernel->set_precompute_matrix(false);
 
 	if ((sscanf(param, "%s", target))==1)
 	{
