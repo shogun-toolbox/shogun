@@ -98,8 +98,6 @@ bool CSVMMPI::svm_train(CFeatures* train_)
 
     column=train->get_feature_vector(j, len, free);
 
-    fwrite(column, sizeof(double), len, fil) ;
-
     REAL *col=new REAL[len] ;
     for (int kk=0; kk<len; kk++)
       col[kk]=column[kk] ; 
