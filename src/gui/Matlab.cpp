@@ -474,13 +474,17 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				if ( (!strncmp(target, "DIAG", strlen("DIAG"))) || 
 						(!strncmp(target, "FULL", strlen("FULL"))) ) 
 				{
-					if (!strncmp(target, "DIAG", strlen("DIAG")))
+					if (!strncmp(target, "FULL2DIAG", strlen("FULL2DIAG")))
 					{
-						gf_matlab.set_custom_kernel(prhs, true);
+						gf_matlab.set_custom_kernel(prhs, false, true);
 					}
 					else if (!strncmp(target, "FULL", strlen("FULL")))
 					{
-						gf_matlab.set_custom_kernel(prhs, false);
+						gf_matlab.set_custom_kernel(prhs, false, false);
+					}
+					else if (!strncmp(target, "DIAG", strlen("DIAG")))
+					{
+						gf_matlab.set_custom_kernel(prhs, true, true);
 					}
 				}
 				else

@@ -940,7 +940,7 @@ bool CGUIMatlab::set_kernel_parameters(const mxArray* mx_arg)
 	return false;
 }
 
-bool CGUIMatlab::set_custom_kernel(const mxArray* vals[], bool upper_diag_only)
+bool CGUIMatlab::set_custom_kernel(const mxArray* vals[], bool source_is_diag, bool dest_is_diag)
 {
 	const mxArray* mx_kernel=vals[1];
 
@@ -952,10 +952,14 @@ bool CGUIMatlab::set_custom_kernel(const mxArray* vals[], bool upper_diag_only)
 
 		if (k && k->get_kernel_type() == K_CUSTOM)
 		{
-			if (upper_diag_only)
-				return k->set_kernel_matrix_diag(km, mxGetM(mx_kernel), mxGetN(mx_kernel));
+			if (source_is_diag && dest_is_diag && (mxGetN(mx_kernel) == mxGetM(mx_kernel)) )
+				return k->set_diag_kernel_matrix_from_diag(km, mxGetN(mx_kernel));
+			else if (!source_is_diag && dest_is_diag && (mxGetN(mx_kernel) == mxGetM(mx_kernel)) )
+				return k->set_diag_kernel_matrix_from_full(km, mxGetN(mx_kernel));
+			else if (!source_is_diag && !dest_is_diag)
+				return k->set_full_kernel_matrix_from_full(km, mxGetM(mx_kernel), mxGetN(mx_kernel));
 			else
-				return k->set_kernel_matrix(km, mxGetM(mx_kernel), mxGetN(mx_kernel));
+				CIO::message(M_ERROR,"not defined / general error\n");
 		}
 	}
 	else

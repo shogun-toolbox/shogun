@@ -70,7 +70,7 @@ public:
 	bool get_kernel_matrix(mxArray* retvals[]);
 	bool get_kernel_optimization(mxArray* retvals[]);
 
-	bool set_custom_kernel(const mxArray* vals[], bool is_diag) ;
+	bool set_custom_kernel(const mxArray* vals[], bool source_is_diag, bool dest_is_diag) ;
 
 	// MKL Kernel stuff
 	bool compute_by_subkernels(mxArray* retvals[]);
