@@ -246,6 +246,24 @@ inline REAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 	}
 	else // weights is a matrix (len x degree)
 	{
+		if (!position_mask)
+		{		
+			position_mask = new bool[len_] ;
+			for (INT i=0; i<len_; i++)
+			{
+				position_mask[i]=false ;
+				
+				for (INT j=0; j<degree; j++)
+					if (weights[i*degree+j]!=0.0)
+					{
+						position_mask[i]=true ;
+						break ;
+					}
+			}
+		}
+		if (position_mask[weight_pos]==0)
+			return 0 ;
+		
 		for (INT j=0; (j<degree) && (seq_pos+j<len_); j++)
 		{
 			if ((!tree->has_floats) && (tree->childs[vec[seq_pos+j]]!=NULL))
@@ -338,6 +356,24 @@ inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 	} 
 	else // no position_weigths, weights is a matrix (len x degree)
 	{
+		if (!position_mask)
+		{		
+			position_mask = new bool[len_] ;
+			for (INT i=0; i<len_; i++)
+			{
+				position_mask[i]=false ;
+				
+				for (INT j=0; j<degree; j++)
+					if (weights[i*degree+j]!=0.0)
+					{
+						position_mask[i]=true ;
+						break ;
+					}
+			}
+		}
+		if (position_mask[weight_pos]==0)
+			return ;
+
 		for (INT j=0; (j<degree) && (seq_pos+j<len_); j++)
 		{
 			if ((!tree->has_floats) && (tree->childs[vec[seq_pos+j]]!=NULL))
