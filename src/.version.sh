@@ -3,7 +3,7 @@
 OS=`uname -s`
 case "$OS" in
      CYGWIN*|Linux)
-	year=`date -r CVS/Entries +%y 2>/dev/null`
+	year=`date -r CVS/Entries +%Y 2>/dev/null`
 	month=`date -r CVS/Entries +%m 2>/dev/null`
 	day=`date -r CVS/Entries +%d 2>/dev/null`
 	hour=`date -r CVS/Entries +%H 2>/dev/null`
@@ -19,7 +19,7 @@ case "$OS" in
 	minute=`echo $hms | awk -F":" '{print $2}'`
 	;;
      Darwin|*) 
-	year=`date +%y 2>/dev/null`
+	year=`date +%Y 2>/dev/null`
 	month=`date +%m 2>/dev/null`
 	day=`date +%d 2>/dev/null`
 	hour=`date +%H 2>/dev/null`
@@ -34,8 +34,8 @@ fi
 
 echo "#define VERSION_EXTRA \"${extra}\""
 echo "#define VERSION_RELEASE \"cvs_${year}-${month}-${day}_${hour}:${minute}${extra}\""
-echo "#define VERSION_YEAR ${year}"
-echo "#define VERSION_MONTH ${month}"
-echo "#define VERSION_DAY ${day}"
-echo "#define VERSION_HOUR ${hour}"
-echo "#define VERSION_MINUTE ${minute}"
+echo "#define VERSION_YEAR `echo ${year} | sed 's/^[0]*//g'`"
+echo "#define VERSION_MONTH `echo ${month} | sed 's/^[0]*//g'`"
+echo "#define VERSION_DAY `echo ${day} | sed 's/^[0]*//g'`"
+echo "#define VERSION_HOUR `echo ${hour} | sed 's/^[0]*//g'`"
+echo "#define VERSION_MINUTE `echo ${minute} | sed 's/^[0]*//g'`"

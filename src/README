@@ -1,3 +1,18 @@
+- versioning scheme
+
+an automagic version will be created from the date of the last cvs update.
+if that is not enough...
+
+use cvs-tags to create time-snapshots of genefinder like:
+	cvs tag -c genefinder_0_1_0
+
+in case one needs to branch genefinder use 
+	cvs tag -b genefinder_0_1
+
+branches should always be named like genefinder_0_1 or genefinder_1_2 etc
+while tags should have the branch name as base, i.e. genefinder_0_1<prefix>
+while prefix should usually be _0 ... _9 or _1_schering_final etc.
+
 - types (use only these!):
 	CHAR	(char)
 	BYTE	(unsigned char)

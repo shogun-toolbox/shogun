@@ -12,7 +12,6 @@ all:	just-do-it
 ifeq (.config,$(wildcard .config))
 include .config
 else
-#its useless to use $(MAKE) here :-(
 just-do-it:	confgen config
 		test -f .config && $(MAKE)
 endif
@@ -27,7 +26,7 @@ SRCDIR = .
 SRCFILES 	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )
 OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)"| grep -v '.cpuinfo.c' ))
 
-.PHONY: just-do-it all out clean doc texdoc htmldoc end condor purif profile depend targets warn2err err2warn ctags depend confgen depgen buildout buildend
+.PHONY: just-do-it all out clean doc texdoc htmldoc end condor purif profile dep depend targets warn2err err2warn ctags confgen depgen buildout buildend
 
 ifeq (.config,$(wildcard .config))
 ifeq (.depend,$(wildcard .depend))
@@ -89,19 +88,22 @@ htmldoc:
 
 distclean: clean
 		rm -f .config tags lib/config.h lib/versionstring.h
+
 clean: .config
 	rm -f $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(TARGET) ../doc/doxygen/*.html ../doc/doxygen/genefinder.tex gmon.out .depend configure.log .cpuinfo ./configure-*
 
 config:	Makefile configure
-		chmod u+x ./configure ./.version.sh
+		chmod u+x ./configure
 		./configure
-		./.version.sh `$(COMP_CPP) -dumpversion` >lib/versionstring.h
+
 dep:	depend
-depend:	Makefile .config
-		chmod u+x ./.version.sh
-		./.version.sh `$(COMP_CPP) -dumpversion` >lib/versionstring.h
+depend:	Makefile .config lib/versionstring.h 
 	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_SRC_CPP)" ) -o.$(EXT_OBJ_CPP) -f - >.depend
 	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' )  -o.$(EXT_OBJ_C) -f - >>.depend
+
+lib/versionstring.h:	CVS/Entries
+		chmod u+x ./.version.sh
+		./.version.sh `$(COMP_CPP) -dumpversion` >lib/versionstring.h
 
 $(OBJFILES): Makefile .config .depend
 
@@ -110,5 +112,6 @@ $(TARGET): $(OBJFILES) $(SRCFILES)
 
 %.$(EXT_OBJ_CPP):	%.$(EXT_SRC_CPP)
 	$(COMP_CPP) $(DEFINES) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<
+
 %.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
 	$(COMP_C) $(DEFINES) $(COMPFLAGS_C) -c $(INCLUDES) -o $@ $<
