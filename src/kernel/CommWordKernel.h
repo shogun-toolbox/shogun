@@ -44,13 +44,11 @@ class CCommWordKernel: public CWordKernel
   REAL* sqrtdiag_lhs;
   REAL* sqrtdiag_rhs;
 
-  bool initialized ;
+  bool initialized;
 
-  INT dictionary_size ;
-  WORD * dictionary ;
-  REAL * dictionary_weights ;
-  
-  bool use_sign ;
+  INT dictionary_size;
+  REAL* dictionary_weights;
+  bool use_sign;
 };
 
 #endif
