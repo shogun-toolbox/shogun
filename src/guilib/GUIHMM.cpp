@@ -123,19 +123,16 @@ bool CGUIHMM::linear_train(char* param)
 		if (WIDTH < 0 || UPTO < 0 )
 		{
 			char buf[1024];
-			if ( (fread(buf, sizeof (unsigned char), sizeof(buf), file)) == sizeof(buf))
-			{
-				for (int i=0; i<(int)sizeof(buf); i++)
-				{
-					if (buf[i]=='\n')
-					{
-						WIDTH=i+1;
-						UPTO=i;
-						CIO::message("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
-						break;
-					}
-				}
+			int i=0;
+			
+			while (fgetc(file)!='\n' && !feof(file))
+			  i++;
 
+			if (!feof(file))
+			{
+				WIDTH=i+1;
+				UPTO=i;
+				CIO::message("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
 				fseek(file,0,SEEK_SET);
 			}
 			else
