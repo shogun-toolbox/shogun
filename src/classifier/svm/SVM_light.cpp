@@ -1387,7 +1387,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
         shrinking. */
      /* Computes lin for those variables from scratch. */
 {
-  register long i,j,ii,jj,t,*changed2dnum,*inactive2dnum;
+  register long i=0,j,ii=0,jj,t,*changed2dnum,*inactive2dnum;
   long *changed,*inactive;
   register double kernel_val,*a_old,dist;
   double ex_c,target;
@@ -1395,7 +1395,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
   if(get_kernel()->has_property(KP_LINADD)) { /* special linear case */
 	  a_old=shrink_state->last_a;    
 
-	  if (!get_kernel()->has_property(KP_KERNCOMBINATION)) {
+	  if (!get_kernel()->has_property(KP_KERNCOMBINATION))
 	  {
 		  get_kernel()->clear_normal();
 		  for(i=0;i<totdoc;i++) {
