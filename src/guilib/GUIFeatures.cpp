@@ -365,6 +365,8 @@ CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 
 	CStringFeatures<CHAR>* target= new CStringFeatures<CHAR>(num_symbols);
 	target->set_features(strings, num_vec, max_len, num_symbols, src->get_alphabet());
+
+	return target;
 }
 
 CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeatures* src, CHAR* param)
@@ -525,7 +527,6 @@ CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(CSparseRealFeatu
 
 CWordFeatures* convert_simple_char_to_simple_word(CCharFeatures* src, CHAR* param)
 {
-	bool result=false;
 	CHAR target[1024]="";
 	CHAR from_class[1024]="";
 	CHAR from_type[1024]="";
@@ -585,17 +586,13 @@ CWordFeatures* convert_simple_char_to_simple_word(CCharFeatures* src, CHAR* para
 
 CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(CCharFeatures* src, CHAR* param)
 {
-	bool result=false;
 	CHAR target[1024]="";
 	CHAR from_class[1024]="";
 	CHAR from_type[1024]="";
 	CHAR to_class[1024]="";
 	CHAR to_type[1024]="";
-	CHAR alpha[1024]="";
 	INT order=1;
 	INT start=0;
-	E_ALPHABET alphabet=DNA;
-
 
 	param=CIO::skip_spaces(param);
 	if ((sscanf(param, "%s %s %s %s %s %d %d", target, from_class, from_type, to_class, to_type, &order, &start))<5)
@@ -608,17 +605,17 @@ CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(CCharFeatures*
 			//create dense features with 0 cache
 			CIO::message(M_INFO, "converting CHAR features to WORD ones\n");
 
-			CShortFeatures* target = new CShortFeatures(0l);
+			CShortFeatures* sf = new CShortFeatures(0l);
 
-			if (target)
+			if (sf)
 			{
-				if (target->obtain_from_char_features(src, start, order))
+				if (sf->obtain_from_char_features(src, start, order))
 				{
 					CIO::message(M_INFO, "conversion successful\n");
-					return target;
+					return sf;
 				}
 
-				delete target;
+				delete sf;
 			}
 		}
 		else
@@ -634,14 +631,12 @@ CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(CCharFeatures*
 
 CRealFeatures* CGUIFeatures::convert_simple_char_to_simple_align(CCharFeatures* src, CHAR* param)
 {
-	bool result=false;
 	CHAR target[1024]="";
 	REAL gapCost=1;
 	CHAR from_class[1024]="";
 	CHAR from_type[1024]="";
 	CHAR to_class[1024]="";
 	CHAR to_type[1024]="";
-	CHAR alpha[1024]="";
 
 	param=CIO::skip_spaces(param);
 	if ((sscanf(param, "%s %s %s %s %s %le", target, from_class, from_type, to_class, to_type, &gapCost))!=6)
