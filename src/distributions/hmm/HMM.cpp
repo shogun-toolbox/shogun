@@ -1327,12 +1327,20 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 	T_STATES *psi=new T_STATES[max_iter*N*nbest] ;
 	INT *ktable=new INT[max_iter*N*nbest] ;
 	INT *ktable_ends=new INT[max_iter*nbest] ;
-	
+
+#ifdef OSF1	
+	REAL** tempv=new (REAL**)[nbest] ;
+#else
 	REAL** tempv=new (REAL*)[nbest] ;
+#endif
 	for (INT i=0; i<nbest; i++)
 		tempv[i]= new REAL[N] ;
 
+#ifdef OSF1	
+	INT** tempi=new (INT**)[nbest] ;
+#else
 	INT** tempi=new (INT*)[nbest] ;
+#endif
 	for (INT i=0; i<nbest; i++)
 		tempi[i]= new INT[N] ;
 

@@ -72,7 +72,11 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			trees=NULL ;
 		}
 		
+#ifdef OSF1
+		trees=new (struct SuffixTree**)[alen] ;		
+#else
 		trees=new (struct SuffixTree*)[alen] ;		
+#endif
 		for (INT i=0; i<alen; i++)
 		{
 			trees[i]=new struct SuffixTree ;
