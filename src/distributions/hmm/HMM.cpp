@@ -1328,11 +1328,11 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 	INT *ktable=new INT[max_iter*N*nbest] ;
 	INT *ktable_ends=new INT[max_iter*nbest] ;
 	
-	REAL* tempv=new (REAL*)[nbest] ;
+	REAL** tempv=new (REAL*)[nbest] ;
 	for (INT i=0; i<nbest; i++)
 		tempv[i]= new REAL[N] ;
 
-	INT* tempi=new (INT*)[nbest] ;
+	INT** tempi=new (INT*)[nbest] ;
 	for (INT i=0; i<nbest; i++)
 		tempi[i]= new INT[N] ;
 
