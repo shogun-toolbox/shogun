@@ -542,8 +542,8 @@ bool CGUIHMM::test_hmm(char* param)
 			for (int dim=0; dim<total; dim++)
 			{
 				output[dim]= 
-				    poslinear ? pos->linear_model_probability(dim) : pos->model_probability(dim) -
-				    neglinear ? neg->linear_model_probability(dim) :neg->model_probability(dim);
+				    (poslinear ? pos->linear_model_probability(dim) : pos->model_probability(dim)) -
+				    (neglinear ? neg->linear_model_probability(dim) : neg->model_probability(dim));
 				label[dim]= obs->get_label(dim);
 			}
 			
