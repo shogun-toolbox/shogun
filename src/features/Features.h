@@ -5,8 +5,17 @@
 
 class CFeatures
 {
+
+	enum EType
+	{
+		DOUBLE,
+		STRING
+	};
+
 	CFeatures();
 	virtual ~CFeatures();
+	
+	virtual EType get_feature_type()=0;
 
 	/** get feature vector for sample num
 		from the matrix as it is if matrix is
@@ -15,11 +24,11 @@ class CFeatures
 		@param num index of feature vector
 		@param len length is returned by reference
 	*/
-	REAL* get_feature_vector(int num, int& len);
-	
-	/// set feature vector in feature matrix for sample num
-	bool set_feature_vector(int num);
+	REAL* get_feature_vector(int num, int& len, bool& free);
 
+
+	bool free_feature_vector(bool free);
+	
 	/// get the pointer to the feature matrix
 	/// num_feat,num_vectors are returned by reference
 	REAL* get_feature_matrix(int &num_feat, int &num_vec);

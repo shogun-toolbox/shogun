@@ -32,25 +32,6 @@ const REAL* CFeatures::get_feature_vector(int num)
 #endif
 }
 
-/// set feature vector for sample num
-bool CFeatures::set_feature_vector(int num)
-{
-#ifdef DEBUG
-	if (num<num_vectors)
-	{
-#endif
-		if (feature_matrix)
-		{
-			for (int i=num; i<num+features; i++)
-				feature_matrix[num*num_features];
-		}
-#ifdef DEBUG
-	}
-	else
-		return CMath::INFTY;
-#endif
-}
-
 /// get the pointer to the feature matrix
 const REAL* CFeatures::get_feature_matrix(int &num_feat, int &num_vectors)
 {
