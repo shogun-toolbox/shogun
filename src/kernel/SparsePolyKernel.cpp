@@ -9,7 +9,8 @@
 #include <assert.h>
 
 CSparsePolyKernel::CSparsePolyKernel(LONG size, INT d, bool inhom)
-  : CSparseRealKernel(size),degree(d),inhomogene(inhom)
+  : CSparseRealKernel(size),degree(d),inhomogene(inhom), 
+  sqrtdiag_lhs(NULL),sqrtdiag_rhs(NULL), initialized(false);
 {
 }
 
