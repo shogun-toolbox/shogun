@@ -107,36 +107,45 @@ bool CGUIKernel::save_kernel_init(char* param)
 
 bool CGUIKernel::init_kernel(char* param)
 {
-	if (!strcmp(param, "TRAIN"))
-	{
-		if (gui->guifeatures.get_train_features())
-		{
-			if (!kernel->check_features(gui->guifeatures.get_train_features()))
-			{
-				CIO::message("kernel can not process this feature type\n");
-				return false ;
-			}
-			kernel->init(gui->guifeatures.get_train_features(),gui->guifeatures.get_train_features()) ;
-		}
-		else
-			CIO::message("assign train features first\n");
-	}
-	else
-	{
-		if (gui->guifeatures.get_train_features() && gui->guifeatures.get_test_features())
-		{
-			if (!kernel->check_features(gui->guifeatures.get_train_features()) && !kernel->check_features(gui->guifeatures.get_test_features()))
-			{
-				CIO::message("kernel can not process this feature type\n");
-				return false ;
-			}
-			kernel->init(gui->guifeatures.get_train_features(),gui->guifeatures.get_train_features()) ;
-		}
-		else
-			CIO::message("assign train and test features first\n");
+	char target[1024];
 
-		// lhs -> always train_features; rhs -> alway test_features
-		kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features()) ;
+	if ((sscanf(param, "%s", target))==1)
+	{
+		if (!strncmp(target, "TRAIN", 5))
+		{
+			if (gui->guifeatures.get_train_features())
+			{
+				if (!kernel->check_features(gui->guifeatures.get_train_features()))
+				{
+					CIO::message("kernel can not process this feature type\n");
+					return false ;
+				}
+				kernel->init(gui->guifeatures.get_train_features(),gui->guifeatures.get_train_features()) ;
+			}
+			else
+				CIO::message("assign train features first\n");
+		}
+		else if (!strncmp(target, "TEST", 5))
+		{
+			if (gui->guifeatures.get_train_features() && gui->guifeatures.get_test_features())
+			{
+				if (!kernel->check_features(gui->guifeatures.get_train_features()) && !kernel->check_features(gui->guifeatures.get_test_features()))
+				{
+					CIO::message("kernel can not process this feature type\n");
+					return false ;
+				}
+				kernel->init(gui->guifeatures.get_train_features(),gui->guifeatures.get_train_features()) ;
+			}
+			else
+				CIO::message("assign train and test features first\n");
+
+			// lhs -> always train_features; rhs -> alway test_features
+			kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features()) ;
+		}
+		else
+			CIO::not_implemented();
 	}
+	else 
+		CIO::message("see help for params\n");
 	return true;
 }
