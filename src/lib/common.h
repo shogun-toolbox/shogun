@@ -19,6 +19,7 @@ typedef unsigned char BYTE ;
 
 /// Type REAL (can be float/double/long double...)
 typedef double REAL ;
+//typedef double REAL ;
 typedef REAL* P_REAL ;
 //@}
 

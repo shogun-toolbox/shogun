@@ -115,7 +115,7 @@ bool CSVMLight::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
 	    mymodel.kernel_parm.kernel_type=6; // hmm+svm precalculated
     }
 
-    double *output = new double[total];	
+    REAL* output = new REAL[total];	
     int* label= new int[total];	
 
     for (int i=0; i<total; i++)
@@ -131,8 +131,8 @@ bool CSVMLight::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
 	    CIO::message(outfile,"%+.8g (%+d)(*)\n",output[i], label[i]);
     }  
 
-    double *fp= new double[total];	
-    double *tp= new double[total];	
+    REAL* fp= new REAL[total];	
+    REAL* tp= new REAL[total];	
     int possize=-1;
     int negsize=-1;
 

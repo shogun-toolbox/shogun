@@ -63,12 +63,12 @@ public:
 	//@}
 
 #ifdef _WIN32
-	inline int isnan(double a)
+	inline int isnan(REAL a)
 	{
 	    return(_isnan(a));
 	}
 #else
-	inline int isnan(double a)
+	inline int isnan(REAL a)
 	{
 	    return(isnan(a));
 	}
@@ -89,7 +89,7 @@ public:
 	  }
 
 	/// signum of float a 
-	inline double sign(REAL a)
+	inline REAL sign(REAL a)
 	  {
 	      if (a==0)
 		  return 0;
@@ -117,13 +117,13 @@ public:
 	/** performs a quicksort on an array output of length size
 	 * it is sorted from in ascending order from top to bottom
 	 * and left to right */
-	void qsort(double* output, int size) ;
+	void qsort(REAL* output, int size) ;
 
 	/** calculates ROC into (fp,tp)
 	 * from output and label of length size 
 	 * returns index with smallest error=fp+fn
 	 */
-	int calcroc(double* fp, double* tp, double* output, int* label, int size, int& possize, int& negsize, FILE* rocfile);
+	int calcroc(REAL* fp, REAL* tp, REAL* output, int* label, int size, int& possize, int& negsize, FILE* rocfile);
 	//@}
 
 	/**@name summing functions */
@@ -132,25 +132,46 @@ public:
 	 * Probability measures are summed up but are now given in logspace where
 	 * direct summation of exp(operand) is not possible due to numerical problems, i.e. eg. exp(-1000)=0. Therefore
 	 * we do log( exp(a) + exp(b)) = a + log (1 + exp (b-a)) where a is max(p,q) and b min(p,q). */
+#ifndef NO_LOG_CACHE
 	inline REAL logarithmic_sum(REAL p, REAL q)
-	  {
+	{
 	    register REAL diff=p-q;
-	    
+
 	    if (diff>0)		//p>q
-	      {
+	    {
 		if (diff > LOGRANGE)
-		  return p;
+		    return p;
 		else
-		  return  p + logtable[(int)(diff*LOGACCURACY)];
-	      }
+		    return  p + logtable[(int)(diff*LOGACCURACY)];
+	    }
 	    else			//p<=q
-	      {
+	    {
 		if (-diff > LOGRANGE)
-		  return  q;
+		    return  q;
 		else
-		  return  q + logtable[(int)(-diff*LOGACCURACY)];
-	      }
-	  }
+		    return  q + logtable[(int)(-diff*LOGACCURACY)];
+	    }
+	}
+
+	///init log table of form log(1+exp(x))
+	void init_log_table();
+	
+	/// determine int x for that log(1+exp(-x)) == 0
+	static int determine_logrange();
+
+	/// determine accuracy, such that the thing fits into MAX_LOG_TABLE_SIZE, needs logrange as argument
+	static int determine_logaccuracy(int range);
+#else
+	inline REAL logarithmic_sum(REAL p, REAL q)
+	{
+	    register REAL diff=p-q;
+
+	    if (diff>0)		//p>q
+		return  p + log(1+exp(-diff));
+	    else		//p<=q
+		return  q + log(1+exp(diff));
+	}
+#endif
 #ifdef LOG_SUM_ARRAY
 	/** sum up a whole array of values in logspace.
 	 * This function addresses the numeric instabiliy caused by simply summing up N elements by adding 
@@ -177,9 +198,6 @@ public:
 	    return logarithmic_sum_array(p,len%2+len>>1) ;
 	  } 
 #endif
-
-	///init log table of form log(1+exp(x))
-	void init_log_table();
 	//@}
 public:
 	/**@name constants*/
@@ -189,16 +207,17 @@ public:
 	
 	/// almost neg (log) infinity
 	static const REAL ALMOST_NEG_INFTY;
-	
+#ifndef NO_LOG_CACHE	
 	/// range for logtable: log(1+exp(x))  -LOGRANGE <= x <= 0
-	static const int LOGRANGE;
+	static int LOGRANGE;
 	
 	/// number of steps per integer
-	static const int LOGACCURACY;
+	static int LOGACCURACY;
 	//@}
 protected:
 	///table with log-values
 	REAL* logtable;	
+#endif
 };
 
 #endif

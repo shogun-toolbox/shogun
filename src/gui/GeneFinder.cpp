@@ -138,8 +138,7 @@ bool converge(double x, double y)
     if (diff<0.0)
 	CIO::message(" ***") ;
     CIO::message(")") ;
-    if (absdiff<EPSILON)
-	conv_it-- ;
+
     if (iteration_count-- == 0 || (absdiff<EPSILON && conv_it<=0))
     {
 	iteration_count=ITERATIONS;
@@ -148,7 +147,14 @@ bool converge(double x, double y)
 	return true;
     }
     else
+    {
+	if (absdiff<EPSILON)
+	    conv_it-- ;
+	else
+	    conv_it=5;
+
 	return false;
+    }
 }
 
 
@@ -1712,7 +1718,7 @@ static bool prompt(FILE* infile=stdin)
 			    int total=possize+negsize;
 
 			   CIO::message("p:%d,n:%d,t:%d\n",possize,negsize,total);
-			    double *output = new double[total];	
+			    REAL* output = new REAL[total];	
 			    int* label= new int[total];	
 
 			    for (int dim=0; dim<total; dim++)
@@ -1745,8 +1751,8 @@ static bool prompt(FILE* infile=stdin)
 				}
 			    }
 
-			    double *fp= new double[total];	
-			    double *tp= new double[total];	
+			    REAL* fp= new REAL[total];	
+			    REAL* tp= new REAL[total];	
 
 			    int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize, rocfile);
 
@@ -1831,7 +1837,7 @@ static bool prompt(FILE* infile=stdin)
 
 		int total=obs->get_DIMENSION();
 
-		double *output = new double[total];	
+		REAL* output = new REAL[total];	
 		int* label= new int[total];	
 
 		for (int dim=0; dim<total; dim++)
@@ -1840,8 +1846,8 @@ static bool prompt(FILE* infile=stdin)
 		    label[dim]=obs->get_label(dim);
 		}
 
-		double *fp= new double[total];	
-		double *tp= new double[total];	
+		REAL* fp= new REAL[total];	
+		REAL* tp= new REAL[total];	
 
 		{
 		    for (int dim=0; dim<total; dim++)
@@ -1849,7 +1855,7 @@ static bool prompt(FILE* infile=stdin)
 			output[dim]=pos->model_probability(dim)-neg->model_probability(dim);
 			label[dim]= obs->get_label(dim);
 
-			if (math.sign(output[dim])==label[dim])
+			if (math.sign((REAL) output[dim])==label[dim])
 			    fprintf(outputfile,"%+.8g (%+d)\n",output[dim], label[dim]);
 			else
 			    fprintf(outputfile,"%+.8g (%+d)(*)\n",output[dim], label[dim]);
