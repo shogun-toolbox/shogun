@@ -16,7 +16,7 @@ class CSalzbergWordKernel: public CWordKernel
 		  pos_prior=pos_prior_ ;
 		  neg_prior=neg_prior_ ;
 		  if (fabs(pos_prior+neg_prior-1)>1e-6)
-			  CIO::message("priors don't sum to 1: %f\n", pos_prior+neg_prior-1) ;
+			  CIO::message("WARNING: priors don't sum to 1: %f+%f-1=%f\n", pos_prior, neg_prior, pos_prior+neg_prior-1) ;
 	  };
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
