@@ -1,4 +1,4 @@
-#include "PreProc.h"
+#include "ShortPreProc.h"
 
 CShortPreProc::CShortPreProc()
 {

@@ -52,5 +52,7 @@ short int* CShortFeatures::get_feature_matrix(long &num_feat, long &num_vec)
 bool CShortFeatures::preproc_feature_matrix()
 {
   if (preproc)
-    ((CShortPreProc*) preproc)->apply_to_feature_matrix(this);
+    return ((CShortPreProc*) preproc)->apply_to_feature_matrix(this);
+  else 
+	return false;
 }

@@ -32,7 +32,7 @@ void CLinearKernel::cleanup()
   
 bool CLinearKernel::check_features(CFeatures* f) 
 {
-  return (f->get_feature_type()==CFeatures::F_REAL);
+  return (f->get_feature_type()==F_REAL);
 }
 
 REAL CLinearKernel::compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)

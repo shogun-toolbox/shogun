@@ -1,31 +1,4 @@
-#include "lib/io.h"
-#include "lib/Mathmatics.h"
-
-#include "kernel/Kernel.h"
-#include "kernel/LinearKernel.h"
-
-#include "features/Features.h"
-#include "features/TOPFeatures.h"
-
-#include "preproc/PreProc.h"
-#include "preproc/NormOne.h"
-
-
-#include <stdio.h>
-#include <unistd.h>
-#include <time.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#ifndef _WIN32
-//#include <termios.h>
-#endif
-
-
+#if 0
 clock_t current_time;
 
 // initial parameters
@@ -114,4 +87,4 @@ static void switch_model(CHMM** m1, CHMM** m2)
     *m2= dummy;
 }
 
-
+#endif

@@ -1,4 +1,4 @@
-#include "PreProc.h"
+#include "StringPreProc.h"
 
 CStringPreProc::CStringPreProc()
 {
