@@ -6,6 +6,12 @@
 #include <math.h>
 #include <stdio.h>
 
+//define finite for win32
+#ifdef _WIN32
+	#include <float.h>
+	#define finite _finite
+#endif
+
 /** Mathematical Functions.
  * Class which collects generic mathematical functions
  */

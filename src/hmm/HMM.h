@@ -77,51 +77,78 @@ class CHMM
     private:
 
 #ifdef PARALLEL
-  inline T_ALPHA_BETA & ALPHA_CACHE(int dim) {
-    return alpha_cache[dim%NUM_PARALLEL] ; } ;
-  inline T_ALPHA_BETA & BETA_CACHE(int dim) {
-    return beta_cache[dim%NUM_PARALLEL] ; } ;
+	/// Datatype that is used in parrallel computation of model probability
+	struct S_MODEL_PROB_THREAD_PARAM
+	{
+	    CHMM * hmm;
+	    int dim_start;
+	    int dim_stop;
+
+	    REAL prob_sum;
+	};
+
+	/// Datatype that is used in parrallel baum welch model estimation
+	struct S_BW_THREAD_PARAM
+	{
+	    CHMM * hmm;
+	    int dim ;
+	    int dim_start;
+	    int dim_stop;
+
+	    REAL ret;
+	    REAL prob;
+
+	    REAL* p_buf;
+	    REAL* q_buf;
+	    REAL* a_buf;
+	    REAL* b_buf;
+	};
+
+	inline T_ALPHA_BETA & ALPHA_CACHE(int dim) {
+	    return alpha_cache[dim%NUM_PARALLEL] ; } ;
+	inline T_ALPHA_BETA & BETA_CACHE(int dim) {
+	    return beta_cache[dim%NUM_PARALLEL] ; } ;
 #ifdef LOG_SUM_ARRAY 
-  inline REAL* ARRAYS(int dim) {
-    return arrayS[dim%NUM_PARALLEL] ; } ;
+	inline REAL* ARRAYS(int dim) {
+	    return arrayS[dim%NUM_PARALLEL] ; } ;
 #endif
-  inline REAL* ARRAYN1(int dim) {
-    return arrayN1[dim%NUM_PARALLEL] ; } ;
-  inline REAL* ARRAYN2(int dim) {
-    return arrayN2[dim%NUM_PARALLEL] ; } ;
-  inline T_STATES* STATES_PER_OBSERVATION_PSI(int dim) {
-    return states_per_observation_psi[dim%NUM_PARALLEL] ; } ;
-  inline const T_STATES* STATES_PER_OBSERVATION_PSI(int dim) const {
-    return states_per_observation_psi[dim%NUM_PARALLEL] ; } ;
-  inline T_STATES* PATH(int dim) {
-    return path[dim%NUM_PARALLEL] ; } ;
-  inline bool & PATH_PROB_UPDATED(int dim) {
-    return path_prob_updated[dim%NUM_PARALLEL] ; } ;
-  inline int & PATH_PROB_DIMENSION(int dim) {
-    return path_prob_dimension[dim%NUM_PARALLEL] ; } ;
+	inline REAL* ARRAYN1(int dim) {
+	    return arrayN1[dim%NUM_PARALLEL] ; } ;
+	inline REAL* ARRAYN2(int dim) {
+	    return arrayN2[dim%NUM_PARALLEL] ; } ;
+	inline T_STATES* STATES_PER_OBSERVATION_PSI(int dim) {
+	    return states_per_observation_psi[dim%NUM_PARALLEL] ; } ;
+	inline const T_STATES* STATES_PER_OBSERVATION_PSI(int dim) const {
+	    return states_per_observation_psi[dim%NUM_PARALLEL] ; } ;
+	inline T_STATES* PATH(int dim) {
+	    return path[dim%NUM_PARALLEL] ; } ;
+	inline bool & PATH_PROB_UPDATED(int dim) {
+	    return path_prob_updated[dim%NUM_PARALLEL] ; } ;
+	inline int & PATH_PROB_DIMENSION(int dim) {
+	    return path_prob_dimension[dim%NUM_PARALLEL] ; } ;
 #else
-  inline T_ALPHA_BETA & ALPHA_CACHE(int dim) {
-    return alpha_cache ; } ;
-  inline T_ALPHA_BETA & BETA_CACHE(int dim) {
-    return beta_cache ; } ;
+	inline T_ALPHA_BETA & ALPHA_CACHE(int dim) {
+	    return alpha_cache ; } ;
+	inline T_ALPHA_BETA & BETA_CACHE(int dim) {
+	    return beta_cache ; } ;
 #ifdef LOG_SUM_ARRAY
-  inline REAL* ARRAYS(int dim) {
-    return arrayS ; } ;
+	inline REAL* ARRAYS(int dim) {
+	    return arrayS ; } ;
 #endif
-  inline REAL* ARRAYN1(int dim) {
-    return arrayN1 ; } ;
-  inline REAL* ARRAYN2(int dim) {
-    return arrayN2 ; } ;
-  inline T_STATES* STATES_PER_OBSERVATION_PSI(int dim) {
-    return states_per_observation_psi ; } ;
-  inline const T_STATES* STATES_PER_OBSERVATION_PSI(int dim) const {
-    return states_per_observation_psi ; } ;
-  inline T_STATES* PATH(int dim) {
-    return path ; } ;
-  inline bool & PATH_PROB_UPDATED(int dim) {
-    return path_prob_updated ; } ;
-  inline int & PATH_PROB_DIMENSION(int dim) {
-    return path_prob_dimension ; } ;
+	inline REAL* ARRAYN1(int dim) {
+	    return arrayN1 ; } ;
+	inline REAL* ARRAYN2(int dim) {
+	    return arrayN2 ; } ;
+	inline T_STATES* STATES_PER_OBSERVATION_PSI(int dim) {
+	    return states_per_observation_psi ; } ;
+	inline const T_STATES* STATES_PER_OBSERVATION_PSI(int dim) const {
+	    return states_per_observation_psi ; } ;
+	inline T_STATES* PATH(int dim) {
+	    return path ; } ;
+	inline bool & PATH_PROB_UPDATED(int dim) {
+	    return path_prob_updated ; } ;
+	inline int & PATH_PROB_DIMENSION(int dim) {
+	    return path_prob_dimension ; } ;
 #endif
 
 
@@ -535,7 +562,7 @@ public:
 	void estimate_model_baum_welch(CHMM* train);
 
 #ifdef PARALLEL
-	void ab_buf_comp(REAL *a_buf, REAL* b_buf, int dim) ;
+	void ab_buf_comp(REAL* p_buf, REAL* q_buf, REAL* a_buf, REAL* b_buf, int dim) ;
 #endif
 	
 	/** uses baum-welch-algorithm to train the {\bf defined} transitions etc.
@@ -645,11 +672,16 @@ public:
 	}
 
 #ifdef PARALLEL
+	
+	static void* bw_dim_prefetch(void * params);
+#ifndef NOVIT
+	static void* vit_dim_prefetch(void * params);
+#endif
 	/** function that gets called from thread start routines.
 	 * @param dim dimension of observation
 	 * @param bw true for model_probability false for best_path
 	 */
-	REAL prefetch(int dim, bool bw, REAL* a_buf=NULL, REAL* b_buf=NULL) ;
+	REAL prefetch(int dim, bool bw, REAL* p_buff=NULL, REAL* q_buf=NULL, REAL* a_buf=NULL, REAL* b_buf=NULL) ;
 #endif
 
 #ifdef FIX_POS

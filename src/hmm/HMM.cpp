@@ -15,73 +15,16 @@
 #define ARRAY_SIZE 65336
 
 #ifdef PARALLEL 
-int NUM_PARALLEL=4 ;
-#else
-int NUM_PARALLEL=1 ;
-#endif
-
-#ifdef PARALLEL
-#include <pthread.h>
-
+ #include <unistd.h>
+ #include <pthread.h>
 #ifdef SUNOS
-#include <thread.h>
+ #include <thread.h>
+#endif
+ int NUM_PARALLEL= sysconf( _SC_NPROCESSORS_ONLN );
+#else
+ int NUM_PARALLEL=1 ;
 #endif
 
-struct S_THREAD_PARAM
-{
-  CHMM * hmm;
-  int    dim ;
-  REAL ret ;
-  REAL *a_buf, *b_buf ;
-}  ;
-
-typedef struct S_THREAD_PARAM T_THREAD_PARAM ;
-
-void *bw_dim_prefetch(void * params)
-{
-  CHMM* hmm=((T_THREAD_PARAM*)params)->hmm ;
-  int dim=((T_THREAD_PARAM*)params)->dim ;
-  REAL*a_buf=((T_THREAD_PARAM*)params)->a_buf ;
-  REAL*b_buf=((T_THREAD_PARAM*)params)->b_buf ;
-  ((T_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, true, a_buf, b_buf) ;
-  return NULL ;
-} ;
-
-#ifndef NOVIT
-void *vit_dim_prefetch(void * params)
-{
-  CHMM* hmm=((T_THREAD_PARAM*)params)->hmm ;
-  int dim=((T_THREAD_PARAM*)params)->dim ;
-  ((T_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, false) ;
-  return NULL ;
-} ;
-#endif // NOVIT
-
-REAL CHMM::prefetch(int dim, bool bw, REAL* a_buf, REAL* b_buf)
-{
-  /*CIO::message(stderr, "prefetch called\n") ;*/
-  if (bw)
-    {
-      forward_comp(p_observations->get_obs_T(dim), N-1, dim) ;
-      backward_comp(p_observations->get_obs_T(dim), N-1, dim) ;
-      REAL modprob=model_probability(dim) ;
-      ab_buf_comp(a_buf, b_buf, dim) ;
-      return modprob ;
-    } 
-#ifndef NOVIT
-  else
-    return best_path(dim) ;
-#endif // NOVIT
-} ;
-#endif //PARALLEL
-
-//win32 does not know finite but _finite
-#ifdef _WIN32
-	#include <float.h>
-	#define finite _finite
-#endif
-
-extern "C" int	finite(double);
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -140,13 +83,14 @@ const char CHMM::CModel::FIX_ALLOWED=1 ;
 const char CHMM::CModel::FIX_DEFAULT=-1 ;
 const REAL CHMM::CModel::DISALLOWED_PENALTY=CMath::ALMOST_NEG_INFTY ;
 #endif
+
 CHMM::CModel::CModel()
 {
-	const_a=new int[ARRAY_SIZE];			///////fixme 
+	const_a=new int[ARRAY_SIZE];				///////static fixme 
 	const_b=new int[ARRAY_SIZE];
 	const_p=new int[ARRAY_SIZE];
 	const_q=new int[ARRAY_SIZE];
-	const_a_val=new REAL[ARRAY_SIZE];			///////fixme 
+	const_a_val=new REAL[ARRAY_SIZE];			///////static fixme 
 	const_b_val=new REAL[ARRAY_SIZE];
 	const_p_val=new REAL[ARRAY_SIZE];
 	const_q_val=new REAL[ARRAY_SIZE];
@@ -201,14 +145,14 @@ CHMM::CModel::~CModel()
 #endif
 }
 
-CHMM::CHMM(int N_, int M_, int ORDER_, CModel* model_, REAL PSEUDO_)
+CHMM::CHMM(int N, int M, int ORDER, CModel* model, REAL PSEUDO)
 {
-  status=initialize(N_, M_, ORDER_, model_, PSEUDO_);
+  status=initialize(N, M, ORDER, model, PSEUDO);
 }
 
-CHMM::CHMM(FILE* model_file_, REAL PSEUDO_)
+CHMM::CHMM(FILE* model_file, REAL PSEUDO)
 {
-  status=initialize(0, 0, 1, NULL, PSEUDO_, model_file_);
+  status=initialize(0, 0, 1, NULL, PSEUDO, model_file);
 }
 
 CHMM::~CHMM()
@@ -279,33 +223,33 @@ CHMM::~CHMM()
 	}
 }
    
-bool CHMM::initialize(int N_, int M_, int ORDER_, CModel* model_, 
-					  REAL PSEUDO_, FILE* model_file_)
+bool CHMM::initialize(int N, int M, int ORDER_, CModel* model, 
+					  REAL PSEUDO, FILE* modelfile)
 {
 	//yes optimistic
 	bool files_ok=true;
 	
-	if (N_>(1<<(8*sizeof(T_STATES))))
+	if (N>(1<<(8*sizeof(T_STATES))))
 	  CIO::message(stderr, "########\nNUMBER OF STATES TOO LARGE. Maximum is %i\n########\n", (1<<(8*sizeof(T_STATES)))) ;
 
-	MAX_M=(BYTE)ceil(log(M_)/log(2)) ;
-	if (M_>(1<<MAX_M))
+	MAX_M=(BYTE)ceil(log(M)/log(2)) ;
+	if (M>(1<<MAX_M))
 	  CIO::message(stderr, "########\nALPHABET TOO LARGE. Maximum is %i\n########\n", (int)(1<<MAX_M)) ;
 
 	if ( (unsigned)MAX_M*ORDER_> (unsigned)8*sizeof(T_OBSERVATIONS) )
 	  CIO::message(stderr, "########\nORDER TOO LARGE. Maximum is %i\n########\n", (int)(((REAL)8*sizeof(T_OBSERVATIONS))/((REAL)MAX_M))) ;
 
 	//map higher order to alphabet
-	M_=	M_ << (MAX_M * (ORDER_-1));
+	M=	M << (MAX_M * (ORDER_-1));
 
 	
 	//initialize parameters
-	this->M= M_;
-	this->N= N_;
+	this->M= M;
+	this->N= N;
 	//this->T= 0; 
 	this->ORDER=ORDER_;
-	this->PSEUDO= PSEUDO_;
-	this->model= model_;
+	this->PSEUDO= PSEUDO;
+	this->model= model;
 	this->p_observations=NULL;
 	this->reused_caches=false;
 	  
@@ -347,16 +291,15 @@ bool CHMM::initialize(int N_, int M_, int ORDER_, CModel* model_,
 	this->loglikelihood=false;
 	this->invalidate_model();
 
-	//all the in out model and train files needed for io
-	////!!!!!!!!!!!!!!!!
-	if (model_file_)
-		files_ok= files_ok && load_model(model_file_);
+	//all the in out model and train files needed for io  ////!!!!!!!!!!!!!!!!
+	if (modelfile)
+		files_ok= files_ok && load_model(modelfile);
 	else
 	{
-		transition_matrix_a=new REAL[N_*N_];
-		observation_matrix_b=new REAL[N_*M_];	
-		initial_state_distribution_p=new REAL[N_];
-		end_state_distribution_q=new REAL[N_];
+		transition_matrix_a=new REAL[N*N];
+		observation_matrix_b=new REAL[N*M];	
+		initial_state_distribution_p=new REAL[N];
+		end_state_distribution_q=new REAL[N];
 		init_model_random();
 		convert_to_log();
 	}
@@ -376,7 +319,7 @@ bool CHMM::initialize(int N_, int M_, int ORDER_, CModel* model_,
 	arrayN2=new REAL[this->N];
 #endif //PARALLEL
 
-#ifdef LOG_SUM_ARRAY
+#ifdef LOG_SUMARRAY
 #ifdef PARALLEL
 	{
 	  arrayS=new P_REAL[NUM_PARALLEL] ;	  
@@ -386,7 +329,7 @@ bool CHMM::initialize(int N_, int M_, int ORDER_, CModel* model_,
 #else //PARALLEL
 	arrayS=new REAL[(int)(this->N/2+1)];
 #endif //PARALLEL
-#endif //LOG_SUM_ARRAY
+#endif //LOG_SUMARRAY
 	transition_matrix_A=new REAL[this->N*this->N];
 	observation_matrix_B=new REAL[this->N*this->M];
 
@@ -796,114 +739,136 @@ REAL CHMM::best_path(int dimension)
 }
 #endif // NOVIT
 
+#ifndef PARALLEL
 REAL CHMM::model_probability_comp() 
 {
-#ifdef PARALLEL
-  pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
-  T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
-#endif
-
   //for faster calculation cache model probability
  CIO::message("computing full model probablity\n") ;
   mod_prob=0 ;
   for (int dim=0; dim<p_observations->get_DIMENSION(); dim++)		//sum in log space
-    {
-#ifdef PARALLEL
-      //CIO::message(stderr,"dim=%i\n",dim) ;
-      if (dim%NUM_PARALLEL==0)
-	{
-	  int i ;
-	  for (i=0; i<NUM_PARALLEL; i++)
-	    if (dim+i<p_observations->get_DIMENSION())
-	      {
-		/*CIO::message(stderr,"creating thread for dim=%i\n",dim+i) ;*/
-		
-		params[i].hmm=this ;
-		params[i].dim=dim+i ;
-#ifdef SUNOS
-		thr_create(NULL,0,bw_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
-#else // SUNOS
-		pthread_create(&threads[i], NULL, bw_dim_prefetch, (void*)&params[i]) ;
-#endif // SUNOS
-	      } ;
-	  for (i=0; i<NUM_PARALLEL; i++)
-	    if (dim+i<p_observations->get_DIMENSION())
-	      {
-		void * ret ;
-		pthread_join(threads[i], &ret) ;
-		/* CIO::message(stderr,"thread for dim=%i returned: %i\n",dim+i,ALPHA_CACHE(dim+i).dimension) ;*/
-	      } ;
-	} ;
-#endif 
       mod_prob+=forward(p_observations->get_obs_T(dim), 0, dim);
-    } ;
 
-#ifdef PARALLEL
-  delete[] threads ;
-  delete[] params ;
-#endif
-  
   mod_prob_updated=true;
   return mod_prob;
 }
 
-#ifdef PARALLEL
+#else
 
-void CHMM::ab_buf_comp(REAL *a_buf, REAL* b_buf, int dim)
+REAL CHMM::model_probability_comp() 
 {
-    int i,j,t ;
-    REAL a_sum;
-    REAL b_sum;
+    pthread_t *threads=new pthread_t[NUM_PARALLEL];
+    S_MODEL_PROB_PARAM *params=new S_MODEL_PROB_PARAM[NUM_PARALLEL];
 
-    for (i=0; i<N; i++)
+    CIO::message("computing full model probablity\n");
+    mod_prob=0;
+
+    for (int cpu=0; cpu<NUM_PARALLEL; cpu++)
     {
-	//estimate initial+end state distribution numerator
-	p_buf[i]=math.logarithmic_sum(get_p(i), train->get_p(i)+train->get_b(i,p_observations->get_obs(dim,0))+train->backward(0,i,dim) - dimmodprob);
-	q_buf[i]=math.logarithmic_sum(get_q(i), train->forward(p_observations->get_obs_T(dim)-1, i, dim)+train->get_q(i) - dimmodprob);
+	params[cpu].hmm=this ;
+	params[cpu].dim_start= p_observations->get_DIMENSION()*cpu/NUM_PARALLEL;
+	params[cpu].dim_stop= p_observations->get_DIMENSION()*(cpu+1)/NUM_PARALLEL;
+#ifdef SUNOS
+	thr_create(NULL,0,bw_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]);
+#else // SUNOS
+	pthread_create(&threads[i], NULL, bw_dim_prefetch, (void*)&params[i]);
+#endif // SUNOS
+    }
 
-	//estimate a
-	for (j=0; j<N; j++)
-	{
-	    a_sum=-math.INFTY;
+    for (cpu=0; cpu<NUM_PARALLEL; cpu++)
+    {
+	void* ret;
+	pthread_join(threads[i], &ret);
+	mod_prob+=(REAL) ret;
+    }
 
-	    for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
-	    {
-		    a_sum= math.logarithmic_sum(a_sum, train->forward(t,i,dim)+
-			    train->get_a(i,j)+train->get_b(j,p_observations->get_obs(dim,t+1))+train->backward(t+1,j,dim));
-	    }
-	    a_buf[N*i+j]=a_sum-dimmodprob ;
-	}
+    delete[] threads;
+    delete[] params;
 
-	//estimate b
-	for (j=0; j<M; j++)
-	{
-		b_sum=math.ALMOST_NEG_INFTY;
+    mod_prob_updated=true;
+    return mod_prob;
+}
 
-	    for (t=0; t<p_observations->get_obs_T(dim); t++) 
-	    {
-		    if (p_observations->get_obs(dim,t)==j) 
-			b_sum=math.logarithmic_sum(b_sum, train->forward(t,i,dim)+train->backward(t, i, dim));
-	    }
+void* CHMM::bw_dim_prefetch(void * params)
+{
+    CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
+    int dim=((S_THREAD_PARAM*)params)->dim ;
+    REAL*p_buf=((S_THREAD_PARAM*)params)->p_buf ;
+    REAL*q_buf=((S_THREAD_PARAM*)params)->q_buf ;
+    REAL*a_buf=((S_THREAD_PARAM*)params)->a_buf ;
+    REAL*b_buf=((S_THREAD_PARAM*)params)->b_buf ;
+    ((S_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, true, p_buf, q_buf, a_buf, b_buf) ;
+    return NULL ;
+}
 
-	    b_buf[M*i+j]=b_sum-dimmodprob ;
-	}
-    } 
+REAL CHMM::model_prob_thread(void* params)
+{
+    CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
+    int dim_start=((S_THREAD_PARAM*)params)->dim_start;
+    int dim_stop=((S_THREAD_PARAM*)params)->dim_stop;
+    
+    REAL prob=0;
+    for (int dim=dim_start; dim<dim_stop; dim++)
+	hmm->model_probability(dim);
+
+    ab_buf_comp(p_buf, q_buf, a_buf, b_buf, dim) ;
+    return modprob ;
 } ;
 
+void* CHMM::bw_dim_prefetch(void * params)
+{
+    CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
+    int dim=((S_THREAD_PARAM*)params)->dim ;
+    REAL*p_buf=((S_THREAD_PARAM*)params)->p_buf ;
+    REAL*q_buf=((S_THREAD_PARAM*)params)->q_buf ;
+    REAL*a_buf=((S_THREAD_PARAM*)params)->a_buf ;
+    REAL*b_buf=((S_THREAD_PARAM*)params)->b_buf ;
+    ((S_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, true, p_buf, q_buf, a_buf, b_buf) ;
+    return NULL ;
+}
+
+#ifndef NOVIT
+void* CHMM::vit_dim_prefetch(void * params)
+{
+    CHMM* hmm=((S_THREAD_PARAM*)params)->hmm ;
+    int dim=((S_THREAD_PARAM*)params)->dim ;
+    ((S_THREAD_PARAM*)params)->ret = hmm->prefetch(dim, false) ;
+    return NULL ;
+} ;
+#endif // NOVIT
+
+REAL CHMM::prefetch(int dim, bool bw, REAL* p_buf, REAL* q_buf, REAL* a_buf, REAL* b_buf)
+{
+    /*CIO::message(stderr, "prefetch called\n") ;*/
+    if (bw)
+    {
+	forward_comp(p_observations->get_obs_T(dim), N-1, dim) ;
+	backward_comp(p_observations->get_obs_T(dim), N-1, dim) ;
+	REAL modprob=model_probability(dim) ;
+	ab_buf_comp(p_buf, q_buf, a_buf, b_buf, dim) ;
+	return modprob ;
+    } 
+#ifndef NOVIT
+    else
+	return best_path(dim) ;
+#endif // NOVIT
+} ;
+#endif //PARALLEL
+
+
+#ifndef PARALLEL
 //estimates new model lambda out of lambda_train using baum welch algorithm
 void CHMM::estimate_model_baum_welch(CHMM* train)
 {
-    int i,j,t,dim;
+    int i,j,t,cpu;
     REAL a_sum, b_sum;	//numerator
-    REAL dimmodprob=0;	//model probability for dim
     REAL fullmodprob=0;	//for all dims
-    
+
     //clear actual model a,b,p,q are used as numerator
     for (i=0; i<N; i++)
-      {
+    {
 	set_p(i,log(PSEUDO));
 	set_q(i,log(PSEUDO));
-	
+
 	for (j=0; j<N; j++)
 	    set_a(i,j, log(PSEUDO));
 	for (j=0; j<M; j++)
@@ -911,69 +876,69 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
     }
 
     pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
-    T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
-    for (i=0; i<NUM_PARALLEL; i++)
-      {
-	params[i].a_buf=new REAL[N*N] ;
-	params[i].b_buf=new REAL[N*M] ;
-      } ;
+    S_THREAD_PARAM *params=new S_THREAD_PARAM[NUM_PARALLEL] ;
 
-    //change summation order to make use of alpha/beta caches
-    for (dim=0; dim<p_observations->get_DIMENSION(); dim++)
+    for (i=0; i<NUM_PARALLEL; i++)
     {
-      if (dim%NUM_PARALLEL==0)
-	{
-	  int i ;
-	  for (i=0; i<NUM_PARALLEL; i++)
-	    if (dim+i<p_observations->get_DIMENSION())
-	      {
-		/*CIO::message(stderr,"creating thread for dim=%i\n",dim+i) ;*/
-		params[i].hmm=train ;
-		params[i].dim=dim+i ;
-#ifdef SUNOS
-		thr_create(NULL,0, bw_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
-#else // SUNOS
-		pthread_create(&threads[i], NULL, bw_dim_prefetch, (void*)&params[i]) ;
-#endif
-	      } ;
-	}
-      
-      {
-	void * ret ;
-	pthread_join(threads[dim%NUM_PARALLEL], &ret) ;
-	dimmodprob = params[dim%NUM_PARALLEL].ret ;
-      } ;
+	params[i].p_buf=new REAL[N];
+	params[i].q_buf=new REAL[N];
+	params[i].a_buf=new REAL[N*N];
+	params[i].b_buf=new REAL[N*M];
+    } ;
 
-      //and denominator
-      fullmodprob+=dimmodprob;
-      
-      for (i=0; i<N; i++)
-	{
-	  //estimate initial+end state distribution numerator
-	  set_p(i, math.logarithmic_sum(get_p(i), train->forward(0,i,dim)+train->backward(0,i,dim) - dimmodprob));
-	  set_q(i, math.logarithmic_sum(get_q(i), (train->forward(p_observations->get_obs_T(dim)-1, i, dim)+
-						   train->backward(p_observations->get_obs_T(dim)-1, i, dim)) - dimmodprob ));
-	  //estimate numerator for a
-	  for (j=0; j<N; j++)
-	    set_a(i,j, math.logarithmic_sum(get_a(i,j), params[dim%NUM_PARALLEL].a_buf[N*i+j]-dimmodprob));
-	  
-	  //estimate numerator for b
-	  for (j=0; j<M; j++)
-	      set_b(i,j, math.logarithmic_sum(get_b(i,j), params[dim%NUM_PARALLEL].b_buf[M*i+j]-dimmodprob));
-	} 
+    for (cpu=0; cpu<NUM_PARALLEL; cpu++)
+    {
+	/*CIO::message(stderr,"creating thread for dim=%i\n",dim+i) ;*/
+	params[i].hmm=train;
+	params[i].dim_start=p_observations->get_DIMENSION()*cpu / NUM_PARALLEL;
+	params[i].dim_stop= p_observations->get_DIMENSION()*(cpu+1) / NUM_PARALLEL;
+
+#ifdef SUNOS
+	thr_create(NULL,0, bw_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
+#else // SUNOS
+	pthread_create(&threads[i], NULL, bw_dim_prefetch, (void*)&params[i]) ;
+#endif
     }
+
+    for (cpu=0; cpu<NUM_PARALLEL; cpu++)
+    {
+	void* ret;
+	pthread_join(threads[cpu], &ret) ;
+	//dimmodprob = params[dim%NUM_PARALLEL].ret ;
+
+	for (i=0; i<N; i++)
+	{
+	    //estimate initial+end state distribution numerator
+	    set_p(i, math.logarithmic_sum(get_p(i), params[cpu].p_buf[i]));
+	    set_q(i, math.logarithmic_sum(get_q(i), params[cpu].q_buf[i]));
+
+	    //estimate numerator for a
+	    for (j=0; j<N; j++)
+		set_a(i,j, math.logarithmic_sum(get_a(i,j), params[cpu].a_buf[N*i+j]));
+
+	    //estimate numerator for b
+	    for (j=0; j<M; j++)
+		set_b(i,j, math.logarithmic_sum(get_b(i,j), params[cpu].b_buf[M*i+j]));
+	}
+
+	fullmodprob+=params[cpu].prob;
+    }
+    
     for (i=0; i<NUM_PARALLEL; i++)
-      {
-	delete[] params[i].a_buf ;
-	delete[] params[i].b_buf ;
-      } ;
+    {
+	delete[] params[i].p_buf;
+	delete[] params[i].q_buf;
+	delete[] params[i].a_buf;
+	delete[] params[i].b_buf;
+    }
+
     delete[] threads ;
     delete[] params ;
-    
+
     //cache train model probability
     train->mod_prob=fullmodprob;
     train->mod_prob_updated=true ;
-    
+
     //new model probability is unknown
     normalize();
     invalidate_model();
@@ -1051,6 +1016,49 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
     invalidate_model();
 }
 
+void CHMM::ab_buf_comp(REAL* p_buf, REAL* q_buf, REAL *a_buf, REAL* b_buf, int dim)
+{
+    int i,j,t ;
+    REAL a_sum;
+    REAL b_sum;
+    REAL prob=0;	//model probability for dim
+   
+    REAL dimmodprob=model_probability(dim);
+
+    for (i=0; i<N; i++)
+    {
+	//estimate initial+end state distribution numerator
+	p_buf[i]=math.logarithmic_sum(get_p(i), get_p(i)+get_b(i,p_observations->get_obs(dim,0))+backward(0,i,dim) - dimmodprob);
+	q_buf[i]=math.logarithmic_sum(get_q(i), forward(p_observations->get_obs_T(dim)-1, i, dim)+get_q(i) - dimmodprob);
+
+	//estimate a
+	for (j=0; j<N; j++)
+	{
+	    a_sum=-math.INFTY;
+
+	    for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
+	    {
+		    a_sum= math.logarithmic_sum(a_sum, forward(t,i,dim)+
+			    get_a(i,j)+get_b(j,p_observations->get_obs(dim,t+1))+backward(t+1,j,dim));
+	    }
+	    a_buf[N*i+j]=a_sum-dimmodprob ;
+	}
+
+	//estimate b
+	for (j=0; j<M; j++)
+	{
+		b_sum=math.ALMOST_NEG_INFTY;
+
+	    for (t=0; t<p_observations->get_obs_T(dim); t++) 
+	    {
+		    if (p_observations->get_obs(dim,t)==j) 
+			b_sum=math.logarithmic_sum(b_sum, forward(t,i,dim)+backward(t, i, dim));
+	    }
+
+	    b_buf[M*i+j]=b_sum-dimmodprob ;
+	}
+    } 
+}
 #endif // PARALLEL
 
 
@@ -1093,7 +1101,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 
 #ifdef PARALLEL
     pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
-    T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
+    S_THREAD_PARAM *params=new S_THREAD_PARAM[NUM_PARALLEL] ;
 #endif
 
     //change summation order to make use of alpha/beta caches
@@ -1258,7 +1266,7 @@ void CHMM::estimate_model_viterbi(CHMM* train)
 
 #ifdef PARALLEL
 	pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
-	T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
+	S_THREAD_PARAM *params=new S_THREAD_PARAM[NUM_PARALLEL] ;
 #endif
 
 	for (int dim=0; dim<p_observations->get_DIMENSION(); dim++)
@@ -1383,7 +1391,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* train)
 
 #ifdef PARALLEL
 	pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
-	T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
+	S_THREAD_PARAM *params=new S_THREAD_PARAM[NUM_PARALLEL] ;
 #endif
 
 	REAL allpatprob=0.0 ;
@@ -2723,7 +2731,7 @@ bool CHMM::load_model(FILE* file)
       result= (received_params== (GOTa | GOTb | GOTp | GOTq | GOTN | GOTM | GOTO));
     }
  
-//  normalize(); 
+  normalize(); 
   return result;
 }
 
@@ -3902,7 +3910,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
   
 #ifdef PARALLEL
   pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
-  T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
+  S_THREAD_PARAM *params=new S_THREAD_PARAM[NUM_PARALLEL] ;
 #endif
   
   for (dim=0; dim<p_observations->get_DIMENSION(); dim++)
@@ -5106,5 +5114,4 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
     }
   
 }
-
 #endif
