@@ -187,7 +187,6 @@ void CSVMLight::svm_learn()
 	w_gap = 1 ;
 	count = 0 ;
 	num_rows=0 ;
-	w_epsilon=1e-2 ;
 	
 	if (get_kernel()->has_property(KP_KERNCOMBINATION))
 	{
@@ -480,7 +479,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 
                             /* repeat this loop until we have convergence */
 //  for(;w_gap>0.1;iteration++){//retrain && (!terminate);iteration++) {
-  for(;(retrain && (!terminate))||(w_gap>w_epsilon);iteration++){
+  for(;(retrain && (!terminate))||(w_gap>get_weight_epsilon());iteration++){
 	  	  
 	  if(!get_kernel()->has_property(KP_LINADD)) 
 		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
@@ -1142,7 +1141,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			//if (mymaxdiff<w_gap*100)
 			//if (CMath::abs(rho-objective)>1)
 			w_gap = CMath::abs(1-rho/objective) ;
-			if (w_gap >= 0.9999*w_epsilon)
+			if (w_gap >= 0.9999*get_weight_epsilon())
 			{
 				if (rho==0)
 				{

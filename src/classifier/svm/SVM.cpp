@@ -15,6 +15,7 @@ CSVM::CSVM()
 
 	svm_loaded=false;
 
+	weight_epsilon=-1;
 	C1=-1;
 	C2=-1;
 }

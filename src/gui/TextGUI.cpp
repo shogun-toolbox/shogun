@@ -92,6 +92,7 @@ static const CHAR* N_CONVERT_CHAR_TO_WORD=	"convert_char_to_word";
 static const CHAR* N_CONVERT_CHAR_TO_SHORT=	"convert_char_to_short";
 static const CHAR* N_CONVERT=	"convert";
 static const CHAR* N_C=			     	"c";
+static const CHAR* N_EPSILON=			"epsilon";
 static const CHAR* N_ADD_STATES=	        "add_states";
 static const CHAR* N_APPEND_HMM=		"append_hmm";
 static const CHAR* N_BAUM_WELCH_TRAIN=	        "bw";
@@ -214,6 +215,7 @@ void CTextGUI::print_help()
 	CIO::message(M_MESSAGEONLY, "\n[CLASSIFIER]\n");
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [epsilon-value]\t\t\t- changes weight_epsilon value\n", N_EPSILON);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <LINEAR|GAUSSIAN|POLY|...> <REAL|BYTE|SPARSEREAL|SLIK> [<CACHESIZE> [OPTS]]\t\t\t- set kernel type\n", N_SET_KERNEL);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t- obtains svm from TRAINFEATURES\n",N_SVM_TRAIN);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <TRAIN|TEST> - init kernel for training/testingn\n",N_INIT_KERNEL);
@@ -655,6 +657,10 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_C, strlen(N_C)))
 	{
 		guisvm.set_C(input+strlen(N_C));
+	} 
+	else if (!strncmp(input, N_EPSILON, strlen(N_EPSILON)))
+	{
+		guisvm.set_weight_epsilon(input+strlen(N_EPSILON));
 	} 
 	else if (!strncmp(input, N_GRADIENT_STEP, strlen(N_GRADIENT_STEP)))
 	{

@@ -18,6 +18,9 @@ CGUISVM::CGUISVM(CGUI * gui_)
   : gui(gui_)
 {
 	svm=NULL;
+	C1=-1;
+	C2=-1;
+	weight_epsilon=-1;
 }
 
 CGUISVM::~CGUISVM()
@@ -110,6 +113,7 @@ bool CGUISVM::train(CHAR* param)
 
 	CIO::message(M_INFO, "starting svm training on %ld vectors using C1=%lf C2=%lf\n", trainlabels->get_num_labels(), C1, C2) ;
 
+	svm->set_weight_epsilon(weight_epsilon);
 	svm->set_C(C1, C2);
 	((CKernelMachine*) svm)->set_labels(trainlabels);
 	((CKernelMachine*) svm)->set_kernel(kernel);
@@ -277,6 +281,19 @@ bool CGUISVM::save(CHAR* param)
 	CIO::message(M_ERROR, "create svm first\n");
 
     return result;
+}
+
+bool CGUISVM::set_weight_epsilon(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	sscanf(param, "%le", &weight_epsilon) ;
+
+	if (weight_epsilon<0)
+		weight_epsilon=1e-4;
+
+	CIO::message(M_INFO, "Set to weight_epsilon=%f\n", weight_epsilon);
+	return true ;  
 }
 
 bool CGUISVM::set_C(CHAR* param)

@@ -18,9 +18,11 @@ class CSVM : public CKernelMachine
 		bool save(FILE* svm_file);
 
 		inline void set_C(REAL c1, REAL c2) { C1=c1; C2=c2; }
+		inline void set_weight_epsilon(REAL eps) { weight_epsilon=eps; }
 
-		REAL get_C1() { return C1; }
-		REAL get_C2() { return C2; }
+		inline REAL get_weight_epsilon() { return weight_epsilon; }
+		inline REAL get_C1() { return C1; }
+		inline REAL get_C2() { return C2; }
 
 		inline int get_support_vector(int idx)
 		{
@@ -103,6 +105,8 @@ class CSVM : public CKernelMachine
 
 		TModel svm_model;
 		bool svm_loaded;
+
+		REAL weight_epsilon;
 
 		REAL C1;
 		REAL C2;

@@ -18,6 +18,7 @@ public:
 	bool load(CHAR* param);
 	bool save(CHAR* param);
 	bool set_C(CHAR* param);
+	bool set_weight_epsilon(CHAR* param);
 
 	CLabels* classify(CLabels* output=NULL);
 	bool classify_example(INT idx, REAL& result);
@@ -27,6 +28,7 @@ public:
  protected:
 	CGUI* gui;
 	CSVM* svm;
+	double weight_epsilon;
 	double C1;
 	double C2;
 };
