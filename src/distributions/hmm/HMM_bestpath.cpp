@@ -52,7 +52,6 @@ inline bool extend_orf(const bool* genestr_stop, INT orf_from, INT orf_to, INT s
 #define KTAB_END(k) ktable_end[k]
 #define PATH_END(k) path_end[k]
 #define SEQ(j,t) seq[j+(t)*N]
-#define STEP_PEN(i,j) step_penalties[(j)*N+i]
 #define PEN(i,j) PEN_matrix[(j)*N+i]
 #define ORF_FROM(i) orf_info[i] 
 #define ORF_TO(i) orf_info[N+i] 
@@ -229,8 +228,8 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 								REAL  val        = DELTA(ts,ii,diff) + elem_val[i] ;
 								if (val>=-1e20)
 								{
-									//if (orf_target!=-1 && pos[t]==1141 && j==4)
-									//fprintf(stderr, "j=%i ii=%i t=%i ts=%i val=%1.2f pen=%1.2f\n", j,ii,pos[t],pos[ts],val, lookup_penalty(penalty, pos[t]-pos[ts])) ;
+									//if ((pos[t]==2034||pos[t]==2213))
+									//fprintf(stderr, "%ld: j=%i ii=%i t=%i ts=%i val=%1.2f pen=%1.2f\n", (long)penalty, j,ii,pos[t],pos[ts],val, lookup_penalty(penalty, pos[t]-pos[ts])) ;
 									val          += lookup_penalty(penalty, pos[t]-pos[ts]) ;
 								} ;
 								
