@@ -897,15 +897,15 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 
 							if (mx_feat)
 							{
-								WORD* feat=mxGetPr(mx_feat);
+								WORD* feat=(WORD*) mxGetData(mx_feat);
 
 								for (INT i=0; i<((CWordFeatures*) f)->get_num_vectors(); i++)
 								{
 									INT num_feat;
 									bool free_vec;
-									REAL* vec=((CWordFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
+									WORD* vec=((CWordFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
 									for (INT j=0; j<num_feat; j++)
-										feat[((CWordFeatures*) f)->get_num_vectors()*j+i]= (double) vec[j];
+										feat[((CWordFeatures*) f)->get_num_vectors()*j+i]= vec[j];
 									((CWordFeatures*) f)->free_feature_vector(vec, i, free_vec);
 								}
 							}
@@ -915,7 +915,7 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 
 							if (mx_feat)
 							{
-								SHORT* feat=mxGetPr(mx_feat);
+								SHORT* feat=(SHORT*) mxGetData(mx_feat);
 
 								for (INT i=0; i<((CShortFeatures*) f)->get_num_vectors(); i++)
 								{
@@ -923,7 +923,7 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 									bool free_vec;
 									SHORT* vec=((CShortFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
 									for (INT j=0; j<num_feat; j++)
-										feat[((CShortFeatures*) f)->get_num_vectors()*j+i]= (double) vec[j];
+										feat[((CShortFeatures*) f)->get_num_vectors()*j+i]= vec[j];
 									((CShortFeatures*) f)->free_feature_vector(vec, i, free_vec);
 								}
 							}
@@ -933,15 +933,15 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 
 							if (mx_feat)
 							{
-								CHAR* feat=mxGetPr(mx_feat);
+								CHAR* feat=(CHAR*) mxGetData(mx_feat);
 
 								for (INT i=0; i<((CCharFeatures*) f)->get_num_vectors(); i++)
 								{
 									INT num_feat;
 									bool free_vec;
-									SHORT* vec=((CCharFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
+									CHAR* vec=((CCharFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
 									for (INT j=0; j<num_feat; j++)
-										feat[((CCharFeatures*) f)->get_num_vectors()*j+i]= (double) vec[j];
+										feat[((CCharFeatures*) f)->get_num_vectors()*j+i]= vec[j];
 									((CCharFeatures*) f)->free_feature_vector(vec, i, free_vec);
 								}
 							}
@@ -951,7 +951,7 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 
 							if (mx_feat)
 							{
-								BYTE* feat=mxGetPr(mx_feat);
+								BYTE* feat=(BYTE*) mxGetData(mx_feat);
 
 								for (INT i=0; i<((CByteFeatures*) f)->get_num_vectors(); i++)
 								{
@@ -959,7 +959,7 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 									bool free_vec;
 									BYTE* vec=((CByteFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
 									for (INT j=0; j<num_feat; j++)
-										feat[((CByteFeatures*) f)->get_num_vectors()*j+i]= (double) vec[j];
+										feat[((CByteFeatures*) f)->get_num_vectors()*j+i]= vec[j];
 									((CByteFeatures*) f)->free_feature_vector(vec, i, free_vec);
 								}
 							}
