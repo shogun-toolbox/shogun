@@ -206,17 +206,15 @@ CLabels* CSVM::classify(CLabels* result)
 		assert(result);
 		CIO::message(M_DEBUG, "computing output on %d test examples\n", num_vectors);
 
-		CKernel *kernel = CKernelMachine::get_kernel() ;
+		CIO::message(M_DEBUG, "using optimized kernel\n");
+		for (INT vec=0; vec<num_vectors; vec++)
+		{
+			if ( (vec% (num_vectors/10+1))== 0)
+				CIO::message(M_PROGRESS, "%3i%%  \r", 100*vec/(num_vectors+1));
 
-			CIO::message(M_DEBUG, "using optimized kernel\n");
-			for (INT vec=0; vec<num_vectors; vec++)
-			{
-				if ( (vec% (num_vectors/10+1))== 0)
-					CIO::message(M_PROGRESS, "%3i%%  \r", 100*vec/(num_vectors+1));
-
-				result->set_label(vec, classify_example(vec));
-			}
-			CIO::message(M_PROGRESS, "done.           \n");
+			result->set_label(vec, classify_example(vec));
+		}
+		CIO::message(M_PROGRESS, "done.           \n");
 	}
 	else 
 		return NULL;
