@@ -3,12 +3,12 @@
 
 #include "features/Features.h"
 #include "lib/common.h"
+#include "preproc/PreProc.h"
 
 #include <stdio.h>
 
-class CFeatures;
 
-class CRealPreProc
+class CRealPreProc : public CPreProc
 {
 public:
 	CRealPreProc();
@@ -34,6 +34,6 @@ public:
 	/** return feature type with which objects derived 
 	*         from CPreProc can deal
 	*             */
-	virtual CFeatures::EType get_feature_type() { return CFeatures::F_REAL; }
+	virtual EType get_feature_type() { return F_REAL; }
 };
 #endif

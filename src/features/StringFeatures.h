@@ -10,7 +10,7 @@ class CStringFeatures: public CStringFeatures
   CStringFeatures()::CFeatures() { } ;
   ~CStringFeatures() { };
   
-  virtual EType get_feature_type() { return CFeatures::STRING ; } ;
+  virtual EType get_feature_type() { return STRING ; } ;
   
   /** get feature vector for sample num
       from the matrix as it is if matrix is

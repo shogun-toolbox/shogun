@@ -1,4 +1,4 @@
-#include "PreProc.h"
+#include "RealPreProc.h"
 
 CRealPreProc::CRealPreProc()
 {

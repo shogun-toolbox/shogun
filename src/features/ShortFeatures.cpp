@@ -28,7 +28,7 @@ short int* CShortFeatures::get_feature_vector(long num, long &len, bool &free)
       compute_feature_vector(num, feat) ;
       if (preproc)
 	{
-	  short int* feat2 = ((CShortPreProc*)preproc)->apply_to_feature_vector(feat, len);
+	  short int* feat2 = ((CShortPreProc*) preproc)->apply_to_feature_vector(feat, len);
 	  delete[] feat ;
 	  return feat2 ;
 	} ;
@@ -47,4 +47,10 @@ short int* CShortFeatures::get_feature_matrix(long &num_feat, long &num_vec)
   num_feat=num_features;
   num_vec=num_vectors;
   return feature_matrix;
+}
+
+bool CShortFeatures::preproc_feature_matrix()
+{
+  if (preproc)
+    ((CShortPreProc*) preproc)->apply_to_feature_matrix(this);
 }

@@ -25,12 +25,6 @@ CPreProc* CFeatures::get_preproc()
   return preproc;
 }
 
-bool CFeatures::preproc_feature_matrix()
-{
-  /*	if (preproc)*/
-#warning		preproc->apply_to_feature_matrix(this);
-}
-
 int* CFeatures::get_labels(long &len)
 {
   len=get_number_of_examples() ;

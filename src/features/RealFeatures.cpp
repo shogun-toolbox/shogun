@@ -39,7 +39,7 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
 		REAL* feat=compute_feature_vector(num, len) ;
 		if (preproc)
 		{
-			REAL* feat2 = ((CRealPreProc*)preproc)->apply_to_feature_vector(feat, len);
+			REAL* feat2 = ((CRealPreProc*) preproc)->apply_to_feature_vector(feat, len);
 			delete[] feat ;
 			return feat2 ;
 		}
@@ -62,10 +62,10 @@ REAL* CRealFeatures::get_feature_matrix(long &num_feat, long &num_vec)
 }
 
 /// preproc feature_matrix
-/*bool CRealFeatures::preproc_feature_matrix()
+bool CRealFeatures::preproc_feature_matrix()
 {
-  if (preproc)
-    preproc->preproc_feature(this);
-}*/
-
-
+	if (preproc)
+		return ((CRealPreProc*) preproc)->apply_to_feature_matrix(this);
+	else
+		return false;
+}

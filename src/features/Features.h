@@ -3,7 +3,8 @@
 
 #include "lib/common.h"
 #include "lib/lapack.h"
-/*#include "preproc/PreProc.h"*/
+#include "lib/common.h"
+#include "preproc/PreProc.h"
 
 class CPreProc;
 
@@ -14,12 +15,6 @@ public:
 	 * just be REALs, SHORT
 	 * or STRINGs or...
 	*/
-	enum EType
-	{
-		F_REAL,
-		F_SHORT,
-		F_STRING
-	};
 
 	CFeatures();
 	// copy constructor
@@ -39,7 +34,7 @@ public:
 	CPreProc* get_preproc();
 
 	/// preprocess the feature_matrix
-	bool preproc_feature_matrix();
+	virtual bool preproc_feature_matrix()=0;
 
 	/// set/get the labels
 	virtual bool set_label(long idx, int label) { return false ; }
@@ -58,5 +53,4 @@ protected:
 	/// Preprocessor
 	CPreProc* preproc;
 };
-
 #endif

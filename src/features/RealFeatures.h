@@ -2,7 +2,6 @@
 #define _REALFEATURES__H__
 
 #include "lib/common.h"
-#include "preproc/PreProc.h"
 #include "features/Features.h"
 
 class CRealFeatures: public CFeatures
@@ -13,7 +12,7 @@ class CRealFeatures: public CFeatures
 
   virtual ~CRealFeatures();
   
-  virtual EType get_feature_type() { return CFeatures::F_REAL; }
+  virtual EType get_feature_type() { return F_REAL; }
   
   /** get feature vector for sample num
       from the matrix as it is if matrix is
@@ -35,6 +34,9 @@ class CRealFeatures: public CFeatures
       see below for definition of feature_matrix
   */
   virtual REAL* set_feature_matrix()=0;
+
+
+  bool preproc_feature_matrix();
 
 protected:
   /// compute feature vector for sample num

@@ -10,7 +10,7 @@ class CShortFeatures: public CFeatures
   CShortFeatures() ;
   virtual ~CShortFeatures() ;
   
-  virtual EType get_feature_type() { return CFeatures::F_SHORT ; } ;
+  virtual EType get_feature_type() { return F_SHORT ; } ;
   
   /** get feature vector for sample num
       from the matrix as it is if matrix is
@@ -31,6 +31,9 @@ class CShortFeatures: public CFeatures
       num_features is the column offset, and columns are linear in memory
       see below for definition of feature_matrix
   */
+  virtual short* set_feature_matrix()=0;
+
+  virtual bool preproc_feature_matrix();
 
 protected:
   /// compute feature vector for sample num
