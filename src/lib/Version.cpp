@@ -12,7 +12,7 @@ CVersion::CVersion()
 	version_hour = VERSION_HOUR;
 	version_minute = VERSION_MINUTE;
 
-	CIO::message(M_INFO, "genefinder_" VERSION_RELEASE " (%d) (w) 2000-2004 Soeren Sonnenburg, Gunnar Raetsch\n", get_version_in_minutes());
+	CIO::message(M_INFO, "genefinder_" VERSION_RELEASE " (%d) (w) 2000-2005 Soeren Sonnenburg, Gunnar Raetsch\n", get_version_in_minutes());
 }
 
 
