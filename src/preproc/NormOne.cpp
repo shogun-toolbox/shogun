@@ -53,7 +53,11 @@ REAL* CNormOne::apply_to_feature_matrix(CFeatures* f)
 		REAL* vec=&matrix[i*num_feat];
 
 		for (j=0; j<num_feat; j++)
+		{
+		if (vec[j]>1e100)
+			vec[j]=0;
 			sqnorm+=vec[j]*vec[j];
+			}
 
 		norm=sqrt(sqnorm);
 		
