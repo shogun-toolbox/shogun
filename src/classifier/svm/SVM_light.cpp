@@ -9,12 +9,11 @@
 //#include <ilconcert/ilomodel.h>
 //#include <ilcplex/ilocplex.h>
 //ILOSTLBEGIN
-extern "C"
-void cblas_dgemv(const enum CBLAS_ORDER order,
-                 const enum CBLAS_TRANSPOSE TransA, const int M, const int N,
-                 const double alpha, const double *A, const int lda,
-                 const double *X, const int incX, const double beta,
-                 double *Y, const int incY);
+#ifdef HAVE_ATLAS
+extern "C" {
+#include <cblas.h>
+}
+#endif
 
 #ifdef USE_CPLEX
 extern "C" {
@@ -22,13 +21,6 @@ extern "C" {
 }
 #endif
 
-#ifdef HAVE_ATLAS
-extern "C" {
-#include <atlas_enum.h>
-#include <atlas_level1.h>
-#include <atlas_level2.h>
-}
-#endif
 
 CSVMLight::CSVMLight()
 {
@@ -1116,6 +1108,25 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				k->compute_by_tree(i,&W[i*num_kernels]) ;
 			
 			REAL objective=0;
+#ifdef HAVE_ATLAS
+			REAL *alphay=new REAL[num] ;
+			REAL sumalpha=0 ;
+			
+			for (int i=0; i<num; i++)
+			{
+				alphay[i]=a[i]*label[i] ;
+				sumalpha+=a[i] ;
+			}
+			for (int i=0; i<num_kernels; i++)
+				sumw[i]=-sumalpha ;
+			
+			cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, num,
+						0.5, W, num_kernels, alphay, 1, 1.0, sumw, 1) ;
+
+			for (int i=0; i<num_kernels; i++)
+				objective+=w[i]*sumw[i] ;
+			//CIO::message(M_DEBUG, "objective=%f\n", objective) ;
+#else
 			for (int d=0; d<num_kernels; d++)
 			{
 				sumw[d]=0;
@@ -1125,7 +1136,8 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				//if (count%100==0)
 				//CIO::message(M_DEBUG, "w[%i]=%f  sumw[%i]=%f\n", d, w[d], d, sumw[d]) ;
 			}
-
+			//CIO::message(M_DEBUG, "objective=%f\n", objective) ;
+#endif
 			count++ ;
 
 #ifdef USE_CPLEX			
@@ -1282,10 +1294,10 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 #endif
 			
 			// update lin
-#ifdef HAVE_ATLAS_shit
+#ifdef HAVE_ATLAS
 // crashes, why?? SSE?
-			ATL_dgemv(AtlasNoTrans, num_kernels, num, 1.0,
-					  W, num_kernels, w, 1, 0.0, lin, 1) ; 
+			cblas_dgemv(CblasColMajor, CblasTrans, num_kernels, num,
+                 1.0, W, num_kernels, w, 1, 0.0, lin, 1) ;
 #else
 			for(int i=0; i<num; i++)
 				lin[i]=0 ;
