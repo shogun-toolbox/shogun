@@ -21,11 +21,11 @@ template <class T> struct T_STRING
 template <class ST> class CStringFeatures: public CFeatures
 {
 	public:
-	CStringFeatures(INT num_sym=-1) : CFeatures(0l), num_vectors(0), features(NULL), max_string_length(0), num_symbols(num_sym)
+	CStringFeatures(INT num_sym=-1) : CFeatures(0l), num_vectors(0), features(NULL), max_string_length(0), num_symbols(num_sym), original_num_symbols(num_sym), order(0), symbol_mask_table(NULL)
 	{
 	}
 
-	CStringFeatures(const CStringFeatures & orig) : CFeatures(orig), num_vectors(orig.num_vectors), max_string_length(orig.max_string_length), num_symbols(orig.num_symbols)
+	CStringFeatures(const CStringFeatures & orig) : CFeatures(orig), num_vectors(orig.num_vectors), max_string_length(orig.max_string_length), num_symbols(orig.num_symbols), original_num_symbols(orig.original_num_symbols), order(orig.order)
 	{
 		if (orig.features)
 		{
@@ -40,9 +40,16 @@ template <class ST> class CStringFeatures: public CFeatures
 				memcpy(features[i].string, orig.features[i].string, sizeof(ST)*orig.features[i].length); 
 			}
 		}
+
+		if (orig.symbol_mask_table)
+		{
+			symbol_mask_table=new WORD[256];
+			for (INT i=0; i<256; i++)
+				symbol_mask_table[i]=orig.symbol_mask_table[i];
+		}
 	}
 
-	CStringFeatures(char* fname, E_ALPHABET alpha=NONE) : CFeatures(fname), num_vectors(0), features(NULL), max_string_length(0), num_symbols(0)
+	CStringFeatures(char* fname, E_ALPHABET alpha=NONE) : CFeatures(fname), num_vectors(0), features(NULL), max_string_length(0), num_symbols(0), original_num_symbols(0), order(0), symbol_mask_table(NULL)
 	{
 		alphabet=alpha;
 		num_symbols=4; //FIXME
@@ -64,6 +71,8 @@ template <class ST> class CStringFeatures: public CFeatures
 			features[i].length=0;
 		}
 		delete[] features;
+
+		delete[] symbol_mask_table;
 	}
 
 	virtual EFeatureClass get_feature_class() { return C_STRING ; } ;
@@ -110,6 +119,18 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	inline INT get_num_symbols() { return num_symbols; }
 	inline INT get_max_num_symbols() { return (1<<(sizeof(ST)*8)); }
+	
+	// these functions are necessary to find out about a former conversion process
+	
+	// number of symbols before higher order mapping
+	inline INT get_original_num_symbols() { return original_num_symbols; }
+
+	// order used when higher order mapping was done
+	inline INT get_order() { return order; }
+
+	// a higher order mapped symbol will be shaped such that the symbols in
+	// specified by bits in the mask will be returned.
+	ST get_masked_symbols(ST symbol, BYTE mask);
 
 	virtual bool load(CHAR* fname)
 	{
@@ -157,7 +178,6 @@ template <class ST> class CStringFeatures: public CFeatures
 			}
 
 			num_symbols=4; //FIXME
-
 			return true;
 		}
 		else
@@ -228,9 +248,17 @@ template <class ST> class CStringFeatures: public CFeatures
 	/// number of used symbols
 	INT num_symbols;
 
+	/// original number of used symbols (before higher order mapping)
+	INT original_num_symbols;
+
 	/// alphabet
 	E_ALPHABET alphabet;
 
+	/// order used in higher order mapping
+	INT order;
+
+	/// order used in higher order mapping
+	WORD* symbol_mask_table;
 };
 
 inline EFeatureType CStringFeatures<REAL>::get_feature_type()
@@ -258,11 +286,21 @@ inline EFeatureType CStringFeatures<WORD>::get_feature_type()
 	return F_WORD;
 }
 
+inline WORD CStringFeatures<WORD>::get_masked_symbols(WORD symbol, BYTE mask)
+{
+	assert(symbol_mask_table);
+	return symbol_mask_table[mask] & symbol;
+}
+
 inline bool CStringFeatures<WORD>::obtain_from_char_features(CStringFeatures<CHAR>* sf, CCharFeatures* cf, E_ALPHABET alphabet, INT start, INT order)
 {
+	INT i=0;
 	assert(sf);
-
+	this->order=order;
 	cleanup();
+
+	delete[] symbol_mask_table;
+	symbol_mask_table=new WORD[256];
 
 	num_vectors=sf->get_num_vectors();
 	max_string_length=sf->get_max_vector_length()-start;
@@ -270,7 +308,7 @@ inline bool CStringFeatures<WORD>::obtain_from_char_features(CStringFeatures<CHA
 	assert(features);
 
 	INT max_val=0;
-	for (INT i=0; i<num_vectors; i++)
+	for (i=0; i<num_vectors; i++)
 	{
 		INT len=sf->get_vector_length(i);
 
@@ -287,9 +325,10 @@ inline bool CStringFeatures<WORD>::obtain_from_char_features(CStringFeatures<CHA
 		}
 	}
 
+	original_num_symbols=max_val+1;
+
 	//number of bits the maximum value in feature matrix requires to get stored
 	max_val= (int) ceil(log((double) max_val+1)/log((double) 2));
-
 	num_symbols=1<<(max_val*order);
 
 	CIO::message("max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, order, num_symbols);
@@ -311,6 +350,25 @@ inline bool CStringFeatures<WORD>::obtain_from_char_features(CStringFeatures<CHA
 		features[line].length-=start ;
 	}
 
+	for (i=0; i<256; i++)
+		symbol_mask_table[i]=0;
+
+	WORD mask=0;
+	for (i=0; i<max_val; i++)
+		mask=(mask<<1) | 1;
+
+	for (i=0; i<256; i++)
+	{
+		BYTE bits=(BYTE) i;
+
+		for (INT j=0; j<8; j++)
+		{
+			if (bits & 1)
+				symbol_mask_table[i]|=mask<<(max_val*j);
+
+			bits>>=1;
+		}
+	}
 	return true;
 }
 

@@ -21,43 +21,6 @@ bool CGUIPluginEstimate::new_estimator(CHAR* param)
     return false;
 }
 
-bool CGUIPluginEstimate::marginalized_train(CHAR* param)
-{
-	CLabels* trainlabels=gui->guilabels.get_train_labels();
-	CWordFeatures* trainfeatures=(CWordFeatures*) gui->guifeatures.get_train_features();
-
-	bool result=false;
-
-	if (trainlabels)
-	{
-		if (trainfeatures)
-		{
-			assert(trainfeatures->get_feature_type()==F_WORD);
-
-			param=CIO::skip_spaces(param);
-
-			int order=0;
-			REAL pos_pseudo=0;
-			REAL neg_pseudo=0;
-			if (sscanf(param, "%le %le %d", &pos_pseudo, &neg_pseudo, &order)==3)
-			{
-				if (estimator)
-					result=estimator->marginalized_train(trainfeatures, trainlabels, pos_pseudo, neg_pseudo, order);
-				else
-					CIO::message("no estimator available\n");
-			}
-			CIO::message("see help for parameters\n");
-
-		}
-		else
-			CIO::message("no features available\n") ;
-	}
-	else
-		CIO::message("no labels available\n") ;
-
-	return result;
-}
-
 bool CGUIPluginEstimate::train(CHAR* param)
 {
 	CLabels* trainlabels=gui->guilabels.get_train_labels();

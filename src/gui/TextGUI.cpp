@@ -25,7 +25,6 @@ static const CHAR* N_NEW_HMM=			"new_hmm";
 static const CHAR* N_NEW_SVM=			"new_svm";
 static const CHAR* N_NEW_PLUGIN_ESTIMATOR="new_plugin_estimator";
 static const CHAR* N_TRAIN_ESTIMATOR=	"train_estimator";
-static const CHAR* N_TRAIN_MARGINALIZED_ESTIMATOR=	"train_marginalized_estimator";
 static const CHAR* N_TEST_ESTIMATOR=	"test_estimator";
 static const CHAR* N_SET_NUM_TABLES=	"set_num_tables";
 static const CHAR* N_LOAD_PREPROC=		"load_preproc";
@@ -195,7 +194,6 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> - init kernel for training/testingn\n",N_INIT_KERNEL);
 	CIO::message("\033[1;31m%s\033[0m\t - creates Plugin Estimator using Linear HMMs\n",N_NEW_PLUGIN_ESTIMATOR);
 	CIO::message("\033[1;31m%s\033[0m\t [<pos_pseudo> [neg_pseudo]]- train the Estimator\n",N_TRAIN_ESTIMATOR);
-	CIO::message("\033[1;31m%s\033[0m\t <pos_pseudo> <neg_pseudo> <order>- train the Estimator the marginalized way\n",N_TRAIN_MARGINALIZED_ESTIMATOR);
 	CIO::message("\n[CLASSIFICATION]\n");
 	CIO::message("\033[1;31m%s\033[0m<threshold>\t\t\t\t- set classification threshold\n",N_SET_THRESHOLD);
 	CIO::message("\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_HMM_TEST);
@@ -269,10 +267,6 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_TRAIN_ESTIMATOR, strlen(N_TRAIN_ESTIMATOR)))
 	{
 		guipluginestimate.train(input+strlen(N_TRAIN_ESTIMATOR));
-	} 
-	else if (!strncmp(input, N_TRAIN_MARGINALIZED_ESTIMATOR, strlen(N_TRAIN_MARGINALIZED_ESTIMATOR)))
-	{
-		guipluginestimate.marginalized_train(input+strlen(N_TRAIN_MARGINALIZED_ESTIMATOR));
 	} 
 	else if (!strncmp(input, N_TEST_ESTIMATOR, strlen(N_TEST_ESTIMATOR)))
 	{

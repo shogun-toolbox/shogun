@@ -2,7 +2,7 @@
 #include "features/CharFeatures.h"
 #include "lib/File.h"
 
-CWordFeatures::CWordFeatures(LONG size, INT num_sym) : CSimpleFeatures<WORD>(size), num_symbols(num_sym)
+CWordFeatures::CWordFeatures(LONG size, INT num_sym) : CSimpleFeatures<WORD>(size), num_symbols(num_sym),original_num_symbols(num_sym),order(0),symbol_mask_table(NULL)
 {
 }
 
@@ -10,13 +10,22 @@ CWordFeatures::CWordFeatures(const CWordFeatures & orig) : CSimpleFeatures<WORD>
 {
 }
 
-CWordFeatures::CWordFeatures(CHAR* fname, INT num_sym) : CSimpleFeatures<WORD>(fname), num_symbols(num_sym)
+CWordFeatures::CWordFeatures(CHAR* fname, INT num_sym) : CSimpleFeatures<WORD>(fname), num_symbols(num_sym),original_num_symbols(num_sym),order(0),symbol_mask_table(NULL)
 {
+}
+
+CWordFeatures::~CWordFeatures()
+{
+	delete[] symbol_mask_table;
 }
 
 bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alphabet, INT start, INT order)
 {
 	assert(cf);
+
+	this->order=order;
+	delete[] symbol_mask_table;
+	symbol_mask_table=new WORD[256];
 
 	num_vectors=cf->get_num_vectors();
 	num_features=cf->get_num_features();
@@ -40,6 +49,8 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alph
 		feature_matrix[i]=(WORD) cf->remap(fm[i]);
 		max_val=math.max(feature_matrix[i],max_val);
 	}
+
+	original_num_symbols=max_val+1;
 	
 	INT* hist = new int[max_val+1] ;
 	for (INT i=0; i<=max_val; i++)
@@ -57,8 +68,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alph
 	delete[] hist;
 
 	//number of bits the maximum value in feature matrix requires to get stored
-	max_val= (int) ceil(log((double) max_val)/log((double) 2));
-
+	max_val= (int) ceil(log((double) max_val+1)/log((double) 2));
 	num_symbols=1<<(max_val*order);
 
 	CIO::message("max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, order, num_symbols);
@@ -68,27 +78,29 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alph
 		CIO::message("symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
 		return false;
 	}
-	
-	//for (INT i=0; i<256; i++)
-			//CIO::message("%d,", cf->remap((BYTE) i));
-//	for (INT v=0; v<num_cf_vec; v++)
-//	{
-//		for (INT i=0; i<num_cf_feat; i++)
-//			CIO::message("%d,", feature_matrix[i]);
-//
-//		CIO::message("\n");
-//	}
 
 	for (INT line=0; line<num_vectors; line++)
 		translate_from_single_order(&feature_matrix[line*num_features], num_features, start, order, max_val);
 
-//	for (INT v=0; v<num_vectors; v++)
-//	{
-//		for (INT i=0; i<num_features; i++)
-//			CIO::message("%d,", feature_matrix[i+num_features*v]);
-//
-//		CIO::message("\n");
-//	}
+	for (INT i=0; i<256; i++)
+		symbol_mask_table[i]=0;
+
+	WORD mask=0;
+	for (INT i=0; i<max_val; i++)
+		mask=(mask<<1) | 1;
+
+	for (INT i=0; i<256; i++)
+	{
+		BYTE bits=(BYTE) i;
+
+		for (INT j=0; j<8; j++)
+		{
+			if (bits & 1)
+				symbol_mask_table[i]|=mask<<(max_val*j);
+
+			bits>>=1;
+		}
+	}
 
 	return true;
 }

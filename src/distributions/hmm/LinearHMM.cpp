@@ -60,10 +60,19 @@ bool CLinearHMM::train()
 	assert(hist);
 	assert(log_hist);
 
-	for (i=0; i< num_params; i++)
+	for (i=0;i<sequence_length;i++)
 	{
-		hist[i]=(((REAL) int_hist[i])+pseudo_count)/(features->get_num_vectors()+num_symbols*pseudo_count);
-		log_hist[i]=log(hist[i]);
+		for (INT j=0; j<num_symbols; j++)
+		{
+			REAL sum=0;
+			for (INT k=0; k<features->get_original_num_symbols(); k++)
+			{
+				sum+=int_hist[i*num_symbols+features->get_masked_symbols((WORD)j,(BYTE) 254)+k];
+			}
+
+			hist[i*num_symbols+j]=(int_hist[i*num_symbols+j]+pseudo_count)/(sum+features->get_original_num_symbols()*pseudo_count);
+			log_hist[i*num_symbols+j]=log(hist[i*num_symbols+j]);
+		}
 	}
 
 	delete[] int_hist;
@@ -106,81 +115,20 @@ bool CLinearHMM::train(const INT* indizes, INT num_indizes, REAL pseudo_count)
 	assert(hist);
 	assert(log_hist);
 
-	for (i=0; i< num_params; i++)
+	for (i=0;i<sequence_length;i++)
 	{
-		hist[i]=(((REAL) int_hist[i])+pseudo_count)/(num_indizes+num_symbols*pseudo_count);
-		log_hist[i]=log(hist[i]);
+		for (INT j=0; j<num_symbols; j++)
+		{
+			REAL sum=0;
+			for (INT k=0; k<features->get_original_num_symbols(); k++)
+			{
+				sum+=int_hist[i*num_symbols+features->get_masked_symbols((WORD)j,(BYTE) 254)+k];
+			}
+
+			hist[i*num_symbols+j]=(int_hist[i*num_symbols+j]+pseudo_count)/(sum+features->get_original_num_symbols()*pseudo_count);
+			log_hist[i*num_symbols+j]=log(hist[i*num_symbols+j]);
+		}
 	}
-
-	delete[] int_hist;
-	return true;
-}
-
-bool CLinearHMM::marginalized_train(const INT* indizes, INT num_indizes, REAL pseudo_count, int order)
-{
-	delete[] hist;
-	delete[] log_hist;
-	INT* int_hist = new int[num_params];
-	assert(int_hist);
-
-	INT vec;
-	INT i;
-
-	for (i=0; i< num_params; i++)
-		int_hist[i]=0;
-
-	for (vec=0; vec<num_indizes; vec++)
-	{
-		INT len;
-		bool to_free;
-
-		assert(indizes[vec]>=0 && indizes[vec]<((CWordFeatures*) features)->get_num_vectors());
-		WORD* vector=((CWordFeatures*) features)->get_feature_vector(indizes[vec], len, to_free);
-
-		//just count the symbols per position -> histogram
-		//
-		for (INT feat=0; feat<len ; feat++)
-			int_hist[feat*num_symbols+vector[feat]]++;
-
-		((CWordFeatures*) features)->free_feature_vector(vector, indizes[vec], to_free);
-	}
-
-	//trade memory for speed
-	hist= new REAL[num_params];
-	log_hist= new REAL[num_params];
-
-	assert(hist);
-	assert(log_hist);
-	INT orig_num_symbols= (INT) pow(num_symbols,1.0/order);
-
-	CIO::message("orig_num_symbols: %d num_symbols: %d\n", orig_num_symbols, num_symbols);
-
-	for (i=0; i<sequence_length; i++)
-	{
-		INT j;
-		REAL prob=0;
-
-		for (j=0; j<orig_num_symbols; j++)
-			prob+=int_hist[i*num_symbols+j*orig_num_symbols];
-
-		for (j=0; j<num_symbols; j++)
-			hist[i*num_symbols+j]=hist[i*num_symbols+j]/prob+pseudo_count;
-	}
-
-	for (i=0; i<sequence_length; i++)
-	{
-		INT j;
-		REAL sum=0;
-
-		for (j=0; j<num_symbols; j++)
-			sum+=hist[i*num_symbols+j];
-
-		for (j=0; j<num_symbols; j++)
-			hist[i*num_symbols+j]/=sum;
-	}
-
-	for (i=0; i< num_params; i++)
-		log_hist[i]=log(hist[i]);
 
 	delete[] int_hist;
 	return true;

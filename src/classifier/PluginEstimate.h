@@ -12,7 +12,6 @@ class CPluginEstimate
 		~CPluginEstimate();
 
 		bool train(CWordFeatures* features, CLabels* labels, REAL pos_pseudo, REAL neg_pseudo);
-		bool marginalized_train(CWordFeatures* features, CLabels* labels, REAL pos_pseudo, REAL neg_pseudo, INT order);
 		REAL* test();
 
 		void set_testfeatures(CWordFeatures* f) { test_features=f; }

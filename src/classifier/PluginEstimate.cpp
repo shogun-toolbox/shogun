@@ -52,41 +52,6 @@ bool CPluginEstimate::train(CWordFeatures* features, CLabels* labels, REAL pos_p
 	return true;
 }
 
-bool CPluginEstimate::marginalized_train(CWordFeatures* features, CLabels* labels, REAL pos_pseudo_count, REAL neg_pseudo_count, INT order)
-{
-	delete pos_model;
-	delete neg_model;
-
-	pos_model=new CLinearHMM(features);
-	neg_model=new CLinearHMM(features);
-
-	INT* pos_indizes=new INT[((CWordFeatures*) features)->get_num_vectors()];
-	INT* neg_indizes=new INT[((CWordFeatures*) features)->get_num_vectors()];
-
-	assert(labels->get_num_labels() == features->get_num_vectors());
-
-	INT pos_idx=0;
-	INT neg_idx=0;
-
-	for (INT i=0; i<labels->get_num_labels(); i++)
-	{
-		if (labels->get_label(i) > 0)
-			pos_indizes[pos_idx++]=i;
-		else
-			neg_indizes[neg_idx++]=i;
-	}
-	//CIO::message("pos: %ld neg: %ld\n", pos_idx, neg_idx);
-
-	CIO::message("training using pseudos %f and %f\n", pos_pseudo_count, neg_pseudo_count);
-	pos_model->marginalized_train(pos_indizes, pos_idx, pos_pseudo_count, order);
-	neg_model->marginalized_train(neg_indizes, neg_idx, neg_pseudo_count, order);
-
-	delete[] pos_indizes;
-	delete[] neg_indizes;
-	
-	return true;
-}
-
 REAL* CPluginEstimate::test()
 {
 	CWordFeatures* features=test_features;

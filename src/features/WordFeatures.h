@@ -17,6 +17,8 @@ class CWordFeatures: public CSimpleFeatures<WORD>
 
 		CWordFeatures(CHAR* fname, INT num_symbols=1<<16);
 
+		virtual ~CWordFeatures();
+
 		bool obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alphabet, INT start, INT order);
 
 		virtual EFeatureType get_feature_type() { return F_WORD; }
@@ -27,12 +29,37 @@ class CWordFeatures: public CSimpleFeatures<WORD>
 
 		inline INT get_num_symbols() { return num_symbols; }
 
+		// these functions are necessary to find out about a former conversion process
+
+		// number of symbols before higher order mapping
+		inline INT get_original_num_symbols() { return original_num_symbols; }
+
+		// order used when higher order mapping was done
+		inline INT get_order() { return order; }
+
+		// a higher order mapped symbol will be shaped such that the symbols in
+		// specified by bits in the mask will be returned.
+		inline WORD get_masked_symbols(WORD symbol, BYTE mask)
+		{
+			assert(symbol_mask_table);
+			return symbol_mask_table[mask] & symbol;
+		}
+
 	protected:
 		///max_val is how many bits does the largest symbol require to be stored without loss
 		void translate_from_single_order(WORD* obs, INT sequence_length, INT start, INT order, INT max_val);
 
 	protected:
+		/// number of used symbols
 		INT num_symbols;
 
+		/// original number of used symbols (before higher order mapping)
+		INT original_num_symbols;
+
+		/// order used in higher order mapping
+		INT order;
+
+		/// order used in higher order mapping
+		WORD* symbol_mask_table;
 };
 #endif
