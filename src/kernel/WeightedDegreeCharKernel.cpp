@@ -327,7 +327,7 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
   for (INT i=0; i<alen; i++)
 	  match_vector[i]=(avec[i]!=bvec[i]) ;
   
-  if (length==0 || max_mismatch > 0)
+  if ((length==0) || (max_mismatch > 0))
   {
 	  for (INT i=0; i<alen-degree; i++)
 	  {
@@ -540,13 +540,13 @@ REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx)
 
 void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib) 
 {
-	INT len ;
+	INT slen ;
 	bool free ;
-	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
+	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, slen, free);
 	assert(max_mismatch==0) ;
-	INT *vec = new INT[len] ;
+	INT *vec = new INT[slen] ;
 	
-	for (INT i=0; i<len; i++)
+	for (INT i=0; i<slen; i++)
 	{
 		if (char_vec[i]=='A') { vec[i]=0 ; continue ; } ;
 		if (char_vec[i]=='C') { vec[i]=1 ; continue ; } ;
@@ -562,26 +562,54 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 	for (INT j=0; j<degree; j++)
 		LevelContrib[j]=0 ;
 	
-	for (INT i=0; i<len-degree; i++)
+	if (length==0)
 	{
-		struct SuffixTree *tree = trees[i] ;
-		assert(tree!=NULL) ;
-		
-		for (INT j=0; j<degree; j++)
+		for (INT i=0; i<slen-degree; i++)
 		{
-			if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
+			struct SuffixTree *tree = trees[i] ;
+			assert(tree!=NULL) ;
+			
+			for (INT j=0; j<degree; j++)
 			{
-				tree=tree->childs[vec[i+j]] ;
-				LevelContrib[j] += tree->weight ;
-			} else
-				if (tree->has_floats)
+				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
-					LevelContrib[j] += tree->child_weights[vec[i+j]] ;
-					break ;
+					tree=tree->childs[vec[i+j]] ;
+					LevelContrib[j] += tree->weight ;
 				} else
-					break ;
-		} 
-	}
+					if (tree->has_floats)
+					{
+						LevelContrib[j] += tree->child_weights[vec[i+j]] ;
+						break ;
+					} else
+						break ;
+			} 
+		}
+	} 
+	else
+	{
+		for (INT i=0; i<slen-degree; i++)
+		{
+			struct SuffixTree *tree = trees[i] ;
+			assert(tree!=NULL) ;
+			
+			for (INT j=0; j<degree; j++)
+			{
+				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
+				{
+					tree=tree->childs[vec[i+j]] ;
+					LevelContrib[j+degree*i] += tree->weight ;
+				} else
+					if (tree->has_floats)
+					{
+						LevelContrib[j+degree*i] += tree->child_weights[vec[i+j]] ;
+						break ;
+					} else
+						break ;
+			} 
+		}
+	} ;
+	
+	
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
 

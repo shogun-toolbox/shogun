@@ -6,6 +6,10 @@
 #include "kernel/WeightedDegreeCharKernel.h"
 #include <assert.h>
 
+//#include <ilconcert/ilomodel.h>
+//#include <ilcplex/ilocplex.h>
+//ILOSTLBEGIN
+
 #ifdef HAVE_ATLAS
 extern "C" {
 #include <atlas_enum.h>
@@ -50,7 +54,8 @@ CSVMLight::~CSVMLight()
 bool CSVMLight::train()
 {
   //certain setup params
-  verbosity=1;
+	
+	verbosity=1 ;
   init_margin=0.15;
   init_iter=500;
   precision_violations=0;
@@ -427,7 +432,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 //  for(;w_gap>0.1;iteration++){//retrain && (!terminate);iteration++) {
   for(;(retrain && (!terminate))||(w_gap>0.1);iteration++){
 	  
-	  if (w_gap<0.5 && iteration>1000) // XXX extremly hacky
+	  if (w_gap<0.25 && iteration>1000) // XXX extremly hacky
 		  break ;
 	  
 	  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
@@ -591,7 +596,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  
 	  noshrink=0;
 	  if ((!retrain) && (inactivenum>0) && (!learn_parm->skip_final_opt_check)
-		  || (get_kernel()->has_property(KP_LINADD))) { 
+		  /*|| (get_kernel()->has_property(KP_LINADD))*/) { 
 		  t1=get_runtime();
 		  reactivate_inactive_examples(label,a,shrink_state,lin,c,totdoc,
 									   iteration,inconsistent,
@@ -1032,6 +1037,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			REAL bound=0;
 			
 			// determine contributions of different levels/lengths
+			//for(INT ii=0,i=0;;(i=active2dnum[ii])>=0;ii++) 
 			for (int i=0; i<num; i++)
 				k->compute_by_tree(i,&W_upd[i*degree]) ;
 			
@@ -1041,6 +1047,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			{
 				sumw[d]=0;
 				
+				//for(INT ii=0,i=0;;(i=active2dnum[ii])>=0;ii++) 
 				for(int i=0; i<num; i++)
 				{
 					REAL W_norm = W_upd[i*degree+d]/w[d];
@@ -1050,7 +1057,6 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				objective   += w[d]*sumw[d];
 				meanabssumw += CMath::abs(sumw[d]);
 			}
-			
 			
 			if (rho==0)
 			{
@@ -1070,7 +1076,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			if (0)
 			{
 				gamma=0.1*bound; //fixme
-				REAL min_s=1000 ;
+				REAL min_s=CMath::INFTY ;
 				for (int i=0; i<20; i++)
 				{
 					//E=sum(PAR.w.*exp( gamma*PAR.sumw - gamma*PAR.rho)) ;
@@ -1132,8 +1138,10 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			ATL_dgemv(AtlasTrans, degree, num, 1.0,
 					  W, degree, w, 1, 0.0, lin, 1) ; 
 #else
+			//for(INT i=0,ii=0;(i=active2dnum[ii])>=0;ii++) 
 			for(int i=0; i<num; i++)
 			{
+	
 				REAL s=0;
 				for (int d=0; d<degree; d++)
 					s+= w[d]*W[i*degree+d] ;
@@ -1141,7 +1149,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			}
 #endif
 			if (count%100==0)
-				CIO::message(M_DEBUG,"gamma: %f  OBJ: %f  RHOM: %f  RHO: %f  wgap=%f\n", gamma, objective,rhom,rho,w_gap);
+				CIO::message(M_DEBUG,"\ngamma: %f  OBJ: %f  RHOM: %f  RHO: %f  wgap=%f  numactive: %i\n", gamma, objective,rhom,rho,w_gap,ii);
 			
 			delete[] W_upd;
 			delete[] sumw;
@@ -1413,46 +1421,46 @@ long CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
   activenum=0;
   change=0;
   for(ii=0;active2dnum[ii]>=0;ii++) {
-    i=active2dnum[ii];
-    activenum++;
+	  i=active2dnum[ii];
+	  activenum++;
       lastiter=last_suboptimal_at[i];
-    if(((iteration-lastiter) > learn_parm->svm_iter_to_shrink) 
-       || (inconsistent[i])) {
-      change++;
-    }
+	  if(((iteration-lastiter) > learn_parm->svm_iter_to_shrink) 
+		 || (inconsistent[i])) {
+		  change++;
+	  }
   }
   if((change>=minshrink) /* shrink only if sufficiently many candidates */
      && (shrink_state->deactnum<shrink_state->maxhistory)) { /* and enough memory */
-    /* Shrink problem by removing those variables which are */
-    /* optimal at a bound for a minimum number of iterations */
-    if(verbosity>=2) {
-     CIO::message(M_INFO, " Shrinking...");
-    }
-	if (!get_kernel()->has_property(KP_LINADD)) { /*  non-linear case save alphas */
-		a_old=new double[totdoc];
-		shrink_state->a_history[shrink_state->deactnum]=a_old;
-		for(i=0;i<totdoc;i++) {
-			a_old[i]=a[i];
-		}
-	}
-    for(ii=0;active2dnum[ii]>=0;ii++) {
-      i=active2dnum[ii];
-	lastiter=last_suboptimal_at[i];
-      if(((iteration-lastiter) > learn_parm->svm_iter_to_shrink) 
-	 || (inconsistent[i])) {
-	shrink_state->active[i]=0;
-	shrink_state->inactive_since[i]=shrink_state->deactnum;
-      }
-    }
-    activenum=compute_index(shrink_state->active,totdoc,active2dnum);
-    shrink_state->deactnum++;
-    if(get_kernel()->has_property(KP_LINADD)) { 
-      shrink_state->deactnum=0;
-    }
-    if(verbosity>=2) {
-     CIO::message(M_INFO, "done.\n");
-     CIO::message(M_INFO, " Number of inactive variables = %ld\n",totdoc-activenum);
-    }
+	  /* Shrink problem by removing those variables which are */
+	  /* optimal at a bound for a minimum number of iterations */
+	  if(verbosity>=2) {
+		  CIO::message(M_INFO, " Shrinking...");
+	  }
+	  if (!get_kernel()->has_property(KP_LINADD)) { /*  non-linear case save alphas */
+		  a_old=new double[totdoc];
+		  shrink_state->a_history[shrink_state->deactnum]=a_old;
+		  for(i=0;i<totdoc;i++) {
+			  a_old[i]=a[i];
+		  }
+	  }
+	  for(ii=0;active2dnum[ii]>=0;ii++) {
+		  i=active2dnum[ii];
+		  lastiter=last_suboptimal_at[i];
+		  if(((iteration-lastiter) > learn_parm->svm_iter_to_shrink) 
+			 || (inconsistent[i])) {
+			  shrink_state->active[i]=0;
+			  shrink_state->inactive_since[i]=shrink_state->deactnum;
+		  }
+	  }
+	  activenum=compute_index(shrink_state->active,totdoc,active2dnum);
+	  shrink_state->deactnum++;
+	  if(get_kernel()->has_property(KP_LINADD)) { 
+		  shrink_state->deactnum=0;
+	  }
+	  if(verbosity>=2) {
+		  CIO::message(M_INFO, "done.\n");
+		  CIO::message(M_INFO, " Number of inactive variables = %ld\n",totdoc-activenum);
+	  }
   }
   return(activenum);
 } 
