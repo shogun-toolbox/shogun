@@ -86,11 +86,11 @@ REAL* CNormOne::apply_to_feature_vector(REAL* f, int& len)
 /// initialize preprocessor from file
 bool CNormOne::load_init_data(FILE* src)
 {
-	return false;
+	return true;
 }
 
 /// save init-data (like transforamtion matrices etc) to file
 bool CNormOne::save_init_data(FILE* dst)
 {
-	return false;
+	return true;
 }

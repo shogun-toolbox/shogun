@@ -175,11 +175,21 @@ REAL* CPruneVarSubMean::apply_to_feature_vector(REAL* f, int &len)
 /// initialize preprocessor from file
 bool CPruneVarSubMean::load_init_data(FILE* src)
 {
-	return false;
+	bool result=false;
+
+    assert(fwrite(&idx, sizeof(int), 1, dest)==1) ;
+    assert(fwrite(idx, sizeof(REAL), num_idx, dest)==num_idx) ;
+    assert(fwrite(mean, sizeof(REAL), num_idx, dest)==num_idx) ;
+    assert(fwrite(std, sizeof(REAL), num_idx, dest)==num_idx) ;
+	return result;
 }
 
 /// save init-data (like transforamtion matrices etc) to file
 bool CPruneVarSubMean::save_init_data(FILE* dst)
 {
+    assert(fwrite(&idx, sizeof(int), 1, dest)==1) ;
+    assert(fwrite(idx, sizeof(REAL), num_idx, dest)==num_idx) ;
+    assert(fwrite(mean, sizeof(REAL), num_idx, dest)==num_idx) ;
+    assert(fwrite(std, sizeof(REAL), num_idx, dest)==num_idx) ;
 	return false;
 }
