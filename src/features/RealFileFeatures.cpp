@@ -124,6 +124,7 @@ bool CRealFileFeatures::load_base_data()
     set_num_vectors(num_vec);
     set_num_features(num_feat);
     preprocessed=preprocd==1;
+	//CIO::message("seeking to: %ld\n", filepos+num_features*num_vectors*doublelen);
     fseek(working_file, filepos+num_features*num_vectors*doublelen, SEEK_SET);
     delete[] labels;
     labels= new int[num_vec];
