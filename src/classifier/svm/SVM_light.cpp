@@ -76,6 +76,9 @@ CSVMLight::CSVMLight()
 	opt_precision=DEF_PRECISION_LINEAR;
 
 	rho=0 ;
+	mymaxdiff=1 ;
+	num_rows=0 ;
+	num_active_rows=0 ;
 }
 
 CSVMLight::~CSVMLight()
@@ -188,9 +191,12 @@ void CSVMLight::svm_learn()
 	delete[] W;
 	W=NULL;
 	rho=0 ;
-	w_gap = 0 ;
+	w_gap = 1 ;
 	count = 0 ;
 	alpha_converged = 0 ;
+	max_num_rows=0 ;
+	num_rows=0 ;
+	row_inactive_since=NULL ;
 	
 	if (get_kernel()->has_property(KP_KERNCOMBINATION))
 	{
@@ -690,6 +696,8 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 					   supvecnum,model->at_upper_bound,(*maxdiff)); 
 		  
 	  }
+	  mymaxdiff=*maxdiff ;
+
 	  if(verbosity>=3) {
 		  CIO::message(M_MESSAGEONLY, "\n");
 	  }
@@ -1132,7 +1140,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			//	exit(0) ;
 
 #ifdef USE_CPLEX			
-			//if (count%10==9)
+			//if (mymaxdiff<w_gap*100)
 			{
 				if (rho==0)
 				{
@@ -1218,7 +1226,8 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				}
 				
 				// have at most 100 rows 
-				if (count>=100) {
+				if (0)//(count>=100) 
+				{
 					INT status = CPXdelrows (env, lp, 2, 2) ;
 					if ( status ) {
 						fprintf (stderr, "Failed to remove an old row.\n");
@@ -1235,6 +1244,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					// obtain solution
 					INT cur_numrows = CPXgetnumrows (env, lp);
 					INT cur_numcols = CPXgetnumcols (env, lp);
+					num_rows = cur_numrows ;
 					
 					REAL *x = new REAL[cur_numcols] ;
 					REAL *slack = new REAL[cur_numrows] ;
@@ -1258,6 +1268,36 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					if (count%100==0)
 						printf ("Solution value  = %f\n\n", objval);
 					
+					if (num_rows>max_num_rows)
+					{
+						INT * tmp=row_inactive_since ;
+						row_inactive_since = new INT[num_rows] ;
+						memcpy(row_inactive_since,tmp,max_num_rows*sizeof(INT)) ;
+						delete[] tmp ;
+						max_num_rows=num_rows ;
+					}
+						
+					num_active_rows=0 ;
+					for (INT i = 1; i < cur_numrows; i++)  // skip first
+						if ((pi[i]!=0))
+						{
+							row_inactive_since[i]=-1 ;
+							num_active_rows++ ;
+						}
+						else
+						{
+							if (row_inactive_since[i]==-1)
+								row_inactive_since[i]=count ;
+							if ((row_inactive_since[i]>100) &&
+								(slack[i]>0.1))
+							{
+								fprintf(stderr,"deleting row %i\n",i) ;
+								CPXdelrows (env, lp, i, i) ;
+								memmove(&row_inactive_since[i],&row_inactive_since[i-1],(cur_numrows-i)*sizeof(INT)) ;
+								num_rows-- ;
+							}
+						}
+
 					if (0)//(count%100==0)
 						for (INT i = 0; i < cur_numrows; i++) {
 							printf ("Row %d:  Slack = %10f  Pi = %10f\n", i, slack[i], pi[i]);
@@ -1269,10 +1309,10 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 									j, x[j], dj[j]);
 						}
 					
-					w_gap = CMath::abs(1+rho/objective) ;
+					w_gap = CMath::abs(1-rho/objective) ;
 					for (INT j = 0; j < cur_numcols-1; j++) 
 						w[j]=x[j] ;
-					rho = x[num_kernels] ;
+					rho = -x[num_kernels] ;
 					
 					delete[] x ;
 					delete[] dj ;
@@ -1291,9 +1331,12 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					s+= w[d]*W[i*num_kernels+d] ;
 				lin[i]=s;
 			}
+			
+			INT jj ;
+			for(jj=0;active2dnum[jj]>=0;jj++);
 
 			//if (count%10==0)
-				CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f\n", count, objective,rho,w_gap);
+				CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f (activeset=%i; active rows=%i/%i/%i)\n", count, objective,rho,w_gap,jj,num_active_rows,num_rows,max_num_rows);
 			
 			delete[] W_upd;
 			delete[] sumw;

@@ -251,7 +251,12 @@ typedef struct shrink_state {
   REAL w_gap ;
   INT count ;
   INT alpha_converged ;
-
+  REAL mymaxdiff ;
+  INT num_rows ;
+  INT num_active_rows ;
+  INT *row_inactive_since ;
+  INT max_num_rows ;
+  
 #ifdef USE_CPLEX
   CPXENVptr     env ;
   CPXLPptr      lp ;

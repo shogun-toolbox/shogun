@@ -440,7 +440,13 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 		for (INT i=0; i<len-degree; i++)
 		{
 			struct SuffixTree *tree = trees[i] ;
+
+			INT max_depth = 0 ;
 			for (INT j=0; j<degree; j++)
+				if (CMath::abs(weights[i*degree + j]*alpha)>1e-8)
+					max_depth = j+1 ;
+			
+			for (INT j=0; j<max_depth; j++)
 			{
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
