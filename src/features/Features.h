@@ -7,6 +7,7 @@
 #include "stdio.h"
 
 class CPreProc;
+class CFeatures;
 
 class CFeatures
 {
@@ -27,6 +28,8 @@ public:
 	 */
 
 	CFeatures(CHAR* fname);
+
+	virtual CFeatures* duplicate() const=0 ;
 
 	virtual ~CFeatures();
 
@@ -64,8 +67,6 @@ public:
 
 	/// return the number of samples
 	virtual INT get_num_vectors()=0 ;
-
-	virtual CFeatures* duplicate() const=0 ;
 
 	//in case there is a feature matrix allow for reshaping
 	virtual bool reshape(INT /*num_features*/, INT /*num_vectors*/) { return false; }
