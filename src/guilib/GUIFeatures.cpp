@@ -664,6 +664,10 @@ bool CGUIFeatures::convert(CHAR* param)
 
 	if (f_ptr)
 	{
+		if ( (*f_ptr)->get_feature_class() == C_COMBINED)
+		{
+		}
+
 		if (strcmp(from_class, "SIMPLE")==0)
 		{
 			if (strcmp(from_type, "CHAR")==0)
