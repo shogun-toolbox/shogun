@@ -1134,7 +1134,7 @@ bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 		mxArray* mx_result=mxCreateDoubleMatrix(num_vec1, num_vec2, mxREAL);
 		double* result=mxGetPr(mx_result);
 
-		if (num_vec1 == num_vec2)
+		if ( (f1 == f2) && (num_vec1 == num_vec2) )
 		{
 			for (int i=0; i<num_vec1; i++)
 			{

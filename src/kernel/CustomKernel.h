@@ -42,12 +42,16 @@ class CCustomKernel: public CKernel
   virtual const CHAR* get_name() { return "Custom"; }
 
   // set kernel matrix (only elements from main diagonal and above)
-  // from elements of maindiagonal and above (concat'd)
-  bool set_kernel_matrix_diag(const REAL* m, int rows, int cols);
+  // from elements of maindiagonal and above (concat'd), while m is 
+  // already given as diagonal
+  bool set_diag_kernel_matrix_from_diag(const REAL* m, int cols);
 
   // set kernel matrix (only elements from main diagonal and above)
   // from squared matrix
-  bool set_kernel_matrix(const REAL* m, int rows, int cols);
+  bool set_diag_kernel_matrix_from_full(const REAL* m, int cols);
+
+  // set full kernel matrix from full kernel matrix
+  bool set_full_kernel_matrix_from_full(const REAL* m, int rows, int cols);
 
  protected:
   /// compute kernel function for features a and b
@@ -57,21 +61,22 @@ class CCustomKernel: public CKernel
   {
 	  assert(row < num_rows);
 	  assert(col < num_cols);
-	  return kmatrix[row*num_cols+col];
-	  /*
-	  if (num_rows == num_cols)
-		  return kmatrix[row * num_cols - row*(row+1)/2 + col];
-	  else
+
+	  if (upper_diagonal)
 	  {
-		  INT r = CMath::min(row, num_cols-1);
-		  return kmatrix[row * num_cols - r*(r+1)/2 + col];
+		  if (row <= col)
+			  return kmatrix[row*num_cols - row*(row+1)/2 + col];
+		  else
+			  return kmatrix[col*num_cols - col*(col+1)/2 + row];
 	  }
-	  */
+	  else
+		  return kmatrix[row*num_cols+col];
   }
 
  protected:
   SHORTREAL* kmatrix;
   INT num_rows;
   INT num_cols;
+  bool upper_diagonal;
 };
 #endif
