@@ -153,81 +153,34 @@ double top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in your favo
     double posx=pos->model_probability(x);
     double negx=neg->model_probability(x);
     
-    int smaller_N=math.min(pos->get_N(), neg->get_N());
-    int smaller_M=math.min(pos->get_M(), neg->get_M());
-
-    int larger_N=math.max(pos->get_N(), neg->get_N());
-    int larger_M=math.max(pos->get_M(), neg->get_M());
-
-
     theta[p++]=(posx-negx);
 
-    //first do all derivatives of parameters that are in both hmms on sequence x
-    for (i=0; i<smaller_N; i++)
+    //first do all derivatives of parameters of positive model for sequence x
+    for (i=0; i<pos->get_N(); i++)
     {
-	theta[p++]=exp(pos->model_derivative_p(i, x)-posx) - exp(neg->model_derivative_p(i, x)-negx);
-	theta[p++]=exp(pos->model_derivative_q(i, x)-posx) - exp(neg->model_derivative_q(i, x)-negx);
+	theta[p++]=exp(pos->model_derivative_p(i, x)-posx);
+	theta[p++]=exp(pos->model_derivative_q(i, x)-posx);
 
-	for (j=0; j<smaller_N; j++)
-	    theta[p++]=exp(pos->model_derivative_a(i, j, x)-posx) - exp(neg->model_derivative_a(i, j, x)-negx);
+	for (j=0; j<pos->get_N(); j++)
+	    theta[p++]=exp(pos->model_derivative_a(i, j, x)-posx);
 
-	for (j=0; j<smaller_M; j++)
-	    theta[p++]=exp(pos->model_derivative_b(i, j, x)-posx) - exp(neg->model_derivative_b(i, j, x)-negx);
+	for (j=0; j<pos->get_M(); j++)
+	    theta[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
 
     }
-
-    //this hmm has more states
-    if (larger_N==pos->get_N())
+    
+    //then do all derivatives of parameters of negative model for sequence y
+    for (i=0; i<neg->get_N(); i++)
     {
-	for (i=smaller_N; i<pos->get_N(); i++)
-	{
-	    theta[p++]=exp(pos->model_derivative_p(i, x)-posx);
-	    theta[p++]=exp(pos->model_derivative_q(i, x)-posx);
+	theta[p++]=exp(neg->model_derivative_p(i, x)-negx);
+	theta[p++]=exp(neg->model_derivative_q(i, x)-negx);
 
-	    for (j=0; j<smaller_N; j++)
-		theta[p++]=exp(pos->model_derivative_a(i, j, x)-posx);
+	for (j=0; j<neg->get_N(); j++)
+	    theta[p++]=exp(neg->model_derivative_a(i, j, x)-negx);
 
-	    for (j=0; j<pos->get_N(); j++)
-		theta[p++]=exp(pos->model_derivative_a(j, i, x)-posx);
-	
-	    for (j=0; j<pos->get_M(); j++)
-		theta[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
-	}
-    }
-    else
-    {
-	for (i=smaller_N; i<neg->get_N(); i++)
-	{
-	    theta[p++]=-exp(neg->model_derivative_p(i, x)-negx);
-	    theta[p++]=-exp(neg->model_derivative_q(i, x)-negx);
+	for (j=0; j<neg->get_M(); j++)
+	    theta[p++]=exp(neg->model_derivative_b(i, j, x)-negx);
 
-	    for (j=0; j<smaller_N; j++)
-		theta[p++]=-exp(neg->model_derivative_a(i, j, x)-negx);
-	    
-	    for (j=0; j<neg->get_N(); j++)
-		theta[p++]=-exp(neg->model_derivative_a(j, i, x)-negx);
-
-	    for (j=0; j<neg->get_M(); j++)
-		theta[p++]=-exp(neg->model_derivative_b(i, j, x)-negx);
-	}
-    }
-
-    //this hmm has more observations
-    if (larger_M==pos->get_M())
-    {
-	for (i=0; i<smaller_N; i++)
-	{
-	    for (j=smaller_M; j<pos->get_M(); j++)
-		theta[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
-	}
-    }
-    else
-    {
-	for (i=0; i<smaller_N; i++)
-	{
-	    for (j=smaller_M; j<neg->get_M(); j++)
-		theta[p++]=-exp(neg->model_derivative_b(i, j, x)-negx);
-	}
     }
 
     p=0;  
@@ -236,73 +189,32 @@ double top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in your favo
 
     result=theta[p++]*(posy-negy);
 
-    //second do all derivatives of parameters that are in both hmms on sequence y
-    for (i=0; i<smaller_N; i++)
+    //second do all derivatives of parameters of positive model for sequence y
+    for (i=0; i<pos->get_N(); i++)
     {
-	result+=theta[p++]*(exp(pos->model_derivative_p(i, y)-posy) - exp(neg->model_derivative_p(i, y)-negy));
-	result+=theta[p++]*(exp(pos->model_derivative_q(i, y)-posy) - exp(neg->model_derivative_q(i, y)-negy));
+	result+=theta[p++]*exp(pos->model_derivative_p(i, y)-posy);
+	result+=theta[p++]*exp(pos->model_derivative_q(i, y)-posy);
 
-	for (j=0; j<smaller_N; j++)
-	    result+=theta[p++]*(exp(pos->model_derivative_a(i, j, y)-posy) - exp(neg->model_derivative_a(i, j, y)-negy));
+	for (j=0; j<pos->get_N(); j++)
+	    result+=theta[p++]*exp(pos->model_derivative_a(i, j, y)-posy);
 
-	for (j=0; j<smaller_M; j++)
-	    result+=theta[p++]*(exp(pos->model_derivative_b(i, j, y)-posy) - exp(neg->model_derivative_b(i, j, y)-negy));
-
+	for (j=0; j<pos->get_M(); j++)
+	    result+=theta[p++]*exp(pos->model_derivative_b(i, j, y)-posy);
     }
 
-    //this hmm has more states
-    if (larger_N==pos->get_N())
+    //... and last derivatives of parameters of negative model for sequence y
+    for (i=0; i<neg->get_N(); i++)
     {
-	for (i=smaller_N; i<pos->get_N(); i++)
-	{
-	    result+=theta[p++]*exp(pos->model_derivative_p(i, y)-posy);
-	    result+=theta[p++]*exp(pos->model_derivative_q(i, y)-posy);
+	result+=theta[p++]*exp(neg->model_derivative_p(i, y)-negy);
+	result+=theta[p++]*exp(neg->model_derivative_q(i, y)-negy);
 
-	    for (j=0; j<smaller_N; j++)
-		result+=theta[p++]*exp(pos->model_derivative_a(i, j, y)-posy);
-	    
-	    for (j=0; j<pos->get_N(); j++)
-		result+=theta[p++]*exp(pos->model_derivative_a(j, i, y)-posy);
+	for (j=0; j<neg->get_N(); j++)
+	    result+=theta[p++]*exp(neg->model_derivative_a(i, j, y)-negy);
 
-	    for (j=0; j<pos->get_M(); j++)
-		result+=theta[p++]*exp(pos->model_derivative_b(i, j, y)-posy);
-	}
-    }
-    else
-    {
-	for (i=smaller_N; i<neg->get_N(); i++)
-	{
-	    result+=-theta[p++]*exp(neg->model_derivative_p(i, y)-negy);
-	    result+=-theta[p++]*exp(neg->model_derivative_q(i, y)-negy);
-
-	    for (j=0; j<smaller_N; j++)
-		result+=-theta[p++]*exp(neg->model_derivative_a(i, j, y)-negy);
-	    
-	    for (j=0; j<neg->get_N(); j++)
-		result+=-theta[p++]*exp(neg->model_derivative_a(j, i, y)-negy);
-
-	    for (j=0; j<neg->get_M(); j++)
-		result+=-theta[p++]*exp(neg->model_derivative_b(i, j, y)-negy);
-	}
+	for (j=0; j<neg->get_M(); j++)
+	    result+=theta[p++]*exp(neg->model_derivative_b(i, j, y)-negy);
     }
 
-    //this hmm has more observations
-    if (larger_M==pos->get_M())
-    {
-	for (i=0; i<smaller_N; i++)
-	{
-	    for (j=smaller_M; j<pos->get_M(); j++)
-		result+=theta[p++]*exp(pos->model_derivative_b(i, j, y)-posy);
-	}
-    }
-    else
-    {
-	for (i=0; i<smaller_N; i++)
-	{
-	    for (j=smaller_M; j<neg->get_M(); j++)
-		result+=-theta[p++]*exp(neg->model_derivative_b(i, j, y)-negy);
-	}
-    }
     return result/normalizer;
 }
 

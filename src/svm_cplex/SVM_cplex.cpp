@@ -190,15 +190,13 @@ void CSVMCplex::top_feature(int x, double *feat)
 
   for (i=0; i<neg->get_N(); i++)
     {
-      feat[p++]=exp(neg->model_derivative_p(i, x)-negx);
-      feat[p++]=exp(neg->model_derivative_q(i, x)-negx);
+      feat[p++]=-exp(neg->model_derivative_p(i, x)-negx);
+      feat[p++]=-exp(neg->model_derivative_q(i, x)-negx);
       
       for (j=0; j<neg->get_N(); j++)
-	feat[p++]=exp(neg->model_derivative_a(i, j, x)-negx);
+	feat[p++]=-exp(neg->model_derivative_a(i, j, x)-negx);
       
       for (j=0; j<neg->get_M(); j++)
-	feat[p++]=exp(neg->model_derivative_b(i, j, x)-negx);
+	feat[p++]=-exp(neg->model_derivative_b(i, j, x)-negx);
 	}
 }
-
-

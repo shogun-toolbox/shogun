@@ -4471,14 +4471,8 @@ void CHMM::set_observations(CObservation* obs, CHMM* lambda)
 
 double* CHMM::compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* featurevector)
 {
-    int smaller_N=math.min(pos->get_N(), neg->get_N());
-    int smaller_M=math.min(pos->get_M(), neg->get_M());
-
-    int larger_N=math.max(pos->get_N(), neg->get_N());
-    int larger_M=math.max(pos->get_M(), neg->get_M());
-
     if (!featurevector)
-	featurevector=new double[1+larger_N*(1+larger_N+1+larger_M)];
+	featurevector=new double[ 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ];
 
     if (!featurevector)
 	return NULL;
@@ -4490,82 +4484,39 @@ double* CHMM::compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* 
 
     featurevector[p++]=(posx-negx);
 
-    //first do all derivatives of parameters that are in both hmms
-    for (i=0; i<smaller_N; i++)
+    //first do positive model
+    for (i=0; i<pos->get_N(); i++)
     {
-	featurevector[p++]=exp(pos->model_derivative_p(i, x)-posx) - exp(neg->model_derivative_p(i, x)-negx);
-	featurevector[p++]=exp(pos->model_derivative_q(i, x)-posx) - exp(neg->model_derivative_q(i, x)-negx);
+	featurevector[p++]=exp(pos->model_derivative_p(i, x)-posx);
+	featurevector[p++]=exp(pos->model_derivative_q(i, x)-posx);
 
-	for (j=0; j<smaller_N; j++)
-	    featurevector[p++]=exp(pos->model_derivative_a(i, j, x)-posx) - exp(neg->model_derivative_a(i, j, x)-negx);
+	for (j=0; j<pos->get_N(); j++)
+	    featurevector[p++]=exp(pos->model_derivative_a(i, j, x)-posx);
 
-	for (j=0; j<smaller_M; j++)
-	    featurevector[p++]=exp(pos->model_derivative_b(i, j, x)-posx) - exp(neg->model_derivative_b(i, j, x)-negx);
+	for (j=0; j<pos->get_M(); j++)
+	    featurevector[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
 
     }
-
-    //this hmm has more states
-    if (larger_N==pos->get_N())
+    
+    for (i=0; i<pos->get_N(); i++)
     {
-	for (i=smaller_N; i<pos->get_N(); i++)
-	{
-	    featurevector[p++]=exp(pos->model_derivative_p(i, x)-posx);
-	    featurevector[p++]=exp(pos->model_derivative_q(i, x)-posx);
+	featurevector[p++]= - exp(neg->model_derivative_p(i, x)-negx);
+	featurevector[p++]= - exp(neg->model_derivative_q(i, x)-negx);
 
-	    for (j=0; j<smaller_N; j++)
-		featurevector[p++]=exp(pos->model_derivative_a(i, j, x)-posx);
+	for (j=0; j<pos->get_N(); j++)
+	    featurevector[p++]= - exp(neg->model_derivative_a(i, j, x)-negx);
 
-	    for (j=0; j<pos->get_N(); j++)
-		featurevector[p++]=exp(pos->model_derivative_a(j, i, x)-posx);
-
-	    for (j=0; j<pos->get_M(); j++)
-		featurevector[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
-	}
-    }
-    else
-    {
-	for (i=smaller_N; i<neg->get_N(); i++)
-	{
-	    featurevector[p++]=-exp(neg->model_derivative_p(i, x)-negx);
-	    featurevector[p++]=-exp(neg->model_derivative_q(i, x)-negx);
-
-	    for (j=0; j<smaller_N; j++)
-		featurevector[p++]=-exp(neg->model_derivative_a(i, j, x)-negx);
-
-	    for (j=0; j<neg->get_N(); j++)
-		featurevector[p++]=-exp(neg->model_derivative_a(j, i, x)-negx);
-
-	    for (j=0; j<neg->get_M(); j++)
-		featurevector[p++]=-exp(neg->model_derivative_b(i, j, x)-negx);
-	}
+	for (j=0; j<pos->get_M(); j++)
+	    featurevector[p++]= - exp(neg->model_derivative_b(i, j, x)-negx);
     }
 
-    //this hmm has more observations
-    if (larger_M==pos->get_M())
-    {
-	for (i=0; i<smaller_N; i++)
-	{
-	    for (j=smaller_M; j<pos->get_M(); j++)
-		featurevector[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
-	}
-    }
-    else
-    {
-	for (i=0; i<smaller_N; i++)
-	{
-	    for (j=smaller_M; j<neg->get_M(); j++)
-		featurevector[p++]=-exp(neg->model_derivative_b(i, j, x)-negx);
-	}
-    }
     return featurevector;
 }
 
 double* CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg, int & num_features)
 {
-    int larger_N=math.max(pos->get_N(), neg->get_N());
-    int larger_M=math.max(pos->get_M(), neg->get_M());
+    num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 
-    num_features=(1+larger_N*(1+larger_N+1+larger_M));
     int totobs=pos->get_observations()->get_DIMENSION()+pos->get_observations()->get_support_vector_num();
     double* featurespace=new double[num_features*totobs];
 

@@ -1573,7 +1573,12 @@ static bool prompt(FILE* infile=stdin)
 		    if (obs_postest && obs_negtest)
 		    {
 			CObservation* obs=new CObservation(obs_postest, obs_negtest);
+		printf("before\n");
+		fflush(stdout);
+
 			svm->load_svm(svm_file, obs);
+		printf("after\n");
+		fflush(stdout);
 
 			CObservation* old_pos=pos->get_observations();
 			CObservation* old_neg=neg->get_observations();
@@ -1597,16 +1602,23 @@ static bool prompt(FILE* infile=stdin)
 		    }
 		    else
 			printf("assign postrain and negtrain observations first!\n");
+		    
+		    if (outputfile)
+			fclose(outputfile);
+		    
+		    if (rocfile)
+			fclose(rocfile);
 		}
 		else
 		    printf("assign positive and negative models first!\n");
+
+		fclose(svm_file);
 	    }
 	    else
-		printf("see help for parameters\n");
-	    fclose(svm_file);
+		printf("could not open svm model\n");
 	}
 	else
-	    printf("could not open svm model\n");
+	    printf("see help for parameters\n");
     } 
     else if (!strncmp(input, N_LINEAR_HMM_TEST, strlen(N_LINEAR_HMM_TEST)))
     {
