@@ -407,3 +407,4 @@ void CObservation::translate_to_single_order(T_OBSERVATIONS* observations_, int 
 	for (int i=0; i<sequence_length; i++)
 		observations_[i]=maptable[mask & observations_[i]];
 }
+

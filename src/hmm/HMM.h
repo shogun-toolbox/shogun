@@ -42,7 +42,6 @@ struct T_ALPHA_BETA
   REAL sum;
 };
 
-
 /** type that is used for states.
  * Probably BYTE is enough if you have at most 256 states,
  * however WORD/long/... is also possible although you might quickly run into memory problems
@@ -64,13 +63,27 @@ typedef T_STATES* P_STATES ;
  */
 class CHMM  
 {
+    public:
+	/// state of top-feature cache
+	enum E_TOP_FEATURE_CACHE_VALIDITY
+	{
+	    VALID=0,
+	    OBS_INVALID=1,
+	    SV_INVALID=2,
+	    QUESTIONABLE=3,
+	    INVALID=4
+	};
+    private:
+
 #ifdef PARALLEL
   inline T_ALPHA_BETA & ALPHA_CACHE(int dim) {
     return alpha_cache[dim%NUM_PARALLEL] ; } ;
   inline T_ALPHA_BETA & BETA_CACHE(int dim) {
     return beta_cache[dim%NUM_PARALLEL] ; } ;
+#ifdef LOGSUMARRAY 
   inline REAL* ARRAYS(int dim) {
     return arrayS[dim%NUM_PARALLEL] ; } ;
+#endif
   inline REAL* ARRAYN1(int dim) {
     return arrayN1[dim%NUM_PARALLEL] ; } ;
   inline REAL* ARRAYN2(int dim) {
@@ -90,8 +103,10 @@ class CHMM
     return alpha_cache ; } ;
   inline T_ALPHA_BETA & BETA_CACHE(int dim) {
     return beta_cache ; } ;
+#ifdef LOGSUMARRAY
   inline REAL* ARRAYS(int dim) {
     return arrayS ; } ;
+#endif
   inline REAL* ARRAYN1(int dim) {
     return arrayN1 ; } ;
   inline REAL* ARRAYN2(int dim) {
@@ -107,7 +122,6 @@ class CHMM
   inline int & PATH_PROB_DIMENSION(int dim) {
     return path_prob_dimension ; } ;
 #endif
-
 
 
 	/** Train definitions.
@@ -1161,12 +1175,17 @@ protected:
 	 */
 	//@{
 	
-	// feature cache
-	static double* feature_cache;	
+	// feature cache for observations
+	static double* feature_cache_obs;	
+	// feature cache for support vectors
+	static double* feature_cache_sv;
+
 	// feature cache validity needs to be checked if set
 	static bool feature_cache_in_question;	
-	// feature cache checksum with wich validity is checked
-	static double feature_cache_checksum;	
+	// feature cache checksums with wich validity is checked
+	static unsigned int feature_cache_checksums[8];	
+	// checksums on observations to see whether cache is still valid
+	static unsigned int features_crc32[32];
 	// number of features per cacheline
 	static int num_features;	
 #ifdef PARALLEL
@@ -1364,7 +1383,7 @@ public:
 	//@{
 	   
 	    /// compute featurevectors for all observations and return a cache of size num_features*num_observations
-	    static double* compute_top_feature_cache(CHMM* pos, CHMM* neg);
+	    static bool compute_top_feature_cache(CHMM* pos, CHMM* neg);
 	    
 	    /**@name compute featurevector for observation dim
 	     * Computes the featurevector for one observation 
@@ -1382,12 +1401,25 @@ public:
 	    /**@name get feature cache line
 	     * @return returns a pointer to a line in featurecache specified by row
 	     */ 
-	    static inline double* get_top_feature_cache_line(int row) { return &feature_cache[num_features*row]; }
+	    static inline double* get_top_feature_cache_line(int row)
+	    {
+		//feature_cache_checksums[6] stands for DIMENSION of observations - sorry for that hack
+		if (row<(int) feature_cache_checksums[6])
+		    return &feature_cache_obs[num_features*row];
+		else
+		    return &feature_cache_sv[num_features*(row - (int)feature_cache_checksums[6])];
+	    }
 
-	    /**@name get feature cache
-	     * @return returns a pointer to the featurecache or NULL if there is no
+	    ///invalidate the top feature cache
+	    static void invalidate_top_feature_cache(E_TOP_FEATURE_CACHE_VALIDITY v);
+
+	    ///update checksums of top feature cache
+	    static void update_checksums(CObservation* o);
+
+	    /**@name check for different observations
+	     * @return returns 0 if crc is still ok, bit 1 is set for observation-change bit 2 for sv-change
 	     */ 
-	    static inline double* get_top_feature_cache() { return feature_cache; }
+	    static void check_and_update_crc(CHMM* pos, CHMM* neg);
 	//@}
 
 protected:

@@ -25,5 +25,6 @@ if nargin>0,
 	    tp=fread(fid, length, 'double');
 	    plot(fp,tp,plotstring);
 	end;
+	fclose(fid);
     end;
 end;

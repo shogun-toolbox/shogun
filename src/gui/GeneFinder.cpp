@@ -333,11 +333,13 @@ static bool prompt(FILE* infile=stdin)
 		delete neg;
 
 	    neg=lambda;
-		neg->set_observations(NULL);
-		delete lambda_train;
+	    neg->set_observations(NULL);
+	    delete lambda_train;
 	    
 	    lambda=NULL;
 	    lambda_train=NULL;
+	    
+	    CHMM::invalidate_top_feature_cache(CHMM::INVALID);
 	}
 	else
 	    printf("create model first\n");
@@ -350,11 +352,13 @@ static bool prompt(FILE* infile=stdin)
 		delete pos;
 
 	    pos=lambda;
-		pos->set_observations(NULL);
+	    pos->set_observations(NULL);
 	    delete lambda_train;
 	    
 	    lambda=NULL;
 	    lambda_train=NULL;
+
+	    CHMM::invalidate_top_feature_cache(CHMM::INVALID);
 	}
 	else
 	    printf("create model first\n");
@@ -491,6 +495,8 @@ static bool prompt(FILE* infile=stdin)
 	for (i=strlen(N_LOAD_OBSERVATIONS); isspace(input[i]); i++);
 	char filename[1024];
 	char target[1024];
+
+	CHMM::invalidate_top_feature_cache(CHMM::INVALID);
 
 	if ((sscanf(&input[i], "%s %s", filename, target))==2)
 	{
@@ -1553,6 +1559,7 @@ static bool prompt(FILE* infile=stdin)
 	FILE* rocfile=NULL;
 	int numargs=-1;
 
+	CHMM::invalidate_top_feature_cache(CHMM::SV_INVALID);
 	for (i=strlen(N_SVM_TEST); isspace(input[i]); i++);
 	numargs=sscanf(&input[i], "%s %s %s", svmname, outputname, rocfname);
 	if (numargs >= 1)

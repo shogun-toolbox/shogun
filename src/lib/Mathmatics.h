@@ -77,6 +77,9 @@ public:
 	/**@name misc functions */
 	//@{
 
+	/// crc32
+	unsigned int crc32(unsigned char *data, int len);
+
 	/// signum of int a 
 	inline int sign(int a)
 	  {

@@ -206,3 +206,31 @@ int CMath::calcroc(double* fp, double* tp, double* output, int* label, int size,
     }
     return returnidx;
 }
+
+unsigned int CMath::crc32(unsigned char *data, int len)
+{
+    unsigned int        result;
+    int                 i,j;
+    unsigned char       octet;
+
+    result = 0-1;
+
+    for (i=0; i<len; i++)
+    {
+	octet = *(data++);
+	for (j=0; j<8; j++)
+	{
+	    if ((octet >> 7) ^ (result >> 31))
+	    {
+		result = (result << 1) ^ 0x04c11db7;
+	    }
+	    else
+	    {
+		result = (result << 1);
+	    }
+	    octet <<= 1;
+	}
+    }
+
+    return ~result; 
+}

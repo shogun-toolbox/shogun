@@ -69,7 +69,7 @@ REAL CHMM::prefetch(int dim, bool bw)
     return best_path(dim) ;
 #endif // NOVIT
 } ;
-#endif
+#endif //PARALLEL
 
 //win32 does not know finite but _finite
 #ifdef _WIN32
@@ -125,10 +125,12 @@ enum E_STATE
 	END
 };
 
-double* CHMM::feature_cache=NULL;	
+double* CHMM::feature_cache_sv=NULL;	
+double* CHMM::feature_cache_obs=NULL;	
 int CHMM::num_features=0;	
 bool CHMM::feature_cache_in_question=false;	
-double CHMM::feature_cache_checksum=0;	
+unsigned int CHMM::feature_cache_checksums[8];	
+unsigned int CHMM::features_crc32[32];
 
 #ifdef FIX_POS
 const char CHMM::CModel::FIX_DISALLOWED=0 ;
@@ -210,12 +212,7 @@ CHMM::CHMM(FILE* model_file_, REAL PSEUDO_)
 CHMM::~CHMM()
 {
   delete model ;
-  delete[] feature_cache;
-  feature_cache=NULL;
-  num_features=0;
-  feature_cache_in_question=false;	
-  feature_cache_checksum=0;	
-  
+  invalidate_top_feature_cache(INVALID);
 
 #ifdef PARALLEL
   {
@@ -4664,53 +4661,187 @@ double* CHMM::compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* 
     return featurevector;
 }
 
-double* CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
+void CHMM::check_and_update_crc(CHMM* pos, CHMM* neg)
 {
-#ifdef DEBUG
-    printf("fcache:%g sv:%d dim:%d\n", feature_cache_checksum, pos->get_observations()->get_support_vector_num(), pos->get_observations()->get_DIMENSION());
-#endif
-    if (!feature_cache || feature_cache_in_question )
+    bool obs_result=false;
+    bool sv_result=false;
+    CObservation* o=pos->get_observations();
+
+    if ( (feature_cache_checksums[0]!= (unsigned int) pos) ||
+	 (feature_cache_checksums[1]!= (unsigned int) neg) ||
+	 (feature_cache_checksums[2]!= (unsigned int) pos->get_N()) ||
+	 (feature_cache_checksums[3]!= (unsigned int) pos->get_M()) ||
+	 (feature_cache_checksums[4]!= (unsigned int) neg->get_N()) ||
+	 (feature_cache_checksums[5]!= (unsigned int) neg->get_M())
+       )
     {
-	if (feature_cache_checksum== 0 || 
-		feature_cache_checksum != 2*pos->get_N()+3*neg->get_N()+5*pos->get_observations()->get_DIMENSION()+7*pos->get_observations()->get_support_vector_num() + 11*((double) ((long) pos->get_observations()->get_obs(0,0) + (long) pos + (long) neg)))
+	obs_result=true;
+	sv_result=true;
+    }
+
+    if ((unsigned int) o->get_DIMENSION() != feature_cache_checksums[6])
+	obs_result=true;
+    
+    const int CRCSIZE=32;
+    const int CRCSIZEHALF=CRCSIZE/2;
+
+    for (int i=0; i<CRCSIZEHALF && i<o->get_DIMENSION(); i++)
+    {
+	int idx=i*o->get_DIMENSION()/CRCSIZEHALF;
+	unsigned int crc=math.crc32( (unsigned char*) o->get_obs_vector(idx), o->get_obs_T(idx) ); 
+
+#ifdef DEBUG
+	printf("OB:idx: %d maxl: %d crc: %x\n", idx, o->get_DIMENSION(), crc);
+#endif
+	if (features_crc32[i]!=crc)
 	{
+	    features_crc32[i]=crc;
+	    obs_result=true;
+	}
+    }
 
-	    printf("refreshing top_feature_cache..\n"); fflush(stdout);
-	    num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
+    if (obs_result)
+    {
+	delete[] feature_cache_obs;
+	feature_cache_obs=NULL;
+    }
 
-	    int totobs=pos->get_observations()->get_DIMENSION()+pos->get_observations()->get_support_vector_num();
-	    feature_cache=new double[num_features*totobs];
+    if ((unsigned int) o->get_support_vector_num() != feature_cache_checksums[7])
+	sv_result=true;
 
-	    if (!feature_cache)
-	    {
-		num_features=0;
-		feature_cache_checksum=0;	
-		feature_cache_in_question=false;
-		return NULL;
-	    }
+    for (int i=0; i<CRCSIZEHALF && i<o->get_support_vector_num(); i++)
+    {
+	int idx=o->get_support_vector_idx(i*o->get_support_vector_num()/CRCSIZEHALF);
+	unsigned int crc=math.crc32( (unsigned char*) o->get_obs_vector(idx), o->get_obs_T(idx) ); 
+	
+#ifdef DEBUG
+	printf("SV:idx: %d maxl: %d crc: %x\n", idx, o->get_support_vector_idx(0)+o->get_support_vector_num(), crc);
+#endif
 
-	    feature_cache_checksum=2*pos->get_N()+3*neg->get_N()+5*pos->get_observations()->get_DIMENSION()+7*pos->get_observations()->get_support_vector_num() + 11*((double) ((long) pos->get_observations()->get_obs(0,0) + (long) pos + (long) neg));
+	if (features_crc32[i+CRCSIZEHALF]!=crc)
+	{
+	    features_crc32[i+CRCSIZEHALF]=crc;
+	    sv_result=true;
+	}
+    }	
 
-	    printf("precalculating top- feature vectors for all sequences\n"); fflush(stdout);
+    if (sv_result)
+    {
+	delete[] feature_cache_sv;
+	feature_cache_sv=NULL;
+    }
+    
+    feature_cache_checksums[0]=(unsigned int) pos;
+    feature_cache_checksums[1]=(unsigned int) neg;
+    feature_cache_checksums[2]=(unsigned int) pos->get_N();
+    feature_cache_checksums[3]=(unsigned int) pos->get_M();
+    feature_cache_checksums[4]=(unsigned int) neg->get_N();
+    feature_cache_checksums[5]=(unsigned int) neg->get_M();
+    feature_cache_checksums[6]=(unsigned int) pos->get_observations()->get_DIMENSION();
+    feature_cache_checksums[7]=(unsigned int) pos->get_observations()->get_support_vector_num();
+    feature_cache_in_question=false;
+}
 
+
+void CHMM::invalidate_top_feature_cache(E_TOP_FEATURE_CACHE_VALIDITY v)
+{
+    switch (v)
+    {
+	case VALID:
+	    break;
+	case OBS_INVALID:
+	    delete[] feature_cache_obs;
+	    feature_cache_obs=NULL;
+	    break;
+	case SV_INVALID:
+	    delete[] feature_cache_sv;
+	    feature_cache_sv=NULL;
+	    break;
+	case QUESTIONABLE:
+	    feature_cache_in_question=false;
+	    break;
+	case INVALID:
+	    delete[] feature_cache_obs;
+	    delete[] feature_cache_sv;
+	    feature_cache_obs=NULL;
+	    feature_cache_sv=NULL;
+	    feature_cache_in_question=false;
+	    num_features=0;
+    };
+}
+
+
+bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
+{
+    num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
+
+    if (!feature_cache_sv || !feature_cache_obs || feature_cache_in_question )
+    {
+	check_and_update_crc(pos, neg);
+	
+	if (!feature_cache_sv)
+	{
+	    printf("refreshing top_sv_feature_cache...........\n"); fflush(stdout);
+
+	    int totobs=pos->get_observations()->get_support_vector_num();
+	    feature_cache_sv=new double[num_features*totobs];
+
+	    printf("precalculating top feature vectors for support vectors\n"); fflush(stdout);
+
+		for (int x=0; x<totobs; x++)
+		{
+		    if (!(x % (totobs/10+1)))
+			printf("%02d%%.", (int) (100.0*x/totobs));
+		    else if (!(x % (totobs/200+1)))
+			printf(".");
+
+		    fflush(stdout);
+
+		    compute_top_feature_vector(pos, neg, x, &feature_cache_sv[x*num_features]);
+		}
+	    
+		printf(".done.\n");
+		fflush(stdout);
+	}
+	else
+	    printf("WARNING: using previous top_sv_feature_cache NOT recalculating\n"); fflush(stdout);
+
+	if (!feature_cache_obs)
+	{
+	    printf("refreshing top_obs_feature_cache...........\n"); fflush(stdout);
+
+	    int totobs=pos->get_observations()->get_DIMENSION();
+	    feature_cache_obs=new double[num_features*totobs];
+
+	    printf("precalculating top feature vectors for observations\n"); fflush(stdout);
+	    
 	    for (int x=0; x<totobs; x++)
 	    {
-		if (!(x % (totobs/10)))
+		if (!(x % (totobs/10+1)))
 		    printf("%02d%%.", (int) (100.0*x/totobs));
-		else if (!(x % (totobs/200)))
+		else if (!(x % (totobs/200+1)))
 		    printf(".");
 
 		fflush(stdout);
 
-		compute_top_feature_vector(pos, neg, x, &feature_cache[x*num_features]);
+		compute_top_feature_vector(pos, neg, x, &feature_cache_obs[x*num_features]);
 	    }
 
 	    printf(".done.\n");
 	    fflush(stdout);
 	}
+	else
+	    printf("WARNING: using previous top_obs_feature_cache NOT recalculating\n"); fflush(stdout);
+   
+	if ((feature_cache_obs!=NULL) && (feature_cache_sv!=NULL || pos->get_observations()->get_support_vector_num() <= 0))
+		return true;
+	else 
+	    return false;
     }
     else
-	    printf("using previous top_feature_cache..NOT recalculating\n"); fflush(stdout);
+    {
+	    printf("WARNING: using previous top_feature_cache NOT recalculating\n"); fflush(stdout);
+	    return true;
+    }
 
-    return feature_cache;
 }
