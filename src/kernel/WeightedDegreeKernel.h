@@ -7,7 +7,7 @@
 class CWeightedDegreeKernel: public CKernel
 {
  public:
-  CWeightedDegreeKernel(long size, int degree) ;
+  CWeightedDegreeKernel(long size, REAL* weights, int degree) ;
   ~CWeightedDegreeKernel() ;
   
   virtual void init(CFeatures* l, CFeatures* r);
@@ -30,6 +30,7 @@ class CWeightedDegreeKernel: public CKernel
   /*    compute_kernel*/
 
  protected:
+  REAL* weights;
   int degree;
 };
 
