@@ -20,7 +20,7 @@ CTextGUI *gui=NULL;
 //names of menu commands
 static const char* N_NEW_HMM=			"new_hmm";
 static const char* N_NEW_SVM=			"new_svm";
-static const char* N_SET_NUM_TABLES=		"set_num_tables";
+static const char* N_SET_NUM_TABLES=	"set_num_tables";
 static const char* N_LOAD_PREPROC=		"load_preproc";
 static const char* N_SAVE_PREPROC=		"save_preproc";
 static const char* N_LOAD_HMM=			"load_hmm";
@@ -141,6 +141,7 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m <PROTEIN|DNA|ALPHANUM|CUBE>\t\t\t- changes alphabet type\n", N_ALPHABET);
 	CIO::message("\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
 	CIO::message("\033[1;31m%s\033[0m <max_dim>\t - set maximum number of patterns\n",N_SET_MAX_DIM);
+	CIO::message("\033[1;31m%s\033[0m <num>\t - set number of forw/backw.-tables\n",N_SET_NUM_TABLES);
 	CIO::message("\n[TRAIN]\n");
 	CIO::message("\033[1;31m%s\033[0m <filename> [<width> <upto>]\t\t- obtains new linear HMM from file\n",N_LINEAR_TRAIN);
 	CIO::message("\033[1;31m%s\033[0m\t\t- does viterbi training on the current HMM\n",N_VITERBI_TRAIN);
