@@ -2,6 +2,14 @@
 #include "kernel/Kernel.h"
 #include "features/Features.h"
 
+CKernel::CKernel()
+{
+} ;
+
+CKernel::~CKernel()
+{
+} ;
+
 /* calculate the kernel function */
 REAL CKernel::kernel(CFeatures* a, int idx_a, CFeatures* b, int idx_b)
 {
