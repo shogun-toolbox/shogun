@@ -16,5 +16,6 @@
 #define HAVE_MPI 1
 /* #undef HAVE_CPLUS_DEMANGLE */
 #define HAVE_CXML 1
+#define SIZEOF_LONG 8
 
 #endif /* ! __CONFIG_H_ */

@@ -44,13 +44,12 @@ typedef struct {
 #define REQ_MATRIX_MEMUSAGE 999
 #define REQ_QUIT 1000
 #define REQ_READ_EXT_Z 1100
+#define REQ_Z_COLUMNS 1101
 
-#if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 /* Some helper functions */
 void bcast_int(MPI_Comm comm, int root, int val);
 void send_int(MPI_Comm comm, int dest, int tag, int val);
 void bcast_req(MPI_Comm comm, int root, int req);
-#endif
 
 /* Resource helpers */
 void resources_checkpoint_distrib_time(IntpointResources *res);

@@ -36,8 +36,8 @@ class CSVMMPI: public CSVM
   CMatrix<double> Z ;
   double svm_b, *svm_w ;
   
-  CBlockCache<double> bcache_d;
-  CBlockCache<int> bcache_i;
+  static CBlockCache<double> bcache_d;
+  static CBlockCache<int> bcache_i;
 } ;
 #endif
 /*#endif // SVMMPI*/

@@ -9,6 +9,8 @@
 #include "lib/io.h"
 #include "preproc/PCACut.h"
 
+CBlockCache<double> CSVMMPI::bcache_d;
+CBlockCache<int> CSVMMPI::bcache_i;
 
 int sign(double a)
 {
@@ -31,12 +33,9 @@ void donothing(void *)
   /* do nothing */
 }
 
-static double one=1.0 ;
-
 #if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 CSVMMPI::CSVMMPI()
   : svm_b(0), svm_w(NULL)
-  //  : Z(1,1,&one,false,donothing)
 {
  /* Block caches */
   bcache_d.AddCacheSize(1);
@@ -84,12 +83,15 @@ bool CSVMMPI::svm_train(CFeatures* train_)
   //CIO::message(" and saving to file ~/Z_clean.dat") ;
 
   m_prime=svm_mpi_broadcast_Z_size(num_cols, num_rows, m_last) ;
+  //CIO::message("mprime=%i, m_last=%i\n ", m_prime, m_last) ;
   int j=0;
   
   for (j=0; j<num_cols; j++) 
   {
     int rank=floor(((double)j)/m_prime) ;
     int start_idx=j%m_prime ; 
+
+    //CIO::message("mprime=%i, rank=%i\n ", m_prime, rank) ;
     
     if (!(j % (num_cols/10+1)))
       CIO::message("%02d%%.", (int) (100.0*j/num_cols));
@@ -200,6 +202,11 @@ void CSVMMPI::svm_mpi_init(int argc, const char **argv)
   CIO::message(stderr, "my_rank=%i\nnum_nodes=%i\n", my_rank, num_nodes) ;
   
   if (my_rank) {
+    bcache_d.AddCacheSize(1);
+    bcache_d.AddCacheSize(100);
+    matrix_set_cache_mgr<double>(&bcache_d);
+    matrix_set_cache_mgr<int>(&bcache_i);
+
     run_non_root_2mpi<double,double>(my_rank, num_nodes);
     MPI_Finalize();
     exit(0);
@@ -219,14 +226,15 @@ unsigned CSVMMPI::svm_mpi_broadcast_Z_size(int num_cols, int num_rows_, unsigned
   m_last_=m_last ;
   m_full = num_cols ;
   Z.Resize(num_rows_, m_prime) ;
-  return m_full ;
+  return m_prime ;
 } ;
 
 void CSVMMPI::svm_mpi_set_Z_block(double * block, int num_cols, int start_idx, int rank) 
 {
+  //CIO::message("z_set %i %i\n", start_idx, rank) ;
   if (rank)
     {
-      CIO::message("z_client %i %i\n",start_idx, rank) ;
+      //CIO::message("z_client %i %i\n",start_idx, rank) ;
       send_z_columns_double(MPI_COMM_WORLD, block, start_idx,
 			    num_cols, num_rows,
 			    rank, true);
@@ -235,7 +243,7 @@ void CSVMMPI::svm_mpi_set_Z_block(double * block, int num_cols, int start_idx, i
     {
       //CIO::message("z_block server %i %i %i %i %ld\n",start_idx, rank, num_cols, num_rows, block) ;
       CMatrix<double> tmp(num_rows, num_cols, block, false, donothing);
-      Z(colon(), colon(start_idx, start_idx+num_cols-1)) = tmp;
+      Z(colon(0,num_rows), colon(start_idx, start_idx+num_cols-1)) = tmp;
     } ;
 } ;
 
@@ -348,8 +356,9 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
 #endif 
   optimize_smw2mpi_core<double>(optimizer, *c, Z, *A, *b, *l, *u,
 				*r, m_prime, m_last, my_rank,
-				num_nodes, res, *primal,
-				*dual, &how);
+				num_nodes, res, 1, NULL/*"/short/x46/tmp/x.mat"*/,
+				NULL /*"/short/x46/tmp/x.mat"*/,
+				*primal, *dual, &how);
   double *prim = primal->GetDataPointer();
   double *dua = dual->GetDataPointer();
   double *Zd = Z.GetDataPointer();

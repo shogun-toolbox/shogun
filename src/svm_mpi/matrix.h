@@ -607,10 +607,7 @@ public:
 
   /**
    */
-  inline T *GetDataPointer(void) {   
-    Dirty(); 
-    return (m_TopLeftPtr); 
-  }
+  inline T *GetDataPointer(void) { Dirty(); return (m_TopLeftPtr); }
 
   /**
    * Create a submatrix from a region inside this matrix.
@@ -732,6 +729,9 @@ public:
       *dest = (T)*src;
   }
 
+  T FindMin(const CMatrix<T> &m, unsigned *i, unsigned *j);
+  T FindMax(const CMatrix<T> &m, unsigned *i, unsigned *j);
+
   void ReadFromFile(const char *path, const long offset,
 		    const bool swapbytes = false);
 
@@ -786,6 +786,10 @@ public:
    */
   void gemm(const CMatrix<T> &a, const T alpha, const CMatrix<T> &b, 
 	    const T beta);
+
+  void syrk_update(const CMatrix<T> &a, const T alpha, const T beta,
+		   const bool isuppertriangular = true,
+		   const bool calc_at_a = false);
 
 #ifdef HAVE_MPI
   /**
@@ -948,6 +952,7 @@ public:
 
   friend struct __matrix_iterator<T>;
   friend struct __matrix_const_iterator<T>;
+
 private:
   friend CMatrix<T> solve FRIEND_TEMPLATE (const CMatrix<T> &A, 
 					   const CMatrix<T> &B,
@@ -982,6 +987,9 @@ private:
 		 const int transA, const int diag, const int M, const int N,
 		 const T alpha, const T *A, const int lda, T *B,
 		 const int ldb) const;
+  void blas_syrk(const int order, const int uplo, const int trans,
+		 const int N, const int K, const T alpha, const T *A,
+		 const int lda, const T beta, T *C, const int ldc) const;
 
   void lapack_potrf(const int upper, const int N, T *A, const int lda) const;
   /* IMPORTANT NOTE: the {d,s}getrf from ATLAS is *not* compatible with 
@@ -1248,6 +1256,10 @@ int matrix_read_from_mat_file(const char *matpath, ...);
  */
 template <class T>
 int matrix_write_to_mat_file(const char *matpath, ...);
+/**
+ */
+template <class T>
+int matrix_append_to_mat_file(const char *matpath, ...);
 
 /**
  */
