@@ -27,6 +27,7 @@ CObservation::CObservation(E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M_,
 	this->ORDER=ORDER_;
 	this->max_T= -1;
 
+	CIO::message("MM:%d\n",MAX_M);
 	cleanup();
 
 	init_map_table();
@@ -44,6 +45,7 @@ CObservation::CObservation(CObservation* pos, CObservation* neg)
 	if ( pos->get_alphabet() == neg->get_alphabet() )
 	{
 		MAX_M=math.min(pos->get_max_M(), neg->get_max_M());
+	CIO::message("MM:%d\n",MAX_M);
 		M=math.min(pos->get_M(), neg->get_M());
 		ORDER=1;
 
@@ -141,6 +143,7 @@ bool CObservation::load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET
 	this->M=M_;
 	this->ORDER=ORDER_;
 
+	CIO::message("MM:%d\n",MAX_M);
 	cleanup();
 	init_map_table();
 
@@ -346,7 +349,11 @@ int CObservation::translate_from_single_order(T_OBSERVATIONS* observations_, int
 	}
 
 	for (i=start; i<sequence_length; i++)	
+	{
 		observations_[i-start]=observations_[i];
+		//if (observations_[i-start]>16)
+			//CIO::message("%d,%d : %d\n", MAX_M, ORDER, observations_[i-start]);
+	}
 
 	return fac*(sequence_length-(ORDER-1)) ;
 }

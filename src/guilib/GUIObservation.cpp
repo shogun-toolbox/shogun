@@ -39,13 +39,14 @@ bool CGUIObservation::load_observations(char* param)
 	int start=0;
 	int width=-1;
 
-	if (gui->guihmm.get_pos())
-		M=gui->guihmm.get_pos()->get_M();
-	else if (gui->guihmm.get_neg())
-		M=gui->guihmm.get_neg()->get_M();
-	else if (gui->guihmm.get_test())
-		M=gui->guihmm.get_test()->get_M();
-	else
+#warning hmm -> obs  observation size -> M ??
+//	if (gui->guihmm.get_pos())
+//		M=gui->guihmm.get_pos()->get_M();
+//	else if (gui->guihmm.get_neg())
+//		M=gui->guihmm.get_neg()->get_M();
+//	else if (gui->guihmm.get_test())
+//		M=gui->guihmm.get_test()->get_M();
+//	else
 		M=get_alphabet_size();
 
 	if ((sscanf(input, "%s %s %d %d %d", filename, target, &ORDER, &start, &width))>=2)

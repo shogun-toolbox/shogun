@@ -389,7 +389,7 @@ bool CGUIHMM::linear_train_from_file(char* param)
 	    //ORDER=1; //obsoleted by set_order
 	    M=4;
 
-	    CObservation* obs=new CObservation(TRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
+	    CObservation* obs=new CObservation(TRAIN, alphabet, (int) ceil(log(M)/log(2)), M, ORDER);
 
 	    if (working && obs)
 	    {
