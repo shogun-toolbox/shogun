@@ -1,16 +1,16 @@
-#ifndef _CREALFEATURES__H__
-#define _CREALFEATURES__H__
+#ifndef _CSTRINGFEATURES__H__
+#define _CSTRINGFEATURES__H__
 
 #include "preproc/Preproc.h"
 #include "features/Features.h"
 
-class CStringFeatures: public CStringFeatures
+class CStringFeatures: public CFeatures
 {
  public:
-  CStringFeatures()::CFeatures() { } ;
+  CStringFeatures(long size);
   ~CStringFeatures() { };
   
-  virtual EType get_feature_type() { return STRING ; } ;
+  virtual EType get_feature_type() { return F_STRING ; } ;
   
   /** get feature vector for sample num
       from the matrix as it is if matrix is

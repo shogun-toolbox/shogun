@@ -15,9 +15,11 @@ public:
 	/** Features can 
 	 * just be REALs, SHORT
 	 * or STRINGs, FILES, or...
+	 *
+	 * size - cache size
 	*/
-
 	CFeatures(long size);
+
 	// copy constructor
 	CFeatures(const CFeatures& orig);
 
