@@ -61,25 +61,30 @@ class CWeightedDegreeCharKernel: public CCharKernel
 	  set_is_initialized(true);
   }
 
+  inline virtual INT get_num_subkernels()
+  {
+	  return get_degree();
+  }
+
   // other kernel tree operations  
-  void prune_tree(struct SuffixTree * p_tree=NULL, int min_usage=2) ;
-  void count_tree_usage(INT idx)  ;
-  REAL *compute_abs_weights(INT & len)  ;
-  REAL compute_abs_weights_tree(struct SuffixTree * p_tree)  ;
-  void compute_by_tree(INT idx, REAL *LevelContrib) ;
+  void prune_tree(struct SuffixTree * p_tree=NULL, int min_usage=2);
+  void count_tree_usage(INT idx);
+  REAL *compute_abs_weights(INT & len);
+  REAL compute_abs_weights_tree(struct SuffixTree * p_tree);
+  void compute_by_tree(INT idx, REAL *LevelContrib);
 
-  INT tree_size(struct SuffixTree * p_tree=NULL) ;
-  bool is_tree_initialized() { return tree_initialized ; } ;
+  INT tree_size(struct SuffixTree * p_tree=NULL);
+  bool is_tree_initialized() { return tree_initialized; }
 
-  INT get_max_mismatch() { return max_mismatch ; } ;
-  INT get_degree() { return degree ; } ;
-  REAL *get_weights() { return weights ; } ;
+  inline INT get_max_mismatch() { return max_mismatch; }
+  inline INT get_degree() { return degree; }
+  inline REAL *get_weights() { return weights; }
 
  protected:
 
-  void add_example_to_tree(INT idx, REAL weight) ;
-  REAL compute_by_tree(INT idx) ;
-  void delete_tree(struct SuffixTree * p_tree=NULL) ;
+  void add_example_to_tree(INT idx, REAL weight);
+  REAL compute_by_tree(INT idx);
+  void delete_tree(struct SuffixTree * p_tree=NULL);
 
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors

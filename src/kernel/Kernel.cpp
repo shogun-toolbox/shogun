@@ -509,3 +509,9 @@ void CKernel::clear_normal()
 {
 	CIO::message(M_ERROR, "kernel clear_normal not implemented\n") ;
 }
+
+INT CKernel::get_num_subkernels()
+{
+	CIO::message(M_ERROR, "kernel get_num_subkernels not implemented\n") ;
+	return -1;
+}

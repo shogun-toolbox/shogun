@@ -50,6 +50,10 @@ typedef UINT* P_UINT;
 typedef long LONG;
 typedef LONG* P_LONG;
 
+/// Type LONG is 8 bytes in size
+typedef unsigned long ULONG;
+typedef ULONG* P_ULONG;
+
 /// Type SHORTREAL is 4 bytes in size
 typedef float SHORTREAL;
 typedef SHORTREAL* P_SHORTREAL;
@@ -116,7 +120,8 @@ enum EKernelType
 enum EKernelProperty
 {
 	KP_NONE = 0,
-	KP_LINADD = 1
+	KP_LINADD = 1, 	// Kernels that can do normal updates w + dw
+	KP_KERNCOMBINATION = 2	// Kernels that are infact a linear combination of subkernels K=\sum_i b_i*K_i
 };
 
 enum EFeatureType

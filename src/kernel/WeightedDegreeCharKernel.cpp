@@ -10,7 +10,7 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d
 	: CCharKernel(size),weights(NULL),degree(d), max_mismatch(max_mismatch_), seq_length(0),
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL)
 {
-	properties=KP_LINADD;
+	properties |= KP_LINADD | KP_KERNCOMBINATION;
 	lhs=NULL;
 	rhs=NULL;
 

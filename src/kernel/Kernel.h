@@ -122,6 +122,7 @@ class CKernel
 		//add vector*factor to 'virtual' normal vector
 		virtual void add_to_normal(INT idx, REAL weight);
 		virtual void clear_normal();
+		virtual INT get_num_subkernels();
 
 		virtual bool set_kernel_parameters(INT num, const double* param) { return false; }
 
@@ -184,6 +185,6 @@ class CKernel
 	
 		bool optimization_initialized ;
 
-		EKernelProperty properties;
+		ULONG  properties;
 };
 #endif

@@ -3,6 +3,7 @@
 #include "classifier/svm/SVM_light.h"
 #include "classifier/svm/Optimizer.h"
 #include "kernel/KernelMachine.h"
+#include "kernel/WeightedDegreeCharKernel.h"
 #include <assert.h>
 
 CSVMLight::CSVMLight()
@@ -982,6 +983,69 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 		}
 		for(jj=0;(j=active2dnum[jj])>=0;jj++) {
 				lin[j]+=get_kernel()->compute_optimized(docs[j]);
+		}
+
+		if (get_kernel()->has_property(KP_KERNCOMBINATION)) {
+			//HACK ASSUME KERNEL IS WEIGHTEDDEGREE WE NEED SOME GENERIC KERNEL INTERFACE
+			//TO DO THAT NICELY
+			//
+			CWeightedDegreeCharKernel* k = (CWeightedDegreeCharKernel*) get_kernel();
+			INT num    = k->get_rhs()->get_num_vectors() ;
+			INT degree = k->get_degree() ;
+			REAL* W = new REAL[num*degree];
+			REAL* sumw = new REAL[degree];
+			REAL* W_norm = new REAL[num*degree];
+			REAL* w = k->get_weights();
+
+			// determine contributions of different levels/lengths
+			for (int i=0; i<num; i++)
+				k->compute_by_tree(i,&W[i*degree]) ;
+
+
+			// compute objective/ W_norm
+			REAL objective=0;
+			for (int d=0; d<degree; d++)
+			{
+				for (int i=0; i<num; i++)
+				{
+					W_norm[i*degree+d]= W[i*degree+d]/w[d];
+					objective+=a[i]*W[i*degree+d];
+				}
+			}
+
+			objective/=2;
+			for (int i=0; i<totdoc; i++)
+				objective-=a[i];
+
+			// compute sumw
+			for (int i=0; i<degree; i++)
+				sumw[i]=0;
+
+			for (int d=0; d<degree; d++)
+			{
+				for (int i=0; i<num; i++)
+				{
+					sumw[d]+=a[i]*W_norm[i*degree+d];
+				}
+			}
+
+			REAL gamma=0.1; //fixme
+			REAL s=0;
+			for (int i=0; i<degree; i++)
+			{
+				w[i] *= exp(gamma*sumw[i]);
+				s+=w[i];
+			}
+
+			for (int i=0; i<degree; i++)
+				w[i]/=s;
+
+			CIO::message(M_DEBUG,"OBJ: %f\n", objective);
+
+			delete[] W;
+			delete[] W_norm;
+			delete[] sumw;
+
 		}
 	}
 	else {                            /* general case */
