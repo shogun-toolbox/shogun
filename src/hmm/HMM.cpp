@@ -4422,7 +4422,7 @@ void CHMM::set_observations(CObservation* obs, CHMM* lambda)
 		    printf("allocating mem for path-table of size %.2f Megabytes (%d*%d) each:\n", ((float)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
 			for (int i=0; i<NUM_PARALLEL; i++)
 			{
-				if ((states_per_observation_psi[i]=new T_STATES[max_T*N])!=NULL
+			  if ((states_per_observation_psi[i]=new T_STATES[max_T*N])!=NULL)
 					printf("path_table[%i] successfully allocated\n",i) ;
 				else
 					printf("failed allocating memory for path_table[%i].\n",i) ;
@@ -4536,7 +4536,7 @@ double* CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
     if (!feature_cache || feature_cache_in_question )
     {
 	if (feature_cache_checksum== 0 || 
-		feature_cache_checksum != 2*pos->get_N()+3*neg->get_N()+5*pos->get_observations()->get_DIMENSION()+7*pos->get_observations()->get_support_vector_num() + 11*((double) ((int) pos->get_observations()->get_obs(0,0) + (int) pos + (int) neg)))
+		feature_cache_checksum != 2*pos->get_N()+3*neg->get_N()+5*pos->get_observations()->get_DIMENSION()+7*pos->get_observations()->get_support_vector_num() + 11*((double) ((long) pos->get_observations()->get_obs(0,0) + (long) pos + (long) neg)))
 	{
 
 	    printf("refreshing top_feature_cache..\n"); fflush(stdout);
@@ -4553,7 +4553,7 @@ double* CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 		return NULL;
 	    }
 
-	    feature_cache_checksum=2*pos->get_N()+3*neg->get_N()+5*pos->get_observations()->get_DIMENSION()+7*pos->get_observations()->get_support_vector_num() + 11*((double) ((int) pos->get_observations()->get_obs(0,0) + (int) pos + (int) neg));
+	    feature_cache_checksum=2*pos->get_N()+3*neg->get_N()+5*pos->get_observations()->get_DIMENSION()+7*pos->get_observations()->get_support_vector_num() + 11*((double) ((long) pos->get_observations()->get_obs(0,0) + (long) pos + (long) neg));
 
 	    printf("precalculating top- feature vectors for all sequences\n"); fflush(stdout);
 

@@ -78,204 +78,205 @@ $(FILES2): Makefile Makefile.env
 
 # DO NOT DELETE
 
-hmm/HMM.o: /usr/include/math.h /usr/include/features.h
-hmm/HMM.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-hmm/HMM.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-hmm/HMM.o: /usr/include/bits/mathcalls.h /usr/include/stdio.h
-hmm/HMM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-hmm/HMM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-hmm/HMM.o: /usr/include/bits/types.h /usr/include/libio.h
-hmm/HMM.o: /usr/include/_G_config.h /usr/include/wchar.h
-hmm/HMM.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-hmm/HMM.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h
-hmm/HMM.o: /usr/include/stdlib.h lib/common.h lib/Observation.h
-lib/Mathmatics.o: /usr/include/math.h /usr/include/features.h
-lib/Mathmatics.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-lib/Mathmatics.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-lib/Mathmatics.o: /usr/include/bits/mathcalls.h /usr/include/stdlib.h
-lib/Mathmatics.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-lib/Mathmatics.o: lib/common.h
-lib/Observation.o: /usr/include/stdio.h /usr/include/features.h
-lib/Observation.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-lib/Observation.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-lib/Observation.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-lib/Observation.o: /usr/include/bits/types.h /usr/include/libio.h
-lib/Observation.o: /usr/include/_G_config.h /usr/include/wchar.h
-lib/Observation.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-lib/Observation.o: /usr/include/bits/stdio_lim.h lib/common.h
-lib/Observation.o: lib/Mathmatics.h /usr/include/math.h
-lib/Observation.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-lib/Observation.o: /usr/include/bits/mathcalls.h /usr/include/stdlib.h
+hmm/HMM.o: /usr/include/math.h /usr/include/standards.h /usr/include/stdlib.h
+hmm/HMM.o: /usr/include/getopt.h /usr/include/sys/types.h
+hmm/HMM.o: /usr/include/time_t.h /usr/include/mach/machine/vm_types.h
+hmm/HMM.o: /usr/include/sys/select.h /usr/include/stdio.h
+hmm/HMM.o: /usr/include/sys/seek.h /usr/include/va_list.h
+hmm/HMM.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+hmm/HMM.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+hmm/HMM.o: /usr/include/sys/rt_limits.h lib/Mathmatics.h lib/common.h
+hmm/HMM.o: lib/Observation.h
+lib/Mathmatics.o: /usr/include/math.h /usr/include/standards.h
+lib/Mathmatics.o: /usr/include/stdlib.h /usr/include/getopt.h
+lib/Mathmatics.o: /usr/include/sys/types.h /usr/include/time_t.h
+lib/Mathmatics.o: /usr/include/mach/machine/vm_types.h
+lib/Mathmatics.o: /usr/include/sys/select.h lib/common.h
+lib/Observation.o: /usr/include/stdio.h /usr/include/standards.h
+lib/Observation.o: /usr/include/sys/seek.h /usr/include/va_list.h
+lib/Observation.o: /usr/include/sys/types.h /usr/include/time_t.h
+lib/Observation.o: /usr/include/mach/machine/vm_types.h
+lib/Observation.o: /usr/include/sys/select.h /usr/include/getopt.h
+lib/Observation.o: /usr/include/sys/limits.h
+lib/Observation.o: /usr/include/machine/machlimits.h
+lib/Observation.o: /usr/include/sys/syslimits.h
+lib/Observation.o: /usr/include/machine/machtime.h
+lib/Observation.o: /usr/include/sys/rt_limits.h lib/common.h lib/Mathmatics.h
+lib/Observation.o: /usr/include/math.h /usr/include/stdlib.h
 svm/Optimizer.o: lib/common.h
 svm/SVM.o: lib/common.h lib/Observation.h /usr/include/stdio.h
-svm/SVM.o: /usr/include/features.h /usr/include/sys/cdefs.h
-svm/SVM.o: /usr/include/gnu/stubs.h
-svm/SVM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm/SVM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm/SVM.o: /usr/include/bits/types.h /usr/include/libio.h
-svm/SVM.o: /usr/include/_G_config.h /usr/include/wchar.h
-svm/SVM.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-svm/SVM.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h /usr/include/math.h
-svm/SVM.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-svm/SVM.o: /usr/include/bits/mathcalls.h /usr/include/stdlib.h
-svm/SVM.o: /usr/include/ctype.h /usr/include/endian.h
-svm/SVM.o: /usr/include/bits/endian.h /usr/include/string.h
-svm/SVM.o: /usr/include/time.h /usr/include/bits/time.h
-svm/SVM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
+svm/SVM.o: /usr/include/standards.h /usr/include/sys/seek.h
+svm/SVM.o: /usr/include/va_list.h /usr/include/sys/types.h
+svm/SVM.o: /usr/include/time_t.h /usr/include/mach/machine/vm_types.h
+svm/SVM.o: /usr/include/sys/select.h /usr/include/getopt.h
+svm/SVM.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+svm/SVM.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+svm/SVM.o: /usr/include/sys/rt_limits.h lib/Mathmatics.h /usr/include/math.h
+svm/SVM.o: /usr/include/stdlib.h /usr/include/ctype.h
+svm/SVM.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
+svm/SVM.o: /usr/include/locale.h /usr/include/nl_types.h /usr/include/mesg.h
+svm/SVM.o: /usr/include/limits.h /usr/include/string.h /usr/include/strings.h
+svm/SVM.o: /usr/include/time.h /usr/include/sys/timers.h
+svm/SVM.o: /usr/include/sys/signalmisc.h /usr/include/sys/timemisc.h
+svm/SVM.o: /usr/include/float.h /usr/include/fp_class.h
 svm/SVM_light.o: svm/SVM.h lib/common.h lib/Observation.h
-svm/SVM_light.o: /usr/include/stdio.h /usr/include/features.h
-svm/SVM_light.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-svm/SVM_light.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm/SVM_light.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm/SVM_light.o: /usr/include/bits/types.h /usr/include/libio.h
-svm/SVM_light.o: /usr/include/_G_config.h /usr/include/wchar.h
-svm/SVM_light.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-svm/SVM_light.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h
-svm/SVM_light.o: /usr/include/math.h /usr/include/bits/huge_val.h
-svm/SVM_light.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-svm/SVM_light.o: /usr/include/stdlib.h /usr/include/ctype.h
-svm/SVM_light.o: /usr/include/endian.h /usr/include/bits/endian.h
-svm/SVM_light.o: /usr/include/string.h /usr/include/time.h
-svm/SVM_light.o: /usr/include/bits/time.h
-svm/SVM_light.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
-svm/SVM_light.o: svm/kernel.h hmm/HMM.h svm/Optimizer.h
-svm/kernel.o: hmm/HMM.h /usr/include/math.h /usr/include/features.h
-svm/kernel.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-svm/kernel.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-svm/kernel.o: /usr/include/bits/mathcalls.h /usr/include/stdio.h
-svm/kernel.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm/kernel.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm/kernel.o: /usr/include/bits/types.h /usr/include/libio.h
-svm/kernel.o: /usr/include/_G_config.h /usr/include/wchar.h
-svm/kernel.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-svm/kernel.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h
-svm/kernel.o: /usr/include/stdlib.h lib/common.h lib/Observation.h
-gui/GeneFinder.o: /usr/include/stdio.h /usr/include/features.h
-gui/GeneFinder.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-gui/GeneFinder.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-gui/GeneFinder.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-gui/GeneFinder.o: /usr/include/bits/types.h /usr/include/libio.h
-gui/GeneFinder.o: /usr/include/_G_config.h /usr/include/wchar.h
-gui/GeneFinder.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-gui/GeneFinder.o: /usr/include/bits/stdio_lim.h /usr/include/unistd.h
-gui/GeneFinder.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-gui/GeneFinder.o: /usr/include/time.h /usr/include/bits/time.h
-gui/GeneFinder.o: /usr/include/string.h /usr/include/ctype.h
-gui/GeneFinder.o: /usr/include/endian.h /usr/include/bits/endian.h
+svm/SVM_light.o: /usr/include/stdio.h /usr/include/standards.h
+svm/SVM_light.o: /usr/include/sys/seek.h /usr/include/va_list.h
+svm/SVM_light.o: /usr/include/sys/types.h /usr/include/time_t.h
+svm/SVM_light.o: /usr/include/mach/machine/vm_types.h
+svm/SVM_light.o: /usr/include/sys/select.h /usr/include/getopt.h
+svm/SVM_light.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+svm/SVM_light.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+svm/SVM_light.o: /usr/include/sys/rt_limits.h lib/Mathmatics.h
+svm/SVM_light.o: /usr/include/math.h /usr/include/stdlib.h
+svm/SVM_light.o: /usr/include/ctype.h /usr/include/sys/localedef.h
+svm/SVM_light.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+svm/SVM_light.o: /usr/include/nl_types.h /usr/include/mesg.h
+svm/SVM_light.o: /usr/include/limits.h /usr/include/string.h
+svm/SVM_light.o: /usr/include/strings.h /usr/include/time.h
+svm/SVM_light.o: /usr/include/sys/timers.h /usr/include/sys/signalmisc.h
+svm/SVM_light.o: /usr/include/sys/timemisc.h /usr/include/float.h
+svm/SVM_light.o: /usr/include/fp_class.h svm/kernel.h hmm/HMM.h
+svm/SVM_light.o: svm/Optimizer.h
+svm/kernel.o: hmm/HMM.h /usr/include/math.h /usr/include/standards.h
+svm/kernel.o: /usr/include/stdlib.h /usr/include/getopt.h
+svm/kernel.o: /usr/include/sys/types.h /usr/include/time_t.h
+svm/kernel.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+svm/kernel.o: /usr/include/stdio.h /usr/include/sys/seek.h
+svm/kernel.o: /usr/include/va_list.h /usr/include/sys/limits.h
+svm/kernel.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+svm/kernel.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+svm/kernel.o: lib/Mathmatics.h lib/common.h lib/Observation.h
+gui/GeneFinder.o: /usr/include/stdio.h /usr/include/standards.h
+gui/GeneFinder.o: /usr/include/sys/seek.h /usr/include/va_list.h
+gui/GeneFinder.o: /usr/include/sys/types.h /usr/include/time_t.h
+gui/GeneFinder.o: /usr/include/mach/machine/vm_types.h
+gui/GeneFinder.o: /usr/include/sys/select.h /usr/include/getopt.h
+gui/GeneFinder.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+gui/GeneFinder.o: /usr/include/sys/syslimits.h
+gui/GeneFinder.o: /usr/include/machine/machtime.h
+gui/GeneFinder.o: /usr/include/sys/rt_limits.h /usr/include/unistd.h
+gui/GeneFinder.o: /usr/include/sys/access.h /usr/include/time.h
+gui/GeneFinder.o: /usr/include/sys/timers.h /usr/include/sys/signalmisc.h
+gui/GeneFinder.o: /usr/include/sys/timemisc.h /usr/include/string.h
+gui/GeneFinder.o: /usr/include/strings.h /usr/include/ctype.h
+gui/GeneFinder.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
+gui/GeneFinder.o: /usr/include/locale.h /usr/include/nl_types.h
+gui/GeneFinder.o: /usr/include/mesg.h /usr/include/limits.h
 gui/GeneFinder.o: /usr/include/stdlib.h /usr/include/math.h
-gui/GeneFinder.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-gui/GeneFinder.o: /usr/include/bits/mathcalls.h /usr/include/fcntl.h
-gui/GeneFinder.o: /usr/include/bits/fcntl.h /usr/include/sys/types.h
-gui/GeneFinder.o: hmm/HMM.h lib/Mathmatics.h lib/common.h lib/Observation.h
-gui/GeneFinder.o: svm/SVM.h
-gui/GeneFinder.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
+gui/GeneFinder.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+gui/GeneFinder.o: /usr/include/sys/mode.h hmm/HMM.h lib/Mathmatics.h
+gui/GeneFinder.o: lib/common.h lib/Observation.h svm/SVM.h
+gui/GeneFinder.o: /usr/include/float.h /usr/include/fp_class.h
 gui/GeneFinder.o: svm/SVM_light.h svm/kernel.h svm/Optimizer.h
-hmm/HMM.o: hmm/HMM.h /usr/include/math.h /usr/include/features.h
-hmm/HMM.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-hmm/HMM.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-hmm/HMM.o: /usr/include/bits/mathcalls.h /usr/include/stdio.h
-hmm/HMM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-hmm/HMM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-hmm/HMM.o: /usr/include/bits/types.h /usr/include/libio.h
-hmm/HMM.o: /usr/include/_G_config.h /usr/include/wchar.h
-hmm/HMM.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-hmm/HMM.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h
-hmm/HMM.o: /usr/include/stdlib.h lib/common.h lib/Observation.h
-hmm/HMM.o: /usr/include/time.h /usr/include/bits/time.h /usr/include/ctype.h
-hmm/HMM.o: /usr/include/endian.h /usr/include/bits/endian.h
-lib/Mathmatics.o: /usr/include/stdio.h /usr/include/features.h
-lib/Mathmatics.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-lib/Mathmatics.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-lib/Mathmatics.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-lib/Mathmatics.o: /usr/include/bits/types.h /usr/include/libio.h
-lib/Mathmatics.o: /usr/include/_G_config.h /usr/include/wchar.h
-lib/Mathmatics.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-lib/Mathmatics.o: /usr/include/bits/stdio_lim.h /usr/include/math.h
-lib/Mathmatics.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-lib/Mathmatics.o: /usr/include/bits/mathcalls.h /usr/include/time.h
-lib/Mathmatics.o: /usr/include/bits/time.h /usr/include/stdlib.h
-lib/Mathmatics.o: lib/Mathmatics.h lib/common.h
-lib/Observation.o: /usr/include/stdio.h /usr/include/features.h
-lib/Observation.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-lib/Observation.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-lib/Observation.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-lib/Observation.o: /usr/include/bits/types.h /usr/include/libio.h
-lib/Observation.o: /usr/include/_G_config.h /usr/include/wchar.h
-lib/Observation.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-lib/Observation.o: /usr/include/bits/stdio_lim.h lib/Observation.h
+hmm/HMM.o: hmm/HMM.h /usr/include/math.h /usr/include/standards.h
+hmm/HMM.o: /usr/include/stdlib.h /usr/include/getopt.h
+hmm/HMM.o: /usr/include/sys/types.h /usr/include/time_t.h
+hmm/HMM.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+hmm/HMM.o: /usr/include/stdio.h /usr/include/sys/seek.h
+hmm/HMM.o: /usr/include/va_list.h /usr/include/sys/limits.h
+hmm/HMM.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+hmm/HMM.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+hmm/HMM.o: lib/Mathmatics.h lib/common.h lib/Observation.h
+hmm/HMM.o: /usr/include/time.h /usr/include/sys/timers.h
+hmm/HMM.o: /usr/include/sys/signalmisc.h /usr/include/sys/timemisc.h
+hmm/HMM.o: /usr/include/ctype.h /usr/include/sys/localedef.h
+hmm/HMM.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+hmm/HMM.o: /usr/include/nl_types.h /usr/include/mesg.h /usr/include/limits.h
+lib/Mathmatics.o: /usr/include/stdio.h /usr/include/standards.h
+lib/Mathmatics.o: /usr/include/sys/seek.h /usr/include/va_list.h
+lib/Mathmatics.o: /usr/include/sys/types.h /usr/include/time_t.h
+lib/Mathmatics.o: /usr/include/mach/machine/vm_types.h
+lib/Mathmatics.o: /usr/include/sys/select.h /usr/include/getopt.h
+lib/Mathmatics.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+lib/Mathmatics.o: /usr/include/sys/syslimits.h
+lib/Mathmatics.o: /usr/include/machine/machtime.h
+lib/Mathmatics.o: /usr/include/sys/rt_limits.h /usr/include/math.h
+lib/Mathmatics.o: /usr/include/stdlib.h /usr/include/time.h
+lib/Mathmatics.o: /usr/include/sys/timers.h /usr/include/sys/signalmisc.h
+lib/Mathmatics.o: /usr/include/sys/timemisc.h lib/Mathmatics.h lib/common.h
+lib/Observation.o: /usr/include/stdio.h /usr/include/standards.h
+lib/Observation.o: /usr/include/sys/seek.h /usr/include/va_list.h
+lib/Observation.o: /usr/include/sys/types.h /usr/include/time_t.h
+lib/Observation.o: /usr/include/mach/machine/vm_types.h
+lib/Observation.o: /usr/include/sys/select.h /usr/include/getopt.h
+lib/Observation.o: /usr/include/sys/limits.h
+lib/Observation.o: /usr/include/machine/machlimits.h
+lib/Observation.o: /usr/include/sys/syslimits.h
+lib/Observation.o: /usr/include/machine/machtime.h
+lib/Observation.o: /usr/include/sys/rt_limits.h lib/Observation.h
 lib/Observation.o: lib/common.h lib/Mathmatics.h /usr/include/math.h
-lib/Observation.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-lib/Observation.o: /usr/include/bits/mathcalls.h /usr/include/stdlib.h
+lib/Observation.o: /usr/include/stdlib.h
 svm/Optimizer.o: svm/pr_loqo.h svm/Optimizer.h lib/common.h svm/SVM.h
 svm/Optimizer.o: lib/Observation.h /usr/include/stdio.h
-svm/Optimizer.o: /usr/include/features.h /usr/include/sys/cdefs.h
-svm/Optimizer.o: /usr/include/gnu/stubs.h
-svm/Optimizer.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm/Optimizer.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm/Optimizer.o: /usr/include/bits/types.h /usr/include/libio.h
-svm/Optimizer.o: /usr/include/_G_config.h /usr/include/wchar.h
-svm/Optimizer.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-svm/Optimizer.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h
-svm/Optimizer.o: /usr/include/math.h /usr/include/bits/huge_val.h
-svm/Optimizer.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-svm/Optimizer.o: /usr/include/stdlib.h /usr/include/ctype.h
-svm/Optimizer.o: /usr/include/endian.h /usr/include/bits/endian.h
-svm/Optimizer.o: /usr/include/string.h /usr/include/time.h
-svm/Optimizer.o: /usr/include/bits/time.h
-svm/Optimizer.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
+svm/Optimizer.o: /usr/include/standards.h /usr/include/sys/seek.h
+svm/Optimizer.o: /usr/include/va_list.h /usr/include/sys/types.h
+svm/Optimizer.o: /usr/include/time_t.h /usr/include/mach/machine/vm_types.h
+svm/Optimizer.o: /usr/include/sys/select.h /usr/include/getopt.h
+svm/Optimizer.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+svm/Optimizer.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+svm/Optimizer.o: /usr/include/sys/rt_limits.h lib/Mathmatics.h
+svm/Optimizer.o: /usr/include/math.h /usr/include/stdlib.h
+svm/Optimizer.o: /usr/include/ctype.h /usr/include/sys/localedef.h
+svm/Optimizer.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+svm/Optimizer.o: /usr/include/nl_types.h /usr/include/mesg.h
+svm/Optimizer.o: /usr/include/limits.h /usr/include/string.h
+svm/Optimizer.o: /usr/include/strings.h /usr/include/time.h
+svm/Optimizer.o: /usr/include/sys/timers.h /usr/include/sys/signalmisc.h
+svm/Optimizer.o: /usr/include/sys/timemisc.h /usr/include/float.h
+svm/Optimizer.o: /usr/include/fp_class.h
 svm/SVM.o: svm/SVM.h lib/common.h lib/Observation.h /usr/include/stdio.h
-svm/SVM.o: /usr/include/features.h /usr/include/sys/cdefs.h
-svm/SVM.o: /usr/include/gnu/stubs.h
-svm/SVM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm/SVM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm/SVM.o: /usr/include/bits/types.h /usr/include/libio.h
-svm/SVM.o: /usr/include/_G_config.h /usr/include/wchar.h
-svm/SVM.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-svm/SVM.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h /usr/include/math.h
-svm/SVM.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-svm/SVM.o: /usr/include/bits/mathcalls.h /usr/include/stdlib.h
-svm/SVM.o: /usr/include/ctype.h /usr/include/endian.h
-svm/SVM.o: /usr/include/bits/endian.h /usr/include/string.h
-svm/SVM.o: /usr/include/time.h /usr/include/bits/time.h
-svm/SVM.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
+svm/SVM.o: /usr/include/standards.h /usr/include/sys/seek.h
+svm/SVM.o: /usr/include/va_list.h /usr/include/sys/types.h
+svm/SVM.o: /usr/include/time_t.h /usr/include/mach/machine/vm_types.h
+svm/SVM.o: /usr/include/sys/select.h /usr/include/getopt.h
+svm/SVM.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+svm/SVM.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+svm/SVM.o: /usr/include/sys/rt_limits.h lib/Mathmatics.h /usr/include/math.h
+svm/SVM.o: /usr/include/stdlib.h /usr/include/ctype.h
+svm/SVM.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
+svm/SVM.o: /usr/include/locale.h /usr/include/nl_types.h /usr/include/mesg.h
+svm/SVM.o: /usr/include/limits.h /usr/include/string.h /usr/include/strings.h
+svm/SVM.o: /usr/include/time.h /usr/include/sys/timers.h
+svm/SVM.o: /usr/include/sys/signalmisc.h /usr/include/sys/timemisc.h
+svm/SVM.o: /usr/include/float.h /usr/include/fp_class.h
 svm/SVM_light.o: svm/SVM_light.h svm/SVM.h lib/common.h lib/Observation.h
-svm/SVM_light.o: /usr/include/stdio.h /usr/include/features.h
-svm/SVM_light.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-svm/SVM_light.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm/SVM_light.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm/SVM_light.o: /usr/include/bits/types.h /usr/include/libio.h
-svm/SVM_light.o: /usr/include/_G_config.h /usr/include/wchar.h
-svm/SVM_light.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-svm/SVM_light.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h
-svm/SVM_light.o: /usr/include/math.h /usr/include/bits/huge_val.h
-svm/SVM_light.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-svm/SVM_light.o: /usr/include/stdlib.h /usr/include/ctype.h
-svm/SVM_light.o: /usr/include/endian.h /usr/include/bits/endian.h
-svm/SVM_light.o: /usr/include/string.h /usr/include/time.h
-svm/SVM_light.o: /usr/include/bits/time.h
-svm/SVM_light.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
-svm/SVM_light.o: svm/kernel.h hmm/HMM.h svm/Optimizer.h
+svm/SVM_light.o: /usr/include/stdio.h /usr/include/standards.h
+svm/SVM_light.o: /usr/include/sys/seek.h /usr/include/va_list.h
+svm/SVM_light.o: /usr/include/sys/types.h /usr/include/time_t.h
+svm/SVM_light.o: /usr/include/mach/machine/vm_types.h
+svm/SVM_light.o: /usr/include/sys/select.h /usr/include/getopt.h
+svm/SVM_light.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+svm/SVM_light.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+svm/SVM_light.o: /usr/include/sys/rt_limits.h lib/Mathmatics.h
+svm/SVM_light.o: /usr/include/math.h /usr/include/stdlib.h
+svm/SVM_light.o: /usr/include/ctype.h /usr/include/sys/localedef.h
+svm/SVM_light.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+svm/SVM_light.o: /usr/include/nl_types.h /usr/include/mesg.h
+svm/SVM_light.o: /usr/include/limits.h /usr/include/string.h
+svm/SVM_light.o: /usr/include/strings.h /usr/include/time.h
+svm/SVM_light.o: /usr/include/sys/timers.h /usr/include/sys/signalmisc.h
+svm/SVM_light.o: /usr/include/sys/timemisc.h /usr/include/float.h
+svm/SVM_light.o: /usr/include/fp_class.h svm/kernel.h hmm/HMM.h
+svm/SVM_light.o: svm/Optimizer.h
 svm/kernel.o: svm/kernel.h hmm/HMM.h /usr/include/math.h
-svm/kernel.o: /usr/include/features.h /usr/include/sys/cdefs.h
-svm/kernel.o: /usr/include/gnu/stubs.h /usr/include/bits/huge_val.h
-svm/kernel.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-svm/kernel.o: /usr/include/stdio.h
-svm/kernel.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm/kernel.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm/kernel.o: /usr/include/bits/types.h /usr/include/libio.h
-svm/kernel.o: /usr/include/_G_config.h /usr/include/wchar.h
-svm/kernel.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-svm/kernel.o: /usr/include/bits/stdio_lim.h lib/Mathmatics.h
-svm/kernel.o: /usr/include/stdlib.h lib/common.h lib/Observation.h
-svm/pr_loqo.o: /usr/include/math.h /usr/include/features.h
-svm/pr_loqo.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-svm/pr_loqo.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-svm/pr_loqo.o: /usr/include/bits/mathcalls.h /usr/include/time.h
-svm/pr_loqo.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm/pr_loqo.o: /usr/include/bits/time.h /usr/include/bits/types.h
-svm/pr_loqo.o: /usr/include/stdlib.h /usr/include/stdio.h
-svm/pr_loqo.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm/pr_loqo.o: /usr/include/libio.h /usr/include/_G_config.h
-svm/pr_loqo.o: /usr/include/wchar.h /usr/include/bits/wchar.h
-svm/pr_loqo.o: /usr/include/gconv.h /usr/include/bits/stdio_lim.h
+svm/kernel.o: /usr/include/standards.h /usr/include/stdlib.h
+svm/kernel.o: /usr/include/getopt.h /usr/include/sys/types.h
+svm/kernel.o: /usr/include/time_t.h /usr/include/mach/machine/vm_types.h
+svm/kernel.o: /usr/include/sys/select.h /usr/include/stdio.h
+svm/kernel.o: /usr/include/sys/seek.h /usr/include/va_list.h
+svm/kernel.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+svm/kernel.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+svm/kernel.o: /usr/include/sys/rt_limits.h lib/Mathmatics.h lib/common.h
+svm/kernel.o: lib/Observation.h
+svm/pr_loqo.o: /usr/include/math.h /usr/include/standards.h
+svm/pr_loqo.o: /usr/include/stdlib.h /usr/include/getopt.h
+svm/pr_loqo.o: /usr/include/sys/types.h /usr/include/time_t.h
+svm/pr_loqo.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+svm/pr_loqo.o: /usr/include/time.h /usr/include/machine/machtime.h
+svm/pr_loqo.o: /usr/include/sys/timers.h /usr/include/sys/signalmisc.h
+svm/pr_loqo.o: /usr/include/sys/timemisc.h /usr/include/stdio.h
+svm/pr_loqo.o: /usr/include/sys/seek.h /usr/include/va_list.h
+svm/pr_loqo.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+svm/pr_loqo.o: /usr/include/sys/syslimits.h /usr/include/sys/rt_limits.h
 svm/pr_loqo.o: lib/common.h svm/pr_loqo.h

@@ -43,6 +43,7 @@ CFLOAT kernel(KERNEL_PARM *kernel_parm,DOC* a,DOC* b)
 
 	    default: printf("Error: Unknown kernel function\n"); exit(1);
 	}
+  return 0 ;
 }
 
 void tester(KERNEL_PARM *kernel_parm)

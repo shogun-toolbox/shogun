@@ -13,7 +13,7 @@
 #include "lib/Observation.h"
 
 #ifdef PARALLEL
-#define NUM_PARALLEL 2
+#define NUM_PARALLEL 4
 #define ALPHA_CACHE(dim) alpha_cache[(dim)%NUM_PARALLEL] 
 #define BETA_CACHE(dim) beta_cache[(dim)%NUM_PARALLEL] 
 #define ARRAYS(dim) arrayS[(dim)%NUM_PARALLEL] 
@@ -636,7 +636,7 @@ public:
 	/** set new observations
 	 * only set the observation pointer and drop caches if there were any
 	 */
-	void CHMM::set_observation_nocache(CObservation* obs);
+	void set_observation_nocache(CObservation* obs);
 
 	/// return observation pointer
 	inline CObservation* get_observations()

@@ -120,7 +120,7 @@ public:
 	 * from output and label of length size 
 	 * returns index with smallest error=fp+fn
 	 */
-	int CMath::calcroc(double* fp, double* tp, double* output, int* label, int size, int& possize, int& negsize, FILE* rocfile);
+	int calcroc(double* fp, double* tp, double* output, int* label, int size, int& possize, int& negsize, FILE* rocfile);
 	//@}
 
 	/**@name summing functions */

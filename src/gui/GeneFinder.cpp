@@ -13,10 +13,9 @@
 //#include <termios.h>
 #endif
 
-
 #ifdef SVMCPLEX
- #include <libmmfile.h>
-#endif
+#include <libmmfile.h>
+#endif // SVMCPLEX
 
 #include "hmm/HMM.h"
 #include "lib/Observation.h"
@@ -1478,7 +1477,10 @@ static bool prompt(FILE* infile=stdin)
 		pos->set_observations(obs);
 		neg->set_observations(obs);
 		
-		theta=new double[1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M())];
+		int larger_N=math.max(pos->get_N(), neg->get_N());
+		int larger_M=math.max(pos->get_M(), neg->get_M());
+		
+		theta=new double[1+larger_N*(1+larger_N+1+larger_M)];
 		svm->svm_train(obs, 4, C);
 		if (strlen(name)>0)
 		{

@@ -124,4 +124,5 @@ static mxArray * Mcplex_quit(int nargout_, mxArray * varargin) {
     mclSetCurrentLocalFunctionTable(save_local_function_table_);
     return mclCExecMexFunction("cplex_quit", nargout_, varargin);
 }
-#endif // SVMCPLEX
+#endif 
+

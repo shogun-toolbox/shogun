@@ -126,4 +126,5 @@ static mxArray * Mcplex_init(int nargout_, mxArray * varargin) {
     return mclCExecMexFunction("cplex_init", nargout_, varargin);
 }
 
-#endif // SVMCPLEX
+#endif 
+
