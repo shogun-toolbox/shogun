@@ -101,7 +101,7 @@ template<class T> class CCache
 		if (lookup_table)
 		{
 			// first look for the element with smallest usage count
-			//long min_idx=((nr_cache_lines-1)*rand())/(RAND_MAX+1); //avoid the last elem and the scratch line
+			//long min_idx=((nr_cache_lines-1)*random())/(RAND_MAX+1); //avoid the last elem and the scratch line
 			long min_idx=0;
 			long min=-1;
 			bool found_free_line=false;
