@@ -1503,6 +1503,10 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 				assert(q==0) ;
 			} ;
 		}
+		delete[] sort_delta_end ;
+		delete[] sort_k ;
+		delete[] sort_t ;
+		delete[] sort_idx ;
 	}
 
 	delete[] delta ;
@@ -1519,10 +1523,6 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 	delete[] ktable_ends;
 	delete[] path_ends ;
 	delete[] delta_end ;
-	delete[] sort_delta_end ;
-	delete[] sort_k ;
-	delete[] sort_t ;
-	delete[] sort_idx ;
 }
 
 
