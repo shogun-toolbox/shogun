@@ -462,6 +462,15 @@ public:
 	bool initialize( int N, int M, int ORDER, 
 					 CModel* model, REAL PSEUDO,
 					 FILE* model_file=NULL);
+	/** initialization function - gets called by constructors.
+	 * @param N number of states
+	 * @param M number of emissions
+	 * @param ORDER order of HMM
+	 * @param model model which holds definitions of states to be learned + consts
+	 * @param PSEUDO Pseudo Value
+	 * @param model_file Filehandle to a hmm model file (*.mod)
+	 */
+	bool alloc_model_and_cache(int N, int M, int ORDER
 	//@}
 
 	/**@name probability functions.
@@ -618,6 +627,10 @@ public:
 	
 	/// normalize the model to satisfy stochasticity
 	void normalize();
+
+	/// increases the number of states by num_states
+	/// the new a/b/p/q values are given the value default_val
+	void add_states(int num_states, REAL default_val=-math.INFTY);
 
 	/// set any model parameter with probability smaller than value to ZERO
 	void chop(REAL value);

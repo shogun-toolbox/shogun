@@ -4305,6 +4305,42 @@ void CHMM::normalize()
     }
 }
 
+void CHMM::add_states(int num_states, REAL default_value)
+{
+    //free
+    //alloc n_p,n_a,n_b,n_q
+
+
+    for (int i=0; i<N; i++)
+    {
+
+	get_p(i)
+	int j;
+
+	if (exp(get_p(i)) < value)
+	    set_p(i, math.ALMOST_NEG_INFTY);
+
+	if (exp(get_q(i)) < value)
+	    set_q(i, math.ALMOST_NEG_INFTY);
+
+	for (j=0; j<N; j++)
+	{
+	    if (exp(get_a(i,j)) < value)
+		    set_a(i,j, math.ALMOST_NEG_INFTY);
+	}
+
+	for (j=0; j<M; j++)
+	{
+	    if (exp(get_b(i,j)) < value)
+		    set_b(i,j, math.ALMOST_NEG_INFTY);
+	}
+    }
+
+    //delete + adjust pointers
+    normalize();
+    invalidate_model();
+}
+
 void CHMM::chop(REAL value)
 {
     for (int i=0; i<N; i++)
