@@ -19,63 +19,56 @@ extern "C" int	finite(double);
 
 
 void CHMM::best_path_trans(REAL *seq, INT seq_len, INT *pos,
-						   INT *step_penalties,
 						   struct penalty_struct **PEN_matrix,
 						   short int nbest, 
-						   REAL *prob_nbest, INT *my_paths)
+						   REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq)
 {
 #define PSI(t,j,k) psi[nbest*((t)*N+(j))+(k)]	
-#define DELTA(j,k) delta[(j)*nbest+k]
-#define DELTA_NEW(j,k) delta_new[(j)*nbest+k]
+#define DELTA(t,j,k) delta[(t)*nbest*N+(j)*nbest+k]
 #define DELTA_END(k) delta_end[k]
 #define KTAB(t,j,k) ktable[nbest*((t)*N+j)+k]
+#define PTAB(t,j,k) ptable[nbest*((t)*N+j)+k]
 #define KTAB_ENDS(k) ktable_ends[k]
-#define PATHS(t,k) my_paths[(k)*(seq_len+1)+t] 
 #define PATH_ENDS(k) path_ends[k]
 #define SEQ(j,t) seq[j+(t)*N]
 #define STEP_PEN(i,j) step_penalties[(j)*N+i]
 #define PEN(i,j) PEN_matrix[(j)*N+i]
-#define LEN(i,j) length[(j)*N+(i)]
-#define LEN_NEW(i,j) length_new[(j)*N+(i)]
 
+	const INT max_look_back = 1000 ;
+	
 	//fprintf(stderr,"seq_len=%i N=%i, nbest=%i\n", seq_len, N,nbest) ;
 	
 	T_STATES *psi=new T_STATES[seq_len*N*nbest] ;
 	assert(psi!=NULL) ;
 	short int *ktable=new short int[seq_len*N*nbest] ;
 	assert(ktable!=NULL) ;
-	short int *ktable_ends=new short int[seq_len*nbest] ;
+	INT *ptable=new INT[seq_len*N*nbest] ;
+	assert(ptable!=NULL) ;
+	short int *ktable_ends=new short int[nbest] ;
 	assert(ktable_ends!=NULL) ;
 
-	REAL* tempvv=new REAL[nbest*N] ;
+	const INT look_back_buflen = math.min(seq_len, seq_len)*nbest*N ;
+	REAL* tempvv=new REAL[look_back_buflen] ;
 	assert(tempvv!=NULL) ;
-	INT* tempii=new INT[nbest*N] ;
+	INT* tempii=new INT[look_back_buflen] ;
 	assert(tempii!=NULL) ;
 
-	T_STATES* path_ends = new T_STATES[seq_len*nbest] ;
+	T_STATES* path_ends = new T_STATES[nbest] ;
 	assert(path_ends!=NULL) ;
 	REAL* delta= new REAL[N*nbest] ;
 	assert(delta!=NULL) ;
-	REAL* delta_new= new REAL[N*nbest] ;
-	assert(delta_new!=NULL) ;
-	REAL* delta_end= new REAL[seq_len*nbest] ;
+	REAL* delta_end= new REAL[nbest] ;
 	assert(delta_end!=NULL) ;
-
-	INT * length = new INT[N*N] ;
-	INT * length_new = new INT[N*N] ;
-	const INT LARGE = 1024*1024*1024 ;
 
 	{ // initialization
 		for (T_STATES i=0; i<N; i++)
 		{
-			DELTA(i,0) = get_p(i) + SEQ(i,0) ;
+			DELTA(0,i,0) = get_p(i) + SEQ(i,0) ;
 			for (short int k=1; k<nbest; k++)
 			{
-				DELTA(i,k)=-math.INFTY ;
+				DELTA(0,i,k)=-math.INFTY ;
 				KTAB(0,i,k)=0 ;
 			}
-			for (INT j=0; j<N; j++)
-				LEN(i,j) = LARGE ;
 		}
 	}
 	
@@ -84,181 +77,135 @@ void CHMM::best_path_trans(REAL *seq, INT seq_len, INT *pos,
 	{
 		fprintf(stderr, "t=%i  ", t) ;
 		for (INT i=0; i<N; i++)
-			fprintf(stderr,"%i: %1.2f  ", i, DELTA(i,0)) ;
+			fprintf(stderr,"%i: %1.2f  ", i, DELTA(t-1,i,0)) ;
 		fprintf(stderr, "\n") ;
-		fprintf(stderr, "LEN(23,0)=%i\n",LEN(23,0)) ;
-		fprintf(stderr, "LEN(23,2)=%i\n",LEN(23,2)) ;
 		
 		for (T_STATES j=0; j<N; j++)
 		{
-			const T_STATES num_elem   = trans_list_forward_cnt[j] ;
-			const T_STATES *elem_list = trans_list_forward[j] ;
-			const REAL *elem_val      = trans_list_forward_val[j] ;
-
-			INT list_len=0 ;
-			for (short int diff=0; diff<nbest; diff++)
+			if (finite(SEQ(j,t))==-1)
+			{ // if we cannot observe the symbol here, then we can omit the rest
+				for (short int k=0; k<nbest; k++)
+				{
+					DELTA(t,j,k)    = SEQ(j,t) ;
+					PSI(t,j,k)      = 0 ;
+					KTAB(t,j,k)     = 0 ;
+					PTAB(t,j,k)     = 0 ;
+				}
+			}
+			else
 			{
+				const T_STATES num_elem   = trans_list_forward_cnt[j] ;
+				const T_STATES *elem_list = trans_list_forward[j] ;
+				const REAL *elem_val      = trans_list_forward_val[j] ;
+				
+				INT list_len=0 ;
 				for (INT i=0; i<num_elem; i++)
 				{
 					T_STATES ii = elem_list[i] ;
-					REAL  val   = DELTA(ii,diff) + elem_val[i] ;
-					if (t==4 && j==5) fprintf(stderr, "val1=%1.2f ii=%i\n", val,ii) ;
-					
-					val        += lookup_step_penalty(STEP_PEN(j,ii), pos[t]-pos[t-1]) ;
-					if (t==4 && j==5) fprintf(stderr, "val2=%1.2f ii=%i\n", val,ii) ;
-					
-					if (PEN(j, ii)!=NULL)
+					for (INT ts=t-1; ts>=0 && pos[t]-pos[ts]<=max_look_back; ts--)
 					{
-						//fprintf(stderr, "- PEN(%i,%i) len=%i\n", j,ii,pos[t]-pos[t-1]) ;
-						val += lookup_penalty(PEN(j,ii), pos[t]-pos[t-1]) ;
-						if (t==4 && j==5) fprintf(stderr, "val3=%1.2f ii=%i\n", val,ii) ;
+						for (short int diff=0; diff<nbest; diff++)
+						{
+							REAL  val        = DELTA(ts,ii,diff) + elem_val[i] ;
+							if (finite(val)>=0)
+								val          += lookup_penalty(PEN(j,ii), pos[t]-pos[ts]) ;
+							tempvv[list_len] = -val ;
+							tempii[list_len] =  ii + diff*N + ts*N*nbest;
+							list_len++ ;
+							assert(list_len<look_back_buflen) ;
+						} ;
+					}
+				}
+				math.qsort(tempvv, tempii, list_len) ;
+				
+				for (short int k=0; k<nbest; k++)
+				{
+					if (k<list_len)
+					{
+						DELTA(t,j,k)    = -tempvv[k] + SEQ(j,t);
+						PSI(t,j,k)      = (tempii[k]%N) ;
+						KTAB(t,j,k)     = (tempii[k]%(N*nbest)-PSI(t,j,k))/N ;
+						PTAB(t,j,k)     = (tempii[k]-(tempii[k]%(N*nbest)))/(N*nbest) ;
+						
+						assert(KTAB(t,j,k)<nbest) ;
+						assert(PSI(t,j,k)<N) ;
+						assert(PTAB(t,j,k)<seq_len) ;
+						assert(finite(DELTA(t,j,k))>=0) ;
 					}
 					else
 					{
-						INT min_len = LARGE ;
-						INT min_s   = -1 ;
-						INT found   = 0 ;
-						
-						for (INT s=0; s<N; s++)
-							if (PEN(j,s)!=NULL)
-							{
-								found = 1 ;
-								if (t==4 && j==5 && ii==2)
-									fprintf(stderr, "len(%i,%i)=%i\n",s,ii,LEN(s,ii)) ;
-								if (LEN(s,ii)<min_len)
-								{
-									min_len = LEN(s,ii) ;
-									min_s   = s ;
-								}
-							} ;
-
-						if (found)
-						{
-							if (min_len>=LARGE)
-							{
-								assert(min_s == -1) ;
-								val += -math.INFTY ;
-							} else
-							{
-								if (t==4 && j==5) fprintf(stderr, "+ PEN(%i,%i) min_len=%i len=%i\n", j,min_s,min_len,min_len+pos[t]-pos[t-1]) ;
-								val += lookup_penalty(PEN(j,min_s), min_len + 
-													  pos[t]-pos[t-1]) ;
-								if (t==4 && j==5) fprintf(stderr, "val4=%1.2f ii=%i min_s=%i\n", val,ii,min_s) ;
-							}
-						}
-					} ;
-
-					tempvv[list_len] = -val ;
-					tempii[list_len] = diff*N + ii ;
-					list_len++ ;
+						DELTA(t,j,k)    = -math.INFTY ;
+						PSI(t,j,k)      = 0 ;
+						KTAB(t,j,k)     = 0 ;
+						PTAB(t,j,k)     = 0 ;
+					}
 				}
-			}
-			math.qsort(tempvv, tempii, list_len) ;
-			
-			for (short int k=0; k<nbest; k++)
-			{
-				if (k<list_len)
-				{
-					DELTA_NEW(j,k)  = -tempvv[k] + SEQ(j,t);
-					PSI(t,j,k)      = (tempii[k]%N) ;
-					KTAB(t,j,k)     = (tempii[k]-(tempii[k]%N))/N ;
-				}
-				else
-				{
-					DELTA_NEW(j,k)  = -math.INFTY ;
-					PSI(t,j,k)      = 0 ;
-					KTAB(t,j,k)     = 0 ;
-				}
-			}
-		}
-		for (T_STATES j=0; j<N; j++)
-		{
-			if (DELTA_NEW(j,0)>math.ALMOST_NEG_INFTY)
-			{
-				for (T_STATES i=0; i<N; i++)
-				{
-					INT tmp1 = PSI(t,j,0) ;
-					LEN_NEW(i,j) = LEN(i,tmp1)+pos[t]-pos[t-1] ;
-				}
-				INT tmp2 = PSI(t,j,0) ;
-				LEN_NEW(tmp2,j) = pos[t]-pos[t-1] ;
-			} else
-				for (T_STATES i=0; i<N; i++)
-					LEN_NEW(i,j) = LARGE  ;
-		}
-		
-		math.swap(delta,delta_new) ;
-		math.swap(length,length_new) ;
-		
-		if (t==seq_len-1)
-		{ //termination
-			INT list_len = 0 ;
-			for (short int diff=0; diff<nbest; diff++)
-			{
-				for (T_STATES i=0; i<N; i++)
-				{
-					tempvv[list_len] = -(DELTA(i,diff)+get_q(i));
-					tempii[list_len] = diff*N + i ;
-					list_len++ ;
-				}
-			}
-			math.qsort(tempvv, tempii, list_len) ;
-			
-			for (short int k=0; k<nbest; k++)
-			{
-				DELTA_END(k) = -tempvv[k] ;
-				PATH_ENDS(k) = (tempii[k]%N) ;
-				KTAB_ENDS(k) = (tempii[k]-(tempii[k]%N))/N ;
 			}
 		}
 	}
 	
-	{ //state sequence backtracking
-		REAL* sort_delta_end=new REAL[nbest] ;
-		assert(sort_delta_end!=NULL) ;
-		INT* sort_idx=new INT[nbest] ;
-		assert(sort_idx!=NULL) ;
-		
-		INT take_iter=seq_len-1 ;
-
-		for (short int k=0; k<nbest; k++)
+	{ //termination
+		INT list_len = 0 ;
+		for (short int diff=0; diff<nbest; diff++)
 		{
-			sort_delta_end[k]=-DELTA_END(k) ;
-			sort_idx[k]=k ;
-		}
-		
-		math.qsort(sort_delta_end, sort_idx, nbest) ;
-
-		for (short int n=0; n<nbest; n++)
-		{
-			short int k=sort_idx[n] ;
-			prob_nbest[n]=-sort_delta_end[n] ;
-
-			assert(k<nbest && k>=0) ;
-			assert(take_iter<seq_len && take_iter>=0) ;
-			
-			PATHS(take_iter,n) = PATH_ENDS(k) ;
-			short int q   = KTAB_ENDS(k) ;
-			
-			for (INT t = take_iter; t>0; t--)
+			for (T_STATES i=0; i<N; i++)
 			{
-				PATHS(t-1,n)=PSI(t, PATHS(t,n), q);
-				q = KTAB(t, PATHS(t,n), q) ;
+				tempvv[list_len] = -(DELTA(seq_len-1,i,diff)+get_q(i)) ;
+				tempii[list_len] = i + diff*N ;
+				list_len++ ;
 			}
 		}
-		delete[] sort_delta_end ;
-		delete[] sort_idx ;
+		math.qsort(tempvv, tempii, list_len) ;
+		
+		for (short int k=0; k<nbest; k++)
+		{
+			DELTA_END(k) = -tempvv[k] ;
+			PATH_ENDS(k) = (tempii[k]%N) ;
+			KTAB_ENDS(k) = (tempii[k]-PATH_ENDS(k))/N ;
+		}
+	}
+	
+	{ //state sequence backtracking
+		INT * state_seq = new INT[seq_len] ;
+		INT * pos_seq   = new INT[seq_len] ;
+		
+		for (short int k=0; k<nbest; k++)
+		{
+			prob_nbest[k]=-DELTA_END(k) ;
+			
+			INT i         = 0 ;
+			state_seq[i]  = PATH_ENDS(k) ;
+			short int q   = KTAB_ENDS(k) ;
+			pos_seq[i]    = seq_len-1 ;
+			while (state_seq[i]>0)
+			{
+				state_seq[i+1] = PSI(pos_seq[i], state_seq[i], q);
+				pos_seq[i+1]   = PTAB(pos_seq[i], state_seq[i], q) ;
+				q              = KTAB(pos_seq[i], state_seq[i], q) ;
+				i++ ;
+			}
+			INT num_states = i+1 ;
+			for (i=0; i<num_states;i++)
+			{
+				my_state_seq[i] = state_seq[num_states-i-1] ;
+				my_pos_seq[i]   = pos_seq[num_states-i-1] ;
+			}
+			my_state_seq[num_states]=-1 ;
+			my_pos_seq[num_states]=-1 ;
+		}
+		delete[] state_seq ;
+		delete[] pos_seq ;
 	}
 
 	delete[] psi ;
 	delete[] ktable;
 	delete[] ktable_ends;
+	delete[] ptable;
 
 	delete[] tempvv ;
 	delete[] tempii ;
 
 	delete[] path_ends ;
 	delete[] delta ;
-	delete[] delta_new ;
 	delete[] delta_end ;
 }

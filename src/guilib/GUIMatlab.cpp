@@ -5,6 +5,7 @@
 #include "lib/io.h"
 #include "mex.h"
 #include "distributions/hmm/HMM.h"
+#include "distributions/hmm/penalty_info.h"
 #include "classifier/svm/SVM.h"
 #include "features/Labels.h"
 #include "features/RealFeatures.h"
@@ -308,6 +309,126 @@ bool CGUIMatlab::best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[])
 			
 			delete h ;
 			delete[] my_path ;
+			return true;
+		}
+		else
+			CIO::message(M_ERROR, "model matricies not matching in size\n");
+	}
+
+	return false;
+}
+
+
+
+
+bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
+{
+	const mxArray* mx_p=vals[1];
+	const mxArray* mx_q=vals[2];
+	const mxArray* mx_a_trans=vals[3];
+	const mxArray* mx_seq=vals[4];
+	const mxArray* mx_pos=vals[5];
+	const mxArray* mx_penalties=vals[6];
+	const mxArray* mx_penalty_info=vals[7];
+	const mxArray* mx_nbest=vals[8];
+
+	INT nbest    = (INT)mxGetScalar(mx_nbest) ;
+	if (nbest<1)
+		return false ;
+	
+	if ( mx_p && mx_q && mx_a_trans && mx_seq && mx_pos && 
+		 mx_penalties && mx_penalty_info)
+	{
+		INT N=mxGetN(mx_p);
+		INT M=mxGetN(mx_pos);
+		INT P=mxGetN(mx_penalty_info) ;
+		
+		CIO::message(M_DEBUG, "N=%i, M=%i, P=%i\n", N, M, P) ;
+		
+		if (
+			mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
+			mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
+			mxGetN(mx_a_trans) == 3 &&
+			mxGetM(mx_seq) == N &&
+			mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 &&
+			mxGetM(mx_penalties)==N && 
+			mxGetN(mx_penalties)==N &&
+			((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
+			 || mxIsEmpty(mx_penalty_info))
+			)
+		{
+			double* p=mxGetPr(mx_p);
+			double* q=mxGetPr(mx_q);
+			double* a=mxGetPr(mx_a_trans);
+
+			double* pos_=mxGetPr(mx_pos) ;
+			double* penalties=mxGetPr(mx_penalties) ;
+			double* seq=mxGetPr(mx_seq) ;
+
+			INT * pos = new INT[M] ;
+
+			for (INT i=0; i<M; i++)
+				pos[i]=(INT)pos_[i] ;
+
+			struct penalty_struct * PEN = 
+				read_penalty_struct_from_cell(mx_penalty_info, P) ;
+			if (PEN==NULL && P!=0)
+				return false ;
+			
+			struct penalty_struct **PEN_matrix = new struct penalty_struct*[N*N] ;
+			for (INT i=0; i<N*N; i++)
+			{
+				INT id = (INT) penalties[i]-1 ;
+				if ((id<0 || id>=P) && (id!=-1))
+				{
+					CIO::message(M_ERROR, "id out of range\n") ;
+					delete_penalty_struct_array(PEN, P) ;
+					return false ;
+				}
+				if (id==-1)
+					PEN_matrix[i]=NULL ;
+				else
+					PEN_matrix[i]=&PEN[id] ;
+			} ;
+			
+			CHMM* h=new CHMM(N, p, q, mxGetM(mx_a_trans), a);
+			
+			INT *my_path = new INT[M*nbest] ;
+			memset(my_path, -1, M*nbest*sizeof(INT)) ;
+			INT *my_pos = new INT[M*nbest] ;
+			memset(my_pos, -1, M*nbest*sizeof(INT)) ;
+			
+			mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxREAL);
+			double* p_prob = mxGetPr(mx_prob);
+			
+			h->best_path_trans(seq, M, pos, PEN_matrix, 
+							   nbest, p_prob, my_path, my_pos) ;
+
+			// clean up 
+			delete_penalty_struct_array(PEN, P) ;
+			delete[] PEN_matrix ;
+			delete[] pos ;
+			delete h ;
+
+			// transcribe result
+			mxArray* mx_my_path=mxCreateDoubleMatrix(nbest, M, mxREAL);
+			double* d_my_path=mxGetPr(mx_my_path);
+			mxArray* mx_my_pos=mxCreateDoubleMatrix(nbest, M, mxREAL);
+			double* d_my_pos=mxGetPr(mx_my_pos);
+			
+			for (INT k=0; k<nbest; k++)
+				for (INT i=0; i<M; i++)
+				{
+					d_my_path[i*nbest+k] = my_path[i+k*M] ;
+					d_my_pos[i*nbest+k] = my_pos[i+k*M] ;
+				}
+			
+			retvals[0]=mx_prob ;
+			retvals[1]=mx_my_path ;
+			retvals[2]=mx_my_pos ;
+			delete[] my_path ;
+			delete[] my_pos ;
+
 			return true;
 		}
 		else

@@ -5,6 +5,8 @@
 #ifndef __CHMM_H__
 #define __CHMM_H__
 
+#include "distributions/hmm/penalty_info.h"
+
 #include "lib/Mathmatics.h"
 #include "lib/common.h"
 #include "lib/io.h"
@@ -557,7 +559,10 @@ public:
 	void best_path_no_b_trans(INT max_iter, INT & max_best_iter, short int nbest, REAL *prob_nbest, INT *my_paths) ;
 	//void best_path_no_b_trans1(INT max_iter, INT & max_best_iter, REAL *prob_nbest, INT *my_paths) ;
 	void model_prob_no_b_trans(INT max_iter, REAL *prob_iter) ;
-	
+	void best_path_trans(REAL *seq, INT seq_len, INT *pos,
+						 struct penalty_struct **PEN_matrix,
+						 short int nbest, 
+						 REAL *prob_nbest, INT *my_state_seq, INT* my_pos_seq) ;
 #endif
 
 	/// calculates probability that observations were generated 

@@ -132,6 +132,20 @@ public:
 	    a=b; b=c ;
 	  }
 
+	/// swap float vectors a and b
+	inline void swap(REAL * & a,REAL *&b)
+	  {
+	    REAL *c=a ;
+	    a=b; b=c ;
+	  }
+
+	/// swap INT vectors a and b
+	inline void swap(INT * & a, INT *&b)
+	  {
+	    INT *c=a ;
+	    a=b; b=c ;
+	  }
+
 	/// swap integers a and b
 	inline void swap(INT & a, INT &b)
 	  {
