@@ -51,7 +51,7 @@ bool CGUIHMM::new_hmm(char* param)
 
 bool CGUIHMM::baum_welch_train(char* param)
 {
-	char* templname=TMP_DIR "bw_model_XXXXXX" ;
+	char templname[]=TMP_DIR "bw_model_XXXXXX" ;
 #ifdef SUNOS
 #define mkstemp(name) mktemp(name);
 #endif
@@ -111,7 +111,7 @@ bool CGUIHMM::baum_welch_train(char* param)
 
 bool CGUIHMM::baum_welch_train_defined(char* param)
 {
-	char* templname=TMP_DIR "bwdef_model_XXXXXX" ;
+	char templname[]=TMP_DIR "bwdef_model_XXXXXX" ;
 #ifdef SUNOS
 #define mkstemp(name) mktemp(name);
 #endif
