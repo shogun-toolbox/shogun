@@ -45,7 +45,6 @@ bool CSVMLight::train()
   opt_precision=DEF_PRECISION_LINEAR;
 
   strcpy (learn_parm->predfile, "");
-  strcpy (learn_parm->alphafile, "");
   learn_parm->biased_hyperplane=1;
   learn_parm->sharedslack=0;
   learn_parm->remove_inconsistent=0;
@@ -57,7 +56,7 @@ bool CSVMLight::train()
   learn_parm->svm_c=C1;
   learn_parm->eps=-1.0;      /* equivalent regression epsilon for classification */
   learn_parm->transduction_posratio=-1.0;
-  learn_parm->svm_costratio=1.0;//CC2/C1;
+  learn_parm->svm_costratio=C2/C1;
   learn_parm->svm_costratio_unlab=1.0;
   learn_parm->svm_unlabbound=1E-5;
   learn_parm->epsilon_crit=1E-6; // GU: better decrease it ... ??
@@ -193,17 +192,46 @@ void CSVMLight::svm_learn()
 		}
 	}
 
+  /* compute starting state for initial alpha values */
+  if(svm_model.alpha) {
+    if(verbosity>=1) {
+      printf("Computing starting state..."); fflush(stdout);
+    }
+    long* index = new long[totdoc];
+    long* index2dnum = new long[totdoc+11];
+    REAL* aicache = new REAL[totdoc];
+    for(i=0;i<totdoc;i++) {    /* create full index and clip alphas */
+      index[i]=1;
+      set_alpha(i, fabs(get_alpha(i)));
+      if(get_alpha(i)<0) set_alpha(i,0);
+      if(get_alpha(i)>learn_parm->svm_cost[i]) set_alpha(i,learn_parm->svm_cost[i]);
+    }
+      for(i=0;i<totdoc;i++)     /* fill kernel cache with unbounded SV */
+
+	if((get_alpha(i)>0) && (get_alpha(i)<learn_parm->svm_cost[i]) 
+	   && (get_kernel()->kernel_cache_space_available())) 
+	  get_kernel()->cache_kernel_row(i);
+      for(i=0;i<totdoc;i++)     /* fill rest of kernel cache with bounded SV */
+	if((get_alpha(i)==learn_parm->svm_cost[i]) 
+	   && (get_kernel()->kernel_cache_space_available())) 
+	  get_kernel()->cache_kernel_row(i);
+    compute_index(index,totdoc,index2dnum);
+    update_linear_component(docs,label,index2dnum,svm_model.alpha,a,index2dnum,totdoc,
+			    lin,aicache);
+    calculate_svm_model(docs,label,lin,svm_model.alpha,a,c,
+			      index2dnum,index2dnum,model);
+    for(i=0;i<totdoc;i++) {    /* copy initial alphas */
+      a[i]=get_alpha(i);
+    }
+    delete[] index;
+    delete[] index2dnum;
+    delete[] aicache;
+
+    if(verbosity>=1) {
+      printf("done.\n");  fflush(stdout);
+    }   
+  } 
 		CIO::message(M_DEBUG, "%d totdoc %d pos %d neg\n", totdoc, trainpos, trainneg);
-	if(learn_parm->remove_inconsistent && learn_parm->compute_loo) {
-		learn_parm->compute_loo=0;
-		CIO::message(M_MESSAGEONLY, "\nCannot compute leave-one-out estimates when removing inconsistent examples.\n\n");
-	}    
-
-	if((trainpos == 1) || (trainneg == 1)) {
-		learn_parm->compute_loo=0;
-		CIO::message(M_MESSAGEONLY, "\nCannot compute leave-one-out with only one example in one class.\n\n");
-	}    
-
 
 	if(verbosity==1) {
 		CIO::message(M_MESSAGEONLY, "Optimizing");
