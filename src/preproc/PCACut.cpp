@@ -218,17 +218,20 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 /// result in feature matrix
 REAL* CPCACut::apply_to_feature_vector(REAL* f, int &len)
 {
-  REAL *ret=new REAL[num_dim] ;
+  REAL *ret=new REAL[num_dim];
   int onei=1 ;
   double zerod=0, oned=1 ;
   char N='N' ;
-  REAL *sub_mean=new REAL[len] ;
+  REAL *sub_mean=new REAL[len];
   for (int i=0; i<len; i++)
-    sub_mean[i]=f[i]-mean[i] ;
-  
-  dgemv_(&N, &num_dim, &len, &oned, T, &num_dim, sub_mean, &onei, &zerod, ret, &onei) ;
+    sub_mean[i]=f[i]-mean[i];
+ 
+  int numd=num_dim;
+
+  dgemv_(&N, &numd, &len, &oned, T, &numd, sub_mean, &onei, &zerod, ret, &onei) ;
 
   delete[] sub_mean ;
   len=num_dim ;
+	  CIO::message("num_dim: %d\n", num_dim);
   return ret;
 }

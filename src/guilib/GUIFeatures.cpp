@@ -22,10 +22,9 @@ bool CGUIFeatures::preprocess(char* param)
     bool result=false;
     param=CIO::skip_spaces(param);
     char target[1024];
-    char type[1024];
-    int comp_features=1 ;
+	int force=0;
 
-    if ((sscanf(param, "%s", target))==1)
+    if ((sscanf(param, "%s %d", target, force))>=1)
     {
 	if ( strcmp(target, "TRAIN")==0 || strcmp(target, "TEST")==0 )
 	{
@@ -44,10 +43,11 @@ bool CGUIFeatures::preprocess(char* param)
 
 		if (*f_ptr)
 		{
-			if (gui->guiprepoc)
+			if (gui->guipreproc.get_preproc())
 			{
-				gui->puipreproc.init(*f_ptr);
-				(*f_ptr)->apply_to_feature_matrix();
+				gui->guipreproc.get_preproc()->init(*f_ptr);
+				(*f_ptr)->set_preproc(gui->guipreproc.get_preproc());
+				(*f_ptr)->preproc_feature_matrix(force==1);
 			}
 			else
 				CIO::message("no preprocessor set!\n");
@@ -98,8 +98,6 @@ bool CGUIFeatures::set_features(char* param)
 	    else
 		CIO::message("see help for parameters\n");
 
-	    if (*f_ptr)
-	    {
 		if (strcmp(type,"TOP")==0)
 		{
 		    if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
@@ -132,9 +130,6 @@ bool CGUIFeatures::set_features(char* param)
 		}
 		else
 		    CIO::not_implemented();
-	    }
-		else
-			CIO::message("features not correctly assigned!\n");
 	}
 	else
 	    CIO::message("observations not correctly assigned!\n");

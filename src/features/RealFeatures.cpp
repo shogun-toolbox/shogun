@@ -46,6 +46,7 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
 	  int len2=len ;
 	  REAL* feat2 = ((CRealPreProc*) preproc)->apply_to_feature_vector(feat, len2);
 	  delete[] feat ;
+	  CIO::message("len2: %d len: %d\n", len2, len);
 	  len=num_features=len2 ;
 	  return feat2 ;
 	}
@@ -70,6 +71,8 @@ REAL* CRealFeatures::get_feature_matrix(long &num_feat, long &num_vec)
 /// preproc feature_matrix
 bool CRealFeatures::preproc_feature_matrix(bool force_preprocessing)
 {
+	CIO::message("preproc: %d, preprocd: %d, force: %d\n", preproc, preprocessed, force_preprocessing);
+
 	if ( preproc && (!preprocessed || force_preprocessing) )
 	{
 	    preprocessed=true;	
@@ -85,6 +88,11 @@ bool CRealFeatures::preproc_feature_matrix(bool force_preprocessing)
 bool CRealFeatures::save(FILE* dest)
 {
     int i;
+	long len;
+	bool free;
+#warning num_features must not correspond with the length of a feature vectore since that one might be preprocessed
+	double* f=get_feature_vector(0, len, free);
+	free_feature_vector(f, free) ;
 
     unsigned char intlen=sizeof(unsigned int);
     unsigned char doublelen=sizeof(double);
@@ -92,8 +100,9 @@ bool CRealFeatures::save(FILE* dest)
     unsigned int fourcc='RFEA'; //id for real features
     unsigned int preprocd= (preprocessed) ? 1 : 0;
     unsigned int num_vec= (unsigned int) num_vectors;
-    unsigned int num_feat= (unsigned int) num_features;
+    unsigned int num_feat= (unsigned int) len; // this is bit of a hack - suggestions please !  //num_features;
 
+	  CIO::message("saving matrix of size %dx%d\n", num_vec,num_feat) ;
     assert(fwrite(&intlen, sizeof(unsigned char), 1, dest)==1);
     assert(fwrite(&doublelen, sizeof(unsigned char), 1, dest)==1);
     assert(fwrite(&endian, sizeof(unsigned int), 1, dest)==1);
@@ -109,9 +118,7 @@ bool CRealFeatures::save(FILE* dest)
 	else if (!(i % (num_vec/200+1)))
 	    CIO::message(".");
 
-	long len;
-	bool free;
-	double* f=get_feature_vector(i, len, free);
+	f=get_feature_vector(i, len, free);
 	assert(fwrite(f, sizeof(double), len, dest)==len) ;
 	free_feature_vector(f, free) ;
     }
