@@ -122,7 +122,6 @@ bool CGUIHMM::linear_train(char* param)
 	{
 		if (WIDTH < 0 || UPTO < 0 )
 		{
-			char buf[1024];
 			int i=0;
 			
 			while (fgetc(file)!='\n' && !feof(file))
