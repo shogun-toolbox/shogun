@@ -44,6 +44,7 @@ REAL CLinearKernel::compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)
   REAL* bvec=((CRealFeatures*) b)->get_feature_vector(idx_b, blen, bfree);
   
   assert(alen==blen);
+  fprintf(stderr, "LinKernel.compute(%ld,%ld) %d\n", idx_a, idx_b, alen) ;
 
   REAL result=ddot_(alen, avec, 1, bvec, 1) ;
   ((CRealFeatures*) a)->free_feature_vector(avec, afree);
