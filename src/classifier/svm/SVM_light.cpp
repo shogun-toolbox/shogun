@@ -7,6 +7,8 @@
 #include "kernel/CombinedKernel.h"
 #include "kernel/AUCKernel.h"
 #include <assert.h>
+#include <unistd.h>
+
 
 #ifdef HAVE_ATLAS
 extern "C" {
@@ -284,10 +286,7 @@ bool CSVMLight::train()
 				CIO::message(M_ERROR, "Could not open CPLEX environment.\n");
 				CPXgeterrorstring (env, status, errmsg);
 				CIO::message(M_ERROR, "%s", errmsg);
-				int kk=0 ;
-				for (int k=0; k<1000000000; k++)
-					kk+=k ;
-				CIO::message(M_ERROR, "dummy=%i\n", kk) ;
+				sleep(60);
 			}
 			else
 			{
