@@ -1,3 +1,6 @@
+#include "classifier/svm/SVM_libsvm.h"
+#include "kernel/Kernel.h"
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,9 +8,8 @@
 #include <float.h>
 #include <string.h>
 #include <stdarg.h>
-#include "classifier/svm/SVM_libsvm.h"
-typedef float Qfloat;
-typedef signed char schar;
+typedef double Qfloat;
+typedef double schar;
 #ifndef min
 template <class T> inline T min(T x,T y) { return (x<y)?x:y; }
 #endif
@@ -167,7 +169,6 @@ void Cache::swap_index(int i, int j)
 //
 // Kernel evaluation
 //
-// the static method k_function is for doing single kernel evaluation
 // the constructor of Kernel prepares to calculate the l*l kernel matrix
 // the member function get_Q is for getting one column from the Q Matrix
 //
@@ -176,18 +177,21 @@ public:
 	Kernel(int l, svm_node * const * x, const svm_parameter& param);
 	virtual ~Kernel();
 
-	static double k_function(const svm_node *x, const svm_node *y,
-				 const svm_parameter& param);
 	virtual Qfloat *get_Q(int column, int len) const = 0;
 	virtual void swap_index(int i, int j) const	// no so const...
 	{
 		swap(x[i],x[j]);
 		if(x_square) swap(x_square[i],x_square[j]);
 	}
+
+	inline double kernel_function(int i, int j) const
+	{
+		return kernel->kernel(x[i]->index,x[j]->index);
+	}
 protected:
+
 	CKernel* kernel;
 
-	double (Kernel::*kernel_function)(int i, int j) const;
 
 private:
 	const svm_node **x;
@@ -198,148 +202,21 @@ private:
 	const double degree;
 	const double gamma;
 	const double coef0;
-
-	static double dot(const svm_node *px, const svm_node *py);
-	double kernel_linear(int i, int j) const
-	{
-		return dot(x[i],x[j]);
-	}
-	double kernel_poly(int i, int j) const
-	{
-		return pow(gamma*dot(x[i],x[j])+coef0,degree);
-	}
-	double kernel_rbf(int i, int j) const
-	{
-		return exp(-gamma*(x_square[i]+x_square[j]-2*dot(x[i],x[j])));
-	}
-	double kernel_sigmoid(int i, int j) const
-	{
-		return tanh(gamma*dot(x[i],x[j])+coef0);
-	}
-	double kernel_genefinder(int i, int j) const
-	{
-		info("%d %d %d %d %d %d\n", i,j, x[i],x[j], x[i]->index,x[j]->index);
-		return kernel->kernel(x[i]->index,x[j]->index);
-	}
 };
 
 Kernel::Kernel(int l, svm_node * const * x_, const svm_parameter& param)
 :kernel_type(param.kernel_type), degree(param.degree),
  gamma(param.gamma), coef0(param.coef0)
 {
-	kernel=param.kernel;
-
-	switch(kernel_type)
-	{
-		case LINEAR:
-			kernel_function = &Kernel::kernel_linear;
-			break;
-		case POLY:
-			kernel_function = &Kernel::kernel_poly;
-			break;
-		case RBF:
-			kernel_function = &Kernel::kernel_rbf;
-			break;
-		case SIGMOID:
-			kernel_function = &Kernel::kernel_sigmoid;
-			break;
-	}
-
 	clone(x,x_,l);
-
-	if(kernel_type == RBF)
-	{
-		x_square = new double[l];
-		for(int i=0;i<l;i++)
-			x_square[i] = dot(x[i],x[i]);
-	}
-	else
-		x_square = 0;
+	x_square = 0;
+	kernel=param.kernel;
 }
 
 Kernel::~Kernel()
 {
 	delete[] x;
 	delete[] x_square;
-}
-
-double Kernel::dot(const svm_node *px, const svm_node *py)
-{
-	double sum = 0;
-	while(px->index != -1 && py->index != -1)
-	{
-		if(px->index == py->index)
-		{
-			sum += px->value * py->value;
-			++px;
-			++py;
-		}
-		else
-		{
-			if(px->index > py->index)
-				++py;
-			else
-				++px;
-		}			
-	}
-	return sum;
-}
-
-double Kernel::k_function(const svm_node *x, const svm_node *y,
-			  const svm_parameter& param)
-{
-	switch(param.kernel_type)
-	{
-		case LINEAR:
-			return dot(x,y);
-		case POLY:
-			return pow(param.gamma*dot(x,y)+param.coef0,param.degree);
-		case RBF:
-		{
-			double sum = 0;
-			while(x->index != -1 && y->index !=-1)
-			{
-				if(x->index == y->index)
-				{
-					double d = x->value - y->value;
-					sum += d*d;
-					++x;
-					++y;
-				}
-				else
-				{
-					if(x->index > y->index)
-					{	
-						sum += y->value * y->value;
-						++y;
-					}
-					else
-					{
-						sum += x->value * x->value;
-						++x;
-					}
-				}
-			}
-
-			while(x->index != -1)
-			{
-				sum += x->value * x->value;
-				++x;
-			}
-
-			while(y->index != -1)
-			{
-				sum += y->value * y->value;
-				++y;
-			}
-			
-			return exp(-param.gamma*sum);
-		}
-		case SIGMOID:
-			return tanh(param.gamma*dot(x,y)+param.coef0);
-		default:
-			return 0;	/* Unreachable */
-	}
 }
 
 // Generalized SMO+SVMlight algorithm
@@ -1134,7 +1011,7 @@ public:
 		if((start = cache->get_data(i,&data,len)) < len)
 		{
 			for(int j=start;j<len;j++)
-				data[j] = (Qfloat)(y[i]*y[j]*(this->*kernel_function)(i,j));
+				data[j] = (Qfloat) y[i]*y[j]*kernel_function(i,j);
 		}
 		return data;
 	}
@@ -1172,7 +1049,7 @@ public:
 		if((start = cache->get_data(i,&data,len)) < len)
 		{
 			for(int j=start;j<len;j++)
-				data[j] = (Qfloat)(this->*kernel_function)(i,j);
+				data[j] = (Qfloat) kernel_function(i,j);
 		}
 		return data;
 	}
@@ -1226,7 +1103,7 @@ public:
 		if(cache->get_data(real_i,&data,l) < l)
 		{
 			for(int j=0;j<l;j++)
-				data[j] = (Qfloat)(this->*kernel_function)(real_i,j);
+				data[j] = (Qfloat) kernel_function(real_i,j);
 		}
 
 		// reorder and copy
@@ -1760,75 +1637,6 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 	return model;
 }
 
-double svm_predict(const svm_model *model, const svm_node *x)
-{
-	if(model->param.svm_type == ONE_CLASS ||
-	   model->param.svm_type == EPSILON_SVR ||
-	   model->param.svm_type == NU_SVR)
-	{
-		double *sv_coef = model->sv_coef[0];
-		double sum = 0;
-		for(int i=0;i<model->l;i++)
-			sum += sv_coef[i] * Kernel::k_function(x,model->SV[i],model->param);
-		sum -= model->rho[0];
-		if(model->param.svm_type == ONE_CLASS)
-			return (sum>0)?1:-1;
-		else
-			return sum;
-	}
-	else
-	{
-		int i;
-		int nr_class = model->nr_class;
-		int l = model->l;
-		
-		double *kvalue = Malloc(double,l);
-		for(i=0;i<l;i++)
-			kvalue[i] = Kernel::k_function(x,model->SV[i],model->param);
-
-		int *start = Malloc(int,nr_class);
-		start[0] = 0;
-		for(i=1;i<nr_class;i++)
-			start[i] = start[i-1]+model->nSV[i-1];
-
-		int *vote = Malloc(int,nr_class);
-		for(i=0;i<nr_class;i++)
-			vote[i] = 0;
-		int p=0;
-		for(i=0;i<nr_class;i++)
-			for(int j=i+1;j<nr_class;j++)
-			{
-				double sum = 0;
-				int si = start[i];
-				int sj = start[j];
-				int ci = model->nSV[i];
-				int cj = model->nSV[j];
-				
-				int k;
-				double *coef1 = model->sv_coef[j-1];
-				double *coef2 = model->sv_coef[i];
-				for(k=0;k<ci;k++)
-					sum += coef1[si+k] * kvalue[si+k];
-				for(k=0;k<cj;k++)
-					sum += coef2[sj+k] * kvalue[sj+k];
-				sum -= model->rho[p++];
-				if(sum > 0)
-					++vote[i];
-				else
-					++vote[j];
-			}
-
-		int vote_max_idx = 0;
-		for(i=1;i<nr_class;i++)
-			if(vote[i] > vote[vote_max_idx])
-				vote_max_idx = i;
-		free(kvalue);
-		free(start);
-		free(vote);
-		return model->label[vote_max_idx];
-	}
-}
-
 const char *svm_type_table[] =
 {
 	"c_svc","nu_svc","one_class","epsilon_svr","nu_svr",NULL
@@ -1898,7 +1706,7 @@ int svm_save_model(const char *model_file_name, const svm_model *model)
 		const svm_node *p = SV[i];
 		while(p->index != -1)
 		{
-			fprintf(fp,"%d:%.8g ",p->index,p->value);
+			fprintf(fp,"%d",p->index);
 			p++;
 		}
 		fprintf(fp, "\n");
@@ -2068,7 +1876,7 @@ out:
 				if(c=='\n') goto out2;
 			} while(isspace(c));
 			ungetc(c,fp);
-			fscanf(fp,"%d:%lf",&(x_space[j].index),&(x_space[j].value));
+			fscanf(fp,"%d",&(x_space[j].index));
 			++j;
 		}	
 out2:
@@ -2113,8 +1921,7 @@ const char *svm_check_parameter(const svm_problem *prob, const svm_parameter *pa
 	if(kernel_type != LINEAR &&
 	   kernel_type != POLY &&
 	   kernel_type != RBF &&
-	   kernel_type != SIGMOID &&
-	   kernel_type != GENEFINDER)
+	   kernel_type != SIGMOID)
 		return "unknown kernel type";
 
 	// cache_size,eps,C,nu,p,shrinking
