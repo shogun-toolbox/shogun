@@ -234,7 +234,7 @@ void CSVMMPI::svm_mpi_set_Z_block(double * block, int num_cols, int start_idx, i
   //CIO::message("z_set %i %i\n", start_idx, rank) ;
   if (rank)
     {
-      //CIO::message("z_client %i %i\n",start_idx, rank) ;
+      // CIO::message("z_client %i %i\n",start_idx, rank) ;
       send_z_columns_double(MPI_COMM_WORLD, block, start_idx,
 			    num_cols, num_rows,
 			    rank, true);

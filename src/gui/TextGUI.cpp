@@ -92,18 +92,18 @@ static const char* N_SET_ORDER=			"set_order";
 CTextGUI::CTextGUI(int argc, const char** argv)
   : CGUI(argc, argv)
 {
-  CIO::message("Learning uses %i threads\n", NUM_PARALLEL) ;
-  
 #ifdef WITHMATLAB
   libmmfileInitialize() ;
 #endif
 
 #ifdef SVMMPI
-  CIO::message("Initializing MPI\n");
+  //CIO::message("Initializing MPI\n");
   CSVMMPI::svm_mpi_init(argc, argv) ;
 #else
   CIO::message("undef'd MPI\n");
 #endif
+
+  CIO::message("HMM Learning uses %i threads\n", NUM_PARALLEL) ;
 }
 
 CTextGUI::~CTextGUI()
