@@ -78,6 +78,7 @@ static const char* N_SVM_TRAIN=			"svm_train";
 static const char* N_SVM_TEST=			"svm_test";
 static const char* N_ONE_CLASS_HMM_TEST=	"one_class_hmm_test";
 static const char* N_HMM_TEST=			"hmm_test";
+static const char* N_HMM_CLASSIFY=		"hmm_classify";
 static const char* N_SET_ORDER=			"set_order";
 static const char* N_SET_OUTPUT=		"set_output";
 static const char* N_GRADIENT_STEP=		"do_grad_step";
@@ -169,11 +170,12 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
 	CIO::message("\033[1;31m%s\033[0m <LINEAR> [<CACHESIZE> [OPTS]]\t\t\t- set kernel type\n", N_SET_KERNEL);
 	CIO::message("\033[1;31m%s\033[0m\t\t- obtains svm from TRAINFEATURES\n",N_SVM_TRAIN);
-	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> - init kernel for training/testingn",N_INIT_KERNEL);
+	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> - init kernel for training/testingn\n",N_INIT_KERNEL);
 	CIO::message("\n[CLASSIFICATION]\n");
 	CIO::message("\033[1;31m%s\033[0m<threshold>\t\t\t\t- set classification threshold\n",N_SET_THRESHOLD);
 	CIO::message("\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_HMM_TEST);
 	CIO::message("\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
+	CIO::message("\033[1;31m%s\033[0m[<output>]\t\t\t\t- classify unknown examples using current HMMs\n",N_HMM_CLASSIFY);
 	CIO::message("\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t- calculate svm output on TESTFEATURES\n",N_SVM_TEST);
 	CIO::message("\n[SYSTEM]\n");
 	CIO::message("\033[1;31m%s\033[0m <STDERR|STDOUT|filename>\t- make std-output go to e.g file\n",N_SET_OUTPUT);
@@ -195,6 +197,7 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	int i;
 	char input[2000];
 
+	//guihmm.debug();
 	if (show_prompt)
 		print_prompt();
 
@@ -454,9 +457,13 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	{
 		guihmm.one_class_test(input+strlen(N_ONE_CLASS_HMM_TEST));
 	} 
+	else if (!strncmp(input, N_HMM_CLASSIFY, strlen(N_HMM_CLASSIFY)))
+	{
+		guihmm.hmm_classify(input+strlen(N_HMM_CLASSIFY));
+	}
 	else if (!strncmp(input, N_HMM_TEST, strlen(N_HMM_TEST)))
 	{
-		guihmm.test_hmm(input+strlen(N_HMM_TEST));
+		guihmm.hmm_test(input+strlen(N_HMM_TEST));
 	}
 	else if (!strncmp(input, N_NORMALIZE, strlen(N_NORMALIZE)))
 	{

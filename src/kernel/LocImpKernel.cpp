@@ -24,11 +24,12 @@ void CLocImpKernel::init(CFeatures* f)
   dim = ((CShortFeatures*)f)->get_num_features() ;
 
   /* convolution, potentiation */
-  double conv;
-  double pot;
-  double sum;
+  //double conv;
+  //double pot;
+  //double sum;
   /* ... */
-  int i,j;
+  //int i,j;
+  int j;
   
   /* pyramid */
   NOF_NTS=dim ;

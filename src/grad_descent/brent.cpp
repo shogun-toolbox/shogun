@@ -11,7 +11,7 @@ REAL brent(REAL ax, REAL bx, REAL cx, REAL (*f)(REAL), REAL tol,
 	REAL *xmin)
 {
 	int iter;
-	REAL a,b,d,etemp,fu,fv,fw,fx,p,q,r,tol1,tol2,u,v,w,x,xm;
+	REAL a,b,d=0xDEADBEAF,etemp,fu,fv,fw,fx,p,q,r,tol1,tol2,u,v,w,x,xm;
 	REAL e=0.0;
 
 	a=(ax < cx ? ax : cx);

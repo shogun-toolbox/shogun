@@ -29,7 +29,7 @@ class CTOPFeatures: public CRealFeatures
  protected:
   CHMM* pos;
   CHMM* neg;
-  bool poslinear;
   bool neglinear;
+  bool poslinear;
 };
 #endif

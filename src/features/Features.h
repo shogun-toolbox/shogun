@@ -53,13 +53,14 @@ public:
 	virtual bool save(FILE* dest)=0;
 	
 protected:
+	/// size of cache in MB
+	long cache_size;
+
 	/// Preprocessor
 	CPreProc* preproc;
 
 	/// true if features were already preprocessed
 	bool preprocessed;
 
-	/// size of cache in MB
-	long cache_size;
 };
 #endif

@@ -84,7 +84,7 @@ bool CGUIFeatures::set_features(char* param)
 	int neglinear=0;
 	int poslinear=0;
 
-	if ((sscanf(param, "%s %s %d %d", type, target, &size, &comp_features, &neglinear, &poslinear))>=2)
+	if ((sscanf(param, "%s %s %d %d %d %d", type, target, &size, &comp_features, &neglinear, &poslinear))>=2)
 	{
 		if ( (strcmp(target, "TRAIN")==0 && gui->guiobs.get_obs("POSTRAIN") && gui->guiobs.get_obs("NEGTRAIN")) ||
 				(strcmp(target, "TEST")==0 && gui->guiobs.get_obs("POSTEST") && gui->guiobs.get_obs("NEGTEST")))
@@ -117,8 +117,8 @@ bool CGUIFeatures::set_features(char* param)
 				if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
 				{
 
-					CObservation* old_obs_pos=gui->guihmm.get_pos()->get_observations();
-					CObservation* old_obs_neg=gui->guihmm.get_neg()->get_observations();
+					//CObservation* old_obs_pos=gui->guihmm.get_pos()->get_observations();
+					//CObservation* old_obs_neg=gui->guihmm.get_neg()->get_observations();
 
 					delete (*o_ptr);
 					*o_ptr=new CObservation(pt, nt);
@@ -142,8 +142,8 @@ bool CGUIFeatures::set_features(char* param)
 				if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
 				{
 
-					CObservation* old_obs_pos=gui->guihmm.get_pos()->get_observations();
-					CObservation* old_obs_neg=gui->guihmm.get_neg()->get_observations();
+					//CObservation* old_obs_pos=gui->guihmm.get_pos()->get_observations();
+					//CObservation* old_obs_neg=gui->guihmm.get_neg()->get_observations();
 
 					delete (*o_ptr);
 					*o_ptr=new CObservation(pt, nt);

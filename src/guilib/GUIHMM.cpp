@@ -520,7 +520,115 @@ bool CGUIHMM::one_class_test(char* param)
 	return result;
 }
 
-bool CGUIHMM::test_hmm(char* param)
+bool CGUIHMM::hmm_classify(char* param)
+{
+	bool result=false;
+	char outputname[1024];
+	char rocfname[1024];
+	FILE* outputfile=stdout;
+	FILE* rocfile=NULL;
+	int numargs=-1;
+	int poslinear=0;
+	int neglinear=0;
+
+	param=CIO::skip_spaces(param);
+
+	numargs=sscanf(param, "%s %d %d", outputname, &neglinear, &poslinear);
+
+	if (numargs>=1)
+	{
+		outputfile=fopen(outputname, "w");
+
+		if (!outputfile)
+		{
+			CIO::message(stderr,"ERROR: could not open %s\n",outputname);
+			return false;
+		}
+
+		if (numargs>=2) 
+		{
+			rocfile=fopen(rocfname, "w");
+
+			if (!rocfile)
+			{
+				CIO::message(stderr,"ERROR: could not open %s\n",rocfname);
+				return false;
+			}
+		}
+	}
+
+	if (pos && neg)
+	{
+		if (gui->guiobs.get_obs("TEST"))
+		{
+			CIO::message("test data is of ORDER %d, MODELS are of order %d (pos) and %d (neg)\n", gui->guiobs.get_obs("TEST")->get_ORDER(), pos->get_ORDER(), neg->get_ORDER());
+			CObservation* posobs=NULL;
+			CObservation* negobs=NULL;
+			CObservation* o= gui->guiobs.get_obs("TEST");
+
+			FILE* posfile=fopen(gui->guiobs.get_test_name(), "r");
+			FILE* negfile=fopen(gui->guiobs.get_test_name(), "r");
+
+			if (posfile && negfile)
+			{
+				posobs= new CObservation(posfile, o->get_type(), o->get_alphabet(), o->get_max_M(), o->get_M(), pos->get_ORDER());
+				negobs= new CObservation(negfile, o->get_type(), o->get_alphabet(), o->get_max_M(), o->get_M(), neg->get_ORDER());
+				CIO::message("created neg obs for pos model using maxM:%d M:%d ORD:%d\n", negobs->get_max_M(), negobs->get_M(), negobs->get_ORDER());
+				CIO::message("created pos obs for neg model using maxM:%d M:%d ORD:%d\n", posobs->get_max_M(), posobs->get_M(), posobs->get_ORDER());
+				fclose(posfile);
+				fclose(negfile);
+			}
+
+			CObservation* old_pos=pos->get_observations();
+			CObservation* old_neg=neg->get_observations();
+
+			assert(posobs!=NULL);
+			assert(negobs!=NULL);
+			pos->set_observations(posobs);
+			neg->set_observations(negobs);
+
+			assert(posobs->get_DIMENSION()==negobs->get_DIMENSION());
+
+			int total=posobs->get_DIMENSION();
+
+			REAL* output = new REAL[total];	
+			int* label= new int[total];	
+			
+			CIO::message("classifying using neg %s hmm vs. pos %s hmm\n", neglinear ? "linear" : "", poslinear ? "linear" : "");
+
+			for (int dim=0; dim<total; dim++)
+			{
+				output[dim]= 
+				    (poslinear ? pos->linear_model_probability(dim) : pos->model_probability(dim)) -
+				    (neglinear ? neg->linear_model_probability(dim) : neg->model_probability(dim));
+				label[dim]= posobs->get_label(dim);
+			}
+			
+			gui->guimath.evaluate_results(output, label, total, outputfile);
+
+			delete[] output;
+			delete[] label;
+
+			pos->set_observations(old_pos);
+			neg->set_observations(old_neg);
+
+			delete posobs;
+			delete negobs;
+			result=true;
+		}
+		else
+			printf("load test observations first!\n");
+	}
+	else
+		CIO::message("assign positive and negative models first!\n");
+
+	if (outputfile)
+		fclose(outputfile);
+
+	return result;
+}
+
+bool CGUIHMM::hmm_test(char* param)
 {
 	bool result=false;
 	char outputname[1024];
@@ -1121,7 +1229,7 @@ bool CGUIHMM::normalize(char* param)
 {
 	param=CIO::skip_spaces(param);
 	int keep_dead_states=0;
-	sscanf(param, "%d %d", &keep_dead_states);
+	sscanf(param, "%d", &keep_dead_states);
 
 	if (working)
 	{

@@ -16,6 +16,11 @@ public:
 	bool set_max_dim(char* param);
 	int get_alphabet_size();
 	
+	inline char* get_test_name()
+	{
+		return test_name;
+	}
+	
 	inline char* get_neg_test_name()
 	{
 		return neg_test_name;
@@ -35,6 +40,7 @@ protected:
 
 	char* neg_test_name;
 	char* pos_test_name;
+	char* test_name;
 
 	E_OBS_ALPHABET alphabet;
 

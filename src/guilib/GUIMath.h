@@ -5,8 +5,8 @@ class CGUIMath
 {
 public:
 	CGUIMath();
-	void evaluate_results(REAL* output, int* label, int total, FILE* outputfile, FILE* rocfile);
-	void current_results(REAL* output, int* label, int total, FILE* outputfile);
+	void evaluate_results(REAL* output, int* label, int total, FILE* outputfile=NULL, FILE* rocfile=NULL);
+	void current_results(REAL* output, int* label, int total, FILE* outputfile=NULL);
 
 	void set_threshold(char* input);
 protected:

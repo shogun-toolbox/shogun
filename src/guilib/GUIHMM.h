@@ -23,7 +23,8 @@ public:
 	bool linear_train(char* param);
 	bool linear_train_from_file(char* param);
 	bool one_class_test(char* param);
-	bool test_hmm(char* param);
+	bool hmm_test(char* param);
+	bool hmm_classify(char* param);
 	bool append_model(char* param);
 	bool add_states(char* param);
 	bool set_hmm_as(char* param);
@@ -49,6 +50,11 @@ public:
 	bool gradient_step(char* param) ;
 
 	int number_of_hmm_tables ;
+	/*inline void debug()
+	{
+		if (working)
+			CIO::message("M:%X, MAX_M:%X, ORDER:%X\n", working->get_M(), working->get_max_M(), working->get_ORDER());
+	}*/
 
 protected:
 

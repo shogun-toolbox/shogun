@@ -113,7 +113,7 @@ bool CRealFeatures::preproc_feature_matrix(bool force_preprocessing)
 
 bool CRealFeatures::save(FILE* dest)
 {
-    int i;
+    long i;
 	long len;
 	bool free;
 #warning num_features must not correspond with the length of a feature vectore since that one might be preprocessed
@@ -137,7 +137,7 @@ bool CRealFeatures::save(FILE* dest)
     assert(fwrite(&num_feat, sizeof(unsigned int), 1, dest)==1);
     assert(fwrite(&preprocd, sizeof(unsigned int), 1, dest)==1);
 
-    for (i=0; i<num_vec; i++)
+    for (i=0; i< (long) num_vec; i++)
     {
 	if (!(i % (num_vec/10+1)))
 	    CIO::message("%02d%%.", (int) (100.0*i/num_vec));
@@ -145,13 +145,13 @@ bool CRealFeatures::save(FILE* dest)
 	    CIO::message(".");
 
 	f=get_feature_vector(i, len, free);
-	assert(fwrite(f, sizeof(double), len, dest)==len) ;
+	assert(fwrite(f, (long) sizeof(double), len, dest)==len) ;
 	free_feature_vector(f, i, free) ;
     }
 
     long num_lab=0;
     int* labels=get_labels(num_lab);
-    assert(num_lab==num_vec);
+    assert(num_lab==(long) num_vec);
     assert(fwrite(labels, sizeof(int), num_vec, dest)==num_vec) ;
     
     return true;
