@@ -1,5 +1,7 @@
 #include <assert.h>
-#include "RealFeatures.h"
+#include "features/RealFeatures.h"
+#include "preproc/RealPreProc.h"
+#include <string.h>
 
 CRealFeatures::CRealFeatures() : CFeatures(), num_vectors(0), num_features(0), feature_matrix(NULL)
 {
@@ -37,7 +39,7 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
 		REAL* feat=compute_feature_vector(num, len) ;
 		if (preproc)
 		{
-			REAL* feat2 = preproc->apply_to_feature_vector(feat, len);
+			REAL* feat2 = ((CRealPreProc*)preproc)->apply_to_feature_vector(feat, len);
 			delete[] feat ;
 			return feat2 ;
 		}

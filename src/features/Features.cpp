@@ -1,4 +1,5 @@
 #include "Features.h"
+#include "preproc/PreProc.h"
 
 CFeatures::CFeatures()
 : preproc(NULL)
@@ -26,8 +27,8 @@ CPreProc* CFeatures::get_preproc()
 
 bool CFeatures::preproc_feature_matrix()
 {
-	if (preproc)
-		preproc->apply_to_feature_matrix(this);
+  /*	if (preproc)*/
+#warning		preproc->apply_to_feature_matrix(this);
 }
 
 int* CFeatures::get_labels(long &len)

@@ -1,4 +1,3 @@
-
 #include "ShortFeatures.h"
 
 CShortFeatures::CShortFeatures()
