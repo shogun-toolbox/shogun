@@ -573,3 +573,27 @@ bool CKernel::save_kernel(FILE* dest, CObservation* obs, int kernel_type)
 	kernel_cache_cleanup(&mykernel_cache);
 	return true;
 }*/
+
+/*
+init
+  if(kernel_cache) {
+    kernel_cache->time=iteration;  // for lru cache
+    kernel_cache_reset_lru(kernel_cache);
+  }
+
+
+   kernel_cache->time=iteration;  // for lru cache 
+    
+
+      if((kernel_cache)
+	 && (supvecnum>kernel_cache->max_elems)
+	 && ((kernel_cache->activenum-activenum)>math.max((long)(activenum/10),(long) 500))) {
+	kernel_cache_shrink(kernel_cache,totdoc,math.max((long)(activenum/10),(long) 500),
+			    shrink_state->active); 
+      }
+    }
+if(kernel_cache) 
+      cache_multiple_kernel_rows(kernel_cache,docs,working2dnum,
+				 choosenum,kernel_parm); 
+    
+*/

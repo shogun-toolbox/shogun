@@ -44,7 +44,7 @@ public:
 	
 	/// get label vector
 	/// caller has to clean up
-	int* get_labels(int idx, int &len) ;
+	int* get_labels(int &len) ;
 
 	/// return the number of samples
 	virtual int get_number_of_examples()=0 ;
