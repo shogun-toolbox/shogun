@@ -1043,6 +1043,32 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
   //change summation order to make use of alpha/beta caches
   for (dim=0; dim<p_observations->get_DIMENSION(); dim++)
   {
+      printf("\nfwgf%d=[\n",dim+1);
+      for (t=0; t<p_observations->get_obs_T(dim); t++)
+      {
+	  printf("[ ");
+	  for (i=0; i<N; i++)
+	  {
+	      printf("%.15f ",exp(train->forward(t, i, dim)));
+	  }
+
+	  printf("];\n");
+      }
+	  printf("];\n");
+      getchar();
+      printf("\nbwgf%d=[\n",dim+1);
+      for (t=0; t<p_observations->get_obs_T(dim); t++)
+      {
+	  printf("[ ");
+	  for (i=0; i<N; i++)
+	  {
+	      printf("%.15f ",exp(train->backward(t, i, dim)));
+	  }
+
+	  printf("];\n");
+      }
+	  printf("];\n");
+      getchar();
       train->invalidate_model();
       dimmodprob=train->model_probability(dim);
       fullmodprob=math.logarithmic_sum(fullmodprob, dimmodprob) ;
@@ -2786,7 +2812,7 @@ bool CHMM::load_model(FILE* file)
       result= (received_params== (GOTa | GOTb | GOTp | GOTq | GOTN | GOTM | GOTO));
     }
  
-  normalize(); 
+//  normalize(); 
   return result;
 }
 
