@@ -214,6 +214,8 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 
 		if (strcmp(transform_str, "log")==0)
 			PEN[id].transform = T_LOG ;
+		else if (strcmp(transform_str, "log(+1)")==0)
+			PEN[id].transform = T_LOG_PLUS1 ;	
 		else if (strcmp(transform_str, "log(+3)")==0)
 			PEN[id].transform = T_LOG_PLUS3 ;	
 		else if (strcmp(transform_str, "(+3)")==0)
@@ -260,6 +262,9 @@ REAL lookup_penalty_svm(const struct penalty_struct *PEN, INT p_value, REAL *d_v
 		break ;
 	case T_LOG:
 		d_value = log(d_value) ;
+		break ;
+	case T_LOG_PLUS1:
+		d_value = log(d_value+1) ;
 		break ;
 	case T_LOG_PLUS3:
 		d_value = log(d_value+3) ;
@@ -324,6 +329,9 @@ REAL lookup_penalty(const struct penalty_struct *PEN, INT p_value,
 		break ;
 	case T_LOG:
 		d_value = log(d_value) ;
+		break ;
+	case T_LOG_PLUS1:
+		d_value = log(d_value+1) ;
 		break ;
 	case T_LOG_PLUS3:
 		d_value = log(d_value+3) ;

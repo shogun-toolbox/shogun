@@ -12,6 +12,7 @@ enum ETransformType
 {
 	T_LINEAR,
 	T_LOG,
+	T_LOG_PLUS1,
 	T_LOG_PLUS3,
 	T_LINEAR_PLUS3
 }  ;

@@ -381,7 +381,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			mxGetM(mx_orf_info)==N &&
 			mxGetN(mx_orf_info)==2 &&
 			mxGetM(mx_genestr)==1 &&
-			mxGetN(mx_dict_weights)==2 && 
+			mxGetN(mx_dict_weights)==4 && 
 			((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			 || mxIsEmpty(mx_penalty_info))
 			)
