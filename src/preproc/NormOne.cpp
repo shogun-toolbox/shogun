@@ -65,7 +65,7 @@ REAL* CNormOne::apply_to_feature_matrix(CFeatures* f)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-REAL* CNormOne::apply_to_feature_vector(REAL* f, int len)
+REAL* CNormOne::apply_to_feature_vector(REAL* f, int& len)
 {
 	REAL* vec=new REAL[len];
 	REAL sqnorm=0;
