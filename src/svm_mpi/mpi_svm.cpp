@@ -8,6 +8,16 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
+
+int sign(double a)
+{
+  if (a>0)
+    return 1 ;
+  if (a<0)
+    return -1 ;
+  return 0 ;
+} 
+
 extern "C" 
 void my_delete(void* ptr)
 {
@@ -61,13 +71,15 @@ bool CSVMMPI::svm_train(CFeatures* train_)
   int * labels=train->get_labels(dummy) ;
   assert(dummy==num_cols) ;
   
-  CIO::message("creating big matrix\n") ;
+  CIO::message("creating big matrix ... ") ;
 
   bool free ; long len ;
   double * column=NULL ;
   column=train->get_feature_vector(0, len, free);
   train->free_feature_vector(column, free);
   num_rows=len ;
+
+  CIO::message(" [%ix%i] ", num_cols, len) ;
 
   m_prime=svm_mpi_broadcast_Z_size(num_cols, num_rows, m_last) ;
   int j=0;
@@ -76,6 +88,11 @@ bool CSVMMPI::svm_train(CFeatures* train_)
   {
     int rank=floor(((double)j)/m_prime) ;
     int start_idx=j%m_prime ; 
+
+    if (!(j % (num_cols/10+1)))
+      CIO::message("%02d%%.", (int) (100.0*j/num_cols));
+    else if (!(j % (num_cols/200+1)))
+      CIO::message(".");
 
     //CIO::message("setting vector: %i %i (%i,%i)\n",start_idx, rank, j, m_prime) ;
     column=train->get_feature_vector(j, len, free);
@@ -88,8 +105,9 @@ bool CSVMMPI::svm_train(CFeatures* train_)
     svm_mpi_set_Z_block(col, 1, start_idx, rank) ; 
     delete[] col ;
   } ;
+  CIO::message("Done\n") ;
 
-  svm_mpi_optimize(labels, num_cols) ; 
+  svm_mpi_optimize(labels, num_cols, train) ; 
   return true; 
 }
 
@@ -187,7 +205,7 @@ void CSVMMPI::svm_mpi_set_Z_block(double * block, int num_cols, int start_idx, i
     } ;
 } ;
 
-void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples) 
+void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * train) 
 {
   double bound=10 ;
   int maxiter=50 ;
@@ -243,7 +261,7 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
 
   //#ifdef save_input
   //#define HOME "/opt/home/raetsch/"
-  #define HOME "/home/104/gxr104/"
+  #define HOME "/home/104/gxr104/short/"
   {
     CIO::message("saving Z matrix to ~/Z.dat (%ix%i)\n",Z.GetNumRows(),Z.GetNumColumns()) ;    
     double* d=Z.GetDataPointer() ;
@@ -322,13 +340,37 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
   svm_w=new REAL[num_rows] ;
   svm_b=*dua ;
 
+  CIO::message("num_rows=%i\n",num_rows) ;
+
   int onei=1 ;
   double zerod=0, oned=1 ;
   char N='N' ;
   int num_rows_=num_rows ;
 
-  dgemv_(&N, &num_rows_, &num_examples, &oned, Zd, &num_rows_, prim, &onei, &zerod, svm_w, &onei) ;
-
+  //dgemv_(&N, &num_rows_, &num_examples, &oned, Zd, &num_rows_, prim, &onei, &zerod, svm_w, &onei) ;
+  {
+    int i;
+    for (i=0; i<num_rows; i++)
+      svm_w[i]=0.0 ;
+    for (i=0; i<num_examples; i++)
+      {
+	long len ; bool free ; double oned=1 ; int onei=0 ; int length ; int j;
+	double * feat=train->get_feature_vector(i, len, free) ;
+	assert(num_rows==len) ;
+	length=len ;
+	if (i==0)
+	  {
+	    for (j=0; j<num_rows; j++)
+	      CIO::message("feat[1][%i]=%e\n", j, feat[j]) ;
+	  } ;
+	for (j=0; j<num_rows; j++)
+	  svm_w[j]+= prim[i]*feat[j];
+	
+	    //daxpy_(&length, &prim[i], feat, &onei, svm_w, &onei) ;
+	train->free_feature_vector(feat, free) ;
+      } 
+  } 
+      
   {
     CIO::message("saving svm_w vector to ~/w.dat\n") ;    
     FILE* f=fopen(HOME "w.dat","w+") ;
@@ -336,7 +378,7 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
     fclose(f) ;
   } 
   
-  {
+  if (0) {
     int i; 
     for (i=0; i<num_examples; i++)
       CIO::message("alpha[%i]=%e\n", i, prim[i]) ;
@@ -345,15 +387,22 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
   } ;
   {
     for (int i=0; i<num_rows; i++)
-      CIO::message("w[%i]=%e\n", i, svm_w) ;
+      CIO::message("w[%i]=%e\n", i, svm_w[i]) ;
     CIO::message("b=%e\n", svm_b) ;
   } ;
   
-  REAL *out=new REAL[num_rows] ;
-  char T='T' ;
-  dgemv_(&T, &num_rows_, &num_examples, &oned, Zd, &num_rows_, svm_w, &onei, &zerod, out, &onei) ;
+  REAL* out=svm_test(train, train) ;
   
   if (1) {
+    int i ;
+    int num_errors=0 ;
+    for (i=0; i<num_examples; i++)
+      if (sign(out[i])!=labels[i])
+	num_errors++ ;
+    CIO::message("Training errors: %1.2f (%i)\n", (double)num_errors/num_examples, num_errors) ;
+  } ;
+
+  if (0) {
     int i ;
     for (i=0; i<num_examples; i++)
       CIO::message("out[%i]=%e\n", i, out[i]-svm_b) ;

@@ -29,8 +29,10 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 
 int CTOPFeatures::get_num_features()
 {
+  CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
   if (pos && neg)
     return 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
+
   return 0 ;
 }
 

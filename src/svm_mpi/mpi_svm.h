@@ -7,6 +7,7 @@
 #include "kernel/Kernel.h"
 #include "lib/common.h"
 #include "svm_mpi/matrix.h"
+#include "features/RealFeatures.h"
 
 #if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 
@@ -27,7 +28,7 @@ class CSVMMPI: public CSVM
  protected:
   unsigned svm_mpi_broadcast_Z_size(int num_cols, int num_rows, unsigned &m_last) ;
   void svm_mpi_set_Z_block(double * block, int num_cols, int start_idx, int rank) ; 
-  void svm_mpi_optimize(int *labels, int num_examples) ;
+  void svm_mpi_optimize(int *labels, int num_examples, CRealFeatures * train) ;
 
  protected:
   unsigned m_full, m_last, m_prime;

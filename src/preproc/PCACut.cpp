@@ -37,8 +37,15 @@ bool CPCACut::init(CFeatures* f_)
       mean[j]=0 ; 
 
   // compute mean
+  CIO::message("Computing mean ... ") ;
+  CIO::message("[%ix%i] ", num_features, num_features) ;
   for (int i=0; i<num_examples; i++)
     {
+      if (!(i % (num_examples/10+1)))
+	CIO::message("%02d%%.", (int) (100.0*i/num_examples));
+      else if (!(i % (num_examples/200+1)))
+	CIO::message(".");
+
       long len ; bool free ;
       feature=f->get_feature_vector(i, len, free) ;
 
@@ -52,7 +59,8 @@ bool CPCACut::init(CFeatures* f_)
   for (j=0; j<num_features; j++)
     mean[j]/=num_examples ;
 
-  CIO::message("computing covariance matrix...") ;
+  CIO::message("done.\nComputing covariance matrix... ") ;
+  CIO::message("[%ix%i] ", num_features, num_features) ;
 
   double *cov=new double[num_features*num_features] ;
   for (int j=0; j<num_features*num_features; j++)
@@ -60,6 +68,11 @@ bool CPCACut::init(CFeatures* f_)
 
   for (int i=0; i<num_examples; i++)
     {
+      if (!(i % (num_examples/10+1)))
+	CIO::message("%02d%%.", (int) (100.0*i/num_examples));
+      else if (!(i % (num_examples/200+1)))
+	CIO::message(".");
+      
       long len ; bool free ;
       feature=f->get_feature_vector(i, len, free) ;
 
@@ -83,53 +96,38 @@ bool CPCACut::init(CFeatures* f_)
 
   CIO::message("done\n") ;
 
-  CIO::message("Computing Eigenvalues ...") ;
+  CIO::message("Computing Eigenvalues ... ") ;
   REAL *values=new REAL[num_features] ;
   REAL *vectors=new REAL[num_features*num_features] ;
-  //  int fl ;
-  //  symeigx(cov, num_features, values, vectors, num_features, &fl);
-
-//    {
-//      CIO::message("done\nRunning matlab PCA code ") ;
-//      libmmfileInitialize() ;
-//      cleaner_main(cov, num_features, 1e-4, &T, &num_dim) ;
-//      libmmfileTerminate() ;
-//      CIO::message("done\n") ;
-//      for (int k=0; k<num_features; k++)
-//        {
-//  	for (int l=0; l< num_dim; l++)
-//  	  CIO::message("%e ", T[k*num_dim+l]) ;
-//  	CIO::message("\n") ;
-//        } ;
-//    }
-    {
-      int lwork=4*num_features ;
-      double *work=new double[lwork] ;
-      int info ; char V='V', U='U' ;
-      dsyev_(&V, &U, &num_features, cov, &num_features, values, work, &lwork, &info) ;
-
-      int num_ok=0 ;
-      for (int i=0; i<num_features; i++)
-	{
-	  //	  CIO::message("EV[%i]=%e\n", i, values[i]) ;
-	  if (values[i]>1e-4)
-	    num_ok++ ;
-	} ;
-      CIO::message("Done\nReducing from %i to %i features..", num_features, num_ok) ;
-      T=new REAL[num_ok*num_features] ;
-      int num_ok2=0 ;
-      num_dim=num_ok ;
-      for (int i=0; i<num_features; i++)
-	{
-	  if (values[i]>1e-4)
-	    {
-	      for (int j=0; j<num_features; j++)
-		T[num_ok2+j*num_ok]=cov[num_features*i+j]/sqrt(values[i]) ;
-	      num_ok2++ ;
-	    } ;
-	} ;
-      CIO::message("Done\n") ;
-    }
+  
+  {
+    int lwork=4*num_features ;
+    double *work=new double[lwork] ;
+    int info ; char V='V', U='U' ;
+    dsyev_(&V, &U, &num_features, cov, &num_features, values, work, &lwork, &info) ;
+    
+    int num_ok=0 ;
+    for (int i=0; i<num_features; i++)
+      {
+	//	  CIO::message("EV[%i]=%e\n", i, values[i]) ;
+	if (values[i]>1e-6)
+	  num_ok++ ;
+      } ;
+    CIO::message("Done\nReducing from %i to %i features..", num_features, num_ok) ;
+    T=new REAL[num_ok*num_features] ;
+    int num_ok2=0 ;
+    num_dim=num_ok ;
+    for (int i=0; i<num_features; i++)
+      {
+	if (values[i]>1e-6)
+	  {
+	    for (int j=0; j<num_features; j++)
+	      T[num_ok2+j*num_ok]=cov[num_features*i+j]/sqrt(values[i]) ;
+	    num_ok2++ ;
+	  } ;
+      } ;
+    CIO::message("Done\n") ;
+  }
   return true ;
 }
 
