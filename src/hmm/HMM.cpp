@@ -4368,8 +4368,8 @@ void CHMM::add_states(int num_states, REAL default_value)
 {
 #define VAL_MACRO log((default_value == 0) ? ((MIN_RAND+((REAL)rand()))/(REAL(RAND_MAX/MAX_RAND))) : default_value)
 	int i,j;
-	const REAL MIN_RAND=1e-3; //this is the range of the random values for the new variables
-	const REAL MAX_RAND=1e-1;
+	const REAL MIN_RAND=1e-2; //this is the range of the random values for the new variables
+	const REAL MAX_RAND=2e-1;
 
 	REAL* n_p=new REAL[N+num_states];
 	REAL* n_q=new REAL[N+num_states];

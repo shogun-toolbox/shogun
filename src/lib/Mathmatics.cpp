@@ -110,32 +110,40 @@ void CMath::sort(int *a, int cols, int sort_col)
 
 void CMath::qsort(REAL* output, int size)
 {
-    REAL split=output[(RAND_MAX+1+size*rand())/(RAND_MAX+1)];
-    //REAL split=output[size/2];
+		if (size==2)
+		{
+				if (output[0] > output [1])
+						swap(output[0],output[1]);
+		}
+		else
+		{
+				REAL split=output[(size*rand())/(RAND_MAX+1)];
+				//REAL split=output[size/2];
 
-    int left=0;
-    int right=size-1;
-    
-    while (left<=right)
-    {
-	while (output[left] < split)
-	    left++;
-	while (output[right] > split)
-	    right--;
+				int left=0;
+				int right=size-1;
 
-	if (left<=right)
-	{
-	    swap(output[left],output[right]);
-	    left++;
-	    right--;
-	}
-    }
+				while (left<=right)
+				{
+						while (output[left] < split)
+								left++;
+						while (output[right] > split)
+								right--;
 
-    if (right+1> 1)
-	qsort(output,right+1);
-    
-    if (size-left> 1)
-	qsort(&output[left],size-left);
+						if (left<=right)
+						{
+								swap(output[left],output[right]);
+								left++;
+								right--;
+						}
+				}
+
+				if (right+1> 1)
+						qsort(output,right+1);
+
+				if (size-left> 1)
+						qsort(&output[left],size-left);
+		}
 }
 
 //plot x- axis false positives (fp) 1-Specificity
