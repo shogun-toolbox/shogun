@@ -84,7 +84,7 @@ class CCombinedKernel : public CKernel
 			return kernel_list->delete_element();
 		}
 
-		inline int get_num_kernel()
+		inline int get_num_subkernels()
 		{
 			return kernel_list->get_num_elements();
 		}
