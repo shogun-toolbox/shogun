@@ -10,7 +10,8 @@ class CFeatures
 	*/
 	enum EType
 	{
-		DOUBLE,
+		REAL,
+		SHORT,
 		STRING
 	};
 
@@ -21,22 +22,6 @@ class CFeatures
 	    from CFeatures can deal
 	*/
 	virtual EType get_feature_type()=0;
-
-	/** get feature vector for sample num
-		from the matrix as it is if matrix is
-		initialized, else return
-		preprocessed compute_feature_vector.
-		One HAS TO call free_feature_vector
-		when done.
-		@param num index of feature vector
-		@param len length is returned by reference
-		@param free parameter needed for free_feature_vector
-	*/
-	REAL* get_feature_vector(int num, int& len, bool& free);
-	/** free features possibly allocated in get_feature_vector
-		@param free parameter that was returned by get_feature_vector
-	 */
-	bool free_feature_vector(void* feat_vec, bool free);
 	
 	/// get the pointer to the feature matrix
 	/// num_feat,num_vectors are returned by reference
@@ -48,10 +33,6 @@ class CFeatures
 		see below for definition of feature_matrix
 	*/
 	virtual REAL* set_feature_matrix()=0;
-
-	/// compute feature vector for sample num
-	/// len is returned by reference
-	virtual REAL* compute_feature_vector(int num, int& len)=0;
 	
 	/// set preprocessor
 	void set_preproc(CPreProc* p);
@@ -63,6 +44,10 @@ class CFeatures
 	bool preproc_feature_matrix();
 	
 protected:
+	/// compute feature vector for sample num
+	/// len is returned by reference
+	virtual REAL* compute_feature_vector(int num, int& len)=0;
+
 	/// Preprocessor
 	CPreProc* preproc;
 
