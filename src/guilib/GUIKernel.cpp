@@ -466,7 +466,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 		{
 			if (strcmp(data_type,"REAL")==0)
 			{
-				double width=1;
+				float width=1;
 
 				sscanf(param, "%s %s %f %d", kern_type, data_type, &width, &size);
 				delete kernel;
