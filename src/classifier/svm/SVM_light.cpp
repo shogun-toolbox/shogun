@@ -6,19 +6,15 @@
 #include "kernel/WeightedDegreeCharKernel.h"
 #include <assert.h>
 
-//#include <ilconcert/ilomodel.h>
-//#include <ilcplex/ilocplex.h>
-//ILOSTLBEGIN
+#ifdef HAVE_ATLAS
+extern "C" {
+#include <cblas.h>
+}
+#endif
 
 #ifdef USE_CPLEX
 extern "C" {
 #include <ilcplex/cplex.h>
-}
-#endif
-
-#ifdef HAVE_ATLAS
-extern "C" {
-#include <cblas.h>
 }
 #endif
 
@@ -1298,19 +1294,13 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			
 // update lin
 #ifdef HAVE_ATLAS
-//void cblas_dgemv(const enum CBLAS_ORDER order,
-//                 const enum CBLAS_TRANSPOSE TransA, const int M, const int N,
-//                 const double alpha, const double *A, const int lda,
-//                 const double *X, const int incX, const double beta,
-//                 double *Y, const int incY);
-
-			cblas_dgemv(CblasColmajor,
-					CblasTrans, num_kernels, num,
-					1.0, W, num_kernels, w, 1, 0.0, lin,1);
+			cblas_dgemv(CblasColMajor,
+						CblasTrans, num_kernels, num,
+						1.0, W, num_kernels, w, 1, 0.0, lin,1);
 #else
 			for(int i=0; i<num; i++)
 				lin[i]=0 ;
-
+			
 			for (int d=0; d<num_kernels; d++)
 				if (w[d]!=0)
 					for(int i=0; i<num; i++)

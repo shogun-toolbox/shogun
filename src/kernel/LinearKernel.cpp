@@ -109,7 +109,7 @@ REAL CLinearKernel::compute(INT idx_a, INT idx_b)
   result/=scale;
 #else
   INT skip=1;
-  REAL result = cblas_dot(ialen, avec, skip, bvec, skip)/scale;
+  REAL result = cblas_ddot(ialen, avec, skip, bvec, skip)/scale;
 #endif // HAVE_ATLAS
 
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
