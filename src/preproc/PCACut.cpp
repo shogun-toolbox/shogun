@@ -3,19 +3,21 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
+//#include <libmmfile.h>
 
 
 extern "C" void cleaner_main(double *covZ, int dim, double thresh,
 			     double **T, int *num_dim)  ;
 
 CPCACut::CPCACut()
-  : CRealPreProc("PruneVarSubMean"), T(NULL), num_dim(0)
+  : CRealPreProc("PCACut"), T(NULL), num_dim(0), mean(NULL) 
 {
 }
 
 CPCACut::~CPCACut()
 {
   delete[] T ;
+  delete[] mean ;
 }
 
 /// initialize preprocessor from features
@@ -26,14 +28,13 @@ bool CPCACut::init(CFeatures* f_)
   CRealFeatures *f=(CRealFeatures*) f_ ;
   int num_examples=f->get_number_of_examples() ;
   int num_features=((CRealFeatures*)f)->get_num_features() ;
-  double *mean=new double[num_features] ;
-  double *var=new double[num_features] ;
+  delete[] mean ;
+  mean=new double[num_features] ;
   double *feature=NULL ;
   int j ;
   for (j=0; j<num_features; j++)
-    {
-      mean[j]=0 ; var[j]=0 ;
-    } ;
+      mean[j]=0 ; 
+
   // compute mean
   for (int i=0; i<num_examples; i++)
     {
@@ -62,10 +63,12 @@ bool CPCACut::init(CFeatures* f_)
       for (int j=0; j<num_features; j++)
 	feature[j]-=mean[j] ;
 
-      // dger_(num_features,num_features, 1.0, feature, 1, feature, 1, cov, num_features) ;
-      for (int k=0; k<num_features; k++)
+      double oned=1.0 ; int onei=1 ;
+      dger_(&num_features,&num_features, &oned, feature, &onei, feature, &onei, cov, &num_features) ;
+
+      /*      for (int k=0; k<num_features; k++)
 	for (int l=0; l<num_features; l++)
-	  cov[k*num_features+l]+=feature[l]*feature[k] ;
+	cov[k*num_features+l]+=feature[l]*feature[k] ;*/
 
       f->free_feature_vector(feature, free) ;
       feature=NULL ;
@@ -81,17 +84,66 @@ bool CPCACut::init(CFeatures* f_)
   //  int fl ;
   //  symeigx(cov, num_features, values, vectors, num_features, &fl);
 
-  if (0)
+//    {
+//      CIO::message("done\nRunning matlab PCA code ") ;
+//      libmmfileInitialize() ;
+//      cleaner_main(cov, num_features, 1e-4, &T, &num_dim) ;
+//      libmmfileTerminate() ;
+//      CIO::message("done\n") ;
+//      for (int k=0; k<num_features; k++)
+//        {
+//  	for (int l=0; l< num_dim; l++)
+//  	  CIO::message("%e ", T[k*num_dim+l]) ;
+//  	CIO::message("\n") ;
+//        } ;
+//    }
     {
       int lwork=4*num_features ;
       double *work=new double[lwork] ;
       int info ; char V='V', U='U' ;
-      dsyev_(&V, &U, &num_features, cov, &num_features, values, work, &lwork, &info, 0) ;
+      dsyev_(&V, &U, &num_features, cov, &num_features, values, work, &lwork, &info) ;
+      int num_ok=0 ;
+      for (int i=0; i<num_features; i++)
+	{
+	  CIO::message("EV[%i]=%e\n", i, values[i]) ;
+	  if (values[i]>1e-4)
+	    num_ok++ ;
+	} ;
+//        for (int k=0; k<num_features; k++)
+//  	{
+//  	  for (int l=0; l< num_features; l++)
+//  	    CIO::message("%e ", cov[k*num_features+l]) ;
+//  	  CIO::message("\n") ;
+//  	} ;
+      T=new REAL[num_ok*num_features] ;
+      int num_ok2=0 ;
+      num_dim=num_ok ;
+      for (int i=0; i<num_features; i++)
+	{
+	  if (values[i]>1e-4)
+	    {
+	      for (int j=0; j<num_features; j++)
+		T[num_ok2+j*num_ok]=cov[num_features*i+j]/sqrt(values[i]) ;
+	      num_ok2++ ;
+	    } ;
+	} ;
+//  	  CIO::message("\n") ;
+//        for (int k=0; k<num_features; k++)
+//  	{
+//  	  for (int l=0; l< num_dim; l++)
+//  	    CIO::message("%e ", T[l+k*num_dim]) ;
+//  	  CIO::message("\n") ;
+//  	} ;
+//  	  CIO::message("\n") ;
+//        for (int k=0; k<num_features; k++)
+//  	{
+//  	  for (int l=0; l< num_dim; l++)
+//  	    CIO::message("%e ", T2[l+k*num_dim]) ;
+//  	  CIO::message("\n") ;
+//  	} ;
+      
     }
 
-  CIO::message("done\nRunning matlab PCA code") ;
-  cleaner_main(cov, num_features, 1e-4, &T, &num_dim) ;
-  CIO::message("done\n") ;
 
   return true ;
 }
@@ -133,8 +185,13 @@ REAL* CPCACut::apply_to_feature_vector(REAL* f, int &len)
   int onei=1 ;
   double zerod=0, oned=1 ;
   char N='N' ;
-  dgemv_(&N, &num_dim, &len, &oned, T, &num_dim, f, &onei, &zerod, ret, &onei) ;
+  REAL *sub_mean=new REAL[len] ;
+  for (int i=0; i<len; i++)
+    sub_mean[i]=f[i]-mean[i] ;
+  
+  dgemv_(&N, &num_dim, &len, &oned, T, &num_dim, sub_mean, &onei, &zerod, ret, &onei) ;
 
+  delete[] sub_mean ;
   len=num_dim ;
   return ret;
 }

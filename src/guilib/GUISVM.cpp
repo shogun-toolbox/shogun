@@ -78,6 +78,7 @@ bool CGUISVM::train(char* param)
   //    }
 
   CIO::message("starting svm\n") ;
+  svm->set_C(C) ;
   bool ret=svm->svm_train(f) ;
 
   gui->guihmm.pos->set_observations(pt) ;

@@ -1,3 +1,5 @@
+#ifdef WITHMATLAB
+
 /*
  * MATLAB Compiler: 2.1
  * Date: Mon Jan 28 09:59:03 2002
@@ -69,3 +71,5 @@ void cleaner_main(double *covZ, int dim, double thresh,
   mclLibTermInitTerms(2, init_term_table) ;
 }
 
+
+#endif

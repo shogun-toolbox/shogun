@@ -97,7 +97,7 @@ CTextGUI::CTextGUI(int argc, const char** argv)
 
 CTextGUI::~CTextGUI()
 {
-#ifdef SVMCPLEX
+#ifdef WITHMATLAB
   libmmfileTerminate() ;
 #endif
 }

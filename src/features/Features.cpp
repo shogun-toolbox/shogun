@@ -9,14 +9,15 @@ CFeatures::CFeatures()
 
 CFeatures::~CFeatures()
 {
-  delete preproc;
+  //delete preproc;
+  CIO::message("Feature object destroyed\n") ;
 }
 
 /// set preprocessor
 void CFeatures::set_preproc(CPreProc* p)
 { 
-  if (preproc)
-    delete preproc; 
+  //  if (preproc)
+  //    delete preproc; 
   preproc=p ;
   CIO::message("set preproc %ld\n", p) ;
 }

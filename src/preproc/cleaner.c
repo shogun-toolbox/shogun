@@ -1,3 +1,5 @@
+#ifdef WITHMATLAB
+
 /*
  * MATLAB Compiler: 2.1
  * Date: Mon Jan 28 12:05:31 2002
@@ -176,6 +178,7 @@ static mxArray * Mcleaner(int nargout_, mxArray * covz, mxArray * thresh) {
      * [v, d] = eig(covz);			% get the eigensystem,
      */
     mlfAssign(&v, mlfEig(&d, mclVa(covz, "covz"), NULL, NULL));
+    mclPrintArray(mclVsv(v, "v"), "v");
     /*
      * % negative eigenvalues have
      * % to go ...
@@ -236,6 +239,7 @@ static mxArray * Mcleaner(int nargout_, mxArray * covz, mxArray * thresh) {
               mclVsv(v, "v"),
               mlfCreateColonIndex(),
               mclVsv(dgood, "dgood"))))));
+    mclPrintArray(mclVsv(T, "T"), "T");
     mclValidateOutput(T, 1, nargout_, "T", "cleaner");
     mxDestroyArray(ans);
     mxDestroyArray(d);
@@ -255,3 +259,5 @@ static mxArray * Mcleaner(int nargout_, mxArray * covz, mxArray * thresh) {
      * 
      */
 }
+
+#endif

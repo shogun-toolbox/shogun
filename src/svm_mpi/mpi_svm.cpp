@@ -76,6 +76,7 @@ bool CSVMMPI::svm_train(CFeatures* train_)
 
     //CIO::message("setting vector: %i %i (%i,%i)\n",start_idx, rank, j, m_prime) ;
     column=train->get_feature_vector(j, len, free);
+
     REAL *col=new REAL[len] ;
     for (int kk=0; kk<len; kk++)
       col[kk]=labels[j]*column[kk] ; 
@@ -175,13 +176,13 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
 
   double zval = 0.0;
   double dr = 1.0;
-  CMatrix<double> b(1, 1, &zval);
+  CMatrix<double> b(1, 1, &zval, false, donothing);
   CMatrix<double> l(zeros<double>(m_full, 1));
   CMatrix<double> u(ones<double>(m_full, 1));
   CIO::message("C=%e\n", C) ;
-  u = 10.0 * u;
+  u = C * u;
   CMatrix<double> c(-ones<double>(m_full, 1));
-  CMatrix<double> r(1, 1, &dr);
+  CMatrix<double> r(1, 1, &dr, false, donothing);
   CMatrix<double> A(1, num_examples, dlabels, false, my_delete);
   
   CIntPointPR optimizer;
@@ -196,52 +197,53 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
 
   CIO::message("starting optimizer\n") ;
 
+  #define HOME "/opt/home/raetsch/"
   {
     CIO::message("saving Z matrix to ~/Z.dat\n") ;    
     double* d=Z.GetDataPointer() ;
-    FILE* f=fopen("/home/104/gxr104/Z.dat","w+") ;
+    FILE* f=fopen(HOME "Z.dat","w+") ;
     fwrite(d, sizeof(double), Z.GetNumRows()*Z.GetNumColumns(), f) ;
     fclose(f) ;
   } 
   {
     CIO::message("saving A matrix to ~/A.dat\n") ;    
     double* d=A.GetDataPointer() ;
-    FILE* f=fopen("/home/104/gxr104/A.dat","w+") ;
+    FILE* f=fopen(HOME "A.dat","w+") ;
     fwrite(d, sizeof(double), A.GetNumRows()*A.GetNumColumns(), f) ;
     fclose(f) ;
   } 
   {
     CIO::message("saving c vector to ~/c.dat\n") ;    
     double* d=c.GetDataPointer() ;
-    FILE* f=fopen("/home/104/gxr104/c.dat","w+") ;
+    FILE* f=fopen(HOME "c.dat","w+") ;
     fwrite(d, sizeof(double), c.GetNumRows()*c.GetNumColumns(), f) ;
     fclose(f) ;
   } 
   {
     CIO::message("saving l vector to ~/l.dat\n") ;    
     double* d=l.GetDataPointer() ;
-    FILE* f=fopen("/home/104/gxr104/l.dat","w+") ;
+    FILE* f=fopen(HOME "l.dat","w+") ;
     fwrite(d, sizeof(double), l.GetNumRows()*l.GetNumColumns(), f) ;
     fclose(f) ;
   } 
   {
     CIO::message("saving u vector to ~/u.dat\n") ;    
     double* d=u.GetDataPointer() ;
-    FILE* f=fopen("/home/104/gxr104/u.dat","w+") ;
+    FILE* f=fopen(HOME "u.dat","w+") ;
     fwrite(d, sizeof(double), u.GetNumRows()*u.GetNumColumns(), f) ;
     fclose(f) ;
   } 
   {
     CIO::message("saving r vector to ~/r.dat\n") ;    
     double* d=r.GetDataPointer() ;
-    FILE* f=fopen("/home/104/gxr104/r.dat","w+") ;
+    FILE* f=fopen(HOME "r.dat","w+") ;
     fwrite(d, sizeof(double), r.GetNumRows()*r.GetNumColumns(), f) ;
     fclose(f) ;
   } 
   {
     CIO::message("saving b vector to ~/b.dat\n") ;    
     double* d=b.GetDataPointer() ;
-    FILE* f=fopen("/home/104/gxr104/b.dat","w+") ;
+    FILE* f=fopen(HOME "b.dat","w+") ;
     fwrite(d, sizeof(double), b.GetNumRows()*b.GetNumColumns(), f) ;
     fclose(f) ;
   } 
@@ -253,6 +255,33 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
   
   double *prim = primal.GetDataPointer();
   double *dua = dual.GetDataPointer();
+  double *Zd = Z.GetDataPointer();
+
+  REAL *w=new REAL[num_rows] ;
+  int onei=1 ;
+  double zerod=0, oned=1 ;
+  char N='N' ;
+  int num_rows_=num_rows ;
+  dgemv_(&N, &num_rows_, &num_examples, &oned, Zd, &num_rows_, prim, &onei, &zerod, w, &onei) ;
+  
+  {
+    for (int i=0; i<num_rows; i++)
+      CIO::message("w[%i]=%e\n", i, w[i]) ;
+    CIO::message("b=%e\n", *dua) ;
+  } ;
+  
+  REAL *out=new REAL[num_rows] ;
+  char T='T' ;
+  dgemv_(&T, &num_rows_, &num_examples, &oned, Zd, &num_rows_, w, &onei, &zerod, out, &onei) ;
+  
+  if (0) {
+    int i ;
+    for (i=0; i<num_examples; i++)
+      CIO::message("out[%i]=%e\n", i, out[i]*labels[i]-*dua) ;
+    //    for (i=2500; i<2510; i++)
+    //      CIO::message("out[%i]=%e\n", i, out[i]-*dua) ;
+  } ;
+
 } ;
 
 
