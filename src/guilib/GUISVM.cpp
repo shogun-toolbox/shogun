@@ -48,7 +48,8 @@ bool CGUISVM::new_svm(char* param)
 bool CGUISVM::train(char* param)
 {
 	CFeatures* features=gui->guifeatures.get_train_features();
-	CPreProc * preproc=gui->guipreproc.get_preproc() ;
+	//CPreProc * preproc=gui->guipreproc.get_preproc() ;
+	CPreProc * preproc=NULL;
 
 	if (!svm)
 	{
@@ -70,11 +71,12 @@ bool CGUISVM::train(char* param)
 			CIO::message("preprocessor does not fit to features");
 			return false;
 		}
+	
+		preproc->init(features);
 	}
 	else
 		CIO::message("doing without preproc\n");
 	
-	preproc->init(features);
 	features->set_preproc(preproc);
 	features->preproc_feature_matrix();
 
