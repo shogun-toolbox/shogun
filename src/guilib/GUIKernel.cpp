@@ -495,7 +495,10 @@ bool CGUIKernel::set_kernel(CHAR* param)
 					return true;
 				}
 			}
-			else if (strcmp(data_type,"SPARNORMSQUARED")==0)
+		}
+		else if (strcmp(kern_type,"NORMSQUARED")==0)
+		{
+			if (strcmp(data_type,"SPARSEREAL")==0)
 			{
 				sscanf(param, "%s %s %d", kern_type, data_type, &size);
 				delete kernel;
