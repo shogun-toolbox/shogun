@@ -1029,7 +1029,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				{
 					REAL W_norm = W_upd[i*degree+d]/w[d];
 					W[i*degree+d] += W_norm;
-					sumw[d]+=a[i]*(0.5*label[i]*W_norm - 1);
+					sumw[d]+=a[i]*(0.5*label[i]*W[i*degree+d] - 1);
 				}
 
 				objective+=w[d]*sumw[d];
