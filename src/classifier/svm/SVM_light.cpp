@@ -118,6 +118,7 @@ void CSVMLight::svm_learn()
 	W=NULL;
 	rho=0 ;
 	sumabsgammas=0 ;
+	w_gap=1 ;
 
 	if (get_kernel()->has_property(KP_KERNCOMBINATION))
 	{
@@ -936,44 +937,46 @@ long CSVMLight::check_optimality(MODEL *model, INT* label,
   (*maxdiff)=0;
   (*misclassified)=0;
   for(ii=0;(i=active2dnum[ii])>=0;ii++) {
-    if((!inconsistent[i]) && label[i]) {
-      dist=(lin[i]-model->b)*(double)label[i];/* 'distance' from
-						 hyperplane*/
-      target=-(learn_parm->eps-(double)label[i]*c[i]);
-      ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
-      if(dist <= 0) {       
-	(*misclassified)++;  /* does not work due to deactivation of var */
-      }
-      if((a[i]>learn_parm->epsilon_a) && (dist > target)) {
-	if((dist-target)>(*maxdiff))  /* largest violation */
-	  (*maxdiff)=dist-target;
-      }
-      else if((a[i]<ex_c) && (dist < target)) {
-	if((target-dist)>(*maxdiff))  /* largest violation */
-	  (*maxdiff)=target-dist;
-      }
-      /* Count how long a variable was at lower/upper bound (and optimal).*/
-      /* Variables, which were at the bound and optimal for a long */
-      /* time are unlikely to become support vectors. In case our */
-      /* cache is filled up, those variables are excluded to save */
-      /* kernel evaluations. (See chapter 'Shrinking').*/ 
-      if((a[i]>(learn_parm->epsilon_a)) 
-	 && (a[i]<ex_c)) { 
-	last_suboptimal_at[i]=iteration;         /* not at bound */
-      }
-      else if((a[i]<=(learn_parm->epsilon_a)) 
-	      && (dist < (target+learn_parm->epsilon_shrink))) {
-	last_suboptimal_at[i]=iteration;         /* not likely optimal */
-      }
-      else if((a[i]>=ex_c)
-	      && (dist > (target-learn_parm->epsilon_shrink)))  { 
-	last_suboptimal_at[i]=iteration;         /* not likely optimal */
-      }
-    }   
+	  if((!inconsistent[i]) && label[i]) {
+		  dist=(lin[i]-model->b)*(double)label[i];/* 'distance' from
+													 hyperplane*/
+		  target=-(learn_parm->eps-(double)label[i]*c[i]);
+		  ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
+		  if(dist <= 0) {       
+			  (*misclassified)++;  /* does not work due to deactivation of var */
+		  }
+		  if((a[i]>learn_parm->epsilon_a) && (dist > target)) {
+			  if((dist-target)>(*maxdiff))  /* largest violation */
+				  (*maxdiff)=dist-target;
+		  }
+		  else if((a[i]<ex_c) && (dist < target)) {
+			  if((target-dist)>(*maxdiff))  /* largest violation */
+				  (*maxdiff)=target-dist;
+		  }
+		  /* Count how long a variable was at lower/upper bound (and optimal).*/
+		  /* Variables, which were at the bound and optimal for a long */
+		  /* time are unlikely to become support vectors. In case our */
+		  /* cache is filled up, those variables are excluded to save */
+		  /* kernel evaluations. (See chapter 'Shrinking').*/ 
+		  if((a[i]>(learn_parm->epsilon_a)) 
+			 && (a[i]<ex_c)) { 
+			  last_suboptimal_at[i]=iteration;         /* not at bound */
+		  }
+		  else if((a[i]<=(learn_parm->epsilon_a)) 
+				  && (dist < (target+learn_parm->epsilon_shrink))) {
+			  last_suboptimal_at[i]=iteration;         /* not likely optimal */
+		  }
+		  else if((a[i]>=ex_c)
+				  && (dist > (target-learn_parm->epsilon_shrink)))  { 
+			  last_suboptimal_at[i]=iteration;         /* not likely optimal */
+		  }
+	  }   
   }
+
   /* termination criterion */
-  if((!retrain) && ((*maxdiff) > learn_parm->epsilon_crit)) {  
-    retrain=1;
+  if((!retrain) && 
+	 (((*maxdiff) > learn_parm->epsilon_crit) || (w_gap>0.1))) {  
+	  retrain=1;
   }
   return(retrain);
 }
@@ -1043,15 +1046,17 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			
 			meanabssumw/=degree;
 			bound = 1.0 / meanabssumw;
-			REAL gamma=50*bound; //fixme
+			REAL gamma=0.05*bound; //fixme
 
-			rho=CMath::INFTY ;
+			rho = CMath::INFTY ;
 			sumabsgammas = sumabsgammas + CMath::abs(gamma) ;
 			for (INT d=0; d<degree; d++)
 			{
 				rhos[d]       = rhos[d] + gamma*(-sumw[d]) ;
-				rho = -CMath::min(rho,rhos[d]/sumabsgammas) ;
+				rho = CMath::min(rho, rhos[d]/sumabsgammas) ;
 			}
+			rho*=-1 ;
+			w_gap = CMath::abs(1-rho/objective) ;
 
 			// update w
 			REAL s=0;
@@ -1076,7 +1081,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				lin[i]=s;
 			}
 
-			CIO::message(M_DEBUG,"gamma: %f OBJ: %f RHO: %f\n", gamma, objective,rho);
+			CIO::message(M_DEBUG,"gamma: %f OBJ: %f RHO: %f  wgap=%f\n", gamma, objective,rho,w_gap);
 
 			delete[] W_upd;
 			delete[] sumw;

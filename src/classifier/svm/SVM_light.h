@@ -242,6 +242,7 @@ typedef struct shrink_state {
   REAL rho ;
   REAL *rhos ;
   REAL sumabsgammas ;
+  REAL w_gap ;
 };
 
 #endif
