@@ -468,7 +468,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 			{
 				double width=1;
 
-				sscanf(param, "%s %s %lf %d", kern_type, data_type, &width, &size);
+				sscanf(param, "%s %s %f %d", kern_type, data_type, &width, &size);
 				delete kernel;
 				kernel=new CGaussianKernel(size, width);
 				if (kernel)
