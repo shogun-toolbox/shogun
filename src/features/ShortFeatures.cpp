@@ -15,6 +15,7 @@ CShortFeatures::~CShortFeatures()
 /// get feature vector for sample num
 short int* CShortFeatures::get_feature_vector(long num, long &len, bool &free)
 {
+	/*
   len=num_features ; 
   if ((num<num_vectors) && feature_matrix)
     {
@@ -34,6 +35,9 @@ short int* CShortFeatures::get_feature_vector(long num, long &len, bool &free)
 	} ;
       return feat ;
     }
+	*/
+#warning CShortFeatures::get_feature_vector is outdated
+	return NULL;
 }
 
 void CShortFeatures::free_feature_vector(short int* feat, bool free)
@@ -51,9 +55,6 @@ short int* CShortFeatures::get_feature_matrix(long &num_feat, long &num_vec)
 
 bool CShortFeatures::preproc_feature_matrix()
 {
-  if (preproc)
-#warning return ((CShortPreProc*) preproc)->apply_to_feature_matrix(this);
-    return false ;
-  else 
+#warning CShortFeatures::preproc_feature_matrix is outdated
 	return false;
 }

@@ -19,7 +19,7 @@ bool CNormOne::init(CFeatures* f)
 	return true;
 }
 
-/// initialize preprocessor from features
+/// clean up allocated memory
 void CNormOne::cleanup()
 {
 }

@@ -13,9 +13,7 @@ CPruneVarSubMean::CPruneVarSubMean(bool divide)
 
 CPruneVarSubMean::~CPruneVarSubMean()
 {
-  delete[] idx ;
-  delete[] mean;
-  delete[] std;
+	cleanup();
 }
 
 /// initialize preprocessor from features
@@ -112,7 +110,7 @@ bool CPruneVarSubMean::init(CFeatures* f_)
 		return false;
 }
 
-/// initialize preprocessor from features
+/// clean up allocated memory
 void CPruneVarSubMean::cleanup()
 {
   delete[] idx;

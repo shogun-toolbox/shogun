@@ -62,16 +62,28 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
 	feat=compute_feature_vector(num, len, feat);
 
 
-	if (preproc)
+	if (get_num_preproc())
 	{
 	  //CIO::message("preprocessing %i th feature vector\n", (int)num) ;
-	  int len2=len ;
-	  REAL* feat2 = ((CRealPreProc*) preproc)->apply_to_feature_vector(feat, len2);
-	  memcpy(feat, feat2, sizeof(REAL)*len2);
-	  delete[] feat2 ;
+
+	  int tmp_len=len;
+	  REAL* tmp_feat_before = feat;
+	  REAL* tmp_feat_after = NULL;
+	 
+	  for (int i=0; i<get_num_preproc(); i++)
+	  {
+		  tmp_feat_after=((CRealPreProc*) get_preproc(i))->apply_to_feature_vector(tmp_feat_before, tmp_len);
+
+		  if (i!=0)	// delete feature vector, except for the the first one, i.e., feat
+			  delete[] tmp_feat_before;
+		  tmp_feat_before=tmp_feat_after;
+	  }
+
+	  memcpy(feat, tmp_feat_after, sizeof(REAL)*tmp_len);
+	  delete[] tmp_feat_after;
 	  //CIO::message(stderr, "len2: %d len: %d\n", len2, len);
 	  //len=num_features=len2 ;
-	  len=len2 ;
+	  len=tmp_len ;
 	}
 	return feat ;
   }
@@ -97,12 +109,19 @@ REAL* CRealFeatures::get_feature_matrix(long &num_feat, long &num_vec)
 /// preproc feature_matrix
 bool CRealFeatures::preproc_feature_matrix(bool force_preprocessing)
 {
-	CIO::message("preproc: %d, preprocd: %d, force: %d\n", preproc, preprocessed, force_preprocessing);
+	CIO::message("preprocd: %d, force: %d\n", preprocessed, force_preprocessing);
 
-	if ( feature_matrix && preproc && (!preprocessed || force_preprocessing) )
+	if ( feature_matrix && get_num_preproc() && (!preprocessed || force_preprocessing) )
 	{
 	    preprocessed=true;	
-	    return (((CRealPreProc*) preproc)->apply_to_feature_matrix(this) != NULL);
+
+		for (int i=0; i<get_num_preproc(); i++)
+		{
+			CIO::message("preprocessing using preproc %s\n", get_preproc(i)->get_name());
+			if (((CRealPreProc*) get_preproc(i))->apply_to_feature_matrix(this) == NULL)
+				return false;
+		}
+		return true;
 	}
 	else
 	{
@@ -145,7 +164,7 @@ bool CRealFeatures::save(FILE* dest)
 	    CIO::message(".");
 
 	f=get_feature_vector(i, len, free);
-	assert(fwrite(f, (long) sizeof(double), len, dest)==len) ;
+	assert(((long)fwrite(f, (long) sizeof(double), len, dest))==len) ;
 	free_feature_vector(f, i, free) ;
     }
 

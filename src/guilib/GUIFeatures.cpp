@@ -50,7 +50,7 @@ bool CGUIFeatures::preprocess(char* param)
 					if (train_features)
 					{
 						gui->guipreproc.get_preproc()->init(train_features);
-						(*f_ptr)->set_preproc(gui->guipreproc.get_preproc());
+						(*f_ptr)->add_preproc(gui->guipreproc.get_preproc());
 
 						CIO::message("force: %d\n",force);
 						(*f_ptr)->preproc_feature_matrix(force==1);

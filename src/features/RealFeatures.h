@@ -48,7 +48,7 @@ class CRealFeatures: public CFeatures
 	  if (num_features && num_vectors)
 	  {
 		  delete feature_cache;
-		  feature_cache= new CCache<REAL>(cache_size, num_features, num_vectors);
+		  feature_cache= new CCache<REAL>(get_cache_size(), num_features, num_vectors);
 	  }
   }
 
@@ -58,7 +58,7 @@ class CRealFeatures: public CFeatures
 	  if (num_features && num_vectors)
 	  {
 		  delete feature_cache;
-		  feature_cache= new CCache<REAL>(cache_size, num_features, num_vectors);
+		  feature_cache= new CCache<REAL>(get_cache_size(), num_features, num_vectors);
 	  }
   }
 	
