@@ -35,7 +35,6 @@ protected:
 	void switch_model(CHMM** m1, CHMM** m2);
 
 	CHMM* working;
-	CHMM* working_estimate;
 	
 	CHMM* pos;
 	CHMM* neg;

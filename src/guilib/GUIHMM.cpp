@@ -6,7 +6,6 @@
 CGUIHMM::CGUIHMM(CGUI * gui_): gui(gui_)
 {
 	working=NULL;
-	working_estimate=NULL;
 
 	pos=NULL;
 	neg=NULL;
@@ -35,10 +34,8 @@ bool CGUIHMM::new_hmm(char* param)
 	{
 	  if (working)
 	    delete working;
-	  if (working_estimate)
-	    delete working_estimate;
+	  
 	  working=new CHMM(n,m,order,NULL,PSEUDO);
-	  working_estimate=new CHMM(n,m,order,NULL,PSEUDO);
 	  ORDER=order;
 	  M=m;
 	  return true;
@@ -65,7 +62,7 @@ bool CGUIHMM::baum_welch_train(char* param)
 	{
 		if (working->get_observations())
 		{
-			working_estimate=new CHMM(working);
+			CHMM* working_estimate=new CHMM(working);
 			
 			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
 
@@ -515,11 +512,10 @@ bool CGUIHMM::assign_obs(char* param)
   
   if ((sscanf(param, "%s", target))==1)
     {
-      if (working && working_estimate)
+      if (working)
 	{
 	  CObservation *obs=gui->guiobs.get_obs(target) ;
 	  working->set_observations(obs);
-	  working_estimate->set_observations(obs);
 
 	  return true ;
 	}
