@@ -6,9 +6,9 @@
 
 #include <assert.h>
 
-CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d, INT max_mismatch_)
+CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d, INT max_mismatch_, bool use_norm)
 	: CCharKernel(size),weights(NULL),degree(d), max_mismatch(max_mismatch_), seq_length(0),
-	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL)
+	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL), use_normalization(use_norm)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION;
 	lhs=NULL;
@@ -124,67 +124,70 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	initialized = false ;
 	INT i;
 
-	if (rhs_changed)
+	if (use_normalization)
 	{
-		if (sqrtdiag_lhs != sqrtdiag_rhs)
-			delete[] sqrtdiag_rhs;
-		sqrtdiag_rhs=NULL ;
-	}
-	if (lhs_changed)
-	{
-		delete[] sqrtdiag_lhs;
-		sqrtdiag_lhs=NULL ;
-		sqrtdiag_lhs= new REAL[lhs->get_num_vectors()];
-		assert(sqrtdiag_lhs) ;
-		for (i=0; i<lhs->get_num_vectors(); i++)
-			sqrtdiag_lhs[i]=1;
-	}
-
-	if (l==r)
-		sqrtdiag_rhs=sqrtdiag_lhs;
-	else if (rhs_changed)
-	{
-		sqrtdiag_rhs= new REAL[rhs->get_num_vectors()];
-		assert(sqrtdiag_rhs) ;
-		
-		for (i=0; i<rhs->get_num_vectors(); i++)
-			sqrtdiag_rhs[i]=1;
-	}
-
-	assert(sqrtdiag_lhs);
-	assert(sqrtdiag_rhs);
-
-	if (lhs_changed)
-	{
-		this->lhs=(CCharFeatures*) l;
-		this->rhs=(CCharFeatures*) l;
-		
-		//compute normalize to 1 values
-		for (i=0; i<lhs->get_num_vectors(); i++)
+		if (rhs_changed)
 		{
-			sqrtdiag_lhs[i]=sqrt(compute(i,i));
-
-			//trap divide by zero exception
-			if (sqrtdiag_lhs[i]==0)
-				sqrtdiag_lhs[i]=1e-16;
+			if (sqrtdiag_lhs != sqrtdiag_rhs)
+				delete[] sqrtdiag_rhs;
+			sqrtdiag_rhs=NULL ;
 		}
-	}
-	
-	// if lhs is different from rhs (train/test data)
-	// compute also the normalization for rhs
-	if ((sqrtdiag_lhs!=sqrtdiag_rhs) & rhs_changed)
-	{
-		this->lhs=(CCharFeatures*) r;
-		this->rhs=(CCharFeatures*) r;
-		
-		//compute normalize to 1 values
-		for (i=0; i<rhs->get_num_vectors(); i++)
+		if (lhs_changed)
 		{
-			sqrtdiag_rhs[i]=sqrt(compute(i,i));
+			delete[] sqrtdiag_lhs;
+			sqrtdiag_lhs=NULL ;
+			sqrtdiag_lhs= new REAL[lhs->get_num_vectors()];
+			assert(sqrtdiag_lhs) ;
+			for (i=0; i<lhs->get_num_vectors(); i++)
+				sqrtdiag_lhs[i]=1;
+		}
 
-			//trap divide by zero exception
-			if (sqrtdiag_rhs[i]==0)
-				sqrtdiag_rhs[i]=1e-16;
+		if (l==r)
+			sqrtdiag_rhs=sqrtdiag_lhs;
+		else if (rhs_changed)
+		{
+			sqrtdiag_rhs= new REAL[rhs->get_num_vectors()];
+			assert(sqrtdiag_rhs) ;
+
+			for (i=0; i<rhs->get_num_vectors(); i++)
+				sqrtdiag_rhs[i]=1;
+		}
+
+		assert(sqrtdiag_lhs);
+		assert(sqrtdiag_rhs);
+
+		if (lhs_changed)
+		{
+			this->lhs=(CCharFeatures*) l;
+			this->rhs=(CCharFeatures*) l;
+
+			//compute normalize to 1 values
+			for (i=0; i<lhs->get_num_vectors(); i++)
+			{
+				sqrtdiag_lhs[i]=sqrt(compute(i,i));
+
+				//trap divide by zero exception
+				if (sqrtdiag_lhs[i]==0)
+					sqrtdiag_lhs[i]=1e-16;
+			}
+		}
+
+		// if lhs is different from rhs (train/test data)
+		// compute also the normalization for rhs
+		if ((sqrtdiag_lhs!=sqrtdiag_rhs) & rhs_changed)
+		{
+			this->lhs=(CCharFeatures*) r;
+			this->rhs=(CCharFeatures*) r;
+
+			//compute normalize to 1 values
+			for (i=0; i<rhs->get_num_vectors(); i++)
+			{
+				sqrtdiag_rhs[i]=sqrt(compute(i,i));
+
+				//trap divide by zero exception
+				if (sqrtdiag_rhs[i]==0)
+					sqrtdiag_rhs[i]=1e-16;
+			}
 		}
 	}
 	
@@ -310,7 +313,7 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 
   REAL sqrt_a= 1 ;
   REAL sqrt_b= 1 ;
-  if (initialized)
+  if (initialized && use_normalization)
     {
       sqrt_a=sqrtdiag_lhs[idx_a] ;
       sqrt_b=sqrtdiag_rhs[idx_b] ;
@@ -323,26 +326,43 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
   for (INT i=0; i<alen; i++)
 	  match_vector[i]=(avec[i]!=bvec[i]) ;
   
-  for (INT i=0; i<alen-degree; i++)
+  if (length==0 || max_mismatch > 0)
   {
-	  INT mismatches=0;
-	  
-	  for (INT j=0; j<degree; j++)
+	  for (INT i=0; i<alen-degree; i++)
 	  {
-		  if (match_vector[i+j])
+		  INT mismatches=0;
+
+		  for (INT j=0; j<degree; j++)
 		  {
-			  mismatches++ ;
-			  if (mismatches>max_mismatch)
-				  break ;
-		  } ;
-		  sum += weights[j+degree*mismatches];
+			  if (match_vector[i+j])
+			  {
+				  mismatches++ ;
+				  if (mismatches>max_mismatch)
+					  break ;
+			  } ;
+			  sum += weights[j+degree*mismatches];
+		  }
+	  }
+  }
+  else
+  {
+	  for (INT i=0; i<alen-degree; i++)
+	  {
+		  INT mismatches=0;
+
+		  for (INT j=0; j<degree; j++)
+		  {
+			  if (!match_vector[i+j])
+				  break;
+			  sum += weights[i*degree+j];
+		  }
 	  }
   }
   
   ((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  return (double) sum; // XXX /sqrt_both;
+  return (double) sum/sqrt_both;
 }
 
 void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight) 
@@ -353,7 +373,8 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight)
 	assert(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
 
-	weight /= 1 ; ///XXX sqrtdiag_lhs[idx] ;
+	if (use_normalization)
+		weight /=  sqrtdiag_lhs[idx] ;
 	
 	for (INT i=0; i<len; i++)
 	{
@@ -368,49 +389,99 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight)
 		vec[i]=0 ;
 	} ;
 		
-	for (INT i=0; i<len-degree; i++)
+	if (length == 0 || max_mismatch > 0)
 	{
-		struct SuffixTree *tree = trees[i] ;
-		for (INT j=0; j<degree; j++)
+		for (INT i=0; i<len-degree; i++)
 		{
-			if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
+			struct SuffixTree *tree = trees[i] ;
+			for (INT j=0; j<degree; j++)
 			{
-				tree=tree->childs[vec[i+j]] ;
-				tree->weight += weight*weights[j];
-			} else 
-				if ((j==degree-1) && (tree->has_floats))
+				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
-					tree->child_weights[vec[i+j]] += weight*weights[j];
-					break ;
-				}
-				else
-				{
-					if (j==degree-1)
+					tree=tree->childs[vec[i+j]] ;
+					tree->weight += weight*weights[j];
+				} else 
+					if ((j==degree-1) && (tree->has_floats))
 					{
-						assert(!tree->has_floats) ;
-						tree->has_floats=true ;
-						for (INT k=0; k<4; k++)
-						{
-							assert(tree->childs[k]==NULL) ;
-							tree->child_weights[k] =0 ;
-						}
 						tree->child_weights[vec[i+j]] += weight*weights[j];
 						break ;
 					}
 					else
 					{
-						assert(!tree->has_floats) ;
-						tree->childs[vec[i+j]]=new struct SuffixTree ;
-						assert(tree->childs[vec[i+j]]!=NULL) ;
-						tree=tree->childs[vec[i+j]] ;
-						for (INT k=0; k<4; k++)
-							tree->childs[k]=NULL ;
-						tree->weight = weight*weights[j] ;
-						tree->has_floats=false ;
-						tree->usage=0 ;
+						if (j==degree-1)
+						{
+							assert(!tree->has_floats) ;
+							tree->has_floats=true ;
+							for (INT k=0; k<4; k++)
+							{
+								assert(tree->childs[k]==NULL) ;
+								tree->child_weights[k] =0 ;
+							}
+							tree->child_weights[vec[i+j]] += weight*weights[j];
+							break ;
+						}
+						else
+						{
+							assert(!tree->has_floats) ;
+							tree->childs[vec[i+j]]=new struct SuffixTree ;
+							assert(tree->childs[vec[i+j]]!=NULL) ;
+							tree=tree->childs[vec[i+j]] ;
+							for (INT k=0; k<4; k++)
+								tree->childs[k]=NULL ;
+							tree->weight = weight*weights[j] ;
+							tree->has_floats=false ;
+							tree->usage=0 ;
+						} ;
 					} ;
-				} ;
-		} ;
+			} ;
+		}
+	}
+	else
+	{
+		for (INT i=0; i<len-degree; i++)
+		{
+			struct SuffixTree *tree = trees[i] ;
+			for (INT j=0; j<degree; j++)
+			{
+				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
+				{
+					tree=tree->childs[vec[i+j]] ;
+					tree->weight += weight*weights[i*degree + j];
+				} else 
+					if ((j==degree-1) && (tree->has_floats))
+					{
+						tree->child_weights[vec[i+j]] += weight*weights[i*degree + j];
+						break ;
+					}
+					else
+					{
+						if (j==degree-1)
+						{
+							assert(!tree->has_floats) ;
+							tree->has_floats=true ;
+							for (INT k=0; k<4; k++)
+							{
+								assert(tree->childs[k]==NULL) ;
+								tree->child_weights[k] =0 ;
+							}
+							tree->child_weights[vec[i+j]] += weight*weights[i*degree + j];
+							break ;
+						}
+						else
+						{
+							assert(!tree->has_floats) ;
+							tree->childs[vec[i+j]]=new struct SuffixTree ;
+							assert(tree->childs[vec[i+j]]!=NULL) ;
+							tree=tree->childs[vec[i+j]] ;
+							for (INT k=0; k<4; k++)
+								tree->childs[k]=NULL ;
+							tree->weight = weight*weights[i*degree + j] ;
+							tree->has_floats=false ;
+							tree->usage=0 ;
+						} ;
+					} ;
+			} ;
+		}
 	}
 	((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
@@ -462,7 +533,10 @@ REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx)
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
 
-	return sum ; // XXX /sqrtdiag_rhs[idx] ;
+	if (use_normalization)
+		 sum /= sqrtdiag_rhs[idx] ;
+
+	return sum;
 }
 
 void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib) 
@@ -512,9 +586,11 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
 
-// XXX
-//	for (INT j=0; j<degree; j++)
-//		LevelContrib[j] /= sqrtdiag_rhs[idx] ;
+	if (use_normalization)
+	{
+		for (INT j=0; j<degree; j++)
+			LevelContrib[j] /= sqrtdiag_rhs[idx] ;
+	}
 }
 
 REAL CWeightedDegreeCharKernel::compute_abs_weights_tree(struct SuffixTree* p_tree) 
@@ -692,3 +768,14 @@ INT CWeightedDegreeCharKernel::tree_size(struct SuffixTree * p_tree)
 	return ret ;
 } 
 
+void CWeightedDegreeCharKernel::set_weights(REAL* ws, INT d, INT len)
+{
+	degree=d;
+	length=len;
+
+	delete[] weights;
+	weights=new REAL[d*len];
+
+	for (int i=0; i<degree*length; i++)
+		weights[i]=ws[i];
+}

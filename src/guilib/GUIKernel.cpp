@@ -732,11 +732,12 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 		{
 			if (strcmp(data_type,"CHAR")==0)
 			{
+				INT use_normalization=1;
 				INT d=3;
 				INT max_mismatch = 0;
 				INT i=0;
 
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &d, &max_mismatch);
+				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &d, &max_mismatch, &use_normalization);
 				REAL* weights=new REAL[d*(1+max_mismatch)];
 				REAL sum=0;
 
@@ -764,7 +765,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 				
 				delete k;
-				k=new CWeightedDegreeCharKernel(size, weights, d, max_mismatch);
+				k=new CWeightedDegreeCharKernel(size, weights, d, max_mismatch, use_normalization==1);
 				delete[] weights ;
 				
 				if (k)
