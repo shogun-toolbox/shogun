@@ -9,6 +9,12 @@ MACHINE=`uname -m`
 EXESUFFIX=${KERNELNAME}-${MACHINE}
 EXT_OBJ_CPP=cpp.o
 EXT_OBJ_C=c.o
+
+#most defines are simply design bugs
+DEFINES="-DMPICH_SKIP_MPICXX -D_LARGEFILE64_SOURCE -DNO_LOG_CACHE -DBIGOBS -DUSE_KERNEL_CACHE -DBIGSTATES"
+#DEFINES="-DMPICH_SKIP_MPICXX -D_LARGEFILE64_SOURCE -DDEBUG -DSVMMPI -DWITHMATLAB -DNO_LOG_CACHE -DBIGOBS -DBIGSTATES -DNORMALIZE_DERIVATIVE -DNORMALIZE_TO_ONE -DUSE_KERNEL_CACHE -DPARALLEL_STRUCTURES -DLOG_SUM_ARRAY -DTMP_SAVE  -DCHECK_BW_NORMALIZATION"
+
+# these ones will be autodetected
 GDB=gdb
 COMP_C=cc
 COMP_CPP=c++
@@ -16,7 +22,7 @@ COMPFLAGS_C=
 COMPFLAGS_CPP=
 INCLUDES=-I${SRCDIR}
 LINK=c++
-LINKFLAGS="-llapack -llapack_atlas -L /usr/lib/3dnow -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c -lm"
+LINKFLAGS="-llapack -llapack_atlas -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c -lm"
 TARGET="genefinder-${EXESUFFIX}"
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -fkeep-inline-functions  -finline-functions -fschedule-insns2 -fthread-jumps -fforce-mem -fforce-addr -fstrength-reduce -fomit-frame-pointer -unroll-loops"
 
@@ -36,7 +42,7 @@ cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
 
-	for _cc in cc gcc
+	for _cc in gcc-3.3 gcc-3.2 cc gcc
 	do
 		if cc_check
 		then
@@ -47,7 +53,7 @@ EOF
 		fi
 	done
 
-	for _cc in cxx CC c++ g++
+	for _cc in cxx CC g++-3.3 g++-3.2 c++ g++
 	do
 		if cc_check
 		then
@@ -223,7 +229,11 @@ determine_march_mcpu()
 	then
 		COMP_C=cc
 		COMP_CPP=CC
-		COMP_OPTS="-O2 -g -Wall"
+		COMP_OPTS="-O4 -g -Wall"
+		LINKFLAGS="-lm -lsunperf -Bstatic -xlic_lib=sunperf -xlic_lib=SUNWPro_lic -Bdynamic -lF77 -lM77 -lsunmath  -mt -lsocket -lnsl"
+	elif alpha
+	then
+		COMP_OPTS="-O5 -inline speed -pthread -om"
 	fi
 
 	OS="-D`echo $system_name | tr 'a-z-' 'A-Z_'`"
@@ -897,6 +907,7 @@ EXT_SRC_C   	= ${EXT_SRC_C}
 GDB				= ${GDB}
 COMP_C			= ${COMP_C}
 COMP_CPP		= ${COMP_CPP}
+DEFINES			= ${DEFINES}
 COMPFLAGS_C		= ${COMPFLAGS_C}
 COMPFLAGS_CPP	= ${COMPFLAGS_CPP}
 INCLUDES		= ${INCLUDES}
