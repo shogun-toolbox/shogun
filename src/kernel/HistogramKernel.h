@@ -1,14 +1,14 @@
-#ifndef _LINEARKERNEL_H___
-#define _LINEARKERNEL_H___
+#ifndef _HistogramKernel_H___
+#define _HistogramKernel_H___
 
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
-class CLinearKernel: public CKernel
+class CHistogramKernel: public CKernel
 {
  public:
-  CLinearKernel(long size, bool rescale) ;
-  ~CLinearKernel() ;
+  CHistogramKernel(long size, int degree) ;
+  ~CHistogramKernel() ;
   
   virtual void init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
@@ -17,7 +17,7 @@ class CLinearKernel: public CKernel
   bool load_init(FILE* src);
   bool save_init(FILE* dest);
 
-  bool check_features(CFeatures* f);
+  bool check_features(CFeatures* f) { return (f->get_feature_type()==F_STRING); }
 
   // return the name of a kernel
   virtual const char* get_name() { return "Linear" ; } ;
@@ -32,8 +32,7 @@ class CLinearKernel: public CKernel
   void init_rescale();
   
  protected:
-  bool rescale ;
-  double scale ;
+  int degree;
 };
 
 #endif

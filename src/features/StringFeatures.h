@@ -4,10 +4,17 @@
 #include "preproc/PreProc.h"
 #include "features/Features.h"
 
+// StringFeatures do not support PREPROCS
 class CStringFeatures: public CFeatures
 {
+	struct T_STRING
+	{
+		CHAR* string;
+		int length;
+	};
+
 	public:
-		CStringFeatures(long size);
+		CStringFeatures();
 		CStringFeatures(const CStringFeatures & orig);
 
 		virtual ~CStringFeatures();
@@ -15,25 +22,26 @@ class CStringFeatures: public CFeatures
 		virtual EType get_feature_type() { return F_STRING ; } ;
 
 		/** get feature vector for sample num
-		  from the matrix as it is if matrix is
-		  initialized, else return
-		  preprocessed compute_feature_vector  
 		  @param num index of feature vector
 		  @param len length is returned by reference
 		  */
-		char* get_feature_vector(int num, int& len, bool& free);
-		void free_feature_vector(CHAR* feat_vec, int num, bool free);
+		CHAR* get_feature_vector(long num, long& len);
 
-		virtual bool preproc_feature_matrix(bool force_preprocessing=false);
-		virtual long get_num_vectors()=0 ;
+
+		// return false as not available for strings
+		virtual bool preproc_feature_matrix(bool force_preprocessing=false) { return false ; }
+		virtual long get_num_vectors()=0;
+
 		virtual CFeatures* duplicate() const=0 ;
+
+		virtual bool load(FILE* dest)=0;
 		virtual bool save(FILE* dest)=0;
 
 	protected:
-		/// compute feature vector for sample num
-		/// len is returned by reference
-		virtual char* compute_feature_vector(int num, int& len)=0;
+		/// number of string vectors
+		long num_vectors;
 
-		CHAR* feature_matrix;
+		//this contains the array of features.
+		T_STRING* features;
 };
 #endif

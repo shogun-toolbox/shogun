@@ -12,7 +12,7 @@ CGUIPreProc::CGUIPreProc(CGUI * gui_)
   : gui(gui_)
 {
 	preprocs=NULL;
-	num_preprocs=NULL;
+	num_preprocs=0;
 }
 
 CGUIPreProc::~CGUIPreProc()
@@ -73,7 +73,6 @@ bool CGUIPreProc::del_preproc(char* param)
 {
 	int i,j,num=num_preprocs-1;
 	CPreProc** pps=NULL; 
-	CPreProc* removed_preproc=NULL;
 	param=CIO::skip_spaces(param);
 
 	sscanf(param, "%i", &num);

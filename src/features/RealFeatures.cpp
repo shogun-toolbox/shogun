@@ -72,6 +72,7 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
 	 
 	  for (int i=0; i<get_num_preproc(); i++)
 	  {
+		  assert(get_preproc(i) && get_preproc(i)->get_feature_type()==F_REAL);
 		  tmp_feat_after=((CRealPreProc*) get_preproc(i))->apply_to_feature_vector(tmp_feat_before, tmp_len);
 
 		  if (i!=0)	// delete feature vector, except for the the first one, i.e., feat
@@ -117,6 +118,7 @@ bool CRealFeatures::preproc_feature_matrix(bool force_preprocessing)
 
 		for (int i=0; i<get_num_preproc(); i++)
 		{
+			assert(get_preproc(i) && get_preproc(i)->get_feature_type()==F_REAL);
 			CIO::message("preprocessing using preproc %s\n", get_preproc(i)->get_name());
 			if (((CRealPreProc*) get_preproc(i))->apply_to_feature_matrix(this) == NULL)
 				return false;
@@ -128,6 +130,11 @@ bool CRealFeatures::preproc_feature_matrix(bool force_preprocessing)
 		CIO::message("no feature matrix available or features already preprocessed - skipping.\n");
 		return false;
 	}
+}
+
+bool CRealFeatures::load(FILE* dest)
+{
+    return false;
 }
 
 bool CRealFeatures::save(FILE* dest)
@@ -175,4 +182,3 @@ bool CRealFeatures::save(FILE* dest)
     
     return true;
 }
-

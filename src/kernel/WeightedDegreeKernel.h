@@ -1,14 +1,14 @@
-#ifndef _LINEARKERNEL_H___
-#define _LINEARKERNEL_H___
+#ifndef _WeightedDegreeKernel_H___
+#define _WeightedDegreeKernel_H___
 
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
-class CLinearKernel: public CKernel
+class CWeightedDegreeKernel: public CKernel
 {
  public:
-  CLinearKernel(long size, bool rescale) ;
-  ~CLinearKernel() ;
+  CWeightedDegreeKernel(long size, int degree) ;
+  ~CWeightedDegreeKernel() ;
   
   virtual void init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
@@ -17,10 +17,10 @@ class CLinearKernel: public CKernel
   bool load_init(FILE* src);
   bool save_init(FILE* dest);
 
-  bool check_features(CFeatures* f);
+  bool check_features(CFeatures* f) { return (f->get_feature_type()==F_STRING); }
 
   // return the name of a kernel
-  virtual const char* get_name() { return "Linear" ; } ;
+  virtual const char* get_name() { return "FixedDegree" ; } ;
 
  protected:
   /// compute kernel function for features a and b
@@ -29,12 +29,8 @@ class CLinearKernel: public CKernel
   REAL compute(long idx_a, long idx_b);
   /*    compute_kernel*/
 
-  void init_rescale();
-  
  protected:
-  bool rescale ;
-  double scale ;
+  int degree;
 };
 
 #endif
-

@@ -31,9 +31,9 @@ inline double sign(double tol, double a)
   return 0 ;
 } ;
 
-inline REAL fmax(REAL a, REAL b)
-{
-  if (a>b)
-    return a ;
-  return b ;
-} ;
+//inline REAL fmax(REAL a, REAL b)
+//{
+//  if (a>b)
+//    return a ;
+//  return b ;
+//} ;

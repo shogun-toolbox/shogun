@@ -62,6 +62,7 @@ class CRealFeatures: public CFeatures
 	  }
   }
 	
+  virtual bool load(FILE* dest);
   virtual bool save(FILE* dest);
 
 protected:

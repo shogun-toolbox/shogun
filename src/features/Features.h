@@ -62,6 +62,7 @@ public:
 
 	virtual CFeatures* duplicate() const=0 ;
 
+	virtual bool load(FILE* dest)=0;
 	virtual bool save(FILE* dest)=0;
 	
 private:
