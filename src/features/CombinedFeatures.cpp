@@ -29,12 +29,13 @@ void CCombinedFeatures::list_feature_objs()
 	CIO::message(M_INFO, "BEGIN COMBINED FEATURES LIST - ");
 	this->list_feature_obj();
 
-	f=get_first_feature_obj();
+	CListElement<CFeatures*> * current = NULL ;
+	f=get_first_feature_obj(current);
 
 	while (f)
 	{
 		f->list_feature_obj();
-		f=get_next_feature_obj();
+		f=get_next_feature_obj(current);
 	}
 
 	CIO::message(M_INFO, "END COMBINED FEATURES LIST - ");

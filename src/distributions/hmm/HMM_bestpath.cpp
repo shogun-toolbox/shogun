@@ -284,12 +284,12 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	// recursion
 	for (INT t=1; t<seq_len; t++)
 	{
-		if (is_big && t%(seq_len/1000)==1)
-			CIO::progress(t, 0, seq_len);
+		if (is_big && t%(seq_len/100)==1)
+			CIO::progress(t, 0, seq_len-1);
 		
 		for (T_STATES j=0; j<N; j++)
 		{
-			if (SEQ(j,t)<-1e20)
+			if (SEQ(j,t)<-1e19)
 			{ // if we cannot observe the symbol here, then we can omit the rest
 				for (short int k=0; k<nbest; k++)
 				{
@@ -316,6 +316,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						look_back=penalty->max_len ;
 					INT orf_from = ORF_FROM(ii) ;
 					INT orf_to   = ORF_TO(j) ;
+
 					if((orf_from!=-1)!=(orf_to!=-1))
 						fprintf(stderr,"j=%i  ii=%i  orf_from=%i orf_to=%i p=%1.2f\n", j, ii, orf_from, orf_to, elem_val[i]) ;
 					assert((orf_from!=-1)==(orf_to!=-1)) ;

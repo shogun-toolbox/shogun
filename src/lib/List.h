@@ -4,30 +4,31 @@
 #include "lib/common.h"
 
 /// doubly connected list for low-level-objects. use pointers to higher-level objects
+
+template <class T> class CListElement
+{
+public:
+	CListElement* next;
+	CListElement* prev;
+	T data;
+	
+public:
+	CListElement(T data, CListElement* prev = NULL, CListElement* next = NULL)
+		{
+			this->data = data;
+			this->next = next;
+			this->prev = prev;
+		} ;
+	
+	/// Destruktor
+	~CListElement()
+		{
+			data = NULL;
+		} ;
+};
+
 template <class T> class CList
 {
-	class CListElement
-	{
-		public:
-			CListElement* next;
-			CListElement* prev;
-			T data;
-
-		public:
-			CListElement(T data, CListElement* prev = NULL, CListElement* next = NULL)
-			{
-				this->data = data;
-				this->next = next;
-				this->prev = prev;
-			}
-
-			/// Destruktor
-			~CListElement()
-			{
-				data = NULL;
-			}
-	};
-
 public:
 	CList(bool delete_data=false)
 	{
@@ -67,6 +68,18 @@ public:
 			return NULL;
 	}
 
+	/// go to first element in list and return it (or NULL if list is empty)
+	inline T get_first_element(CListElement<T> *&current)
+	{
+		if (first != NULL)
+		{
+			current = first;
+			return current->data;
+		}
+		else 
+			return NULL;
+	}
+
 	/// go to last element in list and return it (or NULL if list is empty)
 	inline T get_last_element()
 	{
@@ -86,6 +99,17 @@ public:
 		{
 			actual = actual->next;
 			return actual->data;
+		}
+		else
+			return NULL;
+	}
+
+	inline T get_next_element(CListElement<T> *& current)
+	{
+		if ((current != NULL) && (current->next != NULL))
+		{
+			current = current->next;
+			return current->data;
 		}
 		else
 			return NULL;
@@ -125,9 +149,9 @@ public:
 			else
 			{
 				// case with no successor but nonempty
-				CListElement* element;
+				CListElement<T>* element;
 
-				if ((element = new CListElement(data, actual)) != NULL)
+				if ((element = new CListElement<T>(data, actual)) != NULL)
 				{
 					actual->next = element;
 					actual       = element;
@@ -148,11 +172,11 @@ public:
 	/// insert element BEFORE the current element. return true on success
 	inline bool insert_element(T data)
 	{
-		CListElement* element;
+		CListElement<T>* element;
 
 		if (actual == NULL)                 
 		{
-			if ((element = new CListElement (data)) != NULL)
+			if ((element = new CListElement<T> (data)) != NULL)
 			{
 				actual = element;
 				first  = element;
@@ -167,7 +191,7 @@ public:
 		}
 		else
 		{
-			if ((element = new CListElement(data, actual->prev, actual)) != NULL)
+			if ((element = new CListElement<T>(data, actual->prev, actual)) != NULL)
 			{
 				if (actual->prev != NULL)
 					actual->prev->next = element;
@@ -195,7 +219,7 @@ public:
 
 		if (data)
 		{
-			CListElement *element = actual;
+			CListElement<T> *element = actual;
 
 			if (element->prev)
 				element->prev->next = element->next;
@@ -226,9 +250,9 @@ public:
 
 private:
 	bool delete_data;
-	CListElement* first;
-	CListElement* actual;
-	CListElement* last;
+	CListElement<T>* first;
+	CListElement<T>* actual;
+	CListElement<T>* last;
 	int num_elements;
 };
 #endif

@@ -64,6 +64,10 @@ class CCombinedKernel : public CKernel
 		{
 			return kernel_list->get_first_element();
 		}
+		inline CKernel* get_first_kernel(CListElement<CKernel*>*&current)
+		{
+			return kernel_list->get_first_element(current);
+		}
 
 		inline CKernel* get_last_kernel()
 		{
@@ -74,6 +78,12 @@ class CCombinedKernel : public CKernel
 		{
 			assert(kernel_list->get_current_element()==current) ;
 			return kernel_list->get_next_element();
+		}
+
+		// multi-thread safe
+		inline CKernel* get_next_kernel(CListElement<CKernel*> *&current)
+		{
+			return kernel_list->get_next_element(current);
 		}
 
 		inline bool insert_kernel(CKernel* k)
@@ -107,11 +117,12 @@ class CCombinedKernel : public CKernel
 			if (append_subkernel_weights)
 			{
 				INT num_subkernels = 0 ;
-				CKernel * kn = get_first_kernel() ;
+				CListElement<CKernel*> *current = NULL ;
+				CKernel * kn = get_first_kernel(current) ;
 				while(kn)
 				{
 					num_subkernels += kn->get_num_subkernels() ;
-					kn = get_next_kernel(kn) ;
+					kn = get_next_kernel(current) ;
 				}
 				return num_subkernels ;
 			}
@@ -144,11 +155,12 @@ class CCombinedKernel : public CKernel
 				delete[] precomputed_matrix;
 				precomputed_matrix = NULL;
 			}
-			CKernel *kn = get_first_kernel();
+			CListElement<CKernel*> *current = NULL ;
+			CKernel *kn = get_first_kernel(current);
 			while (kn)
 			{
 				kn->set_precompute_matrix(subkernel_flag,false);
-				kn = get_next_kernel(kn);
+				kn = get_next_kernel(current);
 			}
 		}
 

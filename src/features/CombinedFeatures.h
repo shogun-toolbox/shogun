@@ -52,10 +52,18 @@ public:
 	{
 		return feature_list->get_first_element();
 	}
+	inline CFeatures* get_first_feature_obj(CListElement<CFeatures*>*&current)
+	{
+		return feature_list->get_first_element(current);
+	}
 
 	inline CFeatures* get_next_feature_obj()
 	{
 		return feature_list->get_next_element();
+	}
+	inline CFeatures* get_next_feature_obj(CListElement<CFeatures*>*&current)
+	{
+		return feature_list->get_next_element(current);
 	}
 
 	inline CFeatures* get_last_feature_obj()

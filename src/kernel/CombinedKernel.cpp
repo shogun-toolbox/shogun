@@ -40,9 +40,11 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 	bool result=true;
 
-	lf=((CCombinedFeatures*) l)->get_first_feature_obj() ;
-	rf=((CCombinedFeatures*) r)->get_first_feature_obj() ;
-	k=get_first_kernel() ;
+	CListElement<CFeatures*>*lfc = NULL, *rfc = NULL ;
+	lf=((CCombinedFeatures*) l)->get_first_feature_obj(lfc) ;
+	rf=((CCombinedFeatures*) r)->get_first_feature_obj(rfc) ;
+	CListElement<CKernel*>* current = NULL ;
+	k=get_first_kernel(current) ;
 
 	result = 1 ;
 	
@@ -55,9 +57,9 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 				//fprintf(stderr,"init kernel 0x%X (0x%X, 0x%X)\n", k, lf, rf) ;
 				result=k->init(lf,rf, do_init);
 
-				lf=((CCombinedFeatures*) l)->get_next_feature_obj() ;
-				rf=((CCombinedFeatures*) r)->get_next_feature_obj() ;
-				k=get_next_kernel(k) ;
+				lf=((CCombinedFeatures*) l)->get_next_feature_obj(lfc) ;
+				rf=((CCombinedFeatures*) r)->get_next_feature_obj(rfc) ;
+				k=get_next_kernel(current) ;
 			} ;
 		}
 		else
@@ -68,8 +70,8 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 				//fprintf(stderr,"init kernel 0x%X (0x%X, 0x%X): %i\n", k, lf, rf, result) ;
 
-				lf=((CCombinedFeatures*) l)->get_next_feature_obj() ;
-				k=get_next_kernel(k) ;
+				lf=((CCombinedFeatures*) l)->get_next_feature_obj(lfc) ;
+				k=get_next_kernel(current) ;
 				rf=lf ;
 			} ;
 		}
@@ -103,12 +105,13 @@ void CCombinedKernel::remove_lhs()
 		cache_reset() ;
 	lhs=NULL ;
 	
-	CKernel* k=get_first_kernel();
+	CListElement<CKernel*> * current = NULL ;	
+	CKernel* k=get_first_kernel(current);
 
 	while (k)
 	{	
 		k->remove_lhs();
-		k=get_next_kernel(k);
+		k=get_next_kernel(current);
 	}
 }
 
@@ -118,23 +121,25 @@ void CCombinedKernel::remove_rhs()
 		cache_reset() ;
 	rhs=NULL ;
 
-	CKernel* k=get_first_kernel();
+	CListElement<CKernel*> * current = NULL ;	
+	CKernel* k=get_first_kernel(current);
 
 	while (k)
 	{	
 		k->remove_rhs();
-		k=get_next_kernel(k);
+		k=get_next_kernel(current);
 	}
 }
 
 void CCombinedKernel::cleanup()
 {
-	CKernel* k=get_first_kernel();
+	CListElement<CKernel*> * current = NULL ;	
+	CKernel* k=get_first_kernel(current);
 
 	while (k)
 	{	
 		k->cleanup();
-		k=get_next_kernel(k);
+		k=get_next_kernel(current);
 	}
 
 	delete_optimization();
@@ -147,11 +152,12 @@ void CCombinedKernel::list_kernels()
 	CIO::message(M_INFO, "BEGIN COMBINED KERNEL LIST - ");
 	this->list_kernel();
 
-	k=get_first_kernel();
+	CListElement<CKernel*> * current = NULL ;	
+	k=get_first_kernel(current);
 	while (k)
 	{
 		k->list_kernel();
-		k=get_next_kernel(k);
+		k=get_next_kernel(current);
 	}
 	CIO::message(M_INFO, "END COMBINED KERNEL LIST - ");
 }
@@ -159,12 +165,13 @@ void CCombinedKernel::list_kernels()
 REAL CCombinedKernel::compute(INT x, INT y)
 {
 	REAL result=0;
-	CKernel* k=get_first_kernel();
+	CListElement<CKernel*> * current = NULL ;	
+	CKernel* k=get_first_kernel(current);
 	while (k)
 	{
 		if (k->get_combined_kernel_weight()!=0)
 			result += k->get_combined_kernel_weight() * k->kernel(x,y);
-		k=get_next_kernel(k);
+		k=get_next_kernel(current);
 	}
 
 	return result;
@@ -176,7 +183,8 @@ bool CCombinedKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 
 	delete_optimization();
 	
-	CKernel * k = get_first_kernel() ;
+	CListElement<CKernel*> * current = NULL ;	
+	CKernel * k = get_first_kernel(current) ;
 	bool have_non_optimizable = false ;
 	
 	while(k)
@@ -197,7 +205,7 @@ bool CCombinedKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 			CIO::message(M_WARN, "init_optimization of kernel 0x%X failed\n",k) ;
 		} ;
 		
-		k = get_next_kernel(k) ;
+		k = get_next_kernel(current) ;
 	}
 	
 	if (have_non_optimizable)
@@ -223,12 +231,13 @@ bool CCombinedKernel::delete_optimization()
 { 
 	//CIO::message(M_DEBUG, "deleting CCombinedKernel optimization\n") ;
 
-	CKernel* k = get_first_kernel();
+	CListElement<CKernel*> * current = NULL ;	
+	CKernel* k = get_first_kernel(current);
 
 	while(k)
 	{
 		k->delete_optimization();
-		k = get_next_kernel(k);
+		k = get_next_kernel(current);
 	}
 
 	delete[] sv_idx;
@@ -253,7 +262,8 @@ REAL CCombinedKernel::compute_optimized(INT idx)
 	
 	REAL result = 0 ;
 	
-	CKernel * k = get_first_kernel() ;
+	CListElement<CKernel*> * current = NULL ;	
+	CKernel * k = get_first_kernel(current) ;
 	while(k)
 	{
 		if (k && k->is_optimizable() && 
@@ -280,7 +290,7 @@ REAL CCombinedKernel::compute_optimized(INT idx)
 			}
 		} ;
 		
-		k = get_next_kernel(k) ;
+		k = get_next_kernel(current) ;
 	}
 
 	return result;
@@ -294,23 +304,25 @@ void CCombinedKernel::add_to_normal(INT idx, REAL weight)
 		return ;
 	}
 
-	CKernel* k = get_first_kernel();
+	CListElement<CKernel*> * current = NULL ;	
+	CKernel* k = get_first_kernel(current);
 
 	while(k)
 	{
 		k->add_to_normal(idx, weight);
-		k = get_next_kernel(k);
+		k = get_next_kernel(current);
 	}
 }
 
 void CCombinedKernel::clear_normal() 
 { 
-	CKernel* k = get_first_kernel();
+	CListElement<CKernel*> * current = NULL ;	
+	CKernel* k = get_first_kernel(current);
 
 	while(k)
 	{
 		k->clear_normal() ;
-		k = get_next_kernel(k);
+		k = get_next_kernel(current);
 	}
 }
 
@@ -319,29 +331,31 @@ void CCombinedKernel::compute_by_subkernel(INT idx, REAL * subkernel_contrib)
 	if (append_subkernel_weights)
 	{
 		INT i=0 ;
-		CKernel* k = get_first_kernel();
+		CListElement<CKernel*> * current = NULL ;	
+		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
 			INT num = -1 ;
-			const REAL *w = k->get_subkernel_weights(num);
+			k->get_subkernel_weights(num);
 			if (num>1)
 				k->compute_by_subkernel(idx, &subkernel_contrib[i]) ;
 			else
 				subkernel_contrib[i] += k->get_combined_kernel_weight() * k->compute_optimized(idx) ;
 
-			k = get_next_kernel(k);
+			k = get_next_kernel(current);
 			i += num ;
 		}
 	}
 	else
 	{
 		INT i=0 ;
-		CKernel* k = get_first_kernel();
+		CListElement<CKernel*> * current = NULL ;	
+		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
 			if (k->get_combined_kernel_weight()!=0)
 				subkernel_contrib[i] += k->get_combined_kernel_weight() * k->compute_optimized(idx) ;
-			k = get_next_kernel(k);
+			k = get_next_kernel(current);
 			i++ ;
 		}
 	}
@@ -356,7 +370,8 @@ const REAL* CCombinedKernel::get_subkernel_weights(INT& num_weights)
 	if (append_subkernel_weights)
 	{
 		INT i=0 ;
-		CKernel* k = get_first_kernel();
+		CListElement<CKernel*> * current = NULL ;	
+		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
 			INT num = -1 ;
@@ -364,18 +379,19 @@ const REAL* CCombinedKernel::get_subkernel_weights(INT& num_weights)
 			assert(num==k->get_num_subkernels()) ;
 			for (INT j=0; j<num; j++)
 				subkernel_weights_buffer[i+j]=w[j] ;
-			k = get_next_kernel(k);
+			k = get_next_kernel(current);
 			i += num ;
 		}
 	}
 	else
 	{
 		INT i=0 ;
-		CKernel* k = get_first_kernel();
+		CListElement<CKernel*> * current = NULL ;	
+		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
 			subkernel_weights_buffer[i] = k->get_combined_kernel_weight();
-			k = get_next_kernel(k);
+			k = get_next_kernel(current);
 			i++ ;
 		}
 	}
@@ -388,7 +404,8 @@ void CCombinedKernel::set_subkernel_weights(REAL* weights, INT num_weights)
 	if (append_subkernel_weights)
 	{
 		INT i=0 ;
-		CKernel* k = get_first_kernel();
+		CListElement<CKernel*> * current = NULL ;	
+		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
 			INT num = k->get_num_subkernels() ;
@@ -398,18 +415,19 @@ void CCombinedKernel::set_subkernel_weights(REAL* weights, INT num_weights)
 			  if (weights[i+j]!=0)
 			  w=1 ;
 			  k->set_combined_kernel_weight(w);*/
-			k = get_next_kernel(k);
+			k = get_next_kernel(current);
 			i += num ;
 		}
 	}
 	else
 	{
 		INT i=0 ;
-		CKernel* k = get_first_kernel();
+		CListElement<CKernel*> * current = NULL ;	
+		CKernel* k = get_first_kernel(current);
 		while(k)
 		{
 			k->set_combined_kernel_weight(weights[i]);
-			k = get_next_kernel(k);
+			k = get_next_kernel(current);
 			i++ ;
 		}
 	}
