@@ -1,17 +1,17 @@
-#ifndef _CREALFEATURES__H__
-#define _CREALFEATURES__H__
+#ifndef _REALFEATURES__H__
+#define _REALFEATURES__H__
 
 #include "lib/common.h"
-#include "preproc/Preproc.h"
+#include "preproc/PreProc.h"
 #include "features/Features.h"
 
 class CRealFeatures: public CFeatures
 {
  public:
-  CRealFeatures() ;
+  CRealFeatures();
   ~CRealFeatures();
   
-  virtual EType get_feature_type() { return CFeatures::F_REAL ; } ;
+  virtual EType get_feature_type() { return CFeatures::F_REAL; }
   
   /** get feature vector for sample num
       from the matrix as it is if matrix is
@@ -39,12 +39,12 @@ protected:
   /// len is returned by reference
   virtual REAL* compute_feature_vector(int num, int& len)=0;
 
-  REAL* feature_matrix;
-  
+  /// number of vectors in cache
+  int num_vectors;
+ 
   /// number of features in cache
   int num_features;
   
-  /// number of vectors in cache
-  int num_vectors;
+  REAL* feature_matrix;
 };
 #endif

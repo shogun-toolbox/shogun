@@ -1,5 +1,5 @@
-#ifndef _CREALFEATURES__H__
-#define _CREALFEATURES__H__
+#ifndef _CSHORTFEATURES__H__
+#define _CSHORTFEATURES__H__
 
 #include "preproc/Preproc.h"
 #include "features/Features.h"
