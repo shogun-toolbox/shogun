@@ -1252,39 +1252,47 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					INT solstat = 0 ;
 					REAL objval = 0 ;
 					status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
+					INT solution_ok=(!status) ;
 					if ( status ) {
 						fprintf (stderr, "Failed to obtain solution.\n");
 					}
 					
 					num_active_rows=0 ;
-					REAL max_slack = -CMath::INFTY ;
-					INT max_idx = -1 ;
-					for (INT i = 1; i < cur_numrows; i++)  // skip first
-						if ((pi[i]!=0))
-							num_active_rows++ ;
-						else
-						{
-							if (slack[i]>max_slack)
+					if (solution_ok)
+					{
+						REAL max_slack = -CMath::INFTY ;
+						INT max_idx = -1 ;
+						for (INT i = 1; i < cur_numrows; i++)  // skip first
+							if ((pi[i]!=0))
+								num_active_rows++ ;
+							else
 							{
-								max_slack=slack[i] ;
-								max_idx=i ;
+								if (slack[i]>max_slack)
+								{
+									max_slack=slack[i] ;
+									max_idx=i ;
+								}
+							}
+						
+						// have at most max(100,num_active_rows*2) rows 
+						if ( (num_rows>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
+						{
+							INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
+							if ( status ) {
+								fprintf (stderr, "Failed to remove an old row.\n");
 							}
 						}
-					
-					// have at most max(100,num_active_rows*2) rows 
-					if ( (num_rows>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
+						
+						w_gap = CMath::abs(1-rho/objective) ;
+						for (INT j = 0; j < cur_numcols-1; j++) 
+							w[j]=x[j] ;
+						rho = -x[num_kernels] ;
+						
+					} else
 					{
-						INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
-						if ( status ) {
-							fprintf (stderr, "Failed to remove an old row.\n");
-						}
+						w_gap = 0 ; // then something is wrong and we rather 
+						            // stop sooner than later
 					}
-
-					w_gap = CMath::abs(1-rho/objective) ;
-					for (INT j = 0; j < cur_numcols-1; j++) 
-						w[j]=x[j] ;
-					rho = -x[num_kernels] ;
-					
 					delete[] x ;
 					delete[] slack ;
 					delete[] pi ;
