@@ -171,8 +171,9 @@ bool CGUIKernel::set_kernel(CHAR* param)
 					if (train_labels->get_int_label(i)==1) num_pos++ ;
 					if (train_labels->get_int_label(i)==-1) num_neg++ ;
 				}				
-				CIO::message("priors: pos=%1.2f  neg=%1.2f\n", num_pos/(num_pos+num_neg), 
-							 num_neg/(num_pos+num_neg)) ;
+				CIO::message("priors: pos=%1.2f (%i)  neg=%1.2f (%i)\n", 
+							 (REAL) num_pos/(num_pos+num_neg), num_pos,
+							 (REAL) num_neg/(num_pos+num_neg), num_neg) ;
 				
 				if (estimator)
 					kernel=new CSalzbergWordKernel(size, estimator);
