@@ -1054,7 +1054,7 @@ bool CGUIHMM::relative_entropy(char* param)
 				CIO::message("%f ", entropy[i]);
 			}
 			CIO::message("\n");
-#warning todo save me
+#error todo save me
 			delete[] p;
 			delete[] q;
 			delete[] entropy;
@@ -1086,7 +1086,7 @@ bool CGUIHMM::entropy(char* param)
 		}
 		CIO::message("\n");
 
-#warning todo save me
+#error todo save me
 		delete[] p;
 		delete[] entropy;
 	}

@@ -50,7 +50,7 @@ REAL* CNormDerivativeLem3::apply_to_feature_vector(REAL* f, int len)
 	return NULL;
 }
 
-#warning TODO implement jahau 
+#error TODO implement jahau 
 #ifdef JaaHau
  //this is the normalization used in jaahau
     int o_p=1;
