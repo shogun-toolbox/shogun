@@ -26,7 +26,7 @@ bool CGUIKernel::set_kernel(char* param)
 	if (strcmp(param,"LINEAR")==0)
 	{
 		delete kernel;
-		kernel=new CLinearKernel(false);
+		kernel=new CLinearKernel(true);
 		return true;
 	}
 	else 

@@ -23,7 +23,13 @@ void CLinearKernel::init(CFeatures* f)
 
 void CLinearKernel::init_rescale(CFeatures* f)
 {
-  fprintf(stderr,"CLinearKernel::init_rescale not implemented yet\n") ;
+	double sum=0;
+	scale=1.0;
+
+	for (long i=0; i<f->get_number_of_examples(); i++)
+		sum+=compute(f, i, f, i);
+
+	scale=sum/f->get_number_of_examples();
 }
 
 void CLinearKernel::cleanup()
@@ -47,13 +53,16 @@ REAL CLinearKernel::compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)
   assert(alen==blen);
   //fprintf(stderr, "LinKernel.compute(%ld,%ld) %d\n", idx_a, idx_b, alen) ;
 
-  double sum=0;
-  for (long i=0; i<alen; i++)
-	  sum+=avec[i]*bvec[i];
+  //double sum=0;
+  //for (long i=0; i<alen; i++)
+//	  sum+=avec[i]*bvec[i];
 
 //  CIO::message("%ld,%ld -> %f\n",idx_a, idx_b, sum);
 
-  REAL result=sum;//ddot_(alen, avec, 1, bvec, 1) ;
+  int skip=1;
+  int ialen=(int) alen;
+
+  REAL result=ddot_(&ialen, avec,&skip, bvec, &skip)/scale;
   ((CRealFeatures*) a)->free_feature_vector(avec, afree);
   ((CRealFeatures*) b)->free_feature_vector(bvec, bfree);
 

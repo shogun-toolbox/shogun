@@ -89,7 +89,7 @@ CTextGUI::CTextGUI(int argc, const char** argv)
 
 #ifdef SVMMPI
 #if  defined(HAVE_MPI) && !defined(DISABLE_MPI)
-  CSVMMPI::svm_mpi_init(argc, argv) ;
+  //CSVMMPI::svm_mpi_init(argc, argv) ;
 #endif
 #endif
 }

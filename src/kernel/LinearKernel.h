@@ -41,7 +41,7 @@ class CLinearKernel: public CKernel
   void init_rescale(CFeatures* f);
   
  protected:
-  int rescale ;
+  bool rescale ;
   double scale ;
 };
 

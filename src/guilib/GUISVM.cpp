@@ -153,7 +153,7 @@ bool CGUISVM::test(char* param)
 		return false ;
 	}
 
-	if (!preproc)
+	if (preproc)
 	{
 		CIO::message("using preprocessor: %s\n", preproc->get_name());
 		if (trainfeatures->get_feature_type()!=preproc->get_feature_type() && testfeatures->get_feature_type()!=preproc->get_feature_type())
@@ -161,12 +161,12 @@ bool CGUISVM::test(char* param)
 			CIO::message("preprocessor does not fit to features");
 			return false;
 		}
+		preproc->init(trainfeatures);
 	}
 	else
 		CIO::message("doing without preproc\n");
 	
 
-	preproc->init(trainfeatures);
 	trainfeatures->set_preproc(preproc);
 	trainfeatures->preproc_feature_matrix();
 	
@@ -181,7 +181,8 @@ bool CGUISVM::test(char* param)
 
 	CIO::message("starting svm testing\n") ;
 	svm->set_C(C) ;
-	REAL* output= svm->svm_test(trainfeatures, testfeatures) ;
+	svm->set_kernel(gui->guikernel.get_kernel()) ;
+	REAL* output= svm->svm_test(testfeatures, trainfeatures) ;
 	int total=testfeatures->get_number_of_examples();
 
 	int* label= new int[total];	

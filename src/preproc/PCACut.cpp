@@ -85,7 +85,7 @@ bool CPCACut::init(CFeatures* f_)
 
   fil=fopen(FeaturesFileName,"r") ;
   feature=new REAL[num_features] ;
-  for (i=0; i<num_examples; i++)
+  for (int i=0; i<num_examples; i++)
     {
       if (!(i % (num_examples/10+1)))
 	CIO::message("%02d%%.", (int) (100.0*i/num_examples));
@@ -101,8 +101,8 @@ bool CPCACut::init(CFeatures* f_)
 
       double oned=1.0 ; int onei=1 ;
 
-      cblas_dger(CblasRowMajor,num_features,num_features, oned, feature, onei, feature, onei, cov, num_features) ;
-      //      dger_(&num_features,&num_features, &oned, feature, &onei, feature, &onei, cov, &num_features) ;
+      //cblas_dger(CblasRowMajor,num_features,num_features, oned, feature, onei, feature, onei, cov, num_features) ;
+            dger_(&num_features,&num_features, &oned, feature, &onei, feature, &onei, cov, &num_features) ;
 
       //for (int k=0; k<num_features; k++)
       //	for (int l=0; l<num_features; l++)
@@ -141,11 +141,12 @@ bool CPCACut::init(CFeatures* f_)
     int lwork=4*num_features ;
     double *work=new double[lwork] ;
     int info ; char V='V', U='U' ;
+	int i;
     dsyev_(&V, &U, &num_features, cov, &num_features, values, work, &lwork, &info) ;
     //ATL_dsyev(&V, CblasUpper, num_features, cov, num_features, values, work, lwork, &info) ;
     
     int num_ok=0 ;
-    for (int i=0; i<num_features; i++)
+    for (i=0; i<num_features; i++)
       {
 	//	  CIO::message("EV[%i]=%e\n", i, values[i]) ;
 	if (values[i]>1e-6)
@@ -220,8 +221,8 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 //                  const double alpha, const double *A, const int lda,
 //                  const double *X, const int incX, const double beta,
 //                  double *Y, const int incY);
-	  cblas_dgemv(CblasRowMajor, CblasNoTrans, num_dim, num_feat, oned, T, num_dim, sub_mean, onei, zerod, res, onei) ;
-//	  dgemv_(&N, &num_dim, &num_feat, &oned, T, &num_dim, sub_mean, &onei, &zerod, res, &onei) ;
+	  //cblas_dgemv(CblasRowMajor, CblasNoTrans, num_dim, num_feat, oned, T, num_dim, sub_mean, onei, zerod, res, onei) ;
+	  dgemv_(&N, &num_dim, &num_feat, &oned, T, &num_dim, sub_mean, &onei, &zerod, res, &onei) ;
 	  
 	  REAL* m_transformed=&m[num_dim*vec];
 	  for (i=0; i<num_dim; i++)
@@ -248,8 +249,8 @@ REAL* CPCACut::apply_to_feature_vector(REAL* f, int &len)
   for (int i=0; i<len; i++)
     sub_mean[i]=f[i]-mean[i] ;
   
-  cblas_dgemv(CblasRowMajor, CblasNoTrans, num_dim, len, oned, T, num_dim, sub_mean, onei, zerod, ret, onei) ;
-	      //  dgemv_(&N, &num_dim, &len, &oned, T, &num_dim, sub_mean, &onei, &zerod, ret, &onei) ;
+  //cblas_dgemv(CblasRowMajor, CblasNoTrans, num_dim, len, oned, T, num_dim, sub_mean, onei, zerod, ret, onei) ;
+	        dgemv_(&N, &num_dim, &len, &oned, T, &num_dim, sub_mean, &onei, &zerod, ret, &onei) ;
 
   delete[] sub_mean ;
   len=num_dim ;
