@@ -40,7 +40,7 @@ void CCombinedFeatures::list_feature_objs()
 	CIO::message(M_INFO, "END COMBINED FEATURES LIST - ");
 }
 
-bool CCombindedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_feat)
+bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_feat)
 {
 	bool result=false;
 
@@ -49,13 +49,13 @@ bool CCombindedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb
 		CFeatures* f1=this->get_first_feature_obj();
 		CFeatures* f2=comb_feat->get_first_feature_obj();
 
-		if (CFeatures::check_feature_compatibility(f1, f2))
+		if (f1 && f1->check_feature_compatibility(f2))
 		{
 			while( ( (f1=this->get_first_feature_obj()) != NULL )  && 
 				   ( (f2=comb_feat->get_first_feature_obj()) != NULL) )
 			{
-				if (!CFeatures::check_feature_compatibility(f1, f2))
-					break;
+				if (!f1->check_feature_compatibility(f2))
+					return false;
 			}
 			result=true;
 		}

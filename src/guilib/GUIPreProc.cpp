@@ -227,16 +227,16 @@ bool CGUIPreProc::attach_preproc(CHAR* param)
 				{
 					if (f_train->get_feature_class() == C_COMBINED)
 					{
-						if (f_train->check_feature_obj_compatibility(f_test))
+						if (!((CCombinedFeatures*) f_train)->check_feature_obj_compatibility((CCombinedFeatures*) f_test) )
 						{
-							CFeatures* tr_feat ((CCombinedFeatures*) f_train)->get_first_feature_obj();
-							CFeatures* te_feat ((CCombinedFeatures*) f_test)->get_first_feature_obj();
+							CFeatures* tr_feat = ((CCombinedFeatures*) f_train)->get_first_feature_obj();
+							CFeatures* te_feat = ((CCombinedFeatures*) f_test)->get_first_feature_obj();
 							if (tr_feat && te_feat)
-								preproc_features(tr_feat, te_feat, force);
+								preprocess_features(tr_feat, te_feat, force);
 
-							while ( ((tr_feat = ((CCombinedFeatures*) train_feat)->get_next_feature_obj()) != NULL) &&
-									((te_feat = ((CCombinedFeatures*) test_feat)->get_next_feature_obj()) != NULL))
-								preproc_features(tr_feat, te_feat, force);
+							while ( ((tr_feat = ((CCombinedFeatures*) f_train)->get_next_feature_obj()) != NULL) &&
+									((te_feat = ((CCombinedFeatures*) f_test)->get_next_feature_obj()) != NULL))
+								preprocess_features(tr_feat, te_feat, force);
 
 							result=true;
 						}
@@ -357,14 +357,16 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 			};
 			break;
 		case C_COMBINED:
-			CFeatures* feat ((CCombinedFeatures*) f)->get_first_feature_obj();
-
-			if (feat)
-				preproc_all_features(feat, force);
-
-			while ( (feat = ((CCombinedFeatures*) f)->get_next_feature_obj()) != NULL)
 			{
-				preproc_all_features(feat, force);
+				CFeatures* feat = ((CCombinedFeatures*) f)->get_first_feature_obj();
+
+				if (feat)
+					preproc_all_features(feat, force);
+
+				while ( (feat = ((CCombinedFeatures*) f)->get_next_feature_obj()) != NULL)
+				{
+					preproc_all_features(feat, force);
+				}
 			}
 			break;
 		default:
