@@ -4668,7 +4668,7 @@ REAL CHMM::linear_likelihood(FILE* file, int WIDTH, int UPTO, bool singleline)
 	if ( (fread(line_, sizeof (unsigned char), WIDTH, file)) == (unsigned int) WIDTH)
 	{
 	    if (p_observations->translate_from_single_order(line_,UPTO) < 0)
-		CIO::message(stderr,"wrong character(s) in line %i\n", line_) ;
+		CIO::message(stderr,"wrong character(s) in line %i\n", total) ;
 
 	    double d=log(1);
 	    for (int i=0; i<UPTO; i++)
