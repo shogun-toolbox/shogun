@@ -211,6 +211,8 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	int i;
 	char input[2000];
 
+	memset(input, 0, sizeof(input));
+
 	//guihmm.debug();
 	if (show_prompt)
 		print_prompt();
