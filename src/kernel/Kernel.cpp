@@ -596,8 +596,8 @@ if(kernel_cache)
       cache_multiple_kernel_rows(kernel_cache,docs,working2dnum,
 				 choosenum,kernel_parm); 
     
-    kernel_cache_touch(kernel_cache,i); /* make sure it does not get kicked */
-                                        /* out of cache */
-    kernel_cache_touch(kernel_cache,i); /* make sure it does not get kicked */
-                                        /* out of cache */
+    kernel_cache_touch(kernel_cache,i); // make sure it does not get kicked
+                                        // out of cache 
+    kernel_cache_touch(kernel_cache,i); // make sure it does not get kicked
+                                        // out of cache 
 */

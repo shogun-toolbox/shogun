@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "lib/Observation.h"
+#include "hmm/Observation.h"
 #include "lib/Mathmatics.h"
 #include "lib/io.h"
 
@@ -34,8 +34,8 @@ CObservation::CObservation(E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M_,
 
 CObservation::CObservation(CObservation* pos, CObservation* neg)
 {
-	sv_idx=-1;
-	sv_num=0;
+  /*	sv_idx=-1;
+	sv_num=0;*/
 	this->full_content=NULL;
 	this->MAX_M=-1;
 	this->M=-1;

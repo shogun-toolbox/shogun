@@ -1,3 +1,5 @@
+#ifdef PRUNE_VAR_SUB_MEAN
+
 void CHMM::subtract_mean_from_top_feature_cache(int num_features, int totobs)
 {
 	if (feature_cache_obs)
@@ -12,3 +14,5 @@ void CHMM::subtract_mean_from_top_feature_cache(int num_features, int totobs)
 		}
 	}
 }
+
+#endif

@@ -1,5 +1,6 @@
 
-#else //this is the normalization used in jaahau
+#ifdef JaaHau
+ //this is the normalization used in jaahau
     int o_p=1;
     double sum_p=0;
     double sum_q=0;
