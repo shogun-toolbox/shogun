@@ -186,7 +186,6 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
     {
       REAL* res= new REAL[num_dim];
       REAL* sub_mean= new REAL[num_features];
-      REAL* MEAN=mean ;
       for (int vec=0; vec<num_vectors; vec++)
 	{
 	  int onei=1 ;
