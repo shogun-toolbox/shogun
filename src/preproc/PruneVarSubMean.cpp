@@ -6,8 +6,8 @@
 
 #include <math.h>
 
-CPruneVarSubMean::CPruneVarSubMean()
-  : CRealPreProc("PruneVarSubMean"), idx(NULL), mean(0), num_idx(0)
+CPruneVarSubMean::CPruneVarSubMean(bool divide)
+  : CRealPreProc("PruneVarSubMean"), idx(NULL), mean(0), num_idx(0), divide_by_std(divide)
 {
 }
 
@@ -83,7 +83,8 @@ bool CPruneVarSubMean::init(CFeatures* f_)
 	}
     }
 
-    //CIO::message("number of features: %i  number ok: %i\n", num_features, num_ok) ;
+    CIO::message("Reducing number of features from %i to %i\n", num_features, num_ok) ;
+
     delete[] idx ;
     idx=new int[num_ok];
     REAL* new_mean=new REAL[num_ok];
@@ -124,14 +125,28 @@ REAL* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
     long num_features=0;
     REAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
 
+    CIO::message("get Feature matrix: %ix%i\n", num_vectors, num_features) ;
+	CIO::message("Preprocessing feature matrix\n");
     for (long vec=0; vec<num_vectors; vec++)
-    {
-	REAL* v_src=&m[num_features*vec];
-	REAL* v_dst=&m[num_idx*vec];
+	{
+		REAL* v_src=&m[num_features*vec];
+		REAL* v_dst=&m[num_idx*vec];
 
-	for (long feat=0; feat<num_idx; feat++)
-	    v_dst[feat]=(v_src[idx[feat]]-mean[feat])/std[feat];
-    }
+		if (divide_by_std)
+		{
+			for (long feat=0; feat<num_idx; feat++)
+				v_dst[feat]=(v_src[idx[feat]]-mean[feat])/std[feat];
+		}
+		else
+		{
+			for (long feat=0; feat<num_idx; feat++)
+				v_dst[feat]=(v_src[idx[feat]]-mean[feat]);
+		}
+	}
+	
+	((CRealFeatures*) f)->set_num_features(num_idx);
+	((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
+	CIO::message("new Feature matrix: %ix%i\n", num_vectors, num_features);
     
     return m;
 }
@@ -143,8 +158,16 @@ REAL* CPruneVarSubMean::apply_to_feature_vector(REAL* f, int &len)
   //CIO::message("preprocessing vector of length %i to length %i\n", len, num_idx) ;
 
   REAL *ret=new REAL[num_idx] ;
+  if (divide_by_std)
+  {
   for (int i=0; i<num_idx; i++)
     ret[i]=(f[idx[i]]-mean[i])/std[i];
+  }
+	else
+  {
+  for (int i=0; i<num_idx; i++)
+    ret[i]=(f[idx[i]]-mean[i]);
+  }
 
   len=num_idx ;
   return ret;

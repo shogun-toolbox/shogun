@@ -11,7 +11,7 @@ CRealFileFeatures::CRealFileFeatures(char* fname) : CRealFeatures()
 {
     working_file=fopen(fname, "r");
     working_filename=strdup(fname);
-    assert(working_file);
+    assert(working_file!=NULL);
     intlen=0;
     doublelen=0;
     endian=0;
@@ -23,7 +23,7 @@ CRealFileFeatures::CRealFileFeatures(char* fname) : CRealFeatures()
 
 CRealFileFeatures::CRealFileFeatures(FILE* file) : CRealFeatures(), working_file(file), working_filename(NULL)
 {
-    assert(working_file);
+    assert(working_file!=NULL);
     intlen=0;
     doublelen=0;
     endian=0;
@@ -63,8 +63,8 @@ REAL* CRealFileFeatures::compute_feature_vector(long num, long &len)
     //CIO::message("f:%ld\n", num);
     len=num_features;
     REAL* featurevector= new REAL[num_features];
-    assert(featurevector);
-    assert(working_file);
+    assert(featurevector!=NULL);
+    assert(working_file!=NULL);
     fseek(working_file, filepos+num_features*doublelen*num, SEEK_SET);
     assert(fread(featurevector, doublelen, num_features, working_file) == (unsigned long) num_features);
     return featurevector;
@@ -72,29 +72,25 @@ REAL* CRealFileFeatures::compute_feature_vector(long num, long &len)
 
 REAL* CRealFileFeatures::set_feature_matrix()
 {
-    assert(working_file);
+    assert(working_file!=NULL);
     fseek(working_file, filepos, SEEK_SET);
     delete[] feature_matrix;
-    unsigned int num_feat=0;
-    unsigned int num_vec=0;
-    set_num_features(num_feat);
-    set_num_vectors(num_vec);
-    preprocessed= (preprocd==1);
 
     CIO::message("allocating feature matrix of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
-    feature_matrix=new REAL[num_feat*num_vec];
+    feature_matrix=new REAL[num_features*num_vectors];
 
     CIO::message("loading... be patient.\n");
 
-    for (long i=0; i<(long) num_vec; i++)
+    for (long i=0; i<(long) num_vectors; i++)
     {
-	if (!(i % (num_vec/10+1)))
-	    CIO::message("%02d%%.", (int) (100.0*i/num_vec));
-	else if (!(i % (num_vec/200+1)))
+	if (!(i % (num_vectors/10+1)))
+	    CIO::message("%02d%%.", (int) (100.0*i/num_vectors));
+	else if (!(i % (num_vectors/200+1)))
 	    CIO::message(".");
 
 	assert(fread(&feature_matrix[num_features*i], doublelen, num_features, working_file)== (unsigned long) num_features) ;
     }
+	    CIO::message("done.\n");
 
     return feature_matrix;
 }
@@ -103,7 +99,7 @@ int CRealFileFeatures::get_label(long idx)
 {
     assert(idx<num_vectors);
     if (labels)
-	return labels[idx];
+		return labels[idx];
     return 0;
 }
 
@@ -129,7 +125,7 @@ bool CRealFileFeatures::load_base_data()
     fseek(working_file, filepos+num_features*num_vectors*doublelen, SEEK_SET);
     delete[] labels;
     labels= new int[num_vec];
-    assert(labels);
+    assert(labels!=NULL);
     assert(fread(labels, intlen, num_vec, working_file) == num_vec);
     return true;
 }

@@ -10,7 +10,7 @@
 class CPruneVarSubMean : public CRealPreProc
 {
  public:
-  CPruneVarSubMean();
+  CPruneVarSubMean(bool divide=true);
   virtual ~CPruneVarSubMean();
   
   /// initialize preprocessor from features
@@ -32,5 +32,6 @@ class CPruneVarSubMean : public CRealPreProc
   REAL* mean;
   REAL* std;
   int num_idx ;
+  bool divide_by_std;
 };
 #endif

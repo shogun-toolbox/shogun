@@ -24,7 +24,7 @@ bool CGUIFeatures::preprocess(char* param)
     char target[1024];
 	int force=0;
 
-    if ((sscanf(param, "%s %d", target, force))>=1)
+    if ((sscanf(param, "%s %d", target, &force))>=1)
     {
 	if ( strcmp(target, "TRAIN")==0 || strcmp(target, "TEST")==0 )
 	{
@@ -45,9 +45,16 @@ bool CGUIFeatures::preprocess(char* param)
 		{
 			if (gui->guipreproc.get_preproc())
 			{
-				gui->guipreproc.get_preproc()->init(*f_ptr);
-				(*f_ptr)->set_preproc(gui->guipreproc.get_preproc());
-				(*f_ptr)->preproc_feature_matrix(force==1);
+				if (train_features)
+				{
+					gui->guipreproc.get_preproc()->init(train_features);
+					(*f_ptr)->set_preproc(gui->guipreproc.get_preproc());
+
+					CIO::message("force: %d\n",force);
+					(*f_ptr)->preproc_feature_matrix(force==1);
+				}
+				else
+					CIO::message("initialization of preprocessor needs trainfeatures !\n");
 			}
 			else
 				CIO::message("no preprocessor set!\n");
@@ -114,8 +121,6 @@ bool CGUIFeatures::set_features(char* param)
 			delete (*f_ptr);
 			*f_ptr= new CTOPFeatures(gui->guihmm.get_pos(), gui->guihmm.get_neg());		      
 
-			if (comp_features)
-			    ((CTOPFeatures*)*f_ptr)->set_feature_matrix() ;
 
 			//						gui->guihmm.get_pos()->set_observations(old_obs_pos);
 			//						gui->guihmm.get_neg()->set_observations(old_obs_neg);
@@ -130,6 +135,9 @@ bool CGUIFeatures::set_features(char* param)
 		}
 		else
 		    CIO::not_implemented();
+			
+		if (comp_features)
+			((CRealFeatures*) *f_ptr)->set_feature_matrix() ;
 	}
 	else
 	    CIO::message("observations not correctly assigned!\n");
@@ -147,8 +155,9 @@ bool CGUIFeatures::load(char* param)
     char target[1024];
     char type[1024];
     bool result=false;
+	int comp_features=0;
 
-    if ((sscanf(param, "%s %s %s", filename, type, target))==3)
+    if ((sscanf(param, "%s %s %s %d", filename, type, target, &comp_features))>=3)
     {
 	CFeatures** f_ptr=NULL;
 
@@ -179,6 +188,8 @@ bool CGUIFeatures::load(char* param)
 	    CIO::message("unknown type\n");
 	    return false;
 	}
+	if (comp_features)
+		((CRealFeatures*) *f_ptr)->set_feature_matrix() ;
 
     } else
 	CIO::message("see help for params\n");

@@ -57,8 +57,7 @@ bool CGUISVM::train(char* param)
 	param=CIO::skip_spaces(param);
 
 	CFeatures* features=gui->guifeatures.get_train_features();
-		CIO::message("S:initializing train features %ldx%ld\n", ((CRealFeatures*) features)->get_num_vectors(), ((CRealFeatures*) features)->get_num_features());
-	CPreProc * preproc=gui->guipreproc.get_preproc();
+	CIO::message("S:initializing train features %ldx%ld\n", ((CRealFeatures*) features)->get_num_vectors(), ((CRealFeatures*) features)->get_num_features());
 
 	if (!svm)
 	{
@@ -71,33 +70,6 @@ bool CGUISVM::train(char* param)
 		CIO::message("no training features available") ;
 		return false ;
 	}
-
-	if (preproc)
-	{
-		CIO::message("using preprocessor: %s\n", preproc->get_name());
-		if (features->get_feature_type()!=preproc->get_feature_type())
-		{
-			CIO::message("preprocessor does not fit to features");
-			return false;
-		}
-
-
-		CIO::message("S:initializing train features %ldx%ld\n", ((CRealFeatures*) features)->get_num_vectors(), ((CRealFeatures*) features)->get_num_features());
-		preproc->init(features);
-		CIO::message("E:initializing train features %ldx%ld\n", ((CRealFeatures*) features)->get_num_vectors(), ((CRealFeatures*) features)->get_num_features());
-	}
-	else
-		CIO::message("doing without preproc\n");
-	
-	features->set_preproc(preproc);
-	((CRealFeatures*) features)->preproc_feature_matrix();
-	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) features)->get_num_vectors(), ((CRealFeatures*) features)->get_num_features());
-	
-	//  if (!svm->check_feature_type(f))
-	//    {
-	//      CIO::message("features do not fit to svm") ;
-	//      return false ;
-	//    }
 
 	CIO::message("starting svm training\n") ;
 	svm->set_C(C) ;

@@ -46,7 +46,7 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
 	  int len2=len ;
 	  REAL* feat2 = ((CRealPreProc*) preproc)->apply_to_feature_vector(feat, len2);
 	  delete[] feat ;
-	  CIO::message("len2: %d len: %d\n", len2, len);
+	  //CIO::message("len2: %d len: %d\n", len2, len);
 	  len=num_features=len2 ;
 	  return feat2 ;
 	}
@@ -73,7 +73,7 @@ bool CRealFeatures::preproc_feature_matrix(bool force_preprocessing)
 {
 	CIO::message("preproc: %d, preprocd: %d, force: %d\n", preproc, preprocessed, force_preprocessing);
 
-	if ( preproc && (!preprocessed || force_preprocessing) )
+	if ( feature_matrix && preproc && (!preprocessed || force_preprocessing) )
 	{
 	    preprocessed=true;	
 	    return (((CRealPreProc*) preproc)->apply_to_feature_matrix(this) != NULL);

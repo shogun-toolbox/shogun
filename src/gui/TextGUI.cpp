@@ -117,7 +117,7 @@ void CTextGUI::print_help()
    CIO::message("\n[LOAD]\n");
    CIO::message("\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
    CIO::message("\033[1;31m%s\033[0m <filename> <LINEAR|MPI|CPLEX>\t- load svm\n",N_LOAD_SVM);
-   CIO::message("\033[1;31m%s\033[0m <filename> <REAL|SHORT|STRING> <TRAIN|TEST>\t- load features\n",N_LOAD_FEATURES);
+   CIO::message("\033[1;31m%s\033[0m <filename> <REAL|SHORT|STRING> <TRAIN|TEST> [0|1]\t- load features\n",N_LOAD_FEATURES);
 //   CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
    CIO::message("\033[1;31m%s\033[0m <filename>\t- load observed data\n",N_LOAD_OBSERVATIONS);
    CIO::message("\n[SAVE]\n");
