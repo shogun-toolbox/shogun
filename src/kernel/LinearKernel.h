@@ -11,7 +11,7 @@ class CLinearKernel: public CRealKernel
   CLinearKernel(long size);
   ~CLinearKernel();
   
-  virtual void init(CRealFeatures* l, CRealFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data

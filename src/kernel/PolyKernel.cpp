@@ -17,7 +17,7 @@ CPolyKernel::~CPolyKernel()
 {
 }
   
-void CPolyKernel::init(CRealFeatures* l, CRealFeatures* r, bool do_init)
+bool CPolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	CRealKernel::init(l, r, do_init); 
 
@@ -25,6 +25,8 @@ void CPolyKernel::init(CRealFeatures* l, CRealFeatures* r, bool do_init)
 		init_rescale() ;
 
 	CIO::message("rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
+
+	return true;
 }
 
 void CPolyKernel::init_rescale()

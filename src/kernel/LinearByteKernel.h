@@ -11,7 +11,7 @@ class CLinearByteKernel: public CByteKernel
   CLinearByteKernel(long size);
   ~CLinearByteKernel() ;
   
-  virtual void init(CByteFeatures* l, CByteFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data

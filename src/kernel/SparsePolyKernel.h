@@ -11,7 +11,7 @@ class CSparsePolyKernel: public CSparseRealKernel
   CSparsePolyKernel(long size, int degree, bool inhomogene);
   ~CSparsePolyKernel();
   
-  virtual void init(CSparseRealFeatures* l, CSparseRealFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data

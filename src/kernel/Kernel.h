@@ -18,8 +18,11 @@ class CKernel
 		REAL kernel(long x, long y);
 
 		/** initialize kernel cache
+		 *  make sure to check that your kernel can deal with the
+		 *  supplied features (!)
+		 *  set do_init to true if you want the kernel to call its setup function (like getting scaling parameters,...)
 		 */
-		virtual void init();
+		virtual bool init(CFeatures* lhs, CFeatures* rhs, bool do_init);
 
 		/// clean up your kernel
 		virtual void cleanup()=0;
@@ -33,8 +36,8 @@ class CKernel
 		virtual bool save_init(FILE* dest)=0;
 		
 		/// get left/right hand side of features used in kernel
-		virtual CFeatures* get_lhs()=0;
-		virtual CFeatures* get_rhs()=0;
+		inline CFeatures* get_lhs() { return lhs; }
+		inline CFeatures* get_rhs() { return rhs; }
 
 		// return what type of kernel we are Linear,Polynomial, Gaussian,...
 		virtual EKernelType get_kernel_type()=0 ;
@@ -125,5 +128,10 @@ class CKernel
 		/// this *COULD* store the whole kernel matrix
 		/// usually not applicable / faster
 		REAL* kernel_matrix;
+
+		/// feature vectors to occur on left hand side
+		CFeatures* lhs;
+		/// feature vectors to occur on right hand side
+		CFeatures* rhs;
 };
 #endif

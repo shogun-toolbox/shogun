@@ -22,27 +22,18 @@ template <class ST> class CSimpleKernel : public CKernel
 		 * instead the previous values will be used (which where hopefully obtained
 		 * on training data/loaded)
 		 */
-		virtual void init(CSimpleFeatures<ST>* l, CSimpleFeatures<ST>* r, bool do_init)
+		virtual bool init(CFeatures* l, CFeatures* r, bool do_init)
 		{
-			assert(l!=0);
-			assert(r!=0);
-			lhs=l;
-			rhs=r;
-			CKernel::init();
+			CKernel::init(l,r,do_init);
+
+			assert(l->get_feature_class() == C_SIMPLE);
+			assert(r->get_feature_class() == C_SIMPLE);
+
+			return true;
 		}
 
 		/** return feature class the kernel can deal with
 		  */
 		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
-
-		/// get left/right hand side of features used in kernel
-		inline virtual CFeatures* get_lhs() { return lhs; }
-		inline virtual CFeatures* get_rhs() { return rhs; }
-
-	protected:
-		/// feature vectors to occur on left hand side
-		CSimpleFeatures<ST>* lhs;
-		/// feature vectors to occur on right hand side
-		CSimpleFeatures<ST>* rhs;
 };
 #endif

@@ -11,7 +11,7 @@ class CGaussianKernel: public CRealKernel
   CGaussianKernel(long size, double width);
   ~CGaussianKernel() ;
   
-  virtual void init(CRealFeatures* l, CRealFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -31,11 +31,8 @@ class CGaussianKernel: public CRealKernel
   virtual REAL compute(long idx_a, long idx_b);
   /*    compute_kernel*/
 
-  virtual void init_rescale();
-  
  protected:
   double width;
-  double scale;
 };
 
 #endif

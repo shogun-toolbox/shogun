@@ -11,7 +11,7 @@ class CSparseGaussianKernel: public CSparseRealKernel
   CSparseGaussianKernel(long size, double width);
   ~CSparseGaussianKernel();
   
-  virtual void init(CSparseRealFeatures* l, CSparseRealFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -34,8 +34,6 @@ class CSparseGaussianKernel: public CSparseRealKernel
   /// in the corresponding feature object
   virtual REAL compute(long idx_a, long idx_b);
   /*    compute_kernel*/
-
-  virtual void init_rescale();
   
  protected:
   double scale;

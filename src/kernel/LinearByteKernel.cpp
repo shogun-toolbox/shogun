@@ -16,7 +16,7 @@ CLinearByteKernel::~CLinearByteKernel()
 {
 }
   
-void CLinearByteKernel::init(CByteFeatures* l, CByteFeatures* r, bool do_init)
+bool CLinearByteKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	CByteKernel::init(l, r, do_init); 
 
@@ -24,6 +24,8 @@ void CLinearByteKernel::init(CByteFeatures* l, CByteFeatures* r, bool do_init)
 		init_rescale() ;
 
 	CIO::message("rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
+
+	return true;
 }
 
 void CLinearByteKernel::init_rescale()

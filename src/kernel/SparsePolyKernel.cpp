@@ -17,7 +17,7 @@ CSparsePolyKernel::~CSparsePolyKernel()
 {
 }
   
-void CSparsePolyKernel::init(CSparseRealFeatures* l, CSparseRealFeatures* r, bool do_init)
+bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	CSparseRealKernel::init(l,  r, do_init); 
 
@@ -25,6 +25,7 @@ void CSparsePolyKernel::init(CSparseRealFeatures* l, CSparseRealFeatures* r, boo
 		init_rescale() ;
 
 	CIO::message("rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
+	return true;
 }
 
 void CSparsePolyKernel::init_rescale()
@@ -80,8 +81,10 @@ bool CSparsePolyKernel::save_init(FILE* dest)
   
 REAL CSparsePolyKernel::compute(long idx_a, long idx_b)
 {
-  long alen, blen;
-  bool afree, bfree;
+  long alen=0;
+  long blen=0;
+  bool afree=false;
+  bool bfree=false;
 
   //fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
   TSparseEntry<REAL>* avec=((CSparseRealFeatures*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
@@ -92,16 +95,39 @@ REAL CSparsePolyKernel::compute(long idx_a, long idx_b)
   //result remains zero when one of the vectors is non existent
   if (avec && bvec)
   {
-	  long j=0;
-	  for (long i=0; i<alen; i++)
+	  if (alen<=blen)
 	  {
-			  int a_feat_idx=avec[i].feat_index;
-			  
-			  while ( (j<blen) && (bvec[j].feat_index < a_feat_idx) )
-				  j++;
+	      long j=0;
+	      for (long i=0; i<alen; i++)
+	      {
+	    	  int a_feat_idx=avec[i].feat_index;
 
-			  if (bvec[j].feat_index == a_feat_idx)
-				  result+= avec[i].entry * bvec[j].entry;
+	    	  while ( (j<blen) && (bvec[j].feat_index < a_feat_idx) )
+	    		  j++;
+
+	    	  if ( (j<blen) && (bvec[j].feat_index == a_feat_idx) )
+	    	  {
+	    		  result+= avec[i].entry * bvec[j].entry;
+	    		  j++;
+	    	  }
+	      }
+	  }
+	  else
+	  {
+	      long j=0;
+	      for (long i=0; i<blen; i++)
+	      {
+	    	  int b_feat_idx=bvec[i].feat_index;
+
+	    	  while ( (j<alen) && (avec[j].feat_index < b_feat_idx) )
+	    		  j++;
+
+	    	  if ( (j<alen) && (avec[j].feat_index == b_feat_idx) )
+	    	  {
+	    		  result+= bvec[i].entry * avec[j].entry;
+	    		  j++;
+	    	  }
+	      }
 	  }
 
 	  if (inhomogene)

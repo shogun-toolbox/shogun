@@ -316,7 +316,7 @@ bool CGUIFeatures::save(char* param)
 	char target[1024];
 	char type[1024];
 
-	if ((sscanf(param, "%s %s %s", fname, target, type))==3)
+	if ((sscanf(param, "%s %s %s", fname, type, target))==3)
 	{
 
 		CFeatures** f_ptr=NULL;

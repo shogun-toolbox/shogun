@@ -22,27 +22,20 @@ template <class ST> class CSparseKernel : public CKernel
 		 * instead the previous values will be used (which where hopefully obtained
 		 * on training data/loaded)
 		 */
-		virtual void init(CSparseFeatures<ST>* l, CSparseFeatures<ST>* r, bool do_init)
+		virtual bool init(CFeatures* l, CFeatures* r, bool do_init)
 		{
-			assert(l!=0);
-			assert(r!=0);
-			lhs=l;
-			rhs=r;
-			CKernel::init();
+			CKernel::init(l,r,do_init);
+
+			assert(l->get_feature_class() == C_SPARSE);
+			assert(r->get_feature_class() == C_SPARSE);
+			lhs=(CSparseFeatures<ST>*) l;
+			rhs=(CSparseFeatures<ST>*) r;
+
+			return true;
 		}
 
 		/** return feature class the kernel can deal with
 		  */
 		inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
-
-		/// get left/right hand side of features used in kernel
-		inline virtual CFeatures* get_lhs() { return lhs; }
-		inline virtual CFeatures* get_rhs() { return rhs; }
-
-	protected:
-		/// feature vectors to occur on left hand side
-		CSparseFeatures<ST>* lhs;
-		/// feature vectors to occur on right hand side
-		CSparseFeatures<ST>* rhs;
 };
 #endif

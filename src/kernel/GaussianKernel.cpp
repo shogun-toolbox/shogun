@@ -8,7 +8,7 @@
 #include <assert.h>
 
 CGaussianKernel::CGaussianKernel(long size, double w)
-  : CRealKernel(size),width(w),scale(1.0)
+  : CRealKernel(size),width(w)
 {
 }
 
@@ -16,37 +16,10 @@ CGaussianKernel::~CGaussianKernel()
 {
 }
   
-void CGaussianKernel::init(CRealFeatures* l, CRealFeatures* r, bool do_init)
+bool CGaussianKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	CRealKernel::init(l, r, do_init); 
-
-	if (do_init)
-		init_rescale() ;
-
-	CIO::message("rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
-}
-
-void CGaussianKernel::init_rescale()
-{
-//	CTime t;
-//
-//	long maxx=math.min(5000l,lhs->get_num_vectors());
-//	long maxy=math.min(5000l,rhs->get_num_vectors());
-//
-//	for (long x=0; x<maxx; x++)
-//	{
-//		for (long y=0; y<maxy; y++)
-//		{
-//			compute(x, y);
-//		}
-//	}
-//	t.cur_time_diff_sec(true);
-	double sum=0;
-	scale=1.0;
-	for (long i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
-			sum+=compute(i, i);
-
-	scale=sum/math.min(lhs->get_num_vectors(), rhs->get_num_vectors());
+	return true;
 }
 
 void CGaussianKernel::cleanup()
@@ -79,7 +52,7 @@ REAL CGaussianKernel::compute(long idx_a, long idx_b)
   for (int i=0; i<ialen; i++)
 	  result+=(avec[i]-bvec[i])*(avec[i]-bvec[i]);
 
-  result=exp(-result/width)/scale;
+  result=exp(-result/width);
 
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);

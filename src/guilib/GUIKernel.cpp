@@ -30,6 +30,7 @@
 CGUIKernel::CGUIKernel(CGUI * gui_): gui(gui_)
 {
 	kernel=NULL;
+	initialized=false;
 }
 
 CGUIKernel::~CGUIKernel()
@@ -166,6 +167,7 @@ bool CGUIKernel::load_kernel_init(char* param)
 			else
 			{
 				CIO::message("successfully read kernel init data from \"%s\" !\n", filename);
+				initialized=true;
 				result=true;
 			}
 
@@ -223,9 +225,11 @@ bool CGUIKernel::init_kernel(char* param)
 			do_init=true;
 			if (gui->guifeatures.get_train_features())
 			{
-				if (kernel->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type())
+				if ( (kernel->get_feature_class() == gui->guifeatures.get_train_features()->get_feature_class()) &&
+					 (kernel->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type()))
 				{
-					do_init_kernel(gui->guifeatures.get_train_features(), gui->guifeatures.get_train_features(), do_init);
+					kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_train_features(), do_init);
+					initialized=true;
 				}
 				else
 				{
@@ -240,12 +244,14 @@ bool CGUIKernel::init_kernel(char* param)
 		{
 			if (gui->guifeatures.get_train_features() && gui->guifeatures.get_test_features())
 			{
-				if ((kernel->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type()) && (kernel->get_feature_type() == gui->guifeatures.get_test_features()->get_feature_type()))
+				if	(((kernel->get_feature_class() == gui->guifeatures.get_train_features()->get_feature_class()) && (kernel->get_feature_class() == gui->guifeatures.get_test_features()->get_feature_class())) &&
+				 	((kernel->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type()) && (kernel->get_feature_type() == gui->guifeatures.get_test_features()->get_feature_type())) )
 				{
 					CIO::message("initialising kernel with TEST DATA, train: %d test %d\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
 
 					// lhs -> always train_features; rhs -> alway test_features
-					do_init_kernel(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features(), do_init);
+					kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features(), do_init);
+					initialized=true;
 				}
 				else
 				{
@@ -274,7 +280,7 @@ bool CGUIKernel::save_kernel(char* param)
 	bool result=false;
 	char filename[1024];
 
-	if (kernel)
+	if (kernel && initialized)
 	{
 		if ((sscanf(param, "%s", filename))==1)
 		{
@@ -290,44 +296,6 @@ bool CGUIKernel::save_kernel(char* param)
 			CIO::message("see help for params\n");
 	}
 	else
-		CIO::message("no kernel set!\n");
+		CIO::message("no kernel set / kernel not initialized!\n");
 	return result;
-}
-
-bool CGUIKernel::do_init_kernel(CFeatures* lhs, CFeatures* rhs, bool do_init)
-{
-	switch (kernel->get_feature_class())
-	{
-		case C_SIMPLE:
-			switch (kernel->get_feature_type())
-			{
-				case F_REAL:
-					((CRealKernel*) kernel)->init((CRealFeatures*) lhs,(CRealFeatures*) rhs, do_init) ;
-					break;
-				case F_SHORT:
-					((CShortKernel*) kernel)->init((CShortFeatures*) lhs,(CShortFeatures*) rhs, do_init) ;
-					break;
-				case F_CHAR:
-				case F_BYTE:
-				default:
-					CIO::message("not implemented\n");
-					return false;
-			};
-			break;
-		case C_SPARSE:
-			switch (kernel->get_feature_type())
-			{
-				case F_REAL:
-					((CSparseRealKernel*) kernel)->init((CSparseRealFeatures*) lhs,(CSparseRealFeatures*) rhs, do_init) ;
-					break;
-				default:
-					CIO::message("not implemented\n");
-					return false;
-			};
-			break;
-		default:
-			CIO::message("not implemented\n");
-			return false;
-	};
-	return true;
 }

@@ -36,8 +36,19 @@ REAL CKernel::kernel(long idx_a, long idx_b)
 	return compute(idx_a, idx_b);
 }
 
-void CKernel::init()
+bool CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
+	//make sure features were indeed supplied
+	assert(l);
+	assert(r);
+
+	//make sure features are compatible
+	assert(l->get_feature_class() == r->get_feature_class());
+	assert(l->get_feature_type() == r->get_feature_type());
+
+	lhs=l;
+	rhs=r;
+
 	// allocate kernel cache but clean up beforehand
 	kernel_cache_cleanup();
 	kernel_cache_init(cache_size);
