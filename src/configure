@@ -48,7 +48,7 @@ COMPFLAGS_C=
 COMPFLAGS_CPP=
 INCLUDES=-I${SRCDIR}
 LINK=c++
-LINKFLAGS="-lm -lreadline"
+LINKFLAGS="-lm"
 TARGET="genefinder-${EXESUFFIX}"
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -fkeep-inline-functions  -finline-functions -fschedule-insns2 -fthread-jumps -fforce-mem -fforce-addr -fstrength-reduce -fomit-frame-pointer -unroll-loops"
 #most defines are simply design bugs, use the ./configure --{disable,enable}-<options>
@@ -1114,6 +1114,7 @@ set_opts()
 	if test "$_readline" = yes
 	then
 		HAVE_READLINE='#define HAVE_READLINE 1'
+		LINKFLAGS="$LINKFLAGS -lreadline"
 	fi
 
 	if test "$_matlab" = yes
