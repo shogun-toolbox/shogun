@@ -1,10 +1,10 @@
-#ifndef _SIMPLEKERNEL_H___
-#define _SIMPLEKERNEL_H___
+#ifndef _STRINGKERNEL_H___
+#define _STRINGKERNEL_H___
 
 #include "kernel/Kernel.h"
-#include "features/SimpleFeatures.h"
+#include "features/StringFeatures.h"
 
-template <class ST> class CSimpleKernel : public CKernel
+template <class ST> class CStringKernel : public CKernel
 {
 	public:
 		CSimpleKernel(LONG cachesize) : CKernel(cachesize)
@@ -22,18 +22,19 @@ template <class ST> class CSimpleKernel : public CKernel
 		 * instead the previous values will be used (which where hopefully obtained
 		 * on training data/loaded)
 		 */
-		virtual bool init(CFeatures* l, CFeatures* r, bool do_init)
+		virtual bool init(CStringFeatures<ST>* l, CStringFeatures<ST>* r, bool do_init)
 		{
 			CKernel::init(l,r,do_init);
 
-			assert(l->get_feature_class() == C_SIMPLE);
-			assert(r->get_feature_class() == C_SIMPLE);
+			assert(l->get_feature_class() == C_STRING);
+			assert(r->get_feature_class() == C_STRING);
 
 			return true;
 		}
 
 		/** return feature class the kernel can deal with
 		  */
-		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+		inline virtual EFeatureClass get_feature_class() { return C_STRING; }
 };
 #endif
+
