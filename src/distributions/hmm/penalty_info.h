@@ -65,7 +65,7 @@ inline REAL lookup_penalty(const struct penalty_struct *PEN, INT p_value)
 	INT i=0 ;
 	
 	REAL ret ;
-
+	
 	i = math.fast_find_range(PEN->limits, PEN->len, d_value) ;
 	if (i==-1)
 		ret=PEN->penalties[0] ;
@@ -84,6 +84,9 @@ inline REAL lookup_penalty(const struct penalty_struct *PEN, INT p_value)
 				  PEN->penalties[i_larger]*(d_value-PEN->limits[i_smaller]))/
 				(PEN->limits[i_larger]-PEN->limits[i_smaller]) ;
 	}
+	if (p_value>=30 && p_value<150)
+		fprintf(stderr, "%s %i(%i) -> %1.2f\n", PEN->name, p_value, i, ret) ;
+	
 	
 	return ret ;
 }
