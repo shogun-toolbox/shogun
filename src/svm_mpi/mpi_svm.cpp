@@ -118,31 +118,27 @@ bool CSVMMPI::svm_train(CFeatures* train_)
 
 REAL* CSVMMPI::svm_test(CFeatures* test_, CFeatures*)
 {
-  CRealFeatures * test=(CRealFeatures*)test_ ;
-  long num_test=test->get_num_vectors();
-  REAL* output=new REAL[num_test];
-  for (long i=0; i<num_test;  i++)
-    {
-      int onei=1 ;
-      double zerod=0, oned=1 ;
-      char N='N' ;
-      char T='T' ;
-      long len ; int length ;
-      bool free ;
-      double*feature=test->get_feature_vector(i, len, free) ;
-      length=len ;
+	CRealFeatures * test=(CRealFeatures*)test_ ;
+	long num_test=test->get_num_vectors();
+	CIO::message("testing.\n");
+	REAL* output=new REAL[num_test];
+	for (long i=0; i<num_test;  i++)
+	{
+		int onei=1 ;
+		double zerod=0, oned=1 ;
+		char N='N' ;
+		char T='T' ;
+		long len ; int length ;
+		bool free ;
+		double*feature=test->get_feature_vector(i, len, free) ;
+		length=len ;
 
-      output[i]=ddot_(&length,feature,&onei, svm_w, &onei) ;
-  
-      test->free_feature_vector(feature, free) ;
-    } ;
-  if (1) {
-    int i ;
-    for (i=0; i<10; i++)
-      CIO::message("output[%i]=%e\n", i, output[i]-svm_b) ;
-  } ;
+		output[i]=ddot_(&length,feature,&onei, svm_w, &onei)-svm_b ;
 
-  return output;  
+		test->free_feature_vector(feature, free) ;
+	}
+
+	return output;  
 }
 
 bool CSVMMPI::load(FILE* modelfl)
@@ -150,20 +146,23 @@ bool CSVMMPI::load(FILE* modelfl)
 	bool result=false;
 	char version_buffer[1024];
 
-	fscanf(modelfl,"MPI\n", version_buffer);
+	fscanf(modelfl,"%s\n", version_buffer);
+	CIO::message("detected:%s\n", version_buffer);
 	if(strcmp(version_buffer,"MPI")) {
 		perror ("model file does not match MPI SVM");
 		exit (1); 
 	}
 
 	fscanf(modelfl,"%ld%*[^\n]\n", &num_rows);
+	fscanf(modelfl,"%lf%*[^\n]\n", &svm_b);
+	CIO::message("svm_b:%f\n", svm_b);
 
 	delete[] svm_w;
 	svm_w = new double[num_rows];
 	CIO::message("loading w of size %ld\n",num_rows);
 
 	for (int i=0; i<num_rows; i++)
-		fscanf(modelfl,"%lf%*[^\n]\n", svm_w[i]);
+		fscanf(modelfl,"%lf%*[^\n]\n", &svm_w[i]);
 
 	CIO::message("done\n");
 	result=true;
