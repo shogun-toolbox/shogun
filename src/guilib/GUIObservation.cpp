@@ -14,11 +14,11 @@ CGUIObservation::CGUIObservation(CGUI * gui_): gui(gui_)
 
 CGUIObservation::~CGUIObservation()
 {
-	delete[] pos_train_obs;
-	delete[] neg_train_obs;
-	delete[] pos_test_obs;
-	delete[] neg_test_obs;
-	delete[] test_obs;
+	delete pos_train_obs;
+	delete neg_train_obs;
+	delete pos_test_obs;
+	delete neg_test_obs;
+	delete test_obs;
 }
 
 bool CGUIObservation::load_observations(char* param)
