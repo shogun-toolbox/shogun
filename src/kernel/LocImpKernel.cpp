@@ -1,6 +1,7 @@
 #include <assert.h>
 #include "lib/common.h"
 #include "kernel/LocImpKernel.h"
+#include "features/ShortFeatures.h"
 
 CLocImpKernel::CLocImpKernel(int width_, int degree1_, 
 			     int degree2_) 
@@ -21,6 +22,7 @@ void CLocImpKernel::init(CFeatures* f)
   pyra=NULL;
   stage1=NULL;
   NOF_NTS=0 ;
+  dim = ((CShortFeatures*)f)->get_num_features() ;
 
   /* convolution, potentiation */
   double conv;
@@ -60,11 +62,22 @@ void CLocImpKernel::cleanup()
 
 REAL CLocImpKernel::compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)
 {
-  short int *avec, *bvec ; /* do something here */
-  double dpt ;
+  long alen, blen;
+  bool afree, bfree;
+  REAL dpt=0 ;
+
+  //fprintf(stderr, "LocImpKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
+  short int* avec=((CShortFeatures*) a)->get_feature_vector(idx_a, alen, afree);
+  short int* bvec=((CShortFeatures*) b)->get_feature_vector(idx_b, blen, bfree);
   
-  dot_pyr(&dpt, avec, bvec, 1,1) ;
+  assert(alen==blen);
+  assert(alen==dim);
   
+  dot_pyr(&dpt, avec, bvec, 1, 1) ;
+  
+  ((CShortFeatures*) a)->free_feature_vector(avec, afree);
+  ((CShortFeatures*) b)->free_feature_vector(bvec, bfree);
+
   return dpt ;
   
 }

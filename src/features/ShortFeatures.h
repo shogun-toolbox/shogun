@@ -35,6 +35,8 @@ class CShortFeatures: public CFeatures
 
   virtual bool preproc_feature_matrix();
 
+  int get_num_features() { return num_features ; } ;
+
 protected:
   /// compute feature vector for sample num
   /// len is returned by reference
