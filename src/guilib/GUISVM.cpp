@@ -14,12 +14,14 @@ CGUISVM::~CGUISVM()
 
 bool CGUISVM::new_svm(char* param)
 {
-	if (strcmp(param,"LIGHT"))
+	param=CIO::skip_spaces(param);
+
+	if (strcmp(param,"LIGHT")==0)
 	{
 		delete svm;
 		svm= new CSVMLight();
 	}
-	else if (strcmp(param,"CPLEX"))
+	else if (strcmp(param,"CPLEX")==0)
 	{
 #ifdef SVMCPLEX
 		delete svm;
@@ -28,7 +30,7 @@ bool CGUISVM::new_svm(char* param)
 		CIO::message("CPLEX SVM disabled\n") ;
 #endif
 	}
-	else if (strcmp(param,"MPI"))
+	else if (strcmp(param,"MPI")==0)
 	{
 #ifdef SVMMPI
 #if  defined(HAVE_MPI) && !defined(DISABLE_MPI)
@@ -47,6 +49,8 @@ bool CGUISVM::new_svm(char* param)
 
 bool CGUISVM::train(char* param)
 {
+	param=CIO::skip_spaces(param);
+
 	CFeatures* features=gui->guifeatures.get_train_features();
 	//CPreProc * preproc=gui->guipreproc.get_preproc() ;
 	CPreProc * preproc=NULL;
@@ -94,6 +98,8 @@ bool CGUISVM::train(char* param)
 
 bool CGUISVM::test(char* param)
 {
+	param=CIO::skip_spaces(param);
+
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
 	CPreProc * preproc=gui->guipreproc.get_preproc();
@@ -185,9 +191,11 @@ bool CGUISVM::save_svm()
 
 bool CGUISVM::set_C(char* param)
 {
-  sscanf(param, "%le", &C) ;
-  CIO::message("Set to C=%f\n", C) ;
-  return true ;  
+	param=CIO::skip_spaces(param);
+
+	sscanf(param, "%le", &C) ;
+	CIO::message("Set to C=%f\n", C) ;
+	return true ;  
 }
 
 

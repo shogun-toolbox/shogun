@@ -31,7 +31,7 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
   
   if (feature_matrix)
     {
-      CIO::message("returning %i th column of feature_matrix\n", (int)num) ;
+//      CIO::message("returning %i th column of feature_matrix\n", (int)num) ;
       free=false ;
       return &feature_matrix[num*num_features];
     } 
