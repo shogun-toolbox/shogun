@@ -127,8 +127,47 @@ public:
 	
 	/** performs a quicksort on an array output of length size
 	 * it is sorted from in ascending (for type T) */
+	//template <class T>
+	//static void qsort(T* output, INT size) ;
 	template <class T>
-	static void qsort(T* output, INT size) ;
+	static void qsort(T* output, INT size)
+	{
+		if (size==2)
+		{
+			if (output[0] > output [1])
+				swap(output[0],output[1]);
+		}
+		else
+		{
+			REAL split=output[(size*rand())/(RAND_MAX+1)];
+			//REAL split=output[size/2];
+
+			INT left=0;
+			INT right=size-1;
+
+			while (left<=right)
+			{
+				while (output[left] < split)
+					left++;
+				while (output[right] > split)
+					right--;
+
+				if (left<=right)
+				{
+					swap(output[left],output[right]);
+					left++;
+					right--;
+				}
+			}
+
+			if (right+1> 1)
+				qsort(output,right+1);
+
+			if (size-left> 1)
+				qsort(&output[left],size-left);
+		}
+	}
+
 
 	/** performs a quicksort on an array output of length size
 	 * it is sorted from in ascending order 
@@ -392,45 +431,6 @@ protected:
 
 
 //implementations of template functions
-template <class T>
-void CMath::qsort(T* output, INT size)
-{
-	if (size==2)
-	{
-		if (output[0] > output [1])
-			swap(output[0],output[1]);
-	}
-	else
-	{
-		REAL split=output[(size*rand())/(RAND_MAX+1)];
-		//REAL split=output[size/2];
-
-		INT left=0;
-		INT right=size-1;
-
-		while (left<=right)
-		{
-			while (output[left] < split)
-				left++;
-			while (output[right] > split)
-				right--;
-
-			if (left<=right)
-			{
-				swap(output[left],output[right]);
-				left++;
-				right--;
-			}
-		}
-
-		if (right+1> 1)
-			qsort(output,right+1);
-
-		if (size-left> 1)
-			qsort(&output[left],size-left);
-	}
-}
-
 template <class T1,class T2>
 void CMath::qsort(T1* output, T2* index, INT size)
 {
