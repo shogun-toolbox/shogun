@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 PROJECT_NAME           = Genefinder
 PROJECT_NUMBER         = 
-OUTPUT_DIRECTORY       = /home/neuro/sonne/GENEFINDER/doc/
+OUTPUT_DIRECTORY       = ./
 OUTPUT_LANGUAGE        = English
 EXTRACT_ALL            = YES
 EXTRACT_PRIVATE        = YES
@@ -52,7 +52,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = /home/neuro/sonne/GENEFINDER/src/
+INPUT                  = ../src/
 FILE_PATTERNS          = *.cpp \
                          *.h \
                          *.c

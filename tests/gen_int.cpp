@@ -7,7 +7,7 @@ int main()
 	FILE* f=fopen("foo", "wb");
 	for (int i=0; i<1000; i++)
 	{
-			I= (-1) * (i%2);
+			I=  (2*(i%2)-1);
 			fwrite(&I, sizeof(int), 1, f);
 	}
 	fclose(f);
