@@ -42,7 +42,10 @@ void CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	lhs=l;
 	rhs=r;
 
-	// allocate kernel cache
+	CIO::message("initialising kernel with TEST DATA, train: %d test %d\n",l,r );
+
+	// allocate kernel cache but clean up beforehand
+	kernel_cache_cleanup();
 	kernel_cache_init(cache_size);
 }
 
@@ -337,7 +340,7 @@ bool CKernel::save(char* fname)
 	}
 
 	if (f.is_ok())
-		CIO::message("kernel matrix of size %ld x %ld written (filesize: %ld)", num_left, num_right, num_total*sizeof(REAL));
+		CIO::message("kernel matrix of size %ld x %ld written (filesize: %ld)\n", num_left, num_right, num_total*sizeof(REAL));
 
     return (f.is_ok());
 }

@@ -70,16 +70,8 @@ bool CGUISVM::train(char* param)
 	param=CIO::skip_spaces(param);
 
 	CLabels* trainlabels=gui->guilabels.get_train_labels();
-	//CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CKernel* kernel=gui->guikernel.get_kernel();
 
-//	CIO::message("S:initializing train features %ldx%ld\n", ((CRealFeatures*) features)->get_num_vectors(), ((CRealFeatures*) features)->get_num_features());
-//
-//	bool fr;
-//	long len=0;
-//	REAL* f=((CRealFeatures*) gui->guifeatures.get_train_features())->get_feature_vector(0, len, fr);
-//	((CRealFeatures*) gui->guifeatures.get_train_features())->free_feature_vector(f, 0, fr);
-//
 	if (!svm)
 	{
 		CIO::message("no svm available\n") ;
@@ -99,6 +91,7 @@ bool CGUISVM::train(char* param)
 	}
 
 	CIO::message("starting svm training on %ld vectors using C=%lf\n", trainlabels->get_num_labels(), C) ;
+
 	svm->set_C(C);
 	((CKernelMachine*) svm)->set_labels(trainlabels);
 	((CKernelMachine*) svm)->set_kernel(kernel);
@@ -168,16 +161,10 @@ bool CGUISVM::test(char* param)
 		return false ;
 	}
 
-	/*if (!svm->check_feature_type(trainfeatures) || !svm->check_feature_type(trainfeatures))
-	{
-		CIO::message("features do not fit to svm") ;
-		return false ;
-	}*/
-
 	CIO::message("starting svm testing\n") ;
-	svm->set_C(C) ;
-	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
 	((CKernelMachine*) svm)->set_labels(testlabels);
+	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
+
 	//MISSING testfeatures, trainfeatures) ;
 	REAL* output= svm->test();
 
@@ -199,30 +186,6 @@ bool CGUISVM::test(char* param)
 	delete[] output;
 	delete[] label;
 	return true;
-}
-
-bool CGUISVM::set_kernel()
-{
-  CIO::not_implemented() ;
-  return false ;
-}
-
-bool CGUISVM::get_kernel()
-{
-  CIO::not_implemented() ;
-  return false ;
-}
-
-bool CGUISVM::set_preproc()
-{
-  CIO::not_implemented() ;
-  return false ;
-}
-
-bool CGUISVM::get_preproc()
-{
-  CIO::not_implemented() ;
-  return false ;
 }
 
 bool CGUISVM::load(char* param)

@@ -21,10 +21,6 @@ public:
 	bool new_svm(char* param);
 	bool train(char* param);
 	bool test(char* param);
-	bool set_kernel();
-	bool get_kernel();
-	bool set_preproc();
-	bool get_preproc();
 	bool load(char* param);
 	bool save(char* param);
 	bool set_C(char* param);

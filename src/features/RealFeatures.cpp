@@ -43,7 +43,7 @@ bool CRealFeatures::save(char* fname)
 	}
 
 	if (f.is_ok())
-		CIO::message("%d vectors with %d features each successfully written (filesize: %ld)", num_vectors, num_features, num_vectors*num_features*sizeof(REAL));
+		CIO::message("%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(REAL));
 
     return true;
 }

@@ -190,6 +190,8 @@ bool CGUIKernel::init_kernel(char* param)
 					return false ;
 				}
 				
+				CIO::message("initialising kernel with TEST DATA, train: %d test %d\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
+
 				// lhs -> always train_features; rhs -> alway test_features
 				kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features(), do_init) ;
 			}
