@@ -1363,8 +1363,12 @@ static bool prompt(FILE* infile=stdin)
 
 		    if (UPTO==lambda->get_N())
 		    {	  
+			CObservation* obs=new CObservation(TRAIN, alphabet, 8*sizeof(T_OBSERVATIONS), lambda->get_M(), ORDER);
+			lambda->set_observation_nocache(obs);
 			printf("log(Pr[O|model])=%e, #states: %i, #observation symbols: %i\n", 
 				(double)lambda->linear_likelihood(file, WIDTH, UPTO), lambda->get_N(), lambda->get_M());
+			lambda->set_observation_nocache(NULL);
+			delete obs;
 		    }
 		    else
 			printf("model has wrong size\n");
@@ -1416,9 +1420,15 @@ static bool prompt(FILE* infile=stdin)
 		    }
 		    else
 			return false;
-
+			
 		    if (UPTO==lambda->get_N())
+		    {
+			CObservation* obs=new CObservation(TRAIN, alphabet, 8*sizeof(T_OBSERVATIONS), lambda->get_M(), ORDER);
+			lambda->set_observation_nocache(obs);
 			lambda->save_linear_likelihood_bin(srcfile, dstfile, WIDTH, UPTO);
+			lambda->set_observation_nocache(NULL);
+			delete obs;
+		    }
 		    else
 			printf("model has wrong size\n");
 		}
@@ -1471,7 +1481,13 @@ static bool prompt(FILE* infile=stdin)
 				return false;
 
 				if (UPTO==lambda->get_N())
-				lambda->save_linear_likelihood(srcfile, dstfile, WIDTH, UPTO);
+				{
+				    CObservation* obs=new CObservation(TRAIN, alphabet, 8*sizeof(T_OBSERVATIONS), lambda->get_M(), ORDER);
+				    lambda->set_observation_nocache(obs);
+				    lambda->save_linear_likelihood(srcfile, dstfile, WIDTH, UPTO);
+				    lambda->set_observation_nocache(NULL);
+				    delete obs;
+				}
 				else
 				printf("model has wrong size\n");
 			}
@@ -1905,12 +1921,16 @@ static bool prompt(FILE* infile=stdin)
 				CIO::message(stderr,"ERROR: file has wrong size");
 				return false;
 			    }
-			    	    
+
 			    int possize=posfsize/WIDTH;
 			    int negsize=negfsize/WIDTH;
 			    int total=possize+negsize;
 
-			   CIO::message("p:%d,n:%d,t:%d\n",possize,negsize,total);
+			    CObservation* obs=new CObservation(TRAIN, alphabet, 8*sizeof(T_OBSERVATIONS), pos->get_M(), ORDER);
+			    pos->set_observation_nocache(obs);
+			    neg->set_observation_nocache(obs);
+
+			    CIO::message("p:%d,n:%d,t:%d\n",possize,negsize,total);
 			    REAL* output = new REAL[total];	
 			    int* label= new int[total];	
 
@@ -1923,7 +1943,7 @@ static bool prompt(FILE* infile=stdin)
 				    fseek(negfile, fileptr, SEEK_SET);
 				    output[dim]-=neg->linear_likelihood(negfile, WIDTH, UPTO,true);
 				    label[dim]=-1;
-				    
+
 				    if (output[dim] < 0)
 					fprintf(outputfile,"%+.8g (%+d)\n",(double) output[dim], label[dim]);
 				    else
@@ -1936,7 +1956,7 @@ static bool prompt(FILE* infile=stdin)
 				    fseek(posfile, fileptr, SEEK_SET);
 				    output[dim]-=neg->linear_likelihood(posfile, WIDTH, UPTO,true);
 				    label[dim]=+1;
-				    
+
 				    if (output[dim] > 0)
 					fprintf(outputfile,"%+.8g (%+d)\n",(double) output[dim], label[dim]);
 				    else
@@ -1953,10 +1973,15 @@ static bool prompt(FILE* infile=stdin)
 			    double fpo=fp[pointeven]*negsize;
 			    double fne=(1-tp[pointeven])*possize;
 
-			   CIO::message("classified:\n");
-			   CIO::message("\tcorrect:%i\n", int (correct));
-			   CIO::message("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
-			   CIO::message("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, fp[pointeven], tp[pointeven]);
+			    CIO::message("classified:\n");
+			    CIO::message("\tcorrect:%i\n", int (correct));
+			    CIO::message("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
+			    CIO::message("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, fp[pointeven], tp[pointeven]);
+
+			    pos->set_observation_nocache(NULL);
+			    neg->set_observation_nocache(NULL);
+			    delete obs;
+
 			    delete[] fp;
 			    delete[] tp;
 			    delete[] output;

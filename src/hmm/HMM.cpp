@@ -266,11 +266,7 @@ bool CHMM::alloc_state_dependend_arrays()
 		    set_observation_nocache(p_observations);
 	}
 	else
-	{
-
-	    CIO::message("setting observations\n");
 	    set_observations(p_observations);
-	}
 	
 	this->invalidate_model();
 
@@ -1648,7 +1644,7 @@ void CHMM::output_model(bool verbose)
 	//generic info
 	printf("log(Pr[O|model])=%e, #states: %i, #observationssymbols: %i, #observations: %ix%i\n", 
 	       (double)((p_observations) ? model_probability() : -math.INFTY), 
-	       N, M, p_observations->get_obs_max_T(),p_observations->get_DIMENSION());
+	       N, M, ((p_observations) ? p_observations->get_obs_max_T() : 0), ((p_observations) ? p_observations->get_DIMENSION() : 0));
 
 	if (verbose)
 	{
@@ -1731,8 +1727,9 @@ void CHMM::output_model_defined(bool verbose)
 	  return ;
 
 	//generic info
-	printf("log(Pr[O|model])=% E, #states: %i, #observationssymbols: %i, #observations: %i\n",
-	       ((double) ((p_observations) ? model_probability(): -math.INFTY)), N, M, p_observations->get_obs_max_T());
+	printf("log(Pr[O|model])=%e, #states: %i, #observationssymbols: %i, #observations: %ix%i\n", 
+	       (double)((p_observations) ? model_probability() : -math.INFTY), 
+	       N, M, ((p_observations) ? p_observations->get_obs_max_T() : 0), ((p_observations) ? p_observations->get_DIMENSION() : 0));
 
 	if (verbose)
 	{
@@ -4588,7 +4585,7 @@ void CHMM::chop(REAL value)
 bool CHMM::linear_train(FILE* file, const int WIDTH, const int UPTO)
 {
     double* hist=new double[256*UPTO];
-    char* line_=new char[WIDTH+1];
+    T_OBSERVATIONS* line_=new T_OBSERVATIONS[WIDTH+1];
 
     int i;
     int total=0;
@@ -4605,6 +4602,9 @@ bool CHMM::linear_train(FILE* file, const int WIDTH, const int UPTO)
 
     while ( (fread(line_, sizeof (unsigned char), WIDTH, file)) == (unsigned int) WIDTH)
     {
+	if (p_observations->translate_from_single_order(line_,UPTO) < 0)
+	    CIO::message(stderr,"wrong character(s) in line %i\n", total) ;
+
 	for (i=0; i<UPTO; i++)
 	{
 	    hist[i*256+line_[i]]++;
@@ -4641,7 +4641,8 @@ bool CHMM::linear_train(FILE* file, const int WIDTH, const int UPTO)
     for (i=0;i<UPTO;i++)
     {
 	for (int j=0; j<M; j++)
-	    set_b(i,j, hist[i*256+p_observations->remap(j)] );
+	    set_b(i,j, hist[i*256+j] );
+	    //set_b(i,j, hist[i*256+p_observations->remap(j)] );
     }
 	delete[] line_;
 	delete[] hist;
@@ -4651,14 +4652,14 @@ bool CHMM::linear_train(FILE* file, const int WIDTH, const int UPTO)
 REAL CHMM::linear_likelihood(FILE* file, int WIDTH, int UPTO, bool singleline)
 {
     double* hist=new double[256*UPTO];
-    char* line_=new char[WIDTH+1];
+    T_OBSERVATIONS* line_=new T_OBSERVATIONS[WIDTH+1];
 
     int total=0;
 
     for (int i=0;i<N;i++)
     {
 	for (int j=0; j<M; j++)
-	    hist[i*256+p_observations->remap(j)]=get_b(i,j);
+	    hist[i*256+j]=get_b(i,j);
     }
 
     if (singleline)
@@ -4666,6 +4667,9 @@ REAL CHMM::linear_likelihood(FILE* file, int WIDTH, int UPTO, bool singleline)
 	double lik=-math.INFTY;
 	if ( (fread(line_, sizeof (unsigned char), WIDTH, file)) == (unsigned int) WIDTH)
 	{
+	    if (p_observations->translate_from_single_order(line_,UPTO) < 0)
+		CIO::message(stderr,"wrong character(s) in line %i\n", line_) ;
+
 	    double d=log(1);
 	    for (int i=0; i<UPTO; i++)
 		d+=hist[i*256+line_[i]];
@@ -4704,7 +4708,7 @@ REAL CHMM::linear_likelihood(FILE* file, int WIDTH, int UPTO, bool singleline)
 bool CHMM::save_linear_likelihood_bin(FILE* src, FILE* dest, int WIDTH, int UPTO)
 {
     double* hist=new double[256*UPTO];
-    char* line_=new char[WIDTH+1];
+    T_OBSERVATIONS* line_=new T_OBSERVATIONS[WIDTH+1];
     int total=0;
 
     mod_prob=0;
@@ -4712,11 +4716,14 @@ bool CHMM::save_linear_likelihood_bin(FILE* src, FILE* dest, int WIDTH, int UPTO
     for (int i=0;i<N;i++)
     {
 	for (int j=0; j<M; j++)
-	    hist[i*256+p_observations->remap(j)]=get_b(i,j);
+	    hist[i*256+j]=get_b(i,j);
     }
 
     while ( (fread(line_, sizeof (unsigned char), WIDTH, src)) == (unsigned int) WIDTH)
     {
+	if (p_observations->translate_from_single_order(line_,UPTO) < 0)
+	    CIO::message(stderr,"wrong character(s) in line %i\n", line_) ;
+
 	double d=log(1);
 	for (int i=0; i<UPTO; i++)
 	{
@@ -4739,7 +4746,7 @@ bool CHMM::save_linear_likelihood_bin(FILE* src, FILE* dest, int WIDTH, int UPTO
 bool CHMM::save_linear_likelihood(FILE* src, FILE* dest, int WIDTH, int UPTO)
 {
     double* hist=new double[256*UPTO];
-    char* line_=new char[WIDTH+1];
+    T_OBSERVATIONS* line_=new T_OBSERVATIONS[WIDTH+1];
     int total=0;
 
     mod_prob=0;
@@ -4747,7 +4754,7 @@ bool CHMM::save_linear_likelihood(FILE* src, FILE* dest, int WIDTH, int UPTO)
     for (int i=0;i<N;i++)
     {
 	for (int j=0; j<M; j++)
-	    hist[i*256+p_observations->remap(j)]=get_b(i,j);
+	    hist[i*256+j]=get_b(i,j);
     }
 
     fprintf(dest, "%% likelihood of model per observation\n%% P[O|model]=[ P[O|model]_1 P[O|model]_2 ... P[O|model]_dim ]\n%%\n");
@@ -4755,6 +4762,9 @@ bool CHMM::save_linear_likelihood(FILE* src, FILE* dest, int WIDTH, int UPTO)
 
     while ( (fread(line_, sizeof (unsigned char), WIDTH, src)) == (unsigned int) WIDTH)
     {
+	if (p_observations->translate_from_single_order(line_,UPTO) < 0)
+	    CIO::message(stderr,"wrong character(s) in line %i\n", line_) ;
+
 	double d=log(1);
 	for (int i=0; i<UPTO; i++)
 	{

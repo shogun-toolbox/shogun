@@ -83,3 +83,127 @@ $(FILES2): Makefile Makefile.env
 	$(COMP2) $(COMPFLAGS2) -c $(INCLUDES) -o $@ $<
 
 # DO NOT DELETE
+
+hmm/HMM.cpp.o: lib/Mathmatics.h lib/common.h /usr/include/math.h
+hmm/HMM.cpp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+hmm/HMM.cpp.o: /usr/include/sys/va_list.h lib/Observation.h lib/io.h
+hmm/HMM.cpp.o: /usr/include/stdarg.h
+lib/Mathmatics.cpp.o: lib/common.h /usr/include/math.h /usr/include/stdio.h
+lib/Mathmatics.cpp.o: /usr/include/sys/feature_tests.h
+lib/Mathmatics.cpp.o: /usr/include/sys/va_list.h
+lib/Observation.cpp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+lib/Observation.cpp.o: /usr/include/sys/va_list.h lib/io.h
+lib/Observation.cpp.o: /usr/include/stdarg.h lib/common.h lib/Mathmatics.h
+lib/Observation.cpp.o: /usr/include/math.h
+lib/io.cpp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+lib/io.cpp.o: /usr/include/sys/va_list.h /usr/include/stdarg.h
+svm/Optimizer.cpp.o: lib/common.h
+svm/SVM.cpp.o: lib/common.h lib/Observation.h /usr/include/stdio.h
+svm/SVM.cpp.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+svm/SVM.cpp.o: lib/io.h /usr/include/stdarg.h lib/Mathmatics.h
+svm/SVM.cpp.o: /usr/include/math.h /usr/include/ctype.h /usr/include/string.h
+svm/SVM.cpp.o: /usr/include/stdlib.h /usr/include/time.h /usr/include/float.h
+svm/SVM_light.cpp.o: svm/SVM.h lib/common.h lib/Observation.h
+svm/SVM_light.cpp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+svm/SVM_light.cpp.o: /usr/include/sys/va_list.h lib/io.h
+svm/SVM_light.cpp.o: /usr/include/stdarg.h lib/Mathmatics.h
+svm/SVM_light.cpp.o: /usr/include/math.h /usr/include/ctype.h
+svm/SVM_light.cpp.o: /usr/include/string.h /usr/include/stdlib.h
+svm/SVM_light.cpp.o: /usr/include/time.h /usr/include/float.h svm/kernel.h
+svm/SVM_light.cpp.o: hmm/HMM.h svm/Optimizer.h
+svm/kernel.cpp.o: hmm/HMM.h lib/Mathmatics.h lib/common.h /usr/include/math.h
+svm/kernel.cpp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+svm/kernel.cpp.o: /usr/include/sys/va_list.h lib/Observation.h lib/io.h
+svm/kernel.cpp.o: /usr/include/stdarg.h
+gui/GeneFinder.cpp.o: lib/io.h /usr/include/stdio.h
+gui/GeneFinder.cpp.o: /usr/include/sys/feature_tests.h
+gui/GeneFinder.cpp.o: /usr/include/sys/va_list.h /usr/include/stdarg.h
+gui/GeneFinder.cpp.o: lib/Observation.h lib/common.h lib/Mathmatics.h
+gui/GeneFinder.cpp.o: /usr/include/math.h hmm/HMM.h svm/SVM.h
+gui/GeneFinder.cpp.o: /usr/include/ctype.h /usr/include/string.h
+gui/GeneFinder.cpp.o: /usr/include/stdlib.h /usr/include/time.h
+gui/GeneFinder.cpp.o: /usr/include/float.h svm/SVM_light.h svm/kernel.h
+gui/GeneFinder.cpp.o: svm/Optimizer.h /usr/include/unistd.h
+gui/GeneFinder.cpp.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+gui/GeneFinder.cpp.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+gui/GeneFinder.cpp.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
+gui/GeneFinder.cpp.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+hmm/HMM.cpp.o: /usr/include/math.h hmm/HMM.h lib/Mathmatics.h lib/common.h
+hmm/HMM.cpp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+hmm/HMM.cpp.o: /usr/include/sys/va_list.h lib/Observation.h lib/io.h
+hmm/HMM.cpp.o: /usr/include/stdarg.h /usr/include/stdlib.h
+hmm/HMM.cpp.o: /usr/include/time.h /usr/include/ctype.h
+lib/Mathmatics.cpp.o: lib/Mathmatics.h lib/common.h /usr/include/math.h
+lib/Mathmatics.cpp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+lib/Mathmatics.cpp.o: /usr/include/sys/va_list.h lib/io.h
+lib/Mathmatics.cpp.o: /usr/include/stdarg.h /usr/include/time.h
+lib/Mathmatics.cpp.o: /usr/include/stdlib.h
+lib/Observation.cpp.o: lib/Observation.h /usr/include/stdio.h
+lib/Observation.cpp.o: /usr/include/sys/feature_tests.h
+lib/Observation.cpp.o: /usr/include/sys/va_list.h lib/io.h
+lib/Observation.cpp.o: /usr/include/stdarg.h lib/common.h lib/Mathmatics.h
+lib/Observation.cpp.o: /usr/include/math.h
+lib/io.cpp.o: lib/io.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
+lib/io.cpp.o: /usr/include/sys/va_list.h /usr/include/stdarg.h
+svm/Optimizer.cpp.o: svm/pr_loqo.h svm/Optimizer.h lib/common.h svm/SVM.h
+svm/Optimizer.cpp.o: lib/Observation.h /usr/include/stdio.h
+svm/Optimizer.cpp.o: /usr/include/sys/feature_tests.h
+svm/Optimizer.cpp.o: /usr/include/sys/va_list.h lib/io.h
+svm/Optimizer.cpp.o: /usr/include/stdarg.h lib/Mathmatics.h
+svm/Optimizer.cpp.o: /usr/include/math.h /usr/include/ctype.h
+svm/Optimizer.cpp.o: /usr/include/string.h /usr/include/stdlib.h
+svm/Optimizer.cpp.o: /usr/include/time.h /usr/include/float.h
+svm/SVM.cpp.o: svm/SVM.h lib/common.h lib/Observation.h /usr/include/stdio.h
+svm/SVM.cpp.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+svm/SVM.cpp.o: lib/io.h /usr/include/stdarg.h lib/Mathmatics.h
+svm/SVM.cpp.o: /usr/include/math.h /usr/include/ctype.h /usr/include/string.h
+svm/SVM.cpp.o: /usr/include/stdlib.h /usr/include/time.h /usr/include/float.h
+svm/SVM_light.cpp.o: lib/io.h /usr/include/stdio.h
+svm/SVM_light.cpp.o: /usr/include/sys/feature_tests.h
+svm/SVM_light.cpp.o: /usr/include/sys/va_list.h /usr/include/stdarg.h
+svm/SVM_light.cpp.o: svm/SVM_light.h svm/SVM.h lib/common.h lib/Observation.h
+svm/SVM_light.cpp.o: lib/Mathmatics.h /usr/include/math.h
+svm/SVM_light.cpp.o: /usr/include/ctype.h /usr/include/string.h
+svm/SVM_light.cpp.o: /usr/include/stdlib.h /usr/include/time.h
+svm/SVM_light.cpp.o: /usr/include/float.h svm/kernel.h hmm/HMM.h
+svm/SVM_light.cpp.o: svm/Optimizer.h
+svm/kernel.cpp.o: svm/kernel.h hmm/HMM.h lib/Mathmatics.h lib/common.h
+svm/kernel.cpp.o: /usr/include/math.h /usr/include/stdio.h
+svm/kernel.cpp.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+svm/kernel.cpp.o: lib/Observation.h lib/io.h /usr/include/stdarg.h
+svm/pr_loqo.cpp.o: lib/common.h svm/pr_loqo.h lib/io.h /usr/include/stdio.h
+svm/pr_loqo.cpp.o: /usr/include/sys/feature_tests.h
+svm/pr_loqo.cpp.o: /usr/include/sys/va_list.h /usr/include/stdarg.h
+svm/pr_loqo.cpp.o: /usr/include/math.h /usr/include/time.h
+svm/pr_loqo.cpp.o: /usr/include/stdlib.h
+
+hmm/HMM.c.o: lib/Mathmatics.h lib/common.h /usr/include/math.h
+hmm/HMM.c.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+hmm/HMM.c.o: /usr/include/sys/va_list.h lib/Observation.h lib/io.h
+hmm/HMM.c.o: /usr/include/stdarg.h
+lib/Mathmatics.c.o: lib/common.h /usr/include/math.h /usr/include/stdio.h
+lib/Mathmatics.c.o: /usr/include/sys/feature_tests.h
+lib/Mathmatics.c.o: /usr/include/sys/va_list.h
+lib/Observation.c.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+lib/Observation.c.o: /usr/include/sys/va_list.h lib/io.h
+lib/Observation.c.o: /usr/include/stdarg.h lib/common.h lib/Mathmatics.h
+lib/Observation.c.o: /usr/include/math.h
+lib/io.c.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+lib/io.c.o: /usr/include/sys/va_list.h /usr/include/stdarg.h
+svm/Optimizer.c.o: lib/common.h
+svm/SVM.c.o: lib/common.h lib/Observation.h /usr/include/stdio.h
+svm/SVM.c.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+svm/SVM.c.o: lib/io.h /usr/include/stdarg.h lib/Mathmatics.h
+svm/SVM.c.o: /usr/include/math.h /usr/include/ctype.h /usr/include/string.h
+svm/SVM.c.o: /usr/include/stdlib.h /usr/include/time.h /usr/include/float.h
+svm/SVM_light.c.o: svm/SVM.h lib/common.h lib/Observation.h
+svm/SVM_light.c.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+svm/SVM_light.c.o: /usr/include/sys/va_list.h lib/io.h /usr/include/stdarg.h
+svm/SVM_light.c.o: lib/Mathmatics.h /usr/include/math.h /usr/include/ctype.h
+svm/SVM_light.c.o: /usr/include/string.h /usr/include/stdlib.h
+svm/SVM_light.c.o: /usr/include/time.h /usr/include/float.h svm/kernel.h
+svm/SVM_light.c.o: hmm/HMM.h svm/Optimizer.h
+svm/kernel.c.o: hmm/HMM.h lib/Mathmatics.h lib/common.h /usr/include/math.h
+svm/kernel.c.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+svm/kernel.c.o: /usr/include/sys/va_list.h lib/Observation.h lib/io.h
+svm/kernel.c.o: /usr/include/stdarg.h

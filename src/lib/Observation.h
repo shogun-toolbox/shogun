@@ -265,12 +265,7 @@ public:
 	    return maptable[obs];
 	}
 
-
-protected:
-	/// initialize maptable which is used for fast character translation
-	void init_map_table();
-
-		/** translates e.g. ACGT to 0123 and maps higher order models to the alphabet
+	/** translates e.g. ACGT to 0123 and maps higher order models to the alphabet
 	 * @param observations observations
 	 * @param sequence_length length of observation vector
 	 */
@@ -281,6 +276,10 @@ protected:
 	 * @param sequence_length length of observation vector
 	 */
 	void translate_to_single_order(T_OBSERVATIONS* observations, int sequence_length);
+
+protected:
+	/// initialize maptable which is used for fast character translation
+	void init_map_table();
 
 protected:
 	/// observation matrix
