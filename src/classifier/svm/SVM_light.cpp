@@ -187,7 +187,6 @@ void CSVMLight::svm_learn()
 	w_gap = 1 ;
 	count = 0 ;
 	num_rows=0 ;
-	
 	if (get_kernel()->has_property(KP_KERNCOMBINATION))
 	{
 		W = new REAL[totdoc*get_kernel()->get_num_subkernels()];
@@ -1122,7 +1121,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			for (int i=0; i<num_kernels; i++)
 				objective+=w[i]*sumw[i] ;
 			delete[] alphay ;
-			//CIO::message(M_DEBUG, "objective=%f\n", objective) ;
+			//CIO::message(M_DEBUG, "objective=%f  rho=%f\n", objective,rho) ;
 #else
 			for (int d=0; d<num_kernels; d++)
 			{
@@ -1135,8 +1134,21 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			}
 			//CIO::message(M_DEBUG, "objective=%f\n", objective) ;
 #endif
-			count++ ;
 
+#ifdef USE_W_TIMING
+			if ((w_gap<last_w_gap/2) &&(count%101!=0))
+			{
+				CIO::message(M_INFO,"w_gap=%f last_w_gap=%f\n",w_gap,last_w_gap) ;
+				
+				last_w_gap=last_w_gap/2 ;
+				w_timing[w_timing_idx]=count ;
+				w_timing_idx++ ;
+				for  (int i=0; i<w_timing_idx; i++)
+					CIO::message(M_INFO,"%i %i\n", i, w_timing[i]) ;
+			} ;
+#endif
+
+			count++ ;
 #ifdef USE_CPLEX			
 			//if (mymaxdiff<w_gap*100)
 			//if (CMath::abs(rho-objective)>1)
@@ -1228,6 +1240,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				
 				{ // optimize
 					//CIO::message(M_INFO, "solving the problem\n") ;
+					//CIO::message(M_INFO,"*") ;
 					INT status = CPXlpopt (env, lp);
 					if ( status ) {
 						fprintf (stderr, "Failed to optimize LP.\n");
@@ -1282,10 +1295,10 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 							}
 						}
 						
-						w_gap = CMath::abs(1-rho/objective) ;
 						for (INT j = 0; j < cur_numcols-1; j++) 
 							w[j]=x[j] ;
 						rho = -x[num_kernels] ;
+						w_gap = CMath::abs(1-rho/objective) ;
 						
 					} else
 					{

@@ -14,6 +14,7 @@
 #include <float.h>
 
 #define USE_CPLEX
+#define USE_W_TIMING
 
 #ifdef USE_CPLEX
 extern "C" {
@@ -254,6 +255,12 @@ typedef struct shrink_state {
   INT num_rows ;
   INT num_active_rows ;
   REAL w_epsilon ;
+#ifdef USE_W_TIMING
+  const static INT w_timing_len=25 ;
+  INT w_timing_idx;
+  INT w_timing[w_timing_len] ;
+  REAL last_w_gap ;
+#endif
   
 #ifdef USE_CPLEX
   CPXENVptr     env ;
