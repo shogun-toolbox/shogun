@@ -6,7 +6,7 @@
 #include <assert.h>
 
 CCustomKernel::CCustomKernel()
-  : CKernel(0),kmatrix(NULL),num_cols(0)
+  : CKernel(0),kmatrix(NULL),num_rows(0),num_cols(0)
 {
 }
 
@@ -38,15 +38,21 @@ bool CCustomKernel::save_init(FILE* dest)
 	return false;
 }
 
-bool CCustomKernel::set_kernel_matrix_diag(const REAL* m, int num)
+bool CCustomKernel::set_kernel_matrix_diag(const REAL* km, int rows, int cols)
 {
-	kmatrix= new SHORTREAL[num*num/2];
+	int l=CMath::min(rows,cols);
+	int u=CMath::max(rows,cols);
+	int num=l*(l+1)/2 + (u-l)*l;
+
+	kmatrix= new SHORTREAL[num];
 
 	if (kmatrix)
 	{
-		num_cols=num;
-		for (INT i=0; i<num*num/2; i++)
-			kmatrix[i]=m[i];
+		num_rows=rows;
+		num_cols=cols;
+
+		for (INT i=0; i<num; i++)
+			kmatrix[i]=km[i];
 
 		return true;
 	}
@@ -54,19 +60,60 @@ bool CCustomKernel::set_kernel_matrix_diag(const REAL* m, int num)
 		return false;
 }
 
-bool CCustomKernel::set_kernel_matrix(const REAL* m, int num)
+bool CCustomKernel::set_kernel_matrix(const REAL* km, int rows, int cols)
 {
-	kmatrix= new SHORTREAL[num*num/2];
+	num_rows=rows;
+	num_cols=cols;
+	kmatrix= new SHORTREAL[rows*cols];
 
 	if (kmatrix)
 	{
-		num_cols=num;
-		for (INT i=0; i<num; i++)
-			for (INT j=i; j<num; j++)
-				kmatrix[i*(i+1)/2 + j]=m[i*num+j];
-
+		for (INT row=0; row<num_rows; row++)
+		{
+			for (INT col=0; col<num_cols; col++)
+			{
+				kmatrix[row * num_cols + col]=km[col*num_rows+row];
+			}
+		}
 		return true;
 	}
 	else
 		return false;
+	/*
+	int l=CMath::min(rows,cols);
+	int u=CMath::max(rows,cols);
+
+	kmatrix= new SHORTREAL[l*(l+1)/2 + (u-l)*l];
+
+	if (kmatrix)
+	{
+		num_rows=rows;
+		num_cols=cols;
+
+		if (num_rows < num_cols)
+		{
+			for (INT row=0; row<num_rows; row++)
+			{
+				for (INT col=row; col<num_cols; col++)
+				{
+					kmatrix[row * num_cols - row*(row+1)/2 + col]=km[row*num_cols+col];
+				}
+			}
+		}
+		else
+		{
+			for (INT row=0; row<num_rows; row++)
+			{
+				for (INT col=0; col<row && col<num_cols; col++)
+				{
+					INT r = CMath::min(row, num_cols-1);
+					kmatrix[row * num_cols - r*(r+1)/2 + col]=km[row*num_cols+col];
+				}
+			}
+		}
+		return true;
+	}
+	else
+		return false;
+		*/
 }

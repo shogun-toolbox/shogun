@@ -940,12 +940,11 @@ bool CGUIMatlab::set_kernel_parameters(const mxArray* mx_arg)
 	return false;
 }
 
-bool CGUIMatlab::set_custom_kernel(const mxArray* vals[])
+bool CGUIMatlab::set_custom_kernel(const mxArray* vals[], bool upper_diag_only)
 {
-	const mxArray* mx_kernel=vals[2];
-	const mxArray* mx_diag=vals[3];
+	const mxArray* mx_kernel=vals[1];
 
-	if (mxIsDouble(mx_kernel) && mxIsDouble(mx_diag) && mxGetN(mx_kernel) == mxGetM(mx_kernel))
+	if (mxIsDouble(mx_kernel))
 	{
 		const double* km=mxGetPr(mx_kernel);
 
@@ -953,10 +952,10 @@ bool CGUIMatlab::set_custom_kernel(const mxArray* vals[])
 
 		if (k && k->get_kernel_type() == K_CUSTOM)
 		{
-			if (*mxGetPr(mx_diag) == 0)
-				return k->set_kernel_matrix(km, mxGetM(mx_kernel));
+			if (upper_diag_only)
+				return k->set_kernel_matrix_diag(km, mxGetM(mx_kernel), mxGetN(mx_kernel));
 			else
-				return k->set_kernel_matrix_diag(km, mxGetM(mx_kernel));
+				return k->set_kernel_matrix(km, mxGetM(mx_kernel), mxGetN(mx_kernel));
 		}
 	}
 
@@ -1110,21 +1109,29 @@ CHAR* CGUIMatlab::get_mxString(const mxArray* s)
 		return NULL;
 }
 
-bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[], CFeatures* fe)
+bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 {
-	CFeatures* f=gui->guifeatures.get_train_features();
-	CKernel *k = gui->guikernel.get_kernel() ;
-	
-	if (f && fe)
-	{
-		int num_vece=fe->get_num_vectors();
-		int num_vec=f->get_num_vectors();
+	CKernel* k = gui->guikernel.get_kernel();
+	CFeatures* f1 = NULL;
+	CFeatures* f2 = NULL;
 
-		mxArray* mx_result=mxCreateDoubleMatrix(num_vec, num_vece, mxREAL);
+	if (k)
+	{
+		f1=k->get_lhs();
+		f2=k->get_rhs();
+	}
+	
+	if (f1 && f2)
+	{
+		int num_vec1=f1->get_num_vectors();
+		int num_vec2=f2->get_num_vectors();
+
+		CIO::message(M_DEBUG, "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
+		mxArray* mx_result=mxCreateDoubleMatrix(num_vec1, num_vec2, mxREAL);
 		double* result=mxGetPr(mx_result);
-		for (int i=0; i<num_vec; i++)
-			for (int j=0; j<num_vece; j++)
-				result[i+j*num_vec]=k->kernel(i,j) ;
+		for (int i=0; i<num_vec1; i++)
+			for (int j=0; j<num_vec2; j++)
+				result[i+j*num_vec1]=k->kernel(i,j) ;
 		
 		retvals[0]=mx_result;
 		return true;

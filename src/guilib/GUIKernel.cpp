@@ -195,43 +195,55 @@ bool CGUIKernel::init_kernel(CHAR* param)
 	bool do_init=false;
 
 	if (!kernel)
-	  {
-	    CIO::message(M_ERROR, "no kernel available\n") ;
-	    return false ;
-	  } ;
+	{
+		CIO::message(M_ERROR, "no kernel available\n") ;
+		return false ;
+	} ;
 
 	kernel->set_precompute_matrix(false, false);
 
 	if ((sscanf(param, "%s", target))==1)
 	{
-	  if (!strncmp(target, "TRAIN", 5))
-	    {
-	      do_init=true;
-	      if (gui->guifeatures.get_train_features())
+		if (!strncmp(target, "TRAIN", 5))
 		{
-		  if ( (kernel->get_feature_class() == gui->guifeatures.get_train_features()->get_feature_class()) &&
-		       (kernel->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type()))
-		    {
-		      kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_train_features(), do_init);
-		      initialized=true;
-		    }
-		  else
-		    {
-		      CIO::message(M_ERROR, "kernel can not process this feature type\n");
-		      return false ;
-		    }
+			do_init=true;
+			if (gui->guifeatures.get_train_features())
+			{
+				if ( (kernel->get_feature_class() == gui->guifeatures.get_train_features()->get_feature_class() 
+							|| gui->guifeatures.get_train_features()->get_feature_class() == C_ANY 
+							|| kernel->get_feature_class() == C_ANY ) &&
+						(kernel->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type() 
+						 || gui->guifeatures.get_train_features()->get_feature_type() == F_ANY 
+						 || kernel->get_feature_type() == F_ANY) )
+				{
+					kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_train_features(), do_init);
+					initialized=true;
+				}
+				else
+				{
+					CIO::message(M_ERROR, "kernel can not process this feature type\n");
+					return false ;
+				}
+			}
+			else
+				CIO::message(M_ERROR, "assign train features first\n");
 		}
-	      else
-		CIO::message(M_ERROR, "assign train features first\n");
-	    }
-	  else if (!strncmp(target, "TEST", 5))
-	    {
+		else if (!strncmp(target, "TEST", 5))
+		{
 			if (gui->guifeatures.get_train_features() && gui->guifeatures.get_test_features())
 			{
-				if	(((kernel->get_feature_class() == gui->guifeatures.get_train_features()->get_feature_class()) && 
-					  (kernel->get_feature_class() == gui->guifeatures.get_test_features()->get_feature_class())) &&
-					 ((kernel->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type()) && 
-					  (kernel->get_feature_type() == gui->guifeatures.get_test_features()->get_feature_type())) )
+				if ( (kernel->get_feature_class() == gui->guifeatures.get_train_features()->get_feature_class() 
+							|| gui->guifeatures.get_train_features()->get_feature_class() == C_ANY 
+							|| kernel->get_feature_class() == C_ANY ) &&
+						(kernel->get_feature_class() == gui->guifeatures.get_test_features()->get_feature_class() 
+							|| gui->guifeatures.get_test_features()->get_feature_class() == C_ANY 
+							|| kernel->get_feature_class() == C_ANY ) &&
+						(kernel->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type() 
+						 || gui->guifeatures.get_train_features()->get_feature_type() == F_ANY 
+						 || kernel->get_feature_type() == F_ANY ) &&
+						(kernel->get_feature_type() == gui->guifeatures.get_test_features()->get_feature_type() 
+						 || gui->guifeatures.get_test_features()->get_feature_type() == F_ANY 
+						 || kernel->get_feature_type() == F_ANY ) )
 				{
 					if (!initialized)
 					{
@@ -253,17 +265,17 @@ bool CGUIKernel::init_kernel(CHAR* param)
 			}
 			else
 				CIO::message(M_ERROR, "assign train and test features first\n");
-			
-	    }
-	  else
-		  CIO::not_implemented();
+
+		}
+		else
+			CIO::not_implemented();
 	}
 	else 
 	{
-	    CIO::message(M_ERROR, "see help for params\n");
-	    return false;
+		CIO::message(M_ERROR, "see help for params\n");
+		return false;
 	}
-	
+
 	return true;
 }
 

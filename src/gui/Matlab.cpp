@@ -324,28 +324,10 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (!strncmp(action, N_GET_KERNEL_MATRIX, strlen(N_GET_KERNEL_MATRIX)))
 		{
-			if ((nlhs==1) && (nrhs==2))
-			{
-				CHAR* target=CGUIMatlab::get_mxString(prhs[1]);
-				CFeatures* features=NULL;
-
-				if (!strncmp(target, "TRAIN", strlen("TRAIN")))
-				{
-					features=gui->guifeatures.get_train_features();
-				}
-				else if (!strncmp(target, "TEST", strlen("TEST")))
-				{
-					features=gui->guifeatures.get_test_features();
-				}
-				delete[] target;
-
-				if (features)
-					gf_matlab.get_kernel_matrix(plhs, features);
-				else
-					mexErrMsgTxt("usage is K=gf('get_kernel_matrix','TRAIN|TEST')");
-			}
+			if ((nlhs==1) && (nrhs==1))
+				gf_matlab.get_kernel_matrix(plhs);
 			else
-				mexErrMsgTxt("usage is K=gf('get_kernel_matrix','TRAIN|TEST')");
+				mexErrMsgTxt("usage is K=gf('get_kernel_matrix')");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_INIT, strlen(N_GET_KERNEL_INIT)))
 		{
@@ -485,7 +467,27 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (!strncmp(action, N_SET_CUSTOM_KERNEL, strlen(N_SET_CUSTOM_KERNEL)))
 		{
-			if (nlhs!=0 || nrhs!=1+2 || !gf_matlab.set_custom_kernel(prhs))
+			if (nlhs==0 && nrhs==3)
+			{
+				CHAR* target=CGUIMatlab::get_mxString(prhs[2]);
+
+				if ( (!strncmp(target, "DIAG", strlen("DIAG"))) || 
+						(!strncmp(target, "FULL", strlen("FULL"))) ) 
+				{
+					if (!strncmp(target, "DIAG", strlen("DIAG")))
+					{
+						gf_matlab.set_custom_kernel(prhs, true);
+					}
+					else if (!strncmp(target, "FULL", strlen("FULL")))
+					{
+						gf_matlab.set_custom_kernel(prhs, false);
+					}
+				}
+				else
+					mexErrMsgTxt("usage is gf('set_custom_kernel',[kernelmatrix, is_upperdiag])");
+				delete[] target;
+			}
+			else
 				mexErrMsgTxt("usage is gf('set_custom_kernel',[kernelmatrix, is_upperdiag])");
 		}
 		else if (!strncmp(action, N_SET_KERNEL_INIT, strlen(N_SET_KERNEL_INIT)))

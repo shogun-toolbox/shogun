@@ -1,9 +1,12 @@
 #ifndef _CUSTOMKERNEL_H___
 #define _CUSTOMKERNEL_H___
 
+#include "lib/Mathmatics.h"
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 #include "features/Features.h"
+
+#include <assert.h>
 
 class CCustomKernel: public CKernel
 {
@@ -40,27 +43,35 @@ class CCustomKernel: public CKernel
 
   // set kernel matrix (only elements from main diagonal and above)
   // from elements of maindiagonal and above (concat'd)
-  bool set_kernel_matrix_diag(const REAL* m, int num);
+  bool set_kernel_matrix_diag(const REAL* m, int rows, int cols);
 
   // set kernel matrix (only elements from main diagonal and above)
   // from squared matrix
-  bool set_kernel_matrix(const REAL* m, int num);
+  bool set_kernel_matrix(const REAL* m, int rows, int cols);
 
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
-  inline virtual REAL compute(INT idx_a, INT idx_b)
+  inline virtual REAL compute(INT row, INT col)
   {
-	  if (idx_a < idx_b)
-		  return kmatrix[idx_a*num_cols-idx_b*(idx_b+1)/2];
+	  assert(row < num_rows);
+	  assert(col < num_cols);
+	  return kmatrix[row*num_cols+col];
+	  /*
+	  if (num_rows < num_cols)
+		  return kmatrix[row * num_cols - row*(row+1)/2 + col];
 	  else
-		  return kmatrix[idx_b*num_cols-idx_a*(idx_a+1)/2];
+	  {
+		  INT r = CMath::min(row, num_cols-1);
+		  return kmatrix[row * num_cols - r*(r+1)/2 + col];
+	  }
+	  */
   }
-  /*    compute_kernel*/
 
  protected:
   SHORTREAL* kmatrix;
+  INT num_rows;
   INT num_cols;
 };
 #endif

@@ -18,9 +18,11 @@ CGUISVM::CGUISVM(CGUI * gui_)
   : gui(gui_)
 {
 	svm=NULL;
-	C1=-1;
-	C2=-1;
-	weight_epsilon=-1;
+	C1=1;
+	C2=1;
+	C_mkl=0;
+	weight_epsilon=1e-5;
+	epsilon=1e-5;
 
     // MKL stuff
 	use_mkl = false ;

@@ -67,10 +67,10 @@ public:
 	bool set_kernel_parameters(const mxArray* mx_arg);
 	CFeatures* set_features(const mxArray* vals[], int nrhs);
 
-	bool get_kernel_matrix(mxArray* retvals[], CFeatures* features);
+	bool get_kernel_matrix(mxArray* retvals[]);
 	bool get_kernel_optimization(mxArray* retvals[]);
 
-	bool set_custom_kernel(const mxArray* vals[]) ;
+	bool set_custom_kernel(const mxArray* vals[], bool is_diag) ;
 
 	// MKL Kernel stuff
 	bool compute_by_subkernels(mxArray* retvals[]);
