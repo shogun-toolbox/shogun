@@ -5,8 +5,8 @@
 #include "features/Features.h"
 #include "kernel/OptimizableKernel.h" 
 
-typedef float CACHE_ELEM ;
-typedef INT CACHE_IDX ;
+typedef REAL CACHE_ELEM ;
+typedef LONG CACHE_IDX ;
 
 #include <stdio.h>
 

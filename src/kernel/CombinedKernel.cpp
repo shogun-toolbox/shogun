@@ -94,6 +94,13 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 void CCombinedKernel::remove_lhs()
 {
+	if (get_is_initialized())
+		delete_optimization() ;
+
+	if (lhs)
+		cache_reset() ;
+	lhs=NULL ;
+	
 	CKernel* k=get_first_kernel();
 
 	while (k)
@@ -105,6 +112,10 @@ void CCombinedKernel::remove_lhs()
 
 void CCombinedKernel::remove_rhs()
 {
+	if (rhs)
+		cache_reset() ;
+	rhs=NULL ;
+
 	CKernel* k=get_first_kernel();
 
 	while (k)

@@ -11,11 +11,6 @@ CKernel::CKernel(CACHE_IDX size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL), co
 {
 	if (size<10)
 		size=10;
-	if ((sizeof(CACHE_IDX)==4) && (size>2040))
-	{
-		CIO::message(M_ERROR, "kernel cache size too large for chosen index type\n") ;
-		size = 2040 ;
-	} ;
 
 	cache_size=size;
 	CIO::message(M_INFO, "using a kernel cache of size %i MB\n", size) ;
@@ -31,11 +26,6 @@ void CKernel::resize_kernel_cache(CACHE_IDX size)
 {
 	if (size<10)
 		size=10 ;
-	if ((sizeof(CACHE_IDX)==4) && (size>2040))
-	{
-		CIO::message(M_ERROR, "kernel cache size too large for chosen index type\n") ;
-		size = 2040 ;
-	} ;
 	
 	kernel_cache_cleanup() ;
 	cache_size=size;
@@ -93,7 +83,7 @@ void CKernel::kernel_cache_init(CACHE_IDX buffsize)
 	kernel_cache.totdoc2active = new CACHE_IDX[totdoc];
 	kernel_cache.buffer = new CACHE_ELEM[buffsize*1024*1024/sizeof(CACHE_ELEM)];
 
-	kernel_cache.buffsize=(CACHE_IDX)(buffsize*1024*1024/sizeof(CACHE_IDX));
+	kernel_cache.buffsize=(CACHE_IDX)(buffsize*1024*1024/sizeof(CACHE_ELEM));
 
 	kernel_cache.max_elems=(CACHE_IDX)(kernel_cache.buffsize/totdoc);
 
@@ -183,7 +173,7 @@ void CKernel::cache_kernel_row(CACHE_IDX m)
 }
 
 // Fills cache for the rows in key 
-void CKernel::cache_multiple_kernel_rows(LONG* rows, CACHE_IDX num_rows)
+void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 {
 	// fill up kernel cache 
 	for(CACHE_IDX i=0;i<num_rows;i++) 
