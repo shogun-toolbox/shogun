@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "lib/version.h"
 #include "lib/config.h"
 #include "lib/io.h"
 #include "lib/common.h"
@@ -676,7 +677,9 @@ bool CTextGUI::parse_line(CHAR* input)
 
 //// main - the one and only ///
 int main(int argc, const CHAR* argv[])
-{
+{	
+
+	CIO::message(M_INFO, "genefinder " VERSION " (C) 2000-2004 Soern+Gunna\n\n");
 	gui=new CTextGUI(argc, argv) ;
 
 	if (argc<=1)

@@ -17,7 +17,6 @@ bool CShortFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT
 {
 	assert(cf);
 
-	E_ALPHABET alphabet=cf->get_alphabet();
 	num_vectors=cf->get_num_vectors();
 	num_features=cf->get_num_features();
 
