@@ -17,6 +17,7 @@ bw
 set_hmm_as NEG
 
 
+new_svm MPI
 c 100
 svm_train
 

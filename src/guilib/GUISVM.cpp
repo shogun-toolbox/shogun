@@ -14,37 +14,40 @@ CGUISVM::~CGUISVM()
 
 bool CGUISVM::new_svm(char* param)
 {
-	param=CIO::skip_spaces(param);
-
-	if (strcmp(param,"LIGHT")==0)
-	{
-		delete svm;
-		svm= new CSVMLight();
-	}
-	else if (strcmp(param,"CPLEX")==0)
-	{
+  param=CIO::skip_spaces(param);
+  
+  if (strcmp(param,"LIGHT")==0)
+    {
+      delete svm;
+      svm= new CSVMLight();
+      CIO::message("created SVMLight object\n") ;
+    }
+  else if (strcmp(param,"CPLEX")==0)
+    {
 #ifdef SVMCPLEX
-		delete svm;
-		svm= new CSVMCplex();
+      delete svm;
+      svm= new CSVMCplex();
+      CIO::message("created SVMCplex object\n") ;
 #else
-		CIO::message("CPLEX SVM disabled\n") ;
+      CIO::message("CPLEX SVM disabled\n") ;
 #endif
-	}
-	else if (strcmp(param,"MPI")==0)
-	{
+    }
+  else if (strcmp(param,"MPI")==0)
+    {
 #ifdef SVMMPI
 #if  defined(HAVE_MPI) && !defined(DISABLE_MPI)
-		delete svm;
-		svm= new CSVMMPI(gui->argc, gui->argv);
+      delete svm;
+      svm= new CSVMMPI();
+      CIO::message("created SVMMPI object\n") ;
 #endif
 #else
-		CIO::message("MPI SVM disabled\n") ;
+      CIO::message("MPI SVM disabled\n") ;
 #endif
-	}
-	else
-		return false;
-
-	return (svm!=NULL);
+    }
+  else
+    return false;
+  
+  return (svm!=NULL);
 }
 
 bool CGUISVM::train(char* param)

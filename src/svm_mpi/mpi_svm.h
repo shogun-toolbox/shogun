@@ -13,7 +13,7 @@
 class CSVMMPI: public CSVM
 {
  public:
-  CSVMMPI(int argc, const char **argv);
+  CSVMMPI();
   virtual ~CSVMMPI();
   
   virtual bool svm_train(CFeatures* train);
@@ -21,12 +21,13 @@ class CSVMMPI: public CSVM
   virtual bool load_svm(FILE* svm_file);
   virtual bool save_svm(FILE* svm_file);
   
+  static void svm_mpi_init(int argc, const char **argv); 
+  static void svm_mpi_destroy(void) ;
+
  protected:
-  void svm_mpi_init(int argc, const char **argv); 
   unsigned svm_mpi_broadcast_Z_size(int num_cols, int num_rows, unsigned &m_last) ;
   void svm_mpi_set_Z_block(double * block, int num_cols, int start_idx, int rank) ; 
   void svm_mpi_optimize(int *labels, int num_examples) ;
-  void svm_mpi_destroy(void) ;
 
  protected:
   unsigned m_full, m_last, m_prime;

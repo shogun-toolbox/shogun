@@ -85,12 +85,24 @@ CTextGUI::CTextGUI(int argc, const char** argv)
 #ifdef WITHMATLAB
   libmmfileInitialize() ;
 #endif
+
+#ifdef SVMMPI
+#if  defined(HAVE_MPI) && !defined(DISABLE_MPI)
+  CSVMMPI::svm_mpi_init(argc, argv) ;
+#endif
+#endif
 }
 
 CTextGUI::~CTextGUI()
 {
 #ifdef WITHMATLAB
   libmmfileTerminate() ;
+#endif
+
+#ifdef SVMMPI
+#if  defined(HAVE_MPI) && !defined(DISABLE_MPI)
+  CSVMMPI::svm_mpi_destroy() ;
+#endif
 #endif
 }
 

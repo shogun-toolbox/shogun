@@ -23,7 +23,7 @@ void donothing(void *)
 static double one=1.0 ;
 
 #if defined(HAVE_MPI) && !defined(DISABLE_MPI)
-CSVMMPI::CSVMMPI(int argc, const char **argv)
+CSVMMPI::CSVMMPI()
   //  : Z(1,1,&one,false,donothing)
 {
  /* Block caches */
@@ -32,7 +32,9 @@ CSVMMPI::CSVMMPI(int argc, const char **argv)
   matrix_set_cache_mgr<double>(&bcache_d);
   matrix_set_cache_mgr<int>(&bcache_i);
 
-  svm_mpi_init(argc, argv) ;
+  MPI_Comm_rank(MPI_COMM_WORLD, (int *)&my_rank);
+  MPI_Comm_size(MPI_COMM_WORLD, (int *)&num_nodes);
+  
   kernel=NULL ;
 } ;
 
@@ -110,20 +112,20 @@ void run_non_root_2mpi(const unsigned my_rank, const unsigned num_nodes);
 
 void CSVMMPI::svm_mpi_init(int argc, const char **argv)
 { 
+  int my_rank, num_nodes ;
+  CIO::message("Initializing MPI\n") ;
   MPI_Init(&argc, (char***)&argv);
+  MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN);    
   MPI_Comm_rank(MPI_COMM_WORLD, (int *)&my_rank);
   MPI_Comm_size(MPI_COMM_WORLD, (int *)&num_nodes);
-  MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 
-  fprintf(stderr, "my_rank=%i\nnum_nodes=%i\n", my_rank, num_nodes) ;
-
+  CIO::message(stderr, "my_rank=%i\nnum_nodes=%i\n", my_rank, num_nodes) ;
+  
   if (my_rank) {
     run_non_root_2mpi<double,double>(my_rank, num_nodes);
-    //run_non_root_2mpi(my_rank, num_nodes);
     MPI_Finalize();
     exit(0);
   }
-    
 }
 
 unsigned CSVMMPI::svm_mpi_broadcast_Z_size(int num_cols, int num_rows_, unsigned &m_last_)
