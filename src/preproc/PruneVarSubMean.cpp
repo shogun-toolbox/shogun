@@ -172,3 +172,14 @@ REAL* CPruneVarSubMean::apply_to_feature_vector(REAL* f, int &len)
   len=num_idx ;
   return ret;
 }
+/// initialize preprocessor from file
+bool CPruneVarSubMean::load_init_data(FILE* src)
+{
+	return false;
+}
+
+/// save init-data (like transforamtion matrices etc) to file
+bool CPruneVarSubMean::save_init_data(FILE* dst)
+{
+	return false;
+}

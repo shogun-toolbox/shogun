@@ -235,3 +235,15 @@ REAL* CPCACut::apply_to_feature_vector(REAL* f, int &len)
 	  CIO::message("num_dim: %d\n", num_dim);
   return ret;
 }
+
+/// initialize preprocessor from file
+bool CPCACut::load_init_data(FILE* src)
+{
+	return false;
+}
+
+/// save init-data (like transforamtion matrices etc) to file
+bool CPCACut::save_init_data(FILE* dst)
+{
+	return false;
+}
