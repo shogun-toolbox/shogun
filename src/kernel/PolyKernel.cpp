@@ -22,9 +22,7 @@ CPolyKernel::CPolyKernel(LONG size, INT d, bool inhom)
 
 CPolyKernel::~CPolyKernel() 
 {
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
+	cleanup();
 }
   
 bool CPolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -97,6 +95,9 @@ bool CPolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 void CPolyKernel::cleanup()
 {
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	delete[] sqrtdiag_lhs;
 }
 
 bool CPolyKernel::load_init(FILE* src)

@@ -260,10 +260,28 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (!strncmp(action, N_GET_KERNEL_MATRIX, strlen(N_GET_KERNEL_MATRIX)))
 		{
-			if ((nlhs==1) && (nrhs==1))
-				gf_matlab.get_kernel_matrix(plhs);
+			if ((nlhs==1) && (nrhs==2))
+			{
+				CHAR* target=CGUIMatlab::get_mxString(prhs[1]);
+				CFeatures* features=NULL;
+
+				if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+				{
+					features=gui->guifeatures.get_train_features();
+				}
+				else if (!strncmp(target, "TEST", strlen("TEST")))
+				{
+					features=gui->guifeatures.get_test_features();
+				}
+				delete[] target;
+
+				if (features)
+					gf_matlab.get_kernel_matrix(plhs, features);
+				else
+					mexErrMsgTxt("usage is K=gf('get_kernel_matrix','TRAIN|TEST')");
+			}
 			else
-				mexErrMsgTxt("usage is K=gf('get_kernel_matrix')");
+				mexErrMsgTxt("usage is K=gf('get_kernel_matrix','TRAIN|TEST')");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_INIT, strlen(N_GET_KERNEL_INIT)))
 		{

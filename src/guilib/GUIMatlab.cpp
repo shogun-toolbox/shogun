@@ -1049,10 +1049,9 @@ CHAR* CGUIMatlab::get_mxString(const mxArray* s)
 		return NULL;
 }
 
-bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
+bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[], CFeatures* fe)
 {
 	CFeatures* f=gui->guifeatures.get_train_features();
-	CFeatures* fe=gui->guifeatures.get_test_features();
 	CKernel *k = gui->guikernel.get_kernel() ;
 	
 	if (f && fe)

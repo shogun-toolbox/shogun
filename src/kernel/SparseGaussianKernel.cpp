@@ -8,23 +8,70 @@
 #include <assert.h>
 
 CSparseGaussianKernel::CSparseGaussianKernel(LONG size, double w)
-  : CSparseRealKernel(size),width(w)
+  : CSparseRealKernel(size),width(w),sq_lhs(NULL),sq_rhs(NULL)
 {
 }
 
 CSparseGaussianKernel::~CSparseGaussianKernel() 
 {
+	cleanup();
 }
   
 bool CSparseGaussianKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
+	INT len=0;;
+	bool do_free=false;
+
+	///free sq_{r,l}hs first
+	cleanup();
+
 	CSparseRealKernel::init(l, r, do_init); 
 
+	sq_lhs= new REAL[lhs->get_num_vectors()];
+	assert(sq_lhs);
+
+
+	for (INT i=0; i<lhs->get_num_vectors(); i++)
+	{
+		sq_lhs[i]=0;
+		TSparseEntry<REAL>* vec = ((CSparseRealFeatures*) lhs)->get_sparse_feature_vector(i, len, do_free);
+
+		for (INT j=0; j<len; j++)
+			sq_lhs[i] += vec[j].entry * vec[j].entry;
+
+		((CSparseRealFeatures*) lhs)->free_feature_vector(vec, i, do_free);
+	}
+
+	if (lhs==rhs)
+		sq_rhs=sq_lhs;
+	else
+	{
+		sq_rhs= new REAL[rhs->get_num_vectors()];
+		assert(sq_rhs);
+
+		for (INT i=0; i<rhs->get_num_vectors(); i++)
+		{
+			sq_rhs[i]=0;
+			TSparseEntry<REAL>* vec = ((CSparseRealFeatures*) rhs)->get_sparse_feature_vector(i, len, do_free);
+
+			for (INT j=0; j<len; j++)
+				sq_rhs[i] += vec[j].entry * vec[j].entry;
+
+			((CSparseRealFeatures*) rhs)->free_feature_vector(vec, i, do_free);
+		}
+	}
+	
 	return true;
 }
 
 void CSparseGaussianKernel::cleanup()
 {
+	if (sq_lhs != sq_rhs)
+		delete[] sq_rhs;
+	delete[] sq_lhs;
+
+	sq_lhs = NULL;
+	sq_rhs = NULL;
 }
 
 bool CSparseGaussianKernel::load_init(FILE* src)
@@ -45,15 +92,7 @@ REAL CSparseGaussianKernel::compute(INT idx_a, INT idx_b)
   TSparseEntry<REAL>* avec=((CSparseRealFeatures*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
   TSparseEntry<REAL>* bvec=((CSparseRealFeatures*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
   
-  REAL result=0;
-
-  INT i;
-  for (i=0; i<alen; i++)
-	  result+= avec[i].entry * avec[i].entry;
-
-  for (i=0; i<blen; i++)
-	  result+= bvec[i].entry * bvec[i].entry;
-
+  REAL result = sq_lhs[idx_a] + sq_rhs[idx_b];
 
   if (alen<=blen)
   {
@@ -96,4 +135,3 @@ REAL CSparseGaussianKernel::compute(INT idx_a, INT idx_b)
 
   return result;
 }
-

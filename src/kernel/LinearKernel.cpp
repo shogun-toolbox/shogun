@@ -21,8 +21,6 @@ CLinearKernel::CLinearKernel(LONG size)
 
 CLinearKernel::~CLinearKernel() 
 {
-	if (get_is_initialized())
-		delete_optimization();
 }
   
 bool CLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -49,6 +47,8 @@ void CLinearKernel::init_rescale()
 
 void CLinearKernel::cleanup()
 {
+	if (get_is_initialized())
+		delete_optimization();
 }
 
 bool CLinearKernel::load_init(FILE* src)

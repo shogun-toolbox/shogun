@@ -37,7 +37,9 @@ class CSparseGaussianKernel: public CSparseRealKernel
   
  protected:
   double width;
+
+  REAL* sq_lhs;
+  REAL* sq_rhs;
 };
 
 #endif
-
