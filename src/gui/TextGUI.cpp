@@ -94,7 +94,7 @@ CTextGUI::~CTextGUI()
 #endif
 }
 
-void CTextGUI::help()
+void CTextGUI::print_help()
 {
    CIO::message("\n[LOAD]\n");
    CIO::message("%s <filename>\t- load hmm\n",N_LOAD_MODEL);
@@ -195,12 +195,12 @@ bool CTextGUI::prompt(FILE* infile)
     if (!strncmp(input, N_LOAD_MODEL, strlen(N_LOAD_MODEL)))
     {
 	for (i=strlen(N_LOAD_MODEL); isspace(input[i]); i++);
-	if (lambda)
-	    delete lambda;
-	if (lambda_train)
-	    delete lambda_train;
-	lambda=NULL ;
-	lambda_train=NULL ;
+	if (gui.lambda)
+	    delete gui.lambda;
+	if (gui.lambda_train)
+	    delete gui.lambda_train;
+	gui.lambda=NULL ;
+	gui.lambda_train=NULL ;
 
 	FILE* model_file=fopen(&input[i], "r");
 
