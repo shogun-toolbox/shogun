@@ -359,7 +359,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 								svm_value[1]=0 ;
 							}
 							
-							REAL pen_val = lookup_penalty(penalty, pos[t]-pos[ts], svm_value) ;
+							REAL pen_val = lookup_penalty(penalty, pos[t]-pos[ts], svm_value, true) ;
 							for (short int diff=0; diff<nbest; diff++)
 							{
 								REAL  val        = DELTA(ts,ii,diff) + elem_val[i] ;

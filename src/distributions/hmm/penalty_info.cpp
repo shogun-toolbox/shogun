@@ -6,12 +6,14 @@ extern CTextGUI* gui;
 #include "features/CharFeatures.h"
 #include "features/StringFeatures.h"
 
-#ifdef HAVE_MATLAB
 #include <stdio.h>
 #include <string.h>
 
 #include "lib/io.h"
+
+#ifdef HAVE_MATLAB
 #include "mex.h"
+#endif
 
 #include "distributions/hmm/penalty_info.h"
 
@@ -62,6 +64,7 @@ void delete_penalty_struct_array(struct penalty_struct *PEN, INT len)
 }
 
 
+#ifdef HAVE_MATLAB
 struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT &P)
 {
 	P = mxGetN(mx_penalty_info) ;
@@ -241,6 +244,7 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 	}
 	return PEN ;
 }
+#endif
 
 REAL lookup_penalty_svm(const struct penalty_struct *PEN, INT p_value, REAL *d_values)
 {	
@@ -355,5 +359,3 @@ REAL lookup_penalty(const struct penalty_struct *PEN, INT p_value,
 
 	return ret ;
 }
-	
-#endif
