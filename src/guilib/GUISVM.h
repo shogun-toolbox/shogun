@@ -49,37 +49,6 @@ public:
 #endif
 
 #if 0
-	for (i=strlen(N_LOAD_MODEL); isspace(input[i]); i++);
-	if (gui.lambda)
-	    delete gui.lambda;
-	if (gui.lambda_train)
-	    delete gui.lambda_train;
-	gui.lambda=NULL ;
-	gui.lambda_train=NULL ;
-
-	FILE* model_file=fopen(&input[i], "r");
-
-	if (model_file)
-	{
-	    lambda=new CHMM(model_file,PSEUDO);
-	    rewind(model_file);
-	    lambda_train= new CHMM(model_file,PSEUDO);
-	    rewind(model_file);
-
-	    if ((lambda) && (lambda_train) && 
-		    (lambda->get_status()) && (lambda_train->get_status()))
-		printf("file successfully read\n");
-
-		ORDER=lambda->get_ORDER();
-		M=lambda->get_M();
-	    fclose(model_file);
-	}
-	else
-	   CIO::message("opening file %s failed\n", &input[i]);
-
-
-
-
 	if (lambda)
 	{
 	    if (neg)
@@ -153,21 +122,6 @@ public:
 	}
 	else
 	   CIO::message("see help for parameters/create model first\n");
-	for (i=strlen(N_SAVE_MODEL); isspace(input[i]); i++);
-
-	if (lambda)
-	{
-	    FILE* file=fopen(&input[i], "w");
-
-	    if ((!file) ||	(!lambda->save_model(file)))
-		printf("writing to file %s failed!\n", &input[i]);
-	    else
-		printf("successfully written model into \"%s\" !\n", &input[i]);
-	    if (file)
-		fclose(file);
-	}
-	else
-	   CIO::message("create model first\n");
 	for (i=strlen(N_LOAD_DEFINITIONS); isspace(input[i]); i++);
 
 	if ((!lambda) || (!lambda_train)) 

@@ -104,80 +104,80 @@ CTextGUI::~CTextGUI()
 
 void CTextGUI::print_help()
 {
-   CIO::message("\n[LOAD]\n");
-   CIO::message("\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
-   CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
-   CIO::message("\033[1;31m%s\033[0m <filename>\t- load observed data\n",N_LOAD_OBSERVATIONS);
-   CIO::message("\n[SAVE]\n");
-   CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm\n",N_SAVE_HMM);
-   CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm in binary format\n",N_SAVE_HMM_BIN);
-#ifndef NOVIT
-   CIO::message("\033[1;31m%s\033[0m <filename>\t- save state sequence of viterbi path\n",N_SAVE_PATH);
-   CIO::message("\033[1;31m%s\033[0m <filename>\t- save derivatives of log P[O,Q_best|HMM]\n",N_SAVE_PATH_DERIVATIVES);
-   CIO::message("\033[1;31m%s\033[0m <filename>\t- save derivatives of log P[O,Q_best|HMM] in binary format\n",N_SAVE_PATH_DERIVATIVES_BIN);
-#endif // NOVIT
-   CIO::message("\033[1;31m%s\033[0m <filename>\t- save log derivatives of P[O|HMM]\n",N_SAVE_HMM_DERIVATIVES);
-   CIO::message("\033[1;31m%s\033[0m <filename>\t- save log derivatives of P[O|HMM] in binary format\n",N_SAVE_HMM_DERIVATIVES_BIN);
-   CIO::message("\033[1;31m%s\033[0m <filename> <TOP|FK>\t- save kernel in binary format\n",N_SAVE_KERNEL);
-   CIO::message("\033[1;31m%s\033[0m <filename>\t- save top features for all train obs,neg first\n",N_SAVE_TOP_FEATURES);
-   CIO::message("\033[1;31m%s\033[0m <filename>\t- save P[O|HMM]\n",N_SAVE_LIKELIHOOD);
-   CIO::message("\033[1;31m%s\033[0m <filename>\t- save P[O|HMM]\n",N_SAVE_LIKELIHOOD_BIN);
-   CIO::message("\033[1;31m%s\033[0m <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear HMM from file\n",N_SAVE_LINEAR_LIKELIHOOD);
-   CIO::message("\033[1;31m%s\033[0m <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear HMM from file\n",N_SAVE_LINEAR_LIKELIHOOD_BIN);
+//   CIO::message("\n[LOAD]\n");
+//   CIO::message("\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
+//   CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
+//   CIO::message("\033[1;31m%s\033[0m <filename>\t- load observed data\n",N_LOAD_OBSERVATIONS);
+//   CIO::message("\n[SAVE]\n");
+//   CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm\n",N_SAVE_HMM);
+//   CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm in binary format\n",N_SAVE_HMM_BIN);
+//#ifndef NOVIT
+//   CIO::message("\033[1;31m%s\033[0m <filename>\t- save state sequence of viterbi path\n",N_SAVE_PATH);
+//   CIO::message("\033[1;31m%s\033[0m <filename>\t- save derivatives of log P[O,Q_best|HMM]\n",N_SAVE_PATH_DERIVATIVES);
+//   CIO::message("\033[1;31m%s\033[0m <filename>\t- save derivatives of log P[O,Q_best|HMM] in binary format\n",N_SAVE_PATH_DERIVATIVES_BIN);
+//#endif // NOVIT
+//   CIO::message("\033[1;31m%s\033[0m <filename>\t- save log derivatives of P[O|HMM]\n",N_SAVE_HMM_DERIVATIVES);
+//   CIO::message("\033[1;31m%s\033[0m <filename>\t- save log derivatives of P[O|HMM] in binary format\n",N_SAVE_HMM_DERIVATIVES_BIN);
+//   CIO::message("\033[1;31m%s\033[0m <filename> <TOP|FK>\t- save kernel in binary format\n",N_SAVE_KERNEL);
+//   CIO::message("\033[1;31m%s\033[0m <filename>\t- save top features for all train obs,neg first\n",N_SAVE_TOP_FEATURES);
+//   CIO::message("\033[1;31m%s\033[0m <filename>\t- save P[O|HMM]\n",N_SAVE_LIKELIHOOD);
+//   CIO::message("\033[1;31m%s\033[0m <filename>\t- save P[O|HMM]\n",N_SAVE_LIKELIHOOD_BIN);
+//   CIO::message("\033[1;31m%s\033[0m <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear HMM from file\n",N_SAVE_LINEAR_LIKELIHOOD);
+//   CIO::message("\033[1;31m%s\033[0m <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear HMM from file\n",N_SAVE_LINEAR_LIKELIHOOD_BIN);
    CIO::message("\n[HMM]\n");
-   CIO::message("\033[1;31m%s\033[0m - frees all HMMs and observations\n",N_CLEAR);
+//   CIO::message("\033[1;31m%s\033[0m - frees all HMMs and observations\n",N_CLEAR);
    CIO::message("\033[1;31m%s\033[0m #states #oberservations #order\t- frees previous HMM and creates an empty new one\n",N_NEW_HMM);
-   CIO::message("\033[1;31m%s\033[0m\t- frees previous HMM and creates an empty new one\n",N_NEW_SVM);
-   CIO::message("\033[1;31m%s\033[0m <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> - assign observation to current HMM\n",N_ASSIGN_OBSERVATION);
-   CIO::message("\033[1;31m%s\033[0m - make current HMM the test HMM; then free current HMM \n",N_SET_TEST_HMM);
-   CIO::message("\033[1;31m%s\033[0m - make current HMM the positive HMM; then free current HMM \n",N_SET_POS_HMM);
-   CIO::message("\033[1;31m%s\033[0m - make current HMM the negative HMM; then free current HMM \n",N_SET_NEG_HMM);
-   CIO::message("\033[1;31m%s\033[0m <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
-   CIO::message("\033[1;31m%s\033[0m <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)\n", N_ADD_STATES);
-   CIO::message("\033[1;31m%s\033[0m <filename> <[ACGT][ACGT]>\t\t\t- append HMM <filename> to current HMM\n", N_APPEND_HMM);
-   CIO::message("\033[1;31m%s\033[0m [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
-   CIO::message("\033[1;31m%s\033[0m <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [PROTEIN|DNA|ALPHANUM|CUBE]\t\t\t- changes alphabet type\n", N_ALPHABET);
-   CIO::message("\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
-#ifdef FIX_POS
-   CIO::message("\033[1;31m%s\033[0m position state\t- sets the state which has to be passed at a certain position\n",N_FIX_POS_STATE);
-#endif
-   CIO::message("\033[1;31m%s\033[0m <max_dim>\t - set maximum number of patterns\n",N_SET_MAX_DIM);
-   CIO::message("\033[1;31m%s\033[0m <ORDER>\t - set order of linear HMMs\n",N_SET_ORDER);
+//   CIO::message("\033[1;31m%s\033[0m\t- frees previous HMM and creates an empty new one\n",N_NEW_SVM);
+//   CIO::message("\033[1;31m%s\033[0m <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> - assign observation to current HMM\n",N_ASSIGN_OBSERVATION);
+//   CIO::message("\033[1;31m%s\033[0m - make current HMM the test HMM; then free current HMM \n",N_SET_TEST_HMM);
+//   CIO::message("\033[1;31m%s\033[0m - make current HMM the positive HMM; then free current HMM \n",N_SET_POS_HMM);
+//   CIO::message("\033[1;31m%s\033[0m - make current HMM the negative HMM; then free current HMM \n",N_SET_NEG_HMM);
+//   CIO::message("\033[1;31m%s\033[0m <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
+//   CIO::message("\033[1;31m%s\033[0m <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)\n", N_ADD_STATES);
+//   CIO::message("\033[1;31m%s\033[0m <filename> <[ACGT][ACGT]>\t\t\t- append HMM <filename> to current HMM\n", N_APPEND_HMM);
+//   CIO::message("\033[1;31m%s\033[0m [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
+//   CIO::message("\033[1;31m%s\033[0m <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [PROTEIN|DNA|ALPHANUM|CUBE]\t\t\t- changes alphabet type\n", N_ALPHABET);
+//   CIO::message("\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
+//#ifdef FIX_POS
+//   CIO::message("\033[1;31m%s\033[0m position state\t- sets the state which has to be passed at a certain position\n",N_FIX_POS_STATE);
+//#endif
+//   CIO::message("\033[1;31m%s\033[0m <max_dim>\t - set maximum number of patterns\n",N_SET_MAX_DIM);
+//   CIO::message("\033[1;31m%s\033[0m <ORDER>\t - set order of linear HMMs\n",N_SET_ORDER);
    CIO::message("\n[TRAIN]\n");
-   CIO::message("\033[1;31m%s\033[0m <filename> [<width> <upto>]\t\t- obtains new linear HMM from file\n",N_LINEAR_TRAIN);
-   CIO::message("\033[1;31m%s\033[0m <filename> [<width> <upto>]\t\t- computes likelihood for linear HMM from file\n",N_LINEAR_LIKELIHOOD);
-#ifndef NOVIT
-   CIO::message("\033[1;31m%s\033[0m\t\t- does viterbi training on the current HMM\n",N_VITERBI_TRAIN);
-   CIO::message("\033[1;31m%s\033[0m\t\t- does viterbi training only on defined transitions etc\n",N_VITERBI_TRAIN_DEFINED);
-   CIO::message("\033[1;31m%s\033[0m [pseudo_start [in_steps]]\t\t- does viterbi training only on defined transitions with annealing\n",N_VITERBI_TRAIN_DEFINED_ANNEALED);
-   CIO::message("\033[1;31m%s\033[0m [pseudo_start [step [eps_add]]]\t\t- does viterbi training only on defined transitions with addiabatic annealing\n",N_VITERBI_TRAIN_DEFINED_ADDIABATIC);
-#endif //NOVIT
+//   CIO::message("\033[1;31m%s\033[0m <filename> [<width> <upto>]\t\t- obtains new linear HMM from file\n",N_LINEAR_TRAIN);
+//   CIO::message("\033[1;31m%s\033[0m <filename> [<width> <upto>]\t\t- computes likelihood for linear HMM from file\n",N_LINEAR_LIKELIHOOD);
+//#ifndef NOVIT
+//   CIO::message("\033[1;31m%s\033[0m\t\t- does viterbi training on the current HMM\n",N_VITERBI_TRAIN);
+//   CIO::message("\033[1;31m%s\033[0m\t\t- does viterbi training only on defined transitions etc\n",N_VITERBI_TRAIN_DEFINED);
+//   CIO::message("\033[1;31m%s\033[0m [pseudo_start [in_steps]]\t\t- does viterbi training only on defined transitions with annealing\n",N_VITERBI_TRAIN_DEFINED_ANNEALED);
+//   CIO::message("\033[1;31m%s\033[0m [pseudo_start [step [eps_add]]]\t\t- does viterbi training only on defined transitions with addiabatic annealing\n",N_VITERBI_TRAIN_DEFINED_ADDIABATIC);
+//#endif //NOVIT
    CIO::message("\033[1;31m%s\033[0m\t\t- does baum welch training on current HMM\n",N_BAUM_WELCH_TRAIN);
-   CIO::message("\033[1;31m%s\033[0m\t\t- does baum welch training only on defined transitions etc.\n",N_BAUM_WELCH_TRAIN_DEFINED);
-#ifndef NOVIT
-   CIO::message("\033[1;31m%s\033[0m\t- find the best path using viterbi\n",N_BEST_PATH);
-#endif //NOVIT
-   CIO::message("\033[1;31m%s\033[0m\t- find HMM likelihood\n",N_LIKELIHOOD);
-   CIO::message("\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
-   CIO::message("\n[OUTPUT]\n");
-#ifndef NOVIT
-   CIO::message("\033[1;31m%s\033[0m [from to]\t- outputs best path\n",N_OUTPUT_PATH);
-#endif //NOVIT
-   CIO::message("\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM);
-   CIO::message("\n[HMM-classification]\n");
-   CIO::message("\033[1;31m%s\033[0m[<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_HMM_TEST);
-   CIO::message("\033[1;31m%s\033[0m[<output> [<rocfile>]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
-   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_LINEAR_HMM_TEST);
-   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate hmm output from obs using linear HMM\n",N_LINEAR_HMM_TEST);
-   CIO::message("\n[Hybrid HMM-<TOP-Kernel>-SVM]\n");
-   CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
-   CIO::message("\033[1;31m%s\033[0m <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
-   CIO::message("\033[1;31m%s\033[0m <srcsvm> [<output> [<rocfile>]]\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
-   CIO::message("\033[1;31m%s\033[0m <dstsvm> \t\t- obtains svm from pos/neg linear HMMs\n",N_LINEAR_SVM_TRAIN);
-   CIO::message("\033[1;31m%s\033[0m - enables SVM Light \n",N_SET_SVM_LIGHT);
-#ifdef SVMCPLEX
-   CIO::message("\033[1;31m%s\033[0m - enables SVM CPLEX \n",N_SET_SVM_CPLEX);
-#endif
+//   CIO::message("\033[1;31m%s\033[0m\t\t- does baum welch training only on defined transitions etc.\n",N_BAUM_WELCH_TRAIN_DEFINED);
+//#ifndef NOVIT
+//   CIO::message("\033[1;31m%s\033[0m\t- find the best path using viterbi\n",N_BEST_PATH);
+//#endif //NOVIT
+//   CIO::message("\033[1;31m%s\033[0m\t- find HMM likelihood\n",N_LIKELIHOOD);
+//   CIO::message("\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
+//   CIO::message("\n[OUTPUT]\n");
+//#ifndef NOVIT
+//   CIO::message("\033[1;31m%s\033[0m [from to]\t- outputs best path\n",N_OUTPUT_PATH);
+//#endif //NOVIT
+//   CIO::message("\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM);
+//   CIO::message("\n[HMM-classification]\n");
+//   CIO::message("\033[1;31m%s\033[0m[<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_HMM_TEST);
+//   CIO::message("\033[1;31m%s\033[0m[<output> [<rocfile>]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
+//   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_LINEAR_HMM_TEST);
+//   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate hmm output from obs using linear HMM\n",N_LINEAR_HMM_TEST);
+//   CIO::message("\n[Hybrid HMM-<TOP-Kernel>-SVM]\n");
+//   CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
+//   CIO::message("\033[1;31m%s\033[0m <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
+//   CIO::message("\033[1;31m%s\033[0m <srcsvm> [<output> [<rocfile>]]\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
+//   CIO::message("\033[1;31m%s\033[0m <dstsvm> \t\t- obtains svm from pos/neg linear HMMs\n",N_LINEAR_SVM_TRAIN);
+//   CIO::message("\033[1;31m%s\033[0m - enables SVM Light \n",N_SET_SVM_LIGHT);
+//#ifdef SVMCPLEX
+//   CIO::message("\033[1;31m%s\033[0m - enables SVM CPLEX \n",N_SET_SVM_CPLEX);
+//#endif
    CIO::message("\n[SYSTEM]\n");
    CIO::message("\033[1;31m%s\033[0m <filename>\t- load and execute a script\n",N_EXEC);
    CIO::message("\033[1;31m%s\033[0m\t- exit genfinder\n",N_QUIT);
@@ -222,7 +222,7 @@ bool CTextGUI::get_line(FILE* infile)
 	} 
 	else if (!strncmp(input, N_LOAD_HMM, strlen(N_LOAD_HMM)))
 	{
-	  CIO::not_implemented() ;
+		guihmm.load_hmm(input+strlen(N_LOAD_HMM));
 	} 
 	else if (!strncmp(input, N_SET_HMM_AS, strlen(N_SET_HMM_AS)))
 	{
@@ -238,7 +238,7 @@ bool CTextGUI::get_line(FILE* infile)
 	} 
 	else if (!strncmp(input, N_SAVE_HMM, strlen(N_SAVE_HMM)))
 	{
-	  CIO::not_implemented() ;
+		guihmm.save_hmm(input+strlen(N_SAVE_HMM)) ;
 	} 
 	else if (!strncmp(input, N_LOAD_DEFINITIONS, strlen(N_LOAD_DEFINITIONS)))
 	{

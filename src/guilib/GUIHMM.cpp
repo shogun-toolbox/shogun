@@ -246,51 +246,61 @@ void CGUIHMM::switch_model(CHMM** m1, CHMM** m2)
     *m2= dummy;
 }
 
-#if 0
-clock_t current_time;
+bool CGUIHMM::load_hmm(char* param)
+{
+	bool result=false;
 
-// initial parameters
-int    ITERATIONS = 100;
-double EPSILON    = 1e-6;
-double PSEUDO     = 1e-3 ;
-int ORDER=1;
-int M=4;
-double C=1.0; //SVM C
+	param=CIO::skip_spaces(param);
 
-CHMM* lambda=NULL;
-CHMM* lambda_train=NULL;	//model and training model
+	if (working)
+		delete working;
+	working=NULL;
 
-E_OBS_ALPHABET alphabet=DNA;
-CObservation* obs_postrain=NULL;//observations
-CObservation* obs_negtrain=NULL;//observations
-CObservation* obs_postest=NULL; //observations
-CObservation* obs_negtest=NULL; //observations
-CObservation* obs_test=NULL;	//observations
+	FILE* model_file=fopen(param, "r");
 
-CHMM* test=NULL;//test model 
-CHMM* pos=NULL;	//positive model 
-CHMM* neg=NULL;	//negative model
+	if (model_file)
+	{
+		working=new CHMM(model_file,PSEUDO);
+		rewind(model_file);
 
-// support vector machine
-CSVMLight svm_light;
-#ifdef SVMCPLEX
-CSVMCplex svm_cplex;	
-CSVM* svm=&svm_cplex;	
-#else
-CSVM* svm=&svm_light;	
-#endif
+		if (working && working->get_status())
+		{
+			printf("file successfully read\n");
+			result=true;
+		}
 
-// kernel
-CLinearKernel linear_kernel(false);
-CKernel* kernel=&linear_kernel;
-CNormOne norm_one;
-CPreProc* preproc=&norm_one;
-// Features
-CFeatures* trainfeatures=NULL;
-CFeatures* testfeatures=NULL;
+		ORDER=working->get_ORDER();
+		M=working->get_M();
+		fclose(model_file);
+	}
+	else
+		CIO::message("opening file %s failed\n", param);
 
-static int iteration_count=ITERATIONS ;
-static int conv_it=5 ;
+	return result;
+}
 
+bool CGUIHMM::save_hmm(char* param)
+{
+	bool result=false;
+	param=CIO::skip_spaces(param);
 
-#endif
+	if (working)
+	{
+		FILE* file=fopen(param, "w");
+
+		if ((!file) ||	(!working->save_model(file)))
+			printf("writing to file %s failed!\n", param);
+		else
+		{
+			printf("successfully written model into \"%s\" !\n", param);
+			result=true;
+		}
+
+		if (file)
+			fclose(file);
+	}
+	else
+		CIO::message("create model first\n");
+
+	return result;
+}
