@@ -86,14 +86,24 @@ class CSVM : public CKernelMachine
 			return (svm_model.alpha!=NULL && svm_model.svs!=NULL);
 		}
 
-		inline void use_kerncombination(bool enable)
+		inline void set_mkl_enabled(bool enable)
 		{
 			use_mkl=enable;
 		}
 
-		inline bool is_mkl_enabled()
+		inline bool get_mkl_enabled()
 		{
 			return use_mkl;
+		}
+
+		inline void set_linadd_enabled(bool enable)
+		{
+			use_linadd=enable;
+		}
+
+		inline bool get_linadd_enabled()
+		{
+			return use_linadd ;
 		}
 
 		REAL* test();
@@ -123,7 +133,7 @@ class CSVM : public CKernelMachine
 
 		REAL C1;
 		REAL C2;
-		bool use_mkl;
 		REAL C_mkl ;
+		bool use_mkl, use_linadd ;
 };
 #endif

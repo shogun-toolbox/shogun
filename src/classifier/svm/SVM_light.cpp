@@ -181,7 +181,7 @@ bool CSVMLight::train()
 
 	if (weight_epsilon<=0)
 		weight_epsilon=1e-2 ;
-	if (get_kernel()->has_property(KP_LINADD))
+	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
 		get_kernel()->clear_normal();
 
 	// output some info
@@ -191,7 +191,8 @@ bool CSVMLight::train()
 	CIO::message(M_DEBUG, "C_mkl = %1.1e\n", C_mkl) ;
 	CIO::message(M_DEBUG, "get_kernel()->has_property(KP_LINADD) = %i\n", get_kernel()->has_property(KP_LINADD)) ;
 	CIO::message(M_DEBUG, "get_kernel()->has_property(KP_KERNCOMBINATION) = %i\n", get_kernel()->has_property(KP_KERNCOMBINATION)) ;
-	CIO::message(M_DEBUG, "is_mkl_enabled() = %i\n", is_mkl_enabled()) ;
+	CIO::message(M_DEBUG, "get_mkl_enabled() = %i\n", get_mkl_enabled()) ;
+	CIO::message(M_DEBUG, "get_linadd_enabled() = %i\n", get_linadd_enabled()) ;
 	CIO::message(M_DEBUG, "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
 	CIO::message(M_DEBUG, "estimated time: %1.1f hours\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/3600) ;
 	
@@ -355,7 +356,7 @@ void CSVMLight::svm_learn()
       if(alpha[i]>learn_parm->svm_cost[i]) alpha[i]=learn_parm->svm_cost[i];
     }
 
-	if (!get_kernel()->has_property(KP_LINADD)) {
+	if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) {
 		for(i=0;i<totdoc;i++)     /* fill kernel cache with unbounded SV */
 			if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i]) 
 					&& (get_kernel()->kernel_cache_space_available())) 
@@ -478,8 +479,8 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
   QP qp;            /* buffer for one quadratic program */
 
   epsilon_crit_org=learn_parm->epsilon_crit; /* save org */
-  if(get_kernel()->has_property(KP_LINADD)) {
-    learn_parm->epsilon_crit=2.0;
+  if(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) {
+	  learn_parm->epsilon_crit=2.0;
       /* caching makes no sense for linear kernel */
   } 
   learn_parm->epsilon_shrink=2;
@@ -513,7 +514,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
   terminate=0;
   
   CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
-  if(!get_kernel()->has_property(KP_LINADD)) 
+  if(!(get_kernel()->has_property(KP_LINADD)  && get_linadd_enabled())) 
 	  CKernelMachine::get_kernel()->kernel_cache_reset_lru();
 
 
@@ -530,9 +531,9 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 
                             /* repeat this loop until we have convergence */
 
-  for(;(retrain && (!terminate))||((w_gap>get_weight_epsilon()) && is_mkl_enabled());iteration++){
+  for(;(retrain && (!terminate))||((w_gap>get_weight_epsilon()) && get_mkl_enabled());iteration++){
 	  	  
-	  if(!get_kernel()->has_property(KP_LINADD)) 
+	  if(!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) 
 		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
 	  
 	  CIO::message(M_MESSAGEONLY, ".");
@@ -602,7 +603,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		  if(iteration % 101)
 		  {
 			  already_chosen=0;
-			  if(CMath::min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4 && (!get_kernel()->has_property(KP_LINADD))) 
+			  if(CMath::min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4 && (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()))) 
 			  {
 				  /* select part of the working set from cache */
 				  already_chosen=select_next_qp_subproblem_grad(
@@ -641,7 +642,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  
 	  if(verbosity>=2) t1=get_runtime();
 	  
-	  if (!get_kernel()->has_property(KP_LINADD))
+	  if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()))
 		  CKernelMachine::get_kernel()->cache_multiple_kernel_rows(working2dnum, choosenum); 
 	  
 	  if(verbosity>=2) t2=get_runtime();
@@ -712,7 +713,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		  if((*maxdiff) > learn_parm->epsilon_crit) 
 			  retrain=1;
 		  timing_profile->time_shrink+=get_runtime()-t1;
-		  if((verbosity>=1) && (!get_kernel()->has_property(KP_LINADD))
+		  if((verbosity>=1) && (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()))
 			 || (verbosity>=2)) {
 			  printf("done.\n");  fflush(stdout);
 			  printf(" Number of inactive variables = %ld\n",inactivenum);
@@ -749,7 +750,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 								   a,inconsistent);
 		  inactivenum=totdoc-activenum;
 		  
-		  if (!get_kernel()->has_property(KP_LINADD))
+		  if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()))
 		  {
 			  if( (supvecnum>get_kernel()->get_max_elems_cache()) && ((get_kernel()->get_activenum_cache()-activenum)>CMath::max((LONG)(activenum/10),(LONG) 500))) {
 				  get_kernel()->kernel_cache_shrink(totdoc, CMath::min((LONG) (get_kernel()->get_activenum_cache()-activenum),
@@ -1106,6 +1107,274 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 											long int totdoc,
 											double *lin, REAL *aicache)
 {
+	INT i, j, ii, jj ;
+	REAL tec ;
+	
+	/* general case  generic kernel combination
+	   works only for CombinedKernel (assumes kernel has functions of CombinedKernel)
+	   pray that we have enough memory for kernel cache / only very few examples*/
+	
+	INT num    = get_kernel()->get_rhs()->get_num_vectors() ;
+	//CCombinedKernel* k = (CCombinedKernel*) get_kernel();
+	
+	CIO::message(M_ERROR, "FIX MKL CombinedKernel Learning\n");
+	
+	INT num_kernels = get_kernel()->get_num_subkernels() ;
+	REAL* w    = new REAL[num_kernels];
+	
+	REAL* sumw = new REAL[num_kernels];
+	REAL* w_backup = new REAL[num_kernels] ;
+	
+	// backup and set to one
+	for (i=0; i<num_kernels; i++)
+	{
+		w_backup[i]=w[i] ;
+		w[i]=1 ;
+	}
+	
+	for(jj=0;(i=working2dnum[jj])>=0;jj++) {
+		if(a[i] != a_old[i]) {
+			CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
+			for(ii=0;(j=active2dnum[ii])>=0;ii++) {
+				tec=aicache[j];
+				lin[j]+=(((a[i]*tec)-(a_old[i]*tec))*(double)label[i]);
+			}
+		}
+	}
+	
+	// restore old weights
+	for (INT i=0; i<num_kernels; i++)
+		w[i]=w_backup[i] ;
+	
+	// determine contributions of different levels/lengths FIXME
+	for (int j=0; j<num_kernels; j++)
+		for (int i=0; i<num; i++)
+			W[i*num_kernels+j]=1;
+	
+	REAL objective=0;
+#ifdef HAVE_ATLAS
+	REAL *alphay  = buffer_num ;
+	REAL sumalpha = 0 ;
+	
+	for (int i=0; i<num; i++)
+	{
+		alphay[i]=a[i]*label[i] ;
+		sumalpha+=a[i] ;
+	}
+	for (int i=0; i<num_kernels; i++)
+		sumw[i]=-sumalpha ;
+	
+	cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, num,
+				0.5, W, num_kernels, alphay, 1, 1.0, sumw, 1) ;
+	
+	for (int i=0; i<num_kernels; i++)
+		objective+=w[i]*sumw[i] ;
+#else
+	for (int d=0; d<num_kernels; d++)
+	{
+		sumw[d]=0;
+		for(int i=0; i<num; i++)
+			sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d] - 1);
+		objective   += w[d]*sumw[d];
+	}
+#endif
+	
+	count++ ;
+#ifdef USE_CPLEX			
+	w_gap = CMath::abs(1-rho/objective) ;
+	if (w_gap >= 0.9999*get_weight_epsilon())
+	{
+		if (rho==0)
+		{
+			CIO::message(M_INFO, "creating LP\n") ;
+			
+			INT NUMCOLS = num_kernels + 1 ;
+			double   obj[NUMCOLS];
+			double   lb[NUMCOLS];
+			double   ub[NUMCOLS];
+			for (INT i=0; i<num_kernels; i++)
+			{
+				obj[i]=0 ;
+				lb[i]=0 ;
+				ub[i]=1 ;
+			}
+			obj[num_kernels]=1 ;
+			lb[num_kernels]=-CPX_INFBOUND ;
+			ub[num_kernels]=CPX_INFBOUND ;
+			
+			INT status = CPXnewcols (env, lp, NUMCOLS, obj, lb, ub, NULL, NULL);
+			if ( status ) {
+				char  errmsg[1024];
+				CPXgeterrorstring (env, status, errmsg);
+				CIO::message(M_ERROR, "%s", errmsg);
+			}
+			
+			// add constraint sum(w)=1 ;
+			CIO::message(M_INFO, "add the first row\n") ;
+			int rmatbeg[1] ;
+			int rmatind[num_kernels+1] ;
+			double rmatval[num_kernels+1] ;
+			double rhs[1] ;
+			char sense[1] ;
+			
+			rmatbeg[0] = 0;
+			rhs[0]=1 ; // rhs=1 ;
+			sense[0]='E' ; // equality
+			
+			for (INT i=0; i<num_kernels; i++)
+			{
+				rmatind[i]=i ;
+				rmatval[i]=1 ;
+			}
+			rmatind[num_kernels]=num_kernels ;
+			rmatval[num_kernels]=0 ;
+			
+			status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+								 rhs, sense, rmatbeg,
+								 rmatind, rmatval, NULL, NULL);
+			if ( status ) {
+				CIO::message(M_ERROR, "Failed to add the first row.\n");
+			}
+			
+		}
+		
+		{ // add the new row
+			//CIO::message(M_INFO, "add the new row\n") ;
+			
+			int rmatbeg[1] ;
+			int rmatind[num_kernels+1] ;
+			double rmatval[num_kernels+1] ;
+			double rhs[1] ;
+			char sense[1] ;
+			
+			rmatbeg[0] = 0;
+			rhs[0]=0 ;
+			sense[0]='L' ;
+			
+			for (INT i=0; i<num_kernels; i++)
+			{
+				rmatind[i]=i ;
+				rmatval[i]=-sumw[i] ;
+			}
+			rmatind[num_kernels]=num_kernels ;
+			rmatval[num_kernels]=-1 ;
+			
+			INT status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+									 rhs, sense, rmatbeg,
+									 rmatind, rmatval, NULL, NULL);
+			if ( status ) {
+				CIO::message(M_ERROR, "Failed to add the new row.\n");
+			}
+		}
+		
+		{ // optimize
+			INT status = CPXlpopt (env, lp);
+			if ( status ) {
+				CIO::message(M_ERROR, "Failed to optimize LP.\n");
+			}
+			
+			// obtain solution
+			INT cur_numrows = CPXgetnumrows (env, lp);
+			INT cur_numcols = CPXgetnumcols (env, lp);
+			num_rows = cur_numrows ;
+			
+			REAL *x = new REAL[cur_numcols] ;
+			REAL *slack = new REAL[cur_numrows] ;
+			REAL *pi = new REAL[cur_numrows] ;
+			
+			if ( x     == NULL ||
+				 slack == NULL ||
+				 pi    == NULL   ) {
+				status = CPXERR_NO_MEMORY;
+				CIO::message(M_ERROR, "Could not allocate memory for solution.\n");
+			}
+			INT solstat = 0 ;
+			REAL objval = 0 ;
+			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
+			INT solution_ok=(!status) ;
+			if ( status ) {
+				CIO::message(M_ERROR, "Failed to obtain solution.\n");
+			}
+			
+			num_active_rows=0 ;
+			if (solution_ok)
+			{
+				REAL max_slack = -CMath::INFTY ;
+				INT max_idx = -1 ;
+				for (INT i = 1; i < cur_numrows; i++)  // skip first
+					if ((pi[i]!=0))
+						num_active_rows++ ;
+					else
+					{
+						if (slack[i]>max_slack)
+						{
+							max_slack=slack[i] ;
+							max_idx=i ;
+						}
+					}
+				
+				// have at most max(100,num_active_rows*2) rows 
+				if ( (num_rows>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
+				{
+					INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
+					if ( status ) {
+						CIO::message(M_ERROR, "Failed to remove an old row.\n");
+					}
+				}
+				
+				for (INT j = 0; j < cur_numcols-1; j++) 
+					w[j]=x[j] ;
+				rho = -x[num_kernels] ;
+				w_gap = CMath::abs(1-rho/objective) ;
+				
+			} else
+			{
+				w_gap = 0 ; // then something is wrong and we rather 
+				// stop sooner than later
+			}
+			delete[] x ;
+			delete[] slack ;
+			delete[] pi ;
+		}
+	}
+	
+#endif
+	
+	// update lin
+#ifdef HAVE_ATLAS
+	cblas_dgemv(CblasColMajor,
+				CblasTrans, num_kernels, num,
+				1.0, W, num_kernels, w, 1, 0.0, lin,1);
+#else
+	for(int i=0; i<num; i++)
+		lin[i]=0 ;
+	
+	for (int d=0; d<num_kernels; d++)
+		if (w[d]!=0)
+			for(int i=0; i<num; i++)
+				lin[i] += w[d]*W[i*num_kernels+d] ;
+#endif
+	
+	{ // count actives
+		INT jj ;
+		for(jj=0;active2dnum[jj]>=0;jj++);
+		
+		if (count%10==0)
+			CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows);
+		
+	}
+	
+	delete[] sumw;
+	delete[] w_backup ;
+}
+
+
+void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label, 
+												   long int *active2dnum, double *a, 
+												   double *a_old, long int *working2dnum, 
+												   long int totdoc,
+												   double *lin, REAL *aicache)
+{
 	// kernel with LP_LINADD property is assumed to have 
 	// compute_by_subkernel functions
 	CKernel* k      = get_kernel();
@@ -1436,12 +1705,12 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 	register double tec=0;
 
 
-	if (get_kernel()->has_property(KP_LINADD)) 
+	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) 
 	{
-		if (get_kernel()->has_property(KP_KERNCOMBINATION) && is_mkl_enabled() ) 
+		if (get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
 		{
-			update_linear_component_mkl(docs, label, active2dnum, a, a_old, working2dnum, 
-										totdoc,	lin, aicache) ;
+			update_linear_component_mkl_linadd(docs, label, active2dnum, a, a_old, working2dnum, 
+											   totdoc,	lin, aicache) ;
 		}
 		else
 		{
@@ -1459,30 +1728,13 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 		}
 	}
 	else 
-		if (get_kernel()->has_property(KP_KERNCOMBINATION) && is_mkl_enabled() ) 
+	{
+		if (get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
 		{
-			/* general case  generic kernel combination
-			   works only for CombinedKernel (assumes kernel has functions of CombinedKernel)
-			   pray that we have enough memory for kernel cache / only very few examples*/
-			
-			INT num    = get_kernel()->get_rhs()->get_num_vectors() ;
-			//CCombinedKernel* k = (CCombinedKernel*) get_kernel();
-			
-			CIO::message(M_ERROR, "FIX MKL CombinedKernel Learning\n");
-			
-			INT num_kernels = get_kernel()->get_num_subkernels() ;
-			REAL* w    = new REAL[num_kernels];
-			
-			REAL* sumw = new REAL[num_kernels];
-			REAL* w_backup = new REAL[num_kernels] ;
-
-			// backup and set to one
-			for (i=0; i<num_kernels; i++)
-			{
-				w_backup[i]=w[i] ;
-				w[i]=1 ;
-			}
-			
+			update_linear_component_mkl(docs, label, active2dnum, a, a_old, working2dnum, 
+										totdoc,	lin, aicache) ;
+		}
+		else {
 			for(jj=0;(i=working2dnum[jj])>=0;jj++) {
 				if(a[i] != a_old[i]) {
 					CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
@@ -1492,242 +1744,10 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					}
 				}
 			}
-
-			// restore old weights
-			for (INT i=0; i<num_kernels; i++)
-				w[i]=w_backup[i] ;
-
-			// determine contributions of different levels/lengths FIXME
-			for (int j=0; j<num_kernels; j++)
-				for (int i=0; i<num; i++)
-				W[i*num_kernels+j]=1;
-
-			REAL objective=0;
-#ifdef HAVE_ATLAS
-			REAL *alphay  = buffer_num ;
-			REAL sumalpha = 0 ;
-
-			for (int i=0; i<num; i++)
-			{
-				alphay[i]=a[i]*label[i] ;
-				sumalpha+=a[i] ;
-			}
-			for (int i=0; i<num_kernels; i++)
-				sumw[i]=-sumalpha ;
-
-			cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, num,
-					0.5, W, num_kernels, alphay, 1, 1.0, sumw, 1) ;
-
-			for (int i=0; i<num_kernels; i++)
-				objective+=w[i]*sumw[i] ;
-#else
-			for (int d=0; d<num_kernels; d++)
-			{
-				sumw[d]=0;
-				for(int i=0; i<num; i++)
-					sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d] - 1);
-				objective   += w[d]*sumw[d];
-			}
-#endif
-
-			count++ ;
-#ifdef USE_CPLEX			
-			w_gap = CMath::abs(1-rho/objective) ;
-			if (w_gap >= 0.9999*get_weight_epsilon())
-			{
-				if (rho==0)
-				{
-					CIO::message(M_INFO, "creating LP\n") ;
-
-					INT NUMCOLS = num_kernels + 1 ;
-					double   obj[NUMCOLS];
-					double   lb[NUMCOLS];
-					double   ub[NUMCOLS];
-					for (INT i=0; i<num_kernels; i++)
-					{
-						obj[i]=0 ;
-						lb[i]=0 ;
-						ub[i]=1 ;
-					}
-					obj[num_kernels]=1 ;
-					lb[num_kernels]=-CPX_INFBOUND ;
-					ub[num_kernels]=CPX_INFBOUND ;
-
-					INT status = CPXnewcols (env, lp, NUMCOLS, obj, lb, ub, NULL, NULL);
-					if ( status ) {
-						char  errmsg[1024];
-						CPXgeterrorstring (env, status, errmsg);
-						CIO::message(M_ERROR, "%s", errmsg);
-					}
-
-					// add constraint sum(w)=1 ;
-					CIO::message(M_INFO, "add the first row\n") ;
-					int rmatbeg[1] ;
-					int rmatind[num_kernels+1] ;
-					double rmatval[num_kernels+1] ;
-					double rhs[1] ;
-					char sense[1] ;
-
-					rmatbeg[0] = 0;
-					rhs[0]=1 ; // rhs=1 ;
-					sense[0]='E' ; // equality
-
-					for (INT i=0; i<num_kernels; i++)
-					{
-						rmatind[i]=i ;
-						rmatval[i]=1 ;
-					}
-					rmatind[num_kernels]=num_kernels ;
-					rmatval[num_kernels]=0 ;
-
-					status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
-							rhs, sense, rmatbeg,
-							rmatind, rmatval, NULL, NULL);
-					if ( status ) {
-						CIO::message(M_ERROR, "Failed to add the first row.\n");
-					}
-
-				}
-
-				{ // add the new row
-					//CIO::message(M_INFO, "add the new row\n") ;
-
-					int rmatbeg[1] ;
-					int rmatind[num_kernels+1] ;
-					double rmatval[num_kernels+1] ;
-					double rhs[1] ;
-					char sense[1] ;
-
-					rmatbeg[0] = 0;
-					rhs[0]=0 ;
-					sense[0]='L' ;
-
-					for (INT i=0; i<num_kernels; i++)
-					{
-						rmatind[i]=i ;
-						rmatval[i]=-sumw[i] ;
-					}
-					rmatind[num_kernels]=num_kernels ;
-					rmatval[num_kernels]=-1 ;
-
-					INT status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
-							rhs, sense, rmatbeg,
-							rmatind, rmatval, NULL, NULL);
-					if ( status ) {
-						CIO::message(M_ERROR, "Failed to add the new row.\n");
-					}
-				}
-
-				{ // optimize
-					INT status = CPXlpopt (env, lp);
-					if ( status ) {
-						CIO::message(M_ERROR, "Failed to optimize LP.\n");
-					}
-
-					// obtain solution
-					INT cur_numrows = CPXgetnumrows (env, lp);
-					INT cur_numcols = CPXgetnumcols (env, lp);
-					num_rows = cur_numrows ;
-
-					REAL *x = new REAL[cur_numcols] ;
-					REAL *slack = new REAL[cur_numrows] ;
-					REAL *pi = new REAL[cur_numrows] ;
-
-					if ( x     == NULL ||
-							slack == NULL ||
-							pi    == NULL   ) {
-						status = CPXERR_NO_MEMORY;
-						CIO::message(M_ERROR, "Could not allocate memory for solution.\n");
-					}
-					INT solstat = 0 ;
-					REAL objval = 0 ;
-					status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
-					INT solution_ok=(!status) ;
-					if ( status ) {
-						CIO::message(M_ERROR, "Failed to obtain solution.\n");
-					}
-
-					num_active_rows=0 ;
-					if (solution_ok)
-					{
-						REAL max_slack = -CMath::INFTY ;
-						INT max_idx = -1 ;
-						for (INT i = 1; i < cur_numrows; i++)  // skip first
-							if ((pi[i]!=0))
-								num_active_rows++ ;
-							else
-							{
-								if (slack[i]>max_slack)
-								{
-									max_slack=slack[i] ;
-									max_idx=i ;
-								}
-							}
-
-						// have at most max(100,num_active_rows*2) rows 
-						if ( (num_rows>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
-						{
-							INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
-							if ( status ) {
-								CIO::message(M_ERROR, "Failed to remove an old row.\n");
-							}
-						}
-
-						for (INT j = 0; j < cur_numcols-1; j++) 
-							w[j]=x[j] ;
-						rho = -x[num_kernels] ;
-						w_gap = CMath::abs(1-rho/objective) ;
-
-					} else
-					{
-						w_gap = 0 ; // then something is wrong and we rather 
-						// stop sooner than later
-					}
-					delete[] x ;
-					delete[] slack ;
-					delete[] pi ;
-				}
-			}
-
-#endif
-
-			// update lin
-#ifdef HAVE_ATLAS
-			cblas_dgemv(CblasColMajor,
-					CblasTrans, num_kernels, num,
-					1.0, W, num_kernels, w, 1, 0.0, lin,1);
-#else
-			for(int i=0; i<num; i++)
-				lin[i]=0 ;
-
-			for (int d=0; d<num_kernels; d++)
-				if (w[d]!=0)
-					for(int i=0; i<num; i++)
-						lin[i] += w[d]*W[i*num_kernels+d] ;
-#endif
-
-			// count actives
-			INT jj ;
-			for(jj=0;active2dnum[jj]>=0;jj++);
-
-			if (count%10==0)
-				CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows);
-
-			delete[] sumw;
-			delete[] w_backup ;
-	}
-	else {
-		for(jj=0;(i=working2dnum[jj])>=0;jj++) {
-			if(a[i] != a_old[i]) {
-				CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
-				for(ii=0;(j=active2dnum[ii])>=0;ii++) {
-					tec=aicache[j];
-					lin[j]+=(((a[i]*tec)-(a_old[i]*tec))*(double)label[i]);
-				}
-			}
 		}
 	}
 }
+
 
 /*************************** Working set selection ***************************/
 
@@ -1992,7 +2012,7 @@ long CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 	  if(verbosity>=2) {
 		  CIO::message(M_INFO, " Shrinking...");
 	  }
-	  if (!get_kernel()->has_property(KP_LINADD)) { /*  non-linear case save alphas */
+	  if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) { /*  non-linear case save alphas */
 		  a_old=new double[totdoc];
 		  shrink_state->a_history[shrink_state->deactnum]=a_old;
 		  for(i=0;i<totdoc;i++) {
@@ -2010,7 +2030,7 @@ long CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 	  }
 	  activenum=compute_index(shrink_state->active,totdoc,active2dnum);
 	  shrink_state->deactnum++;
-	  if(get_kernel()->has_property(KP_LINADD)) { 
+	  if((get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) { 
 		  shrink_state->deactnum=0;
 	  }
 	  if(verbosity>=2) {
@@ -2042,7 +2062,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
   register double kernel_val,*a_old,dist;
   double ex_c,target;
 
-  if(get_kernel()->has_property(KP_LINADD)) { /* special linear case */
+  if(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) { /* special linear case */
 	  a_old=shrink_state->last_a;    
 
 	  if (!get_kernel()->has_property(KP_KERNCOMBINATION))
@@ -2127,7 +2147,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
       }
     }
   }
-  if (!get_kernel()->has_property(KP_LINADD)) { /* update history for non-linear */
+  if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) { /* update history for non-linear */
 	  for(i=0;i<totdoc;i++) {
 		  (shrink_state->a_history[shrink_state->deactnum-1])[i]=a[i];
 	  }

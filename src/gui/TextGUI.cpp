@@ -101,7 +101,9 @@ static const CHAR* N_BAUM_WELCH_TRANS_TRAIN=	"bw_trans";
 static const CHAR* N_BAUM_WELCH_TRAIN_DEFINED=	"bw_def";
 static const CHAR* N_LIKELIHOOD=	       	"likelihood";
 static const CHAR* N_ALPHABET=			"alphabet";
-static const CHAR* N_USE_KERNCOMBINATION=			"use_kerncombination";
+static const CHAR* N_USE_MKL =			"use_mkl";
+static const CHAR* N_USE_LINADD=			"use_linadd";
+static const CHAR* N_USE_PRECOMPUTE=			"use_precompute";
 static const CHAR* N_OUTPUT_HMM=		"output_hmm";
 static const CHAR* N_OUTPUT_HMM_DEFINED=        "output_hmm_defined";
 static const CHAR* N_QUIT=			"quit";
@@ -661,9 +663,17 @@ bool CTextGUI::parse_line(CHAR* input)
 	{
 		guisvm.set_C(input+strlen(N_C));
 	} 
-	else if (!strncmp(input, N_USE_KERNCOMBINATION, strlen(N_USE_KERNCOMBINATION)))
+	else if (!strncmp(input, N_USE_PRECOMPUTE, strlen(N_USE_PRECOMPUTE)))
 	{
-		guisvm.use_kerncombination(input+strlen(N_USE_KERNCOMBINATION));
+		guisvm.set_precompute_enabled(input+strlen(N_USE_PRECOMPUTE));
+	} 
+	else if (!strncmp(input, N_USE_MKL, strlen(N_USE_MKL)))
+	{
+		guisvm.set_mkl_enabled(input+strlen(N_USE_MKL));
+	} 
+	else if (!strncmp(input, N_USE_LINADD, strlen(N_USE_LINADD)))
+	{
+		guisvm.set_linadd_enabled(input+strlen(N_USE_LINADD));
 	} 
 	else if (!strncmp(input, N_SVM_EPSILON, strlen(N_SVM_EPSILON)))
 	{

@@ -18,9 +18,11 @@ public:
 	bool load(CHAR* param);
 	bool save(CHAR* param);
 	bool set_C(CHAR* param);
-	bool use_kerncombination(CHAR* param);
+	bool set_mkl_enabled(CHAR* param);
+	bool set_linadd_enabled(CHAR* param);
 	bool set_svm_epsilon(CHAR* param);
 	bool set_mkl_parameters(CHAR* param) ;
+	bool set_precompute_enabled(CHAR* param) ;
 
 	CLabels* classify(CLabels* output=NULL);
 	bool classify_example(INT idx, REAL& result);
@@ -35,6 +37,6 @@ public:
 	double C1;
 	double C2;
 	double C_mkl ;
-	bool use_mkl;
+	bool use_mkl, use_linadd, use_precompute ;
 };
 #endif

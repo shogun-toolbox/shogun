@@ -186,15 +186,18 @@ typedef struct shrink_state {
 					long int *, long int *, long, LEARN_PARM *);
 
   void update_linear_component(LONG* docs, INT *label, 
-					   long int *active2dnum, double *a, double* a_old,
-					   long int *working2dnum, long int totdoc,
-					   double *lin, REAL *aicache);
+							   long int *active2dnum, double *a, double* a_old,
+							   long int *working2dnum, long int totdoc,
+							   double *lin, REAL *aicache);
   // MKL stuff
   void update_linear_component_mkl(LONG* docs, INT *label, 
-					   long int *active2dnum, double *a, double* a_old,
-					   long int *working2dnum, long int totdoc,
-					   double *lin, REAL *aicache);
-  void update_linear_component_mkl_reactivate_inactive_variables(LONG* docs, INT* label, REAL* lin, REAL *a) ;
+								   long int *active2dnum, double *a, double* a_old,
+								   long int *working2dnum, long int totdoc,
+								   double *lin, REAL *aicache);
+  void update_linear_component_mkl_linadd(LONG* docs, INT *label, 
+										  long int *active2dnum, double *a, double* a_old,
+										  long int *working2dnum, long int totdoc,
+										  double *lin, REAL *aicache);
   
   long int select_next_qp_subproblem_grad( INT *label, double *a,
 						  double* lin, double* c, long int totdoc, long int qp_size, long int *inconsistent, 

@@ -7,7 +7,7 @@
 #include <string.h>
 #include <assert.h>
 
-CKernel::CKernel(KERNELCACHE_IDX size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1), optimization_initialized(false), properties(KP_NONE)
+CKernel::CKernel(KERNELCACHE_IDX size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1), optimization_initialized(false), properties(KP_NONE), precompute_matrix(false), precomputed_matrix(NULL)
 {
 	if (size<10)
 		size=10;
@@ -25,6 +25,9 @@ CKernel::~CKernel()
 		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
 
 	kernel_cache_cleanup();
+
+	delete[] precomputed_matrix ;
+	precomputed_matrix=NULL ;
 }
 
 void CKernel::resize_kernel_cache(KERNELCACHE_IDX size) 
@@ -48,6 +51,12 @@ REAL CKernel::kernel(INT idx_a, INT idx_b)
 	if (idx_a < 0 || idx_b <0)
 		return 0;
 
+	if (precompute_matrix && (precomputed_matrix==NULL) && (lhs==rhs))
+		do_precompute_matrix() ;
+
+	if (precompute_matrix && (precomputed_matrix!=NULL))
+		return precomputed_matrix[idx_a*rhs->get_num_vectors()+idx_b] ;
+
 	return compute(idx_a, idx_b);
 }
 
@@ -67,6 +76,9 @@ bool CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	// allocate kernel cache but clean up beforehand
 	kernel_cache_cleanup();
 	kernel_cache_init(cache_size);
+
+	delete[] precomputed_matrix ;
+	precomputed_matrix=NULL ;
 
 	return true;
 }
@@ -530,4 +542,31 @@ const REAL* CKernel::get_subkernel_weights(INT &num_weights)
 void CKernel::set_subkernel_weights(REAL* weights, INT num_weights)
 {
 	CIO::message(M_ERROR, "kernel set_subkernel_weights not implemented\n") ;
+}
+
+void CKernel::do_precompute_matrix()
+{
+	INT num_left=get_lhs()->get_num_vectors();
+	INT num_right=get_rhs()->get_num_vectors();
+	CIO::message(M_INFO, "precomputing kernel matrix (%ix%i)\n", num_left, num_right) ;
+
+	assert(num_left == num_right) ;
+	assert(get_lhs()==get_rhs()) ;
+	INT num=num_left ;
+	
+	delete[] precomputed_matrix ;
+	precomputed_matrix=new REAL[num*num] ;
+	assert(precomputed_matrix!=NULL) ;
+
+	for (INT i=0; i<num; i++)
+	{
+		if (i%10==0)
+			CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
+		for (INT j=0; j<=i; j++)
+		{
+			precomputed_matrix[i*num+j] = compute(i,j) ;
+			precomputed_matrix[j*num+i] = precomputed_matrix[i*num+j] ;
+		}
+	}
+	CIO::message(M_INFO, "done.\n") ;
 }

@@ -118,9 +118,12 @@ bool CGUISVM::train(CHAR* param)
 	svm->set_epsilon(epsilon);
 	svm->set_C_mkl(C_mkl);
 	svm->set_C(C1, C2);
-	svm->use_kerncombination(use_mkl);
+	svm->set_mkl_enabled(use_mkl);
+	svm->set_linadd_enabled(use_linadd);
 	((CKernelMachine*) svm)->set_labels(trainlabels);
 	((CKernelMachine*) svm)->set_kernel(kernel);
+	kernel->set_precompute_matrix(use_precompute);
+	
 	return svm->train();
 }
 
@@ -196,6 +199,7 @@ bool CGUISVM::test(CHAR* param)
 	CIO::message(M_INFO, "starting svm testing\n") ;
 	((CKernelMachine*) svm)->set_labels(testlabels);
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
+	gui->guikernel.get_kernel()->set_precompute_matrix(false);
 
 	if ( (gui->guikernel.get_kernel()->is_optimizable()) && (gui->guikernel.get_kernel()->get_is_initialized()))
 		CIO::message(M_DEBUG, "using kernel optimization\n");
@@ -334,7 +338,7 @@ bool CGUISVM::set_C(CHAR* param)
 	return true ;  
 }
 
-bool CGUISVM::use_kerncombination(CHAR* param)
+bool CGUISVM::set_mkl_enabled(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
@@ -343,10 +347,44 @@ bool CGUISVM::use_kerncombination(CHAR* param)
 
 	use_mkl = (mkl==1);
 
-	if (mkl)
-		CIO::message(M_INFO, "Enabling MKL kern combination\n") ;
+	if (use_mkl)
+		CIO::message(M_INFO, "Enabling MKL optimization\n") ;
 	else
-		CIO::message(M_INFO, "Disabling MKL kern combination\n") ;
+		CIO::message(M_INFO, "Disabling MKL optimization\n") ;
+
+	return true ;  
+}
+
+bool CGUISVM::set_precompute_enabled(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	int precompute=1;
+	sscanf(param, "%d", &precompute) ;
+
+	use_precompute = (precompute==1);
+
+	if (use_precompute)
+		CIO::message(M_INFO, "Enabling Kernel Matrix Precomputation\n") ;
+	else
+		CIO::message(M_INFO, "Disabling Kernel Matrix Precomputation\n") ;
+
+	return true ;  
+}
+
+bool CGUISVM::set_linadd_enabled(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	int linadd=1;
+	sscanf(param, "%d", &linadd) ;
+
+	use_linadd = (linadd==1);
+	
+	if (use_linadd)
+		CIO::message(M_INFO, "Enabling LINADD optimization\n") ;
+	else
+		CIO::message(M_INFO, "Disabling LINADD optimization\n") ;
 
 	return true ;  
 }
@@ -355,6 +393,7 @@ CLabels* CGUISVM::classify(CLabels* output)
 {
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
+	gui->guikernel.get_kernel()->set_precompute_matrix(false);
 
 	if (!svm)
 	{
@@ -392,6 +431,7 @@ bool CGUISVM::classify_example(INT idx, REAL &result)
 {
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
+	gui->guikernel.get_kernel()->set_precompute_matrix(false);
 
 	if (!svm)
 	{

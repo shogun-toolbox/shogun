@@ -129,6 +129,15 @@ class CKernel
 
 		virtual bool set_kernel_parameters(INT num, const double* param) { return false; }
 
+		void set_precompute_matrix(bool flag) { 
+			precompute_matrix = flag ; 
+			if (!precompute_matrix)
+			{
+				delete[] precomputed_matrix ;
+				precomputed_matrix = NULL ;
+			}
+		} ;
+		
 	protected:
 		inline void set_is_initialized(bool init) { optimization_initialized=init; }
 
@@ -148,7 +157,6 @@ class CKernel
 		void   kernel_cache_free(KERNELCACHE_IDX cacheidx);
 		KERNELCACHE_IDX   kernel_cache_free_lru();
 		KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(KERNELCACHE_IDX);
-
 
 		//@}
 
@@ -189,5 +197,10 @@ class CKernel
 		bool optimization_initialized ;
 
 		ULONG  properties;
+
+		// matrix precomputation
+		bool precompute_matrix ;
+		REAL * precomputed_matrix ;
+		void do_precompute_matrix() ;
 };
 #endif
