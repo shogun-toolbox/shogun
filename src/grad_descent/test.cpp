@@ -1,13 +1,13 @@
-#include "hmm/HMM.h"
+#include "distributions/hmm/HMM.h"
 
 CHMM* hmmcom ;
 double linmin(REAL p[], REAL xi[], int n) ;
 
 double get_objective(CHMM* pos)
 {
-  //int no_of_examples=pos->get_observations()->get_DIMENSION() ;
+  //int no_of_examples=pos->get_observations()->get_num_vectors() ;
 
-  double lik=exp( pos->model_probability(-1) * pos->get_observations()->get_DIMENSION()) ;
+  double lik=exp( pos->model_probability(-1) * pos->get_observations()->get_num_vectors()) ;
   //for (int num=0; num<no_of_examples; num++)
   //    lik+=pos->model_probability(num);
   //lik/=no_of_examples ;
@@ -18,7 +18,7 @@ double get_objective(CHMM* pos)
 
 void get_gradient_vector(CHMM* pos, REAL* gradient)
 {
-  int no_of_examples=pos->get_observations()->get_DIMENSION() ;
+  int no_of_examples=pos->get_observations()->get_num_vectors() ;
 
   //pos->check_model_derivatives() ;
   //pos->check_model_derivatives_combined() ;
@@ -47,7 +47,7 @@ void get_gradient_vector(CHMM* pos, REAL* gradient)
 
 void get_param_vector(CHMM* pos, REAL* params)
 {
-  long i,j,p=0;
+  LONG i,j,p=0;
 #define DO_EXP(x) (x)
 
   for (i=0; i<pos->get_N(); i++)
@@ -71,7 +71,7 @@ void get_param_vector(CHMM* pos, REAL* params)
 void set_param_vector(CHMM* pos, REAL* params)
 {
 #define DO_LOG(x) (x)
-  long i,j,p=0;
+  LONG i,j,p=0;
   
   for (i=0; i<pos->get_N(); i++)
     pos->set_p(i,DO_LOG(params[p++])) ;
@@ -94,8 +94,8 @@ void set_param_vector(CHMM* pos, REAL* params)
 void fixed_descent(CHMM* pos, REAL step_size, REAL beta) 
 {
   REAL * params, * gradient ;
-  long int len=pos->get_N()*(1+pos->get_N()+1+pos->get_M()) ;
-  long int i ;
+  LONG len=pos->get_N()*(1+pos->get_N()+1+pos->get_M()) ;
+  LONG i ;
   params=new double[len] ;
   gradient=new double[len] ;
   hmmcom=pos ;

@@ -2,6 +2,7 @@
 #include "gui/GUI.h"
 #include "lib/io.h"
 #include "features/RealFileFeatures.h"
+#include "features/Labels.h"
 
 #ifdef SVMMPI
 #include "svm_mpi/mpi_oneclass.h"
@@ -20,7 +21,7 @@ CGUISVM::~CGUISVM()
 	delete svm;
 }
 
-bool CGUISVM::new_svm(char* param)
+bool CGUISVM::new_svm(CHAR* param)
 {
   param=CIO::skip_spaces(param);
   
@@ -66,7 +67,7 @@ bool CGUISVM::new_svm(char* param)
   return (svm!=NULL);
 }
 
-bool CGUISVM::train(char* param)
+bool CGUISVM::train(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
@@ -91,6 +92,12 @@ bool CGUISVM::train(char* param)
 		return false ;
 	}
 
+	if (!gui->guikernel.is_initialized())
+	{
+		CIO::message("kernel not initialized\n") ;
+		return 0;
+	}
+
 	CIO::message("starting svm training on %ld vectors using C=%lf\n", trainlabels->get_num_labels(), C) ;
 
 	svm->set_C(C);
@@ -99,13 +106,13 @@ bool CGUISVM::train(char* param)
 	return svm->train();
 }
 
-bool CGUISVM::test(char* param)
+bool CGUISVM::test(CHAR* param)
 {
-	char outputname[1024];
-	char rocfname[1024];
+	CHAR outputname[1024];
+	CHAR rocfname[1024];
 	FILE* outputfile=stdout;
 	FILE* rocfile=NULL;
-	int numargs=-1;
+	INT numargs=-1;
 
 	param=CIO::skip_spaces(param);
 
@@ -136,8 +143,8 @@ bool CGUISVM::test(char* param)
 	CLabels* testlabels=gui->guilabels.get_test_labels();
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
-	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
-	CIO::message("I:test features %ldx%ld\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
+	CIO::message("I:training: %ld examples each %ld features\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
+	CIO::message("I:testing: %ld examples each %ld features\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
 
 	if (!svm)
 	{
@@ -162,16 +169,21 @@ bool CGUISVM::test(char* param)
 		return false ;
 	}
 
+	if (!gui->guikernel.is_initialized())
+	{
+		CIO::message("kernel not initialized\n") ;
+		return 0;
+	}
+
 	CIO::message("starting svm testing\n") ;
 	((CKernelMachine*) svm)->set_labels(testlabels);
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
 
-	REAL* output=NULL;
-	///REAL* output= svm->test();
+	REAL* output= svm->test();
 
-	long len=0;
-	long total=	testfeatures->get_num_vectors();
-	int* label=	testlabels->get_labels(len);
+	INT len=0;
+	INT total=	testfeatures->get_num_vectors();
+	INT* label= testlabels->get_int_labels(len);
 
 	CIO::message("out !!! %ld %ld\n", total, len);
 	assert(label);
@@ -181,7 +193,7 @@ bool CGUISVM::test(char* param)
 
 	if (rocfile)
 		fclose(rocfile);
-	if (outputfile)
+	if ((outputfile) && (outputfile!=stdout))
 		fclose(outputfile);
 
 	delete[] output;
@@ -189,12 +201,12 @@ bool CGUISVM::test(char* param)
 	return true;
 }
 
-bool CGUISVM::load(char* param)
+bool CGUISVM::load(CHAR* param)
 {
     bool result=false;
     param=CIO::skip_spaces(param);
-    char filename[1024];
-    char type[1024];
+    CHAR filename[1024];
+    CHAR type[1024];
 
     if ((sscanf(param, "%s %s", filename, type))==2)
     {
@@ -228,7 +240,7 @@ bool CGUISVM::load(char* param)
 	return false;
 }
 
-bool CGUISVM::save(char* param)
+bool CGUISVM::save(CHAR* param)
 {
     bool result=false;
     param=CIO::skip_spaces(param);
@@ -254,11 +266,80 @@ bool CGUISVM::save(char* param)
     return result;
 }
 
-bool CGUISVM::set_C(char* param)
+bool CGUISVM::set_C(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
 	sscanf(param, "%le", &C) ;
 	CIO::message("Set to C=%f\n", C) ;
 	return true ;  
+}
+
+CLabels* CGUISVM::classify(CLabels* output)
+{
+	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
+	CFeatures* testfeatures=gui->guifeatures.get_test_features();
+
+	if (!svm)
+	{
+		CIO::message("no svm available\n") ;
+		return NULL;
+	}
+	if (!trainfeatures)
+	{
+		CIO::message("no training features available\n") ;
+		return NULL;
+	}
+
+	if (!testfeatures)
+	{
+		CIO::message("no test features available\n") ;
+		return NULL;
+	}
+
+	if (!gui->guikernel.is_initialized())
+	{
+		CIO::message("kernel not initialized\n") ;
+		return NULL;
+	}
+	  
+	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
+
+	CIO::message("starting svm testing\n") ;
+	return svm->classify(output);
+}
+
+bool CGUISVM::classify_example(INT idx, REAL &result)
+{
+	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
+	CFeatures* testfeatures=gui->guifeatures.get_test_features();
+
+	if (!svm)
+	{
+		CIO::message("no svm available\n") ;
+		return false;
+	}
+	if (!trainfeatures)
+	{
+		CIO::message("no training features available\n") ;
+		return false;
+	}
+
+	if (!testfeatures)
+	{
+		CIO::message("no test features available\n") ;
+		return false;
+	}
+
+	if (!gui->guikernel.is_initialized())
+	{
+		CIO::message("kernel not initialized\n") ;
+		return false;
+	}
+
+	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
+
+	result=svm->classify_example(idx);
+	//CIO::message("%f guilib\n", result);
+	return true ;
 }

@@ -7,7 +7,7 @@
 class CCharKernel : public CSimpleKernel<CHAR>
 {
 	public:
-		CCharKernel(long cachesize) : CSimpleKernel<CHAR>(cachesize)
+		CCharKernel(LONG cachesize) : CSimpleKernel<CHAR>(cachesize)
 		{
 		}
 

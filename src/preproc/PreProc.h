@@ -11,7 +11,7 @@ class CFeatures;
 class CPreProc
 {
 public:
-	CPreProc(const char* name, const char* id);
+	CPreProc(const CHAR* name, const CHAR* id);
 	virtual ~CPreProc();
 
 	/// initialize preprocessor from features
@@ -36,13 +36,13 @@ public:
 	virtual EFeatureClass get_feature_class()=0;
 
 	/// return the name of the preprocessor
-	const char * get_name() const { return preproc_name; }
+	const CHAR * get_name() const { return preproc_name; }
 	
 	/// return a FOUR letter id of the preprocessor
-	const char * get_id() const { return preproc_id; }
+	const CHAR * get_id() const { return preproc_id; }
 
  protected:
-	const char* preproc_name ;
-	const char* preproc_id;
+	const CHAR* preproc_name ;
+	const CHAR* preproc_id;
 };
 #endif

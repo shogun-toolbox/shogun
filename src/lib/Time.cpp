@@ -1,5 +1,6 @@
 #include "lib/Time.h"
 #include "lib/io.h"
+#include "lib/common.h"
 
 CTime::CTime(bool st)
 {
@@ -17,7 +18,7 @@ clock_t CTime::start(bool verbose)
 {
 	start_time=clock();
 	if (verbose)
-		CIO::message("start %ld\n", (long) start_time);
+		CIO::message("start %ld\n", (LONG) start_time);
 	return start_time;
 }
 
@@ -25,7 +26,7 @@ clock_t CTime::cur_time_diff(bool verbose)
 {
 	clock_t cur_time=clock();
 	if (verbose)
-		CIO::message("current %ld\n", (long) cur_time);
+		CIO::message("current %ld\n", (LONG) cur_time);
 	return cur_time;
 }
 
@@ -33,7 +34,7 @@ clock_t CTime::stop(bool verbose)
 {
 	stop_time=clock();
 	if (verbose)
-		CIO::message("stop %ld\n", (long) stop_time);
+		CIO::message("stop %ld\n", (LONG) stop_time);
 	return stop_time;
 }
 

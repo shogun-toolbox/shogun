@@ -10,7 +10,7 @@
 class CRealPreProc : public CSimplePreProc<REAL>
 {
 public:
-	CRealPreProc(const char *name, const char* id) : CSimplePreProc<REAL>(name,id)
+	CRealPreProc(const CHAR *name, const CHAR* id) : CSimplePreProc<REAL>(name,id)
 	{
 	}
 

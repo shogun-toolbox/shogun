@@ -8,7 +8,7 @@
 class CSparseGaussianKernel: public CSparseRealKernel
 {
  public:
-  CSparseGaussianKernel(long size, double width);
+  CSparseGaussianKernel(LONG size, double width);
   ~CSparseGaussianKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -26,13 +26,13 @@ class CSparseGaussianKernel: public CSparseRealKernel
   inline virtual EFeatureType get_feature_type() { return F_REAL; }
 
   // return the name of a kernel
-  virtual const char* get_name() { return "SparseGaussian" ; } ;
+  virtual const CHAR* get_name() { return "SparseGaussian" ; } ;
 
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
-  virtual REAL compute(long idx_a, long idx_b);
+  virtual REAL compute(INT idx_a, INT idx_b);
   /*    compute_kernel*/
   
  protected:

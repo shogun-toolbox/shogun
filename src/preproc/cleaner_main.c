@@ -32,15 +32,15 @@ static _mex_information _main_info
  * building a stand-alone application.  It calls a library function to perform
  * initialization, call the main function, and perform library termination.
  */
-//int main(int argc, const char * * argv) {
+//INT main(INT argc, const CHAR * * argv) {
 //    return mclMain(argc, argv, mlxCleaner, 1, &_main_info);
 //}
 
-void cleaner_main(double *covZ, int dim, double thresh,
-		  double **T, int *num_dim) 
+void cleaner_main(double *covZ, INT dim, double thresh,
+		  double **T, INT *num_dim) 
 {
   mxArray *mxcovZ, *mxthresh, *mxT ;
-  int i ;
+  INT i ;
 
   /*  mclInitMatlabRoot( 0, NULL );*/
 

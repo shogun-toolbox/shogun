@@ -15,13 +15,13 @@ CGUILabels::~CGUILabels()
 	delete test_labels;
 }
 
-bool CGUILabels::load(char* param)
+bool CGUILabels::load(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
-	char filename[1024];
-	char target[1024];
+	CHAR filename[1024]="";
+	CHAR target[1024]="";
 	bool result=false;
-	bool allow_unknown=false;
+	//bool allow_unknown=false;
 
 	if ((sscanf(param, "%s %s", filename, target))==2)
 	{
@@ -50,27 +50,26 @@ bool CGUILabels::load(char* param)
 			CLabels* label=*f_ptr;
 			assert(label);
 
-			if (!allow_unknown)
-			{
-				bool invalids=false;
+			//if (!allow_unknown)
+			//{
+			//	bool invalids=false;
 
-				for (long i=0; i<label->get_num_labels() && !invalids; i++)
-				{
+			//	for (INT i=0; i<label->get_num_labels() && !invalids; i++)
+			//	{
+			//		if (label->get_int_label(i)==0)
+			//			invalids=true;
+			//	}
 
-					if (label->get_label(i)==0)
-						invalids=true;
-				}
-
-				if (invalids)
-				{
-					CIO::message("attempting to fix invalid labels (class 0), by setting them to class -1\n");
-					for (long i=0; i<label->get_num_labels(); i++)
-					{
-						if (label->get_label(i)==0)
-							label->set_label(i, -1);
-					}
-				}
-			}
+			//	if (invalids)
+			//	{
+			//		CIO::message("attempting to fix invalid labels (class 0), by setting them to class -1\n");
+			//		for (INT i=0; i<label->get_num_labels(); i++)
+			//		{
+			//			if (label->get_label(i)==0)
+			//				label->set_label(i, -1);
+			//		}
+			//	}
+			//}
 		}
 	}
 	else
@@ -79,7 +78,7 @@ bool CGUILabels::load(char* param)
 	return result;
 }
 
-bool CGUILabels::save(char* param)
+bool CGUILabels::save(CHAR* param)
 {
 	bool result=false;
 	return result;

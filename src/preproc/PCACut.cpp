@@ -4,7 +4,15 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifndef NO_LAPACK
+#ifdef HAVE_ATLAS
+extern "C" {
+#include <atlas_enum.h>
+#include <atlas_level2.h>
+}
+
+#ifdef HAVE_LAPACK
+#include "lib/lapack.h"
+
 #include "lib/common.h"
 #include "PCACut.h"
 #include "RealPreProc.h"
@@ -12,10 +20,10 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-extern "C" void cleaner_main(double *covZ, int dim, double thresh,
-		double **T, int *num_dim)  ;
+extern "C" void cleaner_main(double *covZ, INT dim, double thresh,
+		double **T, INT *num_dim)  ;
 
-CPCACut::CPCACut(int do_whitening_, double thresh_) : CRealPreProc("PCACut", "PCAC"), T(NULL),
+CPCACut::CPCACut(INT do_whitening_, double thresh_) : CRealPreProc("PCACut", "PCAC"), T(NULL),
 	num_dim(0), mean(NULL), initialized(false), do_whitening(do_whitening_), thresh(thresh_)
 {
 }
@@ -35,13 +43,13 @@ bool CPCACut::init(CFeatures* f)
 		assert(f->get_feature_type() == F_REAL);
 
 		CIO::message("calling CPCACut::init\n") ;
-		int num_vectors=((CRealFeatures*)f)->get_num_vectors() ;
-		int num_features=((CRealFeatures*)f)->get_num_features() ;
+		INT num_vectors=((CRealFeatures*)f)->get_num_vectors() ;
+		INT num_features=((CRealFeatures*)f)->get_num_features() ;
 		CIO::message("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
 		delete[] mean ;
 		mean=new double[num_features+1] ;
 
-		int i,j;
+		INT i,j;
 
 		/// compute mean
 
@@ -54,7 +62,7 @@ bool CPCACut::init(CFeatures* f)
 		// sum 
 		for (i=0; i<num_vectors; i++)
 		{
-			long len;
+			INT len;
 			bool free;
 			REAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free);
 			for (j=0; j<num_features; j++)
@@ -82,23 +90,20 @@ bool CPCACut::init(CFeatures* f)
 			else if (!(i % (num_vectors/200+1)))
 				CIO::message(".");
 
-			long len;
+			INT len;
 			bool free;
 
 			REAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free) ;
 
-			for (int j=0; j<num_features; j++)
+			for (INT j=0; j<num_features; j++)
 				vec[j]-=mean[j] ;
 
-			double oned=1.0;
-			int onei=1;
-			int lda=(int) num_features;
-
 			/// A = 1.0*xy^T+A blas
-			dger_(&num_features,&num_features, &oned, vec, &onei, vec, &onei, cov, &lda) ;
+			ATL_dger(num_features,num_features, 1.0, vec, 1, 
+				 vec, 1, cov, (int)num_features) ;
 
-			//for (int k=0; k<num_features; k++)
-			//	for (int l=0; l<num_features; l++)
+			//for (INT k=0; k<num_features; k++)
+			//	for (INT l=0; l<num_features; l++)
 			//          cov[k*num_features+l]+=feature[l]*feature[k] ;
 
 			((CRealFeatures*) f)->free_feature_vector(vec, i, free) ;
@@ -111,14 +116,14 @@ bool CPCACut::init(CFeatures* f)
 		CIO::message("done\n") ;
 
 		CIO::message("Computing Eigenvalues ... ") ;
-		int lwork=3*num_features ;
+		INT lwork=3*num_features ;
 		double* work=new double[lwork] ;
 		double* eigenvalues=new double[num_features] ;
-		int info;
-		char V='V';
-		char U='U';
-		int ord= (int) num_features;
-		int lda= (int) num_features;
+		INT info;
+		CHAR V='V';
+		CHAR U='U';
+		INT ord= (int) num_features;
+		INT lda= (int) num_features;
 
 		for (i=0; i<num_features; i++)
 			eigenvalues[i]=0;
@@ -144,12 +149,12 @@ bool CPCACut::init(CFeatures* f)
 		assert(T!=NULL) ;
 		if (do_whitening)
 		{
-			int offs=0 ;
+			INT offs=0 ;
 			for (i=0; i<num_features; i++)
 			{
 				if (eigenvalues[i]>1e-6)
 				{
-					for (int j=0; j<num_features; j++)
+					for (INT j=0; j<num_features; j++)
 						T[offs+j*num_dim]=cov[num_features*i+j]/sqrt(eigenvalues[i]) ;
 					offs++ ;
 				} ;
@@ -178,8 +183,8 @@ void CPCACut::cleanup()
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 {
-	long num_vectors=0;
-	long num_features=0;
+	INT num_vectors=0;
+	INT num_features=0;
 
 	REAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
 	CIO::message("get Feature matrix: %ix%i\n", num_vectors, num_features) ;
@@ -190,22 +195,15 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 		REAL* res= new REAL[num_dim];
 		double* sub_mean= new double[num_features];
 
-		for (int vec=0; vec<num_vectors; vec++)
+		for (INT vec=0; vec<num_vectors; vec++)
 		{
-			int i;
+			INT i;
 
 			for (i=0; i<num_features; i++)
 				sub_mean[i]=m[num_features*vec+i]-mean[i] ;
 
-			int onei=1;
-			double zerod=0;
-			double oned=1;
-			char N='N';
-			int num_f=num_features;
-			int num_d=num_dim;
-			int lda=num_dim;
-
-			dgemv_(&N, &num_d, &num_f, &oned, T, &lda, sub_mean, &onei, &zerod, res, &onei); 
+			ATL_dgemv(AtlasNoTrans, num_dim, num_features, 1.0,
+				  T, num_dim, sub_mean, 1, 0, res, 1); 
 
 			REAL* m_transformed=&m[num_dim*vec];
 			for (i=0; i<num_dim; i++)
@@ -224,17 +222,17 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-REAL* CPCACut::apply_to_feature_vector(REAL* f, int &len)
+REAL* CPCACut::apply_to_feature_vector(REAL* f, INT &len)
 {
 	REAL *ret=new REAL[num_dim];
-	int onei=1 ;
+	INT onei=1 ;
 	double zerod=0, oned=1 ;
-	char N='N' ;
+	CHAR N='N' ;
 	REAL *sub_mean=new REAL[len];
-	for (int i=0; i<len; i++)
+	for (INT i=0; i<len; i++)
 		sub_mean[i]=f[i]-mean[i];
 
-	int numd=num_dim;
+	INT numd=num_dim;
 
 	dgemv_(&N, &numd, &len, &oned, T, &numd, sub_mean, &onei, &zerod, ret, &onei) ;
 
@@ -254,8 +252,8 @@ bool CPCACut::load_init_data(FILE* src)
 	mean=new double[num_dim];
 	T=new double[num_dim*num_old_dim];
 	assert (mean!=NULL && T!=NULL);
-	assert(fread(mean, sizeof(double), num_old_dim, src)==(unsigned int) num_old_dim);
-	assert(fread(T, sizeof(double), num_dim*num_old_dim, src)==(unsigned int) num_old_dim*num_dim);
+	assert(fread(mean, sizeof(double), num_old_dim, src)==(UINT) num_old_dim);
+	assert(fread(T, sizeof(double), num_dim*num_old_dim, src)==(UINT) num_old_dim*num_dim);
 	return true;
 }
 
@@ -264,8 +262,10 @@ bool CPCACut::save_init_data(FILE* dst)
 {
 	assert(fwrite(&num_dim, sizeof(int), 1, dst)==1);
 	assert(fwrite(&num_old_dim, sizeof(int), 1, dst)==1);
-	assert(fwrite(mean, sizeof(double), num_old_dim, dst)==(unsigned int) num_old_dim);
-	assert(fwrite(T, sizeof(double), num_dim*num_old_dim, dst)==(unsigned int) num_old_dim*num_dim);
+	assert(fwrite(mean, sizeof(double), num_old_dim, dst)==(UINT) num_old_dim);
+	assert(fwrite(T, sizeof(double), num_dim*num_old_dim, dst)==(UINT) num_old_dim*num_dim);
 	return true;
 }
-#endif NO_LAPACK
+
+#endif // HAVE_LAPACK
+#endif // HAVE_ATLAS

@@ -7,7 +7,7 @@
 class CByteKernel : public CSimpleKernel<BYTE>
 {
 	public:
-		CByteKernel(long cachesize) : CSimpleKernel<BYTE>(cachesize)
+		CByteKernel(LONG cachesize) : CSimpleKernel<BYTE>(cachesize)
 		{
 		}
 

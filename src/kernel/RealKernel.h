@@ -7,7 +7,7 @@
 class CRealKernel : public CSimpleKernel<REAL>
 {
 	public:
-		CRealKernel(long cachesize) : CSimpleKernel<REAL>(cachesize)
+		CRealKernel(LONG cachesize) : CSimpleKernel<REAL>(cachesize)
 		{
 		}
 

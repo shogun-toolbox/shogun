@@ -11,7 +11,7 @@ template <class T> class CSimpleFile
 {
 public:
 	/// rw is either r for read and w for write
-	CSimpleFile(char* fname, FILE* f)
+	CSimpleFile(CHAR* fname, FILE* f)
 	{
 		file=f;
 		this->fname=strdup(fname);
@@ -33,7 +33,7 @@ public:
 			if (num==0)
 			{
 				bool seek_status=true;
-				long cur_pos=ftell(file);
+				LONG cur_pos=ftell(file);
 
 				if (cur_pos!=-1)
 				{
@@ -68,7 +68,15 @@ public:
 					target=new T[num];
 
 				if (target)
-					status=(fread((void*) target, sizeof(T), num, file) == (unsigned int) num);
+				{
+					size_t num_read=fread((void*) target, sizeof(T), num, file);
+					status=((LONG) num_read == num);
+
+					if (!status)
+						CIO::message("only %ld of %ld entries read. io error\n", (LONG) num_read, num);
+				}
+				else
+					CIO::message("failed to allocate memory while trying to read %ld entries from file \"s\"\n", (LONG) num, fname);
 			}
 			return target;
 		}
@@ -79,7 +87,7 @@ public:
 		}
 	}
 
-	bool save(T* target, long num)
+	bool save(T* target, LONG num)
 	{
 		if (status)
 		{
@@ -106,7 +114,7 @@ public:
 protected:
 	FILE* file;
 	bool status;
-	char task;
-	char* fname;
+	CHAR task;
+	CHAR* fname;
 };
 #endif

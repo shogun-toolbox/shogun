@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <string.h>
 
-CRealFileFeatures::CRealFileFeatures(long size, char* fname) : CRealFeatures(size)
+CRealFileFeatures::CRealFileFeatures(LONG size, CHAR* fname) : CRealFeatures(size)
 {
     working_file=fopen(fname, "r");
     working_filename=strdup(fname);
@@ -21,7 +21,7 @@ CRealFileFeatures::CRealFileFeatures(long size, char* fname) : CRealFeatures(siz
     status=load_base_data();
 }
 
-CRealFileFeatures::CRealFileFeatures(long size, FILE* file) : CRealFeatures(size), working_file(file), working_filename(NULL)
+CRealFileFeatures::CRealFileFeatures(LONG size, FILE* file) : CRealFeatures(size), working_file(file), working_filename(NULL)
 {
     assert(working_file!=NULL);
     intlen=0;
@@ -57,7 +57,7 @@ CFeatures* CRealFileFeatures::duplicate() const
     return new CRealFileFeatures(*this);
 }
 
-REAL* CRealFileFeatures::compute_feature_vector(long num, long &len, REAL* target)
+REAL* CRealFileFeatures::compute_feature_vector(INT num, INT &len, REAL* target)
 {
     assert(num<num_vectors);
     //CIO::message("f:%ld\n", num);
@@ -68,7 +68,7 @@ REAL* CRealFileFeatures::compute_feature_vector(long num, long &len, REAL* targe
     assert(featurevector!=NULL);
     assert(working_file!=NULL);
     fseek(working_file, filepos+num_features*doublelen*num, SEEK_SET);
-    assert(fread(featurevector, doublelen, num_features, working_file) == (unsigned long) num_features);
+    assert(fread(featurevector, doublelen, num_features, working_file) == (size_t) num_features);
     return featurevector;
 }
 
@@ -83,21 +83,21 @@ REAL* CRealFileFeatures::load_feature_matrix()
 
     CIO::message("loading... be patient.\n");
 
-    for (long i=0; i<(long) num_vectors; i++)
+    for (INT i=0; i<(INT) num_vectors; i++)
     {
 	if (!(i % (num_vectors/10+1)))
 	    CIO::message("%02d%%.", (int) (100.0*i/num_vectors));
 	else if (!(i % (num_vectors/200+1)))
 	    CIO::message(".");
 
-	assert(fread(&feature_matrix[num_features*i], doublelen, num_features, working_file)== (unsigned long) num_features) ;
+	assert(fread(&feature_matrix[num_features*i], doublelen, num_features, working_file)== (size_t) num_features) ;
     }
 	    CIO::message("done.\n");
 
     return feature_matrix;
 }
 
-int CRealFileFeatures::get_label(long idx)
+INT CRealFileFeatures::get_label(INT idx)
 {
     assert(idx<num_vectors);
     if (labels)
@@ -108,23 +108,20 @@ int CRealFileFeatures::get_label(long idx)
 bool CRealFileFeatures::load_base_data()
 {
     assert(working_file!=NULL);
-    unsigned int num_vec=0;
-    unsigned int num_feat=0;
+    UINT num_vec=0;
+    UINT num_feat=0;
 
-    assert(fread(&intlen, sizeof(unsigned char), 1, working_file)==1);
-    assert(fread(&doublelen, sizeof(unsigned char), 1, working_file)==1);
-    assert(fread(&endian, (unsigned int) intlen, 1, working_file)== 1);
-    assert(fread(&fourcc, (unsigned int) intlen, 1, working_file)==1);
-    assert(fread(&num_vec, (unsigned int) intlen, 1, working_file)==1);
-    assert(fread(&num_feat, (unsigned int) intlen, 1, working_file)==1);
-    assert(fread(&preprocd, (unsigned int) intlen, 1, working_file)==1);
+    assert(fread(&intlen, sizeof(BYTE), 1, working_file)==1);
+    assert(fread(&doublelen, sizeof(BYTE), 1, working_file)==1);
+    assert(fread(&endian, (UINT) intlen, 1, working_file)== 1);
+    assert(fread(&fourcc, (UINT) intlen, 1, working_file)==1);
+    assert(fread(&num_vec, (UINT) intlen, 1, working_file)==1);
+    assert(fread(&num_feat, (UINT) intlen, 1, working_file)==1);
+    assert(fread(&preprocd, (UINT) intlen, 1, working_file)==1);
     CIO::message("detected: intsize=%d, doublesize=%d, num_vec=%d, num_feat=%d, preprocd=%d\n", intlen, doublelen, num_vec, num_feat, preprocd);
-#warning check for FOURCC , check for endianess+convert if not right+ more checks.
     filepos=ftell(working_file);
     set_num_vectors(num_vec);
     set_num_features(num_feat);
-#warning preprocessed is now a vector ... preprocessed=preprocd==1;
-	//CIO::message("seeking to: %ld\n", filepos+num_features*num_vectors*doublelen);
     fseek(working_file, filepos+num_features*num_vectors*doublelen, SEEK_SET);
     delete[] labels;
     labels= new int[num_vec];

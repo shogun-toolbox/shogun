@@ -12,11 +12,13 @@ class CGUIKernel
 	~CGUIKernel();
 
 	CKernel* get_kernel();
-	bool set_kernel(char* param);
-	bool init_kernel(char* param);
-	bool load_kernel_init(char* param);
-	bool save_kernel_init(char* param);
-	bool save_kernel(char* param);
+	bool set_kernel(CHAR* param);
+	bool init_kernel(CHAR* param);
+	bool load_kernel_init(CHAR* param);
+	bool save_kernel_init(CHAR* param);
+	bool save_kernel(CHAR* param);
+
+	bool is_initialized() { return initialized ; } ;
 
  protected:
 	CKernel* kernel;

@@ -2,12 +2,12 @@
 #define _CFKFEATURES__H__
 
 #include "features/RealFeatures.h"
-#include "hmm/HMM.h"
+#include "distributions/hmm/HMM.h"
 
 class CFKFeatures: public CRealFeatures
 {
  public:
-  CFKFeatures(long size, CHMM* p, CHMM* n);
+  CFKFeatures(LONG size, CHMM* p, CHMM* n);
   CFKFeatures(const CFKFeatures &orig);
   
   virtual ~CFKFeatures();
@@ -35,12 +35,12 @@ class CFKFeatures: public CRealFeatures
   inline double get_weight_a()  { return weight_a; };
 
  protected:
-  virtual REAL* compute_feature_vector(long num, long& len, REAL* target=NULL);
+  virtual REAL* compute_feature_vector(INT num, INT& len, REAL* target=NULL);
   
   /// computes the featurevector to the address addr
-  void compute_feature_vector(REAL* addr, long num, long& len);
+  void compute_feature_vector(REAL* addr, INT num, INT& len);
   
-  double deriv_a(double a, int dimension=-1) ;
+  double deriv_a(double a, INT dimension=-1) ;
 
  protected:
   CHMM* pos;

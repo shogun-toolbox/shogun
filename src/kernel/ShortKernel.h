@@ -7,7 +7,7 @@
 class CShortKernel : public CSimpleKernel<SHORT>
 {
 	public:
-		CShortKernel(long cachesize) : CSimpleKernel<SHORT>(cachesize)
+		CShortKernel(LONG cachesize) : CSimpleKernel<SHORT>(cachesize)
 		{
 		}
 

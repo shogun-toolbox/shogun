@@ -13,7 +13,7 @@ template <class ST> class CSparseFeatures;
 template <class ST> class CSparsePreProc : public CPreProc
 {
 public:
-	CSparsePreProc(const char *name, const char* id) : CPreProc(name,id)
+	CSparsePreProc(const CHAR *name, const CHAR* id) : CPreProc(name,id)
 	{
 	}
 
@@ -24,7 +24,7 @@ public:
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
-	virtual TSparse<ST>* apply_to_sparse_feature_vector(TSparse<ST>* f, int &len)=0;
+	virtual TSparse<ST>* apply_to_sparse_feature_vector(TSparse<ST>* f, INT &len)=0;
 
   /// return that we are simple minded features (just fixed size matrices)
   inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }

@@ -1,8 +1,8 @@
 
-/*double ddot_(int len, double*a, int i1, double*b, int i2) 
+/*double ddot_(INT len, double*a, INT i1, double*b, INT i2) 
 {
   double sum=0 ;
-  int i ;
+  INT i ;
   for (i=0; i<len; i++)
     sum+=a[i]*b[i] ;
   return sum ;

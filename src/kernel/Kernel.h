@@ -9,13 +9,13 @@
 class CKernel
 {
 	public:
-		CKernel(long size);
+		CKernel(LONG size);
 		virtual ~CKernel();
 
 		/** get kernel function for lhs feature vector x 
 		  and rhs feature vector y
 		 */
-		REAL kernel(long x, long y);
+		REAL kernel(INT x, INT y);
 
 		/** initialize kernel cache
 		 *  make sure to check that your kernel can deal with the
@@ -28,8 +28,8 @@ class CKernel
 		virtual void cleanup()=0;
 
 		/// load and save the kernel matrix
-		bool load(char* fname);
-		bool save(char* fname);
+		bool load(CHAR* fname);
+		bool save(CHAR* fname);
 
 		/// load and save kernel init_data
 		virtual bool load_init(FILE* src)=0;
@@ -51,21 +51,21 @@ class CKernel
 		virtual EFeatureClass get_feature_class()=0;
 
 		// return the name of a kernel
-		virtual const char* get_name()=0 ;
+		virtual const CHAR* get_name()=0 ;
 
-		void get_kernel_row(long docnum, long *active2dnum, REAL *buffer) ;
-		void cache_kernel_row(long x);
-		void cache_multiple_kernel_rows(long* key, long varnum);
+		void get_kernel_row(LONG docnum, LONG *active2dnum, REAL *buffer) ;
+		void cache_kernel_row(LONG x);
+		void cache_multiple_kernel_rows(LONG* key, LONG varnum);
 		void kernel_cache_reset_lru();
 
 		/// set the time used for lru	
-		inline void set_time(long t)
+		inline void set_time(LONG t)
 		{
 			kernel_cache.time=t;
 		}
 
 		// Update lru time to avoid removal from cache.
-		long kernel_cache_touch(long cacheidx)
+		LONG kernel_cache_touch(LONG cacheidx)
 		{
 			if(kernel_cache.index[cacheidx] != -1)
 			{
@@ -79,43 +79,43 @@ class CKernel
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual REAL compute(long x, long y)=0;
+		virtual REAL compute(INT x, INT y)=0;
 
 		/**@ cache kernel evalutations to improve speed
 		 */
 		//@{
-		void   kernel_cache_shrink(long, long, long *);
+		void   kernel_cache_shrink(long, long, LONG *);
 
 		/// init kernel cache of size megabytes
-		void   kernel_cache_init(long size);
+		void   kernel_cache_init(LONG size);
 		void   kernel_cache_cleanup();
-		long   kernel_cache_malloc();
-		void   kernel_cache_free(long cacheidx);
-		long   kernel_cache_free_lru();
-		REAL *kernel_cache_clean_and_malloc(long);
+		LONG   kernel_cache_malloc();
+		void   kernel_cache_free(LONG cacheidx);
+		LONG   kernel_cache_free_lru();
+		REAL *kernel_cache_clean_and_malloc(LONG);
 
 
 		/// Is that row cached?
-		inline long kernel_cache_check(long cacheidx)
+		inline LONG kernel_cache_check(LONG cacheidx)
 		{
 			return(kernel_cache.index[cacheidx] != -1);
 		}
 		//@}
 
 		struct KERNEL_CACHE {
-			long   *index;  
+			LONG   *index;  
 			REAL *buffer; 
-			long   *invindex;
-			long   *active2totdoc;
-			long   *totdoc2active;
-			long   *lru;
-			long   *occu;
-			long   elems;
-			long   max_elems;
-			long   time;
-			long   activenum;
-			long   buffsize;
-			//			long   r_offs;
+			LONG   *invindex;
+			LONG   *active2totdoc;
+			LONG   *totdoc2active;
+			LONG   *lru;
+			LONG   *occu;
+			LONG   elems;
+			LONG   max_elems;
+			LONG   time;
+			LONG   activenum;
+			LONG   buffsize;
+			//			LONG   r_offs;
 		};
 
 	protected:
@@ -123,7 +123,7 @@ class CKernel
 		KERNEL_CACHE kernel_cache;
 
 		/// cache_size in MB
-		long cache_size;
+		LONG cache_size;
 
 		/// this *COULD* store the whole kernel matrix
 		/// usually not applicable / faster

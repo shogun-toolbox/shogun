@@ -42,9 +42,9 @@ bool CLogPlusOne::save(FILE* f)
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 REAL* CLogPlusOne::apply_to_feature_matrix(CFeatures* f)
 {
-	long i,j;
-	long num_vec;
-	long num_feat;
+	INT i,j;
+	INT num_vec;
+	INT num_feat;
 	REAL* matrix=((CRealFeatures*) f)->get_feature_matrix(num_feat, num_vec);
 
 	for (i=0; i<num_vec; i++)
@@ -59,10 +59,10 @@ REAL* CLogPlusOne::apply_to_feature_matrix(CFeatures* f)
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-REAL* CLogPlusOne::apply_to_feature_vector(REAL* f, int& len)
+REAL* CLogPlusOne::apply_to_feature_vector(REAL* f, INT& len)
 {
 	REAL* vec=new REAL[len];
-	long i=0;
+	INT i=0;
 
 	for (i=0; i<len; i++)
 		vec[i]=log(f[i]+1);

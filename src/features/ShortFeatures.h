@@ -8,24 +8,24 @@
 class CShortFeatures: public CSimpleFeatures<SHORT>
 {
 	public:
-		CShortFeatures(long size);
+		CShortFeatures(LONG size);
 		CShortFeatures(const CShortFeatures & orig);
 
 		/** load features from file
 		 * fname - filename
 		 */
 
-		CShortFeatures(char* fname);
+		CShortFeatures(CHAR* fname);
 
-		bool obtain_from_char_features(CCharFeatures* cf, E_OBS_ALPHABET alphabet, int start, int order);
+		bool obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alphabet, INT start, INT order);
 
 		virtual EFeatureType get_feature_type() { return F_SHORT; }
 
 		virtual CFeatures* duplicate() const;
-		virtual bool load(char* fname);
-		virtual bool save(char* fname);
+		virtual bool load(CHAR* fname);
+		virtual bool save(CHAR* fname);
 	protected:
-		void translate_from_single_order(SHORT* obs, int sequence_length, int start, int order, int max_val);
+		void translate_from_single_order(SHORT* obs, INT sequence_length, INT start, INT order, INT max_val);
 
 };
 #endif

@@ -1,7 +1,8 @@
 #ifndef __GUIHMM__H
 #define __GUIHMM__H
 
-#include "hmm/HMM.h"
+#include "distributions/hmm/HMM.h"
+#include "features/Labels.h"
 
 class CGUI ;
 
@@ -11,56 +12,57 @@ public:
 	CGUIHMM(CGUI *);
 	~CGUIHMM();
 
-	bool new_hmm(char* param);
-	bool load(char* param);
-	bool save(char* param);
+	bool new_hmm(CHAR* param);
+	bool load(CHAR* param);
+	bool save(CHAR* param);
 	
-	bool set_num_hmm_tables(char* param) ;
-	bool baum_welch_train(char* param);
-	bool baum_welch_train_defined(char* param);
-	bool viterbi_train_defined(char* param);
-	bool viterbi_train(char* param);
-	bool linear_train(char* param);
-	bool linear_train_from_file(char* param);
-	bool one_class_test(char* param);
-	bool hmm_test(char* param);
-	bool hmm_classify(char* param);
-	bool append_model(char* param);
-	bool add_states(char* param);
-	bool set_hmm_as(char* param);
-	bool set_pseudo(char* param) ;
-	bool assign_obs(char* param) ;
-	bool convergence_criteria(char* param) ;
-	bool output_hmm_path(char* param);
-	bool output_hmm(char* param);
-	bool output_hmm_defined(char* param);
-	bool best_path(char* param);
-	bool normalize(char* param);
-	bool save_path(char* param);
-	bool save_likelihood(char* param);
-	bool load_defs(char* param);
-	bool set_max_dim(char* param);
-	bool likelihood(char* param);
-	bool chop(char* param);
-	bool relative_entropy(char* param);
-	bool entropy(char* param);
-	bool permutation_entropy(char* param);
+	bool set_num_hmm_tables(CHAR* param) ;
+	bool baum_welch_train(CHAR* param);
+	bool baum_welch_trans_train(CHAR* param);
+	bool baum_welch_train_defined(CHAR* param);
+	bool viterbi_train_defined(CHAR* param);
+	bool viterbi_train(CHAR* param);
+	bool linear_train(CHAR* param);
+	bool linear_train_from_file(CHAR* param);
+	bool one_class_test(CHAR* param);
+	bool hmm_test(CHAR* param);
+	bool hmm_classify(CHAR* param);
+	bool append_model(CHAR* param);
+	bool add_states(CHAR* param);
+	bool set_hmm_as(CHAR* param);
+	bool set_pseudo(CHAR* param) ;
+	bool convergence_criteria(CHAR* param) ;
+	bool output_hmm_path(CHAR* param);
+	bool output_hmm(CHAR* param);
+	bool output_hmm_defined(CHAR* param);
+	bool best_path(CHAR* param);
+	bool normalize(CHAR* param);
+	bool save_path(CHAR* param);
+	bool save_likelihood(CHAR* param);
+	bool load_defs(CHAR* param);
+	bool set_max_dim(CHAR* param);
+	bool likelihood(CHAR* param);
+	bool chop(CHAR* param);
+	bool relative_entropy(CHAR* param);
+	bool entropy(CHAR* param);
+	bool permutation_entropy(CHAR* param);
 	inline CHMM* get_pos() { return pos; }
 	inline CHMM* get_neg() { return neg; }
 	inline CHMM* get_test() { return test; }
+	inline void set_current(CHMM* h) { working=h; }
 	inline CHMM* get_current() { return working; }
-	bool gradient_step(char* param) ;
+	inline REAL get_pseudo() { return PSEUDO; }
+	inline INT get_number_of_tables() { return number_of_hmm_tables; }
+	bool gradient_step(CHAR* param) ;
 
-	int number_of_hmm_tables ;
-	bool histogram(char* param);
-	/*inline void debug()
-	{
-		if (working)
-			CIO::message("M:%X, MAX_M:%X, ORDER:%X\n", working->get_M(), working->get_max_M(), working->get_ORDER());
-	}*/
-
+	CLabels* classify(CLabels* output=NULL);
+	REAL classify_example(INT idx);
+	CLabels* one_class_classify(CLabels* output=NULL);
+	CLabels* linear_one_class_classify(CLabels* output=NULL);
+	REAL one_class_classify_example(INT idx);
 protected:
 
+	INT number_of_hmm_tables ;
 	bool converge(double x, double y);
 	void switch_model(CHMM** m1, CHMM** m2);
 
@@ -71,13 +73,12 @@ protected:
 	CHMM* test;
 
 	REAL PSEUDO;
-	int M;
-	int ORDER;
+	INT M;
 	REAL EPSILON;
 
-	int iteration_count;
-	int ITERATIONS;
-	int conv_it;
+	INT iteration_count;
+	INT ITERATIONS;
+	INT conv_it;
 
  protected:
 	CGUI* gui ;

@@ -7,6 +7,7 @@
  * "C" "-t" "-T" "link:exe" "-h" "libmmfile.mlib" "cleaner" 
  */
 
+#ifdef MATLAB
 #ifndef MLF_V2
 #define MLF_V2 1
 #endif
@@ -25,7 +26,7 @@ extern void TerminateModule_cleaner(void);
 extern _mexLocalFunctionTable _local_function_table_cleaner;
 
 extern mxArray * mlfCleaner(mxArray * covz, mxArray * thresh);
-extern void mlxCleaner(int nlhs, mxArray * plhs[], int nrhs, mxArray * prhs[]);
+extern void mlxCleaner(INT nlhs, mxArray * plhs[], INT nrhs, mxArray * prhs[]);
 
 #ifdef __cplusplus
 }
@@ -33,3 +34,4 @@ extern void mlxCleaner(int nlhs, mxArray * plhs[], int nrhs, mxArray * prhs[]);
 
 #endif
 
+#endif

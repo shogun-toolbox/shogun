@@ -7,7 +7,7 @@
 
 #include <assert.h>
 
-CGaussianKernel::CGaussianKernel(long size, double w)
+CGaussianKernel::CGaussianKernel(LONG size, double w)
   : CRealKernel(size),width(w)
 {
 }
@@ -36,9 +36,9 @@ bool CGaussianKernel::save_init(FILE* dest)
 	return false;
 }
   
-REAL CGaussianKernel::compute(long idx_a, long idx_b)
+REAL CGaussianKernel::compute(INT idx_a, INT idx_b)
 {
-  long alen, blen;
+  INT alen, blen;
   bool afree, bfree;
 
   double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
@@ -46,10 +46,10 @@ REAL CGaussianKernel::compute(long idx_a, long idx_b)
   
   assert(alen==blen);
 
-  int ialen=(int) alen;
+  INT ialen=(int) alen;
 
   REAL result=0;
-  for (int i=0; i<ialen; i++)
+  for (INT i=0; i<ialen; i++)
 	  result+=(avec[i]-bvec[i])*(avec[i]-bvec[i]);
 
   result=exp(-result/width);

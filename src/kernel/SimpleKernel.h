@@ -7,7 +7,7 @@
 template <class ST> class CSimpleKernel : public CKernel
 {
 	public:
-		CSimpleKernel(long cachesize) : CKernel(cachesize)
+		CSimpleKernel(LONG cachesize) : CKernel(cachesize)
 		{
 		}
 

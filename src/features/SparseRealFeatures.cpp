@@ -6,12 +6,12 @@ CFeatures* CSparseRealFeatures::duplicate() const
 	return new CSparseRealFeatures(*this);
 }
 
-bool CSparseRealFeatures::load(char* fname)
+bool CSparseRealFeatures::load(CHAR* fname)
 {
 	return false;
 }
 
-bool CSparseRealFeatures::save(char* fname)
+bool CSparseRealFeatures::save(CHAR* fname)
 {
 	return false;
 }

@@ -1,3 +1,9 @@
+#ifdef HAVE_ATLAS
+extern "C" {
+#include <atlas_level1.h>
+}
+#endif
+
 #include "lib/common.h"
 #include "kernel/LinearKernel.h"
 #include "features/Features.h"
@@ -6,7 +12,7 @@
 
 #include <assert.h>
 
-CLinearKernel::CLinearKernel(long size)
+CLinearKernel::CLinearKernel(LONG size)
   : CRealKernel(size),scale(1.0)
 {
 }
@@ -31,7 +37,7 @@ void CLinearKernel::init_rescale()
 {
 	double sum=0;
 	scale=1.0;
-	for (long i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
+	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
 			sum+=compute(i, i);
 
 	scale=sum/math.min(lhs->get_num_vectors(), rhs->get_num_vectors());
@@ -44,17 +50,17 @@ void CLinearKernel::cleanup()
 bool CLinearKernel::load_init(FILE* src)
 {
     assert(src!=NULL);
-    unsigned int intlen=0;
-    unsigned int endian=0;
-    unsigned int fourcc=0;
-    unsigned int doublelen=0;
+    UINT intlen=0;
+    UINT endian=0;
+    UINT fourcc=0;
+    UINT doublelen=0;
     double s=1;
 
-    assert(fread(&intlen, sizeof(unsigned char), 1, src)==1);
-    assert(fread(&doublelen, sizeof(unsigned char), 1, src)==1);
-    assert(fread(&endian, (unsigned int) intlen, 1, src)== 1);
-    assert(fread(&fourcc, (unsigned int) intlen, 1, src)==1);
-    assert(fread(&s, (unsigned int) doublelen, 1, src)==1);
+    assert(fread(&intlen, sizeof(BYTE), 1, src)==1);
+    assert(fread(&doublelen, sizeof(BYTE), 1, src)==1);
+    assert(fread(&endian, (UINT) intlen, 1, src)== 1);
+    assert(fread(&fourcc, (UINT) intlen, 1, src)==1);
+    assert(fread(&s, (UINT) doublelen, 1, src)==1);
     CIO::message("detected: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, s);
 
 	scale=s;
@@ -63,24 +69,24 @@ bool CLinearKernel::load_init(FILE* src)
 
 bool CLinearKernel::save_init(FILE* dest)
 {
-    unsigned char intlen=sizeof(unsigned int);
-    unsigned char doublelen=sizeof(double);
-    unsigned int endian=0x12345678;
-    unsigned int fourcc='LINK'; //id for linear kernel
+    BYTE intlen=sizeof(UINT);
+    BYTE doublelen=sizeof(double);
+    UINT endian=0x12345678;
+    BYTE fourcc[5]="LINK"; //id for linear kernel
 
-    assert(fwrite(&intlen, sizeof(unsigned char), 1, dest)==1);
-    assert(fwrite(&doublelen, sizeof(unsigned char), 1, dest)==1);
-    assert(fwrite(&endian, sizeof(unsigned int), 1, dest)==1);
-    assert(fwrite(&fourcc, sizeof(unsigned int), 1, dest)==1);
+    assert(fwrite(&intlen, sizeof(BYTE), 1, dest)==1);
+    assert(fwrite(&doublelen, sizeof(BYTE), 1, dest)==1);
+    assert(fwrite(&endian, sizeof(UINT), 1, dest)==1);
+    assert(fwrite(&fourcc, sizeof(UINT), 1, dest)==1);
     assert(fwrite(&scale, sizeof(double), 1, dest)==1);
     CIO::message("wrote: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, scale);
 
 	return true;
 }
   
-REAL CLinearKernel::compute(long idx_a, long idx_b)
+REAL CLinearKernel::compute(INT idx_a, INT idx_b)
 {
-  long alen, blen;
+  INT alen, blen;
   bool afree, bfree;
 
   double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
@@ -88,19 +94,19 @@ REAL CLinearKernel::compute(long idx_a, long idx_b)
   
   assert(alen==blen);
 
-  int skip=1;
-  int ialen=(int) alen;
+  INT ialen=(int) alen;
 
-#ifdef NO_LAPACK
+#ifndef HAVE_ATLAS
   REAL result=0;
   {
-    for (int i=0; i<ialen; i++)
+    for (INT i=0; i<ialen; i++)
       result+=avec[i]*bvec[i];
   }
   result/=scale;
 #else
-  REAL result=ddot_(&ialen, avec, &skip, bvec, &skip)/scale;
-#endif // NO_LAPACK
+  INT skip=1;
+  REAL result = ATL_ddot(ialen, avec, skip, bvec, skip)/scale;
+#endif // HAVE_ATLAS
 
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);

@@ -5,7 +5,6 @@
 #include "guilib/GUIHMM.h"
 #include "guilib/GUISVM.h"
 #include "guilib/GUIKernel.h"
-#include "guilib/GUIObservation.h"
 #include "guilib/GUIPreProc.h"
 #include "guilib/GUIFeatures.h"
 #include "gui/GUI.h"
@@ -13,7 +12,7 @@
 class CTextGUI: public CGUI
 {
 public:
-	CTextGUI(int argc, const char** argv);
+	CTextGUI(INT argc, const CHAR** argv);
 	~CTextGUI();
 
 	/// print the genefinder prompt
@@ -23,14 +22,14 @@ public:
 
 	/// get line from user/stdin/file input
 	/// @return true at EOF
-	char* get_line(FILE* infile=stdin, bool show_prompt=true);
+	CHAR* get_line(FILE* infile=stdin, bool show_prompt=true);
 
 	/// get line from user/stdin/file input
 	/// @return true at EOF
-	bool parse_line(char* input);
+	bool parse_line(CHAR* input);
 
 protected:
 	FILE* out_file;
-	char input[2000];
+	CHAR input[2000];
 };
 #endif

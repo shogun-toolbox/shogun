@@ -9,7 +9,7 @@
 #include <assert.h>
 
 
-CSparseLinearKernel::CSparseLinearKernel(long size)
+CSparseLinearKernel::CSparseLinearKernel(LONG size)
   : CSparseRealKernel(size),scale(1.0)
 {
 }
@@ -34,7 +34,7 @@ void CSparseLinearKernel::init_rescale()
 {
 	double sum=0;
 	scale=1.0;
-	for (long i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
+	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
 			sum+=compute(i, i);
 
 	scale=sum/math.min(lhs->get_num_vectors(), rhs->get_num_vectors());
@@ -47,17 +47,17 @@ void CSparseLinearKernel::cleanup()
 bool CSparseLinearKernel::load_init(FILE* src)
 {
     assert(src!=NULL);
-    unsigned int intlen=0;
-    unsigned int endian=0;
-    unsigned int fourcc=0;
-    unsigned int doublelen=0;
+    UINT intlen=0;
+    UINT endian=0;
+    UINT fourcc=0;
+    UINT doublelen=0;
     double s=1;
 
-    assert(fread(&intlen, sizeof(unsigned char), 1, src)==1);
-    assert(fread(&doublelen, sizeof(unsigned char), 1, src)==1);
-    assert(fread(&endian, (unsigned int) intlen, 1, src)== 1);
-    assert(fread(&fourcc, (unsigned int) intlen, 1, src)==1);
-    assert(fread(&s, (unsigned int) doublelen, 1, src)==1);
+    assert(fread(&intlen, sizeof(BYTE), 1, src)==1);
+    assert(fread(&doublelen, sizeof(BYTE), 1, src)==1);
+    assert(fread(&endian, (UINT) intlen, 1, src)== 1);
+    assert(fread(&fourcc, (UINT) intlen, 1, src)==1);
+    assert(fread(&s, (UINT) doublelen, 1, src)==1);
     CIO::message("detected: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, s);
 
 	scale=s;
@@ -66,25 +66,25 @@ bool CSparseLinearKernel::load_init(FILE* src)
 
 bool CSparseLinearKernel::save_init(FILE* dest)
 {
-    unsigned char intlen=sizeof(unsigned int);
-    unsigned char doublelen=sizeof(double);
-    unsigned int endian=0x12345678;
-    unsigned int fourcc='LINK'; //id for linear kernel
+    BYTE intlen=sizeof(UINT);
+    BYTE doublelen=sizeof(double);
+    UINT endian=0x12345678;
+    BYTE fourcc[5]="LINK"; //id for linear kernel
 
-    assert(fwrite(&intlen, sizeof(unsigned char), 1, dest)==1);
-    assert(fwrite(&doublelen, sizeof(unsigned char), 1, dest)==1);
-    assert(fwrite(&endian, sizeof(unsigned int), 1, dest)==1);
-    assert(fwrite(&fourcc, sizeof(unsigned int), 1, dest)==1);
+    assert(fwrite(&intlen, sizeof(BYTE), 1, dest)==1);
+    assert(fwrite(&doublelen, sizeof(BYTE), 1, dest)==1);
+    assert(fwrite(&endian, sizeof(UINT), 1, dest)==1);
+    assert(fwrite(&fourcc, sizeof(UINT), 1, dest)==1);
     assert(fwrite(&scale, sizeof(double), 1, dest)==1);
     CIO::message("wrote: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, scale);
 
 	return true;
 }
   
-REAL CSparseLinearKernel::compute(long idx_a, long idx_b)
+REAL CSparseLinearKernel::compute(INT idx_a, INT idx_b)
 {
-  long alen=0;
-  long blen=0;
+  INT alen=0;
+  INT blen=0;
   bool afree=false;
   bool bfree=false;
 
@@ -99,10 +99,10 @@ REAL CSparseLinearKernel::compute(long idx_a, long idx_b)
   {
 	  if (alen<=blen)
 	  {
-	      long j=0;
-	      for (long i=0; i<alen; i++)
+	      INT j=0;
+	      for (INT i=0; i<alen; i++)
 	      {
-	    	  int a_feat_idx=avec[i].feat_index;
+	    	  INT a_feat_idx=avec[i].feat_index;
 
 	    	  while ( (j<blen) && (bvec[j].feat_index < a_feat_idx) )
 	    		  j++;
@@ -116,10 +116,10 @@ REAL CSparseLinearKernel::compute(long idx_a, long idx_b)
 	  }
 	  else
 	  {
-	      long j=0;
-	      for (long i=0; i<blen; i++)
+	      INT j=0;
+	      for (INT i=0; i<blen; i++)
 	      {
-	    	  int b_feat_idx=bvec[i].feat_index;
+	    	  INT b_feat_idx=bvec[i].feat_index;
 
 	    	  while ( (j<alen) && (avec[j].feat_index < b_feat_idx) )
 	    		  j++;

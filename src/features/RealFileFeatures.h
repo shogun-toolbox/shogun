@@ -7,8 +7,8 @@
 class CRealFileFeatures: public CRealFeatures
 {
  public:
-  CRealFileFeatures(long size, FILE* file);
-  CRealFileFeatures(long size, char* filename);
+  CRealFileFeatures(LONG size, FILE* file);
+  CRealFileFeatures(LONG size, CHAR* filename);
 
   CRealFileFeatures(const CRealFileFeatures& orig);
 
@@ -17,25 +17,25 @@ class CRealFileFeatures: public CRealFeatures
   virtual REAL* load_feature_matrix();
   virtual CFeatures* duplicate() const;
 
-  int get_label(long idx);
+  INT get_label(INT idx);
 
 protected:
   /// compute feature vector for sample num
   /// len is returned by reference
-  virtual REAL* compute_feature_vector(long num, long& len, REAL* target=NULL);
+  virtual REAL* compute_feature_vector(INT num, INT& len, REAL* target=NULL);
 
   bool load_base_data();
 
   FILE* working_file;
-  char* working_filename;
+  CHAR* working_filename;
   bool status;
-  int* labels;
+  INT* labels;
 
-  unsigned char intlen;
-  unsigned char doublelen;
-  unsigned int endian;
-  unsigned int fourcc;
-  unsigned int preprocd;
-  long filepos;
+  BYTE intlen;
+  BYTE doublelen;
+  UINT endian;
+  UINT fourcc;
+  UINT preprocd;
+  LONG filepos;
 };
 #endif

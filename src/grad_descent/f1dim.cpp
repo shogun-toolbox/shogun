@@ -1,6 +1,6 @@
 #define NRANSI
 #include "nrutil.h"
-#include "hmm/HMM.h"
+#include "distributions/hmm/HMM.h"
 
 extern int ncom;
 extern REAL *pcom,*xicom, *xt ;

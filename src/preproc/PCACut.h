@@ -1,7 +1,7 @@
 #ifndef _CPCACUT__H__
 #define _CPCACUT__H__
 
-#ifndef NO_LAPACK
+#ifdef HAVE_ATLAS
 
 #include <stdio.h>
 
@@ -13,7 +13,7 @@
 class CPCACut : public CRealPreProc
 {
  public:
-  CPCACut(int do_whitening=0, double thresh=1e-6);
+  CPCACut(INT do_whitening=0, double thresh=1e-6);
   virtual ~CPCACut();
   
   /// initialize preprocessor from features
@@ -32,18 +32,18 @@ class CPCACut : public CRealPreProc
   
   /// apply preproc on single feature vector
   /// result in feature matrix
-  virtual REAL* apply_to_feature_vector(REAL* f, int &len);
+  virtual REAL* apply_to_feature_vector(REAL* f, INT &len);
 
  protected:
   double* T ;
-  int num_dim;
-  int num_old_dim;
+  INT num_dim;
+  INT num_old_dim;
   double *mean ;
 
   /// true when already initialized
   bool initialized;
 
-  int do_whitening;
+  INT do_whitening;
   double thresh ;
 };
 #endif

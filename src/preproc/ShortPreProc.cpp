@@ -1,6 +1,6 @@
 #include "ShortPreProc.h"
 
-CShortPreProc::CShortPreProc()
+CShortPreProc::CShortPreProc(const CHAR *name, const CHAR* id) : CSimplePreProc<SHORT>(name,id)
 {
 }
 

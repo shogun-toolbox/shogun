@@ -10,7 +10,7 @@ template<class T> class CCache
 {
 	struct TEntry
 	{
-		long usage_count;
+		LONG usage_count;
 		bool locked;
 		T* obj;
 	};
@@ -19,10 +19,10 @@ template<class T> class CCache
 	/// create cache of cache_size Megabytes.
 	/// num_entries objects can be cached
 	/// whose lookup table of 
-	/// size: sizeof(long)*num_entries
+	/// size: sizeof(LONG)*num_entries
 	/// must fit into memory
 	/// a chunk of size cache_size will be allocated
-	CCache(long cache_size, long obj_size, long num_entries)
+	CCache(LONG cache_size, LONG obj_size, LONG num_entries)
 	{
 		if (cache_size==0 || obj_size==0 || num_entries==0)
 		{
@@ -48,7 +48,7 @@ template<class T> class CCache
 		assert(lookup_table != NULL);
 		assert(cache_table != NULL);
 
-		long i;
+		LONG i;
 		for (i=0; i<nr_cache_lines; i++)
 			cache_table[i]=NULL;
 
@@ -73,7 +73,7 @@ template<class T> class CCache
 	}
 
 	/// returns a cache entry or NULL when not cached
-	inline T* lock_entry(long number)
+	inline T* lock_entry(LONG number)
 	{
 		if (lookup_table)
 		{
@@ -87,7 +87,7 @@ template<class T> class CCache
 	}
 	
 	/// unlocks a cache entry
-	inline void unlock_entry(long number)
+	inline void unlock_entry(LONG number)
 	{
 		if (lookup_table)
 			lookup_table[number].locked=false;
@@ -96,21 +96,21 @@ template<class T> class CCache
 	/// returns the address of a free cache entry
 	/// to where the data of size obj_size has to
 	/// be written
-	T* set_entry(long number)
+	T* set_entry(LONG number)
 	{
 		if (lookup_table)
 		{
 			// first look for the element with smallest usage count
-			//long min_idx=((nr_cache_lines-1)*random())/(RAND_MAX+1); //avoid the last elem and the scratch line
-			long min_idx=0;
-			long min=-1;
+			//LONG min_idx=((nr_cache_lines-1)*random())/(RAND_MAX+1); //avoid the last elem and the scratch line
+			LONG min_idx=0;
+			LONG min=-1;
 			bool found_free_line=false;
 
 			if (cache_table[min_idx])
 			{
 				min=cache_table[min_idx]->usage_count;
 
-				for (long i=0; i<nr_cache_lines; i++)
+				for (LONG i=0; i<nr_cache_lines; i++)
 				{
 					if (!cache_table[i])
 					{
@@ -121,7 +121,7 @@ template<class T> class CCache
 					}
 					else
 					{
-						long v=cache_table[i]->usage_count;
+						LONG v=cache_table[i]->usage_count;
 
 						if (v<min && !cache_table[i]->locked)
 						{
@@ -161,8 +161,8 @@ template<class T> class CCache
 	}
 
 	bool cache_is_full;
-	long entry_size;
-	long nr_cache_lines;
+	LONG entry_size;
+	LONG nr_cache_lines;
 	TEntry* lookup_table;
 	TEntry** cache_table;
 	T* cache_block;

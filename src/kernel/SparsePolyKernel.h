@@ -8,9 +8,10 @@
 class CSparsePolyKernel: public CSparseRealKernel
 {
  public:
-  CSparsePolyKernel(long size, int degree, bool inhomogene);
+  CSparsePolyKernel(LONG size, INT degree, bool inhomogene);
   ~CSparsePolyKernel();
   
+  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -25,17 +26,22 @@ class CSparsePolyKernel: public CSparseRealKernel
   virtual EKernelType get_kernel_type() { return K_POLY; }
 
   // return the name of a kernel
-  virtual const char* get_name() { return "SparsePoly" ; } ;
+  virtual const CHAR* get_name() { return "SparsePoly" ; } ;
 
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
-  virtual REAL compute(long idx_a, long idx_b);
+  virtual REAL compute(INT idx_a, INT idx_b);
   /*    compute_kernel*/
   
  protected:
-  int degree;
+  INT degree;
   bool inhomogene ;
+
+  double* sqrtdiag_lhs;
+  double* sqrtdiag_rhs;
+
+  bool initialized ;
 };
 #endif

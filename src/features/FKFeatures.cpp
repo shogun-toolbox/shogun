@@ -1,9 +1,9 @@
-#include "hmm/Observation.h"
 #include "features/FKFeatures.h"
+#include "features/StringFeatures.h"
 #include "lib/io.h"
 #include <assert.h>
 
-CFKFeatures::CFKFeatures(long size, CHMM* p, CHMM* n) : CRealFeatures(size)
+CFKFeatures::CFKFeatures(LONG size, CHMM* p, CHMM* n) : CRealFeatures(size)
 {
 	pos_prob=NULL;
 	neg_prob=NULL;
@@ -20,15 +20,15 @@ CFKFeatures::~CFKFeatures()
 {
 }
 
-double CFKFeatures::deriv_a(double a, int dimension)
+double CFKFeatures::deriv_a(double a, INT dimension)
 {
-	CObservation *Obs=pos->get_observations() ;
+	CStringFeatures<WORD> *Obs=pos->get_observations() ;
 	double deriv=0.0 ;
-	int i=dimension ;
+	INT i=dimension ;
 
 	if (dimension==-1)
 	{
-		for (i=0; i<Obs->get_DIMENSION(); i++)
+		for (i=0; i<Obs->get_num_vectors(); i++)
 		{
 			//double pp=pos->model_probability(i) ;
 			//double pn=neg->model_probability(i) ;
@@ -73,11 +73,11 @@ double CFKFeatures::set_opt_a(double a)
 	if (a==-1)
 	{
 		CIO::message("estimating a.\n");
-		pos_prob=new double[pos->get_observations()->get_DIMENSION()];
-		neg_prob=new double[pos->get_observations()->get_DIMENSION()];
+		pos_prob=new double[pos->get_observations()->get_num_vectors()];
+		neg_prob=new double[pos->get_observations()->get_num_vectors()];
 		assert(pos_prob!=NULL);
 		assert(neg_prob!=NULL);
-		for (int i=0; i<pos->get_observations()->get_DIMENSION(); i++)
+		for (INT i=0; i<pos->get_observations()->get_num_vectors(); i++)
 		{
 			pos_prob[i]=pos->model_probability(i) ;
 			neg_prob[i]=neg->model_probability(i) ;
@@ -121,27 +121,17 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 	CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
 
 	if (pos && pos->get_observations())
-		set_num_vectors(pos->get_observations()->get_DIMENSION());
+		set_num_vectors(pos->get_observations()->get_num_vectors());
 	if (pos && neg)
 		num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
 }
-
-//int CFKFeatures::get_label(long idx)
-//{
-//    
-//  if (pos && pos->get_observations())
-//    return pos->get_observations()->get_label(idx) ;
-//
-//  assert(0) ;
-//  return 0 ;
-//}
 
 CFeatures* CFKFeatures::duplicate() const
 {
 	return new CFKFeatures(*this);
 }
 
-REAL* CFKFeatures::compute_feature_vector(long num, long &len, REAL* target)
+REAL* CFKFeatures::compute_feature_vector(INT num, INT &len, REAL* target)
 {
   REAL* featurevector=target;
   
@@ -158,9 +148,9 @@ REAL* CFKFeatures::compute_feature_vector(long num, long &len, REAL* target)
   return featurevector;
 }
 
-void CFKFeatures::compute_feature_vector(REAL* featurevector, long num, long& len)
+void CFKFeatures::compute_feature_vector(REAL* featurevector, INT num, INT& len)
 {
-	long i,j,p=0,x=num;
+	INT i,j,p=0,x=num;
 
 	double posx=pos->model_probability(x);
 	double negx=neg->model_probability(x);
@@ -215,18 +205,18 @@ void CFKFeatures::compute_feature_vector(REAL* featurevector, long num, long& le
 
 REAL* CFKFeatures::set_feature_matrix()
 {
-	long len=0;
+	INT len=0;
 
 	num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 
-	num_vectors=pos->get_observations()->get_DIMENSION();
+	num_vectors=pos->get_observations()->get_num_vectors();
 	CIO::message("allocating FK feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	delete[] feature_matrix;
 	feature_matrix=new REAL[num_features*num_vectors];
 
 	CIO::message("calculating FK feature matrix\n");
 
-	for (long x=0; x<num_vectors; x++)
+	for (INT x=0; x<num_vectors; x++)
 	{
 		if (!(x % (num_vectors/10+1)))
 			printf("%02d%%.", (int) (100.0*x/num_vectors));

@@ -2,8 +2,9 @@
 #include <assert.h>
 #include "lib/common.h"
 #include "guilib/GUIHMM.h"
-#include "hmm/Observation.h"
 #include "gui/GUI.h"
+#include "features/StringFeatures.h"
+#include "features/Labels.h"
 
 CGUIHMM::CGUIHMM(CGUI * gui_): gui(gui_)
 {
@@ -22,8 +23,6 @@ CGUIHMM::CGUIHMM(CGUI * gui_): gui(gui_)
 	EPSILON=1e-4;
 	PSEUDO=1e-10;
 	M=4;
-	ORDER=1;
-
 	conv_it=5;
 }
 
@@ -32,11 +31,11 @@ CGUIHMM::~CGUIHMM()
 
 }
 
-bool CGUIHMM::set_num_hmm_tables(char* param)
+bool CGUIHMM::set_num_hmm_tables(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
-	int tmp;
+	INT tmp;
 	if (sscanf(param, "%d", &tmp) == 1)
 	{
 		if (tmp>0)
@@ -50,21 +49,17 @@ bool CGUIHMM::set_num_hmm_tables(char* param)
 	return false;
 }
 
-bool CGUIHMM::new_hmm(char* param)
+bool CGUIHMM::new_hmm(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
-	int n,m,order;
-	if (sscanf(param, "%d %d %d", &n, &m, &order) == 3)
+	INT n,m;
+	if (sscanf(param, "%d %d", &n, &m) == 2)
 	{
 		if (working)
 			delete working;
 
-		if (order>1)
-			CIO::message("WARNING: no order > 1 supported\n"); 
-
-		working=new CHMM(n,m,order,NULL,PSEUDO, number_of_hmm_tables);
-		ORDER=order;
+		working=new CHMM(n,m,NULL,PSEUDO, number_of_hmm_tables);
 		M=m;
 		return true;
 	}
@@ -76,7 +71,7 @@ bool CGUIHMM::new_hmm(char* param)
 
 void fixed_descent(CHMM* pos, REAL step_size, REAL beta)  ;
 
-bool CGUIHMM::gradient_step(char* param)
+bool CGUIHMM::gradient_step(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
@@ -91,22 +86,32 @@ bool CGUIHMM::gradient_step(char* param)
 	return false;
 }
 
-bool CGUIHMM::baum_welch_train(char* param)
+bool CGUIHMM::baum_welch_train(CHAR* param)
 {
-	char templname[]=TMP_DIR "bw_model_XXXXXX" ;
+	CHAR templname[]=TMP_DIR "bw_model_XXXXXX" ;
 #ifdef SUNOS
 #define mkstemp(name) mktemp(name);
 #endif
+	if ((gui->guifeatures.get_train_features()->get_feature_type()
+	     !=F_WORD) ||
+	   (gui->guifeatures.get_train_features()->get_feature_class()
+	    !=C_STRING))
+	  {
+	    CIO::message("Features must be STRING of type WORD\n") ;
+	    return false ;
+	  } ;
+
 	mkstemp(templname);
-	char templname_best[40] ;
+	CHAR templname_best[40] ;
 	sprintf(templname_best, "%s_best", templname) ;
 	double prob_max=-CMath::INFTY ;
 	iteration_count=ITERATIONS ;
 
 	if (working) 
 	{
-		if (working->get_observations())
+		if (gui->guifeatures.get_train_features())
 		{
+			working->set_observations((CStringFeatures<WORD>*) gui->guifeatures.get_train_features());
 			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
 
 			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
@@ -143,7 +148,7 @@ bool CGUIHMM::baum_welch_train(char* param)
 			working_estimate=NULL;
 		}
 		else
-			CIO::message("assign observation first\n");
+			CIO::message("load train features first\n");
 	}
 	else
 		CIO::message("create model first\n");
@@ -151,14 +156,62 @@ bool CGUIHMM::baum_welch_train(char* param)
 	return false;
 }
 
-bool CGUIHMM::baum_welch_train_defined(char* param)
+
+bool CGUIHMM::baum_welch_trans_train(CHAR* param)
 {
-	char templname[]=TMP_DIR "bwdef_model_XXXXXX" ;
+  if ((gui->guifeatures.get_train_features()->get_feature_type()
+       !=F_WORD) ||
+      (gui->guifeatures.get_train_features()->get_feature_class()
+       !=C_STRING))
+    {
+      CIO::message("Features must be STRING of type WORD\n") ;
+      return false ;
+    } ;
+  
+  double prob_max=-CMath::INFTY ;
+  iteration_count=ITERATIONS ;
+
+  if (working) 
+    {
+      if (gui->guifeatures.get_train_features())
+	{
+	  working->set_observations((CStringFeatures<WORD>*) gui->guifeatures.get_train_features());
+	  CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
+	  
+	  double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
+	  
+	  while (!converge(prob,prob_train))
+	    {
+	      switch_model(&working, &working_estimate);
+	      prob=prob_train ;
+	      working->estimate_model_baum_welch_trans(working_estimate);
+	      prob_train=working_estimate->model_probability();
+	      if (prob_max<prob_train)
+		{
+		  prob_max=prob_train ;
+		} ;
+	    }
+	  delete working_estimate;
+	  working_estimate=NULL;
+	}
+      else
+	CIO::message("load train features first\n");
+    }
+  else
+    CIO::message("create model first\n");
+  
+  return false;
+}
+
+
+bool CGUIHMM::baum_welch_train_defined(CHAR* param)
+{
+	CHAR templname[]=TMP_DIR "bwdef_model_XXXXXX" ;
 #ifdef SUNOS
 #define mkstemp(name) mktemp(name);
 #endif
 	mkstemp(templname);
-	char templname_best[40] ;
+	CHAR templname_best[40] ;
 	sprintf(templname_best, "%s_best", templname) ;
 	double prob_max=-CMath::INFTY ;
 	iteration_count=ITERATIONS ;
@@ -211,14 +264,14 @@ bool CGUIHMM::baum_welch_train_defined(char* param)
 	return false;
 }
 
-bool CGUIHMM::viterbi_train(char* param)
+bool CGUIHMM::viterbi_train(CHAR* param)
 {
-	char* templname= TMP_DIR "vit_model_XXXXXX" ;
+	CHAR* templname= TMP_DIR "vit_model_XXXXXX" ;
 #ifdef SUNOS
 #define mkstemp(name) mktemp(name);
 #endif
 	mkstemp(templname);
-	char templname_best[40] ;
+	CHAR templname_best[40] ;
 	sprintf(templname_best, "%s_best", templname) ;
 	double prob_max=-CMath::INFTY ;
 	iteration_count=ITERATIONS ;
@@ -272,14 +325,14 @@ bool CGUIHMM::viterbi_train(char* param)
 	return false;
 }
 
-bool CGUIHMM::viterbi_train_defined(char* param)
+bool CGUIHMM::viterbi_train_defined(CHAR* param)
 {
-	char* templname= TMP_DIR "vitdef_model_XXXXXX" ;
+	CHAR* templname= TMP_DIR "vitdef_model_XXXXXX" ;
 #ifdef SUNOS
 #define mkstemp(name) mktemp(name);
 #endif
 	mkstemp(templname);
-	char templname_best[40] ;
+	CHAR templname_best[40] ;
 	sprintf(templname_best, "%s_best", templname) ;
 	double prob_max=-CMath::INFTY ;
 	iteration_count=ITERATIONS ;
@@ -333,123 +386,57 @@ bool CGUIHMM::viterbi_train_defined(char* param)
 	return false;
 }
 
-bool CGUIHMM::linear_train(char* param)
+bool CGUIHMM::linear_train(CHAR* param)
 {
-	if (working) 
+	INT numargs=-1;
+	CHAR align='l';
+	bool right_align=false;
+
+	param=CIO::skip_spaces(param);
+
+	numargs=sscanf(param, "%c", &align);
+
+	if (align=='r')
 	{
-		if (working->get_observations())
-		{
-			working->linear_train();
-			return true;
-		}
-		else
-			CIO::message("assign observation first\n");
+		CIO::message("using alignment to right\n");
+		right_align=true;
 	}
 	else
-		CIO::message("create model first\n");
+	{
+		CIO::message("using alignment to left\n");
+	}
+
+	if ((gui->guifeatures.get_train_features()->get_feature_type() !=F_WORD) ||
+			(gui->guifeatures.get_train_features()->get_feature_class() !=C_STRING))
+	{
+		CIO::message("Features must be STRING of type WORD\n");
+		return false;
+	}
+
+	if (gui->guifeatures.get_train_features())
+	{
+		working->set_observations((CStringFeatures<WORD>*) gui->guifeatures.get_train_features());
+		if (working) 
+		{
+			working->linear_train(right_align);
+			return true;
+		}
+	}
+	else
+		CIO::message("load train features first\n");
 
 	return false;
 }
 
-bool CGUIHMM::linear_train_from_file(char* param)
+bool CGUIHMM::one_class_test(CHAR* param)
 {
 	bool result=false;
-	E_OBS_ALPHABET alphabet;
-	int WIDTH=-1,UPTO=-1;
-	char fname[1024];
-
-	param=CIO::skip_spaces(param);
-	sscanf(param, "%s %d %d", fname, &WIDTH, &UPTO);
-
-	FILE* file=fopen(fname, "r");
-
-	if (file) 
-	{
-		if (WIDTH < 0 || UPTO < 0 )
-		{
-			int i=0;
-
-			while (fgetc(file)!='\n' && !feof(file))
-				i++;
-
-			if (!feof(file))
-			{
-				WIDTH=i+1;
-				UPTO=i;
-				CIO::message("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
-				fseek(file,0,SEEK_SET);
-			}
-			else
-				return false;
-		}
-
-		if (WIDTH >0 && UPTO >0)
-		{	  
-			alphabet=DNA;
-			//ORDER=1; //obsoleted by set_order
-			M=4;
-
-			CObservation* obs=new CObservation(TRAIN, alphabet, (int) ceil(log((double) M)/log((double) 2)), M, ORDER);
-
-			if (working && obs)
-			{
-				alphabet=obs->get_alphabet();
-				ORDER=working->get_ORDER();
-				delete(working);
-				working=NULL;
-
-				switch (alphabet)
-				{
-					case DNA:
-						M=4;
-						break;
-					case PROTEIN:
-						M=26;
-						break;
-					case CUBE:
-						M=6;
-						break;
-					case ALPHANUM:
-						M=36;
-						break;
-					default:
-						M=4;
-						break;
-				};
-			}
-
-			working=new CHMM(UPTO,M,ORDER,NULL,PSEUDO,number_of_hmm_tables);
-
-			if (working)
-			{
-				working->set_observation_nocache(obs);
-				working->linear_train(file, WIDTH, UPTO);
-				result=true;
-				CIO::message("done.\n");
-			}
-			else
-				CIO::message("model creation failed\n");
-
-			delete obs;
-		}
-
-		fclose(file);
-	}
-	else
-		CIO::message("opening file %s failed!\n", fname);
-
-	return result;
-}
-
-bool CGUIHMM::one_class_test(char* param)
-{
-	bool result=false;
-	char outputname[1024];
-	char rocfname[1024];
+	CHAR outputname[1024];
+	CHAR rocfname[1024];
 	FILE* outputfile=stdout;
 	FILE* rocfile=NULL;
-	int numargs=-1;
-	int linear=0;
+	INT numargs=-1;
+	INT linear=0;
 
 	param=CIO::skip_spaces(param);
 
@@ -477,31 +464,34 @@ bool CGUIHMM::one_class_test(char* param)
 		}
 	}
 
-	if (test)
+	if (working)
 	{
-		if (gui->guiobs.get_obs("POSTEST") && gui->guiobs.get_obs("NEGTEST"))
+		if (gui->guifeatures.get_test_features())
 		{
-			CObservation* obs=new CObservation(gui->guiobs.get_obs("POSTEST"), gui->guiobs.get_obs("NEGTEST"));
+			CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+			CStringFeatures<WORD>* old_test=working->get_observations();
 
-			CObservation* old_test=test->get_observations();
-			test->set_observations(obs);
+			CLabels* lab=gui->guilabels.get_test_labels();
 
-			int total=obs->get_DIMENSION();
+			working->set_observations(obs);
+
+			INT total=obs->get_num_vectors();
+			assert(lab && total == lab->get_num_labels());
 
 			REAL* output = new REAL[total];	
-			int* label= new int[total];	
+			INT* label= new INT[total];	
 
-			for (int dim=0; dim<total; dim++)
+			for (INT dim=0; dim<total; dim++)
 			{
-				output[dim]= linear ? test->linear_model_probability(dim) : test->model_probability(dim);
-				label[dim]= obs->get_label(dim);
+				output[dim]= linear ? working->linear_model_probability(dim) : working->model_probability(dim);
+				label[dim]= lab->get_int_label(dim);
 			}
 
 			gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);
 			delete[] output;
 			delete[] label;
 
-			test->set_observations(old_test);
+			working->set_observations(old_test);
 
 			delete obs;
 
@@ -511,25 +501,25 @@ bool CGUIHMM::one_class_test(char* param)
 			CIO::message("assign posttest and negtest observations first!\n");
 	}
 	else
-		CIO::message("assign test model first!\n");
+		CIO::message("no hmm defined!\n");
 
 	if (rocfile)
 		fclose(rocfile);
-	if (outputfile)
+	if ((outputfile) && (outputfile!=stdout))
 		fclose(outputfile);
 	return result;
 }
 
-bool CGUIHMM::hmm_classify(char* param)
+bool CGUIHMM::hmm_classify(CHAR* param)
 {
 	bool result=false;
-	char outputname[1024];
-	char rocfname[1024];
+	CHAR outputname[1024];
+	CHAR rocfname[1024];
 	FILE* outputfile=stdout;
 	FILE* rocfile=NULL;
-	int numargs=-1;
-	int poslinear=0;
-	int neglinear=0;
+	INT numargs=-1;
+	INT poslinear=0;
+	INT neglinear=0;
 
 	param=CIO::skip_spaces(param);
 
@@ -559,49 +549,30 @@ bool CGUIHMM::hmm_classify(char* param)
 
 	if (pos && neg)
 	{
-		if (gui->guiobs.get_obs("TEST"))
+		if (gui->guifeatures.get_test_features())
 		{
-			CIO::message("test data is of ORDER %d, MODELS are of order %d (pos) and %d (neg)\n", gui->guiobs.get_obs("TEST")->get_ORDER(), pos->get_ORDER(), neg->get_ORDER());
-			CObservation* posobs=NULL;
-			CObservation* negobs=NULL;
-			CObservation* o= gui->guiobs.get_obs("TEST");
+			CStringFeatures<WORD>* o= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+			CLabels* lab= gui->guilabels.get_test_labels();
 
-			FILE* posfile=fopen(gui->guiobs.get_test_name(), "r");
-			FILE* negfile=fopen(gui->guiobs.get_test_name(), "r");
+			//CStringFeatures<WORD>* old_pos=pos->get_observations();
+			//CStringFeatures<WORD>* old_neg=neg->get_observations();
 
-			if (posfile && negfile)
-			{
-				posobs= new CObservation(posfile, o->get_type(), o->get_alphabet(), o->get_max_M(), o->get_M(), pos->get_ORDER());
-				negobs= new CObservation(negfile, o->get_type(), o->get_alphabet(), o->get_max_M(), o->get_M(), neg->get_ORDER());
-				CIO::message("created neg obs for pos model using maxM:%d M:%d ORD:%d\n", negobs->get_max_M(), negobs->get_M(), negobs->get_ORDER());
-				CIO::message("created pos obs for neg model using maxM:%d M:%d ORD:%d\n", posobs->get_max_M(), posobs->get_M(), posobs->get_ORDER());
-				fclose(posfile);
-				fclose(negfile);
-			}
+			pos->set_observations(o);
+			neg->set_observations(o);
 
-			CObservation* old_pos=pos->get_observations();
-			CObservation* old_neg=neg->get_observations();
-
-			assert(posobs!=NULL);
-			assert(negobs!=NULL);
-			pos->set_observations(posobs);
-			neg->set_observations(negobs);
-
-			assert(posobs->get_DIMENSION()==negobs->get_DIMENSION());
-
-			int total=posobs->get_DIMENSION();
+			INT total=o->get_num_vectors();
 
 			REAL* output = new REAL[total];	
-			int* label= new int[total];	
+			INT* label= new INT[total];	
 
 			CIO::message("classifying using neg %s hmm vs. pos %s hmm\n", neglinear ? "linear" : "", poslinear ? "linear" : "");
 
-			for (int dim=0; dim<total; dim++)
+			for (INT dim=0; dim<total; dim++)
 			{
 				output[dim]= 
 					(poslinear ? pos->linear_model_probability(dim) : pos->model_probability(dim)) -
 					(neglinear ? neg->linear_model_probability(dim) : neg->model_probability(dim));
-				label[dim]= posobs->get_label(dim);
+				label[dim]= lab->get_int_label(dim);
 			}
 
 			gui->guimath.evaluate_results(output, label, total, outputfile);
@@ -609,35 +580,32 @@ bool CGUIHMM::hmm_classify(char* param)
 			delete[] output;
 			delete[] label;
 
-			pos->set_observations(old_pos);
-			neg->set_observations(old_neg);
-
-			delete posobs;
-			delete negobs;
+			//pos->set_observations(old_pos);
+			//neg->set_observations(old_neg);
 			result=true;
 		}
 		else
-			printf("load test observations first!\n");
+			printf("load test features first!\n");
 	}
 	else
 		CIO::message("assign positive and negative models first!\n");
 
-	if (outputfile)
+	if ((outputfile) && (outputfile!=stdout))
 		fclose(outputfile);
 
 	return result;
 }
 
-bool CGUIHMM::hmm_test(char* param)
+bool CGUIHMM::hmm_test(CHAR* param)
 {
 	bool result=false;
-	char outputname[1024];
-	char rocfname[1024];
+	CHAR outputname[1024];
+	CHAR rocfname[1024];
 	FILE* outputfile=stdout;
 	FILE* rocfile=NULL;
-	int numargs=-1;
-	int poslinear=0;
-	int neglinear=0;
+	INT numargs=-1;
+	INT poslinear=0;
+	INT neglinear=0;
 
 	param=CIO::skip_spaces(param);
 
@@ -667,63 +635,32 @@ bool CGUIHMM::hmm_test(char* param)
 
 	if (pos && neg)
 	{
-		if (gui->guiobs.get_obs("POSTEST") && gui->guiobs.get_obs("NEGTEST"))
+		if (gui->guifeatures.get_test_features())
 		{
-			CIO::message("pos test data is of ORDER %d, neg test data is of ORDER %d\n", gui->guiobs.get_obs("POSTEST")->get_ORDER(), gui->guiobs.get_obs("NEGTEST")->get_ORDER());
-			CObservation* posobs=NULL;
-			CObservation* negobs=NULL;
-			CObservation* tmp_posobs=NULL;
-			CObservation* tmp_negobs=NULL;
+			CStringFeatures<WORD>* o=(CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+			CLabels* lab=gui->guilabels.get_test_labels();
 
-			if (gui->guiobs.get_obs("POSTEST")->get_ORDER() == gui->guiobs.get_obs("NEGTEST")->get_ORDER())
-			{
-				posobs=new CObservation(gui->guiobs.get_obs("POSTEST"), gui->guiobs.get_obs("NEGTEST"));
-				negobs=posobs;
-			}
-			else
-			{
-				CObservation* p= gui->guiobs.get_obs("POSTEST");
-				CObservation* n= gui->guiobs.get_obs("NEGTEST");
+			CStringFeatures<WORD>* old_pos=pos->get_observations();
+			CStringFeatures<WORD>* old_neg=neg->get_observations();
 
-				FILE* posfile=fopen(gui->guiobs.get_pos_test_name(), "r");
-				FILE* negfile=fopen(gui->guiobs.get_neg_test_name(), "r");
+			assert(o);
+			pos->set_observations(o);
+			neg->set_observations(o);
 
-				if (posfile && negfile)
-				{
-					tmp_posobs= new CObservation(posfile, p->get_type(), p->get_alphabet(), p->get_max_M(), p->get_M(), n->get_ORDER());
-					tmp_negobs= new CObservation(negfile, n->get_type(), n->get_alphabet(), n->get_max_M(), n->get_M(), p->get_ORDER());
-					CIO::message("created neg obs for pos model using maxM:%d M:%d ORD:%d\n", tmp_negobs->get_max_M(), tmp_negobs->get_M(), tmp_negobs->get_ORDER());
-					CIO::message("created pos obs for neg model using maxM:%d M:%d ORD:%d\n", tmp_posobs->get_max_M(), tmp_posobs->get_M(), tmp_posobs->get_ORDER());
-					posobs=new CObservation(gui->guiobs.get_obs("POSTEST"), tmp_negobs);
-					negobs=new CObservation(tmp_posobs, gui->guiobs.get_obs("NEGTEST"));
-					fclose(posfile);
-					fclose(negfile);
-				}
-			}
-
-			CObservation* old_pos=pos->get_observations();
-			CObservation* old_neg=neg->get_observations();
-
-			assert(posobs!=NULL);
-			assert(negobs!=NULL);
-			pos->set_observations(posobs);
-			neg->set_observations(negobs);
-
-			assert(posobs->get_DIMENSION()==negobs->get_DIMENSION());
-
-			int total=posobs->get_DIMENSION();
+			INT total=o->get_num_vectors();
+			assert(lab && total==lab->get_num_labels());
 
 			REAL* output = new REAL[total];	
-			int* label= new int[total];	
+			INT* label= new INT[total];	
 
 			CIO::message("testing using neg %s hmm vs. pos %s hmm\n", neglinear ? "linear" : "", poslinear ? "linear" : "");
 
-			for (int dim=0; dim<total; dim++)
+			for (INT dim=0; dim<total; dim++)
 			{
 				output[dim]= 
 					(poslinear ? pos->linear_model_probability(dim) : pos->model_probability(dim)) -
 					(neglinear ? neg->linear_model_probability(dim) : neg->model_probability(dim));
-				label[dim]= posobs->get_label(dim);
+				label[dim]= lab->get_int_label(dim);
 				//fprintf(outputfile, "%+d: %f - %f = %f\n", label[dim], pos->model_probability(dim), neg->model_probability(dim), output[dim]);
 			}
 
@@ -735,37 +672,134 @@ bool CGUIHMM::hmm_test(char* param)
 			pos->set_observations(old_pos);
 			neg->set_observations(old_neg);
 
-			delete posobs;
-			if (gui->guiobs.get_obs("POSTEST")->get_ORDER() != gui->guiobs.get_obs("NEGTEST")->get_ORDER())
-				delete negobs;
-			delete tmp_posobs;
-			delete tmp_negobs;
 			result=true;
 		}
 		else
-			printf("assign postest and negtest observations first!\n");
+			printf("load test features first!\n");
 	}
 	else
 		CIO::message("assign positive and negative models first!\n");
 
 	if (rocfile)
 		fclose(rocfile);
-	if (outputfile)
+	if ((outputfile) && (outputfile!=stdout))
 		fclose(outputfile);
 
 	return result;
 }
 
-bool CGUIHMM::append_model(char* param)
+CLabels* CGUIHMM::classify(CLabels* result)
+{
+	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+	INT num_vec=obs->get_num_vectors();
+
+	if (!result)
+		result=new CLabels(num_vec);
+
+	//CStringFeatures<WORD>* old_pos=pos->get_observations();
+	//CStringFeatures<WORD>* old_neg=neg->get_observations();
+
+	assert(obs!=NULL);
+	pos->set_observations(obs);
+	neg->set_observations(obs);
+
+	for (INT i=0; i<num_vec; i++)
+		result->set_label(i, pos->model_probability(i) - neg->model_probability(i));
+
+	//pos->set_observations(old_pos);
+	//neg->set_observations(old_neg);
+	return result;
+}
+
+REAL CGUIHMM::classify_example(INT idx)
+{
+	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+
+	//CStringFeatures<WORD>* old_pos=pos->get_observations();
+	//CStringFeatures<WORD>* old_neg=neg->get_observations();
+
+	assert(obs!=NULL);
+	pos->set_observations(obs);
+	neg->set_observations(obs);
+
+	REAL result=pos->model_probability(idx) - neg->model_probability(idx);
+	//pos->set_observations(old_pos);
+	//neg->set_observations(old_neg);
+	return result;
+}
+
+CLabels* CGUIHMM::one_class_classify(CLabels* result)
+{
+	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+	INT num_vec=obs->get_num_vectors();
+
+	if (!result)
+	  result=new CLabels(num_vec);
+
+	assert(working);
+
+	//CStringFeatures<WORD>* old_pos=working->get_observations();
+
+	assert(obs!=NULL);
+	working->set_observations(obs);
+
+
+	for (INT i=0; i<num_vec; i++)
+		result->set_label(i, working->model_probability(i));
+
+	//working->set_observations(old_pos);
+	return result;
+}
+
+CLabels* CGUIHMM::linear_one_class_classify(CLabels* result)
+{
+	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+	INT num_vec=obs->get_num_vectors();
+
+	if (!result)
+		result=new CLabels(num_vec);
+
+	//CStringFeatures<WORD>* old_pos=working->get_observations();
+
+	assert(obs!=NULL);
+	working->set_observations(obs);
+
+	assert(working);
+
+	for (INT i=0; i<num_vec; i++)
+		result->set_label(i, working->linear_model_probability(i));
+
+	//working->set_observations(old_pos);
+	return result;
+}
+
+
+REAL CGUIHMM::one_class_classify_example(INT idx)
+{
+	CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+
+	//CStringFeatures<WORD>* old_pos=pos->get_observations();
+
+	assert(obs!=NULL);
+	pos->set_observations(obs);
+	neg->set_observations(obs);
+
+	assert(working);
+	REAL result=working->model_probability(idx);
+	//working->set_observations(old_pos);
+	return result;
+}
+
+bool CGUIHMM::append_model(CHAR* param)
 {
 	if (working)
 	{
-		char fname[1024]; 
-		int base1=0;
-		int base2=2;
+		CHAR fname[1024]; 
+		INT base1=0;
+		INT base2=2;
 		param=CIO::skip_spaces(param);
 
-		int num_param=sscanf(param, "%s %i %i", fname, &base1, &base2);
+		INT num_param=sscanf(param, "%s %i %i", fname, &base1, &base2);
 
 		if (num_param==3 || num_param==1)
 		{
@@ -786,7 +820,7 @@ bool CGUIHMM::append_model(char* param)
 
 					CIO::message("h %d , M: %d\n", h, h->get_M());
 
-					for (int i=0; i<h->get_M(); i++)
+					for (INT i=0; i<h->get_M(); i++)
 					{
 						if (i==base1)
 							cur_o[i]=0;
@@ -825,11 +859,11 @@ bool CGUIHMM::append_model(char* param)
 	return false;
 }
 
-bool CGUIHMM::add_states(char* param)
+bool CGUIHMM::add_states(CHAR* param)
 {
 	if (working)
 	{
-		int states=1;
+		INT states=1;
 		double value=0;
 
 		param=CIO::skip_spaces(param);
@@ -846,7 +880,7 @@ bool CGUIHMM::add_states(char* param)
 	return false;
 }
 
-bool CGUIHMM::set_pseudo(char* param)
+bool CGUIHMM::set_pseudo(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
@@ -859,9 +893,9 @@ bool CGUIHMM::set_pseudo(char* param)
 	return true ;
 }
 
-bool CGUIHMM::convergence_criteria(char* param)
+bool CGUIHMM::convergence_criteria(CHAR* param)
 {
-	int j=100;
+	INT j=100;
 	double f=0.001;
 
 	param=CIO::skip_spaces(param);
@@ -880,10 +914,10 @@ bool CGUIHMM::convergence_criteria(char* param)
 	return true ;
 } ;
 
-bool CGUIHMM::set_hmm_as(char* param)
+bool CGUIHMM::set_hmm_as(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
-	char target[1024];
+	CHAR target[1024];
 
 	if ((sscanf(param, "%s", target))==1)
 	{
@@ -918,32 +952,6 @@ bool CGUIHMM::set_hmm_as(char* param)
 
 	return false;
 }
-
-bool CGUIHMM::assign_obs(char* param)
-{
-	param=CIO::skip_spaces(param);
-
-	char target[1024];
-
-	if ((sscanf(param, "%s", target))==1)
-	{
-		if (working)
-		{
-			CObservation *obs=gui->guiobs.get_obs(target) ;
-			working->set_observations(obs);
-
-			return true ;
-		}
-		else
-		{
-			printf("create model first!\n");
-			return false ;
-		} ;
-	}
-	else
-		printf("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
-	return false ;
-} ;
 
 //convergence criteria  -tobeadjusted-
 bool CGUIHMM::converge(double x, double y)
@@ -984,7 +992,7 @@ void CGUIHMM::switch_model(CHMM** m1, CHMM** m2)
 	*m2= dummy;
 }
 
-bool CGUIHMM::load(char* param)
+bool CGUIHMM::load(CHAR* param)
 {
 	bool result=false;
 
@@ -1007,7 +1015,6 @@ bool CGUIHMM::load(char* param)
 			result=true;
 		}
 
-		ORDER=working->get_ORDER();
 		M=working->get_M();
 	}
 	else
@@ -1016,12 +1023,12 @@ bool CGUIHMM::load(char* param)
 	return result;
 }
 
-bool CGUIHMM::save(char* param)
+bool CGUIHMM::save(CHAR* param)
 {
 	bool result=false;
 	param=CIO::skip_spaces(param);
-	char fname[1024];
-	int binary=0;
+	CHAR fname[1024];
+	INT binary=0;
 
 	if (working)
 	{
@@ -1053,11 +1060,11 @@ bool CGUIHMM::save(char* param)
 	return result;
 }
 
-bool CGUIHMM::load_defs(char* param)
+bool CGUIHMM::load_defs(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
-	char fname[1024];
-	int init=1;
+	CHAR fname[1024];
+	INT init=1;
 
 	if (working)
 	{
@@ -1081,12 +1088,12 @@ bool CGUIHMM::load_defs(char* param)
 	return false;
 }
 
-bool CGUIHMM::save_likelihood(char* param)
+bool CGUIHMM::save_likelihood(CHAR* param)
 {
 	bool result=false;
 	param=CIO::skip_spaces(param);
-	char fname[1024];
-	int binary=0;
+	CHAR fname[1024];
+	INT binary=0;
 
 	if (working)
 	{
@@ -1120,46 +1127,50 @@ bool CGUIHMM::save_likelihood(char* param)
 	return result;
 }
 
-bool CGUIHMM::save_path(char* param)
+bool CGUIHMM::save_path(CHAR* param)
 {
 	bool result=false;
 	param=CIO::skip_spaces(param);
-	char fname[1024];
-	int binary=0;
+	CHAR fname[1024];
+	INT binary=0;
 
 	if (working)
 	{
-		if (sscanf(param, "%s %d", fname, &binary) >= 1)
+	  if (sscanf(param, "%s %d", fname, &binary) >= 1)
+	    {
+	      FILE* file=fopen(fname, "w");
+	      if (file)
 		{
-			FILE* file=fopen(fname, "w");
-			if (file)
-			{
-				/// ..future
-				//if (binary)
-				//	result=working->save_model_bin(file);
-				//else
+		  /// ..future
+		  //if (binary)
+		  //	result=working->save_model_bin(file);
+		  //else
+		  CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
 
-				result=working->save_path(file);
-			}
-
-			if (!file || !result)
-				printf("writing to file %s failed!\n", fname);
-			else
-				printf("successfully written path into \"%s\" !\n", fname);
-
-			if (file)
-				fclose(file);
+		  assert(obs!=NULL);
+		  working->set_observations(obs);
+		  
+		  result=working->save_path(file);
 		}
-		else
-			CIO::message("see help for parameters\n");
+	      
+	      if (!file || !result)
+		printf("writing to file %s failed!\n", fname);
+	      else
+		printf("successfully written path into \"%s\" !\n", fname);
+	      
+	      if (file)
+		fclose(file);
+	    }
+	  else
+	    CIO::message("see help for parameters\n");
 	}
 	else
-		CIO::message("create model first\n");
-
+	  CIO::message("create model first\n");
+	
 	return result;
 }
 
-bool CGUIHMM::chop(char* param)
+bool CGUIHMM::chop(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 	double value;
@@ -1175,7 +1186,7 @@ bool CGUIHMM::chop(char* param)
 	return false;
 }
 
-bool CGUIHMM::likelihood(char* param)
+bool CGUIHMM::likelihood(CHAR* param)
 {
 	if (working)
 	{
@@ -1187,7 +1198,7 @@ bool CGUIHMM::likelihood(char* param)
 	return false;
 }
 
-bool CGUIHMM::output_hmm(char* param)
+bool CGUIHMM::output_hmm(CHAR* param)
 {
 	if (working)
 	{
@@ -1199,7 +1210,7 @@ bool CGUIHMM::output_hmm(char* param)
 	return false;
 }
 
-bool CGUIHMM::output_hmm_defined(char* param)
+bool CGUIHMM::output_hmm_defined(CHAR* param)
 {
 	if (working)
 	{
@@ -1212,11 +1223,12 @@ bool CGUIHMM::output_hmm_defined(char* param)
 }
 
 
-bool CGUIHMM::best_path(char* param)
+bool CGUIHMM::best_path(CHAR* param)
 {
 	if (working)
 	{
-		working->output_model_sequence(false);
+		CIO::not_implemented();
+		//working->output_model_sequence(false);
 		return true;
 	}
 	else
@@ -1225,10 +1237,10 @@ bool CGUIHMM::best_path(char* param)
 	return false;
 }
 
-bool CGUIHMM::normalize(char* param)
+bool CGUIHMM::normalize(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
-	int keep_dead_states=0;
+	INT keep_dead_states=0;
 	sscanf(param, "%d", &keep_dead_states);
 
 	if (working)
@@ -1242,10 +1254,10 @@ bool CGUIHMM::normalize(char* param)
 	return false;
 }
 
-bool CGUIHMM::output_hmm_path(char* param)
+bool CGUIHMM::output_hmm_path(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
-	int from, to;
+	INT from, to;
 
 	if (sscanf(param, "%d %d", &from, &to) != 2)
 	{
@@ -1255,7 +1267,8 @@ bool CGUIHMM::output_hmm_path(char* param)
 
 	if (working)
 	{
-		working->output_model_sequence(true,from,to);
+		//working->output_model_sequence(true,from,to);
+		CIO::not_implemented();
 		return true;
 	}
 	else
@@ -1264,7 +1277,7 @@ bool CGUIHMM::output_hmm_path(char* param)
 	return false;
 }
 
-bool CGUIHMM::relative_entropy(char* param)
+bool CGUIHMM::relative_entropy(CHAR* param)
 {
 	if (pos && neg) 
 	{
@@ -1274,9 +1287,9 @@ bool CGUIHMM::relative_entropy(char* param)
 			double* p=new double[pos->get_M()];
 			double* q=new double[pos->get_M()];
 
-			for (int i=0; i<pos->get_N(); i++)
+			for (INT i=0; i<pos->get_N(); i++)
 			{
-				for (int j=0; j<pos->get_M(); j++)
+				for (INT j=0; j<pos->get_M(); j++)
 				{
 					p[j]=pos->get_b(i,j);
 					q[j]=neg->get_b(i,j);
@@ -1298,16 +1311,16 @@ bool CGUIHMM::relative_entropy(char* param)
 	return false;
 }
 
-bool CGUIHMM::entropy(char* param)
+bool CGUIHMM::entropy(CHAR* param)
 {
 	if (pos) 
 	{
 		double* entropy=new double[pos->get_N()];
 		double* p=new double[pos->get_M()];
 
-		for (int i=0; i<pos->get_N(); i++)
+		for (INT i=0; i<pos->get_N(); i++)
 		{
-			for (int j=0; j<pos->get_M(); j++)
+			for (INT j=0; j<pos->get_M(); j++)
 			{
 				p[j]=pos->get_b(i,j);
 			}
@@ -1325,12 +1338,12 @@ bool CGUIHMM::entropy(char* param)
 	return false;
 }
 
-bool CGUIHMM::permutation_entropy(char* param)
+bool CGUIHMM::permutation_entropy(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
-	int width=0;
-	int seq_num=-1;
+	INT width=0;
+	INT seq_num=-1;
 
 	if (sscanf(param, "%d %d", &width, &seq_num) == 2)
 	{
@@ -1350,99 +1363,4 @@ bool CGUIHMM::permutation_entropy(char* param)
 		CIO::message("wrong number of parameters see help!\n");
 
 	return false;
-}
-
-bool CGUIHMM::histogram(char* param)
-{
-	param=CIO::skip_spaces(param);
-
-	char obsfilename[1024];
-	char destfilename[1024];
-	int ord=-1;
-	int i;
-
-	FILE* obsfile=NULL;
-	FILE* destfile=NULL;
-
-	if (sscanf(param, "%s %s %d", obsfilename, destfilename, &ord) == 3)
-	{
-		obsfile=fopen(obsfilename, "r");
-		destfile=fopen(destfilename, "w");
-
-		CObservation* p_observations=new CObservation(TEST, DNA, 2, 4, ord);
-
-		if (p_observations && ord>=1 && ord<=8 && obsfile && destfile)
-		{
-			const int WINSIZE=1024;
-			const int FAKE_WINSIZE=WINSIZE+ord;
-			const int HISTSIZE=(1 << (2*ord)); //*(sizeof(T_OBSERVATIONS));
-			double* hist=new double[HISTSIZE];
-			unsigned char* rawline=new unsigned char[FAKE_WINSIZE];
-			T_OBSERVATIONS* line=new T_OBSERVATIONS[FAKE_WINSIZE];
-			unsigned char* backupbuf=new unsigned char[ord];
-
-			int readsize;
-
-			for (i=0;i<HISTSIZE;i++)
-				hist[i]=0;
-
-			//always leave room for the first ord symbols
-			unsigned char* target=&rawline[ord-1]; 
-			
-			if (ord-1>0)
-			{
-				if ((readsize=fread(rawline, sizeof (unsigned char), ord-1, obsfile))!=ord-1)
-					return false;
-			}
-				for (i=0; i<ord-1; i++)
-					backupbuf[i]=rawline[i];
-
-			while (!feof(obsfile))
-			{
-				readsize=fread(target, sizeof (unsigned char), WINSIZE, obsfile);
-				
-				for (i=0; i<ord-1; i++)
-					rawline[i]=backupbuf[i];
-
-				if (rawline[readsize-1]=='\n')
-				{
-					readsize--;
-
-					for (i=readsize-ord+1; i<readsize; i++)
-						backupbuf[i-readsize+ord]=target[i];
-				}
-
-				for (i=0; i<FAKE_WINSIZE; i++)
-					line[i]=(T_OBSERVATIONS) rawline[i];
-
-				if (p_observations->translate_from_single_order(line,readsize,ord-1) < 0)
-					CIO::message(stderr,"wrong character(s) between %i-%i\n", ftell(obsfile)-readsize, ftell(obsfile)) ;
-
-				for (i=0; i<readsize; i++)
-					hist[line[i+ord-1]]++;
-			}
-
-			for (i=0; i<HISTSIZE; i++)
-				fprintf(destfile, "%f\n", hist[i]);
-			//fwrite(hist, sizeof(double), HISTSIZE, destfile);
-			fclose(destfile);
-			fclose(obsfile);
-
-			delete p_observations;
-			delete[] rawline;
-			delete[] line;
-			delete[] hist;
-		}
-		else
-		{
-			CIO::message("creating obs-object failed or order not within range 0-8 or files could not opened.\n");
-			return false;
-		}
-	}
-	else
-	{
-		CIO::message("See help for parameters.");
-		return false;
-	}
-	return true;
 }

@@ -2,7 +2,7 @@
 #define _CFEATURES__H__
 
 #include "lib/common.h"
-#include "lib/lapack.h"
+/*#include "lib/lapack.h"*/
 #include "preproc/PreProc.h"
 #include "stdio.h"
 
@@ -17,7 +17,7 @@ public:
 	 *
 	 * size - cache size
 	*/
-	CFeatures(long size);
+	CFeatures(LONG size);
 
 	// copy constructor
 	CFeatures(const CFeatures& orig);
@@ -26,7 +26,7 @@ public:
 	 * fname - filename
 	 */
 
-	CFeatures(char* fname);
+	CFeatures(CHAR* fname);
 
 	virtual ~CFeatures();
 
@@ -41,52 +41,52 @@ public:
 	virtual EFeatureClass get_feature_class()=0;
 		
 	/// set preprocessor
-	virtual int add_preproc(CPreProc* p);
+	virtual INT add_preproc(CPreProc* p);
 	
 	/// delete preprocessor from list
 	/// caller has to clean up returned preproc
-	virtual CPreProc* del_preproc(int num);
+	virtual CPreProc* del_preproc(INT num);
 
 	/// get specified preprocessor
-	CPreProc* get_preproc(int num);
+	CPreProc* get_preproc(INT num);
 	
 	/// set applied flag for preprocessor
-	inline void set_preprocessed(int num) { preprocessed[num]=true; }
+	inline void set_preprocessed(INT num) { preprocessed[num]=true; }
 
 	/// get whether specified preprocessor was already applied
-	inline bool is_preprocessed(int num) { return preprocessed[num]; }
+	inline bool is_preprocessed(INT num) { return preprocessed[num]; }
 
 	/// get number of preprocessors
-	inline int get_num_preproc() { return num_preproc; };
+	inline INT get_num_preproc() { return num_preproc; };
 
 	/// get cache size
-	inline long get_cache_size() { return cache_size; };
+	inline LONG get_cache_size() { return cache_size; };
 
 	/// return the number of samples
-	virtual long get_num_vectors()=0 ;
+	virtual INT get_num_vectors()=0 ;
 
 	virtual CFeatures* duplicate() const=0 ;
 
 	//in case there is a feature matrix allow for reshaping
-	virtual bool reshape(int num_features, int num_vectors) { return false; }
+	virtual bool reshape(INT num_features, INT num_vectors) { return false; }
 
 	/** return size (in bytes) a single element (e.g. sizeof(float))
 	    requires
 	*/
-	virtual int get_size()=0;
+	virtual INT get_size()=0;
 
-	virtual bool load(char* fname);
-	virtual bool save(char* fname);
+	virtual bool load(CHAR* fname);
+	virtual bool save(CHAR* fname);
 	
 private:
 	/// size of cache in MB
-	long cache_size;
+	LONG cache_size;
 
 	/// list of preprocessors
 	CPreProc** preproc;
 
 	/// number of preprocs in list
-	int num_preproc;
+	INT num_preproc;
 
 	/// i'th entry is true if features were already preprocessed with preproc i
 	bool* preprocessed;

@@ -1,28 +1,28 @@
 #include "lib/common.h"
 
-void nrerror2(char error_text[]);
-REAL *vector(long nl, long nh);
-int *ivector(long nl, long nh) ;
-unsigned char *cvector(long nl, long nh) ;
-unsigned long *lvector(long nl, long nh) ;
-double *dvector(long nl, long nh) ;
-REAL **matrix(long nrl, long nrh, long ncl, long nch) ;
-double **dmatrix(long nrl, long nrh, long ncl, long nch) ;
-int **imatrix(long nrl, long nrh, long ncl, long nch) ;
-REAL **convert_matrix(REAL *a, long nrl, long nrh, long ncl, long nch) ;
-REAL ***f3tensor(long nrl, long nrh, long ncl, long nch, long ndl, long ndh) ;
-void free_vector(REAL *v, long nl, long nh) ;
-void free_ivector(int *v, long nl, long nh) ;
-void free_cvector(unsigned char *v, long nl, long nh) ;
-void free_lvector(unsigned long *v, long nl, long nh) ;
-void free_dvector(double *v, long nl, long nh) ;
-void free_matrix(REAL **m, long nrl, long nrh, long ncl, long nch) ;
-void free_dmatrix(double **m, long nrl, long nrh, long ncl, long nch) ;
-void free_imatrix(int **m, long nrl, long nrh, long ncl, long nch) ;
-void free_submatrix(REAL **b, long nrl, long nrh, long ncl, long nch) ;
-void free_convert_matrix(REAL **b, long nrl, long nrh, long ncl, long nch) ;
-void free_f3tensor(REAL ***t, long nrl, long nrh, long ncl, long nch, 
-		   long ndl, long ndh) ;
+void nrerror2(CHAR error_text[]);
+REAL *vector(LONG nl, LONG nh);
+int *ivector(LONG nl, LONG nh) ;
+BYTE *cvector(LONG nl, LONG nh) ;
+unsigned long *lvector(LONG nl, LONG nh) ;
+double *dvector(LONG nl, LONG nh) ;
+REAL **matrix(LONG nrl, LONG nrh, LONG ncl, LONG nch) ;
+double **dmatrix(LONG nrl, LONG nrh, LONG ncl, LONG nch) ;
+int **imatrix(LONG nrl, LONG nrh, LONG ncl, LONG nch) ;
+REAL **convert_matrix(REAL *a, LONG nrl, LONG nrh, LONG ncl, LONG nch) ;
+REAL ***f3tensor(LONG nrl, LONG nrh, LONG ncl, LONG nch, LONG ndl, LONG ndh) ;
+void free_vector(REAL *v, LONG nl, LONG nh) ;
+void free_ivector(int *v, LONG nl, LONG nh) ;
+void free_cvector(BYTE *v, LONG nl, LONG nh) ;
+void free_lvector(unsigned long *v, LONG nl, LONG nh) ;
+void free_dvector(double *v, LONG nl, LONG nh) ;
+void free_matrix(REAL **m, LONG nrl, LONG nrh, LONG ncl, LONG nch) ;
+void free_dmatrix(double **m, LONG nrl, LONG nrh, LONG ncl, LONG nch) ;
+void free_imatrix(int **m, LONG nrl, LONG nrh, LONG ncl, LONG nch) ;
+void free_submatrix(REAL **b, LONG nrl, LONG nrh, LONG ncl, LONG nch) ;
+void free_convert_matrix(REAL **b, LONG nrl, LONG nrh, LONG ncl, LONG nch) ;
+void free_f3tensor(REAL ***t, LONG nrl, LONG nrh, LONG ncl, LONG nch, 
+		   LONG ndl, LONG ndh) ;
 
 inline double sign(double tol, double a)
 {

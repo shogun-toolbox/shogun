@@ -5,10 +5,10 @@ class CGUIMath
 {
 public:
 	CGUIMath();
-	void evaluate_results(REAL* output, int* label, int total, FILE* outputfile=NULL, FILE* rocfile=NULL);
-	void current_results(REAL* output, int* label, int total, FILE* outputfile=NULL);
+	void evaluate_results(REAL* output, INT* label, INT total, FILE* outputfile=NULL, FILE* rocfile=NULL);
+	void current_results(REAL* output, INT* label, INT total, FILE* outputfile=NULL);
 
-	void set_threshold(char* input);
+	void set_threshold(CHAR* input);
 protected:
 	REAL threshold;
 };

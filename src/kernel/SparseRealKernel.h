@@ -6,7 +6,7 @@
 class CSparseRealKernel : public CSparseKernel<REAL>
 {
 	public:
-		CSparseRealKernel(long cachesize) : CSparseKernel<REAL>(cachesize)
+		CSparseRealKernel(LONG cachesize) : CSparseKernel<REAL>(cachesize)
 		{
 		}
 

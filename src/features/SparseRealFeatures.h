@@ -7,7 +7,7 @@
 class CSparseRealFeatures: public CSparseFeatures<REAL>
 {
  public:
-  CSparseRealFeatures(long size) : CSparseFeatures<REAL>(size)
+  CSparseRealFeatures(LONG size) : CSparseFeatures<REAL>(size)
   {
   }
 
@@ -15,7 +15,7 @@ class CSparseRealFeatures: public CSparseFeatures<REAL>
   {
   }
 
-  CSparseRealFeatures(char* fname) : CSparseFeatures<REAL>(fname)
+  CSparseRealFeatures(CHAR* fname) : CSparseFeatures<REAL>(fname)
   {
 	load(fname);
   }
@@ -23,7 +23,7 @@ class CSparseRealFeatures: public CSparseFeatures<REAL>
   virtual CFeatures* duplicate() const;
   virtual EFeatureType get_feature_type() { return F_REAL; }
 
-  virtual bool load(char* fname);
-  virtual bool save(char* fname);
+  virtual bool load(CHAR* fname);
+  virtual bool save(CHAR* fname);
 };
 #endif

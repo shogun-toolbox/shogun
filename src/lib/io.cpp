@@ -1,4 +1,5 @@
 #include "lib/io.h"
+#include "lib/common.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -10,7 +11,7 @@ CIO::CIO()
 {
 }
 
-void CIO::message(const char *fmt, ... )
+void CIO::message(const CHAR *fmt, ... )
 {
 	check_target();
     va_list list;
@@ -20,7 +21,7 @@ void CIO::message(const char *fmt, ... )
     fflush(target);
 }
 
-void CIO::message(FILE* target, const char *fmt, ... )
+void CIO::message(FILE* target, const CHAR *fmt, ... )
 {
 	check_target();
     va_list list;
@@ -30,7 +31,7 @@ void CIO::message(FILE* target, const char *fmt, ... )
     fflush(target);
 }
 
-void CIO::buffered_message(const char *fmt, ... )
+void CIO::buffered_message(const CHAR *fmt, ... )
 {
 	check_target();
     va_list list;
@@ -39,7 +40,7 @@ void CIO::buffered_message(const char *fmt, ... )
     va_end(list);
 }
 
-void CIO::buffered_message(FILE* target, const char *fmt, ... )
+void CIO::buffered_message(FILE* target, const CHAR *fmt, ... )
 {
 	check_target();
     va_list list;
@@ -48,9 +49,9 @@ void CIO::buffered_message(FILE* target, const char *fmt, ... )
     va_end(list);
 }
 
-char* CIO::skip_spaces(char* str)
+CHAR* CIO::skip_spaces(CHAR* str)
 {
-	int i=0;
+	INT i=0;
 
 	if (str)
 	{

@@ -8,14 +8,14 @@
 class CByteFeatures: public CSimpleFeatures<BYTE>
 {
 	public:
-		CByteFeatures(long size);
+		CByteFeatures(LONG size);
 		CByteFeatures(const CByteFeatures & orig);
-		CByteFeatures(char* fname);
+		CByteFeatures(CHAR* fname);
 
 		virtual EFeatureType get_feature_type() { return F_BYTE; }
 
 		virtual CFeatures* duplicate() const;
-		virtual bool load(char* fname);
-		virtual bool save(char* fname);
+		virtual bool load(CHAR* fname);
+		virtual bool save(CHAR* fname);
 };
 #endif

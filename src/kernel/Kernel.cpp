@@ -7,12 +7,13 @@
 #include <string.h>
 #include <assert.h>
 
-CKernel::CKernel(long size)
+CKernel::CKernel(LONG size)
 {
-	if (size<100)
-		size=100;
+	if (size<10)
+		size=10;
 
 	cache_size=size;
+	CIO::message("using a kernel cache of size %i MB\n", size) ;
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 }
 
@@ -22,7 +23,7 @@ CKernel::~CKernel()
 }
 
 /* calculate the kernel function */
-REAL CKernel::kernel(long idx_a, long idx_b)
+REAL CKernel::kernel(INT idx_a, INT idx_b)
 {
 	if (idx_a < 0 || idx_b <0)
 	{
@@ -58,10 +59,10 @@ bool CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 /****************************** Cache handling *******************************/
 
-void CKernel::kernel_cache_init(long buffsize)
+void CKernel::kernel_cache_init(LONG buffsize)
 {
-	long i;
-	long totdoc=get_lhs()->get_num_vectors();
+	LONG i;
+	LONG totdoc=get_lhs()->get_num_vectors();
 
 	kernel_cache.index = new long[totdoc];
 	kernel_cache.occu = new long[totdoc];
@@ -71,9 +72,9 @@ void CKernel::kernel_cache_init(long buffsize)
 	kernel_cache.totdoc2active = new long[totdoc];
 	kernel_cache.buffer = new REAL[buffsize*1024*1024/sizeof(REAL)];
 
-	kernel_cache.buffsize=(long)(buffsize*1024*1024/sizeof(REAL));
+	kernel_cache.buffsize=(LONG)(buffsize*1024*1024/sizeof(REAL));
 
-	kernel_cache.max_elems=(long)(kernel_cache.buffsize/totdoc);
+	kernel_cache.max_elems=(LONG)(kernel_cache.buffsize/totdoc);
 
 	if(kernel_cache.max_elems>totdoc) {
 		kernel_cache.max_elems=totdoc;
@@ -98,9 +99,9 @@ void CKernel::kernel_cache_init(long buffsize)
 	kernel_cache.time=0;  
 } 
 
-void CKernel::get_kernel_row(long docnum, long *active2dnum, REAL *buffer)     
+void CKernel::get_kernel_row(LONG docnum, LONG *active2dnum, REAL *buffer)     
 {
-	long i,j,start;
+	LONG i,j,start;
 
 #if 0
 	for(i=0;(j=active2dnum[i])>=0;i++)
@@ -132,9 +133,9 @@ void CKernel::get_kernel_row(long docnum, long *active2dnum, REAL *buffer)
 
 
 // Fills cache for the row m
-void CKernel::cache_kernel_row(long m)
+void CKernel::cache_kernel_row(LONG m)
 {
-	register long j,k,l;
+	register LONG j,k,l;
 	register REAL *cache;
 
 	if(!kernel_cache_check(m))   // not cached yet
@@ -161,19 +162,19 @@ void CKernel::cache_kernel_row(long m)
 }
 
 // Fills cache for the rows in key 
-void CKernel::cache_multiple_kernel_rows(long* rows, long num_rows)
+void CKernel::cache_multiple_kernel_rows(LONG* rows, LONG num_rows)
 {
 	// fill up kernel cache 
-	for(int i=0;i<num_rows;i++) 
+	for(LONG i=0;i<num_rows;i++) 
 		cache_kernel_row(rows[i]);
 }
 
 // remove numshrink columns in the cache
 // which correspond to examples marked
-void CKernel::kernel_cache_shrink(long totdoc, long numshrink, long *after)
+void CKernel::kernel_cache_shrink(LONG totdoc, LONG numshrink, LONG *after)
 {                           
-	register long i,j,jj,from=0,to=0,scount;     // 0 in after.
-	long *keep;
+	register LONG i,j,jj,from=0,to=0,scount;     // 0 in after.
+	LONG *keep;
 
 	keep=new long[totdoc];
 	for(j=0;j<totdoc;j++) {
@@ -214,7 +215,7 @@ void CKernel::kernel_cache_shrink(long totdoc, long numshrink, long *after)
 		}
 	}
 
-	kernel_cache.max_elems=(long)(kernel_cache.buffsize/kernel_cache.activenum);
+	kernel_cache.max_elems=(LONG)(kernel_cache.buffsize/kernel_cache.activenum);
 	if(kernel_cache.max_elems>totdoc) {
 		kernel_cache.max_elems=totdoc;
 	}
@@ -226,7 +227,7 @@ void CKernel::kernel_cache_shrink(long totdoc, long numshrink, long *after)
 
 void CKernel::kernel_cache_reset_lru()
 {
-	long maxlru=0,k;
+	LONG maxlru=0,k;
 
 	for(k=0;k<kernel_cache.max_elems;k++) {
 		if(maxlru < kernel_cache.lru[k]) 
@@ -249,9 +250,9 @@ void CKernel::kernel_cache_cleanup()
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 }
 
-long CKernel::kernel_cache_malloc()
+LONG CKernel::kernel_cache_malloc()
 {
-	long i;
+	LONG i;
 
 	if(kernel_cache.elems < kernel_cache.max_elems) {
 		for(i=0;i<kernel_cache.max_elems;i++) {
@@ -265,7 +266,7 @@ long CKernel::kernel_cache_malloc()
 	return(-1);
 }
 
-void CKernel::kernel_cache_free(long cacheidx)
+void CKernel::kernel_cache_free(LONG cacheidx)
 {
 	kernel_cache.occu[cacheidx]=0;
 	kernel_cache.elems--;
@@ -273,9 +274,9 @@ void CKernel::kernel_cache_free(long cacheidx)
 
 // remove least recently used cache
 // element
-long CKernel::kernel_cache_free_lru()  
+LONG CKernel::kernel_cache_free_lru()  
 {                                     
-	register long k,least_elem=-1,least_time;
+	register LONG k,least_elem=-1,least_time;
 
 	least_time=kernel_cache.time+1;
 	for(k=0;k<kernel_cache.max_elems;k++) {
@@ -297,9 +298,9 @@ long CKernel::kernel_cache_free_lru()
 
 // Get a free cache entry. In case cache is full, the lru
 // element is removed.
-REAL* CKernel::kernel_cache_clean_and_malloc(long cacheidx)
+REAL* CKernel::kernel_cache_clean_and_malloc(LONG cacheidx)
 {             
-	long result;
+	LONG result;
 	if((result = kernel_cache_malloc()) == -1) {
 		if(kernel_cache_free_lru()) {
 			result = kernel_cache_malloc();
@@ -311,27 +312,27 @@ REAL* CKernel::kernel_cache_clean_and_malloc(long cacheidx)
 	}
 	kernel_cache.invindex[result]=cacheidx;
 	kernel_cache.lru[kernel_cache.index[cacheidx]]=kernel_cache.time; // lru
-	return((REAL *)((long)kernel_cache.buffer
+	return((REAL *)((LONG)kernel_cache.buffer
 				+(kernel_cache.activenum*sizeof(REAL)*
 					kernel_cache.index[cacheidx])));
 }
-bool CKernel::load(char* fname)
+bool CKernel::load(CHAR* fname)
 {
 	return false;
 }
 
-bool CKernel::save(char* fname)
+bool CKernel::save(CHAR* fname)
 {
-	long i=0;
-	long num_left=get_lhs()->get_num_vectors();
-	long num_right=get_rhs()->get_num_vectors();
-	long num_total=num_left*num_right;
+	INT i=0;
+	INT num_left=get_lhs()->get_num_vectors();
+	INT num_right=get_rhs()->get_num_vectors();
+	LONG num_total=num_left*num_right;
 
 	CFile f(fname, 'w', F_REAL);
 
-    for (int l=0; l< (long) num_left && f.is_ok(); l++)
+    for (INT l=0; l< (INT) num_left && f.is_ok(); l++)
 	{
-		for (int r=0; r< (long) num_right && f.is_ok(); r++)
+		for (INT r=0; r< (INT) num_right && f.is_ok(); r++)
 		{
 			if (!(i % (num_total/10+1)))
 				CIO::message("%02d%%.", (int) (100.0*i/num_total));

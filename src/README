@@ -1,3 +1,15 @@
+- types (use only these!):
+	CHAR	(char)
+	BYTE	(unsigned char)
+	WORD	(unsigned short)
+	UINT	(unsinged int)
+	INT		(int)
+	LONG	(long)
+	REAL	(double)
+	LONGREAL (long double)
+
+	exceptions: file IO / matlab interface
+
 naming conventions:
 	-objects which can deal with features of type REAL and class SIMPLE don't need to contain Real/Simple in class name
 	-others are required to clearify class/type they can handle, e.g. CSparseByteLinearKernel, CSparseGaussianKernel

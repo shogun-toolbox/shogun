@@ -7,7 +7,7 @@
 template <class ST> class CSparseKernel : public CKernel
 {
 	public:
-		CSparseKernel(long cachesize) : CKernel(cachesize)
+		CSparseKernel(LONG cachesize) : CKernel(cachesize)
 		{
 		}
 

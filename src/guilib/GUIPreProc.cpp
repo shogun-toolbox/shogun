@@ -3,6 +3,7 @@
 #include "preproc/NormOne.h"
 #include "preproc/PruneVarSubMean.h"
 #include "preproc/PCACut.h"
+#include "preproc/SortWord.h"
 #include "lib/io.h"
 
 #include <string.h>
@@ -18,28 +19,30 @@ CGUIPreProc::CGUIPreProc(CGUI * gui_)
 
 CGUIPreProc::~CGUIPreProc()
 {
-	for (int i=0; i<num_preprocs; i++)
+	for (INT i=0; i<num_preprocs; i++)
 		delete preprocs[i];
 	delete[] preprocs;
 }
 
 
-bool CGUIPreProc::add_preproc(char* param)
+bool CGUIPreProc::add_preproc(CHAR* param)
 {
 	CPreProc* preproc=NULL;
 
 	param=CIO::skip_spaces(param);
-#ifndef NO_LAPACK
+#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 	if (strncmp(param,"PCACUT",6)==0)
 	{
-		int do_whitening=0; 
+		INT do_whitening=0; 
 		double thresh=1e-6 ;
 		sscanf(param+6, "%i %le", &do_whitening, &thresh) ;
 		CIO::message("PCACUT parameters: do_whitening=%i thresh=%e", do_whitening, thresh) ;
 		preproc=new CPCACut(do_whitening, thresh);
 	}
 	else 
-#endif
+#endif // LAPACK
+#endif // ATLAS
 	if (strncmp(param,"NORMONE",7)==0)
 	{
 		preproc=new CNormOne();
@@ -48,9 +51,13 @@ bool CGUIPreProc::add_preproc(char* param)
 	{
 		preproc=new CLogPlusOne();
 	}
+	else if (strncmp(param,"SORTWORD",8)==0)
+	{
+		preproc=new CSortWord();
+	}
 	else if (strncmp(param,"PRUNEVARSUBMEAN",15)==0)
 	{
-		int divide_by_std=0; 
+		INT divide_by_std=0; 
 		sscanf(param+15, "%i", &divide_by_std);
 
 		if (divide_by_std)
@@ -69,10 +76,10 @@ bool CGUIPreProc::add_preproc(char* param)
 	return add_preproc(preproc);
 }
 
-bool CGUIPreProc::del_preproc(char* param)
+bool CGUIPreProc::del_preproc(CHAR* param)
 {
-	int i,j;
-	int num=num_preprocs-1;
+	INT i,j;
+	INT num=num_preprocs-1;
 
 	CPreProc** pps=NULL; 
 	param=CIO::skip_spaces(param);
@@ -116,7 +123,7 @@ bool CGUIPreProc::del_preproc(char* param)
 		return false;
 }
 
-bool CGUIPreProc::load(char* param)
+bool CGUIPreProc::load(CHAR* param)
 {
 	bool result=false;
 
@@ -125,19 +132,21 @@ bool CGUIPreProc::load(char* param)
 	CPreProc* preproc=NULL;
 
 	FILE* file=fopen(param, "r");
-	char id[5]="UDEF";
+	CHAR id[5]="UDEF";
 
 	if (file)
 	{
 		assert(fread(id, sizeof(char), 4, file)==4);
 	
-#ifndef NO_LAPACK
+#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 		if (strncmp(id, "PCAC", 4)==0)
 		{
 			preproc=new CPCACut();
 		}
 		else 
-#endif
+#endif // LAPACK
+#endif // ATLAS
 		if (strncmp(id, "NRM1", 4)==0)
 		{
 			preproc=new CNormOne();
@@ -166,10 +175,10 @@ bool CGUIPreProc::load(char* param)
 	return result;
 }
 
-bool CGUIPreProc::save(char* param)
+bool CGUIPreProc::save(CHAR* param)
 {
-	char fname[1024];
-	int num=num_preprocs-1;
+	CHAR fname[1024];
+	INT num=num_preprocs-1;
 	bool result=false; param=CIO::skip_spaces(param);
 	sscanf(param, "%s %i", fname, &num);
 
@@ -198,7 +207,7 @@ bool CGUIPreProc::save(char* param)
 
 bool CGUIPreProc::add_preproc(CPreProc* preproc)
 {
-	int i;
+	INT i;
 	CPreProc** pps=new CPreProc*[num_preprocs+1];
 
 	for (i=0; i<num_preprocs; i++)

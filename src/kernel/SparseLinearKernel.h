@@ -8,7 +8,7 @@
 class CSparseLinearKernel: public CSparseRealKernel
 {
  public:
-  CSparseLinearKernel(long size);
+  CSparseLinearKernel(LONG size);
   ~CSparseLinearKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -26,13 +26,13 @@ class CSparseLinearKernel: public CSparseRealKernel
   inline virtual EFeatureType get_feature_type() { return F_REAL; }
 
   // return the name of a kernel
-  virtual const char* get_name() { return "SparseLinear" ; } ;
+  virtual const CHAR* get_name() { return "SparseLinear" ; } ;
 
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
-  virtual REAL compute(long idx_a, long idx_b);
+  virtual REAL compute(INT idx_a, INT idx_b);
   /*    compute_kernel*/
 
   virtual void init_rescale();

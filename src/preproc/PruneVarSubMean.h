@@ -32,13 +32,13 @@ class CPruneVarSubMean : public CRealPreProc
   
   /// apply preproc on single feature vector
   /// result in feature matrix
-  virtual REAL* apply_to_feature_vector(REAL* f, int &len);
+  virtual REAL* apply_to_feature_vector(REAL* f, INT &len);
 
  protected:
-  int* idx ;
+  INT* idx ;
   REAL* mean;
   REAL* std;
-  int num_idx ;
+  INT num_idx ;
   bool divide_by_std;
   
   /// true when already initialized

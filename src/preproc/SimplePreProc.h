@@ -14,7 +14,7 @@ template <class ST> class CSimpleFeatures;
 template <class ST> class CSimplePreProc : public CPreProc
 {
 public:
-	CSimplePreProc(const char *name, const char* id) : CPreProc(name,id)
+	CSimplePreProc(const CHAR *name, const CHAR* id) : CPreProc(name,id)
 	{
 	}
 
@@ -26,7 +26,7 @@ public:
 	/// apply preproc on single feature vector
 	/// result in feature matrix
 
-	virtual ST* apply_to_feature_vector(ST* f, int &len)=0;
+	virtual ST* apply_to_feature_vector(ST* f, INT &len)=0;
 
   /// return that we are simple minded features (just fixed size matrices)
   inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }

@@ -81,7 +81,7 @@ void TerminateModule_cleaner(void) {
     mxDestroyArray(_mxarray0_);
 }
 
-static mxArray * Mcleaner(int nargout_, mxArray * covz, mxArray * thresh);
+static mxArray * Mcleaner(INT nargout_, mxArray * covz, mxArray * thresh);
 
 _mexLocalFunctionTable _local_function_table_cleaner
   = { 0, (mexFunctionTableEntry *)NULL };
@@ -93,7 +93,7 @@ _mexLocalFunctionTable _local_function_table_cleaner
  * version of the function, appearing above.
  */
 mxArray * mlfCleaner(mxArray * covz, mxArray * thresh) {
-    int nargout = 1;
+    INT nargout = 1;
     mxArray * T = mclGetUninitializedArray();
     mlfEnterNewContext(0, 2, covz, thresh);
     T = Mcleaner(nargout, covz, thresh);
@@ -108,10 +108,10 @@ mxArray * mlfCleaner(mxArray * covz, mxArray * thresh) {
  * This function processes any input arguments and passes them to the
  * implementation version of the function, appearing above.
  */
-void mlxCleaner(int nlhs, mxArray * plhs[], int nrhs, mxArray * prhs[]) {
+void mlxCleaner(INT nlhs, mxArray * plhs[], INT nrhs, mxArray * prhs[]) {
     mxArray * mprhs[2];
     mxArray * mplhs[1];
-    int i;
+    INT i;
     if (nlhs > 1) {
         mlfError(_mxarray0_);
     }
@@ -142,7 +142,7 @@ void mlxCleaner(int nlhs, mxArray * plhs[], int nrhs, mxArray * prhs[]) {
 /*
  * function T=cleaner(covz, thresh) ;
  */
-static mxArray * Mcleaner(int nargout_, mxArray * covz, mxArray * thresh) {
+static mxArray * Mcleaner(INT nargout_, mxArray * covz, mxArray * thresh) {
     mexLocalFunctionTable save_local_function_table_ = mclSetCurrentLocalFunctionTable(
                                                          &_local_function_table_cleaner);
     mxArray * T = mclGetUninitializedArray();

@@ -1,3 +1,9 @@
+#ifdef HAVE_ATLAS
+extern "C" {
+#include <atlas_level1.h>
+}
+#endif
+
 #include "lib/common.h"
 #include "kernel/PolyKernel.h"
 #include "features/Features.h"
@@ -6,15 +12,78 @@
 
 #include <assert.h>
 
-CPolyKernel::CPolyKernel(long size, int d, bool inhom)
-  : CRealKernel(size),degree(d),inhomogene(inhom)
+CPolyKernel::CPolyKernel(LONG size, INT d, bool inhom)
+  : CRealKernel(size),degree(d),inhomogene(inhom), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
 }
 
 CPolyKernel::~CPolyKernel() 
 {
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	delete[] sqrtdiag_lhs;
 }
   
+bool CPolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+{
+	bool result=CRealKernel::init(l,r,do_init);
+
+	initialized = false ;
+	INT i;
+
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+	  delete[] sqrtdiag_rhs;
+	sqrtdiag_rhs=NULL ;
+	delete[] sqrtdiag_lhs;
+	sqrtdiag_lhs=NULL ;
+
+	sqrtdiag_lhs= new REAL[lhs->get_num_vectors()];
+
+	for (i=0; i<lhs->get_num_vectors(); i++)
+		sqrtdiag_lhs[i]=1;
+
+	if (l==r)
+		sqrtdiag_rhs=sqrtdiag_lhs;
+	else
+	{
+		sqrtdiag_rhs= new REAL[rhs->get_num_vectors()];
+		for (i=0; i<rhs->get_num_vectors(); i++)
+			sqrtdiag_rhs[i]=1;
+	}
+
+	assert(sqrtdiag_lhs);
+	assert(sqrtdiag_rhs);
+
+	this->lhs=(CRealFeatures*) l;
+	this->rhs=(CRealFeatures*) l;
+
+	//compute normalize to 1 values
+	for (i=0; i<lhs->get_num_vectors(); i++)
+	  {
+	    sqrtdiag_lhs[i]=sqrt(compute(i,i));
+	    //CIO::message("sqrtdiag[%i]=%f\n", i, sqrtdiag_lhs[i]) ;
+	  } ;
+	
+
+	// if lhs is different from rhs (train/test data)
+	// compute also the normalization for rhs
+	if (sqrtdiag_lhs!=sqrtdiag_rhs)
+	{
+		this->lhs=(CRealFeatures*) r;
+		this->rhs=(CRealFeatures*) r;
+
+		//compute normalize to 1 values
+		for (i=0; i<rhs->get_num_vectors(); i++)
+		  sqrtdiag_rhs[i]=sqrt(compute(i,i));
+	}
+
+	this->lhs=(CRealFeatures*) l;
+	this->rhs=(CRealFeatures*) r;
+
+	initialized = true ;
+	return result;
+}
+
 void CPolyKernel::cleanup()
 {
 }
@@ -29,9 +98,9 @@ bool CPolyKernel::save_init(FILE* dest)
 	return false;
 }
   
-REAL CPolyKernel::compute(long idx_a, long idx_b)
+REAL CPolyKernel::compute(INT idx_a, INT idx_b)
 {
-  long alen, blen;
+  INT alen, blen;
   bool afree, bfree;
 
   //fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
@@ -40,47 +109,41 @@ REAL CPolyKernel::compute(long idx_a, long idx_b)
   
   assert(alen==blen);
 
-  int skip=1;
-  int ialen=(int) alen;
+  REAL sqrt_a= 1 ;
+  REAL sqrt_b= 1 ;
+  if (initialized)
+    {
+      sqrt_a=sqrtdiag_lhs[idx_a] ;
+      sqrt_b=sqrtdiag_rhs[idx_b] ;
+    } ;
 
-#ifdef NO_LAPACK
+  REAL sqrt_both=sqrt_a*sqrt_b;
+
+  INT ialen=(int) alen;
+
+#ifndef HAVE_ATLAS
   REAL result=0;
-  REAL anormalize=0;
-  REAL bnormalize=0;
   {
-    for (int i=0; i<ialen; i++)
+    for (INT i=0; i<ialen; i++)
 	{
       result+=avec[i]*bvec[i];
-	  anormalize+=avec[i]*avec[i];
-	  bnormalize+=bvec[i]*bvec[i];
 	}
 
   }
 #else
-  REAL result=ddot_(&ialen, avec, &skip, bvec, &skip);
-  REAL anormalize=ddot_(&ialen, avec, &skip, avec, &skip);
-  REAL bnormalize=ddot_(&ialen, bvec, &skip, bvec, &skip);
-#endif // NO_LAPACK
+  INT skip=1;
+  REAL result=ATL_ddot(ialen, avec, skip, bvec, skip);
+#endif // HAVE_ATLAS
 
   if (inhomogene)
-  {
 	  result+=1;
-	  anormalize+=1;
-	  bnormalize+=1;
-  }
 
   REAL re=result;
-  REAL ano=anormalize;
-  REAL bno=bnormalize;
 
-  for (int j=1; j<degree; j++)
-  {
+  for (INT j=1; j<degree; j++)
 	  result*=re;
-	  ano*=anormalize;
-	  bno*=bnormalize;
-  }
 
-  result/=sqrt(ano*bno);
+  result/=sqrt_both;
 
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);

@@ -8,15 +8,15 @@
 class CLabels
 {
 	public:
-		CLabels(long num_labels);
-		CLabels(char* fname);
+		CLabels(INT num_labels);
+		CLabels(CHAR* fname);
 		~CLabels();
 
-		bool load(char* fname);
-		bool save(char* fname);
+		bool load(CHAR* fname);
+		bool save(CHAR* fname);
 
 		/// set/get the labels
-		inline bool set_label(long idx, int label)
+		inline bool set_label(INT idx, REAL label)
 		{ 
 			if (labels && idx<num_labels)
 			{
@@ -27,7 +27,19 @@ class CLabels
 				return false;
 		}
 
-		inline INT get_label(long idx)
+		/// set/get INT label
+		inline bool set_int_label(INT idx, INT label)
+		{ 
+			if (labels && idx<num_labels)
+			{
+				labels[idx]= (REAL) label;
+				return true;
+			}
+			else 
+				return false;
+		}
+
+		inline REAL get_label(INT idx)
 		{
 			if (labels && idx<num_labels)
 				return labels[idx];
@@ -35,14 +47,29 @@ class CLabels
 				return -1;
 		}
 
+		inline INT get_int_label(INT idx)
+		{
+			if (labels && idx<num_labels)
+			{
+				assert(labels[idx]== ((REAL) ((INT) labels[idx])));
+				return ((INT) labels[idx]);
+			}
+			else
+				return -1;
+		}
+
 		/// get label vector
 		/// caller has to clean up
-		INT* get_labels(long &len) ;
+		REAL* get_labels(INT &len) ;
+
+		/// get INT label vector
+		/// caller has to clean up
+		INT* get_int_labels(INT &len) ;
 
 		/// get number of labels
-		inline int get_num_labels() { return num_labels; }
+		inline INT get_num_labels() { return num_labels; }
 	protected:
-		long num_labels;
-		INT* labels;
+		INT num_labels;
+		REAL* labels;
 };
 #endif

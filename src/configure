@@ -9,7 +9,7 @@ SRCDIR=.
 EXT_SRC_C=c
 EXT_SRC_CPP=cpp
 KERNELNAME=`uname`
-MACHINE=`uname -m`
+MACHINE=`uname -m | tr ' ' '-'`
 EXESUFFIX=${KERNELNAME}-${MACHINE}
 EXT_OBJ_CPP=cpp.o
 EXT_OBJ_C=c.o
@@ -69,7 +69,7 @@ cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
 
-	for _cc in gcc-3.3 gcc-3.2 cc gcc
+	for _cc in gcc-3.3 gcc-3.2 gcc3 cc gcc
 	do
 		if cc_check
 		then
@@ -80,7 +80,7 @@ EOF
 		fi
 	done
 
-	for _cc in cxx CC g++-3.3 g++-3.2 c++ g++
+	for _cc in g++-3.3 g++-3.2 g++3 cxx CC c++ g++
 	do
 		if cc_check
 		then
@@ -423,11 +423,15 @@ determine_march_mcpu()
 		COMP_C=cc
 		COMP_CPP=CC
 		COMP_OPTS="-fast -xchip=native -xarch=v9 -xO5 -g +w2"
-		LINKFLAGS="-fast -xchip=native -xarch=v9 -xO5 -g +w2 -lm -lsunperf -Bstatic -xlic_lib=sunperf -Bdynamic -lF77 -lM77 -lsunmath  -mt -lsocket -lnsl"
+		LINKFLAGS="-fast -xchip=native -xarch=v9 -xO5 -g +w2 -lm"
 	elif osf1
 	then
 		COMP_OPTS="-O5 -inline speed -pthread -om"
-		LINKFLAGS="-pthread -L/opt/matlab-6/extern/lib/alpha -rpath /opt/matlab-6/extern/lib/alpha -rpath /opt/matlab-6/bin/alpha -lmpi -lm  -lcxml_ev6 -lUfor -lfor -lFutil -lm -lots -lm_c32 -lmld -lexc -lm"
+		LINKFLAGS="-pthread -lmpi -lm"
+	elif darwin
+	then
+		COMP_OPTS="-Wno-long-double $COMP_OPTS"
+		LINKFLAGS="-lm"
 	fi
 
 	OS="-D`echo $system_name | tr 'a-z-' 'A-Z_'`"
@@ -1082,9 +1086,26 @@ set_opts()
 	if test "$_matlab" = yes
 	then
 		DEFINES="$DEFINES -DMATLAB"
-		LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
-		INCLUDES="$INCLUDES -I/home/matrix/matlab/extern/include/"
-		TARGET="gf.mexglx"
+
+		if osf1
+		then
+#LINKFLAGS="-pthread -L/opt/matlab-6/extern/lib/alpha -rpath /opt/matlab-6/extern/lib/alpha -rpath /opt/matlab-6/bin/alpha -lmpi -lm  -lcxml_ev6 -lUfor -lfor -lFutil -lm -lots -lm_c32 -lmld -lexc -lm"
+			LINKFLAGS="-pthread -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*' -L/opt/matlab-6.5-13/bin/alpha -lmx -lmex -lmat -lm"
+			TARGET="gf.mexaxp"
+			INCLUDES="$INCLUDES -I/opt/matlab-6.5-13/extern/include"
+			DEFINES="$DEFINES -DMATLAB_MEX_FILE"
+			COMPFLAGS_CPP="$COMPFLAGS_CPP -shared -ieee -pthread -std1"
+			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -pthread -std1"
+		elif darwin
+		then
+			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -undefined suppress -L/Applications/MATLAB6p5/bin/mac -lmx -lmex -lmat -lm"
+			INCLUDES="$INCLUDES -I/Applications/MATLAB6p5/extern/include"
+			TARGET="gf.mexmac"
+		else
+			LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
+			INCLUDES="$INCLUDES -I/home/matrix/matlab/extern/include/"
+			TARGET="gf.mexglx"
+		fi
 	fi
 	if test "$_svm_mpi" = yes
 	then
@@ -1114,7 +1135,18 @@ set_opts()
 	then
 		DEFINES="$DEFINES -DNO_LAPACK"
 	else
-		LINKFLAGS="$LINKFLAGS -llapack_pic -llapack_atlas -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c"
+		if sunos
+		then
+			LINKFLAGS="$LINKFLAGS -lsunperf -Bstatic -xlic_lib=sunperf -Bdynamic -lF77 -lM77 -lsunmath -mt -lsocket -lnsl"
+		elif darwin
+		then
+			LINKFLAGS="$LINKFLAGS"
+		elif osf1
+		then
+			LINKFLAGS="$LINKFLAGS"
+		else
+			LINKFLAGS="$LINKFLAGS -llapack_pic -llapack_atlas -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c"
+		fi
 	fi
 	if test "$_bigobs" = yes
 	then
@@ -1161,7 +1193,6 @@ COMPFLAGS_C="$COMPFLAGS_CPP"
 
 cat > .config <<EOF
 MAKE 			= ${MAKE}
-SRCDIR 			= ${SRCDIR}
 EXT_SRC_C 		= ${EXT_SRC_C}
 EXT_SRC_CPP 	= ${EXT_SRC_CPP}
 KERNELNAME  	= ${KERNELNAME}

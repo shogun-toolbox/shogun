@@ -23,11 +23,11 @@ public:
 	/// and the file is treated as if it has a header/[typeheader,data]+
 	/// else a the files header will be checked to contain the specified
 	/// fourcc (e.g. 'RFEA')
-	CFile(char* fname, char rw, EFeatureType type, char fourcc[4]=NULL);
+	CFile(CHAR* fname, CHAR rw, EFeatureType type, CHAR fourcc[4]=NULL);
 	~CFile();
 
-	int parse_first_header(EFeatureType &type);
-	int parse_next_header(EFeatureType &type);
+	INT parse_first_header(EFeatureType &type);
+	INT parse_next_header(EFeatureType &type);
 
 	// set target to NULL to get it automagically allocated
 	// set num to 0 if whole file is to be read
@@ -38,12 +38,12 @@ public:
 	WORD*  load_word_data(WORD* target, long& num);
 	SHORT* load_short_data(SHORT* target, long& num);
 
-	bool save_int_data(INT* src, long num);
-	bool save_real_data(REAL* src, long num);
-	bool save_char_data(CHAR* src, long num);
-	bool save_byte_data(BYTE* src, long num);
-	bool save_word_data(WORD* src, long num);
-	bool save_short_data(SHORT* src, long num);
+	bool save_int_data(INT* src, LONG num);
+	bool save_real_data(REAL* src, LONG num);
+	bool save_char_data(CHAR* src, LONG num);
+	bool save_byte_data(BYTE* src, LONG num);
+	bool save_word_data(WORD* src, LONG num);
+	bool save_short_data(SHORT* src, LONG num);
 
 	inline bool is_ok()
 	{
@@ -57,10 +57,10 @@ protected:
 protected: 
 	FILE* file;
 	bool status;
-	char task;
-	char* fname;
+	CHAR task;
+	CHAR* fname;
 	EFeatureType expected_type;
-	int num_header;
-	char fourcc[4];
+	INT num_header;
+	CHAR fourcc[4];
 };
 #endif

@@ -8,9 +8,10 @@
 class CPolyKernel: public CRealKernel
 {
  public:
-  CPolyKernel(long size, int degree, bool inhomogene);
+  CPolyKernel(LONG size, INT degree, bool inhomogene);
   ~CPolyKernel() ;
   
+  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -21,18 +22,22 @@ class CPolyKernel: public CRealKernel
   virtual EKernelType get_kernel_type() { return K_POLY; }
 
   // return the name of a kernel
-  virtual const char* get_name() { return "Poly" ; } ;
+  virtual const CHAR* get_name() { return "Poly" ; } ;
 
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
-  virtual REAL compute(long idx_a, long idx_b);
+  virtual REAL compute(INT idx_a, INT idx_b);
 
  protected:
-  int degree;
+  INT degree;
   bool inhomogene ;
+
+  double* sqrtdiag_lhs;
+  double* sqrtdiag_rhs;
+
+  bool initialized ;
 };
 
 #endif
-

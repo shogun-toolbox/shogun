@@ -1,12 +1,12 @@
 #ifndef _GUISVM_H__
 #define _GUISVM_H__ 
 
-#include "svm/SVM.h"
-#include "svm/SVM_light.h"
-#include "svm_cplex/SVM_cplex.h"
+#include "classifier/svm/SVM.h"
+#include "classifier/svm/SVM_light.h"
+#include "classifier/svm_cplex/SVM_cplex.h"
 
 #ifdef SVMMPI
-#include "svm_mpi/mpi_svm.h"
+#include "classifier/svm_mpi/mpi_svm.h"
 #endif
 
 class CGUI ;
@@ -18,12 +18,15 @@ public:
 	CGUISVM(CGUI*);
 	~CGUISVM();
 
-	bool new_svm(char* param);
-	bool train(char* param);
-	bool test(char* param);
-	bool load(char* param);
-	bool save(char* param);
-	bool set_C(char* param);
+	bool new_svm(CHAR* param);
+	bool train(CHAR* param);
+	bool test(CHAR* param);
+	bool load(CHAR* param);
+	bool save(CHAR* param);
+	bool set_C(CHAR* param);
+
+	CLabels* classify(CLabels* output=NULL);
+	bool classify_example(INT idx, REAL& result);
 
 	inline CSVM* get_svm() { return svm; }
 

@@ -29,6 +29,6 @@ public:
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
-	virtual REAL* apply_to_feature_vector(REAL* f, int len);
+	virtual REAL* apply_to_feature_vector(REAL* f, INT len);
 };
 #endif

@@ -19,7 +19,7 @@ template <class ST> class CSimplePreProc;
 template <class ST> class CSimpleFeatures: public CFeatures
 {
  public:
-	 CSimpleFeatures(long size) : CFeatures(size), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
+	 CSimpleFeatures(LONG size) : CFeatures(size), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
 	 {
 	 }
 
@@ -33,7 +33,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 }
 	 }
 
-	CSimpleFeatures(char* fname) : CFeatures(fname), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
+	CSimpleFeatures(CHAR* fname) : CFeatures(fname), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
 	{
 	}
 
@@ -50,10 +50,16 @@ template <class ST> class CSimpleFeatures: public CFeatures
       @param num index of feature vector
       @param len length is returned by reference
   */
-  ST* get_feature_vector(long num, long& len, bool& free)
+  ST* get_feature_vector(INT num, INT& len, bool& free)
   {
 	  len=num_features; 
-	  assert(num<num_vectors);
+//	  if (num>=num_vectors)
+//	    {
+//	      fprintf(stderr,"feature: %d  num=%d  num_vectors=%d  num_features=%d\n", (INT)this, num, num_vectors, num_features) ;
+//	      free=false ;
+//	      return NULL ;
+//	    }
+//	  assert(num<num_vectors);
 
 	  if (feature_matrix)
 	  {
@@ -62,6 +68,8 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	  } 
 	  else
 	  {
+		  CIO::message("compute feature!!!\n") ;
+		  
 		  ST* feat=NULL;
 		  free=false;
 
@@ -84,11 +92,11 @@ template <class ST> class CSimpleFeatures: public CFeatures
 
 		  if (get_num_preproc())
 		  {
-			  int tmp_len=len;
+			  INT tmp_len=len;
 			  ST* tmp_feat_before = feat;
 			  ST* tmp_feat_after = NULL;
 
-			  for (int i=0; i<get_num_preproc(); i++)
+			  for (INT i=0; i<get_num_preproc(); i++)
 			  {
 				  tmp_feat_after=((CSimplePreProc<ST>*) get_preproc(i))->apply_to_feature_vector(tmp_feat_before, tmp_len);
 
@@ -107,7 +115,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	  }
   }
 
-  void free_feature_vector(ST* feat_vec, int num, bool free)
+  void free_feature_vector(ST* feat_vec, INT num, bool free)
   {
 	  if (feature_cache)
 		  feature_cache->unlock_entry(num);
@@ -118,7 +126,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
   
   /// get the pointer to the feature matrix
   /// num_feat,num_vectors are returned by reference
-  ST* get_feature_matrix(long &num_feat, long &num_vec)
+  ST* get_feature_matrix(INT &num_feat, INT &num_vec)
   {
 	  num_feat=num_features;
 	  num_vec=num_vectors;
@@ -130,7 +138,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
       num_features is the column offset, and columns are linear in memory
       see below for definition of feature_matrix
   */
-  virtual void set_feature_matrix(ST* fm, long num_feat, long num_vec)
+  virtual void set_feature_matrix(ST* fm, INT num_feat, INT num_vec)
   {
 	  feature_matrix=fm;
 	  num_features=num_feat;
@@ -145,7 +153,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	if ( feature_matrix && get_num_preproc())
 	{
 
-		for (int i=0; i<get_num_preproc(); i++)
+		for (INT i=0; i<get_num_preproc(); i++)
 		{ 
 			if ( (!is_preprocessed(i) || force_preprocessing) )
 			{
@@ -165,11 +173,11 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	}
   }
 
-  virtual int get_size() { return sizeof(ST); }
-  virtual inline long  get_num_vectors() { return num_vectors; }
+  virtual INT get_size() { return sizeof(ST); }
+  virtual inline INT  get_num_vectors() { return num_vectors; }
 
-  inline long  get_num_features() { return num_features; }
-  inline void set_num_features(int num)
+  inline INT  get_num_features() { return num_features; }
+  inline void set_num_features(INT num)
   { 
 	  num_features= num; 
 
@@ -180,7 +188,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	  }
   }
 
-  inline void set_num_vectors(int num)
+  inline void set_num_vectors(INT num)
   {
 	  num_vectors= num;
 	  if (num_features && num_vectors)
@@ -193,7 +201,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
   /// return that we are simple minded features (just fixed size matrices)
   inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
   
-  virtual bool reshape(int num_features, int num_vectors)
+  virtual bool reshape(INT num_features, INT num_vectors)
   {
 	  if (num_features*num_vectors == this->num_features * this->num_vectors)
 	  {
@@ -209,17 +217,17 @@ protected:
   /// compute feature vector for sample num
   /// if target is set the vector is written to target
   /// len is returned by reference
-  virtual ST* compute_feature_vector(long num, long& len, ST* target=NULL)
+  virtual ST* compute_feature_vector(INT num, INT& len, ST* target=NULL)
   {
 	  len=0;
 	  return NULL;
   }
 
   /// number of vectors in cache
-  long num_vectors;
+  INT num_vectors;
  
   /// number of features in cache
-  long num_features;
+  INT num_features;
   
   ST* feature_matrix;
   CCache<ST>* feature_cache;

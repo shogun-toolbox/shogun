@@ -8,7 +8,7 @@
 class CLinearByteKernel: public CByteKernel
 {
  public:
-  CLinearByteKernel(long size);
+  CLinearByteKernel(LONG size);
   ~CLinearByteKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -22,13 +22,13 @@ class CLinearByteKernel: public CByteKernel
   virtual EKernelType get_kernel_type() { return K_LINEAR; }
 
   // return the name of a kernel
-  virtual const char* get_name() { return "Linear" ; } ;
+  virtual const CHAR* get_name() { return "Linear" ; } ;
 
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
-  virtual REAL compute(long idx_a, long idx_b);
+  virtual REAL compute(INT idx_a, INT idx_b);
   /*    compute_kernel*/
 
   virtual void init_rescale();

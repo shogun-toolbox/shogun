@@ -5,34 +5,34 @@
 #include <string.h>
 #include <assert.h>
 
-CFeatures::CFeatures(long size)
-: cache_size(size), preproc(NULL), num_preproc(0), preprocessed(NULL) 
+CFeatures::CFeatures(LONG size) : cache_size(size), preproc(NULL), num_preproc(0), preprocessed(NULL) 
 {
+	CIO::message("Feature object created (%ld)\n",this);
 }
 
-CFeatures::CFeatures(const CFeatures& orig)
-: preproc(orig.preproc), num_preproc(orig.num_preproc), preprocessed(orig.preprocessed)
+CFeatures::CFeatures(const CFeatures& orig) : preproc(orig.preproc), num_preproc(orig.num_preproc), preprocessed(orig.preprocessed)
 {
 	preprocessed=new bool[orig.num_preproc];
 	assert(preprocessed);
 	memcpy(preprocessed, orig.preprocessed, sizeof(bool)*orig.num_preproc);
 }
 
-CFeatures::CFeatures(char* fname) : cache_size(0), preproc(NULL), num_preproc(0), preprocessed(false)
+CFeatures::CFeatures(CHAR* fname) : cache_size(0), preproc(NULL), num_preproc(0), preprocessed(false)
 {
 	load(fname);
+	CIO::message("Feature object loaded (%ld)\n",this) ;
 }
 
 CFeatures::~CFeatures()
 {
-  CIO::message("Feature object destroyed\n") ;
+	CIO::message("Feature object destroyed (%ld)\n",this) ;
 }
 
 /// set preprocessor
-int CFeatures::add_preproc(CPreProc* p)
+INT CFeatures::add_preproc(CPreProc* p)
 { 
 	CIO::message("%d preprocs currently, new preproc list is\n", num_preproc);
-	int i;
+	INT i;
 
 	bool* preprocd=new bool[num_preproc+1];
 	CPreProc** pps=new CPreProc*[num_preproc+1];
@@ -56,7 +56,7 @@ int CFeatures::add_preproc(CPreProc* p)
 }
 
 /// get current preprocessor
-CPreProc* CFeatures::get_preproc(int num)
+CPreProc* CFeatures::get_preproc(INT num)
 { 
 	if (num<num_preproc)
 		return preproc[num];
@@ -65,9 +65,9 @@ CPreProc* CFeatures::get_preproc(int num)
 }
 
 /// del current preprocessor
-CPreProc* CFeatures::del_preproc(int num)
+CPreProc* CFeatures::del_preproc(INT num)
 {
-	int i,j;
+	INT i,j;
 	CPreProc** pps=NULL; 
 	bool* preprocd=NULL; 
 	CPreProc* removed_preproc=NULL;
@@ -104,12 +104,12 @@ CPreProc* CFeatures::del_preproc(int num)
 	return removed_preproc;
 }
 
-bool CFeatures::load(char* fname)
+bool CFeatures::load(CHAR* fname)
 {
 	return false;
 }
 
-bool CFeatures::save(char* fname)
+bool CFeatures::save(CHAR* fname)
 {
 	return false;
 }

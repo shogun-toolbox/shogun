@@ -2,7 +2,7 @@
 #include "lib/common.h"
 #include "lib/File.h"
 
-CByteFeatures::CByteFeatures(long size) : CSimpleFeatures<BYTE>(size)
+CByteFeatures::CByteFeatures(LONG size) : CSimpleFeatures<BYTE>(size)
 {
 }
 
@@ -10,7 +10,7 @@ CByteFeatures::CByteFeatures(const CByteFeatures & orig) : CSimpleFeatures<BYTE>
 {
 }
 
-CByteFeatures::CByteFeatures(char* fname) : CSimpleFeatures<BYTE>(fname)
+CByteFeatures::CByteFeatures(CHAR* fname) : CSimpleFeatures<BYTE>(fname)
 {
 	load(fname);
 }
@@ -21,13 +21,14 @@ CFeatures* CByteFeatures::duplicate() const
 }
 
 
-bool CByteFeatures::load(char* fname)
+bool CByteFeatures::load(CHAR* fname)
 {
 	bool status=false;
 	num_vectors=1;
-    num_features=0;
 	CFile f(fname, 'r', F_BYTE);
-	feature_matrix=f.load_byte_data(NULL, num_features);
+	LONG numf=0 ;
+	feature_matrix=f.load_byte_data(NULL, numf);
+	num_features=numf;
 
     if (!f.is_ok())
 		CIO::message("loading file \"%s\" failed", fname);
@@ -37,7 +38,7 @@ bool CByteFeatures::load(char* fname)
 	return status;
 }
 
-bool CByteFeatures::save(char* fname)
+bool CByteFeatures::save(CHAR* fname)
 {
 	return false;
 }
