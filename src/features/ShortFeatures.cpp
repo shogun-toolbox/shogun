@@ -24,13 +24,14 @@ short int* CShortFeatures::get_feature_vector(int num, int &len, bool &free)
   else
     {
       free=true ;
-      short int* feat=compute_feature_vector(num, len) ;
+      short int* feat=new short int[len] ;
+      compute_feature_vector(num, feat) ;
       if (preproc)
 	{
 	  short int* feat2 = preproc->apply_to_feature_vector(feat, len);
 	  delete[] feat ;
 	  return feat2 ;
-	}
+	} ;
       return feat ;
     }
 }

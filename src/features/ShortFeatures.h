@@ -36,7 +36,7 @@ class CShortFeatures: public CFeatures
 protected:
   /// compute feature vector for sample num
   /// len is returned by reference
-  virtual short int* compute_feature_vector(int num, int& len)=0;
+  virtual void compute_feature_vector(int num, short int* feat)=0;
 
   /** chunk of memory for all the feature_vectors	
       it is aligned like 0...num_features-1 for vec0
