@@ -4,7 +4,7 @@ EXT_OBJ         := cpp.o
 EXT_OBJ2        := c.o
 EXT_SRC         := cpp
 EXT_SRC2        := c
-INCLUDES	:= -I./ -I/opt/software/matlab6/extern/include
+INCLUDES	:= -I./ -I/opt/software/matlab6/extern/include -I/home/matrix/matlab6/extern/include
 
 COMP_SUN        := CC
 COMP_SGI	:= CC
@@ -51,7 +51,7 @@ COMPFLAGS_CONDOR2 := $(COMPFLAGS_LINUX)
 
 LINKFLAGS_SUN		:= -g -lm -L/home/solaris/opt/SUNWspro/SC4.0/lib -lmtsk -lpthread -lthread 
 LINKFLAGS_SGI		:= -g -shared
-LINKFLAGS_LINUX		:= -g -lm -Wall -lncurses -L/opt/software/matlab6/extern/lib/glnx86  -lmatlb -lmmfile -Xlinker -rpath /opt/software/matlab6/extern/lib/glnx86 -Xlinker -rpath /opt/software/matlab6/bin/glnx86
+LINKFLAGS_LINUX		:= -g -lm -Wall -lncurses -L/opt/software/matlab6/extern/lib/glnx86 -L/home/matrix/matlab6/extern/lib/glnx86 -lmatlb -lmmfile -Xlinker -rpath /opt/software/matlab6/extern/lib/glnx86 -Xlinker -rpath /opt/software/matlab6/bin/glnx86 -Xlinker -rpath /home/matrix/matlab6/extern/lib/glnx86 -Xlinker -rpath /home/matrix/matlab6/bin/glnx86
 LINKFLAGS_MAC		:= -g -lm -Wall -lpthread -lcurses 
 LINKFLAGS_CYGWIN	:= -g -lm -Wall -lpthread -lcurses 
 LINKFLAGS_PROF		:= -g -lm -Wall -lpthread -lcurses 
