@@ -79,23 +79,23 @@ bool CGUIHMM::baum_welch_train(char* param)
 				{
 					prob_max=prob_train ;
 					FILE* file=fopen(templname_best, "w");
-					printf("\nsaving best model with filename %s ... ", templname_best) ;
+					CIO::message("\nsaving best model with filename %s ... ", templname_best) ;
 					working->save_model(file) ;
 					fclose(file) ;
-					printf("done.") ;
+					CIO::message("done.") ;
 				} 
 				else
 				{
 					FILE* file=fopen(templname, "w");
-					printf("\nsaving model with filename %s ... ", templname) ;
+					CIO::message("\nsaving model with filename %s ... ", templname) ;
 					working->save_model(file) ;
 					fclose(file) ;
-					printf("done.") ;
+					CIO::message("done.") ;
 				} ;
 			}
 		}
 		else
-			printf("assign observation first\n");
+			CIO::message("assign observation first\n");
 	}
 	else
 		CIO::message("create model first\n");
@@ -269,10 +269,10 @@ bool CGUIHMM::one_class_test(char* param)
 			double fpo=fp[pointeven]*negsize;
 			double fne=(1-tp[pointeven])*possize;
 
-			printf("classified:\n");
-			printf("\tcorrect:%i\n", int (correct));
-			printf("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
-			printf("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, (double) fp[pointeven], (double) tp[pointeven]);
+			CIO::message("classified:\n");
+			CIO::message("\tcorrect:%i\n", int (correct));
+			CIO::message("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
+			CIO::message("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, (double) fp[pointeven], (double) tp[pointeven]);
 
 			delete[] fp;
 			delete[] tp;
@@ -286,7 +286,7 @@ bool CGUIHMM::one_class_test(char* param)
 			result=true;
 		}
 		else
-			printf("assign posttest and negtest observations first!\n");
+			CIO::message("assign posttest and negtest observations first!\n");
 	}
 	else
 		CIO::message("assign test model first!\n");
