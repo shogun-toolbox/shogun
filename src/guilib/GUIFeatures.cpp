@@ -911,3 +911,11 @@ bool CGUIFeatures::convert(CHAR* param)
 
 	return result;
 }
+
+void CGUIFeatures::add_train_features(CFeatures* f)
+{
+}
+
+void CGUIFeatures::add_test_features(CFeatures* f)
+{
+}
