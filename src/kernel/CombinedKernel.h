@@ -68,7 +68,7 @@ class CCombinedKernel : public CKernel
 
 		inline CKernel* get_next_kernel()
 		{
-			return kernel_list->get_first_element();
+			return kernel_list->get_next_element();
 		}
 
 		inline bool insert_kernel(CKernel* k)

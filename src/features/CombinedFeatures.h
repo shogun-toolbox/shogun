@@ -54,7 +54,7 @@ public:
 
 	inline CFeatures* get_next_feature_obj()
 	{
-		return feature_list->get_first_element();
+		return feature_list->get_next_element();
 	}
 
 	inline bool insert_feature_obj(CFeatures* obj)

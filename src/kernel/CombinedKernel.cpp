@@ -65,14 +65,12 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 void CCombinedKernel::cleanup()
 {
-	CKernel* k=NULL;
+	CKernel* k=get_first_kernel();
 
-	if ( (k=get_first_kernel()) )
-	{
+	while (k)
+	{	
 		k->cleanup();
-
-		while ( (k=get_next_kernel()) )
-			k->cleanup();
+		k=get_next_kernel();
 	}
 }
 
@@ -83,14 +81,13 @@ void CCombinedKernel::list_kernels()
 	CIO::message(M_INFO, "BEGIN COMBINED FEATURES LIST - ");
 	this->list_kernel();
 
-	if ( (k=get_first_kernel()) )
+	k=get_first_kernel();
+	while (k)
 	{
 		k->list_kernel();
-		while ( (k=get_next_kernel()) )
-			k->list_kernel();
+		k=get_next_kernel();
 	}
 	CIO::message(M_INFO, "END COMBINED FEATURES LIST - ");
-	this->list_kernel();
 }
 
 REAL CCombinedKernel::compute(INT x, INT y)

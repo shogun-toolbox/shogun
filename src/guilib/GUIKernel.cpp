@@ -67,7 +67,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 	CKernel* k=create_kernel(param);
 
 	if (kernel && k)
-		delete k;
+		delete kernel;
 
 	if (k)
 	{
@@ -758,10 +758,10 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 bool CGUIKernel::add_kernel(CHAR* param)
 {
-	if (!kernel || (kernel && kernel->get_kernel_type()!=K_COMBINED))
+	if ((kernel==NULL) || (kernel && kernel->get_kernel_type()!=K_COMBINED))
 	{
 		delete kernel;
-		kernel= new CCombinedKernel(0);
+		kernel= new CCombinedKernel(20);
 		assert(kernel);
 	}
 
@@ -771,9 +771,12 @@ bool CGUIKernel::add_kernel(CHAR* param)
 		assert(k);
 		assert(((CCombinedKernel*) kernel)->append_kernel(k));
 		((CCombinedKernel*) kernel)->list_kernels();
+		return true;
 	}
 	else
 		CIO::message(M_ERROR, "combined kernel object could not be created\n");
+
+	return false;
 }
 
 bool CGUIKernel::del_kernel(CHAR* param)
