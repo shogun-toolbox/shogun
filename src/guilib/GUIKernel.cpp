@@ -3,6 +3,8 @@
 #include "kernel/LinearKernel.h"
 #include "lib/io.h"
 
+#include <string.h>
+
 CGUIKernel::CGUIKernel(CGUI * gui_): gui(gui_)
 {
 	kernel=NULL;
