@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <assert.h>
 #include "lib/common.h"
 #include "guilib/GUIHMM.h"
 #include "hmm/Observation.h"
@@ -596,8 +597,12 @@ bool CGUIHMM::append_model(char* param)
 					printf("file successfully read\n");
 					fclose(model_file);
 
-					REAL cur_o[4];
-					REAL app_o[4];
+					REAL* cur_o=new REAL[h->get_M()];
+					REAL* app_o=new REAL[h->get_M()];
+
+					assert(cur_o != NULL && app_o != NULL);
+
+					CIO::message("h %d , M: %d\n", h, h->get_M());
 
 					for (int i=0; i<h->get_M(); i++)
 					{
@@ -616,6 +621,9 @@ bool CGUIHMM::append_model(char* param)
 					    working->append_model(h, cur_o, app_o);
 					else
 					    working->append_model(h);
+
+					delete[] cur_o;
+					delete[] app_o;
 					CIO::message("new model has %i states\n", working->get_N());
 					delete h;
 				}
@@ -809,7 +817,7 @@ bool CGUIHMM::load(char* param)
 	if (model_file)
 	{
 		working=new CHMM(model_file,PSEUDO);
-		rewind(model_file);
+		fclose(model_file);
 
 		if (working && working->get_status())
 		{
@@ -819,7 +827,6 @@ bool CGUIHMM::load(char* param)
 
 		ORDER=working->get_ORDER();
 		M=working->get_M();
-		fclose(model_file);
 	}
 	else
 		CIO::message("opening file %s failed\n", param);
