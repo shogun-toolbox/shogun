@@ -251,7 +251,6 @@ typedef struct shrink_state {
   REAL mymaxdiff ;
   INT num_rows ;
   INT num_active_rows ;
-  REAL w_epsilon ;
 #ifdef USE_W_TIMING
   const static INT w_timing_len=25 ;
   INT w_timing_idx;

@@ -7,7 +7,7 @@
 #include <assert.h>
 
 CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d, INT max_mismatch_, bool use_norm)
-	: CCharKernel(size),weights(NULL),degree(d), max_mismatch(max_mismatch_), seq_length(0),
+	: CCharKernel(size),weights(NULL),position_weights(NULL),degree(d), max_mismatch(max_mismatch_), seq_length(0),
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL), use_normalization(use_norm)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION;
@@ -30,6 +30,9 @@ CWeightedDegreeCharKernel::~CWeightedDegreeCharKernel()
 
 	delete[] weights;
 	weights=NULL;
+	delete[] position_weights ;
+	position_weights=NULL ;
+	
 }
 
 void CWeightedDegreeCharKernel::remove_lhs() 
@@ -253,6 +256,7 @@ bool CWeightedDegreeCharKernel::load_init(FILE* src)
     CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, degree=%d\n", intlen, doublelen, d);
 
 	degree=d;
+	
 	return true;
 }
 
@@ -331,6 +335,7 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
   {
 	  for (INT i=0; i<alen-degree; i++)
 	  {
+		  REAL sumi = 0.0 ;
 		  INT mismatches=0;
 
 		  for (INT j=0; j<degree; j++)
@@ -341,20 +346,29 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 				  if (mismatches>max_mismatch)
 					  break ;
 			  } ;
-			  sum += weights[j+degree*mismatches];
+			  sumi += weights[j+degree*mismatches];
 		  }
+		  if (position_weights!=NULL)
+			  sum+=position_weights[i]*sumi ;
+		  else
+			  sum+=sumi ;
 	  }
   }
   else
   {
 	  for (INT i=0; i<alen-degree; i++)
 	  {
+		  REAL sumi=0.0 ;
 		  for (INT j=0; j<degree; j++)
 		  {
 			  if (match_vector[i+j])
 				  break;
-			  sum += weights[i*degree+j];
+			  sumi += weights[i*degree+j];
 		  }
+		  if (position_weights!=NULL)
+			  sum+=position_weights[i]*sumi ;
+		  else
+			  sum+=sumi ;
 	  }
   }
   
@@ -393,16 +407,21 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 		for (INT i=0; i<len-degree; i++)
 		{
 			struct SuffixTree *tree = trees[i] ;
+			REAL alpha_pw = alpha ;
+			if (position_weights!=NULL)
+				alpha_pw = alpha*position_weights[i] ;
+
 			for (INT j=0; j<degree; j++)
 			{
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
 					tree=tree->childs[vec[i+j]] ;
-					tree->weight += alpha*weights[j];
+					tree->weight += alpha_pw*weights[j];
 				} else 
+				{
 					if ((j==degree-1) && (tree->has_floats))
 					{
-						tree->child_weights[vec[i+j]] += alpha*weights[j];
+						tree->child_weights[vec[i+j]] += alpha_pw*weights[j];
 						break ;
 					}
 					else
@@ -416,7 +435,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 								assert(tree->childs[k]==NULL) ;
 								tree->child_weights[k] =0 ;
 							}
-							tree->child_weights[vec[i+j]] += alpha*weights[j];
+							tree->child_weights[vec[i+j]] += alpha_pw*weights[j];
 							break ;
 						}
 						else
@@ -427,11 +446,12 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 							tree=tree->childs[vec[i+j]] ;
 							for (INT k=0; k<4; k++)
 								tree->childs[k]=NULL ;
-							tree->weight = alpha*weights[j] ;
+							tree->weight = alpha_pw*weights[j] ;
 							tree->has_floats=false ;
 							tree->usage=0 ;
 						} ;
 					} ;
+				} ;
 			} ;
 		}
 	}
@@ -440,10 +460,13 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 		for (INT i=0; i<len-degree; i++)
 		{
 			struct SuffixTree *tree = trees[i] ;
-
+			REAL alpha_pw = alpha ;
+			if (position_weights!=NULL) 
+				alpha_pw = alpha*position_weights[i] ;
+			
 			INT max_depth = 0 ;
 			for (INT j=0; j<degree; j++)
-				if (CMath::abs(weights[i*degree + j]*alpha)>1e-8)
+				if (CMath::abs(weights[i*degree + j]*alpha_pw)>1e-8)
 					max_depth = j+1 ;
 			
 			for (INT j=0; j<max_depth; j++)
@@ -451,11 +474,11 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
 					tree=tree->childs[vec[i+j]] ;
-					tree->weight += alpha*weights[i*degree + j];
+					tree->weight += alpha_pw*weights[i*degree + j];
 				} else 
 					if ((j==degree-1) && (tree->has_floats))
 					{
-						tree->child_weights[vec[i+j]] += alpha*weights[i*degree + j];
+						tree->child_weights[vec[i+j]] += alpha_pw*weights[i*degree + j];
 						break ;
 					}
 					else
@@ -469,7 +492,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 								assert(tree->childs[k]==NULL) ;
 								tree->child_weights[k] =0 ;
 							}
-							tree->child_weights[vec[i+j]] += alpha*weights[i*degree + j];
+							tree->child_weights[vec[i+j]] += alpha_pw*weights[i*degree + j];
 							break ;
 						}
 						else
@@ -480,7 +503,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 							tree=tree->childs[vec[i+j]] ;
 							for (INT k=0; k<4; k++)
 								tree->childs[k]=NULL ;
-							tree->weight = alpha*weights[i*degree + j] ;
+							tree->weight = alpha_pw*weights[i*degree + j] ;
 							tree->has_floats=false ;
 							tree->usage=0 ;
 						} ;
@@ -564,8 +587,31 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
 		vec[i]=0 ;
 	} ;
+
+	if (position_weights!=NULL)
+	{
+		for (INT i=0; i<slen-degree; i++)
+		{
+			struct SuffixTree *tree = trees[i] ;
+			assert(tree!=NULL) ;
 			
-	if (length==0)
+			for (INT j=0; j<degree; j++)
+			{
+				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
+				{
+					tree=tree->childs[vec[i+j]] ;
+					LevelContrib[i] += tree->weight ;
+				} else
+					if (tree->has_floats)
+					{
+						LevelContrib[i] += tree->child_weights[vec[i+j]] ;
+						break ;
+					} else
+						break ;
+			} 
+		}
+	}
+	else if (length==0)
 	{
 		//for (INT j=0; j<degree; j++)
 		//LevelContrib[j]=0 ;
@@ -804,7 +850,8 @@ INT CWeightedDegreeCharKernel::tree_size(struct SuffixTree * p_tree)
 
 bool CWeightedDegreeCharKernel::set_weights(REAL* ws, INT d, INT len)
 {
-	degree=d;
+	CIO::message(M_DEBUG, "degree = %i  d=%i\n", degree, d) ;
+	degree = d ;
 	length=len;
 	
 	if (len == 0)
@@ -817,6 +864,32 @@ bool CWeightedDegreeCharKernel::set_weights(REAL* ws, INT d, INT len)
 	{
 		for (int i=0; i<degree*len; i++)
 			weights[i]=ws[i];
+		return true;
+	}
+	else
+		return false;
+}
+
+bool CWeightedDegreeCharKernel::set_position_weights(REAL* pws, INT len)
+{
+	if (len==0)
+	{
+		delete[] position_weights ;
+		position_weights = NULL ;
+	}
+	
+    if (seq_length!=len) 
+	{
+		CIO::message(M_ERROR, "seq_length = %i, position_weights_length=%i\n", seq_length, len) ;
+		return false ;
+	}
+	delete[] position_weights;
+	position_weights=new REAL[len];
+	
+	if (position_weights)
+	{
+		for (int i=0; i<len; i++)
+			position_weights[i]=pws[i];
 		return true;
 	}
 	else

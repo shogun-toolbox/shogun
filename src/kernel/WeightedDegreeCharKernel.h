@@ -63,6 +63,8 @@ class CWeightedDegreeCharKernel: public CCharKernel
 
   inline virtual INT get_num_subkernels()
   {
+	  if (position_weights!=NULL)
+		  return seq_length ;
 	  if (length==0)
 		  return get_degree();
 	  return get_degree()*length ;
@@ -80,14 +82,31 @@ class CWeightedDegreeCharKernel: public CCharKernel
 
   inline INT get_max_mismatch() { return max_mismatch; }
   inline INT get_degree() { return degree; }
-  inline REAL *get_weights(INT& d, INT& len)
+  inline REAL *get_degree_weights(INT& d, INT& len)
   {
 	  d=degree;
 	  len=length;
 	  return weights;
   }
+  inline REAL *get_weights(INT& num_weights)
+  {
+	  if (position_weights!=NULL)
+	  {
+		  num_weights = seq_length ;
+		  return position_weights ;
+	  }
+	  num_weights = degree*length ;
+	  return weights;
+  }
+  inline REAL *get_position_weights(INT& len)
+  {
+	  len=seq_length;
+	  return position_weights;
+  }
 
   bool set_weights(REAL* weights, INT d, INT len=0);
+  bool set_position_weights(REAL* position_weights, INT len=0);
+  bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
  protected:
 
@@ -109,9 +128,10 @@ class CWeightedDegreeCharKernel: public CCharKernel
   ///degree*length weights
   ///length must match seq_length if != 0
   REAL* weights;
+  REAL* position_weights ;
   INT degree;
   INT length;
-
+  
   INT max_mismatch ;
   INT seq_length ;
 

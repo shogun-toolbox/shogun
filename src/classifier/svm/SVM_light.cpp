@@ -81,7 +81,7 @@ CSVMLight::CSVMLight()
 	init_iter=500;
 	precision_violations=0;
 	opt_precision=DEF_PRECISION_LINEAR;
-
+	weight_epsilon=1e-3 ;
 	rho=0 ;
 	mymaxdiff=1 ;
 	num_rows=0 ;
@@ -134,7 +134,7 @@ bool CSVMLight::train()
 	learn_parm->sharedslack=0;
 	learn_parm->remove_inconsistent=0;
 	learn_parm->skip_final_opt_check=1;
-	learn_parm->svm_maxqpsize=50;
+	learn_parm->svm_maxqpsize=41;
 	learn_parm->svm_newvarsinqp=learn_parm->svm_maxqpsize-1;
 	learn_parm->maxiter=100000;
 	learn_parm->svm_iter_to_shrink=100;
@@ -150,6 +150,13 @@ bool CSVMLight::train()
 	learn_parm->rho=1.0;
 	learn_parm->xa_depth=0;
 	
+	if (weight_epsilon<0)
+		weight_epsilon=1e-2 ;
+	
+	CIO::message(M_DEBUG, "qpsize = %i\n", learn_parm->svm_maxqpsize) ;
+	CIO::message(M_DEBUG, "epsilon = %1.1e\n", learn_parm->epsilon_crit) ;
+	CIO::message(M_DEBUG, "weight_epsilon = %1.1e\n", weight_epsilon) ;
+	
 	if (!CKernelMachine::get_kernel())
 	{
 		CIO::message(M_ERROR, "SVM_light can not proceed without kernel!\n");
@@ -158,6 +165,12 @@ bool CSVMLight::train()
 	
 	if (get_kernel()->has_property(KP_LINADD))
 		get_kernel()->clear_normal();
+
+	CIO::message(M_DEBUG, "get_kernel()->has_property(KP_LINADD) = %i\n", get_kernel()->has_property(KP_LINADD)) ;
+	CIO::message(M_DEBUG, "get_kernel()->has_property(KP_KERNCOMBINATION) = %i\n", get_kernel()->has_property(KP_KERNCOMBINATION)) ;
+	CIO::message(M_DEBUG, "is_mkl_enabled() = %i\n", is_mkl_enabled()) ;
+	CIO::message(M_DEBUG, "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
+	CIO::message(M_DEBUG, "estimated time: %1.1f hours\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/3600) ;
 	
 	svm_learn();
 	
@@ -497,7 +510,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  if(!get_kernel()->has_property(KP_LINADD)) 
 		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
 	  
-	  CIO::message(M_MESSAGEONLY, ".(%1.1e)",(*maxdiff));
+	  CIO::message(M_MESSAGEONLY, ".");
 	  
 	  if(verbosity>=2) t0=get_runtime();
 	  if(verbosity>=3) {
@@ -1081,34 +1094,37 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 		if (get_kernel()->has_property(KP_KERNCOMBINATION) && is_mkl_enabled() ) {
 
 			//kernel with LP_LINADD property is assumed to have compute_by_tree functions
-			INT num    = get_kernel()->get_rhs()->get_num_vectors() ;
 			CWeightedDegreeCharKernel* k = (CWeightedDegreeCharKernel*) get_kernel();
-			INT degree = -1;
-			INT len    = -1;
-			INT num_kernels = get_kernel()->get_num_subkernels() ;
-			REAL* w    = k->get_weights(degree,len);
+			INT num    = k->get_rhs()->get_num_vectors() ;
+			INT num_weights = -1;
+			INT num_kernels = k->get_num_subkernels() ;
+			REAL* w    = k->get_weights(num_weights);
+			assert(num_weights==num_kernels) ;
 			REAL* sumw = new REAL[num_kernels];
-			REAL* w_backup = new REAL[num_kernels] ;
-
-			// backup and set to one
-			for (INT i=0; i<num_kernels; i++)
 			{
-				w_backup[i]=w[i] ;
-				w[i]=1 ;
-			}
-
-			// recreate tree
-			get_kernel()->clear_normal();
-			for(INT ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
-				if(a[i] != a_old[i]) {
-					get_kernel()->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
+				REAL* w_backup = new REAL[num_kernels] ;
+				
+				// backup and set to one
+				for (INT i=0; i<num_kernels; i++)
+				{
+					w_backup[i]=w[i] ;
+					w[i]=1 ;
 				}
+				
+				// recreate tree
+				k->clear_normal();
+				for(INT ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
+					if(a[i] != a_old[i]) {
+						k->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
+					}
+				}
+				
+				// restore old weights
+				for (INT i=0; i<num_kernels; i++)
+					w[i]=w_backup[i] ;
+				delete[] w_backup ;
 			}
-
-			// restore old weights
-			for (INT i=0; i<num_kernels; i++)
-				w[i]=w_backup[i] ;
-
+			
 			// determine contributions of different levels/lengths
 			for (int i=0; i<num; i++)
 				k->compute_by_tree(i,&W[i*num_kernels]) ;
@@ -1158,6 +1174,8 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			count++ ;
 #ifdef USE_CPLEX			
 			w_gap = CMath::abs(1-rho/objective) ;
+			//fprintf(stdout, "epsilon=%1.2e\n", get_weight_epsilon()) ;
+			
 			if (w_gap >= 0.9999*get_weight_epsilon())
 			{
 				if (rho==0)
@@ -1334,11 +1352,10 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			INT jj ;
 			for(jj=0;active2dnum[jj]>=0;jj++);
 			
-			if (count%10==0)
+			if (count%100==0)
 				CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows);
 			
 			delete[] sumw;
-			delete[] w_backup ;
 		}
 		else
 		{
@@ -1398,7 +1415,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			// determine contributions of different levels/lengths FIXME
 			for (int j=0; j<num_kernels; j++)
 				for (int i=0; i<num; i++)
-				W[i*num_kernels+j]=1;//k->kernel(//k->compute_by_tree(i,&W[i*num_kernels]) ;
+				W[i*num_kernels+j]=1;
 
 			REAL objective=0;
 #ifdef HAVE_ATLAS

@@ -1173,7 +1173,7 @@ bool CGUIMatlab::compute_WD_by_levels(mxArray* retvals[])
 		INT degree = -1;
 		INT len = -1;
 		// get degree & len
-		kernel->get_weights(degree, len);
+		kernel->get_degree_weights(degree, len);
 
 		if (len==0)
 			len=1;
@@ -1204,7 +1204,7 @@ bool CGUIMatlab::get_WD_weights(mxArray* retvals[])
 	{
 		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
 
-		const REAL* weights = kernel->get_weights(degree, length) ;
+		const REAL* weights = kernel->get_degree_weights(degree, length) ;
 		if (length == 0)
 			length = 1;
 		
@@ -1214,6 +1214,33 @@ bool CGUIMatlab::get_WD_weights(mxArray* retvals[])
 		for (int i=0; i<degree*length; i++)
 			result[i] = weights[i] ;
 		
+		retvals[0]=mx_result;
+		return true;
+	}
+	return false;
+}
+
+bool CGUIMatlab::get_WD_position_weights(mxArray* retvals[])
+{
+	CKernel *kernel_ = gui->guikernel.get_kernel() ;
+	INT length=-1;
+	
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
+	{
+		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+
+		const REAL* position_weights = kernel->get_position_weights(length) ;
+		mxArray* mx_result ;
+		if (position_weights==NULL)
+			mx_result=mxCreateDoubleMatrix(1, 0, mxREAL);
+		else
+		{
+			mx_result=mxCreateDoubleMatrix(1, length, mxREAL);
+			double* result=mxGetPr(mx_result);
+			
+			for (int i=0; i<length; i++)
+				result[i] = position_weights[i] ;
+		}
 		retvals[0]=mx_result;
 		return true;
 	}
@@ -1240,6 +1267,25 @@ bool CGUIMatlab::set_WD_weights(const mxArray* mx_arg)
 			len = 0;
 
 		return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), len);
+		
+	}
+	return false;
+}
+
+bool CGUIMatlab::set_WD_position_weights(const mxArray* mx_arg)
+{
+	CKernel *kernel_ = gui->guikernel.get_kernel() ;
+	
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
+	{
+		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+		if (mxGetM(mx_arg)!=1 & mxGetN(mx_arg)>0)
+		{
+			CIO::message(M_ERROR, "dimension mismatch (should be 1xseq_length or 0x0)\n") ;
+			return false ;
+		}
+		INT len = mxGetN(mx_arg);
+		return kernel->set_position_weights(mxGetPr(mx_arg), len);
 		
 	}
 	return false;
