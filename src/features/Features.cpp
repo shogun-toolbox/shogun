@@ -22,7 +22,7 @@ const REAL* CFeatures::get_feature_vector(int num)
 	else
 	{
 		if (preproc)
-			get_feature_vector_comp(int num);
+			apply_to_feature_vector(get_feature_vector_comp(int num), len);
 		else
 			return get_feature_vector_comp(int num);
 	}

@@ -8,13 +8,16 @@ class CFeatures
 	CFeatures();
 	virtual ~CFeatures();
 
-	/// get feature vector for sample num
-	REAL* get_feature_vector(int num);
-
-	/// compute feature vector for sample num
-	virtual REAL* get_feature_vector_comp(int num)=0;
+	/** get feature vector for sample num
+		from the matrix as it is if matrix is
+		initialized, else return
+		preprocessed compute_feature_vector  
+		@param num index of feature vector
+		@param len length is returned by reference
+	*/
+	REAL* get_feature_vector(int num, int& len);
 	
-	/// set feature vector for sample num
+	/// set feature vector in feature matrix for sample num
 	bool set_feature_vector(int num);
 
 	/// get the pointer to the feature matrix
@@ -26,8 +29,11 @@ class CFeatures
 		num_features is the column offset, and columns are linear in memory
 		see below for definition of feature_matrix
 	*/
-	virtual void set_feature_matrix()=0;
+	virtual REAL* set_feature_matrix()=0;
 
+	/// compute feature vector for sample num
+	/// len is returned by reference
+	virtual REAL* compute_feature_vector(int num, int& len)=0;
 	
 	/// set preprocessor
 	void set_preproc(CPreProc* p);
