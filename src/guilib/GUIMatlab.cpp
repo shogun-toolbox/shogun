@@ -75,7 +75,7 @@ bool CGUIMatlab::get_hmm(mxArray* retvals[])
 	return false;
 }
 
-bool CGUIMatlab::best_path(const mxArray* vals[], mxArray* retvals[])
+bool CGUIMatlab::best_path(mxArray* retvals[], int dim)
 {
 	CHMM* h=gui->guihmm.get_current();
 
@@ -83,25 +83,32 @@ bool CGUIMatlab::best_path(const mxArray* vals[], mxArray* retvals[])
 	{
 		CFeatures* f=gui->guifeatures.get_test_features();
 
-		if (f)
+		if ((f) && (f->get_feature_class() == C_STRING)
+				&& (f->get_feature_type() == F_WORD)
+		   )
 		{
-			int num_feat=f->get_num_features();
+			INT num_feat;
 
-			mxArray* mx_path=mxCreateDoubleMatrix(1, num_feat, mxREAL);
-			mxArray* mx_lik=mxCreateDoubleMatrix(1, 1, mxREAL);
+			WORD* fv = ((CStringFeatures<WORD>*) f)->get_feature_vector(dim, num_feat);
 
-			double lik=-1;
-			double* path=mxGetPr(mx_result);
-			T_STATES* s=gui->guihmm.best_path(a, lik);
+			if (fv && num_feat>0)
+			{
+				mxArray* mx_path = mxCreateDoubleMatrix(1, num_feat, mxREAL);
+				mxArray* mx_lik = mxCreateDoubleMatrix(1, 1, mxREAL);
 
-			for (int i=0; i<num_feat; i++)
-				result[i]=s->get_label(i);
+				double* lik = mxGetPr(mx_lik);
+				double* path = mxGetPr(mx_path);
+				T_STATES* s = h->get_path(dim, *lik);
 
-			delete[] s;
+				for (int i=0; i<num_feat; i++)
+					path[i]=s[i];
 
-			retvals[0]=mx_path;
-			retvals[1]=mx_lik;
-			return true;
+				delete[] s;
+
+				retvals[0]=mx_path;
+				retvals[1]=mx_lik;
+				return true;
+			}
 		}
 	}
 	return false;

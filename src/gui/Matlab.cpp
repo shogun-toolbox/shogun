@@ -103,12 +103,18 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (!strncmp(action, N_GET_VITERBI_PATH, strlen(N_GET_VITERBI_PATH)))
 		{
-			if (nlhs==4)
+			if ((nlhs==2) && (nrhs == 2))
 			{
-				gf_matlab.get_best_path(plhs);
+				if (mxIsDouble(prhs[1]))
+				{
+					double* dim=mxGetPr(prhs[1]);
+					gf_matlab.best_path(plhs, (int) *dim);
+				}
+				else
+					mexErrMsgTxt("usage is [path, lik]=gf('get_viterbi_path',dim)");
 			}
 			else
-				mexErrMsgTxt("usage is [path, lik]=gf('get_viterbi_path')");
+				mexErrMsgTxt("usage is [path, lik]=gf('get_viterbi_path',dim)");
 		}
 		else if (!strncmp(action, N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE, strlen(N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE)))
 		  {
