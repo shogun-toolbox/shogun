@@ -25,13 +25,27 @@ class CGUIFeatures
 		inline CFeatures *get_train_features() { return train_features; }
 		inline CFeatures *get_test_features() { return test_features; }
 
-		inline void set_train_features(CFeatures* f) { delete train_features; train_features=f; }
-		inline void set_test_features(CFeatures* f) { delete test_features; test_features=f; }
+		inline void set_train_features(CFeatures* f) 
+			{ 
+				invalidate_train() ;
+				delete train_features; 
+				train_features=f; 
+			} ;
+		
+		inline void set_test_features(CFeatures* f) 
+			{ 
+				invalidate_test() ;
+				delete test_features; 
+				test_features=f; 
+			} ;
 
 		void add_train_features(CFeatures* f);
 		void add_test_features(CFeatures* f);
 
+		void invalidate_train() ;
+		void invalidate_test() ;
 		
+
 		bool load(CHAR* param);
 		bool save(CHAR* param);
 		bool clean(CHAR* param);

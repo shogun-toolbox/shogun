@@ -43,6 +43,49 @@ CWeightedDegreeCharKernel::~CWeightedDegreeCharKernel()
 	} ;
 	cleanup();
 }
+
+void CWeightedDegreeCharKernel::remove_lhs() 
+{ 
+	if (get_is_initialized())
+		delete_optimization() ;
+	if (lhs)
+		cache_reset() ;
+
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	delete[] sqrtdiag_lhs;
+	delete[] match_vector ;
+
+	lhs = NULL ; 
+	rhs = NULL ; 
+	initialized = false ;
+	sqrtdiag_lhs = NULL ;
+	sqrtdiag_rhs = NULL ;
+	match_vector = NULL ;
+	
+	if (trees!=NULL)
+	{
+		for (INT i=0; i<seq_length; i++)
+		{
+			delete trees[i] ;
+			trees[i]=NULL ;
+		}
+		delete[] trees ;
+		trees=NULL ;
+	} ;
+} ;
+
+void CWeightedDegreeCharKernel::remove_rhs()
+{
+	if (rhs)
+		cache_reset() ;
+
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	sqrtdiag_rhs = sqrtdiag_lhs ;
+	rhs = lhs ;
+}
+
   
 bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {

@@ -92,6 +92,11 @@ public:
 		{
 			return kernel_list->get_num_elements();
 		}
+
+	/// takes all necessary steps if the lhs is removed from kernel
+	virtual void remove_lhs() ;
+	/// takes all necessary steps if the rhs is removed from kernel
+	virtual void remove_rhs() ;
 	
 	virtual bool init_optimization(INT count, INT *IDX, REAL * weights);
 	virtual void delete_optimization() ;

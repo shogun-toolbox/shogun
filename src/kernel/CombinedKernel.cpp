@@ -92,6 +92,28 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	return true;
 }
 
+void CCombinedKernel::remove_lhs()
+{
+	CKernel* k=get_first_kernel();
+
+	while (k)
+	{	
+		k->remove_lhs();
+		k=get_next_kernel();
+	}
+}
+
+void CCombinedKernel::remove_rhs()
+{
+	CKernel* k=get_first_kernel();
+
+	while (k)
+	{	
+		k->remove_rhs();
+		k=get_next_kernel();
+	}
+}
+
 void CCombinedKernel::cleanup()
 {
 	CKernel* k=get_first_kernel();

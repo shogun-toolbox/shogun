@@ -69,6 +69,9 @@ class CWeightedDegreeCharKernel: public CCharKernel
   REAL compute(INT idx_a, INT idx_b);
   /*    compute_kernel*/
 
+  virtual void remove_lhs() ;
+  virtual void remove_rhs() ;
+
  protected:
   REAL* weights;
   INT degree;

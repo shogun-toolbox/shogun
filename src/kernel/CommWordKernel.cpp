@@ -22,6 +22,35 @@ CCommWordKernel::~CCommWordKernel()
 	delete[] sqrtdiag_lhs;
 }
   
+void CCommWordKernel::remove_lhs() 
+{ 
+	if (get_is_initialized())
+		delete_optimization() ;
+	if (lhs)
+		cache_reset() ;
+
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	delete[] sqrtdiag_lhs;
+
+	lhs = NULL ; 
+	rhs = NULL ; 
+	initialized = false ;
+	sqrtdiag_lhs = NULL ;
+	sqrtdiag_rhs = NULL ;
+} ;
+
+void CCommWordKernel::remove_rhs()
+{
+	if (rhs)
+		cache_reset() ;
+
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	sqrtdiag_rhs = sqrtdiag_lhs ;
+	rhs = lhs ;
+}
+
 bool CCommWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	bool result=CWordKernel::init(l,r,do_init);

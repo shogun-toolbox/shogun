@@ -5,12 +5,15 @@
 #include "features/Features.h"
 #include "kernel/OptimizableKernel.h" 
 
+typedef float CACHE_ELEM ;
+typedef INT CACHE_IDX ;
+
 #include <stdio.h>
 
 class CKernel: public COptimizableKernel
 {
 	public:
-		CKernel(LONG size);
+		CKernel(CACHE_IDX size);
 		virtual ~CKernel();
 
 		/** get kernel function for lhs feature vector x 
@@ -37,9 +40,16 @@ class CKernel: public COptimizableKernel
 		virtual bool save_init(FILE* dest)=0;
 		
 		/// get left/right hand side of features used in kernel
-		inline CFeatures* get_lhs() { return lhs; }
-		inline CFeatures* get_rhs() { return rhs; }
+		inline CFeatures* get_lhs() { return lhs; } ;
+		inline CFeatures* get_rhs() { return rhs;  } ;
 
+		inline void cache_reset() {	resize_kernel_cache(cache_size) ; } ;
+		
+		/// takes all necessary steps if the lhs is removed from kernel
+		virtual void remove_lhs() { if (lhs) cache_reset() ; lhs = NULL ;  } ;
+		/// takes all necessary steps if the rhs is removed from kernel
+		virtual void remove_rhs() { if (rhs) cache_reset() ; rhs = NULL ;  } ;
+		
 		// return what type of kernel we are Linear,Polynomial, Gaussian,...
 		virtual EKernelType get_kernel_type()=0 ;
 
@@ -57,11 +67,13 @@ class CKernel: public COptimizableKernel
 		// return the size of the kernel cache
 		int get_cache_size() { return cache_size; }
 
-		void get_kernel_row(LONG docnum, LONG *active2dnum, REAL *buffer) ;
-		void cache_kernel_row(LONG x);
-		void cache_multiple_kernel_rows(LONG* key, LONG varnum);
+		void get_kernel_row(CACHE_IDX docnum, LONG *active2dnum, REAL *buffer) ;
+		void cache_kernel_row(CACHE_IDX x);
+		void cache_multiple_kernel_rows(LONG* key, INT varnum);
 		void kernel_cache_reset_lru();
 
+		void resize_kernel_cache(CACHE_IDX size) ;
+		
 		/// set the time used for lru	
 		inline void set_time(LONG t)
 		{
@@ -69,7 +81,7 @@ class CKernel: public COptimizableKernel
 		}
 
 		// Update lru time to avoid removal from cache.
-		LONG kernel_cache_touch(LONG cacheidx)
+		CACHE_IDX kernel_cache_touch(CACHE_IDX cacheidx)
 		{
 			if(kernel_cache.index[cacheidx] != -1)
 			{
@@ -93,37 +105,37 @@ class CKernel: public COptimizableKernel
 		/**@ cache kernel evalutations to improve speed
 		 */
 		//@{
-		void   kernel_cache_shrink(long, long, LONG *);
+		void   kernel_cache_shrink(CACHE_IDX, CACHE_IDX, CACHE_IDX *);
 
 		/// init kernel cache of size megabytes
-		void   kernel_cache_init(LONG size);
+		void   kernel_cache_init(CACHE_IDX size);
 		void   kernel_cache_cleanup();
-		LONG   kernel_cache_malloc();
-		void   kernel_cache_free(LONG cacheidx);
-		LONG   kernel_cache_free_lru();
-		REAL *kernel_cache_clean_and_malloc(LONG);
+		CACHE_IDX   kernel_cache_malloc();
+		void   kernel_cache_free(CACHE_IDX cacheidx);
+		CACHE_IDX   kernel_cache_free_lru();
+		CACHE_ELEM *kernel_cache_clean_and_malloc(CACHE_IDX);
 
 
 		/// Is that row cached?
-		inline LONG kernel_cache_check(LONG cacheidx)
+		inline CACHE_IDX kernel_cache_check(CACHE_IDX cacheidx)
 		{
 			return(kernel_cache.index[cacheidx] != -1);
 		}
 		//@}
 
 		struct KERNEL_CACHE {
-			LONG   *index;  
-			REAL *buffer; 
-			LONG   *invindex;
-			LONG   *active2totdoc;
-			LONG   *totdoc2active;
-			LONG   *lru;
-			LONG   *occu;
-			LONG   elems;
-			LONG   max_elems;
-			LONG   time;
-			LONG   activenum;
-			LONG   buffsize;
+			CACHE_IDX   *index;  
+			CACHE_ELEM  *buffer; 
+			CACHE_IDX   *invindex;
+			CACHE_IDX   *active2totdoc;
+			CACHE_IDX   *totdoc2active;
+			CACHE_IDX   *lru;
+			CACHE_IDX   *occu;
+			CACHE_IDX   elems;
+			CACHE_IDX   max_elems;
+			CACHE_IDX   time;
+			CACHE_IDX   activenum;
+			CACHE_IDX   buffsize;
 			//			LONG   r_offs;
 		};
 
@@ -132,18 +144,18 @@ class CKernel: public COptimizableKernel
 		KERNEL_CACHE kernel_cache;
 
 		/// cache_size in MB
-		LONG cache_size;
+		CACHE_IDX cache_size;
 
 		/// this *COULD* store the whole kernel matrix
 		/// usually not applicable / faster
-		REAL* kernel_matrix;
+		CACHE_ELEM* kernel_matrix;
 
 		/// feature vectors to occur on left hand side
 		CFeatures* lhs;
 		/// feature vectors to occur on right hand side
 		CFeatures* rhs;
 
-		double combined_kernel_weight ;
+		REAL combined_kernel_weight ;
 		
 };
 #endif

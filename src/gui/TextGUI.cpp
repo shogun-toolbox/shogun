@@ -67,6 +67,7 @@ static const CHAR* N_PERMUTATION_ENTROPY="permutation_entropy";
 static const CHAR* N_SET_KERNEL=		"set_kernel";
 static const CHAR* N_ADD_KERNEL=		"add_kernel";
 static const CHAR* N_CLEAN_KERNEL=		"clean_kernel";
+static const CHAR* N_RESIZE_KERNEL_CACHE=		"resize_kernel_cache";
 static const CHAR* N_ADD_PREPROC=		"add_preproc";
 static const CHAR* N_DEL_PREPROC=		"del_preproc";
 static const CHAR* N_CLEAN_PREPROC=		"clean_preproc";
@@ -590,6 +591,10 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_CLEAN_KERNEL, strlen(N_CLEAN_KERNEL)))
 	{
 		guikernel.clean_kernel(input+strlen(N_CLEAN_KERNEL));
+	} 
+	else if (!strncmp(input, N_RESIZE_KERNEL_CACHE, strlen(N_RESIZE_KERNEL_CACHE)))
+	{
+		guikernel.resize_kernel_cache(input+strlen(N_RESIZE_KERNEL_CACHE));
 	} 
 	else if (!strncmp(input, N_DEL_PREPROC, strlen(N_DEL_PREPROC)))
 	{

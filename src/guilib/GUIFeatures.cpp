@@ -24,6 +24,20 @@ CGUIFeatures::~CGUIFeatures()
     delete test_features;
     delete ref_features;
 }
+
+void CGUIFeatures::invalidate_train()
+{
+	CKernel *k = gui->guikernel.get_kernel() ;
+	if (k)
+		k->remove_lhs() ;
+}
+
+void CGUIFeatures::invalidate_test()
+{
+	CKernel *k = gui->guikernel.get_kernel() ;
+	if (k)
+		k->remove_rhs() ;
+}
 		
 bool CGUIFeatures::preprocess(CHAR* param)
 {
@@ -43,6 +57,7 @@ bool CGUIFeatures::preprocess(CHAR* param)
 					f=((CCombinedFeatures*)f)->get_last_feature_obj() ;
 
 				preprocess_features(f, NULL, force==1);
+				invalidate_train() ;
 			}
 			else if (strcmp(target,"TEST")==0)
 			{
@@ -52,6 +67,7 @@ bool CGUIFeatures::preprocess(CHAR* param)
 					((CCombinedFeatures*)fe)->get_last_feature_pair(fe,f) ;
 				
 				preprocess_features(f, fe, force==1);
+				invalidate_test() ;
 			}
 			else
 				CIO::message(M_ERROR, "see help for parameters\n");
@@ -166,10 +182,12 @@ bool CGUIFeatures::load(CHAR* param)
 		if (strcmp(target,"TRAIN")==0)
 		{
 			f_ptr=&train_features;
+			invalidate_train() ;
 		}
 		else if (strcmp(target,"TEST")==0)
 		{
 			f_ptr=&test_features;
+			invalidate_test() ;
 		}
 		else
 		{
@@ -327,7 +345,6 @@ bool CGUIFeatures::save(CHAR* param)
 
 bool CGUIFeatures::clean(CHAR* param)
 {
-	bool result=false;
 	param=CIO::skip_spaces(param);
 	CHAR target[1024]="";
 
@@ -338,10 +355,12 @@ bool CGUIFeatures::clean(CHAR* param)
 		if (strcmp(target,"TRAIN")==0)
 		{
 			f_ptr=&train_features;
+			invalidate_train() ;
 		}
 		else if (strcmp(target,"TEST")==0)
 		{
 			f_ptr=&test_features;
+			invalidate_test() ;
 		}
 		else
 		{
@@ -378,10 +397,12 @@ bool CGUIFeatures::reshape(CHAR* param)
 		if (strcmp(target,"TRAIN")==0)
 		{
 			f_ptr=&train_features;
+			invalidate_train() ;
 		}
 		else if (strcmp(target,"TEST")==0)
 		{
 			f_ptr=&test_features;
+			invalidate_test() ;
 		}
 	}
 	else
@@ -412,10 +433,12 @@ bool CGUIFeatures::convert_full_to_sparse(CHAR* param)
 		if (strcmp(target,"TRAIN")==0)
 		{
 			f_ptr=&train_features;
+			invalidate_train() ;
 		}
 		else if (strcmp(target,"TEST")==0)
 		{
 			f_ptr=&test_features;
+			invalidate_test() ;
 		}
 	}
 	else
@@ -461,10 +484,12 @@ bool CGUIFeatures::convert_sparse_to_full(CHAR* param)
 		if (strcmp(target,"TRAIN")==0)
 		{
 			f_ptr=&train_features;
+			invalidate_train() ;
 		}
 		else if (strcmp(target,"TEST")==0)
 		{
 			f_ptr=&test_features;
+			invalidate_test() ;
 		}
 	}
 	else
@@ -517,11 +542,13 @@ bool CGUIFeatures::convert_char_to_word(CHAR* param)
 		{
 			f_ptr=&train_features;
 			f=train_features;
+			invalidate_train() ;
 		}
 		else if (strcmp(target,"TEST")==0)
 		{
 			f_ptr=&test_features;
 			f=test_features;
+			invalidate_test() ;
 		}
 
 		if (strcmp(alpha,"PROTEIN")==0)
@@ -605,6 +632,7 @@ bool CGUIFeatures::set_ref_features(CHAR* param)
 	      delete ref_features ;
 	      ref_features = train_features ;
 	      train_features = NULL ;
+		  invalidate_train() ;
 	      return true ;
 	    }
 	  else if (strcmp(target,"TEST")==0)
@@ -612,6 +640,7 @@ bool CGUIFeatures::set_ref_features(CHAR* param)
 	      delete ref_features ;
 	      ref_features = test_features ;
 	      test_features = NULL ;
+		  invalidate_test() ;
 	      return true ;
 	    }	  
 	}
@@ -632,44 +661,46 @@ bool CGUIFeatures::alignment_char(CHAR* param)
 	if ((sscanf(param, "%s %le", target, &gapCost))==2)
 	  {
 	    if (strcmp(target,"TRAIN")==0)
-	      {
-		f_ptr=&train_features;
-	      }
+		{
+			f_ptr=&train_features;
+			invalidate_train() ;
+		}
 	    else if (strcmp(target,"TEST")==0)
-	      {
-		f_ptr=&test_features;
-	      }	  
+		{
+			f_ptr=&test_features;
+			invalidate_test() ;
+		}	  
 	  }
 	else
-	  CIO::message(M_ERROR, "see help for params %s\n", target);
-
+		CIO::message(M_ERROR, "see help for params %s\n", target);
+	
 	if (f_ptr)
-	  {
+	{
 	    if ( (*f_ptr) && ( ((*f_ptr)->get_feature_class()) == C_SIMPLE)  && ( ((*f_ptr)->get_feature_type()) == F_CHAR) )
-	      {
-		//create dense features with 0 cache
-		CIO::message(M_INFO, "converting CHAR features to REAL ones\n");
-		
-		CRealFeatures* rf=new CRealFeatures(0l);
-		result=(rf!=NULL);
-		
-		if (result)
-		  {
-		    CIO::message(M_INFO, "start aligment with gapCost=%1.2f\n", gapCost);
-		    rf->Align_char_features((CCharFeatures*) (*f_ptr), (CCharFeatures*)ref_features, gapCost);
-		    delete (*f_ptr);
-		    (*f_ptr)=rf;
-		  }
-	      }
+		{
+			//create dense features with 0 cache
+			CIO::message(M_INFO, "converting CHAR features to REAL ones\n");
+			
+			CRealFeatures* rf=new CRealFeatures(0l);
+			result=(rf!=NULL);
+			
+			if (result)
+			{
+				CIO::message(M_INFO, "start aligment with gapCost=%1.2f\n", gapCost);
+				rf->Align_char_features((CCharFeatures*) (*f_ptr), (CCharFeatures*)ref_features, gapCost);
+				delete (*f_ptr);
+				(*f_ptr)=rf;
+			}
+		}
 	    else
-	      CIO::message(M_ERROR, "no CHAR features available\n");
+			CIO::message(M_ERROR, "no CHAR features available\n");
 	    
 	    if (!result)
-	      CIO::message(M_ERROR, "conversion failed\n");
+			CIO::message(M_ERROR, "conversion failed\n");
 	    else
-	      CIO::message(M_INFO, "conversion successful\n");
-	  }
-
+			CIO::message(M_INFO, "conversion successful\n");
+	}
+	
 	return result;
 }
 
@@ -690,10 +721,12 @@ bool CGUIFeatures::convert_char_to_short(CHAR* param)
 		if (strcmp(target,"TRAIN")==0)
 		{
 			f_ptr=&train_features;
+			invalidate_train() ;
 		}
 		else if (strcmp(target,"TEST")==0)
 		{
 			f_ptr=&test_features;
+			invalidate_test() ;
 		}
 
 		if (strcmp(alpha,"PROTEIN")==0)
@@ -756,10 +789,12 @@ bool CGUIFeatures::convert(CHAR* param)
 		if (strcmp(target,"TRAIN")==0)
 		{
 			f_ptr=&train_features;
+			invalidate_train() ;
 		}
 		else if (strcmp(target,"TEST")==0)
 		{
 			f_ptr=&test_features;
+			invalidate_test() ;
 		}
 	}
 	else
@@ -997,6 +1032,7 @@ void CGUIFeatures::add_train_features(CFeatures* f)
 {
 	if (!train_features || (train_features && train_features->get_feature_class()!=C_COMBINED))
 	{
+		invalidate_train() ;
 		delete train_features;
 		train_features= new CCombinedFeatures();
 		assert(train_features);
@@ -1004,6 +1040,7 @@ void CGUIFeatures::add_train_features(CFeatures* f)
 
 	if (train_features)
 	{
+		invalidate_train() ;
 		assert(f);
 		assert(((CCombinedFeatures*) train_features)->append_feature_obj(f));
 		((CCombinedFeatures*) train_features)->list_feature_objs();
@@ -1016,6 +1053,7 @@ void CGUIFeatures::add_test_features(CFeatures* f)
 {
 	if (!test_features || (test_features && test_features->get_feature_class()!=C_COMBINED))
 	{
+		invalidate_test() ;
 		delete test_features;
 		test_features= new CCombinedFeatures();
 		assert(test_features);
@@ -1023,6 +1061,7 @@ void CGUIFeatures::add_test_features(CFeatures* f)
 
 	if (test_features)
 	{
+		invalidate_test() ;
 		assert(f);
 		assert(((CCombinedFeatures*) test_features)->append_feature_obj(f));
 		((CCombinedFeatures*) test_features)->list_feature_objs();

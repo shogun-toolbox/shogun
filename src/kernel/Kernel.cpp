@@ -7,10 +7,15 @@
 #include <string.h>
 #include <assert.h>
 
-CKernel::CKernel(LONG size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1)
+CKernel::CKernel(CACHE_IDX size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1)
 {
 	if (size<10)
 		size=10;
+	if ((sizeof(CACHE_IDX)==4) && (size>2040))
+	{
+		CIO::message(M_ERROR, "kernel cache size too large for chosen index type\n") ;
+		size = 2040 ;
+	} ;
 
 	cache_size=size;
 	CIO::message(M_INFO, "using a kernel cache of size %i MB\n", size) ;
@@ -20,6 +25,26 @@ CKernel::CKernel(LONG size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL), combine
 CKernel::~CKernel()
 {
 	kernel_cache_cleanup();
+}
+
+void CKernel::resize_kernel_cache(CACHE_IDX size) 
+{
+	if (size<10)
+		size=10 ;
+	if ((sizeof(CACHE_IDX)==4) && (size>2040))
+	{
+		CIO::message(M_ERROR, "kernel cache size too large for chosen index type\n") ;
+		size = 2040 ;
+	} ;
+	
+	kernel_cache_cleanup() ;
+	cache_size=size;
+
+	CIO::message(M_INFO, "using a kernel cache of size %i MB\n", size) ;
+	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
+
+	if (lhs!=NULL && rhs!=NULL)
+		kernel_cache_init(cache_size);
 }
 
 /* calculate the kernel function */
@@ -55,22 +80,22 @@ bool CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 /****************************** Cache handling *******************************/
 
-void CKernel::kernel_cache_init(LONG buffsize)
+void CKernel::kernel_cache_init(CACHE_IDX buffsize)
 {
-	LONG i;
-	LONG totdoc=get_lhs()->get_num_vectors();
+	CACHE_IDX i;
+	CACHE_IDX totdoc=get_lhs()->get_num_vectors();
 
-	kernel_cache.index = new long[totdoc];
-	kernel_cache.occu = new long[totdoc];
-	kernel_cache.lru = new long[totdoc];
-	kernel_cache.invindex = new long[totdoc];
-	kernel_cache.active2totdoc = new long[totdoc];
-	kernel_cache.totdoc2active = new long[totdoc];
-	kernel_cache.buffer = new REAL[buffsize*1024*1024/sizeof(REAL)];
+	kernel_cache.index = new CACHE_IDX[totdoc];
+	kernel_cache.occu = new CACHE_IDX[totdoc];
+	kernel_cache.lru = new CACHE_IDX[totdoc];
+	kernel_cache.invindex = new CACHE_IDX[totdoc];
+	kernel_cache.active2totdoc = new CACHE_IDX[totdoc];
+	kernel_cache.totdoc2active = new CACHE_IDX[totdoc];
+	kernel_cache.buffer = new CACHE_ELEM[buffsize*1024*1024/sizeof(CACHE_ELEM)];
 
-	kernel_cache.buffsize=(LONG)(buffsize*1024*1024/sizeof(REAL));
+	kernel_cache.buffsize=(CACHE_IDX)(buffsize*1024*1024/sizeof(CACHE_IDX));
 
-	kernel_cache.max_elems=(LONG)(kernel_cache.buffsize/totdoc);
+	kernel_cache.max_elems=(CACHE_IDX)(kernel_cache.buffsize/totdoc);
 
 	if(kernel_cache.max_elems>totdoc) {
 		kernel_cache.max_elems=totdoc;
@@ -95,14 +120,14 @@ void CKernel::kernel_cache_init(LONG buffsize)
 	kernel_cache.time=0;  
 } 
 
-void CKernel::get_kernel_row(LONG docnum, LONG *active2dnum, REAL *buffer)     
+void CKernel::get_kernel_row(CACHE_IDX docnum, LONG *active2dnum, REAL *buffer)     
 {
-	LONG i,j,start;
+	CACHE_IDX i,j,start;
 
 #if 0
 	for(i=0;(j=active2dnum[i])>=0;i++)
 	{
-		buffer[j]=(REAL)kernel(docnum, j);
+		buffer[j]=(CACHE_ELEM)kernel(docnum, j);
 	}
 #else
 	/* is cached? */
@@ -116,23 +141,23 @@ void CKernel::get_kernel_row(LONG docnum, LONG *active2dnum, REAL *buffer)
 			if(kernel_cache.totdoc2active[j] >= 0)
 				buffer[j]=kernel_cache.buffer[start+kernel_cache.totdoc2active[j]];
 			else
-				buffer[j]=(REAL) kernel(docnum, j);
+				buffer[j]=(CACHE_ELEM) kernel(docnum, j);
 		}
 	}
 	else 
 	{
 		for(i=0;(j=active2dnum[i])>=0;i++)
-			buffer[j]=(REAL) kernel(docnum, j);
+			buffer[j]=(CACHE_ELEM) kernel(docnum, j);
 	}
 #endif
 }
 
 
 // Fills cache for the row m
-void CKernel::cache_kernel_row(LONG m)
+void CKernel::cache_kernel_row(CACHE_IDX m)
 {
-	register LONG j,k,l;
-	register REAL *cache;
+	register CACHE_IDX j,k,l;
+	register CACHE_ELEM *cache;
 
 	if(!kernel_cache_check(m))   // not cached yet
 	{
@@ -158,21 +183,21 @@ void CKernel::cache_kernel_row(LONG m)
 }
 
 // Fills cache for the rows in key 
-void CKernel::cache_multiple_kernel_rows(LONG* rows, LONG num_rows)
+void CKernel::cache_multiple_kernel_rows(LONG* rows, CACHE_IDX num_rows)
 {
 	// fill up kernel cache 
-	for(LONG i=0;i<num_rows;i++) 
+	for(CACHE_IDX i=0;i<num_rows;i++) 
 		cache_kernel_row(rows[i]);
 }
 
 // remove numshrink columns in the cache
 // which correspond to examples marked
-void CKernel::kernel_cache_shrink(LONG totdoc, LONG numshrink, LONG *after)
+void CKernel::kernel_cache_shrink(CACHE_IDX totdoc, CACHE_IDX numshrink, CACHE_IDX *after)
 {                           
-	register LONG i,j,jj,from=0,to=0,scount;     // 0 in after.
-	LONG *keep;
+	register CACHE_IDX i,j,jj,from=0,to=0,scount;     // 0 in after.
+	CACHE_IDX *keep;
 
-	keep=new long[totdoc];
+	keep=new CACHE_IDX[totdoc];
 	for(j=0;j<totdoc;j++) {
 		keep[j]=1;
 	}
@@ -211,7 +236,7 @@ void CKernel::kernel_cache_shrink(LONG totdoc, LONG numshrink, LONG *after)
 		}
 	}
 
-	kernel_cache.max_elems=(LONG)(kernel_cache.buffsize/kernel_cache.activenum);
+	kernel_cache.max_elems=(CACHE_IDX)(kernel_cache.buffsize/kernel_cache.activenum);
 	if(kernel_cache.max_elems>totdoc) {
 		kernel_cache.max_elems=totdoc;
 	}
@@ -223,7 +248,7 @@ void CKernel::kernel_cache_shrink(LONG totdoc, LONG numshrink, LONG *after)
 
 void CKernel::kernel_cache_reset_lru()
 {
-	LONG maxlru=0,k;
+	CACHE_IDX maxlru=0,k;
 
 	for(k=0;k<kernel_cache.max_elems;k++) {
 		if(maxlru < kernel_cache.lru[k]) 
@@ -246,9 +271,9 @@ void CKernel::kernel_cache_cleanup()
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 }
 
-LONG CKernel::kernel_cache_malloc()
+CACHE_IDX CKernel::kernel_cache_malloc()
 {
-	LONG i;
+	CACHE_IDX i;
 
 	if(kernel_cache.elems < kernel_cache.max_elems) {
 		for(i=0;i<kernel_cache.max_elems;i++) {
@@ -262,7 +287,7 @@ LONG CKernel::kernel_cache_malloc()
 	return(-1);
 }
 
-void CKernel::kernel_cache_free(LONG cacheidx)
+void CKernel::kernel_cache_free(CACHE_IDX cacheidx)
 {
 	kernel_cache.occu[cacheidx]=0;
 	kernel_cache.elems--;
@@ -270,9 +295,9 @@ void CKernel::kernel_cache_free(LONG cacheidx)
 
 // remove least recently used cache
 // element
-LONG CKernel::kernel_cache_free_lru()  
+CACHE_IDX CKernel::kernel_cache_free_lru()  
 {                                     
-	register LONG k,least_elem=-1,least_time;
+	register CACHE_IDX k,least_elem=-1,least_time;
 
 	least_time=kernel_cache.time+1;
 	for(k=0;k<kernel_cache.max_elems;k++) {
@@ -294,9 +319,9 @@ LONG CKernel::kernel_cache_free_lru()
 
 // Get a free cache entry. In case cache is full, the lru
 // element is removed.
-REAL* CKernel::kernel_cache_clean_and_malloc(LONG cacheidx)
+CACHE_ELEM* CKernel::kernel_cache_clean_and_malloc(CACHE_IDX cacheidx)
 {             
-	LONG result;
+	CACHE_IDX result;
 	if((result = kernel_cache_malloc()) == -1) {
 		if(kernel_cache_free_lru()) {
 			result = kernel_cache_malloc();
@@ -308,8 +333,8 @@ REAL* CKernel::kernel_cache_clean_and_malloc(LONG cacheidx)
 	}
 	kernel_cache.invindex[result]=cacheidx;
 	kernel_cache.lru[kernel_cache.index[cacheidx]]=kernel_cache.time; // lru
-	return((REAL *)((LONG)kernel_cache.buffer
-				+(kernel_cache.activenum*sizeof(REAL)*
+	return((CACHE_ELEM *)((CACHE_IDX)kernel_cache.buffer
+				+(kernel_cache.activenum*sizeof(CACHE_ELEM)*
 					kernel_cache.index[cacheidx])));
 }
 bool CKernel::load(CHAR* fname)
@@ -322,7 +347,7 @@ bool CKernel::save(CHAR* fname)
 	INT i=0;
 	INT num_left=get_lhs()->get_num_vectors();
 	INT num_right=get_rhs()->get_num_vectors();
-	LONG num_total=num_left*num_right;
+	CACHE_IDX num_total=num_left*num_right;
 
 	CFile f(fname, 'w', F_REAL);
 
@@ -343,7 +368,7 @@ bool CKernel::save(CHAR* fname)
 	}
 
 	if (f.is_ok())
-		CIO::message(M_INFO, "kernel matrix of size %ld x %ld written (filesize: %ld)\n", num_left, num_right, num_total*sizeof(REAL));
+		CIO::message(M_INFO, "kernel matrix of size %ld x %ld written (filesize: %ld)\n", num_left, num_right, num_total*sizeof(CACHE_ELEM));
 
     return (f.is_ok());
 }

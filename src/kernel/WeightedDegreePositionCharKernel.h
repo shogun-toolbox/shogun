@@ -36,6 +36,9 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
 		  return 0 ;
 	  } ;
   
+  virtual void remove_lhs() ;
+  virtual void remove_rhs() ;
+
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors

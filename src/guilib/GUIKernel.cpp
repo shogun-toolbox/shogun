@@ -905,6 +905,19 @@ bool CGUIKernel::clean_kernel(CHAR* param)
 	return false;
 }
 
+bool CGUIKernel::resize_kernel_cache(CHAR* param)
+{
+	if (kernel!=NULL) 
+	{
+		LONG size = 10 ;
+		sscanf(param, "%ld", &size);
+		kernel->resize_kernel_cache(size) ;
+		return true ;
+	}
+	CIO::message(M_ERROR, "no kernel available\n") ;
+	return false;
+}
+
 bool CGUIKernel::del_kernel(CHAR* param)
 {
 	return false;

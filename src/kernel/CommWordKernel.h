@@ -27,6 +27,9 @@ class CCommWordKernel: public CWordKernel
   virtual void delete_optimization() ;
   virtual REAL compute_optimized(INT idx) ;
 
+  virtual void remove_lhs() ;
+  virtual void remove_rhs() ;
+
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
