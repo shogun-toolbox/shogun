@@ -7,6 +7,11 @@ CFeatures::CFeatures()
 {
 }
 
+CFeatures::CFeatures(const CFeatures& orig)
+: preproc(orig.preproc), preprocessed(orig.preprocessed)
+{
+}
+
 CFeatures::~CFeatures()
 {
   CIO::message("Feature object destroyed\n") ;
@@ -15,7 +20,7 @@ CFeatures::~CFeatures()
 /// set preprocessor
 void CFeatures::set_preproc(CPreProc* p)
 { 
-  preproc=p ;
+  preproc=p;
   CIO::message("set preproc %ld\n", p) ;
 }
 

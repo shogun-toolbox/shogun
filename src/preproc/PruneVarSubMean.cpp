@@ -123,7 +123,7 @@ REAL* CPruneVarSubMean::apply_to_feature_vector(REAL* f, int &len)
   return ret;
 }
 
-#error TODO implement
+#warning TODO implement
 #ifdef PRUNE_VAR_SUB_MEAN
 
 void CHMM::subtract_mean_from_top_feature_cache(int num_features, int totobs)

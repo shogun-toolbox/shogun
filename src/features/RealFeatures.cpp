@@ -16,10 +16,10 @@ CRealFeatures::~CRealFeatures()
 CRealFeatures::CRealFeatures(const CRealFeatures & orig): CFeatures(orig), 
 num_vectors(orig.num_vectors), num_features(orig.num_features)
 {
-  if (orig.feature_matrix)
+    if (orig.feature_matrix)
     {
-      feature_matrix=new REAL(num_vectors*num_features);
-      memcpy(feature_matrix, orig.feature_matrix, num_vectors*num_features); 
+	feature_matrix=new REAL(num_vectors*num_features);
+	memcpy(feature_matrix, orig.feature_matrix, num_vectors*num_features); 
     }
 }
 
@@ -98,7 +98,7 @@ bool CRealFeatures::load(FILE* src)
     assert(fread(&num_vec, (unsigned int) intlen, 1, src)==1);
     assert(fread(&num_feat, (unsigned int) intlen, 1, src)==1);
     assert(fread(&preprocd, (unsigned int) intlen, 1, src)==1);
-#error check for FOURCC , check for endianess+convert if not right+ more checks.
+#warning check for FOURCC , check for endianess+convert if not right+ more checks.
 
     delete[] feature_matrix;
     num_features=num_feat;
@@ -124,7 +124,7 @@ bool CRealFeatures::save(FILE* dest)
 {
     unsigned char intlen=sizeof(unsigned int);
     unsigned char doublelen=sizeof(unsigned int);
-    unsigned int endian=0x123456789;
+    unsigned int endian=0x12345678;
     unsigned int fourcc='RFEA'; //id for real features
     unsigned int preprocd= (preprocessed) ? 1 : 0;
     unsigned int num_vec= (unsigned int) num_vectors;

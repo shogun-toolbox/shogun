@@ -19,7 +19,7 @@ public:
 
 	CFeatures();
 	// copy constructor
-	CFeatures(const CFeatures& orig): preproc(orig.preproc) {} ;
+	CFeatures(const CFeatures& orig);
 
 	virtual ~CFeatures();
 

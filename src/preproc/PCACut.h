@@ -31,5 +31,8 @@ class CPCACut : public CRealPreProc
   double* T ;
   int num_dim ;
   double *mean ;
+
+  /// true when already initialized
+  bool initialized;
 };
 #endif

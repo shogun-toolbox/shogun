@@ -16,7 +16,6 @@ class CTOPFeatures: public CRealFeatures
   virtual REAL* set_feature_matrix();
   virtual int get_label(long idx);
   virtual long get_number_of_examples();
-  virtual int get_num_features() ;
   
   virtual CFeatures* duplicate() const;
 

@@ -7,9 +7,13 @@ CTOPFeatures::CTOPFeatures(CHMM* p, CHMM* n)
   pos=p;
   neg=n;
   num_vectors=get_number_of_examples() ;
+  CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
+  if (pos && neg)
+    num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
   // set_feature_matrix();
 }
-CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig): 
+
+ CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig): 
 	CRealFeatures(orig), pos(orig.pos), neg(orig.neg)
 { 
 }
@@ -25,15 +29,9 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
   delete[] feature_matrix  ;
   feature_matrix=NULL ;
   //  set_feature_matrix() ;
-}
-
-int CTOPFeatures::get_num_features()
-{
   CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
   if (pos && neg)
-    return 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
-
-  return 0 ;
+    num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
 }
 
 int CTOPFeatures::get_label(long idx)
@@ -124,33 +122,6 @@ void CTOPFeatures::compute_feature_vector(REAL* featurevector, long num, long& l
       } ;
     }
 }
-
-/*bool CHMM::save_top_features(CHMM* pos, CHMM* neg, FILE* dest)
-{
-	int totobs=pos->get_observations()->get_DIMENSION();
-    int num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
-	
-	CIO::message("saving %i features (size %i) for %i sequences.\n total file size should be: %i byte.\nwriting as doubles of size %i\n",num_features,sizeof(double)*num_features,totobs,sizeof(double)*num_features*totobs, sizeof(double));
-
-	double* feature_vector=new double[num_features];
-
-	for (int x=0; x<totobs; x++)
-	{
-		if (!(x % (totobs/10+1)))
-			CIO::message("%02d%%.", (int) (100.0*x/totobs));
-		else if (!(x % (totobs/200+1)))
-			CIO::message(".");
-
-		compute_top_feature_vector(pos, neg, x, feature_vector);
-		fwrite(feature_vector, sizeof(double),num_features, dest);
-	}
-
-	CIO::message(".done.\n");
-	delete[] feature_vector;
-
-	return true;
-}
-*/
 
 REAL* CTOPFeatures::set_feature_matrix()
 {
