@@ -2,6 +2,7 @@
 #define __GUIFEATURES__H
 
 #include "features/Features.h"
+#include "features/TOPFeatures.h"
 
 class CGUI ;
 
@@ -12,9 +13,11 @@ public:
   ~CGUIFeatures();
 
   CFeatures *get_train_features() { return train_features ; } ;
-
+  
  protected:
   CGUI* gui ;
   CFeatures *train_features ;
+  CTOPFeatures top_features ;
+
 };
 #endif

@@ -26,6 +26,17 @@ bool CGUISVM::new_svm(char* param)
 
 bool CGUISVM::train(char* param)
 {
+  if (!svm)
+    {
+      CIO::message("no svm available") ;
+      return false ;
+    } ;
+  if (!gui->guifeatures.get_train_features())
+    {
+      CIO::message("no training features available") ;
+      return false ;
+    } ;
+  
   return svm->svm_train(gui->guifeatures.get_train_features()) ;
 }
 
@@ -99,7 +110,8 @@ bool CGUISVM::save_svm()
 
 bool CGUISVM::set_C(char* param)
 {
-  sscanf(param, "%f", &C) ;
+  sscanf(param, "%le", &C) ;
+  CIO::message("Set to C=%f\n", C) ;
   return true ;  
 }
 
