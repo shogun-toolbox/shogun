@@ -7,7 +7,7 @@
 #include <math.h>
 #include <assert.h>
 CPruneVarSubMean::CPruneVarSubMean(bool divide)
-  : CRealPreProc("PruneVarSubMean","PVSM"), idx(NULL), mean(0), std(NULL), num_idx(0), divide_by_std(divide)
+  : CRealPreProc("PruneVarSubMean","PVSM"), idx(NULL), mean(0), std(NULL), num_idx(0), divide_by_std(divide), initialized(false)
 {
 }
 
@@ -21,89 +21,95 @@ CPruneVarSubMean::~CPruneVarSubMean()
 /// initialize preprocessor from features
 bool CPruneVarSubMean::init(CFeatures* f_)
 {
-    CIO::message("calling CPruneVarSubMean::init\n") ;
-
-    CRealFeatures *f=(CRealFeatures*) f_ ;
-    int num_examples=f->get_num_vectors() ;
-    int num_features=((CRealFeatures*)f)->get_num_features() ;
-   
-    delete[] mean;
-    delete[] idx;
-    delete[] std; 
-    mean=NULL;
-    idx=NULL;
-    std=NULL;
-
-    mean=new double[num_features] ;
-    double* var=new double[num_features] ;
-    int i,j;
-
-    for (i=0; i<num_features; i++)
-    {
-	mean[i]=0 ; var[i]=0 ;
-    }
-
-    // compute mean
-    for (i=0; i<num_examples; i++)
-    {
-	long len ; bool free ;
-	REAL* feature=f->get_feature_vector(i, len, free) ;
-
-	for (int j=0; j<len; j++)
-	    mean[j]+=feature[j] ;
-
-	f->free_feature_vector(feature, free) ;
-    }
-
-    for (j=0; j<num_features; j++)
-	mean[j]/=num_examples ;
-
-    // compute var
-    for (i=0; i<num_examples; i++)
-    {
-	long len ; bool free ;
-	REAL* feature=f->get_feature_vector(i, len, free) ;
-
-	for (int j=0; j<num_features; j++)
-	    var[j]+=(mean[j]-feature[j])*(mean[j]-feature[j]) ;
-
-	f->free_feature_vector(feature, free) ;
-    }
-
-    int num_ok=0;
-    int* idx_ok=new int[num_features];
-
-    for (j=0; j<num_features; j++)
-    {
-	var[j]/=num_examples ;
-
-	if (var[j]>1e-6) 
+	if (!initialized)
 	{
-	    idx_ok[num_ok]=j ;
-	    num_ok++ ;
+		CIO::message("calling CPruneVarSubMean::init\n") ;
+
+		CRealFeatures *f=(CRealFeatures*) f_ ;
+		int num_examples=f->get_num_vectors() ;
+		int num_features=((CRealFeatures*)f)->get_num_features() ;
+
+		delete[] mean;
+		delete[] idx;
+		delete[] std; 
+		mean=NULL;
+		idx=NULL;
+		std=NULL;
+
+		mean=new double[num_features] ;
+		double* var=new double[num_features] ;
+		int i,j;
+
+		for (i=0; i<num_features; i++)
+		{
+			mean[i]=0 ; var[i]=0 ;
+		}
+
+		// compute mean
+		for (i=0; i<num_examples; i++)
+		{
+			long len ; bool free ;
+			REAL* feature=f->get_feature_vector(i, len, free) ;
+
+			for (int j=0; j<len; j++)
+				mean[j]+=feature[j] ;
+
+			f->free_feature_vector(feature, free) ;
+		}
+
+		for (j=0; j<num_features; j++)
+			mean[j]/=num_examples ;
+
+		// compute var
+		for (i=0; i<num_examples; i++)
+		{
+			long len ; bool free ;
+			REAL* feature=f->get_feature_vector(i, len, free) ;
+
+			for (int j=0; j<num_features; j++)
+				var[j]+=(mean[j]-feature[j])*(mean[j]-feature[j]) ;
+
+			f->free_feature_vector(feature, free) ;
+		}
+
+		int num_ok=0;
+		int* idx_ok=new int[num_features];
+
+		for (j=0; j<num_features; j++)
+		{
+			var[j]/=num_examples ;
+
+			if (var[j]>1e-6) 
+			{
+				idx_ok[num_ok]=j ;
+				num_ok++ ;
+			}
+		}
+
+		CIO::message("Reducing number of features from %i to %i\n", num_features, num_ok) ;
+
+		delete[] idx ;
+		idx=new int[num_ok];
+		REAL* new_mean=new REAL[num_ok];
+		std=new REAL[num_ok];
+
+		for (j=0; j<num_ok; j++)
+		{
+			idx[j]=idx_ok[j] ;
+			new_mean[j]=mean[idx_ok[j]];
+			std[j]=sqrt(var[idx_ok[j]]);
+		}
+		num_idx=num_ok ;
+		delete[] idx_ok ;
+		delete[] mean;
+		delete[] var;
+		mean=new_mean;
+
+		initialized=true;
+		return true ;
 	}
-    }
-
-    CIO::message("Reducing number of features from %i to %i\n", num_features, num_ok) ;
-
-    delete[] idx ;
-    idx=new int[num_ok];
-    REAL* new_mean=new REAL[num_ok];
-    std=new REAL[num_ok];
-
-    for (j=0; j<num_ok; j++)
-    {
-	idx[j]=idx_ok[j] ;
-	new_mean[j]=mean[idx_ok[j]];
-	std[j]=sqrt(var[idx_ok[j]]);
-    }
-    num_idx=num_ok ;
-    delete[] idx_ok ;
-    delete[] mean;
-    delete[] var;
-    mean=new_mean;
-    
-    return true ;
+	else
+		return false;
 }
 
 /// initialize preprocessor from features
@@ -195,6 +201,7 @@ bool CPruneVarSubMean::load_init_data(FILE* src)
     assert(fread(std, sizeof(REAL), num_idx, src)==(unsigned int) num_idx) ;
 	result=true;
 	divide_by_std=(divide==1);
+	initialized=true;
 	return result;
 }
 

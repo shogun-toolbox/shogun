@@ -39,5 +39,8 @@ class CPruneVarSubMean : public CRealPreProc
   REAL* std;
   int num_idx ;
   bool divide_by_std;
+  
+  /// true when already initialized
+  bool initialized;
 };
 #endif
