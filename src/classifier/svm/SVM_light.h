@@ -182,7 +182,7 @@ typedef struct shrink_state {
   void update_linear_component(LONG* docs, INT *label, 
 					   long int *active2dnum, double *a, double* a_old,
 					   long int *working2dnum, long int totdoc,
-					   double *lin, REAL *aicache, double *weights);
+					   double *lin, REAL *aicache);
   long int select_next_qp_subproblem_grad( INT *label, double *a,
 						  double* lin, double* c, long int totdoc, long int qp_size, long int *inconsistent, 
 						  long int* active2dnum, long int* working2dnum, double *selcrit, 
@@ -204,7 +204,7 @@ typedef struct shrink_state {
 				      double *lin, double *c, long int totdoc,long int iteration,
 				      long int *inconsistent,
 				      long int *docs,MODEL *model,REAL *aicache,
-				      double *weights, double* maxdiff) ;
+				      double* maxdiff) ;
   void compute_xa_estimates(MODEL *, long int *, long int *, long, long int num, 
 			    double *, double *, LEARN_PARM *, double *, double *, double *);
   double xa_estimate_error(MODEL *, long int *, long int *, long, long int num, 

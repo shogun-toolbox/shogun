@@ -76,7 +76,7 @@ bool CSVMLight::train()
 
   //brain damaged svm light work around
   create_new_model(model->sv_num-1);
-  set_bias(model->b);
+  set_bias(-model->b);
   for (INT i=0; i<model->sv_num-1; i++)
   {
 	  set_alpha(i, model->alpha[i+1]);
@@ -287,7 +287,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
   long misclassified,supvecnum=0,*active2dnum,inactivenum;
   long *working2dnum,*selexam;
   long activenum;
-  double criterion,eq;
+  double eq;
   double *a_old;
   long t0=0,t1=0,t2=0,t3=0,t4=0,t5=0,t6=0; /* timing */
   long transductcycle;
@@ -298,7 +298,6 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 
   double *selcrit;  /* buffer for sorting */        
   REAL *aicache;  /* buffer to keep one row of hessian */
-  double *weights;  /* buffer for weight vector in linear case */
   QP qp;            /* buffer for one quadratic program */
 
   epsilon_crit_org=learn_parm->epsilon_crit; /* save org */
@@ -469,7 +468,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 
     if(verbosity>=2) t3=get_runtime();
     update_linear_component(docs,label,active2dnum,a,a_old,working2dnum,totdoc,
-			    lin,aicache, weights);
+			    lin,aicache);
 
     if(verbosity>=2) t4=get_runtime();
     supvecnum=calculate_svm_model(docs,label,lin,a,a_old,c,working2dnum,active2dnum,model);
@@ -515,7 +514,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
       reactivate_inactive_examples(label,a,shrink_state,lin,c,totdoc,
 				   iteration,inconsistent,
 				   docs,model,aicache,
-				   weights,maxdiff);
+				   maxdiff);
       /* Update to new active variables. */
       activenum=compute_index(shrink_state->active,totdoc,active2dnum);
       inactivenum=totdoc-activenum;
@@ -911,7 +910,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			     long int *active2dnum, double *a, 
 			     double *a_old, long int *working2dnum, 
 			     long int totdoc,
-			     double *lin, REAL *aicache, double *weights)
+			     double *lin, REAL *aicache)
      /* keep track of the linear component */
      /* lin of the gradient etc. by updating */
      /* based on the change of the variables */
@@ -1228,7 +1227,6 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 				  LONG* docs, 
 				  MODEL *model, 
 				  REAL *aicache, 
-				  double *weights, 
 				  double *maxdiff)
      /* Make all variables active again which had been removed by
         shrinking. */
