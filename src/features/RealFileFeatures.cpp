@@ -131,6 +131,6 @@ bool CRealFileFeatures::load_base_data()
     assert(fread(labels, intlen, num_vec, working_file) == num_vec);
 	
 	feature_cache= new CCache<REAL>(100, num_features, num_vectors);
-	assert (feature_cache=NULL);
+	assert (feature_cache!=NULL);
     return true;
 }

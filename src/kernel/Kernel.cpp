@@ -25,6 +25,7 @@ REAL CKernel::kernel(long idx_a, long idx_b)
 #endif
 		return 0;
 	}
+//CIO::message("(%5d,%5d)\n", idx_a, idx_b);
 
 	return compute(idx_a, idx_b);
 }
