@@ -464,6 +464,9 @@ public:
 					 FILE* model_file=NULL);
 	//@}
 	
+	/// allocates memory that depends on N
+	bool alloc_state_dependend_arrays();
+
 	/// free memory that depends on N
 	void free_state_dependend_arrays();
 
@@ -624,7 +627,8 @@ public:
 
 	/// increases the number of states by num_states
 	/// the new a/b/p/q values are given the value default_val
-	void add_states(int num_states, REAL default_val=-math.INFTY);
+	/// where 0<=default_val<=1
+	void add_states(int num_states, REAL default_val=0);
 
 	/// set any model parameter with probability smaller than value to ZERO
 	void chop(REAL value);

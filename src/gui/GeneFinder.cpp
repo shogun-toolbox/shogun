@@ -64,6 +64,7 @@ static const char* N_CHOP=				"chop";
 static const char* N_CONVERGENCE_CRITERIA=	        "convergence_criteria";
 static const char* N_PSEUDO=				"pseudo";
 static const char* N_C=					"c";
+static const char* N_ADD_STATES=			"add_states";
 static const char* N_BAUM_WELCH_TRAIN=		        "bw";
 static const char* N_BAUM_WELCH_TRAIN_DEFINED=		"bw_def";
 static const char* N_LIKELIHOOD=			"likelihood";
@@ -228,6 +229,7 @@ static void help()
    CIO::message("%s - make current model the positive model; then free current model \n",N_SET_POS_MODEL);
    CIO::message("%s - make current model the negative model; then free current model \n",N_SET_NEG_MODEL);
    CIO::message("%s <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
+   CIO::message("%s <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)", N_ADD_STATES);
    CIO::message("%s [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
    CIO::message("%s <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [PROTEIN|DNA|ALPHANUM|CUBE]\t\t\t- changes alphabet type\n", N_ALPHABET);
    CIO::message("%s [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms (%i,%e)\n",N_CONVERGENCE_CRITERIA,ITERATIONS,EPSILON);
@@ -1305,6 +1307,7 @@ static bool prompt(FILE* infile=stdin)
 		if (lambda && lambda_train)
 		{
 		    lambda->linear_train(file, WIDTH, UPTO);
+		    lambda_train->copy_model(lambda);
 		   CIO::message("done.\n");
 		}
 		else
@@ -2155,6 +2158,24 @@ static bool prompt(FILE* infile=stdin)
 	}
 	else
 	   CIO::message("assign positive and negative models first!\n");
+    } 
+    else if (!strncmp(input, N_ADD_STATES, strlen(N_ADD_STATES)))
+    {
+	if (lambda)
+	{
+		int states=1;
+		double value=0;
+
+		for (i=strlen(N_ADD_STATES); isspace(input[i]); i++);
+		sscanf(&input[i], "%i %le", &states, &value);
+		CIO::message("adding %i states\n", states);
+		lambda->add_states(states, value);
+		lambda_train->add_states(states, value);
+		CIO::message("new model has %i states\n", lambda->get_N());
+	}
+	else
+	   CIO::message("create model first\n");
+	
     } 
     else if (!strncmp(input, N_C, strlen(N_C)))
     {

@@ -187,7 +187,7 @@ CHMM::~CHMM()
     }
 }
   
-void CHMM::alloc_state_dependend_arrays()
+bool CHMM::alloc_state_dependend_arrays()
 {
 #ifdef PARALLEL
 	alpha_cache=new T_ALPHA_BETA[NUM_PARALLEL] ;
@@ -219,7 +219,7 @@ void CHMM::alloc_state_dependend_arrays()
 
 	this->invalidate_model();
 
-	if (!transition_matrix_a && !observations_matrix_b && !initial_state_distribution_p && !end_state_distribution_q)
+	if (!transition_matrix_a && !observation_matrix_b && !initial_state_distribution_p && !end_state_distribution_q)
 	{
 		transition_matrix_a=new REAL[N*N];
 		observation_matrix_b=new REAL[N*M];	
@@ -288,7 +288,7 @@ void CHMM::free_state_dependend_arrays()
 
 	transition_matrix_A=NULL;
 	observation_matrix_B=NULL;
-	transtion_matrix_a=NULL;
+	transition_matrix_a=NULL;
 	observation_matrix_b=NULL;
 	initial_state_distribution_p=NULL;
 	end_state_distribution_q=NULL;
@@ -4410,51 +4410,62 @@ void CHMM::normalize()
 
 void CHMM::add_states(int num_states, REAL default_value)
 {
-    int i,j;
+#define VAL_MACRO log((default_value == 0) ? ((MIN_RAND+((REAL)rand()))/(REAL(RAND_MAX/MAX_RAND))) : default_value)
+	int i,j;
+	const REAL MIN_RAND=1e-3; //this is the range of the random values for the new variables
+	const REAL MAX_RAND=1e-1;
 
+	REAL* n_p=new REAL[N+num_states];
+	REAL* n_q=new REAL[N+num_states];
+	REAL* n_a=new REAL[(N+num_states)*(N+num_states)];
+	REAL* n_b=new REAL[(N+num_states)*M];
+
+	// warning pay attention to the ordering of 
+	// transition_matrix_a, observation_matrix_b !!!
+	for (i=0; i<N; i++)
+	{
+		n_p[i]=get_p(i);
+		n_q[i]=get_q(i);
+
+		for (j=0; j<N; j++)
+			n_a[(N+num_states)*j+i]=get_a(i,j);
+
+		for (j=0; j<M; j++)
+			n_b[(N+num_states)*j+i]=get_b(i,j);
+	}
+
+	for (i=N; i<N+num_states; i++)
+	{
+		n_p[i]=VAL_MACRO;
+		n_q[i]=VAL_MACRO;
+
+		for (j=0; j<N; j++)
+			n_a[(N+num_states)*i+j]=VAL_MACRO;
+	
+		for (j=0; j<N+num_states; j++)
+			n_a[(N+num_states)*j+i]=VAL_MACRO;
+
+		for (j=0; j<M; j++)
+			n_b[(N+num_states)*j+i]=VAL_MACRO;
+	}
 	free_state_dependend_arrays();
-    REAL* n_p=new REAL[N+num_states];
-    REAL* n_q=new REAL[N+num_states];
-    REAL* n_a=new REAL[(N+num_states)*(N+num_states)];
-    REAL* n_b=new REAL[(N+num_states)*M];
+	N+=num_states;
 
-    // warning pay attention to the ordering of 
-    // transition_matrix_a, observation_matrix_b !!!
-    for (i=0; i<N; i++)
-    {
-	n_p[i]=get_p(i);
-	n_q[i]=get_q(i);
+	alloc_state_dependend_arrays();
 
-	for (j=0; j<N; j++)
-	    n_a[(N+num_states)*i+j]=get_a(i,j);
+	//delete + adjust pointers
+	delete[] initial_state_distribution_p;
+	delete[] end_state_distribution_q;
+	delete[] transition_matrix_a;
+	delete[] observation_matrix_b;
+	transition_matrix_a=n_a;
+	observation_matrix_b=n_b;
 
-	for (j=0; j<M; j++)
-	    n_b[(N+num_states)*i+j]=get_b(i,j);
-    }
+	initial_state_distribution_p=n_p;
+	end_state_distribution_q=n_q;
 
-    for (i=N; i<N+num_states; i++)
-    {
-	    n_p[i]=default_value;
-	    n_q[i]=default_value;
-
-	    for (j=N; j<N+num_states; j++)
-	    {
-		    n_a[(N+num_states)*i+j]=default_value;
-		    n_a[(N+num_states)*j+i]=default_value;
-	    }
-
-	    for (j=0; j<M; j++)
-		    n_b[(N+num_states)*i+j]=default_value;
-    }
-
-    //delete + adjust pointers
-    delete[] transition_matrix_a;
-    delete[] observation_matrix_b;
-    transition_matrix_a=n_a;
-    observation_matrix_b=n_b;
-
-    normalize();
-    invalidate_model();
+	normalize();
+	invalidate_model();
 }
 
 void CHMM::chop(REAL value)
@@ -4542,7 +4553,7 @@ bool CHMM::linear_train(FILE* file, const int WIDTH, const int UPTO)
     {
 	for (int j=0; j<M; j++)
 	    set_b(i,j, hist[i*256+p_observations->remap(j)] );
-	    }
+    }
 	delete[] line_;
 	delete[] hist;
     return true;
