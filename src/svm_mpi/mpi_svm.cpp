@@ -65,7 +65,7 @@ bool CSVMMPI::svm_train(CFeatures* train_)
     } ;
   CRealFeatures *train=(CRealFeatures*)train_ ;
   
-  int num_cols=train->get_number_of_examples() ;
+  int num_cols=train->get_num_vectors() ;
   num_rows=((CRealFeatures*)train)->get_num_features() ;
   CIO::message("num_rows=%i\n", num_rows) ;
   long dummy ;
@@ -73,14 +73,6 @@ bool CSVMMPI::svm_train(CFeatures* train_)
   assert(dummy==num_cols) ;
 
   CIO::message("creating big matrix ... ") ;
-
-  const char* FeaturesFileName=NULL ;
-  int FeatureRows=0 ;
-  if (strcmp(train->get_preproc()->get_name(),"PCACut")==0)
-    {
-      FeaturesFileName=((CPCACut*)train->get_preproc())->GetFeaturesFile(FeatureRows) ;
-      CIO::message("using %s\n", FeaturesFileName) ;
-    } ;
 
   bool free ; long len ;
   double * column=NULL ;
@@ -96,6 +88,7 @@ bool CSVMMPI::svm_train(CFeatures* train_)
   m_prime=svm_mpi_broadcast_Z_size(num_cols, num_rows, m_last) ;
   int j=0;
   
+   /* 
   FILE *FeatFile=NULL ;
   REAL*unprocessedFeature=NULL ;
   if (FeaturesFileName)
@@ -113,7 +106,6 @@ bool CSVMMPI::svm_train(CFeatures* train_)
       CIO::message("%02d%%.", (int) (100.0*j/num_cols));
     else if (!(j % (num_cols/200+1)))
       CIO::message(".");
-    
     if (FeatFile)
       {
 	int len=FeatureRows ;
@@ -144,7 +136,7 @@ bool CSVMMPI::svm_train(CFeatures* train_)
   } ;
   CIO::message("Done\n") ;
   fclose(fil) ;
-
+*/
   svm_mpi_optimize(labels, num_cols, train) ; 
   return true; 
 }
@@ -152,7 +144,7 @@ bool CSVMMPI::svm_train(CFeatures* train_)
 REAL* CSVMMPI::svm_test(CFeatures* test_, CFeatures*)
 {
   CRealFeatures * test=(CRealFeatures*)test_ ;
-  long num_test=test->get_number_of_examples();
+  long num_test=test->get_num_vectors();
   REAL* output=new REAL[num_test];
   for (long i=0; i<num_test;  i++)
     {
@@ -178,12 +170,14 @@ REAL* CSVMMPI::svm_test(CFeatures* test_, CFeatures*)
   return output;  
 }
 
-bool CSVMMPI::load_svm(FILE* svm_file)
+bool CSVMMPI::load(FILE* svm_file)
 {
+return false;
 } 
 
-bool CSVMMPI::save_svm(FILE* svm_file)
+bool CSVMMPI::save(FILE* svm_file)
 {
+return false;
 }
 
 

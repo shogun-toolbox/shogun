@@ -19,8 +19,8 @@ class CSVMMPI: public CSVM
   
   virtual bool svm_train(CFeatures* train);
   virtual REAL* svm_test(CFeatures* test, CFeatures* train);
-  virtual bool load_svm(FILE* svm_file);
-  virtual bool save_svm(FILE* svm_file);
+  virtual bool load(FILE* svm_file);
+  virtual bool save(FILE* svm_file);
   
   static void svm_mpi_init(int argc, const char **argv); 
   static void svm_mpi_destroy(void) ;
