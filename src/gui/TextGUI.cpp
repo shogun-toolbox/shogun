@@ -44,9 +44,6 @@ static const char* N_OUTPUT_PATH=      		"output_hmm_path";
 static const char* N_VITERBI_TRAIN=	       	"vit";
 static const char* N_VITERBI_TRAIN_DEFINED=     "vit_def";
 static const char* N_LINEAR_TRAIN=       	"linear_train";
-static const char* N_LINEAR_LIKELIHOOD=		"linear_likelihood";
-static const char* N_SAVE_LINEAR_LIKELIHOOD=   	"save_linear_likelihood";
-static const char* N_SAVE_LINEAR_LIKELIHOOD_BIN="save_linear_likelihood_bin";
 static const char* N_LOAD_OBSERVATIONS=		"load_obs";
 static const char* N_ASSIGN_OBSERVATION=	"assign_obs";
 static const char* N_CLEAR=			"clear";
@@ -71,13 +68,10 @@ static const char N_COMMENT1=			'#';
 static const char N_COMMENT2=			'%';
 static const char* N_SET_MAX_DIM=		"max_dim";
 static const char* N_TEST=			"test";
-static const char* N_LINEAR_SVM_TRAIN=		"linear_svm_train";
 static const char* N_SVM_TRAIN=			"svm_train";
 static const char* N_SVM_TEST=			"svm_test";
 static const char* N_ONE_CLASS_HMM_TEST=	"one_class_hmm_test";
-static const char* N_ONE_CLASS_LINEAR_HMM_TEST=	"one_class_linear_hmm_test";
 static const char* N_HMM_TEST=			"hmm_test";
-static const char* N_LINEAR_HMM_TEST=		"linear_hmm_test";
 static const char* N_SET_ORDER=			"set_order";
 
 
@@ -155,8 +149,6 @@ void CTextGUI::print_help()
 	CIO::message("\n[HMM-classification]\n");
 	CIO::message("\033[1;31m%s\033[0m[<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_HMM_TEST);
 	CIO::message("\033[1;31m%s\033[0m[<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
-	//   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_LINEAR_HMM_TEST);
-	//   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate hmm output from obs using linear HMM\n",N_LINEAR_HMM_TEST);
 	CIO::message("\n[FEATURES]\n");
 	CIO::message("\033[1;31m%s\033[0m\t <TOP|FK> <TRAIN|TEST> [<CACHE SIZE> [<0|1>]]- creates train/test-features out of obs\n",N_SET_FEATURES);
 	CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|NONE>\t\t\t- set preprocessor type\n", N_SET_PREPROC);
@@ -174,7 +166,6 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m\t- exit genfinder\n",N_EXIT);
 	CIO::message("\033[1;31m%s\033[0m\t- this message\n",N_HELP);
 	CIO::message("\033[1;31m%s\033[0m <commands>\t- execute system functions \n",N_SYSTEM);
-
 }
 
 void CTextGUI::print_prompt()
@@ -324,7 +315,7 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	} 
 	else if (!strncmp(input, N_BEST_PATH, strlen(N_BEST_PATH)))
 	{
-		guihmm.best_path(input+strlen(N_LIKELIHOOD));
+		guihmm.best_path(input+strlen(N_BEST_PATH));
 	} 
 	else if (!strncmp(input, N_LIKELIHOOD, strlen(N_LIKELIHOOD)))
 	{
@@ -381,18 +372,6 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	{
 		guihmm.linear_train(input+strlen(N_LINEAR_TRAIN));
 	} 
-	else if (!strncmp(input, N_LINEAR_LIKELIHOOD, strlen(N_LINEAR_LIKELIHOOD)))
-	{
-		CIO::not_implemented() ;
-	} 
-	else if (!strncmp(input, N_SAVE_LINEAR_LIKELIHOOD_BIN, strlen(N_SAVE_LINEAR_LIKELIHOOD_BIN)))
-	{
-		CIO::not_implemented() ;
-	} 
-	else if (!strncmp(input, N_SAVE_LINEAR_LIKELIHOOD, strlen(N_SAVE_LINEAR_LIKELIHOOD)))
-	{
-		CIO::not_implemented() ;
-	} 
 	else if (!strncmp(input, N_SVM_TRAIN, strlen(N_SVM_TRAIN)))
 	{
 		guisvm.train(input+strlen(N_SVM_TRAIN));
@@ -409,21 +388,9 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	{
 		guifeatures.preprocess(input+strlen(N_PREPROCESS));
 	} 
-	else if (!strncmp(input, N_LINEAR_SVM_TRAIN, strlen(N_LINEAR_SVM_TRAIN)))
-	{
-		CIO::not_implemented() ;
-	} 
 	else if (!strncmp(input, N_SVM_TEST, strlen(N_SVM_TEST)))
 	{
 		guisvm.test(input+strlen(N_SVM_TEST));
-	} 
-	else if (!strncmp(input, N_ONE_CLASS_LINEAR_HMM_TEST, strlen(N_ONE_CLASS_LINEAR_HMM_TEST)))
-	{
-		CIO::not_implemented() ;
-	} 
-	else if (!strncmp(input, N_LINEAR_HMM_TEST, strlen(N_LINEAR_HMM_TEST)))
-	{
-		CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_ONE_CLASS_HMM_TEST, strlen(N_ONE_CLASS_HMM_TEST)))
 	{

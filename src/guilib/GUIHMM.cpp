@@ -34,7 +34,10 @@ bool CGUIHMM::new_hmm(char* param)
 	{
 	  if (working)
 	    delete working;
-	  
+	 
+	  if (order>1)
+	     CIO::message("WARNING: no order > 1 supported\n"); 
+
 	  working=new CHMM(n,m,order,NULL,PSEUDO);
 	  ORDER=order;
 	  M=m;
@@ -290,92 +293,110 @@ bool CGUIHMM::viterbi_train_defined(char* param)
 
 bool CGUIHMM::linear_train(char* param)
 {
-	bool result=false;
-	E_OBS_ALPHABET alphabet;
-	int WIDTH=-1,UPTO=-1;
-	char fname[1024];
-
-	param=CIO::skip_spaces(param);
-	sscanf(param, "%s %d %d", fname, &WIDTH, &UPTO);
-
-	FILE* file=fopen(fname, "r");
-
-	if (file) 
+    if (working) 
+    {
+	if (working->get_observations())
 	{
-		if (WIDTH < 0 || UPTO < 0 )
-		{
-			int i=0;
-			
-			while (fgetc(file)!='\n' && !feof(file))
-			  i++;
-
-			if (!feof(file))
-			{
-				WIDTH=i+1;
-				UPTO=i;
-				CIO::message("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
-				fseek(file,0,SEEK_SET);
-			}
-			else
-				return false;
-		}
-
-		if (WIDTH >0 && UPTO >0)
-		{	  
-			alphabet=DNA;
-			//ORDER=1; //obsoleted by set_order
-			M=4;
-
-			CObservation* obs=new CObservation(TRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
-
-			if (working && obs)
-			{
-				alphabet=obs->get_alphabet();
-				ORDER=working->get_ORDER();
-				delete(working);
-				working=NULL;
-
-				switch (alphabet)
-				{
-					case DNA:
-						M=4;
-						break;
-					case PROTEIN:
-						M=26;
-						break;
-					case CUBE:
-						M=6;
-						break;
-					case ALPHANUM:
-						M=36;
-						break;
-					default:
-						M=4;
-						break;
-				};
-			}
-
-			working=new CHMM(UPTO,M,ORDER,NULL,PSEUDO);
-
-			if (working)
-			{
-				working->set_observation_nocache(obs);
-				working->linear_train(file, WIDTH, UPTO);
-				result=true;
-				CIO::message("done.\n");
-			}
-			else
-				CIO::message("model creation failed\n");
-
-			delete obs;
-		}
-
-		fclose(file);
+	    working->linear_train();
+	    return true;
 	}
 	else
-		CIO::message("opening file %s failed!\n", fname);
+	    CIO::message("assign observation first\n");
+    }
+    else
+	CIO::message("create model first\n");
 
-	return result;
+    return false;
+}
+
+bool CGUIHMM::linear_train_from_file(char* param)
+{
+    bool result=false;
+    E_OBS_ALPHABET alphabet;
+    int WIDTH=-1,UPTO=-1;
+    char fname[1024];
+
+    param=CIO::skip_spaces(param);
+    sscanf(param, "%s %d %d", fname, &WIDTH, &UPTO);
+
+    FILE* file=fopen(fname, "r");
+
+    if (file) 
+    {
+	if (WIDTH < 0 || UPTO < 0 )
+	{
+	    int i=0;
+
+	    while (fgetc(file)!='\n' && !feof(file))
+		i++;
+
+	    if (!feof(file))
+	    {
+		WIDTH=i+1;
+		UPTO=i;
+		CIO::message("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
+		fseek(file,0,SEEK_SET);
+	    }
+	    else
+		return false;
+	}
+
+	if (WIDTH >0 && UPTO >0)
+	{	  
+	    alphabet=DNA;
+	    //ORDER=1; //obsoleted by set_order
+	    M=4;
+
+	    CObservation* obs=new CObservation(TRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
+
+	    if (working && obs)
+	    {
+		alphabet=obs->get_alphabet();
+		ORDER=working->get_ORDER();
+		delete(working);
+		working=NULL;
+
+		switch (alphabet)
+		{
+		    case DNA:
+			M=4;
+			break;
+		    case PROTEIN:
+			M=26;
+			break;
+		    case CUBE:
+			M=6;
+			break;
+		    case ALPHANUM:
+			M=36;
+			break;
+		    default:
+			M=4;
+			break;
+		};
+	    }
+
+	    working=new CHMM(UPTO,M,ORDER,NULL,PSEUDO);
+
+	    if (working)
+	    {
+		working->set_observation_nocache(obs);
+		working->linear_train(file, WIDTH, UPTO);
+		result=true;
+		CIO::message("done.\n");
+	    }
+	    else
+		CIO::message("model creation failed\n");
+
+	    delete obs;
+	}
+
+	fclose(file);
+    }
+    else
+	CIO::message("opening file %s failed!\n", fname);
+
+    return result;
 }
 
 bool CGUIHMM::one_class_test(char* param)
@@ -387,10 +408,11 @@ bool CGUIHMM::one_class_test(char* param)
 	FILE* rocfile=NULL;
 	int numargs=-1;
 	double tresh=0;
+	int linear=0;
 
 	param=CIO::skip_spaces(param);
 
-	numargs=sscanf(param, "%le %s %s", &tresh, outputname, rocfname);
+	numargs=sscanf(param, "%le %s %s %d", &tresh, outputname, rocfname, &linear);
 	CIO::message("Tresholding at:%f\n",tresh);
 
 	if (numargs>=2)
@@ -431,7 +453,7 @@ bool CGUIHMM::one_class_test(char* param)
 
 			for (int dim=0; dim<total; dim++)
 			{
-				output[dim]=test->model_probability(dim);
+				output[dim]= linear ? test->linear_model_probability(dim) : test->model_probability(dim);
 				label[dim]= obs->get_label(dim);
 			}
 
@@ -466,12 +488,14 @@ bool CGUIHMM::test_hmm(char* param)
 	FILE* outputfile=stdout;
 	FILE* rocfile=NULL;
 	int numargs=-1;
+	int poslinear=0;
+	int neglinear=0;
 
 	double tresh=0;
 
 	param=CIO::skip_spaces(param);
 
-	numargs=sscanf(param, "%le %s %s", &tresh, outputname, rocfname);
+	numargs=sscanf(param, "%le %s %s %d %d", &tresh, outputname, rocfname, &neglinear, &poslinear);
 	CIO::message("Tresholding at:%f\n",tresh);
 
 	if (numargs>=2)
@@ -512,10 +536,14 @@ bool CGUIHMM::test_hmm(char* param)
 
 			REAL* output = new REAL[total];	
 			int* label= new int[total];	
+			
+			CIO::message("testing using neg %s hmm vs. pos %s hmm\n", neglinear ? "linear" : "", poslinear ? "linear" : "");
 
 			for (int dim=0; dim<total; dim++)
 			{
-				output[dim]=pos->model_probability(dim)-neg->model_probability(dim);
+				output[dim]= 
+				    poslinear ? pos->linear_model_probability(dim) : pos->model_probability(dim) -
+				    neglinear ? neg->linear_model_probability(dim) :neg->model_probability(dim);
 				label[dim]= obs->get_label(dim);
 			}
 			
@@ -553,7 +581,9 @@ bool CGUIHMM::append_model(char* param)
 		int base2=2;
 		param=CIO::skip_spaces(param);
 
-		if (sscanf(param, "%s %i %i", fname, &base1, &base2) == 3)
+		int num_param=sscanf(param, "%s %i %i", fname, &base1, &base2);
+
+		if (num_param==3 || num_param==1)
 		{
 			FILE* model_file=fopen(fname, "r");
 
@@ -581,7 +611,10 @@ bool CGUIHMM::append_model(char* param)
 							app_o[i]=-1000;
 					}
 					
-					working->append_model(h, cur_o, app_o);
+					if (num_param==3)
+					    working->append_model(h, cur_o, app_o);
+					else
+					    working->append_model(h);
 					CIO::message("new model has %i states\n", working->get_N());
 					delete h;
 				}

@@ -26,11 +26,11 @@ bool CGUIObservation::load_observations(char* param)
 	char* input=CIO::skip_spaces(param);
 	char filename[1024];
 	char target[1024];
-#warning M,ORDER hardcoded 4,1
+#warning M hardcoded 4
 	int M=4;
 	int ORDER=1;
 
-	if ((sscanf(input, "%s %s", filename, target))==2)
+	if ((sscanf(input, "%s %s %d", filename, target, &ORDER))>=2)
 	{
 		FILE* trn_file=fopen(filename, "r");
 

@@ -20,6 +20,7 @@ public:
 	bool viterbi_train_defined(char* param);
 	bool viterbi_train(char* param);
 	bool linear_train(char* param);
+	bool linear_train_from_file(char* param);
 	bool one_class_test(char* param);
 	bool test_hmm(char* param);
 	bool append_model(char* param);
