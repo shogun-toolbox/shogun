@@ -37,48 +37,15 @@ void CKernel::init(CFeatures* l, CFeatures* r)
 	rhs=r;
 
 	// 100MB kernel cache
-	kernel_cache_init(1);
+	kernel_cache_init(100);
 }
 
 /****************************** Cache handling *******************************/
 
-void CKernel::get_kernel_row(long docnum, long *active2dnum, REAL *buffer)     
-{
-	long i,j,start;
-
-#if 0
-	for(i=0;(j=active2dnum[i])>=0;i++)
-	{
-		buffer[j]=(REAL)kernel(docnum, j);
-	}
-#else
-	/* is cached? */
-	if(kernel_cache.index[docnum] != -1) 
-	{
-		kernel_cache.lru[kernel_cache.index[docnum]]=kernel_cache.time; /* lru */
-		start=kernel_cache.activenum*kernel_cache.index[docnum];
-
-		for(i=0;(j=active2dnum[i])>=0;i++)
-		{
-			if(kernel_cache.totdoc2active[j] >= 0)
-				buffer[j]=kernel_cache.buffer[start+kernel_cache.totdoc2active[j]];
-			else
-				buffer[j]=(REAL) kernel(docnum, j);
-		}
-	}
-	else 
-	{
-		for(i=0;(j=active2dnum[i])>=0;i++)
-			buffer[j]=(REAL) kernel(docnum, j);
-	}
-#endif
-}
-
-
 void CKernel::kernel_cache_init(long buffsize)
 {
 	long i;
-	long totdoc=lhs->get_num_vectors()+rhs->get_num_vectors();
+	long totdoc=lhs->get_num_vectors();
 
 	kernel_cache.index = new long[totdoc];
 	kernel_cache.occu = new long[totdoc];
@@ -115,6 +82,39 @@ void CKernel::kernel_cache_init(long buffsize)
 
 	kernel_cache.time=0;  
 } 
+
+void CKernel::get_kernel_row(long docnum, long *active2dnum, REAL *buffer)     
+{
+	long i,j,start;
+
+#if 0
+	for(i=0;(j=active2dnum[i])>=0;i++)
+	{
+		buffer[j]=(REAL)kernel(docnum, j);
+	}
+#else
+	/* is cached? */
+	if(kernel_cache.index[docnum] != -1) 
+	{
+		kernel_cache.lru[kernel_cache.index[docnum]]=kernel_cache.time; /* lru */
+		start=kernel_cache.activenum*kernel_cache.index[docnum];
+
+		for(i=0;(j=active2dnum[i])>=0;i++)
+		{
+			if(kernel_cache.totdoc2active[j] >= 0)
+				buffer[j]=kernel_cache.buffer[start+kernel_cache.totdoc2active[j]];
+			else
+				buffer[j]=(REAL) kernel(docnum, j);
+		}
+	}
+	else 
+	{
+		for(i=0;(j=active2dnum[i])>=0;i++)
+			buffer[j]=(REAL) kernel(docnum, j);
+	}
+#endif
+}
+
 
 // Fills cache for the row m
 void CKernel::cache_kernel_row(long m)
@@ -345,30 +345,3 @@ bool CKernel::save(FILE* dest)
 	//	return true;
 	return false;
 }
-/*
-init
-  if(kernel_cache) {
-    kernel_cache->time=iteration;  // for lru cache
-    kernel_cache_reset_lru(kernel_cache);
-  }
-
-
-   kernel_cache->time=iteration;  // for lru cache 
-    
-
-      if((kernel_cache)
-	 && (supvecnum>kernel_cache->max_elems)
-	 && ((kernel_cache->activenum-activenum)>math.max((long)(activenum/10),(long) 500))) {
-	kernel_cache_shrink(kernel_cache,totdoc,math.max((long)(activenum/10),(long) 500),
-			    shrink_state->active); 
-      }
-    }
-if(kernel_cache) 
-      cache_multiple_kernel_rows(kernel_cache,docs,working2dnum,
-				 choosenum,kernel_parm); 
-    
-    kernel_cache_touch(kernel_cache,i); // make sure it does not get kicked
-                                        // out of cache 
-    kernel_cache_touch(kernel_cache,i); // make sure it does not get kicked
-                                        // out of cache 
- * */

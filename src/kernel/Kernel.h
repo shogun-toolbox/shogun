@@ -37,7 +37,16 @@ class CKernel
 		virtual const char* get_name()=0 ;
 
 		void get_kernel_row(long docnum, long *active2dnum, REAL *buffer) ;
-		
+		void   cache_kernel_row(long x);
+		void   cache_multiple_kernel_rows(long* key, long varnum);
+		void   kernel_cache_reset_lru();
+
+		/// set the time used for lru	
+		inline void CKernel::set_time(long t)
+		{
+		    kernel_cache.time=t;
+		}
+
 		// Update lru time to avoid removal from cache.
 		long CKernel::kernel_cache_touch(long cacheidx)
 		{
@@ -58,13 +67,10 @@ class CKernel
 		/**@ cache kernel evalutations to improve speed
 		*/
 		//@{
-		void   cache_kernel_row(long x);
-		void   cache_multiple_kernel_rows(long* key, long varnum);
 		void   kernel_cache_shrink(long, long, long *);
 
 		/// init kernel cache of size megabytes
 		void   kernel_cache_init(long size);
-		void   kernel_cache_reset_lru();
 		void   kernel_cache_cleanup();
 		long   kernel_cache_malloc();
 		void   kernel_cache_free(long cacheidx);
