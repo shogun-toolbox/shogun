@@ -3,7 +3,6 @@
 
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
-#include "kernel/OptimizableKernel.h"
 
 enum E_NormalizationType
 {

@@ -79,22 +79,22 @@ public:
 		return ((a)>=(0))?(a):(-a);
 	}
 
-	///return the minimum of two integers
+	///return the minimum of two floats
 	inline REAL min(REAL a, REAL b) 
 	{
 		return ((a)<=(b))?(a):(b);
 	}
 
-	///return the maximum of two integers
+	///return the maximum of two floats
 	inline REAL max(REAL a, REAL b) 
 	{
 		return ((a)>=(b))?(a):(b);
 	}
 
-	///return the maximum of two integers
+	///return the absolute value of two floats
 	inline REAL abs(REAL a)
 	{
-		return ((a)>=(0))?(a):(-a);
+		return (a>=0)?(a):(-a);
 	}
 	//@}
 

@@ -3,7 +3,6 @@
 
 #include "lib/common.h"
 #include "kernel/CharKernel.h"
-#include "kernel/OptimizableKernel.h"
 
 class CWeightedDegreeCharKernelPolyA: public CCharKernel
 {

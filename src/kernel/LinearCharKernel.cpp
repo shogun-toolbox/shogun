@@ -8,12 +8,14 @@
 #include <math.h>
 
 CLinearCharKernel::CLinearCharKernel(LONG size)
-  : CCharKernel(size),scale(1.0)
+  : CCharKernel(size),scale(1.0),normal(NULL)
 {
 }
 
 CLinearCharKernel::~CLinearCharKernel() 
 {
+	if (get_is_initialized())
+		delete_optimization();
 }
   
 bool CLinearCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -88,4 +90,61 @@ REAL CLinearCharKernel::compute(INT idx_a, INT idx_b)
   ((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return result;
+}
+
+bool CLinearCharKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* alphas) 
+{
+	CIO::message(M_DEBUG,"drin gelandet yeah\n");
+	INT alen;
+	bool afree;
+	int i;
+
+	int num_feat=((CCharFeatures*) lhs)->get_num_features();
+	assert(num_feat);
+
+	normal=new REAL[num_feat];
+	assert(normal);
+
+	for (i=0; i<num_feat; i++)
+		normal[i]=0;
+
+	for (int i=0; i<num_suppvec; i++)
+	{
+		CHAR* avec=((CCharFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
+		assert(avec);
+
+		for (int j=0; j<num_feat; j++)
+			normal[j]+=alphas[i]*avec[j];
+
+		((CCharFeatures*) lhs)->free_feature_vector(avec, 0, afree);
+	}
+
+	set_is_initialized(true);
+	return true;
+}
+
+void CLinearCharKernel::delete_optimization()
+{
+	delete[] normal;
+	normal=NULL;
+	set_is_initialized(false);
+}
+
+REAL CLinearCharKernel::compute_optimized(INT idx_b) 
+{
+	INT blen;
+	bool bfree;
+
+	CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+
+	double result=0;
+	{
+		for (INT i=0; i<blen; i++)
+			result+= ((LONG) normal[i]) * ((LONG) bvec[i]);
+	}
+	result/=scale;
+
+	((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+
+	return result;
 }

@@ -224,11 +224,9 @@ CLabels* CSVM::classify(CLabels* result)
 
 REAL CSVM::classify_example(INT num)
 {
-	if (COptimizableKernel::is_optimizable(kernel) && (kernel->get_is_initialized()))
+	if (CKernelMachine::get_kernel() && CKernelMachine::get_kernel()->is_optimizable() && (CKernelMachine::get_kernel()->get_is_initialized()))
 	{
-		COptimizableKernel *kernel=CKernelMachine::get_kernel() ;
-
-		REAL dist = kernel->compute_optimized(num) ;
+		REAL dist = CKernelMachine::get_kernel()->compute_optimized(num);
 		return (dist+get_bias());
 	}
 	else

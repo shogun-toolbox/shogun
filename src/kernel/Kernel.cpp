@@ -7,7 +7,7 @@
 #include <string.h>
 #include <assert.h>
 
-CKernel::CKernel(CACHE_IDX size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1)
+CKernel::CKernel(CACHE_IDX size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1), optimization_initialized(false)
 {
 	if (size<10)
 		size=10;
@@ -15,10 +15,15 @@ CKernel::CKernel(CACHE_IDX size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL), co
 	cache_size=size;
 	CIO::message(M_INFO, "using a kernel cache of size %i MB\n", size) ;
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
+	if (get_is_initialized()) 
+		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
 }
 
 CKernel::~CKernel()
 {
+	if (get_is_initialized()) 
+		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+
 	kernel_cache_cleanup();
 }
 
@@ -474,5 +479,30 @@ void CKernel::list_kernel()
 			break;
 	}
 	CIO::message(M_INFO, "\n");
+}
+
+bool CKernel::is_optimizable()
+{
+	if (((get_kernel_type() & K_OPTIMIZABLE)!=0))
+		return true;
+	else
+		return false;
+}
+
+bool CKernel::init_optimization(INT count, INT *IDX, REAL * weights)
+{
+	CIO::message(M_ERROR, "kernel optimization not implemented\n") ;
+	return false ;
+}
+
+void CKernel::delete_optimization() 
+{
+	CIO::message(M_ERROR, "kernel optimization not implemented\n") ;
+}
+
+REAL CKernel::compute_optimized(INT idx)
+{
+	CIO::message(M_ERROR, "kernel optimization not implemented\n") ;
+	return 0;
 }
 

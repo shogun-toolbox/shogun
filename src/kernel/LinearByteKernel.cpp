@@ -8,12 +8,14 @@
 #include <math.h>
 
 CLinearByteKernel::CLinearByteKernel(LONG size)
-  : CByteKernel(size),scale(1.0)
+  : CByteKernel(size),scale(1.0),normal(NULL)
 {
 }
 
 CLinearByteKernel::~CLinearByteKernel() 
 {
+	if (get_is_initialized())
+		delete_optimization();
 }
   
 bool CLinearByteKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -100,4 +102,61 @@ REAL CLinearByteKernel::compute(INT idx_a, INT idx_b)
   ((CByteFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return result;
+}
+
+bool CLinearByteKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* alphas) 
+{
+	CIO::message(M_DEBUG,"drin gelandet yeah\n");
+	INT alen;
+	bool afree;
+	int i;
+
+	int num_feat=((CByteFeatures*) lhs)->get_num_features();
+	assert(num_feat);
+
+	normal=new REAL[num_feat];
+	assert(normal);
+
+	for (i=0; i<num_feat; i++)
+		normal[i]=0;
+
+	for (int i=0; i<num_suppvec; i++)
+	{
+		BYTE* avec=((CByteFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
+		assert(avec);
+
+		for (int j=0; j<num_feat; j++)
+			normal[j]+=alphas[i]*avec[j];
+
+		((CByteFeatures*) lhs)->free_feature_vector(avec, 0, afree);
+	}
+
+	set_is_initialized(true);
+	return true;
+}
+
+void CLinearByteKernel::delete_optimization()
+{
+	delete[] normal;
+	normal=NULL;
+	set_is_initialized(false);
+}
+
+REAL CLinearByteKernel::compute_optimized(INT idx_b) 
+{
+	INT blen;
+	bool bfree;
+
+	BYTE* bvec=((CByteFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+
+	double result=0;
+	{
+		for (INT i=0; i<blen; i++)
+			result+= ((LONG) normal[i]) * ((LONG) bvec[i]);
+	}
+	result/=scale;
+
+	((CByteFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+
+	return result;
 }

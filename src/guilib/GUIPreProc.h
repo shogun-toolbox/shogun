@@ -2,8 +2,9 @@
 #define __GUIPREPROC_H__
 
 #include "preproc/PreProc.h"
+#include "lib/List.h"
 
-class CGUI ;
+class CGUI;
 
 class CGUIPreProc
 {
@@ -15,14 +16,22 @@ class CGUIPreProc
 		bool del_preproc(CHAR* param);
 		bool clean_preproc(CHAR* param);
 
-		inline CPreProc** get_preprocs(INT &num) { num=num_preprocs; return preprocs; }
 		bool load(CHAR* param);
 		bool save(CHAR* param);
 
+		/** attach preprocessor to TRAIN/TEST feature obj.
+		 *  it will also preprocess train/test data
+		 *  when a feature matrix is available
+		 */
+		bool attach_preproc(CHAR* param);
+
 	protected:
-		bool add_preproc(CPreProc* preproc);
+		bool attach_to_features(CFeatures* trainfeat, CFeatures* testfeat, bool force);
+		bool preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force);
+		bool preproc_all_features(CFeatures* f, bool force);
+
+		CList<CList<CPreProc*>*>* attached_preprocs_lists;
+		CList<CPreProc*>* preprocs;
 		CGUI* gui ;
-		INT num_preprocs;
-		CPreProc** preprocs;
 };
 #endif

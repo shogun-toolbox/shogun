@@ -179,7 +179,7 @@ bool CCombinedKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 	{
 		bool ret = true ;
 		
-		if (COptimizableKernel::is_optimizable(k))
+		if (k && k->is_optimizable())
 			ret = k->init_optimization(count, IDX, weights) ;
 		else
 		{
@@ -222,7 +222,7 @@ void CCombinedKernel::delete_optimization()
 	CKernel * k = get_first_kernel() ;
 	while(k)
 	{
-		if (COptimizableKernel::is_optimizable(k) && k->get_is_initialized())
+		if (k && k->is_optimizable() && k->get_is_initialized())
 			k->delete_optimization() ;
 		k = get_next_kernel() ;
 	}
@@ -246,7 +246,7 @@ REAL CCombinedKernel::compute_optimized(INT idx)
 	CKernel * k = get_first_kernel() ;
 	while(k)
 	{
-		if (COptimizableKernel::is_optimizable(k) && 
+		if (k && k->is_optimizable() && 
 			k->get_is_initialized())
 			result += k->get_combined_kernel_weight()*
 				k->compute_optimized(idx) ;

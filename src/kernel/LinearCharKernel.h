@@ -24,6 +24,12 @@ class CLinearCharKernel: public CCharKernel
   // return the name of a kernel
   virtual const CHAR* get_name() { return "Linear" ; } ;
 
+  ///optimizable kernel, i.e. precompute normal vector and as phi(x)=x
+  ///do scalar product in input space
+  virtual bool init_optimization(INT num_suppvec, INT* sv_idx, REAL* alphas);
+  virtual void delete_optimization();
+  virtual REAL compute_optimized(INT idx);
+
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
@@ -35,7 +41,9 @@ class CLinearCharKernel: public CCharKernel
   
  protected:
   double scale ;
+
+  /// normal vector (used in case of optimized kernel)
+  double* normal;
 };
 
 #endif
-

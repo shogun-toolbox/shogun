@@ -3,7 +3,6 @@
 
 #include "lib/common.h"
 #include "kernel/CharKernel.h"
-#include "kernel/OptimizableKernel.h"
 
 struct SuffixTree
 {

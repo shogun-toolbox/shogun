@@ -18,10 +18,6 @@ class CGUIFeatures
 		CGUIFeatures(CGUI *);
 		~CGUIFeatures();
 
-		/// apply the current preprocessor to train/test data
-		/// (only useful when a feature matrix is available)
-		bool preprocess(CHAR* param);
-
 		inline CFeatures *get_train_features() { return train_features; }
 		inline CFeatures *get_test_features() { return test_features; }
 
@@ -62,9 +58,6 @@ class CGUIFeatures
 
 		bool alignment_char(CHAR* param) ;
 		bool set_ref_features(CHAR* param) ;
-	protected:
-		bool preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force);
-		bool preproc_all_features(CFeatures* f, bool force);
 
 	protected:
 		CGUI* gui;

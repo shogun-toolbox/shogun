@@ -3,14 +3,13 @@
 
 #include "lib/common.h"
 #include "features/Features.h"
-#include "kernel/OptimizableKernel.h" 
 
 typedef REAL CACHE_ELEM ;
 typedef LONG CACHE_IDX ;
 
 #include <stdio.h>
 
-class CKernel: public COptimizableKernel
+class CKernel
 {
 	public:
 		CKernel(CACHE_IDX size);
@@ -93,8 +92,21 @@ class CKernel: public COptimizableKernel
 
 		void list_kernel();
 
-		double get_combined_kernel_weight() { return combined_kernel_weight ; } ;
-		void set_combined_kernel_weight(double nw) { combined_kernel_weight=nw ; } ;
+		/** for optimizable kernels, i.e. kernels where the weight 
+		 * vector can be computed explicitely (if it fits into memory) 
+		 */
+
+		virtual bool init_optimization(INT count, INT *IDX, REAL * weights); 
+		virtual void delete_optimization();
+		virtual REAL compute_optimized(INT idx);
+	
+		inline bool get_is_initialized() { return optimization_initialized; }
+		inline void set_is_initialized(bool init) { optimization_initialized=init; }
+
+		bool is_optimizable() ;
+
+		inline double get_combined_kernel_weight() { return combined_kernel_weight; }
+		inline void set_combined_kernel_weight(double nw) { combined_kernel_weight=nw; }
 
 	protected:
 		/// compute kernel function for features a and b
@@ -156,6 +168,8 @@ class CKernel: public COptimizableKernel
 		CFeatures* rhs;
 
 		REAL combined_kernel_weight ;
+	
+		bool optimization_initialized ;
 		
 };
 #endif

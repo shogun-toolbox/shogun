@@ -3,7 +3,6 @@
 
 #include "lib/List.h"
 #include "kernel/Kernel.h"
-#include "kernel/OptimizableKernel.h"
 #include "lib/io.h"
 
 class CCombinedKernel : public CKernel

@@ -1,10 +1,22 @@
 #include "guilib/GUIPreProc.h"
+#include "gui/GUI.h"
 #include "preproc/LogPlusOne.h"
 #include "preproc/NormOne.h"
 #include "preproc/PruneVarSubMean.h"
 #include "preproc/PCACut.h"
 #include "preproc/SortWord.h"
 #include "preproc/SortWordString.h"
+#include "features/RealFileFeatures.h"
+#include "features/TOPFeatures.h"
+#include "features/FKFeatures.h"
+#include "features/CharFeatures.h"
+#include "features/StringFeatures.h"
+#include "features/ByteFeatures.h"
+#include "features/ShortFeatures.h"
+#include "features/RealFeatures.h"
+#include "features/SparseRealFeatures.h"
+#include "features/CombinedFeatures.h"
+#include "features/Features.h"
 #include "lib/io.h"
 #include "lib/config.h"
 
@@ -15,15 +27,14 @@
 CGUIPreProc::CGUIPreProc(CGUI * gui_)
   : gui(gui_)
 {
-	preprocs=NULL;
-	num_preprocs=0;
+	preprocs=new CList<CPreProc*>(true);
+	attached_preprocs_lists=new CList<CList<CPreProc*>*>(true);
 }
 
 CGUIPreProc::~CGUIPreProc()
 {
-	for (INT i=0; i<num_preprocs; i++)
-		delete preprocs[i];
-	delete[] preprocs;
+	delete preprocs;
+	delete attached_preprocs_lists;
 }
 
 
@@ -79,62 +90,26 @@ bool CGUIPreProc::add_preproc(CHAR* param)
 		return false;
 	}
 
-	return add_preproc(preproc);
+	preprocs->get_last_element();
+	return preprocs->append_element(preproc);
 }
 
 bool CGUIPreProc::clean_preproc(CHAR* param)
 {
-	while (num_preprocs>0) 
-		del_preproc(param) ;
-	
-	return true ;
+	delete preprocs;
+	preprocs=new CList<CPreProc*>(true);
+	return (preprocs!=NULL);
 }
 
 bool CGUIPreProc::del_preproc(CHAR* param)
 {
-	INT i,j;
-	INT num=num_preprocs-1;
+	CIO::message(M_INFO, "deleting preproc %i/(%i)\n", preprocs->get_num_elements()-1, preprocs->get_num_elements());
 
-	CPreProc** pps=NULL; 
-	param=CIO::skip_spaces(param);
 
-	sscanf(param, "%i", &num);
-
-	if (num<0)
-		num=0;
-
-	if (num>num_preprocs-1)
-		num=num_preprocs-1;
-
-	CIO::message(M_INFO, "deleting preproc %i/(%i)\n", num, num_preprocs);
-
-	if (num_preprocs>0)
-		delete preprocs[num];
-
-	if (num_preprocs==1)
-	{
-		delete[]  preprocs;
-		preprocs=NULL;
-		num_preprocs=0;
-	}
-	else if (num_preprocs>1)
-		pps= new CPreProc*[num_preprocs-1];
-
-	if (pps)
-	{
-		j=0;
-		for (i=0; i<num_preprocs; i++)
-		{
-			if (i!=num)
-				pps[j++]=preprocs[i];
-		}
-		num_preprocs--;
-		delete[] preprocs;
-		preprocs=pps;
-		return true;
-	}
-	else
-		return false;
+	CPreProc* p=preprocs->delete_element();
+	if (p)
+		delete p;
+	return (p!=NULL);
 }
 
 bool CGUIPreProc::load(CHAR* param)
@@ -184,7 +159,10 @@ bool CGUIPreProc::load(CHAR* param)
 		CIO::message(M_ERROR, "opening file %s failed\n", param);
 
 	if (result)
-		return add_preproc(preproc);
+	{
+		preprocs->get_last_element();
+		result=preprocs->append_element(preproc);
+	}
 
 	return result;
 }
@@ -192,14 +170,14 @@ bool CGUIPreProc::load(CHAR* param)
 bool CGUIPreProc::save(CHAR* param)
 {
 	CHAR fname[1024];
-	INT num=num_preprocs-1;
+	INT num=preprocs->get_num_elements()-1;
 	bool result=false; param=CIO::skip_spaces(param);
 	sscanf(param, "%s %i", fname, &num);
+	CPreProc* preproc= preprocs->get_last_element();
 
-	if (num>=0 && num<num_preprocs && preprocs[num])
+	if (num>=0 && (num < preprocs->get_num_elements()) && preproc)
 	{
 		FILE* file=fopen(fname, "w");
-		CPreProc* preproc=preprocs[num];
 	
 		fwrite(preproc->get_id(), sizeof(char), 4, file);
 		if ((!file) ||	(!preproc->save_init_data(file)))
@@ -219,19 +197,145 @@ bool CGUIPreProc::save(CHAR* param)
 	return result;
 }
 
-bool CGUIPreProc::add_preproc(CPreProc* preproc)
+bool CGUIPreProc::attach_preproc(CHAR* param)
 {
-	INT i;
-	CPreProc** pps=new CPreProc*[num_preprocs+1];
+	bool result=false;
+	param=CIO::skip_spaces(param);
+	CHAR target[1024]="";
+	INT force=0;
 
-	for (i=0; i<num_preprocs; i++)
-		pps[i]=preprocs[i];
-	delete[] preprocs;
+	if ((sscanf(param, "%s %d", target, &force))>=1)
+	{
+		if ( strcmp(target, "TRAIN")==0 || strcmp(target, "TEST")==0 )
+		{
+			if (strcmp(target,"TRAIN")==0)
+			{
+				CFeatures* f = gui->guifeatures.get_train_features();
+				if (f->get_feature_class()==C_COMBINED)
+					f=((CCombinedFeatures*)f)->get_last_feature_obj();
 
-	preprocs=pps;
-	preprocs[num_preprocs]=preproc;
+				preprocess_features(f, NULL, force==1);
+				gui->guifeatures.invalidate_train();
+				result=true;
+			}
+			else if (strcmp(target,"TEST")==0)
+			{
+				CFeatures* fe = gui->guifeatures.get_test_features();
+				CFeatures* f  = gui->guifeatures.get_train_features();
 
-	num_preprocs++;
-		
-	return true;
+				if ((f->get_feature_class()==C_COMBINED) && 
+					(fe->get_feature_class()==C_COMBINED))
+					((CCombinedFeatures*)fe)->get_last_feature_pair(fe,f);
+				
+				preprocess_features(f, fe, force==1);
+				gui->guifeatures.invalidate_test();
+				result=true;
+			}
+			else
+				CIO::message(M_ERROR, "see help for parameters\n");
+		}
+		else
+			CIO::message(M_ERROR, "features not correctly assigned!\n");
+	}
+	else
+		CIO::message(M_ERROR, "see help for parameters\n");
+
+	/// when successful add preprocs to attached_preprocs list (for removal later)
+	/// and clean the current preproc list
+	if (result)
+	{
+		attached_preprocs_lists->get_last_element();
+		attached_preprocs_lists->append_element(preprocs);
+		preprocs=NULL;
+	}
+
+	return result;
+}
+
+bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force)
+{
+	INT num_preproc=preprocs->get_num_elements();
+	CPreProc** preprocs;
+	if (num_preproc > 0)
+	{
+		if (trainfeat)
+		{
+			if (testfeat)
+			{
+				assert(trainfeat->get_num_preproc()==num_preproc);
+
+				for (INT i=0; i<trainfeat->get_num_preproc();  i++)
+				{
+					preprocs[i]->init(trainfeat);
+					testfeat->add_preproc(trainfeat->get_preproc(i));
+				}
+
+				preproc_all_features(testfeat, force);
+			}
+			else
+			{
+				for (INT i=0; i<num_preproc; i++)
+				{
+					preprocs[i]->init(trainfeat);
+					trainfeat->add_preproc(preprocs[i]);
+
+					preproc_all_features(trainfeat, force);
+				}
+			}
+
+			return true;
+		}
+		else
+			CIO::message(M_ERROR, "no features for preprocessing available!\n");
+	}
+	else
+		CIO::message(M_ERROR, "no preprocessors available!\n");
+
+	return false;
+}
+
+bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
+{
+	switch (f->get_feature_class())
+	{
+		case C_SIMPLE:
+			switch (f->get_feature_type())
+			{
+				case F_REAL:
+					return ((CRealFeatures*) f)->preproc_feature_matrix(force);
+				case F_SHORT:
+					return ((CShortFeatures*) f)->preproc_feature_matrix(force);
+				case F_WORD:
+					return ((CShortFeatures*) f)->preproc_feature_matrix(force);
+				case F_CHAR:
+					return ((CCharFeatures*) f)->preproc_feature_matrix(force);
+				case F_BYTE:
+					return ((CByteFeatures*) f)->preproc_feature_matrix(force);
+				default:
+					CIO::not_implemented();
+			}
+			break;
+		case C_STRING:
+			switch (f->get_feature_type())
+			{
+				case F_WORD:
+					return ((CStringFeatures<WORD>*) f)->preproc_feature_strings(force);
+				default:
+					CIO::not_implemented();
+			}
+			break;
+		case C_SPARSE:
+			switch (f->get_feature_type())
+			{
+				case F_REAL:
+					return ((CSparseRealFeatures*) f)->preproc_feature_matrix(force);
+				default:
+					CIO::not_implemented();
+			};
+			break;
+		default:
+			CIO::not_implemented();
+	}
+
+	return false;
 }

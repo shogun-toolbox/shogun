@@ -68,12 +68,10 @@ static const CHAR* N_SET_KERNEL=		"set_kernel";
 static const CHAR* N_ADD_KERNEL=		"add_kernel";
 static const CHAR* N_CLEAN_KERNEL=		"clean_kernel";
 static const CHAR* N_RESIZE_KERNEL_CACHE=		"resize_kernel_cache";
+static const CHAR* N_ATTACH_PREPROC=	"attach_preproc";
 static const CHAR* N_ADD_PREPROC=		"add_preproc";
 static const CHAR* N_DEL_PREPROC=		"del_preproc";
-static const CHAR* N_ADD_PREPROC_CHAIN=	"add_preproc_chain";
-static const CHAR* N_DEL_PREPROC_CHAIN=	"del_preproc_chain";
 static const CHAR* N_CLEAN_PREPROC=		"clean_preproc";
-static const CHAR* N_PREPROCESS=		"preprocess";
 static const CHAR* N_INIT_KERNEL=		"init_kernel";
 static const CHAR* N_DELETE_KERNEL_OPTIMIZATION=		"delete_kernel_optimization";
 static const CHAR* N_INIT_KERNEL_OPTIMIZATION  =		"init_kernel_optimization";
@@ -204,15 +202,15 @@ void CTextGUI::print_help()
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM_DEFINED);
 	CIO::message(M_MESSAGEONLY, "\n[FEATURES]\n");
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|LOGPLUSONE>\t\t\t- add preprocessor of type\n", N_ADD_PREPROC);
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <NUM>\t\t\t- delete preprocessor\n", N_DEL_PREPROC);
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <NUM>\t\t\t- delete all preprocessors\n", N_CLEAN_PREPROC);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t\t- delete last preprocessor\n", N_DEL_PREPROC);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t\t- delete all preprocessors\n", N_CLEAN_PREPROC);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <TRAIN|TEST> <NUM_FEAT> <NUM_VEC>\t\t\t- reshape feature matrix for simple features\n", N_RESHAPE);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert dense features to sparse feature matrix\n", N_CONVERT_TO_SPARSE);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert sparse features to dense feature matrix\n", N_CONVERT_TO_DENSE);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <DNA|..> <ORDER> <START>\t\t\t- convert CHAR to word features, order remapping\n", N_CONVERT_CHAR_TO_WORD);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <DNA|..> <ORDER> <START>\t\t\t- convert CHAR to short features, order remapping\n", N_CONVERT_CHAR_TO_SHORT);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <STRING|SPARSE|SIMPLE> <REAL|CHAR|WORD|..> <STRING|...> <REAL|TOP..>\t\t\t- convert from feature class/type to class/type\n", N_CONVERT);
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <TRAIN|TEST> [<0|1>] - preprocesses the feature_matrix, 1 to force preprocessing of already processed\n",N_PREPROCESS);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <TRAIN|TEST> [<0|1>] - attach the preprocessors to the current feature object, if available it will preprocess the feature_matrix, 1 to force preprocessing of already processed\n",N_ATTACH_PREPROC);
 	CIO::message(M_MESSAGEONLY, "\n[CLASSIFIER]\n");
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
@@ -598,14 +596,6 @@ bool CTextGUI::parse_line(CHAR* input)
 	{
 		guikernel.resize_kernel_cache(input+strlen(N_RESIZE_KERNEL_CACHE));
 	} 
-//	else if (!strncmp(input, N_ADD_PREPROC_CHAIN, strlen(N_ADD_PREPROC_CHAIN)))
-//	{
-//		guipreproc.add_preproc_chain(input+strlen(N_ADD_PREPROC_CHAIN));
-//	} 
-//	else if (!strncmp(input, N_DEL_PREPROC_CHAIN, strlen(N_DEL_PREPROC_CHAIN)))
-//	{
-//		guipreproc.del_preproc_chain(input+strlen(N_DEL_PREPROC_CHAIN));
-//	} 
 	else if (!strncmp(input, N_DEL_PREPROC, strlen(N_DEL_PREPROC)))
 	{
 		guipreproc.del_preproc(input+strlen(N_DEL_PREPROC));
@@ -614,13 +604,13 @@ bool CTextGUI::parse_line(CHAR* input)
 	{
 		guipreproc.add_preproc(input+strlen(N_ADD_PREPROC));
 	} 
+	else if (!strncmp(input, N_ATTACH_PREPROC, strlen(N_ATTACH_PREPROC)))
+	{
+		guipreproc.attach_preproc(input+strlen(N_ATTACH_PREPROC));
+	} 
 	else if (!strncmp(input, N_CLEAN_PREPROC, strlen(N_CLEAN_PREPROC)))
 	{
 		guipreproc.clean_preproc(input+strlen(N_CLEAN_PREPROC));
-	} 
-	else if (!strncmp(input, N_PREPROCESS, strlen(N_PREPROCESS)))
-	{
-		guifeatures.preprocess(input+strlen(N_PREPROCESS));
 	} 
 	else if (!strncmp(input, N_SVM_TEST, strlen(N_SVM_TEST)))
 	{
