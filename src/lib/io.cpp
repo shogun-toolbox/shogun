@@ -32,7 +32,7 @@ void CIO::progress(REAL current_val, REAL min_val, REAL max_val, INT decimals, c
 	LONG runtime = get_runtime() ;
 	
 	char str[1000];
-	REAL v=-1, estimate=0 ;
+	REAL v=-1, estimate=0, total_estimate=0 ;
 	check_target();
 
 	if (max_val-min_val)
@@ -52,26 +52,27 @@ void CIO::progress(REAL current_val, REAL min_val, REAL max_val, INT decimals, c
 	}
 	else
 	{
-		if (v>100) v=1 ;
+		if (v>100) v=100.0 ;
 		if (v<=0) v=1e-6 ;
 		last_progress = v-1e-5 ; ;
 		
-		if (runtime - last_progress_time<100)
+		if ((v!=100.0) && (runtime - last_progress_time<100))
 			return ;
-
+		
 		last_progress_time = runtime ;
 		estimate = (1-v/100)*(last_progress_time-progress_start_time)/(v/100) ;
+		total_estimate = (last_progress_time-progress_start_time)/(v/100) ;
 	}
-
+	
 	if (estimate/100>120)
 	{
-		sprintf(str, "%%s %%%d.%df%%  \t %%1.1f minutes remaining \r",decimals+3, decimals);
-		fprintf(target, str, prefix, v, estimate/100/60);
+		sprintf(str, "%%s %%%d.%df%%  \t %%1.1f minutes remaining \t %%1.1f minutes total\r",decimals+3, decimals);
+		fprintf(target, str, prefix, v, estimate/100/60, total_estimate/100/60);
 	}
 	else
 	{
-		sprintf(str, "%%s %%%d.%df%%  \t %%1.1f seconds remaining \r",decimals+3, decimals);
-		fprintf(target, str, prefix, v, estimate/100);
+		sprintf(str, "%%s %%%d.%df%%  \t %%1.1f seconds remaining \t %%1.1f seconds total\r",decimals+3, decimals);
+		fprintf(target, str, prefix, v, estimate/100, total_estimate/100);
 	}
 	
     fflush(target);

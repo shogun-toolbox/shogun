@@ -365,13 +365,15 @@ bool CSVMLight::train()
 			CIO::message(M_INFO, "precomputing kernel matrix %i (%ix%i)\n", n, num, num) ;
 			for (INT i=0; i<num; i++)
 			{
-				CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
+				// CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
+				CIO::progress(i*i,0,num*num);
+				
 				for (INT j=0; j<=i; j++)
 					matrix[i*(i+1)/2+j] = k->kernel(i,j) ;
 
 			}
-			CIO::message(M_INFO, "\r %1.2f%% ", 100.0) ;
-			CIO::message(M_INFO, "done.\n") ;
+			CIO::progress(num*num,0,num*num);
+			CIO::message(M_INFO, "\ndone.\n") ;
 			w1[n]=0.0 ;
 		}
 
