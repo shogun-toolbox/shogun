@@ -996,6 +996,19 @@ bool CGUIHMM::best_path(char* param)
 	return false;
 }
 
+bool CGUIHMM::normalize(char* param)
+{
+	if (working)
+	{
+	    working->normalize();
+		return true;
+	}
+	else
+	   CIO::message("create model first\n");
+
+	return false;
+}
+
 bool CGUIHMM::output_hmm_path(char* param)
 {
 	param=CIO::skip_spaces(param);

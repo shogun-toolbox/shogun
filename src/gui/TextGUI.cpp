@@ -33,6 +33,7 @@ static const char* N_SAVE_FEATURES=		"save_features";
 static const char* N_LOAD_DEFINITIONS=	"load_defs";
 static const char* N_SAVE_KERNEL=		"save_kernel";
 static const char* N_SET_HMM_AS=		"set_hmm_as";
+static const char* N_NORMALIZE=			"normalize_hmm";
 static const char* N_SET_FEATURES=		"set_features";
 static const char* N_SET_KERNEL=		"set_kernel";
 static const char* N_SET_PREPROC=		"set_preproc";
@@ -128,6 +129,7 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> - assign observation to current HMM\n",N_ASSIGN_OBSERVATION);
 	CIO::message("\033[1;31m%s\033[0m <POS|NEG|TEST>- make current HMM the POS,NEG or TEST HMM; then free current HMM \n",N_SET_HMM_AS);
 	CIO::message("\033[1;31m%s\033[0m <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
+	CIO::message("\033[1;31m%s\033[0m \t\t\t- normalizes HMM params to be sum = 1\n", N_NORMALIZE);
 	CIO::message("\033[1;31m%s\033[0m <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)\n", N_ADD_STATES);
 	CIO::message("\033[1;31m%s\033[0m <filename> <INT> <INT>\t\t\t- append HMM <filename> to current HMM\n", N_APPEND_HMM);
 	CIO::message("\033[1;31m%s\033[0m [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
@@ -399,6 +401,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	else if (!strncmp(input, N_HMM_TEST, strlen(N_HMM_TEST)))
 	{
 		guihmm.test_hmm(input+strlen(N_HMM_TEST));
+	}
+	else if (!strncmp(input, N_NORMALIZE, strlen(N_NORMALIZE)))
+	{
+		guihmm.normalize(input+strlen(N_NORMALIZE));
 	} 
 	else if (!strncmp(input, N_APPEND_HMM, strlen(N_APPEND_HMM)))
 	{

@@ -33,6 +33,7 @@ public:
 	bool output_hmm(char* param);
 	bool output_hmm_defined(char* param);
 	bool best_path(char* param);
+	bool normalize(char* param);
 	bool save_path(char* param);
 	bool load_defs(char* param);
 	bool set_max_dim(char* param);
