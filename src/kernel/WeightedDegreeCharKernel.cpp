@@ -348,8 +348,6 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
   {
 	  for (INT i=0; i<alen-degree; i++)
 	  {
-		  INT mismatches=0;
-
 		  for (INT j=0; j<degree; j++)
 		  {
 			  if (!match_vector[i+j])
@@ -768,7 +766,7 @@ INT CWeightedDegreeCharKernel::tree_size(struct SuffixTree * p_tree)
 	return ret ;
 } 
 
-void CWeightedDegreeCharKernel::set_weights(REAL* ws, INT d, INT len)
+bool CWeightedDegreeCharKernel::set_weights(REAL* ws, INT d, INT len)
 {
 	degree=d;
 	length=len;
@@ -776,6 +774,12 @@ void CWeightedDegreeCharKernel::set_weights(REAL* ws, INT d, INT len)
 	delete[] weights;
 	weights=new REAL[d*len];
 
-	for (int i=0; i<degree*length; i++)
-		weights[i]=ws[i];
+	if (weights)
+	{
+		for (int i=0; i<degree*length; i++)
+			weights[i]=ws[i];
+		return true;
+	}
+	else
+		return false;
 }

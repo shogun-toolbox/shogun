@@ -1023,8 +1023,9 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			//TO DO THAT NICELY
 			CWeightedDegreeCharKernel* k = (CWeightedDegreeCharKernel*) get_kernel();
 			INT num    = k->get_rhs()->get_num_vectors() ;
-			INT degree = k->get_degree() ;
-			REAL* w    = k->get_weights();
+			INT degree = -1;
+			INT len = -1;
+			REAL* w    = k->get_weights(degree,len);
 			REAL* W_upd= new REAL[num*degree];
 			REAL* sumw = new REAL[degree];
 			REAL meanabssumw = 0;

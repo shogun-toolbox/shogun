@@ -85,7 +85,7 @@ class CWeightedDegreeCharKernel: public CCharKernel
 	  return weights;
   }
 
-  void set_weights(REAL* weights, INT d, INT len=0);
+  bool set_weights(REAL* weights, INT d, INT len=0);
 
  protected:
 
