@@ -1,4 +1,4 @@
-#ifndef _CFEATURES__H__
+/*#ifndef _CFEATURES__H__
 #define _CFEATURES__H__
 
 #include "preproc/Preproc.h"
@@ -43,3 +43,4 @@ protected:
     int num_vectors;
 };
 #endif
+*/

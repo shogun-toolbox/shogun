@@ -1,4 +1,4 @@
-#ifndef _SVM_FUNCTIONS_H___
+/*#ifndef _SVM_FUNCTIONS_H___
 #define _SVM_FUNCTIONS_H___
 
 class CSVMFunctions
@@ -17,3 +17,4 @@ class CSVMFunctions
 
 };
 #endif
+*/

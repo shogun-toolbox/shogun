@@ -1,4 +1,4 @@
-#include "guilib/SVMFunctions.h"
+/*#include "guilib/SVMFunctions.h"
 
 void CSVMFunctions::train_svm()
 {
@@ -17,7 +17,7 @@ void CSVMFunctions::train_svm()
 
 	int totdoc=train->get_DIMENSION();
 
-	docs=new DOC[totdoc];  /* training examples */
+	docs=new DOC[totdoc];  // training examples
 	label=new long[totdoc];
 	char str[1024];
 
@@ -168,7 +168,7 @@ void CSVMFunctions::test_svm()
   free(line);
   free(doc.words);
   //  free(mymodel.supvec);
-  //    free(mymodel.alpha);*/
+  //    free(mymodel.alpha);
 }
 
 void CSVMFunctions::load_svm()
@@ -225,4 +225,4 @@ void CSVMFunctions::load_svm()
 void CSVMFunctions::save_svm()
 {
 	svm.save_svm(file);
-}
+}*/

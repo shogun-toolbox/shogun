@@ -1,7 +1,7 @@
 #ifndef _CBINSEQFEATURES__H__
 #define _CBINSEQFEATURES__H__
 
-#include "preproc/Preproc.h"
+#include "preproc/PreProc.h"
 #include "features/ShortFeatures.h"
 #include "hmm/Observation.h"
 

@@ -1,4 +1,4 @@
-CFeatures::CFeatures()
+/*CFeatures::CFeatures()
 {
     preproc=NULL;
     num_vectors=0;
@@ -9,3 +9,4 @@ CFeatures::CFeatures()
 CFeatures::~CFeatures()
 {
 }
+*/

@@ -1,7 +1,7 @@
 #ifndef _CSHORTFEATURES__H__
 #define _CSHORTFEATURES__H__
 
-#include "preproc/Preproc.h"
+#include "preproc/PreProc.h"
 #include "features/Features.h"
 
 class CShortFeatures: public CFeatures
