@@ -10,6 +10,7 @@
 #include "kernel/LinearCharKernel.h"
 #include "kernel/LinearWordKernel.h"
 #include "kernel/WeightedDegreeCharKernel.h"
+#include "kernel/WeightedDegreePositionCharKernel.h"
 #include "kernel/FixedDegreeCharKernel.h"
 #include "kernel/LocalityImprovedCharKernel.h"
 #include "kernel/SimpleLocalityImprovedCharKernel.h"
@@ -201,6 +202,65 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				if (kernel)
 				{
 					CIO::message("FixedDegreeCharKernel created\n");
+					return true;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS")==0)
+		{
+			if (strcmp(data_type,"CHAR")==0)
+			{
+				INT d=3;
+				INT max_mismatch = 0 ;
+				INT i=0;
+				INT length = 0 ;
+				INT center = 0 ;
+				INT step = 0 ;
+
+				sscanf(param, "%s %s %d %d %d %d %d %d", kern_type, data_type, &size, &d, &max_mismatch, &length, &center, &step);
+				REAL* weights=new REAL[d*(1+max_mismatch)];
+				REAL sum=0;
+
+				for (i=0; i<d; i++)
+				{
+					weights[i]=d-i;
+					sum+=weights[i];
+				}
+				for (i=0; i<d; i++)
+					weights[i]/=sum;
+				
+				for (i=0; i<d; i++)
+				{
+					for (INT j=1; j<=max_mismatch; j++)
+					{
+						if (j<i+1)
+						{
+							INT nk=math.nchoosek(i+1, j) ;
+							weights[i+j*d]=weights[i]/(nk*pow(3,j)) ;
+						}
+						else
+							weights[i+j*d]= 0;
+					} ;
+				} ;
+				
+				INT *shift = new INT[length] ;
+				for (INT i=center; i<length; i++)
+					shift[i] = (int)floor((i-center)/step) ;
+
+				for (INT i=center; i>=0; i--)
+					shift[i] = (int)floor((center-i)/step) ;
+
+				for (INT i=0; i<length; i++)
+					CIO::message("shift[%i]=%i\n", i, shift[i]) ;
+				
+				delete kernel;
+				kernel=new CWeightedDegreePositionCharKernel(size, weights, 
+															 d, max_mismatch, 
+															 shift, length);
+
+				if (kernel)
+				{
+					CIO::message("WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
 					return true;
 				}
 			}

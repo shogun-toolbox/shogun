@@ -163,7 +163,7 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
   for (INT i=0; i<alen-degree; i++)
   {
 	  INT mismatches=0;
-
+	  
 	  for (INT j=0; j<degree && mismatches<=max_mismatch; j++)
 	  {
 		  if (avec[i+j]!=bvec[i+j])
@@ -172,15 +172,10 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 			  if (mismatches>max_mismatch)
 				  break ;
 		  } ;
-
-		  //CIO::message("%i  %i  %i  %i  %i\n", i, j, mismatches, degree, max_mismatch) ;
-		  
-//		  assert(weights[j+degree*mismatches]<1) ;
 		  sum += weights[j+degree*mismatches];
 	  }
-
   }
-
+  
   ((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
