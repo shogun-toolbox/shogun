@@ -1,8 +1,0 @@
-load_obs pos2.seq POSTRAIN
-
-new 50 4 1
-assign_obs POSTRAIN
-convergence_criteria 10 1e-6
-bw
-
-quit
