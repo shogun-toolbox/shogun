@@ -53,7 +53,7 @@ bool CLibSVM::train()
 	param.kernel=get_kernel();
 	param.cache_size = get_kernel()->get_cache_size();
 	param.C = 1.0;
-	param.eps = 1e-6;
+	param.eps = epsilon;
 	param.p = 0.1;
 	param.shrinking = 1;
 	param.nr_weight = 2;

@@ -30,6 +30,7 @@
 #include "kernel/HistogramWordKernel.h"
 #include "kernel/SalzbergWordKernel.h"
 #include "kernel/GaussianKernel.h"
+#include "kernel/SigmoidKernel.h"
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/SparsePolyKernel.h"
 #include "kernel/SparseGaussianKernel.h"
@@ -1101,6 +1102,23 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (k)
 				{
 					CIO::message(M_INFO, "Sparse Polynomial Kernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"SIGMOID")==0) // tanh
+		{
+			if (strcmp(data_type,"REAL")==0)
+			{
+				double gamma=0.01;
+				double coef0=0;
+
+				sscanf(param, "%s %s %d %lf %lf", kern_type, data_type, &size, &gamma, &coef0);
+				delete k;
+				k=new CSigmoidKernel(size, gamma, coef0);
+				if (k)
+				{
+					CIO::message(M_INFO, "Sigmoid Kernel created\n");
 					return k;
 				}
 			}

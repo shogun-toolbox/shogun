@@ -1,16 +1,16 @@
-#ifndef _LIBSVM_H___
-#define _LIBSVM_H___
+#ifndef _GPBTSVM_H___
+#define _GPBTSVM_H___
 #include "lib/common.h"
 #include "classifier/svm/SVM.h"
 #include "classifier/svm/SVM_libsvm.h"
 
 #include <stdio.h>
 
-class CLibSVM : public CSVM
+class CGPBTSVM : public CSVM
 {
 	public:
-		CLibSVM();
-		virtual ~CLibSVM();
+		CGPBTSVM();
+		virtual ~CGPBTSVM();
 		virtual bool train();
 
 	protected:

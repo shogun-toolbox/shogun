@@ -6,6 +6,7 @@
 
 #include "classifier/svm/SVM_light.h"
 #include "classifier/svm/LibSVM.h"
+#include "classifier/svm/GPBTSVM.h"
 
 #include <assert.h>
 
@@ -48,6 +49,12 @@ bool CGUISVM::new_svm(CHAR* param)
 		delete svm;
 		svm= new CLibSVM();
 		CIO::message(M_INFO, "created SVMlibsvm object\n") ;
+	}
+	else if (strcmp(param,"GPBT")==0)
+	{
+		delete svm;
+		svm= new CGPBTSVM();
+		CIO::message(M_INFO, "created GPBT-SVM object\n") ;
 	}
 	else
 		return false;
