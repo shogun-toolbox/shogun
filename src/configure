@@ -47,7 +47,7 @@ COMPFLAGS_C=
 COMPFLAGS_CPP=
 INCLUDES=-I${SRCDIR}
 LINK=c++
-LINKFLAGS="-lm"
+LINKFLAGS="-lm -lreadline"
 TARGET="genefinder-${EXESUFFIX}"
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -fkeep-inline-functions  -finline-functions -fschedule-insns2 -fthread-jumps -fforce-mem -fforce-addr -fstrength-reduce -fomit-frame-pointer -unroll-loops"
 #most defines are simply design bugs, use the ./configure --{disable,enable}-<options>
@@ -423,15 +423,14 @@ determine_march_mcpu()
 		COMP_C=cc
 		COMP_CPP=CC
 		COMP_OPTS="-fast -xchip=native -xarch=v9 -xO5 -g +w2"
-		LINKFLAGS="-fast -xchip=native -xarch=v9 -xO5 -g +w2 -lm"
+		LINKFLAGS="-fast -xchip=native -xarch=v9 -xO5 -g +w2 $LINKFLAGS"
 	elif osf1
 	then
 		COMP_OPTS="-O5 -inline speed -pthread -om"
-		LINKFLAGS="-pthread -lmpi -lm"
+		LINKFLAGS="-pthread -lmpi $LINKFLAGS"
 	elif darwin
 	then
 		COMP_OPTS="-Wno-long-double $COMP_OPTS"
-		LINKFLAGS="-lm"
 	fi
 
 	OS="-D`echo $system_name | tr 'a-z-' 'A-Z_'`"
@@ -1089,8 +1088,7 @@ set_opts()
 
 		if osf1
 		then
-#LINKFLAGS="-pthread -L/opt/matlab-6/extern/lib/alpha -rpath /opt/matlab-6/extern/lib/alpha -rpath /opt/matlab-6/bin/alpha -lmpi -lm  -lcxml_ev6 -lUfor -lfor -lFutil -lm -lots -lm_c32 -lmld -lexc -lm"
-			LINKFLAGS="-pthread -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*' -L/opt/matlab-6.5-13/bin/alpha -lmx -lmex -lmat -lm"
+			LINKFLAGS="-pthread -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*' -L/opt/matlab-6.5-13/bin/alpha -lmx -lmex -lmat $LINKFLAGS"
 			TARGET="gf.mexaxp"
 			INCLUDES="$INCLUDES -I/opt/matlab-6.5-13/extern/include"
 			DEFINES="$DEFINES -DMATLAB_MEX_FILE"
@@ -1098,7 +1096,7 @@ set_opts()
 			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -pthread -std1"
 		elif darwin
 		then
-			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -undefined suppress -L/Applications/MATLAB6p5/bin/mac -lmx -lmex -lmat -lm"
+			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -undefined suppress -L/Applications/MATLAB6p5/bin/mac -lmx -lmex -lmat $LINKFLAGS"
 			INCLUDES="$INCLUDES -I/Applications/MATLAB6p5/extern/include"
 			TARGET="gf.mexmac"
 		else
