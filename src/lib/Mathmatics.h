@@ -44,10 +44,9 @@ public:
 	//@{
 
 	///return the minimum of two integers
-	inline INT min(INT a, INT b) 
-	{
-		return ((a)<=(b))?(a):(b);
-	}
+	//
+	template <class T>
+	static inline T min(T a, T b);
 
 	///return the maximum of two integers
 	inline INT max(INT a, INT b) 
@@ -62,7 +61,7 @@ public:
 	}
 
 	///return the minimum of two integers
-	inline LONG min(LONG a, LONG b) 
+	static inline LONG min(LONG a, LONG b) 
 	{
 		return ((a)<=(b))?(a):(b);
 	}
@@ -80,7 +79,7 @@ public:
 	}
 
 	///return the minimum of two floats
-	inline REAL min(REAL a, REAL b) 
+	static inline REAL min(REAL a, REAL b) 
 	{
 		return ((a)<=(b))?(a):(b);
 	}
@@ -126,8 +125,8 @@ public:
 	  }
 
 	/// swap floats a and b
-	template <typename T>
-	inline void swap(T & a,T &b)
+	template <class T>
+	static inline void swap(T & a,T &b)
 	  {
 	    T c=a ;
 	    a=b; b=c ;
@@ -169,27 +168,27 @@ public:
 	/** performs a quicksort on an array output of length size
 	 * it is sorted from in ascending order from top to bottom
 	 * and left to right (for REAL) */
-	void qsort(REAL* output, INT size) ;
+	static void qsort(REAL* output, INT size) ;
 
 	/** performs a quicksort on an array output of length size
 	 * it is sorted from in ascending order from top to bottom
 	 * and left to right (for WORD) */
 	void qsort(WORD* output, INT size) ;
 
-	template <typename T>
-	void qsort(REAL* output, T* index, INT size) ;
+	template <class T>
+	static void qsort(REAL* output, T* index, INT size) ;
 
 	void qsort_backward(REAL* output, INT* index, INT size) ;
 
      /* finds the smallest element in output and puts that element as the 
 		first element  */
-	template <typename T>
-	void min(REAL* output, T* index, INT size) ;
+	template <class T>
+	static void min(REAL* output, T* index, INT size);
 
      /* finds the n smallest elements in output and puts these elements as the 
 		first n elements  */
-	template <typename T>
-	void nmin(REAL* output, T* index, INT size, INT n) ;
+	template <class T>
+	static void nmin(REAL* output, T* index, INT size, INT n);
 
 	/* performs a inplace unique of a WORD vector using quicksort 
 	 * returns the new number of elements */
@@ -429,7 +428,39 @@ inline INT CMath::fast_find_range(REAL* output, INT size, REAL elem)
 	} ;
 }
 
- 
+template <class T> 
+void CMath::nmin(REAL* output, T* index, INT size, INT n)
+{
+	if (6*n*size<13*size*log(size))
+		for (INT i=0; i<n; i++)
+			min(&output[i], &index[i], size-i) ;
+	else
+		qsort(output, index, size) ;
+}
+
+template <class T>
+inline T CMath::min(T a, T b)
+{
+	return ((a)<=(b))?(a):(b);
+}
+
+template <class T>
+void CMath::min(REAL* output, T* index, INT size)
+{
+	if (size<=0)
+		return ;
+	REAL min_elem = output[0] ;
+	INT min_index = 0 ;
+	for (INT i=1; i<size; i++)
+		if (output[i]<min_elem)
+		{
+			min_index=i ;
+			min_elem=output[i] ;
+		}
+	swap(output[0], output[min_index]) ;
+	swap(index[0], index[min_index]) ;
+}
+
 #endif
 
 extern CMath math;

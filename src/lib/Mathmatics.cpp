@@ -119,7 +119,7 @@ void CMath::sort(INT *a, INT cols, INT sort_col)
 		  if (a[i*cols+sort_col]>a[(i+1)*cols+sort_col])
 		  {
 			  for (INT j=0; j<cols; j++)
-				  swap(a[i*cols+j],a[(i+1)*cols+j]) ;
+				  CMath::swap(a[i*cols+j],a[(i+1)*cols+j]) ;
 			  changed=1 ;
 		  } ;
 		  i++ ;
@@ -191,7 +191,7 @@ void CMath::qsort(REAL* output, INT size)
 		if (size==2)
 		{
 				if (output[0] > output [1])
-						swap(output[0],output[1]);
+						CMath::swap(output[0],output[1]);
 		}
 		else
 		{
@@ -224,7 +224,7 @@ void CMath::qsort(REAL* output, INT size)
 		}
 }
 
-template <typename T>
+template <class T>
 void CMath::qsort(REAL* output, T* index, INT size)
 {
 	if (size==2)
@@ -307,33 +307,6 @@ void CMath::qsort_backward(REAL* output, INT* index, INT size)
 		if (size-left> 1)
 			qsort(&output[left],&index[left], size-left);
 	}
-}
-
-template <typename T>
-void CMath::min(REAL* output, T* index, INT size)
-{
-	if (size<=0)
-		return ;
-	REAL min_elem = output[0] ;
-	INT min_index = 0 ;
-	for (INT i=1; i<size; i++)
-		if (output[i]<min_elem)
-		{
-			min_index=i ;
-			min_elem=output[i] ;
-		}
-	swap(output[0], output[min_index]) ;
-	swap(index[0], index[min_index]) ;
-}
-
-template <typename T>
-void CMath::nmin(REAL* output, T* index, INT size, INT n)
-{
-	if (6*n*size<13*size*log(size))
-		for (INT i=0; i<n; i++)
-			min(&output[i], &index[i], size-i) ;
-	else
-		qsort(output, index, size) ;
 }
 
 //plot x- axis false positives (fp) 1-Specificity

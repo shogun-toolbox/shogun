@@ -372,7 +372,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						}
 					}
 				}
-				math.nmin(tempvv, tempii, list_len, nbest) ;
+				CMath::nmin<INT>(tempvv, tempii, list_len, nbest) ;
 				
 				for (short int k=0; k<nbest; k++)
 				{
@@ -407,7 +407,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 			}
 		}
 		
-		math.nmin(tempvv, tempii, list_len, nbest) ;
+		CMath::nmin(tempvv, tempii, list_len, nbest) ;
 		
 		for (short int k=0; k<nbest; k++)
 		{
