@@ -11,7 +11,7 @@ T_OBSERVATIONS CObservation::maptable[MAPTABLE_LENGTH];
 
 #define MAPTABLE_UNDEF ((1<<(8*sizeof(T_OBSERVATIONS)))-1)
 
-CObservation::CObservation(E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M, int M, int ORDER)
+CObservation::CObservation(E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M_, int M_, int ORDER_)
 {
 	full_content=NULL;
 	observations=NULL;
@@ -20,9 +20,9 @@ CObservation::CObservation(E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M, 
 
 	this->observation_type=type;
 	this->alphabet_type=alphabet;
-	this->MAX_M= MAX_M;
-	this->M=M;
-	this->ORDER=ORDER;
+	this->MAX_M= MAX_M_;
+	this->M=M_;
+	this->ORDER=ORDER_;
 	this->max_T= -1;
 
 	cleanup();
