@@ -4736,6 +4736,19 @@ bool CHMM::save_model(FILE* file)
 }
 
 #ifndef NOVIT
+T_STATES* CHMM::get_path(INT dim, REAL& prob)
+{
+	T_STATES* result = NULL;
+
+	prob = best_path(dim);
+	result = new T_STATES[p_observations->get_vector_length(dim)];
+
+	for (INT i=0; i<p_observations->get_vector_length(dim); i++)
+		result[i]=PATH(dim)[i];
+
+	return result;
+}
+
 bool CHMM::save_path(FILE* file)
 {
 	bool result=false;

@@ -20,6 +20,7 @@ static const CHAR* N_HELP=		        "help";
 static const CHAR* N_CRC=			"crc";
 static const CHAR* N_TRANSLATE_STRING=			"translate_string";
 static const CHAR* N_GET_HMM=			"get_hmm";
+static const CHAR* N_GET_VITERBI_PATH=			"get_viterbi_path";
 static const CHAR* N_GET_SVM=			"get_svm";
 static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
 static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
@@ -99,6 +100,15 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				mexErrMsgTxt("usage is [p,q,a,b]=gf('get_hmm')");
+		}
+		else if (!strncmp(action, N_GET_VITERBI_PATH, strlen(N_GET_VITERBI_PATH)))
+		{
+			if (nlhs==4)
+			{
+				gf_matlab.get_best_path(plhs);
+			}
+			else
+				mexErrMsgTxt("usage is [path, lik]=gf('get_viterbi_path')");
 		}
 		else if (!strncmp(action, N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE, strlen(N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE)))
 		  {

@@ -36,7 +36,6 @@ bool CGUIMatlab::get_hmm(mxArray* retvals[])
 
 	if (h)
 	{
-	  fprintf(stderr, "N=%i  M=%i\n", h->get_N(), h->get_M()) ;
 		mxArray* mx_p=mxCreateDoubleMatrix(1, h->get_N(), mxREAL);
 		mxArray* mx_q=mxCreateDoubleMatrix(1, h->get_N(), mxREAL);
 		mxArray* mx_a=mxCreateDoubleMatrix(h->get_N(), h->get_N(), mxREAL);
@@ -74,6 +73,79 @@ bool CGUIMatlab::get_hmm(mxArray* retvals[])
 	}
 
 	return false;
+}
+
+bool CGUIMatlab::best_path(const mxArray* vals[], mxArray* retvals[])
+{
+	CHMM* h=gui->guihmm.get_current();
+
+	if (h)
+	{
+		CFeatures* f=gui->guifeatures.get_test_features();
+
+		if (f)
+		{
+			int num_feat=f->get_num_features();
+
+			mxArray* mx_path=mxCreateDoubleMatrix(1, num_feat, mxREAL);
+			mxArray* mx_lik=mxCreateDoubleMatrix(1, 1, mxREAL);
+
+			double lik=-1;
+			double* path=mxGetPr(mx_result);
+			T_STATES* s=gui->guihmm.best_path(a, lik);
+
+			for (int i=0; i<num_feat; i++)
+				result[i]=s->get_label(i);
+
+			delete[] s;
+
+			retvals[0]=mx_path;
+			retvals[1]=mx_lik;
+			return true;
+		}
+	}
+	return false;
+/*
+	if (h)
+	{
+		mxArray* mx_p=mxCreateDoubleMatrix(1, h->get_N(), mxREAL);
+		mxArray* mx_q=mxCreateDoubleMatrix(1, h->get_N(), mxREAL);
+		mxArray* mx_a=mxCreateDoubleMatrix(h->get_N(), h->get_N(), mxREAL);
+		mxArray* mx_b=mxCreateDoubleMatrix(h->get_N(), h->get_M(), mxREAL);
+
+		if (mx_p && mx_q && mx_a && mx_b)
+		{
+			double* p=mxGetPr(mx_p);
+			double* q=mxGetPr(mx_q);
+			double* a=mxGetPr(mx_a);
+			double* b=mxGetPr(mx_b);
+
+			int i,j;
+			for (i=0; i< h->get_N(); i++)
+			{
+				p[i]=h->get_p(i);
+				q[i]=h->get_q(i);
+			}
+
+			for (i=0; i< h->get_N(); i++)
+				for (j=0; j< h->get_N(); j++)
+					a[i+j*h->get_N()]=h->get_a(i,j);
+
+			for (i=0; i< h->get_N(); i++)
+				for (j=0; j< h->get_M(); j++)
+					b[i+j*h->get_N()]=h->get_b(i,j);
+
+			retvals[0]=mx_p;
+			retvals[1]=mx_q;
+			retvals[2]=mx_a;
+			retvals[3]=mx_b;
+
+			return true;
+		}
+	}
+
+	return false;
+	*/
 }
 
 bool CGUIMatlab::append_hmm(const mxArray* vals[])
@@ -1012,5 +1084,3 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[])
 }
 
 #endif
-
-

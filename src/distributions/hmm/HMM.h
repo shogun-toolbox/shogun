@@ -955,6 +955,13 @@ public:
 	bool check_model_derivatives() ;
 	bool check_model_derivatives_combined() ;
 #ifndef NOVIT
+	/** get viterbi path and path probability
+	* @param dim dimension for which to obtain best path
+	* @param prob likelihood of path
+	* @return viterbi path
+	*/
+	T_STATES* CHMM::get_path(INT dim, REAL& prob);
+
 	/** save viterbi path in ascii format
 	* @param file filehandle
 	*/
