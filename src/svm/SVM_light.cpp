@@ -97,7 +97,7 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 	return true;
 }
 
-bool CSVMLight::svm_test(CObservation* test, FILE* outfile)
+bool CSVMLight::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
 {
     DOC doc;   // test example
 
@@ -132,7 +132,7 @@ bool CSVMLight::svm_test(CObservation* test, FILE* outfile)
     int possize=-1;
     int negsize=-1;
 
-    int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize);
+    int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize, rocfile);
 
     double correct=possize*tp[pointeven]+(1-fp[pointeven])*negsize;
     double fpo=fp[pointeven]*negsize;

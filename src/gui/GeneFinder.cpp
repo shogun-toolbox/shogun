@@ -69,6 +69,8 @@ static const char* N_EXEC=				"exec";
 static const char* N_EXIT=				"exit";
 static const char* N_HELP=				"help";
 static const char* N_SYSTEM=				"!";
+static const char* N_COMMENT1=				"#";
+static const char* N_COMMENT2=				"%%";
 #ifdef FIX_POS
 static const char* N_FIX_POS_STATE=			"fix_pos_state";
 #endif // FIX_POS
@@ -245,12 +247,12 @@ static void help()
 #endif //NOVIT
     printf("%s\t- output whole model\n",N_OUTPUT_MODEL);
     printf("\n[HMM-classification]\n");
-    printf("%s\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
-    printf("%s <negtest> <postest> [<width> <upto>]\t- calculate svm output from obs using linear model\n",N_LINEAR_HMM_TEST);
+    printf("%s[<output> [<rocfile>]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
+    printf("%s <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate svm output from obs using linear model\n",N_LINEAR_HMM_TEST);
     printf("\n[Hybrid HMM-<TOP-Kernel>-SVM]\n");
     printf("%s [c-value]\t\t\t- changes svm_c value\n", N_C);
     printf("%s <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
-    printf("%s <srcsvm> <output>\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
+    printf("%s <srcsvm> [<output> [<rocfile>]]\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
     printf("%s <dstsvm> \t\t- obtains svm from pos/neg linear models\n",N_LINEAR_SVM_TRAIN);
     printf("%s - enables SVM Light \n",N_SET_SVM_LIGHT);
     printf("%s - enables SVM CPLEX \n",N_SET_SVM_CPLEX);
@@ -1528,17 +1530,19 @@ static bool prompt(FILE* infile=stdin)
       {
 	char svmname[1024];
 	char outputname[1024];
+	char rocfname[1024];
 	FILE* outputfile=stdout;
+	FILE* rocfile=NULL;
 	int numargs=-1;
 
 	for (i=strlen(N_SVM_TEST); isspace(input[i]); i++);
-	numargs=sscanf(&input[i], "%s %s", svmname, outputname);
+	numargs=sscanf(&input[i], "%s %s %s", svmname, outputname, rocfname);
 	if (numargs >= 1)
 	{
 	    FILE* svm_file=fopen(svmname, "r");
 	    if (svm_file)
 	    {
-		if (numargs==2)
+		if (numargs>=2)
 		{
 		    outputfile=fopen(outputname, "w");
 
@@ -1546,6 +1550,17 @@ static bool prompt(FILE* infile=stdin)
 		    {
 			fprintf(stderr,"ERROR: could not open %s\n",outputname);
 			return false;
+		    }
+		   
+		    if (numargs==3) 
+		    {
+			rocfile=fopen(rocfname, "w");
+
+			if (!rocfile)
+			{
+			    fprintf(stderr,"ERROR: could not open %s\n",rocfname);
+			    return false;
+			}
 		    }
 		}
 
@@ -1565,7 +1580,9 @@ static bool prompt(FILE* infile=stdin)
 			int larger_M=math.max(pos->get_M(), neg->get_M());
 
 			theta=new double[(1+larger_N*(1+larger_N+1+larger_M))];
-			svm->svm_test(obs, outputfile);
+
+			svm->svm_test(obs, outputfile, rocfile);
+
 			delete[] theta;
 			theta=NULL;
 
@@ -1591,13 +1608,41 @@ static bool prompt(FILE* infile=stdin)
     {
 	char posname[1024];
 	char negname[1024];
+	char outputname[1024];
+	char rocfname[1024];
+	FILE* outputfile=stdout;
+	FILE* rocfile=NULL;
+	int numargs=-1;
 	
 	int WIDTH=-1,UPTO=-1;
 
 	for (i=strlen(N_LINEAR_HMM_TEST); isspace(input[i]); i++);
 
-	if (sscanf(&input[i], "%s %s %d %d", negname, posname,&WIDTH,&UPTO) >= 2)
+	numargs=sscanf(&input[i], "%s %s %s %s %d %d", negname, posname, outputname, rocfname, &WIDTH,&UPTO);
+
+	if (numargs >= 2)
 	{
+	    if (numargs>=3)
+	    {
+		outputfile=fopen(outputname, "w");
+
+		if (!outputfile)
+		{
+		    fprintf(stderr,"ERROR: could not open %s\n",outputname);
+		    return false;
+		}
+
+		if (numargs==3) 
+		{
+		    rocfile=fopen(rocfname, "w");
+
+		    if (!rocfile)
+		    {
+			fprintf(stderr,"ERROR: could not open %s\n",rocfname);
+			return false;
+		    }
+		}
+	    }
 	    if (pos && neg)
 	    {
 		FILE* posfile=fopen(posname, "r");
@@ -1660,6 +1705,11 @@ static bool prompt(FILE* infile=stdin)
 				    fseek(negfile, fileptr, SEEK_SET);
 				    output[dim]-=neg->linear_likelihood(negfile, WIDTH, UPTO,true);
 				    label[dim]=-1;
+				    
+				    if (output[dim] < 0)
+					fprintf(outputfile,"%+.8g (%+d)\n",output[dim], label[dim]);
+				    else
+					fprintf(outputfile,"%+.8g (%+d)(*)\n",output[dim], label[dim]);
 				}
 				else
 				{
@@ -1668,13 +1718,18 @@ static bool prompt(FILE* infile=stdin)
 				    fseek(posfile, fileptr, SEEK_SET);
 				    output[dim]-=neg->linear_likelihood(posfile, WIDTH, UPTO,true);
 				    label[dim]=+1;
+				    
+				    if (output[dim] > 0)
+					fprintf(outputfile,"%+.8g (%+d)\n",output[dim], label[dim]);
+				    else
+					fprintf(outputfile,"%+.8g (%+d)(*)\n",output[dim], label[dim]);
 				}
 			    }
 
 			    double *fp= new double[total];	
 			    double *tp= new double[total];	
 
-			    int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize);
+			    int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize, rocfile);
 
 			    double correct=possize*tp[pointeven]+(1-fp[pointeven])*negsize;
 			    double fpo=fp[pointeven]*negsize;
@@ -1711,11 +1766,40 @@ static bool prompt(FILE* infile=stdin)
     } 
     else if (!strncmp(input, N_HMM_TEST, strlen(N_HMM_TEST)))
     {
-	//char name[1024];
+	char outputname[1024];
+	char rocfname[1024];
+	FILE* outputfile=stdout;
+	FILE* rocfile=NULL;
+	int numargs=-1;
 
 	for (i=strlen(N_HMM_TEST); isspace(input[i]); i++);
-	//if (sscanf(&input[i], "%s", name) == 1)
-	//{
+
+	numargs=sscanf(&input[i], "%s %s", outputname, rocfname);
+
+	if (numargs <= 2)
+	{
+	    if (numargs>=2)
+	    {
+		outputfile=fopen(outputname, "w");
+
+		if (!outputfile)
+		{
+		    fprintf(stderr,"ERROR: could not open %s\n",outputname);
+		    return false;
+		}
+
+		if (numargs==2) 
+		{
+		    rocfile=fopen(rocfname, "w");
+
+		    if (!rocfile)
+		    {
+			fprintf(stderr,"ERROR: could not open %s\n",rocfname);
+			return false;
+		    }
+		}
+	    }
+
 	    if (pos && neg)
 	    {
 		if (obs_postest && obs_negtest)
@@ -1746,10 +1830,15 @@ static bool prompt(FILE* infile=stdin)
 		    {
 			output[dim]=pos->model_probability(dim)-neg->model_probability(dim);
 			label[dim]= obs->get_label(dim);
+			
+			if (math.sign(output[dim])==label[dim])
+			    fprintf(outputfile,"%+.8g (%+d)\n",output[dim], label[dim]);
+			else
+			    fprintf(outputfile,"%+.8g (%+d)(*)\n",output[dim], label[dim]);
 		    }
-		 
+
 		    int possize,negsize;
-		    int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize);
+		    int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize, rocfile);
 
 		    double correct=possize*tp[pointeven]+(1-fp[pointeven])*negsize;
 		    double fpo=fp[pointeven]*negsize;
@@ -1775,9 +1864,9 @@ static bool prompt(FILE* infile=stdin)
 	    }
 	    else
 		printf("assign positive and negative models first!\n");
-	//}
-	//else
-	//    printf("see help for parameters\n");
+	}
+	else
+	    printf("see help for parameters\n");
     } 
     else if (!strncmp(input, N_C, strlen(N_C)))
     {

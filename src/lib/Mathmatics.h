@@ -2,6 +2,8 @@
 #define __MATH_H_
 
 #include <math.h>
+#include <stdlib.h>
+
 #include "lib/common.h"
 
 /** Mathematical Functions.
@@ -74,6 +76,23 @@ public:
 
 	/**@name misc functions */
 	//@{
+
+	/// signum of int a 
+	inline int sign(int a)
+	  {
+	      if (a==0)
+		  return 0;
+	      else return (a<0) ? -1 : +1;
+	  }
+
+	/// signum of float a 
+	inline double sign(REAL a)
+	  {
+	      if (a==0)
+		  return 0;
+	      else return (a<0) ? -1 : +1;
+	  }
+
 	/// swap floats a and b
 	inline void swap(REAL & a,REAL &b)
 	  {
@@ -101,7 +120,7 @@ public:
 	 * from output and label of length size 
 	 * returns index with smallest error=fp+fn
 	 */
-	int CMath::calcroc(double* fp, double* tp, double* output, int* label, int size, int& possize, int& negsize);
+	int CMath::calcroc(double* fp, double* tp, double* output, int* label, int size, int& possize, int& negsize, FILE* rocfile);
 	//@}
 
 	/**@name summing functions */

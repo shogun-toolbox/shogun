@@ -7,4 +7,3 @@ CSVM::CSVM():svm_loaded(false)
 CSVM::~CSVM()
 {
 }
-

@@ -69,7 +69,7 @@ bool CSVMCplex::svm_train(CObservation* train, int, double C)
   return true ;
 }
 
-bool CSVMCplex::svm_test(CObservation* test, FILE* outfile)
+bool CSVMCplex::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
 {
   int number_of_examples=test->get_DIMENSION();
   int number_of_params   = 1+pos->get_N()*(2+pos->get_N()+pos->get_M())+neg->get_N()*(2+neg->get_N()+neg->get_M());
@@ -99,7 +99,7 @@ bool CSVMCplex::svm_test(CObservation* test, FILE* outfile)
   int possize=-1;
   int negsize=-1;
   
-  int pointeven=math.calcroc(fp, tp, output, label, number_of_examples, possize, negsize);
+  int pointeven=math.calcroc(fp, tp, output, label, number_of_examples, possize, negsize, rocfile);
   
   double correct=possize*tp[pointeven]+(1-fp[pointeven])*negsize;
   double fpo=fp[pointeven]*negsize;

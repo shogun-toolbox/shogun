@@ -21,7 +21,7 @@ public:
     virtual ~CSVM();
 
     virtual bool svm_train(CObservation* train, int kernel_type, double C)=0;
-    virtual bool svm_test(CObservation* test, FILE* output)=0;
+    virtual bool svm_test(CObservation* test, FILE* output, FILE* rocfile)=0;
     virtual bool load_svm(FILE* svm_file, CObservation* test)=0;
     virtual bool save_svm(FILE* svm_file)=0;
 

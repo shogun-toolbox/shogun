@@ -104,7 +104,7 @@ void CMath::qsort(double* output, int size)
 
 //plot x- axis false positives (fp) 1-Specificity
 //plot y- axis true positives (tp) Sensitivity
-int CMath::calcroc(double* fp, double* tp, double* output, int* label, int size, int& possize, int& negsize)
+int CMath::calcroc(double* fp, double* tp, double* output, int* label, int size, int& possize, int& negsize, FILE* rocfile)
 {
     int left=0;
     int right=size-1;
@@ -194,7 +194,13 @@ int CMath::calcroc(double* fp, double* tp, double* output, int* label, int size,
 	}
 	iteration++;
     }
-    
+
+    if (rocfile)
+    {
+	const char id[]="ROC";
+	fwrite(id, sizeof(char), sizeof(id), rocfile);
+	fwrite(fp, sizeof(double), size, rocfile);
+	fwrite(tp, sizeof(double), size, rocfile);
+    }
     return returnidx;
 }
-

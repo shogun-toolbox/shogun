@@ -39,7 +39,7 @@ class CSVMLight:public CSVM
   virtual ~CSVMLight();
   
   virtual bool svm_train(CObservation* train, int kernel_type, double C);
-  virtual bool svm_test(CObservation* test, FILE* output);
+  virtual bool svm_test(CObservation* test, FILE* output, FILE* rocfile);
   virtual bool load_svm(FILE* svm_file, CObservation* test);
   virtual bool save_svm(FILE* svm_file);
   
