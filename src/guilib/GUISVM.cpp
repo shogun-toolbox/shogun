@@ -37,11 +37,9 @@ bool CGUISVM::new_svm(char* param)
   else if (strcmp(param,"MPI")==0)
     {
 #ifdef SVMMPI
-#if  defined(HAVE_MPI) && !defined(DISABLE_MPI)
       delete svm;
       svm= new CSVMMPI();
       CIO::message("created SVMMPI object\n") ;
-#endif
 #else
       CIO::message("MPI SVM disabled\n") ;
 #endif
@@ -238,8 +236,6 @@ bool CGUISVM::load(char* param)
 		CIO::message("opening file %s failed\n", filename);
 
 	    return result;
-	    CIO::not_implemented() ;
-	    return false ;
 	}
 	else
 	    CIO::message("type of svm unknown\n");
@@ -273,8 +269,6 @@ bool CGUISVM::save(char* param)
 	CIO::message("create svm first\n");
 
     return result;
-    CIO::not_implemented() ;
-    return false ;
 }
 
 bool CGUISVM::set_C(char* param)

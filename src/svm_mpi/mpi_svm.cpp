@@ -80,8 +80,8 @@ bool CSVMMPI::svm_train(CFeatures* train_)
   train->free_feature_vector(column, free);
   num_rows=len ;
 
-  CIO::message(" [%ix%i] ", num_cols, len) ;
-  CIO::message(" and saving to file ~/Z_clean.dat") ;
+  //CIO::message(" [%ix%i] ", num_cols, len) ;
+  //CIO::message(" and saving to file ~/Z_clean.dat") ;
 
   m_prime=svm_mpi_broadcast_Z_size(num_cols, num_rows, m_last) ;
   int j=0;
@@ -143,14 +143,43 @@ REAL* CSVMMPI::svm_test(CFeatures* test_, CFeatures*)
   return output;  
 }
 
-bool CSVMMPI::load(FILE* svm_file)
+bool CSVMMPI::load(FILE* modelfl)
 {
-return false;
+	bool result=false;
+	char version_buffer[1024];
+
+	fscanf(modelfl,"MPI\n", version_buffer);
+	if(strcmp(version_buffer,"MPI")) {
+		perror ("model file does not match MPI SVM");
+		exit (1); 
+	}
+
+	fscanf(modelfl,"%ld%*[^\n]\n", &num_rows);
+
+	delete[] svm_w;
+	svm_w = new double[num_rows];
+	CIO::message("loading w of size %ld\n",num_rows);
+
+	for (int i=0; i<num_rows; i++)
+		fscanf(modelfl,"%lf%*[^\n]\n", svm_w[i]);
+
+	CIO::message("done\n");
+	result=true;
+	return result;
 } 
 
-bool CSVMMPI::save(FILE* svm_file)
+bool CSVMMPI::save(FILE* modelfl)
 {
-return false;
+  CIO::message("Writing model file...");
+  fprintf(modelfl,"MPI\n");
+  fprintf(modelfl,"%ld # length of w\n", num_rows);
+  fprintf(modelfl,"%+10.16e # threshold b \n",svm_b);
+  
+  for(int i=0;i<num_rows;i++)
+    fprintf(modelfl,"%+10.16e\n", svm_w[i]);
+  
+  CIO::message("done\n");
+  return true ;
 }
 
 
@@ -264,7 +293,7 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
 
   CIO::message("starting optimizer\n") ;
 
-  //#ifdef save_input
+  #ifdef DEBUG
   //#define HOME "/opt/home/raetsch/"
   #define HOME "/home/104/gxr104/short/"
   {
@@ -316,8 +345,7 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
     fwrite(d, sizeof(double), b->GetNumRows()*b->GetNumColumns(), f) ;
     fclose(f) ;
   } 
-  //#endif
-      
+#endif 
   optimize_smw2mpi_core<double>(optimizer, *c, Z, *A, *b, *l, *u,
 				*r, m_prime, m_last, my_rank,
 				num_nodes, res, *primal,
@@ -326,6 +354,7 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
   double *dua = dual->GetDataPointer();
   double *Zd = Z.GetDataPointer();
 
+#ifdef DEBUG
   {
     CIO::message("saving prim vector to ~/primal.dat\n") ;    
     double* d=primal->GetDataPointer() ;
@@ -339,7 +368,8 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
     FILE* f=fopen(HOME "dual.dat","w+") ;
     fwrite(d, sizeof(double), dual->GetNumRows()*dual->GetNumColumns(), f) ;
     fclose(f) ;
-  } 
+  }
+#endif
 
   delete[] svm_w ;
   svm_w=new REAL[num_rows] ;
@@ -375,7 +405,7 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
 	train->free_feature_vector(feat, free) ;
       } 
   } 
-      
+#ifdef DEBUG      
   {
     CIO::message("saving svm_w vector to ~/w.dat\n") ;    
     FILE* f=fopen(HOME "w.dat","w+") ;
@@ -414,7 +444,7 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
     //    for (i=2499; i<2510; i++)
     //    CIO::message("out[%i]=%e\n", i, out[i]-*dua) ;
   } ;
-
+#endif
   delete c; 
   delete A; 
   delete b; 

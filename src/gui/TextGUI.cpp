@@ -13,6 +13,10 @@ CTextGUI *gui=NULL;
 #include <libmmfile.h>
 #endif // WITHMATLAB
 
+#ifdef SVMMPI
+#include "svm_mpi/mpi_svm.h"
+#endif
+
 //names of menu commands
 static const char* N_NEW_HMM=			"new_hmm";
 static const char* N_NEW_SVM=			"new_svm";
@@ -95,9 +99,10 @@ CTextGUI::CTextGUI(int argc, const char** argv)
 #endif
 
 #ifdef SVMMPI
-#if  defined(HAVE_MPI) && !defined(DISABLE_MPI)
-  //CSVMMPI::svm_mpi_init(argc, argv) ;
-#endif
+  CIO::message("Initializing MPI\n");
+  CSVMMPI::svm_mpi_init(argc, argv) ;
+#else
+  CIO::message("undef'd MPI\n");
 #endif
 }
 

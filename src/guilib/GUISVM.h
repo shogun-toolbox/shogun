@@ -1,12 +1,11 @@
 #ifndef _GUISVM_H__
 #define _GUISVM_H__ 
 
-#define SVMMPI
-
 #include "svm/SVM.h"
 #include "svm/SVM_light.h"
 #include "svm_cplex/SVM_cplex.h"
-#ifndef DISABLE_MPI
+
+#ifdef SVMMPI
 #include "svm_mpi/mpi_svm.h"
 #endif
 
