@@ -292,6 +292,8 @@ for ac_option do
   --enable-matlab)		_matlab=yes	;;
   --disable-svmmpi)		_svmmpi=no	;;
   --enable-svmmpi)		_svmmpi=yes	;;
+  --disable-readline)		_readline=no	;;
+  --enable-readline)		_readline=yes	;;
   --disable-cplex)		_cplex=no	;;
   --enable-cplex)		_cplex=yes	;;
   --disable-logcache)	_logcache=no	;;
