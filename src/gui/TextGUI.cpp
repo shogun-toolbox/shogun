@@ -24,6 +24,7 @@ static const char* N_SAVE_KERNEL=		"save_kernel";
 static const char* N_SET_HMM_AS=		"set_hmm_as";
 static const char* N_SET_FEATURES=		"set_features";
 static const char* N_SET_KERNEL=		"set_kernel";
+static const char* N_SET_PREPROC=		"set_preproc";
 static const char* N_SAVE_PATH=			"save_path";
 static const char* N_SAVE_PATH_DERIVATIVES=	"save_vit_deriv";
 static const char* N_SAVE_PATH_DERIVATIVES_BIN=	"save_vit_deriv_bin";
@@ -174,6 +175,7 @@ void CTextGUI::print_help()
    CIO::message("\033[1;31m%s\033[0m\t <TOP|FK> <TRAIN|TEST> - creates train/test-features out of obs\n",N_SET_FEATURES);
    CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
    CIO::message("\033[1;31m%s\033[0m <LINEAR>\t\t\t- set kernel type\n", N_SET_KERNEL);
+   CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|NONE>\t\t\t- set preprocessor type\n", N_SET_PREPROC);
 //   CIO::message("\033[1;31m%s\033[0m <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
 //   CIO::message("\033[1;31m%s\033[0m <srcsvm> [<output> [<rocfile>]]\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
 //   CIO::message("\033[1;31m%s\033[0m <dstsvm> \t\t- obtains svm from pos/neg linear HMMs\n",N_LINEAR_SVM_TRAIN);
@@ -414,6 +416,10 @@ bool CTextGUI::get_line(FILE* infile)
 	else if (!strncmp(input, N_SET_KERNEL, strlen(N_SET_KERNEL)))
 	{
 		guikernel.set_kernel(input+strlen(N_SET_KERNEL));
+	} 
+	else if (!strncmp(input, N_SET_PREPROC, strlen(N_SET_PREPROC)))
+	{
+		guikernel.set_kernel(input+strlen(N_SET_PREPROC));
 	} 
 	else if (!strncmp(input, N_LINEAR_SVM_TRAIN, strlen(N_LINEAR_SVM_TRAIN)))
 	{
