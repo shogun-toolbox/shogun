@@ -171,22 +171,24 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
     if (m)
     {
 	CIO::message("Preprocessing feature matrix\n");
-	REAL* res= new REAL[num_dim];
-	REAL* sub_mean= new REAL[num_features];
+	REAL* res= new REAL[num_dim+100000];
+	double* sub_mean= new double[num_features+1000000];
 	for (int vec=0; vec<num_vectors; vec++)
 	{
-	    int onei=1 ;
-	    double zerod=0;
-	    double oned=1;
-	    char N='N';
 	    int i;
 
 	    for (i=0; i<num_features; i++)
 		sub_mean[i]=m[num_features*vec+i]-mean[i] ;
 
-	    int num_feat=num_features;
+	    int onei=1 ;
+	    double zerod=0;
+	    double oned=1;
+	    char N='N';
+	    int num_f=num_features;
+	    int num_d=num_dim;
+	    int lda=num_dim;
 
-	    dgemv_(&N, &num_dim, &num_feat, &oned, T, &num_dim, sub_mean, &onei, &zerod, res, &onei) ;
+	    dgemv_(&N, &num_d, &num_f, &oned, T, &lda, sub_mean, &onei, &zerod, res, &onei) ;
 
 	    REAL* m_transformed=&m[num_dim*vec];
 	    for (i=0; i<num_dim; i++)
