@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#missing purify, condor, ddd
+#DEFINES="-DMPICH_SKIP_MPICXX -D_LARGEFILE64_SOURCE -DDEBUG -DSVMMPI -DWITHMATLAB -DNO_LOG_CACHE -DBIGOBS -DBIGSTATES -DNORMALIZE_DERIVATIVE -DNORMALIZE_TO_ONE -DUSE_KERNEL_CACHE -DPARALLEL_STRUCTURES -DLOG_SUM_ARRAY -DTMP_SAVE  -DCHECK_BW_NORMALIZATION"
+#"-llapack -llapack_atlas -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c -lm"
+
 # some hopefully reasonable defaults
 SRCDIR=.
 EXT_SRC_C=c
@@ -10,9 +14,29 @@ EXESUFFIX=${KERNELNAME}-${MACHINE}
 EXT_OBJ_CPP=cpp.o
 EXT_OBJ_C=c.o
 
-#most defines are simply design bugs
-DEFINES="-DMPICH_SKIP_MPICXX -D_LARGEFILE64_SOURCE -DNO_LOG_CACHE -DBIGOBS -DUSE_KERNEL_CACHE -DBIGSTATES"
-#DEFINES="-DMPICH_SKIP_MPICXX -D_LARGEFILE64_SOURCE -DDEBUG -DSVMMPI -DWITHMATLAB -DNO_LOG_CACHE -DBIGOBS -DBIGSTATES -DNORMALIZE_DERIVATIVE -DNORMALIZE_TO_ONE -DUSE_KERNEL_CACHE -DPARALLEL_STRUCTURES -DLOG_SUM_ARRAY -DTMP_SAVE  -DCHECK_BW_NORMALIZATION"
+#the defaults are
+_matlab=no
+_svm_mpi=no
+_tmpsave=no
+_cplex=no
+_logcache=no
+_logsumarray=no
+_parallel=no
+_largefile=yes
+_lapack=yes
+_bigobs=yes
+_bigstates=yes
+_kernelcache=yes
+_cache=no
+_debug=no
+_pathdebug=no
+_profile=
+_prefix="/usr/local"
+_bindir="$_prefix/bin"
+_datadir="$_prefix/share/mplayer"
+_mandir="$_prefix/man"
+_confdir="$_prefix/etc/mplayer"
+_libdir="$_prefix/lib"
 
 # these ones will be autodetected
 GDB=gdb
@@ -23,9 +47,11 @@ COMPFLAGS_C=
 COMPFLAGS_CPP=
 INCLUDES=-I${SRCDIR}
 LINK=c++
-LINKFLAGS="-llapack -llapack_atlas -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c -lm"
+LINKFLAGS="-lm"
 TARGET="genefinder-${EXESUFFIX}"
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -fkeep-inline-functions  -finline-functions -fschedule-insns2 -fthread-jumps -fforce-mem -fforce-addr -fstrength-reduce -fomit-frame-pointer -unroll-loops"
+#most defines are simply design bugs, use the ./configure --{disable,enable}-<options>
+DEFINES=
 
 # stuff needed for autodetections (definitely needs cleanup)
 TMPLOG="configure.log"
@@ -174,6 +200,153 @@ echores() {
   echo "" >> "$TMPLOG"
   echo "$@"
 }
+
+for parm in "$@" ; do
+  if test "$parm" = "--help" || test "$parm" = "-help" || test "$parm" = "-h" ; then
+    cat << EOF
+
+Usage: $0 [OPTIONS]...
+
+Configuration:
+  -h, --help             display this help and exit
+
+Installation directories:
+  --prefix=DIR           use this prefix for installing genefinder [/usr/local]
+  --bindir=DIR           use this prefix for installing genefinder binary
+                         [PREFIX/bin]
+  --datadir=DIR          use this prefix for installing machine independent
+                         data files (fonts, skins) [PREFIX/share/genefinder]
+  --mandir=DIR           use this prefix for installing manpages [PREFIX/man]
+  --confdir=DIR          use this prefix for installing configuration files
+                         [same as datadir]
+  --libdir=DIR           use this prefix for object code libraries [PREFIX/lib]
+
+Optional features:
+  --enable-matlab        enable matlab (genefiner can be called from within matlab) support [disable]
+  --enable-svmmpi    	 enable multiprocessor svm support [disabled]
+  --enable-tmpsave    	 enable save HMM on each optimization step to temporary file [disabled]
+  --enable-cplex    	 enable code using CPLEX  [disabled]
+  --enable-logcache      enable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
+  --enable-logsum-array  enable log sum array supposed to be a bit more accurate [disabled]
+  --enable-parallel      enable parallel structures in svm training. genefinder will then run as many threads as the machine has (much faster) [disabled]
+
+  --disable-largefile    disable large file support (64bit file acces routines) [enabled]
+  --disable-lapack    	 disable lapack math routines and use built in ones (slower!) [enabled]
+  --disable-bigobs		 disable big (16bit) observation [enabled]
+  --disable-bigstates	 disable big (16bit) state [enabled]
+  --disable-kernel-cache disable kernel cache [enabled]
+  --disable-cache 		 disable HMM cache [enabled]
+
+Miscellaneous options:
+  --enable-debug	     enable debugging [disabled]
+  --enable-path-debug	 enable viterbi path debugging [disabled]
+  --enable-profile       compile profiling information into genefinder [disable]
+  --enable-static        build a statically linked binary. Set further linking
+                         options with --enable-static="-lslang -lncurses"
+  --cc=COMPILER          use this C compiler to build genefinder [gcc]
+  --target=PLATFORM      target platform (i386-linux, arm-linux, etc)
+  --install-path=PATH    the path to a custom install program (useful if
+                         your OS uses a GNU-incompatible install utility by
+                         default and you want to point to the GNU version)
+EOF
+    exit 0
+  fi
+done # for parm in ...
+
+# 1st pass checking for vital options
+_install=install
+_ranlib=ranlib
+_cc=gcc
+test "$CC" && _cc="$CC"
+_as=auto
+_runtime_cpudetection=no
+for ac_option do
+  case "$ac_option" in
+  --target=*)
+    _target=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --cc=*)
+    _cc=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --as=*)
+    _as=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --enable-static)
+    _ld_static='-static'
+    ;;
+  --disable-static)
+    _ld_static=''
+    ;;
+  --enable-static=*)
+    _ld_static="-static `echo $ac_option | cut -d '=' -f 2`"
+    ;;
+  --with-extraincdir=*)
+    _inc_extra=-I`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -I,g'`
+    ;;
+  --with-extralibdir=*)
+    _ld_extra=-L`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -L,g'`
+#    _ld_extra="${_ld_extra} -Wl,-R"`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -Wl\,-R,g'`" -L"`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -L,g'`
+    ;;
+  --install-path=*)
+    _install=`echo $ac_option | cut -d '=' -f 2 | sed 's/\/$//'`"/install"
+    ;;
+  --disable-matlab)		_matlab=no	;;
+  --enable-matlab)		_matlab=yes	;;
+  --disable-svmmpi)		_svmmpi=no	;;
+  --enable-svmmpi)		_svmmpi=yes	;;
+  --disable-tmpsave)	_tmpsave=no	;;
+  --enable-tmpsave)		_tmpsave=yes	;;
+  --disable-cplex)		_cplex=no	;;
+  --enable-cplex)		_cplex=yes	;;
+  --disable-logcache)	_logcache=no	;;
+  --enable-logcache)	_logcache=yes	;;
+  --disable-logsum-array)_logsumarray=no	;;
+  --enable-logsum-array)_logsumarray=yes	;;
+  --disable-parallel)	_parallel=no	;;
+  --enable-parallel)	_parallel=yes	;;
+  --disable-largefile)	_largefile=no	;;
+  --enable-largefile)	_largefile=yes	;;
+  --disable-lapack)		_lapack=no	;;
+  --enable-lapack)		_lapack=yes	;;
+  --disable-bigobs)		_bigobs=no	;;
+  --enable-bigobs)		_bigobs=yes	;;
+  --disable-bigstates)	_bigstates=no	;;
+  --enable-bigstates)	_bigstates=yes	;;
+  --disable-kernel-cache)_kernelcache=no	;;
+  --enable-kernel-cache)_kernelcache=yes	;;
+  --disable-cache)		_cache=no	;;
+  --enable-cache)		_cache=yes	;;
+  --disable-debug) 		_debug=no ;;
+  --enable-debug) 		_debug=yes ;;
+  --enable-path-debug)  _pathdebug=no ;;
+  --enable-path-debug)  _pathdebug=yes ;;
+  --disable-profile) 	_profile= ;;
+  --enable-profile) 	_profile='-p' ;;
+  --prefix=*)
+    _prefix=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --bindir=*)
+    _bindir=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --datadir=*)
+    _datadir=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --mandir=*)
+    _mandir=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --confdir=*)
+    _confdir=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --libdir=*)
+    _libdir=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+
+  *)
+    echo "Unknown parameter: $ac_option"
+    exit 1
+    ;;
+  esac
+done
 
 determine_march_mcpu()
 {
@@ -904,6 +1077,75 @@ EOF
 	fi
 }
 
+set_opts()
+{
+	if test "$_matlab" = yes
+	then
+		DEFINES="$DEFINES -DMATLAB"
+		LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
+		INCLUDES="$INCLUDES -I/home/matrix/matlab/extern/include/"
+	fi
+	if test "$_svm_mpi" = yes
+	then
+		DEFINES="$DEFINES -DSVMMPI"
+	fi
+	if test "$_tmpsave" = yes
+	then
+		DEFINES="$DEFINES -DTMPSAVE"
+	fi
+	if test "$_cplex" = yes
+	then
+		DEFINES="$DEFINES -DCPLEX"
+	fi
+	if test "$_logcache" = no
+	then
+		DEFINES="$DEFINES -DNO_LOG_CACHE"
+	fi
+	if test "$_logsumarray" = yes
+	then
+		DEFINES="$DEFINES -DLOG_SUM_ARRAY"
+	fi
+	if test "$_parallel" = yes
+	then
+		DEFINES="$DEFINES -DPARALLEL_STRUCTURES"
+	fi
+	if test "$_lapack" = no
+	then
+		DEFINES="$DEFINES -DNO_LAPACK"
+	else
+		LINKFLAGS="$LINKFLAGS -llapack_pic -llapack_atlas -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c"
+	fi
+	if test "$_bigobs" = yes
+	then
+		DEFINES="$DEFINES -DBIGOBS"
+	fi
+	if test "$_bigstates" = yes
+	then
+		DEFINES="$DEFINES -DBIGSTATES"
+	fi
+	if test "$_kernelcache" = yes
+	then
+		DEFINES="$DEFINES -DUSE_KERNEL_CACHE"
+	fi
+	if test "$_cache" = yes
+	then
+		DEFINES="$DEFINES -DNOCACHE"
+	fi
+	if test "$_debug" = yes
+	then
+		DEFINES="$DEFINES -DDEBUG"
+		COMPFLAGS_CPP="$COMPFLAGS_CPP -g"
+	fi
+	if test "$_pathdebug" = yes
+	then
+		DEFINES="$DEFINES -DPATHDEBUG"
+		COMPFLAGS_CPP="$COMPFLAGS_CPP -g"
+	fi
+	if test "$_profile" = yes
+	then
+		COMPFLAGS_CPP="$COMPFLAGS_CPP -g -p"
+	fi
+}
 
 #write the actual config
 
@@ -911,7 +1153,7 @@ write_dot_config()
 {
 
 #set autodetected options
-COMPFLAGS_CPP="$OS $_march $_mcpu $_optimizing $COMP_OPTS"
+COMPFLAGS_CPP="$COMPFLAGS_CPP $OS $_march $_mcpu $_optimizing $COMP_OPTS"
 COMPFLAGS_C="$COMPFLAGS_CPP"
 
 cat > .config <<EOF
@@ -943,15 +1185,9 @@ clean_up()
 	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS" "$TMPSS"
 }
 
-#TODO
-#purify
-#debug
-#condor
-#cplex
-#ddd
-#static
 detect_cc
 check_make
 determine_march_mcpu
+set_opts
 write_dot_config
 clean_up
