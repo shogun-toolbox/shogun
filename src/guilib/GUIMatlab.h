@@ -75,7 +75,9 @@ public:
 	// MKL Kernel stuff
 	bool compute_by_subkernels(mxArray* retvals[]);
 	bool get_subkernel_weights(mxArray* retvals[]);
+	bool get_last_subkernel_weights(mxArray* retvals[]);
 	bool set_subkernel_weights(const mxArray *mx_arg);
+	bool set_last_subkernel_weights(const mxArray *mx_arg);
 	bool get_WD_position_weights(mxArray* retvals[]);
 	bool set_WD_position_weights(const mxArray *mx_arg);
 

@@ -27,8 +27,10 @@ static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
 static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
 static const CHAR* N_COMPUTE_BY_SUBKERNELS=	        "compute_by_subkernels";
 static const CHAR* N_SET_SUBKERNEL_WEIGHTS=	        "set_subkernel_weights";
+static const CHAR* N_SET_LAST_SUBKERNEL_WEIGHTS=	        "set_last_subkernel_weights";
 static const CHAR* N_SET_WD_POS_WEIGHTS=	        "set_WD_position_weights";
 static const CHAR* N_GET_SUBKERNEL_WEIGHTS=	        "get_subkernel_weights";
+static const CHAR* N_GET_LAST_SUBKERNEL_WEIGHTS=	        "get_last_subkernel_weights";
 static const CHAR* N_GET_WD_POS_WEIGHTS=	        "get_WD_position_weights";
 static const CHAR* N_GET_FEATURES=		"get_features";
 static const CHAR* N_GET_LABELS=		"get_labels";
@@ -282,6 +284,16 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				mexErrMsgTxt("usage is W=gf('compute_by_subkernels')");
 		}
+		else if (!strncmp(action, N_GET_LAST_SUBKERNEL_WEIGHTS, strlen(N_GET_LAST_SUBKERNEL_WEIGHTS)))
+		{
+			if ((nlhs==1) && (nrhs==1))
+			{
+				if (!gf_matlab.get_last_subkernel_weights(plhs))
+					mexErrMsgTxt("error executing command");
+			}
+			else
+				mexErrMsgTxt("usage is W=gf('get_last_subkernel_weights')");
+		}
 		else if (!strncmp(action, N_GET_SUBKERNEL_WEIGHTS, strlen(N_GET_SUBKERNEL_WEIGHTS)))
 		{
 			if ((nlhs==1) && (nrhs==1))
@@ -301,6 +313,16 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				mexErrMsgTxt("usage is W=gf('get_WD_position_weights')");
+		}
+		else if (!strncmp(action, N_SET_LAST_SUBKERNEL_WEIGHTS, strlen(N_SET_LAST_SUBKERNEL_WEIGHTS)))
+		{
+			if ((nlhs==0) && (nrhs==2))
+			{
+				if (!gf_matlab.set_last_subkernel_weights(prhs[1]))
+					mexErrMsgTxt("error executing command");
+			}
+			else
+				mexErrMsgTxt("usage is gf('set_last_subkernel_weights', W)");
 		}
 		else if (!strncmp(action, N_SET_SUBKERNEL_WEIGHTS, strlen(N_SET_SUBKERNEL_WEIGHTS)))
 		{

@@ -1475,11 +1475,80 @@ bool CGUIMatlab::get_subkernel_weights(mxArray* retvals[])
 	return false;
 }
 
+bool CGUIMatlab::get_last_subkernel_weights(mxArray* retvals[])
+{
+	CKernel *ckernel = gui->guikernel.get_kernel() ;
+	if (ckernel && (ckernel->get_kernel_type() == K_COMBINED))
+	{
+		CKernel *kernel_ = ((CCombinedKernel*)ckernel)->get_last_kernel() ;
+		
+		INT degree=-1;
+		INT length=-1;
+		
+		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
+		{
+			CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+			
+			const REAL* weights = kernel->get_degree_weights(degree, length) ;
+			if (length == 0)
+				length = 1;
+			
+			mxArray* mx_result=mxCreateDoubleMatrix(degree, length, mxREAL);
+			double* result=mxGetPr(mx_result);
+			
+			for (int i=0; i<degree*length; i++)
+				result[i] = weights[i] ;
+			
+			retvals[0]=mx_result;
+			return true;
+		}
+		
+		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+		{
+			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+			
+			const REAL* weights = kernel->get_degree_weights(degree, length) ;
+			if (length == 0)
+				length = 1;
+			
+			mxArray* mx_result=mxCreateDoubleMatrix(degree, length, mxREAL);
+			double* result=mxGetPr(mx_result);
+			
+			for (int i=0; i<degree*length; i++)
+				result[i] = weights[i] ;
+			
+			retvals[0]=mx_result;
+			return true;
+		}
+		if (kernel_ && (kernel_->get_kernel_type() == K_COMBINED))
+		{
+			CCombinedKernel *kernel = (CCombinedKernel *) kernel_ ;
+			INT num_weights = -1 ;
+			const REAL* weights = kernel->get_subkernel_weights(num_weights) ;
+			
+			mxArray* mx_result=mxCreateDoubleMatrix(1, num_weights, mxREAL);
+			double* result=mxGetPr(mx_result);
+			
+			for (int i=0; i<num_weights; i++)
+				result[i] = weights[i] ;
+			
+			retvals[0]=mx_result;
+			return true;
+		}
+	}
+	
+	CIO::message(M_ERROR, "get_last_subkernel_weights only works for combined kernels") ;
+	return false;
+}
+
 bool CGUIMatlab::get_WD_position_weights(mxArray* retvals[])
 {
 	CKernel *kernel_ = gui->guikernel.get_kernel() ;
 	INT length=-1;
 	
+	if (kernel_ && (kernel_->get_kernel_type() == K_COMBINED))
+		kernel_=((CCombinedKernel*)kernel_)->get_last_kernel() ;
+
 	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 	{
 		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
@@ -1575,9 +1644,73 @@ bool CGUIMatlab::set_subkernel_weights(const mxArray* mx_arg)
 	return true ;
 }
 
+bool CGUIMatlab::set_last_subkernel_weights(const mxArray* mx_arg)
+{
+	CKernel *ckernel = gui->guikernel.get_kernel() ;
+	if (ckernel && (ckernel->get_kernel_type() == K_COMBINED))
+	{
+		CKernel *kernel_ = ((CCombinedKernel*)ckernel)->get_last_kernel() ;
+		
+		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
+		{
+			CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+			INT degree = kernel->get_degree() ;
+			if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
+			{
+				CIO::message(M_ERROR, "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
+				return false ;
+			}
+			
+			INT len = mxGetN(mx_arg);
+			
+			if (len ==  1)
+				len = 0;
+			
+			return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), len);
+			
+		}
+		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+		{
+			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+			INT degree = kernel->get_degree() ;
+			if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
+			{
+				CIO::message(M_ERROR, "dimension mismatch (should be (seq_length | 1) x degree)\n") ;
+				return false ;
+			}
+			
+			INT len = mxGetN(mx_arg);
+			
+			if (len ==  1)
+				len = 0;
+			
+			return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), len);
+			
+		}
+		
+		// all other kernels
+		CKernel *kernel = kernel_ ;
+		INT num_subkernels = kernel->get_num_subkernels() ;
+		if (mxGetM(mx_arg)!=1 || mxGetN(mx_arg)!=num_subkernels)
+		{
+			CIO::message(M_ERROR, "dimension mismatch (should be 1 x num_subkernels)\n") ;
+			return false ;
+		}
+		
+		kernel->set_subkernel_weights(mxGetPr(mx_arg), mxGetN(mx_arg));
+		return true ;
+	}
+
+	CIO::message(M_ERROR, "set_last_subkernel_weights only works for combined kernels") ;
+	return false ;
+}
+
 bool CGUIMatlab::set_WD_position_weights(const mxArray* mx_arg)
 {
 	CKernel *kernel_ = gui->guikernel.get_kernel() ;
+
+	if (kernel_ && (kernel_->get_kernel_type() == K_COMBINED))
+		kernel_=((CCombinedKernel*)kernel_)->get_last_kernel() ;
 	
 	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 	{
