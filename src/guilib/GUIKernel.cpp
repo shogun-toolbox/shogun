@@ -1,4 +1,6 @@
+#include "gui/GUI.h"
 #include "guilib/GUIKernel.h"
+#include "guilib/GUISVM.h"
 #include "guilib/GUIPluginEstimate.h"
 #include "kernel/Kernel.h"
 #include "kernel/RealKernel.h"
@@ -560,6 +562,54 @@ bool CGUIKernel::save_kernel_init(CHAR* param)
 	return result;
 }
 
+bool CGUIKernel::init_kernel_tree(CHAR* param)
+{
+	if (gui->guisvm.get_svm()!=NULL)
+	{
+		CWeightedDegreeCharKernel *kernel_=
+			(CWeightedDegreeCharKernel*)kernel ;
+		
+		if ((kernel->get_kernel_type() == K_WEIGHTEDDEGREE) && 
+			(kernel_->get_max_mismatch()==0))
+		{
+			for(INT i=0; i<gui->guisvm.get_svm()->get_num_support_vectors(); i++)
+			{
+				if (i%1000==0)	CIO::message(".") ;
+				kernel_->add_example_to_tree(gui->guisvm.get_svm()->get_support_vector(i), gui->guisvm.get_svm()->get_alpha(i)) ;
+			} ;			
+			/*CIO::message("\ntree nodes: %i\npruning", kernel_->tree_size()) ;
+			
+			CFeatures* feat=gui->guifeatures.get_train_features() ;
+			
+			for(INT i=0; i<feat->get_num_vectors(); i++)
+				kernel_->count_tree_usage(i) ;
+
+			kernel_->prune_tree() ;
+			CIO::message("tree nodes after pruning: %i\n", kernel_->tree_size()) ;
+			*/
+		} ;
+	} else
+	{
+		CIO::message("create SVM first\n");
+		return false ;
+	}
+	return true ;
+}
+
+bool CGUIKernel::delete_kernel_tree(CHAR* param)
+{
+	CWeightedDegreeCharKernel *kernel_=
+		(CWeightedDegreeCharKernel*)kernel ;
+	
+	if ((kernel->get_kernel_type() == K_WEIGHTEDDEGREE) && 
+		(kernel_->get_max_mismatch()==0))
+	{
+		kernel_->delete_tree() ;
+	} ;
+	return true ;
+}
+
+
 bool CGUIKernel::init_kernel(CHAR* param)
 {
 	CHAR target[1024]="";
@@ -595,43 +645,43 @@ bool CGUIKernel::init_kernel(CHAR* param)
 	    }
 	  else if (!strncmp(target, "TEST", 5))
 	    {
-	      if (gui->guifeatures.get_train_features() && gui->guifeatures.get_test_features())
-		{
-		  if	(((kernel->get_feature_class() == gui->guifeatures.get_train_features()->get_feature_class()) && 
-			  (kernel->get_feature_class() == gui->guifeatures.get_test_features()->get_feature_class())) &&
-			 ((kernel->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type()) && 
-			  (kernel->get_feature_type() == gui->guifeatures.get_test_features()->get_feature_type())) )
-		    {
-		      if (!initialized)
+			if (gui->guifeatures.get_train_features() && gui->guifeatures.get_test_features())
 			{
-			  CIO::message("kernel not initialized for training examples\n") ;
-			  return false ;
+				if	(((kernel->get_feature_class() == gui->guifeatures.get_train_features()->get_feature_class()) && 
+					  (kernel->get_feature_class() == gui->guifeatures.get_test_features()->get_feature_class())) &&
+					 ((kernel->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type()) && 
+					  (kernel->get_feature_type() == gui->guifeatures.get_test_features()->get_feature_type())) )
+				{
+					if (!initialized)
+					{
+						CIO::message("kernel not initialized for training examples\n") ;
+						return false ;
+					}
+					else
+					{
+						CIO::message("initialising kernel with TEST DATA, train: %d test %d\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
+						// lhs -> always train_features; rhs -> always test_features
+						kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features(), do_init);						
+					} ;
+				}
+				else
+				{
+					CIO::message("kernel can not process this feature type\n");
+					return false ;
+				}
 			}
-		      else
-			{
-			  CIO::message("initialising kernel with TEST DATA, train: %d test %d\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
-			  // lhs -> always train_features; rhs -> always test_features
-			  kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features(), do_init);
-			} ;
-		    }
-		  else
-		    {
-		      CIO::message("kernel can not process this feature type\n");
-		      return false ;
-		    }
-		}
-	      else
-		CIO::message("assign train and test features first\n");
-	      
+			else
+				CIO::message("assign train and test features first\n");
+			
 	    }
 	  else
-	    CIO::not_implemented();
+		  CIO::not_implemented();
 	}
 	else 
-	  {
+	{
 	    CIO::message("see help for params\n");
 	    return false;
-	  }
+	}
 	
 	return true;
 }

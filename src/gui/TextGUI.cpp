@@ -51,6 +51,8 @@ static const CHAR* N_ADD_PREPROC=		"add_preproc";
 static const CHAR* N_DEL_PREPROC=		"del_preproc";
 static const CHAR* N_PREPROCESS=		"preprocess";
 static const CHAR* N_INIT_KERNEL=		"init_kernel";
+static const CHAR* N_DELETE_KERNEL_TREE=		"delete_kernel_tree";
+static const CHAR* N_INIT_KERNEL_TREE=		"init_kernel_tree";
 static const CHAR* N_SAVE_PATH=			"save_hmm_path";
 static const CHAR* N_SAVE_LIKELIHOOD=	"save_hmm_likelihood";
 static const CHAR* N_BEST_PATH=			"best_path";
@@ -327,6 +329,14 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_LOAD_SVM, strlen(N_LOAD_SVM)))
 	{
 		guisvm.load(input+strlen(N_LOAD_SVM));
+	} 
+	else if (!strncmp(input, N_DELETE_KERNEL_TREE, strlen(N_DELETE_KERNEL_TREE)))
+	{
+		guikernel.delete_kernel_tree(input+strlen(N_DELETE_KERNEL_TREE));
+	} 
+	else if (!strncmp(input, N_INIT_KERNEL_TREE, strlen(N_INIT_KERNEL_TREE)))
+	{
+		guikernel.init_kernel_tree(input+strlen(N_INIT_KERNEL_TREE));
 	} 
 	else if (!strncmp(input, N_INIT_KERNEL, strlen(N_INIT_KERNEL)))
 	{

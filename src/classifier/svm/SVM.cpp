@@ -1,6 +1,7 @@
 #include "lib/common.h"
 #include "classifier/svm/SVM.h"
 #include "lib/io.h"
+#include "kernel/WeightedDegreeCharKernel.h"
 
 #include <string.h>
 
@@ -123,8 +124,23 @@ CLabels* CSVM::classify(CLabels* result)
 		assert(result);
 		CIO::message("num vec: %d\n", num_vectors);
 
-		for (INT vec=0; vec<num_vectors; vec++)
-			result->set_label(vec, classify_example(vec));
+		CWeightedDegreeCharKernel *kernel=
+			(CWeightedDegreeCharKernel*)CKernelMachine::get_kernel() ;
+
+		if ((kernel->get_kernel_type() == K_WEIGHTEDDEGREE) && 
+			(kernel->is_tree_initialized()))
+		{
+			for (INT vec=0; vec<num_vectors; vec++)
+			{
+				REAL res=classify_example_wd(vec) ;
+				result->set_label(vec, res);
+			}
+		}
+		else
+		{
+			for (INT vec=0; vec<num_vectors; vec++)
+				result->set_label(vec, classify_example(vec));
+		}
 	}
 	else 
 		return NULL;
@@ -134,10 +150,19 @@ CLabels* CSVM::classify(CLabels* result)
 
 REAL CSVM::classify_example(INT num)
 {
-  REAL dist=0;
-  for(INT i=0; i<get_num_support_vectors(); i++)
-    dist+=CKernelMachine::get_kernel()->kernel(get_support_vector(i), num)*get_alpha(i);
-  
-	//CIO::message("%f %f abused\n", dist, dist+get_bias());
-  return(dist+get_bias());
+	REAL dist=0;
+	for(INT i=0; i<get_num_support_vectors(); i++)
+		dist+=CKernelMachine::get_kernel()->kernel(get_support_vector(i), num)*get_alpha(i);
+	
+	return(dist+get_bias());
+}
+
+REAL CSVM::classify_example_wd(INT num)
+{
+	CWeightedDegreeCharKernel *kernel=
+		(CWeightedDegreeCharKernel*)CKernelMachine::get_kernel() ;
+	
+	REAL dist=kernel->compute_by_tree(num) ;
+
+	return(dist+get_bias());
 }

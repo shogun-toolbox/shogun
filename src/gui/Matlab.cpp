@@ -20,6 +20,7 @@ static const CHAR* N_GET_HMM=			"get_hmm";
 static const CHAR* N_GET_SVM=			"get_svm";
 static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
 static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
+static const CHAR* N_GET_KERNEL_TREE_WEIGHTS=	        "get_kernel_tree_weights";
 static const CHAR* N_GET_FEATURES=		"get_features";
 static const CHAR* N_GET_LABELS=		"get_labels";
 static const CHAR* N_GET_PREPROC_INIT=	        "get_preproc_init";
@@ -227,6 +228,13 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.plugin_estimate_classify(plhs);
 			else
 				mexErrMsgTxt("usage is [result]=gf('plugin_estimate_classify')");
+		}
+		else if (!strncmp(action, N_GET_KERNEL_TREE_WEIGHTS, strlen(N_GET_KERNEL_TREE_WEIGHTS)))
+		{
+			if ((nlhs==1) && (nrhs==1))
+				gf_matlab.get_kernel_tree_weights(plhs);
+			else
+				mexErrMsgTxt("usage is W=gf('get_kernel_tree_weights')");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_MATRIX, strlen(N_GET_KERNEL_MATRIX)))
 		{

@@ -8,6 +8,7 @@
 #include "classifier/svm/SVM.h"
 #include "features/Labels.h"
 #include "features/RealFeatures.h"
+#include "kernel/WeightedDegreeCharKernel.h"
 
 #include "guilib/GUIMatlab.h"
 #include "gui/TextGUI.h"
@@ -810,6 +811,28 @@ bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 		for (int i=0; i<num_vec; i++)
 			for (int j=0; j<num_vece; j++)
 				result[i+j*num_vec]=k->kernel(i,j) ;
+		
+		retvals[0]=mx_result;
+		return true;
+	}
+	return false;
+}
+
+bool CGUIMatlab::get_kernel_tree_weights(mxArray* retvals[])
+{
+	CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) gui->guikernel.get_kernel() ;
+	
+	if ((kernel->get_kernel_type() == K_WEIGHTEDDEGREE) && 
+		(kernel->get_max_mismatch()==0))
+	{
+		INT len=0 ;
+		REAL* res=kernel->compute_abs_weights(len) ;
+		
+		mxArray* mx_result=mxCreateDoubleMatrix(4, len, mxREAL);
+		double* result=mxGetPr(mx_result);
+		for (int i=0; i<4*len; i++)
+			result[i]=res[i] ;
+		delete[] res ;
 		
 		retvals[0]=mx_result;
 		return true;
