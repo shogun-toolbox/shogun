@@ -73,7 +73,6 @@ typedef LONGREAL* P_LONGREAL;
 #endif
 
 typedef KERNELCACHE_ELEM P_KERNELCACHE_ELEM;
-
 typedef LONG KERNELCACHE_IDX;
 
 /// The io libs output [DEBUG] etc in front of every CIO::message
@@ -166,6 +165,5 @@ enum E_ALPHABET
 //@}
 
 #define TMP_DIR "/tmp/"
-//#define TMP_DIR "/short/x46/tmp/"
 
 #endif

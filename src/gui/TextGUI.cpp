@@ -21,8 +21,6 @@
 #include <readline/history.h>
 #endif
 
-
-
 CTextGUI* gui=NULL;
 CHistogram* h;
 
@@ -33,6 +31,8 @@ CHistogram* h;
 #ifdef USE_SVMMPI
 #include "svm_mpi/mpi_base.h"
 #endif
+
+const INT READLINE_BUFFER_SIZE = 10000 ;
 
 //names of menu commands
 static const CHAR* N_NEW_HMM=			"new_hmm";
@@ -719,7 +719,7 @@ int main(int argc, const CHAR* argv[])
 				int s2=accept(s, NULL, NULL);
 				CIO::message(M_INFO, "accepting connection\n");
 
-				CHAR input[5000];
+				CHAR input[READLINE_BUFFER_SIZE];
 				do
 				{
 					bzero(input, sizeof(input));
