@@ -37,15 +37,11 @@ bool CGUIFeatures::preprocess(char* param)
 		{
 			if (strcmp(target,"TRAIN")==0)
 			{
-				// init using trainfeatures + add preprocs to TRAINfeatures
-				init_preproc(train_features, train_features);
-				preprocess_features(train_features, force==1);
+				preprocess_features(train_features, NULL, force==1);
 			}
 			else if (strcmp(target,"TEST")==0)
 			{
-				// init using trainfeatures + add preprocs to TESTfeatures
-				init_preproc(train_features, test_features);
-				preprocess_features(test_features, force==1);
+				preprocess_features(train_features, test_features, force==1);
 			}
 			else
 				CIO::message("see help for parameters\n");
@@ -58,40 +54,35 @@ bool CGUIFeatures::preprocess(char* param)
 
 	return result;
 }
-bool CGUIFeatures::init_preproc(CFeatures* feat, CFeatures* addfeat)
+bool CGUIFeatures::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force)
 {
 	int num_preproc=0;
 	CPreProc** preprocs;
 	if ((preprocs=gui->guipreproc.get_preprocs(num_preproc))!=NULL)
 	{
-		if (feat)
+		if (trainfeat)
 		{
-			for (int i=0; i<num_preproc; i++)
+			if (testfeat)
 			{
-				preprocs[i]->init(feat);
-				addfeat->add_preproc(preprocs[i]);
+				assert(trainfeat->get_num_preproc()==num_preproc);
+
+				for (int i=0; i<trainfeat->get_num_preproc();  i++)
+				{
+					preprocs[i]->init(trainfeat);
+					testfeat->add_preproc(trainfeat->get_preproc(i));
+				}
+				testfeat->preproc_feature_matrix(force);
+			}
+			else
+			{
+				for (int i=0; i<num_preproc; i++)
+				{
+					preprocs[i]->init(trainfeat);
+					trainfeat->add_preproc(preprocs[i]);
+					trainfeat->preproc_feature_matrix(force);
+				}
 			}
 
-			return true;
-		}
-		else
-			CIO::message("initialization of preprocessor needs trainfeatures !\n");
-	}
-	else
-		CIO::message("no preprocessors available!\n");
-
-	return false;
-}
-
-bool CGUIFeatures::preprocess_features(CFeatures* feat, bool force)
-{
-	int num_preproc=0;
-	CPreProc** preprocs;
-	if ((preprocs=gui->guipreproc.get_preprocs(num_preproc))!=NULL)
-	{
-		if (feat)
-		{
-			feat->preproc_feature_matrix(force);
 			return true;
 		}
 		else
@@ -102,7 +93,6 @@ bool CGUIFeatures::preprocess_features(CFeatures* feat, bool force)
 
 	return false;
 }
-
 
 bool CGUIFeatures::set_features(char* param)
 {

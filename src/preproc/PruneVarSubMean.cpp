@@ -57,7 +57,12 @@ bool CPruneVarSubMean::init(CFeatures* f_)
 		}
 
 		for (j=0; j<num_features; j++)
+		{
 			mean[j]/=num_examples ;
+
+			if (j<20)
+				CIO::message("%f\n", mean[j]);
+		}
 
 		// compute var
 		for (i=0; i<num_examples; i++)

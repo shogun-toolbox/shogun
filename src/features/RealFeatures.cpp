@@ -38,7 +38,7 @@ bool CRealFeatures::save(char* fname)
     unsigned char doublelen=sizeof(double);
     unsigned int endian=0x12345678;
     unsigned int fourcc='RFEA'; //id for ST features
-    unsigned int preprocd= (preprocessed) ? 1 : 0;
+    //unsigned int preprocd= (preprocessed) ? 1 : 0;
     unsigned int num_vec= (unsigned int) num_vectors;
     unsigned int num_feat= (unsigned int) len; // this is bit of a hack - suggestions please !  //num_features;
 
@@ -49,7 +49,7 @@ bool CRealFeatures::save(char* fname)
     assert(fwrite(&fourcc, sizeof(unsigned int), 1, dest)==1);
     assert(fwrite(&num_vec, sizeof(unsigned int), 1, dest)==1);
     assert(fwrite(&num_feat, sizeof(unsigned int), 1, dest)==1);
-    assert(fwrite(&preprocd, sizeof(unsigned int), 1, dest)==1);
+#warning preprocd is now a vec assert(fwrite(&preprocd, sizeof(unsigned int), 1, dest)==1);
 
     for (i=0; i< (long) num_vec; i++)
     {

@@ -4,14 +4,14 @@
 #include "lib/common.h"
 #include "lib/Mathmatics.h"
 #include "lib/Cache.h"
-#include "preproc/SimplePreProc.h"
 #include "lib/io.h"
 #include "lib/Cache.h"
+#include "preproc/SimplePreProc.h"
+#include "features/Features.h"
 
 #include <string.h>
 #include <assert.h>
 
-#include "features/Features.h"
 
 template <class ST> class CSimpleFeatures;
 
@@ -144,17 +144,21 @@ template <class ST> class CSimpleFeatures: public CFeatures
 
   virtual bool preproc_feature_matrix(bool force_preprocessing=false)
   {
-	CIO::message("preprocd: %d, force: %d\n", preprocessed, force_preprocessing);
+	CIO::message("force: %d\n", force_preprocessing);
 
-	if ( feature_matrix && get_num_preproc() && (!preprocessed || force_preprocessing) )
+	if ( feature_matrix && get_num_preproc())
 	{
-	    preprocessed=true;	
 
 		for (int i=0; i<get_num_preproc(); i++)
-		{
-			CIO::message("preprocessing using preproc %s\n", get_preproc(i)->get_name());
-			if (((CSimplePreProc<ST>*) get_preproc(i))->apply_to_feature_matrix(this) == NULL)
-				return false;
+		{ 
+			if ( (!is_preprocessed(i) || force_preprocessing) )
+			{
+				set_preprocessed(i);
+
+				CIO::message("preprocessing using preproc %s\n", get_preproc(i)->get_name());
+				if (((CSimplePreProc<ST>*) get_preproc(i))->apply_to_feature_matrix(this) == NULL)
+					return false;
+			}
 		}
 		return true;
 	}

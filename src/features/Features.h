@@ -46,6 +46,12 @@ public:
 	/// get specified preprocessor
 	CPreProc* get_preproc(int num);
 	
+	/// set applied flag for preprocessor
+	inline void set_preprocessed(int num) { preprocessed[num]=true; }
+
+	/// get whether specified preprocessor was already applied
+	inline bool is_preprocessed(int num) { return preprocessed[num]; }
+
 	/// get number of preprocessors
 	inline int get_num_preproc() { return num_preproc; };
 
@@ -81,8 +87,7 @@ private:
 	/// number of preprocs in list
 	int num_preproc;
 
-protected:
-	/// true if features were already preprocessed
-	bool preprocessed;
+	/// i'th entry is true if features were already preprocessed with preproc i
+	bool* preprocessed;
 };
 #endif

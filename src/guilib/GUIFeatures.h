@@ -28,8 +28,7 @@ class CGUIFeatures
 		bool reshape(char* param);
 
 	protected:
-		bool init_preproc(CFeatures* feat, CFeatures* addfeat);
-		bool preprocess_features(CFeatures* feat, bool force);
+		bool preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force);
 
 	protected:
 		CGUI* gui;
