@@ -4117,14 +4117,14 @@ void CHMM::chop(REAL value)
 bool CHMM::linear_train(FILE* file, const int WIDTH, const int UPTO)
 {
     double* hist=new double[256*UPTO];
-    char* line=new char[WIDTH+1];
+    char* line_=new char[WIDTH+1];
 
     int i;
     int total=0;
 
     for (i=0; i<UPTO; i++)
     {
-	line[i]=0;
+	line_[i]=0;
 
 	for (int j=0; j<256; j++)
 	{
@@ -4132,11 +4132,11 @@ bool CHMM::linear_train(FILE* file, const int WIDTH, const int UPTO)
 	}
     }
 
-    while ( (fread(line, sizeof (unsigned char), WIDTH, file)) == (unsigned int) WIDTH)
+    while ( (fread(line_, sizeof (unsigned char), WIDTH, file)) == (unsigned int) WIDTH)
     {
 	for (i=0; i<UPTO; i++)
 	{
-	    hist[i*256+line[i]]++;
+	    hist[i*256+line_[i]]++;
 	}		
 	total++;
     }
@@ -4172,7 +4172,7 @@ bool CHMM::linear_train(FILE* file, const int WIDTH, const int UPTO)
 	for (int j=0; j<M; j++)
 	    set_b(i,j, hist[i*256+p_observations->remap(j)] );
 	    }
-	delete[] line;
+	delete[] line_;
 	delete[] hist;
     return true;
 }
@@ -4180,7 +4180,7 @@ bool CHMM::linear_train(FILE* file, const int WIDTH, const int UPTO)
 REAL CHMM::linear_likelihood(FILE* file, int WIDTH, int UPTO, bool singleline)
 {
     double* hist=new double[256*UPTO];
-    char* line=new char[WIDTH+1];
+    char* line_=new char[WIDTH+1];
 
     int total=0;
 
@@ -4193,28 +4193,28 @@ REAL CHMM::linear_likelihood(FILE* file, int WIDTH, int UPTO, bool singleline)
     if (singleline)
     {
 	double lik=-math.INFTY;
-	if ( (fread(line, sizeof (unsigned char), WIDTH, file)) == (unsigned int) WIDTH)
+	if ( (fread(line_, sizeof (unsigned char), WIDTH, file)) == (unsigned int) WIDTH)
 	{
 	    double d=log(1);
 	    for (int i=0; i<UPTO; i++)
-		d+=hist[i*256+line[i]];
+		d+=hist[i*256+line_[i]];
 	    
 	    lik=d;
 	}
 
-	delete[] line;
+	delete[] line_;
 	delete[] hist;
 	return lik;
     }
     else 
     {
 	mod_prob=-math.INFTY;
-	while ( (fread(line, sizeof (unsigned char), WIDTH, file)) == (unsigned int) WIDTH)
+	while ( (fread(line_, sizeof (unsigned char), WIDTH, file)) == (unsigned int) WIDTH)
 	{
 	    double d=log(1);
 	    for (int i=0; i<UPTO; i++)
 	    {
-		d+=hist[i*256+line[i]];
+		d+=hist[i*256+line_[i]];
 	    }
 
 	    //fprintf(stdout,"P_AVG=%e\n",mod_prob);
@@ -4223,7 +4223,7 @@ REAL CHMM::linear_likelihood(FILE* file, int WIDTH, int UPTO, bool singleline)
 	}
 	mod_prob-=log(total);
 	//fprintf(stdout,"P_AVG=%e\n",mod_prob);
-	delete[] line;
+	delete[] line_;
 	delete[] hist;
 
 	mod_prob_updated=true;
@@ -4234,7 +4234,7 @@ REAL CHMM::linear_likelihood(FILE* file, int WIDTH, int UPTO, bool singleline)
 bool CHMM::save_linear_likelihood_bin(FILE* src, FILE* dest, int WIDTH, int UPTO)
 {
     double* hist=new double[256*UPTO];
-    char* line=new char[WIDTH+1];
+    char* line_=new char[WIDTH+1];
     int total=0;
 
     mod_prob=-math.INFTY;
@@ -4245,12 +4245,12 @@ bool CHMM::save_linear_likelihood_bin(FILE* src, FILE* dest, int WIDTH, int UPTO
 	    hist[i*256+p_observations->remap(j)]=get_b(i,j);
     }
 
-    while ( (fread(line, sizeof (unsigned char), WIDTH, src)) == (unsigned int) WIDTH)
+    while ( (fread(line_, sizeof (unsigned char), WIDTH, src)) == (unsigned int) WIDTH)
     {
 	double d=log(1);
 	for (int i=0; i<UPTO; i++)
 	{
-	    d+=hist[i*256+line[i]];
+	    d+=hist[i*256+line_[i]];
 	}
 	float f=(float)d;
 	fwrite(&f, sizeof(float),1, dest);
@@ -4262,7 +4262,7 @@ bool CHMM::save_linear_likelihood_bin(FILE* src, FILE* dest, int WIDTH, int UPTO
 
     mod_prob_updated=true;
     
-	delete[] line;
+	delete[] line_;
 	delete[] hist;
 
 	return true ;
@@ -4271,7 +4271,7 @@ bool CHMM::save_linear_likelihood_bin(FILE* src, FILE* dest, int WIDTH, int UPTO
 bool CHMM::save_linear_likelihood(FILE* src, FILE* dest, int WIDTH, int UPTO)
 {
     double* hist=new double[256*UPTO];
-    char* line=new char[WIDTH+1];
+    char* line_=new char[WIDTH+1];
     int total=0;
 
     mod_prob=-math.INFTY;
@@ -4285,12 +4285,12 @@ bool CHMM::save_linear_likelihood(FILE* src, FILE* dest, int WIDTH, int UPTO)
     fprintf(dest, "%% likelihood of model per observation\n%% P[O|model]=[ P[O|model]_1 P[O|model]_2 ... P[O|model]_dim ]\n%%\n");
     fprintf(dest, "P=[");
 
-    while ( (fread(line, sizeof (unsigned char), WIDTH, src)) == (unsigned int) WIDTH)
+    while ( (fread(line_, sizeof (unsigned char), WIDTH, src)) == (unsigned int) WIDTH)
     {
 	double d=log(1);
 	for (int i=0; i<UPTO; i++)
 	{
-	    d+=hist[i*256+line[i]];
+	    d+=hist[i*256+line_[i]];
 	}
 
 	fprintf(dest, "%e ", d);
@@ -4302,7 +4302,7 @@ bool CHMM::save_linear_likelihood(FILE* src, FILE* dest, int WIDTH, int UPTO)
     fprintf(dest,"];\n\nP_AVG=%e\n",mod_prob);
 
     mod_prob_updated=true;
-	delete[] line;
+	delete[] line_;
 	delete[] hist;
 
 	return true ;

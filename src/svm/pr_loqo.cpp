@@ -22,6 +22,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "lib/common.h"
 #include "pr_loqo.h"
 
 #define	max(A, B)	((A) > (B) ? (A) : (B))

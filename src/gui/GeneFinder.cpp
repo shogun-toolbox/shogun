@@ -1850,17 +1850,18 @@ static bool prompt(FILE* infile=stdin)
 		    double *fp= new double[total];	
 		    double *tp= new double[total];	
 
-		    for (int dim=0; dim<total; dim++)
 		    {
-			output[dim]=pos->model_probability(dim)-neg->model_probability(dim);
-			label[dim]= obs->get_label(dim);
-			
-			if (math.sign(output[dim])==label[dim])
+		      for (int dim=0; dim<total; dim++)
+			{
+			  output[dim]=pos->model_probability(dim)-neg->model_probability(dim);
+			  label[dim]= obs->get_label(dim);
+			  
+			  if (math.sign(output[dim])==label[dim])
 			    fprintf(outputfile,"%+.8g (%+d)\n",output[dim], label[dim]);
-			else
+			  else
 			    fprintf(outputfile,"%+.8g (%+d)(*)\n",output[dim], label[dim]);
-		    }
-
+			}
+		    } 
 		    int possize,negsize;
 		    int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize, rocfile);
 

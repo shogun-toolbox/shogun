@@ -43,7 +43,7 @@ class CSVMLight:public CSVM
   virtual bool load_svm(FILE* svm_file, CObservation* test);
   virtual bool save_svm(FILE* svm_file);
   
- private:
+ protected:
   typedef struct model {
     long    sv_num;	
     long    at_upper_bound;
@@ -60,7 +60,8 @@ class CSVMLight:public CSVM
     double  xa_error,xa_recall,xa_precision;    /* xi/alpha estimates */
     ////  double  *lin_weights;                       /* weights for linear case using folding */
   } MODEL;
-  
+
+ public:
   typedef struct kernel_cache {
     long   *index;  /* cache some kernel evalutations */
     CFLOAT *buffer; /* to improve speed */
@@ -75,9 +76,10 @@ class CSVMLight:public CSVM
     long   activenum;
     long   buffsize;
   } KERNEL_CACHE;
-  
+
+ protected:
   typedef struct cache_parm_s {
-    KERNEL_CACHE *kernel_cache;
+    struct kernel_cache *kernel_cache;
     CFLOAT *cache;
     DOC *docs; 
     long m;
@@ -215,10 +217,10 @@ class CSVMLight:public CSVM
     void   write_alphas(char *, double *, long *, long);
 
 protected:
-    MODEL model;
-	KERNEL_CACHE kernel_cache;
-	LEARN_PARM learn_parm;
-	KERNEL_PARM kernel_parm;
+    MODEL mymodel;
+    KERNEL_CACHE mykernel_cache;
+    LEARN_PARM mylearn_parm;
+    KERNEL_PARM mykernel_parm;
 };
 
 #endif

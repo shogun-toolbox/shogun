@@ -91,7 +91,7 @@ CObservation::CObservation(CObservation* pos, CObservation* neg)
 	}
 }
 
-CObservation::CObservation(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M, int M, int ORDER)
+CObservation::CObservation(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M_, int M_, int ORDER_)
 {
 	full_content=NULL;
 	observations=NULL;
@@ -99,7 +99,7 @@ CObservation::CObservation(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet,
 	label=NULL;
 
 	cleanup();
-	load_observations(file,type,alphabet,MAX_M,M,ORDER);
+	load_observations(file,type,alphabet,MAX_M_,M_,ORDER_);
 }
 
 CObservation::~CObservation()
@@ -133,14 +133,14 @@ void CObservation::cleanup()
   -format specs: in_file (gene.lin)
 		[AGCT]+<<EOF>>
 */
-bool CObservation::load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M, int M, int ORDER)
+bool CObservation::load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M_, int M_, int ORDER_)
 {
 
 	this->observation_type=type;
 	this->alphabet_type=alphabet;
-	this->MAX_M= MAX_M;
-	this->M=M;
-	this->ORDER=ORDER;
+	this->MAX_M= MAX_M_;
+	this->M=M_;
+	this->ORDER=ORDER_;
 
 	cleanup();
 	init_map_table();

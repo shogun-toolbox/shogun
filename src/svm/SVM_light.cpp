@@ -9,16 +9,16 @@ int num_features=-1 ;
 
 CSVMLight::CSVMLight()
 {
-  model.supvec=NULL ;
-  model.alpha=NULL ;
-  model.index=NULL ;
+  mymodel.supvec=NULL ;
+  mymodel.alpha=NULL ;
+  mymodel.index=NULL ;
 }
 
 CSVMLight::~CSVMLight()
 {
-  delete[] model.supvec;
-  delete[] model.alpha;
-  delete[] model.index ;
+  delete[] mymodel.supvec;
+  delete[] mymodel.alpha;
+  delete[] mymodel.index ;
 }
 
 bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
@@ -46,43 +46,43 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 	}
 
 	verbosity=1;
-	strcpy (learn_parm.predfile, "");
-	strcpy (learn_parm.alphafile, "");
-	learn_parm.biased_hyperplane=0;
-	learn_parm.remove_inconsistent=0;
-	learn_parm.skip_final_opt_check=1;
-	learn_parm.svm_maxqpsize=50;
-	learn_parm.svm_newvarsinqp=0;
-	learn_parm.svm_iter_to_shrink=100;
-	learn_parm.svm_c=C;
-	learn_parm.transduction_posratio=0.5;
-	learn_parm.svm_costratio=1.0;
-	learn_parm.svm_costratio_unlab=1.0;
-	learn_parm.svm_unlabbound=1E-5;
-	learn_parm.epsilon_crit=1E-6;
-	learn_parm.epsilon_a=1E-15;
-	learn_parm.compute_loo=0;
-	learn_parm.rho=1.0;
-	learn_parm.xa_depth=0;
-	kernel_parm.kernel_type=kernel_type; //custom kernel
-	kernel_parm.poly_degree=-12345;
-	kernel_parm.rbf_gamma=-12345;
-	kernel_parm.coef_lin=-12345;
-	kernel_parm.coef_const=-12345;
+	strcpy (mylearn_parm.predfile, "");
+	strcpy (mylearn_parm.alphafile, "");
+	mylearn_parm.biased_hyperplane=0;
+	mylearn_parm.remove_inconsistent=0;
+	mylearn_parm.skip_final_opt_check=1;
+	mylearn_parm.svm_maxqpsize=50;
+	mylearn_parm.svm_newvarsinqp=0;
+	mylearn_parm.svm_iter_to_shrink=100;
+	mylearn_parm.svm_c=C;
+	mylearn_parm.transduction_posratio=0.5;
+	mylearn_parm.svm_costratio=1.0;
+	mylearn_parm.svm_costratio_unlab=1.0;
+	mylearn_parm.svm_unlabbound=1E-5;
+	mylearn_parm.epsilon_crit=1E-6;
+	mylearn_parm.epsilon_a=1E-15;
+	mylearn_parm.compute_loo=0;
+	mylearn_parm.rho=1.0;
+	mylearn_parm.xa_depth=0;
+	mykernel_parm.kernel_type=kernel_type; //custom kernel
+	mykernel_parm.poly_degree=-12345;
+	mykernel_parm.rbf_gamma=-12345;
+	mykernel_parm.coef_lin=-12345;
+	mykernel_parm.coef_const=-12345;
 	
 	//tester(&kernel_parm); //to check kernel
 
-	double norm_val=find_normalizer(&kernel_parm, totdoc);
+	double norm_val=find_normalizer(&mykernel_parm, totdoc);
 
 	sprintf(str,"%.32g",norm_val);
-	strcpy(kernel_parm.custom, str);
+	strcpy(mykernel_parm.custom, str);
 
-	kernel_cache_init(&kernel_cache,totdoc,100);
-	svm_learn(docs,label,totdoc,-12345,&learn_parm,&kernel_parm,&kernel_cache,&model);
-	kernel_cache_cleanup(&kernel_cache);
+	kernel_cache_init(&mykernel_cache,totdoc,100);
+	svm_learn(docs,label,totdoc,-12345,&mylearn_parm,&mykernel_parm,&mykernel_cache,&mymodel);
+	kernel_cache_cleanup(&mykernel_cache);
 
 	if (kernel_type==6)
-	    model.kernel_parm.kernel_type=4;
+	    mymodel.kernel_parm.kernel_type=4;
 
 	//delete[] docs;
 	//delete[] label;
@@ -99,12 +99,12 @@ bool CSVMLight::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
 
     int total=test->get_DIMENSION();
     
-    if (model.kernel_parm.kernel_type==4) // standard hmm+svm
+    if (mymodel.kernel_parm.kernel_type==4) // standard hmm+svm
     {
 	featurespace=CHMM::compute_top_feature_cache(pos, neg, num_features);
 
 	if (featurespace)
-	    model.kernel_parm.kernel_type=6; // hmm+svm precalculated
+	    mymodel.kernel_parm.kernel_type=6; // hmm+svm precalculated
     }
 
     double *output = new double[total];	
@@ -114,7 +114,7 @@ bool CSVMLight::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
     { 
 	doc.docnum=i;
 	doc.twonorm_sq=-1;
-	output[i]=classify_example(&model,&doc);
+	output[i]=classify_example(&mymodel,&doc);
 
 	label[i]=test->get_label(i);
 	if ((label[i] < 0 && output[i] < 0) || (label[i] > 0 && output[i] > 0))
@@ -155,7 +155,7 @@ bool CSVMLight::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
     totdoc++;
     
       t1=get_runtime();
-      dist=classify_example(&model,&doc);
+      dist=classify_example(&mymodel,&doc);
       runtime+=(get_runtime()-t1);
     
     if(dist>0) {
@@ -184,9 +184,8 @@ bool CSVMLight::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
   }  
   free(line);
   free(doc.words);
-  free(model.supvec);
-  free(model.alpha);
-*/
+  //  free(mymodel.supvec);
+  //    free(mymodel.alpha);*/
 }
 
 bool CSVMLight::load_svm(FILE* modelfl, CObservation* test)
@@ -199,7 +198,7 @@ bool CSVMLight::load_svm(FILE* modelfl, CObservation* test)
 	perror ("Version of model-file does not match version of svm_classify!"); 
 	exit (1); 
     }
-    fscanf(modelfl,"%ld%*[^\n]\n", &model.kernel_parm.kernel_type);  
+    fscanf(modelfl,"%ld%*[^\n]\n", &mymodel.kernel_parm.kernel_type);  
 //    fscanf(modelfl,"%ld%*[^\n]\n", &model.kernel_parm.poly_degree);
 //    fscanf(modelfl,"%lf%*[^\n]\n", &model.kernel_parm.rbf_gamma);
 //    fscanf(modelfl,"%lf%*[^\n]\n", &model.kernel_parm.coef_lin);
@@ -209,26 +208,26 @@ bool CSVMLight::load_svm(FILE* modelfl, CObservation* test)
 	printf("normalizer:%e\n",normalizer);
 #endif
 
-    ////  fscanf(modelfl,"%ld%*[^\n]\n", &model.totwords);
-    fscanf(modelfl,"%ld%*[^\n]\n", &model.totdoc);
-    fscanf(modelfl,"%ld%*[^\n]\n", &model.sv_num);
-    fscanf(modelfl,"%lf%*[^\n]\n", &model.b);
+    ////  fscanf(modelfl,"%ld%*[^\n]\n", &mymodel.totwords);
+    fscanf(modelfl,"%ld%*[^\n]\n", &mymodel.totdoc);
+    fscanf(modelfl,"%ld%*[^\n]\n", &mymodel.sv_num);
+    fscanf(modelfl,"%lf%*[^\n]\n", &mymodel.b);
     int file_pos=ftell(modelfl);
     
-    model.sv_num--;
-    printf("loading %ld support vectors\n",model.sv_num);
-    test->add_support_vectors(modelfl, model.sv_num);
+    mymodel.sv_num--;
+    printf("loading %ld support vectors\n",mymodel.sv_num);
+    test->add_support_vectors(modelfl, mymodel.sv_num);
     fseek(modelfl, file_pos, SEEK_SET);
 
-    model.supvec=new DOC*[model.sv_num];
-    model.alpha=new double[model.sv_num];
+    mymodel.supvec=new DOC*[mymodel.sv_num];
+    mymodel.alpha=new double[mymodel.sv_num];
 
-    for (int i=0; i<model.sv_num; i++)
+    for (int i=0; i<mymodel.sv_num; i++)
     {
-	model.supvec[i] = new DOC;
-	model.supvec[i]->docnum=test->get_support_vector_idx(i);
-	model.supvec[i]->twonorm_sq=-1;
-	fscanf(modelfl,"%lf%*[^\n]\n",&model.alpha[i]);
+	mymodel.supvec[i] = new DOC;
+	mymodel.supvec[i]->docnum=test->get_support_vector_idx(i);
+	mymodel.supvec[i]->twonorm_sq=-1;
+	fscanf(modelfl,"%lf%*[^\n]\n",&mymodel.alpha[i]);
 #ifdef DEBUG
 	printf("alpha:%e,idx:%d\n",model.alpha[i],model.supvec[i]->docnum);
 #endif
@@ -241,7 +240,7 @@ bool CSVMLight::load_svm(FILE* modelfl, CObservation* test)
 
 bool CSVMLight::save_svm(FILE* modelfl)
 {
-  write_model(modelfl,&model);
+  write_model(modelfl,&mymodel);
   return true ;
 } 
 
