@@ -630,6 +630,13 @@ public:
 	/// where 0<=default_val<=1
 	void add_states(int num_states, REAL default_val=0);
 
+	/// appends the append_model to the current hmm, i.e.
+	/// two extra states are created. one is the end state of
+	/// the current hmm with outputs cur_out (of size M) and
+	/// the other state is the start state of the append_model.
+	/// transition probability from state 1 to states 1 is 1
+	bool append_model(CHMM* append_model, T_OBSERVATIONS* cur_out, T_OBSERVATIONS* app_out);
+
 	/// set any model parameter with probability smaller than value to ZERO
 	void chop(REAL value);
 
