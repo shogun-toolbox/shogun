@@ -24,7 +24,7 @@ template<class T> class CCache
 	/// a chunk of size cache_size will be allocated
 	CCache(long cache_size, long obj_size, long num_entries)
 	{
-		if (cache_size==NULL || obj_size==NULL || num_entries==NULL)
+		if (cache_size==0 || obj_size==0 || num_entries==0)
 		{
 			CIO::message("doing without cache.\n");
 			cache_block=NULL;

@@ -2,7 +2,10 @@
 #include "gui/GUI.h"
 #include "lib/io.h"
 #include "features/RealFileFeatures.h"
+
+#ifdef SVMMPI
 #include "svm_mpi/mpi_oneclass.h"
+#endif
 
 #include <assert.h>
 

@@ -149,3 +149,34 @@ bool CGUIKernel::init_kernel(char* param)
 		CIO::message("see help for params\n");
 	return true;
 }
+
+bool CGUIKernel::save_kernel(char* param)
+{
+	bool result=false;
+	char filename[1024];
+
+	if (kernel)
+	{
+		if ((sscanf(param, "%s", filename))==1)
+		{
+			FILE* file=fopen(filename, "w");
+			if (!file)
+				CIO::message("fname: %s\n", filename);
+			if ((!file) || (!kernel->save(file)))
+				CIO::message("writing to file %s failed!\n", filename);
+			else
+			{
+				CIO::message("successfully written kernel to \"%s\" !\n", filename);
+				result=true;
+			}
+
+			if (file)
+				fclose(file);
+		}
+		else
+			CIO::message("see help for params\n");
+	}
+	else
+		CIO::message("no kernel set!\n");
+	return result;
+}

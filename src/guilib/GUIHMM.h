@@ -16,6 +16,9 @@ public:
 	bool save(char* param);
 	
 	bool baum_welch_train(char* param);
+	bool baum_welch_train_defined(char* param);
+	bool viterbi_train_defined(char* param);
+	bool viterbi_train(char* param);
 	bool linear_train(char* param);
 	bool one_class_test(char* param);
 	bool test_hmm(char* param);
@@ -25,6 +28,15 @@ public:
 	bool set_pseudo(char* param) ;
 	bool assign_obs(char* param) ;
 	bool convergence_criteria(char* param) ;
+	bool output_hmm_path(char* param);
+	bool output_hmm(char* param);
+	bool output_hmm_defined(char* param);
+	bool best_path(char* param);
+	bool save_path(char* param);
+	bool load_defs(char* param);
+	bool set_max_dim(char* param);
+	bool likelihood(char* param);
+	bool chop(char* param);
 	inline CHMM* get_pos() { return pos; }
 	inline CHMM* get_neg() { return neg; }
 	inline CHMM* get_test() { return test; }

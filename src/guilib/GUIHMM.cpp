@@ -48,7 +48,7 @@ bool CGUIHMM::new_hmm(char* param)
 
 bool CGUIHMM::baum_welch_train(char* param)
 {
-	char templname[35]=TMP_DIR "bw_model_XXXXXX" ;
+	char* templname=TMP_DIR "bw_model_XXXXXX" ;
 #ifdef SUNOS
 #define mkstemp(name) mktemp(name);
 #endif
@@ -72,6 +72,188 @@ bool CGUIHMM::baum_welch_train(char* param)
 				prob=prob_train ;
 				working->estimate_model_baum_welch(working_estimate);
 				prob_train=working_estimate->model_probability();
+				if (prob_max<prob_train)
+				{
+					prob_max=prob_train ;
+#ifdef TMP_SAVE
+					FILE* file=fopen(templname_best, "w");
+					CIO::message("\nsaving best model with filename %s ... ", templname_best) ;
+					working->save_model(file) ;
+					fclose(file) ;
+					CIO::message("done.") ;
+#endif
+				} 
+				else
+				{
+#ifdef TMP_SAVE
+					FILE* file=fopen(templname, "w");
+					CIO::message("\nsaving model with filename %s ... ", templname) ;
+					working->save_model(file) ;
+					fclose(file) ;
+					CIO::message("done.") ;
+#endif
+				}
+			}
+			delete working_estimate;
+			working_estimate=NULL;
+		}
+		else
+			CIO::message("assign observation first\n");
+	}
+	else
+		CIO::message("create model first\n");
+
+	return false;
+}
+
+bool CGUIHMM::baum_welch_train_defined(char* param)
+{
+	char* templname=TMP_DIR "bwdef_model_XXXXXX" ;
+#ifdef SUNOS
+#define mkstemp(name) mktemp(name);
+#endif
+	mkstemp(templname);
+	char templname_best[40] ;
+	sprintf(templname_best, "%s_best", templname) ;
+	double prob_max=-CMath::INFTY ;
+	iteration_count=ITERATIONS ;
+
+	if (working) 
+	{
+		if (working->get_observations())
+		{
+			CHMM* working_estimate=new CHMM(working);
+			
+			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
+
+			while (!converge(prob,prob_train))
+			{
+				switch_model(&working, &working_estimate);
+				prob=prob_train ;
+				working->estimate_model_baum_welch_defined(working_estimate);
+				prob_train=working_estimate->model_probability();
+				if (prob_max<prob_train)
+				{
+					prob_max=prob_train ;
+#ifdef TMP_SAVE
+					FILE* file=fopen(templname_best, "w");
+					CIO::message("\nsaving best model with filename %s ... ", templname_best) ;
+					working->save_model(file) ;
+					fclose(file) ;
+					CIO::message("done.") ;
+#endif
+				} 
+				else
+				{
+#ifdef TMP_SAVE
+					FILE* file=fopen(templname, "w");
+					CIO::message("\nsaving model with filename %s ... ", templname) ;
+					working->save_model(file) ;
+					fclose(file) ;
+					CIO::message("done.") ;
+#endif
+				}
+			}
+			delete working_estimate;
+			working_estimate=NULL;
+		}
+		else
+			CIO::message("assign observation first\n");
+	}
+	else
+		CIO::message("create model first\n");
+
+	return false;
+}
+
+bool CGUIHMM::viterbi_train(char* param)
+{
+	char* templname= TMP_DIR "vit_model_XXXXXX" ;
+#ifdef SUNOS
+#define mkstemp(name) mktemp(name);
+#endif
+	mkstemp(templname);
+	char templname_best[40] ;
+	sprintf(templname_best, "%s_best", templname) ;
+	double prob_max=-CMath::INFTY ;
+	iteration_count=ITERATIONS ;
+
+	if (working) 
+	{
+		if (working->get_observations())
+		{
+			CHMM* working_estimate=new CHMM(working);
+			
+			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
+
+			while (!converge(prob,prob_train))
+			{
+				switch_model(&working, &working_estimate);
+				prob=prob_train ;
+				working->estimate_model_viterbi(working_estimate);
+				prob_train=working_estimate->best_path(-1);
+
+				if (prob_max<prob_train)
+				{
+					prob_max=prob_train ;
+#ifdef TMP_SAVE
+					FILE* file=fopen(templname_best, "w");
+					CIO::message("\nsaving best model with filename %s ... ", templname_best) ;
+					working->save_model(file) ;
+					fclose(file) ;
+					CIO::message("done.") ;
+#endif
+				} 
+				else
+				{
+#ifdef TMP_SAVE
+					FILE* file=fopen(templname, "w");
+					CIO::message("\nsaving model with filename %s ... ", templname) ;
+					working->save_model(file) ;
+					fclose(file) ;
+					CIO::message("done.") ;
+#endif
+				}
+			}
+			delete working_estimate;
+			working_estimate=NULL;
+		}
+		else
+			CIO::message("assign observation first\n");
+	}
+	else
+		CIO::message("create model first\n");
+
+	return false;
+}
+
+bool CGUIHMM::viterbi_train_defined(char* param)
+{
+	char* templname= TMP_DIR "vitdef_model_XXXXXX" ;
+#ifdef SUNOS
+#define mkstemp(name) mktemp(name);
+#endif
+	mkstemp(templname);
+	char templname_best[40] ;
+	sprintf(templname_best, "%s_best", templname) ;
+	double prob_max=-CMath::INFTY ;
+	iteration_count=ITERATIONS ;
+
+	if (working) 
+	{
+		if (working->get_observations())
+		{
+			CHMM* working_estimate=new CHMM(working);
+			
+			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
+
+			while (!converge(prob,prob_train))
+			{
+				switch_model(&working, &working_estimate);
+				prob=prob_train ;
+				working->estimate_model_viterbi_defined(working_estimate);
+				prob_train=working_estimate->best_path(-1);
+
 				if (prob_max<prob_train)
 				{
 					prob_max=prob_train ;
@@ -615,24 +797,190 @@ bool CGUIHMM::save(char* param)
 {
 	bool result=false;
 	param=CIO::skip_spaces(param);
+	char fname[1024];
+	int binary=0;
 
 	if (working)
 	{
-		FILE* file=fopen(param, "w");
-
-		if ((!file) ||	(!working->save_model(file)))
-			printf("writing to file %s failed!\n", param);
-		else
+		if (sscanf(param, "%s %d", fname, &binary) >= 1)
 		{
-			printf("successfully written model into \"%s\" !\n", param);
-			result=true;
-		}
+			FILE* file=fopen(fname, "w");
+			if (file)
+			{
+				if (binary)
+					result=working->save_model_bin(file);
+				else
+					result=working->save_model(file);
+			}
 
-		if (file)
-			fclose(file);
+			if (!file || !result)
+				printf("writing to file %s failed!\n", fname);
+			else
+				printf("successfully written model into \"%s\" !\n", fname);
+
+			if (file)
+				fclose(file);
+		}
+		else
+			CIO::message("see help for parameters\n");
 	}
 	else
 		CIO::message("create model first\n");
 
 	return result;
+}
+
+bool CGUIHMM::load_defs(char* param)
+{
+	param=CIO::skip_spaces(param);
+	char fname[1024];
+	int init=1;
+
+	if (working)
+	{
+		if (sscanf(param, "%s %d", fname, &init) >= 1)
+		{
+			FILE* def_file=fopen(fname, "r");
+			if (def_file && working->load_definitions(def_file,true,(init!=0)))
+			{
+				CIO::message("file successfully read\n");
+				return true;
+			}
+			else
+				CIO::message("opening file %s failed\n", fname);
+		}
+		else
+			CIO::message("see help for parameters\n");
+	}
+	else
+		CIO::message("create model first\n");
+
+	return false;
+}
+
+bool CGUIHMM::save_path(char* param)
+{
+	bool result=false;
+	param=CIO::skip_spaces(param);
+	char fname[1024];
+	int binary=0;
+
+	if (working)
+	{
+		if (sscanf(param, "%s %d", fname, &binary) >= 1)
+		{
+			FILE* file=fopen(fname, "w");
+			if (file)
+			{
+				/// ..future
+				//if (binary)
+				//	result=working->save_model_bin(file);
+				//else
+					
+				result=working->save_path(file);
+			}
+
+			if (!file || !result)
+				printf("writing to file %s failed!\n", fname);
+			else
+				printf("successfully written path into \"%s\" !\n", fname);
+
+			if (file)
+				fclose(file);
+		}
+		else
+			CIO::message("see help for parameters\n");
+	}
+	else
+		CIO::message("create model first\n");
+
+	return result;
+}
+
+bool CGUIHMM::chop(char* param)
+{
+	param=CIO::skip_spaces(param);
+	double value;
+
+	if (sscanf(param, "%le", &value) == 1)
+	{
+	    if (working)
+			working->chop(value);
+		return true;
+	}
+	else
+	   CIO::message("see help for parameters/create model first\n");
+	return false;
+}
+
+bool CGUIHMM::likelihood(char* param)
+{
+	if (working)
+	{
+		working->output_model(false);
+		return true;
+	}
+	else
+		CIO::message("create model first!\n");
+	return false;
+}
+
+bool CGUIHMM::output_hmm(char* param)
+{
+	if (working)
+	{
+		working->output_model(true);
+		return true;
+	}
+	else
+		CIO::message("create model first!\n");
+	return false;
+}
+
+bool CGUIHMM::output_hmm_defined(char* param)
+{
+	if (working)
+	{
+		working->output_model_defined(true);
+		return true;
+	}
+	else
+		CIO::message("create model first!\n");
+	return false;
+}
+
+
+bool CGUIHMM::best_path(char* param)
+{
+	if (working)
+	{
+	    working->output_model_sequence(false);
+		return true;
+	}
+	else
+	   CIO::message("create model first\n");
+
+	return false;
+}
+
+bool CGUIHMM::output_hmm_path(char* param)
+{
+	param=CIO::skip_spaces(param);
+	int from, to;
+
+	if (sscanf(param, "%d %d", &from, &to) != 2)
+	{
+	    from=0; 
+	    to=10 ;
+	}
+
+	if (working)
+	{
+	    working->output_model_sequence(true,from,to);
+		return true;
+	}
+	else
+	   CIO::message("create model first\n");
+
+	return false;
 }

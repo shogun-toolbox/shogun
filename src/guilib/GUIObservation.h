@@ -12,6 +12,8 @@ public:
 	~CGUIObservation();
 	bool load_observations(char* param);
 	CObservation* get_obs(char* param);
+	bool set_alphabet(char* param);
+	bool set_max_dim(char* param);
 
 protected:
 	CObservation* pos_train_obs;
