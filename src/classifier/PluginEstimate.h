@@ -59,7 +59,7 @@ class CPluginEstimate
 			return true;
 		}
 
-		inline void set_model_params(REAL* pos_params, REAL* neg_params, INT seq_length, INT num_symbols)
+		inline void set_model_params(const REAL* pos_params, const REAL* neg_params, INT seq_length, INT num_symbols)
 		{
 			if (pos_model)
 				delete pos_model;

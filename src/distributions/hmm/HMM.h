@@ -443,8 +443,8 @@ public:
 	 * @param PSEUDO Pseudo Value
 	 */
 	CHMM(INT N, INT M,	CModel* model, REAL PSEUDO, INT num_parallel);
-	CHMM(INT N, double *p, double*q, double* a) ;
-	CHMM(INT N, double *p, double*q, int num_trans, double* a_trans) ;
+	CHMM(INT N, double* p, double* q, double* a) ;
+	CHMM(INT N, double* p, double* q, int num_trans, double* a_trans) ;
 
 	/** Constructor - Initialization from model file.
 	 * @param model_file Filehandle to a hmm model file (*.mod)

@@ -56,8 +56,8 @@ class CLinearHMM : private CDistribution
 		inline REAL* get_log_hist() { return log_hist; }
 		inline REAL* get_hist() { return hist; }
 
-		void set_log_hist(REAL* new_log_hist);
-		void set_hist(REAL* new_hist);
+		void set_log_hist(const REAL* new_log_hist);
+		void set_hist(const REAL* new_hist);
 
 	protected:
 		INT sequence_length;

@@ -176,7 +176,7 @@ CHMM::CHMM(INT N, INT M, CModel* model, REAL PSEUDO, INT number_of_hmm_tables)
 	status=initialize(model, PSEUDO);
 }
 
-CHMM::CHMM(INT N, double *p, double*q, double* a)
+CHMM::CHMM(INT N, double* p, double* q, double* a)
 {
 	NUM_PARALLEL= 1 ;
 	this->N=N;
@@ -224,7 +224,7 @@ CHMM::CHMM(INT N, double *p, double*q, double* a)
 //	this->invalidate_model();
 }
 
-CHMM::CHMM(INT N, double *p, double*q, int num_trans, double* a_trans)
+CHMM::CHMM(INT N, double* p, double* q, int num_trans, double* a_trans)
 {
 	NUM_PARALLEL= 1 ;
 	model=NULL ;

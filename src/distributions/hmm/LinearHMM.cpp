@@ -180,7 +180,7 @@ REAL CLinearHMM::get_log_derivative(INT param_num, INT num_example)
 	return result;
 }
 
-void CLinearHMM::set_log_hist(REAL* new_log_hist)
+void CLinearHMM::set_log_hist(const REAL* new_log_hist)
 {
 	if (!log_hist)
 		log_hist = new REAL[num_params];
@@ -195,7 +195,7 @@ void CLinearHMM::set_log_hist(REAL* new_log_hist)
 	}
 }
 
-void CLinearHMM::set_hist(REAL* new_hist)
+void CLinearHMM::set_hist(const REAL* new_hist)
 {
 	if (!log_hist)
 		log_hist = new REAL[num_params];
