@@ -1,13 +1,20 @@
 #include "gui/TextGUI.h"
 
+#include <ctype.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
 
 #include "lib/io.h"
 #include "lib/common.h"
 #include "distributions/histogram/Histogram.h"
+
 
 CTextGUI* gui=NULL;
 CHistogram* h;
@@ -23,9 +30,12 @@ CHistogram* h;
 //names of menu commands
 static const CHAR* N_NEW_HMM=			"new_hmm";
 static const CHAR* N_NEW_SVM=			"new_svm";
+static const CHAR* N_NEW_KNN=			"new_knn";
 static const CHAR* N_NEW_PLUGIN_ESTIMATOR="new_plugin_estimator";
 static const CHAR* N_TRAIN_ESTIMATOR=	"train_estimator";
 static const CHAR* N_TEST_ESTIMATOR=	"test_estimator";
+static const CHAR* N_TRAIN_KNN=	"train_knn";
+static const CHAR* N_TEST_KNN=	"test_knn";
 static const CHAR* N_SET_NUM_TABLES=	"set_num_tables";
 static const CHAR* N_LOAD_PREPROC=		"load_preproc";
 static const CHAR* N_SAVE_PREPROC=		"save_preproc";
@@ -196,6 +206,8 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m\t\t- obtains svm from TRAINFEATURES\n",N_SVM_TRAIN);
 	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> - init kernel for training/testingn\n",N_INIT_KERNEL);
 	CIO::message("\033[1;31m%s\033[0m\t - creates Plugin Estimator using Linear HMMs\n",N_NEW_PLUGIN_ESTIMATOR);
+	CIO::message("\033[1;31m%s\033[0m\t- creates new KNN classifier\n",N_NEW_KNN);
+	CIO::message("\033[1;31m%s\033[0m<k>\t- trains KNN classifier\n",N_TRAIN_KNN);
 	CIO::message("\033[1;31m%s\033[0m\t [<pos_pseudo> [neg_pseudo]]- train the Estimator\n",N_TRAIN_ESTIMATOR);
 	CIO::message("\n[CLASSIFICATION]\n");
 	CIO::message("\033[1;31m%s\033[0m<threshold>\t\t\t\t- set classification threshold\n",N_SET_THRESHOLD);
@@ -204,6 +216,7 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m[<output>]\t\t\t\t- classify unknown examples using current HMMs\n",N_HMM_CLASSIFY);
 	CIO::message("\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t- calculate svm output on TESTFEATURES\n",N_SVM_TEST);
 	CIO::message("\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t- calculate estimator output on TESTFEATURES\n",N_TEST_ESTIMATOR);
+	CIO::message("\033[1;31m%s\033[0m<k>\t- tests KNN classifier\n",N_TEST_KNN);
 	CIO::message("\n[SYSTEM]\n");
 	CIO::message("\033[1;31m%s\033[0m <STDERR|STDOUT|filename>\t- make std-output go to e.g file\n",N_SET_OUTPUT);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- load and execute a script\n",N_EXEC);
@@ -263,9 +276,21 @@ bool CTextGUI::parse_line(CHAR* input)
 	{
 		guisvm.new_svm(input+strlen(N_NEW_SVM));
 	} 
+	else if (!strncmp(input, N_NEW_KNN, strlen(N_NEW_KNN)))
+	{
+		guiknn.new_knn(input+strlen(N_NEW_KNN));
+	} 
 	else if (!strncmp(input, N_NEW_PLUGIN_ESTIMATOR, strlen(N_NEW_PLUGIN_ESTIMATOR)))
 	{
 		guipluginestimate.new_estimator(input+strlen(N_NEW_PLUGIN_ESTIMATOR));
+	} 
+	else if (!strncmp(input, N_TRAIN_KNN, strlen(N_TRAIN_KNN)))
+	{
+		guiknn.train(input+strlen(N_TRAIN_KNN));
+	} 
+	else if (!strncmp(input, N_TEST_KNN, strlen(N_TEST_KNN)))
+	{
+		guiknn.test(input+strlen(N_TEST_KNN));
 	} 
 	else if (!strncmp(input, N_TRAIN_ESTIMATOR, strlen(N_TRAIN_ESTIMATOR)))
 	{
@@ -608,10 +633,41 @@ int main(int argc, const CHAR* argv[])
 		{
 			if ( argc>2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help"))
 			{
-				CIO::message("usage: genfinder [ <script> ]\n\n");
+				CIO::message("usage: genefinder [ <-h|--help|/?|-i|<script> ]\n\n");
 				CIO::message("if no options are given genfinder enters interactive mode\n");
 				CIO::message("if <script> is specified the commands will be executed");
+				CIO::message("if -i is specified genefinder will listen on port 6766 (==hex(gf), *dangerous* as commands from any source are accepted");
 				return 1;
+			}
+			else if ( argc>2 || !strcmp(argv[1], "-i") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help"))
+			{
+				int s=socket(AF_INET, SOCK_STREAM, 0);
+				struct sockaddr_in sa;
+				sa.sin_family=AF_INET;
+				sa.sin_port=htons(6766);
+				sa.sin_addr.s_addr=INADDR_ANY;
+				bzero(&(sa.sin_zero), 8);
+
+				bind(s, (sockaddr*) (&sa), sizeof(sockaddr_in));
+				listen(s, 1);
+				int s2=accept(s, NULL, NULL);
+				CIO::message("accepting connection\n");
+
+				CHAR input[2000];
+				do
+				{
+					bzero(input, sizeof(input));
+					int length=read(s2, input, sizeof(input));
+					if (length>0 && length<(int) sizeof(input))
+						input[length]='\0';
+					else
+					{
+						CIO::message("error reading cmdline\n");
+						return 1;
+					}
+				}
+				while(gui->parse_line(input));
+				return 0;
 			}
 			else
 			{

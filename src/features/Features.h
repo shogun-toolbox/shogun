@@ -2,7 +2,6 @@
 #define _CFEATURES__H__
 
 #include "lib/common.h"
-/*#include "lib/lapack.h"*/
 #include "preproc/PreProc.h"
 #include "stdio.h"
 

@@ -4,6 +4,7 @@
 #include "guilib/GUIHMM.h"
 #include "guilib/GUISVM.h"
 #include "guilib/GUIPluginEstimate.h"
+#include "guilib/GUIKNN.h"
 #include "guilib/GUIKernel.h"
 #include "guilib/GUIPreProc.h"
 #include "guilib/GUIFeatures.h"
@@ -15,12 +16,13 @@ class CGUI
 {
  public:
 
-  CGUI(INT ac, const CHAR**av): guisvm(this), guihmm(this), guipluginestimate(this), guikernel(this), 
+  CGUI(INT ac, const CHAR**av): guisvm(this), guihmm(this), guipluginestimate(this), guiknn(this), guikernel(this), 
     guipreproc(this), guifeatures(this), guilabels(this), guimath(this), guitime(this), argc(ac), argv(av) {} ;
 
   CGUISVM guisvm;
   CGUIHMM guihmm;
   CGUIPluginEstimate guipluginestimate;
+  CGUIKNN guiknn;
   CGUIKernel guikernel;
   CGUIPreProc guipreproc;
   CGUIFeatures guifeatures;
@@ -31,5 +33,4 @@ class CGUI
   INT argc ;
   const CHAR **argv ;
 } ;
-
 #endif

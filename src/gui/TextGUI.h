@@ -24,6 +24,10 @@ public:
 	/// @return true at EOF
 	CHAR* get_line(FILE* infile=stdin, bool show_prompt=true);
 
+	/// get line from port 6766
+	/// line is in input
+	bool get_line_from_tcp();
+
 	/// get line from user/stdin/file input
 	/// @return true at EOF
 	bool parse_line(CHAR* input);

@@ -3,7 +3,6 @@ TOP TEN+ ANNOYANCES
   atm, lots of things just use fopen/read/close...
 * CIO::message() mixed with printf's and matlabs mx* stuff -> we only need CIO::...
   also there should be a global setting for verbosity and thus a differentiation into CIO::debug CIO::info CIO::warn CIO::critical etc
-* create generic Classifier class which combines i.e. KNN/Perceptron/SVM/PluginEstimate
 * create generic Distribution class which combines all density related stuff HMM/gaussians/linear hmm ... this would
   allow for using PluginEstimate with *any* distribution and clean all the hmm_test hacks
 * create a one class classifier to avoid hacky one_class_hmm_test
@@ -12,5 +11,8 @@ TOP TEN+ ANNOYANCES
   make system use HAVE_XXX
 * put things (== estimator/svm/hmm/features/kernel...) in some kind of list to be able to use/select them/many
   for certain purposes
+* create generic Classifier class which combines i.e. KNN/Perceptron/SVM/PluginEstimate
 * make unified testing possible, e.g. set_classifier XXX ; calc_output ; get_results etc.
 * fix linear HMM to be equiv. with MMs
+* all outputs are labels
+* tcp/ip io fixen
