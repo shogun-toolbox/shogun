@@ -59,8 +59,13 @@ REAL CKernel::kernel(INT idx_a, INT idx_b)
 		do_precompute_matrix() ;
 
 	if (precompute_matrix && (precomputed_matrix!=NULL))
-		return precomputed_matrix[idx_a*rhs->get_num_vectors()+idx_b] ;
-
+	{
+		if (idx_a>=idx_b)
+			return precomputed_matrix[idx_a*(idx_a+1)/2+idx_b] ;
+		else
+			return precomputed_matrix[idx_b*(idx_b+1)/2+idx_a] ;
+	}
+	
 	return compute(idx_a, idx_b);
 }
 
@@ -561,17 +566,14 @@ void CKernel::do_precompute_matrix()
 	INT num=num_left ;
 	
 	delete[] precomputed_matrix ;
-	precomputed_matrix=new REAL[num*num] ;
+	precomputed_matrix=new SHORTREAL[num*(num+1)/2] ;
 	assert(precomputed_matrix!=NULL) ;
 
 	for (INT i=0; i<num; i++)
 	{
 		CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
 		for (INT j=0; j<=i; j++)
-		{
-			precomputed_matrix[i*num+j] = compute(i,j) ;
-			precomputed_matrix[j*num+i] = precomputed_matrix[i*num+j] ;
-		}
+			precomputed_matrix[i*(i+1)/2+j] = compute(i,j) ;
 	}
 	CIO::message(M_INFO, "\r %1.2f%% ", 100.0) ;
 	CIO::message(M_INFO, "done.\n") ;

@@ -248,12 +248,15 @@ protected:
 	   {
 		   if (use_precomputed_subkernels)
 		   {
+			   if (j>i)
+				   CMath::swap(i,j) ;
 			   REAL sum=0 ;
 			   INT num_weights=-1 ;
-			   INT num = get_kernel()->get_rhs()->get_num_vectors() ;
+			   //INT num = get_kernel()->get_rhs()->get_num_vectors() ;
 			   const REAL * w = CKernelMachine::get_kernel()->get_subkernel_weights(num_weights) ;
 			   for (INT n=0; n<num_precomputed_subkernels; n++)
-				   sum += w[n]*precomputed_subkernels[n][i*num+j] ;
+				   if (w[n]!=0)
+					   sum += w[n]*precomputed_subkernels[n][i*(i+1)/2+j] ;
 			   return sum ;
 		   }
 		   else
@@ -286,7 +289,7 @@ protected:
   REAL *buffer_num ;   // a buffer of length num
   REAL *buffer_numcols ;   // a buffer of length num_cols
   // MKL kernel precomputation
-  REAL ** precomputed_subkernels ;
+  SHORTREAL ** precomputed_subkernels ;
   INT num_precomputed_subkernels ;
   bool use_kernel_cache ;
 

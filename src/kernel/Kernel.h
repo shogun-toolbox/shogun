@@ -139,6 +139,8 @@ class CKernel
 				precomputed_matrix = NULL ;
 			}
 		} ;
+		bool get_precompute_matrix() { return precompute_matrix ;  } ;
+		bool get_precompute_subkernel_matrix() { return precompute_subkernel_matrix ;  } ;
 		
 	protected:
 		inline void set_is_initialized(bool init) { optimization_initialized=init; }
@@ -203,7 +205,7 @@ class CKernel
 		// matrix precomputation
 		bool precompute_matrix ;
 		bool precompute_subkernel_matrix ;
-		REAL * precomputed_matrix ;
+		SHORTREAL * precomputed_matrix ;
 		void do_precompute_matrix() ;
 };
 #endif

@@ -53,49 +53,9 @@ CSVMLight::CSVMLight()
 	num_precomputed_subkernels = 0 ;
 	use_kernel_cache = true ;
 
-#ifdef USE_CPLEX
-	CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
+	lp = NULL ;
+	env = NULL ;
 	
-	lp = NULL;
-	env = NULL;
-	int status = 0;
-	env = CPXopenCPLEX (&status);
-	
-	if ( env == NULL )
-	{
-		char  errmsg[1024];
-		CIO::message(M_ERROR, "Could not open CPLEX environment.\n");
-		CPXgeterrorstring (env, status, errmsg);
-		CIO::message(M_ERROR, "%s", errmsg);
-	}
-	else
-	{
-		status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2);
-		if ( status )
-		{
-			CIO::message(M_ERROR, 
-					"Failure to select dual lp optimization, error %d.\n", status);
-		}
-		else
-		{
-			status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
-			if ( status )
-			{
-				CIO::message(M_ERROR,
-						"Failure to turn on data checking, error %d.\n", status);
-			}	
-			else
-			{
-				lp = CPXcreateprob (env, &status, "light");
-
-				if ( lp == NULL )
-					CIO::message(M_ERROR, "Failed to create LP.\n");
-				else
-					CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
-			}
-		}
-	}
-#endif
 }
 
 CSVMLight::~CSVMLight()
@@ -204,8 +164,60 @@ bool CSVMLight::train()
 
 	use_kernel_cache = !(use_precomputed_subkernels ||
 						 (get_linadd_enabled() && get_kernel()->has_property(KP_LINADD)) ||
-						 (get_mkl_enabled() && get_kernel()->has_property(KP_KERNCOMBINATION))) ;
+						 (get_mkl_enabled() && get_kernel()->has_property(KP_KERNCOMBINATION))||
+						 get_kernel()->get_precompute_matrix() || 
+						 get_kernel()->get_precompute_subkernel_matrix()) ;
+
+	CIO::message(M_DEBUG, "get_kernel()->get_precompute_matrix() = %i\n", get_kernel()->get_precompute_matrix()) ;
+	CIO::message(M_DEBUG, "get_kernel()->get_precompute_subkernel_matrix() = %i\n", get_kernel()->get_precompute_subkernel_matrix()) ;
 	CIO::message(M_DEBUG, "use_kernel_cache = %i\n", use_kernel_cache) ;
+
+#ifdef USE_CPLEX
+	if (get_mkl_enabled() && (env==NULL))
+	{
+		CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
+		
+		lp = NULL;
+		env = NULL;
+		int status = 0;
+		env = CPXopenCPLEX (&status);
+		
+		if ( env == NULL )
+		{
+			char  errmsg[1024];
+			CIO::message(M_ERROR, "Could not open CPLEX environment.\n");
+			CPXgeterrorstring (env, status, errmsg);
+			CIO::message(M_ERROR, "%s", errmsg);
+		}
+		else
+		{
+			status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2);
+			if ( status )
+			{
+				CIO::message(M_ERROR, 
+							 "Failure to select dual lp optimization, error %d.\n", status);
+			}
+			else
+			{
+				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
+				if ( status )
+				{
+					CIO::message(M_ERROR,
+								 "Failure to turn on data checking, error %d.\n", status);
+				}	
+				else
+				{
+					lp = CPXcreateprob (env, &status, "light");
+					
+					if ( lp == NULL )
+						CIO::message(M_ERROR, "Failed to create LP.\n");
+					else
+						CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
+				}
+			}
+		}
+#endif
+	}
 	
 	if (precomputed_subkernels != NULL)
 	{
@@ -220,7 +232,7 @@ bool CSVMLight::train()
 		INT num = get_kernel()->get_rhs()->get_num_vectors() ;
 		INT num_kernels = get_kernel()->get_num_subkernels() ;
 		num_precomputed_subkernels=num_kernels ;
-		precomputed_subkernels=new (REAL*)[num_precomputed_subkernels] ;
+		precomputed_subkernels=new (SHORTREAL*)[num_precomputed_subkernels] ;
 		CKernel* k = get_kernel() ;
 		INT num_weights = -1;
 		const REAL* w   = k->get_subkernel_weights(num_weights);
@@ -235,24 +247,27 @@ bool CSVMLight::train()
 			w1[i]=0.0 ; 
 		}
 
+        // allocating memory 
+		for (INT n=0; n<num_precomputed_subkernels; n++)
+		{
+			precomputed_subkernels[n]=new SHORTREAL[num*(num+1)/2] ;
+			assert(precomputed_subkernels[n]!=NULL) ;
+		}
+		
 		for (INT n=0; n<num_precomputed_subkernels; n++)
 		{
 			w1[n]=1.0 ;
 			k->set_subkernel_weights(w1, num_weights) ;
 
-			precomputed_subkernels[n]=new REAL[num*num] ;
-			assert(precomputed_subkernels[n]!=NULL) ;
-			REAL * matrix = precomputed_subkernels[n] ;
+			SHORTREAL * matrix = precomputed_subkernels[n] ;
 			
 			CIO::message(M_INFO, "precomputing kernel matrix %i (%ix%i)\n", n, num, num) ;
 			for (INT i=0; i<num; i++)
 			{
 				CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
 				for (INT j=0; j<=i; j++)
-				{
-					matrix[i*num+j] = k->kernel(i,j) ;
-					matrix[j*num+i] = matrix[i*num+j] ;
-				}
+					matrix[i*(i+1)/2+j] = k->kernel(i,j) ;
+
 			}
 			CIO::message(M_INFO, "\r %1.2f%% ", 100.0) ;
 			CIO::message(M_INFO, "done.\n") ;
@@ -1202,13 +1217,16 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 		for (INT n=0; n<num_kernels; n++)
 		{
 			assert(precomputed_subkernels[n]!=NULL) ;
-			REAL * matrix = precomputed_subkernels[n] ;
+			SHORTREAL * matrix = precomputed_subkernels[n] ;
 			for(INT i=0;i<num;i++) 
 			{
 				if(a[i] != a_old[i]) 
 				{
 					for(INT j=0;j<num;j++) 
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*matrix[i*num+j]*(double)label[i];
+						if (i>=j)
+							W[j*num_kernels+n]+=(a[i]-a_old[i])*matrix[i*(i+1)/2+j]*(double)label[i];
+						else
+							W[j*num_kernels+n]+=(a[i]-a_old[i])*matrix[i+j*(j+1)/2]*(double)label[i];
 				}
 			}
 		}
