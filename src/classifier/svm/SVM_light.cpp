@@ -184,8 +184,6 @@ bool CSVMLight::setup_auc_maximization()
 
 bool CSVMLight::train()
 {
-	//setup_auc_maximization() ;
-
 	//certain setup params	
 	verbosity=1 ;
 	init_margin=0.15;
@@ -194,7 +192,7 @@ bool CSVMLight::train()
 	opt_precision=DEF_PRECISION_LINEAR;
 	
 	strcpy (learn_parm->predfile, "");
-	learn_parm->biased_hyperplane=1; // AUC
+	learn_parm->biased_hyperplane=1; 
 	learn_parm->sharedslack=0;
 	learn_parm->remove_inconsistent=0;
 	learn_parm->skip_final_opt_check=1;

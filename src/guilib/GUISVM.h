@@ -13,7 +13,7 @@ public:
 	~CGUISVM();
 
 	bool new_svm(CHAR* param);
-	bool train(CHAR* param);
+	bool train(CHAR* param, bool auc_maximization);
 	bool test(CHAR* param);
 	bool load(CHAR* param);
 	bool save(CHAR* param);
