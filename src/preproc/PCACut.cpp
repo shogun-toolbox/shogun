@@ -13,8 +13,10 @@
 extern "C" void cleaner_main(double *covZ, int dim, double thresh,
 			     double **T, int *num_dim)  ;
 
-CPCACut::CPCACut()
-  : CRealPreProc("PCACut", "PCAC"), T(NULL), num_dim(0), mean(NULL), initialized(false)
+CPCACut::CPCACut(int do_whitening_, double thresh_)
+  : CRealPreProc("PCACut", "PCAC"), T(NULL), 
+  num_dim(0), mean(NULL), initialized(false), 
+  do_whitening(do_whitening_), thresh(thresh_)
 {
 }
 
@@ -126,7 +128,7 @@ bool CPCACut::init(CFeatures* f)
 	for (i=0; i<num_features; i++)
 	{
 	    //	  CIO::message("EV[%i]=%e\n", i, values[i]) ;
-	    if (eigenvalues[i]>1e-6)
+	    if (eigenvalues[i]>thresh)
 		num_dim++ ;
 	} ;
 
@@ -137,16 +139,19 @@ bool CPCACut::init(CFeatures* f)
 	num_old_dim=num_features;
 
 	assert(T!=NULL) ;
-	int offs=0 ;
-	for (i=0; i<num_features; i++)
-	{
-	    if (eigenvalues[i]>1e-6)
+	if (do_whitening)
+	  {
+  	    int offs=0 ;
+	    for (i=0; i<num_features; i++)
 	    {
-		for (int j=0; j<num_features; j++)
-		    T[offs+j*num_dim]=cov[num_features*i+j]/sqrt(eigenvalues[i]) ;
-		offs++ ;
-	    } ;
-	}
+	      if (eigenvalues[i]>1e-6)
+	      {
+		  for (int j=0; j<num_features; j++)
+		      T[offs+j*num_dim]=cov[num_features*i+j]/sqrt(eigenvalues[i]) ;
+		  offs++ ;
+	      } ;
+	    }
+	  } ;
 
 	delete[] eigenvalues;
 	delete[] cov;
@@ -234,7 +239,7 @@ REAL* CPCACut::apply_to_feature_vector(REAL* f, int &len)
 
   delete[] sub_mean ;
   len=num_dim ;
-	  CIO::message("num_dim: %d\n", num_dim);
+  //	  CIO::message("num_dim: %d\n", num_dim);
   return ret;
 }
 

@@ -10,7 +10,7 @@
 class CPCACut : public CRealPreProc
 {
  public:
-  CPCACut();
+  CPCACut(int do_whitening=0, double thresh=1e-6);
   virtual ~CPCACut();
   
   /// initialize preprocessor from features
@@ -39,5 +39,8 @@ class CPCACut : public CRealPreProc
 
   /// true when already initialized
   bool initialized;
+
+  int do_whitening;
+  double thresh ;
 };
 #endif

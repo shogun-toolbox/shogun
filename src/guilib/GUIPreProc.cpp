@@ -22,25 +22,29 @@ CGUIPreProc::~CGUIPreProc()
 bool CGUIPreProc::set_preproc(char* param)
 {
 	param=CIO::skip_spaces(param);
-	if (strcmp(param,"PCACUT")==0)
+	if (strncmp(param,"PCACUT",6)==0)
 	{
 		delete preproc;
-		preproc=new CPCACut();
+		int do_whitening=0; 
+		double thresh=1e-6 ;
+		sscanf(param+6, "%i %le", &do_whitening, &thresh) ;
+		CIO::message("PCACUT parameters: do_whitening=%i thresh=%e", do_whitening, thresh) ;
+		preproc=new CPCACut(do_whitening, thresh);
 		return true;
 	}
-	else if (strcmp(param,"NORMONE")==0)
+	else if (strncmp(param,"NORMONE",7)==0)
 	{
 		delete preproc;
 		preproc=new CNormOne();
 		return true;
 	}
-	else if (strcmp(param,"PRUNEVARSUBMEAN")==0)
+	else if (strncmp(param,"PRUNEVARSUBMEAN",15)==0)
 	{
 		delete preproc;
 		preproc=new CPruneVarSubMean();
 		return true;
 	}
-	else if (strcmp(param,"NONE")==0)
+	else if (strncmp(param,"NONE",4)==0)
 	{
 		delete preproc;
 		preproc=NULL;

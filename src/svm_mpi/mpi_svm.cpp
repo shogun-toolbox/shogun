@@ -9,9 +9,6 @@
 #include "lib/io.h"
 #include "preproc/PCACut.h"
 
-CBlockCache<double> CSVMMPI::bcache_d;
-CBlockCache<int> CSVMMPI::bcache_i;
-
 int sign(double a)
 {
   if (a>0)
@@ -20,18 +17,6 @@ int sign(double a)
     return -1 ;
   return 0 ;
 } 
-
-extern "C" 
-void my_delete(void* ptr)
-{
-  delete[] ptr ;
-} ;
-
-extern "C"
-void donothing(void *)
-{
-  /* do nothing */
-}
 
 #if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 CSVMMPI::CSVMMPI()
@@ -186,69 +171,6 @@ bool CSVMMPI::save(FILE* modelfl)
   CIO::message("done\n");
   return true ;
 }
-
-
-
-template <class I, class T>
-void run_non_root_2mpi(const unsigned my_rank, const unsigned num_nodes);
-
-
-void CSVMMPI::svm_mpi_init(int argc, const char **argv)
-{ 
-  int my_rank, num_nodes ;
-  CIO::message("Initializing MPI\n") ;
-  MPI_Init(&argc, (char***)&argv);
-  MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN);    
-  MPI_Comm_rank(MPI_COMM_WORLD, (int *)&my_rank);
-  MPI_Comm_size(MPI_COMM_WORLD, (int *)&num_nodes);
-
-  CIO::message(stderr, "my_rank=%i\nnum_nodes=%i\n", my_rank, num_nodes) ;
-  
-  if (my_rank) {
-    bcache_d.AddCacheSize(1);
-    bcache_d.AddCacheSize(100);
-    matrix_set_cache_mgr<double>(&bcache_d);
-    matrix_set_cache_mgr<int>(&bcache_i);
-
-    run_non_root_2mpi<double,double>(my_rank, num_nodes);
-    MPI_Finalize();
-    exit(0);
-  }
-}
-
-unsigned CSVMMPI::svm_mpi_broadcast_Z_size(int num_cols, int num_rows_, unsigned &m_last_)
-{
-  unsigned num_nodes;
-  num_rows=num_rows_ ;
-  MPI_Comm_size(MPI_COMM_WORLD, (int *)&num_nodes);
-  m_prime=distribute_dimensions(num_cols, num_nodes, num_rows_, num_rows_, &m_last) ;
-  //num_nodes=1 ;
-  //m_prime=num_cols ;
-  //m_last=num_cols ;
-
-  m_last_=m_last ;
-  m_full = num_cols ;
-  Z.Resize(num_rows_, m_prime) ;
-  return m_prime ;
-} ;
-
-void CSVMMPI::svm_mpi_set_Z_block(double * block, int num_cols, int start_idx, int rank) 
-{
-  //CIO::message("z_set %i %i\n", start_idx, rank) ;
-  if (rank)
-    {
-      // CIO::message("z_client %i %i\n",start_idx, rank) ;
-      send_z_columns_double(MPI_COMM_WORLD, block, start_idx,
-			    num_cols, num_rows,
-			    rank, true);
-    }
-  else
-    {
-      //CIO::message("z_block server %i %i %i %i %ld\n",start_idx, rank, num_cols, num_rows, block) ;
-      CMatrix<double> tmp(num_rows, num_cols, block, false, donothing);
-      Z(colon(0,num_rows), colon(start_idx, start_idx+num_cols-1)) = tmp;
-    } ;
-} ;
 
 void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * train) 
 {
@@ -467,12 +389,4 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
   delete primal ;
 } ;
 
-
-void CSVMMPI::svm_mpi_destroy(void)
-{
-  /* Root node only */
-  bcast_req(MPI_COMM_WORLD, 0, REQ_QUIT);
-  //bcast_req(MPI_COMM_WORLD, 0, REQ_FINALIZE);
-  MPI_Finalize();
-}
 #endif

@@ -14,7 +14,7 @@ CTextGUI *gui=NULL;
 #endif // WITHMATLAB
 
 #ifdef SVMMPI
-#include "svm_mpi/mpi_svm.h"
+#include "svm_mpi/mpi_base.h"
 #endif
 
 //names of menu commands
@@ -101,7 +101,7 @@ CTextGUI::CTextGUI(int argc, const char** argv)
 
 #ifdef SVMMPI
   //CIO::message("Initializing MPI\n");
-  CSVMMPI::svm_mpi_init(argc, argv) ;
+  CMPIBase::svm_mpi_init(argc, argv) ;
 #else
   CIO::message("undef'd MPI\n");
 #endif
@@ -117,7 +117,7 @@ CTextGUI::~CTextGUI()
 
 #ifdef SVMMPI
 #if  defined(HAVE_MPI) && !defined(DISABLE_MPI)
-  CSVMMPI::svm_mpi_destroy() ;
+  CMPIBase::svm_mpi_destroy() ;
 #endif
 #endif
 }
