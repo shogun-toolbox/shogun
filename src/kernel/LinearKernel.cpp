@@ -34,11 +34,12 @@ bool CLinearKernel::check_features(CFeatures* f)
   return (f->get_feature_type()==CFeatures::F_REAL);
 }
 
-REAL CLinearKernel::compute(CFeatures* a, int idx_a, CFeatures* b, int idx_b)
+REAL CLinearKernel::compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)
 {
-  int alen, blen;
+  long alen, blen;
   bool afree, bfree;
 
+  //fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
   REAL* avec=((CRealFeatures*) a)->get_feature_vector(idx_a, alen, afree);
   REAL* bvec=((CRealFeatures*) b)->get_feature_vector(idx_b, blen, bfree);
   

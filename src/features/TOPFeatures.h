@@ -20,6 +20,7 @@ class CTOPFeatures: public CRealFeatures
       delete[] feature_matrix  ;
       feature_matrix=NULL ;
       //set_feature_matrix() ;
+      num_vectors=get_number_of_examples() ;
     };
 
   virtual REAL* set_feature_matrix();
@@ -31,7 +32,13 @@ class CTOPFeatures: public CRealFeatures
     } ;
   virtual long get_number_of_examples() 
     {
-	return pos->get_observations()->get_DIMENSION();
+      if (pos)
+	if (pos->get_observations())
+	  return pos->get_observations()->get_DIMENSION();
+	else 
+	  return 0 ;
+      else
+	return 0;
 #warning check here
     } ;
 
@@ -41,10 +48,10 @@ class CTOPFeatures: public CRealFeatures
     }
 
  protected:
-  virtual REAL* compute_feature_vector(int num, int& len);
+  virtual REAL* compute_feature_vector(long num, long& len);
   
   /// computes the featurevector to the address addr
-  void compute_feature_vector(REAL* addr, int num, int& len);
+  void compute_feature_vector(REAL* addr, long num, long& len);
   
  protected:
   CHMM* pos;

@@ -26,12 +26,12 @@ class CRealFeatures: public CFeatures
       @param num index of feature vector
       @param len length is returned by reference
   */
-  REAL* get_feature_vector(int num, int& len, bool& free);
+  REAL* get_feature_vector(long num, long& len, bool& free);
   void free_feature_vector(REAL* feat_vec, bool free);
   
   /// get the pointer to the feature matrix
   /// num_feat,num_vectors are returned by reference
-  REAL* get_feature_matrix(int &num_feat, int &num_vec);  
+  REAL* get_feature_matrix(long &num_feat, long &num_vec);  
   
   /** set feature matrix
       necessary to set feature_matrix, num_features, num_vectors, where
@@ -43,13 +43,13 @@ class CRealFeatures: public CFeatures
 protected:
   /// compute feature vector for sample num
   /// len is returned by reference
-  virtual REAL* compute_feature_vector(int num, int& len)=0;
+  virtual REAL* compute_feature_vector(long num, long& len)=0;
 
   /// number of vectors in cache
-  int num_vectors;
+  long num_vectors;
  
   /// number of features in cache
-  int num_features;
+  long num_features;
   
   REAL* feature_matrix;
 };

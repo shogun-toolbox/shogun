@@ -58,7 +58,7 @@ void CLocImpKernel::cleanup()
   delete[] stage1 ;
 } ;
 
-REAL CLocImpKernel::compute(CFeatures* a, int idx_a, CFeatures* b, int idx_b)
+REAL CLocImpKernel::compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)
 {
   short int *avec, *bvec ; /* do something here */
   double dpt ;

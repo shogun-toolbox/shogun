@@ -30,7 +30,7 @@ class CLocImpKernel: public CKernel
     /// compute kernel function for features a and b
     /// idx_{a,b} denote the index of the feature vectors
     /// in the corresponding feature object
-    virtual REAL compute(CFeatures* a, int idx_a, CFeatures* b, int idx_b);
+    virtual REAL compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b);
     /*    compute_kernel*/
 
     void dot_pyr (double* dpt, const short int* const data1,

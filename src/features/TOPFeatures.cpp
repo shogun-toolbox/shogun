@@ -3,63 +3,64 @@
 
 CTOPFeatures::CTOPFeatures(CHMM* p, CHMM* n)
 {
-	pos=p;
-	neg=n;
+  pos=p;
+  neg=n;
+  num_vectors=get_number_of_examples() ;
 }
 
 CTOPFeatures::~CTOPFeatures()
 {
 }
 
-REAL* CTOPFeatures::compute_feature_vector(int num, int &len)
+REAL* CTOPFeatures::compute_feature_vector(long num, long &len)
 {
-	REAL* featurevector;
-
-	CIO::message("allocating %.2f M for top feature vector cache\n", 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()));
-	
-	featurevector=new REAL[ 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ];
-
-    if (!featurevector)
-		return NULL;
-
-	compute_feature_vector(featurevector, num,len);
-	return featurevector;
+  REAL* featurevector;
+  
+  //CIO::message("allocating %.2f M for top feature vector cache\n", 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()));
+  
+  featurevector=new REAL[ 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ];
+  
+  if (!featurevector)
+    return NULL;
+  
+  compute_feature_vector(featurevector, num,len);
+  return featurevector;
 }
 
-void CTOPFeatures::compute_feature_vector(REAL* featurevector, int num, int& len)
+void CTOPFeatures::compute_feature_vector(REAL* featurevector, long num, long& len)
 {
-    int i,j,p=0,x=num;
-
-    double posx=pos->model_probability(x);
-    double negx=neg->model_probability(x);
-
-    featurevector[p++]=(posx-negx);
-
-    //first do positive model
-    for (i=0; i<pos->get_N(); i++)
+  long i,j,p=0,x=num;
+  
+  double posx=pos->model_probability(x);
+  double negx=neg->model_probability(x);
+  
+  featurevector[p++]=(posx-negx);
+  
+  //first do positive model
+  for (i=0; i<pos->get_N(); i++)
     {
-	featurevector[p++]=exp(pos->model_derivative_p(i, x)-posx);
-	featurevector[p++]=exp(pos->model_derivative_q(i, x)-posx);
-
-	for (j=0; j<pos->get_N(); j++)
-	    featurevector[p++]=exp(pos->model_derivative_a(i, j, x)-posx);
-
-	for (j=0; j<pos->get_M(); j++)
-	    featurevector[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
-
+      featurevector[p++]=exp(pos->model_derivative_p(i, x)-posx);
+      featurevector[p++]=exp(pos->model_derivative_q(i, x)-posx);
+      
+      for (j=0; j<pos->get_N(); j++)
+	featurevector[p++]=exp(pos->model_derivative_a(i, j, x)-posx);
+      
+      for (j=0; j<pos->get_M(); j++)
+	featurevector[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
+      
     }
-   
-	//then do negative
-    for (i=0; i<neg->get_N(); i++)
+  
+  //then do negative
+  for (i=0; i<neg->get_N(); i++)
     {
-	featurevector[p++]= - exp(neg->model_derivative_p(i, x)-negx);
-	featurevector[p++]= - exp(neg->model_derivative_q(i, x)-negx);
-
-	for (j=0; j<neg->get_N(); j++)
-	    featurevector[p++]= - exp(neg->model_derivative_a(i, j, x)-negx);
-
-	for (j=0; j<neg->get_M(); j++)
-	    featurevector[p++]= - exp(neg->model_derivative_b(i, j, x)-negx);
+      featurevector[p++]= - exp(neg->model_derivative_p(i, x)-negx);
+      featurevector[p++]= - exp(neg->model_derivative_q(i, x)-negx);
+      
+      for (j=0; j<neg->get_N(); j++)
+	featurevector[p++]= - exp(neg->model_derivative_a(i, j, x)-negx);
+      
+      for (j=0; j<neg->get_M(); j++)
+	featurevector[p++]= - exp(neg->model_derivative_b(i, j, x)-negx);
     }
 }
 
@@ -92,7 +93,7 @@ void CTOPFeatures::compute_feature_vector(REAL* featurevector, int num, int& len
 
 REAL* CTOPFeatures::set_feature_matrix()
 {
-	int len=0;
+	long len=0;
 
 	num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 
@@ -102,7 +103,7 @@ REAL* CTOPFeatures::set_feature_matrix()
 
 	CIO::message("calculating top feature matrix\n");
 
-	for (int x=0; x<num_vectors; x++)
+	for (long x=0; x<num_vectors; x++)
 	{
 		if (!(x % (num_vectors/10+1)))
 			printf("%02d%%.", (int) (100.0*x/num_vectors));

@@ -11,17 +11,17 @@ CKernel::~CKernel()
 } ;
 
 /* calculate the kernel function */
-REAL CKernel::kernel(CFeatures* a, int idx_a, CFeatures* b, int idx_b)
+REAL CKernel::kernel(CFeatures* a, long idx_a, CFeatures* b, long idx_b)
 {
   if (idx_a < 0 || idx_b <0)
     {
 #ifdef DEBUG
-      printf("ERROR: (%d,%d)\n", a->docnum, b->docnum);
+      printf("ERROR: (%d,%d)\n", idx_a, idx_b);
 #endif
       return 0;
     }
   
-  return compute(a,idx_a, b,idx_b);
+  return compute(a, idx_a, b, idx_b);
 }
 
 void CKernel::get_kernel_row(CFeatures *train,

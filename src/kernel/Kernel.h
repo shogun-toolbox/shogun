@@ -15,7 +15,7 @@ public:
 	/// get kernel function for features a and b
 	/// idx_{a,b} denote the index of the feature vectors
 	/// in the corresponding feature object
-	REAL kernel(CFeatures* a, int idx_a, CFeatures* b, int idx_b);
+	REAL kernel(CFeatures* a, long idx_a, CFeatures* b, long idx_b);
 
 	/// initialize your kernel
 	virtual void init(CFeatures* f)=0;
@@ -39,7 +39,7 @@ protected:
 	/// compute kernel function for features a and b
 	/// idx_{a,b} denote the index of the feature vectors
 	/// in the corresponding feature object
-	virtual REAL compute(CFeatures* a, int idx_a, CFeatures* b, int idx_b)=0;
+	virtual REAL compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)=0;
 	
 	/**@ cache kernel evalutations to improve speed
 	*/
