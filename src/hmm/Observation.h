@@ -6,19 +6,6 @@
 #include "lib/common.h"
 #include "lib/Mathmatics.h"
 
-/*
-typedef struct word {
-  FNUM    wnum;	
-  FVAL    weight;
-} WORD;*/
-
-
-typedef struct doc {
-  long    docnum;
-  double  twonorm_sq;
-//  WORD    *words;
-} DOC;
-
 //define numbers for the bases 
 const unsigned char B_A=0;
 const unsigned char B_C=1;
@@ -130,21 +117,6 @@ public:
 	 * @param file filehandle to observations
 	 */
 	bool load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M, int M, int ORDER=1);
-
-	/** add num_sv support vectors to observations
-	 * \begin{verbatim}
-	  -format specs: in_file (machine.svm)
-	  (<NUMBER>:[AGCT]+<<EOL|EOF>>)+
-	  \end{verbatim}
-	 * @param file filehandle to supportvector machine
-	 */
-	bool add_support_vectors(FILE* file, int num_sv);
-
-	/// get index of supportvector in observations
-	inline int get_support_vector_idx(int sv) { return sv_idx+sv; }
-	
-	/// get number of supportvectors in observations
-	inline int get_support_vector_num() { return sv_num; }
 
 	///free observations
 	void cleanup();
@@ -322,12 +294,6 @@ protected:
 
 	/// maximum #columns of observation matrix
 	int max_T;
-
-	/// number of support vectors added to data
-	int sv_num;
-	
-	/// index of first support vector
-	int sv_idx;
 
 	/// content of file
 	char* full_content;

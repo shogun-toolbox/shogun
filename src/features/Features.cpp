@@ -16,15 +16,15 @@ CFeatures::~CFeatures()
 const REAL* CFeatures::get_feature_vector(int num)
 {
 #ifdef DEBUG
-	if (num<num_vectors)
+	if (num<num_vectors && feature_matrix)
 #endif
 		return feature_matrix[num*num_features];
 	else
 	{
 		if (preproc)
-
-
-		get_feature_vector_comp(int num);
+			get_feature_vector_comp(int num);
+		else
+			return get_feature_vector_comp(int num);
 	}
 #ifdef DEBUG
 	else

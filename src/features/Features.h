@@ -10,6 +10,9 @@ class CFeatures
 
 	/// get feature vector for sample num
 	REAL* get_feature_vector(int num);
+
+	/// compute feature vector for sample num
+	virtual REAL* get_feature_vector_comp(int num)=0;
 	
 	/// set feature vector for sample num
 	bool set_feature_vector(int num);
@@ -24,6 +27,7 @@ class CFeatures
 		see below for definition of feature_matrix
 	*/
 	virtual void set_feature_matrix()=0;
+
 	
 	/// set preprocessor
 	void set_preproc(CPreProc* p);

@@ -111,9 +111,6 @@ CObservation::~CObservation()
 
 void CObservation::cleanup()
 {
-	sv_idx=-1;
-	sv_num=0;
-
 	REALDIMENSION=-1;
 	DIMENSION=-1;
 
@@ -209,83 +206,6 @@ bool CObservation::load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET
 		}
     }
     return numread==length;
-}
-
-bool CObservation::add_support_vectors(FILE* file, int num_sv)
-{
-    bool result=false;
-    T_OBSERVATIONS** obs=new T_OBSERVATIONS*[DIMENSION+num_sv];
-    int* obs_len= new int[DIMENSION+num_sv];
-    int* lab= new int[DIMENSION+num_sv];
-    int max_T_SVM=0;
-    int i=0;
-
-    for (i=0; i<DIMENSION; i++)
-    {
-	    obs[i]=get_obs_vector(i);
-	    obs_len[i]=get_obs_T(i);
-	    lab[i]=get_label(i);
-    }
-    
-    delete[] observations;
-    delete[] observation_len;
-    delete[] label;
-    
-    observations=obs;
-    observation_len=obs_len;
-    label=lab;
-
-    char character;
-    for (i=DIMENSION; i<DIMENSION+num_sv; i++)
-    {
-	while ((fread(&character, sizeof(char), 1, file))==1 && character !=':');
-
-	if (character==':')
-	{
-	    int filepos=ftell(file);
-	    int line_length=-1;
-	    char* line=NULL;
-
-	    while ((fread(&character, sizeof(char), 1, file))==1 && character!='\n' );
-
-	    if (character=='\n')
-	    {
-		line_length=ftell(file)-filepos-1;
-		line= new char[line_length];
-		fseek(file, filepos, SEEK_SET);
-		fread(line, sizeof(char), line_length, file);
-
-		observations[i]=(T_OBSERVATIONS*) line;
-		observation_len[i]=line_length;
-		label[i]=0;
-
-		translate_from_single_order(observations[i], observation_len[i]);
-#ifdef DEBUG
-		printf(">");
-		for (int j=0; j<line_length; j++)
-		   CIO::message("%d",(int) observations[i][j]);
-		printf("<\n");
-#endif
-		if (line_length>max_T_SVM)
-		    max_T_SVM=line_length;
-	    }
-	    else 
-		return false;
-	}
-	else 
-	    return false;
-    }
-    
-    if (max_T < max_T_SVM)
-	max_T=max_T_SVM;
-
-   CIO::message("read %d support vectors\n", i-DIMENSION);
-
-    sv_num=num_sv;
-    sv_idx=DIMENSION;
-    //DIMENSION+=num_sv; // we do not want the sv's to count
-
-    return result;
 }
 
 //init map_table
