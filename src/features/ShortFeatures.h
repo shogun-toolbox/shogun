@@ -37,17 +37,16 @@ protected:
   /// len is returned by reference
   virtual void compute_feature_vector(int num, short int* feat)=0;
 
-  /** chunk of memory for all the feature_vectors	
-      it is aligned like 0...num_features-1 for vec0
-      0...num_features-1 for vec1 and so on up to vecnum_vectors-1
-  */
-  short int* feature_matrix;
-
   /// number of features in cache
   int num_features;
   
   /// number of vectors in cache
   int num_vectors;
 
+  /** chunk of memory for all the feature_vectors	
+      it is aligned like 0...num_features-1 for vec0
+      0...num_features-1 for vec1 and so on up to vecnum_vectors-1
+  */
+  short int* feature_matrix;
 };
 #endif

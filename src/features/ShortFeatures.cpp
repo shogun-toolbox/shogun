@@ -2,7 +2,7 @@
 #include "ShortFeatures.h"
 
 CShortFeatures::CShortFeatures()
-: CFeatures(), num_vectors(0), num_features(0), 
+: CFeatures(),  num_features(0), num_vectors(0),
   feature_matrix(NULL)
 {
 }

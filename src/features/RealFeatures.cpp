@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "RealFeatures.h"
 
 CRealFeatures::CRealFeatures() : CFeatures(), num_vectors(0), num_features(0), feature_matrix(NULL)
@@ -13,28 +14,25 @@ CRealFeatures::~CRealFeatures()
 REAL* CRealFeatures::get_feature_vector(int num, int &len, bool &free)
 {
 	len=num_features ; 
-	if (num<num_vectors)
-	{
-		if (feature_matrix)
-		{
-			free=false ;
-			return &feature_matrix[num*num_features];
-		} 
-		else
-		{
-			free=true ;
-			REAL* feat=compute_feature_vector(num, len) ;
-			if (preproc)
-			{
-				REAL* feat2 = preproc->apply_to_feature_vector(feat, len);
-				delete[] feat ;
-				return feat2 ;
-			}
-			return feat ;
-		}
-	}
+	assert(num<num_vectors) ;
+	
+	if (feature_matrix)
+	  {
+	    free=false ;
+	    return &feature_matrix[num*num_features];
+	  } 
 	else
-		return math.INFTY;
+	  {
+	    free=true ;
+	    REAL* feat=compute_feature_vector(num, len) ;
+	    if (preproc)
+	      {
+		REAL* feat2 = preproc->apply_to_feature_vector(feat, len);
+		delete[] feat ;
+		return feat2 ;
+	      }
+	    return feat ;
+	  }
 }
 
 void CRealFeatures::free_feature_vector(REAL* feat, bool free)
