@@ -38,6 +38,7 @@ static const char* N_SET_FEATURES=		"set_features";
 static const char* N_SET_KERNEL=		"set_kernel";
 static const char* N_SET_PREPROC=		"set_preproc";
 static const char* N_PREPROCESS=		"preprocess";
+static const char* N_INIT_KERNEL=		"init_kernel";
 static const char* N_SAVE_PATH=			"save_path";
 static const char* N_SAVE_PATH_DERIVATIVES=	"save_vit_deriv";
 static const char* N_SAVE_PATH_DERIVATIVES_BIN=	"save_vit_deriv_bin";
@@ -201,6 +202,7 @@ void CTextGUI::print_help()
    CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
    CIO::message("\033[1;31m%s\033[0m <LINEAR> [<CACHESIZE> [OPTS]]\t\t\t- set kernel type\n", N_SET_KERNEL);
    CIO::message("\033[1;31m%s\033[0m\t\t- obtains svm from TRAINFEATURES\n",N_SVM_TRAIN);
+   CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> - init kernel for training/testingn",N_INIT_KERNEL);
    CIO::message("\033[1;31m%s\033[0m [[<treshhold> [<output> [<rocfile>]]]\t\t- calculate svm output on TESTFEATURES\n",N_SVM_TEST);
    //CIO::message("\033[1;31m%s\033[0m <dstsvm> \t\t- obtains svm from pos/neg linear HMMs\n",N_LINEAR_SVM_TRAIN);
    CIO::message("\n[SYSTEM]\n");
@@ -261,6 +263,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
     else if (!strncmp(input, N_LOAD_SVM, strlen(N_LOAD_SVM)))
     {
 	guisvm.load(input+strlen(N_LOAD_SVM));
+    } 
+    else if (!strncmp(input, N_INIT_KERNEL, strlen(N_INIT_KERNEL)))
+    {
+	guikernel.init_kernel(input+strlen(N_INIT_KERNEL));
     } 
     else if (!strncmp(input, N_LOAD_KERNEL_INIT, strlen(N_LOAD_KERNEL_INIT)))
     {

@@ -30,7 +30,7 @@ void CLinearKernel::init_rescale()
 			sum+=compute(i, i);
 
 	scale=sum/math.min(lhs->get_num_vectors(), rhs->get_num_vectors());
-	CIO::message("rescaling kernel by %g\n",scale);
+	CIO::message("rescaling kernel by %g (sum:%g num:%d)\n",scale, sum, math.min(lhs->get_num_vectors(), rhs->get_num_vectors()));
 }
 
 void CLinearKernel::cleanup()
@@ -52,8 +52,8 @@ bool CLinearKernel::load_init(FILE* src)
     assert(fread(&endian, (unsigned int) intlen, 1, src)== 1);
     assert(fread(&fourcc, (unsigned int) intlen, 1, src)==1);
     assert(fread(&r, (unsigned int) intlen, 1, src)==1);
-    assert(fread(&scale, (unsigned int) doublelen, 1, src)==1);
-    CIO::message("detected: intsize=%d, doublesize=%d, r=%d, scale=%d\n", intlen, doublelen, r, s);
+    assert(fread(&s, (unsigned int) doublelen, 1, src)==1);
+    CIO::message("detected: intsize=%d, doublesize=%d, r=%d, scale=%g\n", intlen, doublelen, r, s);
 
 	rescale= r==1;
 	scale=s;
@@ -73,7 +73,9 @@ bool CLinearKernel::save_init(FILE* dest)
     assert(fwrite(&endian, sizeof(unsigned int), 1, dest)==1);
     assert(fwrite(&fourcc, sizeof(unsigned int), 1, dest)==1);
     assert(fwrite(&r, sizeof(unsigned int), 1, dest)==1);
-    assert(fwrite(&scale, sizeof(REAL), 1, dest)==1);
+    assert(fwrite(&scale, sizeof(double), 1, dest)==1);
+    CIO::message("wrote: intsize=%d, doublesize=%d, r=%d, scale=%g\n", intlen, doublelen, r, scale);
+
 	return true;
 }
   

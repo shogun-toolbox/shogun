@@ -2,6 +2,7 @@
 #include "kernel/Kernel.h"
 #include "kernel/LinearKernel.h"
 #include "lib/io.h"
+#include "gui/GUI.h"
 
 #include <string.h>
 
@@ -47,19 +48,26 @@ bool CGUIKernel::set_kernel(char* param)
 bool CGUIKernel::load_kernel_init(char* param)
 {
 	bool result=false;
+	char filename[1024];
+
 	if (kernel)
 	{
-		FILE* file=fopen(param, "r");
-		if ((!file) || (!kernel->load_init(file)))
-			CIO::message("reading from file %s failed!\n", param);
-		else
+		if ((sscanf(param, "%s", filename))==1)
 		{
-			CIO::message("successfully read kernel init data from \"%s\" !\n", param);
-			result=true;
-		}
+			FILE* file=fopen(filename, "r");
+			if ((!file) || (!kernel->load_init(file)))
+				CIO::message("reading from file %s failed!\n", filename);
+			else
+			{
+				CIO::message("successfully read kernel init data from \"%s\" !\n", filename);
+				result=true;
+			}
 
-		if (file)
-			fclose(file);
+			if (file)
+				fclose(file);
+		}
+		else
+			CIO::message("see help for params\n");
 	}
 	else
 		CIO::message("no kernel set!\n");
@@ -69,21 +77,66 @@ bool CGUIKernel::load_kernel_init(char* param)
 bool CGUIKernel::save_kernel_init(char* param)
 {
 	bool result=false;
+	char filename[1024];
+
 	if (kernel)
 	{
-		FILE* file=fopen(param, "w");
-		if ((!file) || (!kernel->save(file)))
-			CIO::message("writing to file %s failed!\n", param);
-		else
+		if ((sscanf(param, "%s", filename))==1)
 		{
-			CIO::message("successfully written kernel init data into \"%s\" !\n", param);
-			result=true;
-		}
+			FILE* file=fopen(filename, "w");
+			if (!file)
+				CIO::message("fname: %s\n", filename);
+			if ((!file) || (!kernel->save_init(file)))
+				CIO::message("writing to file %s failed!\n", filename);
+			else
+			{
+				CIO::message("successfully written kernel init data into \"%s\" !\n", filename);
+				result=true;
+			}
 
-		if (file)
-			fclose(file);
+			if (file)
+				fclose(file);
+		}
+		else
+			CIO::message("see help for params\n");
 	}
 	else
 		CIO::message("no kernel set!\n");
 	return result;
+}
+
+bool CGUIKernel::init_kernel(char* param)
+{
+	if (!strcmp(param, "TRAIN"))
+	{
+		if (gui->guifeatures.get_train_features())
+		{
+			if (!kernel->check_features(gui->guifeatures.get_train_features()))
+			{
+				CIO::message("kernel can not process this feature type\n");
+				return false ;
+			}
+			kernel->init(gui->guifeatures.get_train_features(),gui->guifeatures.get_train_features()) ;
+		}
+		else
+			CIO::message("assign train features first\n");
+	}
+	else
+	{
+		if (gui->guifeatures.get_train_features() && gui->guifeatures.get_test_features())
+		{
+			if (!kernel->check_features(gui->guifeatures.get_train_features()) && !kernel->check_features(gui->guifeatures.get_test_features()))
+			{
+				CIO::message("kernel can not process this feature type\n");
+				return false ;
+			}
+			kernel->init(gui->guifeatures.get_train_features(),gui->guifeatures.get_train_features()) ;
+		}
+		else
+			CIO::message("assign train and test features first\n");
+
+		// lhs -> always train_features; rhs -> alway test_features
+		kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features()) ;
+	}
+	return true;
 }
