@@ -7,7 +7,7 @@
 
 #include "lib/io.h"
 
-CTextGUI *gui=NULL;
+CTextGUI* gui=NULL;
 
 #ifdef WITHMATLAB
 #include <libmmfile.h>
@@ -206,11 +206,8 @@ void CTextGUI::print_prompt()
 	//CIO::message("genefinder >> ");
 }
 
-bool CTextGUI::get_line(FILE* infile, bool show_prompt)
+char* CTextGUI::get_line(FILE* infile, bool show_prompt)
 {
-	int i;
-	char input[2000];
-
 	memset(input, 0, sizeof(input));
 
 	//guihmm.debug();
@@ -218,17 +215,27 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 		print_prompt();
 
 	if (feof(infile))
+		return NULL;
+
+	if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
+		return NULL;
+	else
+	{
+		if (strlen(input)>=1)
+			input[strlen(input)-1]='\0';
+		return input;
+	}
+}
+
+bool CTextGUI::parse_line(char* input)
+{
+	int i;
+	if (!input)
 		return false;
 
-	char* b=fgets(input, sizeof(input), infile);
-
-	if ((b==NULL) || !strlen(input))
-		return false;
-	
 	if ((input[0]==N_COMMENT1) || (input[0]==N_COMMENT2) || (input[0]=='\n'))
 		return true;
 
-	input[strlen(input)-1]='\0';
 	CIO::message("%s\n",input) ;
 
 	if (!strncmp(input, N_NEW_HMM, strlen(N_NEW_HMM)))
@@ -553,7 +560,7 @@ int main(int argc, const char* argv[])
 	gui=new CTextGUI(argc, argv) ;
 
 	if (argc<=1)
-		while (gui->get_line());
+		while (gui->parse_line(gui->get_line()));
 	else
 	{
 		if (argc>=2)

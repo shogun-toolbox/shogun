@@ -23,9 +23,14 @@ public:
 
 	/// get line from user/stdin/file input
 	/// @return true at EOF
-	bool get_line(FILE* infile=stdin, bool show_prompt=true);
+	char* get_line(FILE* infile=stdin, bool show_prompt=true);
+
+	/// get line from user/stdin/file input
+	/// @return true at EOF
+	bool parse_line(char* input);
 
 protected:
 	FILE* out_file;
+	char input[2000];
 };
 #endif
