@@ -68,15 +68,15 @@ bool CGUIPreProc::load(char* param)
 	{
 		assert(fread(id, sizeof(char), 4, file)==4);
 	
-		if (strncmp(id, "PCAC", 4)<0)
+		if (strncmp(id, "PCAC", 4)==0)
 		{
 			preproc=new CPCACut();
 		}
-		else if (strncmp(id, "NRM1", 4)<0)
+		else if (strncmp(id, "NRM1", 4)==0)
 		{
 			preproc=new CNormOne();
 		}
-		else if (strncmp(id, "PVSM", 4)<0)
+		else if (strncmp(id, "PVSM", 4)==0)
 		{
 			preproc=new CPruneVarSubMean();
 		}

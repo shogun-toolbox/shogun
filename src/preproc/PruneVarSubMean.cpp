@@ -15,6 +15,7 @@ CPruneVarSubMean::~CPruneVarSubMean()
 {
   delete[] idx ;
   delete[] mean;
+  delete[] std;
 }
 
 /// initialize preprocessor from features
@@ -176,29 +177,34 @@ REAL* CPruneVarSubMean::apply_to_feature_vector(REAL* f, int &len)
 bool CPruneVarSubMean::load_init_data(FILE* src)
 {
 	bool result=false;
+	int divide=0;
 	
+
+    assert(fread(&divide, sizeof(int), 1, src)==1) ;
+    assert(fread(&num_idx, sizeof(int), 1, src)==1) ;
+	CIO::message("divide:%d num_idx:%d\n", divide, num_idx);
 	delete[] mean;
 	delete[] idx;
 	delete[] std;
 	idx=new int[num_idx];
 	mean=new REAL[num_idx];
 	std=new REAL[num_idx];
-	
 	assert (mean!=NULL && idx!=NULL && std!=NULL);
-
-    assert(fread(&num_idx, sizeof(int), 1, src)==1) ;
-    assert(fread(idx, sizeof(REAL), num_idx, src)==(unsigned int) num_idx) ;
+    assert(fread(idx, sizeof(int), num_idx, src)==(unsigned int) num_idx) ;
     assert(fread(mean, sizeof(REAL), num_idx, src)==(unsigned int) num_idx) ;
     assert(fread(std, sizeof(REAL), num_idx, src)==(unsigned int) num_idx) ;
 	result=true;
+	divide_by_std=(divide==1);
 	return result;
 }
 
 /// save init-data (like transforamtion matrices etc) to file
 bool CPruneVarSubMean::save_init_data(FILE* dst)
 {
+	int divide= (divide_by_std) ? 1 : 0;
+    assert(fwrite(&divide, sizeof(int), 1, dst)==1) ;
     assert(fwrite(&num_idx, sizeof(int), 1, dst)==1) ;
-    assert(fwrite(idx, sizeof(REAL), num_idx, dst)==(unsigned int) num_idx) ;
+    assert(fwrite(idx, sizeof(int), num_idx, dst)==(unsigned int) num_idx) ;
     assert(fwrite(mean, sizeof(REAL), num_idx, dst)==(unsigned int) num_idx) ;
     assert(fwrite(std, sizeof(REAL), num_idx, dst)==(unsigned int) num_idx) ;
 	return true;
