@@ -157,38 +157,128 @@ CHMM::CHMM(FILE* model_file, REAL PSEUDO)
 
 CHMM::~CHMM()
 {
-  delete model ;
-  invalidate_top_feature_cache(INVALID);
-
-#ifdef PARALLEL
-  {
-    for (int i=0; i<NUM_PARALLEL; i++)
-      {
-	delete[] arrayN1[i];
-	delete[] arrayN2[i];
-      } ;
-  } ;
-  delete[] arrayN1 ;
-  delete[] arrayN2 ;
-
-  delete[] path_prob_updated ;
-  delete[] path_prob_dimension ;
-#else
-  delete[] arrayN1;
-  delete[] arrayN2;
-#endif
+    delete model ;
+    invalidate_top_feature_cache(INVALID);
+    free_state_dependend_arrays();
 
 #ifdef LOG_SUM_ARRAY
 #ifdef PARALLEL
-	{
-	  for (int i=0; i<NUM_PARALLEL; i++)
+    {
+	for (int i=0; i<NUM_PARALLEL; i++)
 	    delete[] arrayS[i];
-	  delete[] arrayS ;
-	} ;
+	delete[] arrayS ;
+    } ;
 #else //PARALLEL
-	delete[] arrayS;
+    delete[] arrayS;
 #endif //PARALLEL
 #endif //LOG_SUM_ARRAY
+
+    if (!reused_caches)
+    {
+#ifndef NOVIT
+#ifdef PARALLEL
+	delete[] path_prob_updated ;
+	delete[] path_prob_dimension ;
+	for (int i=0; i<NUM_PARALLEL; i++)
+	    delete[] path[i] ;
+#endif
+	delete[] path;
+#endif
+    }
+}
+  
+void CHMM::alloc_state_dependend_arrays()
+{
+#ifdef PARALLEL
+	alpha_cache=new T_ALPHA_BETA[NUM_PARALLEL] ;
+	beta_cache=new T_ALPHA_BETA[NUM_PARALLEL] ;
+	states_per_observation_psi=new P_STATES[NUM_PARALLEL] ;
+
+	for (int i=0; i<NUM_PARALLEL; i++)
+	{
+		this->alpha_cache[i].table=NULL;
+		this->beta_cache[i].table=NULL;
+		this->alpha_cache[i].dimension=0;
+		this->beta_cache[i].dimension=0;
+#ifndef NOVIT
+		this->states_per_observation_psi[i]=NULL ;
+#endif // NOVIT
+	} ;
+
+#else // PARALLEL
+	this->alpha_cache.table=NULL;
+	this->beta_cache.table=NULL;
+	this->alpha_cache.dimension=0;
+	this->beta_cache.dimension=0;
+#ifndef NOVIT
+	this->states_per_observation_psi=NULL ;
+	this->path=NULL;
+#endif //NOVIT
+
+#endif //PARALLEL
+
+	this->invalidate_model();
+
+	if (!transition_matrix_a && !observations_matrix_b && !initial_state_distribution_p && !end_state_distribution_q)
+	{
+		transition_matrix_a=new REAL[N*N];
+		observation_matrix_b=new REAL[N*M];	
+		initial_state_distribution_p=new REAL[N];
+		end_state_distribution_q=new REAL[N];
+	}
+
+#ifdef PARALLEL
+	{
+		arrayN1=new P_REAL[NUM_PARALLEL] ;
+		arrayN2=new P_REAL[NUM_PARALLEL] ;
+		for (int i=0; i<NUM_PARALLEL; i++)
+		{
+			arrayN1[i]=new REAL[this->N];
+			arrayN2[i]=new REAL[this->N];
+		}
+	} ;
+#else //PARALLEL
+	arrayN1=new REAL[this->N];
+	arrayN2=new REAL[this->N];
+#endif //PARALLEL
+
+#ifdef LOG_SUMARRAY
+#ifdef PARALLEL
+	{
+		arrayS=new P_REAL[NUM_PARALLEL] ;	  
+		for (int i=0; i<NUM_PARALLEL; i++)
+			arrayS[i]=new REAL[(int)(this->N/2+1)];
+	} ;
+#else //PARALLEL
+	arrayS=new REAL[(int)(this->N/2+1)];
+#endif //PARALLEL
+#endif //LOG_SUMARRAY
+	transition_matrix_A=new REAL[this->N*this->N];
+	observation_matrix_B=new REAL[this->N*this->M];
+
+
+	return ((transition_matrix_A != NULL) && (observation_matrix_B != NULL) && 
+			(transition_matrix_a != NULL) && (observation_matrix_b != NULL) && (initial_state_distribution_p != NULL) &&
+			(end_state_distribution_q != NULL));
+}
+
+void CHMM::free_state_dependend_arrays()
+{
+#ifdef PARALLEL
+	for (int i=0; i<NUM_PARALLEL; i++)
+	{
+		delete[] arrayN1[i];
+		delete[] arrayN2[i];
+
+		arrayN1[i]=NULL;
+		arrayN2[i]=NULL;
+	}
+#else
+	delete[] arrayN1;
+	delete[] arrayN2;
+	arrayN1=NULL;
+	arrayN2=NULL;
+#endif
 	delete[] transition_matrix_A;
 	delete[] observation_matrix_B;
 	delete[] transition_matrix_a;
@@ -196,33 +286,43 @@ CHMM::~CHMM()
 	delete[] initial_state_distribution_p;
 	delete[] end_state_distribution_q;
 
+	transition_matrix_A=NULL;
+	observation_matrix_B=NULL;
+	transtion_matrix_a=NULL;
+	observation_matrix_b=NULL;
+	initial_state_distribution_p=NULL;
+	end_state_distribution_q=NULL;
+
 	if (!reused_caches)
 	{
 #ifdef PARALLEL
-	  for (int i=0; i<NUM_PARALLEL; i++)
-	    {
-	      delete[] alpha_cache[i].table;
-	      delete[] beta_cache[i].table;
-#ifndef NOVIT
-	      delete[] states_per_observation_psi[i] ;
-	      delete[] path[i] ;
-#endif // NOVIT
-	    } ;
-	  delete[] alpha_cache ;
-	  delete[] beta_cache ;
-	  delete[] states_per_observation_psi ;
-	  delete[] path ;
+		for (int i=0; i<NUM_PARALLEL; i++)
+		{
+			delete[] alpha_cache[i].table;
+			delete[] beta_cache[i].table;
+			alpha_cache[i].table=NULL;
+			beta_cache[i].table=NULL;
+		}
+
+		delete[] alpha_cache;
+		delete[] beta_cache;
+		alpha_cache=NULL;
+		beta_cache=NULL;
 #else
-	  delete[] alpha_cache.table;
-	  delete[] beta_cache.table;
-#ifndef NOVIT
-	  delete[] states_per_observation_psi ;
-	  delete[] path;
-#endif // NOVIT
+		delete[] alpha_cache.table;
+		delete[] beta_cache.table;
+		alpha_cache.table=NULL;
+		beta_cache.table=NULL;
 #endif
+
+#ifndef NOVIT
+		delete[] states_per_observation_psi;
+		states_per_observation_psi=NULL;
+#endif // NOVIT
 	}
+
 }
-   
+
 bool CHMM::initialize(int N, int M, int ORDER_, CModel* model, 
 					  REAL PSEUDO, FILE* modelfile)
 {
@@ -243,7 +343,6 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 
 		//map higher order to alphabet
 		M=	M << (MAX_M * (ORDER_-1));
-
 	}
 	
 	//initialize parameters
@@ -259,13 +358,13 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 
 #ifdef PARALLEL
 	{
-	  path_prob_updated=new bool[NUM_PARALLEL] ;
-	  path_prob_dimension=new int[NUM_PARALLEL] ;
+	  path_prob_updated=new bool[NUM_PARALLEL];
+	  path_prob_dimension=new int[NUM_PARALLEL];
 
-	  alpha_cache=new T_ALPHA_BETA[NUM_PARALLEL] ;
-	  beta_cache=new T_ALPHA_BETA[NUM_PARALLEL] ;
-	  states_per_observation_psi=new P_STATES[NUM_PARALLEL] ;
-	  path=new P_STATES[NUM_PARALLEL] ;
+	  alpha_cache=new T_ALPHA_BETA[NUM_PARALLEL];
+	  beta_cache=new T_ALPHA_BETA[NUM_PARALLEL];
+	  states_per_observation_psi=new P_STATES[NUM_PARALLEL];
+	  path=new P_STATES[NUM_PARALLEL];
 
 	  for (int i=0; i<NUM_PARALLEL; i++)
 	    {
@@ -274,7 +373,7 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 	      this->alpha_cache[i].dimension=0;
 	      this->beta_cache[i].dimension=0;
 #ifndef NOVIT
-	      this->states_per_observation_psi[i]=NULL ;
+	      this->states_per_observation_psi[i]=NULL;
 	      this->path[i]=NULL;
 #endif // NOVIT
 	    } ;
@@ -285,7 +384,7 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 	this->alpha_cache.dimension=0;
 	this->beta_cache.dimension=0;
 #ifndef NOVIT
-	this->states_per_observation_psi=NULL ;
+	this->states_per_observation_psi=NULL;
 	this->path=NULL;
 #endif //NOVIT
 
@@ -341,6 +440,7 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 			(transition_matrix_a != NULL) && (observation_matrix_b != NULL) && (initial_state_distribution_p != NULL) &&
 			(end_state_distribution_q != NULL));
 }
+
 //------------------------------------------------------------------------------------//
 
 //forward algorithm
@@ -4310,36 +4410,49 @@ void CHMM::normalize()
 
 void CHMM::add_states(int num_states, REAL default_value)
 {
-    //free
-    //alloc n_p,n_a,n_b,n_q
+    int i,j;
 
+	free_state_dependend_arrays();
+    REAL* n_p=new REAL[N+num_states];
+    REAL* n_q=new REAL[N+num_states];
+    REAL* n_a=new REAL[(N+num_states)*(N+num_states)];
+    REAL* n_b=new REAL[(N+num_states)*M];
 
-    for (int i=0; i<N; i++)
+    // warning pay attention to the ordering of 
+    // transition_matrix_a, observation_matrix_b !!!
+    for (i=0; i<N; i++)
     {
-
-	/*get_p(i)
-	int j;
-
-	if (exp(get_p(i)) < value)
-	    set_p(i, math.ALMOST_NEG_INFTY);
-
-	if (exp(get_q(i)) < value)
-	    set_q(i, math.ALMOST_NEG_INFTY);
+	n_p[i]=get_p(i);
+	n_q[i]=get_q(i);
 
 	for (j=0; j<N; j++)
-	{
-	    if (exp(get_a(i,j)) < value)
-		    set_a(i,j, math.ALMOST_NEG_INFTY);
-	}
+	    n_a[(N+num_states)*i+j]=get_a(i,j);
 
 	for (j=0; j<M; j++)
-	{
-	    if (exp(get_b(i,j)) < value)
-		    set_b(i,j, math.ALMOST_NEG_INFTY);
-	}*/
+	    n_b[(N+num_states)*i+j]=get_b(i,j);
+    }
+
+    for (i=N; i<N+num_states; i++)
+    {
+	    n_p[i]=default_value;
+	    n_q[i]=default_value;
+
+	    for (j=N; j<N+num_states; j++)
+	    {
+		    n_a[(N+num_states)*i+j]=default_value;
+		    n_a[(N+num_states)*j+i]=default_value;
+	    }
+
+	    for (j=0; j<M; j++)
+		    n_b[(N+num_states)*i+j]=default_value;
     }
 
     //delete + adjust pointers
+    delete[] transition_matrix_a;
+    delete[] observation_matrix_b;
+    transition_matrix_a=n_a;
+    observation_matrix_b=n_b;
+
     normalize();
     invalidate_model();
 }

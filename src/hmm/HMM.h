@@ -462,16 +462,10 @@ public:
 	bool initialize( int N, int M, int ORDER, 
 					 CModel* model, REAL PSEUDO,
 					 FILE* model_file=NULL);
-	/** initialization function - allocate memory for model and cache
-	 * @param N number of states
-	 * @param M number of emissions
-	 * @param ORDER order of HMM
-	 */
-	bool alloc_model_and_cache(int N, int M, int ORDER);
-
-	/// frees model and cache
-	bool free_model_and_cache();
 	//@}
+	
+	/// free memory that depends on N
+	void free_state_dependend_arrays();
 
 	/**@name probability functions.
 	 * forward/backward/viterbi algorithm
