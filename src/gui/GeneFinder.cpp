@@ -291,7 +291,7 @@ static bool prompt(FILE* infile=stdin)
 
    CIO::message("genefinder >> ");
     char* b=fgets(input, sizeof(input), infile);
-    if (!strlen(input) || (b==NULL) || (input[0]==N_COMMENT1) || (input[0]==N_COMMENT2) || (input[0]=='\n'))
+    if ((b==NULL) || !strlen(input) || (input[0]==N_COMMENT1) || (input[0]==N_COMMENT2) || (input[0]=='\n'))
 	return true;
     
     input[strlen(input)-1]='\0';
@@ -1265,7 +1265,6 @@ static bool prompt(FILE* infile=stdin)
 
 	    if (WIDTH >0 && UPTO >0)
 	    {	  
-
 		alphabet= DNA;
 		ORDER=1;
 		M=4;
@@ -1280,42 +1279,44 @@ static bool prompt(FILE* infile=stdin)
 		    delete(lambda);
 		    lambda=NULL;
 		    lambda_train=NULL;
+
+		    switch (alphabet)
+		    {
+			case DNA:
+			    M=4;
+			    break;
+			case PROTEIN:
+			    M=26;
+			    break;
+			case CUBE:
+			    M=6;
+			    break;
+			case ALPHANUM:
+			    M=36;
+			    break;
+			default:
+			    M=4;
+			    break;
+		    };
 		}
-
-		switch (alphabet)
-		{
-		    case DNA:
-			M=4;
-			break;
-		    case PROTEIN:
-			M=26;
-			break;
-		    case CUBE:
-			M=6;
-			break;
-		    case ALPHANUM:
-			M=36;
-			break;
-		    default:
-			M=4;
-			break;
-		};
-
 
 		lambda=new CHMM(UPTO,M,ORDER,NULL,PSEUDO);
 		lambda_train=new CHMM(UPTO,M,ORDER,NULL,PSEUDO);
 
-		lambda->set_observation_nocache(obs);
-		lambda_train->set_observation_nocache(obs);
-
 		if (lambda && lambda_train)
 		{
+		    lambda->set_observation_nocache(obs);
+		    lambda_train->set_observation_nocache(obs);
 		    lambda->linear_train(file, WIDTH, UPTO);
 		    lambda_train->copy_model(lambda);
-		   CIO::message("done.\n");
+		    lambda->set_observation_nocache(NULL);
+		    lambda_train->set_observation_nocache(NULL);
+		    CIO::message("done.\n");
 		}
 		else
-		   CIO::message("model creation failed\n");
+		    CIO::message("model creation failed\n");
+
+		delete obs;
 	    }
 
 	    fclose(file);
@@ -2202,7 +2203,7 @@ static bool prompt(FILE* infile=stdin)
     } 
     else if (!strncmp(input, N_ADD_STATES, strlen(N_ADD_STATES)))
     {
-	if (lambda)
+	if (lambda && lambda_train)
 	{
 		int states=1;
 		double value=0;

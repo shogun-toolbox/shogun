@@ -12,6 +12,10 @@
 	#define finite _finite
 #endif
 
+#ifdef SUNOS
+extern "C" int	finite(double);
+#endif
+
 /** Mathematical Functions.
  * Class which collects generic mathematical functions
  */
