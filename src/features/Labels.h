@@ -10,6 +10,7 @@ class CLabels
 	public:
 		CLabels(long num_labels);
 		CLabels(char* fname);
+		~CLabels();
 
 		bool load(char* fname);
 		bool save(char* fname);

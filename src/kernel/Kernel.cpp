@@ -18,6 +18,7 @@ CKernel::CKernel(long size)
 
 CKernel::~CKernel()
 {
+	kernel_cache_cleanup();
 }
 
 /* calculate the kernel function */

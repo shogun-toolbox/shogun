@@ -17,6 +17,7 @@ CGUISVM::CGUISVM(CGUI * gui_)
 
 CGUISVM::~CGUISVM()
 {
+	delete svm;
 }
 
 bool CGUISVM::new_svm(char* param)

@@ -14,6 +14,7 @@ typedef struct quadratic_program {
 } QP;
     
 /* interface to QP-solver */
-double *optimize_qp(QP *, double *, long, double *);
+double *optimize_qp(QP* qp, double* epsilon_crit, long nx, double* threshold, double* primal, double* dual,
+		double& init_margin, long& init_iter, long& precision_violations, double& model_b, double& opt_precision);
 
 #endif

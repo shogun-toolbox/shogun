@@ -15,6 +15,13 @@ CLabels::CLabels(char* fname)
 	load(fname);
 }
 
+CLabels::~CLabels()
+{
+	delete[] labels;
+	num_labels=0;
+	labels=NULL;
+}
+
 INT* CLabels::get_labels(long &len)
 {
 
