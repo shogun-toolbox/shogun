@@ -9,6 +9,9 @@
 CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d, INT max_mismatch_)
 	: CCharKernel(size),weights(NULL),degree(d), max_mismatch(max_mismatch_), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
+	lhs=NULL ;
+	rhs=NULL ;
+
 	weights=new REAL[d*(1+max_mismatch)];
 	assert(weights!=NULL);
 	for (INT i=0; i<d*(1+max_mismatch); i++)
@@ -28,6 +31,7 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	INT lhs_changed = (lhs!=l) ;
 	INT rhs_changed = (rhs!=r) ;
+
 	CIO::message("lhs_changed: %i\n", lhs_changed) ;
 	CIO::message("rhs_changed: %i\n", rhs_changed) ;
 
@@ -171,7 +175,7 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 
 		  //CIO::message("%i  %i  %i  %i  %i\n", i, j, mismatches, degree, max_mismatch) ;
 		  
-		  assert(weights[j+degree*mismatches]<1) ;
+//		  assert(weights[j+degree*mismatches]<1) ;
 		  sum += weights[j+degree*mismatches];
 	  }
 

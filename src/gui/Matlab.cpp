@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "lib/common.h"
 #include "lib/io.h"
 #include "mex.h"
 
@@ -14,6 +15,7 @@ extern CTextGUI* gui;
 
 static const CHAR* N_SEND_COMMAND=		"send_command";
 static const CHAR* N_HELP=		        "help";
+static const CHAR* N_CRC=			"crc";
 static const CHAR* N_GET_HMM=			"get_hmm";
 static const CHAR* N_GET_SVM=			"get_svm";
 static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
@@ -363,6 +365,27 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features)");
 			CIO::message("done\n");
+		}
+		else if (!strncmp(action, N_CRC, strlen(N_CRC)))
+		{
+			if ((nrhs==2) && (nlhs==1))
+			{
+				CHAR* string=CGUIMatlab::get_mxString(prhs[1]);
+				UINT sl = strlen(string) ;
+				
+				BYTE* bstring = new BYTE[sl] ;
+				for (UINT i=0; i<sl; i++)
+					bstring[i] = string[i] ;
+				UINT res = math.crc32(bstring, sl) ;
+				plhs[0] = mxCreateDoubleMatrix(1, 1, mxREAL);
+				REAL * p=mxGetPr(plhs[0]) ;
+				*p = res ;
+				delete[] bstring ;
+				delete[] string ;
+			}
+			else
+				mexErrMsgTxt("usage is crc32=gf('crc', string)");
+			
 		}
 		else if (!strncmp(action, N_SET_LABELS, strlen(N_SET_LABELS)))
 		{
