@@ -5,11 +5,12 @@
 
 CFKFeatures::CFKFeatures(long size, CHMM* p, CHMM* n) : CRealFeatures(size)
 {
+  weight_a=-1;
   set_models(p,n);
 }
 
  CFKFeatures::CFKFeatures(const CFKFeatures &orig): 
-	CRealFeatures(orig), pos(orig.pos), neg(orig.neg)
+	CRealFeatures(orig), pos(orig.pos), neg(orig.neg), weight_a(orig.weight_a)
 { 
 }
 
@@ -19,65 +20,74 @@ CFKFeatures::~CFKFeatures()
 
 double CFKFeatures::deriv_a(double a, int dimension)
 {
-  CObservation *Obs=pos->get_observations() ;
-  double deriv=0.0 ;
-  int i=dimension ;
-  
-  if (dimension==-1)
-    {
-      for (i=0; i<Obs->get_DIMENSION(); i++)
+	CObservation *Obs=pos->get_observations() ;
+	double deriv=0.0 ;
+	int i=dimension ;
+
+	if (dimension==-1)
 	{
-	  double pp=pos->model_probability(i) ;
-	  double pn=neg->model_probability(i) ;
-	  double sub=pp ;
-	  if (pn>pp) sub=pn ;
-	  pp-=sub ;
-	  pn-=sub ;
-	  pp=exp(pp) ;
-	  pn=exp(pn) ;
-	  double p=a*pp+(1-a)*pn ;
-	  deriv+=(pp-pn)/p ;
+		for (i=0; i<Obs->get_DIMENSION(); i++)
+		{
+			double pp=pos->model_probability(i) ;
+			double pn=neg->model_probability(i) ;
+			double sub=pp ;
+			if (pn>pp) sub=pn ;
+			pp-=sub ;
+			pn-=sub ;
+			pp=exp(pp) ;
+			pn=exp(pn) ;
+			double p=a*pp+(1-a)*pn ;
+			deriv+=(pp-pn)/p ;
 
-	  /*double d1=(pp-pn)/p ;
-	  pp=exp(pos->model_probability(i)) ;
-	  pn=exp(neg->model_probability(i)) ;
-	  p=a*pp+(1-a)*pn ;
-	  double d2=(pp-pn)/p ;
-	  fprintf(stderr, "d1=%e  d2=%e,  d1-d2=%e\n",d1,d2) ;*/
+			/*double d1=(pp-pn)/p ;
+			  pp=exp(pos->model_probability(i)) ;
+			  pn=exp(neg->model_probability(i)) ;
+			  p=a*pp+(1-a)*pn ;
+			  double d2=(pp-pn)/p ;
+			  fprintf(stderr, "d1=%e  d2=%e,  d1-d2=%e\n",d1,d2) ;*/
+		} ;
+	} else
+	{
+		double pp=pos->model_probability(i) ;
+		double pn=neg->model_probability(i) ;
+		double sub=pp ;
+		if (pn>pp) sub=pn ;
+		pp-=sub ;
+		pn-=sub ;
+		pp=exp(pp) ;
+		pn=exp(pn) ;
+		double p=a*pp+(1-a)*pn ;
+		deriv+=(pp-pn)/p ;
 	} ;
-    } else
-      {
-	double pp=pos->model_probability(i) ;
-	double pn=neg->model_probability(i) ;
-	double sub=pp ;
-	if (pn>pp) sub=pn ;
-	pp-=sub ;
-	pn-=sub ;
-	pp=exp(pp) ;
-	pn=exp(pn) ;
-	double p=a*pp+(1-a)*pn ;
-	deriv+=(pp-pn)/p ;
-      } ;
 
-  return deriv ;
+	return deriv ;
 } ;
 
 
-double CFKFeatures::opt_a()
+double CFKFeatures::set_opt_a(double a)
 {
-  double la=0, ua=1, a=(la+ua)/2 ;
-  while (ua-la>1e-6)
-    {
-      double da=deriv_a(a) ;
-      if (da>0)
-	la=a ;
-      if (da<=0)
-	ua=a ;
-      a=(la+ua)/2 ;
-      CIO::message("opt_a: a=%1.3e  deriv=%1.3e  la=%1.3e  ua=%1.3e\n", a, da, la ,ua) ;
-    } ;
-  return a ;
-} ;
+	if (a==-1)
+	{
+		CIO::message("estimating a.\n");
+		double la=0;
+		double ua=1;
+		a=(la+ua)/2;
+		while (ua-la>1e-6)
+		{
+			double da=deriv_a(a);
+			if (da>0)
+				la=a;
+			if (da<=0)
+				ua=a;
+			a=(la+ua)/2;
+			CIO::message("opt_a: a=%1.3e  deriv=%1.3e  la=%1.3e  ua=%1.3e\n", a, da, la ,ua);
+		}
+	}
+
+	weight_a=a;
+	CIO::message("setting opt_a: %g\n", a);
+	return a;
+}
 
 void CFKFeatures::set_models(CHMM* p, CHMM* n)
 {
@@ -85,7 +95,6 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 
   pos=p; 
   neg=n;
-  weight_a=opt_a() ;
   set_num_vectors(0);
 
   delete[] feature_matrix  ;

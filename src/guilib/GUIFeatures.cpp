@@ -111,6 +111,7 @@ bool CGUIFeatures::set_features(char* param)
 
 			if (strcmp(type,"TOP")==0)
 			{
+				CIO::message("setting TOP features\n");
 				if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
 				{
 
@@ -135,6 +136,7 @@ bool CGUIFeatures::set_features(char* param)
 			}
 			else if (strcmp(type,"FK")==0)
 			{
+				CIO::message("setting FK features\n");
 				if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
 				{
 
@@ -148,6 +150,15 @@ bool CGUIFeatures::set_features(char* param)
 
 					delete (*f_ptr);
 					*f_ptr= new CFKFeatures(size, gui->guihmm.get_pos(), gui->guihmm.get_neg());
+
+					if (train_features)
+						((CFKFeatures*) *f_ptr)->set_opt_a(((CFKFeatures*) train_features)->get_weight_a());
+					else
+					{
+						delete (*f_ptr);
+						(f_ptr)=NULL;
+						CIO::message("no train features recognized.\n");
+					}
 
 					//						gui->guihmm.get_pos()->set_observations(old_obs_pos);
 					//						gui->guihmm.get_neg()->set_observations(old_obs_neg);

@@ -32,7 +32,8 @@ class CFKFeatures: public CRealFeatures
   
   virtual CFeatures* duplicate() const;
 
-  double opt_a() ;
+  double set_opt_a(double a=-1) ;
+  inline double get_weight_a()  { return weight_a; };
 
  protected:
   virtual REAL* compute_feature_vector(long num, long& len, REAL* target=NULL);
