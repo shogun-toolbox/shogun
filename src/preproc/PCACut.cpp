@@ -65,11 +65,11 @@ bool CPCACut::init(CFeatures* f_)
 	feature[j]-=mean[j] ;
 
       double oned=1.0 ; int onei=1 ;
-      dger_(&num_features,&num_features, &oned, feature, &onei, feature, &onei, cov, &num_features) ;
+      //      dger_(&num_features,&num_features, &oned, feature, &onei, feature, &onei, cov, &num_features) ;
 
-      /*      for (int k=0; k<num_features; k++)
+      for (int k=0; k<num_features; k++)
 	for (int l=0; l<num_features; l++)
-	cov[k*num_features+l]+=feature[l]*feature[k] ;*/
+	  cov[k*num_features+l]+=feature[l]*feature[k] ;
 
       f->free_feature_vector(feature, free) ;
       feature=NULL ;
