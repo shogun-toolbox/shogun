@@ -824,12 +824,42 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 		{
 			if (strcmp(data_type,"CHAR")==0)
 			{
-				INT d=3;
-				INT max_mismatch = 0;
+				INT d=1;
+				char sub_kern_type='W';
+				EWDKernType t=E_WD;
 
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &d, &max_mismatch);
+				sscanf(param, "%s %s %d %c %d", kern_type, data_type, &size, &sub_kern_type, &d);
 				delete k;
-				k=new CWDCharKernel(size, d, max_mismatch);
+
+				switch (sub_kern_type)
+				{
+					case 'W':
+						t=E_WD;
+						break;
+					case 'O':
+						t=E_CONST;
+						break;
+					case 'L':
+						t=E_LINEAR;
+						break;
+					case 'S':
+						t=E_SQPOLY;
+						break;
+					case 'C':
+						t=E_CUBICPOLY;
+						break;
+					case 'E':
+						t=E_EXP;
+						break;
+					case 'G':
+						t=E_LOG;
+						break;
+					default:
+						t=E_WD;
+						break;
+				};
+
+				k=new CWDCharKernel(size, t, d);
 				
 				if (k)
 				{

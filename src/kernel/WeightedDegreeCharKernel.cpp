@@ -220,7 +220,6 @@ bool CWeightedDegreeCharKernel::load_init(FILE* src)
     UINT endian=0;
     UINT fourcc=0;
     UINT doublelen=0;
-	double* w=NULL;
     INT d=1;
 
     assert(fread(&intlen, sizeof(BYTE), 1, src)==1);
@@ -228,8 +227,8 @@ bool CWeightedDegreeCharKernel::load_init(FILE* src)
     assert(fread(&endian, (UINT) intlen, 1, src)== 1);
     assert(fread(&fourcc, (UINT) intlen, 1, src)==1);
     assert(fread(&d, (UINT) intlen, 1, src)==1);
-	double* weights= new double[d];
-	assert(weights) ;
+	double* w= new double[d];
+	assert(w) ;
 	
     assert(fread(w, sizeof(double), d, src)==(UINT) d) ;
 

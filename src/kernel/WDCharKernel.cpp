@@ -6,65 +6,23 @@
 
 #include <assert.h>
 
-CWDCharKernel::CWDCharKernel(LONG size, INT d, INT max_mismatch_)
-	: CCharKernel(size),degree(d), max_mismatch(max_mismatch_), seq_length(0),
+CWDCharKernel::CWDCharKernel(LONG size, EWDKernType t, INT d)
+	: CCharKernel(size), type(t), degree(d), seq_length(0),
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL)
 {
-	old_weights=new REAL[d*(1+max_mismatch)];
 	matching_weights=NULL; //depend on length of sequence will be initialized later
-
-	INT i=0;
-	REAL sum=0;
-
-	for (i=0; i<d; i++)
-	{
-		old_weights[i]=d-i;
-		sum+=old_weights[i];
-	}
-
-	for (i=0; i<d; i++)
-		old_weights[i]/=sum;
-
-	for (i=0; i<d; i++)
-	{
-		for (INT j=1; j<=max_mismatch; j++)
-		{
-			if (j<i+1)
-			{
-				INT nk=math.nchoosek(i+1, j);
-				old_weights[i+j*d]=old_weights[i]/(nk*pow(3,j));
-			}
-			else
-				old_weights[i+j*d]= 0;
-		}
-	}
 
 	lhs=NULL ;
 	rhs=NULL ;
-
-	trees=NULL ;
-	tree_initialized=false ;
 }
 
 CWDCharKernel::~CWDCharKernel() 
 {
-	delete_optimization() ;
-
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
 	delete[] sqrtdiag_lhs;
 	delete[] match_vector ;
 
-	if (trees!=NULL)
-	{
-		for (INT i=0; i<seq_length; i++)
-		{
-			delete trees[i] ;
-			trees[i]=NULL ;
-		}
-		delete[] trees ;
-		trees=NULL ;
-	}
 	cleanup();
 }
 
@@ -86,17 +44,6 @@ void CWDCharKernel::remove_lhs()
 	sqrtdiag_lhs = NULL ;
 	sqrtdiag_rhs = NULL ;
 	match_vector = NULL ;
-	
-	if (trees!=NULL)
-	{
-		for (INT i=0; i<seq_length; i++)
-		{
-			delete trees[i] ;
-			trees[i]=NULL ;
-		}
-		delete[] trees ;
-		trees=NULL ;
-	}
 }
 
 void CWDCharKernel::remove_rhs()
@@ -110,12 +57,10 @@ void CWDCharKernel::remove_rhs()
 	rhs = lhs ;
 }
 
-
-bool CWDCharKernel::init_matching_weights()
+bool CWDCharKernel::init_matching_weights_wd()
 {
-
 	matching_weights=new REAL[seq_length];
-	
+
 	if (matching_weights)
 	{
 		double deg=degree;
@@ -127,6 +72,109 @@ bool CWDCharKernel::init_matching_weights()
 	}
 
 	return (matching_weights!=NULL);
+}
+
+bool CWDCharKernel::init_matching_weights_const()
+{
+	matching_weights=new REAL[seq_length];
+
+	if (matching_weights)
+	{
+		for (int i=1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=1;
+	}
+
+	return (matching_weights!=NULL);
+}
+
+bool CWDCharKernel::init_matching_weights_linear()
+{
+	matching_weights=new REAL[seq_length];
+
+	if (matching_weights)
+	{
+		for (int i=1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=degree*i;
+	}
+
+	return (matching_weights!=NULL);
+}
+
+bool CWDCharKernel::init_matching_weights_sqpoly()
+{
+	matching_weights=new REAL[seq_length];
+
+	if (matching_weights)
+	{
+		for (int i=1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=((double) i)*i+degree*i;
+	}
+
+	return (matching_weights!=NULL);
+}
+
+bool CWDCharKernel::init_matching_weights_cubicpoly()
+{
+	matching_weights=new REAL[seq_length];
+
+	if (matching_weights)
+	{
+		for (int i=1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=((double) i)*i*i+degree*i*i;
+	}
+
+	return (matching_weights!=NULL);
+}
+
+bool CWDCharKernel::init_matching_weights_exp()
+{
+	matching_weights=new REAL[seq_length];
+
+	if (matching_weights)
+	{
+		for (int i=1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=exp(((double) i)*degree/seq_length);
+	}
+
+	return (matching_weights!=NULL);
+}
+
+bool CWDCharKernel::init_matching_weights_log()
+{
+	matching_weights=new REAL[seq_length];
+
+	if (matching_weights)
+	{
+		for (int i=1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=log(((double) i)*degree);
+	}
+
+	return (matching_weights!=NULL);
+}
+
+
+bool CWDCharKernel::init_matching_weights()
+{
+	switch (type)
+	{
+		case E_WD:
+			return init_matching_weights_wd();
+		case E_CONST:
+			return init_matching_weights_const();
+		case E_LINEAR:
+			return init_matching_weights_linear();
+		case E_SQPOLY:
+			return init_matching_weights_sqpoly();
+		case E_CUBICPOLY:
+			return init_matching_weights_cubicpoly();
+		case E_EXP:
+			return init_matching_weights_exp();
+		case E_LOG:
+			return init_matching_weights_log();
+		default:
+			return false;
+	};
+
 }
 
 bool CWDCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -145,32 +193,6 @@ bool CWDCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		delete[] match_vector ;
 		match_vector=new bool[alen] ;
 		
-		if (trees)
-		{
-			delete_tree() ;
-			for (INT i=0; i<seq_length; i++)
-			{
-				delete trees[i] ;
-				trees[i]=NULL ;
-			}
-			delete[] trees ;
-			trees=NULL ;
-		}
-		
-#ifdef OSF1
-		trees=new (struct SuffixTree**)[alen] ;		
-#else
-		trees=new (struct SuffixTree*)[alen] ;		
-#endif
-		for (INT i=0; i<alen; i++)
-		{
-			trees[i]=new struct SuffixTree ;
-			trees[i]->weight=0 ;
-			trees[i]->has_floats=false ;
-			trees[i]->usage=0;
-			for (INT j=0; j<4; j++)
-				trees[i]->childs[j]=NULL ;
-		} 
 		seq_length = alen ;
 		((CCharFeatures*) l)->free_feature_vector(avec, 0, afree);
 
@@ -253,8 +275,7 @@ bool CWDCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 }
 void CWDCharKernel::cleanup()
 {
-	delete[] old_weights;
-	old_weights=NULL;
+	matching_weights=NULL;
 }
 
 bool CWDCharKernel::load_init(FILE* src)
@@ -264,7 +285,6 @@ bool CWDCharKernel::load_init(FILE* src)
     UINT endian=0;
     UINT fourcc=0;
     UINT doublelen=0;
-	double* w=NULL;
     INT d=1;
 
     assert(fread(&intlen, sizeof(BYTE), 1, src)==1);
@@ -272,13 +292,13 @@ bool CWDCharKernel::load_init(FILE* src)
     assert(fread(&endian, (UINT) intlen, 1, src)== 1);
     assert(fread(&fourcc, (UINT) intlen, 1, src)==1);
     assert(fread(&d, (UINT) intlen, 1, src)==1);
-	double* old_weights= new double[d];
-	assert(old_weights) ;
+	double* w= new double[d];
+	assert(w) ;
 	
     assert(fread(w, sizeof(double), d, src)==(UINT) d) ;
 
 	for (INT i=0; i<d; i++)
-		old_weights[i]=w[i];
+		matching_weights[i]=w[i];
 
     CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, degree=%d\n", intlen, doublelen, d);
 
@@ -291,43 +311,6 @@ bool CWDCharKernel::save_init(FILE* dest)
 	return false;
 }
   
-
-bool CWDCharKernel::init_optimization(INT count, INT * IDX, REAL * old_weights)
-{
-	if (max_mismatch!=0)
-	{
-		CIO::message(M_ERROR, "CWDCharKernel optimization not implemented for mismatch!=0\n") ;
-		return false ;
-	}
-
-	if (get_is_initialized()) 
-		delete_optimization() ;
-	
-	CIO::message(M_DEBUG, "initializing CWDCharKernel optimization\n") ;
-	int i=0;
-	for (i=0; i<count; i++)
-	{
-		if ( (i % (count/10+1)) == 0)
-			CIO::message(M_PROGRESS, "%3i%%  \r", 100*i/(count+1)) ;
-		add_example_to_tree(IDX[i], old_weights[i]) ;
-	}
-	CIO::message(M_PROGRESS, "done.           \n");
-	
-	set_is_initialized(true) ;
-	return true ;
-}
-
-void CWDCharKernel::delete_optimization() 
-{ 
-	if (get_is_initialized())
-	{
-		CIO::message(M_DEBUG, "deleting CWDCharKernel optimization\n") ;
-		
-		delete_tree(NULL); 
-		set_is_initialized(false) ;
-	} else
-		CIO::message(M_ERROR, "CWDCharKernel optimization not initialized\n") ;
-} ;
 
 REAL CWDCharKernel::compute(INT idx_a, INT idx_b)
 {
@@ -352,321 +335,25 @@ REAL CWDCharKernel::compute(INT idx_a, INT idx_b)
 
 	REAL sum=0;
 
-	if (max_mismatch==0)
+	INT match_len=-1;
+
+	for (INT i=0; i<alen; i++)
 	{
-		INT match_len=-1;
-
-		for (INT i=0; i<alen; i++)
+		if (avec[i]==bvec[i])
+			match_len++;
+		else
 		{
-			if (avec[i]==bvec[i])
-				match_len++;
-			else
-			{
-				if (match_len>=0)
-					sum+=matching_weights[match_len];
-				match_len=-1;
-			}
+			if (match_len>=0)
+				sum+=matching_weights[match_len];
+			match_len=-1;
 		}
-
-		if (match_len>=0)
-			sum+=matching_weights[match_len];
 	}
-	else
-		CIO::message(M_ERROR, "mismatches not supported\n");
+
+	if (match_len>=0)
+		sum+=matching_weights[match_len];
 
 	((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return (double) sum/sqrt_both;
 }
-
-void CWDCharKernel::add_example_to_tree(INT idx, REAL weight) 
-{
-	INT len ;
-	bool free ;
-	CHAR* char_vec=((CCharFeatures*) lhs)->get_feature_vector(idx, len, free);
-	assert(max_mismatch==0) ;
-	INT *vec = new INT[len] ;
-
-	weight /= sqrtdiag_lhs[idx] ;
-	
-	for (INT i=0; i<len; i++)
-	{
-		if (char_vec[i]=='A') { vec[i]=0 ; continue ; } ;
-		if (char_vec[i]=='C') { vec[i]=1 ; continue ; } ;
-		if (char_vec[i]=='G') { vec[i]=2 ; continue ; } ;
-		if (char_vec[i]=='T') { vec[i]=3 ; continue ; } ;
-		if (char_vec[i]=='a') { vec[i]=0 ; continue ; } ;
-		if (char_vec[i]=='c') { vec[i]=1 ; continue ; } ;
-		if (char_vec[i]=='g') { vec[i]=2 ; continue ; } ;
-		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
-		vec[i]=0 ;
-	} ;
-		
-	for (INT i=0; i<len-degree; i++)
-	{
-		struct SuffixTree *tree = trees[i] ;
-		for (INT j=0; j<degree; j++)
-		{
-			if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
-			{
-				tree=tree->childs[vec[i+j]] ;
-				tree->weight += weight*old_weights[j];
-			} else 
-				if ((j==degree-1) && (tree->has_floats))
-				{
-					tree->child_weights[vec[i+j]] += weight*old_weights[j];
-					break ;
-				}
-				else
-				{
-					if (j==degree-1)
-					{
-						assert(!tree->has_floats) ;
-						tree->has_floats=true ;
-						for (INT k=0; k<4; k++)
-						{
-							assert(tree->childs[k]==NULL) ;
-							tree->child_weights[k] =0 ;
-						}
-						tree->child_weights[vec[i+j]] += weight*old_weights[j];
-						break ;
-					}
-					else
-					{
-						assert(!tree->has_floats) ;
-						tree->childs[vec[i+j]]=new struct SuffixTree ;
-						assert(tree->childs[vec[i+j]]!=NULL) ;
-						tree=tree->childs[vec[i+j]] ;
-						for (INT k=0; k<4; k++)
-							tree->childs[k]=NULL ;
-						tree->weight = weight*old_weights[j] ;
-						tree->has_floats=false ;
-						tree->usage=0 ;
-					} ;
-				} ;
-		} ;
-	}
-	((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
-	delete[] vec ;
-	tree_initialized=true ;
-}
-
-REAL CWDCharKernel::compute_by_tree(INT idx) 
-{
-	INT len ;
-	bool free ;
-	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
-	assert(max_mismatch==0) ;
-	INT *vec = new INT[len] ;
-	
-	for (INT i=0; i<len; i++)
-	{
-		if (char_vec[i]=='A') { vec[i]=0 ; continue ; } ;
-		if (char_vec[i]=='C') { vec[i]=1 ; continue ; } ;
-		if (char_vec[i]=='G') { vec[i]=2 ; continue ; } ;
-		if (char_vec[i]=='T') { vec[i]=3 ; continue ; } ;
-		if (char_vec[i]=='a') { vec[i]=0 ; continue ; } ;
-		if (char_vec[i]=='c') { vec[i]=1 ; continue ; } ;
-		if (char_vec[i]=='g') { vec[i]=2 ; continue ; } ;
-		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
-		vec[i]=0 ;
-	} ;
-		
-	REAL sum=0 ;
-	for (INT i=0; i<len-degree; i++)
-	{
-		struct SuffixTree *tree = trees[i] ;
-		assert(tree!=NULL) ;
-		
-		for (INT j=0; j<degree; j++)
-		{
-			if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
-			{
-				tree=tree->childs[vec[i+j]] ;
-				sum += tree->weight ;
-			} else
-				if (tree->has_floats)
-				{
-					sum += tree->child_weights[vec[i+j]] ;
-					break ;
-				} else
-					break ;
-		} 
-	}
-	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
-	delete[] vec ;
-
-	return sum/sqrtdiag_rhs[idx] ;
-}
-
-REAL CWDCharKernel::compute_abs_weights_tree(struct SuffixTree* p_tree) 
-{
-	REAL ret=0 ;
-
-	if (p_tree==NULL)
-		return 0 ;
-		
-	if (p_tree->has_floats)
-	{
-		for (INT k=0; k<4; k++)
-			ret+=(p_tree->child_weights[k]) ;
-		
-		return ret ;
-	}
-
-	ret+=(p_tree->weight) ;
-
-	for (INT i=0; i<4; i++)
-		if (p_tree->childs[i]!=NULL)
-			ret += compute_abs_weights_tree(p_tree->childs[i])  ;
-
-	return ret ;
-}
-
-REAL *CWDCharKernel::compute_abs_weights(int &len) 
-{
-	REAL * sum=new REAL[seq_length*4] ;
-	for (INT i=0; i<seq_length*4; i++)
-		sum[i]=0 ;
-	len=seq_length ;
-	
-	for (INT i=0; i<seq_length-degree; i++)
-	{
-		struct SuffixTree *tree = trees[i] ;
-		assert(tree!=NULL) ;
-		for (INT k=0; k<4; k++)
-			sum[i*4+k]=compute_abs_weights_tree(tree->childs[k]) ;
-	}
-
-	return sum ;
-}
-
-void CWDCharKernel::count_tree_usage(INT idx) 
-{
-	INT len ;
-	bool free ;
-	CHAR* char_vec=((CCharFeatures*) lhs)->get_feature_vector(idx, len, free);
-	assert(max_mismatch==0) ;
-	INT *vec = new INT[len] ;
-	
-	for (INT i=0; i<len; i++)
-	{
-		vec[i]=0 ;
-		if (char_vec[i]=='A') vec[i]=0 ;
-		if (char_vec[i]=='a') vec[i]=0 ;
-		if (char_vec[i]=='C') vec[i]=1 ;
-		if (char_vec[i]=='c') vec[i]=1 ;
-		if (char_vec[i]=='G') vec[i]=2 ;
-		if (char_vec[i]=='g') vec[i]=2 ;
-		if (char_vec[i]=='T') vec[i]=3 ;
-		if (char_vec[i]=='t') vec[i]=3 ;
-		//assert(vec[i]!=-1) ;
-	} ;
-		
-	for (INT i=0; i<len-degree; i++)
-	{
-		struct SuffixTree *tree = trees[i] ;
-		assert(tree!=NULL) ;
-		
-		for (INT j=0; j<degree; j++)
-		{
-			tree->usage++ ;
-			if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
-				tree=tree->childs[vec[i+j]] ;
-			else
-				break;
-		} 
-	}
-	((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
-	delete[] vec ;
-}
-
-void CWDCharKernel::prune_tree(struct SuffixTree * p_tree, int min_usage)
-{
-	if (p_tree==NULL)
-	{
-		if (trees==NULL)
-			return ;
-		for (INT i=0; i<seq_length; i++)
-			prune_tree(trees[i], min_usage) ;
-		return ;
-	}
-	if (p_tree->has_floats)
-		return ;
-	
-	for (INT i=0; i<4; i++)
-	{
-		if (p_tree->childs[i]!=NULL)
-		{
-			prune_tree(p_tree->childs[i], min_usage)  ;
-			if (p_tree->childs[i]->usage < min_usage)
-			{
-				delete_tree(p_tree->childs[i]) ;
-				delete p_tree->childs[i] ;
-				p_tree->childs[i]=NULL ;
-			}
-		} 
-
-	} ;
-} 
-
-void CWDCharKernel::delete_tree(struct SuffixTree * p_tree)
-{
-	if (p_tree==NULL)
-	{
-		if (trees==NULL)
-			return ;
-		for (INT i=0; i<seq_length; i++)
-		{
-			delete_tree(trees[i]) ;
-			trees[i]->has_floats=false ;
-			trees[i]->usage=0;
-			for (INT k=0; k<4; k++)
-				trees[i]->childs[k]=NULL ;
-		} ;		
-
-		tree_initialized=false ;
-		return ;
-	}
-	if (p_tree->has_floats)
-		return ;
-	
-	for (INT i=0; i<4; i++)
-	{
-		if (p_tree->childs[i]!=NULL)
-		{
-			delete_tree(p_tree->childs[i])  ;
-			delete p_tree->childs[i] ;
-			p_tree->childs[i]=NULL ;
-		} 
-		p_tree->weight=0 ;
-	}
-} 
-
-
-INT CWDCharKernel::tree_size(struct SuffixTree * p_tree)
-{
-	INT ret=0 ;
-
-	if (p_tree==NULL)
-	{
-		if (trees==NULL)
-			return 0 ;
-		
-		for (INT i=0; i<seq_length; i++)
-			if (trees[i]!=NULL)
-				ret += tree_size(trees[i]) ;
-			else
-				CIO::message(M_ERROR, "%i empty\n", i) ;
-		return ret ;
-	}
-	if (p_tree->has_floats)
-		return 4 ;
-
-	for (INT i=0; i<4; i++)
-		if (p_tree->childs[i]!=NULL)
-			ret += tree_size(p_tree->childs[i])+1  ;
-
-	return ret ;
-} 
