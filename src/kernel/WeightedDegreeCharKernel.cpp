@@ -359,6 +359,8 @@ REAL CWeightedDegreeCharKernel::compute_using_block(CHAR* avec, INT alen, CHAR* 
 
 	if (match_len>=0)
 		sum+=matching_weights[match_len];
+
+	return sum;
 }
 
 REAL CWeightedDegreeCharKernel::compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen)
