@@ -76,9 +76,13 @@ bool CSVMMPI::svm_train(CFeatures* train_)
 
     //CIO::message("setting vector: %i %i (%i,%i)\n",start_idx, rank, j, m_prime) ;
     column=train->get_feature_vector(j, len, free);
-    assert(len==num_rows) ;
-    svm_mpi_set_Z_block(column, 1, start_idx, rank) ; 
+    REAL *col=new REAL[len] ;
+    for (int kk=0; kk<len; kk++)
+      col[kk]=labels[j]*column[kk] ; 
     train->free_feature_vector(column, free);
+    assert(len==num_rows) ;
+    svm_mpi_set_Z_block(col, 1, start_idx, rank) ; 
+    delete[] col ;
   } ;
 
   svm_mpi_optimize(labels, num_cols) ; 
@@ -125,11 +129,11 @@ unsigned CSVMMPI::svm_mpi_broadcast_Z_size(int num_cols, int num_rows_, unsigned
 {
   unsigned num_nodes;
   num_rows=num_rows_ ;
-  //MPI_Comm_size(MPI_COMM_WORLD, (int *)&num_nodes);
-  //m_prime=distribute_dimensions(num_cols, num_nodes, num_rows_, num_rows_, &m_last) ;
-  num_nodes=1 ;
-  m_prime=num_cols ;
-  m_last=num_cols ;
+  MPI_Comm_size(MPI_COMM_WORLD, (int *)&num_nodes);
+  m_prime=distribute_dimensions(num_cols, num_nodes, num_rows_, num_rows_, &m_last) ;
+  //num_nodes=1 ;
+  //m_prime=num_cols ;
+  //m_last=num_cols ;
 
   m_last_=m_last ;
   m_full = num_cols ;
@@ -174,17 +178,18 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
   CMatrix<double> b(1, 1, &zval);
   CMatrix<double> l(zeros<double>(m_full, 1));
   CMatrix<double> u(ones<double>(m_full, 1));
-  u = C * u;
+  CIO::message("C=%e\n", C) ;
+  u = 10.0 * u;
   CMatrix<double> c(-ones<double>(m_full, 1));
   CMatrix<double> r(1, 1, &dr);
-  CMatrix<double> A(1, num_examples, dlabels, false,my_delete);
+  CMatrix<double> A(1, num_examples, dlabels, false, my_delete);
   
   CIntPointPR optimizer;
   optimizer.SetBound(10);
   optimizer.SetMaxIterations(maxiter);
 
   unsigned my_rank=0 ;
-  //MPI_Comm_rank(MPI_COMM_WORLD, (int *)&my_rank);
+  MPI_Comm_rank(MPI_COMM_WORLD, (int *)&my_rank);
   const char * how ;
 
   CMatrix<double> primal, dual ;
@@ -192,9 +197,52 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
   CIO::message("starting optimizer\n") ;
 
   {
+    CIO::message("saving Z matrix to ~/Z.dat\n") ;    
     double* d=Z.GetDataPointer() ;
-    FILE* f=fopen("/tmp/dat","w+") ;
+    FILE* f=fopen("/home/104/gxr104/Z.dat","w+") ;
     fwrite(d, sizeof(double), Z.GetNumRows()*Z.GetNumColumns(), f) ;
+    fclose(f) ;
+  } 
+  {
+    CIO::message("saving A matrix to ~/A.dat\n") ;    
+    double* d=A.GetDataPointer() ;
+    FILE* f=fopen("/home/104/gxr104/A.dat","w+") ;
+    fwrite(d, sizeof(double), A.GetNumRows()*A.GetNumColumns(), f) ;
+    fclose(f) ;
+  } 
+  {
+    CIO::message("saving c vector to ~/c.dat\n") ;    
+    double* d=c.GetDataPointer() ;
+    FILE* f=fopen("/home/104/gxr104/c.dat","w+") ;
+    fwrite(d, sizeof(double), c.GetNumRows()*c.GetNumColumns(), f) ;
+    fclose(f) ;
+  } 
+  {
+    CIO::message("saving l vector to ~/l.dat\n") ;    
+    double* d=l.GetDataPointer() ;
+    FILE* f=fopen("/home/104/gxr104/l.dat","w+") ;
+    fwrite(d, sizeof(double), l.GetNumRows()*l.GetNumColumns(), f) ;
+    fclose(f) ;
+  } 
+  {
+    CIO::message("saving u vector to ~/u.dat\n") ;    
+    double* d=u.GetDataPointer() ;
+    FILE* f=fopen("/home/104/gxr104/u.dat","w+") ;
+    fwrite(d, sizeof(double), u.GetNumRows()*u.GetNumColumns(), f) ;
+    fclose(f) ;
+  } 
+  {
+    CIO::message("saving r vector to ~/r.dat\n") ;    
+    double* d=r.GetDataPointer() ;
+    FILE* f=fopen("/home/104/gxr104/r.dat","w+") ;
+    fwrite(d, sizeof(double), r.GetNumRows()*r.GetNumColumns(), f) ;
+    fclose(f) ;
+  } 
+  {
+    CIO::message("saving b vector to ~/b.dat\n") ;    
+    double* d=b.GetDataPointer() ;
+    FILE* f=fopen("/home/104/gxr104/b.dat","w+") ;
+    fwrite(d, sizeof(double), b.GetNumRows()*b.GetNumColumns(), f) ;
     fclose(f) ;
   } 
       

@@ -90,7 +90,7 @@ bool CPCACut::init(CFeatures* f_)
     }
 
   CIO::message("done\nRunning matlab PCA code") ;
-  cleaner_main(cov, num_features, 1e-5, &T, &num_dim) ;
+  cleaner_main(cov, num_features, 1e-4, &T, &num_dim) ;
   CIO::message("done\n") ;
 
   return true ;
