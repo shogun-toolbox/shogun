@@ -142,6 +142,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 
   }
 
+  /// preprocess the feature_matrix
   virtual bool preproc_feature_matrix(bool force_preprocessing=false)
   {
 	CIO::message("force: %d\n", force_preprocessing);
@@ -193,6 +194,9 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		  feature_cache= new CCache<ST>(get_cache_size(), num_features, num_vectors);
 	  }
   }
+  
+  /// return that we are simple minded features (just fixed size matrices)
+  inline virtual EClass get_feature_class() { return C_SIMPLE; }
   
   virtual bool reshape(int num_features, int num_vectors)
   {

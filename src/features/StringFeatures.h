@@ -27,9 +27,7 @@ class CStringFeatures: public CFeatures
 		  */
 		CHAR* get_feature_vector(long num, long& len);
 
-
 		// return false as not available for strings
-		virtual bool preproc_feature_matrix(bool force_preprocessing=false) { return false ; }
 		virtual long get_num_vectors()=0;
 
 		virtual CFeatures* duplicate() const=0 ;

@@ -9,6 +9,12 @@ class CGUI;
 
 class CGUIFeatures
 {
+	enum EFeatureType
+	{
+		Simple,
+		Sparse
+	};
+
 	public:
 		CGUIFeatures(CGUI *);
 		~CGUIFeatures();
@@ -21,6 +27,8 @@ class CGUIFeatures
 
 		CFeatures *get_train_features() { return train_features; }
 		CFeatures *get_test_features() { return test_features; }
+
+		bool convert_full_to_sparse(char* param);
 		
 		bool load(char* param);
 		bool save(char* param);
@@ -29,6 +37,7 @@ class CGUIFeatures
 
 	protected:
 		bool preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force);
+		bool preproc_all_features(CFeatures* f, bool force);
 
 	protected:
 		CGUI* gui;

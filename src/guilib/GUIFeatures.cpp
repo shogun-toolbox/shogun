@@ -6,9 +6,11 @@
 #include "features/TOPFeatures.h"
 #include "features/FKFeatures.h"
 #include "features/CharFeatures.h"
+#include "features/StringFeatures.h"
 #include "features/ByteFeatures.h"
 #include "features/ShortFeatures.h"
 #include "features/RealFeatures.h"
+#include "features/SparseRealFeatures.h"
 #include "features/Features.h"
 
 CGUIFeatures::CGUIFeatures(CGUI * gui_)
@@ -54,6 +56,7 @@ bool CGUIFeatures::preprocess(char* param)
 
 	return result;
 }
+
 bool CGUIFeatures::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force)
 {
 	int num_preproc=0;
@@ -71,7 +74,8 @@ bool CGUIFeatures::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat
 					preprocs[i]->init(trainfeat);
 					testfeat->add_preproc(trainfeat->get_preproc(i));
 				}
-				testfeat->preproc_feature_matrix(force);
+
+				preproc_all_features(testfeat, force);
 			}
 			else
 			{
@@ -79,7 +83,8 @@ bool CGUIFeatures::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat
 				{
 					preprocs[i]->init(trainfeat);
 					trainfeat->add_preproc(preprocs[i]);
-					trainfeat->preproc_feature_matrix(force);
+
+					preproc_all_features(trainfeat, force);
 				}
 			}
 
@@ -94,6 +99,40 @@ bool CGUIFeatures::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat
 	return false;
 }
 
+bool CGUIFeatures::preproc_all_features(CFeatures* f, bool force)
+{
+	switch (f->get_feature_class())
+	{
+		case C_SIMPLE:
+			switch (f->get_feature_type())
+			{
+				case F_REAL:
+					return ((CRealFeatures*) f)->preproc_feature_matrix(force);
+				case F_SHORT:
+					return ((CShortFeatures*) f)->preproc_feature_matrix(force);
+				case F_CHAR:
+					return ((CCharFeatures*) f)->preproc_feature_matrix(force);
+				case F_BYTE:
+					return ((CByteFeatures*) f)->preproc_feature_matrix(force);
+				default:
+					CIO::message("not implemented\n");
+			}
+			break;
+		case C_SPARSE:
+			switch (f->get_feature_type())
+			{
+				case F_REAL:
+					return ((CSparseRealFeatures*) f)->preproc_feature_matrix(force);
+				default:
+					CIO::message("not implemented\n");
+			};
+			break;
+		default:
+			CIO::message("not implemented\n");
+	}
+
+	return false;
+}
 bool CGUIFeatures::set_features(char* param)
 {
 	bool result=false;
@@ -368,6 +407,57 @@ bool CGUIFeatures::reshape(char* param)
 	{
 		CIO::message("reshape data to %d x %d\n", num_feat, num_vec);
 		result=(*f_ptr)->reshape(num_feat, num_vec);
+
+		if (!result)
+			CIO::message("reshaping failed");
+	}
+
+	return result;
+}
+
+bool CGUIFeatures::convert_full_to_sparse(char* param)
+{
+	bool result=false;
+	long num_feat=0;
+	long num_vec=0;
+	char target[1024];
+
+	CFeatures** f_ptr=NULL;
+
+	param=CIO::skip_spaces(param);
+	if ((sscanf(param, "%s", target))==1)
+	{
+		if (strcmp(target,"TRAIN")==0)
+		{
+			f_ptr=&train_features;
+		}
+		else if (strcmp(target,"TEST")==0)
+		{
+			f_ptr=&test_features;
+		}
+	}
+	else
+		CIO::message("see help for params\n");
+
+	if (f_ptr)
+	{
+		result=(*f_ptr)->reshape(num_feat, num_vec);
+
+		if ( ((*f_ptr)->get_feature_class()) == C_SIMPLE)
+		{
+			if ( ((*f_ptr)->get_feature_type()) == F_REAL)
+			{
+				//create sparse features with 0 cache
+				CIO::message("attempting to convert dense feature matrix to a sparse one\n");
+				CSparseRealFeatures* sf=new CSparseRealFeatures(0l);
+				long num_f=0;
+				long num_v=0;
+				REAL* feats=((CRealFeatures*)(*f_ptr))->get_feature_matrix(num_f, num_v);
+				sf->set_full_feature_matrix(feats, num_f, num_v);
+			}
+		}
+		else
+			CIO::message("no Simple features available\n");
 
 		if (!result)
 			CIO::message("reshaping failed");

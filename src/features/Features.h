@@ -35,6 +35,11 @@ public:
 	    from CFeatures can deal
 	*/
 	virtual EType get_feature_type()=0;
+
+	/** return feature class
+	    like Sparse,Simple,...
+	*/
+	virtual EClass get_feature_class()=0;
 		
 	/// set preprocessor
 	virtual int add_preproc(CPreProc* p);
@@ -57,9 +62,6 @@ public:
 
 	/// get cache size
 	inline long get_cache_size() { return cache_size; };
-
-	/// preprocess the feature_matrix
-	virtual bool preproc_feature_matrix(bool force_preprocessing=false)=0;
 
 	/// return the number of samples
 	virtual long get_num_vectors()=0 ;
