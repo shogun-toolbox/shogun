@@ -126,39 +126,12 @@ public:
 	  }
 
 	/// swap floats a and b
-	inline void swap(REAL & a,REAL &b)
+	template <typename T>
+	inline void swap(T & a,T &b)
 	  {
-	    REAL c=a ;
+	    T c=a ;
 	    a=b; b=c ;
 	  }
-
-	/// swap float vectors a and b
-	inline void swap(REAL * & a,REAL *&b)
-	  {
-	    REAL *c=a ;
-	    a=b; b=c ;
-	  }
-
-	/// swap INT vectors a and b
-	inline void swap(INT * & a, INT *&b)
-	  {
-	    INT *c=a ;
-	    a=b; b=c ;
-	  }
-
-	/// swap integers a and b
-	inline void swap(INT & a, INT &b)
-	  {
-	    INT c=a ;
-	    a=b; b=c ;
-	  } 
-
-	/// swap integers a and b
-	inline void swap(WORD &a, WORD &b)
-	  {
-	    WORD c=a ;
-	    a=b; b=c ;
-	  } 
 
 	/// x^2
 	inline REAL sq(REAL x)
@@ -202,15 +175,21 @@ public:
 	 * it is sorted from in ascending order from top to bottom
 	 * and left to right (for WORD) */
 	void qsort(WORD* output, INT size) ;
-	void qsort(REAL* output, INT* index, INT size) ;
+
+	template <typename T>
+	void qsort(REAL* output, T* index, INT size) ;
+
 	void qsort_backward(REAL* output, INT* index, INT size) ;
 
      /* finds the smallest element in output and puts that element as the 
 		first element  */
-	void min(REAL* output, INT* index, INT size) ;
+	template <typename T>
+	void min(REAL* output, T* index, INT size) ;
+
      /* finds the n smallest elements in output and puts these elements as the 
 		first n elements  */
-	void nmin(REAL* output, INT* index, INT size, INT n) ;
+	template <typename T>
+	void nmin(REAL* output, T* index, INT size, INT n) ;
 
 	/* performs a inplace unique of a WORD vector using quicksort 
 	 * returns the new number of elements */

@@ -224,7 +224,8 @@ void CMath::qsort(REAL* output, INT size)
 		}
 }
 
-void CMath::qsort(REAL* output, INT* index, INT size)
+template <typename T>
+void CMath::qsort(REAL* output, T* index, INT size)
 {
 	if (size==2)
 	{
@@ -308,7 +309,8 @@ void CMath::qsort_backward(REAL* output, INT* index, INT size)
 	}
 }
 
-void CMath::min(REAL* output, INT* index, INT size)
+template <typename T>
+void CMath::min(REAL* output, T* index, INT size)
 {
 	if (size<=0)
 		return ;
@@ -324,7 +326,8 @@ void CMath::min(REAL* output, INT* index, INT size)
 	swap(index[0], index[min_index]) ;
 }
 
-void CMath::nmin(REAL* output, INT* index, INT size, INT n)
+template <typename T>
+void CMath::nmin(REAL* output, T* index, INT size, INT n)
 {
 	if (6*n*size<13*size*log(size))
 		for (INT i=0; i<n; i++)
