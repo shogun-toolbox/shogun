@@ -185,9 +185,15 @@ public:
 		swap(x[i],x[j]);
 		if(x_square) swap(x_square[i],x_square[j]);
 	}
+
+	double foobar(int i, int j) const
+	{
+		return kernel->kernel(i,j);
+	}
 protected:
 
 	double (Kernel::*kernel_function)(int i, int j) const;
+	CKernel* kernel;
 
 
 private:
@@ -207,8 +213,10 @@ Kernel::Kernel(int l, svm_node * const * x_, const svm_parameter& param)
 :kernel_type(param.kernel_type), degree(param.degree),
  gamma(param.gamma), coef0(param.coef0)
 {
+	kernel_function = &Kernel::foobar;
 	clone(x,x_,l);
 	x_square = 0;
+	kernel=param.kernel;
 }
 
 Kernel::~Kernel()

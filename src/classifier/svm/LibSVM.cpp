@@ -28,7 +28,6 @@ bool CLibSVM::train()
 		problem.y[i]=get_labels()->get_label(i);
 		problem.x[i]=new svm_node[0];
 		problem.x[i]->index=i;
-		CIO::message("%f\n",problem.y[i]);
 	}
 
 	param.svm_type=C_SVC; // C SVM
@@ -36,18 +35,21 @@ bool CLibSVM::train()
 	param.shrinking=0;
 	param.cache_size=100; //for testing 100M cache (grrghh)
 	param.eps=1e-6;
+	param.kernel=get_kernel();
 
 	model = svm_train(&problem, &param);
 
 	if (model)
 	{
-		CIO::message("nr_class:%d\n", model->nr_class);
+		CIO::message("nr_class:%d %d %d %d\n", model->nr_class, model->nSV, model->l, *(model->nSV));
 		assert(model->nr_class==2);
-		assert(model->nSV && (*(model->nSV))==model->l);
+		assert(model->nSV && (*(model->nSV)));
 
-		create_new_model(model->l);
+		int num_sv=*(model->nSV);
+
+		create_new_model(num_sv);
 		
-		for (int i=0; i<model->l; i++)
+		for (int i=0; i<num_sv; i++)
 		{
 			set_support_vector(i, model->SV[i]->index);
 			set_alpha(i, (*(model->sv_coef))[i]);
