@@ -238,6 +238,7 @@ typedef struct shrink_state {
   long int   init_iter,precision_violations;
   double model_b;
   double opt_precision;
+  REAL* W;
 };
 
 #endif

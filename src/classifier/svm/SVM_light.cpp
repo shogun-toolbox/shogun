@@ -8,21 +8,22 @@
 
 CSVMLight::CSVMLight()
 {
-  model=new MODEL[1];
-  learn_parm=new LEARN_PARM[1];
-  model->supvec=NULL;
-  model->alpha=NULL;
-  model->index=NULL;
-  set_kernel(NULL);
-  primal=NULL;
-  dual=NULL;
+	W=NULL;
+	model=new MODEL[1];
+	learn_parm=new LEARN_PARM[1];
+	model->supvec=NULL;
+	model->alpha=NULL;
+	model->index=NULL;
+	set_kernel(NULL);
+	primal=NULL;
+	dual=NULL;
 
-  //certain setup params
-  verbosity=1;
-  init_margin=0.15;
-  init_iter=500;
-  precision_violations=0;
-  opt_precision=DEF_PRECISION_LINEAR;
+	//certain setup params
+	verbosity=1;
+	init_margin=0.15;
+	init_iter=500;
+	precision_violations=0;
+	opt_precision=DEF_PRECISION_LINEAR;
 }
 
 CSVMLight::~CSVMLight()
@@ -111,6 +112,16 @@ void CSVMLight::svm_learn()
 	INT* label=lab->get_int_labels(totdoc);
 	assert(label!=NULL);
 	LONG* docs=new long[totdoc];
+	delete[] W;
+	W=NULL;
+
+	if (get_kernel()->has_property(KP_KERNCOMBINATION))
+	{
+		W = new REAL[totdoc*get_kernel()->get_num_subkernels()];
+
+		for (i=0; i<totdoc*get_kernel()->get_num_subkernels(); i++)
+			W[i]=0;
+	}
 
 	for (i=0; i<totdoc; i++)
 		docs[i]=i;
@@ -970,82 +981,99 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
      /* based on the change of the variables */
      /* in the current working set */
 {
-	register long i,ii,j,jj;
-	register double tec;
+	register long i=0,ii=0,j=0,jj=0;
+	register double tec=0;
 
 	if (get_kernel()->has_property(KP_LINADD)) {
 		get_kernel()->clear_normal();
 
-		for(ii=0;(i=working2dnum[ii])>=0;ii++) {
+		for(i=0;(i=working2dnum[ii])>=0;ii++) {
 			if(a[i] != a_old[i]) {
 					get_kernel()->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
 			}
-		}
-		for(jj=0;(j=active2dnum[jj])>=0;jj++) {
-				lin[j]+=get_kernel()->compute_optimized(docs[j]);
 		}
 
 		if (get_kernel()->has_property(KP_KERNCOMBINATION)) {
 			//HACK ASSUME KERNEL IS WEIGHTEDDEGREE WE NEED SOME GENERIC KERNEL INTERFACE
 			//TO DO THAT NICELY
-			//
 			CWeightedDegreeCharKernel* k = (CWeightedDegreeCharKernel*) get_kernel();
 			INT num    = k->get_rhs()->get_num_vectors() ;
 			INT degree = k->get_degree() ;
-			REAL* W = new REAL[num*degree];
-			REAL* sumw = new REAL[degree];
-			REAL* W_norm = new REAL[num*degree];
 			REAL* w = k->get_weights();
+			REAL* W_upd = new REAL[num*degree];
+			REAL* sumw = new REAL[degree];
+			REAL meanabssumw = 0;
+			REAL bound=0;
 
 			// determine contributions of different levels/lengths
 			for (int i=0; i<num; i++)
-				k->compute_by_tree(i,&W[i*degree]) ;
+				k->compute_by_tree(i,&W_upd[i*degree]) ;
 
+			// update W with normalized W_upd and compute sumw
+			for (int d=0; d<degree; d++)
+			{
+				sumw[d]=0;
 
-			// compute objective/ W_norm
+				for (int i=0; i<num; i++)
+				{
+					REAL W_norm = W_upd[i*degree+d]/w[d];
+					W[i*degree+d] += W_norm;
+					sumw[d]+=a[i]*(0.5*label[i]*W_norm - 1);
+				}
+
+				meanabssumw+=CMath::abs(sumw[d]);
+			}
+
+			meanabssumw/=degree;
+			bound = 1.0 / meanabssumw;
+
+			// compute objective
 			REAL objective=0;
-			for (int d=0; d<degree; d++)
-			{
-				for (int i=0; i<num; i++)
-				{
-					W_norm[i*degree+d]= W[i*degree+d]/w[d];
-					objective+=a[i]*W[i*degree+d];
-				}
-			}
 
-			objective/=2;
 			for (int i=0; i<totdoc; i++)
-				objective-=a[i];
+			{
+				for (int d=0; d<degree; d++)
+					objective+=a[i]*(0.5*label[i]*w[d]*W[i*degree+d] - 1);
+			}
 
-			// compute sumw
-			for (int i=0; i<degree; i++)
-				sumw[i]=0;
+			REAL gamma=0.05*bound; //fixme
+
+
+			// update w
+			REAL s=0;
+			for (int d=0; d<degree; d++)
+			{
+				w[d] *= exp(gamma*sumw[d]);
+				s+=w[d];
+			}
 
 			for (int d=0; d<degree; d++)
 			{
-				for (int i=0; i<num; i++)
-				{
-					sumw[d]+=a[i]*W_norm[i*degree+d];
-				}
+				w[d]/=s;
 			}
 
-			REAL gamma=0.1; //fixme
-			REAL s=0;
-			for (int i=0; i<degree; i++)
+			int i,ii;
+
+			// update lin
+			for(ii=0;(i=active2dnum[ii])>=0;ii++)
 			{
-				w[i] *= exp(gamma*sumw[i]);
-				s+=w[i];
+				REAL s=0;
+				for (int d=0; d<degree; d++)
+					s+= w[d]*W[i*degree+d];
+
+				lin[i]=s;
 			}
 
-			for (int i=0; i<degree; i++)
-				w[i]/=s;
+			CIO::message(M_DEBUG,"gamma: %f OBJ: %f\n", gamma, objective);
 
-			CIO::message(M_DEBUG,"OBJ: %f\n", objective);
-
-			delete[] W;
-			delete[] W_norm;
+			delete[] W_upd;
 			delete[] sumw;
-
+		}
+		else
+		{
+			for(jj=0;(j=active2dnum[jj])>=0;jj++) {
+				lin[j]+=get_kernel()->compute_optimized(docs[j]);
+			}
 		}
 	}
 	else {                            /* general case */
