@@ -2,6 +2,7 @@
 #include "gui/GUI.h"
 #include "lib/io.h"
 #include "features/RealFileFeatures.h"
+#include "svm_mpi/mpi_oneclass.h"
 
 #include <assert.h>
 
@@ -43,6 +44,16 @@ bool CGUISVM::new_svm(char* param)
       CIO::message("created SVMMPI object\n") ;
 #else
       CIO::message("MPI SVM disabled\n") ;
+#endif
+    }
+  else if (strcmp(param,"ONECLASS")==0)
+    {
+#ifdef SVMMPI
+      delete svm;
+      svm= new COneClassMPI();
+      CIO::message("created OneClassMPI object\n") ;
+#else
+      CIO::message("MPI OneClass SVM disabled\n") ;
 #endif
     }
   else

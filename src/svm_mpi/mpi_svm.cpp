@@ -9,7 +9,7 @@
 #include "lib/io.h"
 #include "preproc/PCACut.h"
 
-int sign(double a)
+static int sign(double a)
 {
   if (a>0)
     return 1 ;
