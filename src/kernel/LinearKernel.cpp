@@ -15,6 +15,11 @@ void CLinearKernel::init(CFeatures* f)
     init_scale(f) ;
 } ;
 
+void CLinearKernel::init_rescale(CFeatures* f)
+{
+  fprintf(stderr,"CLinearKernel::init_rescale not implemented yet\n") ;
+} ;
+
 void CLinearKernel::cleanup()
 {
 } ;

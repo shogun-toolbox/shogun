@@ -32,6 +32,8 @@ class CLinearKernel: public CKernel
   /// in the corresponding feature object
   REAL compute(CFeatures* a, int idx_a, CFeatures* b, int idx_b);
   /*    compute_kernel*/
+
+  void init_rescale(CFeatures* f);
   
  protected:
   double scale ;
