@@ -492,12 +492,12 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 
                             /* repeat this loop until we have convergence */
 
-  for(;(retrain && (!terminate))||(w_gap>get_weight_epsilon());iteration++){
+  for(;(retrain && (!terminate))||((w_gap>get_weight_epsilon()) && is_mkl_enabled());iteration++){
 	  	  
 	  if(!get_kernel()->has_property(KP_LINADD)) 
 		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
 	  
-	  CIO::message(M_MESSAGEONLY, ".");
+	  CIO::message(M_MESSAGEONLY, ".(%1.1e)",(*maxdiff));
 	  
 	  if(verbosity>=2) t0=get_runtime();
 	  if(verbosity>=3) {
@@ -1079,6 +1079,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 	if (get_kernel()->has_property(KP_LINADD)) {
 
 		if (get_kernel()->has_property(KP_KERNCOMBINATION) && is_mkl_enabled() ) {
+
 			//kernel with LP_LINADD property is assumed to have compute_by_tree functions
 			INT num    = get_kernel()->get_rhs()->get_num_vectors() ;
 			CWeightedDegreeCharKernel* k = (CWeightedDegreeCharKernel*) get_kernel();
@@ -1318,38 +1319,38 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			// update lin
 #ifdef HAVE_ATLAS
 			cblas_dgemv(CblasColMajor,
-					CblasTrans, num_kernels, num,
-					1.0, W, num_kernels, w, 1, 0.0, lin,1);
+						CblasTrans, num_kernels, num,
+						1.0, W, num_kernels, w, 1, 0.0, lin,1);
 #else
 			for(int i=0; i<num; i++)
 				lin[i]=0 ;
-
 			for (int d=0; d<num_kernels; d++)
 				if (w[d]!=0)
 					for(int i=0; i<num; i++)
 						lin[i] += w[d]*W[i*num_kernels+d] ;
 #endif
-
+			
 			// count actives
 			INT jj ;
 			for(jj=0;active2dnum[jj]>=0;jj++);
-
+			
 			if (count%10==0)
 				CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows);
-
+			
 			delete[] sumw;
 			delete[] w_backup ;
 		}
 		else
 		{
 			get_kernel()->clear_normal();
+			// fprintf(stderr, "lin_add-opt\n") ;
 
 			for(ii=0;(i=working2dnum[ii])>=0;ii++) {
 				if(a[i] != a_old[i]) {
 					get_kernel()->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
 				}
 			}
-
+			
 			for(jj=0;(j=active2dnum[jj])>=0;jj++) {
 				lin[j]+=get_kernel()->compute_optimized(docs[j]);
 			}
