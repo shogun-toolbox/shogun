@@ -3,17 +3,28 @@
 #include "lib/io.h"
 
 #include <math.h>
-
-void CGUIMath::evaluate_results(REAL* output, int* label, int total, REAL tresh, FILE* outputfile, FILE* rocfile)
+CGUIMath::CGUIMath() : threshold(0.0)
 {
-	current_results(output, label, total, tresh, outputfile);
+}
+
+void CGUIMath::set_threshold(char* param)
+{
+	param=CIO::skip_spaces(param);
+	CIO::message("old threshold: %f", threshold);
+	sscanf(param,"%le", &threshold);
+	CIO::message(" new threshold: %f\n", threshold);
+}
+
+void CGUIMath::evaluate_results(REAL* output, int* label, int total, FILE* outputfile, FILE* rocfile)
+{
+	current_results(output, label, total, outputfile);
 
 	REAL* fp= new REAL[total];	
 	REAL* tp= new REAL[total];	
 	int possize=0;
 	int negsize=0;
 	int size=total;
-	int pointeven=math.calcroc(fp, tp, output, label, size, possize, negsize, tresh, rocfile);
+	int pointeven=math.calcroc(fp, tp, output, label, size, possize, negsize, threshold, rocfile);
 
 	// rounding necessary due to (although very small) numerical deviations
 	double correct=math.round(possize*tp[pointeven]+(1.0-fp[pointeven])*negsize);
@@ -23,12 +34,13 @@ void CGUIMath::evaluate_results(REAL* output, int* label, int total, REAL tresh,
 	CIO::message("total: %i pos: %i, neg: %i\n", possize+negsize, possize, negsize);
 	CIO::message("\tcorrect:%i\n", int (correct));
 	CIO::message("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
-	CIO::message("of %i samples (c:%f,w:%f,fp:%f,tp:%f,tresh*:%+.18g)\n",total, correct/total, 1-correct/total, (double) fp[pointeven], (double) tp[pointeven], tresh);
+	CIO::message("of %i samples (c:%f,w:%f,fp:%f,tp:%f,tresh*:%+.18g)\n",total, correct/total, 1-correct/total, (double) fp[pointeven], (double) tp[pointeven], threshold);
 	delete[] fp;
 	delete[] tp;
+	CIO::message("setting threshold to: %f\n", threshold);
 }
 
-void CGUIMath::current_results(REAL* output, int* label, int total, REAL tresh, FILE* outputfile)
+void CGUIMath::current_results(REAL* output, int* label, int total, FILE* outputfile)
 {
 	int fp=0;
 	int fn=0;
@@ -43,14 +55,14 @@ void CGUIMath::current_results(REAL* output, int* label, int total, REAL tresh, 
 		else
 			neg++;
 
-		if ( (output[dim]-tresh>=0 && label[dim]>0) || (output[dim]-tresh<0 && label[dim]<0) )
+		if ( (output[dim]-threshold>=0 && label[dim]>0) || (output[dim]-threshold<0 && label[dim]<0) )
 		{
-			fprintf(outputfile,"%+.18g (%+d)\n",(double) output[dim]-tresh, label[dim]);
+			fprintf(outputfile,"%+.18g (%+d)\n",(double) output[dim]-threshold, label[dim]);
 			correct++;
 		}
 		else
 		{
-			fprintf(outputfile,"%+.18g (%+d)(*)\n",(double) output[dim]-tresh, label[dim]);
+			fprintf(outputfile,"%+.18g (%+d)(*)\n",(double) output[dim]-threshold, label[dim]);
 			if (label[dim]>0)
 				fn++;
 			else
@@ -62,6 +74,6 @@ void CGUIMath::current_results(REAL* output, int* label, int total, REAL tresh, 
 	CIO::message("\tcorrect:%i\n", int (correct));
 	CIO::message("\twrong:%i (fp:%i,fn:%i)\n", int(fp+fn), int (fp), int (fn));
 	CIO::message("of %i samples (c:%f,w:%f,fp:%f,tp:%f,tresh:%+.18g)\n", total, ((double) correct)/((double)total), 1.0-((double)correct)/((double)total),
-			((double) fp)/((double) neg), (double) (pos-fn)/((double)pos), ((double) tresh));
+			((double) fp)/((double) neg), (double) (pos-fn)/((double)pos), ((double) threshold));
 
 }

@@ -57,3 +57,8 @@ char* CIO::skip_spaces(char* str)
 	else 
 		return str;
 }
+
+void CIO::set_target(FILE* t)
+{
+	target=t;
+}

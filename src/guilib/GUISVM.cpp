@@ -98,12 +98,9 @@ bool CGUISVM::test(char* param)
 	FILE* rocfile=NULL;
 	int numargs=-1;
 
-	double tresh=0;
-
 	param=CIO::skip_spaces(param);
 
-	numargs=sscanf(param, "%le %s %s", &tresh, outputname, rocfname);
-	CIO::message("Tresholding at:%f\n",tresh);
+	numargs=sscanf(param, "%s %s", outputname, rocfname);
 
 	if (numargs>=2)
 	{
@@ -164,7 +161,7 @@ bool CGUISVM::test(char* param)
 	int total=testfeatures->get_num_vectors();
 	int* label= testfeatures->get_labels(len);
 	assert(len==total);
-	gui->guimath.evaluate_results(output, label, total, tresh, outputfile, rocfile);
+	gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);
 
 	if (rocfile)
 		fclose(rocfile);

@@ -72,15 +72,17 @@ static const char N_COMMENT1=			'#';
 static const char N_COMMENT2=			'%';
 static const char* N_SET_MAX_DIM=		"max_dim";
 static const char* N_TEST=			"test";
+static const char* N_SET_THRESHOLD=			"set_threshold";
 static const char* N_SVM_TRAIN=			"svm_train";
 static const char* N_SVM_TEST=			"svm_test";
 static const char* N_ONE_CLASS_HMM_TEST=	"one_class_hmm_test";
 static const char* N_HMM_TEST=			"hmm_test";
 static const char* N_SET_ORDER=			"set_order";
+static const char* N_SET_OUTPUT=		"set_output";
 static const char* N_GRADIENT_STEP=		"do_grad_step";
 
 CTextGUI::CTextGUI(int argc, const char** argv)
-: CGUI(argc, argv)
+: CGUI(argc, argv), out_file(NULL)
 {
 #ifdef WITHMATLAB
 	libmmfileInitialize() ;
@@ -98,6 +100,8 @@ CTextGUI::CTextGUI(int argc, const char** argv)
 
 CTextGUI::~CTextGUI()
 {
+	if (out_file)
+		fclose(out_file);
 #ifdef WITHMATLAB
 	libmmfileTerminate() ;
 #endif
@@ -150,13 +154,10 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m\t\t- does baum welch training only on defined transitions etc.\n",N_BAUM_WELCH_TRAIN_DEFINED);
 	CIO::message("\033[1;31m%s\033[0m\t- find the best path using viterbi\n",N_BEST_PATH);
 	CIO::message("\033[1;31m%s\033[0m\t- find HMM likelihood\n",N_LIKELIHOOD);
-	CIO::message("\n[OUTPUT]\n");
+	CIO::message("\n[HMM-OUTPUT]\n");
 	CIO::message("\033[1;31m%s\033[0m [from to]\t- outputs best path\n",N_OUTPUT_PATH);
 	CIO::message("\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM);
 	CIO::message("\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM_DEFINED);
-	CIO::message("\n[HMM-classification]\n");
-	CIO::message("\033[1;31m%s\033[0m[<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_HMM_TEST);
-	CIO::message("\033[1;31m%s\033[0m[<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
 	CIO::message("\n[FEATURES]\n");
 	CIO::message("\033[1;31m%s\033[0m\t <TOP|FK> <TRAIN|TEST> [<CACHE SIZE> [<0|1>]]- creates train/test-features out of obs\n",N_SET_FEATURES);
 	CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|NONE>\t\t\t- set preprocessor type\n", N_SET_PREPROC);
@@ -167,8 +168,13 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m <LINEAR> [<CACHESIZE> [OPTS]]\t\t\t- set kernel type\n", N_SET_KERNEL);
 	CIO::message("\033[1;31m%s\033[0m\t\t- obtains svm from TRAINFEATURES\n",N_SVM_TRAIN);
 	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> - init kernel for training/testingn",N_INIT_KERNEL);
-	CIO::message("\033[1;31m%s\033[0m [[<treshhold> [<output> [<rocfile>]]]\t\t- calculate svm output on TESTFEATURES\n",N_SVM_TEST);
+	CIO::message("\n[CLASSIFICATION]\n");
+	CIO::message("\033[1;31m%s\033[0m<threshold>\t\t\t\t- set classification threshold\n",N_SET_THRESHOLD);
+	CIO::message("\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_HMM_TEST);
+	CIO::message("\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
+	CIO::message("\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t- calculate svm output on TESTFEATURES\n",N_SVM_TEST);
 	CIO::message("\n[SYSTEM]\n");
+	CIO::message("\033[1;31m%s\033[0m <STDERR|STDOUT|filename>\t- make std-output go to e.g file\n",N_SET_OUTPUT);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- load and execute a script\n",N_EXEC);
 	CIO::message("\033[1;31m%s\033[0m\t- exit genfinder\n",N_QUIT);
 	CIO::message("\033[1;31m%s\033[0m\t- exit genfinder\n",N_EXIT);
@@ -190,13 +196,19 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	if (show_prompt)
 		print_prompt();
 
+	if (feof(infile))
+		return false;
+
 	char* b=fgets(input, sizeof(input), infile);
-	if ((b==NULL) || !strlen(input) || (input[0]==N_COMMENT1) || (input[0]==N_COMMENT2) || (input[0]=='\n') || feof(infile))
+
+	if ((b==NULL) || !strlen(input))
+		return false;
+	
+	if ((input[0]==N_COMMENT1) || (input[0]==N_COMMENT2) || (input[0]=='\n'))
 		return true;
 
 	input[strlen(input)-1]='\0';
-	if (infile!=stdin)
-		CIO::message("%s\n",input) ;
+	CIO::message("%s\n",input) ;
 
 	if (!strncmp(input, N_NEW_HMM, strlen(N_NEW_HMM)))
 	{
@@ -301,6 +313,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	{
 		guihmm.set_pseudo(input+strlen(N_PSEUDO));
 	} 
+	else if (!strncmp(input, N_SET_THRESHOLD, strlen(N_SET_THRESHOLD)))
+	{
+		guimath.set_threshold(input+strlen(N_SET_THRESHOLD));
+	} 
 	else if (!strncmp(input, N_ALPHABET, strlen(N_ALPHABET)))
 	{
 		guiobs.set_alphabet(input+strlen(N_ALPHABET)) ;
@@ -345,6 +361,30 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	{
 		guihmm.output_hmm(input+strlen(N_OUTPUT_HMM));
 	} 
+	else if (!strncmp(input, N_SET_OUTPUT, strlen(N_SET_OUTPUT)))
+	{
+		for (i=strlen(N_SET_OUTPUT); isspace(input[i]); i++);
+		char* param=&input[i];
+
+		if (out_file)
+			fclose(out_file);
+
+		out_file=NULL;
+
+		CIO::message("setting out_target to: %s\n", param);
+
+		if (strcmp(param, "STDERR")==0)
+			CIO::set_target(stderr);
+		else if(strcmp(param, "STDOUT")==0)
+			CIO::set_target(stdout);
+		else
+		{
+			out_file=fopen(param, "w");
+			if (!out_file)
+				CIO::message("error opening out_target \"%s\"", param);
+			CIO::set_target(out_file);
+		}
+	}
 	else if (!strncmp(input, N_EXEC, strlen(N_EXEC)))
 	{
 		for (i=strlen(N_EXEC); isspace(input[i]); i++);

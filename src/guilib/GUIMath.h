@@ -4,7 +4,12 @@
 class CGUIMath
 {
 public:
-	void evaluate_results(REAL* output, int* label, int total, REAL tresh, FILE* outputfile, FILE* rocfile);
-	void current_results(REAL* output, int* label, int total, REAL tresh, FILE* outputfile);
+	CGUIMath();
+	void evaluate_results(REAL* output, int* label, int total, FILE* outputfile, FILE* rocfile);
+	void current_results(REAL* output, int* label, int total, FILE* outputfile);
+
+	void set_threshold(char* input);
+protected:
+	REAL threshold;
 };
 #endif

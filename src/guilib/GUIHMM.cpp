@@ -449,13 +449,11 @@ bool CGUIHMM::one_class_test(char* param)
 	FILE* outputfile=stdout;
 	FILE* rocfile=NULL;
 	int numargs=-1;
-	double tresh=0;
 	int linear=0;
 
 	param=CIO::skip_spaces(param);
 
-	numargs=sscanf(param, "%le %s %s %d", &tresh, outputname, rocfname, &linear);
-	CIO::message("Tresholding at:%f\n",tresh);
+	numargs=sscanf(param, "%s %s %d", outputname, rocfname, &linear);
 
 	if (numargs>=2)
 	{
@@ -499,7 +497,7 @@ bool CGUIHMM::one_class_test(char* param)
 				label[dim]= obs->get_label(dim);
 			}
 
-			gui->guimath.evaluate_results(output, label, total, tresh, outputfile, rocfile);
+			gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);
 			delete[] output;
 			delete[] label;
 
@@ -533,12 +531,9 @@ bool CGUIHMM::test_hmm(char* param)
 	int poslinear=0;
 	int neglinear=0;
 
-	double tresh=0;
-
 	param=CIO::skip_spaces(param);
 
-	numargs=sscanf(param, "%le %s %s %d %d", &tresh, outputname, rocfname, &neglinear, &poslinear);
-	CIO::message("Tresholding at:%f\n",tresh);
+	numargs=sscanf(param, "%s %s %d %d", outputname, rocfname, &neglinear, &poslinear);
 
 	if (numargs>=2)
 	{
@@ -624,7 +619,7 @@ bool CGUIHMM::test_hmm(char* param)
 				//fprintf(outputfile, "%+d: %f - %f = %f\n", label[dim], pos->model_probability(dim), neg->model_probability(dim), output[dim]);
 			}
 			
-			gui->guimath.evaluate_results(output, label, total, tresh, outputfile, rocfile);
+			gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);
 
 			delete[] output;
 			delete[] label;
