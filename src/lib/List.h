@@ -112,15 +112,6 @@ public:
 			return NULL;
 	}
 
-	/// replace current element in list return true if successful
-	inline bool replace_element(T data)
-	{
-		if (append_element(data))
-			return delete_element();
-		else 
-			return false;
-	}
-
 	/// append element AFTER the current element. return true on success
 	inline bool append_element(T data)
 	{

@@ -442,6 +442,7 @@ bool CGUIFeatures::convert_char_to_word(CHAR* param)
 
 	if (f_ptr)
 	{
+		//FIXME
 		if ((f->get_feature_class()) == C_COMBINED)
 		{
 			CFeatures *f2 = ((CCombinedFeatures*)f)->get_last_feature_obj() ;
@@ -644,6 +645,7 @@ bool CGUIFeatures::convert(CHAR* param)
 	CHAR to_type[1024]="";
 
 	CFeatures** f_ptr=NULL;
+	CCombinedFeatures* f_combined=NULL;
 
 	param=CIO::skip_spaces(param);
 	if ((sscanf(param, "%s %s %s %s %s", target, from_class, from_type, to_class, to_type))>=5)
@@ -666,6 +668,10 @@ bool CGUIFeatures::convert(CHAR* param)
 	{
 		if ( (*f_ptr)->get_feature_class() == C_COMBINED)
 		{
+			f_combined= (CCombinedFeatures*) (*f_ptr);
+			assert(f_combined);
+
+			*f_ptr=f_combined->get_last_feature_obj();
 		}
 
 		if (strcmp(from_class, "SIMPLE")==0)
@@ -895,6 +901,15 @@ bool CGUIFeatures::convert(CHAR* param)
 		else
 			CIO::message(M_INFO, "conversion successful\n");
 
+		// in case of combined features delete current (==last) feature obj
+		// pointer from list (feature object got deleted already above)
+		// and append *f_ptr which holds the newly created feature object
+		if (f_combined)
+		{
+			f_combined->delete_feature_obj();
+			f_combined->append_feature_obj(*f_ptr);
+			*f_ptr=f_combined;
+		}
 	}
 	else
 		CIO::message(M_ERROR, "no \"%s\" features available\n", target);
@@ -931,7 +946,6 @@ void CGUIFeatures::add_test_features(CFeatures* f)
 	if (!test_features || (test_features && test_features->get_feature_class()!=C_COMBINED))
 	{
 		invalidate_test() ;
-		//delete test_features;
 		CFeatures * first_elem = test_features ;
 		test_features= new CCombinedFeatures();
 		assert(test_features);
