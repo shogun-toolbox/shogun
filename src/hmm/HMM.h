@@ -1439,6 +1439,9 @@ public:
 	   
 	    /// compute featurevectors for all observations and return a cache of size num_features*num_observations
 	    static bool compute_top_feature_cache(CHMM* pos, CHMM* neg);
+
+		/// save all top featurevectors into dest
+		static bool CHMM::save_top_features(CHMM* pos, CHMM* neg, FILE* dest);
 	    
 	    /**@name compute featurevector for observation dim
 	     * Computes the featurevector for one observation 

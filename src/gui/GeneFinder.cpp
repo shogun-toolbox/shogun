@@ -35,7 +35,8 @@ static const char* N_LOAD_MODEL=			"load_model";
 static const char* N_SAVE_MODEL=			"save_model";
 static const char* N_SAVE_MODEL_BIN=		"save_model_bin";
 static const char* N_LOAD_DEFINITIONS=		"load_defs";
-static const char* N_SAVE_TOP_KERNEL=		"save_top_kernel";
+static const char* N_SAVE_KERNEL=			"save_kernel";
+static const char* N_SAVE_TOP_FEATURES=		"save_top_features";
 #ifndef NOVIT
 static const char* N_SAVE_PATH=				"save_path";
 static const char* N_SAVE_PATH_DERIVATIVES=	        "save_vit_deriv";
@@ -220,7 +221,8 @@ static void help()
 #endif // NOVIT
    CIO::message("%s <filename>\t- save log derivatives of P[O|model]\n",N_SAVE_MODEL_DERIVATIVES);
    CIO::message("%s <filename>\t- save log derivatives of P[O|model] in binary format\n",N_SAVE_MODEL_DERIVATIVES_BIN);
-   CIO::message("%s <filename>\t- save top kernel in binary format\n",N_SAVE_TOP_KERNEL);
+   CIO::message("%s <filename> <TOP|FK>\t- save kernel in binary format\n",N_SAVE_KERNEL);
+   CIO::message("%s <filename>\t- save top features for all train obs,neg first\n",N_SAVE_TOP_FEATURES);
    CIO::message("%s <filename>\t- save P[O|model]\n",N_SAVE_LIKELIHOOD);
    CIO::message("%s <filename>\t- save P[O|model]\n",N_SAVE_LIKELIHOOD_BIN);
    CIO::message("%s <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear model from file\n",N_SAVE_LINEAR_LIKELIHOOD);
@@ -610,10 +612,10 @@ static bool prompt(FILE* infile=stdin)
 	else
 	   CIO::message("opening file %s for writing failed\n", &input[i]);
     } 
-    else if (!strncmp(input, N_SAVE_TOP_KERNEL, strlen(N_SAVE_TOP_KERNEL)))
+    else if (!strncmp(input, N_SAVE_TOP_FEATURES, strlen(N_SAVE_TOP_FEATURES)))
 	{
 		int j;
-		for (i=strlen(N_SAVE_TOP_KERNEL); isspace(input[i]); i++);
+		for (i=strlen(N_SAVE_TOP_FEATURES); isspace(input[i]); i++);
 		for (j=i; j<(int)strlen(input) && !isspace(input[j]); j++);
 		input[j]='\0';
 		FILE* file=fopen(&input[i], "w");
@@ -631,16 +633,13 @@ static bool prompt(FILE* infile=stdin)
 					pos->set_observations(obs);
 					neg->set_observations(obs);
 
-					int larger_N=math.max(pos->get_N(), neg->get_N());
-					int larger_M=math.max(pos->get_M(), neg->get_M());
-					theta=new double[1+larger_N*(1+larger_N+1+larger_M)];
-
-					save_top_kernel(file, obs);
+					unsigned int endian=0x12345678;
+					unsigned char* e=(unsigned char*) &endian;
+									 
+					CIO::message("we got %i pos samples and %i neg samples,\nwriting order is pos first\n endian check: 0x12345678 is seen as 0x%x%x%x%x -> its %s\n", obs_postrain->get_DIMENSION(), obs_negtrain->get_DIMENSION(), e[0],e[1],e[2],e[3], ( e[0]==0x12 && e[1]==0x34 && e[2]==0x56 && e[3]==0x78) ? "BIG ENDIAN" : "LITTLE ENDIAN"); 
+					CHMM::save_top_features(pos,neg,file);
 					fclose(file);
-					CIO::message("successfully written top_kernel into \"%s\" !\n", &input[i]);
-
-					delete[] theta;
-					theta=NULL;
+					CIO::message("successfully written top_features into \"%s\" !\n", &input[i]);
 
 					pos->set_observations(old_pos);
 					neg->set_observations(old_neg);
@@ -652,10 +651,66 @@ static bool prompt(FILE* infile=stdin)
 			}
 			else
 				CIO::message("assign positive and negative models first!\n");
-
 		}
 		else
 			CIO::message("opening file %s for writing failed\n", &input[i]);
+	} 
+    else if (!strncmp(input, N_SAVE_KERNEL, strlen(N_SAVE_KERNEL)))
+	{
+		char filename[1024];
+		char kern[1024];
+		int kern_type=6;
+		for (i=strlen(N_SAVE_KERNEL); isspace(input[i]); i++);
+
+		if ((sscanf(&input[i], "%s %s", filename, kern))==2)
+		{
+			FILE* file=fopen(filename, "w");
+
+			if (kern[0]=='F')
+				kern_type=7;
+
+			if (file)
+			{
+				if (pos && neg)
+				{
+					if (obs_postrain && obs_negtrain)
+					{
+						CObservation* obs=new CObservation(obs_postrain, obs_negtrain);
+
+						CObservation* old_pos=pos->get_observations();
+						CObservation* old_neg=neg->get_observations();
+
+						pos->set_observations(obs);
+						neg->set_observations(obs);
+
+						int larger_N=math.max(pos->get_N(), neg->get_N());
+						int larger_M=math.max(pos->get_M(), neg->get_M());
+						theta=new double[1+larger_N*(1+larger_N+1+larger_M)];
+
+						save_kernel(file, obs, kern_type);
+						fclose(file);
+						CIO::message("successfully written top_kernel into \"%s\" !\n", filename);
+
+						delete[] theta;
+						theta=NULL;
+
+						pos->set_observations(old_pos);
+						neg->set_observations(old_neg);
+
+						delete obs;
+					}
+					else
+						CIO::message("assign postrain and negtrain observations first!\n");
+				}
+				else
+					CIO::message("assign positive and negative models first!\n");
+
+			}
+			else
+				CIO::message("opening file %s for writing failed\n", filename);
+		}
+		else
+			CIO::message("see help for parameters\n");
 	} 
 #ifndef NOVIT
     else if (!strncmp(input, N_SAVE_PATH_DERIVATIVES_BIN, strlen(N_SAVE_PATH_DERIVATIVES_BIN)))

@@ -64,8 +64,9 @@ double find_normalizer(KERNEL_PARM *kernel_parm, int num);
 double linear_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b);
 double top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b);
 double cached_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b);
+double cached_fisher_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b);
 CFLOAT kernel(KERNEL_PARM *, DOC *, DOC *); 
-bool save_top_kernel(FILE* dest, CObservation* obs);
+bool save_kernel(FILE* dest, CObservation* obs, int kernel_type);
 void   *my_malloc(long); 
 
 //#endif

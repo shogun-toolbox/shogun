@@ -5077,6 +5077,32 @@ double* CHMM::compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* 
     return featurevector;
 }
 
+bool CHMM::save_top_features(CHMM* pos, CHMM* neg, FILE* dest)
+{
+	int totobs=pos->get_observations()->get_DIMENSION();
+    int num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
+	
+	CIO::message("saving %i features (size %i) for %i sequences.\n total file size should be: %i byte.\nwriting as doubles of size %i\n",num_features,sizeof(double)*num_features,totobs,sizeof(double)*num_features*totobs, sizeof(double));
+
+	double* feature_vector=new double[num_features];
+
+	for (int x=0; x<totobs; x++)
+	{
+		if (!(x % (totobs/10+1)))
+			CIO::message("%02d%%.", (int) (100.0*x/totobs));
+		else if (!(x % (totobs/200+1)))
+			CIO::message(".");
+
+		compute_top_feature_vector(pos, neg, x, feature_vector);
+		fwrite(feature_vector, sizeof(double),num_features, dest);
+	}
+
+	CIO::message(".done.\n");
+	delete[] feature_vector;
+
+	return true;
+}
+
 void CHMM::check_and_update_crc(CHMM* pos, CHMM* neg)
 {
     bool obs_result=false;

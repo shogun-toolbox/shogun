@@ -46,6 +46,8 @@ CFLOAT kernel(KERNEL_PARM *kernel_parm,DOC* a,DOC* b)
 			return ((CFLOAT)linear_top_kernel(kernel_parm,a,b)); 
 		case 6:
 			return ((CFLOAT)cached_top_kernel(kernel_parm,a,b)); 
+		case 7:
+			return ((CFLOAT)cached_fisher_kernel(kernel_parm,a,b)); 
 
 	    default:CIO::message("Error: Unknown kernel function\n"); exit(1);
 	}
@@ -540,7 +542,32 @@ double cached_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in yo
     return result;
 }
 
-bool save_top_kernel(FILE* dest, CObservation* obs)
+
+double cached_fisher_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in your favorite kernel */
+{
+    double* features_a=CHMM::get_top_feature_cache_line(a->docnum);
+    double* features_b=CHMM::get_top_feature_cache_line(b->docnum);
+    double result=0;
+    int i=CHMM::get_top_num_features();
+
+    while (i--)
+		result+= *features_a++ * *features_b++;
+
+    features_a=CHMM::get_top_feature_cache_line(a->docnum);
+    features_b=CHMM::get_top_feature_cache_line(b->docnum);
+	//fisher kernel is just the same as TOP but without first komponent
+	result-=features_a[0] * features_b[0];
+
+    result/=normalizer;
+#ifdef KERNEL_DEBUG
+    double top_res=top_kernel(kernel_parm,a,b);
+    if (fabs(top_res-result)>1e-6)
+	printf("cached kernel bug:%e == %e\n", top_kernel(kernel_parm,a,b), result);
+#endif
+    return result;
+}
+
+bool save_kernel(FILE* dest, CObservation* obs, int kernel_type)
 {
     KERNEL_CACHE mykernel_cache;
     KERNEL_PARM mykernel_parm;
@@ -548,10 +575,17 @@ bool save_top_kernel(FILE* dest, CObservation* obs)
 	
 	memset(&mykernel_cache, 0x0, sizeof(KERNEL_CACHE));
 	memset(&mykernel_parm, 0x0, sizeof(KERNEL_PARM));
-	int kernel_type=6;
 
-	if (!CHMM::compute_top_feature_cache(pos, neg))
-		kernel_type=4; // hmm+svm precalculated
+	if (kernel_type==6)
+	{
+		if (!CHMM::compute_top_feature_cache(pos, neg))
+			kernel_type=4; // hmm+svm precalculated
+	}
+	else if (kernel_type==7)
+	{
+		if (!CHMM::compute_top_feature_cache(pos, neg))
+			CIO::message("preparing for crash...");
+	}
 	
 	mykernel_parm.kernel_type=kernel_type; //custom kernel
 	mykernel_parm.poly_degree=-12345;
@@ -559,7 +593,7 @@ bool save_top_kernel(FILE* dest, CObservation* obs)
 	mykernel_parm.coef_lin=-12345;
 	mykernel_parm.coef_const=-12345;
 	
-	double norm_val=find_normalizer(&mykernel_parm, totdoc);
+	find_normalizer(&mykernel_parm, totdoc);
 
 #ifdef USE_KERNEL_CACHE
 	kernel_cache_init(&mykernel_cache,totdoc,100);
