@@ -32,7 +32,7 @@ class CPCACut : public CRealPreProc
   virtual REAL* apply_to_feature_vector(REAL* f, int &len);
 
  protected:
-  int* idx ;
-  int num_idx ;
+  double* T ;
+  int num_dim ;
 };
 #endif
