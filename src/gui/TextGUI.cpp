@@ -15,6 +15,10 @@
 #include "lib/common.h"
 #include "distributions/histogram/Histogram.h"
 
+#include <readline/readline.h>
+#include <readline/history.h>
+
+
 
 CTextGUI* gui=NULL;
 CHistogram* h;
@@ -237,14 +241,24 @@ CHAR* CTextGUI::get_line(FILE* infile, bool show_prompt)
 	memset(input, 0, sizeof(input));
 
 	//guihmm.debug();
-	if (show_prompt)
-		print_prompt();
+	//if (show_prompt)
+	//	print_prompt();
 
 	if (feof(infile))
 		return NULL;
 
-	if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
+	char* in=readline("\033[1;34mgenefinder\033[0m >> ");
+	if (in)
+	{
+		strncpy(input, in, sizeof(input));
+		add_history(in);
+		free(in);
+	}
+
+	if (in==NULL || (!strlen(input)))
 		return NULL;
+	//if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
+		//return NULL;
 	else
 		return input;
 }

@@ -75,6 +75,8 @@ public:
 	*/
 	virtual INT get_size()=0;
 
+	void list_feature_obj();
+
 	virtual bool load(CHAR* fname);
 	virtual bool save(CHAR* fname);
 	

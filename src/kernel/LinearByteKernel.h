@@ -22,7 +22,7 @@ class CLinearByteKernel: public CByteKernel
   virtual EKernelType get_kernel_type() { return K_LINEAR; }
 
   // return the name of a kernel
-  virtual const CHAR* get_name() { return "Linear" ; } ;
+  virtual const CHAR* get_name() { return "Linear"; }
 
  protected:
   /// compute kernel function for features a and b

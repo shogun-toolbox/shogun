@@ -351,3 +351,104 @@ bool CKernel::save(CHAR* fname)
 
     return (f.is_ok());
 }
+
+
+void CKernel::list_kernel()
+{
+	CIO::message("0x%X - \"%s\" ", get_name(), this);
+	switch (get_kernel_type())
+	{
+		case K_UNKNOWN:
+			CIO::message("K_UNKNOWN ");
+			break;
+		case K_LINEAR:
+			CIO::message("K_LINEAR ");
+			break;
+		case K_POLY:
+			CIO::message("K_POLY ");
+			break;
+		case K_GAUSSIAN:
+			CIO::message("K_GAUSSIAN ");
+			break;
+		case K_HISTOGRAM:
+			CIO::message("K_HISTOGRAM ");
+			break;
+		case K_SALZBERG:
+			CIO::message("K_SALZBERG ");
+			break;
+		case K_LOCALITYIMPROVED:
+			CIO::message("K_LOCALITYIMPROVED ");
+			break;
+		case K_SIMPLELOCALITYIMPROVED:
+			CIO::message("K_SIMPLELOCALITYIMPROVED ");
+			break;
+		case K_FIXEDDEGREE:
+			CIO::message("K_FIXEDDEGREE ");
+			break;
+		case K_WEIGHTEDDEGREE:
+			CIO::message("K_WEIGHTEDDEGREE ");
+			break;
+		case K_WEIGHTEDDEGREEPOS:
+			CIO::message("K_WEIGHTEDDEGREEPOS ");
+			break;
+		case K_COMMWORD:
+			CIO::message("K_COMMWORD ");
+			break;
+		case K_POLYMATCH:
+			CIO::message("K_POLYMATCH ");
+			break;
+		case K_ALIGNMENT:
+			CIO::message("K_ALIGNMENT ");
+			break;
+		case K_COMMWORDSTRING:
+			CIO::message("K_COMMWORDSTRING ");
+			break;
+		case K_SPARSENORMSQUARED:
+			CIO::message("K_SPARSENORMSQUARED ");
+			break;
+		case K_COMBINED:
+			CIO::message("K_COMBINED ");
+			break;
+		default:
+			CIO::message("ERROR ");
+			break;
+	}
+
+	switch (get_feature_class())
+	{
+		case C_UNKNOWN:
+			CIO::message("C_UNKNOWN ");
+		case C_SIMPLE:
+			CIO::message("C_SIMPLE ");
+		case C_SPARSE:
+			CIO::message("C_SPARSE ");
+		case C_STRING:
+			CIO::message("C_STRING ");
+		case C_COMBINED:
+			CIO::message("C_COMBINED ");
+		default:
+			CIO::message("ERROR ");
+	}
+
+	switch (get_feature_type())
+	{
+		case F_UNKNOWN:
+			CIO::message("F_UNKNOWN ");
+		case F_REAL:
+			CIO::message("F_REAL ");
+		case F_SHORT:
+			CIO::message("F_SHORT ");
+		case F_CHAR:
+			CIO::message("F_CHAR ");
+		case F_INT:
+			CIO::message("F_INT ");
+		case F_BYTE:
+			CIO::message("F_BYTE ");
+		case F_WORD:
+			CIO::message("F_WORD ");
+		default:
+			CIO::message("ERROR ");
+	}
+	CIO::message("\n");
+}
+

@@ -78,6 +78,8 @@ class CKernel
 			return(0);
 		}
 
+		void list_kernel();
+
 	protected:
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors

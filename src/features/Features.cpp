@@ -104,6 +104,59 @@ CPreProc* CFeatures::del_preproc(INT num)
 	return removed_preproc;
 }
 
+void CFeatures::list_feature_obj()
+{
+	CIO::message("0x%X - ", this);
+	switch (get_feature_class())
+	{
+		case C_UNKNOWN:
+			CIO::message("C_UNKNOWN ");
+			break;
+		case C_SIMPLE:
+			CIO::message("C_SIMPLE ");
+			break;
+		case C_SPARSE:
+			CIO::message("C_SPARSE ");
+			break;
+		case C_STRING:
+			CIO::message("C_STRING ");
+			break;
+		case C_COMBINED:
+			CIO::message("C_COMBINED ");
+			break;
+		default:
+			CIO::message("ERROR ");
+	}
+
+	switch (get_feature_type())
+	{
+		case F_UNKNOWN:
+			CIO::message("F_UNKNOWN ");
+			break;
+		case F_REAL:
+			CIO::message("F_REAL ");
+			break;
+		case F_SHORT:
+			CIO::message("F_SHORT ");
+			break;
+		case F_CHAR:
+			CIO::message("F_CHAR ");
+			break;
+		case F_INT:
+			CIO::message("F_INT ");
+			break;
+		case F_BYTE:
+			CIO::message("F_BYTE ");
+			break;
+		case F_WORD:
+			CIO::message("F_WORD ");
+			break;
+		default:
+			CIO::message("ERROR ");
+	}
+	CIO::message("\n");
+}
+
 bool CFeatures::load(CHAR* fname)
 {
 	return false;
