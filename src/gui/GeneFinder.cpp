@@ -1467,11 +1467,11 @@ static bool prompt(FILE* infile=stdin)
 		theta=new double[1+larger_N*(1+larger_N+1+larger_M)];
 		svm->svm_train(obs, 4, C);
 		if (strlen(name)>0)
-		  {
+		{
 		    FILE * fd=fopen(name,"w+") ;
 		    svm->save_svm(fd) ;
 		    fclose(fd) ;
-		  } 
+		} 
 		delete[] theta;
 		theta=NULL;
 		
@@ -1566,6 +1566,8 @@ static bool prompt(FILE* infile=stdin)
 		    }
 		}
 
+		printf("testing\n");
+		fflush(stdout);
 		if (pos && neg)
 		{
 		    if (obs_postest && obs_negtest)

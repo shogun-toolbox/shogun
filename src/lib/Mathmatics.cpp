@@ -15,10 +15,12 @@
 CMath math;
 
 //gene/math specific constants
-const int CMath::LOGRANGE            = 30 ;		// range for logtable: log(1+exp(x))  -25 <= x <= 0
-#ifndef _DEBUG
-const int CMath::LOGACCURACY         = 100000;	        // 100000 steps per integer
+
+#ifndef DEBUG
+const int CMath::LOGRANGE            = 50 ;		// range for logtable: log(1+exp(x))  -25 <= x <= 0
+const int CMath::LOGACCURACY         = 200000;	        // 100000 steps per integer
 #else
+const int CMath::LOGRANGE            = 30 ;		// range for logtable: log(1+exp(x))  -25 <= x <= 0
 const int CMath::LOGACCURACY         = 40000;	        // 100000 steps per integer
 #endif
 

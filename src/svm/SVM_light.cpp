@@ -29,10 +29,6 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 	long* label=new long[totdoc];
 	char str[1024];
 
-	KERNEL_CACHE kernel_cache;
-	LEARN_PARM learn_parm;
-	KERNEL_PARM kernel_parm;
-	
 	if (kernel_type==4) // standard hmm+svm
 	{
 	    featurespace=pos->compute_top_feature_cache(pos, neg, num_features);
@@ -88,8 +84,8 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 	if (kernel_type==6)
 	    model.kernel_parm.kernel_type=4;
 
-	delete[] docs;
-	delete[] label;
+	//delete[] docs;
+	//delete[] label;
 	delete[] featurespace;
 	featurespace=NULL;
 	num_features=-1;

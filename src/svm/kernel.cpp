@@ -317,7 +317,7 @@ double cached_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in yo
 	result+= *features_a++ * *features_b++;
 
     result/=normalizer;
-#ifdef DEBUG
+#ifdef KERNEL_DEBUG
     double top_res=top_kernel(kernel_parm,a,b);
     if (fabs(top_res-result)>1e-6)
 	printf("cached kernel bug:%e == %e\n", top_kernel(kernel_parm,a,b), result);

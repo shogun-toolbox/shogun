@@ -20,8 +20,8 @@ end:
 genefinder.`uname`: $(FILES) $(FILES2)
 	$(LINK) -o genefinder.`uname` $(LINKFLAGS) */*.$(EXT_OBJ) */*.$(EXT_OBJ2)
 
-debug: COMPFLAGS=-g -DDEBUG
-debug: LINKFLAGS=-g -DDEBUG
+debug: COMPFLAGS=$(COMPFLAGS_DEBUG)
+debug: LINKFLAGS=$(LINKFLAGS_DEBUG)
 debug: genefinder.`uname`
 	gdb genefinder.`uname`
 

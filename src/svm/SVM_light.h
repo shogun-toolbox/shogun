@@ -215,7 +215,10 @@ class CSVMLight:public CSVM
     void   write_alphas(char *, double *, long *, long);
 
 protected:
-    MODEL model ;
+    MODEL model;
+	KERNEL_CACHE kernel_cache;
+	LEARN_PARM learn_parm;
+	KERNEL_PARM kernel_parm;
 };
 
 #endif
