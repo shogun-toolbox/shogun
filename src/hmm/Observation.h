@@ -102,7 +102,7 @@ public:
 	 * a row of the observation matrix corresponds to one dimension of input.
 	 * @param file filehandle to observations
 	 */
-	CObservation(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M, int M, int ORDER=1);
+	CObservation(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M, int M, int ORDER=1, int start=0, int width=-1);
 
 	///Destructor - frees logtable
 	virtual ~CObservation();
@@ -116,7 +116,7 @@ public:
 	 * a row of the observation matrix corresponds to one dimension of input.
 	 * @param file filehandle to observations
 	 */
-	bool load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M, int M, int ORDER=1);
+	bool load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M, int M, int ORDER=1, int start=0, int width=-1);
 
 	///free observations
 	void cleanup();
@@ -249,7 +249,7 @@ public:
 	 * @param observations observations
 	 * @param sequence_length length of observation vector
 	 */
-	int translate_from_single_order(T_OBSERVATIONS* observations_, int sequence_length);
+	int translate_from_single_order(T_OBSERVATIONS* observations_, int sequence_length, int pre_chars);
 
 	/** translates e.g. 0123 to ACGT and drops higher dimensions of emissions
 	 * @param observations observations

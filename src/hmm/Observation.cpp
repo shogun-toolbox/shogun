@@ -93,7 +93,7 @@ CObservation::CObservation(CObservation* pos, CObservation* neg)
 	}
 }
 
-CObservation::CObservation(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M_, int M_, int ORDER_)
+CObservation::CObservation(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M_, int M_, int ORDER_, int start, int width)
 {
 	full_observation=NULL;
 	observations=NULL;
@@ -101,7 +101,7 @@ CObservation::CObservation(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet,
 	label=NULL;
 
 	cleanup();
-	load_observations(file,type,alphabet,MAX_M_,M_,ORDER_);
+	load_observations(file,type,alphabet,MAX_M_,M_,ORDER_, start, width);
 }
 
 CObservation::~CObservation()
@@ -132,7 +132,7 @@ void CObservation::cleanup()
   -format specs: in_file (gene.lin)
 		[AGCT]+<<EOF>>
 */
-bool CObservation::load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M_, int M_, int ORDER_)
+bool CObservation::load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M_, int M_, int ORDER_, int start, int width)
 {
 
 	this->observation_type=type;
@@ -196,25 +196,23 @@ bool CObservation::load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET
 					if (full_observation[i]==(T_OBSERVATIONS) '\n')
 					{
 						observations[line]=(T_OBSERVATIONS*) full_observation+i-time;
-						observation_len[line]=time;
+						observation_len[line]= (width>0) ? math.min(time,width) : time;
 						full_observation[i]=(T_OBSERVATIONS) '\0';
 
-						if (translate_from_single_order(observations[line], time) < 0)
-							CIO::message(stderr,"wrong character(s) in line %i\n", line) ;
+						if (translate_from_single_order(observations[line], time, start) < 0)
+							CIO::message(stderr,"wrong character(s) in line %i\n", line);
 
 						if (time>max_T)
 							max_T=time;
 
-						line++ ;
-						time=0 ;
+						line++;
+						time=0;
 					} 
-					else time++ ;
-				} ;
+					else time++;
+				}
 
-				printf("done\n") ;
-				printf("maximum length %i \n", max_T) ;
-
-
+				CIO::message("done\n") ;
+				CIO::message("maximum length %i (start: %d width: %d)\n", max_T, start, width);
 			}
 			else
 				CIO::message("error reading file\n");
@@ -298,42 +296,42 @@ void CObservation::init_map_table()
 }
 
 //translate ACGT <-> 0123 in observations
-int CObservation::translate_from_single_order(T_OBSERVATIONS* observations_, int sequence_length)
+int CObservation::translate_from_single_order(T_OBSERVATIONS* observations_, int sequence_length, int start)
 {
-  int i,j, fac=1 ;
-  T_OBSERVATIONS value=0;
+	int i,j, fac=1 ;
+	T_OBSERVATIONS value=0;
 
-  for (i=sequence_length-1; i>= ((int) ORDER)-1; i--)	//convert interval of size T
-    {
-      value=0;
-      for (j=i; j>=i-((int) ORDER)+1; j--)
+	for (i=sequence_length-1; i>= ((int) ORDER)-1; i--)	//convert interval of size T
 	{
-	  if ((maptable[observations_[j]]>=M) || (maptable[observations_[j]]==MAPTABLE_UNDEF))
-	    {
-	      CIO::message(stderr,"wrong: %c -> %i,%i,%i,%i\n",observations_[j],(int)maptable[observations_[j]],j,i,sequence_length-1) ;
-	      fac=-1 ;
-	    } ;
-	  value= (value >> MAX_M) | (maptable[observations_[j]] << (MAX_M * (ORDER-1)));
-	} ;
-      observations_[i]=value;
-    }
-  
-  for (i=ORDER-2;i>=0;i--)
-    {
-      value=0;
-      for (j=i; j>=i-ORDER+1; j--)
-	{
-	  value= (value >> MAX_M);
-	  if (j>=0)
-	    value|=maptable[observations_[j]] << (MAX_M * (ORDER-1));
+		value=0;
+		for (j=i; j>=i-((int) ORDER)+1; j--)
+		{
+			if ((maptable[observations_[j]]>=M) || (maptable[observations_[j]]==MAPTABLE_UNDEF))
+			{
+				CIO::message(stderr,"wrong: %c -> %i,%i,%i,%i\n",observations_[j],(int)maptable[observations_[j]],j,i,sequence_length-1) ;
+				fac=-1 ;
+			}
+			value= (value >> MAX_M) | (maptable[observations_[j]] << (MAX_M * (ORDER-1)));
+		}
+		observations_[i]=value;
 	}
-      observations_[i]=value;
-    }
 
-  for (i=ORDER-1; i<sequence_length; i++)	
-    observations_[i-(ORDER-1)]=observations_[i];
+	for (i=ORDER-2;i>=0;i--)
+	{
+		value=0;
+		for (j=i; j>=i-ORDER+1; j--)
+		{
+			value= (value >> MAX_M);
+			if (j>=0)
+				value|=maptable[observations_[j]] << (MAX_M * (ORDER-1));
+		}
+		observations_[i]=value;
+	}
 
-  return fac*(sequence_length-(ORDER-1)) ;
+	for (i=start; i<sequence_length; i++)	
+		observations_[i-start]=observations_[i];
+
+	return fac*(sequence_length-(ORDER-1)) ;
 }
 
 //translate ACGT <-> 0123 in observations

@@ -34,8 +34,10 @@ bool CGUIObservation::load_observations(char* param)
 #warning M hardcoded 4
 	int M=4;
 	int ORDER=1;
+	int start=0;
+	int width=-1;
 
-	if ((sscanf(input, "%s %s %d", filename, target, &ORDER))>=2)
+	if ((sscanf(input, "%s %s %d %d %d", filename, target, &ORDER, &start, &width))>=2)
 	{
 		FILE* trn_file=fopen(filename, "r");
 
@@ -44,29 +46,29 @@ bool CGUIObservation::load_observations(char* param)
 			if (strcmp(target,"POSTRAIN")==0)
 			{
 				delete pos_train_obs;
-				pos_train_obs= new CObservation(trn_file, POSTRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
+				pos_train_obs= new CObservation(trn_file, POSTRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER, start, width);
 			}
 			else if (strcmp(target,"NEGTRAIN")==0)
 			{
 				delete neg_train_obs;
-				neg_train_obs= new CObservation(trn_file, NEGTRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
+				neg_train_obs= new CObservation(trn_file, NEGTRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER, start, width);
 			}
 			else if (strcmp(target,"POSTEST")==0)
 			{
 				delete pos_test_obs;
 				pos_test_name=strdup(filename);
-				pos_test_obs= new CObservation(trn_file, POSTEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
+				pos_test_obs= new CObservation(trn_file, POSTEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER, start, width);
 			}
 			else if (strcmp(target,"NEGTEST")==0)
 			{
 				delete neg_test_obs;
 				neg_test_name=strdup(filename);
-				neg_test_obs= new CObservation(trn_file, NEGTEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
+				neg_test_obs= new CObservation(trn_file, NEGTEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER, start, width);
 			}
 			else if (strcmp(target,"TEST")==0)
 			{
 				delete test_obs;
-				test_obs= new CObservation(trn_file, TEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
+				test_obs= new CObservation(trn_file, TEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER, start, width);
 			}
 			else
 				CIO::message("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
