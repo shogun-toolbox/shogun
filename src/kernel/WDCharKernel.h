@@ -20,7 +20,7 @@ enum EWDKernType
 class CWDCharKernel: public CCharKernel
 {
 	public:
-		CWDCharKernel(LONG size, EWDKernType type, INT degree, INT which_deg=-1);
+		CWDCharKernel(LONG size, EWDKernType type, INT degree, INT which_deg=-1, bool use_normalization=true);
 		~CWDCharKernel();
 
 		virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -70,10 +70,10 @@ class CWDCharKernel: public CCharKernel
 		INT degree;
 		INT seq_length;
 
-
 		double* sqrtdiag_lhs;
 		double* sqrtdiag_rhs;
 
+		bool use_normalization;
 		bool initialized;
 		bool* match_vector;
 };

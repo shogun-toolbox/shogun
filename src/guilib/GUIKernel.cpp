@@ -824,12 +824,13 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 		{
 			if (strcmp(data_type,"CHAR")==0)
 			{
+				INT use_normalization=1;
 				INT d=1;
 				INT which_d=-1;
 				char sub_kern_type='W';
 				EWDKernType t=E_WD;
 
-				sscanf(param, "%s %s %d %c %d %d", kern_type, data_type, &size, &sub_kern_type, &d, &which_d);
+				sscanf(param, "%s %s %d %c %d %d %d", kern_type, data_type, &size, &sub_kern_type, &d, &which_d, &use_normalization);
 				delete k;
 
 				switch (sub_kern_type)
@@ -863,7 +864,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 						break;
 				};
 
-				k=new CWDCharKernel(size, t, d, which_d);
+				k=new CWDCharKernel(size, t, d, which_d, use_normalization==1);
 				
 				if (k)
 				{
