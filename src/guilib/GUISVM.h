@@ -20,8 +20,6 @@ public:
 	bool new_svm(char* param);
 	bool train(char* param);
 	bool test(char* param);
-	bool set_svm_type(char* param);
-	bool get_svm_type();
 	bool set_kernel();
 	bool get_kernel();
 	bool set_preproc();
@@ -32,19 +30,7 @@ public:
  protected:
 	CGUI* gui ;
 	double C ;
-
-	CSVMLight svm_light;
-#ifdef SVMMPI
-#if defined(HAVE_MPI) && !defined(DISABLE_MPI)
-	CSVMMPI svm_mpi ;
-#endif
-#endif //SVMMPI
-#ifdef SVMCPLEX
-	CSVMCplex svm_cplex;
-#endif // SVMCPLEX
 	CSVM* svm ;
-
-
 };
 #endif
 
@@ -723,99 +709,6 @@ public:
 
 	return true;
 	lambda->check_path_derivatives() ;
-	for (i=strlen(N_LINEAR_TRAIN); isspace(input[i]); i++);
-
-	int WIDTH=-1,UPTO=-1;
-	char fname[1024];
-
-	sscanf(&input[i], "%s %d %d", fname, &WIDTH, &UPTO);
-	
-	FILE* file=fopen(fname, "r");
-
-	if (file) 
-	{
-	    if (WIDTH < 0 || UPTO < 0 )
-	    {
-		char buf[1024];
-		if ( (fread(buf, sizeof (unsigned char), sizeof(buf), file)) == sizeof(buf))
-		{
-		    for (int i=0; i<(int)sizeof(buf); i++)
-		    {
-			if (buf[i]=='\n')
-			{
-			    WIDTH=i+1;
-			    UPTO=i;
-			   CIO::message("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
-			    break;
-			}
-		    }
-
-		    fseek(file,0,SEEK_SET);
-		}
-		else
-		    return false;
-	    }
-
-	    if (WIDTH >0 && UPTO >0)
-	    {	  
-		alphabet= DNA;
-		//ORDER=1; //obsoleted by set_order
-		M=4;
-
-		CObservation* obs=new CObservation(TRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
-
-		if (lambda && obs)
-		{
-		    alphabet=obs->get_alphabet();
-		    ORDER=lambda->get_ORDER();
-		    delete(lambda_train);
-		    delete(lambda);
-		    lambda=NULL;
-		    lambda_train=NULL;
-
-		    switch (alphabet)
-		    {
-			case DNA:
-			    M=4;
-			    break;
-			case PROTEIN:
-			    M=26;
-			    break;
-			case CUBE:
-			    M=6;
-			    break;
-			case ALPHANUM:
-			    M=36;
-			    break;
-			default:
-			    M=4;
-			    break;
-		    };
-		}
-
-		lambda=new CHMM(UPTO,M,ORDER,NULL,PSEUDO);
-		lambda_train=new CHMM(UPTO,M,ORDER,NULL,PSEUDO);
-
-		if (lambda && lambda_train)
-		{
-		    lambda->set_observation_nocache(obs);
-		    lambda_train->set_observation_nocache(obs);
-		    lambda->linear_train(file, WIDTH, UPTO);
-		    lambda_train->copy_model(lambda);
-		    lambda->set_observation_nocache(NULL);
-		    lambda_train->set_observation_nocache(NULL);
-		    CIO::message("done.\n");
-		}
-		else
-		    CIO::message("model creation failed\n");
-
-		delete obs;
-	    }
-
-	    fclose(file);
-	}
-	else
-	   CIO::message("opening file %s failed!\n", fname);
 	for (i=strlen(N_LINEAR_LIKELIHOOD); isspace(input[i]); i++);
 
 	int WIDTH=-1,UPTO=-1;

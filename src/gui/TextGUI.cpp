@@ -14,20 +14,15 @@ CTextGUI *gui=NULL;
 #endif // WITHMATLAB
 
 //names of menu commands
-static const char* N_SET_HMM_AS=		"set_hmm_as";
 static const char* N_NEW_HMM=			"new_hmm";
 static const char* N_NEW_SVM=			"new_svm";
-static const char* N_SET_SVM_TYPE=		"new_svm";
-static const char* N_SET_TEST_HMM=		"set_test_HMM";
-static const char* N_SET_POS_HMM=		"set_pos_HMM";
-static const char* N_SET_NEG_HMM=		"set_neg_HMM";
 static const char* N_LOAD_HMM=			"load_HMM";
 static const char* N_SAVE_HMM=			"save_HMM";
 static const char* N_SAVE_HMM_BIN=		"save_HMM_bin";
-static const char* N_LOAD_DEFINITIONS=		"load_defs";
+static const char* N_LOAD_DEFINITIONS=	"load_defs";
 static const char* N_SAVE_KERNEL=		"save_kernel";
-static const char* N_SAVE_TOP_FEATURES=		"save_top_features";
-#ifndef NOVIT
+static const char* N_SAVE_TOP_FEATURES=	"save_top_features";
+static const char* N_SET_HMM_AS=		"set_hmm_as";
 static const char* N_SAVE_PATH=			"save_path";
 static const char* N_SAVE_PATH_DERIVATIVES=	"save_vit_deriv";
 static const char* N_SAVE_PATH_DERIVATIVES_BIN=	"save_vit_deriv_bin";
@@ -38,7 +33,6 @@ static const char* N_VITERBI_TRAIN=	       	"vit";
 static const char* N_VITERBI_TRAIN_DEFINED=     "vit_def";
 static const char* N_VITERBI_TRAIN_DEFINED_ANNEALED=    "vit_def_ann";
 static const char* N_VITERBI_TRAIN_DEFINED_ADDIABATIC=  "vit_def_add";
-#endif // NOVIT
 static const char* N_LINEAR_TRAIN=       	"linear_train";
 static const char* N_LINEAR_LIKELIHOOD=		"linear_likelihood";
 static const char* N_SAVE_LINEAR_LIKELIHOOD=   	"save_linear_likelihood";
@@ -75,9 +69,6 @@ static const char* N_TEST=			"test";
 static const char* N_LINEAR_SVM_TRAIN=		"linear_svm_train";
 static const char* N_SVM_TRAIN=			"svm_train";
 static const char* N_SVM_TEST=			"svm_test";
-static const char* N_SET_SVM_LIGHT=		"set_svm_light";
-static const char* N_SET_SVM_CPLEX=		"set_svm_cplex";
-static const char* N_SET_SVM_MPI=		"set_svm_mpi";
 static const char* N_ONE_CLASS_HMM_TEST=	"one_class_hmm_test";
 static const char* N_ONE_CLASS_LINEAR_HMM_TEST=	"one_class_linear_hmm_test";
 static const char* N_HMM_TEST=			"hmm_test";
@@ -104,12 +95,12 @@ CTextGUI::~CTextGUI()
 
 void CTextGUI::print_help()
 {
-//   CIO::message("\n[LOAD]\n");
-//   CIO::message("\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
+   CIO::message("\n[LOAD]\n");
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
 //   CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
 //   CIO::message("\033[1;31m%s\033[0m <filename>\t- load observed data\n",N_LOAD_OBSERVATIONS);
 //   CIO::message("\n[SAVE]\n");
-//   CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm\n",N_SAVE_HMM);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm\n",N_SAVE_HMM);
 //   CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm in binary format\n",N_SAVE_HMM_BIN);
 //#ifndef NOVIT
 //   CIO::message("\033[1;31m%s\033[0m <filename>\t- save state sequence of viterbi path\n",N_SAVE_PATH);
@@ -127,17 +118,14 @@ void CTextGUI::print_help()
    CIO::message("\n[HMM]\n");
 //   CIO::message("\033[1;31m%s\033[0m - frees all HMMs and observations\n",N_CLEAR);
    CIO::message("\033[1;31m%s\033[0m #states #oberservations #order\t- frees previous HMM and creates an empty new one\n",N_NEW_HMM);
-//   CIO::message("\033[1;31m%s\033[0m\t- frees previous HMM and creates an empty new one\n",N_NEW_SVM);
 //   CIO::message("\033[1;31m%s\033[0m <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> - assign observation to current HMM\n",N_ASSIGN_OBSERVATION);
-//   CIO::message("\033[1;31m%s\033[0m - make current HMM the test HMM; then free current HMM \n",N_SET_TEST_HMM);
-//   CIO::message("\033[1;31m%s\033[0m - make current HMM the positive HMM; then free current HMM \n",N_SET_POS_HMM);
-//   CIO::message("\033[1;31m%s\033[0m - make current HMM the negative HMM; then free current HMM \n",N_SET_NEG_HMM);
+   CIO::message("\033[1;31m%s\033[0m <POS|NEG|TEST>- make current HMM the POS,NEG or TEST HMM; then free current HMM \n",N_SET_HMM_AS);
 //   CIO::message("\033[1;31m%s\033[0m <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
 //   CIO::message("\033[1;31m%s\033[0m <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)\n", N_ADD_STATES);
 //   CIO::message("\033[1;31m%s\033[0m <filename> <[ACGT][ACGT]>\t\t\t- append HMM <filename> to current HMM\n", N_APPEND_HMM);
 //   CIO::message("\033[1;31m%s\033[0m [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
 //   CIO::message("\033[1;31m%s\033[0m <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [PROTEIN|DNA|ALPHANUM|CUBE]\t\t\t- changes alphabet type\n", N_ALPHABET);
-//   CIO::message("\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
+   CIO::message("\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
 //#ifdef FIX_POS
 //   CIO::message("\033[1;31m%s\033[0m position state\t- sets the state which has to be passed at a certain position\n",N_FIX_POS_STATE);
 //#endif
@@ -169,14 +157,12 @@ void CTextGUI::print_help()
 //   CIO::message("\033[1;31m%s\033[0m[<output> [<rocfile>]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
 //   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_LINEAR_HMM_TEST);
 //   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate hmm output from obs using linear HMM\n",N_LINEAR_HMM_TEST);
-//   CIO::message("\n[Hybrid HMM-<TOP-Kernel>-SVM]\n");
-//   CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
+   CIO::message("\n[SVM]\n");
+   CIO::message("\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
+   CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
 //   CIO::message("\033[1;31m%s\033[0m <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
 //   CIO::message("\033[1;31m%s\033[0m <srcsvm> [<output> [<rocfile>]]\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
 //   CIO::message("\033[1;31m%s\033[0m <dstsvm> \t\t- obtains svm from pos/neg linear HMMs\n",N_LINEAR_SVM_TRAIN);
-//   CIO::message("\033[1;31m%s\033[0m - enables SVM Light \n",N_SET_SVM_LIGHT);
-//#ifdef SVMCPLEX
-//   CIO::message("\033[1;31m%s\033[0m - enables SVM CPLEX \n",N_SET_SVM_CPLEX);
 //#endif
    CIO::message("\n[SYSTEM]\n");
    CIO::message("\033[1;31m%s\033[0m <filename>\t- load and execute a script\n",N_EXEC);
@@ -405,10 +391,6 @@ bool CTextGUI::get_line(FILE* infile)
 	{
 		guisvm.train(input+strlen(N_SVM_TRAIN));
 	} 
-	else if (!strncmp(input, N_SET_SVM_TYPE, strlen(N_SET_SVM_TYPE)))
-	{
-		guisvm.set_svm_type(input+strlen(N_SET_SVM_TYPE));
-	}
 	else if (!strncmp(input, N_LINEAR_SVM_TRAIN, strlen(N_LINEAR_SVM_TRAIN)))
 	{
 	  CIO::not_implemented() ;

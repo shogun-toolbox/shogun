@@ -1,8 +1,9 @@
 #include "guilib/GUIHMM.h"
+#include "hmm/Observation.h"
+#include "gui/GUI.h"
 
 //#include <stdlib.h>
 //#include <string.h>
-#include "gui/GUI.h"
 
 CGUIHMM::CGUIHMM(CGUI * gui_): gui(gui_)
 {
@@ -67,41 +68,130 @@ bool CGUIHMM::baum_welch_train(char* param)
 
 			while (!converge(prob,prob_train))
 			{
-			switch_model(&working, &working_estimate);
-			prob=prob_train ;
-			working->estimate_model_baum_welch(working_estimate);
-			prob_train=working_estimate->model_probability();
-			if (prob_max<prob_train)
-			{
-				prob_max=prob_train ;
-				FILE* file=fopen(templname_best, "w");
-				printf("\nsaving best model with filename %s ... ", templname_best) ;
-				working->save_model(file) ;
-				fclose(file) ;
-				printf("done.") ;
-			} 
-			else
-			{
-				FILE* file=fopen(templname, "w");
-				printf("\nsaving model with filename %s ... ", templname) ;
-				working->save_model(file) ;
-				fclose(file) ;
-				printf("done.") ;
-			} ;
+				switch_model(&working, &working_estimate);
+				prob=prob_train ;
+				working->estimate_model_baum_welch(working_estimate);
+				prob_train=working_estimate->model_probability();
+				if (prob_max<prob_train)
+				{
+					prob_max=prob_train ;
+					FILE* file=fopen(templname_best, "w");
+					printf("\nsaving best model with filename %s ... ", templname_best) ;
+					working->save_model(file) ;
+					fclose(file) ;
+					printf("done.") ;
+				} 
+				else
+				{
+					FILE* file=fopen(templname, "w");
+					printf("\nsaving model with filename %s ... ", templname) ;
+					working->save_model(file) ;
+					fclose(file) ;
+					printf("done.") ;
+				} ;
 			}
 		}
 		else
 			printf("assign observation first\n");
 	}
 	else
-	   CIO::message("create model first\n");
+		CIO::message("create model first\n");
 
 	return false;
 }
 
 bool CGUIHMM::linear_train(char* param)
 {
-	return false;
+	bool result=false;
+	E_OBS_ALPHABET alphabet;
+	int WIDTH=-1,UPTO=-1;
+	char fname[1024];
+
+	param=CIO::skip_spaces(param);
+	sscanf(param, "%s %d %d", fname, &WIDTH, &UPTO);
+
+	FILE* file=fopen(fname, "r");
+
+	if (file) 
+	{
+		if (WIDTH < 0 || UPTO < 0 )
+		{
+			char buf[1024];
+			if ( (fread(buf, sizeof (unsigned char), sizeof(buf), file)) == sizeof(buf))
+			{
+				for (int i=0; i<(int)sizeof(buf); i++)
+				{
+					if (buf[i]=='\n')
+					{
+						WIDTH=i+1;
+						UPTO=i;
+						CIO::message("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
+						break;
+					}
+				}
+
+				fseek(file,0,SEEK_SET);
+			}
+			else
+				return false;
+		}
+
+		if (WIDTH >0 && UPTO >0)
+		{	  
+			alphabet=DNA;
+			//ORDER=1; //obsoleted by set_order
+			M=4;
+
+			CObservation* obs=new CObservation(TRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
+
+			if (working && obs)
+			{
+				alphabet=obs->get_alphabet();
+				ORDER=working->get_ORDER();
+				delete(working);
+				working=NULL;
+
+				switch (alphabet)
+				{
+					case DNA:
+						M=4;
+						break;
+					case PROTEIN:
+						M=26;
+						break;
+					case CUBE:
+						M=6;
+						break;
+					case ALPHANUM:
+						M=36;
+						break;
+					default:
+						M=4;
+						break;
+				};
+			}
+
+			working=new CHMM(UPTO,M,ORDER,NULL,PSEUDO);
+
+			if (working)
+			{
+				working->set_observation_nocache(obs);
+				working->linear_train(file, WIDTH, UPTO);
+				result=true;
+				CIO::message("done.\n");
+			}
+			else
+				CIO::message("model creation failed\n");
+
+			delete obs;
+		}
+
+		fclose(file);
+	}
+	else
+		CIO::message("opening file %s failed!\n", fname);
+
+	return result;
 }
 
 bool CGUIHMM::one_class_test(char* param)

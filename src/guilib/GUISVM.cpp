@@ -3,17 +3,9 @@
 #include "lib/io.h"
 
 CGUISVM::CGUISVM(CGUI * gui_)
-  : gui(gui_), svm_light(), 
-#ifdef SVMMPI
-#if defined(HAVE_MPI) && !defined(DISABLE_MPI)
-svm_mpi(gui->argc, gui->argv),
-#endif
-#endif // SVMMPI
-#ifdef SVMCPLEX
-  svm_cplex(),
-#endif // SVMCPLEX
-  svm(&svm_mpi)
+  : gui(gui_)
 {
+	svm=NULL;
 }
 
 CGUISVM::~CGUISVM()
@@ -22,8 +14,35 @@ CGUISVM::~CGUISVM()
 
 bool CGUISVM::new_svm(char* param)
 {
-  CIO::not_implemented() ; // verstehe nicht, was hier hin soll ... ?-)
-  return false ;
+	if (strcmp(param,"LIGHT"))
+	{
+		delete svm;
+		svm= new CSVMLight();
+	}
+	else if (strcmp(param,"CPLEX"))
+	{
+#ifdef SVMCPLEX
+		delete svm;
+		svm= new CSVMCplex();
+#else
+		CIO::message("CPLEX SVM disabled\n") ;
+#endif
+	}
+	else if (strcmp(param,"MPI"))
+	{
+#ifdef SVMMPI
+#if  defined(HAVE_MPI) && !defined(DISABLE_MPI)
+		delete svm;
+		svm= new CSVMMPI(gui->argc, gui->argv);
+#endif
+#else
+		CIO::message("MPI SVM disabled\n") ;
+#endif
+	}
+	else
+		return false;
+
+	return (svm!=NULL);
 }
 
 bool CGUISVM::train(char* param)
@@ -88,34 +107,6 @@ bool CGUISVM::train(char* param)
 }
 
 bool CGUISVM::test(char* param)
-{
-  CIO::not_implemented() ;
-  return false ;
-}
-
-bool CGUISVM::set_svm_type(char* param)
-{
-  if (strcmp(param,"light"))
-    svm=&svm_light ;
-  else if (strcmp(param,"cplex"))
-#ifdef SVMCPLEX
-    svm=&svm_cplex ;
-#else
-  CIO::message("CPLEX SVM disabled\n") ;
-#endif
-  else if (strcmp(param,"mpi"))
-#ifdef SVMMPI
-#if defined(HAVE_MPI) && !defined(DISABLE_MPI)
-    svm=&svm_mpi ;
-#endif
-#else
-  CIO::message("MPI SVM disabled\n") ;
-#endif
-  
-  return false ;
-}
-
-bool CGUISVM::get_svm_type()
 {
   CIO::not_implemented() ;
   return false ;
