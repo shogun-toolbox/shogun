@@ -166,7 +166,8 @@ bool CGUISVM::test(char* param)
 	((CKernelMachine*) svm)->set_labels(testlabels);
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
 
-	REAL* output= svm->test();
+	REAL* output=NULL;
+	///REAL* output= svm->test();
 
 	CIO::message("out !!!\n");
 	long len=0;

@@ -5,6 +5,7 @@
 #include "lib/io.h"
 #include "mex.h"
 #include "hmm/HMM.h"
+#include "hmm/HMM.h"
 
 #include "gui/Matlab.h"
 #include "gui/TextGUI.h"

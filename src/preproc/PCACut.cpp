@@ -13,25 +13,23 @@
 #include "lib/io.h"
 
 extern "C" void cleaner_main(double *covZ, int dim, double thresh,
-			     double **T, int *num_dim)  ;
+		double **T, int *num_dim)  ;
 
-CPCACut::CPCACut(int do_whitening_, double thresh_)
-  : CRealPreProc("PCACut", "PCAC"), T(NULL), 
-  num_dim(0), mean(NULL), initialized(false), 
-  do_whitening(do_whitening_), thresh(thresh_)
+CPCACut::CPCACut(int do_whitening_, double thresh_) : CRealPreProc("PCACut", "PCAC"), T(NULL),
+	num_dim(0), mean(NULL), initialized(false), do_whitening(do_whitening_), thresh(thresh_)
 {
 }
 
 CPCACut::~CPCACut()
 {
-  delete[] T;
-  delete[] mean;
+	delete[] T;
+	delete[] mean;
 }
 
 /// initialize preprocessor from features
 bool CPCACut::init(CFeatures* f)
 {
-    if (!initialized)
+	if (!initialized)
 	{
 		assert(f->get_feature_class() == C_SIMPLE);
 		assert(f->get_feature_type() == F_REAL);
@@ -164,15 +162,15 @@ bool CPCACut::init(CFeatures* f)
 		CIO::message("Done\n") ;
 		return true ;
 	}
-    return 
-	false;
+	return 
+		false;
 }
 
 /// initialize preprocessor from features
 void CPCACut::cleanup()
 {
-  delete[] T ;
-  T=NULL ;
+	delete[] T ;
+	T=NULL ;
 }
 
 /// apply preproc on feature matrix
@@ -180,97 +178,94 @@ void CPCACut::cleanup()
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 {
-    long num_vectors=0;
-    long num_features=0;
+	long num_vectors=0;
+	long num_features=0;
 
-    REAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
-    CIO::message("get Feature matrix: %ix%i\n", num_vectors, num_features) ;
+	REAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
+	CIO::message("get Feature matrix: %ix%i\n", num_vectors, num_features) ;
 
-    if (m)
-    {
-	CIO::message("Preprocessing feature matrix\n");
-	REAL* res= new REAL[num_dim];
-	double* sub_mean= new double[num_features];
-
-	for (int vec=0; vec<num_vectors; vec++)
+	if (m)
 	{
-	    int i;
+		CIO::message("Preprocessing feature matrix\n");
+		REAL* res= new REAL[num_dim];
+		double* sub_mean= new double[num_features];
 
-	    for (i=0; i<num_features; i++)
-		sub_mean[i]=m[num_features*vec+i]-mean[i] ;
+		for (int vec=0; vec<num_vectors; vec++)
+		{
+			int i;
 
-	    int onei=1;
-	    double zerod=0;
-	    double oned=1;
-	    char N='N';
-	    int num_f=num_features;
-	    int num_d=num_dim;
-	    int lda=num_dim;
+			for (i=0; i<num_features; i++)
+				sub_mean[i]=m[num_features*vec+i]-mean[i] ;
 
-	    //CIO::message("dgemv args: num_f: %d, num_d: %d\n", num_f, num_d) ;
-#warning num_f might be num_features-1 or it is a bug in the SUN performance library (might apply to num_d too)
-	    dgemv_(&N, &num_d, &num_f, &oned, T, &lda, sub_mean, &onei, &zerod, res, &onei); 
+			int onei=1;
+			double zerod=0;
+			double oned=1;
+			char N='N';
+			int num_f=num_features;
+			int num_d=num_dim;
+			int lda=num_dim;
 
-	    REAL* m_transformed=&m[num_dim*vec];
-	    for (i=0; i<num_dim; i++)
-		m_transformed[i]=m[i];
+			dgemv_(&N, &num_d, &num_f, &oned, T, &lda, sub_mean, &onei, &zerod, res, &onei); 
+
+			REAL* m_transformed=&m[num_dim*vec];
+			for (i=0; i<num_dim; i++)
+				m_transformed[i]=m[i];
+		}
+		delete[] res;
+		delete[] sub_mean;
+
+		((CRealFeatures*) f)->set_num_features(num_dim);
+		((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
+		CIO::message("new Feature matrix: %ix%i\n", num_vectors, num_features);
 	}
-	delete[] res;
-	delete[] sub_mean;
 
-	((CRealFeatures*) f)->set_num_features(num_dim);
-	((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
-	CIO::message("new Feature matrix: %ix%i\n", num_vectors, num_features);
-    }
-
-    return m;
+	return m;
 }
 
 /// apply preproc on single feature vector
 /// result in feature matrix
 REAL* CPCACut::apply_to_feature_vector(REAL* f, int &len)
 {
-  REAL *ret=new REAL[num_dim];
-  int onei=1 ;
-  double zerod=0, oned=1 ;
-  char N='N' ;
-  REAL *sub_mean=new REAL[len];
-  for (int i=0; i<len; i++)
-    sub_mean[i]=f[i]-mean[i];
- 
-  int numd=num_dim;
+	REAL *ret=new REAL[num_dim];
+	int onei=1 ;
+	double zerod=0, oned=1 ;
+	char N='N' ;
+	REAL *sub_mean=new REAL[len];
+	for (int i=0; i<len; i++)
+		sub_mean[i]=f[i]-mean[i];
 
-  dgemv_(&N, &numd, &len, &oned, T, &numd, sub_mean, &onei, &zerod, ret, &onei) ;
+	int numd=num_dim;
 
-  delete[] sub_mean ;
-  len=num_dim ;
-  //	  CIO::message("num_dim: %d\n", num_dim);
-  return ret;
+	dgemv_(&N, &numd, &len, &oned, T, &numd, sub_mean, &onei, &zerod, ret, &onei) ;
+
+	delete[] sub_mean ;
+	len=num_dim ;
+	//	  CIO::message("num_dim: %d\n", num_dim);
+	return ret;
 }
 
 /// initialize preprocessor from file
 bool CPCACut::load_init_data(FILE* src)
 {
-    assert(fread(&num_dim, sizeof(int), 1, src)==1);
-    assert(fread(&num_old_dim, sizeof(int), 1, src)==1);
+	assert(fread(&num_dim, sizeof(int), 1, src)==1);
+	assert(fread(&num_old_dim, sizeof(int), 1, src)==1);
 	delete[] mean;
 	delete[] T;
 	mean=new double[num_dim];
 	T=new double[num_dim*num_old_dim];
 	assert (mean!=NULL && T!=NULL);
-    assert(fread(mean, sizeof(double), num_old_dim, src)==(unsigned int) num_old_dim);
-    assert(fread(T, sizeof(double), num_dim*num_old_dim, src)==(unsigned int) num_old_dim*num_dim);
+	assert(fread(mean, sizeof(double), num_old_dim, src)==(unsigned int) num_old_dim);
+	assert(fread(T, sizeof(double), num_dim*num_old_dim, src)==(unsigned int) num_old_dim*num_dim);
 	return true;
 }
 
 /// save init-data (like transforamtion matrices etc) to file
 bool CPCACut::save_init_data(FILE* dst)
 {
-    assert(fwrite(&num_dim, sizeof(int), 1, dst)==1);
-    assert(fwrite(&num_old_dim, sizeof(int), 1, dst)==1);
-    assert(fwrite(mean, sizeof(double), num_old_dim, dst)==(unsigned int) num_old_dim);
-    assert(fwrite(T, sizeof(double), num_dim*num_old_dim, dst)==(unsigned int) num_old_dim*num_dim);
+	assert(fwrite(&num_dim, sizeof(int), 1, dst)==1);
+	assert(fwrite(&num_old_dim, sizeof(int), 1, dst)==1);
+	assert(fwrite(mean, sizeof(double), num_old_dim, dst)==(unsigned int) num_old_dim);
+	assert(fwrite(T, sizeof(double), num_dim*num_old_dim, dst)==(unsigned int) num_old_dim*num_dim);
 	return true;
 }
-
 #endif NO_LAPACK

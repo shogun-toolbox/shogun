@@ -38,15 +38,15 @@ public:
 	bool get_hmm(mxArray* retvals[]);
 	bool set_hmm(const mxArray* vals[]);
 
-	//bool get_svm();
+	bool get_svm(mxArray* retvals[]);
+	bool set_svm(const mxArray* vals[]);
+
 	//bool get_kernel_init();
 	//bool get_features();
 	//bool get_labels();
 	//bool get_preproc_init();
 	//bool get_hmm_defs();
 
-	//bool set_hmm();
-	//bool set_svm();
 	//bool set_kernel_init();
 	//bool set_features();
 	//bool set_labels();
