@@ -1,5 +1,6 @@
 #include "classifier/svm/SVM_libsvm.h"
 #include "kernel/Kernel.h"
+#include "lib/io.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -24,22 +25,6 @@ template <class S, class T> inline void clone(T*& dst, S* src, int n)
 }
 #define INF HUGE_VAL
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
-#if 1
-void info(char *fmt,...)
-{
-	va_list ap;
-	va_start(ap,fmt);
-	vprintf(fmt,ap);
-	va_end(ap);
-}
-void info_flush()
-{
-	fflush(stdout);
-}
-#else
-void info(char *fmt,...) {}
-void info_flush() {}
-#endif
 
 //
 // Kernel Cache
@@ -386,7 +371,7 @@ void Solver::Solve(int l, const Kernel& Q, const double *b_, const schar *y_,
 		{
 			counter = min(l,1000);
 			if(shrinking) do_shrinking();
-			info("."); info_flush();
+			CIO::message(".");
 		}
 
 		int i,j;
@@ -396,7 +381,7 @@ void Solver::Solve(int l, const Kernel& Q, const double *b_, const schar *y_,
 			reconstruct_gradient();
 			// reset active set size and check
 			active_size = l;
-			info("*"); info_flush();
+			CIO::message("*");
 			if(select_working_set(i,j)!=0)
 				break;
 			else
@@ -569,7 +554,7 @@ void Solver::Solve(int l, const Kernel& Q, const double *b_, const schar *y_,
 	si->upper_bound_p = Cp;
 	si->upper_bound_n = Cn;
 
-	info("\noptimization finished, #iter = %d\n",iter);
+	CIO::message("\noptimization finished, #iter = %d\n",iter);
 
 	delete[] b;
 	delete[] y;
@@ -1157,7 +1142,7 @@ static void solve_c_svc(
 	for(i=0;i<l;i++)
 		sum_alpha += alpha[i];
 
-	info("nu = %f\n", sum_alpha/(param->C*prob->l));
+	CIO::message("nu = %f\n", sum_alpha/(param->C*prob->l));
 
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i];
@@ -1207,7 +1192,7 @@ static void solve_nu_svc(
 		alpha, 1.0, 1.0, param->eps, si,  param->shrinking);
 	double r = si->r;
 
-	info("C = %f\n",1/r);
+	CIO::message("C = %f\n",1/r);
 
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i]/r;
@@ -1283,7 +1268,7 @@ static void solve_epsilon_svr(
 		alpha[i] = alpha2[i] - alpha2[i+l];
 		sum_alpha += fabs(alpha[i]);
 	}
-	info("nu = %f\n",sum_alpha/(param->C*l));
+	CIO::message("nu = %f\n",sum_alpha/(param->C*l));
 
 	delete[] alpha2;
 	delete[] linear_term;
@@ -1318,7 +1303,7 @@ static void solve_nu_svr(
 	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
 		alpha2, C, C, param->eps, si, param->shrinking);
 
-	info("epsilon = %f\n",-si->r);
+	CIO::message("epsilon = %f\n",-si->r);
 
 	for(i=0;i<l;i++)
 		alpha[i] = alpha2[i] - alpha2[i+l];
@@ -1362,7 +1347,7 @@ decision_function svm_train_one(
 			break;
 	}
 
-	info("obj = %.16f, rho = %.16f\n",si.obj,si.rho);
+	CIO::message("obj = %.16f, rho = %.16f\n",si.obj,si.rho);
 
 	// output SVs
 
@@ -1386,7 +1371,7 @@ decision_function svm_train_one(
 		}
 	}
 
-	info("nSV = %d, nBSV = %d\n",nSV,nBSV);
+	CIO::message("nSV = %d, nBSV = %d\n",nSV,nBSV);
 
 	decision_function f;
 	f.alpha = alpha;
@@ -1576,7 +1561,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 			nz_count[i] = nSV;
 		}
 		
-		info("Total nSV = %d\n",total_sv);
+		CIO::message("Total nSV = %d\n",total_sv);
 
 		model->l = total_sv;
 		model->SV = Malloc(svm_node *,total_sv);

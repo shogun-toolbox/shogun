@@ -196,6 +196,7 @@ bool CGUISVM::test(CHAR* param)
 	INT* label= testlabels->get_int_labels(len);
 
 	assert(label);
+	CIO::message("len:%d total:%d\n", len, total);
 	assert(len==total);
 
 	gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);

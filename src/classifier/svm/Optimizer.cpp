@@ -42,7 +42,7 @@ double *optimize_qp(QP* qp, double* epsilon_crit, LONG nx, double* threshold, do
     for(i=0;i<qp->opt_n;i++) {
      CIO::message("%f: ",qp->opt_g0[i]);
       for(j=0;j<qp->opt_n;j++) {
-	printf("%f ",qp->opt_g[i*qp->opt_n+j]);
+		  CIO::message("%f ",qp->opt_g[i*qp->opt_n+j]);
       }
      CIO::message(": a=%.30f",qp->opt_xinit[i]);
      CIO::message(": y=%f\n",qp->opt_ce[i]);
@@ -78,7 +78,7 @@ double *optimize_qp(QP* qp, double* epsilon_crit, LONG nx, double* threshold, do
 
     if(isnan(dual[0]) || result==INCONSISTENT ) {     /* check for choldc problem */
       if(verbosity>=1) {
-	printf("NOTICE: Restarting PR_LOQO with more conservative parameters.\n");
+		  CIO::message("NOTICE: Restarting PR_LOQO with more conservative parameters.\n");
       }
       if(init_margin<0.80) { /* become more conservative in general */
 	init_margin=(4.0*margin+1.0)/5.0;
@@ -86,7 +86,7 @@ double *optimize_qp(QP* qp, double* epsilon_crit, LONG nx, double* threshold, do
       margin=(margin+1.0)/2.0;
       (opt_precision)*=10.0;   /* reduce precision */
       if(verbosity>=1) {
-	printf("NOTICE: Reducing precision of PR_LOQO.\n");
+		  CIO::message("NOTICE: Reducing precision of PR_LOQO.\n");
       }
     }
     else if(result!=OPTIMAL_SOLUTION) {
@@ -94,7 +94,7 @@ double *optimize_qp(QP* qp, double* epsilon_crit, LONG nx, double* threshold, do
       init_iter+=10;
       (opt_precision)*=10.0;   /* reduce precision */
       if(verbosity>=2) {
-	printf("NOTICE: Reducing precision of PR_LOQO.\n");
+		  CIO::message("NOTICE: Reducing precision of PR_LOQO.\n");
       }      
     }
   }
