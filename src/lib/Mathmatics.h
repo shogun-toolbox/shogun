@@ -191,6 +191,21 @@ public:
 	void qsort(REAL* output, INT* index, INT size) ;
 	void qsort_backward(REAL* output, INT* index, INT size) ;
 
+	/* performs a inplace unique of a WORD vector using quicksort 
+	 * returns the new number of elements */
+	INT unique(WORD* output, INT size) 
+		{
+			qsort(output, size) ;
+			INT i,j=0 ;
+			for (i=0; i<size; i++)
+				if (i==0 || output[i]!=output[i-1])
+					output[j++]=output[i] ;
+			return j ;
+		}
+	/* finds an element in a sorted array via binary search
+     * returns -1 if not found */
+	INT fast_find(WORD* output, INT size, WORD elem) ;
+
 	/** calculates ROC into (fp,tp)
 	 * from output and label of length size 
 	 * returns index with smallest error=fp+fn

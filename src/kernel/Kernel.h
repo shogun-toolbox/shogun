@@ -3,10 +3,11 @@
 
 #include "lib/common.h"
 #include "features/Features.h"
+#include "kernel/OptimizableKernel.h" 
 
 #include <stdio.h>
 
-class CKernel
+class CKernel: public COptimizableKernel
 {
 	public:
 		CKernel(LONG size);

@@ -142,45 +142,30 @@ bool CGUIKernel::save_kernel_init(CHAR* param)
 	return result;
 }
 
-bool CGUIKernel::init_kernel_tree(CHAR* param)
+bool CGUIKernel::init_kernel_optimization(CHAR* param)
 {
 	if (gui->guisvm.get_svm()!=NULL)
 	{
-		CWeightedDegreeCharKernel *kernel_=
-			(CWeightedDegreeCharKernel*)kernel ;
-		
-		if ((kernel->get_kernel_type() == K_WEIGHTEDDEGREE) && 
-			(kernel_->get_max_mismatch()==0))
+		if (COptimizableKernel::is_optimizable(kernel))
 		{
+			INT * sv_idx    = new INT[gui->guisvm.get_svm()->get_num_support_vectors()] ;
+			REAL* sv_weight = new REAL[gui->guisvm.get_svm()->get_num_support_vectors()] ;
+			
 			for(INT i=0; i<gui->guisvm.get_svm()->get_num_support_vectors(); i++)
 			{
-				if (i%1000==0)
-					CIO::message(M_MESSAGEONLY, ".") ;
-				kernel_->add_example_to_tree(gui->guisvm.get_svm()->get_support_vector(i), gui->guisvm.get_svm()->get_alpha(i)) ;
+				sv_idx[i]    = gui->guisvm.get_svm()->get_support_vector(i) ;
+				sv_weight[i] = gui->guisvm.get_svm()->get_alpha(i) ;
 			}
-		}
-		if (kernel->get_kernel_type() == K_COMBINED) 
-		{
-			CCombinedKernel * ckernel = (CCombinedKernel*)kernel ;
-			kernel = ckernel->get_first_kernel() ;
-			kernel_= (CWeightedDegreeCharKernel*)kernel ;
+			bool ret = kernel->init_optimization(gui->guisvm.get_svm()->get_num_support_vectors(), sv_idx, sv_weight) ;
+			
+			delete[] sv_idx ;
+			delete[] sv_weight ;
 
-			while (kernel!=NULL)
-			{
-				if ((kernel->get_kernel_type() == K_WEIGHTEDDEGREE) && 
-					(kernel_->get_max_mismatch()==0))
-				{
-					for(INT i=0; i<gui->guisvm.get_svm()->get_num_support_vectors(); i++)
-					{
-						if (i%1000==0)
-						CIO::message(M_MESSAGEONLY, ".") ;
-						kernel_->add_example_to_tree(gui->guisvm.get_svm()->get_support_vector(i), gui->guisvm.get_svm()->get_alpha(i)) ;
-					}
-				}
-				kernel = ckernel->get_next_kernel() ;
-				kernel_= (CWeightedDegreeCharKernel*)kernel ;
-			}
+			if (!ret)
+				CIO::message(M_ERROR, "initialization of kernel optimization failed\n") ;
+			return ret ;
 		}
+
 	}
 	else
 	{
@@ -190,33 +175,28 @@ bool CGUIKernel::init_kernel_tree(CHAR* param)
 	return true ;
 }
 
-bool CGUIKernel::delete_kernel_tree(CHAR* param)
+bool CGUIKernel::delete_kernel_optimization(CHAR* param)
 {
-	CWeightedDegreeCharKernel *kernel_=
-		(CWeightedDegreeCharKernel*)kernel ;
-	
-	if ((kernel->get_kernel_type() == K_WEIGHTEDDEGREE) && 
-		(kernel_->get_max_mismatch()==0))
-	{
-		kernel_->delete_tree() ;
-	} ;
-		if (kernel->get_kernel_type() == K_COMBINED) 
-		{
-			CCombinedKernel * ckernel = (CCombinedKernel*)kernel ;
-			kernel = ckernel->get_first_kernel() ;
-			kernel_= (CWeightedDegreeCharKernel*)kernel;
+	if (COptimizableKernel::is_optimizable(kernel) && kernel->get_is_initialized())
+		kernel->delete_optimization() ;
 
-			while (kernel!=NULL)
-			{
-				if ((kernel->get_kernel_type() == K_WEIGHTEDDEGREE) && 
-					(kernel_->get_max_mismatch()==0))
-				{
-					kernel_->delete_tree() ;
-				}
-				kernel = ckernel->get_next_kernel() ;
-				kernel_= (CWeightedDegreeCharKernel*)kernel ;
-			}
-		}
+/*	if (kernel->get_kernel_type() == K_COMBINED) 
+	{
+	CCombinedKernel * ckernel = (CCombinedKernel*)kernel ;
+	kernel = ckernel->get_first_kernel() ;
+	kernel_= (CWeightedDegreeCharKernel*)kernel;
+	
+	while (kernel!=NULL)
+	{
+	if ((kernel->get_kernel_type() == K_WEIGHTEDDEGREE) && 
+	(kernel_->get_max_mismatch()==0))
+	{
+	kernel_->delete_tree() ;
+	}
+	kernel = ckernel->get_next_kernel() ;
+	kernel_= (CWeightedDegreeCharKernel*)kernel ;
+	}
+	}*/
 	return true ;
 }
 
@@ -507,12 +487,18 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 		{
 			if (strcmp(data_type,"WORD")==0)
 			{
+				INT use_sign = 0 ;
+				
+				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &use_sign);
 				delete k;
-				k=new CCommWordKernel(size);
+				k=new CCommWordKernel(size, use_sign);
 
 				if (k)
 				{
-					CIO::message(M_INFO, "CommWordKernel created\n");
+					if (use_sign)
+						CIO::message(M_INFO, "CommWordKernel with sign(count) created\n");
+					else
+						CIO::message(M_INFO, "CommWordKernel with count created\n");
 					return k;
 				}
 			}
@@ -541,6 +527,80 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (k)
 				{
 					CIO::message(M_INFO, "FixedDegreeCharKernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS2")==0)
+		{
+			if (strcmp(data_type,"CHAR")==0)
+			{
+				INT d=3;
+				INT max_mismatch = 0 ;
+				INT i=0;
+				INT length = 0 ;
+				char * rest = new char[strlen(param)] ;
+				char * rest2 = new char[strlen(param)] ;
+				
+				sscanf(param, "%s %s %d %d %d %d %[0-9 .+-]", 
+					   kern_type, data_type, &size, &d, &max_mismatch, 
+					   &length, rest);
+
+				INT *shift = new INT[length] ;
+				for (i=0; i<length; i++)
+				{
+					int args = sscanf(rest, "%i %[0-9 .+-]", &shift[i], rest2) ;
+					if (((args!=2) && (i<length-1)) || (args<1))
+					{
+						CIO::message(M_ERROR, "failed to read list at position %i\n", i) ;
+						return false ;
+					} ;
+					if (shift[i]>length)
+					{
+						CIO::message(M_ERROR, "shift longer than sequence: %i \n", shift[i]) ;
+						return false ;
+					} ;
+					strcpy(rest,rest2) ;
+				}
+				//for (INT i=0; i<length; i++)
+				//  CIO::message(M_INFO, "shift[%i]=%i\n", i, shift[i]) ;
+				
+				REAL* weights=new REAL[d*(1+max_mismatch)];
+				REAL sum=0;
+
+				for (i=0; i<d; i++)
+				{
+					weights[i]=d-i;
+					sum+=weights[i];
+				}
+				for (i=0; i<d; i++)
+					weights[i]/=sum;
+				
+				for (i=0; i<d; i++)
+				{
+					for (INT j=1; j<=max_mismatch; j++)
+					{
+						if (j<i+1)
+						{
+							INT nk=math.nchoosek(i+1, j) ;
+							weights[i+j*d]=weights[i]/(nk*pow(3,j)) ;
+						}
+						else
+							weights[i+j*d]= 0;
+					} ;
+				} ;
+				
+				
+				delete k;
+				k=new CWeightedDegreePositionCharKernel(size, weights, 
+															 d, max_mismatch, 
+															 shift, length);
+				delete[] shift ;
+				delete[] weights ;
+				
+				if (k)
+				{
+					CIO::message(M_INFO, "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
 					return k;
 				}
 			}

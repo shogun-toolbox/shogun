@@ -8,7 +8,8 @@
 
 CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, REAL* w, INT d, INT max_mismatch_, INT * shift_, INT shift_len_)
 	: CCharKernel(size),weights(NULL),counts(NULL),degree(d), max_mismatch(max_mismatch_), 
-	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
+	  seq_length(0), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
+	  match_vector(NULL)
 {
 	lhs=NULL ;
 	rhs=NULL ;
@@ -31,6 +32,9 @@ CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, 
 			max_shift = shift[i] ;
 	} ;
 	assert(max_shift>=0 && max_shift<=shift_len) ;
+
+	trees=NULL ;
+	tree_initialized=false ;
 }
 
 CWeightedDegreePositionCharKernel::~CWeightedDegreePositionCharKernel() 
@@ -41,6 +45,18 @@ CWeightedDegreePositionCharKernel::~CWeightedDegreePositionCharKernel()
 	delete[] shift ;
 	delete[] counts ;
 	delete[] weights ;
+	weights=NULL ;
+
+	if (trees!=NULL)
+	{
+		for (INT i=0; i<seq_length; i++)
+		{
+			delete trees[i] ;
+			trees[i]=NULL ;
+		}
+		delete[] trees ;
+		trees=NULL ;
+	} ;
 
 	cleanup();
 }
@@ -52,6 +68,44 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do
 
 	CIO::message(M_DEBUG, "lhs_changed: %i\n", lhs_changed) ;
 	CIO::message(M_DEBUG, "rhs_changed: %i\n", rhs_changed) ;
+
+	if (lhs_changed) 
+	{
+		INT alen ;
+		bool afree ;
+		CHAR* avec=((CCharFeatures*) l)->get_feature_vector(0, alen, afree);
+		delete[] match_vector ;
+		match_vector=new bool[alen] ;
+		
+		if (trees)
+		{
+			delete_tree() ;
+			for (INT i=0; i<seq_length; i++)
+			{
+				delete trees[i] ;
+				trees[i]=NULL ;
+			}
+			delete[] trees ;
+			trees=NULL ;
+		}
+		
+#ifdef OSF1
+		trees=new (struct SuffixTree**)[alen] ;		
+#else
+		trees=new (struct SuffixTree*)[alen] ;		
+#endif
+		for (INT i=0; i<alen; i++)
+		{
+			trees[i]=new struct SuffixTree ;
+			trees[i]->weight=0 ;
+			trees[i]->has_floats=false ;
+			trees[i]->usage=0;
+			for (INT j=0; j<4; j++)
+				trees[i]->childs[j]=NULL ;
+		} 
+		seq_length = alen ;
+		((CCharFeatures*) l)->free_feature_vector(avec, 0, afree);
+	} 
 
 	bool result=CCharKernel::init(l,r,do_init);
 	initialized = false ;
@@ -115,6 +169,7 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do
 	initialized = true ;
 	return result;
 }
+
 void CWeightedDegreePositionCharKernel::cleanup()
 {
 	delete[] weights;
@@ -347,9 +402,190 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
   result/=sqrt_both;
   delete[] sum1 ;
   
-/*  REAL result2 = compute2(idx_a,idx_b) ;
-assert(fabs(result-result2)<1e-8);*/
+  //REAL result2 = compute2(idx_a,idx_b) ;
+  //assert(fabs(result-result2)<1e-6);
   
   return result ;
   
 }
+
+bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, REAL * weights)
+{
+	if (max_mismatch!=0)
+	{
+		CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not implemented for mismatch!=0\n") ;
+		return false ;
+	}
+
+	if (get_is_initialized()) 
+		delete_optimization() ;
+	
+	CIO::message(M_DEBUG, "initializing CWeightedDegreePositionCharKernel optimization\n") ;
+	int i=0;
+	for (i=0; i<count; i++)
+	{
+		if ( (i % (count/10+1)) == 0)
+			CIO::message(M_PROGRESS, "%3i%%  \r", 100*i/(count+1)) ;
+		add_example_to_tree(IDX[i], weights[i]) ;
+	}
+	CIO::message(M_PROGRESS, "done.           \n");
+	
+	set_is_initialized(true) ;
+	return true ;
+}
+
+void CWeightedDegreePositionCharKernel::delete_optimization() 
+{ 
+	if (get_is_initialized())
+	{
+		CIO::message(M_DEBUG, "deleting CWeightedDegreePositionCharKernel optimization\n") ;
+		
+		delete_tree(NULL); 
+		set_is_initialized(false) ;
+	} else
+		CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not initialized\n") ;
+} ;
+
+
+REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx) 
+{
+	INT len ;
+	bool free ;
+	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
+	assert(max_mismatch==0) ;
+	INT *vec = new INT[len] ;
+	
+	for (INT i=0; i<len; i++)
+	{
+		if (char_vec[i]=='A') { vec[i]=0 ; continue ; } ;
+		if (char_vec[i]=='C') { vec[i]=1 ; continue ; } ;
+		if (char_vec[i]=='G') { vec[i]=2 ; continue ; } ;
+		if (char_vec[i]=='T') { vec[i]=3 ; continue ; } ;
+		if (char_vec[i]=='a') { vec[i]=0 ; continue ; } ;
+		if (char_vec[i]=='c') { vec[i]=1 ; continue ; } ;
+		if (char_vec[i]=='g') { vec[i]=2 ; continue ; } ;
+		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
+		vec[i]=0 ;
+	} ;
+
+	REAL sum = 0 ;
+	for (INT i=0; i<len-degree; i++)
+		sum += compute_by_tree_helper(vec, i, i) ;
+
+	for (INT i=0; i<len-degree; i++)
+		for (INT k=1; (k<=shift[i]) && (i<len-degree-k); k++)
+		{
+			sum+=compute_by_tree_helper(vec, i, i+k)/(2*k) ;
+			sum+=compute_by_tree_helper(vec, i+k, i)/(2*k) ;
+		}
+	
+	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
+	delete[] vec ;
+
+	return sum/sqrtdiag_rhs[idx] ;
+}
+
+void CWeightedDegreePositionCharKernel::add_example_to_tree(INT idx, REAL weight) 
+{
+	INT len ;
+	bool free ;
+	CHAR* char_vec=((CCharFeatures*) lhs)->get_feature_vector(idx, len, free);
+	assert(max_mismatch==0) ;
+	INT *vec = new INT[len] ;
+
+	weight /= sqrtdiag_lhs[idx] ;
+	
+	for (INT i=0; i<len; i++)
+	{
+		if (char_vec[i]=='A') { vec[i]=0 ; continue ; } ;
+		if (char_vec[i]=='C') { vec[i]=1 ; continue ; } ;
+		if (char_vec[i]=='G') { vec[i]=2 ; continue ; } ;
+		if (char_vec[i]=='T') { vec[i]=3 ; continue ; } ;
+		if (char_vec[i]=='a') { vec[i]=0 ; continue ; } ;
+		if (char_vec[i]=='c') { vec[i]=1 ; continue ; } ;
+		if (char_vec[i]=='g') { vec[i]=2 ; continue ; } ;
+		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
+		vec[i]=0 ;
+	} ;
+		
+	for (INT i=0; i<len-degree; i++)
+	{
+		struct SuffixTree *tree = trees[i] ;
+		for (INT j=0; j<degree; j++)
+		{
+			if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
+			{
+				tree=tree->childs[vec[i+j]] ;
+				tree->weight += weight*weights[j];
+			} else 
+				if ((j==degree-1) && (tree->has_floats))
+				{
+					tree->child_weights[vec[i+j]] += weight*weights[j];
+					break ;
+				}
+				else
+				{
+					if (j==degree-1)
+					{
+						assert(!tree->has_floats) ;
+						tree->has_floats=true ;
+						for (INT k=0; k<4; k++)
+						{
+							assert(tree->childs[k]==NULL) ;
+							tree->child_weights[k] =0 ;
+						}
+						tree->child_weights[vec[i+j]] += weight*weights[j];
+						break ;
+					}
+					else
+					{
+						assert(!tree->has_floats) ;
+						tree->childs[vec[i+j]]=new struct SuffixTree ;
+						assert(tree->childs[vec[i+j]]!=NULL) ;
+						tree=tree->childs[vec[i+j]] ;
+						for (INT k=0; k<4; k++)
+							tree->childs[k]=NULL ;
+						tree->weight = weight*weights[j] ;
+						tree->has_floats=false ;
+						tree->usage=0 ;
+					} ;
+				} ;
+		} ;
+	}
+	((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
+	delete[] vec ;
+	tree_initialized=true ;
+}
+
+void CWeightedDegreePositionCharKernel::delete_tree(struct SuffixTree * p_tree)
+{
+	if (p_tree==NULL)
+	{
+		if (trees==NULL)
+			return ;
+		for (INT i=0; i<seq_length; i++)
+		{
+			delete_tree(trees[i]) ;
+			trees[i]->has_floats=false ;
+			trees[i]->usage=0;
+			for (INT k=0; k<4; k++)
+				trees[i]->childs[k]=NULL ;
+		} ;		
+
+		tree_initialized=false ;
+		return ;
+	}
+	if (p_tree->has_floats)
+		return ;
+	
+	for (INT i=0; i<4; i++)
+	{
+		if (p_tree->childs[i]!=NULL)
+		{
+			delete_tree(p_tree->childs[i])  ;
+			delete p_tree->childs[i] ;
+			p_tree->childs[i]=NULL ;
+		} 
+		p_tree->weight=0 ;
+	} ;
+} 

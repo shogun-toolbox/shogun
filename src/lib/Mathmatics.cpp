@@ -504,5 +504,38 @@ double CMath::entropy(REAL* p, INT len)
 		e-=exp(p[i])*p[i];
 
 	return e;
+}
 
+INT CMath::fast_find(WORD* output, INT size, WORD elem)
+{
+	INT start=0, end=size-1, middle=size/2 ;
+	
+	if (output[start]>elem || output[end]<elem)
+		return -1 ;
+	
+	while (1)
+	{
+		//CIO::message(M_DEBUG, "start=%i middle=%i end=%i\n", start, middle, end) ;
+		//CIO::message(M_DEBUG, "elem=%i start=%i middle=%i end=%i\n", elem, output[start], output[middle], output[end]) ;
+		if (output[middle]>elem)
+		{
+			end = middle ;
+			middle=start+(end-start)/2 ;
+		} ;
+		if (output[middle]<elem)
+		{
+			start = middle ;
+			middle=start+(end-start)/2 ;
+		}
+		if (output[middle]==elem)
+			return middle ;
+		if (end-start<=1)
+		{
+			if (output[start]==elem)
+				return start ;
+			if (output[end]==elem)
+				return end ;
+			return -1 ;
+		}
+	} ;
 }

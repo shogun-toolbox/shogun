@@ -3,6 +3,7 @@
 
 #include "lib/common.h"
 #include "kernel/WordKernel.h"
+#include "kernel/OptimizableKernel.h"
 
 class CCommWordStringKernel: public CWordKernel
 {
@@ -23,6 +24,18 @@ class CCommWordStringKernel: public CWordKernel
   // return the name of a kernel
   virtual const CHAR* get_name() { return "CommWordString" ; } ;
 
+  virtual bool init_optimization(INT count, INT *IDX, REAL * weights) 
+	  {
+		  CIO::message(M_ERROR, "not implemented yet") ;
+		  return false;
+	  } ;
+  virtual void delete_optimization() {} ;
+  virtual REAL compute_optimized(INT idx) 
+	  { 		  
+		  CIO::message(M_ERROR, "not implemented yet") ;
+		  return 0 ; 
+	  } ;
+  
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors

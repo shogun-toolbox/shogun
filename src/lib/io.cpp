@@ -64,6 +64,9 @@ void CIO::print_message_prio(EMessageType prio, FILE* target)
 		case M_DEBUG:
 			fprintf(target, "[DEBUG] ");
 			break;
+		case M_PROGRESS:
+			fprintf(target, "[PROGRESS] ");
+			break;
 		case M_INFO:
 			//fprintf(target, "[INFO] ");
 			break;

@@ -3,6 +3,7 @@
 
 #include "lib/common.h"
 #include "kernel/CharKernel.h"
+#include "kernel/OptimizableKernel.h"
 
 struct SuffixTree
 {
@@ -35,19 +36,33 @@ class CWeightedDegreeCharKernel: public CCharKernel
   // return the name of a kernel
   virtual const CHAR* get_name() { return "WeightedDegree" ; } ;
 
-  void add_example_to_tree(INT idx, REAL weight) ;
-  REAL compute_by_tree(INT idx) ;
+  virtual bool init_optimization(INT count, INT * IDX, REAL * weights) ;
+  virtual void delete_optimization() ;
+  virtual REAL compute_optimized(INT idx) 
+	  { 
+		  if (get_is_initialized())
+			  return compute_by_tree(idx); 
+
+		  CIO::message(M_ERROR, "CWeightedDegreeCharKernel optimization not initialized\n") ;
+		  return 0 ;
+	  } ;
+
+  // other kernel tree operations  
   void prune_tree(struct SuffixTree * p_tree=NULL, int min_usage=2) ;
   void count_tree_usage(INT idx)  ;
   REAL *compute_abs_weights(INT & len)  ;
   REAL compute_abs_weights_tree(struct SuffixTree * p_tree)  ;
 
-  void delete_tree(struct SuffixTree * p_tree=NULL) ;
   INT tree_size(struct SuffixTree * p_tree=NULL) ;
   bool is_tree_initialized() { return tree_initialized ; } ;
   INT get_max_mismatch() { return max_mismatch ; } ;
-  
+
  protected:
+
+  void add_example_to_tree(INT idx, REAL weight) ;
+  REAL compute_by_tree(INT idx) ;
+  void delete_tree(struct SuffixTree * p_tree=NULL) ;
+
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object

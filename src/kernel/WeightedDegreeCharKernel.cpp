@@ -7,7 +7,8 @@
 #include <assert.h>
 
 CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d, INT max_mismatch_)
-	: CCharKernel(size),weights(NULL),degree(d), max_mismatch(max_mismatch_), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL)
+	: CCharKernel(size),weights(NULL),degree(d), max_mismatch(max_mismatch_), seq_length(0),
+	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL)
 {
 	lhs=NULL ;
 	rhs=NULL ;
@@ -23,24 +24,23 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d
 
 CWeightedDegreeCharKernel::~CWeightedDegreeCharKernel() 
 {
+	delete_optimization() ;
+
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
 	delete[] sqrtdiag_lhs;
 	delete[] match_vector ;
 
-
-	delete_tree() ;
-	
-	if (trees==NULL)
-		return ;
-	for (INT i=0; i<seq_length; i++)
+	if (trees!=NULL)
 	{
-		delete trees[i] ;
-		trees[i]=NULL ;
-	}
-	delete[] trees ;
-	trees=NULL ;
-
+		for (INT i=0; i<seq_length; i++)
+		{
+			delete trees[i] ;
+			trees[i]=NULL ;
+		}
+		delete[] trees ;
+		trees=NULL ;
+	} ;
 	cleanup();
 }
   
@@ -192,6 +192,44 @@ bool CWeightedDegreeCharKernel::save_init(FILE* dest)
 	return false;
 }
   
+
+bool CWeightedDegreeCharKernel::init_optimization(INT count, INT * IDX, REAL * weights)
+{
+	if (max_mismatch!=0)
+	{
+		CIO::message(M_ERROR, "CWeightedDegreeCharKernel optimization not implemented for mismatch!=0\n") ;
+		return false ;
+	}
+
+	if (get_is_initialized()) 
+		delete_optimization() ;
+	
+	CIO::message(M_DEBUG, "initializing CWeightedDegreeCharKernel optimization\n") ;
+	int i=0;
+	for (i=0; i<count; i++)
+	{
+		if ( (i % (count/10+1)) == 0)
+			CIO::message(M_PROGRESS, "%3i%%  \r", 100*i/(count+1)) ;
+		add_example_to_tree(IDX[i], weights[i]) ;
+	}
+	CIO::message(M_PROGRESS, "done.           \n");
+	
+	set_is_initialized(true) ;
+	return true ;
+}
+
+void CWeightedDegreeCharKernel::delete_optimization() 
+{ 
+	if (get_is_initialized())
+	{
+		CIO::message(M_DEBUG, "deleting CWeightedDegreeCharKernel optimization\n") ;
+		
+		delete_tree(NULL); 
+		set_is_initialized(false) ;
+	} else
+		CIO::message(M_ERROR, "CWeightedDegreeCharKernel optimization not initialized\n") ;
+} ;
+
 REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 {
   INT alen, blen;
@@ -252,16 +290,15 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight)
 	
 	for (INT i=0; i<len; i++)
 	{
+		if (char_vec[i]=='A') { vec[i]=0 ; continue ; } ;
+		if (char_vec[i]=='C') { vec[i]=1 ; continue ; } ;
+		if (char_vec[i]=='G') { vec[i]=2 ; continue ; } ;
+		if (char_vec[i]=='T') { vec[i]=3 ; continue ; } ;
+		if (char_vec[i]=='a') { vec[i]=0 ; continue ; } ;
+		if (char_vec[i]=='c') { vec[i]=1 ; continue ; } ;
+		if (char_vec[i]=='g') { vec[i]=2 ; continue ; } ;
+		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
 		vec[i]=0 ;
-		if (char_vec[i]=='A') vec[i]=0 ;
-		if (char_vec[i]=='a') vec[i]=0 ;
-		if (char_vec[i]=='C') vec[i]=1 ;
-		if (char_vec[i]=='c') vec[i]=1 ;
-		if (char_vec[i]=='G') vec[i]=2 ;
-		if (char_vec[i]=='g') vec[i]=2 ;
-		if (char_vec[i]=='T') vec[i]=3 ;
-		if (char_vec[i]=='t') vec[i]=3 ;
-//		assert(vec[i]!=-1) ;
 	} ;
 		
 	for (INT i=0; i<len-degree; i++)
@@ -323,16 +360,15 @@ REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx)
 	
 	for (INT i=0; i<len; i++)
 	{
+		if (char_vec[i]=='A') { vec[i]=0 ; continue ; } ;
+		if (char_vec[i]=='C') { vec[i]=1 ; continue ; } ;
+		if (char_vec[i]=='G') { vec[i]=2 ; continue ; } ;
+		if (char_vec[i]=='T') { vec[i]=3 ; continue ; } ;
+		if (char_vec[i]=='a') { vec[i]=0 ; continue ; } ;
+		if (char_vec[i]=='c') { vec[i]=1 ; continue ; } ;
+		if (char_vec[i]=='g') { vec[i]=2 ; continue ; } ;
+		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
 		vec[i]=0 ;
-		if (char_vec[i]=='A') vec[i]=0 ;
-		if (char_vec[i]=='a') vec[i]=0 ;
-		if (char_vec[i]=='C') vec[i]=1 ;
-		if (char_vec[i]=='c') vec[i]=1 ;
-		if (char_vec[i]=='G') vec[i]=2 ;
-		if (char_vec[i]=='g') vec[i]=2 ;
-		if (char_vec[i]=='T') vec[i]=3 ;
-		if (char_vec[i]=='t') vec[i]=3 ;
-//		assert(vec[i]!=-1) ;
 	} ;
 		
 	REAL sum=0 ;
@@ -499,7 +535,7 @@ void CWeightedDegreeCharKernel::delete_tree(struct SuffixTree * p_tree)
 		if (p_tree->childs[i]!=NULL)
 		{
 			delete_tree(p_tree->childs[i])  ;
-			delete[] p_tree->childs[i] ;
+			delete p_tree->childs[i] ;
 			p_tree->childs[i]=NULL ;
 		} 
 		p_tree->weight=0 ;

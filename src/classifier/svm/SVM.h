@@ -86,7 +86,7 @@ class CSVM : public CKernelMachine
 
 		CLabels* classify(CLabels* labels=NULL);
 		REAL classify_example(INT num);
-		REAL classify_example_wd(INT num);
+		REAL classify_example_optimized(INT num);
 
 	protected:
 

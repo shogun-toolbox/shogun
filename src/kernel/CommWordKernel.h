@@ -7,7 +7,7 @@
 class CCommWordKernel: public CWordKernel
 {
  public:
-  CCommWordKernel(LONG size) ;
+  CCommWordKernel(LONG size, bool use_sign) ;
   ~CCommWordKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -23,6 +23,10 @@ class CCommWordKernel: public CWordKernel
   // return the name of a kernel
   virtual const CHAR* get_name() { return "CommWord" ; } ;
 
+  virtual bool init_optimization(INT count, INT *IDX, REAL * weights) ;
+  virtual void delete_optimization() ;
+  virtual REAL compute_optimized(INT idx) ;
+
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
@@ -31,10 +35,16 @@ class CCommWordKernel: public CWordKernel
   /*    compute_kernel*/
 
  protected:
-  double* sqrtdiag_lhs;
-  double* sqrtdiag_rhs;
+  REAL* sqrtdiag_lhs;
+  REAL* sqrtdiag_rhs;
 
   bool initialized ;
+
+  INT dictionary_size ;
+  WORD * dictionary ;
+  REAL * dictionary_weights ;
+  
+  bool use_sign ;
 };
 
 #endif

@@ -16,8 +16,8 @@ class CGUIKernel
 	bool set_kernel(CHAR* param);
 	CKernel* create_kernel(CHAR* params);
 	bool init_kernel(CHAR* param);
-	bool init_kernel_tree(CHAR* param);
-	bool delete_kernel_tree(CHAR* param);
+	bool init_kernel_optimization(CHAR* param);
+	bool delete_kernel_optimization(CHAR* param);
 	bool load_kernel_init(CHAR* param);
 	bool save_kernel_init(CHAR* param);
 	bool save_kernel(CHAR* param);

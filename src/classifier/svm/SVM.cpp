@@ -178,11 +178,11 @@ REAL* CSVM::test()
   for (INT i=0; i<num_test;  i++)
   {
 	  if ( (i% (num_test/10+1))== 0)
-		  CIO::message(M_MESSAGEONLY, "%i%%..",100*i/(num_test+1));
+		  CIO::message(M_PROGRESS, "%3i%%  \r",100*i/(num_test+1));
 
 	  output[i]=classify_example(i);
   }
-  CIO::message(M_MESSAGEONLY, ".done.\n");
+  CIO::message(M_PROGRESS, "done.           \n");
   return output;
 }
 
@@ -204,24 +204,34 @@ CLabels* CSVM::classify(CLabels* result)
 			result=new CLabels(num_vectors);
 
 		assert(result);
-		CIO::message(M_DEBUG, "num vec: %d\n", num_vectors);
+		CIO::message(M_DEBUG, "computing output on %d test examples\n", num_vectors);
 
-		CWeightedDegreeCharKernel *kernel=
-			(CWeightedDegreeCharKernel*)CKernelMachine::get_kernel() ;
+		CKernel *kernel = CKernelMachine::get_kernel() ;
 
-		if ((kernel->get_kernel_type() == K_WEIGHTEDDEGREE) && 
-			(kernel->is_tree_initialized()))
+		if (COptimizableKernel::is_optimizable(kernel) && 
+			kernel->get_is_initialized())
 		{
+			CIO::message(M_DEBUG, "using optimized kernel\n");
 			for (INT vec=0; vec<num_vectors; vec++)
 			{
-				REAL res=classify_example_wd(vec) ;
-				result->set_label(vec, res);
+				if ( (vec% (num_vectors/10+1))== 0)
+					CIO::message(M_PROGRESS, "%3i%%  \r", 100*vec/(num_vectors+1));
+
+				result->set_label(vec, classify_example_optimized(vec));
 			}
+			CIO::message(M_PROGRESS, "done.           \n");
 		}
 		else
 		{
+			CIO::message(M_DEBUG, "using standard kernel\n");
 			for (INT vec=0; vec<num_vectors; vec++)
+			{
+				if ( (vec% (num_vectors/10+1))== 0)
+					CIO::message(M_PROGRESS, "%3i%%  \r", 100*vec/(num_vectors+1));
+				
 				result->set_label(vec, classify_example(vec));
+			}
+			CIO::message(M_PROGRESS, "done.           \n");
 		}
 	}
 	else 
@@ -236,15 +246,14 @@ REAL CSVM::classify_example(INT num)
 	for(INT i=0; i<get_num_support_vectors(); i++)
 		dist+=CKernelMachine::get_kernel()->kernel(get_support_vector(i), num)*get_alpha(i);
 	
-	return(dist+get_bias());
+	return (dist+get_bias());
 }
 
-REAL CSVM::classify_example_wd(INT num)
+REAL CSVM::classify_example_optimized(INT num)
 {
-	CWeightedDegreeCharKernel *kernel=
-		(CWeightedDegreeCharKernel*)CKernelMachine::get_kernel() ;
-	
-	REAL dist=kernel->compute_by_tree(num) ;
+	COptimizableKernel *kernel=CKernelMachine::get_kernel() ;
 
-	return(dist+get_bias());
+	REAL dist = kernel->compute_optimized(num) ;
+
+	return (dist+get_bias());
 }
