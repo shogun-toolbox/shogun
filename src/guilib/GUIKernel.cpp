@@ -23,6 +23,7 @@
 #include "kernel/CharPolyKernel.h"
 #include "kernel/CustomKernel.h"
 #include "kernel/PolyMatchWordKernel.h"
+#include "kernel/PolyMatchCharKernel.h"
 #include "kernel/WordMatchKernel.h"
 #include "kernel/CommWordKernel.h"
 #include "kernel/CommWordStringKernel.h"
@@ -484,6 +485,22 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (k)
 				{
 					CIO::message(M_INFO, "PolyMatchWordKernel created\n");
+					return k;
+				}
+			}
+			else if (strcmp(data_type,"CHAR")==0)
+			{
+				INT inhomogene=0;
+				INT degree=2;
+				INT normalize=1;
+
+				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
+				delete k;
+				k=new CPolyMatchCharKernel(size, degree, inhomogene==1, normalize==1);
+
+				if (k)
+				{
+					CIO::message(M_INFO, "PolyMatchCharKernel created\n");
 					return k;
 				}
 			}

@@ -22,7 +22,7 @@ class CPolyMatchWordKernel: public CWordKernel
   virtual EKernelType get_kernel_type() { return K_POLYMATCH; }
 
   // return the name of a kernel
-  virtual const CHAR* get_name() { return "PolyMatch"; };
+  virtual const CHAR* get_name() { return "PolyMatchChar"; };
 
  protected:
   /// compute kernel function for features a and b
