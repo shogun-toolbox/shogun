@@ -28,6 +28,7 @@
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/SparsePolyKernel.h"
 #include "kernel/SparseGaussianKernel.h"
+#include "kernel/SparseNormSquaredKernel.h"
 #include "kernel/SparseRealKernel.h"
 #include "features/RealFileFeatures.h"
 #include "features/TOPFeatures.h"
@@ -491,6 +492,17 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				if (kernel)
 				{
 					CIO::message("Sparse Gaussian Kernel created\n");
+					return true;
+				}
+			}
+			else if (strcmp(data_type,"SPARNORMSQUARED")==0)
+			{
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				delete kernel;
+				kernel=new CSparseNormSquaredKernel(size);
+				if (kernel)
+				{
+					CIO::message("Sparse NormSquared Kernel created\n");
 					return true;
 				}
 			}

@@ -1,15 +1,15 @@
-#ifndef _SPARSEGAUSSIANKERNEL_H___
-#define _SPARSEGAUSSIANKERNEL_H___
+#ifndef _SPARSENORMSQUARED_H__
+#define _SPARSENORMSQUARED_H__
 
 #include "lib/common.h"
 #include "kernel/SparseRealKernel.h"
 #include "features/SparseRealFeatures.h"
 
-class CSparseGaussianKernel: public CSparseRealKernel
+class CSparseNormSquaredKernel: public CSparseRealKernel
 {
  public:
-  CSparseGaussianKernel(LONG size, double width);
-  ~CSparseGaussianKernel();
+  CSparseNormSquaredKernel(LONG size);
+  ~CSparseNormSquaredKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
@@ -19,14 +19,14 @@ class CSparseGaussianKernel: public CSparseRealKernel
   virtual bool save_init(FILE* dest);
 
   // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_GAUSSIAN; }
+  virtual EKernelType get_kernel_type() { return K_SPARSENORMSQUARED; }
 
   /** return feature type the kernel can deal with
   */
   inline virtual EFeatureType get_feature_type() { return F_REAL; }
 
   // return the name of a kernel
-  virtual const CHAR* get_name() { return "SparseGaussian" ; } ;
+  virtual const CHAR* get_name() { return "SparseNormSquared" ; } ;
 
  protected:
   /// compute kernel function for features a and b
@@ -36,8 +36,7 @@ class CSparseGaussianKernel: public CSparseRealKernel
   /*    compute_kernel*/
   
  protected:
-  double width;
+  double scale;
 };
 
 #endif
-
