@@ -6,8 +6,8 @@
 
 #include <assert.h>
 
-CWDCharKernel::CWDCharKernel(LONG size, EWDKernType t, INT d)
-	: CCharKernel(size), type(t), degree(d), seq_length(0),
+CWDCharKernel::CWDCharKernel(LONG size, EWDKernType t, INT d, INT which_deg)
+	: CCharKernel(size), type(t), which_degree(which_deg), degree(d), seq_length(0),
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL)
 {
 	num_matching_weights_external=0;
@@ -396,20 +396,40 @@ REAL CWDCharKernel::compute(INT idx_a, INT idx_b)
 
 	INT match_len=-1;
 
-	for (INT i=0; i<alen; i++)
+	if (which_degree>0)
 	{
-		if (avec[i]==bvec[i])
-			match_len++;
-		else
+		for (INT i=0; i<alen; i++)
 		{
-			if (match_len>=0)
-				sum+=matching_weights[match_len];
-			match_len=-1;
+			if (avec[i]==bvec[i])
+				match_len++;
+			else
+			{
+				if (match_len==which_degree)
+					sum+=matching_weights[match_len];
+				match_len=-1;
+			}
 		}
-	}
 
-	if (match_len>=0)
-		sum+=matching_weights[match_len];
+		if (match_len==which_degree)
+			sum+=matching_weights[match_len];
+	}
+	else
+	{
+		for (INT i=0; i<alen; i++)
+		{
+			if (avec[i]==bvec[i])
+				match_len++;
+			else
+			{
+				if (match_len>=0)
+					sum+=matching_weights[match_len];
+				match_len=-1;
+			}
+		}
+
+		if (match_len>=0)
+			sum+=matching_weights[match_len];
+	}
 
 	((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);

@@ -20,7 +20,7 @@ enum EWDKernType
 class CWDCharKernel: public CCharKernel
 {
 	public:
-		CWDCharKernel(LONG size, EWDKernType type, INT degree);
+		CWDCharKernel(LONG size, EWDKernType type, INT degree, INT which_deg=-1);
 		~CWDCharKernel();
 
 		virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -66,6 +66,7 @@ class CWDCharKernel: public CCharKernel
 		REAL* matching_weights;
 
 		EWDKernType type;
+		INT which_degree;
 		INT degree;
 		INT seq_length;
 
