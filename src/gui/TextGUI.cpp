@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-CTextGUI gui;
+CTextGUI *gui=NULL;
 
 //names of menu commands
 static const char* N_SET_HMM_AS=		"set_hmm_as";
@@ -20,71 +20,73 @@ static const char* N_LOAD_HMM=			"load_HMM";
 static const char* N_SAVE_HMM=			"save_HMM";
 static const char* N_SAVE_HMM_BIN=		"save_HMM_bin";
 static const char* N_LOAD_DEFINITIONS=		"load_defs";
-static const char* N_SAVE_KERNEL=			"save_kernel";
+static const char* N_SAVE_KERNEL=		"save_kernel";
 static const char* N_SAVE_TOP_FEATURES=		"save_top_features";
 #ifndef NOVIT
-static const char* N_SAVE_PATH=						"save_path";
-static const char* N_SAVE_PATH_DERIVATIVES=	        "save_vit_deriv";
-static const char* N_SAVE_PATH_DERIVATIVES_BIN=	    "save_vit_deriv_bin";
-static const char* N_BEST_PATH=			        	"best_path";
-static const char* N_OUTPUT_PATH=					"output_path";
-static const char* N_OUTPUT_GENES=					"output_genes";
-static const char* N_VITERBI_TRAIN=		        	"vit";
-static const char* N_VITERBI_TRAIN_DEFINED=             "vit_def";
+static const char* N_SAVE_PATH=			"save_path";
+static const char* N_SAVE_PATH_DERIVATIVES=	"save_vit_deriv";
+static const char* N_SAVE_PATH_DERIVATIVES_BIN=	"save_vit_deriv_bin";
+static const char* N_BEST_PATH=			"best_path";
+static const char* N_OUTPUT_PATH=      		"output_path";
+static const char* N_OUTPUT_GENES=	        "output_genes";
+static const char* N_VITERBI_TRAIN=	       	"vit";
+static const char* N_VITERBI_TRAIN_DEFINED=     "vit_def";
 static const char* N_VITERBI_TRAIN_DEFINED_ANNEALED=    "vit_def_ann";
 static const char* N_VITERBI_TRAIN_DEFINED_ADDIABATIC=  "vit_def_add";
 #endif // NOVIT
-static const char* N_LINEAR_TRAIN=					"linear_train";
-static const char* N_LINEAR_LIKELIHOOD=				"linear_likelihood";
-static const char* N_SAVE_LINEAR_LIKELIHOOD=		"save_linear_likelihood";
-static const char* N_SAVE_LINEAR_LIKELIHOOD_BIN=	"save_linear_likelihood_bin";
-static const char* N_SAVE_HMM_DERIVATIVES=        "save_bw_deriv";
-static const char* N_SAVE_HMM_DERIVATIVES_BIN=    "save_bw_deriv_bin";
-static const char* N_SAVE_LIKELIHOOD=               "save_likelihood";
-static const char* N_SAVE_LIKELIHOOD_BIN=           "save_likelihood_bin";
-static const char* N_LOAD_OBSERVATIONS=		        "load_obs";
-static const char* N_ASSIGN_OBSERVATION=			"assign_obs";
-static const char* N_CLEAR=							"clear";
-static const char* N_CHOP=							"chop";
-static const char* N_CONVERGENCE_CRITERIA=	        "convergence_criteria";
-static const char* N_PSEUDO=						"pseudo";
-static const char* N_C=								"c";
-static const char* N_ADD_STATES=					"add_states";
-static const char* N_APPEND_HMM=					"append_HMM";
-static const char* N_BAUM_WELCH_TRAIN=		        "bw";
-static const char* N_BAUM_WELCH_TRAIN_DEFINED=		"bw_def";
-static const char* N_LIKELIHOOD=					"likelihood";
-static const char* N_ALPHABET=			       	 	"alphabet";
-static const char* N_OUTPUT_HMM=					"output_HMM";
-static const char* N_OUTPUT_HMM_DEFINED=          "output_HMM_defined";
-static const char* N_QUIT=				"quit";
-static const char* N_EXEC=				"exec";
-static const char* N_EXIT=				"exit";
-static const char* N_HELP=				"help";
-static const char* N_SYSTEM=				"!";
-static const char N_COMMENT1=				'#';
-static const char N_COMMENT2=				'%';
-static const char* N_FIX_POS_STATE=			"fix_pos_state";
-static const char* N_SET_MAX_DIM=			"max_dim";
-static const char* N_TEST=				"test";
-static const char* N_LINEAR_SVM_TRAIN=			"linear_svm_train";
-static const char* N_SVM_TRAIN=					"svm_train";
-static const char* N_SVM_TEST=					"svm_test";
-static const char* N_SET_SVM_LIGHT=			 	"set_svm_light";
-static const char* N_SET_SVM_CPLEX=			 	"set_svm_cplex";
-static const char* N_ONE_CLASS_HMM_TEST=		"one_class_hmm_test";
+static const char* N_LINEAR_TRAIN=       	"linear_train";
+static const char* N_LINEAR_LIKELIHOOD=		"linear_likelihood";
+static const char* N_SAVE_LINEAR_LIKELIHOOD=   	"save_linear_likelihood";
+static const char* N_SAVE_LINEAR_LIKELIHOOD_BIN="save_linear_likelihood_bin";
+static const char* N_SAVE_HMM_DERIVATIVES=      "save_bw_deriv";
+static const char* N_SAVE_HMM_DERIVATIVES_BIN=  "save_bw_deriv_bin";
+static const char* N_SAVE_LIKELIHOOD=           "save_likelihood";
+static const char* N_SAVE_LIKELIHOOD_BIN=       "save_likelihood_bin";
+static const char* N_LOAD_OBSERVATIONS=		"load_obs";
+static const char* N_ASSIGN_OBSERVATION=	"assign_obs";
+static const char* N_CLEAR=			"clear";
+static const char* N_CHOP=			"chop";
+static const char* N_CONVERGENCE_CRITERIA=	"convergence_criteria";
+static const char* N_PSEUDO=			"pseudo";
+static const char* N_C=			     	"c";
+static const char* N_ADD_STATES=	        "add_states";
+static const char* N_APPEND_HMM=		"append_HMM";
+static const char* N_BAUM_WELCH_TRAIN=	        "bw";
+static const char* N_BAUM_WELCH_TRAIN_DEFINED=	"bw_def";
+static const char* N_LIKELIHOOD=	       	"likelihood";
+static const char* N_ALPHABET=			"alphabet";
+static const char* N_OUTPUT_HMM=		"output_HMM";
+static const char* N_OUTPUT_HMM_DEFINED=        "output_HMM_defined";
+static const char* N_QUIT=			"quit";
+static const char* N_EXEC=			"exec";
+static const char* N_EXIT=			"exit";
+static const char* N_HELP=			"help";
+static const char* N_SYSTEM=			"!";
+static const char N_COMMENT1=			'#';
+static const char N_COMMENT2=			'%';
+static const char* N_FIX_POS_STATE=		"fix_pos_state";
+static const char* N_SET_MAX_DIM=		"max_dim";
+static const char* N_TEST=			"test";
+static const char* N_LINEAR_SVM_TRAIN=		"linear_svm_train";
+static const char* N_SVM_TRAIN=			"svm_train";
+static const char* N_SVM_TEST=			"svm_test";
+static const char* N_SET_SVM_LIGHT=		"set_svm_light";
+static const char* N_SET_SVM_CPLEX=		"set_svm_cplex";
+static const char* N_SET_SVM_MPI=		"set_svm_mpi";
+static const char* N_ONE_CLASS_HMM_TEST=	"one_class_hmm_test";
 static const char* N_ONE_CLASS_LINEAR_HMM_TEST=	"one_class_linear_hmm_test";
-static const char* N_HMM_TEST=					"hmm_test";
-static const char* N_LINEAR_HMM_TEST=			"linear_hmm_test";
-static const char* N_SET_ORDER=					"set_order";
+static const char* N_HMM_TEST=			"hmm_test";
+static const char* N_LINEAR_HMM_TEST=		"linear_hmm_test";
+static const char* N_SET_ORDER=			"set_order";
 
 
-CTextGUI::CTextGUI()
+CTextGUI::CTextGUI(int argc, const char** argv)
+  : CGUI(argc, argv)
 {
-    CIO::message("Learning uses %i threads\n", NUM_PARALLEL) ;
-   
+  CIO::message("Learning uses %i threads\n", NUM_PARALLEL) ;
+  
 #ifdef SVMCPLEX
-    libmmfileInitialize() ;
+  libmmfileInitialize() ;
 #endif
 }
 
@@ -182,7 +184,7 @@ void CTextGUI::print_help()
 
 void CTextGUI::print_prompt()
 {
-	CIO::message("\033[1;34mgenefinder\033[0m >> ");
+	CIO::message(stderr,"\033[1;34mgenefinder\033[0m >> ");
     //CIO::message("genefinder >> ");
 }
 
@@ -211,6 +213,7 @@ bool CTextGUI::get_line(FILE* infile)
 	} 
 	else if (!strncmp(input, N_LOAD_HMM, strlen(N_LOAD_HMM)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SET_HMM_AS, strlen(N_SET_HMM_AS)))
 	{
@@ -218,82 +221,107 @@ bool CTextGUI::get_line(FILE* infile)
 	}
 	else if (!strncmp(input, N_SAVE_HMM_BIN, strlen(N_SAVE_HMM_BIN)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_CHOP, strlen(N_CHOP)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SAVE_HMM, strlen(N_SAVE_HMM)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_LOAD_DEFINITIONS, strlen(N_LOAD_DEFINITIONS)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_ASSIGN_OBSERVATION, strlen(N_ASSIGN_OBSERVATION)))
 	{
+	  guihmm.assign_obs(input+strlen(N_ASSIGN_OBSERVATION)) ;
 	}
 	else if (!strncmp(input, N_LOAD_OBSERVATIONS, strlen(N_LOAD_OBSERVATIONS)))
 	{
-		guiobs.load_observations(input+strlen(N_LOAD_OBSERVATIONS));
+	  guiobs.load_observations(input+strlen(N_LOAD_OBSERVATIONS));
 	}
 	else if (!strncmp(input, N_SAVE_PATH, strlen(N_SAVE_PATH)))
 	{
+	  CIO::not_implemented() ;
 	}
 	else if (!strncmp(input, N_SAVE_LIKELIHOOD_BIN, strlen(N_SAVE_LIKELIHOOD_BIN)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SAVE_LIKELIHOOD, strlen(N_SAVE_LIKELIHOOD)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SAVE_TOP_FEATURES, strlen(N_SAVE_TOP_FEATURES)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SAVE_KERNEL, strlen(N_SAVE_KERNEL)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SAVE_PATH_DERIVATIVES_BIN, strlen(N_SAVE_PATH_DERIVATIVES_BIN)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SAVE_PATH_DERIVATIVES, strlen(N_SAVE_PATH_DERIVATIVES)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SAVE_HMM_DERIVATIVES_BIN, strlen(N_SAVE_HMM_DERIVATIVES_BIN)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SAVE_HMM_DERIVATIVES, strlen(N_SAVE_HMM_DERIVATIVES)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_FIX_POS_STATE, strlen(N_FIX_POS_STATE)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SET_MAX_DIM, strlen(N_SET_MAX_DIM)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_CLEAR, strlen(N_CLEAR)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_PSEUDO, strlen(N_PSEUDO)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_ALPHABET, strlen(N_ALPHABET)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_CONVERGENCE_CRITERIA, strlen(N_CONVERGENCE_CRITERIA)))
 	{
+	  guihmm.convergence_criteria(input+strlen(N_CONVERGENCE_CRITERIA)) ;
 	} 
 	else if (!strncmp(input, N_VITERBI_TRAIN_DEFINED_ANNEALED, strlen(N_VITERBI_TRAIN_DEFINED_ANNEALED)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_VITERBI_TRAIN_DEFINED_ADDIABATIC, strlen(N_VITERBI_TRAIN_DEFINED_ADDIABATIC)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_VITERBI_TRAIN_DEFINED, strlen(N_VITERBI_TRAIN_DEFINED)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_VITERBI_TRAIN, strlen(N_VITERBI_TRAIN)))
 	{
+	  CIO::not_implemented() ;
 	}
 	else if (!strncmp(input, N_BAUM_WELCH_TRAIN_DEFINED, strlen(N_BAUM_WELCH_TRAIN_DEFINED)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_BAUM_WELCH_TRAIN, strlen(N_BAUM_WELCH_TRAIN)))
 	{
@@ -301,24 +329,31 @@ bool CTextGUI::get_line(FILE* infile)
 	} 
 	else if (!strncmp(input, N_BEST_PATH, strlen(N_BEST_PATH)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_LIKELIHOOD, strlen(N_LIKELIHOOD)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_OUTPUT_HMM_DEFINED, strlen(N_OUTPUT_HMM_DEFINED)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_OUTPUT_PATH, strlen(N_OUTPUT_PATH)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_OUTPUT_GENES, strlen(N_OUTPUT_GENES)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_OUTPUT_HMM, strlen(N_OUTPUT_HMM)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_EXEC, strlen(N_EXEC)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_EXIT, strlen(N_EXIT)))
 	{
@@ -330,6 +365,7 @@ bool CTextGUI::get_line(FILE* infile)
 	} 
 	else if (!strncmp(input, N_TEST, strlen(N_TEST)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_HELP, strlen(N_HELP)))
 	{
@@ -346,12 +382,15 @@ bool CTextGUI::get_line(FILE* infile)
 	} 
 	else if (!strncmp(input, N_LINEAR_LIKELIHOOD, strlen(N_LINEAR_LIKELIHOOD)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SAVE_LINEAR_LIKELIHOOD_BIN, strlen(N_SAVE_LINEAR_LIKELIHOOD_BIN)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SAVE_LINEAR_LIKELIHOOD, strlen(N_SAVE_LINEAR_LIKELIHOOD)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SVM_TRAIN, strlen(N_SVM_TRAIN)))
 	{
@@ -363,6 +402,7 @@ bool CTextGUI::get_line(FILE* infile)
 	}
 	else if (!strncmp(input, N_LINEAR_SVM_TRAIN, strlen(N_LINEAR_SVM_TRAIN)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_SVM_TEST, strlen(N_SVM_TEST)))
 	{
@@ -370,9 +410,11 @@ bool CTextGUI::get_line(FILE* infile)
 	} 
 	else if (!strncmp(input, N_ONE_CLASS_LINEAR_HMM_TEST, strlen(N_ONE_CLASS_LINEAR_HMM_TEST)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_LINEAR_HMM_TEST, strlen(N_LINEAR_HMM_TEST)))
 	{
+	  CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_ONE_CLASS_HMM_TEST, strlen(N_ONE_CLASS_HMM_TEST)))
 	{
@@ -396,6 +438,7 @@ bool CTextGUI::get_line(FILE* infile)
 	} 
 	else if (!strncmp(input, N_SET_ORDER, strlen(N_SET_ORDER)))
 	{
+	  CIO::not_implemented() ;
 	}
 	else
 		CIO::message("unrecognized command. type help for options\n");
@@ -405,35 +448,37 @@ bool CTextGUI::get_line(FILE* infile)
 //// main - the one and only ///
 int main(int argc, const char* argv[])
 {
-	if (argc<=1)
-		while (gui.get_line());
-	else
-	{
-		if (argc>=2)
-		{
-			if ( argc>2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help"))
-			{
-				printf("usage: genfinder [ <script> ]\n\n");
-				printf("if no options are given genfinder enters interactive mode\n");
-				printf("if <script> is specified the commands will be executed");
-				return 1;
-			}
-			else
-			{
-				FILE* file=fopen(argv[1], "r");
+  gui=new CTextGUI(argc, argv) ;
 
-				if (!file)
-				{
-					CIO::message("error opening/reading file: \"%s\"",argv[1]);
-					return 1;
-				}
-				else
-				{
-					while(!feof(file) && gui.get_line(file));
-					fclose(file);
-				}
-			}
+  if (argc<=1)
+    while (gui->get_line());
+  else
+    {
+      if (argc>=2)
+	{
+	  if ( argc>2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help"))
+	    {
+	      printf("usage: genfinder [ <script> ]\n\n");
+	      printf("if no options are given genfinder enters interactive mode\n");
+	      printf("if <script> is specified the commands will be executed");
+	      return 1;
+	    }
+	  else
+	    {
+	      FILE* file=fopen(argv[1], "r");
+	      
+	      if (!file)
+		{
+		  CIO::message("error opening/reading file: \"%s\"",argv[1]);
+		  return 1;
 		}
+	      else
+		{
+		  while(!feof(file) && gui->get_line(file));
+		  fclose(file);
+		}
+	    }
 	}
-	return 0;
+    }
+  return 0;
 }

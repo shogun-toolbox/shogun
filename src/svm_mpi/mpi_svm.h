@@ -6,7 +6,7 @@
 #include "svm/SVM.h"
 #include "kernel/Kernel.h"
 #include "lib/common.h"
-#include "intpoint/matrix.h"
+#include "svm_mpi/matrix.h"
 
 
 class CSVMMPI: public CSVM

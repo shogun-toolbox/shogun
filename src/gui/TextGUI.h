@@ -8,11 +8,12 @@
 #include "guilib/GUIObservation.h"
 #include "guilib/GUIPreProc.h"
 #include "guilib/GUIFeatures.h"
+#include "gui/GUI.h"
 
-class CTextGUI
+class CTextGUI: public CGUI
 {
 public:
-	CTextGUI();
+	CTextGUI(int argc, const char** argv);
 	~CTextGUI();
 
 	/// print the genefinder prompt
@@ -24,11 +25,5 @@ public:
 	/// @return true at EOF
 	bool get_line(FILE* infile=stdin);
 
-	CGUISVM guisvm;
-	CGUIHMM guihmm;
-	CGUIKernel guikernel;
-	CGUIObservation guiobs;
-	CGUIPreProc guipreproc;
-	CGUIFeatures guifeatures;
 };
 #endif

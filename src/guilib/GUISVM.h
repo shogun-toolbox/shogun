@@ -6,7 +6,7 @@
 #include "svm/SVM.h"
 #include "svm/SVM_light.h"
 #include "svm_cplex/SVM_cplex.h"
-#include "intpoint/mpi_svm.h"
+#include "svm_mpi/mpi_svm.h"
 
 class CGUI ;
 

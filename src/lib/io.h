@@ -11,6 +11,10 @@ public:
 	static void set_target(FILE* target);
 	static void message(const char *fmt, ... );
 	static void message(FILE* target, const char *fmt, ... );
+	static void not_implemented() 
+	  {
+	    message(stderr, "Sorry, not yet implemented\n");
+	  };
 
 	static void buffered_message(const char *fmt, ... );
 	static void buffered_message(FILE* target, const char *fmt, ... );

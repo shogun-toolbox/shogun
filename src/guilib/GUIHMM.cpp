@@ -137,8 +137,12 @@ bool CGUIHMM::convergence_criteria(char* param)
       EPSILON=f;
     }
   else
-    CIO::message("see help for parameters. current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
+    {
+      CIO::message("see help for parameters. current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
+      return false ;
+    }
   CIO::message("current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
+  return true ;
 } ;
 
 bool CGUIHMM::set_hmm_as(char* param)
@@ -187,12 +191,18 @@ bool CGUIHMM::assign_obs(char* param)
 	  CObservation *obs=gui->guiobs.get_obs(target) ;
 	  working->set_observations(obs);
 	  working_estimate->set_observations(obs);
+
+	  return true ;
 	}
       else
-	printf("create model first!\n");
+	{
+	  printf("create model first!\n");
+	  return false ;
+	} ;
     }
   else
     printf("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
+  return false ;
 } ;
 
 //convergence criteria  -tobeadjusted-
