@@ -1,15 +1,16 @@
 #ifndef _LIBSVM_H
 #define _LIBSVM_H
 
+#include "kernel/Kernel.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "kernel/Kernel.h"
-
 struct svm_node
 {
 	int index;
+	double value;
 };
 
 struct svm_problem
@@ -20,13 +21,13 @@ struct svm_problem
 };
 
 enum { C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR };	/* svm_type */
-enum { LINEAR, POLY, RBF, SIGMOID };	/* kernel_type */
+enum { LINEAR, POLY, RBF, SIGMOID, GENEFINDER };	/* kernel_type */
 
 struct svm_parameter
 {
+	CKernel* kernel;
 	int svm_type;
 	int kernel_type;
-	CKernel* kernel;
 	double degree;	/* for poly */
 	double gamma;	/* for poly/rbf/sigmoid */
 	double coef0;	/* for poly/sigmoid */
@@ -64,7 +65,6 @@ struct svm_model
 	int free_sv;		// 1 if svm_model is created by svm_load_model
 				// 0 if svm_model is created by svm_train
 };
-
 
 
 struct svm_model *svm_train(const struct svm_problem *prob,
