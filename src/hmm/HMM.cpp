@@ -1071,6 +1071,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 
 #else // PARALLEL 
 
+#ifndef NEGATIVE_MODEL_HACK
 //estimates new model lambda out of lambda_train using baum welch algorithm
 void CHMM::estimate_model_baum_welch(CHMM* train)
 {
@@ -1140,6 +1141,92 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
     normalize();
     invalidate_model();
 }
+#else
+//estimates new model lambda out of lambda_train using baum welch algorithm
+void CHMM::estimate_model_baum_welch(CHMM* train)
+{
+	int i,j,t,dim;
+	REAL a_sum, b_sum;	//numerator
+	REAL dimmodprob=0;	//model probability for dim
+	REAL fullmodprob=0;	//for all dims
+
+	const REAL MIN_RAND=1e-1;
+
+
+	if (exp(train->get_p(0))>=0.99)
+	{
+		for (i=0; i<N; i++)
+		{
+			if (i!=25)
+				train->set_p(i,-math.INFTY);
+			else
+				train->set_p(i, (MIN_RAND+((REAL)rand()))/REAL(RAND_MAX));
+				
+			train->set_q(i, (MIN_RAND+((REAL)rand()))/REAL(RAND_MAX));
+
+			for (j=0; j<25; j++)
+				train->set_b(i,j, (MIN_RAND+((REAL)rand()))/REAL(RAND_MAX));
+		}
+		train->invalidate_model();
+	}
+
+	//clear actual model a,b,p,q are used as numerator
+	for (i=0; i<N; i++)
+	{
+		//if (i!=25)
+			set_p(i,log(PSEUDO));
+		//else
+		//	set_p(i,train->get_p(i));
+
+		set_q(i,train->get_q(i));
+
+		for (j=0; j<N; j++)
+			set_a(i,j, train->get_a(i,j));	//a is const
+		for (j=0; j<25; j++)
+			set_b(i,j, log(PSEUDO));	
+		for (j=25; j<M; j++)
+			set_b(i,j, train->get_b(i,j));	//b is const for state
+	}
+
+	//change summation order to make use of alpha/beta caches
+	for (dim=0; dim<p_observations->get_DIMENSION(); dim++)
+	{
+		dimmodprob=train->model_probability(dim);
+		fullmodprob+=dimmodprob ;
+
+		for (i=0; i<N; i++)
+		{
+			//estimate initial+end state distribution numerator
+			set_p(i, math.logarithmic_sum(get_p(i), train->get_p(i)+train->get_b(i,p_observations->get_obs(dim,0))+train->backward(0,i,dim) - dimmodprob));
+		}
+
+		for (i=0; i<25; i++)
+		{
+			//estimate b
+			for (j=0; j<M; j++)
+			{
+				b_sum=math.ALMOST_NEG_INFTY;
+
+				for (t=0; t<p_observations->get_obs_T(dim); t++) 
+				{
+					if (p_observations->get_obs(dim,t)==j) 
+						b_sum=math.logarithmic_sum(b_sum, train->forward(t,i,dim)+train->backward(t, i, dim));
+				}
+
+				set_b(i,j, math.logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
+			}
+		} 
+	}
+
+	//cache train model probability
+	train->mod_prob=fullmodprob;
+	train->mod_prob_updated=true ;
+
+	//new model probability is unknown
+	normalize();
+	invalidate_model();
+}
+#endif //NEGATIVE_MODEL_HACK
 #endif // PARALLEL
 
 
@@ -4998,6 +5085,46 @@ double* CHMM::compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* 
 	    featurevector[p++]= - exp(neg->model_derivative_b(i, j, x)-negx);
     }
 #else
+#ifdef NORMALIZE_TO_ONE
+	for (i=0; i<pos->get_N(); i++)
+	{
+		featurevector[p++]=exp(pos->model_derivative_p(i, x)-posx);
+		featurevector[p++]=exp(pos->model_derivative_q(i, x)-posx);
+
+		for (j=0; j<pos->get_N(); j++)
+			featurevector[p++]=exp(pos->model_derivative_a(i, j, x)-posx);
+
+		for (j=0; j<pos->get_M(); j++)
+			featurevector[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
+
+	}
+
+	double sum=0;
+	for (i=0; i<neg->get_N(); i++)
+	{
+		featurevector[p]= - exp(neg->model_derivative_p(i, x)-negx);
+		sum+=featurevector[p]*featurevector[p++];
+		featurevector[p]= - exp(neg->model_derivative_q(i, x)-negx);
+		sum+=featurevector[p]*featurevector[p++];
+
+		for (j=0; j<neg->get_N(); j++)
+		{
+			featurevector[p++]= - exp(neg->model_derivative_a(i, j, x)-negx);
+			sum+=featurevector[p]*featurevector[p++];
+		}
+
+		for (j=0; j<neg->get_M(); j++)
+		{
+			featurevector[p++]= - exp(neg->model_derivative_b(i, j, x)-negx);
+			sum+=featurevector[p]*featurevector[p++];
+		}
+	}
+
+	sum=sqrt(sum);
+	for (p=0; p<1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()); p++)
+		featurevector[p++]/=sum;
+
+#else //this is the normalization used in jaahau
     int o_p=1;
     double sum_p=0;
     double sum_q=0;
@@ -5073,6 +5200,7 @@ double* CHMM::compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* 
 	featurevector[p++]-=sum_p;
 	featurevector[p++]-=sum_q;
     }
+#endif
 #endif
     return featurevector;
 }
