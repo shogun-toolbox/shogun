@@ -4553,8 +4553,8 @@ void CHMM::add_states(int num_states, REAL default_value)
 	initial_state_distribution_p=n_p;
 	end_state_distribution_q=n_q;
 
-	normalize();
 	invalidate_model();
+	normalize();
 }
 
 void CHMM::chop(REAL value)
