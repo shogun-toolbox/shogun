@@ -124,6 +124,9 @@ void CFeatures::list_feature_obj()
 		case C_COMBINED:
 			CIO::message(M_INFO, "C_COMBINED ");
 			break;
+		case C_ANY:
+			CIO::message(M_INFO, "C_ANY ");
+			break;
 		default:
 			CIO::message(M_INFO, "ERROR ");
 	}
@@ -150,6 +153,9 @@ void CFeatures::list_feature_obj()
 			break;
 		case F_WORD:
 			CIO::message(M_INFO, "F_WORD ");
+			break;
+		case F_ANY:
+			CIO::message(M_INFO, "F_ANY ");
 			break;
 		default:
 			CIO::message(M_INFO, "ERROR ");

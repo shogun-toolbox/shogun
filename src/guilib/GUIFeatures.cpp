@@ -909,6 +909,7 @@ bool CGUIFeatures::convert(CHAR* param)
 			f_combined->delete_feature_obj();
 			f_combined->append_feature_obj(*f_ptr);
 			*f_ptr=f_combined;
+			f_combined->list_feature_objs();
 		}
 	}
 	else
@@ -919,45 +920,54 @@ bool CGUIFeatures::convert(CHAR* param)
 
 void CGUIFeatures::add_train_features(CFeatures* f)
 {
-	if (!train_features || (train_features && train_features->get_feature_class()!=C_COMBINED))
+	invalidate_train() ;
+
+	if (!train_features)
 	{
-		invalidate_train() ;
-		CFeatures* first_elem = train_features ;
 		train_features= new CCombinedFeatures();
 		assert(train_features);
-		((CCombinedFeatures*) train_features) -> append_feature_obj(first_elem) ;
-		((CCombinedFeatures*) train_features)->list_feature_objs();
 	}
 
 	if (train_features)
 	{
-		invalidate_train() ;
+		if (train_features->get_feature_class()!=C_COMBINED)
+		{
+			CFeatures* first_elem = train_features ;
+			train_features= new CCombinedFeatures();
+			((CCombinedFeatures*) train_features)->append_feature_obj(first_elem) ;
+			((CCombinedFeatures*) train_features)->list_feature_objs();
+		}
+
 		assert(f);
 		bool result = ((CCombinedFeatures*) train_features)->append_feature_obj(f);
 		assert(result) ;
 		((CCombinedFeatures*) train_features)->list_feature_objs();
 	}
-	else
-		CIO::message(M_ERROR, "combined feature object could not be created\n");
 }
 
 void CGUIFeatures::add_test_features(CFeatures* f)
 {
-	if (!test_features || (test_features && test_features->get_feature_class()!=C_COMBINED))
+	invalidate_test() ;
+
+	if (!test_features)
 	{
-		invalidate_test() ;
-		CFeatures * first_elem = test_features ;
 		test_features= new CCombinedFeatures();
 		assert(test_features);
-		((CCombinedFeatures*)test_features)->append_feature_obj(first_elem) ;
-		((CCombinedFeatures*) test_features)->list_feature_objs();	
 	}
 	
 	if (test_features)
 	{
-		invalidate_test() ;
+		if (test_features->get_feature_class()!=C_COMBINED)
+		{
+			CFeatures * first_elem = test_features ;
+			test_features= new CCombinedFeatures();
+			((CCombinedFeatures*)test_features)->append_feature_obj(first_elem) ;
+			((CCombinedFeatures*) test_features)->list_feature_objs();	
+		}
+
 		assert(f);
-		assert(((CCombinedFeatures*) test_features)->append_feature_obj(f));
+		bool result=((CCombinedFeatures*) test_features)->append_feature_obj(f);
+		assert(result);
 		((CCombinedFeatures*) test_features)->list_feature_objs();
 	}
 	else
