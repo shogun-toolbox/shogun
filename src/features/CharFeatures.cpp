@@ -91,19 +91,19 @@ void CCharFeatures::init_map_table()
   switch (alphabet_type)
     {
 	case CUBE:
-	    maptable['1']=0;
-	    maptable['2']=1;
-	    maptable['3']=2;
-	    maptable['4']=3;	
-	    maptable['5']=4;	
-	    maptable['6']=5;	//Translation '123456' -> 012345
+	    maptable[(unsigned char) '1']=0;
+	    maptable[(unsigned char) '2']=1;
+	    maptable[(unsigned char) '3']=2;
+	    maptable[(unsigned char) '4']=3;	
+	    maptable[(unsigned char) '5']=4;	
+	    maptable[(unsigned char) '6']=5;	//Translation '123456' -> 012345
 
-	    maptable[0]='1';
-	    maptable[1]='2';
-	    maptable[2]='3';
-	    maptable[3]='4';
-	    maptable[4]='5';
-	    maptable[5]='6';	//Translation 012345->'123456'
+	    maptable[(unsigned char) 0]='1';
+	    maptable[(unsigned char) 1]='2';
+	    maptable[(unsigned char) 2]='3';
+	    maptable[(unsigned char) 3]='4';
+	    maptable[(unsigned char) 4]='5';
+	    maptable[(unsigned char) 5]='6';	//Translation 012345->'123456'
 
 	    break;
     case PROTEIN:
@@ -137,12 +137,12 @@ void CCharFeatures::init_map_table()
       break;
     case DNA:
     default:
-	maptable['A']=B_A;
-	maptable['C']=B_C;
-	maptable['G']=B_G;
-	maptable['T']=B_T;	
-	maptable['N']=B_N;	
-	maptable['n']=B_n;	//Translation ACGTNn -> 012345
+	maptable[(unsigned char) 'A']=B_A;
+	maptable[(unsigned char) 'C']=B_C;
+	maptable[(unsigned char) 'G']=B_G;
+	maptable[(unsigned char) 'T']=B_T;	
+	maptable[(unsigned char) 'N']=B_N;	
+	maptable[(unsigned char) 'n']=B_n;	//Translation ACGTNn -> 012345
 
 	maptable[B_A]='A';
 	maptable[B_C]='C';
