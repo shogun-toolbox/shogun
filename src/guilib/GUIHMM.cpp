@@ -196,21 +196,274 @@ bool CGUIHMM::linear_train(char* param)
 
 bool CGUIHMM::one_class_test(char* param)
 {
-	return false;
+	bool result=false;
+	char outputname[1024];
+	char rocfname[1024];
+	FILE* outputfile=stdout;
+	FILE* rocfile=NULL;
+	int numargs=-1;
+	double tresh=0.5;
+
+	param=CIO::skip_spaces(param);
+
+	numargs=sscanf(param, "%le %s %s", &tresh, outputname, rocfname);
+
+	CIO::message("Tresholding at:%f\n",tresh);
+	if (numargs>=2)
+	{
+		outputfile=fopen(outputname, "w");
+
+		if (!outputfile)
+		{
+			CIO::message(stderr,"ERROR: could not open %s\n",outputname);
+			return false;
+		}
+
+		if (numargs==3) 
+		{
+			rocfile=fopen(rocfname, "w");
+
+			if (!rocfile)
+			{
+				CIO::message(stderr,"ERROR: could not open %s\n",rocfname);
+				return false;
+			}
+		}
+	}
+
+	if (test)
+	{
+		if (gui->guiobs.get_obs("POSTEST") && gui->guiobs.get_obs("NEGTEST"))
+		{
+			CObservation* obs=new CObservation(gui->guiobs.get_obs("POSTEST"), gui->guiobs.get_obs("NEGTEST"));
+
+			CObservation* old_test=test->get_observations();
+			test->set_observations(obs);
+
+			int total=obs->get_DIMENSION();
+
+			REAL* output = new REAL[total];	
+			int* label= new int[total];	
+
+			REAL* fp= new REAL[total];	
+			REAL* tp= new REAL[total];	
+
+			for (int dim=0; dim<total; dim++)
+			{
+				output[dim]=test->model_probability(dim)-tresh;
+				label[dim]= obs->get_label(dim);
+
+				if (math.sign((REAL) output[dim])==label[dim])
+					fprintf(outputfile,"%+.8g (%+d)\n",(double) output[dim], label[dim]);
+				else
+					fprintf(outputfile,"%+.8g (%+d)(*)\n",(double) output[dim], label[dim]);
+			}
+
+			int possize,negsize;
+			int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize, rocfile);
+
+			double correct=possize*tp[pointeven]+(1-fp[pointeven])*negsize;
+			double fpo=fp[pointeven]*negsize;
+			double fne=(1-tp[pointeven])*possize;
+
+			printf("classified:\n");
+			printf("\tcorrect:%i\n", int (correct));
+			printf("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
+			printf("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, (double) fp[pointeven], (double) tp[pointeven]);
+
+			delete[] fp;
+			delete[] tp;
+			delete[] output;
+			delete[] label;
+
+			test->set_observations(old_test);
+
+			delete obs;
+
+			result=true;
+		}
+		else
+			printf("assign posttest and negtest observations first!\n");
+	}
+	else
+		CIO::message("assign test model first!\n");
+
+	return result;
 }
 
 bool CGUIHMM::test_hmm(char* param)
 {
-	return false;
+	bool result=false;
+	char outputname[1024];
+	char rocfname[1024];
+	FILE* outputfile=stdout;
+	FILE* rocfile=NULL;
+	int numargs=-1;
+
+	param=CIO::skip_spaces(param);
+
+	numargs=sscanf(param, "%s %s", outputname, rocfname);
+
+	if (numargs>=1)
+	{
+		outputfile=fopen(outputname, "w");
+
+		if (!outputfile)
+		{
+			CIO::message(stderr,"ERROR: could not open %s\n",outputname);
+			return false;
+		}
+
+		if (numargs==2) 
+		{
+			rocfile=fopen(rocfname, "w");
+
+			if (!rocfile)
+			{
+				CIO::message(stderr,"ERROR: could not open %s\n",rocfname);
+				return false;
+			}
+		}
+	}
+
+	if (pos && neg)
+	{
+		if (gui->guiobs.get_obs("POSTEST") && gui->guiobs.get_obs("NEGTEST"))
+		{
+			CObservation* obs=new CObservation(gui->guiobs.get_obs("POSTEST"), gui->guiobs.get_obs("NEGTEST"));
+
+			CObservation* old_pos=pos->get_observations();
+			CObservation* old_neg=neg->get_observations();
+
+			pos->set_observations(obs);
+			neg->set_observations(obs);
+
+			int total=obs->get_DIMENSION();
+
+			REAL* output = new REAL[total];	
+			int* label= new int[total];	
+
+			REAL* fp= new REAL[total];	
+			REAL* tp= new REAL[total];	
+
+			for (int dim=0; dim<total; dim++)
+			{
+				output[dim]=pos->model_probability(dim)-neg->model_probability(dim);
+				label[dim]= obs->get_label(dim);
+
+				if (math.sign((REAL) output[dim])==label[dim])
+					fprintf(outputfile,"%+.8g (%+d)\n",(double) output[dim], label[dim]);
+				else
+					fprintf(outputfile,"%+.8g (%+d)(*)\n",(double) output[dim], label[dim]);
+			}
+
+			int possize,negsize;
+			int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize, rocfile);
+
+			double correct=possize*tp[pointeven]+(1-fp[pointeven])*negsize;
+			double fpo=fp[pointeven]*negsize;
+			double fne=(1-tp[pointeven])*possize;
+
+			printf("classified:\n");
+			printf("\tcorrect:%i\n", int (correct));
+			printf("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
+			printf("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, (double) fp[pointeven], (double) tp[pointeven]);
+
+			delete[] fp;
+			delete[] tp;
+			delete[] output;
+			delete[] label;
+
+			pos->set_observations(old_pos);
+			neg->set_observations(old_neg);
+
+			delete obs;
+			result=true;
+		}
+		else
+			printf("assign postest and negtest observations first!\n");
+	}
+	else
+		CIO::message("assign positive and negative models first!\n");
+
+	return result;
 }
 
 bool CGUIHMM::append_model(char* param)
 {
+	if (working)
+	{
+		char fname[1024]; 
+		int base1=0;
+		int base2=2;
+		param=CIO::skip_spaces(param);
+
+		if (sscanf(param, "%s %i %i", fname, &base1, &base2) == 3)
+		{
+			FILE* model_file=fopen(fname, "r");
+
+			if (model_file)
+			{
+				CHMM* h=new CHMM(model_file,PSEUDO);
+				if (h && h->get_status())
+				{
+					printf("file successfully read\n");
+					fclose(model_file);
+
+					REAL cur_o[4];
+					REAL app_o[4];
+
+					for (int i=0; i<h->get_M(); i++)
+					{
+						if (i==base1)
+							cur_o[i]=0;
+						else
+							cur_o[i]=-1000;
+						
+						if (i==base2)
+							app_o[i]=0;
+						else
+							app_o[i]=-1000;
+					}
+					
+					working->append_model(h, cur_o, app_o);
+					CIO::message("new model has %i states\n", working->get_N());
+					delete h;
+				}
+				else
+					CIO::message("reading file %s failed\n", fname);
+			}
+			else
+				CIO::message("opening file %s failed\n", fname);
+		}
+		else
+			CIO::message("see help for parameters\n", fname);
+	}
+	else
+		CIO::message("create model first\n");
+
+
 	return false;
 }
 
 bool CGUIHMM::add_states(char* param)
 {
+	if (working)
+	{
+		int states=1;
+		double value=0;
+  
+		param=CIO::skip_spaces(param);
+
+		sscanf(param, "%i %le", &states, &value);
+		CIO::message("adding %i states\n", states);
+		working->add_states(states, value);
+		CIO::message("new model has %i states\n", working->get_N());
+		return true;
+	}
+	else
+	   CIO::message("create model first\n");
+
 	return false;
 }
 

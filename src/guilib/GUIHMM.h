@@ -5,7 +5,7 @@
 
 class CGUI ;
 
-class CGUIHMM
+class CGUIHMM 
 {
 public:
 	CGUIHMM(CGUI *);
