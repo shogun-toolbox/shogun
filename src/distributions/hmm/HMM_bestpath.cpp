@@ -15,36 +15,31 @@
 extern "C" int	finite(double);
 #endif
 
-bool extend_orf(const char* genestr, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to)
+inline bool extend_orf(const bool* genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to)
 {
 	if (start<0) 
 		start=0 ;
-	if (last_pos==to && to<0)
-		to=last_pos=0 ;
 	if (to<0)
 		to=0 ;
-
-	assert(to>=last_pos) ;
-	assert(to>=start) ;
-	assert(start<=last_pos+3) ;
+	
 	INT orf_target = orf_to-orf_from ;
 	if (orf_target<0) orf_target+=3 ;
-	assert((to-start)%3==orf_target) ;
-
+	
 	INT pos ;
 	if (last_pos==to)
 		pos = to-orf_to-3 ;
 	else
 		pos=last_pos ;
+
+	if (pos<0)
+		return true ;
 	
 	for (; pos>=start; pos-=3)
-		if (genestr[pos]=='t' && 
-			((genestr[pos+1]=='a' && 
-			  (genestr[pos+2]=='a' || genestr[pos+2]=='g')) ||
-			 (genestr[pos+1]=='g' && genestr[pos+2]=='a')))
+		if (genestr_stop[pos])
 			return false ;
-
+	
 	last_pos = math.min(pos+3,to-orf_to-3) ;
+
 	return true ;
 }
 
@@ -63,7 +58,8 @@ bool extend_orf(const char* genestr, INT orf_from, INT orf_to, INT start, INT &l
 #define ORF_TO(i) orf_info[N+i] 
 
 void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const INT *orf_info,
-						   struct penalty_struct **PEN_matrix, const char *genestr,
+						   struct penalty_struct **PEN_matrix, 
+						   const char *genestr, INT genestr_len,
 						   short int nbest, 
 						   REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq)
 {
@@ -85,7 +81,9 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	const INT look_back_buflen = max_look_back*nbest*N ;
 	const REAL mem_use = (REAL)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(short int)+sizeof(INT))+
 								look_back_buflen*(2*sizeof(REAL)+sizeof(INT))+
-								seq_len*(sizeof(T_STATES)+sizeof(INT)))/(1024*1024) ;
+								seq_len*(sizeof(T_STATES)+sizeof(INT))+
+								genestr_len*sizeof(bool))/(1024*1024)
+		 ;
     bool is_big = (mem_use>30) || (seq_len>1000) ;
 
 	if (is_big)
@@ -97,6 +95,8 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	}
 	assert(nbest<32000) ;
 		
+	bool * genestr_stop = new bool[genestr_len] ;
+
 	REAL* delta= new REAL[look_back_buflen] ;
 	assert(delta!=NULL) ;
 	T_STATES *psi=new T_STATES[seq_len*N*nbest] ;
@@ -122,6 +122,20 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	assert(state_seq!=NULL) ;
 	INT * pos_seq   = new INT[seq_len] ;
 	assert(pos_seq!=NULL) ;
+
+	
+	{ // precompute stop codons
+		for (INT i=0; i<genestr_len-2; i++)
+			if (genestr[i]=='t' && 
+				((genestr[i+1]=='a' && 
+				  (genestr[i+2]=='a' || genestr[i+2]=='g')) ||
+				 (genestr[i+1]=='g' && genestr[i+2]=='a')))
+				genestr_stop[i]=true ;
+			else
+				genestr_stop[i]=false ;
+		genestr_stop[genestr_len-1]=false ;
+		genestr_stop[genestr_len-1]=false ;
+	}
 	
 	{ // initialization
 		for (T_STATES i=0; i<N; i++)
@@ -198,13 +212,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 							ok=true ;
 						else if (pos[ts]!=-1 && (pos[t]-pos[ts])%3==orf_target)
 						{
-//							fprintf(stderr,"start=%i last_pos=%i end=%i  ", pos[ts], last_pos, pos[t]) ;
-							ok=extend_orf(genestr, orf_from, orf_to, pos[ts], last_pos, pos[t]) ;
-//							if (ok)
-//								fprintf(stderr, "orf ok\n") ;
-//							else
-//								fprintf(stderr, "no orf\n") ;
-							
+							ok=extend_orf(genestr_stop, orf_from, orf_to, pos[ts], last_pos, pos[t]) ;
 							if (!ok) 
 								break ;
 						} else
@@ -271,7 +279,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	{ //state sequence backtracking
 		for (short int k=0; k<nbest; k++)
 		{
-			prob_nbest[k]=-DELTA_END(k) ;
+			prob_nbest[k]= DELTA_END(k) ;
 			
 			INT i         = 0 ;
 			state_seq[i]  = PATH_END(k) ;
@@ -312,4 +320,5 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 
 	delete[] state_seq ;
 	delete[] pos_seq ;
+	delete[] genestr_stop ;
 }

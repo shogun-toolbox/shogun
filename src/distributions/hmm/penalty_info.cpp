@@ -15,6 +15,7 @@ void init_penalty_struct(struct penalty_struct &PEN)
 	PEN.transform = T_LINEAR ;
 	PEN.name = NULL ;
 	PEN.max_len=0 ;
+	PEN.min_len=0 ;
 	PEN.cache=NULL ;
 }
 
@@ -116,6 +117,14 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 			delete_penalty_struct_array(PEN,P) ;
 			return NULL ;
 		}
+		const mxArray* mx_min_len_field = mxGetField(mx_elem, 0, "min_len") ;
+		if (mx_min_len_field==NULL || !mxIsNumeric(mx_min_len_field) ||
+			mxGetM(mx_min_len_field)!=1 || mxGetN(mx_min_len_field)!=1)
+		{
+			CIO::message(M_ERROR, "missing min_len field\n") ;
+			delete_penalty_struct_array(PEN,P) ;
+			return NULL ;
+		}
 		
 		INT id = (INT) mxGetScalar(mx_id_field)-1 ;
 		if (i<0 || i>P-1)
@@ -132,6 +141,16 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 			return NULL ;
 		}
 		PEN[id].max_len = max_len ;
+
+		INT min_len = (INT) mxGetScalar(mx_min_len_field) ;
+		if (min_len<0 || min_len>1024*1024*100)
+		{
+			CIO::message(M_ERROR, "min_len out of range\n") ;
+			delete_penalty_struct_array(PEN,P) ;
+			return NULL ;
+		}
+		PEN[id].min_len = min_len ;
+
 		if (PEN[id].id!=-1)
 		{
 			CIO::message(M_ERROR, "penalty id already used\n") ;
@@ -174,11 +193,11 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 		init_penalty_struct_cache(PEN[id]) ;
 
 		if (PEN->cache)
-			fprintf(stderr, "penalty_info: name=%s id=%i len=%i max_len=%i transform='%s' (cache initialized)\n", PEN[id].name,
-					PEN[id].id, PEN[id].len, PEN[id].max_len, transform_str) ;
+			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_len=%i max_len=%i transform='%s' (cache initialized)\n", PEN[id].name,
+					PEN[id].id, PEN[id].len, PEN[id].min_len, PEN[id].max_len, transform_str) ;
 		else
-			fprintf(stderr, "penalty_info: name=%s id=%i len=%i max_len=%i transform='%s'\n", PEN[id].name,
-					PEN[id].id, PEN[id].len, PEN[id].max_len, transform_str) ;
+			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_len=%i max_len=%i transform='%s'\n", PEN[id].name,
+					PEN[id].id, PEN[id].len, PEN[id].min_len, PEN[id].max_len, transform_str) ;
 
 		
 		mxFree(transform_str) ;

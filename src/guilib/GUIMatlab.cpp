@@ -412,7 +412,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxREAL);
 			double* p_prob = mxGetPr(mx_prob);
 			
-			h->best_path_trans(seq, M, pos, orf_info, PEN_matrix, genestr,
+			h->best_path_trans(seq, M, pos, orf_info, PEN_matrix, genestr, L,
 							   nbest, p_prob, my_path, my_pos) ;
 
 			// clean up 
