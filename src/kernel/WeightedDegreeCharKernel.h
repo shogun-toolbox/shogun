@@ -19,7 +19,7 @@ struct SuffixTree
 class CWeightedDegreeCharKernel: public CCharKernel
 {
  public:
-  CWeightedDegreeCharKernel(LONG size, REAL* weights, INT degree, INT max_mismatch, bool use_normalization=true, INT mkl_stepsize=1) ;
+  CWeightedDegreeCharKernel(LONG size, REAL* weights, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1) ;
   ~CWeightedDegreeCharKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -208,6 +208,8 @@ class CWeightedDegreeCharKernel: public CCharKernel
   struct SuffixTree **trees ;
   bool tree_initialized ;
   bool use_normalization ;
+  bool block_computation;
+
   REAL* matching_weights;
 };
 #endif

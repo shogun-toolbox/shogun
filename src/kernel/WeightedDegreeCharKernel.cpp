@@ -6,9 +6,9 @@
 
 #include <assert.h>
 
-CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d, INT max_mismatch_, bool use_norm, INT mkl_stepsize_)
+CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
 	: CCharKernel(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), max_mismatch(max_mismatch_), seq_length(0),
-	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL), use_normalization(use_norm)
+	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL), use_normalization(use_norm), block_computation(block)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION;
 	lhs=NULL;
@@ -431,7 +431,7 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 
   double result=0;
 
-  if (max_mismatch == 0 && length == 0)
+  if (max_mismatch == 0 && length == 0 && block_computation)
 	  result = compute_using_block(avec, alen, bvec, blen) ;
   else
   {

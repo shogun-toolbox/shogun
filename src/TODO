@@ -1,4 +1,4 @@
-- was ist denn penalty_info im distributions dir ?
+- WeightedDegreePositionCharKernel optimize/linadd testen (schon impl ???)
 - src aufrauemen/cleaner main weg
 - svm cplex & svm_mpi killen
 - grad_descent weghauen
