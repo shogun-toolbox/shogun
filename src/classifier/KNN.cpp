@@ -26,8 +26,8 @@ bool CKNN::train()
 	int i;
 	for (i=1; i<num_train_labels; i++)
 	{
-		min_class=math.max(max_class, train_labels[i]);
-		max_class=math.min(min_class, train_labels[i]);
+		max_class=math.max(max_class, train_labels[i]);
+		min_class=math.min(min_class, train_labels[i]);
 	}
 
 	for (i=0; i<num_train_labels; i++)
@@ -35,6 +35,8 @@ bool CKNN::train()
 
 	min_label=min_class;
 	num_classes=max_class-min_class;
+
+	CIO::message("num_classes: %d num_train: %d\n", num_classes, num_train_labels);
 	return true;
 }
 
@@ -57,8 +59,12 @@ REAL* CKNN::test()
 	assert(output);
 	assert(classes);
 
+	CIO::message("%d test examples\n", num_lab);
 	for (int i=0; i<num_lab; i++)
 	{
+		if ( (i% (num_lab/10+1))== 0)
+			CIO::message("%i%%..",100*i/(num_lab+1));
+
 		int j;
 		for (j=0; j<num_train_labels; j++)
 		{

@@ -7,14 +7,17 @@
 
 CSVM::CSVM()
 {
-	C1=-1;
-	C2=-1;
 	CKernelMachine::kernel=NULL;
-	svm_loaded=false;
+
 	svm_model.b=0.0;
 	svm_model.alpha=NULL;
 	svm_model.svs=NULL;
 	svm_model.num_svs=0;
+
+	svm_loaded=false;
+
+	C1=-1;
+	C2=-1;
 }
 
 CSVM::~CSVM()
@@ -27,35 +30,91 @@ CSVM::~CSVM()
 
 bool CSVM::load(FILE* modelfl)
 {
-	bool result=false;
+	bool result=true;
 	CHAR char_buffer[1024];
 	int int_buffer;
 	double double_buffer;
+	int line_number=1;
 
-	memset(&svm_model, 0x0, sizeof(TModel));
-
-	fscanf(modelfl,"%%SVM\n");
-	fscanf(modelfl,"numsv=%d%*[^\n]\n", &int_buffer);
-	svm_model.num_svs=int_buffer;
-	fscanf(modelfl,"kernel='%s'\n", char_buffer);
-	fscanf(modelfl,"b=%lf%*[^\n]\n", &double_buffer);
-	svm_model.b=double_buffer;
-
-	CIO::message("loading %ld support vectors\n",svm_model.num_svs);
-	create_new_model(svm_model.num_svs);
-
-	fscanf(modelfl,"alphas=\[\n");
-
-	for (INT i=1; i<svm_model.num_svs; i++)
+	if (fscanf(modelfl,"%%SVM\n")==EOF)
 	{
-		fscanf(modelfl,"\t[%lf,%d];%*[^\n]\n", &double_buffer, &int_buffer);
+		result=false;
+		CIO::message("error in svm file, line nr:%d\n", line_number);
+	}
+	else
+		line_number++;
+
+	int_buffer=0;
+	if (fscanf(modelfl,"numsv=%d%*[^\n]\n", &int_buffer) != 1)
+	{
+		result=false;
+		CIO::message("error in svm file, line nr:%d\n", line_number);
+	}
+
+	if (!feof(modelfl))
+		line_number++;
+
+	CIO::message("loading %ld support vectors\n",int_buffer);
+	create_new_model(int_buffer);
+
+	if (fscanf(modelfl,"kernel='%s'%*[^\n]\n", char_buffer) != 1)
+	{
+		result=false;
+		CIO::message("error in svm file, line nr:%d\n", line_number);
+	}
+
+	if (!feof(modelfl))
+		line_number++;
+
+	double_buffer=0;
+	
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
+	if (fscanf(modelfl,"b=%lf%*[^\n]\n", &double_buffer) != 1)
+	{
+		result=false;
+		CIO::message("error in svm file, line nr:%d\n", line_number);
+		CIO::message("b\n");
+	}
+	
+	if (!feof(modelfl))
+		line_number++;
+
+	set_bias(double_buffer);
+
+	if (fscanf(modelfl,"alphas=\[\n") == EOF)
+	{
+		result=false;
+		CIO::message("error in svm file, line nr:%d\n", line_number);
+	}
+	else
+		line_number++;
+
+	for (INT i=0; i<get_num_support_vectors(); i++)
+	{
+		double_buffer=0;
+		int_buffer=0;
+
+		if (fscanf(modelfl,"\t[[]%+10.16e,%d[]]%*[^\n]\n", &double_buffer, &int_buffer) != 2)
+		{
+			result=false;
+			CIO::message("error in svm file, line nr:%d\n", line_number);
+		}
+
+		if (!feof(modelfl))
+			line_number++;
+
 		set_support_vector(i, int_buffer);
 		set_alpha(i, double_buffer);
 	}
 
-	fscanf(modelfl,"];");
+	if (fscanf(modelfl,"];") == EOF)
+	{
+		result=false;
+		CIO::message("error in svm file, line nr:%d\n", line_number);
+	}
+	else
+		line_number++;
 
-	result=true;
 	svm_loaded=result;
 	return result;
 }
@@ -70,7 +129,7 @@ bool CSVM::save(FILE* modelfl)
 
   fprintf(modelfl, "alphas=\[\n");
   
-  for(INT i=0; i<svm_model.num_svs; i++)
+  for(INT i=0; i<get_num_support_vectors(); i++)
     fprintf(modelfl,"\t[%+10.16e,%d];\n", CSVM::get_alpha(i), get_support_vector(i));
 
   fprintf(modelfl, "];\n");
@@ -153,7 +212,12 @@ REAL CSVM::classify_example(INT num)
 {
 	REAL dist=0;
 	for(INT i=0; i<get_num_support_vectors(); i++)
+	{
+		CIO::message("i:%d\n\tsv_idx:%d\n ", i, get_support_vector(i));
+		CIO::message("\talpha:%f\n ", get_alpha(i));
+		CIO::message("\tnum_sv:%d num:%d\n", get_num_support_vectors(), num);
 		dist+=CKernelMachine::get_kernel()->kernel(get_support_vector(i), num)*get_alpha(i);
+	}
 	
 	return(dist+get_bias());
 }

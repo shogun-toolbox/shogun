@@ -9,8 +9,8 @@
 #include <assert.h>
 
 CSparsePolyKernel::CSparsePolyKernel(LONG size, INT d, bool inhom)
-  : CSparseRealKernel(size),degree(d),inhomogene(inhom), 
-	sqrtdiag_lhs(NULL),sqrtdiag_rhs(NULL), initialized(false)
+  : CSparseRealKernel(size), degree(d), inhomogene(inhom), 
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
 }
 
@@ -73,7 +73,8 @@ bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	this->lhs=(CSparseRealFeatures*) l;
 	this->rhs=(CSparseRealFeatures*) r;
 
-	initialized = true ;
+	initialized = true;
+	CIO::message("SparsePolyKernel initialized\n");
 	return result;
 }
   
@@ -93,81 +94,82 @@ bool CSparsePolyKernel::save_init(FILE* dest)
   
 REAL CSparsePolyKernel::compute(INT idx_a, INT idx_b)
 {
-  INT alen=0;
-  INT blen=0;
-  bool afree=false;
-  bool bfree=false;
-
-  //fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
-  TSparseEntry<REAL>* avec=((CSparseRealFeatures*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
-  TSparseEntry<REAL>* bvec=((CSparseRealFeatures*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
-
-  REAL sqrt_a= 1 ;
-  REAL sqrt_b= 1 ;
-  if (initialized)
-    {
-      sqrt_a=sqrtdiag_lhs[idx_a] ;
-      sqrt_b=sqrtdiag_rhs[idx_b] ;
-    } ;
-
-  REAL sqrt_both=sqrt_a*sqrt_b;
-  
-  REAL result=0;
-
-  //result remains zero when one of the vectors is non existent
-  if (avec && bvec)
-  {
-	  if (alen<=blen)
-	  {
-	      INT j=0;
-	      for (INT i=0; i<alen; i++)
-	      {
-	    	  INT a_feat_idx=avec[i].feat_index;
-
-	    	  while ( (j<blen) && (bvec[j].feat_index < a_feat_idx) )
-	    		  j++;
-
-	    	  if ( (j<blen) && (bvec[j].feat_index == a_feat_idx) )
-	    	  {
-	    		  result+= avec[i].entry * bvec[j].entry;
-	    		  j++;
-	    	  }
-	      }
-	  }
-	  else
-	  {
-	      INT j=0;
-	      for (INT i=0; i<blen; i++)
-	      {
-	    	  INT b_feat_idx=bvec[i].feat_index;
-
-	    	  while ( (j<alen) && (avec[j].feat_index < b_feat_idx) )
-	    		  j++;
-
-	    	  if ( (j<alen) && (avec[j].feat_index == b_feat_idx) )
-	    	  {
-	    		  result+= bvec[i].entry * avec[j].entry;
-	    		  j++;
-	    	  }
-	      }
-	  }
-
-	  if (inhomogene)
-		  result+=1;
-
-	  REAL re=result;
-
-	  for (INT j=1; j<degree; j++)
-		  result*=re;
-  }
-  else
-  {
-	  if (inhomogene)
-		  result=1.0;
-  }
-
-  ((CSparseRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CSparseRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
-
-  return result/sqrt_both;
+//  INT alen=0;
+//  INT blen=0;
+//  bool afree=false;
+//  bool bfree=false;
+//
+//  //fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
+//  TSparseEntry<REAL>* avec=((CSparseRealFeatures*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
+//  TSparseEntry<REAL>* bvec=((CSparseRealFeatures*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
+//
+//  REAL sqrt_a= 1 ;
+//  REAL sqrt_b= 1 ;
+//  if (initialized)
+//    {
+//      sqrt_a=sqrtdiag_lhs[idx_a] ;
+//      sqrt_b=sqrtdiag_rhs[idx_b] ;
+//    } ;
+//
+//  REAL sqrt_both=sqrt_a*sqrt_b;
+//  
+//  REAL result=0;
+//
+//  //result remains zero when one of the vectors is non existent
+//  if (avec && bvec)
+//  {
+//	  if (alen<=blen)
+//	  {
+//	      INT j=0;
+//	      for (INT i=0; i<alen; i++)
+//	      {
+//	    	  INT a_feat_idx=avec[i].feat_index;
+//
+//	    	  while ( (j<blen) && (bvec[j].feat_index < a_feat_idx) )
+//	    		  j++;
+//
+//	    	  if ( (j<blen) && (bvec[j].feat_index == a_feat_idx) )
+//	    	  {
+//	    		  result+= avec[i].entry * bvec[j].entry;
+//	    		  j++;
+//	    	  }
+//	      }
+//	  }
+//	  else
+//	  {
+//	      INT j=0;
+//	      for (INT i=0; i<blen; i++)
+//	      {
+//	    	  INT b_feat_idx=bvec[i].feat_index;
+//
+//	    	  while ( (j<alen) && (avec[j].feat_index < b_feat_idx) )
+//	    		  j++;
+//
+//	    	  if ( (j<alen) && (avec[j].feat_index == b_feat_idx) )
+//	    	  {
+//	    		  result+= bvec[i].entry * avec[j].entry;
+//	    		  j++;
+//	    	  }
+//	      }
+//	  }
+//
+//	  if (inhomogene)
+//		  result+=1;
+//
+//	  REAL re=result;
+//
+//	  for (INT j=1; j<degree; j++)
+//		  result*=re;
+//  }
+//  else
+//  {
+//	  if (inhomogene)
+//		  result=1.0;
+//  }
+//
+//  ((CSparseRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+//  ((CSparseRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+//
+//  return result/sqrt_both;
+return 1;
 }

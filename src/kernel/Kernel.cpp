@@ -7,7 +7,7 @@
 #include <string.h>
 #include <assert.h>
 
-CKernel::CKernel(LONG size)
+CKernel::CKernel(LONG size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL)
 {
 	if (size<10)
 		size=10;
