@@ -1,28 +1,11 @@
+#include "lib/common.h"
 #include "kernel/Kernel.h"
-#include "hmm/HMM.h"
-#include <string.h>
-#include <stdlib.h>
+#include "features/Features.h"
 
-/*
-extern long verbosity;
-extern CHMM* pos;
-extern CHMM* neg;
-extern double* theta;
-
-long   kernel_cache_statistic;
-double normalizer=1;
-*/
-
-//#ifdef SUNOS
-// extern "C" int exit(int);
-//#endif
 /* calculate the kernel function */
-CFLOAT CKernel::kernel(KERNEL_PARM *kernel_parm,DOC* a,DOC* b)
+REAL CKernel::kernel(CFeatures* a, int idx_a, CFeatures* b, int idx_b)
 {
-  
-    kernel_cache_statistic++;
-
-    if (a->docnum < 0 || b ->docnum <0)
+    if (idx_a < 0 || idx_b <0)
     {
 #ifdef DEBUG
 	printf("ERROR: (%d,%d)\n", a->docnum, b->docnum);
@@ -30,30 +13,11 @@ CFLOAT CKernel::kernel(KERNEL_PARM *kernel_parm,DOC* a,DOC* b)
 	return 0;
     }
 
-  switch(kernel_parm->kernel_type) {
-////    case 0: /* linear */ 
-////            return((CFLOAT)sprod_ss(a->words,b->words)); 
-////    case 1: /* polynomial */
-////            return((CFLOAT)pow(kernel_parm->coef_lin*sprod_ss(a->words,b->words)+kernel_parm->coef_const,(double)kernel_parm->poly_degree)); 
-////    case 2: /* radial basis function */
-////            return((CFLOAT)exp(-kernel_parm->rbf_gamma*(a->twonorm_sq-2*sprod_ss(a->words,b->words)+b->twonorm_sq)));
-////    case 3: /* sigmoid neural net */
-////            return((CFLOAT)tanh(kernel_parm->coef_lin*sprod_ss(a->words,b->words)+kernel_parm->coef_const)); 
-		case 4: /* TOP Kernel */
-	        return((CFLOAT)top_kernel(kernel_parm,a,b)); 
-		case 5: 
-			return ((CFLOAT)linear_top_kernel(kernel_parm,a,b)); 
-		case 6:
-			return ((CFLOAT)cached_top_kernel(kernel_parm,a,b)); 
-		case 7:
-			return ((CFLOAT)cached_fisher_kernel(kernel_parm,a,b)); 
-
-	    default:CIO::message("Error: Unknown kernel function\n"); exit(1);
-	}
-  return 0 ;
+	return compute(a,idx_a, b,idx_b);
 }
 
 /****************************** Cache handling *******************************/
+/*
 void CKernel::kernel_cache_init(KERNEL_CACHE *kernel_cache, long totdoc, long buffsize)
 {
   long i;
@@ -64,9 +28,9 @@ void CKernel::kernel_cache_init(KERNEL_CACHE *kernel_cache, long totdoc, long bu
   kernel_cache->invindex = new long[totdoc];
   kernel_cache->active2totdoc = new long[totdoc];
   kernel_cache->totdoc2active = new long[totdoc];
-  kernel_cache->buffer = new CFLOAT[buffsize*1024*1024/sizeof(CFLOAT)];
+  kernel_cache->buffer = new REAL[buffsize*1024*1024/sizeof(REAL)];
 
-  kernel_cache->buffsize=(long)(buffsize*1024*1024/sizeof(CFLOAT));
+  kernel_cache->buffsize=(long)(buffsize*1024*1024/sizeof(REAL));
 
   kernel_cache->max_elems=(long)(kernel_cache->buffsize/totdoc);
   if(kernel_cache->max_elems>totdoc) {
@@ -78,7 +42,7 @@ void CKernel::kernel_cache_init(KERNEL_CACHE *kernel_cache, long totdoc, long bu
    CIO::message(" Kernel evals so far: %ld\n",kernel_cache_statistic);    
   }
 
-  kernel_cache->elems=0;   /* initialize cache */
+  kernel_cache->elems=0;   // initialize cache 
   for(i=0;i<totdoc;i++) {
     kernel_cache->index[i]=-1;
     kernel_cache->lru[i]=0;
@@ -99,49 +63,49 @@ void CKernel::kernel_cache_init(KERNEL_CACHE *kernel_cache, long totdoc, long bu
 
 void CKernel::get_kernel_row(
 KERNEL_CACHE *kernel_cache,
-DOC *docs,          /* Get's a row of the matrix of kernel values */
-long docnum,long totdoc, /* This matrix has the same form as the Hessian, */ 
-long *active2dnum,  /* just that the elements are not multiplied by */
-CFLOAT *buffer,     /* y_i * y_j * a_i * a_j */
-KERNEL_PARM *kernel_parm) /* Takes the values from the cache if available. */
+DOC *docs,          // Get's a row of the matrix of kernel values
+long docnum,long totdoc, // This matrix has the same form as the Hessian,
+long *active2dnum,  // just that the elements are not multiplied by
+REAL *buffer,     // y_i * y_j * a_i * a_j
+KERNEL_PARM *kernel_parm) // Takes the values from the cache if available.
 {
   register long i,j,start;
   DOC *ex;
 
   ex=&(docs[docnum]);
-  if(kernel_cache->index[docnum] != -1) { /* is cached? */
-    kernel_cache->lru[kernel_cache->index[docnum]]=kernel_cache->time; /* lru */
+  if(kernel_cache->index[docnum] != -1) { //is cached? 
+    kernel_cache->lru[kernel_cache->index[docnum]]=kernel_cache->time; // lru
     start=kernel_cache->activenum*kernel_cache->index[docnum];
     for(i=0;(j=active2dnum[i])>=0;i++) {
       if(kernel_cache->totdoc2active[j] >= 0) {
 	buffer[j]=kernel_cache->buffer[start+kernel_cache->totdoc2active[j]];
       }
       else {
-	buffer[j]=(CFLOAT)kernel(kernel_parm,ex,&(docs[j]));
+	buffer[j]=(REAL)kernel(kernel_parm,ex,&(docs[j]));
       }
     }
   }
   else {
     for(i=0;(j=active2dnum[i])>=0;i++) {
-      buffer[j]=(CFLOAT)kernel(kernel_parm,ex,&(docs[j]));
+      buffer[j]=(REAL)kernel(kernel_parm,ex,&(docs[j]));
     }
   }
 }
 
 
-/* Fills cache for the row m */
+// Fills cache for the row m
 void CKernel::cache_kernel_row(KERNEL_CACHE *kernel_cache, DOC *docs, long m, KERNEL_PARM *kernel_parm)
 {
   register DOC *ex;
   register long j,k,l;
-  register CFLOAT *cache;
+  register REAL *cache;
 
-  if(!kernel_cache_check(kernel_cache,m)) {  /* not cached yet*/
+  if(!kernel_cache_check(kernel_cache,m)) {  // not cached yet
     cache = kernel_cache_clean_and_malloc(kernel_cache,m);
     if(cache) {
       l=kernel_cache->totdoc2active[m];
       ex=&(docs[m]);
-      for(j=0;j<kernel_cache->activenum;j++) {  /* fill cache */
+      for(j=0;j<kernel_cache->activenum;j++) {  // fill cache 
 	k=kernel_cache->active2totdoc[j];
 	if((kernel_cache->index[k] != -1) && (l != -1) && (k != m)) {
 	  cache[j]=kernel_cache->buffer[kernel_cache->activenum
@@ -158,21 +122,21 @@ void CKernel::cache_kernel_row(KERNEL_CACHE *kernel_cache, DOC *docs, long m, KE
   }
 }
 
-/* Fills cache for the rows in key */
+// Fills cache for the rows in key 
 void CKernel::cache_multiple_kernel_rows(KERNEL_CACHE *kernel_cache, DOC *docs, long *key, long varnum, KERNEL_PARM *kernel_parm)
 {
   register long i;
 
-  for(i=0;i<varnum;i++) {  /* fill up kernel cache */
+  for(i=0;i<varnum;i++) {  // fill up kernel cache 
     cache_kernel_row(kernel_cache,docs,key[i],kernel_parm);
   }
 }
 
-/* remove numshrink columns in the cache */
-/* which correspond to examples marked  */
+// remove numshrink columns in the cache
+// which correspond to examples marked
 void CKernel::kernel_cache_shrink(KERNEL_CACHE *kernel_cache, long totdoc, long numshrink, long *after)
 {                           
-  register long i,j,jj,from=0,to=0,scount;     /* 0 in after. */
+  register long i,j,jj,from=0,to=0,scount;     // 0 in after.
   long *keep;
 
   if(verbosity>=2) {
@@ -278,8 +242,8 @@ void CKernel::kernel_cache_free(KERNEL_CACHE *kernel_cache, long i)
   kernel_cache->elems--;
 }
 
-/* remove least recently used cache */
-/* element */
+// remove least recently used cache
+// element
 long CKernel::kernel_cache_free_lru(KERNEL_CACHE *kernel_cache)  
 {                                     
   register long k,least_elem=-1,least_time;
@@ -302,9 +266,9 @@ long CKernel::kernel_cache_free_lru(KERNEL_CACHE *kernel_cache)
   return(0);
 }
 
-/* Get a free cache entry. In case cache is full, the lru */
-/* element is removed. */
-CFLOAT* CKernel::kernel_cache_clean_and_malloc(KERNEL_CACHE *kernel_cache, long docnum)
+// Get a free cache entry. In case cache is full, the lru
+// element is removed.
+REAL* CKernel::kernel_cache_clean_and_malloc(KERNEL_CACHE *kernel_cache, long docnum)
 {             
   long result;
   if((result = kernel_cache_malloc(kernel_cache)) == -1) {
@@ -317,23 +281,23 @@ CFLOAT* CKernel::kernel_cache_clean_and_malloc(KERNEL_CACHE *kernel_cache, long 
     return(0);
   }
   kernel_cache->invindex[result]=docnum;
-  kernel_cache->lru[kernel_cache->index[docnum]]=kernel_cache->time; /* lru */
-  return((CFLOAT *)((long)kernel_cache->buffer
-		    +(kernel_cache->activenum*sizeof(CFLOAT)*
+  kernel_cache->lru[kernel_cache->index[docnum]]=kernel_cache->time; // lru
+  return((REAL *)((long)kernel_cache->buffer
+		    +(kernel_cache->activenum*sizeof(REAL)*
 		      kernel_cache->index[docnum])));
 }
 
-/* Update lru time to avoid removal from cache. */
+// Update lru time to avoid removal from cache.
 long CKernel::kernel_cache_touch(KERNEL_CACHE *kernel_cache, long docnum)
 {
   if(kernel_cache && kernel_cache->index[docnum] != -1) {
-    kernel_cache->lru[kernel_cache->index[docnum]]=kernel_cache->time; /* lru */
+    kernel_cache->lru[kernel_cache->index[docnum]]=kernel_cache->time; // lru
     return(1);
   }
   return(0);
 }
   
-/* Is that row cached? */
+// Is that row cached?
 long CKernel::kernel_cache_check(KERNEL_CACHE *kernel_cache, long docnum)
 {
   return(kernel_cache->index[docnum] != -1);
@@ -405,7 +369,7 @@ double CKernel::find_normalizer(KERNEL_PARM *kernel_parm, int num)
 }
 
 double CKernel::linear_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) 
-  /* plug in your favorite kernel */
+  // plug in your favorite kernel
 {
 	double result=0;
 
@@ -439,7 +403,7 @@ double CKernel::linear_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b)
 }
 
 
-double CKernel::top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in your favorite kernel */
+double CKernel::top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b)
 {
     double result=0;
 
@@ -515,7 +479,7 @@ double CKernel::top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in 
     return result/normalizer;
 }
 
-double CKernel::cached_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in your favorite kernel */
+double CKernel::cached_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b)
 {
     double* features_a=CHMM::get_top_feature_cache_line(a->docnum);
     double* features_b=CHMM::get_top_feature_cache_line(b->docnum);
@@ -535,7 +499,7 @@ double CKernel::cached_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* p
 }
 
 
-double CKernel::cached_fisher_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in your favorite kernel */
+double CKernel::cached_fisher_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b)
 {
     double* features_a=CHMM::get_top_feature_cache_line(a->docnum);
     double* features_b=CHMM::get_top_feature_cache_line(b->docnum);
@@ -608,4 +572,4 @@ bool CKernel::save_kernel(FILE* dest, CObservation* obs, int kernel_type)
 
 	kernel_cache_cleanup(&mykernel_cache);
 	return true;
-}
+}*/

@@ -28,8 +28,10 @@ public:
 
 	// check the feature object
 	virtual bool check_features(CFeatures* f)=0 ;
+	
+	// return the name of a kernel
+	virtual const char* get_name()=0 ;
 
-	/*
 protected:
 	/// compute kernel function for features a and b
 	/// idx_{a,b} denote the index of the feature vectors
@@ -51,10 +53,9 @@ protected:
 	long   kernel_cache_free_lru();
 	REAL *kernel_cache_clean_and_malloc(long);
 	long   kernel_cache_touch(long);
-	long   kernel_cache_check(long);*/
+	long   kernel_cache_check(long);
 	//@}
 	
-	/*
 	typedef struct kernel_cache {
 		long   *index;  
 		REAL *buffer; 
@@ -69,13 +70,7 @@ protected:
 		long   activenum;
 		long   buffsize;
 	} KERNEL_CACHE;
-*/
 protected:
-	long    kernel_type;   /* 0=linear, 1=poly, 2=rbf, 3=sigmoid, 4=custom */
-	long    poly_degree;
-	double  rbf_gamma;
-	double  coef_lin;
-	double  coef_const;
-	char    custom[50];    /* for user supplied kernel */
+	*/
 };
 #endif

@@ -5,7 +5,6 @@ extern "C" {
 
 void daxpy_(int, double, double*, int, double*, int) ;
 double ddot_(int, double*, int, double*, int) ;
-
 }
 
 #endif

@@ -20,7 +20,7 @@
 class CLinearKernel: public CKernel
 {
  public:
-  CLinearKernel(int rescale) ;
+  CLinearKernel(bool rescale) ;
   ~CLinearKernel() ;
   
   virtual void init(CFeatures* f);
@@ -38,8 +38,8 @@ class CLinearKernel: public CKernel
   void init_rescale(CFeatures* f);
   
  protected:
-  double scale ;
   int rescale ;
+  double scale ;
 };
 
 #endif
