@@ -7,7 +7,7 @@
 class CTOPFeatures: public CRealFeatures
 {
  public:
-  CTOPFeatures(long size, CHMM* p, CHMM* n);
+  CTOPFeatures(long size, CHMM* p, CHMM* n, bool neglin, bool poslin);
   CTOPFeatures(const CTOPFeatures &orig);
   
   virtual ~CTOPFeatures();
@@ -18,6 +18,7 @@ class CTOPFeatures: public CRealFeatures
   
   virtual CFeatures* duplicate() const;
 
+  int get_num_features();
 
  protected:
   virtual REAL* compute_feature_vector(long num, long& len, REAL* target=NULL);
@@ -28,5 +29,7 @@ class CTOPFeatures: public CRealFeatures
  protected:
   CHMM* pos;
   CHMM* neg;
+  bool poslinear;
+  bool neglinear;
 };
 #endif

@@ -2,13 +2,13 @@
 #include "lib/io.h"
 #include <assert.h>
 
-CTOPFeatures::CTOPFeatures(long size, CHMM* p, CHMM* n) : CRealFeatures(size)
+CTOPFeatures::CTOPFeatures(long size, CHMM* p, CHMM* n, bool neglin, bool poslin) : CRealFeatures(size), neglinear(neglin), poslinear(poslin)
 {
   set_models(p,n);
 }
 
  CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig): 
-	CRealFeatures(orig), pos(orig.pos), neg(orig.neg)
+	CRealFeatures(orig), pos(orig.pos), neg(orig.neg), neglinear(orig.neglinear), poslinear(orig.poslinear)
 { 
 }
 
@@ -31,8 +31,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
   
   if (pos && pos->get_observations())
 	set_num_vectors(pos->get_observations()->get_DIMENSION());
-  if (pos && neg)
-	num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
+	num_features=get_num_features();
 }
 
 int CTOPFeatures::get_label(long idx)
@@ -54,9 +53,8 @@ REAL* CTOPFeatures::compute_feature_vector(long num, long &len, REAL* target)
 {
   REAL* featurevector=target;
   
-  //CIO::message("allocating %.2f M for top feature vector cache\n", 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()));
  if (!featurevector) 
-   featurevector=new REAL[ 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ];
+   featurevector=new REAL[get_num_features()];
   
   if (!featurevector)
     return NULL;
@@ -70,51 +68,72 @@ void CTOPFeatures::compute_feature_vector(REAL* featurevector, long num, long& l
 {
 	long i,j,p=0,x=num;
 
-	double posx=pos->model_probability(x);
-	double negx=neg->model_probability(x);
+	double posx=(poslinear) ? (pos->linear_model_probability(x)) : (pos->model_probability(x));
+	double negx=(neglinear) ? (neg->linear_model_probability(x)) : (neg->model_probability(x));
 
-	len=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
-	//  CIO::message("len=%i\n",len) ;
+	len=get_num_features();
 
 	featurevector[p++]=(posx-negx);
-//	CIO::message("posx-negx=%f\n", featurevector[0]);
+	//	CIO::message("posx-negx=%f\n", featurevector[0]);
 
 	//first do positive model
-	for (i=0; i<pos->get_N(); i++)
+	if (poslinear)
 	{
-		featurevector[p++]=exp(pos->model_derivative_p(i, x)-posx);
-//		CIO::message("pos_p_deriv=%e\n", featurevector[p-1]) ;
-		featurevector[p++]=exp(pos->model_derivative_q(i, x)-posx);
-//		CIO::message("pos_q_deriv=%e\n", featurevector[p-1]) ;
-
-		for (j=0; j<pos->get_N(); j++) {
-			featurevector[p++]=exp(pos->model_derivative_a(i, j, x)-posx);
-//			CIO::message("pos_a_deriv[%i]=%e\n", j, featurevector[p-1]) ;
+		for (i=0; i<pos->get_N(); i++)
+		{
+			for (j=0; j<pos->get_M(); j++)
+				featurevector[p++]=exp(pos->linear_model_derivative(i, j, x)-posx);
 		}
+	}
+	else
+	{
+		for (i=0; i<pos->get_N(); i++)
+		{
+			featurevector[p++]=exp(pos->model_derivative_p(i, x)-posx);
+			//		CIO::message("pos_p_deriv=%e\n", featurevector[p-1]) ;
+			featurevector[p++]=exp(pos->model_derivative_q(i, x)-posx);
+			//		CIO::message("pos_q_deriv=%e\n", featurevector[p-1]) ;
 
-		for (j=0; j<pos->get_M(); j++) {
-			featurevector[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
-//			CIO::message("pos_b_deriv[%i]=%e\n", j, featurevector[p-1]) ;
-		} 
+			for (j=0; j<pos->get_N(); j++) {
+				featurevector[p++]=exp(pos->model_derivative_a(i, j, x)-posx);
+				//			CIO::message("pos_a_deriv[%i]=%e\n", j, featurevector[p-1]) ;
+			}
 
+			for (j=0; j<pos->get_M(); j++) {
+				featurevector[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
+				//			CIO::message("pos_b_deriv[%i]=%e\n", j, featurevector[p-1]) ;
+			} 
+
+		}
 	}
 
-	//then do negative
-	for (i=0; i<neg->get_N(); i++)
+	if (neglinear)
 	{
-		featurevector[p++]= - exp(neg->model_derivative_p(i, x)-negx);
-//		CIO::message("neg_p_deriv=%e\n", featurevector[p-1]) ;
-		featurevector[p++]= - exp(neg->model_derivative_q(i, x)-negx);
-//		CIO::message("neg_q_deriv=%e\n", featurevector[p-1]) ;
-
-		for (j=0; j<neg->get_N(); j++) {
-			featurevector[p++]= - exp(neg->model_derivative_a(i, j, x)-negx);
-//			CIO::message("neg_a_deriv=%e\n", featurevector[p-1]) ;
+		for (i=0; i<neg->get_N(); i++)
+		{
+			for (j=0; j<neg->get_M(); j++)
+				featurevector[p++]= - exp(neg->linear_model_derivative(i, j, x)-negx);
 		}
+	}
+	else
+	{
+		//then do negative
+		for (i=0; i<neg->get_N(); i++)
+		{
+			featurevector[p++]= - exp(neg->model_derivative_p(i, x)-negx);
+			//		CIO::message("neg_p_deriv=%e\n", featurevector[p-1]) ;
+			featurevector[p++]= - exp(neg->model_derivative_q(i, x)-negx);
+			//		CIO::message("neg_q_deriv=%e\n", featurevector[p-1]) ;
 
-		for (j=0; j<neg->get_M(); j++) {
-			featurevector[p++]= - exp(neg->model_derivative_b(i, j, x)-negx);
-//			CIO::message("neg_b_deriv=%e\n", featurevector[p-1]) ;
+			for (j=0; j<neg->get_N(); j++) {
+				featurevector[p++]= - exp(neg->model_derivative_a(i, j, x)-negx);
+				//			CIO::message("neg_a_deriv=%e\n", featurevector[p-1]) ;
+			}
+
+			for (j=0; j<neg->get_M(); j++) {
+				featurevector[p++]= - exp(neg->model_derivative_b(i, j, x)-negx);
+				//			CIO::message("neg_b_deriv=%e\n", featurevector[p-1]) ;
+			}
 		}
 	}
 }
@@ -123,7 +142,7 @@ REAL* CTOPFeatures::set_feature_matrix()
 {
 	long len=0;
 
-	num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
+	num_features=get_num_features();
 
 	num_vectors=pos->get_observations()->get_DIMENSION();
 	CIO::message("allocating top feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
@@ -153,4 +172,17 @@ REAL* CTOPFeatures::set_feature_matrix()
 	num_features=get_num_features() ;
 
 	return feature_matrix;
+}
+
+int CTOPFeatures::get_num_features()
+{
+	int num=0;
+
+	if (pos && neg)
+	{
+		num+=1; //zeroth- component
+		num+= (poslinear) ? (pos->get_N()*pos->get_M()) : (pos->get_N()*(1+pos->get_N()+1+pos->get_M()));
+		num+= (neglinear) ? (neg->get_N()*neg->get_M()) : (neg->get_N()*(1+neg->get_N()+1+neg->get_M()));
+	}
+	return num;
 }
