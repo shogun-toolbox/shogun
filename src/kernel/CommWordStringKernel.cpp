@@ -5,9 +5,11 @@
 
 #include <assert.h>
 
-CCommWordStringKernel::CCommWordStringKernel(LONG size, bool use_sign_)
+CCommWordStringKernel::CCommWordStringKernel(LONG size, bool use_sign_, 
+											 E_NormalizationType normalization_) 
   : CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
-	  dictionary_size(0), dictionary(NULL), dictionary_weights(NULL), use_sign(use_sign_)
+	dictionary_size(0), dictionary(NULL), dictionary_weights(NULL), use_sign(use_sign_), 
+	normalization(normalization_)
 {
 }
 
@@ -137,15 +139,14 @@ REAL CCommWordStringKernel::compute(INT idx_a, INT idx_b)
   WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
   WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
 
-  REAL sqrt_a= 1 ;
-  REAL sqrt_b= 1 ;
-  if (initialized)
+  REAL sqrt_both=1;
+  if (initialized && normalization!=E_NO_NORMALIZATION)
     {
-      sqrt_a=sqrtdiag_lhs[idx_a] ;
-      sqrt_b=sqrtdiag_rhs[idx_b] ;
+		REAL sqrt_a=sqrtdiag_lhs[idx_a] ;
+		REAL sqrt_b=sqrtdiag_rhs[idx_b] ;
+		sqrt_both=sqrt_a*sqrt_b;
     } ;
 
-  REAL sqrt_both=sqrt_a*sqrt_b;
 
   INT result=0;
 
@@ -199,8 +200,18 @@ REAL CCommWordStringKernel::compute(INT idx_a, INT idx_b)
 			  right_idx++;
 	  }
   }
- 
-  return result/sqrt_both;
+  switch (normalization)
+  {
+  case E_NO_NORMALIZATION:
+	  return result ;
+  case E_SQRT_NORMALIZATION:
+	  return result/sqrt(sqrt_both) ;
+  case E_FULL_NORMALIZATION:
+	  return result/sqrt_both ;
+  default:
+	  assert(0) ;
+  }
+  return result ;
 }
 
 
@@ -216,17 +227,20 @@ bool CCommWordStringKernel::init_optimization(INT count, INT *IDX, REAL * weight
 	} ;
 	CIO::message(M_DEBUG, "initializing CCommWordStringKernel optimization\n") ;
 
-	INT max_words=0 ;
+	INT max_words=1000 ; // use a bit more ...
 	int i ;
 	for (i=0; i<count; i++)
 	{
-		((CStringFeatures<WORD>*) lhs)->get_feature_vector(IDX[i], alen);
+		WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(IDX[i], alen);
+		if (avec==NULL)
+			return false ;
 		max_words+=alen ;
 	} ;
 	WORD *words = new WORD[max_words] ;
 	if (words==NULL)
 		return false ;
-
+	CIO::message(M_DEBUG, "max_words=%i\n", max_words) ;
+	
 	int num_words = 0 ;
 	for (i=0; i<count; i++)
 	{
@@ -236,7 +250,9 @@ bool CCommWordStringKernel::init_optimization(INT count, INT *IDX, REAL * weight
 		int j;
 		for (j=0; j<alen; j++)
 		{
-			assert(num_words<max_words) ;
+			if (num_words>=max_words)
+				CIO::message(M_DEBUG, "num_words=%i\n", num_words) ;
+			//assert(num_words<max_words) ;
 			words[num_words++]=avec[j] ;
 		}
 	} ;
@@ -278,11 +294,37 @@ bool CCommWordStringKernel::init_optimization(INT count, INT *IDX, REAL * weight
 					continue ;
 				int idx = math.fast_find(words, num_unique_words, avec[j-1]) ;
 				assert(idx!=-1) ;
-				word_weights[idx] += weights[i]/sqrtdiag_lhs[IDX[i]] ;
+				switch (normalization)
+				{
+				case E_NO_NORMALIZATION:
+					word_weights[idx] += weights[i] ;
+					break ;
+				case E_SQRT_NORMALIZATION:
+					word_weights[idx] += weights[i]/sqrt(sqrtdiag_lhs[IDX[i]]) ;
+					break ;
+				case E_FULL_NORMALIZATION:
+					word_weights[idx] += weights[i]/sqrtdiag_lhs[IDX[i]] ;
+					break ;
+				default:
+					assert(0) ;
+				}
 			}
 			int idx = math.fast_find(words, num_unique_words, avec[alen-1]) ;
 			assert(idx!=-1) ;
-			word_weights[idx] += weights[i]/sqrtdiag_lhs[IDX[i]] ;
+			switch (normalization)
+			{
+			case E_NO_NORMALIZATION:
+				word_weights[idx] += weights[i] ;
+				break ;
+			case E_SQRT_NORMALIZATION:
+				word_weights[idx] += weights[i]/sqrt(sqrtdiag_lhs[IDX[i]]) ;
+				break ;
+			case E_FULL_NORMALIZATION:
+				word_weights[idx] += weights[i]/sqrtdiag_lhs[IDX[i]] ;
+				break ;
+			default:
+				assert(0) ;
+			}
 		}
 		else
 		{
@@ -292,12 +334,38 @@ bool CCommWordStringKernel::init_optimization(INT count, INT *IDX, REAL * weight
 					continue ;
 				int idx = math.fast_find(words, num_unique_words, avec[j-1]) ;
 				assert(idx!=-1) ;
-				word_weights[idx] += weights[i]*(j-last_j)/sqrtdiag_lhs[IDX[i]] ;
+				switch (normalization)
+				{
+				case E_NO_NORMALIZATION:
+					word_weights[idx] += weights[i]*(j-last_j) ;
+					break ;
+				case E_SQRT_NORMALIZATION:
+					word_weights[idx] += weights[i]*(j-last_j)/sqrt(sqrtdiag_lhs[IDX[i]]) ;	
+					break ;
+				case E_FULL_NORMALIZATION:
+					word_weights[idx] += weights[i]*(j-last_j)/sqrtdiag_lhs[IDX[i]] ;
+					break ;
+				default:
+					assert(0) ;
+				}
 				last_j = j ;
 			}
 			int idx = math.fast_find(words, num_unique_words, avec[alen-1]) ;
 			assert(idx!=-1) ;
-			word_weights[idx] += weights[i]*(alen-last_j)/sqrtdiag_lhs[IDX[i]] ;
+			switch (normalization)
+			{
+			case E_NO_NORMALIZATION:
+				word_weights[idx] += weights[i]*(alen-last_j) ;
+				break ;
+			case E_SQRT_NORMALIZATION:
+				word_weights[idx] += weights[i]*(alen-last_j)/sqrt(sqrtdiag_lhs[IDX[i]]) ;
+				break ;
+			case E_FULL_NORMALIZATION:
+				word_weights[idx] += weights[i]*(alen-last_j)/sqrtdiag_lhs[IDX[i]] ;
+				break ;
+			default:
+				assert(0) ;
+			}
 		}
 	}
 	CIO::message(M_PROGRESS, "Done.         \n") ;
@@ -373,7 +441,16 @@ REAL CCommWordStringKernel::compute_optimized(INT i)
 			result += dictionary_weights[idx]*(alen-last_j) ;
 	}
 	
-	//((CWordFeatures*) rhs)->free_feature_vector(avec, i, afree);
-
-	return result/sqrtdiag_rhs[i] ;
+	switch (normalization)
+	{
+	case E_NO_NORMALIZATION:
+		return result ;
+	case E_SQRT_NORMALIZATION:
+		return result/sqrt(sqrtdiag_rhs[i]) ;
+	case E_FULL_NORMALIZATION:
+		return result/sqrtdiag_rhs[i] ;
+	default:
+		assert(0) ;
+	}
+	return result ;
 } ;
