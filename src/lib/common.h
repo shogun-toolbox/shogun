@@ -19,6 +19,7 @@ typedef unsigned char BYTE ;
 
 /// Type REAL (can be float/double/long double...)
 typedef double REAL ;
+typedef REAL* P_REAL ;
 
 /** SVM type of float to use for caching
   * kernel evaluations. Using float saves

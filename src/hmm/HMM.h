@@ -12,30 +12,7 @@
 #include "lib/common.h"
 #include "lib/Observation.h"
 
-#ifdef PARALLEL
-#define NUM_PARALLEL 4
-#define ALPHA_CACHE(dim) alpha_cache[(dim)%NUM_PARALLEL] 
-#define BETA_CACHE(dim) beta_cache[(dim)%NUM_PARALLEL] 
-#define ARRAYS(dim) arrayS[(dim)%NUM_PARALLEL] 
-#define ARRAYN1(dim) arrayN1[(dim)%NUM_PARALLEL] 
-#define ARRAYN2(dim) arrayN2[(dim)%NUM_PARALLEL] 
-#define STATES_PER_OBSERVATION_PSI(dim) states_per_observation_psi[(dim)%NUM_PARALLEL]
-#define PATH(dim) path[(dim)%NUM_PARALLEL]
-#define PATH_PROB_UPDATED(dim) path_prob_updated[(dim)%NUM_PARALLEL]
-#define PATH_PROB_DIMENSION(dim) path_prob_dimension[(dim)%NUM_PARALLEL]
-#else
-#define NUM_PARALLEL 1
-#define ALPHA_CACHE(dim) alpha_cache
-#define BETA_CACHE(dim) beta_cache
-#define ARRAYS(dim) arrayS 
-#define ARRAYN1(dim) arrayN1 
-#define ARRAYN2(dim) arrayN2
-#define STATES_PER_OBSERVATION_PSI(dim) states_per_observation_psi
-#define PATH(dim) path
-#define PATH_PROB_UPDATED(dim) path_prob_updated
-#define PATH_PROB_DIMENSION(dim) path_prob_dimension
-#endif
-
+extern int NUM_PARALLEL ;
 
 /// START macro for time measurements
 #define START { current_time = clock(); printf("started\n");}
@@ -75,6 +52,7 @@ typedef WORD T_STATES ;
 #else
 typedef BYTE T_STATES ;
 #endif
+typedef T_STATES* P_STATES ;
 
 //@}
 
@@ -86,6 +64,52 @@ typedef BYTE T_STATES ;
  */
 class CHMM  
 {
+#ifdef PARALLEL
+  inline T_ALPHA_BETA & ALPHA_CACHE(int dim) {
+    return alpha_cache[dim%NUM_PARALLEL] ; } ;
+  inline T_ALPHA_BETA & BETA_CACHE(int dim) {
+    return beta_cache[dim%NUM_PARALLEL] ; } ;
+  inline REAL* ARRAYS(int dim) {
+    return arrayS[dim%NUM_PARALLEL] ; } ;
+  inline REAL* ARRAYN1(int dim) {
+    return arrayN1[dim%NUM_PARALLEL] ; } ;
+  inline REAL* ARRAYN2(int dim) {
+    return arrayN2[dim%NUM_PARALLEL] ; } ;
+  inline T_STATES* STATES_PER_OBSERVATION_PSI(int dim) {
+    return states_per_observation_psi[dim%NUM_PARALLEL] ; } ;
+  inline const T_STATES* STATES_PER_OBSERVATION_PSI(int dim) const {
+    return states_per_observation_psi[dim%NUM_PARALLEL] ; } ;
+  inline T_STATES* PATH(int dim) {
+    return path[dim%NUM_PARALLEL] ; } ;
+  inline bool & PATH_PROB_UPDATED(int dim) {
+    return path_prob_updated[dim%NUM_PARALLEL] ; } ;
+  inline int & PATH_PROB_DIMENSION(int dim) {
+    return path_prob_dimension[dim%NUM_PARALLEL] ; } ;
+#else
+  inline T_ALPHA_BETA & ALPHA_CACHE(int dim) {
+    return alpha_cache ; } ;
+  inline T_ALPHA_BETA & BETA_CACHE(int dim) {
+    return beta_cache ; } ;
+  inline REAL* ARRAYS(int dim) {
+    return arrayS ; } ;
+  inline REAL* ARRAYN1(int dim) {
+    return arrayN1 ; } ;
+  inline REAL* ARRAYN2(int dim) {
+    return arrayN2 ; } ;
+  inline T_STATES* STATES_PER_OBSERVATION_PSI(int dim) {
+    return states_per_observation_psi ; } ;
+  inline const T_STATES* STATES_PER_OBSERVATION_PSI(int dim) const {
+    return states_per_observation_psi ; } ;
+  inline T_STATES* PATH(int dim) {
+    return path ; } ;
+  inline bool & PATH_PROB_UPDATED(int dim) {
+    return path_prob_updated ; } ;
+  inline int & PATH_PROB_DIMENSION(int dim) {
+    return path_prob_dimension ; } ;
+#endif
+
+
+
 	/** Train definitions.
 	 * Encapsulates Modelparameters that are constant/shall be learned.
 	 * Consists of structures and access functions for learning only defined transitions and constants.
@@ -1147,9 +1171,9 @@ protected:
 	static int num_features;	
 #ifdef PARALLEL
 	// array of size N*NUM_PARALLEL for temporary calculations
-	REAL* arrayN1[NUM_PARALLEL] ; 
+	REAL** arrayN1 /*[NUM_PARALLEL]*/ ;
 	// array of size N*NUM_PARRALEL for temporary calculations
-	REAL* arrayN2[NUM_PARALLEL] ;
+	REAL** arrayN2 /*[NUM_PARALLEL]*/ ;
 #else //PARALLEL
 	// array of size N for temporary calculations
 	REAL* arrayN1;
@@ -1160,7 +1184,7 @@ protected:
 #ifdef LOG_SUM_ARRAY
 #ifdef PARALLEL
 	// array for for temporary calculations of log_sum
-	REAL* arrayS[NUM_PARALLEL];
+	REAL** arrayS /*[NUM_PARALLEL]*/;
 #else
 	// array for for temporary calculations of log_sum
 	REAL* arrayS;
@@ -1170,22 +1194,22 @@ protected:
 #ifdef PARALLEL
 
 	/// cache for forward variables can be terrible HUGE O(T*N)
-	T_ALPHA_BETA alpha_cache[NUM_PARALLEL];
+	T_ALPHA_BETA *alpha_cache /*[NUM_PARALLEL]*/ ;
 	/// cache for backward variables can be terrible HUGE O(T*N)
-	T_ALPHA_BETA beta_cache[NUM_PARALLEL];
+	T_ALPHA_BETA *beta_cache /*[NUM_PARALLEL]*/ ;
 
 #ifndef NOVIT
 	/// backtracking table for viterbi can be terrible HUGE O(T*N)
-	T_STATES* states_per_observation_psi[NUM_PARALLEL];
+	T_STATES** states_per_observation_psi /*[NUM_PARALLEL]*/ ;
 
 	/// best path (=state sequence) through model
-	T_STATES* path[NUM_PARALLEL];
+	T_STATES** path /*[NUM_PARALLEL]*/ ;
 	
 	/// true if path probability is up to date
-	bool path_prob_updated[NUM_PARALLEL];
+	bool* path_prob_updated /*[NUM_PARALLEL]*/;
 	
 	/// dimension for which path_prob was calculated
-	int path_prob_dimension[NUM_PARALLEL];	
+	int* path_prob_dimension /*[NUM_PARALLEL]*/ ;	
 #endif //NOVIT
 
 #else //PARALLEL

@@ -15,13 +15,18 @@
 
 #define ARRAY_SIZE 65336
 
+#ifdef PARALLEL 
+int NUM_PARALLEL=4 ;
+#else
+int NUM_PARALLEL=1 ;
+#endif
+
 #ifdef PARALLEL
 #include <pthread.h>
 
 #ifdef SUNOS
 #include <thread.h>
 #endif
-
 
 struct S_THREAD_PARAM
 {
@@ -99,7 +104,7 @@ void error(int line, char* str);
 enum E_STATE
 {
 	INITIAL,
-	ARRAYS,
+	ARRAYs,
 	GET_N,
 	GET_M,
 	GET_ORDER,
@@ -193,12 +198,12 @@ CHMM::CModel::~CModel()
 
 CHMM::CHMM(int N_, int M_, int ORDER_, CModel* model_, REAL PSEUDO_)
 {
-	status=initialize(N_, M_, ORDER_, model_, PSEUDO_);
+  status=initialize(N_, M_, ORDER_, model_, PSEUDO_);
 }
 
 CHMM::CHMM(FILE* model_file_, REAL PSEUDO_)
 {
-	status=initialize(0, 0, 1, NULL, PSEUDO_, model_file_);
+  status=initialize(0, 0, 1, NULL, PSEUDO_, model_file_);
 }
 
 CHMM::~CHMM()
@@ -212,16 +217,21 @@ CHMM::~CHMM()
   
 
 #ifdef PARALLEL
-	{
-	  for (int i=0; i<NUM_PARALLEL; i++)
-	    {
-	      delete[] arrayN1[i];
-	      delete[] arrayN2[i];
-	    } ;
-	} ;
+  {
+    for (int i=0; i<NUM_PARALLEL; i++)
+      {
+	delete[] arrayN1[i];
+	delete[] arrayN2[i];
+      } ;
+  } ;
+  delete[] arrayN1 ;
+  delete[] arrayN2 ;
+
+  delete[] path_prob_updated ;
+  delete[] path_prob_dimension ;
 #else
-	delete[] arrayN1;
-	delete[] arrayN2;
+  delete[] arrayN1;
+  delete[] arrayN2;
 #endif
 
 #ifdef LOG_SUM_ARRAY
@@ -229,6 +239,7 @@ CHMM::~CHMM()
 	{
 	  for (int i=0; i<NUM_PARALLEL; i++)
 	    delete[] arrayS[i];
+	  delete[] arrayS ;
 	} ;
 #else //PARALLEL
 	delete[] arrayS;
@@ -253,6 +264,10 @@ CHMM::~CHMM()
 	      delete[] path[i] ;
 #endif // NOVIT
 	    } ;
+	  delete[] alpha_cache ;
+	  delete[] beta_cache ;
+	  delete[] states_per_observation_psi ;
+	  delete[] path ;
 #else
 	  delete[] alpha_cache.table;
 	  delete[] beta_cache.table;
@@ -270,7 +285,6 @@ bool CHMM::initialize(int N_, int M_, int ORDER_, CModel* model_,
 	//yes optimistic
 	bool files_ok=true;
 	
-
 	if (N_>(1<<(8*sizeof(T_STATES))))
 	  fprintf(stderr, "########\nNUMBER OF STATES TOO LARGE. Maximum is %i\n########\n", (1<<(8*sizeof(T_STATES)))) ;
 
@@ -298,6 +312,14 @@ bool CHMM::initialize(int N_, int M_, int ORDER_, CModel* model_,
 
 #ifdef PARALLEL
 	{
+	  path_prob_updated=new bool[NUM_PARALLEL] ;
+	  path_prob_dimension=new int[NUM_PARALLEL] ;
+
+	  alpha_cache=new T_ALPHA_BETA[NUM_PARALLEL] ;
+	  beta_cache=new T_ALPHA_BETA[NUM_PARALLEL] ;
+	  states_per_observation_psi=new P_STATES[NUM_PARALLEL] ;
+	  path=new P_STATES[NUM_PARALLEL] ;
+
 	  for (int i=0; i<NUM_PARALLEL; i++)
 	    {
 	      this->alpha_cache[i].table=NULL;
@@ -341,6 +363,8 @@ bool CHMM::initialize(int N_, int M_, int ORDER_, CModel* model_,
 
 #ifdef PARALLEL
 	{
+	  arrayN1=new P_REAL[NUM_PARALLEL] ;
+	  arrayN2=new P_REAL[NUM_PARALLEL] ;
 	  for (int i=0; i<NUM_PARALLEL; i++)
 	    {
 	      arrayN1[i]=new REAL[this->N];
@@ -355,6 +379,7 @@ bool CHMM::initialize(int N_, int M_, int ORDER_, CModel* model_,
 #ifdef LOG_SUM_ARRAY
 #ifdef PARALLEL
 	{
+	  arrayS=new P_REAL[NUM_PARALLEL] ;	  
 	  for (int i=0; i<NUM_PARALLEL; i++)
 	    arrayS[i]=new REAL[(int)(this->N/2+1)];
 	} ;
@@ -638,7 +663,6 @@ REAL CHMM::backward_comp(int time, int state, int dimension)
 	}
 }
 
-
 #ifndef NOVIT
 //calculates probability  of best path through the model lambda AND path itself
 //using viterbi algorithm
@@ -772,6 +796,11 @@ REAL CHMM::best_path(int dimension)
 
 REAL CHMM::model_probability_comp() 
 {
+#ifdef PARALLEL
+  pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
+  T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
+#endif
+
   //for faster calculation cache model probability
   printf("computing full model probablity\n") ;
   mod_prob=-math.INFTY ;
@@ -781,8 +810,6 @@ REAL CHMM::model_probability_comp()
       //fprintf(stderr,"dim=%i\n",dim) ;
       if (dim%NUM_PARALLEL==0)
 	{
-	  pthread_t threads[NUM_PARALLEL] ;
-	  T_THREAD_PARAM params[NUM_PARALLEL] ;
 	  int i ;
 	  for (i=0; i<NUM_PARALLEL; i++)
 	    if (dim+i<p_observations->get_DIMENSION())
@@ -808,6 +835,11 @@ REAL CHMM::model_probability_comp()
 #endif 
       mod_prob=math.logarithmic_sum(forward(p_observations->get_obs_T(dim), 0, dim), mod_prob);	
     } ;
+
+#ifdef PARALLEL
+  delete[] threads ;
+  delete[] params ;
+#endif
   
   mod_prob-=log(p_observations->get_DIMENSION());
   mod_prob_updated=true;
@@ -828,7 +860,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
     //clear actual model a,b,p,q are used as numerator
     //A,B as denominator for a,b
     for (i=0; i<N; i++)
-    {
+      {
 	set_p(i,log(PSEUDO));
 	set_q(i,log(PSEUDO));
 	A[i]=log(N*PSEUDO);
@@ -840,77 +872,117 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	    set_b(i,j, log(PSEUDO));
     }
 
+#ifdef PARALLEL
+    pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
+    T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
+#endif
+
     //change summation order to make use of alpha/beta caches
     for (dim=0; dim<p_observations->get_DIMENSION(); dim++)
     {
-	//and denominator
-	dimmodprob=train->model_probability(dim);
-	fullmodprob=math.logarithmic_sum(fullmodprob, dimmodprob) ;
-
-	for (i=0; i<N; i++)
+#ifdef PARALLEL
+      if (dim%NUM_PARALLEL==0)
 	{
-	    //estimate initial+end state distribution numerator
-	    set_p(i, math.logarithmic_sum(get_p(i), train->forward(0,i,dim)+train->backward(0,i,dim) - dimmodprob));
-	    set_q(i, math.logarithmic_sum(get_q(i), (train->forward(p_observations->get_obs_T(dim)-1, i, dim)+
-			train->backward(p_observations->get_obs_T(dim)-1, i, dim)) - dimmodprob ));
-
-	    //estimate a and b
-
-	    //denominators are constant for j
-	    //therefore calculate them first
-	    a_sum_denom=-math.INFTY;
-	    b_sum_denom=-math.INFTY;
-
-	    for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
-		a_sum_denom= math.logarithmic_sum(a_sum_denom, train->forward(t,i,dim)+train->backward(t,i,dim));
-
-	    b_sum_denom=math.logarithmic_sum(a_sum_denom, train->forward(t,i,dim)+train->backward(t,i,dim));
-
-	    A[i]= math.logarithmic_sum(A[i], a_sum_denom-dimmodprob);
-	    B[i]= math.logarithmic_sum(B[i], b_sum_denom-dimmodprob);
-	    
-	    //estimate numerator for a
-	    for (j=0; j<N; j++)
+	  int i ;
+	  for (i=0; i<NUM_PARALLEL; i++)
+	    if (dim+i<p_observations->get_DIMENSION())
+	      {
+		//fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;
+		params[i].hmm=train ;
+		params[i].dim=dim+i ;
+#ifdef SUNOS
+		thr_create(NULL,0, bw_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
+#else // SUNOS
+		pthread_create(&threads[i], NULL, vit_dim_prefetch, (void*)&params[i]) ;
+#endif
+	      } ;
+	  for (i=0; i<NUM_PARALLEL; i++)
+	    if (dim+i<p_observations->get_DIMENSION())
+	      {
+		void * ret ;
+		pthread_join(threads[i], &ret) ;
+		/*	allpatprob += params[i].ret ;*/
+		//fprintf(stderr,"thread for dim=%i returned: %i\n",dim+i,train->PATH_PROB_p_observations->get_DIMENSION()(dim)) ;
+	      } ;
+	}
+#else
+      //using viterbi to find best path
+      /*allpatprob += train->best_path(dim);*/
+#endif // PARALLEL
+      
+      //and denominator
+      dimmodprob=train->model_probability(dim);
+      fullmodprob=math.logarithmic_sum(fullmodprob, dimmodprob) ;
+      
+      for (i=0; i<N; i++)
+	{
+	  //estimate initial+end state distribution numerator
+	  set_p(i, math.logarithmic_sum(get_p(i), train->forward(0,i,dim)+train->backward(0,i,dim) - dimmodprob));
+	  set_q(i, math.logarithmic_sum(get_q(i), (train->forward(p_observations->get_obs_T(dim)-1, i, dim)+
+						   train->backward(p_observations->get_obs_T(dim)-1, i, dim)) - dimmodprob ));
+	  
+	  //estimate a and b
+	  
+	  //denominators are constant for j
+	  //therefore calculate them first
+	  a_sum_denom=-math.INFTY;
+	  b_sum_denom=-math.INFTY;
+	  
+	  for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
+	    a_sum_denom= math.logarithmic_sum(a_sum_denom, train->forward(t,i,dim)+train->backward(t,i,dim));
+	  
+	  b_sum_denom=math.logarithmic_sum(a_sum_denom, train->forward(t,i,dim)+train->backward(t,i,dim));
+	  
+	  A[i]= math.logarithmic_sum(A[i], a_sum_denom-dimmodprob);
+	  B[i]= math.logarithmic_sum(B[i], b_sum_denom-dimmodprob);
+	  
+	  //estimate numerator for a
+	  for (j=0; j<N; j++)
 	    {
-		a_sum_num=-math.INFTY;
-
-		for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
+	      a_sum_num=-math.INFTY;
+	      
+	      for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
 		{
-			a_sum_num= math.logarithmic_sum(a_sum_num, train->forward(t,i,dim)+
-				train->get_a(i,j)+train->get_b(j,p_observations->get_obs(dim,t+1))+train->backward(t+1,j,dim));
+		  a_sum_num= math.logarithmic_sum(a_sum_num, train->forward(t,i,dim)+
+						  train->get_a(i,j)+train->get_b(j,p_observations->get_obs(dim,t+1))+train->backward(t+1,j,dim));
 		}
-		set_a(i,j, math.logarithmic_sum(get_a(i,j), a_sum_num-dimmodprob));
+	      set_a(i,j, math.logarithmic_sum(get_a(i,j), a_sum_num-dimmodprob));
 	    }
-	    
-	    //estimate numerator for b
-	    for (j=0; j<M; j++)
+	  
+	  //estimate numerator for b
+	  for (j=0; j<M; j++)
 	    {
-		b_sum_num=-math.INFTY;
-
-		for (t=0; t<p_observations->get_obs_T(dim); t++) 
+	      b_sum_num=-math.INFTY;
+	      
+	      for (t=0; t<p_observations->get_obs_T(dim); t++) 
 		{
-			if (p_observations->get_obs(dim,t)==j) 
-			    b_sum_num=math.logarithmic_sum(b_sum_num, train->forward(t,i,dim)+train->backward(t, i, dim));
+		  if (p_observations->get_obs(dim,t)==j) 
+		    b_sum_num=math.logarithmic_sum(b_sum_num, train->forward(t,i,dim)+train->backward(t, i, dim));
 		}
-	
-		set_b(i,j, math.logarithmic_sum(get_b(i,j), b_sum_num-dimmodprob));
+	      
+	      set_b(i,j, math.logarithmic_sum(get_b(i,j), b_sum_num-dimmodprob));
 	    }
 	} 
     }
+#ifdef PARALLEL
+    delete[] threads ;
+    delete[] params ;
+#endif
 
+    
     //calculate estimates
     for (i=0; i<N; i++)
-    {
-		set_p(i, get_p(i) - log(p_observations->get_DIMENSION()+N*PSEUDO) );
-		set_q(i, get_q(i) - log(p_observations->get_DIMENSION()+N*PSEUDO) );
-
-		for (j=0; j<N; j++)
-			set_a(i,j, get_a(i,j) - A[i]);
-
-		for (j=0; j<M; j++)
-			set_b(i,j, get_b(i,j) - B[i]);
-    }
-
+      {
+	set_p(i, get_p(i) - log(p_observations->get_DIMENSION()+N*PSEUDO) );
+	set_q(i, get_q(i) - log(p_observations->get_DIMENSION()+N*PSEUDO) );
+	
+	for (j=0; j<N; j++)
+	  set_a(i,j, get_a(i,j) - A[i]);
+	
+	for (j=0; j<M; j++)
+	  set_b(i,j, get_b(i,j) - B[i]);
+      }
+    
     //cache train model probability
     train->mod_prob=fullmodprob-log(p_observations->get_DIMENSION());
     train->mod_prob_updated=true ;
@@ -1084,14 +1156,17 @@ void CHMM::estimate_model_viterbi(CHMM* train)
 
 	REAL allpatprob=0 ;
 
+#ifdef PARALLEL
+	pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
+	T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
+#endif
+
 	for (int dim=0; dim<p_observations->get_DIMENSION(); dim++)
 	{
 
 #ifdef PARALLEL
 	  if (dim%NUM_PARALLEL==0)
 	    {
-	      pthread_t threads[NUM_PARALLEL] ;
-	      T_THREAD_PARAM params[NUM_PARALLEL] ;
 	      int i ;
 	      for (i=0; i<NUM_PARALLEL; i++)
 		if (dim+i<p_observations->get_DIMENSION())
@@ -1131,6 +1206,11 @@ void CHMM::estimate_model_viterbi(CHMM* train)
 	  P[train->PATH(dim)[0]]++;
 	  Q[train->PATH(dim)[p_observations->get_obs_T(dim)-1]]++;
 	}
+
+#ifdef PARALLEL
+	delete[] threads ;
+	delete[] params ;
+#endif 
 
 	allpatprob/=p_observations->get_DIMENSION() ;
 	train->all_pat_prob=allpatprob ;
@@ -1201,6 +1281,11 @@ void CHMM::estimate_model_viterbi_defined(CHMM* train)
 	  Q[i]=PSEUDO;
 	}
 
+#ifdef PARALLEL
+	pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
+	T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
+#endif
+
 	REAL allpatprob=0.0 ;
 	for (int dim=0; dim<p_observations->get_DIMENSION(); dim++)
 	{
@@ -1208,8 +1293,6 @@ void CHMM::estimate_model_viterbi_defined(CHMM* train)
 #ifdef PARALLEL
 	  if (dim%NUM_PARALLEL==0)
 	    {
-	      pthread_t threads[NUM_PARALLEL] ;
-	      T_THREAD_PARAM params[NUM_PARALLEL] ;
 	      int i ;
 	      for (i=0; i<NUM_PARALLEL; i++)
 		if (dim+i<p_observations->get_DIMENSION())
@@ -1251,6 +1334,10 @@ void CHMM::estimate_model_viterbi_defined(CHMM* train)
 	  Q[train->PATH(dim)[p_observations->get_obs_T(dim)-1]]++;
 	}
 
+#ifdef PARALLEL
+	delete[] threads ;
+	delete[] params ;
+#endif
 
 	//train->invalidate_model() ;
 	//REAL q=train->best_path(-1) ;
@@ -2331,7 +2418,7 @@ bool CHMM::load_model(FILE* file)
 		{
 		  state=COMMENT;
 		}
-	    case ARRAYS:	// when n,m, order are known p,a,b arrays are allowed to be read
+	    case ARRAYs:	// when n,m, order are known p,a,b arrays are allowed to be read
 	      if (value=='p')
 		{
 		  if (received_params & GOTp)
@@ -2372,7 +2459,7 @@ bool CHMM::load_model(FILE* file)
 		    {
 		      this->N= atoi(buffer);
 		      received_params|=GOTN;
-		      state= (received_params == (GOTN | GOTM | GOTO)) ? ARRAYS : INITIAL;
+		      state= (received_params == (GOTN | GOTM | GOTO)) ? ARRAYs : INITIAL;
 		    }
 		  else
 		    state=END;		//end if error
@@ -2385,7 +2472,7 @@ bool CHMM::load_model(FILE* file)
 		    {
 		      this->M= atoi(buffer);
 		      received_params|=GOTM;
-		      state= (received_params == (GOTN | GOTM | GOTO)) ? ARRAYS : INITIAL;
+		      state= (received_params == (GOTN | GOTM | GOTO)) ? ARRAYs : INITIAL;
 		    }
 		  else
 		    state=END;		//end if error
@@ -2399,7 +2486,7 @@ bool CHMM::load_model(FILE* file)
 		      this->ORDER= atoi(buffer);
 		      
 		      received_params|=GOTO;
-		      state= (received_params == (GOTN | GOTM | GOTO)) ? ARRAYS : INITIAL;
+		      state= (received_params == (GOTN | GOTM | GOTO)) ? ARRAYs : INITIAL;
 		    }
 		  else
 		    state=END;		//end if error
@@ -2437,7 +2524,7 @@ bool CHMM::load_model(FILE* file)
 		    }
 		  received_params|=GOTa;
 		}
-	      state= (received_params == (GOTa | GOTb | GOTp | GOTq)) ? END : ARRAYS;
+	      state= (received_params == (GOTa | GOTb | GOTp | GOTq)) ? END : ARRAYs;
 	      break;
 	    case GET_b:
 	      if (value=='=')
@@ -2471,7 +2558,7 @@ bool CHMM::load_model(FILE* file)
 		    }	
 		  received_params|=GOTb;
 		}
-	      state= ((received_params & (GOTa | GOTb | GOTp | GOTq)) == (GOTa | GOTb | GOTp | GOTq)) ? END : ARRAYS;
+	      state= ((received_params & (GOTa | GOTb | GOTp | GOTq)) == (GOTa | GOTb | GOTp | GOTq)) ? END : ARRAYs;
 	      break;
 	    case GET_p:
 	      if (value=='=')
@@ -2494,7 +2581,7 @@ bool CHMM::load_model(FILE* file)
 		    }
 		  received_params|=GOTp;
 		}
-	      state= (received_params == (GOTa | GOTb | GOTp | GOTq)) ? END : ARRAYS;
+	      state= (received_params == (GOTa | GOTb | GOTp | GOTq)) ? END : ARRAYs;
 	      break;
 	    case GET_q:
 	      if (value=='=')
@@ -2517,7 +2604,7 @@ bool CHMM::load_model(FILE* file)
 		    }
 		  received_params|=GOTq;
 		}
-	      state= (received_params == (GOTa | GOTb | GOTp | GOTq)) ? END : ARRAYS;
+	      state= (received_params == (GOTa | GOTb | GOTp | GOTq)) ? END : ARRAYs;
 	      break;
 	    case COMMENT:
 	      if (value==EOF)
@@ -3712,6 +3799,11 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
   else
     printf("writing derivatives of changed weights only\n") ;
   
+#ifdef PARALLEL
+  pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
+  T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
+#endif
+  
   for (dim=0; dim<p_observations->get_DIMENSION(); dim++)
     {		      
       if (dim%20==0)
@@ -3723,8 +3815,6 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 #ifdef PARALLEL
       if (dim%NUM_PARALLEL==0)
 	{
-	  pthread_t threads[NUM_PARALLEL] ;
-	  T_THREAD_PARAM params[NUM_PARALLEL] ;
 	  int i ;
 	  for (i=0; i<NUM_PARALLEL; i++)
 	    if (dim+i<p_observations->get_DIMENSION())
@@ -3810,6 +3900,11 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 	} ;
     }
   save_model_bin(file) ;
+
+#ifdef PARALLEL
+  delete[] threads ;
+  delete[] params ;
+#endif
   
   result=true;
   printf("\n") ;
