@@ -10,7 +10,7 @@ class CHistogramKernel: public CKernel
   CHistogramKernel(long size, int degree) ;
   ~CHistogramKernel() ;
   
-  virtual void init(CFeatures* l, CFeatures* r);
+  virtual void init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data

@@ -7,8 +7,8 @@
 #include <assert.h>
 #include <math.h>
 
-CLinearByteKernel::CLinearByteKernel(long size, bool rescale_) 
-  : CByteKernel(size),rescale(rescale_),scale(1.0)
+CLinearByteKernel::CLinearByteKernel(long size)
+  : CByteKernel(size),scale(1.0)
 {
 }
 
@@ -16,17 +16,18 @@ CLinearByteKernel::~CLinearByteKernel()
 {
 }
   
-void CLinearByteKernel::init(CFeatures* l, CFeatures* r)
+void CLinearByteKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CByteKernel::init((CByteFeatures*) l, (CByteFeatures*) r); 
+	CByteKernel::init((CByteFeatures*) l, (CByteFeatures*) r, do_init); 
 
-	if (rescale)
+	if (do_init)
 		init_rescale() ;
+
+	CIO::message("rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
 }
 
 void CLinearByteKernel::init_rescale()
 {
-	CIO::message("left: %d right: %d\n", lhs->get_num_vectors(), rhs->get_num_vectors());
 	long double sum=0;
 	scale=1.0;
 	for (long i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
@@ -35,7 +36,6 @@ void CLinearByteKernel::init_rescale()
 	if ( sum > (pow(2,8*sizeof(long))) )
 		CIO::message("the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(long));
 	scale=sum/math.min(lhs->get_num_vectors(), rhs->get_num_vectors());
-	CIO::message("rescaling kernel by %g (sum:%g num:%d)\n",scale, sum, math.min(lhs->get_num_vectors(), rhs->get_num_vectors()));
 }
 
 void CLinearByteKernel::cleanup()
@@ -59,8 +59,6 @@ bool CLinearByteKernel::load_init(FILE* src)
     assert(fread(&r, (unsigned int) intlen, 1, src)==1);
     assert(fread(&s, (unsigned int) doublelen, 1, src)==1);
     CIO::message("detected: intsize=%d, doublesize=%d, r=%d, scale=%g\n", intlen, doublelen, r, s);
-
-	rescale= r==1;
 	scale=s;
 	return true;
 }
@@ -71,15 +69,13 @@ bool CLinearByteKernel::save_init(FILE* dest)
     unsigned char doublelen=sizeof(double);
     unsigned int endian=0x12345678;
     unsigned int fourcc='LINK'; //id for linear kernel
-	unsigned int r= (rescale) ? 1 : 0;
 
     assert(fwrite(&intlen, sizeof(unsigned char), 1, dest)==1);
     assert(fwrite(&doublelen, sizeof(unsigned char), 1, dest)==1);
     assert(fwrite(&endian, sizeof(unsigned int), 1, dest)==1);
     assert(fwrite(&fourcc, sizeof(unsigned int), 1, dest)==1);
-    assert(fwrite(&r, sizeof(unsigned int), 1, dest)==1);
     assert(fwrite(&scale, sizeof(double), 1, dest)==1);
-    CIO::message("wrote: intsize=%d, doublesize=%d, r=%d, scale=%g\n", intlen, doublelen, r, scale);
+    CIO::message("wrote: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, scale);
 
 	return true;
 }

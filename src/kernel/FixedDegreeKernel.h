@@ -10,7 +10,7 @@ class CFixedDegreeKernel: public CKernel
   CFixedDegreeKernel(long size, int degree) ;
   ~CFixedDegreeKernel() ;
   
-  virtual void init(CFeatures* l, CFeatures* r);
+  virtual void init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data

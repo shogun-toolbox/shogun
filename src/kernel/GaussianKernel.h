@@ -8,10 +8,10 @@
 class CGaussianKernel: public CRealKernel
 {
  public:
-  CGaussianKernel(long size, double width, bool rescale) ;
+  CGaussianKernel(long size, double width);
   ~CGaussianKernel() ;
   
-  virtual void init(CFeatures* l, CFeatures* r);
+  virtual void init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -34,10 +34,7 @@ class CGaussianKernel: public CRealKernel
   
  protected:
   double width;
-  bool rescale ;
   double scale ;
-  REAL* vec;
-  long vec_len;
 };
 
 #endif

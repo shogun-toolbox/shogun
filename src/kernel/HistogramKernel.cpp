@@ -15,9 +15,9 @@ CHistogramKernel::~CHistogramKernel()
 {
 }
   
-void CHistogramKernel::init(CFeatures* l, CFeatures* r)
+void CHistogramKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CKernel::init(l,r); 
+	CKernel::init(l,r, do_init); 
 }
 
 void CHistogramKernel::cleanup()

@@ -3,13 +3,13 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
-#include "lib/Time.h"
+//#include "lib/Time.h"
 //#include "lib/f77blas.h"
 
 #include <assert.h>
 
-CPolyKernel::CPolyKernel(long size, int d, bool hom, bool rescale_) 
-  : CRealKernel(size),degree(d),homogene(hom),rescale(rescale_),scale(1.0)
+CPolyKernel::CPolyKernel(long size, int d, bool inhom)
+  : CRealKernel(size),degree(d),inhomogene(inhom),scale(1.0)
 {
 }
 
@@ -17,29 +17,31 @@ CPolyKernel::~CPolyKernel()
 {
 }
   
-void CPolyKernel::init(CFeatures* l, CFeatures* r)
+void CPolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CRealKernel::init((CRealFeatures*) l, (CRealFeatures*) r); 
+	CRealKernel::init((CRealFeatures*) l, (CRealFeatures*) r, do_init); 
 
-	if (rescale)
+	if (do_init)
 		init_rescale() ;
+
+	CIO::message("rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
 }
 
 void CPolyKernel::init_rescale()
 {
-	CTime t;
-
-	long maxx=math.min(5000l,lhs->get_num_vectors());
-	long maxy=math.min(5000l,rhs->get_num_vectors());
-
-	for (long x=0; x<maxx; x++)
-	{
-		for (long y=0; y<maxy; y++)
-		{
-			compute(x, y);
-		}
-	}
-	t.cur_time_diff_sec(true);
+//	CTime t;
+//
+//	long maxx=math.min(5000l,lhs->get_num_vectors());
+//	long maxy=math.min(5000l,rhs->get_num_vectors());
+//
+//	for (long x=0; x<maxx; x++)
+//	{
+//		for (long y=0; y<maxy; y++)
+//		{
+//			compute(x, y);
+//		}
+//	}
+//	t.cur_time_diff_sec(true);
 
 	double sum=0;
 	scale=1.0;
@@ -47,7 +49,6 @@ void CPolyKernel::init_rescale()
 			sum+=compute(i, i);
 
 	scale=sum/math.min(lhs->get_num_vectors(), rhs->get_num_vectors());
-	CIO::message("rescaling kernel by %g (sum:%g num:%d)\n",scale, sum, math.min(lhs->get_num_vectors(), rhs->get_num_vectors()));
 }
 
 void CPolyKernel::cleanup()
@@ -93,7 +94,7 @@ REAL CPolyKernel::compute(long idx_a, long idx_b)
   REAL result=ddot_(&ialen, avec, &skip, bvec, &skip);
 #endif // NO_LAPACK
 
-  if (!homogene)
+  if (inhomogene)
 	  result+=1;
 
   REAL re=result/scale;

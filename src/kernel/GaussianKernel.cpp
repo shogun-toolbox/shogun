@@ -7,8 +7,8 @@
 
 #include <assert.h>
 
-CGaussianKernel::CGaussianKernel(long size, double w, bool rescale_) 
-  : CRealKernel(size),width(w),rescale(rescale_),scale(1.0),vec(NULL),vec_len(0)
+CGaussianKernel::CGaussianKernel(long size, double w)
+  : CRealKernel(size),width(w),scale(1.0)
 {
 }
 
@@ -16,24 +16,14 @@ CGaussianKernel::~CGaussianKernel()
 {
 }
   
-void CGaussianKernel::init(CFeatures* l, CFeatures* r)
+void CGaussianKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CRealKernel::init((CRealFeatures*) l, (CRealFeatures*) r); 
+	CRealKernel::init((CRealFeatures*) l, (CRealFeatures*) r, do_init); 
 
-	long l_len=((CRealFeatures*) l)->get_num_features();
-	long r_len=((CRealFeatures*) r)->get_num_features();
-
-	assert(l_len==r_len);
-	CIO::message("%ld %ld\n",l_len, r_len);
-	delete[] vec;
-
-	vec_len=l_len;
-	vec=new REAL[vec_len];
-
-	assert(vec);
-
-	if (rescale)
+	if (do_init)
 		init_rescale() ;
+
+	CIO::message("rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
 }
 
 void CGaussianKernel::init_rescale()
@@ -57,14 +47,10 @@ void CGaussianKernel::init_rescale()
 			sum+=compute(i, i);
 
 	scale=sum/math.min(lhs->get_num_vectors(), rhs->get_num_vectors());
-	CIO::message("rescaling kernel by %g (sum:%g num:%d)\n",scale, sum, math.min(lhs->get_num_vectors(), rhs->get_num_vectors()));
 }
 
 void CGaussianKernel::cleanup()
 {
-	delete[] vec;
-	vec=NULL;
-	vec_len=0;
 }
 
 bool CGaussianKernel::load_init(FILE* src)
@@ -91,7 +77,7 @@ REAL CGaussianKernel::compute(long idx_a, long idx_b)
   double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   
   assert(alen==blen);
-  assert(alen==vec_len);
+
   int ialen=(int) alen;
 
   REAL result=0;

@@ -8,10 +8,10 @@
 class CLinearKernel: public CRealKernel
 {
  public:
-  CLinearKernel(long size, bool rescale) ;
-  ~CLinearKernel() ;
+  CLinearKernel(long size);
+  ~CLinearKernel();
   
-  virtual void init(CFeatures* l, CFeatures* r);
+  virtual void init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -33,7 +33,6 @@ class CLinearKernel: public CRealKernel
   virtual void init_rescale();
   
  protected:
-  bool rescale ;
   double scale ;
 };
 

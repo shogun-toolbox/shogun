@@ -8,8 +8,8 @@
 
 #include <assert.h>
 
-CLinearKernel::CLinearKernel(long size, bool rescale_) 
-  : CRealKernel(size),rescale(rescale_),scale(1.0)
+CLinearKernel::CLinearKernel(long size)
+  : CRealKernel(size),scale(1.0)
 {
 }
 
@@ -17,12 +17,14 @@ CLinearKernel::~CLinearKernel()
 {
 }
   
-void CLinearKernel::init(CFeatures* l, CFeatures* r)
+void CLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CRealKernel::init((CRealFeatures*) l, (CRealFeatures*) r); 
+	CRealKernel::init((CRealFeatures*) l, (CRealFeatures*) r, do_init); 
 
-	if (rescale)
+	if (do_init)
 		init_rescale() ;
+
+	CIO::message("rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
 }
 
 void CLinearKernel::init_rescale()
@@ -33,7 +35,6 @@ void CLinearKernel::init_rescale()
 			sum+=compute(i, i);
 
 	scale=sum/math.min(lhs->get_num_vectors(), rhs->get_num_vectors());
-	CIO::message("rescaling kernel by %g (sum:%g num:%d)\n",scale, sum, math.min(lhs->get_num_vectors(), rhs->get_num_vectors()));
 }
 
 void CLinearKernel::cleanup()
@@ -46,7 +47,6 @@ bool CLinearKernel::load_init(FILE* src)
     unsigned int intlen=0;
     unsigned int endian=0;
     unsigned int fourcc=0;
-    unsigned int r=0;
     unsigned int doublelen=0;
     double s=1;
 
@@ -54,11 +54,9 @@ bool CLinearKernel::load_init(FILE* src)
     assert(fread(&doublelen, sizeof(unsigned char), 1, src)==1);
     assert(fread(&endian, (unsigned int) intlen, 1, src)== 1);
     assert(fread(&fourcc, (unsigned int) intlen, 1, src)==1);
-    assert(fread(&r, (unsigned int) intlen, 1, src)==1);
     assert(fread(&s, (unsigned int) doublelen, 1, src)==1);
-    CIO::message("detected: intsize=%d, doublesize=%d, r=%d, scale=%g\n", intlen, doublelen, r, s);
+    CIO::message("detected: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, s);
 
-	rescale= r==1;
 	scale=s;
 	return true;
 }
@@ -69,15 +67,13 @@ bool CLinearKernel::save_init(FILE* dest)
     unsigned char doublelen=sizeof(double);
     unsigned int endian=0x12345678;
     unsigned int fourcc='LINK'; //id for linear kernel
-	unsigned int r= (rescale) ? 1 : 0;
 
     assert(fwrite(&intlen, sizeof(unsigned char), 1, dest)==1);
     assert(fwrite(&doublelen, sizeof(unsigned char), 1, dest)==1);
     assert(fwrite(&endian, sizeof(unsigned int), 1, dest)==1);
     assert(fwrite(&fourcc, sizeof(unsigned int), 1, dest)==1);
-    assert(fwrite(&r, sizeof(unsigned int), 1, dest)==1);
     assert(fwrite(&scale, sizeof(double), 1, dest)==1);
-    CIO::message("wrote: intsize=%d, doublesize=%d, r=%d, scale=%g\n", intlen, doublelen, r, scale);
+    CIO::message("wrote: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, scale);
 
 	return true;
 }

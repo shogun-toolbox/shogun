@@ -8,10 +8,10 @@
 class CPolyKernel: public CRealKernel
 {
  public:
-  CPolyKernel(long size, int degree, bool homogene, bool rescale) ;
+  CPolyKernel(long size, int degree, bool inhomogene);
   ~CPolyKernel() ;
   
-  virtual void init(CFeatures* l, CFeatures* r);
+  virtual void init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -34,8 +34,8 @@ class CPolyKernel: public CRealKernel
   
  protected:
   int degree;
-  bool homogene ;
-  bool rescale ;
+  bool inhomogene ;
+  bool allow_init ;
   double scale ;
 };
 

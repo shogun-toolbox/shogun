@@ -8,10 +8,10 @@
 class CLinearByteKernel: public CByteKernel
 {
  public:
-  CLinearByteKernel(long size, bool rescale) ;
+  CLinearByteKernel(long size);
   ~CLinearByteKernel() ;
   
-  virtual void init(CFeatures* l, CFeatures* r);
+  virtual void init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -33,7 +33,6 @@ class CLinearByteKernel: public CByteKernel
   virtual void init_rescale();
   
  protected:
-  bool rescale ;
   double scale ;
 };
 

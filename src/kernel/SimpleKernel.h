@@ -15,9 +15,9 @@ template <class ST> class CSimpleKernel : public CKernel
 		 * where l are feature vectors to occur on left hand side
 		 * and r the feature vectors to occur on right hand side
 		 */
-		virtual void init(CSimpleFeatures<ST>* l, CSimpleFeatures<ST>* r)
+		virtual void init(CSimpleFeatures<ST>* l, CSimpleFeatures<ST>* r, bool do_init)
 		{
-			CKernel::init(l,r);
+			CKernel::init(l,r, do_init);
 		}
 };
 #endif

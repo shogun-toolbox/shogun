@@ -15,9 +15,9 @@ CFixedDegreeKernel::~CFixedDegreeKernel()
 {
 }
   
-void CFixedDegreeKernel::init(CFeatures* l, CFeatures* r)
+void CFixedDegreeKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CKernel::init(l,r); 
+	CKernel::init(l,r, do_init); 
 }
 
 void CFixedDegreeKernel::cleanup()

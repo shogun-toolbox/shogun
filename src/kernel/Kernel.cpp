@@ -34,7 +34,7 @@ REAL CKernel::kernel(long idx_a, long idx_b)
 	return compute(idx_a, idx_b);
 }
 
-void CKernel::init(CFeatures* l, CFeatures* r)
+void CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	assert(l!=0);
 	assert(r!=0);

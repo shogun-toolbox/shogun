@@ -37,10 +37,9 @@ bool CGUIKernel::set_kernel(char* param)
 		{
 			if (strcmp(data_type,"BYTE")==0)
 			{
-				int scale=1;
-				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &scale);
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
 				delete kernel;
-				kernel=new CLinearByteKernel(size, scale==1);
+				kernel=new CLinearByteKernel(size);
 				if (kernel)
 				{
 					CIO::message("LinearByteKernel created\n");
@@ -49,10 +48,9 @@ bool CGUIKernel::set_kernel(char* param)
 			}
 			else if (strcmp(data_type,"REAL")==0)
 			{
-				int scale=1;
-				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &scale);
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
 				delete kernel;
-				kernel=new CLinearKernel(size, scale==1);
+				kernel=new CLinearKernel(size);
 				return true;
 			}
 		}
@@ -60,13 +58,13 @@ bool CGUIKernel::set_kernel(char* param)
 		{
 			if (strcmp(data_type,"REAL")==0)
 			{
-				int scale=1;
-				int homogene=1;
+				int inhomogene=0;
 				int degree=2;
 
-				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &degree, &homogene, &size, &scale);
+				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &degree, &inhomogene, &size);
 				delete kernel;
-				kernel=new CPolyKernel(size, degree, homogene==1, scale==1);
+				kernel=new CPolyKernel(size, degree, inhomogene==1);
+
 				if (kernel)
 				{
 					CIO::message("Polynomial Kernel created\n");
@@ -78,12 +76,11 @@ bool CGUIKernel::set_kernel(char* param)
 		{
 			if (strcmp(data_type,"REAL")==0)
 			{
-				int scale=1;
 				double width=1;
 
-				sscanf(param, "%s %s %lf %d %d", kern_type, data_type, &width, &size, &scale);
+				sscanf(param, "%s %s %lf %d", kern_type, data_type, &width, &size);
 				delete kernel;
-				kernel=new CGaussianKernel(size, width, scale==1);
+				kernel=new CGaussianKernel(size, width);
 				if (kernel)
 				{
 					CIO::message("Gaussian Kernel created\n");
@@ -164,11 +161,13 @@ bool CGUIKernel::save_kernel_init(char* param)
 bool CGUIKernel::init_kernel(char* param)
 {
 	char target[1024];
+	bool do_init=false;
 
 	if ((sscanf(param, "%s", target))==1)
 	{
 		if (!strncmp(target, "TRAIN", 5))
 		{
+			do_init=true;
 			if (gui->guifeatures.get_train_features())
 			{
 				if (!kernel->check_features(gui->guifeatures.get_train_features()))
@@ -176,7 +175,7 @@ bool CGUIKernel::init_kernel(char* param)
 					CIO::message("kernel can not process this feature type\n");
 					return false ;
 				}
-				kernel->init(gui->guifeatures.get_train_features(),gui->guifeatures.get_train_features()) ;
+				kernel->init(gui->guifeatures.get_train_features(),gui->guifeatures.get_train_features(), do_init) ;
 			}
 			else
 				CIO::message("assign train features first\n");
@@ -192,7 +191,7 @@ bool CGUIKernel::init_kernel(char* param)
 				}
 				
 				// lhs -> always train_features; rhs -> alway test_features
-				kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features()) ;
+				kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features(), do_init) ;
 			}
 			else
 				CIO::message("assign train and test features first\n");
