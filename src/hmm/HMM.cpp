@@ -4584,69 +4584,69 @@ void CHMM::chop(REAL value)
 
 bool CHMM::linear_train(FILE* file, const int WIDTH, const int UPTO)
 {
-    double* hist=new double[256*UPTO];
-    T_OBSERVATIONS* line_=new T_OBSERVATIONS[WIDTH+1];
+	double* hist=new double[256*UPTO];
+	T_OBSERVATIONS* line_=new T_OBSERVATIONS[WIDTH+1];
 
-    int i;
-    int total=0;
-
-    for (i=0; i<UPTO; i++)
-    {
-	line_[i]=0;
-
-	for (int j=0; j<256; j++)
-	{
-	    hist[i*256+j]=0;
-	}
-    }
-
-    while ( (fread(line_, sizeof (unsigned char), WIDTH, file)) == (unsigned int) WIDTH)
-    {
-	if (p_observations->translate_from_single_order(line_,UPTO) < 0)
-	    CIO::message(stderr,"wrong character(s) in line %i\n", total) ;
+	int i;
+	int total=0;
 
 	for (i=0; i<UPTO; i++)
 	{
-	    hist[i*256+line_[i]]++;
-	}		
-	total++;
-    }
+		line_[i]=0;
 
-    for (i=0;i<UPTO;i++)
-    {
-	for (int j=0; j<256; j++)
-	    hist[i*256+j]=log(hist[i*256+j]+PSEUDO)-log(total+M*PSEUDO);
-    }
-
-    set_p(0, 0);
-    for (i=1; i<UPTO; i++)
-	set_p(i, math.ALMOST_NEG_INFTY);
-
-    set_q(UPTO-1, 0);
-    for (i=0; i<UPTO-1; i++)
-	set_q(i, math.ALMOST_NEG_INFTY);
-
-
-    for (i=0;i<UPTO;i++)
-    {
-	for (int j=0; j<UPTO; j++)
-	{
-	    if (i==j-1)
-		set_a(i,j, 0);
-	    else
-		set_a(i,j, math.ALMOST_NEG_INFTY);
+		for (int j=0; j<256; j++)
+		{
+			hist[i*256+j]=0;
+		}
 	}
-    }
 
-    for (i=0;i<UPTO;i++)
-    {
-	for (int j=0; j<M; j++)
-	    set_b(i,j, hist[i*256+j] );
-	    //set_b(i,j, hist[i*256+p_observations->remap(j)] );
-    }
+	while ( (fread(line_, sizeof (unsigned char), WIDTH, file)) == (unsigned int) WIDTH)
+	{
+		if (p_observations->translate_from_single_order(line_,UPTO) < 0)
+			CIO::message(stderr,"wrong character(s) in line %i\n", total) ;
+
+		for (i=0; i<UPTO; i++)
+		{
+			hist[i*256+line_[i]]++;
+		}		
+		total++;
+	}
+
+	for (i=0;i<UPTO;i++)
+	{
+		for (int j=0; j<256; j++)
+			hist[i*256+j]=log(hist[i*256+j]+PSEUDO)-log(total+M*PSEUDO);
+	}
+
+	set_p(0, 0);
+	for (i=1; i<UPTO; i++)
+		set_p(i, math.ALMOST_NEG_INFTY);
+
+	set_q(UPTO-1, 0);
+	for (i=0; i<UPTO-1; i++)
+		set_q(i, math.ALMOST_NEG_INFTY);
+
+
+	for (i=0;i<UPTO;i++)
+	{
+		for (int j=0; j<UPTO; j++)
+		{
+			if (i==j-1)
+				set_a(i,j, 0);
+			else
+				set_a(i,j, math.ALMOST_NEG_INFTY);
+		}
+	}
+
+	for (i=0;i<UPTO;i++)
+	{
+		for (int j=0; j<M; j++)
+			set_b(i,j, hist[i*256+j] );
+		//set_b(i,j, hist[i*256+p_observations->remap(j)] );
+	}
 	delete[] line_;
 	delete[] hist;
-    return true;
+	return true;
 }
 
 REAL CHMM::linear_likelihood(FILE* file, int WIDTH, int UPTO, bool singleline)

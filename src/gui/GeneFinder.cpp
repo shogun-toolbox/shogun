@@ -531,27 +531,27 @@ static bool prompt(FILE* infile=stdin)
 		if (strcmp(target,"POSTRAIN")==0)
 		{
 			delete obs_postrain;
-		    obs_postrain= new CObservation(trn_file, POSTRAIN, alphabet, 8*sizeof(T_OBSERVATIONS), M, ORDER);
+		    obs_postrain= new CObservation(trn_file, POSTRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
 		}
 		else if (strcmp(target,"NEGTRAIN")==0)
 		{
 			delete obs_negtrain;
-			obs_negtrain= new CObservation(trn_file, NEGTRAIN, alphabet, 8*sizeof(T_OBSERVATIONS), M, ORDER);
+			obs_negtrain= new CObservation(trn_file, NEGTRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
 		}
 		else if (strcmp(target,"POSTEST")==0)
 		{
 			delete obs_postest;
-			obs_postest= new CObservation(trn_file, POSTEST, alphabet, 8*sizeof(T_OBSERVATIONS), M, ORDER);
+			obs_postest= new CObservation(trn_file, POSTEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
 		}
 		else if (strcmp(target,"NEGTEST")==0)
 		{
 			delete obs_negtest;
-			obs_negtest= new CObservation(trn_file, NEGTEST, alphabet, 8*sizeof(T_OBSERVATIONS), M, ORDER);
+			obs_negtest= new CObservation(trn_file, NEGTEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
 		}
 		else if (strcmp(target,"TEST")==0)
 		{
 			delete obs_test;
-			obs_test= new CObservation(trn_file, TEST, alphabet, 8*sizeof(T_OBSERVATIONS), M, ORDER);
+			obs_test= new CObservation(trn_file, TEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
 		}
 		else
 		   CIO::message("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
@@ -1271,7 +1271,7 @@ static bool prompt(FILE* infile=stdin)
 		//ORDER=1; //obsoleted by set_order
 		M=4;
 
-		CObservation* obs=new CObservation(TRAIN, alphabet, 8*sizeof(T_OBSERVATIONS), M, ORDER);
+		CObservation* obs=new CObservation(TRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
 
 		if (lambda && obs)
 		{
@@ -1363,7 +1363,7 @@ static bool prompt(FILE* infile=stdin)
 
 		    if (UPTO==lambda->get_N())
 		    {	  
-			CObservation* obs=new CObservation(TRAIN, alphabet, 8*sizeof(T_OBSERVATIONS), lambda->get_M(), ORDER);
+				CObservation* obs=new CObservation(TRAIN, alphabet, (BYTE)ceil(log(lambda->get_M())/log(2)), lambda->get_M(), ORDER);
 			lambda->set_observation_nocache(obs);
 			printf("log(Pr[O|model])=%e, #states: %i, #observation symbols: %i\n", 
 				(double)lambda->linear_likelihood(file, WIDTH, UPTO), lambda->get_N(), lambda->get_M());
@@ -1423,7 +1423,7 @@ static bool prompt(FILE* infile=stdin)
 			
 		    if (UPTO==lambda->get_N())
 		    {
-			CObservation* obs=new CObservation(TRAIN, alphabet, 8*sizeof(T_OBSERVATIONS), lambda->get_M(), ORDER);
+				CObservation* obs=new CObservation(TRAIN, alphabet, (BYTE)ceil(log(lambda->get_M())/log(2)), lambda->get_M(), ORDER);
 			lambda->set_observation_nocache(obs);
 			lambda->save_linear_likelihood_bin(srcfile, dstfile, WIDTH, UPTO);
 			lambda->set_observation_nocache(NULL);
@@ -1482,7 +1482,7 @@ static bool prompt(FILE* infile=stdin)
 
 				if (UPTO==lambda->get_N())
 				{
-				    CObservation* obs=new CObservation(TRAIN, alphabet, 8*sizeof(T_OBSERVATIONS), lambda->get_M(), ORDER);
+					CObservation* obs=new CObservation(TRAIN, alphabet, (BYTE)ceil(log(lambda->get_M())/log(2)), lambda->get_M(), ORDER);
 				    lambda->set_observation_nocache(obs);
 				    lambda->save_linear_likelihood(srcfile, dstfile, WIDTH, UPTO);
 				    lambda->set_observation_nocache(NULL);
@@ -1926,7 +1926,7 @@ static bool prompt(FILE* infile=stdin)
 			    int negsize=negfsize/WIDTH;
 			    int total=possize+negsize;
 
-			    CObservation* obs=new CObservation(TRAIN, alphabet, 8*sizeof(T_OBSERVATIONS), pos->get_M(), ORDER);
+				CObservation* obs=new CObservation(TRAIN, alphabet, (BYTE)ceil(log(pos->get_M())/log(2)), pos->get_M(), ORDER);
 			    pos->set_observation_nocache(obs);
 			    neg->set_observation_nocache(obs);
 
