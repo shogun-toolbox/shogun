@@ -122,7 +122,7 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m <filename> <REAL|SHORT|STRING> <TRAIN|TEST> [<CACHE SIZE> [0|1]]\t- load features\n",N_LOAD_FEATURES);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- load preproc init data\n",N_LOAD_PREPROC);
 	CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
-	CIO::message("\033[1;31m%s\033[0m <filename>\t- load observed data\n",N_LOAD_OBSERVATIONS);
+	CIO::message("\033[1;31m%s\033[0m <filename> <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [<ORDER> [<START> [<WIDTH>]]\t- load observed data\n",N_LOAD_OBSERVATIONS);
 	CIO::message("\n[SAVE]\n");
 	CIO::message("\033[1;31m%s\033[0m <filename> [<0|1>]\t- save hmm in [binary] format\n",N_SAVE_HMM);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- save svm\n",N_SAVE_SVM);
