@@ -1219,13 +1219,13 @@ bool CGUIMatlab::set_WD_weights(const mxArray* mx_arg)
 	{
 		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
 		INT degree = kernel->get_degree() ;
-		if (mxGetN(mx_arg)!=degree || mxGetM(mx_arg)>=1)
+		if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
 		{
-			CIO::message(M_ERROR, "dimension mismatch (should be (seq_length | 1) x degree)\n") ;
+			CIO::message(M_ERROR, "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
 			return false ;
 		}
 
-		return kernel->set_weights(mxGetPr(mx_arg), mxGetN(mx_arg), mxGetM(mx_arg));
+		return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), mxGetN(mx_arg));
 		
 	}
 	return false;

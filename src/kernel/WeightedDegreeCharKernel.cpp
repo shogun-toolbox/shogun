@@ -19,6 +19,7 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d
 	for (INT i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
 
+	length = 0;
 	trees=NULL;
 	tree_initialized=false ;
 }
