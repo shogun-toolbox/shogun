@@ -3,7 +3,7 @@
 #include "classifier/svm/SVM_light.h"
 #include "classifier/svm/Optimizer.h"
 #include "kernel/KernelMachine.h"
-#include "kernel/WeightedDegreeCharKernel.h"
+//#include "kernel/WeightedDegreeCharKernel.h"
 #include "kernel/CombinedKernel.h"
 #include <assert.h>
 
@@ -81,11 +81,13 @@ CSVMLight::CSVMLight()
 	init_iter=500;
 	precision_violations=0;
 	opt_precision=DEF_PRECISION_LINEAR;
-	weight_epsilon=1e-3 ;
 	rho=0 ;
 	mymaxdiff=1 ;
 	num_rows=0 ;
 	num_active_rows=0 ;
+
+	weight_epsilon=0 ;
+	lp_C = 0 ;
 }
 
 CSVMLight::~CSVMLight()
@@ -144,18 +146,19 @@ bool CSVMLight::train()
 	learn_parm->svm_costratio=C2/C1;
 	learn_parm->svm_costratio_unlab=1.0;
 	learn_parm->svm_unlabbound=1E-5;
-	learn_parm->epsilon_crit=1E-6; // GU: better decrease it ... ??
+	learn_parm->epsilon_crit=epsilon; // GU: better decrease it ... ??
 	learn_parm->epsilon_a=1E-15;
 	learn_parm->compute_loo=0;
 	learn_parm->rho=1.0;
 	learn_parm->xa_depth=0;
 	
-	if (weight_epsilon<0)
+	if (weight_epsilon<=0)
 		weight_epsilon=1e-2 ;
 	
 	CIO::message(M_DEBUG, "qpsize = %i\n", learn_parm->svm_maxqpsize) ;
 	CIO::message(M_DEBUG, "epsilon = %1.1e\n", learn_parm->epsilon_crit) ;
 	CIO::message(M_DEBUG, "weight_epsilon = %1.1e\n", weight_epsilon) ;
+	CIO::message(M_DEBUG, "C_mkl = %1.1e\n", C_mkl) ;
 	
 	if (!CKernelMachine::get_kernel())
 	{
@@ -1094,22 +1097,27 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 		if (get_kernel()->has_property(KP_KERNCOMBINATION) && is_mkl_enabled() ) {
 
 			//kernel with LP_LINADD property is assumed to have compute_by_tree functions
-			CWeightedDegreeCharKernel* k = (CWeightedDegreeCharKernel*) get_kernel();
+			CKernel* k = get_kernel();
 			INT num    = k->get_rhs()->get_num_vectors() ;
 			INT num_weights = -1;
 			INT num_kernels = k->get_num_subkernels() ;
-			REAL* w    = k->get_weights(num_weights);
+			const REAL* w    = k->get_subkernel_weights(num_weights);
+			//fprintf(stderr,"num_weights=%i  num_kernels=%i\n", num_weights, num_kernels) ;
+			
 			assert(num_weights==num_kernels) ;
 			REAL* sumw = new REAL[num_kernels];
 			{
 				REAL* w_backup = new REAL[num_kernels] ;
+				REAL* w1 = new REAL[num_kernels] ;
 				
 				// backup and set to one
 				for (INT i=0; i<num_kernels; i++)
 				{
 					w_backup[i]=w[i] ;
-					w[i]=1 ;
+					w1[i]=1 ;
 				}
+
+				k->set_subkernel_weights(w1, num_weights) ;
 				
 				// recreate tree
 				k->clear_normal();
@@ -1119,16 +1127,15 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					}
 				}
 				
-				// restore old weights
-				for (INT i=0; i<num_kernels; i++)
-					w[i]=w_backup[i] ;
-				delete[] w_backup ;
-			}
-			
-			// determine contributions of different levels/lengths
-			for (int i=0; i<num; i++)
-				k->compute_by_tree(i,&W[i*num_kernels]) ;
+				// determine contributions of different levels/lengths
+				for (int i=0; i<num; i++)
+					k->compute_by_subkernel(i,&W[i*num_kernels]) ;
 
+				// restore old weights
+				k->set_subkernel_weights(w_backup,num_weights) ;
+				delete[] w_backup ;
+				delete[] w1 ;
+			}
 			REAL objective=0;
 #ifdef HAVE_ATLAS
 			REAL *alphay=new REAL[num] ;
@@ -1174,27 +1181,31 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			count++ ;
 #ifdef USE_CPLEX			
 			w_gap = CMath::abs(1-rho/objective) ;
-			//fprintf(stdout, "epsilon=%1.2e\n", get_weight_epsilon()) ;
 			
 			if (w_gap >= 0.9999*get_weight_epsilon())
 			{
+				CIO::message(M_INFO, "*") ;
 				if (rho==0)
 				{
 					CIO::message(M_INFO, "creating LP\n") ;
 
-					INT NUMCOLS = num_kernels + 1 ;
+					INT NUMCOLS = 2*num_kernels + 1 ;
 					double   obj[NUMCOLS];
 					double   lb[NUMCOLS];
 					double   ub[NUMCOLS];
-					for (INT i=0; i<num_kernels; i++)
+					for (INT i=0; i<2*num_kernels; i++)
 					{
 						obj[i]=0 ;
 						lb[i]=0 ;
 						ub[i]=1 ;
 					}
-					obj[num_kernels]=1 ;
-					lb[num_kernels]=-CPX_INFBOUND ;
-					ub[num_kernels]=CPX_INFBOUND ;
+					for (INT i=num_kernels; i<2*num_kernels; i++)
+					{
+						obj[i]= C_mkl ;
+					}
+					obj[2*num_kernels]=1 ;
+					lb[2*num_kernels]=-CPX_INFBOUND ;
+					ub[2*num_kernels]=CPX_INFBOUND ;
 
 					INT status = CPXnewcols (env, lp, NUMCOLS, obj, lb, ub, NULL, NULL);
 					if ( status ) {
@@ -1212,7 +1223,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					char sense[1] ;
 
 					rmatbeg[0] = 0;
-					rhs[0]=1 ; // rhs=1 ;
+					rhs[0]=1 ;     // rhs=1 ;
 					sense[0]='E' ; // equality
 
 					for (INT i=0; i<num_kernels; i++)
@@ -1220,18 +1231,62 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 						rmatind[i]=i ;
 						rmatval[i]=1 ;
 					}
-					rmatind[num_kernels]=num_kernels ;
+					rmatind[num_kernels]=2*num_kernels ;
 					rmatval[num_kernels]=0 ;
-
+					
 					status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
-							rhs, sense, rmatbeg,
-							rmatind, rmatval, NULL, NULL);
+										 rhs, sense, rmatbeg,
+										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
 						fprintf (stderr, "Failed to add the first row.\n");
 					}
-
+					if (C_mkl!=0.0)
+					{
+						for (INT q=0; q<num_kernels-1; q++)
+						{
+							// add constraint w[i]-w[i+1]<s[i] ;
+							// add constraint w[i+1]-w[i]<s[i] ;
+							int rmatbeg[1] ;
+							int rmatind[3] ;
+							double rmatval[3] ;
+							double rhs[1] ;
+							char sense[1] ;
+							
+							rmatbeg[0] = 0;
+							rhs[0]=0 ;     // rhs=1 ;
+							sense[0]='L' ; // equality
+							rmatind[0]=q ;
+							rmatval[0]=1 ;
+							rmatind[1]=q+1 ;
+							rmatval[1]=-1 ;
+							rmatind[2]=num_kernels+q ;
+							rmatval[2]=-1 ;
+							status = CPXaddrows (env, lp, 0, 1, 3, 
+												 rhs, sense, rmatbeg,
+												 rmatind, rmatval, NULL, NULL);
+							if ( status ) {
+								fprintf (stderr, "Failed to add the first row.\n");
+							}
+							
+							rmatbeg[0] = 0;
+							rhs[0]=0 ;     // rhs=1 ;
+							sense[0]='L' ; // equality
+							rmatind[0]=q ;
+							rmatval[0]=-1 ;
+							rmatind[1]=q+1 ;
+							rmatval[1]=1 ;
+							rmatind[2]=num_kernels+q ;
+							rmatval[2]=-1 ;
+							status = CPXaddrows (env, lp, 0, 1, 3, 
+												 rhs, sense, rmatbeg,
+												 rmatind, rmatval, NULL, NULL);
+							if ( status ) {
+								fprintf (stderr, "Failed to add the first row.\n");
+							}
+						}
+					}
 				}
-
+				
 				{ // add the new row
 					//CIO::message(M_INFO, "add the new row\n") ;
 
@@ -1250,12 +1305,12 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 						rmatind[i]=i ;
 						rmatval[i]=-sumw[i] ;
 					}
-					rmatind[num_kernels]=num_kernels ;
+					rmatind[num_kernels]=2*num_kernels ;
 					rmatval[num_kernels]=-1 ;
 
 					INT status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
-							rhs, sense, rmatbeg,
-							rmatind, rmatval, NULL, NULL);
+											 rhs, sense, rmatbeg,
+											 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
 						fprintf (stderr, "Failed to add the new row.\n");
 					}
@@ -1295,7 +1350,10 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					{
 						REAL max_slack = -CMath::INFTY ;
 						INT max_idx = -1 ;
-						for (INT i = 1; i < cur_numrows; i++)  // skip first
+						INT start_pos = 1 ;
+						if (C_mkl!=0.0)
+							start_pos+=2*(num_kernels-1);
+						for (INT i = start_pos; i < cur_numrows; i++)  // skip first
 							if ((pi[i]!=0))
 								num_active_rows++ ;
 							else
@@ -1308,19 +1366,17 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 							}
 
 						// have at most max(100,num_active_rows*2) rows 
-						if ( (num_rows>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
+						if ( (num_rows-start_pos>CMath::max(10,2*num_active_rows)) && (max_idx!=-1))
 						{
+							//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_pos,num_rows) ;
 							INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
 							if ( status ) {
 								fprintf (stderr, "Failed to remove an old row.\n");
 							}
 						}
-
-						for (INT j = 0; j < cur_numcols-1; j++) 
-							w[j]=x[j] ;
-						rho = -x[num_kernels] ;
+						k->set_subkernel_weights(x, num_kernels) ;
+						rho = -x[2*num_kernels] ;
 						w_gap = CMath::abs(1-rho/objective) ;
-
 					} else
 					{
 						w_gap = 0 ; // then something is wrong and we rather 
@@ -1353,7 +1409,12 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			for(jj=0;active2dnum[jj]>=0;jj++);
 			
 			if (count%100==0)
-				CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows);
+			{
+				INT start_pos = 1 ;
+				if (C_mkl!=0.0)
+					start_pos+=2*(num_kernels-1);
+				CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_pos);
+			}
 			
 			delete[] sumw;
 		}
