@@ -75,20 +75,24 @@ bool CGUIHMM::baum_welch_train(char* param)
 				if (prob_max<prob_train)
 				{
 					prob_max=prob_train ;
+#ifdef TMP_SAVE
 					FILE* file=fopen(templname_best, "w");
 					CIO::message("\nsaving best model with filename %s ... ", templname_best) ;
 					working->save_model(file) ;
 					fclose(file) ;
 					CIO::message("done.") ;
+#endif
 				} 
 				else
 				{
+#ifdef TMP_SAVE
 					FILE* file=fopen(templname, "w");
 					CIO::message("\nsaving model with filename %s ... ", templname) ;
 					working->save_model(file) ;
 					fclose(file) ;
 					CIO::message("done.") ;
-				} ;
+#endif
+				}
 			}
 			delete working_estimate;
 			working_estimate=NULL;

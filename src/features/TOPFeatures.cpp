@@ -15,7 +15,6 @@ CTOPFeatures::CTOPFeatures(CHMM* p, CHMM* n)
 
     if (pos && neg)
 	num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
-    // set_feature_matrix();
 }
 
  CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig): 
@@ -33,7 +32,6 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
   neg=n ;
   delete[] feature_matrix  ;
   feature_matrix=NULL ;
-  //  set_feature_matrix() ;
   CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
   if (pos && neg)
     num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
