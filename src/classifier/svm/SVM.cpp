@@ -1,7 +1,6 @@
 #include "lib/common.h"
 #include "classifier/svm/SVM.h"
 #include "lib/io.h"
-#include "kernel/WeightedDegreeCharKernel.h"
 
 #include <string.h>
 

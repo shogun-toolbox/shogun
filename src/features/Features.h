@@ -64,7 +64,7 @@ public:
 	/// get cache size
 	inline LONG get_cache_size() { return cache_size; };
 
-	/// return the number of samples
+	/// return the number of examples
 	virtual INT get_num_vectors()=0 ;
 
 	//in case there is a feature matrix allow for reshaping

@@ -69,6 +69,7 @@ public:
 
 	bool get_kernel_matrix(mxArray* retvals[], CFeatures* features);
 	bool get_kernel_optimization(mxArray* retvals[]);
+	bool compute_WD_by_levels(mxArray* retvals[]);
 
 	bool get_version(mxArray* retvals[]);
 	bool get_labels(mxArray* retvals[], CLabels* label);

@@ -193,6 +193,7 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	initialized = true ;
 	return result;
 }
+
 void CWeightedDegreeCharKernel::cleanup()
 {
 	delete_optimization();
@@ -458,6 +459,62 @@ REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx)
 	}
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
+
+	return sum/sqrtdiag_rhs[idx] ;
+}
+
+REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib) 
+{
+	INT len ;
+	bool free ;
+	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
+	assert(max_mismatch==0) ;
+	INT *vec = new INT[len] ;
+	
+	for (INT i=0; i<len; i++)
+	{
+		if (char_vec[i]=='A') { vec[i]=0 ; continue ; } ;
+		if (char_vec[i]=='C') { vec[i]=1 ; continue ; } ;
+		if (char_vec[i]=='G') { vec[i]=2 ; continue ; } ;
+		if (char_vec[i]=='T') { vec[i]=3 ; continue ; } ;
+		if (char_vec[i]=='a') { vec[i]=0 ; continue ; } ;
+		if (char_vec[i]=='c') { vec[i]=1 ; continue ; } ;
+		if (char_vec[i]=='g') { vec[i]=2 ; continue ; } ;
+		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
+		vec[i]=0 ;
+	} ;
+		
+	REAL sum=0 ;
+	for (INT j=0; j<degree; j++)
+		LevelContrib[j]=0 ;
+	
+	for (INT i=0; i<len-degree; i++)
+	{
+		struct SuffixTree *tree = trees[i] ;
+		assert(tree!=NULL) ;
+		
+		for (INT j=0; j<degree; j++)
+		{
+			if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
+			{
+				tree=tree->childs[vec[i+j]] ;
+				sum += tree->weight ;
+				LevelContrib[j] += tree->weight ;
+			} else
+				if (tree->has_floats)
+				{
+					sum += tree->child_weights[vec[i+j]] ;
+					LevelContrib[j] += tree->child_weights[vec[i+j]] ;
+					break ;
+				} else
+					break ;
+		} 
+	}
+	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
+	delete[] vec ;
+
+	for (INT j=0; j<degree; j++)
+		LevelContrib[j] /= sqrtdiag_rhs[idx] ;
 
 	return sum/sqrtdiag_rhs[idx] ;
 }

@@ -25,6 +25,7 @@ static const CHAR* N_GET_SVM=			"get_svm";
 static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
 static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
 static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
+static const CHAR* N_COMPUTE_WD_BY_LEVELS=	        "compute_WD_by_levels";
 static const CHAR* N_GET_FEATURES=		"get_features";
 static const CHAR* N_GET_LABELS=		"get_labels";
 static const CHAR* N_GET_VERSION=		"get_version";
@@ -259,6 +260,13 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.get_kernel_optimization(plhs);
 			else
 				mexErrMsgTxt("usage is W=gf('get_kernel_optimization')");
+		}
+		else if (!strncmp(action, N_COMPUTE_WD_BY_LEVELS, strlen(N_COMPUTE_WD_BY_LEVELS)))
+		{
+			if ((nlhs==1) && (nrhs==1))
+				gf_matlab.compute_WD_by_levels(plhs);
+			else
+				mexErrMsgTxt("usage is W=gf('compute_WD_by_levels')");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_MATRIX, strlen(N_GET_KERNEL_MATRIX)))
 		{

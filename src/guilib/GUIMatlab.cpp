@@ -1151,4 +1151,37 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[])
 	return false;
 }
 
+bool CGUIMatlab::compute_WD_by_levels(mxArray* retvals[])
+{
+	CKernel *kernel_ = gui->guikernel.get_kernel() ;
+	
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
+	{
+		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+		
+		if (!kernel->is_tree_initialized())
+		{
+			CIO::message(M_ERROR, "optimization not initialized\n") ;
+			return false ;
+		}
+		if (!kernel->get_rhs())
+		{
+			CIO::message(M_ERROR, "no rhs\n") ;
+			return false ;
+		}
+		INT num    = kernel->get_rhs()->get_num_vectors() ;
+		INT degree = kernel->get_degree() ;
+
+		mxArray* mx_result=mxCreateDoubleMatrix(degree+1, num, mxREAL);
+		double* result=mxGetPr(mx_result);
+
+		for (int i=0; i<num; i++)
+			result[i*(degree+1)]=kernel->compute_by_tree(i,&result[i*(degree+1)+1]) ;
+		
+		retvals[0]=mx_result;
+		return true;
+	}
+	return false;
+}
+
 #endif
