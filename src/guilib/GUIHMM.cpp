@@ -57,19 +57,19 @@ bool CGUIHMM::new_hmm(char* param)
 	int n,m,order;
 	if (sscanf(param, "%d %d %d", &n, &m, &order) == 3)
 	{
-	  if (working)
-	    delete working;
-	 
-	  if (order>1)
-	     CIO::message("WARNING: no order > 1 supported\n"); 
+		if (working)
+			delete working;
 
-	  working=new CHMM(n,m,order,NULL,PSEUDO, number_of_hmm_tables);
-	  ORDER=order;
-	  M=m;
-	  return true;
+		if (order>1)
+			CIO::message("WARNING: no order > 1 supported\n"); 
+
+		working=new CHMM(n,m,order,NULL,PSEUDO, number_of_hmm_tables);
+		ORDER=order;
+		M=m;
+		return true;
 	}
 	else
-	  CIO::message("see help for parameters\n");
+		CIO::message("see help for parameters\n");
 
 	return false;
 }
@@ -83,10 +83,10 @@ bool CGUIHMM::gradient_step(char* param)
 	double step_size, beta;
 	if (sscanf(param, "%le %le", &step_size, &beta) == 2)
 	{
-	  fixed_descent(working, step_size, beta) ;
+		fixed_descent(working, step_size, beta) ;
 	}
 	else
-	  CIO::message("see help for parameters\n");
+		CIO::message("see help for parameters\n");
 
 	return false;
 }
@@ -108,7 +108,7 @@ bool CGUIHMM::baum_welch_train(char* param)
 		if (working->get_observations())
 		{
 			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
-			
+
 			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
 
 			while (!converge(prob,prob_train))
@@ -168,7 +168,7 @@ bool CGUIHMM::baum_welch_train_defined(char* param)
 		if (working->get_observations())
 		{
 			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
-			
+
 			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
 
 			while (!converge(prob,prob_train))
@@ -228,7 +228,7 @@ bool CGUIHMM::viterbi_train(char* param)
 		if (working->get_observations())
 		{
 			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
-			
+
 			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
 
 			while (!converge(prob,prob_train))
@@ -289,7 +289,7 @@ bool CGUIHMM::viterbi_train_defined(char* param)
 		if (working->get_observations())
 		{
 			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
-			
+
 			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
 
 			while (!converge(prob,prob_train))
@@ -335,110 +335,110 @@ bool CGUIHMM::viterbi_train_defined(char* param)
 
 bool CGUIHMM::linear_train(char* param)
 {
-    if (working) 
-    {
-	if (working->get_observations())
+	if (working) 
 	{
-	    working->linear_train();
-	    return true;
+		if (working->get_observations())
+		{
+			working->linear_train();
+			return true;
+		}
+		else
+			CIO::message("assign observation first\n");
 	}
 	else
-	    CIO::message("assign observation first\n");
-    }
-    else
-	CIO::message("create model first\n");
+		CIO::message("create model first\n");
 
-    return false;
+	return false;
 }
 
 bool CGUIHMM::linear_train_from_file(char* param)
 {
-    bool result=false;
-    E_OBS_ALPHABET alphabet;
-    int WIDTH=-1,UPTO=-1;
-    char fname[1024];
+	bool result=false;
+	E_OBS_ALPHABET alphabet;
+	int WIDTH=-1,UPTO=-1;
+	char fname[1024];
 
-    param=CIO::skip_spaces(param);
-    sscanf(param, "%s %d %d", fname, &WIDTH, &UPTO);
+	param=CIO::skip_spaces(param);
+	sscanf(param, "%s %d %d", fname, &WIDTH, &UPTO);
 
-    FILE* file=fopen(fname, "r");
+	FILE* file=fopen(fname, "r");
 
-    if (file) 
-    {
-	if (WIDTH < 0 || UPTO < 0 )
+	if (file) 
 	{
-	    int i=0;
-
-	    while (fgetc(file)!='\n' && !feof(file))
-		i++;
-
-	    if (!feof(file))
-	    {
-		WIDTH=i+1;
-		UPTO=i;
-		CIO::message("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
-		fseek(file,0,SEEK_SET);
-	    }
-	    else
-		return false;
-	}
-
-	if (WIDTH >0 && UPTO >0)
-	{	  
-	    alphabet=DNA;
-	    //ORDER=1; //obsoleted by set_order
-	    M=4;
-
-	    CObservation* obs=new CObservation(TRAIN, alphabet, (int) ceil(log(M)/log(2)), M, ORDER);
-
-	    if (working && obs)
-	    {
-		alphabet=obs->get_alphabet();
-		ORDER=working->get_ORDER();
-		delete(working);
-		working=NULL;
-
-		switch (alphabet)
+		if (WIDTH < 0 || UPTO < 0 )
 		{
-		    case DNA:
+			int i=0;
+
+			while (fgetc(file)!='\n' && !feof(file))
+				i++;
+
+			if (!feof(file))
+			{
+				WIDTH=i+1;
+				UPTO=i;
+				CIO::message("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
+				fseek(file,0,SEEK_SET);
+			}
+			else
+				return false;
+		}
+
+		if (WIDTH >0 && UPTO >0)
+		{	  
+			alphabet=DNA;
+			//ORDER=1; //obsoleted by set_order
 			M=4;
-			break;
-		    case PROTEIN:
-			M=26;
-			break;
-		    case CUBE:
-			M=6;
-			break;
-		    case ALPHANUM:
-			M=36;
-			break;
-		    default:
-			M=4;
-			break;
-		};
-	    }
 
-	    working=new CHMM(UPTO,M,ORDER,NULL,PSEUDO,number_of_hmm_tables);
+			CObservation* obs=new CObservation(TRAIN, alphabet, (int) ceil(log(M)/log(2)), M, ORDER);
 
-	    if (working)
-	    {
-		working->set_observation_nocache(obs);
-		working->linear_train(file, WIDTH, UPTO);
-		result=true;
-		CIO::message("done.\n");
-	    }
-	    else
-		CIO::message("model creation failed\n");
+			if (working && obs)
+			{
+				alphabet=obs->get_alphabet();
+				ORDER=working->get_ORDER();
+				delete(working);
+				working=NULL;
 
-	    delete obs;
+				switch (alphabet)
+				{
+					case DNA:
+						M=4;
+						break;
+					case PROTEIN:
+						M=26;
+						break;
+					case CUBE:
+						M=6;
+						break;
+					case ALPHANUM:
+						M=36;
+						break;
+					default:
+						M=4;
+						break;
+				};
+			}
+
+			working=new CHMM(UPTO,M,ORDER,NULL,PSEUDO,number_of_hmm_tables);
+
+			if (working)
+			{
+				working->set_observation_nocache(obs);
+				working->linear_train(file, WIDTH, UPTO);
+				result=true;
+				CIO::message("done.\n");
+			}
+			else
+				CIO::message("model creation failed\n");
+
+			delete obs;
+		}
+
+		fclose(file);
 	}
+	else
+		CIO::message("opening file %s failed!\n", fname);
 
-	fclose(file);
-    }
-    else
-	CIO::message("opening file %s failed!\n", fname);
-
-    return result;
+	return result;
 }
 
 bool CGUIHMM::one_class_test(char* param)
@@ -593,17 +593,17 @@ bool CGUIHMM::hmm_classify(char* param)
 
 			REAL* output = new REAL[total];	
 			int* label= new int[total];	
-			
+
 			CIO::message("classifying using neg %s hmm vs. pos %s hmm\n", neglinear ? "linear" : "", poslinear ? "linear" : "");
 
 			for (int dim=0; dim<total; dim++)
 			{
 				output[dim]= 
-				    (poslinear ? pos->linear_model_probability(dim) : pos->model_probability(dim)) -
-				    (neglinear ? neg->linear_model_probability(dim) : neg->model_probability(dim));
+					(poslinear ? pos->linear_model_probability(dim) : pos->model_probability(dim)) -
+					(neglinear ? neg->linear_model_probability(dim) : neg->model_probability(dim));
 				label[dim]= posobs->get_label(dim);
 			}
-			
+
 			gui->guimath.evaluate_results(output, label, total, outputfile);
 
 			delete[] output;
@@ -674,7 +674,7 @@ bool CGUIHMM::hmm_test(char* param)
 			CObservation* negobs=NULL;
 			CObservation* tmp_posobs=NULL;
 			CObservation* tmp_negobs=NULL;
-			
+
 			if (gui->guiobs.get_obs("POSTEST")->get_ORDER() == gui->guiobs.get_obs("NEGTEST")->get_ORDER())
 			{
 				posobs=new CObservation(gui->guiobs.get_obs("POSTEST"), gui->guiobs.get_obs("NEGTEST"));
@@ -715,18 +715,18 @@ bool CGUIHMM::hmm_test(char* param)
 
 			REAL* output = new REAL[total];	
 			int* label= new int[total];	
-			
+
 			CIO::message("testing using neg %s hmm vs. pos %s hmm\n", neglinear ? "linear" : "", poslinear ? "linear" : "");
 
 			for (int dim=0; dim<total; dim++)
 			{
 				output[dim]= 
-				    (poslinear ? pos->linear_model_probability(dim) : pos->model_probability(dim)) -
-				    (neglinear ? neg->linear_model_probability(dim) : neg->model_probability(dim));
+					(poslinear ? pos->linear_model_probability(dim) : pos->model_probability(dim)) -
+					(neglinear ? neg->linear_model_probability(dim) : neg->model_probability(dim));
 				label[dim]= posobs->get_label(dim);
 				//fprintf(outputfile, "%+d: %f - %f = %f\n", label[dim], pos->model_probability(dim), neg->model_probability(dim), output[dim]);
 			}
-			
+
 			gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);
 
 			delete[] output;
@@ -737,7 +737,7 @@ bool CGUIHMM::hmm_test(char* param)
 
 			delete posobs;
 			if (gui->guiobs.get_obs("POSTEST")->get_ORDER() != gui->guiobs.get_obs("NEGTEST")->get_ORDER())
-			    delete negobs;
+				delete negobs;
 			delete tmp_posobs;
 			delete tmp_negobs;
 			result=true;
@@ -792,17 +792,17 @@ bool CGUIHMM::append_model(char* param)
 							cur_o[i]=0;
 						else
 							cur_o[i]=-1000;
-						
+
 						if (i==base2)
 							app_o[i]=0;
 						else
 							app_o[i]=-1000;
 					}
-					
+
 					if (num_param==3)
-					    working->append_model(h, cur_o, app_o);
+						working->append_model(h, cur_o, app_o);
 					else
-					    working->append_model(h);
+						working->append_model(h);
 
 					delete[] cur_o;
 					delete[] app_o;
@@ -831,7 +831,7 @@ bool CGUIHMM::add_states(char* param)
 	{
 		int states=1;
 		double value=0;
-  
+
 		param=CIO::skip_spaces(param);
 
 		sscanf(param, "%i %le", &states, &value);
@@ -841,43 +841,43 @@ bool CGUIHMM::add_states(char* param)
 		return true;
 	}
 	else
-	   CIO::message("create model first\n");
+		CIO::message("create model first\n");
 
 	return false;
 }
 
 bool CGUIHMM::set_pseudo(char* param)
 {
-  param=CIO::skip_spaces(param);
-  
-  if (sscanf(param, "%le", &PSEUDO)!=1)
-    {
-      CIO::message("see help for parameters. current setting: pseudo=%e\n", PSEUDO);
-      return false ;
-    }
-  CIO::message("current setting: pseudo=%e\n", PSEUDO);
-  return true ;
+	param=CIO::skip_spaces(param);
+
+	if (sscanf(param, "%le", &PSEUDO)!=1)
+	{
+		CIO::message("see help for parameters. current setting: pseudo=%e\n", PSEUDO);
+		return false ;
+	}
+	CIO::message("current setting: pseudo=%e\n", PSEUDO);
+	return true ;
 }
 
 bool CGUIHMM::convergence_criteria(char* param)
 {
-  int j=100;
-  double f=0.001;
-  
-  param=CIO::skip_spaces(param);
-  
-  if (sscanf(param, "%d %le", &j, &f) == 2)
-    {
-      ITERATIONS=j;
-      EPSILON=f;
-    }
-  else
-    {
-      CIO::message("see help for parameters. current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
-      return false ;
-    }
-  CIO::message("current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
-  return true ;
+	int j=100;
+	double f=0.001;
+
+	param=CIO::skip_spaces(param);
+
+	if (sscanf(param, "%d %le", &j, &f) == 2)
+	{
+		ITERATIONS=j;
+		EPSILON=f;
+	}
+	else
+	{
+		CIO::message("see help for parameters. current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
+		return false ;
+	}
+	CIO::message("current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
+	return true ;
 } ;
 
 bool CGUIHMM::set_hmm_as(char* param)
@@ -921,67 +921,67 @@ bool CGUIHMM::set_hmm_as(char* param)
 
 bool CGUIHMM::assign_obs(char* param)
 {
-  param=CIO::skip_spaces(param);
-  
-  char target[1024];
-  
-  if ((sscanf(param, "%s", target))==1)
-    {
-      if (working)
-	{
-	  CObservation *obs=gui->guiobs.get_obs(target) ;
-	  working->set_observations(obs);
+	param=CIO::skip_spaces(param);
 
-	  return true ;
-	}
-      else
+	char target[1024];
+
+	if ((sscanf(param, "%s", target))==1)
 	{
-	  printf("create model first!\n");
-	  return false ;
-	} ;
-    }
-  else
-    printf("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
-  return false ;
+		if (working)
+		{
+			CObservation *obs=gui->guiobs.get_obs(target) ;
+			working->set_observations(obs);
+
+			return true ;
+		}
+		else
+		{
+			printf("create model first!\n");
+			return false ;
+		} ;
+	}
+	else
+		printf("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
+	return false ;
 } ;
 
 //convergence criteria  -tobeadjusted-
 bool CGUIHMM::converge(double x, double y)
 {
-    double diff=y-x;
-    double absdiff=fabs(diff);
+	double diff=y-x;
+	double absdiff=fabs(diff);
 
-    CIO::message("\n #%03d\tbest result so far: %G (eps: %f", iteration_count, y, diff);
-    if (diff<0.0)
-	//CIO::message(" ***") ;
-	CIO::message(" **************** WARNING **************") ;
-    CIO::message(")") ;
+	CIO::message("\n #%03d\tbest result so far: %G (eps: %f", iteration_count, y, diff);
+	if (diff<0.0)
+		//CIO::message(" ***") ;
+		CIO::message(" **************** WARNING **************") ;
+	CIO::message(")") ;
 
-    if (iteration_count-- == 0 || (absdiff<EPSILON && conv_it<=0))
-    {
-	iteration_count=ITERATIONS;
-	CIO::message("...finished\n");
-	conv_it=5 ;
-	return true;
-    }
-    else
-    {
-	if (absdiff<EPSILON)
-	    conv_it-- ;
+	if (iteration_count-- == 0 || (absdiff<EPSILON && conv_it<=0))
+	{
+		iteration_count=ITERATIONS;
+		CIO::message("...finished\n");
+		conv_it=5 ;
+		return true;
+	}
 	else
-	    conv_it=5;
+	{
+		if (absdiff<EPSILON)
+			conv_it-- ;
+		else
+			conv_it=5;
 
-	return false;
-    }
+		return false;
+	}
 }
 
 //switch model and train model
 void CGUIHMM::switch_model(CHMM** m1, CHMM** m2)
 {
-    CHMM* dummy= *m1;
+	CHMM* dummy= *m1;
 
-    *m1= *m2;
-    *m2= dummy;
+	*m1= *m2;
+	*m2= dummy;
 }
 
 bool CGUIHMM::load(char* param)
@@ -1099,7 +1099,7 @@ bool CGUIHMM::save_likelihood(char* param)
 				//if (binary)
 				//	result=working->save_model_bin(file);
 				//else
-					
+
 				result=working->save_likelihood(file);
 			}
 
@@ -1138,7 +1138,7 @@ bool CGUIHMM::save_path(char* param)
 				//if (binary)
 				//	result=working->save_model_bin(file);
 				//else
-					
+
 				result=working->save_path(file);
 			}
 
@@ -1166,12 +1166,12 @@ bool CGUIHMM::chop(char* param)
 
 	if (sscanf(param, "%le", &value) == 1)
 	{
-	    if (working)
+		if (working)
 			working->chop(value);
 		return true;
 	}
 	else
-	   CIO::message("see help for parameters/create model first\n");
+		CIO::message("see help for parameters/create model first\n");
 	return false;
 }
 
@@ -1216,11 +1216,11 @@ bool CGUIHMM::best_path(char* param)
 {
 	if (working)
 	{
-	    working->output_model_sequence(false);
+		working->output_model_sequence(false);
 		return true;
 	}
 	else
-	   CIO::message("create model first\n");
+		CIO::message("create model first\n");
 
 	return false;
 }
@@ -1233,11 +1233,11 @@ bool CGUIHMM::normalize(char* param)
 
 	if (working)
 	{
-	    working->normalize(keep_dead_states==1);
+		working->normalize(keep_dead_states==1);
 		return true;
 	}
 	else
-	   CIO::message("create model first\n");
+		CIO::message("create model first\n");
 
 	return false;
 }
@@ -1249,17 +1249,17 @@ bool CGUIHMM::output_hmm_path(char* param)
 
 	if (sscanf(param, "%d %d", &from, &to) != 2)
 	{
-	    from=0; 
-	    to=10 ;
+		from=0; 
+		to=10 ;
 	}
 
 	if (working)
 	{
-	    working->output_model_sequence(true,from,to);
+		working->output_model_sequence(true,from,to);
 		return true;
 	}
 	else
-	   CIO::message("create model first\n");
+		CIO::message("create model first\n");
 
 	return false;
 }
@@ -1352,4 +1352,99 @@ bool CGUIHMM::permutation_entropy(char* param)
 		CIO::message("wrong number of parameters see help!\n");
 
 	return false;
+}
+
+bool CGUIHMM::histogram(char* param)
+{
+	param=CIO::skip_spaces(param);
+
+	char obsfilename[1024];
+	char destfilename[1024];
+	int ord=-1;
+	int i;
+
+	FILE* obsfile=NULL;
+	FILE* destfile=NULL;
+
+	if (sscanf(param, "%s %s %d", obsfilename, destfilename, &ord) == 3)
+	{
+		obsfile=fopen(obsfilename, "r");
+		destfile=fopen(destfilename, "w");
+
+		CObservation* p_observations=new CObservation(TEST, DNA, 2, 4, ord);
+
+		if (p_observations && ord>=1 && ord<=8 && obsfile && destfile)
+		{
+			const int WINSIZE=1024;
+			const int FAKE_WINSIZE=WINSIZE+ord;
+			const int HISTSIZE=(1 << (2*ord)); //*(sizeof(T_OBSERVATIONS));
+			double* hist=new double[HISTSIZE];
+			unsigned char* rawline=new unsigned char[FAKE_WINSIZE];
+			T_OBSERVATIONS* line=new T_OBSERVATIONS[FAKE_WINSIZE];
+			unsigned char* backupbuf=new unsigned char[ord];
+
+			int readsize;
+
+			for (i=0;i<HISTSIZE;i++)
+				hist[i]=0;
+
+			//always leave room for the first ord symbols
+			unsigned char* target=&rawline[ord-1]; 
+			
+			if (ord-1>0)
+			{
+				if ((readsize=fread(rawline, sizeof (unsigned char), ord-1, obsfile))!=ord-1)
+					return false;
+			}
+				for (i=0; i<ord-1; i++)
+					backupbuf[i]=rawline[i];
+
+			while (!feof(obsfile))
+			{
+				readsize=fread(target, sizeof (unsigned char), WINSIZE, obsfile);
+				
+				for (i=0; i<ord-1; i++)
+					rawline[i]=backupbuf[i];
+
+				if (rawline[readsize-1]=='\n')
+				{
+					readsize--;
+
+					for (i=readsize-ord+1; i<readsize; i++)
+						backupbuf[i-readsize+ord]=target[i];
+				}
+
+				for (i=0; i<FAKE_WINSIZE; i++)
+					line[i]=(T_OBSERVATIONS) rawline[i];
+
+				if (p_observations->translate_from_single_order(line,readsize,ord-1) < 0)
+					CIO::message(stderr,"wrong character(s) between %i-%i\n", ftell(obsfile)-readsize, ftell(obsfile)) ;
+
+				for (i=0; i<readsize; i++)
+					hist[line[i+ord-1]]++;
+			}
+
+			for (i=0; i<HISTSIZE; i++)
+				fprintf(destfile, "%f\n", hist[i]);
+			//fwrite(hist, sizeof(double), HISTSIZE, destfile);
+			fclose(destfile);
+			fclose(obsfile);
+
+			delete p_observations;
+			delete[] rawline;
+			delete[] line;
+			delete[] hist;
+		}
+		else
+		{
+			CIO::message("creating obs-object failed or order not within range 0-8 or files could not opened.\n");
+			return false;
+		}
+	}
+	else
+	{
+		CIO::message("See help for parameters.");
+		return false;
+	}
+	return true;
 }

@@ -51,6 +51,7 @@ public:
 	bool gradient_step(char* param) ;
 
 	int number_of_hmm_tables ;
+	bool histogram(char* param);
 	/*inline void debug()
 	{
 		if (working)

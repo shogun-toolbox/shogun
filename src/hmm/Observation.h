@@ -252,7 +252,7 @@ public:
 	 * @param observations observations
 	 * @param sequence_length length of observation vector
 	 */
-	int translate_from_single_order(T_OBSERVATIONS* observations_, int sequence_length, int pre_chars);
+	int translate_from_single_order(T_OBSERVATIONS* observations_, int sequence_length, int start);
 
 	/** translates e.g. 0123 to ACGT and drops higher dimensions of emissions
 	 * @param observations observations
