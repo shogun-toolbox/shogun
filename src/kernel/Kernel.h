@@ -13,9 +13,12 @@ public:
 	/// in the corresponding feature object
 	REAL kernel(CFeatures* a, int idx_a, CFeatures* b, int idx_b);
 
+	/// initialize your kernel
 	virtual void init(CFeatures* f)=0;
+	/// clean up your kernel
 	virtual void cleanup()=0;
 
+	/// load and save the kernel
 	bool load(FILE* src);
 	bool save(FILE* dest);
 
