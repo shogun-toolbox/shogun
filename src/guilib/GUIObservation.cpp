@@ -4,7 +4,7 @@
 
 CGUIObservation::CGUIObservation(CGUI * gui_): gui(gui_)
 {
-	E_OBS_ALPHABET alphabet=DNA;
+	alphabet=DNA;
 	pos_train_obs=NULL;
 	neg_train_obs=NULL;
 	pos_test_obs=NULL;
@@ -26,7 +26,7 @@ bool CGUIObservation::load_observations(char* param)
 	char* input=CIO::skip_spaces(param);
 	char filename[1024];
 	char target[1024];
-#warning M,ORDER hardcoded 4,1
+#error M,ORDER hardcoded 4,1
 	int M=4;
 	int ORDER=1;
 

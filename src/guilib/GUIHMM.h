@@ -12,8 +12,8 @@ public:
 	~CGUIHMM();
 
 	bool new_hmm(char* param);
-	bool load_hmm(char* param);
-	bool save_hmm(char* param);
+	bool load(char* param);
+	bool save(char* param);
 	
 	bool baum_welch_train(char* param);
 	bool linear_train(char* param);

@@ -3,9 +3,6 @@
 #include "hmm/Observation.h"
 #include "gui/GUI.h"
 
-//#include <stdlib.h>
-//#include <string.h>
-
 CGUIHMM::CGUIHMM(CGUI * gui_): gui(gui_)
 {
 	working=NULL;
@@ -55,6 +52,9 @@ bool CGUIHMM::new_hmm(char* param)
 bool CGUIHMM::baum_welch_train(char* param)
 {
 	char templname[35]=TMP_DIR "bw_model_XXXXXX" ;
+#ifdef SUNOS
+#define mkstemp(name) mktemp(name);
+#endif
 	mkstemp(templname);
 	char templname_best[40] ;
 	sprintf(templname_best, "%s_best", templname) ;
@@ -598,7 +598,7 @@ void CGUIHMM::switch_model(CHMM** m1, CHMM** m2)
     *m2= dummy;
 }
 
-bool CGUIHMM::load_hmm(char* param)
+bool CGUIHMM::load(char* param)
 {
 	bool result=false;
 
@@ -631,7 +631,7 @@ bool CGUIHMM::load_hmm(char* param)
 	return result;
 }
 
-bool CGUIHMM::save_hmm(char* param)
+bool CGUIHMM::save(char* param)
 {
 	bool result=false;
 	param=CIO::skip_spaces(param);

@@ -5,6 +5,7 @@
 #include "lib/lapack.h"
 #include "lib/common.h"
 #include "preproc/PreProc.h"
+#include "stdio.h"
 
 class CPreProc;
 
@@ -48,9 +49,15 @@ public:
 	virtual long get_number_of_examples()=0 ;
 
 	virtual CFeatures* duplicate() const=0 ;
+
+	virtual bool load(FILE* dest)=0;
+	virtual bool save(FILE* dest)=0;
 	
 protected:
 	/// Preprocessor
 	CPreProc* preproc;
+
+	/// true if features were already preprocessed
+	bool preprocessed;
 };
 #endif

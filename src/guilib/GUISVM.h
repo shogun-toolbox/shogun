@@ -6,7 +6,9 @@
 #include "svm/SVM.h"
 #include "svm/SVM_light.h"
 #include "svm_cplex/SVM_cplex.h"
+#ifndef DISABLE_MPI
 #include "svm_mpi/mpi_svm.h"
+#endif
 
 class CGUI ;
 
@@ -24,8 +26,8 @@ public:
 	bool get_kernel();
 	bool set_preproc();
 	bool get_preproc();
-	bool load_svm();
-	bool save_svm();
+	bool load(char* param);
+	bool save(char* param);
 	bool set_C(char* param);
 
  protected:

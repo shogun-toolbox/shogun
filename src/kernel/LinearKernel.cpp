@@ -3,6 +3,7 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
+#include "lib/f77blas.h"
 
 #include <assert.h>
 
@@ -47,8 +48,8 @@ REAL CLinearKernel::compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)
   bool afree, bfree;
 
   //fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
-  REAL* avec=((CRealFeatures*) a)->get_feature_vector(idx_a, alen, afree);
-  REAL* bvec=((CRealFeatures*) b)->get_feature_vector(idx_b, blen, bfree);
+  double* avec=((CRealFeatures*) a)->get_feature_vector(idx_a, alen, afree);
+  double* bvec=((CRealFeatures*) b)->get_feature_vector(idx_b, blen, bfree);
   
   assert(alen==blen);
   //fprintf(stderr, "LinKernel.compute(%ld,%ld) %d\n", idx_a, idx_b, alen) ;
@@ -61,8 +62,9 @@ REAL CLinearKernel::compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)
 
   int skip=1;
   int ialen=(int) alen;
+  //REAL result=F77CALL(ddot)(REF ialen, avec, REF skip, bvec, REF skip)/scale;
 
-  REAL result=ddot_(&ialen, avec,&skip, bvec, &skip)/scale;
+  REAL result=ddot_(&ialen, avec, &skip, bvec, &skip)/scale;
   ((CRealFeatures*) a)->free_feature_vector(avec, afree);
   ((CRealFeatures*) b)->free_feature_vector(bvec, bfree);
 

@@ -159,7 +159,7 @@ REAL* CTOPFeatures::set_feature_matrix()
 	num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 
 	num_vectors=pos->get_observations()->get_DIMENSION();
-	CIO::message("allocating top feature cache of size %.2fM for sv\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
+	CIO::message("allocating top feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	delete[] feature_matrix;
 	feature_matrix=new REAL[num_features*num_vectors];
 

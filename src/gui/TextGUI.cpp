@@ -18,6 +18,10 @@ static const char* N_NEW_HMM=			"new_hmm";
 static const char* N_NEW_SVM=			"new_svm";
 static const char* N_LOAD_HMM=			"load_hmm";
 static const char* N_SAVE_HMM=			"save_hmm";
+static const char* N_LOAD_SVM=			"load_svm";
+static const char* N_SAVE_SVM=			"save_svm";
+static const char* N_LOAD_FEATURES=		"load_features";
+static const char* N_SAVE_FEATURES=		"save_features";
 static const char* N_SAVE_HMM_BIN=		"save_hmm_bin";
 static const char* N_LOAD_DEFINITIONS=	"load_defs";
 static const char* N_SAVE_KERNEL=		"save_kernel";
@@ -111,10 +115,14 @@ void CTextGUI::print_help()
 {
    CIO::message("\n[LOAD]\n");
    CIO::message("\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- load svm\n",N_LOAD_SVM);
+   CIO::message("\033[1;31m%s\033[0m <filename> <TOP|FK> <TRAIN|TEST>\t- load features\n",N_LOAD_FEATURES);
 //   CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
    CIO::message("\033[1;31m%s\033[0m <filename>\t- load observed data\n",N_LOAD_OBSERVATIONS);
    CIO::message("\n[SAVE]\n");
    CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm\n",N_SAVE_HMM);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save svm\n",N_SAVE_SVM);
+   CIO::message("\033[1;31m%s\033[0m <filename> <TRAIN|TEST>\t- save features\n",N_SAVE_FEATURES);
 //   CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm in binary format\n",N_SAVE_HMM_BIN);
 //#ifndef NOVIT
 //   CIO::message("\033[1;31m%s\033[0m <filename>\t- save state sequence of viterbi path\n",N_SAVE_PATH);
@@ -220,7 +228,19 @@ bool CTextGUI::get_line(FILE* infile)
 	} 
 	else if (!strncmp(input, N_LOAD_HMM, strlen(N_LOAD_HMM)))
 	{
-		guihmm.load_hmm(input+strlen(N_LOAD_HMM));
+		guihmm.load(input+strlen(N_LOAD_HMM));
+	} 
+	else if (!strncmp(input, N_LOAD_FEATURES, strlen(N_LOAD_FEATURES)))
+	{
+		guifeatures.load(input+strlen(N_LOAD_FEATURES));
+	} 
+	else if (!strncmp(input, N_SAVE_FEATURES, strlen(N_SAVE_FEATURES)))
+	{
+		guifeatures.save(input+strlen(N_SAVE_FEATURES));
+	} 
+	else if (!strncmp(input, N_LOAD_SVM, strlen(N_LOAD_SVM)))
+	{
+		guisvm.load(input+strlen(N_LOAD_SVM));
 	} 
 	else if (!strncmp(input, N_SET_HMM_AS, strlen(N_SET_HMM_AS)))
 	{
@@ -236,7 +256,11 @@ bool CTextGUI::get_line(FILE* infile)
 	} 
 	else if (!strncmp(input, N_SAVE_HMM, strlen(N_SAVE_HMM)))
 	{
-		guihmm.save_hmm(input+strlen(N_SAVE_HMM)) ;
+		guihmm.save(input+strlen(N_SAVE_HMM)) ;
+	} 
+	else if (!strncmp(input, N_SAVE_SVM, strlen(N_SAVE_SVM)))
+	{
+		guisvm.save(input+strlen(N_SAVE_SVM)) ;
 	} 
 	else if (!strncmp(input, N_LOAD_DEFINITIONS, strlen(N_LOAD_DEFINITIONS)))
 	{

@@ -17,10 +17,6 @@ class CPCACut : public CRealPreProc
   virtual bool init(CFeatures* f);
   /// cleanup
   virtual void cleanup();
-  /// initialize preprocessor from file
-  virtual bool load(FILE* f);
-  /// save preprocessor init-data to file
-  virtual bool save(FILE* f);
   
   /// apply preproc on feature matrix
   /// result in feature matrix
@@ -31,14 +27,9 @@ class CPCACut : public CRealPreProc
   /// result in feature matrix
   virtual REAL* apply_to_feature_vector(REAL* f, int &len);
 
-  const char* GetFeaturesFile(int &rows) { 
-    rows=FeatureRows; return FeaturesFileName ; 
-  } ;
  protected:
   double* T ;
   int num_dim ;
   double *mean ;
-  char *FeaturesFileName ;
-  int FeatureRows ;
 };
 #endif

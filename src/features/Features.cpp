@@ -3,7 +3,7 @@
 #include "lib/io.h"
 
 CFeatures::CFeatures()
-: preproc(NULL)
+: preproc(NULL), preprocessed(false)
 {
 }
 

@@ -3,6 +3,7 @@
 
 #include "features/Features.h"
 #include "features/TOPFeatures.h"
+#include "hmm/Observation.h"
 
 class CGUI;
 
@@ -22,11 +23,16 @@ class CGUIFeatures
 
 		CFeatures *get_train_features() { return train_features; }
 		CFeatures *get_test_features() { return test_features; }
+		
+		bool load(char* param);
+		bool save(char* param);
 
 	protected:
 		CGUI* gui;
 		CFeatures *train_features;
 		CFeatures *test_features;
+		CObservation *train_obs;
+		CObservation *test_obs;
 		E_FEATURE_TYPE type;
 };
 #endif

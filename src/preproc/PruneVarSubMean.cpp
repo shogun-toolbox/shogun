@@ -25,13 +25,15 @@ bool CPruneVarSubMean::init(CFeatures* f_)
   double *mean=new double[num_features] ;
   double *var=new double[num_features] ;
   double *feature=NULL ;
-  int j ;
+  int i,j;
+
   for (j=0; j<num_features; j++)
     {
       mean[j]=0 ; var[j]=0 ;
-    } ;
+    }
+
   // compute mean
-  for (int i=0; i<num_examples; i++)
+  for (i=0; i<num_examples; i++)
     {
       long len ; bool free ;
       feature=f->get_feature_vector(i, len, free) ;
@@ -47,7 +49,7 @@ bool CPruneVarSubMean::init(CFeatures* f_)
     mean[j]/=num_examples ;
 
   // compute var
-  for (int i=0; i<num_examples; i++)
+  for (i=0; i<num_examples; i++)
     {
       long len ; bool free ;
       feature=f->get_feature_vector(i, len, free) ;
@@ -121,22 +123,23 @@ REAL* CPruneVarSubMean::apply_to_feature_vector(REAL* f, int &len)
   return ret;
 }
 
-#warning TODO implement
+#error TODO implement
 #ifdef PRUNE_VAR_SUB_MEAN
 
 void CHMM::subtract_mean_from_top_feature_cache(int num_features, int totobs)
 {
-	if (feature_cache_obs)
+    int i;
+    if (feature_cache_obs)
+    {
+	for (int j=0; j<num_features; j++)
 	{
-		for (int j=0; j<num_features; j++)
-		{
-			double mean=0;
-			for (int i=0; i<totobs; i++)
-				mean+=feature_cache_obs[i*num_features+j];
-			for (int i=0; i<totobs; i++)
-				feature_cache_obs[i*num_features+j]-=mean;
-		}
+	    double mean=0;
+	    for (i=0; i<totobs; i++)
+		mean+=feature_cache_obs[i*num_features+j];
+	    for (i=0; i<totobs; i++)
+		feature_cache_obs[i*num_features+j]-=mean;
 	}
+    }
 }
 
 #endif

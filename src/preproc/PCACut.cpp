@@ -14,161 +14,140 @@ extern "C" void cleaner_main(double *covZ, int dim, double thresh,
 			     double **T, int *num_dim)  ;
 
 CPCACut::CPCACut()
-  : CRealPreProc("PCACut"), T(NULL), num_dim(0), mean(NULL), FeaturesFileName(NULL)
+  : CRealPreProc("PCACut"), T(NULL), num_dim(0), mean(NULL)
 {
 }
 
 CPCACut::~CPCACut()
 {
-  delete[] T ;
-  delete[] mean ;
-  delete[] FeaturesFileName ;
+  delete[] T;
+  delete[] mean;
 }
 
 /// initialize preprocessor from features
-bool CPCACut::init(CFeatures* f_)
+bool CPCACut::init(CFeatures* f)
 {
-  CIO::message("calling CPCACut::init\n") ;
- 
-  CRealFeatures *f=(CRealFeatures*) f_ ;
-  int num_examples=f->get_number_of_examples() ;
-  int num_features=((CRealFeatures*)f)->get_num_features() ;
-  delete[] mean ;
-  mean=new double[num_features] ;
-  double *feature=NULL ;
-  int j ;
-  for (j=0; j<num_features; j++)
-      mean[j]=0 ; 
+    CIO::message("calling CPCACut::init\n") ;
+    int num_vectors=((CRealFeatures*)f)->get_number_of_examples() ;
+    int num_features=((CRealFeatures*)f)->get_num_features() ;
+    CIO::message("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
+    delete[] mean ;
+    mean=new double[num_features] ;
 
-  // compute mean
-  delete[] FeaturesFileName ;
-  FeaturesFileName=strdup(TMP_DIR "Z_notclean.dat.XXXXXX") ;
-  mktemp(FeaturesFileName);
-  CIO::message("Computing mean & saving to file %s ... ", FeaturesFileName) ;
-  CIO::message("[%ix%i] ", num_features, num_examples) ;
+    int i,j;
 
-  FILE* fil=fopen(FeaturesFileName,"w+") ;
-  FeatureRows=num_features ;
+    /// compute mean
 
-  for (int i=0; i<num_examples; i++)
+    // clear
+    for (j=0; j<num_features; j++)
     {
-      if (!(i % (num_examples/10+1)))
-	CIO::message("%02d%%.", (int) (100.0*i/num_examples));
-      else if (!(i % (num_examples/200+1)))
-	CIO::message(".");
+	mean[j]=0 ; 
+    }
 
-      long len ; bool free ;
-      feature=f->get_feature_vector(i, len, free) ;
-
-      fwrite(feature, sizeof(double), len, fil) ;
-      assert(len==num_features) ;
-
-      for (int j=0; j<num_features; j++)
-	mean[j]+=feature[j] ;
-
-      f->free_feature_vector(feature, free) ;
-      feature=NULL ;
-    } ;
-  fclose(fil) ;
-
-  for (j=0; j<num_features; j++)
-    mean[j]/=num_examples ;
-
-  CIO::message("done.\nComputing covariance matrix... ") ;
-  CIO::message("[%ix%i] (reading features from file %s) ", num_features, num_features, FeaturesFileName) ;
-
-  double *cov=new double[num_features*num_features] ;
-  assert(cov!=NULL) ;
-
-  for (j=0; j<num_features*num_features; j++)
-    cov[j]=0.0 ;
-
-  fil=fopen(FeaturesFileName,"r") ;
-  feature=new REAL[num_features] ;
-  for (int i=0; i<num_examples; i++)
+    // sum 
+    for (i=0; i<num_vectors; i++)
     {
-      if (!(i % (num_examples/10+1)))
-	CIO::message("%02d%%.", (int) (100.0*i/num_examples));
-      else if (!(i % (num_examples/200+1)))
-	CIO::message(".");
-      
-      //long len ; bool free ;
-      //feature=f->get_feature_vector(i, len, free) ;
-      fread(feature, sizeof(double), num_features, fil) ;
+	long len;
+	bool free;
+	REAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free);
+	for (j=0; j<num_features; j++)
+	{
+	    mean[j]+= vec[j];
+	}
+	((CRealFeatures*) f)->free_feature_vector(vec, free);
+    }
 
-      for (int j=0; j<num_features; j++)
-	feature[j]-=mean[j] ;
+    //divide
+    for (j=0; j<num_features; j++)
+	mean[j]/=num_vectors;
 
-      double oned=1.0 ; int onei=1 ;
+    CIO::message("done.\nComputing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0) ;
+    double *cov=new double[num_features*num_features] ;
+    assert(cov!=NULL) ;
 
-      //cblas_dger(CblasRowMajor,num_features,num_features, oned, feature, onei, feature, onei, cov, num_features) ;
-            dger_(&num_features,&num_features, &oned, feature, &onei, feature, &onei, cov, &num_features) ;
+    for (j=0; j<num_features*num_features; j++)
+	cov[j]=0.0 ;
 
-      //for (int k=0; k<num_features; k++)
-      //	for (int l=0; l<num_features; l++)
-      //          cov[k*num_features+l]+=feature[l]*feature[k] ;
+    for (i=0; i<num_vectors; i++)
+    {
+	if (!(i % (num_vectors/10+1)))
+	    CIO::message("%02d%%.", (int) (100.0*i/num_vectors));
+	else if (!(i % (num_vectors/200+1)))
+	    CIO::message(".");
 
-      //f->free_feature_vector(feature, free) ;
-      //feature=NULL ;
-    } ;
-  fclose(fil) ;
+	long len;
+	bool free;
 
-  for (int k=0; k<num_features; k++)
-    for (int l=0; l<num_features; l++)
-      cov[k*num_features+l]/=num_examples ;
+	REAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free) ;
 
-  CIO::message("done\n") ;
+	for (int j=0; j<num_features; j++)
+	    vec[j]-=mean[j] ;
 
-  CIO::message("Computing Eigenvalues ... ") ;
-  REAL *values=new REAL[num_features] ;
-  //  REAL *vectors=new REAL[num_features*num_features] ;
-  //  assert(vectors!=NULL) ;
-  
-//    {
-//      CIO::message("done\nRunning matlab PCA code ") ;
-//      libmmfileInitialize() ;
-//      cleaner_main(cov, num_features, 1e-4, &T, &num_dim) ;
-//      libmmfileTerminate() ;
-//      CIO::message("done\n") ;
-//      for (int k=0; k<num_features; k++)
-//        {
-//  	for (int l=0; l< num_dim; l++)
-//  	  CIO::message("%e ", T[k*num_dim+l]) ;
-//  	CIO::message("\n") ;
-//        } ;
-//    }
-  {
-    int lwork=4*num_features ;
-    double *work=new double[lwork] ;
-    int info ; char V='V', U='U' ;
-	int i;
-    dsyev_(&V, &U, &num_features, cov, &num_features, values, work, &lwork, &info) ;
-    //ATL_dsyev(&V, CblasUpper, num_features, cov, num_features, values, work, lwork, &info) ;
-    
-    int num_ok=0 ;
+	double oned=1.0;
+	int onei=1;
+	int lda=(int) num_features;
+
+	/// A = 1.0*xy^T+A blas
+	dger_(&num_features,&num_features, &oned, vec, &onei, vec, &onei, cov, &lda) ;
+
+	//for (int k=0; k<num_features; k++)
+	//	for (int l=0; l<num_features; l++)
+	//          cov[k*num_features+l]+=feature[l]*feature[k] ;
+
+	((CRealFeatures*) f)->free_feature_vector(vec, free) ;
+    }
+
     for (i=0; i<num_features; i++)
-      {
+	for (j=0; j<num_features; j++)
+	    cov[i*num_features+j]/=num_vectors ;
+
+    CIO::message("done\n") ;
+
+    CIO::message("Computing Eigenvalues ... ") ;
+    int lwork=3*num_features ;
+    double* work=new double[lwork] ;
+    double* eigenvalues=new double[num_features] ;
+    int info;
+    char V='V';
+    char U='U';
+    int ord= (int) num_features;
+    int lda= (int) num_features;
+
+    for (i=0; i<num_features; i++)
+	eigenvalues[i]=0;
+
+    // lapack sym matrix eigenvalues+vectors
+    dsyev_(&V, &U, &ord, cov, &lda, eigenvalues, work, &lwork, &info) ;
+    delete[] work;
+
+    num_dim=0;
+    for (i=0; i<num_features; i++)
+    {
 	//	  CIO::message("EV[%i]=%e\n", i, values[i]) ;
-	if (values[i]>1e-6)
-	  num_ok++ ;
-      } ;
-    CIO::message("Done\nReducing from %i to %i features..", num_features, num_ok) ;
-    T=new REAL[num_ok*num_features] ;
+	if (eigenvalues[i]>1e-6)
+	    num_dim++ ;
+    } ;
+    
+    CIO::message("Done\nReducing from %i to %i features..", num_features, num_dim) ;
+
+    delete[] T;
+    T=new REAL[num_dim*num_features] ;
     assert(T!=NULL) ;
-    int num_ok2=0 ;
-    num_dim=num_ok ;
+    int offs=0 ;
     for (i=0; i<num_features; i++)
-      {
-	if (values[i]>1e-6)
-	  {
+    {
+	if (eigenvalues[i]>1e-6)
+	{
 	    for (int j=0; j<num_features; j++)
-	      T[num_ok2+j*num_ok]=cov[num_features*i+j]/sqrt(values[i]) ;
-	    num_ok2++ ;
-	  } ;
-      } ;
+		T[offs+j*num_dim]=cov[num_features*i+j]/sqrt(eigenvalues[i]) ;
+	    offs++ ;
+	} ;
+    }
+
+    delete[] eigenvalues;
+    delete[] cov;
     CIO::message("Done\n") ;
-  }
-  return true ;
+    return true ;
 }
 
 /// initialize preprocessor from features
@@ -178,63 +157,49 @@ void CPCACut::cleanup()
   T=NULL ;
 }
 
-/// initialize preprocessor from file
-bool CPCACut::load(FILE* f)
-{
-  return false;
-}
-
-/// save preprocessor init-data to file
-bool CPCACut::save(FILE* f)
-{
-  return false;
-}
-
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 {
-  long num_vectors=0;
-  long num_features=0;
-  
-  REAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
-  CIO::message("get Feature matrix: %ix%i\n", num_vectors, num_features) ;
-  
-  if (m)
-    {
-      REAL* res= new REAL[num_dim];
-      REAL* sub_mean= new REAL[num_features];
-      for (int vec=0; vec<num_vectors; vec++)
-	{
-	  int onei=1 ;
-	  double zerod=0, oned=1;
-	  char N='N';
-	  int i;
-	  for (i=0; i<num_features; i++)
-	    sub_mean[i]=m[num_features*vec+i]-mean[i] ;
-	  
-	  int num_feat=num_features;
+    long num_vectors=0;
+    long num_features=0;
 
-// void cblas_dgemv(const enum CBLAS_ORDER Order,
-//                  const enum CBLAS_TRANSPOSE TransA, const int M, const int N,
-//                  const double alpha, const double *A, const int lda,
-//                  const double *X, const int incX, const double beta,
-//                  double *Y, const int incY);
-	  //cblas_dgemv(CblasRowMajor, CblasNoTrans, num_dim, num_feat, oned, T, num_dim, sub_mean, onei, zerod, res, onei) ;
-	  dgemv_(&N, &num_dim, &num_feat, &oned, T, &num_dim, sub_mean, &onei, &zerod, res, &onei) ;
-	  
-	  REAL* m_transformed=&m[num_dim*vec];
-	  for (i=0; i<num_dim; i++)
-	    m_transformed[i]=m[i];
+    REAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
+    CIO::message("get Feature matrix: %ix%i\n", num_vectors, num_features) ;
+
+    if (m)
+    {
+	CIO::message("Preprocessing feature matrix\n");
+	REAL* res= new REAL[num_dim];
+	REAL* sub_mean= new REAL[num_features];
+	for (int vec=0; vec<num_vectors; vec++)
+	{
+	    int onei=1 ;
+	    double zerod=0;
+	    double oned=1;
+	    char N='N';
+	    int i;
+
+	    for (i=0; i<num_features; i++)
+		sub_mean[i]=m[num_features*vec+i]-mean[i] ;
+
+	    int num_feat=num_features;
+
+	    dgemv_(&N, &num_dim, &num_feat, &oned, T, &num_dim, sub_mean, &onei, &zerod, res, &onei) ;
+
+	    REAL* m_transformed=&m[num_dim*vec];
+	    for (i=0; i<num_dim; i++)
+		m_transformed[i]=m[i];
 	}
-      delete[] res;
-      delete[] sub_mean;
-      
-      ((CRealFeatures*) f)->set_num_features(num_dim);
+	delete[] res;
+	delete[] sub_mean;
+
+	((CRealFeatures*) f)->set_num_features(num_dim);
+	CIO::message("new Feature matrix: %ix%i\n", num_vectors, num_features);
     }
-  
-  return m;
+
+    return m;
 }
 
 /// apply preproc on single feature vector
@@ -249,18 +214,9 @@ REAL* CPCACut::apply_to_feature_vector(REAL* f, int &len)
   for (int i=0; i<len; i++)
     sub_mean[i]=f[i]-mean[i] ;
   
-  //cblas_dgemv(CblasRowMajor, CblasNoTrans, num_dim, len, oned, T, num_dim, sub_mean, onei, zerod, ret, onei) ;
-	        dgemv_(&N, &num_dim, &len, &oned, T, &num_dim, sub_mean, &onei, &zerod, ret, &onei) ;
+  dgemv_(&N, &num_dim, &len, &oned, T, &num_dim, sub_mean, &onei, &zerod, ret, &onei) ;
 
   delete[] sub_mean ;
   len=num_dim ;
   return ret;
 }
-
-// REAL* CPCACut::apply_to_feature_vector(CRealFeature* feat, int num)
-// {
-//   FILE *fil=fopen(FeaturesFile,"r") ;
-//   fseek(fil, sizeof(double)*num*num_features
-//   fclose(fil) ;
-// }
-
