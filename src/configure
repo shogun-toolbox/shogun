@@ -1084,8 +1084,6 @@ set_opts()
 {
 	if test "$_matlab" = yes
 	then
-		DEFINES="$DEFINES -DMATLAB"
-
 		if osf1
 		then
 			LINKFLAGS="-pthread -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*' -L/opt/matlab-6.5-13/bin/alpha -lmx -lmex -lmat $LINKFLAGS"

@@ -1,19 +1,22 @@
-#ifdef MATLAB
+#include "lib/config.h"
+
+#ifdef HAVE_MATLAB
 #include <stdio.h>
 #include <string.h>
-
-#include "lib/io.h"
-#include "mex.h"
-#include "distributions/hmm/HMM.h"
-#include "distributions/hmm/penalty_info.h"
-#include "classifier/svm/SVM.h"
-#include "features/Labels.h"
-#include "features/RealFeatures.h"
-#include "kernel/WeightedDegreeCharKernel.h"
 
 #include "guilib/GUIMatlab.h"
 #include "gui/TextGUI.h"
 #include "gui/GUI.h"
+
+#include "lib/io.h"
+#include "distributions/hmm/penalty_info.h"
+#include "distributions/hmm/HMM.h"
+#include "distributions/hmm/penalty_info.h"
+#include "features/Labels.h"
+#include "features/RealFeatures.h"
+#include "kernel/WeightedDegreeCharKernel.h"
+#include "classifier/svm/SVM.h"
+
 
 extern CTextGUI* gui;
 

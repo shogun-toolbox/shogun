@@ -1,4 +1,4 @@
-#ifdef MATLAB
+#ifdef HAVE_MATLAB
 #ifndef __MATLAB_H_
 #define __MATLAB_H_
 

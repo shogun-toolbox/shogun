@@ -1,4 +1,6 @@
-#ifdef MATLAB
+#include "lib/config.h"
+
+#ifdef HAVE_MATLAB
 #include <stdio.h>
 #include <string.h>
 
