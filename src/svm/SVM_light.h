@@ -62,21 +62,6 @@ class CSVMLight:public CSVM
   } MODEL;
 
  public:
-  typedef struct kernel_cache {
-    long   *index;  /* cache some kernel evalutations */
-    CFLOAT *buffer; /* to improve speed */
-    long   *invindex;
-    long   *active2totdoc;
-    long   *totdoc2active;
-    long   *lru;
-    long   *occu;
-    long   elems;
-    long   max_elems;
-    long   time;
-    long   activenum;
-    long   buffsize;
-  } KERNEL_CACHE;
-
  protected:
   typedef struct cache_parm_s {
     struct kernel_cache *kernel_cache;
@@ -115,7 +100,6 @@ class CSVMLight:public CSVM
     //int    parse_document(char *, DOC *, long *, long *, long);
     //void   nol_ll(char *, long *, long *, long *);
     long   get_runtime();
-    void   *my_malloc(long); 
     void   svm_learn(DOC *, long *, long, long, LEARN_PARM *, KERNEL_PARM *, 
 	    KERNEL_CACHE *, MODEL *);
     long   optimize_to_convergence(DOC *, long *, long, long, LEARN_PARM *,
@@ -170,23 +154,6 @@ class CSVMLight:public CSVM
 	    long *, DOC *, KERNEL_PARM *,
 	    KERNEL_CACHE *, MODEL *, CFLOAT *, 
 	    double *, double *);
-
-    /* cache kernel evalutations to improve speed */
-    void   get_kernel_row(KERNEL_CACHE *,DOC *, long, long, long *, CFLOAT *, 
-	    KERNEL_PARM *);
-    void   cache_kernel_row(KERNEL_CACHE *,DOC *, long, KERNEL_PARM *);
-    void   cache_multiple_kernel_rows(KERNEL_CACHE *,DOC *, long *, long, 
-	    KERNEL_PARM *);
-    void   kernel_cache_shrink(KERNEL_CACHE *,long, long, long *);
-    void   kernel_cache_init(KERNEL_CACHE *,long, long);
-    void   kernel_cache_reset_lru(KERNEL_CACHE *);
-    void   kernel_cache_cleanup(KERNEL_CACHE *);
-    long   kernel_cache_malloc(KERNEL_CACHE *);
-    void   kernel_cache_free(KERNEL_CACHE *,long);
-    long   kernel_cache_free_lru(KERNEL_CACHE *);
-    CFLOAT *kernel_cache_clean_and_malloc(KERNEL_CACHE *,long);
-    long   kernel_cache_touch(KERNEL_CACHE *,long);
-    long   kernel_cache_check(KERNEL_CACHE *,long);
 
     void compute_xa_estimates(MODEL *, long *, long *, long, DOC *, 
 	    double *, double *, KERNEL_PARM *, 

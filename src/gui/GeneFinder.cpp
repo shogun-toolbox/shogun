@@ -28,13 +28,14 @@
 #endif // SVMCPLEX
 
 //names of menu commands
-static const char* N_SET_TEST_MODEL=			"set_test_model";
+static const char* N_SET_TEST_MODEL=		"set_test_model";
 static const char* N_SET_POS_MODEL=			"set_pos_model";
 static const char* N_SET_NEG_MODEL=			"set_neg_model";
 static const char* N_LOAD_MODEL=			"load_model";
 static const char* N_SAVE_MODEL=			"save_model";
-static const char* N_SAVE_MODEL_BIN=			"save_model_bin";
-static const char* N_LOAD_DEFINITIONS=		        "load_defs";
+static const char* N_SAVE_MODEL_BIN=		"save_model_bin";
+static const char* N_LOAD_DEFINITIONS=		"load_defs";
+static const char* N_SAVE_TOP_KERNEL=		"save_top_kernel";
 #ifndef NOVIT
 static const char* N_SAVE_PATH=				"save_path";
 static const char* N_SAVE_PATH_DERIVATIVES=	        "save_vit_deriv";
@@ -219,6 +220,7 @@ static void help()
 #endif // NOVIT
    CIO::message("%s <filename>\t- save log derivatives of P[O|model]\n",N_SAVE_MODEL_DERIVATIVES);
    CIO::message("%s <filename>\t- save log derivatives of P[O|model] in binary format\n",N_SAVE_MODEL_DERIVATIVES_BIN);
+   CIO::message("%s <filename>\t- save top kernel in binary format\n",N_SAVE_TOP_KERNEL);
    CIO::message("%s <filename>\t- save P[O|model]\n",N_SAVE_LIKELIHOOD);
    CIO::message("%s <filename>\t- save P[O|model]\n",N_SAVE_LIKELIHOOD_BIN);
    CIO::message("%s <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear model from file\n",N_SAVE_LINEAR_LIKELIHOOD);
@@ -608,6 +610,53 @@ static bool prompt(FILE* infile=stdin)
 	else
 	   CIO::message("opening file %s for writing failed\n", &input[i]);
     } 
+    else if (!strncmp(input, N_SAVE_TOP_KERNEL, strlen(N_SAVE_TOP_KERNEL)))
+	{
+		int j;
+		for (i=strlen(N_SAVE_TOP_KERNEL); isspace(input[i]); i++);
+		for (j=i; j<(int)strlen(input) && !isspace(input[j]); j++);
+		input[j]='\0';
+		FILE* file=fopen(&input[i], "w");
+		if (file)
+		{
+			if (pos && neg)
+			{
+				if (obs_postrain && obs_negtrain)
+				{
+					CObservation* obs=new CObservation(obs_postrain, obs_negtrain);
+
+					CObservation* old_pos=pos->get_observations();
+					CObservation* old_neg=neg->get_observations();
+
+					pos->set_observations(obs);
+					neg->set_observations(obs);
+
+					int larger_N=math.max(pos->get_N(), neg->get_N());
+					int larger_M=math.max(pos->get_M(), neg->get_M());
+					theta=new double[1+larger_N*(1+larger_N+1+larger_M)];
+
+					save_top_kernel(file, obs);
+					fclose(file);
+					CIO::message("successfully written top_kernel into \"%s\" !\n", &input[i]);
+
+					delete[] theta;
+					theta=NULL;
+
+					pos->set_observations(old_pos);
+					neg->set_observations(old_neg);
+
+					delete obs;
+				}
+				else
+					CIO::message("assign postrain and negtrain observations first!\n");
+			}
+			else
+				CIO::message("assign positive and negative models first!\n");
+
+		}
+		else
+			CIO::message("opening file %s for writing failed\n", &input[i]);
+	} 
 #ifndef NOVIT
     else if (!strncmp(input, N_SAVE_PATH_DERIVATIVES_BIN, strlen(N_SAVE_PATH_DERIVATIVES_BIN)))
     {

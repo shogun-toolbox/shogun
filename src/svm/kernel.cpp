@@ -3,7 +3,10 @@
 
 #include "svm/kernel.h"
 #include "hmm/HMM.h"
+#include <string.h>
+#include <stdlib.h>
 
+extern long verbosity;
 extern CHMM* pos;
 extern CHMM* neg;
 extern double* theta;
@@ -48,6 +51,304 @@ CFLOAT kernel(KERNEL_PARM *kernel_parm,DOC* a,DOC* b)
 	}
   return 0 ;
 }
+
+/****************************** Cache handling *******************************/
+void* my_malloc(long size)
+{
+  void *ptr;
+  ptr=(void *)malloc(size);
+  if(!ptr) { 
+    perror ("Out of memory!\n"); 
+    exit (1); 
+  }
+  return(ptr);
+}
+
+void kernel_cache_init(KERNEL_CACHE *kernel_cache, long totdoc, long buffsize)
+{
+  long i;
+
+  kernel_cache->index = (long *)my_malloc(sizeof(long)*totdoc);
+  kernel_cache->occu = (long *)my_malloc(sizeof(long)*totdoc);
+  kernel_cache->lru = (long *)my_malloc(sizeof(long)*totdoc);
+  kernel_cache->invindex = (long *)my_malloc(sizeof(long)*totdoc);
+  kernel_cache->active2totdoc = (long *)my_malloc(sizeof(long)*totdoc);
+  kernel_cache->totdoc2active = (long *)my_malloc(sizeof(long)*totdoc);
+  kernel_cache->buffer = (CFLOAT *)my_malloc(buffsize*1024*1024);
+
+  kernel_cache->buffsize=(long)(buffsize*1024*1024/sizeof(CFLOAT));
+
+  kernel_cache->max_elems=(long)(kernel_cache->buffsize/totdoc);
+  if(kernel_cache->max_elems>totdoc) {
+    kernel_cache->max_elems=totdoc;
+  }
+
+  if(verbosity>=2) {
+   CIO::message(" Cache-size in rows = %ld\n",kernel_cache->max_elems);
+   CIO::message(" Kernel evals so far: %ld\n",kernel_cache_statistic);    
+  }
+
+  kernel_cache->elems=0;   /* initialize cache */
+  for(i=0;i<totdoc;i++) {
+    kernel_cache->index[i]=-1;
+    kernel_cache->lru[i]=0;
+  }
+  for(i=0;i<kernel_cache->max_elems;i++) {
+    kernel_cache->occu[i]=0;
+    kernel_cache->invindex[i]=-1;
+  }
+
+  kernel_cache->activenum=totdoc;;
+  for(i=0;i<totdoc;i++) {
+      kernel_cache->active2totdoc[i]=i;
+      kernel_cache->totdoc2active[i]=i;
+  }
+
+  kernel_cache->time=0;  
+} 
+
+void get_kernel_row(
+KERNEL_CACHE *kernel_cache,
+DOC *docs,          /* Get's a row of the matrix of kernel values */
+long docnum,long totdoc, /* This matrix has the same form as the Hessian, */ 
+long *active2dnum,  /* just that the elements are not multiplied by */
+CFLOAT *buffer,     /* y_i * y_j * a_i * a_j */
+KERNEL_PARM *kernel_parm) /* Takes the values from the cache if available. */
+{
+  register long i,j,start;
+  DOC *ex;
+
+  ex=&(docs[docnum]);
+  if(kernel_cache->index[docnum] != -1) { /* is cached? */
+    kernel_cache->lru[kernel_cache->index[docnum]]=kernel_cache->time; /* lru */
+    start=kernel_cache->activenum*kernel_cache->index[docnum];
+    for(i=0;(j=active2dnum[i])>=0;i++) {
+      if(kernel_cache->totdoc2active[j] >= 0) {
+	buffer[j]=kernel_cache->buffer[start+kernel_cache->totdoc2active[j]];
+      }
+      else {
+	buffer[j]=(CFLOAT)kernel(kernel_parm,ex,&(docs[j]));
+      }
+    }
+  }
+  else {
+    for(i=0;(j=active2dnum[i])>=0;i++) {
+      buffer[j]=(CFLOAT)kernel(kernel_parm,ex,&(docs[j]));
+    }
+  }
+}
+
+
+/* Fills cache for the row m */
+void cache_kernel_row(KERNEL_CACHE *kernel_cache, DOC *docs, long m, KERNEL_PARM *kernel_parm)
+{
+  register DOC *ex;
+  register long j,k,l;
+  register CFLOAT *cache;
+
+  if(!kernel_cache_check(kernel_cache,m)) {  /* not cached yet*/
+    cache = kernel_cache_clean_and_malloc(kernel_cache,m);
+    if(cache) {
+      l=kernel_cache->totdoc2active[m];
+      ex=&(docs[m]);
+      for(j=0;j<kernel_cache->activenum;j++) {  /* fill cache */
+	k=kernel_cache->active2totdoc[j];
+	if((kernel_cache->index[k] != -1) && (l != -1) && (k != m)) {
+	  cache[j]=kernel_cache->buffer[kernel_cache->activenum
+				       *kernel_cache->index[k]+l];
+	}
+	else {
+	  cache[j]=kernel(kernel_parm,ex,&(docs[k]));
+	} 
+      }
+    }
+    else {
+      perror("Error: Kernel cache full! => increase cache size");
+    }
+  }
+}
+
+/* Fills cache for the rows in key */
+void cache_multiple_kernel_rows(KERNEL_CACHE *kernel_cache, DOC *docs, long *key, long varnum, KERNEL_PARM *kernel_parm)
+{
+  register long i;
+
+  for(i=0;i<varnum;i++) {  /* fill up kernel cache */
+    cache_kernel_row(kernel_cache,docs,key[i],kernel_parm);
+  }
+}
+
+/* remove numshrink columns in the cache */
+/* which correspond to examples marked  */
+void kernel_cache_shrink(KERNEL_CACHE *kernel_cache, long totdoc, long numshrink, long *after)
+{                           
+  register long i,j,jj,from=0,to=0,scount;     /* 0 in after. */
+  long *keep;
+
+  if(verbosity>=2) {
+   CIO::message(" Reorganizing cache...");
+  }
+
+  keep=(long *)my_malloc(sizeof(long)*totdoc);
+  for(j=0;j<totdoc;j++) {
+    keep[j]=1;
+  }
+  scount=0;
+  for(jj=0;(jj<kernel_cache->activenum) && (scount<numshrink);jj++) {
+    j=kernel_cache->active2totdoc[jj];
+    if(!after[j]) {
+      scount++;
+      keep[j]=0;
+    }
+  }
+
+  for(i=0;i<kernel_cache->max_elems;i++) {
+    for(jj=0;jj<kernel_cache->activenum;jj++) {
+      j=kernel_cache->active2totdoc[jj];
+      if(!keep[j]) {
+	from++;
+      }
+      else {
+	kernel_cache->buffer[to]=kernel_cache->buffer[from];
+	to++;
+	from++;
+      }
+    }
+  }
+
+  kernel_cache->activenum=0;
+  for(j=0;j<totdoc;j++) {
+    if((keep[j]) && (kernel_cache->totdoc2active[j] != -1)) {
+      kernel_cache->active2totdoc[kernel_cache->activenum]=j;
+      kernel_cache->totdoc2active[j]=kernel_cache->activenum;
+      kernel_cache->activenum++;
+    }
+    else {
+      kernel_cache->totdoc2active[j]=-1;
+    }
+  }
+
+  kernel_cache->max_elems=(long)(kernel_cache->buffsize/kernel_cache->activenum);
+  if(kernel_cache->max_elems>totdoc) {
+    kernel_cache->max_elems=totdoc;
+  }
+
+  free(keep);
+
+  if(verbosity>=2) {
+   CIO::message("done.\n");
+   CIO::message(" Cache-size in rows = %ld\n",kernel_cache->max_elems);
+  }
+}
+
+
+void kernel_cache_reset_lru(KERNEL_CACHE *kernel_cache)
+{
+  long maxlru=0,k;
+  
+  for(k=0;k<kernel_cache->max_elems;k++) {
+    if(maxlru < kernel_cache->lru[k]) 
+      maxlru=kernel_cache->lru[k];
+  }
+  for(k=0;k<kernel_cache->max_elems;k++) {
+      kernel_cache->lru[k]-=maxlru;
+  }
+}
+
+void kernel_cache_cleanup(KERNEL_CACHE *kernel_cache)
+{
+  free(kernel_cache->index);
+  free(kernel_cache->occu);
+  free(kernel_cache->lru);
+  free(kernel_cache->invindex);
+  free(kernel_cache->active2totdoc);
+  free(kernel_cache->totdoc2active);
+  free(kernel_cache->buffer);
+}
+
+long kernel_cache_malloc(KERNEL_CACHE *kernel_cache)
+{
+  long i;
+
+  if(kernel_cache->elems < kernel_cache->max_elems) {
+    for(i=0;i<kernel_cache->max_elems;i++) {
+      if(!kernel_cache->occu[i]) {
+	kernel_cache->occu[i]=1;
+	kernel_cache->elems++;
+	return(i);
+      }
+    }
+  }
+  return(-1);
+}
+
+void kernel_cache_free(KERNEL_CACHE *kernel_cache, long i)
+{
+  kernel_cache->occu[i]=0;
+  kernel_cache->elems--;
+}
+
+/* remove least recently used cache */
+/* element */
+long kernel_cache_free_lru(KERNEL_CACHE *kernel_cache)  
+{                                     
+  register long k,least_elem=-1,least_time;
+
+  least_time=kernel_cache->time+1;
+  for(k=0;k<kernel_cache->max_elems;k++) {
+    if(kernel_cache->invindex[k] != -1) {
+      if(kernel_cache->lru[k]<least_time) {
+	least_time=kernel_cache->lru[k];
+	least_elem=k;
+      }
+    }
+  }
+  if(least_elem != -1) {
+    kernel_cache_free(kernel_cache,least_elem);
+    kernel_cache->index[kernel_cache->invindex[least_elem]]=-1;
+    kernel_cache->invindex[least_elem]=-1;
+    return(1);
+  }
+  return(0);
+}
+
+/* Get a free cache entry. In case cache is full, the lru */
+/* element is removed. */
+CFLOAT* kernel_cache_clean_and_malloc(KERNEL_CACHE *kernel_cache, long docnum)
+{             
+  long result;
+  if((result = kernel_cache_malloc(kernel_cache)) == -1) {
+    if(kernel_cache_free_lru(kernel_cache)) {
+      result = kernel_cache_malloc(kernel_cache);
+    }
+  }
+  kernel_cache->index[docnum]=result;
+  if(result == -1) {
+    return(0);
+  }
+  kernel_cache->invindex[result]=docnum;
+  kernel_cache->lru[kernel_cache->index[docnum]]=kernel_cache->time; /* lru */
+  return((CFLOAT *)((long)kernel_cache->buffer
+		    +(kernel_cache->activenum*sizeof(CFLOAT)*
+		      kernel_cache->index[docnum])));
+}
+
+/* Update lru time to avoid removal from cache. */
+long kernel_cache_touch(KERNEL_CACHE *kernel_cache, long docnum)
+{
+  if(kernel_cache && kernel_cache->index[docnum] != -1) {
+    kernel_cache->lru[kernel_cache->index[docnum]]=kernel_cache->time; /* lru */
+    return(1);
+  }
+  return(0);
+}
+  
+/* Is that row cached? */
+long kernel_cache_check(KERNEL_CACHE *kernel_cache, long docnum)
+{
+  return(kernel_cache->index[docnum] != -1);
+}
+  
 
 void tester(KERNEL_PARM *kernel_parm)
 {
@@ -237,5 +538,49 @@ double cached_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in yo
 	printf("cached kernel bug:%e == %e\n", top_kernel(kernel_parm,a,b), result);
 #endif
     return result;
+}
+
+bool save_top_kernel(FILE* dest, CObservation* obs)
+{
+    KERNEL_CACHE mykernel_cache;
+    KERNEL_PARM mykernel_parm;
+	int totdoc=obs->get_DIMENSION();
+	
+	memset(&mykernel_cache, 0x0, sizeof(KERNEL_CACHE));
+	memset(&mykernel_parm, 0x0, sizeof(KERNEL_PARM));
+	int kernel_type=6;
+
+	if (!CHMM::compute_top_feature_cache(pos, neg))
+		kernel_type=4; // hmm+svm precalculated
+	
+	mykernel_parm.kernel_type=kernel_type; //custom kernel
+	mykernel_parm.poly_degree=-12345;
+	mykernel_parm.rbf_gamma=-12345;
+	mykernel_parm.coef_lin=-12345;
+	mykernel_parm.coef_const=-12345;
+	
+	double norm_val=find_normalizer(&mykernel_parm, totdoc);
+
+#ifdef USE_KERNEL_CACHE
+	kernel_cache_init(&mykernel_cache,totdoc,100);
+#else
+	kernel_cache_init(&mykernel_cache,totdoc, 2);
+#endif
+
+	DOC a;
+	DOC b;
+	for (int i=0; i<totdoc; i++)
+	{
+		a.docnum=i;
+		for (int j=0; j<totdoc; j++)
+		{
+			b.docnum=j;
+			double d=kernel(&mykernel_parm, &a, &b);
+			fwrite(&d, sizeof(double),1, dest);
+		}
+	}
+
+	kernel_cache_cleanup(&mykernel_cache);
+	return true;
 }
 #endif
