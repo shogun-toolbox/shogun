@@ -1,7 +1,7 @@
 #ifndef _KERNEL_H___
 #define _KERNEL_H___
 
-#include "svm/kernel.h"
+#include "kernel/Kernel.h"
 #include "hmm/HMM.h"
 #include <string.h>
 #include <stdlib.h>
