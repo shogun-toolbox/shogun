@@ -1098,8 +1098,8 @@ set_opts()
 			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -pthread -std1"
 		elif darwin
 		then
-			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -undefined suppress -L/Applications/MATLAB6p5/bin/mac -lmx -lmex -lmat $LINKFLAGS"
-			INCLUDES="$INCLUDES -I/Applications/MATLAB6p5/extern/include"
+			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -undefined suppress -L/Applications/MATLAB7/bin/mac -lmx -lmex -lmat $LINKFLAGS"
+			INCLUDES="$INCLUDES -I/Applications/MATLAB7/extern/include"
 			TARGET="gf.mexmac"
 		else
 			LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
