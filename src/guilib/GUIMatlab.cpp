@@ -351,7 +351,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 		INT M=mxGetN(mx_pos);
 		INT P=mxGetN(mx_penalty_info) ;
 		INT L=mxGetN(mx_genestr) ;
-		INT D=mxGetN(mx_dict_weights) ;
+		INT D=mxGetM(mx_dict_weights) ;
 		
 		//CIO::message(M_DEBUG, "N=%i, M=%i, P=%i, L=%i, nbest=%i\n", N, M, P, L, nbest) ;
 		/*fprintf(stderr,"ok1=%i\n", mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
@@ -381,7 +381,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			mxGetM(mx_orf_info)==N &&
 			mxGetN(mx_orf_info)==2 &&
 			mxGetM(mx_genestr)==1 &&
-			mxGetM(mx_dict_weights)==1 && 
+			mxGetN(mx_dict_weights)==2 && 
 			((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			 || mxIsEmpty(mx_penalty_info))
 			)
@@ -437,7 +437,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			double* p_prob = mxGetPr(mx_prob);
 			
 			h->best_path_trans(seq, M, pos, orf_info, PEN_matrix, genestr, L,
-							   nbest, p_prob, my_path, my_pos, dict_weights, D) ;
+							   nbest, p_prob, my_path, my_pos, dict_weights, 2*D) ;
 
 			// clean up 
 			delete_penalty_struct_array(PEN, P) ;

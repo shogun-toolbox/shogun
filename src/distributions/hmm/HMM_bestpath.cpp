@@ -18,7 +18,7 @@ extern "C" int	finite(double);
 static const INT num_words = 4096 ;
 static const INT word_degree = 6 ;
 static bool word_used[num_words] ;
-static REAL svm_value ;
+static REAL svm_value[2] ;
 static REAL *dict_weights ;
 static INT svm_pos_start ;
 static INT num_unique_words = 0 ;
@@ -60,13 +60,14 @@ inline void reset_svm_value(INT pos, INT & last_svm_pos)
 {
 	for (int i=0; i<num_words; i++)
 		word_used[i]=false ;
-	svm_value = 0 ;
+	svm_value[0] = 0 ;
+	svm_value[1] = 0 ;
 	last_svm_pos = pos - 6+1 ;
 	svm_pos_start = pos - 6 ;
 	num_unique_words=0 ;
 }
 
-REAL extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos) 
+void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, REAL* ret) 
 {
 	bool did_something = false ;
 	for (int i=last_svm_pos-1; i>=pos; i--)
@@ -74,7 +75,8 @@ REAL extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos)
 		did_something=true ;
 		if (!word_used[wordstr[i]])
 		{
-			svm_value+=dict_weights[wordstr[i]] ;
+			svm_value[0]+=dict_weights[wordstr[i]] ;
+			svm_value[1]+=dict_weights[wordstr[i]+num_words] ;
 			//fprintf(stderr,"svm_value=%1.2f word
 			word_used[wordstr[i]]=true ;
 			num_unique_words++ ;
@@ -83,11 +85,17 @@ REAL extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos)
 	if (did_something || num_unique_words>0)
 	{
 		last_svm_pos=pos ;
-		return svm_value/sqrt((double)num_unique_words) ;  // full normalization
+		ret[0]= svm_value[0]/sqrt((double)num_unique_words) ;  // full normalization
+		ret[1]= svm_value[1]/sqrt((double)num_unique_words) ;  // full normalization
 		//	return svm_value/sqrt((double)svm_pos_start-pos) ; // len normalization
 	}
 	else
-		return 0 ; // what should I do?
+	{
+		// what should I do?
+		ret[0]=0 ;
+		ret[1]=0 ;
+	}
+	
 }
 
 inline bool extend_orf(const bool* genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to)
@@ -141,7 +149,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	const INT default_look_back = 30000 ;
 	INT max_look_back = 0 ;
 	bool use_svm = false ;
-	assert(dict_len==num_words) ;
+	assert(dict_len==2*num_words) ;
 	dict_weights=dictionary_weights ;
 	
 	{ // determine maximal length of look-back
@@ -209,7 +217,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	INT * pos_seq   = new INT[seq_len] ;
 	assert(pos_seq!=NULL) ;
 
-	REAL svm_value = 0 ;
+	REAL svm_value[2] = {0,0} ;
 	
 	{ // precompute stop codons
 		for (INT i=0; i<genestr_len-2; i++)
@@ -344,9 +352,12 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						if (ok)
 						{
 							if (use_svm)
-								svm_value=extend_svm_value(wordstr, pos[ts], last_svm_pos) ;
+								extend_svm_value(wordstr, pos[ts], last_svm_pos, svm_value) ;
 							else
-								svm_value=0 ;
+							{
+								svm_value[0]=0 ;
+								svm_value[1]=0 ;
+							}
 							
 							REAL pen_val = lookup_penalty(penalty, pos[t]-pos[ts], svm_value) ;
 							for (short int diff=0; diff<nbest; diff++)
