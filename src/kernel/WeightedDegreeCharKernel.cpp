@@ -342,7 +342,7 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
   ((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  return (double) sum/sqrt_both;
+  return (double) sum; // XXX /sqrt_both;
 }
 
 void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight) 
@@ -353,7 +353,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL weight)
 	assert(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
 
-	weight /= sqrtdiag_lhs[idx] ;
+	weight /= 1 ; ///XXX sqrtdiag_lhs[idx] ;
 	
 	for (INT i=0; i<len; i++)
 	{
@@ -462,7 +462,7 @@ REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx)
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
 
-	return sum/sqrtdiag_rhs[idx] ;
+	return sum ; // XXX /sqrtdiag_rhs[idx] ;
 }
 
 void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib) 
@@ -512,8 +512,9 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
 
-	for (INT j=0; j<degree; j++)
-		LevelContrib[j] /= sqrtdiag_rhs[idx] ;
+// XXX
+//	for (INT j=0; j<degree; j++)
+//		LevelContrib[j] /= sqrtdiag_rhs[idx] ;
 }
 
 REAL CWeightedDegreeCharKernel::compute_abs_weights_tree(struct SuffixTree* p_tree) 

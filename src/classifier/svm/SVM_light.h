@@ -240,9 +240,12 @@ typedef struct shrink_state {
   double opt_precision;
   REAL* W;
   REAL rho ;
+  REAL rhom ;
   REAL *rhos ;
   REAL sumabsgammas ;
   REAL w_gap ;
+  INT count ;
+  INT alpha_converged ;
 };
 
 #endif
