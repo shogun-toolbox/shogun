@@ -13,15 +13,17 @@ if nargin>0,
     end
 
     fid=fopen(rocfilename, 'r','a');
-    [ id count ] =fread(fid, 4, 'char');
-    if count == 4 & id(1) == 'R' & id(2) == 'O' & id(3) == 'C',
-	fpos_cur=ftell(fid);
-	fseek(fid, 0, 'eof');
-	fpos_end=ftell(fid);
-	fseek(fid, fpos_cur, 'bof');
-	length=(fpos_end-fpos_cur)/8/2;
-	fp=fread(fid, length, 'double');
-	tp=fread(fid, length, 'double');
-	plot(fp,tp,plotstring);
+    if fid ~= -1,
+	[ id count ] =fread(fid, 4, 'char');
+	if count == 4 & id(1) == 'R' & id(2) == 'O' & id(3) == 'C',
+	    fpos_cur=ftell(fid);
+	    fseek(fid, 0, 'eof');
+	    fpos_end=ftell(fid);
+	    fseek(fid, fpos_cur, 'bof');
+	    length=(fpos_end-fpos_cur)/8/2;
+	    fp=fread(fid, length, 'double');
+	    tp=fread(fid, length, 'double');
+	    plot(fp,tp,plotstring);
+	end;
     end;
 end;
