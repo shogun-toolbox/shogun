@@ -4,6 +4,8 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
+#include <math.h>
+
 CPruneVarSubMean::CPruneVarSubMean()
   : CRealPreProc("PruneVarSubMean"), idx(NULL), mean(0), num_idx(0)
 {

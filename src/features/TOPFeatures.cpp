@@ -41,8 +41,10 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 
 int CTOPFeatures::get_label(long idx)
 {
+    
   if (pos && pos->get_observations())
     return pos->get_observations()->get_label(idx) ;
+
   assert(0) ;
   return 0 ;
 }

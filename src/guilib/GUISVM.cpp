@@ -2,6 +2,8 @@
 #include "gui/GUI.h"
 #include "lib/io.h"
 
+#include <assert.h>
+
 CGUISVM::CGUISVM(CGUI * gui_)
   : gui(gui_)
 {
@@ -199,9 +201,11 @@ bool CGUISVM::test(char* param)
 	svm->set_C(C) ;
 	svm->set_kernel(gui->guikernel.get_kernel()) ;
 	REAL* output= svm->svm_test(testfeatures, trainfeatures) ;
-	
+
+	long len=0;	
 	int total=testfeatures->get_num_vectors();
-	int* label= new int[total];	
+	int* label= testfeatures->get_labels(len);
+	assert(len==total);
 	gui->guimath.evaluate_results(output, label, total, tresh, outputfile, rocfile);
 	delete[] output;
 	delete[] label;
