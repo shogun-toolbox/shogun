@@ -1457,10 +1457,10 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 			for (INT k=0; k<nbest; k++)
 			CIO::message("delta_end(%i,%i)=%e\n", iter,k,DELTA_END(iter,k)) ;*/
 
-		REAL sort_delta_end=new REAL[max_iter*nbest] ;
-		INT sort_k=new INT[max_iter*nbest] ;
-		INT sort_t=new INT[max_iter*nbest] ;
-		INT sort_idx=new INT[max_iter*nbest] ;
+		REAL* sort_delta_end=new REAL[max_iter*nbest] ;
+		INT* sort_k=new INT[max_iter*nbest] ;
+		INT* sort_t=new INT[max_iter*nbest] ;
+		INT* sort_idx=new INT[max_iter*nbest] ;
 		INT i=0 ;
 		
 		for (INT iter=0; iter<max_iter-1; iter++)

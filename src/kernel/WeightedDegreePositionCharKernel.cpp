@@ -6,7 +6,7 @@
 
 #include <assert.h>
 
-CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, double* w, INT d, INT max_mismatch_, INT * shift_, INT shift_len_)
+CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, REAL* w, INT d, INT max_mismatch_, INT * shift_, INT shift_len_)
 	: CCharKernel(size),weights(NULL),counts(NULL),degree(d), max_mismatch(max_mismatch_), 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
@@ -186,9 +186,9 @@ REAL CWeightedDegreePositionCharKernel::compute2(INT idx_a, INT idx_b)
 
   REAL sqrt_both=sqrt_a*sqrt_b;
 
-  double sum0=0 ;
-  double sum1[max_shift] ;
-  double sum2[max_shift] ;
+  REAL sum0=0 ;
+  REAL* sum1=new REAL[max_shift] ;
+  REAL* sum2=new REAL[max_shift] ;
   for (INT i=0; i<max_shift; i++)
   {
 	  sum1[i]=0 ;
@@ -256,7 +256,9 @@ REAL CWeightedDegreePositionCharKernel::compute2(INT idx_a, INT idx_b)
   REAL result = sum0 ;
   for (INT i=0; i<max_shift; i++)
 	  result += (sum1[i]+sum2[i])/(2*(i+1)) ;
-  
+
+  delete[] sum1 ;
+  delete[] sum2 ;
   return (double) result/sqrt_both;
 }
 
@@ -282,8 +284,8 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
 
   REAL sqrt_both=sqrt_a*sqrt_b;
 
-  double sum0=0 ;
-  double sum1[max_shift] ;
+  REAL sum0=0 ;
+  REAL *sum1=REAL[max_shift] ;
   for (INT i=0; i<max_shift; i++)
 	  sum1[i]=0 ;
 
@@ -344,7 +346,8 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
 	  result += sum1[i]/(2*(i+1)) ;
   
   result/=sqrt_both;
-
+  delete[] sum1 ;
+  
 /*  REAL result2 = compute2(idx_a,idx_b) ;
 assert(fabs(result-result2)<1e-8);*/
   
