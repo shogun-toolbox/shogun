@@ -91,7 +91,7 @@ check_make()
 		echores "GNU Make detected"
 		MAKE=make
 	else
-		echores "non GNU Make detected expect trouble (try running gmake manually)"
+		echores "non GNU Make detected expect trouble (try running GNU make manually in case of trouble)"
 		MAKE=gmake
 	fi
 }
