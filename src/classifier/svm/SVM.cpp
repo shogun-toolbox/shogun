@@ -235,12 +235,7 @@ REAL CSVM::classify_example(INT num)
 {
 	REAL dist=0;
 	for(INT i=0; i<get_num_support_vectors(); i++)
-	{
-		CIO::message("i:%d\n\tsv_idx:%d\n ", i, get_support_vector(i));
-		CIO::message("\talpha:%f\n ", get_alpha(i));
-		CIO::message("\tnum_sv:%d num:%d\n", get_num_support_vectors(), num);
 		dist+=CKernelMachine::get_kernel()->kernel(get_support_vector(i), num)*get_alpha(i);
-	}
 	
 	return(dist+get_bias());
 }
