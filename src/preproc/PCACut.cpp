@@ -1,3 +1,4 @@
+#include "lib/common.h"
 #include "PCACut.h"
 #include "RealPreProc.h"
 #include "features/Features.h"
@@ -5,13 +6,14 @@
 #include "lib/io.h"
 #include <math.h>
 //#include <libmmfile.h>
-
+#include <assert.h>
+#include <string.h>
 
 extern "C" void cleaner_main(double *covZ, int dim, double thresh,
 			     double **T, int *num_dim)  ;
 
 CPCACut::CPCACut()
-  : CRealPreProc("PCACut"), T(NULL), num_dim(0), mean(NULL) 
+  : CRealPreProc("PCACut"), T(NULL), num_dim(0), mean(NULL), FeaturesFileName(NULL)
 {
 }
 
@@ -19,6 +21,7 @@ CPCACut::~CPCACut()
 {
   delete[] T ;
   delete[] mean ;
+  delete[] FeaturesFileName ;
 }
 
 /// initialize preprocessor from features
@@ -37,8 +40,15 @@ bool CPCACut::init(CFeatures* f_)
       mean[j]=0 ; 
 
   // compute mean
-  CIO::message("Computing mean ... ") ;
-  CIO::message("[%ix%i] ", num_features, num_features) ;
+  delete[] FeaturesFileName ;
+  FeaturesFileName=strdup(TMP_DIR "Z_notclean.dat.XXXXXX") ;
+  mkstemp(FeaturesFileName);
+  CIO::message("Computing mean & saving to file %s ... ", FeaturesFileName) ;
+  CIO::message("[%ix%i] ", num_features, num_examples) ;
+
+  FILE* fil=fopen(FeaturesFileName,"w+") ;
+  FeatureRows=num_features ;
+
   for (int i=0; i<num_examples; i++)
     {
       if (!(i % (num_examples/10+1)))
@@ -48,6 +58,9 @@ bool CPCACut::init(CFeatures* f_)
 
       long len ; bool free ;
       feature=f->get_feature_vector(i, len, free) ;
+
+      fwrite(feature, sizeof(double), len, fil) ;
+      assert(len==num_features) ;
 
       for (int j=0; j<num_features; j++)
 	mean[j]+=feature[j] ;
@@ -55,17 +68,22 @@ bool CPCACut::init(CFeatures* f_)
       f->free_feature_vector(feature, free) ;
       feature=NULL ;
     } ;
+  fclose(fil) ;
 
   for (j=0; j<num_features; j++)
     mean[j]/=num_examples ;
 
   CIO::message("done.\nComputing covariance matrix... ") ;
-  CIO::message("[%ix%i] ", num_features, num_features) ;
+  CIO::message("[%ix%i] (reading features from file %s) ", num_features, num_features, FeaturesFileName) ;
 
   double *cov=new double[num_features*num_features] ;
+  assert(cov!=NULL) ;
+
   for (int j=0; j<num_features*num_features; j++)
     cov[j]=0.0 ;
 
+  fil=fopen(FeaturesFileName,"r") ;
+  feature=new REAL[num_features] ;
   for (int i=0; i<num_examples; i++)
     {
       if (!(i % (num_examples/10+1)))
@@ -73,8 +91,9 @@ bool CPCACut::init(CFeatures* f_)
       else if (!(i % (num_examples/200+1)))
 	CIO::message(".");
       
-      long len ; bool free ;
-      feature=f->get_feature_vector(i, len, free) ;
+      //long len ; bool free ;
+      //feature=f->get_feature_vector(i, len, free) ;
+      fread(feature, sizeof(double), num_features, fil) ;
 
       for (int j=0; j<num_features; j++)
 	feature[j]-=mean[j] ;
@@ -86,9 +105,10 @@ bool CPCACut::init(CFeatures* f_)
       //	for (int l=0; l<num_features; l++)
       //          cov[k*num_features+l]+=feature[l]*feature[k] ;
 
-      f->free_feature_vector(feature, free) ;
-      feature=NULL ;
+      //f->free_feature_vector(feature, free) ;
+      //feature=NULL ;
     } ;
+  fclose(fil) ;
 
   for (int k=0; k<num_features; k++)
     for (int l=0; l<num_features; l++)
@@ -98,7 +118,8 @@ bool CPCACut::init(CFeatures* f_)
 
   CIO::message("Computing Eigenvalues ... ") ;
   REAL *values=new REAL[num_features] ;
-  REAL *vectors=new REAL[num_features*num_features] ;
+  //  REAL *vectors=new REAL[num_features*num_features] ;
+  //  assert(vectors!=NULL) ;
   
   {
     int lwork=4*num_features ;
@@ -115,6 +136,7 @@ bool CPCACut::init(CFeatures* f_)
       } ;
     CIO::message("Done\nReducing from %i to %i features..", num_features, num_ok) ;
     T=new REAL[num_ok*num_features] ;
+    assert(T!=NULL) ;
     int num_ok2=0 ;
     num_dim=num_ok ;
     for (int i=0; i<num_features; i++)
@@ -208,4 +230,11 @@ REAL* CPCACut::apply_to_feature_vector(REAL* f, int &len)
   len=num_dim ;
   return ret;
 }
+
+// REAL* CPCACut::apply_to_feature_vector(CRealFeature* feat, int num)
+// {
+//   FILE *fil=fopen(FeaturesFile,"r") ;
+//   fseek(fil, sizeof(double)*num*num_features
+//   fclose(fil) ;
+// }
 

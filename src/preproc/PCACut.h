@@ -31,9 +31,14 @@ class CPCACut : public CRealPreProc
   /// result in feature matrix
   virtual REAL* apply_to_feature_vector(REAL* f, int &len);
 
+  const char* GetFeaturesFile(int &rows) { 
+    rows=FeatureRows; return FeaturesFileName ; 
+  } ;
  protected:
   double* T ;
   int num_dim ;
   double *mean ;
+  char *FeaturesFileName ;
+  int FeatureRows ;
 };
 #endif

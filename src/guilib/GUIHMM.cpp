@@ -1,3 +1,4 @@
+#include "lib/common.h"
 #include "guilib/GUIHMM.h"
 #include "hmm/Observation.h"
 #include "gui/GUI.h"
@@ -53,7 +54,7 @@ bool CGUIHMM::new_hmm(char* param)
 
 bool CGUIHMM::baum_welch_train(char* param)
 {
-	char templname[30]="/tmp/bw_model_XXXXXX" ;
+	char templname[35]=TMP_DIR "bw_model_XXXXXX" ;
 	mkstemp(templname);
 	char templname_best[40] ;
 	sprintf(templname_best, "%s_best", templname) ;

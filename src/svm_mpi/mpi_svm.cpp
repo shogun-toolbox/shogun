@@ -7,6 +7,7 @@
 #include "mpi_svm.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
+#include "preproc/PCACut.h"
 
 
 int sign(double a)
@@ -70,8 +71,16 @@ bool CSVMMPI::svm_train(CFeatures* train_)
   long dummy ;
   int * labels=train->get_labels(dummy) ;
   assert(dummy==num_cols) ;
-  
+
   CIO::message("creating big matrix ... ") ;
+
+  const char* FeaturesFileName=NULL ;
+  int FeatureRows=0 ;
+  if (strcmp(train->get_preproc()->get_name(),"PCACut")==0)
+    {
+      FeaturesFileName=((CPCACut*)train->get_preproc())->GetFeaturesFile(FeatureRows) ;
+      CIO::message("using %s\n", FeaturesFileName) ;
+    } ;
 
   bool free ; long len ;
   double * column=NULL ;
@@ -80,32 +89,61 @@ bool CSVMMPI::svm_train(CFeatures* train_)
   num_rows=len ;
 
   CIO::message(" [%ix%i] ", num_cols, len) ;
+  CIO::message(" and saving to file ~/Z_clean.dat") ;
+
+  FILE* fil=fopen(TMP_DIR "Z_clean.dat","w+") ;
 
   m_prime=svm_mpi_broadcast_Z_size(num_cols, num_rows, m_last) ;
   int j=0;
   
+  FILE *FeatFile=NULL ;
+  REAL*unprocessedFeature=NULL ;
+  if (FeaturesFileName)
+    {
+      fopen(FeaturesFileName,"r+") ;
+      unprocessedFeature = new REAL[FeatureRows] ;
+    } ;
+
   for (j=0; j<num_cols; j++) 
   {
     int rank=floor(((double)j)/m_prime) ;
     int start_idx=j%m_prime ; 
-
+    
     if (!(j % (num_cols/10+1)))
       CIO::message("%02d%%.", (int) (100.0*j/num_cols));
     else if (!(j % (num_cols/200+1)))
       CIO::message(".");
+    
+    if (FeatFile)
+      {
+	int len=FeatureRows ;
+	fseek(FeatFile, sizeof(double)*j*FeatureRows, SEEK_SET) ;
+	fread(unprocessedFeature, sizeof(double), FeatureRows, FeatFile) ;
+	((CPCACut*)train->get_preproc())->apply_to_feature_vector(unprocessedFeature,len) ;
+	assert(len==num_rows) ;
+	if (j==0)
+	  {
+	    CIO::message("preprocessing from %i to %i dimensions\n", FeatureRows, len) ;
+	  } ;
+      } 
+    else
+      column=train->get_feature_vector(j, len, free);
 
-    //CIO::message("setting vector: %i %i (%i,%i)\n",start_idx, rank, j, m_prime) ;
-    column=train->get_feature_vector(j, len, free);
+    fwrite(column, sizeof(double), len, fil) ;
 
     REAL *col=new REAL[len] ;
     for (int kk=0; kk<len; kk++)
       col[kk]=column[kk] ; 
-    train->free_feature_vector(column, free);
+
+    if (!FeatFile)
+      train->free_feature_vector(column, free);
+
     assert(len==num_rows) ;
     svm_mpi_set_Z_block(col, 1, start_idx, rank) ; 
     delete[] col ;
   } ;
   CIO::message("Done\n") ;
+  fclose(fil) ;
 
   svm_mpi_optimize(labels, num_cols, train) ; 
   return true; 
