@@ -59,7 +59,7 @@ class CCustomKernel: public CKernel
 	  assert(col < num_cols);
 	  return kmatrix[row*num_cols+col];
 	  /*
-	  if (num_rows < num_cols)
+	  if (num_rows == num_cols)
 		  return kmatrix[row * num_cols - row*(row+1)/2 + col];
 	  else
 	  {

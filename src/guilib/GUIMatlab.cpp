@@ -1127,22 +1127,47 @@ bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 	{
 		int num_vec1=f1->get_num_vectors();
 		int num_vec2=f2->get_num_vectors();
-		int maxskip=num_vec1*num_vec2/100;
-		int skip=maxskip-1;
+		int total_num = num_vec1 * num_vec2;
+		int num_done = 0;
 
 		CIO::message(M_DEBUG, "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 		mxArray* mx_result=mxCreateDoubleMatrix(num_vec1, num_vec2, mxREAL);
 		double* result=mxGetPr(mx_result);
-		for (int i=0; i<num_vec1; i++)
+
+		if (num_vec1 == num_vec2)
 		{
-			for (int j=0; j<num_vec2; j++)
+			for (int i=0; i<num_vec1; i++)
 			{
-				if ((skip--)%maxskip == 0)
+				for (int j=i; j<num_vec1; j++)
 				{
-					skip=maxskip-1;
-					CIO::progress(j+i*num_vec2, 0, num_vec1*num_vec2);
+					double v=k->kernel(i,j);
+
+					result[i+j*num_vec1]=v;
+					result[j+i*num_vec1]=v;
+
+					if (num_done%100)
+						CIO::progress(num_done, 0, total_num);
+
+					if (i!=j)
+						num_done+=2;
+					else
+						num_done+=1;
 				}
-				result[i+j*num_vec1]=k->kernel(i,j) ;
+			}
+		}
+		else
+		{
+			for (int i=0; i<num_vec1; i++)
+			{
+				for (int j=0; j<num_vec2; j++)
+				{
+					result[i+j*num_vec1]=k->kernel(i,j) ;
+
+					if (num_done%100)
+						CIO::progress(num_done, 0, total_num);
+
+					num_done++;
+				}
 			}
 		}
 
