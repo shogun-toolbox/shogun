@@ -46,7 +46,7 @@ CFile::~CFile()
 	file=NULL;
 }
 
-INT* CFile::load_int_data(INT* target, int& num)
+INT* CFile::load_int_data(INT* target, long& num)
 {
 	assert(expected_type==F_INT);
 	CSimpleFile<INT> f(fname, file);
@@ -55,7 +55,7 @@ INT* CFile::load_int_data(INT* target, int& num)
 	return target;
 }
 
-REAL* CFile::load_real_data(REAL* target, int& num)
+REAL* CFile::load_real_data(REAL* target, long& num)
 {
 	assert(expected_type==F_REAL);
 	CSimpleFile<REAL> f(fname, file);
@@ -64,7 +64,7 @@ REAL* CFile::load_real_data(REAL* target, int& num)
 	return target;
 }
 
-CHAR* CFile::load_char_data(CHAR* target, int& num)
+CHAR* CFile::load_char_data(CHAR* target, long& num)
 {
 	assert(expected_type==F_CHAR);
 	CSimpleFile<CHAR> f(fname, file);
@@ -73,7 +73,7 @@ CHAR* CFile::load_char_data(CHAR* target, int& num)
 	return target;
 }
 
-BYTE* CFile::load_byte_data(BYTE* target, int& num)
+BYTE* CFile::load_byte_data(BYTE* target, long& num)
 {
 	assert(expected_type==F_BYTE);
 	CSimpleFile<BYTE> f(fname, file);
@@ -82,7 +82,7 @@ BYTE* CFile::load_byte_data(BYTE* target, int& num)
 	return target;
 }
 
-WORD* CFile::load_word_data(WORD* target, int& num)
+WORD* CFile::load_word_data(WORD* target, long& num)
 {
 	assert(expected_type==F_WORD);
 	CSimpleFile<WORD> f(fname, file);
@@ -91,7 +91,7 @@ WORD* CFile::load_word_data(WORD* target, int& num)
 	return target;
 }
 
-SHORT* CFile::load_short_data(SHORT* target, int& num)
+SHORT* CFile::load_short_data(SHORT* target, long& num)
 {
 	assert(expected_type==F_SHORT);
 	CSimpleFile<SHORT> f(fname, file);

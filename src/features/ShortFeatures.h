@@ -21,6 +21,7 @@ class CShortFeatures: public CSimpleFeatures<SHORT>
 
 		virtual EType get_feature_type() { return F_SHORT; }
 
+		virtual CFeatures* duplicate() const;
 		virtual bool load(char* fname);
 		virtual bool save(char* fname);
 	protected:

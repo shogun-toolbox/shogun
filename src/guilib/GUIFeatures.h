@@ -9,12 +9,6 @@ class CGUI;
 class CGUIFeatures
 {
 	public:
-		enum E_FEATURE_TYPE
-		{
-			TOP,
-			FK
-		};
-
 		CGUIFeatures(CGUI *);
 		~CGUIFeatures();
 
@@ -30,12 +24,13 @@ class CGUIFeatures
 		bool load(char* param);
 		bool save(char* param);
 
+		bool reshape(char* param);
+
 	protected:
 		CGUI* gui;
 		CFeatures *train_features;
 		CFeatures *test_features;
 		CObservation *train_obs;
 		CObservation *test_obs;
-		E_FEATURE_TYPE type;
 };
 #endif

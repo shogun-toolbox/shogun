@@ -94,8 +94,9 @@ bool CGUISVM::train(char* param)
 
 	CIO::message("starting svm training\n") ;
 	svm->set_C(C) ;
-	svm->set_kernel(gui->guikernel.get_kernel()) ;
-	return svm->svm_train(features) ;
+	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
+	//MISSING set train features to kernel
+	return svm->train() ;
 }
 
 bool CGUISVM::test(char* param)
@@ -162,8 +163,9 @@ bool CGUISVM::test(char* param)
 
 	CIO::message("starting svm testing\n") ;
 	svm->set_C(C) ;
-	svm->set_kernel(gui->guikernel.get_kernel()) ;
-	REAL* output= svm->svm_test(testfeatures, trainfeatures) ;
+	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
+	//MISSING testfeatures, trainfeatures) ;
+	REAL* output= svm->test();
 
 	long len=0;	
 	int total=testfeatures->get_num_vectors();

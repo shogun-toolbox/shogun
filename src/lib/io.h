@@ -21,6 +21,9 @@ public:
 
 	static char* skip_spaces(char* str);
 protected:
+	void static check_target();
+
+protected:
 	static FILE* target;
 };
 #endif

@@ -21,7 +21,7 @@ public:
 	}
 
 	//num is the number of read elements
-	T* load(T* target, int& num=0)
+	T* load(T* target, long& num=0)
 	{
 		if (status)
 		{
@@ -55,7 +55,7 @@ public:
 		}
 	}
 
-	bool save(T* target, int num)
+	bool save(T* target, long num)
 	{
 		if (status)
 		{

@@ -4,6 +4,10 @@
 #include <stdarg.h>
 #include <ctype.h>
 
+extern FILE *stdin;
+extern FILE *stdout;
+extern FILE *stderr;
+
 FILE* CIO::target=stdout;
 
 CIO::CIO()
@@ -12,6 +16,7 @@ CIO::CIO()
 
 void CIO::message(const char *fmt, ... )
 {
+	check_target();
     va_list list;
     va_start(list,fmt);
     vfprintf(target,fmt,list);
@@ -21,6 +26,7 @@ void CIO::message(const char *fmt, ... )
 
 void CIO::message(FILE* target, const char *fmt, ... )
 {
+	check_target();
     va_list list;
     va_start(list,fmt);
     vfprintf(target,fmt,list);
@@ -30,6 +36,7 @@ void CIO::message(FILE* target, const char *fmt, ... )
 
 void CIO::buffered_message(const char *fmt, ... )
 {
+	check_target();
     va_list list;
     va_start(list,fmt);
     vfprintf(target,fmt,list);
@@ -38,6 +45,7 @@ void CIO::buffered_message(const char *fmt, ... )
 
 void CIO::buffered_message(FILE* target, const char *fmt, ... )
 {
+	check_target();
     va_list list;
     va_start(list,fmt);
     vfprintf(target,fmt,list);
@@ -61,4 +69,10 @@ char* CIO::skip_spaces(char* str)
 void CIO::set_target(FILE* t)
 {
 	target=t;
+}
+
+void CIO::check_target()
+{
+	if (!target)
+		target=stdout;
 }

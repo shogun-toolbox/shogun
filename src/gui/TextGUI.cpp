@@ -31,6 +31,7 @@ static const char* N_LOAD_KERNEL_INIT=	"load_kernel_init";
 static const char* N_SAVE_KERNEL_INIT=	"save_kernel_init";
 static const char* N_LOAD_FEATURES=		"load_features";
 static const char* N_SAVE_FEATURES=		"save_features";
+static const char* N_RESHAPE=			"reshape";
 static const char* N_LOAD_DEFINITIONS=	"load_defs";
 static const char* N_SAVE_KERNEL=		"save_kernel";
 static const char* N_SET_HMM_AS=		"set_hmm_as";
@@ -124,7 +125,7 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
 	CIO::message("\033[1;31m%s\033[0m <filename> <LINEAR|MPI|CPLEX>\t- load svm\n",N_LOAD_SVM);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- load kernel init data\n",N_LOAD_KERNEL_INIT);
-	CIO::message("\033[1;31m%s\033[0m <filename> <REAL|SHORT|CHAR> <TRAIN|TEST> [<CACHE SIZE> [0|1]]\t- load features\n",N_LOAD_FEATURES);
+	CIO::message("\033[1;31m%s\033[0m <filename> <REAL|SHORT|BYTE|CHAR> <TRAIN|TEST> [<CACHE SIZE> [0|1]]\t- load features\n",N_LOAD_FEATURES);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- load preproc init data\n",N_LOAD_PREPROC);
 	CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
 	CIO::message("\033[1;31m%s\033[0m <filename> <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [<ORDER> [<START> [<WIDTH>]]\t- load observed data\n",N_LOAD_OBSERVATIONS);
@@ -170,6 +171,7 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m\t <TOP|FK> <TRAIN|TEST> [<CACHE SIZE> [<0|1>]]- creates train/test-features out of obs\n",N_SET_FEATURES);
 	CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|NONE>\t\t\t- add preprocessor of type\n", N_ADD_PREPROC);
 	CIO::message("\033[1;31m%s\033[0m <NUM>\t\t\t- delete preprocessor\n", N_DEL_PREPROC);
+	CIO::message("\033[1;31m%s\033[0m <TRAIN|TEST> <NUM_FEAT> <NUM_VEC>\t\t\t- reshape feature matrix for simple features\n", N_RESHAPE);
 	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> [<0|1>] - preprocesses the feature_matrix, 1 to force preprocessing of already processed\n",N_PREPROCESS);
 	CIO::message("\n[SVM]\n");
 	CIO::message("\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
@@ -248,6 +250,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	else if (!strncmp(input, N_SAVE_FEATURES, strlen(N_SAVE_FEATURES)))
 	{
 		guifeatures.save(input+strlen(N_SAVE_FEATURES));
+	} 
+	else if (!strncmp(input, N_RESHAPE, strlen(N_RESHAPE)))
+	{
+		guifeatures.reshape(input+strlen(N_RESHAPE));
 	} 
 	else if (!strncmp(input, N_LOAD_SVM, strlen(N_LOAD_SVM)))
 	{

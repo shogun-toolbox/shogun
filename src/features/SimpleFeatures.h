@@ -13,6 +13,8 @@
 
 #include "features/Features.h"
 
+template <class ST> class CSimpleFeatures;
+
 template <class ST> class CSimpleFeatures: public CFeatures
 {
  public:
@@ -137,6 +139,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	  feature_matrix=fm;
 	  num_features=num_feat;
 	  num_vectors=num_vec;
+
   }
 
   virtual bool preproc_feature_matrix(bool force_preprocessing=false)
@@ -162,8 +165,19 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	}
   }
 
+  virtual bool  set_label(long idx, int label)
+  {
+	  return false;
+  }
+
+  virtual int  	get_label(long idx)
+  {
+	  return -1;
+  }
+
   virtual int get_size() { return sizeof(ST); }
   virtual inline long  get_num_vectors() { return num_vectors; }
+
   inline long  get_num_features() { return num_features; }
   inline void set_num_features(int num)
   { 
@@ -184,6 +198,18 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		  delete feature_cache;
 		  feature_cache= new CCache<ST>(get_cache_size(), num_features, num_vectors);
 	  }
+  }
+  
+  bool reshape(int num_features, int num_vectors)
+  {
+	  if (num_features*num_vectors= this->num_features * this->num_vectors)
+	  {
+		  this->num_features=num_features;
+		  this->num_vectors=num_vectors;
+		  return true;
+	  }
+	  else
+		  return false;
   }
 	
 protected:

@@ -6,6 +6,7 @@
 #include "features/TOPFeatures.h"
 #include "features/FKFeatures.h"
 #include "features/CharFeatures.h"
+#include "features/ByteFeatures.h"
 #include "features/ShortFeatures.h"
 #include "features/RealFeatures.h"
 
@@ -234,6 +235,10 @@ bool CGUIFeatures::load(char* param)
 		if (comp_features)
 			((CRealFileFeatures*) *f_ptr)->load_feature_matrix() ;
 	}
+	else if (strcmp(type, "BYTE")==0)
+	{
+		*f_ptr=new CByteFeatures(filename);
+	}
 	else if (strcmp(type, "CHAR")==0)
 	{
 		*f_ptr=new CCharFeatures(filename);
@@ -297,4 +302,36 @@ bool CGUIFeatures::save(char* param)
 	CIO::message("see help for params\n");
 
     return result;
+}
+
+bool CGUIFeatures::reshape(char* param)
+{
+	bool result=false;
+	long num_feat=0;
+	long num_vec=0;
+	char target[1024];
+
+	CFeatures** f_ptr=NULL;
+
+	param=CIO::skip_spaces(param);
+	if ((sscanf(param, "%s %ld %ld", target, &num_feat, &num_vec))==2)
+	{
+		if (strcmp(target,"TRAIN")==0)
+		{
+			f_ptr=&train_features;
+		}
+		else if (strcmp(target,"TEST")==0)
+		{
+			f_ptr=&test_features;
+		}
+	}
+	else
+		CIO::message("see help for params\n");
+
+	if (f_ptr)
+	{
+		result=(*f_ptr)->reshape(num_feat, num_vec);
+	}
+
+	return result;
 }

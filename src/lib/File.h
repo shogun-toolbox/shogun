@@ -31,19 +31,19 @@ public:
 
 	// set target to NULL to get it automagically allocated
 	// set num to 0 if whole file is to be read
-	INT*   load_int_data(INT* target, int& num);
-	REAL*  load_real_data(REAL* target, int& num);
-	CHAR*  load_char_data(CHAR* target, int& num);
-	BYTE*  load_byte_data(BYTE* target, int& num);
-	WORD*  load_word_data(WORD* target, int& num);
-	SHORT* load_short_data(SHORT* target, int& num);
+	INT*   load_int_data(INT* target, long& num);
+	REAL*  load_real_data(REAL* target, long& num);
+	CHAR*  load_char_data(CHAR* target, long& num);
+	BYTE*  load_byte_data(BYTE* target, long& num);
+	WORD*  load_word_data(WORD* target, long& num);
+	SHORT* load_short_data(SHORT* target, long& num);
 
-	bool save_int_data(int num, INT* src);
-	bool save_real_data(int num, REAL* src);
-	bool save_char_data(int num, CHAR* src);
-	bool save_byte_data(int num, BYTE* src);
-	bool save_word_data(int num, WORD* src);
-	bool save_short_data(int num, SHORT* src);
+	bool save_int_data(long num, INT* src);
+	bool save_real_data(long num, REAL* src);
+	bool save_char_data(long num, CHAR* src);
+	bool save_byte_data(long num, BYTE* src);
+	bool save_word_data(long num, WORD* src);
+	bool save_short_data(long num, SHORT* src);
 
 	inline bool is_ok()
 	{
