@@ -18,7 +18,9 @@ typedef unsigned short int WORD ;
 typedef unsigned char BYTE ;
 
 /// Type REAL (can be float/double/long double...)
+//typedef long double REAL ;
 typedef double REAL ;
+//typedef float REAL ;
 //typedef double REAL ;
 typedef REAL* P_REAL ;
 //@}

@@ -766,7 +766,7 @@ static bool prompt(FILE* infile=stdin)
 	else
 	    if ((lambda!=NULL) & (lambda_train!=NULL))
 		printf("see help for parameters. current setting: pseudo=%e (%e,%e)\n",
-			PSEUDO,lambda->get_pseudo(),lambda_train->get_pseudo());
+			(double) PSEUDO, (double) lambda->get_pseudo(), (double) lambda_train->get_pseudo());
 	    else
 		printf("see help for parameters. current setting: pseudo=%e\n", PSEUDO);
 
@@ -1732,9 +1732,9 @@ static bool prompt(FILE* infile=stdin)
 				    label[dim]=-1;
 				    
 				    if (output[dim] < 0)
-					fprintf(outputfile,"%+.8g (%+d)\n",output[dim], label[dim]);
+					fprintf(outputfile,"%+.8g (%+d)\n",(double) output[dim], label[dim]);
 				    else
-					fprintf(outputfile,"%+.8g (%+d)(*)\n",output[dim], label[dim]);
+					fprintf(outputfile,"%+.8g (%+d)(*)\n",(double) output[dim], label[dim]);
 				}
 				else
 				{
@@ -1745,9 +1745,9 @@ static bool prompt(FILE* infile=stdin)
 				    label[dim]=+1;
 				    
 				    if (output[dim] > 0)
-					fprintf(outputfile,"%+.8g (%+d)\n",output[dim], label[dim]);
+					fprintf(outputfile,"%+.8g (%+d)\n",(double) output[dim], label[dim]);
 				    else
-					fprintf(outputfile,"%+.8g (%+d)(*)\n",output[dim], label[dim]);
+					fprintf(outputfile,"%+.8g (%+d)(*)\n",(double) output[dim], label[dim]);
 				}
 			    }
 
@@ -1856,9 +1856,9 @@ static bool prompt(FILE* infile=stdin)
 			label[dim]= obs->get_label(dim);
 
 			if (math.sign((REAL) output[dim])==label[dim])
-			    fprintf(outputfile,"%+.8g (%+d)\n",output[dim], label[dim]);
+			    fprintf(outputfile,"%+.8g (%+d)\n",(double) output[dim], label[dim]);
 			else
-			    fprintf(outputfile,"%+.8g (%+d)(*)\n",output[dim], label[dim]);
+			    fprintf(outputfile,"%+.8g (%+d)(*)\n",(double) output[dim], label[dim]);
 		    }
 		} 
 		int possize,negsize;
@@ -1871,7 +1871,7 @@ static bool prompt(FILE* infile=stdin)
 		printf("classified:\n");
 		printf("\tcorrect:%i\n", int (correct));
 		printf("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
-		printf("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, fp[pointeven], tp[pointeven]);
+		printf("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, (double) fp[pointeven], (double) tp[pointeven]);
 
 		delete[] fp;
 		delete[] tp;

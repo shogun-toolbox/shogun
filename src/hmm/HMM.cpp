@@ -556,9 +556,9 @@ REAL CHMM::backward_comp(int time, int state, int dimension)
 	    beta=(T_ALPHA_BETA_TABLE*)ARRAYN2(dimension);
 	  }
 	
-	if (time>p_observations->get_obs_T(dimension)-1)
-	  return 0;
-	else if (time==p_observations->get_obs_T(dimension)-1)
+	if (time>=p_observations->get_obs_T(dimension)-1)
+//	  return 0;
+//	else if (time==p_observations->get_obs_T(dimension)-1)
 	  return get_q(state);
 	else
 	  {
@@ -588,6 +588,7 @@ REAL CHMM::backward_comp(int time, int state, int dimension)
 		      sum= math.logarithmic_sum(sum, get_a(i, j) + get_b(j, p_observations->get_obs(dimension,t)) + beta[j]);
 
 		    beta_new[i]=sum;
+		    //printf("beta[%d][%d]=%f\n",t,i,(double)sum);
 #endif //LOG_SUM_ARRAY
 		  }
 		
@@ -1014,21 +1015,24 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 void CHMM::estimate_model_baum_welch(CHMM* train)
 {
   int i,j,t,dim;
-  REAL a_sum_num, b_sum_num;		//numerator
-  REAL a_sum_denom, b_sum_denom;	//denominator
+  REAL a_sum, b_sum;		//numerator
   REAL dimmodprob=-math.INFTY;	//model probability for dim
   REAL fullmodprob=-math.INFTY;	//for all dims
-  REAL* A=ARRAYN1(0);
-  REAL* B=ARRAYN2(0);
   
   //clear actual model a,b,p,q are used as numerator
-  //A,B as denominator for a,b
   for (i=0; i<N; i++)
     {
+	
+      set_p(i,train->get_p(i));
+      set_q(i,train->get_q(i));
+      
+      for (j=0; j<N; j++)
+	set_a(i,j, train->get_a(i,j));
+      for (j=0; j<M; j++)
+	set_b(i,j, train->get_b(i,j));
+
       set_p(i,log(PSEUDO));
       set_q(i,log(PSEUDO));
-      A[i]=log(N*PSEUDO);
-      B[i]=log(M*PSEUDO);
       
       for (j=0; j<N; j++)
 	set_a(i,j, log(PSEUDO));
@@ -1038,82 +1042,76 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
   
   //change summation order to make use of alpha/beta caches
   for (dim=0; dim<p_observations->get_DIMENSION(); dim++)
-    {
-      //and denominator
+  {
+      train->invalidate_model();
       dimmodprob=train->model_probability(dim);
       fullmodprob=math.logarithmic_sum(fullmodprob, dimmodprob) ;
-      
+
       for (i=0; i<N; i++)
-	{
+      {
 	  //estimate initial+end state distribution numerator
-	  set_p(i, math.logarithmic_sum(get_p(i), train->forward(0,i,dim)+train->backward(0,i,dim) - dimmodprob));
-	  set_q(i, math.logarithmic_sum(get_q(i), (train->forward(p_observations->get_obs_T(dim)-1, i, dim)+
-						   train->backward(p_observations->get_obs_T(dim)-1, i, dim)) - dimmodprob ));
-	  
-	  //estimate a and b
-	  
-	  //denominators are constant for j
-	  //therefore calculate them first
-	  a_sum_denom=-math.INFTY;
-	  b_sum_denom=-math.INFTY;
-	  
-	  for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
-	    a_sum_denom= math.logarithmic_sum(a_sum_denom, train->forward(t,i,dim)+train->backward(t,i,dim));
-	  
-	  b_sum_denom=math.logarithmic_sum(a_sum_denom, train->forward(t,i,dim)+train->backward(t,i,dim));
-	  
-	  A[i]= math.logarithmic_sum(A[i], a_sum_denom-dimmodprob);
-	  B[i]= math.logarithmic_sum(B[i], b_sum_denom-dimmodprob);
-	  
-	  //estimate numerator for a
+//printf("(%d)before: %f addv: %f pro:%f\n", i, get_p(i), train->backward(0,i,dim), dimmodprob);
+	  set_p(i, math.logarithmic_sum(get_p(i), (train->get_p(i)+train->get_b(i,p_observations->get_obs(dim,0))+train->backward(0,i,dim)) - dimmodprob));
+	  set_q(i, math.logarithmic_sum(get_q(i), train->forward(p_observations->get_obs_T(dim)-1, i, dim) +train->get_q(i) - dimmodprob ));
+	  //estimate a
 	  for (j=0; j<N; j++)
-	    {
-	      a_sum_num=-math.INFTY;
-	      
+	  {
+	      a_sum=-math.INFTY;
+
 	      for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
-		{
-		  a_sum_num= math.logarithmic_sum(a_sum_num, train->forward(t,i,dim)+
-						  train->get_a(i,j)+train->get_b(j,p_observations->get_obs(dim,t+1))+train->backward(t+1,j,dim));
-		}
-	      set_a(i,j, math.logarithmic_sum(get_a(i,j), a_sum_num-dimmodprob));
-	    }
-	  
-	  //estimate numerator for b
+	      {
+		  a_sum= math.logarithmic_sum(a_sum, train->forward(t,i,dim)+
+			  train->get_a(i,j)+train->get_b(j,p_observations->get_obs(dim,t+1))+train->backward(t+1,j,dim));
+	      }
+	      set_a(i,j, math.logarithmic_sum(get_a(i,j), a_sum-dimmodprob));
+	  }
+
+
+	  //estimate b
 	  for (j=0; j<M; j++)
-	    {
-	      b_sum_num=-math.INFTY;
-	      
+	  {
+	      b_sum=-math.INFTY;
+
 	      for (t=0; t<p_observations->get_obs_T(dim); t++) 
-		{
+	      {
 		  if (p_observations->get_obs(dim,t)==j) 
-		    b_sum_num=math.logarithmic_sum(b_sum_num, train->forward(t,i,dim)+train->backward(t, i, dim));
-		}
-	      
-	      set_b(i,j, math.logarithmic_sum(get_b(i,j), b_sum_num-dimmodprob));
-	    }
-	} 
-    }
-  
-  //calculate estimates
+		      b_sum=math.logarithmic_sum(b_sum, train->forward(t,i,dim)+train->backward(t, i, dim));
+	      }
+
+	      set_b(i,j, math.logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
+	  }
+	  
+      } 
+  /*printf("\n");
   for (i=0; i<N; i++)
-    {
-      set_p(i, get_p(i) - log(p_observations->get_DIMENSION()+N*PSEUDO) );
-      set_q(i, get_q(i) - log(p_observations->get_DIMENSION()+N*PSEUDO) );
-      
-      for (j=0; j<N; j++)
-	set_a(i,j, get_a(i,j) - A[i]);
-      
-      for (j=0; j<M; j++)
-	set_b(i,j, get_b(i,j) - B[i]);
-    }
+      printf ("%f\n", get_p(i));*/
+  }
   
   //cache train model probability
   train->mod_prob=fullmodprob-log(p_observations->get_DIMENSION());
   train->mod_prob_updated=true ;
   
   //new model probability is unknown
-  //normalize();
+  normalize();
+/*  printf("\n");
+  for (i=0; i<N; i++)
+      printf ("%f->%f (%G)\n", train->get_p(i), get_p(i), get_p(i)-train->get_p(i));
+
+  double new_pr=-math.INFTY;
+  double new_pr2=-math.INFTY;
+  for (dim=0; dim<p_observations->get_DIMENSION(); dim++)
+  {
+      for (i=0; i<N; i++)
+      {
+	  new_pr=math.logarithmic_sum(new_pr, train->backward(0,i,dim)+get_p(i)+train->get_b(i,p_observations->get_obs(dim,0)));
+	  new_pr2=math.logarithmic_sum(new_pr2, train->forward(p_observations->get_obs_T(dim)-1, i, dim) +get_q(i));
+      }
+  }
+*/
+//  new_pr-=log(p_observations->get_DIMENSION());
+//  new_pr2-=log(p_observations->get_DIMENSION());
   invalidate_model();
+//  printf(">>>%f ?= %f == %f == %f <<<\n", train->model_probability(), model_probability(), new_pr, new_pr2);
 }
 
 #endif // PARALLEL
@@ -1619,7 +1617,7 @@ void CHMM::output_model(bool verbose)
 	
 	//generic info
 	printf("log(Pr[O|model])=%e, #states: %i, #observationssymbols: %i, #observations: %ix%i\n", 
-	       (REAL)((p_observations) ? model_probability() : -math.INFTY), 
+	       (double)((p_observations) ? model_probability() : -math.INFTY), 
 	       N, M, p_observations->get_obs_max_T(),p_observations->get_DIMENSION());
 
 	if (verbose)
@@ -1704,7 +1702,7 @@ void CHMM::output_model_defined(bool verbose)
 
 	//generic info
 	printf("log(Pr[O|model])=% E, #states: %i, #observationssymbols: %i, #observations: %i\n",
-	       (p_observations) ? model_probability(): -math.INFTY, N, M, p_observations->get_obs_max_T());
+	       ((double) ((p_observations) ? model_probability(): -math.INFTY)), N, M, p_observations->get_obs_max_T());
 
 	if (verbose)
 	{
@@ -1785,7 +1783,7 @@ void CHMM::output_model_sequence(bool verbose, int from, int to)
 	  }
 	expected_sequence_prob/=p_observations->get_DIMENSION() ;
 	
-	printf("\nE log(Pr[path|model])=% E #wrong symbols: %d (%d) that is %f Percent\n\n", expected_sequence_prob, diffs, p_observations->get_obs_max_T()*p_observations->get_DIMENSION(), 100.0*diffs/(p_observations->get_obs_max_T()*p_observations->get_DIMENSION()));
+	printf("\nE log(Pr[path|model])=% E #wrong symbols: %d (%d) that is %f Percent\n\n", (double) expected_sequence_prob, diffs, p_observations->get_obs_max_T()*p_observations->get_DIMENSION(), 100.0*diffs/(p_observations->get_obs_max_T()*p_observations->get_DIMENSION()));
 	
 	if (verbose)
 	  {
@@ -1800,7 +1798,7 @@ void CHMM::output_model_sequence(bool verbose, int from, int to)
 		  buf[outlen*(i+1)-1]='\x0';
 		
 		REAL pr=best_path(q);		
-		printf("sequence %i: norm_log_prob=%e\n", q, pr) ;
+		printf("sequence %i: norm_log_prob=%e\n", q, (double) pr) ;
 		
 		for (j=0; j<outlen-1; j++)
 		  {
@@ -2787,7 +2785,8 @@ bool CHMM::load_model(FILE* file)
 	}
       result= (received_params== (GOTa | GOTb | GOTp | GOTq | GOTN | GOTM | GOTO));
     }
-  
+ 
+  normalize(); 
   return result;
 }
 
@@ -3468,7 +3467,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 				break;
 			      }
 			    if ((dvalue>1) || (dvalue<0))
-				printf("invalid value for const_q_val(%i): %e\n",i,dvalue) ;
+				printf("invalid value for const_q_val(%i): %e\n",i,(double) dvalue) ;
 			  }
 			else
 			  model->set_const_q_val(i++, 1.0);
@@ -3707,7 +3706,7 @@ bool CHMM::save_likelihood(FILE* file)
 
 	  fprintf(file, "P=[");
 	  for (int dim=0; dim<p_observations->get_DIMENSION(); dim++)
-	    fprintf(file, "%e ", model_probability(dim));
+	    fprintf(file, "%e ", (double) model_probability(dim));
 	  
 	  fprintf(file,"];");
 	  result=true;
@@ -3846,19 +3845,19 @@ bool CHMM::save_path_derivatives(FILE* logfile)
 	    
 				//derivates dlogp,dlogq
 	    for (i=0; i<N; i++)
-	      fprintf(logfile,"%e, ", path_derivative_p(i,dim) );
+	      fprintf(logfile,"%e, ", (double) path_derivative_p(i,dim) );
 	    
 	    for (i=0; i<N; i++)
-	      fprintf(logfile,"%e, ", path_derivative_q(i,dim) );
+	      fprintf(logfile,"%e, ", (double) path_derivative_q(i,dim) );
 	    
 				//derivates dloga,dlogb
 	    for (i=0; i<N; i++)
 	      for (j=0; j<N; j++)
-		fprintf(logfile, "%e,", path_derivative_a(i,j,dim) );
+		fprintf(logfile, "%e,", (double) path_derivative_a(i,j,dim) );
 	    
 	    for (i=0; i<N; i++)
 	      for (j=0; j<M; j++)
-		fprintf(logfile, "%e,", path_derivative_b(i,j,dim) );
+		fprintf(logfile, "%e,", (double) path_derivative_b(i,j,dim) );
 	    
 	    fseek(logfile,ftell(logfile)-1,SEEK_SET);
 	    fprintf(logfile, " ];\n");
@@ -4098,19 +4097,19 @@ bool CHMM::save_model_derivatives(FILE* file)
 	  
 	  //derivates log(dp),log(dq)
 	  for (i=0; i<N; i++)
-	    fprintf(file,"%e, ", model_derivative_p(i, dim) );		//log (dp)
+	    fprintf(file,"%e, ", (double) model_derivative_p(i, dim) );		//log (dp)
 	  
 	  for (i=0; i<N; i++)
-	    fprintf(file,"%e, ", model_derivative_q(i, dim) );	//log (dq)
+	    fprintf(file,"%e, ", (double) model_derivative_q(i, dim) );	//log (dq)
 	  
 	  //derivates log(da),log(db)
 	  for (i=0; i<N; i++)
 	    for (j=0; j<N; j++)
-	      fprintf(file, "%e,", model_derivative_a(i,j,dim) );
+	      fprintf(file, "%e,", (double) model_derivative_a(i,j,dim) );
 	  
 	  for (i=0; i<N; i++)
 	    for (j=0; j<M; j++)
-	      fprintf(file, "%e,", model_derivative_b(i,j,dim) );
+	      fprintf(file, "%e,", (double) model_derivative_b(i,j,dim) );
 	  
 	  fseek(file,ftell(file)-1,SEEK_SET);
 	  fprintf(file, " ];\n");
@@ -4574,7 +4573,7 @@ bool CHMM::save_linear_likelihood(FILE* src, FILE* dest, int WIDTH, int UPTO)
     }
 
     mod_prob-=log(total);
-    fprintf(dest,"];\n\nP_AVG=%e\n",mod_prob);
+    fprintf(dest,"];\n\nP_AVG=%e\n",(double) mod_prob);
 
     mod_prob_updated=true;
 	delete[] line_;
