@@ -1,6 +1,6 @@
 clear gf
 
-switch 1
+switch 3
 case 1
 	fid=fopen('/home/neuro/sonne/bb_hmm_examples/dice/dice.txt','r');
 	sequence=fread(fid, inf, 'char');
@@ -71,7 +71,7 @@ case 3
 	posacc=posacc';
 
 	gf('send_command','pseudo 1e-10');
-	gf('send_command','new_hmm 6 4');
+	gf('send_command','new_hmm 4 4');
 	gf('set_features','TRAIN',char(posacc),'DNA');
 	gf('send_command', 'convert TRAIN SIMPLE CHAR STRING CHAR');
 	gf('send_command', 'convert TRAIN STRING CHAR STRING WORD');
@@ -79,7 +79,7 @@ case 3
 	gf('send_command','set_hmm_as POS')
 
 	gf('send_command','pseudo 1e-10');
-	gf('send_command','new_hmm 6 4');
+	gf('send_command','new_hmm 4 4');
 	gf('set_features','TRAIN',char(negacc),'DNA');
 	gf('send_command', 'convert TRAIN SIMPLE CHAR STRING CHAR');
 	gf('send_command', 'convert TRAIN STRING CHAR STRING WORD');
