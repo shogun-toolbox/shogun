@@ -477,9 +477,9 @@ public:
 	    if (dimension==-1)
 	      {
 		if (mod_prob_updated)
-		  return mod_prob;
+		  return -pow(-mod_prob, 1.0/p_observations->get_DIMENSION());
 		else
-		  return model_probability_comp() ;
+		  return -pow(-model_probability_comp(), 1.0/p_observations->get_DIMENSION()) ;
 	      }
 	    else
 	      return forward(p_observations->get_obs_T(dimension), 0, dimension);
