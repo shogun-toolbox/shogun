@@ -4,24 +4,29 @@
 #include "features/Features.h"
 #include "features/TOPFeatures.h"
 
-class CGUI ;
+class CGUI;
 
 class CGUIFeatures
 {
-public:
-  CGUIFeatures(CGUI *);
-  ~CGUIFeatures();
+	public:
+		enum E_FEATURE_TYPE
+		{
+			TOP,
+			FK
+		};
 
-  CFeatures *get_train_features() { return train_features ; } ;
+		CGUIFeatures(CGUI *);
+		~CGUIFeatures();
 
-  void set_hmms(CHMM *pos, CHMM* neg) 
-    {
-      top_features.set_models(pos,neg) ;
-    } ;
- protected:
-  CGUI* gui ;
-  CFeatures *train_features ;
-  CTOPFeatures top_features ;
+		bool set_features(char* param);
 
+		CFeatures *get_train_features() { return train_features; }
+		CFeatures *get_test_features() { return test_features; }
+
+	protected:
+		CGUI* gui;
+		CFeatures *train_features;
+		CFeatures *test_features;
+		E_FEATURE_TYPE type;
 };
 #endif

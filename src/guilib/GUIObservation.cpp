@@ -76,6 +76,7 @@ bool CGUIObservation::load_observations(char* param)
 
 	return true;
 }
+
 CObservation* CGUIObservation::get_obs(char* param)
 {
 	param=CIO::skip_spaces(param);

@@ -21,8 +21,8 @@ static const char* N_SAVE_HMM=			"save_hmm";
 static const char* N_SAVE_HMM_BIN=		"save_hmm_bin";
 static const char* N_LOAD_DEFINITIONS=	"load_defs";
 static const char* N_SAVE_KERNEL=		"save_kernel";
-static const char* N_SAVE_TOP_FEATURES=	"save_top_features";
 static const char* N_SET_HMM_AS=		"set_hmm_as";
+static const char* N_SET_FEATURES=		"set_features";
 static const char* N_SAVE_PATH=			"save_path";
 static const char* N_SAVE_PATH_DERIVATIVES=	"save_vit_deriv";
 static const char* N_SAVE_PATH_DERIVATIVES_BIN=	"save_vit_deriv_bin";
@@ -110,7 +110,6 @@ void CTextGUI::print_help()
 //   CIO::message("\033[1;31m%s\033[0m <filename>\t- save log derivatives of P[O|HMM]\n",N_SAVE_HMM_DERIVATIVES);
 //   CIO::message("\033[1;31m%s\033[0m <filename>\t- save log derivatives of P[O|HMM] in binary format\n",N_SAVE_HMM_DERIVATIVES_BIN);
 //   CIO::message("\033[1;31m%s\033[0m <filename> <TOP|FK>\t- save kernel in binary format\n",N_SAVE_KERNEL);
-//   CIO::message("\033[1;31m%s\033[0m <filename>\t- save top features for all train obs,neg first\n",N_SAVE_TOP_FEATURES);
 //   CIO::message("\033[1;31m%s\033[0m <filename>\t- save P[O|HMM]\n",N_SAVE_LIKELIHOOD);
 //   CIO::message("\033[1;31m%s\033[0m <filename>\t- save P[O|HMM]\n",N_SAVE_LIKELIHOOD_BIN);
 //   CIO::message("\033[1;31m%s\033[0m <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear HMM from file\n",N_SAVE_LINEAR_LIKELIHOOD);
@@ -159,6 +158,7 @@ void CTextGUI::print_help()
 //   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate hmm output from obs using linear HMM\n",N_LINEAR_HMM_TEST);
    CIO::message("\n[SVM]\n");
    CIO::message("\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
+   CIO::message("\033[1;31m%s\033[0m\t <TOP|FK> <TRAIN|TEST> - creates train/test-features out of obs\n",N_SET_FEATURES);
    CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
 //   CIO::message("\033[1;31m%s\033[0m <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
 //   CIO::message("\033[1;31m%s\033[0m <srcsvm> [<output> [<rocfile>]]\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
@@ -246,9 +246,9 @@ bool CTextGUI::get_line(FILE* infile)
 	{
 	  CIO::not_implemented() ;
 	} 
-	else if (!strncmp(input, N_SAVE_TOP_FEATURES, strlen(N_SAVE_TOP_FEATURES)))
+	else if (!strncmp(input, N_SET_FEATURES, strlen(N_SET_FEATURES)))
 	{
-	  CIO::not_implemented() ;
+		guifeatures.set_features(input+strlen(N_SET_FEATURES));
 	} 
 	else if (!strncmp(input, N_SAVE_KERNEL, strlen(N_SAVE_KERNEL)))
 	{

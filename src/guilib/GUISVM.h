@@ -27,10 +27,11 @@ public:
 	bool load_svm();
 	bool save_svm();
 	bool set_C(char* param);
+
  protected:
-	CGUI* gui ;
-	double C ;
-	CSVM* svm ;
+	CGUI* gui;
+	CSVM* svm;
+	double C;
 };
 #endif
 

@@ -47,69 +47,101 @@ bool CGUISVM::new_svm(char* param)
 
 bool CGUISVM::train(char* param)
 {
-  if (!svm)
-    {
-      CIO::message("no svm available") ;
-      return false ;
-    } ;
-  if (!gui->guifeatures.get_train_features())
-    {
-      CIO::message("no training features available") ;
-      return false ;
-    } ;
+	CFeatures* features=gui->guifeatures.get_train_features();
+	CPreProc * preproc=gui->guipreproc.get_preproc() ;
 
-  CObservation *pt=gui->guiobs.get_obs("POSTRAIN") ;
-  CObservation *nt=gui->guiobs.get_obs("NEGTRAIN") ;
-  if (!pt || !nt)
-    {
-      CIO::message("model not assigned") ;
-      return false ;
-    } ;
-  CObservation* obs=new CObservation(pt, nt);
-  
-  gui->guihmm.pos->set_observations(obs) ;
-  gui->guihmm.neg->set_observations(obs) ;
-
-  CFeatures * f=gui->guifeatures.get_train_features() ;
-  ((CTOPFeatures*)f)->set_models(gui->guihmm.pos, gui->guihmm.neg) ;
-
-  CPreProc * preproc=gui->guipreproc.get_preproc() ;
-
-  if (preproc)
-    {
-      CIO::message("using preprocessor: %s\n", preproc->get_name()) ;
-      if (f->get_feature_type()!=preproc->get_feature_type())
+	if (!svm)
 	{
-	  CIO::message("preprocessor does not fit to features") ;
-	  return false ;
+		CIO::message("no svm available") ;
+		return false ;
 	}
-    } ;
-  //  CIO::message("using features: %s\n", f->name()) ;
 
-  f->set_preproc(NULL) ;
-  preproc->init(f) ;
-  f->set_preproc(preproc) ;
-  
-  //  if (!svm->check_feature_type(f))
-  //    {
-  //      CIO::message("features do not fit to svm") ;
-  //      return false ;
-  //    }
+	if (!features)
+	{
+		CIO::message("no training features available") ;
+		return false ;
+	}
 
-  CIO::message("starting svm\n") ;
-  svm->set_C(C) ;
-  bool ret=svm->svm_train(f) ;
+	if (!preproc)
+	{
+		CIO::message("using preprocessor: %s\n", preproc->get_name());
+		if (features->get_feature_type()!=preproc->get_feature_type())
+		{
+			CIO::message("preprocessor does not fit to features");
+			return false;
+		}
+	}
+	else
+		CIO::message("doing without preproc\n");
+	
+	preproc->init(features);
+	features->set_preproc(preproc);
+	features->preproc_feature_matrix();
 
-  gui->guihmm.pos->set_observations(pt) ;
-  gui->guihmm.neg->set_observations(nt) ;
+	//  if (!svm->check_feature_type(f))
+	//    {
+	//      CIO::message("features do not fit to svm") ;
+	//      return false ;
+	//    }
 
-  return ret ;
+	CIO::message("starting svm training\n") ;
+	svm->set_C(C) ;
+	return svm->svm_train(features) ;
 }
 
 bool CGUISVM::test(char* param)
 {
-  CIO::not_implemented() ;
-  return false ;
+	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
+	CFeatures* testfeatures=gui->guifeatures.get_test_features();
+	CPreProc * preproc=gui->guipreproc.get_preproc();
+
+	if (!svm)
+	{
+		CIO::message("no svm available") ;
+		return false ;
+	}
+	if (!trainfeatures)
+	{
+		CIO::message("no training features available") ;
+		return false ;
+	}
+
+	if (!testfeatures)
+	{
+		CIO::message("no test features available") ;
+		return false ;
+	}
+
+	if (!preproc)
+	{
+		CIO::message("using preprocessor: %s\n", preproc->get_name());
+		if (trainfeatures->get_feature_type()!=preproc->get_feature_type() && testfeatures->get_feature_type()!=preproc->get_feature_type())
+		{
+			CIO::message("preprocessor does not fit to features");
+			return false;
+		}
+	}
+	else
+		CIO::message("doing without preproc\n");
+	
+
+	preproc->init(trainfeatures);
+	trainfeatures->set_preproc(preproc);
+	trainfeatures->preproc_feature_matrix();
+	
+	testfeatures->set_preproc(preproc);
+	testfeatures->preproc_feature_matrix();
+
+	//  if (!svm->check_feature_type(f))
+	//    {
+	//      CIO::message("features do not fit to svm") ;
+	//      return false ;
+	//    }
+
+	CIO::message("starting svm testing\n") ;
+	svm->set_C(C) ;
+	svm->svm_test(trainfeatures, testfeatures) ;
+	return true;
 }
 
 bool CGUISVM::set_kernel()

@@ -506,14 +506,12 @@ bool CGUIHMM::set_hmm_as(char* param)
 				delete pos;
 				pos=working;
 				working=NULL;
-				gui->guifeatures.set_hmms(pos, neg) ;
 			}
 			else if (strcmp(target,"NEG")==0)
 			{
 				delete neg;
 				neg=working;
 				working=NULL;
-				gui->guifeatures.set_hmms(pos, neg) ;
 			}
 			else if (strcmp(target,"TEST")==0)
 			{
