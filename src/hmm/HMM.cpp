@@ -4838,21 +4838,23 @@ void CHMM::check_and_update_crc(CHMM* pos, CHMM* neg)
     if ((unsigned int) o->get_support_vector_num() != feature_cache_checksums[7])
       sv_result=true;
     
-    for (int i=0; i<CRCSIZEHALF && i<o->get_support_vector_num(); i++)
-      {
-	int idx=o->get_support_vector_idx(i*o->get_support_vector_num()/CRCSIZEHALF);
-	unsigned int crc=math.crc32( (unsigned char*) o->get_obs_vector(idx), o->get_obs_T(idx) ); 
-	
-#ifdef DEBUG
-	printf("SV:idx: %d maxl: %d crc: %x\n", idx, o->get_support_vector_idx(0)+o->get_support_vector_num(), crc);
-#endif
-
-	if (features_crc32[i+CRCSIZEHALF]!=crc)
+    {
+      for (int i=0; i<CRCSIZEHALF && i<o->get_support_vector_num(); i++)
 	{
-	    features_crc32[i+CRCSIZEHALF]=crc;
-	    sv_result=true;
-	}
-    }	
+	  int idx=o->get_support_vector_idx(i*o->get_support_vector_num()/CRCSIZEHALF);
+	  unsigned int crc=math.crc32( (unsigned char*) o->get_obs_vector(idx), o->get_obs_T(idx) ); 
+	  
+#ifdef DEBUG
+	  printf("SV:idx: %d maxl: %d crc: %x\n", idx, o->get_support_vector_idx(0)+o->get_support_vector_num(), crc);
+#endif
+	  
+	  if (features_crc32[i+CRCSIZEHALF]!=crc)
+	    {
+	      features_crc32[i+CRCSIZEHALF]=crc;
+	      sv_result=true;
+	    }
+	}	
+    } 
 
     if (sv_result)
     {

@@ -77,11 +77,11 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 	sprintf(str,"%.32g",norm_val);
 	strcpy(mykernel_parm.custom, str);
 
-#ifdef KERNEL_CACHE
+#ifdef USE_KERNEL_CACHE
 	kernel_cache_init(&mykernel_cache,totdoc,100);
 	svm_learn(docs,label,totdoc,-12345,&mylearn_parm,&mykernel_parm,&mykernel_cache,&mymodel);
 	kernel_cache_cleanup(&mykernel_cache);
-#elseif
+#else
 	svm_learn(docs,label,totdoc,-12345,&mylearn_parm,&mykernel_parm,NULL,&mymodel);
 #endif
 	if (kernel_type==6)
