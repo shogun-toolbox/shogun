@@ -46,17 +46,17 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 	if (!result)
 	{
-		CIO::message("CombinedKernel: Initialising the following kernel failed\n");
+		CIO::message(M_INFO, "CombinedKernel: Initialising the following kernel failed\n");
 		if (k)
 			k->list_kernel();
 		else
-			CIO::message("<NULL>\n");
+			CIO::message(M_INFO, "<NULL>\n");
 		return false;
 	}
 
 	if ((lf!=NULL) || (rf!=NULL) || (k!=NULL))
 	{
-		CIO::message("CombinedKernel: Number of features/kernels does not match - bailing out\n");
+		CIO::message(M_INFO, "CombinedKernel: Number of features/kernels does not match - bailing out\n");
 		return false;
 	}
 	
@@ -80,7 +80,7 @@ void CCombinedKernel::list_kernels()
 {
 	CKernel* k;
 
-	CIO::message("BEGIN COMBINED FEATURES LIST - ");
+	CIO::message(M_INFO, "BEGIN COMBINED FEATURES LIST - ");
 	this->list_kernel();
 
 	if ( (k=get_first_kernel()) )
@@ -89,6 +89,6 @@ void CCombinedKernel::list_kernels()
 		while ( (k=get_next_kernel()) )
 			k->list_kernel();
 	}
-	CIO::message("END COMBINED FEATURES LIST - ");
+	CIO::message(M_INFO, "END COMBINED FEATURES LIST - ");
 	this->list_kernel();
 }

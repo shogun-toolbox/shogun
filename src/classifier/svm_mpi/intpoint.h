@@ -5,7 +5,8 @@
 
 #include "matrix.h"
 #include "optimizer.h"
-//#include "kernel.h"
+#include "lib/config.h"
+
 #if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 #include "intpoint_mpi.h"
 #endif

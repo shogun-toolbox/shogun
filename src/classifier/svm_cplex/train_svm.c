@@ -1,4 +1,4 @@
-#ifdef SVMCPLEX
+#ifdef USE_SVMCPLEX
 
 /*
  * MATLAB Compiler: 2.1
@@ -379,4 +379,4 @@ static mxArray * Mtrain_svm(mxArray * * b,
      */
 }
 
-#endif // SVMCPLEX
+#endif // USE_SVMCPLEX

@@ -15,8 +15,8 @@
 #include <stdio.h>
 #include <assert.h>
 
-#ifdef PARALLEL
-#define PARALLEL_STRUCTURES 1
+#ifdef USE_HMMPARALLEL
+#define USE_HMMPARALLEL_STRUCTURES 1
 #endif
 
 class CHMM;
@@ -46,7 +46,7 @@ struct T_ALPHA_BETA
  * Probably BYTE is enough if you have at most 256 states,
  * however WORD/long/... is also possible although you might quickly run into memory problems
  */
-#ifdef BIGSTATES
+#ifdef USE_BIGSTATES
 typedef WORD T_STATES ;
 #else
 typedef BYTE T_STATES ;
@@ -73,7 +73,7 @@ class CHMM : private CDistribution
   T_STATES *trans_list_backward_cnt  ;
   bool mem_initialized ;
 
-#ifdef PARALLEL_STRUCTURES
+#ifdef USE_HMMPARALLEL_STRUCTURES
 
   INT NUM_PARALLEL ;
 
@@ -108,7 +108,7 @@ class CHMM : private CDistribution
 	    return alpha_cache[dim%NUM_PARALLEL] ; } ;
 	inline T_ALPHA_BETA & BETA_CACHE(INT dim) {
 	    return beta_cache[dim%NUM_PARALLEL] ; } ;
-#ifdef LOG_SUM_ARRAY 
+#ifdef USE_LOGSUMARRAY 
 	inline REAL* ARRAYS(INT dim) {
 	    return arrayS[dim%NUM_PARALLEL] ; } ;
 #endif
@@ -131,7 +131,7 @@ class CHMM : private CDistribution
 	    return alpha_cache ; } ;
 	inline T_ALPHA_BETA & BETA_CACHE(INT /*dim*/) {
 	    return beta_cache ; } ;
-#ifdef LOG_SUM_ARRAY
+#ifdef USE_LOGSUMARRAY
 	inline REAL* ARRAYS(INT dim) {
 	    return arrayS ; } ;
 #endif
@@ -256,7 +256,7 @@ class CHMM : private CDistribution
 		/// get value out of fix_pos_state array
 		inline CHAR get_fix_pos_state(INT pos, T_STATES state, T_STATES num_states)
 		{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 		  if ((pos<0)||(pos*num_states+state>65336))
 		    CIO::message(stderr,"index out of range in get_fix_pos_state(%i,%i,%i) \n", pos,state,num_states) ;
 #endif
@@ -344,7 +344,7 @@ class CHMM : private CDistribution
 		/// set value in fix_pos_state vector
 		inline void set_fix_pos_state(INT pos, T_STATES state, T_STATES num_states, CHAR value)
 		{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
        		  if ((pos<0)||(pos*num_states+state>65336))
 		    CIO::message(stderr,"index out of range in set_fix_pos_state(%i,%i,%i,%i) [%i]\n", pos,state,num_states,(int)value, pos*num_states+state) ;
 #endif
@@ -632,7 +632,7 @@ public:
 	void estimate_model_baum_welch_old(CHMM* train);
 	void estimate_model_baum_welch_trans(CHMM* train);
 
-#ifdef PARALLEL_STRUCTURES
+#ifdef USE_HMMPARALLEL_STRUCTURES
 	void ab_buf_comp(REAL* p_buf, REAL* q_buf, REAL* a_buf, REAL* b_buf, INT dim) ;
 #endif
 	
@@ -764,7 +764,7 @@ public:
 	    PSEUDO=pseudo ;
 	}
 
-#ifdef PARALLEL_STRUCTURES
+#ifdef USE_HMMPARALLEL_STRUCTURES
 	
 	static void* bw_dim_prefetch(void * params);
 #ifndef NOVIT
@@ -1001,7 +1001,7 @@ public:
 	 */
 	inline void set_q(T_STATES offset, REAL value)
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if (offset>=N)
 	    CIO::message(stderr,"index out of range in set_q(%i,%e) [%i]\n", offset,value,N) ;
 #endif
@@ -1014,7 +1014,7 @@ public:
 	 */
 	inline void set_p(T_STATES offset, REAL value)
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if (offset>=N)
 	    CIO::message(stderr,"index out of range in set_p(%i,.) [%i]\n", offset,N) ;
 #endif
@@ -1028,7 +1028,7 @@ public:
 	 */
 	inline void set_A(T_STATES line_, T_STATES column, REAL value)
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if ((line_>N)||(column>N))
 	    CIO::message(stderr,"index out of range in set_A(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
 #endif
@@ -1042,7 +1042,7 @@ public:
 	 */
 	inline void set_a(T_STATES line_, T_STATES column, REAL value)
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if ((line_>N)||(column>N))
 	    CIO::message(stderr,"index out of range in set_a(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
 #endif
@@ -1056,7 +1056,7 @@ public:
 	 */
 	inline void set_B(T_STATES line_, WORD column, REAL value)
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if ((line_>=N)||(column>=M))
 	    CIO::message(stderr,"index out of range in set_B(%i,%i) [%i,%i]\n", line_, column,N,M) ;
 #endif
@@ -1070,7 +1070,7 @@ public:
 	 */
 	inline void set_b(T_STATES line_, WORD column, REAL value)
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if ((line_>=N)||(column>=M))
 	    CIO::message(stderr,"index out of range in set_b(%i,%i) [%i,%i]\n", line_, column,N,M) ;
 #endif
@@ -1086,7 +1086,7 @@ public:
 	 */
 	inline void set_psi(INT time, T_STATES state, T_STATES value, INT dimension)
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if ((time>=p_observations->get_max_vector_length())||(state>N))
 	    CIO::message(stderr,"index out of range in set_psi(%i,%i,.) [%i,%i]\n",time,state,p_observations->get_max_vector_length(),N) ;
 #endif
@@ -1100,7 +1100,7 @@ public:
 	 */
 	inline REAL get_q(T_STATES offset) const 
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if (offset>=N)
 	    CIO::message(stderr,"index out of range in %e=get_q(%i) [%i]\n", end_state_distribution_q[offset],offset,N) ;
 #endif
@@ -1113,7 +1113,7 @@ public:
 	 */
 	inline REAL get_p(T_STATES offset) const 
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if (offset>=N)
 	    CIO::message(stderr,"index out of range in get_p(%i,.) [%i]\n", offset,N) ;
 #endif
@@ -1127,7 +1127,7 @@ public:
 	 */
 	inline REAL get_A(T_STATES line_, T_STATES column) const
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if ((line_>N)||(column>N))
 	    CIO::message(stderr,"index out of range in get_A(%i,%i) [%i,%i]\n",line_,column,N,N) ;
 #endif
@@ -1141,7 +1141,7 @@ public:
 	 */
 	inline REAL get_a(T_STATES line_, T_STATES column) const
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if ((line_>N)||(column>N))
 	    CIO::message(stderr,"index out of range in get_a(%i,%i) [%i,%i]\n",line_,column,N,N) ;
 #endif
@@ -1155,7 +1155,7 @@ public:
 	 */
 	inline REAL get_B(T_STATES line_, WORD column) const
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if ((line_>=N)||(column>=M))
 	    CIO::message(stderr,"index out of range in get_B(%i,%i) [%i,%i]\n", line_, column,N,M) ;
 #endif
@@ -1169,7 +1169,7 @@ public:
 	 */
 	inline REAL get_b(T_STATES line_, WORD column) const 
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if ((line_>=N)||(column>=M))
 	    CIO::message(stderr,"index out of range in get_b(%i,%i) [%i,%i]\n", line_, column,N,M) ;
 #endif
@@ -1185,7 +1185,7 @@ public:
 	 */
 	inline T_STATES get_psi(INT time, T_STATES state, INT dimension) const
 	{
-#ifdef DEBUG
+#ifdef HMM_DEBUG
 	  if ((time>=p_observations->get_max_vector_length())||(state>N))
 	    CIO::message(stderr,"index out of range in get_psi(%i,%i) [%i,%i]\n",time,state,p_observations->get_max_vector_length(),N) ;
 #endif
@@ -1267,29 +1267,29 @@ protected:
 	bool reused_caches;
 	//@}
 	
-#ifdef PARALLEL_STRUCTURES
+#ifdef USE_HMMPARALLEL_STRUCTURES
 	// array of size N*NUM_PARALLEL for temporary calculations
 	REAL** arrayN1 /*[NUM_PARALLEL]*/ ;
 	// array of size N*NUM_PARRALEL for temporary calculations
 	REAL** arrayN2 /*[NUM_PARALLEL]*/ ;
-#else //PARALLEL_STRUCTURES
+#else //USE_HMMPARALLEL_STRUCTURES
 	// array of size N for temporary calculations
 	REAL* arrayN1;
 	// array of size N for temporary calculations
 	REAL* arrayN2;
-#endif //PARALLEL_STRUCTURES
+#endif //USE_HMMPARALLEL_STRUCTURES
 
-#ifdef LOG_SUM_ARRAY
-#ifdef PARALLEL_STRUCTURES
+#ifdef USE_LOGSUMARRAY
+#ifdef USE_HMMPARALLEL_STRUCTURES
 	// array for for temporary calculations of log_sum
 	REAL** arrayS /*[NUM_PARALLEL]*/;
 #else
 	// array for for temporary calculations of log_sum
 	REAL* arrayS;
-#endif // PARALLEL_STRUCTURES
-#endif // LOG_SUM_ARRAY
+#endif // USE_HMMPARALLEL_STRUCTURES
+#endif // USE_LOGSUMARRAY
 
-#ifdef PARALLEL_STRUCTURES
+#ifdef USE_HMMPARALLEL_STRUCTURES
 
 	/// cache for forward variables can be terrible HUGE O(T*N)
 	T_ALPHA_BETA *alpha_cache /*[NUM_PARALLEL]*/ ;
@@ -1310,7 +1310,7 @@ protected:
 	INT* path_prob_dimension /*[NUM_PARALLEL]*/ ;	
 #endif //NOVIT
 
-#else //PARALLEL_STRUCTURES
+#else //USE_HMMPARALLEL_STRUCTURES
 	/// cache for forward variables can be terrible HUGE O(T*N)
 	T_ALPHA_BETA alpha_cache;
 	/// cache for backward variables can be terrible HUGE O(T*N)
@@ -1330,7 +1330,7 @@ protected:
 	INT path_prob_dimension;
 #endif // NOVIT
 
-#endif //PARALLEL_STRUCTURES
+#endif //USE_HMMPARALLEL_STRUCTURES
 	//@}
 
 	static const INT GOTN;
@@ -1493,9 +1493,9 @@ protected:
 	inline void error(INT line, CHAR* str)
 	{
 	    if (line)
-		CIO::message(stderr,"error in line %d %s\n", line, str);
+			CIO::message(M_ERROR, "error in line %d %s\n", line, str);
 	    else
-		CIO::message(stderr,"error %s\n", str);
+			CIO::message(M_ERROR, "error %s\n", str);
 	}
 	//@}
 
@@ -1568,5 +1568,4 @@ protected:
 	  } ;
 
 };
-
 #endif

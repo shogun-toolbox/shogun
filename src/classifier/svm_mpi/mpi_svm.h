@@ -1,8 +1,6 @@
-#ifdef SVMMPI
+#ifdef USE_SVMMPI
 #ifndef _SVMMPI_H___
 #define _SVMMPI_H___
-
-/*#ifdef SVMMPI*/
 
 #include "svm/SVM.h"
 #include "kernel/Kernel.h"
@@ -10,6 +8,7 @@
 #include "svm_mpi/matrix.h"
 #include "features/RealFeatures.h"
 #include "svm_mpi/mpi_base.h"
+#include "lib/config.h"
 
 #if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 
@@ -31,7 +30,5 @@ class CSVMMPI: public CSVM, public CMPIBase
   double svm_b, *svm_w ;
 } ;
 #endif
-/*#endif // SVMMPI*/
-
 #endif // _SVMMPI_H__
 #endif

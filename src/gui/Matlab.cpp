@@ -33,6 +33,7 @@ static const CHAR* N_APPEND_HMM=			"append_hmm";
 static const CHAR* N_SET_SVM=			"set_svm";
 static const CHAR* N_SET_KERNEL_INIT=	        "set_kernel_init";
 static const CHAR* N_SET_FEATURES=		"set_features";
+static const CHAR* N_ADD_FEATURES=		"add_features";
 static const CHAR* N_SET_LABELS=		"set_labels";
 static const CHAR* N_SET_PREPROC_INIT=	        "set_preproc_init";
 static const CHAR* N_SET_HMM_DEFS=		"set_hmm_defs";
@@ -383,10 +384,43 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 						delete[] target;
 					}
 					else
-						mexErrMsgTxt("usage is gf('features', 'TRAIN|TEST', features)");
+						mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features)");
 				}
 				else
-					mexErrMsgTxt("usage is gf('features', 'TRAIN|TEST', features)");
+					mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features)");
+			}
+			else
+				mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features)");
+			CIO::message("done\n");
+		}
+		else if (!strncmp(action, N_ADD_FEATURES, strlen(N_ADD_FEATURES)))
+		{
+			if (nrhs==3)
+			{
+				CHAR* target=CGUIMatlab::get_mxString(prhs[1]);
+
+				if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
+						(!strncmp(target, "TEST", strlen("TEST"))) ) 
+				{
+					CFeatures* features=gf_matlab.set_features(prhs);
+
+					if (features && target)
+					{
+						if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+						{
+							gui->guifeatures.add_train_features(features);
+						}
+						else if (!strncmp(target, "TEST", strlen("TEST")))
+						{
+							gui->guifeatures.add_test_features(features);
+						}
+						delete[] target;
+					}
+					else
+						mexErrMsgTxt("usage is gf('add_features', 'TRAIN|TEST', features)");
+				}
+				else
+					mexErrMsgTxt("usage is gf('add_features', 'TRAIN|TEST', features)");
 			}
 			else
 				mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features)");

@@ -74,7 +74,7 @@ bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	this->rhs=(CSparseRealFeatures*) r;
 
 	initialized = true;
-	CIO::message("SparsePolyKernel initialized\n");
+	CIO::message(M_INFO, "SparsePolyKernel initialized\n");
 	return result;
 }
   

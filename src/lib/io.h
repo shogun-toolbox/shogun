@@ -12,19 +12,20 @@ public:
 	CIO();
 
 	static void set_target(FILE* target);
-	static void message(const CHAR *fmt, ... );
-	static void message(FILE* target, const CHAR *fmt, ... );
-	static void not_implemented() 
-	  {
-	    message(stderr, "Sorry, not yet implemented\n");
-	  };
+	static void message(EMessageType prio, const CHAR *fmt, ... );
 
-	static void buffered_message(const CHAR *fmt, ... );
-	static void buffered_message(FILE* target, const CHAR *fmt, ... );
+	inline static void not_implemented() 
+	{
+		message(M_ERROR, "Sorry, not yet implemented\n");
+	}
+
+	static void buffered_message(EMessageType prio, const CHAR *fmt, ... );
 
 	static CHAR* skip_spaces(CHAR* str);
+
 protected:
 	static void check_target();
+	static void print_message_prio(EMessageType prio, FILE* target);
 
 protected:
 	static FILE* target;

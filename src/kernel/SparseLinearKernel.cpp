@@ -25,7 +25,7 @@ bool CSparseLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	if (do_init)
 		init_rescale() ;
 
-	CIO::message("rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
+	CIO::message(M_INFO, "rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
 
 	return true;
 }
@@ -58,7 +58,7 @@ bool CSparseLinearKernel::load_init(FILE* src)
     assert(fread(&endian, (UINT) intlen, 1, src)== 1);
     assert(fread(&fourcc, (UINT) intlen, 1, src)==1);
     assert(fread(&s, (UINT) doublelen, 1, src)==1);
-    CIO::message("detected: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, s);
+    CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, s);
 
 	scale=s;
 	return true;
@@ -76,7 +76,7 @@ bool CSparseLinearKernel::save_init(FILE* dest)
     assert(fwrite(&endian, sizeof(UINT), 1, dest)==1);
     assert(fwrite(&fourcc, sizeof(UINT), 1, dest)==1);
     assert(fwrite(&scale, sizeof(double), 1, dest)==1);
-    CIO::message("wrote: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, scale);
+    CIO::message(M_INFO, "wrote: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, scale);
 
 	return true;
 }

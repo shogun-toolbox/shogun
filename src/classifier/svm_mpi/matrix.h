@@ -1,4 +1,4 @@
-#ifdef SVMMPI
+#ifdef USE_SVMMPI
 /* -*-C++-*- */
 
 /*
@@ -31,6 +31,8 @@
 #include <cstring>
 #include <cmath>
 #include <cstdarg>
+#include "lib/config.h"
+
 #ifdef HAVE_MATLAB
 #include "mat.h"
 #endif /* ! NO_MATLAB */

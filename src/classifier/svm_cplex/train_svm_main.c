@@ -1,4 +1,4 @@
-#ifdef SVMCPLEX
+#ifdef USE_SVMCPLEX
 
 /*
  * MATLAB Compiler: 2.1
@@ -92,5 +92,5 @@ void train_svm_main(double *XT, double *LT, double C,
   mclLibTermInitTerms(6, init_term_table) ;
 }
 
-#endif // SVMCPLEX
+#endif // USE_SVMCPLEX
 

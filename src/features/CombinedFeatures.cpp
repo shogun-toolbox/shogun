@@ -26,7 +26,7 @@ void CCombinedFeatures::list_feature_objs()
 {
 	CFeatures* f;
 
-	CIO::message("BEGIN COMBINED FEATURES LIST - ");
+	CIO::message(M_INFO, "BEGIN COMBINED FEATURES LIST - ");
 	this->list_feature_obj();
 
 	if ( (f=get_first_feature_obj()) )
@@ -35,7 +35,7 @@ void CCombinedFeatures::list_feature_objs()
 		while ( (f=get_next_feature_obj()) )
 			f->list_feature_obj();
 	}
-	CIO::message("END COMBINED FEATURES LIST - ");
+	CIO::message(M_INFO, "END COMBINED FEATURES LIST - ");
 	this->list_feature_obj();
 }
 

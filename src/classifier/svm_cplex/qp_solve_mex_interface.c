@@ -1,4 +1,4 @@
-#ifdef SVMCPLEX
+#ifdef USE_SVMCPLEX
 /*
  * MATLAB Compiler: 2.1
  * Date: Sun Nov 11 18:46:58 2001
@@ -121,4 +121,4 @@ static mxArray * Mqp_solve(int nargout_, mxArray * varargin) {
     return mclCExecMexFunction("qp_solve", nargout_, varargin);
 }
 
-#endif // SVMCPLEX
+#endif // USE_SVMCPLEX

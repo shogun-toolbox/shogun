@@ -8,7 +8,7 @@
 #include "classifier/svm_cplex/SVM_cplex.h"
 #include "classifier/svm/LibSVM.h"
 
-#ifdef SVMMPI
+#ifdef USE_SVMMPI
 #include "classifier/svm_mpi/mpi_oneclass.h"
 #endif
 
@@ -33,42 +33,42 @@ bool CGUISVM::new_svm(CHAR* param)
 	{
 		delete svm;
 		svm= new CSVMLight();
-		CIO::message("created SVMLight object\n") ;
+		CIO::message(M_INFO, "created SVMLight object\n") ;
 	}
 	else if (strcmp(param,"LIBSVM")==0)
 	{
 		delete svm;
 		svm= new CLibSVM();
-		CIO::message("created SVMlibsvm object\n") ;
+		CIO::message(M_INFO, "created SVMlibsvm object\n") ;
 	}
 	else if (strcmp(param,"CPLEX")==0)
 	{
 #ifdef SVMCPLEX
 		delete svm;
 		svm= new CSVMCplex();
-		CIO::message("created SVMCplex object\n") ;
+		CIO::message(M_INFO, "created SVMCplex object\n") ;
 #else
-		CIO::message("CPLEX SVM disabled\n") ;
+		CIO::message(M_ERROR, "CPLEX SVM disabled\n") ;
 #endif
 	}
 	else if (strcmp(param,"MPI")==0)
 	{
-#ifdef SVMMPI
+#ifdef USE_SVMMPI
 		delete svm;
 		svm= new CSVMMPI();
-		CIO::message("created SVMMPI object\n") ;
+		CIO::message(M_INFO, "created SVMMPI object\n") ;
 #else
-		CIO::message("MPI SVM disabled\n") ;
+		CIO::message(M_ERROR, "MPI SVM disabled\n") ;
 #endif
 	}
 	else if (strcmp(param,"ONECLASS")==0)
 	{
-#ifdef SVMMPI
+#ifdef USE_SVMMPI
 		delete svm;
 		svm= new COneClassMPI();
-		CIO::message("created OneClassMPI object\n") ;
+		CIO::message(M_INFO, "created OneClassMPI object\n") ;
 #else
-		CIO::message("MPI OneClass SVM disabled\n") ;
+		CIO::message(M_ERROR, "MPI OneClass SVM disabled\n") ;
 #endif
 	}
 	else
@@ -86,29 +86,29 @@ bool CGUISVM::train(CHAR* param)
 
 	if (!svm)
 	{
-		CIO::message("no svm available\n") ;
+		CIO::message(M_ERROR, "no svm available\n") ;
 		return false ;
 	}
 
 	if (!kernel)
 	{
-		CIO::message("no kernel available\n");
+		CIO::message(M_ERROR, "no kernel available\n");
 		return false ;
 	}
 
 	if (!trainlabels)
 	{
-		CIO::message("no trainlabels available\n");
+		CIO::message(M_ERROR, "no trainlabels available\n");
 		return false ;
 	}
 
 	if (!gui->guikernel.is_initialized())
 	{
-		CIO::message("kernel not initialized\n") ;
+		CIO::message(M_ERROR, "kernel not initialized\n") ;
 		return 0;
 	}
 
-	CIO::message("starting svm training on %ld vectors using C1=%lf C2=%lf\n", trainlabels->get_num_labels(), C1, C2) ;
+	CIO::message(M_INFO, "starting svm training on %ld vectors using C1=%lf C2=%lf\n", trainlabels->get_num_labels(), C1, C2) ;
 
 	svm->set_C(C1, C2);
 	((CKernelMachine*) svm)->set_labels(trainlabels);
@@ -134,7 +134,7 @@ bool CGUISVM::test(CHAR* param)
 
 		if (!outputfile)
 		{
-			CIO::message(stderr,"ERROR: could not open %s\n",outputname);
+			CIO::message(M_ERROR, "could not open %s\n",outputname);
 			return false;
 		}
 
@@ -144,7 +144,7 @@ bool CGUISVM::test(CHAR* param)
 
 			if (!rocfile)
 			{
-				CIO::message(stderr,"ERROR: could not open %s\n",rocfname);
+				CIO::message(M_ERROR, "could not open %s\n",rocfname);
 				return false;
 			}
 		}
@@ -153,39 +153,39 @@ bool CGUISVM::test(CHAR* param)
 	CLabels* testlabels=gui->guilabels.get_test_labels();
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
-	CIO::message("I:training: %ld examples each %ld features\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
-	CIO::message("I:testing: %ld examples each %ld features\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
+	CIO::message(M_DEBUG, "I:training: %ld examples each %ld features\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
+	CIO::message(M_DEBUG, "I:testing: %ld examples each %ld features\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
 
 	if (!svm)
 	{
-		CIO::message("no svm available") ;
+		CIO::message(M_ERROR, "no svm available") ;
 		return false ;
 	}
 	if (!trainfeatures)
 	{
-		CIO::message("no training features available") ;
+		CIO::message(M_ERROR, "no training features available") ;
 		return false ;
 	}
 
 	if (!testfeatures)
 	{
-		CIO::message("no test features available") ;
+		CIO::message(M_ERROR, "no test features available") ;
 		return false ;
 	}
 
 	if (!testlabels)
 	{
-		CIO::message("no test labels available") ;
+		CIO::message(M_ERROR, "no test labels available") ;
 		return false ;
 	}
 
 	if (!gui->guikernel.is_initialized())
 	{
-		CIO::message("kernel not initialized\n") ;
+		CIO::message(M_ERROR, "kernel not initialized\n") ;
 		return 0;
 	}
 
-	CIO::message("starting svm testing\n") ;
+	CIO::message(M_INFO, "starting svm testing\n") ;
 	((CKernelMachine*) svm)->set_labels(testlabels);
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
 
@@ -196,7 +196,7 @@ bool CGUISVM::test(CHAR* param)
 	INT* label= testlabels->get_int_labels(len);
 
 	assert(label);
-	CIO::message("len:%d total:%d\n", len, total);
+	CIO::message(M_DEBUG, "len:%d total:%d\n", len, total);
 	assert(len==total);
 
 	gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);
@@ -233,20 +233,20 @@ bool CGUISVM::load(CHAR* param)
 		    result=true;
 		}
 		else
-		    CIO::message("svm creation/loading failed\n");
+		    CIO::message(M_ERROR, "svm creation/loading failed\n");
 
 		fclose(model_file);
 	    }
 	    else
-		CIO::message("opening file %s failed\n", filename);
+		CIO::message(M_ERROR, "opening file %s failed\n", filename);
 
 	    return result;
 	}
 	else
-	    CIO::message("type of svm unknown\n");
+	    CIO::message(M_ERROR, "type of svm unknown\n");
     }
     else
-	CIO::message("see help for parameters\n");
+	CIO::message(M_ERROR, "see help for parameters\n");
 	return false;
 }
 
@@ -271,7 +271,7 @@ bool CGUISVM::save(CHAR* param)
 	    fclose(file);
     }
     else
-	CIO::message("create svm first\n");
+	CIO::message(M_ERROR, "create svm first\n");
 
     return result;
 }
@@ -290,7 +290,7 @@ bool CGUISVM::set_C(CHAR* param)
 	if (C2<0)
 		C2=C1;
 
-	CIO::message("Set to C1=%f C2=%f\n", C1, C2) ;
+	CIO::message(M_INFO, "Set to C1=%f C2=%f\n", C1, C2) ;
 	return true ;  
 }
 
@@ -301,30 +301,30 @@ CLabels* CGUISVM::classify(CLabels* output)
 
 	if (!svm)
 	{
-		CIO::message("no svm available\n") ;
+		CIO::message(M_ERROR, "no svm available\n") ;
 		return NULL;
 	}
 	if (!trainfeatures)
 	{
-		CIO::message("no training features available\n") ;
+		CIO::message(M_ERROR, "no training features available\n") ;
 		return NULL;
 	}
 
 	if (!testfeatures)
 	{
-		CIO::message("no test features available\n") ;
+		CIO::message(M_ERROR, "no test features available\n") ;
 		return NULL;
 	}
 
 	if (!gui->guikernel.is_initialized())
 	{
-		CIO::message("kernel not initialized\n") ;
+		CIO::message(M_ERROR, "kernel not initialized\n") ;
 		return NULL;
 	}
 	  
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
 
-	CIO::message("starting svm testing\n") ;
+	CIO::message(M_INFO, "starting svm testing\n") ;
 	return svm->classify(output);
 }
 
@@ -335,30 +335,29 @@ bool CGUISVM::classify_example(INT idx, REAL &result)
 
 	if (!svm)
 	{
-		CIO::message("no svm available\n") ;
+		CIO::message(M_ERROR, "no svm available\n") ;
 		return false;
 	}
 	if (!trainfeatures)
 	{
-		CIO::message("no training features available\n") ;
+		CIO::message(M_ERROR, "no training features available\n") ;
 		return false;
 	}
 
 	if (!testfeatures)
 	{
-		CIO::message("no test features available\n") ;
+		CIO::message(M_ERROR, "no test features available\n") ;
 		return false;
 	}
 
 	if (!gui->guikernel.is_initialized())
 	{
-		CIO::message("kernel not initialized\n") ;
+		CIO::message(M_ERROR, "kernel not initialized\n") ;
 		return false;
 	}
 
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
 
 	result=svm->classify_example(idx);
-	//CIO::message("%f guilib\n", result);
 	return true ;
 }

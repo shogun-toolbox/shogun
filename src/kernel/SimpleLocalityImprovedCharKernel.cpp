@@ -24,7 +24,7 @@ bool CSimpleLocalityImprovedCharKernel::init(CFeatures* l, CFeatures* r, bool do
 	    INT num_features = ((CCharFeatures*) l)->get_num_features() ;
 	    match=new CHAR[num_features];
 	    pyramid_weights = new REAL[num_features] ;
-	    CIO::message("initializing pyramid weights: size=%ld length=%i\n", num_features, length) ;
+	    CIO::message(M_INFO, "initializing pyramid weights: size=%ld length=%i\n", num_features, length) ;
 
 	    const INT PYRAL = 2 * length - 1; // total window length
 	    REAL PYRAL_pot;
@@ -80,7 +80,7 @@ bool CSimpleLocalityImprovedCharKernel::save_init(FILE* dest)
 static void assert2 (const INT ok, const CHAR* const msg)
 {
    if (! ok) {
-      CIO::message( msg );
+      CIO::message(M_ERROR, msg );
    }
 }
 

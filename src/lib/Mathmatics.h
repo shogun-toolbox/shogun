@@ -215,7 +215,7 @@ public:
 	 * Probability measures are summed up but are now given in logspace where
 	 * direct summation of exp(operand) is not possible due to numerical problems, i.e. eg. exp(-1000)=0. Therefore
 	 * we do log( exp(a) + exp(b)) = a + log (1 + exp (b-a)) where a is max(p,q) and b min(p,q). */
-#ifndef NO_LOG_CACHE
+#ifdef USE_LOGCACHE
 	inline REAL logarithmic_sum(REAL p, REAL q)
 	{
 		if (finite(p))
@@ -333,7 +333,7 @@ public:
 	/// range for logtable: log(1+exp(x))  -LOGRANGE <= x <= 0
 	static INT LOGRANGE;
 	
-#ifndef NO_LOG_CACHE	
+#ifdef USE_LOGCACHE	
 	/// number of steps per integer
 	static INT LOGACCURACY;
 	//@}

@@ -108,15 +108,11 @@ void fixed_descent(CHMM* pos, REAL step_size, REAL beta)
   get_param_vector(pos, params) ;
   get_gradient_vector(pos, gradient) ;
 
-  //REAL step=linmin(params, gradient, len) ;
-  //printf("step=%e\n",step) ;
-
   for (i=0; i<len; i++)
-    {
-      //CIO::message("p[%i]=%e   %1.2e  g[%i]=%e\n", i, exp(params[i]), step, i, gradient[i]) ;
       params[i]+=step_size*gradient[i] ;
-    }
+
   set_param_vector(pos, params) ;
+
   if (beta>0)
     pos->normalize() ;
 
@@ -124,7 +120,7 @@ void fixed_descent(CHMM* pos, REAL step_size, REAL beta)
 
   double lik2 = get_objective(pos) ;
 
-  CIO::message("lik_before=%e  lik_after=%e\n", lik, lik2) ;
+  CIO::message(M_DEBUG, "lik_before=%e  lik_after=%e\n", lik, lik2) ;
   delete[] params ;
   delete[] gradient ;
 }

@@ -5,6 +5,7 @@
 #include "preproc/PCACut.h"
 #include "preproc/SortWord.h"
 #include "lib/io.h"
+#include "lib/config.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -37,7 +38,7 @@ bool CGUIPreProc::add_preproc(CHAR* param)
 		INT do_whitening=0; 
 		double thresh=1e-6 ;
 		sscanf(param+6, "%i %le", &do_whitening, &thresh) ;
-		CIO::message("PCACUT parameters: do_whitening=%i thresh=%e", do_whitening, thresh) ;
+		CIO::message(M_INFO, "PCACUT parameters: do_whitening=%i thresh=%e", do_whitening, thresh) ;
 		preproc=new CPCACut(do_whitening, thresh);
 	}
 	else 
@@ -61,9 +62,9 @@ bool CGUIPreProc::add_preproc(CHAR* param)
 		sscanf(param+15, "%i", &divide_by_std);
 
 		if (divide_by_std)
-			CIO::message("normalizing VARIANCE\n");
+			CIO::message(M_INFO, "normalizing VARIANCE\n");
 		else
-			CIO::message("NOT normalizing VARIANCE\n");
+			CIO::message(M_WARN, "NOT normalizing VARIANCE\n");
 
 		preproc=new CPruneVarSubMean(divide_by_std==1);
 	}
@@ -92,7 +93,7 @@ bool CGUIPreProc::del_preproc(CHAR* param)
 	if (num>num_preprocs-1)
 		num=num_preprocs-1;
 
-	CIO::message("deleting preproc %i/(%i)\n", num, num_preprocs);
+	CIO::message(M_INFO, "deleting preproc %i/(%i)\n", num, num_preprocs);
 
 	if (num_preprocs>0)
 		delete preprocs[num];
@@ -156,7 +157,7 @@ bool CGUIPreProc::load(CHAR* param)
 			preproc=new CPruneVarSubMean();
 		}
 		else
-			CIO::message("unrecognized file\n");
+			CIO::message(M_ERROR, "unrecognized file\n");
 
 		if (preproc && preproc->load_init_data(file))
 		{
@@ -167,7 +168,7 @@ bool CGUIPreProc::load(CHAR* param)
 		fclose(file);
 	}
 	else
-		CIO::message("opening file %s failed\n", param);
+		CIO::message(M_ERROR, "opening file %s failed\n", param);
 
 	if (result)
 		return add_preproc(preproc);
@@ -200,7 +201,7 @@ bool CGUIPreProc::save(CHAR* param)
 			fclose(file);
 	}
 	else
-		CIO::message("create preproc first\n");
+		CIO::message(M_ERROR, "create preproc first\n");
 
 	return result;
 }

@@ -38,14 +38,12 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	assert(l!=NULL) ;
 	assert(r!=NULL) ;
 
-  //  fprintf(stderr, "start\n") ;
-
 	CWordFeatures* lhs=(CWordFeatures*) l;
 	CWordFeatures* rhs=(CWordFeatures*) r;
 	assert(lhs) ;
 	assert(rhs) ;
 	
-	CIO::message("init: lhs: %ld   rhs: %ld\n", lhs, rhs) ;
+	CIO::message(M_DEBUG, "init: lhs: %ld   rhs: %ld\n", lhs, rhs) ;
 	INT i;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
@@ -105,12 +103,12 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			rhs->get_num_features() * rhs->get_num_symbols();
 	    if ((!estimate) || (!estimate->check_models()))
 		{
-			CIO::message("no estimate available\n") ;
+			CIO::message(M_ERROR, "no estimate available\n") ;
 			return false ;
 		} ;
 	    if (num_params!=estimate->get_num_params())
 		{
-			CIO::message("number of parameters of estimate and feature representation do not match\n") ;
+			CIO::message(M_ERROR, "number of parameters of estimate and feature representation do not match\n") ;
 			return false ;
 		} ;
 	    
@@ -399,9 +397,6 @@ REAL CHistogramWordKernel::compute_slow(INT idx_a, INT idx_b)
   if (initialized)
     result /=  (sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]) ;
 
-  //fprintf(stderr, "%ld : %ld -> %f\n",idx_a, idx_b, result) ;
-
-//  CIO::message("%f\n", result);
   return result;
 }
 

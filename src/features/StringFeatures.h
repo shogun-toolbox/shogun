@@ -134,7 +134,7 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	virtual bool load(CHAR* fname)
 	{
-		CIO::message("loading...\n");
+		CIO::message(M_INFO, "loading...\n");
 		LONG length=0;
 		max_string_length=0;
 
@@ -151,7 +151,7 @@ template <class ST> class CStringFeatures: public CFeatures
 					num_vectors++;
 			}
 
-			CIO::message("file contains %ld vectors\n", num_vectors);
+			CIO::message(M_INFO, "file contains %ld vectors\n", num_vectors);
 			features= new T_STRING<ST>[num_vectors];
 
 			long index=0;
@@ -163,7 +163,7 @@ template <class ST> class CStringFeatures: public CFeatures
 				for (columns=0; index+columns<length && p[columns]!='\n'; columns++);
 
 				if (index+columns>=length && p[columns]!='\n')
-					CIO::message("error in \"%s\":%d\n", fname, lines);
+					CIO::message(M_ERROR, "error in \"%s\":%d\n", fname, lines);
 
 				features[lines].length=columns;
 				features[lines].string=new ST[columns];
@@ -181,7 +181,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			return true;
 		}
 		else
-			CIO::message("reading file failed\n");
+			CIO::message(M_ERROR, "reading file failed\n");
 
 		return false;
 	}
@@ -331,15 +331,15 @@ inline bool CStringFeatures<WORD>::obtain_from_char_features(CStringFeatures<CHA
 	max_val= (int) ceil(log((double) max_val+1)/log((double) 2));
 	num_symbols=1<<(max_val*order);
 
-	CIO::message("max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, order, num_symbols);
+	CIO::message(M_DEBUG, "max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, order, num_symbols);
 
 	if (num_symbols>(1<<(sizeof(WORD)*8)))
 	{
-		CIO::message("symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
+		CIO::message(M_DEBUG, "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
 		return false;
 	}
 	
-	CIO::message("translate: start=%i order=%i\n", start, order) ;
+	CIO::message(M_DEBUG, "translate: start=%i order=%i\n", start, order) ;
 	for (INT line=0; line<num_vectors; line++)
 	{
 		INT len=0;

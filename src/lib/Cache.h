@@ -26,7 +26,7 @@ template<class T> class CCache
 	{
 		if (cache_size==0 || obj_size==0 || num_entries==0)
 		{
-			CIO::message("doing without cache.\n");
+			CIO::message(M_WARN, "doing without cache.\n");
 			cache_block=NULL;
 			lookup_table=NULL;
 			cache_table=NULL;
@@ -39,7 +39,7 @@ template<class T> class CCache
 		entry_size=obj_size;
 		nr_cache_lines=math.min(cache_size*1024*1024/obj_size/sizeof(T), num_entries+1);
 
-		CIO::message("creating %d cache lines (total size: %ld byte)\n", nr_cache_lines, nr_cache_lines*obj_size*sizeof(T));
+		CIO::message(M_INFO, "creating %d cache lines (total size: %ld byte)\n", nr_cache_lines, nr_cache_lines*obj_size*sizeof(T));
 		cache_block=new T[obj_size*nr_cache_lines];
 		lookup_table=new TEntry[num_entries];
 		cache_table=new TEntry*[nr_cache_lines];
@@ -77,7 +77,6 @@ template<class T> class CCache
 	{
 		if (lookup_table)
 		{
-			//CIO::message("G:%5d: %5d %10d\n", lookup_table[number].usage_count, number, lookup_table[number].obj);
 			lookup_table[number].usage_count++;
 			lookup_table[number].locked=true;
 			return lookup_table[number].obj;
@@ -149,7 +148,6 @@ template<class T> class CCache
 
 				cache_table[min_idx]=&lookup_table[number];
 				lookup_table[number].obj=&cache_block[entry_size*min_idx];
-				//CIO::message("S:%5d: %5d(Y)\n", min, number);
 
 				return lookup_table[number].obj;
 			}

@@ -60,7 +60,6 @@ CFeatures* CRealFileFeatures::duplicate() const
 REAL* CRealFileFeatures::compute_feature_vector(INT num, INT &len, REAL* target)
 {
     assert(num<num_vectors);
-    //CIO::message("f:%ld\n", num);
     len=num_features;
     REAL* featurevector=target;
 	if (!featurevector)
@@ -78,21 +77,21 @@ REAL* CRealFileFeatures::load_feature_matrix()
     fseek(working_file, filepos, SEEK_SET);
     delete[] feature_matrix;
 
-    CIO::message("allocating feature matrix of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
+    CIO::message(M_INFO, "allocating feature matrix of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
     feature_matrix=new REAL[num_features*num_vectors];
 
-    CIO::message("loading... be patient.\n");
+    CIO::message(M_INFO, "loading... be patient.\n");
 
     for (INT i=0; i<(INT) num_vectors; i++)
     {
 	if (!(i % (num_vectors/10+1)))
-	    CIO::message("%02d%%.", (int) (100.0*i/num_vectors));
+	    CIO::message(M_MESSAGEONLY, "%02d%%.", (int) (100.0*i/num_vectors));
 	else if (!(i % (num_vectors/200+1)))
-	    CIO::message(".");
+	    CIO::message(M_MESSAGEONLY, ".");
 
 	assert(fread(&feature_matrix[num_features*i], doublelen, num_features, working_file)== (size_t) num_features) ;
     }
-	    CIO::message("done.\n");
+	    CIO::message(M_INFO, "done.\n");
 
     return feature_matrix;
 }
@@ -118,7 +117,7 @@ bool CRealFileFeatures::load_base_data()
     assert(fread(&num_vec, (UINT) intlen, 1, working_file)==1);
     assert(fread(&num_feat, (UINT) intlen, 1, working_file)==1);
     assert(fread(&preprocd, (UINT) intlen, 1, working_file)==1);
-    CIO::message("detected: intsize=%d, doublesize=%d, num_vec=%d, num_feat=%d, preprocd=%d\n", intlen, doublelen, num_vec, num_feat, preprocd);
+    CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, num_vec=%d, num_feat=%d, preprocd=%d\n", intlen, doublelen, num_vec, num_feat, preprocd);
     filepos=ftell(working_file);
     set_num_vectors(num_vec);
     set_num_features(num_feat);

@@ -18,9 +18,9 @@
 //////////////////////////////////////////////////////////////////////
 
 CMath math;
-#ifndef NO_LOG_CACHE
+#ifdef USE_LOGCACHE
 //gene/math specific constants
-#ifdef DEBUG
+#ifdef USE_HMMDEBUG
 #define MAX_LOG_TABLE_SIZE 10*1024*1024
 #define LOG_TABLE_PRECISION 1e-6
 #else
@@ -33,7 +33,7 @@ INT CMath::LOGACCURACY         = 0; // 100000 steps per integer
 
 INT CMath::LOGRANGE            = 0; // range for logtable: log(1+exp(x))  -25 <= x <= 0
 
-#ifdef PATHDEBUG
+#ifdef USE_PATHDEBUG
 const REAL CMath::INFTY            =  1e11;	        // infinity
 #else
 const REAL CMath::INFTY            =  1e10; //-log(0.0);	// infinity
@@ -48,37 +48,33 @@ CMath::CMath()
 	gettimeofday(&tv, NULL);
 	UINT seed=(UINT) (4223517*getpid()*tv.tv_sec*tv.tv_usec);
 	initstate(seed, CMath::rand_state, sizeof(CMath::rand_state));
-	CIO::message("seeding random number generator with %u\n", seed);
-/*	for (INT i=0; i<100000; i++)
-	{
-		CIO::message("%d\n",random());
-	}*/
+	CIO::message(M_INFO, "seeding random number generator with %u\n", seed);
 
-#ifndef NO_LOG_CACHE
+#ifdef USE_LOGCACHE
     LOGRANGE=CMath::determine_logrange();
     LOGACCURACY=CMath::determine_logaccuracy(LOGRANGE);
-    CIO::message("Initializing log-table (size=%i*%i*%i=%2.1fMB) ...",LOGRANGE,LOGACCURACY,sizeof(REAL),LOGRANGE*LOGACCURACY*sizeof(REAL)/(1024.0*1024.0)) ;
+    CIO::message(M_INFO, "Initializing log-table (size=%i*%i*%i=%2.1fMB) ...",LOGRANGE,LOGACCURACY,sizeof(REAL),LOGRANGE*LOGACCURACY*sizeof(REAL)/(1024.0*1024.0)) ;
    
     CMath::logtable=new REAL[LOGRANGE*LOGACCURACY];
     init_log_table();
-    CIO::message("Done.\n") ;
+    CIO::message(M_INFO, "Done.\n") ;
 #else
 	INT i=0;
 	while ((REAL)log(1+((REAL)exp(-REAL(i)))))
 		i++;
-    CIO::message("determined range for x in log(1+exp(-x)) is:%d\n", i);
+    CIO::message(M_INFO, "determined range for x in log(1+exp(-x)) is:%d\n", i);
 	LOGRANGE=i;
 #endif 
 }
 
 CMath::~CMath()
 {
-#ifndef NO_LOG_CACHE
+#ifdef USE_LOGCACHE
 	delete[] logtable;
 #endif
 }
 
-#ifndef NO_LOG_CACHE
+#ifdef USE_LOGCACHE
 INT CMath::determine_logrange()
 {
     INT i;
@@ -90,14 +86,14 @@ INT CMath::determine_logrange()
 	    break;
     }
 
-    CIO::message("determined range for x in table log(1+exp(-x)) is:%d (error:%G)\n",i,acc);
+    CIO::message(M_INFO, "determined range for x in table log(1+exp(-x)) is:%d (error:%G)\n",i,acc);
     return i;
 }
 
 INT CMath::determine_logaccuracy(INT range)
 {
     range=MAX_LOG_TABLE_SIZE/range/((int)sizeof(REAL));
-    CIO::message("determined accuracy for x in table log(1+exp(-x)) is:%d (error:%G)\n",range,1.0/(double) range);
+    CIO::message(M_INFO, "determined accuracy for x in table log(1+exp(-x)) is:%d (error:%G)\n",range,1.0/(double) range);
     return range;
 }
 
@@ -420,7 +416,6 @@ INT CMath::calcroc(REAL* fp, REAL* tp, REAL* output, INT* label, INT& size, INT&
 					break;
 				}
 			}
-			//CIO::message("it: %d pidx: %d nidx: %d tresh: %f\n", iteration, posidx, negidx, treshhold);
 		}
 
 		//calc tp,fp
@@ -434,13 +429,6 @@ INT CMath::calcroc(REAL* fp, REAL* tp, REAL* output, INT* label, INT& size, INT&
 			tresh=(old_treshhold+treshhold)/2;
 			returnidx=iteration;
 		}
-
-#ifdef DEBUG
-		if (returnidx==iteration)
-			CIO::message("fp:%f,tp:%f, minerr:%f(*) tresh:%f pos:%f neg:%f o_t:%f t:%f\n", fp[iteration], tp[iteration], negsize*fp[iteration]/size+(1-tp[iteration])*possize/size, tresh, posout[posidx], negout[negidx], old_treshhold, treshhold);
-		else
-			CIO::message("fp:%f,tp:%f, minerr:%f\n", fp[iteration], tp[iteration], negsize*fp[iteration]/size+(1-tp[iteration])*possize/size);
-#endif
 
 		iteration++;
 	}

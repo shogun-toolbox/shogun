@@ -45,7 +45,7 @@ class CPluginEstimate
 		{
 			if ((!pos_model) || (!neg_model))
 			{
-				CIO::message("no model available\n");
+				CIO::message(M_ERROR, "no model available\n");
 				return false;
 			}
 

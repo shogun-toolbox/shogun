@@ -7,7 +7,7 @@
 
 CFeatures::CFeatures(LONG size) : cache_size(size), preproc(NULL), num_preproc(0), preprocessed(NULL) 
 {
-	CIO::message("Feature object created (%ld)\n",this);
+	CIO::message(M_INFO, "Feature object created (%ld)\n",this);
 }
 
 CFeatures::CFeatures(const CFeatures& orig) : preproc(orig.preproc), num_preproc(orig.num_preproc), preprocessed(orig.preprocessed)
@@ -20,18 +20,18 @@ CFeatures::CFeatures(const CFeatures& orig) : preproc(orig.preproc), num_preproc
 CFeatures::CFeatures(CHAR* fname) : cache_size(0), preproc(NULL), num_preproc(0), preprocessed(false)
 {
 	load(fname);
-	CIO::message("Feature object loaded (%ld)\n",this) ;
+	CIO::message(M_INFO, "Feature object loaded (%ld)\n",this) ;
 }
 
 CFeatures::~CFeatures()
 {
-	CIO::message("Feature object destroyed (%ld)\n",this) ;
+	CIO::message(M_INFO, "Feature object destroyed (%ld)\n",this) ;
 }
 
 /// set preprocessor
 INT CFeatures::add_preproc(CPreProc* p)
 { 
-	CIO::message("%d preprocs currently, new preproc list is\n", num_preproc);
+	CIO::message(M_INFO, "%d preprocs currently, new preproc list is\n", num_preproc);
 	INT i;
 
 	bool* preprocd=new bool[num_preproc+1];
@@ -51,7 +51,7 @@ INT CFeatures::add_preproc(CPreProc* p)
 	num_preproc++;
 
 	for (i=0; i<num_preproc; i++)
-		CIO::message("preproc[%d]=%s %ld\n",i, preproc[i]->get_name(), preproc[i]) ;
+		CIO::message(M_INFO, "preproc[%d]=%s %ld\n",i, preproc[i]->get_name(), preproc[i]) ;
 	return num_preproc;
 }
 
@@ -99,62 +99,62 @@ CPreProc* CFeatures::del_preproc(INT num)
 	preproc=pps;
 
 	for (i=0; i<num_preproc; i++)
-		CIO::message("preproc[%d]=%s\n",i, preproc[i]->get_name()) ;
+		CIO::message(M_INFO, "preproc[%d]=%s\n",i, preproc[i]->get_name()) ;
 
 	return removed_preproc;
 }
 
 void CFeatures::list_feature_obj()
 {
-	CIO::message("0x%X - ", this);
+	CIO::message(M_INFO, "0x%X - ", this);
 	switch (get_feature_class())
 	{
 		case C_UNKNOWN:
-			CIO::message("C_UNKNOWN ");
+			CIO::message(M_INFO, "C_UNKNOWN ");
 			break;
 		case C_SIMPLE:
-			CIO::message("C_SIMPLE ");
+			CIO::message(M_INFO, "C_SIMPLE ");
 			break;
 		case C_SPARSE:
-			CIO::message("C_SPARSE ");
+			CIO::message(M_INFO, "C_SPARSE ");
 			break;
 		case C_STRING:
-			CIO::message("C_STRING ");
+			CIO::message(M_INFO, "C_STRING ");
 			break;
 		case C_COMBINED:
-			CIO::message("C_COMBINED ");
+			CIO::message(M_INFO, "C_COMBINED ");
 			break;
 		default:
-			CIO::message("ERROR ");
+			CIO::message(M_INFO, "ERROR ");
 	}
 
 	switch (get_feature_type())
 	{
 		case F_UNKNOWN:
-			CIO::message("F_UNKNOWN ");
+			CIO::message(M_INFO, "F_UNKNOWN ");
 			break;
 		case F_REAL:
-			CIO::message("F_REAL ");
+			CIO::message(M_INFO, "F_REAL ");
 			break;
 		case F_SHORT:
-			CIO::message("F_SHORT ");
+			CIO::message(M_INFO, "F_SHORT ");
 			break;
 		case F_CHAR:
-			CIO::message("F_CHAR ");
+			CIO::message(M_INFO, "F_CHAR ");
 			break;
 		case F_INT:
-			CIO::message("F_INT ");
+			CIO::message(M_INFO, "F_INT ");
 			break;
 		case F_BYTE:
-			CIO::message("F_BYTE ");
+			CIO::message(M_INFO, "F_BYTE ");
 			break;
 		case F_WORD:
-			CIO::message("F_WORD ");
+			CIO::message(M_INFO, "F_WORD ");
 			break;
 		default:
-			CIO::message("ERROR ");
+			CIO::message(M_INFO, "ERROR ");
 	}
-	CIO::message("\n");
+	CIO::message(M_MESSAGEONLY, "\n");
 }
 
 bool CFeatures::load(CHAR* fname)

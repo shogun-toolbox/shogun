@@ -13,7 +13,7 @@ CKernel::CKernel(LONG size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL)
 		size=10;
 
 	cache_size=size;
-	CIO::message("using a kernel cache of size %i MB\n", size) ;
+	CIO::message(M_INFO, "using a kernel cache of size %i MB\n", size) ;
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 }
 
@@ -27,12 +27,8 @@ REAL CKernel::kernel(INT idx_a, INT idx_b)
 {
 	if (idx_a < 0 || idx_b <0)
 	{
-#ifdef DEBUG
-		printf("ERROR: (%d,%d)\n", idx_a, idx_b);
-#endif
 		return 0;
 	}
-//CIO::message("(%5d,%5d)\n", idx_a, idx_b);
 
 	return compute(idx_a, idx_b);
 }
@@ -335,9 +331,9 @@ bool CKernel::save(CHAR* fname)
 		for (INT r=0; r< (INT) num_right && f.is_ok(); r++)
 		{
 			if (!(i % (num_total/10+1)))
-				CIO::message("%02d%%.", (int) (100.0*i/num_total));
+				CIO::message(M_MESSAGEONLY, "%02d%%.", (int) (100.0*i/num_total));
 			else if (!(i % (num_total/200+1)))
-				CIO::message(".");
+				CIO::message(M_MESSAGEONLY, ".");
 
 			double k=kernel(l,r);
 			f.save_real_data(&k, 1);
@@ -347,7 +343,7 @@ bool CKernel::save(CHAR* fname)
 	}
 
 	if (f.is_ok())
-		CIO::message("kernel matrix of size %ld x %ld written (filesize: %ld)\n", num_left, num_right, num_total*sizeof(REAL));
+		CIO::message(M_INFO, "kernel matrix of size %ld x %ld written (filesize: %ld)\n", num_left, num_right, num_total*sizeof(REAL));
 
     return (f.is_ok());
 }
@@ -355,100 +351,100 @@ bool CKernel::save(CHAR* fname)
 
 void CKernel::list_kernel()
 {
-	CIO::message("0x%X - \"%s\" ", get_name(), this);
+	CIO::message(M_INFO, "0x%X - \"%s\" ", get_name(), this);
 	switch (get_kernel_type())
 	{
 		case K_UNKNOWN:
-			CIO::message("K_UNKNOWN ");
+			CIO::message(M_INFO, "K_UNKNOWN ");
 			break;
 		case K_LINEAR:
-			CIO::message("K_LINEAR ");
+			CIO::message(M_INFO, "K_LINEAR ");
 			break;
 		case K_POLY:
-			CIO::message("K_POLY ");
+			CIO::message(M_INFO, "K_POLY ");
 			break;
 		case K_GAUSSIAN:
-			CIO::message("K_GAUSSIAN ");
+			CIO::message(M_INFO, "K_GAUSSIAN ");
 			break;
 		case K_HISTOGRAM:
-			CIO::message("K_HISTOGRAM ");
+			CIO::message(M_INFO, "K_HISTOGRAM ");
 			break;
 		case K_SALZBERG:
-			CIO::message("K_SALZBERG ");
+			CIO::message(M_INFO, "K_SALZBERG ");
 			break;
 		case K_LOCALITYIMPROVED:
-			CIO::message("K_LOCALITYIMPROVED ");
+			CIO::message(M_INFO, "K_LOCALITYIMPROVED ");
 			break;
 		case K_SIMPLELOCALITYIMPROVED:
-			CIO::message("K_SIMPLELOCALITYIMPROVED ");
+			CIO::message(M_INFO, "K_SIMPLELOCALITYIMPROVED ");
 			break;
 		case K_FIXEDDEGREE:
-			CIO::message("K_FIXEDDEGREE ");
+			CIO::message(M_INFO, "K_FIXEDDEGREE ");
 			break;
 		case K_WEIGHTEDDEGREE:
-			CIO::message("K_WEIGHTEDDEGREE ");
+			CIO::message(M_INFO, "K_WEIGHTEDDEGREE ");
 			break;
 		case K_WEIGHTEDDEGREEPOS:
-			CIO::message("K_WEIGHTEDDEGREEPOS ");
+			CIO::message(M_INFO, "K_WEIGHTEDDEGREEPOS ");
 			break;
 		case K_COMMWORD:
-			CIO::message("K_COMMWORD ");
+			CIO::message(M_INFO, "K_COMMWORD ");
 			break;
 		case K_POLYMATCH:
-			CIO::message("K_POLYMATCH ");
+			CIO::message(M_INFO, "K_POLYMATCH ");
 			break;
 		case K_ALIGNMENT:
-			CIO::message("K_ALIGNMENT ");
+			CIO::message(M_INFO, "K_ALIGNMENT ");
 			break;
 		case K_COMMWORDSTRING:
-			CIO::message("K_COMMWORDSTRING ");
+			CIO::message(M_INFO, "K_COMMWORDSTRING ");
 			break;
 		case K_SPARSENORMSQUARED:
-			CIO::message("K_SPARSENORMSQUARED ");
+			CIO::message(M_INFO, "K_SPARSENORMSQUARED ");
 			break;
 		case K_COMBINED:
-			CIO::message("K_COMBINED ");
+			CIO::message(M_INFO, "K_COMBINED ");
 			break;
 		default:
-			CIO::message("ERROR ");
+			CIO::message(M_ERROR, "ERROR ");
 			break;
 	}
 
 	switch (get_feature_class())
 	{
 		case C_UNKNOWN:
-			CIO::message("C_UNKNOWN ");
+			CIO::message(M_INFO, "C_UNKNOWN ");
 		case C_SIMPLE:
-			CIO::message("C_SIMPLE ");
+			CIO::message(M_INFO, "C_SIMPLE ");
 		case C_SPARSE:
-			CIO::message("C_SPARSE ");
+			CIO::message(M_INFO, "C_SPARSE ");
 		case C_STRING:
-			CIO::message("C_STRING ");
+			CIO::message(M_INFO, "C_STRING ");
 		case C_COMBINED:
-			CIO::message("C_COMBINED ");
+			CIO::message(M_INFO, "C_COMBINED ");
 		default:
-			CIO::message("ERROR ");
+			CIO::message(M_ERROR, "ERROR ");
 	}
 
 	switch (get_feature_type())
 	{
 		case F_UNKNOWN:
-			CIO::message("F_UNKNOWN ");
+			CIO::message(M_INFO, "F_UNKNOWN ");
 		case F_REAL:
-			CIO::message("F_REAL ");
+			CIO::message(M_INFO, "F_REAL ");
 		case F_SHORT:
-			CIO::message("F_SHORT ");
+			CIO::message(M_INFO, "F_SHORT ");
 		case F_CHAR:
-			CIO::message("F_CHAR ");
+			CIO::message(M_INFO, "F_CHAR ");
 		case F_INT:
-			CIO::message("F_INT ");
+			CIO::message(M_INFO, "F_INT ");
 		case F_BYTE:
-			CIO::message("F_BYTE ");
+			CIO::message(M_INFO, "F_BYTE ");
 		case F_WORD:
-			CIO::message("F_WORD ");
+			CIO::message(M_INFO, "F_WORD ");
 		default:
-			CIO::message("ERROR ");
+			CIO::message(M_ERROR, "ERROR ");
 	}
-	CIO::message("\n");
+	CIO::message(M_INFO, "\n");
 }
 

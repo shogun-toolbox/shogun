@@ -1,8 +1,9 @@
-#ifdef SVMMPI
+#ifdef USE_SVMMPI
 #include <cstdio>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "lib/config.h"
 
 #if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 
@@ -229,7 +230,7 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
 
   CIO::message("starting optimizer\n") ;
 
-#ifdef DEBUG
+#ifdef USE_SVMMPIDEBUG
 //#define HOME "/opt/home/raetsch/"
 #define HOME "/home/104/gxr104/short/"
   {
@@ -291,7 +292,7 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
   double *dua = dual->GetDataPointer();
   double *Zd = Z.GetDataPointer();
 
-#ifdef DEBUG
+#ifdef USE_SVMMPIDEBUG
   {
     CIO::message("saving prim vector to ~/primal.dat\n") ;    
     double* d=primal->GetDataPointer() ;
@@ -342,7 +343,7 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
 	train->free_feature_vector(feat, i, free) ;
       } 
   } 
-#ifdef DEBUG      
+#ifdef USE_SVMMPIDEBUG      
   {
     CIO::message("saving svm_w vector to ~/w.dat\n") ;    
     FILE* f=fopen(HOME "w.dat","w+") ;

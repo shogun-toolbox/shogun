@@ -1,4 +1,4 @@
-#ifdef SVMCPLEX
+#ifdef USE_SVMCPLEX
 
 /*
  * MATLAB Compiler: 2.1

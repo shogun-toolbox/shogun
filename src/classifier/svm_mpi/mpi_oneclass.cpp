@@ -1,8 +1,10 @@
-#ifdef SVMMPI
+#ifdef USE_SVMMPI
 #include <cstdio>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include "lib/config.h"
 
 #if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 #include "intpoint.h"

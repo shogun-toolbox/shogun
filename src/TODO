@@ -1,7 +1,5 @@
-TOP TEN+ ANNOYANCES
-* generate config.h in lib/config.h + make make-system use HAVE_XXX
 * CIO::message() mixed with printf's and matlabs mx* stuff -> we only need CIO::... ala gstreamer
-  also there should be a global setting for verbosity and thus a differentiation into CIO::debug CIO::info CIO::warn CIO::critical etc
+* real detection for lapack/blas/matlab/cplex etc
 * remove or fix all the unused hacky stuff (svm_mpi/grad_descent...)
 * create generic Distribution class which combines all density related stuff HMM/gaussians/linear hmm ... this would
   allow for using PluginEstimate with *any* distribution and clean all the hmm_test hacks
@@ -12,8 +10,9 @@ TOP TEN+ ANNOYANCES
 * make unified testing possible, e.g. set_classifier XXX ; calc_output ; get_results etc.
 * no standardized File IO (there needs to be some header parsing stuff/ little/big endian conversion...)
   atm, lots of things just use fopen/read/close...
-* fix linear HMM to be equiv. with MMs
 * all outputs are labels
 * tcp/ip io fixen
-* testsuite
 * fix+test combined kernels
+* type (INT/LONG etc) fixes, clear policy
+* fix linear HMM to be equiv. with MMs
+* testsuite

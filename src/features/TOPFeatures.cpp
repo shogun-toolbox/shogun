@@ -53,7 +53,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	compute_relevant_indizes(n, &neg_relevant_indizes);
 	num_features=compute_num_features();
 
-	CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i] -> %i features\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features) ;
+	CIO::message(M_DEBUG, "pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i] -> %i features\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features) ;
 }
 
 CFeatures* CTOPFeatures::duplicate() const
@@ -169,28 +169,28 @@ REAL* CTOPFeatures::set_feature_matrix()
 	num_features=get_num_features();
 
 	num_vectors=pos->get_observations()->get_num_vectors();
-	CIO::message("allocating top feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
+	CIO::message(M_INFO, "allocating top feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	delete[] feature_matrix;
 	feature_matrix=new REAL[num_features*num_vectors];
 	if (!feature_matrix)
 	{
-		CIO::message(stderr,"allocation not successful!");
+		CIO::message(M_ERROR, "allocation not successful!");
 		return NULL ;
 	} ;
 
-	CIO::message("calculating top feature matrix\n");
+	CIO::message(M_INFO, "calculating top feature matrix\n");
 
 	for (INT x=0; x<num_vectors; x++)
 	{
 		if (!(x % (num_vectors/10+1)))
-			CIO::message("%02d%%.", (int) (100.0*x/num_vectors));
+			CIO::message(M_MESSAGEONLY, "%02d%%.", (int) (100.0*x/num_vectors));
 		else if (!(x % (num_vectors/200+1)))
-			CIO::message(".");
+			CIO::message(M_MESSAGEONLY, ".");
 
 		compute_feature_vector(&feature_matrix[x*num_features], x, len);
 	}
 
-	CIO::message(".done.\n");
+	CIO::message(M_MESSAGEONLY, ".done.\n");
 
 	num_vectors=get_num_vectors() ;
 	num_features=get_num_features() ;
@@ -270,14 +270,12 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 			assert(idx_p < hmm_idx->num_p);
 			hmm_idx->idx_p[idx_p++]=i;
 		}
-//		CIO::message("p derivatives: %i\n", idx_p) ;
 		
 		if (hmm->get_q(i)>math.ALMOST_NEG_INFTY)
 		{
 			assert(idx_q < hmm_idx->num_q);
 			hmm_idx->idx_q[idx_q++]=i;
 		}
-//		CIO::message("q derivatives: %i\n", idx_q) ;
 
 		for (j=0; j<hmm->get_N(); j++)
 		{
@@ -288,7 +286,6 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 				hmm_idx->idx_a_cols[idx_a++]=j;
 			}
 		}
-//		CIO::message("a derivatives: %i\n", idx_a) ;
 
 		for (j=0; j<pos->get_M(); j++)
 		{
@@ -299,7 +296,6 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 				hmm_idx->idx_b_cols[idx_b++]=j;
 			}
 		}
-//		CIO::message("b derivatives: %i\n", idx_b) ;
 	}
 
 	return true;

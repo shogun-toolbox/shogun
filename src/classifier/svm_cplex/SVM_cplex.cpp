@@ -1,4 +1,4 @@
-#ifdef SVMCPLEX
+#ifdef USE_SVMCPLEX
 
 #include "svm_cplex/SVM_cplex.h"
 #include "lib/io.h"
@@ -203,4 +203,4 @@ void CSVMCplex::top_feature(int x, double *feat)
 	feat[p++]=-exp(neg->model_derivative_b(i, j, x)-negx);
 	}
 }
-#endif // SVMCPLEX
+#endif // USE_SVMCPLEX

@@ -50,8 +50,8 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do
 	INT lhs_changed = (lhs!=l) ;
 	INT rhs_changed = (rhs!=r) ;
 
-	CIO::message("lhs_changed: %i\n", lhs_changed) ;
-	CIO::message("rhs_changed: %i\n", rhs_changed) ;
+	CIO::message(M_DEBUG, "lhs_changed: %i\n", lhs_changed) ;
+	CIO::message(M_DEBUG, "rhs_changed: %i\n", rhs_changed) ;
 
 	bool result=CCharKernel::init(l,r,do_init);
 	initialized = false ;
@@ -144,7 +144,7 @@ bool CWeightedDegreePositionCharKernel::load_init(FILE* src)
 	for (INT i=0; i<d; i++)
 		weights[i]=w[i];
 
-    CIO::message("detected: intsize=%d, doublesize=%d, degree=%d\n", intlen, doublelen, d);
+    CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, degree=%d\n", intlen, doublelen, d);
 
 	degree=d;
 	return true;
@@ -210,7 +210,6 @@ REAL CWeightedDegreePositionCharKernel::compute2(INT idx_a, INT idx_b)
 		  sum0 += weights[j+degree*mismatches];
 	  }
   } ;
-  //CIO::message("old sum0=%f\n", sum0) ;
   
   // shift in sequence a
   for (INT i=0; i<alen-degree; i++)

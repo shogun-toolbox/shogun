@@ -1,11 +1,13 @@
 /* -*-C++-*- */
-#ifdef SVMMPI
+#ifdef USE_SVMMPI
 
 #ifndef __INTPOINT_MPI_H_
 #define __INTPOINT_MPI_H_
 
 #include <sys/time.h>
 #include "config.h"
+#include "lib/config.h"
+
 #if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 #include "mpi.h"
 #endif

@@ -1,4 +1,4 @@
-#ifdef SVMCPLEX
+#ifdef USE_SVMCPLEX
 
 /*
  * MATLAB Compiler: 2.1
@@ -178,4 +178,4 @@ static mxArray * Mspdiag(int nargout_, mxArray * diagonal) {
     return A;
 }
 
-#endif // SVMCPLEX
+#endif // USE_SVMCPLEX

@@ -79,7 +79,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				kernel=new CLinearByteKernel(size);
 				if (kernel)
 				{
-					CIO::message("LinearByteKernel created\n");
+					CIO::message(M_INFO, "LinearByteKernel created\n");
 					return true;
 				}
 			}
@@ -90,7 +90,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				kernel=new CLinearWordKernel(size);
 				if (kernel)
 				{
-					CIO::message("LinearWordKernel created\n");
+					CIO::message(M_INFO, "LinearWordKernel created\n");
 					return true;
 				}
 			}
@@ -101,7 +101,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				kernel=new CLinearCharKernel(size);
 				if (kernel)
 				{
-					CIO::message("LinearCharKernel created\n");
+					CIO::message(M_INFO, "LinearCharKernel created\n");
 					return true;
 				}
 			}
@@ -127,21 +127,21 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				sscanf(param, "%s %s %d", kern_type, data_type, &size);
 				if (kernel)
 				  {
-				    CIO::message("destroying old kernel\n") ;
+				    CIO::message(M_INFO, "destroying old kernel\n") ;
 				    delete kernel;
 				  } ;
 
-				CIO::message("getting estimator\n") ;
+				CIO::message(M_INFO, "getting estimator\n") ;
 				CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
 
 				if (estimator)
 					kernel=new CHistogramWordKernel(size, estimator);
 				else
-					CIO::message("no estimator set\n");
+					CIO::message(M_ERROR, "no estimator set\n");
 
 				if (kernel)
 				{
-					CIO::message("HistogramKernel created\n");
+					CIO::message(M_INFO, "HistogramKernel created\n");
 					return true;
 				}
 			}
@@ -153,18 +153,18 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				sscanf(param, "%s %s %d", kern_type, data_type, &size);
 				if (kernel)
 				{
-				    CIO::message("destroying old kernel\n") ;
+				    CIO::message(M_INFO, "destroying old kernel\n") ;
 				    delete kernel;
 				  } ;
 
-				CIO::message("getting estimator\n") ;
+				CIO::message(M_INFO, "getting estimator\n") ;
 				CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
 
-				CIO::message("getting labels\n") ;
+				CIO::message(M_INFO, "getting labels\n") ;
 				CLabels * train_labels = gui->guilabels.get_train_labels() ;
 				if (!train_labels)
 				{
-					CIO::message("assign train labels first!\n") ;
+					CIO::message(M_INFO, "assign train labels first!\n") ;
 					return false ;
 				} ;
 				
@@ -175,21 +175,21 @@ bool CGUIKernel::set_kernel(CHAR* param)
 					if (train_labels->get_int_label(i)==1) num_pos++ ;
 					if (train_labels->get_int_label(i)==-1) num_neg++ ;
 				}				
-				CIO::message("priors: pos=%1.3f (%i)  neg=%1.3f (%i)\n", 
+				CIO::message(M_INFO, "priors: pos=%1.3f (%i)  neg=%1.3f (%i)\n", 
 							 (REAL) num_pos/(num_pos+num_neg), num_pos,
 							 (REAL) num_neg/(num_pos+num_neg), num_neg) ;
 				
 				if (estimator)
 					kernel=new CSalzbergWordKernel(size, estimator);
 				else
-					CIO::message("no estimator set\n");
+					CIO::message(M_ERROR, "no estimator set\n");
 				
 				((CSalzbergWordKernel*)kernel)->set_prior_probs((REAL)num_pos/(num_pos+num_neg), 
 																(REAL)num_neg/(num_pos+num_neg)) ;
 				
 				if (kernel)
 				{
-					CIO::message("SalzbergKernel created\n");
+					CIO::message(M_INFO, "SalzbergKernel created\n");
 					return true;
 				}
 			}
@@ -207,7 +207,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 
 				if (kernel)
 				{
-					CIO::message("PolyMatchWordKernel created\n");
+					CIO::message(M_INFO, "PolyMatchWordKernel created\n");
 					return true;
 				}
 			}
@@ -223,7 +223,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 
 				if (kernel)
 				{
-					CIO::message("MatchKernel created\n");
+					CIO::message(M_INFO, "MatchKernel created\n");
 					return true;
 				}
 			}
@@ -237,7 +237,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 
 				if (kernel)
 				{
-					CIO::message("CommWordKernel created\n");
+					CIO::message(M_INFO, "CommWordKernel created\n");
 					return true;
 				}
 			}
@@ -248,7 +248,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 
 				if (kernel)
 				{
-					CIO::message("CommWordStringKernel created\n");
+					CIO::message(M_INFO, "CommWordStringKernel created\n");
 					return true;
 				}
 			}
@@ -265,7 +265,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 
 				if (kernel)
 				{
-					CIO::message("FixedDegreeCharKernel created\n");
+					CIO::message(M_INFO, "FixedDegreeCharKernel created\n");
 					return true;
 				}
 			}
@@ -284,7 +284,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				sscanf(param, "%s %s %d %d %d %d %d %le", 
 					   kern_type, data_type, &size, &d, &max_mismatch, 
 					   &length, &center, &step);
-				CIO::message("step = %le\n") ;
+				CIO::message(M_INFO, "step = %le\n") ;
 				
 				REAL* weights=new REAL[d*(1+max_mismatch)];
 				REAL sum=0;
@@ -323,7 +323,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 						shift[i]=length ;
 
 				for (INT i=0; i<length; i++)
-				  CIO::message("shift[%i]=%i\n", i, shift[i]) ;
+				  CIO::message(M_INFO, "shift[%i]=%i\n", i, shift[i]) ;
 				
 				delete kernel;
 				kernel=new CWeightedDegreePositionCharKernel(size, weights, 
@@ -334,7 +334,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				
 				if (kernel)
 				{
-					CIO::message("WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
+					CIO::message(M_INFO, "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
 					return true;
 				}
 			}
@@ -380,7 +380,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				
 				if (kernel)
 				{
-					CIO::message("WeightedDegreeCharKernel created\n");
+					CIO::message(M_INFO, "WeightedDegreeCharKernel created\n");
 					return true;
 				}
 			}
@@ -397,7 +397,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				kernel=new CSimpleLocalityImprovedCharKernel(size, l, d1, d2);
 				if (kernel)
 				{
-					CIO::message("SimpleLocalityImprovedCharKernel created\n");
+					CIO::message(M_INFO, "SimpleLocalityImprovedCharKernel created\n");
 					return true;
 				}
 			}
@@ -414,7 +414,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				kernel=new CLocalityImprovedCharKernel(size, l, d1, d2);
 				if (kernel)
 				{
-					CIO::message("LocalityImprovedCharKernel created\n");
+					CIO::message(M_INFO, "LocalityImprovedCharKernel created\n");
 					return true;
 				}
 			}
@@ -432,7 +432,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 
 				if (kernel)
 				{
-					CIO::message("Polynomial Kernel created\n");
+					CIO::message(M_INFO, "Polynomial Kernel created\n");
 					return true;
 				}
 			}
@@ -447,7 +447,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 
 				if (kernel)
 				{
-					CIO::message("CharPolynomial Kernel created\n");
+					CIO::message(M_INFO, "CharPolynomial Kernel created\n");
 					return true;
 				}
 			}
@@ -462,7 +462,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 
 				if (kernel)
 				{
-					CIO::message("Sparse Polynomial Kernel created\n");
+					CIO::message(M_INFO, "Sparse Polynomial Kernel created\n");
 					return true;
 				}
 			}
@@ -478,7 +478,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				kernel=new CGaussianKernel(size, width);
 				if (kernel)
 				{
-					CIO::message("Gaussian Kernel created\n");
+					CIO::message(M_INFO, "Gaussian Kernel created\n");
 					return true;
 				}
 			}
@@ -491,7 +491,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				kernel=new CSparseGaussianKernel(size, width);
 				if (kernel)
 				{
-					CIO::message("Sparse Gaussian Kernel created\n");
+					CIO::message(M_INFO, "Sparse Gaussian Kernel created\n");
 					return true;
 				}
 			}
@@ -505,7 +505,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				kernel=new CSparseNormSquaredKernel(size);
 				if (kernel)
 				{
-					CIO::message("Sparse NormSquared Kernel created\n");
+					CIO::message(M_INFO, "Sparse NormSquared Kernel created\n");
 					return true;
 				}
 			}
@@ -514,7 +514,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 			CIO::not_implemented();
 	}
 	else 
-		CIO::message("see help for params!\n");
+		CIO::message(M_ERROR, "see help for params!\n");
 
 	CIO::not_implemented();
 	return false;
@@ -531,10 +531,10 @@ bool CGUIKernel::load_kernel_init(CHAR* param)
 		{
 			FILE* file=fopen(filename, "r");
 			if ((!file) || (!kernel->load_init(file)))
-				CIO::message("reading from file %s failed!\n", filename);
+				CIO::message(M_ERROR, "reading from file %s failed!\n", filename);
 			else
 			{
-				CIO::message("successfully read kernel init data from \"%s\" !\n", filename);
+				CIO::message(M_INFO, "successfully read kernel init data from \"%s\" !\n", filename);
 				initialized=true;
 				result=true;
 			}
@@ -543,10 +543,10 @@ bool CGUIKernel::load_kernel_init(CHAR* param)
 				fclose(file);
 		}
 		else
-			CIO::message("see help for params\n");
+			CIO::message(M_ERROR, "see help for params\n");
 	}
 	else
-		CIO::message("no kernel set!\n");
+		CIO::message(M_ERROR, "no kernel set!\n");
 	return result;
 }
 
@@ -561,12 +561,12 @@ bool CGUIKernel::save_kernel_init(CHAR* param)
 		{
 			FILE* file=fopen(filename, "w");
 			if (!file)
-				CIO::message("fname: %s\n", filename);
+				CIO::message(M_ERROR, "fname: %s\n", filename);
 			if ((!file) || (!kernel->save_init(file)))
-				CIO::message("writing to file %s failed!\n", filename);
+				CIO::message(M_ERROR, "writing to file %s failed!\n", filename);
 			else
 			{
-				CIO::message("successfully written kernel init data into \"%s\" !\n", filename);
+				CIO::message(M_INFO, "successfully written kernel init data into \"%s\" !\n", filename);
 				result=true;
 			}
 
@@ -574,10 +574,10 @@ bool CGUIKernel::save_kernel_init(CHAR* param)
 				fclose(file);
 		}
 		else
-			CIO::message("see help for params\n");
+			CIO::message(M_ERROR, "see help for params\n");
 	}
 	else
-		CIO::message("no kernel set!\n");
+		CIO::message(M_ERROR, "no kernel set!\n");
 	return result;
 }
 
@@ -593,23 +593,15 @@ bool CGUIKernel::init_kernel_tree(CHAR* param)
 		{
 			for(INT i=0; i<gui->guisvm.get_svm()->get_num_support_vectors(); i++)
 			{
-				if (i%1000==0)	CIO::message(".") ;
+				if (i%1000==0)
+					CIO::message(M_MESSAGEONLY, ".") ;
 				kernel_->add_example_to_tree(gui->guisvm.get_svm()->get_support_vector(i), gui->guisvm.get_svm()->get_alpha(i)) ;
-			} ;			
-			/*CIO::message("\ntree nodes: %i\npruning", kernel_->tree_size()) ;
-			
-			CFeatures* feat=gui->guifeatures.get_train_features() ;
-			
-			for(INT i=0; i<feat->get_num_vectors(); i++)
-				kernel_->count_tree_usage(i) ;
-
-			kernel_->prune_tree() ;
-			CIO::message("tree nodes after pruning: %i\n", kernel_->tree_size()) ;
-			*/
-		} ;
-	} else
+			}
+		}
+	}
+	else
 	{
-		CIO::message("create SVM first\n");
+		CIO::message(M_ERROR, "create SVM first\n");
 		return false ;
 	}
 	return true ;
@@ -636,7 +628,7 @@ bool CGUIKernel::init_kernel(CHAR* param)
 
 	if (!kernel)
 	  {
-	    CIO::message("no kernel available\n") ;
+	    CIO::message(M_ERROR, "no kernel available\n") ;
 	    return false ;
 	  } ;
 
@@ -655,12 +647,12 @@ bool CGUIKernel::init_kernel(CHAR* param)
 		    }
 		  else
 		    {
-		      CIO::message("kernel can not process this feature type\n");
+		      CIO::message(M_ERROR, "kernel can not process this feature type\n");
 		      return false ;
 		    }
 		}
 	      else
-		CIO::message("assign train features first\n");
+		CIO::message(M_ERROR, "assign train features first\n");
 	    }
 	  else if (!strncmp(target, "TEST", 5))
 	    {
@@ -673,24 +665,24 @@ bool CGUIKernel::init_kernel(CHAR* param)
 				{
 					if (!initialized)
 					{
-						CIO::message("kernel not initialized for training examples\n") ;
+						CIO::message(M_ERROR, "kernel not initialized for training examples\n") ;
 						return false ;
 					}
 					else
 					{
-						CIO::message("initialising kernel with TEST DATA, train: %d test %d\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
+						CIO::message(M_INFO, "initialising kernel with TEST DATA, train: %d test %d\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
 						// lhs -> always train_features; rhs -> always test_features
 						kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features(), do_init);						
 					} ;
 				}
 				else
 				{
-					CIO::message("kernel can not process this feature type\n");
+					CIO::message(M_ERROR, "kernel can not process this feature type\n");
 					return false ;
 				}
 			}
 			else
-				CIO::message("assign train and test features first\n");
+				CIO::message(M_ERROR, "assign train and test features first\n");
 			
 	    }
 	  else
@@ -698,7 +690,7 @@ bool CGUIKernel::init_kernel(CHAR* param)
 	}
 	else 
 	{
-	    CIO::message("see help for params\n");
+	    CIO::message(M_ERROR, "see help for params\n");
 	    return false;
 	}
 	
@@ -715,17 +707,17 @@ bool CGUIKernel::save_kernel(CHAR* param)
 		if ((sscanf(param, "%s", filename))==1)
 		{
 			if (!kernel->save(filename))
-				CIO::message("writing to file %s failed!\n", filename);
+				CIO::message(M_ERROR, "writing to file %s failed!\n", filename);
 			else
 			{
-				CIO::message("successfully written kernel to \"%s\" !\n", filename);
+				CIO::message(M_INFO, "successfully written kernel to \"%s\" !\n", filename);
 				result=true;
 			}
 		}
 		else
-			CIO::message("see help for params\n");
+			CIO::message(M_ERROR, "see help for params\n");
 	}
 	else
-		CIO::message("no kernel set / kernel not initialized!\n");
+		CIO::message(M_ERROR, "no kernel set / kernel not initialized!\n");
 	return result;
 }

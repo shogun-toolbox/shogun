@@ -21,7 +21,7 @@ bool CLibSVM::train()
 
 	assert(get_labels() && get_labels()->get_num_labels());
 	problem.l=get_labels()->get_num_labels();
-	CIO::message("%d trainlabels\n", problem.l);
+	CIO::message(M_INFO, "%d trainlabels\n", problem.l);
 
 	problem.y=new double[problem.l];
 	problem.x=new struct svm_node*[problem.l];

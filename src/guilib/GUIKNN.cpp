@@ -41,13 +41,13 @@ bool CGUIKNN::train(CHAR* param)
 				result=knn->train();
 			}
 			else
-				CIO::message("no knn classifier available\n");
+				CIO::message(M_ERROR, "no knn classifier available\n");
 		}
 		else
-			CIO::message("no kernel available\n") ;
+			CIO::message(M_ERROR, "no kernel available\n") ;
 	}
 	else
-		CIO::message("no labels available\n") ;
+		CIO::message(M_ERROR, "no labels available\n") ;
 
 	return result;
 }
@@ -70,7 +70,7 @@ bool CGUIKNN::test(CHAR* param)
 
 		if (!outputfile)
 		{
-			CIO::message(stderr,"ERROR: could not open %s\n",outputname);
+			CIO::message(M_ERROR, "could not open %s\n",outputname);
 			return false;
 		}
 
@@ -80,7 +80,7 @@ bool CGUIKNN::test(CHAR* param)
 
 			if (!rocfile)
 			{
-				CIO::message(stderr,"ERROR: could not open %s\n",rocfname);
+				CIO::message(M_ERROR, "could not open %s\n",rocfname);
 				return false;
 			}
 		}
@@ -91,26 +91,26 @@ bool CGUIKNN::test(CHAR* param)
 
 	if (!knn)
 	{
-		CIO::message("no knn classifier available\n") ;
+		CIO::message(M_ERROR, "no knn classifier available\n") ;
 		return false ;
 	}
 
 	if (!kernel)
 	{
-		CIO::message("no kernel available\n") ;
+		CIO::message(M_ERROR, "no kernel available\n") ;
 		return false ;
 	}
 
 	if (!testlabels)
 	{
-		CIO::message("no test labels available\n") ;
+		CIO::message(M_ERROR, "no test labels available\n") ;
 		return false ;
 	}
 
 	knn->set_labels(testlabels);
 	knn->set_kernel(kernel);
 
-	CIO::message("starting knn classifier testing\n") ;
+	CIO::message(M_INFO, "starting knn classifier testing\n") ;
 	REAL* output=knn->test();
 
 	INT len=0;

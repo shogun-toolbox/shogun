@@ -1,7 +1,8 @@
-#ifdef SVMMPI
+#ifdef USE_SVMMPI
 #ifndef _MPIBASE_H___
 #define _MPIBASE_H___
 
+#include "lib/config.h"
 #include "classifier/svm/SVM.h"
 #include "kernel/Kernel.h"
 #include "lib/common.h"

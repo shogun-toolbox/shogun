@@ -151,7 +151,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 					memcpy(feat, tmp_feat_after, sizeof(TSparseEntry<ST>)*tmp_len);
 					delete[] tmp_feat_after;
 					len=tmp_len ;
-					CIO::message(stderr, "len: %d len2: %d\n", len, num_features);
+					CIO::message(M_DEBUG, "len: %d len2: %d\n", len, num_features);
 				}
 				return feat ;
 			}
@@ -192,7 +192,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 		/// num_feat,num_vectors are returned by reference
 		ST* get_full_feature_matrix(INT &num_feat, INT &num_vec)
 		{
-			CIO::message("converting sparse features to full feature matrix of %ld x %ld entries\n", num_vectors, num_features);
+			CIO::message(M_INFO, "converting sparse features to full feature matrix of %ld x %ld entries\n", num_vectors, num_features);
 			num_feat=num_features;
 			num_vec=num_vectors;
 
@@ -213,7 +213,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 				}
 			}
 			else
-				CIO::message("error allocating memory for dense feature matrix\n");
+				CIO::message(M_ERROR, "error allocating memory for dense feature matrix\n");
 
 			return fm;
 		}
@@ -229,7 +229,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 			num_features=num_feat;
 			num_vectors=num_vec;
 
-			CIO::message("converting dense feature matrix to sparse one\n");
+			CIO::message(M_INFO, "converting dense feature matrix to sparse one\n");
 			num_feat=num_features;
 			num_vec=num_vectors;
 
@@ -269,7 +269,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 								if (!sparse_feature_matrix[i].features)
 								{
-									CIO::message("allocation of features failed\n");
+									CIO::message(M_INFO, "allocation of features failed\n");
 									return false;
 								}
 
@@ -293,15 +293,15 @@ template <class ST> class CSparseFeatures: public CFeatures
 					}
 					else
 					{
-						CIO::message("allocation of sparse feature matrix failed\n");
+						CIO::message(M_ERROR, "allocation of sparse feature matrix failed\n");
 						result=false;
 					}
 
-					CIO::message("sparse feature matrix has %ld entries (full matrix had %ld)\n", num_total_entries, num_feat*num_vec);
+					CIO::message(M_INFO, "sparse feature matrix has %ld entries (full matrix had %ld)\n", num_total_entries, num_feat*num_vec);
 				}
 				else
 				{
-					CIO::message("huh ? zero size matrix given ?\n");
+					CIO::message(M_ERROR, "huh ? zero size matrix given ?\n");
 					result=false;
 				}
 			}
@@ -316,7 +316,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 		virtual bool preproc_sparse_feature_matrix(bool force_preprocessing=false)
 		{
-			CIO::message("force: %d\n", force_preprocessing);
+			CIO::message(M_INFO, "force: %d\n", force_preprocessing);
 
 			if ( sparse_feature_matrix && get_num_preproc() )
 			{
@@ -325,7 +325,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 					if ( (!is_preprocessed(i) || force_preprocessing) )
 					{
 						set_preprocessed(i);
-						CIO::message("preprocessing using preproc %s\n", get_preproc(i)->get_name());
+						CIO::message(M_INFO, "preprocessing using preproc %s\n", get_preproc(i)->get_name());
 						if (((CSparsePreProc<ST>*) get_preproc(i))->apply_to_sparse_feature_matrix(this) == NULL)
 							return false;
 					}
@@ -335,7 +335,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 			}
 			else
 			{
-				CIO::message("no sparse feature matrix available or features already preprocessed - skipping.\n");
+				CIO::message(M_WARN, "no sparse feature matrix available or features already preprocessed - skipping.\n");
 				return false;
 			}
 		}

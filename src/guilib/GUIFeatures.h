@@ -28,6 +28,9 @@ class CGUIFeatures
 		inline void set_train_features(CFeatures* f) { delete train_features; train_features=f; }
 		inline void set_test_features(CFeatures* f) { delete test_features; test_features=f; }
 
+		void add_train_features(CFeatures* f);
+		void add_test_features(CFeatures* f);
+
 		
 		bool load(CHAR* param);
 		bool save(CHAR* param);

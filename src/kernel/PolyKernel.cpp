@@ -1,3 +1,5 @@
+#include "lib/config.h"
+
 #ifdef HAVE_ATLAS
 extern "C" {
 #include <atlas_level1.h>

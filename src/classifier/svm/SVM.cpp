@@ -25,7 +25,7 @@ CSVM::~CSVM()
   delete[] svm_model.alpha ;
   delete[] svm_model.svs ;
 
-  CIO::message("SVM object destroyed\n") ;
+  CIO::message(M_DEBUG, "SVM object destroyed\n") ;
 }
 
 bool CSVM::load(FILE* modelfl)
@@ -39,7 +39,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%4s\n", char_buffer)==EOF)
 	{
 		result=false;
-		CIO::message("error in svm file, line nr:%d\n", line_number);
+		CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
 	}
 	else
 	{
@@ -47,7 +47,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("%SVM", char_buffer)!=0)
 		{
 			result=false;
-			CIO::message("error in svm file, line nr:%d\n", line_number);
+			CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
 		}
 		line_number++;
 	}
@@ -56,19 +56,19 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl," numsv=%d; \n", &int_buffer) != 1)
 	{
 		result=false;
-		CIO::message("error in svm file, line nr:%d\n", line_number);
+		CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
 	}
 
 	if (!feof(modelfl))
 		line_number++;
 
-	CIO::message("loading %ld support vectors\n",int_buffer);
+	CIO::message(M_INFO, "loading %ld support vectors\n",int_buffer);
 	create_new_model(int_buffer);
 
 	if (fscanf(modelfl," kernel='%s'; \n", char_buffer) != 1)
 	{
 		result=false;
-		CIO::message("error in svm file, line nr:%d\n", line_number);
+		CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
 	}
 
 	if (!feof(modelfl))
@@ -79,8 +79,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl," b=%lf; \n", &double_buffer) != 1)
 	{
 		result=false;
-		CIO::message("error in svm file, line nr:%d\n", line_number);
-		CIO::message("b\n");
+		CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
 	}
 	
 	if (!feof(modelfl))
@@ -91,7 +90,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%8s\n", char_buffer) == EOF)
 	{
 		result=false;
-		CIO::message("error in svm file, line nr:%d\n", line_number);
+		CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
 	}
 	else
 	{
@@ -99,7 +98,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("alphas=[", char_buffer)!=0)
 		{
 			result=false;
-			CIO::message("error in svm file, line nr:%d\n", line_number);
+			CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
 		}
 		line_number++;
 	}
@@ -112,7 +111,7 @@ bool CSVM::load(FILE* modelfl)
 		if (fscanf(modelfl," \[%lf,%d]; \n", &double_buffer, &int_buffer) != 2)
 		{
 			result=false;
-			CIO::message("error in svm file, line nr:%d\n", line_number);
+			CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
 		}
 
 		if (!feof(modelfl))
@@ -125,7 +124,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%2s", char_buffer) == EOF)
 	{
 		result=false;
-		CIO::message("error in svm file, line nr:%d\n", line_number);
+		CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
 	}
 	else
 	{
@@ -133,7 +132,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("];", char_buffer)!=0)
 		{
 			result=false;
-			CIO::message("error in svm file, line nr:%d\n", line_number);
+			CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
 		}
 		line_number++;
 	}
@@ -144,7 +143,7 @@ bool CSVM::load(FILE* modelfl)
 
 bool CSVM::save(FILE* modelfl)
 {
-  CIO::message("Writing model file...");
+  CIO::message(M_INFO, "Writing model file...");
   fprintf(modelfl,"%%SVM\n");
   fprintf(modelfl,"numsv=%d;\n", get_num_support_vectors());
   fprintf(modelfl,"kernel='%s';\n", CKernelMachine::get_kernel()->get_name());
@@ -157,7 +156,7 @@ bool CSVM::save(FILE* modelfl)
 
   fprintf(modelfl, "];\n");
   
-  CIO::message("done\n");
+  CIO::message(M_INFO, "done\n");
   return true ;
 } 
 
@@ -165,7 +164,7 @@ REAL* CSVM::test()
 {
   if (!CKernelMachine::get_kernel())
   {
-      CIO::message("SVM can not proceed without kernel!\n");
+      CIO::message(M_ERROR, "SVM can not proceed without kernel!\n");
       return false ;
   }
 
@@ -173,17 +172,17 @@ REAL* CSVM::test()
   assert(lab!=NULL);
   INT num_test=lab->get_num_labels();
 
-  CIO::message("%d test examples\n", num_test);
+  CIO::message(M_DEBUG, "%d test examples\n", num_test);
   REAL* output=new REAL[num_test];
 
   for (INT i=0; i<num_test;  i++)
   {
 	  if ( (i% (num_test/10+1))== 0)
-		  CIO::message("%i%%..",100*i/(num_test+1));
+		  CIO::message(M_MESSAGEONLY, "%i%%..",100*i/(num_test+1));
 
 	  output[i]=classify_example(i);
   }
-  CIO::message(".done.\n");
+  CIO::message(M_MESSAGEONLY, ".done.\n");
   return output;
 }
 
@@ -191,7 +190,7 @@ CLabels* CSVM::classify(CLabels* result)
 {
 	if (!CKernelMachine::get_kernel())
 	{
-		CIO::message("SVM can not proceed without kernel!\n");
+		CIO::message(M_ERROR, "SVM can not proceed without kernel!\n");
 		return false ;
 	}
 
@@ -205,7 +204,7 @@ CLabels* CSVM::classify(CLabels* result)
 			result=new CLabels(num_vectors);
 
 		assert(result);
-		CIO::message("num vec: %d\n", num_vectors);
+		CIO::message(M_DEBUG, "num vec: %d\n", num_vectors);
 
 		CWeightedDegreeCharKernel *kernel=
 			(CWeightedDegreeCharKernel*)CKernelMachine::get_kernel() ;

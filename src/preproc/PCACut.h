@@ -1,6 +1,8 @@
 #ifndef _CPCACUT__H__
 #define _CPCACUT__H__
 
+#include "lib/config.h"
+
 #ifdef HAVE_ATLAS
 
 #include <stdio.h>

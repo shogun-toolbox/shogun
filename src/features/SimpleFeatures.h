@@ -68,7 +68,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	  } 
 	  else
 	  {
-		  CIO::message("compute feature!!!\n") ;
+		  CIO::message(M_DEBUG, "compute feature!!!\n") ;
 		  
 		  ST* feat=NULL;
 		  free=false;
@@ -109,7 +109,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 			  delete[] tmp_feat_after;
 
 			  len=tmp_len ;
-			  CIO::message(stderr, "len: %d len2: %d\n", len, num_features);
+			  CIO::message(M_DEBUG, "len: %d len2: %d\n", len, num_features);
 		  }
 		  return feat ;
 	  }
@@ -148,7 +148,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
   /// preprocess the feature_matrix
   virtual bool preproc_feature_matrix(bool force_preprocessing=false)
   {
-	CIO::message("force: %d\n", force_preprocessing);
+	CIO::message(M_DEBUG, "force: %d\n", force_preprocessing);
 
 	if ( feature_matrix && get_num_preproc())
 	{
@@ -159,7 +159,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 			{
 				set_preprocessed(i);
 
-				CIO::message("preprocessing using preproc %s\n", get_preproc(i)->get_name());
+				CIO::message(M_INFO, "preprocessing using preproc %s\n", get_preproc(i)->get_name());
 				if (((CSimplePreProc<ST>*) get_preproc(i))->apply_to_feature_matrix(this) == NULL)
 					return false;
 			}
@@ -168,7 +168,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	}
 	else
 	{
-		CIO::message("no feature matrix available or features already preprocessed - skipping.\n");
+		CIO::message(M_ERROR, "no feature matrix available or features already preprocessed - skipping.\n");
 		return false;
 	}
   }

@@ -88,7 +88,7 @@ htmldoc:
 	cd ../doc/doxygen/ && doxygen
 
 distclean: clean
-		rm -f .config tags
+		rm -f .config tags lib/config.h
 clean: .config
 	rm -f $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(TARGET) ../doc/doxygen/*.html ../doc/doxygen/genefinder.tex gmon.out .depend configure.log .cpuinfo ./configure-*
 

@@ -36,7 +36,7 @@ bool CKNN::train()
 	min_label=min_class;
 	num_classes=max_class-min_class+1;
 
-	CIO::message("num_classes: %d (%+d to %+d) num_train: %d\n", num_classes, min_class, max_class, num_train_labels);
+	CIO::message(M_INFO, "num_classes: %d (%+d to %+d) num_train: %d\n", num_classes, min_class, max_class, num_train_labels);
 	return true;
 }
 
@@ -62,11 +62,11 @@ REAL* CKNN::test()
 	assert(output);
 	assert(classes);
 
-	CIO::message("%d test examples\n", num_lab);
+	CIO::message(M_INFO, "%d test examples\n", num_lab);
 	for (int i=0; i<num_lab; i++)
 	{
 		if ( (i% (num_lab/10+1))== 0)
-			CIO::message("%i%%..",100*i/(num_lab+1));
+			CIO::message(M_MESSAGEONLY, "%i%%..",100*i/(num_lab+1));
 
 		int j;
 		for (j=0; j<num_train_labels; j++)

@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "lib/config.h"
 #include "lib/io.h"
 #include "lib/common.h"
 #include "distributions/histogram/Histogram.h"
@@ -27,7 +28,7 @@ CHistogram* h;
 #include <libmmfile.h>
 #endif // WITHMATLAB
 
-#ifdef SVMMPI
+#ifdef USE_SVMMPI
 #include "svm_mpi/mpi_base.h"
 #endif
 
@@ -122,14 +123,13 @@ CTextGUI::CTextGUI(INT argc, const CHAR** argv)
 	libmmfileInitialize() ;
 #endif
 
-#ifdef SVMMPI
-	//CIO::message("Initializing MPI\n");
+#ifdef USE_SVMMPI
 	CMPIBase::svm_mpi_init(argc, argv) ;
 #else
-	CIO::message("undef'd MPI\n");
+	CIO::message(M_ERROR, "undef'd MPI\n");
 #endif
 
-	CIO::message("HMM uses %i separate tables\n", guihmm.get_number_of_tables()) ;
+	CIO::message(M_DEBUG, "HMM uses %i separate tables\n", guihmm.get_number_of_tables()) ;
 }
 
 CTextGUI::~CTextGUI()
@@ -140,7 +140,7 @@ CTextGUI::~CTextGUI()
 	libmmfileTerminate() ;
 #endif
 
-#ifdef SVMMPI
+#ifdef USE_SVMMPI
 #if  defined(HAVE_MPI) && !defined(DISABLE_MPI)
 	CMPIBase::svm_mpi_destroy() ;
 #endif
@@ -149,90 +149,90 @@ CTextGUI::~CTextGUI()
 
 void CTextGUI::print_help()
 {
-	CIO::message("\n[LOAD]\n");
-	CIO::message("\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
-	CIO::message("\033[1;31m%s\033[0m <filename> <LINEAR|MPI|CPLEX>\t- load svm\n",N_LOAD_SVM);
-	CIO::message("\033[1;31m%s\033[0m <filename>\t- load kernel init data\n",N_LOAD_KERNEL_INIT);
-	CIO::message("\033[1;31m%s\033[0m <filename> <SIMPLE|SPARSE|STRING> <REAL|SHORT|BYTE|CHAR> <TRAIN|TEST> [<CACHE SIZE> [0|1]]\t- load features\n",N_LOAD_FEATURES);
-	CIO::message("\033[1;31m%s\033[0m <filename> <TRAIN|TEST> \t- load labels\n",N_LOAD_LABELS);
-	CIO::message("\033[1;31m%s\033[0m <filename>\t- load preproc init data\n",N_LOAD_PREPROC);
-	CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
-	CIO::message("\n[SAVE]\n");
-	CIO::message("\033[1;31m%s\033[0m <filename> [<0|1>]\t- save hmm in [binary] format\n",N_SAVE_HMM);
-	CIO::message("\033[1;31m%s\033[0m <filename>\t- save svm\n",N_SAVE_SVM);
-	CIO::message("\033[1;31m%s\033[0m <filename>\t- save kernel init data\n",N_SAVE_KERNEL_INIT);
-	CIO::message("\033[1;31m%s\033[0m <filename>\t- save preproc init data\n",N_SAVE_PREPROC);
-	CIO::message("\033[1;31m%s\033[0m <filename> <REAL|...> <TRAIN|TEST> \t- save features\n",N_SAVE_FEATURES);
-	CIO::message("\033[1;31m%s\033[0m <filename>\t- save likelihood for each sequence\n",N_SAVE_LIKELIHOOD);
-	CIO::message("\033[1;31m%s\033[0m <filename>\t- save state sequence of viterbi path\n",N_SAVE_PATH);
-	CIO::message("\n[HMM]\n");
-	CIO::message("\033[1;31m%s\033[0m - frees all HMMs and observations\n",N_CLEAR);
-	CIO::message("\033[1;31m%s\033[0m #states #oberservations\t- frees previous HMM and creates an empty new one\n",N_NEW_HMM);
-	CIO::message("\033[1;31m%s\033[0m <POS|NEG|TEST>- make current HMM the POS,NEG or TEST HMM; then free current HMM \n",N_SET_HMM_AS);
-	CIO::message("\033[1;31m%s\033[0m <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
-	CIO::message("\033[1;31m%s\033[0m [<keep_dead_states>]\t\t\t- normalizes HMM params to be sum = 1\n", N_NORMALIZE);
-	CIO::message("\033[1;31m%s\033[0m \t\t\t- returns the relative entropy for each position (requires lin. HMMS)\n", N_RELATIVE_ENTROPY);
-	CIO::message("\033[1;31m%s\033[0m \t\t\t- returns the entropy for each position (requires lin. HMM)\n", N_ENTROPY);
-	CIO::message("\033[1;31m%s\033[0m <width> <num>\t\t\t- returns the permutation entropy for sequence <num>\n", N_PERMUTATION_ENTROPY);
-	CIO::message("\033[1;31m%s\033[0m <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)\n", N_ADD_STATES);
-	CIO::message("\033[1;31m%s\033[0m <filename> [<INT> <INT>]\t\t\t- append HMM <filename> to current HMM\n", N_APPEND_HMM);
-	CIO::message("\033[1;31m%s\033[0m [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
-	CIO::message("\033[1;31m%s\033[0m <PROTEIN|DNA|ALPHANUM|CUBE>\t\t\t- changes alphabet type\n", N_ALPHABET);
-	CIO::message("\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
-	CIO::message("\033[1;31m%s\033[0m <max_dim>\t - set maximum number of patterns\n",N_SET_MAX_DIM);
-	CIO::message("\033[1;31m%s\033[0m <num>\t - set number of forw/backw.-tables\n",N_SET_NUM_TABLES);
-	CIO::message("\n[TRAIN]\n");
-	CIO::message("\033[1;31m%s\033[0m [<width> <upto>]\t\t- obtains new linear HMM\n",N_LINEAR_TRAIN);
-	CIO::message("\033[1;31m%s\033[0m\t\t- does viterbi training on the current HMM\n",N_VITERBI_TRAIN);
-	CIO::message("\033[1;31m%s\033[0m\t\t- does viterbi training only on defined transitions etc\n",N_VITERBI_TRAIN_DEFINED);
-	CIO::message("\033[1;31m%s\033[0m\t\t- does baum welch training on current HMM\n",N_BAUM_WELCH_TRAIN);
-	CIO::message("\033[1;31m%s\033[0m\t\t- does baum welch training only on defined transitions etc.\n",N_BAUM_WELCH_TRAIN_DEFINED);
-	CIO::message("\033[1;31m%s\033[0m\t- find the best path using viterbi\n",N_BEST_PATH);
-	CIO::message("\033[1;31m%s\033[0m\t- find HMM likelihood\n",N_LIKELIHOOD);
-	CIO::message("\n[HMM-OUTPUT]\n");
-	CIO::message("\033[1;31m%s\033[0m [from to]\t- outputs best path\n",N_OUTPUT_PATH);
-	CIO::message("\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM);
-	CIO::message("\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM_DEFINED);
-	CIO::message("\n[FEATURES]\n");
-	CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|LOGPLUSONE>\t\t\t- add preprocessor of type\n", N_ADD_PREPROC);
-	CIO::message("\033[1;31m%s\033[0m <NUM>\t\t\t- delete preprocessor\n", N_DEL_PREPROC);
-	CIO::message("\033[1;31m%s\033[0m <TRAIN|TEST> <NUM_FEAT> <NUM_VEC>\t\t\t- reshape feature matrix for simple features\n", N_RESHAPE);
-	CIO::message("\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert dense features to sparse feature matrix\n", N_CONVERT_TO_SPARSE);
-	CIO::message("\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert sparse features to dense feature matrix\n", N_CONVERT_TO_DENSE);
-	CIO::message("\033[1;31m%s\033[0m  <TRAIN|TEST> <DNA|..> <ORDER> <START>\t\t\t- convert CHAR to word features, order remapping\n", N_CONVERT_CHAR_TO_WORD);
-	CIO::message("\033[1;31m%s\033[0m  <TRAIN|TEST> <DNA|..> <ORDER> <START>\t\t\t- convert CHAR to short features, order remapping\n", N_CONVERT_CHAR_TO_SHORT);
-	CIO::message("\033[1;31m%s\033[0m  <TRAIN|TEST> <STRING|SPARSE|SIMPLE> <REAL|CHAR|WORD|..> <STRING|...> <REAL|TOP..>\t\t\t- convert from feature class/type to class/type\n", N_CONVERT);
-	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> [<0|1>] - preprocesses the feature_matrix, 1 to force preprocessing of already processed\n",N_PREPROCESS);
-	CIO::message("\n[CLASSIFIER]\n");
-	CIO::message("\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
-	CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
-	CIO::message("\033[1;31m%s\033[0m <LINEAR|GAUSSIAN|POLY|...> <REAL|BYTE|SPARSEREAL|SLIK> [<CACHESIZE> [OPTS]]\t\t\t- set kernel type\n", N_SET_KERNEL);
-	CIO::message("\033[1;31m%s\033[0m\t\t- obtains svm from TRAINFEATURES\n",N_SVM_TRAIN);
-	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> - init kernel for training/testingn\n",N_INIT_KERNEL);
-	CIO::message("\033[1;31m%s\033[0m\t - creates Plugin Estimator using Linear HMMs\n",N_NEW_PLUGIN_ESTIMATOR);
-	CIO::message("\033[1;31m%s\033[0m\t- creates new KNN classifier\n",N_NEW_KNN);
-	CIO::message("\033[1;31m%s\033[0m<k>\t- trains KNN classifier\n",N_TRAIN_KNN);
-	CIO::message("\033[1;31m%s\033[0m\t [<pos_pseudo> [neg_pseudo]]- train the Estimator\n",N_TRAIN_ESTIMATOR);
-	CIO::message("\n[CLASSIFICATION]\n");
-	CIO::message("\033[1;31m%s\033[0m<threshold>\t\t\t\t- set classification threshold\n",N_SET_THRESHOLD);
-	CIO::message("\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_HMM_TEST);
-	CIO::message("\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
-	CIO::message("\033[1;31m%s\033[0m[<output>]\t\t\t\t- classify unknown examples using current HMMs\n",N_HMM_CLASSIFY);
-	CIO::message("\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t- calculate svm output on TESTFEATURES\n",N_SVM_TEST);
-	CIO::message("\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t- calculate estimator output on TESTFEATURES\n",N_TEST_ESTIMATOR);
-	CIO::message("\033[1;31m%s\033[0m<k>\t- tests KNN classifier\n",N_TEST_KNN);
-	CIO::message("\n[SYSTEM]\n");
-	CIO::message("\033[1;31m%s\033[0m <STDERR|STDOUT|filename>\t- make std-output go to e.g file\n",N_SET_OUTPUT);
-	CIO::message("\033[1;31m%s\033[0m <filename>\t- load and execute a script\n",N_EXEC);
-	CIO::message("\033[1;31m%s\033[0m\t- exit genfinder\n",N_QUIT);
-	CIO::message("\033[1;31m%s\033[0m\t- exit genfinder\n",N_EXIT);
-	CIO::message("\033[1;31m%s\033[0m\t- this message\n",N_HELP);
-	CIO::message("\033[1;31m%s\033[0m <commands>\t- execute system functions \n",N_SYSTEM);
+	CIO::message(M_MESSAGEONLY, "\n[LOAD]\n");
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename> <LINEAR|MPI|CPLEX>\t- load svm\n",N_LOAD_SVM);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename>\t- load kernel init data\n",N_LOAD_KERNEL_INIT);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename> <SIMPLE|SPARSE|STRING> <REAL|SHORT|BYTE|CHAR> <TRAIN|TEST> [<CACHE SIZE> [0|1]]\t- load features\n",N_LOAD_FEATURES);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename> <TRAIN|TEST> \t- load labels\n",N_LOAD_LABELS);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename>\t- load preproc init data\n",N_LOAD_PREPROC);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
+	CIO::message(M_MESSAGEONLY, "\n[SAVE]\n");
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename> [<0|1>]\t- save hmm in [binary] format\n",N_SAVE_HMM);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename>\t- save svm\n",N_SAVE_SVM);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename>\t- save kernel init data\n",N_SAVE_KERNEL_INIT);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename>\t- save preproc init data\n",N_SAVE_PREPROC);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename> <REAL|...> <TRAIN|TEST> \t- save features\n",N_SAVE_FEATURES);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename>\t- save likelihood for each sequence\n",N_SAVE_LIKELIHOOD);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename>\t- save state sequence of viterbi path\n",N_SAVE_PATH);
+	CIO::message(M_MESSAGEONLY, "\n[HMM]\n");
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m - frees all HMMs and observations\n",N_CLEAR);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m #states #oberservations\t- frees previous HMM and creates an empty new one\n",N_NEW_HMM);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <POS|NEG|TEST>- make current HMM the POS,NEG or TEST HMM; then free current HMM \n",N_SET_HMM_AS);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [<keep_dead_states>]\t\t\t- normalizes HMM params to be sum = 1\n", N_NORMALIZE);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m \t\t\t- returns the relative entropy for each position (requires lin. HMMS)\n", N_RELATIVE_ENTROPY);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m \t\t\t- returns the entropy for each position (requires lin. HMM)\n", N_ENTROPY);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <width> <num>\t\t\t- returns the permutation entropy for sequence <num>\n", N_PERMUTATION_ENTROPY);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)\n", N_ADD_STATES);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename> [<INT> <INT>]\t\t\t- append HMM <filename> to current HMM\n", N_APPEND_HMM);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <PROTEIN|DNA|ALPHANUM|CUBE>\t\t\t- changes alphabet type\n", N_ALPHABET);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <max_dim>\t - set maximum number of patterns\n",N_SET_MAX_DIM);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <num>\t - set number of forw/backw.-tables\n",N_SET_NUM_TABLES);
+	CIO::message(M_MESSAGEONLY, "\n[TRAIN]\n");
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [<width> <upto>]\t\t- obtains new linear HMM\n",N_LINEAR_TRAIN);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t- does viterbi training on the current HMM\n",N_VITERBI_TRAIN);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t- does viterbi training only on defined transitions etc\n",N_VITERBI_TRAIN_DEFINED);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t- does baum welch training on current HMM\n",N_BAUM_WELCH_TRAIN);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t- does baum welch training only on defined transitions etc.\n",N_BAUM_WELCH_TRAIN_DEFINED);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t- find the best path using viterbi\n",N_BEST_PATH);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t- find HMM likelihood\n",N_LIKELIHOOD);
+	CIO::message(M_MESSAGEONLY, "\n[HMM-OUTPUT]\n");
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [from to]\t- outputs best path\n",N_OUTPUT_PATH);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM_DEFINED);
+	CIO::message(M_MESSAGEONLY, "\n[FEATURES]\n");
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|LOGPLUSONE>\t\t\t- add preprocessor of type\n", N_ADD_PREPROC);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <NUM>\t\t\t- delete preprocessor\n", N_DEL_PREPROC);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <TRAIN|TEST> <NUM_FEAT> <NUM_VEC>\t\t\t- reshape feature matrix for simple features\n", N_RESHAPE);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert dense features to sparse feature matrix\n", N_CONVERT_TO_SPARSE);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert sparse features to dense feature matrix\n", N_CONVERT_TO_DENSE);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <DNA|..> <ORDER> <START>\t\t\t- convert CHAR to word features, order remapping\n", N_CONVERT_CHAR_TO_WORD);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <DNA|..> <ORDER> <START>\t\t\t- convert CHAR to short features, order remapping\n", N_CONVERT_CHAR_TO_SHORT);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <STRING|SPARSE|SIMPLE> <REAL|CHAR|WORD|..> <STRING|...> <REAL|TOP..>\t\t\t- convert from feature class/type to class/type\n", N_CONVERT);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <TRAIN|TEST> [<0|1>] - preprocesses the feature_matrix, 1 to force preprocessing of already processed\n",N_PREPROCESS);
+	CIO::message(M_MESSAGEONLY, "\n[CLASSIFIER]\n");
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <LINEAR|GAUSSIAN|POLY|...> <REAL|BYTE|SPARSEREAL|SLIK> [<CACHESIZE> [OPTS]]\t\t\t- set kernel type\n", N_SET_KERNEL);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t- obtains svm from TRAINFEATURES\n",N_SVM_TRAIN);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <TRAIN|TEST> - init kernel for training/testingn\n",N_INIT_KERNEL);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t - creates Plugin Estimator using Linear HMMs\n",N_NEW_PLUGIN_ESTIMATOR);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t- creates new KNN classifier\n",N_NEW_KNN);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m<k>\t- trains KNN classifier\n",N_TRAIN_KNN);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t [<pos_pseudo> [neg_pseudo]]- train the Estimator\n",N_TRAIN_ESTIMATOR);
+	CIO::message(M_MESSAGEONLY, "\n[CLASSIFICATION]\n");
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m<threshold>\t\t\t\t- set classification threshold\n",N_SET_THRESHOLD);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_HMM_TEST);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m[<output>]\t\t\t\t- classify unknown examples using current HMMs\n",N_HMM_CLASSIFY);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t- calculate svm output on TESTFEATURES\n",N_SVM_TEST);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m[[<output> [<rocfile>]]]\t\t- calculate estimator output on TESTFEATURES\n",N_TEST_ESTIMATOR);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m<k>\t- tests KNN classifier\n",N_TEST_KNN);
+	CIO::message(M_MESSAGEONLY, "\n[SYSTEM]\n");
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <STDERR|STDOUT|filename>\t- make std-output go to e.g file\n",N_SET_OUTPUT);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename>\t- load and execute a script\n",N_EXEC);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t- exit genfinder\n",N_QUIT);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t- exit genfinder\n",N_EXIT);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t- this message\n",N_HELP);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <commands>\t- execute system functions \n",N_SYSTEM);
 }
 
 void CTextGUI::print_prompt()
 {
-	CIO::message("\033[1;34mgenefinder\033[0m >> ");
+	CIO::message(M_MESSAGEONLY, "\033[1;34mgenefinder\033[0m >> ");
 	//CIO::message("genefinder >> ");
 }
 
@@ -276,7 +276,7 @@ bool CTextGUI::parse_line(CHAR* input)
 	if (strlen(input)>=1 && input[strlen(input)-1]=='\n')
 		input[strlen(input)-1]='\0';
 
-	CIO::message("%s\n",input) ;
+	CIO::message(M_MESSAGEONLY, "%s\n",input) ;
 
 	if (!strncmp(input, N_NEW_HMM, strlen(N_NEW_HMM)))
 	{
@@ -499,7 +499,7 @@ bool CTextGUI::parse_line(CHAR* input)
 
 		out_file=NULL;
 
-		CIO::message("setting out_target to: %s\n", param);
+		CIO::message(M_INFO, "setting out_target to: %s\n", param);
 
 		if (strcmp(param, "STDERR")==0)
 			CIO::set_target(stderr);
@@ -509,7 +509,7 @@ bool CTextGUI::parse_line(CHAR* input)
 		{
 			out_file=fopen(param, "w");
 			if (!out_file)
-				CIO::message("error opening out_target \"%s\"", param);
+				CIO::message(M_ERROR, "error opening out_target \"%s\"", param);
 			CIO::set_target(out_file);
 		}
 	}
@@ -525,7 +525,7 @@ bool CTextGUI::parse_line(CHAR* input)
 			fclose(file);
 		}
 		else
-			CIO::message("error opening/reading file: \"%s\"",argv[1]);
+			CIO::message(M_ERROR, "error opening/reading file: \"%s\"",argv[1]);
 	} 
 	else if (!strncmp(input, N_EXIT, strlen(N_EXIT)))
 	{
@@ -629,7 +629,7 @@ bool CTextGUI::parse_line(CHAR* input)
      	        guitime.stop();
 	} 
 	else
-		CIO::message("unrecognized command. type help for options\n");
+		CIO::message(M_ERROR, "unrecognized command. type help for options\n");
 
 	return true;
 }
@@ -647,10 +647,10 @@ int main(int argc, const CHAR* argv[])
 		{
 			if ( argc>2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help"))
 			{
-				CIO::message("usage: genefinder [ <-h|--help|/?|-i|<script> ]\n\n");
-				CIO::message("if no options are given genfinder enters interactive mode\n");
-				CIO::message("if <script> is specified the commands will be executed");
-				CIO::message("if -i is specified genefinder will listen on port 6766 (==hex(gf), *dangerous* as commands from any source are accepted");
+				CIO::message(M_ERROR, "usage: genefinder [ <-h|--help|/?|-i|<script> ]\n\n");
+				CIO::message(M_INFO, "if no options are given genfinder enters interactive mode\n");
+				CIO::message(M_INFO, "if <script> is specified the commands will be executed");
+				CIO::message(M_INFO, "if -i is specified genefinder will listen on port 6766 (==hex(gf), *dangerous* as commands from any source are accepted");
 				return 1;
 			}
 			else if ( argc>2 || !strcmp(argv[1], "-i") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help"))
@@ -665,7 +665,7 @@ int main(int argc, const CHAR* argv[])
 				bind(s, (sockaddr*) (&sa), sizeof(sockaddr_in));
 				listen(s, 1);
 				int s2=accept(s, NULL, NULL);
-				CIO::message("accepting connection\n");
+				CIO::message(M_INFO, "accepting connection\n");
 
 				CHAR input[2000];
 				do
@@ -676,7 +676,7 @@ int main(int argc, const CHAR* argv[])
 						input[length]='\0';
 					else
 					{
-						CIO::message("error reading cmdline\n");
+						CIO::message(M_ERROR, "error reading cmdline\n");
 						return 1;
 					}
 				}
@@ -689,7 +689,7 @@ int main(int argc, const CHAR* argv[])
 
 				if (!file)
 				{
-					CIO::message("error opening/reading file: \"%s\"",argv[1]);
+					CIO::message(M_ERROR, "error opening/reading file: \"%s\"",argv[1]);
 					return 1;
 				}
 				else
@@ -701,7 +701,7 @@ int main(int argc, const CHAR* argv[])
 		}
 	}
 
-	CIO::message("quitting...\n");
+	CIO::message(M_INFO, "quitting...\n");
 	delete gui ;
 
 	return 0;

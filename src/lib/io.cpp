@@ -11,9 +11,10 @@ CIO::CIO()
 {
 }
 
-void CIO::message(const CHAR *fmt, ... )
+void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 {
 	check_target();
+	print_message_prio(prio, target);
     va_list list;
     va_start(list,fmt);
     vfprintf(target,fmt,list);
@@ -21,28 +22,10 @@ void CIO::message(const CHAR *fmt, ... )
     fflush(target);
 }
 
-void CIO::message(FILE* target, const CHAR *fmt, ... )
+void CIO::buffered_message(EMessageType prio, const CHAR *fmt, ... )
 {
 	check_target();
-    va_list list;
-    va_start(list,fmt);
-    vfprintf(target,fmt,list);
-    va_end(list);
-    fflush(target);
-}
-
-void CIO::buffered_message(const CHAR *fmt, ... )
-{
-	check_target();
-    va_list list;
-    va_start(list,fmt);
-    vfprintf(target,fmt,list);
-    va_end(list);
-}
-
-void CIO::buffered_message(FILE* target, const CHAR *fmt, ... )
-{
-	check_target();
+	print_message_prio(prio, target);
     va_list list;
     va_start(list,fmt);
     vfprintf(target,fmt,list);
@@ -72,4 +55,39 @@ void CIO::check_target()
 {
 	if (!target)
 		target=stdout;
+}
+
+void CIO::print_message_prio(EMessageType prio, FILE* target)
+{
+	switch (prio)
+	{
+		case M_DEBUG:
+			fprintf(target, "[DEBUG] ");
+			break;
+		case M_INFO:
+			fprintf(target, "[INFO] ");
+			break;
+		case M_NOTICE:
+			fprintf(target, "[NOTICE] ");
+			break;
+		case M_WARN:
+			fprintf(target, "[WARN] ");
+			break;
+		case M_ERROR:
+			fprintf(target, "[ERROR] ");
+			break;
+		case M_CRITICAL:
+			fprintf(target, "[CRITICAL] ");
+			break;
+		case M_ALERT:
+			fprintf(target, "[ALERT] ");
+			break;
+		case M_EMERGENCY:
+			fprintf(target, "[EMERGENCY] ");
+			break;
+		case M_MESSAGEONLY:
+			break;
+		default:
+			break;
+	}
 }

@@ -1,5 +1,6 @@
+#include "lib/config.h"
+
 #include <math.h>
-//#include <libmmfile.h>
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>

@@ -56,6 +56,22 @@ typedef REAL* P_REAL;
 typedef long double LONGREAL;
 typedef LONGREAL* P_LONGREAL;
 
+/// The io libs output [DEBUG] etc in front of every CIO::message
+/// 'higher' messages filter output depending on the loglevel, i.e. CRITICAL messages
+/// will print all M_CRITICAL TO M_EMERGENCY messages to
+enum EMessageType
+{
+	M_DEBUG,
+	M_INFO,
+	M_NOTICE,
+	M_WARN,
+	M_ERROR,
+	M_CRITICAL,
+	M_ALERT,
+	M_EMERGENCY,
+	M_MESSAGEONLY
+};
+
 enum EKernelType
 {
 	K_UNKNOWN = 0,

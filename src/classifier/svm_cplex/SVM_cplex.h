@@ -1,7 +1,7 @@
 #ifndef _SVMCplex_H___
 #define _SVMCplex_H___
 
-#ifdef SVMCPLEX
+#ifdef USE_SVMCPLEX
 
 #include "hmm/HMM.h"
 #include "svm/SVM.h"
@@ -28,6 +28,6 @@ protected:
 };
 
 
-#endif // SVMCPLEX
+#endif // USE_SVMCPLEX
 
 #endif // _SVMCplex_H__

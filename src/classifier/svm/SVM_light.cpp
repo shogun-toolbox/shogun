@@ -66,7 +66,7 @@ bool CSVMLight::train()
   
   if (!CKernelMachine::get_kernel())
   {
-      CIO::message("SVM_light can not proceed without kernel!\n");
+      CIO::message(M_ERROR, "SVM_light can not proceed without kernel!\n");
       return false ;
   }
       
@@ -196,17 +196,17 @@ void CSVMLight::svm_learn()
 
 	if(learn_parm->remove_inconsistent && learn_parm->compute_loo) {
 		learn_parm->compute_loo=0;
-		CIO::message("\nCannot compute leave-one-out estimates when removing inconsistent examples.\n\n");
+		CIO::message(M_MESSAGEONLY, "\nCannot compute leave-one-out estimates when removing inconsistent examples.\n\n");
 	}    
 
 	if((trainpos == 1) || (trainneg == 1)) {
 		learn_parm->compute_loo=0;
-		CIO::message("\nCannot compute leave-one-out with only one example in one class.\n\n");
+		CIO::message(M_MESSAGEONLY, "\nCannot compute leave-one-out with only one example in one class.\n\n");
 	}    
 
 
 	if(verbosity==1) {
-		CIO::message("Optimizing");
+		CIO::message(M_MESSAGEONLY, "Optimizing");
 	}
 
 	/* train the svm */
@@ -216,7 +216,7 @@ void CSVMLight::svm_learn()
 
 	if(verbosity>=1) {
 		if(verbosity==1)
-			CIO::message("done. (%ld iterations)\n",iterations);
+			CIO::message(M_MESSAGEONLY, "done. (%ld iterations)\n",iterations);
 
 		misclassified=0;
 		for(i=0;(i<totdoc);i++) { /* get final statistic */
@@ -224,7 +224,7 @@ void CSVMLight::svm_learn()
 				misclassified++;
 		}
 
-		CIO::message("Optimization finished (%ld misclassified, maxdiff=%.5f).\n",
+		CIO::message(M_INFO, "Optimization finished (%ld misclassified, maxdiff=%.5f).\n",
 				misclassified,maxdiff); 
 
 		runtime_end=get_runtime();
@@ -236,7 +236,7 @@ void CSVMLight::svm_learn()
 					 learn_parm->epsilon_a)) 
 				upsupvecnum++;
 		}
-		CIO::message("Number of SV: %ld (including %ld at upper bound)\n",
+		CIO::message(M_INFO, "Number of SV: %ld (including %ld at upper bound)\n",
 				model->sv_num-1,upsupvecnum);
 	}
 
@@ -331,11 +331,11 @@ LONG retrain)
   
 	  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
 
-	  CIO::message(".");
+	  CIO::message(M_MESSAGEONLY, ".");
 
 	  if(verbosity>=2) t0=get_runtime();
 	  if(verbosity>=3) {
-		  CIO::message("\nSelecting working set... "); 
+		  CIO::message(M_MESSAGEONLY, "\nSelecting working set... "); 
 	  }
 
     i=0;
@@ -413,7 +413,7 @@ LONG retrain)
 	}
 
     if(verbosity>=2) {
-     CIO::message(" %ld vectors chosen\n",choosenum); 
+     CIO::message(M_INFO, " %ld vectors chosen\n",choosenum); 
     }
 
     if(verbosity>=2) t1=get_runtime();
@@ -441,7 +441,7 @@ LONG retrain)
     /* relative to the active variables */
     if(verbosity>=3) {
       criterion=compute_objective_function(a,lin,label,active2dnum);
-     CIO::message("Objective function (over active variables): %.16f\n",criterion);
+     CIO::message(M_INFO, "Objective function (over active variables): %.16f\n",criterion);
       
     }
 
@@ -477,12 +477,12 @@ LONG retrain)
       learn_parm->epsilon_crit=epsilon_crit_org;
     
     if(verbosity>=2) {
-     CIO::message(" => (%ld SV (incl. %ld SV at u-bound), max violation=%.5f)\n",
+     CIO::message(M_INFO, " => (%ld SV (incl. %ld SV at u-bound), max violation=%.5f)\n",
 	     supvecnum,model->at_upper_bound,(*maxdiff)); 
      
     }
     if(verbosity>=3) {
-     CIO::message("\n");
+     CIO::message(M_MESSAGEONLY, "\n");
     }
 
     if(((iteration % 10) == 0) && (!noshrink)) {
@@ -495,7 +495,7 @@ LONG retrain)
 
   if(verbosity>=1) {
 	  criterion=compute_objective_function(a,lin,label,active2dnum);
-	  CIO::message("\nobj = %.16f, rho = %.16f\n",criterion,model->b);
+	  CIO::message(M_INFO, "\nobj = %.16f, rho = %.16f\n",criterion,model->b);
   }
 
   delete[] chosen;
@@ -587,7 +587,7 @@ double *epsilon_crit_target)
 				      qp);
 
     if(verbosity>=3) {
-     CIO::message("Running optimizer...");
+     CIO::message(M_DEBUG, "Running optimizer...");
     }
 
     /* call the qp-subsolver */
@@ -601,7 +601,7 @@ double *epsilon_crit_target)
 			model_b, opt_precision);
 
     if(verbosity>=3) {         
-     CIO::message("done\n");
+     CIO::message(M_DEBUG, "done\n");
     }
 
     for(i=0;i<varnum;i++) {
@@ -672,7 +672,7 @@ QP *qp)
 
     if(verbosity>=3) {
       if(i % 20 == 0) {
-	CIO::message("%ld..",i);
+	CIO::message(M_DEBUG, "%ld..",i);
       }
     }
   }
@@ -685,7 +685,7 @@ QP *qp)
   }
 
   if(verbosity>=3) {
-    CIO::message("done\n");
+    CIO::message(M_DEBUG, "done\n");
   }
 }
 
@@ -700,7 +700,7 @@ MODEL *model)
   double ex_c;
 
   if(verbosity>=3) {
-   CIO::message("Calculating model...");
+   CIO::message(M_DEBUG, "Calculating model...");
   }
 
   if(!learn_parm->biased_hyperplane) {
@@ -745,7 +745,7 @@ MODEL *model)
   }      
 
   if(verbosity>=3) {
-   CIO::message("done\n");
+   CIO::message(M_DEBUG, "done\n");
   }
 
   /* If there is no alpha in the working set not at bounds, then
@@ -855,7 +855,7 @@ LONG *inconsistentnum, LONG *inconsistent)
     inconsistent[maxex]=1;  /* never choose again */
     retrain=2;          /* start over */
     if(verbosity>=3) {
-     CIO::message("inconsistent(%ld)..",i);
+     CIO::message(M_DEBUG, "inconsistent(%ld)..",i);
     }
   }
   return(retrain);
@@ -1106,7 +1106,7 @@ LONG CSVMLight::shrink_problem(LEARN_PARM *learn_parm, SHRINK_STATE *shrink_stat
     /* Shrink problem by removing those variables which are */
     /* optimal at a bound for a minimum number of iterations */
     if(verbosity>=2) {
-     CIO::message(" Shrinking...");
+     CIO::message(M_INFO, " Shrinking...");
     }
     a_old=new double[totdoc];
     shrink_state->a_history[shrink_state->deactnum]=a_old;
@@ -1127,8 +1127,8 @@ LONG CSVMLight::shrink_problem(LEARN_PARM *learn_parm, SHRINK_STATE *shrink_stat
     activenum=compute_index(shrink_state->active,totdoc,active2dnum);
     shrink_state->deactnum++;
     if(verbosity>=2) {
-     CIO::message("done.\n");
-     CIO::message(" Number of inactive variables = %ld\n",totdoc-activenum);
+     CIO::message(M_INFO, "done.\n");
+     CIO::message(M_INFO, " Number of inactive variables = %ld\n",totdoc-activenum);
     }
   }
   //  delete[] a_old ;
@@ -1161,7 +1161,7 @@ double *weights, double* maxdiff)
   inactive2dnum=new long[totdoc+11];
   for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) {
     if(verbosity>=2) {
-     CIO::message("%ld..",t);
+     CIO::message(M_INFO, "%ld..",t);
     }
     a_old=shrink_state->a_history[t];    
     for(i=0;i<totdoc;i++) {

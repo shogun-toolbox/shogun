@@ -41,7 +41,7 @@ bool CGUIHMM::set_num_hmm_tables(CHAR* param)
 		if (tmp>0)
 		{
 			number_of_hmm_tables=tmp ;
-			CIO::message("using %i separate tables\n",number_of_hmm_tables) ;
+			CIO::message(M_INFO, "using %i separate tables\n",number_of_hmm_tables) ;
 			return true ;
 		} ;
 	} ;
@@ -64,7 +64,7 @@ bool CGUIHMM::new_hmm(CHAR* param)
 		return true;
 	}
 	else
-		CIO::message("see help for parameters\n");
+		CIO::message(M_ERROR, "see help for parameters\n");
 
 	return false;
 }
@@ -81,7 +81,7 @@ bool CGUIHMM::gradient_step(CHAR* param)
 		fixed_descent(working, step_size, beta) ;
 	}
 	else
-		CIO::message("see help for parameters\n");
+		CIO::message(M_ERROR, "see help for parameters\n");
 
 	return false;
 }
@@ -97,7 +97,7 @@ bool CGUIHMM::baum_welch_train(CHAR* param)
 	   (gui->guifeatures.get_train_features()->get_feature_class()
 	    !=C_STRING))
 	  {
-	    CIO::message("Features must be STRING of type WORD\n") ;
+	    CIO::message(M_ERROR, "Features must be STRING of type WORD\n") ;
 	    return false ;
 	  } ;
 
@@ -127,20 +127,20 @@ bool CGUIHMM::baum_welch_train(CHAR* param)
 					prob_max=prob_train ;
 #ifdef TMP_SAVE
 					FILE* file=fopen(templname_best, "w");
-					CIO::message("\nsaving best model with filename %s ... ", templname_best) ;
+					CIO::message(M_INFO, "\nsaving best model with filename %s ... ", templname_best) ;
 					working->save_model(file) ;
 					fclose(file) ;
-					CIO::message("done.") ;
+					CIO::message(M_INFO, "done.") ;
 #endif
 				} 
 				else
 				{
 #ifdef TMP_SAVE
 					FILE* file=fopen(templname, "w");
-					CIO::message("\nsaving model with filename %s ... ", templname) ;
+					CIO::message(M_INFO, "\nsaving model with filename %s ... ", templname) ;
 					working->save_model(file) ;
 					fclose(file) ;
-					CIO::message("done.") ;
+					CIO::message(M_INFO, "done.") ;
 #endif
 				}
 			}
@@ -148,10 +148,10 @@ bool CGUIHMM::baum_welch_train(CHAR* param)
 			working_estimate=NULL;
 		}
 		else
-			CIO::message("load train features first\n");
+			CIO::message(M_ERROR, "load train features first\n");
 	}
 	else
-		CIO::message("create model first\n");
+		CIO::message(M_ERROR, "create model first\n");
 
 	return false;
 }
@@ -164,7 +164,7 @@ bool CGUIHMM::baum_welch_trans_train(CHAR* param)
       (gui->guifeatures.get_train_features()->get_feature_class()
        !=C_STRING))
     {
-      CIO::message("Features must be STRING of type WORD\n") ;
+      CIO::message(M_ERROR, "Features must be STRING of type WORD\n") ;
       return false ;
     } ;
   
@@ -195,10 +195,10 @@ bool CGUIHMM::baum_welch_trans_train(CHAR* param)
 	  working_estimate=NULL;
 	}
       else
-	CIO::message("load train features first\n");
+	CIO::message(M_ERROR, "load train features first\n");
     }
   else
-    CIO::message("create model first\n");
+    CIO::message(M_ERROR, "create model first\n");
   
   return false;
 }
@@ -235,20 +235,20 @@ bool CGUIHMM::baum_welch_train_defined(CHAR* param)
 					prob_max=prob_train ;
 #ifdef TMP_SAVE
 					FILE* file=fopen(templname_best, "w");
-					CIO::message("\nsaving best model with filename %s ... ", templname_best) ;
+					CIO::message(M_INFO, "\nsaving best model with filename %s ... ", templname_best) ;
 					working->save_model(file) ;
 					fclose(file) ;
-					CIO::message("done.") ;
+					CIO::message(M_INFO, "done.") ;
 #endif
 				} 
 				else
 				{
 #ifdef TMP_SAVE
 					FILE* file=fopen(templname, "w");
-					CIO::message("\nsaving model with filename %s ... ", templname) ;
+					CIO::message(M_INFO, "\nsaving model with filename %s ... ", templname) ;
 					working->save_model(file) ;
 					fclose(file) ;
-					CIO::message("done.") ;
+					CIO::message(M_INFO, "done.") ;
 #endif
 				}
 			}
@@ -256,10 +256,10 @@ bool CGUIHMM::baum_welch_train_defined(CHAR* param)
 			working_estimate=NULL;
 		}
 		else
-			CIO::message("assign observation first\n");
+			CIO::message(M_ERROR, "assign observation first\n");
 	}
 	else
-		CIO::message("create model first\n");
+		CIO::message(M_ERROR, "create model first\n");
 
 	return false;
 }
@@ -296,20 +296,20 @@ bool CGUIHMM::viterbi_train(CHAR* param)
 					prob_max=prob_train ;
 #ifdef TMP_SAVE
 					FILE* file=fopen(templname_best, "w");
-					CIO::message("\nsaving best model with filename %s ... ", templname_best) ;
+					CIO::message(M_INFO, "\nsaving best model with filename %s ... ", templname_best) ;
 					working->save_model(file) ;
 					fclose(file) ;
-					CIO::message("done.") ;
+					CIO::message(M_INFO, "done.") ;
 #endif
 				} 
 				else
 				{
 #ifdef TMP_SAVE
 					FILE* file=fopen(templname, "w");
-					CIO::message("\nsaving model with filename %s ... ", templname) ;
+					CIO::message(M_INFO, "\nsaving model with filename %s ... ", templname) ;
 					working->save_model(file) ;
 					fclose(file) ;
-					CIO::message("done.") ;
+					CIO::message(M_INFO, "done.") ;
 #endif
 				}
 			}
@@ -317,10 +317,10 @@ bool CGUIHMM::viterbi_train(CHAR* param)
 			working_estimate=NULL;
 		}
 		else
-			CIO::message("assign observation first\n");
+			CIO::message(M_ERROR, "assign observation first\n");
 	}
 	else
-		CIO::message("create model first\n");
+		CIO::message(M_ERROR, "create model first\n");
 
 	return false;
 }
@@ -357,20 +357,20 @@ bool CGUIHMM::viterbi_train_defined(CHAR* param)
 					prob_max=prob_train ;
 #ifdef TMP_SAVE
 					FILE* file=fopen(templname_best, "w");
-					CIO::message("\nsaving best model with filename %s ... ", templname_best) ;
+					CIO::message(M_INFO, "\nsaving best model with filename %s ... ", templname_best) ;
 					working->save_model(file) ;
 					fclose(file) ;
-					CIO::message("done.") ;
+					CIO::message(M_INFO, "done.") ;
 #endif
 				} 
 				else
 				{
 #ifdef TMP_SAVE
 					FILE* file=fopen(templname, "w");
-					CIO::message("\nsaving model with filename %s ... ", templname) ;
+					CIO::message(M_INFO, "\nsaving model with filename %s ... ", templname) ;
 					working->save_model(file) ;
 					fclose(file) ;
-					CIO::message("done.") ;
+					CIO::message(M_INFO, "done.") ;
 #endif
 				}
 			}
@@ -378,10 +378,10 @@ bool CGUIHMM::viterbi_train_defined(CHAR* param)
 			working_estimate=NULL;
 		}
 		else
-			CIO::message("assign observation first\n");
+			CIO::message(M_ERROR, "assign observation first\n");
 	}
 	else
-		CIO::message("create model first\n");
+		CIO::message(M_ERROR, "create model first\n");
 
 	return false;
 }
@@ -398,18 +398,18 @@ bool CGUIHMM::linear_train(CHAR* param)
 
 	if (align=='r')
 	{
-		CIO::message("using alignment to right\n");
+		CIO::message(M_INFO, "using alignment to right\n");
 		right_align=true;
 	}
 	else
 	{
-		CIO::message("using alignment to left\n");
+		CIO::message(M_INFO, "using alignment to left\n");
 	}
 
 	if ((gui->guifeatures.get_train_features()->get_feature_type() !=F_WORD) ||
 			(gui->guifeatures.get_train_features()->get_feature_class() !=C_STRING))
 	{
-		CIO::message("Features must be STRING of type WORD\n");
+		CIO::message(M_ERROR, "Features must be STRING of type WORD\n");
 		return false;
 	}
 
@@ -423,7 +423,7 @@ bool CGUIHMM::linear_train(CHAR* param)
 		}
 	}
 	else
-		CIO::message("load train features first\n");
+		CIO::message(M_ERROR, "load train features first\n");
 
 	return false;
 }
@@ -448,7 +448,7 @@ bool CGUIHMM::one_class_test(CHAR* param)
 
 		if (!outputfile)
 		{
-			CIO::message(stderr,"ERROR: could not open %s\n",outputname);
+			CIO::message(M_ERROR, "could not open %s\n",outputname);
 			return false;
 		}
 
@@ -458,7 +458,7 @@ bool CGUIHMM::one_class_test(CHAR* param)
 
 			if (!rocfile)
 			{
-				CIO::message(stderr,"ERROR: could not open %s\n",rocfname);
+				CIO::message(M_ERROR, "could not open %s\n",rocfname);
 				return false;
 			}
 		}
@@ -498,10 +498,10 @@ bool CGUIHMM::one_class_test(CHAR* param)
 			result=true;
 		}
 		else
-			CIO::message("assign posttest and negtest observations first!\n");
+			CIO::message(M_ERROR, "assign posttest and negtest observations first!\n");
 	}
 	else
-		CIO::message("no hmm defined!\n");
+		CIO::message(M_ERROR, "no hmm defined!\n");
 
 	if (rocfile)
 		fclose(rocfile);
@@ -531,7 +531,7 @@ bool CGUIHMM::hmm_classify(CHAR* param)
 
 		if (!outputfile)
 		{
-			CIO::message(stderr,"ERROR: could not open %s\n",outputname);
+			CIO::message(M_ERROR, "could not open %s\n",outputname);
 			return false;
 		}
 
@@ -541,7 +541,7 @@ bool CGUIHMM::hmm_classify(CHAR* param)
 
 			if (!rocfile)
 			{
-				CIO::message(stderr,"ERROR: could not open %s\n",rocfname);
+				CIO::message(M_ERROR, "could not open %s\n",rocfname);
 				return false;
 			}
 		}
@@ -565,7 +565,7 @@ bool CGUIHMM::hmm_classify(CHAR* param)
 			REAL* output = new REAL[total];	
 			INT* label= new INT[total];	
 
-			CIO::message("classifying using neg %s hmm vs. pos %s hmm\n", neglinear ? "linear" : "", poslinear ? "linear" : "");
+			CIO::message(M_INFO, "classifying using neg %s hmm vs. pos %s hmm\n", neglinear ? "linear" : "", poslinear ? "linear" : "");
 
 			for (INT dim=0; dim<total; dim++)
 			{
@@ -588,7 +588,7 @@ bool CGUIHMM::hmm_classify(CHAR* param)
 			printf("load test features first!\n");
 	}
 	else
-		CIO::message("assign positive and negative models first!\n");
+		CIO::message(M_ERROR, "assign positive and negative models first!\n");
 
 	if ((outputfile) && (outputfile!=stdout))
 		fclose(outputfile);
@@ -617,7 +617,7 @@ bool CGUIHMM::hmm_test(CHAR* param)
 
 		if (!outputfile)
 		{
-			CIO::message(stderr,"ERROR: could not open %s\n",outputname);
+			CIO::message(M_ERROR, "could not open %s\n",outputname);
 			return false;
 		}
 
@@ -627,7 +627,7 @@ bool CGUIHMM::hmm_test(CHAR* param)
 
 			if (!rocfile)
 			{
-				CIO::message(stderr,"ERROR: could not open %s\n",rocfname);
+				CIO::message(M_ERROR, "could not open %s\n",rocfname);
 				return false;
 			}
 		}
@@ -653,7 +653,7 @@ bool CGUIHMM::hmm_test(CHAR* param)
 			REAL* output = new REAL[total];	
 			INT* label= new INT[total];	
 
-			CIO::message("testing using neg %s hmm vs. pos %s hmm\n", neglinear ? "linear" : "", poslinear ? "linear" : "");
+			CIO::message(M_INFO, "testing using neg %s hmm vs. pos %s hmm\n", neglinear ? "linear" : "", poslinear ? "linear" : "");
 
 			for (INT dim=0; dim<total; dim++)
 			{
@@ -675,10 +675,10 @@ bool CGUIHMM::hmm_test(CHAR* param)
 			result=true;
 		}
 		else
-			printf("load test features first!\n");
+			CIO::message(M_ERROR, "load test features first!\n");
 	}
 	else
-		CIO::message("assign positive and negative models first!\n");
+		CIO::message(M_ERROR, "assign positive and negative models first!\n");
 
 	if (rocfile)
 		fclose(rocfile);
@@ -818,7 +818,7 @@ bool CGUIHMM::append_model(CHAR* param)
 					REAL* app_o=new REAL[h->get_M()];
 					assert(cur_o != NULL && app_o != NULL);
 
-					CIO::message("h %d , M: %d\n", h, h->get_M());
+					CIO::message(M_DEBUG, "h %d , M: %d\n", h, h->get_M());
 
 					for (INT i=0; i<h->get_M(); i++)
 					{
@@ -840,20 +840,20 @@ bool CGUIHMM::append_model(CHAR* param)
 
 					delete[] cur_o;
 					delete[] app_o;
-					CIO::message("new model has %i states\n", working->get_N());
+					CIO::message(M_INFO, "new model has %i states\n", working->get_N());
 					delete h;
 				}
 				else
-					CIO::message("reading file %s failed\n", fname);
+					CIO::message(M_ERROR, "reading file %s failed\n", fname);
 			}
 			else
-				CIO::message("opening file %s failed\n", fname);
+				CIO::message(M_ERROR, "opening file %s failed\n", fname);
 		}
 		else
-			CIO::message("see help for parameters\n", fname);
+			CIO::message(M_ERROR, "see help for parameters\n", fname);
 	}
 	else
-		CIO::message("create model first\n");
+		CIO::message(M_ERROR, "create model first\n");
 
 
 	return false;
@@ -869,13 +869,13 @@ bool CGUIHMM::add_states(CHAR* param)
 		param=CIO::skip_spaces(param);
 
 		sscanf(param, "%i %le", &states, &value);
-		CIO::message("adding %i states\n", states);
+		CIO::message(M_INFO, "adding %i states\n", states);
 		working->add_states(states, value);
-		CIO::message("new model has %i states\n", working->get_N());
+		CIO::message(M_INFO, "new model has %i states\n", working->get_N());
 		return true;
 	}
 	else
-		CIO::message("create model first\n");
+		CIO::message(M_INFO, "create model first\n");
 
 	return false;
 }
@@ -886,10 +886,10 @@ bool CGUIHMM::set_pseudo(CHAR* param)
 
 	if (sscanf(param, "%le", &PSEUDO)!=1)
 	{
-		CIO::message("see help for parameters. current setting: pseudo=%e\n", PSEUDO);
+		CIO::message(M_INFO, "see help for parameters. current setting: pseudo=%e\n", PSEUDO);
 		return false ;
 	}
-	CIO::message("current setting: pseudo=%e\n", PSEUDO);
+	CIO::message(M_INFO, "current setting: pseudo=%e\n", PSEUDO);
 	return true ;
 }
 
@@ -907,10 +907,10 @@ bool CGUIHMM::convergence_criteria(CHAR* param)
 	}
 	else
 	{
-		CIO::message("see help for parameters. current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
+		CIO::message(M_ERROR, "see help for parameters. current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
 		return false ;
 	}
-	CIO::message("current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
+	CIO::message(M_INFO, "current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
 	return true ;
 } ;
 
@@ -942,13 +942,13 @@ bool CGUIHMM::set_hmm_as(CHAR* param)
 				working=NULL;
 			}
 			else
-				CIO::message("target POS|NEG|TEST missing\n");
+				CIO::message(M_ERROR, "target POS|NEG|TEST missing\n");
 		}
 		else
-			CIO::message("create model first!\n");
+			CIO::message(M_ERROR, "create model first!\n");
 	}
 	else
-		CIO::message("target POS|NEG|TEST missing\n");
+		CIO::message(M_ERROR, "target POS|NEG|TEST missing\n");
 
 	return false;
 }
@@ -959,16 +959,14 @@ bool CGUIHMM::converge(double x, double y)
 	double diff=y-x;
 	double absdiff=fabs(diff);
 
-	CIO::message("\n #%03d\tbest result so far: %G (eps: %f", iteration_count, y, diff);
+	CIO::message(M_INFO, "\n #%03d\tbest result so far: %G (eps: %f)\n", iteration_count, y, diff);
 	if (diff<0.0)
-		//CIO::message(" ***") ;
-		CIO::message(" **************** WARNING **************") ;
-	CIO::message(")") ;
+		CIO::message(M_WARN, " **************** WARNING **************\n") ;
 
 	if (iteration_count-- == 0 || (absdiff<EPSILON && conv_it<=0))
 	{
 		iteration_count=ITERATIONS;
-		CIO::message("...finished\n");
+		CIO::message(M_INFO, "...finished\n");
 		conv_it=5 ;
 		return true;
 	}
@@ -1018,7 +1016,7 @@ bool CGUIHMM::load(CHAR* param)
 		M=working->get_M();
 	}
 	else
-		CIO::message("opening file %s failed\n", param);
+		CIO::message(M_ERROR, "opening file %s failed\n", param);
 
 	return result;
 }
@@ -1052,10 +1050,10 @@ bool CGUIHMM::save(CHAR* param)
 				fclose(file);
 		}
 		else
-			CIO::message("see help for parameters\n");
+			CIO::message(M_ERROR, "see help for parameters\n");
 	}
 	else
-		CIO::message("create model first\n");
+		CIO::message(M_ERROR, "create model first\n");
 
 	return result;
 }
@@ -1073,17 +1071,17 @@ bool CGUIHMM::load_defs(CHAR* param)
 			FILE* def_file=fopen(fname, "r");
 			if (def_file && working->load_definitions(def_file,true,(init!=0)))
 			{
-				CIO::message("file successfully read\n");
+				CIO::message(M_INFO, "file successfully read\n");
 				return true;
 			}
 			else
-				CIO::message("opening file %s failed\n", fname);
+				CIO::message(M_ERROR, "opening file %s failed\n", fname);
 		}
 		else
-			CIO::message("see help for parameters\n");
+			CIO::message(M_ERROR, "see help for parameters\n");
 	}
 	else
-		CIO::message("create model first\n");
+		CIO::message(M_ERROR, "create model first\n");
 
 	return false;
 }
@@ -1119,10 +1117,10 @@ bool CGUIHMM::save_likelihood(CHAR* param)
 				fclose(file);
 		}
 		else
-			CIO::message("see help for parameters\n");
+			CIO::message(M_ERROR, "see help for parameters\n");
 	}
 	else
-		CIO::message("create model first\n");
+		CIO::message(M_ERROR, "create model first\n");
 
 	return result;
 }
@@ -1162,10 +1160,10 @@ bool CGUIHMM::save_path(CHAR* param)
 		fclose(file);
 	    }
 	  else
-	    CIO::message("see help for parameters\n");
+	    CIO::message(M_ERROR, "see help for parameters\n");
 	}
 	else
-	  CIO::message("create model first\n");
+	  CIO::message(M_ERROR, "create model first\n");
 	
 	return result;
 }
@@ -1182,7 +1180,7 @@ bool CGUIHMM::chop(CHAR* param)
 		return true;
 	}
 	else
-		CIO::message("see help for parameters/create model first\n");
+		CIO::message(M_ERROR, "see help for parameters/create model first\n");
 	return false;
 }
 
@@ -1194,7 +1192,7 @@ bool CGUIHMM::likelihood(CHAR* param)
 		return true;
 	}
 	else
-		CIO::message("create model first!\n");
+		CIO::message(M_ERROR, "create model first!\n");
 	return false;
 }
 
@@ -1206,7 +1204,7 @@ bool CGUIHMM::output_hmm(CHAR* param)
 		return true;
 	}
 	else
-		CIO::message("create model first!\n");
+		CIO::message(M_ERROR, "create model first!\n");
 	return false;
 }
 
@@ -1218,7 +1216,7 @@ bool CGUIHMM::output_hmm_defined(CHAR* param)
 		return true;
 	}
 	else
-		CIO::message("create model first!\n");
+		CIO::message(M_ERROR, "create model first!\n");
 	return false;
 }
 
@@ -1232,7 +1230,7 @@ bool CGUIHMM::best_path(CHAR* param)
 		return true;
 	}
 	else
-		CIO::message("create model first\n");
+		CIO::message(M_ERROR, "create model first\n");
 
 	return false;
 }
@@ -1249,7 +1247,7 @@ bool CGUIHMM::normalize(CHAR* param)
 		return true;
 	}
 	else
-		CIO::message("create model first\n");
+		CIO::message(M_ERROR, "create model first\n");
 
 	return false;
 }
@@ -1272,7 +1270,7 @@ bool CGUIHMM::output_hmm_path(CHAR* param)
 		return true;
 	}
 	else
-		CIO::message("create model first\n");
+		CIO::message(M_ERROR, "create model first\n");
 
 	return false;
 }
@@ -1296,18 +1294,18 @@ bool CGUIHMM::relative_entropy(CHAR* param)
 				}
 
 				entropy[i]=math.relative_entropy(p, q, pos->get_M());
-				CIO::message("%f ", entropy[i]);
+				CIO::message(M_MESSAGEONLY, "%f ", entropy[i]);
 			}
-			CIO::message("\n");
+			CIO::message(M_MESSAGEONLY, "\n");
 			delete[] p;
 			delete[] q;
 			delete[] entropy;
 		}
 		else
-			CIO::message("pos and neg hmm's differ in number of emissions or states\n");
+			CIO::message(M_ERROR, "pos and neg hmm's differ in number of emissions or states\n");
 	}
 	else
-		CIO::message("set pos and neg hmm first\n");
+		CIO::message(M_ERROR, "set pos and neg hmm first\n");
 	return false;
 }
 
@@ -1326,15 +1324,15 @@ bool CGUIHMM::entropy(CHAR* param)
 			}
 
 			entropy[i]=math.entropy(p, pos->get_M());
-			CIO::message("%f ", entropy[i]);
+			CIO::message(M_MESSAGEONLY, "%f ", entropy[i]);
 		}
-		CIO::message("\n");
+		CIO::message(M_MESSAGEONLY, "\n");
 
 		delete[] p;
 		delete[] entropy;
 	}
 	else
-		CIO::message("set pos hmm first\n");
+		CIO::message(M_ERROR, "set pos hmm first\n");
 	return false;
 }
 
@@ -1354,13 +1352,13 @@ bool CGUIHMM::permutation_entropy(CHAR* param)
 				return working->permutation_entropy(width, seq_num);
 			}
 			else
-				CIO::message("set observations first\n");
+				CIO::message(M_ERROR, "set observations first\n");
 		}
 		else
-			CIO::message("create hmm first\n");
+			CIO::message(M_ERROR, "create hmm first\n");
 	}
 	else
-		CIO::message("wrong number of parameters see help!\n");
+		CIO::message(M_ERROR, "wrong number of parameters see help!\n");
 
 	return false;
 }

@@ -31,7 +31,7 @@ bool CByteFeatures::load(CHAR* fname)
 	num_features=numf;
 
     if (!f.is_ok())
-		CIO::message("loading file \"%s\" failed", fname);
+		CIO::message(M_ERROR, "loading file \"%s\" failed", fname);
 	else
 		status=true;
 

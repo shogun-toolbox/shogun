@@ -21,7 +21,6 @@ bool CGUILabels::load(CHAR* param)
 	CHAR filename[1024]="";
 	CHAR target[1024]="";
 	bool result=false;
-	//bool allow_unknown=false;
 
 	if ((sscanf(param, "%s %s", filename, target))==2)
 	{
@@ -34,11 +33,10 @@ bool CGUILabels::load(CHAR* param)
 		else if (strcmp(target,"TEST")==0)
 		{
 			f_ptr=&test_labels;
-			//allow_unknown=true;
 		}
 		else
 		{
-			CIO::message("see help for parameters\n");
+			CIO::message(M_ERROR, "see help for parameters\n");
 			return false;
 		}
 
@@ -49,31 +47,10 @@ bool CGUILabels::load(CHAR* param)
 
 			CLabels* label=*f_ptr;
 			assert(label);
-
-			//if (!allow_unknown)
-			//{
-			//	bool invalids=false;
-
-			//	for (INT i=0; i<label->get_num_labels() && !invalids; i++)
-			//	{
-			//		if (label->get_int_label(i)==0)
-			//			invalids=true;
-			//	}
-
-			//	if (invalids)
-			//	{
-			//		CIO::message("attempting to fix invalid labels (class 0), by setting them to class -1\n");
-			//		for (INT i=0; i<label->get_num_labels(); i++)
-			//		{
-			//			if (label->get_label(i)==0)
-			//				label->set_label(i, -1);
-			//		}
-			//	}
-			//}
 		}
 	}
 	else
-		CIO::message("see help for params\n");
+		CIO::message(M_ERROR, "see help for params\n");
 
 	return result;
 }

@@ -49,8 +49,8 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	INT lhs_changed = (lhs!=l) ;
 	INT rhs_changed = (rhs!=r) ;
 
-	CIO::message("lhs_changed: %i\n", lhs_changed) ;
-	CIO::message("rhs_changed: %i\n", rhs_changed) ;
+	CIO::message(M_DEBUG, "lhs_changed: %i\n", lhs_changed) ;
+	CIO::message(M_DEBUG, "rhs_changed: %i\n", rhs_changed) ;
 	
 	if (lhs_changed) 
 	{
@@ -181,7 +181,7 @@ bool CWeightedDegreeCharKernel::load_init(FILE* src)
 	for (INT i=0; i<d; i++)
 		weights[i]=w[i];
 
-    CIO::message("detected: intsize=%d, doublesize=%d, degree=%d\n", intlen, doublelen, d);
+    CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, degree=%d\n", intlen, doublelen, d);
 
 	degree=d;
 	return true;
@@ -520,7 +520,7 @@ INT CWeightedDegreeCharKernel::tree_size(struct SuffixTree * p_tree)
 			if (trees[i]!=NULL)
 				ret += tree_size(trees[i]) ;
 			else
-				CIO::message("%i empty\n", i) ;
+				CIO::message(M_ERROR, "%i empty\n", i) ;
 		return ret ;
 	}
 	if (p_tree->has_floats)

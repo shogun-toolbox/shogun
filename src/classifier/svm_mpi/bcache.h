@@ -1,4 +1,4 @@
-#ifdef SVMMPI
+#ifdef USE_SVMMPI
 /* -*-C++-*- */
 
 /*

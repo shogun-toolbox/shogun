@@ -23,7 +23,7 @@ bool CWordMatchKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	if (do_init)
 		init_rescale() ;
 
-	CIO::message("rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
+	CIO::message(M_INFO, "rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
 
 	return true;
 }
@@ -36,7 +36,7 @@ void CWordMatchKernel::init_rescale()
 			sum+=compute(i, i);
 
 	if ( sum > (pow((double) 2, (double) 8*sizeof(LONG))) )
-		CIO::message("the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
+		CIO::message(M_ERROR, "the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
 	scale=sum/math.min(lhs->get_num_vectors(), rhs->get_num_vectors());
 }
 
@@ -60,7 +60,7 @@ bool CWordMatchKernel::load_init(FILE* src)
     assert(fread(&fourcc, (UINT) intlen, 1, src)==1);
     assert(fread(&r, (UINT) intlen, 1, src)==1);
     assert(fread(&s, (UINT) doublelen, 1, src)==1);
-    CIO::message("detected: intsize=%d, doublesize=%d, r=%d, scale=%g\n", intlen, doublelen, r, s);
+    CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, r=%d, scale=%g\n", intlen, doublelen, r, s);
 	scale=s;
 	return true;
 }
