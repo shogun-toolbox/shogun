@@ -1485,7 +1485,6 @@ static bool prompt(FILE* infile=stdin)
 		
 		int larger_N=math.max(pos->get_N(), neg->get_N());
 		int larger_M=math.max(pos->get_M(), neg->get_M());
-		
 		theta=new double[1+larger_N*(1+larger_N+1+larger_M)];
 		svm->svm_train(obs, 4, C);
 		if (strlen(name)>0)
