@@ -187,7 +187,7 @@ void CSVMLight::svm_learn()
 	w_gap = 1 ;
 	count = 0 ;
 	num_rows=0 ;
-	w_epsilon=1e-4 ;
+	w_epsilon=1e-2 ;
 	
 	if (get_kernel()->has_property(KP_KERNCOMBINATION))
 	{
