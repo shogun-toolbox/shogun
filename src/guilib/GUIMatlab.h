@@ -70,6 +70,8 @@ public:
 	bool get_kernel_matrix(mxArray* retvals[], CFeatures* features);
 	bool get_kernel_optimization(mxArray* retvals[]);
 
+	bool set_custom_kernel(const mxArray* vals[]) ;
+
 	// MKL Kernel stuff
 	bool compute_by_subkernels(mxArray* retvals[]);
 	bool get_subkernel_weights(mxArray* retvals[]);

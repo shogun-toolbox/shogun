@@ -949,7 +949,7 @@ bool CGUIMatlab::set_custom_kernel(const mxArray* vals[])
 	{
 		const double* km=mxGetPr(mx_kernel);
 
-		CKernel* k=gui->guikernel.get_kernel();
+		CCustomKernel* k=(CCustomKernel*)gui->guikernel.get_kernel();
 
 		if (k && k->get_kernel_type() == K_CUSTOM)
 		{
