@@ -58,12 +58,15 @@ bool CGUIHMM::baum_welch_train(char* param)
 	sprintf(templname_best, "%s_best", templname) ;
 	double prob_max=-CMath::INFTY ;
 	iteration_count=ITERATIONS ;
+
 	if (working) 
 	{
-		working_estimate=new CHMM(working);
 
-		if (working->get_observations() && working_estimate->get_observations())
+		if (working->get_observations())
 		{
+			working_estimate=new CHMM(working);
+			working_estimate->set_observations(working->get_observations());
+			
 			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
 
 			while (!converge(prob,prob_train))

@@ -344,7 +344,17 @@ bool CTextGUI::get_line(FILE* infile)
 	} 
 	else if (!strncmp(input, N_EXEC, strlen(N_EXEC)))
 	{
-	  CIO::not_implemented() ;
+		for (i=strlen(N_EXEC); isspace(input[i]); i++);
+
+		FILE* file=fopen(&input[i], "r");
+
+		if (file)
+		{
+			while(!feof(file) && gui->get_line(file));
+			fclose(file);
+		}
+		else
+			CIO::message("error opening/reading file: \"%s\"",argv[1]);
 	} 
 	else if (!strncmp(input, N_EXIT, strlen(N_EXIT)))
 	{
