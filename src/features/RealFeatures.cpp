@@ -116,7 +116,7 @@ bool CRealFeatures::save(FILE* dest)
     int i;
 	long len;
 	bool free;
-#error num_features must not correspond with the length of a feature vectore since that one might be preprocessed
+#warning num_features must not correspond with the length of a feature vectore since that one might be preprocessed
 	double* f=get_feature_vector(0, len, free);
 	free_feature_vector(f, 0, free) ;
 

@@ -1006,9 +1006,13 @@ bool CGUIHMM::best_path(char* param)
 
 bool CGUIHMM::normalize(char* param)
 {
+	param=CIO::skip_spaces(param);
+	int keep_dead_states=0;
+	sscanf(param, "%d %d", &keep_dead_states);
+
 	if (working)
 	{
-	    working->normalize();
+	    working->normalize(keep_dead_states==1);
 		return true;
 	}
 	else
@@ -1061,7 +1065,7 @@ bool CGUIHMM::relative_entropy(char* param)
 				CIO::message("%f ", entropy[i]);
 			}
 			CIO::message("\n");
-#error todo save me
+#warning todo save me
 			delete[] p;
 			delete[] q;
 			delete[] entropy;
@@ -1093,7 +1097,7 @@ bool CGUIHMM::entropy(char* param)
 		}
 		CIO::message("\n");
 
-#error todo save me
+#warning todo save me
 		delete[] p;
 		delete[] entropy;
 	}

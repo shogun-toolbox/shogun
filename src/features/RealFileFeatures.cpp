@@ -119,7 +119,7 @@ bool CRealFileFeatures::load_base_data()
     assert(fread(&num_feat, (unsigned int) intlen, 1, working_file)==1);
     assert(fread(&preprocd, (unsigned int) intlen, 1, working_file)==1);
     CIO::message("detected: intsize=%d, doublesize=%d, num_vec=%d, num_feat=%d, preprocd=%d\n", intlen, doublelen, num_vec, num_feat, preprocd);
-#error check for FOURCC , check for endianess+convert if not right+ more checks.
+#warning check for FOURCC , check for endianess+convert if not right+ more checks.
     filepos=ftell(working_file);
     set_num_vectors(num_vec);
     set_num_features(num_feat);
