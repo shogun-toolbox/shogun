@@ -1030,3 +1030,62 @@ bool CGUIHMM::output_hmm_path(char* param)
 
 	return false;
 }
+
+bool CGUIHMM::relative_entropy(char* param)
+{
+	char* input=CIO::skip_spaces(param);
+	char target[1024];
+
+	if ((sscanf(input, "%s", target))==1)
+	{
+		CObservation* obs=NULL;
+
+		if (strcmp(target,"POSTRAIN")==0)
+			obs=pos_train_obs;
+		else if (strcmp(target,"NEGTRAIN")==0)
+			obs=neg_train_obs;
+		else if (strcmp(target,"POSTEST")==0)
+			obs= pos_test_obs;
+		else if (strcmp(target,"NEGTEST")==0)
+			obs= neg_test_obs;
+		else if (strcmp(target,"TEST")==0)
+			obs= test_obs;
+		else
+			CIO::message("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
+
+		if (obs)
+		{
+		    int num_sym=obs->get_M();
+		    double p=new double[num_sym];
+		    
+		    for (int column=0; column<obs->get_max_obs_T(); column++)
+		    {
+			double rent=0;
+			for (int line=0; line<obs->num_sym; line++)
+			{
+			    if (obs->get_obs_T(line)!=obs->get_max_obs_T())
+			    {
+				CIO::message("DIMENSIONS of observations differ in size!\n");
+				return false;
+			    }
+			    else
+			    {
+				rent
+				math
+			    }
+			}
+		    }
+		    delete[] p;
+		}
+		else
+			CIO::message("no observations were set for target %s\n",target);
+	}
+	else
+	{
+		CIO::message("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
+		return false;
+	}
+
+	return true;
+
+}
