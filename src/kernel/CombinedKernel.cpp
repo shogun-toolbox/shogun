@@ -15,6 +15,9 @@ CCombinedKernel::CCombinedKernel(LONG size)
 
 CCombinedKernel::~CCombinedKernel() 
 {
+	if (get_is_initialized())
+		delete_optimization() ;
+	
 	fprintf(stderr, "combined kernel deleted\n") ;
 	cleanup();
 	delete kernel_list;
