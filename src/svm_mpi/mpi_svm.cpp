@@ -70,7 +70,7 @@ bool CSVMMPI::svm_train(CFeatures* train_)
     svm_mpi_set_Z_block(column, 1, start_idx, rank) ; 
     train->free_feature_vector(column, free);
   } ;
-  
+
   svm_mpi_optimize(labels, num_cols) ; 
   return true; 
 }
@@ -126,7 +126,6 @@ unsigned CSVMMPI::svm_mpi_broadcast_Z_size(int num_cols, int num_rows_, unsigned
   Z.Resize(num_rows_, m_prime) ;
   return m_full ;
 } ;
-
 
 void CSVMMPI::svm_mpi_set_Z_block(double * block, int num_cols, int start_idx, int rank) 
 {
