@@ -384,6 +384,8 @@ inline bool CStringFeatures<WORD>::obtain_from_char_features(CStringFeatures<CHA
 
 		/* fix the length of the string -- hacky */
 		features[line].length-=start ;
+		if (features[line].length<0)
+			features[line].length=0 ;
 	}
 
 	for (i=0; i<256; i++)

@@ -125,10 +125,10 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	
 	{ // precompute stop codons
 		for (INT i=0; i<genestr_len-2; i++)
-			if (genestr[i]=='t' && 
-				((genestr[i+1]=='a' && 
-				  (genestr[i+2]=='a' || genestr[i+2]=='g')) ||
-				 (genestr[i+1]=='g' && genestr[i+2]=='a')))
+			if (genestr[i]=='T' && 
+				((genestr[i+1]=='A' && 
+				  (genestr[i+2]=='A' || genestr[i+2]=='G')) ||
+				 (genestr[i+1]=='G' && genestr[i+2]=='A')))
 				genestr_stop[i]=true ;
 			else
 				genestr_stop[i]=false ;
@@ -230,7 +230,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 								{
 									//if ((pos[t]==2034||pos[t]==2213))
 									//fprintf(stderr, "%ld: j=%i ii=%i t=%i ts=%i val=%1.2f pen=%1.2f\n", (long)penalty, j,ii,pos[t],pos[ts],val, lookup_penalty(penalty, pos[t]-pos[ts])) ;
-									val          += lookup_penalty(penalty, pos[t]-pos[ts]) ;
+									val          += lookup_penalty(penalty, genestr, pos[ts], pos[t]) ;
 								} ;
 								
 								tempvv[list_len] = -val ;
