@@ -36,7 +36,7 @@ class CRealFeatures: public CFeatures
   virtual REAL* set_feature_matrix()=0;
 
 
-  virtual bool preproc_feature_matrix();
+  virtual bool preproc_feature_matrix(bool force_preprocessing=false);
 
   virtual inline long  get_num_vectors() { return num_vectors; }
   inline long  get_num_features() { return num_features; }

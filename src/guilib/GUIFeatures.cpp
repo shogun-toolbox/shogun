@@ -17,6 +17,52 @@ CGUIFeatures::~CGUIFeatures()
     delete test_obs;
 }
 		
+bool CGUIFeatures::preprocess(char* param)
+{
+    bool result=false;
+    param=CIO::skip_spaces(param);
+    char target[1024];
+    char type[1024];
+    int comp_features=1 ;
+
+    if ((sscanf(param, "%s", target))==1)
+    {
+	if ( strcmp(target, "TRAIN")==0 || strcmp(target, "TEST")==0 )
+	{
+		CFeatures** f_ptr=NULL;
+
+		if (strcmp(target,"TRAIN")==0)
+		{
+			f_ptr=&train_features;
+		}
+		else if (strcmp(target,"TEST")==0)
+		{
+			f_ptr=&test_features;
+		}
+		else
+			CIO::message("see help for parameters\n");
+
+		if (*f_ptr)
+		{
+			if (gui->guiprepoc)
+			{
+				gui->puipreproc.init(*f_ptr);
+				(*f_ptr)->apply_to_feature_matrix();
+			}
+			else
+				CIO::message("no preprocessor set!\n");
+		}
+		else
+			CIO::message("features not correctly assigned!\n");
+	}
+	else
+	    CIO::message("observations not correctly assigned!\n");
+    }
+    else
+	CIO::message("see help for parameters\n");
+
+    return result;
+}
 bool CGUIFeatures::set_features(char* param)
 {
     bool result=false;
@@ -52,7 +98,7 @@ bool CGUIFeatures::set_features(char* param)
 	    else
 		CIO::message("see help for parameters\n");
 
-	    if (&f_ptr)
+	    if (*f_ptr)
 	    {
 		if (strcmp(type,"TOP")==0)
 		{
@@ -69,6 +115,7 @@ bool CGUIFeatures::set_features(char* param)
 
 			delete (*f_ptr);
 			*f_ptr= new CTOPFeatures(gui->guihmm.get_pos(), gui->guihmm.get_neg());		      
+
 			if (comp_features)
 			    ((CTOPFeatures*)*f_ptr)->set_feature_matrix() ;
 
@@ -86,6 +133,8 @@ bool CGUIFeatures::set_features(char* param)
 		else
 		    CIO::not_implemented();
 	    }
+		else
+			CIO::message("features not correctly assigned!\n");
 	}
 	else
 	    CIO::message("observations not correctly assigned!\n");

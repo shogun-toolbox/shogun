@@ -68,15 +68,18 @@ REAL* CRealFeatures::get_feature_matrix(long &num_feat, long &num_vec)
 }
 
 /// preproc feature_matrix
-bool CRealFeatures::preproc_feature_matrix()
+bool CRealFeatures::preproc_feature_matrix(bool force_preprocessing)
 {
-	if (preproc && !preprocessed)
+	if ( preproc && (!preprocessed || force_preprocessing) )
 	{
 	    preprocessed=true;	
 	    return (((CRealPreProc*) preproc)->apply_to_feature_matrix(this) != NULL);
 	}
 	else
+	{
+		CIO::message("no feature matrix available or features already preprocessed - skipping.\n");
 		return false;
+	}
 }
 
 bool CRealFeatures::save(FILE* dest)
@@ -107,7 +110,7 @@ bool CRealFeatures::save(FILE* dest)
 	    CIO::message(".");
 
 	long len;
-       	bool free;
+	bool free;
 	double* f=get_feature_vector(i, len, free);
 	assert(fwrite(f, sizeof(double), len, dest)==len) ;
 	free_feature_vector(f, free) ;

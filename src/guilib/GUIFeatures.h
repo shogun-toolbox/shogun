@@ -21,6 +21,10 @@ class CGUIFeatures
 
 		bool set_features(char* param);
 
+		/// apply the current preprocessor to train/test data
+		/// (only useful when a feature matrix is available)
+		bool preprocess(char* param);
+
 		CFeatures *get_train_features() { return train_features; }
 		CFeatures *get_test_features() { return test_features; }
 		

@@ -178,9 +178,11 @@ void CTextGUI::print_help()
    CIO::message("\033[1;31m%s\033[0m[<output> [<rocfile>]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
 //   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_LINEAR_HMM_TEST);
 //   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate hmm output from obs using linear HMM\n",N_LINEAR_HMM_TEST);
+   CIO::message("\n[FEATURES]\n");
+   CIO::message("\033[1;31m%s\033[0m\t <TOP|FK> <TRAIN|TEST> [<0|1>]- creates train/test-features out of obs\n",N_SET_FEATURES);
+   CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> - preprocesses the feature_matrix\n",N_PREPROCESS);
    CIO::message("\n[SVM]\n");
    CIO::message("\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
-   CIO::message("\033[1;31m%s\033[0m\t <TOP|FK> <TRAIN|TEST> - creates train/test-features out of obs\n",N_SET_FEATURES);
    CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
    CIO::message("\033[1;31m%s\033[0m <LINEAR>\t\t\t- set kernel type\n", N_SET_KERNEL);
    CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|NONE>\t\t\t- set preprocessor type\n", N_SET_PREPROC);

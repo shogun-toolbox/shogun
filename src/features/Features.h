@@ -35,7 +35,7 @@ public:
 	CPreProc* get_preproc();
 
 	/// preprocess the feature_matrix
-	virtual bool preproc_feature_matrix()=0;
+	virtual bool preproc_feature_matrix(bool force_preprocessing=false)=0;
 
 	/// set/get the labels
 	virtual bool set_label(long idx, int label) { return false ; }
