@@ -805,7 +805,7 @@ REAL CHMM::model_probability_comp()
 
   //for faster calculation cache model probability
  CIO::message("computing full model probablity\n") ;
-  mod_prob=-math.INFTY ;
+  mod_prob=0 ;
   for (int dim=0; dim<p_observations->get_DIMENSION(); dim++)		//sum in log space
     {
 #ifdef PARALLEL
@@ -835,7 +835,7 @@ REAL CHMM::model_probability_comp()
 	      } ;
 	} ;
 #endif 
-      mod_prob=math.logarithmic_sum(forward(p_observations->get_obs_T(dim), 0, dim), mod_prob);	
+      mod_prob+=forward(p_observations->get_obs_T(dim), 0, dim);
     } ;
 
 #ifdef PARALLEL
@@ -843,7 +843,6 @@ REAL CHMM::model_probability_comp()
   delete[] params ;
 #endif
   
-  mod_prob-=log(p_observations->get_DIMENSION());
   mod_prob_updated=true;
   return mod_prob;
 }
@@ -892,7 +891,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
     int i,j,t,dim;
     REAL a_sum_denom, b_sum_denom;	//denominator
     REAL dimmodprob=-math.INFTY;	//model probability for dim
-    REAL fullmodprob=-math.INFTY;	//for all dims
+    REAL fullmodprob=0;			//for all dims
     REAL* A=ARRAYN1(0);
     REAL* B=ARRAYN2(0);
     
@@ -946,7 +945,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
       } ;
 
       //and denominator
-      fullmodprob=math.logarithmic_sum(fullmodprob, dimmodprob) ;
+      fullmodprob+=dimmodprob;
       
       for (i=0; i<N; i++)
 	{
@@ -1001,7 +1000,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
       }
     
     //cache train model probability
-    train->mod_prob=fullmodprob-log(p_observations->get_DIMENSION());
+    train->mod_prob=fullmodprob;
     train->mod_prob_updated=true ;
     
     //new model probability is unknown
@@ -1014,130 +1013,71 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 //estimates new model lambda out of lambda_train using baum welch algorithm
 void CHMM::estimate_model_baum_welch(CHMM* train)
 {
-  int i,j,t,dim;
-  REAL a_sum, b_sum;		//numerator
-  REAL dimmodprob=-math.INFTY;	//model probability for dim
-  REAL fullmodprob=-math.INFTY;	//for all dims
-  
-  //clear actual model a,b,p,q are used as numerator
-  for (i=0; i<N; i++)
+    int i,j,t,dim;
+    REAL a_sum, b_sum;			//numerator
+    REAL dimmodprob=0;	//model probability for dim
+    REAL fullmodprob=0;	//for all dims
+
+    //clear actual model a,b,p,q are used as numerator
+    for (i=0; i<N; i++)
     {
-	
-      set_p(i,train->get_p(i));
-      set_q(i,train->get_q(i));
-      
-      for (j=0; j<N; j++)
-	set_a(i,j, train->get_a(i,j));
-      for (j=0; j<M; j++)
-	set_b(i,j, train->get_b(i,j));
+	set_p(i,log(PSEUDO));
+	set_q(i,log(PSEUDO));
 
-      set_p(i,log(PSEUDO));
-      set_q(i,log(PSEUDO));
-      
-      for (j=0; j<N; j++)
-	set_a(i,j, log(PSEUDO));
-      for (j=0; j<M; j++)
-	set_b(i,j, log(PSEUDO));
+	for (j=0; j<N; j++)
+	    set_a(i,j, log(PSEUDO));
+	for (j=0; j<M; j++)
+	    set_b(i,j, log(PSEUDO));
     }
-  
-  //change summation order to make use of alpha/beta caches
-  for (dim=0; dim<p_observations->get_DIMENSION(); dim++)
-  {
-      printf("\nfwgf%d=[\n",dim+1);
-      for (t=0; t<p_observations->get_obs_T(dim); t++)
-      {
-	  printf("[ ");
-	  for (i=0; i<N; i++)
-	  {
-	      printf("%.15f ",exp(train->forward(t, i, dim)));
-	  }
 
-	  printf("];\n");
-      }
-	  printf("];\n");
-      getchar();
-      printf("\nbwgf%d=[\n",dim+1);
-      for (t=0; t<p_observations->get_obs_T(dim); t++)
-      {
-	  printf("[ ");
-	  for (i=0; i<N; i++)
-	  {
-	      printf("%.15f ",exp(train->backward(t, i, dim)));
-	  }
+    //change summation order to make use of alpha/beta caches
+    for (dim=0; dim<p_observations->get_DIMENSION(); dim++)
+    {
+	dimmodprob=train->model_probability(dim);
+	fullmodprob+=dimmodprob ;
 
-	  printf("];\n");
-      }
-	  printf("];\n");
-      getchar();
-      train->invalidate_model();
-      dimmodprob=train->model_probability(dim);
-      fullmodprob=math.logarithmic_sum(fullmodprob, dimmodprob) ;
+	for (i=0; i<N; i++)
+	{
+	    //estimate initial+end state distribution numerator
+	    set_p(i, math.logarithmic_sum(get_p(i), train->get_p(i)+train->get_b(i,p_observations->get_obs(dim,0))+train->backward(0,i,dim) - dimmodprob));
+	    set_q(i, math.logarithmic_sum(get_q(i), train->forward(p_observations->get_obs_T(dim)-1, i, dim)+train->get_q(i) - dimmodprob ));
 
-      for (i=0; i<N; i++)
-      {
-	  //estimate initial+end state distribution numerator
-//printf("(%d)before: %f addv: %f pro:%f\n", i, get_p(i), train->backward(0,i,dim), dimmodprob);
-	  set_p(i, math.logarithmic_sum(get_p(i), (train->get_p(i)+train->get_b(i,p_observations->get_obs(dim,0))+train->backward(0,i,dim)) - dimmodprob));
-	  set_q(i, math.logarithmic_sum(get_q(i), train->forward(p_observations->get_obs_T(dim)-1, i, dim) +train->get_q(i) - dimmodprob ));
-	  //estimate a
-	  for (j=0; j<N; j++)
-	  {
-	      a_sum=-math.INFTY;
+	    //estimate a
+	    for (j=0; j<N; j++)
+	    {
+		a_sum=-math.INFTY;
 
-	      for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
-	      {
-		  a_sum= math.logarithmic_sum(a_sum, train->forward(t,i,dim)+
-			  train->get_a(i,j)+train->get_b(j,p_observations->get_obs(dim,t+1))+train->backward(t+1,j,dim));
-	      }
-	      set_a(i,j, math.logarithmic_sum(get_a(i,j), a_sum-dimmodprob));
-	  }
+		for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
+		{
+		    a_sum= math.logarithmic_sum(a_sum, train->forward(t,i,dim)+
+			    train->get_a(i,j)+train->get_b(j,p_observations->get_obs(dim,t+1))+train->backward(t+1,j,dim));
+		}
+		set_a(i,j, math.logarithmic_sum(get_a(i,j), a_sum-dimmodprob));
+	    }
 
+	    //estimate b
+	    for (j=0; j<M; j++)
+	    {
+		b_sum=math.ALMOST_NEG_INFTY;
 
-	  //estimate b
-	  for (j=0; j<M; j++)
-	  {
-	      b_sum=-math.INFTY;
+		for (t=0; t<p_observations->get_obs_T(dim); t++) 
+		{
+		    if (p_observations->get_obs(dim,t)==j) 
+			b_sum=math.logarithmic_sum(b_sum, train->forward(t,i,dim)+train->backward(t, i, dim));
+		}
 
-	      for (t=0; t<p_observations->get_obs_T(dim); t++) 
-	      {
-		  if (p_observations->get_obs(dim,t)==j) 
-		      b_sum=math.logarithmic_sum(b_sum, train->forward(t,i,dim)+train->backward(t, i, dim));
-	      }
+		set_b(i,j, math.logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
+	    }
+	} 
+    }
 
-	      set_b(i,j, math.logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
-	  }
-	  
-      } 
-  /*printf("\n");
-  for (i=0; i<N; i++)
-      printf ("%f\n", get_p(i));*/
-  }
-  
-  //cache train model probability
-  train->mod_prob=fullmodprob-log(p_observations->get_DIMENSION());
-  train->mod_prob_updated=true ;
-  
-  //new model probability is unknown
-  normalize();
-/*  printf("\n");
-  for (i=0; i<N; i++)
-      printf ("%f->%f (%G)\n", train->get_p(i), get_p(i), get_p(i)-train->get_p(i));
+    //cache train model probability
+    train->mod_prob=fullmodprob;
+    train->mod_prob_updated=true ;
 
-  double new_pr=-math.INFTY;
-  double new_pr2=-math.INFTY;
-  for (dim=0; dim<p_observations->get_DIMENSION(); dim++)
-  {
-      for (i=0; i<N; i++)
-      {
-	  new_pr=math.logarithmic_sum(new_pr, train->backward(0,i,dim)+get_p(i)+train->get_b(i,p_observations->get_obs(dim,0)));
-	  new_pr2=math.logarithmic_sum(new_pr2, train->forward(p_observations->get_obs_T(dim)-1, i, dim) +get_q(i));
-      }
-  }
-*/
-//  new_pr-=log(p_observations->get_DIMENSION());
-//  new_pr2-=log(p_observations->get_DIMENSION());
-  invalidate_model();
-//  printf(">>>%f ?= %f == %f == %f <<<\n", train->model_probability(), model_probability(), new_pr, new_pr2);
+    //new model probability is unknown
+    normalize();
+    invalidate_model();
 }
 
 #endif // PARALLEL
@@ -1150,7 +1090,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
     REAL a_sum_num, b_sum_num;		//numerator
     REAL a_sum_denom, b_sum_denom;	//denominator
     REAL dimmodprob=-math.INFTY;	//model probability for dim
-    REAL fullmodprob=-math.INFTY;	//for all dims
+    REAL fullmodprob=0;			//for all dims
     REAL* A=ARRAYN1(0);
     REAL* B=ARRAYN2(0);
     
@@ -1218,7 +1158,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 #endif // PARALLEL
 
       //and denominator
-      fullmodprob=math.logarithmic_sum(fullmodprob, dimmodprob) ;
+      fullmodprob+= dimmodprob;
 	    
 	//estimate initial+end state distribution numerator
 	for (k=0; (i=model->get_learn_p(k))!=-1; k++)	
@@ -1311,7 +1251,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
     }
 
     //cache train model probability
-    train->mod_prob=fullmodprob-log(p_observations->get_DIMENSION());
+    train->mod_prob=fullmodprob;
     train->mod_prob_updated=true ;
     
     //new model probability is unknown
@@ -4508,7 +4448,7 @@ REAL CHMM::linear_likelihood(FILE* file, int WIDTH, int UPTO, bool singleline)
     }
     else 
     {
-	mod_prob=-math.INFTY;
+	mod_prob=0.0;
 	while ( (fread(line_, sizeof (unsigned char), WIDTH, file)) == (unsigned int) WIDTH)
 	{
 	    double d=log(1);
@@ -4518,10 +4458,9 @@ REAL CHMM::linear_likelihood(FILE* file, int WIDTH, int UPTO, bool singleline)
 	    }
 
 	    //CIO::message("P_AVG=%e\n",mod_prob);
-	    mod_prob=math.logarithmic_sum(mod_prob, d);
+	    mod_prob+=d;
 	    total++;
 	}
-	mod_prob-=log(total);
 	//CIO::message("P_AVG=%e\n",mod_prob);
 	delete[] line_;
 	delete[] hist;
@@ -4537,7 +4476,7 @@ bool CHMM::save_linear_likelihood_bin(FILE* src, FILE* dest, int WIDTH, int UPTO
     char* line_=new char[WIDTH+1];
     int total=0;
 
-    mod_prob=-math.INFTY;
+    mod_prob=0;
 
     for (int i=0;i<N;i++)
     {
@@ -4554,11 +4493,9 @@ bool CHMM::save_linear_likelihood_bin(FILE* src, FILE* dest, int WIDTH, int UPTO
 	}
 	float f=(float)d;
 	fwrite(&f, sizeof(float),1, dest);
-	mod_prob=math.logarithmic_sum(mod_prob, d);
+	mod_prob+=d;
 	total++;
     }
-
-    mod_prob-=log(total);
 
     mod_prob_updated=true;
     
@@ -4574,7 +4511,7 @@ bool CHMM::save_linear_likelihood(FILE* src, FILE* dest, int WIDTH, int UPTO)
     char* line_=new char[WIDTH+1];
     int total=0;
 
-    mod_prob=-math.INFTY;
+    mod_prob=0;
 
     for (int i=0;i<N;i++)
     {
@@ -4594,11 +4531,10 @@ bool CHMM::save_linear_likelihood(FILE* src, FILE* dest, int WIDTH, int UPTO)
 	}
 
 	fprintf(dest, "%e ", d);
-	mod_prob=math.logarithmic_sum(mod_prob, d);
+	mod_prob+=d;
 	total++;
     }
 
-    mod_prob-=log(total);
     fprintf(dest,"];\n\nP_AVG=%e\n",(double) mod_prob);
 
     mod_prob_updated=true;

@@ -162,14 +162,33 @@ public:
 	/// determine accuracy, such that the thing fits into MAX_LOG_TABLE_SIZE, needs logrange as argument
 	static int determine_logaccuracy(int range);
 #else
+	/*
+	inline REAL logarithmic_sum(REAL p, REAL q)
+	{
+	    double result=comp_logarithmic_sum(p,q);
+
+	    printf("diff:%f <-> %f\n",p-q, result);
+	    return result;
+	}*/
+
 	inline REAL logarithmic_sum(REAL p, REAL q)
 	{
 	    register REAL diff=p-q;
 
 	    if (diff>0)		//p>q
-		return  p + log(1+exp(-diff));
-	    else		//p<=q
-		return  q + log(1+exp(diff));
+	    {
+		if (diff > 73)
+		    return p;
+		else
+		    return  p + log(1+exp(-diff));
+	    }
+	    else			//p<=q
+	    {
+		if (-diff > 73)
+		    return  q;
+		else
+		    return  q + log(1+exp(diff));
+	    }
 	}
 #endif
 #ifdef LOG_SUM_ARRAY

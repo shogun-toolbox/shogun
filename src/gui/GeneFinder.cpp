@@ -136,7 +136,8 @@ bool converge(double x, double y)
 
     CIO::message("\n #%03d\tbest result so far: %G (eps: %f", iteration_count, y, diff);
     if (diff<0.0)
-	CIO::message(" ***") ;
+	//CIO::message(" ***") ;
+	CIO::message(" **************** WARNING **************") ;
     CIO::message(")") ;
 
     if (iteration_count-- == 0 || (absdiff<EPSILON && conv_it<=0))
