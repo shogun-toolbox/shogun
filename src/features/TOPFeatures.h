@@ -13,6 +13,15 @@ class CTOPFeatures: public CRealFeatures
 
   virtual ~CTOPFeatures();
 
+  void set_models(CHMM* p, CHMM* n)
+    {
+      pos=p ; 
+      neg=n ;
+      delete[] feature_matrix  ;
+      feature_matrix=NULL ;
+      //set_feature_matrix() ;
+    };
+
   virtual REAL* set_feature_matrix();
 
   virtual int get_label(long idx) 
