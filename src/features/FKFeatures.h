@@ -1,46 +1,47 @@
-/*#ifndef _CFEATURES__H__
-#define _CFEATURES__H__
+#ifndef _CFKFEATURES__H__
+#define _CFKFEATURES__H__
 
-#include "preproc/Preproc.h"
+#include "features/RealFeatures.h"
+#include "hmm/HMM.h"
 
-class CFeatures
+class CFKFeatures: public CRealFeatures
 {
-    CSVM();
-    virtual ~CSVM();
+ public:
+  CFKFeatures(CHMM* p, CHMM* n, REAL a);
+  CFKFeatures(const CFKFeatures &orig);
+  
+  virtual ~CFKFeatures();
+
+  /// set HMMs and weight a
+  void set_models(CHMM* p, CHMM* n, REAL a);
+
+  /// set weight a
+  inline void set_a(REAL a) 
+  {
+	  weight_a=a;
+  }
+  
+  /// get weight a
+  inline REAL get_a() 
+  {
+	  return weight_a;
+  }
+
+  virtual REAL* set_feature_matrix();
+  virtual int get_label(long idx);
+  
+  virtual CFeatures* duplicate() const;
 
 
-    /// get feature vector for sample num
-    inline const REAL* get_feature_vector(int num)
-    { 
-	if (num<num_vectors)
-	    return feature_cache[num*num_features];
-	else
-	    return get_feature_vector_comp(int num);
-    }
-
-protected:
-    virtual const REAL* get_feature_vector_comp(int num)=0;
-    
-    /// set preprocessor
-    inline void set_preproc(CPreProc* p) { preproc=p };
-    
-    /// set current preprocessor
-    inline CPreProc* get_preproc() { return preproc; };
-
-protected:
-    CPreProc* preproc;
-
-    /** chunk of memory for all the feature_vectors	
-      it is aligned like 0...num_features-1 for vec0
-      0...num_features-1 for vec1 and so on up to vecnum_vectors-1
-    */
-    double* feature_cache;
-
-    /// number of features in cache
-    int num_features;
-
-    /// number of vectors in cache
-    int num_vectors;
+ protected:
+  virtual REAL* compute_feature_vector(long num, long& len);
+  
+  /// computes the featurevector to the address addr
+  void compute_feature_vector(REAL* addr, long num, long& len);
+  
+ protected:
+  CHMM* pos;
+  CHMM* neg;
+  REAL weight_a;
 };
 #endif
-*/

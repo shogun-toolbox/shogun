@@ -2,7 +2,6 @@
 #define __GUIFEATURES__H
 
 #include "features/Features.h"
-#include "features/TOPFeatures.h"
 #include "hmm/Observation.h"
 
 class CGUI;

@@ -3,6 +3,8 @@
 #include "hmm/Observation.h"
 #include "lib/io.h"
 #include "features/RealFileFeatures.h"
+#include "features/TOPFeatures.h"
+#include "features/FKFeatures.h"
 
 CGUIFeatures::CGUIFeatures(CGUI * gui_)
   : gui(gui_), train_features(NULL), test_features(NULL), train_obs(NULL), test_obs(NULL)
@@ -131,7 +133,28 @@ bool CGUIFeatures::set_features(char* param)
 		}
 		else if (strcmp(type,"FK")==0)
 		{
-		    CIO::not_implemented();
+			REAL a=0.5;
+
+			if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
+			{
+
+				CObservation* old_obs_pos=gui->guihmm.get_pos()->get_observations();
+				CObservation* old_obs_neg=gui->guihmm.get_neg()->get_observations();
+
+				delete (*o_ptr);
+				*o_ptr=new CObservation(pt, nt);
+				gui->guihmm.get_pos()->set_observations(*o_ptr);
+				gui->guihmm.get_neg()->set_observations(*o_ptr);
+
+				delete (*f_ptr);
+				*f_ptr= new CFKFeatures(gui->guihmm.get_pos(), gui->guihmm.get_neg(), a);
+
+				//						gui->guihmm.get_pos()->set_observations(old_obs_pos);
+				//						gui->guihmm.get_neg()->set_observations(old_obs_neg);
+
+			}
+			else
+				CIO::message("HMMs not correctly assigned!\n");
 		}
 		else
 		    CIO::not_implemented();

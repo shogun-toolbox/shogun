@@ -1,6 +1,7 @@
 #include "guilib/GUISVM.h"
 #include "gui/GUI.h"
 #include "lib/io.h"
+#include "features/RealFileFeatures.h"
 
 #include <assert.h>
 
