@@ -1,0 +1,14 @@
+naming conventions:
+	-objects which can deal with features of type REAL and class SIMPLE don't need to contain Real/Simple in class name
+	-others are required to clearify class/type they can handle, e.g. CSparseByteLinearKernel, CSparseGaussianKernel
+
+- features
+	-featureclass Simple/Sparse
+		-featuretype Real/Byte/...
+- preprocessors
+	-featureclass Simple/Sparse
+		-featuretype Real/Byte/...
+- kernel
+	-featureclass Simple/Sparse
+		-featuretype Real/Byte/...
+			-kerneltype Linear/Gaussian/...
