@@ -34,7 +34,7 @@ bool CKNN::train()
 		train_labels[i]-=min_class;
 
 	min_label=min_class;
-	num_classes=max_class-min_class;
+	num_classes=max_class-min_class+1; ///FIXME use real histogram!!!
 
 	CIO::message("num_classes: %d num_train: %d\n", num_classes, num_train_labels);
 	return true;
