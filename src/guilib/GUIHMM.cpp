@@ -1033,59 +1033,63 @@ bool CGUIHMM::output_hmm_path(char* param)
 
 bool CGUIHMM::relative_entropy(char* param)
 {
-	char* input=CIO::skip_spaces(param);
-	char target[1024];
-
-	if ((sscanf(input, "%s", target))==1)
+	if (pos && neg) 
 	{
-		CObservation* obs=NULL;
-
-		if (strcmp(target,"POSTRAIN")==0)
-			obs=pos_train_obs;
-		else if (strcmp(target,"NEGTRAIN")==0)
-			obs=neg_train_obs;
-		else if (strcmp(target,"POSTEST")==0)
-			obs= pos_test_obs;
-		else if (strcmp(target,"NEGTEST")==0)
-			obs= neg_test_obs;
-		else if (strcmp(target,"TEST")==0)
-			obs= test_obs;
-		else
-			CIO::message("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
-
-		if (obs)
+		if ( (pos->get_M() == neg->get_M()) && (pos->get_N() == neg->get_N()) )
 		{
-		    int num_sym=obs->get_M();
-		    double p=new double[num_sym];
-		    
-		    for (int column=0; column<obs->get_max_obs_T(); column++)
-		    {
-			double rent=0;
-			for (int line=0; line<obs->num_sym; line++)
+			double* entropy=new double[pos->get_N()];
+			double* p=new double[pos->get_M()];
+			double* q=new double[pos->get_M()];
+
+			for (int i=0; i<pos->get_N(); i++)
 			{
-			    if (obs->get_obs_T(line)!=obs->get_max_obs_T())
-			    {
-				CIO::message("DIMENSIONS of observations differ in size!\n");
-				return false;
-			    }
-			    else
-			    {
-				rent
-				math
-			    }
+				for (int j=0; j<pos->get_M(); j++)
+				{
+					p[j]=pos->get_b(i,j);
+					q[j]=neg->get_b(i,j);
+				}
+
+				entropy[i]=math.relative_entropy(p, q, pos->get_M());
+				CIO::message("%f ", entropy[i]);
 			}
-		    }
-		    delete[] p;
+			CIO::message("\n");
+#warning todo save me
+			delete[] p;
+			delete[] q;
+			delete[] entropy;
 		}
 		else
-			CIO::message("no observations were set for target %s\n",target);
+			CIO::message("pos and neg hmm's differ in number of emissions or states\n");
 	}
 	else
+		CIO::message("set pos and neg hmm first\n");
+	return false;
+}
+
+bool CGUIHMM::entropy(char* param)
+{
+	if (pos) 
 	{
-		CIO::message("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
-		return false;
+		double* entropy=new double[pos->get_N()];
+		double* p=new double[pos->get_M()];
+
+		for (int i=0; i<pos->get_N(); i++)
+		{
+			for (int j=0; j<pos->get_M(); j++)
+			{
+				p[j]=pos->get_b(i,j);
+			}
+
+			entropy[i]=math.entropy(p, pos->get_M());
+			CIO::message("%f ", entropy[i]);
+		}
+		CIO::message("\n");
+
+#warning todo save me
+		delete[] p;
+		delete[] entropy;
 	}
-
-	return true;
-
+	else
+		CIO::message("set pos hmm first\n");
+	return false;
 }
