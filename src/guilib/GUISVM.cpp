@@ -321,9 +321,9 @@ bool CGUISVM::use_kerncombination(CHAR* param)
 	param=CIO::skip_spaces(param);
 
 	int mkl=1;
-	sscanf(param, "%d", &use_mkl) ;
+	sscanf(param, "%d", &mkl) ;
 
-	use_mkl == (mkl==1);
+	use_mkl = (mkl==1);
 
 	if (mkl)
 		CIO::message(M_INFO, "Enabling MKL kern combination\n") ;
