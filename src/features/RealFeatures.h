@@ -26,6 +26,13 @@ class CRealFeatures: public CFeatures
   /// num_feat,num_vectors are returned by reference
   REAL* get_feature_matrix(int &num_feat, int &num_vec);  
   
+  /** set feature matrix
+      necessary to set feature_matrix, num_features, num_vectors, where
+      num_features is the column offset, and columns are linear in memory
+      see below for definition of feature_matrix
+  */
+  virtual REAL* set_feature_matrix()=0;
+
 protected:
   /// compute feature vector for sample num
   /// len is returned by reference
