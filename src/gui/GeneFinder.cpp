@@ -13,14 +13,19 @@
 //#include <termios.h>
 #endif
 
-#include <libmmfile.h>
+
+#ifdef SVMCPLEX
+ #include <libmmfile.h>
+#endif
 
 #include "hmm/HMM.h"
 #include "lib/Observation.h"
 #include "lib/Mathmatics.h"
 #include "svm/SVM.h"
 #include "svm/SVM_light.h"
-#include "svm_cplex/SVM_cplex.h"
+#ifdef SVMCPLEX
+ #include "svm_cplex/SVM_cplex.h"
+#endif
 
 //names of menu commands
 static const char* N_SET_POS_MODEL=			"set_pos_model";
@@ -1474,10 +1479,7 @@ static bool prompt(FILE* infile=stdin)
 		pos->set_observations(obs);
 		neg->set_observations(obs);
 		
-		int larger_N=math.max(pos->get_N(), neg->get_N());
-		int larger_M=math.max(pos->get_M(), neg->get_M());
-		
-		theta=new double[1+larger_N*(1+larger_N+1+larger_M)];
+		theta=new double[1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M())];
 		svm->svm_train(obs, 4, C);
 		if (strlen(name)>0)
 		{
@@ -1593,10 +1595,8 @@ static bool prompt(FILE* infile=stdin)
 
 			pos->set_observations(obs);
 			neg->set_observations(obs);
-			int larger_N=math.max(pos->get_N(), neg->get_N());
-			int larger_M=math.max(pos->get_M(), neg->get_M());
 
-			theta=new double[(1+larger_N*(1+larger_N+1+larger_M))];
+			theta=new double[1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M())];
 
 			svm->svm_test(obs, outputfile, rocfile);
 

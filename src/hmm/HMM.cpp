@@ -4498,15 +4498,15 @@ double* CHMM::compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* 
 
     }
     
-    for (i=0; i<pos->get_N(); i++)
+    for (i=0; i<neg->get_N(); i++)
     {
 	featurevector[p++]= - exp(neg->model_derivative_p(i, x)-negx);
 	featurevector[p++]= - exp(neg->model_derivative_q(i, x)-negx);
 
-	for (j=0; j<pos->get_N(); j++)
+	for (j=0; j<neg->get_N(); j++)
 	    featurevector[p++]= - exp(neg->model_derivative_a(i, j, x)-negx);
 
-	for (j=0; j<pos->get_M(); j++)
+	for (j=0; j<neg->get_M(); j++)
 	    featurevector[p++]= - exp(neg->model_derivative_b(i, j, x)-negx);
     }
 
@@ -4531,11 +4531,17 @@ double* CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg, int & num_features
     for (int x=0; x<totobs; x++)
     {
 	if (!(x % (totobs/10)))
-	    printf("%02d%%", (int) (100.0*x/totobs));
-	else printf(".");
+	    printf("%02d%%.", (int) (100.0*x/totobs));
+	else if (!(x % (totobs/200)))
+	    printf(".");
+
 	fflush(stdout);
 
 	compute_top_feature_vector(pos, neg, x, &featurespace[x*num_features]);
     }
+    
+    printf(".done.\n");
+    fflush(stdout);
+
     return featurespace;
 }

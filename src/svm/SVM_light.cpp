@@ -48,7 +48,7 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 	verbosity=1;
 	strcpy (learn_parm.predfile, "");
 	strcpy (learn_parm.alphafile, "");
-	learn_parm.biased_hyperplane=1;
+	learn_parm.biased_hyperplane=0;
 	learn_parm.remove_inconsistent=0;
 	learn_parm.skip_final_opt_check=1;
 	learn_parm.svm_maxqpsize=50;
@@ -59,7 +59,7 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 	learn_parm.svm_costratio=1.0;
 	learn_parm.svm_costratio_unlab=1.0;
 	learn_parm.svm_unlabbound=1E-5;
-	learn_parm.epsilon_crit=0.00001;
+	learn_parm.epsilon_crit=1E-6;
 	learn_parm.epsilon_a=1E-15;
 	learn_parm.compute_loo=0;
 	learn_parm.rho=1.0;
@@ -121,6 +121,8 @@ bool CSVMLight::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
 	    fprintf(outfile,"%+.8g (%+d)\n",output[i], label[i]);
 	else
 	    fprintf(outfile,"%+.8g (%+d)(*)\n",output[i], label[i]);
+
+	fflush(outfile);
     }  
 
     double *fp= new double[total];	
