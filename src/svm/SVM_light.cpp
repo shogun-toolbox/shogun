@@ -123,17 +123,17 @@ bool CSVMLight::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
     int* label= new int[total];	
 
     for (int i=0; i<total; i++)
-    { 
-	doc.docnum=i;
-	doc.twonorm_sq=-1;
-	output[i]=classify_example(&mymodel,&doc);
+	{ 
+		doc.docnum=i;
+		doc.twonorm_sq=-1;
+		output[i]=classify_example(&mymodel,&doc);
 
-	label[i]=test->get_label(i);
-	if ((label[i] < 0 && output[i] < 0) || (label[i] > 0 && output[i] > 0))
-	    CIO::message(outfile,"%+.8g (%+d)\n",output[i], label[i]);
-	else
-	    CIO::message(outfile,"%+.8g (%+d)(*)\n",output[i], label[i]);
-    }  
+		label[i]=test->get_label(i);
+		if ((label[i] < 0 && output[i] < 0) || (label[i] > 0 && output[i] > 0))
+			CIO::message(outfile,"%+.8g (%+d)\n",output[i], label[i]);
+		else
+			CIO::message(outfile,"%+.8g (%+d)(*)\n",output[i], label[i]);
+	}  
 
     REAL* fp= new REAL[total];	
     REAL* tp= new REAL[total];	
