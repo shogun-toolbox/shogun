@@ -55,6 +55,8 @@ bool CPCACut::init(CFeatures* f_)
   CIO::message("computing covariance matrix...") ;
 
   double *cov=new double[num_features*num_features] ;
+  for (int j=0; j<num_features*num_features; j++)
+    cov[j]=0.0 ;
 
   for (int i=0; i<num_examples; i++)
     {
