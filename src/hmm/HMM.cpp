@@ -16,7 +16,7 @@
 #define ARRAY_SIZE 65336
 
 #ifdef PARALLEL 
-int NUM_PARALLEL=4 ;
+int NUM_PARALLEL=2 ;
 #else
 int NUM_PARALLEL=1 ;
 #endif
