@@ -3582,7 +3582,7 @@ bool CHMM::save_model(FILE* file)
 	    for (i=0; i<N; i++)
 	      {
 		if (i<N-1) {
-		  if (finite((float) get_p(i)))
+		  if (finite(get_p(i)))
 		    fprintf(file, "%e,", (double)get_p(i));
 		  else
 		    fprintf(file, "%f,", NAN_REPLACEMENT);			
@@ -3599,7 +3599,7 @@ bool CHMM::save_model(FILE* file)
 	    for (i=0; i<N; i++)
 	      {
 		if (i<N-1) {
-		  if (finite((float) get_q(i)))
+		  if (finite(get_q(i)))
 		    fprintf(file, "%e,", (double)get_q(i));
 		  else
 		    fprintf(file, "%f,", NAN_REPLACEMENT);			
@@ -3620,13 +3620,13 @@ bool CHMM::save_model(FILE* file)
 		for (j=0; j<N; j++)
 		  {
 		    if (j<N-1) {
-		      if (finite((float) get_a(i,j)))
+		      if (finite(get_a(i,j)))
 			fprintf(file, "%e,", (double)get_a(i,j));
 		      else
 			fprintf(file, "%f,", NAN_REPLACEMENT);
 		    }
 		    else {
-		      if (finite((float) get_a(i,j)))
+		      if (finite(get_a(i,j)))
 			fprintf(file, "%e];\n", (double)get_a(i,j));
 		      else
 			fprintf(file, "%f];\n", NAN_REPLACEMENT);
@@ -3643,13 +3643,13 @@ bool CHMM::save_model(FILE* file)
 		for (j=0; j<M; j++)
 		  {
 		    if (j<M-1) {
-		      if (finite((float) get_b(i,j)))
+		      if (finite(get_b(i,j)))
 			fprintf(file, "%e,",  (double)get_b(i,j));
 		      else
 			fprintf(file, "%f,", NAN_REPLACEMENT);
 		    }
 		    else {
-		      if (finite((float) get_b(i,j)))
+		      if (finite(get_b(i,j)))
 			fprintf(file, "%e];\n", (double)get_b(i,j));
 		      else
 			fprintf(file, "%f];\n", NAN_REPLACEMENT);
