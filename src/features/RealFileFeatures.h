@@ -14,8 +14,6 @@ class CRealFileFeatures: public CRealFeatures
 
   virtual ~CRealFileFeatures();
   
-  virtual EType get_feature_type() { return F_REALFILE; }
-  
   /** set feature matrix
       necessary to set feature_matrix, num_features, num_vectors, where
       num_features is the column offset, and columns are linear in memory
