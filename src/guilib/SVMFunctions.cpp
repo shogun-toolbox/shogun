@@ -1,5 +1,6 @@
+#include "guilib/SVMFunctions.h"
 
-CFunctions::train_svm()
+void CSVMFunctions::train_svm()
 {
 	delete[] docs;
 	delete[] label;
@@ -82,7 +83,7 @@ CFunctions::train_svm()
 	return true;
 }
 
-CFunctions::test_svm()
+void CSVMFunctions::test_svm()
 {
     DOC doc;   // test example
 
@@ -170,7 +171,7 @@ CFunctions::test_svm()
   //    free(mymodel.alpha);*/
 }
 
-CFunctions::load_svm()
+void CSVMFunctions::load_svm()
 {
     bool result=false;
     char version_buffer[1024];
@@ -221,7 +222,7 @@ CFunctions::load_svm()
     return result;
 }
 
-CFunctions::save_svm()
+void CSVMFunctions::save_svm()
 {
 	svm.save_svm(file);
 }
