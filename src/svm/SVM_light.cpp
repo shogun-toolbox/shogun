@@ -17,9 +17,11 @@ CSVMLight::CSVMLight()
 
 CSVMLight::~CSVMLight()
 {
-  delete[] mymodel.supvec;
-  delete[] mymodel.alpha;
-  delete[] mymodel.index ;
+  free(mymodel.supvec);
+  free(mymodel.alpha);
+  free(mymodel.index) ;
+  delete[] docs;
+  delete[] label;
 }
 
 bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
