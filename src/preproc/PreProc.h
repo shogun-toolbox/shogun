@@ -28,5 +28,6 @@ public:
 	/// apply preproc on single feature vector
 	/// result in feature matrix
 	virtual REAL* apply_to_feature_vector(REAL* f, int len)=0;
+	virtual short int* apply_to_feature_vector(short int* f, int len)=0;
 };
 #endif

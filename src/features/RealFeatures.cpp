@@ -1,7 +1,9 @@
+
 #include "RealFeatures.h"
 
 CRealFeatures::CRealFeatures()
-: CFeatures(), num_vectors(0), num_features(0), feature_matrix(NULL)
+: CFeatures(), num_vectors(0), num_features(0), 
+  feature_matrix(NULL)
 {
 }
 
@@ -53,3 +55,5 @@ REAL* CRealFeatures::get_feature_matrix(int &num_feat, int &num_vec)
   if (preproc)
     preproc->preproc_feature(this);
 }*/
+
+
