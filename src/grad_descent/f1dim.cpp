@@ -9,7 +9,7 @@ extern CHMM* hmmcom ;
 double get_objective(CHMM* pos) ;
 void set_param_vector(CHMM* pos, REAL* params) ;
 
-float f1dim(REAL x)
+REAL f1dim(REAL x)
 {
 	int j;
 	

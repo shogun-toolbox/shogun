@@ -119,11 +119,11 @@ bool CRealFileFeatures::load_base_data()
     assert(fread(&num_feat, (unsigned int) intlen, 1, working_file)==1);
     assert(fread(&preprocd, (unsigned int) intlen, 1, working_file)==1);
     CIO::message("detected: intsize=%d, doublesize=%d, num_vec=%d, num_feat=%d, preprocd=%d\n", intlen, doublelen, num_vec, num_feat, preprocd);
-#warning check for FOURCC , check for endianess+convert if not right+ more checks.
+#error check for FOURCC , check for endianess+convert if not right+ more checks.
     filepos=ftell(working_file);
     set_num_vectors(num_vec);
     set_num_features(num_feat);
-#warning preprocessed is now a vector ... preprocessed=preprocd==1;
+#error preprocessed is now a vector ... preprocessed=preprocd==1;
 	//CIO::message("seeking to: %ld\n", filepos+num_features*num_vectors*doublelen);
     fseek(working_file, filepos+num_features*num_vectors*doublelen, SEEK_SET);
     delete[] labels;

@@ -39,7 +39,7 @@ bool CGUIObservation::load_observations(char* param)
 	int start=0;
 	int width=-1;
 
-#warning hmm -> obs  observation size -> M ??
+#error hmm -> obs  observation size -> M ??
 //	if (gui->guihmm.get_pos())
 //		M=gui->guihmm.get_pos()->get_M();
 //	else if (gui->guihmm.get_neg())
@@ -58,33 +58,33 @@ bool CGUIObservation::load_observations(char* param)
 			if (strcmp(target,"POSTRAIN")==0)
 			{
 				delete pos_train_obs;
-				pos_train_obs= new CObservation(trn_file, POSTRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER, start, width);
+				pos_train_obs= new CObservation(trn_file, POSTRAIN, alphabet, (BYTE)ceil(log((double) M)/log((double) 2)), M, ORDER, start, width);
 			}
 			else if (strcmp(target,"NEGTRAIN")==0)
 			{
 				delete neg_train_obs;
-				neg_train_obs= new CObservation(trn_file, NEGTRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER, start, width);
+				neg_train_obs= new CObservation(trn_file, NEGTRAIN, alphabet, (BYTE)ceil(log((double) M)/log((double) 2)), M, ORDER, start, width);
 			}
 			else if (strcmp(target,"POSTEST")==0)
 			{
 				delete pos_test_obs;
 				delete pos_test_name;
 				pos_test_name=strdup(filename);
-				pos_test_obs= new CObservation(trn_file, POSTEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER, start, width);
+				pos_test_obs= new CObservation(trn_file, POSTEST, alphabet, (BYTE)ceil(log((double) M)/log((double) 2)), M, ORDER, start, width);
 			}
 			else if (strcmp(target,"NEGTEST")==0)
 			{
 				delete neg_test_obs;
 				delete neg_test_name;
 				neg_test_name=strdup(filename);
-				neg_test_obs= new CObservation(trn_file, NEGTEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER, start, width);
+				neg_test_obs= new CObservation(trn_file, NEGTEST, alphabet, (BYTE)ceil(log((double) M)/log((double) 2)), M, ORDER, start, width);
 			}
 			else if (strcmp(target,"TEST")==0)
 			{
 				delete test_obs;
 				delete test_name;
 				test_name=strdup(filename);
-				test_obs= new CObservation(trn_file, TEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER, start, width);
+				test_obs= new CObservation(trn_file, TEST, alphabet, (BYTE)ceil(log((double) M)/log((double) 2)), M, ORDER, start, width);
 			}
 			else
 				CIO::message("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");

@@ -208,7 +208,7 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 	    int lda=num_dim;
 
 	    //CIO::message("dgemv args: num_f: %d, num_d: %d\n", num_f, num_d) ;
-#warning num_f might be num_features-1 or it is a bug in the SUN performance library (might apply to num_d too)
+#error num_f might be num_features-1 or it is a bug in the SUN performance library (might apply to num_d too)
 	    dgemv_(&N, &num_d, &num_f, &oned, T, &lda, sub_mean, &onei, &zerod, res, &onei); 
 
 	    REAL* m_transformed=&m[num_dim*vec];

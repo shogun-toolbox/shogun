@@ -18,22 +18,23 @@ INCLUDES=-I${SRCDIR}
 LINK=g++
 LINKFLAGS="-llapack -llapack_atlas -L /usr/lib/3dnow -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c -lm"
 TARGET="genefinder-${EXESUFFIX}"
+COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -fkeep-inline-functions  -finline-functions -fschedule-insns2 -fthread-jumps -fforce-mem -fforce-addr -fstrength-reduce -fomit-frame-pointer -unroll-loops"
 
 # stuff needed for autodetections (definitely needs cleanup)
 TMPLOG="configure.log"
 rm -f "$TMPLOG"
-TMPC="$I/mplayer-conf-$RANDOM-$$.c"
-TMPCPP="$I/mplayer-conf-$RANDOM-$$.cpp"
-TMPO="$I/mplayer-conf-$RANDOM-$$.o"
-TMPS="$I/mplayer-conf-$RANDOM-$$.S"
+TMPC="./configure-$RANDOM-$$.c"
+TMPCPP="./configure-$RANDOM-$$.cpp"
+TMPO="./configure-$RANDOM-$$.o"
+TMPS="./configure-$RANDOM-$$.S"
 
 cc_check() {
   echo >> "$TMPLOG"
   cat "$TMPC" >> "$TMPLOG"
   echo >> "$TMPLOG"
-  echo "$_cc $_inc_extra $_ld_static $_ld_extra $TMPC -o $TMPO $@" >> "$TMPLOG"
+  echo "$COMP_C $TMPC -o $TMPO $@" >> "$TMPLOG"
   rm -f "$TMPO"
-  ( "$_cc" $_inc_extra $_ld_static $_ld_extra "$TMPC" -o "$TMPO" "$@" ) >> "$TMPLOG" 2>&1
+  ( "$COMP_C" "$TMPC" -o "$TMPO" "$@" ) >> "$TMPLOG" 2>&1
   TMP="$?"
   echo >> "$TMPLOG"
   echo "ldd $TMPO" >> "$TMPLOG"
@@ -170,6 +171,14 @@ determine_march_mcpu()
 	  host_arch=`echo $_target | cut -d '-' -f 1 | tr '_' '-'`
 	fi
 
+	if sunos
+	then
+		COMP_C=cc
+		COMP_CPP=CC
+		COMP_OPTS="-O2 -g -Wall"
+	fi
+
+	OS=`echo "-D$system_name" | tr 'a-z' 'A-Z'`
 	echo "Detected operating system: $system_name"
 	echo "Detected host architecture: $host_arch"
 
@@ -450,7 +459,7 @@ int main() {
 	return 0;
 }
 EOF
-	  $_cc -o "$TMPO" "$TMPC"
+	  $COMP_C -o "$TMPO" "$TMPC"
 	  case `"$TMPO"` in
 		0-0) proc="ev4" ;;
 		1-0) proc="ev5" ;;
@@ -585,18 +594,18 @@ EOF
 		  cc_check -march=$proc -mcpu=$proc  || proc=error
 		fi
 		if test "$proc" = "error" ; then
-		  echores "Your $_cc does not support even \"i386\" for '-march' and '-mcpu'."
+		  echores "Your $COMP_C does not support even \"i386\" for '-march' and '-mcpu'."
 		  _mcpu=""
 		  _march=""
 		  _optimizing=""
 		elif test "$proc" = "i586-i686"; then
 		  _march="-march=i586"
 		  _mcpu="-mcpu=i686"
-		  _optimizing="$proc"
+		  _optimizing=""
 		else
 		  _march="-march=$proc"
 		  _mcpu="-mcpu=$proc"
-		  _optimizing="$proc"
+		  _optimizing=""
 		fi
 
 		## Gabucino : --target takes effect here (hopefully...) by overwriting
@@ -676,7 +685,8 @@ EOF
 		cpu745x=`$_cpuinfo | grep "cpu.*745."`
 		if test -n "$cpu745x"; then
 		_march='-mcpu=7450'
-		_mcpu='-mtune=7450 -maltivec -mabi=altivec'
+		_mcpu='-mtune=7450'
+		_optimizing='-maltivec -mabi=altivec'
 		fi
 		;;
 
@@ -740,10 +750,10 @@ EOF
 	esac
 
 
-	if x86 && test "$_runtime_cpudetection" = no ; then
+	if x86; then
 	  extcheck() {
 		if test "$1" = yes ; then
-		  echocheck "kernel support of $2"
+		  echocheck "CPU and kernel support of $2"
 		  cat > $TMPC <<EOF
 #include <signal.h>
 void catch() { exit(1); }
@@ -753,14 +763,12 @@ int main(void){
 }
 EOF
 
-		  if ( cc_check && $TMPO ) > /dev/null 2>&1 ; then
+		  if ( cc_check -m$2 && $TMPO ) > /dev/null 2>&1 ; then
 			echores "yes"
 		_optimizing="$_optimizing $2"
 			return 0
 		  else
-			echores "failed"
-			echo "It seems that your kernel does not correctly support $2."
-			echo "To use $2 extensions in MPlayer, you have to upgrade/recompile your kernel!"
+			echores "no"
 		return 1
 		  fi
 		fi
@@ -773,12 +781,6 @@ EOF
 	  extcheck $_3dnowex "3dnowex" "pswapd %%mm0, %%mm0" || _3dnowex=no
 	  extcheck $_sse "sse" "xorps %%xmm0, %%xmm0" || _sse=no _gcc3_ext="$_gcc3_ext -mno-sse"
 	  extcheck $_sse2 "sse2" "xorpd %%xmm0, %%xmm0" || _sse2=no _gcc3_ext="$_gcc3_ext -mno-sse2"
-	  echocheck "mtrr support"
-	  echores "$_mtrr"
-
-	  if test "$_mtrr" = yes ; then
-		_optimizing="$_optimizing mtrr"
-	  fi
 
 	  if test "$_gcc3_ext" != ""; then
 		# if we had to disable sse/sse2 because the active kernel does not
@@ -791,16 +793,29 @@ EOF
 	  fi
 
 	fi
+
+	_opts=""
+
+	for o in $_optimizing
+	do
+		_opts="$_opts -m$o"
+	done
+
+	_optimizing="$_opts"
+
+	echo "$system_name"
 }
 
-#set autodetected options
-COMPFLAGS_CPP="-g -Wall -O9 $_march $_mcpu -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -fkeep-inline-functions  -finline-functions -fschedule-insns2 -fthread-jumps -fforce-mem -fforce-addr -fstrength-reduce -fomit-frame-pointer -unroll-loops"
-COMPFLAGS_C="$COMPFLAGS_CPP"
 
 #write the actual config
 
 write_dot_config()
 {
+
+#set autodetected options
+COMPFLAGS_CPP="$OS $_march $_mcpu $_optimizing $COMP_OPTS"
+COMPFLAGS_C="$COMPFLAGS_CPP"
+
 cat > .config <<EOF
 SRCDIR 			= ${SRCDIR}
 EXT_SRC_C 		= ${EXT_SRC_C}
@@ -823,6 +838,11 @@ LINKFLAGS 		= ${LINKFLAGS}
 EOF
 }
 
+clean_up()
+{
+	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS"
+}
+
 #TODO
 #purify
 #debug
@@ -832,3 +852,4 @@ EOF
 #static
 determine_march_mcpu
 write_dot_config
+clean_up

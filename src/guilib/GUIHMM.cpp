@@ -389,7 +389,7 @@ bool CGUIHMM::linear_train_from_file(char* param)
 			//ORDER=1; //obsoleted by set_order
 			M=4;
 
-			CObservation* obs=new CObservation(TRAIN, alphabet, (int) ceil(log(M)/log(2)), M, ORDER);
+			CObservation* obs=new CObservation(TRAIN, alphabet, (int) ceil(log((double) M)/log((double) 2)), M, ORDER);
 
 			if (working && obs)
 			{
@@ -1286,7 +1286,7 @@ bool CGUIHMM::relative_entropy(char* param)
 				CIO::message("%f ", entropy[i]);
 			}
 			CIO::message("\n");
-#warning todo save me
+#error todo save me
 			delete[] p;
 			delete[] q;
 			delete[] entropy;
@@ -1318,7 +1318,7 @@ bool CGUIHMM::entropy(char* param)
 		}
 		CIO::message("\n");
 
-#warning todo save me
+#error todo save me
 		delete[] p;
 		delete[] entropy;
 	}

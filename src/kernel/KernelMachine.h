@@ -21,8 +21,8 @@ class CKernelMachine
   virtual inline void set_labels(CLabels* lab) { labels=lab; }
   virtual CLabels* get_labels() { return labels; }
 
-  virtual inline void set_kernel(CKernel* k) { kernel=k; }
-  virtual inline CKernel* get_kernel() { return kernel; }
+  inline void set_kernel(CKernel* k) { kernel=k; }
+  inline CKernel* get_kernel() { return kernel; }
 
  protected:
   CKernel* kernel;

@@ -4,10 +4,6 @@
 #include <stdarg.h>
 #include <ctype.h>
 
-extern FILE *stdin;
-extern FILE *stdout;
-extern FILE *stderr;
-
 FILE* CIO::target=stdout;
 
 CIO::CIO()
