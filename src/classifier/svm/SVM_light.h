@@ -297,6 +297,7 @@ protected:
 #ifdef USE_CPLEX
   CPXENVptr     env ;
   CPXLPptr      lp ;
+  bool          lp_initialized ;
 #endif
 
 };

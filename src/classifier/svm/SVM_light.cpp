@@ -75,6 +75,7 @@ CSVMLight::CSVMLight()
 #ifdef USE_CPLEX
 	lp = NULL ;
 	env = NULL ;
+	lp_initialized = false ;
 #endif
 	
 }
@@ -87,6 +88,7 @@ CSVMLight::~CSVMLight()
 		if ( status ) {
 			CIO::message(M_ERROR, "CPXfreeprob failed, error code %d.\n", status);
 		}
+		lp=NULL ;
 	}
 	if ( env != NULL ) {
 		INT status = CPXcloseCPLEX (&env);
@@ -97,6 +99,7 @@ CSVMLight::~CSVMLight()
 			CPXgeterrorstring (env, status, errmsg);
 			CIO::message(M_ERROR, "%s", errmsg);
 		}
+		env=NULL ;
 	}
 #endif
 
@@ -271,6 +274,7 @@ bool CSVMLight::train()
 #ifdef USE_CPLEX
 	if (get_mkl_enabled() && (env==NULL))
 	{
+		lp_initialized = false ;
 		while (env==NULL)
 		{
 			CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
@@ -316,6 +320,26 @@ bool CSVMLight::train()
 				}
 			}
 		}
+	}
+	
+	if (lp)
+	{
+		INT status = CPXfreeprob (env, &lp);
+		if ( status ) {
+			CIO::message(M_ERROR, "CPXfreeprob failed, error code %d.\n", status);
+		}
+		lp=NULL ;
+	}
+	
+	if (get_mkl_enabled())
+	{
+		INT status = 0 ;
+		lp = CPXcreateprob (env, &status, "light");
+		
+		if ( lp == NULL )
+			CIO::message(M_ERROR, "Failed to create LP.\n");
+		else
+			CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
 	}
 	
 #endif
@@ -397,6 +421,17 @@ bool CSVMLight::train()
 		set_support_vector(i, model->supvec[i+1]);
 	}
 
+#ifdef USE_CPLEX
+	if (lp)
+	{
+		INT status = CPXfreeprob (env, &lp);
+		if ( status ) {
+			CIO::message(M_ERROR, "CPXfreeprob failed, error code %d.\n", status);
+		}
+		lp=NULL ;
+	}
+#endif
+	
 	if (precomputed_subkernels!=NULL)
 	{
 		for (INT i=0; i<num_precomputed_subkernels; i++)
@@ -1422,11 +1457,12 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 	count++ ;
 #ifdef USE_CPLEX			
 	w_gap = CMath::abs(1-rho/objective) ;
-
+	
+	//CIO::message(M_INFO, "(%i) ",count) ;
 	if ((w_gap >= 0.9999*get_weight_epsilon()))
 	{
 		CIO::message(M_INFO, "*") ;
-		if (count == 1)
+		if (!lp_initialized)
 		{
 			CIO::message(M_INFO, "creating LP\n") ;
 			
@@ -1456,7 +1492,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 			}
 			
 			// add constraint sum(w)=1 ;
-			CIO::message(M_INFO, "add the first row\n") ;
+			CIO::message(M_INFO, "adding the first row\n") ;
 			int rmatbeg[1] ;
 			int rmatind[num_kernels+1] ;
 			double rmatval[num_kernels+1] ;
@@ -1481,10 +1517,13 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 			if ( status ) {
 				CIO::message(M_ERROR, "Failed to add the first row.\n");
 			}
+			lp_initialized = true ;
+			
 			if (C_mkl!=0.0)
 			{
 				for (INT q=0; q<num_kernels-1; q++)
 				{
+					fprintf(stderr,"q=%i\n", q) ;
 					// add constraint w[i]-w[i+1]<s[i] ;
 					// add constraint w[i+1]-w[i]<s[i] ;
 					int rmatbeg[1] ;
@@ -1743,7 +1782,7 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 	if ((w_gap >= 0.9999*get_weight_epsilon()))// && (mymaxdiff < prev_mymaxdiff/2.0))
 	{
 		CIO::message(M_INFO, "*") ;
-		if (rho==0)
+		if (!lp_initialized)
 		{
 			CIO::message(M_INFO, "creating LP\n") ;
 			
@@ -1798,6 +1837,7 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 			if ( status ) {
 				CIO::message(M_ERROR, "Failed to add the first row.\n");
 			}
+			lp_initialized=true ;
 			if (C_mkl!=0.0)
 			{
 				for (INT q=0; q<num_kernels-1; q++)
