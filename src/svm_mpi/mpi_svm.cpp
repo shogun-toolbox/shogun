@@ -6,6 +6,7 @@
 #include "intpoint_mpi.h"
 #include "mpi_svm.h"
 #include "features/RealFeatures.h"
+#include "lib/io.h"
 
 extern "C" 
 void my_delete(void* ptr)
@@ -30,13 +31,19 @@ CSVMMPI::~CSVMMPI()
 bool CSVMMPI::svm_train(CFeatures* train)
 {
   int num_cols=train->get_number_of_examples() ;
-  int num_rows=((CRealFeatures*)train)->get_num_features() ;
-  m_prime=svm_mpi_broadcast_Z_size(num_cols, num_rows, m_last) ;
-  double * column ;
+  num_rows=((CRealFeatures*)train)->get_num_features() ;
+  CIO::message("num_rows=%i\n", num_rows) ;
 
-  for (int i=0; i<num_cols; i++)
+  m_prime=svm_mpi_broadcast_Z_size(num_cols, num_rows, m_last) ;
+  double * column=new double[num_rows] ;
+  int j=0;
+  
+  for (j=0; j<num_cols; j++) 
   {
-    svm_mpi_set_Z_block(column, 1, i%m_prime, i/m_prime) ; 
+    int rank=floor(((double)j)/m_prime) ;
+    int start_idx=j%m_prime ;
+    CIO::message("starting svm: %i %i (%i,%i)\n",start_idx, rank, j, m_prime) ;
+    svm_mpi_set_Z_block(column, 1, start_idx, rank) ; 
   } ;
 }
 
@@ -99,12 +106,17 @@ void donothing(void *)
 void CSVMMPI::svm_mpi_set_Z_block(double * block, int num_cols, int start_idx, int rank) 
 {
   if (rank)
-    send_z_columns_double(MPI_COMM_WORLD, block, start_idx,
-			  num_cols, num_rows,
-			  rank, true);
+    {
+      CIO::message("z_client %i %i\n",start_idx, rank) ;
+      send_z_columns_double(MPI_COMM_WORLD, block, start_idx,
+			    num_cols, num_rows,
+			    rank, true);
+    }
   else
     {
-      CMatrix<double> tmp(num_rows, num_cols, block, false, donothing);
+      CIO::message("z_block server %i %i %i %i\n",start_idx, rank, num_cols, num_rows) ;
+      CMatrix<double> tmp(num_rows, num_cols, block, true);
+      CIO::message("z_block server %i %i\n",start_idx, rank) ;
       Z(colon(), colon(start_idx, start_idx+num_cols-1)) = tmp;
     } ;
 } ;

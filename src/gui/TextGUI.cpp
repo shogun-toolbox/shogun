@@ -1,10 +1,11 @@
 #include "gui/TextGUI.h"
 
-#include "lib/io.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+
+#include "lib/io.h"
 
 CTextGUI *gui=NULL;
 

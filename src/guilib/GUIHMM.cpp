@@ -157,10 +157,12 @@ bool CGUIHMM::set_hmm_as(char* param)
 			if (strcmp(target,"POS")==0)
 			{
 				pos=working;
+				gui->guifeatures.set_hmms(pos, neg) ;
 			}
 			else if (strcmp(target,"NEG")==0)
 			{
 				neg=working;
+				gui->guifeatures.set_hmms(pos, neg) ;
 			}
 			else if (strcmp(target,"TEST")==0)
 			{

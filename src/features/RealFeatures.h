@@ -35,7 +35,7 @@ class CRealFeatures: public CFeatures
   */
   virtual REAL* set_feature_matrix()=0;
 
-  int get_num_features() { return num_features ; } ;
+  virtual int get_num_features()=0 ;
 
   bool preproc_feature_matrix();
 

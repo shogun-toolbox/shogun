@@ -19,12 +19,15 @@ CTOPFeatures::~CTOPFeatures()
 
 void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 {
-	pos=p ; 
-	neg=n ;
-	delete[] feature_matrix  ;
-	feature_matrix=NULL ;
-	//set_feature_matrix() ;
-	num_vectors=get_number_of_examples() ;
+  pos=p ; 
+  neg=n ;
+  delete[] feature_matrix  ;
+  feature_matrix=NULL ;
+  //set_feature_matrix() ;
+  num_vectors=get_number_of_examples() ;
+  
+  if (pos && neg)
+    num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
 }
 
 int CTOPFeatures::get_label(long idx)
@@ -37,10 +40,10 @@ int CTOPFeatures::get_label(long idx)
 
 long CTOPFeatures::get_number_of_examples()
 {
-	if (pos && pos->get_observations())
-			return pos->get_observations()->get_DIMENSION();
-
-	return 0;
+  if (pos && pos->get_observations())
+    return pos->get_observations()->get_DIMENSION();
+  
+  return 0;
 }
   
 CFeatures* CTOPFeatures::duplicate() const

@@ -65,7 +65,8 @@ REAL* CRealFeatures::get_feature_matrix(long &num_feat, long &num_vec)
 bool CRealFeatures::preproc_feature_matrix()
 {
 	if (preproc)
-		return ((CRealPreProc*) preproc)->apply_to_feature_matrix(this);
+#warning		return ((CRealPreProc*) preproc)->apply_to_feature_matrix(this);
+	  return false ;
 	else
 		return false;
 }

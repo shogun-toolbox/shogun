@@ -12,7 +12,7 @@ svm_mpi(gui->argc, gui->argv),
 #ifdef SVMCPLEX
   svm_cplex(),
 #endif // SVMCPLEX
-  svm(&svm_light)
+  svm(&svm_mpi)
 {
 }
 
@@ -39,7 +39,9 @@ bool CGUISVM::train(char* param)
       return false ;
     } ;
   
-  return svm->svm_train(gui->guifeatures.get_train_features()) ;
+  CFeatures * f=gui->guifeatures.get_train_features() ;
+  CIO::message("starting svm\n") ;
+  return svm->svm_train(f) ;
 }
 
 bool CGUISVM::test(char* param)
