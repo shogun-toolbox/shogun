@@ -26,7 +26,7 @@ static double one=1.0 ;
 CSVMMPI::CSVMMPI(int argc, const char **argv)
   //  : Z(1,1,&one,false,donothing)
 {
-  //  svm_mpi_init(argc, argv) ;
+  svm_mpi_init(argc, argv) ;
   kernel=NULL ;
 } ;
 
@@ -41,7 +41,10 @@ bool CSVMMPI::svm_train(CFeatures* train)
   int num_cols=train->get_number_of_examples() ;
   num_rows=((CRealFeatures*)train)->get_num_features() ;
   CIO::message("num_rows=%i\n", num_rows) ;
-
+  long dummy ;
+  int * labels=train->get_labels(dummy) ;
+  assert(dummy==num_cols) ;
+  
   m_prime=svm_mpi_broadcast_Z_size(num_cols, num_rows, m_last) ;
   double * column=(double*)malloc(sizeof(double)*num_rows) ;
   int j=0;
@@ -50,9 +53,12 @@ bool CSVMMPI::svm_train(CFeatures* train)
   {
     int rank=floor(((double)j)/m_prime) ;
     int start_idx=j%m_prime ;
-    CIO::message("starting svm: %i %i (%i,%i)\n",start_idx, rank, j, m_prime) ;
+    //CIO::message("setting vector: %i %i (%i,%i)\n",start_idx, rank, j, m_prime) ;
     svm_mpi_set_Z_block(column, 1, start_idx, rank) ; 
   } ;
+  
+  svm_mpi_optimize(labels, num_cols) ; 
+  return true; 
 }
 
 REAL* CSVMMPI::svm_test(CFeatures* test, CFeatures* train)
@@ -121,23 +127,9 @@ void CSVMMPI::svm_mpi_set_Z_block(double * block, int num_cols, int start_idx, i
     }
   else
     {
-      CIO::message("z_block server %i %i %i %i %ld\n",start_idx, rank, num_cols, num_rows, block) ;
-
+      //CIO::message("z_block server %i %i %i %i %ld\n",start_idx, rank, num_cols, num_rows, block) ;
       CMatrix<double> tmp(num_rows, num_cols, block, false, donothing);
-
-      //      CIO::message("z_block server %i %i %i \n",start_idx, rank, num_cols) ;
       Z(colon(), colon(start_idx, start_idx+num_cols-1)) = tmp;
-
-      CIO::message("z_block server %i %i \n",Z.GetNumRows(),Z.GetNumColumns()) ;
-
-      double* Zd=Z.GetDataPointer() ;
-      Zd+=num_rows*start_idx ;
-      
-      //      CIO::message("z_block server %i %i %ld %ld\n",Z.GetNumRows(),Z.GetNumColumns(), Zd, block) ;
-
-      for (int i=0; i< num_cols*num_rows; i++)
-	Zd[i]=block[i] ;
-	
     } ;
 } ;
 
