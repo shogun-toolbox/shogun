@@ -25,9 +25,14 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
   feature_matrix=NULL ;
   //set_feature_matrix() ;
   num_vectors=get_number_of_examples() ;
-  
+  num_features=get_num_features() ;
+}
+
+int CTOPFeatures::get_num_features()
+{
   if (pos && neg)
-    num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
+    return 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
+  return 0 ;
 }
 
 int CTOPFeatures::get_label(long idx)

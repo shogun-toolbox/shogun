@@ -14,11 +14,19 @@ void my_delete(void* ptr)
   delete[] ptr ;
 } ;
 
+extern "C"
+void donothing(void *)
+{
+  /* do nothing */
+}
+
+static double one=1.0 ;
 
 #if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 CSVMMPI::CSVMMPI(int argc, const char **argv)
+  //  : Z(1,1,&one,false,donothing)
 {
-  svm_mpi_init(argc, argv) ;
+  //  svm_mpi_init(argc, argv) ;
   kernel=NULL ;
 } ;
 
@@ -35,7 +43,7 @@ bool CSVMMPI::svm_train(CFeatures* train)
   CIO::message("num_rows=%i\n", num_rows) ;
 
   m_prime=svm_mpi_broadcast_Z_size(num_cols, num_rows, m_last) ;
-  double * column=new double[num_rows] ;
+  double * column=(double*)malloc(sizeof(double)*num_rows) ;
   int j=0;
   
   for (j=0; j<num_cols; j++) 
@@ -88,20 +96,19 @@ unsigned CSVMMPI::svm_mpi_broadcast_Z_size(int num_cols, int num_rows_, unsigned
 {
   unsigned num_nodes;
   num_rows=num_rows_ ;
-  MPI_Comm_size(MPI_COMM_WORLD, (int *)&num_nodes);
-  m_prime=distribute_dimensions(num_cols, num_nodes, num_rows_, num_rows_,
-				&m_last) ;
+  //  MPI_Comm_size(MPI_COMM_WORLD, (int *)&num_nodes);
+  num_nodes=1 ;
+  //m_prime=distribute_dimensions(num_cols, num_nodes, num_rows_, num_rows_,
+  //			&m_last) ;
+  m_prime=num_cols ;
+  m_last=num_cols ;
+
   m_last_=m_last ;
   m_full = num_cols ;
   Z.Resize(num_rows_, m_prime) ;
   return m_full ;
 } ;
 
-extern "C"
-void donothing(void *)
-{
-  /* do nothing */
-}
 
 void CSVMMPI::svm_mpi_set_Z_block(double * block, int num_cols, int start_idx, int rank) 
 {
@@ -114,10 +121,23 @@ void CSVMMPI::svm_mpi_set_Z_block(double * block, int num_cols, int start_idx, i
     }
   else
     {
-      CIO::message("z_block server %i %i %i %i\n",start_idx, rank, num_cols, num_rows) ;
-      CMatrix<double> tmp(num_rows, num_cols, block, true);
-      CIO::message("z_block server %i %i\n",start_idx, rank) ;
+      CIO::message("z_block server %i %i %i %i %ld\n",start_idx, rank, num_cols, num_rows, block) ;
+
+      CMatrix<double> tmp(num_rows, num_cols, block, false, donothing);
+
+      //      CIO::message("z_block server %i %i %i \n",start_idx, rank, num_cols) ;
       Z(colon(), colon(start_idx, start_idx+num_cols-1)) = tmp;
+
+      CIO::message("z_block server %i %i \n",Z.GetNumRows(),Z.GetNumColumns()) ;
+
+      double* Zd=Z.GetDataPointer() ;
+      Zd+=num_rows*start_idx ;
+      
+      //      CIO::message("z_block server %i %i %ld %ld\n",Z.GetNumRows(),Z.GetNumColumns(), Zd, block) ;
+
+      for (int i=0; i< num_cols*num_rows; i++)
+	Zd[i]=block[i] ;
+	
     } ;
 } ;
 

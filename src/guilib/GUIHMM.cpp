@@ -1,7 +1,7 @@
 #include "guilib/GUIHMM.h"
 
-#include <stdlib.h>
-#include <string.h>
+//#include <stdlib.h>
+//#include <string.h>
 #include "gui/GUI.h"
 
 CGUIHMM::CGUIHMM(CGUI * gui_): gui(gui_)

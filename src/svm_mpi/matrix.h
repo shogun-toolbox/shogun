@@ -607,7 +607,10 @@ public:
 
   /**
    */
-  inline T *GetDataPointer(void) { Dirty(); return (m_TopLeftPtr); }
+  inline T *GetDataPointer(void) {   
+    Dirty(); 
+    return (m_TopLeftPtr); 
+  }
 
   /**
    * Create a submatrix from a region inside this matrix.

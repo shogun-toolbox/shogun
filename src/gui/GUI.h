@@ -1,7 +1,6 @@
 #ifndef __GUI__H
 #define __GUI__H
 
-#include <stdio.h>
 #include "guilib/GUIHMM.h"
 #include "guilib/GUISVM.h"
 #include "guilib/GUIKernel.h"
