@@ -1441,7 +1441,7 @@ public:
 	    static bool compute_top_feature_cache(CHMM* pos, CHMM* neg);
 
 		/// save all top featurevectors into dest
-		static bool CHMM::save_top_features(CHMM* pos, CHMM* neg, FILE* dest);
+		static bool save_top_features(CHMM* pos, CHMM* neg, FILE* dest);
 	    
 	    /**@name compute featurevector for observation dim
 	     * Computes the featurevector for one observation 
@@ -1467,6 +1467,7 @@ public:
 		else
 		    return &feature_cache_sv[num_features*(row - (int)feature_cache_checksums[6])];
 	    }
+		void subtract_mean_from_top_feature_cache(int num_features, int totobs);
 
 	    ///invalidate the top feature cache
 	    static void invalidate_top_feature_cache(E_TOP_FEATURE_CACHE_VALIDITY v);

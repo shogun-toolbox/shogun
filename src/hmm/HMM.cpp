@@ -1153,39 +1153,54 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	const REAL MIN_RAND=1e-1;
 
 
-	if (exp(train->get_p(0))>=0.99)
+	if (exp(train->get_p(0))>-0.00001)
 	{
 		for (i=0; i<N; i++)
 		{
-			if (i!=25)
+			if (i==25)
 				train->set_p(i,-math.INFTY);
 			else
-				train->set_p(i, (MIN_RAND+((REAL)rand()))/REAL(RAND_MAX));
-				
-			train->set_q(i, (MIN_RAND+((REAL)rand()))/REAL(RAND_MAX));
+				train->set_p(i, log(MIN_RAND+((REAL)rand()))/REAL(RAND_MAX));
 
-			for (j=0; j<25; j++)
-				train->set_b(i,j, (MIN_RAND+((REAL)rand()))/REAL(RAND_MAX));
+			if (i<49)
+				train->set_q(i, -math.INFTY);
+			else if (i<51)
+				train->set_q(i, log(MIN_RAND+((REAL)rand()))/REAL(RAND_MAX));
+
+			if (i<25)
+			{
+				for (j=0; j<M; j++)
+					train->set_b(i,j, log(MIN_RAND+((REAL)rand()))/REAL(RAND_MAX));
+			}
+
 		}
 		train->invalidate_model();
+		train->normalize();
 	}
 
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
 	{
 		//if (i!=25)
-			set_p(i,log(PSEUDO));
+		set_p(i,log(PSEUDO));
 		//else
 		//	set_p(i,train->get_p(i));
 
-		set_q(i,train->get_q(i));
+		set_q(i,log(PSEUDO));
 
 		for (j=0; j<N; j++)
 			set_a(i,j, train->get_a(i,j));	//a is const
-		for (j=0; j<25; j++)
-			set_b(i,j, log(PSEUDO));	
-		for (j=25; j<M; j++)
-			set_b(i,j, train->get_b(i,j));	//b is const for state
+	
+		if (i<25)
+		{
+			for (j=0; j<M; j++)
+				set_b(i,j, log(PSEUDO));	
+		}
+		else
+		{
+			for (j=0; j<M; j++)
+				set_b(i,j, train->get_b(i,j));	//b is const for state
+		}
 	}
 
 	//change summation order to make use of alpha/beta caches
@@ -1198,6 +1213,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 		{
 			//estimate initial+end state distribution numerator
 			set_p(i, math.logarithmic_sum(get_p(i), train->get_p(i)+train->get_b(i,p_observations->get_obs(dim,0))+train->backward(0,i,dim) - dimmodprob));
+			set_q(i, math.logarithmic_sum(get_q(i), train->forward(p_observations->get_obs_T(dim)-1, i, dim)+train->get_q(i) - dimmodprob ));
 		}
 
 		for (i=0; i<25; i++)
@@ -5086,20 +5102,31 @@ double* CHMM::compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* 
     }
 #else
 #ifdef NORMALIZE_TO_ONE
+	double sum=0;
+	sum+=featurevector[0]*featurevector[0];
+
 	for (i=0; i<pos->get_N(); i++)
 	{
-		featurevector[p++]=exp(pos->model_derivative_p(i, x)-posx);
-		featurevector[p++]=exp(pos->model_derivative_q(i, x)-posx);
+		featurevector[p]=exp(pos->model_derivative_p(i, x)-posx);
+		sum+=featurevector[p]*featurevector[p++];
+		featurevector[p]=exp(pos->model_derivative_q(i, x)-posx);
+		sum+=featurevector[p]*featurevector[p++];
 
 		for (j=0; j<pos->get_N(); j++)
-			featurevector[p++]=exp(pos->model_derivative_a(i, j, x)-posx);
+		{
+			featurevector[p]=exp(pos->model_derivative_a(i, j, x)-posx);
+			sum+=featurevector[p]*featurevector[p++];
+		}
 
 		for (j=0; j<pos->get_M(); j++)
-			featurevector[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
+		{
+
+			sum+=featurevector[p]*featurevector[p++];
+			featurevector[p]=exp(pos->model_derivative_b(i, j, x)-posx);
+		}
 
 	}
 
-	double sum=0;
 	for (i=0; i<neg->get_N(); i++)
 	{
 		featurevector[p]= - exp(neg->model_derivative_p(i, x)-negx);
@@ -5122,7 +5149,7 @@ double* CHMM::compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* 
 
 	sum=sqrt(sum);
 	for (p=0; p<1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()); p++)
-		featurevector[p++]/=sum;
+		featurevector[p]/=sum;
 
 #else //this is the normalization used in jaahau
     int o_p=1;
@@ -5342,6 +5369,21 @@ void CHMM::invalidate_top_feature_cache(E_TOP_FEATURE_CACHE_VALIDITY v)
     };
 }
 
+void CHMM::subtract_mean_from_top_feature_cache(int num_features, int totobs)
+{
+	if (feature_cache_obs)
+	{
+		for (int j=0; j<num_features; j++)
+		{
+			double mean=0;
+			for (int i=0; i<totobs; i++)
+				mean+=feature_cache_obs[i*num_features+j];
+			for (int i=0; i<totobs; i++)
+				feature_cache_obs[i*num_features+j]-=mean;
+		}
+	}
+}
+
 #ifndef PARALLEL
 
 bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
@@ -5368,8 +5410,6 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 			printf("%02d%%.", (int) (100.0*x/totobs));
 		    else if (!(x % (totobs/200+1)))
 			printf(".");
-
-		   
 
 		    compute_top_feature_vector(pos, neg, pos->get_observations()->get_support_vector_idx(x), &feature_cache_sv[x*num_features]);
 		}

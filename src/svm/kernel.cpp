@@ -392,13 +392,16 @@ double find_normalizer(KERNEL_PARM *kernel_parm, int num)
 	double sum=0;
 	normalizer=1.0;
 
+// do not normalize since they are already normalized
+//#ifndef NORMALIZE_TO_ONE
 	for (int i=0; i<num; i++)
 	{
 		a.docnum=i;
 		sum+=kernel(kernel_parm, &a, &a);
 	}
 	normalizer=sum/num;
-
+//#endif
+	CIO::message("kernel normalizer: %f\n", normalizer);
 	return normalizer;
 }
 
