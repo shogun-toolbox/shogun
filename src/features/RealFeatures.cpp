@@ -1,7 +1,7 @@
-#include "Features.h"
+#include "RealFeatures.h"
 
 CRealFeatures::CRealFeatures()
-  : CFeatures(), num_vectors(0), num_features(0), feature_matrix(NULL)
+: CFeatures(), num_vectors(0), num_features(0), feature_matrix(NULL)
 {
 }
 
@@ -17,15 +17,15 @@ REAL* CRealFeatures::get_feature_vector(int num, int &len, bool &free)
   if ((num<num_vectors) && feature_matrix)
     {
       free=false ;
-      return feature_matrix[num*num_features];
+      return &feature_matrix[num*num_features];
     } 
   else
     {
       free=true ;
-      REAL* feat=get_feature_vector_comp(num) ;
+      REAL* feat=compute_feature_vector(num, len) ;
       if (preproc)
 	{
-	  REAL* feat2 preproc->apply_to_feature_vector(feat, len);
+	  REAL* feat2 = preproc->apply_to_feature_vector(feat, len);
 	  delete[] feat ;
 	  return feat2 ;
 	}
@@ -40,7 +40,7 @@ void CRealFeatures::free_feature_vector(REAL* feat, bool free)
 } 
 
 /// get the pointer to the feature matrix
-const REAL* CRealFeatures::get_feature_matrix(int &num_feat, int &num_vect)
+REAL* CRealFeatures::get_feature_matrix(int &num_feat, int &num_vec)
 {
   num_feat=num_features;
   num_vec=num_vectors;
@@ -48,8 +48,8 @@ const REAL* CRealFeatures::get_feature_matrix(int &num_feat, int &num_vect)
 }
 
 /// preproc feature_matrix
-bool CRealFeatures::preproc_feature_matrix()
+/*bool CRealFeatures::preproc_feature_matrix()
 {
   if (preproc)
     preproc->preproc_feature(this);
-}
+}*/

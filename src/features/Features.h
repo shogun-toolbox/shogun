@@ -4,7 +4,7 @@
 #include "lib/common.h"
 #include "preproc/PreProc.h"
 
-//class CPreProc;
+class CPreProc;
 
 class CFeatures
 {

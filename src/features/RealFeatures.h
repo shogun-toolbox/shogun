@@ -8,10 +8,10 @@
 class CRealFeatures: public CFeatures
 {
  public:
-  CRealFeatures()::CFeatures() { } ;
-  ~CRealFeatures() { };
+  CRealFeatures() ;
+  ~CRealFeatures();
   
-  virtual EType get_feature_type() { return CFeatures::DOUBLE ; } ;
+  virtual EType get_feature_type() { return CFeatures::F_REAL ; } ;
   
   /** get feature vector for sample num
       from the matrix as it is if matrix is
@@ -21,7 +21,7 @@ class CRealFeatures: public CFeatures
       @param len length is returned by reference
   */
   REAL* get_feature_vector(int num, int& len, bool& free);
-  bool free_feature_vector(REAL* feat_vec, bool free);
+  void free_feature_vector(REAL* feat_vec, bool free);
   
   /// get the pointer to the feature matrix
   /// num_feat,num_vectors are returned by reference
