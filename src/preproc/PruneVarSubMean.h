@@ -29,6 +29,8 @@ class CPruneVarSubMean : public CRealPreProc
 
  protected:
   int* idx ;
+  REAL* mean;
+  REAL* std;
   int num_idx ;
 };
 #endif
