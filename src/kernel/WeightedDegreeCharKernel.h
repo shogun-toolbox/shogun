@@ -220,5 +220,9 @@ class CWeightedDegreeCharKernel: public CCharKernel
   bool block_computation;
 
   REAL* matching_weights;
+
+  struct SuffixTree* TreeMem ;
+  INT TreeMemPtr ;
+  INT TreeMemPtrMax ;
 };
 #endif

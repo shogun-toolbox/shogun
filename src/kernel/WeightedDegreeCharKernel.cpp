@@ -20,6 +20,10 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d
 	for (INT i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
 
+	TreeMemPtrMax=50000000 ;
+	TreeMemPtr=0 ;
+	TreeMem = new struct SuffixTree[TreeMemPtrMax] ;
+
 	length = 0;
 	trees=NULL;
 	tree_initialized=false ;
@@ -35,6 +39,8 @@ CWeightedDegreeCharKernel::~CWeightedDegreeCharKernel()
 	position_weights=NULL ;
 	delete[] weights_buffer ;
 	weights_buffer = NULL ;
+
+	delete[] TreeMem ;
 }
 
 void CWeightedDegreeCharKernel::remove_lhs() 
@@ -618,7 +624,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, REAL alpha
 		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
 		vec[i]=0 ;
 	} ;
-		
+
 	for (INT i=0; i<len; i++)
 	{
 		struct SuffixTree *tree = trees[i] ;
@@ -680,7 +686,9 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch_recursion(struct Su
 			subtree->weight += alpha*weights[degree_rec+degree*mismatch_rec];
 		} else 
 		{
-			tree->childs[vec[0]]=new struct SuffixTree ;
+			tree->childs[vec[0]]=&TreeMem[TreeMemPtr++] ;
+			assert(TreeMemPtr<TreeMemPtrMax) ;
+			
 			assert(tree->childs[vec[0]]!=NULL) ;
 			subtree=tree->childs[vec[0]] ;
 			for (INT k=0; k<4; k++)
@@ -704,8 +712,10 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch_recursion(struct Su
 					subtree->weight += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
 				} else 
 				{
-					tree->childs[ot]=new struct SuffixTree ;
-					assert(tree->childs[ot]!=NULL) ;
+					tree->childs[ot]=&TreeMem[TreeMemPtr++] ;
+					assert(TreeMemPtr<TreeMemPtrMax) ;
+
+					//assert(tree->childs[ot]!=NULL) ;
 					subtree=tree->childs[ot] ;
 					for (INT k=0; k<4; k++)
 						subtree->childs[k]=NULL ;
@@ -1007,6 +1017,7 @@ void CWeightedDegreeCharKernel::delete_tree(struct SuffixTree * p_tree)
 		}
 
 		tree_initialized=false;
+		TreeMemPtr=0;
 		return;
 	}
 
@@ -1017,8 +1028,8 @@ void CWeightedDegreeCharKernel::delete_tree(struct SuffixTree * p_tree)
 	{
 		if (p_tree->childs[i]!=NULL)
 		{
-			delete_tree(p_tree->childs[i]);
-			delete p_tree->childs[i];
+			//delete_tree(p_tree->childs[i]);
+			//delete p_tree->childs[i];
 			p_tree->childs[i]=NULL;
 		} 
 		p_tree->weight=0;
