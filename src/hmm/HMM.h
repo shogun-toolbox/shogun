@@ -1139,6 +1139,10 @@ protected:
 	
 	// feature cache
 	static double* feature_cache;	
+	// feature cache validity needs to be checked if set
+	static bool feature_cache_in_question;	
+	// feature cache checksum with wich validity is checked
+	static double feature_cache_checksum;	
 	// number of features per cacheline
 	static int num_features;	
 #ifdef PARALLEL

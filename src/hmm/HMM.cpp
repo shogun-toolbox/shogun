@@ -121,6 +121,8 @@ enum E_STATE
 
 double* CHMM::feature_cache=NULL;	
 int CHMM::num_features=0;	
+bool CHMM::feature_cache_in_question=false;	
+double CHMM::feature_cache_checksum=0;	
 
 #ifdef FIX_POS
 const char CHMM::CModel::FIX_DISALLOWED=0 ;
@@ -205,6 +207,9 @@ CHMM::~CHMM()
   delete[] feature_cache;
   feature_cache=NULL;
   num_features=0;
+  feature_cache_in_question=false;	
+  feature_cache_checksum=0;	
+  
 
 #ifdef PARALLEL
 	{
@@ -2060,9 +2065,7 @@ void CHMM::invalidate_model()
 	this->all_path_prob_updated=false;
 #endif  //NOVIT
 
-	delete[] feature_cache;
-	feature_cache=NULL;
-	num_features=0;
+	feature_cache_in_question=true;	
 
 #ifdef PARALLEL
 	{
@@ -4527,36 +4530,51 @@ double* CHMM::compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* 
 
 double* CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 {
-    if (!feature_cache)
+#ifdef DEBUG
+    printf("fcache:%g sv:%d dim:%d\n", feature_cache_checksum, pos->get_observations()->get_support_vector_num(), pos->get_observations()->get_DIMENSION());
+#endif
+    if (!feature_cache || feature_cache_in_question )
     {
-	num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
-
-	int totobs=pos->get_observations()->get_DIMENSION()+pos->get_observations()->get_support_vector_num();
-	feature_cache=new double[num_features*totobs];
-
-	if (!feature_cache)
+	if (feature_cache_checksum== 0 || 
+		feature_cache_checksum != 2*pos->get_N()+3*neg->get_N()+5*pos->get_observations()->get_DIMENSION()+7*pos->get_observations()->get_support_vector_num() + 11*((double) ((int) pos->get_observations()->get_obs(0,0) + (int) pos + (int) neg)))
 	{
-	    return NULL;
-	    num_features=0;
-	}
 
-	printf("precalculating feature vectors for all sequences\n"); fflush(stdout);
+	    printf("refreshing top_feature_cache..\n"); fflush(stdout);
+	    num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 
-	for (int x=0; x<totobs; x++)
-	{
-	    if (!(x % (totobs/10)))
-		printf("%02d%%.", (int) (100.0*x/totobs));
-	    else if (!(x % (totobs/200)))
-		printf(".");
+	    int totobs=pos->get_observations()->get_DIMENSION()+pos->get_observations()->get_support_vector_num();
+	    feature_cache=new double[num_features*totobs];
 
+	    if (!feature_cache)
+	    {
+		num_features=0;
+		feature_cache_checksum=0;	
+		feature_cache_in_question=false;
+		return NULL;
+	    }
+
+	    feature_cache_checksum=2*pos->get_N()+3*neg->get_N()+5*pos->get_observations()->get_DIMENSION()+7*pos->get_observations()->get_support_vector_num() + 11*((double) ((int) pos->get_observations()->get_obs(0,0) + (int) pos + (int) neg));
+
+	    printf("precalculating top- feature vectors for all sequences\n"); fflush(stdout);
+
+	    for (int x=0; x<totobs; x++)
+	    {
+		if (!(x % (totobs/10)))
+		    printf("%02d%%.", (int) (100.0*x/totobs));
+		else if (!(x % (totobs/200)))
+		    printf(".");
+
+		fflush(stdout);
+
+		compute_top_feature_vector(pos, neg, x, &feature_cache[x*num_features]);
+	    }
+
+	    printf(".done.\n");
 	    fflush(stdout);
-
-	    compute_top_feature_vector(pos, neg, x, &feature_cache[x*num_features]);
 	}
-
-	printf(".done.\n");
-	fflush(stdout);
-
     }
+    else
+	    printf("using previous top_feature_cache..NOT recalculating\n"); fflush(stdout);
+
     return feature_cache;
 }

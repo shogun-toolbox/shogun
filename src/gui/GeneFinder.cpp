@@ -289,7 +289,7 @@ static bool prompt(FILE* infile=stdin)
 
     printf("genefinder >> ");fflush(stdout);
     char* b=fgets(input, sizeof(input), infile);
-    if (!strlen(input) || (b==NULL) || (input[0]==N_COMMENT1) || (input[0]==N_COMMENT2))
+    if (!strlen(input) || (b==NULL) || (input[0]==N_COMMENT1) || (input[0]==N_COMMENT2) || (input[0]=='\n'))
 	return true;
     
     input[strlen(input)-1]='\0';
