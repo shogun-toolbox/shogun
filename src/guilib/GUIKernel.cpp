@@ -509,6 +509,21 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 					normalization = E_SQRT_NORMALIZATION ;
 					CIO::message(M_INFO, "using sqrt normalization\n") ;
 				}
+				else if (strcmp(normalization_str, "SQRTLEN")==0)
+				{
+					normalization = E_SQRTLEN_NORMALIZATION ;
+					CIO::message(M_INFO, "using sqrt-len normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "LEN")==0)
+				{
+					normalization = E_LEN_NORMALIZATION ;
+					CIO::message(M_INFO, "using len normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "SQLEN")==0)
+				{
+					normalization = E_SQLEN_NORMALIZATION ;
+					CIO::message(M_INFO, "using squared len normalization\n") ;
+				}
 				else if (strcmp(normalization_str, "FULL")==0)
 				{
 					normalization = E_FULL_NORMALIZATION ;

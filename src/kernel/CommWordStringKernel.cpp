@@ -208,6 +208,12 @@ REAL CCommWordStringKernel::compute(INT idx_a, INT idx_b)
 	  return result/sqrt(sqrt_both) ;
   case E_FULL_NORMALIZATION:
 	  return result/sqrt_both ;
+  case E_SQRTLEN_NORMALIZATION:
+	  return result/sqrt(sqrt(alen*blen)) ;
+  case E_LEN_NORMALIZATION:
+	  return result/sqrt(alen*blen) ;
+  case E_SQLEN_NORMALIZATION:
+	  return result/(alen*blen) ;
   default:
 	  assert(0) ;
   }
@@ -305,6 +311,15 @@ bool CCommWordStringKernel::init_optimization(INT count, INT *IDX, REAL * weight
 				case E_FULL_NORMALIZATION:
 					word_weights[idx] += weights[i]/sqrtdiag_lhs[IDX[i]] ;
 					break ;
+				case E_SQRTLEN_NORMALIZATION:
+					word_weights[idx] += weights[i]/sqrt(sqrt(alen)) ;
+					break ;
+				case E_LEN_NORMALIZATION:
+					word_weights[idx] += weights[i]/sqrt(alen) ;
+					break ;
+				case E_SQLEN_NORMALIZATION:
+					word_weights[idx] += weights[i]/alen ;
+					break ;
 				default:
 					assert(0) ;
 				}
@@ -321,6 +336,15 @@ bool CCommWordStringKernel::init_optimization(INT count, INT *IDX, REAL * weight
 				break ;
 			case E_FULL_NORMALIZATION:
 				word_weights[idx] += weights[i]/sqrtdiag_lhs[IDX[i]] ;
+				break ;
+			case E_SQRTLEN_NORMALIZATION:
+				word_weights[idx] += weights[i]/sqrt(sqrt(alen)) ;
+				break ;
+			case E_LEN_NORMALIZATION:
+				word_weights[idx] += weights[i]/sqrt(alen) ;
+				break ;
+			case E_SQLEN_NORMALIZATION:
+				word_weights[idx] += weights[i]/alen ;
 				break ;
 			default:
 				assert(0) ;
@@ -345,6 +369,15 @@ bool CCommWordStringKernel::init_optimization(INT count, INT *IDX, REAL * weight
 				case E_FULL_NORMALIZATION:
 					word_weights[idx] += weights[i]*(j-last_j)/sqrtdiag_lhs[IDX[i]] ;
 					break ;
+				case E_SQRTLEN_NORMALIZATION:
+					word_weights[idx] += weights[i]*(j-last_j)/sqrt(sqrt(alen)) ;
+					break ;
+				case E_LEN_NORMALIZATION:
+					word_weights[idx] += weights[i]*(j-last_j)/sqrt(alen) ;
+					break ;
+				case E_SQLEN_NORMALIZATION:
+					word_weights[idx] += weights[i]*(j-last_j)/alen ;
+					break ;
 				default:
 					assert(0) ;
 				}
@@ -362,6 +395,15 @@ bool CCommWordStringKernel::init_optimization(INT count, INT *IDX, REAL * weight
 				break ;
 			case E_FULL_NORMALIZATION:
 				word_weights[idx] += weights[i]*(alen-last_j)/sqrtdiag_lhs[IDX[i]] ;
+				break ;
+			case E_SQRTLEN_NORMALIZATION:
+				word_weights[idx] += weights[i]*(alen-last_j)/sqrt(sqrt(alen)) ;
+				break ;
+			case E_SQLEN_NORMALIZATION:
+				word_weights[idx] += weights[i]*(alen-last_j)/alen ;
+				break ;
+			case E_LEN_NORMALIZATION:
+				word_weights[idx] += weights[i]*(alen-last_j)/sqrt(alen) ;
 				break ;
 			default:
 				assert(0) ;
@@ -449,6 +491,12 @@ REAL CCommWordStringKernel::compute_optimized(INT i)
 		return result/sqrt(sqrtdiag_rhs[i]) ;
 	case E_FULL_NORMALIZATION:
 		return result/sqrtdiag_rhs[i] ;
+	case E_SQRTLEN_NORMALIZATION:
+		return result/sqrt(sqrt(alen)) ;
+	case E_LEN_NORMALIZATION:
+		return result/sqrt(alen) ;
+	case E_SQLEN_NORMALIZATION:
+		return result/alen ;
 	default:
 		assert(0) ;
 	}
