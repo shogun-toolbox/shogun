@@ -242,7 +242,24 @@ typedef struct shrink_state {
   void   write_model(FILE *, MODEL *);
   void   write_prediction(CHAR *, MODEL *, double *, double *, long int *, long int *, long, LEARN_PARM *);
    void   write_alphas(CHAR *, double *, INT *, long int);
-  
+
+protected:
+   REAL compute_kernel(INT i, INT j)
+	   {
+		   if (use_precomputed_subkernels)
+		   {
+			   REAL sum=0 ;
+			   INT num_weights=-1 ;
+			   INT num = get_kernel()->get_rhs()->get_num_vectors() ;
+			   const REAL * w = CKernelMachine::get_kernel()->get_subkernel_weights(num_weights) ;
+			   for (INT n=0; n<num_precomputed_subkernels; n++)
+				   sum += w[n]*precomputed_subkernels[n][i*num+j] ;
+			   return sum ;
+		   }
+		   else
+			   return CKernelMachine::get_kernel()->kernel(i, j) ;
+	   }
+   
  protected:
   bool svm_loaded;
   MODEL* model;
@@ -271,6 +288,7 @@ typedef struct shrink_state {
   // MKL kernel precomputation
   REAL ** precomputed_subkernels ;
   INT num_precomputed_subkernels ;
+  bool use_kernel_cache ;
 
 #ifdef USE_CPLEX
   CPXENVptr     env ;

@@ -159,7 +159,7 @@ REAL CCombinedKernel::compute(INT x, INT y)
 	CKernel* k=get_first_kernel();
 	while (k)
 	{
-		if (k->get_combined_kernel_weight()!=NULL)
+		if (k->get_combined_kernel_weight()!=0)
 			result += k->get_combined_kernel_weight() * k->kernel(x,y);
 		k=get_next_kernel();
 	}

@@ -51,6 +51,7 @@ CSVMLight::CSVMLight()
 	
 	precomputed_subkernels = NULL ;
 	num_precomputed_subkernels = 0 ;
+	use_kernel_cache = true ;
 
 #ifdef USE_CPLEX
 	CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
@@ -199,7 +200,12 @@ bool CSVMLight::train()
 	CIO::message(M_DEBUG, "get_mkl_enabled() = %i\n", get_mkl_enabled()) ;
 	CIO::message(M_DEBUG, "get_linadd_enabled() = %i\n", get_linadd_enabled()) ;
 	CIO::message(M_DEBUG, "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
-	CIO::message(M_DEBUG, "estimated time: %1.1f hours\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/3600) ;
+	CIO::message(M_DEBUG, "estimated time: %1.1f minutes\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/60) ;
+
+	use_kernel_cache = !(use_precomputed_subkernels ||
+						 (get_linadd_enabled() && get_kernel()->has_property(KP_LINADD)) ||
+						 (get_mkl_enabled() && get_kernel()->has_property(KP_KERNCOMBINATION))) ;
+	CIO::message(M_DEBUG, "use_kernel_cache = %i\n", use_kernel_cache) ;
 	
 	if (precomputed_subkernels != NULL)
 	{
@@ -236,6 +242,7 @@ bool CSVMLight::train()
 
 			precomputed_subkernels[n]=new REAL[num*num] ;
 			assert(precomputed_subkernels[n]!=NULL) ;
+			REAL * matrix = precomputed_subkernels[n] ;
 			
 			CIO::message(M_INFO, "precomputing kernel matrix (%ix%i)\n", num, num) ;
 			for (INT i=0; i<num; i++)
@@ -243,8 +250,8 @@ bool CSVMLight::train()
 				CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
 				for (INT j=0; j<=i; j++)
 				{
-					precomputed_subkernels[n][i*num+j] = k->kernel(i,j) ;
-					precomputed_subkernels[n][j*num+i] = precomputed_subkernels[n][i*num+j] ;
+					matrix[i*num+j] = k->kernel(i,j) ;
+					matrix[j*num+i] = matrix[i*num+j] ;
 				}
 			}
 			CIO::message(M_INFO, "\r %1.2f%% ", 100.0) ;
@@ -428,14 +435,15 @@ void CSVMLight::svm_learn()
       if(alpha[i]>learn_parm->svm_cost[i]) alpha[i]=learn_parm->svm_cost[i];
     }
 
-	if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) {
+	if (use_kernel_cache)
+	{
 		for(i=0;i<totdoc;i++)     /* fill kernel cache with unbounded SV */
 			if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i]) 
-					&& (get_kernel()->kernel_cache_space_available())) 
+			   && (get_kernel()->kernel_cache_space_available())) 
 				get_kernel()->cache_kernel_row(i);
 		for(i=0;i<totdoc;i++)     /* fill rest of kernel cache with bounded SV */
 			if((alpha[i]==learn_parm->svm_cost[i]) 
-					&& (get_kernel()->kernel_cache_space_available())) 
+			   && (get_kernel()->kernel_cache_space_available())) 
 				get_kernel()->cache_kernel_row(i);
 	}
     (void)compute_index(index,totdoc,index2dnum);
@@ -586,7 +594,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
   terminate=0;
   
   CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
-  if(!(get_kernel()->has_property(KP_LINADD)  && get_linadd_enabled())) 
+  if (use_kernel_cache)
 	  CKernelMachine::get_kernel()->kernel_cache_reset_lru();
 
 
@@ -605,7 +613,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 
   for(;(retrain && (!terminate))||((w_gap>get_weight_epsilon()) && get_mkl_enabled());iteration++){
 	  	  
-	  if(!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) 
+	  if(use_kernel_cache) 
 		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
 	  
 	  CIO::message(M_MESSAGEONLY, ".");
@@ -675,7 +683,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		  if(iteration % 101)
 		  {
 			  already_chosen=0;
-			  if(CMath::min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4 && (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()))) 
+			  if(CMath::min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4 && use_kernel_cache)
 			  {
 				  /* select part of the working set from cache */
 				  already_chosen=select_next_qp_subproblem_grad(
@@ -714,7 +722,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  
 	  if(verbosity>=2) t1=get_runtime();
 	  
-	  if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()))
+	  if (use_kernel_cache)
 		  CKernelMachine::get_kernel()->cache_multiple_kernel_rows(working2dnum, choosenum); 
 	  
 	  if(verbosity>=2) t2=get_runtime();
@@ -785,7 +793,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		  if((*maxdiff) > learn_parm->epsilon_crit) 
 			  retrain=1;
 		  timing_profile->time_shrink+=get_runtime()-t1;
-		  if((verbosity>=1) && (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()))
+		  if (((verbosity>=1) && use_kernel_cache)
 			 || (verbosity>=2)) {
 			  printf("done.\n");  fflush(stdout);
 			  printf(" Number of inactive variables = %ld\n",inactivenum);
@@ -822,7 +830,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 								   a,inconsistent);
 		  inactivenum=totdoc-activenum;
 		  
-		  if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()))
+		  if (use_kernel_cache)
 		  {
 			  if( (supvecnum>get_kernel()->get_max_elems_cache()) && ((get_kernel()->get_activenum_cache()-activenum)>CMath::max((LONG)(activenum/10),(LONG) 500))) {
 				  get_kernel()->kernel_cache_shrink(totdoc, CMath::min((LONG) (get_kernel()->get_activenum_cache()-activenum),
@@ -954,28 +962,28 @@ void CSVMLight::compute_matrices_for_optimization(LONG* docs, INT* label,
   }
 
   for(i=0;i<varnum;i++) {
-    ki=key[i];
-
-    /* Compute the matrix for equality constraints */
-    qp->opt_ce[i]=label[ki];
-    qp->opt_low[i]=0;
-    qp->opt_up[i]=learn_parm->svm_cost[ki];
-
-    kernel_temp=(double)CKernelMachine::get_kernel()->kernel(docs[ki], docs[ki]); 
-    /* compute linear part of objective function */
-    qp->opt_g0[i]-=(kernel_temp*a[ki]*(double)label[ki]); 
-    /* compute quadratic part of objective function */
-    qp->opt_g[varnum*i+i]=kernel_temp;
-    for(j=i+1;j<varnum;j++) {
-      kj=key[j];
-      kernel_temp=(double)CKernelMachine::get_kernel()->kernel(docs[ki], docs[kj]);
-      /* compute linear part of objective function */
-      qp->opt_g0[i]-=(kernel_temp*a[kj]*(double)label[kj]);
-      qp->opt_g0[j]-=(kernel_temp*a[ki]*(double)label[ki]); 
-      /* compute quadratic part of objective function */
-      qp->opt_g[varnum*i+j]=(double)label[ki]*(double)label[kj]*kernel_temp;
-      qp->opt_g[varnum*j+i]=(double)label[ki]*(double)label[kj]*kernel_temp;
-    }
+	  ki=key[i];
+	  
+	  /* Compute the matrix for equality constraints */
+	  qp->opt_ce[i]=label[ki];
+	  qp->opt_low[i]=0;
+	  qp->opt_up[i]=learn_parm->svm_cost[ki];
+	  
+	  kernel_temp=compute_kernel(docs[ki], docs[ki]); 
+	  /* compute linear part of objective function */
+	  qp->opt_g0[i]-=(kernel_temp*a[ki]*(double)label[ki]); 
+	  /* compute quadratic part of objective function */
+	  qp->opt_g[varnum*i+i]=kernel_temp;
+	  for(j=i+1;j<varnum;j++) {
+		  kj=key[j];
+		  kernel_temp=compute_kernel(docs[ki], docs[kj]);
+		  /* compute linear part of objective function */
+		  qp->opt_g0[i]-=(kernel_temp*a[kj]*(double)label[kj]);
+		  qp->opt_g0[j]-=(kernel_temp*a[ki]*(double)label[ki]); 
+		  /* compute quadratic part of objective function */
+		  qp->opt_g[varnum*i+j]=(double)label[ki]*(double)label[kj]*kernel_temp;
+		  qp->opt_g[varnum*j+i]=(double)label[ki]*(double)label[kj]*kernel_temp;
+	  }
 
     if(verbosity>=3) {
       if(i % 20 == 0) {
@@ -1214,17 +1222,18 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 		for (INT n=0; n<num_kernels; n++)
 		{
 			assert(precomputed_subkernels[n]!=NULL) ;
+			REAL * matrix = precomputed_subkernels[n] ;
 			for(INT i=0;i<num;i++) 
 			{
 				if(a[i] != a_old[i]) 
 				{
 					for(INT j=0;j<num;j++) 
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*precomputed_subkernels[n][i*num+j]*(double)label[i];
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*matrix[i*num+j]*(double)label[i];
 				}
 			}
 		}
 	} 
-	else // hope the kernel is fast
+	else // hope the kernel is fast ...
 	{
 		REAL* w_backup = new REAL[num_kernels] ;
 		REAL* w1 = new REAL[num_kernels] ;
@@ -1931,7 +1940,12 @@ long CSVMLight::select_next_qp_subproblem_grad(INT* label,
 	for(i=0;(j=active2dnum[i])>=0;i++) {
 		s=-label[j];
 		if(cache_only) 
-			valid=(get_kernel()->kernel_cache_check(j));
+		{
+			if (use_kernel_cache)
+				valid=(get_kernel()->kernel_cache_check(j));
+			else 
+				valid = 1 ;
+		}
 		else
 			valid=1;
 		if(valid
@@ -1953,7 +1967,8 @@ long CSVMLight::select_next_qp_subproblem_grad(INT* label,
 		chosen[i]=1;
 		working2dnum[inum+choosenum]=i;
 		choosenum+=1;
-		CKernelMachine::get_kernel()->kernel_cache_touch(i); 
+		if (use_kernel_cache)
+			CKernelMachine::get_kernel()->kernel_cache_touch(i); 
         /* make sure it does not get kicked */
 		/* out of cache */
 	}
@@ -1962,7 +1977,12 @@ long CSVMLight::select_next_qp_subproblem_grad(INT* label,
 	for(i=0;(j=active2dnum[i])>=0;i++) {
 		s=label[j];
 		if(cache_only) 
-			valid=(get_kernel()->kernel_cache_check(j));
+		{
+			if (use_kernel_cache)
+				valid=(get_kernel()->kernel_cache_check(j));
+			else
+				valid = 1 ;
+		}
 		else
 			valid=1;
 		if(valid
@@ -1985,7 +2005,8 @@ long CSVMLight::select_next_qp_subproblem_grad(INT* label,
 		chosen[i]=1;
 		working2dnum[inum+choosenum]=i;
 		choosenum+=1;
-		CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
+		if (use_kernel_cache)
+			CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
 		/* out of cache */
 	} 
 	working2dnum[inum+choosenum]=-1; /* complete index */
@@ -2034,7 +2055,8 @@ long CSVMLight::select_next_qp_subproblem_rand(INT* label,
     chosen[i]=1;
     working2dnum[inum+choosenum]=i;
     choosenum+=1;
-	CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
+	if (use_kernel_cache)
+		CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
                                         /* out of cache */
   }
 
@@ -2058,7 +2080,8 @@ long CSVMLight::select_next_qp_subproblem_rand(INT* label,
     chosen[i]=1;
     working2dnum[inum+choosenum]=i;
     choosenum+=1;
-	CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
+	if (use_kernel_cache)
+		CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
                                         /* out of cache */
   } 
   working2dnum[inum+choosenum]=-1; /* complete index */
@@ -2167,7 +2190,7 @@ long CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 	  if(verbosity>=2) {
 		  CIO::message(M_INFO, " Shrinking...");
 	  }
-	  if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) { /*  non-linear case save alphas */
+	  if (use_kernel_cache) { /*  non-linear case save alphas */
 		  a_old=new double[totdoc];
 		  shrink_state->a_history[shrink_state->deactnum]=a_old;
 		  for(i=0;i<totdoc;i++) {
@@ -2185,9 +2208,9 @@ long CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 	  }
 	  activenum=compute_index(shrink_state->active,totdoc,active2dnum);
 	  shrink_state->deactnum++;
-	  if((get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) { 
+	  if(!use_kernel_cache)
 		  shrink_state->deactnum=0;
-	  }
+
 	  if(verbosity>=2) {
 		  CIO::message(M_INFO, "done.\n");
 		  CIO::message(M_INFO, " Number of inactive variables = %ld\n",totdoc-activenum);
@@ -2217,7 +2240,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
   register double kernel_val,*a_old,dist;
   double ex_c,target;
 
-  if(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) { /* special linear case */
+  if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) { /* special linear case */
 	  a_old=shrink_state->last_a;    
 
 	  if (!get_kernel()->has_property(KP_KERNCOMBINATION))
@@ -2239,7 +2262,13 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 	  else
 		  shrink_state->last_lin[i]=lin[i];
   }
-  else {
+  else if (!use_kernel_cache) 
+  {
+	  if (!get_kernel()->has_property(KP_KERNCOMBINATION))
+		  CIO::message(M_ERROR, "sorry, not implemented") ;
+  }
+  else 
+  {
 	  changed=new long[totdoc];
 	  changed2dnum=new long[totdoc+11];
 	  inactive=new long[totdoc];
@@ -2251,12 +2280,12 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 		  a_old=shrink_state->a_history[t];    
 		  for(i=0;i<totdoc;i++) {
 			  inactive[i]=((!shrink_state->active[i]) 
-					  && (shrink_state->inactive_since[i] == t));
+						   && (shrink_state->inactive_since[i] == t));
 			  changed[i]= (a[i] != a_old[i]);
 		  }
 		  compute_index(inactive,totdoc,inactive2dnum);
 		  compute_index(changed,totdoc,changed2dnum);
-
+		  
 		  for(ii=0;(i=changed2dnum[ii])>=0;ii++) {
 			  CKernelMachine::get_kernel()->get_kernel_row(i,inactive2dnum,aicache);
 			  for(jj=0;(j=inactive2dnum[jj])>=0;jj++) {
@@ -2302,7 +2331,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
       }
     }
   }
-  if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) { /* update history for non-linear */
+  if (use_kernel_cache) { /* update history for non-linear */
 	  for(i=0;i<totdoc;i++) {
 		  (shrink_state->a_history[shrink_state->deactnum-1])[i]=a[i];
 	  }
