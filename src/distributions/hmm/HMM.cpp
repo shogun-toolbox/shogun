@@ -1315,11 +1315,12 @@ REAL CHMM::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 
 void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REAL *prob_nbest, INT *my_paths)
 {
-	if (nbest==1)
+/*	if (nbest==1)
 	{
 		best_path_no_b_trans1(max_iter, max_best_iter, prob_nbest, my_paths) ;
 		return ;
 	} ;
+*/
 
 #define PSI(t,j,k) psi[nbest*((t)*N+(j))+(k)]	
 #define DELTA(j,k) delta[(j)*nbest+k]
@@ -1465,10 +1466,10 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 				PATHS(t-1,n)=PSI(t, PATHS(t,n), q);
 				q = KTAB(t, PATHS(t,n), q) ;
 
-				assert(q>=0) ;
-				assert(q<nbest) ;
-				assert(PATHS(t-1,n)>=0) ;
-				assert(PATHS(t-1,n)<N) ;
+				//assert(q>=0) ;
+				//assert(q<nbest) ;
+				//assert(PATHS(t-1,n)>=0) ;
+				//assert(PATHS(t-1,n)<N) ;
 			}
 		}
 		delete[] sort_delta_end ;
@@ -1488,7 +1489,7 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 	delete[] delta_end ;
 }
 
-
+/*
 void CHMM::best_path_no_b_trans1(INT max_iter, INT &max_best_iter, REAL *prob, INT *my_path)
 {
 	T_STATES *psi=new T_STATES[max_iter*N] ;
@@ -1501,11 +1502,9 @@ void CHMM::best_path_no_b_trans1(INT max_iter, INT &max_best_iter, REAL *prob, I
 	REAL* delta_new= new REAL[N] ;
 	REAL* delta_end= new REAL[max_iter] ;
 
-	{ // initialization
-		for (INT i=0; i<N; i++)
-		{
-			delta[i] = get_p(i) ;
-		}
+	for (INT i=0; i<N; i++)
+	{
+		delta[i] = get_p(i) ;
 	}
 	
 	// recursion
@@ -1519,18 +1518,21 @@ void CHMM::best_path_no_b_trans1(INT max_iter, INT &max_best_iter, REAL *prob, I
 			const INT *elem_list = trans_list_forward[j] ;
 			const REAL *elem_val = trans_list_forward_val[j] ;
 			
-			INT list_len=0 ;
+			INT min_state=0 ;
+			REAL min_val = math.INFTY ;
+			
 			for (INT i=0; i<num_elem; i++)
 			{
 				INT ii = elem_list[i] ;
-				tempvv[list_len] = -(delta[ii] + elem_val[i]) ;
-				tempii[list_len] = ii ;
-				list_len++ ;
+				REAL val = -(delta[ii] + elem_val[i]) ;
+				if (val<min_val)
+				{
+					min_val=val ;
+					min_state=ii ;
+				}
 			}
-			math.qmin(tempvv, tempii, list_len) ;
-			
-			delta_new[j]  = -tempvv[0] ;
-			psi[t*N+j]    = tempii[0] ;
+			delta_new[j]  = -min_val ;
+			psi[t*N+j]    = min_state ;
 		}
 		
 		dummy=delta;
@@ -1538,17 +1540,21 @@ void CHMM::best_path_no_b_trans1(INT max_iter, INT &max_best_iter, REAL *prob, I
 		delta_new=dummy;	//switch delta/delta_new
 		
 		{ //termination
-			INT list_len = 0 ;
+			INT min_state = 0 ;
+			REAL min_val = math.INFTY ;
+			
 			for (INT i=0; i<N; i++)
 			{
-				tempvv[list_len] = -(delta[i]+get_q(i));
-				tempii[list_len] = i ;
-				list_len++ ;
+				REAL val = -(delta[i]+get_q(i));
+				if (val<min_val)
+				{
+					min_val=val ;
+					min_state=i ;
+				}
 			}
-			math.qmin(tempvv, tempii, list_len) ;
 			
-			delta_end[t-1] = -tempvv[0] ;
-			path_ends[t-1] = tempii[0] ;
+			delta_end[t-1] = -min_val ;
+			path_ends[t-1] = min_state ;
 		}
 	}
 	
@@ -1558,7 +1564,8 @@ void CHMM::best_path_no_b_trans1(INT max_iter, INT &max_best_iter, REAL *prob, I
 		REAL* sort_delta_end=new REAL[max_iter] ;
 		INT* sort_t=new INT[max_iter] ;
 		
-		INT i=0 ;
+		INT i=0 ; 
+		REAL
 		for (INT iter=0; iter<max_iter-1; iter++)
 		{
 			sort_delta_end[i]=-delta_end[iter] ;
@@ -1589,6 +1596,7 @@ void CHMM::best_path_no_b_trans1(INT max_iter, INT &max_best_iter, REAL *prob, I
 	delete[] path_ends ;
 	delete[] delta_end ;
 }
+*/
 
 void CHMM::model_prob_no_b_trans(INT max_iter, REAL *prob_iter)
 {
