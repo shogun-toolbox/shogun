@@ -10,6 +10,7 @@
 #include "lib/Mathmatics.h"
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/config.h"
 #include "features/StringFeatures.h"
 #include "distributions/Distribution.h"
 
@@ -1299,9 +1300,9 @@ protected:
 #ifdef USE_HMMPARALLEL_STRUCTURES
 
 	/// cache for forward variables can be terrible HUGE O(T*N)
-	T_ALPHA_BETA *alpha_cache /*[NUM_PARALLEL]*/ ;
+	T_ALPHA_BETA* alpha_cache /*[NUM_PARALLEL]*/ ;
 	/// cache for backward variables can be terrible HUGE O(T*N)
-	T_ALPHA_BETA *beta_cache /*[NUM_PARALLEL]*/ ;
+	T_ALPHA_BETA* beta_cache /*[NUM_PARALLEL]*/ ;
 
 #ifndef NOVIT
 	/// backtracking table for viterbi can be terrible HUGE O(T*N)

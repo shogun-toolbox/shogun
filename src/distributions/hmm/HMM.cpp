@@ -6,6 +6,7 @@
 #include "distributions/hmm/HMM.h"
 #include "lib/Mathmatics.h"
 #include "lib/io.h"
+#include "lib/config.h"
 #include "features/StringFeatures.h"
 #include "features/CharFeatures.h"
 
@@ -19,7 +20,6 @@
 #ifdef SUNOS
 extern "C" int	finite(double);
 #endif
-
 
 #ifdef USE_HMMPARALLEL 
 #include <unistd.h>
@@ -1918,76 +1918,77 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
-	  {
-	    if (train->get_p(i)>math.ALMOST_NEG_INFTY)
-	      set_p(i,log(PSEUDO));
-	    else
-	      set_p(i,train->get_p(i));
-	    if (train->get_q(i)>math.ALMOST_NEG_INFTY)
-	      set_q(i,log(PSEUDO));
-	    else
-	      set_q(i,train->get_q(i));
-	    
-	    for (j=0; j<N; j++)
-	      if (train->get_a(i,j)>math.ALMOST_NEG_INFTY)
-		set_a(i,j, log(PSEUDO));
-	      else
-		set_a(i,j,train->get_a(i,j));
-	    for (j=0; j<M; j++)
-	      if (train->get_b(i,j)>math.ALMOST_NEG_INFTY)
-		set_b(i,j, log(PSEUDO));
-	      else
-		set_b(i,j,train->get_b(i,j));
-	  }
+	{
+		if (train->get_p(i)>math.ALMOST_NEG_INFTY)
+			set_p(i,log(PSEUDO));
+		else
+			set_p(i,train->get_p(i));
+		if (train->get_q(i)>math.ALMOST_NEG_INFTY)
+			set_q(i,log(PSEUDO));
+		else
+			set_q(i,train->get_q(i));
+
+		for (j=0; j<N; j++)
+			if (train->get_a(i,j)>math.ALMOST_NEG_INFTY)
+				set_a(i,j, log(PSEUDO));
+			else
+				set_a(i,j,train->get_a(i,j));
+		for (j=0; j<M; j++)
+			if (train->get_b(i,j)>math.ALMOST_NEG_INFTY)
+				set_b(i,j, log(PSEUDO));
+			else
+				set_b(i,j,train->get_b(i,j));
+	}
 	invalidate_model();
-	
+
 	//change summation order to make use of alpha/beta caches
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
-	  {
-	    dimmodprob=train->model_probability(dim);
-	    fullmodprob+=dimmodprob ;
-	    
-	    for (i=0; i<N; i++)
-	      {
-		//estimate initial+end state distribution numerator
-		set_p(i, math.logarithmic_sum(get_p(i), train->get_p(i)+train->get_b(i,p_observations->get_feature(dim,0))+train->backward(0,i,dim) - dimmodprob));
-		set_q(i, math.logarithmic_sum(get_q(i), train->forward(p_observations->get_vector_length(dim)-1, i, dim)+train->get_q(i) - dimmodprob ));
-		
-		INT num = trans_list_backward_cnt[i] ;
-		//estimate a
-		for (j=0; j<num; j++)
-		  {
-		    INT jj = trans_list_backward[i][j] ;
-		    a_sum=-math.INFTY;
-		    
-		    for (t=0; t<p_observations->get_vector_length(dim)-1; t++) 
-		      {
-			a_sum= math.logarithmic_sum(a_sum, train->forward(t,i,dim)+
-						    train->get_a(i,jj)+train->get_b(jj,p_observations->get_feature(dim,t+1))+train->backward(t+1,jj,dim));
-		      }
-		    set_a(i,jj, math.logarithmic_sum(get_a(i,jj), a_sum-dimmodprob));
-		  }
-		
-		//estimate b
-		for (j=0; j<M; j++)
-		  {
-		    b_sum=-math.INFTY;
-		    
-		    for (t=0; t<p_observations->get_vector_length(dim); t++) 
-		      {
-			if (p_observations->get_feature(dim,t)==j)
-			  b_sum=math.logarithmic_sum(b_sum, train->forward(t,i,dim)+train->backward(t, i, dim));
-		      }
-		    
-		    set_b(i,j, math.logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
-		  }
-	      } 
-	  }
-	
+	{
+		dimmodprob=train->model_probability(dim);
+		fullmodprob+=dimmodprob ;
+
+		for (i=0; i<N; i++)
+		{
+			//estimate initial+end state distribution numerator
+			set_p(i, math.logarithmic_sum(get_p(i), train->get_p(i)+train->get_b(i,p_observations->get_feature(dim,0))+train->backward(0,i,dim) - dimmodprob));
+			set_q(i, math.logarithmic_sum(get_q(i), train->forward(p_observations->get_vector_length(dim)-1, i, dim)+train->get_q(i) - dimmodprob ));
+
+			INT num = trans_list_backward_cnt[i] ;
+
+			//estimate a
+			for (j=0; j<num; j++)
+			{
+				INT jj = trans_list_backward[i][j] ;
+				a_sum=-math.INFTY;
+
+				for (t=0; t<p_observations->get_vector_length(dim)-1; t++) 
+				{
+					a_sum= math.logarithmic_sum(a_sum, train->forward(t,i,dim)+
+							train->get_a(i,jj)+train->get_b(jj,p_observations->get_feature(dim,t+1))+train->backward(t+1,jj,dim));
+				}
+				set_a(i,jj, math.logarithmic_sum(get_a(i,jj), a_sum-dimmodprob));
+			}
+
+			//estimate b
+			for (j=0; j<M; j++)
+			{
+				b_sum=-math.INFTY;
+
+				for (t=0; t<p_observations->get_vector_length(dim); t++) 
+				{
+					if (p_observations->get_feature(dim,t)==j)
+						b_sum=math.logarithmic_sum(b_sum, train->forward(t,i,dim)+train->backward(t, i, dim));
+				}
+
+				set_b(i,j, math.logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
+			}
+		} 
+	}
+
 	//cache train model probability
 	train->mod_prob=fullmodprob;
 	train->mod_prob_updated=true ;
-	
+
 	//new model probability is unknown
 	normalize();
 	invalidate_model();
@@ -2159,6 +2160,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 
 	const REAL MIN_RAND=23e-3;
 
+	CIO::message(M_DEBUG, "M:%d\n",M);
 
 	if (train->get_p(0)>-0.00001)
 	{
@@ -2270,7 +2272,6 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	const REAL MIN_RAND=23e-3;
 	static bool bla=true;
 
-	CIO::message(M_DEBUG, "RANDOM_MAX:%ld\n",RANDOM_MAX);
 	if ((bla) && train->get_q(N-1)>-0.00001)
 	{
 		bla=false;

@@ -384,7 +384,7 @@ bool CTextGUI::parse_line(CHAR* input)
 	} 
 	else if (!strncmp(input, N_CONVERT_CHAR_TO_SHORT, strlen(N_CONVERT_CHAR_TO_SHORT)))
 	{
-		guifeatures.convert_char_to_word(input+strlen(N_CONVERT_CHAR_TO_SHORT));
+		guifeatures.convert_char_to_short(input+strlen(N_CONVERT_CHAR_TO_SHORT));
 	} 
 	else if (!strncmp(input, N_CONVERT, strlen(N_CONVERT)))
 	{

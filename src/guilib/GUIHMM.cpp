@@ -959,7 +959,7 @@ bool CGUIHMM::converge(double x, double y)
 	double diff=y-x;
 	double absdiff=fabs(diff);
 
-	CIO::message(M_INFO, "\n #%03d\tbest result so far: %G (eps: %f)\n", iteration_count, y, diff);
+	CIO::message(M_INFO, "\n #%03d\tbest result so far: %G (eps: %f)", iteration_count, y, diff);
 	if (diff<0.0)
 		CIO::message(M_WARN, " **************** WARNING **************\n") ;
 
