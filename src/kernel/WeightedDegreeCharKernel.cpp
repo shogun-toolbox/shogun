@@ -558,12 +558,11 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
 		vec[i]=0 ;
 	} ;
-		
-	for (INT j=0; j<degree; j++)
-		LevelContrib[j]=0 ;
-	
+			
 	if (length==0)
 	{
+		for (INT j=0; j<degree; j++)
+			LevelContrib[j]=0 ;
 		for (INT i=0; i<slen-degree; i++)
 		{
 			struct SuffixTree *tree = trees[i] ;
@@ -587,6 +586,8 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 	} 
 	else
 	{
+		for (INT j=0; j<degree*length; j++)
+			LevelContrib[j]=0 ;
 		for (INT i=0; i<slen-degree; i++)
 		{
 			struct SuffixTree *tree = trees[i] ;

@@ -1172,6 +1172,7 @@ bool CGUIMatlab::compute_WD_by_levels(mxArray* retvals[])
 		INT num    = kernel->get_rhs()->get_num_vectors() ;
 		INT degree = -1;
 		INT len = -1;
+		// get degree & len
 		kernel->get_weights(degree, len);
 
 		if (len==0)
