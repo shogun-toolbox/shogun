@@ -22,6 +22,9 @@ public:
 	};
 
 	CFeatures();
+	// copy constructor
+	CFeatures(const CFeatures& orig): preproc(orig.preproc) {} ;
+
 	virtual ~CFeatures();
 
 	/** return feature type with which objects derived 
@@ -48,6 +51,8 @@ public:
 
 	/// return the number of samples
 	virtual long get_number_of_examples()=0 ;
+
+	virtual CFeatures* duplicate() const=0 ;
 	
 protected:
 	/// Preprocessor

@@ -13,15 +13,29 @@ CKernel::~CKernel()
 /* calculate the kernel function */
 REAL CKernel::kernel(CFeatures* a, int idx_a, CFeatures* b, int idx_b)
 {
-    if (idx_a < 0 || idx_b <0)
+  if (idx_a < 0 || idx_b <0)
     {
 #ifdef DEBUG
-	printf("ERROR: (%d,%d)\n", a->docnum, b->docnum);
+      printf("ERROR: (%d,%d)\n", a->docnum, b->docnum);
 #endif
-	return 0;
+      return 0;
     }
+  
+  return compute(a,idx_a, b,idx_b);
+}
 
-	return compute(a,idx_a, b,idx_b);
+void CKernel::get_kernel_row(CFeatures *train,
+long docnum,         // This matrix has the same form as the Hessian,
+long *active2dnum,  // just that the elements are not multiplied by
+REAL *buffer)     // y_i * y_j * a_i * a_j
+
+{
+  register long i,j;
+
+  for(i=0;(j=active2dnum[i])>=0;i++) {
+    buffer[j]=(REAL)kernel(train, docnum, train, j);
+  }
+#warning check get_kernel_row
 }
 
 /****************************** Cache handling *******************************/

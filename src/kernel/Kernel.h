@@ -32,6 +32,9 @@ public:
 	// return the name of a kernel
 	virtual const char* get_name()=0 ;
 
+	void get_kernel_row(CFeatures *train, long docnum,
+			    long *active2dnum,  REAL *buffer) ;
+
 protected:
 	/// compute kernel function for features a and b
 	/// idx_{a,b} denote the index of the feature vectors

@@ -28,6 +28,9 @@ class CLinearKernel: public CKernel
   
   virtual bool check_features(CFeatures* f) ;
 
+  // return the name of a kernel
+  virtual const char* get_name() { return "Linear" ; } ;
+
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors

@@ -9,7 +9,13 @@ class CRealFeatures: public CFeatures
 {
  public:
   CRealFeatures();
-  ~CRealFeatures();
+  CRealFeatures(const CRealFeatures & orig): CFeatures(orig), 
+    num_vectors(orig.num_vectors), num_features(orig.num_features)
+    {
+      if (orig.feature_matrix)
+	feature_matrix=new REAL(num_vectors*num_features) ;
+    } ;
+  virtual ~CRealFeatures();
   
   virtual EType get_feature_type() { return CFeatures::F_REAL; }
   
