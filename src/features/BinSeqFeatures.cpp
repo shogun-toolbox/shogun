@@ -1,5 +1,5 @@
 #include <assert.h>
-#include "BinSeqFeatures.h"
+#include "features/BinSeqFeatures.h"
 
 CBinSeqFeatures::CBinSeqFeatures(long size, CObservation *pos_, CObservation *neg_)
   : CShortFeatures(size), pos(pos_), neg(neg_)
