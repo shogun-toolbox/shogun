@@ -24,6 +24,7 @@ CGUISVM::CGUISVM(CGUI * gui_)
 
     // MKL stuff
 	use_mkl = false ;
+	use_linadd = false ;
 	use_precompute = false ;
 	use_precompute_subkernel = false ;
 }

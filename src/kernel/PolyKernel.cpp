@@ -2,7 +2,7 @@
 
 #ifdef HAVE_ATLAS
 extern "C" {
-#include <atlas_level1.h>
+#include <cblas.h>
 }
 #endif
 
@@ -150,7 +150,7 @@ REAL CPolyKernel::compute(INT idx_a, INT idx_b)
   }
 #else
   INT skip=1;
-  REAL result=ATL_ddot(ialen, avec, skip, bvec, skip);
+  REAL result=cblas_ddot(ialen, avec, skip, bvec, skip);
 #endif // HAVE_ATLAS
 
   if (inhomogene)
