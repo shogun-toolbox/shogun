@@ -279,7 +279,9 @@ static bool prompt(FILE* infile=stdin)
     if (infile!=stdin)
 	printf("%s\n",input) ;
 
-    if (!strncmp(input, N_LOAD_MODEL, strlen(N_LOAD_MODEL)))
+    if (!strncmp(input, N_COMMENT1, strlen(N_COMMENT1)) || !strncmp(input, N_COMMENT2, strlen(N_COMMENT2)) )
+	return true;
+    else if (!strncmp(input, N_LOAD_MODEL, strlen(N_LOAD_MODEL)))
     {
 	for (i=strlen(N_LOAD_MODEL); isspace(input[i]); i++);
 	if (lambda)
