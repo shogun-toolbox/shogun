@@ -18,11 +18,12 @@ extern CTextGUI* gui;
 static const CHAR* N_SEND_COMMAND=		"send_command";
 static const CHAR* N_HELP=		        "help";
 static const CHAR* N_CRC=			"crc";
+static const CHAR* N_TRANSLATE_STRING=			"translate_string";
 static const CHAR* N_GET_HMM=			"get_hmm";
 static const CHAR* N_GET_SVM=			"get_svm";
 static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
 static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
-static const CHAR* N_GET_KERNEL_TREE_WEIGHTS=	        "get_kernel_tree_weights";
+static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
 static const CHAR* N_GET_FEATURES=		"get_features";
 static const CHAR* N_GET_LABELS=		"get_labels";
 static const CHAR* N_GET_PREPROC_INIT=	        "get_preproc_init";
@@ -234,12 +235,12 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				mexErrMsgTxt("usage is [result]=gf('plugin_estimate_classify')");
 		}
-		else if (!strncmp(action, N_GET_KERNEL_TREE_WEIGHTS, strlen(N_GET_KERNEL_TREE_WEIGHTS)))
+		else if (!strncmp(action, N_GET_KERNEL_OPTIMIZATION, strlen(N_GET_KERNEL_OPTIMIZATION)))
 		{
 			if ((nlhs==1) && (nrhs==1))
-				gf_matlab.get_kernel_tree_weights(plhs);
+				gf_matlab.get_kernel_optimization(plhs);
 			else
-				mexErrMsgTxt("usage is W=gf('get_kernel_tree_weights')");
+				mexErrMsgTxt("usage is W=gf('get_kernel_optimization')");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_MATRIX, strlen(N_GET_KERNEL_MATRIX)))
 		{
@@ -318,12 +319,12 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (!strncmp(action, N_BEST_PATH_TRANS, strlen(N_BEST_PATH_TRANS)))
 		{
-			if ((nrhs==1+10) & (nlhs==3))
+			if ((nrhs==1+11) & (nlhs==3))
 			{
 				gf_matlab.best_path_trans(prhs,plhs);
 			}
 			else
-				mexErrMsgTxt("usage is [prob,path,pos]=gf('best_path_trans',p,q,a_trans,seq,pos,orf_info, genestr, penalties, penalty_info, nbest)");
+				mexErrMsgTxt("usage is [prob,path,pos]=gf('best_path_trans',p,q,a_trans,seq,pos,orf_info, genestr, penalties, penalty_info, nbest, dict_weights)");
 		}
 		else if (!strncmp(action, N_MODEL_PROB_NO_B_TRANS, strlen(N_MODEL_PROB_NO_B_TRANS)))
 		{
@@ -466,6 +467,71 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				mexErrMsgTxt("usage is gf('clean_features', 'TRAIN|TEST')");
 			CIO::message(M_INFO, "done\n");
 		}
+		else if (!strncmp(action, N_TRANSLATE_STRING, strlen(N_TRANSLATE_STRING)))
+		{
+			if ((nrhs==4) && (nlhs==1))
+			{
+				REAL* string=mxGetPr(prhs[1]);
+				int len = mxGetN(prhs[1]) ;
+				if (mxGetM(prhs[1])!=1 || mxGetN(prhs[2])!=1 || mxGetM(prhs[2])!=1 ||
+					mxGetN(prhs[3])!=1 || mxGetM(prhs[3])!=1)
+					mexErrMsgTxt("usage2 is translation=gf('translate_string', string, order, start)");
+				REAL *p_order = mxGetPr(prhs[2]) ;
+				REAL *p_start = mxGetPr(prhs[3]) ;
+				INT order = (INT)p_order[0] ;
+				INT start = (INT)p_start[0] ;
+				const INT max_val = 2 ; /* DNA->2bits */
+				
+				plhs[0] = mxCreateDoubleMatrix(1, len, mxREAL);
+				REAL* real_obs = mxGetPr(plhs[0]) ;
+				
+				WORD* obs=new WORD[len] ;
+				
+				INT i,j;
+				for (i=0; i<len; i++)
+					switch ((char)string[i])
+					{
+					case 'A': obs[i]=0 ; break ;
+					case 'C': obs[i]=1 ; break ;
+					case 'G': obs[i]=2 ; break ;
+					case 'T': obs[i]=3 ; break ;
+					case 'a': obs[i]=0 ; break ;
+					case 'c': obs[i]=1 ; break ;
+					case 'g': obs[i]=2 ; break ;
+					case 't': obs[i]=3 ; break ;
+					default: mexErrMsgTxt("wrong letter") ;
+					}
+				//mxFree(string) ;
+				
+				for (i=len-1; i>= ((int) order)-1; i--)	//convert interval of size T
+				{
+					WORD value=0;
+					for (j=i; j>=i-((int) order)+1; j--)
+						value= (value >> max_val) | ((obs[j]) << (max_val * (order-1)));
+					
+					obs[i]= (WORD) value;
+				}
+				
+				for (i=order-2;i>=0;i--)
+				{
+					WORD value=0;
+					for (j=i; j>=i-order+1; j--)
+					{
+						value= (value >> max_val);
+						if (j>=0)
+							value|=(obs[j]) << (max_val * (order-1));
+					}
+					obs[i]=value;
+				}
+				for (i=start; i<len; i++)	
+					real_obs[i-start]=(REAL)obs[i];
+
+				delete[] obs ;
+			}
+			else
+				mexErrMsgTxt("usage is translation=gf('translate_string', string, order, start)");
+			
+		}
 		else if (!strncmp(action, N_CRC, strlen(N_CRC)))
 		{
 			if ((nrhs==2) && (nlhs==1))
@@ -481,7 +547,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				REAL * p=mxGetPr(plhs[0]) ;
 				*p = res ;
 				delete[] bstring ;
-				delete[] string ;
+				mxFree(string) ;
 			}
 			else
 				mexErrMsgTxt("usage is crc32=gf('crc', string)");

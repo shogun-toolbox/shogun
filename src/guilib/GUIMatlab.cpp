@@ -15,6 +15,7 @@
 #include "features/Labels.h"
 #include "features/RealFeatures.h"
 #include "kernel/WeightedDegreeCharKernel.h"
+#include "kernel/CommWordStringKernel.h"
 #include "classifier/svm/SVM.h"
 
 
@@ -336,18 +337,21 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 	const mxArray* mx_penalties=vals[8];
 	const mxArray* mx_penalty_info=vals[9];
 	const mxArray* mx_nbest=vals[10];
+	const mxArray* mx_dict_weights=vals[11];
 
 	INT nbest    = (INT)mxGetScalar(mx_nbest) ;
 	if (nbest<1)
 		return false ;
 	
 	if ( mx_p && mx_q && mx_a_trans && mx_seq && mx_pos && 
-		 mx_penalties && mx_penalty_info && mx_orf_info && mx_genestr)
+		 mx_penalties && mx_penalty_info && mx_orf_info && 
+		 mx_genestr && mx_dict_weights)
 	{
 		INT N=mxGetN(mx_p);
 		INT M=mxGetN(mx_pos);
 		INT P=mxGetN(mx_penalty_info) ;
 		INT L=mxGetN(mx_genestr) ;
+		INT D=mxGetN(mx_dict_weights) ;
 		
 		//CIO::message(M_DEBUG, "N=%i, M=%i, P=%i, L=%i, nbest=%i\n", N, M, P, L, nbest) ;
 		/*fprintf(stderr,"ok1=%i\n", mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
@@ -377,6 +381,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			mxGetM(mx_orf_info)==N &&
 			mxGetN(mx_orf_info)==2 &&
 			mxGetM(mx_genestr)==1 &&
+			mxGetM(mx_dict_weights)==1 && 
 			((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			 || mxIsEmpty(mx_penalty_info))
 			)
@@ -419,6 +424,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 					PEN_matrix[i]=&PEN[id] ;
 			} ;
 			char * genestr = mxArrayToString(mx_genestr) ;				
+			REAL * dict_weights = mxGetPr(mx_dict_weights) ;
 			
 			CHMM* h=new CHMM(N, p, q, mxGetM(mx_a_trans), a);
 			
@@ -431,7 +437,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			double* p_prob = mxGetPr(mx_prob);
 			
 			h->best_path_trans(seq, M, pos, orf_info, PEN_matrix, genestr, L,
-							   nbest, p_prob, my_path, my_pos) ;
+							   nbest, p_prob, my_path, my_pos, dict_weights, D) ;
 
 			// clean up 
 			delete_penalty_struct_array(PEN, P) ;
@@ -960,13 +966,17 @@ bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 	return false;
 }
 
-bool CGUIMatlab::get_kernel_tree_weights(mxArray* retvals[])
+bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[])
 {
-	CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) gui->guikernel.get_kernel() ;
+	CKernel *kernel_ = gui->guikernel.get_kernel() ;
 	
-	if ((kernel->get_kernel_type() == K_WEIGHTEDDEGREE) && 
-		(kernel->get_max_mismatch()==0))
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 	{
+		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+		
+		if (kernel->get_max_mismatch()!=0)
+			return false ;
+		
 		INT len=0 ;
 		REAL* res=kernel->compute_abs_weights(len) ;
 		
@@ -975,6 +985,25 @@ bool CGUIMatlab::get_kernel_tree_weights(mxArray* retvals[])
 		for (int i=0; i<4*len; i++)
 			result[i]=res[i] ;
 		delete[] res ;
+		
+		retvals[0]=mx_result;
+		return true;
+	}
+	if (kernel_ && (kernel_->get_kernel_type() == K_COMMWORDSTRING))
+	{
+		CCommWordStringKernel *kernel = (CCommWordStringKernel *) kernel_ ;
+		
+		INT len=0 ;
+		WORD * dict ;
+		REAL * weights ;
+		kernel->get_dictionary(len, dict, weights) ;
+		
+		mxArray* mx_result=mxCreateDoubleMatrix(len, 2, mxREAL);
+		double* result=mxGetPr(mx_result);
+		for (int i=0; i<len; i++)
+			result[i]=dict[i] ;
+		for (int i=0; i<len; i++)
+			result[i+len]=weights[i] ;
 		
 		retvals[0]=mx_result;
 		return true;

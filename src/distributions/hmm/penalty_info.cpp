@@ -27,7 +27,6 @@ void init_penalty_struct(struct penalty_struct &PEN)
 	PEN.min_len=0 ;
 	PEN.cache=NULL ;
 	PEN.use_svm=false ;
-	PEN.WordDegree=0 ;
 }
 
 void init_penalty_struct_cache(struct penalty_struct &PEN)
@@ -39,7 +38,7 @@ void init_penalty_struct_cache(struct penalty_struct &PEN)
 	if (cache)
 	{
 		for (INT i=0; i<=PEN.max_len; i++)
-			cache[i] = lookup_penalty(&PEN, NULL, 0, i) ;
+			cache[i] = lookup_penalty(&PEN, i, 0, false) ;
 		PEN.cache = cache ;
 	}
 }
@@ -145,17 +144,8 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 			return NULL ;
 		}
 		INT use_svm = (INT) mxGetScalar(mx_use_svm_field) ;
-
-		const mxArray* mx_WordDegree_field = mxGetField(mx_elem, 0, "WordDegree") ;
-		if (mx_WordDegree_field==NULL || !mxIsNumeric(mx_WordDegree_field) ||
-			mxGetM(mx_WordDegree_field)!=1 || mxGetN(mx_WordDegree_field)!=1)
-		{
-			CIO::message(M_ERROR, "missing WordDegree field\n") ;
-			delete_penalty_struct_array(PEN,P) ;
-			return NULL ;
-		}
-		INT WordDegree = (INT) mxGetScalar(mx_WordDegree_field) ;
-
+		//fprintf(stderr, "use_svm_field=%i\n", use_svm) ;
+		
 		const mxArray* mx_next_id_field = mxGetField(mx_elem, 0, "next_id") ;
 		if (mx_next_id_field==NULL || !mxIsNumeric(mx_next_id_field) ||
 			mxGetM(mx_next_id_field)!=1 || mxGetN(mx_next_id_field)!=1)
@@ -164,7 +154,7 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 			delete_penalty_struct_array(PEN,P) ;
 			return NULL ;
 		}
-		INT next_id = (INT) mxGetScalar(mx_next_id_field) ;
+		INT next_id = (INT) mxGetScalar(mx_next_id_field)-1 ;
 		
 		INT id = (INT) mxGetScalar(mx_id_field)-1 ;
 		if (i<0 || i>P-1)
@@ -198,12 +188,12 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 			return NULL ;
 		}
 		PEN[id].id=id ;
-		PEN[id].next_pen=&PEN[next_id] ;
+		if (next_id>=0)
+			PEN[id].next_pen=&PEN[next_id] ;
+		//fprintf(stderr,"id=%i, next_id=%i\n", id, next_id) ;
+		
 		assert(next_id!=id) ;
-		PEN[id].WordDegree=WordDegree ;
 		PEN[id].use_svm=(use_svm!=0) ;
-		if (use_svm!=0)
-			assert(WordDegree>0) ;
 		PEN[id].limits = new REAL[len] ;
 		PEN[id].penalties = new REAL[len] ;
 		double * limits = mxGetPr(mx_limits_field) ;
@@ -252,47 +242,12 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 	return PEN ;
 }
 
-REAL predict_svm(const char *genestr, INT start, INT end, INT order)
-{ 
-	assert(order!=0) ;
-	// transfer the right part of the string into a CharString
-	CStringFeatures<CHAR> cf;
-	T_STRING<CHAR> *features=new T_STRING<CHAR> ;
-	// extract part of the string
-	features->string= new CHAR[end-start+1] ;
-	memcpy(features->string, &genestr[start], end-start) ;
-	features->string[end-start]=0 ;
-	features->length = end-start ;
-    // assume 4 letters in DNA sequences
-	cf.set_features(features, 1, end-start, 4, DNA) ;
-
-	// convert intro a WordString representation
-	CCharFeatures cf_dummy(DNA, 0l);
-	CStringFeatures<WORD> *sf=new CStringFeatures<WORD>();
-	sf->obtain_from_char_features(&cf, &cf_dummy, DNA, order-1, order);
-	
-	// set test features
-	gui->guifeatures.set_test_features(sf);
-	// preprocess
-	gui->guifeatures.preprocess("TEST");
-	// initialized the kernel
-	gui->guikernel.init_kernel("TEST");
-	// classify
-	CLabels* l=gui->guisvm.classify();
-	// cleanup
-	gui->guifeatures.clean("TEST");
-
-	return l->get_label(0) ;
-}
-
-REAL lookup_penalty_svm(const struct penalty_struct *PEN, const char * genestr, 
-						INT start, INT end)
+REAL lookup_penalty_svm(const struct penalty_struct *PEN, INT p_value, REAL d_value)
 {	
-	if (PEN==NULL || genestr==NULL)
+	if (PEN==NULL)
 		return 0 ;
 	assert(PEN->use_svm) ;
-	
-	REAL d_value = predict_svm(genestr, start, end, PEN->WordDegree) ;
+	//fprintf(stderr,"transform=%i, d_value=%1.2f\n", (INT)PEN->transform, d_value) ;
 	
 	switch (PEN->transform)
 	{
@@ -328,30 +283,32 @@ REAL lookup_penalty_svm(const struct penalty_struct *PEN, const char * genestr,
 			   (PEN->limits[idx]-d_value)) / (PEN->limits[idx]-PEN->limits[idx-1]) ;  
 	}
 	
+	//fprintf(stderr,"ret=%1.2f\n", ret) ;
+
 	if (PEN->next_pen)
-		ret+=lookup_penalty(PEN->next_pen, genestr, start, end);
+		ret+=lookup_penalty(PEN->next_pen, p_value, d_value);
+	
+	//fprintf(stderr,"ret=%1.2f\n", ret) ;
 	
 	return ret ;
 }
 
-REAL lookup_penalty(const struct penalty_struct *PEN, const char * genestr, 
-					INT start, INT end)
+REAL lookup_penalty(const struct penalty_struct *PEN, INT p_value, 
+					REAL svm_value, bool follow_next)
 {	
 	if (PEN==NULL)
 		return 0 ;
 	if (PEN->use_svm)
-		return lookup_penalty_svm(PEN, genestr, start, end) ;
-	
-	INT p_value=end-start ;
-	
+		return lookup_penalty_svm(PEN, p_value, svm_value) ;
+		
 	if ((p_value<PEN->min_len) || (p_value>PEN->max_len))
 		return -math.INFTY ;
 	
 	if (PEN->cache!=NULL && (p_value>=0) && (p_value<=PEN->max_len))
 	{
 		REAL ret=PEN->cache[p_value] ;
-		if (PEN->next_pen)
-			ret+=lookup_penalty(PEN->next_pen, genestr, start, end);
+		if (PEN->next_pen && follow_next)
+			ret+=lookup_penalty(PEN->next_pen, p_value, svm_value);
 		return ret ;
 	}
 	
@@ -392,8 +349,8 @@ REAL lookup_penalty(const struct penalty_struct *PEN, const char * genestr,
 	//if (p_value>=30 && p_value<150)
 	//fprintf(stderr, "%s %i(%i) -> %1.2f\n", PEN->name, p_value, idx, ret) ;
 	
-	if (PEN->next_pen)
-		ret+=lookup_penalty(PEN->next_pen, genestr, start, end);
+	if (PEN->next_pen && follow_next)
+		ret+=lookup_penalty(PEN->next_pen, p_value, svm_value);
 
 	return ret ;
 }

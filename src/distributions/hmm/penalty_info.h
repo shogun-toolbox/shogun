@@ -29,7 +29,6 @@ struct penalty_struct
 	struct penalty_struct *next_pen ;
 	char * name ;
 	bool use_svm ;
-	INT WordDegree ;
 } ;
 
 void init_penalty_struct(struct penalty_struct &PEN) ;
@@ -40,6 +39,6 @@ void delete_penalty_struct_array(struct penalty_struct *PEN, INT len) ;
 struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT &P) ;
 #endif
 
-REAL lookup_penalty(const struct penalty_struct *PEN, const char * genestr, INT start, INT stop) ;
+REAL lookup_penalty(const struct penalty_struct *PEN, INT p_value, REAL svm_value, bool follow_next=true) ;
 
 #endif

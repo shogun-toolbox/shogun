@@ -560,10 +560,11 @@ public:
 	//void best_path_no_b_trans1(INT max_iter, INT & max_best_iter, REAL *prob_nbest, INT *my_paths) ;
 	void model_prob_no_b_trans(INT max_iter, REAL *prob_iter) ;
 	void best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const INT *orf_info,
-							   struct penalty_struct **PEN_matrix, 
-							   const char *genestr, INT genestr_len,
-							   short int nbest, 
-							   REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq) ;
+						 struct penalty_struct **PEN_matrix, 
+						 const char *genestr, INT genestr_len,
+						 short int nbest, 
+						 REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
+						 REAL *dictionary_weights, INT dict_len) ;
 #endif
 
 	/// calculates probability that observations were generated 

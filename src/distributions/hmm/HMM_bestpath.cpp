@@ -15,6 +15,81 @@
 extern "C" int	finite(double);
 #endif
 
+static const INT num_words = 4096 ;
+static const INT word_degree = 6 ;
+static bool word_used[num_words] ;
+static REAL svm_value ;
+static REAL *dict_weights ;
+static INT svm_pos_start ;
+static INT num_unique_words = 0 ;
+
+inline void translate_from_single_order(WORD* obs, INT sequence_length, 
+										INT start=5, INT order=word_degree, 
+										INT max_val=2/*DNA->2bits*/)
+{
+	INT i,j;
+	WORD value=0;
+	
+	for (i=sequence_length-1; i>= ((int) order)-1; i--)	//convert interval of size T
+	{
+		value=0;
+		for (j=i; j>=i-((int) order)+1; j--)
+			value= (value >> max_val) | (obs[j] << (max_val * (order-1)));
+		
+		obs[i]= (WORD) value;
+	}
+	
+	for (i=order-2;i>=0;i--)
+	{
+		value=0;
+		for (j=i; j>=i-order+1; j--)
+		{
+			value= (value >> max_val);
+			if (j>=0)
+				value|=obs[j] << (max_val * (order-1));
+		}
+		obs[i]=value;
+		assert(value<4096) ;
+	}
+	if (start>0)
+		for (i=start; i<sequence_length; i++)	
+			obs[i-start]=obs[i];
+}
+
+inline void reset_svm_value(INT pos, INT & last_svm_pos) 
+{
+	for (int i=0; i<num_words; i++)
+		word_used[i]=false ;
+	svm_value = 0 ;
+	last_svm_pos = pos - 6+1 ;
+	svm_pos_start = pos - 6 ;
+	num_unique_words=0 ;
+}
+
+REAL extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos) 
+{
+	bool did_something = false ;
+	for (int i=last_svm_pos-1; i>=pos; i--)
+	{
+		did_something=true ;
+		if (!word_used[wordstr[i]])
+		{
+			svm_value+=dict_weights[wordstr[i]] ;
+			//fprintf(stderr,"svm_value=%1.2f word
+			word_used[wordstr[i]]=true ;
+			num_unique_words++ ;
+		}
+	} ;
+	if (did_something || num_unique_words>0)
+	{
+		last_svm_pos=pos ;
+		return svm_value/sqrt((double)num_unique_words) ;  // full normalization
+		//	return svm_value/sqrt((double)svm_pos_start-pos) ; // len normalization
+	}
+	else
+		return 0 ; // what should I do?
+}
+
 inline bool extend_orf(const bool* genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to)
 {
 	if (start<0) 
@@ -60,10 +135,15 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						   struct penalty_struct **PEN_matrix, 
 						   const char *genestr, INT genestr_len,
 						   short int nbest, 
-						   REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq)
+						   REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
+						   REAL *dictionary_weights, INT dict_len)
 {
 	const INT default_look_back = 30000 ;
 	INT max_look_back = 0 ;
+	bool use_svm = false ;
+	assert(dict_len==num_words) ;
+	dict_weights=dictionary_weights ;
+	
 	{ // determine maximal length of look-back
 		for (INT i=0; i<N; i++)
 			for (INT j=0; j<N; j++)
@@ -71,12 +151,19 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 				{
 					if (PEN(i,j)->max_len>max_look_back)
 						max_look_back=PEN(i,j)->max_len ;
+					if (PEN(i,j)->use_svm)
+						use_svm=true ;
+					if (PEN(i,j)->next_pen)
+						if (PEN(i,j)->next_pen->use_svm)
+						use_svm=true ;
+					
 				} else
 					if (max_look_back<default_look_back)
 						max_look_back=default_look_back ;
 	}
-	//max_look_back = math.min(seq_len, max_look_back) ;
-
+	max_look_back = math.min(genestr_len, max_look_back) ;
+	//fprintf(stderr,"use_svm=%i\n", use_svm) ;
+	
 	const INT look_back_buflen = max_look_back*nbest*N ;
 	const REAL mem_use = (REAL)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(short int)+sizeof(INT))+
 								look_back_buflen*(2*sizeof(REAL)+sizeof(INT))+
@@ -122,19 +209,40 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	INT * pos_seq   = new INT[seq_len] ;
 	assert(pos_seq!=NULL) ;
 
+	REAL svm_value = 0 ;
 	
 	{ // precompute stop codons
 		for (INT i=0; i<genestr_len-2; i++)
-			if (genestr[i]=='T' && 
-				((genestr[i+1]=='A' && 
-				  (genestr[i+2]=='A' || genestr[i+2]=='G')) ||
-				 (genestr[i+1]=='G' && genestr[i+2]=='A')))
+			if (genestr[i]=='t' && 
+				((genestr[i+1]=='a' && 
+				  (genestr[i+2]=='a' || genestr[i+2]=='g')) ||
+				 (genestr[i+1]=='a' && genestr[i+2]=='a')))
 				genestr_stop[i]=true ;
 			else
 				genestr_stop[i]=false ;
 		genestr_stop[genestr_len-1]=false ;
 		genestr_stop[genestr_len-1]=false ;
 	}
+
+	// translate to words, if svm is used
+	WORD* wordstr=NULL ;
+	if (use_svm)
+	{
+		assert(dict_weights!=NULL) ;
+		wordstr=new WORD[genestr_len] ;
+		for (INT i=0; i<genestr_len; i++)
+			switch (genestr[i])
+			{
+			case 'a': wordstr[i]=0 ; break ;
+			case 'c': wordstr[i]=1 ; break ;
+			case 'g': wordstr[i]=2 ; break ;
+			case 't': wordstr[i]=3 ; break ;
+			default: assert(0) ;
+			}
+		translate_from_single_order(wordstr, genestr_len) ;
+		//fprintf(stderr, "genestr_len=%i\n", genestr_len) ;
+	}
+	
 	
 	{ // initialization
 		for (T_STATES i=0; i<N; i++)
@@ -152,7 +260,17 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 			}
 		}
 	}
+	/*INT svm_last_pos ;
+	INT i ;
 	
+	reset_svm_value(400, svm_last_pos) ;
+	for (i=400; i>350; i--)
+	{
+		svm_value=extend_svm_value(wordstr, i, svm_last_pos) ;
+		fprintf(stderr,"i=%i  svm_value=%1.3f svm_last_pos=%i\n", i, svm_value, svm_last_pos) ;
+		}*/
+	
+
 	// recursion
 	for (INT t=1; t<seq_len; t++)
 	{
@@ -203,7 +321,12 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						if (orf_target<0) orf_target+=3 ;
 						assert(orf_target>=0 && orf_target<3) ;
 					}
+
 					INT last_pos = pos[t] ;
+					INT last_svm_pos ;
+					if (use_svm)
+						reset_svm_value(pos[t], last_svm_pos) ;
+
 					for (INT ts=t-1; ts>=0 && pos[t]-pos[ts]<=look_back; ts--)
 					{
 						bool ok ;
@@ -213,9 +336,6 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						{
 								
 							ok=extend_orf(genestr_stop, orf_from, orf_to, pos[ts], last_pos, pos[t]) ;
-							//if (pos[t]==1141)
-							//fprintf(stderr,"orf_from=%i orf_to=%i start=%i last=%i to=%i ok=%i penalty=%1.2f\n", orf_from, orf_to, pos[ts], last_pos, pos[t], (INT)ok,lookup_penalty(penalty, pos[t]-pos[ts])) ;
-							
 							if (!ok) 
 								break ;
 						} else
@@ -223,15 +343,16 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						
 						if (ok)
 						{
+							if (use_svm)
+								svm_value=extend_svm_value(wordstr, pos[ts], last_svm_pos) ;
+							else
+								svm_value=0 ;
+							
+							REAL pen_val = lookup_penalty(penalty, pos[t]-pos[ts], svm_value) ;
 							for (short int diff=0; diff<nbest; diff++)
 							{
 								REAL  val        = DELTA(ts,ii,diff) + elem_val[i] ;
-								if (val>=-1e20)
-								{
-									//if ((pos[t]==2034||pos[t]==2213))
-									//fprintf(stderr, "%ld: j=%i ii=%i t=%i ts=%i val=%1.2f pen=%1.2f\n", (long)penalty, j,ii,pos[t],pos[ts],val, lookup_penalty(penalty, pos[t]-pos[ts])) ;
-									val          += lookup_penalty(penalty, genestr, pos[ts], pos[t]) ;
-								} ;
+								val             += pen_val ;
 								
 								tempvv[list_len] = -val ;
 								tempii[list_len] =  ii + diff*N + ts*N*nbest;

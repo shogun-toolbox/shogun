@@ -43,6 +43,13 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 
   inline virtual EFeatureType get_feature_type() { return F_WORD; }
   
+  void get_dictionary(INT &dsize, WORD*& dict, REAL*& dweights) 
+	  {
+		  dsize=dictionary_size ;
+		  dict=dictionary ;
+		  dweights = dictionary_weights ;
+	  } ;
+  
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
