@@ -564,7 +564,8 @@ public:
 						 const char *genestr, INT genestr_len,
 						 short int nbest, 
 						 REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
-						 REAL *dictionary_weights, INT dict_len) ;
+						 REAL *dictionary_weights, INT dict_len,
+						 REAL *&PEN_values, INT &num_PEN_id, bool use_orf) ;
 #endif
 
 	/// calculates probability that observations were generated 

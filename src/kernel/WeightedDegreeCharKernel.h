@@ -57,7 +57,11 @@ class CWeightedDegreeCharKernel: public CCharKernel
   }
   inline virtual void add_to_normal(INT idx, REAL weight) 
   {
-	  add_example_to_tree(idx, weight);
+	  if (max_mismatch==0)
+		  add_example_to_tree(idx, weight);
+	  else
+		  add_example_to_tree_mismatch(idx, weight);
+
 	  set_is_initialized(true);
   }
   inline virtual INT get_num_subkernels()
@@ -169,6 +173,11 @@ class CWeightedDegreeCharKernel: public CCharKernel
  protected:
 
   void add_example_to_tree(INT idx, REAL weight);
+  void add_example_to_tree_mismatch(INT idx, REAL weight);
+  void add_example_to_tree_mismatch_recursion(struct SuffixTree *tree,  REAL alpha,
+											  INT *vec, INT len_rem, 
+											  INT depth_rec, INT mismatch_rec) ;
+  
   REAL compute_by_tree(INT idx);
   void delete_tree(struct SuffixTree * p_tree=NULL);
 

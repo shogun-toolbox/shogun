@@ -293,12 +293,8 @@ REAL lookup_penalty_svm(const struct penalty_struct *PEN, INT p_value, REAL *d_v
 			   (PEN->limits[idx]-d_value)) / (PEN->limits[idx]-PEN->limits[idx-1]) ;  
 	}
 	
-	//fprintf(stderr,"ret=%1.2f\n", ret) ;
-
 	if (PEN->next_pen)
 		ret+=lookup_penalty(PEN->next_pen, p_value, d_values);
-	
-	//fprintf(stderr,"ret=%1.2f\n", ret) ;
 	
 	return ret ;
 }

@@ -423,6 +423,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 	const mxArray* mx_penalty_info=vals[9];
 	const mxArray* mx_nbest=vals[10];
 	const mxArray* mx_dict_weights=vals[11];
+	const mxArray* mx_use_orf=vals[12];
 
 	INT nbest    = (INT)mxGetScalar(mx_nbest) ;
 	if (nbest<1)
@@ -466,6 +467,8 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			mxGetM(mx_orf_info)==N &&
 			mxGetN(mx_orf_info)==2 &&
 			mxGetM(mx_genestr)==1 &&
+			mxGetM(mx_use_orf)==1 &&
+			mxGetN(mx_use_orf)==1 &&
 			mxGetN(mx_dict_weights)==4 && 
 			((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			 || mxIsEmpty(mx_penalty_info))
@@ -474,6 +477,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			double* p=mxGetPr(mx_p);
 			double* q=mxGetPr(mx_q);
 			double* a=mxGetPr(mx_a_trans);
+			INT use_orf=(INT)*mxGetPr(mx_use_orf) ;
 
 			double* seq=mxGetPr(mx_seq) ;
 
@@ -520,11 +524,19 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			
 			mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxREAL);
 			double* p_prob = mxGetPr(mx_prob);
+			REAL* PEN_values=NULL ;
+			INT num_PEN_id = 0 ;
 			
 			h->best_path_trans(seq, M, pos, orf_info, PEN_matrix, genestr, L,
 							   nbest, p_prob, my_path, my_pos, dict_weights, 
-							   4*D) ;
+							   4*D, PEN_values, num_PEN_id, use_orf) ;
 
+			int dims[3]={num_PEN_id,M,nbest};
+			mxArray* mx_PEN_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
+			double* p_PEN_values = mxGetPr(mx_PEN_values);
+			for (INT s=0; s<num_PEN_id*M*nbest; s++)
+				p_PEN_values[s]=PEN_values[s] ;
+			
 			// clean up 
 			delete_penalty_struct_array(PEN, P) ;
 			delete[] PEN_matrix ;
@@ -549,8 +561,11 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			retvals[0]=mx_prob ;
 			retvals[1]=mx_my_path ;
 			retvals[2]=mx_my_pos ;
+			retvals[3]=mx_PEN_values ;
+
 			delete[] my_path ;
 			delete[] my_pos ;
+			delete[] PEN_values ;
 
 			return true;
 		}

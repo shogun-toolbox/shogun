@@ -275,11 +275,11 @@ bool CWeightedDegreeCharKernel::save_init(FILE* dest)
 
 bool CWeightedDegreeCharKernel::init_optimization(INT count, INT * IDX, REAL * alphas)
 {
-	if (max_mismatch!=0)
+	/*if (max_mismatch!=0)
 	{
 		CIO::message(M_ERROR, "CWeightedDegreeCharKernel optimization not implemented for mismatch!=0\n") ;
 		return false ;
-	}
+		}*/
 
 	delete_optimization();
 	
@@ -289,7 +289,10 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT * IDX, REAL * a
 	{
 		if ( (i % (count/10+1)) == 0)
 			CIO::progress(i, 0, count);
-		add_example_to_tree(IDX[i], alphas[i]) ;
+		if (max_mismatch==0)
+			add_example_to_tree(IDX[i], alphas[i]) ;
+		else
+			add_example_to_tree_mismatch(IDX[i], alphas[i]) ;
 	}
 	CIO::message(M_MESSAGEONLY, "done.           \n");
 	
@@ -592,12 +595,140 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 	tree_initialized=true ;
 }
 
+void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, REAL alpha) 
+{
+	INT len ;
+	bool free ;
+	CHAR* char_vec=((CCharFeatures*) lhs)->get_feature_vector(idx, len, free);
+	//assert(max_mismatch==0) ;
+	INT *vec = new INT[len] ;
+
+	if (use_normalization)
+		alpha /=  sqrtdiag_lhs[idx] ;
+	
+	for (INT i=0; i<len; i++)
+	{
+		if (char_vec[i]=='A') { vec[i]=0 ; continue ; } ;
+		if (char_vec[i]=='C') { vec[i]=1 ; continue ; } ;
+		if (char_vec[i]=='G') { vec[i]=2 ; continue ; } ;
+		if (char_vec[i]=='T') { vec[i]=3 ; continue ; } ;
+		if (char_vec[i]=='a') { vec[i]=0 ; continue ; } ;
+		if (char_vec[i]=='c') { vec[i]=1 ; continue ; } ;
+		if (char_vec[i]=='g') { vec[i]=2 ; continue ; } ;
+		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
+		vec[i]=0 ;
+	} ;
+		
+	for (INT i=0; i<len; i++)
+	{
+		struct SuffixTree *tree = trees[i] ;
+		REAL alpha_pw = alpha ;
+		if (position_weights!=NULL)
+			alpha_pw = alpha*position_weights[i] ;
+		if (alpha_pw==0.0)
+			continue ;
+		add_example_to_tree_mismatch_recursion(tree, alpha_pw, &vec[i], len-i, 0, 0) ;
+	}
+	//fprintf(stdout,"*") ;
+
+	((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
+	delete[] vec ;
+	tree_initialized=true ;
+}
+
+void CWeightedDegreeCharKernel::add_example_to_tree_mismatch_recursion(struct SuffixTree *tree,  REAL alpha,
+																	   INT *vec, INT len_rem, 
+																	   INT degree_rec, INT mismatch_rec) 
+{
+	if ((len_rem<=0) || (mismatch_rec>max_mismatch) || (degree_rec>degree))
+		return ;
+	assert(tree!=NULL) ;
+	const INT other[4][3] = {	{1,2,3},{0,2,3},{0,1,3},{0,1,2} } ;
+			
+	struct SuffixTree *subtree = NULL ;
+
+	if (degree_rec==degree-1)
+	{
+		if (tree->has_floats)
+		{
+			tree->child_weights[vec[0]] += alpha*weights[degree_rec+degree*mismatch_rec];
+			if (mismatch_rec+1<=max_mismatch)
+				for (INT o=0; o<3; o++)
+					tree->child_weights[other[vec[0]][o]] += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
+		}
+		else
+		{
+			tree->has_floats=true ;
+			for (INT k=0; k<4; k++)
+			{
+				assert(tree->childs[k]==NULL) ;
+				tree->child_weights[k] =0 ;
+			}
+			tree->child_weights[vec[0]] += alpha*weights[degree_rec+degree*mismatch_rec];
+			if (mismatch_rec+1<=max_mismatch)
+				for (INT o=0; o<3; o++)
+					tree->child_weights[other[vec[0]][o]] += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
+		}
+		return ;
+	}
+	else
+	{
+		assert(!tree->has_floats) ;
+		if (tree->childs[vec[0]]!=NULL)
+		{
+			subtree=tree->childs[vec[0]] ;
+			subtree->weight += alpha*weights[degree_rec+degree*mismatch_rec];
+		} else 
+		{
+			tree->childs[vec[0]]=new struct SuffixTree ;
+			assert(tree->childs[vec[0]]!=NULL) ;
+			subtree=tree->childs[vec[0]] ;
+			for (INT k=0; k<4; k++)
+				subtree->childs[k]=NULL ;
+			subtree->weight = alpha*weights[degree_rec+degree*mismatch_rec] ;
+			subtree->has_floats=false ;
+			subtree->usage=0 ;
+		}
+		add_example_to_tree_mismatch_recursion(subtree,  alpha,
+											   &vec[1], len_rem-1, 
+											   degree_rec+1, mismatch_rec) ;
+
+		if (mismatch_rec+1<=max_mismatch)
+		{
+			for (INT o=0; o<3; o++)
+			{
+				INT ot = other[vec[0]][o] ;
+				if (tree->childs[ot]!=NULL)
+				{
+					subtree=tree->childs[ot] ;
+					subtree->weight += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
+				} else 
+				{
+					tree->childs[ot]=new struct SuffixTree ;
+					assert(tree->childs[ot]!=NULL) ;
+					subtree=tree->childs[ot] ;
+					for (INT k=0; k<4; k++)
+						subtree->childs[k]=NULL ;
+					subtree->weight = alpha*weights[degree_rec+degree*(mismatch_rec+1)] ;
+					subtree->has_floats=false ;
+					subtree->usage=0 ;
+				}
+				
+				add_example_to_tree_mismatch_recursion(subtree,  alpha,
+													   &vec[1], len_rem-1, 
+													   degree_rec+1, mismatch_rec+1) ;
+			}
+		}
+	}
+}
+
+
 REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx) 
 {
 	INT len ;
 	bool free ;
 	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
-	assert(max_mismatch==0) ;
+	//assert(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
 	
 	for (INT i=0; i<len; i++)
@@ -648,7 +779,7 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 	INT slen ;
 	bool free ;
 	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, slen, free);
-	assert(max_mismatch==0) ;
+	//assert(max_mismatch==0) ;
 	INT *vec = new INT[slen] ;
 	
 	for (INT i=0; i<slen; i++)
@@ -793,7 +924,7 @@ void CWeightedDegreeCharKernel::count_tree_usage(INT idx)
 	INT len ;
 	bool free ;
 	CHAR* char_vec=((CCharFeatures*) lhs)->get_feature_vector(idx, len, free);
-	assert(max_mismatch==0) ;
+	//assert(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
 	
 	for (INT i=0; i<len; i++)

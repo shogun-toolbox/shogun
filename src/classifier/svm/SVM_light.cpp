@@ -20,6 +20,22 @@ extern "C" {
 }
 #endif
 
+#ifdef USE_SVMPARALLEL 
+#include <unistd.h>
+#include <pthread.h>
+
+static const INT NUM_PARALLEL = 4 ;
+struct S_THREAD_PARAM 
+{
+	REAL * lin ;
+	INT start, end;
+	LONG * active2dnum ;
+	LONG * docs ;
+	CKernel* kernel ;
+}  ;
+
+#endif
+
 CSVMLight::CSVMLight()
 {
 
@@ -1038,11 +1054,11 @@ void CSVMLight::optimize_svm(LONG* docs, INT* label,
 }
 
 void CSVMLight::compute_matrices_for_optimization(LONG* docs, INT* label, 
-          long *exclude_from_eq_const, double eq_target,
-	  long int *chosen, long int *active2dnum, 
-          long int *key, MODEL *model, double *a, double *lin, double *c, 
-	  long int varnum, long int totdoc,
-          REAL *aicache, QP *qp)
+												  long *exclude_from_eq_const, double eq_target,
+												  long int *chosen, long int *active2dnum, 
+												  long int *key, MODEL *model, double *a, double *lin, double *c, 
+												  long int varnum, long int totdoc,
+												  REAL *aicache, QP *qp)
 {
   register long ki,kj,i,j;
   register double kernel_temp;
@@ -1086,25 +1102,25 @@ void CSVMLight::compute_matrices_for_optimization(LONG* docs, INT* label,
 		  qp->opt_g0[j]-=(kernel_temp*a[ki]*(double)label[ki]); 
 		  /* compute quadratic part of objective function */
 		  qp->opt_g[varnum*i+j]=(double)label[ki]*(double)label[kj]*kernel_temp;
-		  qp->opt_g[varnum*j+i]=(double)label[ki]*(double)label[kj]*kernel_temp;
+		  qp->opt_g[varnum*j+i]=qp->opt_g[varnum*i+j];//(double)label[ki]*(double)label[kj]*kernel_temp;
 	  }
-
-    if(verbosity>=3) {
-      if(i % 20 == 0) {
-	CIO::message(M_DEBUG, "%ld..",i);
-      }
-    }
+	  
+	  if(verbosity>=3) {
+		  if(i % 20 == 0) {
+			  CIO::message(M_DEBUG, "%ld..",i);
+		  }
+	  }
   }
-
+  
   for(i=0;i<varnum;i++) {
-    /* assure starting at feasible point */
-    qp->opt_xinit[i]=a[key[i]];
-    /* set linear part of objective function */
-    qp->opt_g0[i]=(learn_parm->eps-(double)label[key[i]]*c[key[i]])+qp->opt_g0[i]*(double)label[key[i]];    
+	  /* assure starting at feasible point */
+	  qp->opt_xinit[i]=a[key[i]];
+	  /* set linear part of objective function */
+	  qp->opt_g0[i]=(learn_parm->eps-(double)label[key[i]]*c[key[i]])+qp->opt_g0[i]*(double)label[key[i]];    
   }
-
+  
   if(verbosity>=3) {
-    CIO::message(M_DEBUG, "done\n");
+	  CIO::message(M_DEBUG, "done\n");
   }
 }
 
@@ -1961,6 +1977,22 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 
 }
 
+#ifdef USE_SVMPARALLEL
+void *update_linear_component_linadd_helper(void *params_)
+{
+	S_THREAD_PARAM * params = (S_THREAD_PARAM*) params_ ;
+	
+	INT jj=0, j=0 ;
+	
+	for(jj=params->start;(jj<params->end) && (j=params->active2dnum[jj])>=0;jj++) 
+	{
+		params->lin[j]+=params->kernel->compute_optimized(params->docs[j]);
+	}
+	return NULL ;
+}
+
+#endif
+
 
 void CSVMLight::update_linear_component(LONG* docs, INT* label, 
 										long int *active2dnum, double *a, 
@@ -1993,9 +2025,41 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				}
 			}
 			
+#ifdef USE_SVMPARALLEL
+			INT num_elem = 0 ;
+			for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
+
+			pthread_t threads[NUM_PARALLEL-1] ;
+			S_THREAD_PARAM params[NUM_PARALLEL-1] ;
+			INT start = 0 ;
+			INT step = num_elem/NUM_PARALLEL ;
+			INT end = step ;
+			
+			for (INT t=0; t<NUM_PARALLEL-1; t++)
+			{
+				params[t].kernel = get_kernel() ;
+				params[t].lin = lin ;
+				params[t].docs = docs ;
+				params[t].active2dnum=active2dnum ;
+				params[t].start = start ;
+				params[t].end = end ;
+				start=end ;
+				end+=step ;
+				pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
+			}
+				
+			for(jj=params[NUM_PARALLEL-2].end;(j=active2dnum[jj])>=0;jj++) {
+				lin[j]+=get_kernel()->compute_optimized(docs[j]);
+			}
+			void* ret;
+			for (INT t=0; t<NUM_PARALLEL-1; t++)
+				pthread_join(threads[t], &ret) ;
+
+#else			
 			for(jj=0;(j=active2dnum[jj])>=0;jj++) {
 				lin[j]+=get_kernel()->compute_optimized(docs[j]);
 			}
+#endif
 		}
 	}
 	else 

@@ -16,8 +16,9 @@ extern "C" int	finite(double);
 
 static const INT num_words = 4096 ;
 static const INT word_degree = 6 ;
+static const INT num_svms = 4 ;
 static bool word_used[num_words] ;
-static REAL svm_value[4] ;
+static REAL svm_value_unnormalized[num_svms] ;
 static REAL *dict_weights ;
 static INT svm_pos_start ;
 static INT num_unique_words = 0 ;
@@ -48,59 +49,56 @@ inline void translate_from_single_order(WORD* obs, INT sequence_length,
 				value|=obs[j] << (max_val * (order-1));
 		}
 		obs[i]=value;
-		assert(value<4096) ;
+		assert(value<num_words) ;
 	}
 	if (start>0)
 		for (i=start; i<sequence_length; i++)	
 			obs[i-start]=obs[i];
 }
 
-inline void reset_svm_value(INT pos, INT & last_svm_pos) 
+inline void reset_svm_value(INT pos, INT & last_svm_pos, REAL * svm_value) 
 {
 	for (int i=0; i<num_words; i++)
 		word_used[i]=false ;
-	svm_value[0] = 0 ;
-	svm_value[1] = 0 ;
-	svm_value[2] = 0 ;
-	svm_value[3] = 0 ;
+	for (INT s=0; s<num_svms; s++)
+		svm_value_unnormalized[s] = 0 ;
+	for (INT s=0; s<num_svms; s++)
+		svm_value[s] = 0 ;
 	last_svm_pos = pos - 6+1 ;
 	svm_pos_start = pos - 6 ;
 	num_unique_words=0 ;
 }
 
-void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, REAL* ret) 
+void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, REAL* svm_value) 
 {
 	bool did_something = false ;
-	for (int i=last_svm_pos-1; i>=pos; i--)
+	for (int i=last_svm_pos-1; (i>=pos) && (i>=0); i--)
 	{
-		did_something=true ;
+		if (wordstr[i]>=num_words)
+			CIO::message(M_DEBUG, "wordstr[%i]=%i\n", i, wordstr[i]) ;
+		
 		if (!word_used[wordstr[i]])
 		{
-			svm_value[0]+=dict_weights[wordstr[i]] ;
-			svm_value[1]+=dict_weights[wordstr[i]+num_words] ;
-			svm_value[2]+=dict_weights[wordstr[i]+num_words*2] ;
-			svm_value[3]+=dict_weights[wordstr[i]+num_words*3] ;
+			for (INT s=0; s<num_svms; s++)
+				svm_value_unnormalized[s]+=dict_weights[wordstr[i]+s*num_words] ;
 
 			word_used[wordstr[i]]=true ;
 			num_unique_words++ ;
+			did_something=true ;
 		}
 	} ;
-	if (did_something || num_unique_words>0)
+	if (num_unique_words>0)
 	{
 		last_svm_pos=pos ;
-		ret[0]= svm_value[0]/sqrt((double)num_unique_words) ;  // full normalization
-		ret[1]= svm_value[1]/sqrt((double)num_unique_words) ;  // full normalization
-		ret[2]= svm_value[2]/sqrt((double)num_unique_words) ;  // full normalization
-		ret[3]= svm_value[3]/sqrt((double)num_unique_words) ;  // full normalization
-		//	return svm_value/sqrt((double)svm_pos_start-pos) ; // len normalization
+		if (did_something)
+			for (INT s=0; s<num_svms; s++)
+				svm_value[s]= svm_value_unnormalized[s]/sqrt((double)num_unique_words) ;  // full normalization
 	}
 	else
 	{
 		// what should I do?
-		ret[0]=0 ;
-		ret[1]=0 ;
-		ret[2]=0 ;
-		ret[3]=0 ;
+		for (INT s=0; s<num_svms; s++)
+			svm_value[s]=0 ;
 	}
 	
 }
@@ -151,13 +149,21 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						   const char *genestr, INT genestr_len,
 						   short int nbest, 
 						   REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
-						   REAL *dictionary_weights, INT dict_len)
+						   REAL *dictionary_weights, INT dict_len, 
+						   REAL *&PEN_values, INT &num_PEN_id, bool use_orf)
 {
 	const INT default_look_back = 30000 ;
 	INT max_look_back = 0 ;
 	bool use_svm = false ;
-	assert(dict_len==4*num_words) ;
+	assert(dict_len==num_svms*num_words) ;
 	dict_weights=dictionary_weights ;
+
+	REAL svm_value[num_svms] ;
+	
+	{ // initialize svm_svalue
+		for (INT s=0; s<num_svms; s++)
+			svm_value[s]=0 ;
+	}
 	
 	{ // determine maximal length of look-back
 		for (INT i=0; i<N; i++)
@@ -171,7 +177,8 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 					if (PEN(i,j)->next_pen)
 						if (PEN(i,j)->next_pen->use_svm)
 						use_svm=true ;
-					
+					if (PEN(i,j)->id+1>num_PEN_id)
+						num_PEN_id=PEN(i,j)->id+1 ;
 				} else
 					if (max_look_back<default_look_back)
 						max_look_back=default_look_back ;
@@ -224,14 +231,12 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	INT * pos_seq   = new INT[seq_len] ;
 	assert(pos_seq!=NULL) ;
 
-	REAL svm_value[4] = {0,0,0,0} ;
-	
 	{ // precompute stop codons
 		for (INT i=0; i<genestr_len-2; i++)
 			if (genestr[i]=='t' && 
 				((genestr[i+1]=='a' && 
 				  (genestr[i+2]=='a' || genestr[i+2]=='g')) ||
-				 (genestr[i+1]=='a' && genestr[i+2]=='a')))
+				 (genestr[i+1]=='g' && genestr[i+2]=='a')))
 				genestr_stop[i]=true ;
 			else
 				genestr_stop[i]=false ;
@@ -275,16 +280,6 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 			}
 		}
 	}
-	/*INT svm_last_pos ;
-	INT i ;
-	
-	reset_svm_value(400, svm_last_pos) ;
-	for (i=400; i>350; i--)
-	{
-		svm_value=extend_svm_value(wordstr, i, svm_last_pos) ;
-		fprintf(stderr,"i=%i  svm_value=%1.3f svm_last_pos=%i\n", i, svm_value, svm_last_pos) ;
-		}*/
-	
 
 	// recursion
 	for (INT t=1; t<seq_len; t++)
@@ -336,7 +331,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 					INT last_pos = pos[t] ;
 					INT last_svm_pos ;
 					if (use_svm)
-						reset_svm_value(pos[t], last_svm_pos) ;
+						reset_svm_value(pos[t], last_svm_pos, svm_value) ;
 
 					for (INT ts=t-1; ts>=0 && pos[t]-pos[ts]<=look_back; ts--)
 					{
@@ -346,9 +341,12 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						else if (pos[ts]!=-1 && (pos[t]-pos[ts])%3==orf_target)
 						{
 								
-							ok=extend_orf(genestr_stop, orf_from, orf_to, pos[ts], last_pos, pos[t]) ;
+							ok=(!use_orf) || extend_orf(genestr_stop, orf_from, orf_to, pos[ts], last_pos, pos[t]) ;
 							if (!ok) 
+							{
+								//CIO::message(M_DEBUG, "no orf from %i[%i] to %i[%i]\n", pos[ts], orf_from, pos[t], orf_to) ;
 								break ;
+							}
 						} else
 							ok=false ;
 						
@@ -356,13 +354,6 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						{
 							if (use_svm)
 								extend_svm_value(wordstr, pos[ts], last_svm_pos, svm_value) ;
-							else
-							{
-								svm_value[0]=0 ;
-								svm_value[1]=0 ;
-								svm_value[2]=0 ;
-								svm_value[3]=0 ;
-							}
 							
 							REAL pen_val = lookup_penalty(penalty, pos[t]-pos[ts], svm_value, true) ;
 							for (short int diff=0; diff<nbest; diff++)
@@ -422,7 +413,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 		}
 	}
 	
-	{ //state sequence backtracking
+	{ //state sequence backtracking		
 		for (short int k=0; k<nbest; k++)
 		{
 			prob_nbest[k]= DELTA_END(k) ;
@@ -449,6 +440,51 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 			}
 			my_state_seq[num_states+k*seq_len]=-1 ;
 			my_pos_seq[num_states+k*seq_len]=-1 ;
+		}
+		REAL svm_value[num_svms] ;
+		for (INT s=0; s<num_svms; s++)
+			svm_value[s]=0 ;
+		PEN_values = new REAL[num_PEN_id*seq_len*nbest] ;
+		for (INT s=0; s<num_PEN_id*seq_len*nbest; s++)
+			PEN_values[s]=0 ;
+		char * PEN_names[num_PEN_id] ;
+		for (INT s=0; s<num_PEN_id; s++)
+			PEN_names[s]=NULL ;
+
+		for (short int k=0; k<nbest; k++)
+		{
+			for (INT i=0; i<seq_len-1; i++)
+			{
+				if (my_state_seq[i+1+k*seq_len]==-1)
+					break ;
+				INT from_state = my_state_seq[i+k*seq_len] ;
+				INT to_state   = my_state_seq[i+1+k*seq_len] ;
+				INT from_pos   = my_pos_seq[i+k*seq_len] ;
+				INT to_pos     = my_pos_seq[i+1+k*seq_len] ;
+				
+				//CIO::message(M_DEBUG, "%i. from state %i pos %i[%i]  to  state %i pos %i[%i]  penalties:", k, from_state, pos[from_pos], from_pos, to_state, pos[to_pos], to_pos) ;
+				INT last_svm_pos = -1 ;
+				
+				reset_svm_value(pos[to_pos], last_svm_pos, svm_value) ;
+				extend_svm_value(wordstr, pos[from_pos], last_svm_pos, svm_value) ;
+				struct penalty_struct *penalty = PEN(to_state, from_state) ;
+				while (penalty)
+				{
+					REAL pen_val = lookup_penalty(penalty, pos[to_pos]-pos[from_pos], svm_value, false) ;
+					PEN_values[penalty->id + i*num_PEN_id + seq_len*num_PEN_id*k] += pen_val ;
+					PEN_names[penalty->id] = penalty->name ;
+					//CIO::message(M_DEBUG, "%s(%i;%1.2f), ", penalty->name, penalty->id, pen_val) ;
+					penalty = penalty->next_pen ;
+				}
+				//CIO::message(M_DEBUG, "\n") ;
+			}
+			/*for (INT s=0; s<num_PEN_id; s++)
+			{
+				if (PEN_names[s])
+					CIO::message(M_DEBUG, "%s:\t%1.2f\n", PEN_names[s], PEN_values[s+num_PEN_id*k]) ;
+				else
+					assert(PEN_values[s]==0.0) ;
+					}*/
 		}
 	}
 	if (is_big)
