@@ -61,6 +61,7 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
 		free=true;
 	feat=compute_feature_vector(num, len, feat);
 
+
 	if (preproc)
 	{
 	  //CIO::message("preprocessing %i th feature vector\n", (int)num) ;
@@ -68,10 +69,10 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
 	  REAL* feat2 = ((CRealPreProc*) preproc)->apply_to_feature_vector(feat, len2);
 	  memcpy(feat, feat2, sizeof(REAL)*len2);
 	  delete[] feat2 ;
-	  //CIO::message("len2: %d len: %d\n", len2, len);
-	  len=num_features=len2 ;
+	  //CIO::message(stderr, "len2: %d len: %d\n", len2, len);
+	  //len=num_features=len2 ;
+	  len=len2 ;
 	}
-
 	return feat ;
   }
 }

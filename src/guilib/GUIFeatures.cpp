@@ -21,156 +21,156 @@ CGUIFeatures::~CGUIFeatures()
 		
 bool CGUIFeatures::preprocess(char* param)
 {
-    bool result=false;
-    param=CIO::skip_spaces(param);
-    char target[1024];
+	bool result=false;
+	param=CIO::skip_spaces(param);
+	char target[1024];
 	int force=0;
-	int cache_size=100;
 
-    if ((sscanf(param, "%s %d %d", target, &cache_size, &force))>=1)
-    {
-	if ( strcmp(target, "TRAIN")==0 || strcmp(target, "TEST")==0 )
+	if ((sscanf(param, "%s %d", target, &force))>=1)
 	{
-		CFeatures** f_ptr=NULL;
+		if ( strcmp(target, "TRAIN")==0 || strcmp(target, "TEST")==0 )
+		{
+			CFeatures** f_ptr=NULL;
 
-		if (strcmp(target,"TRAIN")==0)
-		{
-			f_ptr=&train_features;
-		}
-		else if (strcmp(target,"TEST")==0)
-		{
-			f_ptr=&test_features;
-		}
-		else
-			CIO::message("see help for parameters\n");
-
-		if (*f_ptr)
-		{
-			if (gui->guipreproc.get_preproc())
+			if (strcmp(target,"TRAIN")==0)
 			{
-				if (train_features)
-				{
-					gui->guipreproc.get_preproc()->init(train_features);
-					(*f_ptr)->set_preproc(gui->guipreproc.get_preproc());
+				f_ptr=&train_features;
+			}
+			else if (strcmp(target,"TEST")==0)
+			{
+				f_ptr=&test_features;
+			}
+			else
+				CIO::message("see help for parameters\n");
 
-					CIO::message("force: %d\n",force);
-					(*f_ptr)->preproc_feature_matrix(force==1);
+			if (*f_ptr)
+			{
+				if (gui->guipreproc.get_preproc())
+				{
+					if (train_features)
+					{
+						gui->guipreproc.get_preproc()->init(train_features);
+						(*f_ptr)->set_preproc(gui->guipreproc.get_preproc());
+
+						CIO::message("force: %d\n",force);
+						(*f_ptr)->preproc_feature_matrix(force==1);
+					}
+					else
+						CIO::message("initialization of preprocessor needs trainfeatures !\n");
 				}
 				else
-					CIO::message("initialization of preprocessor needs trainfeatures !\n");
+					CIO::message("no preprocessor set!\n");
 			}
 			else
-				CIO::message("no preprocessor set!\n");
+				CIO::message("features not correctly assigned!\n");
 		}
 		else
-			CIO::message("features not correctly assigned!\n");
+			CIO::message("observations not correctly assigned!\n");
 	}
 	else
-	    CIO::message("observations not correctly assigned!\n");
-    }
-    else
-	CIO::message("see help for parameters\n");
-
-    return result;
-}
-bool CGUIFeatures::set_features(char* param)
-{
-    bool result=false;
-    param=CIO::skip_spaces(param);
-    char target[1024];
-    char type[1024];
-    int comp_features=1;
-    int size=100;
-
-    if ((sscanf(param, "%s %s %i", type, target, &size, &comp_features))>=2)
-    {
-	if ( (strcmp(target, "TRAIN")==0 && gui->guiobs.get_obs("POSTRAIN") && gui->guiobs.get_obs("NEGTRAIN")) ||
-		(strcmp(target, "TEST")==0 && gui->guiobs.get_obs("POSTEST") && gui->guiobs.get_obs("NEGTEST")))
-	{
-	    CFeatures** f_ptr=NULL;
-	    CObservation** o_ptr=NULL;
-	    CObservation* pt=NULL;
-	    CObservation* nt=NULL;
-
-	    if (strcmp(target,"TRAIN")==0)
-	    {
-		f_ptr=&train_features;
-		o_ptr=&train_obs;
-		pt=gui->guiobs.get_obs("POSTRAIN") ;
-		nt=gui->guiobs.get_obs("NEGTRAIN") ;
-	    }
-	    else if (strcmp(target,"TEST")==0)
-	    {
-		f_ptr=&test_features;
-		o_ptr=&test_obs;
-		pt=gui->guiobs.get_obs("POSTEST") ;
-		nt=gui->guiobs.get_obs("NEGTEST") ;
-	    }
-	    else
 		CIO::message("see help for parameters\n");
 
-		if (strcmp(type,"TOP")==0)
+	return result;
+}
+
+bool CGUIFeatures::set_features(char* param)
+{
+	bool result=false;
+	param=CIO::skip_spaces(param);
+	char target[1024];
+	char type[1024];
+	int comp_features=1;
+	int size=100;
+
+	if ((sscanf(param, "%s %s %d %d", type, target, &size, &comp_features))>=2)
+	{
+		if ( (strcmp(target, "TRAIN")==0 && gui->guiobs.get_obs("POSTRAIN") && gui->guiobs.get_obs("NEGTRAIN")) ||
+				(strcmp(target, "TEST")==0 && gui->guiobs.get_obs("POSTEST") && gui->guiobs.get_obs("NEGTEST")))
 		{
-		    if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
-		    {
+			CFeatures** f_ptr=NULL;
+			CObservation** o_ptr=NULL;
+			CObservation* pt=NULL;
+			CObservation* nt=NULL;
 
-			CObservation* old_obs_pos=gui->guihmm.get_pos()->get_observations();
-			CObservation* old_obs_neg=gui->guihmm.get_neg()->get_observations();
-
-			delete (*o_ptr);
-			*o_ptr=new CObservation(pt, nt);
-			gui->guihmm.get_pos()->set_observations(*o_ptr);
-			gui->guihmm.get_neg()->set_observations(*o_ptr);
-
-			delete (*f_ptr);
-			*f_ptr= new CTOPFeatures(size, gui->guihmm.get_pos(), gui->guihmm.get_neg());		      
-
-
-			//						gui->guihmm.get_pos()->set_observations(old_obs_pos);
-			//						gui->guihmm.get_neg()->set_observations(old_obs_neg);
-
-		    }
-		    else
-			CIO::message("HMMs not correctly assigned!\n");
-		}
-		else if (strcmp(type,"FK")==0)
-		{
-			REAL a=0.5;
-
-			if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
+			if (strcmp(target,"TRAIN")==0)
 			{
-
-				CObservation* old_obs_pos=gui->guihmm.get_pos()->get_observations();
-				CObservation* old_obs_neg=gui->guihmm.get_neg()->get_observations();
-
-				delete (*o_ptr);
-				*o_ptr=new CObservation(pt, nt);
-				gui->guihmm.get_pos()->set_observations(*o_ptr);
-				gui->guihmm.get_neg()->set_observations(*o_ptr);
-
-				delete (*f_ptr);
-				*f_ptr= new CFKFeatures(size, gui->guihmm.get_pos(), gui->guihmm.get_neg(), a);
-
-				//						gui->guihmm.get_pos()->set_observations(old_obs_pos);
-				//						gui->guihmm.get_neg()->set_observations(old_obs_neg);
-
+				f_ptr=&train_features;
+				o_ptr=&train_obs;
+				pt=gui->guiobs.get_obs("POSTRAIN") ;
+				nt=gui->guiobs.get_obs("NEGTRAIN") ;
+			}
+			else if (strcmp(target,"TEST")==0)
+			{
+				f_ptr=&test_features;
+				o_ptr=&test_obs;
+				pt=gui->guiobs.get_obs("POSTEST") ;
+				nt=gui->guiobs.get_obs("NEGTEST") ;
 			}
 			else
-				CIO::message("HMMs not correctly assigned!\n");
+				CIO::message("see help for parameters\n");
+
+			if (strcmp(type,"TOP")==0)
+			{
+				if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
+				{
+
+					CObservation* old_obs_pos=gui->guihmm.get_pos()->get_observations();
+					CObservation* old_obs_neg=gui->guihmm.get_neg()->get_observations();
+
+					delete (*o_ptr);
+					*o_ptr=new CObservation(pt, nt);
+					gui->guihmm.get_pos()->set_observations(*o_ptr);
+					gui->guihmm.get_neg()->set_observations(*o_ptr);
+
+					delete (*f_ptr);
+					*f_ptr= new CTOPFeatures(size, gui->guihmm.get_pos(), gui->guihmm.get_neg());		      
+
+
+					//						gui->guihmm.get_pos()->set_observations(old_obs_pos);
+					//						gui->guihmm.get_neg()->set_observations(old_obs_neg);
+
+				}
+				else
+					CIO::message("HMMs not correctly assigned!\n");
+			}
+			else if (strcmp(type,"FK")==0)
+			{
+				REAL a=0.5;
+
+				if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
+				{
+
+					CObservation* old_obs_pos=gui->guihmm.get_pos()->get_observations();
+					CObservation* old_obs_neg=gui->guihmm.get_neg()->get_observations();
+
+					delete (*o_ptr);
+					*o_ptr=new CObservation(pt, nt);
+					gui->guihmm.get_pos()->set_observations(*o_ptr);
+					gui->guihmm.get_neg()->set_observations(*o_ptr);
+
+					delete (*f_ptr);
+					*f_ptr= new CFKFeatures(size, gui->guihmm.get_pos(), gui->guihmm.get_neg(), a);
+
+					//						gui->guihmm.get_pos()->set_observations(old_obs_pos);
+					//						gui->guihmm.get_neg()->set_observations(old_obs_neg);
+
+				}
+				else
+					CIO::message("HMMs not correctly assigned!\n");
+			}
+			else
+				CIO::not_implemented();
+
+			if (comp_features)
+				((CRealFeatures*) *f_ptr)->set_feature_matrix() ;
 		}
 		else
-		    CIO::not_implemented();
-			
-		if (comp_features)
-			((CRealFeatures*) *f_ptr)->set_feature_matrix() ;
+			CIO::message("observations not correctly assigned!\n");
 	}
 	else
-	    CIO::message("observations not correctly assigned!\n");
-    }
-    else
-	CIO::message("see help for parameters\n");
+		CIO::message("see help for parameters\n");
 
-    return result;
+	return result;
 }
 
 bool CGUIFeatures::load(char* param)
@@ -183,7 +183,7 @@ bool CGUIFeatures::load(char* param)
 	int comp_features=0;
 	int size=100;
 
-    if ((sscanf(param, "%s %s %s %d", filename, type, target, &size, &comp_features))>=3)
+    if ((sscanf(param, "%s %s %s %d  %d", filename, type, target, &size, &comp_features))>=3)
     {
 	CFeatures** f_ptr=NULL;
 
