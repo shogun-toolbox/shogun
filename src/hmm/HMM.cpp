@@ -876,6 +876,10 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 #ifdef PARALLEL
     pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
     T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
+    pthread_attr_t *attr=new pthread_attr_t;
+    pthread_attr_init(attr) ;
+    pthread_attr_setschedpolicy(attr,SCHED_RR) ;
+    pthread_attr_setinheritsched(attr, PTHREAD_EXPLICIT_SCHED);
 #endif
 
     //change summation order to make use of alpha/beta caches
