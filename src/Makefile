@@ -18,7 +18,7 @@ end:
 	@echo ============================================================================ 
 	@echo 
 genefinder.`uname`: $(FILES) $(FILES2)
-	$(LINK) -o genefinder.`uname` $(LINKFLAGS) */*.$(EXT_OBJ) */*.$(EXT_OBJ2)
+	$(LINK) -o genefinder.`uname` $(LINKFLAGS) */*.$(EXT_OBJ) */*.$(EXT_OBJ2) -L./intpoint -lintpoint
 genefinder.`uname`.hack: $(FILES) $(FILES2)
 	$(LINK) -o genefinder.`uname`.hack $(LINKFLAGS) */*.$(EXT_OBJ) */*.$(EXT_OBJ2)
 

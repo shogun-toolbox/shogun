@@ -7,6 +7,8 @@
 #define true 1
 #endif
 
+#include "intpoint/intpoint.h"
+
 /**@name Standard Types 
  * Definition of Platform independent Types
 */
