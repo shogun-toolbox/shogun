@@ -3,7 +3,6 @@
 
 #include "lib/common.h"
 #include "lib/lapack.h"
-#include "lib/common.h"
 #include "preproc/PreProc.h"
 #include "stdio.h"
 

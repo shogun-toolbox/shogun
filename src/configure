@@ -1084,6 +1084,7 @@ set_opts()
 		DEFINES="$DEFINES -DMATLAB"
 		LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
 		INCLUDES="$INCLUDES -I/home/matrix/matlab/extern/include/"
+		TARGET="gf.mexglx"
 	fi
 	if test "$_svm_mpi" = yes
 	then
@@ -1135,11 +1136,13 @@ set_opts()
 	then
 		DEFINES="$DEFINES -DDEBUG"
 		COMPFLAGS_CPP="$COMPFLAGS_CPP -g"
+		TARGET="genefinder-${EXESUFFIX}.debug"
 	fi
 	if test "$_pathdebug" = yes
 	then
 		DEFINES="$DEFINES -DPATHDEBUG"
 		COMPFLAGS_CPP="$COMPFLAGS_CPP -g"
+		TARGET="genefinder-${EXESUFFIX}.debug"
 	fi
 	if test "$_profile" = yes
 	then
