@@ -11,6 +11,8 @@ CSVMLight::CSVMLight()
   mymodel.supvec=NULL ;
   mymodel.alpha=NULL ;
   mymodel.index=NULL ;
+  docs=NULL ;
+  label=NULL ;
 }
 
 CSVMLight::~CSVMLight()
