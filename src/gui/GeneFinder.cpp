@@ -1586,12 +1586,7 @@ static bool prompt(FILE* infile=stdin)
 		    if (obs_postest && obs_negtest)
 		    {
 			CObservation* obs=new CObservation(obs_postest, obs_negtest);
-		printf("before\n");
-		fflush(stdout);
-
 			svm->load_svm(svm_file, obs);
-		printf("after\n");
-		fflush(stdout);
 
 			CObservation* old_pos=pos->get_observations();
 			CObservation* old_neg=neg->get_observations();
