@@ -16,11 +16,16 @@ void CLocImpKernel::init(CFeatures* f)
 {
 } ;
 
-void CLinearKernel::cleanup()
+void CLocImpKernel::cleanup()
 {
 } ;
   
-REAL CLinearKernel::compute(CFeatures* a, int idx_a, CFeatures* b, int idx_b)
+bool CLocImpKernel::check_features(CFeatures* f) 
+{
+  return (f->get_feature_type()==CFeatures::SHORT) ;
+} ;
+
+REAL CLocImpKernel::compute(CFeatures* a, int idx_a, CFeatures* b, int idx_b)
 {
   
 }

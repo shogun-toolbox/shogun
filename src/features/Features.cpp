@@ -1,3 +1,5 @@
+#include "Features.h"
+
 CFeatures::CFeatures()
 {
     preproc=NULL;
@@ -57,6 +59,5 @@ CPreProc* CFeatures::get_preproc()
 bool CFeatures::preproc_feature_matrix()
 {
 	if (preproc)
-		preproc->do_preproc(this);
+		preproc->preproc_feature(this);
 }
-#endif

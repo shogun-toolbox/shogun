@@ -26,6 +26,8 @@ class CLinearKernel: public CKernel
   virtual void init(CFeatures* f);
   virtual void cleanup();
   
+  virtual bool check_features(CFeatures* f) ;
+
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors

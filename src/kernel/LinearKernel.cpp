@@ -24,6 +24,11 @@ void CLinearKernel::cleanup()
 {
 } ;
   
+bool CLinearKernel::check_features(CFeatures* f) 
+{
+  return (f->get_feature_type()==CFeatures::DOUBLE) ;
+} ;
+
 REAL CLinearKernel::compute(CFeatures* a, int idx_a, CFeatures* b, int idx_b)
 {
   int alen, blen, afree, bfree ;
@@ -36,6 +41,5 @@ REAL CLinearKernel::compute(CFeatures* a, int idx_a, CFeatures* b, int idx_b)
   b->free_feature_vector(bvec, bfree);
 
   return result ;
-
 }
 

@@ -26,6 +26,9 @@ public:
 	bool load(FILE* src);
 	bool save(FILE* dest);
 
+	// check the feature object
+	virtual bool check_features(CFeatures* f)=0 ;
+
 protected:
 	/// compute kernel function for features a and b
 	/// idx_{a,b} denote the index of the feature vectors
