@@ -37,6 +37,7 @@ static const char* N_SET_HMM_AS=		"set_hmm_as";
 static const char* N_NORMALIZE=			"normalize_hmm";
 static const char* N_RELATIVE_ENTROPY=	"relative_entropy";
 static const char* N_ENTROPY=			"entropy";
+static const char* N_PERMUTATION_ENTROPY="permutation_entropy";
 static const char* N_SET_FEATURES=		"set_features";
 static const char* N_SET_KERNEL=		"set_kernel";
 static const char* N_ADD_PREPROC=		"add_preproc";
@@ -143,6 +144,7 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m [<keep_dead_states>]\t\t\t- normalizes HMM params to be sum = 1\n", N_NORMALIZE);
 	CIO::message("\033[1;31m%s\033[0m \t\t\t- returns the relative entropy for each position (requires lin. HMMS)\n", N_RELATIVE_ENTROPY);
 	CIO::message("\033[1;31m%s\033[0m \t\t\t- returns the entropy for each position (requires lin. HMM)\n", N_ENTROPY);
+	CIO::message("\033[1;31m%s\033[0m <width> <num>\t\t\t- returns the permutation entropy for sequence <num>\n", N_PERMUTATION_ENTROPY);
 	CIO::message("\033[1;31m%s\033[0m <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)\n", N_ADD_STATES);
 	CIO::message("\033[1;31m%s\033[0m <filename> [<INT> <INT>]\t\t\t- append HMM <filename> to current HMM\n", N_APPEND_HMM);
 	CIO::message("\033[1;31m%s\033[0m [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
@@ -482,6 +484,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	else if (!strncmp(input, N_ENTROPY, strlen(N_ENTROPY)))
 	{
 		guihmm.entropy(input+strlen(N_ENTROPY));
+	} 
+	else if (!strncmp(input, N_PERMUTATION_ENTROPY, strlen(N_PERMUTATION_ENTROPY)))
+	{
+		guihmm.permutation_entropy(input+strlen(N_PERMUTATION_ENTROPY));
 	} 
 	else if (!strncmp(input, N_APPEND_HMM, strlen(N_APPEND_HMM)))
 	{

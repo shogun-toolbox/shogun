@@ -44,6 +44,7 @@ public:
 	bool chop(char* param);
 	bool relative_entropy(char* param);
 	bool entropy(char* param);
+	bool permutation_entropy(char* param);
 	inline CHMM* get_pos() { return pos; }
 	inline CHMM* get_neg() { return neg; }
 	inline CHMM* get_test() { return test; }

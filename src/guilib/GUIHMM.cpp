@@ -34,20 +34,20 @@ CGUIHMM::~CGUIHMM()
 
 bool CGUIHMM::set_num_hmm_tables(char* param)
 {
-  param=CIO::skip_spaces(param);
-  
-  int tmp;
-  if (sscanf(param, "%d", &tmp) == 1)
-    {
-      if (tmp>0)
+	param=CIO::skip_spaces(param);
+
+	int tmp;
+	if (sscanf(param, "%d", &tmp) == 1)
 	{
-	  number_of_hmm_tables=tmp ;
-	  CIO::message("using %i separate tables\n",number_of_hmm_tables) ;
-	  return true ;
+		if (tmp>0)
+		{
+			number_of_hmm_tables=tmp ;
+			CIO::message("using %i separate tables\n",number_of_hmm_tables) ;
+			return true ;
+		} ;
 	} ;
-    } ;
-    
-  return false;
+
+	return false;
 }
 
 bool CGUIHMM::new_hmm(char* param)
@@ -1324,5 +1324,32 @@ bool CGUIHMM::entropy(char* param)
 	}
 	else
 		CIO::message("set pos hmm first\n");
+	return false;
+}
+
+bool CGUIHMM::permutation_entropy(char* param)
+{
+	param=CIO::skip_spaces(param);
+
+	int width=0;
+	int seq_num=-1;
+
+	if (sscanf(param, "%d %d", &width, &seq_num) == 2)
+	{
+		if (working) 
+		{
+			if (working->get_observations())
+			{
+				return working->permutation_entropy(width, seq_num);
+			}
+			else
+				CIO::message("set observations first\n");
+		}
+		else
+			CIO::message("create hmm first\n");
+	}
+	else
+		CIO::message("wrong number of parameters see help!\n");
+
 	return false;
 }
