@@ -184,14 +184,18 @@ typedef struct shrink_state {
   long int   incorporate_unlabeled_examples(MODEL *, long int *,long int *, long int *,
 					double *, double *, long, double *,
 					long int *, long int *, long, LEARN_PARM *);
+
   void update_linear_component(LONG* docs, INT *label, 
 					   long int *active2dnum, double *a, double* a_old,
 					   long int *working2dnum, long int totdoc,
 					   double *lin, REAL *aicache);
+  // MKL stuff
   void update_linear_component_mkl(LONG* docs, INT *label, 
 					   long int *active2dnum, double *a, double* a_old,
 					   long int *working2dnum, long int totdoc,
 					   double *lin, REAL *aicache);
+  void update_linear_component_mkl_reactivate_inactive_variables(LONG* docs, INT* label, REAL* lin, REAL *a) ;
+  
   long int select_next_qp_subproblem_grad( INT *label, double *a,
 						  double* lin, double* c, long int totdoc, long int qp_size, long int *inconsistent, 
 						  long int* active2dnum, long int* working2dnum, double *selcrit, 
@@ -254,6 +258,8 @@ typedef struct shrink_state {
                        // for each example (for current alphas)
   INT* w_zero_rounds ; // counts the number of rounds the coefficient has been zero
   INT* w_deactivated ; // stores which variable has been deactivated
+  INT num_w_deactivated ; // number of variables that have been deactivated
+  
   INT orig_alphas_by_row_num ;
   REAL** orig_alphas_by_row ; // stores a pointer to a set of alphas for recomputation 
                              // a row (when reactivating variables)
@@ -264,6 +270,11 @@ typedef struct shrink_state {
   REAL mymaxdiff ;     // current alpha gap
   INT num_rows ;       // number of alpha constraint rows 
   INT num_active_rows ;// number of active alpha constraint rows
+  REAL *buffer_num ;   // a buffer of length num
+  REAL *buffer_numcols ;   // a buffer of length num_cols
+  REAL *buffer1_numrows ;  // buffer 1 of length num_rows
+  REAL *buffer2_numrows ;  // buffer 1 of length num_rows
+  
 
 #ifdef USE_CPLEX
   CPXENVptr     env ;
