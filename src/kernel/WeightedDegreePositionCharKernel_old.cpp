@@ -1,12 +1,12 @@
 #include "lib/common.h"
-#include "kernel/WeightedDegreePositionCharKernel.h"
+#include "kernel/WeightedDegreePositionCharKernel_old.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
 #include "lib/io.h"
 
 #include <assert.h>
 
-CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, REAL* w, INT d, 
+CWeightedDegreePositionCharKernel_old::CWeightedDegreePositionCharKernel_old(LONG size, REAL* w, INT d, 
 																	 INT max_mismatch_, INT * shift_, 
 																	 INT shift_len_, bool use_norm,
 																	 INT mkl_stepsize_)
@@ -45,7 +45,7 @@ CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, 
 	tree_initialized=false ;
 }
 
-CWeightedDegreePositionCharKernel::~CWeightedDegreePositionCharKernel() 
+CWeightedDegreePositionCharKernel_old::~CWeightedDegreePositionCharKernel_old() 
 {
 	delete[] shift;
 	shift = NULL;
@@ -65,7 +65,7 @@ CWeightedDegreePositionCharKernel::~CWeightedDegreePositionCharKernel()
 	cleanup();
 }
 
-void CWeightedDegreePositionCharKernel::remove_lhs() 
+void CWeightedDegreePositionCharKernel_old::remove_lhs() 
 { 
 	delete_optimization();
 
@@ -97,7 +97,7 @@ void CWeightedDegreePositionCharKernel::remove_lhs()
 
 } ;
 
-void CWeightedDegreePositionCharKernel::remove_rhs()
+void CWeightedDegreePositionCharKernel_old::remove_rhs()
 {
 	if (rhs)
 		cache_reset() ;
@@ -109,7 +109,7 @@ void CWeightedDegreePositionCharKernel::remove_rhs()
 }
 
   
-bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CWeightedDegreePositionCharKernel_old::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	INT lhs_changed = (lhs!=l) ;
 	INT rhs_changed = (rhs!=r) ;
@@ -233,7 +233,7 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do
 	return result;
 }
 
-void CWeightedDegreePositionCharKernel::cleanup()
+void CWeightedDegreePositionCharKernel_old::cleanup()
 {
 	delete_optimization();
 
@@ -265,7 +265,7 @@ void CWeightedDegreePositionCharKernel::cleanup()
 	tree_initialized = false;
 }
 
-bool CWeightedDegreePositionCharKernel::load_init(FILE* src)
+bool CWeightedDegreePositionCharKernel_old::load_init(FILE* src)
 {
     assert(src!=NULL);
     UINT intlen=0;
@@ -294,22 +294,22 @@ bool CWeightedDegreePositionCharKernel::load_init(FILE* src)
 	return true;
 }
 
-bool CWeightedDegreePositionCharKernel::save_init(FILE* /*dest*/)
+bool CWeightedDegreePositionCharKernel_old::save_init(FILE* /*dest*/)
 {
 	return false;
 }
 
-bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, REAL * alphas)
+bool CWeightedDegreePositionCharKernel_old::init_optimization(INT count, INT * IDX, REAL * alphas)
 {
 	if (max_mismatch!=0)
 	{
-		CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not implemented for mismatch!=0\n") ;
+		CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel_old optimization not implemented for mismatch!=0\n") ;
 		return false ;
 	}
 
 	delete_optimization();
 	
-	CIO::message(M_DEBUG, "initializing CWeightedDegreePositionCharKernel optimization\n") ;
+	CIO::message(M_DEBUG, "initializing CWeightedDegreePositionCharKernel_old optimization\n") ;
 	int i=0;
 	for (i=0; i<count; i++)
 	{
@@ -323,9 +323,9 @@ bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, 
 	return true ;
 }
 
-bool CWeightedDegreePositionCharKernel::delete_optimization() 
+bool CWeightedDegreePositionCharKernel_old::delete_optimization() 
 { 
-	CIO::message(M_DEBUG, "deleting CWeightedDegreePositionCharKernel optimization\n");
+	CIO::message(M_DEBUG, "deleting CWeightedDegreePositionCharKernel_old optimization\n");
 
 	if (get_is_initialized())
 	{
@@ -347,7 +347,7 @@ bool CWeightedDegreePositionCharKernel::delete_optimization()
    ...
 */
   
-REAL CWeightedDegreePositionCharKernel::compute2(INT idx_a, INT idx_b)
+REAL CWeightedDegreePositionCharKernel_old::compute2(INT idx_a, INT idx_b)
 {
   INT alen, blen;
   bool afree, bfree;
@@ -379,10 +379,10 @@ REAL CWeightedDegreePositionCharKernel::compute2(INT idx_a, INT idx_b)
   }
   
   // no shift
-  for (INT i=0; i<alen; i++)
+  for (INT i=0; i<alen-degree; i++)
   {
 	  INT mismatches=0;
-	  for (INT j=0; (j<degree) && (i+j<alen) && mismatches<=max_mismatch; j++)
+	  for (INT j=0; j<degree && mismatches<=max_mismatch; j++)
 	  {
 		  if (avec[i+j]!=bvec[i+j])
 		  {
@@ -395,12 +395,12 @@ REAL CWeightedDegreePositionCharKernel::compute2(INT idx_a, INT idx_b)
   } ;
   
   // shift in sequence a
-  for (INT i=0; i<alen; i++)
+  for (INT i=0; i<alen-degree; i++)
   {
-	  for (INT k=1; (k<=shift[i]) && (i+k<alen); k++)
+	  for (INT k=1; (k<=shift[i]) && (i<alen-degree-k); k++)
 	  {
 		  INT mismatches=0;
-		  for (INT j=0; (j<degree) && (i+j+k<alen) && mismatches<=max_mismatch; j++)
+		  for (INT j=0; j<degree && mismatches<=max_mismatch; j++)
 		  {
 			  if (avec[i+j+k]!=bvec[i+j])
 			  {
@@ -414,12 +414,12 @@ REAL CWeightedDegreePositionCharKernel::compute2(INT idx_a, INT idx_b)
   }
 
   // shift in sequence b
-  for (INT i=0; i<alen; i++)
+  for (INT i=0; i<alen-degree; i++)
   {
-	  for (INT k=1; (k<=shift[i]) && (i+k<alen); k++)
+	  for (INT k=1; (k<=shift[i]) && (i<alen-degree-k); k++)
 	  {
 		  INT mismatches=0;
-		  for (INT j=0; (j<degree) && (i+j+k<alen) && mismatches<=max_mismatch; j++)
+		  for (INT j=0; j<degree && mismatches<=max_mismatch; j++)
 		  {
 			  if (avec[i+j]!=bvec[i+j+k])
 			  {
@@ -444,7 +444,7 @@ REAL CWeightedDegreePositionCharKernel::compute2(INT idx_a, INT idx_b)
   return (double) result/sqrt_both;
 }
 
-REAL CWeightedDegreePositionCharKernel::compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
+REAL CWeightedDegreePositionCharKernel_old::compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
 {
 	REAL sum0=0 ;
 	REAL *sum1=new REAL[max_shift] ;
@@ -452,14 +452,14 @@ REAL CWeightedDegreePositionCharKernel::compute_with_mismatch(CHAR* avec, INT al
 		sum1[i]=0 ;
 	
 	// no shift
-	for (INT i=0; i<alen; i++)
+	for (INT i=0; i<alen-degree; i++)
 	{
 		if ((position_weights!=NULL) && (position_weights[i]==0.0))
 			continue ;
 
 		INT mismatches=0;
 		REAL sumi = 0.0 ;
-		for (INT j=0; (j<degree) && (i+j<alen); j++)
+		for (INT j=0; j<degree; j++)
 		{
 			if (avec[i+j]!=bvec[i+j])
 			{
@@ -475,16 +475,16 @@ REAL CWeightedDegreePositionCharKernel::compute_with_mismatch(CHAR* avec, INT al
 			sum0 += sumi ;
 	} ;
 	
-	for (INT i=0; i<alen; i++)
+	for (INT i=0; i<alen-degree; i++)
 	{
 		if ((position_weights!=NULL) && (position_weights[i]==0.0))
 			continue ;
-		for (INT k=1; (k<=shift[i]) && (i+k<alen); k++)
+		for (INT k=1; (k<=shift[i]) && (i<alen-degree-k); k++)
 		{
 			REAL sumi = 0.0 ;
 			// shift in sequence a
 			INT mismatches=0;
-			for (INT j=0; (j<degree) && (i+j+k<alen); j++)
+			for (INT j=0; j<degree; j++)
 			{
 				if (avec[i+j+k]!=bvec[i+j])
 				{
@@ -496,7 +496,7 @@ REAL CWeightedDegreePositionCharKernel::compute_with_mismatch(CHAR* avec, INT al
 			}
 			// shift in sequence b
 			mismatches=0;
-			for (INT j=0; (j<degree) && (i+j+k<alen); j++)
+			for (INT j=0; j<degree; j++)
 			{
 				if (avec[i+j]!=bvec[i+j+k])
 				{
@@ -521,7 +521,7 @@ REAL CWeightedDegreePositionCharKernel::compute_with_mismatch(CHAR* avec, INT al
 	return result ;
 }
 
-REAL CWeightedDegreePositionCharKernel::compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
+REAL CWeightedDegreePositionCharKernel_old::compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
 {
 	REAL sum0=0 ;
 	REAL *sum1=new REAL[max_shift] ;
@@ -529,12 +529,12 @@ REAL CWeightedDegreePositionCharKernel::compute_without_mismatch(CHAR* avec, INT
 		sum1[i]=0 ;
 	
 	// no shift
-	for (INT i=0; i<alen; i++)
+	for (INT i=0; i<alen-degree; i++)
 	{
 		if ((position_weights!=NULL) && (position_weights[i]==0.0))
 			continue ;
 		REAL sumi = 0.0 ;
-		for (INT j=0; (j<degree) && (i+j<alen); j++)
+		for (INT j=0; j<degree; j++)
 		{
 			if (avec[i+j]!=bvec[i+j])
 				break ;
@@ -546,22 +546,22 @@ REAL CWeightedDegreePositionCharKernel::compute_without_mismatch(CHAR* avec, INT
 			sum0 += sumi ;
 	} ;
 	
-	for (INT i=0; i<alen; i++)
+	for (INT i=0; i<alen-degree; i++)
 	{
 		if ((position_weights!=NULL) && (position_weights[i]==0.0))
 			continue ;
-		for (INT k=1; (k<=shift[i]) && (i+k<alen); k++)
+		for (INT k=1; (k<=shift[i]) && (i<alen-degree-k); k++)
 		{
 			REAL sumi = 0.0 ;
 			// shift in sequence a
-			for (INT j=0; (j<degree) && (i+j+k<alen); j++)
+			for (INT j=0; j<degree; j++)
 			{
 				if (avec[i+j+k]!=bvec[i+j])
 					break ;
 				sumi += weights[j];
 			}
 			// shift in sequence b
-			for (INT j=0; (j<degree) && (i+j+k<alen); j++)
+			for (INT j=0; j<degree; j++)
 			{
 				if (avec[i+j]!=bvec[i+j+k])
 					break ;
@@ -582,7 +582,7 @@ REAL CWeightedDegreePositionCharKernel::compute_without_mismatch(CHAR* avec, INT
 	return result ;
 }
 
-REAL CWeightedDegreePositionCharKernel::compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
+REAL CWeightedDegreePositionCharKernel_old::compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
 {
 	REAL sum0=0 ;
 	REAL *sum1=new REAL[max_shift] ;
@@ -607,22 +607,22 @@ REAL CWeightedDegreePositionCharKernel::compute_without_mismatch_matrix(CHAR* av
 			sum0 += sumi ;
 	} ;
 	
-	for (INT i=0; i<alen; i++)
+	for (INT i=0; i<alen-degree; i++)
 	{
 		if ((position_weights!=NULL) && (position_weights[i]==0.0))
 			continue ;
-		for (INT k=1; (k<=shift[i]) && (i+k<alen); k++)
+		for (INT k=1; (k<=shift[i]) && (i<alen-degree-k); k++)
 		{
 			REAL sumi = 0.0 ;
 			// shift in sequence a
-			for (INT j=0; (j<degree) && (i+j+k<alen); j++)
+			for (INT j=0; j<degree; j++)
 			{
 				if (avec[i+j+k]!=bvec[i+j])
 					break ;
 				sumi += weights[i*degree+j];
 			}
 			// shift in sequence b
-			for (INT j=0; (j<degree) && (i+j+k<alen); j++)
+			for (INT j=0; j<degree; j++)
 			{
 				if (avec[i+j]!=bvec[i+j+k])
 					break ;
@@ -644,7 +644,7 @@ REAL CWeightedDegreePositionCharKernel::compute_without_mismatch_matrix(CHAR* av
 }
 
 
-REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
+REAL CWeightedDegreePositionCharKernel_old::compute(INT idx_a, INT idx_b)
 {
   INT alen, blen;
   bool afree, bfree;
@@ -685,7 +685,7 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
   
 }
 
-void CWeightedDegreePositionCharKernel::add_example_to_tree(INT idx, REAL alpha) 
+void CWeightedDegreePositionCharKernel_old::add_example_to_tree(INT idx, REAL alpha) 
 {
 	INT len ;
 	bool free ;
@@ -761,7 +761,7 @@ void CWeightedDegreePositionCharKernel::add_example_to_tree(INT idx, REAL alpha)
 	tree_initialized=true ;
 }
 
-REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx) 
+REAL CWeightedDegreePositionCharKernel_old::compute_by_tree(INT idx) 
 {
 	INT len ;
 	bool free ;
@@ -802,7 +802,7 @@ REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx)
 		return sum ;
 }
 
-void CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, REAL* LevelContrib) 
+void CWeightedDegreePositionCharKernel_old::compute_by_tree(INT idx, REAL* LevelContrib) 
 {
 	INT len ;
 	bool free ;
@@ -842,7 +842,7 @@ void CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, REAL* LevelCont
 	delete[] vec ;
 }
 
-REAL CWeightedDegreePositionCharKernel::compute_abs_weights_tree(struct SuffixTree* p_tree) 
+REAL CWeightedDegreePositionCharKernel_old::compute_abs_weights_tree(struct SuffixTree* p_tree) 
 {
 	REAL ret=0 ;
 
@@ -866,7 +866,7 @@ REAL CWeightedDegreePositionCharKernel::compute_abs_weights_tree(struct SuffixTr
 	return ret ;
 }
 
-REAL *CWeightedDegreePositionCharKernel::compute_abs_weights(int &len) 
+REAL *CWeightedDegreePositionCharKernel_old::compute_abs_weights(int &len) 
 {
 	REAL * sum=new REAL[seq_length*4] ;
 	for (INT i=0; i<seq_length*4; i++)
@@ -884,7 +884,7 @@ REAL *CWeightedDegreePositionCharKernel::compute_abs_weights(int &len)
 	return sum ;
 }
 
-void CWeightedDegreePositionCharKernel::delete_tree(struct SuffixTree * p_tree)
+void CWeightedDegreePositionCharKernel_old::delete_tree(struct SuffixTree * p_tree)
 {
 	if (p_tree==NULL)
 	{
@@ -921,7 +921,7 @@ void CWeightedDegreePositionCharKernel::delete_tree(struct SuffixTree * p_tree)
 	}
 } 
 
-bool CWeightedDegreePositionCharKernel::set_weights(REAL* ws, INT d, INT len)
+bool CWeightedDegreePositionCharKernel_old::set_weights(REAL* ws, INT d, INT len)
 {
 	CIO::message(M_DEBUG, "degree = %i  d=%i\n", degree, d) ;
 	degree = d ;
@@ -943,7 +943,7 @@ bool CWeightedDegreePositionCharKernel::set_weights(REAL* ws, INT d, INT len)
 		return false;
 }
 
-bool CWeightedDegreePositionCharKernel::set_position_weights(REAL* pws, INT len)
+bool CWeightedDegreePositionCharKernel_old::set_position_weights(REAL* pws, INT len)
 {
 	if (len==0)
 	{

@@ -6,8 +6,8 @@
 
 #include <assert.h>
 
-CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d, INT max_mismatch_, bool use_norm)
-	: CCharKernel(size),weights(NULL),position_weights(NULL),degree(d), max_mismatch(max_mismatch_), seq_length(0),
+CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d, INT max_mismatch_, bool use_norm, INT mkl_stepsize_)
+	: CCharKernel(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), max_mismatch(max_mismatch_), seq_length(0),
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL), use_normalization(use_norm)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION;
@@ -32,6 +32,8 @@ CWeightedDegreeCharKernel::~CWeightedDegreeCharKernel()
 	weights=NULL;
 	delete[] position_weights ;
 	position_weights=NULL ;
+	delete[] weights_buffer ;
+	weights_buffer = NULL ;
 	
 }
 
@@ -644,11 +646,11 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
 					tree=tree->childs[vec[i+j]] ;
-					LevelContrib[i] += factor*tree->weight ;
+					LevelContrib[i/mkl_stepsize] += factor*tree->weight ;
 				} else
 					if (tree->has_floats)
 					{
-						LevelContrib[i] += factor*tree->child_weights[vec[i+j]] ;
+						LevelContrib[i/mkl_stepsize] += factor*tree->child_weights[vec[i+j]] ;
 						break ;
 					} else
 						break ;
@@ -669,11 +671,11 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
 					tree=tree->childs[vec[i+j]] ;
-					LevelContrib[j] += factor*tree->weight ;
+					LevelContrib[j/mkl_stepsize] += factor*tree->weight ;
 				} else
 					if (tree->has_floats)
 					{
-						LevelContrib[j] += factor*tree->child_weights[vec[i+j]] ;
+						LevelContrib[j/mkl_stepsize] += factor*tree->child_weights[vec[i+j]] ;
 						break ;
 					} else
 						break ;
@@ -694,11 +696,11 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
 					tree=tree->childs[vec[i+j]] ;
-					LevelContrib[j+degree*i] += factor*tree->weight ;
+					LevelContrib[(j+degree*i)/mkl_stepsize] += factor*tree->weight ;
 				} else
 					if (tree->has_floats)
 					{
-						LevelContrib[j+degree*i] += factor*tree->child_weights[vec[i+j]] ;
+						LevelContrib[(j+degree*i)/mkl_stepsize] += factor*tree->child_weights[vec[i+j]] ;
 						break ;
 					} else
 						break ;

@@ -1508,8 +1508,13 @@ bool CGUIMatlab::set_WD_position_weights(const mxArray* mx_arg)
 			CIO::message(M_ERROR, "dimension mismatch (should be 1xseq_length or 0x0)\n") ;
 			return false ;
 		}
-		INT len = mxGetN(mx_arg);
-		return kernel->set_position_weights(mxGetPr(mx_arg), len);
+		if (mxGetM(mx_arg)==0 & mxGetN(mx_arg)==0)
+			return kernel->delete_position_weights() ;
+		else
+		{
+			INT len = mxGetN(mx_arg);
+			return kernel->set_position_weights(mxGetPr(mx_arg), len);
+		}
 		
 	}
 	return false;

@@ -19,7 +19,7 @@ struct SuffixTree
 class CWeightedDegreeCharKernel: public CCharKernel
 {
  public:
-  CWeightedDegreeCharKernel(LONG size, REAL* weights, INT degree, INT max_mismatch, bool use_normalization=true) ;
+  CWeightedDegreeCharKernel(LONG size, REAL* weights, INT degree, INT max_mismatch, bool use_normalization=true, INT mkl_stepsize=1) ;
   ~CWeightedDegreeCharKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -61,13 +61,15 @@ class CWeightedDegreeCharKernel: public CCharKernel
 	  set_is_initialized(true);
   }
   inline virtual INT get_num_subkernels()
-  {
-	  if (position_weights!=NULL)
-		  return seq_length ;
-	  if (length==0)
-		  return get_degree();
-	  return get_degree()*length ;
-  }
+	  {
+		  //fprintf(stderr, "mkl_stepsize=%i\n", mkl_stepsize) ;
+		  //exit(-1) ;
+		  if (position_weights!=NULL)
+			  return (INT) ceil(1.0*seq_length/mkl_stepsize) ;
+		  if (length==0)
+			  return (INT) ceil(1.0*get_degree()/mkl_stepsize);
+		  return (INT) ceil(1.0*get_degree()*length/mkl_stepsize) ;
+	  }
   inline void compute_by_subkernel(INT idx, REAL * subkernel_contrib)
 	  { 
 		  if (get_is_initialized())
@@ -79,18 +81,49 @@ class CWeightedDegreeCharKernel: public CCharKernel
 	  } ;
   inline const REAL* get_subkernel_weights(INT& num_weights)
 	  {
-		  return get_weights(num_weights) ;
+		  num_weights = get_num_subkernels() ;
+		  
+		  delete[] weights_buffer ;
+		  weights_buffer = new REAL[num_weights] ;
+		  
+		  if (position_weights!=NULL)
+			  for (INT i=0; i<num_weights; i++)
+				  weights_buffer[i] = position_weights[i*mkl_stepsize] ;
+		  else
+			  for (INT i=0; i<num_weights; i++)
+				  weights_buffer[i] = weights[i*mkl_stepsize] ;
+		  
+		  return weights_buffer ;
 	  }
   inline void set_subkernel_weights(REAL* weights2, INT num_weights2)
 	  {
-		  INT num_weights=-1 ;
-		  REAL* weights = get_weights(num_weights) ;
+		  INT num_weights = get_num_subkernels() ;
 		  if (num_weights!=num_weights2)
 			  CIO::message(M_ERROR, "number of weights do not match\n") ;
-		  for (INT i=0; i<num_weights; i++)
-			  weights[i]=weights2[i] ;
+		  
+		  if (position_weights!=NULL)
+			  for (INT i=0; i<num_weights; i++)
+				  for (INT j=0; j<mkl_stepsize; j++)
+				  {
+					  if (i*mkl_stepsize+j<seq_length)
+						  position_weights[i*mkl_stepsize+j] = weights2[i] ;
+				  }
+		  else if (length==0)
+		  {
+			  for (INT i=0; i<num_weights; i++)
+				  for (INT j=0; j<mkl_stepsize; j++)
+					  if (i*mkl_stepsize+j<get_degree())
+						  weights[i*mkl_stepsize+j] = weights2[i] ;
+		  }
+		  else
+		  {
+			  for (INT i=0; i<num_weights; i++)
+				  for (INT j=0; j<mkl_stepsize; j++)
+					  if (i*mkl_stepsize+j<get_degree()*length)
+						  weights[i*mkl_stepsize+j] = weights2[i] ;
+		  }
 	  }
-
+  
   // other kernel tree operations  
   void prune_tree(struct SuffixTree * p_tree=NULL, int min_usage=2);
   void count_tree_usage(INT idx);
@@ -156,6 +189,8 @@ class CWeightedDegreeCharKernel: public CCharKernel
   ///length must match seq_length if != 0
   REAL* weights;
   REAL* position_weights ;
+  REAL* weights_buffer ;
+  INT mkl_stepsize ;
   INT degree;
   INT length;
   

@@ -863,8 +863,9 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				INT d=3;
 				INT max_mismatch = 0;
 				INT i=0;
+				INT mkl_stepsize = 1 ;
 
-				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &d, &max_mismatch, &use_normalization);
+				sscanf(param, "%s %s %d %d %d %d %d", kern_type, data_type, &size, &d, &max_mismatch, &use_normalization, &mkl_stepsize);
 				REAL* weights=new REAL[d*(1+max_mismatch)];
 				REAL sum=0;
 
@@ -892,7 +893,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 				
 				delete k;
-				k=new CWeightedDegreeCharKernel(size, weights, d, max_mismatch, use_normalization==1);
+				k=new CWeightedDegreeCharKernel(size, weights, d, max_mismatch, use_normalization==1, mkl_stepsize);
 				delete[] weights ;
 				
 				if (k)
