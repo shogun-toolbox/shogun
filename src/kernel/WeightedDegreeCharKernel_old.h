@@ -30,10 +30,10 @@ class CWeightedDegreeCharKernel_old: public CCharKernel
   bool save_init(FILE* dest);
 
   // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREE; }
+  virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREEOLD; }
 
   // return the name of a kernel
-  virtual const CHAR* get_name() { return "WeightedDegree" ; } ;
+  virtual const CHAR* get_name() { return "WeightedDegree_old" ; } ;
 
   virtual bool init_optimization(INT count, INT * IDX, REAL * weights) ;
   virtual bool delete_optimization() ;
@@ -75,7 +75,7 @@ class CWeightedDegreeCharKernel_old: public CCharKernel
 			  compute_by_tree(idx, subkernel_contrib); 
 			  return ;
 		  }
-		  CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not initialized\n") ;
+		  CIO::message(M_ERROR, "CWeightedDegreeCharKernel_old optimization not initialized\n") ;
 	  } ;
   inline const REAL* get_subkernel_weights(INT& num_weights)
 	  {
