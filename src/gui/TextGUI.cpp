@@ -1,4 +1,6 @@
-#include "TextGUI.h"
+#include "gui/TextGUI.h"
+#include "lib/io.h"
+
 CTextGUI gui;
 
 //names of menu commands

@@ -1,8 +1,11 @@
 #ifndef __TEXT_GUI__H
 #define __TEXT_GUI__H
 
+#include <stdio.h>
+
 class CTextGUI
 {
+public:
 	CTextGUI();
 	~CTextGUI();
 

@@ -1,5 +1,6 @@
 #include "TOPFeatures.h"
 #include "lib/io.h"
+#include <assert.h>
 
 CTOPFeatures::CTOPFeatures(CHMM* p, CHMM* n)
 {
@@ -28,8 +29,10 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 
 int CTOPFeatures::get_label(long idx)
 {
-	if (pos && pos->get_observations())
-		return pos->get_observations()->get_label(idx) ;
+  if (pos && pos->get_observations())
+    return pos->get_observations()->get_label(idx) ;
+  assert(0) ;
+  return 0 ;
 }
 
 long CTOPFeatures::get_number_of_examples()

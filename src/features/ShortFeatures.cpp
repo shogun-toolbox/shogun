@@ -1,4 +1,5 @@
-#include "ShortFeatures.h"
+#include "features/ShortFeatures.h"
+#include "preproc/ShortPreProc.h"
 
 CShortFeatures::CShortFeatures()
 : CFeatures(),  num_features(0), num_vectors(0),
@@ -27,7 +28,7 @@ short int* CShortFeatures::get_feature_vector(long num, long &len, bool &free)
       compute_feature_vector(num, feat) ;
       if (preproc)
 	{
-	  short int* feat2 = preproc->apply_to_feature_vector(feat, len);
+	  short int* feat2 = ((CShortPreProc*)preproc)->apply_to_feature_vector(feat, len);
 	  delete[] feat ;
 	  return feat2 ;
 	} ;
