@@ -27,7 +27,7 @@ class CRealFileFeatures: public CRealFeatures
 protected:
   /// compute feature vector for sample num
   /// len is returned by reference
-  virtual REAL* compute_feature_vector(long num, long& len);
+  virtual REAL* compute_feature_vector(long num, long& len, REAL* target=NULL);
 
   bool load_base_data();
 

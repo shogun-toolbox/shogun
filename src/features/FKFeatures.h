@@ -34,7 +34,7 @@ class CFKFeatures: public CRealFeatures
 
 
  protected:
-  virtual REAL* compute_feature_vector(long num, long& len);
+  virtual REAL* compute_feature_vector(long num, long& len, REAL* target=NULL);
   
   /// computes the featurevector to the address addr
   void compute_feature_vector(REAL* addr, long num, long& len);

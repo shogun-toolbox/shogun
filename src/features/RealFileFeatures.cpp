@@ -57,12 +57,14 @@ CFeatures* CRealFileFeatures::duplicate() const
     return new CRealFileFeatures(*this);
 }
 
-REAL* CRealFileFeatures::compute_feature_vector(long num, long &len)
+REAL* CRealFileFeatures::compute_feature_vector(long num, long &len, REAL* target)
 {
     assert(num<num_vectors);
     //CIO::message("f:%ld\n", num);
     len=num_features;
-    REAL* featurevector= new REAL[num_features];
+    REAL* featurevector= target;
+	if (!featurevector)
+	  featurevector=new REAL[num_features];
     assert(featurevector!=NULL);
     assert(working_file!=NULL);
     fseek(working_file, filepos+num_features*doublelen*num, SEEK_SET);
@@ -127,5 +129,8 @@ bool CRealFileFeatures::load_base_data()
     labels= new int[num_vec];
     assert(labels!=NULL);
     assert(fread(labels, intlen, num_vec, working_file) == num_vec);
+	
+	feature_cache= new CCache<REAL>(100, num_features, num_vectors);
+	assert (feature_cache=NULL);
     return true;
 }

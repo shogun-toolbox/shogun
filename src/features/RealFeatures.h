@@ -3,6 +3,7 @@
 
 #include "lib/common.h"
 #include "features/Features.h"
+#include "lib/Cache.h"
 
 class CRealFeatures: public CFeatures
 {
@@ -47,8 +48,9 @@ class CRealFeatures: public CFeatures
 
 protected:
   /// compute feature vector for sample num
+  /// if target is set the vector is written to target
   /// len is returned by reference
-  virtual REAL* compute_feature_vector(long num, long& len)=0;
+  virtual REAL* compute_feature_vector(long num, long& len, REAL* target=NULL)=0;
 
   /// number of vectors in cache
   long num_vectors;
@@ -57,5 +59,6 @@ protected:
   long num_features;
   
   REAL* feature_matrix;
+  CCache<REAL>* feature_cache;
 };
 #endif

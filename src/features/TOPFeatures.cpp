@@ -4,17 +4,7 @@
 
 CTOPFeatures::CTOPFeatures(CHMM* p, CHMM* n)
 {
-    assert(p!=NULL && n!=NULL);
-    pos=p;
-    neg=n;
-    set_num_vectors(0);
-    if (pos && pos->get_observations())
-	set_num_vectors(pos->get_observations()->get_DIMENSION());
-
-    CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
-
-    if (pos && neg)
-	num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
+  set_models(p,n);
 }
 
  CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig): 
@@ -28,13 +18,24 @@ CTOPFeatures::~CTOPFeatures()
 
 void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 {
-  pos=p ; 
-  neg=n ;
+  assert(p!=NULL && n!=NULL);
+
+  pos=p; 
+  neg=n;
+  set_num_vectors(0);
+
   delete[] feature_matrix  ;
   feature_matrix=NULL ;
+  
   CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
+  
+  if (pos && pos->get_observations())
+	set_num_vectors(pos->get_observations()->get_DIMENSION());
   if (pos && neg)
-    num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
+	num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
+
+  delete feature_cache;
+  feature_cache= new CCache<REAL>(100, num_features, num_vectors);
 }
 
 int CTOPFeatures::get_label(long idx)
@@ -52,13 +53,13 @@ CFeatures* CTOPFeatures::duplicate() const
 	return new CTOPFeatures(*this);
 }
 
-REAL* CTOPFeatures::compute_feature_vector(long num, long &len)
+REAL* CTOPFeatures::compute_feature_vector(long num, long &len, REAL* target)
 {
-  REAL* featurevector;
+  REAL* featurevector=target;
   
   //CIO::message("allocating %.2f M for top feature vector cache\n", 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()));
-  
-  featurevector=new REAL[ 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ];
+ if (!featurevector) 
+   featurevector=new REAL[ 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ];
   
   if (!featurevector)
     return NULL;

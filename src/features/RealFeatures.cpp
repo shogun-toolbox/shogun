@@ -1,16 +1,19 @@
-#include <assert.h>
 #include "features/RealFeatures.h"
 #include "preproc/RealPreProc.h"
-#include <string.h>
 #include "lib/io.h"
+#include "lib/Cache.h"
 
-CRealFeatures::CRealFeatures() : CFeatures(), num_vectors(0), num_features(0), feature_matrix(NULL)
+#include <string.h>
+#include <assert.h>
+
+CRealFeatures::CRealFeatures() : CFeatures(), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
 {
 }
 
 CRealFeatures::~CRealFeatures()
 {
   delete[] feature_matrix;
+  delete feature_cache;
 }
   
 CRealFeatures::CRealFeatures(const CRealFeatures & orig): CFeatures(orig), 
@@ -28,36 +31,56 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
 {
   len=num_features; 
   assert(num<num_vectors);
-  
+
   if (feature_matrix)
-    {
-//      CIO::message("returning %i th column of feature_matrix\n", (int)num) ;
-      free=false ;
-      return &feature_matrix[num*num_features];
-    } 
+  {
+	//      CIO::message("returning %i th column of feature_matrix\n", (int)num) ;
+	free=false ;
+	return &feature_matrix[num*num_features];
+  } 
   else
-    {
-      //CIO::message("computing %i th feature vector\n", (int)num) ;
-      free=true ;
-      REAL* feat=compute_feature_vector(num, len) ;
-      if (preproc)
+  {
+	//CIO::message("computing %i th feature vector\n", (int)num) ;
+	
+	REAL* feat=NULL;
+	free=true ;
+
+	if (feature_cache)
+	{
+	  free=false;
+	  feat=feature_cache->get_entry(num);
+
+	  if (feat)
+		return feat;
+	  else
+	  {
+		feat=feature_cache->set_entry(num);
+	  }
+	}
+
+	feat=compute_feature_vector(num, len, feat);
+
+	if (preproc)
 	{
 	  //CIO::message("preprocessing %i th feature vector\n", (int)num) ;
 	  int len2=len ;
 	  REAL* feat2 = ((CRealPreProc*) preproc)->apply_to_feature_vector(feat, len2);
-	  delete[] feat ;
+	  memcpy(feat, feat2, sizeof(REAL)*len2);
+	  delete[] feat2 ;
 	  //CIO::message("len2: %d len: %d\n", len2, len);
 	  len=num_features=len2 ;
-	  return feat2 ;
 	}
-      return feat ;
-    }
+
+	return feat ;
+  }
 }
 
 void CRealFeatures::free_feature_vector(REAL* feat, bool free)
 {
   if (free)
     delete[] feat ;
+
+  delete feature_cache;
 } 
 
 /// get the pointer to the feature matrix

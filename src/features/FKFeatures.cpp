@@ -4,22 +4,11 @@
 
 CFKFeatures::CFKFeatures(CHMM* p, CHMM* n, REAL a)
 {
-    assert(p!=NULL && n!=NULL);
-    pos=p;
-    neg=n;
-	weight_a=a;
-    set_num_vectors(0);
-    if (pos && pos->get_observations())
-	set_num_vectors(pos->get_observations()->get_DIMENSION());
-
-    CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
-
-    if (pos && neg)
-	num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
+  set_models(p,n,a);
 }
 
  CFKFeatures::CFKFeatures(const CFKFeatures &orig): 
-	CRealFeatures(orig), pos(orig.pos), neg(orig.neg), weight_a(orig.weight_a)
+	CRealFeatures(orig), pos(orig.pos), neg(orig.neg)
 { 
 }
 
@@ -29,15 +18,25 @@ CFKFeatures::~CFKFeatures()
 
 void CFKFeatures::set_models(CHMM* p, CHMM* n, REAL a)
 {
-  pos=p ; 
-  neg=n ;
+  assert(p!=NULL && n!=NULL);
+
+  pos=p; 
+  neg=n;
   weight_a=a;
+  set_num_vectors(0);
 
   delete[] feature_matrix  ;
   feature_matrix=NULL ;
+  
   CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
+  
+  if (pos && pos->get_observations())
+	set_num_vectors(pos->get_observations()->get_DIMENSION());
   if (pos && neg)
-    num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
+	num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
+
+  delete feature_cache;
+  feature_cache= new CCache<REAL>(100, num_features, num_vectors);
 }
 
 int CFKFeatures::get_label(long idx)
@@ -55,13 +54,14 @@ CFeatures* CFKFeatures::duplicate() const
 	return new CFKFeatures(*this);
 }
 
-REAL* CFKFeatures::compute_feature_vector(long num, long &len)
+REAL* CFKFeatures::compute_feature_vector(long num, long &len, REAL* target)
 {
-  REAL* featurevector;
+  REAL* featurevector=target;
   
   //CIO::message("allocating %.2f M for FK feature vector cache\n", 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()));
-  
-  featurevector=new REAL[ 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ];
+ 
+  if (!featurevector)
+	featurevector=new REAL[ 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ];
   
   if (!featurevector)
     return NULL;
