@@ -13,8 +13,8 @@ public:
 	/// in the corresponding feature object
 	REAL kernel(CFeatures* a, int idx_a, CFeatures* b, int idx_b);
 
-	void init(CFeatures* f)=0;
-	void cleanup(CFeatures* f)=0;
+	virtual void init(CFeatures* f)=0;
+	virtual void cleanup()=0;
 
 	bool load(FILE* src);
 	bool save(FILE* dest);
@@ -23,7 +23,7 @@ protected:
 	/// compute kernel function for features a and b
 	/// idx_{a,b} denote the index of the feature vectors
 	/// in the corresponding feature object
-	REAL compute(CFeatures* a, int idx_a, CFeatures* b, int idx_b)=0;
+	virtual REAL compute(CFeatures* a, int idx_a, CFeatures* b, int idx_b)=0;
 	
 	/**@ cache kernel evalutations to improve speed
 	*/
