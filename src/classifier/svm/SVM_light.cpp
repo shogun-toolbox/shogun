@@ -1009,32 +1009,25 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			for (int i=0; i<num; i++)
 				k->compute_by_tree(i,&W_upd[i*degree]) ;
 
-			// update W with normalized W_upd and compute sumw
+			// update W with normalized W_upd and compute sumw and compute objective
+			REAL objective=0;
 			for (int d=0; d<degree; d++)
 			{
 				sumw[d]=0;
 
-				for (int i=0; i<num; i++)
+				for(ii=0;(i=active2dnum[ii])>=0;ii++)
 				{
 					REAL W_norm = W_upd[i*degree+d]/w[d];
 					W[i*degree+d] += W_norm;
 					sumw[d]+=a[i]*(0.5*label[i]*W_norm - 1);
 				}
 
+				objective+=w[d]*sumw[d];
 				meanabssumw+=CMath::abs(sumw[d]);
 			}
 
 			meanabssumw/=degree;
 			bound = 1.0 / meanabssumw;
-
-			// compute objective
-			REAL objective=0;
-
-			for (int i=0; i<totdoc; i++)
-			{
-				for (int d=0; d<degree; d++)
-					objective+=a[i]*(0.5*label[i]*w[d]*W[i*degree+d] - 1);
-			}
 
 			REAL gamma=0.05*bound; //fixme
 
