@@ -9,7 +9,10 @@ class CBinSeqFeatures: public CShortFeatures
 {
  public:
   CBinSeqFeatures(CObservation *pos, CObservation *neg) ;
-  ~CBinSeqFeatures() ;
+  virtual ~CBinSeqFeatures() ;
+
+  virtual int get_label(int idx) ;
+  virtual int get_number_of_examples() ;
   
 protected:
   /// compute feature vector for sample num
@@ -18,4 +21,6 @@ protected:
 
   CObservation *pos,*neg ;
 };
+
+
 #endif

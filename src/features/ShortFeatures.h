@@ -8,7 +8,7 @@ class CShortFeatures: public CFeatures
 {
  public:
   CShortFeatures() ;
-  ~CShortFeatures() ;
+  virtual ~CShortFeatures() ;
   
   virtual EType get_feature_type() { return CFeatures::F_SHORT ; } ;
   
@@ -31,7 +31,6 @@ class CShortFeatures: public CFeatures
       num_features is the column offset, and columns are linear in memory
       see below for definition of feature_matrix
   */
-  virtual short int* set_feature_matrix()=0;
 
 protected:
   /// compute feature vector for sample num
