@@ -16,3 +16,4 @@
 * type (INT/LONG etc) fixes, clear policy
 * fix linear HMM to be equiv. with MMs
 * testsuite
+* versioning

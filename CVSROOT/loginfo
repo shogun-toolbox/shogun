@@ -24,4 +24,4 @@
 #DEFAULT (echo ""; id; echo %s; date; cat) >> $CVSROOT/CVSROOT/commitlog
 # or
 #DEFAULT (echo ""; id; echo %{sVv}; date; cat) >> $CVSROOT/CVSROOT/commitlog
-DEFAULT ($CVSROOT/CVSROOT/log -m Gunnar.Raetsch@first.fhg.de -m Soeren.Sonnenburg@first.fhg.de -f $CVSROOT/CVSROOT/Tex.updates -s %s)
+DEFAULT ($CVSROOT/CVSROOT/log -m Gunnar.Raetsch@first.fhg.de -m Soeren.Sonnenburg@first.fhg.de -f $CVSROOT/CVSROOT/Tex.updates -s %1s)

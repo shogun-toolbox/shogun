@@ -30,3 +30,5 @@
 # The following string would enable all `cvs admin' commands for all
 # users:
 #UserAdminOptions=aAbceIklLmnNostuU
+
+UseNewInfoFormatStrings=yes
