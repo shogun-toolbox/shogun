@@ -327,7 +327,7 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
     } 
     else if (!strncmp(input, N_PSEUDO, strlen(N_PSEUDO)))
     {
-	CIO::not_implemented() ;
+		guihmm.set_pseudo(input+strlen(N_PSEUDO));
     } 
     else if (!strncmp(input, N_ALPHABET, strlen(N_ALPHABET)))
     {
