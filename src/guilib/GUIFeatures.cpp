@@ -148,6 +148,15 @@ bool CGUIFeatures::preproc_all_features(CFeatures* f, bool force)
 					CIO::not_implemented();
 			}
 			break;
+		case C_STRING:
+			switch (f->get_feature_type())
+			{
+				case F_WORD:
+					return ((CStringFeatures<WORD>*) f)->preproc_feature_strings(force);
+				default:
+					CIO::not_implemented();
+			}
+			break;
 		case C_SPARSE:
 			switch (f->get_feature_type())
 			{

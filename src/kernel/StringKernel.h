@@ -7,7 +7,7 @@
 template <class ST> class CStringKernel : public CKernel
 {
 	public:
-		CSimpleKernel(LONG cachesize) : CKernel(cachesize)
+		CStringKernel(LONG cachesize) : CKernel(cachesize)
 		{
 		}
 
@@ -22,7 +22,7 @@ template <class ST> class CStringKernel : public CKernel
 		 * instead the previous values will be used (which where hopefully obtained
 		 * on training data/loaded)
 		 */
-		virtual bool init(CStringFeatures<ST>* l, CStringFeatures<ST>* r, bool do_init)
+		virtual bool init(CFeatures* l, CFeatures* r, bool do_init)
 		{
 			CKernel::init(l,r,do_init);
 

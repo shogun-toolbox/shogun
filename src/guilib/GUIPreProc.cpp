@@ -4,6 +4,7 @@
 #include "preproc/PruneVarSubMean.h"
 #include "preproc/PCACut.h"
 #include "preproc/SortWord.h"
+#include "preproc/SortWordString.h"
 #include "lib/io.h"
 #include "lib/config.h"
 
@@ -51,6 +52,10 @@ bool CGUIPreProc::add_preproc(CHAR* param)
 	else if (strncmp(param,"LOGPLUSONE",10)==0)
 	{
 		preproc=new CLogPlusOne();
+	}
+	else if (strncmp(param,"SORTWORDSTRING",14)==0)
+	{
+		preproc=new CSortWordString();
 	}
 	else if (strncmp(param,"SORTWORD",8)==0)
 	{

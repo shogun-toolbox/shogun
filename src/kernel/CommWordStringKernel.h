@@ -2,13 +2,13 @@
 #define _COMMWORDSTRINGKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/WordKernel.h"
+#include "kernel/StringKernel.h"
 #include "kernel/OptimizableKernel.h"
 
-class CCommWordStringKernel: public CWordKernel
+class CCommWordStringKernel: public CStringKernel<WORD>
 {
  public:
-  CCommWordStringKernel(LONG size) ;
+  CCommWordStringKernel(LONG size, bool use_sign) ;
   ~CCommWordStringKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -24,17 +24,14 @@ class CCommWordStringKernel: public CWordKernel
   // return the name of a kernel
   virtual const CHAR* get_name() { return "CommWordString" ; } ;
 
-  virtual bool init_optimization(INT count, INT *IDX, REAL * weights) 
-	  {
-		  CIO::message(M_ERROR, "not implemented yet") ;
-		  return false;
-	  } ;
-  virtual void delete_optimization() {} ;
-  virtual REAL compute_optimized(INT idx) 
-	  { 		  
-		  CIO::message(M_ERROR, "not implemented yet") ;
-		  return 0 ; 
-	  } ;
+  virtual bool init_optimization(INT count, INT *IDX, REAL * weights) ;
+  virtual void delete_optimization() ;
+  virtual REAL compute_optimized(INT idx) ;
+
+  virtual void remove_lhs() ;
+  virtual void remove_rhs() ;
+
+  inline virtual EFeatureType get_feature_type() { return F_WORD; }
   
  protected:
   /// compute kernel function for features a and b
@@ -48,6 +45,12 @@ class CCommWordStringKernel: public CWordKernel
   double* sqrtdiag_rhs;
 
   bool initialized ;
+
+  INT dictionary_size ;
+  WORD * dictionary ;
+  REAL * dictionary_weights ;
+  
+  bool use_sign ;
 };
 
 #endif

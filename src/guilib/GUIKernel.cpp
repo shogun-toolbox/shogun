@@ -484,6 +484,25 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 			}
 		}
+		else if (strcmp(kern_type,"COMMSTRING")==0)
+		{
+			if (strcmp(data_type,"WORD")==0)
+			{
+				delete k;
+				INT use_sign = 0 ;
+				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &use_sign);
+				k=new CCommWordStringKernel(size, use_sign);
+				
+				if (k)
+				{
+					if (use_sign)
+						CIO::message(M_INFO, "CommWordStringKernel with sign(count) created\n");
+					else
+						CIO::message(M_INFO, "CommWordStringKernel with count created\n");
+					return k;
+				}
+			}
+		}
 		else if (strcmp(kern_type,"COMM")==0)
 		{
 			if (strcmp(data_type,"WORD")==0)
@@ -500,17 +519,6 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 						CIO::message(M_INFO, "CommWordKernel with sign(count) created\n");
 					else
 						CIO::message(M_INFO, "CommWordKernel with count created\n");
-					return k;
-				}
-			}
-			else if (strcmp(data_type,"WORDSTRING")==0)
-			{
-				delete k;
-				k=new CCommWordStringKernel(size);
-
-				if (k)
-				{
-					CIO::message(M_INFO, "CommWordStringKernel created\n");
 					return k;
 				}
 			}

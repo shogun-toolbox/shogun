@@ -62,7 +62,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						   short int nbest, 
 						   REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq)
 {
-	const INT default_look_back = 10000 ;
+	const INT default_look_back = 30000 ;
 	INT max_look_back = 0 ;
 	{ // determine maximal length of look-back
 		for (INT i=0; i<N; i++)
@@ -75,7 +75,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 					if (max_look_back<default_look_back)
 						max_look_back=default_look_back ;
 	}
-	max_look_back = math.min(seq_len, max_look_back) ;
+	//max_look_back = math.min(seq_len, max_look_back) ;
 
 	const INT look_back_buflen = max_look_back*nbest*N ;
 	const REAL mem_use = (REAL)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(short int)+sizeof(INT))+

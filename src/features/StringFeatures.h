@@ -2,6 +2,7 @@
 #define _CSTRINGFEATURES__H__
 
 #include "preproc/PreProc.h"
+#include "preproc/StringPreProc.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
 #include "lib/common.h"
@@ -10,6 +11,7 @@
 #include "lib/Mathmatics.h"
 
 #include <assert.h>
+
 
 template <class T> struct T_STRING
 {
@@ -20,6 +22,8 @@ template <class T> struct T_STRING
 // StringFeatures do not yet support PREPROCS
 template <class ST> class CStringFeatures: public CFeatures
 {
+//	class CStringPreProc<ST> ;
+	
 	public:
 	CStringFeatures(INT num_sym=-1) : CFeatures(0l), num_vectors(0), features(NULL), max_string_length(0), num_symbols(num_sym), original_num_symbols(num_sym), order(0), symbol_mask_table(NULL)
 	{
@@ -94,6 +98,19 @@ template <class ST> class CStringFeatures: public CFeatures
 
 		len=features[num].length;
 		return features[num].string;
+	}
+
+	/** get feature vector for sample num
+	  @param num index of feature vector
+	  @param len length is returned by reference
+	  */
+	virtual void set_feature_vector(INT num, ST* string, INT len)
+	{
+		assert(features!=NULL);
+		assert(num<num_vectors);
+
+		features[num].length=len ;
+		features[num].string=string ;
 	}
 
 	virtual ST inline get_feature(INT vec_num, INT feat_num)
@@ -203,6 +220,23 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	virtual INT get_size() { return sizeof(ST); }
 
+	/// preprocess the feature_matrix
+	virtual bool preproc_feature_strings(bool force_preprocessing=false)
+		{
+			CIO::message(M_DEBUG, "force: %d\n", force_preprocessing);
+			
+			for (INT i=0; i<get_num_preproc(); i++)
+			{ 
+				CIO::message(M_INFO, "preprocessing using preproc %s\n", get_preproc(i)->get_name());
+				bool ok=((CStringPreProc<ST>*) get_preproc(i))->apply_to_feature_strings(this) ;
+				
+//					if (!((CStringPreProc<ST>*) get_preproc(i))->apply_to_feature_strings(this))
+				if (!ok)
+					return false;
+			}
+			return true;
+		}
+
 	protected:
 
 	void translate_from_single_order(ST* obs, INT sequence_length, INT start, INT order, INT max_val)
@@ -234,6 +268,8 @@ template <class ST> class CStringFeatures: public CFeatures
 		for (i=start; i<sequence_length; i++)	
 			obs[i-start]=obs[i];
 	}
+
+	
 
 	protected:
 	/// number of string vectors
