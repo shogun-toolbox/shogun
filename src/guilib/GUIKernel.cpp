@@ -266,6 +266,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 															 d, max_mismatch, 
 															 shift, length);
 				delete[] shift ;
+				delete[] weights ;
 				
 				if (kernel)
 				{
@@ -319,7 +320,8 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				
 				delete kernel;
 				kernel=new CWeightedDegreeCharKernel(size, weights, d, max_mismatch);
-
+				delete[] weights ;
+				
 				if (kernel)
 				{
 					CIO::message("WeightedDegreeCharKernel created\n");

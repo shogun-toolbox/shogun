@@ -28,10 +28,12 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
   REAL compute(INT idx_a, INT idx_b);
+  REAL compute2(INT idx_a, INT idx_b);
   /*    compute_kernel*/
 
  protected:
   REAL* weights;
+  INT * counts ;
   INT degree;
   INT max_mismatch ;
   INT *shift ;

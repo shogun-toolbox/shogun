@@ -7,13 +7,15 @@
 #include <assert.h>
 
 CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, double* w, INT d, INT max_mismatch_, INT * shift_, INT shift_len_)
-	: CCharKernel(size),weights(NULL),degree(d), max_mismatch(max_mismatch_), 
+	: CCharKernel(size),weights(NULL),counts(NULL),degree(d), max_mismatch(max_mismatch_), 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
 	lhs=NULL ;
 	rhs=NULL ;
 
 	weights=new REAL[d*(1+max_mismatch)];
+	counts = new INT[d*(1+max_mismatch)];
+
 	assert(weights!=NULL);
 	for (INT i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
@@ -37,6 +39,8 @@ CWeightedDegreePositionCharKernel::~CWeightedDegreePositionCharKernel()
 		delete[] sqrtdiag_rhs;
 	delete[] sqrtdiag_lhs;
 	delete[] shift ;
+	delete[] counts ;
+	delete[] weights ;
 
 	cleanup();
 }
@@ -160,7 +164,7 @@ bool CWeightedDegreePositionCharKernel::save_init(FILE* /*dest*/)
    ...
 */
   
-REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
+REAL CWeightedDegreePositionCharKernel::compute2(INT idx_a, INT idx_b)
 {
   INT alen, blen;
   bool afree, bfree;
@@ -206,6 +210,7 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
 		  sum0 += weights[j+degree*mismatches];
 	  }
   } ;
+  //CIO::message("old sum0=%f\n", sum0) ;
   
   // shift in sequence a
   for (INT i=0; i<alen-degree; i++)
@@ -253,4 +258,96 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
 	  result += (sum1[i]+sum2[i])/(2*(i+1)) ;
   
   return (double) result/sqrt_both;
+}
+
+REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
+{
+  INT alen, blen;
+  bool afree, bfree;
+
+  CHAR* avec=((CCharFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+  CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+
+  // can only deal with strings of same length
+  assert(alen == blen);
+  assert(shift_len == alen) ;
+
+  REAL sqrt_a= 1 ;
+  REAL sqrt_b= 1 ;
+  if (initialized)
+    {
+      sqrt_a=sqrtdiag_lhs[idx_a] ;
+      sqrt_b=sqrtdiag_rhs[idx_b] ;
+    } ;
+
+  REAL sqrt_both=sqrt_a*sqrt_b;
+
+  double sum0=0 ;
+  double sum1[max_shift] ;
+  for (INT i=0; i<max_shift; i++)
+	  sum1[i]=0 ;
+
+  // no shift
+  for (INT i=0; i<alen-degree; i++)
+  {
+	  INT mismatches=0;
+	  for (INT j=0; j<degree; j++)
+	  {
+		  if (avec[i+j]!=bvec[i+j])
+		  {
+			  mismatches++ ;
+			  if (mismatches>max_mismatch)
+				  break ;
+		  } ;
+		  sum0 += weights[j+degree*mismatches];
+	  }
+  } ;
+  
+  for (INT i=0; i<alen-degree; i++)
+  {
+	  for (INT k=1; (k<=shift[i]) && (i<alen-degree-k); k++)
+	  {
+		  const INT k1=k-1 ;
+		  
+		  // shift in sequence a
+		  INT mismatches=0;
+		  for (INT j=0; j<degree; j++)
+		  {
+			  if (avec[i+j+k]!=bvec[i+j])
+			  {
+				  mismatches++ ;
+				  if (mismatches>max_mismatch)
+					  break ;
+			  } ;
+			  sum1[k1] += weights[j+degree*mismatches];
+		  }
+		  // shift in sequence b
+		  mismatches=0;
+		  for (INT j=0; j<degree; j++)
+		  {
+			  if (avec[i+j]!=bvec[i+j+k])
+			  {
+				  mismatches++ ;
+				  if (mismatches>max_mismatch)
+					  break ;
+			  } ;
+			  sum1[k1] += weights[j+degree*mismatches];
+		  }
+	  } ;
+  }
+
+  ((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+  ((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+
+  REAL result = sum0 ;
+  for (INT i=0; i<max_shift; i++)
+	  result += sum1[i]/(2*(i+1)) ;
+  
+  result/=sqrt_both;
+
+/*  REAL result2 = compute2(idx_a,idx_b) ;
+assert(fabs(result-result2)<1e-8);*/
+  
+  return result ;
+  
 }
