@@ -249,8 +249,8 @@ determine_march_mcpu()
 	then
 		COMP_C=cc
 		COMP_CPP=CC
-		COMP_OPTS="-O4 -g -Wall"
-		LINKFLAGS="-lm -lsunperf -Bstatic -xlic_lib=sunperf -xlic_lib=SUNWPro_lic -Bdynamic -lF77 -lM77 -lsunmath  -mt -lsocket -lnsl"
+		COMP_OPTS="-fast -xchip=native -xarch=v9 -xO5 -g +w2"
+		LINKFLAGS="-fast -xchip=native -xarch=v9 -xO5 -g +w2 -lm -lsunperf -Bstatic -xlic_lib=sunperf -Bdynamic -lF77 -lM77 -lsunmath  -mt -lsocket -lnsl"
 	elif osf1
 	then
 		COMP_OPTS="-O5 -inline speed -pthread -om"
@@ -755,7 +755,7 @@ EOF
 		iproc='sparc'
 		proc='v8'
 		_march=''
-		_mcpu="-mcpu=$proc"
+		_mcpu=''
 		;;
 
 	  arm)
