@@ -37,12 +37,14 @@ bool CGUIFeatures::preprocess(char* param)
 		{
 			if (strcmp(target,"TRAIN")==0)
 			{
-				init_preproc(train_features);
+				// init using trainfeatures + add preprocs to TRAINfeatures
+				init_preproc(train_features, train_features);
 				preprocess_features(train_features, force==1);
 			}
 			else if (strcmp(target,"TEST")==0)
 			{
-				init_preproc(train_features);
+				// init using trainfeatures + add preprocs to TESTfeatures
+				init_preproc(train_features, test_features);
 				preprocess_features(test_features, force==1);
 			}
 			else
@@ -56,7 +58,7 @@ bool CGUIFeatures::preprocess(char* param)
 
 	return result;
 }
-bool CGUIFeatures::init_preproc(CFeatures* feat)
+bool CGUIFeatures::init_preproc(CFeatures* feat, CFeatures* addfeat)
 {
 	int num_preproc=0;
 	CPreProc** preprocs;
@@ -65,7 +67,10 @@ bool CGUIFeatures::init_preproc(CFeatures* feat)
 		if (feat)
 		{
 			for (int i=0; i<num_preproc; i++)
+			{
 				preprocs[i]->init(feat);
+				addfeat->add_preproc(preprocs[i]);
+			}
 
 			return true;
 		}
@@ -86,12 +91,7 @@ bool CGUIFeatures::preprocess_features(CFeatures* feat, bool force)
 	{
 		if (feat)
 		{
-			for (int i=0; i<num_preproc; i++)
-				feat->add_preproc(preprocs[i]);
-
-			CIO::message("force: %d\n",force);
 			feat->preproc_feature_matrix(force);
-
 			return true;
 		}
 		else
