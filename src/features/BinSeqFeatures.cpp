@@ -23,12 +23,14 @@ CBinSeqFeatures::~CBinSeqFeatures()
 
 int CBinSeqFeatures::get_label(int idx) 
 {
-  return 0;
+  if (idx<pos->get_DIMENSION())
+    return 1;
+  return -1 ;
 } ;
 
 int CBinSeqFeatures::get_number_of_examples() 
 {
-  return 0;
+  return num_vectors ;
 } ;
 
 void CBinSeqFeatures::compute_feature_vector(int num, short int* feat)
