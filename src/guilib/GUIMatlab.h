@@ -66,7 +66,7 @@ public:
 	bool get_features(mxArray* retvals[], CFeatures* features);
 	CFeatures* set_features(const mxArray* vals[], int nrhs);
 
-	bool get_kernel_matrix(mxArray* retvals[]);
+	bool get_kernel_matrix(mxArray* retvals[], CFeatures* features);
 	bool get_kernel_optimization(mxArray* retvals[]);
 
 	bool get_labels(mxArray* retvals[], CLabels* label);
