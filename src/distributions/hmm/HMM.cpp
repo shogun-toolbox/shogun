@@ -5929,7 +5929,10 @@ bool CHMM::linear_train(bool right_align)
 void CHMM::set_observation_nocache(CStringFeatures<WORD>* obs)
 {
 	p_observations=obs;
-	assert(obs && obs->get_num_symbols() <= M);
+
+	if (obs)
+		if (obs->get_num_symbols() >= M)
+			CIO::message(M_ERROR, "number of symbols (%d) larger than number of symbols (%d)\n", obs->get_num_symbols(), M);
 
 	if (!reused_caches)
 	{
@@ -5968,7 +5971,10 @@ void CHMM::set_observation_nocache(CStringFeatures<WORD>* obs)
 void CHMM::set_observations(CStringFeatures<WORD>* obs, CHMM* lambda)
 {
 	p_observations=obs;
-	assert(obs && obs->get_num_symbols() <= M);
+
+	if (obs)
+		if (obs->get_num_symbols() >= M)
+			CIO::message(M_ERROR, "number of symbols (%d) larger than number of symbols (%d)\n", obs->get_num_symbols(), M);
 
 	if (!reused_caches)
 	{
