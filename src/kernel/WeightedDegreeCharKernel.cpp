@@ -309,12 +309,12 @@ REAL CWeightedDegreeCharKernel::compute_with_mismatch(CHAR* avec, INT alen, CHAR
 {
 	REAL sum = 0.0 ;
 	
-	for (INT i=0; i<alen-degree; i++)
+	for (INT i=0; i<alen; i++)
 	{
 		REAL sumi = 0.0 ;
-		INT mismatches=0;
+		INT mismatches=0 ;
 		
-		for (INT j=0; j<degree; j++)
+		for (INT j=0; (i+j<alen) && (j<degree); j++)
 		{
 			if (match_vector[i+j])
 			{
@@ -336,11 +336,11 @@ REAL CWeightedDegreeCharKernel::compute_without_mismatch(CHAR* avec, INT alen, C
 {
 	REAL sum = 0.0 ;
 	
-	for (INT i=0; i<alen-degree; i++)
+	for (INT i=0; i<alen; i++)
 	{
 		REAL sumi = 0.0 ;
 		
-		for (INT j=0; j<degree; j++)
+		for (INT j=0; (i+j<alen) && (j<degree); j++)
 		{
 			if (match_vector[i+j])
 				break ;
@@ -358,10 +358,10 @@ REAL CWeightedDegreeCharKernel::compute_without_mismatch_matrix(CHAR* avec, INT 
 {
 	REAL sum = 0.0 ;
 
-	for (INT i=0; i<alen-degree; i++)
+	for (INT i=0; i<alen; i++)
 	{
 		REAL sumi=0.0 ;
-		for (INT j=0; j<degree; j++)
+		for (INT j=0; (i+j<alen) && (j<degree); j++)
 		{
 			if (match_vector[i+j])
 				break;
@@ -442,7 +442,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 		
 	if (length == 0 || max_mismatch > 0)
 	{
-		for (INT i=0; i<len-degree; i++)
+		for (INT i=0; i<len; i++)
 		{
 			struct SuffixTree *tree = trees[i] ;
 			REAL alpha_pw = alpha ;
@@ -450,7 +450,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 				alpha_pw = alpha*position_weights[i] ;
 			if (alpha_pw==0.0)
 				continue ;
-			for (INT j=0; j<degree; j++)
+			for (INT j=0; (j<degree) && (i+j<len); j++)
 			{
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
@@ -496,7 +496,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 	}
 	else
 	{
-		for (INT i=0; i<len-degree; i++)
+		for (INT i=0; i<len; i++)
 		{
 			struct SuffixTree *tree = trees[i] ;
 			REAL alpha_pw = alpha ;
@@ -505,11 +505,11 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 			if (alpha_pw==0.0)
 				continue ;
 			INT max_depth = 0 ;
-			for (INT j=0; j<degree; j++)
+			for (INT j=0; (j<degree) && (i+j<len); j++)
 				if (CMath::abs(weights[i*degree + j]*alpha_pw)>1e-8)
 					max_depth = j+1 ;
 			
-			for (INT j=0; j<max_depth; j++)
+			for (INT j=0; (j<max_depth) && (i+j<len); j++)
 			{
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
@@ -578,12 +578,12 @@ REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx)
 	} ;
 		
 	REAL sum=0 ;
-	for (INT i=0; i<len-degree; i++)
+	for (INT i=0; i<len; i++)
 	{
 		struct SuffixTree *tree = trees[i] ;
 		assert(tree!=NULL) ;
 		
-		for (INT j=0; j<degree; j++)
+		for (INT j=0; (j<degree) && (i+j<len); j++)
 		{
 			if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 			{
@@ -634,12 +634,12 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 
 	if (position_weights!=NULL)
 	{
-		for (INT i=0; i<slen-degree; i++)
+		for (INT i=0; i<slen; i++)
 		{
 			struct SuffixTree *tree = trees[i] ;
 			assert(tree!=NULL) ;
 			
-			for (INT j=0; j<degree; j++)
+			for (INT j=0; (j<degree) && (i+j<slen); j++)
 			{
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
@@ -659,12 +659,12 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 	{
 		//for (INT j=0; j<degree; j++)
 		//LevelContrib[j]=0 ;
-		for (INT i=0; i<slen-degree; i++)
+		for (INT i=0; i<slen; i++)
 		{
 			struct SuffixTree *tree = trees[i] ;
 			assert(tree!=NULL) ;
 			
-			for (INT j=0; j<degree; j++)
+			for (INT j=0; (j<degree) && (i+j<slen); j++)
 			{
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
@@ -684,12 +684,12 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 	{
 		//for (INT j=0; j<degree*length; j++)
 		//LevelContrib[j]=0 ;
-		for (INT i=0; i<slen-degree; i++)
+		for (INT i=0; i<slen; i++)
 		{
 			struct SuffixTree *tree = trees[i] ;
 			assert(tree!=NULL) ;
 			
-			for (INT j=0; j<degree; j++)
+			for (INT j=0; (j<degree) && (i+j<slen); j++)
 			{
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
@@ -741,7 +741,7 @@ REAL *CWeightedDegreeCharKernel::compute_abs_weights(int &len)
 		sum[i]=0 ;
 	len=seq_length ;
 	
-	for (INT i=0; i<seq_length-degree; i++)
+	for (INT i=0; i<seq_length; i++)
 	{
 		struct SuffixTree *tree = trees[i] ;
 		assert(tree!=NULL) ;
@@ -774,12 +774,12 @@ void CWeightedDegreeCharKernel::count_tree_usage(INT idx)
 		//assert(vec[i]!=-1) ;
 	} ;
 		
-	for (INT i=0; i<len-degree; i++)
+	for (INT i=0; i<len; i++)
 	{
 		struct SuffixTree *tree = trees[i] ;
 		assert(tree!=NULL) ;
 		
-		for (INT j=0; j<degree; j++)
+		for (INT j=0; (j<degree) && (i+j<degree); j++)
 		{
 			tree->usage++ ;
 			if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
