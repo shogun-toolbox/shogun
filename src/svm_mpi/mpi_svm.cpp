@@ -46,7 +46,6 @@ bool CSVMMPI::svm_train(CFeatures* train)
   assert(dummy==num_cols) ;
   
   m_prime=svm_mpi_broadcast_Z_size(num_cols, num_rows, m_last) ;
-  double * column=(double*)malloc(sizeof(double)*num_rows) ;
   int j=0;
   
   for (j=0; j<num_cols; j++) 
@@ -54,6 +53,9 @@ bool CSVMMPI::svm_train(CFeatures* train)
     int rank=floor(((double)j)/m_prime) ;
     int start_idx=j%m_prime ;
     //CIO::message("setting vector: %i %i (%i,%i)\n",start_idx, rank, j, m_prime) ;
+    double * column=new REAL[num_rows] ;
+    
+    
     svm_mpi_set_Z_block(column, 1, start_idx, rank) ; 
   } ;
   

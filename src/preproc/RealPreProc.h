@@ -11,7 +11,7 @@
 class CRealPreProc : public CPreProc
 {
 public:
-	CRealPreProc();
+	CRealPreProc(const char *name);
 	virtual ~CRealPreProc();
 
 	/// apply preproc on feature matrix

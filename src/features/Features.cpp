@@ -1,10 +1,10 @@
 #include "Features.h"
 #include "preproc/PreProc.h"
+#include "lib/io.h"
 
 CFeatures::CFeatures()
 : preproc(NULL)
 {
-    
 }
 
 CFeatures::~CFeatures()
@@ -15,8 +15,10 @@ CFeatures::~CFeatures()
 /// set preprocessor
 void CFeatures::set_preproc(CPreProc* p)
 { 
-  delete preproc; 
+  if (preproc)
+    delete preproc; 
   preproc=p ;
+  CIO::message("set preproc %ld\n", p) ;
 }
 
 /// set current preprocessor

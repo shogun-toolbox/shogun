@@ -11,7 +11,7 @@ class CFeatures;
 class CPreProc
 {
 public:
-	CPreProc();
+	CPreProc(const char* name);
 	virtual ~CPreProc();
 
 	/// initialize preprocessor from features
@@ -27,5 +27,10 @@ public:
 	*         from CPreProc can deal
 	*             */
 	virtual EType get_feature_type()=0;
+
+	const char * get_name() const { return preproc_name ; } ;
+
+ protected:
+	const char * preproc_name ;
 };
 #endif

@@ -5,6 +5,7 @@
 #include <math.h>
 
 CNormOne::CNormOne()
+  : CRealPreProc("NormOne") 
 {
 }
 

@@ -2,15 +2,21 @@
 #define __GUIPREPROC_H__
 
 #include "preproc/PreProc.h"
+#include "preproc/PruneVarSubMean.h"
 
 class CGUI ;
 
 class CGUIPreProc
 {
-public:
-	CGUIPreProc(CGUI*);
-	~CGUIPreProc();
+ public:
+  CGUIPreProc(CGUI*);
+  ~CGUIPreProc();
+
+  CPreProc * get_preproc() { return preproc ; } ;
  protected:
-	CGUI* gui ;
+  CGUI* gui ;
+
+  CPreProc * preproc ;
+  CPruneVarSubMean prunevarsubmean ;
 };
 #endif

@@ -11,7 +11,7 @@ class CFeatures;
 class CStringPreProc : CPreProc
 {
 public:
-	CStringPreProc();
+	CStringPreProc(const char*name);
 	virtual ~CStringPreProc();
 
 	/// initialize preprocessor from features

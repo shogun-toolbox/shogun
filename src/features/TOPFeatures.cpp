@@ -67,7 +67,8 @@ REAL* CTOPFeatures::compute_feature_vector(long num, long &len)
   if (!featurevector)
     return NULL;
   
-  compute_feature_vector(featurevector, num,len);
+  compute_feature_vector(featurevector, num, len);
+
   return featurevector;
 }
 
@@ -79,20 +80,27 @@ void CTOPFeatures::compute_feature_vector(REAL* featurevector, long num, long& l
   double negx=neg->model_probability(x);
   
   len=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
-
+  //  CIO::message("len=%i\n",len) ;
+  
   featurevector[p++]=(posx-negx);
   
   //first do positive model
   for (i=0; i<pos->get_N(); i++)
     {
       featurevector[p++]=exp(pos->model_derivative_p(i, x)-posx);
+      //  CIO::message("pos_p_deriv=%e\n", featurevector[p-1]) ;
       featurevector[p++]=exp(pos->model_derivative_q(i, x)-posx);
+      //CIO::message("pos_q_deriv=%e\n", featurevector[p-1]) ;
       
-      for (j=0; j<pos->get_N(); j++)
+      for (j=0; j<pos->get_N(); j++) {
 	featurevector[p++]=exp(pos->model_derivative_a(i, j, x)-posx);
+	//CIO::message("pos_a_deriv[%i]=%e\n", j, featurevector[p-1]) ;
+      }
       
-      for (j=0; j<pos->get_M(); j++)
+      for (j=0; j<pos->get_M(); j++) {
 	featurevector[p++]=exp(pos->model_derivative_b(i, j, x)-posx);
+	//CIO::message("pos_b_deriv[%i]=%e\n", j, featurevector[p-1]) ;
+      } 
       
     }
   
@@ -100,13 +108,19 @@ void CTOPFeatures::compute_feature_vector(REAL* featurevector, long num, long& l
   for (i=0; i<neg->get_N(); i++)
     {
       featurevector[p++]= - exp(neg->model_derivative_p(i, x)-negx);
+      //CIO::message("pos_p_deriv=%e\n", featurevector[p-1]) ;
       featurevector[p++]= - exp(neg->model_derivative_q(i, x)-negx);
+      //CIO::message("pos_q_deriv=%e\n", featurevector[p-1]) ;
       
-      for (j=0; j<neg->get_N(); j++)
+      for (j=0; j<neg->get_N(); j++) {
 	featurevector[p++]= - exp(neg->model_derivative_a(i, j, x)-negx);
+	//CIO::message("pos_p_deriv=%e\n", featurevector[p-1]) ;
+      } ;
       
-      for (j=0; j<neg->get_M(); j++)
+      for (j=0; j<neg->get_M(); j++) {
 	featurevector[p++]= - exp(neg->model_derivative_b(i, j, x)-negx);
+	//CIO::message("pos_p_deriv=%e\n", featurevector[p-1]) ;
+      } ;
     }
 }
 

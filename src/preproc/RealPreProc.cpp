@@ -1,6 +1,6 @@
 #include "RealPreProc.h"
 
-CRealPreProc::CRealPreProc()
+CRealPreProc::CRealPreProc(const char *name): CPreProc(name)
 {
 }
 

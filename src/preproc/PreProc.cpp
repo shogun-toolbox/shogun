@@ -1,6 +1,7 @@
 #include "PreProc.h"
 
-CPreProc::CPreProc()
+CPreProc::CPreProc(const char * name)
+  : preproc_name(name)
 {
 }
 

@@ -40,6 +40,29 @@ bool CGUISVM::train(char* param)
     } ;
   
   CFeatures * f=gui->guifeatures.get_train_features() ;
+  CPreProc * preproc=gui->guipreproc.get_preproc() ;
+
+  if (preproc)
+    {
+      CIO::message("using preprocessor: %s\n", preproc->get_name()) ;
+      if (f->get_feature_type()!=preproc->get_feature_type())
+	{
+	  CIO::message("preprocessor does not fit to features") ;
+	  return false ;
+	}
+    } ;
+  //  CIO::message("using features: %s\n", f->name()) ;
+
+  f->set_preproc(NULL) ;
+  preproc->init(f) ;
+  f->set_preproc(preproc) ;
+  
+  //  if (!svm->check_feature_type(f))
+  //    {
+  //      CIO::message("features do not fit to svm") ;
+  //      return false ;
+  //    }
+
   CIO::message("starting svm\n") ;
   return svm->svm_train(f) ;
 }
