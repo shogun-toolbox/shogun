@@ -1,5 +1,5 @@
-#ifndef _CPRUNE_VAR_SUB_MEAN__H__
-#define _CPRUNE_VAR_SUB_MEAN__H__
+#ifndef _CPCACUT__H__
+#define _CPCACUT__H__
 
 #include "RealPreProc.h"
 #include "features/Features.h"

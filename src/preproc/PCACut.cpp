@@ -1,8 +1,15 @@
-#include "PruneVarSubMean.h"
+#include "PCACut.h"
 #include "RealPreProc.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
+
+extern "C" void symeigx(double a[],    
+	      int n,         
+	      double d[],    
+	      double v[],    
+	      int    ell,
+	     int    *fl) ;
 
 CPCACut::CPCACut()
   : CRealPreProc("PruneVarSubMean"), idx(NULL), num_idx(0)
@@ -46,36 +53,42 @@ bool CPCACut::init(CFeatures* f_)
   for (j=0; j<num_features; j++)
     mean[j]/=num_examples ;
 
-  // compute var
+  CIO::message("computing covariance matrix...") ;
+
+  double *cov=new double[num_features*num_features] ;
+
   for (int i=0; i<num_examples; i++)
     {
       long len ; bool free ;
       feature=f->get_feature_vector(i, len, free) ;
 
       for (int j=0; j<num_features; j++)
-	var[j]+=(mean[j]-feature[j])*(mean[j]-feature[j]) ;
+	feature[j]-=mean[j] ;
+
+      // dger_(num_features,num_features, 1.0, feature, 1, feature, 1, cov, num_features) ;
+      for (int k=0; k<num_features; k++)
+	for (int l=0; l<num_features; l++)
+	  cov[k*num_features+l]+=feature[l]*feature[k] ;
 
       f->free_feature_vector(feature, free) ;
       feature=NULL ;
     } ;
+  CIO::message("done\nComputing Eigenvalues") ;
 
-  int num_ok=0 ; int* idx_ok=new int[num_features] ;
-  for (j=0; j<num_features; j++)
-    {
-      var[j]/=num_examples ;
-      if (var[j]>1e-4) 
-	{
-	  idx_ok[num_ok]=j ;
-	  num_ok++ ;
-	} ;
-    } ;
-  //CIO::message("number of features: %i  number ok: %i\n", num_features, num_ok) ;
-  delete[] idx ;
-  idx=new int[num_ok] ;
-  for (j=0; j<num_ok; j++)
-    idx[j]=idx_ok[j] ;
-  num_idx=num_ok ;
-  delete[] idx_ok ;
+
+  //  REAL *values=new REAL[num_features] ;
+  //  REAL *vectors=new REAL[num_features*num_features] ;
+  //  int fl ;
+  //  symeigx(cov, num_features, values, vectors, num_features, &fl);
+
+//   {
+//     int lwork=4*num_features ;
+//     double *work=new double[lwork] ;
+//     int info ;
+//     dsyev_('V', 'U', num_features, cov, num_features, values, work, lwork, &info) ;
+//   }
+  
+  CIO::message("done\n") ;
 
   return true ;
 }

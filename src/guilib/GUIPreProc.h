@@ -3,6 +3,7 @@
 
 #include "preproc/PreProc.h"
 #include "preproc/PruneVarSubMean.h"
+#include "preproc/PCACut.h"
 
 class CGUI ;
 
@@ -18,5 +19,6 @@ class CGUIPreProc
 
   CPreProc * preproc ;
   CPruneVarSubMean prunevarsubmean ;
+  CPCACut pcacut ;
 };
 #endif
