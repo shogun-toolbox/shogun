@@ -958,6 +958,8 @@ bool CGUIMatlab::set_custom_kernel(const mxArray* vals[], bool upper_diag_only)
 				return k->set_kernel_matrix(km, mxGetM(mx_kernel), mxGetN(mx_kernel));
 		}
 	}
+	else
+		CIO::message(M_ERROR,"kernel matrix must by given as double matrix\n");
 
 	return false;
 }

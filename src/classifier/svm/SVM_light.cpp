@@ -240,7 +240,7 @@ bool CSVMLight::train()
 	CIO::message(M_DEBUG, "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
 	CIO::message(M_DEBUG, "estimated time: %1.1f minutes\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/60) ;
 
-	use_kernel_cache = !(use_precomputed_subkernels ||
+	use_kernel_cache = !(use_precomputed_subkernels || (get_kernel()->get_kernel_type() == K_CUSTOM) ||
 						 (get_linadd_enabled() && get_kernel()->has_property(KP_LINADD)) ||
 						 (get_mkl_enabled() && get_kernel()->has_property(KP_KERNCOMBINATION))||
 						 get_kernel()->get_precompute_matrix() || 
