@@ -21,6 +21,7 @@ CLinearKernel::CLinearKernel(LONG size)
 
 CLinearKernel::~CLinearKernel() 
 {
+	cleanup();
 }
   
 bool CLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -47,8 +48,7 @@ void CLinearKernel::init_rescale()
 
 void CLinearKernel::cleanup()
 {
-	if (get_is_initialized())
-		delete_optimization();
+	delete_optimization();
 }
 
 bool CLinearKernel::load_init(FILE* src)
@@ -149,7 +149,7 @@ bool CLinearKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* alphas
 	return true;
 }
 
-void CLinearKernel::delete_optimization()
+bool CLinearKernel::delete_optimization()
 {
 	delete[] normal;
 	normal=NULL;

@@ -14,9 +14,7 @@ CPolyMatchWordKernel::CPolyMatchWordKernel(LONG size, INT d, bool inhom)
 
 CPolyMatchWordKernel::~CPolyMatchWordKernel() 
 {
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
+	cleanup();
 }
   
 bool CPolyMatchWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -89,6 +87,14 @@ bool CPolyMatchWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 void CPolyMatchWordKernel::cleanup()
 {
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	sqrtdiag_rhs=NULL;
+
+	delete[] sqrtdiag_lhs;
+	sqrtdiag_lhs=NULL;
+
+	initialized=false;
 }
 
 bool CPolyMatchWordKernel::load_init(FILE* src)

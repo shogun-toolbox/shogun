@@ -12,7 +12,7 @@ CHistogramWordKernel::CHistogramWordKernel(LONG size, CPluginEstimate* pie)
     sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), 
     ld_mean_lhs(NULL), ld_mean_rhs(NULL),
     plo_lhs(NULL), plo_rhs(NULL),
-    num_params(0), num_params1(0), num_symbols(0), sum_m2_s2(0)
+    num_params(0), num_params1(0), num_symbols(0), sum_m2_s2(0), initialized(false)
 {
 }
 
@@ -306,6 +306,38 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
   
 void CHistogramWordKernel::cleanup()
 {
+	delete[] variance;
+	variance=NULL;
+
+	delete[] mean;
+	mean=NULL;
+
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	sqrtdiag_rhs=NULL;
+
+	delete[] sqrtdiag_lhs;
+	sqrtdiag_lhs=NULL;
+
+	if (ld_mean_lhs!=ld_mean_rhs)
+		delete[] ld_mean_rhs ;
+	ld_mean_rhs=NULL;
+
+	delete[] ld_mean_lhs ;
+	ld_mean_lhs=NULL;
+
+	if (plo_lhs!=plo_rhs)
+		delete[] plo_rhs ;
+	plo_rhs=NULL;
+
+	delete[] plo_lhs ;
+	plo_lhs=NULL;
+
+	num_params=0;
+	num_params1=0;
+	num_symbols=0;
+	sum_m2_s2=0;
+	initialized = false;
 }
 
 bool CHistogramWordKernel::load_init(FILE* src)

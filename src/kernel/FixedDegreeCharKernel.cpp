@@ -13,9 +13,7 @@ CFixedDegreeCharKernel::CFixedDegreeCharKernel(LONG size, INT d)
 
 CFixedDegreeCharKernel::~CFixedDegreeCharKernel() 
 {
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
+	cleanup();
 }
 
 bool CFixedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -87,6 +85,14 @@ bool CFixedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
   
 void CFixedDegreeCharKernel::cleanup()
 {
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	sqrtdiag_rhs = NULL;
+
+	delete[] sqrtdiag_lhs;
+	sqrtdiag_lhs = NULL;
+
+	initialized=false;
 }
 
 bool CFixedDegreeCharKernel::load_init(FILE* src)

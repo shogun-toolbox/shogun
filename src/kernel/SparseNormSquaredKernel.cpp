@@ -14,6 +14,7 @@ CSparseNormSquaredKernel::CSparseNormSquaredKernel(LONG size)
 
 CSparseNormSquaredKernel::~CSparseNormSquaredKernel() 
 {
+	cleanup();
 }
   
 bool CSparseNormSquaredKernel::init(CFeatures* l, CFeatures* r, bool do_init)

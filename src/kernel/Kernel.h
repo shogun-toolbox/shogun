@@ -93,19 +93,19 @@ class CKernel
 		 * vector can be computed explicitely (if it fits into memory) 
 		 */
 
-		virtual bool init_optimization(INT count, INT *IDX, REAL * weights); 
-		virtual void delete_optimization();
-		virtual REAL compute_optimized(INT idx);
-	
-		inline bool get_is_initialized() { return optimization_initialized; }
-		inline void set_is_initialized(bool init) { optimization_initialized=init; }
-
-		bool is_optimizable() ;
-
 		inline double get_combined_kernel_weight() { return combined_kernel_weight; }
 		inline void set_combined_kernel_weight(double nw) { combined_kernel_weight=nw; }
 
+		inline bool get_is_initialized() { return optimization_initialized; }
+
+		bool is_optimizable();
+		virtual bool init_optimization(INT count, INT *IDX, REAL * weights); 
+		virtual bool delete_optimization();
+		virtual REAL compute_optimized(INT idx);
+
 	protected:
+		inline void set_is_initialized(bool init) { optimization_initialized=init; }
+
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object

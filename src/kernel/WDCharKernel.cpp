@@ -11,49 +11,41 @@ CWDCharKernel::CWDCharKernel(LONG size, EWDKernType t, INT d)
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL)
 {
 	matching_weights=NULL; //depend on length of sequence will be initialized later
-
-	lhs=NULL ;
-	rhs=NULL ;
 }
 
 CWDCharKernel::~CWDCharKernel() 
 {
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
-	delete[] match_vector ;
-
 	cleanup();
 }
 
 void CWDCharKernel::remove_lhs() 
 { 
 	if (get_is_initialized())
-		delete_optimization() ;
+		delete_optimization();
 	if (lhs)
-		cache_reset() ;
+		cache_reset();
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
 	delete[] sqrtdiag_lhs;
-	delete[] match_vector ;
+	delete[] match_vector;
 
 	lhs = NULL ; 
 	rhs = NULL ; 
-	initialized = false ;
-	sqrtdiag_lhs = NULL ;
-	sqrtdiag_rhs = NULL ;
-	match_vector = NULL ;
+	initialized = false;
+	sqrtdiag_lhs = NULL;
+	sqrtdiag_rhs = NULL;
+	match_vector = NULL;
 }
 
 void CWDCharKernel::remove_rhs()
 {
 	if (rhs)
-		cache_reset() ;
+		cache_reset();
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs = sqrtdiag_lhs ;
+	sqrtdiag_rhs = sqrtdiag_lhs;
 	rhs = lhs ;
 }
 
@@ -285,9 +277,23 @@ bool CWDCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	initialized = true ;
 	return result;
 }
+
 void CWDCharKernel::cleanup()
 {
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	sqrtdiag_rhs = NULL;
+
+	delete[] sqrtdiag_lhs;
+	sqrtdiag_lhs = NULL;
+
+	delete[] match_vector;
+	match_vector  = NULL;
+
+	delete[] matching_weights;
 	matching_weights=NULL;
+
+	initialized = false;
 }
 
 bool CWDCharKernel::load_init(FILE* src)

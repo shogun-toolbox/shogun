@@ -14,10 +14,9 @@ CLinearWordKernel::CLinearWordKernel(LONG size)
 
 CLinearWordKernel::~CLinearWordKernel() 
 {
-	if (get_is_initialized())
-		delete_optimization();
+	cleanup();
 }
-  
+
 bool CLinearWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	CWordKernel::init(l, r, do_init); 
@@ -35,7 +34,7 @@ void CLinearWordKernel::init_rescale()
 	LONGREAL sum=0;
 	scale=1.0;
 	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
-			sum+=compute(i, i);
+		sum+=compute(i, i);
 
 	if ( sum > (pow((double) 2, (double) 8*sizeof(LONG))) )
 		CIO::message(M_ERROR, "the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
@@ -44,25 +43,26 @@ void CLinearWordKernel::init_rescale()
 
 void CLinearWordKernel::cleanup()
 {
+	delete_optimization();
 }
 
 bool CLinearWordKernel::load_init(FILE* src)
 {
-    assert(src!=NULL);
-    UINT intlen=0;
-    UINT endian=0;
-    UINT fourcc=0;
-    UINT r=0;
-    UINT doublelen=0;
-    double s=1;
+	assert(src!=NULL);
+	UINT intlen=0;
+	UINT endian=0;
+	UINT fourcc=0;
+	UINT r=0;
+	UINT doublelen=0;
+	double s=1;
 
-    assert(fread(&intlen, sizeof(BYTE), 1, src)==1);
-    assert(fread(&doublelen, sizeof(BYTE), 1, src)==1);
-    assert(fread(&endian, (UINT) intlen, 1, src)== 1);
-    assert(fread(&fourcc, (UINT) intlen, 1, src)==1);
-    assert(fread(&r, (UINT) intlen, 1, src)==1);
-    assert(fread(&s, (UINT) doublelen, 1, src)==1);
-    CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, r=%d, scale=%g\n", intlen, doublelen, r, s);
+	assert(fread(&intlen, sizeof(BYTE), 1, src)==1);
+	assert(fread(&doublelen, sizeof(BYTE), 1, src)==1);
+	assert(fread(&endian, (UINT) intlen, 1, src)== 1);
+	assert(fread(&fourcc, (UINT) intlen, 1, src)==1);
+	assert(fread(&r, (UINT) intlen, 1, src)==1);
+	assert(fread(&s, (UINT) doublelen, 1, src)==1);
+	CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, r=%d, scale=%g\n", intlen, doublelen, r, s);
 	scale=s;
 	return true;
 }
@@ -71,25 +71,25 @@ bool CLinearWordKernel::save_init(FILE* dest)
 {
 	return false;
 }
-  
+
 REAL CLinearWordKernel::compute(INT idx_a, INT idx_b)
 {
-  INT alen, blen;
-  bool afree, bfree;
+	INT alen, blen;
+	bool afree, bfree;
 
-  WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  assert(alen==blen);
-  double sum=0;
-  for (LONG i=0; i<alen; i++)
-	  sum+=((LONG) avec[i])*((LONG) bvec[i]);
+	assert(alen==blen);
+	double sum=0;
+	for (LONG i=0; i<alen; i++)
+		sum+=((LONG) avec[i])*((LONG) bvec[i]);
 
-  REAL result=sum/scale;
-  ((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	REAL result=sum/scale;
+	((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  return result;
+	return result;
 }
 
 bool CLinearWordKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* alphas) 
@@ -123,11 +123,13 @@ bool CLinearWordKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* al
 	return true;
 }
 
-void CLinearWordKernel::delete_optimization()
+bool CLinearWordKernel::delete_optimization()
 {
 	delete[] normal;
 	normal=NULL;
 	set_is_initialized(false);
+
+	return true;
 }
 
 REAL CLinearWordKernel::compute_optimized(INT idx_b) 

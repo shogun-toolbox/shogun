@@ -10,15 +10,12 @@ CCombinedKernel::CCombinedKernel(LONG size)
 {
 	kernel_list=new CList<CKernel*>(true);
 	fprintf(stderr, "combined kernel created\n") ;
-	
 }
 
 CCombinedKernel::~CCombinedKernel() 
 {
-	if (get_is_initialized())
-		delete_optimization() ;
 	
-	fprintf(stderr, "combined kernel deleted\n") ;
+	CIO::message(M_INFO, "combined kernel deleted\n");
 	cleanup();
 	delete kernel_list;
 }
@@ -94,8 +91,7 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 void CCombinedKernel::remove_lhs()
 {
-	if (get_is_initialized())
-		delete_optimization() ;
+	delete_optimization();
 
 	if (lhs)
 		cache_reset() ;
@@ -134,13 +130,15 @@ void CCombinedKernel::cleanup()
 		k->cleanup();
 		k=get_next_kernel();
 	}
+
+	delete_optimization();
 }
 
 void CCombinedKernel::list_kernels()
 {
 	CKernel* k;
 
-	CIO::message(M_INFO, "BEGIN COMBINED FEATURES LIST - ");
+	CIO::message(M_INFO, "BEGIN COMBINED KERNEL LIST - ");
 	this->list_kernel();
 
 	k=get_first_kernel();
@@ -149,7 +147,7 @@ void CCombinedKernel::list_kernels()
 		k->list_kernel();
 		k=get_next_kernel();
 	}
-	CIO::message(M_INFO, "END COMBINED FEATURES LIST - ");
+	CIO::message(M_INFO, "END COMBINED KERNEL LIST - ");
 }
 
 REAL CCombinedKernel::compute(INT x, INT y)
@@ -169,8 +167,7 @@ bool CCombinedKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 {
 	CIO::message(M_DEBUG, "initializing CCombinedKernel optimization\n") ;
 
-	if (get_is_initialized())
-		delete_optimization() ;
+	delete_optimization();
 	
 	CKernel * k = get_first_kernel() ;
 	bool have_non_optimizable = false ;
@@ -215,23 +212,29 @@ bool CCombinedKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 	return true ;
 } ;
 
-void CCombinedKernel::delete_optimization() 
+bool CCombinedKernel::delete_optimization() 
 { 
 	CIO::message(M_DEBUG, "deleting CCombinedKernel optimization\n") ;
 
-	CKernel * k = get_first_kernel() ;
+	CKernel* k = get_first_kernel();
+
 	while(k)
 	{
-		if (k && k->is_optimizable() && k->get_is_initialized())
-			k->delete_optimization() ;
-		k = get_next_kernel() ;
+		k->delete_optimization();
+		k = get_next_kernel();
 	}
-	delete[] sv_idx ;
-	delete[] sv_weight ;
-	sv_count = 0 ;
-	
-	set_is_initialized(false) ;
-} ;
+
+	delete[] sv_idx;
+	sv_idx = NULL;
+
+	delete[] sv_weight;
+	sv_idx = NULL;
+
+	sv_count = 0;
+	set_is_initialized(false);
+
+	return true;
+}
 
 REAL CCombinedKernel::compute_optimized(INT idx) 
 { 		  
@@ -267,5 +270,6 @@ REAL CCombinedKernel::compute_optimized(INT idx)
 		
 		k = get_next_kernel() ;
 	}
-	return result ; 
-} ;
+
+	return result;
+}

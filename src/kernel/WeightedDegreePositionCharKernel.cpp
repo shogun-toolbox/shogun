@@ -39,32 +39,22 @@ CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, 
 
 CWeightedDegreePositionCharKernel::~CWeightedDegreePositionCharKernel() 
 {
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
-	delete[] shift ;
-	delete[] counts ;
+	delete[] shift;
+	shift = NULL;
+
+	delete[] counts;
+	counts = NULL;
+
 	delete[] weights ;
 	weights=NULL ;
-
-	if (trees!=NULL)
-	{
-		for (INT i=0; i<seq_length; i++)
-		{
-			delete trees[i] ;
-			trees[i]=NULL ;
-		}
-		delete[] trees ;
-		trees=NULL ;
-	} ;
 
 	cleanup();
 }
 
 void CWeightedDegreePositionCharKernel::remove_lhs() 
 { 
-	if (get_is_initialized())
-		delete_optimization() ;
+	delete_optimization();
+
 	if (lhs)
 		cache_reset() ;
 
@@ -152,14 +142,14 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do
 	} 
 
 	bool result=CCharKernel::init(l,r,do_init);
-	initialized = false ;
+	initialized = false;
 	INT i;
 
 	if (rhs_changed)
 	{
 		if (sqrtdiag_lhs != sqrtdiag_rhs)
 			delete[] sqrtdiag_rhs;
-		sqrtdiag_rhs=NULL ;
+		sqrtdiag_rhs=NULL;
 	}
 	if (lhs_changed)
 	{
@@ -222,14 +212,40 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do
 	this->lhs=(CCharFeatures*) l;
 	this->rhs=(CCharFeatures*) r;
 
-	initialized = true ;
+	initialized = true;
 	return result;
 }
 
 void CWeightedDegreePositionCharKernel::cleanup()
 {
-	delete[] weights;
-	weights=NULL;
+	delete_optimization();
+
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+
+	sqrtdiag_rhs = NULL;
+
+	delete[] sqrtdiag_lhs;
+	sqrtdiag_lhs = NULL;
+
+	if (trees!=NULL)
+	{
+		for (INT i=0; i<seq_length; i++)
+		{
+			delete trees[i];
+			trees[i]=NULL;
+		}
+		delete[] trees;
+		trees=NULL;
+	}
+
+	lhs = NULL;
+	rhs = NULL;
+
+	seq_length = 0;
+	initialized = false;
+	match_vector = NULL;
+	tree_initialized = false;
 }
 
 bool CWeightedDegreePositionCharKernel::load_init(FILE* src)
@@ -473,8 +489,7 @@ bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, 
 		return false ;
 	}
 
-	if (get_is_initialized()) 
-		delete_optimization() ;
+	delete_optimization();
 	
 	CIO::message(M_DEBUG, "initializing CWeightedDegreePositionCharKernel optimization\n") ;
 	int i=0;
@@ -490,17 +505,19 @@ bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, 
 	return true ;
 }
 
-void CWeightedDegreePositionCharKernel::delete_optimization() 
+bool CWeightedDegreePositionCharKernel::delete_optimization() 
 { 
+	CIO::message(M_DEBUG, "deleting CWeightedDegreePositionCharKernel optimization\n");
+
 	if (get_is_initialized())
 	{
-		CIO::message(M_DEBUG, "deleting CWeightedDegreePositionCharKernel optimization\n") ;
-		
 		delete_tree(NULL); 
 		set_is_initialized(false) ;
-	} else
-		CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not initialized\n") ;
-} ;
+		return true;
+	}
+
+	return false;
+}
 
 
 REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx) 

@@ -14,6 +14,7 @@ CWordMatchKernel::CWordMatchKernel(LONG size, INT d)
 
 CWordMatchKernel::~CWordMatchKernel() 
 {
+	cleanup();
 }
   
 bool CWordMatchKernel::init(CFeatures* l, CFeatures* r, bool do_init)

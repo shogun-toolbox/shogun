@@ -68,10 +68,10 @@ void CSparseGaussianKernel::cleanup()
 {
 	if (sq_lhs != sq_rhs)
 		delete[] sq_rhs;
-	delete[] sq_lhs;
-
-	sq_lhs = NULL;
 	sq_rhs = NULL;
+
+	delete[] sq_lhs;
+	sq_lhs = NULL;
 }
 
 bool CSparseGaussianKernel::load_init(FILE* src)

@@ -14,6 +14,7 @@ CLocalityImprovedCharKernel::CLocalityImprovedCharKernel(LONG size, INT l, INT d
 
 CLocalityImprovedCharKernel::~CLocalityImprovedCharKernel() 
 {
+	cleanup();
 }
 
 bool CLocalityImprovedCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -29,6 +30,7 @@ bool CLocalityImprovedCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 void CLocalityImprovedCharKernel::cleanup()
 {
 	delete[] match;
+	match = NULL;
 }
 
 bool CLocalityImprovedCharKernel::load_init(FILE* src)

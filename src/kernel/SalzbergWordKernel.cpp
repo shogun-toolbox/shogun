@@ -19,14 +19,7 @@ CSalzbergWordKernel::CSalzbergWordKernel(LONG size, CPluginEstimate* pie)
 
 CSalzbergWordKernel::~CSalzbergWordKernel() 
 {
-  delete[] variance;
-  delete[] mean;
-  if (sqrtdiag_lhs != sqrtdiag_rhs)
-    delete[] sqrtdiag_rhs;
-  delete[] sqrtdiag_lhs;
-  if (ld_mean_lhs!=ld_mean_rhs)
-    delete[] ld_mean_rhs ;
-  delete[] ld_mean_lhs ;
+	cleanup();
 }
 
 bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -286,6 +279,25 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
   
 void CSalzbergWordKernel::cleanup()
 {
+  delete[] variance;
+  variance=NULL;
+
+  delete[] mean;
+  mean=NULL;
+
+  if (sqrtdiag_lhs != sqrtdiag_rhs)
+    delete[] sqrtdiag_rhs;
+  sqrtdiag_rhs=NULL;
+
+  delete[] sqrtdiag_lhs;
+  sqrtdiag_lhs=NULL;
+
+  if (ld_mean_lhs!=ld_mean_rhs)
+    delete[] ld_mean_rhs ;
+  ld_mean_rhs=NULL;
+
+  delete[] ld_mean_lhs ;
+  ld_mean_lhs=NULL;
 }
 
 bool CSalzbergWordKernel::load_init(FILE* src)

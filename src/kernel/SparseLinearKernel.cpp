@@ -16,6 +16,7 @@ CSparseLinearKernel::CSparseLinearKernel(LONG size)
 
 CSparseLinearKernel::~CSparseLinearKernel() 
 {
+	cleanup();
 }
   
 bool CSparseLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)

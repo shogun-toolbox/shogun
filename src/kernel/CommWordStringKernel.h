@@ -34,7 +34,7 @@ class CCommWordStringKernel: public CStringKernel<WORD>
   virtual const CHAR* get_name() { return "CommWordString" ; } ;
 
   virtual bool init_optimization(INT count, INT *IDX, REAL * weights) ;
-  virtual void delete_optimization() ;
+  virtual bool delete_optimization() ;
   virtual REAL compute_optimized(INT idx) ;
 
   virtual void remove_lhs() ;

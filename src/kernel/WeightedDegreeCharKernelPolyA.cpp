@@ -12,9 +12,6 @@ CWeightedDegreeCharKernelPolyA::CWeightedDegreeCharKernelPolyA(LONG size, double
 	  lhs_sites(NULL), lhs_sites_num(NULL), rhs_sites(NULL), rhs_sites_num(NULL), lhs_num(0), rhs_num(0),
 	  down_stream(20), up_stream(20)
 {
-	lhs=NULL ;
-	rhs=NULL ;
-
 	weights=new REAL[d*(1+max_mismatch)];
 	assert(weights!=NULL);
 	for (INT i=0; i<d*(1+max_mismatch); i++)
@@ -23,25 +20,10 @@ CWeightedDegreeCharKernelPolyA::CWeightedDegreeCharKernelPolyA(LONG size, double
 
 CWeightedDegreeCharKernelPolyA::~CWeightedDegreeCharKernelPolyA() 
 {
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
-	delete[] match_vector ;
-
-	for (INT i=0; i<lhs_num; i++)
-	{
-		delete[] lhs_sites[i] ;
-	}
-	for (INT i=0; i<rhs_num; i++)
-	{
-		delete[] rhs_sites[i] ;
-	}
-	delete[] lhs_sites ;
-	delete[] lhs_sites_num ;
-	delete[] rhs_sites ;
-	delete[] rhs_sites_num ;
-	
 	cleanup();
+
+	delete[] weights;
+	weights=NULL;
 }
 
 void CWeightedDegreeCharKernelPolyA::remove_lhs() 
@@ -241,8 +223,36 @@ bool CWeightedDegreeCharKernelPolyA::init(CFeatures* l, CFeatures* r, bool do_in
 
 void CWeightedDegreeCharKernelPolyA::cleanup()
 {
-	delete[] weights;
-	weights=NULL;
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	sqrtdiag_rhs = NULL;
+
+	delete[] sqrtdiag_lhs;
+	sqrtdiag_lhs = NULL;
+
+	delete[] match_vector ;
+	match_vector = NULL;
+
+	for (INT i=0; i<lhs_num; i++)
+	{
+		delete[] lhs_sites[i] ;
+	}
+	for (INT i=0; i<rhs_num; i++)
+	{
+		delete[] rhs_sites[i] ;
+	}
+
+	delete[] lhs_sites ;
+	lhs_sites = NULL;
+
+	delete[] lhs_sites_num ;
+	lhs_sites_num = NULL;
+
+	delete[] rhs_sites ;
+	rhs_sites = NULL;
+
+	delete[] rhs_sites_num ;
+	rhs_sites_num = NULL;
 }
 
 bool CWeightedDegreeCharKernelPolyA::load_init(FILE* src)

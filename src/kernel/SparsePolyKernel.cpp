@@ -16,9 +16,7 @@ CSparsePolyKernel::CSparsePolyKernel(LONG size, INT d, bool inhom)
 
 CSparsePolyKernel::~CSparsePolyKernel() 
 {
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
+	cleanup();
 }
 
 bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -92,6 +90,14 @@ bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
   
 void CSparsePolyKernel::cleanup()
 {
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	sqrtdiag_rhs=NULL;
+
+	delete[] sqrtdiag_lhs;
+	sqrtdiag_lhs=NULL;
+
+	initialized=false;
 }
 
 bool CSparsePolyKernel::load_init(FILE* src)

@@ -14,8 +14,7 @@ CLinearCharKernel::CLinearCharKernel(LONG size)
 
 CLinearCharKernel::~CLinearCharKernel() 
 {
-	if (get_is_initialized())
-		delete_optimization();
+	cleanup();
 }
   
 bool CLinearCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -44,6 +43,7 @@ void CLinearCharKernel::init_rescale()
 
 void CLinearCharKernel::cleanup()
 {
+	delete_optimization();
 }
 
 bool CLinearCharKernel::load_init(FILE* src)
@@ -123,11 +123,12 @@ bool CLinearCharKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* al
 	return true;
 }
 
-void CLinearCharKernel::delete_optimization()
+bool CLinearCharKernel::delete_optimization()
 {
 	delete[] normal;
 	normal=NULL;
 	set_is_initialized(false);
+	return true;
 }
 
 REAL CLinearCharKernel::compute_optimized(INT idx_b) 

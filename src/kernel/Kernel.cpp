@@ -495,9 +495,11 @@ bool CKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 	return false ;
 }
 
-void CKernel::delete_optimization() 
+bool CKernel::delete_optimization() 
 {
-	CIO::message(M_ERROR, "kernel optimization not implemented\n") ;
+	if (!is_optimizable())
+		CIO::message(M_ERROR, "kernel optimization not implemented\n") ;
+	return false;
 }
 
 REAL CKernel::compute_optimized(INT idx)

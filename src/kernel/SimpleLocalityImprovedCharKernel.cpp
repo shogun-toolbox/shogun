@@ -13,6 +13,7 @@ CSimpleLocalityImprovedCharKernel::CSimpleLocalityImprovedCharKernel(LONG size, 
 
 CSimpleLocalityImprovedCharKernel::~CSimpleLocalityImprovedCharKernel() 
 {
+	cleanup();
 }
 
 bool CSimpleLocalityImprovedCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -64,7 +65,10 @@ bool CSimpleLocalityImprovedCharKernel::init(CFeatures* l, CFeatures* r, bool do
 void CSimpleLocalityImprovedCharKernel::cleanup()
 {
 	delete[] match;
+	match=NULL;
+
 	delete[] pyramid_weights;
+	pyramid_weights=NULL;
 }
 
 bool CSimpleLocalityImprovedCharKernel::load_init(FILE* src)

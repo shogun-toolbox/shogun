@@ -97,7 +97,13 @@ void CPolyKernel::cleanup()
 {
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
+
+	sqrtdiag_rhs=NULL;
+
 	delete[] sqrtdiag_lhs;
+	sqrtdiag_lhs=NULL;
+
+	initialized=false;
 }
 
 bool CPolyKernel::load_init(FILE* src)

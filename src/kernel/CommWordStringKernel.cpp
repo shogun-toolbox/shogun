@@ -15,18 +15,13 @@ CCommWordStringKernel::CCommWordStringKernel(LONG size, bool use_sign_,
 
 CCommWordStringKernel::~CCommWordStringKernel() 
 {
-	if (get_is_initialized())
-		delete_optimization() ;
-
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
+	cleanup();
 }
   
 void CCommWordStringKernel::remove_lhs() 
 { 
-	if (get_is_initialized())
-		delete_optimization() ;
+	delete_optimization();
+
 	if (lhs)
 		cache_reset() ;
 
@@ -120,6 +115,17 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 void CCommWordStringKernel::cleanup()
 {
+	delete_optimization();
+
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+
+	sqrtdiag_rhs=NULL;
+
+	delete[] sqrtdiag_lhs;
+	sqrtdiag_lhs=NULL;
+
+	initialized=false;
 }
 
 bool CCommWordStringKernel::load_init(FILE* src)
@@ -420,23 +426,20 @@ bool CCommWordStringKernel::init_optimization(INT count, INT *IDX, REAL * weight
 	return true ;
 } ;
 
-void CCommWordStringKernel::delete_optimization() 
+bool CCommWordStringKernel::delete_optimization() 
 {
-	if (get_is_initialized())
-	{
-		CIO::message(M_DEBUG, "deleting CCommWordStringKernel optimization\n") ;
-		delete[] dictionary ;
-		delete[] dictionary_weights;
-		
-		dictionary_size=0 ;
-		dictionary=NULL ;
-		dictionary_weights=NULL ;
-		
-		set_is_initialized(false) ;
-	}
-	else
-		CIO::message(M_ERROR, "CCommWordStringKernel optimization not initialized\n") ;
-} ;
+	CIO::message(M_DEBUG, "deleting CCommWordStringKernel optimization\n") ;
+	delete[] dictionary ;
+	delete[] dictionary_weights;
+
+	dictionary_size=0 ;
+	dictionary=NULL ;
+	dictionary_weights=NULL ;
+
+	set_is_initialized(false) ;
+
+	return true;
+}
 
 REAL CCommWordStringKernel::compute_optimized(INT i) 
 { 

@@ -10,70 +10,56 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d
 	: CCharKernel(size),weights(NULL),degree(d), max_mismatch(max_mismatch_), seq_length(0),
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL)
 {
-	lhs=NULL ;
-	rhs=NULL ;
+	lhs=NULL;
+	rhs=NULL;
 
 	weights=new REAL[d*(1+max_mismatch)];
 	assert(weights!=NULL);
 	for (INT i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
 
-	trees=NULL ;
+	trees=NULL;
 	tree_initialized=false ;
 }
 
 CWeightedDegreeCharKernel::~CWeightedDegreeCharKernel() 
 {
-	delete_optimization() ;
-
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
-	delete[] match_vector ;
-
-	if (trees!=NULL)
-	{
-		for (INT i=0; i<seq_length; i++)
-		{
-			delete trees[i] ;
-			trees[i]=NULL ;
-		}
-		delete[] trees ;
-		trees=NULL ;
-	} ;
 	cleanup();
+
+	delete[] weights;
+	weights=NULL;
 }
 
 void CWeightedDegreeCharKernel::remove_lhs() 
 { 
-	if (get_is_initialized())
-		delete_optimization() ;
+	delete_optimization();
+
 	if (lhs)
-		cache_reset() ;
+		cache_reset();
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
 	delete[] sqrtdiag_lhs;
-	delete[] match_vector ;
+	delete[] match_vector;
 
-	lhs = NULL ; 
-	rhs = NULL ; 
-	initialized = false ;
-	sqrtdiag_lhs = NULL ;
-	sqrtdiag_rhs = NULL ;
-	match_vector = NULL ;
+	lhs = NULL; 
+	rhs = NULL; 
+	initialized = false;
+	sqrtdiag_lhs = NULL;
+	sqrtdiag_rhs = NULL;
+	match_vector = NULL;
 	
 	if (trees!=NULL)
 	{
 		for (INT i=0; i<seq_length; i++)
 		{
-			delete trees[i] ;
-			trees[i]=NULL ;
+			delete trees[i];
+			trees[i]=NULL;
 		}
-		delete[] trees ;
-		trees=NULL ;
-	} ;
-} ;
+		delete[] trees;
+		trees=NULL;
+	}
+}
 
 void CWeightedDegreeCharKernel::remove_rhs()
 {
@@ -209,8 +195,31 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 }
 void CWeightedDegreeCharKernel::cleanup()
 {
-	delete[] weights;
-	weights=NULL;
+	delete_optimization();
+
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	sqrtdiag_rhs = NULL;
+
+	delete[] sqrtdiag_lhs;
+	sqrtdiag_lhs = NULL;
+
+	delete[] match_vector;
+	match_vector = NULL;
+
+	initialized=false;
+
+	if (trees!=NULL)
+	{
+		for (INT i=0; i<seq_length; i++)
+		{
+			delete trees[i];
+			trees[i]=NULL;
+		}
+		delete[] trees ;
+		trees=NULL;
+	}
+	seq_length=0;
 }
 
 bool CWeightedDegreeCharKernel::load_init(FILE* src)
@@ -255,8 +264,7 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT * IDX, REAL * w
 		return false ;
 	}
 
-	if (get_is_initialized()) 
-		delete_optimization() ;
+	delete_optimization();
 	
 	CIO::message(M_DEBUG, "initializing CWeightedDegreeCharKernel optimization\n") ;
 	int i=0;
@@ -272,17 +280,19 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT * IDX, REAL * w
 	return true ;
 }
 
-void CWeightedDegreeCharKernel::delete_optimization() 
+bool CWeightedDegreeCharKernel::delete_optimization() 
 { 
+	CIO::message(M_DEBUG, "deleting CWeightedDegreeCharKernel optimization\n");
+
 	if (get_is_initialized())
 	{
-		CIO::message(M_DEBUG, "deleting CWeightedDegreeCharKernel optimization\n") ;
-		
 		delete_tree(NULL); 
-		set_is_initialized(false) ;
-	} else
-		CIO::message(M_ERROR, "CWeightedDegreeCharKernel optimization not initialized\n") ;
-} ;
+		set_is_initialized(false);
+		return true;
+	}
+	
+	return false;
+}
 
 REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 {
@@ -568,32 +578,36 @@ void CWeightedDegreeCharKernel::delete_tree(struct SuffixTree * p_tree)
 	if (p_tree==NULL)
 	{
 		if (trees==NULL)
-			return ;
+			return;
+
 		for (INT i=0; i<seq_length; i++)
 		{
-			delete_tree(trees[i]) ;
-			trees[i]->has_floats=false ;
-			trees[i]->usage=0;
-			for (INT k=0; k<4; k++)
-				trees[i]->childs[k]=NULL ;
-		} ;		
+			delete_tree(trees[i]);
 
-		tree_initialized=false ;
-		return ;
+			trees[i]->has_floats=false;
+			trees[i]->usage=0;
+
+			for (INT k=0; k<4; k++)
+				trees[i]->childs[k]=NULL;
+		}
+
+		tree_initialized=false;
+		return;
 	}
+
 	if (p_tree->has_floats)
-		return ;
+		return;
 	
 	for (INT i=0; i<4; i++)
 	{
 		if (p_tree->childs[i]!=NULL)
 		{
-			delete_tree(p_tree->childs[i])  ;
-			delete p_tree->childs[i] ;
-			p_tree->childs[i]=NULL ;
+			delete_tree(p_tree->childs[i]);
+			delete p_tree->childs[i];
+			p_tree->childs[i]=NULL;
 		} 
-		p_tree->weight=0 ;
-	} ;
+		p_tree->weight=0;
+	}
 } 
 
 

@@ -14,8 +14,7 @@ CLinearByteKernel::CLinearByteKernel(LONG size)
 
 CLinearByteKernel::~CLinearByteKernel() 
 {
-	if (get_is_initialized())
-		delete_optimization();
+	cleanup();
 }
   
 bool CLinearByteKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -44,6 +43,7 @@ void CLinearByteKernel::init_rescale()
 
 void CLinearByteKernel::cleanup()
 {
+	delete_optimization();
 }
 
 bool CLinearByteKernel::load_init(FILE* src)
@@ -135,11 +135,14 @@ bool CLinearByteKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* al
 	return true;
 }
 
-void CLinearByteKernel::delete_optimization()
+bool CLinearByteKernel::delete_optimization()
 {
 	delete[] normal;
 	normal=NULL;
+
 	set_is_initialized(false);
+
+	return true;
 }
 
 REAL CLinearByteKernel::compute_optimized(INT idx_b) 

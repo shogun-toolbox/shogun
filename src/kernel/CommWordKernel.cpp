@@ -14,20 +14,15 @@ CCommWordKernel::CCommWordKernel(LONG size, bool use_sign_)
 
 CCommWordKernel::~CCommWordKernel() 
 {
-	if (get_is_initialized())
-		delete_optimization() ;
-	
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
+	cleanup();
 }
   
 void CCommWordKernel::remove_lhs() 
 { 
-	if (get_is_initialized())
-		delete_optimization() ;
+	delete_optimization();
+
 	if (lhs)
-		cache_reset() ;
+		cache_reset();
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
@@ -120,6 +115,20 @@ bool CCommWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 void CCommWordKernel::cleanup()
 {
+	delete_optimization();
+
+	initialized=false;
+	dictionary_size=0;
+	dictionary=NULL;
+	dictionary_weights=NULL;
+	
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+
+	sqrtdiag_rhs=NULL;
+
+	delete[] sqrtdiag_lhs;
+	sqrtdiag_lhs=NULL;
 }
 
 bool CCommWordKernel::load_init(FILE* src)
@@ -316,25 +325,22 @@ bool CCommWordKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 	
 	set_is_initialized(true) ;
 	return true ;
-} ;
+}
 
-void CCommWordKernel::delete_optimization() 
+bool CCommWordKernel::delete_optimization() 
 {
-	if (get_is_initialized())
-	{
-		CIO::message(M_DEBUG, "deleting CCommWordKernel optimization\n") ;
-		delete[] dictionary ;
-		delete[] dictionary_weights;
-		
-		dictionary_size=0 ;
-		dictionary=NULL ;
-		dictionary_weights=NULL ;
-		
-		set_is_initialized(false) ;
-	}
-	else
-		CIO::message(M_ERROR, "CCommWordKernel optimization not initialized\n") ;
-} ;
+	CIO::message(M_DEBUG, "deleting CCommWordKernel optimization\n");
+	delete[] dictionary;
+	delete[] dictionary_weights;
+
+	dictionary_size=0;
+	dictionary=NULL;
+	dictionary_weights=NULL;
+
+	set_is_initialized(false);
+
+	return true;
+}
 
 REAL CCommWordKernel::compute_optimized(INT i) 
 { 
