@@ -256,19 +256,11 @@ typedef struct shrink_state {
   // MKL stuff
   REAL* W;             // Matrix that stores the contribution by each kernel 
                        // for each example (for current alphas)
-  INT* w_zero_rounds ; // counts the number of rounds the coefficient has been zero
-  INT* w_deactivated ; // stores which variable has been deactivated
-  INT num_w_deactivated ; // number of variables that have been deactivated
-  
-  INT orig_alphas_by_row_num ;
-  REAL** orig_alphas_by_row ; // stores a pointer to a set of alphas for recomputation 
-                             // a row (when reactivating variables)
   REAL rho ;           // current margin
   REAL w_gap ;         // current relative w gap
   REAL lp_C ;          // regularization parameter for w smoothing
   INT count ;          // number of iteration
   REAL mymaxdiff ;     // current alpha gap
-  REAL prev_mymaxdiff ;     // current alpha gap
   INT num_rows ;       // number of alpha constraint rows 
   INT num_active_rows ;// number of active alpha constraint rows
   REAL *buffer_num ;   // a buffer of length num

@@ -19,9 +19,6 @@ extern "C" {
 }
 #endif
 
-const INT num_zero_rounds_to_deactivate = 50000 ;
-const INT num_round_check_deactivated = 100000 ;
-
 CSVMLight::CSVMLight()
 {
 
@@ -45,19 +42,14 @@ CSVMLight::CSVMLight()
 	// MKL stuff
 	rho=0 ;
 	mymaxdiff=1 ;
-	prev_mymaxdiff = 1 ;
 	num_rows=0 ;
 	num_active_rows=0 ;
 	weight_epsilon=0 ;
 	lp_C = 0 ;
-	orig_alphas_by_row = NULL ;
-	w_deactivated   = NULL ;
-	w_zero_rounds   = NULL ;
 	buffer_num      = NULL ;
 	buffer_numcols  = NULL ;
 	buffer1_numrows = NULL ;
 	buffer2_numrows = NULL ;
-	num_w_deactivated = 0 ;
 	
 #ifdef USE_CPLEX
 	CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
@@ -135,9 +127,6 @@ CSVMLight::~CSVMLight()
 
   // MKL stuff
   delete[] W ;
-  delete[] orig_alphas_by_row ;
-  delete[] w_deactivated ;
-  delete[] w_zero_rounds ;
   delete[] buffer_num ;
   delete[] buffer1_numrows ;
   delete[] buffer2_numrows ;
@@ -182,24 +171,7 @@ bool CSVMLight::train()
 	}
 
 	// MKL stuff
-	delete[] orig_alphas_by_row ;
-	orig_alphas_by_row_num = 100 ;
-	orig_alphas_by_row     = new (REAL*)[orig_alphas_by_row_num] ;
-	for (INT i=0; i<orig_alphas_by_row_num; i++)
-		orig_alphas_by_row[i] = NULL ;
-	
-	delete[] w_deactivated ;
-	delete[] w_zero_rounds ;
-	
-	w_zero_rounds = new INT[get_kernel()->get_num_subkernels()] ;
-	w_deactivated = new INT[get_kernel()->get_num_subkernels()] ;
-	for (INT i=0; i<get_kernel()->get_num_subkernels(); i++)
-	{
-		w_zero_rounds[i] = 0 ;
-		w_deactivated[i] = 0 ;
-	}
 	buffer_num = new REAL[get_kernel()->get_rhs()->get_num_vectors()] ;
-	num_w_deactivated = 0 ;
 	delete[] buffer1_numrows ;
 	buffer1_numrows = NULL ;
 	delete[] buffer2_numrows ;
@@ -763,10 +735,6 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		  
 	  }
 	  mymaxdiff=*maxdiff ;
-	  if (prev_mymaxdiff==-2)
-		  prev_mymaxdiff = mymaxdiff ;
-	  if (prev_mymaxdiff==-1)
-		  prev_mymaxdiff = -2 ;
 
 	  if(verbosity>=3) {
 		  CIO::message(M_MESSAGEONLY, "\n");
@@ -1132,293 +1100,6 @@ long CSVMLight::check_optimality(MODEL *model, INT* label,
   return(retrain);
 }
 
-void CSVMLight::update_linear_component_mkl_reactivate_inactive_variables(LONG* docs, INT* label, 
-																		  REAL* lin, REAL *a)
-{
-	CKernel* k = get_kernel();
-	INT num    = k->get_rhs()->get_num_vectors() ;
-	INT num_kernels = k->get_num_subkernels() ;
-
-	INT cur_num_rows = CPXgetnumrows (env, lp);
-	INT start_row = 1 ;
-	if (C_mkl!=0.0)
-		start_row += 2*(num_kernels-1);
-
-	// remove all alpha constraints
-	INT status = CPXdelrows (env, lp, start_row, cur_num_rows-1) ;
-	if ( status ) 
-		CIO::message(M_ERROR, "Failed to remove an old row.\n");
-
-	// preparation
-	REAL* sumw      = new REAL[num_kernels];
-	REAL* w_backup  = new REAL[num_kernels] ;
-	
-	{ // recompute and add all alpha constraints
-		REAL* w1        = new REAL[num_kernels] ;
-		REAL* Wtmp      = new REAL[num_kernels*num] ;
-		INT num_weights = -1;
-		const REAL* w   = k->get_subkernel_weights(num_weights);
-		assert(num_weights==num_kernels) ;
-		
-		// backup and set to one
-		INT num_reactivated = 0 ;
-		for (INT i=0; i<num_kernels; i++)
-		{
-			w_backup[i] = w[i] ;
-			w1[i]= 1 ; // set weight to zero if inactivated, 
-			// leave optimization to kernel implementation
-			if (w_deactivated[i])
-				num_reactivated++ ;
-			{ // remove 0 bound from variable
-				double ubnd = 1.0 ;
-				char type='U' ;
-				INT status = CPXchgbds(env, lp, 1, &i, &type, &ubnd);
-				if ( status ) 
-					CIO::message (M_ERROR, "Failed to deactivate variable.\n");
-			}
-		}
-		// set the kernel weights
-		k->set_subkernel_weights(w1, num_weights) ;
-
-		CIO::message(M_INFO, "reactivated %i of %i MKL variables\n", num_reactivated, num_weights) ;
-		
-		CIO::message(M_INFO, "recompute %i constraints ", cur_num_rows-start_row) ;
-		for (INT row = start_row; row<cur_num_rows; row++)
-		{
-			CIO::message(M_INFO, ".") ;			
-			// create update of normal (with changed alphas only; relative to a)
-			k->clear_normal();
-			for(INT i=0;i<num;i++) 
-				k->add_to_normal(docs[i], orig_alphas_by_row[row-start_row][i] * (double)label[i] );
-			//if (orig_alphas_by_row[row-start_row][i]!=a[i])
-			//	k->add_to_normal(docs[i], (orig_alphas_by_row[row-start_row][i]-a[i]) * (double)label[i] );	
-			
-			// determine contributions of different kernels
-			//memcpy(Wtmp, W, num_kernels*num*sizeof(REAL)) ;
-			//memset(Wtmp, 0, num_kernels*num*sizeof(REAL)) ;
-			for (INT i=0; i<num*num_kernels; i++)
-				Wtmp[i]=0.0 ;
-			for (INT i=0; i<num; i++)
-				k->compute_by_subkernel(i,&Wtmp[i*num_kernels]) ;
-			
-			{ // compute sumw
-#ifdef HAVE_ATLAS
-				REAL *alphay  = buffer_num ;
-				REAL sumalpha = 0 ;
-				for (int i=0; i<num; i++)
-				{
-					alphay[i]=orig_alphas_by_row[row-start_row][i]*label[i] ;
-					sumalpha+=orig_alphas_by_row[row-start_row][i] ;
-				}
-				for (int i=0; i<num_kernels; i++)
-					sumw[i]=-sumalpha ;
-				cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, num,
-							0.5, Wtmp, num_kernels, alphay, 1, 1.0, sumw, 1) ;
-#else
-				for (int d=0; d<num_kernels; d++)
-				{
-					sumw[d]=0;
-					for(int i=0; i<num; i++)
-						sumw[d] += orig_alphas_by_row[row-start_row][i]*(0.5*label[i]*Wtmp[i*num_kernels+d] - 1);
-				}
-#endif
-			}
-			{ // add the new row
-				int rmatbeg[1] ;
-				int rmatind[num_kernels+1] ;
-				double rmatval[num_kernels+1] ;
-				double rhs[1] ;
-				char sense[1] ;
-				
-				rmatbeg[0] = 0;
-				rhs[0]=0 ;
-				sense[0]='L' ;
-				
-				for (INT i=0; i<num_kernels; i++)
-				{
-					rmatind[i]=i ;
-					rmatval[i]=-sumw[i] ;
-				}
-				rmatind[num_kernels]=2*num_kernels ;
-				rmatval[num_kernels]=-1 ;
-				
-				INT status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
-										 rhs, sense, rmatbeg,
-										 rmatind, rmatval, NULL, NULL);
-				if ( status ) 
-					CIO::message(M_ERROR, "Failed to add the new row.\n");
-			}
-		}
-		delete[] w1 ;
-		delete[] Wtmp ;
-	}
-	CIO::message(M_INFO, "\nOptimizing LP\n") ;
-	
-	{ // optimize LP
-		INT status = CPXlpopt (env, lp);
-		if ( status ) 
-			CIO::message(M_ERROR, "Failed to optimize LP.\n");
-		
-		// obtain solution
-		INT cur_numrows = CPXgetnumrows (env, lp);
-		INT cur_numcols = CPXgetnumcols (env, lp);
-		num_rows = cur_numrows ;
-		
-		if (!buffer_numcols)
-			buffer_numcols  = new REAL[cur_numcols] ;
-		REAL *x = buffer_numcols ;
-		if ( x     == NULL) {
-			status = CPXERR_NO_MEMORY;
-			CIO::message(M_ERROR, "Could not allocate memory for solution.\n") ;
-		}
-		INT solstat = 0 ;
-		REAL objval = 0 ;
-		status = CPXsolution (env, lp, &solstat, &objval, x, NULL, NULL, NULL);
-		INT solution_ok = (!status) ;
-		if ( status ) 
-			CIO::message(M_ERROR, "Failed to obtain solution.\n");
-		
-		if (solution_ok)
-		{
-			// set weights, store new rho and compute new w gap
-			k->set_subkernel_weights(x, num_kernels) ;
-			rho = -x[2*num_kernels] ;
-			
-			// reset zero counters for active variables
-			for (INT i=0; i<num_kernels; i++)
-				if (x[i]!=0.0)
-					w_zero_rounds[i]=0 ;
-
-			// output x and old x for verification
-			for (INT i=0; i<num_kernels; i++)
-				CIO::message(M_DEBUG, "x[%i] = %1.3f  x_old[%i] = %1.3f \n", i, x[i], i, w_backup[i]) ;
-		} else
-			w_gap = 0 ; // then something is wrong and we rather 
-   		                // stop sooner than later
-		//delete[] x ;
-	}
-
-	CIO::message(M_INFO, "Deactivating unused variables\n") ;
-	{ // deactivate variables
-		INT num_reactivated = 0 ;
-		for (INT i=0; i<num_kernels; i++)
-			if ((w_zero_rounds[i]>=num_zero_rounds_to_deactivate) && (w_deactivated[i]==0))
-			{
-				w_deactivated[i]=1 ;
-				num_w_deactivated++ ;
-				double ubnd = 0 ;
-				char type='U' ;
-				INT status = CPXchgbds(env, lp, 1, &i, &type, &ubnd);
-				if ( status ) 
-					CIO::message (M_ERROR, "Failed to deactivate variable.\n");
-			} else
-				if ((w_deactivated[i]!=0) && (w_zero_rounds[i]<num_zero_rounds_to_deactivate))
-				{					
-					w_deactivated[i]=0 ;
-					num_w_deactivated-- ;
-					num_reactivated++ ;
-					fprintf(stderr,"rectivate %i\n", i) ;
-				} ;
-		INT num_deactivated = 0 ;
-		for (INT i=0; i<num_kernels; i++)
-			if (w_deactivated[i]!=0)
-				num_deactivated++ ;
-		
-		CIO::message(M_INFO, "reactivated %i variables\n", num_reactivated) ;
-		CIO::message(M_INFO, "deactivated %i variables after reactivation\n", num_deactivated) ;
-	}
-	
-
-	{ // update W
-		REAL* w1        = new REAL[num_kernels] ;
-		INT num_weights = -1;
-		const REAL* w   = k->get_subkernel_weights(num_weights);
-		assert(num_weights==num_kernels) ;
-		
-		// backup and set to one
-		for (INT i=0; i<num_kernels; i++)
-		{
-			w_backup[i] = w[i] ;
-			//if (w_deactivated[i])
-				w1[i] = 1.0 ;
-				//else
-				//w1[1] = 0.0 ;
-		}
-		// set the kernel weights
-		k->set_subkernel_weights(w1, num_weights) ;
-
-		k->clear_normal();
-		for(INT i=0;i<num;i++) 
-			k->add_to_normal(docs[i], a[i] * (double)label[i] );
-		
-		// determine contributions of different kernels
-		for (INT i=0; i<num*num_kernels; i++)
-			W[i]=0.0 ;
-		for (INT i=0; i<num; i++)
-			k->compute_by_subkernel(i,&W[i*num_kernels]) ;
-
-		// restore original weights
-		k->set_subkernel_weights(w_backup, num_weights) ;
-	}
-
-	CIO::message(M_INFO, "Update lin\n") ;
-	{ // update lin
-		INT num_weights = -1;
-		const REAL* w   = k->get_subkernel_weights(num_weights);
-#ifdef HAVE_ATLAS
-		cblas_dgemv(CblasColMajor,
-					CblasTrans, num_kernels, num,
-					1.0, W, num_kernels, w, 1, 0.0, lin,1);
-#else
-		for(int i=0; i<num; i++)
-			lin[i]=0 ;
-		for (int d=0; d<num_kernels; d++)
-			if (w[d]!=0)
-				for(int i=0; i<num; i++)
-					lin[i] += w[d]*W[i*num_kernels+d] ;
-#endif
-	}
-
-	//CIO::message(M_INFO, "Recompute objective (for old weights)\n") ;
-	{ // recompute objective and output some stuff
-		/*REAL objective=0;
-#ifdef HAVE_ATLAS
-		REAL *alphay  = buffer_num ;
-		REAL sumalpha = 0 ;
-		for (int i=0; i<num; i++)
-		{
-			alphay[i]=a[i]*label[i] ;
-			sumalpha+=a[i] ;
-		}
-		for (int i=0; i<num_kernels; i++)
-			sumw[i]=-sumalpha ;
-		
-		cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, num,
-					0.5, W, num_kernels, alphay, 1, 1.0, sumw, 1) ;
-		
-		for (int i=0; i<num_kernels; i++)
-			objective+=w_backup[i]*sumw[i] ;
-#else
-		for (int d=0; d<num_kernels; d++)
-		{
-			sumw[d]=0;
-			for(int i=0; i<num; i++)
-				sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d] - 1);
-			objective   += w_backup[d]*sumw[d];
-		}
-#endif
-		// update w gap
-		w_gap = CMath::abs(1-rho/objective) ;
-		*/
-
-		// output something
-		CIO::message(M_INFO,"\n*%i. RHO: %f \n", count, rho);
-	}
-
-	delete[] w_backup ;
-	delete[] sumw ;
-}
-
 void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label, 
 											long int *active2dnum, double *a, 
 											double *a_old, long int *working2dnum, 
@@ -1443,12 +1124,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 		for (INT i=0; i<num_kernels; i++)
 		{
 			w_backup[i] = w[i] ;
-            // set weight to zero if inactivated, 
-			// leave optimization to kernel implementation
-			if (w_deactivated[i]==0)
-				w1[i]=1.0 ; 
-			else
-				w1[i]=0.0 ;
+			w1[i]=1.0 ; 
 		}
 		// set the kernel weights
 		k->set_subkernel_weights(w1, num_weights) ;
@@ -1502,11 +1178,9 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 	count++ ;
 #ifdef USE_CPLEX			
 	w_gap = CMath::abs(1-rho/objective) ;
-	//fprintf(stderr, "%f %f", mymaxdiff, prev_mymaxdiff) ;
-	if ((w_gap >= 0.9999*get_weight_epsilon()) && (mymaxdiff < prev_mymaxdiff/2.0))
+
+	if ((w_gap >= 0.9999*get_weight_epsilon()))// && (mymaxdiff < prev_mymaxdiff/2.0))
 	{
-		prev_mymaxdiff = -1 ;
-		
 		CIO::message(M_INFO, "*") ;
 		if (rho==0)
 		{
@@ -1636,21 +1310,6 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 									 rmatind, rmatval, NULL, NULL);
 			if ( status ) 
 				CIO::message(M_ERROR, "Failed to add the new row.\n");
-
-			// remember alpha vector in order to reactivate variables
-			INT numrows = CPXgetnumrows (env, lp) - 2 ; // creates 0-based index after adding
-			if (C_mkl!=0.0)
-				numrows -= 2*(num_kernels-1) ;
-			if (numrows+1 > orig_alphas_by_row_num) // extend the array
-			{ 
-				REAL **tmp = new (REAL*)[numrows+1] ;
-				memcpy(tmp, orig_alphas_by_row, orig_alphas_by_row_num*sizeof(REAL*)) ;
-				delete[] orig_alphas_by_row ;
-				orig_alphas_by_row = tmp ;
-				orig_alphas_by_row_num = numrows+1 ;
-			}
-			orig_alphas_by_row[numrows] = new REAL[num] ;
-			memcpy(orig_alphas_by_row[numrows], a, num*sizeof(double)) ;
 		}
 		
 		{ // optimize
@@ -1716,12 +1375,6 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 					INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
 					if ( status ) 
 						CIO::message(M_ERROR, "Failed to remove an old row.\n");
-
-					// move everything forward by one element
-					delete[] orig_alphas_by_row[max_idx - start_row] ;
-					for (INT i = max_idx-start_row+1; i<orig_alphas_by_row_num; i++)
-						orig_alphas_by_row[i-1] = orig_alphas_by_row[i] ;
-					orig_alphas_by_row[orig_alphas_by_row_num-1] = NULL ;
 				}
 
 				// set weights, store new rho and compute new w gap
@@ -1729,43 +1382,11 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 				rho = -x[2*num_kernels] ;
 				w_gap = CMath::abs(1-rho/objective) ;
 				
-				// increase zero counters
-				for (INT i=0; i<num_kernels; i++)
-				{
-					//CIO::message(M_ERROR,"alpha[%i]=%1.3e [%i] ", i, x[i], w_zero_rounds[i]) ;
-					if (x[i]==0.0)
-						w_zero_rounds[i]++ ;
-					else
-						w_zero_rounds[i]=0 ;
-				}
-				//fprintf(stderr,"\n") ;
 				delete[] pi ;
 				delete[] slack ;
 			} else
 				w_gap = 0 ; // then something is wrong and we rather 
 				            // stop sooner than later
-		}
-	}
-	
-	{ //deactivate variables
-		INT max_idx = -1 ;
-		INT max_val = -1 ;
-		for (INT i=0; i<num_kernels; i++)
-			if ((max_val<w_zero_rounds[i]) && !w_deactivated[i]) 
-			{
-				max_val = w_zero_rounds[i] ;
-				max_idx = i ;
-			}
-		if (max_val>=num_zero_rounds_to_deactivate)
-		{
-			w_deactivated[max_idx]=1 ;
-			num_w_deactivated++ ;			
-			double ubnd = 0 ;
-			char type='U' ;
-			INT status = CPXchgbds(env, lp, 1, &max_idx, &type, &ubnd);
-			if ( status ) 
-				CIO::message (M_ERROR, "Failed to deactivate variable.\n");
-			CIO::message(M_INFO, "deactivated variable %i\n", max_idx) ;
 		}
 	}
 #endif
@@ -1798,8 +1419,6 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 	
 	delete[] sumw;
 
-	if (count%num_round_check_deactivated==0)
-		  update_linear_component_mkl_reactivate_inactive_variables(docs,label,lin,a) ;
 }
 
 
