@@ -26,6 +26,12 @@ static double one=1.0 ;
 CSVMMPI::CSVMMPI(int argc, const char **argv)
   //  : Z(1,1,&one,false,donothing)
 {
+ /* Block caches */
+  bcache_d.AddCacheSize(1);
+  bcache_d.AddCacheSize(100);
+  matrix_set_cache_mgr<double>(&bcache_d);
+  matrix_set_cache_mgr<int>(&bcache_i);
+
   svm_mpi_init(argc, argv) ;
   kernel=NULL ;
 } ;

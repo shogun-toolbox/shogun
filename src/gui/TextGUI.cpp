@@ -9,6 +9,10 @@
 
 CTextGUI *gui=NULL;
 
+#ifdef WITHMATLAB
+#include <libmmfile.h>
+#endif // WITHMATLAB
+
 //names of menu commands
 static const char* N_SET_HMM_AS=		"set_hmm_as";
 static const char* N_NEW_HMM=			"new_hmm";
@@ -86,7 +90,7 @@ CTextGUI::CTextGUI(int argc, const char** argv)
 {
   CIO::message("Learning uses %i threads\n", NUM_PARALLEL) ;
   
-#ifdef SVMCPLEX
+#ifdef WITHMATLAB
   libmmfileInitialize() ;
 #endif
 }

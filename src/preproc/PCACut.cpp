@@ -11,6 +11,9 @@ extern "C" void symeigx(double a[],
 	      int    ell,
 	     int    *fl) ;
 
+extern "C" void cleaner_main(double *covZ, int dim, double thresh,
+			     double **T, int *num_dim)  ;
+
 CPCACut::CPCACut()
   : CRealPreProc("PruneVarSubMean"), idx(NULL), num_idx(0)
 {
@@ -73,21 +76,14 @@ bool CPCACut::init(CFeatures* f_)
       f->free_feature_vector(feature, free) ;
       feature=NULL ;
     } ;
-  CIO::message("done\nComputing Eigenvalues") ;
+  for (int k=0; k<num_features; k++)
+    for (int l=0; l<num_features; l++)
+      cov[k*num_features+l]/=num_examples ;
 
+  CIO::message("done\nRunning matlab PCA code") ;
+  double *T ; int num_dim=0 ;
+  cleaner_main(cov, num_features, 1e-5, &T, &num_dim) ;
 
-  REAL *values=new REAL[num_features] ;
-  REAL *vectors=new REAL[num_features*num_features] ;
-  int fl ;
-  symeigx(cov, num_features, values, vectors, num_features, &fl);
-
-//   {
-//     int lwork=4*num_features ;
-//     double *work=new double[lwork] ;
-//     int info ;
-//     dsyev_('V', 'U', num_features, cov, num_features, values, work, lwork, &info) ;
-//   }
-  
   CIO::message("done\n") ;
 
   return true ;
