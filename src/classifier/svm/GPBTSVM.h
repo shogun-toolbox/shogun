@@ -14,9 +14,6 @@ class CGPBTSVM : public CSVM
 		virtual bool train();
 
 	protected:
-		svm_problem problem;
-		svm_parameter param;
-
 		struct svm_model* model;
 };
 #endif

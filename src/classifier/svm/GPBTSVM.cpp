@@ -19,19 +19,21 @@ bool CGPBTSVM::train()
 
 	assert(get_kernel());
 	assert(get_labels() && get_labels()->get_num_labels());
-	prob.KER=new sKernel(get_kernel(), get_labels()->get_num_labels());
+	int num_lab = 0;
+	int* lab=get_labels()->get_int_labels(num_lab);
+	prob.KER=new sKernel(get_kernel(), num_lab);
+	prob.y=lab;
 	assert(prob.KER);
 	prob.ell=get_labels()->get_num_labels();
 	CIO::message(M_INFO, "%d trainlabels\n", prob.ell);
 
 	//  /*** set options defaults ***/
-	//  sigma                = 1.0;
-	//  degree               = 3.0;
-	//  normalisation        = 1.0;
-	//  c_poly               = 1.0;
-	//  nOutputStream        = 0;
+	prob.delta = epsilon;
+	prob.maxmw = get_kernel()->get_cache_size();
 	prob.verbosity       = 1;
 	prob.preprocess_size = -1;
+	prob.c_const = get_C1();
+	prob.chunk_size = get_qpsize();
 
 	if (prob.chunk_size < 2)      prob.chunk_size = 2;
 	if (prob.q <= 0)              prob.q = prob.chunk_size / 3;
@@ -56,13 +58,13 @@ bool CGPBTSVM::train()
 		prob.preprocess_size = (int) ( (double)prob.chunk_size * 1.5 );
 
 	/*** compute the problem solution *******************************************/
-	solution = (double *)malloc(prob.ell * sizeof(double));
+	solution = new double[prob.ell];
 	prob.gpdtsolve(solution);
 	/****************************************************************************/
 
 
 	int num_sv=0;
-	int bsv;
+	int bsv=0;
 	int i=0;
 	int k=0;
 
@@ -76,7 +78,7 @@ bool CGPBTSVM::train()
 	}
 
 	create_new_model(num_sv);
-	set_bias(-prob.bee);
+	set_bias(prob.bee);
 
 	CIO::message(M_INFO,"SV: %d BSV = %d\n", num_sv, bsv);
 
@@ -89,7 +91,8 @@ bool CGPBTSVM::train()
 		}
 	}
 
-	free(solution);
+	delete[] solution;
+	delete[] lab;
 
 	return true;
 }

@@ -141,6 +141,7 @@ class QPproblem
 public:
   int     chunk_size;
   int     ell;
+  int    *y;
   int     q;
   int     maxmw;
   double  c_const;
@@ -170,7 +171,6 @@ public:
 // ----------------- Private Data  ---------------
 private:
   int    dim;
-  int    *y;
   int    *index_in, *index_out;
   int    *ing, *inaux, *inold, *incom;
   int    *cec;

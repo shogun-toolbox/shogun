@@ -131,6 +131,7 @@ QPproblem::QPproblem()
   q                 = -1;
   y                 = NULL;
   tau_proximal      = 0.0;
+  dim = 1; //FIXME make linadd kernels efficient
 }
 
 /******************************************************************************/
@@ -138,7 +139,6 @@ QPproblem::QPproblem()
 /******************************************************************************/
 QPproblem::~QPproblem()
 {
-  if (y != NULL) free(y);
 }
 
 /*** setter method for the subproblem features ***/

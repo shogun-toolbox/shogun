@@ -68,7 +68,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "gpdt.h"
+
+#include "classifier/svm/gpdt.h"
+#include "lib/io.h"
 
 #define y_in(i)      y[index_in[(i)]]
 #define y_out(i)     y[index_out[(i)]]
@@ -1017,7 +1019,7 @@ int QPproblem::Preprocess1(sKernel* KER, int *aux, int *sv)
   int    n, i, off, j, k, ll;
   int    nsv, nbsv;
   int    *sv_loc, *bsv_loc, *sp_y;
-  float  *sp_D;
+  float  *sp_D=NULL;
   double *sp_alpha, *sp_h;
 
   s  = ell;
@@ -1037,6 +1039,8 @@ int QPproblem::Preprocess1(sKernel* KER, int *aux, int *sv)
 
   if (sl < 500)
       sp_D = (float *)malloc(sl*sl * sizeof(float));
+  else
+	  CIO::message(M_ERROR,"sl<500 expect me to die\n");
 
   for (i = 0; i < sl; i++)
        sp_h[i] = -1.0;
@@ -1211,6 +1215,7 @@ double QPproblem::gpdtsolve(double *solution)
   ti = clock();
 
   /* arrays allocation */
+  CIO::message(M_DEBUG,"ell:%d, chunk_size:%d, nb:%d dim:%d\n", ell, chunk_size,nb, dim);
   ing       = (int    *)malloc(ell*sizeof(int       ));
   inaux     = (int    *)malloc(ell*sizeof(int       ));
   index_in  = (int    *)malloc(chunk_size*sizeof(int));
