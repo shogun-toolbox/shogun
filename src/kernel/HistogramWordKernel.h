@@ -45,17 +45,18 @@ class CHistogramWordKernel: public CWordKernel
   REAL* sqrtdiag_lhs;
   REAL* sqrtdiag_rhs;
 
-  REAL* ld_mean_lhs ;
-  REAL* ld_mean_rhs ;
+  REAL* ld_mean_lhs;
+  REAL* ld_mean_rhs;
 
-  REAL* plo_lhs ;
-  REAL* plo_rhs ;
+  REAL* plo_lhs;
+  REAL* plo_rhs;
 
   INT num_params;
   INT num_params1;
   INT num_symbols;
-  bool initialized ;
-  REAL sum_m2_s2 ;
+  REAL sum_m2_s2;
+
+  bool initialized;
 };
 
 #endif

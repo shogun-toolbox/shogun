@@ -154,6 +154,8 @@ bool CLinearKernel::delete_optimization()
 	delete[] normal;
 	normal=NULL;
 	set_is_initialized(false);
+
+	return true;
 }
 
 REAL CLinearKernel::compute_optimized(INT idx_b) 
