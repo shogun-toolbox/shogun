@@ -1,8 +1,10 @@
 #include "guilib/GUIHMM.h"
 
 #include <stdlib.h>
+#include <string.h>
+#include "gui/GUI.h"
 
-CGUIHMM::CGUIHMM()
+CGUIHMM::CGUIHMM(CGUI * gui_): gui(gui_)
 {
 	working=NULL;
 	working_estimate=NULL;
@@ -31,14 +33,18 @@ bool CGUIHMM::new_hmm(char* param)
 	int n,m,order;
 	if (sscanf(param, "%d %d %d", &n, &m, &order) == 3)
 	{
-		delete working;
-	    working=new CHMM(n,m,order,NULL,PSEUDO);
-		ORDER=order;
-		M=m;
-		return true;
+	  if (working)
+	    delete working;
+	  if (working_estimate)
+	    delete working_estimate;
+	  working=new CHMM(n,m,order,NULL,PSEUDO);
+	  working_estimate=new CHMM(n,m,order,NULL,PSEUDO);
+	  ORDER=order;
+	  M=m;
+	  return true;
 	}
 	else
-	   CIO::message("see help for parameters\n");
+	  CIO::message("see help for parameters\n");
 
 	return false;
 }
@@ -118,6 +124,23 @@ bool CGUIHMM::add_states(char* param)
 	return false;
 }
 
+bool CGUIHMM::convergence_criteria(char* param)
+{
+  int j=100;
+  double f=0.001;
+  
+  param=CIO::skip_spaces(param);
+  
+  if (sscanf(param, "%d %le", &j, &f) == 2)
+    {
+      ITERATIONS=j;
+      EPSILON=f;
+    }
+  else
+    CIO::message("see help for parameters. current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
+  CIO::message("current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
+} ;
+
 bool CGUIHMM::set_hmm_as(char* param)
 {
 	param=CIO::skip_spaces(param);
@@ -140,16 +163,37 @@ bool CGUIHMM::set_hmm_as(char* param)
 				test=working;
 			}
 			else
-				CIO::message("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
+				CIO::message("target POS|NEG|TEST missing\n");
 		}
 		else
 			CIO::message("create model first!\n");
 	}
 	else
-		CIO::message("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
+		CIO::message("target POS|NEG|TEST missing\n");
 
 	return false;
 }
+
+bool CGUIHMM::assign_obs(char* param)
+{
+  param=CIO::skip_spaces(param);
+  
+  char target[1024];
+  
+  if ((sscanf(param, "%s", target))==1)
+    {
+      if (working && working_estimate)
+	{
+	  CObservation *obs=gui->guiobs.get_obs(target) ;
+	  working->set_observations(obs);
+	  working_estimate->set_observations(obs);
+	}
+      else
+	printf("create model first!\n");
+    }
+  else
+    printf("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
+} ;
 
 //convergence criteria  -tobeadjusted-
 bool CGUIHMM::converge(double x, double y)

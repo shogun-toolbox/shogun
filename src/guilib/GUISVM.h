@@ -1,13 +1,20 @@
 #ifndef _GUISVM_H__
 #define _GUISVM_H__ 
 
+#define SVMMPI
+
 #include "svm/SVM.h"
+#include "svm/SVM_light.h"
+#include "svm_cplex/SVM_cplex.h"
+#include "intpoint/mpi_svm.h"
+
+class CGUI ;
 
 class CGUISVM
 {
 
 public:
-	CGUISVM();
+	CGUISVM(CGUI*);
 	~CGUISVM();
 
 	bool new_svm(char* param);
@@ -22,6 +29,20 @@ public:
 	bool load_svm();
 	bool save_svm();
 	bool set_C(char* param);
+ protected:
+	CGUI* gui ;
+	double C ;
+
+	CSVMLight svm_light;
+#ifdef SVMMPI
+	CSVMMPI svm_mpi ;
+#endif //SVMMPI
+#ifdef SVMCPLEX
+	CSVMCplex svm_cplex;
+#endif // SVMCPLEX
+	CSVM* svm ;
+
+
 };
 #endif
 

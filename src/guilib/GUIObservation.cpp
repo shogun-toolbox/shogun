@@ -1,7 +1,8 @@
 #include "guilib/GUIObservation.h"
 #include "lib/io.h"
+#include <string.h>
 
-CGUIObservation::CGUIObservation()
+CGUIObservation::CGUIObservation(CGUI * gui_): gui(gui_)
 {
 	E_OBS_ALPHABET alphabet=DNA;
 	pos_train_obs=NULL;

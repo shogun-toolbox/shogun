@@ -3,10 +3,12 @@
 
 #include "hmm/HMM.h"
 
+class CGUI ;
+
 class CGUIHMM
 {
 public:
-	CGUIHMM();
+	CGUIHMM(CGUI *);
 	~CGUIHMM();
 
 	bool new_hmm(char* param);
@@ -17,6 +19,8 @@ public:
 	bool append_model(char* param);
 	bool add_states(char* param);
 	bool set_hmm_as(char* param);
+	bool assign_obs(char* param) ;
+	bool convergence_criteria(char* param) ;
 
 protected:
 
@@ -38,5 +42,8 @@ protected:
 	int iteration_count;
 	int ITERATIONS;
 	int conv_it;
+
+ protected:
+	CGUI* gui ;
 };
 #endif

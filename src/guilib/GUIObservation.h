@@ -3,10 +3,12 @@
 
 #include "hmm/Observation.h"
 
+class CGUI ;
+
 class CGUIObservation
 {
 public:
-	CGUIObservation();
+	CGUIObservation(CGUI *);
 	~CGUIObservation();
 	bool load_observations(char* param);
 	CObservation* get_obs(char* param);
@@ -19,5 +21,8 @@ protected:
 	CObservation* test_obs;
 
 	E_OBS_ALPHABET alphabet;
+
+ protected:
+	CGUI* gui ;
 };
 #endif

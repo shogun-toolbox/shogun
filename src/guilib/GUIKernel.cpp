@@ -1,6 +1,6 @@
 #include "guilib/GUIKernel.h"
 
-CGUIKernel::CGUIKernel()
+CGUIKernel::CGUIKernel(CGUI * gui_): gui(gui_)
 {
 }
 

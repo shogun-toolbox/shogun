@@ -1,6 +1,16 @@
 #include "guilib/GUISVM.h"
+#include "gui/GUI.h"
+#include "lib/io.h"
 
-CGUISVM::CGUISVM()
+CGUISVM::CGUISVM(CGUI * gui_)
+  : gui(gui_), svm_light(), 
+#ifdef SVMMPI
+svm_mpi(gui->argc, gui->argv),
+#endif // SVMMPI
+#ifdef SVMCPLEX
+  svm_cplex(),
+#endif // SVMCPLEX
+  svm(&svm_light)
 {
 }
 
@@ -10,50 +20,87 @@ CGUISVM::~CGUISVM()
 
 bool CGUISVM::new_svm(char* param)
 {
+  CIO::not_implemented() ; // verstehe nicht, was hier hin soll ... ?-)
+  return false ;
 }
 
 bool CGUISVM::train(char* param)
 {
+  return svm->svm_train(gui->guifeatures.get_train_features()) ;
 }
 
 bool CGUISVM::test(char* param)
 {
+  CIO::not_implemented() ;
+  return false ;
 }
 
 bool CGUISVM::set_svm_type(char* param)
 {
+  if (strcmp(param,"light"))
+    svm=&svm_light ;
+  else if (strcmp(param,"cplex"))
+#ifdef SVMCPLEX
+    svm=&svm_cplex ;
+#else
+  CIO::message("CPLEX SVM disabled\n") ;
+#endif
+  else if (strcmp(param,"mpi"))
+#ifdef SVMMPI
+    svm=&svm_mpi ;
+#else
+  CIO::message("MPI SVM disabled\n") ;
+#endif
+  
+  return false ;
 }
 
 bool CGUISVM::get_svm_type()
 {
+  CIO::not_implemented() ;
+  return false ;
 }
 
 bool CGUISVM::set_kernel()
 {
+  CIO::not_implemented() ;
+  return false ;
 }
 
 bool CGUISVM::get_kernel()
 {
+  CIO::not_implemented() ;
+  return false ;
 }
 
 bool CGUISVM::set_preproc()
 {
+  CIO::not_implemented() ;
+  return false ;
 }
 
 bool CGUISVM::get_preproc()
 {
+  CIO::not_implemented() ;
+  return false ;
 }
 
 bool CGUISVM::load_svm()
 {
+  CIO::not_implemented() ;
+  return false ;
 }
 
 bool CGUISVM::save_svm()
 {
+  CIO::not_implemented() ;
+  return false ;
 }
 
 bool CGUISVM::set_C(char* param)
 {
+  sscanf(param, "%f", &C) ;
+  return true ;  
 }
 
 

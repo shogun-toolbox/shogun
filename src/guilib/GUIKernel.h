@@ -3,13 +3,17 @@
 
 #include "kernel/Kernel.h"
 
+class CGUI ;
+
 class CGUIKernel
 {
-public:
-	CGUIKernel();
+ public:
+	CGUIKernel(CGUI*);
 	~CGUIKernel();
 
-protected:
+ protected:
 	CKernel* kernel;
+ protected:
+	CGUI* gui ;
 };
 #endif

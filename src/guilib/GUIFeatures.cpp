@@ -1,6 +1,6 @@
 #include "guilib/GUIFeatures.h"
 
-CGUIFeatures::CGUIFeatures()
+CGUIFeatures::CGUIFeatures(CGUI * gui_): gui(gui_)
 {
 }
 

@@ -3,10 +3,14 @@
 
 #include "preproc/PreProc.h"
 
+class CGUI ;
+
 class CGUIPreProc
 {
 public:
-	CGUIPreProc();
+	CGUIPreProc(CGUI*);
 	~CGUIPreProc();
+ protected:
+	CGUI* gui ;
 };
 #endif
