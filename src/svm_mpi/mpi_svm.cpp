@@ -132,6 +132,10 @@ REAL* CSVMMPI::svm_test(CFeatures* test_, CFeatures*)
 		bool free ;
 		double*feature=test->get_feature_vector(i, len, free) ;
 		length=len ;
+		/*for (int j=0; j<length; j++)
+		  {
+		    fprintf(stderr,"%i: %e*%e=%e\n", j,feature[j],svm_w[j]) ;
+		    } ;*/
 
 		output[i]=ddot_(&length,feature,&onei, svm_w, &onei)-svm_b ;
 
