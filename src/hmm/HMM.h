@@ -532,6 +532,10 @@ public:
 	 * @param train model from which the new model is estimated
 	 */
 	void estimate_model_baum_welch(CHMM* train);
+
+#ifdef PARALLEL
+	void ab_buf_comp(REAL *a_buf, REAL* b_buf, int dim) ;
+#endif
 	
 	/** uses baum-welch-algorithm to train the {\bf defined} transitions etc.
 	 * @param train model from which the new model is estimated
@@ -644,7 +648,7 @@ public:
 	 * @param dim dimension of observation
 	 * @param bw true for model_probability false for best_path
 	 */
-	REAL prefetch(int dim, bool bw) ;
+	REAL prefetch(int dim, bool bw, REAL* a_buf=NULL, REAL* b_buf=NULL) ;
 #endif
 
 #ifdef FIX_POS
