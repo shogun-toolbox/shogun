@@ -550,7 +550,10 @@ bool CGUIHMM::test_hmm(char* param)
 			CObservation* tmp_negobs=NULL;
 			
 			if (gui->guiobs.get_obs("POSTEST")->get_ORDER() == gui->guiobs.get_obs("NEGTEST")->get_ORDER())
-				posobs=negobs=new CObservation(gui->guiobs.get_obs("POSTEST"), gui->guiobs.get_obs("NEGTEST"));
+			{
+				posobs=new CObservation(gui->guiobs.get_obs("POSTEST"), gui->guiobs.get_obs("NEGTEST"));
+				negobs=posobs;
+			}
 			else
 			{
 				CObservation* p= gui->guiobs.get_obs("POSTEST");
@@ -563,8 +566,10 @@ bool CGUIHMM::test_hmm(char* param)
 				{
 					tmp_posobs= new CObservation(posfile, p->get_type(), p->get_alphabet(), p->get_max_M(), p->get_M(), n->get_ORDER());
 					tmp_negobs= new CObservation(negfile, n->get_type(), n->get_alphabet(), n->get_max_M(), n->get_M(), p->get_ORDER());
+					CIO::message("created neg obs for pos model using maxM:%d M:%d ORD:%d\n", tmp_negobs->get_max_M(), tmp_negobs->get_M(), tmp_negobs->get_ORDER());
+					CIO::message("created pos obs for neg model using maxM:%d M:%d ORD:%d\n", tmp_posobs->get_max_M(), tmp_posobs->get_M(), tmp_posobs->get_ORDER());
 					posobs=new CObservation(gui->guiobs.get_obs("POSTEST"), tmp_negobs);
-					negobs=new CObservation(gui->guiobs.get_obs("NEGTEST"), tmp_posobs);
+					negobs=new CObservation(tmp_posobs, gui->guiobs.get_obs("NEGTEST"));
 					fclose(posfile);
 					fclose(negfile);
 				}
@@ -573,8 +578,8 @@ bool CGUIHMM::test_hmm(char* param)
 			CObservation* old_pos=pos->get_observations();
 			CObservation* old_neg=neg->get_observations();
 
-			assert(posobs==NULL);
-			assert(negobs==NULL);
+			assert(posobs!=NULL);
+			assert(negobs!=NULL);
 			pos->set_observations(posobs);
 			neg->set_observations(negobs);
 
