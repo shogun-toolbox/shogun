@@ -113,6 +113,12 @@ enum EKernelType
 	K_COMBINED = 140 | K_OPTIMIZABLE
 };
 
+enum EKernelProperty
+{
+	KP_NONE = 0,
+	KP_LINADD = 1
+};
+
 enum EFeatureType
 {
 	F_UNKNOWN = 0,

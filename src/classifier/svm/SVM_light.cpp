@@ -70,6 +70,9 @@ bool CSVMLight::train()
       CIO::message(M_ERROR, "SVM_light can not proceed without kernel!\n");
       return false ;
   }
+
+  if (get_kernel()->has_property(KP_LINADD))
+	  get_kernel()->clear_normal();
       
   svm_learn();
 
@@ -216,14 +219,17 @@ void CSVMLight::svm_learn()
       if(alpha[i]<0) alpha[i]=0;
       if(alpha[i]>learn_parm->svm_cost[i]) alpha[i]=learn_parm->svm_cost[i];
     }
-      for(i=0;i<totdoc;i++)     /* fill kernel cache with unbounded SV */
-	if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i]) 
-	   && (get_kernel()->kernel_cache_space_available())) 
-	  get_kernel()->cache_kernel_row(i);
-      for(i=0;i<totdoc;i++)     /* fill rest of kernel cache with bounded SV */
-	if((alpha[i]==learn_parm->svm_cost[i]) 
-	   && (get_kernel()->kernel_cache_space_available())) 
-	  get_kernel()->cache_kernel_row(i);
+
+	if (!get_kernel()->has_property(KP_LINADD)) {
+		for(i=0;i<totdoc;i++)     /* fill kernel cache with unbounded SV */
+			if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i]) 
+					&& (get_kernel()->kernel_cache_space_available())) 
+				get_kernel()->cache_kernel_row(i);
+		for(i=0;i<totdoc;i++)     /* fill rest of kernel cache with bounded SV */
+			if((alpha[i]==learn_parm->svm_cost[i]) 
+					&& (get_kernel()->kernel_cache_space_available())) 
+				get_kernel()->cache_kernel_row(i);
+	}
     (void)compute_index(index,totdoc,index2dnum);
     update_linear_component(docs,label,index2dnum,alpha,a,index2dnum,totdoc,
 			    lin,aicache);
@@ -337,6 +343,10 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
   QP qp;            /* buffer for one quadratic program */
 
   epsilon_crit_org=learn_parm->epsilon_crit; /* save org */
+  if(get_kernel()->has_property(KP_LINADD)) {
+    learn_parm->epsilon_crit=2.0;
+      /* caching makes no sense for linear kernel */
+  } 
   learn_parm->epsilon_shrink=2;
   (*maxdiff)=1;
 
@@ -454,7 +464,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		if(iteration % 101)
 		{
 			already_chosen=0;
-			if(CMath::min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4) 
+			if(CMath::min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4 && (!get_kernel()->has_property(KP_LINADD))) 
 			{
 				/* select part of the working set from cache */
 				already_chosen=select_next_qp_subproblem_grad(
@@ -493,7 +503,8 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 
     if(verbosity>=2) t1=get_runtime();
      
-	CKernelMachine::get_kernel()->cache_multiple_kernel_rows(working2dnum, choosenum); 
+	if (!get_kernel()->has_property(KP_LINADD))
+		CKernelMachine::get_kernel()->cache_multiple_kernel_rows(working2dnum, choosenum); 
 
     if(verbosity>=2) t2=get_runtime();
     if(retrain != 2) {
@@ -544,8 +555,8 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
     }
 
     noshrink=0;
-    if((!retrain) && (inactivenum>0) && (!learn_parm->skip_final_opt_check))
-	{ 
+    if ((!retrain) && (inactivenum>0) && (!learn_parm->skip_final_opt_check)
+	   || (get_kernel()->has_property(KP_LINADD))) { 
       t1=get_runtime();
       reactivate_inactive_examples(label,a,shrink_state,lin,c,totdoc,
 				   iteration,inconsistent,
@@ -563,7 +574,8 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
       if((*maxdiff) > learn_parm->epsilon_crit) 
 	retrain=1;
       timing_profile->time_shrink+=get_runtime()-t1;
-      if((verbosity>=1) || (verbosity>=2)) {
+      if((verbosity>=1) && (!get_kernel()->has_property(KP_LINADD))
+			  || (verbosity>=2)) {
 	printf("done.\n");  fflush(stdout);
         printf(" Number of inactive variables = %ld\n",inactivenum);
       }		  
@@ -587,6 +599,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
     if(verbosity>=3) {
      CIO::message(M_MESSAGEONLY, "\n");
     }
+
     
 	if (((iteration % 10) == 0) && (!noshrink))
 	{
@@ -595,11 +608,15 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 				    CMath::max((LONG)(totdoc/500),(LONG) 100)),
 			       a,inconsistent);
       inactivenum=totdoc-activenum;
-      if( (supvecnum>get_kernel()->get_max_elems_cache()) && ((get_kernel()->get_activenum_cache()-activenum)>CMath::max((LONG)(activenum/10),(LONG) 500))) {
-	get_kernel()->kernel_cache_shrink(totdoc, CMath::min((LONG) (get_kernel()->get_activenum_cache()-activenum),
-				 (LONG) (get_kernel()->get_activenum_cache()-supvecnum)),
-			    shrink_state->active); 
-      }
+
+	if (!get_kernel()->has_property(KP_LINADD))
+	{
+		if( (supvecnum>get_kernel()->get_max_elems_cache()) && ((get_kernel()->get_activenum_cache()-activenum)>CMath::max((LONG)(activenum/10),(LONG) 500))) {
+			get_kernel()->kernel_cache_shrink(totdoc, CMath::min((LONG) (get_kernel()->get_activenum_cache()-activenum),
+						(LONG) (get_kernel()->get_activenum_cache()-supvecnum)),
+					shrink_state->active); 
+		}
+	}
     }
   } /* end of loop */
 
@@ -952,15 +969,29 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
      /* based on the change of the variables */
      /* in the current working set */
 {
-  register long i,ii,j,jj;
-  register double tec;
+	register long i,ii,j,jj;
+	register double tec;
 
-	for(jj=0;(i=working2dnum[jj])>=0;jj++) {
-		if(a[i] != a_old[i]) {
-			CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
-			for(ii=0;(j=active2dnum[ii])>=0;ii++) {
-				tec=aicache[j];
-				lin[j]+=(((a[i]*tec)-(a_old[i]*tec))*(double)label[i]);
+	if (get_kernel()->has_property(KP_LINADD)) {
+		get_kernel()->clear_normal();
+
+		for(ii=0;(i=working2dnum[ii])>=0;ii++) {
+			if(a[i] != a_old[i]) {
+					get_kernel()->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
+			}
+		}
+		for(jj=0;(j=active2dnum[jj])>=0;jj++) {
+				lin[j]+=get_kernel()->compute_optimized(docs[j]);
+		}
+	}
+	else {                            /* general case */
+		for(jj=0;(i=working2dnum[jj])>=0;jj++) {
+			if(a[i] != a_old[i]) {
+				CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
+				for(ii=0;(j=active2dnum[ii])>=0;ii++) {
+					tec=aicache[j];
+					lin[j]+=(((a[i]*tec)-(a_old[i]*tec))*(double)label[i]);
+				}
 			}
 		}
 	}
@@ -1228,11 +1259,13 @@ long CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
     if(verbosity>=2) {
      CIO::message(M_INFO, " Shrinking...");
     }
-    a_old=new double[totdoc];
-    shrink_state->a_history[shrink_state->deactnum]=a_old;
-    for(i=0;i<totdoc;i++) {
-      a_old[i]=a[i];
-    }
+	if (!get_kernel()->has_property(KP_LINADD)) { /*  non-linear case save alphas */
+		a_old=new double[totdoc];
+		shrink_state->a_history[shrink_state->deactnum]=a_old;
+		for(i=0;i<totdoc;i++) {
+			a_old[i]=a[i];
+		}
+	}
     for(ii=0;active2dnum[ii]>=0;ii++) {
       i=active2dnum[ii];
 	lastiter=last_suboptimal_at[i];
@@ -1244,6 +1277,9 @@ long CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
     }
     activenum=compute_index(shrink_state->active,totdoc,active2dnum);
     shrink_state->deactnum++;
+    if(get_kernel()->has_property(KP_LINADD)) { 
+      shrink_state->deactnum=0;
+    }
     if(verbosity>=2) {
      CIO::message(M_INFO, "done.\n");
      CIO::message(M_INFO, " Number of inactive variables = %ld\n",totdoc-activenum);
@@ -1273,35 +1309,53 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
   register double kernel_val,*a_old,dist;
   double ex_c,target;
 
-  changed=new long[totdoc];
-  changed2dnum=new long[totdoc+11];
-  inactive=new long[totdoc];
-  inactive2dnum=new long[totdoc+11];
-  for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) {
-    if(verbosity>=2) {
-     CIO::message(M_INFO, "%ld..",t);
-    }
-    a_old=shrink_state->a_history[t];    
-    for(i=0;i<totdoc;i++) {
-      inactive[i]=((!shrink_state->active[i]) 
-		   && (shrink_state->inactive_since[i] == t));
-      changed[i]= (a[i] != a_old[i]);
-    }
-    compute_index(inactive,totdoc,inactive2dnum);
-    compute_index(changed,totdoc,changed2dnum);
-
-      for(ii=0;(i=changed2dnum[ii])>=0;ii++) {
-		  CKernelMachine::get_kernel()->get_kernel_row(i,inactive2dnum,aicache);
-	for(jj=0;(j=inactive2dnum[jj])>=0;jj++) {
-	  kernel_val=aicache[j];
-	  lin[j]+=(((a[i]*kernel_val)-(a_old[i]*kernel_val))*(double)label[i]);
-	}
-      }
+  if(get_kernel()->has_property(KP_LINADD)) { /* special linear case */
+	  a_old=shrink_state->last_a;    
+	  get_kernel()->clear_normal();
+	  for(i=0;i<totdoc;i++) {
+		  if(a[i] != a_old[i]) {
+			  get_kernel()->add_to_normal(docs[i], ((a[i]-a_old[i])*(double)label[i]));
+			  a_old[i]=a[i];
+		  }
+	  }
+	  for(i=0;i<totdoc;i++) {
+		  if(!shrink_state->active[i]) {
+			  lin[i]=shrink_state->last_lin[i]+get_kernel()->compute_optimized(docs[i]);
+		  }
+		  shrink_state->last_lin[i]=lin[i];
+	  }
   }
-  delete[] changed;
-  delete[] changed2dnum;
-  delete[] inactive;
-  delete[] inactive2dnum;
+  else {
+	  changed=new long[totdoc];
+	  changed2dnum=new long[totdoc+11];
+	  inactive=new long[totdoc];
+	  inactive2dnum=new long[totdoc+11];
+	  for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) {
+		  if(verbosity>=2) {
+			  CIO::message(M_INFO, "%ld..",t);
+		  }
+		  a_old=shrink_state->a_history[t];    
+		  for(i=0;i<totdoc;i++) {
+			  inactive[i]=((!shrink_state->active[i]) 
+					  && (shrink_state->inactive_since[i] == t));
+			  changed[i]= (a[i] != a_old[i]);
+		  }
+		  compute_index(inactive,totdoc,inactive2dnum);
+		  compute_index(changed,totdoc,changed2dnum);
+
+		  for(ii=0;(i=changed2dnum[ii])>=0;ii++) {
+			  CKernelMachine::get_kernel()->get_kernel_row(i,inactive2dnum,aicache);
+			  for(jj=0;(j=inactive2dnum[jj])>=0;jj++) {
+				  kernel_val=aicache[j];
+				  lin[j]+=(((a[i]*kernel_val)-(a_old[i]*kernel_val))*(double)label[i]);
+			  }
+		  }
+	  }
+	  delete[] changed;
+	  delete[] changed2dnum;
+	  delete[] inactive;
+	  delete[] inactive2dnum;
+  }
 
   (*maxdiff)=0;
   for(i=0;i<totdoc;i++) {
@@ -1334,11 +1388,13 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
       }
     }
   }
-  for(i=0;i<totdoc;i++) {
-    (shrink_state->a_history[shrink_state->deactnum-1])[i]=a[i];
-  }
-  for(t=shrink_state->deactnum-2;(t>=0) && shrink_state->a_history[t];t--) {
-      delete[] shrink_state->a_history[t];
-      shrink_state->a_history[t]=0;
+  if (!get_kernel()->has_property(KP_LINADD)) { /* update history for non-linear */
+	  for(i=0;i<totdoc;i++) {
+		  (shrink_state->a_history[shrink_state->deactnum-1])[i]=a[i];
+	  }
+	  for(t=shrink_state->deactnum-2;(t>=0) && shrink_state->a_history[t];t--) {
+		  delete[] shrink_state->a_history[t];
+		  shrink_state->a_history[t]=0;
+	  }
   }
 }

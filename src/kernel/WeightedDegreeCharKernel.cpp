@@ -10,6 +10,7 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d
 	: CCharKernel(size),weights(NULL),degree(d), max_mismatch(max_mismatch_), seq_length(0),
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL)
 {
+	properties=KP_LINADD;
 	lhs=NULL;
 	rhs=NULL;
 
@@ -300,6 +301,7 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
   INT alen, blen;
   bool afree, bfree;
 
+	//CIO::message(M_DEBUG, "COMPUTE(%d,%d)\n",idx_a, idx_b);
   CHAR* avec=((CCharFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
   CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 

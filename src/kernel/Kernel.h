@@ -112,11 +112,16 @@ class CKernel
 		inline void set_combined_kernel_weight(double nw) { combined_kernel_weight=nw; }
 
 		inline bool get_is_initialized() { return optimization_initialized; }
+		inline bool has_property(EKernelProperty p) { return (properties & p) != 0; }
 
 		bool is_optimizable();
 		virtual bool init_optimization(INT count, INT *IDX, REAL * weights); 
 		virtual bool delete_optimization();
 		virtual REAL compute_optimized(INT idx);
+
+		//add vector*factor to 'virtual' normal vector
+		virtual void add_to_normal(INT idx, REAL weight);
+		virtual void clear_normal();
 
 		virtual bool set_kernel_parameters(INT num, const double* param) { return false; }
 
@@ -178,6 +183,7 @@ class CKernel
 		REAL combined_kernel_weight ;
 	
 		bool optimization_initialized ;
-		
+
+		EKernelProperty properties;
 };
 #endif

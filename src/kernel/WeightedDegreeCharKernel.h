@@ -46,6 +46,21 @@ class CWeightedDegreeCharKernel: public CCharKernel
 		  return 0 ;
 	  } ;
 
+  inline virtual void clear_normal()
+  {
+	  if (get_is_initialized())
+	  {
+		  delete_tree(NULL); 
+		  set_is_initialized(false);
+	  }
+  }
+
+  inline virtual void add_to_normal(INT idx, REAL weight) 
+  {
+	  add_example_to_tree(idx, weight);
+	  set_is_initialized(true);
+  }
+
   // other kernel tree operations  
   void prune_tree(struct SuffixTree * p_tree=NULL, int min_usage=2) ;
   void count_tree_usage(INT idx)  ;

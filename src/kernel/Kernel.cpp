@@ -7,7 +7,7 @@
 #include <string.h>
 #include <assert.h>
 
-CKernel::CKernel(KERNELCACHE_IDX size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1), optimization_initialized(false)
+CKernel::CKernel(KERNELCACHE_IDX size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1), optimization_initialized(false), properties(KP_NONE)
 {
 	if (size<10)
 		size=10;
@@ -501,3 +501,11 @@ REAL CKernel::compute_optimized(INT idx)
 	return 0;
 }
 
+void CKernel::add_to_normal(INT idx, REAL weight)
+{
+	CIO::message(M_ERROR, "kernel add_to_normal not implemented\n") ;
+}
+void CKernel::clear_normal()
+{
+	CIO::message(M_ERROR, "kernel clear_normal not implemented\n") ;
+}
