@@ -103,6 +103,8 @@ class CKernel
 		virtual bool delete_optimization();
 		virtual REAL compute_optimized(INT idx);
 
+		virtual bool set_kernel_parameters(INT num, const double* param) { return false; }
+
 	protected:
 		inline void set_is_initialized(bool init) { optimization_initialized=init; }
 

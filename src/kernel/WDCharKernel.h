@@ -13,7 +13,8 @@ enum EWDKernType
 	E_SQPOLY=3,
 	E_CUBICPOLY=4,
 	E_EXP=5,
-	E_LOG=6
+	E_LOG=6,
+	E_EXTERNAL=7
 };
 
 class CWDCharKernel: public CCharKernel
@@ -28,6 +29,9 @@ class CWDCharKernel: public CCharKernel
 		/// load and save kernel init_data
 		bool load_init(FILE* src);
 		bool save_init(FILE* dest);
+
+		/// set parms
+		virtual bool set_kernel_parameters(INT num, const double* param);
 
 		// return what type of kernel we are Linear,Polynomial, Gaussian,...
 		virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREE; }
@@ -44,6 +48,7 @@ class CWDCharKernel: public CCharKernel
 		bool init_matching_weights_cubicpoly();
 		bool init_matching_weights_exp();
 		bool init_matching_weights_log();
+		bool init_matching_weights_external();
 
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
@@ -55,6 +60,9 @@ class CWDCharKernel: public CCharKernel
 		virtual void remove_rhs();
 
 	protected:
+		INT num_matching_weights_external;
+		REAL* matching_weights_external;
+
 		REAL* matching_weights;
 
 		EWDKernType type;

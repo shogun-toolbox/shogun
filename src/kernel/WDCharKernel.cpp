@@ -10,6 +10,8 @@ CWDCharKernel::CWDCharKernel(LONG size, EWDKernType t, INT d)
 	: CCharKernel(size), type(t), degree(d), seq_length(0),
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL)
 {
+	num_matching_weights_external=0;
+	matching_weights_external=NULL;
 	matching_weights=NULL; //depend on length of sequence will be initialized later
 }
 
@@ -150,12 +152,27 @@ bool CWDCharKernel::init_matching_weights_log()
 			matching_weights[i-1]=pow(log(i),2);
 
 		for (int i=degree+1; i<seq_length+1 ; i++)
-			matching_weights[i-1]=i;
+			matching_weights[i-1]=i-degree+1+pow(log(degree+1),2);
 	}
 
 	return (matching_weights!=NULL);
 }
 
+bool CWDCharKernel::init_matching_weights_external()
+{
+	if (matching_weights_external && (seq_length == num_matching_weights_external) )
+	{
+		matching_weights=new REAL[seq_length];
+
+		if (matching_weights)
+		{
+			for (int i=0; i<seq_length; i++)
+				matching_weights[i]=matching_weights_external[i];
+		}
+	}
+
+	return (matching_weights!=NULL);
+}
 
 bool CWDCharKernel::init_matching_weights()
 {
@@ -175,6 +192,8 @@ bool CWDCharKernel::init_matching_weights()
 			return init_matching_weights_exp();
 		case E_LOG:
 			return init_matching_weights_log();
+		case E_EXTERNAL:
+			return init_matching_weights_external();
 		default:
 			return false;
 	};
@@ -293,7 +312,26 @@ void CWDCharKernel::cleanup()
 	delete[] matching_weights;
 	matching_weights=NULL;
 
+	delete[] matching_weights_external;
+	matching_weights=NULL;
+
+	num_matching_weights_external=0;
+
 	initialized = false;
+}
+
+bool CWDCharKernel::set_kernel_parameters(INT num, const double* param)
+{
+	delete[] matching_weights_external;
+
+	assert(num>0);
+	num_matching_weights_external = num;
+	matching_weights_external= new REAL[num];
+
+	for (int i=0; i<num; i++)
+		matching_weights[i]=matching_weights_external[i];
+	
+	return true;
 }
 
 bool CWDCharKernel::load_init(FILE* src)

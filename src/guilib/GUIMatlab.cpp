@@ -920,6 +920,25 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 	return false;
 }
 
+bool CGUIMatlab::set_kernel_parameters(const mxArray* vals[])
+{
+	const mxArray* mx_arg=vals[2];
+
+	if (mx_arg && mxGetM(mx_arg)==1 )
+	{
+		double* arg=mxGetPr(mx_arg);
+
+		CKernel* k=gui->guikernel.get_kernel();
+
+		if (k)
+		{
+			k->set_kernel_parameters(mxGetN(mx_arg), arg);
+		}
+	}
+
+	return false;
+}
+
 CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 {
 	const mxArray* mx_feat=vals[2];
@@ -1033,22 +1052,22 @@ bool CGUIMatlab::get_labels(mxArray* retvals[], CLabels* label)
 
 CLabels* CGUIMatlab::set_labels(const mxArray* vals[])
 {
-		const mxArray* mx_lab=vals[2];
+	const mxArray* mx_lab=vals[2];
 
-		if (mx_lab && mxGetM(mx_lab)==1 )
-		{
-			CLabels* label=new CLabels(mxGetN(mx_lab));
+	if (mx_lab && mxGetM(mx_lab)==1 )
+	{
+		CLabels* label=new CLabels(mxGetN(mx_lab));
 
-			double* lab=mxGetPr(mx_lab);
+		double* lab=mxGetPr(mx_lab);
 
-			CIO::message(M_INFO, "%d\n", label->get_num_labels());
+		CIO::message(M_INFO, "%d\n", label->get_num_labels());
 
-			for (int i=0; i<label->get_num_labels(); i++)
-				if (!label->set_label(i, lab[i]))
-					CIO::message(M_ERROR, "weirdo ! %d %d\n", label->get_num_labels(), i);
+		for (int i=0; i<label->get_num_labels(); i++)
+			if (!label->set_label(i, lab[i]))
+				CIO::message(M_ERROR, "weirdo ! %d %d\n", label->get_num_labels(), i);
 
-			return label;
-		}
+		return label;
+	}
 
 	return NULL;
 }
