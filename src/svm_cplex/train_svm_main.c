@@ -1,3 +1,5 @@
+#ifdef SVMCPLEX
+
 /*
  * MATLAB Compiler: 2.1
  * Date: Sun Nov 11 18:46:58 2001
@@ -90,4 +92,5 @@ void train_svm_main(double *XT, double *LT, double C,
   mclLibTermInitTerms(6, init_term_table) ;
 }
 
+#endif // SVMCPLEX
 

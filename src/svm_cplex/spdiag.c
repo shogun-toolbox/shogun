@@ -1,3 +1,5 @@
+#ifdef SVMCPLEX
+
 /*
  * MATLAB Compiler: 2.1
  * Date: Sun Nov 11 18:46:58 2001
@@ -175,3 +177,5 @@ static mxArray * Mspdiag(int nargout_, mxArray * diagonal) {
     mclSetCurrentLocalFunctionTable(save_local_function_table_);
     return A;
 }
+
+#endif // SVMCPLEX

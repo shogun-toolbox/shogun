@@ -1,3 +1,5 @@
+#ifdef SVMCPLEX
+
 /*
  * MATLAB Compiler: 2.1
  * Date: Sun Nov 11 18:46:58 2001
@@ -376,3 +378,5 @@ static mxArray * Mtrain_svm(mxArray * * b,
      * %cplex_quit(lpenv,1)
      */
 }
+
+#endif // SVMCPLEX

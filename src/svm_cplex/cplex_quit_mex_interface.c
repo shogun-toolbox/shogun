@@ -1,3 +1,4 @@
+#ifdef SVMCPLEX
 /*
  * MATLAB Compiler: 2.1
  * Date: Sun Nov 11 18:41:15 2001
@@ -123,3 +124,4 @@ static mxArray * Mcplex_quit(int nargout_, mxArray * varargin) {
     mclSetCurrentLocalFunctionTable(save_local_function_table_);
     return mclCExecMexFunction("cplex_quit", nargout_, varargin);
 }
+#endif // SVMCPLEX

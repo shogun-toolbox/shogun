@@ -82,7 +82,9 @@ static const char* N_LINEAR_SVM_TRAIN=			"linear_svm_train";
 static const char* N_SVM_TRAIN=				"svm_train";
 static const char* N_SVM_TEST=				"svm_test";
 static const char* N_SET_SVM_LIGHT=			 "set_svm_light";
+#ifdef SVMCPLEX
 static const char* N_SET_SVM_CPLEX=			 "set_svm_cplex";
+#endif
 static const char* N_HMM_TEST=				"hmm_test";
 static const char* N_LINEAR_HMM_TEST=			"linear_hmm_test";
 
@@ -117,9 +119,12 @@ CHMM* pos=NULL;	//positive model
 CHMM* neg=NULL;	//negative model
 
 CSVMLight svm_light;	//support vector machine
+#ifdef SVMCPLEX
 CSVMCplex svm_cplex;	//support vector machine
 CSVM* svm=&svm_cplex;	//support vector machine
-
+#else
+CSVM* svm=&svm_light;	//support vector machine
+#endif
 double* theta; //full parameter vector
 
 static int iteration_count=ITERATIONS ;
@@ -174,13 +179,17 @@ static void initialize()
     lambda_train=NULL ;
     fprintf(stdout,"Learning uses %i threads\n", NUM_PARALLEL) ;
     fflush(stdout);
+#ifdef SVMCPLEX
     libmmfileInitialize() ;
+#endif
 }
 
 //cleanup
 static void cleanup()
 {
+#ifdef SVMCPLEX
   libmmfileTerminate() ;
+#endif
   if (pos)
     delete pos;
   if (neg)
@@ -255,7 +264,9 @@ static void help()
     printf("%s <srcsvm> [<output> [<rocfile>]]\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
     printf("%s <dstsvm> \t\t- obtains svm from pos/neg linear models\n",N_LINEAR_SVM_TRAIN);
     printf("%s - enables SVM Light \n",N_SET_SVM_LIGHT);
+#ifdef SVMCPLEX
     printf("%s - enables SVM CPLEX \n",N_SET_SVM_CPLEX);
+#endif
     printf("\n[SYSTEM]\n");
     printf("%s <filename>\t- load and execute a script\n",N_EXEC);
     printf("%s\t- exit genfinder\n",N_QUIT);
@@ -1440,8 +1451,10 @@ static bool prompt(FILE* infile=stdin)
     } 
     else if (!strncmp(input, N_SET_SVM_LIGHT, strlen(N_SET_SVM_LIGHT)))
       svm=&svm_light ;
+#ifdef SVMCPLEX
     else if (!strncmp(input, N_SET_SVM_CPLEX, strlen(N_SET_SVM_CPLEX)))
       svm=&svm_cplex ;
+#endif
     else if (!strncmp(input, N_SVM_TRAIN, strlen(N_SVM_TRAIN)))
     {
 	char name[1024];

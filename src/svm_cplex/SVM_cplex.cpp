@@ -1,3 +1,5 @@
+#ifdef SVMCPLEX
+
 #include "svm_cplex/SVM_cplex.h"
 #include <matrix.h>
 extern "C" {
@@ -200,3 +202,4 @@ void CSVMCplex::top_feature(int x, double *feat)
 	feat[p++]=-exp(neg->model_derivative_b(i, j, x)-negx);
 	}
 }
+#endif // SVMCPLEX

@@ -1,6 +1,8 @@
 #ifndef _SVMCplex_H___
 #define _SVMCplex_H___
 
+#ifdef SVMCPLEX
+
 #include "hmm/HMM.h"
 #include "svm/SVM.h"
 #include "lib/Observation.h"
@@ -24,4 +26,8 @@ protected:
     double *w, b;
 
 };
-#endif
+
+
+#endif // SVMCPLEX
+
+#endif // _SVMCplex_H__

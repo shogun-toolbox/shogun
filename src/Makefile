@@ -20,10 +20,17 @@ end:
 genefinder.`uname`: $(FILES) $(FILES2)
 	$(LINK) -o genefinder.`uname` $(LINKFLAGS) */*.$(EXT_OBJ) */*.$(EXT_OBJ2)
 
-debug: COMPFLAGS=$(COMPFLAGS_DEBUG)
-debug: LINKFLAGS=$(LINKFLAGS_DEBUG)
+debug: COMPFLAGS=$(COMPFLAGS_DEBUG) 
+debug: COMPFLAGS2=$(COMPFLAGS_DEBUG)
+debug: LINKFLAGS=$(LINKFLAGS_DEBUG) 
+debug: COMPFLAGS2=$(COMPFLAGS_DEBUG)
 debug: genefinder.`uname`
 	gdb genefinder.`uname`
+
+cplex: COMPFLAGS+=-DSVMCPLEX
+cplex: COMPFLAGS2+=-DSVMCPLEX
+cplex: LINKFLAGS+=-L/opt/software/matlab6/extern/lib/glnx86  -lmatlb -lmmfile -Xlinker -rpath /opt/software/matlab6/bin/glnx86 -Xlinker -rpath /opt/software/matlab6/extern/lib/glnx86
+cplex: genefinder.`uname`
 
 static: LINKFLAGS+=-static
 static: genefinder.`uname`
@@ -396,73 +403,6 @@ svm/pr_loqo.c.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
 svm/pr_loqo.c.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
 svm/pr_loqo.c.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
 svm/pr_loqo.c.o: svm/pr_loqo.h
-svm_cplex/SVM_cplex.c.o: /opt/software/matlab6/extern/include/libmatlb.h
-svm_cplex/SVM_cplex.c.o: /opt/software/matlab6/extern/include/libmatlbm.h
-svm_cplex/SVM_cplex.c.o: /opt/software/matlab6/extern/include/libsgl.h
-svm_cplex/SVM_cplex.c.o: /opt/software/matlab6/extern/include/matrix.h
-svm_cplex/SVM_cplex.c.o: /opt/software/matlab6/extern/include/mex.h
-svm_cplex/SVM_cplex.c.o: /opt/software/matlab6/extern/include/mwutil.h
-svm_cplex/SVM_cplex.c.o: /opt/software/matlab6/extern/include/tmwtypes.h
-svm_cplex/SVM_cplex.c.o: /usr/include/_G_config.h /usr/include/alloca.h
-svm_cplex/SVM_cplex.c.o: /usr/include/assert.h /usr/include/bits/endian.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/huge_val.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/local_lim.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/mathcalls.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/mathdef.h /usr/include/bits/nan.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/posix1_lim.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/posix2_lim.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/pthreadtypes.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/sched.h /usr/include/bits/select.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/setjmp.h /usr/include/bits/sigset.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/stdio_lim.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/time.h /usr/include/bits/types.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/waitflags.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/waitstatus.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/wchar.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/wordsize.h
-svm_cplex/SVM_cplex.c.o: /usr/include/bits/xopen_lim.h /usr/include/ctype.h
-svm_cplex/SVM_cplex.c.o: /usr/include/endian.h /usr/include/features.h
-svm_cplex/SVM_cplex.c.o: /usr/include/gconv.h /usr/include/gnu/stubs.h
-svm_cplex/SVM_cplex.c.o: /usr/include/libio.h /usr/include/limits.h
-svm_cplex/SVM_cplex.c.o: /usr/include/linux/limits.h /usr/include/math.h
-svm_cplex/SVM_cplex.c.o: /usr/include/setjmp.h /usr/include/stdio.h
-svm_cplex/SVM_cplex.c.o: /usr/include/stdlib.h /usr/include/string.h
-svm_cplex/SVM_cplex.c.o: /usr/include/sys/cdefs.h /usr/include/sys/select.h
-svm_cplex/SVM_cplex.c.o: /usr/include/sys/sysmacros.h /usr/include/sys/types.h
-svm_cplex/SVM_cplex.c.o: /usr/include/time.h /usr/include/wchar.h
-svm_cplex/SVM_cplex.c.o: /usr/include/xlocale.h
-svm_cplex/SVM_cplex.c.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
-svm_cplex/SVM_cplex.c.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/limits.h
-svm_cplex/SVM_cplex.c.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm_cplex/SVM_cplex.c.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm_cplex/SVM_cplex.c.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/syslimits.h
-svm_cplex/SVM_cplex.c.o: hmm/HMM.h lib/Mathmatics.h lib/Observation.h
-svm_cplex/SVM_cplex.c.o: lib/common.h svm/SVM.h svm_cplex/SVM_cplex.h
-svm_cplex/SVM_cplex.c.o: svm_cplex/train_svm.h
-svm_cplex/SVM_cplex.o: /usr/include/_G_config.h /usr/include/alloca.h
-svm_cplex/SVM_cplex.o: /usr/include/bits/endian.h /usr/include/bits/huge_val.h
-svm_cplex/SVM_cplex.o: /usr/include/bits/mathcalls.h
-svm_cplex/SVM_cplex.o: /usr/include/bits/mathdef.h /usr/include/bits/nan.h
-svm_cplex/SVM_cplex.o: /usr/include/bits/pthreadtypes.h
-svm_cplex/SVM_cplex.o: /usr/include/bits/sched.h /usr/include/bits/select.h
-svm_cplex/SVM_cplex.o: /usr/include/bits/sigset.h
-svm_cplex/SVM_cplex.o: /usr/include/bits/stdio_lim.h /usr/include/bits/time.h
-svm_cplex/SVM_cplex.o: /usr/include/bits/types.h /usr/include/bits/waitflags.h
-svm_cplex/SVM_cplex.o: /usr/include/bits/waitstatus.h
-svm_cplex/SVM_cplex.o: /usr/include/bits/wchar.h /usr/include/ctype.h
-svm_cplex/SVM_cplex.o: /usr/include/endian.h /usr/include/features.h
-svm_cplex/SVM_cplex.o: /usr/include/gconv.h /usr/include/gnu/stubs.h
-svm_cplex/SVM_cplex.o: /usr/include/libio.h /usr/include/math.h
-svm_cplex/SVM_cplex.o: /usr/include/stdio.h /usr/include/stdlib.h
-svm_cplex/SVM_cplex.o: /usr/include/string.h /usr/include/sys/cdefs.h
-svm_cplex/SVM_cplex.o: /usr/include/sys/select.h /usr/include/sys/sysmacros.h
-svm_cplex/SVM_cplex.o: /usr/include/sys/types.h /usr/include/time.h
-svm_cplex/SVM_cplex.o: /usr/include/wchar.h /usr/include/xlocale.h
-svm_cplex/SVM_cplex.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
-svm_cplex/SVM_cplex.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm_cplex/SVM_cplex.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm_cplex/SVM_cplex.o: hmm/HMM.h lib/Mathmatics.h lib/Observation.h
-svm_cplex/SVM_cplex.o: lib/common.h svm/SVM.h
 svm_cplex/cplex_init_mex_interface.o: /opt/software/matlab6/extern/include/libmatlb.h
 svm_cplex/cplex_init_mex_interface.o: /opt/software/matlab6/extern/include/libmatlbm.h
 svm_cplex/cplex_init_mex_interface.o: /opt/software/matlab6/extern/include/libsgl.h
@@ -510,7 +450,6 @@ svm_cplex/cplex_init_mex_interface.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/in
 svm_cplex/cplex_init_mex_interface.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
 svm_cplex/cplex_init_mex_interface.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
 svm_cplex/cplex_init_mex_interface.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/syslimits.h
-svm_cplex/cplex_init_mex_interface.o: svm_cplex/cplex_init_mex_interface.h
 svm_cplex/cplex_quit_mex_interface.o: /opt/software/matlab6/extern/include/libmatlb.h
 svm_cplex/cplex_quit_mex_interface.o: /opt/software/matlab6/extern/include/libmatlbm.h
 svm_cplex/cplex_quit_mex_interface.o: /opt/software/matlab6/extern/include/libsgl.h
@@ -604,10 +543,8 @@ svm_cplex/qp_solve_mex_interface.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/incl
 svm_cplex/qp_solve_mex_interface.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
 svm_cplex/qp_solve_mex_interface.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
 svm_cplex/qp_solve_mex_interface.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/syslimits.h
-svm_cplex/qp_solve_mex_interface.o: svm_cplex/qp_solve_mex_interface.h
 svm_cplex/spdiag.o: /opt/software/matlab6/extern/include/libmatlb.h
 svm_cplex/spdiag.o: /opt/software/matlab6/extern/include/libmatlbm.h
-svm_cplex/spdiag.o: /opt/software/matlab6/extern/include/libmmfile.h
 svm_cplex/spdiag.o: /opt/software/matlab6/extern/include/libsgl.h
 svm_cplex/spdiag.o: /opt/software/matlab6/extern/include/matrix.h
 svm_cplex/spdiag.o: /opt/software/matlab6/extern/include/mex.h
@@ -638,7 +575,6 @@ svm_cplex/spdiag.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/limits.h
 svm_cplex/spdiag.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
 svm_cplex/spdiag.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
 svm_cplex/spdiag.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/syslimits.h
-svm_cplex/spdiag.o: svm_cplex/spdiag.h
 svm_cplex/train_svm.o: /opt/software/matlab6/extern/include/libmatlb.h
 svm_cplex/train_svm.o: /opt/software/matlab6/extern/include/libmatlbm.h
 svm_cplex/train_svm.o: /opt/software/matlab6/extern/include/libsgl.h
@@ -672,48 +608,3 @@ svm_cplex/train_svm.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/limits.h
 svm_cplex/train_svm.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
 svm_cplex/train_svm.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
 svm_cplex/train_svm.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/syslimits.h
-svm_cplex/train_svm.o: svm_cplex/cplex_init_mex_interface.h
-svm_cplex/train_svm.o: svm_cplex/qp_solve_mex_interface.h svm_cplex/spdiag.h
-svm_cplex/train_svm.o: svm_cplex/train_svm.h
-svm_cplex/train_svm_main.o: /opt/software/matlab6/extern/include/libmatlb.h
-svm_cplex/train_svm_main.o: /opt/software/matlab6/extern/include/libmatlbm.h
-svm_cplex/train_svm_main.o: /opt/software/matlab6/extern/include/libmmfile.h
-svm_cplex/train_svm_main.o: /opt/software/matlab6/extern/include/libsgl.h
-svm_cplex/train_svm_main.o: /opt/software/matlab6/extern/include/matrix.h
-svm_cplex/train_svm_main.o: /opt/software/matlab6/extern/include/mex.h
-svm_cplex/train_svm_main.o: /opt/software/matlab6/extern/include/mwutil.h
-svm_cplex/train_svm_main.o: /opt/software/matlab6/extern/include/tmwtypes.h
-svm_cplex/train_svm_main.o: /usr/include/_G_config.h /usr/include/alloca.h
-svm_cplex/train_svm_main.o: /usr/include/assert.h /usr/include/bits/endian.h
-svm_cplex/train_svm_main.o: /usr/include/bits/local_lim.h
-svm_cplex/train_svm_main.o: /usr/include/bits/posix1_lim.h
-svm_cplex/train_svm_main.o: /usr/include/bits/posix2_lim.h
-svm_cplex/train_svm_main.o: /usr/include/bits/pthreadtypes.h
-svm_cplex/train_svm_main.o: /usr/include/bits/sched.h
-svm_cplex/train_svm_main.o: /usr/include/bits/select.h
-svm_cplex/train_svm_main.o: /usr/include/bits/setjmp.h
-svm_cplex/train_svm_main.o: /usr/include/bits/sigset.h
-svm_cplex/train_svm_main.o: /usr/include/bits/stdio_lim.h
-svm_cplex/train_svm_main.o: /usr/include/bits/types.h
-svm_cplex/train_svm_main.o: /usr/include/bits/waitflags.h
-svm_cplex/train_svm_main.o: /usr/include/bits/waitstatus.h
-svm_cplex/train_svm_main.o: /usr/include/bits/wchar.h
-svm_cplex/train_svm_main.o: /usr/include/bits/wordsize.h
-svm_cplex/train_svm_main.o: /usr/include/bits/xopen_lim.h
-svm_cplex/train_svm_main.o: /usr/include/endian.h /usr/include/features.h
-svm_cplex/train_svm_main.o: /usr/include/gconv.h /usr/include/gnu/stubs.h
-svm_cplex/train_svm_main.o: /usr/include/libio.h /usr/include/limits.h
-svm_cplex/train_svm_main.o: /usr/include/linux/limits.h /usr/include/setjmp.h
-svm_cplex/train_svm_main.o: /usr/include/stdio.h /usr/include/stdlib.h
-svm_cplex/train_svm_main.o: /usr/include/sys/cdefs.h /usr/include/sys/select.h
-svm_cplex/train_svm_main.o: /usr/include/sys/sysmacros.h
-svm_cplex/train_svm_main.o: /usr/include/sys/types.h /usr/include/time.h
-svm_cplex/train_svm_main.o: /usr/include/wchar.h /usr/include/xlocale.h
-svm_cplex/train_svm_main.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/float.h
-svm_cplex/train_svm_main.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/limits.h
-svm_cplex/train_svm_main.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stdarg.h
-svm_cplex/train_svm_main.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/stddef.h
-svm_cplex/train_svm_main.o: /usr/lib/gcc-lib/i486-suse-linux/2.95.2/include/syslimits.h
-svm_cplex/train_svm_main.o: svm_cplex/cplex_init_mex_interface.h
-svm_cplex/train_svm_main.o: svm_cplex/qp_solve_mex_interface.h
-svm_cplex/train_svm_main.o: svm_cplex/spdiag.h svm_cplex/train_svm.h
