@@ -253,48 +253,56 @@ bool CSVMLight::train()
 #ifdef USE_CPLEX
 	if (get_mkl_enabled() && (env==NULL))
 	{
-		CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
-		
-		lp = NULL;
-		env = NULL;
-		int status = 0;
-		env = CPXopenCPLEX (&status);
-		
-		if ( env == NULL )
+		while (env==NULL)
 		{
-			char  errmsg[1024];
-			CIO::message(M_ERROR, "Could not open CPLEX environment.\n");
-			CPXgeterrorstring (env, status, errmsg);
-			CIO::message(M_ERROR, "%s", errmsg);
-		}
-		else
-		{
-			status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2);
-			if ( status )
+			CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
+			
+			lp = NULL;
+			env = NULL;
+			int status = 0;
+			env = CPXopenCPLEX (&status);
+			
+			if ( env == NULL )
 			{
-				CIO::message(M_ERROR, 
-							 "Failure to select dual lp optimization, error %d.\n", status);
+				char  errmsg[1024];
+				CIO::message(M_ERROR, "Could not open CPLEX environment.\n");
+				CPXgeterrorstring (env, status, errmsg);
+				CIO::message(M_ERROR, "%s", errmsg);
+				int kk=0 ;
+				for (int k=0; k<1000000000; k++)
+					kk+=k ;
+				CIO::message(M_ERROR, "dummy=%i\n", kk) ;
 			}
 			else
 			{
-				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
+				status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2);
 				if ( status )
 				{
-					CIO::message(M_ERROR,
-								 "Failure to turn on data checking, error %d.\n", status);
-				}	
+					CIO::message(M_ERROR, 
+								 "Failure to select dual lp optimization, error %d.\n", status);
+				}
 				else
 				{
-					lp = CPXcreateprob (env, &status, "light");
-					
-					if ( lp == NULL )
-						CIO::message(M_ERROR, "Failed to create LP.\n");
+					status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
+					if ( status )
+					{
+						CIO::message(M_ERROR,
+									 "Failure to turn on data checking, error %d.\n", status);
+					}	
 					else
-						CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
+					{
+						lp = CPXcreateprob (env, &status, "light");
+						
+						if ( lp == NULL )
+							CIO::message(M_ERROR, "Failed to create LP.\n");
+						else
+							CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
+					}
 				}
 			}
 		}
 	}
+	
 #endif
 	
 	if (precomputed_subkernels != NULL)
@@ -380,6 +388,9 @@ bool CSVMLight::train()
 		num_precomputed_subkernels=0 ;
 		precomputed_subkernels=NULL ;
 	}
+
+	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
+		get_kernel()->clear_normal() ;
 	
 	return true ;
 }
