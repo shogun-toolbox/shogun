@@ -57,6 +57,7 @@ void *vit_dim_prefetch(void * params)
 
 REAL CHMM::prefetch(int dim, bool bw)
 {
+  fprintf(stderr, "prefetch called\n") ;
   if (bw)
     {
       forward_comp(p_observations->get_obs_T(dim), N-1, dim) ;
@@ -814,7 +815,7 @@ REAL CHMM::model_probability_comp()
 	  for (i=0; i<NUM_PARALLEL; i++)
 	    if (dim+i<p_observations->get_DIMENSION())
 	      {
-		//fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;
+		/*fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;*/
 		
 		params[i].hmm=this ;
 		params[i].dim=dim+i ;
@@ -829,7 +830,7 @@ REAL CHMM::model_probability_comp()
 	      {
 		void * ret ;
 		pthread_join(threads[i], &ret) ;
-		//fprintf(stderr,"thread for dim=%i returned: %i\n",dim+i,ALPHA_CACHE(dim+i).dimension) ;
+		/* fprintf(stderr,"thread for dim=%i returned: %i\n",dim+i,ALPHA_CACHE(dim+i).dimension) ;*/
 	      } ;
 	} ;
 #endif 
@@ -887,7 +888,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	  for (i=0; i<NUM_PARALLEL; i++)
 	    if (dim+i<p_observations->get_DIMENSION())
 	      {
-		//fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;
+		fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;
 		params[i].hmm=train ;
 		params[i].dim=dim+i ;
 #ifdef SUNOS
@@ -901,17 +902,15 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	      {
 		void * ret ;
 		pthread_join(threads[i], &ret) ;
-		/*	allpatprob += params[i].ret ;*/
-		//fprintf(stderr,"thread for dim=%i returned: %i\n",dim+i,train->PATH_PROB_p_observations->get_DIMENSION()(dim)) ;
+		dimmodprob = params[i].ret ;
+		fprintf(stderr,"thread for dim=%i returned: %e\n",dim+i, dimmodprob) ;
 	      } ;
 	}
 #else
-      //using viterbi to find best path
-      /*allpatprob += train->best_path(dim);*/
+      dimmodprob=train->model_probability(dim);
 #endif // PARALLEL
       
       //and denominator
-      dimmodprob=train->model_probability(dim);
       fullmodprob=math.logarithmic_sum(fullmodprob, dimmodprob) ;
       
       for (i=0; i<N; i++)
@@ -1029,12 +1028,45 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 	B[i]=log(PSEUDO);
     }
 
+#ifdef PARALLEL
+    pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
+    T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
+#endif
+
     //change summation order to make use of alpha/beta caches
     for (dim=0; dim<p_observations->get_DIMENSION(); dim++)
     {
-	//and denominator
-	dimmodprob=train->model_probability(dim);
-	fullmodprob=math.logarithmic_sum(fullmodprob, dimmodprob) ;
+#ifdef PARALLEL
+      if (dim%NUM_PARALLEL==0)
+	{
+	  int i ;
+	  for (i=0; i<NUM_PARALLEL; i++)
+	    if (dim+i<p_observations->get_DIMENSION())
+	      {
+		/*fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;*/
+		params[i].hmm=train ;
+		params[i].dim=dim+i ;
+#ifdef SUNOS
+		thr_create(NULL,0, bw_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
+#else // SUNOS
+		pthread_create(&threads[i], NULL, vit_dim_prefetch, (void*)&params[i]) ;
+#endif
+	      } ;
+	  for (i=0; i<NUM_PARALLEL; i++)
+	    if (dim+i<p_observations->get_DIMENSION())
+	      {
+		void * ret ;
+		pthread_join(threads[i], &ret) ;
+		dimmodprob = params[i].ret ;
+		/*fprintf(stderr,"thread for dim=%i returned: %e\n",dim+i,dimmodprob) ;*/
+	      } ;
+	}
+#else
+      dimmodprob=train->model_probability(dim);
+#endif // PARALLEL
+
+      //and denominator
+      fullmodprob=math.logarithmic_sum(fullmodprob, dimmodprob) ;
 	    
 	//estimate initial+end state distribution numerator
 	for (k=0; (i=model->get_learn_p(k))!=-1; k++)	
@@ -1101,6 +1133,11 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 	    set_b(i,j, math.logarithmic_sum(get_b(i,j), b_sum_num-dimmodprob));
 	}
     }
+#ifdef PARALLEL
+    delete[] threads ;
+    delete[] params ;
+#endif
+
 
     //calculate estimates
     for (k=0; (i=model->get_learn_p(k))!=-1; k++)	
@@ -1171,7 +1208,7 @@ void CHMM::estimate_model_viterbi(CHMM* train)
 	      for (i=0; i<NUM_PARALLEL; i++)
 		if (dim+i<p_observations->get_DIMENSION())
 		  {
-		    //fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;
+		    /*fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;*/
 		    params[i].hmm=train ;
 		    params[i].dim=dim+i ;
 #ifdef SUNOS
@@ -1186,7 +1223,7 @@ void CHMM::estimate_model_viterbi(CHMM* train)
 		    void * ret ;
 		    pthread_join(threads[i], &ret) ;
 		    allpatprob += params[i].ret ;
-		    //fprintf(stderr,"thread for dim=%i returned: %i\n",dim+i,train->PATH_PROB_p_observations->get_DIMENSION()(dim)) ;
+		    /*fprintf(stderr,"thread for dim=%i returned: %e\n",dim+i,params[i].ret) ;*/
 		  } ;
 	    } ;
 #else
@@ -1297,7 +1334,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* train)
 	      for (i=0; i<NUM_PARALLEL; i++)
 		if (dim+i<p_observations->get_DIMENSION())
 		  {
-		    //fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;
+		    /*		    fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;*/
 		    params[i].hmm=train ;
 		    params[i].dim=dim+i ;
 #ifdef SUNOS
@@ -1312,7 +1349,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* train)
 		    void * ret ;
 		    pthread_join(threads[i], &ret) ;
 		    allpatprob += params[i].ret ;
-		    //fprintf(stderr,"thread for dim=%i returned: %i\n",dim+i,train->PATH_PROB_p_observations->get_DIMENSION()(dim)) ;
+		    /*		    fprintf(stderr,"thread for dim=%i returned: %e\n",dim+i,params[i].ret) ;*/
 		  } ;
 	    } ;
 #else // PARALLEL
@@ -3819,7 +3856,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 	  for (i=0; i<NUM_PARALLEL; i++)
 	    if (dim+i<p_observations->get_DIMENSION())
 	      {
-		//fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;
+		/*fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;*/
 		
 		params[i].hmm=this ;
 		params[i].dim=dim+i ;
@@ -3834,7 +3871,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 	      {
 		void * ret ;
 		pthread_join(threads[i], &ret) ;
-		//fprintf(stderr,"thread for dim=%i returned: %i\n",dim+i,ALPHA_CACHE(dim+i).dimension) ;
+		/*fprintf(stderr,"thread for dim=%i returned: %i\n",dim+i,ALPHA_CACHE(dim+i).dimension) ;*/
 	      } ;
 	} ;
 #endif
