@@ -27,6 +27,9 @@ class CCommWordKernel: public CWordKernel
   virtual bool delete_optimization() ;
   virtual REAL compute_optimized(INT idx) ;
 
+  virtual void add_to_normal(INT idx, REAL weight);
+  virtual void clear_normal();
+
   virtual void remove_lhs() ;
   virtual void remove_rhs() ;
 

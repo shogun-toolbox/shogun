@@ -20,9 +20,6 @@ extern "C" {
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-extern "C" void cleaner_main(double *covZ, INT dim, double thresh,
-		double **T, INT *num_dim)  ;
-
 CPCACut::CPCACut(INT do_whitening_, double thresh_) : CRealPreProc("PCACut", "PCAC"), T(NULL),
 	num_dim(0), mean(NULL), initialized(false), do_whitening(do_whitening_), thresh(thresh_)
 {

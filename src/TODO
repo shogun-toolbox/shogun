@@ -1,19 +1,39 @@
-* multiple classifiers/features/distributions/etc, make them interact via lists/indizes of who works with whom
-* CIO::message() mixed with printf's and matlabs mx* stuff -> we only need CIO::... ala gstreamer
-* real detection for lapack/blas/matlab/cplex etc
-* remove or fix all the unused hacky stuff (svm_mpi/grad_descent...)
-* create generic Distribution class which combines all density related stuff HMM/gaussians/linear hmm ... this would
+- was ist denn penalty_info im distributions dir ?
+- src aufrauemen/cleaner main weg
+- svm cplex & svm_mpi killen
+- grad_descent weghauen
+- Python interface
+- suffix tree ala leslie als extra classe...
+- multiple classifiers/features/distributions/etc, make them interact via lists/indizes of who works with whom
+- CIO::message() mixed with printf's and matlabs mx* stuff -> we only need CIO::... ala gstreamer
+- real detection for lapack/blas/matlab/cplex etc
+- remove or fix all the unused hacky stuff (svm_mpi/grad_descent...)
+- create generic Distribution class which combines all density related stuff HMM/gaussians/linear hmm ... this would
   allow for using PluginEstimate with *any* distribution and clean all the hmm_test hacks
-* create a one class classifier to avoid hacky one_class_hmm_test
-* put things (== estimator/svm/hmm/features/kernel...) in some kind of list to be able to use/select them/many
+- create a one class classifier to avoid hacky one_class_hmm_test
+- put things (== estimator/svm/hmm/features/kernel...) in some kind of list to be able to use/select them/many
   for certain purposes
-* create generic Classifier class which combines i.e. KNN/Perceptron/SVM/PluginEstimate
-* make unified testing possible, e.g. set_classifier XXX ; calc_output ; get_results etc.
-* no standardized File IO (there needs to be some header parsing stuff/ little/big endian conversion...)
+- create generic Classifier class which combines i.e. KNN/Perceptron/SVM/PluginEstimate
+- make unified testing possible, e.g. set_classifier XXX ; calc_output ; get_results etc.
+- no standardized File IO (there needs to be some header parsing stuff/ little/big endian conversion...)
   atm, lots of things just use fopen/read/close...
-* all outputs are labels
-* tcp/ip io fixen
-* type (INT/LONG etc) fixes, clear policy
-* fix linear HMM to be equiv. with MMs
-* testsuite
-* deal with remove_lhs/rhs in kernel cleanup() function
+- all outputs are labels
+- tcp/ip io fixen
+- type (INT/LONG etc) fixes, clear policy
+- fix linear HMM to be equiv. with MMs
+- testsuite
+- deal with remove_lhs/rhs in kernel cleanup() function
+
+DONE
+- commword linadd faehig machen
+- combined kernel update LINADD property wenn kern hinzu kommt...
+- get_features
+- convert_char_to_word -> DNA 
+- genefinder SVM save temporary results / alphas Ws...
+test custom kernel
+- customkernel speichert nur diagonale
+- get kernel matrix berechnet nur haelfte
+- M_PROGRESS mit current min/max (output nur alle 5s)
+- option to disable normalisation for polynomial kernel
+- WD kern Rand fixen
+

@@ -73,11 +73,17 @@ class CCombinedKernel : public CKernel
 
 		inline bool insert_kernel(CKernel* k)
 		{
+			if (!(k->has_property(KP_LINADD)))
+				unset_property(KP_LINADD);
+
 			return kernel_list->insert_element(k);
 		}
 
 		inline bool append_kernel(CKernel* k)
 		{
+			if (!(k->has_property(KP_LINADD)))
+				unset_property(KP_LINADD);
+
 			return kernel_list->append_element(k);
 		}
 
@@ -119,22 +125,23 @@ class CCombinedKernel : public CKernel
 		virtual void set_subkernel_weights(REAL* weights, INT num_weights);
 
 		virtual void set_precompute_matrix(bool flag, bool subkernel_flag) 
-			{ 
-				precompute_matrix = flag ; 
-				precompute_subkernel_matrix = subkernel_flag ; 
-				
-				if (!precompute_matrix)
-				{
-					delete[] precomputed_matrix ;
-					precomputed_matrix = NULL ;
-				}
-				CKernel *kn = get_first_kernel() ;
-				while (kn)
-				{
-					kn->set_precompute_matrix(subkernel_flag,false) ;
-					kn = get_next_kernel(kn) ;
-				}
-			} ;
+		{ 
+			precompute_matrix = flag; 
+			precompute_subkernel_matrix = subkernel_flag; 
+
+			if (!precompute_matrix)
+			{
+				delete[] precomputed_matrix;
+				precomputed_matrix = NULL;
+			}
+			CKernel *kn = get_first_kernel();
+			while (kn)
+			{
+				kn->set_precompute_matrix(subkernel_flag,false);
+				kn = get_next_kernel(kn);
+			}
+		}
+
 	protected:
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
@@ -146,7 +153,7 @@ class CCombinedKernel : public CKernel
 		INT   sv_count;
 		INT*  sv_idx;
 		REAL* sv_weight;
-		REAL* subkernel_weights_buffer ;
-		bool append_subkernel_weights ;		
+		REAL* subkernel_weights_buffer;
+		bool append_subkernel_weights;
 };
 #endif

@@ -524,10 +524,10 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 							tree->weight = alpha_pw*weights[j] ;
 							tree->has_floats=false ;
 							tree->usage=0 ;
-						} ;
-					} ;
-				} ;
-			} ;
+						}
+					}
+				}
+			}
 		}
 	}
 	else

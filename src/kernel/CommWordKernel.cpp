@@ -221,6 +221,51 @@ REAL CCommWordKernel::compute(INT idx_a, INT idx_b)
   return result/sqrt_both;
 }
 
+void CCommWordKernel::add_to_normal(INT vec_idx, REAL weight)
+{
+	INT alen=-1;
+	bool afree;
+	WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(vec_idx, alen, afree);
+
+	int j, last_j=0 ;
+	if (use_sign)
+	{
+		for (j=1; j<alen; j++)
+		{
+			if (avec[j]==avec[j-1])
+				continue ;
+			int idx = CMath::fast_find(dictionary, dictionary_size, avec[j-1]) ;
+			assert(idx!=-1) ;
+			dictionary_weights[idx] += weight/sqrtdiag_lhs[vec_idx] ;
+		}
+		int idx = CMath::fast_find(dictionary, dictionary_size, avec[alen-1]) ;
+		assert(idx!=-1) ;
+		dictionary_weights[idx] += weight/sqrtdiag_lhs[vec_idx] ;
+	}
+	else
+	{
+		for (j=1; j<alen; j++)
+		{
+			if (avec[j]==avec[j-1])
+				continue ;
+			int idx = CMath::fast_find(dictionary, dictionary_size, avec[j-1]) ;
+			assert(idx!=-1) ;
+			dictionary_weights[idx] += weight*(j-last_j)/sqrtdiag_lhs[vec_idx] ;
+			last_j = j ;
+		}
+		int idx = CMath::fast_find(dictionary, dictionary_size, avec[alen-1]) ;
+		assert(idx!=-1) ;
+		dictionary_weights[idx] += weight*(alen-last_j)/sqrtdiag_lhs[vec_idx] ;
+	}
+	((CWordFeatures*) lhs)->free_feature_vector(avec, vec_idx, afree);
+}
+
+void CCommWordKernel::clear_normal()
+{
+	for (int i=0; i<dictionary_size; i++)
+		dictionary_weights[i]=0;
+}
+
 
 bool CCommWordKernel::init_optimization(INT count, INT *IDX, REAL * weights) 
 {
@@ -391,4 +436,4 @@ REAL CCommWordKernel::compute_optimized(INT i)
 	((CWordFeatures*) rhs)->free_feature_vector(avec, i, afree);
 
 	return result/sqrtdiag_rhs[i] ;
-} ;
+}

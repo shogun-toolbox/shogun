@@ -504,4 +504,4 @@ REAL CCommWordStringKernel::compute_optimized(INT i)
 		assert(0) ;
 	}
 	return result ;
-} ;
+}

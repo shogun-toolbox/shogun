@@ -143,6 +143,16 @@ class CKernel
 		bool get_precompute_subkernel_matrix() { return precompute_subkernel_matrix ;  } ;
 		
 	protected:
+		inline void set_property(EKernelProperty p)
+		{
+			properties |= p;
+		}
+
+		inline void unset_property(EKernelProperty p)
+		{
+			properties &= (properties | p) ^ p;
+		}
+
 		inline void set_is_initialized(bool init) { optimization_initialized=init; }
 
 		/// compute kernel function for features a and b

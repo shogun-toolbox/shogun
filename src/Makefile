@@ -75,6 +75,9 @@ ctags: tags
 tags:	$(SRCFILES)
 	ctags */*.cpp */*.h */*.c
 
+linecount:	$(SRCFILES)
+	wc -l */*.cpp */*.h */*.c | grep total
+
 targets:
 	@echo "=========="
 	@echo "=targets:="
