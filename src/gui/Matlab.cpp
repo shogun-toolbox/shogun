@@ -178,6 +178,12 @@ void CMatlab::real_mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *
 		}
 		else if (!strncmp(action, N_GET_SVM, strlen(N_GET_SVM)))
 		{
+			if (nlhs==3)
+			{
+				gf_matlab.get_svm(plhs);
+			}
+			else
+				mexErrMsgTxt("usage is []=gf('get_hmm')");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_INIT, strlen(N_GET_KERNEL_INIT)))
 		{

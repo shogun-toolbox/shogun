@@ -223,7 +223,10 @@ char* CTextGUI::get_line(FILE* infile, bool show_prompt)
 	{
 		if (strlen(input)>=1)
 			input[strlen(input)-1]='\0';
-		return input;
+		if (input[0]=='\0')
+			return NULL;
+		else
+			return input;
 	}
 }
 
@@ -441,7 +444,7 @@ bool CTextGUI::parse_line(char* input)
 
 		if (file)
 		{
-			while(!feof(file) && gui->get_line(file,false));
+			while(!feof(file) && gui->parse_line((gui->get_line(file,false))));
 			fclose(file);
 		}
 		else
@@ -583,7 +586,7 @@ int main(int argc, const char* argv[])
 				}
 				else
 				{
-					while(!feof(file) && gui->get_line(file, false));
+					while(!feof(file) && gui->parse_line(gui->get_line(file, false)));
 					fclose(file);
 				}
 			}
