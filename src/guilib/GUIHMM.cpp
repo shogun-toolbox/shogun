@@ -343,6 +343,11 @@ bool CGUIHMM::test_hmm(char* param)
 
 			delete obs;
 			result=true;
+
+			if (rocfile)
+				fclose(rocfile);
+			if (outputfile)
+				fclose(outputfile);
 		}
 		else
 			printf("assign postest and negtest observations first!\n");
