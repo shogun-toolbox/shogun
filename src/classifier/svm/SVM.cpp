@@ -36,16 +36,24 @@ bool CSVM::load(FILE* modelfl)
 	double double_buffer;
 	int line_number=1;
 
-	if (fscanf(modelfl,"%%SVM\n")==EOF)
+	if (fscanf(modelfl,"%4s\n", char_buffer)==EOF)
 	{
 		result=false;
 		CIO::message("error in svm file, line nr:%d\n", line_number);
 	}
 	else
+	{
+		char_buffer[4]='\0';
+		if (strcmp("%SVM", char_buffer)!=0)
+		{
+			result=false;
+			CIO::message("error in svm file, line nr:%d\n", line_number);
+		}
 		line_number++;
+	}
 
 	int_buffer=0;
-	if (fscanf(modelfl,"numsv=%d%*[^\n]\n", &int_buffer) != 1)
+	if (fscanf(modelfl," numsv=%d; \n", &int_buffer) != 1)
 	{
 		result=false;
 		CIO::message("error in svm file, line nr:%d\n", line_number);
@@ -57,7 +65,7 @@ bool CSVM::load(FILE* modelfl)
 	CIO::message("loading %ld support vectors\n",int_buffer);
 	create_new_model(int_buffer);
 
-	if (fscanf(modelfl,"kernel='%s'%*[^\n]\n", char_buffer) != 1)
+	if (fscanf(modelfl," kernel='%s'; \n", char_buffer) != 1)
 	{
 		result=false;
 		CIO::message("error in svm file, line nr:%d\n", line_number);
@@ -68,8 +76,7 @@ bool CSVM::load(FILE* modelfl)
 
 	double_buffer=0;
 	
-	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
-	if (fscanf(modelfl,"b=%lf%*[^\n]\n", &double_buffer) != 1)
+	if (fscanf(modelfl," b=%lf; \n", &double_buffer) != 1)
 	{
 		result=false;
 		CIO::message("error in svm file, line nr:%d\n", line_number);
@@ -81,20 +88,28 @@ bool CSVM::load(FILE* modelfl)
 
 	set_bias(double_buffer);
 
-	if (fscanf(modelfl,"alphas=\[\n") == EOF)
+	if (fscanf(modelfl,"%8s\n", char_buffer) == EOF)
 	{
 		result=false;
 		CIO::message("error in svm file, line nr:%d\n", line_number);
 	}
 	else
+	{
+		char_buffer[9]='\0';
+		if (strcmp("alphas=[", char_buffer)!=0)
+		{
+			result=false;
+			CIO::message("error in svm file, line nr:%d\n", line_number);
+		}
 		line_number++;
+	}
 
 	for (INT i=0; i<get_num_support_vectors(); i++)
 	{
 		double_buffer=0;
 		int_buffer=0;
 
-		if (fscanf(modelfl,"\t[[]%+10.16e,%d[]]%*[^\n]\n", &double_buffer, &int_buffer) != 2)
+		if (fscanf(modelfl," \[%lf,%d]; \n", &double_buffer, &int_buffer) != 2)
 		{
 			result=false;
 			CIO::message("error in svm file, line nr:%d\n", line_number);
@@ -107,13 +122,21 @@ bool CSVM::load(FILE* modelfl)
 		set_alpha(i, double_buffer);
 	}
 
-	if (fscanf(modelfl,"];") == EOF)
+	if (fscanf(modelfl,"%2s", char_buffer) == EOF)
 	{
 		result=false;
 		CIO::message("error in svm file, line nr:%d\n", line_number);
 	}
 	else
+	{
+		char_buffer[3]='\0';
+		if (strcmp("];", char_buffer)!=0)
+		{
+			result=false;
+			CIO::message("error in svm file, line nr:%d\n", line_number);
+		}
 		line_number++;
+	}
 
 	svm_loaded=result;
 	return result;
