@@ -57,10 +57,10 @@ class CWDCharKernel: public CCharKernel
 	protected:
 		REAL* matching_weights;
 
+		EWDKernType type;
 		INT degree;
 		INT seq_length;
 
-		EWDKernType type;
 
 		double* sqrtdiag_lhs;
 		double* sqrtdiag_rhs;
