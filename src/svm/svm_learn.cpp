@@ -487,7 +487,7 @@ long retrain)
   clear_index(working2dnum);
 
                             /* repeat this loop until we have convergence */
-  for(;retrain;iteration++) {
+  for(;retrain && iteration < 5000 ;iteration++) {
 
     if(kernel_cache)
       kernel_cache->time=iteration;  /* for lru cache */
