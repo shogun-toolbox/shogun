@@ -84,6 +84,7 @@ static const CHAR* N_CONVERGENCE_CRITERIA=	"convergence_criteria";
 static const CHAR* N_PSEUDO=			"pseudo";
 static const CHAR* N_CONVERT=	"convert";
 static const CHAR* N_C=			     	"c";
+static const CHAR* N_SVMQPSIZE=			     	"svm_qpsize";
 static const CHAR* N_MKL_PARAMETERS=			"mkl_parameters";
 static const CHAR* N_SVM_EPSILON=			"svm_epsilon";
 static const CHAR* N_SVM_TRAIN_AUC_MAXIMIZATION=			"svm_train_auc_maximization";
@@ -194,6 +195,7 @@ void CTextGUI::print_help()
 	CIO::message(M_MESSAGEONLY, "\n[CLASSIFIER]\n");
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <LIGHT|LIBSVM> - creates SVM of type LIGHT or LIBSVM\n",N_NEW_SVM);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [qpsize]\t\t\t- changes svm_qpsize value\n", N_SVMQPSIZE);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [epsilon-value]\t\t\t- changes svm-epsilon value\n", N_SVM_EPSILON);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [epsilon-value C-lp]\t\t\t- changes mkl parameters\n", N_MKL_PARAMETERS);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <LINEAR|GAUSSIAN|POLY|...> <REAL|BYTE|SPARSEREAL|SLIK> [<CACHESIZE> [OPTS]]\t\t\t- set kernel type\n", N_SET_KERNEL);
@@ -617,6 +619,10 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_C, strlen(N_C)))
 	{
 		guisvm.set_C(input+strlen(N_C));
+	} 
+	else if (!strncmp(input, N_SVMQPSIZE, strlen(N_SVMQPSIZE)))
+	{
+		guisvm.set_qpsize(input+strlen(N_SVMQPSIZE));
 	} 
 	else if (!strncmp(input, N_USE_PRECOMPUTE, strlen(N_USE_PRECOMPUTE)))
 	{

@@ -212,7 +212,7 @@ bool CSVMLight::train()
 	learn_parm->sharedslack=0;
 	learn_parm->remove_inconsistent=0;
 	learn_parm->skip_final_opt_check=1;
-	learn_parm->svm_maxqpsize=41;
+	learn_parm->svm_maxqpsize=get_qpsize();
 	learn_parm->svm_newvarsinqp=learn_parm->svm_maxqpsize-1;
 	learn_parm->maxiter=100000;
 	learn_parm->svm_iter_to_shrink=100;

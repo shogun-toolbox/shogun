@@ -21,10 +21,12 @@ class CSVM : public CKernelMachine
 		inline void set_weight_epsilon(REAL eps) { weight_epsilon=eps; }
 		inline void set_epsilon(REAL eps) { epsilon=eps; }
 		inline void set_C_mkl(REAL C) { C_mkl = C; }
+		inline void set_qpsize(int qps) { qpsize=qps; }
 
 		inline REAL get_weight_epsilon() { return weight_epsilon; }
 		inline REAL get_C1() { return C1; }
 		inline REAL get_C2() { return C2; }
+		inline int get_qpsize() { return qpsize; }
 
 		inline int get_support_vector(int idx)
 		{
@@ -137,6 +139,7 @@ class CSVM : public CKernelMachine
 		REAL C1;
 		REAL C2;
 		REAL C_mkl ;
+		int qpsize;
 		bool use_mkl, use_linadd ;
 		bool use_precomputed_subkernels ;
 };

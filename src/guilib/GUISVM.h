@@ -18,6 +18,7 @@ public:
 	bool load(CHAR* param);
 	bool save(CHAR* param);
 	bool set_C(CHAR* param);
+	bool set_qpsize(CHAR* param);
 	bool set_mkl_enabled(CHAR* param);
 	bool set_linadd_enabled(CHAR* param);
 	bool set_svm_epsilon(CHAR* param);
@@ -32,6 +33,7 @@ public:
  protected:
 	CGUI* gui;
 	CSVM* svm;
+	int qpsize;
 	double weight_epsilon;
 	double epsilon;
 	double C1;

@@ -13,6 +13,7 @@ CGUISVM::CGUISVM(CGUI * gui_)
   : gui(gui_)
 {
 	svm=NULL;
+	qpsize=41;
 	C1=1;
 	C2=1;
 	C_mkl=0;
@@ -91,6 +92,7 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 	svm->set_epsilon(epsilon);
 	svm->set_C_mkl(C_mkl);
 	svm->set_C(C1, C2);
+	svm->set_qpsize(qpsize);
 	svm->set_mkl_enabled(use_mkl);
 	svm->set_linadd_enabled(use_linadd);
 	((CKernelMachine*) svm)->set_labels(trainlabels);
@@ -315,6 +317,21 @@ bool CGUISVM::set_C(CHAR* param)
 		C2=C1;
 
 	CIO::message(M_INFO, "Set to C1=%f C2=%f\n", C1, C2) ;
+	return true ;  
+}
+
+bool CGUISVM::set_qpsize(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	qpsize=-1;
+
+	sscanf(param, "%d", &qpsize) ;
+
+	if (qpsize<2)
+		qpsize=41;
+
+	CIO::message(M_INFO, "Set qpsize to qpsize=%d\n", qpsize);
 	return true ;  
 }
 
