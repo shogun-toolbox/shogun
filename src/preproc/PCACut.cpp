@@ -76,10 +76,10 @@ bool CPCACut::init(CFeatures* f_)
   CIO::message("done\nComputing Eigenvalues") ;
 
 
-  //  REAL *values=new REAL[num_features] ;
-  //  REAL *vectors=new REAL[num_features*num_features] ;
-  //  int fl ;
-  //  symeigx(cov, num_features, values, vectors, num_features, &fl);
+  REAL *values=new REAL[num_features] ;
+  REAL *vectors=new REAL[num_features*num_features] ;
+  int fl ;
+  symeigx(cov, num_features, values, vectors, num_features, &fl);
 
 //   {
 //     int lwork=4*num_features ;

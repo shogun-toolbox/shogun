@@ -41,6 +41,11 @@ bool CGUISVM::train(char* param)
 
   CObservation *pt=gui->guiobs.get_obs("POSTRAIN") ;
   CObservation *nt=gui->guiobs.get_obs("NEGTRAIN") ;
+  if (!pt || !nt)
+    {
+      CIO::message("model not assigned") ;
+      return false ;
+    } ;
   CObservation* obs=new CObservation(pt, nt);
   
   gui->guihmm.pos->set_observations(obs) ;
