@@ -228,20 +228,23 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 {
 	//yes optimistic
 	bool files_ok=true;
-	
-	if (N>(1<<(8*sizeof(T_STATES))))
-	  CIO::message(stderr, "########\nNUMBER OF STATES TOO LARGE. Maximum is %i\n########\n", (1<<(8*sizeof(T_STATES)))) ;
+	if  (M!=0)	
+	{
+		if (N>(1<<(8*sizeof(T_STATES))))
+			CIO::message(stderr, "########\nNUMBER OF STATES TOO LARGE. Maximum is %i\n########\n", (1<<(8*sizeof(T_STATES)))) ;
 
-	MAX_M=(BYTE)ceil(log(M)/log(2)) ;
-	if (M>(1<<MAX_M))
-	  CIO::message(stderr, "########\nALPHABET TOO LARGE. Maximum is %i\n########\n", (int)(1<<MAX_M)) ;
+		MAX_M=(BYTE)ceil(log(M)/log(2));
 
-	if ( (unsigned)MAX_M*ORDER_> (unsigned)8*sizeof(T_OBSERVATIONS) )
-	  CIO::message(stderr, "########\nORDER TOO LARGE. Maximum is %i\n########\n", (int)(((REAL)8*sizeof(T_OBSERVATIONS))/((REAL)MAX_M))) ;
+		if (M>(1<<(8*sizeof(T_OBSERVATIONS))))
+			CIO::message(stderr, "########\nALPHABET TOO LARGE. Maximum is %i\n########\n", (int)((1<<(8*sizeof(T_OBSERVATIONS)))));
 
-	//map higher order to alphabet
-	M=	M << (MAX_M * (ORDER_-1));
+		if ( (unsigned)MAX_M*ORDER_> (unsigned)8*sizeof(T_OBSERVATIONS) )
+			CIO::message(stderr, "########\nORDER TOO LARGE. Maximum is %i\n########\n", (int)(((REAL)8*sizeof(T_OBSERVATIONS))/((REAL)MAX_M))) ;
 
+		//map higher order to alphabet
+		M=	M << (MAX_M * (ORDER_-1));
+
+	}
 	
 	//initialize parameters
 	this->M= M;
@@ -287,7 +290,6 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 #endif //NOVIT
 
 #endif //PARALLEL
-
 	this->loglikelihood=false;
 	this->invalidate_model();
 

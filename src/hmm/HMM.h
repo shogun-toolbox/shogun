@@ -1156,7 +1156,7 @@ protected:
 	/// define pseudocounts against overfitting
 	REAL PSEUDO;
 
-    /// M is not allowed to be larger than that (in bit)
+	/// number of bits that M observations require
 	BYTE MAX_M ;
 
 	// line number during processing input files
