@@ -65,8 +65,8 @@ class CGUIFeatures
 		CStringFeatures<CHAR>* convert_simple_char_to_string_char(CCharFeatures* src, CHAR* param);
 		CWordFeatures* convert_simple_char_to_simple_word(CCharFeatures* src, CHAR* param);
 		CShortFeatures* convert_simple_char_to_simple_short(CCharFeatures* src, CHAR* param);
-		CRealFeatures* convert_simple_word_to_simple_salzberg(CWordFeatures* src, CHAR* param);
 		CRealFeatures* convert_simple_char_to_simple_align(CCharFeatures* src,CHAR* param);
+		CRealFeatures* convert_simple_word_to_simple_salzberg(CWordFeatures* src, CHAR* param);
 
 		CStringFeatures<WORD>* convert_string_char_to_string_word(CStringFeatures<CHAR>* src, CHAR* param);
 		CTOPFeatures* convert_string_word_to_simple_top(CStringFeatures<WORD>* src, CHAR* param);

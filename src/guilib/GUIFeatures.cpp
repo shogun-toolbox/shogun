@@ -419,11 +419,11 @@ CStringFeatures<WORD>* CGUIFeatures::convert_string_char_to_string_word(CStringF
 			//create dense features with 0 cache
 			CIO::message(M_INFO, "converting CHAR STRING features to WORD STRING ones (order=%i)\n",order);
 
-			CStringFeatures<WORD>* target=new CStringFeatures<WORD>();
-			if (target && target->obtain_from_char_features(src, start, order))
-				return target;
+			CStringFeatures<WORD>* sf=new CStringFeatures<WORD>();
+			if (sf && sf->obtain_from_char_features(src, start, order))
+				return sf;
 
-			delete target;
+			delete sf;
 		}
 		else
 			CIO::message(M_ERROR, "features are not of class/type STRING/CHAR\n");
@@ -436,7 +436,7 @@ CStringFeatures<WORD>* CGUIFeatures::convert_string_char_to_string_word(CStringF
 
 CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<WORD>* src, CHAR* param)
 {
-	CTOPFeatures* target = NULL;
+	CTOPFeatures* tf = NULL;
 
 	if (src && src->get_feature_class() == C_SIMPLE && src->get_feature_type() == F_WORD)
 	{
@@ -450,8 +450,8 @@ CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<WO
 			bool neglinear=false;
 			bool poslinear=false;
 
-			target = new CTOPFeatures(0l, gui->guihmm.get_pos(), gui->guihmm.get_neg(), neglinear, poslinear);		     
-			assert(target->set_feature_matrix());
+			tf = new CTOPFeatures(0l, gui->guihmm.get_pos(), gui->guihmm.get_neg(), neglinear, poslinear);		     
+			assert(tf && tf->set_feature_matrix());
 		}
 		else
 			CIO::message(M_ERROR, "HMMs not correctly assigned!\n");
@@ -459,12 +459,12 @@ CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<WO
 	else 
 		CIO::not_implemented();
 
-	return target;
+	return tf;
 }
 
 CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD>* src, CHAR* param)
 {
-	CFKFeatures* target = NULL;
+	CFKFeatures* fkf = NULL;
 
 	CIO::message(M_INFO, "converting to FK features\n");
 
@@ -478,13 +478,13 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD
 		gui->guihmm.get_pos()->set_observations(string_feat);
 		gui->guihmm.get_neg()->set_observations(string_feat);
 
-		CFKFeatures* target= new CFKFeatures(0l, gui->guihmm.get_pos(), gui->guihmm.get_neg());//, neglinear, poslinear);		     
+		CFKFeatures* fkf = new CFKFeatures(0l, gui->guihmm.get_pos(), gui->guihmm.get_neg());//, neglinear, poslinear);		     
 		if (train_features)
-			target->set_opt_a(((CFKFeatures*) train_features)->get_weight_a());
+			fkf->set_opt_a(((CFKFeatures*) train_features)->get_weight_a());
 		else
 			CIO::message(M_ERROR, "need train features to set optimal a\n");
 
-		assert(target->set_feature_matrix());
+		assert(fkf->set_feature_matrix());
 
 		gui->guihmm.get_pos()->set_observations(old_obs_pos);
 		gui->guihmm.get_neg()->set_observations(old_obs_neg);
@@ -492,7 +492,7 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD
 	else
 		CIO::message(M_ERROR, "HMMs not correctly assigned!\n");
 
-	return target;
+	return fkf;
 }
 
 
@@ -507,13 +507,13 @@ CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(CSparseRealFeatu
 			{
 				//create dense features with 0 cache
 				CIO::message(M_INFO, "attempting to convert sparse feature matrix to a dense one\n");
-				CRealFeatures* target = new CRealFeatures(0l);
+				CRealFeatures* rf = new CRealFeatures(0l);
+				assert(rf);
 				INT num_f=0;
 				INT num_v=0;
 				REAL* feats=src->get_full_feature_matrix(num_f, num_v);
-
-				target->set_feature_matrix(feats, num_f, num_v);
-				return target;
+				rf->set_feature_matrix(feats, num_f, num_v);
+				return rf;
 			}
 		}
 		else
@@ -525,7 +525,7 @@ CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(CSparseRealFeatu
 	return NULL;
 }
 
-CWordFeatures* convert_simple_char_to_simple_word(CCharFeatures* src, CHAR* param)
+CWordFeatures* CGUIFeatures::convert_simple_char_to_simple_word(CCharFeatures* src, CHAR* param)
 {
 	CHAR target[1024]="";
 	CHAR from_class[1024]="";
@@ -562,17 +562,17 @@ CWordFeatures* convert_simple_char_to_simple_word(CCharFeatures* src, CHAR* para
 			//create dense features with 0 cache
 			CIO::message(M_INFO, "converting CHAR features to WORD ones\n");
 
-			CWordFeatures* target = new CWordFeatures(0l);
+			CWordFeatures* wf = new CWordFeatures(0l);
 
-			if (target)
+			if (wf)
 			{
-				if (target->obtain_from_char_features(src, alphabet, start, order))
+				if (wf->obtain_from_char_features(src, alphabet, start, order))
 				{
 					CIO::message(M_INFO, "conversion successful\n");
-					return target;
+					return wf;
 				}
 
-				delete target;
+				delete wf;
 			}
 		}
 		else
@@ -733,10 +733,23 @@ bool CGUIFeatures::convert(CHAR* param)
 
 		if (strcmp(from_class, "SIMPLE")==0)
 		{
-			if (strcmp(from_type, "CHAR")==0)
+			if (strcmp(from_type, "REAL")==0)
+			{
+				if (strcmp(to_class, "SPARSE")==0 && strcmp(to_type,"REAL")==0)
+					result = convert_simple_real_to_sparse_real(((CRealFeatures*) (*f_ptr)), param);
+				else
+					CIO::not_implemented();
+			}
+			else if (strcmp(from_type, "CHAR")==0)
 			{
 				if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"CHAR")==0)
 					result = convert_simple_char_to_string_char(((CCharFeatures*) (*f_ptr)), param);
+				else if (strcmp(to_class, "SIMPLE")==0 && strcmp(to_type,"WORD")==0)
+					result = convert_simple_char_to_simple_word(((CCharFeatures*) (*f_ptr)), param);
+				else if (strcmp(to_class, "SIMPLE")==0 && strcmp(to_type,"SHORT")==0)
+					result = convert_simple_char_to_simple_short(((CCharFeatures*) (*f_ptr)), param);
+				else if (strcmp(to_class, "SIMPLE")==0 && strcmp(to_type,"ALIGN")==0)
+					result = convert_simple_char_to_simple_align(((CCharFeatures*) (*f_ptr)), param);
 				else
 					CIO::not_implemented();
 			}
@@ -752,7 +765,15 @@ bool CGUIFeatures::convert(CHAR* param)
 		}
 		else if (strcmp(from_class, "SPARSE")==0)
 		{
-			CIO::not_implemented();
+			if (strcmp(from_type, "REAL")==0)
+			{
+				if (strcmp(to_class, "SIMPLE")==0 && strcmp(to_type,"REAL")==0)
+					result = convert_sparse_real_to_simple_real(((CSparseRealFeatures*) (*f_ptr)), param);
+				else
+					CIO::not_implemented();
+			}
+			else
+				CIO::not_implemented();
 		}
 		else if (strcmp(from_class, "STRING")==0)
 		{
@@ -778,7 +799,7 @@ bool CGUIFeatures::convert(CHAR* param)
 		else
 			CIO::message(M_ERROR, "see help for parameters\n");
 
-		if (target)
+		if (result)
 		{
 			CIO::message(M_INFO, "conversion successful\n");
 
