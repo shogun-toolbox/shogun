@@ -8,6 +8,7 @@
 #include "lib/common.h"
 #include "svm_mpi/matrix.h"
 
+#if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 
 class CSVMMPI: public CSVM
 {
@@ -33,6 +34,7 @@ class CSVMMPI: public CSVM
   CMatrix<double> Z ;
   
 } ;
+#endif
 /*#endif // SVMMPI*/
 
 #endif // _SVMMPI_H__

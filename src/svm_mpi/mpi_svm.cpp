@@ -14,6 +14,7 @@ void my_delete(void* ptr)
 } ;
 
 
+#if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 CSVMMPI::CSVMMPI(int argc, const char **argv)
 {
   svm_mpi_init(argc, argv) ;
@@ -157,3 +158,4 @@ void CSVMMPI::svm_mpi_destroy(void)
   bcast_req(MPI_COMM_WORLD, 0, REQ_QUIT);
   MPI_Finalize();
 }
+#endif

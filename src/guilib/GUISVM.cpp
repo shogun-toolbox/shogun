@@ -5,7 +5,9 @@
 CGUISVM::CGUISVM(CGUI * gui_)
   : gui(gui_), svm_light(), 
 #ifdef SVMMPI
+#if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 svm_mpi(gui->argc, gui->argv),
+#endif
 #endif // SVMMPI
 #ifdef SVMCPLEX
   svm_cplex(),
@@ -58,7 +60,9 @@ bool CGUISVM::set_svm_type(char* param)
 #endif
   else if (strcmp(param,"mpi"))
 #ifdef SVMMPI
+#if defined(HAVE_MPI) && !defined(DISABLE_MPI)
     svm=&svm_mpi ;
+#endif
 #else
   CIO::message("MPI SVM disabled\n") ;
 #endif

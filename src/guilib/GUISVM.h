@@ -35,7 +35,9 @@ public:
 
 	CSVMLight svm_light;
 #ifdef SVMMPI
+#if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 	CSVMMPI svm_mpi ;
+#endif
 #endif //SVMMPI
 #ifdef SVMCPLEX
 	CSVMCplex svm_cplex;
