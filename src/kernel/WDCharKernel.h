@@ -8,7 +8,7 @@
 class CWDCharKernel: public CCharKernel
 {
 	public:
-		CWDCharKernel(LONG size, REAL* old_weights, REAL* new_weights, INT degree, INT max_mismatch);
+		CWDCharKernel(LONG size, INT degree, INT max_mismatch);
 		~CWDCharKernel();
 
 		virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -24,6 +24,7 @@ class CWDCharKernel: public CCharKernel
 		// return the name of a kernel
 		virtual const CHAR* get_name() { return "WD"; }
 
+		
 		virtual bool init_optimization(INT count, INT * IDX, REAL * weights);
 		virtual void delete_optimization();
 		virtual REAL compute_optimized(INT idx) 
@@ -46,7 +47,7 @@ class CWDCharKernel: public CCharKernel
 		INT get_max_mismatch() { return max_mismatch; }
 
 	protected:
-
+		bool init_matching_weights();
 		void add_example_to_tree(INT idx, REAL weight);
 		REAL compute_by_tree(INT idx);
 		void delete_tree(struct SuffixTree* p_tree=NULL);
@@ -62,7 +63,7 @@ class CWDCharKernel: public CCharKernel
 
 	protected:
 		REAL* old_weights;
-		REAL* new_weights;
+		REAL* matching_weights;
 		INT degree;
 		INT max_mismatch;
 		INT seq_length;
@@ -75,7 +76,5 @@ class CWDCharKernel: public CCharKernel
 
 		struct SuffixTree** trees;
 		bool tree_initialized;
-
 };
-
 #endif

@@ -826,54 +826,10 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			{
 				INT d=3;
 				INT max_mismatch = 0;
-				INT i=0;
 
 				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &d, &max_mismatch);
-				REAL* old_weights=new REAL[d*(1+max_mismatch)];
-				REAL* new_weights=new REAL[d*(1+max_mismatch)];
-				REAL sum=0;
-
-				{
-					double deg=d;
-					for (double k=0; k<d ; k++)
-					{
-						new_weights[(INT) k]=(-pow(k,3) + (3*deg-3)*pow(k,2) + (9*deg-2)*k + 6*deg) / (3*deg*(deg+1));
-						CIO::message(M_INFO, "NEW: %d -> %f\n", (INT) k, new_weights[(INT) k]);
-					}
-
-				}
-					for (i=0; i<d; i++)
-					{
-						old_weights[i]=d-i;
-						CIO::message(M_INFO, "OLD1: %d -> %f\n", i, old_weights[(INT) i]);
-						sum+=old_weights[i];
-					}
-					for (i=0; i<d; i++)
-						old_weights[i]/=sum;
-
-					for (i=0; i<d; i++)
-					{
-						for (INT j=1; j<=max_mismatch; j++)
-						{
-							if (j<i+1)
-							{
-								INT nk=math.nchoosek(i+1, j);
-								old_weights[i+j*d]=old_weights[i]/(nk*pow(3,j));
-							}
-							else
-								old_weights[i+j*d]= 0;
-
-						}
-					}
-					for (i=0; i<d; i++)
-					{
-						CIO::message(M_INFO, "OLD2: %d -> %f\n", i, old_weights[(INT) i]);
-					}
-				
 				delete k;
-				k=new CWDCharKernel(size, old_weights, new_weights, d, max_mismatch);
-				delete[] old_weights ;
-				delete[] new_weights ;
+				k=new CWDCharKernel(size, d, max_mismatch);
 				
 				if (k)
 				{

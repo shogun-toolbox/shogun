@@ -6,22 +6,41 @@
 
 #include <assert.h>
 
-CWDCharKernel::CWDCharKernel(LONG size, double* w, double* nw, INT d, INT max_mismatch_)
-	: CCharKernel(size),old_weights(NULL),new_weights(NULL),degree(d), max_mismatch(max_mismatch_), seq_length(0),
+CWDCharKernel::CWDCharKernel(LONG size, INT d, INT max_mismatch_)
+	: CCharKernel(size),degree(d), max_mismatch(max_mismatch_), seq_length(0),
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL)
 {
+	old_weights=new REAL[d*(1+max_mismatch)];
+	matching_weights=NULL; //depend on length of sequence will be initialized later
+
+	INT i=0;
+	REAL sum=0;
+
+	for (i=0; i<d; i++)
+	{
+		old_weights[i]=d-i;
+		sum+=old_weights[i];
+	}
+
+	for (i=0; i<d; i++)
+		old_weights[i]/=sum;
+
+	for (i=0; i<d; i++)
+	{
+		for (INT j=1; j<=max_mismatch; j++)
+		{
+			if (j<i+1)
+			{
+				INT nk=math.nchoosek(i+1, j);
+				old_weights[i+j*d]=old_weights[i]/(nk*pow(3,j));
+			}
+			else
+				old_weights[i+j*d]= 0;
+		}
+	}
+
 	lhs=NULL ;
 	rhs=NULL ;
-
-	old_weights=new REAL[d*(1+max_mismatch)];
-	assert(old_weights!=NULL);
-	for (INT i=0; i<d*(1+max_mismatch); i++)
-		old_weights[i]=w[i];
-
-	new_weights=new REAL[d*(1+max_mismatch)];
-	assert(new_weights!=NULL);
-	for (INT i=0; i<d*(1+max_mismatch); i++)
-		new_weights[i]=nw[i];
 
 	trees=NULL ;
 	tree_initialized=false ;
@@ -45,7 +64,7 @@ CWDCharKernel::~CWDCharKernel()
 		}
 		delete[] trees ;
 		trees=NULL ;
-	} ;
+	}
 	cleanup();
 }
 
@@ -77,8 +96,8 @@ void CWDCharKernel::remove_lhs()
 		}
 		delete[] trees ;
 		trees=NULL ;
-	} ;
-} ;
+	}
+}
 
 void CWDCharKernel::remove_rhs()
 {
@@ -91,7 +110,25 @@ void CWDCharKernel::remove_rhs()
 	rhs = lhs ;
 }
 
-  
+
+bool CWDCharKernel::init_matching_weights()
+{
+
+	matching_weights=new REAL[seq_length];
+	
+	if (matching_weights)
+	{
+		double deg=degree;
+		INT k;
+		for (k=0; k<degree ; k++)
+			matching_weights[k]=(-pow(k,3) + (3*deg-3)*pow(k,2) + (9*deg-2)*k + 6*deg) / (3*deg*(deg+1));
+		for (k=degree; k<seq_length ; k++)
+			matching_weights[k]=(-deg+3*k+4)/3;
+	}
+
+	return (matching_weights!=NULL);
+}
+
 bool CWDCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	INT lhs_changed = (lhs!=l) ;
@@ -136,6 +173,8 @@ bool CWDCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		} 
 		seq_length = alen ;
 		((CCharFeatures*) l)->free_feature_vector(avec, 0, afree);
+
+		init_matching_weights();
 	} 
 
 	bool result=CCharKernel::init(l,r,do_init);
@@ -307,29 +346,12 @@ REAL CWDCharKernel::compute(INT idx_a, INT idx_b)
 	{
 		sqrt_a=sqrtdiag_lhs[idx_a] ;
 		sqrt_b=sqrtdiag_rhs[idx_b] ;
-	} ;
+	}
 
 	REAL sqrt_both=sqrt_a*sqrt_b;
 
 	REAL sum=0;
 
-	for (INT i=0; i<alen; i++)
-	{
-		INT mismatches=0;
-
-		for (INT j=0; (j<degree) && ((i+j) < alen); j++)
-		{
-			if (match_vector[i+j])
-			{
-				mismatches++ ;
-				if (mismatches>max_mismatch)
-					break ;
-			}
-			sum += old_weights[j+degree*mismatches];
-		}
-	}
-
-	REAL result=0;
 	if (max_mismatch==0)
 	{
 		INT match_len=-1;
@@ -341,48 +363,16 @@ REAL CWDCharKernel::compute(INT idx_a, INT idx_b)
 			else
 			{
 				if (match_len>=0)
-				{
-					if (match_len<degree)
-						result+=new_weights[match_len];
-					else
-					{
-						CIO::message(M_INFO, "happens %d!\n", match_len);
-						INT num_fit=(match_len+1-degree)/degree;
-						INT rest=match_len - num_fit*degree;
-						result+=num_fit*degree;
-						while (rest>=0)
-						{
-							result+=(degree-rest)*old_weights[rest];
-							rest--;
-						}
-					}
-				}
+					sum+=matching_weights[match_len];
 				match_len=-1;
 			}
 		}
 
 		if (match_len>=0)
-		{
-			if (match_len<degree)
-				result+=new_weights[match_len];
-			else
-			{
-						CIO::message(M_INFO, "happens2 %d!\n", match_len);
-				INT num_fit=(match_len+1-degree)/degree;
-				INT rest=match_len - num_fit*degree;
-				result+=num_fit*degree;
-				while (rest>=0)
-				{
-					result+=(degree-rest)*old_weights[rest];
-					rest--;
-				}
-			}
-		}
-
-		REAL diff=math.abs(result-sum);
-		if ( diff > 1e-10)
-			CIO::message(M_ERROR, "WDold: %f WDnew: %f abs: %f\n", sum, result, result-sum);
+			sum+=matching_weights[match_len];
 	}
+	else
+		CIO::message(M_ERROR, "mismatches not supported\n");
 
 	((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
@@ -651,7 +641,7 @@ void CWDCharKernel::delete_tree(struct SuffixTree * p_tree)
 			p_tree->childs[i]=NULL ;
 		} 
 		p_tree->weight=0 ;
-	} ;
+	}
 } 
 
 
@@ -680,4 +670,3 @@ INT CWDCharKernel::tree_size(struct SuffixTree * p_tree)
 
 	return ret ;
 } 
-
