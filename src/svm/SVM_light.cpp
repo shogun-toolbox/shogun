@@ -82,7 +82,9 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 	svm_learn(docs,label,totdoc,-12345,&mylearn_parm,&mykernel_parm,&mykernel_cache,&mymodel);
 	kernel_cache_cleanup(&mykernel_cache);
 #else
-	svm_learn(docs,label,totdoc,-12345,&mylearn_parm,&mykernel_parm,NULL,&mymodel);
+	kernel_cache_init(&mykernel_cache,totdoc,0);
+	svm_learn(docs,label,totdoc,-12345,&mylearn_parm,&mykernel_parm,&mykernel_cache,&mymodel);
+	kernel_cache_cleanup(&mykernel_cache);
 #endif
 	if (kernel_type==6)
 	    mymodel.kernel_parm.kernel_type=4;
