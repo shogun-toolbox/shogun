@@ -102,7 +102,7 @@ bool CGUISVM::test(char* param)
 
 	numargs=sscanf(param, "%s %s", outputname, rocfname);
 
-	if (numargs>=2)
+	if (numargs>=1)
 	{
 		outputfile=fopen(outputname, "w");
 
@@ -112,7 +112,7 @@ bool CGUISVM::test(char* param)
 			return false;
 		}
 
-		if (numargs==3) 
+		if (numargs==2) 
 		{
 			rocfile=fopen(rocfname, "w");
 
