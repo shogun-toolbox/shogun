@@ -49,10 +49,13 @@ REAL* CKNN::test()
 	int num_lab=CKernelMachine::get_labels()->get_num_labels();
 	CKernel* kernel=CKernelMachine::get_kernel();
 
+	//distances to train data and working buffer of train_labels
 	REAL* dists=new REAL[num_train_labels];
 	INT* train_lab=new INT[num_train_labels];
-	REAL* output=new REAL[num_lab];
+
+	///histogram of classes and returned output
 	INT* classes=new INT[num_classes];
+	REAL* output=new REAL[num_lab];
 
 	assert(dists);
 	assert(train_lab);
@@ -77,7 +80,7 @@ REAL* CKNN::test()
 		//classes[1..k] then holds the classes for minimum distance
 		math.qsort(dists, train_lab, num_train_labels);
 
-		//compute histogram of class outputs
+		//compute histogram of class outputs of the first k nearest neighbours
 		for (j=0; j<num_classes; j++)
 			classes[j]=0;
 
@@ -98,7 +101,7 @@ REAL* CKNN::test()
 			}
 		}
 
-		output[i]=out_idx;
+		output[i]=out_idx+min_label;
 	}
 
 	delete[] dists;
