@@ -356,7 +356,7 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
 #endif 
   optimize_smw2mpi_core<double>(optimizer, *c, Z, *A, *b, *l, *u,
 				*r, m_prime, m_last, my_rank,
-				num_nodes, res, 1, NULL/*"/short/x46/tmp/x.mat"*/,
+				num_nodes, res, 0, NULL/*"/short/x46/tmp/x.mat"*/,
 				NULL /*"/short/x46/tmp/x.mat"*/,
 				*primal, *dual, &how);
   double *prim = primal->GetDataPointer();
