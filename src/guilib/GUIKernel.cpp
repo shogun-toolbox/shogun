@@ -21,6 +21,7 @@
 #include "kernel/PolyMatchWordKernel.h"
 #include "kernel/WordMatchKernel.h"
 #include "kernel/CommWordKernel.h"
+#include "kernel/CommWordStringKernel.h"
 #include "kernel/HistogramWordKernel.h"
 #include "kernel/SalzbergWordKernel.h"
 #include "kernel/GaussianKernel.h"
@@ -221,7 +222,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 
 				if (kernel)
 				{
-					CIO::message("CommWordKernel created\n");
+					CIO::message("MatchKernel created\n");
 					return true;
 				}
 			}
@@ -236,6 +237,17 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				if (kernel)
 				{
 					CIO::message("CommWordKernel created\n");
+					return true;
+				}
+			}
+			else if (strcmp(data_type,"WORDSTRING")==0)
+			{
+				delete kernel;
+				kernel=new CCommWordStringKernel(size);
+
+				if (kernel)
+				{
+					CIO::message("CommWordStringKernel created\n");
 					return true;
 				}
 			}

@@ -18,10 +18,10 @@ class CCommWordStringKernel: public CWordKernel
   bool save_init(FILE* dest);
 
   // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_COMMWORD; }
+  virtual EKernelType get_kernel_type() { return K_COMMWORDSTRING; }
 
   // return the name of a kernel
-  virtual const CHAR* get_name() { return "CommWord" ; } ;
+  virtual const CHAR* get_name() { return "CommWordString" ; } ;
 
  protected:
   /// compute kernel function for features a and b
