@@ -26,29 +26,51 @@
 
 LONG verbosity=1;
 
-/* nx - Maximum number of variables in QP */
+/* /////////////////////////////////////////////////////////////// */
+
+# define DEF_PRECISION_LINEAR    1E-8
+# define DEF_PRECISION_NONLINEAR 1E-14
+
+double *optimize_qp();
+double *primal=0,*dual=0;
+double init_margin=0.15;
+long   init_iter=500,precision_violations=0;
+double model_b;
+double opt_precision=DEF_PRECISION_LINEAR;
+
+/* /////////////////////////////////////////////////////////////// */
+
 /* start the optimizer and return the optimal values */
-double *optimize_qp(QP* qp, double* epsilon_crit, LONG nx, double* threshold, double* primal, double* dual,
-		double& init_margin, long& init_iter, long& precision_violations, double& model_b, double& opt_precision)
+double *optimize_qp(QP *qp,double *epsilon_crit, long nx,double *threshold, long& svm_maxqpsize)
 {
-  register LONG i,j,result;
+  register long i,j,result;
   double margin,obj_before,obj_after;
   double sigdig,dist,epsilon_loqo;
-  INT iter;
+  int iter;
  
+  if(!primal) { /* allocate memory at first call */
+    primal=new double[nx*3];
+    dual=new double[nx*2+1];
+  }
   
   if(verbosity>=4) { /* really verbose */
-   CIO::message(M_MESSAGEONLY, "\n\n");
+    printf("\n\n");
     for(i=0;i<qp->opt_n;i++) {
-     CIO::message(M_MESSAGEONLY, "%f: ",qp->opt_g0[i]);
+      printf("%f: ",qp->opt_g0[i]);
       for(j=0;j<qp->opt_n;j++) {
-		  CIO::message(M_MESSAGEONLY, "%f ",qp->opt_g[i*qp->opt_n+j]);
+	printf("%f ",qp->opt_g[i*qp->opt_n+j]);
       }
-     CIO::message(M_MESSAGEONLY, ": a=%.30f",qp->opt_xinit[i]);
-     CIO::message(M_MESSAGEONLY, ": y=%f\n",qp->opt_ce[i]);
+      printf(": a%ld=%.10f < %f",i,qp->opt_xinit[i],qp->opt_up[i]);
+      printf(": y=%f\n",qp->opt_ce[i]);
     }
-   CIO::message(M_MESSAGEONLY, "\n");
-  }
+    for(j=0;j<qp->opt_m;j++) {
+      printf("EQ-%ld: %f*a0",j,qp->opt_ce[j]);
+      for(i=1;i<qp->opt_n;i++) {
+	printf(" + %f*a%ld",qp->opt_ce[i],i);
+      }
+      printf(" = %f\n\n",-qp->opt_ce0[0]);
+    }
+}
 
   obj_before=0; /* calculate objective before optimization */
   for(i=0;i<qp->opt_n;i++) {
@@ -76,17 +98,17 @@ double *optimize_qp(QP* qp, double* epsilon_crit, LONG nx, double* threshold, do
 		   (double)sigdig,(int)iter, 
 		   (double)margin,(double)(qp->opt_up[0])/4.0,(int)0);
 
-    if(isnan(dual[0]) || result==INCONSISTENT ) {     /* check for choldc problem */
-      if(verbosity>=1) {
-		  CIO::message(M_WARN, "Restarting PR_LOQO with more conservative parameters.\n");
+    if(isnan(dual[0])) {     /* check for choldc problem */
+      if(verbosity>=2) {
+	printf("NOTICE: Restarting PR_LOQO with more conservative parameters.\n");
       }
       if(init_margin<0.80) { /* become more conservative in general */
 	init_margin=(4.0*margin+1.0)/5.0;
       }
       margin=(margin+1.0)/2.0;
       (opt_precision)*=10.0;   /* reduce precision */
-      if(verbosity>=1) {
-		  CIO::message(M_WARN, "Reducing precision of PR_LOQO.\n");
+      if(verbosity>=2) {
+	printf("NOTICE: Reducing precision of PR_LOQO.\n");
       }
     }
     else if(result!=OPTIMAL_SOLUTION) {
@@ -94,12 +116,12 @@ double *optimize_qp(QP* qp, double* epsilon_crit, LONG nx, double* threshold, do
       init_iter+=10;
       (opt_precision)*=10.0;   /* reduce precision */
       if(verbosity>=2) {
-		  CIO::message(M_WARN, "Reducing precision of PR_LOQO.\n");
+	printf("NOTICE: Reducing precision of PR_LOQO due to (%ld).\n",result);
       }      
     }
   }
 
-  if(qp->opt_m)         /* Thanks to Alex Smola for this hINT */
+  if(qp->opt_m)         /* Thanks to Alex Smola for this hint */
     model_b=dual[0];
   else
     model_b=0;
@@ -116,7 +138,7 @@ double *optimize_qp(QP* qp, double* epsilon_crit, LONG nx, double* threshold, do
     for(j=i;j<qp->opt_n;j++) {
       dist+=(primal[j]*qp->opt_g[i*qp->opt_n+j]);
     }
-    /*CIO::message("LOQO: a[%d]=%f, dist=%f, b=%f\n",i,primal[i],dist,dual[0]); */
+    /*  printf("LOQO: a[%d]=%f, dist=%f, b=%f\n",i,primal[i],dist,dual[0]); */
     if((primal[i]<(qp->opt_up[i]-epsilon_loqo)) && (dist < (1.0-(*epsilon_crit)))) {
       epsilon_loqo=(qp->opt_up[i]-primal[i])*2.0;
     }
@@ -143,25 +165,38 @@ double *optimize_qp(QP* qp, double* epsilon_crit, LONG nx, double* threshold, do
     }
   }
 
+  /* if optimizer returned NAN values, reset and retry with smaller */
+  /* working set. */
+  if(isnan(obj_after) || isnan(model_b)) {
+    for(i=0;i<qp->opt_n;i++) {
+      primal[i]=qp->opt_xinit[i];
+    }     
+    model_b=0;
+    if(svm_maxqpsize>2) {
+      svm_maxqpsize--;  /* decrease size of qp-subproblems */
+    }
+  }
+
   if(obj_after >= obj_before) { /* check whether there was progress */
     (opt_precision)/=100.0;
     precision_violations++;
     if(verbosity>=2) {
-     CIO::message(M_WARN, "Increasing Precision of PR_LOQO.\n");
+      printf("NOTICE: Increasing Precision of PR_LOQO.\n");
     }
   }
 
-  if(precision_violations > 50) { 
+  if(precision_violations > 500) { 
     (*epsilon_crit)*=10.0;
+    precision_violations=0;
     if(verbosity>=1) {
-     CIO::message(M_WARN, "WARNING: Relaxing epsilon on KT-Conditions.\n");
+      printf("\nWARNING: Relaxing epsilon on KT-Conditions.\n");
     }
   }	  
 
   (*threshold)=model_b;
 
   if(result!=OPTIMAL_SOLUTION) {
-   CIO::message(M_ERROR, "PR_LOQO did not converge. \n");
+    printf("\nERROR: PR_LOQO did not converge. \n");
     return(qp->opt_xinit);
   }
   else {

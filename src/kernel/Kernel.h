@@ -61,12 +61,15 @@ class CKernel
 		virtual const CHAR* get_name()=0 ;
 
 		// return the size of the kernel cache
-		int get_cache_size() { return cache_size; }
+		inline int get_cache_size() { return cache_size; }
 
+		inline int get_max_elems_cache() { return kernel_cache.max_elems; }
+		inline int get_activenum_cache() { return kernel_cache.activenum; }
 		void get_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, REAL *buffer) ;
 		void cache_kernel_row(KERNELCACHE_IDX x);
 		void cache_multiple_kernel_rows(LONG* key, INT varnum);
 		void kernel_cache_reset_lru();
+		void   kernel_cache_shrink(KERNELCACHE_IDX totdoc, KERNELCACHE_IDX num_shrink, KERNELCACHE_IDX *after);
 
 		void resize_kernel_cache(KERNELCACHE_IDX size) ;
 		
@@ -77,7 +80,7 @@ class CKernel
 		}
 
 		// Update lru time to avoid removal from cache.
-		KERNELCACHE_IDX kernel_cache_touch(KERNELCACHE_IDX cacheidx)
+		inline KERNELCACHE_IDX kernel_cache_touch(KERNELCACHE_IDX cacheidx)
 		{
 			if(kernel_cache.index[cacheidx] != -1)
 			{
@@ -85,6 +88,18 @@ class CKernel
 				return(1);
 			}
 			return(0);
+		}
+
+		/// Is that row cached?
+		inline KERNELCACHE_IDX kernel_cache_check(KERNELCACHE_IDX cacheidx)
+		{
+			return(kernel_cache.index[cacheidx] >= 0);
+		}
+
+		inline long kernel_cache_space_available()
+			/* Is there room for one more row? */
+		{
+			return(kernel_cache.elems < kernel_cache.max_elems);
 		}
 
 		void list_kernel();
@@ -116,7 +131,6 @@ class CKernel
 		/**@ cache kernel evalutations to improve speed
 		 */
 		//@{
-		void   kernel_cache_shrink(KERNELCACHE_IDX, KERNELCACHE_IDX, KERNELCACHE_IDX *);
 
 		/// init kernel cache of size megabytes
 		void   kernel_cache_init(KERNELCACHE_IDX size);
@@ -127,11 +141,6 @@ class CKernel
 		KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(KERNELCACHE_IDX);
 
 
-		/// Is that row cached?
-		inline KERNELCACHE_IDX kernel_cache_check(KERNELCACHE_IDX cacheidx)
-		{
-			return(kernel_cache.index[cacheidx] != -1);
-		}
 		//@}
 
 		struct KERNEL_CACHE {

@@ -119,12 +119,6 @@ void CKernel::get_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, REAL *bu
 {
 	KERNELCACHE_IDX i,j,start;
 
-#if 0
-	for(i=0;(j=active2dnum[i])>=0;i++)
-	{
-		buffer[j]=(KERNELCACHE_ELEM)kernel(docnum, j);
-	}
-#else
 	/* is cached? */
 	if(kernel_cache.index[docnum] != -1) 
 	{
@@ -144,7 +138,6 @@ void CKernel::get_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, REAL *bu
 		for(i=0;(j=active2dnum[i])>=0;i++)
 			buffer[j]=(KERNELCACHE_ELEM) kernel(docnum, j);
 	}
-#endif
 }
 
 
@@ -240,7 +233,6 @@ void CKernel::kernel_cache_shrink(KERNELCACHE_IDX totdoc, KERNELCACHE_IDX numshr
 
 }
 
-
 void CKernel::kernel_cache_reset_lru()
 {
 	KERNELCACHE_IDX maxlru=0,k;
@@ -268,18 +260,18 @@ void CKernel::kernel_cache_cleanup()
 
 KERNELCACHE_IDX CKernel::kernel_cache_malloc()
 {
-	KERNELCACHE_IDX i;
+  KERNELCACHE_IDX i;
 
-	if(kernel_cache.elems < kernel_cache.max_elems) {
-		for(i=0;i<kernel_cache.max_elems;i++) {
-			if(!kernel_cache.occu[i]) {
-				kernel_cache.occu[i]=1;
-				kernel_cache.elems++;
-				return(i);
-			}
-		}
-	}
-	return(-1);
+  if(kernel_cache_space_available()) {
+    for(i=0;i<kernel_cache.max_elems;i++) {
+      if(!kernel_cache.occu[i]) {
+	kernel_cache.occu[i]=1;
+	kernel_cache.elems++;
+	return(i);
+      }
+    }
+  }
+  return(-1);
 }
 
 void CKernel::kernel_cache_free(KERNELCACHE_IDX cacheidx)
@@ -292,24 +284,25 @@ void CKernel::kernel_cache_free(KERNELCACHE_IDX cacheidx)
 // element
 KERNELCACHE_IDX CKernel::kernel_cache_free_lru()  
 {                                     
-	register KERNELCACHE_IDX k,least_elem=-1,least_time;
+  register KERNELCACHE_IDX k,least_elem=-1,least_time;
 
-	least_time=kernel_cache.time+1;
-	for(k=0;k<kernel_cache.max_elems;k++) {
-		if(kernel_cache.invindex[k] != -1) {
-			if(kernel_cache.lru[k]<least_time) {
-				least_time=kernel_cache.lru[k];
-				least_elem=k;
-			}
-		}
-	}
-	if(least_elem != -1) {
-		kernel_cache_free(least_elem);
-		kernel_cache.index[kernel_cache.invindex[least_elem]]=-1;
-		kernel_cache.invindex[least_elem]=-1;
-		return(1);
-	}
-	return(0);
+  least_time=kernel_cache.time+1;
+  for(k=0;k<kernel_cache.max_elems;k++) {
+    if(kernel_cache.invindex[k] != -1) {
+      if(kernel_cache.lru[k]<least_time) {
+	least_time=kernel_cache.lru[k];
+	least_elem=k;
+      }
+    }
+  }
+
+  if(least_elem != -1) {
+    kernel_cache_free(least_elem);
+    kernel_cache.index[kernel_cache.invindex[least_elem]]=-1;
+    kernel_cache.invindex[least_elem]=-1;
+    return(1);
+  }
+  return(0);
 }
 
 // Get a free cache entry. In case cache is full, the lru

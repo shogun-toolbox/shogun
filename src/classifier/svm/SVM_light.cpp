@@ -12,7 +12,6 @@ CSVMLight::CSVMLight()
   model->supvec=NULL;
   model->alpha=NULL;
   model->index=NULL;
-  //CKernelMachine::set_kernel(NULL);
   set_kernel(NULL);
   primal=NULL;
   dual=NULL;
@@ -48,14 +47,17 @@ bool CSVMLight::train()
   strcpy (learn_parm->predfile, "");
   strcpy (learn_parm->alphafile, "");
   learn_parm->biased_hyperplane=1;
+  learn_parm->sharedslack=0;
   learn_parm->remove_inconsistent=0;
   learn_parm->skip_final_opt_check=1;
   learn_parm->svm_maxqpsize=50;
-  learn_parm->svm_newvarsinqp=0;
+  learn_parm->svm_newvarsinqp=learn_parm->svm_maxqpsize-1;
+  learn_parm->maxiter=100000;
   learn_parm->svm_iter_to_shrink=100;
   learn_parm->svm_c=C1;
-  learn_parm->transduction_posratio=0.5;
-  learn_parm->svm_costratio=1.0;
+  learn_parm->eps=-1.0;      /* equivalent regression epsilon for classification */
+  learn_parm->transduction_posratio=-1.0;
+  learn_parm->svm_costratio=1.0;//CC2/C1;
   learn_parm->svm_costratio_unlab=1.0;
   learn_parm->svm_unlabbound=1E-5;
   learn_parm->epsilon_crit=1E-6; // GU: better decrease it ... ??
@@ -93,18 +95,13 @@ LONG CSVMLight::get_runtime()
 
 void CSVMLight::svm_learn()
 {
-	LONG *inconsistent, i; //, *unlabeled
+	LONG *inconsistent, i;
 	LONG inconsistentnum;
 	LONG misclassified,upsupvecnum;
-	//  double loss,model_length,example_length;
-	double maxdiff,*lin,*a;
+	double maxdiff, *lin, *c, *a;
 	LONG runtime_start,runtime_end;
 	LONG iterations;
-	//  LONG heldout;
-	//  LONG loo_count=0,loo_count_pos=0,loo_count_neg=0;
 	LONG trainpos=0, trainneg=0 ;
-	//  LONG loocomputed=0,runtime_start_loo=0,runtime_start_xa=0;
-	//  double heldout_c=0;
 	INT totdoc=0;
 	CLabels* lab=CKernelMachine::get_labels();
 	assert(lab!=NULL);
@@ -135,9 +132,10 @@ void CSVMLight::svm_learn()
 		learn_parm->svm_newvarsinqp=learn_parm->svm_maxqpsize;
 	}
 
-	init_shrink_state(&shrink_state,totdoc,(LONG)10000);
+	init_shrink_state(&shrink_state,totdoc,(LONG)MAXSHRINK);
 
 	inconsistent = new long[totdoc];
+	c = new double[totdoc];
 	a = new double[totdoc];
 	a_fullset = new double[totdoc];
 	xi_fullset = new double[totdoc];
@@ -175,6 +173,7 @@ void CSVMLight::svm_learn()
 
 	for(i=0;i<totdoc;i++) {    /* various inits */
 		inconsistent[i]=0;
+		c[i]=0;
 		a[i]=0;
 		lin[i]=0;
 
@@ -194,6 +193,7 @@ void CSVMLight::svm_learn()
 		}
 	}
 
+		CIO::message(M_DEBUG, "%d totdoc %d pos %d neg\n", totdoc, trainpos, trainneg);
 	if(learn_parm->remove_inconsistent && learn_parm->compute_loo) {
 		learn_parm->compute_loo=0;
 		CIO::message(M_MESSAGEONLY, "\nCannot compute leave-one-out estimates when removing inconsistent examples.\n\n");
@@ -210,9 +210,12 @@ void CSVMLight::svm_learn()
 	}
 
 	/* train the svm */
-	iterations=optimize_to_convergence(docs,label,totdoc,
-			&shrink_state,model,inconsistent,a,lin,&timing_profile,
-			&maxdiff,(LONG)-1,(LONG)1);
+  iterations=optimize_to_convergence(docs,label,totdoc,
+                     &shrink_state,model,inconsistent,a,lin,
+                     c,&timing_profile,
+                     &maxdiff,(long)-1,
+                     (long)1);
+
 
 	if(verbosity>=1) {
 		if(verbosity==1)
@@ -220,7 +223,7 @@ void CSVMLight::svm_learn()
 
 		misclassified=0;
 		for(i=0;(i<totdoc);i++) { /* get final statistic */
-			if((lin[i]+model->b)*(double)label[i] <= 0.0) 
+			if((lin[i]-model->b)*(double)label[i] <= 0.0) 
 				misclassified++;
 		}
 
@@ -246,6 +249,7 @@ void CSVMLight::svm_learn()
 	shrink_state_cleanup(&shrink_state);
 	delete[] label;
 	delete[] inconsistent;
+	delete[] c;
 	delete[] a;
 	delete[] a_fullset;
 	delete[] xi_fullset;
@@ -254,33 +258,47 @@ void CSVMLight::svm_learn()
 	delete[] docs;
 }
 
-LONG CSVMLight::optimize_to_convergence(
-LONG* docs,                 /* Training vectors (x-part) */
-INT* label,               /* Training labels (y-part) */
-LONG totdoc,               /* Number of examples in docs/label */
-SHRINK_STATE *shrink_state,/* State of active variables */
-MODEL *model,              /* Returns learning result */
-LONG *inconsistent,
-double *a,
-double *lin,
-TIMING *timing_profile,
-double *maxdiff,
-LONG heldout,
-LONG retrain)
+long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc, 
+			     SHRINK_STATE *shrink_state, MODEL *model, 
+			     long int *inconsistent,
+			     double *a, double *lin, double *c, 
+			     TIMING *timing_profile, double *maxdiff, 
+			     long int heldout, long int retrain)
+     /* docs: Training vectors (x-part) */
+     /* label: Training labels/value (y-part, zero if test example for
+			      transduction) */
+     /* totdoc: Number of examples in docs/label */
+     /* laern_parm: Learning paramenters */
+     /* kernel_parm: Kernel paramenters */
+     /* kernel_cache: Initialized/partly filled Cache, if using a kernel. 
+                      NULL if linear. */
+     /* shrink_state: State of active variables */
+     /* model: Returns learning result */
+     /* inconsistent: examples thrown out as inconstistent */
+     /* a: alphas */
+     /* lin: linear component of gradient */
+     /* c: right hand side of inequalities (margin) */
+     /* maxdiff: returns maximum violation of KT-conditions */
+     /* heldout: marks held-out example for leave-one-out (or -1) */
+     /* retrain: selects training mode (1=regular / 2=holdout) */
 {
-  LONG *chosen,*key,i,j,jj,*last_suboptimal_at,noshrink;
-  LONG inconsistentnum,choosenum,already_chosen=0,iteration;
-  LONG misclassified,supvecnum=0,*active2dnum,inactivenum;
-  LONG *working2dnum,*selexam;
-  LONG activenum;
+  long *chosen,*key,i,j,jj,*last_suboptimal_at,noshrink;
+  long inconsistentnum,choosenum,already_chosen=0,iteration;
+  long misclassified,supvecnum=0,*active2dnum,inactivenum;
+  long *working2dnum,*selexam;
+  long activenum;
   double criterion,eq;
-  double *a_old=NULL;
-  LONG t0=0,t1=0,t2=0,t3=0,t4=0,t5=0,t6=0; /* timing */
-  LONG transductcycle;
+  double *a_old;
+  long t0=0,t1=0,t2=0,t3=0,t4=0,t5=0,t6=0; /* timing */
+  long transductcycle;
+  long transduction;
   double epsilon_crit_org; 
+  double bestmaxdiff;
+  long   bestmaxdiffiter,terminate;
 
   double *selcrit;  /* buffer for sorting */        
   REAL *aicache;  /* buffer to keep one row of hessian */
+  double *weights;  /* buffer for weight vector in linear case */
   QP qp;            /* buffer for one quadratic program */
 
   epsilon_crit_org=learn_parm->epsilon_crit; /* save org */
@@ -307,8 +325,12 @@ LONG retrain)
   choosenum=0;
   inconsistentnum=0;
   transductcycle=0;
+  transduction=0;
   if(!retrain) retrain=1;
   iteration=1;
+  bestmaxdiffiter=1;
+  bestmaxdiff=999999999;
+  terminate=0;
   
   CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
   CKernelMachine::get_kernel()->kernel_cache_reset_lru();
@@ -325,9 +347,8 @@ LONG retrain)
   inactivenum=totdoc-activenum;
   clear_index(working2dnum);
 
-  /* repeat this loop until we have convergence */
-  for(;retrain && iteration < 1000000 ;iteration++) 
-  {
+                            /* repeat this loop until we have convergence */
+  for(;retrain && (!terminate);iteration++) {
   
 	  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
 
@@ -337,6 +358,9 @@ LONG retrain)
 	  if(verbosity>=3) {
 		  CIO::message(M_MESSAGEONLY, "\nSelecting working set... "); 
 	  }
+
+    if(learn_parm->svm_newvarsinqp>learn_parm->svm_maxqpsize) 
+      learn_parm->svm_newvarsinqp=learn_parm->svm_maxqpsize;
 
     i=0;
     for(jj=0;(j=working2dnum[jj])>=0;jj++) { /* clear working set */
@@ -370,7 +394,7 @@ LONG retrain)
       }
       if(learn_parm->biased_hyperplane) {
 	eq=0;
-	for(i=0;i<totdoc;i++) { /* make sure we fulfill equality constraINT */
+	for(i=0;i<totdoc;i++) { /* make sure we fulfill equality constraint */
 	  eq+=a[i]*label[i];
 	}
 	for(i=0;(i<totdoc) && (fabs(eq) > learn_parm->epsilon_a);i++) {
@@ -390,26 +414,42 @@ LONG retrain)
       }
       compute_index(chosen,totdoc,working2dnum);
     }
-    else 
-	{      /* select working set according to steepest gradient */ 
-		if (math.min(learn_parm->svm_newvarsinqp,learn_parm->svm_maxqpsize)>=4)
+    else
+	{   /* select working set according to steepest gradient */
+		if(iteration % 101)
 		{
-			/* select part of the working set from cache */
-			already_chosen=select_next_qp_subproblem_grad_cache(
-					label,a,lin,totdoc,
-					math.min((LONG)(learn_parm->svm_maxqpsize-choosenum),
-						(LONG)(learn_parm->svm_newvarsinqp/2)),
+			already_chosen=0;
+			if(math.min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4) 
+			{
+				/* select part of the working set from cache */
+				already_chosen=select_next_qp_subproblem_grad(
+						label,a,lin,c,totdoc,
+						(long)(math.min(learn_parm->svm_maxqpsize-choosenum,
+									learn_parm->svm_newvarsinqp)/2),
+						inconsistent,active2dnum,
+						working2dnum,selcrit,selexam,1,
+						key,chosen);
+				choosenum+=already_chosen;
+			}
+			choosenum+=select_next_qp_subproblem_grad(
+					label,a,lin,c,totdoc,
+					math.min(learn_parm->svm_maxqpsize-choosenum,
+						learn_parm->svm_newvarsinqp-already_chosen),
 					inconsistent,active2dnum,
-					working2dnum,selcrit,selexam,
-					key,chosen);
-			choosenum+=already_chosen;
+					working2dnum,selcrit,selexam,0,key,
+					chosen);
 		}
-		choosenum+=select_next_qp_subproblem_grad(label,a,lin,totdoc,
-				math.min((LONG)(learn_parm->svm_maxqpsize-choosenum),
-					(LONG)(learn_parm->svm_newvarsinqp-already_chosen)),
-				inconsistent,active2dnum,
-				working2dnum,selcrit,selexam,key,
-				chosen);
+		else { /* once in a while, select a somewhat random working set
+				  to get unlocked of infinite loops due to numerical
+				  inaccuracies in the core qp-solver */
+			choosenum+=select_next_qp_subproblem_rand(
+					label,a,lin,c,totdoc,
+					math.min(learn_parm->svm_maxqpsize-choosenum,
+						learn_parm->svm_newvarsinqp),
+					inconsistent,active2dnum,
+					working2dnum,selcrit,selexam,key,
+					chosen,iteration);
+		}
 	}
 
     if(verbosity>=2) {
@@ -422,34 +462,25 @@ LONG retrain)
 
     if(verbosity>=2) t2=get_runtime();
     if(retrain != 2) {
-      optimize_svm(docs,label,chosen,active2dnum,model,totdoc,
-		   working2dnum,choosenum,a,lin,aicache,
-		   &qp,&epsilon_crit_org);
+      optimize_svm(docs,label,inconsistent,0.0,chosen,active2dnum,
+		   model,totdoc,working2dnum,choosenum,a,lin,c,
+		   aicache,&qp,&epsilon_crit_org);
     }
 
     if(verbosity>=2) t3=get_runtime();
     update_linear_component(docs,label,active2dnum,a,a_old,working2dnum,totdoc,
-			    lin,aicache,
-				NULL);
+			    lin,aicache, weights);
 
     if(verbosity>=2) t4=get_runtime();
-    supvecnum=calculate_svm_model(docs,label,lin,a,a_old, working2dnum,model);
+    supvecnum=calculate_svm_model(docs,label,lin,a,a_old,c,working2dnum,active2dnum,model);
 
     if(verbosity>=2) t5=get_runtime();
-
-    /* The following computation of the objective function works only */
-    /* relative to the active variables */
-    if(verbosity>=3) {
-      criterion=compute_objective_function(a,lin,label,active2dnum);
-     CIO::message(M_INFO, "Objective function (over active variables): %.16f\n",criterion);
-      
-    }
 
     for(jj=0;(i=working2dnum[jj])>=0;jj++) {
       a_old[i]=a[i];
     }
 
-    retrain=check_optimality(model,label,a,lin,totdoc,
+    retrain=check_optimality(model,label,a,lin,c,totdoc,
 			     maxdiff,epsilon_crit_org,&misclassified,
 			     inconsistent,active2dnum,last_suboptimal_at,
 			     iteration);
@@ -464,7 +495,44 @@ LONG retrain)
       timing_profile->time_check+=t6-t5;
     }
 
+    /* checking whether optimizer got stuck */
+    if((*maxdiff) < bestmaxdiff) {
+      bestmaxdiff=(*maxdiff);
+      bestmaxdiffiter=iteration;
+    }
+    if(iteration > (bestmaxdiffiter+learn_parm->maxiter)) { 
+      /* long time no progress? */
+      terminate=1;
+      retrain=0;
+      if(verbosity>=1) 
+	printf("\nWARNING: Relaxing KT-Conditions due to slow progress! Terminating!\n");
+    }
+
     noshrink=0;
+    if((!retrain) && (inactivenum>0) && (!learn_parm->skip_final_opt_check))
+	{ 
+      t1=get_runtime();
+      reactivate_inactive_examples(label,a,shrink_state,lin,c,totdoc,
+				   iteration,inconsistent,
+				   docs,model,aicache,
+				   weights,maxdiff);
+      /* Update to new active variables. */
+      activenum=compute_index(shrink_state->active,totdoc,active2dnum);
+      inactivenum=totdoc-activenum;
+      /* reset watchdog */
+      bestmaxdiff=(*maxdiff);
+      bestmaxdiffiter=iteration;
+      /* termination criterion */
+      noshrink=1;
+      retrain=0;
+      if((*maxdiff) > learn_parm->epsilon_crit) 
+	retrain=1;
+      timing_profile->time_shrink+=get_runtime()-t1;
+      if((verbosity>=1) || (verbosity>=2)) {
+	printf("done.\n");  fflush(stdout);
+        printf(" Number of inactive variables = %ld\n",inactivenum);
+      }		  
+    }
 
     if((!retrain) && (learn_parm->epsilon_crit>(*maxdiff))) 
       learn_parm->epsilon_crit=(*maxdiff);
@@ -484,19 +552,21 @@ LONG retrain)
     if(verbosity>=3) {
      CIO::message(M_MESSAGEONLY, "\n");
     }
-
-    if(((iteration % 10) == 0) && (!noshrink)) {
-      activenum=shrink_problem(learn_parm,shrink_state,active2dnum,last_suboptimal_at,
-			       iteration,totdoc,math.max((LONG)(activenum/10),(LONG) 100),
+    
+	if (((iteration % 10) == 0) && (!noshrink))
+	{
+      activenum=shrink_problem(shrink_state,active2dnum,last_suboptimal_at,iteration,totdoc,
+			       math.max((LONG)(activenum/10),
+				    math.max((LONG)(totdoc/500),(LONG) 100)),
 			       a,inconsistent);
       inactivenum=totdoc-activenum;
+      if( (supvecnum>get_kernel()->get_max_elems_cache()) && ((get_kernel()->get_activenum_cache()-activenum)>math.max((LONG)(activenum/10),(LONG) 500))) {
+	get_kernel()->kernel_cache_shrink(totdoc, math.min((LONG) (get_kernel()->get_activenum_cache()-activenum),
+				 (LONG) (get_kernel()->get_activenum_cache()-supvecnum)),
+			    shrink_state->active); 
+      }
     }
   } /* end of loop */
-
-  if(verbosity>=1) {
-	  criterion=compute_objective_function(a,lin,label,active2dnum);
-	  CIO::message(M_INFO, "\nobj = %.16f, rho = %.16f\n",criterion,model->b);
-  }
 
   delete[] chosen;
   delete[] last_suboptimal_at;
@@ -520,40 +590,26 @@ LONG retrain)
   return(iteration);
 }
 
-/* Return value of objective function. */
-/* Works only relative to the active variables! */
-double CSVMLight::compute_objective_function(double *a, double* lin, INT *label, LONG* active2dnum)
-{
-  LONG i,ii;
-  double criterion;
-  /* calculate value of objective function */
-  criterion=0;
-  for(ii=0;active2dnum[ii]>=0;ii++) {
-    i=active2dnum[ii];
-    criterion=criterion-a[i]+0.5*a[i]*label[i]*lin[i];
-  } 
-  return(criterion);
-}
 
-/* initializes and empties index */
 void CSVMLight::clear_index(LONG *index)  
+              /* initializes and empties index */
 {
   index[0]=-1;
 } 
 
-/* initializes and empties index */
 void CSVMLight::add_to_index(LONG *index, LONG elem)
+     /* initializes and empties index */
 {
-  register LONG i;
+  register long i;
   for(i=0;index[i] != -1;i++);
   index[i]=elem;
   index[i+1]=-1;
 }
 
-/* create an inverted index of binfeature */
 LONG CSVMLight::compute_index(LONG *binfeature, LONG range, LONG *index)
+     /* create an inverted index of binfeature */
 {               
-  register LONG i,ii;
+  register long i,ii;
 
   ii=0;
   for(i=0;i<range;i++) {
@@ -568,78 +624,64 @@ LONG CSVMLight::compute_index(LONG *binfeature, LONG range, LONG *index)
   return(ii);
 }
 
-void CSVMLight::optimize_svm(
-LONG* docs,               /* Do optimization on the working set. */
-INT* label, LONG *chosen, LONG *active2dnum,
-MODEL *model,
-LONG totdoc, LONG* working2dnum, LONG varnum,
-double *a, double* lin,
-REAL *aicache,
-QP *qp,
-double *epsilon_crit_target)
+
+void CSVMLight::optimize_svm(LONG* docs, INT* label,
+		  long int *exclude_from_eq_const, double eq_target,
+		  long int *chosen, long int *active2dnum, MODEL *model, 
+		  long int totdoc, long int *working2dnum, long int varnum, 
+		  double *a, double *lin, double *c,
+		  REAL *aicache, QP *qp, 
+		  double *epsilon_crit_target)
+     /* Do optimization on the working set. */
 {
-    LONG i;
+    long i;
     double *a_v;
 
-    compute_matrices_for_optimization(docs,label,chosen,active2dnum,
-				      working2dnum,model,a,lin,varnum,
-				      totdoc,aicache,
-				      qp);
+    compute_matrices_for_optimization(docs,label,
+				      exclude_from_eq_const,eq_target,chosen,
+				      active2dnum,working2dnum,model,a,lin,c,
+				      varnum,totdoc,aicache,qp);
 
     if(verbosity>=3) {
      CIO::message(M_DEBUG, "Running optimizer...");
     }
-
     /* call the qp-subsolver */
-	/* in case the optimizer gives us */
-	/* the threshold for free. otherwise */
-	/* b is calculated in calculate_model. */
     a_v=optimize_qp(qp,epsilon_crit_target,
 		    learn_parm->svm_maxqpsize,
-		    &(model->b), primal, dual,
-			init_margin, init_iter, precision_violations,
-			model_b, opt_precision);
-
+		    &(model->b),  				/* in case the optimizer gives us */
+            learn_parm->svm_maxqpsize); /* the threshold for free. otherwise */
+                                   		/* b is calculated in calculate_model. */
     if(verbosity>=3) {         
      CIO::message(M_DEBUG, "done\n");
     }
 
     for(i=0;i<varnum;i++) {
       a[working2dnum[i]]=a_v[i];
-      /*
-      if(a_v[i]<=(0+learn_parm->epsilon_a)) {
-	a[working2dnum[i]]=0;
-      }
-      else if(a_v[i]>=(learn_parm->svm_cost[working2dnum[i]]-learn_parm->epsilon_a)) {
-	a[working2dnum[i]]=learn_parm->svm_cost[working2dnum[i]];
-      }
-      */
     }
 }
 
-void CSVMLight::compute_matrices_for_optimization(
-LONG *docs,
-INT *label,LONG* chosen,LONG* active2dnum, LONG* key,
-MODEL *model,
-double *a, double* lin,
-LONG varnum, LONG totdoc,
-REAL *aicache,
-QP *qp)
+void CSVMLight::compute_matrices_for_optimization(LONG* docs, INT* label, 
+          long *exclude_from_eq_const, double eq_target,
+	  long int *chosen, long int *active2dnum, 
+          long int *key, MODEL *model, double *a, double *lin, double *c, 
+	  long int varnum, long int totdoc,
+          REAL *aicache, QP *qp)
 {
-  register LONG ki,kj,i,j;
+  register long ki,kj,i,j;
   register double kernel_temp;
 
   qp->opt_n=varnum;
-  qp->opt_ce0[0]=0; /* compute the constant for equality constraINT */
+  qp->opt_ce0[0]=-eq_target; /* compute the constant for equality constraint */
   for(j=1;j<model->sv_num;j++) { /* start at 1 */
-    if(!chosen[model->supvec[j]]) {
+    if((!chosen[model->supvec[j]])
+       && (!exclude_from_eq_const[(model->supvec[j])])) {
       qp->opt_ce0[0]+=model->alpha[j];
     }
   } 
   if(learn_parm->biased_hyperplane) 
     qp->opt_m=1;
   else 
-    qp->opt_m=0;  /* eq-constraINT will be ignored */
+    qp->opt_m=0;  /* eq-constraint will be ignored */
 
   /* init linear part of objective function */
   for(i=0;i<varnum;i++) {
@@ -678,10 +720,10 @@ QP *qp)
   }
 
   for(i=0;i<varnum;i++) {
-    /* assure starting at feasible poINT */
+    /* assure starting at feasible point */
     qp->opt_xinit[i]=a[key[i]];
     /* set linear part of objective function */
-    qp->opt_g0[i]=-1.0+qp->opt_g0[i]*(double)label[key[i]];    
+    qp->opt_g0[i]=(learn_parm->eps-(double)label[key[i]]*c[key[i]])+qp->opt_g0[i]*(double)label[key[i]];    
   }
 
   if(verbosity>=3) {
@@ -689,15 +731,14 @@ QP *qp)
   }
 }
 
-LONG CSVMLight::calculate_svm_model(
-LONG *docs,              /* Compute decision function based on current values */
-INT *label, /* of alpha. */
-double *lin, double *a, double* a_old,
-LONG *working2dnum,
-MODEL *model)
+long CSVMLight::calculate_svm_model(LONG* docs, INT *label,
+			 double *lin, double *a, double *a_old, double *c, 
+			 long int *working2dnum, long int *active2dnum, MODEL *model)
+     /* Compute decision function based on current values */
+     /* of alpha. */
 {
-  LONG i,ii,pos,b_calculated=0;
-  double ex_c;
+  long i,ii,pos,b_calculated=0,first_low,first_high;
+  double ex_c,b_temp,b_low,b_high;
 
   if(verbosity>=3) {
    CIO::message(M_DEBUG, "Calculating model...");
@@ -739,34 +780,85 @@ MODEL *model)
 
     if((!b_calculated) 
        && (a[i]>learn_parm->epsilon_a) && (a[i]<ex_c)) {   /* calculate b */
-	model->b=((double)label[i]-lin[i]);
+     	model->b=((double)label[i]*learn_parm->eps-c[i]+lin[i]); 
 	b_calculated=1;
     }
   }      
+
+  /* No alpha in the working set not at bounds, so b was not
+     calculated in the usual way. The following handles this special
+     case. */
+  if(learn_parm->biased_hyperplane 
+     && (!b_calculated)
+     && (model->sv_num-1 == model->at_upper_bound)) { 
+    first_low=1;
+    first_high=1;
+    b_low=0;
+    b_high=0;
+    for(ii=0;(i=active2dnum[ii])>=0;ii++) {
+      ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
+      if(a[i]<ex_c) { 
+	if(label[i]>0)  {
+	  b_temp=-(learn_parm->eps-c[i]+lin[i]);
+	  if((b_temp>b_low) || (first_low)) {
+	    b_low=b_temp;
+	    first_low=0;
+	  }
+	}
+	else {
+	  b_temp=-(-learn_parm->eps-c[i]+lin[i]);
+	  if((b_temp<b_high) || (first_high)) {
+	    b_high=b_temp;
+	    first_high=0;
+	  }
+	}
+      }
+      else {
+	if(label[i]<0)  {
+	  b_temp=-(-learn_parm->eps-c[i]+lin[i]);
+	  if((b_temp>b_low) || (first_low)) {
+	    b_low=b_temp;
+	    first_low=0;
+	  }
+	}
+	else {
+	  b_temp=-(learn_parm->eps-c[i]+lin[i]);
+	  if((b_temp<b_high) || (first_high)) {
+	    b_high=b_temp;
+	    first_high=0;
+	  }
+	}
+      }
+    }
+    if(first_high) {
+      model->b=-b_low;
+    }
+    else if(first_low) {
+      model->b=-b_high;
+    }
+    else {
+      model->b=-(b_high+b_low)/2.0;  /* select b as the middle of range */
+      /* printf("\nb_low=%f, b_high=%f,b=%f\n",b_low,b_high,model->b); */
+    }
+  }
 
   if(verbosity>=3) {
    CIO::message(M_DEBUG, "done\n");
   }
 
-  /* If there is no alpha in the working set not at bounds, then
-     just use the model->b from the last iteration or the one provided 
-     by the core optimizer */
-
   return(model->sv_num-1); /* have to substract one, since element 0 is empty*/
 }
 
-/* Check KT-conditions */
-LONG CSVMLight::check_optimality(
-MODEL *model,            
-INT *label,
-double *a, double* lin,
-LONG totdoc,
-double *maxdiff, double epsilon_crit_org,
-LONG *misclassified,
-LONG *inconsistent,LONG* active2dnum, LONG *last_suboptimal_at, LONG iteration)
+long CSVMLight::check_optimality(MODEL *model, INT* label,
+		      double *a, double *lin, double *c, long int totdoc, 
+		      double *maxdiff, double epsilon_crit_org, long int *misclassified, 
+		      long int *inconsistent, long int *active2dnum,
+		      long int *last_suboptimal_at, 
+		      long int iteration)
+     /* Check KT-conditions */
 {
-  LONG i,ii,retrain;
-  double dist,ex_c;
+  long i,ii,retrain;
+  double dist,ex_c,target;
 
   learn_parm->epsilon_shrink=learn_parm->epsilon_shrink*0.7+(*maxdiff)*0.3; 
   retrain=0;
@@ -774,21 +866,23 @@ LONG *inconsistent,LONG* active2dnum, LONG *last_suboptimal_at, LONG iteration)
   (*misclassified)=0;
   for(ii=0;(i=active2dnum[ii])>=0;ii++) {
     if((!inconsistent[i]) && label[i]) {
-      dist=(lin[i]+model->b)*(double)label[i];/* 'distance' from hyperplane*/
+      dist=(lin[i]-model->b)*(double)label[i];/* 'distance' from
+						 hyperplane*/
+      target=-(learn_parm->eps-(double)label[i]*c[i]);
       ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
       if(dist <= 0) {       
 	(*misclassified)++;  /* does not work due to deactivation of var */
       }
-      if((a[i]>learn_parm->epsilon_a) && (dist > 1)) {
-	if((dist-1.0)>(*maxdiff))  /* largest violation */
-	  (*maxdiff)=dist-1.0;
+      if((a[i]>learn_parm->epsilon_a) && (dist > target)) {
+	if((dist-target)>(*maxdiff))  /* largest violation */
+	  (*maxdiff)=dist-target;
       }
-      else if((a[i]<ex_c) && (dist < 1)) {
-	if((1.0-dist)>(*maxdiff))  /* largest violation */
-	  (*maxdiff)=1.0-dist;
+      else if((a[i]<ex_c) && (dist < target)) {
+	if((target-dist)>(*maxdiff))  /* largest violation */
+	  (*maxdiff)=target-dist;
       }
-      /* Count how LONG a variable was at lower/upper bound (and optimal).*/
-      /* Variables, which were at the bound and optimal for a LONG */
+      /* Count how long a variable was at lower/upper bound (and optimal).*/
+      /* Variables, which were at the bound and optimal for a long */
       /* time are unlikely to become support vectors. In case our */
       /* cache is filled up, those variables are excluded to save */
       /* kernel evaluations. (See chapter 'Shrinking').*/ 
@@ -797,11 +891,11 @@ LONG *inconsistent,LONG* active2dnum, LONG *last_suboptimal_at, LONG iteration)
 	last_suboptimal_at[i]=iteration;         /* not at bound */
       }
       else if((a[i]<=(learn_parm->epsilon_a)) 
-	      && (dist < (1.0+learn_parm->epsilon_shrink))) {
+	      && (dist < (target+learn_parm->epsilon_shrink))) {
 	last_suboptimal_at[i]=iteration;         /* not likely optimal */
       }
       else if((a[i]>=ex_c)
-	      && (dist > (1.0-learn_parm->epsilon_shrink)))  { 
+	      && (dist > (target-learn_parm->epsilon_shrink)))  { 
 	last_suboptimal_at[i]=iteration;         /* not likely optimal */
       }
     }   
@@ -813,66 +907,18 @@ LONG *inconsistent,LONG* active2dnum, LONG *last_suboptimal_at, LONG iteration)
   return(retrain);
 }
 
-LONG CSVMLight::identify_misclassified(
-double *lin,
-INT *label, LONG totdoc,
-MODEL *model,
-LONG *inconsistentnum, LONG* inconsistent)
+void CSVMLight::update_linear_component(LONG* docs, INT* label, 
+			     long int *active2dnum, double *a, 
+			     double *a_old, long int *working2dnum, 
+			     long int totdoc,
+			     double *lin, REAL *aicache, double *weights)
+     /* keep track of the linear component */
+     /* lin of the gradient etc. by updating */
+     /* based on the change of the variables */
+     /* in the current working set */
 {
-  LONG i,retrain;
-  double dist;
-
-  /* Throw out misclassified examples. This */
-  /* corresponds to the -i 2 option. */
-  /* ATTENTION: this is just a heuristic for finding a close */
-  /*            to minimum number of examples to exclude to */
-  /*            make the problem separable with desired margin */
-  retrain=0;
-  for(i=0;i<totdoc;i++) {
-    dist=(lin[i]+model->b)*(double)label[i]; /* 'distance' from hyperplane*/  
-  }
-  return(retrain);
-}
-
-LONG CSVMLight::identify_one_misclassified(
-double *lin,
-INT *label, LONG totdoc,
-MODEL *model,
-LONG *inconsistentnum, LONG *inconsistent)
-{
-  LONG i=-1,retrain,maxex=-1;
-  //  double dist,maxdist=0;
-
-  /* Throw out the 'most misclassified' example. This */
-  /* corresponds to the -i 3 option. */
-  /* ATTENTION: this is just a heuristic for finding a close */
-  /*            to minimum number of examples to exclude to */
-  /*            make the problem separable with desired margin */
-  retrain=0;
-  
-  if(maxex>=0) {
-    (*inconsistentnum)++;
-    inconsistent[maxex]=1;  /* never choose again */
-    retrain=2;          /* start over */
-    if(verbosity>=3) {
-     CIO::message(M_DEBUG, "inconsistent(%ld)..",i);
-    }
-  }
-  return(retrain);
-}
-
-void CSVMLight::update_linear_component(
-LONG* docs,
-INT *label, 
-LONG *active2dnum,                  /* keep track of the linear component */
-double *a, double* a_old,          /* lin of the gradient etc. by updating */
-LONG *working2dnum, LONG totdoc, /* based on the change of the variables */
-double *lin,
-REAL *aicache,
-double *weights)
-{
-	register LONG i,ii,j,jj;
-	register double tec;
+  register long i,ii,j,jj;
+  register double tec;
 
 	for(jj=0;(i=working2dnum[jj])>=0;jj++) {
 		if(a[i] != a_old[i]) {
@@ -887,16 +933,109 @@ double *weights)
 
 /*************************** Working set selection ***************************/
 
-LONG CSVMLight::select_next_qp_subproblem_grad(
-INT *label,
-double *a,double* lin,      /* Use the feasible direction approach to select the */
-LONG totdoc, LONG qp_size, /* next qp-subproblem  (see section 'Selecting a good */
-LONG *inconsistent, LONG* active2dnum, LONG* working2dnum,
-double *selcrit,
-LONG *select,
-LONG *key, LONG *chosen)
+long CSVMLight::select_next_qp_subproblem_grad(INT* label, 
+				    double *a, double *lin, 
+				    double *c, long int totdoc, 
+				    long int qp_size, 
+				    long int *inconsistent, 
+				    long int *active2dnum, 
+				    long int *working2dnum, 
+				    double *selcrit, 
+				    long int *select, 
+				    long int cache_only,
+				    long int *key, long int *chosen)
+     /* Use the feasible direction approach to select the next
+      qp-subproblem (see chapter 'Selecting a good working set'). If
+      'cache_only' is true, then the variables are selected only among
+      those for which the kernel evaluations are cached. */
 {
-  LONG choosenum,i,j,k,activedoc,inum;
+  long choosenum,i,j,k,activedoc,inum,valid;
+  double s;
+
+  for(inum=0;working2dnum[inum]>=0;inum++); /* find end of index */
+  choosenum=0;
+  activedoc=0;
+  for(i=0;(j=active2dnum[i])>=0;i++) {
+    s=-label[j];
+    if(cache_only) 
+      valid=(get_kernel()->kernel_cache_check(j));
+    else
+      valid=1;
+    if(valid
+       && (!((a[j]<=(0+learn_parm->epsilon_a)) && (s<0)))
+       && (!((a[j]>=(learn_parm->svm_cost[j]-learn_parm->epsilon_a)) 
+	     && (s>0)))
+       && (!chosen[j]) 
+       && (label[j])
+       && (!inconsistent[j]))
+      {
+      selcrit[activedoc]=(double)label[j]*(learn_parm->eps-(double)label[j]*c[j]+(double)label[j]*lin[j]);
+      key[activedoc]=j;
+      activedoc++;
+    }
+  }
+  select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
+  for(k=0;(choosenum<(qp_size/2)) && (k<(qp_size/2)) && (k<activedoc);k++) {
+      i=key[select[k]];
+      chosen[i]=1;
+      working2dnum[inum+choosenum]=i;
+      choosenum+=1;
+	CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
+                                        /* out of cache */
+  }
+
+  activedoc=0;
+  for(i=0;(j=active2dnum[i])>=0;i++) {
+    s=label[j];
+    if(cache_only) 
+      valid=(get_kernel()->kernel_cache_check(j));
+    else
+      valid=1;
+    if(valid
+       && (!((a[j]<=(0+learn_parm->epsilon_a)) && (s<0)))
+       && (!((a[j]>=(learn_parm->svm_cost[j]-learn_parm->epsilon_a)) 
+	     && (s>0))) 
+       && (!chosen[j]) 
+       && (label[j])
+       && (!inconsistent[j])) 
+      {
+      selcrit[activedoc]=-(double)label[j]*(learn_parm->eps-(double)label[j]*c[j]+(double)label[j]*lin[j]);
+      /*  selcrit[activedoc]=-(double)(label[j]*(-1.0+(double)label[j]*lin[j])); */
+      key[activedoc]=j;
+      activedoc++;
+    }
+  }
+  select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
+  for(k=0;(choosenum<qp_size) && (k<(qp_size/2)) && (k<activedoc);k++) {
+    i=key[select[k]];
+    chosen[i]=1;
+    working2dnum[inum+choosenum]=i;
+    choosenum+=1;
+	CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
+                                        /* out of cache */
+  } 
+  working2dnum[inum+choosenum]=-1; /* complete index */
+  return(choosenum);
+}
+
+long CSVMLight::select_next_qp_subproblem_rand(INT* label, 
+				    double *a, double *lin, 
+				    double *c, long int totdoc, 
+				    long int qp_size, 
+				    long int *inconsistent, 
+				    long int *active2dnum, 
+				    long int *working2dnum, 
+				    double *selcrit, 
+				    long int *select, 
+				    long int *key, 
+				    long int *chosen, 
+				    long int iteration)
+/* Use the feasible direction approach to select the next
+   qp-subproblem (see section 'Selecting a good working set'). Chooses
+   a feasible direction at (pseudo) random to help jump over numerical
+   problem. */
+{
+  long choosenum,i,j,k,activedoc,inum;
   double s;
 
   for(inum=0;working2dnum[inum]>=0;inum++); /* find end of index */
@@ -910,18 +1049,17 @@ LONG *key, LONG *chosen)
        && (!inconsistent[j]) 
        && (label[j])
        && (!chosen[j])) {
-      selcrit[activedoc]=lin[j]-(double)label[j];
+      selcrit[activedoc]=(j+iteration) % totdoc;
       key[activedoc]=j;
       activedoc++;
     }
   }
-  select_top_n(selcrit,activedoc,select,(LONG)(qp_size/2));
+  select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
   for(k=0;(choosenum<(qp_size/2)) && (k<(qp_size/2)) && (k<activedoc);k++) {
     i=key[select[k]];
     chosen[i]=1;
     working2dnum[inum+choosenum]=i;
     choosenum+=1;
-    
 	CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
                                         /* out of cache */
   }
@@ -935,12 +1073,12 @@ LONG *key, LONG *chosen)
        && (!inconsistent[j]) 
        && (label[j])
        && (!chosen[j])) {
-      selcrit[activedoc]=(double)(label[j])-lin[j];
+      selcrit[activedoc]=(j+iteration) % totdoc;
       key[activedoc]=j;
       activedoc++;
     }
   }
-  select_top_n(selcrit,activedoc,select,(LONG)(qp_size/2));
+  select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
   for(k=0;(choosenum<qp_size) && (k<(qp_size/2)) && (k<activedoc);k++) {
     i=key[select[k]];
     chosen[i]=1;
@@ -954,80 +1092,11 @@ LONG *key, LONG *chosen)
 }
 
 
-LONG CSVMLight::select_next_qp_subproblem_grad_cache(
-INT *label,
-double *a, double *lin,         // Use the feasible direction approach to select the 
-LONG totdoc, LONG qp_size,    // next qp-subproblem  (see chapter 'Selecting a 
-LONG *inconsistent, LONG* active2dnum, LONG* working2dnum, // cached kernel 
-double *selcrit,
-LONG *select,
-LONG *key, LONG* chosen)
+
+void CSVMLight::select_top_n(double *selcrit, long range, long* select,
+		  long int n)
 {
-return CSVMLight::select_next_qp_subproblem_grad(
-label,a,lin,totdoc,qp_size,inconsistent,active2dnum,working2dnum,selcrit,select,
-key,chosen);
-}
-/*
-  LONG choosenum,i,j,k,activedoc,inum;
-  double s;
-
-  for(inum=0;working2dnum[inum]>=0;inum++); // find end of index
-  choosenum=0;
-  activedoc=0;
-  for(i=0;(j=active2dnum[i])>=0;i++) {
-    s=-label[j];
-    if((kernel_cache->index[j]>=0)
-       && (!((a[j]<=(0+learn_parm->epsilon_a)) && (s<0)))
-       && (!((a[j]>=(learn_parm->svm_cost[j]-learn_parm->epsilon_a)) 
-	     && (s>0)))
-       && (!chosen[j]) 
-       && (label[j])
-       && (!inconsistent[j]))
-      {
-      selcrit[activedoc]=(double)label[j]*(-1.0+(double)label[j]*lin[j]);
-      key[activedoc]=j;
-      activedoc++;
-    }
-  }
-  select_top_n(selcrit,activedoc,select,(LONG)(qp_size/2));
-  for(k=0;(choosenum<(qp_size/2)) && (k<(qp_size/2)) && (k<activedoc);k++) {
-    i=key[select[k]];
-    chosen[i]=1;
-    working2dnum[inum+choosenum]=i;
-    choosenum+=1;
-  }
-
-  activedoc=0;
-  for(i=0;(j=active2dnum[i])>=0;i++) {
-    s=label[j];
-    if((kernel_cache->index[j]>=0)
-       && (!((a[j]<=(0+learn_parm->epsilon_a)) && (s<0)))
-       && (!((a[j]>=(learn_parm->svm_cost[j]-learn_parm->epsilon_a)) 
-	     && (s>0))) 
-       && (!chosen[j]) 
-       && (label[j])
-       && (!inconsistent[j])) 
-      {
-      selcrit[activedoc]=-(double)(label[j]*(-1.0+(double)label[j]*lin[j]));
-      key[activedoc]=j;
-      activedoc++;
-    }
-  }
-  select_top_n(selcrit,activedoc,select,(LONG)(qp_size/2));
-  for(k=0;(choosenum<qp_size) && (k<(qp_size/2)) && (k<activedoc);k++) {
-    i=key[select[k]];
-    chosen[i]=1;
-    working2dnum[inum+choosenum]=i;
-    choosenum+=1;
-  } 
-  working2dnum[inum+choosenum]=-1; // complete index
-  return(choosenum);
-}
-*/
-
-void CSVMLight::select_top_n(double *selcrit, LONG range,LONG* select, LONG n)
-{
-  register LONG i,j;
+  register long i,j;
 
   for(i=0;(i<n) && (i<range);i++) { /* Initialize with the first n elements */
     for(j=i;j>=0;j--) {
@@ -1040,15 +1109,17 @@ void CSVMLight::select_top_n(double *selcrit, LONG range,LONG* select, LONG n)
       }
     }
   }
-  for(i=n;i<range;i++) {  
-    if(selcrit[i]>selcrit[select[n-1]]) {
-      for(j=n-1;j>=0;j--) {
-	if((j>0) && (selcrit[select[j-1]]<selcrit[i])) {
-	  select[j]=select[j-1];
-	}
-	else {
-	  select[j]=i;
-	  j=-1;
+  if(n>0) {
+    for(i=n;i<range;i++) {  
+      if(selcrit[i]>selcrit[select[n-1]]) {
+	for(j=n-1;j>=0;j--) {
+	  if((j>0) && (selcrit[select[j-1]]<selcrit[i])) {
+	    select[j]=select[j-1];
+	  }
+	  else {
+	    select[j]=i;
+	    j=-1;
+	  }
 	}
       }
     }
@@ -1058,18 +1129,24 @@ void CSVMLight::select_top_n(double *selcrit, LONG range,LONG* select, LONG n)
 
 /******************************** Shrinking  *********************************/
 
-void CSVMLight::init_shrink_state(SHRINK_STATE *shrink_state, LONG totdoc, LONG maxhistory)
+void CSVMLight::init_shrink_state(SHRINK_STATE *shrink_state, long int totdoc,
+		       long int maxhistory)
 {
-  LONG i;
+  long i;
 
   shrink_state->deactnum=0;
   shrink_state->active = new long[totdoc];
   shrink_state->inactive_since = new long[totdoc];
-  shrink_state->a_history = new double*[10000];
+  shrink_state->a_history = new double*[maxhistory];
+  shrink_state->maxhistory=maxhistory;
+  shrink_state->last_lin = new double[totdoc];
+  shrink_state->last_a = new double[totdoc];
 
   for(i=0;i<totdoc;i++) { 
     shrink_state->active[i]=1;
     shrink_state->inactive_since[i]=0;
+    shrink_state->last_a[i]=0;
+    shrink_state->last_lin[i]=0;
   }
 }
 
@@ -1077,18 +1154,25 @@ void CSVMLight::shrink_state_cleanup(SHRINK_STATE *shrink_state)
 {
   delete[] shrink_state->active;
   delete[] shrink_state->inactive_since;
-  for (int i=0; i<shrink_state->deactnum; i++)
-    delete[] shrink_state->a_history[i];
-  delete[] shrink_state->a_history;
+  if(shrink_state->deactnum > 0) 
+    delete[] (shrink_state->a_history[shrink_state->deactnum-1]);
+  delete[] (shrink_state->a_history);
+  delete[] (shrink_state->last_a);
+  delete[] (shrink_state->last_lin);
 }
 
-/* shrink some variables away */
-/* do the shrinking only if at least minshrink variables can be removed */
-LONG CSVMLight::shrink_problem(LEARN_PARM *learn_parm, SHRINK_STATE *shrink_state, LONG *active2dnum, 
-					LONG *last_suboptimal_at, LONG iteration, LONG totdoc, LONG minshrink, 
-					double *a, LONG *inconsistent)
+long CSVMLight::shrink_problem(SHRINK_STATE *shrink_state, 
+		    long int *active2dnum, 
+		    long int *last_suboptimal_at, 
+		    long int iteration, 
+		    long int totdoc, 
+		    long int minshrink, 
+		    double *a, 
+		    long int *inconsistent)
+     /* Shrink some variables away.  Do the shrinking only if at least
+        minshrink variables can be removed. */
 {
-  LONG i,ii,change,activenum;
+  long i,ii,change,activenum,lastiter;
   double *a_old=NULL;
   
   activenum=0;
@@ -1096,13 +1180,14 @@ LONG CSVMLight::shrink_problem(LEARN_PARM *learn_parm, SHRINK_STATE *shrink_stat
   for(ii=0;active2dnum[ii]>=0;ii++) {
     i=active2dnum[ii];
     activenum++;
-    if(((iteration-last_suboptimal_at[i])
-	> learn_parm->svm_iter_to_shrink) 
+      lastiter=last_suboptimal_at[i];
+    if(((iteration-lastiter) > learn_parm->svm_iter_to_shrink) 
        || (inconsistent[i])) {
       change++;
     }
   }
-  if(change>=minshrink) { /* shrink only if sufficiently many candidates */
+  if((change>=minshrink) /* shrink only if sufficiently many candidates */
+     && (shrink_state->deactnum<shrink_state->maxhistory)) { /* and enough memory */
     /* Shrink problem by removing those variables which are */
     /* optimal at a bound for a minimum number of iterations */
     if(verbosity>=2) {
@@ -1113,15 +1198,13 @@ LONG CSVMLight::shrink_problem(LEARN_PARM *learn_parm, SHRINK_STATE *shrink_stat
     for(i=0;i<totdoc;i++) {
       a_old[i]=a[i];
     }
-    change=0;
     for(ii=0;active2dnum[ii]>=0;ii++) {
       i=active2dnum[ii];
-      if((((iteration-last_suboptimal_at[i])
-	   >learn_parm->svm_iter_to_shrink) 
-	  || (inconsistent[i]))) {
+	lastiter=last_suboptimal_at[i];
+      if(((iteration-lastiter) > learn_parm->svm_iter_to_shrink) 
+	 || (inconsistent[i])) {
 	shrink_state->active[i]=0;
 	shrink_state->inactive_since[i]=shrink_state->deactnum;
-	change++;
       }
     }
     activenum=compute_index(shrink_state->active,totdoc,active2dnum);
@@ -1131,29 +1214,30 @@ LONG CSVMLight::shrink_problem(LEARN_PARM *learn_parm, SHRINK_STATE *shrink_stat
      CIO::message(M_INFO, " Number of inactive variables = %ld\n",totdoc-activenum);
     }
   }
-  //  delete[] a_old ;
-  //  a_old=NULL ;
   return(activenum);
 } 
 
-
-void CSVMLight::reactivate_inactive_examples(
-INT *label,              /* Make all variables active again */
-double *a, 
-SHRINK_STATE *shrink_state,
-double *lin,                      /* which had been removed by shrinking. */
-LONG totdoc, LONG iteration,      /* Computes lin for those */
-LEARN_PARM *learn_parm,              /* variables from scratch. */
-LONG *inconsistent,
-LONG *docs,
-MODEL *model,
-REAL *aicache,
-double *weights, double* maxdiff)
+void CSVMLight::reactivate_inactive_examples(INT* label, 
+				  double *a, 
+				  SHRINK_STATE *shrink_state, 
+				  double *lin, 
+				  double *c, 
+				  long int totdoc, 
+				  long int iteration, 
+				  long int *inconsistent, 
+				  LONG* docs, 
+				  MODEL *model, 
+				  REAL *aicache, 
+				  double *weights, 
+				  double *maxdiff)
+     /* Make all variables active again which had been removed by
+        shrinking. */
+     /* Computes lin for those variables from scratch. */
 {
-  register LONG i,j,ii,jj,t,*changed2dnum,*inactive2dnum;
-  LONG *changed,*inactive;
+  register long i,j,ii,jj,t,*changed2dnum,*inactive2dnum;
+  long *changed,*inactive;
   register double kernel_val,*a_old,dist;
-  double ex_c;
+  double ex_c,target;
 
   changed=new long[totdoc];
   changed2dnum=new long[totdoc+11];
@@ -1180,29 +1264,38 @@ double *weights, double* maxdiff)
 	}
       }
   }
+  delete[] changed;
+  delete[] changed2dnum;
+  delete[] inactive;
+  delete[] inactive2dnum;
+
   (*maxdiff)=0;
   for(i=0;i<totdoc;i++) {
     shrink_state->inactive_since[i]=shrink_state->deactnum-1;
     if(!inconsistent[i]) {
-      dist=(lin[i]+model->b)*(double)label[i];
+      dist=(lin[i]-model->b)*(double)label[i];
+      target=-(learn_parm->eps-(double)label[i]*c[i]);
       ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
-      if((a[i]>learn_parm->epsilon_a) && (dist > 1)) {
-	if((dist-1.0)>(*maxdiff))  /* largest violation */
-	  (*maxdiff)=dist-1.0;
+      if((a[i]>learn_parm->epsilon_a) && (dist > target)) {
+	if((dist-target)>(*maxdiff))  /* largest violation */
+	  (*maxdiff)=dist-target;
       }
-      else if((a[i]<ex_c) && (dist < 1)) {
-	if((1.0-dist)>(*maxdiff))  /* largest violation */
-	  (*maxdiff)=1.0-dist;
+      else if((a[i]<ex_c) && (dist < target)) {
+	if((target-dist)>(*maxdiff))  /* largest violation */
+	  (*maxdiff)=target-dist;
       }
       if((a[i]>(0+learn_parm->epsilon_a)) 
 	 && (a[i]<ex_c)) { 
 	shrink_state->active[i]=1;                         /* not at bound */
       }
-      else if((a[i]<=(0+learn_parm->epsilon_a)) && (dist < (1+learn_parm->epsilon_shrink))) {
+      else if((a[i]<=(0+learn_parm->epsilon_a)) && (dist < (target+learn_parm->epsilon_shrink))) {
 	shrink_state->active[i]=1;
       }
       else if((a[i]>=ex_c)
-	      && (dist > (1-learn_parm->epsilon_shrink))) {
+	      && (dist > (target-learn_parm->epsilon_shrink))) {
+	shrink_state->active[i]=1;
+      }
+      else if(learn_parm->sharedslack) { /* make all active when sharedslack */
 	shrink_state->active[i]=1;
       }
     }
@@ -1214,9 +1307,4 @@ double *weights, double* maxdiff)
       delete[] shrink_state->a_history[t];
       shrink_state->a_history[t]=0;
   }
- delete[] changed;
- delete[] changed2dnum;
- delete[] inactive;
- delete[] inactive2dnum;
-} ;
-
+}
