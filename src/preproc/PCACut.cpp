@@ -4,20 +4,20 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-CPruneVarSubMean::CPruneVarSubMean()
+CPCACut::CPCACut()
   : CRealPreProc("PruneVarSubMean"), idx(NULL), num_idx(0)
 {
 }
 
-CPruneVarSubMean::~CPruneVarSubMean()
+CPCACut::~CPCACut()
 {
   delete[] idx ;
 }
 
 /// initialize preprocessor from features
-bool CPruneVarSubMean::init(CFeatures* f_)
+bool CPCACut::init(CFeatures* f_)
 {
-  CIO::message("calling CPruneVarSubMean::init\n") ;
+  CIO::message("calling CPCACut::init\n") ;
 
   CRealFeatures *f=(CRealFeatures*) f_ ;
   int num_examples=f->get_number_of_examples() ;
@@ -81,20 +81,20 @@ bool CPruneVarSubMean::init(CFeatures* f_)
 }
 
 /// initialize preprocessor from features
-void CPruneVarSubMean::cleanup()
+void CPCACut::cleanup()
 {
   delete[] idx ;
   idx=NULL ;
 }
 
 /// initialize preprocessor from file
-bool CPruneVarSubMean::load(FILE* f)
+bool CPCACut::load(FILE* f)
 {
   return false;
 }
 
 /// save preprocessor init-data to file
-bool CPruneVarSubMean::save(FILE* f)
+bool CPCACut::save(FILE* f)
 {
   return false;
 }
@@ -102,14 +102,14 @@ bool CPruneVarSubMean::save(FILE* f)
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-REAL* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
+REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 {
   return NULL;
 }
 
 /// apply preproc on single feature vector
 /// result in feature matrix
-REAL* CPruneVarSubMean::apply_to_feature_vector(REAL* f, int &len)
+REAL* CPCACut::apply_to_feature_vector(REAL* f, int &len)
 {
   //CIO::message("preprocessing vector of length %i to length %i\n", len, num_idx) ;
 
@@ -121,22 +121,3 @@ REAL* CPruneVarSubMean::apply_to_feature_vector(REAL* f, int &len)
   return ret;
 }
 
-#warning TODO implement
-#ifdef PRUNE_VAR_SUB_MEAN
-
-void CHMM::subtract_mean_from_top_feature_cache(int num_features, int totobs)
-{
-	if (feature_cache_obs)
-	{
-		for (int j=0; j<num_features; j++)
-		{
-			double mean=0;
-			for (int i=0; i<totobs; i++)
-				mean+=feature_cache_obs[i*num_features+j];
-			for (int i=0; i<totobs; i++)
-				feature_cache_obs[i*num_features+j]-=mean;
-		}
-	}
-}
-
-#endif

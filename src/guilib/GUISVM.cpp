@@ -38,8 +38,17 @@ bool CGUISVM::train(char* param)
       CIO::message("no training features available") ;
       return false ;
     } ;
+
+  CObservation *pt=gui->guiobs.get_obs("POSTRAIN") ;
+  CObservation *nt=gui->guiobs.get_obs("NEGTRAIN") ;
+  CObservation* obs=new CObservation(pt, nt);
   
+  gui->guihmm.pos->set_observations(obs) ;
+  gui->guihmm.neg->set_observations(obs) ;
+
   CFeatures * f=gui->guifeatures.get_train_features() ;
+  ((CTOPFeatures*)f)->set_models(gui->guihmm.pos, gui->guihmm.neg) ;
+
   CPreProc * preproc=gui->guipreproc.get_preproc() ;
 
   if (preproc)
@@ -64,7 +73,12 @@ bool CGUISVM::train(char* param)
   //    }
 
   CIO::message("starting svm\n") ;
-  return svm->svm_train(f) ;
+  bool ret=svm->svm_train(f) ;
+
+  gui->guihmm.pos->set_observations(pt) ;
+  gui->guihmm.neg->set_observations(nt) ;
+
+  return ret ;
 }
 
 bool CGUISVM::test(char* param)

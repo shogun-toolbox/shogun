@@ -7,11 +7,11 @@
 
 #include <stdio.h>
 
-class CPruneVarSubMean : public CRealPreProc
+class CPCACut : public CRealPreProc
 {
  public:
-  CPruneVarSubMean();
-  virtual ~CPruneVarSubMean();
+  CPCACut();
+  virtual ~CPCACut();
   
   /// initialize preprocessor from features
   virtual bool init(CFeatures* f);

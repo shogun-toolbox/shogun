@@ -22,6 +22,9 @@ public:
 	bool assign_obs(char* param) ;
 	bool convergence_criteria(char* param) ;
 
+	CHMM* pos;
+	CHMM* neg;
+	CHMM* test;
 protected:
 
 	bool converge(double x, double y);
@@ -30,9 +33,6 @@ protected:
 	CHMM* working;
 	CHMM* working_estimate;
 
-	CHMM* pos;
-	CHMM* neg;
-	CHMM* test;
 
 	REAL PSEUDO;
 	int M;

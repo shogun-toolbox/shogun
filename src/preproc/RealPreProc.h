@@ -20,7 +20,8 @@ public:
 	virtual REAL* apply_to_feature_matrix(CFeatures* f)=0;
 	/// apply preproc on single feature vector
 	/// result in feature matrix
-	virtual REAL* apply_to_feature_vector(REAL* f, int len)=0;
+
+	virtual REAL* apply_to_feature_vector(REAL* f, int &len)=0;
 	
 	/** return feature type with which objects derived 
 	*         from CPreProc can deal

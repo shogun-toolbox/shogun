@@ -43,8 +43,10 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
       if (preproc)
 	{
 	  //CIO::message("preprocessing %i th feature vector\n", (int)num) ;
-	  REAL* feat2 = ((CRealPreProc*) preproc)->apply_to_feature_vector(feat, len);
+	  int len2=len ;
+	  REAL* feat2 = ((CRealPreProc*) preproc)->apply_to_feature_vector(feat, len2);
 	  delete[] feat ;
+	  len=num_features=len2 ;
 	  return feat2 ;
 	}
       return feat ;

@@ -26,7 +26,7 @@ static double one=1.0 ;
 CSVMMPI::CSVMMPI(int argc, const char **argv)
   //  : Z(1,1,&one,false,donothing)
 {
-  //  svm_mpi_init(argc, argv) ;
+  svm_mpi_init(argc, argv) ;
   kernel=NULL ;
 } ;
 
@@ -54,15 +54,19 @@ bool CSVMMPI::svm_train(CFeatures* train_)
   
   CIO::message("creating big matrix\n") ;
 
+  bool free ; long len ;
+  double * column=NULL ;
+  column=train->get_feature_vector(0, len, free);
+  train->free_feature_vector(column, free);
+  num_rows=len ;
+
   m_prime=svm_mpi_broadcast_Z_size(num_cols, num_rows, m_last) ;
   int j=0;
   
-  double * column=NULL ;
   for (j=0; j<num_cols; j++) 
   {
     int rank=floor(((double)j)/m_prime) ;
     int start_idx=j%m_prime ; 
-    bool free ; long len ;
 
     //CIO::message("setting vector: %i %i (%i,%i)\n",start_idx, rank, j, m_prime) ;
     column=train->get_feature_vector(j, len, free);
@@ -149,7 +153,8 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
   double bound=10 ;
   int maxiter=50 ;
 
-  CIO::message("preparing small matrices\n") ;
+  CIO::message("preparing small matrices: num_examples=%i\n",num_examples) ;
+
   IntpointResources *res = NULL ;
   if (! my_rank)
     res = new IntpointResources[num_nodes];
@@ -180,6 +185,13 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
 
   CIO::message("starting optimizer\n") ;
 
+  {
+    double* d=Z.GetDataPointer() ;
+    FILE* f=fopen("/tmp/dat","w+") ;
+    fwrite(d, sizeof(double), Z.GetNumRows()*Z.GetNumColumns(), f) ;
+    fclose(f) ;
+  } 
+      
   optimize_smw2mpi_core<double>(optimizer, c, Z, A, b, l, u,
 				r, m_prime, m_last, my_rank,
 				num_nodes, res, primal,
