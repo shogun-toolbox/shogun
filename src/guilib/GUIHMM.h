@@ -36,6 +36,7 @@ public:
 	bool best_path(char* param);
 	bool normalize(char* param);
 	bool save_path(char* param);
+	bool save_likelihood(char* param);
 	bool load_defs(char* param);
 	bool set_max_dim(char* param);
 	bool likelihood(char* param);

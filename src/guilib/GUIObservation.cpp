@@ -1,6 +1,7 @@
 #include "guilib/GUIObservation.h"
 #include "lib/io.h"
 #include <string.h>
+#include "gui/GUI.h"
 
 CGUIObservation::CGUIObservation(CGUI * gui_): gui(gui_)
 {
@@ -31,11 +32,19 @@ bool CGUIObservation::load_observations(char* param)
 	char* input=CIO::skip_spaces(param);
 	char filename[1024];
 	char target[1024];
-#warning M hardcoded 4
-	int M=4;
+	int M=-1;
 	int ORDER=1;
 	int start=0;
 	int width=-1;
+
+	if (gui->guihmm.get_pos())
+		M=gui->guihmm.get_pos()->get_M();
+	else if (gui->guihmm.get_neg())
+		M=gui->guihmm.get_neg()->get_M();
+	else if (gui->guihmm.get_test())
+		M=gui->guihmm.get_test()->get_M();
+	else
+		M=get_alphabet_size();
 
 	if ((sscanf(input, "%s %s %d %d %d", filename, target, &ORDER, &start, &width))>=2)
 	{
@@ -176,4 +185,9 @@ bool CGUIObservation::set_alphabet(char* param)
 	else
 		CIO::message("see help for parameters\n");
 	return false;
+}
+
+int CGUIObservation::get_alphabet_size()
+{
+	return CObservation::get_alphabet_size(alphabet);
 }

@@ -225,6 +225,9 @@ public:
 	{
 	    return alphabet_type;
 	}
+	
+	/// return number of symbols in current alphabet
+	static int get_alphabet_size(E_OBS_ALPHABET alphabet);
 
 	/// get the number of dimensions
 	inline int get_DIMENSION() 

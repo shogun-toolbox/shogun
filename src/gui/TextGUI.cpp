@@ -43,6 +43,7 @@ static const char* N_SET_PREPROC=		"set_preproc";
 static const char* N_PREPROCESS=		"preprocess";
 static const char* N_INIT_KERNEL=		"init_kernel";
 static const char* N_SAVE_PATH=			"save_hmm_path";
+static const char* N_SAVE_LIKELIHOOD=	"save_hmm_likelihood";
 static const char* N_BEST_PATH=			"best_path";
 static const char* N_OUTPUT_PATH=      		"output_hmm_path";
 static const char* N_VITERBI_TRAIN=	       	"vit";
@@ -129,6 +130,7 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- save kernel init data\n",N_SAVE_KERNEL_INIT);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- save preproc init data\n",N_SAVE_PREPROC);
 	CIO::message("\033[1;31m%s\033[0m <filename> <TRAIN|TEST>\t- save features\n",N_SAVE_FEATURES);
+	CIO::message("\033[1;31m%s\033[0m <filename>\t- save likelihood for each sequence\n",N_SAVE_LIKELIHOOD);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- save state sequence of viterbi path\n",N_SAVE_PATH);
 	CIO::message("\n[HMM]\n");
 	CIO::message("\033[1;31m%s\033[0m - frees all HMMs and observations\n",N_CLEAR);
@@ -258,6 +260,14 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	{
 		guihmm.chop(input+strlen(N_CHOP));
 	} 
+	else if (!strncmp(input, N_SAVE_LIKELIHOOD, strlen(N_SAVE_LIKELIHOOD)))
+	{
+		guihmm.save_likelihood(input+strlen(N_SAVE_LIKELIHOOD));
+	}
+	else if (!strncmp(input, N_SAVE_PATH, strlen(N_SAVE_PATH)))
+	{
+		guihmm.save_path(input+strlen(N_SAVE_PATH));
+	}
 	else if (!strncmp(input, N_SAVE_HMM, strlen(N_SAVE_HMM)))
 	{
 		guihmm.save(input+strlen(N_SAVE_HMM)) ;
@@ -285,10 +295,6 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	else if (!strncmp(input, N_LOAD_OBSERVATIONS, strlen(N_LOAD_OBSERVATIONS)))
 	{
 		guiobs.load_observations(input+strlen(N_LOAD_OBSERVATIONS));
-	}
-	else if (!strncmp(input, N_SAVE_PATH, strlen(N_SAVE_PATH)))
-	{
-		guihmm.save_path(input+strlen(N_SAVE_PATH));
 	}
 	else if (!strncmp(input, N_SET_FEATURES, strlen(N_SET_FEATURES)))
 	{

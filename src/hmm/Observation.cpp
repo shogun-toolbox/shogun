@@ -221,6 +221,23 @@ bool CObservation::load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET
     return numread==length;
 }
 
+int CObservation::get_alphabet_size(E_OBS_ALPHABET a)
+{
+	switch (a)
+	{
+		case CUBE:
+			return 6;
+		case PROTEIN:
+			return 21;
+		case ALPHANUM:
+			return 36;
+		case DNA:
+			return 4;
+		default:
+			return -1;
+	};
+}
+
 //init map_table
 void CObservation::init_map_table()
 {

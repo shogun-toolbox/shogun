@@ -973,6 +973,45 @@ bool CGUIHMM::load_defs(char* param)
 	return false;
 }
 
+bool CGUIHMM::save_likelihood(char* param)
+{
+	bool result=false;
+	param=CIO::skip_spaces(param);
+	char fname[1024];
+	int binary=0;
+
+	if (working)
+	{
+		if (sscanf(param, "%s %d", fname, &binary) >= 1)
+		{
+			FILE* file=fopen(fname, "w");
+			if (file)
+			{
+				/// ..future
+				//if (binary)
+				//	result=working->save_model_bin(file);
+				//else
+					
+				result=working->save_likelihood(file);
+			}
+
+			if (!file || !result)
+				printf("writing to file %s failed!\n", fname);
+			else
+				printf("successfully written likelihoods into \"%s\" !\n", fname);
+
+			if (file)
+				fclose(file);
+		}
+		else
+			CIO::message("see help for parameters\n");
+	}
+	else
+		CIO::message("create model first\n");
+
+	return result;
+}
+
 bool CGUIHMM::save_path(char* param)
 {
 	bool result=false;

@@ -14,6 +14,7 @@ public:
 	CObservation* get_obs(char* param);
 	bool set_alphabet(char* param);
 	bool set_max_dim(char* param);
+	int get_alphabet_size();
 	
 	inline char* get_neg_test_name()
 	{
