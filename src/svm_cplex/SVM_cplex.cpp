@@ -167,8 +167,9 @@ bool CSVMCplex::save_svm(FILE* modelfl)
 
 void CSVMCplex::top_feature(int x, double *feat)
 {
+  /*CHMM::compute_top_feature_vector(pos, neg, x, feat) ;*/
+      
   int i,j;
-  
   double posx=pos->model_probability(x);
   double negx=neg->model_probability(x);
   
@@ -197,8 +198,7 @@ void CSVMCplex::top_feature(int x, double *feat)
       
       for (j=0; j<neg->get_M(); j++)
 	feat[p++]=exp(neg->model_derivative_b(i, j, x)-negx);
-    }
+	}
 }
-
 
 

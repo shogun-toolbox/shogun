@@ -31,7 +31,7 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 
 	if (kernel_type==4) // standard hmm+svm
 	{
-	    featurespace=pos->compute_top_feature_cache(pos, neg, num_features);
+	    featurespace=CHMM::compute_top_feature_cache(pos, neg, num_features);
 	    
 	    if (featurespace)
 		kernel_type=6; // hmm+svm precalculated
@@ -101,7 +101,7 @@ bool CSVMLight::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
     
     if (model.kernel_parm.kernel_type==4) // standard hmm+svm
     {
-	featurespace=pos->compute_top_feature_cache(pos, neg, num_features);
+	featurespace=CHMM::compute_top_feature_cache(pos, neg, num_features);
 
 	if (featurespace)
 	    model.kernel_parm.kernel_type=6; // hmm+svm precalculated

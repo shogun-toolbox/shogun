@@ -1331,7 +1331,7 @@ public:
 	//@{
 	   
 	    /// compute featurevectors for all observations and return a cache of size num_features*num_observations
-	    double* compute_top_feature_cache(CHMM* pos, CHMM* neg, int & num_features);
+	    static double* compute_top_feature_cache(CHMM* pos, CHMM* neg, int & num_features);
 	    
 	    /**@name compute featurevector for observation dim
 	     * Computes the featurevector for one observation 
@@ -1339,7 +1339,7 @@ public:
 	     * @param featurevector if not NULL the vector will be written to that address
 	     * @return returns the featurevector or NULL if unsuccessfull
 	     */ 
-	    double* compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* featurevector=NULL);
+	    static double* compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* featurevector=NULL);
 	//@}
 
 protected:
