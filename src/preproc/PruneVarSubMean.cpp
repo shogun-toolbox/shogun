@@ -57,12 +57,7 @@ bool CPruneVarSubMean::init(CFeatures* f_)
 		}
 
 		for (j=0; j<num_features; j++)
-		{
 			mean[j]/=num_examples ;
-
-			if (j<20)
-				CIO::message("%f\n", mean[j]);
-		}
 
 		// compute var
 		for (i=0; i<num_examples; i++)
@@ -170,27 +165,25 @@ REAL* CPruneVarSubMean::apply_to_feature_vector(REAL* f, int &len)
 {
   //CIO::message("preprocessing vector of length %i to length %i\n", len, num_idx) ;
 
-	//CIO::message("huh!\n");
-
 	REAL* ret=NULL;
 
-//  if (initialized)
-//  {
-//	  ret=new REAL[num_idx] ;
-//
-//	  if (divide_by_std)
-//	  {
-//		  for (int i=0; i<num_idx; i++)
-//			  ret[i]=(f[idx[i]]-mean[i])/std[i];
-//	  }
-//	  else
-//	  {
-//		  for (int i=0; i<num_idx; i++)
-//			  ret[i]=(f[idx[i]]-mean[i]);
-//	  }
-//	  len=num_idx ;
-//  }
-//  else
+  if (initialized)
+  {
+	  ret=new REAL[num_idx] ;
+
+	  if (divide_by_std)
+	  {
+		  for (int i=0; i<num_idx; i++)
+			  ret[i]=(f[idx[i]]-mean[i])/std[i];
+	  }
+	  else
+	  {
+		  for (int i=0; i<num_idx; i++)
+			  ret[i]=(f[idx[i]]-mean[i]);
+	  }
+	  len=num_idx ;
+  }
+  else
   {
 	  ret=new REAL[len] ;
 	  for (int i=0; i<len; i++)

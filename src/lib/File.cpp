@@ -53,6 +53,14 @@ INT* CFile::load_int_data(INT* target, long& num)
 	return target;
 }
 
+bool CFile::save_int_data(INT* src, long num)
+{
+	assert(expected_type==F_INT);
+	CSimpleFile<INT> f(fname, file);
+	status=f.save(src, num);
+	return status;
+}
+
 REAL* CFile::load_real_data(REAL* target, long& num)
 {
 	assert(expected_type==F_REAL);
@@ -60,6 +68,14 @@ REAL* CFile::load_real_data(REAL* target, long& num)
 	target=f.load(target, num);
 	status=(target!=NULL);
 	return target;
+}
+
+bool CFile::save_real_data(REAL* src, long num)
+{
+	assert(expected_type==F_REAL);
+	CSimpleFile<REAL> f(fname, file);
+	status=f.save(src, num);
+	return status;
 }
 
 CHAR* CFile::load_char_data(CHAR* target, long& num)

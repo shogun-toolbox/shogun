@@ -38,12 +38,12 @@ public:
 	WORD*  load_word_data(WORD* target, long& num);
 	SHORT* load_short_data(SHORT* target, long& num);
 
-	bool save_int_data(long num, INT* src);
-	bool save_real_data(long num, REAL* src);
-	bool save_char_data(long num, CHAR* src);
-	bool save_byte_data(long num, BYTE* src);
-	bool save_word_data(long num, WORD* src);
-	bool save_short_data(long num, SHORT* src);
+	bool save_int_data(INT* src, long num);
+	bool save_real_data(REAL* src, long num);
+	bool save_char_data(CHAR* src, long num);
+	bool save_byte_data(BYTE* src, long num);
+	bool save_word_data(WORD* src, long num);
+	bool save_short_data(SHORT* src, long num);
 
 	inline bool is_ok()
 	{

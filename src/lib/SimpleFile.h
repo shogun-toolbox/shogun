@@ -90,7 +90,7 @@ public:
 
 				if (target)
 				{
-					status=(fwrite((void*) target, sizeof(T), num, file) == num);
+					status=(fwrite((void*) target, sizeof(T), num, file) == (unsigned long) num);
 				}
 			}
 		}

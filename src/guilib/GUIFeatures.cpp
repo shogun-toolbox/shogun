@@ -271,47 +271,73 @@ bool CGUIFeatures::load(char* param)
 
 bool CGUIFeatures::save(char* param)
 {
-    bool result=false;
-    param=CIO::skip_spaces(param);
-    char filename[1024];
-    char target[1024];
+	bool result=false;
+	param=CIO::skip_spaces(param);
+	char fname[1024];
+	char target[1024];
+	char type[1024];
 
-    if ((sscanf(param, "%s %s", filename, target))==2)
-    {
+	if ((sscanf(param, "%s %s %s", fname, target, type))==2)
+	{
 
-	CFeatures** f_ptr=NULL;
+		CFeatures** f_ptr=NULL;
 
-	if (strcmp(target,"TRAIN")==0)
-	{
-	    f_ptr=&train_features;
-	}
-	else if (strcmp(target,"TEST")==0)
-	{
-	    f_ptr=&test_features;
-	}
-	else
-	{
-	    CIO::message("see help for parameters\n");
-	    return false;
-	}
+		if (strcmp(target,"TRAIN")==0)
+		{
+			f_ptr=&train_features;
+		}
+		else if (strcmp(target,"TEST")==0)
+		{
+			f_ptr=&test_features;
+		}
+		else
+		{
+			CIO::message("see help for parameters\n");
+			return false;
+		}
 
-	if (*f_ptr)
-	{
-	    if ((filename) || (!(*f_ptr)->save(filename)))
-		CIO::message("writing to file %s failed!\n", filename);
-	    else
-	    {
-		CIO::message("successfully written features into \"%s\" !\n", filename);
-		result=true;
-	    }
+		if (*f_ptr)
+		{
+			if (fname)
+			{
+				if (strcmp(type,"REAL")==0)
+				{
+					result= ((CRealFeatures*) (*f_ptr))->save(fname);
+				}
+				else if (strcmp(type, "BYTE")==0)
+				{
+					result= ((CByteFeatures*) (*f_ptr))->save(fname);
+				}
+				else if (strcmp(type, "CHAR")==0)
+				{
+					result= ((CCharFeatures*) (*f_ptr))->save(fname);
+				}
+				else if (strcmp(type, "SHORT")==0)
+				{
+					result= ((CShortFeatures*) (*f_ptr))->save(fname);
+				}
+				else
+				{
+					CIO::message("unknown type\n");
+					return false;
+				}
+			}
+
+			if (!result)
+				CIO::message("writing to file %s failed!\n", fname);
+			else
+			{
+				CIO::message("successfully written features into \"%s\" !\n", fname);
+				result=true;
+			}
+
+		} else
+			CIO::message("set features first\n");
 
 	} else
-	    CIO::message("set features first\n");
+		CIO::message("see help for params\n");
 
-    } else
-	CIO::message("see help for params\n");
-
-    return result;
+	return result;
 }
 
 bool CGUIFeatures::reshape(char* param)
