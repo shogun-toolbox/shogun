@@ -80,6 +80,19 @@ bool CPCACut::init(CFeatures* f_)
     for (int l=0; l<num_features; l++)
       cov[k*num_features+l]/=num_examples ;
 
+
+  REAL *values=new REAL[num_features] ;
+  REAL *vectors=new REAL[num_features*num_features] ;
+  int fl ;
+  symeigx(cov, num_features, values, vectors, num_features, &fl);
+
+//   {
+//     int lwork=4*num_features ;
+//     double *work=new double[lwork] ;
+//     int info ;
+//     dsyev_('V', 'U', num_features, cov, num_features, values, work, lwork, &info) ;
+//   }
+
   CIO::message("done\nRunning matlab PCA code") ;
   double *T ; int num_dim=0 ;
   cleaner_main(cov, num_features, 1e-5, &T, &num_dim) ;
