@@ -80,6 +80,9 @@ class CKernel
 
 		void list_kernel();
 
+		double get_combined_kernel_weight() { return combined_kernel_weight ; } ;
+		void set_combined_kernel_weight(double nw) { combined_kernel_weight=nw ; } ;
+
 	protected:
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
@@ -138,5 +141,8 @@ class CKernel
 		CFeatures* lhs;
 		/// feature vectors to occur on right hand side
 		CFeatures* rhs;
+
+		double combined_kernel_weight ;
+		
 };
 #endif

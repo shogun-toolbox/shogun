@@ -7,7 +7,7 @@
 #include <string.h>
 #include <assert.h>
 
-CKernel::CKernel(LONG size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL)
+CKernel::CKernel(LONG size) : kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1)
 {
 	if (size<10)
 		size=10;
@@ -351,7 +351,7 @@ bool CKernel::save(CHAR* fname)
 
 void CKernel::list_kernel()
 {
-	CIO::message(M_INFO, "0x%X - \"%s\" ", get_name(), this);
+	CIO::message(M_INFO, "0x%X - \"%s\" weight=%1.2f ", this, get_name(), get_combined_kernel_weight());
 	switch (get_kernel_type())
 	{
 		case K_UNKNOWN:
@@ -414,14 +414,19 @@ void CKernel::list_kernel()
 	{
 		case C_UNKNOWN:
 			CIO::message(M_INFO, "C_UNKNOWN ");
+			break;
 		case C_SIMPLE:
 			CIO::message(M_INFO, "C_SIMPLE ");
+			break;
 		case C_SPARSE:
 			CIO::message(M_INFO, "C_SPARSE ");
+			break;
 		case C_STRING:
 			CIO::message(M_INFO, "C_STRING ");
+			break;
 		case C_COMBINED:
 			CIO::message(M_INFO, "C_COMBINED ");
+			break;
 		default:
 			CIO::message(M_ERROR, "ERROR ");
 	}
@@ -430,20 +435,28 @@ void CKernel::list_kernel()
 	{
 		case F_UNKNOWN:
 			CIO::message(M_INFO, "F_UNKNOWN ");
+			break;
 		case F_REAL:
 			CIO::message(M_INFO, "F_REAL ");
+			break;
 		case F_SHORT:
 			CIO::message(M_INFO, "F_SHORT ");
+			break;
 		case F_CHAR:
 			CIO::message(M_INFO, "F_CHAR ");
+			break;
 		case F_INT:
 			CIO::message(M_INFO, "F_INT ");
+			break;
 		case F_BYTE:
 			CIO::message(M_INFO, "F_BYTE ");
+			break;
 		case F_WORD:
 			CIO::message(M_INFO, "F_WORD ");
+			break;
 		default:
 			CIO::message(M_ERROR, "ERROR ");
+			break;
 	}
 	CIO::message(M_INFO, "\n");
 }

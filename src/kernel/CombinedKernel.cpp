@@ -9,10 +9,13 @@ CCombinedKernel::CCombinedKernel(LONG size)
 	: CKernel(size)
 {
 	kernel_list=new CList<CKernel*>(true);
+	fprintf(stderr, "combined kernel created\n") ;
+	
 }
 
 CCombinedKernel::~CCombinedKernel() 
 {
+	fprintf(stderr, "combined kernel deleted\n") ;
 	cleanup();
 	delete kernel_list;
 }
@@ -31,18 +34,41 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 	bool result=true;
 
-	if ( (lf=((CCombinedFeatures*) l)->get_first_feature_obj()) &&
-			(rf=((CCombinedFeatures*) r)->get_first_feature_obj()) && 
-			(k=get_first_kernel()) )
-	{
-		result=k->init(lf,rf, do_init);
+	lf=((CCombinedFeatures*) l)->get_first_feature_obj() ;
+	rf=((CCombinedFeatures*) r)->get_first_feature_obj() ;
+	k=get_first_kernel() ;
 
-		while ( (result) && 
-				(lf=((CCombinedFeatures*) l)->get_next_feature_obj()) &&
-				(lf=((CCombinedFeatures*) r)->get_next_feature_obj()) &&
-				(k=get_next_kernel()) )
-			result=k->init(lf,rf, do_init);
+	result = 1 ;
+	
+	if ( lf && rf && k)
+	{
+		if (l!=r)
+		{
+			while ( result && lf && rf && k )
+			{
+				fprintf(stderr,"init kernel 0x%X (0x%X, 0x%X)\n", k, lf, rf) ;
+				result=k->init(lf,rf, do_init);
+
+				lf=((CCombinedFeatures*) l)->get_next_feature_obj() ;
+				rf=((CCombinedFeatures*) r)->get_next_feature_obj() ;
+				k=get_next_kernel() ;
+			} ;
+		}
+		else
+		{
+			while ( result && lf && k )
+			{
+				result=k->init(lf,rf, do_init);
+
+				fprintf(stderr,"init kernel 0x%X (0x%X, 0x%X): %i\n", k, lf, rf, result) ;
+
+				lf=((CCombinedFeatures*) l)->get_next_feature_obj() ;
+				k=get_next_kernel() ;
+				rf=lf ;
+			} ;
+		}
 	}
+	fprintf(stderr,"k=0x%X  lf=0x%X  rf=0x%X  result=%i\n", k, lf, rf, result) ;
 
 	if (!result)
 	{
@@ -96,7 +122,7 @@ REAL CCombinedKernel::compute(INT x, INT y)
 	CKernel* k=get_first_kernel();
 	while (k)
 	{
-		result+=k->kernel(x,y);
+		result += k->get_combined_kernel_weight() * k->kernel(x,y);
 		k=get_next_kernel();
 	}
 

@@ -296,11 +296,11 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 	{
 		if (strcmp(kern_type,"COMBINED")==0)
 		{
-			delete kernel;
-			kernel= new CCombinedKernel(size);
+			delete k;
+			k= new CCombinedKernel(size);
 			if (kernel)
 				CIO::message(M_INFO, "CombinedKernel created\n");
-			return kernel;
+			return k;
 		}
 	} 
 	//compared with <KERNTYPE> <DATATYPE> <CACHESIZE>
@@ -767,9 +767,23 @@ bool CGUIKernel::add_kernel(CHAR* param)
 
 	if (kernel)
 	{
-		CKernel* k=create_kernel(param);
+		char newparam[1000] ;
+		double weight=1 ;
+		
+		int ret = sscanf(param, "%le %[a-zA-Z _*/+-0-9]", &weight, newparam) ;
+		
+		if (ret!=2)
+		{
+			CIO::message(M_ERROR, "add_kernel <weight> <kernel-parameters>\n");
+			return false ;
+		}
+
+		CKernel* k=create_kernel(newparam);
+		k->set_combined_kernel_weight(weight) ;
+		
 		assert(k);
-		assert(((CCombinedKernel*) kernel)->append_kernel(k));
+		bool bret = ((CCombinedKernel*) kernel)->append_kernel(k) ;
+		assert(bret);
 		((CCombinedKernel*) kernel)->list_kernels();
 		return true;
 	}
