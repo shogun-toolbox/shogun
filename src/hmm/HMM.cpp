@@ -57,7 +57,7 @@ void *vit_dim_prefetch(void * params)
 
 REAL CHMM::prefetch(int dim, bool bw)
 {
-  fprintf(stderr, "prefetch called\n") ;
+  /*fprintf(stderr, "prefetch called\n") ;*/
   if (bw)
     {
       forward_comp(p_observations->get_obs_T(dim), N-1, dim) ;
@@ -514,6 +514,7 @@ REAL CHMM::forward_comp(int time, int state, int dimension)
 		  return sum;
 		else
 		  {
+		    /*printf("setting alpha_cache.dim=%i\n", dimension) ;*/
 		    ALPHA_CACHE(dimension).dimension=dimension;
 		    ALPHA_CACHE(dimension).updated=true;
 		    ALPHA_CACHE(dimension).sum=sum;
@@ -873,10 +874,6 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 #ifdef PARALLEL
     pthread_t *threads=new pthread_t[NUM_PARALLEL] ;
     T_THREAD_PARAM *params=new T_THREAD_PARAM[NUM_PARALLEL] ;
-    pthread_attr_t *attr=new pthread_attr_t;
-    pthread_attr_init(attr) ;
-    pthread_attr_setschedpolicy(attr,SCHED_RR) ;
-    pthread_attr_setinheritsched(attr, PTHREAD_EXPLICIT_SCHED);
 #endif
 
     //change summation order to make use of alpha/beta caches
@@ -889,13 +886,13 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	  for (i=0; i<NUM_PARALLEL; i++)
 	    if (dim+i<p_observations->get_DIMENSION())
 	      {
-		fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;
+		/*fprintf(stderr,"creating thread for dim=%i\n",dim+i) ;*/
 		params[i].hmm=train ;
 		params[i].dim=dim+i ;
 #ifdef SUNOS
 		thr_create(NULL,0, bw_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
 #else // SUNOS
-		pthread_create(&threads[i], NULL, vit_dim_prefetch, (void*)&params[i]) ;
+		pthread_create(&threads[i], NULL, bw_dim_prefetch, (void*)&params[i]) ;
 #endif
 	      } ;
 	  for (i=0; i<NUM_PARALLEL; i++)
@@ -904,7 +901,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 		void * ret ;
 		pthread_join(threads[i], &ret) ;
 		dimmodprob = params[i].ret ;
-		fprintf(stderr,"thread for dim=%i returned: %e\n",dim+i, dimmodprob) ;
+		/*fprintf(stderr,"thread for dim=%i returned: %e\n",dim+i, dimmodprob) ;*/
 	      } ;
 	}
 #else
@@ -1050,7 +1047,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 #ifdef SUNOS
 		thr_create(NULL,0, bw_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
 #else // SUNOS
-		pthread_create(&threads[i], NULL, vit_dim_prefetch, (void*)&params[i]) ;
+		pthread_create(&threads[i], NULL, bw_dim_prefetch, (void*)&params[i]) ;
 #endif
 	      } ;
 	  for (i=0; i<NUM_PARALLEL; i++)
@@ -4694,23 +4691,23 @@ void CHMM::check_and_update_crc(CHMM* pos, CHMM* neg)
 	printf("OB:idx: %d maxl: %d crc: %x\n", idx, o->get_DIMENSION(), crc);
 #endif
 	if (features_crc32[i]!=crc)
-	{
+	  {
 	    features_crc32[i]=crc;
 	    obs_result=true;
-	}
+	  }
     }
-
+    
     if (obs_result)
-    {
+      {
 	delete[] feature_cache_obs;
 	feature_cache_obs=NULL;
-    }
-
+      }
+    
     if ((unsigned int) o->get_support_vector_num() != feature_cache_checksums[7])
-	sv_result=true;
-
+      sv_result=true;
+    
     for (int i=0; i<CRCSIZEHALF && i<o->get_support_vector_num(); i++)
-    {
+      {
 	int idx=o->get_support_vector_idx(i*o->get_support_vector_num()/CRCSIZEHALF);
 	unsigned int crc=math.crc32( (unsigned char*) o->get_obs_vector(idx), o->get_obs_T(idx) ); 
 	

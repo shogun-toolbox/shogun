@@ -80,7 +80,7 @@ class CHMM
     return alpha_cache[dim%NUM_PARALLEL] ; } ;
   inline T_ALPHA_BETA & BETA_CACHE(int dim) {
     return beta_cache[dim%NUM_PARALLEL] ; } ;
-#ifdef LOGSUMARRAY 
+#ifdef LOG_SUM_ARRAY 
   inline REAL* ARRAYS(int dim) {
     return arrayS[dim%NUM_PARALLEL] ; } ;
 #endif
@@ -103,7 +103,7 @@ class CHMM
     return alpha_cache ; } ;
   inline T_ALPHA_BETA & BETA_CACHE(int dim) {
     return beta_cache ; } ;
-#ifdef LOGSUMARRAY
+#ifdef LOG_SUM_ARRAY
   inline REAL* ARRAYS(int dim) {
     return arrayS ; } ;
 #endif
@@ -1484,7 +1484,7 @@ protected:
 	      }
 	    else
 	      {
-		//printf("forward cache failed for %i: old entry: dim=%i\n", dimension, ALPHA_CACHE(dimension).dimension) ;
+		printf("forward cache failed for %i: old entry: dim=%i, %i\n", dimension, ALPHA_CACHE(dimension).dimension, ALPHA_CACHE(dimension).updated) ;
 		return forward_comp(time, state, dimension) ;
 	      } ;
 	  } ;
@@ -1492,20 +1492,20 @@ protected:
 	/// inline proxies for backward pass
 	inline REAL backward(int time, int state, int dimension)
 	  {
-		if (BETA_CACHE(dimension).table && (dimension==BETA_CACHE(dimension).dimension) && (BETA_CACHE(dimension).updated))
-		  {
-		  	if (time<0)
-		  		return BETA_CACHE(dimension).sum;
-		    if (time<p_observations->get_obs_T(dimension))
-				return BETA_CACHE(dimension).table[time*N+state];
-		    else
-				return -CMath::INFTY;
-		  }
+	    if (BETA_CACHE(dimension).table && (dimension==BETA_CACHE(dimension).dimension) && (BETA_CACHE(dimension).updated))
+	      {
+		if (time<0)
+		  return BETA_CACHE(dimension).sum;
+		if (time<p_observations->get_obs_T(dimension))
+		  return BETA_CACHE(dimension).table[time*N+state];
 		else
-		  {
-		    //printf("backward cache failed for %i: old entry: dim=%i\n", dimension, ALPHA_CACHE(dimension).dimension) ;
-		    return backward_comp(time, state, dimension) ;
-		  } ;
+		  return -CMath::INFTY;
+	      }
+	    else
+	      {
+		printf("backward cache failed for %i: old entry: dim=%i, %i\n", dimension, ALPHA_CACHE(dimension).dimension, BETA_CACHE(dimension).updated) ;
+		return backward_comp(time, state, dimension) ;
+	      } ;
 	  } ;
 };
 
