@@ -27,11 +27,11 @@ void CHMM::best_path_trans(REAL *seq, INT seq_len, INT *pos,
 #define PSI(t,j,k) psi[nbest*((t)*N+(j))+(k)]	
 #define DELTA(j,k) delta[(j)*nbest+k]
 #define DELTA_NEW(j,k) delta_new[(j)*nbest+k]
-#define DELTA_END(t,k) delta_end[(t)*nbest+k]
+#define DELTA_END(k) delta_end[k]
 #define KTAB(t,j,k) ktable[nbest*((t)*N+j)+k]
-#define KTAB_ENDS(t,k) ktable_ends[nbest*(t)+k]
+#define KTAB_ENDS(k) ktable_ends[k]
 #define PATHS(t,k) my_paths[(k)*(seq_len+1)+t] 
-#define PATH_ENDS(t,k) path_ends[(t)*nbest+k]
+#define PATH_ENDS(k) path_ends[k]
 #define SEQ(j,t) seq[j+(t)*N]
 #define STEP_PEN(i,j) step_penalties[(j)*N+i]
 #define PEN(i,j) PEN_matrix[(j)*N+i]
@@ -177,12 +177,6 @@ void CHMM::best_path_trans(REAL *seq, INT seq_len, INT *pos,
 			{
 				for (T_STATES i=0; i<N; i++)
 				{
-//  for j=1:size(A,2),
-//	if ~isinf(delta2(j)),
-//	  LEN(:,j,t+1) = LEN(:,P(t,j),t)+pos(t+1)-pos(t) ;
-//	  LEN(P(t,j),j,t+1) = pos(t+1)-pos(t) ;
-//	end ;
-//  end ;
 					INT tmp1 = PSI(t,j,0) ;
 					LEN_NEW(i,j) = LEN(i,tmp1)+pos[t]-pos[t-1] ;
 				}
@@ -212,9 +206,9 @@ void CHMM::best_path_trans(REAL *seq, INT seq_len, INT *pos,
 			
 			for (short int k=0; k<nbest; k++)
 			{
-				DELTA_END(t-1,k) = -tempvv[k] ;
-				PATH_ENDS(t-1,k) = (tempii[k]%N) ;
-				KTAB_ENDS(t-1,k) = (tempii[k]-(tempii[k]%N))/N ;
+				DELTA_END(k) = -tempvv[k] ;
+				PATH_ENDS(k) = (tempii[k]%N) ;
+				KTAB_ENDS(k) = (tempii[k]-(tempii[k]%N))/N ;
 			}
 		}
 	}
@@ -226,9 +220,10 @@ void CHMM::best_path_trans(REAL *seq, INT seq_len, INT *pos,
 		assert(sort_idx!=NULL) ;
 		
 		INT take_iter=seq_len-1 ;
+
 		for (short int k=0; k<nbest; k++)
 		{
-			sort_delta_end[k]=-DELTA_END(take_iter-1,k) ;
+			sort_delta_end[k]=-DELTA_END(k) ;
 			sort_idx[k]=k ;
 		}
 		
@@ -242,8 +237,8 @@ void CHMM::best_path_trans(REAL *seq, INT seq_len, INT *pos,
 			assert(k<nbest && k>=0) ;
 			assert(take_iter<seq_len && take_iter>=0) ;
 			
-			PATHS(take_iter,n) = PATH_ENDS(take_iter-1, k) ;
-			short int q   = KTAB_ENDS(take_iter-1, k) ;
+			PATHS(take_iter,n) = PATH_ENDS(k) ;
+			short int q   = KTAB_ENDS(k) ;
 			
 			for (INT t = take_iter; t>0; t--)
 			{
