@@ -1,5 +1,5 @@
 #include "hmm/Observation.h"
-#include "FKFeatures.h"
+#include "features/FKFeatures.h"
 #include "lib/io.h"
 #include <assert.h>
 
