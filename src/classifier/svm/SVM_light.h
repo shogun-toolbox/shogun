@@ -268,9 +268,9 @@ typedef struct shrink_state {
   INT num_active_rows ;// number of active alpha constraint rows
   REAL *buffer_num ;   // a buffer of length num
   REAL *buffer_numcols ;   // a buffer of length num_cols
-  REAL *buffer1_numrows ;  // buffer 1 of length num_rows
-  REAL *buffer2_numrows ;  // buffer 1 of length num_rows
-  
+  // MKL kernel precomputation
+  REAL ** precomputed_subkernels ;
+  INT num_precomputed_subkernels ;
 
 #ifdef USE_CPLEX
   CPXENVptr     env ;

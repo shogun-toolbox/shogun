@@ -48,9 +48,10 @@ CSVMLight::CSVMLight()
 	lp_C = 0 ;
 	buffer_num      = NULL ;
 	buffer_numcols  = NULL ;
-	buffer1_numrows = NULL ;
-	buffer2_numrows = NULL ;
 	
+	precomputed_subkernels = NULL ;
+	num_precomputed_subkernels = 0 ;
+
 #ifdef USE_CPLEX
 	CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
 	
@@ -128,9 +129,17 @@ CSVMLight::~CSVMLight()
   // MKL stuff
   delete[] W ;
   delete[] buffer_num ;
-  delete[] buffer1_numrows ;
-  delete[] buffer2_numrows ;
   delete[] buffer_numcols ;
+
+  if (precomputed_subkernels != NULL)
+  {
+	  for (INT i=0; i<num_precomputed_subkernels; i++)
+		  delete[] precomputed_subkernels[i] ;
+	  delete[] precomputed_subkernels ;
+	  precomputed_subkernels=NULL ;
+	  num_precomputed_subkernels=0 ;
+  }
+  
 }
 
 bool CSVMLight::train()
@@ -172,10 +181,6 @@ bool CSVMLight::train()
 
 	// MKL stuff
 	buffer_num = new REAL[get_kernel()->get_rhs()->get_num_vectors()] ;
-	delete[] buffer1_numrows ;
-	buffer1_numrows = NULL ;
-	delete[] buffer2_numrows ;
-	buffer2_numrows = NULL ;
 	delete[] buffer_numcols ;
 	buffer_numcols = NULL ;
 
@@ -196,6 +201,64 @@ bool CSVMLight::train()
 	CIO::message(M_DEBUG, "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
 	CIO::message(M_DEBUG, "estimated time: %1.1f hours\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/3600) ;
 	
+	if (precomputed_subkernels != NULL)
+	{
+		for (INT i=0; i<num_precomputed_subkernels; i++)
+			delete[] precomputed_subkernels[i] ;
+		delete[] precomputed_subkernels ;
+		num_precomputed_subkernels=0 ;
+		precomputed_subkernels=NULL ;
+	}
+	if (use_precomputed_subkernels)
+	{
+		INT num = get_kernel()->get_rhs()->get_num_vectors() ;
+		INT num_kernels = get_kernel()->get_num_subkernels() ;
+		num_precomputed_subkernels=num_kernels ;
+		precomputed_subkernels=new (REAL*)[num_precomputed_subkernels] ;
+		CKernel* k = get_kernel() ;
+		INT num_weights = -1;
+		const REAL* w   = k->get_subkernel_weights(num_weights);
+
+		REAL* w_backup = new REAL[num_kernels] ;
+		REAL* w1 = new REAL[num_kernels] ;
+		
+		// backup and set to zero
+		for (INT i=0; i<num_kernels; i++)
+		{
+			w_backup[i] = w[i] ;
+			w1[i]=0.0 ; 
+		}
+
+		for (INT n=0; n<num_precomputed_subkernels; n++)
+		{
+			w1[n]=1.0 ;
+			k->set_subkernel_weights(w1, num_weights) ;
+
+			precomputed_subkernels[n]=new REAL[num*num] ;
+			assert(precomputed_subkernels[n]!=NULL) ;
+			
+			CIO::message(M_INFO, "precomputing kernel matrix (%ix%i)\n", num, num) ;
+			for (INT i=0; i<num; i++)
+			{
+				CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
+				for (INT j=0; j<=i; j++)
+				{
+					precomputed_subkernels[n][i*num+j] = k->kernel(i,j) ;
+					precomputed_subkernels[n][j*num+i] = precomputed_subkernels[n][i*num+j] ;
+				}
+			}
+			CIO::message(M_INFO, "\r %1.2f%% ", 100.0) ;
+			CIO::message(M_INFO, "done.\n") ;
+			w1[n]=0.0 ;
+		}
+
+		// restore old weights
+		k->set_subkernel_weights(w_backup,num_weights) ;
+		
+		delete[] w_backup ;
+		delete[] w1 ;
+
+	}
 
 	// train the svm
 	svm_learn();
@@ -207,6 +270,15 @@ bool CSVMLight::train()
 	{
 		set_alpha(i, model->alpha[i+1]);
 		set_support_vector(i, model->supvec[i+1]);
+	}
+
+	if (precomputed_subkernels!=NULL)
+	{
+		for (INT i=0; i<num_precomputed_subkernels; i++)
+			delete[] precomputed_subkernels[i] ;
+		delete[] precomputed_subkernels ;
+		num_precomputed_subkernels=0 ;
+		precomputed_subkernels=NULL ;
 	}
 	
 	return true ;
@@ -1107,7 +1179,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 											long int totdoc,
 											double *lin, REAL *aicache)
 {
-	CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
+	CKernel* k      = get_kernel();
 	INT num         = k->get_rhs()->get_num_vectors() ;
 	INT num_weights = -1;
 	INT num_kernels = k->get_num_subkernels() ;
@@ -1115,15 +1187,12 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 
 	assert(num_weights==num_kernels) ;
 	REAL* sumw = new REAL[num_kernels];
+
+	if (get_kernel()->get_kernel_type()==K_COMBINED) // for combined kernel
 	{
+		CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
 		CKernel* kn = k->get_first_kernel() ;
 		INT n = 0, i, j ;
-		/*INT jj, ii ;
-		REAL tec ;
-		LONG *all2dnum = new LONG[num+1] ;
-		for (i=0; i<num; i++)
-			all2dnum[i]=i ;
-			all2dnum[num]=-1 ;*/
 		
 		while (kn!=NULL)
 		{
@@ -1135,21 +1204,60 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 						W[j*num_kernels+n]+=(a[i]-a_old[i])*kn->kernel(i,j)*(double)label[i];
 				}
 			}
-            /* // somehow this does not work :-(
-			   for(jj=0;(i=all2dnum[jj])>=0;jj++) 
-			   if(a[i] != a_old[i]) 
-			   {
-			   CKernelMachine::get_kernel()->get_kernel_row(i,all2dnum,aicache);
-			   for(ii=0;(j=all2dnum[ii])>=0;ii++) {
-			   tec=aicache[j];
-			   W[j*num_kernels+n]+=(((a[i]*tec)-(a_old[i]*tec))*(double)label[i]);
-			   }
-			   }*/
 			kn = k->get_next_kernel() ;
 			n++ ;
 		}
-		//delete[] all2dnum ;
 	}
+	else if (use_precomputed_subkernels) // everything is already precomputed
+	{
+		assert(precomputed_subkernels!=NULL) ;
+		for (INT n=0; n<num_kernels; n++)
+		{
+			assert(precomputed_subkernels[n]!=NULL) ;
+			for(INT i=0;i<num;i++) 
+			{
+				if(a[i] != a_old[i]) 
+				{
+					for(INT j=0;j<num;j++) 
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*precomputed_subkernels[n][i*num+j]*(double)label[i];
+				}
+			}
+		}
+	} 
+	else // hope the kernel is fast
+	{
+		REAL* w_backup = new REAL[num_kernels] ;
+		REAL* w1 = new REAL[num_kernels] ;
+		
+		// backup and set to zero
+		for (INT i=0; i<num_kernels; i++)
+		{
+			w_backup[i] = w[i] ;
+			w1[i]=0.0 ; 
+		}
+		for (INT n=0; n<num_kernels; n++)
+		{
+			w1[n]=1.0 ;
+			k->set_subkernel_weights(w1, num_weights) ;
+		
+			for(INT i=0;i<num;i++) 
+			{
+				if(a[i] != a_old[i]) 
+				{
+					for(INT j=0;j<num;j++) 
+						W[j*num_kernels+n]+=(a[i]-a_old[i])*k->kernel(i,j)*(double)label[i];
+				}
+			}
+			w1[n]=0.0 ;
+		}
+
+		// restore old weights
+		k->set_subkernel_weights(w_backup,num_weights) ;
+		
+		delete[] w_backup ;
+		delete[] w1 ;
+	}
+	
 	REAL objective=0;
 #ifdef HAVE_ATLAS
 	REAL *alphay  = buffer_num ;
@@ -1327,10 +1435,6 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 			
 			if (!buffer_numcols)
 				buffer_numcols  = new REAL[cur_numcols] ;
-			//if (!buffer1_numrows)
-			//buffer1_numrows = new REAL[cur_numrows] ;
-			//if (!buffer2_numrows)
-			//	buffer2_numrows = new REAL[cur_numrows] ;
 					
 			REAL *x     = buffer_numcols ;
 			REAL *slack = new REAL[cur_numrows] ;
@@ -1648,10 +1752,6 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 			
 			if (!buffer_numcols)
 				buffer_numcols  = new REAL[cur_numcols] ;
-			//if (!buffer1_numrows)
-			//buffer1_numrows = new REAL[cur_numrows] ;
-			//if (!buffer2_numrows)
-			//	buffer2_numrows = new REAL[cur_numrows] ;
 					
 			REAL *x     = buffer_numcols ;
 			REAL *slack = new REAL[cur_numrows] ;

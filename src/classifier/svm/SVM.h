@@ -110,7 +110,10 @@ class CSVM : public CKernelMachine
 
 		CLabels* classify(CLabels* labels=NULL);
 		REAL classify_example(INT num);
-
+		void set_precomputed_subkernels_enabled(bool flag)
+			{
+				use_precomputed_subkernels = flag ;
+			}
 	protected:
 
 		/// an SVM is defined by support vectors, their coefficients alpha
@@ -135,5 +138,6 @@ class CSVM : public CKernelMachine
 		REAL C2;
 		REAL C_mkl ;
 		bool use_mkl, use_linadd ;
+		bool use_precomputed_subkernels ;
 };
 #endif

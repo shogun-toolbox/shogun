@@ -37,6 +37,7 @@ public:
 	double C1;
 	double C2;
 	double C_mkl ;
-	bool use_mkl, use_linadd, use_precompute, use_precompute_subkernel ;
+	bool use_mkl, use_linadd, use_precompute, use_precompute_subkernel, 
+		use_precompute_subkernel_light ;
 };
 #endif

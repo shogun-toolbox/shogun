@@ -10,7 +10,8 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
 {
  public:
   CWeightedDegreePositionCharKernel(LONG size, REAL* weights, INT degree, INT max_mismatch, 
-									INT * shift, INT shift_len, bool use_norm=false) ;
+									INT * shift, INT shift_len, bool use_norm=false,
+									INT mkl_stepsize=1) ;
   ~CWeightedDegreePositionCharKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -53,11 +54,13 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
 	  }
   inline virtual INT get_num_subkernels()
 	  {
+		  //fprintf(stderr, "mkl_stepsize=%i\n", mkl_stepsize) ;
+		  //exit(-1) ;
 		  if (position_weights!=NULL)
-			  return seq_length ;
+			  return (INT) ceil(1.0*seq_length/mkl_stepsize) ;
 		  if (length==0)
-			  return get_degree();
-		  return get_degree()*length ;
+			  return (INT) ceil(1.0*get_degree()/mkl_stepsize);
+		  return (INT) ceil(1.0*get_degree()*length/mkl_stepsize) ;
 	  }
   inline void compute_by_subkernel(INT idx, REAL * subkernel_contrib)
 	  { 
@@ -70,16 +73,47 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
 	  } ;
   inline const REAL* get_subkernel_weights(INT& num_weights)
 	  {
-		  return get_weights(num_weights) ;
+		  num_weights = get_num_subkernels() ;
+		  
+		  delete[] weights_buffer ;
+		  weights_buffer = new REAL[num_weights] ;
+		  
+		  if (position_weights!=NULL)
+			  for (INT i=0; i<num_weights; i++)
+				  weights_buffer[i] = position_weights[i*mkl_stepsize] ;
+		  else
+			  for (INT i=0; i<num_weights; i++)
+				  weights_buffer[i] = weights[i*mkl_stepsize] ;
+		  
+		  return weights_buffer ;
 	  }
   inline void set_subkernel_weights(REAL* weights2, INT num_weights2)
 	  {
-		  INT num_weights=-1 ;
-		  REAL* weights = get_weights(num_weights) ;
+		  INT num_weights = get_num_subkernels() ;
 		  if (num_weights!=num_weights2)
 			  CIO::message(M_ERROR, "number of weights do not match\n") ;
-		  for (INT i=0; i<num_weights; i++)
-			  weights[i]=weights2[i] ;
+		  
+		  if (position_weights!=NULL)
+			  for (INT i=0; i<num_weights; i++)
+				  for (INT j=0; j<mkl_stepsize; j++)
+				  {
+					  if (i*mkl_stepsize+j<seq_length)
+						  position_weights[i*mkl_stepsize+j] = weights2[i] ;
+				  }
+		  else if (length==0)
+		  {
+			  for (INT i=0; i<num_weights; i++)
+				  for (INT j=0; j<mkl_stepsize; j++)
+					  if (i*mkl_stepsize+j<get_degree())
+						  weights[i*mkl_stepsize+j] = weights2[i] ;
+		  }
+		  else
+		  {
+			  for (INT i=0; i<num_weights; i++)
+				  for (INT j=0; j<mkl_stepsize; j++)
+					  if (i*mkl_stepsize+j<get_degree()*length)
+						  weights[i*mkl_stepsize+j] = weights2[i] ;
+		  }
 	  }
   		
   // other kernel tree operations  
@@ -96,33 +130,33 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
 
   // weight setting/getting operations
   inline REAL *get_degree_weights(INT& d, INT& len)
-  {
-	  d=degree;
-	  len=length;
-	  return weights;
-  }
-  inline REAL *get_weights(INT& num_weights)
-  {
-	  if (position_weights!=NULL)
 	  {
-		  num_weights = seq_length ;
-		  return position_weights ;
+		  d=degree;
+		  len=length;
+		  return weights;
 	  }
-	  if (length==0)
-		  num_weights = degree ;
-	  else
-		  num_weights = degree*length ;
-	  return weights;
-  }
+  inline REAL *get_weights(INT& num_weights)
+	  {
+		  if (position_weights!=NULL)
+		  {
+			  num_weights = seq_length ;
+			  return position_weights ;
+		  }
+		  if (length==0)
+			  num_weights = degree ;
+		  else
+			  num_weights = degree*length ;
+		  return weights;
+	  }
   inline REAL *get_position_weights(INT& len)
-  {
-	  len=seq_length;
-	  return position_weights;
-  }
+	  {
+		  len=seq_length;
+		  return position_weights;
+	  }
   bool set_weights(REAL* weights, INT d, INT len=0);
-  bool set_position_weights(REAL* position_weights, INT len=0);
+  bool set_position_weights(REAL* position_weights, INT len=0); 
   bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
-
+  
   REAL compute_by_tree(INT idx) ;
   void compute_by_tree(INT idx, REAL* LevelContrib) ;
 
@@ -153,6 +187,8 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
   REAL* weights;
   REAL* position_weights ;
   INT * counts ;
+  REAL* weights_buffer ;
+  INT mkl_stepsize ;
 
   INT degree;
   INT length;
@@ -231,7 +267,7 @@ inline REAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 
 /* computes the simple kernel between position seq_pos and tree tree_pos */
 inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, INT seq_pos, INT tree_pos, 
-																	  INT weight_pos,
+																	  INT weight_pos, 
 																	  REAL* LevelContrib, REAL factor) 
 {
 	struct SuffixTree *tree = trees[tree_pos] ;
@@ -251,11 +287,11 @@ inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 				if ((!tree->has_floats) && (tree->childs[vec[seq_pos+j]]!=NULL))
 				{
 					tree=tree->childs[vec[seq_pos+j]] ;
-					LevelContrib[weight_pos] += factor*tree->weight*weights[j] ;
+					LevelContrib[weight_pos/mkl_stepsize] += factor*tree->weight*weights[j] ;
 				} else
 					if (tree->has_floats)
 					{
-						LevelContrib[weight_pos] += factor*tree->child_weights[vec[seq_pos+j]]*weights[j] ;
+						LevelContrib[weight_pos/mkl_stepsize] += factor*tree->child_weights[vec[seq_pos+j]]*weights[j] ;
 						break ;
 					} else
 						break ;
@@ -268,11 +304,11 @@ inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 				if ((!tree->has_floats) && (tree->childs[vec[seq_pos+j]]!=NULL))
 				{
 					tree=tree->childs[vec[seq_pos+j]] ;
-					LevelContrib[weight_pos] += factor*tree->weight*weights[j+weight_pos*degree] ;
+					LevelContrib[weight_pos/mkl_stepsize] += factor*tree->weight*weights[j+weight_pos*degree] ;
 				} else
 					if (tree->has_floats)
 					{
-						LevelContrib[weight_pos] += factor*tree->child_weights[vec[seq_pos+j]]*weights[j+weight_pos*degree] ;
+						LevelContrib[weight_pos/mkl_stepsize] += factor*tree->child_weights[vec[seq_pos+j]]*weights[j+weight_pos*degree] ;
 						break ;
 					} else
 						break ;
@@ -286,11 +322,11 @@ inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 			if ((!tree->has_floats) && (tree->childs[vec[seq_pos+j]]!=NULL))
 			{
 				tree=tree->childs[vec[seq_pos+j]] ;
-				LevelContrib[j] += factor*tree->weight*weights[j] ;
+				LevelContrib[j/mkl_stepsize] += factor*tree->weight*weights[j] ;
 			} else
 				if (tree->has_floats)
 				{
-					LevelContrib[j] += factor*tree->child_weights[vec[seq_pos+j]]*weights[j] ;
+					LevelContrib[j/mkl_stepsize] += factor*tree->child_weights[vec[seq_pos+j]]*weights[j] ;
 					break ;
 				} else
 					break ;
@@ -303,11 +339,11 @@ inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 			if ((!tree->has_floats) && (tree->childs[vec[seq_pos+j]]!=NULL))
 			{
 				tree=tree->childs[vec[seq_pos+j]] ;
-				LevelContrib[j+degree*weight_pos] += factor * tree->weight * weights[j+weight_pos*degree] ;
+				LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * tree->weight * weights[j+weight_pos*degree] ;
 			} else
 				if (tree->has_floats)
 				{
-					LevelContrib[j+degree*weight_pos] += factor * tree->child_weights[vec[seq_pos+j]] * weights[j+weight_pos*degree] ;
+					LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * tree->child_weights[vec[seq_pos+j]] * weights[j+weight_pos*degree] ;
 					break ;
 				} else
 					break ;

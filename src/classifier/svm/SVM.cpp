@@ -20,6 +20,7 @@ CSVM::CSVM()
 	C2=-1;
 	use_mkl = false;
 	use_linadd = false;
+	use_precomputed_subkernels = false ;
 }
 
 CSVM::~CSVM()

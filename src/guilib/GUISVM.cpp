@@ -27,6 +27,7 @@ CGUISVM::CGUISVM(CGUI * gui_)
 	use_linadd = false ;
 	use_precompute = false ;
 	use_precompute_subkernel = false ;
+	use_precompute_subkernel_light = false ;
 }
 
 CGUISVM::~CGUISVM()
@@ -127,6 +128,7 @@ bool CGUISVM::train(CHAR* param)
 	svm->set_linadd_enabled(use_linadd);
 	((CKernelMachine*) svm)->set_labels(trainlabels);
 	((CKernelMachine*) svm)->set_kernel(kernel);
+	((CSVM*) svm)->set_precomputed_subkernels_enabled(use_precompute_subkernel_light) ;
 	kernel->set_precompute_matrix(use_precompute, use_precompute_subkernel);
 	
 	bool result = svm->train();
@@ -372,6 +374,7 @@ bool CGUISVM::set_precompute_enabled(CHAR* param)
 
 	use_precompute = (precompute==1);
 	use_precompute_subkernel = (precompute==2);
+	use_precompute_subkernel_light = (precompute==3);
 
 	if (use_precompute)
 		CIO::message(M_INFO, "Enabling Kernel Matrix Precomputation\n") ;
@@ -382,6 +385,11 @@ bool CGUISVM::set_precompute_enabled(CHAR* param)
 		CIO::message(M_INFO, "Enabling Subkernel Matrix Precomputation\n") ;
 	else
 		CIO::message(M_INFO, "Disabling Subkernel Matrix Precomputation\n") ;
+
+	if (use_precompute_subkernel_light)
+		CIO::message(M_INFO, "Enabling Subkernel Matrix Precomputation by SVM Light\n") ;
+	else
+		CIO::message(M_INFO, "Disabling Subkernel Matrix Precomputation by SVM Light\n") ;
 
 	return true ;  
 }

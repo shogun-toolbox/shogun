@@ -8,8 +8,10 @@
 
 CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, REAL* w, INT d, 
 																	 INT max_mismatch_, INT * shift_, 
-																	 INT shift_len_, bool use_norm)
-	: CCharKernel(size),weights(NULL),position_weights(NULL),counts(NULL),degree(d), 
+																	 INT shift_len_, bool use_norm,
+																	 INT mkl_stepsize_)
+	: CCharKernel(size),weights(NULL),position_weights(NULL),counts(NULL),
+	  weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), 
 	  max_mismatch(max_mismatch_), seq_length(0), 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
 	  match_vector(NULL), use_normalization(use_norm)
@@ -57,6 +59,9 @@ CWeightedDegreePositionCharKernel::~CWeightedDegreePositionCharKernel()
 	delete[] position_weights ;
 	position_weights=NULL ;
 
+	delete[] weights_buffer ;
+	weights_buffer = NULL ;
+	
 	cleanup();
 }
 

@@ -159,7 +159,8 @@ REAL CCombinedKernel::compute(INT x, INT y)
 	CKernel* k=get_first_kernel();
 	while (k)
 	{
-		result += k->get_combined_kernel_weight() * k->kernel(x,y);
+		if (k->get_combined_kernel_weight()!=NULL)
+			result += k->get_combined_kernel_weight() * k->kernel(x,y);
 		k=get_next_kernel();
 	}
 
@@ -254,21 +255,26 @@ REAL CCombinedKernel::compute_optimized(INT idx)
 	{
 		if (k && k->is_optimizable() && 
 			k->get_is_initialized())
-			result += k->get_combined_kernel_weight()*
-				k->compute_optimized(idx) ;
+		{
+			if (k->get_combined_kernel_weight()!=0)
+				result += k->get_combined_kernel_weight()*
+					k->compute_optimized(idx) ;
+		}
 		else
 		{
 			assert(sv_idx!=NULL || sv_count==0) ;
 			assert(sv_weight!=NULL || sv_count==0) ;
 			// CIO::message(M_DEBUG, "not optimized kernel computation\n") ;
 
-			// compute the usual way for any non-optimized kernel
-			int j=0;
-			REAL sub_result=0 ;
-			for (j=0; j<sv_count; j++)
-				sub_result += sv_weight[j] * k->kernel(sv_idx[j], idx) ;
-			
-			result += k->get_combined_kernel_weight()*sub_result ;
+			if (k->get_combined_kernel_weight()!=0)
+			{ // compute the usual way for any non-optimized kernel
+				int j=0;
+				REAL sub_result=0 ;
+				for (j=0; j<sv_count; j++)
+					sub_result += sv_weight[j] * k->kernel(sv_idx[j], idx) ;
+				
+				result += k->get_combined_kernel_weight()*sub_result ;
+			}
 		} ;
 		
 		k = get_next_kernel() ;
@@ -311,7 +317,8 @@ void CCombinedKernel::compute_by_subkernel(INT idx, REAL * subkernel_contrib)
 	CKernel* k = get_first_kernel();
 	while(k)
 	{
-		subkernel_contrib[i] += k->get_combined_kernel_weight() * k->compute_optimized(idx) ;
+		if (k->get_combined_kernel_weight()!=0)
+			subkernel_contrib[i] += k->get_combined_kernel_weight() * k->compute_optimized(idx) ;
 		//subkernel_contrib[i] += k->compute_optimized(idx) ;
 		k = get_next_kernel();
 		i++ ;
