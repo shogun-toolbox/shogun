@@ -11,5 +11,5 @@ num_feat=fread(fid, 1, intstring)
 preprocd=fread(fid, 1, intstring)
 
 feature_matrix=fread(fid, num_vec*num_feat, doublestring);
-feature_matrix=reshape(feature_matrix, num_vec, num_feat);
+feature_matrix=reshape(feature_matrix, num_feat, num_vec);
 labels=fread(fid, num_vec, intstring);
