@@ -351,7 +351,7 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 	  {
 		  for (INT j=0; j<degree; j++)
 		  {
-			  if (!match_vector[i+j])
+			  if (match_vector[i+j])
 				  break;
 			  sum += weights[i*degree+j];
 		  }
