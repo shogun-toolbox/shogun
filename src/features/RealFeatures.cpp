@@ -37,12 +37,12 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
     } 
   else
     {
-      CIO::message("computing %i th feature vector\n", (int)num) ;
+      //CIO::message("computing %i th feature vector\n", (int)num) ;
       free=true ;
       REAL* feat=compute_feature_vector(num, len) ;
       if (preproc)
 	{
-	  CIO::message("preprocessing %i th feature vector\n", (int)num) ;
+	  //CIO::message("preprocessing %i th feature vector\n", (int)num) ;
 	  REAL* feat2 = ((CRealPreProc*) preproc)->apply_to_feature_vector(feat, len);
 	  delete[] feat ;
 	  return feat2 ;

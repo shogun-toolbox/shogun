@@ -26,7 +26,7 @@ static double one=1.0 ;
 CSVMMPI::CSVMMPI(int argc, const char **argv)
   //  : Z(1,1,&one,false,donothing)
 {
-  svm_mpi_init(argc, argv) ;
+  //  svm_mpi_init(argc, argv) ;
   kernel=NULL ;
 } ;
 
@@ -36,8 +36,15 @@ CSVMMPI::~CSVMMPI()
 } ;
 
 
-bool CSVMMPI::svm_train(CFeatures* train)
+bool CSVMMPI::svm_train(CFeatures* train_)
 {
+  if (train_->get_feature_type()!=F_REAL)
+    {
+      CIO::message("features do not fit to SVM\n") ;
+      return false ;
+    } ;
+  CRealFeatures *train=(CRealFeatures*)train_ ;
+  
   int num_cols=train->get_number_of_examples() ;
   num_rows=((CRealFeatures*)train)->get_num_features() ;
   CIO::message("num_rows=%i\n", num_rows) ;
@@ -45,18 +52,23 @@ bool CSVMMPI::svm_train(CFeatures* train)
   int * labels=train->get_labels(dummy) ;
   assert(dummy==num_cols) ;
   
+  CIO::message("creating big matrix\n") ;
+
   m_prime=svm_mpi_broadcast_Z_size(num_cols, num_rows, m_last) ;
   int j=0;
   
+  double * column=NULL ;
   for (j=0; j<num_cols; j++) 
   {
     int rank=floor(((double)j)/m_prime) ;
-    int start_idx=j%m_prime ;
+    int start_idx=j%m_prime ; 
+    bool free ; long len ;
+
     //CIO::message("setting vector: %i %i (%i,%i)\n",start_idx, rank, j, m_prime) ;
-    double * column=new REAL[num_rows] ;
-    
-    
+    column=train->get_feature_vector(j, len, free);
+    assert(len==num_rows) ;
     svm_mpi_set_Z_block(column, 1, start_idx, rank) ; 
+    train->free_feature_vector(column, free);
   } ;
   
   svm_mpi_optimize(labels, num_cols) ; 
@@ -83,7 +95,6 @@ void run_non_root_2mpi(const unsigned my_rank, const unsigned num_nodes);
 
 void CSVMMPI::svm_mpi_init(int argc, const char **argv)
 { 
-
   MPI_Init(&argc, (char***)&argv);
   MPI_Comm_rank(MPI_COMM_WORLD, (int *)&my_rank);
   MPI_Comm_size(MPI_COMM_WORLD, (int *)&num_nodes);
@@ -104,10 +115,9 @@ unsigned CSVMMPI::svm_mpi_broadcast_Z_size(int num_cols, int num_rows_, unsigned
 {
   unsigned num_nodes;
   num_rows=num_rows_ ;
-  //  MPI_Comm_size(MPI_COMM_WORLD, (int *)&num_nodes);
+  //MPI_Comm_size(MPI_COMM_WORLD, (int *)&num_nodes);
+  //m_prime=distribute_dimensions(num_cols, num_nodes, num_rows_, num_rows_, &m_last) ;
   num_nodes=1 ;
-  //m_prime=distribute_dimensions(num_cols, num_nodes, num_rows_, num_rows_,
-  //			&m_last) ;
   m_prime=num_cols ;
   m_last=num_cols ;
 
@@ -140,6 +150,7 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
   double bound=10 ;
   int maxiter=50 ;
 
+  CIO::message("preparing small matrices\n") ;
   IntpointResources *res = NULL ;
   if (! my_rank)
     res = new IntpointResources[num_nodes];
@@ -162,11 +173,13 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples)
   optimizer.SetBound(10);
   optimizer.SetMaxIterations(maxiter);
 
-  unsigned my_rank ;
-  MPI_Comm_rank(MPI_COMM_WORLD, (int *)&my_rank);
+  unsigned my_rank=0 ;
+  //MPI_Comm_rank(MPI_COMM_WORLD, (int *)&my_rank);
   const char * how ;
 
   CMatrix<double> primal, dual ;
+
+  CIO::message("starting optimizer\n") ;
 
   optimize_smw2mpi_core<double>(optimizer, c, Z, A, b, l, u,
 				r, m_prime, m_last, my_rank,

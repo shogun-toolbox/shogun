@@ -69,12 +69,12 @@ bool CPruneVarSubMean::init(CFeatures* f_)
 	  num_ok++ ;
 	} ;
     } ;
-  CIO::message("number of features: %i  number ok: %i\n", num_features, num_ok) ;
+  //CIO::message("number of features: %i  number ok: %i\n", num_features, num_ok) ;
   delete[] idx ;
   idx=new int[num_ok] ;
   for (j=0; j<num_ok; j++)
     idx[j]=idx_ok[j] ;
-
+  num_idx=num_ok ;
   delete[] idx_ok ;
 
   return true ;
@@ -111,7 +111,7 @@ REAL* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
 /// result in feature matrix
 REAL* CPruneVarSubMean::apply_to_feature_vector(REAL* f, int len)
 {
-  CIO::message("preprocessing vector of length %i to length %i\n", len, num_idx) ;
+  //CIO::message("preprocessing vector of length %i to length %i\n", len, num_idx) ;
   REAL *ret=new REAL[num_idx] ;
   for (int i=0; i<num_idx; i++)
     ret[i]=f[idx[i]] ;
