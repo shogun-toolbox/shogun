@@ -258,6 +258,7 @@ CHAR* CTextGUI::get_line(FILE* infile, bool show_prompt)
 		print_prompt();
 	if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
 		return NULL;
+	char* in=input;
 #endif
 
 	if (in==NULL || (!strlen(input)))
