@@ -9,11 +9,6 @@
 //#include <ilconcert/ilomodel.h>
 //#include <ilcplex/ilocplex.h>
 //ILOSTLBEGIN
-#ifdef HAVE_ATLAS
-extern "C" {
-#include <cblas.h>
-}
-#endif
 
 #ifdef USE_CPLEX
 extern "C" {
@@ -21,6 +16,11 @@ extern "C" {
 }
 #endif
 
+#ifdef HAVE_ATLAS
+extern "C" {
+#include <cblas.h>
+}
+#endif
 
 CSVMLight::CSVMLight()
 {
@@ -1293,11 +1293,17 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			
 #endif
 			
-			// update lin
+// update lin
 #ifdef HAVE_ATLAS
-// crashes, why?? SSE?
-			cblas_dgemv(CblasColMajor, CblasTrans, num_kernels, num,
-                 1.0, W, num_kernels, w, 1, 0.0, lin, 1) ;
+//void cblas_dgemv(const enum CBLAS_ORDER order,
+//                 const enum CBLAS_TRANSPOSE TransA, const int M, const int N,
+//                 const double alpha, const double *A, const int lda,
+//                 const double *X, const int incX, const double beta,
+//                 double *Y, const int incY);
+
+			cblas_dgemv(CblasColmajor,
+					CblasTrans, num_kernels, num,
+					1.0, W, num_kernels, w, 1, 0.0, lin,1);
 #else
 			for(int i=0; i<num; i++)
 				lin[i]=0 ;

@@ -7,8 +7,7 @@
 
 #ifdef HAVE_ATLAS
 extern "C" {
-#include <atlas_enum.h>
-#include <atlas_level2.h>
+#include <cblas.h>
 }
 
 #ifdef HAVE_LAPACK
@@ -100,7 +99,7 @@ bool CPCACut::init(CFeatures* f)
 				vec[j]-=mean[j] ;
 
 			/// A = 1.0*xy^T+A blas
-			ATL_dger(num_features,num_features, 1.0, vec, 1, 
+			cblas_dger(CblasColmajor, num_features,num_features, 1.0, vec, 1, 
 				 vec, 1, cov, (int)num_features) ;
 
 			//for (INT k=0; k<num_features; k++)
@@ -203,7 +202,7 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 			for (i=0; i<num_features; i++)
 				sub_mean[i]=m[num_features*vec+i]-mean[i] ;
 
-			ATL_dgemv(AtlasNoTrans, num_dim, num_features, 1.0,
+			cblas_dgemv(CblasColmajor, CblasNoTrans, num_dim, num_features, 1.0,
 				  T, num_dim, sub_mean, 1, 0, res, 1); 
 
 			REAL* m_transformed=&m[num_dim*vec];

@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#missing purify, condor, ddd
-#DEFINES="-DMPICH_SKIP_MPICXX -D_LARGEFILE64_SOURCE -DDEBUG -DSVMMPI -DWITHMATLAB -DNO_LOG_CACHE -DBIGOBS -DBIGSTATES -DNORMALIZE_DERIVATIVE -DNORMALIZE_TO_ONE -DUSE_KERNEL_CACHE -DPARALLEL_STRUCTURES -DLOG_SUM_ARRAY -DTMP_SAVE  -DCHECK_BW_NORMALIZATION"
-#"-llapack -llapack_atlas -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c -lm"
-
 # some hopefully reasonable defaults
 SRCDIR=.
 EXT_SRC_C=c
@@ -1165,7 +1161,7 @@ set_opts()
 		then
 			LINKFLAGS="$LINKFLAGS"
 		else
-			LINKFLAGS="$LINKFLAGS -llapack_pic -llapack_atlas -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c"
+			LINKFLAGS="$LINKFLAGS -llapack_pic -lcblas -lf77blas -ldl -lrt -lm -liberty -lg2c"
 		fi
 	fi
 

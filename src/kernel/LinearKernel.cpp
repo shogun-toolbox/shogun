@@ -2,7 +2,7 @@
 
 #ifdef HAVE_ATLAS
 extern "C" {
-#include <atlas_level1.h>
+#include <cblas.h>
 }
 #endif
 
@@ -100,17 +100,17 @@ REAL CLinearKernel::compute(INT idx_a, INT idx_b)
 
   INT ialen=(int) alen;
 
-//#ifndef HAVE_ATLAS
+#ifndef HAVE_ATLAS
   REAL result=0;
   {
     for (INT i=0; i<ialen; i++)
       result+=avec[i]*bvec[i];
   }
   result/=scale;
-//#else
-  // INT skip=1;
-//  REAL result = ATL_ddot(ialen, avec, skip, bvec, skip)/scale;
-//#endif // HAVE_ATLAS
+#else
+  INT skip=1;
+  REAL result = cblas_dot(ialen, avec, skip, bvec, skip)/scale;
+#endif // HAVE_ATLAS
 
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
@@ -167,17 +167,17 @@ REAL CLinearKernel::compute_optimized(INT idx_b)
 
 	INT ialen=(int) blen;
 
-//#ifndef HAVE_ATLAS
+#ifndef HAVE_ATLAS
 	REAL result=0;
 	{
 		for (INT i=0; i<ialen; i++)
 			result+=normal[i]*bvec[i];
 	}
 	result/=scale;
-//#else
-//	INT skip=1;
-//	REAL result = ATL_ddot(ialen, normal, skip, bvec, skip)/scale;
-//#endif
+#else
+	INT skip=1;
+	REAL result = cblas_ddot(ialen, normal, skip, bvec, skip)/scale;
+#endif
 
 	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
