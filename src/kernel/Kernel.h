@@ -1,10 +1,10 @@
 #ifndef _KERNEL_H___
 #define _KERNEL_H___
+
 #include "lib/common.h"
 #include "features/Features.h"
 
-
-#define CFLOAT double
+#include <stdio.h>
 
 class CKernel
 {
