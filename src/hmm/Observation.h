@@ -296,7 +296,7 @@ protected:
 	int max_T;
 
 	/// content of file
-	char* full_content;
+	T_OBSERVATIONS* full_observation;
 	//@}
 };
 #endif

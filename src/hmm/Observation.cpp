@@ -15,7 +15,7 @@ T_OBSERVATIONS CObservation::maptable[MAPTABLE_LENGTH];
 
 CObservation::CObservation(E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M_, int M_, int ORDER_)
 {
-	full_content=NULL;
+	full_observation=NULL;
 	observations=NULL;
 	observation_len=NULL;
 	label=NULL;
@@ -36,7 +36,7 @@ CObservation::CObservation(CObservation* pos, CObservation* neg)
 {
   /*	sv_idx=-1;
 	sv_num=0;*/
-	this->full_content=NULL;
+	this->full_observation=NULL;
 	this->MAX_M=-1;
 	this->M=-1;
 	this->ORDER=1;
@@ -95,7 +95,7 @@ CObservation::CObservation(CObservation* pos, CObservation* neg)
 
 CObservation::CObservation(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET alphabet, int MAX_M_, int M_, int ORDER_)
 {
-	full_content=NULL;
+	full_observation=NULL;
 	observations=NULL;
 	observation_len=NULL;
 	label=NULL;
@@ -114,8 +114,8 @@ void CObservation::cleanup()
 	REALDIMENSION=-1;
 	DIMENSION=-1;
 
-	delete[] full_content;
-	full_content=NULL;
+	delete[] full_observation;
+	full_observation=NULL;
 
 	delete[] observations;
 	observations=NULL;
@@ -151,58 +151,73 @@ bool CObservation::load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET
     {
 		if ((length=(int)ftell(file)) != -1)
 		{
-			full_content = new char[length];
-			
+#warning fixme: depends on alphabet
+			char* full_content = new char[length];
+			full_observation = new T_OBSERVATIONS[length];
+
 			rewind(file);
 			numread=(int)fread(full_content, sizeof (unsigned char), length, file);
 
-			// count lines
-			int i, lines = 0 ;
-
-			for (i=0;i<length; i++)
+			if (numread==length)
 			{
-				if (full_content[i]=='\n')
-					lines++ ;
-			}
-
-			observations=new T_OBSERVATIONS*[lines];
-			observation_len=new int[lines];
-
-			REALDIMENSION=lines ;
-			DIMENSION=lines ;
-
-			printf("found %i sequences\nallocating memory...", lines) ;
-			
-
-			// count letters per line
-			int line=0 ;
-			int time=0 ; 
-			max_T=-1;
-
-			for (i=0;i<length; i++)
-			{
-				if (full_content[i]=='\n')
+				int i;
+				for (i=length-1; i>=0; i--)
 				{
-					observations[line]=(T_OBSERVATIONS*) full_content+i-time;
-					observation_len[line]=time;
-					full_content[i]='\0';
+					full_observation[i]=full_content[i];
+				}
 
-					if (translate_from_single_order(observations[line], time) < 0)
-						CIO::message(stderr,"wrong character(s) in line %i\n", line) ;
+				delete[] full_content;
+				full_content=NULL;
 
-					if (time>max_T)
-						max_T=time;
+				// count lines
+				int lines = 0 ;
+				for (i=0;i<length; i++)
+				{
+					if (full_observation[i]==(T_OBSERVATIONS) '\n')
+						lines++ ;
+				}
 
-					line++ ;
-					time=0 ;
-				} 
-				else time++ ;
-			} ;
+				observations=new T_OBSERVATIONS*[lines];
+				observation_len=new int[lines];
 
-			printf("done\n") ;
-			printf("maximum length %i \n", max_T) ;
-			
+				REALDIMENSION=lines ;
+				DIMENSION=lines ;
 
+				printf("found %i sequences\nallocating memory...", lines) ;
+
+
+				// count letters per line
+				int line=0 ;
+				int time=0 ; 
+				max_T=-1;
+
+				for (i=0;i<length; i++)
+				{
+					if (full_observation[i]==(T_OBSERVATIONS) '\n')
+					{
+						observations[line]=(T_OBSERVATIONS*) full_observation+i-time;
+						observation_len[line]=time;
+						full_observation[i]=(T_OBSERVATIONS) '\0';
+
+						if (translate_from_single_order(observations[line], time) < 0)
+							CIO::message(stderr,"wrong character(s) in line %i\n", line) ;
+
+						if (time>max_T)
+							max_T=time;
+
+						line++ ;
+						time=0 ;
+					} 
+					else time++ ;
+				} ;
+
+				printf("done\n") ;
+				printf("maximum length %i \n", max_T) ;
+
+
+			}
+			else
+				CIO::message("error reading file\n");
 		}
     }
     return numread==length;
@@ -288,14 +303,14 @@ int CObservation::translate_from_single_order(T_OBSERVATIONS* observations_, int
   int i,j, fac=1 ;
   T_OBSERVATIONS value=0;
 
-  for (i=sequence_length-1; i>= ORDER-1; i--)	//convert interval of size T
+  for (i=sequence_length-1; i>= ((int) ORDER)-1; i--)	//convert interval of size T
     {
       value=0;
-      for (j=i; j>=i-ORDER+1; j--)
+      for (j=i; j>=i-((int) ORDER)+1; j--)
 	{
 	  if ((maptable[observations_[j]]>=M) || (maptable[observations_[j]]==MAPTABLE_UNDEF))
 	    {
-	      CIO::message(stderr,"wrong: %c -> %i\n",(char)observations_[j],(int)maptable[observations_[j]]) ;
+	      CIO::message(stderr,"wrong: %c -> %i,%i,%i,%i\n",observations_[j],(int)maptable[observations_[j]],j,i,sequence_length-1) ;
 	      fac=-1 ;
 	    } ;
 	  value= (value >> MAX_M) | (maptable[observations_[j]] << (MAX_M * (ORDER-1)));

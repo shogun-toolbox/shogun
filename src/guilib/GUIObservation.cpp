@@ -158,8 +158,13 @@ bool CGUIObservation::set_alphabet(char* param)
 		else if (strcmp(target,"CUBE")==0)
 			alphabet=CUBE;
 		else
+		{
 			CIO::message("unknown alphabet!\n");
+			return false;
+		}
+		return true;
 	}
 	else
 		CIO::message("see help for parameters\n");
+	return false;
 }
