@@ -171,7 +171,7 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM_DEFINED);
 	CIO::message("\n[FEATURES]\n");
 	CIO::message("\033[1;31m%s\033[0m\t <TOP|FK> <TRAIN|TEST> [<CACHE SIZE> [<0|1>]]- creates train/test-features out of obs\n",N_SET_FEATURES);
-	CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|NONE>\t\t\t- add preprocessor of type\n", N_ADD_PREPROC);
+	CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|LOGPLUSONE>\t\t\t- add preprocessor of type\n", N_ADD_PREPROC);
 	CIO::message("\033[1;31m%s\033[0m <NUM>\t\t\t- delete preprocessor\n", N_DEL_PREPROC);
 	CIO::message("\033[1;31m%s\033[0m <TRAIN|TEST> <NUM_FEAT> <NUM_VEC>\t\t\t- reshape feature matrix for simple features\n", N_RESHAPE);
 	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> [<0|1>] - preprocesses the feature_matrix, 1 to force preprocessing of already processed\n",N_PREPROCESS);
@@ -568,6 +568,8 @@ int main(int argc, const char* argv[])
 			}
 		}
 	}
+
+	CIO::message("quitting...\n");
 	delete gui ;
 
 	return 0;

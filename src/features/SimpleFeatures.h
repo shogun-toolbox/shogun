@@ -22,8 +22,8 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	 {
 	 }
 
-	 CSimpleFeatures(const CSimpleFeatures & orig) : CFeatures(orig), 
-	 num_vectors(orig.num_vectors), num_features(orig.num_features)
+	 CSimpleFeatures(const CSimpleFeatures & orig) : 
+		 CFeatures(orig), num_vectors(orig.num_vectors), num_features(orig.num_features), feature_matrix(orig.feature_matrix), feature_cache(orig.feature_cache)
 	 {
 		 if (orig.feature_matrix)
 		 {
@@ -32,7 +32,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 }
 	 }
 
-	CSimpleFeatures(char* fname) : CFeatures(fname)
+	CSimpleFeatures(char* fname) : CFeatures(fname), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
 	{
 	}
 

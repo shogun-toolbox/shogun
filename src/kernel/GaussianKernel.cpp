@@ -3,12 +3,12 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
-//#include "lib/f77blas.h"
+//#include "lib/Time.h"
 
 #include <assert.h>
 
 CGaussianKernel::CGaussianKernel(long size, double w, bool rescale_) 
-  : CRealKernel(size),width(w),rescale(rescale_),scale(1.0)
+  : CRealKernel(size),width(w),rescale(rescale_),scale(1.0),vec(NULL),vec_len(0)
 {
 }
 
@@ -20,12 +20,37 @@ void CGaussianKernel::init(CFeatures* l, CFeatures* r)
 {
 	CRealKernel::init((CRealFeatures*) l, (CRealFeatures*) r); 
 
+	long l_len=((CRealFeatures*) l)->get_num_features();
+	long r_len=((CRealFeatures*) r)->get_num_features();
+
+	assert(l_len==r_len);
+	CIO::message("%ld %ld\n",l_len, r_len);
+	delete[] vec;
+
+	vec_len=l_len;
+	vec=new REAL[vec_len];
+
+	assert(vec);
+
 	if (rescale)
 		init_rescale() ;
 }
 
 void CGaussianKernel::init_rescale()
 {
+//	CTime t;
+//
+//	long maxx=math.min(5000l,lhs->get_num_vectors());
+//	long maxy=math.min(5000l,rhs->get_num_vectors());
+//
+//	for (long x=0; x<maxx; x++)
+//	{
+//		for (long y=0; y<maxy; y++)
+//		{
+//			compute(x, y);
+//		}
+//	}
+//	t.cur_time_diff_sec(true);
 	double sum=0;
 	scale=1.0;
 	for (long i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
@@ -37,6 +62,9 @@ void CGaussianKernel::init_rescale()
 
 void CGaussianKernel::cleanup()
 {
+	delete[] vec;
+	vec=NULL;
+	vec_len=0;
 }
 
 bool CGaussianKernel::load_init(FILE* src)
@@ -63,16 +91,14 @@ REAL CGaussianKernel::compute(long idx_a, long idx_b)
   double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   
   assert(alen==blen);
+  assert(alen==vec_len);
   int ialen=(int) alen;
 
   REAL result=0;
-  {
-    for (int i=0; i<ialen; i++)
-      result+=(avec[i]-bvec[i])*(avec[i]-bvec[i]);
-  }
+  for (int i=0; i<ialen; i++)
+	  result+=(avec[i]-bvec[i])*(avec[i]-bvec[i]);
 
-  result/=-width;
-  result=exp(result)/scale;
+  result=exp(-result/width)/scale;
 
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);

@@ -1,4 +1,5 @@
 #include "guilib/GUIPreProc.h"
+#include "preproc/LogPlusOne.h"
 #include "preproc/NormOne.h"
 #include "preproc/PruneVarSubMean.h"
 #include "preproc/PCACut.h"
@@ -22,6 +23,7 @@ CGUIPreProc::~CGUIPreProc()
 	delete[] preprocs;
 }
 
+
 bool CGUIPreProc::add_preproc(char* param)
 {
 	CPreProc* preproc=NULL;
@@ -38,9 +40,13 @@ bool CGUIPreProc::add_preproc(char* param)
 	}
 	else 
 #endif
-	  if (strncmp(param,"NORMONE",7)==0)
+	if (strncmp(param,"NORMONE",7)==0)
 	{
 		preproc=new CNormOne();
+	}
+	else if (strncmp(param,"LOGPLUSONE",10)==0)
+	{
+		preproc=new CLogPlusOne();
 	}
 	else if (strncmp(param,"PRUNEVARSUBMEAN",15)==0)
 	{
@@ -54,12 +60,6 @@ bool CGUIPreProc::add_preproc(char* param)
 
 		preproc=new CPruneVarSubMean(divide_by_std==1);
 	}
-//	else if (strncmp(param,"NONE",4)==0)
-//	{
-//		delete preproc;
-//		preproc=NULL;
-//		return true;
-//	}
 	else 
 	{
 		CIO::not_implemented();
@@ -71,16 +71,32 @@ bool CGUIPreProc::add_preproc(char* param)
 
 bool CGUIPreProc::del_preproc(char* param)
 {
-	int i,j,num=num_preprocs-1;
+	int i,j;
+	int num=num_preprocs-1;
+
 	CPreProc** pps=NULL; 
 	param=CIO::skip_spaces(param);
 
 	sscanf(param, "%i", &num);
 
+	if (num<0)
+		num=0;
+
+	if (num>num_preprocs-1)
+		num=num_preprocs-1;
+
+	CIO::message("deleting preproc %i/(%i)\n", num, num_preprocs);
+
 	if (num_preprocs>0)
 		delete preprocs[num];
 
-	if (num_preprocs>1)
+	if (num_preprocs==1)
+	{
+		delete[]  preprocs;
+		preprocs=NULL;
+		num_preprocs=0;
+	}
+	else if (num_preprocs>1)
 		pps= new CPreProc*[num_preprocs-1];
 
 	if (pps)

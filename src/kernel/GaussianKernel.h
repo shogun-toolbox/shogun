@@ -36,6 +36,8 @@ class CGaussianKernel: public CRealKernel
   double width;
   bool rescale ;
   double scale ;
+  REAL* vec;
+  long vec_len;
 };
 
 #endif

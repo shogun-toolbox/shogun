@@ -8,11 +8,11 @@ CFeatures::CFeatures(long size)
 }
 
 CFeatures::CFeatures(const CFeatures& orig)
-: preproc(orig.preproc), preprocessed(orig.preprocessed)
+: preproc(orig.preproc), num_preproc(orig.num_preproc), preprocessed(orig.preprocessed)
 {
 }
 
-CFeatures::CFeatures(char* fname)
+CFeatures::CFeatures(char* fname) : cache_size(0), preproc(NULL), num_preproc(0), preprocessed(false)
 {
 	load(fname);
 }
@@ -25,6 +25,7 @@ CFeatures::~CFeatures()
 /// set preprocessor
 int CFeatures::add_preproc(CPreProc* p)
 { 
+	CIO::message("%d preprocs currently, new preproc list is\n", num_preproc);
 	int i;
 	CPreProc** pps=new CPreProc*[num_preproc+1];
 	for (i=0; i<num_preproc; i++)
@@ -40,7 +41,7 @@ int CFeatures::add_preproc(CPreProc* p)
 	return num_preproc;
 }
 
-/// set current preprocessor
+/// get current preprocessor
 CPreProc* CFeatures::get_preproc(int num)
 { 
 	if (num<num_preproc)
@@ -49,7 +50,7 @@ CPreProc* CFeatures::get_preproc(int num)
 		return NULL;
 }
 
-/// set current preprocessor
+/// del current preprocessor
 CPreProc* CFeatures::del_preproc(int num)
 {
 	int i,j;

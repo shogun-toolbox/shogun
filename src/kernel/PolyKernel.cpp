@@ -3,11 +3,12 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
+#include "lib/Time.h"
 //#include "lib/f77blas.h"
 
 #include <assert.h>
 
-CPolyKernel::CPolyKernel(long size, double d, bool hom, bool rescale_) 
+CPolyKernel::CPolyKernel(long size, int d, bool hom, bool rescale_) 
   : CRealKernel(size),degree(d),homogene(hom),rescale(rescale_),scale(1.0)
 {
 }
@@ -26,6 +27,20 @@ void CPolyKernel::init(CFeatures* l, CFeatures* r)
 
 void CPolyKernel::init_rescale()
 {
+	CTime t;
+
+	long maxx=math.min(5000l,lhs->get_num_vectors());
+	long maxy=math.min(5000l,rhs->get_num_vectors());
+
+	for (long x=0; x<maxx; x++)
+	{
+		for (long y=0; y<maxy; y++)
+		{
+			compute(x, y);
+		}
+	}
+	t.cur_time_diff_sec(true);
+
 	double sum=0;
 	scale=1.0;
 	for (long i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
@@ -64,17 +79,9 @@ REAL CPolyKernel::compute(long idx_a, long idx_b)
   double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   
   assert(alen==blen);
-  //fprintf(stderr, "LinKernel.compute(%ld,%ld) %d\n", idx_a, idx_b, alen) ;
-
-//  double sum=0;
-//  for (long i=0; i<alen; i++)
-//	  sum+=avec[i]*bvec[i];
-
-//  CIO::message("%ld,%ld -> %f\n",idx_a, idx_b, sum);
 
   int skip=1;
   int ialen=(int) alen;
-  //REAL result=F77CALL(ddot)(REF ialen, avec, REF skip, bvec, REF skip)/scale;
 
 #ifdef NO_LAPACK
   REAL result=0;
@@ -89,9 +96,14 @@ REAL CPolyKernel::compute(long idx_a, long idx_b)
   if (!homogene)
 	  result+=1;
 
-  result=pow(result,degree)/scale;
+  REAL re=result/scale;
+  result=re;
+  
+  for (int j=0; j<degree; j++)
+	  result*=re;
 
-//  REAL result=sum/scale;
+//  result=pow(result,(double) degree)/scale;
+
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 

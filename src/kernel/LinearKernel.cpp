@@ -3,6 +3,7 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
+
 //#include "lib/f77blas.h"
 
 #include <assert.h>
@@ -96,17 +97,9 @@ REAL CLinearKernel::compute(long idx_a, long idx_b)
   double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   
   assert(alen==blen);
-  //fprintf(stderr, "LinKernel.compute(%ld,%ld) %d\n", idx_a, idx_b, alen) ;
-
-//  double sum=0;
-//  for (long i=0; i<alen; i++)
-//	  sum+=avec[i]*bvec[i];
-
-//  CIO::message("%ld,%ld -> %f\n",idx_a, idx_b, sum);
 
   int skip=1;
   int ialen=(int) alen;
-  //REAL result=F77CALL(ddot)(REF ialen, avec, REF skip, bvec, REF skip)/scale;
 
 #ifdef NO_LAPACK
   REAL result=0;

@@ -8,6 +8,9 @@
 
 CKernel::CKernel(long size)
 {
+	if (size<100)
+		size=100;
+
 	cache_size=size;
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 }
@@ -38,8 +41,8 @@ void CKernel::init(CFeatures* l, CFeatures* r)
 	lhs=l;
 	rhs=r;
 
-	// 100MB kernel cache
-	kernel_cache_init(100);
+	// allocate kernel cache
+	kernel_cache_init(cache_size);
 }
 
 /****************************** Cache handling *******************************/

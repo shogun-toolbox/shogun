@@ -62,9 +62,9 @@ bool CGUIKernel::set_kernel(char* param)
 			{
 				int scale=1;
 				int homogene=1;
-				double degree=2;
+				int degree=2;
 
-				sscanf(param, "%s %s %lf %d %d %d", kern_type, data_type, &degree, &homogene, &size, &scale);
+				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &degree, &homogene, &size, &scale);
 				delete kernel;
 				kernel=new CPolyKernel(size, degree, homogene==1, scale==1);
 				if (kernel)

@@ -9,6 +9,7 @@
 #include "features/ByteFeatures.h"
 #include "features/ShortFeatures.h"
 #include "features/RealFeatures.h"
+#include "features/Features.h"
 
 CGUIFeatures::CGUIFeatures(CGUI * gui_)
   : gui(gui_), train_features(NULL), test_features(NULL), train_obs(NULL), test_obs(NULL)
@@ -34,47 +35,18 @@ bool CGUIFeatures::preprocess(char* param)
 	{
 		if ( strcmp(target, "TRAIN")==0 || strcmp(target, "TEST")==0 )
 		{
-			CFeatures** f_ptr=NULL;
-
 			if (strcmp(target,"TRAIN")==0)
 			{
-				f_ptr=&train_features;
+				init_preproc(train_features);
+				preprocess_features(train_features, force==1);
 			}
 			else if (strcmp(target,"TEST")==0)
 			{
-				f_ptr=&test_features;
+				init_preproc(train_features);
+				preprocess_features(test_features, force==1);
 			}
 			else
 				CIO::message("see help for parameters\n");
-
-			if (*f_ptr)
-			{
-				int num_preproc=0;
-				CPreProc** preprocs;
-				if ((preprocs=gui->guipreproc.get_preprocs(num_preproc))!=NULL)
-				{
-					if (train_features)
-					{
-						CFeatures* feat=train_features;
-						for (int i=0; i<num_preproc; i++)
-						{
-							preprocs[i]->init(feat);
-							feat->add_preproc(preprocs[i]);
-							if (feat != *f_ptr)
-								(*f_ptr)->add_preproc(preprocs[i]);
-						}
-						
-						CIO::message("force: %d\n",force);
-						(*f_ptr)->preproc_feature_matrix(force==1);
-					}
-					else
-						CIO::message("initialization of preprocessor needs trainfeatures !\n");
-				}
-				else
-					CIO::message("no preprocessor set!\n");
-			}
-			else
-				CIO::message("features not correctly assigned!\n");
 		}
 		else
 			CIO::message("observations not correctly assigned!\n");
@@ -84,6 +56,53 @@ bool CGUIFeatures::preprocess(char* param)
 
 	return result;
 }
+bool CGUIFeatures::init_preproc(CFeatures* feat)
+{
+	int num_preproc=0;
+	CPreProc** preprocs;
+	if ((preprocs=gui->guipreproc.get_preprocs(num_preproc))!=NULL)
+	{
+		if (feat)
+		{
+			for (int i=0; i<num_preproc; i++)
+				preprocs[i]->init(feat);
+
+			return true;
+		}
+		else
+			CIO::message("initialization of preprocessor needs trainfeatures !\n");
+	}
+	else
+		CIO::message("no preprocessors available!\n");
+
+	return false;
+}
+
+bool CGUIFeatures::preprocess_features(CFeatures* feat, bool force)
+{
+	int num_preproc=0;
+	CPreProc** preprocs;
+	if ((preprocs=gui->guipreproc.get_preprocs(num_preproc))!=NULL)
+	{
+		if (feat)
+		{
+			for (int i=0; i<num_preproc; i++)
+				feat->add_preproc(preprocs[i]);
+
+			CIO::message("force: %d\n",force);
+			feat->preproc_feature_matrix(force);
+
+			return true;
+		}
+		else
+			CIO::message("no features for preprocessing available!\n");
+	}
+	else
+		CIO::message("no preprocessors available!\n");
+
+	return false;
+}
+
 
 bool CGUIFeatures::set_features(char* param)
 {
