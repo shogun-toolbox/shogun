@@ -33,7 +33,7 @@ bool CSVMMPI::svm_train(CFeatures* train)
   m_prime=svm_mpi_broadcast_Z_size(num_cols, num_rows, m_last) ;
   double * column ;
 
-  for (int i=0; i<num_cols; i++) ;
+  for (int i=0; i<num_cols; i++)
   {
     svm_mpi_set_Z_block(column, 1, i%m_prime, i/m_prime) ; 
   } ;
