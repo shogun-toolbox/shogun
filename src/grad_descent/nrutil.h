@@ -30,10 +30,3 @@ inline double sign(double tol, double a)
   if (a>0) return tol ;
   return 0 ;
 } ;
-
-inline REAL fmax(REAL a, REAL b)
-{
-  if (a>b)
-    return a ;
-  return b ;
-} ;

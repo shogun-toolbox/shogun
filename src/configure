@@ -11,11 +11,11 @@ EXT_OBJ_CPP=cpp.o
 EXT_OBJ_C=c.o
 GDB=gdb
 COMP_C=cc
-COMP_CPP=CC
+COMP_CPP=c++
 COMPFLAGS_C=
 COMPFLAGS_CPP=
 INCLUDES=-I${SRCDIR}
-LINK=g++
+LINK=c++
 LINKFLAGS="-llapack -llapack_atlas -L /usr/lib/3dnow -lcblas -lf77blas -latlas -ldl -lrt -lm -liberty -lg2c -lm"
 TARGET="genefinder-${EXESUFFIX}"
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -fkeep-inline-functions  -finline-functions -fschedule-insns2 -fthread-jumps -fforce-mem -fforce-addr -fstrength-reduce -fomit-frame-pointer -unroll-loops"
@@ -28,13 +28,56 @@ TMPCPP="./configure-$RANDOM-$$.cpp"
 TMPO="./configure-$RANDOM-$$.o"
 TMPS="./configure-$RANDOM-$$.S"
 
+detect_cc()
+{
+		echocheck "c/c++ compiler"
+cat > $TMPC << EOF
+int main(void) { return 0; }
+EOF
+
+	for _cc in cc gcc
+	do
+		if cc_check
+		then
+			COMP_C=$_cc
+			_ccveropts='-v'
+			"$_cc" "$_ccveropts" >/dev/null 2>&1 || _ccveropts='-V'
+			break;
+		fi
+	done
+
+	for _cc in cxx CC c++ g++
+	do
+		if cc_check
+		then
+			COMP_CPP=$_cc
+			_cppveropts='-v'
+			"$_cc" "$_cppveropts" >/dev/null 2>&1 || _cppveropts='-V'
+			break;
+		fi
+	done
+
+	if test -n "$COMP_C" ; then
+		echores "detected: $COMP_C ( `$COMP_C $_ccveropts 2>&1 | egrep -ve '^(Reading specs from|Configured with:|Thread model:)'` )."
+	else
+		echores "no C compiler detected - cannot do anything"
+		exit 1
+	fi
+	if test -n "$COMP_CPP" ; then
+		echores "detected: $COMP_CPP ( `$COMP_CPP $_cppveropts 2>&1 | egrep -ve '^(Reading specs from|Configured with:|Thread model:)'` )."
+	else
+		echores "no C++ compiler detected - cannot do anything"
+		exit 1
+	fi
+}
+
 cc_check() {
   echo >> "$TMPLOG"
   cat "$TMPC" >> "$TMPLOG"
   echo >> "$TMPLOG"
-  echo "$COMP_C $TMPC -o $TMPO $@" >> "$TMPLOG"
+  echo "$_cc $TMPC -o $TMPO $@" >> "$TMPLOG"
   rm -f "$TMPO"
-  ( "$COMP_C" "$TMPC" -o "$TMPO" "$@" ) >> "$TMPLOG" 2>&1
+  ( "$_cc" "$TMPC" -o "$TMPO" "$@" ) >> "$TMPLOG" 2>&1
   TMP="$?"
   echo >> "$TMPLOG"
   echo "ldd $TMPO" >> "$TMPLOG"
@@ -765,7 +808,7 @@ EOF
 
 		  if ( cc_check -m$2 && $TMPO ) > /dev/null 2>&1 ; then
 			echores "yes"
-		_optimizing="$_optimizing $2"
+		_optimizing="$_optimizing -m$2"
 			return 0
 		  else
 			echores "no"
@@ -793,17 +836,6 @@ EOF
 	  fi
 
 	fi
-
-	_opts=""
-
-	for o in $_optimizing
-	do
-		_opts="$_opts -m$o"
-	done
-
-	_optimizing="$_opts"
-
-	echo "$system_name"
 }
 
 
@@ -850,6 +882,7 @@ clean_up()
 #cplex
 #ddd
 #static
+detect_cc
 determine_march_mcpu
 write_dot_config
 clean_up

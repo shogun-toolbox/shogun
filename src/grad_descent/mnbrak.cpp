@@ -6,6 +6,8 @@
 #define TINY 1.0e-20
 #define SHFT(a,b,c,d) (a)=(b);(b)=(c);(c)=(d);
 
+#include "lib/Mathmatics.h"
+
 void mnbrak(REAL *ax, REAL *bx, REAL *cx, REAL *fa, REAL *fb, REAL *fc,
 	REAL (*func)(REAL))
 {
@@ -23,7 +25,7 @@ void mnbrak(REAL *ax, REAL *bx, REAL *cx, REAL *fa, REAL *fb, REAL *fc,
 		r=(*bx-*ax)*(*fb-*fc);
 		q=(*bx-*cx)*(*fb-*fa);
 		u=(*bx)-((*bx-*cx)*q-(*bx-*ax)*r)/
-			(2.0*sign(fmax(fabs(q-r),TINY),q-r));
+			(2.0*sign(math.max(fabs(q-r),TINY),q-r));
 		ulim=(*bx)+GLIMIT*(*cx-*bx);
 		if ((*bx-u)*(u-*cx) > 0.0) {
 			fu=(*func)(u);
