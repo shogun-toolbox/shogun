@@ -1172,7 +1172,7 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[])
 	return false;
 }
 
-bool CGUIMatlab::compute_WD_by_levels(mxArray* retvals[])
+bool CGUIMatlab::compute_by_subkernels(mxArray* retvals[])
 {
 	CKernel *kernel_ = gui->guikernel.get_kernel() ;
 	
@@ -1250,7 +1250,7 @@ bool CGUIMatlab::compute_WD_by_levels(mxArray* retvals[])
 }
 
 
-bool CGUIMatlab::get_WD_weights(mxArray* retvals[])
+bool CGUIMatlab::get_subkernel_weights(mxArray* retvals[])
 {
 	CKernel *kernel_ = gui->guikernel.get_kernel() ;
 	INT degree=-1;
@@ -1355,7 +1355,7 @@ bool CGUIMatlab::get_WD_position_weights(mxArray* retvals[])
 	return false;
 }
 
-bool CGUIMatlab::set_WD_weights(const mxArray* mx_arg)
+bool CGUIMatlab::set_subkernel_weights(const mxArray* mx_arg)
 {
 	CKernel *kernel_ = gui->guikernel.get_kernel() ;
 	
@@ -1383,7 +1383,7 @@ bool CGUIMatlab::set_WD_weights(const mxArray* mx_arg)
 		INT degree = kernel->get_degree() ;
 		if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
 		{
-			CIO::message(M_ERROR, "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
+			CIO::message(M_ERROR, "dimension mismatch (should be (seq_length | 1) x degree)\n") ;
 			return false ;
 		}
 
@@ -1395,7 +1395,18 @@ bool CGUIMatlab::set_WD_weights(const mxArray* mx_arg)
 		return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), len);
 		
 	}
-	return false;
+
+	// all other kernels
+	CKernel *kernel = kernel_ ;
+	INT num_subkernels = kernel->get_num_subkernels() ;
+	if (mxGetM(mx_arg)!=1 || mxGetN(mx_arg)!=num_subkernels)
+	{
+		CIO::message(M_ERROR, "dimension mismatch (should be 1 x num_subkernels)\n") ;
+		return false ;
+	}
+		
+	kernel->set_subkernel_weights(mxGetPr(mx_arg), mxGetN(mx_arg));
+	return true ;
 }
 
 bool CGUIMatlab::set_WD_position_weights(const mxArray* mx_arg)

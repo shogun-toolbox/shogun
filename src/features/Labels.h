@@ -66,6 +66,10 @@ class CLabels
 		/// caller has to clean up
 		INT* get_int_labels(INT &len) ;
 
+		/// set INT label vector
+		/// caller has to clean up
+		void set_int_labels(INT *labels, INT len) ;
+
 		/// get number of labels
 		inline INT get_num_labels() { return num_labels; }
 	protected:

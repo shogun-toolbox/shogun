@@ -792,7 +792,7 @@ bool CGUIFeatures::convert(CHAR* param)
 						if ( ( ((*f_ptr)->get_feature_class()) == C_STRING)  && ( ((*f_ptr)->get_feature_type()) == F_CHAR) )
 						{
 							//create dense features with 0 cache
-							CIO::message(M_INFO, "converting CHAR STRING features to WORD STRING ones\n");
+							CIO::message(M_INFO, "converting CHAR STRING features to WORD STRING ones (order=%i)\n",order);
 
 							CStringFeatures<WORD>* sf=new CStringFeatures<WORD>();
 							result=(sf!=NULL);
@@ -903,16 +903,19 @@ void CGUIFeatures::add_train_features(CFeatures* f)
 	if (!train_features || (train_features && train_features->get_feature_class()!=C_COMBINED))
 	{
 		invalidate_train() ;
-		delete train_features;
+		CFeatures* first_elem = train_features ;
 		train_features= new CCombinedFeatures();
 		assert(train_features);
+		((CCombinedFeatures*) train_features) -> append_feature_obj(first_elem) ;
+		((CCombinedFeatures*) train_features)->list_feature_objs();
 	}
 
 	if (train_features)
 	{
 		invalidate_train() ;
 		assert(f);
-		assert(((CCombinedFeatures*) train_features)->append_feature_obj(f));
+		bool result = ((CCombinedFeatures*) train_features)->append_feature_obj(f);
+		assert(result) ;
 		((CCombinedFeatures*) train_features)->list_feature_objs();
 	}
 	else
@@ -924,11 +927,14 @@ void CGUIFeatures::add_test_features(CFeatures* f)
 	if (!test_features || (test_features && test_features->get_feature_class()!=C_COMBINED))
 	{
 		invalidate_test() ;
-		delete test_features;
+		//delete test_features;
+		CFeatures * first_elem = test_features ;
 		test_features= new CCombinedFeatures();
 		assert(test_features);
+		((CCombinedFeatures*)test_features)->append_feature_obj(first_elem) ;
+		((CCombinedFeatures*) test_features)->list_feature_objs();	
 	}
-
+	
 	if (test_features)
 	{
 		invalidate_test() ;

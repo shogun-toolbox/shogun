@@ -58,6 +58,16 @@ INT* CLabels::get_int_labels(INT &len)
 		return NULL;
 }
 
+void CLabels::set_int_labels(INT * mylabels, INT len)
+{
+	num_labels = len ;
+	delete[] labels ;
+	
+	labels = new REAL[num_labels] ;
+	for (INT i=0; i<num_labels; i++)
+		set_int_label(i, mylabels[i]) ;
+}
+
 bool CLabels::load(CHAR* fname)
 {
 	bool status=false;

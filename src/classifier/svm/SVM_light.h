@@ -138,6 +138,7 @@ typedef struct shrink_state {
   virtual ~CSVMLight();
   
   virtual bool	train();
+  bool setup_auc_maximization() ;
 
   double classify_example(long int num);
   double model_length_s(MODEL*);

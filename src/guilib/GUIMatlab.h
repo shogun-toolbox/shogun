@@ -70,10 +70,10 @@ public:
 	bool get_kernel_matrix(mxArray* retvals[], CFeatures* features);
 	bool get_kernel_optimization(mxArray* retvals[]);
 
-	// WD Kernel stuff
-	bool compute_WD_by_levels(mxArray* retvals[]);
-	bool get_WD_weights(mxArray* retvals[]);
-	bool set_WD_weights(const mxArray *mx_arg);
+	// MKL Kernel stuff
+	bool compute_by_subkernels(mxArray* retvals[]);
+	bool get_subkernel_weights(mxArray* retvals[]);
+	bool set_subkernel_weights(const mxArray *mx_arg);
 	bool get_WD_position_weights(mxArray* retvals[]);
 	bool set_WD_position_weights(const mxArray *mx_arg);
 

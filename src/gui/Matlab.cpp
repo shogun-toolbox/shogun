@@ -25,10 +25,10 @@ static const CHAR* N_GET_SVM=			"get_svm";
 static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
 static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
 static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
-static const CHAR* N_COMPUTE_WD_BY_LEVELS=	        "compute_WD_by_levels";
-static const CHAR* N_SET_WD_WEIGHTS=	        "set_WD_weights";
+static const CHAR* N_COMPUTE_BY_SUBKERNELS=	        "compute_by_subkernels";
+static const CHAR* N_SET_SUBKERNEL_WEIGHTS=	        "set_subkernel_weights";
 static const CHAR* N_SET_WD_POS_WEIGHTS=	        "set_WD_position_weights";
-static const CHAR* N_GET_WD_WEIGHTS=	        "get_WD_weights";
+static const CHAR* N_GET_SUBKERNEL_WEIGHTS=	        "get_subkernel_weights";
 static const CHAR* N_GET_WD_POS_WEIGHTS=	        "get_WD_position_weights";
 static const CHAR* N_GET_FEATURES=		"get_features";
 static const CHAR* N_GET_LABELS=		"get_labels";
@@ -271,25 +271,25 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				mexErrMsgTxt("usage is W=gf('get_kernel_optimization')");
 		}
-		else if (!strncmp(action, N_COMPUTE_WD_BY_LEVELS, strlen(N_COMPUTE_WD_BY_LEVELS)))
+		else if (!strncmp(action, N_COMPUTE_BY_SUBKERNELS, strlen(N_COMPUTE_BY_SUBKERNELS)))
 		{
 			if ((nlhs==1) && (nrhs==1))
 			{
-				if (!gf_matlab.compute_WD_by_levels(plhs))
+				if (!gf_matlab.compute_by_subkernels(plhs))
 					mexErrMsgTxt("error executing command");
 			}
 			else
-				mexErrMsgTxt("usage is W=gf('compute_WD_by_levels')");
+				mexErrMsgTxt("usage is W=gf('compute_by_subkernels')");
 		}
-		else if (!strncmp(action, N_GET_WD_WEIGHTS, strlen(N_GET_WD_WEIGHTS)))
+		else if (!strncmp(action, N_GET_SUBKERNEL_WEIGHTS, strlen(N_GET_SUBKERNEL_WEIGHTS)))
 		{
 			if ((nlhs==1) && (nrhs==1))
 			{
-				if (!gf_matlab.get_WD_weights(plhs))
+				if (!gf_matlab.get_subkernel_weights(plhs))
 					mexErrMsgTxt("error executing command");
 			}
 			else
-				mexErrMsgTxt("usage is W=gf('get_WD_weights')");
+				mexErrMsgTxt("usage is W=gf('get_subkernel_weights')");
 		}
 		else if (!strncmp(action, N_GET_WD_POS_WEIGHTS, strlen(N_GET_WD_POS_WEIGHTS)))
 		{
@@ -301,15 +301,15 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				mexErrMsgTxt("usage is W=gf('get_WD_position_weights')");
 		}
-		else if (!strncmp(action, N_SET_WD_WEIGHTS, strlen(N_SET_WD_WEIGHTS)))
+		else if (!strncmp(action, N_SET_SUBKERNEL_WEIGHTS, strlen(N_SET_SUBKERNEL_WEIGHTS)))
 		{
 			if ((nlhs==0) && (nrhs==2))
 			{
-				if (!gf_matlab.set_WD_weights(prhs[1]))
+				if (!gf_matlab.set_subkernel_weights(prhs[1]))
 					mexErrMsgTxt("error executing command");
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_WD_weights', W)");
+				mexErrMsgTxt("usage is gf('set_subkernel_weights', W)");
 		}
 		else if (!strncmp(action, N_SET_WD_POS_WEIGHTS, strlen(N_SET_WD_POS_WEIGHTS)))
 		{
@@ -541,15 +541,18 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 							gui->guifeatures.add_test_features(features);
 						}
 						delete[] target;
+						target=NULL ;
 					}
 					else
 						mexErrMsgTxt("usage is gf('add_features', 'TRAIN|TEST', features, ...)");
 				}
 				else
 					mexErrMsgTxt("usage is gf('add_features', 'TRAIN|TEST', features, ...)");
+				delete[] target;
+				target=NULL ;
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features, ...)");
+				mexErrMsgTxt("usage is gf('add_features', 'TRAIN|TEST', features, ...)");
 			CIO::message(M_INFO, "done\n");
 		}
 		else if (!strncmp(action, N_CLEAN_FEATURES, strlen(N_CLEAN_FEATURES)))

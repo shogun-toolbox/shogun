@@ -496,7 +496,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			{
 				delete k;
 				INT use_sign = 0 ;
-				char normalization_str[100] ;
+				char normalization_str[100]="" ;
 				E_NormalizationType normalization = E_FULL_NORMALIZATION ;
 				
 				sscanf(param, "%s %s %d %d %s", kern_type, data_type, &size, &use_sign, normalization_str);
@@ -685,10 +685,11 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				INT *shift = new INT[length] ;
 				for (i=0; i<length; i++)
 				{
+					strcpy(rest2, "") ;
 					int args = sscanf(rest, "%i %[0-9 .+-]", &shift[i], rest2) ;
 					if (((args!=2) && (i<length-1)) || (args<1))
 					{
-						CIO::message(M_ERROR, "failed to read list at position %i\n", i) ;
+						CIO::message(M_ERROR, "failed to read shift list at position %i\n", i) ;
 						return false ;
 					} ;
 					if (shift[i]>length)
@@ -697,6 +698,34 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 						return false ;
 					} ;
 					strcpy(rest,rest2) ;
+				}
+				
+				REAL *position_weights = new REAL[length] ;
+				for (INT i=0; i<length; i++)
+					position_weights[i]=1.0/length ;
+				if (strlen(rest)>0)
+				{
+					for (i=0; i<length; i++)
+					{
+						fprintf(stderr, "%i %s\n", i, rest) ;
+						
+						int args = sscanf(rest, "%le %[0-9 .+-]", &position_weights[i], rest2) ;
+						if (((args!=2) && (i<length-1)) || (args<1))
+						{
+							if (i>0)
+							{
+								CIO::message(M_ERROR, "failed to read weight list at position %i\n", i) ;
+								return false ;
+							}
+							else break ;
+						} ;
+						if (position_weights[i]<0)
+						{
+							CIO::message(M_ERROR, "no negative weights allowed: %1.1le \n", position_weights[i]) ;
+							return false ;
+						} ;
+						strcpy(rest,rest2) ;
+					}
 				}
 				
 				REAL* weights=new REAL[d*(1+max_mismatch)];
@@ -730,16 +759,11 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 														d, max_mismatch, 
 														shift, length, false, 
 														mkl_stepsize);
-				{
-					REAL *weights = new REAL[length] ;
-					for (INT i=0; i<length; i++)
-						weights[i]=1.0/length ;
-					((CWeightedDegreePositionCharKernel*)k)->set_position_weights(weights, length) ;
-					delete[] weights ;
-				}
+				((CWeightedDegreePositionCharKernel*)k)->set_position_weights(position_weights, length) ;
 				
 				delete[] shift ;
 				delete[] weights ;
+				delete[] position_weights ;
 				
 				if (k)
 				{
