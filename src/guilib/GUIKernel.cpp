@@ -451,7 +451,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				INT inhomogene=0;
 				INT degree=2;
 
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &degree, &inhomogene, &size);
+				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene);
 				delete kernel;
 				kernel=new CSparsePolyKernel(size, degree, inhomogene==1);
 
@@ -466,9 +466,9 @@ bool CGUIKernel::set_kernel(CHAR* param)
 		{
 			if (strcmp(data_type,"REAL")==0)
 			{
-				float width=1;
+				double width=1;
 
-				sscanf(param, "%s %s %f %d", kern_type, data_type, &width, &size);
+				sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &width);
 				delete kernel;
 				kernel=new CGaussianKernel(size, width);
 				if (kernel)
@@ -481,7 +481,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 			{
 				double width=1;
 
-				sscanf(param, "%s %s %lf %d", kern_type, data_type, &width, &size);
+				sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &width);
 				delete kernel;
 				kernel=new CSparseGaussianKernel(size, width);
 				if (kernel)
