@@ -51,7 +51,7 @@ REAL CSparseGaussianKernel::compute(long idx_a, long idx_b)
   for (i=0; i<alen; i++)
 	  result+= avec[i].entry * avec[i].entry;
 
-  for (i=0; i<alen; i++)
+  for (i=0; i<blen; i++)
 	  result+= bvec[i].entry * bvec[i].entry;
 
 

@@ -52,6 +52,8 @@ bool CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	// allocate kernel cache but clean up beforehand
 	kernel_cache_cleanup();
 	kernel_cache_init(cache_size);
+
+	return true;
 }
 
 /****************************** Cache handling *******************************/
