@@ -26,6 +26,8 @@ static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
 static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
 static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
 static const CHAR* N_COMPUTE_WD_BY_LEVELS=	        "compute_WD_by_levels";
+static const CHAR* N_SET_WD_WEIGHTS=	        "set_WD_weights";
+static const CHAR* N_GET_WD_WEIGHTS=	        "get_WD_weights";
 static const CHAR* N_GET_FEATURES=		"get_features";
 static const CHAR* N_GET_LABELS=		"get_labels";
 static const CHAR* N_GET_VERSION=		"get_version";
@@ -250,23 +252,52 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		else if (!strncmp(action, N_PLUGIN_ESTIMATE_CLASSIFY, strlen(N_PLUGIN_ESTIMATE_CLASSIFY)))
 		{
 			if (nlhs==1)
-				gf_matlab.plugin_estimate_classify(plhs);
+			{
+				if (!gf_matlab.plugin_estimate_classify(plhs))
+					mexErrMsgTxt("error executing command");
+			}
 			else
 				mexErrMsgTxt("usage is [result]=gf('plugin_estimate_classify')");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_OPTIMIZATION, strlen(N_GET_KERNEL_OPTIMIZATION)))
 		{
 			if ((nlhs==1) && (nrhs==1))
-				gf_matlab.get_kernel_optimization(plhs);
+			{
+				if (!gf_matlab.get_kernel_optimization(plhs))
+					mexErrMsgTxt("error executing command");
+			}
 			else
 				mexErrMsgTxt("usage is W=gf('get_kernel_optimization')");
 		}
 		else if (!strncmp(action, N_COMPUTE_WD_BY_LEVELS, strlen(N_COMPUTE_WD_BY_LEVELS)))
 		{
 			if ((nlhs==1) && (nrhs==1))
-				gf_matlab.compute_WD_by_levels(plhs);
+			{
+				if (!gf_matlab.compute_WD_by_levels(plhs))
+					mexErrMsgTxt("error executing command");
+			}
 			else
 				mexErrMsgTxt("usage is W=gf('compute_WD_by_levels')");
+		}
+		else if (!strncmp(action, N_GET_WD_WEIGHTS, strlen(N_GET_WD_WEIGHTS)))
+		{
+			if ((nlhs==1) && (nrhs==1))
+			{
+				if (!gf_matlab.get_WD_weights(plhs))
+					mexErrMsgTxt("error executing command");
+			}
+			else
+				mexErrMsgTxt("usage is W=gf('get_WD_weights')");
+		}
+		else if (!strncmp(action, N_SET_WD_WEIGHTS, strlen(N_SET_WD_WEIGHTS)))
+		{
+			if ((nlhs==0) && (nrhs==2))
+			{
+				if (!gf_matlab.set_WD_weights(prhs[1]))
+					mexErrMsgTxt("error executing command");
+			}
+			else
+				mexErrMsgTxt("usage is gf('set_WD_weights', W)");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_MATRIX, strlen(N_GET_KERNEL_MATRIX)))
 		{

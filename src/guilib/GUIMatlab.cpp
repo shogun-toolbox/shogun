@@ -1184,4 +1184,52 @@ bool CGUIMatlab::compute_WD_by_levels(mxArray* retvals[])
 	return false;
 }
 
+
+bool CGUIMatlab::get_WD_weights(mxArray* retvals[])
+{
+	CKernel *kernel_ = gui->guikernel.get_kernel() ;
+	
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
+	{
+		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+		INT degree = kernel->get_degree() ;
+		const REAL* weights = kernel->get_weights() ;
+		
+		mxArray* mx_result=mxCreateDoubleMatrix(1, degree, mxREAL);
+		double* result=mxGetPr(mx_result);
+		
+		for (int i=0; i<degree; i++)
+			result[i] = weights[i] ;
+		
+		retvals[0]=mx_result;
+		return true;
+	}
+	return false;
+}
+
+bool CGUIMatlab::set_WD_weights(const mxArray* mx_arg)
+{
+	CKernel *kernel_ = gui->guikernel.get_kernel() ;
+	
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
+	{
+		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+		INT degree = kernel->get_degree() ;
+		if (mxGetN(mx_arg)!=degree || mxGetM(mx_arg)!=1)
+		{
+			CIO::message(M_ERROR, "dimension mismatch (should be 1 x degree)\n") ;
+			return false ;
+		}
+		REAL* weights = kernel->get_weights() ;
+		
+		double* arg=mxGetPr(mx_arg);
+		
+		for (int i=0; i<degree; i++)
+			weights[i] = arg[i] ;
+		
+		return true;
+	}
+	return false;
+}
+
 #endif

@@ -69,7 +69,11 @@ public:
 
 	bool get_kernel_matrix(mxArray* retvals[], CFeatures* features);
 	bool get_kernel_optimization(mxArray* retvals[]);
+
+	// WD Kernel stuff
 	bool compute_WD_by_levels(mxArray* retvals[]);
+	bool get_WD_weights(mxArray* retvals[]);
+	bool set_WD_weights(const mxArray *mx_arg);
 
 	bool get_version(mxArray* retvals[]);
 	bool get_labels(mxArray* retvals[], CLabels* label);

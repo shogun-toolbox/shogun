@@ -55,8 +55,10 @@ class CWeightedDegreeCharKernel: public CCharKernel
 
   INT tree_size(struct SuffixTree * p_tree=NULL) ;
   bool is_tree_initialized() { return tree_initialized ; } ;
+
   INT get_max_mismatch() { return max_mismatch ; } ;
   INT get_degree() { return degree ; } ;
+  REAL *get_weights() { return weights ; } ;
 
  protected:
 
