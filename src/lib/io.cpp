@@ -66,13 +66,15 @@ void CIO::progress(REAL current_val, REAL min_val, REAL max_val, INT decimals, c
 	
 	if (estimate/100>120)
 	{
-		sprintf(str, "%%s %%%d.%df%%    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		fprintf(target, str, prefix, v, estimate/100/60, total_estimate/100/60);
+		sprintf(str, "%%s %%%d.%df%%%%    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
+		//fprintf(target, "\n%s\n", str) ;
+		fprintf(target, str, prefix, v, (float)estimate/100/60, (float)total_estimate/100/60);
 	}
 	else
 	{
-		sprintf(str, "%%s %%%d.%df%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		fprintf(target, str, prefix, v, estimate/100, total_estimate/100);
+		sprintf(str, "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
+		//fprintf(target, "\n%s\n", str) ;
+		fprintf(target, str, prefix, v, (float)estimate/100, (float)total_estimate/100);
 	}
 	
     fflush(target);

@@ -573,9 +573,16 @@ void CKernel::do_precompute_matrix()
 	{
 		//CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
 		CIO::progress(i*i,0,num*num);
+		//fprintf(stdout, "%i:",i) ;
 		for (INT j=0; j<=i; j++)
+		{
+			//fprintf(stdout, ".") ;
 			precomputed_matrix[i*(i+1)/2+j] = compute(i,j) ;
+			//fprintf(stdout, "*") ;
+		}
+		//fprintf(stdout, "\n") ;
 	}
+
 	CIO::progress(num*num,0,num*num);
 	//CIO::message(M_INFO, "\r %1.2f%% ", 100.0) ;
 	CIO::message(M_INFO, "\ndone.\n") ;
