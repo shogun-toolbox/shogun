@@ -13,6 +13,7 @@
 #include "kernel/LinearCharKernel.h"
 #include "kernel/LinearWordKernel.h"
 #include "kernel/WeightedDegreeCharKernel.h"
+#include "kernel/WeightedDegreeCharKernelPolyA.h"
 #include "kernel/WeightedDegreePositionCharKernel.h"
 #include "kernel/FixedDegreeCharKernel.h"
 #include "kernel/LocalityImprovedCharKernel.h"
@@ -716,6 +717,52 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (k)
 				{
 					CIO::message(M_INFO, "WeightedDegreeCharKernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOLYA")==0)
+		{
+			if (strcmp(data_type,"CHAR")==0)
+			{
+				INT d=3;
+				INT max_mismatch = 0;
+				INT i=0;
+
+				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &d, &max_mismatch);
+				REAL* weights=new REAL[d*(1+max_mismatch)];
+				REAL sum=0;
+
+				for (i=0; i<d; i++)
+				{
+					weights[i]=d-i;
+					sum+=weights[i];
+				}
+				for (i=0; i<d; i++)
+					weights[i]/=sum;
+				
+				for (i=0; i<d; i++)
+				{
+					for (INT j=1; j<=max_mismatch; j++)
+					{
+						if (j<i+1)
+						{
+							INT nk=math.nchoosek(i+1, j);
+							weights[i+j*d]=weights[i]/(nk*pow(3,j));
+						}
+						else
+							weights[i+j*d]= 0;
+						
+					}
+				}
+				
+				delete k;
+				k=new CWeightedDegreeCharKernelPolyA(size, weights, d, max_mismatch);
+				delete[] weights ;
+				
+				if (k)
+				{
+					CIO::message(M_INFO, "WeightedDegreeCharKernelPolyA created\n");
 					return k;
 				}
 			}
