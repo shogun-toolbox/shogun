@@ -79,10 +79,53 @@ bool CRealFeatures::preproc_feature_matrix()
 		return false;
 }
 
+bool CRealFeatures::load(FILE* src)
+{
+    assert(src!=NULL);
+
+    unsigned char intlen=0;
+    unsigned char doublelen=0;
+    unsigned int endian=0;
+    unsigned int fourcc=0;
+    unsigned int preprocd=0;
+    unsigned int num_vec=0;
+    unsigned int num_feat=0;
+
+    assert(fread(&intlen, sizeof(unsigned char), 1, src)==1);
+    assert(fread(&doublelen, sizeof(unsigned char), 1, src)==1);
+    assert(fread(&endian, (unsigned int) intlen, 1, src)== 1);
+    assert(fread(&fourcc, (unsigned int) intlen, 1, src)==1);
+    assert(fread(&num_vec, (unsigned int) intlen, 1, src)==1);
+    assert(fread(&num_feat, (unsigned int) intlen, 1, src)==1);
+    assert(fread(&preprocd, (unsigned int) intlen, 1, src)==1);
+#warning check for FOURCC , check for endianess+convert if not right+ more checks.
+
+    delete[] feature_matrix;
+    set_num_features(num_feat);
+    set_num_vectors(num_vec);
+    preprocessed= (preprocd==1);
+
+    CIO::message("detected: intsize=%d, doublesize=%d, num_vec=%d, num_feat=%d, preprocd=%d\n", intlen, doublelen, num_vec, num_feat, preprocd);
+    CIO::message("allocating feature matrix of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
+    feature_matrix=new REAL[num_feat*num_vec];
+
+    CIO::message("loading... be patient.\n");
+
+    for (int i=0; i<num_vec; i++)
+    {
+	if (!(i % (num_vec/10+1)))
+	    CIO::message("%02d%%.", (int) (100.0*i/num_vec));
+	else if (!(i % (num_vec/200+1)))
+	    CIO::message(".");
+
+	assert(fread(&feature_matrix[num_features*i], doublelen, num_features, src)==num_features) ;
+    }
+    CIO::message("detected: intsize=%d, doublesize=%d, num_vec=%d, num_feat=%d, preprocd=%d\n", intlen, doublelen, num_vec, num_feat, preprocd);
+    return true;
+}
+
 bool CRealFeatures::save(FILE* dest)
 {
-    int i;
-
     unsigned char intlen=sizeof(unsigned int);
     unsigned char doublelen=sizeof(double);
     unsigned int endian=0x12345678;
@@ -99,7 +142,7 @@ bool CRealFeatures::save(FILE* dest)
     assert(fwrite(&num_feat, sizeof(unsigned int), 1, dest)==1);
     assert(fwrite(&preprocd, sizeof(unsigned int), 1, dest)==1);
 
-    for (i=0; i<num_vec; i++)
+    for (int i=0; i<num_vec; i++)
     {
 	if (!(i % (num_vec/10+1)))
 	    CIO::message("%02d%%.", (int) (100.0*i/num_vec));
@@ -112,9 +155,6 @@ bool CRealFeatures::save(FILE* dest)
 	assert(fwrite(f, sizeof(double), len, dest)==len) ;
 	free_feature_vector(f, free) ;
     }
-
-    int* labels=get_labels();
-    assert(fwrite(labels, sizeof(int), num_vec, dest)==num_vec) ;
     
     return true;
 }

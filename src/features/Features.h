@@ -14,7 +14,7 @@ class CFeatures
 public:
 	/** Features can 
 	 * just be REALs, SHORT
-	 * or STRINGs or...
+	 * or STRINGs, FILES, or...
 	*/
 
 	CFeatures();
@@ -46,11 +46,10 @@ public:
 	int* get_labels(long &len) ;
 
 	/// return the number of samples
-	virtual long get_number_of_examples()=0 ;
+	virtual long get_num_vectors()=0 ;
 
 	virtual CFeatures* duplicate() const=0 ;
 
-	virtual bool load(FILE* dest)=0;
 	virtual bool save(FILE* dest)=0;
 	
 protected:

@@ -4,13 +4,18 @@
 
 CTOPFeatures::CTOPFeatures(CHMM* p, CHMM* n)
 {
-  pos=p;
-  neg=n;
-  num_vectors=get_number_of_examples() ;
-  CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
-  if (pos && neg)
-    num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
-  // set_feature_matrix();
+    assert(p!=NULL && n!=NULL);
+    pos=p;
+    neg=n;
+    set_num_vectors(0);
+    if (pos && pos->get_observations())
+	set_num_vectors(pos->get_observations()->get_DIMENSION());
+
+    CIO::message("pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
+
+    if (pos && neg)
+	num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
+    // set_feature_matrix();
 }
 
  CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig): 
@@ -42,14 +47,6 @@ int CTOPFeatures::get_label(long idx)
   return 0 ;
 }
 
-long CTOPFeatures::get_number_of_examples()
-{
-  if (pos && pos->get_observations())
-    return pos->get_observations()->get_DIMENSION();
-  
-  return 0;
-}
-  
 CFeatures* CTOPFeatures::duplicate() const
 {
 	return new CTOPFeatures(*this);
@@ -148,7 +145,7 @@ REAL* CTOPFeatures::set_feature_matrix()
 
 	printf(".done.\n");
 	
-	num_vectors=get_number_of_examples() ;
+	num_vectors=get_num_vectors() ;
 	num_features=get_num_features() ;
 
 	return feature_matrix;

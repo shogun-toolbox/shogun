@@ -32,7 +32,7 @@ CPreProc* CFeatures::get_preproc()
 
 int* CFeatures::get_labels(long &len)
 {
-  len=get_number_of_examples() ;
+  len=get_num_vectors() ;
   int* labels=new int[len] ;
   for (int i=0; i<len; i++)
     labels[i]=get_label(i) ;

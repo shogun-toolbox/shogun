@@ -26,10 +26,10 @@ void CLinearKernel::init_rescale(CFeatures* f)
 	double sum=0;
 	scale=1.0;
 
-	for (long i=0; i<f->get_number_of_examples(); i++)
+	for (long i=0; i<f->get_num_vectors(); i++)
 		sum+=compute(f, i, f, i);
 
-	scale=sum/f->get_number_of_examples();
+	scale=sum/f->get_num_vectors();
 }
 
 void CLinearKernel::cleanup()

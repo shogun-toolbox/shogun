@@ -2,6 +2,7 @@
 #include "gui/GUI.h"
 #include "hmm/Observation.h"
 #include "lib/io.h"
+#include "features/RealFileFeatures.h"
 
 CGUIFeatures::CGUIFeatures(CGUI * gui_)
   : gui(gui_), train_features(NULL), test_features(NULL), train_obs(NULL), test_obs(NULL)
@@ -103,7 +104,7 @@ bool CGUIFeatures::load(char* param)
     char type[1024];
     bool result=false;
 
-    if ((sscanf(param, "%s %s %s", filename, type, target))==2)
+    if ((sscanf(param, "%s %s %s", filename, type, target))==3)
     {
 	CFeatures** f_ptr=NULL;
 
@@ -124,31 +125,16 @@ bool CGUIFeatures::load(char* param)
 	delete (*f_ptr);
 	*f_ptr=NULL;
 
-	if (strcmp(type,"TOP")==0)
+	if (strcmp(type,"REAL")==0)
 	{
-	    *f_ptr=new CTOPFeatures(NULL, NULL);
+	    CIO::message("opening file...\n");
+	    *f_ptr=new CRealFileFeatures(filename);
 	}
 	else
 	{
 	    CIO::message("unknown type\n");
 	    return false;
 	}
-
-	if (*f_ptr)
-	{
-	    FILE* file=fopen(filename, "w");
-	    if ((!file) || (!(*f_ptr)->save(file)))
-		printf("writing to file %s failed!\n", param);
-	    else
-	    {
-		printf("successfully written features into \"%s\" !\n", param);
-		result=true;
-	    }
-
-	    if (file)
-		fclose(file);
-	} else
-	    CIO::message("set features first\n");
 
     } else
 	CIO::message("see help for params\n");
@@ -185,11 +171,11 @@ bool CGUIFeatures::save(char* param)
 	if (*f_ptr)
 	{
 	    FILE* file=fopen(filename, "w");
-	    if ((!file) || (!(*f_ptr)->load(file)))
-		printf("writing to file %s failed!\n", param);
+	    if ((!file) || (!(*f_ptr)->save(file)))
+		CIO::message("writing to file %s failed!\n", filename);
 	    else
 	    {
-		printf("successfully written features into \"%s\" !\n", param);
+		CIO::message("successfully written features into \"%s\" !\n", filename);
 		result=true;
 	    }
 

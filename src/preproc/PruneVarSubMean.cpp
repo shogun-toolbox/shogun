@@ -20,7 +20,7 @@ bool CPruneVarSubMean::init(CFeatures* f_)
   CIO::message("calling CPruneVarSubMean::init\n") ;
 
   CRealFeatures *f=(CRealFeatures*) f_ ;
-  int num_examples=f->get_number_of_examples() ;
+  int num_examples=f->get_num_vectors() ;
   int num_features=((CRealFeatures*)f)->get_num_features() ;
   double *mean=new double[num_features] ;
   double *var=new double[num_features] ;

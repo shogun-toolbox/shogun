@@ -30,7 +30,7 @@ bool CPCACut::init(CFeatures* f)
     if (!initialized)
     {
 	CIO::message("calling CPCACut::init\n") ;
-	int num_vectors=((CRealFeatures*)f)->get_number_of_examples() ;
+	int num_vectors=((CRealFeatures*)f)->get_num_vectors() ;
 	int num_features=((CRealFeatures*)f)->get_num_features() ;
 	CIO::message("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
 	delete[] mean ;
@@ -195,7 +195,7 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 	    int num_d=num_dim;
 	    int lda=num_dim;
 
-	    CIO::message("dgemv args: num_f: %d, num_d: %d\n", num_f, num_d) ;
+	    //CIO::message("dgemv args: num_f: %d, num_d: %d\n", num_f, num_d) ;
 #warning num_f might be num_features-1 or it is a bug in the SUN performance library (might apply to num_d too)
 	    dgemv_(&N, &num_d, &num_f, &oned, T, &lda, sub_mean, &onei, &zerod, res, &onei); 
 

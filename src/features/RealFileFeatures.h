@@ -43,6 +43,8 @@ class CRealFeatures: public CFeatures
   inline void set_num_features(int num) { num_features= num; }
   inline void set_num_vectors(int num) { num_vectors= num; }
 	
+	virtual bool load(FILE* dest)=0;
+  virtual bool load(FILE* src);
   virtual bool save(FILE* dest);
 
 protected:
@@ -57,5 +59,6 @@ protected:
   long num_features;
   
   REAL* feature_matrix;
+  int* labels;
 };
 #endif

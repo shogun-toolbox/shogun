@@ -55,7 +55,8 @@ bool CGUISVM::train(char* param)
 	param=CIO::skip_spaces(param);
 
 	CFeatures* features=gui->guifeatures.get_train_features();
-	CPreProc * preproc=gui->guipreproc.get_preproc() ;
+		CIO::message("S:initializing train features %ldx%ld\n", ((CRealFeatures*) features)->get_num_vectors(), ((CRealFeatures*) features)->get_num_features());
+	CPreProc * preproc=gui->guipreproc.get_preproc();
 
 	if (!svm)
 	{
@@ -79,16 +80,16 @@ bool CGUISVM::train(char* param)
 		}
 
 
-		CIO::message("S:initializing train features %ldx%ld\n", ((CRealFeatures*) features)->get_number_of_examples(), ((CRealFeatures*) features)->get_num_features());
+		CIO::message("S:initializing train features %ldx%ld\n", ((CRealFeatures*) features)->get_num_vectors(), ((CRealFeatures*) features)->get_num_features());
 		preproc->init(features);
-		CIO::message("E:initializing train features %ldx%ld\n", ((CRealFeatures*) features)->get_number_of_examples(), ((CRealFeatures*) features)->get_num_features());
+		CIO::message("E:initializing train features %ldx%ld\n", ((CRealFeatures*) features)->get_num_vectors(), ((CRealFeatures*) features)->get_num_features());
 	}
 	else
 		CIO::message("doing without preproc\n");
 	
 	features->set_preproc(preproc);
 	((CRealFeatures*) features)->preproc_feature_matrix();
-	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) features)->get_number_of_examples(), ((CRealFeatures*) features)->get_num_features());
+	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) features)->get_num_vectors(), ((CRealFeatures*) features)->get_num_features());
 	
 	//  if (!svm->check_feature_type(f))
 	//    {
@@ -138,8 +139,8 @@ bool CGUISVM::test(char* param)
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
 	CPreProc * preproc=gui->guipreproc.get_preproc();
-	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_number_of_examples(), ((CRealFeatures*) trainfeatures)->get_num_features());
-	CIO::message("I:test features %ldx%ld\n", ((CRealFeatures*) testfeatures)->get_number_of_examples(), ((CRealFeatures*) testfeatures)->get_num_features());
+	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
+	CIO::message("I:test features %ldx%ld\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
 
 	if (!svm)
 	{
@@ -166,9 +167,9 @@ bool CGUISVM::test(char* param)
 			CIO::message("preprocessor does not fit to features");
 			return false;
 		}
-		CIO::message("S:initializing train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_number_of_examples(), ((CRealFeatures*) trainfeatures)->get_num_features());
+		CIO::message("S:initializing train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
 		preproc->init(trainfeatures);
-		CIO::message("E:initializing train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_number_of_examples(), ((CRealFeatures*) trainfeatures)->get_num_features());
+		CIO::message("E:initializing train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
 	}
 	else
 		CIO::message("doing without preproc\n");
@@ -176,13 +177,13 @@ bool CGUISVM::test(char* param)
 
 	trainfeatures->set_preproc(preproc);
 	trainfeatures->preproc_feature_matrix();
-	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_number_of_examples(), ((CRealFeatures*) trainfeatures)->get_num_features());
-	CIO::message("I:test features %ldx%ld\n", ((CRealFeatures*) testfeatures)->get_number_of_examples(), ((CRealFeatures*) testfeatures)->get_num_features());
+	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
+	CIO::message("I:test features %ldx%ld\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
 	
 	testfeatures->set_preproc(preproc);
 	testfeatures->preproc_feature_matrix();
-	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_number_of_examples(), ((CRealFeatures*) trainfeatures)->get_num_features());
-	CIO::message("I:test features %ldx%ld\n", ((CRealFeatures*) testfeatures)->get_number_of_examples(), ((CRealFeatures*) testfeatures)->get_num_features());
+	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
+	CIO::message("I:test features %ldx%ld\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
 
 	//  if (!svm->check_feature_type(f))
 	//    {
@@ -195,7 +196,7 @@ bool CGUISVM::test(char* param)
 	svm->set_kernel(gui->guikernel.get_kernel()) ;
 	REAL* output= svm->svm_test(testfeatures, trainfeatures) ;
 	
-	int total=testfeatures->get_number_of_examples();
+	int total=testfeatures->get_num_vectors();
 
 	int* label= new int[total];	
 
@@ -265,28 +266,31 @@ bool CGUISVM::load(char* param)
     if ((sscanf(param, "%s %s", filename, type))==2)
     {
 
-	new_svm(type);
-
-	FILE* model_file=fopen(filename, "r");
-
-	if (model_file)
+	if (new_svm(type))
 	{
-	    if (svm && svm->load(model_file))
+	    FILE* model_file=fopen(filename, "r");
+
+	    if (model_file)
 	    {
-		printf("file successfully read\n");
-		result=true;
+		if (svm && svm->load(model_file))
+		{
+		    printf("file successfully read\n");
+		    result=true;
+		}
+		else
+		    CIO::message("svm creation/loading failed\n");
+
+		fclose(model_file);
 	    }
 	    else
-		CIO::message("svm creation/loading failed\n");
+		CIO::message("opening file %s failed\n", filename);
 
-	    fclose(model_file);
+	    return result;
+	    CIO::not_implemented() ;
+	    return false ;
 	}
 	else
-	    CIO::message("opening file %s failed\n", filename);
-
-	return result;
-	CIO::not_implemented() ;
-	return false ;
+	    CIO::message("type of svm unknown\n");
     }
     else
 	CIO::message("see help for parameters\n");
