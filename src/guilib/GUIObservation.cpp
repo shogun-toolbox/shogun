@@ -39,7 +39,7 @@ bool CGUIObservation::load_observations(char* param)
 	int start=0;
 	int width=-1;
 
-#error hmm -> obs  observation size -> M ??
+#warning hmm -> obs  observation size -> M ??
 //	if (gui->guihmm.get_pos())
 //		M=gui->guihmm.get_pos()->get_M();
 //	else if (gui->guihmm.get_neg())

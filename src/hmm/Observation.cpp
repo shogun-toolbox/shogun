@@ -163,7 +163,7 @@ bool CObservation::load_observations(FILE* file, E_OBS_TYPE type, E_OBS_ALPHABET
     {
 		if ((length=(int)ftell(file)) != -1)
 		{
-#error fixme: depends on alphabet
+#warning fixme: depends on alphabet
 			char* full_content = new char[length];
 			full_observation = new T_OBSERVATIONS[length];
 
