@@ -1240,7 +1240,7 @@ bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 					result[i+j*num_vec1]=v;
 					result[j+i*num_vec1]=v;
 
-					if (num_done%100)
+					if (num_done%100000)
 						CIO::progress(num_done, 0, total_num-1);
 
 					if (i!=j)
@@ -1258,7 +1258,7 @@ bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 				{
 					result[i+j*num_vec1]=k->kernel(i,j) ;
 
-					if (num_done%100)
+					if (num_done%100000)
 						CIO::progress(num_done, 0, total_num-1);
 
 					num_done++;
