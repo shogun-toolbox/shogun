@@ -129,6 +129,11 @@ REAL* CTOPFeatures::set_feature_matrix()
 	CIO::message("allocating top feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	delete[] feature_matrix;
 	feature_matrix=new REAL[num_features*num_vectors];
+	if (!feature_matrix)
+	  {
+	    CIO::message(stderr,"allocation not successful!");
+	    return NULL ;
+	  } ;
 
 	CIO::message("calculating top feature matrix\n");
 

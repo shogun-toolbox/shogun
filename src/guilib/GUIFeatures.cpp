@@ -135,8 +135,6 @@ bool CGUIFeatures::set_features(char* param)
 			}
 			else if (strcmp(type,"FK")==0)
 			{
-				REAL a=0.5;
-
 				if (gui->guihmm.get_pos() && gui->guihmm.get_neg())
 				{
 
@@ -149,7 +147,7 @@ bool CGUIFeatures::set_features(char* param)
 					gui->guihmm.get_neg()->set_observations(*o_ptr);
 
 					delete (*f_ptr);
-					*f_ptr= new CFKFeatures(size, gui->guihmm.get_pos(), gui->guihmm.get_neg(), a);
+					*f_ptr= new CFKFeatures(size, gui->guihmm.get_pos(), gui->guihmm.get_neg());
 
 					//						gui->guihmm.get_pos()->set_observations(old_obs_pos);
 					//						gui->guihmm.get_neg()->set_observations(old_obs_neg);

@@ -44,7 +44,8 @@ typedef struct {
 #define REQ_MATRIX_MEMUSAGE 999
 #define REQ_QUIT 1000
 #define REQ_READ_EXT_Z 1100
-#define REQ_Z_COLUMNS 1101
+#define REQ_Z_COLUMNS 105
+#define REQ_FINALIZE 106
 
 /* Some helper functions */
 void bcast_int(MPI_Comm comm, int root, int val);

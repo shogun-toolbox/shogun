@@ -7,13 +7,13 @@
 class CFKFeatures: public CRealFeatures
 {
  public:
-  CFKFeatures(long size, CHMM* p, CHMM* n, REAL a);
+  CFKFeatures(long size, CHMM* p, CHMM* n);
   CFKFeatures(const CFKFeatures &orig);
   
   virtual ~CFKFeatures();
 
   /// set HMMs and weight a
-  void set_models(CHMM* p, CHMM* n, REAL a);
+  void set_models(CHMM* p, CHMM* n);
 
   /// set weight a
   inline void set_a(REAL a) 
@@ -32,6 +32,7 @@ class CFKFeatures: public CRealFeatures
   
   virtual CFeatures* duplicate() const;
 
+  double opt_a() ;
 
  protected:
   virtual REAL* compute_feature_vector(long num, long& len, REAL* target=NULL);
@@ -39,6 +40,8 @@ class CFKFeatures: public CRealFeatures
   /// computes the featurevector to the address addr
   void compute_feature_vector(REAL* addr, long num, long& len);
   
+  double deriv_a(double a, int dimension=-1) ;
+
  protected:
   CHMM* pos;
   CHMM* neg;

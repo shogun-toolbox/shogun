@@ -467,7 +467,8 @@ void CSVMMPI::svm_mpi_optimize(int * labels, int num_examples, CRealFeatures * t
 void CSVMMPI::svm_mpi_destroy(void)
 {
   /* Root node only */
-  bcast_req(MPI_COMM_WORLD, 0, REQ_QUIT);
+  //bcast_req(MPI_COMM_WORLD, 0, REQ_QUIT);
+  bcast_req(MPI_COMM_WORLD, 0, REQ_FINALIZE);
   MPI_Finalize();
 }
 #endif

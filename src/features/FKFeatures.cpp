@@ -1,10 +1,11 @@
+#include "hmm/Observation.h"
 #include "FKFeatures.h"
 #include "lib/io.h"
 #include <assert.h>
 
-CFKFeatures::CFKFeatures(long size, CHMM* p, CHMM* n, REAL a) : CRealFeatures(size)
+CFKFeatures::CFKFeatures(long size, CHMM* p, CHMM* n) : CRealFeatures(size)
 {
-  set_models(p,n,a);
+  set_models(p,n);
 }
 
  CFKFeatures::CFKFeatures(const CFKFeatures &orig): 
@@ -16,13 +17,75 @@ CFKFeatures::~CFKFeatures()
 {
 }
 
-void CFKFeatures::set_models(CHMM* p, CHMM* n, REAL a)
+double CFKFeatures::deriv_a(double a, int dimension)
+{
+  CObservation *Obs=pos->get_observations() ;
+  double deriv=0.0 ;
+  int i=dimension ;
+  
+  if (dimension==-1)
+    {
+      for (i=0; i<Obs->get_DIMENSION(); i++)
+	{
+	  double pp=pos->model_probability(i) ;
+	  double pn=neg->model_probability(i) ;
+	  double sub=pp ;
+	  if (pn>pp) sub=pn ;
+	  pp-=sub ;
+	  pn-=sub ;
+	  pp=exp(pp) ;
+	  pn=exp(pn) ;
+	  double p=a*pp+(1-a)*pn ;
+	  deriv+=(pp-pn)/p ;
+
+	  /*double d1=(pp-pn)/p ;
+	  pp=exp(pos->model_probability(i)) ;
+	  pn=exp(neg->model_probability(i)) ;
+	  p=a*pp+(1-a)*pn ;
+	  double d2=(pp-pn)/p ;
+	  fprintf(stderr, "d1=%e  d2=%e,  d1-d2=%e\n",d1,d2) ;*/
+	} ;
+    } else
+      {
+	double pp=pos->model_probability(i) ;
+	double pn=neg->model_probability(i) ;
+	double sub=pp ;
+	if (pn>pp) sub=pn ;
+	pp-=sub ;
+	pn-=sub ;
+	pp=exp(pp) ;
+	pn=exp(pn) ;
+	double p=a*pp+(1-a)*pn ;
+	deriv+=(pp-pn)/p ;
+      } ;
+
+  return deriv ;
+} ;
+
+
+double CFKFeatures::opt_a()
+{
+  double la=0, ua=1, a=(la+ua)/2 ;
+  while (ua-la>1e-6)
+    {
+      double da=deriv_a(a) ;
+      if (da>0)
+	la=a ;
+      if (da<=0)
+	ua=a ;
+      a=(la+ua)/2 ;
+      CIO::message("opt_a: a=%1.3e  deriv=%1.3e  la=%1.3e  ua=%1.3e\n", a, da, la ,ua) ;
+    } ;
+  return a ;
+} ;
+
+void CFKFeatures::set_models(CHMM* p, CHMM* n)
 {
   assert(p!=NULL && n!=NULL);
 
   pos=p; 
   neg=n;
-  weight_a=a;
+  weight_a=opt_a() ;
   set_num_vectors(0);
 
   delete[] feature_matrix  ;
@@ -78,7 +141,7 @@ void CFKFeatures::compute_feature_vector(REAL* featurevector, long num, long& le
 	len=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 	//  CIO::message("len=%i\n",len) ;
 
-	featurevector[p++]=(exp(posx)-exp(negx))/(weight_a*exp(posx)+(1-weight_a)*exp(negx));
+	featurevector[p++] = deriv_a(weight_a, x);
 //	CIO::message("posx+negx=%f\n", featurevector[0]);
 
 	//first do positive model
