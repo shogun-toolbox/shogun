@@ -16,9 +16,9 @@ CTextGUI *gui=NULL;
 //names of menu commands
 static const char* N_NEW_HMM=			"new_hmm";
 static const char* N_NEW_SVM=			"new_svm";
-static const char* N_LOAD_HMM=			"load_HMM";
-static const char* N_SAVE_HMM=			"save_HMM";
-static const char* N_SAVE_HMM_BIN=		"save_HMM_bin";
+static const char* N_LOAD_HMM=			"load_hmm";
+static const char* N_SAVE_HMM=			"save_hmm";
+static const char* N_SAVE_HMM_BIN=		"save_hmm_bin";
 static const char* N_LOAD_DEFINITIONS=	"load_defs";
 static const char* N_SAVE_KERNEL=		"save_kernel";
 static const char* N_SAVE_TOP_FEATURES=	"save_top_features";
@@ -49,13 +49,13 @@ static const char* N_CONVERGENCE_CRITERIA=	"convergence_criteria";
 static const char* N_PSEUDO=			"pseudo";
 static const char* N_C=			     	"c";
 static const char* N_ADD_STATES=	        "add_states";
-static const char* N_APPEND_HMM=		"append_HMM";
+static const char* N_APPEND_HMM=		"append_hmm";
 static const char* N_BAUM_WELCH_TRAIN=	        "bw";
 static const char* N_BAUM_WELCH_TRAIN_DEFINED=	"bw_def";
 static const char* N_LIKELIHOOD=	       	"likelihood";
 static const char* N_ALPHABET=			"alphabet";
-static const char* N_OUTPUT_HMM=		"output_HMM";
-static const char* N_OUTPUT_HMM_DEFINED=        "output_HMM_defined";
+static const char* N_OUTPUT_HMM=		"output_hmm";
+static const char* N_OUTPUT_HMM_DEFINED=        "output_hmm_defined";
 static const char* N_QUIT=			"quit";
 static const char* N_EXEC=			"exec";
 static const char* N_EXIT=			"exit";
@@ -98,8 +98,8 @@ void CTextGUI::print_help()
    CIO::message("\n[LOAD]\n");
    CIO::message("\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
 //   CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
-//   CIO::message("\033[1;31m%s\033[0m <filename>\t- load observed data\n",N_LOAD_OBSERVATIONS);
-//   CIO::message("\n[SAVE]\n");
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- load observed data\n",N_LOAD_OBSERVATIONS);
+   CIO::message("\n[SAVE]\n");
    CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm\n",N_SAVE_HMM);
 //   CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm in binary format\n",N_SAVE_HMM_BIN);
 //#ifndef NOVIT
@@ -118,7 +118,7 @@ void CTextGUI::print_help()
    CIO::message("\n[HMM]\n");
 //   CIO::message("\033[1;31m%s\033[0m - frees all HMMs and observations\n",N_CLEAR);
    CIO::message("\033[1;31m%s\033[0m #states #oberservations #order\t- frees previous HMM and creates an empty new one\n",N_NEW_HMM);
-//   CIO::message("\033[1;31m%s\033[0m <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> - assign observation to current HMM\n",N_ASSIGN_OBSERVATION);
+   CIO::message("\033[1;31m%s\033[0m <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> - assign observation to current HMM\n",N_ASSIGN_OBSERVATION);
    CIO::message("\033[1;31m%s\033[0m <POS|NEG|TEST>- make current HMM the POS,NEG or TEST HMM; then free current HMM \n",N_SET_HMM_AS);
 //   CIO::message("\033[1;31m%s\033[0m <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
    CIO::message("\033[1;31m%s\033[0m <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)\n", N_ADD_STATES);
@@ -439,37 +439,37 @@ bool CTextGUI::get_line(FILE* infile)
 //// main - the one and only ///
 int main(int argc, const char* argv[])
 {
-  gui=new CTextGUI(argc, argv) ;
+	gui=new CTextGUI(argc, argv) ;
 
-  if (argc<=1)
-    while (gui->get_line());
-  else
-    {
-      if (argc>=2)
+	if (argc<=1)
+		while (gui->get_line());
+	else
 	{
-	  if ( argc>2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help"))
-	    {
-	      printf("usage: genfinder [ <script> ]\n\n");
-	      printf("if no options are given genfinder enters interactive mode\n");
-	      printf("if <script> is specified the commands will be executed");
-	      return 1;
-	    }
-	  else
-	    {
-	      FILE* file=fopen(argv[1], "r");
-	      
-	      if (!file)
+		if (argc>=2)
 		{
-		  CIO::message("error opening/reading file: \"%s\"",argv[1]);
-		  return 1;
+			if ( argc>2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help"))
+			{
+				printf("usage: genfinder [ <script> ]\n\n");
+				printf("if no options are given genfinder enters interactive mode\n");
+				printf("if <script> is specified the commands will be executed");
+				return 1;
+			}
+			else
+			{
+				FILE* file=fopen(argv[1], "r");
+
+				if (!file)
+				{
+					CIO::message("error opening/reading file: \"%s\"",argv[1]);
+					return 1;
+				}
+				else
+				{
+					while(!feof(file) && gui->get_line(file));
+					fclose(file);
+				}
+			}
 		}
-	      else
-		{
-		  while(!feof(file) && gui->get_line(file));
-		  fclose(file);
-		}
-	    }
 	}
-    }
-  return 0;
+	return 0;
 }
