@@ -88,6 +88,7 @@ bool CGUISVM::train(char* param)
 
 	CIO::message("starting svm training\n") ;
 	svm->set_C(C) ;
+	svm->set_kernel(gui->guikernel.get_kernel()) ;
 	return svm->svm_train(features) ;
 }
 

@@ -11,9 +11,11 @@ class CGUIKernel
 	CGUIKernel(CGUI*);
 	~CGUIKernel();
 
+	CKernel* get_kernel();
+	bool set_kernel(char* param);
+
  protected:
 	CKernel* kernel;
- protected:
 	CGUI* gui ;
 };
 #endif
