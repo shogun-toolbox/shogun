@@ -10,10 +10,10 @@ bool CHMM::feature_cache_in_question=false;
 unsigned int CHMM::feature_cache_checksums[8];	
 unsigned int CHMM::features_crc32[32];
 
-class CTOPFeatures: public CFeatures
+class CTOPFeatures: public CRealFeatures
 {
+ public:
 
-h
 	    /// compute featurevectors for all observations and return a cache of size num_features*num_observations
 	    static bool compute_top_feature_cache(CHMM* pos, CHMM* neg);
 

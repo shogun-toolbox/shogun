@@ -1,6 +1,7 @@
 #ifndef _CREALFEATURES__H__
 #define _CREALFEATURES__H__
 
+#include "lib/common.h"
 #include "preproc/Preproc.h"
 #include "features/Features.h"
 

@@ -1,11 +1,12 @@
 #ifndef _CFEATURES__H__
 #define _CFEATURES__H__
 
+#include "lib/common.h"
 #include "preproc/PreProc.h"
 
 class CFeatures
 {
-
+ public:
 	/** Features can be DOUBLEs and STRINGs
 	*/
 	enum EType
@@ -31,13 +32,13 @@ class CFeatures
 
 	/// Preprocess the feature feature_matrix
 	bool preproc_feature_matrix();
+
+	virtual bool set_label(int idx, int label) { return false ; }
+	virtual int get_label(int idx)=0 ;
 	
 protected:
-	/// compute feature vector for sample num
-	/// len is returned by reference
-	virtual REAL* compute_feature_vector(int num, int& len)=0;
-
 	/// Preprocessor
 	CPreProc* preproc;
 };
+
 #endif
