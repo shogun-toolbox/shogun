@@ -145,7 +145,7 @@ void CTextGUI::print_help()
 //   CIO::message("\033[1;31m%s\033[0m <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
    CIO::message("\033[1;31m%s\033[0m <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)\n", N_ADD_STATES);
    CIO::message("\033[1;31m%s\033[0m <filename> <INT> <INT>\t\t\t- append HMM <filename> to current HMM\n", N_APPEND_HMM);
-//   CIO::message("\033[1;31m%s\033[0m [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
+   CIO::message("\033[1;31m%s\033[0m [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
 //   CIO::message("\033[1;31m%s\033[0m <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [PROTEIN|DNA|ALPHANUM|CUBE]\t\t\t- changes alphabet type\n", N_ALPHABET);
    CIO::message("\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
 //#ifdef FIX_POS
@@ -214,7 +214,7 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 		print_prompt();
 
     char* b=fgets(input, sizeof(input), infile);
-    if ((b==NULL) || !strlen(input) || (input[0]==N_COMMENT1) || (input[0]==N_COMMENT2) || (input[0]=='\n'))
+    if ((b==NULL) || !strlen(input) || (input[0]==N_COMMENT1) || (input[0]==N_COMMENT2) || (input[0]=='\n') || feof(infile))
 	return true;
 
     input[strlen(input)-1]='\0';

@@ -434,6 +434,19 @@ bool CGUIHMM::add_states(char* param)
 	return false;
 }
 
+bool CGUIHMM::set_pseudo(char* param)
+{
+  param=CIO::skip_spaces(param);
+  
+  if (sscanf(param, "%le", &PSEUDO)!=1)
+    {
+      CIO::message("see help for parameters. current setting: pseudo=%e\n", PSEUDO);
+      return false ;
+    }
+  CIO::message("current setting: pseudo=%e\n", PSEUDO);
+  return true ;
+}
+
 bool CGUIHMM::convergence_criteria(char* param)
 {
   int j=100;
