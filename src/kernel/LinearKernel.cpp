@@ -15,12 +15,14 @@ extern "C" {
 #include <assert.h>
 
 CLinearKernel::CLinearKernel(LONG size)
-  : CRealKernel(size),scale(1.0)
+  : CRealKernel(size),scale(1.0),normal(NULL)
 {
 }
 
 CLinearKernel::~CLinearKernel() 
 {
+	if (get_is_initialized())
+		delete_optimization();
 }
   
 bool CLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)
@@ -114,4 +116,68 @@ REAL CLinearKernel::compute(INT idx_a, INT idx_b)
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return result;
+}
+
+bool CLinearKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* alphas) 
+{
+	CIO::message(M_DEBUG,"drin gelandet yeah\n");
+	INT alen;
+	bool afree;
+	int i;
+
+	int num_feat=((CRealFeatures*) lhs)->get_num_features();
+	assert(num_feat);
+
+	normal=new REAL[num_feat];
+	assert(normal);
+
+	for (i=0; i<num_feat; i++)
+		normal[i]=0;
+
+	for (int i=0; i<num_suppvec; i++)
+	{
+		REAL* avec=((CRealFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
+		assert(avec);
+
+		for (int j=0; j<num_feat; j++)
+			normal[j]+=alphas[i]*avec[j];
+
+		((CRealFeatures*) lhs)->free_feature_vector(avec, 0, afree);
+	}
+
+	set_is_initialized(true);
+	return true;
+}
+
+void CLinearKernel::delete_optimization()
+{
+	delete[] normal;
+	normal=NULL;
+	set_is_initialized(false);
+}
+
+REAL CLinearKernel::compute_optimized(INT idx_b) 
+{
+	INT blen;
+	bool bfree;
+
+	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+
+	INT ialen=(int) blen;
+
+#ifndef HAVE_ATLAS
+	REAL result=0;
+	{
+		for (INT i=0; i<ialen; i++)
+			result+=normal[i]*bvec[i];
+	}
+	result/=scale;
+#else
+	INT skip=1;
+	REAL result = ATL_ddot(ialen, normal, skip, bvec, skip)/scale;
+#endif
+
+	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+
+	return result;
 }

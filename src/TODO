@@ -1,3 +1,4 @@
+* multiple classifiers/features/distributions/etc, make them interact via lists/indizes of who works with whom
 * CIO::message() mixed with printf's and matlabs mx* stuff -> we only need CIO::... ala gstreamer
 * real detection for lapack/blas/matlab/cplex etc
 * remove or fix all the unused hacky stuff (svm_mpi/grad_descent...)
@@ -12,7 +13,6 @@
   atm, lots of things just use fopen/read/close...
 * all outputs are labels
 * tcp/ip io fixen
-* fix+test combined kernels
 * type (INT/LONG etc) fixes, clear policy
 * fix linear HMM to be equiv. with MMs
 * testsuite

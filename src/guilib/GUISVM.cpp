@@ -189,6 +189,9 @@ bool CGUISVM::test(CHAR* param)
 	((CKernelMachine*) svm)->set_labels(testlabels);
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
 
+	if (COptimizableKernel::is_optimizable(gui->guikernel.get_kernel()) && (gui->guikernel.get_kernel()->get_is_initialized()))
+		CIO::message(M_DEBUG, "using kernel optimization\n");
+
 	REAL* output= svm->test();
 
 	INT len=0;
@@ -323,6 +326,9 @@ CLabels* CGUISVM::classify(CLabels* output)
 	}
 	  
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
+
+	if (COptimizableKernel::is_optimizable(gui->guikernel.get_kernel()) && (gui->guikernel.get_kernel()->get_is_initialized()))
+		CIO::message(M_DEBUG, "using kernel optimization\n");
 
 	CIO::message(M_INFO, "starting svm testing\n") ;
 	return svm->classify(output);

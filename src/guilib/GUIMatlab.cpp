@@ -640,6 +640,7 @@ bool CGUIMatlab::svm_classify(mxArray* retvals[])
 	if (f)
 	{
 		int num_vec=f->get_num_vectors();
+
 		CLabels* l=gui->guisvm.classify();
 
 		if (!l)

@@ -70,6 +70,8 @@ static const CHAR* N_CLEAN_KERNEL=		"clean_kernel";
 static const CHAR* N_RESIZE_KERNEL_CACHE=		"resize_kernel_cache";
 static const CHAR* N_ADD_PREPROC=		"add_preproc";
 static const CHAR* N_DEL_PREPROC=		"del_preproc";
+static const CHAR* N_ADD_PREPROC_CHAIN=	"add_preproc_chain";
+static const CHAR* N_DEL_PREPROC_CHAIN=	"del_preproc_chain";
 static const CHAR* N_CLEAN_PREPROC=		"clean_preproc";
 static const CHAR* N_PREPROCESS=		"preprocess";
 static const CHAR* N_INIT_KERNEL=		"init_kernel";
@@ -596,17 +598,25 @@ bool CTextGUI::parse_line(CHAR* input)
 	{
 		guikernel.resize_kernel_cache(input+strlen(N_RESIZE_KERNEL_CACHE));
 	} 
+//	else if (!strncmp(input, N_ADD_PREPROC_CHAIN, strlen(N_ADD_PREPROC_CHAIN)))
+//	{
+//		guipreproc.add_preproc_chain(input+strlen(N_ADD_PREPROC_CHAIN));
+//	} 
+//	else if (!strncmp(input, N_DEL_PREPROC_CHAIN, strlen(N_DEL_PREPROC_CHAIN)))
+//	{
+//		guipreproc.del_preproc_chain(input+strlen(N_DEL_PREPROC_CHAIN));
+//	} 
 	else if (!strncmp(input, N_DEL_PREPROC, strlen(N_DEL_PREPROC)))
 	{
 		guipreproc.del_preproc(input+strlen(N_DEL_PREPROC));
 	} 
-	else if (!strncmp(input, N_CLEAN_PREPROC, strlen(N_CLEAN_PREPROC)))
-	{
-		guipreproc.clean_preproc(input+strlen(N_CLEAN_PREPROC));
-	} 
 	else if (!strncmp(input, N_ADD_PREPROC, strlen(N_ADD_PREPROC)))
 	{
 		guipreproc.add_preproc(input+strlen(N_ADD_PREPROC));
+	} 
+	else if (!strncmp(input, N_CLEAN_PREPROC, strlen(N_CLEAN_PREPROC)))
+	{
+		guipreproc.clean_preproc(input+strlen(N_CLEAN_PREPROC));
 	} 
 	else if (!strncmp(input, N_PREPROCESS, strlen(N_PREPROCESS)))
 	{

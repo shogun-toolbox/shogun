@@ -143,4 +143,3 @@ bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, R
 	CIO::message(M_INFO, "created %i x %i matrix (%ld)\n", num_features, num_vectors, feature_matrix) ;
 	return true;
 }
-

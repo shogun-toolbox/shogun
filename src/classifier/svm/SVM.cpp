@@ -208,31 +208,15 @@ CLabels* CSVM::classify(CLabels* result)
 
 		CKernel *kernel = CKernelMachine::get_kernel() ;
 
-		if (COptimizableKernel::is_optimizable(kernel) && 
-			kernel->get_is_initialized())
-		{
 			CIO::message(M_DEBUG, "using optimized kernel\n");
 			for (INT vec=0; vec<num_vectors; vec++)
 			{
 				if ( (vec% (num_vectors/10+1))== 0)
 					CIO::message(M_PROGRESS, "%3i%%  \r", 100*vec/(num_vectors+1));
 
-				result->set_label(vec, classify_example_optimized(vec));
-			}
-			CIO::message(M_PROGRESS, "done.           \n");
-		}
-		else
-		{
-			CIO::message(M_DEBUG, "using standard kernel\n");
-			for (INT vec=0; vec<num_vectors; vec++)
-			{
-				if ( (vec% (num_vectors/10+1))== 0)
-					CIO::message(M_PROGRESS, "%3i%%  \r", 100*vec/(num_vectors+1));
-				
 				result->set_label(vec, classify_example(vec));
 			}
 			CIO::message(M_PROGRESS, "done.           \n");
-		}
 	}
 	else 
 		return NULL;
@@ -242,18 +226,19 @@ CLabels* CSVM::classify(CLabels* result)
 
 REAL CSVM::classify_example(INT num)
 {
-	REAL dist=0;
-	for(INT i=0; i<get_num_support_vectors(); i++)
-		dist+=CKernelMachine::get_kernel()->kernel(get_support_vector(i), num)*get_alpha(i);
-	
-	return (dist+get_bias());
-}
+	if (COptimizableKernel::is_optimizable(kernel) && (kernel->get_is_initialized()))
+	{
+		COptimizableKernel *kernel=CKernelMachine::get_kernel() ;
 
-REAL CSVM::classify_example_optimized(INT num)
-{
-	COptimizableKernel *kernel=CKernelMachine::get_kernel() ;
+		REAL dist = kernel->compute_optimized(num) ;
+		return (dist+get_bias());
+	}
+	else
+	{
+		REAL dist=0;
+		for(INT i=0; i<get_num_support_vectors(); i++)
+			dist+=CKernelMachine::get_kernel()->kernel(get_support_vector(i), num)*get_alpha(i);
 
-	REAL dist = kernel->compute_optimized(num) ;
-
-	return (dist+get_bias());
+		return (dist+get_bias());
+	}
 }

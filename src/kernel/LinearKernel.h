@@ -9,7 +9,7 @@ class CLinearKernel: public CRealKernel
 {
  public:
   CLinearKernel(LONG size);
-  ~CLinearKernel();
+  virtual ~CLinearKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
@@ -24,17 +24,11 @@ class CLinearKernel: public CRealKernel
   // return the name of a kernel
   virtual const CHAR* get_name() { return "Linear" ; } ;
 
-  virtual bool init_optimization(INT count, INT *IDX, REAL * weights) 
-	  {
-		  CIO::message(M_ERROR, "not implemented yet") ;
-		  return false;
-	  } ;
-  virtual void delete_optimization() {} ;
-  virtual REAL compute_optimized(INT idx) 
-	  { 		  
-		  CIO::message(M_ERROR, "not implemented yet") ;
-		  return 0 ; 
-	  } ;
+  ///optimizable kernel, i.e. precompute normal vector and as phi(x)=x
+  ///do scalar product in input space
+  virtual bool init_optimization(INT num_suppvec, INT* sv_idx, REAL* alphas);
+  virtual void delete_optimization();
+  virtual REAL compute_optimized(INT idx);
 
  protected:
   /// compute kernel function for features a and b
@@ -47,6 +41,8 @@ class CLinearKernel: public CRealKernel
   
  protected:
   double scale ;
-};
 
+  /// normal vector (used in case of optimized kernel)
+  double* normal;
+};
 #endif

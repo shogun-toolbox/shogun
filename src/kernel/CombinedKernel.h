@@ -6,9 +6,6 @@
 #include "kernel/OptimizableKernel.h"
 #include "lib/io.h"
 
-///TODO
-///guilib ->Combined stuff d.h. {add,del?}_{kernel/features}?#$*
-///
 class CCombinedKernel : public CKernel
 {
 public:
