@@ -16,6 +16,7 @@ DEFINES="-DMPICH_SKIP_MPICXX -D_LARGEFILE64_SOURCE -DNO_LOG_CACHE -DBIGOBS -DUSE
 
 # these ones will be autodetected
 GDB=gdb
+MAKE=make
 COMP_C=cc
 COMP_CPP=c++
 COMPFLAGS_C=
@@ -82,6 +83,19 @@ EOF
 	fi
 }
 
+check_make()
+{
+	echocheck "GNU Make"
+	if make --version 2>&1 | grep GNU
+	then
+		echores "GNU Make detected"
+		MAKE=make
+	else
+		echores "non GNU Make detected expect trouble (try running gmake manually)"
+		MAKE=gmake
+	fi
+}
+
 cc_check() {
   echo >> "$TMPLOG"
   cat "$TMPC" >> "$TMPLOG"
@@ -90,10 +104,15 @@ cc_check() {
   rm -f "$TMPO"
   ( "$_cc" "$TMPC" -o "$TMPO" "$@" ) >> "$TMPLOG" 2>&1
   TMP="$?"
-  echo >> "$TMPLOG"
-  echo "ldd $TMPO" >> "$TMPLOG"
-  ( ldd "$TMPO" ) >> "$TMPLOG" 2>&1
-  echo >> "$TMPLOG"
+  if test -f "$TMPO"
+  then
+	  echo >> "$TMPLOG"
+	  echo "ldd $TMPO" >> "$TMPLOG"
+	  ( ldd "$TMPO" ) >> "$TMPLOG" 2>&1
+  else
+	  echo "no object file created" >> "$TMPLOG"
+  fi
+	  echo >> "$TMPLOG"
   return "$TMP"
 }
 
@@ -124,6 +143,7 @@ bsd()     { freebsd || netbsd || bsdos || openbsd ; return "$?" ; }
 qnx()     { issystem "QNX"     ; return "$?" ; }
 darwin()  { issystem "Darwin"  ; return "$?" ; }
 gnu()     { issystem "GNU"     ; return "$?" ; }
+osf1()     { issystem "OSF1"    ; return "$?" ; }
 
 # arch test boolean functions
 # x86/x86pc is used by QNX
@@ -231,9 +251,10 @@ determine_march_mcpu()
 		COMP_CPP=CC
 		COMP_OPTS="-O4 -g -Wall"
 		LINKFLAGS="-lm -lsunperf -Bstatic -xlic_lib=sunperf -xlic_lib=SUNWPro_lic -Bdynamic -lF77 -lM77 -lsunmath  -mt -lsocket -lnsl"
-	elif alpha
+	elif osf1
 	then
 		COMP_OPTS="-O5 -inline speed -pthread -om"
+		LINKFLAGS="-pthread -L/opt/matlab-6/extern/lib/alpha -rpath /opt/matlab-6/extern/lib/alpha -rpath /opt/matlab-6/bin/alpha -lmpi -lm  -lcxml_ev6 -lUfor -lfor -lFutil -lm -lots -lm_c32 -lmld -lexc -lm"
 	fi
 
 	OS="-D`echo $system_name | tr 'a-z-' 'A-Z_'`"
@@ -894,6 +915,7 @@ COMPFLAGS_CPP="$OS $_march $_mcpu $_optimizing $COMP_OPTS"
 COMPFLAGS_C="$COMPFLAGS_CPP"
 
 cat > .config <<EOF
+MAKE 			= ${MAKE}
 SRCDIR 			= ${SRCDIR}
 EXT_SRC_C 		= ${EXT_SRC_C}
 EXT_SRC_CPP 	= ${EXT_SRC_CPP}
@@ -929,6 +951,7 @@ clean_up()
 #ddd
 #static
 detect_cc
+check_make
 determine_march_mcpu
 write_dot_config
 clean_up
