@@ -3,6 +3,7 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
+#include <math.h>
 //#include <libmmfile.h>
 
 

@@ -1,6 +1,6 @@
 load_obs pos.seq POSTRAIN
 
-new_hmm 4 4 1
+new_hmm 10 4 1
 assign_obs POSTRAIN
 convergence_criteria 1 1e-6
 bw
@@ -9,7 +9,7 @@ set_hmm_as POS
 
 load_obs neg.seq NEGTRAIN
 
-new 4 4 1
+new 10 4 1
 assign_obs NEGTRAIN
 convergence_criteria 1 1e-6
 bw
