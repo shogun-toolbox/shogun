@@ -1,48 +1,88 @@
-	double sum=0;
-	sum+=featurevector[0]*featurevector[0];
+#include "NormOne.h"
+#include "features/Features.h"
+#include "features/RealFeatures.h"
 
-	for (i=0; i<pos->get_N(); i++)
+CNormOne::CNormOne()
+{
+}
+
+CNormOne::~CNormOne()
+{
+}
+
+/// initialize preprocessor from features
+bool CNormOne::init(CFeatures* f)
+{
+	return true;
+}
+
+/// initialize preprocessor from features
+void CNormOne::cleanup()
+{
+}
+
+/// initialize preprocessor from file
+bool CNormOne::load(FILE* f)
+{
+	return false;
+}
+
+/// save preprocessor init-data to file
+bool CNormOne::save(FILE* f)
+{
+	return false;
+}
+
+/// apply preproc on feature matrix
+/// result in feature matrix
+/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
+REAL* CNormOne::apply_to_feature_matrix(CFeatures* f)
+{
+	long i,j;
+	long num_vec;
+	long num_feat;
+	REAL* matrix=((CRealFeatures*) f)->get_feature_matrix(num_feat, num_vec);
+
+	for (i=0; i<num_vec; i++)
 	{
-		featurevector[p]=exp(pos->model_derivative_p(i, x)-posx);
-		sum+=featurevector[p]*featurevector[p++];
-		featurevector[p]=exp(pos->model_derivative_q(i, x)-posx);
-		sum+=featurevector[p]*featurevector[p++];
+		REAL sqnorm=0;
+		REAL norm=0;
+		REAL* vec=&matrix[i*num_feat];
 
-		for (j=0; j<pos->get_N(); j++)
-		{
-			featurevector[p]=exp(pos->model_derivative_a(i, j, x)-posx);
-			sum+=featurevector[p]*featurevector[p++];
-		}
+		for (j=0; j<num_feat; j++)
+			sqnorm+=vec[j]*vec[j];
 
-		for (j=0; j<pos->get_M(); j++)
-		{
-
-			sum+=featurevector[p]*featurevector[p++];
-			featurevector[p]=exp(pos->model_derivative_b(i, j, x)-posx);
-		}
-
+		norm=sqrt(sqnorm);
+		
+		for (j=0; j<num_feat; j++)
+			vec[j]/=norm;
 	}
+	return matrix;
+}
 
-	for (i=0; i<neg->get_N(); i++)
-	{
-		featurevector[p]= - exp(neg->model_derivative_p(i, x)-negx);
-		sum+=featurevector[p]*featurevector[p++];
-		featurevector[p]= - exp(neg->model_derivative_q(i, x)-negx);
-		sum+=featurevector[p]*featurevector[p++];
+/// apply preproc on single feature vector
+/// result in feature matrix
+REAL* CNormOne::apply_to_feature_vector(REAL* f, int len)
+{
+	REAL* vec=new REAL[len];
+	REAL sqnorm=0;
+	REAL norm=0;
+	long i=0;
 
-		for (j=0; j<neg->get_N(); j++)
-		{
-			featurevector[p++]= - exp(neg->model_derivative_a(i, j, x)-negx);
-			sum+=featurevector[p]*featurevector[p++];
-		}
+	for (i=0; i<len; i++)
+		sqnorm+=f[i]*f[i];
+	
+	norm=sqrt(sqnorm);
 
-		for (j=0; j<neg->get_M(); j++)
-		{
-			featurevector[p++]= - exp(neg->model_derivative_b(i, j, x)-negx);
-			sum+=featurevector[p]*featurevector[p++];
-		}
-	}
+	for (i=0; i<len; i++)
+		vec[i]=f[i]/norm;
 
-	sum=sqrt(sum);
-	for (p=0; p<1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()); p++)
-		featurevector[p]/=sum;
+	return vec;
+}
+
+short int* CNormOne::apply_to_feature_vector(short int* f, int len)
+{
+	return NULL;
+}
+
+

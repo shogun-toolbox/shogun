@@ -16,6 +16,8 @@ public:
 
 	/// initialize preprocessor from features
 	virtual bool init(CFeatures* f)=0;
+	/// cleanup
+	virtual void cleanup()=0;
 	/// initialize preprocessor from file
 	virtual bool load(FILE* f)=0;
 	/// save preprocessor init-data to file
