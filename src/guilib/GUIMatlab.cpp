@@ -1125,13 +1125,24 @@ bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 	{
 		int num_vec1=f1->get_num_vectors();
 		int num_vec2=f2->get_num_vectors();
+		int maxskip=num_vec1*num_vec2/100;
+		int skip=maxskip-1;
 
 		CIO::message(M_DEBUG, "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 		mxArray* mx_result=mxCreateDoubleMatrix(num_vec1, num_vec2, mxREAL);
 		double* result=mxGetPr(mx_result);
 		for (int i=0; i<num_vec1; i++)
+		{
 			for (int j=0; j<num_vec2; j++)
+			{
+				if ((skip--)%maxskip == 0)
+				{
+					skip=maxskip-1;
+					CIO::message(M_PROGRESS, "%3i%%  \r",100*(j+i*num_vec2)/(num_vec1*num_vec2+1));
+				}
 				result[i+j*num_vec1]=k->kernel(i,j) ;
+			}
+		}
 		
 		retvals[0]=mx_result;
 		return true;
