@@ -101,7 +101,7 @@ bool CGUISVM::test(char* param)
 			return false;
 		}
 
-		if (numargs==2) 
+		if (numargs==3) 
 		{
 			rocfile=fopen(rocfname, "w");
 
@@ -151,6 +151,12 @@ bool CGUISVM::test(char* param)
 	int* label= testfeatures->get_labels(len);
 	assert(len==total);
 	gui->guimath.evaluate_results(output, label, total, tresh, outputfile, rocfile);
+
+	if (rocfile)
+		fclose(rocfile);
+	if (outputfile)
+		fclose(outputfile);
+
 	delete[] output;
 	delete[] label;
 	return true;

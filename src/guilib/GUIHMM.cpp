@@ -269,6 +269,10 @@ bool CGUIHMM::one_class_test(char* param)
 	else
 		CIO::message("assign test model first!\n");
 
+	if (rocfile)
+		fclose(rocfile);
+	if (outputfile)
+		fclose(outputfile);
 	return result;
 }
 
@@ -298,7 +302,7 @@ bool CGUIHMM::test_hmm(char* param)
 			return false;
 		}
 
-		if (numargs==2) 
+		if (numargs==3) 
 		{
 			rocfile=fopen(rocfname, "w");
 
@@ -343,17 +347,17 @@ bool CGUIHMM::test_hmm(char* param)
 
 			delete obs;
 			result=true;
-
-			if (rocfile)
-				fclose(rocfile);
-			if (outputfile)
-				fclose(outputfile);
 		}
 		else
 			printf("assign postest and negtest observations first!\n");
 	}
 	else
 		CIO::message("assign positive and negative models first!\n");
+
+	if (rocfile)
+		fclose(rocfile);
+	if (outputfile)
+		fclose(outputfile);
 
 	return result;
 }
