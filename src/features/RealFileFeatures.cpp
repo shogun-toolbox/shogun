@@ -1,111 +1,79 @@
-#include <assert.h>
-#include "features/RealFeatures.h"
+#include "features/RealFileFeatures.h"
+#include "features/Features.h"
 #include "preproc/RealPreProc.h"
-#include <string.h>
 #include "lib/io.h"
 
-CRealFeatures::CRealFeatures() : CFeatures(), num_vectors(0), num_features(0), feature_matrix(NULL)
+#include <stdio.h>
+#include <assert.h>
+#include <string.h>
+
+CRealFileFeatures::CRealFileFeatures(char* fname) : CRealFeatures()
 {
+    working_file=fopen(fname, "r");
+    working_filename=strdup(fname);
+    status= working_file!=NULL;
+    intlen=0;
+    doublelen=0;
+    endian=0;
+    fourcc=0;
+    preprocd=0;
 }
 
-CRealFeatures::~CRealFeatures()
+CRealFileFeatures::CRealFileFeatures(FILE* file) : CRealFeatures(), working_file(file), working_filename(NULL)
+{
+    status= working_file!=NULL;
+    intlen=0;
+    doublelen=0;
+    endian=0;
+    fourcc=0;
+    preprocd=0;
+}
+
+CRealFileFeatures::~CRealFileFeatures()
 {
   delete[] feature_matrix;
+  delete[] working_filename;
 }
   
-CRealFeatures::CRealFeatures(const CRealFeatures & orig): CFeatures(orig), 
-num_vectors(orig.num_vectors), num_features(orig.num_features)
+CRealFileFeatures::CRealFileFeatures(const CRealFileFeatures & orig): CRealFeatures(orig), 
+working_file(orig.working_file), status(orig.status)
 {
-    if (orig.feature_matrix)
+    if (orig.working_filename)
+	working_filename=strdup(orig.working_filename);
+    if (orig.labels && get_num_vectors())
     {
-	feature_matrix=new REAL(num_vectors*num_features);
-	memcpy(feature_matrix, orig.feature_matrix, num_vectors*num_features); 
+	labels=new int[get_num_vectors()];
+	memcpy(labels, orig.labels, sizeof(int)*get_num_vectors()); 
     }
 }
 
-/// get feature vector for sample num
-REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
+CFeatures* CRealFileFeatures::duplicate() const
 {
-  len=num_features; 
-  assert(num<num_vectors);
-  
-  if (feature_matrix)
-    {
-//      CIO::message("returning %i th column of feature_matrix\n", (int)num) ;
-      free=false ;
-      return &feature_matrix[num*num_features];
-    } 
-  else
-    {
-      //CIO::message("computing %i th feature vector\n", (int)num) ;
-      free=true ;
-      REAL* feat=compute_feature_vector(num, len) ;
-      if (preproc)
-	{
-	  //CIO::message("preprocessing %i th feature vector\n", (int)num) ;
-	  int len2=len ;
-	  REAL* feat2 = ((CRealPreProc*) preproc)->apply_to_feature_vector(feat, len2);
-	  delete[] feat ;
-	  len=num_features=len2 ;
-	  return feat2 ;
-	}
-      return feat ;
-    }
+    return new CRealFileFeatures(*this);
 }
 
-void CRealFeatures::free_feature_vector(REAL* feat, bool free)
+REAL* CRealFileFeatures::compute_feature_vector(long num, long &len)
 {
-  if (free)
-    delete[] feat ;
-} 
-
-/// get the pointer to the feature matrix
-REAL* CRealFeatures::get_feature_matrix(long &num_feat, long &num_vec)
-{
-  num_feat=num_features;
-  num_vec=num_vectors;
-  return feature_matrix;
+    assert(num<num_vectors);
+    len=num_features;
+    REAL* featurevector= new REAL[num_features];
+    assert(featurevector);
+    assert(working_file);
+    fseek(working_file, filepos+num_features*doublelen*num, SEEK_SET);
+    assert(fread(featurevector, doublelen, num_features, working_file) == num_features);
 }
 
-/// preproc feature_matrix
-bool CRealFeatures::preproc_feature_matrix()
+REAL* CRealFileFeatures::set_feature_matrix()
 {
-	if (preproc && !preprocessed)
-	{
-	    preprocessed=true;	
-	    return (((CRealPreProc*) preproc)->apply_to_feature_matrix(this) != NULL);
-	}
-	else
-		return false;
-}
-
-bool CRealFeatures::load(FILE* src)
-{
-    assert(src!=NULL);
-
-    unsigned char intlen=0;
-    unsigned char doublelen=0;
-    unsigned int endian=0;
-    unsigned int fourcc=0;
-    unsigned int preprocd=0;
-    unsigned int num_vec=0;
-    unsigned int num_feat=0;
-
-    assert(fread(&intlen, sizeof(unsigned char), 1, src)==1);
-    assert(fread(&doublelen, sizeof(unsigned char), 1, src)==1);
-    assert(fread(&endian, (unsigned int) intlen, 1, src)== 1);
-    assert(fread(&fourcc, (unsigned int) intlen, 1, src)==1);
-    assert(fread(&num_vec, (unsigned int) intlen, 1, src)==1);
-    assert(fread(&num_feat, (unsigned int) intlen, 1, src)==1);
-    assert(fread(&preprocd, (unsigned int) intlen, 1, src)==1);
-#warning check for FOURCC , check for endianess+convert if not right+ more checks.
-
+    assert(working_file);
+    fseek(working_file, filepos, SEEK_SET);
     delete[] feature_matrix;
+    unsigned int num_feat=0;
+    unsigned int num_vec=0;
     set_num_features(num_feat);
     set_num_vectors(num_vec);
     preprocessed= (preprocd==1);
 
-    CIO::message("detected: intsize=%d, doublesize=%d, num_vec=%d, num_feat=%d, preprocd=%d\n", intlen, doublelen, num_vec, num_feat, preprocd);
     CIO::message("allocating feature matrix of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
     feature_matrix=new REAL[num_feat*num_vec];
 
@@ -118,44 +86,43 @@ bool CRealFeatures::load(FILE* src)
 	else if (!(i % (num_vec/200+1)))
 	    CIO::message(".");
 
-	assert(fread(&feature_matrix[num_features*i], doublelen, num_features, src)==num_features) ;
+	assert(fread(&feature_matrix[num_features*i], doublelen, num_features, working_file)==num_features) ;
     }
-    CIO::message("detected: intsize=%d, doublesize=%d, num_vec=%d, num_feat=%d, preprocd=%d\n", intlen, doublelen, num_vec, num_feat, preprocd);
-    return true;
+
+    return feature_matrix;
 }
 
-bool CRealFeatures::save(FILE* dest)
+int CRealFileFeatures::get_label(long idx)
 {
-    unsigned char intlen=sizeof(unsigned int);
-    unsigned char doublelen=sizeof(double);
-    unsigned int endian=0x12345678;
-    unsigned int fourcc='RFEA'; //id for real features
-    unsigned int preprocd= (preprocessed) ? 1 : 0;
-    unsigned int num_vec= (unsigned int) num_vectors;
-    unsigned int num_feat= (unsigned int) num_features;
-
-    assert(fwrite(&intlen, sizeof(unsigned char), 1, dest)==1);
-    assert(fwrite(&doublelen, sizeof(unsigned char), 1, dest)==1);
-    assert(fwrite(&endian, sizeof(unsigned int), 1, dest)==1);
-    assert(fwrite(&fourcc, sizeof(unsigned int), 1, dest)==1);
-    assert(fwrite(&num_vec, sizeof(unsigned int), 1, dest)==1);
-    assert(fwrite(&num_feat, sizeof(unsigned int), 1, dest)==1);
-    assert(fwrite(&preprocd, sizeof(unsigned int), 1, dest)==1);
-
-    for (int i=0; i<num_vec; i++)
-    {
-	if (!(i % (num_vec/10+1)))
-	    CIO::message("%02d%%.", (int) (100.0*i/num_vec));
-	else if (!(i % (num_vec/200+1)))
-	    CIO::message(".");
-
-	long len;
-       	bool free;
-	double* f=get_feature_vector(i, len, free);
-	assert(fwrite(f, sizeof(double), len, dest)==len) ;
-	free_feature_vector(f, free) ;
-    }
-    
-    return true;
+    assert(idx<num_vectors);
+    if (labels)
+	return labels[idx];
+    return 0;
 }
 
+bool CRealFileFeatures::load_base_data()
+{
+    assert(working_file!=NULL);
+    unsigned int num_vec=0;
+    unsigned int num_feat=0;
+
+    assert(fread(&intlen, sizeof(unsigned char), 1, working_file)==1);
+    assert(fread(&doublelen, sizeof(unsigned char), 1, working_file)==1);
+    assert(fread(&endian, (unsigned int) intlen, 1, working_file)== 1);
+    assert(fread(&fourcc, (unsigned int) intlen, 1, working_file)==1);
+    assert(fread(&num_vec, (unsigned int) intlen, 1, working_file)==1);
+    assert(fread(&num_feat, (unsigned int) intlen, 1, working_file)==1);
+    assert(fread(&preprocd, (unsigned int) intlen, 1, working_file)==1);
+    CIO::message("detected: intsize=%d, doublesize=%d, num_vec=%d, num_feat=%d, preprocd=%d\n", intlen, doublelen, num_vec, num_feat, preprocd);
+#warning check for FOURCC , check for endianess+convert if not right+ more checks.
+    filepos=ftell(working_file);
+    set_num_vectors(num_vec);
+    set_num_features(num_feat);
+    preprocessed=preprocd==1;
+    fseek(working_file, filepos+num_features*num_vectors, SEEK_SET);
+    delete[] labels;
+    labels= new int[num_vec];
+    assert(labels);
+    assert(fread(labels, intlen, num_vec, working_file) == num_vec);
+    return true;
+}

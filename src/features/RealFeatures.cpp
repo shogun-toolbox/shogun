@@ -19,7 +19,7 @@ num_vectors(orig.num_vectors), num_features(orig.num_features)
     if (orig.feature_matrix)
     {
 	feature_matrix=new REAL(num_vectors*num_features);
-	memcpy(feature_matrix, orig.feature_matrix, num_vectors*num_features); 
+	memcpy(feature_matrix, orig.feature_matrix, sizeof(double)*num_vectors*num_features); 
     }
 }
 
@@ -113,7 +113,9 @@ bool CRealFeatures::save(FILE* dest)
 	free_feature_vector(f, free) ;
     }
 
-    int* labels=get_labels();
+    long num_lab=0;
+    int* labels=get_labels(num_lab);
+    assert(num_lab==num_vec);
     assert(fwrite(labels, sizeof(int), num_vec, dest)==num_vec) ;
     
     return true;
