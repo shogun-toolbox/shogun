@@ -391,7 +391,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features)");
-			CIO::message("done\n");
+			CIO::message(M_INFO, "done\n");
 		}
 		else if (!strncmp(action, N_ADD_FEATURES, strlen(N_ADD_FEATURES)))
 		{
@@ -424,7 +424,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features)");
-			CIO::message("done\n");
+			CIO::message(M_INFO, "done\n");
 		}
 		else if (!strncmp(action, N_CRC, strlen(N_CRC)))
 		{

@@ -90,7 +90,7 @@ bool CGUIMatlab::append_hmm(const mxArray* vals[])
 				gui->guihmm.get_pseudo(), gui->guihmm.get_number_of_tables());
 		if (h)
 		{
-			CIO::message("N:%d M:%d p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
+			CIO::message(M_INFO, "N:%d M:%d p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
 					N, M,
 					mxGetN(mx_p), mxGetM(mx_p), 
 					mxGetN(mx_q), mxGetM(mx_q), 
@@ -123,7 +123,7 @@ bool CGUIMatlab::append_hmm(const mxArray* vals[])
 					for (j=0; j< h->get_M(); j++)
 						h->set_b(i,j, b[i+j*h->get_N()]);
 
-				CIO::message("h %d , M: %d\n", h, h->get_M());
+				CIO::message(M_INFO, "h %d , M: %d\n", h, h->get_M());
 
 				old_h->append_model(h);
 
@@ -132,7 +132,7 @@ bool CGUIMatlab::append_hmm(const mxArray* vals[])
 				return true;
 			}
 			else
-				CIO::message("model matricies not matching in size\n");
+				CIO::message(M_ERROR, "model matricies not matching in size\n");
 		}
 	}
 	return false;
@@ -156,7 +156,7 @@ bool CGUIMatlab::set_hmm(const mxArray* vals[])
 
 		if (h)
 		{
-			CIO::message("N:%d M:%d p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
+			CIO::message(M_ERROR, "N:%d M:%d p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
 					N, M,
 					mxGetN(mx_p), mxGetM(mx_p), 
 					mxGetN(mx_q), mxGetM(mx_q), 
@@ -194,7 +194,7 @@ bool CGUIMatlab::set_hmm(const mxArray* vals[])
 				return true;
 			}
 			else
-				CIO::message("model matricies not matching in size\n");
+				CIO::message(M_ERROR, "model matricies not matching in size\n");
 		}
 	}
 
@@ -215,11 +215,6 @@ bool CGUIMatlab::best_path_no_b(const mxArray* vals[], mxArray* retvals[])
 
 	if ( mx_p && mx_q && mx_a)
 	{
-		/*CIO::message("N:%d p:(%d,%d) q:(%d,%d) a:(%d,%d)\n",
-					 N, mxGetN(mx_p), mxGetM(mx_p), 
-					 mxGetN(mx_q), mxGetM(mx_q), 
-					 mxGetN(mx_a), mxGetM(mx_a));*/
-		
 		if (
 			mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
 			mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
@@ -252,7 +247,7 @@ bool CGUIMatlab::best_path_no_b(const mxArray* vals[], mxArray* retvals[])
 			return true;
 		}
 		else
-			CIO::message("model matricies not matching in size\n");
+			CIO::message(M_ERROR, "model matricies not matching in size\n");
 	}
 
 	return false;
@@ -277,11 +272,6 @@ bool CGUIMatlab::best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[])
 
 	if ( mx_p && mx_q && mx_a_trans)
 	{
-		/*CIO::message("N:%d p:(%d,%d) q:(%d,%d) a_trans:(%d,%d)\n",
-					 N, mxGetN(mx_p), mxGetM(mx_p), 
-					 mxGetN(mx_q), mxGetM(mx_q), 
-					 mxGetN(mx_a_trans), mxGetM(mx_a_trans));*/
-		
 		if (
 			mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
 			mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
@@ -307,11 +297,10 @@ bool CGUIMatlab::best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[])
 			double* result=mxGetPr(mx_result);
 			
 			for (INT k=0; k<nbest; k++)
+			{
 				for (INT i=0; i<max_best_iter+1; i++)
-				{
-//					CIO::message("%i %i\n", k, i) ;
 					result[i*nbest+k] = my_path[i+k*(max_iter+1)] ;
-				}
+			}
 			 
 			
 			retvals[0]=mx_prob ;
@@ -322,7 +311,7 @@ bool CGUIMatlab::best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[])
 			return true;
 		}
 		else
-			CIO::message("model matricies not matching in size\n");
+			CIO::message(M_ERROR, "model matricies not matching in size\n");
 	}
 
 	return false;
@@ -367,7 +356,7 @@ bool CGUIMatlab::model_prob_no_b_trans(const mxArray* vals[], mxArray* retvals[]
 			return true;
 		}
 		else
-			CIO::message("model matricies not matching in size\n");
+			CIO::message(M_ERROR, "model matricies not matching in size\n");
 	}
 
 	return false;
@@ -518,7 +507,7 @@ bool CGUIMatlab::svm_classify(mxArray* retvals[])
 
 		if (!l)
 		  {
-		    CIO::message("svm_classify failed\n") ;
+		    CIO::message(M_ERROR, "svm_classify failed\n") ;
 		    return false ;
 		  } ;
 
@@ -542,7 +531,7 @@ bool CGUIMatlab::svm_classify_example(mxArray* retvals[], int idx)
 	
 	if (!gui->guisvm.classify_example(idx, result[0]))
 	  {
-	    CIO::message("svm_classify_example failed\n") ;
+	    CIO::message(M_ERROR, "svm_classify_example failed\n") ;
 	    return false ;
 	  } ;
 	
@@ -663,7 +652,7 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 						case F_CHAR:
 						case F_BYTE:
 						default:
-							CIO::message("not implemented\n");
+							CIO::message(M_ERROR, "not implemented\n");
 					}
 					break;
 				case C_SPARSE:
@@ -671,11 +660,11 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 					{
 						case F_REAL:
 						default:
-							CIO::message("not implemented\n");
+							CIO::message(M_ERROR, "not implemented\n");
 					};
 					break;
 				default:
-					CIO::message("not implemented\n");
+					CIO::message(M_ERROR, "not implemented\n");
 			}
 			if (mx_feat)
 				retvals[0]=mx_feat;
@@ -683,7 +672,7 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 			return (mx_feat!=NULL);
 		}
 		else
-			CIO::message("matlab does not support that feature type\n");
+			CIO::message(M_ERROR, "matlab does not support that feature type\n");
 
 	}
 
@@ -694,13 +683,13 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[])
 {
 	const mxArray* mx_feat=vals[2];
 	CFeatures* f=NULL;
-	CIO::message("start CGUIMatlab::set_features\n") ;
+	CIO::message(M_INFO, "start CGUIMatlab::set_features\n") ;
 
 	if (mx_feat)
 	{
 		if (mxIsSparse(mx_feat))
 		{
-			CIO::message("no, no, no. this is not implemented yet\n");
+			CIO::message(M_ERROR, "no, no, no. this is not implemented yet\n");
 		}
 		else
 		{
@@ -732,7 +721,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[])
 			}
 			///and so on
 			else
-				CIO::message("not implemented\n");
+				CIO::message(M_ERROR, "not implemented\n");
 		}
 	}
 	return f;
@@ -769,11 +758,11 @@ CLabels* CGUIMatlab::set_labels(const mxArray* vals[])
 
 			double* lab=mxGetPr(mx_lab);
 
-			CIO::message("%d\n", label->get_num_labels());
+			CIO::message(M_INFO, "%d\n", label->get_num_labels());
 
 			for (int i=0; i<label->get_num_labels(); i++)
 				if (!label->set_label(i, lab[i]))
-					CIO::message("weirdo ! %d %d\n", label->get_num_labels(), i);
+					CIO::message(M_ERROR, "weirdo ! %d %d\n", label->get_num_labels(), i);
 
 			return label;
 		}
