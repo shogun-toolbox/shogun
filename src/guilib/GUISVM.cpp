@@ -4,8 +4,12 @@
 #include "features/RealFileFeatures.h"
 #include "features/Labels.h"
 
+#include "classifier/svm/SVM_light.h"
+#include "classifier/svm_cplex/SVM_cplex.h"
+#include "classifier/svm/LibSVM.h"
+
 #ifdef SVMMPI
-#include "svm_mpi/mpi_oneclass.h"
+#include "classifier/svm_mpi/mpi_oneclass.h"
 #endif
 
 #include <assert.h>
@@ -23,48 +27,54 @@ CGUISVM::~CGUISVM()
 
 bool CGUISVM::new_svm(CHAR* param)
 {
-  param=CIO::skip_spaces(param);
-  
-  if (strcmp(param,"LIGHT")==0)
-    {
-      delete svm;
-      svm= new CSVMLight();
-      CIO::message("created SVMLight object\n") ;
-    }
-  else if (strcmp(param,"CPLEX")==0)
-    {
+	param=CIO::skip_spaces(param);
+
+	if (strcmp(param,"LIGHT")==0)
+	{
+		delete svm;
+		svm= new CSVMLight();
+		CIO::message("created SVMLight object\n") ;
+	}
+	else if (strcmp(param,"LIBSVM")==0)
+	{
+		delete svm;
+		svm= new CLibSVM();
+		CIO::message("created SVMlibsvm object\n") ;
+	}
+	else if (strcmp(param,"CPLEX")==0)
+	{
 #ifdef SVMCPLEX
-      delete svm;
-      svm= new CSVMCplex();
-      CIO::message("created SVMCplex object\n") ;
+		delete svm;
+		svm= new CSVMCplex();
+		CIO::message("created SVMCplex object\n") ;
 #else
-      CIO::message("CPLEX SVM disabled\n") ;
+		CIO::message("CPLEX SVM disabled\n") ;
 #endif
-    }
-  else if (strcmp(param,"MPI")==0)
-    {
+	}
+	else if (strcmp(param,"MPI")==0)
+	{
 #ifdef SVMMPI
-      delete svm;
-      svm= new CSVMMPI();
-      CIO::message("created SVMMPI object\n") ;
+		delete svm;
+		svm= new CSVMMPI();
+		CIO::message("created SVMMPI object\n") ;
 #else
-      CIO::message("MPI SVM disabled\n") ;
+		CIO::message("MPI SVM disabled\n") ;
 #endif
-    }
-  else if (strcmp(param,"ONECLASS")==0)
-    {
+	}
+	else if (strcmp(param,"ONECLASS")==0)
+	{
 #ifdef SVMMPI
-      delete svm;
-      svm= new COneClassMPI();
-      CIO::message("created OneClassMPI object\n") ;
+		delete svm;
+		svm= new COneClassMPI();
+		CIO::message("created OneClassMPI object\n") ;
 #else
-      CIO::message("MPI OneClass SVM disabled\n") ;
+		CIO::message("MPI OneClass SVM disabled\n") ;
 #endif
-    }
-  else
-    return false;
-  
-  return (svm!=NULL);
+	}
+	else
+		return false;
+
+	return (svm!=NULL);
 }
 
 bool CGUISVM::train(CHAR* param)

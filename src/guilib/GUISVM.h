@@ -2,12 +2,6 @@
 #define _GUISVM_H__ 
 
 #include "classifier/svm/SVM.h"
-#include "classifier/svm/SVM_light.h"
-#include "classifier/svm_cplex/SVM_cplex.h"
-
-#ifdef SVMMPI
-#include "classifier/svm_mpi/mpi_svm.h"
-#endif
 
 class CGUI ;
 

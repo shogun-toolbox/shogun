@@ -1086,8 +1086,8 @@ public:
 	inline void set_psi(INT time, T_STATES state, T_STATES value, INT dimension)
 	{
 #ifdef DEBUG
-	  if ((time>=p_observations->get_obs_max_T())||(state>N))
-	    CIO::message(stderr,"index out of range in set_psi(%i,%i,.) [%i,%i]\n",time,state,p_observations->get_obs_max_T(),N) ;
+	  if ((time>=p_observations->get_max_vector_length())||(state>N))
+	    CIO::message(stderr,"index out of range in set_psi(%i,%i,.) [%i,%i]\n",time,state,p_observations->get_max_vector_length(),N) ;
 #endif
 	  STATES_PER_OBSERVATION_PSI(dimension)[time*N+state]=value;
 	}
@@ -1185,8 +1185,8 @@ public:
 	inline T_STATES get_psi(INT time, T_STATES state, INT dimension) const
 	{
 #ifdef DEBUG
-	  if ((time>=p_observations->get_obs_max_T())||(state>N))
-	    CIO::message(stderr,"index out of range in get_psi(%i,%i) [%i,%i]\n",time,state,p_observations->get_obs_max_T(),N) ;
+	  if ((time>=p_observations->get_max_vector_length())||(state>N))
+	    CIO::message(stderr,"index out of range in get_psi(%i,%i) [%i,%i]\n",time,state,p_observations->get_max_vector_length(),N) ;
 #endif
 	  return STATES_PER_OBSERVATION_PSI(dimension)[time*N+state];
 	}
