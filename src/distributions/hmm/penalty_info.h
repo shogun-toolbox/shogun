@@ -3,7 +3,10 @@
 
 #include "lib/common.h"
 #include "lib/Mathmatics.h"
+
+#ifdef HAVE_MATLAB
 #include <mex.h>
+#endif
 
 enum ETransformType
 {
@@ -30,7 +33,7 @@ void init_penalty_struct(struct penalty_struct &PEN) ;
 void delete_penalty_struct(struct penalty_struct &PEN) ;
 void delete_penalty_struct_array(struct penalty_struct *PEN, INT len) ;
 
-#ifdef MATLAB
+#ifdef HAVE_MATLAB
 struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT &P) ;
 #endif
 

@@ -51,7 +51,13 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 	//compute normalize to 1 values
 	for (i=0; i<lhs->get_num_vectors(); i++)
+	{
 		sqrtdiag_lhs[i]=sqrt(compute(i,i));
+		
+		//trap divide by zero exception
+		if (sqrtdiag_lhs[i]==0)
+			sqrtdiag_lhs[i]=1e-16;
+	}
 
 	// if lhs is different from rhs (train/test data)
 	// compute also the normalization for rhs
@@ -62,7 +68,13 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 		//compute normalize to 1 values
 		for (i=0; i<rhs->get_num_vectors(); i++)
+		{
 		  sqrtdiag_rhs[i]=sqrt(compute(i,i));
+
+			//trap divide by zero exception
+			if (sqrtdiag_rhs[i]==0)
+				sqrtdiag_rhs[i]=1e-16;
+		}
 	}
 
 	this->lhs=(CStringFeatures<WORD>*) l;
