@@ -148,7 +148,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 			{
 				sscanf(param, "%s %s %d", kern_type, data_type, &size);
 				if (kernel)
-				  {
+				{
 				    CIO::message("destroying old kernel\n") ;
 				    delete kernel;
 				  } ;
@@ -156,11 +156,32 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				CIO::message("getting estimator\n") ;
 				CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
 
+				CIO::message("getting labels\n") ;
+				CLabels * train_labels = gui->guilabels.get_train_labels() ;
+				if (!train_labels)
+				{
+					CIO::message("assign train labels first!\n") ;
+					return false ;
+				} ;
+				
+				INT num_pos=0, num_neg=0;
+				
+				for (INT i=0; i<train_labels->get_num_labels(); i++)
+				{
+					if (train_labels->get_int_label(i)==1) num_pos++ ;
+					if (train_labels->get_int_label(i)==-1) num_neg++ ;
+				}				
+				CIO::message("priors: pos=%1.2f  neg=%1.2f\n", num_pos/(num_pos+num_neg), 
+							 num_neg/(num_pos+num_neg)) ;
+				
 				if (estimator)
 					kernel=new CSalzbergWordKernel(size, estimator);
 				else
 					CIO::message("no estimator set\n");
-
+				
+				((CSalzbergWordKernel*)kernel)->set_prior_probs(num_pos/(num_pos+num_neg), 
+																num_neg/(num_pos+num_neg)) ;
+				
 				if (kernel)
 				{
 					CIO::message("SalzbergKernel created\n");

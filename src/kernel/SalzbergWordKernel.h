@@ -11,6 +11,12 @@ class CSalzbergWordKernel: public CWordKernel
   CSalzbergWordKernel(LONG size, CPluginEstimate* pie);
   ~CSalzbergWordKernel() ;
   
+  void set_prior_probs(REAL pos_prior_, REAL neg_prior_)
+	  {
+		  pos_prior=pos_prior_ ;
+		  neg_prior=neg_prior_ ;
+		  assert(fabs(pos_prior+neg_prior-1)<1e-6) ;
+	  };
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
 
@@ -33,7 +39,7 @@ class CSalzbergWordKernel: public CWordKernel
 
   inline INT compute_index(INT position, WORD symbol)
   {
-	  return position*num_symbols+symbol+1;
+	  return position*num_symbols+symbol;
   }
 
  protected:
@@ -48,14 +54,11 @@ class CSalzbergWordKernel: public CWordKernel
   REAL* ld_mean_lhs ;
   REAL* ld_mean_rhs ;
 
-  REAL* plo_lhs ;
-  REAL* plo_rhs ;
-
   INT num_params;
-  INT num_params1;
   INT num_symbols;
   bool initialized ;
   REAL sum_m2_s2 ;
+  REAL pos_prior, neg_prior ;
 };
 
 #endif
