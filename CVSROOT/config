@@ -31,4 +31,4 @@
 # users:
 #UserAdminOptions=aAbceIklLmnNostuU
 
-UseNewInfoFormatStrings=yes
+UseNewInfoFmtStrings=yes
