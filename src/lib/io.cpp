@@ -1,5 +1,6 @@
 #include "lib/io.h"
 #include "lib/common.h"
+#include "lib/Mathmatics.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -19,6 +20,22 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
     va_start(list,fmt);
     vfprintf(target,fmt,list);
     va_end(list);
+    fflush(target);
+}
+
+void CIO::progress(REAL current_val, REAL min_val, REAL max_val, INT decimals, const char* prefix)
+{
+	char str[1000];
+	REAL v=-1;
+	check_target();
+
+	if (max_val-min_val)
+		v=100*(current_val-min_val+1)/(max_val-min_val+1);
+	if (decimals < 1)
+		decimals = 1;
+
+	sprintf(str, "%%s %%%d.%df%%  \r",decimals+3, decimals);
+	fprintf(target, str, prefix, v);
     fflush(target);
 }
 
@@ -64,11 +81,8 @@ void CIO::print_message_prio(EMessageType prio, FILE* target)
 		case M_DEBUG:
 			fprintf(target, "[DEBUG] ");
 			break;
-		case M_PROGRESS:
-			fprintf(target, "[PROGRESS] ");
-			break;
 		case M_INFO:
-			//fprintf(target, "[INFO] ");
+			fprintf(target, "[INFO] ");
 			break;
 		case M_NOTICE:
 			fprintf(target, "[NOTICE] ");

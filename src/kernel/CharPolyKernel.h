@@ -8,7 +8,7 @@
 class CCharPolyKernel: public CCharKernel
 {
  public:
-  CCharPolyKernel(LONG size, INT degree, bool inhomogene);
+  CCharPolyKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);
   ~CCharPolyKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -38,6 +38,7 @@ class CCharPolyKernel: public CCharKernel
   double* sqrtdiag_rhs;
 
   bool initialized ;
+  bool use_normalization;
 };
 
 #endif

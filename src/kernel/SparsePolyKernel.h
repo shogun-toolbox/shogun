@@ -8,7 +8,7 @@
 class CSparsePolyKernel: public CSparseRealKernel
 {
  public:
-  CSparsePolyKernel(LONG size, INT degree, bool inhomogene);
+  CSparsePolyKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);
   ~CSparsePolyKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -43,5 +43,6 @@ class CSparsePolyKernel: public CSparseRealKernel
   double* sqrtdiag_rhs;
 
   bool initialized ;
+  bool use_normalization;
 };
 #endif

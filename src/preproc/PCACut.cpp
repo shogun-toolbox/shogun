@@ -86,9 +86,7 @@ bool CPCACut::init(CFeatures* f)
 		for (i=0; i<num_vectors; i++)
 		{
 			if (!(i % (num_vectors/10+1)))
-				CIO::message(M_PROGRESS,"%02d%%.", (int) (100.0*i/num_vectors));
-			else if (!(i % (num_vectors/200+1)))
-				CIO::message(M_PROGRESS,".");
+				CIO::progress(i, 0, num_vectors);
 
 			INT len;
 			bool free;
@@ -108,6 +106,8 @@ bool CPCACut::init(CFeatures* f)
 
 			((CRealFeatures*) f)->free_feature_vector(vec, i, free) ;
 		}
+
+		CIO::message(M_MESSAGEONLY, "done.           \n");
 
 		for (i=0; i<num_features; i++)
 			for (j=0; j<num_features; j++)

@@ -475,10 +475,11 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			{
 				INT inhomogene=0;
 				INT degree=2;
+				INT normalize=1;
 
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene);
+				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
 				delete k;
-				k=new CPolyMatchWordKernel(size, degree, inhomogene==1);
+				k=new CPolyMatchWordKernel(size, degree, inhomogene==1, normalize==1);
 
 				if (k)
 				{
@@ -1040,10 +1041,11 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			{
 				INT inhomogene=0;
 				INT degree=2;
+				INT normalize=1;
 
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene);
+				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
 				delete k;
-				k=new CPolyKernel(size, degree, inhomogene==1);
+				k=new CPolyKernel(size, degree, inhomogene==1, normalize==1);
 
 				if (k)
 				{
@@ -1055,10 +1057,11 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			{
 				INT inhomogene=0;
 				INT degree=2;
+				INT normalize=1;
 
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene);
+				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
 				delete k;
-				k=new CCharPolyKernel(size, degree, inhomogene==1);
+				k=new CCharPolyKernel(size, degree, inhomogene==1, normalize==1);
 
 				if (k)
 				{
@@ -1070,10 +1073,11 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			{
 				INT inhomogene=0;
 				INT degree=2;
+				INT normalize=1;
 
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene);
+				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
 				delete k;
-				k=new CSparsePolyKernel(size, degree, inhomogene==1);
+				k=new CSparsePolyKernel(size, degree, inhomogene==1, normalize==1);
 
 				if (k)
 				{

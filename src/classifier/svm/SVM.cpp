@@ -184,11 +184,11 @@ REAL* CSVM::test()
   for (INT i=0; i<num_test;  i++)
   {
 	  if ( (i% (num_test/10+1))== 0)
-		  CIO::message(M_PROGRESS, "%3i%%  \r",100*i/(num_test+1));
+		  CIO::progress(i, 0, num_test);
 
 	  output[i]=classify_example(i);
   }
-  CIO::message(M_PROGRESS, "done.           \n");
+  CIO::message(M_MESSAGEONLY, "done.           \n");
   return output;
 }
 
@@ -216,11 +216,11 @@ CLabels* CSVM::classify(CLabels* result)
 		for (INT vec=0; vec<num_vectors; vec++)
 		{
 			if ( (vec% (num_vectors/10+1))== 0)
-				CIO::message(M_PROGRESS, "%3i%%  \r", 100*vec/(num_vectors+1));
+				CIO::progress(vec, 0, num_vectors);
 
 			result->set_label(vec, classify_example(vec));
 		}
-		CIO::message(M_PROGRESS, "done.           \n");
+		CIO::message(M_MESSAGEONLY, "done.           \n");
 	}
 	else 
 		return NULL;

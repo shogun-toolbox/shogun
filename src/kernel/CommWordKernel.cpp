@@ -281,7 +281,7 @@ bool CCommWordKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 	for (i=0; i<count; i++)
 	{
 		if ( (i % (count/10+1)) == 0)
-			CIO::message(M_PROGRESS, "%3i%%  \r", 100*i/(count+1)) ;
+			CIO::progress(i, 0, count);
 
 		WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(IDX[i], alen, afree);
 
@@ -317,7 +317,7 @@ bool CCommWordKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 		}
 		((CWordFeatures*) lhs)->free_feature_vector(avec, IDX[i], afree);
 	}
-	CIO::message(M_PROGRESS, "Done.         \n") ;
+	CIO::message(M_MESSAGEONLY, "Done.         \n") ;
 	
 	dictionary         = words ;
 	dictionary_weights = word_weights ;

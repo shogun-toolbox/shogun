@@ -281,10 +281,10 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT * IDX, REAL * a
 	for (i=0; i<count; i++)
 	{
 		if ( (i % (count/10+1)) == 0)
-			CIO::message(M_PROGRESS, "%3i%%  \r", 100*i/(count+1)) ;
+			CIO::progress(i, 0, count);
 		add_example_to_tree(IDX[i], alphas[i]) ;
 	}
-	CIO::message(M_PROGRESS, "done.           \n");
+	CIO::message(M_MESSAGEONLY, "done.           \n");
 	
 	set_is_initialized(true) ;
 	return true ;

@@ -1140,11 +1140,13 @@ bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 				if ((skip--)%maxskip == 0)
 				{
 					skip=maxskip-1;
-					CIO::message(M_PROGRESS, "%3i%%  \r",100*(j+i*num_vec2)/(num_vec1*num_vec2+1));
+					CIO::progress(j+i*num_vec2, 0, num_vec1*num_vec2);
 				}
 				result[i+j*num_vec1]=k->kernel(i,j) ;
 			}
 		}
+
+		CIO::message(M_MESSAGEONLY, "done.           \n");
 		
 		retvals[0]=mx_result;
 		return true;

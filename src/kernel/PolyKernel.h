@@ -8,8 +8,8 @@
 class CPolyKernel: public CRealKernel
 {
  public:
-  CPolyKernel(LONG size, INT degree, bool inhomogene);
-  ~CPolyKernel() ;
+  CPolyKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);
+  ~CPolyKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
@@ -22,7 +22,7 @@ class CPolyKernel: public CRealKernel
   virtual EKernelType get_kernel_type() { return K_POLY; }
 
   // return the name of a kernel
-  virtual const CHAR* get_name() { return "Poly" ; } ;
+  virtual const CHAR* get_name() { return "Poly"; };
 
  protected:
   /// compute kernel function for features a and b
@@ -32,12 +32,13 @@ class CPolyKernel: public CRealKernel
 
  protected:
   INT degree;
-  bool inhomogene ;
+  bool inhomogene;
 
   double* sqrtdiag_lhs;
   double* sqrtdiag_rhs;
 
-  bool initialized ;
+  bool initialized;
+  bool use_normalization;
 };
 
 #endif

@@ -89,7 +89,6 @@ enum EMessageType
 	M_ALERT,
 	M_EMERGENCY,
 	M_MESSAGEONLY,
-	M_PROGRESS
 };
 
 enum EKernelType

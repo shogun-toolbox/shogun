@@ -101,6 +101,11 @@ public:
 		return x*x;
 	}
 
+	static inline REAL log10(REAL v)
+	{
+		return log(v)/log(10);
+	}
+
 	static inline LONG factorial(INT n)
 	{
 		LONG res=1 ;

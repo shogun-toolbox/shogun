@@ -8,7 +8,7 @@
 class CPolyMatchWordKernel: public CWordKernel
 {
  public:
-  CPolyMatchWordKernel(LONG size, INT degree, bool inhomogene);
+  CPolyMatchWordKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);
   ~CPolyMatchWordKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -22,7 +22,7 @@ class CPolyMatchWordKernel: public CWordKernel
   virtual EKernelType get_kernel_type() { return K_POLYMATCH; }
 
   // return the name of a kernel
-  virtual const CHAR* get_name() { return "PolyMatch" ; } ;
+  virtual const CHAR* get_name() { return "PolyMatch"; };
 
  protected:
   /// compute kernel function for features a and b
@@ -32,12 +32,13 @@ class CPolyMatchWordKernel: public CWordKernel
 
  protected:
   INT degree;
-  bool inhomogene ;
+  bool inhomogene;
 
   double* sqrtdiag_lhs;
   double* sqrtdiag_rhs;
 
-  bool initialized ;
+  bool initialized;
+  bool use_normalization;
 };
 
 #endif

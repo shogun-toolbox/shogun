@@ -281,12 +281,8 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	// recursion
 	for (INT t=1; t<seq_len; t++)
 	{
-		//fprintf(stderr, "t=%i  ", t) ;
-		//for (INT i=0; i<N; i++)
-		//	fprintf(stderr,"%i: %1.2f  ", i, DELTA(t-1,i,0)) ;
-		//fprintf(stderr, "\n") ;
 		if (is_big && t%(seq_len/1000)==1)
-			CIO::message(M_PROGRESS, "%2.1f%%   \r", 100.0*t/seq_len) ;
+			CIO::progress(t, 0, seq_len);
 		
 		for (T_STATES j=0; j<N; j++)
 		{
@@ -446,7 +442,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 		}
 	}
 	if (is_big)
-		CIO::message(M_PROGRESS, "DONE.     \n") ;
+		CIO::message(M_MESSAGEONLY, "DONE.     \n") ;
 
 	delete[] delta ;
 	delete[] psi ;

@@ -115,7 +115,6 @@ static const CHAR* N_SYSTEM=			"!";
 static const CHAR N_COMMENT1=			'#';
 static const CHAR N_COMMENT2=			'%';
 static const CHAR* N_SET_MAX_DIM=		"max_dim";
-static const CHAR* N_TEST=			"test";
 static const CHAR* N_SET_THRESHOLD=			"set_threshold";
 static const CHAR* N_SVM_TRAIN=			"svm_train";
 static const CHAR* N_SVM_TEST=			"svm_test";
@@ -566,10 +565,6 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_QUIT, strlen(N_QUIT)))
 	{
 		return false;
-	} 
-	else if (!strncmp(input, N_TEST, strlen(N_TEST)))
-	{
-		CIO::not_implemented() ;
 	} 
 	else if (!strncmp(input, N_HELP, strlen(N_HELP)))
 	{

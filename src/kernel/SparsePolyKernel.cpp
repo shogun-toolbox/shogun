@@ -8,9 +8,9 @@
 
 #include <assert.h>
 
-CSparsePolyKernel::CSparsePolyKernel(LONG size, INT d, bool inhom)
+CSparsePolyKernel::CSparsePolyKernel(LONG size, INT d, bool inhom, bool use_norm)
   : CSparseRealKernel(size), degree(d), inhomogene(inhom), 
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
 {
 }
 
@@ -32,51 +32,54 @@ bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	delete[] sqrtdiag_lhs;
 	sqrtdiag_lhs=NULL ;
 
-	sqrtdiag_lhs= new REAL[lhs->get_num_vectors()];
-
-	for (i=0; i<lhs->get_num_vectors(); i++)
-		sqrtdiag_lhs[i]=1;
-
-	if (l==r)
-		sqrtdiag_rhs=sqrtdiag_lhs;
-	else
+	if (use_normalization)
 	{
-		sqrtdiag_rhs= new REAL[rhs->get_num_vectors()];
-		for (i=0; i<rhs->get_num_vectors(); i++)
-			sqrtdiag_rhs[i]=1;
-	}
+		sqrtdiag_lhs= new REAL[lhs->get_num_vectors()];
 
-	assert(sqrtdiag_lhs);
-	assert(sqrtdiag_rhs);
+		for (i=0; i<lhs->get_num_vectors(); i++)
+			sqrtdiag_lhs[i]=1;
 
-	this->lhs=(CSparseRealFeatures*) l;
-	this->rhs=(CSparseRealFeatures*) l;
+		if (l==r)
+			sqrtdiag_rhs=sqrtdiag_lhs;
+		else
+		{
+			sqrtdiag_rhs= new REAL[rhs->get_num_vectors()];
+			for (i=0; i<rhs->get_num_vectors(); i++)
+				sqrtdiag_rhs[i]=1;
+		}
 
-	//compute normalize to 1 values
-	for (i=0; i<lhs->get_num_vectors(); i++)
-	{
-		sqrtdiag_lhs[i]=sqrt(compute(i,i));
+		assert(sqrtdiag_lhs);
+		assert(sqrtdiag_rhs);
 
-		//trap divide by zero exception
-		if (sqrtdiag_lhs[i]==0)
-			sqrtdiag_lhs[i]=1-16;
-	}
-
-	// if lhs is different from rhs (train/test data)
-	// compute also the normalization for rhs
-	if (sqrtdiag_lhs!=sqrtdiag_rhs)
-	{
-		this->lhs=(CSparseRealFeatures*) r;
-		this->rhs=(CSparseRealFeatures*) r;
+		this->lhs=(CSparseRealFeatures*) l;
+		this->rhs=(CSparseRealFeatures*) l;
 
 		//compute normalize to 1 values
-		for (i=0; i<rhs->get_num_vectors(); i++)
+		for (i=0; i<lhs->get_num_vectors(); i++)
 		{
-			sqrtdiag_rhs[i]=sqrt(compute(i,i));
+			sqrtdiag_lhs[i]=sqrt(compute(i,i));
 
 			//trap divide by zero exception
-			if (sqrtdiag_rhs[i]==0)
-				sqrtdiag_rhs[i]=1e-16;
+			if (sqrtdiag_lhs[i]==0)
+				sqrtdiag_lhs[i]=1-16;
+		}
+
+		// if lhs is different from rhs (train/test data)
+		// compute also the normalization for rhs
+		if (sqrtdiag_lhs!=sqrtdiag_rhs)
+		{
+			this->lhs=(CSparseRealFeatures*) r;
+			this->rhs=(CSparseRealFeatures*) r;
+
+			//compute normalize to 1 values
+			for (i=0; i<rhs->get_num_vectors(); i++)
+			{
+				sqrtdiag_rhs[i]=sqrt(compute(i,i));
+
+				//trap divide by zero exception
+				if (sqrtdiag_rhs[i]==0)
+					sqrtdiag_rhs[i]=1e-16;
+			}
 		}
 	}
 
@@ -123,7 +126,7 @@ REAL CSparsePolyKernel::compute(INT idx_a, INT idx_b)
 
   REAL sqrt_a= 1 ;
   REAL sqrt_b= 1 ;
-  if (initialized)
+  if (initialized && use_normalization)
     {
       sqrt_a=sqrtdiag_lhs[idx_a] ;
       sqrt_b=sqrtdiag_rhs[idx_b] ;
