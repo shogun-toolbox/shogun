@@ -316,14 +316,34 @@ void CCombinedKernel::clear_normal()
 
 void CCombinedKernel::compute_by_subkernel(INT idx, REAL * subkernel_contrib)
 {
-	INT i=0 ;
-	CKernel* k = get_first_kernel();
-	while(k)
+	if (append_subkernel_weights)
 	{
-		if (k->get_combined_kernel_weight()!=0)
-			subkernel_contrib[i] += k->get_combined_kernel_weight() * k->compute_optimized(idx) ;
-		k = get_next_kernel(k);
-		i++ ;
+		INT i=0 ;
+		CKernel* k = get_first_kernel();
+		while(k)
+		{
+			INT num = -1 ;
+			const REAL *w = k->get_subkernel_weights(num);
+			if (num>1)
+				k->compute_by_subkernel(idx, &subkernel_contrib[i]) ;
+			else
+				subkernel_contrib[i] += k->get_combined_kernel_weight() * k->compute_optimized(idx) ;
+
+			k = get_next_kernel(k);
+			i += num ;
+		}
+	}
+	else
+	{
+		INT i=0 ;
+		CKernel* k = get_first_kernel();
+		while(k)
+		{
+			if (k->get_combined_kernel_weight()!=0)
+				subkernel_contrib[i] += k->get_combined_kernel_weight() * k->compute_optimized(idx) ;
+			k = get_next_kernel(k);
+			i++ ;
+		}
 	}
 }
 
@@ -373,11 +393,11 @@ void CCombinedKernel::set_subkernel_weights(REAL* weights, INT num_weights)
 		{
 			INT num = k->get_num_subkernels() ;
 			k->set_subkernel_weights(&weights[i],num);
-			REAL w = 0 ;
-			for (INT j=0; j<num; j++)
-				if (weights[i+j]!=0)
-					w=1 ;
-			k->set_combined_kernel_weight(w);
+			/*REAL w = 0 ;
+			  for (INT j=0; j<num; j++)
+			  if (weights[i+j]!=0)
+			  w=1 ;
+			  k->set_combined_kernel_weight(w);*/
 			k = get_next_kernel(k);
 			i += num ;
 		}

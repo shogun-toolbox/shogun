@@ -97,6 +97,11 @@ class CCombinedKernel : public CKernel
 			return kernel_list->delete_element();
 		}
 
+		inline bool get_append_subkernel_weights()
+			{
+				return append_subkernel_weights ;
+			}
+		
 		inline int get_num_subkernels()
 		{
 			if (append_subkernel_weights)

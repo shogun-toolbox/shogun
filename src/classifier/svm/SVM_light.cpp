@@ -1372,7 +1372,8 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 			}
 		}
 	} 
-	else if (get_kernel()->get_kernel_type()==K_COMBINED) // for combined kernel
+	else if ((get_kernel()->get_kernel_type()==K_COMBINED) && 
+			 (!((CCombinedKernel*)get_kernel())->get_append_subkernel_weights()))// for combined kernel
 	{
 		CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
 		CKernel* kn = k->get_first_kernel() ;
@@ -1523,7 +1524,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 			{
 				for (INT q=0; q<num_kernels-1; q++)
 				{
-					fprintf(stderr,"q=%i\n", q) ;
+					//fprintf(stderr,"q=%i\n", q) ;
 					// add constraint w[i]-w[i+1]<s[i] ;
 					// add constraint w[i+1]-w[i]<s[i] ;
 					int rmatbeg[1] ;
@@ -1648,7 +1649,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 					}
 				
 				// have at most max(100,num_active_rows*2) rows, if not, remove one
-				if ( (num_rows-start_row>CMath::max(10,2*num_active_rows)) && (max_idx!=-1))
+				if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 				{
 					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_row,num_rows) ;
 					INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
@@ -1719,7 +1720,7 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 	{
 		REAL* w_backup = new REAL[num_kernels] ;
 		REAL* w1 = new REAL[num_kernels] ;
-		
+
 		// backup and set to one
 		for (INT i=0; i<num_kernels; i++)
 		{
@@ -1966,7 +1967,7 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 					}
 				
 				// have at most max(100,num_active_rows*2) rows, if not, remove one
-				if ( (num_rows-start_row>CMath::max(10,2*num_active_rows)) && (max_idx!=-1))
+				if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 				{
 					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_row,num_rows) ;
 					INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
