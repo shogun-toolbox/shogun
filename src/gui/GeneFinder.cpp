@@ -74,8 +74,8 @@ static const char* N_EXEC=				"exec";
 static const char* N_EXIT=				"exit";
 static const char* N_HELP=				"help";
 static const char* N_SYSTEM=				"!";
-static const char* N_COMMENT1=				"#";
-static const char* N_COMMENT2=				"%%";
+static const char N_COMMENT1=				'#';
+static const char N_COMMENT2=				'%';
 #ifdef FIX_POS
 static const char* N_FIX_POS_STATE=			"fix_pos_state";
 #endif // FIX_POS
@@ -289,15 +289,14 @@ static bool prompt(FILE* infile=stdin)
 
     printf("genefinder >> ");fflush(stdout);
     char* b=fgets(input, sizeof(input), infile);
-    input[strlen(input)-1]='\0';
-    if (!strlen(input) || (b==NULL))
+    if (!strlen(input) || (b==NULL) || (input[0]==N_COMMENT1) || (input[0]==N_COMMENT2))
 	return true;
+    
+    input[strlen(input)-1]='\0';
     if (infile!=stdin)
 	printf("%s\n",input) ;
 
-    if (!strncmp(input, N_COMMENT1, strlen(N_COMMENT1)) || !strncmp(input, N_COMMENT2, strlen(N_COMMENT2)) )
-	return true;
-    else if (!strncmp(input, N_LOAD_MODEL, strlen(N_LOAD_MODEL)))
+    if (!strncmp(input, N_LOAD_MODEL, strlen(N_LOAD_MODEL)))
     {
 	for (i=strlen(N_LOAD_MODEL); isspace(input[i]); i++);
 	if (lambda)

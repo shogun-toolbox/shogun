@@ -577,6 +577,7 @@ public:
 	/** invalidates all caches.
 	 * this function has to be called when direct changes to the model have been made.
 	 * this is necessary for the forward/backward/viterbi algorithms to not work with old tables
+	 * and to keep the featurecache up-to-date
 	 */
 	void invalidate_model();
 
@@ -1132,9 +1133,14 @@ protected:
 	
 	/**@name arrays and caches.
 	 * arrays for model parameters
-	 * caches for forward/backward variables etc
+	 * caches for forward/backward variables, feature cache etc
 	 */
 	//@{
+	
+	// feature cache
+	static double* feature_cache;	
+	// number of features per cacheline
+	static int num_features;	
 #ifdef PARALLEL
 	// array of size N*NUM_PARALLEL for temporary calculations
 	REAL* arrayN1[NUM_PARALLEL] ; 
@@ -1157,7 +1163,6 @@ protected:
 #endif // PARALLEL 
 #endif // LOG_SUM_ARRAY
 
-	
 #ifdef PARALLEL
 
 	/// cache for forward variables can be terrible HUGE O(T*N)
@@ -1331,7 +1336,7 @@ public:
 	//@{
 	   
 	    /// compute featurevectors for all observations and return a cache of size num_features*num_observations
-	    static double* compute_top_feature_cache(CHMM* pos, CHMM* neg, int & num_features);
+	    static double* compute_top_feature_cache(CHMM* pos, CHMM* neg);
 	    
 	    /**@name compute featurevector for observation dim
 	     * Computes the featurevector for one observation 
@@ -1340,6 +1345,21 @@ public:
 	     * @return returns the featurevector or NULL if unsuccessfull
 	     */ 
 	    static double* compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* featurevector=NULL);
+	    
+	    /**@name get number of features
+	     * @return returns the number of features in a feature cache line
+	     */ 
+	    static inline int get_top_num_features() { return CHMM::num_features; }
+
+	    /**@name get feature cache line
+	     * @return returns a pointer to a line in featurecache specified by row
+	     */ 
+	    static inline double* get_top_feature_cache_line(int row) { return &feature_cache[num_features*row]; }
+
+	    /**@name get feature cache
+	     * @return returns a pointer to the featurecache or NULL if there is no
+	     */ 
+	    static inline double* get_top_feature_cache() { return feature_cache; }
 	//@}
 
 protected:

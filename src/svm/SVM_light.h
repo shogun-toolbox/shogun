@@ -218,9 +218,9 @@ class CSVMLight:public CSVM
 
 protected:
     MODEL mymodel;
-    KERNEL_CACHE mykernel_cache;
+    /*KERNEL_CACHE mykernel_cache;
     LEARN_PARM mylearn_parm;
-    KERNEL_PARM mykernel_parm;
+    KERNEL_PARM mykernel_parm;*/
 };
 
 #endif

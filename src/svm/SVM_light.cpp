@@ -4,8 +4,6 @@ extern long verbosity;
 extern double normalizer;
 extern CHMM* pos;
 extern CHMM* neg;
-double *featurespace=NULL ;
-int num_features=-1 ;
 
 CSVMLight::CSVMLight()
 {
@@ -29,11 +27,13 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 	long* label=new long[totdoc];
 	char str[1024];
 
+	KERNEL_CACHE mykernel_cache;
+	LEARN_PARM mylearn_parm;
+	KERNEL_PARM mykernel_parm;
+
 	if (kernel_type==4) // standard hmm+svm
 	{
-	    featurespace=CHMM::compute_top_feature_cache(pos, neg, num_features);
-	    
-	    if (featurespace)
+	    if (CHMM::compute_top_feature_cache(pos, neg))
 		kernel_type=6; // hmm+svm precalculated
 	}
 
@@ -48,7 +48,7 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 	verbosity=1;
 	strcpy (mylearn_parm.predfile, "");
 	strcpy (mylearn_parm.alphafile, "");
-	mylearn_parm.biased_hyperplane=0;
+	mylearn_parm.biased_hyperplane=1;
 	mylearn_parm.remove_inconsistent=0;
 	mylearn_parm.skip_final_opt_check=1;
 	mylearn_parm.svm_maxqpsize=50;
@@ -83,12 +83,13 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 
 	if (kernel_type==6)
 	    mymodel.kernel_parm.kernel_type=4;
+	
+	//free(model.supvec);
+	//free(model.alpha);
+	//free(model.index);
 
 	//delete[] docs;
 	//delete[] label;
-	delete[] featurespace;
-	featurespace=NULL;
-	num_features=-1;
 
 	return true;
 }
@@ -101,9 +102,7 @@ bool CSVMLight::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
     
     if (mymodel.kernel_parm.kernel_type==4) // standard hmm+svm
     {
-	featurespace=CHMM::compute_top_feature_cache(pos, neg, num_features);
-
-	if (featurespace)
+	if (CHMM::compute_top_feature_cache(pos, neg))
 	    mymodel.kernel_parm.kernel_type=6; // hmm+svm precalculated
     }
 
@@ -140,9 +139,6 @@ bool CSVMLight::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
     printf("\tcorrect:%i\n", int (correct));
     printf("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
     printf("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, fp[pointeven], tp[pointeven]);
-    delete[] featurespace;
-    featurespace=NULL;
-    num_features=-1;
     delete[] fp;
     delete[] tp;
     delete[] output;
@@ -193,6 +189,7 @@ bool CSVMLight::load_svm(FILE* modelfl, CObservation* test)
     bool result=false;
     char version_buffer[1024];
 
+    memset(&mymodel, 0x0, sizeof(MODEL));
     fscanf(modelfl,"SVM-light Version %s\n",version_buffer);
     if(strcmp(version_buffer,VERSION)) {
 	perror ("Version of model-file does not match version of svm_classify!"); 
@@ -229,7 +226,7 @@ bool CSVMLight::load_svm(FILE* modelfl, CObservation* test)
 	mymodel.supvec[i]->twonorm_sq=-1;
 	fscanf(modelfl,"%lf%*[^\n]\n",&mymodel.alpha[i]);
 #ifdef DEBUG
-	printf("alpha:%e,idx:%d\n",model.alpha[i],model.supvec[i]->docnum);
+	printf("alpha:%e,idx:%d\n",mymodel.alpha[i],mymodel.supvec[i]->docnum);
 #endif
     }
 
@@ -241,6 +238,12 @@ bool CSVMLight::load_svm(FILE* modelfl, CObservation* test)
 bool CSVMLight::save_svm(FILE* modelfl)
 {
   write_model(modelfl,&mymodel);
+	//free(mymodel.supvec);
+	//free(mymodel.alpha);
+	//free(mymodel.index);
+	//memset(&mymodel, 0x0, sizeof(MODEL));
+	//delete[] docs;
+	//delete[] label;
   return true ;
 } 
 
@@ -2914,7 +2917,7 @@ void CSVMLight::write_model(FILE *modelfl, MODEL *model)
 ////    }
     fprintf(modelfl,"\n");
   }
-  fclose(modelfl);
+  //fclose(modelfl);
   if(verbosity>=1) {
     printf("done\n");
   }

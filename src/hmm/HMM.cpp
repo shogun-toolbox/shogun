@@ -3,6 +3,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "hmm/HMM.h"
+
+
 #include "lib/Mathmatics.h"
 
 #include <stdlib.h>
@@ -19,6 +21,7 @@
 #ifdef SUNOS
 #include <thread.h>
 #endif
+
 
 struct S_THREAD_PARAM
 {
@@ -116,6 +119,8 @@ enum E_STATE
 	END
 };
 
+double* CHMM::feature_cache=NULL;	
+int CHMM::num_features=0;	
 
 #ifdef FIX_POS
 const char CHMM::CModel::FIX_DISALLOWED=0 ;
@@ -197,6 +202,9 @@ CHMM::CHMM(FILE* model_file_, REAL PSEUDO_)
 CHMM::~CHMM()
 {
   delete model ;
+  delete[] feature_cache;
+  feature_cache=NULL;
+  num_features=0;
 
 #ifdef PARALLEL
 	{
@@ -2051,6 +2059,10 @@ void CHMM::invalidate_model()
 	this->path_deriv_dimension=-1 ;
 	this->all_path_prob_updated=false;
 #endif  //NOVIT
+
+	delete[] feature_cache;
+	feature_cache=NULL;
+	num_features=0;
 
 #ifdef PARALLEL
 	{
@@ -4513,35 +4525,38 @@ double* CHMM::compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* 
     return featurevector;
 }
 
-double* CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg, int & num_features)
+double* CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 {
-    num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
-
-    int totobs=pos->get_observations()->get_DIMENSION()+pos->get_observations()->get_support_vector_num();
-    double* featurespace=new double[num_features*totobs];
-
-    if (!featurespace)
+    if (!feature_cache)
     {
-	return NULL;
-	num_features=-1;
-    }
+	num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 
-    printf("precalculating feature vectors for all sequences\n"); fflush(stdout);
+	int totobs=pos->get_observations()->get_DIMENSION()+pos->get_observations()->get_support_vector_num();
+	feature_cache=new double[num_features*totobs];
 
-    for (int x=0; x<totobs; x++)
-    {
-	if (!(x % (totobs/10)))
-	    printf("%02d%%.", (int) (100.0*x/totobs));
-	else if (!(x % (totobs/200)))
-	    printf(".");
+	if (!feature_cache)
+	{
+	    return NULL;
+	    num_features=0;
+	}
 
+	printf("precalculating feature vectors for all sequences\n"); fflush(stdout);
+
+	for (int x=0; x<totobs; x++)
+	{
+	    if (!(x % (totobs/10)))
+		printf("%02d%%.", (int) (100.0*x/totobs));
+	    else if (!(x % (totobs/200)))
+		printf(".");
+
+	    fflush(stdout);
+
+	    compute_top_feature_vector(pos, neg, x, &feature_cache[x*num_features]);
+	}
+
+	printf(".done.\n");
 	fflush(stdout);
 
-	compute_top_feature_vector(pos, neg, x, &featurespace[x*num_features]);
     }
-    
-    printf(".done.\n");
-    fflush(stdout);
-
-    return featurespace;
+    return feature_cache;
 }

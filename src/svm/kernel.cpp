@@ -7,8 +7,6 @@
 extern CHMM* pos;
 extern CHMM* neg;
 extern double* theta;
-extern double* featurespace;
-extern int num_features;
 
 long   kernel_cache_statistic;
 double normalizer=1;
@@ -220,10 +218,10 @@ double top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in your favo
 
 double cached_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in your favorite kernel */
 {
-    double* features_a=&featurespace[num_features*a->docnum];
-    double* features_b=&featurespace[num_features*b->docnum];
+    double* features_a=CHMM::get_top_feature_cache_line(a->docnum);
+    double* features_b=CHMM::get_top_feature_cache_line(b->docnum);
     double result=0;
-    int i=num_features;
+    int i=CHMM::get_top_num_features();
 
     while (i--)
 	result+= *features_a++ * *features_b++;
