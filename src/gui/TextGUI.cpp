@@ -178,7 +178,7 @@ void CTextGUI::print_help()
 	CIO::message("\n[SVM]\n");
 	CIO::message("\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
 	CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
-	CIO::message("\033[1;31m%s\033[0m <LINEAR> [<CACHESIZE> [OPTS]]\t\t\t- set kernel type\n", N_SET_KERNEL);
+	CIO::message("\033[1;31m%s\033[0m <LINEAR|GAUSSIAN|POLY> [<CACHESIZE> [OPTS]]\t\t\t- set kernel type\n", N_SET_KERNEL);
 	CIO::message("\033[1;31m%s\033[0m\t\t- obtains svm from TRAINFEATURES\n",N_SVM_TRAIN);
 	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> - init kernel for training/testingn\n",N_INIT_KERNEL);
 	CIO::message("\n[CLASSIFICATION]\n");

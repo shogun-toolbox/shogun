@@ -1,15 +1,15 @@
-#ifndef _LINEARKERNEL_H___
-#define _LINEARKERNEL_H___
+#ifndef _GAUSSIANKERNEL_H___
+#define _GAUSSIANKERNEL_H___
 
 #include "lib/common.h"
 #include "kernel/RealKernel.h"
 #include "features/RealFeatures.h"
 
-class CLinearKernel: public CRealKernel
+class CGaussianKernel: public CRealKernel
 {
  public:
-  CLinearKernel(long size, bool rescale) ;
-  ~CLinearKernel() ;
+  CGaussianKernel(long size, double width, bool rescale) ;
+  ~CGaussianKernel() ;
   
   virtual void init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
@@ -21,7 +21,7 @@ class CLinearKernel: public CRealKernel
   virtual bool check_features(CFeatures* f);
 
   // return the name of a kernel
-  virtual const char* get_name() { return "Linear" ; } ;
+  virtual const char* get_name() { return "Gaussian" ; } ;
 
  protected:
   /// compute kernel function for features a and b
@@ -33,9 +33,9 @@ class CLinearKernel: public CRealKernel
   virtual void init_rescale();
   
  protected:
+  double width;
   bool rescale ;
   double scale ;
 };
 
 #endif
-

@@ -2,6 +2,8 @@
 #include "kernel/Kernel.h"
 #include "kernel/LinearKernel.h"
 #include "kernel/LinearByteKernel.h"
+#include "kernel/PolyKernel.h"
+#include "kernel/GaussianKernel.h"
 #include "lib/io.h"
 #include "gui/GUI.h"
 
@@ -52,6 +54,41 @@ bool CGUIKernel::set_kernel(char* param)
 				delete kernel;
 				kernel=new CLinearKernel(size, scale==1);
 				return true;
+			}
+		}
+		else if (strcmp(kern_type,"POLY")==0)
+		{
+			if (strcmp(data_type,"REAL")==0)
+			{
+				int scale=1;
+				int homogene=1;
+				double degree=2;
+
+				sscanf(param, "%s %s %lf %d %d %d", kern_type, data_type, &degree, &homogene, &size, &scale);
+				delete kernel;
+				kernel=new CPolyKernel(size, degree, homogene==1, scale==1);
+				if (kernel)
+				{
+					CIO::message("Polynomial Kernel created\n");
+					return true;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"GAUSSIAN")==0)
+		{
+			if (strcmp(data_type,"REAL")==0)
+			{
+				int scale=1;
+				double width=1;
+
+				sscanf(param, "%s %s %lf %d %d", kern_type, data_type, &width, &size, &scale);
+				delete kernel;
+				kernel=new CGaussianKernel(size, width, scale==1);
+				if (kernel)
+				{
+					CIO::message("Gaussian Kernel created\n");
+					return true;
+				}
 			}
 		}
 		else 

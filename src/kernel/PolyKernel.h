@@ -1,15 +1,15 @@
-#ifndef _LINEARKERNEL_H___
-#define _LINEARKERNEL_H___
+#ifndef _POLYKERNEL_H___
+#define _POLYKERNEL_H___
 
 #include "lib/common.h"
 #include "kernel/RealKernel.h"
 #include "features/RealFeatures.h"
 
-class CLinearKernel: public CRealKernel
+class CPolyKernel: public CRealKernel
 {
  public:
-  CLinearKernel(long size, bool rescale) ;
-  ~CLinearKernel() ;
+  CPolyKernel(long size, double degree, bool homogene, bool rescale) ;
+  ~CPolyKernel() ;
   
   virtual void init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
@@ -21,7 +21,7 @@ class CLinearKernel: public CRealKernel
   virtual bool check_features(CFeatures* f);
 
   // return the name of a kernel
-  virtual const char* get_name() { return "Linear" ; } ;
+  virtual const char* get_name() { return "Poly" ; } ;
 
  protected:
   /// compute kernel function for features a and b
@@ -33,6 +33,8 @@ class CLinearKernel: public CRealKernel
   virtual void init_rescale();
   
  protected:
+  double degree;
+  bool homogene ;
   bool rescale ;
   double scale ;
 };

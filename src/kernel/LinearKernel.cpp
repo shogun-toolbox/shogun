@@ -16,9 +16,9 @@ CLinearKernel::~CLinearKernel()
 {
 }
   
-void CLinearKernel::init(CRealFeatures* l, CRealFeatures* r)
+void CLinearKernel::init(CFeatures* l, CFeatures* r)
 {
-	CRealKernel::init(l,r); 
+	CRealKernel::init((CRealFeatures*) l, (CRealFeatures*) r); 
 
 	if (rescale)
 		init_rescale() ;
