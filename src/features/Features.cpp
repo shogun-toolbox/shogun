@@ -24,12 +24,14 @@ int CFeatures::add_preproc(CPreProc* p)
 	CPreProc** pps=new CPreProc*[num_preproc+1];
 	for (i=0; i<num_preproc; i++)
 		pps[i]=preproc[i];
+	delete[] preproc;
+	preproc=pps;
 	preproc[num_preproc]=p;
 
 	num_preproc++;
 
 	for (i=0; i<num_preproc; i++)
-		CIO::message("preproc[%d]=%s\n",i, preproc[i]->get_name()) ;
+		CIO::message("preproc[%d]=%s %ld\n",i, preproc[i]->get_name(), preproc[i]) ;
 	return num_preproc;
 }
 
@@ -66,6 +68,8 @@ CPreProc* CFeatures::del_preproc(int num)
 		num_preproc--;
 	}
 
+	delete[] preproc;
+	preproc=pps;
 
 	for (i=0; i<num_preproc; i++)
 		CIO::message("preproc[%d]=%s\n",i, preproc[i]->get_name()) ;

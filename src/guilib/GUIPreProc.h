@@ -11,12 +11,16 @@ class CGUIPreProc
 		CGUIPreProc(CGUI*);
 		~CGUIPreProc();
 
-		bool set_preproc(char* param);
-		inline CPreProc * get_preproc() { return preproc ; }
+		bool add_preproc(char* param);
+		bool del_preproc(char* param);
+		inline CPreProc** get_preprocs(int &num) { num=num_preprocs; return preprocs; }
 		bool load(char* param);
 		bool save(char* param);
+
 	protected:
+		bool add_preproc(CPreProc* preproc);
 		CGUI* gui ;
-		CPreProc * preproc;
+		int num_preprocs;
+		CPreProc** preprocs;
 };
 #endif

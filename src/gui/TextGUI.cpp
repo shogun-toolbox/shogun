@@ -39,7 +39,8 @@ static const char* N_RELATIVE_ENTROPY=	"relative_entropy";
 static const char* N_ENTROPY=			"entropy";
 static const char* N_SET_FEATURES=		"set_features";
 static const char* N_SET_KERNEL=		"set_kernel";
-static const char* N_SET_PREPROC=		"set_preproc";
+static const char* N_ADD_PREPROC=		"add_preproc";
+static const char* N_DEL_PREPROC=		"del_preproc";
 static const char* N_PREPROCESS=		"preprocess";
 static const char* N_INIT_KERNEL=		"init_kernel";
 static const char* N_SAVE_PATH=			"save_hmm_path";
@@ -163,7 +164,8 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM_DEFINED);
 	CIO::message("\n[FEATURES]\n");
 	CIO::message("\033[1;31m%s\033[0m\t <TOP|FK> <TRAIN|TEST> [<CACHE SIZE> [<0|1>]]- creates train/test-features out of obs\n",N_SET_FEATURES);
-	CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|NONE>\t\t\t- set preprocessor type\n", N_SET_PREPROC);
+	CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|NONE>\t\t\t- add preprocessor of type\n", N_ADD_PREPROC);
+	CIO::message("\033[1;31m%s\033[0m <NUM>\t\t\t- delete preprocessor\n", N_DEL_PREPROC);
 	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> [<0|1>] - preprocesses the feature_matrix, 1 to force preprocessing of already processed\n",N_PREPROCESS);
 	CIO::message("\n[SVM]\n");
 	CIO::message("\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
@@ -441,9 +443,13 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	{
 		guikernel.set_kernel(input+strlen(N_SET_KERNEL));
 	} 
-	else if (!strncmp(input, N_SET_PREPROC, strlen(N_SET_PREPROC)))
+	else if (!strncmp(input, N_DEL_PREPROC, strlen(N_DEL_PREPROC)))
 	{
-		guipreproc.set_preproc(input+strlen(N_SET_PREPROC));
+		guipreproc.del_preproc(input+strlen(N_DEL_PREPROC));
+	} 
+	else if (!strncmp(input, N_ADD_PREPROC, strlen(N_ADD_PREPROC)))
+	{
+		guipreproc.add_preproc(input+strlen(N_ADD_PREPROC));
 	} 
 	else if (!strncmp(input, N_PREPROCESS, strlen(N_PREPROCESS)))
 	{

@@ -81,9 +81,9 @@ REAL* CRealFeatures::get_feature_vector(long num, long &len, bool &free)
 
 	  memcpy(feat, tmp_feat_after, sizeof(REAL)*tmp_len);
 	  delete[] tmp_feat_after;
-	  //CIO::message(stderr, "len2: %d len: %d\n", len2, len);
 	  //len=num_features=len2 ;
 	  len=tmp_len ;
+	  CIO::message(stderr, "len: %d len2: %d\n", len, num_features);
 	}
 	return feat ;
   }

@@ -45,13 +45,21 @@ bool CGUIFeatures::preprocess(char* param)
 
 			if (*f_ptr)
 			{
-				if (gui->guipreproc.get_preproc())
+				int num_preproc=0;
+				CPreProc** preprocs;
+				if ((preprocs=gui->guipreproc.get_preprocs(num_preproc))!=NULL)
 				{
 					if (train_features)
 					{
-						gui->guipreproc.get_preproc()->init(train_features);
-						(*f_ptr)->add_preproc(gui->guipreproc.get_preproc());
-
+						CFeatures* feat=train_features;
+						for (int i=0; i<num_preproc; i++)
+						{
+							preprocs[i]->init(feat);
+							feat->add_preproc(preprocs[i]);
+							if (feat != *f_ptr)
+								(*f_ptr)->add_preproc(preprocs[i]);
+						}
+						
 						CIO::message("force: %d\n",force);
 						(*f_ptr)->preproc_feature_matrix(force==1);
 					}

@@ -72,6 +72,14 @@ bool CGUISVM::train(char* param)
 	CFeatures* features=gui->guifeatures.get_train_features();
 	CIO::message("S:initializing train features %ldx%ld\n", ((CRealFeatures*) features)->get_num_vectors(), ((CRealFeatures*) features)->get_num_features());
 
+	bool fr;
+	long len=0;
+	REAL* f=((CRealFeatures*) gui->guifeatures.get_train_features())->get_feature_vector(0, len, fr);
+	((CRealFeatures*) gui->guifeatures.get_train_features())->free_feature_vector(f, 0, fr);
+
+	CIO::message("nana: %i\n", len);
+
+
 	if (!svm)
 	{
 		CIO::message("no svm available") ;

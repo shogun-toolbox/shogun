@@ -11,39 +11,39 @@
 CGUIPreProc::CGUIPreProc(CGUI * gui_)
   : gui(gui_)
 {
-	preproc=NULL;
+	preprocs=NULL;
+	num_preprocs=NULL;
 }
 
 CGUIPreProc::~CGUIPreProc()
 {
-	delete preproc;
+	for (int i=0; i<num_preprocs; i++)
+		delete preprocs[i];
+	delete[] preprocs;
 }
 
-bool CGUIPreProc::set_preproc(char* param)
+bool CGUIPreProc::add_preproc(char* param)
 {
+	CPreProc* preproc=NULL;
+
 	param=CIO::skip_spaces(param);
 #ifndef NO_LAPACK
 	if (strncmp(param,"PCACUT",6)==0)
 	{
-		delete preproc;
 		int do_whitening=0; 
 		double thresh=1e-6 ;
 		sscanf(param+6, "%i %le", &do_whitening, &thresh) ;
 		CIO::message("PCACUT parameters: do_whitening=%i thresh=%e", do_whitening, thresh) ;
 		preproc=new CPCACut(do_whitening, thresh);
-		return true;
 	}
 	else 
 #endif
 	  if (strncmp(param,"NORMONE",7)==0)
 	{
-		delete preproc;
 		preproc=new CNormOne();
-		return true;
 	}
 	else if (strncmp(param,"PRUNEVARSUBMEAN",15)==0)
 	{
-		delete preproc;
 		int divide_by_std=0; 
 		sscanf(param+15, "%i", &divide_by_std);
 
@@ -53,18 +53,52 @@ bool CGUIPreProc::set_preproc(char* param)
 			CIO::message("NOT normalizing VARIANCE\n");
 
 		preproc=new CPruneVarSubMean(divide_by_std==1);
-		return true;
 	}
-	else if (strncmp(param,"NONE",4)==0)
-	{
-		delete preproc;
-		preproc=NULL;
-		return true;
-	}
+//	else if (strncmp(param,"NONE",4)==0)
+//	{
+//		delete preproc;
+//		preproc=NULL;
+//		return true;
+//	}
 	else 
+	{
 		CIO::not_implemented();
+		return false;
+	}
 
-	return false;
+	return add_preproc(preproc);
+}
+
+bool CGUIPreProc::del_preproc(char* param)
+{
+	int i,j,num=num_preprocs-1;
+	CPreProc** pps=NULL; 
+	CPreProc* removed_preproc=NULL;
+	param=CIO::skip_spaces(param);
+
+	sscanf(param, "%i", &num);
+
+	if (num_preprocs>0)
+		delete preprocs[num];
+
+	if (num_preprocs>1)
+		pps= new CPreProc*[num_preprocs-1];
+
+	if (pps)
+	{
+		j=0;
+		for (i=0; i<num_preprocs; i++)
+		{
+			if (i!=num)
+				pps[j++]=preprocs[i];
+		}
+		num_preprocs--;
+		delete[] preprocs;
+		preprocs=pps;
+		return true;
+	}
+	else
+		return false;
 }
 
 bool CGUIPreProc::load(char* param)
@@ -73,8 +107,7 @@ bool CGUIPreProc::load(char* param)
 
 	param=CIO::skip_spaces(param);
 
-	delete preproc;
-	preproc=NULL;
+	CPreProc* preproc=NULL;
 
 	FILE* file=fopen(param, "r");
 	char id[5]="UDEF";
@@ -112,16 +145,23 @@ bool CGUIPreProc::load(char* param)
 	else
 		CIO::message("opening file %s failed\n", param);
 
+	if (result)
+		return add_preproc(preproc);
+
 	return result;
 }
 
 bool CGUIPreProc::save(char* param)
 {
+	char fname[1024];
+	int num=num_preprocs-1;
 	bool result=false; param=CIO::skip_spaces(param);
+	sscanf(param, "%s %i", fname, &num);
 
-	if (preproc)
+	if (num>=0 && num<num_preprocs && preprocs[num])
 	{
-		FILE* file=fopen(param, "w");
+		FILE* file=fopen(fname, "w");
+		CPreProc* preproc=preprocs[num];
 	
 		fwrite(preproc->get_id(), sizeof(char), 4, file);
 		if ((!file) ||	(!preproc->save_init_data(file)))
@@ -139,4 +179,21 @@ bool CGUIPreProc::save(char* param)
 		CIO::message("create preproc first\n");
 
 	return result;
+}
+
+bool CGUIPreProc::add_preproc(CPreProc* preproc)
+{
+	int i;
+	CPreProc** pps=new CPreProc*[num_preprocs+1];
+
+	for (i=0; i<num_preprocs; i++)
+		pps[i]=preprocs[i];
+	delete[] preprocs;
+
+	preprocs=pps;
+	preprocs[num_preprocs]=preproc;
+
+	num_preprocs++;
+		
+	return true;
 }
