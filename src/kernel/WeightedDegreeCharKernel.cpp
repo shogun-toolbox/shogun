@@ -772,6 +772,9 @@ bool CWeightedDegreeCharKernel::set_weights(REAL* ws, INT d, INT len)
 	degree=d;
 	length=len;
 
+	if (len == 0)
+		len=1;
+
 	delete[] weights;
 	weights=new REAL[d*len];
 

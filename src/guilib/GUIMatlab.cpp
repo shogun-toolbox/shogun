@@ -1225,7 +1225,12 @@ bool CGUIMatlab::set_WD_weights(const mxArray* mx_arg)
 			return false ;
 		}
 
-		return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), mxGetN(mx_arg));
+		INT len = mxGetN(mx_arg);
+
+		if (len ==  1)
+			len=0;
+
+		return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), len);
 		
 	}
 	return false;
