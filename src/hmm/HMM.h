@@ -1488,7 +1488,7 @@ protected:
 	      }
 	    else
 	      {
-		printf("forward cache failed for %i: old entry: dim=%i, %i\n", dimension, ALPHA_CACHE(dimension).dimension, ALPHA_CACHE(dimension).updated) ;
+		/*printf("forward cache failed for %i: old entry: dim=%i, %i\n", dimension, ALPHA_CACHE(dimension).dimension, ALPHA_CACHE(dimension).updated) ;*/
 		return forward_comp(time, state, dimension) ;
 	      } ;
 	  } ;
@@ -1507,7 +1507,7 @@ protected:
 	      }
 	    else
 	      {
-		printf("backward cache failed for %i: old entry: dim=%i, %i\n", dimension, ALPHA_CACHE(dimension).dimension, BETA_CACHE(dimension).updated) ;
+		/*printf("backward cache failed for %i: old entry: dim=%i, %i\n", dimension, ALPHA_CACHE(dimension).dimension, BETA_CACHE(dimension).updated) ;*/
 		return backward_comp(time, state, dimension) ;
 	      } ;
 	  } ;

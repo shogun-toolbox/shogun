@@ -10,7 +10,7 @@ bw
 set_pos_model
 
 new 9 4 1
-convergence_criteria 10 1e-6
+convergence_criteria 1 1e-6
 assign_obs NEGTRAIN
 bw
 set_neg_model
