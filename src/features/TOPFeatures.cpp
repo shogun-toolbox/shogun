@@ -7,6 +7,7 @@ CTOPFeatures::CTOPFeatures(CHMM* p, CHMM* n)
   pos=p;
   neg=n;
   num_vectors=get_number_of_examples() ;
+  // set_feature_matrix();
 }
 CTOPFeatures::CTOPFeatures(const CTOPFeatures &orig): 
 	CRealFeatures(orig), pos(orig.pos), neg(orig.neg)
@@ -23,7 +24,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
   neg=n ;
   delete[] feature_matrix  ;
   feature_matrix=NULL ;
-  set_feature_matrix() ;
+  //  set_feature_matrix() ;
 }
 
 int CTOPFeatures::get_num_features()

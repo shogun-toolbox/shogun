@@ -18,8 +18,9 @@ bool CGUIFeatures::set_features(char* param)
   param=CIO::skip_spaces(param);
   char target[1024];
   char type[1024];
+  int comp_features=1 ;
   
-  if ((sscanf(param, "%s %s", type, target))==2)
+  if ((sscanf(param, "%s %s %i", type, target, &comp_features))>=2)
     {
       if ( (strcmp(target, "TRAIN")==0 && gui->guiobs.get_obs("POSTRAIN") && gui->guiobs.get_obs("NEGTRAIN")) ||
 	   (strcmp(target, "TEST")==0 && gui->guiobs.get_obs("POSTEST") && gui->guiobs.get_obs("NEGTEST")))
@@ -58,8 +59,9 @@ bool CGUIFeatures::set_features(char* param)
 		      gui->guihmm.get_neg()->set_observations(obs);
 		      
 		      delete (*f_ptr);
-		      *f_ptr= new CTOPFeatures(gui->guihmm.get_pos(), gui->guihmm.get_neg());
-		      ((CTOPFeatures*) *f_ptr)->set_feature_matrix();
+		      *f_ptr= new CTOPFeatures(gui->guihmm.get_pos(), gui->guihmm.get_neg());		      
+		      if (comp_features)
+			((CTOPFeatures*)*f_ptr)->set_feature_matrix() ;
 		      
 		      //						gui->guihmm.get_pos()->set_observations(old_obs_pos);
 		      //						gui->guihmm.get_neg()->set_observations(old_obs_neg);

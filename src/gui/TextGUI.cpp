@@ -419,7 +419,7 @@ bool CTextGUI::get_line(FILE* infile)
 	} 
 	else if (!strncmp(input, N_SET_PREPROC, strlen(N_SET_PREPROC)))
 	{
-		guikernel.set_kernel(input+strlen(N_SET_PREPROC));
+		guipreproc.set_preproc(input+strlen(N_SET_PREPROC));
 	} 
 	else if (!strncmp(input, N_LINEAR_SVM_TRAIN, strlen(N_LINEAR_SVM_TRAIN)))
 	{

@@ -176,50 +176,46 @@ bool CPCACut::save(FILE* f)
 REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 {
 #warning crashes right here!
-	long num_vectors=0;
-	long num_features=0;
-
-	REAL* m=((CRealFeatures*) f)->get_feature_matrix(num_vectors, num_features);
-
-	if (m)
+  long num_vectors=0;
+  long num_features=0;
+  
+  REAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
+  CIO::message("get Feature matrix: %ix%i\n", num_vectors, num_features) ;
+  
+  if (m)
+    {
+      REAL* res= new REAL[num_dim];
+      REAL* sub_mean= new REAL[num_features];
+      REAL* MEAN=mean ;
+      for (int vec=0; vec<num_vectors; vec++)
 	{
-		REAL* ret= new REAL[num_dim*num_vectors];
-		for (int vec=0; vec<num_vectors; vec++)
-		{
-			int onei=1 ;
-			double zerod=0, oned=1;
-			char N='N';
-			int i;
-			REAL* sub_mean=&m[num_features*vec];
-			for (i=0; i<num_features; i++)
-				sub_mean[i]-=mean[i] ;
-
-			int num_feat=num_features;
-			dgemv_(&N, &num_dim, &num_feat, &oned, T, &num_dim, sub_mean, &onei, &zerod, ret, &onei) ;
-
-			REAL* m_transformed=&m[num_dim*vec];
-			for (i=0; i<num_dim; i++)
-				m_transformed[i]=m[i];
-		}
-		delete[] ret;
-
-		((CRealFeatures*) f)->set_num_features(num_dim);
+	  int onei=1 ;
+	  double zerod=0, oned=1;
+	  char N='N';
+	  int i;
+	  for (i=0; i<num_features; i++)
+	    sub_mean[i]=m[num_features*vec+i]-mean[i] ;
+	  
+	  int num_feat=num_features;
+	  dgemv_(&N, &num_dim, &num_feat, &oned, T, &num_dim, sub_mean, &onei, &zerod, res, &onei) ;
+	  
+	  REAL* m_transformed=&m[num_dim*vec];
+	  for (i=0; i<num_dim; i++)
+	    m_transformed[i]=m[i];
 	}
-
-	return m;
+      delete[] res;
+      delete[] sub_mean;
+      
+      ((CRealFeatures*) f)->set_num_features(num_dim);
+    }
+  
+  return m;
 }
 
 /// apply preproc on single feature vector
 /// result in feature matrix
 REAL* CPCACut::apply_to_feature_vector(REAL* f, int &len)
 {
-  //  CIO::message("preprocessing vector of length %i to length %i\n", len, num_dim) ;
-
-//    REAL *ret=new REAL[len] ;
-//    for (int i=0; i<len; i++)
-//      ret[i]=f[i] ;
-//    return ret ;
-
   REAL *ret=new REAL[num_dim] ;
   int onei=1 ;
   double zerod=0, oned=1 ;

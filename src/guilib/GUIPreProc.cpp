@@ -3,6 +3,7 @@
 #include "preproc/PruneVarSubMean.h"
 #include "preproc/PCACut.h"
 #include "lib/io.h"
+#include <string.h>
 
 CGUIPreProc::CGUIPreProc(CGUI * gui_)
   : gui(gui_)

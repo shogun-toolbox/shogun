@@ -9,7 +9,7 @@ set_hmm_as POS
 
 load_obs neg.seq NEGTRAIN
 
-new 5 4 1
+new_hmm 5 4 1
 assign_obs NEGTRAIN
 convergence_criteria 1 1e-6
 bw
@@ -19,6 +19,7 @@ set_hmm_as NEG
 
 new_svm MPI
 c 100
+
 svm_train
 
 
