@@ -27,6 +27,7 @@ static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
 static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
 static const CHAR* N_GET_FEATURES=		"get_features";
 static const CHAR* N_GET_LABELS=		"get_labels";
+static const CHAR* N_GET_VERSION=		"get_version";
 static const CHAR* N_GET_PREPROC_INIT=	        "get_preproc_init";
 static const CHAR* N_GET_HMM_DEFS=		"get_hmm_defs";
 static const CHAR* N_SET_HMM=			"set_hmm";
@@ -335,6 +336,15 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				mexErrMsgTxt("usage is [lab]=gf('get_labels', 'TRAIN|TEST')");
+		}
+		else if (!strncmp(action, N_GET_VERSION, strlen(N_GET_VERSION)))
+		{
+			if (nrhs==1 && nlhs==1)
+			{
+					gf_matlab.get_version(plhs);
+			}
+			else
+				mexErrMsgTxt("usage is [lab]=gf('get_version')");
 		}
 		else if (!strncmp(action, N_GET_PREPROC_INIT, strlen(N_GET_PREPROC_INIT)))
 		{

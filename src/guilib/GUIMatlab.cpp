@@ -9,6 +9,7 @@
 #include "gui/GUI.h"
 
 #include "lib/io.h"
+#include "lib/Version.h"
 #include "distributions/hmm/penalty_info.h"
 #include "distributions/hmm/HMM.h"
 #include "distributions/hmm/penalty_info.h"
@@ -990,6 +991,23 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 		}
 	}
 	return f;
+}
+
+bool CGUIMatlab::get_version(mxArray* retvals[])
+{
+	mxArray* mx_ver=mxCreateDoubleMatrix(1, 1, mxREAL);
+
+	if (mx_ver)
+	{
+		double* ver=mxGetPr(mx_ver);
+
+		*ver = version.get_version_in_minutes();
+
+		retvals[0]=mx_ver;
+		return true;
+	}
+
+	return false;
 }
 
 bool CGUIMatlab::get_labels(mxArray* retvals[], CLabels* label)

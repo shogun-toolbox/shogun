@@ -88,18 +88,18 @@ htmldoc:
 	cd ../doc/doxygen/ && doxygen
 
 distclean: clean
-		rm -f .config tags lib/config.h lib/version.h
+		rm -f .config tags lib/config.h lib/versionstring.h
 clean: .config
 	rm -f $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(TARGET) ../doc/doxygen/*.html ../doc/doxygen/genefinder.tex gmon.out .depend configure.log .cpuinfo ./configure-*
 
 config:	Makefile configure
 		chmod u+x ./configure ./.version.sh
 		./configure
-		./.version.sh `$(COMP_CPP) -dumpversion` >lib/version.h
+		./.version.sh `$(COMP_CPP) -dumpversion` >lib/versionstring.h
 dep:	depend
 depend:	Makefile .config
 		chmod u+x ./.version.sh
-		./.version.sh `$(COMP_CPP) -dumpversion` >lib/version.h
+		./.version.sh `$(COMP_CPP) -dumpversion` >lib/versionstring.h
 	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_SRC_CPP)" ) -o.$(EXT_OBJ_CPP) -f - >.depend
 	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' )  -o.$(EXT_OBJ_C) -f - >>.depend
 
