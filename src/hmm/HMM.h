@@ -462,15 +462,15 @@ public:
 	bool initialize( int N, int M, int ORDER, 
 					 CModel* model, REAL PSEUDO,
 					 FILE* model_file=NULL);
-	/** initialization function - gets called by constructors.
+	/** initialization function - allocate memory for model and cache
 	 * @param N number of states
 	 * @param M number of emissions
 	 * @param ORDER order of HMM
-	 * @param model model which holds definitions of states to be learned + consts
-	 * @param PSEUDO Pseudo Value
-	 * @param model_file Filehandle to a hmm model file (*.mod)
 	 */
-	bool alloc_model_and_cache(int N, int M, int ORDER
+	bool alloc_model_and_cache(int N, int M, int ORDER);
+
+	/// frees model and cache
+	bool free_model_and_cache();
 	//@}
 
 	/**@name probability functions.

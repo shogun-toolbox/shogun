@@ -855,7 +855,52 @@ REAL CHMM::prefetch(int dim, bool bw, REAL* p_buf, REAL* q_buf, REAL* a_buf, REA
 #endif //PARALLEL
 
 
-#ifndef PARALLEL
+#ifdef PARALLEL
+
+void CHMM::ab_buf_comp(REAL* p_buf, REAL* q_buf, REAL *a_buf, REAL* b_buf, int dim)
+{
+    int i,j,t ;
+    REAL a_sum;
+    REAL b_sum;
+    REAL prob=0;	//model probability for dim
+   
+    REAL dimmodprob=model_probability(dim);
+
+    for (i=0; i<N; i++)
+    {
+	//estimate initial+end state distribution numerator
+	p_buf[i]=math.logarithmic_sum(get_p(i), get_p(i)+get_b(i,p_observations->get_obs(dim,0))+backward(0,i,dim) - dimmodprob);
+	q_buf[i]=math.logarithmic_sum(get_q(i), forward(p_observations->get_obs_T(dim)-1, i, dim)+get_q(i) - dimmodprob);
+
+	//estimate a
+	for (j=0; j<N; j++)
+	{
+	    a_sum=-math.INFTY;
+
+	    for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
+	    {
+		    a_sum= math.logarithmic_sum(a_sum, forward(t,i,dim)+
+			    get_a(i,j)+get_b(j,p_observations->get_obs(dim,t+1))+backward(t+1,j,dim));
+	    }
+	    a_buf[N*i+j]=a_sum-dimmodprob ;
+	}
+
+	//estimate b
+	for (j=0; j<M; j++)
+	{
+		b_sum=math.ALMOST_NEG_INFTY;
+
+	    for (t=0; t<p_observations->get_obs_T(dim); t++) 
+	    {
+		    if (p_observations->get_obs(dim,t)==j) 
+			b_sum=math.logarithmic_sum(b_sum, forward(t,i,dim)+backward(t, i, dim));
+	    }
+
+	    b_buf[M*i+j]=b_sum-dimmodprob ;
+	}
+    } 
+}
+
 //estimates new model lambda out of lambda_train using baum welch algorithm
 void CHMM::estimate_model_baum_welch(CHMM* train)
 {
@@ -1014,50 +1059,6 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
     //new model probability is unknown
     normalize();
     invalidate_model();
-}
-
-void CHMM::ab_buf_comp(REAL* p_buf, REAL* q_buf, REAL *a_buf, REAL* b_buf, int dim)
-{
-    int i,j,t ;
-    REAL a_sum;
-    REAL b_sum;
-    REAL prob=0;	//model probability for dim
-   
-    REAL dimmodprob=model_probability(dim);
-
-    for (i=0; i<N; i++)
-    {
-	//estimate initial+end state distribution numerator
-	p_buf[i]=math.logarithmic_sum(get_p(i), get_p(i)+get_b(i,p_observations->get_obs(dim,0))+backward(0,i,dim) - dimmodprob);
-	q_buf[i]=math.logarithmic_sum(get_q(i), forward(p_observations->get_obs_T(dim)-1, i, dim)+get_q(i) - dimmodprob);
-
-	//estimate a
-	for (j=0; j<N; j++)
-	{
-	    a_sum=-math.INFTY;
-
-	    for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
-	    {
-		    a_sum= math.logarithmic_sum(a_sum, forward(t,i,dim)+
-			    get_a(i,j)+get_b(j,p_observations->get_obs(dim,t+1))+backward(t+1,j,dim));
-	    }
-	    a_buf[N*i+j]=a_sum-dimmodprob ;
-	}
-
-	//estimate b
-	for (j=0; j<M; j++)
-	{
-		b_sum=math.ALMOST_NEG_INFTY;
-
-	    for (t=0; t<p_observations->get_obs_T(dim); t++) 
-	    {
-		    if (p_observations->get_obs(dim,t)==j) 
-			b_sum=math.logarithmic_sum(b_sum, forward(t,i,dim)+backward(t, i, dim));
-	    }
-
-	    b_buf[M*i+j]=b_sum-dimmodprob ;
-	}
-    } 
 }
 #endif // PARALLEL
 
@@ -4314,7 +4315,7 @@ void CHMM::add_states(int num_states, REAL default_value)
     for (int i=0; i<N; i++)
     {
 
-	get_p(i)
+	/*get_p(i)
 	int j;
 
 	if (exp(get_p(i)) < value)
@@ -4333,7 +4334,7 @@ void CHMM::add_states(int num_states, REAL default_value)
 	{
 	    if (exp(get_b(i,j)) < value)
 		    set_b(i,j, math.ALMOST_NEG_INFTY);
-	}
+	}*/
     }
 
     //delete + adjust pointers
