@@ -25,7 +25,6 @@ REAL CKernel::kernel(long idx_a, long idx_b)
 #endif
 		return 0;
 	}
-		printf("(%d,%d)\n", idx_a, idx_b);
 
 	return compute(idx_a, idx_b);
 }
@@ -38,20 +37,43 @@ void CKernel::init(CFeatures* l, CFeatures* r)
 	rhs=r;
 
 	// 100MB kernel cache
-	kernel_cache_init(100);
+	kernel_cache_init(1);
 }
+
+/****************************** Cache handling *******************************/
 
 void CKernel::get_kernel_row(long docnum, long *active2dnum, REAL *buffer)     
 {
-	register long i,j;
+	long i,j,start;
 
+#if 0
 	for(i=0;(j=active2dnum[i])>=0;i++)
 	{
 		buffer[j]=(REAL)kernel(docnum, j);
 	}
+#else
+	/* is cached? */
+	if(kernel_cache.index[docnum] != -1) 
+	{
+		kernel_cache.lru[kernel_cache.index[docnum]]=kernel_cache.time; /* lru */
+		start=kernel_cache.activenum*kernel_cache.index[docnum];
+
+		for(i=0;(j=active2dnum[i])>=0;i++)
+		{
+			if(kernel_cache.totdoc2active[j] >= 0)
+				buffer[j]=kernel_cache.buffer[start+kernel_cache.totdoc2active[j]];
+			else
+				buffer[j]=(REAL) kernel(docnum, j);
+		}
+	}
+	else 
+	{
+		for(i=0;(j=active2dnum[i])>=0;i++)
+			buffer[j]=(REAL) kernel(docnum, j);
+	}
+#endif
 }
 
-/****************************** Cache handling *******************************/
 
 void CKernel::kernel_cache_init(long buffsize)
 {
@@ -69,7 +91,7 @@ void CKernel::kernel_cache_init(long buffsize)
 	kernel_cache.buffsize=(long)(buffsize*1024*1024/sizeof(REAL));
 
 	kernel_cache.max_elems=(long)(kernel_cache.buffsize/totdoc);
-	kernel_cache.r_offs=lhs->get_num_vectors();
+	//kernel_cache.r_offs=lhs->get_num_vectors();
 
 	if(kernel_cache.max_elems>totdoc) {
 		kernel_cache.max_elems=totdoc;
@@ -93,37 +115,6 @@ void CKernel::kernel_cache_init(long buffsize)
 
 	kernel_cache.time=0;  
 } 
-
-//void CKernel::get_kernel_row(
-//DOC *docs,          // Get's a row of the matrix of kernel values
-//long docnum,long totdoc, // This matrix has the same form as the Hessian,
-//long *active2dnum,  // just that the elements are not multiplied by
-//REAL *buffer,     // y_i * y_j * a_i * a_j
-//KERNEL_PARM *kernel_parm) // Takes the values from the cache if available.
-//{
-//  register long i,j,start;
-//  DOC *ex;
-//
-//  ex=&(docs[docnum]);
-//  if(kernel_cache.index[docnum] != -1) { //is cached? 
-//    kernel_cache.lru[kernel_cache.index[docnum]]=kernel_cache.time; // lru
-//    start=kernel_cache.activenum*kernel_cache.index[docnum];
-//    for(i=0;(j=active2dnum[i])>=0;i++) {
-//      if(kernel_cache.totdoc2active[j] >= 0) {
-//	buffer[j]=kernel_cache.buffer[start+kernel_cache.totdoc2active[j]];
-//      }
-//      else {
-//	buffer[j]=(REAL)kernel(kernel_parm,ex,&(docs[j]));
-//      }
-//    }
-//  }
-//  else {
-//    for(i=0;(j=active2dnum[i])>=0;i++) {
-//      buffer[j]=(REAL)kernel(kernel_parm,ex,&(docs[j]));
-//    }
-//  }
-//}
-
 
 // Fills cache for the row m
 void CKernel::cache_kernel_row(long m)

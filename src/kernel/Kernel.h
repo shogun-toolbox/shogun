@@ -37,6 +37,17 @@ class CKernel
 		virtual const char* get_name()=0 ;
 
 		void get_kernel_row(long docnum, long *active2dnum, REAL *buffer) ;
+		
+		// Update lru time to avoid removal from cache.
+		long CKernel::kernel_cache_touch(long cacheidx)
+		{
+			if(kernel_cache.index[cacheidx] != -1)
+			{
+				kernel_cache.lru[kernel_cache.index[cacheidx]]=kernel_cache.time; 
+				return(1);
+			}
+			return(0);
+		}
 
 	protected:
 		/// compute kernel function for features a and b
@@ -60,16 +71,6 @@ class CKernel
 		long   kernel_cache_free_lru();
 		REAL *kernel_cache_clean_and_malloc(long);
 
-		// Update lru time to avoid removal from cache.
-		long CKernel::kernel_cache_touch(long cacheidx)
-		{
-			if(kernel_cache.index[cacheidx] != -1)
-			{
-				kernel_cache.lru[kernel_cache.index[cacheidx]]=kernel_cache.time; 
-				return(1);
-			}
-			return(0);
-		}
 
 		/// Is that row cached?
 		inline long CKernel::kernel_cache_check(long cacheidx)
@@ -91,7 +92,7 @@ class CKernel
 			long   time;
 			long   activenum;
 			long   buffsize;
-			long   r_offs;
+//			long   r_offs;
 		};
 	protected:
 		/// feature vectors to occur on left hand side
