@@ -52,9 +52,9 @@ REAL CLinearKernel::compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)
   assert(alen==blen);
   //fprintf(stderr, "LinKernel.compute(%ld,%ld) %d\n", idx_a, idx_b, alen) ;
 
-  double sum=0;
-  for (long i=0; i<alen; i++)
-	  sum+=avec[i]*bvec[i];
+//  double sum=0;
+//  for (long i=0; i<alen; i++)
+//	  sum+=avec[i]*bvec[i];
 
 //  CIO::message("%ld,%ld -> %f\n",idx_a, idx_b, sum);
 
@@ -62,8 +62,8 @@ REAL CLinearKernel::compute(CFeatures* a, long idx_a, CFeatures* b, long idx_b)
   int ialen=(int) alen;
   //REAL result=F77CALL(ddot)(REF ialen, avec, REF skip, bvec, REF skip)/scale;
 
-  //REAL result=ddot_(&ialen, avec, &skip, bvec, &skip)/scale;
-  REAL result=sum/scale;
+  REAL result=ddot_(&ialen, avec, &skip, bvec, &skip)/scale;
+//  REAL result=sum/scale;
   ((CRealFeatures*) a)->free_feature_vector(avec, afree);
   ((CRealFeatures*) b)->free_feature_vector(bvec, bfree);
 
