@@ -418,7 +418,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (!strncmp(action, N_SET_KERNEL_PARAMETERS, strlen(N_SET_KERNEL_PARAMETERS)))
 		{
-			if (nlhs!=0 || nrhs!=2 || gf_matlab.set_kernel_parameters())
+			if (nlhs!=0 || nrhs!=2 || !gf_matlab.set_kernel_parameters(prhs[1]))
 				mexErrMsgTxt("usage is gf('set_kernel_parameters',[parm])");
 
 		}

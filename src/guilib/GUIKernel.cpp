@@ -854,6 +854,9 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 					case 'G':
 						t=E_LOG;
 						break;
+					case 'X':
+						t=E_EXTERNAL;
+						break;
 					default:
 						t=E_WD;
 						break;

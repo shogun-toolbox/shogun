@@ -920,19 +920,17 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 	return false;
 }
 
-bool CGUIMatlab::set_kernel_parameters(const mxArray* vals[])
+bool CGUIMatlab::set_kernel_parameters(const mxArray* mx_arg)
 {
-	const mxArray* mx_arg=vals[2];
-
 	if (mx_arg && mxGetM(mx_arg)==1 )
 	{
-		double* arg=mxGetPr(mx_arg);
+		const double* arg=mxGetPr(mx_arg);
 
 		CKernel* k=gui->guikernel.get_kernel();
 
 		if (k)
 		{
-			k->set_kernel_parameters(mxGetN(mx_arg), arg);
+			return (k->set_kernel_parameters(mxGetN(mx_arg), arg));
 		}
 	}
 

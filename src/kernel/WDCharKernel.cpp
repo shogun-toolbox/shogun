@@ -170,6 +170,8 @@ bool CWDCharKernel::init_matching_weights_external()
 				matching_weights[i]=matching_weights_external[i];
 		}
 	}
+	else
+		CIO::message(M_ERROR, "sequence longer then weights (seqlen:%d, wlen:%d)\n", seq_length, matching_weights_external);
 
 	return (matching_weights!=NULL);
 }
@@ -322,16 +324,17 @@ void CWDCharKernel::cleanup()
 
 bool CWDCharKernel::set_kernel_parameters(INT num, const double* param)
 {
-	delete[] matching_weights_external;
+	if (param)
+	{
+		delete[] matching_weights_external;
+		assert(num>0);
+		num_matching_weights_external = num;
+		matching_weights_external= new REAL[num];
+		for (int i=0; i<num; i++)
+			matching_weights_external[i]=param[i];
+	}
 
-	assert(num>0);
-	num_matching_weights_external = num;
-	matching_weights_external= new REAL[num];
-
-	for (int i=0; i<num; i++)
-		matching_weights[i]=matching_weights_external[i];
-	
-	return true;
+	return (matching_weights_external != NULL);
 }
 
 bool CWDCharKernel::load_init(FILE* src)

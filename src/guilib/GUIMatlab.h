@@ -64,6 +64,7 @@ public:
 
 	//bool get_kernel_init();
 	bool get_features(mxArray* retvals[], CFeatures* features);
+	bool set_kernel_parameters(const mxArray* mx_arg);
 	CFeatures* set_features(const mxArray* vals[], int nrhs);
 
 	bool get_kernel_matrix(mxArray* retvals[], CFeatures* features);
