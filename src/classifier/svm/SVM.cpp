@@ -183,8 +183,8 @@ REAL* CSVM::test()
 
   for (INT i=0; i<num_test;  i++)
   {
-	  if ( (i% (num_test/10+1))== 0)
-		  CIO::progress(i, 0, num_test);
+	  if ( (i% (num_test/100+1))== 0)
+		  CIO::progress(i, 0, num_test-1);
 
 	  output[i]=classify_example(i);
   }
@@ -216,7 +216,7 @@ CLabels* CSVM::classify(CLabels* result)
 		for (INT vec=0; vec<num_vectors; vec++)
 		{
 			if ( (vec% (num_vectors/10+1))== 0)
-				CIO::progress(vec, 0, num_vectors);
+				CIO::progress(vec, 0, num_vectors-1);
 
 			result->set_label(vec, classify_example(vec));
 		}

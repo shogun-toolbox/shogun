@@ -179,8 +179,8 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
   virtual void remove_lhs() ;
   virtual void remove_rhs() ;
 
-  REAL compute_by_tree_helper(INT* vec, INT seq_pos, INT tree_pos, INT weight_pos) ;
-  void compute_by_tree_helper(INT* vec, INT seq_pos, INT tree_pos, INT weight_pos,
+  REAL compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos) ;
+  void compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos,
 							  REAL* LevelContrib, REAL factor) ;
   
  protected:
@@ -213,8 +213,9 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
 };
 
 /* computes the simple kernel between position seq_pos and tree tree_pos */
-inline REAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, INT seq_pos, INT tree_pos,
-																	   INT weight_pos)
+inline REAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, INT len_, INT seq_pos, 
+																	  INT tree_pos,
+																	  INT weight_pos)
 {
 	REAL sum=0 ;
 
@@ -226,7 +227,7 @@ inline REAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 
 	if (length==0) // weights is a vector (1 x degree)
 	{
-		for (INT j=0; j<degree; j++)
+		for (INT j=0; (j<degree) && (seq_pos+j<len_); j++)
 		{
 			if ((!tree->has_floats) && (tree->childs[vec[seq_pos+j]]!=NULL))
 			{
@@ -243,7 +244,7 @@ inline REAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 	}
 	else // weights is a matrix (len x degree)
 	{
-		for (INT j=0; j<degree; j++)
+		for (INT j=0; (j<degree) && (seq_pos+j<len_); j++)
 		{
 			if ((!tree->has_floats) && (tree->childs[vec[seq_pos+j]]!=NULL))
 			{
@@ -266,7 +267,8 @@ inline REAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 } ;
 
 /* computes the simple kernel between position seq_pos and tree tree_pos */
-inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, INT seq_pos, INT tree_pos, 
+inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, INT len_,
+																	  INT seq_pos, INT tree_pos, 
 																	  INT weight_pos, 
 																	  REAL* LevelContrib, REAL factor) 
 {
@@ -282,7 +284,7 @@ inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 			return ;
 		if (length==0) // with position_weigths, weights is a vector (1 x degree)
 		{
-			for (INT j=0; j<degree; j++)
+			for (INT j=0; (j<degree) && (seq_pos+j<len_); j++)
 			{
 				if ((!tree->has_floats) && (tree->childs[vec[seq_pos+j]]!=NULL))
 				{
@@ -299,7 +301,7 @@ inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 		} 
 		else // with position_weigths, weights is a matrix (len x degree)
 		{
-			for (INT j=0; j<degree; j++)
+			for (INT j=0; (j<degree) && (seq_pos+j<len_); j++)
 			{
 				if ((!tree->has_floats) && (tree->childs[vec[seq_pos+j]]!=NULL))
 				{
@@ -317,7 +319,7 @@ inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 	}
 	else if (length==0) // no position_weigths, weights is a vector (1 x degree)
 	{
-		for (INT j=0; j<degree; j++)
+		for (INT j=0; (j<degree) && (seq_pos+j<len_); j++)
 		{
 			if ((!tree->has_floats) && (tree->childs[vec[seq_pos+j]]!=NULL))
 			{
@@ -334,7 +336,7 @@ inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 	} 
 	else // no position_weigths, weights is a matrix (len x degree)
 	{
-		for (INT j=0; j<degree; j++)
+		for (INT j=0; (j<degree) && (seq_pos+j<len_); j++)
 		{
 			if ((!tree->has_floats) && (tree->childs[vec[seq_pos+j]]!=NULL))
 			{

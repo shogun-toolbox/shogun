@@ -80,7 +80,7 @@ void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, REAL* ret)
 			svm_value[1]+=dict_weights[wordstr[i]+num_words] ;
 			svm_value[2]+=dict_weights[wordstr[i]+num_words*2] ;
 			svm_value[3]+=dict_weights[wordstr[i]+num_words*3] ;
-			//fprintf(stderr,"svm_value=%1.2f word
+
 			word_used[wordstr[i]]=true ;
 			num_unique_words++ ;
 		}

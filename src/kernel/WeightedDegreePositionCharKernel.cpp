@@ -590,12 +590,12 @@ REAL CWeightedDegreePositionCharKernel::compute_without_mismatch_matrix(CHAR* av
 		sum1[i]=0 ;
 	
 	// no shift
-	for (INT i=0; i<alen-degree; i++)
+	for (INT i=0; i<alen; i++)
 	{
 		if ((position_weights!=NULL) && (position_weights[i]==0.0))
 			continue ;
 		REAL sumi = 0.0 ;
-		for (INT j=0; j<degree; j++)
+		for (INT j=0; (j<degree) && (i+j<alen); j++)
 		{
 			if (avec[i+j]!=bvec[i+j])
 				break ;
@@ -709,11 +709,11 @@ void CWeightedDegreePositionCharKernel::add_example_to_tree(INT idx, REAL alpha)
 		vec[i]=0 ;
 	} ;
 		
-	for (INT i=0; i<len-degree; i++)
+	for (INT i=0; i<len; i++)
 	{
 		struct SuffixTree *tree = trees[i] ;
 		
-		for (INT j=0; j<degree; j++)
+		for (INT j=0; (j<degree) && (i+j<len); j++)
 		{
 			if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 			{
@@ -781,16 +781,16 @@ REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx)
 		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
 		vec[i]=0 ;
 	} ;
-
+	
 	REAL sum = 0 ;
-	for (INT i=0; i<len-degree; i++)
-		sum += compute_by_tree_helper(vec, i, i, i) ;
+	for (INT i=0; i<len; i++)
+		sum += compute_by_tree_helper(vec, len, i, i, i) ;
 
-	for (INT i=0; i<len-degree; i++)
-		for (INT k=1; (k<=shift[i]) && (i<len-degree-k); k++)
+	for (INT i=0; i<len; i++)
+		for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
 		{
-			sum+=compute_by_tree_helper(vec, i, i+k, i)/(2*k) ;
-			sum+=compute_by_tree_helper(vec, i+k, i, i)/(2*k) ;
+			sum+=compute_by_tree_helper(vec, len, i, i+k, i)/(2*k) ;
+			sum+=compute_by_tree_helper(vec, len, i+k, i, i)/(2*k) ;
 		}
 	
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
@@ -828,14 +828,14 @@ void CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, REAL* LevelCont
 	if (use_normalization)
 		factor = 1.0/sqrtdiag_rhs[idx] ;
 
-	for (INT i=0; i<len-degree; i++)
-		compute_by_tree_helper(vec, i, i, i, LevelContrib, factor) ;
+	for (INT i=0; i<len; i++)
+		compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor) ;
 	
-	for (INT i=0; i<len-degree; i++)
-		for (INT k=1; (k<=shift[i]) && (i<len-degree-k); k++)
+	for (INT i=0; i<len; i++)
+		for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
 		{
-			compute_by_tree_helper(vec, i, i+k, i, LevelContrib, factor/(2*k)) ;
-			compute_by_tree_helper(vec, i+k, i, i, LevelContrib, factor/(2*k)) ;
+			compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, factor/(2*k)) ;
+			compute_by_tree_helper(vec, len, i+k, i, i, LevelContrib, factor/(2*k)) ;
 		}
 	
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
@@ -873,7 +873,7 @@ REAL *CWeightedDegreePositionCharKernel::compute_abs_weights(int &len)
 		sum[i]=0 ;
 	len=seq_length ;
 	
-	for (INT i=0; i<seq_length-degree; i++)
+	for (INT i=0; i<seq_length; i++)
 	{
 		struct SuffixTree *tree = trees[i] ;
 		assert(tree!=NULL) ;
