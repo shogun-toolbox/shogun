@@ -97,6 +97,7 @@ static const char* N_ONE_CLASS_HMM_TEST=		"one_class_hmm_test";
 static const char* N_ONE_CLASS_LINEAR_HMM_TEST=		"one_class_linear_hmm_test";
 static const char* N_HMM_TEST=				"hmm_test";
 static const char* N_LINEAR_HMM_TEST=			"linear_hmm_test";
+static const char* N_SET_ORDER=			"set_order";
 
 clock_t current_time;
 
@@ -239,6 +240,7 @@ static void help()
    CIO::message("%s position state\t- sets the state which has to be passed at a certain position\n",N_FIX_POS_STATE);
 #endif
    CIO::message("%s <max_dim>\t - set maximum number of patterns\n",N_SET_MAX_DIM);
+   CIO::message("%s <ORDER>\t - set order of linear HMMs\n",N_SET_ORDER);
    CIO::message("\n[TRAIN]\n");
    CIO::message("%s <filename> [<width> <upto>]\t\t- obtains new linear model from file\n",N_LINEAR_TRAIN);
    CIO::message("%s <filename> [<width> <upto>]\t\t- computes likelihood for linear model from file\n",N_LINEAR_LIKELIHOOD);
@@ -1266,7 +1268,7 @@ static bool prompt(FILE* infile=stdin)
 	    if (WIDTH >0 && UPTO >0)
 	    {	  
 		alphabet= DNA;
-		ORDER=1;
+		//ORDER=1; //obsoleted by set_order
 		M=4;
 
 		CObservation* obs=new CObservation(TRAIN, alphabet, 8*sizeof(T_OBSERVATIONS), M, ORDER);
@@ -2230,6 +2232,15 @@ static bool prompt(FILE* infile=stdin)
 	else
 		printf("current setting: C=%e\n", C);
     } 
+    else if (!strncmp(input, N_SET_ORDER, strlen(N_SET_ORDER)))
+	{
+		for (i=strlen(N_SET_ORDER); isspace(input[i]); i++);
+		
+		if (sscanf(&input[i], "%d", &ORDER)==1)
+			CIO::message("setting ORDER to %d\n", ORDER);
+		else
+			CIO::message("current ORDER is set to %d, see help for parameters.\n", ORDER);
+	}
     else
 	printf("unrecognized command. type help for options\n");
 
