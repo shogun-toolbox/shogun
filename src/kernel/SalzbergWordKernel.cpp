@@ -159,7 +159,7 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 						REAL theta_n = 1/estimate->log_derivative_neg_obsolete(vec[j], j) ;
 						REAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
 						
-						variance[idx] += math.sq(value-mean[idx])/num_vectors;
+						variance[idx] += CMath::sq(value-mean[idx])/num_vectors;
 					}
 				}
 				

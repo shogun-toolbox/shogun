@@ -191,7 +191,7 @@ template <class ST> class CStringFeatures: public CFeatures
 				features[lines].string=new ST[columns];
 				assert(features[lines].string);
 
-				max_string_length=math.max(max_string_length,columns);
+				max_string_length=CMath::max(max_string_length,columns);
 
 				for (INT i=0; i<columns; i++)
 					features[lines].string[i]= ((ST) p[i]);
@@ -363,7 +363,7 @@ inline bool CStringFeatures<WORD>::obtain_from_char_features(CStringFeatures<CHA
 		for (INT j=0; j<len; j++)
 		{
 			str[j]=(WORD) cf.remap(sf->get_feature(i,j));
-			max_val=math.max(str[j],max_val);
+			max_val=CMath::max((INT) str[j],max_val);
 		}
 	}
 

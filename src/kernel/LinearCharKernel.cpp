@@ -1,11 +1,11 @@
 #include "lib/common.h"
+#include "lib/Mathmatics.h"
 #include "kernel/LinearCharKernel.h"
 #include "kernel/CharKernel.h"
 #include "features/CharFeatures.h"
 #include "lib/io.h"
 
 #include <assert.h>
-#include <math.h>
 
 CLinearCharKernel::CLinearCharKernel(LONG size)
   : CCharKernel(size),scale(1.0),normal(NULL)
@@ -24,7 +24,7 @@ bool CLinearCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	if (do_init)
 		init_rescale() ;
 
-	CIO::message(M_INFO, "rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
+	CIO::message(M_INFO, "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
 
 	return true;
 }
@@ -38,7 +38,7 @@ void CLinearCharKernel::init_rescale()
 
 	if ( sum > (pow((double) 2, (double) 8*sizeof(LONG))) )
 		CIO::message(M_ERROR, "the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
-	scale=sum/math.min(lhs->get_num_vectors(), rhs->get_num_vectors());
+	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
 }
 
 void CLinearCharKernel::cleanup()

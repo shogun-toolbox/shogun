@@ -400,7 +400,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
     i=0;
     for(jj=0;(j=working2dnum[jj])>=0;jj++) { /* clear working set */
       if((chosen[j]>=(learn_parm->svm_maxqpsize/
-		      math.min(learn_parm->svm_maxqpsize,
+		      CMath::min(learn_parm->svm_maxqpsize,
 			   learn_parm->svm_newvarsinqp))) 
 	 || (inconsistent[j])
 	 || (j == heldout)) {
@@ -454,12 +454,12 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		if(iteration % 101)
 		{
 			already_chosen=0;
-			if(math.min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4) 
+			if(CMath::min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4) 
 			{
 				/* select part of the working set from cache */
 				already_chosen=select_next_qp_subproblem_grad(
 						label,a,lin,c,totdoc,
-						(long)(math.min(learn_parm->svm_maxqpsize-choosenum,
+						(long)(CMath::min(learn_parm->svm_maxqpsize-choosenum,
 									learn_parm->svm_newvarsinqp)/2),
 						inconsistent,active2dnum,
 						working2dnum,selcrit,selexam,1,
@@ -468,7 +468,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 			}
 			choosenum+=select_next_qp_subproblem_grad(
 					label,a,lin,c,totdoc,
-					math.min(learn_parm->svm_maxqpsize-choosenum,
+					CMath::min(learn_parm->svm_maxqpsize-choosenum,
 						learn_parm->svm_newvarsinqp-already_chosen),
 					inconsistent,active2dnum,
 					working2dnum,selcrit,selexam,0,key,
@@ -479,7 +479,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 				  inaccuracies in the core qp-solver */
 			choosenum+=select_next_qp_subproblem_rand(
 					label,a,lin,c,totdoc,
-					math.min(learn_parm->svm_maxqpsize-choosenum,
+					CMath::min(learn_parm->svm_maxqpsize-choosenum,
 						learn_parm->svm_newvarsinqp),
 					inconsistent,active2dnum,
 					working2dnum,selcrit,selexam,key,
@@ -591,12 +591,12 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	if (((iteration % 10) == 0) && (!noshrink))
 	{
       activenum=shrink_problem(shrink_state,active2dnum,last_suboptimal_at,iteration,totdoc,
-			       math.max((LONG)(activenum/10),
-				    math.max((LONG)(totdoc/500),(LONG) 100)),
+			       CMath::max((LONG)(activenum/10),
+				    CMath::max((LONG)(totdoc/500),(LONG) 100)),
 			       a,inconsistent);
       inactivenum=totdoc-activenum;
-      if( (supvecnum>get_kernel()->get_max_elems_cache()) && ((get_kernel()->get_activenum_cache()-activenum)>math.max((LONG)(activenum/10),(LONG) 500))) {
-	get_kernel()->kernel_cache_shrink(totdoc, math.min((LONG) (get_kernel()->get_activenum_cache()-activenum),
+      if( (supvecnum>get_kernel()->get_max_elems_cache()) && ((get_kernel()->get_activenum_cache()-activenum)>CMath::max((LONG)(activenum/10),(LONG) 500))) {
+	get_kernel()->kernel_cache_shrink(totdoc, CMath::min((LONG) (get_kernel()->get_activenum_cache()-activenum),
 				 (LONG) (get_kernel()->get_activenum_cache()-supvecnum)),
 			    shrink_state->active); 
       }

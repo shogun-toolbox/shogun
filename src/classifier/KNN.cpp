@@ -26,8 +26,8 @@ bool CKNN::train()
 	int i;
 	for (i=1; i<num_train_labels; i++)
 	{
-		max_class=math.max(max_class, train_labels[i]);
-		min_class=math.min(min_class, train_labels[i]);
+		max_class=CMath::max(max_class, train_labels[i]);
+		min_class=CMath::min(min_class, train_labels[i]);
 	}
 
 	for (i=0; i<num_train_labels; i++)
@@ -78,7 +78,7 @@ REAL* CKNN::test()
 
 		//sort the distance vector for test example j to all train examples
 		//classes[1..k] then holds the classes for minimum distance
-		math.qsort(dists, train_lab, num_train_labels);
+		CMath::qsort(dists, train_lab, num_train_labels);
 
 		//compute histogram of class outputs of the first k nearest neighbours
 		for (j=0; j<num_classes; j++)

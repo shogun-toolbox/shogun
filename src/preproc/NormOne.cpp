@@ -1,8 +1,8 @@
 #include "NormOne.h"
 #include "RealPreProc.h"
+#include "lib/Mathmatics.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
-#include <math.h>
 
 CNormOne::CNormOne()
   : CRealPreProc("NormOne", "NRM1") 

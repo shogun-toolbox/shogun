@@ -21,8 +21,8 @@
 #include "classifier/svm/SVM.h"
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/Mathmatics.h"
 
-#include <math.h>
 
 LONG verbosity=1;
 

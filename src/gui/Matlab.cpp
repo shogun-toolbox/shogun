@@ -593,7 +593,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				BYTE* bstring = new BYTE[sl] ;
 				for (UINT i=0; i<sl; i++)
 					bstring[i] = string[i] ;
-				UINT res = math.crc32(bstring, sl) ;
+				UINT res = CMath::crc32(bstring, sl) ;
 				plhs[0] = mxCreateDoubleMatrix(1, 1, mxREAL);
 				REAL * p=mxGetPr(plhs[0]) ;
 				*p = res ;

@@ -75,8 +75,8 @@ REAL CHistogram::get_log_likelihood_example(INT num_example)
 
 REAL CHistogram::get_log_derivative(INT num_example, INT param_num)
 {
-	if (hist[param_num] < math.ALMOST_NEG_INFTY)
-		return -math.INFTY;
+	if (hist[param_num] < CMath::ALMOST_NEG_INFTY)
+		return -CMath::INFTY;
 	else
 	{
 		assert(features);
@@ -102,7 +102,7 @@ REAL CHistogram::get_log_derivative(INT num_example, INT param_num)
 		if (num_occurences>0)
 			deriv+=log(num_occurences)-hist[param_num];
 		else
-			deriv=-math.INFTY;
+			deriv=-CMath::INFTY;
 
 		((CWordFeatures*) features)->free_feature_vector(vector, len, to_free);
 

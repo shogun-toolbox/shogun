@@ -21,16 +21,17 @@
 #include "lib/common.h"
 #include "classifier/svm/pr_loqo.h"
 #include "lib/io.h"
+#include "lib/Mathmatics.h"
 
 #include <math.h>
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-#define	max(A, B)	((A) > (B) ? (A) : (B))
-#define	min(A, B)	((A) < (B) ? (A) : (B))
-#define sqr(A)          ((A) * (A))
-#define	ABS(A)  	((A) > 0 ? (A) : (-(A)))
+//#define	max(A, B)	((A) > (B) ? (A) : (B))
+//#define	min(A, B)	((A) < (B) ? (A) : (B))
+//#define sqr(A)          ((A) * (A))
+//#define	ABS(A)  	((A) > 0 ? (A) : (-(A)))
 
 #define PREDICTOR 1
 #define CORRECTOR 2
@@ -355,8 +356,8 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
   if (restart == 1) {
 				/* x, y already preset */
     for (i=0; i<n; i++) {	/* compute g, t for primal feasibility */
-      g[i] = max(ABS(x[i] - l[i]), bound);
-      t[i] = max(ABS(u[i] - x[i]), bound); 
+      g[i] = CMath::max(CMath::abs(x[i] - l[i]), bound);
+      t[i] = CMath::max(CMath::abs(u[i] - x[i]), bound); 
     }
 
     matrix_vector(n, h_x, x, h_dot_x); /* h_dot_x = h_x * x */
@@ -395,10 +396,10 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
     
     /* initialize the other variables */
     for (i=0; i<n; i++) {
-      g[i] = max(ABS(x[i] - l[i]), bound);
-      z[i] = max(ABS(x[i]), bound);
-      t[i] = max(ABS(u[i] - x[i]), bound); 
-      s[i] = max(ABS(x[i]), bound); 
+      g[i] = CMath::max(CMath::abs(x[i] - l[i]), bound);
+      z[i] = CMath::max(CMath::abs(x[i]), bound);
+      t[i] = CMath::max(CMath::abs(u[i] - x[i]), bound); 
+      s[i] = CMath::max(CMath::abs(x[i]), bound); 
     }
   }
 
@@ -448,12 +449,12 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
     
     for (i=0; i<n; i++) {
       x_h_x += h_dot_x[i] * x[i];
-      primal_inf += sqr(tau[i]);
-      primal_inf += sqr(nu[i]);
-      dual_inf += sqr(sigma[i]);
+      primal_inf += CMath::sq(tau[i]);
+      primal_inf += CMath::sq(nu[i]);
+      dual_inf += CMath::sq(sigma[i]);
     }
     for (i=0; i<m; i++) 
-      primal_inf += sqr(rho[i]);
+      primal_inf += CMath::sq(rho[i]);
     primal_inf = sqrt(primal_inf)/b_plus_1;
     dual_inf = sqrt(dual_inf)/c_plus_1;
 
@@ -466,9 +467,9 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
     for (i=0; i<m; i++)
       dual_obj += b[i] * y[i];
 
-    sigfig = log10(ABS(primal_obj) + 1) -
-             log10(ABS(primal_obj - dual_obj));
-    sigfig = max(sigfig, 0);
+    sigfig = log10(CMath::abs(primal_obj) + 1) -
+             log10(CMath::abs(primal_obj - dual_obj));
+    sigfig = CMath::max(sigfig, 0.0);
 		   
     /* the diagnostics - after we computed our results we will
        analyze them */
@@ -478,8 +479,8 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
     if (primal_inf > 10e100)   status = PRIMAL_INFEASIBLE;
     if (dual_inf > 10e100)     status = DUAL_INFEASIBLE;
     if ((primal_inf > 10e100) & (dual_inf > 10e100)) status = PRIMAL_AND_DUAL_INFEASIBLE;
-    if (ABS(primal_obj) > 10e100) status = PRIMAL_UNBOUNDED;
-    if (ABS(dual_obj) > 10e100) status = DUAL_UNBOUNDED;
+    if (CMath::abs(primal_obj) > 10e100) status = PRIMAL_UNBOUNDED;
+    if (CMath::abs(dual_obj) > 10e100) status = DUAL_UNBOUNDED;
 
     /* write some nice routine to enforce the time limit if you
        _really_ want, however it's quite useless as you can compute
@@ -563,10 +564,10 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
       
       alfa = -1;
       for (i=0; i<n; i++) {
-	alfa = min(alfa, delta_g[i]/g[i]);
-	alfa = min(alfa, delta_t[i]/t[i]);
-	alfa = min(alfa, delta_s[i]/s[i]);
-	alfa = min(alfa, delta_z[i]/z[i]);
+	alfa = CMath::min(alfa, delta_g[i]/g[i]);
+	alfa = CMath::min(alfa, delta_t[i]/t[i]);
+	alfa = CMath::min(alfa, delta_s[i]/s[i]);
+	alfa = CMath::min(alfa, delta_z[i]/z[i]);
       }
       alfa = (margin - 1) / alfa;
       
@@ -574,7 +575,7 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
       for (i=0, mu=0; i<n; i++)
 	mu += z[i] * g[i] + s[i] * t[i];
       mu = mu / (2*n);
-      mu = mu * sqr((alfa - 1) / (alfa + 10));
+      mu = mu * CMath::sq((alfa - 1) / (alfa + 10));
       
       for (i=0; i<n; i++) {
 	x[i] += alfa * delta_x[i];

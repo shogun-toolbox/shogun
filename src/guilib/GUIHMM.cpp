@@ -116,7 +116,7 @@ CStringFeatures<WORD>* csf = ((CStringFeatures<WORD>*) (gui->guifeatures.get_tra
 			working->set_observations((CStringFeatures<WORD>*) gui->guifeatures.get_train_features());
 			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
 
-			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
+			double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
 
 			while (!converge(prob,prob_train))
 			{
@@ -180,7 +180,7 @@ bool CGUIHMM::baum_welch_trans_train(CHAR* param)
 	  working->set_observations((CStringFeatures<WORD>*) gui->guifeatures.get_train_features());
 	  CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
 	  
-	  double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
+	  double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
 	  
 	  while (!converge(prob,prob_train))
 	    {
@@ -224,7 +224,7 @@ bool CGUIHMM::baum_welch_train_defined(CHAR* param)
 		{
 			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
 
-			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
+			double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
 
 			while (!converge(prob,prob_train))
 			{
@@ -284,7 +284,7 @@ bool CGUIHMM::viterbi_train(CHAR* param)
 		{
 			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
 
-			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
+			double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
 
 			while (!converge(prob,prob_train))
 			{
@@ -345,7 +345,7 @@ bool CGUIHMM::viterbi_train_defined(CHAR* param)
 		{
 			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
 
-			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
+			double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
 
 			while (!converge(prob,prob_train))
 			{
@@ -1295,7 +1295,7 @@ bool CGUIHMM::relative_entropy(CHAR* param)
 					q[j]=neg->get_b(i,j);
 				}
 
-				entropy[i]=math.relative_entropy(p, q, pos->get_M());
+				entropy[i]=CMath::relative_entropy(p, q, pos->get_M());
 				CIO::message(M_MESSAGEONLY, "%f ", entropy[i]);
 			}
 			CIO::message(M_MESSAGEONLY, "\n");
@@ -1325,7 +1325,7 @@ bool CGUIHMM::entropy(CHAR* param)
 				p[j]=pos->get_b(i,j);
 			}
 
-			entropy[i]=math.entropy(p, pos->get_M());
+			entropy[i]=CMath::entropy(p, pos->get_M());
 			CIO::message(M_MESSAGEONLY, "%f ", entropy[i]);
 		}
 		CIO::message(M_MESSAGEONLY, "\n");

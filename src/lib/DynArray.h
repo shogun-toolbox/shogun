@@ -101,7 +101,7 @@ public:
 		{
 			num_elements=new_num_elements;
 			array=p;
-			memset(array[math.min(new_num_elements, num_elements)], 0, math.abs(new_num_elements-num_elements), sizeof(T));
+			memset(array[CMath::min(new_num_elements, num_elements)], 0, CMath::abs(new_num_elements-num_elements), sizeof(T));
 			return true;
 		}
 		else

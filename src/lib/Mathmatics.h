@@ -46,54 +46,23 @@ public:
 	///return the minimum of two integers
 	//
 	template <class T>
-	static inline T min(T a, T b);
-
-	///return the maximum of two integers
-	inline INT max(INT a, INT b) 
-	{
-		return ((a)>=(b))?(a):(b);
-	}
-
-	///return the maximum of two integers
-	inline INT abs(INT a)
-	{
-		return ((a)>=(0))?(a):(-a);
-	}
-
-	///return the minimum of two integers
-	static inline LONG min(LONG a, LONG b) 
+	static inline T min(T a, T b)
 	{
 		return ((a)<=(b))?(a):(b);
 	}
 
 	///return the maximum of two integers
-	inline LONG max(LONG a, LONG b) 
+	template <class T>
+	static inline T max(T a, T b) 
 	{
 		return ((a)>=(b))?(a):(b);
 	}
 
 	///return the maximum of two integers
-	inline LONG abs(LONG a)
+	template <class T>
+	static inline T abs(T a)
 	{
 		return ((a)>=(0))?(a):(-a);
-	}
-
-	///return the minimum of two floats
-	static inline REAL min(REAL a, REAL b) 
-	{
-		return ((a)<=(b))?(a):(b);
-	}
-
-	///return the maximum of two floats
-	inline REAL max(REAL a, REAL b) 
-	{
-		return ((a)>=(b))?(a):(b);
-	}
-
-	///return the absolute value of two floats
-	inline REAL abs(REAL a)
-	{
-		return (a>=0)?(a):(-a);
 	}
 	//@}
 
@@ -101,84 +70,71 @@ public:
 	//@{
 
 	/// crc32
-	UINT crc32(BYTE *data, INT len);
+	static UINT crc32(BYTE *data, INT len);
 
-	inline REAL round(REAL d)
+	static inline REAL round(REAL d)
 	{
 		return floor(d+0.5);
 	}
 
-	/// signum of int a 
-	inline INT sign(INT a)
-	  {
-	      if (a==0)
-		  return 0;
-	      else return (a<0) ? -1 : +1;
-	  }
-
-	/// signum of float a 
-	inline REAL sign(REAL a)
-	  {
-	      if (a==0)
-		  return 0;
-	      else return (a<0) ? -1 : +1;
-	  }
+	/// signum of type T variable a 
+	template <class T>
+	static inline REAL sign(REAL a)
+	{
+		if (a==0)
+			return 0;
+		else return (a<0) ? (-1) : (+1);
+	}
 
 	/// swap floats a and b
 	template <class T>
 	static inline void swap(T & a,T &b)
-	  {
-	    T c=a ;
-	    a=b; b=c ;
-	  }
+	{
+		T c=a ;
+		a=b; b=c ;
+	}
 
 	/// x^2
-	inline REAL sq(REAL x)
+	template <class T>
+	static inline T sq(T x)
 	{
 		return x*x;
 	}
 
-	inline LONG factorial(INT n)
-		{
-			LONG res=1 ;
-			for (int i=2; i<=n; i++)
-				res*=i ;
-			return res ;
-		} ;
+	static inline LONG factorial(INT n)
+	{
+		LONG res=1 ;
+		for (int i=2; i<=n; i++)
+			res*=i ;
+		return res ;
+	}
 
-	inline LONG nchoosek(INT n, INT k)
-		{
-			long res=1 ;
-			
-			for (INT i=n-k+1; i<=n; i++)
-				res*=i ;
-			
-			return res/factorial(k) ;
-		} ;
-	
-	
-	 
+	static inline LONG nchoosek(INT n, INT k)
+	{
+		long res=1 ;
+
+		for (INT i=n-k+1; i<=n; i++)
+			res*=i ;
+
+		return res/factorial(k) ;
+	}
 
 	/** performs a bubblesort on a given matrix a.
 	 * it is sorted from in ascending order from top to bottom
 	 * and left to right */
-	void sort(INT *a, INT cols, INT sort_col=0) ;
-	void sort(REAL *a, INT*idx, INT N) ;
+	static void sort(INT *a, INT cols, INT sort_col=0) ;
+	static void sort(REAL *a, INT*idx, INT N) ;
 	
 	/** performs a quicksort on an array output of length size
 	 * it is sorted from in ascending order from top to bottom
-	 * and left to right (for REAL) */
-	static void qsort(REAL* output, INT size) ;
-
-	/** performs a quicksort on an array output of length size
-	 * it is sorted from in ascending order from top to bottom
-	 * and left to right (for WORD) */
-	void qsort(WORD* output, INT size) ;
+	 * and left to right (for type T) */
+	template <class T>
+	static void qsort(T* output, INT size) ;
 
 	template <class T>
 	static void qsort(REAL* output, T* index, INT size) ;
 
-	void qsort_backward(REAL* output, INT* index, INT size) ;
+	static void qsort_backward(REAL* output, INT* index, INT size) ;
 
      /* finds the smallest element in output and puts that element as the 
 		first element  */
@@ -190,42 +146,104 @@ public:
 	template <class T>
 	static void nmin(REAL* output, T* index, INT size, INT n);
 
-	/* performs a inplace unique of a WORD vector using quicksort 
+	/* performs a inplace unique of a vector of type T using quicksort 
 	 * returns the new number of elements */
-	INT unique(WORD* output, INT size) 
-		{
-			qsort(output, size) ;
-			INT i,j=0 ;
-			for (i=0; i<size; i++)
-				if (i==0 || output[i]!=output[i-1])
-					output[j++]=output[i] ;
-			return j ;
-		}
+	template <class T>
+	static INT unique(T* output, INT size) 
+	{
+		qsort(output, size) ;
+		INT i,j=0 ;
+		for (i=0; i<size; i++)
+			if (i==0 || output[i]!=output[i-1])
+				output[j++]=output[i] ;
+		return j ;
+	}
+
 	/* finds an element in a sorted array via binary search
      * returns -1 if not found */
-	inline INT fast_find(WORD* output, INT size, WORD elem) ;
+	static inline INT fast_find(WORD* output, INT size, WORD elem)
+	{
+		INT start=0, end=size-1, middle=size/2 ;
+
+		if (output[start]>elem || output[end]<elem)
+			return -1 ;
+
+		while (1)
+		{
+			if (output[middle]>elem)
+			{
+				end = middle ;
+				middle=start+(end-start)/2 ;
+			} ;
+			if (output[middle]<elem)
+			{
+				start = middle ;
+				middle=start+(end-start)/2 ;
+			}
+			if (output[middle]==elem)
+				return middle ;
+			if (end-start<=1)
+			{
+				if (output[start]==elem)
+					return start ;
+				if (output[end]==elem)
+					return end ;
+				return -1 ;
+			}
+		}
+	}
 
 	/* finds an element in a sorted array via binary search
 	 * that is smaller-equal elem und the next element is larger-equal  */
-	inline INT fast_find_range(REAL* output, INT size, REAL elem) ;
+	static inline INT fast_find_range(REAL* output, INT size, REAL elem)
+	{
+		INT start=0, end=size-2, middle=(size-2)/2 ;
+
+		if (output[start]>elem)
+			return -1 ;
+		if (output[end]<=elem)
+			return size-1 ;
+
+		while (1)
+		{
+			if (output[middle]>elem)
+			{
+				end = middle ;
+				middle=start+(end-start)/2 ;
+			} ;
+			if (output[middle]<elem)
+			{
+				start = middle ;
+				middle=start+(end-start)/2 ;
+			}
+			if (output[middle]<=elem && output[middle+1]>=elem)
+				return middle ;
+			if (end-start<=1)
+			{
+				if (output[start]<=elem && output[start+1]>=elem)
+					return start ;
+				return end ;
+			}
+		}
+	}
 
 	/** calculates ROC into (fp,tp)
 	 * from output and label of length size 
 	 * returns index with smallest error=fp+fn
 	 */
-	INT calcroc(REAL* fp, REAL* tp, REAL* output, INT* label, INT& size, INT& possize, INT& negsize, REAL& tresh, FILE* rocfile);
+	static INT calcroc(REAL* fp, REAL* tp, REAL* output, INT* label, INT& size, INT& possize, INT& negsize, REAL& tresh, FILE* rocfile);
 	//@}
 
 	/// returns the mutual information of p which is given in logspace
 	/// where p,q are given in logspace
-	double mutual_info(REAL* p1, REAL* p2, INT len);
+	static double mutual_info(REAL* p1, REAL* p2, INT len);
 
 	/// returns the relative entropy H(P||Q), 
 	/// where p,q are given in logspace
-	double relative_entropy(REAL* p, REAL* q, INT len);
+	static double relative_entropy(REAL* p, REAL* q, INT len);
 
 	/// returns entropy of p which is given in logspace
-	double entropy(REAL* p, INT len);
+	static double entropy(REAL* p, INT len);
 
 	/**@name summing functions */
 	//@{ 
@@ -234,7 +252,7 @@ public:
 	 * direct summation of exp(operand) is not possible due to numerical problems, i.e. eg. exp(-1000)=0. Therefore
 	 * we do log( exp(a) + exp(b)) = a + log (1 + exp (b-a)) where a is max(p,q) and b min(p,q). */
 #ifdef USE_LOGCACHE
-	inline REAL logarithmic_sum(REAL p, REAL q)
+	static inline REAL logarithmic_sum(REAL p, REAL q)
 	{
 		if (finite(p))
 		{
@@ -266,7 +284,7 @@ public:
 	}
 
 	///init log table of form log(1+exp(x))
-	void init_log_table();
+	static void init_log_table();
 	
 	/// determine INT x for that log(1+exp(-x)) == 0
 	static INT determine_logrange();
@@ -283,7 +301,7 @@ public:
 	    return result;
 	}*/
 
-	inline REAL logarithmic_sum(REAL p, REAL q)
+	static inline REAL logarithmic_sum(REAL p, REAL q)
 	{
 		if (finite(p))
 		{
@@ -318,7 +336,7 @@ public:
 	 * each of the elements to some variable. Instead array neighbours are summed up until one element remains.
 	 * Whilst the number of additions remains the same, the error is only in the order of log(N) instead N.
 	 */
-	inline REAL logarithmic_sum_array(REAL *p, INT len)
+	static inline REAL logarithmic_sum_array(REAL *p, INT len)
 	  {
 	    if (len<=2)
 	      {
@@ -357,75 +375,54 @@ public:
 	//@}
 protected:
 	///table with log-values
-	REAL* logtable;	
+	static REAL* logtable;	
 #endif
 	static CHAR rand_state[256];
 };
 
 
-
-inline INT CMath::fast_find(WORD* output, INT size, WORD elem)
+//implementations of template functions
+template <class T>
+void CMath::qsort(REAL* output, T* index, INT size)
 {
-	INT start=0, end=size-1, middle=size/2 ;
-	
-	if (output[start]>elem || output[end]<elem)
-		return -1 ;
-	
-	while (1)
+	if (size==2)
 	{
-		if (output[middle]>elem)
-		{
-			end = middle ;
-			middle=start+(end-start)/2 ;
-		} ;
-		if (output[middle]<elem)
-		{
-			start = middle ;
-			middle=start+(end-start)/2 ;
+		if (output[0] > output [1]){
+			swap(output[0],output[1]);
+			swap(index[0],index[1]);
 		}
-		if (output[middle]==elem)
-			return middle ;
-		if (end-start<=1)
-		{
-			if (output[start]==elem)
-				return start ;
-			if (output[end]==elem)
-				return end ;
-			return -1 ;
-		}
-	} ;
-}
-
-inline INT CMath::fast_find_range(REAL* output, INT size, REAL elem)
-{
-	INT start=0, end=size-2, middle=(size-2)/2 ;
-	
-	if (output[start]>elem)
-		return -1 ;
-	if (output[end]<=elem)
-		return size-1 ;
-	
-	while (1)
+		
+	}
+	else
 	{
-		if (output[middle]>elem)
+		REAL split=output[(size*rand())/(RAND_MAX+1)];
+		//REAL split=output[size/2];
+		
+		INT left=0;
+		INT right=size-1;
+		
+		while (left<=right)
 		{
-			end = middle ;
-			middle=start+(end-start)/2 ;
-		} ;
-		if (output[middle]<elem)
-		{
-			start = middle ;
-			middle=start+(end-start)/2 ;
+			while (output[left] < split)
+				left++;
+			while (output[right] > split)
+				right--;
+			
+			if (left<=right)
+			{
+				swap(output[left],output[right]);
+				swap(index[left],index[right]);
+				left++;
+				right--;
+			}
 		}
-		if (output[middle]<=elem && output[middle+1]>=elem)
-			return middle ;
-		if (end-start<=1)
-		{
-			if (output[start]<=elem && output[start+1]>=elem)
-				return start ;
-			return end ;
-		}
-	} ;
+		
+		if (right+1> 1)
+			qsort(output,index,right+1);
+		
+		if (size-left> 1)
+			qsort(&output[left],&index[left], size-left);
+	}
 }
 
 template <class T> 
@@ -436,12 +433,6 @@ void CMath::nmin(REAL* output, T* index, INT size, INT n)
 			min(&output[i], &index[i], size-i) ;
 	else
 		qsort(output, index, size) ;
-}
-
-template <class T>
-inline T CMath::min(T a, T b)
-{
-	return ((a)<=(b))?(a):(b);
 }
 
 template <class T>
@@ -461,6 +452,43 @@ void CMath::min(REAL* output, T* index, INT size)
 	swap(index[0], index[min_index]) ;
 }
 
-#endif
+template <class T>
+void CMath::qsort(T* output, INT size)
+{
+	if (size==2)
+	{
+		if (output[0] > output [1])
+			swap(output[0],output[1]);
+	}
+	else
+	{
+		REAL split=output[(size*rand())/(RAND_MAX+1)];
+		//REAL split=output[size/2];
 
-extern CMath math;
+		INT left=0;
+		INT right=size-1;
+
+		while (left<=right)
+		{
+			while (output[left] < split)
+				left++;
+			while (output[right] > split)
+				right--;
+
+			if (left<=right)
+			{
+				swap(output[left],output[right]);
+				left++;
+				right--;
+			}
+		}
+
+		if (right+1> 1)
+			qsort(output,right+1);
+
+		if (size-left> 1)
+			qsort(&output[left],size-left);
+	}
+}
+
+#endif

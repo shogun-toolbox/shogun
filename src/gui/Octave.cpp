@@ -553,7 +553,7 @@ DEFUN_DLD (gf, prhs, nlhs, "genefinder.")
 				for (UINT i=0; i<sl; i++)
 					bstring[i] = string[i];
 
-				UINT res = math.crc32(bstring, sl) ;
+				UINT res = CMath::crc32(bstring, sl) ;
 				plhs(0) = (double) res;
 
 				delete[] bstring;

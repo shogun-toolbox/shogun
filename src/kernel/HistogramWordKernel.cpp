@@ -163,7 +163,7 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			
 			WORD* vec=lhs->get_feature_vector(i, len, freevec);
 			
-			variance[0] += math.sq(estimate->posterior_log_odds_obsolete(vec, len)-mean[0])/num_vectors;
+			variance[0] += CMath::sq(estimate->posterior_log_odds_obsolete(vec, len)-mean[0])/num_vectors;
 			
 			assert(len==lhs->get_num_features());
 			
@@ -179,9 +179,9 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 					}
 					else
 					{
-						variance[idx]             += math.sq(estimate->log_derivative_pos_obsolete(vec[j], j)
+						variance[idx]             += CMath::sq(estimate->log_derivative_pos_obsolete(vec[j], j)
 															 -mean[idx])/num_vectors;
-						variance[idx+num_params1] += math.sq(estimate->log_derivative_neg_obsolete(vec[j], j)
+						variance[idx+num_params1] += CMath::sq(estimate->log_derivative_neg_obsolete(vec[j], j)
 															 -mean[idx+num_params1])/num_vectors;
 					}
 				}

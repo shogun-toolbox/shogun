@@ -1,4 +1,3 @@
-
 #include <math.h>
 #include "distributions/hmm/HMM.h"
 #include "lib/Mathmatics.h"
@@ -121,7 +120,7 @@ inline bool extend_orf(const bool* genestr_stop, INT orf_from, INT orf_to, INT s
 		if (genestr_stop[pos])
 			return false ;
 	
-	last_pos = math.min(pos+3,to-orf_to-3) ;
+	last_pos = CMath::min(pos+3,to-orf_to-3) ;
 
 	return true ;
 }
@@ -169,7 +168,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 					if (max_look_back<default_look_back)
 						max_look_back=default_look_back ;
 	}
-	max_look_back = math.min(genestr_len, max_look_back) ;
+	max_look_back = CMath::min(genestr_len, max_look_back) ;
 	//fprintf(stderr,"use_svm=%i\n", use_svm) ;
 	
 	const INT look_back_buflen = max_look_back*nbest*N ;
@@ -261,7 +260,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 			PTAB(0,i,0)  = 0 ;
 			for (short int k=1; k<nbest; k++)
 			{
-				DELTA(0,i,k)    = -math.INFTY ;
+				DELTA(0,i,k)    = -CMath::INFTY ;
 				PSI(0,i,0)      = 0 ;
 				KTAB(0,i,k)     = 0 ;
 				PTAB(0,i,k)     = 0 ;
@@ -385,7 +384,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 					}
 					else
 					{
-						DELTA(t,j,k)    = -math.INFTY ;
+						DELTA(t,j,k)    = -CMath::INFTY ;
 						PSI(t,j,k)      = 0 ;
 						KTAB(t,j,k)     = 0 ;
 						PTAB(t,j,k)     = 0 ;

@@ -37,7 +37,7 @@ bool CShortFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT
 	for (INT i=0; i<len; i++)
 	{
 		feature_matrix[i]=(SHORT) cf->remap(fm[i]);
-		max_val=math.max(feature_matrix[i],max_val);
+		max_val=CMath::max((INT) feature_matrix[i],max_val);
 	}
 
 	for (INT line=0; line<num_vectors; line++)

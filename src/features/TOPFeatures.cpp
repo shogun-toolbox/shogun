@@ -210,21 +210,21 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 
 	for (i=0; i<hmm->get_N(); i++)
 	{
-		if (hmm->get_p(i)>math.ALMOST_NEG_INFTY)
+		if (hmm->get_p(i)>CMath::ALMOST_NEG_INFTY)
 			hmm_idx->num_p++;
 
-		if (hmm->get_q(i)>math.ALMOST_NEG_INFTY)
+		if (hmm->get_q(i)>CMath::ALMOST_NEG_INFTY)
 			hmm_idx->num_q++;
 
 		for (j=0; j<hmm->get_N(); j++)
 		{
-			if (hmm->get_a(i,j)>math.ALMOST_NEG_INFTY)
+			if (hmm->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
 				hmm_idx->num_a++;
 		}
 
 		for (j=0; j<pos->get_M(); j++)
 		{
-			if (hmm->get_b(i,j)>math.ALMOST_NEG_INFTY)
+			if (hmm->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
 				hmm_idx->num_b++;
 		}
 	}
@@ -265,13 +265,13 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 
 	for (i=0; i<hmm->get_N(); i++)
 	{
-		if (hmm->get_p(i)>math.ALMOST_NEG_INFTY)
+		if (hmm->get_p(i)>CMath::ALMOST_NEG_INFTY)
 		{
 			assert(idx_p < hmm_idx->num_p);
 			hmm_idx->idx_p[idx_p++]=i;
 		}
 		
-		if (hmm->get_q(i)>math.ALMOST_NEG_INFTY)
+		if (hmm->get_q(i)>CMath::ALMOST_NEG_INFTY)
 		{
 			assert(idx_q < hmm_idx->num_q);
 			hmm_idx->idx_q[idx_q++]=i;
@@ -279,7 +279,7 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 
 		for (j=0; j<hmm->get_N(); j++)
 		{
-			if (hmm->get_a(i,j)>math.ALMOST_NEG_INFTY)
+			if (hmm->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
 			{
 				assert(idx_a < hmm_idx->num_a);
 				hmm_idx->idx_a_rows[idx_a]=i;
@@ -289,7 +289,7 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 
 		for (j=0; j<pos->get_M(); j++)
 		{
-			if (hmm->get_b(i,j)>math.ALMOST_NEG_INFTY)
+			if (hmm->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
 			{
 				assert(idx_b < hmm_idx->num_b);
 				hmm_idx->idx_b_rows[idx_b]=i;

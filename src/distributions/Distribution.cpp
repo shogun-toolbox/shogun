@@ -43,7 +43,7 @@ INT CDistribution::get_num_relevant_model_parameters()
 
 	for (INT i=0; i<total_num; i++)
 	{
-		if (get_log_model_parameter(i)>math.ALMOST_NEG_INFTY)
+		if (get_log_model_parameter(i)>CMath::ALMOST_NEG_INFTY)
 			num++;
 	}
 	return num;

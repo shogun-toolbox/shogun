@@ -1,7 +1,7 @@
 #include "SortWordString.h"
 #include "features/Features.h"
 #include "features/StringFeatures.h"
-#include <math.h>
+#include "lib/Mathmatics.h"
 
 CSortWordString::CSortWordString() : CStringPreProc<WORD>("SortWordString", "STWS") 
 {
@@ -50,7 +50,7 @@ bool CSortWordString::apply_to_feature_strings(CFeatures* f)
 		WORD* vec = ((CStringFeatures<WORD>*)f)->get_feature_vector(i, len) ;
 		//CIO::message(M_DEBUG, "sorting string of length %i\n", len) ;
 		
-		math.qsort(vec, len);
+		CMath::qsort(vec, len);
 	}
 	return true ;
 }
@@ -64,7 +64,7 @@ WORD* CSortWordString::apply_to_feature_string(WORD* f, INT& len)
 	for (i=0; i<len; i++)
 		vec[i]=f[i];
 
-	math.qsort(vec, len);
+	CMath::qsort(vec, len);
 
 	return vec;
 }

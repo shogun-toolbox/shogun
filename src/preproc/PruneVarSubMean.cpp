@@ -3,8 +3,8 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
+#include "lib/Mathmatics.h"
 
-#include <math.h>
 #include <assert.h>
 CPruneVarSubMean::CPruneVarSubMean(bool divide)
   : CRealPreProc("PruneVarSubMean","PVSM"), idx(NULL), mean(NULL), std(NULL), num_idx(0), divide_by_std(divide), initialized(false)

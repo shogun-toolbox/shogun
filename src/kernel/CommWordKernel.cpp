@@ -257,7 +257,7 @@ bool CCommWordKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 		((CWordFeatures*) lhs)->free_feature_vector(avec, IDX[i], afree); ;
 	} ;
 	CIO::message(M_DEBUG, "%i words\n", num_words) ;
-	int num_unique_words = math.unique(words, num_words) ;
+	int num_unique_words = CMath::unique(words, num_words) ;
 	CIO::message(M_DEBUG, "%i unique words\n", num_unique_words) ;
 	
 	{ // remove the memory overhead
@@ -292,11 +292,11 @@ bool CCommWordKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 			{
 				if (avec[j]==avec[j-1])
 					continue ;
-				int idx = math.fast_find(words, num_unique_words, avec[j-1]) ;
+				int idx = CMath::fast_find(words, num_unique_words, avec[j-1]) ;
 				assert(idx!=-1) ;
 				word_weights[idx] += weights[i]/sqrtdiag_lhs[IDX[i]] ;
 			}
-			int idx = math.fast_find(words, num_unique_words, avec[alen-1]) ;
+			int idx = CMath::fast_find(words, num_unique_words, avec[alen-1]) ;
 			assert(idx!=-1) ;
 			word_weights[idx] += weights[i]/sqrtdiag_lhs[IDX[i]] ;
 		}
@@ -306,12 +306,12 @@ bool CCommWordKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 			{
 				if (avec[j]==avec[j-1])
 					continue ;
-				int idx = math.fast_find(words, num_unique_words, avec[j-1]) ;
+				int idx = CMath::fast_find(words, num_unique_words, avec[j-1]) ;
 				assert(idx!=-1) ;
 				word_weights[idx] += weights[i]*(j-last_j)/sqrtdiag_lhs[IDX[i]] ;
 				last_j = j ;
 			}
-			int idx = math.fast_find(words, num_unique_words, avec[alen-1]) ;
+			int idx = CMath::fast_find(words, num_unique_words, avec[alen-1]) ;
 			assert(idx!=-1) ;
 			word_weights[idx] += weights[i]*(alen-last_j)/sqrtdiag_lhs[IDX[i]] ;
 		}
@@ -364,11 +364,11 @@ REAL CCommWordKernel::compute_optimized(INT i)
 		{
 			if (avec[j]==avec[j-1])
 				continue ;
-			int idx = math.fast_find(dictionary, dictionary_size, avec[j-1]) ;
+			int idx = CMath::fast_find(dictionary, dictionary_size, avec[j-1]) ;
 			if (idx!=-1)
 				result += dictionary_weights[idx] ;
 		}
-		int idx = math.fast_find(dictionary, dictionary_size, avec[alen-1]) ;
+		int idx = CMath::fast_find(dictionary, dictionary_size, avec[alen-1]) ;
 		if (idx!=-1)
 			result += dictionary_weights[idx] ;
 	}
@@ -378,12 +378,12 @@ REAL CCommWordKernel::compute_optimized(INT i)
 		{
 			if (avec[j]==avec[j-1])
 				continue ;
-			int idx = math.fast_find(dictionary, dictionary_size, avec[j-1]) ;
+			int idx = CMath::fast_find(dictionary, dictionary_size, avec[j-1]) ;
 			if (idx!=-1)
 				result += dictionary_weights[idx]*(j-last_j) ;
 			last_j = j ;
 		}
-		int idx = math.fast_find(dictionary, dictionary_size, avec[alen-1]) ;
+		int idx = CMath::fast_find(dictionary, dictionary_size, avec[alen-1]) ;
 		if (idx!=-1)
 			result += dictionary_weights[idx]*(alen-last_j) ;
 	}

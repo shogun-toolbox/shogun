@@ -2,7 +2,6 @@
 #include "guilib/GUIMath.h"
 #include "lib/io.h"
 
-#include <math.h>
 CGUIMath::CGUIMath(CGUI* g) : gui(g), threshold(0.0)
 {
 }
@@ -24,14 +23,14 @@ void CGUIMath::evaluate_results(REAL* output, INT* label, INT total, FILE* outpu
 	INT possize=0;
 	INT negsize=0;
 	INT size=total;
-	INT pointeven=math.calcroc(fp, tp, output, label, size, possize, negsize, threshold, rocfile);
+	INT pointeven=CMath::calcroc(fp, tp, output, label, size, possize, negsize, threshold, rocfile);
 
 	if (pointeven!=-1)
 	{
 		// rounding necessary due to (although very small) numerical deviations
-		double correct=math.round(possize*tp[pointeven]+(1.0-fp[pointeven])*negsize);
-		double fpo=math.round(fp[pointeven]*negsize);
-		double fne=math.round((1-tp[pointeven])*possize);
+		double correct=CMath::round(possize*tp[pointeven]+(1.0-fp[pointeven])*negsize);
+		double fpo=CMath::round(fp[pointeven]*negsize);
+		double fne=CMath::round((1-tp[pointeven])*possize);
 		CIO::message(M_INFO, "classified:\n");
 		CIO::message(M_INFO, "total: %i pos: %i, neg: %i\n", possize+negsize, possize, negsize);
 		CIO::message(M_INFO, "\tcorrect:%i\n", INT (correct));

@@ -14,7 +14,6 @@
 #include "features/StringFeatures.h"
 #include "distributions/Distribution.h"
 
-#include <math.h>
 #include <stdio.h>
 #include <assert.h>
 
@@ -171,13 +170,13 @@ class CHMM : private CDistribution
 		/// sorts learn_a matrix
 		inline void sort_learn_a()
 		{
-		  math.sort(learn_a,2) ;
+			CMath::sort(learn_a,2) ;
 		}
 		
 		/// sorts learn_b matrix
 		inline void sort_learn_b()
 		{
-		  math.sort(learn_b,2) ;
+			CMath::sort(learn_b,2) ;
 		}
 
 		/**@name read access functions.
@@ -1426,9 +1425,9 @@ public:
 	/// computes log dp(lambda)/d a_ij. 
 	inline REAL model_derivative_a(T_STATES i, T_STATES j, INT dimension)
 	  {
-	    REAL sum=-math.INFTY;
+	    REAL sum=-CMath::INFTY;
 	    for (INT t=0; t<p_observations->get_vector_length(dimension)-1; t++)
-	      sum= math.logarithmic_sum(sum, forward(t, i, dimension) + backward(t+1, j, dimension) + get_b(j, p_observations->get_feature(dimension,t+1)));
+	      sum= CMath::logarithmic_sum(sum, forward(t, i, dimension) + backward(t+1, j, dimension) + get_b(j, p_observations->get_feature(dimension,t+1)));
 	    
 	    return sum;
 	  }
@@ -1436,13 +1435,13 @@ public:
 /// computes log dp(lambda)/d b_ij. 
 inline REAL model_derivative_b(T_STATES i, WORD j, INT dimension)
 {
-	REAL sum=-math.INFTY;
+	REAL sum=-CMath::INFTY;
 	for (INT t=0; t<p_observations->get_vector_length(dimension); t++)
 	{
 		if (p_observations->get_feature(dimension,t)==j)
-			sum= math.logarithmic_sum(sum, forward(t,i,dimension)+backward(t,i,dimension)-get_b(i,p_observations->get_feature(dimension,t)));
+			sum= CMath::logarithmic_sum(sum, forward(t,i,dimension)+backward(t,i,dimension)-get_b(i,p_observations->get_feature(dimension,t)));
 	}
-	//if (sum==-math.INFTY)
+	//if (sum==-CMath::INFTY)
 	// CIO::message("log derivative is -inf: dim=%i, state=%i, obs=%i\n",dimension, i, j) ;
 	return sum;
 } 

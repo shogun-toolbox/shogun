@@ -19,7 +19,6 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CMath math;
 #ifdef USE_LOGCACHE
 //gene/math specific constants
 #ifdef USE_HMMDEBUG
@@ -147,125 +146,6 @@ void CMath::sort(REAL *a, INT* idx, INT N)
 	 
 } 
 
-
-void CMath::qsort(WORD* output, INT size)
-{
-		if (size==2)
-		{
-				if (output[0] > output [1])
-						swap(output[0],output[1]);
-		}
-		else
-		{
-				REAL split=output[(size*rand())/(RAND_MAX+1)];
-				//REAL split=output[size/2];
-
-				INT left=0;
-				INT right=size-1;
-
-				while (left<=right)
-				{
-						while (output[left] < split)
-								left++;
-						while (output[right] > split)
-								right--;
-
-						if (left<=right)
-						{
-								swap(output[left],output[right]);
-								left++;
-								right--;
-						}
-				}
-
-				if (right+1> 1)
-						qsort(output,right+1);
-
-				if (size-left> 1)
-						qsort(&output[left],size-left);
-		}
-}
-
-void CMath::qsort(REAL* output, INT size)
-{
-		if (size==2)
-		{
-				if (output[0] > output [1])
-						CMath::swap(output[0],output[1]);
-		}
-		else
-		{
-				REAL split=output[(size*rand())/(RAND_MAX+1)];
-				//REAL split=output[size/2];
-
-				INT left=0;
-				INT right=size-1;
-
-				while (left<=right)
-				{
-						while (output[left] < split)
-								left++;
-						while (output[right] > split)
-								right--;
-
-						if (left<=right)
-						{
-								swap(output[left],output[right]);
-								left++;
-								right--;
-						}
-				}
-
-				if (right+1> 1)
-						qsort(output,right+1);
-
-				if (size-left> 1)
-						qsort(&output[left],size-left);
-		}
-}
-
-template <class T>
-void CMath::qsort(REAL* output, T* index, INT size)
-{
-	if (size==2)
-	{
-		if (output[0] > output [1]){
-			swap(output[0],output[1]);
-			swap(index[0],index[1]);
-		}
-		
-	}
-	else
-	{
-		REAL split=output[(size*rand())/(RAND_MAX+1)];
-		//REAL split=output[size/2];
-		
-		INT left=0;
-		INT right=size-1;
-		
-		while (left<=right)
-		{
-			while (output[left] < split)
-				left++;
-			while (output[right] > split)
-				right--;
-			
-			if (left<=right)
-			{
-				swap(output[left],output[right]);
-				swap(index[left],index[right]);
-				left++;
-				right--;
-			}
-		}
-		
-		if (right+1> 1)
-			qsort(output,index,right+1);
-		
-		if (size-left> 1)
-			qsort(&output[left],&index[left], size-left);
-	}
-}
 
 void CMath::qsort_backward(REAL* output, INT* index, INT size)
 {

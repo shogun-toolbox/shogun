@@ -1,8 +1,8 @@
 #include "SortWord.h"
 #include "WordPreProc.h"
 #include "features/Features.h"
+#include "lib/Mathmatics.h"
 #include "features/WordFeatures.h"
-#include <math.h>
 
 CSortWord::CSortWord() : CWordPreProc("SortWord", "SRTW") 
 {
@@ -50,7 +50,7 @@ WORD* CSortWord::apply_to_feature_matrix(CFeatures* f)
 	for (i=0; i<num_vec; i++)
 	{
 		WORD* vec=&matrix[i*num_feat];
-		math.qsort(vec, num_feat);
+		CMath::qsort(vec, num_feat);
 	}
 	return matrix;
 }
@@ -65,7 +65,7 @@ WORD* CSortWord::apply_to_feature_vector(WORD* f, INT& len)
 	for (i=0; i<len; i++)
 		vec[i]=f[i];
 
-	math.qsort(vec, len);
+	CMath::qsort(vec, len);
 
 	return vec;
 }

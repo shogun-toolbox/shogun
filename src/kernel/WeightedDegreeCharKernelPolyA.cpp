@@ -70,7 +70,7 @@ INT* CWeightedDegreeCharKernelPolyA::find_site(char* seq, INT len, INT & num)
 	INT buffer[1000] ;
 	num = 0 ;
 	
-	for (INT i=down_stream; i<len-math.max(6,up_stream); i++)
+	for (INT i=down_stream; i<len-CMath::max(6,up_stream); i++)
 		for (INT j=0; j<num_polyA_seqs; j++)
 			if (strncmp(&seq[i], polyA_seqs[j],6)==0 && 
 				((i>=99 && i<105) || (i>140 && i<160)))

@@ -31,7 +31,7 @@ bool CLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	if (do_init)
 		init_rescale() ;
 
-	CIO::message(M_INFO, "rescaling kernel by %g (num:%d)\n",scale, math.min(l->get_num_vectors(), r->get_num_vectors()));
+	CIO::message(M_INFO, "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
 
 	return true;
 }
@@ -43,7 +43,7 @@ void CLinearKernel::init_rescale()
 	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
 			sum+=compute(i, i);
 
-	scale=sum/math.min(lhs->get_num_vectors(), rhs->get_num_vectors());
+	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
 }
 
 void CLinearKernel::cleanup()

@@ -102,7 +102,7 @@ bool CSVMCplex::svm_test(CObservation* test, FILE* outfile, FILE* rocfile)
   int possize=-1;
   int negsize=-1;
   
-  int pointeven=math.calcroc(fp, tp, output, label, number_of_examples, possize, negsize, rocfile);
+  int pointeven=CMath::calcroc(fp, tp, output, label, number_of_examples, possize, negsize, rocfile);
   
   double correct=possize*tp[pointeven]+(1-fp[pointeven])*negsize;
   double fpo=fp[pointeven]*negsize;

@@ -156,7 +156,7 @@ void CFKFeatures::compute_feature_vector(REAL* featurevector, INT num, INT& len)
 	len=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 
 	featurevector[p++] = deriv_a(weight_a, x);
-	double px=math.logarithmic_sum(posx+log(weight_a),negx+log(1-weight_a)) ;
+	double px=CMath::logarithmic_sum(posx+log(weight_a),negx+log(1-weight_a)) ;
 
 	//first do positive model
 	for (i=0; i<pos->get_N(); i++)

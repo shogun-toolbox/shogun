@@ -37,7 +37,7 @@ template<class T> class CCache
 		}
 
 		entry_size=obj_size;
-		nr_cache_lines=math.min(cache_size*1024*1024/obj_size/sizeof(T), num_entries+1);
+		nr_cache_lines=CMath::min((LONG) (cache_size*1024*1024/obj_size/sizeof(T)), num_entries+1);
 
 		CIO::message(M_INFO, "creating %d cache lines (total size: %ld byte)\n", nr_cache_lines, nr_cache_lines*obj_size*sizeof(T));
 		cache_block=new T[obj_size*nr_cache_lines];

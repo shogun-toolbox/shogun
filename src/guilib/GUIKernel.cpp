@@ -636,7 +636,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 					{
 						if (j<i+1)
 						{
-							INT nk=math.nchoosek(i+1, j) ;
+							INT nk=CMath::nchoosek(i+1, j) ;
 							weights[i+j*d]=weights[i]/(nk*pow(3,j)) ;
 						}
 						else
@@ -692,7 +692,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 					{
 						if (j<i+1)
 						{
-							INT nk=math.nchoosek(i+1, j) ;
+							INT nk=CMath::nchoosek(i+1, j) ;
 							weights[i+j*d]=weights[i]/(nk*pow(3,j)) ;
 						}
 						else
@@ -754,7 +754,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 					{
 						if (j<i+1)
 						{
-							INT nk=math.nchoosek(i+1, j);
+							INT nk=CMath::nchoosek(i+1, j);
 							weights[i+j*d]=weights[i]/(nk*pow(3,j));
 						}
 						else
@@ -800,7 +800,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 					{
 						if (j<i+1)
 						{
-							INT nk=math.nchoosek(i+1, j);
+							INT nk=CMath::nchoosek(i+1, j);
 							weights[i+j*d]=weights[i]/(nk*pow(3,j));
 						}
 						else

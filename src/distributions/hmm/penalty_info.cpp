@@ -312,7 +312,7 @@ REAL lookup_penalty(const struct penalty_struct *PEN, INT p_value,
 		return lookup_penalty_svm(PEN, p_value, svm_values) ;
 		
 	if ((p_value<PEN->min_len) || (p_value>PEN->max_len))
-		return -math.INFTY ;
+		return -CMath::INFTY ;
 	
 	if (PEN->cache!=NULL && (p_value>=0) && (p_value<=PEN->max_len))
 	{

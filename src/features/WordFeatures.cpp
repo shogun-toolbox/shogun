@@ -47,7 +47,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alph
 	for (INT i=0; i<len; i++)
 	{
 		feature_matrix[i]=(WORD) cf->remap(fm[i]);
-		max_val=math.max(feature_matrix[i],max_val);
+		max_val=CMath::max((INT) feature_matrix[i],max_val);
 	}
 
 	original_num_symbols=max_val+1;
