@@ -1,11 +1,11 @@
 #include "features/RealFeatures.h"
 
-bool CRealFeatures::load(FILE* dest)
+bool CRealFeatures::load(char* fname)
 {
     return false;
 }
 
-bool CRealFeatures::save(FILE* dest)
+bool CRealFeatures::save(char* fname)
 {
     long i;
 	long len;
@@ -14,6 +14,9 @@ bool CRealFeatures::save(FILE* dest)
 	double* f=get_feature_vector(0, len, free);
 	free_feature_vector(f, 0, free) ;
 
+	FILE* dest=fopen(fname,"w");
+
+	assert(dest);
     unsigned char intlen=sizeof(unsigned int);
     unsigned char doublelen=sizeof(double);
     unsigned int endian=0x12345678;
@@ -48,5 +51,7 @@ bool CRealFeatures::save(FILE* dest)
     assert(num_lab==(long) num_vec);
     assert(fwrite(labels, sizeof(int), num_vec, dest)==num_vec) ;
     
+	if (dest)
+		fclose(dest);
     return true;
 }

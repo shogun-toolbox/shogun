@@ -7,11 +7,27 @@
 
 #include "lib/common.h"
 
+/// A file consists of a header
+/// then an alternation of a type header and data
+///
+/// or just raw data (simplefile=true)
+///
+/// the more complex stuff is currently not implemented
+///
 class CFile
 {
 public:
-	CFile(char* fname, char rw, EType type, bool autodetection=false);
+	///Open a file of name fname with mode rw (r or w)
+	/// - type specifies the datatype used in the file (F_INT,...)
+	/// - fourcc : in the case fourcc is 0, type will be ignored
+	/// and the file is treated as if it has a header/[typeheader,data]+
+	/// else a the files header will be checked to contain the specified
+	/// fourcc (e.g. 'RFEA')
+	CFile(char* fname, char rw, EType type, char fourcc[4]=NULL);
 	~CFile();
+
+	int parse_first_header(EType &type);
+	int parse_next_header(EType &type);
 
 	INT* load_int_data(int num, INT* target);
 	REAL* load_real_data(int num, REAL* target);
@@ -41,6 +57,8 @@ protected:
 	bool status;
 	char task;
 	char* fname;
-	EType filetype;
+	EType expected_type;
+	int num_header;
+	char fourcc[4];
 };
 #endif

@@ -51,7 +51,7 @@ public:
 
 				if (target)
 				{
-					status=(fread((void*) target, sizeof(T), num, file) == num);
+					status=(fwrite((void*) target, sizeof(T), num, file) == num);
 				}
 			}
 		}

@@ -270,8 +270,7 @@ bool CGUIFeatures::save(char* param)
 
 	if (*f_ptr)
 	{
-	    FILE* file=fopen(filename, "w");
-	    if ((!file) || (!(*f_ptr)->save(file)))
+	    if ((filename) || (!(*f_ptr)->save(filename)))
 		CIO::message("writing to file %s failed!\n", filename);
 	    else
 	    {
@@ -279,8 +278,6 @@ bool CGUIFeatures::save(char* param)
 		result=true;
 	    }
 
-	    if (file)
-		fclose(file);
 	} else
 	    CIO::message("set features first\n");
 

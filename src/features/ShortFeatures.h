@@ -16,7 +16,7 @@ class CShortFeatures: public CSimpleFeatures<SHORT>
   }
   virtual EType get_feature_type() { return F_SHORT; }
 
-  virtual bool load(FILE* dest) { return false ; }
-  virtual bool save(FILE* dest) { return false ; }
+  virtual bool load(char* fname);
+  virtual bool save(char* fname);
 };
 #endif

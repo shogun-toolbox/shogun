@@ -16,7 +16,7 @@ class CRealFeatures: public CSimpleFeatures<REAL>
   }
   virtual EType get_feature_type() { return F_REAL; }
 
-  virtual bool load(FILE* dest);
-  virtual bool save(FILE* dest);
+  virtual bool load(char* fname);
+  virtual bool save(char* fname);
 };
 #endif

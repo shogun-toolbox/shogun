@@ -62,8 +62,8 @@ public:
 
 	virtual CFeatures* duplicate() const=0 ;
 
-	virtual bool load(FILE* dest)=0;
-	virtual bool save(FILE* dest)=0;
+	virtual bool load(char* fname)=0;
+	virtual bool save(char* fname)=0;
 	
 private:
 	/// size of cache in MB
