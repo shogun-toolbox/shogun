@@ -7,7 +7,7 @@
 ///TODO
 ///guilib ->Combined stuff d.h. {add,del?}_{kernel/features}?#$*
 ///
-class CCombinedKernel : CKernel
+class CCombinedKernel : public CKernel
 {
 	public:
 		CCombinedKernel(LONG size);
@@ -95,7 +95,7 @@ class CCombinedKernel : CKernel
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
-		virtual REAL compute(INT x, INT y)=0;
+		virtual REAL compute(INT x, INT y);
 
 	protected:
 		CList<CKernel*>* kernel_list;

@@ -64,6 +64,7 @@ static const CHAR* N_RELATIVE_ENTROPY=	"relative_entropy";
 static const CHAR* N_ENTROPY=			"entropy";
 static const CHAR* N_PERMUTATION_ENTROPY="permutation_entropy";
 static const CHAR* N_SET_KERNEL=		"set_kernel";
+static const CHAR* N_ADD_KERNEL=		"add_kernel";
 static const CHAR* N_ADD_PREPROC=		"add_preproc";
 static const CHAR* N_DEL_PREPROC=		"del_preproc";
 static const CHAR* N_PREPROCESS=		"preprocess";
@@ -573,6 +574,10 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_SET_KERNEL, strlen(N_SET_KERNEL)))
 	{
 		guikernel.set_kernel(input+strlen(N_SET_KERNEL));
+	} 
+	else if (!strncmp(input, N_ADD_KERNEL, strlen(N_ADD_KERNEL)))
+	{
+		guikernel.add_kernel(input+strlen(N_ADD_KERNEL));
 	} 
 	else if (!strncmp(input, N_DEL_PREPROC, strlen(N_DEL_PREPROC)))
 	{

@@ -14,6 +14,7 @@ class CGUIKernel
 
 	CKernel* get_kernel();
 	bool set_kernel(CHAR* param);
+	CKernel* create_kernel(CHAR* params);
 	bool init_kernel(CHAR* param);
 	bool init_kernel_tree(CHAR* param);
 	bool delete_kernel_tree(CHAR* param);
@@ -21,12 +22,13 @@ class CGUIKernel
 	bool save_kernel_init(CHAR* param);
 	bool save_kernel(CHAR* param);
 
+	bool add_kernel(CHAR* param);
+	bool del_kernel(CHAR* param);
 	bool is_initialized() { return initialized ; } ;
 
  protected:
 	CKernel* kernel;
 	CGUI* gui ;
 	bool initialized;
-	
 };
 #endif

@@ -92,3 +92,16 @@ void CCombinedKernel::list_kernels()
 	CIO::message(M_INFO, "END COMBINED FEATURES LIST - ");
 	this->list_kernel();
 }
+
+REAL CCombinedKernel::compute(INT x, INT y)
+{
+	REAL result=0;
+	CKernel* k=get_first_kernel();
+	while (k)
+	{
+		result+=k->kernel(x,y);
+		k=get_next_kernel();
+	}
+
+	return result;
+}

@@ -10,6 +10,7 @@
 #include "features/ShortFeatures.h"
 #include "features/RealFeatures.h"
 #include "features/SparseRealFeatures.h"
+#include "features/CombinedFeatures.h"
 #include "features/Features.h"
 
 CGUIFeatures::CGUIFeatures(CGUI * gui_)
@@ -914,8 +915,38 @@ bool CGUIFeatures::convert(CHAR* param)
 
 void CGUIFeatures::add_train_features(CFeatures* f)
 {
+	if (!train_features || (train_features && train_features->get_feature_class()!=C_COMBINED))
+	{
+		delete train_features;
+		train_features= new CCombinedFeatures();
+		assert(train_features);
+	}
+
+	if (train_features)
+	{
+		assert(f);
+		assert(((CCombinedFeatures*) train_features)->append_feature_obj(f));
+		((CCombinedFeatures*) train_features)->list_feature_objs();
+	}
+	else
+		CIO::message(M_ERROR, "combined feature object could not be created\n");
 }
 
 void CGUIFeatures::add_test_features(CFeatures* f)
 {
+	if (!test_features || (test_features && test_features->get_feature_class()!=C_COMBINED))
+	{
+		delete test_features;
+		test_features= new CCombinedFeatures();
+		assert(test_features);
+	}
+
+	if (test_features)
+	{
+		assert(f);
+		assert(((CCombinedFeatures*) test_features)->append_feature_obj(f));
+		((CCombinedFeatures*) test_features)->list_feature_objs();
+	}
+	else
+		CIO::message(M_ERROR, "combined feature object could not be created\n");
 }

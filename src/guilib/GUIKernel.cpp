@@ -3,6 +3,7 @@
 #include "guilib/GUISVM.h"
 #include "guilib/GUIPluginEstimate.h"
 #include "kernel/Kernel.h"
+#include "kernel/CombinedKernel.h"
 #include "kernel/RealKernel.h"
 #include "kernel/ShortKernel.h"
 #include "kernel/CharKernel.h"
@@ -63,461 +64,21 @@ CKernel* CGUIKernel::get_kernel()
 
 bool CGUIKernel::set_kernel(CHAR* param)
 {
-	INT size=100;
-	CHAR kern_type[1024]="";
-	CHAR data_type[1024]="";
-	param=CIO::skip_spaces(param);
-	
-	if (sscanf(param, "%s %s %d", kern_type, data_type, &size) >= 2)
+	CKernel* k=create_kernel(param);
+
+	if (kernel && k)
+		delete k;
+
+	if (k)
 	{
-		if (strcmp(kern_type,"LINEAR")==0)
-		{
-			if (strcmp(data_type,"BYTE")==0)
-			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
-				delete kernel;
-				kernel=new CLinearByteKernel(size);
-				if (kernel)
-				{
-					CIO::message(M_INFO, "LinearByteKernel created\n");
-					return true;
-				}
-			}
-			else if (strcmp(data_type,"WORD")==0)
-			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
-				delete kernel;
-				kernel=new CLinearWordKernel(size);
-				if (kernel)
-				{
-					CIO::message(M_INFO, "LinearWordKernel created\n");
-					return true;
-				}
-			}
-			else if (strcmp(data_type,"CHAR")==0)
-			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
-				delete kernel;
-				kernel=new CLinearCharKernel(size);
-				if (kernel)
-				{
-					CIO::message(M_INFO, "LinearCharKernel created\n");
-					return true;
-				}
-			}
-			else if (strcmp(data_type,"REAL")==0)
-			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
-				delete kernel;
-				kernel=new CLinearKernel(size);
-				return true;
-			}
-			else if (strcmp(data_type,"SPARSEREAL")==0)
-			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
-				delete kernel;
-				kernel=new CSparseLinearKernel(size);
-				return true;
-			}
-		}
-		else if (strcmp(kern_type,"HISTOGRAM")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
-				if (kernel)
-				  {
-				    CIO::message(M_INFO, "destroying old kernel\n") ;
-				    delete kernel;
-				  } ;
-
-				CIO::message(M_INFO, "getting estimator\n") ;
-				CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
-
-				if (estimator)
-					kernel=new CHistogramWordKernel(size, estimator);
-				else
-					CIO::message(M_ERROR, "no estimator set\n");
-
-				if (kernel)
-				{
-					CIO::message(M_INFO, "HistogramKernel created\n");
-					return true;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"SALZBERG")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
-				if (kernel)
-				{
-				    CIO::message(M_INFO, "destroying old kernel\n") ;
-				    delete kernel;
-				  } ;
-
-				CIO::message(M_INFO, "getting estimator\n") ;
-				CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
-
-				CIO::message(M_INFO, "getting labels\n") ;
-				CLabels * train_labels = gui->guilabels.get_train_labels() ;
-				if (!train_labels)
-				{
-					CIO::message(M_INFO, "assign train labels first!\n") ;
-					return false ;
-				} ;
-				
-				INT num_pos=0, num_neg=0;
-				
-				for (INT i=0; i<train_labels->get_num_labels(); i++)
-				{
-					if (train_labels->get_int_label(i)==1) num_pos++ ;
-					if (train_labels->get_int_label(i)==-1) num_neg++ ;
-				}				
-				CIO::message(M_INFO, "priors: pos=%1.3f (%i)  neg=%1.3f (%i)\n", 
-							 (REAL) num_pos/(num_pos+num_neg), num_pos,
-							 (REAL) num_neg/(num_pos+num_neg), num_neg) ;
-				
-				if (estimator)
-					kernel=new CSalzbergWordKernel(size, estimator);
-				else
-					CIO::message(M_ERROR, "no estimator set\n");
-				
-				((CSalzbergWordKernel*)kernel)->set_prior_probs((REAL)num_pos/(num_pos+num_neg), 
-																(REAL)num_neg/(num_pos+num_neg)) ;
-				
-				if (kernel)
-				{
-					CIO::message(M_INFO, "SalzbergKernel created\n");
-					return true;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"POLYMATCH")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				INT inhomogene=0;
-				INT degree=2;
-
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene);
-				delete kernel;
-				kernel=new CPolyMatchWordKernel(size, degree, inhomogene==1);
-
-				if (kernel)
-				{
-					CIO::message(M_INFO, "PolyMatchWordKernel created\n");
-					return true;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"MATCH")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				delete kernel;
-				INT d=3;
-				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &d);
-				kernel=new CWordMatchKernel(size, d);
-
-				if (kernel)
-				{
-					CIO::message(M_INFO, "MatchKernel created\n");
-					return true;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"COMM")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				delete kernel;
-				kernel=new CCommWordKernel(size);
-
-				if (kernel)
-				{
-					CIO::message(M_INFO, "CommWordKernel created\n");
-					return true;
-				}
-			}
-			else if (strcmp(data_type,"WORDSTRING")==0)
-			{
-				delete kernel;
-				kernel=new CCommWordStringKernel(size);
-
-				if (kernel)
-				{
-					CIO::message(M_INFO, "CommWordStringKernel created\n");
-					return true;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"FIXEDDEGREE")==0)
-		{
-			if (strcmp(data_type,"CHAR")==0)
-			{
-				INT d=3;
-
-				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &d);
-				delete kernel;
-				kernel=new CFixedDegreeCharKernel(size, d);
-
-				if (kernel)
-				{
-					CIO::message(M_INFO, "FixedDegreeCharKernel created\n");
-					return true;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS")==0)
-		{
-			if (strcmp(data_type,"CHAR")==0)
-			{
-				INT d=3;
-				INT max_mismatch = 0 ;
-				INT i=0;
-				INT length = 0 ;
-				INT center = 0 ;
-				REAL step = 0 ;
-
-				sscanf(param, "%s %s %d %d %d %d %d %le", 
-					   kern_type, data_type, &size, &d, &max_mismatch, 
-					   &length, &center, &step);
-				CIO::message(M_INFO, "step = %le\n") ;
-				
-				REAL* weights=new REAL[d*(1+max_mismatch)];
-				REAL sum=0;
-
-				for (i=0; i<d; i++)
-				{
-					weights[i]=d-i;
-					sum+=weights[i];
-				}
-				for (i=0; i<d; i++)
-					weights[i]/=sum;
-				
-				for (i=0; i<d; i++)
-				{
-					for (INT j=1; j<=max_mismatch; j++)
-					{
-						if (j<i+1)
-						{
-							INT nk=math.nchoosek(i+1, j) ;
-							weights[i+j*d]=weights[i]/(nk*pow(3,j)) ;
-						}
-						else
-							weights[i+j*d]= 0;
-					} ;
-				} ;
-				
-				INT *shift = new INT[length] ;
-				for (INT i=center; i<length; i++)
-					shift[i] = (int)floor(((REAL)(i-center))/step) ;
-
-				for (INT i=center; i>=0; i--)
-					shift[i] = (int)floor(((REAL)(center-i))/step) ;
-
-				for (INT i=0; i<length; i++)
-					if (shift[i]>length)
-						shift[i]=length ;
-
-				for (INT i=0; i<length; i++)
-				  CIO::message(M_INFO, "shift[%i]=%i\n", i, shift[i]) ;
-				
-				delete kernel;
-				kernel=new CWeightedDegreePositionCharKernel(size, weights, 
-															 d, max_mismatch, 
-															 shift, length);
-				delete[] shift ;
-				delete[] weights ;
-				
-				if (kernel)
-				{
-					CIO::message(M_INFO, "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
-					return true;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"WEIGHTEDDEGREE")==0)
-		{
-			if (strcmp(data_type,"CHAR")==0)
-			{
-				INT d=3;
-				INT max_mismatch = 0;
-				INT i=0;
-
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &d, &max_mismatch);
-				REAL* weights=new REAL[d*(1+max_mismatch)];
-				REAL sum=0;
-
-				for (i=0; i<d; i++)
-				{
-					weights[i]=d-i;
-					sum+=weights[i];
-				}
-				for (i=0; i<d; i++)
-					weights[i]/=sum;
-				
-				for (i=0; i<d; i++)
-				{
-					for (INT j=1; j<=max_mismatch; j++)
-					{
-						if (j<i+1)
-						{
-							INT nk=math.nchoosek(i+1, j);
-							weights[i+j*d]=weights[i]/(nk*pow(3,j));
-						}
-						else
-							weights[i+j*d]= 0;
-						
-					}
-				}
-				
-				delete kernel;
-				kernel=new CWeightedDegreeCharKernel(size, weights, d, max_mismatch);
-				delete[] weights ;
-				
-				if (kernel)
-				{
-					CIO::message(M_INFO, "WeightedDegreeCharKernel created\n");
-					return true;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"SLIK")==0)
-		{
-			if (strcmp(data_type,"CHAR")==0)
-			{
-				INT l=3;
-				INT d1=3;
-				INT d2=1;
-				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &l, &d1, &d2);
-				delete kernel;
-				kernel=new CSimpleLocalityImprovedCharKernel(size, l, d1, d2);
-				if (kernel)
-				{
-					CIO::message(M_INFO, "SimpleLocalityImprovedCharKernel created\n");
-					return true;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"LIK")==0)
-		{
-			if (strcmp(data_type,"CHAR")==0)
-			{
-				INT l=3;
-				INT d1=3;
-				INT d2=1;
-				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &l, &d1, &d2);
-				delete kernel;
-				kernel=new CLocalityImprovedCharKernel(size, l, d1, d2);
-				if (kernel)
-				{
-					CIO::message(M_INFO, "LocalityImprovedCharKernel created\n");
-					return true;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"POLY")==0)
-		{
-			if (strcmp(data_type,"REAL")==0)
-			{
-				INT inhomogene=0;
-				INT degree=2;
-
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene);
-				delete kernel;
-				kernel=new CPolyKernel(size, degree, inhomogene==1);
-
-				if (kernel)
-				{
-					CIO::message(M_INFO, "Polynomial Kernel created\n");
-					return true;
-				}
-			}
-			else if (strcmp(data_type,"CHAR")==0)
-			{
-				INT inhomogene=0;
-				INT degree=2;
-
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene);
-				delete kernel;
-				kernel=new CCharPolyKernel(size, degree, inhomogene==1);
-
-				if (kernel)
-				{
-					CIO::message(M_INFO, "CharPolynomial Kernel created\n");
-					return true;
-				}
-			}
-			else if (strcmp(data_type,"SPARSEREAL")==0)
-			{
-				INT inhomogene=0;
-				INT degree=2;
-
-				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene);
-				delete kernel;
-				kernel=new CSparsePolyKernel(size, degree, inhomogene==1);
-
-				if (kernel)
-				{
-					CIO::message(M_INFO, "Sparse Polynomial Kernel created\n");
-					return true;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"GAUSSIAN")==0)
-		{
-			if (strcmp(data_type,"REAL")==0)
-			{
-				double width=1;
-
-				sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &width);
-				delete kernel;
-				kernel=new CGaussianKernel(size, width);
-				if (kernel)
-				{
-					CIO::message(M_INFO, "Gaussian Kernel created\n");
-					return true;
-				}
-			}
-			else if (strcmp(data_type,"SPARSEREAL")==0)
-			{
-				double width=1;
-
-				sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &width);
-				delete kernel;
-				kernel=new CSparseGaussianKernel(size, width);
-				if (kernel)
-				{
-					CIO::message(M_INFO, "Sparse Gaussian Kernel created\n");
-					return true;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"NORMSQUARED")==0)
-		{
-			if (strcmp(data_type,"SPARSEREAL")==0)
-			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
-				delete kernel;
-				kernel=new CSparseNormSquaredKernel(size);
-				if (kernel)
-				{
-					CIO::message(M_INFO, "Sparse NormSquared Kernel created\n");
-					return true;
-				}
-			}
-		}
-		else 
-			CIO::not_implemented();
+		kernel=k;
+		return true;
 	}
-	else 
-		CIO::message(M_ERROR, "see help for params!\n");
-
-	CIO::not_implemented();
-	return false;
+	else
+	{
+		CIO::message(M_ERROR, "kernel creation failed.\n");
+		return false;
+	}
 }
 
 bool CGUIKernel::load_kernel_init(CHAR* param)
@@ -720,4 +281,502 @@ bool CGUIKernel::save_kernel(CHAR* param)
 	else
 		CIO::message(M_ERROR, "no kernel set / kernel not initialized!\n");
 	return result;
+}
+
+CKernel* CGUIKernel::create_kernel(CHAR* param)
+{
+	INT size=100;
+	CHAR kern_type[1024]="";
+	CHAR data_type[1024]="";
+	param=CIO::skip_spaces(param);
+	CKernel* k=NULL;
+
+	//note the different args COMBINED <cachesize>
+	if (sscanf(param, "%s %d", kern_type, &size) == 2)
+	{
+		if (strcmp(kern_type,"COMBINED")==0)
+		{
+			delete kernel;
+			kernel= new CCombinedKernel(size);
+			if (kernel)
+				CIO::message(M_INFO, "CombinedKernel created\n");
+			return kernel;
+		}
+	} 
+	//compared with <KERNTYPE> <DATATYPE> <CACHESIZE>
+	else if (sscanf(param, "%s %s %d", kern_type, data_type, &size) >= 2)
+	{
+		if (strcmp(kern_type,"LINEAR")==0)
+		{
+			if (strcmp(data_type,"BYTE")==0)
+			{
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				delete k;
+				k=new CLinearByteKernel(size);
+				if (k)
+				{
+					CIO::message(M_INFO, "LinearByteKernel created\n");
+					return k;
+				}
+			}
+			else if (strcmp(data_type,"WORD")==0)
+			{
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				delete k;
+				k=new CLinearWordKernel(size);
+				if (k)
+				{
+					CIO::message(M_INFO, "LinearWordKernel created\n");
+					return k;
+				}
+			}
+			else if (strcmp(data_type,"CHAR")==0)
+			{
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				delete k;
+				k=new CLinearCharKernel(size);
+				if (k)
+				{
+					CIO::message(M_INFO, "LinearCharKernel created\n");
+					return k;
+				}
+			}
+			else if (strcmp(data_type,"REAL")==0)
+			{
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				delete k;
+				k=new CLinearKernel(size);
+				return k;
+			}
+			else if (strcmp(data_type,"SPARSEREAL")==0)
+			{
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				delete k;
+				k=new CSparseLinearKernel(size);
+				return k;
+			}
+		}
+		else if (strcmp(kern_type,"HISTOGRAM")==0)
+		{
+			if (strcmp(data_type,"WORD")==0)
+			{
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				if (k)
+				  {
+				    CIO::message(M_INFO, "destroying old k\n") ;
+				    delete k;
+				  } ;
+
+				CIO::message(M_INFO, "getting estimator\n") ;
+				CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
+
+				if (estimator)
+					k=new CHistogramWordKernel(size, estimator);
+				else
+					CIO::message(M_ERROR, "no estimator set\n");
+
+				if (k)
+				{
+					CIO::message(M_INFO, "HistogramKernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"SALZBERG")==0)
+		{
+			if (strcmp(data_type,"WORD")==0)
+			{
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				if (k)
+				{
+				    CIO::message(M_INFO, "destroying old k\n") ;
+				    delete k;
+				  } ;
+
+				CIO::message(M_INFO, "getting estimator\n") ;
+				CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
+
+				CIO::message(M_INFO, "getting labels\n") ;
+				CLabels * train_labels = gui->guilabels.get_train_labels() ;
+				if (!train_labels)
+				{
+					CIO::message(M_INFO, "assign train labels first!\n") ;
+					return NULL ;
+				} ;
+				
+				INT num_pos=0, num_neg=0;
+				
+				for (INT i=0; i<train_labels->get_num_labels(); i++)
+				{
+					if (train_labels->get_int_label(i)==1) num_pos++ ;
+					if (train_labels->get_int_label(i)==-1) num_neg++ ;
+				}				
+				CIO::message(M_INFO, "priors: pos=%1.3f (%i)  neg=%1.3f (%i)\n", 
+							 (REAL) num_pos/(num_pos+num_neg), num_pos,
+							 (REAL) num_neg/(num_pos+num_neg), num_neg) ;
+				
+				if (estimator)
+					k=new CSalzbergWordKernel(size, estimator);
+				else
+					CIO::message(M_ERROR, "no estimator set\n");
+				
+				((CSalzbergWordKernel*)k)->set_prior_probs((REAL)num_pos/(num_pos+num_neg), 
+																(REAL)num_neg/(num_pos+num_neg)) ;
+				
+				if (k)
+				{
+					CIO::message(M_INFO, "SalzbergKernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"POLYMATCH")==0)
+		{
+			if (strcmp(data_type,"WORD")==0)
+			{
+				INT inhomogene=0;
+				INT degree=2;
+
+				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene);
+				delete k;
+				k=new CPolyMatchWordKernel(size, degree, inhomogene==1);
+
+				if (k)
+				{
+					CIO::message(M_INFO, "PolyMatchWordKernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"MATCH")==0)
+		{
+			if (strcmp(data_type,"WORD")==0)
+			{
+				delete k;
+				INT d=3;
+				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &d);
+				k=new CWordMatchKernel(size, d);
+
+				if (k)
+				{
+					CIO::message(M_INFO, "MatchKernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"COMM")==0)
+		{
+			if (strcmp(data_type,"WORD")==0)
+			{
+				delete k;
+				k=new CCommWordKernel(size);
+
+				if (k)
+				{
+					CIO::message(M_INFO, "CommWordKernel created\n");
+					return k;
+				}
+			}
+			else if (strcmp(data_type,"WORDSTRING")==0)
+			{
+				delete k;
+				k=new CCommWordStringKernel(size);
+
+				if (k)
+				{
+					CIO::message(M_INFO, "CommWordStringKernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"FIXEDDEGREE")==0)
+		{
+			if (strcmp(data_type,"CHAR")==0)
+			{
+				INT d=3;
+
+				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &d);
+				delete k;
+				k=new CFixedDegreeCharKernel(size, d);
+
+				if (k)
+				{
+					CIO::message(M_INFO, "FixedDegreeCharKernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS")==0)
+		{
+			if (strcmp(data_type,"CHAR")==0)
+			{
+				INT d=3;
+				INT max_mismatch = 0 ;
+				INT i=0;
+				INT length = 0 ;
+				INT center = 0 ;
+				REAL step = 0 ;
+
+				sscanf(param, "%s %s %d %d %d %d %d %le", 
+					   kern_type, data_type, &size, &d, &max_mismatch, 
+					   &length, &center, &step);
+				CIO::message(M_INFO, "step = %le\n") ;
+				
+				REAL* weights=new REAL[d*(1+max_mismatch)];
+				REAL sum=0;
+
+				for (i=0; i<d; i++)
+				{
+					weights[i]=d-i;
+					sum+=weights[i];
+				}
+				for (i=0; i<d; i++)
+					weights[i]/=sum;
+				
+				for (i=0; i<d; i++)
+				{
+					for (INT j=1; j<=max_mismatch; j++)
+					{
+						if (j<i+1)
+						{
+							INT nk=math.nchoosek(i+1, j) ;
+							weights[i+j*d]=weights[i]/(nk*pow(3,j)) ;
+						}
+						else
+							weights[i+j*d]= 0;
+					} ;
+				} ;
+				
+				INT *shift = new INT[length] ;
+				for (INT i=center; i<length; i++)
+					shift[i] = (int)floor(((REAL)(i-center))/step) ;
+
+				for (INT i=center; i>=0; i--)
+					shift[i] = (int)floor(((REAL)(center-i))/step) ;
+
+				for (INT i=0; i<length; i++)
+					if (shift[i]>length)
+						shift[i]=length ;
+
+				for (INT i=0; i<length; i++)
+				  CIO::message(M_INFO, "shift[%i]=%i\n", i, shift[i]) ;
+				
+				delete k;
+				k=new CWeightedDegreePositionCharKernel(size, weights, 
+															 d, max_mismatch, 
+															 shift, length);
+				delete[] shift ;
+				delete[] weights ;
+				
+				if (k)
+				{
+					CIO::message(M_INFO, "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"WEIGHTEDDEGREE")==0)
+		{
+			if (strcmp(data_type,"CHAR")==0)
+			{
+				INT d=3;
+				INT max_mismatch = 0;
+				INT i=0;
+
+				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &d, &max_mismatch);
+				REAL* weights=new REAL[d*(1+max_mismatch)];
+				REAL sum=0;
+
+				for (i=0; i<d; i++)
+				{
+					weights[i]=d-i;
+					sum+=weights[i];
+				}
+				for (i=0; i<d; i++)
+					weights[i]/=sum;
+				
+				for (i=0; i<d; i++)
+				{
+					for (INT j=1; j<=max_mismatch; j++)
+					{
+						if (j<i+1)
+						{
+							INT nk=math.nchoosek(i+1, j);
+							weights[i+j*d]=weights[i]/(nk*pow(3,j));
+						}
+						else
+							weights[i+j*d]= 0;
+						
+					}
+				}
+				
+				delete k;
+				k=new CWeightedDegreeCharKernel(size, weights, d, max_mismatch);
+				delete[] weights ;
+				
+				if (k)
+				{
+					CIO::message(M_INFO, "WeightedDegreeCharKernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"SLIK")==0)
+		{
+			if (strcmp(data_type,"CHAR")==0)
+			{
+				INT l=3;
+				INT d1=3;
+				INT d2=1;
+				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &l, &d1, &d2);
+				delete k;
+				k=new CSimpleLocalityImprovedCharKernel(size, l, d1, d2);
+				if (k)
+				{
+					CIO::message(M_INFO, "SimpleLocalityImprovedCharKernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"LIK")==0)
+		{
+			if (strcmp(data_type,"CHAR")==0)
+			{
+				INT l=3;
+				INT d1=3;
+				INT d2=1;
+				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &l, &d1, &d2);
+				delete k;
+				k=new CLocalityImprovedCharKernel(size, l, d1, d2);
+				if (k)
+				{
+					CIO::message(M_INFO, "LocalityImprovedCharKernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"POLY")==0)
+		{
+			if (strcmp(data_type,"REAL")==0)
+			{
+				INT inhomogene=0;
+				INT degree=2;
+
+				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene);
+				delete k;
+				k=new CPolyKernel(size, degree, inhomogene==1);
+
+				if (k)
+				{
+					CIO::message(M_INFO, "Polynomial Kernel created\n");
+					return k;
+				}
+			}
+			else if (strcmp(data_type,"CHAR")==0)
+			{
+				INT inhomogene=0;
+				INT degree=2;
+
+				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene);
+				delete k;
+				k=new CCharPolyKernel(size, degree, inhomogene==1);
+
+				if (k)
+				{
+					CIO::message(M_INFO, "CharPolynomial Kernel created\n");
+					return k;
+				}
+			}
+			else if (strcmp(data_type,"SPARSEREAL")==0)
+			{
+				INT inhomogene=0;
+				INT degree=2;
+
+				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &degree, &inhomogene);
+				delete k;
+				k=new CSparsePolyKernel(size, degree, inhomogene==1);
+
+				if (k)
+				{
+					CIO::message(M_INFO, "Sparse Polynomial Kernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"GAUSSIAN")==0)
+		{
+			if (strcmp(data_type,"REAL")==0)
+			{
+				double width=1;
+
+				sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &width);
+				delete k;
+				k=new CGaussianKernel(size, width);
+				if (k)
+				{
+					CIO::message(M_INFO, "Gaussian Kernel created\n");
+					return k;
+				}
+			}
+			else if (strcmp(data_type,"SPARSEREAL")==0)
+			{
+				double width=1;
+
+				sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &width);
+				delete k;
+				k=new CSparseGaussianKernel(size, width);
+				if (k)
+				{
+					CIO::message(M_INFO, "Sparse Gaussian Kernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"NORMSQUARED")==0)
+		{
+			if (strcmp(data_type,"SPARSEREAL")==0)
+			{
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				delete k;
+				k=new CSparseNormSquaredKernel(size);
+				if (k)
+				{
+					CIO::message(M_INFO, "Sparse NormSquared Kernel created\n");
+					return k;
+				}
+			}
+		}
+		else 
+			CIO::not_implemented();
+	}
+	else 
+		CIO::message(M_ERROR, "see help for params!\n");
+
+	CIO::not_implemented();
+	return NULL;
+}
+
+bool CGUIKernel::add_kernel(CHAR* param)
+{
+	if (!kernel || (kernel && kernel->get_kernel_type()!=K_COMBINED))
+	{
+		delete kernel;
+		kernel= new CCombinedKernel(0);
+		assert(kernel);
+	}
+
+	if (kernel)
+	{
+		CKernel* k=create_kernel(param);
+		assert(k);
+		assert(((CCombinedKernel*) kernel)->append_kernel(k));
+		((CCombinedKernel*) kernel)->list_kernels();
+	}
+	else
+		CIO::message(M_ERROR, "combined kernel object could not be created\n");
+}
+
+bool CGUIKernel::del_kernel(CHAR* param)
+{
+	return false;
 }
