@@ -21,6 +21,35 @@ extern "C" {
 
 CSVMLight::CSVMLight()
 {
+
+	W=NULL;
+	model=new MODEL[1];
+	learn_parm=new LEARN_PARM[1];
+	model->supvec=NULL;
+	model->alpha=NULL;
+	model->index=NULL;
+	set_kernel(NULL);
+	primal=NULL;
+	dual=NULL;
+
+	//certain setup params
+	verbosity=1;
+	init_margin=0.15;
+	init_iter=500;
+	precision_violations=0;
+	opt_precision=DEF_PRECISION_LINEAR;
+
+	// MKL stuff
+	rho=0 ;
+	mymaxdiff=1 ;
+	num_rows=0 ;
+	num_active_rows=0 ;
+	weight_epsilon=0 ;
+	lp_C = 0 ;
+	orig_alphas_by_row = NULL ;
+	w_deactivated = NULL ;
+	w_zero_rounds = NULL ;
+	
 #ifdef USE_CPLEX
 	CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
 	
@@ -57,37 +86,13 @@ CSVMLight::CSVMLight()
 				lp = CPXcreateprob (env, &status, "light");
 
 				if ( lp == NULL )
-					fprintf (stderr, "Failed to create LP.\n");
+					CIO::message(M_ERROR, "Failed to create LP.\n");
 				else
 					CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
 			}
 		}
 	}
 #endif
-	
-	W=NULL;
-	model=new MODEL[1];
-	learn_parm=new LEARN_PARM[1];
-	model->supvec=NULL;
-	model->alpha=NULL;
-	model->index=NULL;
-	set_kernel(NULL);
-	primal=NULL;
-	dual=NULL;
-
-	//certain setup params
-	verbosity=1;
-	init_margin=0.15;
-	init_iter=500;
-	precision_violations=0;
-	opt_precision=DEF_PRECISION_LINEAR;
-	rho=0 ;
-	mymaxdiff=1 ;
-	num_rows=0 ;
-	num_active_rows=0 ;
-
-	weight_epsilon=0 ;
-	lp_C = 0 ;
 }
 
 CSVMLight::~CSVMLight()
@@ -96,7 +101,7 @@ CSVMLight::~CSVMLight()
 	if ( lp != NULL ) {
 		INT status = CPXfreeprob (env, &lp);
 		if ( status ) {
-			fprintf (stderr, "CPXfreeprob failed, error code %d.\n", status);
+			CIO::message(M_ERROR, "CPXfreeprob failed, error code %d.\n", status);
 		}
 	}
 	if ( env != NULL ) {
@@ -104,9 +109,9 @@ CSVMLight::~CSVMLight()
 		
 		if ( status ) {
 			char  errmsg[1024];
-			fprintf (stderr, "Could not close CPLEX environment.\n");
+			CIO::message(M_ERROR, "Could not close CPLEX environment.\n");
 			CPXgeterrorstring (env, status, errmsg);
-			fprintf (stderr, "%s", errmsg);
+			CIO::message(M_ERROR, "%s", errmsg);
 		}
 	}
 #endif
@@ -118,7 +123,12 @@ CSVMLight::~CSVMLight()
   delete[] learn_parm;
   delete[] primal;
   delete[] dual;
+
+  // MKL stuff
   delete[] W ;
+  delete[] orig_alphas_by_row ;
+  delete[] w_deactivated ;
+  delete[] w_zero_rounds ;
 }
 
 bool CSVMLight::train()
@@ -149,9 +159,33 @@ bool CSVMLight::train()
 	learn_parm->epsilon_crit=epsilon; // GU: better decrease it ... ??
 	learn_parm->epsilon_a=1E-15;
 	learn_parm->compute_loo=0;
+
+	if (!CKernelMachine::get_kernel())
+	{
+		CIO::message(M_ERROR, "SVM_light can not proceed without kernel!\n");
+		return false ;
+	}
+
+	// MKL stuff
+	delete[] orig_alphas_by_row ;
+	orig_alphas_by_row_num = 100 ;
+	orig_alphas_by_row     = new (REAL*)[orig_alphas_by_row_num] ;
+	for (INT i=0; i<orig_alphas_by_row_num; i++)
+		orig_alphas_by_row[i] = NULL ;
+	
+	delete[] w_deactivated ;
+	delete[] w_zero_rounds ;
+	
+	w_zero_rounds = new INT[get_kernel()->get_num_subkernels()] ;
+	w_deactivated = new INT[get_kernel()->get_num_subkernels()] ;
+	for (INT i=0; i<get_kernel()->get_num_subkernels(); i++)
+	{
+		w_zero_rounds[i] = 0 ;
+		w_deactivated[i] = 0 ;
+	}
+	
 	learn_parm->rho=1.0;
 	learn_parm->xa_depth=0;
-	
 	if (weight_epsilon<=0)
 		weight_epsilon=1e-2 ;
 	
@@ -159,12 +193,6 @@ bool CSVMLight::train()
 	CIO::message(M_DEBUG, "epsilon = %1.1e\n", learn_parm->epsilon_crit) ;
 	CIO::message(M_DEBUG, "weight_epsilon = %1.1e\n", weight_epsilon) ;
 	CIO::message(M_DEBUG, "C_mkl = %1.1e\n", C_mkl) ;
-	
-	if (!CKernelMachine::get_kernel())
-	{
-		CIO::message(M_ERROR, "SVM_light can not proceed without kernel!\n");
-		return false ;
-	}
 	
 	if (get_kernel()->has_property(KP_LINADD))
 		get_kernel()->clear_normal();
@@ -175,17 +203,11 @@ bool CSVMLight::train()
 	CIO::message(M_DEBUG, "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
 	CIO::message(M_DEBUG, "estimated time: %1.1f hours\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/3600) ;
 	
-	w_zero_rounds=new INT[get_kernel()->get_num_subkernels()] ;
-	w_deactivated=new INT[get_kernel()->get_num_subkernels()] ;
-	for (INT i=0; i<get_kernel()->get_num_subkernels(); i++)
-	{
-		w_zero_rounds[i] = 0 ;
-		w_deactivated[i] = 0 ;
-	}
 
+	// train the svm
 	svm_learn();
 	
-	//brain damaged svm light work around
+	// brain damaged svm light work around
 	create_new_model(model->sv_num-1);
 	set_bias(-model->b);
 	for (INT i=0; i<model->sv_num-1; i++)
@@ -1086,11 +1108,382 @@ long CSVMLight::check_optimality(MODEL *model, INT* label,
   return(retrain);
 }
 
+void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label, 
+											long int *active2dnum, double *a, 
+											double *a_old, long int *working2dnum, 
+											long int totdoc,
+											double *lin, REAL *aicache)
+{
+	// kernel with LP_LINADD property is assumed to have 
+	// compute_by_subkernel functions
+	CKernel* k      = get_kernel();
+	INT num         = k->get_rhs()->get_num_vectors() ;
+	INT num_weights = -1;
+	INT num_kernels = k->get_num_subkernels() ;
+	const REAL* w   = k->get_subkernel_weights(num_weights);
+	
+	assert(num_weights==num_kernels) ;
+	REAL* sumw = new REAL[num_kernels];
+	{
+		REAL* w_backup = new REAL[num_kernels] ;
+		REAL* w1 = new REAL[num_kernels] ;
+		
+		// backup and set to one
+		for (INT i=0; i<num_kernels; i++)
+		{
+			w_backup[i] = w[i] ;
+			w1[i]=(w_deactivated[i]!=0) ; // set weight to zero if inactivated, 
+			// leave optimization to kernel implementation
+		}
+		// set the kernel weights
+		k->set_subkernel_weights(w1, num_weights) ;
+		
+		// create normal update (with changed alphas only)
+		k->clear_normal();
+		for(INT ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
+			if(a[i] != a_old[i]) {
+				k->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
+			}
+		}
+		
+		// determine contributions of different kernels
+		for (int i=0; i<num; i++)
+			k->compute_by_subkernel(i,&W[i*num_kernels]) ;
+		
+		// restore old weights
+		k->set_subkernel_weights(w_backup,num_weights) ;
+		
+		delete[] w_backup ;
+		delete[] w1 ;
+	}
+	REAL objective=0;
+#ifdef HAVE_ATLAS
+	REAL *alphay=new REAL[num] ;
+	REAL sumalpha=0 ;
+	
+	for (int i=0; i<num; i++)
+	{
+		alphay[i]=a[i]*label[i] ;
+		sumalpha+=a[i] ;
+	}
+	for (int i=0; i<num_kernels; i++)
+		sumw[i]=-sumalpha ;
+	
+	cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, num,
+				0.5, W, num_kernels, alphay, 1, 1.0, sumw, 1) ;
+	
+	for (int i=0; i<num_kernels; i++)
+		objective+=w[i]*sumw[i] ;
+	delete[] alphay ;
+#else
+	for (int d=0; d<num_kernels; d++)
+	{
+		sumw[d]=0;
+		for(int i=0; i<num; i++)
+			sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d] - 1);
+		objective   += w[d]*sumw[d];
+	}
+#endif
+	
+	count++ ;
+#ifdef USE_CPLEX			
+	w_gap = CMath::abs(1-rho/objective) ;
+	
+	if (w_gap >= 0.9999*get_weight_epsilon())
+	{
+		CIO::message(M_INFO, "*") ;
+		if (rho==0)
+		{
+			CIO::message(M_INFO, "creating LP\n") ;
+			
+			INT NUMCOLS = 2*num_kernels + 1 ;
+			double   obj[NUMCOLS];
+			double   lb[NUMCOLS];
+			double   ub[NUMCOLS];
+			for (INT i=0; i<2*num_kernels; i++)
+			{
+				obj[i]=0 ;
+				lb[i]=0 ;
+				ub[i]=1 ;
+			}
+			for (INT i=num_kernels; i<2*num_kernels; i++)
+			{
+				obj[i]= C_mkl ;
+			}
+			obj[2*num_kernels]=1 ;
+			lb[2*num_kernels]=-CPX_INFBOUND ;
+			ub[2*num_kernels]=CPX_INFBOUND ;
+			
+			INT status = CPXnewcols (env, lp, NUMCOLS, obj, lb, ub, NULL, NULL);
+			if ( status ) {
+				char  errmsg[1024];
+				CPXgeterrorstring (env, status, errmsg);
+				CIO::message(M_ERROR, "%s", errmsg);
+			}
+			
+			// add constraint sum(w)=1 ;
+			CIO::message(M_INFO, "add the first row\n") ;
+			int rmatbeg[1] ;
+			int rmatind[num_kernels+1] ;
+			double rmatval[num_kernels+1] ;
+			double rhs[1] ;
+			char sense[1] ;
+			
+			rmatbeg[0] = 0;
+			rhs[0]=1 ;     // rhs=1 ;
+			sense[0]='E' ; // equality
+			
+			for (INT i=0; i<num_kernels; i++)
+			{
+				rmatind[i]=i ;
+				rmatval[i]=1 ;
+			}
+			rmatind[num_kernels]=2*num_kernels ;
+			rmatval[num_kernels]=0 ;
+			
+			status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+								 rhs, sense, rmatbeg,
+								 rmatind, rmatval, NULL, NULL);
+			if ( status ) {
+				CIO::message(M_ERROR, "Failed to add the first row.\n");
+			}
+			if (C_mkl!=0.0)
+			{
+				for (INT q=0; q<num_kernels-1; q++)
+				{
+					// add constraint w[i]-w[i+1]<s[i] ;
+					// add constraint w[i+1]-w[i]<s[i] ;
+					int rmatbeg[1] ;
+					int rmatind[3] ;
+					double rmatval[3] ;
+					double rhs[1] ;
+					char sense[1] ;
+					
+					rmatbeg[0] = 0;
+					rhs[0]=0 ;     // rhs=1 ;
+					sense[0]='L' ; // equality
+					rmatind[0]=q ;
+					rmatval[0]=1 ;
+					rmatind[1]=q+1 ;
+					rmatval[1]=-1 ;
+					rmatind[2]=num_kernels+q ;
+					rmatval[2]=-1 ;
+					status = CPXaddrows (env, lp, 0, 1, 3, 
+										 rhs, sense, rmatbeg,
+										 rmatind, rmatval, NULL, NULL);
+					if ( status ) {
+						CIO::message(M_ERROR, "Failed to add a smothness row (1).\n");
+					}
+					
+					rmatbeg[0] = 0;
+					rhs[0]=0 ;     // rhs=1 ;
+					sense[0]='L' ; // equality
+					rmatind[0]=q ;
+					rmatval[0]=-1 ;
+					rmatind[1]=q+1 ;
+					rmatval[1]=1 ;
+					rmatind[2]=num_kernels+q ;
+					rmatval[2]=-1 ;
+					status = CPXaddrows (env, lp, 0, 1, 3, 
+										 rhs, sense, rmatbeg,
+										 rmatind, rmatval, NULL, NULL);
+					if ( status ) {
+						CIO::message(M_ERROR, "Failed to add a smothness row (2).\n");
+					}
+				}
+			}
+		}
+		
+		{ // add the new row
+			//CIO::message(M_INFO, "add the new row\n") ;
+			
+			int rmatbeg[1] ;
+			int rmatind[num_kernels+1] ;
+			double rmatval[num_kernels+1] ;
+			double rhs[1] ;
+			char sense[1] ;
+			
+			rmatbeg[0] = 0;
+			rhs[0]=0 ;
+			sense[0]='L' ;
+			
+			for (INT i=0; i<num_kernels; i++)
+			{
+				rmatind[i]=i ;
+				rmatval[i]=-sumw[i] ;
+			}
+			rmatind[num_kernels]=2*num_kernels ;
+			rmatval[num_kernels]=-1 ;
+			
+			INT status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
+									 rhs, sense, rmatbeg,
+									 rmatind, rmatval, NULL, NULL);
+			if ( status ) 
+				CIO::message(M_ERROR, "Failed to add the new row.\n");
+
+			// remember alpha vector in order to reactivate variables
+			INT numrows = CPXgetnumrows (env, lp) - 2 ; // creates 0-based index after adding
+			if (C_mkl!=0.0)
+				numrows -= 2*(num_kernels-1) ;
+			if (numrows+1 > orig_alphas_by_row_num) // extend the array
+			{ 
+				REAL **tmp = new (REAL*)[numrows+1] ;
+				memcpy(tmp, orig_alphas_by_row, orig_alphas_by_row_num*sizeof(REAL*)) ;
+				delete[] orig_alphas_by_row ;
+				orig_alphas_by_row = tmp ;
+			}
+			assert(orig_alphas_by_row[numrows]==NULL) ;
+			orig_alphas_by_row[numrows] = new REAL[num] ;
+			memcpy(orig_alphas_by_row[numrows], a, num*sizeof(double)) ;
+		}
+		
+		{ // optimize
+			INT status = CPXlpopt (env, lp);
+			if ( status ) 
+				CIO::message(M_ERROR, "Failed to optimize LP.\n");
+			
+			// obtain solution
+			INT cur_numrows = CPXgetnumrows (env, lp);
+			INT cur_numcols = CPXgetnumcols (env, lp);
+			num_rows = cur_numrows ;
+			
+			REAL *x = new REAL[cur_numcols] ;
+			REAL *slack = new REAL[cur_numrows] ;
+			REAL *pi = new REAL[cur_numrows] ;
+			
+			if ( x     == NULL ||
+				 slack == NULL ||
+				 pi    == NULL   ) {
+				status = CPXERR_NO_MEMORY;
+				CIO::message(M_ERROR, "Could not allocate memory for solution.\n") ;
+			}
+			INT solstat = 0 ;
+			REAL objval = 0 ;
+			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
+			INT solution_ok = (!status) ;
+			if ( status ) {
+				CIO::message(M_ERROR, "Failed to obtain solution.\n");
+			}
+			
+			num_active_rows=0 ;
+			if (solution_ok)
+			{
+				REAL max_slack = -CMath::INFTY ;
+				INT max_idx = -1 ;
+				INT start_pos = 1 ;
+				if (C_mkl!=0.0)
+					start_pos+=2*(num_kernels-1);
+
+				for (INT i = start_pos; i < cur_numrows; i++)  // skip first
+					if ((pi[i]!=0))
+						num_active_rows++ ;
+					else
+					{
+						if (slack[i]>max_slack)
+						{
+							max_slack=slack[i] ;
+							max_idx=i ;
+						}
+					}
+				
+				// have at most max(100,num_active_rows*2) rows, if not, remove one
+				if ( (num_rows-start_pos>CMath::max(10,2*num_active_rows)) && (max_idx!=-1))
+				{
+					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_pos,num_rows) ;
+					INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
+					if ( status ) 
+						CIO::message(M_ERROR, "Failed to remove an old row.\n");
+
+					// move everything forward by one element
+					delete[] orig_alphas_by_row[max_idx - start_pos] ;
+					for (INT i = max_idx-start_pos+1; i<orig_alphas_by_row_num; i++)
+						orig_alphas_by_row[i-1] = orig_alphas_by_row[i] ;
+					orig_alphas_by_row[orig_alphas_by_row_num] = NULL ;
+				}
+
+				// set weights, store new rho and compute new w gap
+				k->set_subkernel_weights(x, num_kernels) ;
+				rho = -x[2*num_kernels] ;
+				w_gap = CMath::abs(1-rho/objective) ;
+				
+				// increase zero counters
+				for (INT i=0; i<num_kernels; i++)
+				{
+					//CIO::message(M_ERROR,"alpha[%i]=%1.3e [%i] ", i, x[i], w_zero_rounds[i]) ;
+					if (x[i]==0.0)
+						w_zero_rounds[i]++ ;
+					else
+						w_zero_rounds[i]=0 ;
+				}
+				//fprintf(stderr,"\n") ;
+			} else
+				w_gap = 0 ; // then something is wrong and we rather 
+				            // stop sooner than later
+
+			delete[] x ;
+			delete[] slack ;
+			delete[] pi ;
+		}
+	}
+	
+	{ //deactivate variables
+		INT max_idx = -1 ;
+		INT max_val = -1 ;
+		for (INT i=0; i<num_kernels; i++)
+			if ((max_val<w_zero_rounds[i]) && !w_deactivated[i]) 
+			{
+				max_val = w_zero_rounds[i] ;
+				max_idx = i ;
+			}
+		if (max_val>=10)
+		{
+			w_deactivated[max_idx]=1 ;
+			double ubnd = 0 ;
+			char type='U' ;
+			INT status = CPXchgbds(env, lp, 1, &max_idx, &type, &ubnd);
+			if ( status ) 
+				CIO::message (M_ERROR, "Failed to deactivate variable.\n");
+			CIO::message(M_INFO, "deactivated variable %i\n", max_idx) ;
+		}
+	}
+	
+#endif
+	
+	// update lin
+#ifdef HAVE_ATLAS
+	cblas_dgemv(CblasColMajor,
+				CblasTrans, num_kernels, num,
+				1.0, W, num_kernels, w, 1, 0.0, lin,1);
+#else
+	for(int i=0; i<num; i++)
+		lin[i]=0 ;
+	for (int d=0; d<num_kernels; d++)
+		if (w[d]!=0)
+			for(int i=0; i<num; i++)
+				lin[i] += w[d]*W[i*num_kernels+d] ;
+#endif
+	
+	// count actives
+	INT jj ;
+	for(jj=0;active2dnum[jj]>=0;jj++);
+	
+	if (count%100==0)
+	{
+		INT start_pos = 1 ;
+		if (C_mkl!=0.0)
+			start_pos+=2*(num_kernels-1);
+		CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_pos);
+	}
+	
+	delete[] sumw;
+}
+
+
 void CSVMLight::update_linear_component(LONG* docs, INT* label, 
-			     long int *active2dnum, double *a, 
-			     double *a_old, long int *working2dnum, 
-			     long int totdoc,
-			     double *lin, REAL *aicache)
+										long int *active2dnum, double *a, 
+										double *a_old, long int *working2dnum, 
+										long int totdoc,
+										double *lin, REAL *aicache)
      /* keep track of the linear component */
      /* lin of the gradient etc. by updating */
      /* based on the change of the variables */
@@ -1100,372 +1493,17 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 	register double tec=0;
 
 
-	if (get_kernel()->has_property(KP_LINADD)) {
-
-		if (get_kernel()->has_property(KP_KERNCOMBINATION) && is_mkl_enabled() ) {
-
-			//kernel with LP_LINADD property is assumed to have compute_by_tree functions
-			CKernel* k = get_kernel();
-			INT num    = k->get_rhs()->get_num_vectors() ;
-			INT num_weights = -1;
-			INT num_kernels = k->get_num_subkernels() ;
-			const REAL* w    = k->get_subkernel_weights(num_weights);
-			//fprintf(stderr,"num_weights=%i  num_kernels=%i\n", num_weights, num_kernels) ;
-			
-			assert(num_weights==num_kernels) ;
-			REAL* sumw = new REAL[num_kernels];
-			{
-				REAL* w_backup = new REAL[num_kernels] ;
-				REAL* w1 = new REAL[num_kernels] ;
-				
-				// backup and set to one
-				for (INT i=0; i<num_kernels; i++)
-				{
-					w_backup[i]=w[i] ;
-					w1[i]=1 ;
-				}
-
-				k->set_subkernel_weights(w1, num_weights) ;
-				
-				// recreate tree
-				k->clear_normal();
-				for(INT ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
-					if(a[i] != a_old[i]) {
-						k->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
-					}
-				}
-				
-				// determine contributions of different levels/lengths
-				for (int i=0; i<num; i++)
-					k->compute_by_subkernel(i,&W[i*num_kernels]) ;
-
-				// restore old weights
-				k->set_subkernel_weights(w_backup,num_weights) ;
-				delete[] w_backup ;
-				delete[] w1 ;
-			}
-			REAL objective=0;
-#ifdef HAVE_ATLAS
-			REAL *alphay=new REAL[num] ;
-			REAL sumalpha=0 ;
-
-			for (int i=0; i<num; i++)
-			{
-				alphay[i]=a[i]*label[i] ;
-				sumalpha+=a[i] ;
-			}
-			for (int i=0; i<num_kernels; i++)
-				sumw[i]=-sumalpha ;
-
-			cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, num,
-					0.5, W, num_kernels, alphay, 1, 1.0, sumw, 1) ;
-
-			for (int i=0; i<num_kernels; i++)
-				objective+=w[i]*sumw[i] ;
-			delete[] alphay ;
-#else
-			for (int d=0; d<num_kernels; d++)
-			{
-				sumw[d]=0;
-				for(int i=0; i<num; i++)
-					sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d] - 1);
-				objective   += w[d]*sumw[d];
-			}
-#endif
-			for (INT i=0; i<num_kernels; i++)
-				fprintf(stderr,"sumw[%i]=%1.1f ", i, sumw[i]) ;
-			fprintf(stderr," obj=%1.1f\n", objective) ;
-			
-#ifdef USE_W_TIMING
-			if ((w_gap<last_w_gap/2) &&(count%101!=0))
-			{
-				CIO::message(M_INFO,"w_gap=%f last_w_gap=%f\n",w_gap,last_w_gap) ;
-
-				last_w_gap=last_w_gap/2 ;
-				w_timing[w_timing_idx]=count ;
-				w_timing_idx++ ;
-				for  (int i=0; i<w_timing_idx; i++)
-					CIO::message(M_INFO,"%i %i\n", i, w_timing[i]) ;
-			}
-#endif
-
-			count++ ;
-#ifdef USE_CPLEX			
-			w_gap = CMath::abs(1-rho/objective) ;
-			
-			if (w_gap >= 0.9999*get_weight_epsilon())
-			{
-				CIO::message(M_INFO, "*") ;
-				if (rho==0)
-				{
-					CIO::message(M_INFO, "creating LP\n") ;
-
-					INT NUMCOLS = 2*num_kernels + 1 ;
-					double   obj[NUMCOLS];
-					double   lb[NUMCOLS];
-					double   ub[NUMCOLS];
-					for (INT i=0; i<2*num_kernels; i++)
-					{
-						obj[i]=0 ;
-						lb[i]=0 ;
-						ub[i]=1 ;
-					}
-					for (INT i=num_kernels; i<2*num_kernels; i++)
-					{
-						obj[i]= C_mkl ;
-					}
-					obj[2*num_kernels]=1 ;
-					lb[2*num_kernels]=-CPX_INFBOUND ;
-					ub[2*num_kernels]=CPX_INFBOUND ;
-
-					INT status = CPXnewcols (env, lp, NUMCOLS, obj, lb, ub, NULL, NULL);
-					if ( status ) {
-						char  errmsg[1024];
-						CPXgeterrorstring (env, status, errmsg);
-						fprintf (stderr, "%s", errmsg);
-					}
-
-					// add constraint sum(w)=1 ;
-					CIO::message(M_INFO, "add the first row\n") ;
-					int rmatbeg[1] ;
-					int rmatind[num_kernels+1] ;
-					double rmatval[num_kernels+1] ;
-					double rhs[1] ;
-					char sense[1] ;
-
-					rmatbeg[0] = 0;
-					rhs[0]=1 ;     // rhs=1 ;
-					sense[0]='E' ; // equality
-
-					for (INT i=0; i<num_kernels; i++)
-					{
-						rmatind[i]=i ;
-						rmatval[i]=1 ;
-					}
-					rmatind[num_kernels]=2*num_kernels ;
-					rmatval[num_kernels]=0 ;
-					
-					status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
-										 rhs, sense, rmatbeg,
-										 rmatind, rmatval, NULL, NULL);
-					if ( status ) {
-						fprintf (stderr, "Failed to add the first row.\n");
-					}
-					if (C_mkl!=0.0)
-					{
-						for (INT q=0; q<num_kernels-1; q++)
-						{
-							// add constraint w[i]-w[i+1]<s[i] ;
-							// add constraint w[i+1]-w[i]<s[i] ;
-							int rmatbeg[1] ;
-							int rmatind[3] ;
-							double rmatval[3] ;
-							double rhs[1] ;
-							char sense[1] ;
-							
-							rmatbeg[0] = 0;
-							rhs[0]=0 ;     // rhs=1 ;
-							sense[0]='L' ; // equality
-							rmatind[0]=q ;
-							rmatval[0]=1 ;
-							rmatind[1]=q+1 ;
-							rmatval[1]=-1 ;
-							rmatind[2]=num_kernels+q ;
-							rmatval[2]=-1 ;
-							status = CPXaddrows (env, lp, 0, 1, 3, 
-												 rhs, sense, rmatbeg,
-												 rmatind, rmatval, NULL, NULL);
-							if ( status ) {
-								fprintf (stderr, "Failed to add the first row.\n");
-							}
-							
-							rmatbeg[0] = 0;
-							rhs[0]=0 ;     // rhs=1 ;
-							sense[0]='L' ; // equality
-							rmatind[0]=q ;
-							rmatval[0]=-1 ;
-							rmatind[1]=q+1 ;
-							rmatval[1]=1 ;
-							rmatind[2]=num_kernels+q ;
-							rmatval[2]=-1 ;
-							status = CPXaddrows (env, lp, 0, 1, 3, 
-												 rhs, sense, rmatbeg,
-												 rmatind, rmatval, NULL, NULL);
-							if ( status ) {
-								fprintf (stderr, "Failed to add the first row.\n");
-							}
-						}
-					}
-				}
-				
-				{ // add the new row
-					//CIO::message(M_INFO, "add the new row\n") ;
-
-					int rmatbeg[1] ;
-					int rmatind[num_kernels+1] ;
-					double rmatval[num_kernels+1] ;
-					double rhs[1] ;
-					char sense[1] ;
-
-					rmatbeg[0] = 0;
-					rhs[0]=0 ;
-					sense[0]='L' ;
-
-					for (INT i=0; i<num_kernels; i++)
-					{
-						rmatind[i]=i ;
-						rmatval[i]=-sumw[i] ;
-					}
-					rmatind[num_kernels]=2*num_kernels ;
-					rmatval[num_kernels]=-1 ;
-
-					INT status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
-											 rhs, sense, rmatbeg,
-											 rmatind, rmatval, NULL, NULL);
-					if ( status ) {
-						fprintf (stderr, "Failed to add the new row.\n");
-					}
-				}
-
-				{ // optimize
-					INT status = CPXlpopt (env, lp);
-					if ( status ) {
-						fprintf (stderr, "Failed to optimize LP.\n");
-					}
-
-					// obtain solution
-					INT cur_numrows = CPXgetnumrows (env, lp);
-					INT cur_numcols = CPXgetnumcols (env, lp);
-					num_rows = cur_numrows ;
-
-					REAL *x = new REAL[cur_numcols] ;
-					REAL *slack = new REAL[cur_numrows] ;
-					REAL *pi = new REAL[cur_numrows] ;
-
-					if ( x     == NULL ||
-							slack == NULL ||
-							pi    == NULL   ) {
-						status = CPXERR_NO_MEMORY;
-						fprintf (stderr, "Could not allocate memory for solution.\n");
-					}
-					INT solstat = 0 ;
-					REAL objval = 0 ;
-					status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
-					INT solution_ok=(!status) ;
-					if ( status ) {
-						fprintf (stderr, "Failed to obtain solution.\n");
-					}
-
-					num_active_rows=0 ;
-					if (solution_ok)
-					{
-						REAL max_slack = -CMath::INFTY ;
-						INT max_idx = -1 ;
-						INT start_pos = 1 ;
-						if (C_mkl!=0.0)
-							start_pos+=2*(num_kernels-1);
-						for (INT i = start_pos; i < cur_numrows; i++)  // skip first
-							if ((pi[i]!=0))
-								num_active_rows++ ;
-							else
-							{
-								if (slack[i]>max_slack)
-								{
-									max_slack=slack[i] ;
-									max_idx=i ;
-								}
-							}
-
-						// have at most max(100,num_active_rows*2) rows 
-						if ( (num_rows-start_pos>CMath::max(10,2*num_active_rows)) && (max_idx!=-1))
-						{
-							//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_pos,num_rows) ;
-							INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
-							if ( status ) {
-								fprintf (stderr, "Failed to remove an old row.\n");
-							}
-						}
-						k->set_subkernel_weights(x, num_kernels) ;
-						rho = -x[2*num_kernels] ;
-						w_gap = CMath::abs(1-rho/objective) ;
-
-						for (INT i=0; i<num_kernels; i++)
-						{
-							fprintf(stderr,"alpha[%i]=%1.3e [%i] ", i, x[i], w_zero_rounds[i]) ;
-							if (fabs(x[i])<1e-8)
-								w_zero_rounds[i]++ ;
-							else
-								w_zero_rounds[i]=0 ;
-						}
-						fprintf(stderr,"\n") ;
-					} else
-					{
-						w_gap = 0 ; // then something is wrong and we rather 
-						// stop sooner than later
-					}
-					delete[] x ;
-					delete[] slack ;
-					delete[] pi ;
-				}
-			}
-			
-			{ //deactivate variables
-				INT max_idx = -1 ;
-				INT max_val = -1 ;
-				for (INT i=0; i<num_kernels; i++)
-					if ((max_val<w_zero_rounds[i]) && !w_deactivated[i]) 
-					{
-						max_val = w_zero_rounds[i] ;
-						max_idx = i ;
-					}
-				if (max_val>=1000)
-				{
-					w_deactivated[max_idx]=1 ;
-					double ubnd = 0 ;
-					char type='U' ;
-					INT status = CPXchgbds(env, lp, 1, &max_idx, &type, &ubnd);
-					if ( status ) {
-						fprintf (stderr, "Failed to deactivate variable.\n");
-					}
-					CIO::message(M_DEBUG, "deactivated variable %i\n", max_idx) ;
-				}
-			}
-			
-#endif
-
-			// update lin
-#ifdef HAVE_ATLAS
-			cblas_dgemv(CblasColMajor,
-						CblasTrans, num_kernels, num,
-						1.0, W, num_kernels, w, 1, 0.0, lin,1);
-#else
-			for(int i=0; i<num; i++)
-				lin[i]=0 ;
-			for (int d=0; d<num_kernels; d++)
-				if (w[d]!=0)
-					for(int i=0; i<num; i++)
-						lin[i] += w[d]*W[i*num_kernels+d] ;
-#endif
-			
-			// count actives
-			INT jj ;
-			for(jj=0;active2dnum[jj]>=0;jj++);
-			
-			if (count%100==0)
-			{
-				INT start_pos = 1 ;
-				if (C_mkl!=0.0)
-					start_pos+=2*(num_kernels-1);
-				CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_pos);
-			}
-			
-			delete[] sumw;
+	if (get_kernel()->has_property(KP_LINADD)) 
+	{
+		if (get_kernel()->has_property(KP_KERNCOMBINATION) && is_mkl_enabled() ) 
+		{
+			update_linear_component_mkl(docs, label, active2dnum, a, a_old, working2dnum, 
+										totdoc,	lin, aicache) ;
 		}
 		else
 		{
 			get_kernel()->clear_normal();
-			// fprintf(stderr, "lin_add-opt\n") ;
-
+			
 			for(ii=0;(i=working2dnum[ii])>=0;ii++) {
 				if(a[i] != a_old[i]) {
 					get_kernel()->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
@@ -1478,20 +1516,20 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 		}
 	}
 	else 
-		if (get_kernel()->has_property(KP_KERNCOMBINATION) && is_mkl_enabled() ) {
-
+		if (get_kernel()->has_property(KP_KERNCOMBINATION) && is_mkl_enabled() ) 
+		{
 			/* general case  generic kernel combination
 			   works only for CombinedKernel (assumes kernel has functions of CombinedKernel)
 			   pray that we have enough memory for kernel cache / only very few examples*/
-
+			
 			INT num    = get_kernel()->get_rhs()->get_num_vectors() ;
-			CCombinedKernel* k = (CCombinedKernel*) get_kernel();
-
+			//CCombinedKernel* k = (CCombinedKernel*) get_kernel();
+			
 			CIO::message(M_ERROR, "FIX MKL CombinedKernel Learning\n");
-
+			
 			INT num_kernels = get_kernel()->get_num_subkernels() ;
 			REAL* w    = new REAL[num_kernels];
-
+			
 			REAL* sumw = new REAL[num_kernels];
 			REAL* w_backup = new REAL[num_kernels] ;
 
@@ -1501,7 +1539,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				w_backup[i]=w[i] ;
 				w[i]=1 ;
 			}
-
+			
 			for(jj=0;(i=working2dnum[jj])>=0;jj++) {
 				if(a[i] != a_old[i]) {
 					CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
@@ -1550,19 +1588,6 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			}
 #endif
 
-#ifdef USE_W_TIMING
-			if ((w_gap<last_w_gap/2) &&(count%101!=0))
-			{
-				CIO::message(M_INFO,"w_gap=%f last_w_gap=%f\n",w_gap,last_w_gap) ;
-
-				last_w_gap=last_w_gap/2 ;
-				w_timing[w_timing_idx]=count ;
-				w_timing_idx++ ;
-				for  (int i=0; i<w_timing_idx; i++)
-					CIO::message(M_INFO,"%i %i\n", i, w_timing[i]) ;
-			}
-#endif
-
 			count++ ;
 #ifdef USE_CPLEX			
 			w_gap = CMath::abs(1-rho/objective) ;
@@ -1590,7 +1615,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					if ( status ) {
 						char  errmsg[1024];
 						CPXgeterrorstring (env, status, errmsg);
-						fprintf (stderr, "%s", errmsg);
+						CIO::message(M_ERROR, "%s", errmsg);
 					}
 
 					// add constraint sum(w)=1 ;
@@ -1617,7 +1642,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 							rhs, sense, rmatbeg,
 							rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-						fprintf (stderr, "Failed to add the first row.\n");
+						CIO::message(M_ERROR, "Failed to add the first row.\n");
 					}
 
 				}
@@ -1647,14 +1672,14 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 							rhs, sense, rmatbeg,
 							rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-						fprintf (stderr, "Failed to add the new row.\n");
+						CIO::message(M_ERROR, "Failed to add the new row.\n");
 					}
 				}
 
 				{ // optimize
 					INT status = CPXlpopt (env, lp);
 					if ( status ) {
-						fprintf (stderr, "Failed to optimize LP.\n");
+						CIO::message(M_ERROR, "Failed to optimize LP.\n");
 					}
 
 					// obtain solution
@@ -1670,14 +1695,14 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 							slack == NULL ||
 							pi    == NULL   ) {
 						status = CPXERR_NO_MEMORY;
-						fprintf (stderr, "Could not allocate memory for solution.\n");
+						CIO::message(M_ERROR, "Could not allocate memory for solution.\n");
 					}
 					INT solstat = 0 ;
 					REAL objval = 0 ;
 					status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
 					INT solution_ok=(!status) ;
 					if ( status ) {
-						fprintf (stderr, "Failed to obtain solution.\n");
+						CIO::message(M_ERROR, "Failed to obtain solution.\n");
 					}
 
 					num_active_rows=0 ;
@@ -1702,7 +1727,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 						{
 							INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
 							if ( status ) {
-								fprintf (stderr, "Failed to remove an old row.\n");
+								CIO::message(M_ERROR, "Failed to remove an old row.\n");
 							}
 						}
 

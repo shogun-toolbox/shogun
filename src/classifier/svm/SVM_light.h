@@ -188,6 +188,10 @@ typedef struct shrink_state {
 					   long int *active2dnum, double *a, double* a_old,
 					   long int *working2dnum, long int totdoc,
 					   double *lin, REAL *aicache);
+  void update_linear_component_mkl(LONG* docs, INT *label, 
+					   long int *active2dnum, double *a, double* a_old,
+					   long int *working2dnum, long int totdoc,
+					   double *lin, REAL *aicache);
   long int select_next_qp_subproblem_grad( INT *label, double *a,
 						  double* lin, double* c, long int totdoc, long int qp_size, long int *inconsistent, 
 						  long int* active2dnum, long int* working2dnum, double *selcrit, 
@@ -244,23 +248,23 @@ typedef struct shrink_state {
   long int   init_iter,precision_violations;
   double model_b;
   double opt_precision;
-  REAL* W;
-  INT* w_zero_rounds ;
-  INT* w_deactivated ;
-  REAL rho ;
-  REAL w_gap ;
-  REAL lp_C ;
-  INT count ;
-  REAL mymaxdiff ;
-  INT num_rows ;
-  INT num_active_rows ;
-#ifdef USE_W_TIMING
-  const static INT w_timing_len=25 ;
-  INT w_timing_idx;
-  INT w_timing[w_timing_len] ;
-  REAL last_w_gap ;
-#endif
   
+  // MKL stuff
+  REAL* W;             // Matrix that stores the contribution by each kernel 
+                       // for each example (for current alphas)
+  INT* w_zero_rounds ; // counts the number of rounds the coefficient has been zero
+  INT* w_deactivated ; // stores which variable has been deactivated
+  INT orig_alphas_by_row_num ;
+  REAL** orig_alphas_by_row ; // stores a pointer to a set of alphas for recomputation 
+                             // a row (when reactivating variables)
+  REAL rho ;           // current margin
+  REAL w_gap ;         // current relative w gap
+  REAL lp_C ;          // regularization parameter for w smoothing
+  INT count ;          // number of iteration
+  REAL mymaxdiff ;     // current alpha gap
+  INT num_rows ;       // number of alpha constraint rows 
+  INT num_active_rows ;// number of active alpha constraint rows
+
 #ifdef USE_CPLEX
   CPXENVptr     env ;
   CPXLPptr      lp ;
