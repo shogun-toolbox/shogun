@@ -169,7 +169,6 @@ void Cache::swap_index(int i, int j)
 //
 // Kernel evaluation
 //
-// the static method k_function is for doing single kernel evaluation
 // the constructor of Kernel prepares to calculate the l*l kernel matrix
 // the member function get_Q is for getting one column from the Q Matrix
 //
@@ -178,7 +177,6 @@ public:
 	Kernel(int l, svm_node * const * x, const svm_parameter& param);
 	virtual ~Kernel();
 
-	double k_function(const svm_node *x, const svm_node *y, const svm_parameter& param);
 	virtual Qfloat *get_Q(int column, int len) const = 0;
 	virtual void swap_index(int i, int j) const	// no so const...
 	{
@@ -186,13 +184,12 @@ public:
 		if(x_square) swap(x_square[i],x_square[j]);
 	}
 
-	double foobar(int i, int j) const
+	inline double kernel_function(int i, int j) const
 	{
 		return kernel->kernel(i,j);
 	}
 protected:
 
-	double (Kernel::*kernel_function)(int i, int j) const;
 	CKernel* kernel;
 
 
@@ -205,15 +202,12 @@ private:
 	const double degree;
 	const double gamma;
 	const double coef0;
-
-	static double dot(const svm_node *px, const svm_node *py);
 };
 
 Kernel::Kernel(int l, svm_node * const * x_, const svm_parameter& param)
 :kernel_type(param.kernel_type), degree(param.degree),
  gamma(param.gamma), coef0(param.coef0)
 {
-	kernel_function = &Kernel::foobar;
 	clone(x,x_,l);
 	x_square = 0;
 	kernel=param.kernel;
@@ -223,11 +217,6 @@ Kernel::~Kernel()
 {
 	delete[] x;
 	delete[] x_square;
-}
-
-double Kernel::k_function(const svm_node *x, const svm_node *y, const svm_parameter& param)
-{
-	return param.kernel->kernel(x->index,y->index);
 }
 
 // Generalized SMO+SVMlight algorithm
@@ -1022,7 +1011,7 @@ public:
 		if((start = cache->get_data(i,&data,len)) < len)
 		{
 			for(int j=start;j<len;j++)
-				data[j] = (Qfloat)(y[i]*y[j]*(this->*kernel_function)(i,j));
+				data[j] = (Qfloat) y[i]*y[j]*kernel_function(i,j);
 		}
 		return data;
 	}
@@ -1060,7 +1049,7 @@ public:
 		if((start = cache->get_data(i,&data,len)) < len)
 		{
 			for(int j=start;j<len;j++)
-				data[j] = (Qfloat)(this->*kernel_function)(i,j);
+				data[j] = (Qfloat) kernel_function(i,j);
 		}
 		return data;
 	}
@@ -1114,7 +1103,7 @@ public:
 		if(cache->get_data(real_i,&data,l) < l)
 		{
 			for(int j=0;j<l;j++)
-				data[j] = (Qfloat)(this->*kernel_function)(real_i,j);
+				data[j] = (Qfloat) kernel_function(real_i,j);
 		}
 
 		// reorder and copy
@@ -1717,7 +1706,7 @@ int svm_save_model(const char *model_file_name, const svm_model *model)
 		const svm_node *p = SV[i];
 		while(p->index != -1)
 		{
-			fprintf(fp,"%d:%.8g ",p->index,p->value);
+			fprintf(fp,"%d",p->index);
 			p++;
 		}
 		fprintf(fp, "\n");
@@ -1887,7 +1876,7 @@ out:
 				if(c=='\n') goto out2;
 			} while(isspace(c));
 			ungetc(c,fp);
-			fscanf(fp,"%d:%lf",&(x_space[j].index),&(x_space[j].value));
+			fscanf(fp,"%d",&(x_space[j].index));
 			++j;
 		}	
 out2:

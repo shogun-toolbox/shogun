@@ -111,5 +111,6 @@ REAL CLinearKernel::compute(INT idx_a, INT idx_b)
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
+//  CIO::message("%4d %4d -> %6.3f\n", idx_a, idx_b, result);
   return result;
 }

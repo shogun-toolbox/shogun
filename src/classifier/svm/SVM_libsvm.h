@@ -10,7 +10,6 @@ extern "C" {
 struct svm_node
 {
 	int index;
-	double value;
 };
 
 struct svm_problem
