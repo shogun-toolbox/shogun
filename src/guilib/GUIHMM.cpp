@@ -503,17 +503,23 @@ bool CGUIHMM::set_hmm_as(char* param)
 		{
 			if (strcmp(target,"POS")==0)
 			{
+				delete pos;
 				pos=working;
+				working=NULL;
 				gui->guifeatures.set_hmms(pos, neg) ;
 			}
 			else if (strcmp(target,"NEG")==0)
 			{
+				delete neg;
 				neg=working;
+				working=NULL;
 				gui->guifeatures.set_hmms(pos, neg) ;
 			}
 			else if (strcmp(target,"TEST")==0)
 			{
+				delete test;
 				test=working;
+				working=NULL;
 			}
 			else
 				CIO::message("target POS|NEG|TEST missing\n");
