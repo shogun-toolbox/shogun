@@ -453,14 +453,16 @@ bool CGUIFeatures::convert_full_to_sparse(char* param)
 				long num_f=0;
 				long num_v=0;
 				REAL* feats=((CRealFeatures*)(*f_ptr))->get_feature_matrix(num_f, num_v);
-				sf->set_full_feature_matrix(feats, num_f, num_v);
+				result=sf->set_full_feature_matrix(feats, num_f, num_v);
+				delete (*f_ptr);
+				(*f_ptr)=sf;
 			}
 		}
 		else
 			CIO::message("no Simple features available\n");
 
 		if (!result)
-			CIO::message("reshaping failed");
+			CIO::message("conversion failed");
 	}
 
 	return result;

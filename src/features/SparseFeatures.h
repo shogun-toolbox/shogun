@@ -60,6 +60,9 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 		virtual ~CSparseFeatures()
 		{
+			for (long i=0; i< num_sparse_vectors; i++)
+				delete[] sparse_feature_matrix[i].features;
+
 			delete[] sparse_feature_matrix;
 			delete feature_cache;
 		}
@@ -247,8 +250,9 @@ template <class ST> class CSparseFeatures: public CFeatures
 		  where num_features is the column offset, and columns are linear in memory
 		  see above for definition of sparse_feature_matrix
 		  */
-		virtual void set_full_feature_matrix(ST* ffm, long num_feat, long num_vec)
+		virtual bool set_full_feature_matrix(ST* ffm, long num_feat, long num_vec)
 		{
+			bool result=true;
 			num_features=num_feat;
 			num_vectors=num_vec;
 
@@ -257,17 +261,16 @@ template <class ST> class CSparseFeatures: public CFeatures
 			num_vec=num_vectors;
 
 			int* num_feat_entries=new int[num_vectors];
+			assert(num_feat_entries);
 
 			if (num_feat_entries)
 			{
-				for (long i=0; i< num_feat*num_vec; i++)
-					num_feat_entries[i]=0;
-
 				long num_sparse_vec=0;
 
 				// count nr of non sparse features
 				for (long i=0; i< num_vec; i++)
 				{
+					num_feat_entries[i]=0;
 					for (long j=0; j< num_feat; j++)
 					{
 						if (ffm[i*num_feat + j])
@@ -292,25 +295,42 @@ template <class ST> class CSparseFeatures: public CFeatures
 							if (num_feat_entries[i]>0)
 							{
 								sparse_feature_matrix[sparse_vec_idx].features= new TSparseEntry<ST>[num_feat_entries[i]];
-								if (sparse_feature_matrix[sparse_vec_idx].num_feat_entries>0)
+
+								if (!sparse_feature_matrix[sparse_vec_idx].features)
 								{
-									long sparse_feat_idx=0;
-
-									for (long j=0; j< num_feat; j++)
-									{
-										long pos= i*num_feat + j;
-
-										if (ffm[pos])
-											sparse_feature_matrix[sparse_vec_idx].features[sparse_feat_idx++].entry=ffm[pos];
-									}
-
+									CIO::message("allocation of features failed\n");
+									return false;
 								}
-								num_sparse_vec++;
+
+								sparse_feature_matrix[sparse_vec_idx].num_feat_entries=num_feat_entries[i];
+
+								long sparse_feat_idx=0;
+
+								for (long j=0; j< num_feat; j++)
+								{
+									long pos= i*num_feat + j;
+
+									if (ffm[pos])
+										sparse_feature_matrix[sparse_vec_idx].features[sparse_feat_idx++].entry=ffm[pos];
+								}
+								sparse_vec_idx++;
 							}
 						}
 					}
+					else
+					{
+						CIO::message("allocation of sparse feature matrix failed\n");
+						result=false;
+					}
+				}
+				else
+				{
+					CIO::message("huh ? zero matrix given ?\n");
+					result=false;
 				}
 			}
+			delete[] num_feat_entries;
+			return result;
 		}
 
 		virtual bool preproc_feature_matrix(bool force_preprocessing=false)

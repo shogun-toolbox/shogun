@@ -20,6 +20,7 @@ public:
 
 	~CSimpleFile()
 	{
+		free(fname);
 	}
 
 	//num is the number of read elements

@@ -60,6 +60,7 @@ static const char* N_CLEAR=			"clear";
 static const char* N_CHOP=			"chop";
 static const char* N_CONVERGENCE_CRITERIA=	"convergence_criteria";
 static const char* N_PSEUDO=			"pseudo";
+static const char* N_CONVERT_TO_SPARSE=	"convert_to_sparse";
 static const char* N_C=			     	"c";
 static const char* N_ADD_STATES=	        "add_states";
 static const char* N_APPEND_HMM=		"append_hmm";
@@ -174,6 +175,7 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|LOGPLUSONE>\t\t\t- add preprocessor of type\n", N_ADD_PREPROC);
 	CIO::message("\033[1;31m%s\033[0m <NUM>\t\t\t- delete preprocessor\n", N_DEL_PREPROC);
 	CIO::message("\033[1;31m%s\033[0m <TRAIN|TEST> <NUM_FEAT> <NUM_VEC>\t\t\t- reshape feature matrix for simple features\n", N_RESHAPE);
+	CIO::message("\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert dense features to sparse feature matrix\n", N_CONVERT_TO_SPARSE);
 	CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> [<0|1>] - preprocesses the feature_matrix, 1 to force preprocessing of already processed\n",N_PREPROCESS);
 	CIO::message("\n[SVM]\n");
 	CIO::message("\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
@@ -260,6 +262,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	else if (!strncmp(input, N_RESHAPE, strlen(N_RESHAPE)))
 	{
 		guifeatures.reshape(input+strlen(N_RESHAPE));
+	} 
+	else if (!strncmp(input, N_CONVERT_TO_SPARSE, strlen(N_CONVERT_TO_SPARSE)))
+	{
+		guifeatures.convert_full_to_sparse(input+strlen(N_CONVERT_TO_SPARSE));
 	} 
 	else if (!strncmp(input, N_LOAD_SVM, strlen(N_LOAD_SVM)))
 	{

@@ -40,7 +40,9 @@ CFile::CFile(char* fname, char rw, EType typ, char fourcc[4])
 
 CFile::~CFile()
 {
+	free(fname);
 	fclose(file);
+	fname=NULL;
 	file=NULL;
 }
 
