@@ -126,15 +126,25 @@ public:
 	static void sort(REAL *a, INT*idx, INT N) ;
 	
 	/** performs a quicksort on an array output of length size
-	 * it is sorted from in ascending order from top to bottom
-	 * and left to right (for type T) */
+	 * it is sorted from in ascending (for type T) */
 	template <class T>
 	static void qsort(T* output, INT size) ;
 
-	template <class T>
-	static void qsort(REAL* output, T* index, INT size) ;
+	/** performs a quicksort on an array output of length size
+	 * it is sorted from in ascending order 
+	 * (for type T1) and returns the index (type T2)
+	 * matlab alike [sorted,index]=sort(output) 
+	 */
+	template <class T1,class T2>
+	static void qsort(T1* output, T2* index, INT size);
 
-	static void qsort_backward(REAL* output, INT* index, INT size) ;
+	/** performs a quicksort on an array output of length size
+	 * it is sorted from in ascending order
+	 * (for type T1) and returns the index (type T2)
+	 * matlab alike [sorted,index]=sort(output) 
+	 */
+	template <class T1,class T2>
+	static void qsort_backward(T1* output, T2* index, INT size);
 
      /* finds the smallest element in output and puts that element as the 
 		first element  */
@@ -383,7 +393,46 @@ protected:
 
 //implementations of template functions
 template <class T>
-void CMath::qsort(REAL* output, T* index, INT size)
+void CMath::qsort(T* output, INT size)
+{
+	if (size==2)
+	{
+		if (output[0] > output [1])
+			swap(output[0],output[1]);
+	}
+	else
+	{
+		REAL split=output[(size*rand())/(RAND_MAX+1)];
+		//REAL split=output[size/2];
+
+		INT left=0;
+		INT right=size-1;
+
+		while (left<=right)
+		{
+			while (output[left] < split)
+				left++;
+			while (output[right] > split)
+				right--;
+
+			if (left<=right)
+			{
+				swap(output[left],output[right]);
+				left++;
+				right--;
+			}
+		}
+
+		if (right+1> 1)
+			qsort(output,right+1);
+
+		if (size-left> 1)
+			qsort(&output[left],size-left);
+	}
+}
+
+template <class T1,class T2>
+void CMath::qsort(T1* output, T2* index, INT size)
 {
 	if (size==2)
 	{
@@ -406,6 +455,49 @@ void CMath::qsort(REAL* output, T* index, INT size)
 			while (output[left] < split)
 				left++;
 			while (output[right] > split)
+				right--;
+			
+			if (left<=right)
+			{
+				swap(output[left],output[right]);
+				swap(index[left],index[right]);
+				left++;
+				right--;
+			}
+		}
+		
+		if (right+1> 1)
+			qsort(output,index,right+1);
+		
+		if (size-left> 1)
+			qsort(&output[left],&index[left], size-left);
+	}
+}
+
+template <class T1,class T2>
+void CMath::qsort_backward(T1* output, T2* index, INT size)
+{
+	if (size==2)
+	{
+		if (output[0] < output [1]){
+			swap(output[0],output[1]);
+			swap(index[0],index[1]);
+		}
+		
+	}
+	else
+	{
+		REAL split=output[(size*rand())/(RAND_MAX+1)];
+		//REAL split=output[size/2];
+		
+		INT left=0;
+		INT right=size-1;
+		
+		while (left<=right)
+		{
+			while (output[left] > split)
+				left++;
+			while (output[right] < split)
 				right--;
 			
 			if (left<=right)
@@ -451,44 +543,4 @@ void CMath::min(REAL* output, T* index, INT size)
 	swap(output[0], output[min_index]) ;
 	swap(index[0], index[min_index]) ;
 }
-
-template <class T>
-void CMath::qsort(T* output, INT size)
-{
-	if (size==2)
-	{
-		if (output[0] > output [1])
-			swap(output[0],output[1]);
-	}
-	else
-	{
-		REAL split=output[(size*rand())/(RAND_MAX+1)];
-		//REAL split=output[size/2];
-
-		INT left=0;
-		INT right=size-1;
-
-		while (left<=right)
-		{
-			while (output[left] < split)
-				left++;
-			while (output[right] > split)
-				right--;
-
-			if (left<=right)
-			{
-				swap(output[left],output[right]);
-				left++;
-				right--;
-			}
-		}
-
-		if (right+1> 1)
-			qsort(output,right+1);
-
-		if (size-left> 1)
-			qsort(&output[left],size-left);
-	}
-}
-
 #endif
