@@ -196,7 +196,7 @@ bool CTextGUI::get_line(FILE* infile)
 
 	input[strlen(input)-1]='\0';
 	if (infile!=stdin)
-		printf("%s\n",input) ;
+		CIO::message("%s\n",input) ;
 	
 	if (!strncmp(input, N_NEW_HMM, strlen(N_NEW_HMM)))
 	{
@@ -449,9 +449,9 @@ int main(int argc, const char* argv[])
 		{
 			if ( argc>2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help"))
 			{
-				printf("usage: genfinder [ <script> ]\n\n");
-				printf("if no options are given genfinder enters interactive mode\n");
-				printf("if <script> is specified the commands will be executed");
+				CIO::message("usage: genfinder [ <script> ]\n\n");
+				CIO::message("if no options are given genfinder enters interactive mode\n");
+				CIO::message("if <script> is specified the commands will be executed");
 				return 1;
 			}
 			else
