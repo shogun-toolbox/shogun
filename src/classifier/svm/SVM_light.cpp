@@ -193,39 +193,50 @@ void CSVMLight::svm_learn()
 	}
 
   /* compute starting state for initial alpha values */
-  if(svm_model.alpha) {
+	CIO::message(M_DEBUG, "alpha:%d num_sv:%d\n", svm_model.alpha, get_num_support_vectors());
+  if(svm_model.alpha && get_num_support_vectors()) {
     if(verbosity>=1) {
       printf("Computing starting state..."); fflush(stdout);
     }
+
+	REAL* alpha = new REAL[totdoc];
+
+	for (i=0; i<totdoc; i++)
+		alpha[i]=0;
+
+	for (i=0; i<get_num_support_vectors(); i++)
+		alpha[get_support_vector(i)]=get_alpha(i);
+	
     long* index = new long[totdoc];
     long* index2dnum = new long[totdoc+11];
     REAL* aicache = new REAL[totdoc];
     for(i=0;i<totdoc;i++) {    /* create full index and clip alphas */
       index[i]=1;
-      set_alpha(i, fabs(get_alpha(i)));
-      if(get_alpha(i)<0) set_alpha(i,0);
-      if(get_alpha(i)>learn_parm->svm_cost[i]) set_alpha(i,learn_parm->svm_cost[i]);
+      alpha[i]=fabs(alpha[i]);
+      if(alpha[i]<0) alpha[i]=0;
+      if(alpha[i]>learn_parm->svm_cost[i]) alpha[i]=learn_parm->svm_cost[i];
     }
       for(i=0;i<totdoc;i++)     /* fill kernel cache with unbounded SV */
-
-	if((get_alpha(i)>0) && (get_alpha(i)<learn_parm->svm_cost[i]) 
+	if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i]) 
 	   && (get_kernel()->kernel_cache_space_available())) 
 	  get_kernel()->cache_kernel_row(i);
       for(i=0;i<totdoc;i++)     /* fill rest of kernel cache with bounded SV */
-	if((get_alpha(i)==learn_parm->svm_cost[i]) 
+	if((alpha[i]==learn_parm->svm_cost[i]) 
 	   && (get_kernel()->kernel_cache_space_available())) 
 	  get_kernel()->cache_kernel_row(i);
-    compute_index(index,totdoc,index2dnum);
-    update_linear_component(docs,label,index2dnum,svm_model.alpha,a,index2dnum,totdoc,
+    (void)compute_index(index,totdoc,index2dnum);
+    update_linear_component(docs,label,index2dnum,alpha,a,index2dnum,totdoc,
 			    lin,aicache);
-    calculate_svm_model(docs,label,lin,svm_model.alpha,a,c,
+    (void)calculate_svm_model(docs,label,lin,alpha,a,c,
 			      index2dnum,index2dnum,model);
     for(i=0;i<totdoc;i++) {    /* copy initial alphas */
-      a[i]=get_alpha(i);
+      a[i]=alpha[i];
     }
+
     delete[] index;
     delete[] index2dnum;
     delete[] aicache;
+    delete[] alpha;
 
     if(verbosity>=1) {
       printf("done.\n");  fflush(stdout);
@@ -270,9 +281,6 @@ void CSVMLight::svm_learn()
 		CIO::message(M_INFO, "Number of SV: %ld (including %ld at upper bound)\n",
 				model->sv_num-1,upsupvecnum);
 	}
-
-	/*  if(learn_parm->alphafile[0])
-		write_alphas(learn_parm->alphafile,a,label,totdoc);*/
 
 	shrink_state_cleanup(&shrink_state);
 	delete[] label;
