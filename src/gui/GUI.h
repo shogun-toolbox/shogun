@@ -9,13 +9,14 @@
 #include "guilib/GUIFeatures.h"
 #include "guilib/GUIMath.h"
 #include "guilib/GUILabels.h"
+#include "guilib/GUITime.h"
 
 class CGUI
 {
  public:
 
   CGUI(INT ac, const CHAR**av): guisvm(this), guihmm(this), guipluginestimate(this), guikernel(this), 
-    guipreproc(this), guifeatures(this), guilabels(this), argc(ac), argv(av) {} ;
+    guipreproc(this), guifeatures(this), guilabels(this), guimath(this), guitime(this), argc(ac), argv(av) {} ;
 
   CGUISVM guisvm;
   CGUIHMM guihmm;
@@ -25,6 +26,7 @@ class CGUI
   CGUIFeatures guifeatures;
   CGUILabels guilabels;
   CGUIMath guimath;
+  CGUITime guitime;
 
   INT argc ;
   const CHAR **argv ;

@@ -3,7 +3,7 @@
 #include "lib/io.h"
 
 #include <math.h>
-CGUIMath::CGUIMath() : threshold(0.0)
+CGUIMath::CGUIMath(CGUI* g) : gui(g), threshold(0.0)
 {
 }
 

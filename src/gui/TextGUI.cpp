@@ -94,11 +94,12 @@ static const CHAR* N_SVM_TEST=			"svm_test";
 static const CHAR* N_ONE_CLASS_HMM_TEST=	"one_class_hmm_test";
 static const CHAR* N_HMM_TEST=			"hmm_test";
 static const CHAR* N_HMM_CLASSIFY=		"hmm_classify";
-static const CHAR* N_SET_ORDER=			"set_order";
 static const CHAR* N_SET_OUTPUT=		"set_output";
 static const CHAR* N_GRADIENT_STEP=		"do_grad_step";
 static const CHAR* N_ALIGN_CHAR=                "align_char" ;
 static const CHAR* N_SET_REF_FEAT=              "set_ref_features" ;
+static const CHAR* N_TIC=              "tic" ;
+static const CHAR* N_TOC=              "toc" ;
 
 CTextGUI::CTextGUI(INT argc, const CHAR** argv)
 : CGUI(argc, argv), out_file(NULL)
@@ -580,10 +581,14 @@ bool CTextGUI::parse_line(CHAR* input)
 	{
      	        guihmm.gradient_step(input+strlen(N_GRADIENT_STEP)) ;
 	} 
-	else if (!strncmp(input, N_SET_ORDER, strlen(N_SET_ORDER)))
+	else if (!strncmp(input, N_TIC, strlen(N_TIC)))
 	{
-		CIO::not_implemented() ;
-	}
+     	        guitime.start();
+	} 
+	else if (!strncmp(input, N_TOC, strlen(N_TOC)))
+	{
+     	        guitime.stop();
+	} 
 	else
 		CIO::message("unrecognized command. type help for options\n");
 
