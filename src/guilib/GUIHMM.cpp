@@ -14,6 +14,7 @@ CGUIHMM::CGUIHMM(CGUI * gui_): gui(gui_)
 	neg=NULL;
 	test=NULL;
 
+	ITERATIONS=150;
 	EPSILON=1e-4;
 	PSEUDO=1e-10;
 	M=4;
@@ -61,11 +62,9 @@ bool CGUIHMM::baum_welch_train(char* param)
 
 	if (working) 
 	{
-
 		if (working->get_observations())
 		{
 			working_estimate=new CHMM(working);
-			working_estimate->set_observations(working->get_observations());
 			
 			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
 
@@ -93,6 +92,8 @@ bool CGUIHMM::baum_welch_train(char* param)
 					CIO::message("done.") ;
 				} ;
 			}
+			delete working_estimate;
+			working_estimate=NULL;
 		}
 		else
 			CIO::message("assign observation first\n");
