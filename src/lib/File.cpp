@@ -20,9 +20,7 @@ CFile::CFile(char* fname, char rw, EType typ, char fourcc[4])
 		if ( fname)
 		{
 			if ((file=fopen((const char*) fname, (const char*) mode)))
-			{
 				status=true;
-			}
 		}
 	}
 

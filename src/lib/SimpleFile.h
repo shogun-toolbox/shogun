@@ -1,6 +1,8 @@
 #ifndef __SIMPLEFILE_H__
 #define __SIMPLEFILE_H__
 
+#include "lib/io.h"
+
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
@@ -29,10 +31,33 @@ public:
 
 			if (num==0)
 			{
-				if (!fseek(file, 0, SEEK_END))
+				bool seek_status=true;
+				long cur_pos=ftell(file);
+
+				if (cur_pos!=-1)
 				{
-					if ((num=(int)ftell(file)) != -1)
-						num/=sizeof(T);
+					if (!fseek(file, 0, SEEK_END))
+					{
+						if ((num=(int)ftell(file)) != -1)
+						{
+							CIO::message("file of size %ld bytes == %ld entries detected\n", num,num/sizeof(T));
+							num/=sizeof(T);
+						}
+						else
+							seek_status=false;
+					}
+					else
+						seek_status=false;
+				}
+
+				if ((fseek(file,cur_pos, SEEK_SET)) == -1)
+					seek_status=false;
+
+				if (!seek_status)
+				{
+					CIO::message("filesize autodetection failed\n");
+					num=0;
+					return NULL;
 				}
 			}
 
@@ -42,9 +67,7 @@ public:
 					target=new T[num];
 
 				if (target)
-				{
 					status=(fread((void*) target, sizeof(T), num, file) == (unsigned int) num);
-				}
 			}
 			return target;
 		}

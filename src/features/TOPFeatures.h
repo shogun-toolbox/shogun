@@ -14,7 +14,6 @@ class CTOPFeatures: public CRealFeatures
 
   void set_models(CHMM* p, CHMM* n);
   virtual REAL* set_feature_matrix();
-  virtual int get_label(long idx);
   
   virtual CFeatures* duplicate() const;
 

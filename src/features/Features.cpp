@@ -82,15 +82,6 @@ CPreProc* CFeatures::del_preproc(int num)
 	return removed_preproc;
 }
 
-int* CFeatures::get_labels(long &len)
-{
-  len=get_num_vectors() ;
-  int* labels=new int[len] ;
-  for (int i=0; i<len; i++)
-    labels[i]=get_label(i) ;
-  return labels ;
-}
-
 bool CFeatures::load(char* fname)
 {
 	return false;

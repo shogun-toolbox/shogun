@@ -165,16 +165,6 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	}
   }
 
-  virtual bool  set_label(long idx, int label)
-  {
-	  return false;
-  }
-
-  virtual int  	get_label(long idx)
-  {
-	  return -1;
-  }
-
   virtual int get_size() { return sizeof(ST); }
   virtual inline long  get_num_vectors() { return num_vectors; }
 
@@ -200,9 +190,9 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	  }
   }
   
-  bool reshape(int num_features, int num_vectors)
+  virtual bool reshape(int num_features, int num_vectors)
   {
-	  if (num_features*num_vectors= this->num_features * this->num_vectors)
+	  if (num_features*num_vectors == this->num_features * this->num_vectors)
 	  {
 		  this->num_features=num_features;
 		  this->num_vectors=num_vectors;

@@ -8,13 +8,14 @@
 #include "guilib/GUIPreProc.h"
 #include "guilib/GUIFeatures.h"
 #include "guilib/GUIMath.h"
+#include "guilib/GUILabels.h"
 
 class CGUI
 {
  public:
 
   CGUI(int ac, const char**av): guisvm(this), guihmm(this), guikernel(this), 
-    guiobs(this), guipreproc(this), guifeatures(this), argc(ac), argv(av) {} ;
+    guiobs(this), guipreproc(this), guifeatures(this), guilabels(this), argc(ac), argv(av) {} ;
 
   CGUISVM guisvm;
   CGUIHMM guihmm;
@@ -22,6 +23,7 @@ class CGUI
   CGUIObservation guiobs;
   CGUIPreProc guipreproc;
   CGUIFeatures guifeatures;
+  CGUILabels guilabels;
   CGUIMath guimath;
 
   int argc ;

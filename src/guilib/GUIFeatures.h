@@ -1,6 +1,7 @@
 #ifndef __GUIFEATURES__H
 #define __GUIFEATURES__H
 
+#include "features/Labels.h"
 #include "features/Features.h"
 #include "hmm/Observation.h"
 

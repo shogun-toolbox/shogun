@@ -1,8 +1,25 @@
 #include "features/RealFeatures.h"
+#include "lib/File.h"
+
+CFeatures* CRealFeatures::duplicate() const
+{
+	return new CRealFeatures(*this);
+}
 
 bool CRealFeatures::load(char* fname)
 {
-    return false;
+	bool status=false;
+	num_vectors=1;
+    num_features=0;
+	CFile f(fname, 'r', F_REAL);
+	feature_matrix=f.load_real_data(NULL, num_features);
+
+    if (!f.is_ok())
+		CIO::message("loading file \"%s\" failed", fname);
+	else
+		status=true;
+
+	return status;
 }
 
 bool CRealFeatures::save(char* fname)
@@ -46,10 +63,10 @@ bool CRealFeatures::save(char* fname)
 	free_feature_vector(f, i, free) ;
     }
 
-    long num_lab=0;
-    int* labels=get_labels(num_lab);
-    assert(num_lab==(long) num_vec);
-    assert(fwrite(labels, sizeof(int), num_vec, dest)==num_vec) ;
+    //long num_lab=0;
+    //int* labels=get_labels(num_lab);
+    //assert(num_lab==(long) num_vec);
+    //assert(fwrite(labels, sizeof(int), num_vec, dest)==num_vec) ;
     
 	if (dest)
 		fclose(dest);

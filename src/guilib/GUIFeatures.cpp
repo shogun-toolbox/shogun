@@ -229,11 +229,12 @@ bool CGUIFeatures::load(char* param)
 
 	if (strcmp(type,"REAL")==0)
 	{
-		CIO::message("opening file...\n");
-		*f_ptr=new CRealFileFeatures(size, filename);
+		*f_ptr=new CRealFeatures(filename);
+		//CIO::message("opening file...\n");
+		//*f_ptr=new CRealFileFeatures(size, filename);
 
-		if (comp_features)
-			((CRealFileFeatures*) *f_ptr)->load_feature_matrix() ;
+		//if (comp_features)
+			//((CRealFileFeatures*) *f_ptr)->load_feature_matrix() ;
 	}
 	else if (strcmp(type, "BYTE")==0)
 	{
@@ -314,7 +315,7 @@ bool CGUIFeatures::reshape(char* param)
 	CFeatures** f_ptr=NULL;
 
 	param=CIO::skip_spaces(param);
-	if ((sscanf(param, "%s %ld %ld", target, &num_feat, &num_vec))==2)
+	if ((sscanf(param, "%s %ld %ld", target, &num_feat, &num_vec))==3)
 	{
 		if (strcmp(target,"TRAIN")==0)
 		{
@@ -330,7 +331,11 @@ bool CGUIFeatures::reshape(char* param)
 
 	if (f_ptr)
 	{
+		CIO::message("reshape data to %d x %d\n", num_feat, num_vec);
 		result=(*f_ptr)->reshape(num_feat, num_vec);
+
+		if (!result)
+			CIO::message("reshaping failed");
 	}
 
 	return result;

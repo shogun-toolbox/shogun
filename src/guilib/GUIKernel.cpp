@@ -1,6 +1,7 @@
 #include "guilib/GUIKernel.h"
 #include "kernel/Kernel.h"
 #include "kernel/LinearKernel.h"
+#include "kernel/LinearByteKernel.h"
 #include "lib/io.h"
 #include "gui/GUI.h"
 
@@ -24,24 +25,42 @@ CKernel* CGUIKernel::get_kernel()
 bool CGUIKernel::set_kernel(char* param)
 {
 	int size=100;
-	char type[1024];
+	char kern_type[1024];
+	char data_type[1024];
 	param=CIO::skip_spaces(param);
-
-	if (sscanf(param, "%s %d", type, &size) >= 1)
+	
+	if (sscanf(param, "%s %s %d", kern_type, data_type, &size) >= 2)
 	{
-		if (strcmp(type,"LINEAR")==0)
+		if (strcmp(kern_type,"LINEAR")==0)
 		{
-			int scale=1;
-			sscanf(param, "%s %d %d", type, &size, &scale);
-			delete kernel;
-			kernel=new CLinearKernel(size, scale==1);
-			return true;
+			if (strcmp(data_type,"BYTE")==0)
+			{
+				int scale=1;
+				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &scale);
+				delete kernel;
+				kernel=new CLinearByteKernel(size, scale==1);
+				if (kernel)
+				{
+					CIO::message("LinearByteKernel created\n");
+					return true;
+				}
+			}
+			else if (strcmp(data_type,"REAL")==0)
+			{
+				int scale=1;
+				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &scale);
+				delete kernel;
+				kernel=new CLinearKernel(size, scale==1);
+				return true;
+			}
 		}
 		else 
 			CIO::not_implemented();
 	}
 	else 
 		CIO::message("see help for params!\n");
+
+	CIO::not_implemented();
 	return false;
 }
 

@@ -29,6 +29,7 @@ static const char* N_LOAD_SVM=			"load_svm";
 static const char* N_SAVE_SVM=			"save_svm";
 static const char* N_LOAD_KERNEL_INIT=	"load_kernel_init";
 static const char* N_SAVE_KERNEL_INIT=	"save_kernel_init";
+static const char* N_LOAD_LABELS=		"load_labels";
 static const char* N_LOAD_FEATURES=		"load_features";
 static const char* N_SAVE_FEATURES=		"save_features";
 static const char* N_RESHAPE=			"reshape";
@@ -126,6 +127,7 @@ void CTextGUI::print_help()
 	CIO::message("\033[1;31m%s\033[0m <filename> <LINEAR|MPI|CPLEX>\t- load svm\n",N_LOAD_SVM);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- load kernel init data\n",N_LOAD_KERNEL_INIT);
 	CIO::message("\033[1;31m%s\033[0m <filename> <REAL|SHORT|BYTE|CHAR> <TRAIN|TEST> [<CACHE SIZE> [0|1]]\t- load features\n",N_LOAD_FEATURES);
+	CIO::message("\033[1;31m%s\033[0m <filename> <TRAIN|TEST> \t- load labels\n",N_LOAD_LABELS);
 	CIO::message("\033[1;31m%s\033[0m <filename>\t- load preproc init data\n",N_LOAD_PREPROC);
 	CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
 	CIO::message("\033[1;31m%s\033[0m <filename> <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [<ORDER> [<START> [<WIDTH>]]\t- load observed data\n",N_LOAD_OBSERVATIONS);
@@ -242,6 +244,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
 	else if (!strncmp(input, N_LOAD_PREPROC, strlen(N_LOAD_PREPROC)))
 	{
 		guipreproc.load(input+strlen(N_LOAD_PREPROC)) ;
+	} 
+	else if (!strncmp(input, N_LOAD_LABELS, strlen(N_LOAD_LABELS)))
+	{
+		guilabels.load(input+strlen(N_LOAD_LABELS));
 	} 
 	else if (!strncmp(input, N_LOAD_FEATURES, strlen(N_LOAD_FEATURES)))
 	{

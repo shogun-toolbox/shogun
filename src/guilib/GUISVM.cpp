@@ -69,34 +69,40 @@ bool CGUISVM::train(char* param)
 {
 	param=CIO::skip_spaces(param);
 
-	CFeatures* features=gui->guifeatures.get_train_features();
-	CIO::message("S:initializing train features %ldx%ld\n", ((CRealFeatures*) features)->get_num_vectors(), ((CRealFeatures*) features)->get_num_features());
+	CLabels* trainlabels=gui->guilabels.get_train_labels();
+	//CFeatures* trainfeatures=gui->guifeatures.get_train_features();
+	CKernel* kernel=gui->guikernel.get_kernel();
 
-	bool fr;
-	long len=0;
-	REAL* f=((CRealFeatures*) gui->guifeatures.get_train_features())->get_feature_vector(0, len, fr);
-	((CRealFeatures*) gui->guifeatures.get_train_features())->free_feature_vector(f, 0, fr);
-
-	CIO::message("nana: %i\n", len);
-
-
+//	CIO::message("S:initializing train features %ldx%ld\n", ((CRealFeatures*) features)->get_num_vectors(), ((CRealFeatures*) features)->get_num_features());
+//
+//	bool fr;
+//	long len=0;
+//	REAL* f=((CRealFeatures*) gui->guifeatures.get_train_features())->get_feature_vector(0, len, fr);
+//	((CRealFeatures*) gui->guifeatures.get_train_features())->free_feature_vector(f, 0, fr);
+//
 	if (!svm)
 	{
-		CIO::message("no svm available") ;
+		CIO::message("no svm available\n") ;
 		return false ;
 	}
 
-	if (!features)
+	if (!kernel)
 	{
-		CIO::message("no training features available") ;
+		CIO::message("no kernel available\n");
 		return false ;
 	}
 
-	CIO::message("starting svm training\n") ;
-	svm->set_C(C) ;
-	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
-	//MISSING set train features to kernel
-	return svm->train() ;
+	if (!trainlabels)
+	{
+		CIO::message("no trainlabels available\n");
+		return false ;
+	}
+
+	CIO::message("starting svm training on %ld vectors using C=%lf\n", trainlabels->get_num_labels(), C) ;
+	svm->set_C(C);
+	((CKernelMachine*) svm)->set_labels(trainlabels);
+	((CKernelMachine*) svm)->set_kernel(kernel);
+	return svm->train();
 }
 
 bool CGUISVM::test(char* param)
@@ -133,6 +139,7 @@ bool CGUISVM::test(char* param)
 		}
 	}
 
+	CLabels* testlabels=gui->guilabels.get_test_labels();
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
 	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
@@ -155,6 +162,12 @@ bool CGUISVM::test(char* param)
 		return false ;
 	}
 
+	if (!testlabels)
+	{
+		CIO::message("no test labels available") ;
+		return false ;
+	}
+
 	/*if (!svm->check_feature_type(trainfeatures) || !svm->check_feature_type(trainfeatures))
 	{
 		CIO::message("features do not fit to svm") ;
@@ -164,13 +177,18 @@ bool CGUISVM::test(char* param)
 	CIO::message("starting svm testing\n") ;
 	svm->set_C(C) ;
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
+	((CKernelMachine*) svm)->set_labels(testlabels);
 	//MISSING testfeatures, trainfeatures) ;
 	REAL* output= svm->test();
 
-	long len=0;	
-	int total=testfeatures->get_num_vectors();
-	int* label= testfeatures->get_labels(len);
+	CIO::message("out !!!\n");
+	long len=0;
+	long total=	testfeatures->get_num_vectors();
+	int* label=	testlabels->get_labels(len);
+
+	assert(label);
 	assert(len==total);
+
 	gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);
 
 	if (rocfile)

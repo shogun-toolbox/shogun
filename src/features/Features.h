@@ -55,21 +55,13 @@ public:
 	/// preprocess the feature_matrix
 	virtual bool preproc_feature_matrix(bool force_preprocessing=false)=0;
 
-	/// set/get the labels
-	virtual bool set_label(long idx, int label) { return false ; }
-	virtual int  get_label(long idx)=0 ;
-	
-	/// get label vector
-	/// caller has to clean up
-	int* get_labels(long &len) ;
-
 	/// return the number of samples
 	virtual long get_num_vectors()=0 ;
 
 	virtual CFeatures* duplicate() const=0 ;
 
 	//in case there is a feature matrix allow for reshaping
-	bool reshape(int num_features, int num_vectors) { return false; }
+	virtual bool reshape(int num_features, int num_vectors) { return false; }
 
 	/** return size (in bytes) a single element (e.g. sizeof(float))
 	    requires

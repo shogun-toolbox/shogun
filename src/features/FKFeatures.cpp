@@ -126,15 +126,15 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 		num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
 }
 
-int CFKFeatures::get_label(long idx)
-{
-    
-  if (pos && pos->get_observations())
-    return pos->get_observations()->get_label(idx) ;
-
-  assert(0) ;
-  return 0 ;
-}
+//int CFKFeatures::get_label(long idx)
+//{
+//    
+//  if (pos && pos->get_observations())
+//    return pos->get_observations()->get_label(idx) ;
+//
+//  assert(0) ;
+//  return 0 ;
+//}
 
 CFeatures* CFKFeatures::duplicate() const
 {
