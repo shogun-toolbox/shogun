@@ -35,12 +35,12 @@ public:
 template <class ST> class CSparseFeatures: public CFeatures
 {
 	public:
-		CSparseFeatures(LONG size) : CFeatures(size), num_vectors(0), num_features(0), num_sparse_vectors(0), sparse_feature_matrix(NULL), feature_cache(NULL)
+		CSparseFeatures(LONG size) : CFeatures(size), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL)
 		{
 		}
 
 		CSparseFeatures(const CSparseFeatures & orig) : 
-			CFeatures(orig), num_vectors(orig.num_vectors), num_features(orig.num_features), num_sparse_vectors(orig.num_sparse_vectors), sparse_feature_matrix(orig.sparse_feature_matrix), feature_cache(orig.feature_cache)
+			CFeatures(orig), num_vectors(orig.num_vectors), num_features(orig.num_features), sparse_feature_matrix(orig.sparse_feature_matrix), feature_cache(orig.feature_cache)
 			{
 				if (orig.sparse_feature_matrix)
 				{
@@ -49,13 +49,13 @@ template <class ST> class CSparseFeatures: public CFeatures
 				}
 			}
 
-		CSparseFeatures(CHAR* fname) : CFeatures(fname), num_vectors(0), num_features(0), num_sparse_vectors(0), sparse_feature_matrix(NULL), feature_cache(NULL)
+		CSparseFeatures(CHAR* fname) : CFeatures(fname), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL)
 		{
 		}
 
 		virtual ~CSparseFeatures()
 		{
-			for (INT i=0; i< num_sparse_vectors; i++)
+			for (INT i=0; i< num_vectors; i++)
 				delete[] sparse_feature_matrix[i].features;
 
 			delete[] sparse_feature_matrix;
@@ -168,8 +168,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 		/// get the pointer to the sparse feature matrix
 		/// num_feat,num_vectors are returned by reference
-		/// the actual number of sparse vectors is returned in num_sparse_vec
-		TSparse<ST>* get_sparse_feature_matrix(INT &num_feat, INT &num_vec, INT &num_sparse_vec)
+		TSparse<ST>* get_sparse_feature_matrix(INT &num_feat, INT &num_vec)
 		{
 			num_feat=num_features;
 			num_vec=num_vectors;
@@ -182,12 +181,11 @@ template <class ST> class CSparseFeatures: public CFeatures
 		  num_features is the column offset, and columns are linear in memory
 		  see below for definition of feature_matrix
 		  */
-		virtual void set_sparse_feature_matrix(TSparse<ST>* sfm, INT num_feat, INT num_vec, INT num_sparse_vec)
+		virtual void set_sparse_feature_matrix(TSparse<ST>* sfm, INT num_feat, INT num_vec)
 		{
 			sparse_feature_matrix=sfm;
 			num_features=num_feat;
 			num_vectors=num_vec;
-			num_sparse_vectors=num_sparse_vec;
 		}
 
 		/// gets a copy of a full  feature matrix
@@ -205,7 +203,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 				for (LONG i=0; i<num_feat*num_vec; i++)
 					fm[i]=0;
 
-				for (INT v=0; v<num_sparse_vectors; v++)
+				for (INT v=0; v<num_vec; v++)
 				{
 					for (INT f=0; f<sparse_feature_matrix[v].num_feat_entries; f++)
 					{
@@ -221,7 +219,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 		}
 
 		/** creates a sparse feature matrix from a full dense feature matrix
-		  necessary to set feature_matrix, num_features, num_vectors, num_sparse vec
+		  necessary to set feature_matrix, num_features and num_vectors
 		  where num_features is the column offset, and columns are linear in memory
 		  see above for definition of sparse_feature_matrix
 		  */
@@ -240,7 +238,6 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 			if (num_feat_entries)
 			{
-				INT num_sparse_vec=0;
 				INT num_total_entries=0;
 
 				// count nr of non sparse features
@@ -252,37 +249,31 @@ template <class ST> class CSparseFeatures: public CFeatures
 						if (ffm[i*((LONG) num_feat) + j] != 0)
 							num_feat_entries[i]++;
 					}
-
-					if (num_feat_entries[i])
-						num_sparse_vec++;
 				}
 
-				num_sparse_vectors=num_sparse_vec;
-
-				CIO::message("num_sparse_vec: %d\n", num_sparse_vec);
-
-				if (num_sparse_vec>0)
+				if (num_vec>0)
 				{
-					INT sparse_vec_idx=0;
-					sparse_feature_matrix=new TSparse<ST>[num_sparse_vectors];
+					sparse_feature_matrix=new TSparse<ST>[num_vec];
 
 					if (sparse_feature_matrix)
 					{
 						for (INT i=0; i< num_vec; i++)
 						{
+							sparse_feature_matrix[i].vec_index=i;
+							sparse_feature_matrix[i].num_feat_entries=0;
+							sparse_feature_matrix[i].features= NULL;
+
 							if (num_feat_entries[i]>0)
 							{
-								sparse_feature_matrix[sparse_vec_idx].features= new TSparseEntry<ST>[num_feat_entries[i]];
+								sparse_feature_matrix[i].features= new TSparseEntry<ST>[num_feat_entries[i]];
 
-								if (!sparse_feature_matrix[sparse_vec_idx].features)
+								if (!sparse_feature_matrix[i].features)
 								{
 									CIO::message("allocation of features failed\n");
 									return false;
 								}
 
-								sparse_feature_matrix[sparse_vec_idx].num_feat_entries=num_feat_entries[i];
-								sparse_feature_matrix[sparse_vec_idx].vec_index=i;
-
+								sparse_feature_matrix[i].num_feat_entries=num_feat_entries[i];
 								INT sparse_feat_idx=0;
 
 								for (INT j=0; j< num_feat; j++)
@@ -291,14 +282,12 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 									if (ffm[pos] != 0)
 									{
-										sparse_feature_matrix[sparse_vec_idx].features[sparse_feat_idx].entry=ffm[pos];
-										sparse_feature_matrix[sparse_vec_idx].features[sparse_feat_idx].feat_index=j;
+										sparse_feature_matrix[i].features[sparse_feat_idx].entry=ffm[pos];
+										sparse_feature_matrix[i].features[sparse_feat_idx].feat_index=j;
 										sparse_feat_idx++;
 										num_total_entries++;
 									}
-
 								}
-								sparse_vec_idx++;
 							}
 						}
 					}
@@ -312,7 +301,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 				}
 				else
 				{
-					CIO::message("huh ? zero matrix given ?\n");
+					CIO::message("huh ? zero size matrix given ?\n");
 					result=false;
 				}
 			}
@@ -356,8 +345,6 @@ template <class ST> class CSparseFeatures: public CFeatures
 		virtual inline INT  get_num_vectors() { return num_vectors; }
 		inline INT  get_num_features() { return num_features; }
 
-		inline INT  get_num_sparse_vectors() { return num_sparse_vectors; }
-
 		/// return that we are sparse features
 		inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
 
@@ -386,13 +373,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 		/// total number of features
 		INT num_features;
 
-
-		/// number of sparse vectors
-		/// this number might be lower than num_vectors, as some vectors might be
-		/// 0
-		INT num_sparse_vectors;
-
-		/// array of sparse vectors of size num_sparse_vec_entries
+		/// array of sparse vectors of size num_vectors
 		TSparse<ST>* sparse_feature_matrix;
 
 		CCache< TSparseEntry<ST> >* feature_cache;
