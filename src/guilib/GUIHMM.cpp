@@ -610,7 +610,8 @@ bool CGUIHMM::test_hmm(char* param)
 			neg->set_observations(old_neg);
 
 			delete posobs;
-			delete negobs;
+			if (gui->guiobs.get_obs("POSTEST")->get_ORDER() != gui->guiobs.get_obs("NEGTEST")->get_ORDER())
+			    delete negobs;
 			delete tmp_posobs;
 			delete tmp_negobs;
 			result=true;
