@@ -16,6 +16,7 @@ _matlab=no
 _octave=no
 _svm_mpi=no
 _cplex=no
+_wtiming=no
 _logcache=no
 _shortrealkernelcache=no
 _logsumarray=no
@@ -224,7 +225,8 @@ Optional features:
   --enable-matlab               enable matlab (genefiner can be called from within matlab) support [disabled]
   --enable-octave               enable octave (genefiner can be called from within octave) support [disabled]
   --enable-svmmpi    	        enable multiprocessor svm support [disabled]
-  --enable-svmcplex    	        enable code using CPLEX  [disabled]
+  --enable-cplex    	        enable code using CPLEX  [disabled]
+  --enable-w-timing    	        enable code using W timing  [disabled]
   --enable-logcache             enable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
   --enable-shortrealkernelcache enable kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles [disabled]
   --enable-logsum-array         enable log sum array supposed to be a bit more accurate [disabled]
@@ -298,6 +300,8 @@ for ac_option do
   --enable-readline)		_readline=yes	;;
   --disable-cplex)		_cplex=no	;;
   --enable-cplex)		_cplex=yes	;;
+  --disable-w-timing)	_wtiming=no	;;
+  --enable-w-timing)	_wtiming=yes	;;
   --disable-logcache)	_logcache=no	;;
   --enable-logcache)	_logcache=yes	;;
   --disable-shortrealkernelcache)	_shortrealkernelcache=no	;;
@@ -1140,7 +1144,12 @@ set_opts()
 
 	if test "$_cplex" = yes
 	then
-		HAVE_SVMCPLEX='#define HAVE_SVMCPLEX 1'
+		USE_CPLEX='#define USE_CPLEX 1'
+	fi
+
+	if test "$_wtiming" = yes
+	then
+		USE_W_TIMING='#define USE_W_TIMING 1'
 	fi
 
 	if test "$_largefile" = yes
@@ -1269,7 +1278,6 @@ write_config_h()
 cat >lib/config.h <<EOF
 $HAVE_READLINE
 $HAVE_MATLAB
-$HAVE_SVMCPLEX
 $HAVE_LARGEFILE
 $HAVE_LAPACK
 $HAVE_ATLAS
@@ -1287,6 +1295,8 @@ $USE_HMMDEBUG
 $USE_SVMMPIDEBUG
 $USE_PATHDEBUG
 $USE_SVMMPI
+$USE_CPLEX
+$USE_W_TIMING
 EOF
 }
 

@@ -83,6 +83,26 @@ bool CLinearByteKernel::save_init(FILE* dest)
 
 	return true;
 }
+
+void CLinearByteKernel::clear_normal()
+{
+	int num = lhs->get_num_vectors();
+
+	for (int i=0; i<num; i++)
+		normal[i]=0;
+}
+
+void CLinearByteKernel::add_to_normal(INT idx, REAL weight) 
+{
+	INT vlen;
+	bool vfree;
+	BYTE* vec=((CByteFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
+
+	for (int i=0; i<vlen; i++)
+		normal[i]+= weight*vec[i];
+
+	((CByteFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
+}
   
 REAL CLinearByteKernel::compute(INT idx_a, INT idx_b)
 {

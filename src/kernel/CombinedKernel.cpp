@@ -8,6 +8,7 @@
 CCombinedKernel::CCombinedKernel(LONG size)
 	: CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL) 
 {
+	properties |= KP_KERNCOMBINATION;
 	kernel_list=new CList<CKernel*>(true);
 	fprintf(stderr, "combined kernel created\n") ;
 }

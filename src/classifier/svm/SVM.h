@@ -84,6 +84,16 @@ class CSVM : public CKernelMachine
 			return (svm_model.alpha!=NULL && svm_model.svs!=NULL);
 		}
 
+		inline void use_kerncombination(bool enable)
+		{
+			use_mkl=enable;
+		}
+
+		inline bool is_mkl_enabled()
+		{
+			return use_mkl;
+		}
+
 		REAL* test();
 
 		CLabels* classify(CLabels* labels=NULL);
@@ -110,5 +120,6 @@ class CSVM : public CKernelMachine
 
 		REAL C1;
 		REAL C2;
+		bool use_mkl;
 };
 #endif

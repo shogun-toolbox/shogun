@@ -13,9 +13,6 @@
 #include <time.h> 
 #include <float.h>
 
-#define USE_CPLEX
-#define USE_W_TIMING
-
 #ifdef USE_CPLEX
 extern "C" {
 #include <ilcplex/cplex.h>

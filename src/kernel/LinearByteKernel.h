@@ -30,6 +30,9 @@ class CLinearByteKernel: public CByteKernel
   virtual bool delete_optimization();
   virtual REAL compute_optimized(INT idx);
 
+  virtual void clear_normal();
+  virtual void add_to_normal(INT idx, REAL weight);
+
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors

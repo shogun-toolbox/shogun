@@ -18,6 +18,7 @@ public:
 	bool load(CHAR* param);
 	bool save(CHAR* param);
 	bool set_C(CHAR* param);
+	bool use_kerncombination(CHAR* param);
 	bool set_weight_epsilon(CHAR* param);
 
 	CLabels* classify(CLabels* output=NULL);
@@ -31,5 +32,6 @@ public:
 	double weight_epsilon;
 	double C1;
 	double C2;
+	bool use_mkl;
 };
 #endif

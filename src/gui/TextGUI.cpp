@@ -100,6 +100,7 @@ static const CHAR* N_BAUM_WELCH_TRANS_TRAIN=	"bw_trans";
 static const CHAR* N_BAUM_WELCH_TRAIN_DEFINED=	"bw_def";
 static const CHAR* N_LIKELIHOOD=	       	"likelihood";
 static const CHAR* N_ALPHABET=			"alphabet";
+static const CHAR* N_USE_KERNCOMBINATION=			"use_kerncombination";
 static const CHAR* N_OUTPUT_HMM=		"output_hmm";
 static const CHAR* N_OUTPUT_HMM_DEFINED=        "output_hmm_defined";
 static const CHAR* N_QUIT=			"quit";
@@ -657,6 +658,10 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_C, strlen(N_C)))
 	{
 		guisvm.set_C(input+strlen(N_C));
+	} 
+	else if (!strncmp(input, N_USE_KERNCOMBINATION, strlen(N_USE_KERNCOMBINATION)))
+	{
+		guisvm.use_kerncombination(input+strlen(N_USE_KERNCOMBINATION));
 	} 
 	else if (!strncmp(input, N_EPSILON, strlen(N_EPSILON)))
 	{

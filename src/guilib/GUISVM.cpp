@@ -17,6 +17,7 @@
 CGUISVM::CGUISVM(CGUI * gui_)
   : gui(gui_)
 {
+	use_mkl = true;
 	svm=NULL;
 	C1=-1;
 	C2=-1;
@@ -115,6 +116,7 @@ bool CGUISVM::train(CHAR* param)
 
 	svm->set_weight_epsilon(weight_epsilon);
 	svm->set_C(C1, C2);
+	svm->use_kerncombination(use_mkl);
 	((CKernelMachine*) svm)->set_labels(trainlabels);
 	((CKernelMachine*) svm)->set_kernel(kernel);
 	return svm->train();
@@ -311,6 +313,23 @@ bool CGUISVM::set_C(CHAR* param)
 		C2=C1;
 
 	CIO::message(M_INFO, "Set to C1=%f C2=%f\n", C1, C2) ;
+	return true ;  
+}
+
+bool CGUISVM::use_kerncombination(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	int mkl=1;
+	sscanf(param, "%d", &use_mkl) ;
+
+	use_mkl == (mkl==1);
+
+	if (mkl)
+		CIO::message(M_INFO, "Enabling MKL kern combination\n") ;
+	else
+		CIO::message(M_INFO, "Disabling MKL kern combination\n") ;
+
 	return true ;  
 }
 

@@ -72,6 +72,26 @@ bool CLinearWordKernel::save_init(FILE* dest)
 	return false;
 }
 
+void CLinearWordKernel::clear_normal()
+{
+	int num = lhs->get_num_vectors();
+
+	for (int i=0; i<num; i++)
+		normal[i]=0;
+}
+
+void CLinearWordKernel::add_to_normal(INT idx, REAL weight) 
+{
+	INT vlen;
+	bool vfree;
+	WORD* vec=((CWordFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
+
+	for (int i=0; i<vlen; i++)
+		normal[i]+= weight*vec[i];
+
+	((CWordFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
+}
+  
 REAL CLinearWordKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;

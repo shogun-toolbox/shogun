@@ -126,5 +126,4 @@ class CWeightedDegreeCharKernel: public CCharKernel
   bool use_normalization ;
   
 };
-
 #endif

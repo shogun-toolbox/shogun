@@ -71,6 +71,26 @@ bool CLinearCharKernel::save_init(FILE* dest)
 {
 	return false;
 }
+
+void CLinearCharKernel::clear_normal()
+{
+	int num = lhs->get_num_vectors();
+
+	for (int i=0; i<num; i++)
+		normal[i]=0;
+}
+
+void CLinearCharKernel::add_to_normal(INT idx, REAL weight) 
+{
+	INT vlen;
+	bool vfree;
+	CHAR* vec=((CCharFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
+
+	for (int i=0; i<vlen; i++)
+		normal[i]+= weight*vec[i];
+
+	((CCharFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
+}
   
 REAL CLinearCharKernel::compute(INT idx_a, INT idx_b)
 {

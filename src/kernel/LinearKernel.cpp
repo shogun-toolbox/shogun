@@ -17,6 +17,7 @@ extern "C" {
 CLinearKernel::CLinearKernel(LONG size)
   : CRealKernel(size),scale(1.0),normal(NULL)
 {
+	properties |= KP_LINADD;
 }
 
 CLinearKernel::~CLinearKernel() 
@@ -87,6 +88,26 @@ bool CLinearKernel::save_init(FILE* dest)
 
 	return true;
 }
+
+void CLinearKernel::clear_normal()
+{
+	int num = lhs->get_num_vectors();
+
+	for (int i=0; i<num; i++)
+		normal[i]=0;
+}
+
+void CLinearKernel::add_to_normal(INT idx, REAL weight) 
+{
+	INT vlen;
+	bool vfree;
+	double* vec=((CRealFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
+
+	for (int i=0; i<vlen; i++)
+		normal[i]+= weight*vec[i];
+
+	((CRealFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
+}
   
 REAL CLinearKernel::compute(INT idx_a, INT idx_b)
 {
@@ -120,7 +141,6 @@ REAL CLinearKernel::compute(INT idx_a, INT idx_b)
 
 bool CLinearKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* alphas) 
 {
-	CIO::message(M_DEBUG,"drin gelandet yeah\n");
 	INT alen;
 	bool afree;
 	int i;
