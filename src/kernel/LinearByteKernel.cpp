@@ -126,7 +126,7 @@ bool CLinearByteKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* al
 		assert(avec);
 
 		for (int j=0; j<num_feat; j++)
-			normal[j]+=alphas[i]*avec[j];
+			normal[j]+= alphas[i] * ((double) avec[j]);
 
 		((CByteFeatures*) lhs)->free_feature_vector(avec, 0, afree);
 	}
@@ -152,7 +152,7 @@ REAL CLinearByteKernel::compute_optimized(INT idx_b)
 	double result=0;
 	{
 		for (INT i=0; i<blen; i++)
-			result+= ((LONG) normal[i]) * ((LONG) bvec[i]);
+			result+= normal[i] * ((double) bvec[i]);
 	}
 	result/=scale;
 
