@@ -17,7 +17,7 @@ class CShortFeatures: public CSimpleFeatures<SHORT>
 
 		CShortFeatures(CHAR* fname);
 
-		bool obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alphabet, INT start, INT order);
+		bool obtain_from_char_features(CCharFeatures* cf, INT start, INT order);
 
 		virtual EFeatureType get_feature_type() { return F_SHORT; }
 

@@ -583,15 +583,13 @@ bool CGUIFeatures::convert_char_to_short(CHAR* param)
 {
 	bool result=false;
 	CHAR target[1024]="";
-	CHAR alpha[1024]="";
 	INT order=1;
 	INT start=0;
-	E_ALPHABET alphabet=DNA;
 
 	CFeatures** f_ptr=NULL;
 	
 	param=CIO::skip_spaces(param);
-	if ((sscanf(param, "%s %s %d %d", target, alpha, &order, &start))>=3)
+	if ((sscanf(param, "%s %d %d", target, &order, &start))>=2)
 	{
 		if (strcmp(target,"TRAIN")==0)
 		{
@@ -603,17 +601,6 @@ bool CGUIFeatures::convert_char_to_short(CHAR* param)
 			f_ptr=&test_features;
 			invalidate_test() ;
 		}
-
-		if (strcmp(alpha,"PROTEIN")==0)
-			alphabet=PROTEIN;
-		else if (strcmp(alpha,"ALPHANUM")==0)
-			alphabet=ALPHANUM;
-		else if (strcmp(alpha,"DNA")==0)
-			alphabet=DNA;
-		else if (strcmp(alpha,"CUBE")==0)
-			alphabet=CUBE;
-		else
-			CIO::message(M_ERROR, "unknown alphabet!\n");
 	}
 	else
 		CIO::message(M_ERROR, "see help for params\n");
@@ -630,7 +617,7 @@ bool CGUIFeatures::convert_char_to_short(CHAR* param)
 
 			if (result)
 			{
-				sf->obtain_from_char_features((CCharFeatures*) (*f_ptr), alphabet, start, order);
+				sf->obtain_from_char_features((CCharFeatures*) (*f_ptr), start, order);
 				delete (*f_ptr);
 				(*f_ptr)=sf;
 			}
@@ -720,8 +707,10 @@ bool CGUIFeatures::convert(CHAR* param)
 							break;
 						case PROTEIN:
 							num_symbols = 26;
+							break;
 						case ALPHANUM:
 							num_symbols = 36;
+							break;
 						case CUBE:
 							num_symbols = 6;
 							break;
@@ -796,23 +785,10 @@ bool CGUIFeatures::convert(CHAR* param)
 			{
 				if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"WORD")==0)
 				{
-					CHAR alpha[1024]="";
 					INT order=1;
 					INT start=0;
-					E_ALPHABET alphabet=DNA;
-					if ((sscanf(param, "%s %s %s %s %s %s %d %d", target, from_class, from_type, to_class, to_type, alpha, &order, &start))>=6)
+					if ((sscanf(param, "%s %s %s %s %s %d %d", target, from_class, from_type, to_class, to_type, &order, &start))>=5)
 					{
-						if (strcmp(alpha,"PROTEIN")==0)
-							alphabet=PROTEIN;
-						else if (strcmp(alpha,"ALPHANUM")==0)
-							alphabet=ALPHANUM;
-						else if (strcmp(alpha,"DNA")==0)
-							alphabet=DNA;
-						else if (strcmp(alpha,"CUBE")==0)
-							alphabet=CUBE;
-						else
-							CIO::message(M_ERROR, "unknown alphabet!\n");
-
 						if ( ( ((*f_ptr)->get_feature_class()) == C_STRING)  && ( ((*f_ptr)->get_feature_type()) == F_CHAR) )
 						{
 							//create dense features with 0 cache
@@ -821,11 +797,9 @@ bool CGUIFeatures::convert(CHAR* param)
 							CStringFeatures<WORD>* sf=new CStringFeatures<WORD>();
 							result=(sf!=NULL);
 
-							CCharFeatures cf(alphabet, 0l);
-
 							if (result)
 							{
-								sf->obtain_from_char_features((CStringFeatures<CHAR>*) (*f_ptr), &cf, alphabet, start, order);
+								sf->obtain_from_char_features((CStringFeatures<CHAR>*) (*f_ptr), start, order);
 								delete (*f_ptr);
 								(*f_ptr)=sf;
 							}

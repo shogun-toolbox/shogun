@@ -55,12 +55,12 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	CStringFeatures(char* fname, E_ALPHABET alpha=NONE) : CFeatures(fname), num_vectors(0), features(NULL), max_string_length(0), num_symbols(0), original_num_symbols(0), order(0), symbol_mask_table(NULL)
 	{
-		alphabet=alpha;
+		alphabet_type=alpha;
 		num_symbols=4; //FIXME
 		load(fname);
 	}
 
-	bool obtain_from_char_features(CStringFeatures<CHAR>* sf, CCharFeatures* cf, E_ALPHABET alphabet, INT start, INT order);
+	bool obtain_from_char_features(CStringFeatures<CHAR>* sf, INT start, INT order);
 
 	virtual ~CStringFeatures()
 	{
@@ -81,6 +81,11 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	virtual EFeatureClass get_feature_class() { return C_STRING ; } ;
 	virtual EFeatureType get_feature_type();
+
+	inline E_ALPHABET get_alphabet()
+	{
+		return alphabet_type;
+	}
 
 	virtual CFeatures* duplicate() const 
 	{
@@ -210,7 +215,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		this->num_vectors=num_vectors;
 		this->max_string_length=max_string_length;
 		this->num_symbols=num_symbols;
-		this->alphabet=alphabet;
+		this->alphabet_type=alphabet;
 	}
 
 	virtual bool save(CHAR* dest)
@@ -288,7 +293,7 @@ template <class ST> class CStringFeatures: public CFeatures
 	INT original_num_symbols;
 
 	/// alphabet
-	E_ALPHABET alphabet;
+	E_ALPHABET alphabet_type;
 
 	/// order used in higher order mapping
 	INT order;
@@ -328,21 +333,22 @@ inline WORD CStringFeatures<WORD>::get_masked_symbols(WORD symbol, BYTE mask)
 	return symbol_mask_table[mask] & symbol;
 }
 
-inline bool CStringFeatures<WORD>::obtain_from_char_features(CStringFeatures<CHAR>* sf, CCharFeatures* cf, E_ALPHABET alphabet, INT start, INT order)
+inline bool CStringFeatures<WORD>::obtain_from_char_features(CStringFeatures<CHAR>* sf, INT start, INT order)
 {
 	INT i=0;
 	assert(sf);
+	E_ALPHABET alphabet=sf->get_alphabet();
 	this->order=order;
 	cleanup();
-
+	CCharFeatures cf(alphabet, 0l);
 	delete[] symbol_mask_table;
 	symbol_mask_table=new WORD[256];
-
 	num_vectors=sf->get_num_vectors();
 	max_string_length=sf->get_max_vector_length()-start;
 	features=new T_STRING<WORD>[num_vectors];
 	assert(features);
 
+	CIO::message(M_DEBUG, "%d symbols in StringFeatures<CHAR>\n", sf->get_num_symbols());
 	INT max_val=0;
 	for (i=0; i<num_vectors; i++)
 	{
@@ -356,7 +362,7 @@ inline bool CStringFeatures<WORD>::obtain_from_char_features(CStringFeatures<CHA
 
 		for (INT j=0; j<len; j++)
 		{
-			str[j]=(WORD) cf->remap(sf->get_feature(i,j));
+			str[j]=(WORD) cf.remap(sf->get_feature(i,j));
 			max_val=math.max(str[j],max_val);
 		}
 	}

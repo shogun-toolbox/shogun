@@ -13,10 +13,11 @@ CShortFeatures::CShortFeatures(CHAR* fname) : CSimpleFeatures<SHORT>(fname)
 {
 }
 
-bool CShortFeatures::obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alphabet, INT start, INT order)
+bool CShortFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT order)
 {
 	assert(cf);
 
+	E_ALPHABET alphabet=cf->get_alphabet();
 	num_vectors=cf->get_num_vectors();
 	num_features=cf->get_num_features();
 

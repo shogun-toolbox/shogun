@@ -414,18 +414,18 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 						delete[] target;
 					}
 					else
-						mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features)");
+						mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features, ...)");
 				}
 				else
-					mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features)");
+					mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features, ...)");
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features)");
+				mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features, ...)");
 			CIO::message(M_INFO, "done\n");
 		}
 		else if (!strncmp(action, N_ADD_FEATURES, strlen(N_ADD_FEATURES)))
 		{
-			if (nrhs==3)
+			if (nrhs>=3)
 			{
 				CHAR* target=CGUIMatlab::get_mxString(prhs[1]);
 
@@ -447,13 +447,13 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 						delete[] target;
 					}
 					else
-						mexErrMsgTxt("usage is gf('add_features', 'TRAIN|TEST', features)");
+						mexErrMsgTxt("usage is gf('add_features', 'TRAIN|TEST', features, ...)");
 				}
 				else
-					mexErrMsgTxt("usage is gf('add_features', 'TRAIN|TEST', features)");
+					mexErrMsgTxt("usage is gf('add_features', 'TRAIN|TEST', features, ...)");
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features)");
+				mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features, ...)");
 			CIO::message(M_INFO, "done\n");
 		}
 		else if (!strncmp(action, N_CLEAN_FEATURES, strlen(N_CLEAN_FEATURES)))

@@ -207,8 +207,8 @@ void CTextGUI::print_help()
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <TRAIN|TEST> <NUM_FEAT> <NUM_VEC>\t\t\t- reshape feature matrix for simple features\n", N_RESHAPE);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert dense features to sparse feature matrix\n", N_CONVERT_TO_SPARSE);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert sparse features to dense feature matrix\n", N_CONVERT_TO_DENSE);
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <DNA|..> <ORDER> <START>\t\t\t- convert CHAR to word features, order remapping\n", N_CONVERT_CHAR_TO_WORD);
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <DNA|..> <ORDER> <START>\t\t\t- convert CHAR to short features, order remapping\n", N_CONVERT_CHAR_TO_SHORT);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <ORDER> <START>\t\t\t- convert CHAR to word features, order remapping\n", N_CONVERT_CHAR_TO_WORD);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <ORDER> <START>\t\t\t- convert CHAR to short features, order remapping\n", N_CONVERT_CHAR_TO_SHORT);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <STRING|SPARSE|SIMPLE> <REAL|CHAR|WORD|..> <STRING|...> <REAL|TOP..>\t\t\t- convert from feature class/type to class/type\n", N_CONVERT);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <TRAIN|TEST> [<0|1>] - attach the preprocessors to the current feature object, if available it will preprocess the feature_matrix, 1 to force preprocessing of already processed\n",N_ATTACH_PREPROC);
 	CIO::message(M_MESSAGEONLY, "\n[CLASSIFIER]\n");

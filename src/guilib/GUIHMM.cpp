@@ -100,6 +100,8 @@ bool CGUIHMM::baum_welch_train(CHAR* param)
 	    CIO::message(M_ERROR, "Features must be STRING of type WORD\n") ;
 	    return false ;
 	  } ;
+CStringFeatures<WORD>* csf = ((CStringFeatures<WORD>*) (gui->guifeatures.get_train_features()));
+	CIO::message(M_DEBUG, "Stringfeatures have %d orig_symbols %d symbols %d order %d max_symbols\n",  csf->get_original_num_symbols(), csf->get_num_symbols(), csf->get_order(), csf->get_max_num_symbols());
 
 	mkstemp(templname);
 	CHAR templname_best[40] ;
