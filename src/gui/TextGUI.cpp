@@ -175,11 +175,7 @@ void CTextGUI::print_help()
 
 void CTextGUI::print_prompt()
 {
-  cout << flush ;
-  cerr << flush ;
   CIO::message("\033[1;34mgenefinder\033[0m >> ");
-  cout << flush ;
-  cerr << flush ;
     //CIO::message("genefinder >> ");
 }
 

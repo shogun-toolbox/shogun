@@ -4,7 +4,7 @@
 #include <stdarg.h>
 #include <ctype.h>
 
-FILE* CIO::target=stdout;
+FILE* CIO::target=stderr;
 
 CIO::CIO()
 {
