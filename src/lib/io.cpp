@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <ctype.h>
 
 FILE* CIO::target=stdout;
 
@@ -41,4 +42,18 @@ void CIO::buffered_message(FILE* target, const char *fmt, ... )
     va_start(list,fmt);
     vfprintf(target,fmt,list);
     va_end(list);
+}
+
+char* CIO::skip_spaces(char* str)
+{
+	int i=0;
+
+	if (str)
+	{
+		for (i=0; isspace(str[i]); i++);
+
+		return &str[i];
+	}
+	else 
+		return str;
 }

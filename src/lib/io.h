@@ -5,7 +5,7 @@
 #include <stdarg.h>
 class CIO
 {
-    public:
+public:
 	CIO();
 
 	static void set_target(FILE* target);
@@ -14,7 +14,9 @@ class CIO
 
 	static void buffered_message(const char *fmt, ... );
 	static void buffered_message(FILE* target, const char *fmt, ... );
-    protected:
+
+	static char* skip_spaces(char* str);
+protected:
 	static FILE* target;
 };
 #endif

@@ -2,7 +2,12 @@
 #define __TEXT_GUI__H
 
 #include <stdio.h>
-#include "hmm/HMM.h"
+#include "guilib/GUIHMM.h"
+#include "guilib/GUISVM.h"
+#include "guilib/GUIKernel.h"
+#include "guilib/GUIObservation.h"
+#include "guilib/GUIPreProc.h"
+#include "guilib/GUIFeatures.h"
 
 class CTextGUI
 {
@@ -19,8 +24,11 @@ public:
 	/// @return true at EOF
 	bool get_line(FILE* infile=stdin);
 
-	CHMM *lambda, *lambda_train ;
-	int ITERATIONS ;
-	double EPSILON ;
+	CGUISVM guisvm;
+	CGUIHMM guihmm;
+	CGUIKernel guikernel;
+	CGUIObservation guiobs;
+	CGUIPreProc guipreproc;
+	CGUIFeatures guifeatures;
 };
 #endif

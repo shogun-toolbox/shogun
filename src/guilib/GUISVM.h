@@ -1,24 +1,31 @@
-/*#ifndef _SVM_FUNCTIONS_H___
-#define _SVM_FUNCTIONS_H___
+#ifndef _GUISVM_H__
+#define _GUISVM_H__ 
 
-class CSVMFunctions
+#include "svm/SVM.h"
+
+class CGUISVM
 {
- public:
-  void train_svm();
-  void test_svm();
-  void set_svm_type();
-  void get_svm_type();
-  void set_kernel();
-  void get_kernel();
-  void set_preproc();
-  void get_preproc();
-  void load_svm();
-  void save_svm();
 
+public:
+	CGUISVM();
+	~CGUISVM();
+
+	bool new_svm(char* param);
+	bool train(char* param);
+	bool test(char* param);
+	bool set_svm_type(char* param);
+	bool get_svm_type();
+	bool set_kernel();
+	bool get_kernel();
+	bool set_preproc();
+	bool get_preproc();
+	bool load_svm();
+	bool save_svm();
+	bool set_C(char* param);
 };
 #endif
 
-
+#if 0
 	for (i=strlen(N_LOAD_MODEL); isspace(input[i]); i++);
 	if (gui.lambda)
 	    delete gui.lambda;
@@ -167,93 +174,6 @@ class CSVMFunctions
 	    else
 		printf("opening file %s failed\n", file_name);
 	}
-	for (i=strlen(N_ASSIGN_OBSERVATION); isspace(input[i]); i++);
-	char target[1024];
-
-	if ((sscanf(&input[i], "%s", target))==1)
-	{
-		if (lambda && lambda_train)
-		{
-			if (strcmp(target,"POSTRAIN")==0)
-			{
-				lambda->set_observations(obs_postrain);
-				lambda_train->set_observations(obs_postrain);//,lambda);
-			}
-			else if (strcmp(target,"NEGTRAIN")==0)
-			{
-				lambda->set_observations(obs_negtrain);
-				lambda_train->set_observations(obs_negtrain);//,lambda);
-			}
-			else if (strcmp(target,"POSTEST")==0)
-			{
-				lambda->set_observations(obs_postest);
-				lambda_train->set_observations(obs_postest);//,lambda);
-			}
-			else if (strcmp(target,"NEGTEST")==0)
-			{
-				lambda->set_observations(obs_negtest);
-				lambda_train->set_observations(obs_negtest);//,lambda);
-			}
-			else if (strcmp(target,"TEST")==0)
-			{
-				lambda->set_observations(obs_test);
-				lambda_train->set_observations(obs_test);//,lambda);
-			}
-			else
-				printf("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
-		}
-		else
-			printf("create model first!\n");
-	}
-	else
-		printf("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
-	for (i=strlen(N_LOAD_OBSERVATIONS); isspace(input[i]); i++);
-	char filename[1024];
-	char target[1024];
-
-	if ((sscanf(&input[i], "%s %s", filename, target))==2)
-	{
-	    FILE* trn_file=fopen(filename, "r");
-
-	    if (trn_file)
-	    {
-#warning		CHMM::invalidate_top_feature_cache(CHMM::INVALID);
-
-		if (strcmp(target,"POSTRAIN")==0)
-		{
-			delete obs_postrain;
-		    obs_postrain= new CObservation(trn_file, POSTRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
-		}
-		else if (strcmp(target,"NEGTRAIN")==0)
-		{
-			delete obs_negtrain;
-			obs_negtrain= new CObservation(trn_file, NEGTRAIN, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
-		}
-		else if (strcmp(target,"POSTEST")==0)
-		{
-			delete obs_postest;
-			obs_postest= new CObservation(trn_file, POSTEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
-		}
-		else if (strcmp(target,"NEGTEST")==0)
-		{
-			delete obs_negtest;
-			obs_negtest= new CObservation(trn_file, NEGTEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
-		}
-		else if (strcmp(target,"TEST")==0)
-		{
-			delete obs_test;
-			obs_test= new CObservation(trn_file, TEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
-		}
-		else
-		   CIO::message("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
-	
-		fclose(trn_file);
-	    }
-	    else
-		printf("opening file %s failed\n", filename);
-	}
-	else
-	   CIO::message("target POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST missing\n");
 	for (i=strlen(N_SAVE_PATH); isspace(input[i]); i++);
 
 	FILE* file=fopen(&input[i], "w");
@@ -266,7 +186,6 @@ class CSVMFunctions
 	else
 	   CIO::message("opening file %s for writing failed\n", &input[i]);
     } 
-#endif // NOVIT
 	for (i=strlen(N_SAVE_LIKELIHOOD_BIN); isspace(input[i]); i++);
 
 	FILE* file=fopen(&input[i], "w");
@@ -514,18 +433,6 @@ class CSVMFunctions
 
 	for (i=strlen(N_NEW); isspace(input[i]); i++);
 
-	int n,m,order;
-	if (sscanf(&input[i], "%d %d %d", &n, &m, &order) == 3)
-	{
-	    delete lambda;
-	    delete lambda_train;
-	    lambda=new CHMM(n,m,order,NULL,PSEUDO);
-	    lambda_train=new CHMM(n,m,order,NULL,PSEUDO);
-		ORDER=order;
-		M=m;
-	}
-	else
-	   CIO::message("see help for parameters\n");
 	double pseudo;
 	for (i=strlen(N_PSEUDO); isspace(input[i]); i++);
 	if (sscanf(&input[i], "%le", &pseudo) == 1)
@@ -684,10 +591,8 @@ class CSVMFunctions
 	   CIO::message("create model first\n");
 	if ((lambda) && (lambda_train)) 
 	{
-#ifdef TMP_SAVE
 	    char templname[30]="/tmp/vit_def_model_XXXXXX" ;
 	    mkstemp(templname);
-#endif
 	    double prob=0.0, prob_train=0.0 ;
 	    iteration_count=ITERATIONS ;
 	    while (!converge(prob, prob_train))
@@ -696,7 +601,6 @@ class CSVMFunctions
 		prob=prob_train ;
 		lambda->estimate_model_viterbi_defined(lambda_train);
 		prob_train=lambda_train->best_path(-1) ;
-#ifdef TMP_SAVE
 		FILE* file=fopen(templname, "w");
 		if (prob>prob_train)
 		{
@@ -707,17 +611,14 @@ class CSVMFunctions
 		}
 		else
 		   CIO::message("\nskipping TMP_SAVE. model got worse.");
-#endif
 	    }
 	}
 	else
 	   CIO::message("create model first\n");
 	if ((lambda) && (lambda_train)) 
 	{
-#ifdef TMP_SAVE
 	    char templname[30]="/tmp/vit_model_XXXXXX" ;
 	    mkstemp(templname);
-#endif
 	    double prob=0.0,prob_train=0.0 ;
 	    iteration_count=ITERATIONS ;
 	    while (!converge(prob, prob_train)) 
@@ -726,7 +627,6 @@ class CSVMFunctions
 		prob=prob_train ;
 		lambda->estimate_model_viterbi(lambda_train);
 		prob_train=lambda_train->best_path(-1) ;
-#ifdef TMP_SAVE
 		FILE* file=fopen(templname, "w");
 		if (prob>prob_train)
 		{
@@ -737,18 +637,15 @@ class CSVMFunctions
 		}
 		else
 		   CIO::message("\nskipping TMP_SAVE. model got worse.");
-#endif
 	    }
 	}
 	else
 	   CIO::message("create model first\n");
-#ifdef TMP_SAVE
 	char templname[30]="/tmp/bw_def_model_XXXXXX" ;
 	mkstemp(templname);
 	char templname_best[40] ;
 	sprintf(templname_best, "%s_best", templname) ;
 	double prob_max=-CMath::INFTY ;
-#endif
 	iteration_count=ITERATIONS ;
 	if ((lambda) && (lambda_train)) 
 	{
@@ -761,7 +658,6 @@ class CSVMFunctions
 			prob=prob_train ;
 			lambda->estimate_model_baum_welch_defined(lambda_train);
 			prob_train=lambda_train->model_probability();
-#ifdef TMP_SAVE
 			if (prob_max<prob_train)
 			{
 				prob_max=prob_train ;
@@ -779,58 +675,11 @@ class CSVMFunctions
 				fclose(file) ;
 				printf("done.") ;
 			}
-#endif
 	    }
 		}
 		else
 			printf("assign observation first\n");
 
-	}
-	else
-	   CIO::message("create model first\n");
-#ifdef TMP_SAVE
-	char templname[30]="/tmp/bw_model_XXXXXX" ;
-	mkstemp(templname);
-	char templname_best[40] ;
-	sprintf(templname_best, "%s_best", templname) ;
-	double prob_max=-CMath::INFTY ;
-#endif
-	iteration_count=ITERATIONS ;
-	if ((lambda) && (lambda_train)) 
-	{
-		if (lambda->get_observations() && lambda_train->get_observations())
-		{
-			double prob_train=math.ALMOST_NEG_INFTY, prob = -math.INFTY ;
-
-			while (!converge(prob,prob_train))
-			{
-			switch_model(&lambda, &lambda_train);
-			prob=prob_train ;
-			lambda->estimate_model_baum_welch(lambda_train);
-			prob_train=lambda_train->model_probability();
-	#ifdef TMP_SAVE
-			if (prob_max<prob_train)
-			{
-				prob_max=prob_train ;
-				FILE* file=fopen(templname_best, "w");
-				printf("\nsaving best model with filename %s ... ", templname_best) ;
-				lambda->save_model(file) ;
-				fclose(file) ;
-				printf("done.") ;
-			} 
-			else
-			{
-				FILE* file=fopen(templname, "w");
-				printf("\nsaving model with filename %s ... ", templname) ;
-				lambda->save_model(file) ;
-				fclose(file) ;
-				printf("done.") ;
-			} ;
-	#endif
-			}
-		}
-		else
-			printf("assign observation first\n");
 	}
 	else
 	   CIO::message("create model first\n");
@@ -1911,3 +1760,4 @@ class CSVMFunctions
 		else
 			CIO::message("current ORDER is set to %d, see help for parameters.\n", ORDER);
 */
+#endif

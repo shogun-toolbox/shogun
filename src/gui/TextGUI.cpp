@@ -1,6 +1,6 @@
 #include "gui/TextGUI.h"
-#include "lib/io.h"
 
+#include "lib/io.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,12 +9,16 @@
 CTextGUI gui;
 
 //names of menu commands
-static const char* N_SET_TEST_MODEL=		"set_test_model";
-static const char* N_SET_POS_MODEL=			"set_pos_model";
-static const char* N_SET_NEG_MODEL=			"set_neg_model";
-static const char* N_LOAD_MODEL=			"load_model";
-static const char* N_SAVE_MODEL=			"save_model";
-static const char* N_SAVE_MODEL_BIN=		"save_model_bin";
+static const char* N_SET_HMM_AS=		"set_hmm_as";
+static const char* N_NEW_HMM=			"new_hmm";
+static const char* N_NEW_SVM=			"new_svm";
+static const char* N_SET_SVM_TYPE=		"new_svm";
+static const char* N_SET_TEST_HMM=		"set_test_HMM";
+static const char* N_SET_POS_HMM=		"set_pos_HMM";
+static const char* N_SET_NEG_HMM=		"set_neg_HMM";
+static const char* N_LOAD_HMM=			"load_HMM";
+static const char* N_SAVE_HMM=			"save_HMM";
+static const char* N_SAVE_HMM_BIN=		"save_HMM_bin";
 static const char* N_LOAD_DEFINITIONS=		"load_defs";
 static const char* N_SAVE_KERNEL=			"save_kernel";
 static const char* N_SAVE_TOP_FEATURES=		"save_top_features";
@@ -34,26 +38,25 @@ static const char* N_LINEAR_TRAIN=					"linear_train";
 static const char* N_LINEAR_LIKELIHOOD=				"linear_likelihood";
 static const char* N_SAVE_LINEAR_LIKELIHOOD=		"save_linear_likelihood";
 static const char* N_SAVE_LINEAR_LIKELIHOOD_BIN=	"save_linear_likelihood_bin";
-static const char* N_SAVE_MODEL_DERIVATIVES=        "save_bw_deriv";
-static const char* N_SAVE_MODEL_DERIVATIVES_BIN=    "save_bw_deriv_bin";
+static const char* N_SAVE_HMM_DERIVATIVES=        "save_bw_deriv";
+static const char* N_SAVE_HMM_DERIVATIVES_BIN=    "save_bw_deriv_bin";
 static const char* N_SAVE_LIKELIHOOD=               "save_likelihood";
 static const char* N_SAVE_LIKELIHOOD_BIN=           "save_likelihood_bin";
 static const char* N_LOAD_OBSERVATIONS=		        "load_obs";
 static const char* N_ASSIGN_OBSERVATION=			"assign_obs";
-static const char* N_NEW=							"new";
 static const char* N_CLEAR=							"clear";
 static const char* N_CHOP=							"chop";
 static const char* N_CONVERGENCE_CRITERIA=	        "convergence_criteria";
 static const char* N_PSEUDO=						"pseudo";
 static const char* N_C=								"c";
 static const char* N_ADD_STATES=					"add_states";
-static const char* N_APPEND_MODEL=					"append_model";
+static const char* N_APPEND_HMM=					"append_HMM";
 static const char* N_BAUM_WELCH_TRAIN=		        "bw";
 static const char* N_BAUM_WELCH_TRAIN_DEFINED=		"bw_def";
 static const char* N_LIKELIHOOD=					"likelihood";
 static const char* N_ALPHABET=			       	 	"alphabet";
-static const char* N_OUTPUT_MODEL=					"output_model";
-static const char* N_OUTPUT_MODEL_DEFINED=          "output_model_defined";
+static const char* N_OUTPUT_HMM=					"output_HMM";
+static const char* N_OUTPUT_HMM_DEFINED=          "output_HMM_defined";
 static const char* N_QUIT=				"quit";
 static const char* N_EXEC=				"exec";
 static const char* N_EXIT=				"exit";
@@ -95,298 +98,308 @@ CTextGUI::~CTextGUI()
 void CTextGUI::print_help()
 {
    CIO::message("\n[LOAD]\n");
-   CIO::message("%s <filename>\t- load hmm\n",N_LOAD_MODEL);
-   CIO::message("%s <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
-   CIO::message("%s <filename>\t- load observed data\n",N_LOAD_OBSERVATIONS);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
+   CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- load observed data\n",N_LOAD_OBSERVATIONS);
    CIO::message("\n[SAVE]\n");
-   CIO::message("%s <filename>\t- save hmm\n",N_SAVE_MODEL);
-   CIO::message("%s <filename>\t- save hmm in binary format\n",N_SAVE_MODEL_BIN);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm\n",N_SAVE_HMM);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm in binary format\n",N_SAVE_HMM_BIN);
 #ifndef NOVIT
-   CIO::message("%s <filename>\t- save state sequence of viterbi path\n",N_SAVE_PATH);
-   CIO::message("%s <filename>\t- save derivatives of log P[O,Q_best|model]\n",N_SAVE_PATH_DERIVATIVES);
-   CIO::message("%s <filename>\t- save derivatives of log P[O,Q_best|model] in binary format\n",N_SAVE_PATH_DERIVATIVES_BIN);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save state sequence of viterbi path\n",N_SAVE_PATH);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save derivatives of log P[O,Q_best|HMM]\n",N_SAVE_PATH_DERIVATIVES);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save derivatives of log P[O,Q_best|HMM] in binary format\n",N_SAVE_PATH_DERIVATIVES_BIN);
 #endif // NOVIT
-   CIO::message("%s <filename>\t- save log derivatives of P[O|model]\n",N_SAVE_MODEL_DERIVATIVES);
-   CIO::message("%s <filename>\t- save log derivatives of P[O|model] in binary format\n",N_SAVE_MODEL_DERIVATIVES_BIN);
-   CIO::message("%s <filename> <TOP|FK>\t- save kernel in binary format\n",N_SAVE_KERNEL);
-   CIO::message("%s <filename>\t- save top features for all train obs,neg first\n",N_SAVE_TOP_FEATURES);
-   CIO::message("%s <filename>\t- save P[O|model]\n",N_SAVE_LIKELIHOOD);
-   CIO::message("%s <filename>\t- save P[O|model]\n",N_SAVE_LIKELIHOOD_BIN);
-   CIO::message("%s <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear model from file\n",N_SAVE_LINEAR_LIKELIHOOD);
-   CIO::message("%s <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear model from file\n",N_SAVE_LINEAR_LIKELIHOOD_BIN);
-   CIO::message("\n[MODEL]\n");
-   CIO::message("%s - frees all models and observations\n",N_CLEAR);
-   CIO::message("%s #states #oberservations #order\t- frees previous model and creates an empty new one\n",N_NEW);
-   CIO::message("%s <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> - assign observation to current model\n",N_ASSIGN_OBSERVATION);
-   CIO::message("%s - make current model the test model; then free current model \n",N_SET_TEST_MODEL);
-   CIO::message("%s - make current model the positive model; then free current model \n",N_SET_POS_MODEL);
-   CIO::message("%s - make current model the negative model; then free current model \n",N_SET_NEG_MODEL);
-   CIO::message("%s <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
-   CIO::message("%s <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)", N_ADD_STATES);
-   CIO::message("%s <filename> <[ACGT][ACGT]>\t\t\t- append model <filename> to current model", N_ADD_STATES);
-   CIO::message("%s [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
-   CIO::message("%s <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [PROTEIN|DNA|ALPHANUM|CUBE]\t\t\t- changes alphabet type\n", N_ALPHABET);
-   CIO::message("%s [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms (%i,%e)\n",N_CONVERGENCE_CRITERIA,ITERATIONS,EPSILON);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save log derivatives of P[O|HMM]\n",N_SAVE_HMM_DERIVATIVES);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save log derivatives of P[O|HMM] in binary format\n",N_SAVE_HMM_DERIVATIVES_BIN);
+   CIO::message("\033[1;31m%s\033[0m <filename> <TOP|FK>\t- save kernel in binary format\n",N_SAVE_KERNEL);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save top features for all train obs,neg first\n",N_SAVE_TOP_FEATURES);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save P[O|HMM]\n",N_SAVE_LIKELIHOOD);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save P[O|HMM]\n",N_SAVE_LIKELIHOOD_BIN);
+   CIO::message("\033[1;31m%s\033[0m <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear HMM from file\n",N_SAVE_LINEAR_LIKELIHOOD);
+   CIO::message("\033[1;31m%s\033[0m <srcname> <destname> [<width> <upto>]\t\t- saves likelihood for linear HMM from file\n",N_SAVE_LINEAR_LIKELIHOOD_BIN);
+   CIO::message("\n[HMM]\n");
+   CIO::message("\033[1;31m%s\033[0m - frees all HMMs and observations\n",N_CLEAR);
+   CIO::message("\033[1;31m%s\033[0m #states #oberservations #order\t- frees previous HMM and creates an empty new one\n",N_NEW_HMM);
+   CIO::message("\033[1;31m%s\033[0m\t- frees previous HMM and creates an empty new one\n",N_NEW_SVM);
+   CIO::message("\033[1;31m%s\033[0m <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> - assign observation to current HMM\n",N_ASSIGN_OBSERVATION);
+   CIO::message("\033[1;31m%s\033[0m - make current HMM the test HMM; then free current HMM \n",N_SET_TEST_HMM);
+   CIO::message("\033[1;31m%s\033[0m - make current HMM the positive HMM; then free current HMM \n",N_SET_POS_HMM);
+   CIO::message("\033[1;31m%s\033[0m - make current HMM the negative HMM; then free current HMM \n",N_SET_NEG_HMM);
+   CIO::message("\033[1;31m%s\033[0m <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
+   CIO::message("\033[1;31m%s\033[0m <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)\n", N_ADD_STATES);
+   CIO::message("\033[1;31m%s\033[0m <filename> <[ACGT][ACGT]>\t\t\t- append HMM <filename> to current HMM\n", N_APPEND_HMM);
+   CIO::message("\033[1;31m%s\033[0m [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
+   CIO::message("\033[1;31m%s\033[0m <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> [PROTEIN|DNA|ALPHANUM|CUBE]\t\t\t- changes alphabet type\n", N_ALPHABET);
+   CIO::message("\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
 #ifdef FIX_POS
-   CIO::message("%s position state\t- sets the state which has to be passed at a certain position\n",N_FIX_POS_STATE);
+   CIO::message("\033[1;31m%s\033[0m position state\t- sets the state which has to be passed at a certain position\n",N_FIX_POS_STATE);
 #endif
-   CIO::message("%s <max_dim>\t - set maximum number of patterns\n",N_SET_MAX_DIM);
-   CIO::message("%s <ORDER>\t - set order of linear HMMs\n",N_SET_ORDER);
+   CIO::message("\033[1;31m%s\033[0m <max_dim>\t - set maximum number of patterns\n",N_SET_MAX_DIM);
+   CIO::message("\033[1;31m%s\033[0m <ORDER>\t - set order of linear HMMs\n",N_SET_ORDER);
    CIO::message("\n[TRAIN]\n");
-   CIO::message("%s <filename> [<width> <upto>]\t\t- obtains new linear model from file\n",N_LINEAR_TRAIN);
-   CIO::message("%s <filename> [<width> <upto>]\t\t- computes likelihood for linear model from file\n",N_LINEAR_LIKELIHOOD);
+   CIO::message("\033[1;31m%s\033[0m <filename> [<width> <upto>]\t\t- obtains new linear HMM from file\n",N_LINEAR_TRAIN);
+   CIO::message("\033[1;31m%s\033[0m <filename> [<width> <upto>]\t\t- computes likelihood for linear HMM from file\n",N_LINEAR_LIKELIHOOD);
 #ifndef NOVIT
-   CIO::message("%s\t\t- does viterbi training on the current model\n",N_VITERBI_TRAIN);
-   CIO::message("%s\t\t- does viterbi training only on defined transitions etc\n",N_VITERBI_TRAIN_DEFINED);
-   CIO::message("%s [pseudo_start [in_steps]]\t\t- does viterbi training only on defined transitions with annealing\n",N_VITERBI_TRAIN_DEFINED_ANNEALED);
-   CIO::message("%s [pseudo_start [step [eps_add]]]\t\t- does viterbi training only on defined transitions with addiabatic annealing\n",N_VITERBI_TRAIN_DEFINED_ADDIABATIC);
+   CIO::message("\033[1;31m%s\033[0m\t\t- does viterbi training on the current HMM\n",N_VITERBI_TRAIN);
+   CIO::message("\033[1;31m%s\033[0m\t\t- does viterbi training only on defined transitions etc\n",N_VITERBI_TRAIN_DEFINED);
+   CIO::message("\033[1;31m%s\033[0m [pseudo_start [in_steps]]\t\t- does viterbi training only on defined transitions with annealing\n",N_VITERBI_TRAIN_DEFINED_ANNEALED);
+   CIO::message("\033[1;31m%s\033[0m [pseudo_start [step [eps_add]]]\t\t- does viterbi training only on defined transitions with addiabatic annealing\n",N_VITERBI_TRAIN_DEFINED_ADDIABATIC);
 #endif //NOVIT
-   CIO::message("%s\t\t- does baum welch training on current model\n",N_BAUM_WELCH_TRAIN);
-   CIO::message("%s\t\t- does baum welch training only on defined transitions etc.\n",N_BAUM_WELCH_TRAIN_DEFINED);
+   CIO::message("\033[1;31m%s\033[0m\t\t- does baum welch training on current HMM\n",N_BAUM_WELCH_TRAIN);
+   CIO::message("\033[1;31m%s\033[0m\t\t- does baum welch training only on defined transitions etc.\n",N_BAUM_WELCH_TRAIN_DEFINED);
 #ifndef NOVIT
-   CIO::message("%s\t- find the best path using viterbi\n",N_BEST_PATH);
+   CIO::message("\033[1;31m%s\033[0m\t- find the best path using viterbi\n",N_BEST_PATH);
 #endif //NOVIT
-   CIO::message("%s\t- find model likelihood\n",N_LIKELIHOOD);
-   CIO::message("%s [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms (%i,%e)\n",N_CONVERGENCE_CRITERIA,ITERATIONS,EPSILON);
+   CIO::message("\033[1;31m%s\033[0m\t- find HMM likelihood\n",N_LIKELIHOOD);
+   CIO::message("\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
    CIO::message("\n[OUTPUT]\n");
 #ifndef NOVIT
-   CIO::message("%s [from to]\t- outputs best path\n",N_OUTPUT_PATH);
+   CIO::message("\033[1;31m%s\033[0m [from to]\t- outputs best path\n",N_OUTPUT_PATH);
 #endif //NOVIT
-   CIO::message("%s\t- output whole model\n",N_OUTPUT_MODEL);
+   CIO::message("\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM);
    CIO::message("\n[HMM-classification]\n");
-   CIO::message("%s[<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_HMM_TEST);
-   CIO::message("%s[<output> [<rocfile>]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
-   CIO::message("%s <negtest> <postest> [<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_LINEAR_HMM_TEST);
-   CIO::message("%s <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate hmm output from obs using linear model\n",N_LINEAR_HMM_TEST);
+   CIO::message("\033[1;31m%s\033[0m[<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_HMM_TEST);
+   CIO::message("\033[1;31m%s\033[0m[<output> [<rocfile>]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
+   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_LINEAR_HMM_TEST);
+   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate hmm output from obs using linear HMM\n",N_LINEAR_HMM_TEST);
    CIO::message("\n[Hybrid HMM-<TOP-Kernel>-SVM]\n");
-   CIO::message("%s [c-value]\t\t\t- changes svm_c value\n", N_C);
-   CIO::message("%s <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
-   CIO::message("%s <srcsvm> [<output> [<rocfile>]]\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
-   CIO::message("%s <dstsvm> \t\t- obtains svm from pos/neg linear models\n",N_LINEAR_SVM_TRAIN);
-   CIO::message("%s - enables SVM Light \n",N_SET_SVM_LIGHT);
+   CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
+   CIO::message("\033[1;31m%s\033[0m <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
+   CIO::message("\033[1;31m%s\033[0m <srcsvm> [<output> [<rocfile>]]\t\t- calculate [linear_]svm output from obs using current HMM\n",N_SVM_TEST);
+   CIO::message("\033[1;31m%s\033[0m <dstsvm> \t\t- obtains svm from pos/neg linear HMMs\n",N_LINEAR_SVM_TRAIN);
+   CIO::message("\033[1;31m%s\033[0m - enables SVM Light \n",N_SET_SVM_LIGHT);
 #ifdef SVMCPLEX
-   CIO::message("%s - enables SVM CPLEX \n",N_SET_SVM_CPLEX);
+   CIO::message("\033[1;31m%s\033[0m - enables SVM CPLEX \n",N_SET_SVM_CPLEX);
 #endif
    CIO::message("\n[SYSTEM]\n");
-   CIO::message("%s <filename>\t- load and execute a script\n",N_EXEC);
-   CIO::message("%s\t- exit genfinder\n",N_QUIT);
-   CIO::message("%s\t- exit genfinder\n",N_EXIT);
-   CIO::message("%s\t- this message\n",N_HELP);
-   CIO::message("%s <commands>\t- execute system functions \n",N_SYSTEM);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- load and execute a script\n",N_EXEC);
+   CIO::message("\033[1;31m%s\033[0m\t- exit genfinder\n",N_QUIT);
+   CIO::message("\033[1;31m%s\033[0m\t- exit genfinder\n",N_EXIT);
+   CIO::message("\033[1;31m%s\033[0m\t- this message\n",N_HELP);
+   CIO::message("\033[1;31m%s\033[0m <commands>\t- execute system functions \n",N_SYSTEM);
    
 }
 
 void CTextGUI::print_prompt()
 {
-   CIO::message("genefinder >> ");
+	CIO::message("\033[1;34mgenefinder\033[0m >> ");
+    //CIO::message("genefinder >> ");
 }
 
 bool CTextGUI::get_line(FILE* infile)
 {
-    int i;
-    char input[2000];
+	int i;
+	char input[2000];
 
 	print_prompt();
 
-    char* b=fgets(input, sizeof(input), infile);
-    if ((b==NULL) || !strlen(input) || (input[0]==N_COMMENT1) || (input[0]==N_COMMENT2) || (input[0]=='\n'))
-	return true;
-    
-    input[strlen(input)-1]='\0';
-    if (infile!=stdin)
-	printf("%s\n",input) ;
+	char* b=fgets(input, sizeof(input), infile);
+	if ((b==NULL) || !strlen(input) || (input[0]==N_COMMENT1) || (input[0]==N_COMMENT2) || (input[0]=='\n'))
+		return true;
 
-    if (!strncmp(input, N_LOAD_MODEL, strlen(N_LOAD_MODEL)))
-    {
-    } 
-    else if (!strncmp(input, N_SET_NEG_MODEL, strlen(N_SET_NEG_MODEL)))
-    {
-	}
-    else if (!strncmp(input, N_SET_TEST_MODEL, strlen(N_SET_TEST_MODEL)))
-    {
-    } 
-    else if (!strncmp(input, N_SET_POS_MODEL, strlen(N_SET_POS_MODEL)))
-    {
-    } 
-    else if (!strncmp(input, N_SAVE_MODEL_BIN, strlen(N_SAVE_MODEL_BIN)))
-    {
-    } 
-    else if (!strncmp(input, N_CHOP, strlen(N_CHOP)))
-    {
-    } 
-    else if (!strncmp(input, N_SAVE_MODEL, strlen(N_SAVE_MODEL)))
-    {
-    } 
-    else if (!strncmp(input, N_LOAD_DEFINITIONS, strlen(N_LOAD_DEFINITIONS)))
-    {
-    } 
-    else if (!strncmp(input, N_ASSIGN_OBSERVATION, strlen(N_ASSIGN_OBSERVATION)))
-    {
-    }
-    else if (!strncmp(input, N_LOAD_OBSERVATIONS, strlen(N_LOAD_OBSERVATIONS)))
-    {
-    }
-    else if (!strncmp(input, N_SAVE_PATH, strlen(N_SAVE_PATH)))
-    {
-	}
-    else if (!strncmp(input, N_SAVE_LIKELIHOOD_BIN, strlen(N_SAVE_LIKELIHOOD_BIN)))
-    {
-    } 
-    else if (!strncmp(input, N_SAVE_LIKELIHOOD, strlen(N_SAVE_LIKELIHOOD)))
-    {
-    } 
-    else if (!strncmp(input, N_SAVE_TOP_FEATURES, strlen(N_SAVE_TOP_FEATURES)))
+	input[strlen(input)-1]='\0';
+	if (infile!=stdin)
+		printf("%s\n",input) ;
+	
+	if (!strncmp(input, N_NEW_HMM, strlen(N_NEW_HMM)))
+	{
+		guihmm.new_hmm(input+strlen(N_NEW_HMM));
+	} 
+	else if (!strncmp(input, N_NEW_SVM, strlen(N_NEW_SVM)))
+	{
+		guisvm.new_svm(input+strlen(N_NEW_SVM));
+	} 
+	else if (!strncmp(input, N_LOAD_HMM, strlen(N_LOAD_HMM)))
 	{
 	} 
-    else if (!strncmp(input, N_SAVE_KERNEL, strlen(N_SAVE_KERNEL)))
+	else if (!strncmp(input, N_SET_HMM_AS, strlen(N_SET_HMM_AS)))
+	{
+		guihmm.set_hmm_as(input+strlen(N_SET_HMM_AS));
+	}
+	else if (!strncmp(input, N_SAVE_HMM_BIN, strlen(N_SAVE_HMM_BIN)))
 	{
 	} 
-    else if (!strncmp(input, N_SAVE_PATH_DERIVATIVES_BIN, strlen(N_SAVE_PATH_DERIVATIVES_BIN)))
-    {
-    } 
-    else if (!strncmp(input, N_SAVE_PATH_DERIVATIVES, strlen(N_SAVE_PATH_DERIVATIVES)))
-    {
-    } 
-    else if (!strncmp(input, N_SAVE_MODEL_DERIVATIVES_BIN, strlen(N_SAVE_MODEL_DERIVATIVES_BIN)))
-    {
-    } 
-    else if (!strncmp(input, N_SAVE_MODEL_DERIVATIVES, strlen(N_SAVE_MODEL_DERIVATIVES)))
-    {
-    } 
-    else if (!strncmp(input, N_FIX_POS_STATE, strlen(N_FIX_POS_STATE)))
-    {
-    } 
-    else if (!strncmp(input, N_SET_MAX_DIM, strlen(N_SET_MAX_DIM)))
-    {
-    } 
-    else if (!strncmp(input, N_CLEAR, strlen(N_CLEAR)))
-    {
-    } 
-    else if (!strncmp(input, N_NEW, strlen(N_NEW)))
-    {
-    } 
-    else if (!strncmp(input, N_PSEUDO, strlen(N_PSEUDO)))
-    {
-    } 
-    else if (!strncmp(input, N_ALPHABET, strlen(N_ALPHABET)))
-    {
-    } 
-    else if (!strncmp(input, N_CONVERGENCE_CRITERIA, strlen(N_CONVERGENCE_CRITERIA)))
-    {
-    } 
-    else if (!strncmp(input, N_VITERBI_TRAIN_DEFINED_ANNEALED, strlen(N_VITERBI_TRAIN_DEFINED_ANNEALED)))
-    {
-    } 
-    else if (!strncmp(input, N_VITERBI_TRAIN_DEFINED_ADDIABATIC, strlen(N_VITERBI_TRAIN_DEFINED_ADDIABATIC)))
-    {
-    } 
-    else if (!strncmp(input, N_VITERBI_TRAIN_DEFINED, strlen(N_VITERBI_TRAIN_DEFINED)))
-    {
-    } 
-    else if (!strncmp(input, N_VITERBI_TRAIN, strlen(N_VITERBI_TRAIN)))
-    {
-    }
-    else if (!strncmp(input, N_BAUM_WELCH_TRAIN_DEFINED, strlen(N_BAUM_WELCH_TRAIN_DEFINED)))
-    {
-    } 
-    else if (!strncmp(input, N_BAUM_WELCH_TRAIN, strlen(N_BAUM_WELCH_TRAIN)))
-    {
-    } 
-    else if (!strncmp(input, N_BEST_PATH, strlen(N_BEST_PATH)))
-    {
-    } 
-    else if (!strncmp(input, N_LIKELIHOOD, strlen(N_LIKELIHOOD)))
-    {
-    } 
-    else if (!strncmp(input, N_OUTPUT_MODEL_DEFINED, strlen(N_OUTPUT_MODEL_DEFINED)))
-    {
-    } 
-    else if (!strncmp(input, N_OUTPUT_PATH, strlen(N_OUTPUT_PATH)))
-    {
-    } 
-    else if (!strncmp(input, N_OUTPUT_GENES, strlen(N_OUTPUT_GENES)))
-    {
-    } 
-    else if (!strncmp(input, N_OUTPUT_MODEL, strlen(N_OUTPUT_MODEL)))
-    {
-    } 
-    else if (!strncmp(input, N_EXEC, strlen(N_EXEC)))
-    {
-    } 
-    else if (!strncmp(input, N_EXIT, strlen(N_EXIT)))
-    {
-	return false;
-    } 
-    else if (!strncmp(input, N_QUIT, strlen(N_QUIT)))
-    {
-	return false;
-    } 
-    else if (!strncmp(input, N_TEST, strlen(N_TEST)))
-    {
-    } 
-    else if (!strncmp(input, N_HELP, strlen(N_HELP)))
-    {
+	else if (!strncmp(input, N_CHOP, strlen(N_CHOP)))
+	{
+	} 
+	else if (!strncmp(input, N_SAVE_HMM, strlen(N_SAVE_HMM)))
+	{
+	} 
+	else if (!strncmp(input, N_LOAD_DEFINITIONS, strlen(N_LOAD_DEFINITIONS)))
+	{
+	} 
+	else if (!strncmp(input, N_ASSIGN_OBSERVATION, strlen(N_ASSIGN_OBSERVATION)))
+	{
+	}
+	else if (!strncmp(input, N_LOAD_OBSERVATIONS, strlen(N_LOAD_OBSERVATIONS)))
+	{
+		guiobs.load_observations(input+strlen(N_LOAD_OBSERVATIONS));
+	}
+	else if (!strncmp(input, N_SAVE_PATH, strlen(N_SAVE_PATH)))
+	{
+	}
+	else if (!strncmp(input, N_SAVE_LIKELIHOOD_BIN, strlen(N_SAVE_LIKELIHOOD_BIN)))
+	{
+	} 
+	else if (!strncmp(input, N_SAVE_LIKELIHOOD, strlen(N_SAVE_LIKELIHOOD)))
+	{
+	} 
+	else if (!strncmp(input, N_SAVE_TOP_FEATURES, strlen(N_SAVE_TOP_FEATURES)))
+	{
+	} 
+	else if (!strncmp(input, N_SAVE_KERNEL, strlen(N_SAVE_KERNEL)))
+	{
+	} 
+	else if (!strncmp(input, N_SAVE_PATH_DERIVATIVES_BIN, strlen(N_SAVE_PATH_DERIVATIVES_BIN)))
+	{
+	} 
+	else if (!strncmp(input, N_SAVE_PATH_DERIVATIVES, strlen(N_SAVE_PATH_DERIVATIVES)))
+	{
+	} 
+	else if (!strncmp(input, N_SAVE_HMM_DERIVATIVES_BIN, strlen(N_SAVE_HMM_DERIVATIVES_BIN)))
+	{
+	} 
+	else if (!strncmp(input, N_SAVE_HMM_DERIVATIVES, strlen(N_SAVE_HMM_DERIVATIVES)))
+	{
+	} 
+	else if (!strncmp(input, N_FIX_POS_STATE, strlen(N_FIX_POS_STATE)))
+	{
+	} 
+	else if (!strncmp(input, N_SET_MAX_DIM, strlen(N_SET_MAX_DIM)))
+	{
+	} 
+	else if (!strncmp(input, N_CLEAR, strlen(N_CLEAR)))
+	{
+	} 
+	else if (!strncmp(input, N_PSEUDO, strlen(N_PSEUDO)))
+	{
+	} 
+	else if (!strncmp(input, N_ALPHABET, strlen(N_ALPHABET)))
+	{
+	} 
+	else if (!strncmp(input, N_CONVERGENCE_CRITERIA, strlen(N_CONVERGENCE_CRITERIA)))
+	{
+	} 
+	else if (!strncmp(input, N_VITERBI_TRAIN_DEFINED_ANNEALED, strlen(N_VITERBI_TRAIN_DEFINED_ANNEALED)))
+	{
+	} 
+	else if (!strncmp(input, N_VITERBI_TRAIN_DEFINED_ADDIABATIC, strlen(N_VITERBI_TRAIN_DEFINED_ADDIABATIC)))
+	{
+	} 
+	else if (!strncmp(input, N_VITERBI_TRAIN_DEFINED, strlen(N_VITERBI_TRAIN_DEFINED)))
+	{
+	} 
+	else if (!strncmp(input, N_VITERBI_TRAIN, strlen(N_VITERBI_TRAIN)))
+	{
+	}
+	else if (!strncmp(input, N_BAUM_WELCH_TRAIN_DEFINED, strlen(N_BAUM_WELCH_TRAIN_DEFINED)))
+	{
+	} 
+	else if (!strncmp(input, N_BAUM_WELCH_TRAIN, strlen(N_BAUM_WELCH_TRAIN)))
+	{
+		guihmm.baum_welch_train(input+strlen(N_BAUM_WELCH_TRAIN));
+	} 
+	else if (!strncmp(input, N_BEST_PATH, strlen(N_BEST_PATH)))
+	{
+	} 
+	else if (!strncmp(input, N_LIKELIHOOD, strlen(N_LIKELIHOOD)))
+	{
+	} 
+	else if (!strncmp(input, N_OUTPUT_HMM_DEFINED, strlen(N_OUTPUT_HMM_DEFINED)))
+	{
+	} 
+	else if (!strncmp(input, N_OUTPUT_PATH, strlen(N_OUTPUT_PATH)))
+	{
+	} 
+	else if (!strncmp(input, N_OUTPUT_GENES, strlen(N_OUTPUT_GENES)))
+	{
+	} 
+	else if (!strncmp(input, N_OUTPUT_HMM, strlen(N_OUTPUT_HMM)))
+	{
+	} 
+	else if (!strncmp(input, N_EXEC, strlen(N_EXEC)))
+	{
+	} 
+	else if (!strncmp(input, N_EXIT, strlen(N_EXIT)))
+	{
+		return false;
+	} 
+	else if (!strncmp(input, N_QUIT, strlen(N_QUIT)))
+	{
+		return false;
+	} 
+	else if (!strncmp(input, N_TEST, strlen(N_TEST)))
+	{
+	} 
+	else if (!strncmp(input, N_HELP, strlen(N_HELP)))
+	{
 		print_help();
-    }
-    else if (!strncmp(input, N_SYSTEM, strlen(N_SYSTEM)))
-    {
+	}
+	else if (!strncmp(input, N_SYSTEM, strlen(N_SYSTEM)))
+	{
 		for (i=strlen(N_SYSTEM); isspace(input[i]); i++);
 		system(&input[i]);
-    } 
-    else if (!strncmp(input, N_LINEAR_TRAIN, strlen(N_LINEAR_TRAIN)))
-    {
-    } 
-    else if (!strncmp(input, N_LINEAR_LIKELIHOOD, strlen(N_LINEAR_LIKELIHOOD)))
-    {
-    } 
-    else if (!strncmp(input, N_SAVE_LINEAR_LIKELIHOOD_BIN, strlen(N_SAVE_LINEAR_LIKELIHOOD_BIN)))
-    {
-    } 
-    else if (!strncmp(input, N_SAVE_LINEAR_LIKELIHOOD, strlen(N_SAVE_LINEAR_LIKELIHOOD)))
-    {
-    } 
-    else if (!strncmp(input, N_SVM_TRAIN, strlen(N_SVM_TRAIN)))
-    {
-    } 
-    else if (!strncmp(input, N_SET_SVM_LIGHT, strlen(N_SET_SVM_LIGHT)))
+	} 
+	else if (!strncmp(input, N_LINEAR_TRAIN, strlen(N_LINEAR_TRAIN)))
+	{
+		guihmm.linear_train(input+strlen(N_LINEAR_TRAIN));
+	} 
+	else if (!strncmp(input, N_LINEAR_LIKELIHOOD, strlen(N_LINEAR_LIKELIHOOD)))
+	{
+	} 
+	else if (!strncmp(input, N_SAVE_LINEAR_LIKELIHOOD_BIN, strlen(N_SAVE_LINEAR_LIKELIHOOD_BIN)))
+	{
+	} 
+	else if (!strncmp(input, N_SAVE_LINEAR_LIKELIHOOD, strlen(N_SAVE_LINEAR_LIKELIHOOD)))
+	{
+	} 
+	else if (!strncmp(input, N_SVM_TRAIN, strlen(N_SVM_TRAIN)))
+	{
+		guisvm.train(input+strlen(N_SVM_TRAIN));
+	} 
+	else if (!strncmp(input, N_SET_SVM_TYPE, strlen(N_SET_SVM_TYPE)))
+	{
+		guisvm.set_svm_type(input+strlen(N_SET_SVM_TYPE));
+	}
+	else if (!strncmp(input, N_LINEAR_SVM_TRAIN, strlen(N_LINEAR_SVM_TRAIN)))
+	{
+	} 
+	else if (!strncmp(input, N_SVM_TEST, strlen(N_SVM_TEST)))
+	{
+		guisvm.test(input+strlen(N_SVM_TEST));
+	} 
+	else if (!strncmp(input, N_ONE_CLASS_LINEAR_HMM_TEST, strlen(N_ONE_CLASS_LINEAR_HMM_TEST)))
+	{
+	} 
+	else if (!strncmp(input, N_LINEAR_HMM_TEST, strlen(N_LINEAR_HMM_TEST)))
+	{
+	} 
+	else if (!strncmp(input, N_ONE_CLASS_HMM_TEST, strlen(N_ONE_CLASS_HMM_TEST)))
+	{
+		guihmm.one_class_test(input+strlen(N_ONE_CLASS_HMM_TEST));
+	} 
+	else if (!strncmp(input, N_HMM_TEST, strlen(N_HMM_TEST)))
+	{
+		guihmm.test_hmm(input+strlen(N_HMM_TEST));
+	} 
+	else if (!strncmp(input, N_APPEND_HMM, strlen(N_APPEND_HMM)))
+	{
+		guihmm.append_model(input+strlen(N_APPEND_HMM));
+	} 
+	else if (!strncmp(input, N_ADD_STATES, strlen(N_ADD_STATES)))
+	{
+		guihmm.add_states(input+strlen(N_ADD_STATES));
+	} 
+	else if (!strncmp(input, N_C, strlen(N_C)))
+	{
+		guisvm.set_C(input+strlen(N_C));
+	} 
+	else if (!strncmp(input, N_SET_ORDER, strlen(N_SET_ORDER)))
 	{
 	}
-    else if (!strncmp(input, N_SET_SVM_CPLEX, strlen(N_SET_SVM_CPLEX)))
-	{
-	}
-    else if (!strncmp(input, N_LINEAR_SVM_TRAIN, strlen(N_LINEAR_SVM_TRAIN)))
-    {
-    } 
-    else if (!strncmp(input, N_SVM_TEST, strlen(N_SVM_TEST)))
-    {
-    } 
-    else if (!strncmp(input, N_ONE_CLASS_LINEAR_HMM_TEST, strlen(N_ONE_CLASS_LINEAR_HMM_TEST)))
-    {
-    } 
-    else if (!strncmp(input, N_LINEAR_HMM_TEST, strlen(N_LINEAR_HMM_TEST)))
-    {
-    } 
-    else if (!strncmp(input, N_ONE_CLASS_HMM_TEST, strlen(N_ONE_CLASS_HMM_TEST)))
-    {
-    } 
-    else if (!strncmp(input, N_HMM_TEST, strlen(N_HMM_TEST)))
-    {
-    } 
-    else if (!strncmp(input, N_APPEND_MODEL, strlen(N_APPEND_MODEL)))
-    {
-    } 
-    else if (!strncmp(input, N_ADD_STATES, strlen(N_ADD_STATES)))
-    {
-    } 
-    else if (!strncmp(input, N_C, strlen(N_C)))
-    {
-    } 
-    else if (!strncmp(input, N_SET_ORDER, strlen(N_SET_ORDER)))
-	{
-	}
-    else
+	else
 		CIO::message("unrecognized command. type help for options\n");
-    return true;
+	return true;
 }
 
 //// main - the one and only ///

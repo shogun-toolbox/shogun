@@ -1,3 +1,62 @@
+#include "guilib/GUISVM.h"
+
+CGUISVM::CGUISVM()
+{
+}
+
+CGUISVM::~CGUISVM()
+{
+}
+
+bool CGUISVM::new_svm(char* param)
+{
+}
+
+bool CGUISVM::train(char* param)
+{
+}
+
+bool CGUISVM::test(char* param)
+{
+}
+
+bool CGUISVM::set_svm_type(char* param)
+{
+}
+
+bool CGUISVM::get_svm_type()
+{
+}
+
+bool CGUISVM::set_kernel()
+{
+}
+
+bool CGUISVM::get_kernel()
+{
+}
+
+bool CGUISVM::set_preproc()
+{
+}
+
+bool CGUISVM::get_preproc()
+{
+}
+
+bool CGUISVM::load_svm()
+{
+}
+
+bool CGUISVM::save_svm()
+{
+}
+
+bool CGUISVM::set_C(char* param)
+{
+}
+
+
 
 #if 0
 #include "svm/SVM.h"
