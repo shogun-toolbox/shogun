@@ -1,7 +1,7 @@
 #include "StringPreProc.h"
 
-CStringPreProc::CStringPreProc(const char *name)
-  : CPreProc(name) 
+CStringPreProc::CStringPreProc(const char *name, const char* id)
+  : CPreProc(name, id)
 {
 }
 

@@ -4,7 +4,7 @@
 #include "features/RealFeatures.h"
 
 CNormDerivativeLem3::CNormDerivativeLem3()
-  : CRealPreProc("NormDerivativeLem3") 
+  : CRealPreProc("NormDerivativeLem3", "NDL3") 
 {
 }
 

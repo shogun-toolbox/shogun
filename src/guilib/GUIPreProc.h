@@ -13,6 +13,8 @@ class CGUIPreProc
 
 		bool set_preproc(char* param);
 		inline CPreProc * get_preproc() { return preproc ; }
+		bool load(char* param);
+		bool save(char* param);
 	protected:
 		CGUI* gui ;
 		CPreProc * preproc;

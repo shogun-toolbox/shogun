@@ -5,7 +5,7 @@
 #include <math.h>
 
 CNormOne::CNormOne()
-  : CRealPreProc("NormOne") 
+  : CRealPreProc("NormOne", "NRM1") 
 {
 }
 

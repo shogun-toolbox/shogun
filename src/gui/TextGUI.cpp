@@ -16,6 +16,8 @@ CTextGUI *gui=NULL;
 //names of menu commands
 static const char* N_NEW_HMM=			"new_hmm";
 static const char* N_NEW_SVM=			"new_svm";
+static const char* N_LOAD_PREPROC=		"load_preproc";
+static const char* N_SAVE_PREPROC=		"save_preproc";
 static const char* N_LOAD_HMM=			"load_hmm";
 static const char* N_SAVE_HMM=			"save_hmm";
 static const char* N_LOAD_SVM=			"load_svm";
@@ -118,11 +120,13 @@ void CTextGUI::print_help()
    CIO::message("\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
    CIO::message("\033[1;31m%s\033[0m <filename> <LINEAR|MPI|CPLEX>\t- load svm\n",N_LOAD_SVM);
    CIO::message("\033[1;31m%s\033[0m <filename> <REAL|SHORT|STRING> <TRAIN|TEST> [0|1]\t- load features\n",N_LOAD_FEATURES);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- load preproc init data\n",N_LOAD_PREPROC);
 //   CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
    CIO::message("\033[1;31m%s\033[0m <filename>\t- load observed data\n",N_LOAD_OBSERVATIONS);
    CIO::message("\n[SAVE]\n");
    CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm\n",N_SAVE_HMM);
    CIO::message("\033[1;31m%s\033[0m <filename>\t- save svm\n",N_SAVE_SVM);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save preproc init data\n",N_SAVE_PREPROC);
    CIO::message("\033[1;31m%s\033[0m <filename> <TRAIN|TEST>\t- save features\n",N_SAVE_FEATURES);
 //   CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm in binary format\n",N_SAVE_HMM_BIN);
 //#ifndef NOVIT
@@ -181,12 +185,12 @@ void CTextGUI::print_help()
 //   CIO::message("\033[1;31m%s\033[0m <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate hmm output from obs using linear HMM\n",N_LINEAR_HMM_TEST);
    CIO::message("\n[FEATURES]\n");
    CIO::message("\033[1;31m%s\033[0m\t <TOP|FK> <TRAIN|TEST> [<0|1>]- creates train/test-features out of obs\n",N_SET_FEATURES);
+   CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|NONE>\t\t\t- set preprocessor type\n", N_SET_PREPROC);
    CIO::message("\033[1;31m%s\033[0m\t <TRAIN|TEST> [<0|1>] - preprocesses the feature_matrix, 1 to force preprocessing of already processed\n",N_PREPROCESS);
    CIO::message("\n[SVM]\n");
    CIO::message("\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
    CIO::message("\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
    CIO::message("\033[1;31m%s\033[0m <LINEAR>\t\t\t- set kernel type\n", N_SET_KERNEL);
-   CIO::message("\033[1;31m%s\033[0m <PCACUT|NORMONE|PRUNEVARSUBMEAN|NONE>\t\t\t- set preprocessor type\n", N_SET_PREPROC);
    CIO::message("\033[1;31m%s\033[0m\t\t- obtains svm from TRAINFEATURES\n",N_SVM_TRAIN);
    CIO::message("\033[1;31m%s\033[0m [[<treshhold> [<output> [<rocfile>]]]\t\t- calculate svm output on TESTFEATURES\n",N_SVM_TEST);
    //CIO::message("\033[1;31m%s\033[0m <dstsvm> \t\t- obtains svm from pos/neg linear HMMs\n",N_LINEAR_SVM_TRAIN);
@@ -233,6 +237,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
     {
 	guihmm.load(input+strlen(N_LOAD_HMM));
     } 
+    else if (!strncmp(input, N_LOAD_PREPROC, strlen(N_LOAD_PREPROC)))
+    {
+	guipreproc.load(input+strlen(N_LOAD_PREPROC)) ;
+    } 
     else if (!strncmp(input, N_LOAD_FEATURES, strlen(N_LOAD_FEATURES)))
     {
 	guifeatures.load(input+strlen(N_LOAD_FEATURES));
@@ -260,6 +268,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
     else if (!strncmp(input, N_SAVE_HMM, strlen(N_SAVE_HMM)))
     {
 	guihmm.save(input+strlen(N_SAVE_HMM)) ;
+    } 
+    else if (!strncmp(input, N_SAVE_PREPROC, strlen(N_SAVE_PREPROC)))
+    {
+	guipreproc.save(input+strlen(N_SAVE_PREPROC)) ;
     } 
     else if (!strncmp(input, N_SAVE_SVM, strlen(N_SAVE_SVM)))
     {

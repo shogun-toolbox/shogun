@@ -1,12 +1,13 @@
 #include "PreProc.h"
 #include "lib/io.h"
 
-CPreProc::CPreProc(const char * name)
-  : preproc_name(name)
+CPreProc::CPreProc(const char* name, const char* id)
+  : preproc_name(name), preproc_id(id)
 {
+	CIO::message("creating PreProc \"%s\"\n", preproc_name);
 }
 
 CPreProc::~CPreProc()
 {
-  CIO::message("PreProc object destroyed\n") ;
+  CIO::message("deleting PreProc \"%s\"\n", preproc_name) ;
 }

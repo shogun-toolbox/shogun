@@ -14,7 +14,7 @@ extern "C" void cleaner_main(double *covZ, int dim, double thresh,
 			     double **T, int *num_dim)  ;
 
 CPCACut::CPCACut()
-  : CRealPreProc("PCACut"), T(NULL), num_dim(0), mean(NULL), initialized(false)
+  : CRealPreProc("PCACut", "PCAC"), T(NULL), num_dim(0), mean(NULL), initialized(false)
 {
 }
 
@@ -134,6 +134,8 @@ bool CPCACut::init(CFeatures* f)
 
 	delete[] T;
 	T=new REAL[num_dim*num_features] ;
+	num_old_dim=num_features;
+
 	assert(T!=NULL) ;
 	int offs=0 ;
 	for (i=0; i<num_features; i++)
@@ -239,11 +241,24 @@ REAL* CPCACut::apply_to_feature_vector(REAL* f, int &len)
 /// initialize preprocessor from file
 bool CPCACut::load_init_data(FILE* src)
 {
-	return false;
+    assert(fread(&num_dim, sizeof(int), 1, src)==1);
+    assert(fread(&num_old_dim, sizeof(int), 1, src)==1);
+	delete[] mean;
+	delete[] T;
+	mean=new double[num_dim];
+	T=new double[num_dim*num_old_dim];
+	assert (mean!=NULL && T!=NULL);
+    assert(fread(mean, sizeof(double), num_old_dim, src)==(unsigned int) num_old_dim);
+    assert(fread(T, sizeof(double), num_dim*num_old_dim, src)==(unsigned int) num_old_dim*num_dim);
+	return true;
 }
 
 /// save init-data (like transforamtion matrices etc) to file
 bool CPCACut::save_init_data(FILE* dst)
 {
-	return false;
+    assert(fwrite(&num_dim, sizeof(int), 1, dst)==1);
+    assert(fwrite(&num_old_dim, sizeof(int), 1, dst)==1);
+    assert(fwrite(mean, sizeof(double), num_old_dim, dst)==(unsigned int) num_old_dim);
+    assert(fwrite(T, sizeof(double), num_dim*num_old_dim, dst)==(unsigned int) num_old_dim*num_dim);
+	return true;
 }
