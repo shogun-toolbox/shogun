@@ -86,10 +86,6 @@ static const CHAR* N_CLEAR=			"clear";
 static const CHAR* N_CHOP=			"chop";
 static const CHAR* N_CONVERGENCE_CRITERIA=	"convergence_criteria";
 static const CHAR* N_PSEUDO=			"pseudo";
-static const CHAR* N_CONVERT_TO_SPARSE=	"convert_to_sparse";
-static const CHAR* N_CONVERT_TO_DENSE=	"convert_to_dense";
-static const CHAR* N_CONVERT_CHAR_TO_WORD=	"convert_char_to_word";
-static const CHAR* N_CONVERT_CHAR_TO_SHORT=	"convert_char_to_short";
 static const CHAR* N_CONVERT=	"convert";
 static const CHAR* N_C=			     	"c";
 static const CHAR* N_MKL_PARAMETERS=			"mkl_parameters";
@@ -123,7 +119,6 @@ static const CHAR* N_HMM_TEST=			"hmm_test";
 static const CHAR* N_HMM_CLASSIFY=		"hmm_classify";
 static const CHAR* N_SET_OUTPUT=		"set_output";
 static const CHAR* N_GRADIENT_STEP=		"do_grad_step";
-static const CHAR* N_ALIGN_CHAR=                "align_char" ;
 static const CHAR* N_SET_REF_FEAT=              "set_ref_features" ;
 static const CHAR* N_TIC=              "tic" ;
 static const CHAR* N_TOC=              "toc" ;
@@ -210,11 +205,7 @@ void CTextGUI::print_help()
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t\t- delete last preprocessor\n", N_DEL_PREPROC);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t\t- delete all preprocessors\n", N_CLEAN_PREPROC);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <TRAIN|TEST> <NUM_FEAT> <NUM_VEC>\t\t\t- reshape feature matrix for simple features\n", N_RESHAPE);
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert dense features to sparse feature matrix\n", N_CONVERT_TO_SPARSE);
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST>\t\t\t- convert sparse features to dense feature matrix\n", N_CONVERT_TO_DENSE);
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <ORDER> <START>\t\t\t- convert CHAR to word features, order remapping\n", N_CONVERT_CHAR_TO_WORD);
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <ORDER> <START>\t\t\t- convert CHAR to short features, order remapping\n", N_CONVERT_CHAR_TO_SHORT);
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <STRING|SPARSE|SIMPLE> <REAL|CHAR|WORD|..> <STRING|...> <REAL|TOP..>\t\t\t- convert from feature class/type to class/type\n", N_CONVERT);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <STRING|SPARSE|SIMPLE> <REAL|CHAR|WORD|..> <STRING|...> <REAL|TOP..> ...\t\t\t- convert from feature class/type to class/type\n", N_CONVERT);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <TRAIN|TEST> [<0|1>] - attach the preprocessors to the current feature object, if available it will preprocess the feature_matrix, 1 to force preprocessing of already processed\n",N_ATTACH_PREPROC);
 	CIO::message(M_MESSAGEONLY, "\n[CLASSIFIER]\n");
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
@@ -369,29 +360,9 @@ bool CTextGUI::parse_line(CHAR* input)
 	{
 		guifeatures.reshape(input+strlen(N_RESHAPE));
 	} 
-	else if (!strncmp(input, N_CONVERT_TO_SPARSE, strlen(N_CONVERT_TO_SPARSE)))
-	{
-		guifeatures.convert_full_to_sparse(input+strlen(N_CONVERT_TO_SPARSE));
-	} 
-	else if (!strncmp(input, N_CONVERT_TO_DENSE, strlen(N_CONVERT_TO_DENSE)))
-	{
-		guifeatures.convert_sparse_to_full(input+strlen(N_CONVERT_TO_DENSE));
-	} 
-	else if (!strncmp(input, N_CONVERT_CHAR_TO_WORD, strlen(N_CONVERT_CHAR_TO_WORD)))
-	{
-		guifeatures.convert_char_to_word(input+strlen(N_CONVERT_CHAR_TO_WORD));
-	} 
 	else if (!strncmp(input, N_SET_REF_FEAT, strlen(N_SET_REF_FEAT)))
         {
 	        guifeatures.set_ref_features(input+strlen(N_SET_REF_FEAT));
-	} 
-	else if (!strncmp(input, N_ALIGN_CHAR, strlen(N_ALIGN_CHAR)))
-        {
-	        guifeatures.alignment_char(input+strlen(N_ALIGN_CHAR));
-	} 
-	else if (!strncmp(input, N_CONVERT_CHAR_TO_SHORT, strlen(N_CONVERT_CHAR_TO_SHORT)))
-	{
-		guifeatures.convert_char_to_short(input+strlen(N_CONVERT_CHAR_TO_SHORT));
 	} 
 	else if (!strncmp(input, N_CONVERT, strlen(N_CONVERT)))
 	{

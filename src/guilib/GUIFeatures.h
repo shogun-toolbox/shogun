@@ -3,6 +3,17 @@
 
 #include "features/Labels.h"
 #include "features/Features.h"
+#include "features/RealFileFeatures.h"
+#include "features/TOPFeatures.h"
+#include "features/FKFeatures.h"
+#include "features/CharFeatures.h"
+#include "features/StringFeatures.h"
+#include "features/ByteFeatures.h"
+#include "features/WordFeatures.h"
+#include "features/ShortFeatures.h"
+#include "features/RealFeatures.h"
+#include "features/SparseRealFeatures.h"
+#include "features/CombinedFeatures.h"
 
 class CGUI;
 
@@ -50,13 +61,19 @@ class CGUIFeatures
 
 		bool convert(CHAR* param);
 
-		/// obsolete use the more generic convert function
-		bool convert_full_to_sparse(CHAR* param);
-		bool convert_sparse_to_full(CHAR* param);
-		bool convert_char_to_word(CHAR* param);
-		bool convert_char_to_short(CHAR* param);
+		CSparseRealFeatures* convert_simple_real_to_sparse_real(CRealFeatures* src, CHAR* param);
+		CStringFeatures<CHAR>* convert_simple_char_to_string_char(CCharFeatures* src, CHAR* param);
+		CWordFeatures* convert_simple_char_to_simple_word(CCharFeatures* src, CHAR* param);
+		CShortFeatures* convert_simple_char_to_simple_short(CCharFeatures* src, CHAR* param);
+		CRealFeatures* convert_simple_word_to_simple_salzberg(CWordFeatures* src, CHAR* param);
+		CRealFeatures* convert_simple_char_to_simple_align(CCharFeatures* src,CHAR* param);
 
-		bool alignment_char(CHAR* param) ;
+		CStringFeatures<WORD>* convert_string_char_to_string_word(CStringFeatures<CHAR>* src, CHAR* param);
+		CTOPFeatures* convert_string_word_to_simple_top(CStringFeatures<WORD>* src, CHAR* param);
+		CFKFeatures* convert_string_word_to_simple_fk(CStringFeatures<WORD>* src, CHAR* param);
+
+		CRealFeatures* convert_sparse_real_to_simple_real(CSparseRealFeatures* src, CHAR* param);
+
 		bool set_ref_features(CHAR* param) ;
 
 	protected:
