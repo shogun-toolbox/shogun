@@ -20,6 +20,7 @@
 #include "kernel/WordMatchKernel.h"
 #include "kernel/CommWordKernel.h"
 #include "kernel/HistogramWordKernel.h"
+#include "kernel/SalzbergWordKernel.h"
 #include "kernel/GaussianKernel.h"
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/SparsePolyKernel.h"
@@ -137,6 +138,32 @@ bool CGUIKernel::set_kernel(CHAR* param)
 				if (kernel)
 				{
 					CIO::message("HistogramKernel created\n");
+					return true;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"SALZBERG")==0)
+		{
+			if (strcmp(data_type,"WORD")==0)
+			{
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				if (kernel)
+				  {
+				    CIO::message("destroying old kernel\n") ;
+				    delete kernel;
+				  } ;
+
+				CIO::message("getting estimator\n") ;
+				CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
+
+				if (estimator)
+					kernel=new CSalzbergWordKernel(size, estimator);
+				else
+					CIO::message("no estimator set\n");
+
+				if (kernel)
+				{
+					CIO::message("SalzbergKernel created\n");
 					return true;
 				}
 			}
