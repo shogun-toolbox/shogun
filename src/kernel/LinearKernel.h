@@ -25,7 +25,7 @@ class CLinearKernel: public CKernel
   REAL compute(long idx_a, long idx_b);
   /*    compute_kernel*/
 
-  void init_rescale(CFeatures* f);
+  void init_rescale();
   
  protected:
   bool rescale ;

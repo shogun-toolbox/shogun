@@ -30,6 +30,10 @@ class CKernel
 		bool load(FILE* src);
 		bool save(FILE* dest);
 
+		/// load and save kernel init_data
+		//bool load_init(FILE* src)=0;
+		//bool save_init(FILE* dest)=0;
+		
 		// check the feature object
 		virtual bool check_features(CFeatures* f)=0 ;
 

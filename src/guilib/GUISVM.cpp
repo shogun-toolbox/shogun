@@ -115,7 +115,6 @@ bool CGUISVM::test(char* param)
 
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
-	CPreProc * preproc=gui->guipreproc.get_preproc();
 	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
 	CIO::message("I:test features %ldx%ld\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
 
@@ -136,37 +135,11 @@ bool CGUISVM::test(char* param)
 		return false ;
 	}
 
-	if (preproc)
+	/*if (!svm->check_feature_type(trainfeatures) || !svm->check_feature_type(trainfeatures))
 	{
-		CIO::message("using preprocessor: %s\n", preproc->get_name());
-		if (trainfeatures->get_feature_type()!=preproc->get_feature_type() || testfeatures->get_feature_type()!=preproc->get_feature_type())
-		{
-			CIO::message("preprocessor does not fit to features");
-			return false;
-		}
-		CIO::message("S:initializing train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
-		preproc->init(trainfeatures);
-		CIO::message("E:initializing train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
-	}
-	else
-		CIO::message("doing without preproc\n");
-	
-
-	trainfeatures->set_preproc(preproc);
-	trainfeatures->preproc_feature_matrix();
-	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
-	CIO::message("I:test features %ldx%ld\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
-	
-	testfeatures->set_preproc(preproc);
-	testfeatures->preproc_feature_matrix();
-	CIO::message("I:train features %ldx%ld\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
-	CIO::message("I:test features %ldx%ld\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
-
-	//  if (!svm->check_feature_type(f))
-	//    {
-	//      CIO::message("features do not fit to svm") ;
-	//      return false ;
-	//    }
+		CIO::message("features do not fit to svm") ;
+		return false ;
+	}*/
 
 	CIO::message("starting svm testing\n") ;
 	svm->set_C(C) ;

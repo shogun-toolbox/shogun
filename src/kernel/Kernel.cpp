@@ -305,25 +305,6 @@ REAL* CKernel::kernel_cache_clean_and_malloc(long cacheidx)
 
 bool CKernel::save(FILE* dest)
 {
-	//    KERNEL_CACHE mykernel_cache;
-	//    KERNEL_PARM mykernel_parm;
-	//	int totdoc=obs->get_DIMENSION();
-	//	
-	//	memset(&mykernel_cache, 0x0, sizeof(KERNEL_CACHE));
-	//	memset(&mykernel_parm, 0x0, sizeof(KERNEL_PARM));
-	//
-	//	if (kernel_type==6)
-	//	{
-	//		if (!CHMM::compute_top_feature_cache(pos, neg))
-	//			kernel_type=4; // hmm+svm precalculated
-	//	}
-	//	else if (kernel_type==7)
-	//	{
-	//		if (!CHMM::compute_top_feature_cache(pos, neg))
-	//			CIO::message("preparing for crash...");
-	//	}
-	//	
-	//
 	//#ifdef USE_KERNEL_CACHE
 	//	kernel_cache_init(&mykernel_cache,totdoc,100);
 	//#else

@@ -19,18 +19,18 @@ void CLinearKernel::init(CFeatures* l, CFeatures* r)
 	CKernel::init(l,r); 
 
 	if (rescale)
-		init_rescale(l) ;
+		init_rescale() ;
 }
 
-void CLinearKernel::init_rescale(CFeatures* f)
+void CLinearKernel::init_rescale()
 {
 	double sum=0;
 	scale=1.0;
+	for (long i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
+			sum+=compute(i, i);
 
-	for (long i=0; i<f->get_num_vectors(); i++)
-		sum+=compute(i, i);
-
-	scale=sum/f->get_num_vectors();
+	scale=sum/math.min(lhs->get_num_vectors(), rhs->get_num_vectors());
+	CIO::message("rescaling kernel by %g\n",scale);
 }
 
 void CLinearKernel::cleanup()
@@ -71,4 +71,3 @@ REAL CLinearKernel::compute(long idx_a, long idx_b)
 
   return result;
 }
-

@@ -549,5 +549,7 @@ int main(int argc, const char* argv[])
 	    }
 	}
     }
+    delete gui ;
+
     return 0;
 }
