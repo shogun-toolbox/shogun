@@ -39,6 +39,9 @@ class CRealFeatures: public CFeatures
 
   bool preproc_feature_matrix();
 
+  inline void set_num_features(int num) { num_features= num; }
+  inline void set_num_vectors(int num) { num_vectors= num; }
+
 protected:
   /// compute feature vector for sample num
   /// len is returned by reference

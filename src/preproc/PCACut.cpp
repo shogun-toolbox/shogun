@@ -175,7 +175,38 @@ bool CPCACut::save(FILE* f)
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 {
-  return NULL;
+#warning crashes right here!
+	long num_vectors=0;
+	long num_features=0;
+
+	REAL* m=((CRealFeatures*) f)->get_feature_matrix(num_vectors, num_features);
+
+	if (m)
+	{
+		REAL* ret= new REAL[num_dim*num_vectors];
+		for (int vec=0; vec<num_vectors; vec++)
+		{
+			int onei=1 ;
+			double zerod=0, oned=1;
+			char N='N';
+			int i;
+			REAL* sub_mean=&m[num_features*vec];
+			for (i=0; i<num_features; i++)
+				sub_mean[i]-=mean[i] ;
+
+			int num_feat=num_features;
+			dgemv_(&N, &num_dim, &num_feat, &oned, T, &num_dim, sub_mean, &onei, &zerod, ret, &onei) ;
+
+			REAL* m_transformed=&m[num_dim*vec];
+			for (i=0; i<num_dim; i++)
+				m_transformed[i]=m[i];
+		}
+		delete[] ret;
+
+		((CRealFeatures*) f)->set_num_features(num_dim);
+	}
+
+	return m;
 }
 
 /// apply preproc on single feature vector

@@ -62,7 +62,7 @@ bool CGUISVM::train(char* param)
 		return false ;
 	}
 
-	if (!preproc)
+	if (preproc)
 	{
 		CIO::message("using preprocessor: %s\n", preproc->get_name());
 		if (features->get_feature_type()!=preproc->get_feature_type())
