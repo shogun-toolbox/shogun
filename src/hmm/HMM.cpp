@@ -851,36 +851,41 @@ REAL CHMM::model_probability_comp()
 
 void CHMM::ab_buf_comp(REAL *a_buf, REAL* b_buf, int dim)
 {
-  int i,j,t ;
-  REAL a_sum_num ;
-  REAL b_sum_num ;
-  for (i=0; i<N; i++)
+    int i,j,t ;
+    REAL a_sum;
+    REAL b_sum;
+
+    for (i=0; i<N; i++)
     {
-      //estimate numerator for a
-      for (j=0; j<N; j++)
+	//estimate initial+end state distribution numerator
+	p_buf[i]=math.logarithmic_sum(get_p(i), train->get_p(i)+train->get_b(i,p_observations->get_obs(dim,0))+train->backward(0,i,dim) - dimmodprob);
+	q_buf[i]=math.logarithmic_sum(get_q(i), train->forward(p_observations->get_obs_T(dim)-1, i, dim)+train->get_q(i) - dimmodprob);
+
+	//estimate a
+	for (j=0; j<N; j++)
 	{
-	  a_sum_num=-math.INFTY;
-	  
-	  for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
+	    a_sum=-math.INFTY;
+
+	    for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
 	    {
-	      a_sum_num= math.logarithmic_sum(a_sum_num, forward(t,i,dim)+
-					      get_a(i,j)+get_b(j,p_observations->get_obs(dim,t+1))+backward(t+1,j,dim));
+		    a_sum= math.logarithmic_sum(a_sum, train->forward(t,i,dim)+
+			    train->get_a(i,j)+train->get_b(j,p_observations->get_obs(dim,t+1))+train->backward(t+1,j,dim));
 	    }
-	  a_buf[N*i+j]=a_sum_num ;
+	    a_buf[N*i+j]=a_sum-dimmodprob ;
 	}
-      
-      //estimate numerator for b
-      for (j=0; j<M; j++)
+
+	//estimate b
+	for (j=0; j<M; j++)
 	{
-	  b_sum_num=-math.INFTY;
-	  
-	  for (t=0; t<p_observations->get_obs_T(dim); t++) 
+		b_sum=math.ALMOST_NEG_INFTY;
+
+	    for (t=0; t<p_observations->get_obs_T(dim); t++) 
 	    {
-	      if (p_observations->get_obs(dim,t)==j) 
-		b_sum_num=math.logarithmic_sum(b_sum_num, forward(t,i,dim)+backward(t, i, dim));
+		    if (p_observations->get_obs(dim,t)==j) 
+			b_sum=math.logarithmic_sum(b_sum, train->forward(t,i,dim)+train->backward(t, i, dim));
 	    }
-	  
-	  b_buf[M*i+j]=b_sum_num ;
+
+	    b_buf[M*i+j]=b_sum-dimmodprob ;
 	}
     } 
 } ;
@@ -889,21 +894,16 @@ void CHMM::ab_buf_comp(REAL *a_buf, REAL* b_buf, int dim)
 void CHMM::estimate_model_baum_welch(CHMM* train)
 {
     int i,j,t,dim;
-    REAL a_sum_denom, b_sum_denom;	//denominator
-    REAL dimmodprob=-math.INFTY;	//model probability for dim
-    REAL fullmodprob=0;			//for all dims
-    REAL* A=ARRAYN1(0);
-    REAL* B=ARRAYN2(0);
+    REAL a_sum, b_sum;	//numerator
+    REAL dimmodprob=0;	//model probability for dim
+    REAL fullmodprob=0;	//for all dims
     
     //clear actual model a,b,p,q are used as numerator
-    //A,B as denominator for a,b
     for (i=0; i<N; i++)
       {
 	set_p(i,log(PSEUDO));
 	set_q(i,log(PSEUDO));
-	A[i]=log(N*PSEUDO);
-	B[i]=log(M*PSEUDO);
-
+	
 	for (j=0; j<N; j++)
 	    set_a(i,j, log(PSEUDO));
 	for (j=0; j<M; j++)
@@ -953,22 +953,6 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	  set_p(i, math.logarithmic_sum(get_p(i), train->forward(0,i,dim)+train->backward(0,i,dim) - dimmodprob));
 	  set_q(i, math.logarithmic_sum(get_q(i), (train->forward(p_observations->get_obs_T(dim)-1, i, dim)+
 						   train->backward(p_observations->get_obs_T(dim)-1, i, dim)) - dimmodprob ));
-	  
-	  //estimate a and b
-	  
-	  //denominators are constant for j
-	  //therefore calculate them first
-	  a_sum_denom=-math.INFTY;
-	  b_sum_denom=-math.INFTY;
-	  
-	  for (t=0; t<p_observations->get_obs_T(dim)-1; t++) 
-	    a_sum_denom= math.logarithmic_sum(a_sum_denom, train->forward(t,i,dim)+train->backward(t,i,dim));
-	  
-	  b_sum_denom=math.logarithmic_sum(a_sum_denom, train->forward(t,i,dim)+train->backward(t,i,dim));
-	  
-	  A[i]= math.logarithmic_sum(A[i], a_sum_denom-dimmodprob);
-	  B[i]= math.logarithmic_sum(B[i], b_sum_denom-dimmodprob);
-	  
 	  //estimate numerator for a
 	  for (j=0; j<N; j++)
 	    set_a(i,j, math.logarithmic_sum(get_a(i,j), params[dim%NUM_PARALLEL].a_buf[N*i+j]-dimmodprob));
@@ -986,25 +970,12 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
     delete[] threads ;
     delete[] params ;
     
-    //calculate estimates
-    for (i=0; i<N; i++)
-      {
-	set_p(i, get_p(i) - log(p_observations->get_DIMENSION()+N*PSEUDO) );
-	set_q(i, get_q(i) - log(p_observations->get_DIMENSION()+N*PSEUDO) );
-	
-	for (j=0; j<N; j++)
-	  set_a(i,j, get_a(i,j) - A[i]);
-	
-	for (j=0; j<M; j++)
-	  set_b(i,j, get_b(i,j) - B[i]);
-      }
-    
     //cache train model probability
     train->mod_prob=fullmodprob;
     train->mod_prob_updated=true ;
     
     //new model probability is unknown
-    //normalize();
+    normalize();
     invalidate_model();
 }
 
@@ -1014,7 +985,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 void CHMM::estimate_model_baum_welch(CHMM* train)
 {
     int i,j,t,dim;
-    REAL a_sum, b_sum;			//numerator
+    REAL a_sum, b_sum;	//numerator
     REAL dimmodprob=0;	//model probability for dim
     REAL fullmodprob=0;	//for all dims
 

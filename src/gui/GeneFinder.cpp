@@ -28,6 +28,7 @@
 #endif // SVMCPLEX
 
 //names of menu commands
+static const char* N_SET_TEST_MODEL=			"set_test_model";
 static const char* N_SET_POS_MODEL=			"set_pos_model";
 static const char* N_SET_NEG_MODEL=			"set_neg_model";
 static const char* N_LOAD_MODEL=			"load_model";
@@ -90,6 +91,8 @@ static const char* N_SET_SVM_LIGHT=			 "set_svm_light";
 #ifdef SVMCPLEX
 static const char* N_SET_SVM_CPLEX=			 "set_svm_cplex";
 #endif
+static const char* N_ONE_CLASS_HMM_TEST=		"one_class_hmm_test";
+static const char* N_ONE_CLASS_LINEAR_HMM_TEST=		"one_class_linear_hmm_test";
 static const char* N_HMM_TEST=				"hmm_test";
 static const char* N_LINEAR_HMM_TEST=			"linear_hmm_test";
 
@@ -113,6 +116,7 @@ CObservation* obs_postest=NULL; //observations
 CObservation* obs_negtest=NULL; //observations
 CObservation* obs_test=NULL;	//observations
 
+CHMM* test=NULL;//test model 
 CHMM* pos=NULL;	//positive model 
 CHMM* neg=NULL;	//negative model
 
@@ -220,6 +224,7 @@ static void help()
    CIO::message("%s - frees all models and observations\n",N_CLEAR);
    CIO::message("%s #states #oberservations #order\t- frees previous model and creates an empty new one\n",N_NEW);
    CIO::message("%s <POSTRAIN|NEGTRAIN|POSTEST|NEGTEST|TEST> - assign observation to current model\n",N_ASSIGN_OBSERVATION);
+   CIO::message("%s - make current model the test model; then free current model \n",N_SET_TEST_MODEL);
    CIO::message("%s - make current model the positive model; then free current model \n",N_SET_POS_MODEL);
    CIO::message("%s - make current model the negative model; then free current model \n",N_SET_NEG_MODEL);
    CIO::message("%s <value>\t\t\t- chops likelihood of all parameters 0<value<1\n", N_CHOP);
@@ -252,8 +257,10 @@ static void help()
 #endif //NOVIT
    CIO::message("%s\t- output whole model\n",N_OUTPUT_MODEL);
    CIO::message("\n[HMM-classification]\n");
+   CIO::message("%s[<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_HMM_TEST);
    CIO::message("%s[<output> [<rocfile>]]\t\t\t\t- calculate output from obs using current HMMs\n",N_HMM_TEST);
-   CIO::message("%s <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate svm output from obs using linear model\n",N_LINEAR_HMM_TEST);
+   CIO::message("%s <negtest> <postest> [<treshhold> [<output> [<rocfile>]]]\t\t\t\t- calculate output from obs using test HMM\n",N_ONE_CLASS_LINEAR_HMM_TEST);
+   CIO::message("%s <negtest> <postest> [<output> [<rocfile> [<width> <upto>]]]\t- calculate hmm output from obs using linear model\n",N_LINEAR_HMM_TEST);
    CIO::message("\n[Hybrid HMM-<TOP-Kernel>-SVM]\n");
    CIO::message("%s [c-value]\t\t\t- changes svm_c value\n", N_C);
    CIO::message("%s <dstsvm>\t\t- obtains svm from POS/NEGTRAIN using pos/neg HMM\n",N_SVM_TRAIN);
@@ -331,6 +338,25 @@ static bool prompt(FILE* infile=stdin)
 	    lambda=NULL;
 	    lambda_train=NULL;
 	    
+	    CHMM::invalidate_top_feature_cache(CHMM::INVALID);
+	}
+	else
+	   CIO::message("create model first\n");
+    } 
+    else if (!strncmp(input, N_SET_TEST_MODEL, strlen(N_SET_TEST_MODEL)))
+    {
+	if (lambda)
+	{
+	    if (test)
+		delete test;
+
+	    test=lambda;
+	    test->set_observations(NULL);
+	    delete lambda_train;
+	    
+	    lambda=NULL;
+	    lambda_train=NULL;
+
 	    CHMM::invalidate_top_feature_cache(CHMM::INVALID);
 	}
 	else
@@ -1630,6 +1656,161 @@ static bool prompt(FILE* infile=stdin)
 	else
 	   CIO::message("see help for parameters\n");
     } 
+    else if (!strncmp(input, N_ONE_CLASS_LINEAR_HMM_TEST, strlen(N_ONE_CLASS_LINEAR_HMM_TEST)))
+    {
+	char posname[1024];
+	char negname[1024];
+	char outputname[1024];
+	char rocfname[1024];
+	FILE* outputfile=stdout;
+	FILE* rocfile=NULL;
+	int numargs=-1;
+	double tresh=0.5;
+	
+	int WIDTH=-1,UPTO=-1;
+
+	for (i=strlen(N_ONE_CLASS_LINEAR_HMM_TEST); isspace(input[i]); i++);
+
+	numargs=sscanf(&input[i], "%s %s %le %s %s %d %d", negname, posname, &tresh, outputname, rocfname, &WIDTH,&UPTO);
+
+	if (numargs >= 2)
+	{
+	    if (numargs>=4)
+	    {
+		outputfile=fopen(outputname, "w");
+
+		if (!outputfile)
+		{
+		    CIO::message(stderr,"ERROR: could not open %s\n",outputname);
+		    return false;
+		}
+
+		if (numargs>=5) 
+		{
+		    rocfile=fopen(rocfname, "w");
+
+		    if (!rocfile)
+		    {
+			CIO::message(stderr,"ERROR: could not open %s\n",rocfname);
+			return false;
+		    }
+		}
+	    }
+	    if (test)
+	    {
+		FILE* posfile=fopen(posname, "r");
+		FILE* negfile=fopen(negname, "r");
+
+		if (posfile && negfile)
+		{
+		   CIO::message("opened %s and %s\n",posname,negname);
+		    if (WIDTH < 0 || UPTO < 0 )
+		    {
+			char buf[1024];
+			if ( (fread(buf, sizeof (unsigned char), sizeof(buf), posfile)) == sizeof(buf))
+			{
+			    for (int i=0; i<(int)sizeof(buf); i++)
+			    {
+				if (buf[i]=='\n')
+				{
+				    WIDTH=i+1;
+				    UPTO=i;
+				   CIO::message("detected WIDTH=%d UPTO=%d\n",WIDTH, UPTO);
+				   
+				    break;
+				}
+			    }
+			    fseek(posfile,0,SEEK_SET);
+			}
+			else
+			    return false;
+
+			if (UPTO==test->get_N())
+			{
+			    fseek(posfile,0,SEEK_END);
+			    int posfsize=ftell(posfile);
+			    fseek(posfile,0,SEEK_SET);
+
+			    fseek(negfile,0,SEEK_END);
+			    int negfsize=ftell(negfile);
+			    fseek(negfile,0,SEEK_SET);
+
+			    if ( ((posfsize/WIDTH)*WIDTH!=posfsize) || ((negfsize/WIDTH)*WIDTH!=negfsize))
+			    {
+				CIO::message(stderr,"ERROR: file has wrong size");
+				return false;
+			    }
+			    	    
+			    int possize=posfsize/WIDTH;
+			    int negsize=negfsize/WIDTH;
+			    int total=possize+negsize;
+
+			   CIO::message("p:%d,n:%d,t:%d\n",possize,negsize,total);
+			    REAL* output = new REAL[total];	
+			    int* label= new int[total];	
+
+			    for (int dim=0; dim<total; dim++)
+			    {
+				if (dim<negsize)
+				{
+				    output[dim]=test->linear_likelihood(negfile, WIDTH, UPTO,true)-tresh;
+				    label[dim]=-1;
+				    
+				    if (output[dim] < 0)
+					fprintf(outputfile,"%+.8g (%+d)\n",(double) output[dim], label[dim]);
+				    else
+					fprintf(outputfile,"%+.8g (%+d)(*)\n",(double) output[dim], label[dim]);
+				}
+				else
+				{
+				    output[dim]=test->linear_likelihood(posfile, WIDTH, UPTO,true)-tresh;
+				    label[dim]=+1;
+				    
+				    if (output[dim] > 0)
+					fprintf(outputfile,"%+.8g (%+d)\n",(double) output[dim], label[dim]);
+				    else
+					fprintf(outputfile,"%+.8g (%+d)(*)\n",(double) output[dim], label[dim]);
+				}
+			    }
+
+			    REAL* fp= new REAL[total];	
+			    REAL* tp= new REAL[total];	
+
+			    int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize, rocfile);
+
+			    double correct=possize*tp[pointeven]+(1-fp[pointeven])*negsize;
+			    double fpo=fp[pointeven]*negsize;
+			    double fne=(1-tp[pointeven])*possize;
+
+			   CIO::message("classified:\n");
+			   CIO::message("\tcorrect:%i\n", int (correct));
+			   CIO::message("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
+			   CIO::message("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, fp[pointeven], tp[pointeven]);
+			    delete[] fp;
+			    delete[] tp;
+			    delete[] output;
+			    delete[] label;
+
+			}
+			else
+			   CIO::message("model has wrong size\n");
+		    }
+
+		}
+		else
+		   CIO::message("assign postrain and negtrain observations first!\n");
+		
+		if (posfile)
+		    fclose(posfile);
+		if (negfile)
+		    fclose(negfile);
+	    }
+	    else
+		printf("assign positive and negative models first!\n");
+	}
+	else
+	   CIO::message("see help for parameters\n");
+    } 
     else if (!strncmp(input, N_LINEAR_HMM_TEST, strlen(N_LINEAR_HMM_TEST)))
     {
 	char posname[1024];
@@ -1654,11 +1835,11 @@ static bool prompt(FILE* infile=stdin)
 
 		if (!outputfile)
 		{
-		    CIO::message(stderr,"ERROR: could not open %s\n",outputname);
+		    CIO::message(stderr,"ERROR: could not open \"%s\"\n",outputname);
 		    return false;
 		}
 
-		if (numargs==3) 
+		if (numargs>=4) 
 		{
 		    rocfile=fopen(rocfname, "w");
 
@@ -1669,6 +1850,7 @@ static bool prompt(FILE* infile=stdin)
 		    }
 		}
 	    }
+
 	    if (pos && neg)
 	    {
 		FILE* posfile=fopen(posname, "r");
@@ -1790,6 +1972,97 @@ static bool prompt(FILE* infile=stdin)
 	else
 	   CIO::message("see help for parameters\n");
     } 
+    else if (!strncmp(input, N_ONE_CLASS_HMM_TEST, strlen(N_ONE_CLASS_HMM_TEST)))
+    {
+	char outputname[1024];
+	char rocfname[1024];
+	FILE* outputfile=stdout;
+	FILE* rocfile=NULL;
+	int numargs=-1;
+	double tresh=0.5;
+
+	for (i=strlen(N_ONE_CLASS_HMM_TEST); isspace(input[i]); i++);
+
+	numargs=sscanf(&input[i], "%le %s %s", &tresh, outputname, rocfname);
+
+	CIO::message("Tresholding at:%f\n",tresh);
+	if (numargs>=2)
+	{
+	    outputfile=fopen(outputname, "w");
+
+	    if (!outputfile)
+	    {
+		CIO::message(stderr,"ERROR: could not open %s\n",outputname);
+		return false;
+	    }
+
+	    if (numargs==3) 
+	    {
+		rocfile=fopen(rocfname, "w");
+
+		if (!rocfile)
+		{
+		    CIO::message(stderr,"ERROR: could not open %s\n",rocfname);
+		    return false;
+		}
+	    }
+	}
+
+	if (test)
+	{
+	    if (obs_postest && obs_negtest)
+	    {
+		CObservation* obs=new CObservation(obs_postest, obs_negtest);
+
+		CObservation* old_test=test->get_observations();
+		test->set_observations(obs);
+
+		int total=obs->get_DIMENSION();
+
+		REAL* output = new REAL[total];	
+		int* label= new int[total];	
+
+		REAL* fp= new REAL[total];	
+		REAL* tp= new REAL[total];	
+
+		for (int dim=0; dim<total; dim++)
+		{
+		    output[dim]=test->model_probability(dim)-tresh;
+		    label[dim]= obs->get_label(dim);
+
+		    if (math.sign((REAL) output[dim])==label[dim])
+			fprintf(outputfile,"%+.8g (%+d)\n",(double) output[dim], label[dim]);
+		    else
+			fprintf(outputfile,"%+.8g (%+d)(*)\n",(double) output[dim], label[dim]);
+		}
+
+		int possize,negsize;
+		int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize, rocfile);
+
+		double correct=possize*tp[pointeven]+(1-fp[pointeven])*negsize;
+		double fpo=fp[pointeven]*negsize;
+		double fne=(1-tp[pointeven])*possize;
+
+		printf("classified:\n");
+		printf("\tcorrect:%i\n", int (correct));
+		printf("\twrong:%i (fp:%i,fn:%i)\n", int(fpo+fne), int (fpo), int (fne));
+		printf("of %i samples (c:%f,w:%f,fp:%f,tp:%f)\n",total, correct/total, 1-correct/total, (double) fp[pointeven], (double) tp[pointeven]);
+
+		delete[] fp;
+		delete[] tp;
+		delete[] output;
+		delete[] label;
+
+		test->set_observations(old_test);
+
+		delete obs;
+	    }
+	    else
+		printf("assign posttest and negtest observations first!\n");
+	}
+	else
+	   CIO::message("assign test model first!\n");
+    } 
     else if (!strncmp(input, N_HMM_TEST, strlen(N_HMM_TEST)))
     {
 	char outputname[1024];
@@ -1841,27 +2114,20 @@ static bool prompt(FILE* infile=stdin)
 		REAL* output = new REAL[total];	
 		int* label= new int[total];	
 
-		for (int dim=0; dim<total; dim++)
-		{
-		    output[dim]=pos->model_probability(dim)-neg->model_probability(dim);
-		    label[dim]=obs->get_label(dim);
-		}
-
 		REAL* fp= new REAL[total];	
 		REAL* tp= new REAL[total];	
 
+		for (int dim=0; dim<total; dim++)
 		{
-		    for (int dim=0; dim<total; dim++)
-		    {
-			output[dim]=pos->model_probability(dim)-neg->model_probability(dim);
-			label[dim]= obs->get_label(dim);
+		    output[dim]=pos->model_probability(dim)-neg->model_probability(dim);
+		    label[dim]= obs->get_label(dim);
 
-			if (math.sign((REAL) output[dim])==label[dim])
-			    fprintf(outputfile,"%+.8g (%+d)\n",(double) output[dim], label[dim]);
-			else
-			    fprintf(outputfile,"%+.8g (%+d)(*)\n",(double) output[dim], label[dim]);
-		    }
-		} 
+		    if (math.sign((REAL) output[dim])==label[dim])
+			fprintf(outputfile,"%+.8g (%+d)\n",(double) output[dim], label[dim]);
+		    else
+			fprintf(outputfile,"%+.8g (%+d)(*)\n",(double) output[dim], label[dim]);
+		}
+
 		int possize,negsize;
 		int pointeven=math.calcroc(fp, tp, output, label, total, possize, negsize, rocfile);
 
@@ -1885,7 +2151,7 @@ static bool prompt(FILE* infile=stdin)
 		delete obs;
 	    }
 	    else
-		printf("assign postrain and negtrain observations first!\n");
+		printf("assign postest and negtest observations first!\n");
 	}
 	else
 	   CIO::message("assign positive and negative models first!\n");
