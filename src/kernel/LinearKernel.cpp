@@ -14,10 +14,10 @@ extern "C" {
 
 #include <assert.h>
 
-CLinearKernel::CLinearKernel(LONG size)
-  : CRealKernel(size),scale(1.0),normal(NULL)
+CLinearKernel::CLinearKernel(LONG size, bool do_rescale_, REAL scale_)
+  : CRealKernel(size),scale(scale_),do_rescale(do_rescale_), normal(NULL)
 {
-	properties |= KP_LINADD;
+	properties |= KP_LINADD | KP_KERNCOMBINATION ;
 }
 
 CLinearKernel::~CLinearKernel() 
@@ -39,6 +39,8 @@ bool CLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 void CLinearKernel::init_rescale()
 {
+	if (!do_rescale)
+		return ;
 	double sum=0;
 	scale=1.0;
 	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
@@ -91,8 +93,9 @@ bool CLinearKernel::save_init(FILE* dest)
 
 void CLinearKernel::clear_normal()
 {
-	int num = lhs->get_num_vectors();
-
+	int num = ((CRealFeatures*) lhs)->get_num_features();
+	if (normal==NULL)
+		normal = new REAL[num] ;
 	for (int i=0; i<num; i++)
 		normal[i]=0;
 }

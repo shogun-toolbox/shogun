@@ -8,7 +8,7 @@
 class CLinearKernel: public CRealKernel
 {
  public:
-  CLinearKernel(LONG size);
+  CLinearKernel(LONG size, bool do_rescale=true, REAL scale=1.0);
   virtual ~CLinearKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -44,6 +44,7 @@ class CLinearKernel: public CRealKernel
   
  protected:
   double scale ;
+  bool do_rescale ;
 
   /// normal vector (used in case of optimized kernel)
   double* normal;

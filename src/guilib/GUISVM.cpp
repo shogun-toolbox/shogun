@@ -115,6 +115,8 @@ bool CGUISVM::train(CHAR* param)
 	CIO::message(M_INFO, "starting svm training on %ld vectors using C1=%lf C2=%lf\n", trainlabels->get_num_labels(), C1, C2) ;
 
 	svm->set_weight_epsilon(weight_epsilon);
+	svm->set_epsilon(epsilon);
+	svm->set_C_mkl(C_mkl);
 	svm->set_C(C1, C2);
 	svm->use_kerncombination(use_mkl);
 	((CKernelMachine*) svm)->set_labels(trainlabels);
@@ -285,16 +287,32 @@ bool CGUISVM::save(CHAR* param)
     return result;
 }
 
-bool CGUISVM::set_weight_epsilon(CHAR* param)
+bool CGUISVM::set_svm_epsilon(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
-	sscanf(param, "%le", &weight_epsilon) ;
+	sscanf(param, "%le", &epsilon) ;
+
+	if (epsilon<0)
+		epsilon=1e-4;
+
+	CIO::message(M_INFO, "Set to svm_epsilon=%f\n", epsilon);
+	return true ;  
+}
+
+bool CGUISVM::set_mkl_parameters(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	sscanf(param, "%le %le", &weight_epsilon, &C_mkl) ;
 
 	if (weight_epsilon<0)
 		weight_epsilon=1e-4;
+	if (C_mkl<0)
+		C_mkl=1e-4 ;
 
 	CIO::message(M_INFO, "Set to weight_epsilon=%f\n", weight_epsilon);
+	CIO::message(M_INFO, "Set to C_mkl=%f\n", C_mkl);
 	return true ;  
 }
 

@@ -16,6 +16,8 @@
 #include "features/Labels.h"
 #include "features/RealFeatures.h"
 #include "kernel/WeightedDegreeCharKernel.h"
+#include "kernel/WeightedDegreePositionCharKernel.h"
+#include "kernel/CombinedKernel.h"
 #include "kernel/CommWordStringKernel.h"
 #include "classifier/svm/SVM.h"
 
@@ -1129,6 +1131,25 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[])
 		retvals[0]=mx_result;
 		return true;
 	}
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+	{
+		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+		
+		if (kernel->get_max_mismatch()!=0)
+			return false ;
+		
+		INT len=0 ;
+		REAL* res=kernel->compute_abs_weights(len) ;
+		
+		mxArray* mx_result=mxCreateDoubleMatrix(4, len, mxREAL);
+		double* result=mxGetPr(mx_result);
+		for (int i=0; i<4*len; i++)
+			result[i]=res[i] ;
+		delete[] res ;
+		
+		retvals[0]=mx_result;
+		return true;
+	}
 	if (kernel_ && (kernel_->get_kernel_type() == K_COMMWORDSTRING))
 	{
 		CCommWordStringKernel *kernel = (CCommWordStringKernel *) kernel_ ;
@@ -1190,6 +1211,41 @@ bool CGUIMatlab::compute_WD_by_levels(mxArray* retvals[])
 		retvals[0]=mx_result;
 		return true;
 	}
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+	{
+		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+		
+		if (!kernel->is_tree_initialized())
+		{
+			CIO::message(M_ERROR, "optimization not initialized\n") ;
+			return false ;
+		}
+		if (!kernel->get_rhs())
+		{
+			CIO::message(M_ERROR, "no rhs\n") ;
+			return false ;
+		}
+		INT num    = kernel->get_rhs()->get_num_vectors() ;
+		INT degree = -1;
+		INT len = -1;
+		// get degree & len
+		kernel->get_degree_weights(degree, len);
+
+		if (len==0)
+			len=1;
+		
+		mxArray* mx_result=mxCreateDoubleMatrix(degree*len, num, mxREAL);
+		double* result=mxGetPr(mx_result);
+
+		for (int i=0; i<num*degree*len; i++)
+			result[i]=0 ;
+		
+		for (int i=0; i<num; i++)
+			kernel->compute_by_tree(i,&result[i*degree*len]) ;
+		
+		retvals[0]=mx_result;
+		return true;
+	}
 	return false;
 }
 
@@ -1217,6 +1273,39 @@ bool CGUIMatlab::get_WD_weights(mxArray* retvals[])
 		retvals[0]=mx_result;
 		return true;
 	}
+
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+	{
+		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+
+		const REAL* weights = kernel->get_degree_weights(degree, length) ;
+		if (length == 0)
+			length = 1;
+		
+		mxArray* mx_result=mxCreateDoubleMatrix(degree, length, mxREAL);
+		double* result=mxGetPr(mx_result);
+		
+		for (int i=0; i<degree*length; i++)
+			result[i] = weights[i] ;
+		
+		retvals[0]=mx_result;
+		return true;
+	}
+	if (kernel_ && (kernel_->get_kernel_type() == K_COMBINED))
+	{
+		CCombinedKernel *kernel = (CCombinedKernel *) kernel_ ;
+		INT num_weights = -1 ;
+		const REAL* weights = kernel->get_subkernel_weights(num_weights) ;
+		
+		mxArray* mx_result=mxCreateDoubleMatrix(1, num_weights, mxREAL);
+		double* result=mxGetPr(mx_result);
+		
+		for (int i=0; i<num_weights; i++)
+			result[i] = weights[i] ;
+		
+		retvals[0]=mx_result;
+		return true;
+	}
 	return false;
 }
 
@@ -1228,6 +1317,25 @@ bool CGUIMatlab::get_WD_position_weights(mxArray* retvals[])
 	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 	{
 		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+
+		const REAL* position_weights = kernel->get_position_weights(length) ;
+		mxArray* mx_result ;
+		if (position_weights==NULL)
+			mx_result=mxCreateDoubleMatrix(1, 0, mxREAL);
+		else
+		{
+			mx_result=mxCreateDoubleMatrix(1, length, mxREAL);
+			double* result=mxGetPr(mx_result);
+			
+			for (int i=0; i<length; i++)
+				result[i] = position_weights[i] ;
+		}
+		retvals[0]=mx_result;
+		return true;
+	}
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+	{
+		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 
 		const REAL* position_weights = kernel->get_position_weights(length) ;
 		mxArray* mx_result ;
@@ -1269,6 +1377,24 @@ bool CGUIMatlab::set_WD_weights(const mxArray* mx_arg)
 		return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), len);
 		
 	}
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+	{
+		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+		INT degree = kernel->get_degree() ;
+		if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
+		{
+			CIO::message(M_ERROR, "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
+			return false ;
+		}
+
+		INT len = mxGetN(mx_arg);
+
+		if (len ==  1)
+			len = 0;
+
+		return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), len);
+		
+	}
 	return false;
 }
 
@@ -1279,6 +1405,18 @@ bool CGUIMatlab::set_WD_position_weights(const mxArray* mx_arg)
 	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 	{
 		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+		if (mxGetM(mx_arg)!=1 & mxGetN(mx_arg)>0)
+		{
+			CIO::message(M_ERROR, "dimension mismatch (should be 1xseq_length or 0x0)\n") ;
+			return false ;
+		}
+		INT len = mxGetN(mx_arg);
+		return kernel->set_position_weights(mxGetPr(mx_arg), len);
+		
+	}
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+	{
+		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 		if (mxGetM(mx_arg)!=1 & mxGetN(mx_arg)>0)
 		{
 			CIO::message(M_ERROR, "dimension mismatch (should be 1xseq_length or 0x0)\n") ;

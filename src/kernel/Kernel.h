@@ -120,9 +120,12 @@ class CKernel
 		virtual REAL compute_optimized(INT idx);
 
 		//add vector*factor to 'virtual' normal vector
-		virtual void add_to_normal(INT idx, REAL weight);
+		virtual void add_to_normal(INT idx, REAL weight) ;
 		virtual void clear_normal();
 		virtual INT get_num_subkernels();
+		virtual void compute_by_subkernel(INT idx, REAL * subkernel_contrib);
+		virtual const REAL* get_subkernel_weights(INT& num_weights);
+		virtual void set_subkernel_weights(REAL* weights, INT num_weights);
 
 		virtual bool set_kernel_parameters(INT num, const double* param) { return false; }
 

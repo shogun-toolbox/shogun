@@ -6,15 +6,17 @@
 #include <assert.h>
 
 CCombinedKernel::CCombinedKernel(LONG size)
-	: CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL) 
+	: CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL), subkernel_weights_buffer(NULL)
 {
-	properties |= KP_KERNCOMBINATION;
+	properties |= KP_LINADD | KP_KERNCOMBINATION;
 	kernel_list=new CList<CKernel*>(true);
 	fprintf(stderr, "combined kernel created\n") ;
 }
 
 CCombinedKernel::~CCombinedKernel() 
 {
+	delete[] subkernel_weights_buffer ;
+	subkernel_weights_buffer=NULL ;
 	
 	CIO::message(M_INFO, "combined kernel deleted\n");
 	cleanup();
@@ -215,7 +217,7 @@ bool CCombinedKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 
 bool CCombinedKernel::delete_optimization() 
 { 
-	CIO::message(M_DEBUG, "deleting CCombinedKernel optimization\n") ;
+	//CIO::message(M_DEBUG, "deleting CCombinedKernel optimization\n") ;
 
 	CKernel* k = get_first_kernel();
 
@@ -229,7 +231,7 @@ bool CCombinedKernel::delete_optimization()
 	sv_idx = NULL;
 
 	delete[] sv_weight;
-	sv_idx = NULL;
+	sv_weight = NULL;
 
 	sv_count = 0;
 	set_is_initialized(false);
@@ -258,7 +260,7 @@ REAL CCombinedKernel::compute_optimized(INT idx)
 		{
 			assert(sv_idx!=NULL || sv_count==0) ;
 			assert(sv_weight!=NULL || sv_count==0) ;
-			CIO::message(M_DEBUG, "not optimized kernel computation\n") ;
+			// CIO::message(M_DEBUG, "not optimized kernel computation\n") ;
 
 			// compute the usual way for any non-optimized kernel
 			int j=0;
@@ -273,4 +275,76 @@ REAL CCombinedKernel::compute_optimized(INT idx)
 	}
 
 	return result;
+}
+
+void CCombinedKernel::add_to_normal(INT idx, REAL weight) 
+{ 
+	if (!get_is_initialized())
+	{
+		init_optimization(1, &idx, &weight) ;
+		return ;
+	}
+
+	CKernel* k = get_first_kernel();
+
+	while(k)
+	{
+		k->add_to_normal(idx, weight);
+		k = get_next_kernel();
+	}
+}
+
+void CCombinedKernel::clear_normal() 
+{ 
+	CKernel* k = get_first_kernel();
+
+	while(k)
+	{
+		k->clear_normal() ;
+		k = get_next_kernel();
+	}
+}
+
+void CCombinedKernel::compute_by_subkernel(INT idx, REAL * subkernel_contrib)
+{
+	INT i=0 ;
+	CKernel* k = get_first_kernel();
+	while(k)
+	{
+		subkernel_contrib[i] += k->get_combined_kernel_weight() * k->compute_optimized(idx) ;
+		//subkernel_contrib[i] += k->compute_optimized(idx) ;
+		k = get_next_kernel();
+		i++ ;
+	}
+}
+
+const REAL* CCombinedKernel::get_subkernel_weights(INT& num_weights)
+{
+	num_weights = kernel_list->get_num_elements() ;
+	delete[] subkernel_weights_buffer ;
+	subkernel_weights_buffer = new REAL[num_weights] ;
+
+	INT i=0 ;
+	CKernel* k = get_first_kernel();
+	while(k)
+	{
+		subkernel_weights_buffer[i] = k->get_combined_kernel_weight();
+		//CIO::message(M_INFO, "g %i: %1.1f ", i, subkernel_weights_buffer[i]) ;
+		k = get_next_kernel();
+		i++ ;
+	}
+	return subkernel_weights_buffer ;
+}
+
+void CCombinedKernel::set_subkernel_weights(REAL* weights, INT num_weights)
+{
+	INT i=0 ;
+	CKernel* k = get_first_kernel();
+	while(k)
+	{
+		k->set_combined_kernel_weight(weights[i]);
+		//CIO::message(M_INFO, "s %i: %1.1f ", i, weights[i]) ;
+		k = get_next_kernel();
+		i++ ;
+	}
 }

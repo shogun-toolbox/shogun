@@ -304,6 +304,78 @@ bool CWeightedDegreeCharKernel::delete_optimization()
 	return false;
 }
 
+
+REAL CWeightedDegreeCharKernel::compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen)
+{
+	REAL sum = 0.0 ;
+	
+	for (INT i=0; i<alen-degree; i++)
+	{
+		REAL sumi = 0.0 ;
+		INT mismatches=0;
+		
+		for (INT j=0; j<degree; j++)
+		{
+			if (match_vector[i+j])
+			{
+				mismatches++ ;
+				if (mismatches>max_mismatch)
+					break ;
+			} ;
+			sumi += weights[j+degree*mismatches];
+		}
+		if (position_weights!=NULL)
+			sum+=position_weights[i]*sumi ;
+		else
+			sum+=sumi ;
+	}
+	return sum ;
+}
+
+REAL CWeightedDegreeCharKernel::compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen)
+{
+	REAL sum = 0.0 ;
+	
+	for (INT i=0; i<alen-degree; i++)
+	{
+		REAL sumi = 0.0 ;
+		
+		for (INT j=0; j<degree; j++)
+		{
+			if (match_vector[i+j])
+				break ;
+			sumi += weights[j];
+		}
+		if (position_weights!=NULL)
+			sum+=position_weights[i]*sumi ;
+		else
+			sum+=sumi ;
+	}
+	return sum ;
+}
+
+REAL CWeightedDegreeCharKernel::compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen)
+{
+	REAL sum = 0.0 ;
+
+	for (INT i=0; i<alen-degree; i++)
+	{
+		REAL sumi=0.0 ;
+		for (INT j=0; j<degree; j++)
+		{
+			if (match_vector[i+j])
+				break;
+			sumi += weights[i*degree+j];
+		}
+		if (position_weights!=NULL)
+			sum += position_weights[i]*sumi ;
+		else
+			sum += sumi ;
+	}
+
+	return sum ;
+}
+
 REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 {
   INT alen, blen;
@@ -326,56 +398,22 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 
   REAL sqrt_both=sqrt_a*sqrt_b;
 
-  double sum=0;
+  double result=0;
 
   for (INT i=0; i<alen; i++)
 	  match_vector[i]=(avec[i]!=bvec[i]) ;
   
-  if ((length==0) || (max_mismatch > 0))
-  {
-	  for (INT i=0; i<alen-degree; i++)
-	  {
-		  REAL sumi = 0.0 ;
-		  INT mismatches=0;
-
-		  for (INT j=0; j<degree; j++)
-		  {
-			  if (match_vector[i+j])
-			  {
-				  mismatches++ ;
-				  if (mismatches>max_mismatch)
-					  break ;
-			  } ;
-			  sumi += weights[j+degree*mismatches];
-		  }
-		  if (position_weights!=NULL)
-			  sum+=position_weights[i]*sumi ;
-		  else
-			  sum+=sumi ;
-	  }
-  }
+  if (max_mismatch > 0)
+	  result = compute_with_mismatch(avec, alen, bvec, blen) ;
+  else if (length==0)
+	  result = compute_without_mismatch(avec, alen, bvec, blen) ;
   else
-  {
-	  for (INT i=0; i<alen-degree; i++)
-	  {
-		  REAL sumi=0.0 ;
-		  for (INT j=0; j<degree; j++)
-		  {
-			  if (match_vector[i+j])
-				  break;
-			  sumi += weights[i*degree+j];
-		  }
-		  if (position_weights!=NULL)
-			  sum+=position_weights[i]*sumi ;
-		  else
-			  sum+=sumi ;
-	  }
-  }
+	  result = compute_without_mismatch_matrix(avec, alen, bvec, blen) ;
   
   ((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  return (double) sum/sqrt_both;
+  return (double) result/sqrt_both;
 }
 
 void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha) 
@@ -410,7 +448,8 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 			REAL alpha_pw = alpha ;
 			if (position_weights!=NULL)
 				alpha_pw = alpha*position_weights[i] ;
-
+			if (alpha_pw==0.0)
+				continue ;
 			for (INT j=0; j<degree; j++)
 			{
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
@@ -463,7 +502,8 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 			REAL alpha_pw = alpha ;
 			if (position_weights!=NULL) 
 				alpha_pw = alpha*position_weights[i] ;
-			
+			if (alpha_pw==0.0)
+				continue ;
 			INT max_depth = 0 ;
 			for (INT j=0; j<degree; j++)
 				if (CMath::abs(weights[i*degree + j]*alpha_pw)>1e-8)
@@ -588,6 +628,10 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 		vec[i]=0 ;
 	} ;
 
+	REAL factor = 1.0 ;
+	if (use_normalization)
+		factor = 1.0/sqrtdiag_rhs[idx] ;
+
 	if (position_weights!=NULL)
 	{
 		for (INT i=0; i<slen-degree; i++)
@@ -600,11 +644,11 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
 					tree=tree->childs[vec[i+j]] ;
-					LevelContrib[i] += tree->weight ;
+					LevelContrib[i] += factor*tree->weight ;
 				} else
 					if (tree->has_floats)
 					{
-						LevelContrib[i] += tree->child_weights[vec[i+j]] ;
+						LevelContrib[i] += factor*tree->child_weights[vec[i+j]] ;
 						break ;
 					} else
 						break ;
@@ -625,11 +669,11 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
 					tree=tree->childs[vec[i+j]] ;
-					LevelContrib[j] += tree->weight ;
+					LevelContrib[j] += factor*tree->weight ;
 				} else
 					if (tree->has_floats)
 					{
-						LevelContrib[j] += tree->child_weights[vec[i+j]] ;
+						LevelContrib[j] += factor*tree->child_weights[vec[i+j]] ;
 						break ;
 					} else
 						break ;
@@ -650,11 +694,11 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 				if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
 				{
 					tree=tree->childs[vec[i+j]] ;
-					LevelContrib[j+degree*i] += tree->weight ;
+					LevelContrib[j+degree*i] += factor*tree->weight ;
 				} else
 					if (tree->has_floats)
 					{
-						LevelContrib[j+degree*i] += tree->child_weights[vec[i+j]] ;
+						LevelContrib[j+degree*i] += factor*tree->child_weights[vec[i+j]] ;
 						break ;
 					} else
 						break ;
@@ -662,15 +706,8 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 		}
 	} ;
 	
-	
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
-
-	if (use_normalization)
-	{
-		for (INT j=0; j<degree; j++)
-			LevelContrib[j] /= sqrtdiag_rhs[idx] ;
-	}
 }
 
 REAL CWeightedDegreeCharKernel::compute_abs_weights_tree(struct SuffixTree* p_tree) 

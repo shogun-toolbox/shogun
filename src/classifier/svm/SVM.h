@@ -19,6 +19,8 @@ class CSVM : public CKernelMachine
 
 		inline void set_C(REAL c1, REAL c2) { C1=c1; C2=c2; }
 		inline void set_weight_epsilon(REAL eps) { weight_epsilon=eps; }
+		inline void set_epsilon(REAL eps) { epsilon=eps; }
+		inline void set_C_mkl(REAL C) { C_mkl = C; }
 
 		inline REAL get_weight_epsilon() { return weight_epsilon; }
 		inline REAL get_C1() { return C1; }
@@ -117,9 +119,11 @@ class CSVM : public CKernelMachine
 		bool svm_loaded;
 
 		REAL weight_epsilon;
+		REAL epsilon;
 
 		REAL C1;
 		REAL C2;
 		bool use_mkl;
+		REAL C_mkl ;
 };
 #endif

@@ -46,9 +46,7 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size)
 REAL CKernel::kernel(INT idx_a, INT idx_b)
 {
 	if (idx_a < 0 || idx_b <0)
-	{
 		return 0;
-	}
 
 	return compute(idx_a, idx_b);
 }
@@ -505,6 +503,7 @@ void CKernel::add_to_normal(INT idx, REAL weight)
 {
 	CIO::message(M_ERROR, "kernel add_to_normal not implemented\n") ;
 }
+
 void CKernel::clear_normal()
 {
 	CIO::message(M_ERROR, "kernel clear_normal not implemented\n") ;
@@ -514,4 +513,21 @@ INT CKernel::get_num_subkernels()
 {
 	CIO::message(M_ERROR, "kernel get_num_subkernels not implemented\n") ;
 	return -1;
+}
+
+void CKernel::compute_by_subkernel(INT idx, REAL * subkernel_contrib)
+{
+	CIO::message(M_ERROR, "kernel compute_by_subkernel not implemented\n") ;
+}
+
+const REAL* CKernel::get_subkernel_weights(INT &num_weights)
+{
+	num_weights=-1 ;
+	CIO::message(M_ERROR, "kernel get_subkernel_weights not implemented\n") ;
+	return NULL ;
+}
+
+void CKernel::set_subkernel_weights(REAL* weights, INT num_weights)
+{
+	CIO::message(M_ERROR, "kernel set_subkernel_weights not implemented\n") ;
 }

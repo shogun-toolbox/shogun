@@ -175,6 +175,14 @@ bool CSVMLight::train()
 	CIO::message(M_DEBUG, "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
 	CIO::message(M_DEBUG, "estimated time: %1.1f hours\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/3600) ;
 	
+	w_zero_rounds=new INT[get_kernel()->get_num_subkernels()] ;
+	w_deactivated=new INT[get_kernel()->get_num_subkernels()] ;
+	for (INT i=0; i<get_kernel()->get_num_subkernels(); i++)
+	{
+		w_zero_rounds[i] = 0 ;
+		w_deactivated[i] = 0 ;
+	}
+
 	svm_learn();
 	
 	//brain damaged svm light work around
@@ -1164,7 +1172,10 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				objective   += w[d]*sumw[d];
 			}
 #endif
-
+			for (INT i=0; i<num_kernels; i++)
+				fprintf(stderr,"sumw[%i]=%1.1f ", i, sumw[i]) ;
+			fprintf(stderr," obj=%1.1f\n", objective) ;
+			
 #ifdef USE_W_TIMING
 			if ((w_gap<last_w_gap/2) &&(count%101!=0))
 			{
@@ -1377,6 +1388,16 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 						k->set_subkernel_weights(x, num_kernels) ;
 						rho = -x[2*num_kernels] ;
 						w_gap = CMath::abs(1-rho/objective) ;
+
+						for (INT i=0; i<num_kernels; i++)
+						{
+							fprintf(stderr,"alpha[%i]=%1.3e [%i] ", i, x[i], w_zero_rounds[i]) ;
+							if (fabs(x[i])<1e-8)
+								w_zero_rounds[i]++ ;
+							else
+								w_zero_rounds[i]=0 ;
+						}
+						fprintf(stderr,"\n") ;
 					} else
 					{
 						w_gap = 0 ; // then something is wrong and we rather 
@@ -1387,7 +1408,29 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					delete[] pi ;
 				}
 			}
-
+			
+			{ //deactivate variables
+				INT max_idx = -1 ;
+				INT max_val = -1 ;
+				for (INT i=0; i<num_kernels; i++)
+					if ((max_val<w_zero_rounds[i]) && !w_deactivated[i]) 
+					{
+						max_val = w_zero_rounds[i] ;
+						max_idx = i ;
+					}
+				if (max_val>=1000)
+				{
+					w_deactivated[max_idx]=1 ;
+					double ubnd = 0 ;
+					char type='U' ;
+					INT status = CPXchgbds(env, lp, 1, &max_idx, &type, &ubnd);
+					if ( status ) {
+						fprintf (stderr, "Failed to deactivate variable.\n");
+					}
+					CIO::message(M_DEBUG, "deactivated variable %i\n", max_idx) ;
+				}
+			}
+			
 #endif
 
 			// update lin

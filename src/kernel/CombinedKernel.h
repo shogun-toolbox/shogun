@@ -98,6 +98,12 @@ class CCombinedKernel : public CKernel
 		virtual bool delete_optimization();
 		virtual REAL compute_optimized(INT idx);
 
+		virtual void add_to_normal(INT idx, REAL weight) ;
+		virtual void clear_normal();
+		virtual void compute_by_subkernel(INT idx, REAL * subkernel_contrib);
+		virtual const REAL* get_subkernel_weights(INT& num_weights);
+		virtual void set_subkernel_weights(REAL* weights, INT num_weights);
+
 	protected:
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
@@ -109,5 +115,6 @@ class CCombinedKernel : public CKernel
 		INT   sv_count;
 		INT*  sv_idx;
 		REAL* sv_weight;
+		REAL* subkernel_weights_buffer ;
 };
 #endif

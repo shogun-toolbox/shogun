@@ -19,7 +19,8 @@ public:
 	bool save(CHAR* param);
 	bool set_C(CHAR* param);
 	bool use_kerncombination(CHAR* param);
-	bool set_weight_epsilon(CHAR* param);
+	bool set_svm_epsilon(CHAR* param);
+	bool set_mkl_parameters(CHAR* param) ;
 
 	CLabels* classify(CLabels* output=NULL);
 	bool classify_example(INT idx, REAL& result);
@@ -30,8 +31,10 @@ public:
 	CGUI* gui;
 	CSVM* svm;
 	double weight_epsilon;
+	double epsilon;
 	double C1;
 	double C2;
+	double C_mkl ;
 	bool use_mkl;
 };
 #endif

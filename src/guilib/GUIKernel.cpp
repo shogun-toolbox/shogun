@@ -364,9 +364,13 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			}
 			else if (strcmp(data_type,"REAL")==0)
 			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				double scale = -1 ;
+				sscanf(param, "%s %s %d %le", kern_type, data_type, &size, &scale);
 				delete k;
-				k=new CLinearKernel(size);
+				if (scale==-1)
+					k=new CLinearKernel(size, true);
+				else
+					k=new CLinearKernel(size, false, scale);
 				return k;
 			}
 			else if (strcmp(data_type,"SPARSEREAL")==0)
@@ -585,7 +589,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 			}
 		}
-		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS2")==0)
+		else if ((strcmp(kern_type,"WEIGHTEDDEGREEPOS2")==0) || (strcmp(kern_type,"WEIGHTEDDEGREEPOS3")==0))
 		{
 			if (strcmp(data_type,"CHAR")==0)
 			{
@@ -646,9 +650,21 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				
 				delete k;
-				k=new CWeightedDegreePositionCharKernel(size, weights, 
-															 d, max_mismatch, 
-															 shift, length);
+				if (strcmp(kern_type,"WEIGHTEDDEGREEPOS2")==0)
+					k=new CWeightedDegreePositionCharKernel(size, weights, 
+															d, max_mismatch, 
+															shift, length, false);
+				else
+				{
+					k=new CWeightedDegreePositionCharKernel(size, weights, 
+															d, max_mismatch, 
+															shift, length, false);
+					REAL *weights = new REAL[length] ;
+					for (INT i=0; i<length; i++)
+						weights[i]=1.0/length ;
+					((CWeightedDegreePositionCharKernel*)k)->set_position_weights(weights, length) ;
+					delete[] weights ;
+				}
 				delete[] shift ;
 				delete[] weights ;
 				

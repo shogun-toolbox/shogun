@@ -46,6 +46,7 @@ class CWeightedDegreeCharKernel: public CCharKernel
 		  return 0 ;
 	  } ;
 
+  // subkernel functionality
   inline virtual void clear_normal()
   {
 	  if (get_is_initialized())
@@ -54,13 +55,11 @@ class CWeightedDegreeCharKernel: public CCharKernel
 		  set_is_initialized(false);
 	  }
   }
-
   inline virtual void add_to_normal(INT idx, REAL weight) 
   {
 	  add_example_to_tree(idx, weight);
 	  set_is_initialized(true);
   }
-
   inline virtual INT get_num_subkernels()
   {
 	  if (position_weights!=NULL)
@@ -69,6 +68,28 @@ class CWeightedDegreeCharKernel: public CCharKernel
 		  return get_degree();
 	  return get_degree()*length ;
   }
+  inline void compute_by_subkernel(INT idx, REAL * subkernel_contrib)
+	  { 
+		  if (get_is_initialized())
+		  {
+			  compute_by_tree(idx, subkernel_contrib); 
+			  return ;
+		  }
+		  CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not initialized\n") ;
+	  } ;
+  inline const REAL* get_subkernel_weights(INT& num_weights)
+	  {
+		  return get_weights(num_weights) ;
+	  }
+  inline void set_subkernel_weights(REAL* weights2, INT num_weights2)
+	  {
+		  INT num_weights=-1 ;
+		  REAL* weights = get_weights(num_weights) ;
+		  if (num_weights!=num_weights2)
+			  CIO::message(M_ERROR, "number of weights do not match\n") ;
+		  for (INT i=0; i<num_weights; i++)
+			  weights[i]=weights2[i] ;
+	  }
 
   // other kernel tree operations  
   void prune_tree(struct SuffixTree * p_tree=NULL, int min_usage=2);
@@ -95,7 +116,10 @@ class CWeightedDegreeCharKernel: public CCharKernel
 		  num_weights = seq_length ;
 		  return position_weights ;
 	  }
-	  num_weights = degree*length ;
+	  if (length==0)
+		  num_weights = degree ;
+	  else
+		  num_weights = degree*length ;
 	  return weights;
   }
   inline REAL *get_position_weights(INT& len)
@@ -119,6 +143,9 @@ class CWeightedDegreeCharKernel: public CCharKernel
   /// in the corresponding feature object
   REAL compute(INT idx_a, INT idx_b);
   /*    compute_kernel*/
+  REAL compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
+  REAL compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
+  REAL compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
 
   virtual void remove_lhs() ;
   virtual void remove_rhs() ;

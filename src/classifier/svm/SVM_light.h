@@ -245,8 +245,11 @@ typedef struct shrink_state {
   double model_b;
   double opt_precision;
   REAL* W;
+  INT* w_zero_rounds ;
+  INT* w_deactivated ;
   REAL rho ;
   REAL w_gap ;
+  REAL lp_C ;
   INT count ;
   REAL mymaxdiff ;
   INT num_rows ;
