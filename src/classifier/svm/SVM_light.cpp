@@ -1122,6 +1122,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 
 			for (int i=0; i<num_kernels; i++)
 				objective+=w[i]*sumw[i] ;
+			delete[] alphay ;
 			//CIO::message(M_DEBUG, "objective=%f\n", objective) ;
 #else
 			for (int d=0; d<num_kernels; d++)
@@ -1315,6 +1316,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows);
 			
 			delete[] sumw;
+			delete[] w_backup ;
 		}
 		else
 		{
