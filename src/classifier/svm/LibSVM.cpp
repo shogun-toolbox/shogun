@@ -81,7 +81,7 @@ bool CLibSVM::train()
 		int num_sv=model->l;
 
 		create_new_model(num_sv);
-		set_bias(-model->rho[0]);
+		set_bias(model->rho[0]);
 
 		for (int i=0; i<num_sv; i++)
 		{
