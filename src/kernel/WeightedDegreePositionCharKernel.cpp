@@ -10,7 +10,7 @@ CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, 
 																	 INT max_mismatch_, INT * shift_, 
 																	 INT shift_len_, bool use_norm,
 																	 INT mkl_stepsize_)
-	: CCharKernel(size),weights(NULL),position_weights(NULL),counts(NULL),
+	: CCharKernel(size),weights(NULL),position_weights(NULL),position_mask(NULL), counts(NULL),
 	  weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), 
 	  max_mismatch(max_mismatch_), seq_length(0), 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
@@ -58,6 +58,9 @@ CWeightedDegreePositionCharKernel::~CWeightedDegreePositionCharKernel()
 
 	delete[] position_weights ;
 	position_weights=NULL ;
+
+	delete[] position_mask ;
+	position_mask=NULL ;
 
 	delete[] weights_buffer ;
 	weights_buffer = NULL ;
@@ -116,6 +119,9 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do
 
 	CIO::message(M_DEBUG, "lhs_changed: %i\n", lhs_changed) ;
 	CIO::message(M_DEBUG, "rhs_changed: %i\n", rhs_changed) ;
+
+	delete[] position_mask ;
+	position_mask = NULL ;
 	
 	if (lhs_changed) 
 	{
@@ -589,9 +595,28 @@ REAL CWeightedDegreePositionCharKernel::compute_without_mismatch_matrix(CHAR* av
 	for (INT i=0; i<max_shift; i++)
 		sum1[i]=0 ;
 	
+	if (!position_mask)
+	{		
+		position_mask = new bool[alen] ;
+		for (INT i=0; i<alen; i++)
+		{
+			position_mask[i]=false ;
+			
+			for (INT j=0; j<degree; j++)
+				if (weights[i*degree+j]!=0.0)
+				{
+					position_mask[i]=true ;
+					break ;
+				}
+		}
+	}
+	
 	// no shift
 	for (INT i=0; i<alen; i++)
 	{
+		if (!position_mask[i])
+			continue ;
+		
 		if ((position_weights!=NULL) && (position_weights[i]==0.0))
 			continue ;
 		REAL sumi = 0.0 ;
@@ -609,6 +634,8 @@ REAL CWeightedDegreePositionCharKernel::compute_without_mismatch_matrix(CHAR* av
 	
 	for (INT i=0; i<alen; i++)
 	{
+		if (!position_mask[i])
+			continue ;		
 		if ((position_weights!=NULL) && (position_weights[i]==0.0))
 			continue ;
 		for (INT k=1; (k<=shift[i]) && (i+k<alen); k++)

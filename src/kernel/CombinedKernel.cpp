@@ -373,6 +373,11 @@ void CCombinedKernel::set_subkernel_weights(REAL* weights, INT num_weights)
 		{
 			INT num = k->get_num_subkernels() ;
 			k->set_subkernel_weights(&weights[i],num);
+			REAL w = 0 ;
+			for (INT j=0; j<num; j++)
+				if (weights[i+j]!=0)
+					w=1 ;
+			k->set_combined_kernel_weight(w);
 			k = get_next_kernel(k);
 			i += num ;
 		}

@@ -186,6 +186,8 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
  protected:
   REAL* weights;
   REAL* position_weights ;
+  bool* position_mask ;
+  
   INT * counts ;
   REAL* weights_buffer ;
   INT mkl_stepsize ;
