@@ -202,7 +202,7 @@ bool CSVMLight::train()
 	learn_parm->svm_iter_to_shrink=100;
 	learn_parm->svm_c=C1;
 	learn_parm->eps=-1.0;      /* equivalent regression epsilon for classification */
-	learn_parm->transduction_posratio=-1.0;
+	learn_parm->transduction_posratio=0.33;
 	learn_parm->svm_costratio=C2/C1;
 	learn_parm->svm_costratio_unlab=1.0;
 	learn_parm->svm_unlabbound=1E-5;

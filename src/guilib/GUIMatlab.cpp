@@ -522,7 +522,8 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			double* p_prob = mxGetPr(mx_prob);
 			
 			h->best_path_trans(seq, M, pos, orf_info, PEN_matrix, genestr, L,
-							   nbest, p_prob, my_path, my_pos, dict_weights, 2*D) ;
+							   nbest, p_prob, my_path, my_pos, dict_weights, 
+							   4*D) ;
 
 			// clean up 
 			delete_penalty_struct_array(PEN, P) ;

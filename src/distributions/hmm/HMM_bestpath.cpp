@@ -17,7 +17,7 @@ extern "C" int	finite(double);
 static const INT num_words = 4096 ;
 static const INT word_degree = 6 ;
 static bool word_used[num_words] ;
-static REAL svm_value[2] ;
+static REAL svm_value[4] ;
 static REAL *dict_weights ;
 static INT svm_pos_start ;
 static INT num_unique_words = 0 ;
@@ -61,6 +61,8 @@ inline void reset_svm_value(INT pos, INT & last_svm_pos)
 		word_used[i]=false ;
 	svm_value[0] = 0 ;
 	svm_value[1] = 0 ;
+	svm_value[2] = 0 ;
+	svm_value[3] = 0 ;
 	last_svm_pos = pos - 6+1 ;
 	svm_pos_start = pos - 6 ;
 	num_unique_words=0 ;
@@ -76,6 +78,8 @@ void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, REAL* ret)
 		{
 			svm_value[0]+=dict_weights[wordstr[i]] ;
 			svm_value[1]+=dict_weights[wordstr[i]+num_words] ;
+			svm_value[2]+=dict_weights[wordstr[i]+num_words*2] ;
+			svm_value[3]+=dict_weights[wordstr[i]+num_words*3] ;
 			//fprintf(stderr,"svm_value=%1.2f word
 			word_used[wordstr[i]]=true ;
 			num_unique_words++ ;
@@ -86,6 +90,8 @@ void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, REAL* ret)
 		last_svm_pos=pos ;
 		ret[0]= svm_value[0]/sqrt((double)num_unique_words) ;  // full normalization
 		ret[1]= svm_value[1]/sqrt((double)num_unique_words) ;  // full normalization
+		ret[2]= svm_value[2]/sqrt((double)num_unique_words) ;  // full normalization
+		ret[3]= svm_value[3]/sqrt((double)num_unique_words) ;  // full normalization
 		//	return svm_value/sqrt((double)svm_pos_start-pos) ; // len normalization
 	}
 	else
@@ -93,6 +99,8 @@ void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, REAL* ret)
 		// what should I do?
 		ret[0]=0 ;
 		ret[1]=0 ;
+		ret[2]=0 ;
+		ret[3]=0 ;
 	}
 	
 }
@@ -148,7 +156,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	const INT default_look_back = 30000 ;
 	INT max_look_back = 0 ;
 	bool use_svm = false ;
-	assert(dict_len==2*num_words) ;
+	assert(dict_len==4*num_words) ;
 	dict_weights=dictionary_weights ;
 	
 	{ // determine maximal length of look-back
@@ -216,7 +224,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	INT * pos_seq   = new INT[seq_len] ;
 	assert(pos_seq!=NULL) ;
 
-	REAL svm_value[2] = {0,0} ;
+	REAL svm_value[4] = {0,0,0,0} ;
 	
 	{ // precompute stop codons
 		for (INT i=0; i<genestr_len-2; i++)
@@ -352,6 +360,8 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 							{
 								svm_value[0]=0 ;
 								svm_value[1]=0 ;
+								svm_value[2]=0 ;
+								svm_value[3]=0 ;
 							}
 							
 							REAL pen_val = lookup_penalty(penalty, pos[t]-pos[ts], svm_value, true) ;
