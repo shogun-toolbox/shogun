@@ -5,7 +5,7 @@
 #include "features/Labels.h"
 #include "distributions/Distribution.h"
 
-class CLinearHMM : CDistribution
+class CLinearHMM : private CDistribution
 {
 	public:
 		CLinearHMM(CWordFeatures* f);

@@ -61,7 +61,7 @@ typedef T_STATES* P_STATES ;
  * Several functions for tasks such as training,reading/writing models, reading observations,
  * calculation of derivatives are supplied.
  */
-class CHMM : CDistribution
+class CHMM : private CDistribution
 {
     private:
 
@@ -127,27 +127,27 @@ class CHMM : CDistribution
 	inline INT & PATH_PROB_DIMENSION(INT dim) {
 	    return path_prob_dimension[dim%NUM_PARALLEL] ; } ;
 #else
-	inline T_ALPHA_BETA & ALPHA_CACHE(INT dim) {
+	inline T_ALPHA_BETA & ALPHA_CACHE(INT /*dim*/) {
 	    return alpha_cache ; } ;
-	inline T_ALPHA_BETA & BETA_CACHE(INT dim) {
+	inline T_ALPHA_BETA & BETA_CACHE(INT /*dim*/) {
 	    return beta_cache ; } ;
 #ifdef LOG_SUM_ARRAY
 	inline REAL* ARRAYS(INT dim) {
 	    return arrayS ; } ;
 #endif
-	inline REAL* ARRAYN1(INT dim) {
+	inline REAL* ARRAYN1(INT /*dim*/) {
 	    return arrayN1 ; } ;
-	inline REAL* ARRAYN2(INT dim) {
+	inline REAL* ARRAYN2(INT /*dim*/) {
 	    return arrayN2 ; } ;
-	inline T_STATES* STATES_PER_OBSERVATION_PSI(INT dim) {
+	inline T_STATES* STATES_PER_OBSERVATION_PSI(INT /*dim*/) {
 	    return states_per_observation_psi ; } ;
-	inline const T_STATES* STATES_PER_OBSERVATION_PSI(INT dim) const {
+	inline const T_STATES* STATES_PER_OBSERVATION_PSI(INT /*dim*/) const {
 	    return states_per_observation_psi ; } ;
-	inline T_STATES* PATH(INT dim) {
+	inline T_STATES* PATH(INT /*dim*/) {
 	    return path ; } ;
-	inline bool & PATH_PROB_UPDATED(INT dim) {
+	inline bool & PATH_PROB_UPDATED(INT /*dim*/) {
 	    return path_prob_updated ; } ;
-	inline INT & PATH_PROB_DIMENSION(INT dim) {
+	inline INT & PATH_PROB_DIMENSION(INT /*dim*/) {
 	    return path_prob_dimension ; } ;
 #endif
 

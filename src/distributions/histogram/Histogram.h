@@ -4,7 +4,7 @@
 #include "features/WordFeatures.h"
 #include "distributions/Distribution.h"
 
-class CHistogram : CDistribution
+class CHistogram : private CDistribution
 {
 	public:
 		CHistogram();
