@@ -37,7 +37,7 @@ void CKernel::init(CFeatures* l, CFeatures* r)
 	rhs=r;
 
 	// 100MB kernel cache
-	kernel_cache_init(100);
+	kernel_cache_init(500);
 }
 
 /****************************** Cache handling *******************************/

@@ -42,13 +42,13 @@ class CKernel
 		void   kernel_cache_reset_lru();
 
 		/// set the time used for lru	
-		inline void CKernel::set_time(long t)
+		inline void set_time(long t)
 		{
 		    kernel_cache.time=t;
 		}
 
 		// Update lru time to avoid removal from cache.
-		long CKernel::kernel_cache_touch(long cacheidx)
+		long kernel_cache_touch(long cacheidx)
 		{
 			if(kernel_cache.index[cacheidx] != -1)
 			{
@@ -79,7 +79,7 @@ class CKernel
 
 
 		/// Is that row cached?
-		inline long CKernel::kernel_cache_check(long cacheidx)
+		inline long kernel_cache_check(long cacheidx)
 		{
 			return(kernel_cache.index[cacheidx] != -1);
 		}
