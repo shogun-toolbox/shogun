@@ -1015,7 +1015,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			{
 				sumw[d]=0;
 
-				for(ii=0;(i=active2dnum[ii])>=0;ii++)
+				for(int i=0; i<num; i++)
 				{
 					REAL W_norm = W_upd[i*degree+d]/w[d];
 					W[i*degree+d] += W_norm;
@@ -1045,10 +1045,8 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				w[d]/=s;
 			}
 
-			int i,ii;
-
 			// update lin
-			for(ii=0;(i=active2dnum[ii])>=0;ii++)
+			for(int i=0; i<num; i++)
 			{
 				REAL s=0;
 				for (int d=0; d<degree; d++)
