@@ -164,6 +164,34 @@ CHMM::~CHMM()
     delete model ;
     invalidate_top_feature_cache(INVALID);
     free_state_dependend_arrays();
+	
+	if (!reused_caches)
+	{
+#ifdef PARALLEL
+		for (int i=0; i<NUM_PARALLEL; i++)
+		{
+			delete[] alpha_cache[i].table;
+			delete[] beta_cache[i].table;
+			alpha_cache[i].table=NULL;
+			beta_cache[i].table=NULL;
+		}
+
+		delete[] alpha_cache;
+		delete[] beta_cache;
+		alpha_cache=NULL;
+		beta_cache=NULL;
+#else
+		delete[] alpha_cache.table;
+		delete[] beta_cache.table;
+		alpha_cache.table=NULL;
+		beta_cache.table=NULL;
+#endif
+
+#ifndef NOVIT
+		delete[] states_per_observation_psi;
+		states_per_observation_psi=NULL;
+#endif // NOVIT
+	}
 
 #ifdef LOG_SUM_ARRAY
 #ifdef PARALLEL
@@ -193,33 +221,6 @@ CHMM::~CHMM()
   
 bool CHMM::alloc_state_dependend_arrays()
 {
-#ifdef PARALLEL
-	alpha_cache=new T_ALPHA_BETA[NUM_PARALLEL] ;
-	beta_cache=new T_ALPHA_BETA[NUM_PARALLEL] ;
-	states_per_observation_psi=new P_STATES[NUM_PARALLEL] ;
-
-	for (int i=0; i<NUM_PARALLEL; i++)
-	{
-		this->alpha_cache[i].table=NULL;
-		this->beta_cache[i].table=NULL;
-		this->alpha_cache[i].dimension=0;
-		this->beta_cache[i].dimension=0;
-#ifndef NOVIT
-		this->states_per_observation_psi[i]=NULL ;
-#endif // NOVIT
-	}
-
-#else // PARALLEL
-	this->alpha_cache.table=NULL;
-	this->beta_cache.table=NULL;
-	this->alpha_cache.dimension=0;
-	this->beta_cache.dimension=0;
-#ifndef NOVIT
-	this->states_per_observation_psi=NULL ;
-#endif //NOVIT
-
-#endif //PARALLEL
-
 
 	if (!transition_matrix_a && !observation_matrix_b && !initial_state_distribution_p && !end_state_distribution_q)
 	{
@@ -260,8 +261,6 @@ bool CHMM::alloc_state_dependend_arrays()
 #else
 		if (alpha_cache.table!=NULL)
 #endif
-
-
 		    set_observations(p_observations);
 		else
 		    set_observation_nocache(p_observations);
@@ -312,33 +311,6 @@ void CHMM::free_state_dependend_arrays()
 	initial_state_distribution_p=NULL;
 	end_state_distribution_q=NULL;
 
-	if (!reused_caches)
-	{
-#ifdef PARALLEL
-		for (int i=0; i<NUM_PARALLEL; i++)
-		{
-			delete[] alpha_cache[i].table;
-			delete[] beta_cache[i].table;
-			alpha_cache[i].table=NULL;
-			beta_cache[i].table=NULL;
-		}
-
-		delete[] alpha_cache;
-		delete[] beta_cache;
-		alpha_cache=NULL;
-		beta_cache=NULL;
-#else
-		delete[] alpha_cache.table;
-		delete[] beta_cache.table;
-		alpha_cache.table=NULL;
-		beta_cache.table=NULL;
-#endif
-
-#ifndef NOVIT
-		delete[] states_per_observation_psi;
-		states_per_observation_psi=NULL;
-#endif // NOVIT
-	}
 
 }
 
@@ -366,19 +338,47 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 	}
 	else
 		MAX_M=0;
-	
+
 	//initialize parameters
 	this->M= M;
 	this->N= N;
 	this->transition_matrix_a=NULL;
-        this->observation_matrix_b=NULL;
-        this->initial_state_distribution_p=NULL;
-        this->end_state_distribution_q=NULL;
+	this->observation_matrix_b=NULL;
+	this->initial_state_distribution_p=NULL;
+	this->end_state_distribution_q=NULL;
 	this->ORDER=ORDER_;
 	this->PSEUDO= PSEUDO;
 	this->model= model;
 	this->p_observations=NULL;
 	this->reused_caches=false;
+
+#ifdef PARALLEL
+	alpha_cache=new T_ALPHA_BETA[NUM_PARALLEL] ;
+	beta_cache=new T_ALPHA_BETA[NUM_PARALLEL] ;
+	states_per_observation_psi=new P_STATES[NUM_PARALLEL] ;
+
+	for (int i=0; i<NUM_PARALLEL; i++)
+	{
+		this->alpha_cache[i].table=NULL;
+		this->beta_cache[i].table=NULL;
+		this->alpha_cache[i].dimension=0;
+		this->beta_cache[i].dimension=0;
+#ifndef NOVIT
+		this->states_per_observation_psi[i]=NULL ;
+#endif // NOVIT
+	}
+
+#else // PARALLEL
+	this->alpha_cache.table=NULL;
+	this->beta_cache.table=NULL;
+	this->alpha_cache.dimension=0;
+	this->beta_cache.dimension=0;
+#ifndef NOVIT
+	this->states_per_observation_psi=NULL ;
+#endif //NOVIT
+
+#endif //PARALLEL
+
 	
 	if (modelfile)
 		files_ok= files_ok && load_model(modelfile);
@@ -4791,7 +4791,9 @@ void CHMM::set_observation_nocache(CObservation* obs)
 
 			alpha_cache[i].table=NULL;
 			beta_cache[i].table=NULL;
+#ifndef NOVIT
 			states_per_observation_psi[i]=NULL;
+#endif // NOVIT
 			path[i]=NULL;
 		} ;
 #else
@@ -4822,12 +4824,16 @@ void CHMM::set_observations(CObservation* obs, CHMM* lambda)
 		{
 			delete[] alpha_cache[i].table;
 			delete[] beta_cache[i].table;
+#ifndef NOVIT
 			delete[] states_per_observation_psi[i];
+#endif // NOVIT
 			delete[] path[i];
 
 			alpha_cache[i].table=NULL;
 			beta_cache[i].table=NULL;
+#ifndef NOVIT
 			states_per_observation_psi[i]=NULL;
+#endif // NOVIT
 			path[i]=NULL;
 		} ;
 #else
@@ -4938,11 +4944,15 @@ void CHMM::set_observations(CObservation* obs, CHMM* lambda)
 
 double* CHMM::compute_top_feature_vector(CHMM* pos, CHMM* neg, int dim, double* featurevector)
 {
-    if (!featurevector)
-	featurevector=new double[ 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ];
 
     if (!featurevector)
-	return NULL;
+	{
+		CIO::message("allocating %.2f M for top feature vector cache\n", 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()));
+		featurevector=new double[ 1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ];
+	}
+
+    if (!featurevector)
+		return NULL;
 
     int i,j,p=0,x=dim;
 
@@ -5183,6 +5193,7 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 	   CIO::message("refreshing top_sv_feature_cache...........\n");
 
 	    int totobs=pos->get_observations()->get_support_vector_num();
+		CIO::message("allocating top feature cache of size %.2fM for sv\n", sizeof(double)*num_features*totobs/1024.0/1024.0);
 	    feature_cache_sv=new double[num_features*totobs];
 
 	   CIO::message("precalculating top feature vectors for support vectors\n");
@@ -5210,6 +5221,7 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 	   CIO::message("refreshing top_obs_feature_cache...........\n");
 
 	    int totobs=pos->get_observations()->get_DIMENSION();
+		CIO::message("allocating top feature cache of size %.2fM for obs\n", sizeof(double)*num_features*totobs/1024.0/1024.0);
 	    feature_cache_obs=new double[num_features*totobs];
 
 	   CIO::message("precalculating top feature vectors for observations\n");
@@ -5222,7 +5234,6 @@ bool CHMM::compute_top_feature_cache(CHMM* pos, CHMM* neg)
 		   CIO::message(".");
 
 		
-
 		compute_top_feature_vector(pos, neg, x, &feature_cache_obs[x*num_features]);
 	    }
 

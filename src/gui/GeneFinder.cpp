@@ -2179,8 +2179,11 @@ static bool prompt(FILE* infile=stdin)
 				    printf("file successfully read\n");
 				    fclose(model_file);
 
-				    REAL cur_o[]= {0, -math.INFTY, -math.INFTY, -math.INFTY};
-				    REAL app_o[]= {-math.INFTY, -math.INFTY, 0, -math.INFTY};
+				    REAL cur_o[]= {0, -1000, -1000, -1000};
+				    REAL app_o[]= {-1000, -1000, 0, -1000};
+
+				    //REAL cur_o[]= {0, -math.INFTY, -math.INFTY, -math.INFTY};
+				    //REAL app_o[]= {-math.INFTY, -math.INFTY, 0, -math.INFTY};
 
 				    lambda->append_model(h, cur_o, app_o);
 				    lambda_train->append_model(h, cur_o, app_o);

@@ -141,22 +141,32 @@ public:
 #ifndef NO_LOG_CACHE
 	inline REAL logarithmic_sum(REAL p, REAL q)
 	{
-	    register REAL diff=p-q;
+		if (finite(p))
+		{
+			if (finite(q))
+			{
 
-	    if (diff>0)		//p>q
-	    {
-		if (diff > LOGRANGE)
-		    return p;
-		else
-		    return  p + logtable[(int)(diff*LOGACCURACY)];
-	    }
-	    else			//p<=q
-	    {
-		if (-diff > LOGRANGE)
-		    return  q;
-		else
-		    return  q + logtable[(int)(-diff*LOGACCURACY)];
-	    }
+				register REAL diff=p-q;
+
+				if (diff>0)		//p>q
+				{
+					if (diff > LOGRANGE)
+						return p;
+					else
+						return  p + logtable[(int)(diff*LOGACCURACY)];
+				}
+				else			//p<=q
+				{
+					if (-diff > LOGRANGE)
+						return  q;
+					else
+						return  q + logtable[(int)(-diff*LOGACCURACY)];
+				}
+			}
+			return p;
+		}
+		else 
+			return q;
 	}
 
 	///init log table of form log(1+exp(x))
@@ -179,22 +189,32 @@ public:
 
 	inline REAL logarithmic_sum(REAL p, REAL q)
 	{
-	    register REAL diff=p-q;
+		if (finite(p))
+		{
+			if (finite(q))
+			{
 
-	    if (diff>0)		//p>q
-	    {
-		if (diff > 73)
-		    return p;
-		else
-		    return  p + log(1+exp(-diff));
-	    }
-	    else			//p<=q
-	    {
-		if (-diff > 73)
-		    return  q;
-		else
-		    return  q + log(1+exp(diff));
-	    }
+				register REAL diff=p-q;
+
+				if (diff>0)		//p>q
+				{
+					if (diff > 73)
+						return p;
+					else
+						return  p + log(1+exp(-diff));
+				}
+				else			//p<=q
+				{
+					if (-diff > 73)
+						return  q;
+					else
+						return  q + log(1+exp(diff));
+				}
+			}
+			return p;
+		}
+		else 
+			return q;
 	}
 #endif
 #ifdef LOG_SUM_ARRAY

@@ -32,7 +32,7 @@ int CMath::LOGACCURACY         = 0; // 100000 steps per integer
 #ifdef PATHDEBUG
 const REAL CMath::INFTY            =  1e11;	        // infinity
 #else
-const REAL CMath::INFTY            =  -log(0.0);	// infinity
+const REAL CMath::INFTY            =  1e10; //-log(0.0);	// infinity
 #endif
 const REAL CMath::ALMOST_NEG_INFTY =  -1000;	
 
