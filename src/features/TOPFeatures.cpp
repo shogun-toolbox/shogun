@@ -1,4 +1,6 @@
-CFeatures::CFeatures()
+#include "TOPFeatures.h"
+
+CTOPFeatures::CTOPFeatures()
 {
     preproc=NULL;
     num_vectors=0;

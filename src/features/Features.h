@@ -4,16 +4,20 @@
 #include "lib/common.h"
 #include "preproc/PreProc.h"
 
+//class CPreProc;
+
 class CFeatures
 {
- public:
-	/** Features can be DOUBLEs and STRINGs
+public:
+	/** Features can 
+	 * just be REALs, SHORT
+	 * or STRINGs or...
 	*/
 	enum EType
 	{
-		REAL,
-		SHORT,
-		STRING
+		F_REAL,
+		F_SHORT,
+		F_STRING
 	};
 
 	CFeatures();
