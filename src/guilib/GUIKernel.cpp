@@ -950,7 +950,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 			}
 		}
-		else if (strcmp(kern_type,"GAUSSIAN")==0)
+		else if (strcmp(kern_type,"GAUSSIAN")==0) // RBF
 		{
 			if (strcmp(data_type,"REAL")==0)
 			{

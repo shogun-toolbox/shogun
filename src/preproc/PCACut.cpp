@@ -43,10 +43,10 @@ bool CPCACut::init(CFeatures* f)
 		assert(f->get_feature_class() == C_SIMPLE);
 		assert(f->get_feature_type() == F_REAL);
 
-		CIO::message("calling CPCACut::init\n") ;
+		CIO::message(M_INFO,"calling CPCACut::init\n") ;
 		INT num_vectors=((CRealFeatures*)f)->get_num_vectors() ;
 		INT num_features=((CRealFeatures*)f)->get_num_features() ;
-		CIO::message("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
+		CIO::message(M_INFO,"num_examples: %ld num_features: %ld \n", num_vectors, num_features);
 		delete[] mean ;
 		mean=new double[num_features+1] ;
 
@@ -77,7 +77,7 @@ bool CPCACut::init(CFeatures* f)
 		for (j=0; j<num_features; j++)
 			mean[j]/=num_vectors;
 
-		CIO::message("done.\nComputing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0) ;
+		CIO::message(M_INFO,"done.\nComputing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0) ;
 		double *cov=new double[num_features*num_features] ;
 		assert(cov!=NULL) ;
 
@@ -87,9 +87,9 @@ bool CPCACut::init(CFeatures* f)
 		for (i=0; i<num_vectors; i++)
 		{
 			if (!(i % (num_vectors/10+1)))
-				CIO::message("%02d%%.", (int) (100.0*i/num_vectors));
+				CIO::message(M_PROGRESS,"%02d%%.", (int) (100.0*i/num_vectors));
 			else if (!(i % (num_vectors/200+1)))
-				CIO::message(".");
+				CIO::message(M_PROGRESS,".");
 
 			INT len;
 			bool free;
@@ -114,9 +114,9 @@ bool CPCACut::init(CFeatures* f)
 			for (j=0; j<num_features; j++)
 				cov[i*num_features+j]/=num_vectors ;
 
-		CIO::message("done\n") ;
+		CIO::message(M_INFO,"done\n") ;
 
-		CIO::message("Computing Eigenvalues ... ") ;
+		CIO::message(M_INFO,"Computing Eigenvalues ... ") ;
 		INT lwork=3*num_features ;
 		double* work=new double[lwork] ;
 		double* eigenvalues=new double[num_features] ;
@@ -141,7 +141,7 @@ bool CPCACut::init(CFeatures* f)
 				num_dim++ ;
 		} ;
 
-		CIO::message("Done\nReducing from %i to %i features..", num_features, num_dim) ;
+		CIO::message(M_INFO,"Done\nReducing from %i to %i features..", num_features, num_dim) ;
 
 		delete[] T;
 		T=new REAL[num_dim*num_features] ;
@@ -165,7 +165,7 @@ bool CPCACut::init(CFeatures* f)
 		delete[] eigenvalues;
 		delete[] cov;
 		initialized=true;
-		CIO::message("Done\n") ;
+		CIO::message(M_INFO,"Done\n") ;
 		return true ;
 	}
 	return 
@@ -188,11 +188,11 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 	INT num_features=0;
 
 	REAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
-	CIO::message("get Feature matrix: %ix%i\n", num_vectors, num_features) ;
+	CIO::message(M_INFO,"get Feature matrix: %ix%i\n", num_vectors, num_features) ;
 
 	if (m)
 	{
-		CIO::message("Preprocessing feature matrix\n");
+		CIO::message(M_INFO,"Preprocessing feature matrix\n");
 		REAL* res= new REAL[num_dim];
 		double* sub_mean= new double[num_features];
 
@@ -215,7 +215,7 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 
 		((CRealFeatures*) f)->set_num_features(num_dim);
 		((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
-		CIO::message("new Feature matrix: %ix%i\n", num_vectors, num_features);
+		CIO::message(M_INFO,"new Feature matrix: %ix%i\n", num_vectors, num_features);
 	}
 
 	return m;

@@ -255,7 +255,7 @@ bool CGUIPreProc::attach_preproc(CHAR* param)
 bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat, bool force)
 {
 	INT num_preproc=preprocs->get_num_elements();
-	CPreProc** preprocs;
+	CPreProc** preprocs = NULL ;
 	if (num_preproc > 0)
 	{
 		if (trainfeat)
