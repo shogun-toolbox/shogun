@@ -48,6 +48,7 @@ public:
 	inline CHMM* get_pos() { return pos; }
 	inline CHMM* get_neg() { return neg; }
 	inline CHMM* get_test() { return test; }
+	inline CHMM* get_current() { return working; }
 	bool gradient_step(char* param) ;
 
 	int number_of_hmm_tables ;
