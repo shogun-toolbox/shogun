@@ -285,7 +285,7 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
   REAL sqrt_both=sqrt_a*sqrt_b;
 
   REAL sum0=0 ;
-  REAL *sum1=REAL[max_shift] ;
+  REAL *sum1=new REAL[max_shift] ;
   for (INT i=0; i<max_shift; i++)
 	  sum1[i]=0 ;
 
