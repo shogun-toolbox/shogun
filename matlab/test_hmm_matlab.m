@@ -1,12 +1,12 @@
 clear gf
 
-switch 3
+switch 1
 case 1
 	fid=fopen('/home/neuro/sonne/bb_hmm_examples/dice/dice.txt','r');
 	sequence=fread(fid, inf, 'char');
 	fclose(fid);
 
-	sequence=sequence;
+	sequence=sequence(1:end-1);
 	char(sequence)'
 
 	gf('send_command','pseudo 1e-10');
@@ -28,7 +28,7 @@ case 2
 	sequence=fread(fid, inf, 'char');
 	fclose(fid);
 
-	sequence=sequence;
+	sequence=sequence(1:end-1);
 
 	gf('send_command','pseudo 1e-10');
 	gf('send_command','new_hmm 3 6');
