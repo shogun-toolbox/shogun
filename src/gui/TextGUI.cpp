@@ -238,27 +238,37 @@ void CTextGUI::print_prompt()
 	//CIO::message("genefinder >> ");
 }
 
-CHAR* CTextGUI::get_line(FILE* infile, bool show_prompt)
+CHAR* CTextGUI::get_line(FILE* infile, bool interactive_mode)
 {
+	char* in=NULL;
 	memset(input, 0, sizeof(input));
 
 	if (feof(infile))
 		return NULL;
 
 #ifdef HAVE_READLINE
-	char* in=readline("\033[1;34mgenefinder\033[0m >> ");
-	if (in)
+	if (interactive_mode)
 	{
-		strncpy(input, in, sizeof(input));
-		add_history(in);
-		free(in);
+		in=readline("\033[1;34mgenefinder\033[0m >> ");
+		if (in)
+		{
+			strncpy(input, in, sizeof(input));
+			add_history(in);
+			free(in);
+		}
+	}
+	else
+	{
+		if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
+			return NULL;
+		in=input;
 	}
 #else
-	if (show_prompt)
+	if (interactive_mode)
 		print_prompt();
 	if ( (fgets(input, sizeof(input), infile)==NULL) || (!strlen(input)) )
 		return NULL;
-	char* in=input;
+	in=input;
 #endif
 
 	if (in==NULL || (!strlen(input)))

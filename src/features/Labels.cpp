@@ -74,7 +74,7 @@ bool CLabels::load(CHAR* fname)
 		CIO::message(M_ERROR, "loading file \"%s\" failed", fname);
 	else
 	{
-		CIO::message(M_ERROR, "%ld labels successfully read\n", num_labels);
+		CIO::message(M_INFO, "%ld labels successfully read\n", num_labels);
 		status=true;
 	}
 
