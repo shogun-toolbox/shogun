@@ -2,6 +2,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 #include "intpoint.h"
 #include "intpoint_mpi.h"
 #include "mpi_base.h"
@@ -25,7 +27,6 @@ void donothing(void *)
   /* do nothing */
 }
 
-#if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 CMPIBase::CMPIBase()
 {
  /* Block caches */
@@ -106,4 +107,5 @@ void CMPIBase::svm_mpi_destroy(void)
   //bcast_req(MPI_COMM_WORLD, 0, REQ_FINALIZE);
   MPI_Finalize();
 }
+
 #endif

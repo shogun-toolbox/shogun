@@ -22,6 +22,7 @@ CGUIPreProc::~CGUIPreProc()
 bool CGUIPreProc::set_preproc(char* param)
 {
 	param=CIO::skip_spaces(param);
+#ifndef NO_LAPACK
 	if (strncmp(param,"PCACUT",6)==0)
 	{
 		delete preproc;
@@ -32,7 +33,9 @@ bool CGUIPreProc::set_preproc(char* param)
 		preproc=new CPCACut(do_whitening, thresh);
 		return true;
 	}
-	else if (strncmp(param,"NORMONE",7)==0)
+	else 
+#endif
+	  if (strncmp(param,"NORMONE",7)==0)
 	{
 		delete preproc;
 		preproc=new CNormOne();
@@ -80,11 +83,14 @@ bool CGUIPreProc::load(char* param)
 	{
 		assert(fread(id, sizeof(char), 4, file)==4);
 	
+#ifndef NO_LAPACK
 		if (strncmp(id, "PCAC", 4)==0)
 		{
 			preproc=new CPCACut();
 		}
-		else if (strncmp(id, "NRM1", 4)==0)
+		else 
+#endif
+		if (strncmp(id, "NRM1", 4)==0)
 		{
 			preproc=new CNormOne();
 		}

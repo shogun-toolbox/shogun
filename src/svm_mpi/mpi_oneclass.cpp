@@ -2,6 +2,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 #include "intpoint.h"
 #include "intpoint_mpi.h"
 #include "mpi_oneclass.h"
@@ -18,7 +20,6 @@ static int sign(double a)
   return 0 ;
 } 
 
-#if defined(HAVE_MPI) && !defined(DISABLE_MPI)
 COneClassMPI::COneClassMPI()
   : svm_b(0), svm_w(NULL)
 {

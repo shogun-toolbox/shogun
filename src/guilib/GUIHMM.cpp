@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "lib/common.h"
 #include "guilib/GUIHMM.h"
 #include "hmm/Observation.h"

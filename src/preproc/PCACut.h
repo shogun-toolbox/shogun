@@ -1,11 +1,14 @@
 #ifndef _CPCACUT__H__
 #define _CPCACUT__H__
 
+#ifndef NO_LAPACK
+
+#include <stdio.h>
+
 #include "RealPreProc.h"
 #include "features/Features.h"
 #include "lib/common.h"
 
-#include <stdio.h>
 
 class CPCACut : public CRealPreProc
 {
@@ -43,4 +46,5 @@ class CPCACut : public CRealPreProc
   int do_whitening;
   double thresh ;
 };
+#endif
 #endif

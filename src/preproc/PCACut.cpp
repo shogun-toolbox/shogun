@@ -1,14 +1,16 @@
+#include <math.h>
+//#include <libmmfile.h>
+#include <assert.h>
+#include <string.h>
+#include <stdlib.h>
+
+#ifndef NO_LAPACK
 #include "lib/common.h"
 #include "PCACut.h"
 #include "RealPreProc.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
-#include <math.h>
-//#include <libmmfile.h>
-#include <assert.h>
-#include <string.h>
-#include <stdlib.h>
 
 extern "C" void cleaner_main(double *covZ, int dim, double thresh,
 			     double **T, int *num_dim)  ;
@@ -267,3 +269,5 @@ bool CPCACut::save_init_data(FILE* dst)
     assert(fwrite(T, sizeof(double), num_dim*num_old_dim, dst)==(unsigned int) num_old_dim*num_dim);
 	return true;
 }
+
+#endif NO_LAPACK

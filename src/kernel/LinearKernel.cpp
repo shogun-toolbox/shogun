@@ -106,7 +106,16 @@ REAL CLinearKernel::compute(long idx_a, long idx_b)
   int ialen=(int) alen;
   //REAL result=F77CALL(ddot)(REF ialen, avec, REF skip, bvec, REF skip)/scale;
 
+#ifdef NO_LAPACK
+  REAL result=0;
+  {
+    for (int i=0; i<ialen; i++)
+      result+=avec[i]*bvec[i];
+  }
+#else
   REAL result=ddot_(&ialen, avec, &skip, bvec, &skip)/scale;
+#endif // NO_LAPACK
+
 //  REAL result=sum/scale;
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
