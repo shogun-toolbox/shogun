@@ -81,7 +81,7 @@ void CFKFeatures::compute_feature_vector(REAL* featurevector, long num, long& le
 	len=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 	//  CIO::message("len=%i\n",len) ;
 
-	featurevector[p++]=(posx+negx);
+	featurevector[p++]=(exp(posx)-exp(negx))/(weight_a*exp(posx)+(1-weight_a)*exp(negx));
 //	CIO::message("posx+negx=%f\n", featurevector[0]);
 
 	//first do positive model
@@ -107,18 +107,18 @@ void CFKFeatures::compute_feature_vector(REAL* featurevector, long num, long& le
 	//then do negative
 	for (i=0; i<neg->get_N(); i++)
 	{
-		featurevector[p++]= (weight_a-1)*exp(neg->model_derivative_p(i, x)-negx);
+		featurevector[p++]= (1-weight_a)*exp(neg->model_derivative_p(i, x)-negx);
 //		CIO::message("neg_p_deriv=%e\n", featurevector[p-1]) ;
-		featurevector[p++]= (weight_a-1)* exp(neg->model_derivative_q(i, x)-negx);
+		featurevector[p++]= (1-weight_a)* exp(neg->model_derivative_q(i, x)-negx);
 //		CIO::message("neg_q_deriv=%e\n", featurevector[p-1]) ;
 
 		for (j=0; j<neg->get_N(); j++) {
-			featurevector[p++]= (weight_a-1)*exp(neg->model_derivative_a(i, j, x)-negx);
+			featurevector[p++]= (1-weight_a)*exp(neg->model_derivative_a(i, j, x)-negx);
 //			CIO::message("neg_a_deriv=%e\n", featurevector[p-1]) ;
 		}
 
 		for (j=0; j<neg->get_M(); j++) {
-			featurevector[p++]= (weight_a-1)*exp(neg->model_derivative_b(i, j, x)-negx);
+			featurevector[p++]= (1-weight_a)*exp(neg->model_derivative_b(i, j, x)-negx);
 //			CIO::message("neg_b_deriv=%e\n", featurevector[p-1]) ;
 		}
 	}
