@@ -163,6 +163,14 @@ public:
 	{
 	    return M;
 	}
+	
+	/** get inherited ORDER of HMM used for alphabet remapping
+	 * @return ORDER
+	 */
+	inline int get_ORDER() const
+	{
+	    return ORDER;
+	}
 
 	/** get number of columns of vector at dimension in observation matrix
 	 * @return length of observation vector

@@ -543,15 +543,44 @@ bool CGUIHMM::test_hmm(char* param)
 	{
 		if (gui->guiobs.get_obs("POSTEST") && gui->guiobs.get_obs("NEGTEST"))
 		{
-			CObservation* obs=new CObservation(gui->guiobs.get_obs("POSTEST"), gui->guiobs.get_obs("NEGTEST"));
+			CIO::message("pos test data is of ORDER %d, neg test data is of ORDER %d\n", gui->guiobs.get_obs("POSTEST")->get_ORDER(), gui->guiobs.get_obs("NEGTEST")->get_ORDER());
+			CObservation* posobs=NULL;
+			CObservation* negobs=NULL;
+			CObservation* tmp_posobs=NULL;
+			CObservation* tmp_negobs=NULL;
+			
+			if (gui->guiobs.get_obs("POSTEST")->get_ORDER() == gui->guiobs.get_obs("NEGTEST")->get_ORDER())
+				posobs=negobs=new CObservation(gui->guiobs.get_obs("POSTEST"), gui->guiobs.get_obs("NEGTEST"));
+			else
+			{
+				CObservation* p= gui->guiobs.get_obs("POSTEST");
+				CObservation* n= gui->guiobs.get_obs("NEGTEST");
+
+				FILE* posfile=fopen(gui->guiobs.get_pos_test_name(), "r");
+				FILE* negfile=fopen(gui->guiobs.get_neg_test_name(), "r");
+
+				if (posfile && negfile)
+				{
+					tmp_posobs= new CObservation(posfile, p->get_type(), p->get_alphabet(), p->get_max_M(), p->get_M(), n->get_ORDER());
+					tmp_negobs= new CObservation(negfile, n->get_type(), n->get_alphabet(), n->get_max_M(), n->get_M(), p->get_ORDER());
+					posobs=new CObservation(gui->guiobs.get_obs("POSTEST"), tmp_negobs);
+					negobs=new CObservation(gui->guiobs.get_obs("NEGTEST"), tmp_posobs);
+					fclose(posfile);
+					fclose(negfile);
+				}
+			}
 
 			CObservation* old_pos=pos->get_observations();
 			CObservation* old_neg=neg->get_observations();
 
-			pos->set_observations(obs);
-			neg->set_observations(obs);
+			assert(posobs==NULL);
+			assert(negobs==NULL);
+			pos->set_observations(posobs);
+			neg->set_observations(negobs);
 
-			int total=obs->get_DIMENSION();
+			assert(posobs->get_DIMENSION()==negobs->get_DIMENSION());
+
+			int total=posobs->get_DIMENSION();
 
 			REAL* output = new REAL[total];	
 			int* label= new int[total];	
@@ -563,7 +592,8 @@ bool CGUIHMM::test_hmm(char* param)
 				output[dim]= 
 				    (poslinear ? pos->linear_model_probability(dim) : pos->model_probability(dim)) -
 				    (neglinear ? neg->linear_model_probability(dim) : neg->model_probability(dim));
-				label[dim]= obs->get_label(dim);
+				label[dim]= posobs->get_label(dim);
+				//fprintf(outputfile, "%+d: %f - %f = %f\n", label[dim], pos->model_probability(dim), neg->model_probability(dim), output[dim]);
 			}
 			
 			gui->guimath.evaluate_results(output, label, total, tresh, outputfile, rocfile);
@@ -574,7 +604,10 @@ bool CGUIHMM::test_hmm(char* param)
 			pos->set_observations(old_pos);
 			neg->set_observations(old_neg);
 
-			delete obs;
+			delete posobs;
+			delete negobs;
+			delete tmp_posobs;
+			delete tmp_negobs;
 			result=true;
 		}
 		else

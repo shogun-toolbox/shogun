@@ -10,6 +10,9 @@ CGUIObservation::CGUIObservation(CGUI * gui_): gui(gui_)
 	pos_test_obs=NULL;
 	neg_test_obs=NULL;
 	test_obs=NULL;
+
+	neg_test_name=NULL;
+	pos_test_name=NULL;
 }
 
 CGUIObservation::~CGUIObservation()
@@ -19,6 +22,8 @@ CGUIObservation::~CGUIObservation()
 	delete pos_test_obs;
 	delete neg_test_obs;
 	delete test_obs;
+	delete neg_test_name;
+	delete pos_test_name;
 }
 
 bool CGUIObservation::load_observations(char* param)
@@ -49,11 +54,13 @@ bool CGUIObservation::load_observations(char* param)
 			else if (strcmp(target,"POSTEST")==0)
 			{
 				delete pos_test_obs;
+				pos_test_name=strdup(filename);
 				pos_test_obs= new CObservation(trn_file, POSTEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
 			}
 			else if (strcmp(target,"NEGTEST")==0)
 			{
 				delete neg_test_obs;
+				neg_test_name=strdup(filename);
 				neg_test_obs= new CObservation(trn_file, NEGTEST, alphabet, (BYTE)ceil(log(M)/log(2)), M, ORDER);
 			}
 			else if (strcmp(target,"TEST")==0)
