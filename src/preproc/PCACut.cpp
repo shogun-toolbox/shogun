@@ -124,6 +124,19 @@ bool CPCACut::init(CFeatures* f_)
   //  REAL *vectors=new REAL[num_features*num_features] ;
   //  assert(vectors!=NULL) ;
   
+//    {
+//      CIO::message("done\nRunning matlab PCA code ") ;
+//      libmmfileInitialize() ;
+//      cleaner_main(cov, num_features, 1e-4, &T, &num_dim) ;
+//      libmmfileTerminate() ;
+//      CIO::message("done\n") ;
+//      for (int k=0; k<num_features; k++)
+//        {
+//  	for (int l=0; l< num_dim; l++)
+//  	  CIO::message("%e ", T[k*num_dim+l]) ;
+//  	CIO::message("\n") ;
+//        } ;
+//    }
   {
     int lwork=4*num_features ;
     double *work=new double[lwork] ;
