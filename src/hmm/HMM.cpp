@@ -203,7 +203,7 @@ bool CHMM::alloc_state_dependend_arrays()
 #ifndef NOVIT
 		this->states_per_observation_psi[i]=NULL ;
 #endif // NOVIT
-	} ;
+	}
 
 #else // PARALLEL
 	this->alpha_cache.table=NULL;
@@ -212,7 +212,6 @@ bool CHMM::alloc_state_dependend_arrays()
 	this->beta_cache.dimension=0;
 #ifndef NOVIT
 	this->states_per_observation_psi=NULL ;
-	this->path=NULL;
 #endif //NOVIT
 
 #endif //PARALLEL
@@ -225,18 +224,16 @@ bool CHMM::alloc_state_dependend_arrays()
 		observation_matrix_b=new REAL[N*M];	
 		initial_state_distribution_p=new REAL[N];
 		end_state_distribution_q=new REAL[N];
+		init_model_random();
+		convert_to_log();
 	}
 
 #ifdef PARALLEL
+	for (int i=0; i<NUM_PARALLEL; i++)
 	{
-		arrayN1=new P_REAL[NUM_PARALLEL] ;
-		arrayN2=new P_REAL[NUM_PARALLEL] ;
-		for (int i=0; i<NUM_PARALLEL; i++)
-		{
-			arrayN1[i]=new REAL[this->N];
-			arrayN2[i]=new REAL[this->N];
-		}
-	} ;
+		arrayN1[i]=new REAL[this->N];
+		arrayN2[i]=new REAL[this->N];
+	}
 #else //PARALLEL
 	arrayN1=new REAL[this->N];
 	arrayN2=new REAL[this->N];
@@ -244,11 +241,8 @@ bool CHMM::alloc_state_dependend_arrays()
 
 #ifdef LOG_SUMARRAY
 #ifdef PARALLEL
-	{
-		arrayS=new P_REAL[NUM_PARALLEL] ;	  
-		for (int i=0; i<NUM_PARALLEL; i++)
-			arrayS[i]=new REAL[(int)(this->N/2+1)];
-	} ;
+	for (int i=0; i<NUM_PARALLEL; i++)
+		arrayS[i]=new REAL[(int)(this->N/2+1)];
 #else //PARALLEL
 	arrayS=new REAL[(int)(this->N/2+1)];
 #endif //PARALLEL
@@ -256,6 +250,7 @@ bool CHMM::alloc_state_dependend_arrays()
 	transition_matrix_A=new REAL[this->N*this->N];
 	observation_matrix_B=new REAL[this->N*this->M];
 
+	set_observations(p_observations);
 
 	return ((transition_matrix_A != NULL) && (observation_matrix_B != NULL) && 
 			(transition_matrix_a != NULL) && (observation_matrix_b != NULL) && (initial_state_distribution_p != NULL) &&
@@ -328,6 +323,8 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 {
 	//yes optimistic
 	bool files_ok=true;
+	int i;
+
 	if  (M!=0)	
 	{
 		if (N>(1<<(8*sizeof(T_STATES))))
@@ -357,34 +354,19 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 	  
 
 #ifdef PARALLEL
-	{
 	  path_prob_updated=new bool[NUM_PARALLEL];
 	  path_prob_dimension=new int[NUM_PARALLEL];
 
-	  alpha_cache=new T_ALPHA_BETA[NUM_PARALLEL];
-	  beta_cache=new T_ALPHA_BETA[NUM_PARALLEL];
-	  states_per_observation_psi=new P_STATES[NUM_PARALLEL];
 	  path=new P_STATES[NUM_PARALLEL];
 
-	  for (int i=0; i<NUM_PARALLEL; i++)
-	    {
-	      this->alpha_cache[i].table=NULL;
-	      this->beta_cache[i].table=NULL;
-	      this->alpha_cache[i].dimension=0;
-	      this->beta_cache[i].dimension=0;
+	  for (i=0; i<NUM_PARALLEL; i++)
+	  {
 #ifndef NOVIT
-	      this->states_per_observation_psi[i]=NULL;
 	      this->path[i]=NULL;
 #endif // NOVIT
-	    } ;
-	} ;
+	  }
 #else // PARALLEL
-	this->alpha_cache.table=NULL;
-	this->beta_cache.table=NULL;
-	this->alpha_cache.dimension=0;
-	this->beta_cache.dimension=0;
 #ifndef NOVIT
-	this->states_per_observation_psi=NULL;
 	this->path=NULL;
 #endif //NOVIT
 
@@ -395,45 +377,19 @@ bool CHMM::initialize(int N, int M, int ORDER_, CModel* model,
 	//all the in out model and train files needed for io  ////!!!!!!!!!!!!!!!!
 	if (modelfile)
 		files_ok= files_ok && load_model(modelfile);
-	else
-	{
-		transition_matrix_a=new REAL[N*N];
-		observation_matrix_b=new REAL[N*M];	
-		initial_state_distribution_p=new REAL[N];
-		end_state_distribution_q=new REAL[N];
-		init_model_random();
-		convert_to_log();
-	}
 
 #ifdef PARALLEL
-	{
-	  arrayN1=new P_REAL[NUM_PARALLEL] ;
-	  arrayN2=new P_REAL[NUM_PARALLEL] ;
-	  for (int i=0; i<NUM_PARALLEL; i++)
-	    {
-	      arrayN1[i]=new REAL[this->N];
-	      arrayN2[i]=new REAL[this->N];
-	    }
-	} ;
-#else //PARALLEL
-	arrayN1=new REAL[this->N];
-	arrayN2=new REAL[this->N];
+	arrayN1=new P_REAL[NUM_PARALLEL];
+	arrayN2=new P_REAL[NUM_PARALLEL];
 #endif //PARALLEL
 
 #ifdef LOG_SUMARRAY
 #ifdef PARALLEL
-	{
-	  arrayS=new P_REAL[NUM_PARALLEL] ;	  
-	  for (int i=0; i<NUM_PARALLEL; i++)
-	    arrayS[i]=new REAL[(int)(this->N/2+1)];
-	} ;
-#else //PARALLEL
-	arrayS=new REAL[(int)(this->N/2+1)];
+	arrayS=new P_REAL[NUM_PARALLEL] ;	  
 #endif //PARALLEL
 #endif //LOG_SUMARRAY
-	transition_matrix_A=new REAL[this->N*this->N];
-	observation_matrix_B=new REAL[this->N*this->M];
 
+	alloc_state_dependend_arrays();
 
 	return	((files_ok) &&
 			(transition_matrix_A != NULL) && (observation_matrix_B != NULL) && 
