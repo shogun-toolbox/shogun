@@ -1315,6 +1315,12 @@ REAL CHMM::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 
 void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REAL *prob_nbest, INT *my_paths)
 {
+	if (nbest==1)
+	{
+		best_path_no_b_trans1(max_iter, max_best_iter, prob_nbest, my_paths) ;
+		return ;
+	} ;
+
 #define PSI(t,j,k) psi[nbest*((t)*N+(j))+(k)]	
 #define DELTA(j,k) delta[(j)*nbest+k]
 #define DELTA_NEW(j,k) delta_new[(j)*nbest+k]
@@ -1328,21 +1334,8 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 	INT *ktable=new INT[max_iter*N*nbest] ;
 	INT *ktable_ends=new INT[max_iter*nbest] ;
 
-#ifdef OSF1	
-	REAL** tempv=new (REAL**)[nbest] ;
-#else
-	REAL** tempv=new (REAL*)[nbest] ;
-#endif
-	for (INT i=0; i<nbest; i++)
-		tempv[i]= new REAL[N] ;
-
-#ifdef OSF1	
-	INT** tempi=new (INT**)[nbest] ;
-#else
-	INT** tempi=new (INT*)[nbest] ;
-#endif
-	for (INT i=0; i<nbest; i++)
-		tempi[i]= new INT[N] ;
+	REAL* tempvv=new REAL[nbest*N] ;
+	INT* tempii=new INT[nbest*N] ;
 
 	INT* path_ends = new INT[max_iter*nbest] ;
 	REAL* delta= new REAL[N*nbest] ;
@@ -1361,17 +1354,10 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 		}
 	}
 	
-//	for (INT i=0; i<N; i++)
-//		CIO::message("p[%i]=%1.3e\n ",i,get_p(i)) ;
-//	for (INT i=0; i<N; i++)
-//		CIO::message("q[%i]=%1.3e\n ",i,get_q(i)) ;
-	
 	// recursion
 	for (INT t=1; t<max_iter; t++)
 	{
 		REAL* dummy;
-//		for (INT j=0; j<NN; j++)
-//			CIO::message("delta[%i]=%1.3e\n ",j,delta[j]) ;
 
 		for (INT j=0; j<N; j++)
 		{
@@ -1379,39 +1365,35 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 			const INT *elem_list = trans_list_forward[j] ;
 			const REAL *elem_val = trans_list_forward_val[j] ;
 			
+			INT list_len=0 ;
 			for (INT diff=0; diff<nbest; diff++)
 			{
-				REAL* tv=tempv[diff] ;
-				INT* ti=tempi[diff] ;
 				for (INT i=0; i<num_elem; i++)
 				{
 					INT ii = elem_list[i] ;
 					
-					tv[i] = -(DELTA(ii,diff) + elem_val[i]) ;
-					ti[i] = ii ;
+					tempvv[list_len] = -(DELTA(ii,diff) + elem_val[i]) ;
+					tempii[list_len] = diff*N + ii ;
+					list_len++ ;
 				}
-				math.qsort(tv, ti, num_elem) ;
 			}
-
+			math.qsort(tempvv, tempii, list_len) ;
+			
 			for (INT k=0; k<nbest; k++)
 			{
-				DELTA_NEW(j,k)  = -math.INFTY ;
-				PSI(t,j,k)      = 0 ;
-				KTAB(t,j,k)     = 0 ;
-
-				for (INT q=0; (q<=k) && (q<num_elem); q++)
+				if (k<list_len)
 				{
-					if (-tempv[k-q][q]>DELTA_NEW(j,k))
-					{
-						DELTA_NEW(j,k)= -tempv[k-q][q] ;
-						PSI(t,j,k)    = tempi[k-q][q] ;
-						KTAB(t,j,k)   = q ;
-					} ;
+					DELTA_NEW(j,k)  = -tempvv[k] ;
+					PSI(t,j,k)      = (tempii[k]%N) ;
+					KTAB(t,j,k)     = (tempii[k]-(tempii[k]%N))/N ;
 				}
-				
-				//CIO::message("-- %i %e\n", tempi[0], -tempv[0]) ;
+				else
+				{
+					DELTA_NEW(j,k)  = -math.INFTY ;
+					PSI(t,j,k)      = 0 ;
+					KTAB(t,j,k)     = 0 ;
+				}
 			}
-			
 		}
 		
 		dummy=delta;
@@ -1419,41 +1401,23 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 		delta_new=dummy;	//switch delta/delta_new
 		
 		{ //termination
+			INT list_len = 0 ;
 			for (INT diff=0; diff<nbest; diff++)
 			{
-				REAL* tv=tempv[diff] ;
-				INT* ti=tempi[diff] ;
-
 				for (INT i=0; i<N; i++)
 				{
-					tv[i] = -(DELTA(i,diff)+get_q(i));
-					ti[i] = i ;
+					tempvv[list_len] = -(DELTA(i,diff)+get_q(i));
+					tempii[list_len] = diff*N + i ;
+					list_len++ ;
 				}
-				math.qsort(tv,ti, N) ;
 			}
+			math.qsort(tempvv, tempii, list_len) ;
 			
 			for (INT k=0; k<nbest; k++)
 			{
-				REAL new_DELTA_END = -math.INFTY ;
-				INT new_PATH_ENDS = N-1 ;
-				INT new_KTAB_ENDS = 0 ;
-				
-				for (INT q=0; ((q<=k) && (q<N)); q++)
-				{
-					const INT diff = k-q ;
-					const REAL* tv=tempv[diff] ;
-					const INT*  ti=tempi[diff] ;
-
-					if (-tv[q]>new_DELTA_END)
-					{
-						new_DELTA_END = -tv[q] ;
-						new_PATH_ENDS = ti[q] ;
-						new_KTAB_ENDS = q ;
-					} ;
-				} ;
-				DELTA_END(t-1,k) = new_DELTA_END ;
-				PATH_ENDS(t-1,k) = new_PATH_ENDS ;
-				KTAB_ENDS(t-1,k) = new_KTAB_ENDS ;
+				DELTA_END(t-1,k) = -tempvv[k] ;
+				PATH_ENDS(t-1,k) = (tempii[k]%N) ;
+				KTAB_ENDS(t-1,k) = (tempii[k]-(tempii[k]%N))/N ;
 			}
 		}
 	}
@@ -1461,17 +1425,12 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 	{ //state sequence backtracking
 		max_best_iter=0 ;
 		
-		/*for (INT iter=0; iter<max_iter-1; iter++)
-			for (INT k=0; k<nbest; k++)
-			CIO::message("delta_end(%i,%i)=%e\n", iter,k,DELTA_END(iter,k)) ;*/
-
 		REAL* sort_delta_end=new REAL[max_iter*nbest] ;
 		INT* sort_k=new INT[max_iter*nbest] ;
 		INT* sort_t=new INT[max_iter*nbest] ;
 		INT* sort_idx=new INT[max_iter*nbest] ;
-		INT i=0 ;
 		
-		//fprintf(stdout, "path_probs = [") ;
+		INT i=0 ;
 		for (INT iter=0; iter<max_iter-1; iter++)
 			for (INT k=0; k<nbest; k++)
 			{
@@ -1479,19 +1438,18 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 				sort_k[i]=k ;
 				sort_t[i]=iter+1 ;
 				sort_idx[i]=i ;
-				//if (DELTA_END(iter,k)>-1e5)
-				//fprintf(stdout, "%1.3f\n", -DELTA_END(iter,k)) ;
 				i++ ;
 			}
-		//fprintf(stdout, "]\n") ;
 		
 		math.qsort(sort_delta_end, sort_idx, (max_iter-1)*nbest) ;
+
+		//for (INT j=0; j<i; j++)
+		//fprintf(stdout, "%1.2f  %i %i\n", sort_delta_end[j], sort_k[sort_idx[j]], sort_t[sort_idx[j]]) ;
 		
 		for (INT n=0; n<nbest; n++)
 		{
 			INT k=sort_k[sort_idx[n]], iter=sort_t[sort_idx[n]] ;
 			prob_nbest[n]=-sort_delta_end[n] ;
-			//CIO::message("bestprob[%i]=%e k=%i t=%i\n", n, prob_nbest[n], k, iter) ;
 
 			if (iter>max_best_iter)
 				max_best_iter=iter ;
@@ -1500,21 +1458,18 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 			assert(iter<max_iter) ;
 			
 			PATHS(iter,n) = PATH_ENDS(iter-1, k) ;
-			INT q = k-KTAB_ENDS(iter-1,k) ;
-			//CIO::message("n=%i q=%i  p[%i]=%i\n", n, q, iter, PATHS(iter,n)) ;
+			INT q         = KTAB_ENDS(iter-1, k) ;
 			
 			for (INT t = iter; t>0; t--)
 			{
-				//CIO::message("%i=PSI(%i,%i,%i)\n", PSI(t, PATHS(t,n), q), t,  PATHS(t,n), q) ;
 				PATHS(t-1,n)=PSI(t, PATHS(t,n), q);
-				q -= KTAB(t, PATHS(t,n), q) ;
-				//CIO::message("n=%i q=%i  p[%i]=%i\n", n, q, t-1, PATHS(t-1,n)) ;
+				q = KTAB(t, PATHS(t,n), q) ;
+
+				assert(q>=0) ;
+				assert(q<nbest) ;
+				assert(PATHS(t-1,n)>=0) ;
+				assert(PATHS(t-1,n)<N) ;
 			}
-			if ((q!=0) && (prob_nbest[n]>-math.INFTY/2))
-			{
-				CIO::message("k=%i q=%i\n", k,q) ;
-				assert(q==0) ;
-			} ;
 		}
 		delete[] sort_delta_end ;
 		delete[] sort_k ;
@@ -1524,16 +1479,113 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 
 	delete[] delta ;
 	delete[] delta_new ;
-	for (INT i=0; i<nbest; i++)
-	{
-		delete[] tempv[i] ;
-		delete[] tempi[i] ;
-	}
-	delete[] tempv ;
-	delete[] tempi ;
+	delete[] tempvv ;
+	delete[] tempii ;
 	delete[] psi ;
 	delete[] ktable;
 	delete[] ktable_ends;
+	delete[] path_ends ;
+	delete[] delta_end ;
+}
+
+
+void CHMM::best_path_no_b_trans1(INT max_iter, INT &max_best_iter, REAL *prob, INT *my_path)
+{
+	T_STATES *psi=new T_STATES[max_iter*N] ;
+
+	REAL* tempvv=new REAL[N] ;
+	INT* tempii=new INT[N] ;
+
+	INT* path_ends = new INT[max_iter] ;
+	REAL* delta= new REAL[N] ;
+	REAL* delta_new= new REAL[N] ;
+	REAL* delta_end= new REAL[max_iter] ;
+
+	{ // initialization
+		for (INT i=0; i<N; i++)
+		{
+			delta[i] = get_p(i) ;
+		}
+	}
+	
+	// recursion
+	for (INT t=1; t<max_iter; t++)
+	{
+		REAL* dummy;
+
+		for (INT j=0; j<N; j++)
+		{
+			const INT num_elem   = trans_list_forward_cnt[j] ;
+			const INT *elem_list = trans_list_forward[j] ;
+			const REAL *elem_val = trans_list_forward_val[j] ;
+			
+			INT list_len=0 ;
+			for (INT i=0; i<num_elem; i++)
+			{
+				INT ii = elem_list[i] ;
+				tempvv[list_len] = -(delta[ii] + elem_val[i]) ;
+				tempii[list_len] = ii ;
+				list_len++ ;
+			}
+			math.qmin(tempvv, tempii, list_len) ;
+			
+			delta_new[j]  = -tempvv[0] ;
+			psi[t*N+j]    = tempii[0] ;
+		}
+		
+		dummy=delta;
+		delta=delta_new;
+		delta_new=dummy;	//switch delta/delta_new
+		
+		{ //termination
+			INT list_len = 0 ;
+			for (INT i=0; i<N; i++)
+			{
+				tempvv[list_len] = -(delta[i]+get_q(i));
+				tempii[list_len] = i ;
+				list_len++ ;
+			}
+			math.qmin(tempvv, tempii, list_len) ;
+			
+			delta_end[t-1] = -tempvv[0] ;
+			path_ends[t-1] = tempii[0] ;
+		}
+	}
+	
+	{ //state sequence backtracking
+		max_best_iter=0 ;
+		
+		REAL* sort_delta_end=new REAL[max_iter] ;
+		INT* sort_t=new INT[max_iter] ;
+		
+		INT i=0 ;
+		for (INT iter=0; iter<max_iter-1; iter++)
+		{
+			sort_delta_end[i]=-delta_end[iter] ;
+			sort_t[i]=iter+1 ;
+			i++ ;
+		}
+		math.qmin(sort_delta_end, sort_t, max_iter-1) ;
+
+		INT iter=sort_t[0] ;
+		prob[0]=-sort_delta_end[0] ;
+			
+		max_best_iter=iter ;
+		assert(iter<max_iter) ;
+			
+		my_path[iter] = path_ends[iter-1] ;
+		for (INT t = iter; t>0; t--)
+			my_path[t-1]=psi[t*N + my_path[t]];
+		
+		delete[] sort_delta_end ;
+		delete[] sort_t ;
+	} ;
+
+    delete[] delta ;
+	delete[] delta_new ;
+	delete[] tempvv ;
+	delete[] tempii ;
+	delete[] psi ;
 	delete[] path_ends ;
 	delete[] delta_end ;
 }
