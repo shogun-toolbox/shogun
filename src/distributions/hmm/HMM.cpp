@@ -1332,7 +1332,7 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 	for (INT i=0; i<nbest; i++)
 		tempv[i]= new REAL[N] ;
 
-	INT* tempi[nbest] ;
+	INT* tempi=new INT[nbest] ;
 	for (INT i=0; i<nbest; i++)
 		tempi[i]= new INT[N] ;
 
@@ -1457,10 +1457,10 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 			for (INT k=0; k<nbest; k++)
 			CIO::message("delta_end(%i,%i)=%e\n", iter,k,DELTA_END(iter,k)) ;*/
 
-		REAL sort_delta_end[max_iter*nbest] ;
-		INT sort_k[max_iter*nbest] ;
-		INT sort_t[max_iter*nbest] ;
-		INT sort_idx[max_iter*nbest] ;
+		REAL sort_delta_end=new REAL[max_iter*nbest] ;
+		INT sort_k=new INT[max_iter*nbest] ;
+		INT sort_t=new INT[max_iter*nbest] ;
+		INT sort_idx=new INT[max_iter*nbest] ;
 		INT i=0 ;
 		
 		for (INT iter=0; iter<max_iter-1; iter++)
@@ -1512,13 +1512,17 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, INT nbest, REA
 		delete[] tempv[i] ;
 		delete[] tempi[i] ;
 	}
-	
+	delete[] tempv ;
+	delete[] tempi ;
 	delete[] psi ;
 	delete[] ktable;
 	delete[] ktable_ends;
 	delete[] path_ends ;
 	delete[] delta_end ;
-	
+	delete[] sort_delta_end ;
+	delete[] sort_k ;
+	delete[] sort_t ;
+	delete[] sort_idx ;
 }
 
 
