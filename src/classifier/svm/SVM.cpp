@@ -7,7 +7,8 @@
 
 CSVM::CSVM()
 {
-	C=-1;
+	C1=-1;
+	C2=-1;
 	CKernelMachine::kernel=NULL;
 	svm_loaded=false;
 	svm_model.b=0.0;

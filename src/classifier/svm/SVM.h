@@ -17,8 +17,10 @@ class CSVM : public CKernelMachine
 		bool load(FILE* svm_file);
 		bool save(FILE* svm_file);
 
-		inline void set_C(REAL c) { C=c; }
-		REAL get_C() { return C; }
+		inline void set_C(REAL c1, REAL c2) { C1=c1; C2=c2; }
+
+		REAL get_C1() { return C1; }
+		REAL get_C2() { return C2; }
 
 		inline int get_support_vector(int idx)
 		{
@@ -103,6 +105,7 @@ class CSVM : public CKernelMachine
 		TModel svm_model;
 		bool svm_loaded;
 
-		REAL C;
+		REAL C1;
+		REAL C2;
 };
 #endif

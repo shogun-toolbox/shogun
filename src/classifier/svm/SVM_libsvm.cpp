@@ -188,12 +188,9 @@ public:
 	{
 		return kernel->kernel(x[i]->index,x[j]->index);
 	}
-protected:
-
-	CKernel* kernel;
-
 
 private:
+	CKernel* kernel;
 	const svm_node **x;
 	double *x_square;
 

@@ -53,7 +53,7 @@ bool CSVMLight::train()
   learn_parm->svm_maxqpsize=50;
   learn_parm->svm_newvarsinqp=0;
   learn_parm->svm_iter_to_shrink=100;
-  learn_parm->svm_c=C;
+  learn_parm->svm_c=C1;
   learn_parm->transduction_posratio=0.5;
   learn_parm->svm_costratio=1.0;
   learn_parm->svm_costratio_unlab=1.0;

@@ -331,7 +331,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 			if (strcmp(data_type,"CHAR")==0)
 			{
 				INT d=3;
-				INT max_mismatch = 0 ;
+				INT max_mismatch = 0;
 				INT i=0;
 
 				sscanf(param, "%s %s %d %d %d", kern_type, data_type, &size, &d, &max_mismatch);
@@ -352,22 +352,14 @@ bool CGUIKernel::set_kernel(CHAR* param)
 					{
 						if (j<i+1)
 						{
-							INT nk=math.nchoosek(i+1, j) ;
-							weights[i+j*d]=weights[i]/(nk*pow(3,j)) ;
+							INT nk=math.nchoosek(i+1, j);
+							weights[i+j*d]=weights[i]/(nk*pow(3,j));
 						}
 						else
 							weights[i+j*d]= 0;
 						
-					} ;
-				} ;
-				/*for (i=0; i<d; i++)
-				{
-					for (INT j=0; j<=max_mismatch; j++)
-					{
-						CIO::message("%1.3f  ", weights[i+j*d]) ;
 					}
-					CIO::message("\n") ;
-					} ;*/
+				}
 				
 				delete kernel;
 				kernel=new CWeightedDegreeCharKernel(size, weights, d, max_mismatch);

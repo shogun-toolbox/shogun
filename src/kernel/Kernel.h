@@ -53,6 +53,9 @@ class CKernel
 		// return the name of a kernel
 		virtual const CHAR* get_name()=0 ;
 
+		// return the size of the kernel cache
+		int get_cache_size() { return cache_size; }
+
 		void get_kernel_row(LONG docnum, LONG *active2dnum, REAL *buffer) ;
 		void cache_kernel_row(LONG x);
 		void cache_multiple_kernel_rows(LONG* key, LONG varnum);

@@ -108,9 +108,9 @@ bool CGUISVM::train(CHAR* param)
 		return 0;
 	}
 
-	CIO::message("starting svm training on %ld vectors using C=%lf\n", trainlabels->get_num_labels(), C) ;
+	CIO::message("starting svm training on %ld vectors using C1=%lf C2=%lf\n", trainlabels->get_num_labels(), C1, C2) ;
 
-	svm->set_C(C);
+	svm->set_C(C1, C2);
 	((CKernelMachine*) svm)->set_labels(trainlabels);
 	((CKernelMachine*) svm)->set_kernel(kernel);
 	return svm->train();
@@ -195,7 +195,6 @@ bool CGUISVM::test(CHAR* param)
 	INT total=	testfeatures->get_num_vectors();
 	INT* label= testlabels->get_int_labels(len);
 
-	CIO::message("out !!! %ld %ld\n", total, len);
 	assert(label);
 	assert(len==total);
 
@@ -280,8 +279,17 @@ bool CGUISVM::set_C(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
-	sscanf(param, "%le", &C) ;
-	CIO::message("Set to C=%f\n", C) ;
+	C1=-1;
+	C2=-1;
+
+	sscanf(param, "%le %le", &C1, &C2) ;
+
+	if (C1<0)
+		C1=1.0;
+	if (C2<0)
+		C2=C1;
+
+	CIO::message("Set to C1=%f C2=%f\n", C1, C2) ;
 	return true ;  
 }
 

@@ -39,21 +39,26 @@ bool CLibSVM::train()
 		x_space[2*i+1].index=-1;
 	}
 
+	int weights_label[2]={-1,+1};
+	double weights[2]={get_C1(),get_C2()};
+
+	assert(get_kernel());
+
 	param.svm_type=C_SVC; // C SVM
 	param.kernel_type = LINEAR;
 	param.degree = 3;
 	param.gamma = 0;	// 1/k
 	param.coef0 = 0;
 	param.nu = 0.5;
-	param.cache_size = 100;
-	param.C = 1;
+	param.kernel=get_kernel();
+	param.cache_size = get_kernel()->get_cache_size();
+	param.C = 1.0;
 	param.eps = 1e-6;
 	param.p = 0.1;
-	param.shrinking = 0;
-	param.nr_weight = 0;
-	param.weight_label = NULL;
-	param.weight = NULL;
-	param.kernel=get_kernel();
+	param.shrinking = 1;
+	param.nr_weight = 2;
+	param.weight_label = weights_label;
+	param.weight = weights;
 
 	const char* error_msg = svm_check_parameter(&problem,&param);
 

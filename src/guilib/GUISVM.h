@@ -27,6 +27,7 @@ public:
  protected:
 	CGUI* gui;
 	CSVM* svm;
-	double C;
+	double C1;
+	double C2;
 };
 #endif
