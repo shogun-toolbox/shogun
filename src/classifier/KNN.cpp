@@ -75,7 +75,7 @@ REAL* CKNN::test()
 
 		//sort the distance vector for test example j to all train examples
 		//classes[1..k] then holds the classes for minimum distance
-		math.qsort(dists, classes, num_train_labels);
+		math.qsort(dists, train_lab, num_train_labels);
 
 		//compute histogram of class outputs
 		for (j=0; j<num_classes; j++)
