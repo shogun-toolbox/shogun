@@ -41,7 +41,15 @@ bool CGUIPreProc::set_preproc(char* param)
 	else if (strncmp(param,"PRUNEVARSUBMEAN",15)==0)
 	{
 		delete preproc;
-		preproc=new CPruneVarSubMean();
+		int divide_by_std=0; 
+		sscanf(param+15, "%i", &divide_by_std);
+
+		if (divide_by_std)
+			CIO::message("normalizing VARIANCE\n");
+		else
+			CIO::message("NOT normalizing VARIANCE\n");
+
+		preproc=new CPruneVarSubMean(divide_by_std==1);
 		return true;
 	}
 	else if (strncmp(param,"NONE",4)==0)
