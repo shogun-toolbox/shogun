@@ -21,33 +21,33 @@ CBinSeqFeatures::~CBinSeqFeatures()
   neg=pos=NULL ;
 } ;
 
-int CBinSeqFeatures::get_label(int idx) 
+int CBinSeqFeatures::get_label(long idx) 
 {
   if (idx<pos->get_DIMENSION())
     return 1;
   return -1 ;
 } ;
 
-int CBinSeqFeatures::get_number_of_examples() 
+long CBinSeqFeatures::get_number_of_examples() 
 {
   return num_vectors ;
 } ;
 
-void CBinSeqFeatures::compute_feature_vector(int num, short int* feat)
+void CBinSeqFeatures::compute_feature_vector(long num, short int* feat)
 {
-  int num_pos=pos->get_DIMENSION() ;
+  long num_pos=pos->get_DIMENSION() ;
   if (num<num_pos)
     {
       assert(pos!=NULL) ;
       assert(pos->get_obs_T(num)==num_features) ;
-      for (int i=0; i<num_features; i++)
+      for (long i=0; i<num_features; i++)
 	feat[i]=pos->get_obs(num, i) ;
     } 
   else
     {
       assert(neg!=NULL) ;
       assert(neg->get_obs_T(num-num_pos)==num_features) ;
-      for (int i=0; i<num_features; i++)
+      for (long i=0; i<num_features; i++)
 	feat[i]=neg->get_obs(num-num_pos, i) ;
     } ;
 } ;

@@ -24,7 +24,7 @@ CPreProc* CFeatures::get_preproc()
   return preproc;
 }
 
-int* CFeatures::get_labels(int &len)
+int* CFeatures::get_labels(long &len)
 {
   len=get_number_of_examples() ;
   int* labels=new int[len] ;

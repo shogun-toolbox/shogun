@@ -39,15 +39,15 @@ public:
 	bool preproc_feature_matrix();
 
 	/// set/get the labels
-	virtual bool set_label(int idx, int label) { return false ; }
-	virtual int  get_label(int idx)=0 ;
+	virtual bool set_label(long idx, int label) { return false ; }
+	virtual int  get_label(long idx)=0 ;
 	
 	/// get label vector
 	/// caller has to clean up
-	int* get_labels(int &len) ;
+	int* get_labels(long &len) ;
 
 	/// return the number of samples
-	virtual int get_number_of_examples()=0 ;
+	virtual long get_number_of_examples()=0 ;
 	
 protected:
 	/// Preprocessor

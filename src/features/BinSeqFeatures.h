@@ -11,13 +11,13 @@ class CBinSeqFeatures: public CShortFeatures
   CBinSeqFeatures(CObservation *pos, CObservation *neg) ;
   virtual ~CBinSeqFeatures() ;
 
-  virtual int get_label(int idx) ;
-  virtual int get_number_of_examples() ;
+  virtual int get_label(long idx) ;
+  virtual long get_number_of_examples() ;
   
 protected:
   /// compute feature vector for sample num
   /// len is returned by reference
-  virtual void compute_feature_vector(int num, short int* feat);
+  virtual void compute_feature_vector(long num, short int* feat);
 
   CObservation *pos,*neg ;
 };
