@@ -69,23 +69,6 @@ bool CGUIHMM::new_hmm(CHAR* param)
 	return false;
 }
 
-void fixed_descent(CHMM* pos, REAL step_size, REAL beta)  ;
-
-bool CGUIHMM::gradient_step(CHAR* param)
-{
-	param=CIO::skip_spaces(param);
-
-	double step_size, beta;
-	if (sscanf(param, "%le %le", &step_size, &beta) == 2)
-	{
-		fixed_descent(working, step_size, beta) ;
-	}
-	else
-		CIO::message(M_ERROR, "see help for parameters\n");
-
-	return false;
-}
-
 bool CGUIHMM::baum_welch_train(CHAR* param)
 {
 	CHAR templname[]=TMP_DIR "bw_model_XXXXXX" ;

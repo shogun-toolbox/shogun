@@ -28,10 +28,6 @@ CHistogram* h;
 #include <libmmfile.h>
 #endif // WITHMATLAB
 
-#ifdef USE_SVMMPI
-#include "svm_mpi/mpi_base.h"
-#endif
-
 const INT READLINE_BUFFER_SIZE = 10000 ;
 
 //names of menu commands
@@ -118,7 +114,6 @@ static const CHAR* N_ONE_CLASS_HMM_TEST=	"one_class_hmm_test";
 static const CHAR* N_HMM_TEST=			"hmm_test";
 static const CHAR* N_HMM_CLASSIFY=		"hmm_classify";
 static const CHAR* N_SET_OUTPUT=		"set_output";
-static const CHAR* N_GRADIENT_STEP=		"do_grad_step";
 static const CHAR* N_SET_REF_FEAT=              "set_ref_features" ;
 static const CHAR* N_TIC=              "tic" ;
 static const CHAR* N_TOC=              "toc" ;
@@ -128,12 +123,6 @@ CTextGUI::CTextGUI(INT argc, const CHAR** argv)
 {
 #ifdef WITHMATLAB
 	libmmfileInitialize() ;
-#endif
-
-#ifdef USE_SVMMPI
-	CMPIBase::svm_mpi_init(argc, argv) ;
-#else
-	CIO::message(M_ERROR, "undef'd MPI\n");
 #endif
 
 	CIO::message(M_DEBUG, "HMM uses %i separate tables\n", guihmm.get_number_of_tables()) ;
@@ -147,18 +136,13 @@ CTextGUI::~CTextGUI()
 	libmmfileTerminate() ;
 #endif
 
-#ifdef USE_SVMMPI
-#if  defined(HAVE_MPI) && !defined(DISABLE_MPI)
-	CMPIBase::svm_mpi_destroy() ;
-#endif
-#endif
 }
 
 void CTextGUI::print_help()
 {
 	CIO::message(M_MESSAGEONLY, "\n[LOAD]\n");
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename> <LINEAR|MPI|CPLEX>\t- load svm\n",N_LOAD_SVM);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename> <LINEAR|CPLEX>\t- load svm\n",N_LOAD_SVM);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename>\t- load kernel init data\n",N_LOAD_KERNEL_INIT);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename> <SIMPLE|SPARSE|STRING> <REAL|SHORT|BYTE|CHAR> <TRAIN|TEST> [<CACHE SIZE> [0|1]]\t- load features\n",N_LOAD_FEATURES);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename> <TRAIN|TEST> \t- load labels\n",N_LOAD_LABELS);
@@ -208,7 +192,7 @@ void CTextGUI::print_help()
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m  <TRAIN|TEST> <STRING|SPARSE|SIMPLE> <REAL|CHAR|WORD|..> <STRING|...> <REAL|TOP..> ...\t\t\t- convert from feature class/type to class/type\n", N_CONVERT);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <TRAIN|TEST> [<0|1>] - attach the preprocessors to the current feature object, if available it will preprocess the feature_matrix, 1 to force preprocessing of already processed\n",N_ATTACH_PREPROC);
 	CIO::message(M_MESSAGEONLY, "\n[CLASSIFIER]\n");
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <LIGHT|CPLEX|MPI> - creates SVM of type LIGHT,CPLEX or MPI\n",N_NEW_SVM);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t <LIGHT|LIBSVM> - creates SVM of type LIGHT or LIBSVM\n",N_NEW_SVM);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [epsilon-value]\t\t\t- changes svm-epsilon value\n", N_SVM_EPSILON);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [epsilon-value C-lp]\t\t\t- changes mkl parameters\n", N_MKL_PARAMETERS);
@@ -653,10 +637,6 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_MKL_PARAMETERS, strlen(N_MKL_PARAMETERS)))
 	{
 		guisvm.set_mkl_parameters(input+strlen(N_MKL_PARAMETERS));
-	} 
-	else if (!strncmp(input, N_GRADIENT_STEP, strlen(N_GRADIENT_STEP)))
-	{
-     	        guihmm.gradient_step(input+strlen(N_GRADIENT_STEP)) ;
 	} 
 	else if (!strncmp(input, N_TIC, strlen(N_TIC)))
 	{

@@ -53,7 +53,6 @@ public:
 	inline CHMM* get_current() { return working; }
 	inline REAL get_pseudo() { return PSEUDO; }
 	inline INT get_number_of_tables() { return number_of_hmm_tables; }
-	bool gradient_step(CHAR* param) ;
 
 	CLabels* classify(CLabels* output=NULL);
 	REAL classify_example(INT idx);

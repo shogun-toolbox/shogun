@@ -5,12 +5,7 @@
 #include "features/Labels.h"
 
 #include "classifier/svm/SVM_light.h"
-#include "classifier/svm_cplex/SVM_cplex.h"
 #include "classifier/svm/LibSVM.h"
-
-#ifdef USE_SVMMPI
-#include "classifier/svm_mpi/mpi_oneclass.h"
-#endif
 
 #include <assert.h>
 
@@ -52,36 +47,6 @@ bool CGUISVM::new_svm(CHAR* param)
 		delete svm;
 		svm= new CLibSVM();
 		CIO::message(M_INFO, "created SVMlibsvm object\n") ;
-	}
-	else if (strcmp(param,"CPLEX")==0)
-	{
-#ifdef SVMCPLEX
-		delete svm;
-		svm= new CSVMCplex();
-		CIO::message(M_INFO, "created SVMCplex object\n") ;
-#else
-		CIO::message(M_ERROR, "CPLEX SVM disabled\n") ;
-#endif
-	}
-	else if (strcmp(param,"MPI")==0)
-	{
-#ifdef USE_SVMMPI
-		delete svm;
-		svm= new CSVMMPI();
-		CIO::message(M_INFO, "created SVMMPI object\n") ;
-#else
-		CIO::message(M_ERROR, "MPI SVM disabled\n") ;
-#endif
-	}
-	else if (strcmp(param,"ONECLASS")==0)
-	{
-#ifdef USE_SVMMPI
-		delete svm;
-		svm= new COneClassMPI();
-		CIO::message(M_INFO, "created OneClassMPI object\n") ;
-#else
-		CIO::message(M_ERROR, "MPI OneClass SVM disabled\n") ;
-#endif
 	}
 	else
 		return false;
