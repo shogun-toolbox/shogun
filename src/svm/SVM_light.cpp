@@ -21,15 +21,24 @@ CSVMLight::~CSVMLight()
 
 bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 {
+	delete[] docs;
+	delete[] label;
+	docs=NULL;
+	label=NULL;
+	free(mymodel.supvec);
+	free(mymodel.alpha);
+	free(mymodel.index);
+	memset(&mymodel, 0x0, sizeof(MODEL));
+	memset(&mymodel, 0x0, sizeof(MODEL));
+	memset(&mykernel_cache, 0x0, sizeof(KERNEL_CACHE));
+	memset(&mylearn_parm, 0x0, sizeof(LEARN_PARM));
+	memset(&mykernel_parm, 0x0, sizeof(KERNEL_PARM));
+
 	int totdoc=train->get_DIMENSION();
 
-	DOC* docs=new DOC[totdoc];  /* training examples */
-	long* label=new long[totdoc];
+	docs=new DOC[totdoc];  /* training examples */
+	label=new long[totdoc];
 	char str[1024];
-
-	KERNEL_CACHE mykernel_cache;
-	LEARN_PARM mylearn_parm;
-	KERNEL_PARM mykernel_parm;
 
 	if (kernel_type==4) // standard hmm+svm
 	{
@@ -89,12 +98,6 @@ bool CSVMLight::svm_train(CObservation* train, int kernel_type, double C)
 	if (kernel_type==6)
 	    mymodel.kernel_parm.kernel_type=4;
 	
-	//free(model.supvec);
-	//free(model.alpha);
-	//free(model.index);
-
-	//delete[] docs;
-	//delete[] label;
 
 	return true;
 }
@@ -243,12 +246,6 @@ bool CSVMLight::load_svm(FILE* modelfl, CObservation* test)
 bool CSVMLight::save_svm(FILE* modelfl)
 {
   write_model(modelfl,&mymodel);
-	//free(mymodel.supvec);
-	//free(mymodel.alpha);
-	//free(mymodel.index);
-	//memset(&mymodel, 0x0, sizeof(MODEL));
-	//delete[] docs;
-	//delete[] label;
   return true ;
 } 
 
@@ -264,7 +261,6 @@ double CSVMLight::classify_example(MODEL *model,DOC *ex) /* classifies example *
   }
   return(dist-model->b);
 }
-
 
 /* compute length of weight vector */
 double CSVMLight::model_length_s(MODEL *model, KERNEL_PARM *kernel_parm)

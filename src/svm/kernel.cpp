@@ -130,8 +130,8 @@ double linear_top_kernel(KERNEL_PARM *kernel_parm, DOC* a, DOC* b) /* plug in yo
 		for (int i=0; i<pos->get_N(); i++)
 		{
 		    if (*obs_x==*obs_y)
-			result+=(exp(-pos->get_b(i, *obs_x))-exp(-neg->get_b(i, *obs_x)))*
-			    (exp(-pos->get_b(i, *obs_y))-exp(-neg->get_b(i, *obs_y)));
+			result+= (exp(-pos->get_b(i, *obs_x)-pos->get_b(i, *obs_y))) + 
+			         (exp(-neg->get_b(i, *obs_x)-neg->get_b(i, *obs_y)));
 		    obs_x++;
 		    obs_y++;
 		}
