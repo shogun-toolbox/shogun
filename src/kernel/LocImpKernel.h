@@ -23,6 +23,10 @@ class CLocImpKernel: public CKernel
     void dot_pyr (double* dpt, const short int* const data1,
 		  const short int* const data2, const int num1,
 		  const int num2) ;
+	
+	/// load and save kernel init_data
+	virtual bool load_init(FILE* src);
+	virtual bool save_init(FILE* dest);
 
  protected:
     int width, degree1, degree2 ;

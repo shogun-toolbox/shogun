@@ -170,3 +170,13 @@ void CLocImpKernel::dot_pyr (double* dpt,
       x1 += NOF_NTS;
    }
 }
+
+bool CLocImpKernel::load_init(FILE* src)
+{
+	return false;
+}
+
+bool CLocImpKernel::save_init(FILE* dest)
+{
+	return false;
+}

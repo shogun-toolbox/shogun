@@ -26,6 +26,8 @@ static const char* N_LOAD_HMM=			"load_hmm";
 static const char* N_SAVE_HMM=			"save_hmm";
 static const char* N_LOAD_SVM=			"load_svm";
 static const char* N_SAVE_SVM=			"save_svm";
+static const char* N_LOAD_KERNEL_INIT=	"load_kernel_init";
+static const char* N_SAVE_KERNEL_INIT=	"save_kernel_init";
 static const char* N_LOAD_FEATURES=		"load_features";
 static const char* N_SAVE_FEATURES=		"save_features";
 static const char* N_SAVE_HMM_BIN=		"save_hmm_bin";
@@ -124,6 +126,7 @@ void CTextGUI::print_help()
    CIO::message("\n[LOAD]\n");
    CIO::message("\033[1;31m%s\033[0m <filename>\t- load hmm\n",N_LOAD_HMM);
    CIO::message("\033[1;31m%s\033[0m <filename> <LINEAR|MPI|CPLEX>\t- load svm\n",N_LOAD_SVM);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- load kernel init data\n",N_LOAD_KERNEL_INIT);
    CIO::message("\033[1;31m%s\033[0m <filename> <REAL|SHORT|STRING> <TRAIN|TEST> [<CACHE SIZE> [0|1]]\t- load features\n",N_LOAD_FEATURES);
    CIO::message("\033[1;31m%s\033[0m <filename>\t- load preproc init data\n",N_LOAD_PREPROC);
 //   CIO::message("\033[1;31m%s\033[0m <filename> [initialize=1]\t- load hmm defs\n",N_LOAD_DEFINITIONS);
@@ -131,6 +134,7 @@ void CTextGUI::print_help()
    CIO::message("\n[SAVE]\n");
    CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm\n",N_SAVE_HMM);
    CIO::message("\033[1;31m%s\033[0m <filename>\t- save svm\n",N_SAVE_SVM);
+   CIO::message("\033[1;31m%s\033[0m <filename>\t- save kernel init data\n",N_SAVE_KERNEL_INIT);
    CIO::message("\033[1;31m%s\033[0m <filename>\t- save preproc init data\n",N_SAVE_PREPROC);
    CIO::message("\033[1;31m%s\033[0m <filename> <TRAIN|TEST>\t- save features\n",N_SAVE_FEATURES);
 //   CIO::message("\033[1;31m%s\033[0m <filename>\t- save hmm in binary format\n",N_SAVE_HMM_BIN);
@@ -258,6 +262,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
     {
 	guisvm.load(input+strlen(N_LOAD_SVM));
     } 
+    else if (!strncmp(input, N_LOAD_KERNEL_INIT, strlen(N_LOAD_KERNEL_INIT)))
+    {
+	guikernel.load_kernel_init(input+strlen(N_LOAD_KERNEL_INIT));
+    } 
     else if (!strncmp(input, N_SET_HMM_AS, strlen(N_SET_HMM_AS)))
     {
 	guihmm.set_hmm_as(input+strlen(N_SET_HMM_AS));
@@ -281,6 +289,10 @@ bool CTextGUI::get_line(FILE* infile, bool show_prompt)
     else if (!strncmp(input, N_SAVE_SVM, strlen(N_SAVE_SVM)))
     {
 	guisvm.save(input+strlen(N_SAVE_SVM)) ;
+    } 
+    else if (!strncmp(input, N_SAVE_KERNEL_INIT, strlen(N_SAVE_KERNEL_INIT)))
+    {
+	guikernel.save_kernel_init(input+strlen(N_SAVE_KERNEL_INIT)) ;
     } 
     else if (!strncmp(input, N_LOAD_DEFINITIONS, strlen(N_LOAD_DEFINITIONS)))
     {

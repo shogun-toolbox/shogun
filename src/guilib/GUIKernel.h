@@ -13,6 +13,8 @@ class CGUIKernel
 
 	CKernel* get_kernel();
 	bool set_kernel(char* param);
+	bool load_kernel_init(char* param);
+	bool save_kernel_init(char* param);
 
  protected:
 	CKernel* kernel;

@@ -43,3 +43,47 @@ bool CGUIKernel::set_kernel(char* param)
 		CIO::message("see help for params!\n");
 	return false;
 }
+
+bool CGUIKernel::load_kernel_init(char* param)
+{
+	bool result=false;
+	if (kernel)
+	{
+		FILE* file=fopen(param, "r");
+		if ((!file) || (!kernel->load_init(file)))
+			CIO::message("reading from file %s failed!\n", param);
+		else
+		{
+			CIO::message("successfully read kernel init data from \"%s\" !\n", param);
+			result=true;
+		}
+
+		if (file)
+			fclose(file);
+	}
+	else
+		CIO::message("no kernel set!\n");
+	return result;
+}
+
+bool CGUIKernel::save_kernel_init(char* param)
+{
+	bool result=false;
+	if (kernel)
+	{
+		FILE* file=fopen(param, "w");
+		if ((!file) || (!kernel->save(file)))
+			CIO::message("writing to file %s failed!\n", param);
+		else
+		{
+			CIO::message("successfully written kernel init data into \"%s\" !\n", param);
+			result=true;
+		}
+
+		if (file)
+			fclose(file);
+	}
+	else
+		CIO::message("no kernel set!\n");
+	return result;
+}

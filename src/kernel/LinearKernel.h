@@ -13,6 +13,10 @@ class CLinearKernel: public CKernel
   virtual void init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
+  /// load and save kernel init_data
+  bool load_init(FILE* src);
+  bool save_init(FILE* dest);
+
   bool check_features(CFeatures* f);
 
   // return the name of a kernel

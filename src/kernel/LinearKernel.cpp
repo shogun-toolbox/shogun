@@ -36,6 +36,46 @@ void CLinearKernel::init_rescale()
 void CLinearKernel::cleanup()
 {
 }
+
+bool CLinearKernel::load_init(FILE* src)
+{
+    assert(src!=NULL);
+    unsigned int intlen=0;
+    unsigned int endian=0;
+    unsigned int fourcc=0;
+    unsigned int r=0;
+    unsigned int doublelen=0;
+    double s=1;
+
+    assert(fread(&intlen, sizeof(unsigned char), 1, src)==1);
+    assert(fread(&doublelen, sizeof(unsigned char), 1, src)==1);
+    assert(fread(&endian, (unsigned int) intlen, 1, src)== 1);
+    assert(fread(&fourcc, (unsigned int) intlen, 1, src)==1);
+    assert(fread(&r, (unsigned int) intlen, 1, src)==1);
+    assert(fread(&scale, (unsigned int) doublelen, 1, src)==1);
+    CIO::message("detected: intsize=%d, doublesize=%d, r=%d, scale=%d\n", intlen, doublelen, r, s);
+
+	rescale= r==1;
+	scale=s;
+	return true;
+}
+
+bool CLinearKernel::save_init(FILE* dest)
+{
+    unsigned char intlen=sizeof(unsigned int);
+    unsigned char doublelen=sizeof(double);
+    unsigned int endian=0x12345678;
+    unsigned int fourcc='LINK'; //id for linear kernel
+	unsigned int r= (rescale) ? 1 : 0;
+
+    assert(fwrite(&intlen, sizeof(unsigned char), 1, dest)==1);
+    assert(fwrite(&doublelen, sizeof(unsigned char), 1, dest)==1);
+    assert(fwrite(&endian, sizeof(unsigned int), 1, dest)==1);
+    assert(fwrite(&fourcc, sizeof(unsigned int), 1, dest)==1);
+    assert(fwrite(&r, sizeof(unsigned int), 1, dest)==1);
+    assert(fwrite(&scale, sizeof(REAL), 1, dest)==1);
+	return true;
+}
   
 bool CLinearKernel::check_features(CFeatures* f) 
 {
