@@ -97,11 +97,12 @@ REAL CPolyKernel::compute(long idx_a, long idx_b)
   if (inhomogene)
 	  result+=1;
 
-  REAL re=result/scale;
-  result=re;
+  REAL re=result;
   
-  for (int j=0; j<degree; j++)
+  for (int j=1; j<degree; j++)
 	  result*=re;
+
+  result/=scale;
 
 //  result=pow(result,(double) degree)/scale;
 

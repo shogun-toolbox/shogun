@@ -214,19 +214,13 @@ bool CGUIKernel::save_kernel(char* param)
 	{
 		if ((sscanf(param, "%s", filename))==1)
 		{
-			FILE* file=fopen(filename, "w");
-			if (!file)
-				CIO::message("fname: %s\n", filename);
-			if ((!file) || (!kernel->save(file)))
+			if (!kernel->save(filename))
 				CIO::message("writing to file %s failed!\n", filename);
 			else
 			{
 				CIO::message("successfully written kernel to \"%s\" !\n", filename);
 				result=true;
 			}
-
-			if (file)
-				fclose(file);
 		}
 		else
 			CIO::message("see help for params\n");

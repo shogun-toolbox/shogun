@@ -1,5 +1,6 @@
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/File.h"
 #include "kernel/Kernel.h"
 #include "features/Features.h"
 
@@ -305,29 +306,38 @@ REAL* CKernel::kernel_cache_clean_and_malloc(long cacheidx)
 				+(kernel_cache.activenum*sizeof(REAL)*
 					kernel_cache.index[cacheidx])));
 }
-
-bool CKernel::save(FILE* dest)
+bool CKernel::load(char* fname)
 {
-	//#ifdef USE_KERNEL_CACHE
-	//	kernel_cache_init(&mykernel_cache,totdoc,100);
-	//#else
-	//	kernel_cache_init(&mykernel_cache,totdoc, 2);
-	//#endif
-	//
-	//	DOC a;
-	//	DOC b;
-	//	for (int i=0; i<totdoc; i++)
-	//	{
-	//		a.docnum=i;
-	//		for (int j=0; j<totdoc; j++)
-	//		{
-	//			b.docnum=j;
-	//			double d=kernel(&mykernel_parm, &a, &b);
-	//			fwrite(&d, sizeof(double),1, dest);
-	//		}
-	//	}
-	//
-	//	kernel_cache_cleanup(&mykernel_cache);
-	//	return true;
 	return false;
+}
+
+bool CKernel::save(char* fname)
+{
+	long i=0;
+	long num_left=lhs->get_num_vectors();
+	long num_right=rhs->get_num_vectors();
+	long num_total=num_left*num_right;
+
+	CFile f(fname, 'w', F_REAL);
+
+    for (int l=0; l< (long) num_left && f.is_ok(); l++)
+	{
+		for (int r=0; r< (long) num_right && f.is_ok(); r++)
+		{
+			if (!(i % (num_total/10+1)))
+				CIO::message("%02d%%.", (int) (100.0*i/num_total));
+			else if (!(i % (num_total/200+1)))
+				CIO::message(".");
+
+			double k=kernel(l,r);
+			f.save_real_data(&k, 1);
+
+			i++;
+		}
+	}
+
+	if (f.is_ok())
+		CIO::message("kernel matrix of size %ld x %ld written (filesize: %ld)", num_left, num_right, num_total*sizeof(REAL));
+
+    return (f.is_ok());
 }

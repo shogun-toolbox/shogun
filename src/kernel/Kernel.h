@@ -33,9 +33,9 @@ class CKernel
 		/// clean up your kernel
 		virtual void cleanup()=0;
 
-		/// load and save the kernel
-		bool load(FILE* src);
-		bool save(FILE* dest);
+		/// load and save the kernel matrix
+		bool load(char* fname);
+		bool save(char* fname);
 
 		/// load and save kernel init_data
 		virtual bool load_init(FILE* src)=0;
@@ -122,5 +122,9 @@ class CKernel
 
 		/// cache_size in MB
 		long cache_size;
+
+		/// this *COULD* store the whole kernel matrix
+		/// usually not applicable / faster
+		REAL* kernel_matrix;
 };
 #endif

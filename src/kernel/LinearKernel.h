@@ -37,4 +37,3 @@ class CLinearKernel: public CRealKernel
 };
 
 #endif
-
