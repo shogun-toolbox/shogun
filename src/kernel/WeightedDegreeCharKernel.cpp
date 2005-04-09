@@ -532,7 +532,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 #ifdef USE_TREEMEM
 							tree->childs[vec[i+j]]=&TreeMem[TreeMemPtr++];
 							assert(TreeMemPtr<TreeMemPtrMax) ;
-#elseif
+#else
 							tree->childs[vec[i+j]]=new struct SuffixTree ;
 							assert(tree->childs[vec[i+j]]!=NULL) ;
 #endif
@@ -595,7 +595,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 #ifdef USE_TREEMEM
 							tree->childs[vec[i+j]]=&TreeMem[TreeMemPtr++];
 							assert(TreeMemPtr<TreeMemPtrMax) ;
-#elseif
+#else
 							tree->childs[vec[i+j]] = new struct SuffixTree ;
 							assert(tree->childs[vec[i+j]]!=NULL) ;
 #endif
