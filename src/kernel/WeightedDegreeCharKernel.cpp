@@ -20,9 +20,11 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d
 	for (INT i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
 
+#ifdef USE_TREEMEM
 	TreeMemPtrMax=50000000 ;
 	TreeMemPtr=0 ;
 	TreeMem = new struct SuffixTree[TreeMemPtrMax] ;
+#endif
 
 	length = 0;
 	trees=NULL;
@@ -40,7 +42,9 @@ CWeightedDegreeCharKernel::~CWeightedDegreeCharKernel()
 	delete[] weights_buffer ;
 	weights_buffer = NULL ;
 
+#ifdef USE_TREEMEM
 	delete[] TreeMem ;
+#endif
 }
 
 void CWeightedDegreeCharKernel::remove_lhs() 
@@ -525,9 +529,13 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 						else
 						{
 							assert(!tree->has_floats) ;
+#ifdef USE_TREEMEM
 							tree->childs[vec[i+j]]=&TreeMem[TreeMemPtr++];
 							assert(TreeMemPtr<TreeMemPtrMax) ;
+#elseif
+							tree->childs[vec[i+j]]=new struct SuffixTree ;
 							assert(tree->childs[vec[i+j]]!=NULL) ;
+#endif
 							tree=tree->childs[vec[i+j]] ;
 							for (INT k=0; k<4; k++)
 								tree->childs[k]=NULL ;
@@ -584,8 +592,13 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 						else
 						{
 							assert(!tree->has_floats) ;
+#ifdef USE_TREEMEM
 							tree->childs[vec[i+j]]=&TreeMem[TreeMemPtr++];
 							assert(TreeMemPtr<TreeMemPtrMax) ;
+#elseif
+							tree->childs[vec[i+j]] = new struct SuffixTree ;
+							assert(tree->childs[vec[i+j]]!=NULL) ;
+#endif
 							tree=tree->childs[vec[i+j]] ;
 							for (INT k=0; k<4; k++)
 								tree->childs[k]=NULL ;
@@ -687,10 +700,13 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch_recursion(struct Su
 			subtree->weight += alpha*weights[degree_rec+degree*mismatch_rec];
 		} else 
 		{
+#ifdef USE_TREEMEM
 			tree->childs[vec[0]]=&TreeMem[TreeMemPtr++] ;
 			assert(TreeMemPtr<TreeMemPtrMax) ;
-			
+#else
+			tree->childs[vec[0]]=new struct SuffixTree ;
 			assert(tree->childs[vec[0]]!=NULL) ;
+#endif			
 			subtree=tree->childs[vec[0]] ;
 			for (INT k=0; k<4; k++)
 				subtree->childs[k]=NULL ;
@@ -713,10 +729,13 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch_recursion(struct Su
 					subtree->weight += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
 				} else 
 				{
+#ifdef USE_TREEMEM
 					tree->childs[ot]=&TreeMem[TreeMemPtr++] ;
 					assert(TreeMemPtr<TreeMemPtrMax) ;
-
-					//assert(tree->childs[ot]!=NULL) ;
+#else
+					tree->childs[ot]=new struct SuffixTree ;
+					assert(tree->childs[ot]!=NULL) ;
+#endif
 					subtree=tree->childs[ot] ;
 					for (INT k=0; k<4; k++)
 						subtree->childs[k]=NULL ;
@@ -1018,7 +1037,9 @@ void CWeightedDegreeCharKernel::delete_tree(struct SuffixTree * p_tree)
 		}
 
 		tree_initialized=false;
+#ifdef USE_TREEMEM
 		TreeMemPtr=0;
+#endif
 		return;
 	}
 
@@ -1029,8 +1050,10 @@ void CWeightedDegreeCharKernel::delete_tree(struct SuffixTree * p_tree)
 	{
 		if (p_tree->childs[i]!=NULL)
 		{
-			//delete_tree(p_tree->childs[i]);
-			//delete p_tree->childs[i];
+#ifndef USE_TREEMEM
+			delete_tree(p_tree->childs[i]);
+			delete p_tree->childs[i];
+#endif
 			p_tree->childs[i]=NULL;
 		} 
 		p_tree->weight=0;

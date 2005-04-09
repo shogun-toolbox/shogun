@@ -221,8 +221,10 @@ class CWeightedDegreeCharKernel: public CCharKernel
 
   REAL* matching_weights;
 
+#ifdef USE_TREEMEM
   struct SuffixTree* TreeMem ;
   INT TreeMemPtr ;
   INT TreeMemPtrMax ;
+#endif
 };
 #endif
