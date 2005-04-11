@@ -28,8 +28,6 @@ CHistogram* h;
 #include <libmmfile.h>
 #endif // WITHMATLAB
 
-const INT READLINE_BUFFER_SIZE = 10000 ;
-
 //names of menu commands
 static const CHAR* N_NEW_HMM=			"new_hmm";
 static const CHAR* N_NEW_SVM=			"new_svm";
@@ -119,7 +117,7 @@ static const CHAR* N_SET_REF_FEAT=              "set_ref_features" ;
 static const CHAR* N_TIC=              "tic" ;
 static const CHAR* N_TOC=              "toc" ;
 
-CTextGUI::CTextGUI(INT argc, const CHAR** argv)
+CTextGUI::CTextGUI(INT argc, char** argv)
 : CGUI(argc, argv), out_file(NULL)
 {
 #ifdef WITHMATLAB
@@ -416,7 +414,7 @@ bool CTextGUI::parse_line(CHAR* input)
 	} 
 	else if (!strncmp(input, N_CLEAR, strlen(N_CLEAR)))
 	{
-		const CHAR** argv=gui->argv;
+		char ** argv=gui->argv;
 		INT argc=gui->argc;
 		delete gui;
 		gui=new CTextGUI(argc, argv);
@@ -656,78 +654,4 @@ bool CTextGUI::parse_line(CHAR* input)
 		CIO::message(M_ERROR, "unrecognized command. type help for options\n");
 
 	return true;
-}
-
-//// main - the one and only ///
-int main(int argc, const CHAR* argv[])
-{	
-
-	gui=new CTextGUI(argc, argv) ;
-
-	if (argc<=1)
-		while (gui->parse_line(gui->get_line()));
-	else
-	{
-		if (argc>=2)
-		{
-			if ( argc>2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help"))
-			{
-				CIO::message(M_ERROR, "usage: genefinder [ <-h|--help|/?|-i|<script> ]\n\n");
-				CIO::message(M_INFO, "if no options are given genfinder enters interactive mode\n");
-				CIO::message(M_INFO, "if <script> is specified the commands will be executed");
-				CIO::message(M_INFO, "if -i is specified genefinder will listen on port 6766 (==hex(gf), *dangerous* as commands from any source are accepted");
-				return 1;
-			}
-			else if ( argc>2 || !strcmp(argv[1], "-i") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help"))
-			{
-				int s=socket(AF_INET, SOCK_STREAM, 0);
-				struct sockaddr_in sa;
-				sa.sin_family=AF_INET;
-				sa.sin_port=htons(6766);
-				sa.sin_addr.s_addr=INADDR_ANY;
-				bzero(&(sa.sin_zero), 8);
-
-				bind(s, (sockaddr*) (&sa), sizeof(sockaddr_in));
-				listen(s, 1);
-				int s2=accept(s, NULL, NULL);
-				CIO::message(M_INFO, "accepting connection\n");
-
-				CHAR input[READLINE_BUFFER_SIZE];
-				do
-				{
-					bzero(input, sizeof(input));
-					int length=read(s2, input, sizeof(input));
-					if (length>0 && length<(int) sizeof(input))
-						input[length]='\0';
-					else
-					{
-						CIO::message(M_ERROR, "error reading cmdline\n");
-						return 1;
-					}
-				}
-				while(gui->parse_line(input));
-				return 0;
-			}
-			else
-			{
-				FILE* file=fopen(argv[1], "r");
-
-				if (!file)
-				{
-					CIO::message(M_ERROR, "error opening/reading file: \"%s\"",argv[1]);
-					return 1;
-				}
-				else
-				{
-					while(!feof(file) && gui->parse_line(gui->get_line(file, false)));
-					fclose(file);
-				}
-			}
-		}
-	}
-
-	CIO::message(M_INFO, "quitting...\n");
-	delete gui ;
-
-	return 0;
 }

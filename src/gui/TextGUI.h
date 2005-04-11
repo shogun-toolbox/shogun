@@ -12,7 +12,7 @@
 class CTextGUI: public CGUI
 {
 public:
-	CTextGUI(INT argc, const CHAR** argv);
+	CTextGUI(INT argc, char** argv);
 	~CTextGUI();
 
 	/// print the genefinder prompt

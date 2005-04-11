@@ -13,6 +13,7 @@ EXT_OBJ_C=c.o
 #the defaults are
 _readline=yes
 _matlab=no
+_python=no
 _octave=no
 _svm_mpi=no
 _cplex=no
@@ -49,7 +50,7 @@ INCLUDES=-I${SRCDIR}
 LINK=c++
 LINKFLAGS="-lm"
 TARGET="genefinder-${EXESUFFIX}"
-COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -fkeep-inline-functions  -finline-functions -fschedule-insns2 -fthread-jumps -fforce-mem -fforce-addr -fstrength-reduce -fomit-frame-pointer -unroll-loops"
+COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-mem -fforce-addr -fstrength-reduce -fomit-frame-pointer -unroll-loops"
 #most defines are simply design bugs, use the ./configure --{disable,enable}-<options>
 DEFINES=
 
@@ -230,6 +231,7 @@ Installation directories:
   --libdir=DIR                  use this prefix for object code libraries [PREFIX/lib]
 
 Optional features:
+  --enable-python               enable python (genefiner can be called from within python) support [disabled]
   --enable-matlab               enable matlab (genefiner can be called from within matlab) support [disabled]
   --enable-octave               enable octave (genefiner can be called from within octave) support [disabled]
   --enable-svmmpi    	        enable multiprocessor svm support [disabled]
@@ -298,6 +300,8 @@ for ac_option do
   --install-path=*)
     _install=`echo $ac_option | cut -d '=' -f 2 | sed 's/\/$//'`"/install"
     ;;
+  --disable-python)		_python=no	;;
+  --enable-python)		_python=yes	;;
   --disable-matlab)		_matlab=no	;;
   --enable-matlab)		_matlab=yes	;;
   --disable-octave)		_octave=no	;;
@@ -1111,6 +1115,15 @@ EOF
 
 set_opts()
 {
+	if test "$_python" = yes
+	then
+		INCLUDES="-I/usr/include/python2.3 $INCLUDES"
+		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -DNDEBUG -Wall -Wstrict-prototypes -fPIC $COMPFLAGS_CPP"
+		COMPFLAGS_C="-pthread -fno-strict-aliasing -DNDEBUG -Wall -Wstrict-prototypes -fPIC $COMPFLAGS_C"
+		LINKFLAGS="-pthread -shared -L/usr/lib/python2.3/config -lpython2.3 $LINKFLAGS"
+		TARGET="gf.so"
+	fi
+
 	if test "$_matlab" = yes
 	then
 		if osf1
@@ -1169,6 +1182,11 @@ set_opts()
 		LINKFLAGS="$LINKFLAGS -lreadline"
 	fi
 
+	if test "$_python" = yes
+	then
+		HAVE_PYTHON='#define HAVE_PYTHON 1'
+	fi
+
 	if test "$_matlab" = yes
 	then
 		HAVE_MATLAB='#define HAVE_MATLAB 1'
@@ -1176,7 +1194,7 @@ set_opts()
 
 	if test "$_octave" = yes
 	then
-		HAVE_MATLAB='#define HAVE_OCTAVE 1'
+		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
 	fi
 
 	if test "$_cplex" = yes
@@ -1331,7 +1349,9 @@ write_config_h()
 {
 cat >lib/config.h <<EOF
 $HAVE_READLINE
+$HAVE_PYTHON
 $HAVE_MATLAB
+$HAVE_OCTAVE
 $HAVE_LARGEFILE
 $HAVE_LAPACK
 $HAVE_ATLAS

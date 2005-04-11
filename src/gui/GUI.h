@@ -16,7 +16,7 @@ class CGUI
 {
  public:
 
-  CGUI(INT ac, const CHAR**av): guisvm(this), guihmm(this), guipluginestimate(this), guiknn(this), guikernel(this), 
+  CGUI(INT ac, char** av): guisvm(this), guihmm(this), guipluginestimate(this), guiknn(this), guikernel(this), 
     guipreproc(this), guifeatures(this), guilabels(this), guimath(this), guitime(this), argc(ac), argv(av) {} ;
 
   CGUISVM guisvm;
@@ -31,6 +31,6 @@ class CGUI
   CGUITime guitime;
 
   INT argc ;
-  const CHAR **argv ;
+  char** argv ;
 } ;
 #endif
