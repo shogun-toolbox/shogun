@@ -402,6 +402,38 @@ CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeature
 	return target;
 }
 
+CStringFeatures<ULONG>* CGUIFeatures::convert_string_char_to_string_ulong(CStringFeatures<CHAR>* src, CHAR* param)
+{
+	CHAR which[1024]="";
+	CHAR from_class[1024]="";
+	CHAR from_type[1024]="";
+	CHAR to_class[1024]="";
+	CHAR to_type[1024]="";
+	INT order=1;
+	INT start=0;
+
+	if ((sscanf(param, "%s %s %s %s %s %d %d", which, from_class, from_type, to_class, to_type, &order, &start))>=5)
+	{
+		if ( ( (src->get_feature_class()) == C_STRING)  && ( (src->get_feature_type()) == F_CHAR) )
+		{
+			//create dense features with 0 cache
+			CIO::message(M_INFO, "converting CHAR STRING features to ULONG STRING ones (order=%i)\n",order);
+
+			CStringFeatures<ULONG>* sf=new CStringFeatures<ULONG>();
+			if (sf && sf->obtain_from_char_features(src, start, order))
+				return sf;
+
+			delete sf;
+		}
+		else
+			CIO::message(M_ERROR, "features are not of class/type STRING/CHAR\n");
+	}
+	else
+		CIO::message(M_ERROR, "see help for parameters\n");
+
+	return NULL;
+}
+
 CStringFeatures<WORD>* CGUIFeatures::convert_string_char_to_string_word(CStringFeatures<CHAR>* src, CHAR* param)
 {
 	CHAR which[1024]="";
@@ -781,6 +813,8 @@ bool CGUIFeatures::convert(CHAR* param)
 			{
 				if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"WORD")==0)
 					result = convert_string_char_to_string_word(((CStringFeatures<CHAR>*) (*f_ptr)), param);
+				else if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"ULONG")==0)
+					result = convert_string_char_to_string_ulong(((CStringFeatures<CHAR>*) (*f_ptr)), param);
 				else
 					CIO::not_implemented();
 			}

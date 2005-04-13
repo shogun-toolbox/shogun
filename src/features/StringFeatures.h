@@ -47,7 +47,7 @@ template <class ST> class CStringFeatures: public CFeatures
 
 		if (orig.symbol_mask_table)
 		{
-			symbol_mask_table=new WORD[256];
+			symbol_mask_table=new ST[256];
 			for (INT i=0; i<256; i++)
 				symbol_mask_table[i]=orig.symbol_mask_table[i];
 		}
@@ -59,8 +59,6 @@ template <class ST> class CStringFeatures: public CFeatures
 		num_symbols=4; //FIXME
 		load(fname);
 	}
-
-	bool obtain_from_char_features(CStringFeatures<CHAR>* sf, INT start, INT order);
 
 	virtual ~CStringFeatures()
 	{
@@ -152,7 +150,11 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	// a higher order mapped symbol will be shaped such that the symbols in
 	// specified by bits in the mask will be returned.
-	ST get_masked_symbols(ST symbol, BYTE mask);
+	inline ST get_masked_symbols(ST symbol, BYTE mask)
+	{
+		assert(symbol_mask_table);
+		return symbol_mask_table[mask] & symbol;
+	}
 
 	virtual bool load(CHAR* fname)
 	{
@@ -242,12 +244,95 @@ template <class ST> class CStringFeatures: public CFeatures
 			return true;
 		}
 
+	inline bool obtain_from_char_features(CStringFeatures<CHAR>* sf, INT start, INT order)
+	{
+		INT i=0;
+		assert(sf);
+		E_ALPHABET alphabet=sf->get_alphabet();
+		this->order=order;
+		cleanup();
+		CCharFeatures cf(alphabet, 0l);
+		delete[] symbol_mask_table;
+		symbol_mask_table=new ST[256];
+		num_vectors=sf->get_num_vectors();
+		max_string_length=sf->get_max_vector_length()-start;
+		features=new T_STRING<ST>[num_vectors];
+		assert(features);
+
+		CIO::message(M_DEBUG, "%d symbols in StringFeatures<CHAR>\n", sf->get_num_symbols());
+		INT max_val=0;
+		for (i=0; i<num_vectors; i++)
+		{
+			INT len=sf->get_vector_length(i);
+
+			features[i].string=new ST[len];
+			features[i].length=len;
+			assert(features[i].string);
+
+			ST* str=features[i].string;
+
+			for (INT j=0; j<len; j++)
+			{
+				str[j]=(ST) cf.remap(sf->get_feature(i,j));
+				max_val=CMath::max((INT) str[j],max_val);
+			}
+		}
+
+		original_num_symbols=max_val+1;
+
+		//number of bits the maximum value in feature matrix requires to get stored
+		max_val= (int) ceil(log((double) max_val+1)/log((double) 2));
+		num_symbols=1<<(max_val*order);
+
+		CIO::message(M_DEBUG, "max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, order, num_symbols);
+
+		if (num_symbols>(1<<(sizeof(ST)*8)))
+		{
+			CIO::message(M_DEBUG, "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
+			return false;
+		}
+
+		CIO::message(M_DEBUG, "translate: start=%i order=%i\n", start, order) ;
+		for (INT line=0; line<num_vectors; line++)
+		{
+			INT len=0;
+			ST* fv=get_feature_vector(line, len);
+			translate_from_single_order(fv, len, start, order, max_val);
+
+			/* fix the length of the string -- hacky */
+			features[line].length-=start ;
+			if (features[line].length<0)
+				features[line].length=0 ;
+		}
+
+		for (i=0; i<256; i++)
+			symbol_mask_table[i]=0;
+
+		ST mask=0;
+		for (i=0; i<max_val; i++)
+			mask=(mask<<1) | 1;
+
+		for (i=0; i<256; i++)
+		{
+			BYTE bits=(BYTE) i;
+
+			for (INT j=0; j<8; j++)
+			{
+				if (bits & 1)
+					symbol_mask_table[i]|=mask<<(max_val*j);
+
+				bits>>=1;
+			}
+		}
+		return true;
+	}
+
 	protected:
 
 	void translate_from_single_order(ST* obs, INT sequence_length, INT start, INT order, INT max_val)
 	{
 		INT i,j;
-		WORD value=0;
+		ST value=0;
 
 		for (i=sequence_length-1; i>= ((int) order)-1; i--)	//convert interval of size T
 		{
@@ -274,8 +359,6 @@ template <class ST> class CStringFeatures: public CFeatures
 			obs[i-start]=obs[i];
 	}
 
-	
-
 	protected:
 	/// number of string vectors
 	INT num_vectors;
@@ -299,7 +382,7 @@ template <class ST> class CStringFeatures: public CFeatures
 	INT order;
 
 	/// order used in higher order mapping
-	WORD* symbol_mask_table;
+	ST* symbol_mask_table;
 };
 
 inline EFeatureType CStringFeatures<REAL>::get_feature_type()
@@ -326,94 +409,4 @@ inline EFeatureType CStringFeatures<WORD>::get_feature_type()
 {
 	return F_WORD;
 }
-
-inline WORD CStringFeatures<WORD>::get_masked_symbols(WORD symbol, BYTE mask)
-{
-	assert(symbol_mask_table);
-	return symbol_mask_table[mask] & symbol;
-}
-
-inline bool CStringFeatures<WORD>::obtain_from_char_features(CStringFeatures<CHAR>* sf, INT start, INT order)
-{
-	INT i=0;
-	assert(sf);
-	E_ALPHABET alphabet=sf->get_alphabet();
-	this->order=order;
-	cleanup();
-	CCharFeatures cf(alphabet, 0l);
-	delete[] symbol_mask_table;
-	symbol_mask_table=new WORD[256];
-	num_vectors=sf->get_num_vectors();
-	max_string_length=sf->get_max_vector_length()-start;
-	features=new T_STRING<WORD>[num_vectors];
-	assert(features);
-
-	CIO::message(M_DEBUG, "%d symbols in StringFeatures<CHAR>\n", sf->get_num_symbols());
-	INT max_val=0;
-	for (i=0; i<num_vectors; i++)
-	{
-		INT len=sf->get_vector_length(i);
-
-		features[i].string=new WORD[len];
-		features[i].length=len;
-		assert(features[i].string);
-
-		WORD* str=features[i].string;
-
-		for (INT j=0; j<len; j++)
-		{
-			str[j]=(WORD) cf.remap(sf->get_feature(i,j));
-			max_val=CMath::max((INT) str[j],max_val);
-		}
-	}
-
-	original_num_symbols=max_val+1;
-
-	//number of bits the maximum value in feature matrix requires to get stored
-	max_val= (int) ceil(log((double) max_val+1)/log((double) 2));
-	num_symbols=1<<(max_val*order);
-
-	CIO::message(M_DEBUG, "max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, order, num_symbols);
-
-	if (num_symbols>(1<<(sizeof(WORD)*8)))
-	{
-		CIO::message(M_DEBUG, "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
-		return false;
-	}
-	
-	CIO::message(M_DEBUG, "translate: start=%i order=%i\n", start, order) ;
-	for (INT line=0; line<num_vectors; line++)
-	{
-		INT len=0;
-		WORD* fv=get_feature_vector(line, len);
-		translate_from_single_order(fv, len, start, order, max_val);
-
-		/* fix the length of the string -- hacky */
-		features[line].length-=start ;
-		if (features[line].length<0)
-			features[line].length=0 ;
-	}
-
-	for (i=0; i<256; i++)
-		symbol_mask_table[i]=0;
-
-	WORD mask=0;
-	for (i=0; i<max_val; i++)
-		mask=(mask<<1) | 1;
-
-	for (i=0; i<256; i++)
-	{
-		BYTE bits=(BYTE) i;
-
-		for (INT j=0; j<8; j++)
-		{
-			if (bits & 1)
-				symbol_mask_table[i]|=mask<<(max_val*j);
-
-			bits>>=1;
-		}
-	}
-	return true;
-}
-
 #endif

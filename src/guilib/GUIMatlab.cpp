@@ -1395,16 +1395,13 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[])
 		CCommWordStringKernel *kernel = (CCommWordStringKernel *) kernel_ ;
 		
 		INT len=0 ;
-		WORD * dict ;
-		REAL * weights ;
-		kernel->get_dictionary(len, dict, weights) ;
+		REAL* weights ;
+		kernel->get_dictionary(len, weights) ;
 		
-		mxArray* mx_result=mxCreateDoubleMatrix(len, 2, mxREAL);
+		mxArray* mx_result=mxCreateDoubleMatrix(len, 1, mxREAL);
 		double* result=mxGetPr(mx_result);
 		for (int i=0; i<len; i++)
-			result[i]=dict[i] ;
-		for (int i=0; i<len; i++)
-			result[i+len]=weights[i] ;
+			result[i]=weights[i] ;
 		
 		retvals[0]=mx_result;
 		return true;

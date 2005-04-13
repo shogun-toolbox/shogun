@@ -2,17 +2,8 @@
 #define _COMMWORDSTRINGKERNEL_H___
 
 #include "lib/common.h"
+#include "lib/Mathmatics.h"
 #include "kernel/StringKernel.h"
-
-enum E_NormalizationType
-{
-	E_NO_NORMALIZATION,
-	E_SQRT_NORMALIZATION,
-	E_FULL_NORMALIZATION,
-	E_SQRTLEN_NORMALIZATION,
-	E_LEN_NORMALIZATION,
-	E_SQLEN_NORMALIZATION 
-} ;
 
 class CCommWordStringKernel: public CStringKernel<WORD>
 {
@@ -37,38 +28,66 @@ class CCommWordStringKernel: public CStringKernel<WORD>
   virtual bool delete_optimization() ;
   virtual REAL compute_optimized(INT idx) ;
 
+  virtual void add_to_normal(INT idx, REAL weight);
+  virtual void clear_normal();
+
   virtual void remove_lhs() ;
   virtual void remove_rhs() ;
 
   inline virtual EFeatureType get_feature_type() { return F_WORD; }
   
-  void get_dictionary(INT &dsize, WORD*& dict, REAL*& dweights) 
-	  {
-		  dsize=dictionary_size ;
-		  dict=dictionary ;
-		  dweights = dictionary_weights ;
-	  } ;
+  void get_dictionary(INT& dsize, REAL*& dweights) 
+  {
+	  dsize=dictionary_size;
+	  dweights = dictionary_weights;
+  }
   
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
   REAL compute(INT idx_a, INT idx_b);
-  /*    compute_kernel*/
+
+  inline REAL normalize_weight(REAL value, INT seq_num, INT seq_len, E_NormalizationType normalization)
+  {
+	  switch (normalization)
+	  {
+		  case E_NO_NORMALIZATION:
+			  return value;
+			  break ;
+		  case E_SQRT_NORMALIZATION:
+			  return value/sqrt(sqrtdiag_lhs[seq_num]) ;
+			  break ;
+		  case E_FULL_NORMALIZATION:
+			  return value/sqrtdiag_lhs[seq_num] ;
+			  break ;
+		  case E_SQRTLEN_NORMALIZATION:
+			  return value/sqrt(sqrt(seq_len)) ;
+			  break ;
+		  case E_LEN_NORMALIZATION:
+			  return value/sqrt(seq_len) ;
+			  break ;
+		  case E_SQLEN_NORMALIZATION:
+			  return value/seq_len ;
+			  break ;
+		  default:
+			  assert(0) ;
+	  }
+
+	  return -CMath::INFTY;
+  }
 
  protected:
   double* sqrtdiag_lhs;
   double* sqrtdiag_rhs;
 
-  bool initialized ;
+  bool initialized;
 
-  INT dictionary_size ;
-  WORD * dictionary ;
-  REAL * dictionary_weights ;
-  
+  INT dictionary_size;
+  REAL* dictionary_weights;
   bool use_sign ;
+
   E_NormalizationType normalization ;
-  
 };
 
 #endif

@@ -279,7 +279,6 @@ bool CCommWordKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 		return true ;
 	}
 
-
 	CIO::message(M_DEBUG, "initializing CCommWordKernel optimization\n") ;
 	
 	for (int i=0; i<count; i++)

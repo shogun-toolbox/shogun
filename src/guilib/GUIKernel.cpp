@@ -27,6 +27,7 @@
 #include "kernel/WordMatchKernel.h"
 #include "kernel/CommWordKernel.h"
 #include "kernel/CommWordStringKernel.h"
+#include "kernel/CommUlongStringKernel.h"
 #include "kernel/HistogramWordKernel.h"
 #include "kernel/SalzbergWordKernel.h"
 #include "kernel/GaussianKernel.h"
@@ -581,6 +582,66 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 						CIO::message(M_INFO, "CommWordStringKernel with sign(count) created\n");
 					else
 						CIO::message(M_INFO, "CommWordStringKernel with count created\n");
+					return k;
+				}
+			}
+			else if (strcmp(data_type,"ULONG")==0)
+			{
+				delete k;
+				INT use_sign = 0 ;
+				char normalization_str[100]="" ;
+				E_NormalizationType normalization = E_FULL_NORMALIZATION ;
+				
+				sscanf(param, "%s %s %d %d %s", kern_type, data_type, &size, &use_sign, normalization_str);
+				if (strlen(normalization_str)==0)
+				{
+					normalization = E_FULL_NORMALIZATION ;
+					CIO::message(M_INFO, "using full normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "NO")==0)
+				{
+					normalization = E_NO_NORMALIZATION ;
+					CIO::message(M_INFO, "using no normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "SQRT")==0)
+				{
+					normalization = E_SQRT_NORMALIZATION ;
+					CIO::message(M_INFO, "using sqrt normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "SQRTLEN")==0)
+				{
+					normalization = E_SQRTLEN_NORMALIZATION ;
+					CIO::message(M_INFO, "using sqrt-len normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "LEN")==0)
+				{
+					normalization = E_LEN_NORMALIZATION ;
+					CIO::message(M_INFO, "using len normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "SQLEN")==0)
+				{
+					normalization = E_SQLEN_NORMALIZATION ;
+					CIO::message(M_INFO, "using squared len normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "FULL")==0)
+				{
+					normalization = E_FULL_NORMALIZATION ;
+					CIO::message(M_INFO, "using full normalization\n") ;
+				}
+				else 
+				{
+					CIO::message(M_ERROR, "unknow normalization: %s\n", normalization_str) ;
+					return NULL ;
+				}
+
+				k=new CCommUlongStringKernel(size, use_sign, normalization);
+				
+				if (k)
+				{
+					if (use_sign)
+						CIO::message(M_INFO, "CommUlongStringKernel with sign(count) created\n");
+					else
+						CIO::message(M_INFO, "CommUlongStringKernel with count created\n");
 					return k;
 				}
 			}

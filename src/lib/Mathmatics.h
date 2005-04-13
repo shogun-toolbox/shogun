@@ -215,7 +215,8 @@ public:
 
 	/* finds an element in a sorted array via binary search
      * returns -1 if not found */
-	static inline INT fast_find(WORD* output, INT size, WORD elem)
+	template <class T>
+	static inline INT fast_find(T* output, INT size, T elem)
 	{
 		INT start=0, end=size-1, middle=size/2 ;
 

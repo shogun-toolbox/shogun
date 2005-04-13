@@ -69,6 +69,7 @@ class CGUIFeatures
 		CRealFeatures* convert_simple_word_to_simple_salzberg(CWordFeatures* src, CHAR* param);
 
 		CStringFeatures<WORD>* convert_string_char_to_string_word(CStringFeatures<CHAR>* src, CHAR* param);
+		CStringFeatures<ULONG>* convert_string_char_to_string_ulong(CStringFeatures<CHAR>* src, CHAR* param);
 		CTOPFeatures* convert_string_word_to_simple_top(CStringFeatures<WORD>* src, CHAR* param);
 		CFKFeatures* convert_string_word_to_simple_fk(CStringFeatures<WORD>* src, CHAR* param);
 

@@ -50,5 +50,4 @@ class CCommWordKernel: public CWordKernel
   REAL* dictionary_weights;
   bool use_sign;
 };
-
 #endif
