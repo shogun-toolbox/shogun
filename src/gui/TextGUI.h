@@ -8,6 +8,7 @@
 #include "guilib/GUIPreProc.h"
 #include "guilib/GUIFeatures.h"
 #include "gui/GUI.h"
+#include "lib/Signal.h"
 
 class CTextGUI: public CGUI
 {
@@ -33,6 +34,7 @@ public:
 	bool parse_line(CHAR* input);
 
 protected:
+	CSignal* sig;
 	FILE* out_file;
 	CHAR input[10000];
 };

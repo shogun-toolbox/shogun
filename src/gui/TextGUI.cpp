@@ -118,12 +118,13 @@ static const CHAR* N_TIC=              "tic" ;
 static const CHAR* N_TOC=              "toc" ;
 
 CTextGUI::CTextGUI(INT argc, char** argv)
-: CGUI(argc, argv), out_file(NULL)
+: CGUI(argc, argv), sig(NULL), out_file(NULL)
 {
 #ifdef WITHMATLAB
 	libmmfileInitialize() ;
 #endif
 
+	sig = new CSignal();
 	CIO::message(M_DEBUG, "HMM uses %i separate tables\n", guihmm.get_number_of_tables()) ;
 }
 
@@ -135,6 +136,7 @@ CTextGUI::~CTextGUI()
 	libmmfileTerminate() ;
 #endif
 
+	delete sig;
 }
 
 void CTextGUI::print_help()

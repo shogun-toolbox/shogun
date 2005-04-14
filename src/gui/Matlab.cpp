@@ -67,16 +67,17 @@ static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE=	"plugin_estimate_classify
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
-  //  fprintf(stderr,"gui=%ld\n", gui) ;
-        if (!gui)
+	if (!gui)
+		gui=new CTextGUI(0, NULL);
+
+	if (!gui)
 		gui=new CTextGUI(0, NULL);
 	
-	assert(gui);
+	if (!gui)
+		CIO::message(M_ERROR,"gui could not be initialized.");
+
 	if (!nrhs)
-	{
-		//add some more text
-		mexErrMsgTxt("No input arguments supplied.");
-	} 
+		CIO::message(M_ERROR,"No input arguments supplied.");
 
 	CHAR* action=CGUIMatlab::get_mxString(prhs[0]);
 
