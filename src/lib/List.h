@@ -68,17 +68,6 @@ public:
 			return NULL;
 	}
 
-	/// go to first element in list and return it (or NULL if list is empty)
-	inline T get_first_element(CListElement<T> *&current)
-	{
-		if (first != NULL)
-		{
-			current = first;
-			return current->data;
-		}
-		else 
-			return NULL;
-	}
 
 	/// go to last element in list and return it (or NULL if list is empty)
 	inline T get_last_element()
@@ -92,6 +81,7 @@ public:
 			return NULL;
 	}
 
+
 	/// go to next element in list and return it (or NULL if not available)
 	inline T get_next_element()
 	{
@@ -104,16 +94,6 @@ public:
 			return NULL;
 	}
 
-	inline T get_next_element(CListElement<T> *& current)
-	{
-		if ((current != NULL) && (current->next != NULL))
-		{
-			current = current->next;
-			return current->data;
-		}
-		else
-			return NULL;
-	}
 
 	/// go to previous element in list and return it (or NULL if not available)
 	inline T get_previous_element()
@@ -135,6 +115,67 @@ public:
 		else 
 			return NULL;
 	}
+
+
+	/**@name Thread safe list access functions*/
+	//@{
+	/// go to first element and return it (or NULL if list is empty)
+	inline T get_first_element(CListElement<T> *&current)
+	{
+		if (first != NULL)
+		{
+			current = first;
+			return current->data;
+		}
+		else 
+			return NULL;
+	}
+
+	/// go to last element in list and return it (or NULL if list is empty)
+	inline T get_last_element(CListElement<T> *&current)
+	{
+		if (last != NULL)
+		{
+			current = last;
+			return current->data;
+		}
+		else 
+			return NULL;
+	}
+
+	/// go to next element in list and return it (or NULL if not available)
+	inline T get_next_element(CListElement<T> *& current)
+	{
+		if ((current != NULL) && (current->next != NULL))
+		{
+			current = current->next;
+			return current->data;
+		}
+		else
+			return NULL;
+	}
+
+	/// go to previous element in list and return it (or NULL if not available)
+	inline T get_previous_element(CListElement<T> *& current)
+	{
+		if ((current != NULL) && (current->prev != NULL))
+		{
+			current = current->prev;
+			return current->data;
+		}
+		else
+			return NULL;
+	}
+
+	/// return current element in list (or NULL if not available)
+	inline T get_current_element(CListElement<T> *& current)
+	{
+		if (current != NULL)
+			return current->data;
+		else 
+			return NULL;
+	}
+	//@}
 
 	/// append element AFTER the current element. return true on success
 	inline bool append_element(T data)

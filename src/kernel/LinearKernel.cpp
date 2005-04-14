@@ -56,39 +56,12 @@ void CLinearKernel::cleanup()
 
 bool CLinearKernel::load_init(FILE* src)
 {
-    assert(src!=NULL);
-    UINT intlen=0;
-    UINT endian=0;
-    UINT fourcc=0;
-    UINT doublelen=0;
-    double s=1;
-
-    assert(fread(&intlen, sizeof(BYTE), 1, src)==1);
-    assert(fread(&doublelen, sizeof(BYTE), 1, src)==1);
-    assert(fread(&endian, (UINT) intlen, 1, src)== 1);
-    assert(fread(&fourcc, (UINT) intlen, 1, src)==1);
-    assert(fread(&s, (UINT) doublelen, 1, src)==1);
-    CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, s);
-
-	scale=s;
-	return true;
+	return false;
 }
 
 bool CLinearKernel::save_init(FILE* dest)
 {
-    BYTE intlen=sizeof(UINT);
-    BYTE doublelen=sizeof(double);
-    UINT endian=0x12345678;
-    BYTE fourcc[5]="LINK"; //id for linear kernel
-
-    assert(fwrite(&intlen, sizeof(BYTE), 1, dest)==1);
-    assert(fwrite(&doublelen, sizeof(BYTE), 1, dest)==1);
-    assert(fwrite(&endian, sizeof(UINT), 1, dest)==1);
-    assert(fwrite(&fourcc, sizeof(UINT), 1, dest)==1);
-    assert(fwrite(&scale, sizeof(double), 1, dest)==1);
-    CIO::message(M_INFO, "wrote: intsize=%d, doublesize=%d, scale=%g\n", intlen, doublelen, scale);
-
-	return true;
+	return false;
 }
 
 void CLinearKernel::clear_normal()

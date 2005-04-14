@@ -221,11 +221,5 @@ bool CPruneVarSubMean::load_init_data(FILE* src)
 /// save init-data (like transforamtion matrices etc) to file
 bool CPruneVarSubMean::save_init_data(FILE* dst)
 {
-	INT divide= (divide_by_std) ? 1 : 0;
-    assert(fwrite(&divide, sizeof(int), 1, dst)==1) ;
-    assert(fwrite(&num_idx, sizeof(int), 1, dst)==1) ;
-    assert(fwrite(idx, sizeof(int), num_idx, dst)==(UINT) num_idx) ;
-    assert(fwrite(mean, sizeof(REAL), num_idx, dst)==(UINT) num_idx) ;
-    assert(fwrite(std, sizeof(REAL), num_idx, dst)==(UINT) num_idx) ;
-	return true;
+	return false;
 }

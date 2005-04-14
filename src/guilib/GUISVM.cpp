@@ -87,9 +87,16 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 		return false ;
 	}
 
-	if (!gui->guikernel.is_initialized())
+	if ( !gui->guikernel.is_initialized() || !kernel->get_lhs() )
 	{
 		CIO::message(M_ERROR, "kernel not initialized\n") ;
+		return 0;
+	}
+
+	if (trainlabels->get_num_labels() != kernel->get_lhs()->get_num_vectors())
+	{
+		CIO::message(M_ERROR, "number of train labels (%d) and training vectors (%d) differs!\n", 
+				trainlabels->get_num_labels(), kernel->get_lhs()->get_num_vectors()) ;
 		return 0;
 	}
 

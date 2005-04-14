@@ -85,7 +85,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 					fv[i]=0;
 
 				for (i=0; i<num_feat; i++)
-					fv[sv[i].feat_index]= sv[feat].entry;
+					fv[sv[i].feat_index]= sv[i].entry;
 			}
 
 			free_sparse_feature_vector(sv, num, free);
@@ -173,7 +173,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 			num_feat=num_features;
 			num_vec=num_vectors;
 
-			return feature_matrix;
+			return sparse_feature_matrix;
 		}
 
 		/** set feature matrix

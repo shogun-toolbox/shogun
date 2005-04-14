@@ -88,7 +88,7 @@ enum EMessageType
 	M_CRITICAL,
 	M_ALERT,
 	M_EMERGENCY,
-	M_MESSAGEONLY,
+	M_MESSAGEONLY
 };
 
 enum E_NormalizationType
@@ -129,7 +129,8 @@ enum EKernelType
 	K_COMBINED = 140 | K_OPTIMIZABLE,
 	K_AUC = 150 | K_OPTIMIZABLE,
 	K_CUSTOM = 160,
-	K_SIGMOID = 170
+	K_SIGMOID = 170,
+	K_CHI2 = 180
 };
 
 enum EKernelProperty

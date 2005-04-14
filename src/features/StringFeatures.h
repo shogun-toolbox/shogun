@@ -10,6 +10,7 @@
 #include "lib/File.h"
 #include "lib/Mathmatics.h"
 
+#include <math.h>
 #include <assert.h>
 
 
@@ -286,7 +287,7 @@ template <class ST> class CStringFeatures: public CFeatures
 
 		CIO::message(M_DEBUG, "max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, order, num_symbols);
 
-		if (num_symbols>(1<<(sizeof(ST)*8)))
+		if ( ((long double) num_symbols) > pow(((long double) 2),((long double) sizeof(ST)*8)) )
 		{
 			CIO::message(M_DEBUG, "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
 			return false;
@@ -384,29 +385,4 @@ template <class ST> class CStringFeatures: public CFeatures
 	/// order used in higher order mapping
 	ST* symbol_mask_table;
 };
-
-inline EFeatureType CStringFeatures<REAL>::get_feature_type()
-{
-	return F_REAL;
-}
-
-inline EFeatureType CStringFeatures<SHORT>::get_feature_type()
-{
-	return F_SHORT;
-}
-
-inline EFeatureType CStringFeatures<CHAR>::get_feature_type()
-{
-	return F_CHAR;
-}
-
-inline EFeatureType CStringFeatures<BYTE>::get_feature_type()
-{
-	return F_BYTE;
-}
-
-inline EFeatureType CStringFeatures<WORD>::get_feature_type()
-{
-	return F_WORD;
-}
 #endif

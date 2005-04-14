@@ -882,8 +882,10 @@ void CGUIFeatures::add_train_features(CFeatures* f)
 
 		assert(f);
 		bool result = ((CCombinedFeatures*) train_features)->append_feature_obj(f);
-		assert(result) ;
-		((CCombinedFeatures*) train_features)->list_feature_objs();
+		if (result)
+			((CCombinedFeatures*) train_features)->list_feature_objs();
+		else
+			CIO::message(M_ERROR, "appending feature object failed\n");
 	}
 }
 
@@ -909,8 +911,11 @@ void CGUIFeatures::add_test_features(CFeatures* f)
 
 		assert(f);
 		bool result=((CCombinedFeatures*) test_features)->append_feature_obj(f);
-		assert(result);
-		((CCombinedFeatures*) test_features)->list_feature_objs();
+
+		if (result)
+			((CCombinedFeatures*) test_features)->list_feature_objs();
+		else
+			CIO::message(M_ERROR, "appending feature object failed\n");
 	}
 	else
 		CIO::message(M_ERROR, "combined feature object could not be created\n");

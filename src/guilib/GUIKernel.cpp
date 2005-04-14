@@ -8,6 +8,7 @@
 #include "kernel/ShortKernel.h"
 #include "kernel/CharKernel.h"
 #include "kernel/ByteKernel.h"
+#include "kernel/Chi2Kernel.h"
 #include "kernel/LinearKernel.h"
 #include "kernel/LinearByteKernel.h"
 #include "kernel/LinearCharKernel.h"
@@ -666,6 +667,21 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 			}
 		}
+		else if (strcmp(kern_type,"CHI2")==0)
+		{
+			if (strcmp(data_type,"REAL")==0)
+			{
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				delete k;
+				k=new CChi2Kernel(size);
+
+				if (k)
+				{
+					CIO::message(M_INFO, "Chi2Kernel created\n");
+					return k;
+				}
+			}
+		}
 		else if (strcmp(kern_type,"FIXEDDEGREE")==0)
 		{
 			if (strcmp(data_type,"CHAR")==0)
@@ -1272,14 +1288,17 @@ bool CGUIKernel::add_kernel(CHAR* param)
 		}
 
 		CKernel* k=create_kernel(newparam);
+		assert(k);
 		k->set_combined_kernel_weight(weight) ;
 		
-		assert(k);
 		bool bret = ((CCombinedKernel*) kernel)->append_kernel(k) ;
-		assert(bret);
-		((CCombinedKernel*) kernel)->list_kernels();
+		if (bret)
+			((CCombinedKernel*) kernel)->list_kernels();
+		else
+			CIO::message(M_ERROR, "appending kernel failed\n");
+
 		delete[] newparam ;
-		return true;
+		return bret;
 	}
 	else
 		CIO::message(M_ERROR, "combined kernel object could not be created\n");

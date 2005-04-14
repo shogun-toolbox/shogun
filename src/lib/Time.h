@@ -1,6 +1,9 @@
 #ifndef __TIME_H__
 #define __TIME_H__
+
 #include <time.h>
+
+#include "lib/common.h"
 
 class CTime
 {
@@ -28,6 +31,13 @@ class CTime
 		/// returns time difference between start and stop
 		/// when verbose is set the time difference is printed
 		double time_diff_sec(bool verbose=false);
+
+		static LONG get_runtime() 
+		{
+			clock_t start;
+			start = clock();
+			return((LONG)((double)start*100.0/(double)CLOCKS_PER_SEC));
+		}
 
 	protected:
 		clock_t start_time;

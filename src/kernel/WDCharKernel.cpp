@@ -342,30 +342,7 @@ bool CWDCharKernel::set_kernel_parameters(INT num, const double* param)
 
 bool CWDCharKernel::load_init(FILE* src)
 {
-    assert(src!=NULL);
-    UINT intlen=0;
-    UINT endian=0;
-    UINT fourcc=0;
-    UINT doublelen=0;
-    INT d=1;
-
-    assert(fread(&intlen, sizeof(BYTE), 1, src)==1);
-    assert(fread(&doublelen, sizeof(BYTE), 1, src)==1);
-    assert(fread(&endian, (UINT) intlen, 1, src)== 1);
-    assert(fread(&fourcc, (UINT) intlen, 1, src)==1);
-    assert(fread(&d, (UINT) intlen, 1, src)==1);
-	double* w= new double[d];
-	assert(w) ;
-	
-    assert(fread(w, sizeof(double), d, src)==(UINT) d) ;
-
-	for (INT i=0; i<d; i++)
-		matching_weights[i]=w[i];
-
-    CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, degree=%d\n", intlen, doublelen, d);
-
-	degree=d;
-	return true;
+	return false;
 }
 
 bool CWDCharKernel::save_init(FILE* dest)

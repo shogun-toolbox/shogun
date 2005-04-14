@@ -70,7 +70,7 @@ cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
 
-	for _cc in gcc-3.3 gcc-3.2 gcc3 cc gcc
+	for _cc in gcc-3.4 gcc-3.3 gcc-3.2 gcc3 cc gcc
 	do
 		if cc_check
 		then
@@ -81,7 +81,7 @@ EOF
 		fi
 	done
 
-	for _cc in g++-3.3 g++-3.2 g++3 cxx CC c++ g++
+	for _cc in g++-3.4 g++-3.3 g++-3.2 g++3 cxx CC c++ g++
 	do
 		if cc_check
 		then
@@ -1118,8 +1118,8 @@ set_opts()
 	if test "$_python" = yes
 	then
 		INCLUDES="-I/usr/include/python2.3 $INCLUDES"
-		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -DNDEBUG -Wall -Wstrict-prototypes -fPIC $COMPFLAGS_CPP"
-		COMPFLAGS_C="-pthread -fno-strict-aliasing -DNDEBUG -Wall -Wstrict-prototypes -fPIC $COMPFLAGS_C"
+		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_CPP"
+		COMPFLAGS_C="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_C"
 		LINKFLAGS="-pthread -shared -L/usr/lib/python2.3/config -lpython2.3 $LINKFLAGS"
 		TARGET="gf.so"
 	fi

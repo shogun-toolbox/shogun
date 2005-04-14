@@ -168,11 +168,13 @@ bool CFile::read_header()
     UINT fourcc=0;
     UINT doublelen=0;
 
-    assert(fread(&intlen, sizeof(BYTE), 1, file)==1);
-    assert(fread(&doublelen, sizeof(BYTE), 1, file)==1);
-    assert(fread(&endian, (UINT) intlen, 1, file)== 1);
-    assert(fread(&fourcc, (UINT) intlen, 1, file)==1);
-	return false;
+	if ( (fread(&intlen, sizeof(BYTE), 1, file)==1) &&
+			(fread(&doublelen, sizeof(BYTE), 1, file)==1) &&
+			(fread(&endian, (UINT) intlen, 1, file)== 1) &&
+			(fread(&fourcc, (UINT) intlen, 1, file)==1))
+		return true;
+	else
+		return false;
 }
 
 bool CFile::write_header()
@@ -181,10 +183,11 @@ bool CFile::write_header()
     BYTE doublelen=sizeof(double);
     UINT endian=0x12345678;
 
-    assert(fwrite(&intlen, sizeof(BYTE), 1, file)==1);
-    assert(fwrite(&doublelen, sizeof(BYTE), 1, file)==1);
-    assert(fwrite(&endian, sizeof(UINT), 1, file)==1);
-    assert(fwrite(&fourcc, 4*sizeof(char), 1, file)==1);
-
-	return false;
+	if ((fwrite(&intlen, sizeof(BYTE), 1, file)==1) &&
+			(fwrite(&doublelen, sizeof(BYTE), 1, file)==1) &&
+			(fwrite(&endian, sizeof(UINT), 1, file)==1) &&
+			(fwrite(&fourcc, 4*sizeof(char), 1, file)==1))
+		return true;
+	else
+		return false;
 }

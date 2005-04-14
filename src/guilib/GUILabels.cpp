@@ -20,7 +20,6 @@ bool CGUILabels::load(CHAR* param)
 	param=CIO::skip_spaces(param);
 	CHAR filename[1024]="";
 	CHAR target[1024]="";
-	bool result=false;
 
 	if ((sscanf(param, "%s %s", filename, target))==2)
 	{
@@ -46,13 +45,17 @@ bool CGUILabels::load(CHAR* param)
 			*f_ptr=new CLabels(filename);
 
 			CLabels* label=*f_ptr;
-			assert(label);
+
+			if (label)
+				return true;
+			else
+				CIO::message(M_ERROR, "loading labels failed\n");
 		}
 	}
 	else
 		CIO::message(M_ERROR, "see help for params\n");
 
-	return result;
+	return false;
 }
 
 bool CGUILabels::save(CHAR* param)

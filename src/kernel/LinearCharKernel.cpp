@@ -48,23 +48,7 @@ void CLinearCharKernel::cleanup()
 
 bool CLinearCharKernel::load_init(FILE* src)
 {
-    assert(src!=NULL);
-    UINT intlen=0;
-    UINT endian=0;
-    UINT fourcc=0;
-    UINT r=0;
-    UINT doublelen=0;
-    double s=1;
-
-    assert(fread(&intlen, sizeof(BYTE), 1, src)==1);
-    assert(fread(&doublelen, sizeof(BYTE), 1, src)==1);
-    assert(fread(&endian, (UINT) intlen, 1, src)== 1);
-    assert(fread(&fourcc, (UINT) intlen, 1, src)==1);
-    assert(fread(&r, (UINT) intlen, 1, src)==1);
-    assert(fread(&s, (UINT) doublelen, 1, src)==1);
-    CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, r=%d, scale=%g\n", intlen, doublelen, r, s);
-	scale=s;
-	return true;
+	return false;
 }
 
 bool CLinearCharKernel::save_init(FILE* dest)

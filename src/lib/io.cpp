@@ -1,5 +1,12 @@
+#include "lib/config.h"
+
+#ifdef HAVE_MATLAB
+#include "mex.h"
+#endif
+
 #include "lib/io.h"
 #include "lib/common.h"
+#include "lib/Time.h"
 #include "lib/Mathmatics.h"
 
 #include <stdio.h>
@@ -13,11 +20,44 @@ REAL CIO::last_progress=1 ;
 
 CIO::CIO()
 {
-
 }
 
 void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 {
+#ifdef HAVE_MATLAB
+	char str[4096];
+    va_list list;
+    va_start(list,fmt);
+    vfprintf(target,fmt,list);
+	vsnprintf(str, sizeof(str), fmt, list);
+    va_end(list);
+
+	switch (prio)
+	{
+		case M_DEBUG:
+			mexPrintf("[DEBUG] %s", str);
+			break;
+		case M_INFO:
+			mexPrintf("[INFO] %s", str);
+			break;
+		case M_NOTICE:
+			mexPrintf("[NOTICE] %s", str);
+			break;
+		case M_WARN:
+			mexWarnMsgTxt(str);
+			break;
+		case M_ERROR:
+		case M_CRITICAL:
+		case M_ALERT:
+		case M_EMERGENCY:
+			mexErrMsgTxt(str);
+			break;
+		case M_MESSAGEONLY:
+			break;
+		default:
+			break;
+	}
+#else
 	check_target();
 	print_message_prio(prio, target);
     va_list list;
@@ -25,11 +65,22 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
     vfprintf(target,fmt,list);
     va_end(list);
     fflush(target);
+#endif
+}
+
+void CIO::buffered_message(EMessageType prio, const CHAR *fmt, ... )
+{
+	check_target();
+	print_message_prio(prio, target);
+    va_list list;
+    va_start(list,fmt);
+    vfprintf(target,fmt,list);
+    va_end(list);
 }
 
 void CIO::progress(REAL current_val, REAL min_val, REAL max_val, INT decimals, const char* prefix)
 {
-	LONG runtime = get_runtime() ;
+	LONG runtime = CTime::get_runtime() ;
 	
 	char str[1000];
 	REAL v=-1, estimate=0, total_estimate=0 ;
@@ -41,14 +92,11 @@ void CIO::progress(REAL current_val, REAL min_val, REAL max_val, INT decimals, c
 	if (decimals < 1)
 		decimals = 1;
 
-	//fprintf(stdout, "runtime=%ld  %f %f\n", runtime, v, last_progress) ;
-
 	if (last_progress>v)
 	{
 		last_progress_time = runtime ;
 		progress_start_time = runtime;
 		last_progress = v ;
-		//fprintf(stdout,"reset\n") ;
 	}
 	else
 	{
@@ -66,28 +114,16 @@ void CIO::progress(REAL current_val, REAL min_val, REAL max_val, INT decimals, c
 	
 	if (estimate/100>120)
 	{
-		sprintf(str, "%%s %%%d.%df%%%%    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
-		//fprintf(target, "\n%s\n", str) ;
-		fprintf(target, str, prefix, v, (float)estimate/100/60, (float)total_estimate/100/60);
+		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
+		message(M_MESSAGEONLY, str, prefix, v, (float)estimate/100/60, (float)total_estimate/100/60);
 	}
 	else
 	{
-		sprintf(str, "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
-		//fprintf(target, "\n%s\n", str) ;
-		fprintf(target, str, prefix, v, (float)estimate/100, (float)total_estimate/100);
+		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
+		message(M_MESSAGEONLY, str, prefix, v, (float)estimate/100, (float)total_estimate/100);
 	}
 	
     fflush(target);
-}
-
-void CIO::buffered_message(EMessageType prio, const CHAR *fmt, ... )
-{
-	check_target();
-	print_message_prio(prio, target);
-    va_list list;
-    va_start(list,fmt);
-    vfprintf(target,fmt,list);
-    va_end(list);
 }
 
 CHAR* CIO::skip_spaces(CHAR* str)
@@ -123,7 +159,7 @@ void CIO::print_message_prio(EMessageType prio, FILE* target)
 			fprintf(target, "[DEBUG] ");
 			break;
 		case M_INFO:
-			//fprintf(target, "[INFO]");
+			fprintf(target, "[INFO]");
 			break;
 		case M_NOTICE:
 			fprintf(target, "[NOTICE] ");

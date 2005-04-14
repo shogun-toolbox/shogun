@@ -960,7 +960,7 @@ public:
 	* @param prob likelihood of path
 	* @return viterbi path
 	*/
-	T_STATES* CHMM::get_path(INT dim, REAL& prob);
+	T_STATES* get_path(INT dim, REAL& prob);
 
 	/** save viterbi path in ascii format
 	* @param file filehandle

@@ -357,7 +357,7 @@ bool CSVMLight::train()
 		INT num = get_kernel()->get_rhs()->get_num_vectors() ;
 		INT num_kernels = get_kernel()->get_num_subkernels() ;
 		num_precomputed_subkernels=num_kernels ;
-		precomputed_subkernels=new (SHORTREAL*)[num_precomputed_subkernels] ;
+		precomputed_subkernels=new SHORTREAL*[num_precomputed_subkernels] ;
 		CKernel* k = get_kernel() ;
 		INT num_weights = -1;
 		const REAL* w   = k->get_subkernel_weights(num_weights);

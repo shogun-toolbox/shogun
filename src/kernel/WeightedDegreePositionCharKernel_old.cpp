@@ -140,7 +140,7 @@ bool CWeightedDegreePositionCharKernel_old::init(CFeatures* l, CFeatures* r, boo
 #ifdef OSF1
 		trees=new (struct SuffixTree**)[alen] ;		
 #else
-		trees=new (struct SuffixTree*)[alen] ;		
+		trees=new struct SuffixTree*[alen] ;		
 #endif
 		for (INT i=0; i<alen; i++)
 		{
@@ -267,31 +267,7 @@ void CWeightedDegreePositionCharKernel_old::cleanup()
 
 bool CWeightedDegreePositionCharKernel_old::load_init(FILE* src)
 {
-    assert(src!=NULL);
-    UINT intlen=0;
-    UINT endian=0;
-    UINT fourcc=0;
-    UINT doublelen=0;
-    INT d=1;
-
-    assert(fread(&intlen, sizeof(BYTE), 1, src)==1);
-    assert(fread(&doublelen, sizeof(BYTE), 1, src)==1);
-    assert(fread(&endian, (UINT) intlen, 1, src)== 1);
-    assert(fread(&fourcc, (UINT) intlen, 1, src)==1);
-    assert(fread(&d, (UINT) intlen, 1, src)==1);
-	double* w= new double[d];
-	assert(w) ;
-	
-    assert(fread(w, sizeof(double), d, src)==(UINT) d) ;
-
-	for (INT i=0; i<d; i++)
-		weights[i]=w[i];
-
-    CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, degree=%d\n", intlen, doublelen, d);
-
-	degree=d;
-	
-	return true;
+	return false;
 }
 
 bool CWeightedDegreePositionCharKernel_old::save_init(FILE* /*dest*/)

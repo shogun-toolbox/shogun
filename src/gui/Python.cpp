@@ -1,6 +1,10 @@
 #include "lib/config.h"
 
 #ifdef HAVE_PYTHON
+
+#include <Python.h>
+#include <numarray/libnumarray.h>
+
 #include "guilib/GUIPython.h"
 #include "gui/Python.h"
 #include "gui/TextGUI.h"
@@ -24,6 +28,9 @@ PyMODINIT_FUNC initgf(void)
 
 	// initialize callbacks
     (void) Py_InitModule("gf", gfpythonmethods);
+
+	// init numarray
+	import_libnumarray();
 }
 
 void exitgf(void)

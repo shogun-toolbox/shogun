@@ -29,13 +29,6 @@ protected:
 	static void check_target();
 	static void print_message_prio(EMessageType prio, FILE* target);
 
-	static LONG get_runtime() 
-		{
-			clock_t start;
-			start = clock();
-			return((LONG)((double)start*100.0/(double)CLOCKS_PER_SEC));
-		}
-
 protected:
 	static FILE* target;
 	static LONG last_progress_time, progress_start_time ;
