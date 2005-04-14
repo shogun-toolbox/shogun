@@ -34,7 +34,6 @@ public:
 	bool parse_line(CHAR* input);
 
 protected:
-	CSignal* sig;
 	FILE* out_file;
 	CHAR input[10000];
 };

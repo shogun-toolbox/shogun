@@ -70,9 +70,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 	if (!gui)
 		gui=new CTextGUI(0, NULL);
 
-	if (!gui)
-		gui=new CTextGUI(0, NULL);
-	
+	CSignal::set_handler();
+
 	if (!gui)
 		CIO::message(M_ERROR,"gui could not be initialized.");
 
@@ -92,7 +91,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				delete[] cmd;
 			}
 			else
-				mexErrMsgTxt("usage is gf('send_command', 'cmdline')");
+				CIO::message(M_ERROR, "usage is gf('send_command', 'cmdline')");
 		}
 		else if (!strncmp(action, N_HELP, strlen(N_HELP)))
 		{
@@ -101,7 +100,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.send_command("help");
 			}
 			else
-				mexErrMsgTxt("usage is gf('help')");
+				CIO::message(M_ERROR, "usage is gf('help')");
 		}
 		else if (!strncmp(action, N_GET_HMM, strlen(N_GET_HMM)))
 		{
@@ -110,7 +109,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.get_hmm(plhs);
 			}
 			else
-				mexErrMsgTxt("usage is [p,q,a,b]=gf('get_hmm')");
+				CIO::message(M_ERROR, "usage is [p,q,a,b]=gf('get_hmm')");
 		}
 		else if (!strncmp(action, N_GET_VITERBI_PATH, strlen(N_GET_VITERBI_PATH)))
 		{
@@ -122,10 +121,10 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 					gf_matlab.best_path(plhs, (int) *dim);
 				}
 				else
-					mexErrMsgTxt("usage is [path, lik]=gf('get_viterbi_path',dim)");
+					CIO::message(M_ERROR, "usage is [path, lik]=gf('get_viterbi_path',dim)");
 			}
 			else
-				mexErrMsgTxt("usage is [path, lik]=gf('get_viterbi_path',dim)");
+				CIO::message(M_ERROR, "usage is [path, lik]=gf('get_viterbi_path',dim)");
 		}
 		else if (!strncmp(action, N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE, strlen(N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE)))
 		  {
@@ -137,24 +136,24 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			    gf_matlab.one_class_hmm_classify_example(plhs, (int) (*idx) );
 			  }
 			else
-			  mexErrMsgTxt("usage is [result]=gf('hmm_classify_example', feature_vector_index)");
+			  CIO::message(M_ERROR, "usage is [result]=gf('hmm_classify_example', feature_vector_index)");
 		      }
 		    else
-		      mexErrMsgTxt("usage is [result]=gf('one_class_hmm_classify_example', feature_vector_index)");
+		      CIO::message(M_ERROR, "usage is [result]=gf('one_class_hmm_classify_example', feature_vector_index)");
 		}
 		else if (!strncmp(action, N_ONE_CLASS_HMM_CLASSIFY, strlen(N_ONE_CLASS_HMM_CLASSIFY)))
 		{
 			if (nlhs==1)
 				gf_matlab.one_class_hmm_classify(plhs, false);
 			else
-				mexErrMsgTxt("usage is [result]=gf('hmm_classify')");
+				CIO::message(M_ERROR, "usage is [result]=gf('hmm_classify')");
 		}
 		else if (!strncmp(action, N_ONE_CLASS_LINEAR_HMM_CLASSIFY, strlen(N_ONE_CLASS_HMM_CLASSIFY)))
 		{
 			if (nlhs==1)
 				gf_matlab.one_class_hmm_classify(plhs, true);
 			else
-				mexErrMsgTxt("usage is [result]=gf('hmm_classify')");
+				CIO::message(M_ERROR, "usage is [result]=gf('hmm_classify')");
 		}
 		else if (!strncmp(action, N_HMM_CLASSIFY_EXAMPLE, strlen(N_HMM_CLASSIFY_EXAMPLE)))
 		{
@@ -166,17 +165,17 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 					gf_matlab.hmm_classify_example(plhs, (int) (*idx) );
 				}
 				else
-					mexErrMsgTxt("usage is [result]=gf('hmm_classify_example', feature_vector_index)");
+					CIO::message(M_ERROR, "usage is [result]=gf('hmm_classify_example', feature_vector_index)");
 			}
 			else
-				mexErrMsgTxt("usage is [result]=gf('hmm_classify_example', feature_vector_index)");
+				CIO::message(M_ERROR, "usage is [result]=gf('hmm_classify_example', feature_vector_index)");
 		}
 		else if (!strncmp(action, N_HMM_CLASSIFY, strlen(N_HMM_CLASSIFY)))
 		{
 			if (nlhs==1)
 				gf_matlab.hmm_classify(plhs);
 			else
-				mexErrMsgTxt("usage is [result]=gf('hmm_classify')");
+				CIO::message(M_ERROR, "usage is [result]=gf('hmm_classify')");
 		}
 		else if (!strncmp(action, N_GET_SVM, strlen(N_GET_SVM)))
 		{
@@ -185,7 +184,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.get_svm(plhs);
 			}
 			else
-				mexErrMsgTxt("usage is [b,alphas]=gf('get_svm')");
+				CIO::message(M_ERROR, "usage is [b,alphas]=gf('get_svm')");
 		}
 		else if (!strncmp(action, N_SET_SVM, strlen(N_SET_SVM)))
 		{
@@ -194,7 +193,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.set_svm(prhs);
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_svm', [ b, alphas])");
+				CIO::message(M_ERROR, "usage is gf('set_svm', [ b, alphas])");
 		}
 		else if (!strncmp(action, N_SVM_CLASSIFY_EXAMPLE, strlen(N_SVM_CLASSIFY_EXAMPLE)))
 		{
@@ -204,23 +203,23 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				{
 				  double* idx=mxGetPr(prhs[1]);
 				  if (!gf_matlab.svm_classify_example(plhs, (int) (*idx) ))
-				    mexErrMsgTxt("svm_classify_example failed");
+				    CIO::message(M_ERROR, "svm_classify_example failed");
 				}
 				else
-				mexErrMsgTxt("usage is [result]=gf('svm_classify_example', feature_vector_index)");
+				CIO::message(M_ERROR, "usage is [result]=gf('svm_classify_example', feature_vector_index)");
 			}
 			else
-				mexErrMsgTxt("usage is [result]=gf('svm_classify_example', feature_vector_index)");
+				CIO::message(M_ERROR, "usage is [result]=gf('svm_classify_example', feature_vector_index)");
 		}
 		else if (!strncmp(action, N_SVM_CLASSIFY, strlen(N_SVM_CLASSIFY)))
 		{
 			if (nlhs==1)
 			  {
 			    if (!gf_matlab.svm_classify(plhs))
-			      mexErrMsgTxt("svm_classify failed");
+			      CIO::message(M_ERROR, "svm_classify failed");
 			  }
 			else
-				mexErrMsgTxt("usage is [result]=gf('svm_classify')");
+				CIO::message(M_ERROR, "usage is [result]=gf('svm_classify')");
 		}
 		else if (!strncmp(action, N_GET_PLUGIN_ESTIMATE, strlen(N_GET_PLUGIN_ESTIMATE)))
 		{
@@ -229,7 +228,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.get_plugin_estimate(plhs);
 			}
 			else
-				mexErrMsgTxt("usage is [emission_probs, model_sizes]=gf('get_plugin_estimate')");
+				CIO::message(M_ERROR, "usage is [emission_probs, model_sizes]=gf('get_plugin_estimate')");
 		}
 		else if (!strncmp(action, N_SET_PLUGIN_ESTIMATE, strlen(N_SET_PLUGIN_ESTIMATE)))
 		{
@@ -238,7 +237,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.set_plugin_estimate(prhs);
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_plugin_estimate', emission_probs, model_sizes)");
+				CIO::message(M_ERROR, "usage is gf('set_plugin_estimate', emission_probs, model_sizes)");
 		}
 		else if (!strncmp(action, N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE, strlen(N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE)))
 		{
@@ -250,107 +249,107 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 					gf_matlab.plugin_estimate_classify_example(plhs, (int) (*idx) );
 				}
 				else
-				mexErrMsgTxt("usage is [result]=gf('plugin_estimate_classify_example', feature_vector_index)");
+				CIO::message(M_ERROR, "usage is [result]=gf('plugin_estimate_classify_example', feature_vector_index)");
 			}
 			else
-				mexErrMsgTxt("usage is [result]=gf('plugin_estimate_classify_example', feature_vector_index)");
+				CIO::message(M_ERROR, "usage is [result]=gf('plugin_estimate_classify_example', feature_vector_index)");
 		}
 		else if (!strncmp(action, N_PLUGIN_ESTIMATE_CLASSIFY, strlen(N_PLUGIN_ESTIMATE_CLASSIFY)))
 		{
 			if (nlhs==1)
 			{
 				if (!gf_matlab.plugin_estimate_classify(plhs))
-					mexErrMsgTxt("error executing command");
+					CIO::message(M_ERROR, "error executing command");
 			}
 			else
-				mexErrMsgTxt("usage is [result]=gf('plugin_estimate_classify')");
+				CIO::message(M_ERROR, "usage is [result]=gf('plugin_estimate_classify')");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_OPTIMIZATION, strlen(N_GET_KERNEL_OPTIMIZATION)))
 		{
 			if ((nlhs==1) && (nrhs==1))
 			{
 				if (!gf_matlab.get_kernel_optimization(plhs))
-					mexErrMsgTxt("error executing command");
+					CIO::message(M_ERROR, "error executing command");
 			}
 			else
-				mexErrMsgTxt("usage is W=gf('get_kernel_optimization')");
+				CIO::message(M_ERROR, "usage is W=gf('get_kernel_optimization')");
 		}
 		else if (!strncmp(action, N_COMPUTE_BY_SUBKERNELS, strlen(N_COMPUTE_BY_SUBKERNELS)))
 		{
 			if ((nlhs==1) && (nrhs==1))
 			{
 				if (!gf_matlab.compute_by_subkernels(plhs))
-					mexErrMsgTxt("error executing command");
+					CIO::message(M_ERROR, "error executing command");
 			}
 			else
-				mexErrMsgTxt("usage is W=gf('compute_by_subkernels')");
+				CIO::message(M_ERROR, "usage is W=gf('compute_by_subkernels')");
 		}
 		else if (!strncmp(action, N_GET_LAST_SUBKERNEL_WEIGHTS, strlen(N_GET_LAST_SUBKERNEL_WEIGHTS)))
 		{
 			if ((nlhs==1) && (nrhs==1))
 			{
 				if (!gf_matlab.get_last_subkernel_weights(plhs))
-					mexErrMsgTxt("error executing command");
+					CIO::message(M_ERROR, "error executing command");
 			}
 			else
-				mexErrMsgTxt("usage is W=gf('get_last_subkernel_weights')");
+				CIO::message(M_ERROR, "usage is W=gf('get_last_subkernel_weights')");
 		}
 		else if (!strncmp(action, N_GET_SUBKERNEL_WEIGHTS, strlen(N_GET_SUBKERNEL_WEIGHTS)))
 		{
 			if ((nlhs==1) && (nrhs==1))
 			{
 				if (!gf_matlab.get_subkernel_weights(plhs))
-					mexErrMsgTxt("error executing command");
+					CIO::message(M_ERROR, "error executing command");
 			}
 			else
-				mexErrMsgTxt("usage is W=gf('get_subkernel_weights')");
+				CIO::message(M_ERROR, "usage is W=gf('get_subkernel_weights')");
 		}
 		else if (!strncmp(action, N_GET_WD_POS_WEIGHTS, strlen(N_GET_WD_POS_WEIGHTS)))
 		{
 			if ((nlhs==1) && (nrhs==1))
 			{
 				if (!gf_matlab.get_WD_position_weights(plhs))
-					mexErrMsgTxt("error executing command");
+					CIO::message(M_ERROR, "error executing command");
 			}
 			else
-				mexErrMsgTxt("usage is W=gf('get_WD_position_weights')");
+				CIO::message(M_ERROR, "usage is W=gf('get_WD_position_weights')");
 		}
 		else if (!strncmp(action, N_SET_LAST_SUBKERNEL_WEIGHTS, strlen(N_SET_LAST_SUBKERNEL_WEIGHTS)))
 		{
 			if ((nlhs==0) && (nrhs==2))
 			{
 				if (!gf_matlab.set_last_subkernel_weights(prhs[1]))
-					mexErrMsgTxt("error executing command");
+					CIO::message(M_ERROR, "error executing command");
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_last_subkernel_weights', W)");
+				CIO::message(M_ERROR, "usage is gf('set_last_subkernel_weights', W)");
 		}
 		else if (!strncmp(action, N_SET_SUBKERNEL_WEIGHTS, strlen(N_SET_SUBKERNEL_WEIGHTS)))
 		{
 			if ((nlhs==0) && (nrhs==2))
 			{
 				if (!gf_matlab.set_subkernel_weights(prhs[1]))
-					mexErrMsgTxt("error executing command");
+					CIO::message(M_ERROR, "error executing command");
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_subkernel_weights', W)");
+				CIO::message(M_ERROR, "usage is gf('set_subkernel_weights', W)");
 		}
 		else if (!strncmp(action, N_SET_WD_POS_WEIGHTS, strlen(N_SET_WD_POS_WEIGHTS)))
 		{
 			if ((nlhs==0) && (nrhs==2))
 			{
 				if (!gf_matlab.set_WD_position_weights(prhs[1]))
-					mexErrMsgTxt("error executing command");
+					CIO::message(M_ERROR, "error executing command");
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_WD_position_weights', W)");
+				CIO::message(M_ERROR, "usage is gf('set_WD_position_weights', W)");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_MATRIX, strlen(N_GET_KERNEL_MATRIX)))
 		{
 			if ((nlhs==1) && (nrhs==1))
 				gf_matlab.get_kernel_matrix(plhs);
 			else
-				mexErrMsgTxt("usage is K=gf('get_kernel_matrix')");
+				CIO::message(M_ERROR, "usage is K=gf('get_kernel_matrix')");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_INIT, strlen(N_GET_KERNEL_INIT)))
 		{
@@ -375,10 +374,10 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				if (features)
 					gf_matlab.get_features(plhs,features);
 				else
-					mexErrMsgTxt("usage is [features]=gf('get_features', 'TRAIN|TEST')");
+					CIO::message(M_ERROR, "usage is [features]=gf('get_features', 'TRAIN|TEST')");
 			}
 			else
-				mexErrMsgTxt("usage is [features]=gf('get_features', 'TRAIN|TEST')");
+				CIO::message(M_ERROR, "usage is [features]=gf('get_features', 'TRAIN|TEST')");
 		}
 		else if (!strncmp(action, N_GET_LABELS, strlen(N_GET_LABELS)))
 		{
@@ -400,10 +399,10 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				if (labels)
 					gf_matlab.get_labels(plhs,labels);
 				else
-					mexErrMsgTxt("usage is [lab]=gf('get_labels', 'TRAIN|TEST')");
+					CIO::message(M_ERROR, "usage is [lab]=gf('get_labels', 'TRAIN|TEST')");
 			}
 			else
-				mexErrMsgTxt("usage is [lab]=gf('get_labels', 'TRAIN|TEST')");
+				CIO::message(M_ERROR, "usage is [lab]=gf('get_labels', 'TRAIN|TEST')");
 		}
 		else if (!strncmp(action, N_GET_VERSION, strlen(N_GET_VERSION)))
 		{
@@ -412,7 +411,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 					gf_matlab.get_version(plhs);
 			}
 			else
-				mexErrMsgTxt("usage is [lab]=gf('get_version')");
+				CIO::message(M_ERROR, "usage is [lab]=gf('get_version')");
 		}
 		else if (!strncmp(action, N_GET_PREPROC_INIT, strlen(N_GET_PREPROC_INIT)))
 		{
@@ -427,7 +426,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.best_path_no_b_trans(prhs,plhs);
 			}
 			else
-				mexErrMsgTxt("usage is [prob,path]=gf('best_path_no_b_trans',p,q,a_trans,max_iter,nbest)");
+				CIO::message(M_ERROR, "usage is [prob,path]=gf('best_path_no_b_trans',p,q,a_trans,max_iter,nbest)");
 		}
 		else if (!strncmp(action, N_BEST_PATH_TRANS, strlen(N_BEST_PATH_TRANS)))
 		{
@@ -436,7 +435,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.best_path_trans(prhs,plhs);
 			}
 			else
-				mexErrMsgTxt("usage is [prob,path,pos,PEN_values]=gf('best_path_trans',p,q,a_trans,seq,pos,orf_info, genestr, penalties, penalty_info, nbest, dict_weights, use_orf)");
+				CIO::message(M_ERROR, "usage is [prob,path,pos,PEN_values]=gf('best_path_trans',p,q,a_trans,seq,pos,orf_info, genestr, penalties, penalty_info, nbest, dict_weights, use_orf)");
 		}
 		else if (!strncmp(action, N_MODEL_PROB_NO_B_TRANS, strlen(N_MODEL_PROB_NO_B_TRANS)))
 		{
@@ -445,7 +444,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.model_prob_no_b_trans(prhs,plhs);
 			}
 			else
-				mexErrMsgTxt("usage is probs=gf('model_prob_no_b_trans',p,q,a_trans,max_iter)");
+				CIO::message(M_ERROR, "usage is probs=gf('model_prob_no_b_trans',p,q,a_trans,max_iter)");
 		}
 		else if (!strncmp(action, N_BEST_PATH_NO_B, strlen(N_BEST_PATH_NO_B)))
 		{
@@ -454,7 +453,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.best_path_no_b(prhs,plhs);
 			}
 			else
-				mexErrMsgTxt("usage is [prob,path]=gf('best_path_no_b',p,q,a,max_iter)");
+				CIO::message(M_ERROR, "usage is [prob,path]=gf('best_path_no_b',p,q,a,max_iter)");
 		}
 		else if (!strncmp(action, N_SET_HMM, strlen(N_SET_HMM)))
 		{
@@ -463,7 +462,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.set_hmm(prhs);
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_hmm',[p,q,a,b])");
+				CIO::message(M_ERROR, "usage is gf('set_hmm',[p,q,a,b])");
 		}
 		else if (!strncmp(action, N_APPEND_HMM, strlen(N_APPEND_HMM)))
 		{
@@ -472,7 +471,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.append_hmm(prhs);
 			}
 			else
-				mexErrMsgTxt("usage is gf('append_hmm',[p,q,a,b])");
+				CIO::message(M_ERROR, "usage is gf('append_hmm',[p,q,a,b])");
 		}
 		else if (!strncmp(action, N_SET_SVM, strlen(N_SET_SVM)))
 		{
@@ -481,12 +480,12 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.set_svm(prhs);
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_svm',[b,alphas])");
+				CIO::message(M_ERROR, "usage is gf('set_svm',[b,alphas])");
 		}
 		else if (!strncmp(action, N_SET_KERNEL_PARAMETERS, strlen(N_SET_KERNEL_PARAMETERS)))
 		{
 			if (nlhs!=0 || nrhs!=2 || !gf_matlab.set_kernel_parameters(prhs[1]))
-				mexErrMsgTxt("usage is gf('set_kernel_parameters',[parm])");
+				CIO::message(M_ERROR, "usage is gf('set_kernel_parameters',[parm])");
 		}
 		else if (!strncmp(action, N_SET_CUSTOM_KERNEL, strlen(N_SET_CUSTOM_KERNEL)))
 		{
@@ -511,11 +510,11 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 					}
 				}
 				else
-					mexErrMsgTxt("usage is gf('set_custom_kernel',[kernelmatrix, is_upperdiag])");
+					CIO::message(M_ERROR, "usage is gf('set_custom_kernel',[kernelmatrix, is_upperdiag])");
 				delete[] target;
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_custom_kernel',[kernelmatrix, is_upperdiag])");
+				CIO::message(M_ERROR, "usage is gf('set_custom_kernel',[kernelmatrix, is_upperdiag])");
 		}
 		else if (!strncmp(action, N_SET_KERNEL_INIT, strlen(N_SET_KERNEL_INIT)))
 		{
@@ -544,13 +543,13 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 						delete[] target;
 					}
 					else
-						mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features, ...)");
+						CIO::message(M_ERROR, "usage is gf('set_features', 'TRAIN|TEST', features, ...)");
 				}
 				else
-					mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features, ...)");
+					CIO::message(M_ERROR, "usage is gf('set_features', 'TRAIN|TEST', features, ...)");
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_features', 'TRAIN|TEST', features, ...)");
+				CIO::message(M_ERROR, "usage is gf('set_features', 'TRAIN|TEST', features, ...)");
 			CIO::message(M_INFO, "done\n");
 		}
 		else if (!strncmp(action, N_ADD_FEATURES, strlen(N_ADD_FEATURES)))
@@ -578,15 +577,15 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 						target=NULL ;
 					}
 					else
-						mexErrMsgTxt("usage is gf('add_features', 'TRAIN|TEST', features, ...)");
+						CIO::message(M_ERROR, "usage is gf('add_features', 'TRAIN|TEST', features, ...)");
 				}
 				else
-					mexErrMsgTxt("usage is gf('add_features', 'TRAIN|TEST', features, ...)");
+					CIO::message(M_ERROR, "usage is gf('add_features', 'TRAIN|TEST', features, ...)");
 				delete[] target;
 				target=NULL ;
 			}
 			else
-				mexErrMsgTxt("usage is gf('add_features', 'TRAIN|TEST', features, ...)");
+				CIO::message(M_ERROR, "usage is gf('add_features', 'TRAIN|TEST', features, ...)");
 			CIO::message(M_INFO, "done\n");
 		}
 		else if (!strncmp(action, N_CLEAN_FEATURES, strlen(N_CLEAN_FEATURES)))
@@ -607,13 +606,13 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 						delete[] target;
 					}
 					else
-						mexErrMsgTxt("usage is gf('clean_features', 'TRAIN|TEST')");
+						CIO::message(M_ERROR, "usage is gf('clean_features', 'TRAIN|TEST')");
 				}
 				else
-					mexErrMsgTxt("usage is gf('clean_features', 'TRAIN|TEST')");
+					CIO::message(M_ERROR, "usage is gf('clean_features', 'TRAIN|TEST')");
 			}
 			else
-				mexErrMsgTxt("usage is gf('clean_features', 'TRAIN|TEST')");
+				CIO::message(M_ERROR, "usage is gf('clean_features', 'TRAIN|TEST')");
 			CIO::message(M_INFO, "done\n");
 		}
 		else if (!strncmp(action, N_TRANSLATE_STRING, strlen(N_TRANSLATE_STRING)))
@@ -624,7 +623,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				int len = mxGetN(prhs[1]) ;
 				if (mxGetM(prhs[1])!=1 || mxGetN(prhs[2])!=1 || mxGetM(prhs[2])!=1 ||
 					mxGetN(prhs[3])!=1 || mxGetM(prhs[3])!=1)
-					mexErrMsgTxt("usage2 is translation=gf('translate_string', string, order, start)");
+					CIO::message(M_ERROR, "usage2 is translation=gf('translate_string', string, order, start)");
 				REAL *p_order = mxGetPr(prhs[2]) ;
 				REAL *p_start = mxGetPr(prhs[3]) ;
 				INT order = (INT)p_order[0] ;
@@ -648,7 +647,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 					case 'c': obs[i]=1 ; break ;
 					case 'g': obs[i]=2 ; break ;
 					case 't': obs[i]=3 ; break ;
-					default: mexErrMsgTxt("wrong letter") ;
+					default: CIO::message(M_ERROR, "wrong letter") ;
 					}
 				//mxFree(string) ;
 				
@@ -678,7 +677,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				delete[] obs ;
 			}
 			else
-				mexErrMsgTxt("usage is translation=gf('translate_string', string, order, start)");
+				CIO::message(M_ERROR, "usage is translation=gf('translate_string', string, order, start)");
 			
 		}
 		else if (!strncmp(action, N_CRC, strlen(N_CRC)))
@@ -699,7 +698,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				mxFree(string) ;
 			}
 			else
-				mexErrMsgTxt("usage is crc32=gf('crc', string)");
+				CIO::message(M_ERROR, "usage is crc32=gf('crc', string)");
 			
 		}
 		else if (!strncmp(action, N_SET_LABELS, strlen(N_SET_LABELS)))
@@ -725,13 +724,13 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 						delete[] target;
 					}
 					else
-						mexErrMsgTxt("usage is gf('set_labels', 'TRAIN|TEST', labels)");
+						CIO::message(M_ERROR, "usage is gf('set_labels', 'TRAIN|TEST', labels)");
 				}
 				else
-					mexErrMsgTxt("usage is gf('set_labels', 'TRAIN|TEST', labels)");
+					CIO::message(M_ERROR, "usage is gf('set_labels', 'TRAIN|TEST', labels)");
 			}
 			else
-				mexErrMsgTxt("usage is gf('set_labels', 'TRAIN|TEST', labels)");
+				CIO::message(M_ERROR, "usage is gf('set_labels', 'TRAIN|TEST', labels)");
 		}
 		else if (!strncmp(action, N_SET_PREPROC_INIT, strlen(N_SET_PREPROC_INIT)))
 		{
@@ -741,12 +740,14 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else
 		{
-			mexErrMsgTxt("action not defined");
+			CIO::message(M_ERROR, "action not defined");
 		}
 
 		delete[] action;
 	}
 	else
-		mexErrMsgTxt("string expected as first argument");
+		CIO::message(M_ERROR, "string expected as first argument");
+
+	CSignal::unset_handler();
 }
 #endif

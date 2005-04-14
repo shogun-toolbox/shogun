@@ -1,4 +1,5 @@
 #include "lib/io.h"
+#include "lib/Signal.h"
 #include "lib/Mathmatics.h"
 #include "classifier/svm/SVM_light.h"
 #include "classifier/svm/Optimizer.h"
@@ -6,6 +7,7 @@
 #include "features/WordFeatures.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/AUCKernel.h"
+
 #include <assert.h>
 #include <unistd.h>
 
@@ -623,7 +625,7 @@ void CSVMLight::svm_learn()
 		CIO::message(M_DEBUG, "%d totdoc %d pos %d neg\n", totdoc, trainpos, trainneg);
 
 	if(verbosity==1) {
-		CIO::message(M_MESSAGEONLY, "Optimizing");
+		CIO::message(M_MESSAGEONLY, "Optimizing...\n");
 	}
 
 	/* train the svm */
@@ -708,6 +710,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
   long transduction;
   double epsilon_crit_org; 
   double bestmaxdiff;
+  double worstmaxdiff;
   long   bestmaxdiffiter,terminate;
 
   double *selcrit;  /* buffer for sorting */        
@@ -747,6 +750,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
   iteration=1;
   bestmaxdiffiter=1;
   bestmaxdiff=999999999;
+  worstmaxdiff=1e-10;
   terminate=0;
   
   CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
@@ -767,16 +771,14 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 
                             /* repeat this loop until we have convergence */
 
-  for(;((iteration<10) || (retrain && (!terminate))||((w_gap>get_weight_epsilon()) && get_mkl_enabled()));iteration++){
+  for(;((!CSignal::cancel_computations()) && ((iteration<10) || (retrain && (!terminate))||((w_gap>get_weight_epsilon()) && get_mkl_enabled()))); iteration++){
 	  	  
 	  if(use_kernel_cache) 
 		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
 	  
-	  CIO::message(M_MESSAGEONLY, ".");
-	  
 	  if(verbosity>=2) t0=get_runtime();
 	  if(verbosity>=3) {
-		  CIO::message(M_MESSAGEONLY, "\nSelecting working set... "); 
+		  CIO::message(M_MESSAGEONLY, "\nSelecting working set...%f "); 
 	  }
 	  
 	  if(learn_parm->svm_newvarsinqp>learn_parm->svm_maxqpsize) 
@@ -943,6 +945,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		  /* reset watchdog */
 		  bestmaxdiff=(*maxdiff);
 		  bestmaxdiffiter=iteration;
+
 		  /* termination criterion */
 		  noshrink=1;
 		  retrain=0;
@@ -995,6 +998,11 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 			  }
 		  }
 	  }
+
+	  if (bestmaxdiff>worstmaxdiff)
+		  worstmaxdiff=bestmaxdiff;
+
+	  CIO::progress(-CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon));
   } /* end of loop */
 
   delete[] chosen;

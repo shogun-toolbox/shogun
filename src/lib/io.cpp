@@ -5,6 +5,7 @@
 #endif
 
 #include "lib/io.h"
+#include "lib/Signal.h"
 #include "lib/common.h"
 #include "lib/Time.h"
 #include "lib/Mathmatics.h"
@@ -17,7 +18,9 @@ FILE* CIO::target=stdout;
 LONG CIO::last_progress_time=0 ;
 LONG CIO::progress_start_time=0 ;
 REAL CIO::last_progress=1 ;
-EMessageType CIO::loglevel = M_ERROR;
+EMessageType CIO::loglevel = M_WARN;
+const EMessageType CIO::levels[NUM_LOG_LEVELS]={M_DEBUG, M_INFO, M_NOTICE, M_WARN, M_ERROR, M_CRITICAL, M_ALERT, M_EMERGENCY,M_MESSAGEONLY};
+const char* CIO::message_strings[NUM_LOG_LEVELS]={"[DEBUG] ", "[INFO] ", "[NOTICE] ", "[WARN] ", "[ERROR] ", "[CRITICAL] ", "[ALERT] ", "[EMERGENCY] ", ""};
 
 CIO::CIO()
 {
@@ -33,37 +36,41 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
     va_end(list);
 
 	check_target();
-	switch (prio)
+	int p=get_prio_string(prio);
+	if (p>=0)
 	{
-		case M_DEBUG:
-			fprintf(target, "[DEBUG] %s", str);
-			break;
-		case M_INFO:
-			fprintf(target, "[INFO] %s", str);
-			break;
-		case M_NOTICE:
-			fprintf(target, "[NOTICE] %s", str);
-			break;
-		case M_WARN:
-			mexWarnMsgTxt(str);
-			break;
-		case M_ERROR:
-		case M_CRITICAL:
-		case M_ALERT:
-		case M_EMERGENCY:
-			mexErrMsgTxt(str);
-			break;
-		case M_MESSAGEONLY:
-			fprintf(target, "%s", str);
-			break;
-		default:
-			break;
+		switch (prio)
+		{
+			case M_DEBUG:
+			case M_INFO:
+			case M_NOTICE:
+			case M_MESSAGEONLY:
+				fprintf(target, message_strings[p]);
+				fprintf(target, "%s", str);
+				break;
+
+			case M_WARN:
+				mexWarnMsgTxt(str);
+				break;
+
+			case M_ERROR:
+			case M_CRITICAL:
+			case M_ALERT:
+			case M_EMERGENCY:
+				CSignal::unset_handler();
+				mexErrMsgTxt(str);
+				break;
+			default:
+				break;
+		}
 	}
     fflush(target);
 #else
 	check_target();
-	if (print_message_prio(prio, target))
+	int p=get_prio_string(prio);
+	if (p>=0)
 	{
+		fprintf(target, message_strings[p]);
 		va_list list;
 		va_start(list,fmt);
 		vfprintf(target,fmt,list);
@@ -76,8 +83,10 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 void CIO::buffered_message(EMessageType prio, const CHAR *fmt, ... )
 {
 	check_target();
-	if (print_message_prio(prio, target))
+	int p=get_prio_string(prio);
+	if (p>=0)
 	{
+		fprintf(target, message_strings[p]);
 		va_list list;
 		va_start(list,fmt);
 		vfprintf(target,fmt,list);
@@ -163,28 +172,28 @@ void CIO::check_target()
 		target=stdout;
 }
 
-bool CIO::print_message_prio(EMessageType prio, FILE* target)
+int CIO::get_prio_string(EMessageType prio)
 {
-	const int num_levels=9;
-	const EMessageType levels[num_levels]={M_MESSAGEONLY, M_DEBUG, M_INFO, M_NOTICE, M_WARN, M_ERROR, M_CRITICAL, M_ALERT, M_EMERGENCY};
-	const char* strings[num_levels]={"[MESSAGEONLY]", "[DEBUG] ", "[INFO]", "[NOTICE]", "[WARN]", "[ERROR]", "[CRITICAL]", "[ALERT]", "[EMERGENCY]"};
-
 	int i=0;
-	int idx=0;
-	bool output=false;
+	int idx=-1;
 
-	while (i<num_levels && levels[i]!=loglevel)
+	while (i<NUM_LOG_LEVELS)
 	{
 		if (levels[i]==loglevel)
-			output=true;
-		if (levels[i]==prio)
-			idx=i;
-
+		{
+			while (i<NUM_LOG_LEVELS)
+			{
+				if (levels[i]==prio)
+				{
+					idx=i;
+					break;
+				}
+				i++;
+			}
+			break;
+		}
 		i++;
 	}
 
-	if (output)
-		fprintf(target, strings[idx]);
-
-	return output;
+	return idx;
 }

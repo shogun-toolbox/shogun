@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#define NUM_LOG_LEVELS 9
+
 class CIO
 {
 public:
@@ -27,7 +29,9 @@ public:
 
 protected:
 	static void check_target();
-	static bool print_message_prio(EMessageType prio, FILE* target);
+
+	//return index into levels array or -1 if message not to be printed
+	static int get_prio_string(EMessageType prio);
 
 protected:
 	static FILE* target;
@@ -35,5 +39,7 @@ protected:
 	static REAL last_progress ;
 
 	static EMessageType loglevel;
+	const static char* message_strings[NUM_LOG_LEVELS];
+	const static EMessageType levels[NUM_LOG_LEVELS];
 };
 #endif
