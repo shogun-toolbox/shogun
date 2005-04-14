@@ -82,6 +82,7 @@ static const CHAR* N_CONVERGENCE_CRITERIA=	"convergence_criteria";
 static const CHAR* N_PSEUDO=			"pseudo";
 static const CHAR* N_CONVERT=	"convert";
 static const CHAR* N_C=			     	"c";
+static const CHAR* N_LOGLEVEL=			     	"loglevel";
 static const CHAR* N_SVMQPSIZE=			     	"svm_qpsize";
 static const CHAR* N_MKL_PARAMETERS=			"mkl_parameters";
 static const CHAR* N_SVM_EPSILON=			"svm_epsilon";
@@ -651,6 +652,24 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_TOC, strlen(N_TOC)))
 	{
      	        guitime.stop();
+	} 
+	else if (!strncmp(input, N_LOGLEVEL, strlen(N_LOGLEVEL)))
+	{
+		char* param=input+strlen(N_LOGLEVEL);
+		param=CIO::skip_spaces(param);
+
+		char level[1024];
+		strcpy(level, "ALL");
+		sscanf(param, "%s", level) ;
+
+		if (!strncmp(input, "ALL", strlen("ALL")))
+			CIO::set_loglevel(M_MESSAGEONLY);
+		else if (!strncmp(input, "WARN", strlen("WARN")))
+			CIO::set_loglevel(M_WARN);
+		else if (!strncmp(input, "WARN", strlen("WARN")))
+			CIO::set_loglevel(M_ERROR);
+		else
+			CIO::message(M_MESSAGEONLY, "unknown loglevel\n");
 	} 
 	else
 		CIO::message(M_ERROR, "unrecognized command. type help for options\n");

@@ -17,6 +17,7 @@ FILE* CIO::target=stdout;
 LONG CIO::last_progress_time=0 ;
 LONG CIO::progress_start_time=0 ;
 REAL CIO::last_progress=1 ;
+EMessageType CIO::loglevel = M_ERROR;
 
 CIO::CIO()
 {
@@ -61,23 +62,27 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
     fflush(target);
 #else
 	check_target();
-	print_message_prio(prio, target);
-    va_list list;
-    va_start(list,fmt);
-    vfprintf(target,fmt,list);
-    va_end(list);
-    fflush(target);
+	if (print_message_prio(prio, target))
+	{
+		va_list list;
+		va_start(list,fmt);
+		vfprintf(target,fmt,list);
+		va_end(list);
+		fflush(target);
+	}
 #endif
 }
 
 void CIO::buffered_message(EMessageType prio, const CHAR *fmt, ... )
 {
 	check_target();
-	print_message_prio(prio, target);
-    va_list list;
-    va_start(list,fmt);
-    vfprintf(target,fmt,list);
-    va_end(list);
+	if (print_message_prio(prio, target))
+	{
+		va_list list;
+		va_start(list,fmt);
+		vfprintf(target,fmt,list);
+		va_end(list);
+	}
 }
 
 void CIO::progress(REAL current_val, REAL min_val, REAL max_val, INT decimals, const char* prefix)
@@ -142,6 +147,11 @@ CHAR* CIO::skip_spaces(CHAR* str)
 		return str;
 }
 
+void CIO::set_loglevel(EMessageType level)
+{
+	loglevel=level;
+}
+
 void CIO::set_target(FILE* t)
 {
 	target=t;
@@ -153,37 +163,28 @@ void CIO::check_target()
 		target=stdout;
 }
 
-void CIO::print_message_prio(EMessageType prio, FILE* target)
+bool CIO::print_message_prio(EMessageType prio, FILE* target)
 {
-	switch (prio)
+	const int num_levels=9;
+	const EMessageType levels[num_levels]={M_MESSAGEONLY, M_DEBUG, M_INFO, M_NOTICE, M_WARN, M_ERROR, M_CRITICAL, M_ALERT, M_EMERGENCY};
+	const char* strings[num_levels]={"[MESSAGEONLY]", "[DEBUG] ", "[INFO]", "[NOTICE]", "[WARN]", "[ERROR]", "[CRITICAL]", "[ALERT]", "[EMERGENCY]"};
+
+	int i=0;
+	int idx=0;
+	bool output=false;
+
+	while (i<num_levels && levels[i]!=loglevel)
 	{
-		case M_DEBUG:
-			fprintf(target, "[DEBUG] ");
-			break;
-		case M_INFO:
-			fprintf(target, "[INFO] ");
-			break;
-		case M_NOTICE:
-			fprintf(target, "[NOTICE] ");
-			break;
-		case M_WARN:
-			fprintf(target, "[WARN] ");
-			break;
-		case M_ERROR:
-			fprintf(target, "[ERROR] ");
-			break;
-		case M_CRITICAL:
-			fprintf(target, "[CRITICAL] ");
-			break;
-		case M_ALERT:
-			fprintf(target, "[ALERT] ");
-			break;
-		case M_EMERGENCY:
-			fprintf(target, "[EMERGENCY] ");
-			break;
-		case M_MESSAGEONLY:
-			break;
-		default:
-			break;
+		if (levels[i]==loglevel)
+			output=true;
+		if (levels[i]==prio)
+			idx=i;
+
+		i++;
 	}
+
+	if (output)
+		fprintf(target, strings[idx]);
+
+	return output;
 }

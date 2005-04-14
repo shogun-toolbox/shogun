@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 
 #include "lib/config.h"
 #include "lib/io.h"
@@ -7,6 +8,7 @@
 
 CSignal::CSignal()
 {
+	memset(&CSignal::oldsigaction, 0, sizeof(CSignal::oldsigaction));
 	CIO::message(M_INFO, "initalizing signal handler\n");
 
 	if (!set_handler())
@@ -46,9 +48,7 @@ bool CSignal::set_handler()
 	act.sa_mask = st;
 	act.sa_flags = 0;
 
-	if (!sigaction(SIGTERM, &act, NULL) &&
-			!sigaction(SIGINT, &act, NULL) &&
-			!sigaction(SIGHUP, &act, NULL))
+	if (!sigaction(SIGTERM, &act, &oldsigaction))
 		return true;
 	else
 		return false;
@@ -56,20 +56,7 @@ bool CSignal::set_handler()
 
 bool CSignal::unset_handler()
 {
-	struct sigaction act;
-	sigset_t st;
-
-	sigemptyset(&st);
-
-	act.sa_restorer = NULL; //just in case remove
-	act.sa_sigaction=NULL; //just in case
-	act.sa_handler=SIG_DFL;
-	act.sa_mask = st;
-	act.sa_flags = 0;
-
-	if (!sigaction(SIGTERM, &act, NULL) &&
-			!sigaction(SIGINT, &act, NULL) &&
-			!sigaction(SIGHUP, &act, NULL))
+	if (!sigaction(SIGTERM, &oldsigaction, NULL))
 		return true;
 	else
 		return false;
