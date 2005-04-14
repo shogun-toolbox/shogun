@@ -6,6 +6,8 @@
 #include "lib/io.h"
 #include "lib/Signal.h"
 
+struct sigaction CSignal::oldsigaction;
+
 CSignal::CSignal()
 {
 	memset(&CSignal::oldsigaction, 0, sizeof(CSignal::oldsigaction));
