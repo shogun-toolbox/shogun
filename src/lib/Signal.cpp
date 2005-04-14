@@ -23,16 +23,18 @@ CSignal::~CSignal()
 void CSignal::handler(int signal)
 {
 #ifdef HAVE_MATLAB
-	CIO::message(M_MESSAGEONLY, "\nForce quit (y/n/c)? ");
+	CIO::message(M_MESSAGEONLY, "\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
 	char answer=fgetc(stdin);
 
-	if (answer == 'y')
+	if (answer == 'I')
 	{
 		unset_handler();
 		CIO::message(M_ERROR, "gf stopped by SIGINT\n");
 	}
-	else if (answer == 'c')
+	else if (answer == 'P')
 		cancel_computation=true;
+	else
+		CIO::message(M_MESSAGEONLY, "\n");
 #else
 	CIO::message(M_MESSAGEONLY, "\n");
 	CIO::message(M_ERROR, "gf stopped by SIGINT\n");
