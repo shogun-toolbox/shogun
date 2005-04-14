@@ -2,6 +2,7 @@
 #include <signal.h>
 
 #include "lib/config.h"
+#include "lib/io.h"
 #include "lib/Signal.h"
 
 CSignal::CSignal()
