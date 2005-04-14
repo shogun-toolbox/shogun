@@ -7,20 +7,27 @@
 
 CSignal::CSignal()
 {
-	set_handler();
+	CIO::message(M_INFO, "initalizing signal handler\n");
+
+	if (!set_handler())
+		CIO::message(M_ERROR, "error initalizing signal handler\n");
 }
 
 CSignal::~CSignal()
 {
-	unset_handler();
+	if (!unset_handler())
+		CIO::message(M_ERROR, "error deinitalizing signal handler\n");
 }
 
 void CSignal::handler(int signal)
 {
 #ifdef HAVE_MATLAB
 	unset_handler();
+	CIO::message(M_MESSAGEONLY, "\n");
 	CIO::message(M_ERROR, "gf stopped by SIGTERM\n");
 #else
+	CIO::message(M_MESSAGEONLY, "\n");
+	CIO::message(M_ERROR, "gf stopped by SIGTERM\n");
 	unset_handler();
 	exit(0);
 #endif
@@ -37,9 +44,14 @@ bool CSignal::set_handler()
 	act.sa_sigaction=NULL; //just in case
 	act.sa_handler=CSignal::handler;
 	act.sa_mask = st;
-	act.sa_flags = SA_NODEFER;
+	act.sa_flags = 0;
 
-	return (sigaction(SIGTERM, &act, NULL) == 0);
+	if (!sigaction(SIGTERM, &act, NULL) &&
+			!sigaction(SIGINT, &act, NULL) &&
+			!sigaction(SIGHUP, &act, NULL))
+		return true;
+	else
+		return false;
 }
 
 bool CSignal::unset_handler()
@@ -53,7 +65,12 @@ bool CSignal::unset_handler()
 	act.sa_sigaction=NULL; //just in case
 	act.sa_handler=SIG_DFL;
 	act.sa_mask = st;
-	act.sa_flags = SA_NODEFER;
+	act.sa_flags = 0;
 
-	return (sigaction(SIGTERM, &act, NULL) == 0);
+	if (!sigaction(SIGTERM, &act, NULL) &&
+			!sigaction(SIGINT, &act, NULL) &&
+			!sigaction(SIGHUP, &act, NULL))
+		return true;
+	else
+		return false;
 }

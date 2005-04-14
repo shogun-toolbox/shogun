@@ -28,20 +28,20 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 	char str[4096];
     va_list list;
     va_start(list,fmt);
-    vfprintf(target,fmt,list);
 	vsnprintf(str, sizeof(str), fmt, list);
     va_end(list);
 
+	check_target();
 	switch (prio)
 	{
 		case M_DEBUG:
-			mexPrintf("[DEBUG] %s", str);
+			fprintf(target, "[DEBUG] %s", str);
 			break;
 		case M_INFO:
-			mexPrintf("[INFO] %s", str);
+			fprintf(target, "[INFO] %s", str);
 			break;
 		case M_NOTICE:
-			mexPrintf("[NOTICE] %s", str);
+			fprintf(target, "[NOTICE] %s", str);
 			break;
 		case M_WARN:
 			mexWarnMsgTxt(str);
@@ -53,10 +53,12 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			mexErrMsgTxt(str);
 			break;
 		case M_MESSAGEONLY:
+			fprintf(target, "%s", str);
 			break;
 		default:
 			break;
 	}
+    fflush(target);
 #else
 	check_target();
 	print_message_prio(prio, target);
@@ -159,7 +161,7 @@ void CIO::print_message_prio(EMessageType prio, FILE* target)
 			fprintf(target, "[DEBUG] ");
 			break;
 		case M_INFO:
-			fprintf(target, "[INFO]");
+			fprintf(target, "[INFO] ");
 			break;
 		case M_NOTICE:
 			fprintf(target, "[NOTICE] ");

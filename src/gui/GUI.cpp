@@ -10,16 +10,21 @@
 #include <unistd.h>
 
 #include "gui/TextGUI.h"
+#include "lib/Signal.h"
 
 extern CTextGUI* gui;
 const INT READLINE_BUFFER_SIZE = 10000 ;
 
+static CSignal* sig;
 int main(int argc, char* argv[])
 {	
 	gui=new CTextGUI(argc, argv) ;
+	sig=new CSignal();
 
 	if (argc<=1)
+	{
 		while (gui->parse_line(gui->get_line()));
+	}
 	else
 	{
 		if (argc>=2)
