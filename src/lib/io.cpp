@@ -102,7 +102,7 @@ void CIO::progress(REAL current_val, REAL min_val, REAL max_val, INT decimals, c
 	REAL v=-1, estimate=0, total_estimate=0 ;
 	check_target();
 
-	if (max_val-min_val)
+	if (max_val-min_val>0)
 		v=100*(current_val-min_val+1)/(max_val-min_val+1);
 
 	if (decimals < 1)
@@ -137,6 +137,54 @@ void CIO::progress(REAL current_val, REAL min_val, REAL max_val, INT decimals, c
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
 		message(M_MESSAGEONLY, str, prefix, v, (float)estimate/100, (float)total_estimate/100);
+	}
+	
+    fflush(target);
+}
+
+void CIO::absolute_progress(REAL current_val, REAL val, REAL min_val, REAL max_val, INT decimals, const char* prefix)
+{
+	LONG runtime = CTime::get_runtime() ;
+	
+	char str[1000];
+	REAL v=-1, estimate=0, total_estimate=0 ;
+	check_target();
+
+	if (max_val-min_val>0)
+		v=100*(val-min_val+1)/(max_val-min_val+1);
+
+	if (decimals < 1)
+		decimals = 1;
+
+	if (last_progress>v)
+	{
+		last_progress_time = runtime ;
+		progress_start_time = runtime;
+		last_progress = v ;
+	}
+	else
+	{
+		if (v>100) v=100.0 ;
+		if (v<=0) v=1e-6 ;
+		last_progress = v-1e-5 ; ;
+		
+		if ((v!=100.0) && (runtime - last_progress_time<100))
+			return ;
+		
+		last_progress_time = runtime ;
+		estimate = (1-v/100)*(last_progress_time-progress_start_time)/(v/100) ;
+		total_estimate = (last_progress_time-progress_start_time)/(v/100) ;
+	}
+	
+	if (estimate/100>120)
+	{
+		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
+		message(M_MESSAGEONLY, str, prefix, current_val, (float)estimate/100/60, (float)total_estimate/100/60);
+	}
+	else
+	{
+		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
+		message(M_MESSAGEONLY, str, prefix, current_val, (float)estimate/100, (float)total_estimate/100);
 	}
 	
     fflush(target);

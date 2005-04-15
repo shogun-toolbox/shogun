@@ -18,6 +18,7 @@ public:
 	static void set_loglevel(EMessageType level);
 	static void message(EMessageType prio, const CHAR *fmt, ... );
 	static void progress(REAL current_val, REAL min_val=0.0, REAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
+	static void absolute_progress(REAL current_val, REAL val, REAL min_val=0.0, REAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
 
 	inline static void not_implemented() 
 	{

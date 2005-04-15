@@ -619,7 +619,7 @@ void CSVMLight::svm_learn()
     delete[] alpha;
 
     if(verbosity>=1) {
-      printf("done.\n");  fflush(stdout);
+      printf("\ndone.\n");  fflush(stdout);
     }   
   } 
 		CIO::message(M_DEBUG, "%d totdoc %d pos %d neg\n", totdoc, trainpos, trainneg);
@@ -1002,7 +1002,8 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  if (bestmaxdiff>worstmaxdiff)
 		  worstmaxdiff=bestmaxdiff;
 
-	  CIO::progress(-CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon));
+	  //CIO::progress(-CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon), 6);
+	  CIO::absolute_progress(bestmaxdiff, -CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon), 6);
   } /* end of loop */
 
   delete[] chosen;
