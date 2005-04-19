@@ -343,7 +343,9 @@ bool CSVMLight::train()
 		else
 			CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
 	}
-	
+#else
+	if (get_mkl_enabled())
+		CIO::message(M_ERROR, "MKL was disabled at compile-time\n");
 #endif
 	
 	if (precomputed_subkernels != NULL)
@@ -1471,7 +1473,6 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 	//CIO::message(M_INFO, "(%i) ",count) ;
 	if ((w_gap >= 0.9999*get_weight_epsilon()))
 	{
-		CIO::message(M_INFO, "*") ;
 		if (!lp_initialized)
 		{
 			CIO::message(M_INFO, "creating LP\n") ;
@@ -1576,6 +1577,8 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 				}
 			}
 		}
+
+		CIO::message(M_MESSAGEONLY, "*") ;
 		
 		{ // add the new row
 			//CIO::message(M_INFO, "add the new row\n") ;
@@ -1703,7 +1706,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 		INT start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		CIO::message(M_MESSAGEONLY,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
 	}
 	
 	delete[] sumw;
@@ -1791,7 +1794,7 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 
 	if ((w_gap >= 0.9999*get_weight_epsilon()))// && (mymaxdiff < prev_mymaxdiff/2.0))
 	{
-		CIO::message(M_INFO, "*") ;
+		CIO::message(M_MESSAGEONLY, "*") ;
 		if (!lp_initialized)
 		{
 			CIO::message(M_INFO, "creating LP\n") ;
@@ -2021,7 +2024,7 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 		INT start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		CIO::message(M_INFO,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		CIO::message(M_MESSAGEONLY,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
 	}
 	
 	delete[] sumw;
