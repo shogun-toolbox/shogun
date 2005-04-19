@@ -236,7 +236,9 @@ bool CCombinedKernel::delete_optimization()
 
 	while(k)
 	{
-		k->delete_optimization();
+		if (k->is_optimizable())
+			k->delete_optimization();
+
 		k = get_next_kernel(current);
 	}
 

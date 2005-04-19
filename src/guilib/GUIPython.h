@@ -14,8 +14,9 @@ public:
 
 	// this simply sends a cmd to genefinder
 	// 		gf('send_command', 'cmdline');
-	static PyObject* send_command(PyObject* self, PyObject* args);
-	static PyObject* system(PyObject* self, PyObject* args);
+	static PyObject* py_send_command(PyObject* self, PyObject* args);
+	static PyObject* py_system(PyObject* self, PyObject* args);
+	static PyObject* py_get_kernel_matrix(PyObject* self, PyObject* args);
 };
 #endif
 #endif
