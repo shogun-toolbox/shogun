@@ -45,12 +45,12 @@ PyObject* CGUIPython::py_system(PyObject* self, PyObject* args)
 
 PyObject* CGUIPython::py_get_kernel_matrix(PyObject* self, PyObject* args)
 {
-	PyArrayObject* convolved;
-	if (convolved == Py_None)
-		convolved = (PyArrayObject *) PyArray_FromDims(
-				data->nd, data->dimensions, tFloat64);
-	else
-		convolved = (PyArrayObject *) PyArray_ContiguousFromObject(oconvolved, tFloat64, 2, 2);
+	//PyArrayObject* convolved;
+	//if (convolved == Py_None)
+	//	convolved = (PyArrayObject *) PyArray_FromDims(
+	//			data->nd, data->dimensions, tFloat64);
+	//else
+	//	convolved = (PyArrayObject *) PyArray_ContiguousFromObject(oconvolved, tFloat64, 2, 2);
 	Py_INCREF(Py_None);
 	return Py_None;
 }
