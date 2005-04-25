@@ -134,33 +134,32 @@ void CFeatures::list_feature_obj()
 	switch (get_feature_type())
 	{
 		case F_UNKNOWN:
-			CIO::message(M_INFO, "F_UNKNOWN ");
+			CIO::message(M_INFO, "F_UNKNOWN \n");
 			break;
 		case F_REAL:
-			CIO::message(M_INFO, "F_REAL ");
+			CIO::message(M_INFO, "F_REAL \n");
 			break;
 		case F_SHORT:
-			CIO::message(M_INFO, "F_SHORT ");
+			CIO::message(M_INFO, "F_SHORT \n");
 			break;
 		case F_CHAR:
-			CIO::message(M_INFO, "F_CHAR ");
+			CIO::message(M_INFO, "F_CHAR \n");
 			break;
 		case F_INT:
-			CIO::message(M_INFO, "F_INT ");
+			CIO::message(M_INFO, "F_INT \n");
 			break;
 		case F_BYTE:
-			CIO::message(M_INFO, "F_BYTE ");
+			CIO::message(M_INFO, "F_BYTE \n");
 			break;
 		case F_WORD:
-			CIO::message(M_INFO, "F_WORD ");
+			CIO::message(M_INFO, "F_WORD \n");
 			break;
 		case F_ANY:
-			CIO::message(M_INFO, "F_ANY ");
+			CIO::message(M_INFO, "F_ANY \n");
 			break;
 		default:
-			CIO::message(M_INFO, "ERROR ");
+			CIO::message(M_INFO, "ERROR \n");
 	}
-	CIO::message(M_MESSAGEONLY, "\n");
 }
 
 bool CFeatures::load(CHAR* fname)

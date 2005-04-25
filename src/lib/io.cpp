@@ -63,8 +63,8 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			default:
 				break;
 		}
+		fflush(target);
 	}
-    fflush(target);
 #else
 	check_target();
 	int p=get_prio_string(prio);
