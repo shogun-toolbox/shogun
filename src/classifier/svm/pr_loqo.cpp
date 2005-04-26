@@ -43,7 +43,7 @@
 
 void nrerror(CHAR error_text[])
 {
- CIO::message(M_ERROR, "terminating optimizer - %s\n", error_text);
+ CIO::message(M_WARN, "terminating optimizer - %s\n", error_text);
  // exit(1); 
 }
 
