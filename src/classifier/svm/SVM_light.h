@@ -263,6 +263,11 @@ protected:
 		   else
 			   return CKernelMachine::get_kernel()->kernel(i, j) ;
 	   }
+
+#ifdef USE_CPLEX
+	bool init_cplex();
+	bool cleanup_cplex();
+#endif
    
  protected:
   bool svm_loaded;

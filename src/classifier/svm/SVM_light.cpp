@@ -82,28 +82,94 @@ CSVMLight::CSVMLight()
 	
 }
 
-CSVMLight::~CSVMLight()
-{
 #ifdef USE_CPLEX
-	if ( lp != NULL ) {
-		INT status = CPXfreeprob (env, &lp);
-		if ( status ) {
-			CIO::message(M_ERROR, "CPXfreeprob failed, error code %d.\n", status);
+bool CSVMLight::init_cplex()
+{
+	while (env==NULL)
+	{
+		CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
+
+		int status = 0;
+		env = CPXopenCPLEX (&status);
+
+		if ( env == NULL )
+		{
+			char  errmsg[1024];
+			CIO::message(M_WARNING, "Could not open CPLEX environment.\n");
+			CPXgeterrorstring (env, status, errmsg);
+			CIO::message(M_WARNING, "%s", errmsg);
+			CIO::message(M_WARNING, "retrying in 60 seconds\n");
+			sleep(60);
 		}
-		lp=NULL ;
+		else
+		{
+			status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2);
+			if ( status )
+			{
+				CIO::message(M_ERROR, 
+						"Failure to select dual lp optimization, error %d.\n", status);
+			}
+			else
+			{
+				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
+				if ( status )
+				{
+					CIO::message(M_ERROR,
+							"Failure to turn on data checking, error %d.\n", status);
+				}	
+				else
+				{
+					lp = CPXcreateprob (env, &status, "light");
+
+					if ( lp == NULL )
+						CIO::message(M_ERROR, "Failed to create LP.\n");
+					else
+						CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
+				}
+			}
+		}
 	}
-	if ( env != NULL ) {
+
+	return (lp != NULL) && (env != NULL);
+}
+
+bool CSVMLight::cleanup_cplex()
+{
+	bool result=false;
+
+	if (lp)
+	{
+		INT status = CPXfreeprob(env, &lp);
+		lp = NULL;
+		lp_initialized = false;
+
+		if (status)
+			CIO::message(M_ERROR, "CPXfreeprob failed, error code %d.\n", status);
+		else
+			result = true;
+	}
+
+	if (env)
+	{
 		INT status = CPXcloseCPLEX (&env);
+		env=NULL;
 		
-		if ( status ) {
+		if (status)
+		{
 			char  errmsg[1024];
 			CIO::message(M_ERROR, "Could not close CPLEX environment.\n");
 			CPXgeterrorstring (env, status, errmsg);
 			CIO::message(M_ERROR, "%s", errmsg);
 		}
-		env=NULL ;
+		else
+			result = true;
 	}
+	return result;
+}
 #endif
+
+CSVMLight::~CSVMLight()
+{
 
   delete[] model->supvec;
   delete[] model->alpha;
@@ -274,75 +340,10 @@ bool CSVMLight::train()
 	CIO::message(M_DEBUG, "use_kernel_cache = %i\n", use_kernel_cache) ;
 
 #ifdef USE_CPLEX
-	if (get_mkl_enabled() && (env==NULL))
-	{
-		lp_initialized = false ;
-		while (env==NULL)
-		{
-			CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
-			
-			lp = NULL;
-			env = NULL;
-			int status = 0;
-			env = CPXopenCPLEX (&status);
-			
-			if ( env == NULL )
-			{
-				char  errmsg[1024];
-				CIO::message(M_ERROR, "Could not open CPLEX environment.\n");
-				CPXgeterrorstring (env, status, errmsg);
-				CIO::message(M_ERROR, "%s", errmsg);
-				sleep(60);
-			}
-			else
-			{
-				status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2);
-				if ( status )
-				{
-					CIO::message(M_ERROR, 
-								 "Failure to select dual lp optimization, error %d.\n", status);
-				}
-				else
-				{
-					status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
-					if ( status )
-					{
-						CIO::message(M_ERROR,
-									 "Failure to turn on data checking, error %d.\n", status);
-					}	
-					else
-					{
-						lp = CPXcreateprob (env, &status, "light");
-						
-						if ( lp == NULL )
-							CIO::message(M_ERROR, "Failed to create LP.\n");
-						else
-							CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
-					}
-				}
-			}
-		}
-	}
-	
-	if (lp)
-	{
-		INT status = CPXfreeprob (env, &lp);
-		if ( status ) {
-			CIO::message(M_ERROR, "CPXfreeprob failed, error code %d.\n", status);
-		}
-		lp=NULL ;
-	}
-	
+	cleanup_cplex();
+
 	if (get_mkl_enabled())
-	{
-		INT status = 0 ;
-		lp = CPXcreateprob (env, &status, "light");
-		
-		if ( lp == NULL )
-			CIO::message(M_ERROR, "Failed to create LP.\n");
-		else
-			CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
-	}
+		init_cplex();
 #else
 	if (get_mkl_enabled())
 		CIO::message(M_ERROR, "MKL was disabled at compile-time\n");
@@ -426,14 +427,7 @@ bool CSVMLight::train()
 	}
 
 #ifdef USE_CPLEX
-	if (lp)
-	{
-		INT status = CPXfreeprob (env, &lp);
-		if ( status ) {
-			CIO::message(M_ERROR, "CPXfreeprob failed, error code %d.\n", status);
-		}
-		lp=NULL ;
-	}
+	clean_cplex();
 #endif
 	
 	if (precomputed_subkernels!=NULL)
