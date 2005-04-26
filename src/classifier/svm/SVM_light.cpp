@@ -767,7 +767,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 
                             /* repeat this loop until we have convergence */
 
-  for(;((!CSignal::cancel_computations()) && ((iteration<10) || (retrain && (!terminate))||((w_gap>get_weight_epsilon()) && get_mkl_enabled()))); iteration++){
+  for(;((!CSignal::cancel_computations()) && ((iteration<3) || (retrain && (!terminate))||((w_gap>get_weight_epsilon()) && get_mkl_enabled()))); iteration++){
 	  	  
 	  if(use_kernel_cache) 
 		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */

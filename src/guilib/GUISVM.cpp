@@ -14,7 +14,7 @@ CGUISVM::CGUISVM(CGUI * gui_)
   : gui(gui_)
 {
 	svm=NULL;
-	qpsize=71;
+	qpsize=41;
 	C1=1;
 	C2=1;
 	C_mkl=0;

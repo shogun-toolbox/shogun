@@ -15,6 +15,7 @@ CSVM::CSVM()
 
 	svm_loaded=false;
 
+	qpsize=41;
 	weight_epsilon=1e-5;
 	C1=1;
 	C2=1;
