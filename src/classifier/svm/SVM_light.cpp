@@ -95,10 +95,10 @@ bool CSVMLight::init_cplex()
 		if ( env == NULL )
 		{
 			char  errmsg[1024];
-			CIO::message(M_WARNING, "Could not open CPLEX environment.\n");
+			CIO::message(M_WARN, "Could not open CPLEX environment.\n");
 			CPXgeterrorstring (env, status, errmsg);
-			CIO::message(M_WARNING, "%s", errmsg);
-			CIO::message(M_WARNING, "retrying in 60 seconds\n");
+			CIO::message(M_WARN, "%s", errmsg);
+			CIO::message(M_WARN, "retrying in 60 seconds\n");
 			sleep(60);
 		}
 		else
@@ -427,7 +427,7 @@ bool CSVMLight::train()
 	}
 
 #ifdef USE_CPLEX
-	clean_cplex();
+	cleanup_cplex();
 #endif
 	
 	if (precomputed_subkernels!=NULL)
