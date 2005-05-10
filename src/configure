@@ -1150,9 +1150,17 @@ set_opts()
 				TARGET="gf.mexa64"
 			  ;;
 			  *)
-				LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
-				INCLUDES="$INCLUDES -I/home/matrix/matlab/extern/include/"
-				TARGET="gf.mexglx"
+
+			  if test -d /fml/ag-raetsch/share/software/matlab/extern/include
+			  then
+				  LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/fml/ag-raetsch/share/software/matlab/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/fml/ag-raetsch/share/software/matlab/extern/lib/glnx86,--rpath-link,/fml/ag-raetsch/share/software/matlab/bin/glnx86 -L/fml/ag-raetsch/share/software/matlab/bin/glnx86 -lmx -lmex -lmat"
+				  INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/matlab/extern/include/"
+				  TARGET="gf.mexglx"
+			  else
+				  LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
+				  INCLUDES="$INCLUDES -I/home/matrix/matlab/extern/include/"
+				  TARGET="gf.mexglx"
+			  fi
 				;;
 			esac
 		else
