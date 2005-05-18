@@ -144,7 +144,7 @@ bool CSVMLight::cleanup_cplex()
 		lp_initialized = false;
 
 		if (status)
-			CIO::message(M_ERROR, "CPXfreeprob failed, error code %d.\n", status);
+			CIO::message(M_WARN, "CPXfreeprob failed, error code %d.\n", status);
 		else
 			result = true;
 	}
@@ -157,9 +157,9 @@ bool CSVMLight::cleanup_cplex()
 		if (status)
 		{
 			char  errmsg[1024];
-			CIO::message(M_ERROR, "Could not close CPLEX environment.\n");
+			CIO::message(M_WARN, "Could not close CPLEX environment.\n");
 			CPXgeterrorstring (env, status, errmsg);
-			CIO::message(M_ERROR, "%s", errmsg);
+			CIO::message(M_WARN, "%s", errmsg);
 		}
 		else
 			result = true;
