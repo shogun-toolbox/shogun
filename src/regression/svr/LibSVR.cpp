@@ -1,4 +1,4 @@
-#include "regression/svm/LibSVR.h"
+#include "regression/svr/LibSVR.h"
 #include "lib/io.h"
 
 CLibSVR::CLibSVR()
@@ -75,7 +75,6 @@ bool CLibSVR::train()
 		assert(model->nr_class==2);
 		assert(model->l>0);
 		assert(model->SV);
-		assert(model->nSV);
 		assert(model->sv_coef && model->sv_coef[0]);
 
 		int num_sv=model->l;

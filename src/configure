@@ -1145,8 +1145,8 @@ set_opts()
 			  x86_64|amd64)
 				COMPFLAGS_C="$COMPFLAGS_C -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE -pthread"
 				COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE -pthread"
-				LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/fml/ag-raetsch/share/software/matlab64/extern/lib/glnxa64/mexFunction.map -Wl,--rpath-link,/fml/ag-raetsch/share/software/matlab64/bin/glnxa64 -L/fml/ag-raetsch/share/software/matlab64/bin/glnxa64 -lmx -lmex -lmat -lm -lstdc++"
-				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/matlab64/extern/include/"
+				LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/fml/ag-raetsch/share/software/matlab/extern/lib/glnxa64/mexFunction.map -Wl,--rpath-link,/fml/ag-raetsch/share/software/matlab/bin/glnxa64 -L/fml/ag-raetsch/share/software/matlab/bin/glnxa64 -lmx -lmex -lmat -lm -lstdc++"
+				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/matlab/extern/include/"
 				TARGET="gf.mexa64"
 			  ;;
 			  *)

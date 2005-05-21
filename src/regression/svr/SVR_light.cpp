@@ -627,6 +627,361 @@ void CSVRLight::svr_learn()
 	delete[] docs;
 }
 
+long CSVRLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc, 
+			     SHRINK_STATE *shrink_state, MODEL *model, 
+			     long int *inconsistent,
+			     double *a, double *lin, double *c, 
+			     TIMING *timing_profile, double *maxdiff, 
+			     long int heldout, long int retrain)
+     /* docs: Training vectors (x-part) */
+     /* label: Training labels/value (y-part, zero if test example for
+			      transduction) */
+     /* totdoc: Number of examples in docs/label */
+     /* laern_parm: Learning paramenters */
+     /* kernel_parm: Kernel paramenters */
+     /* kernel_cache: Initialized/partly filled Cache, if using a kernel. 
+                      NULL if linear. */
+     /* shrink_state: State of active variables */
+     /* model: Returns learning result */
+     /* inconsistent: examples thrown out as inconstistent */
+     /* a: alphas */
+     /* lin: linear component of gradient */
+     /* c: right hand side of inequalities (margin) */
+     /* maxdiff: returns maximum violation of KT-conditions */
+     /* heldout: marks held-out example for leave-one-out (or -1) */
+     /* retrain: selects training mode (1=regular / 2=holdout) */
+{
+  long *chosen,*key,i,j,jj,*last_suboptimal_at,noshrink;
+  long inconsistentnum,choosenum,already_chosen=0,iteration;
+  long misclassified,supvecnum=0,*active2dnum,inactivenum;
+  long *working2dnum,*selexam;
+  long activenum;
+  double eq;
+  double *a_old;
+  long t0=0,t1=0,t2=0,t3=0,t4=0,t5=0,t6=0; /* timing */
+  long transductcycle;
+  long transduction;
+  double epsilon_crit_org; 
+  double bestmaxdiff;
+  double worstmaxdiff;
+  long   bestmaxdiffiter,terminate;
+
+  double *selcrit;  /* buffer for sorting */        
+  REAL *aicache;  /* buffer to keep one row of hessian */
+  QP qp;            /* buffer for one quadratic program */
+
+  epsilon_crit_org=learn_parm->epsilon_crit; /* save org */
+  if(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) {
+	  learn_parm->epsilon_crit=2.0;
+      /* caching makes no sense for linear kernel */
+  } 
+  learn_parm->epsilon_shrink=2;
+  (*maxdiff)=1;
+
+  chosen = new long[totdoc];
+  last_suboptimal_at =new long[totdoc];
+  key =new long[totdoc+11];
+  selcrit =new double[totdoc];
+  selexam =new long[totdoc];
+  a_old =new double[totdoc];
+  aicache =new REAL[totdoc];
+  working2dnum =new long[totdoc+11];
+  active2dnum =new long[totdoc+11];
+  qp.opt_ce =new double[learn_parm->svm_maxqpsize];
+  qp.opt_ce0 =new double[1];
+  qp.opt_g =new double[learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize];
+  qp.opt_g0 =new double[learn_parm->svm_maxqpsize];
+  qp.opt_xinit =new double[learn_parm->svm_maxqpsize];
+  qp.opt_low=new double[learn_parm->svm_maxqpsize];
+  qp.opt_up=new double[learn_parm->svm_maxqpsize];
+
+  choosenum=0;
+  inconsistentnum=0;
+  transductcycle=0;
+  transduction=0;
+  if(!retrain) retrain=1;
+  iteration=1;
+  bestmaxdiffiter=1;
+  bestmaxdiff=999999999;
+  worstmaxdiff=1e-10;
+  terminate=0;
+  
+  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
+  if (use_kernel_cache)
+	  CKernelMachine::get_kernel()->kernel_cache_reset_lru();
+
+
+  for(i=0;i<totdoc;i++) {    /* various inits */
+    chosen[i]=0;
+    a_old[i]=a[i];
+    last_suboptimal_at[i]=1;
+    if(inconsistent[i]) 
+      inconsistentnum++;
+  }
+  activenum=compute_index(shrink_state->active,totdoc,active2dnum);
+  inactivenum=totdoc-activenum;
+  clear_index(working2dnum);
+
+                            /* repeat this loop until we have convergence */
+
+  for(;((!CSignal::cancel_computations()) && ((iteration<3) || (retrain && (!terminate))||((w_gap>get_weight_epsilon()) && get_mkl_enabled()))); iteration++){
+	  	  
+	  if(use_kernel_cache) 
+		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
+	  
+	  if(verbosity>=2) t0=get_runtime();
+	  if(verbosity>=3) {
+		  CIO::message(M_MESSAGEONLY, "\nSelecting working set...%f "); 
+	  }
+	  
+	  if(learn_parm->svm_newvarsinqp>learn_parm->svm_maxqpsize) 
+		  learn_parm->svm_newvarsinqp=learn_parm->svm_maxqpsize;
+	  
+	  i=0;
+	  for(jj=0;(j=working2dnum[jj])>=0;jj++) { /* clear working set */
+		  if((chosen[j]>=(learn_parm->svm_maxqpsize/
+						  CMath::min(learn_parm->svm_maxqpsize,
+									 learn_parm->svm_newvarsinqp))) 
+			 || (inconsistent[j])
+			 || (j == heldout)) {
+			  chosen[j]=0; 
+			  choosenum--; 
+		  }
+		  else {
+			  chosen[j]++;
+			  working2dnum[i++]=j;
+		  }
+	  }
+	  working2dnum[i]=-1;
+	  
+	  if(retrain == 2) {
+		  choosenum=0;
+		  for(jj=0;(j=working2dnum[jj])>=0;jj++) { /* fully clear working set */
+			  chosen[j]=0; 
+		  }
+		  clear_index(working2dnum);
+		  for(i=0;i<totdoc;i++) { /* set inconsistent examples to zero (-i 1) */
+			  if((inconsistent[i] || (heldout==i)) && (a[i] != 0.0)) {
+				  chosen[i]=99999;
+				  choosenum++;
+				  a[i]=0;
+			  }
+		  }
+		  if(learn_parm->biased_hyperplane) {
+			  eq=0;
+			  for(i=0;i<totdoc;i++) { /* make sure we fulfill equality constraint */
+				  eq+=a[i]*label[i];
+			  }
+			  for(i=0;(i<totdoc) && (fabs(eq) > learn_parm->epsilon_a);i++) {
+				  if((eq*label[i] > 0) && (a[i] > 0)) {
+					  chosen[i]=88888;
+					  choosenum++;
+					  if((eq*label[i]) > a[i]) {
+						  eq-=(a[i]*label[i]);
+						  a[i]=0;
+					  }
+					  else {
+						  a[i]-=(eq*label[i]);
+						  eq=0;
+					  }
+				  }
+			  }
+		  }
+		  compute_index(chosen,totdoc,working2dnum);
+	  }
+	  else
+	  {   /* select working set according to steepest gradient */
+		  if(iteration % 101)
+		  {
+			  already_chosen=0;
+			  if(CMath::min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4 && use_kernel_cache)
+			  {
+				  /* select part of the working set from cache */
+				  already_chosen=select_next_qp_subproblem_grad(
+					  label,a,lin,c,totdoc,
+					  (long)(CMath::min(learn_parm->svm_maxqpsize-choosenum,
+										learn_parm->svm_newvarsinqp)/2),
+					  inconsistent,active2dnum,
+					  working2dnum,selcrit,selexam,1,
+					  key,chosen);
+				  choosenum+=already_chosen;
+			  }
+			  choosenum+=select_next_qp_subproblem_grad(
+				  label,a,lin,c,totdoc,
+				  CMath::min(learn_parm->svm_maxqpsize-choosenum,
+							 learn_parm->svm_newvarsinqp-already_chosen),
+				  inconsistent,active2dnum,
+				  working2dnum,selcrit,selexam,0,key,
+				  chosen);
+		  }
+		  else { /* once in a while, select a somewhat random working set
+					to get unlocked of infinite loops due to numerical
+					inaccuracies in the core qp-solver */
+			  choosenum+=select_next_qp_subproblem_rand(
+				  label,a,lin,c,totdoc,
+				  CMath::min(learn_parm->svm_maxqpsize-choosenum,
+							 learn_parm->svm_newvarsinqp),
+				  inconsistent,active2dnum,
+				  working2dnum,selcrit,selexam,key,
+				  chosen,iteration);
+		  }
+	  }
+	  
+	  if(verbosity>=2) {
+		  CIO::message(M_INFO, " %ld vectors chosen\n",choosenum); 
+	  }
+	  
+	  if(verbosity>=2) t1=get_runtime();
+	  
+	  if (use_kernel_cache)
+		  CKernelMachine::get_kernel()->cache_multiple_kernel_rows(working2dnum, choosenum); 
+	  
+	  if(verbosity>=2) t2=get_runtime();
+	  if(retrain != 2) {
+		  optimize_svm(docs,label,inconsistent,0.0,chosen,active2dnum,
+					   model,totdoc,working2dnum,choosenum,a,lin,c,
+					   aicache,&qp,&epsilon_crit_org);
+	  }
+	  
+	  if(verbosity>=2) t3=get_runtime();
+	  update_linear_component(docs,label,active2dnum,a,a_old,working2dnum,totdoc,
+							  lin,aicache);
+	  
+	  if(verbosity>=2) t4=get_runtime();
+	  supvecnum=calculate_svm_model(docs,label,lin,a,a_old,c,working2dnum,active2dnum,model);
+	  
+	  if(verbosity>=2) t5=get_runtime();
+	  
+	  for(jj=0;(i=working2dnum[jj])>=0;jj++) {
+		  a_old[i]=a[i];
+	  }
+	  
+	  retrain=check_optimality(model,label,a,lin,c,totdoc,
+							   maxdiff,epsilon_crit_org,&misclassified,
+							   inconsistent,active2dnum,last_suboptimal_at,
+							   iteration);
+	  
+	  if(verbosity>=2) {
+		  t6=get_runtime();
+		  timing_profile->time_select+=t1-t0;
+		  timing_profile->time_kernel+=t2-t1;
+		  timing_profile->time_opti+=t3-t2;
+		  timing_profile->time_update+=t4-t3;
+		  timing_profile->time_model+=t5-t4;
+		  timing_profile->time_check+=t6-t5;
+	  }
+	  
+	  /* checking whether optimizer got stuck */
+	  if((*maxdiff) < bestmaxdiff) {
+		  bestmaxdiff=(*maxdiff);
+		  bestmaxdiffiter=iteration;
+	  }
+	  if(iteration > (bestmaxdiffiter+learn_parm->maxiter)) { 
+		  /* long time no progress? */
+		  terminate=1;
+		  retrain=0;
+		  if(verbosity>=1) 
+			  printf("\nWARNING: Relaxing KT-Conditions due to slow progress! Terminating!\n");
+	  }
+	  
+	  noshrink=0;
+	  if ((!retrain) && (inactivenum>0) && (!learn_parm->skip_final_opt_check)
+		  /*|| (get_kernel()->has_property(KP_LINADD))*/) { 
+		  t1=get_runtime();
+		  reactivate_inactive_examples(label,a,shrink_state,lin,c,totdoc,
+									   iteration,inconsistent,
+									   docs,model,aicache,
+									   maxdiff);
+		  /* Update to new active variables. */
+		  activenum=compute_index(shrink_state->active,totdoc,active2dnum);
+		  inactivenum=totdoc-activenum;
+		  /* reset watchdog */
+		  bestmaxdiff=(*maxdiff);
+		  bestmaxdiffiter=iteration;
+
+		  /* termination criterion */
+		  noshrink=1;
+		  retrain=0;
+		  if((*maxdiff) > learn_parm->epsilon_crit) 
+			  retrain=1;
+		  timing_profile->time_shrink+=get_runtime()-t1;
+		  if (((verbosity>=1) && use_kernel_cache)
+			 || (verbosity>=2)) {
+			  printf("done.\n");  fflush(stdout);
+			  printf(" Number of inactive variables = %ld\n",inactivenum);
+		  }		  
+	  }
+	  
+	  if((!retrain) && (learn_parm->epsilon_crit>(*maxdiff))) 
+		  learn_parm->epsilon_crit=(*maxdiff);
+	  if((!retrain) && (learn_parm->epsilon_crit>epsilon_crit_org)) {
+		  learn_parm->epsilon_crit/=2.0;
+		  retrain=1;
+		  noshrink=1;
+	  }
+	  if(learn_parm->epsilon_crit<epsilon_crit_org) 
+		  learn_parm->epsilon_crit=epsilon_crit_org;
+	  
+	  if(verbosity>=2) {
+		  CIO::message(M_INFO, " => (%ld SV (incl. %ld SV at u-bound), max violation=%.5f)\n",
+					   supvecnum,model->at_upper_bound,(*maxdiff)); 
+		  
+	  }
+	  mymaxdiff=*maxdiff ;
+
+	  if(verbosity>=3) {
+		  CIO::message(M_MESSAGEONLY, "\n");
+	  }
+	  
+	  
+	  if (((iteration % 10) == 0) && (!noshrink))
+	  {
+		  activenum=shrink_problem(shrink_state,active2dnum,last_suboptimal_at,iteration,totdoc,
+								   CMath::max((LONG)(activenum/10),
+											  CMath::max((LONG)(totdoc/500),(LONG) 100)),
+								   a,inconsistent);
+		  inactivenum=totdoc-activenum;
+		  
+		  if (use_kernel_cache)
+		  {
+			  if( (supvecnum>get_kernel()->get_max_elems_cache()) && ((get_kernel()->get_activenum_cache()-activenum)>CMath::max((LONG)(activenum/10),(LONG) 500))) {
+				  get_kernel()->kernel_cache_shrink(totdoc, CMath::min((LONG) (get_kernel()->get_activenum_cache()-activenum),
+																	   (LONG) (get_kernel()->get_activenum_cache()-supvecnum)),
+													shrink_state->active); 
+			  }
+		  }
+	  }
+
+	  if (bestmaxdiff>worstmaxdiff)
+		  worstmaxdiff=bestmaxdiff;
+
+	  //CIO::progress(-CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon), 6);
+	  CIO::absolute_progress(bestmaxdiff, -CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon), 6);
+  } /* end of loop */
+
+  delete[] chosen;
+  delete[] last_suboptimal_at;
+  delete[] key;
+  delete[] selcrit;
+  delete[] selexam;
+  delete[] a_old;
+  delete[] aicache;
+  delete[] working2dnum;
+  delete[] active2dnum;
+  delete[] qp.opt_ce;
+  delete[] qp.opt_ce0;
+  delete[] qp.opt_g;
+  delete[] qp.opt_g0;
+  delete[] qp.opt_xinit;
+  delete[] qp.opt_low;
+  delete[] qp.opt_up;
+
+  learn_parm->epsilon_crit=epsilon_crit_org; /* restore org */
+
+  return(iteration);
+}
+
+
 
 void CSVRLight::clear_index(LONG *index)  
               /* initializes and empties index */
