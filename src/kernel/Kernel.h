@@ -71,7 +71,7 @@ class CKernel
 		void kernel_cache_reset_lru();
 		void   kernel_cache_shrink(KERNELCACHE_IDX totdoc, KERNELCACHE_IDX num_shrink, KERNELCACHE_IDX *after);
 
-		void resize_kernel_cache(KERNELCACHE_IDX size) ;
+		void resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack=false);
 		
 		/// set the time used for lru	
 		inline void set_time(LONG t)
@@ -165,7 +165,7 @@ class CKernel
 		//@{
 
 		/// init kernel cache of size megabytes
-		void   kernel_cache_init(KERNELCACHE_IDX size);
+		void   kernel_cache_init(KERNELCACHE_IDX size, bool regression_hack=false);
 		void   kernel_cache_cleanup();
 		KERNELCACHE_IDX   kernel_cache_malloc();
 		void   kernel_cache_free(KERNELCACHE_IDX cacheidx);

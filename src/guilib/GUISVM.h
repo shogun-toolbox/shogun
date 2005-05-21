@@ -22,6 +22,7 @@ public:
 	bool set_mkl_enabled(CHAR* param);
 	bool set_linadd_enabled(CHAR* param);
 	bool set_svm_epsilon(CHAR* param);
+	bool set_svr_tube_epsilon(CHAR* param);
 	bool set_mkl_parameters(CHAR* param) ;
 	bool set_precompute_enabled(CHAR* param) ;
 
@@ -36,6 +37,7 @@ public:
 	int qpsize;
 	double weight_epsilon;
 	double epsilon;
+	double tube_epsilon;
 	double C1;
 	double C2;
 	double C_mkl ;

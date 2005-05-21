@@ -752,6 +752,8 @@ bool CGUIMatlab::set_svm(const mxArray* vals[])
 			return true;
 		}
 	}
+	else
+		CIO::message(M_ERROR, "no svm object available\n") ;
 
 	return false;
 }

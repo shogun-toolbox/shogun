@@ -1,5 +1,5 @@
-#ifndef _SVMLight_H___
-#define _SVMLight_H___
+#ifndef _SVRLight_H___
+#define _SVRLight_H___
 
 #include "classifier/svm/SVM.h"
 #include "kernel/Kernel.h"
@@ -26,7 +26,7 @@ extern "C" {
 # define DEF_PRECISION_NONLINEAR 1E-14
 # define MAXSHRINK 50000
 
-class CSVMLight:public CSVM
+class CSVRLight:public CSVM
 {
  protected:
   typedef struct model {
@@ -134,8 +134,8 @@ typedef struct shrink_state {
 } SHRINK_STATE;                                                         
 
  public:
-  CSVMLight();
-  virtual ~CSVMLight();
+  CSVRLight();
+  virtual ~CSVRLight();
   
   virtual bool	train();
   bool setup_auc_maximization() ;
@@ -145,7 +145,7 @@ typedef struct shrink_state {
   void   clear_vector_n(double *, long int);
   void   read_model(CHAR *, MODEL *, long, long int);
   long int   get_runtime();
-  void   svm_learn();
+  void   svr_learn();
   
   long int optimize_to_convergence(long int* docs, INT* label, long int totdoc, 
 					   SHRINK_STATE *shrink_state, MODEL *model, long int *inconsistent, 

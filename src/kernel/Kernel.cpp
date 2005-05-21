@@ -34,15 +34,15 @@ CKernel::~CKernel()
 	precomputed_matrix=NULL ;
 }
 
-void CKernel::resize_kernel_cache(KERNELCACHE_IDX size) 
+void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 {
 	if (size<10)
-		size=10 ;
+		size=10;
 	
-	kernel_cache_cleanup() ;
+	kernel_cache_cleanup();
 	cache_size=size;
 
-	CIO::message(M_INFO, "using a kernel cache of size %i MB\n", size) ;
+	CIO::message(M_INFO, "using a kernel cache of size %i MB\n", size);
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 
 	if (lhs!=NULL && rhs!=NULL)
@@ -94,10 +94,14 @@ bool CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 /****************************** Cache handling *******************************/
 
-void CKernel::kernel_cache_init(KERNELCACHE_IDX buffsize)
+void CKernel::kernel_cache_init(KERNELCACHE_IDX buffsize, bool regression_hack)
 {
 	KERNELCACHE_IDX i;
 	KERNELCACHE_IDX totdoc=get_lhs()->get_num_vectors();
+
+	//in regression the additional constraints are made by doubling the training data
+	if (regression_hack)
+		totdoc*=2;
 
 	kernel_cache.index = new KERNELCACHE_IDX[totdoc];
 	kernel_cache.occu = new KERNELCACHE_IDX[totdoc];
@@ -532,7 +536,6 @@ void CKernel::clear_normal()
 
 INT CKernel::get_num_subkernels()
 {
-	//CIO::message(M_ERROR, "kernel get_num_subkernels not implemented\n") ;
 	return 1;
 }
 
@@ -544,7 +547,6 @@ void CKernel::compute_by_subkernel(INT idx, REAL * subkernel_contrib)
 const REAL* CKernel::get_subkernel_weights(INT &num_weights)
 {
 	num_weights=1 ;
-	//CIO::message(M_ERROR, "kernel get_subkernel_weights not implemented\n") ;
 	return &combined_kernel_weight ;
 }
 
@@ -552,7 +554,7 @@ void CKernel::set_subkernel_weights(REAL* weights, INT num_weights)
 {
 	combined_kernel_weight = weights[0] ;
 	if (num_weights!=1)
-		CIO::message(M_ERROR, "should be one ...\n") ;
+		CIO::message(M_ERROR, "number of subkernel weights should be one ...\n") ;
 }
 
 void CKernel::do_precompute_matrix()
@@ -571,19 +573,11 @@ void CKernel::do_precompute_matrix()
 
 	for (INT i=0; i<num; i++)
 	{
-		//CIO::message(M_INFO, "\r %1.2f%% ", 100.0*i*i/(num*num)) ;
 		CIO::progress(i*i,0,num*num);
-		//fprintf(stdout, "%i:",i) ;
 		for (INT j=0; j<=i; j++)
-		{
-			//fprintf(stdout, ".") ;
 			precomputed_matrix[i*(i+1)/2+j] = compute(i,j) ;
-			//fprintf(stdout, "*") ;
-		}
-		//fprintf(stdout, "\n") ;
 	}
 
 	CIO::progress(num*num,0,num*num);
-	//CIO::message(M_INFO, "\r %1.2f%% ", 100.0) ;
 	CIO::message(M_INFO, "\ndone.\n") ;
 }

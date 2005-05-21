@@ -20,6 +20,7 @@ class CSVM : public CKernelMachine
 		inline void set_C(REAL c1, REAL c2) { C1=c1; C2=c2; }
 		inline void set_weight_epsilon(REAL eps) { weight_epsilon=eps; }
 		inline void set_epsilon(REAL eps) { epsilon=eps; }
+		inline void set_tube_epsilon(REAL eps) { tube_epsilon=eps; }
 		inline void set_C_mkl(REAL C) { C_mkl = C; }
 		inline void set_qpsize(int qps) { qpsize=qps; }
 
@@ -135,6 +136,7 @@ class CSVM : public CKernelMachine
 
 		REAL weight_epsilon;
 		REAL epsilon;
+		REAL tube_epsilon;
 
 		REAL C1;
 		REAL C2;

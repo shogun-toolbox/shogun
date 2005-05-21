@@ -8,6 +8,9 @@
 #include "classifier/svm/LibSVM.h"
 #include "classifier/svm/GPBTSVM.h"
 
+#include "regression/svr/SVR_light.h"
+#include "regression/svr/LibSVR.h"
+
 #include <assert.h>
 
 CGUISVM::CGUISVM(CGUI * gui_)
@@ -20,6 +23,7 @@ CGUISVM::CGUISVM(CGUI * gui_)
 	C_mkl=0;
 	weight_epsilon=1e-5;
 	epsilon=1e-5;
+	tube_epsilon=1e-2;
 
     // MKL stuff
 	use_mkl = false ;
@@ -55,6 +59,18 @@ bool CGUISVM::new_svm(CHAR* param)
 		delete svm;
 		svm= new CGPBTSVM();
 		CIO::message(M_INFO, "created GPBT-SVM object\n") ;
+	}
+	else if (strcmp(param,"LIBSVR")==0)
+	{
+		delete svm;
+		svm= new CLibSVR();
+		CIO::message(M_INFO, "created SVRlibsvm object\n") ;
+	}
+	else if (strcmp(param,"SVRLIGHT")==0)
+	{
+		delete svm;
+		svm= new CSVRLight();
+		CIO::message(M_INFO, "created SVRLight object\n") ;
 	}
 	else
 		return false;
@@ -104,6 +120,7 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 
 	svm->set_weight_epsilon(weight_epsilon);
 	svm->set_epsilon(epsilon);
+	svm->set_tube_epsilon(tube_epsilon);
 	svm->set_C_mkl(C_mkl);
 	svm->set_C(C1, C2);
 	svm->set_qpsize(qpsize);
@@ -297,6 +314,19 @@ bool CGUISVM::set_svm_epsilon(CHAR* param)
 		epsilon=1e-4;
 
 	CIO::message(M_INFO, "Set to svm_epsilon=%f\n", epsilon);
+	return true ;  
+}
+
+bool CGUISVM::set_svr_tube_epsilon(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	sscanf(param, "%le", &tube_epsilon) ;
+
+	if (tube_epsilon<0)
+		tube_epsilon=1e-2;
+
+	CIO::message(M_INFO, "Set to svr_tube_epsilon=%f\n", tube_epsilon);
 	return true ;  
 }
 
