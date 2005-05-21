@@ -453,9 +453,9 @@ void CSVRLight::svr_learn()
 	double maxdiff, *lin, *c, *a;
 	LONG runtime_start,runtime_end;
 	LONG iterations;
-	INT totdoc=0;
 	CLabels* lab=CKernelMachine::get_labels();
 	assert(lab!=NULL);
+	INT totdoc=lab->get_num_labels();
 	double *xi_fullset; /* buffer for storing xi on full sample in loo */
 	double *a_fullset;  /* buffer for storing alpha on full sample in loo */
 	TIMING timing_profile;
@@ -472,7 +472,7 @@ void CSVRLight::svr_learn()
 	  j=2*totdoc-1-i;
 	  label[i]=+1;
 	  c[i]=lab->get_label(i);
-	  docs[j]=j;
+	  docs[j]=i;
 	  label[j]=-1;
 	  c[j]=lab->get_label(i);
   }
@@ -505,8 +505,6 @@ void CSVRLight::svr_learn()
 
 	for (i=0; i<totdoc; i++)
 		docs[i]=i;
-
-
 
 	/* make sure -n value is reasonable */
 	if((learn_parm->svm_newvarsinqp < 2) 
@@ -572,6 +570,7 @@ void CSVRLight::svr_learn()
 	}
 
 	/* train the svm */
+		CIO::message(M_DEBUG, "num_train: %d\n", totdoc);
   iterations=optimize_to_convergence(docs,label,totdoc,
                      &shrink_state,model,inconsistent,a,lin,
                      c,&timing_profile,
@@ -594,6 +593,8 @@ void CSVRLight::svr_learn()
 
 		runtime_end=get_runtime();
 		upsupvecnum=0;
+
+		CIO::message(M_DEBUG, "num sv: %d\n", model->sv_num);
 		for(i=1;i<model->sv_num;i++)
 		{
 			if(fabs(model->alpha[i]) >= 
