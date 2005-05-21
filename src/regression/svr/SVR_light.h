@@ -245,24 +245,30 @@ typedef struct shrink_state {
    void   write_alphas(CHAR *, double *, INT *, long int);
 
 protected:
-   REAL compute_kernel(INT i, INT j)
-	   {
-		   if (use_precomputed_subkernels)
-		   {
-			   if (j>i)
-				   CMath::swap(i,j) ;
-			   REAL sum=0 ;
-			   INT num_weights=-1 ;
-			   //INT num = get_kernel()->get_rhs()->get_num_vectors() ;
-			   const REAL * w = CKernelMachine::get_kernel()->get_subkernel_weights(num_weights) ;
-			   for (INT n=0; n<num_precomputed_subkernels; n++)
-				   if (w[n]!=0)
-					   sum += w[n]*precomputed_subkernels[n][i*(i+1)/2+j] ;
-			   return sum ;
-		   }
-		   else
-			   return CKernelMachine::get_kernel()->kernel(i, j) ;
-	   }
+REAL compute_kernel(INT i, INT j)
+{
+	if (j>=num_vectors)
+		j=2*num_vectors-1-j;
+
+	if (i>=num_vectors)
+		i=2*num_vectors-1-i;
+
+	if (use_precomputed_subkernels)
+	{
+		if (j>i)
+			CMath::swap(i,j) ;
+		REAL sum=0 ;
+		INT num_weights=-1 ;
+		//INT num = get_kernel()->get_rhs()->get_num_vectors() ;
+		const REAL * w = CKernelMachine::get_kernel()->get_subkernel_weights(num_weights) ;
+		for (INT n=0; n<num_precomputed_subkernels; n++)
+			if (w[n]!=0)
+				sum += w[n]*precomputed_subkernels[n][i*(i+1)/2+j] ;
+		return sum ;
+	}
+	else
+		return CKernelMachine::get_kernel()->kernel(i, j) ;
+}
 
 #ifdef USE_CPLEX
 	bool init_cplex();
@@ -296,6 +302,7 @@ protected:
   SHORTREAL ** precomputed_subkernels ;
   INT num_precomputed_subkernels ;
   bool use_kernel_cache ;
+  INT num_vectors; //number of train elements
 
 #ifdef USE_CPLEX
   CPXENVptr     env ;

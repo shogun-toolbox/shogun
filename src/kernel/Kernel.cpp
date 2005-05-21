@@ -46,7 +46,7 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 
 	if (lhs!=NULL && rhs!=NULL)
-		kernel_cache_init(cache_size);
+		kernel_cache_init(cache_size, regression_hack);
 }
 
 /* calculate the kernel function */
@@ -54,6 +54,17 @@ REAL CKernel::kernel(INT idx_a, INT idx_b)
 {
 	if (idx_a < 0 || idx_b <0)
 		return 0;
+
+	if (lhs==rhs)
+	{
+		int num_vectors = lhs->get_num_vectors();
+
+		if (idx_a>=num_vectors)
+			idx_a=2*num_vectors-1-idx_a;
+
+		if (idx_b>=num_vectors)
+			idx_b=2*num_vectors-1-idx_b;
+	}
 
 	if (precompute_matrix && (precomputed_matrix==NULL) && (lhs==rhs))
 		do_precompute_matrix() ;

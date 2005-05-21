@@ -1,8 +1,7 @@
-C=10;
-sep=0.5;
+C=100;
 numtrain=1000;
 svm_eps=1e-5;
-svm_tube=0.1;
+svm_tube=0.0001;
 
 rand('state',0);
 %rand('state',sum(100*clock));
@@ -16,7 +15,7 @@ gf('send_command', 'loglevel ALL');
 gf('send_command', 'new_svm LIBSVR');
 gf('set_features', 'TRAIN', traindat);
 gf('set_labels', 'TRAIN', trainlab);
-gf('send_command', 'set_kernel CHI2 REAL 50');
+gf('send_command', 'set_kernel GAUSSIAN REAL 50 10');
 gf('send_command', 'init_kernel TRAIN');
 gf('send_command', sprintf('c %f',C));
 gf('send_command', sprintf('svm_epsilon %f',svm_eps));

@@ -449,19 +449,21 @@ void CSVRLight::svr_learn()
 {
 	LONG *inconsistent, i, j;
 	LONG inconsistentnum;
-	LONG misclassified,upsupvecnum;
+	LONG upsupvecnum;
 	double maxdiff, *lin, *c, *a;
 	LONG runtime_start,runtime_end;
 	LONG iterations;
-	CLabels* lab=CKernelMachine::get_labels();
-	assert(lab!=NULL);
-	INT totdoc=lab->get_num_labels();
 	double *xi_fullset; /* buffer for storing xi on full sample in loo */
 	double *a_fullset;  /* buffer for storing alpha on full sample in loo */
 	TIMING timing_profile;
 	SHRINK_STATE shrink_state;
 	INT* label;
 	LONG* docs;
+
+	CLabels* lab=CKernelMachine::get_labels();
+	assert(lab!=NULL);
+	INT totdoc=lab->get_num_labels();
+	num_vectors=totdoc;
 	
 	/* set up regression problem in standard form */
 	docs=new long[2*totdoc];
@@ -472,7 +474,7 @@ void CSVRLight::svr_learn()
 	  j=2*totdoc-1-i;
 	  label[i]=+1;
 	  c[i]=lab->get_label(i);
-	  docs[j]=i;
+	  docs[j]=j;
 	  label[j]=-1;
 	  c[j]=lab->get_label(i);
   }
@@ -503,9 +505,6 @@ void CSVRLight::svr_learn()
 			W[i]=0;
 	}
 
-	for (i=0; i<totdoc; i++)
-		docs[i]=i;
-
 	/* make sure -n value is reasonable */
 	if((learn_parm->svm_newvarsinqp < 2) 
 			|| (learn_parm->svm_newvarsinqp > learn_parm->svm_maxqpsize)) {
@@ -515,7 +514,6 @@ void CSVRLight::svr_learn()
 	init_shrink_state(&shrink_state,totdoc,(LONG)MAXSHRINK);
 
 	inconsistent = new long[totdoc];
-	c = new double[totdoc];
 	a = new double[totdoc];
 	a_fullset = new double[totdoc];
 	xi_fullset = new double[totdoc];
@@ -554,15 +552,12 @@ void CSVRLight::svr_learn()
 		if(label[i] > 0) {
 			learn_parm->svm_cost[i]=learn_parm->svm_c*learn_parm->svm_costratio*
 				fabs((double)label[i]);
-			label[i]=1;
 		}
 		else if(label[i] < 0) {
 			learn_parm->svm_cost[i]=learn_parm->svm_c*fabs((double)label[i]);
-			label[i]=-1;
 		}
-		else {
-			learn_parm->svm_cost[i]=0;
-		}
+		else
+			assert(false);
 	}
 
 	if(verbosity==1) {
@@ -579,17 +574,8 @@ void CSVRLight::svr_learn()
 
 
 	if(verbosity>=1) {
-		if(verbosity==1)
-			CIO::message(M_MESSAGEONLY, "done. (%ld iterations)\n",iterations);
-
-		misclassified=0;
-		for(i=0;(i<totdoc);i++) { /* get final statistic */
-			if((lin[i]-model->b)*(double)label[i] <= 0.0) 
-				misclassified++;
-		}
-
-		CIO::message(M_INFO, "Optimization finished (%ld misclassified, maxdiff=%.5f).\n",
-				misclassified,maxdiff); 
+		CIO::message(M_MESSAGEONLY, "done. (%ld iterations)\n",iterations);
+		CIO::message(M_INFO, "Optimization finished (maxdiff=%.5f).\n",maxdiff);
 
 		runtime_end=get_runtime();
 		upsupvecnum=0;
