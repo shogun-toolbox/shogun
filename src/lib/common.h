@@ -11,6 +11,7 @@
 #define true 1
 #endif
 
+
 #ifndef LINUX
 #define RANDOM_MAX 2147483647
 #else

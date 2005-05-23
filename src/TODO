@@ -1,6 +1,8 @@
+- clean up libsvm/svmlight regression stuff, derive from CSVMLight
+- remove use_precompute hack -> make it a temporary precomputed kernel
+- clear gf -> kabumm bei init_kernel  / vorher clean_kernels -> ok...
 - don't use List for preprocs/combined features -> use DYNARRAY!!!
-- linearen + commword fuer combined kernel ???
-- regression fuer SVMlight/libSVM
+-  linearen + commword fuer combined kernel ???
 - SVMs linadd mpi implementation
 - SVMs generell parallelisieren (fuer MKL)
 - Python interface
@@ -30,6 +32,7 @@
 
 DONE
 
+- regression fuer SVMlight/libSVM
 - CIO::message() mixed with printf's and matlabs mx* stuff -> we only need CIO::... ala gstreamer, outputlevel ala DEBUG/INFO/WARN/ERROR
 - k(x,y) = sum_i (x_i-y_i)^2/(x_i+y_i)) (chi^2 histogram kernel)
 - CommWordString /CommWordUlongKernel testen/fixen (division durch 0 in normalize) optimierung mit unique sort

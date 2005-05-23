@@ -17,6 +17,8 @@ class CKernel
 		 */
 		REAL kernel(INT x, INT y);
 
+		REAL* get_kernel_matrix(int &m, int &n);
+
 		/** initialize kernel cache
 		 *  make sure to check that your kernel can deal with the
 		 *  supplied features (!)
