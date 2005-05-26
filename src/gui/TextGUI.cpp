@@ -279,8 +279,9 @@ bool CTextGUI::parse_line(CHAR* input)
 	//remove linebreaks if there are any
 	if (strlen(input)>=1 && input[strlen(input)-1]=='\n')
 		input[strlen(input)-1]='\0';
-
+#ifndef HAVE_PYTHON
 	CIO::message(M_MESSAGEONLY, "%s\n",input) ;
+#endif
 
 	if (!strncmp(input, N_NEW_HMM, strlen(N_NEW_HMM)))
 	{

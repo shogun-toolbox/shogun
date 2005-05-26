@@ -42,8 +42,8 @@ REAL* CKernel::get_kernel_matrix(int &num_vec1, int &num_vec2)
 
 	if (f1 && f2)
 	{
-		int num_vec1=f1->get_num_vectors();
-		int num_vec2=f2->get_num_vectors();
+		num_vec1=f1->get_num_vectors();
+		num_vec2=f2->get_num_vectors();
 		int total_num = num_vec1 * num_vec2;
 		int num_done = 0;
 

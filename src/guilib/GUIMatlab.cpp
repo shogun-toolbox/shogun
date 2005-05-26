@@ -1685,6 +1685,7 @@ bool CGUIMatlab::set_subkernel_weights(const mxArray* mx_arg)
 		return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), len);
 		
 	}
+
 	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
 	{
 		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
@@ -1701,7 +1702,6 @@ bool CGUIMatlab::set_subkernel_weights(const mxArray* mx_arg)
 			len = 0;
 
 		return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), len);
-		
 	}
 
 	// all other kernels
@@ -1816,5 +1816,4 @@ bool CGUIMatlab::set_WD_position_weights(const mxArray* mx_arg)
 	}
 	return false;
 }
-
 #endif
