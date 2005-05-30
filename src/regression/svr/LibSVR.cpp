@@ -40,7 +40,7 @@ bool CLibSVR::train()
 	}
 
 	int weights_label[2]={-1,+1};
-	double weights[2]={get_C1(),get_C2()};
+	double weights[2]={1.0,get_C2()/get_C1()};
 
 	assert(get_kernel());
 
@@ -52,7 +52,7 @@ bool CLibSVR::train()
 	param.nu = 0.5;
 	param.kernel=get_kernel();
 	param.cache_size = get_kernel()->get_cache_size();
-	param.C = 1.0;
+	param.C = get_C1();
 	param.eps = epsilon;
 	param.p = tube_epsilon;
 	param.shrinking = 1;

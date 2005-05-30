@@ -1,4 +1,4 @@
-C=100;
+C=1;
 numtrain=1000;
 svm_eps=1e-5;
 svm_tube=0.0001;

@@ -281,10 +281,10 @@ bool CSVRLight::train()
 	learn_parm->svm_newvarsinqp=learn_parm->svm_maxqpsize-1;
 	learn_parm->maxiter=100000;
 	learn_parm->svm_iter_to_shrink=100;
-	learn_parm->svm_c=C1;
+	learn_parm->svm_c=get_C1();
 	learn_parm->eps=tube_epsilon;      /* equivalent regression epsilon for classification */
 	learn_parm->transduction_posratio=0.33;
-	learn_parm->svm_costratio=C2/C1;
+	learn_parm->svm_costratio=get_C2()/get_C1();
 	learn_parm->svm_costratio_unlab=1.0;
 	learn_parm->svm_unlabbound=1E-5;
 	learn_parm->epsilon_crit=epsilon; // GU: better decrease it ... ??
