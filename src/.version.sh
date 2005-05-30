@@ -32,10 +32,11 @@ if test "$1" ; then
  extra="_$1"
 fi
 
+
 echo "#define VERSION_EXTRA \"${extra}\""
 echo "#define VERSION_RELEASE \"cvs_${year}-${month}-${day}_${hour}:${minute}${extra}\""
-echo "#define VERSION_YEAR ${year}"
-echo "#define VERSION_MONTH ${month}"
-echo "#define VERSION_DAY ${day}"
-echo "#define VERSION_HOUR ${hour}"
-echo "#define VERSION_MINUTE ${minute}"
+echo "#define VERSION_YEAR `echo ${year} | sed 's/^[0]*//g'`"
+echo "#define VERSION_MONTH `echo ${month} | sed 's/^[0]*//g'`"
+echo "#define VERSION_DAY `echo ${day} | sed 's/^[0]*//g'`"
+echo "#define VERSION_HOUR `echo ${hour} | sed 's/^[0]*//g'`"
+echo "#define VERSION_MINUTE `echo ${minute} | sed 's/^[0]*//g'`"
