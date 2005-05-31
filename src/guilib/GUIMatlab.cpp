@@ -1225,6 +1225,26 @@ bool CGUIMatlab::get_version(mxArray* retvals[])
 	return false;
 }
 
+bool CGUIMatlab::get_svm_objective(mxArray* retvals[])
+{
+	mxArray* mx_v=mxCreateDoubleMatrix(1, 1, mxREAL);
+	CSVM* svm=gui->guisvm.get_svm();
+
+	if (mx_v && svm)
+	{
+		double* v=mxGetPr(mx_v);
+
+		*v = svm->get_objective();
+
+		retvals[0]=mx_v;
+		return true;
+	}
+	else
+		CIO::message(M_ERROR, "no svm set\n");
+
+	return false;
+}
+
 bool CGUIMatlab::get_labels(mxArray* retvals[], CLabels* label)
 {
 	if (label)

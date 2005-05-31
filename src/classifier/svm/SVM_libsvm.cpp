@@ -1322,6 +1322,7 @@ struct decision_function
 {
 	double *alpha;
 	double rho;	
+	double objective;
 };
 
 decision_function svm_train_one(
@@ -1378,6 +1379,7 @@ decision_function svm_train_one(
 	decision_function f;
 	f.alpha = alpha;
 	f.rho = si.rho;
+	f.objective=si.obj;
 	return f;
 }
 
@@ -1462,6 +1464,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		decision_function f = svm_train_one(prob,param,0,0);
 		model->rho = Malloc(double,1);
 		model->rho[0] = f.rho;
+		model->objective = f.objective;
 
 		int nSV = 0;
 		int i;

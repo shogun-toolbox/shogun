@@ -63,6 +63,7 @@ struct svm_model
 	// XXX
 	int free_sv;		// 1 if svm_model is created by svm_load_model
 				// 0 if svm_model is created by svm_train
+	double objective;
 };
 
 

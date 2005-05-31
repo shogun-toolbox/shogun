@@ -691,7 +691,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
   long misclassified,supvecnum=0,*active2dnum,inactivenum;
   long *working2dnum,*selexam;
   long activenum;
-  double eq;
+  double criterion, eq;
   double *a_old;
   long t0=0,t1=0,t2=0,t3=0,t4=0,t5=0,t6=0; /* timing */
   long transductcycle;
@@ -886,6 +886,12 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  supvecnum=calculate_svm_model(docs,label,lin,a,a_old,c,working2dnum,active2dnum,model);
 	  
 	  if(verbosity>=2) t5=get_runtime();
+
+    /* The following computation of the objective function works only */
+    /* relative to the active variables */
+      criterion=compute_objective_function(a,lin,c,learn_parm->eps,label, active2dnum);
+	  CIO::message(M_INFO, "\nobj = %.16f, rho = %.16f\n",criterion,model->b);
+	  CSVM::set_objective(criterion);
 	  
 	  for(jj=0;(i=working2dnum[jj])>=0;jj++) {
 		  a_old[i]=a[i];
@@ -1014,6 +1020,22 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
   learn_parm->epsilon_crit=epsilon_crit_org; /* restore org */
 
   return(iteration);
+}
+
+double CSVMLight::compute_objective_function(double *a, double *lin, double *c, double eps, INT *label,
+                  long int *active2dnum)
+     /* Return value of objective function. */
+     /* Works only relative to the active variables! */
+{
+  long i,ii;
+  double criterion;
+  /* calculate value of objective function */
+  criterion=0;
+  for(ii=0;active2dnum[ii]>=0;ii++) {
+    i=active2dnum[ii];
+    criterion=criterion+(eps-(double)label[i]*c[i])*a[i]+0.5*a[i]*label[i]*lin[i];
+  }
+  return(criterion);
 }
 
 

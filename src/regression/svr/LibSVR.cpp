@@ -81,6 +81,7 @@ bool CLibSVR::train()
 
 		create_new_model(num_sv);
 
+		CSVM::set_objective(model->objective);
 		//workaround for libsvm bug (?)
 		//if the first example has a positive label the whole decision function
 		//is inverted, i.e. f(x) becomes -f(x)

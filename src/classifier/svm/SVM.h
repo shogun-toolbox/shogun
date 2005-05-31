@@ -109,6 +109,16 @@ class CSVM : public CKernelMachine
 			return use_linadd ;
 		}
 
+		inline void set_objective(REAL v)
+		{
+			objective=v;
+		}
+
+		inline REAL get_objective()
+		{
+			return objective ;
+		}
+
 		REAL* test();
 
 		CLabels* classify(CLabels* labels=NULL);
@@ -141,6 +151,9 @@ class CSVM : public CKernelMachine
 		REAL C1;
 		REAL C2;
 		REAL C_mkl ;
+
+		REAL objective;
+
 		int qpsize;
 		bool use_mkl, use_linadd ;
 		bool use_precomputed_subkernels ;

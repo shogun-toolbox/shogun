@@ -84,6 +84,7 @@ public:
 	bool set_WD_position_weights(const mxArray *mx_arg);
 
 	bool get_version(mxArray* retvals[]);
+	bool get_svm_objective(mxArray* retvals[]);
 	bool get_labels(mxArray* retvals[], CLabels* label);
 	CLabels* set_labels(const mxArray* vals[]);
 	//bool get_preproc_init();

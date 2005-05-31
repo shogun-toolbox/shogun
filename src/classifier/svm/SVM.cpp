@@ -25,6 +25,7 @@ CSVM::CSVM()
 	use_mkl = false;
 	use_linadd = false;
 	use_precomputed_subkernels = false ;
+	objective=0;
 }
 
 CSVM::~CSVM()

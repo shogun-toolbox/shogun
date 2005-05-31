@@ -22,6 +22,7 @@ static const CHAR* N_TRANSLATE_STRING=			"translate_string";
 static const CHAR* N_GET_HMM=			"get_hmm";
 static const CHAR* N_GET_VITERBI_PATH=			"get_viterbi_path";
 static const CHAR* N_GET_SVM=			"get_svm";
+static const CHAR* N_GET_SVM_OBJECTIVE=		"get_svm_objective";
 static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
 static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
 static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
@@ -176,6 +177,15 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.hmm_classify(plhs);
 			else
 				CIO::message(M_ERROR, "usage is [result]=gf('hmm_classify')");
+		}
+		else if (!strncmp(action, N_GET_SVM_OBJECTIVE, strlen(N_GET_SVM_OBJECTIVE)))
+		{
+			if (nlhs==1)
+			{
+				gf_matlab.get_svm_objective(plhs);
+			}
+			else
+				CIO::message(M_ERROR, "usage is [obj]=gf('get_svm_objective')");
 		}
 		else if (!strncmp(action, N_GET_SVM, strlen(N_GET_SVM)))
 		{
