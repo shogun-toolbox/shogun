@@ -636,6 +636,7 @@ void CSVMLight::svm_learn()
 
 		CIO::message(M_INFO, "Optimization finished (%ld misclassified, maxdiff=%.5f).\n",
 				misclassified,maxdiff); 
+		CIO::message(M_INFO, "obj = %.16f, rho = %.16f\n",get_objective(),model->b);
 
 		runtime_end=get_runtime();
 		upsupvecnum=0;
@@ -887,12 +888,6 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  
 	  if(verbosity>=2) t5=get_runtime();
 
-    /* The following computation of the objective function works only */
-    /* relative to the active variables */
-      criterion=compute_objective_function(a,lin,c,learn_parm->eps,label, active2dnum);
-	  CIO::message(M_INFO, "\nobj = %.16f, rho = %.16f\n",criterion,model->b);
-	  CSVM::set_objective(criterion);
-	  
 	  for(jj=0;(i=working2dnum[jj])>=0;jj++) {
 		  a_old[i]=a[i];
 	  }
@@ -999,6 +994,12 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  //CIO::progress(-CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon), 6);
 	  CIO::absolute_progress(bestmaxdiff, -CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon), 6);
   } /* end of loop */
+
+  /* The following computation of the objective function works only */
+  /* relative to the active variables */
+  criterion=compute_objective_function(a,lin,c,learn_parm->eps,label, active2dnum);
+  CSVM::set_objective(criterion);
+	  
 
   delete[] chosen;
   delete[] last_suboptimal_at;
