@@ -982,12 +982,19 @@ double CSVRLight::compute_objective_function(double *a, double *lin, double *c,
 {
   long i,ii;
   double criterion;
+  double part1=0;
+  double part2=0;
+  double part3=0;
   /* calculate value of objective function */
   criterion=0;
   for(ii=0;active2dnum[ii]>=0;ii++) {
     i=active2dnum[ii];
     criterion=criterion+(eps-(double)label[i]*c[i])*a[i]+0.5*a[i]*label[i]*lin[i];
+    part1+=eps*a[i];
+    part2+=(-(double)label[i]*c[i])*a[i];
+	part3+=0.5*a[i]*label[i]*lin[i];
   }
+  CIO::message(M_MESSAGEONLY,"\ncriterion: %f part1: %f part2: %f part3: %f\n", criterion, part1, part2, part3);
   return(criterion);
 }
 
