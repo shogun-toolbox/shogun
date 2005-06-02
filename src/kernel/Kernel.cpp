@@ -513,8 +513,11 @@ void CKernel::list_kernel()
 		case K_COMBINED:
 			CIO::message(M_INFO, "K_COMBINED ");
 			break;
+		case K_CUSTOM:
+			CIO::message(M_INFO, "K_CUSTOM ");
+			break;
 		default:
-			CIO::message(M_ERROR, "ERROR ");
+			CIO::message(M_ERROR, "ERROR UNKNOWN KERNEL TYPE");
 			break;
 	}
 
@@ -536,7 +539,7 @@ void CKernel::list_kernel()
 			CIO::message(M_INFO, "C_COMBINED ");
 			break;
 		default:
-			CIO::message(M_ERROR, "ERROR ");
+			CIO::message(M_ERROR, "ERROR UNKNOWN FEATURE CLASS");
 	}
 
 	switch (get_feature_type())
@@ -563,7 +566,7 @@ void CKernel::list_kernel()
 			CIO::message(M_INFO, "F_WORD ");
 			break;
 		default:
-			CIO::message(M_ERROR, "ERROR ");
+			CIO::message(M_ERROR, "ERROR UNKNOWN FEATURE TYPE");
 			break;
 	}
 	CIO::message(M_INFO, "\n");
