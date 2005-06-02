@@ -538,6 +538,9 @@ void CKernel::list_kernel()
 		case C_COMBINED:
 			CIO::message(M_INFO, "C_COMBINED ");
 			break;
+		case C_COMBINED:
+			CIO::message(M_INFO, "C_ANY ");
+			break;
 		default:
 			CIO::message(M_ERROR, "ERROR UNKNOWN FEATURE CLASS");
 	}
@@ -564,6 +567,9 @@ void CKernel::list_kernel()
 			break;
 		case F_WORD:
 			CIO::message(M_INFO, "F_WORD ");
+			break;
+		case F_ANY:
+			CIO::message(M_INFO, "F_ANY ");
 			break;
 		default:
 			CIO::message(M_ERROR, "ERROR UNKNOWN FEATURE TYPE");
