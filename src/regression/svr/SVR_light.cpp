@@ -1999,7 +1999,7 @@ void CSVRLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 }
 
 #ifdef USE_SVMPARALLEL
-void *update_linear_component_linadd_helper(void *params_)
+static void *update_linear_component_linadd_helper(void *params_)
 {
 	S_THREAD_PARAM * params = (S_THREAD_PARAM*) params_ ;
 	
