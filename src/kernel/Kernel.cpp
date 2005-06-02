@@ -538,7 +538,7 @@ void CKernel::list_kernel()
 		case C_COMBINED:
 			CIO::message(M_INFO, "C_COMBINED ");
 			break;
-		case C_COMBINED:
+		case C_ANY:
 			CIO::message(M_INFO, "C_ANY ");
 			break;
 		default:
