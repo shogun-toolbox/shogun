@@ -292,14 +292,19 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 	{
 		if (testfeat)
 		{
-			for (INT i=0; i<trainfeat->get_num_preproc();  i++)
+			// if we don't have a preproc for trainfeatures we 
+			// don't need a preproc for test features
+			if (trainfeat->get_num_preproc())
 			{
-				CPreProc* preproc = trainfeat->get_preproc(i);
-				preproc->init(trainfeat);
-				testfeat->add_preproc(trainfeat->get_preproc(i));
-			}
+				for (INT i=0; i<trainfeat->get_num_preproc();  i++)
+				{
+					CPreProc* preproc = trainfeat->get_preproc(i);
+					preproc->init(trainfeat);
+					testfeat->add_preproc(trainfeat->get_preproc(i));
+				}
 
-			preproc_all_features(testfeat, force);
+				preproc_all_features(testfeat, force);
+			}
 		}
 		else
 		{
@@ -326,6 +331,7 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 	}
 	else
 		CIO::message(M_ERROR, "no features for preprocessing available!\n");
+
 	return false;
 }
 
