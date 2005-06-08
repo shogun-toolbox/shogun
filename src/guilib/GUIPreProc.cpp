@@ -294,6 +294,8 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 		{
 			// if we don't have a preproc for trainfeatures we 
 			// don't need a preproc for test features
+			CIO::message(M_DEBUG, "%d preprocessors attached to train features\n");
+
 			if (trainfeat->get_num_preproc())
 			{
 				for (INT i=0; i<trainfeat->get_num_preproc();  i++)
