@@ -50,10 +50,10 @@ bool CCombinedFeatures::check_feature_obj_compatibility(CCombinedFeatures* comb_
 		CFeatures* f1=this->get_first_feature_obj();
 		CFeatures* f2=comb_feat->get_first_feature_obj();
 
-		if (f1 && f1->check_feature_compatibility(f2))
+		if (f1 && f2 && f1->check_feature_compatibility(f2))
 		{
-			while( ( (f1=this->get_first_feature_obj()) != NULL )  && 
-				   ( (f2=comb_feat->get_first_feature_obj()) != NULL) )
+			while( ( (f1=this->get_next_feature_obj()) != NULL )  && 
+				   ( (f2=comb_feat->get_next_feature_obj()) != NULL) )
 			{
 				if (!f1->check_feature_compatibility(f2))
 					return false;
