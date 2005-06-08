@@ -227,7 +227,7 @@ bool CGUIPreProc::attach_preproc(CHAR* param)
 				{
 					if (f_train->get_feature_class() == C_COMBINED)
 					{
-						if (!((CCombinedFeatures*) f_train)->check_feature_obj_compatibility((CCombinedFeatures*) f_test) )
+						if (((CCombinedFeatures*) f_train)->check_feature_obj_compatibility((CCombinedFeatures*) f_test) )
 						{
 							//preprocess the last test feature obj
 							CFeatures* te_feat = ((CCombinedFeatures*) f_test)->get_last_feature_obj();

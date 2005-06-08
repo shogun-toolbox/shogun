@@ -177,7 +177,7 @@ bool CFeatures::check_feature_compatibility(CFeatures* f)
 	bool result=false;
 
 	if (f)
-		result= ( (f) && (this->get_feature_class() == f->get_feature_class()) &&
+		result= ( (this->get_feature_class() == f->get_feature_class()) &&
 				(this->get_feature_type() == f->get_feature_type()));
 	return result;
 }
