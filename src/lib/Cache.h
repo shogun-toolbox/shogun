@@ -149,6 +149,9 @@ template<class T> class CCache
 				cache_table[min_idx]=&lookup_table[number];
 				lookup_table[number].obj=&cache_block[entry_size*min_idx];
 
+				//lock cache entry;
+				lookup_table[number].usage_count=0;
+				lookup_table[number].locked=true;
 				return lookup_table[number].obj;
 			}
 			else

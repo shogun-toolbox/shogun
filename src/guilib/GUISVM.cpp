@@ -11,6 +11,8 @@
 #include "regression/svr/SVR_light.h"
 #include "regression/svr/LibSVR.h"
 
+#include "classifier/svm/MPD.h"
+
 #include <assert.h>
 
 CGUISVM::CGUISVM(CGUI * gui_)
@@ -59,6 +61,12 @@ bool CGUISVM::new_svm(CHAR* param)
 		delete svm;
 		svm= new CGPBTSVM();
 		CIO::message(M_INFO, "created GPBT-SVM object\n") ;
+	}
+	else if (strcmp(param,"MPD")==0)
+	{
+		delete svm;
+		svm= new CMPDSVM();
+		CIO::message(M_INFO, "created MPD-SVM object\n") ;
 	}
 	else if (strcmp(param,"LIBSVR")==0)
 	{
