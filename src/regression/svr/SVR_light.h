@@ -250,8 +250,8 @@ inline INT regression_fix_index(INT i)
 {
 	if (i>=num_vectors)
 		i=2*num_vectors-1-i;
-	else
-		return i;
+
+	return i;
 }
 
 REAL compute_kernel(INT i, INT j)
