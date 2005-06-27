@@ -42,14 +42,14 @@ gf('set_labels', 'TEST', testlab);
 gf('send_command', 'init_kernel TEST');
 out2=gf('svm_classify');
 
-clf
-plot(traindat,trainlab,'b-')
-hold on
-plot(traindat,trainlab,'bx')
-
-plot(testdat,out,'r-')
-plot(testdat,out,'ro')
-
-plot(testdat,out2,'g-')
-plot(testdat,out2,'go')
-
+%clf
+%plot(traindat,trainlab,'b-')
+%hold on
+%plot(traindat,trainlab,'bx')
+%
+%plot(testdat,out,'r-')
+%plot(testdat,out,'ro')
+%
+%plot(testdat,out2,'g-')
+%plot(testdat,out2,'go')
+%
