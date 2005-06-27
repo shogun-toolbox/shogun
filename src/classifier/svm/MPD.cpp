@@ -16,8 +16,8 @@ bool CMPDSVM::train()
 	CLabels* lab = CKernelMachine::get_labels();
 
 	//const REAL nu=0.32;
-	const REAL eps=1e-5;
-	const REAL hessreg = 1e-12;
+	const REAL alpha_eps=1e-12;
+	const REAL eps=get_epsilon();
 	const long int maxiter = 1L<<30;
 	//const bool nustop=false;
 	//const int k=2;
@@ -90,6 +90,11 @@ bool CMPDSVM::train()
 			{
 				maxpviol=v;
 				maxpidx=i;
+			} // if we cannot improve on maxpviol, we can still improve by choosing a cached element
+			else if (v == maxpviol) 
+			{
+				if (kernel_cache->is_cached(i))
+					maxpidx=i;
 			}
 		}
 
@@ -119,7 +124,7 @@ bool CMPDSVM::train()
 		}
 
 		// hessian updates
-		hstep=-hessres[maxpidx]/(compute_H(maxpidx,maxpidx)+hessreg);
+		hstep=-hessres[maxpidx]/compute_H(maxpidx,maxpidx);
 		//hstep[0]=-hessres[maxpidx]/(compute_H(maxpidx,maxpidx)+hessreg);
 		//hstep[1]=-hessres[maxpidx+n]/(compute_H(maxpidx,maxpidx)+hessreg);
 
@@ -130,10 +135,10 @@ bool CMPDSVM::train()
 		// do primal updates ..
 		REAL tmpalpha = alphas[maxpidx] - dalphas[maxpidx]/compute_H(maxpidx,maxpidx);
 
-		if (tmpalpha > d) 
+		if (tmpalpha > d-alpha_eps) 
 			tmpalpha = d;
 
-		if (tmpalpha < 0)
+		if (tmpalpha < 0+alpha_eps)
 			tmpalpha = 0;
 
 		// update alphas & dalphas & detas ...
@@ -196,7 +201,6 @@ bool CMPDSVM::train()
 			set_support_vector(j, i);
 			j++;
 		}
-		
 	}
 
 	delete[] alphas;

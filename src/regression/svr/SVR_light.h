@@ -246,13 +246,18 @@ typedef struct shrink_state {
    void   write_alphas(CHAR *, double *, INT *, long int);
 
 protected:
-REAL compute_kernel(INT i, INT j)
+inline INT regression_fix_index(INT i)
 {
-	if (j>=num_vectors)
-		j=2*num_vectors-1-j;
-
 	if (i>=num_vectors)
 		i=2*num_vectors-1-i;
+	else
+		return i;
+}
+
+REAL compute_kernel(INT i, INT j)
+{
+	i=regression_fix_index(i);
+	j=regression_fix_index(j);
 
 	if (use_precomputed_subkernels)
 	{
@@ -260,7 +265,7 @@ REAL compute_kernel(INT i, INT j)
 			CMath::swap(i,j) ;
 		REAL sum=0 ;
 		INT num_weights=-1 ;
-		//INT num = get_kernel()->get_rhs()->get_num_vectors() ;
+
 		const REAL * w = CKernelMachine::get_kernel()->get_subkernel_weights(num_weights) ;
 		for (INT n=0; n<num_precomputed_subkernels; n++)
 			if (w[n]!=0)

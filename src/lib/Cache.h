@@ -72,6 +72,11 @@ template<class T> class CCache
 		delete[] cache_table;
 	}
 
+	inline bool is_cached(LONG number)
+	{
+		return (lookup_table && lookup_table[number].obj);
+	}
+
 	/// returns a cache entry or NULL when not cached
 	inline T* lock_entry(LONG number)
 	{

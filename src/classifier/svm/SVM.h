@@ -25,6 +25,7 @@ class CSVM : public CKernelMachine
 		inline void set_qpsize(int qps) { qpsize=qps; }
 
 		inline REAL get_weight_epsilon() { return weight_epsilon; }
+		inline REAL get_epsilon() { return epsilon; }
 		inline REAL get_C1() { return C1; }
 		inline REAL get_C2() { return C2; }
 		inline int get_qpsize() { return qpsize; }

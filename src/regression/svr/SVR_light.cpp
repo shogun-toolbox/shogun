@@ -1713,7 +1713,7 @@ void CSVRLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 		k->clear_normal();
 		for(INT ii=0, i=0;(i=working2dnum[ii])>=0;ii++) {
 			if(a[i] != a_old[i]) {
-				k->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
+				k->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(double)label[i]);
 			}
 		}
 		
@@ -2007,7 +2007,7 @@ static void *update_linear_component_linadd_helper(void *params_)
 	
 	for(jj=params->start;(jj<params->end) && (j=params->active2dnum[jj])>=0;jj++) 
 	{
-		params->lin[j]+=params->kernel->compute_optimized(params->docs[j]);
+		params->lin[j]+=params->kernel->compute_optimized(regression_fix_index(params->docs[j]));
 	}
 	return NULL ;
 }
@@ -2042,7 +2042,7 @@ void CSVRLight::update_linear_component(LONG* docs, INT* label,
 			
 			for(ii=0;(i=working2dnum[ii])>=0;ii++) {
 				if(a[i] != a_old[i]) {
-					get_kernel()->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
+					get_kernel()->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(double)label[i]);
 				}
 			}
 			
@@ -2070,7 +2070,7 @@ void CSVRLight::update_linear_component(LONG* docs, INT* label,
 			}
 				
 			for(jj=params[NUM_PARALLEL-2].end;(j=active2dnum[jj])>=0;jj++) {
-				lin[j]+=get_kernel()->compute_optimized(docs[j]);
+				lin[j]+=get_kernel()->compute_optimized(regression_fix_index(docs[j]));
 			}
 			void* ret;
 			for (INT t=0; t<NUM_PARALLEL-1; t++)
@@ -2078,7 +2078,7 @@ void CSVRLight::update_linear_component(LONG* docs, INT* label,
 
 #else			
 			for(jj=0;(j=active2dnum[jj])>=0;jj++) {
-				lin[j]+=get_kernel()->compute_optimized(docs[j]);
+				lin[j]+=get_kernel()->compute_optimized(regression_fix_index(docs[j]));
 			}
 #endif
 		}
@@ -2440,13 +2440,13 @@ void CSVRLight::reactivate_inactive_examples(INT* label,
 		  get_kernel()->clear_normal();
 		  for(i=0;i<totdoc;i++) {
 			  if(a[i] != a_old[i]) {
-				  get_kernel()->add_to_normal(docs[i], ((a[i]-a_old[i])*(double)label[i]));
+				  get_kernel()->add_to_normal(regression_fix_index(docs[i]), ((a[i]-a_old[i])*(double)label[i]));
 				  a_old[i]=a[i];
 			  }
 		  }
 		  for(i=0;i<totdoc;i++) {
 			  if(!shrink_state->active[i]) {
-				  lin[i]=shrink_state->last_lin[i]+get_kernel()->compute_optimized(docs[i]);
+				  lin[i]=shrink_state->last_lin[i]+get_kernel()->compute_optimized(regression_fix_index(docs[i]));
 			  }
 			  shrink_state->last_lin[i]=lin[i];
 		  }
