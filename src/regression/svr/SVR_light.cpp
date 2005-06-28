@@ -990,11 +990,7 @@ double CSVRLight::compute_objective_function(double *a, double *lin, double *c,
   for(ii=0;active2dnum[ii]>=0;ii++) {
     i=active2dnum[ii];
     criterion=criterion+(eps-(double)label[i]*c[i])*a[i]+0.5*a[i]*label[i]*lin[i];
-    part1+=eps*a[i];
-    part2+=(-(double)label[i]*c[i])*a[i];
-	part3+=0.5*a[i]*label[i]*lin[i];
   }
-  CIO::message(M_MESSAGEONLY,"\ncriterion: %f part1: %f part2: %f part3: %f\n", criterion, part1, part2, part3);
   return(criterion);
 }
 
@@ -1322,7 +1318,7 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 											double *lin, REAL *aicache, double* c)
 {
 	CKernel* k      = get_kernel();
-	INT num         = k->get_rhs()->get_num_vectors() ;
+	INT num         = totdoc;
 	INT num_weights = -1;
 	INT num_kernels = k->get_num_subkernels() ;
 	const REAL* w   = k->get_subkernel_weights(num_weights);
@@ -1432,7 +1428,7 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 		//objective   += w[d]*sumw[d];
 		sumw[d]=0;
 		for(int i=0; i<num; i++)
-			sumw[d] += 0.5*a[i]*label[i]*W[i*num_kernels+d] + a[i]*learn_parm->eps + a[i]*label[i]*c[i];
+			sumw[d] += a[i]*(learn_parm->eps + label[i]*(0.5*W[i*num_kernels+d]-c[i]));
 		objective   += w[d]*sumw[d];
 	}
 #endif
@@ -1693,7 +1689,7 @@ void CSVRLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 	// kernel with LP_LINADD property is assumed to have 
 	// compute_by_subkernel functions
 	CKernel* k      = get_kernel();
-	INT num         = k->get_rhs()->get_num_vectors() ;
+	INT num         = totdoc;
 	INT num_weights = -1;
 	INT num_kernels = k->get_num_subkernels() ;
 	const REAL* w   = k->get_subkernel_weights(num_weights);
@@ -1754,7 +1750,7 @@ void CSVRLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 	{
 		sumw[d]=0;
 		for(int i=0; i<num; i++)
-			sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d] - 1);
+			sumw[d] += a[i]*(learn_parm->eps + label[i]*(0.5*W[i*num_kernels+d]-c[i]));
 		objective   += w[d]*sumw[d];
 	}
 #endif
