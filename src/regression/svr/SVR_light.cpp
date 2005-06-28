@@ -1333,15 +1333,21 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 		{
 			assert(precomputed_subkernels[n]!=NULL) ;
 			SHORTREAL * matrix = precomputed_subkernels[n] ;
-			for(INT i=0;i<num;i++) 
+			for(INT ii=0;ii<num;ii++) 
 			{
-				if(a[i] != a_old[i]) 
+				if(a[ii] != a_old[ii]) 
 				{
-					for(INT j=0;j<num;j++) 
+					INT i=regression_fix_index(ii);
+
+					for(INT jj=0;jj<num;jj++) 
+					{
+						INT j=regression_fix_index(jj);
+
 						if (i>=j)
-							W[j*num_kernels+n]+=(a[i]-a_old[i])*matrix[i*(i+1)/2+j]*(double)label[i];
+							W[j*num_kernels+n]+=(a[ii]-a_old[ii])*matrix[i*(i+1)/2+j]*(double)label[ii];
 						else
-							W[j*num_kernels+n]+=(a[i]-a_old[i])*matrix[i+j*(j+1)/2]*(double)label[i];
+							W[j*num_kernels+n]+=(a[ii]-a_old[ii])*matrix[i+j*(j+1)/2]*(double)label[ii];
+					}
 				}
 			}
 		}
@@ -1403,14 +1409,11 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 	
 	REAL objective=0;
 #ifdef HAVE_ATLAS
-	REAL *alphay  = buffer_num ;
 	REAL sumalpha = 0 ;
 	
 	for (int i=0; i<num; i++)
-	{
-		alphay[i]=a[i]*label[i] ;
-		sumalpha+=a[i] ;
-	}
+		sumalpha+=a[i]*(learn_parm->eps-label[i]*c[i]);
+	
 	for (int i=0; i<num_kernels; i++)
 		sumw[i]=-sumalpha ;
 	
@@ -1422,10 +1425,6 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 #else
 	for (int d=0; d<num_kernels; d++)
 	{
-		//sumw[d]=0;
-		//for(int i=0; i<num; i++)
-		//	sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d] - 1);
-		//objective   += w[d]*sumw[d];
 		sumw[d]=0;
 		for(int i=0; i<num; i++)
 			sumw[d] += a[i]*(learn_parm->eps + label[i]*(0.5*W[i*num_kernels+d]-c[i]));
@@ -1729,19 +1728,16 @@ void CSVRLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 	}
 	REAL objective=0;
 #ifdef HAVE_ATLAS
-	REAL *alphay  = buffer_num ;
 	REAL sumalpha = 0 ;
 	
 	for (int i=0; i<num; i++)
-	{
-		alphay[i]=a[i]*label[i] ;
-		sumalpha+=a[i] ;
-	}
+		sumalpha+=a[i]*(learn_parm->eps-label[i]*c[i]);
+	
 	for (int i=0; i<num_kernels; i++)
 		sumw[i]=-sumalpha ;
 	
 	cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, num,
-				0.5, W, num_kernels, alphay, 1, 1.0, sumw, 1) ;
+				0.5, W, num_kernels, a, 1, 1.0, sumw, 1) ;
 	
 	for (int i=0; i<num_kernels; i++)
 		objective+=w[i]*sumw[i] ;
