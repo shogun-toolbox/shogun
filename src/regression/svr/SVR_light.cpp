@@ -833,7 +833,7 @@ long CSVRLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  
 	  if(verbosity>=2) t3=get_runtime();
 	  update_linear_component(docs,label,active2dnum,a,a_old,working2dnum,totdoc,
-							  lin,aicache);
+							  lin,aicache,c);
 	  
 	  if(verbosity>=2) t4=get_runtime();
 	  supvecnum=calculate_svm_model(docs,label,lin,a,a_old,c,working2dnum,active2dnum,model);
@@ -1319,7 +1319,7 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 											long int *active2dnum, double *a, 
 											double *a_old, long int *working2dnum, 
 											long int totdoc,
-											double *lin, REAL *aicache)
+											double *lin, REAL *aicache, double* c)
 {
 	CKernel* k      = get_kernel();
 	INT num         = k->get_rhs()->get_num_vectors() ;
@@ -1426,9 +1426,13 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 #else
 	for (int d=0; d<num_kernels; d++)
 	{
+		//sumw[d]=0;
+		//for(int i=0; i<num; i++)
+		//	sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d] - 1);
+		//objective   += w[d]*sumw[d];
 		sumw[d]=0;
 		for(int i=0; i<num; i++)
-			sumw[d] += a[i]*(0.5*label[i]*W[i*num_kernels+d] - 1);
+			sumw[d] += 0.5*a[i]*label[i]*W[i*num_kernels+d] + a[i]*learn_parm->eps + a[i]*label[i]*c[i];
 		objective   += w[d]*sumw[d];
 	}
 #endif
@@ -1684,7 +1688,7 @@ void CSVRLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 												   long int *active2dnum, double *a, 
 												   double *a_old, long int *working2dnum, 
 												   long int totdoc,
-												   double *lin, REAL *aicache)
+												   double *lin, REAL *aicache, double* c)
 {
 	// kernel with LP_LINADD property is assumed to have 
 	// compute_by_subkernel functions
@@ -2019,7 +2023,7 @@ void CSVRLight::update_linear_component(LONG* docs, INT* label,
 										long int *active2dnum, double *a, 
 										double *a_old, long int *working2dnum, 
 										long int totdoc,
-										double *lin, REAL *aicache)
+										double *lin, REAL *aicache, double* c)
      /* keep track of the linear component */
      /* lin of the gradient etc. by updating */
      /* based on the change of the variables */
@@ -2034,7 +2038,7 @@ void CSVRLight::update_linear_component(LONG* docs, INT* label,
 		if (get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
 		{
 			update_linear_component_mkl_linadd(docs, label, active2dnum, a, a_old, working2dnum, 
-											   totdoc,	lin, aicache) ;
+											   totdoc,	lin, aicache, c) ;
 		}
 		else
 		{
@@ -2088,7 +2092,7 @@ void CSVRLight::update_linear_component(LONG* docs, INT* label,
 		if (get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
 		{
 			update_linear_component_mkl(docs, label, active2dnum, a, a_old, working2dnum, 
-										totdoc,	lin, aicache) ;
+										totdoc,	lin, aicache, c) ;
 		}
 		else {
 			for(jj=0;(i=working2dnum[jj])>=0;jj++) {

@@ -190,16 +190,16 @@ typedef struct shrink_state {
   void update_linear_component(LONG* docs, INT *label, 
 							   long int *active2dnum, double *a, double* a_old,
 							   long int *working2dnum, long int totdoc,
-							   double *lin, REAL *aicache);
+							   double *lin, REAL *aicache, double* c);
   // MKL stuff
   void update_linear_component_mkl(LONG* docs, INT *label, 
 								   long int *active2dnum, double *a, double* a_old,
 								   long int *working2dnum, long int totdoc,
-								   double *lin, REAL *aicache);
+								   double *lin, REAL *aicache, double* c);
   void update_linear_component_mkl_linadd(LONG* docs, INT *label, 
 										  long int *active2dnum, double *a, double* a_old,
 										  long int *working2dnum, long int totdoc,
-										  double *lin, REAL *aicache);
+										  double *lin, REAL *aicache, double* c);
   
   long int select_next_qp_subproblem_grad( INT *label, double *a,
 						  double* lin, double* c, long int totdoc, long int qp_size, long int *inconsistent, 
