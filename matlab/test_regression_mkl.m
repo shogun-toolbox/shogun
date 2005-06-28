@@ -3,15 +3,15 @@ C=10;
 numtrain=1000;
 svm_eps=1e-2;
 svm_tube=0.01;
-W1=10;
-W2=50;
-W3=100;
+W1=0.5;
+W2=2;
+W3=1;
 
 rand('state',0);
 %rand('state',sum(100*clock));
 traindat=[sort(100*rand(1,numtrain))];
 traindat=[traindat(2:490) traindat(512:1000)];
-trainlab=[sin(traindat)];
+trainlab=[sin(2*traindat)];
 testdat=[linspace(-10,traindat(1),30) traindat linspace(traindat(end),traindat(end)+traindat(1)+10,30)];
 testlab=[sin(testdat)];
 
@@ -43,7 +43,7 @@ gf('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, W2));
 gf('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, W3));
 gf('send_command', 'init_kernel TRAIN');
 gf('send_command', 'use_mkl 1');
-gf('send_command', 'use_precompute 0');
+gf('send_command', 'use_precompute 1');
 gf('send_command', 'mkl_parameters 1e-3 0');
 gf('send_command', sprintf('c %f',C));
 gf('send_command', sprintf('svm_epsilon %f',svm_eps));
