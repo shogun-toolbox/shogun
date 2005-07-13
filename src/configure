@@ -1214,12 +1214,10 @@ set_opts()
 			  x86_64|amd64)
 				LINKFLAGS="$LINKFLAGS -L/fml/ag-raetsch/share/software/ilog/cplex90/lib/x86-64_RHEL3.0_3.2/static_pic/ -lcplex"
 				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/ilog/cplex90/include"
-				TARGET="gf.mexa64"
 			  ;;
 			  *)
 				LINKFLAGS="$LINKFLAGS -L/fml/ag-raetsch/share/software/ilog/cplex90/lib/x86_RHEL3.0_3.2/static_pic/ -lcplex"
 				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/ilog/cplex90/include"
-				TARGET="gf.mexglx"
 				;;
 			esac
 		fi
