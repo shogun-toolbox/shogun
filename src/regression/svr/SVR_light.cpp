@@ -982,9 +982,6 @@ double CSVRLight::compute_objective_function(double *a, double *lin, double *c,
 {
   long i,ii;
   double criterion;
-  double part1=0;
-  double part2=0;
-  double part3=0;
   /* calculate value of objective function */
   criterion=0;
   for(ii=0;active2dnum[ii]>=0;ii++) {
