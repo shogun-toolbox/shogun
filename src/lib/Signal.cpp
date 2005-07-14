@@ -45,6 +45,7 @@ void CSignal::handler(int signal)
 
 bool CSignal::set_handler()
 {
+#ifdef HAVE_MATLAB
 	if (!active)
 	{
 		struct sigaction act;
@@ -70,11 +71,13 @@ bool CSignal::set_handler()
 		}
 	}
 	else
+#endif
 		return false;
 }
 
 bool CSignal::unset_handler()
 {
+#ifdef HAVE_MATLAB
 	if (active)
 	{
 		if (!sigaction(SIGINT, &oldsigaction, NULL))
@@ -86,12 +89,15 @@ bool CSignal::unset_handler()
 			return false;
 	}
 	else
+#endif
 		return false;
 }
 
 void CSignal::clear()
 {
+#ifdef HAVE_MATLAB
 	cancel_computation=false;
 	active=false;
 	memset(&CSignal::oldsigaction, 0, sizeof(CSignal::oldsigaction));
+#endif
 }
