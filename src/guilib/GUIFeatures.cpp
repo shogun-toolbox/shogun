@@ -217,29 +217,16 @@ bool CGUIFeatures::clean(CHAR* param)
 		CFeatures** f_ptr=NULL;
 
 		if (strcmp(target,"TRAIN")==0)
-		{
-			f_ptr=&train_features;
-			invalidate_train() ;
-		}
+			set_train_features(NULL);
 		else if (strcmp(target,"TEST")==0)
-		{
-			f_ptr=&test_features;
-			invalidate_test() ;
-		}
+			set_test_features(NULL);
 		else
 		{
 			CIO::message(M_ERROR, "see help for parameters\n");
 			return false;
 		}
+		return true;
 
-		if (*f_ptr)
-		{
-			delete *f_ptr ;
-			*f_ptr = NULL ;
-			return true ;
-		} else
-			CIO::message(M_DEBUG, "feature already = NULL\n") ;
-		return false ;
 	} else
 		CIO::message(M_ERROR, "see help for params\n");
 

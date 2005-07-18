@@ -44,9 +44,10 @@ class CKernel
 		inline void cache_reset() {	resize_kernel_cache(cache_size) ; } ;
 		
 		/// takes all necessary steps if the lhs is removed from kernel
-		virtual void remove_lhs() { if (lhs) cache_reset() ; lhs = NULL ;  } ;
+		virtual void remove_lhs();
+
 		/// takes all necessary steps if the rhs is removed from kernel
-		virtual void remove_rhs() { if (rhs) cache_reset() ; rhs = NULL ;  } ;
+		virtual void remove_rhs();
 		
 		// return what type of kernel we are Linear,Polynomial, Gaussian,...
 		virtual EKernelType get_kernel_type()=0 ;

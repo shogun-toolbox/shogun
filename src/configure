@@ -34,9 +34,9 @@ _svmmpidebug=no
 _profile=
 _prefix="/usr/local"
 _bindir="$_prefix/bin"
-_datadir="$_prefix/share/mplayer"
+_datadir="$_prefix/share/genefinder"
 _mandir="$_prefix/man"
-_confdir="$_prefix/etc/mplayer"
+_confdir="$_prefix/etc/genefinder"
 _libdir="$_prefix/lib"
 
 # these ones will be autodetected
@@ -172,6 +172,10 @@ qnx()     { issystem "QNX"     ; return "$?" ; }
 darwin()  { issystem "Darwin"  ; return "$?" ; }
 gnu()     { issystem "GNU"     ; return "$?" ; }
 osf1()     { issystem "OSF1"    ; return "$?" ; }
+mingw32() { issystem "MINGW32" ; return "$?" ; }
+morphos() { issystem "MorphOS" ; return "$?" ; }
+win32()   { cygwin || mingw32  ; return "$?" ; }
+beos()    { issystem "BEOS"    ; return "$?" ; }
 
 # arch test boolean functions
 # x86/x86pc is used by QNX
@@ -194,6 +198,23 @@ ppc() {
     ppc) return 0;;
     *) return 1;;
   esac
+}
+
+alpha() {
+  case "$host_arch" in
+    alpha) return 0;;
+    *) return 1;;
+  esac
+}
+
+# not boolean test: implement the posix shell "!" operator for a
+# non-posix /bin/sh.
+#   usage:  not {command}
+# returns exit status "success" when the execution of "command"
+# fails.
+not() {
+  eval "$@"
+  test $? -ne 0
 }
 
 # Use this before starting a check

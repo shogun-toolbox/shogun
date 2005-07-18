@@ -456,6 +456,22 @@ bool CKernel::save(CHAR* fname)
     return (f.is_ok());
 }
 
+void CKernel::remove_lhs()
+{ 
+	if (lhs)
+		cache_reset();
+
+	lhs = NULL;
+}
+
+/// takes all necessary steps if the rhs is removed from kernel
+void CKernel::remove_rhs()
+{
+	if (rhs)
+		cache_reset();
+	rhs = NULL;
+}
+
 
 void CKernel::list_kernel()
 {

@@ -275,7 +275,38 @@ PyObject* CGUIPython::py_set_features(PyObject* self, PyObject* args)
 
 PyObject* CGUIPython::py_add_features(PyObject* self, PyObject* args)
 {
-	return NULL;
+	PyObject   *py_ofeat = NULL;
+	char* target = NULL;
+
+	if (PyArg_ParseTuple(args, "sO", &target, &py_ofeat))
+	{
+		if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
+				(!strncmp(target, "TEST", strlen("TEST"))) ) 
+		{
+
+			CFeatures* features=set_features(py_ofeat);
+
+			if (features && target)
+			{
+				if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+				{
+					gui->guifeatures.add_train_features(features);
+				}
+				else if (!strncmp(target, "TEST", strlen("TEST")))
+				{
+					gui->guifeatures.add_test_features(features);
+				}
+			}
+			else
+				CIO::message(M_ERROR, "usage is gf('add_features', 'TRAIN|TEST', features, ...)");
+		}
+		else
+			CIO::message(M_ERROR, "set_features: Invalid parameters.\n");
+
+	}
+
+	Py_INCREF(Py_None);
+	return Py_None;
 }
 
 PyObject* CGUIPython::py_clean_features(PyObject* self, PyObject* args)
