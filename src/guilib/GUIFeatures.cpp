@@ -214,8 +214,6 @@ bool CGUIFeatures::clean(CHAR* param)
 
 	if ((sscanf(param, "%s", target))==1)
 	{
-		CFeatures** f_ptr=NULL;
-
 		if (strcmp(target,"TRAIN")==0)
 			set_train_features(NULL);
 		else if (strcmp(target,"TEST")==0)
