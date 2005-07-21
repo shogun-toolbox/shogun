@@ -266,7 +266,7 @@ bool CSVRLight::setup_auc_maximization()
 bool CSVRLight::train()
 {
 	//certain setup params	
-	verbosity=1 ;
+	verbosity=1;
 	init_margin=0.15;
 	init_iter=500;
 	precision_violations=0;
@@ -466,6 +466,28 @@ void CSVRLight::svr_learn()
 	num_vectors=totdoc;
 	
 	/* set up regression problem in standard form */
+	docs=new long[2*totdoc];
+	label=new INT[2*totdoc];
+	c = new double[2*totdoc];
+
+
+	/*
+	INT* perm=CMathmatics::randperm(2*totdoc);
+	assert(perm);
+
+	for(i=0;i<totdoc;i++) {   
+		docs[perm[i]]=i;
+		j=2*totdoc-1-i;
+		label[perm[i]]=+1;
+		c[perm[i]]=lab->get_label(i);
+		docs[perm[j]]=j;
+		label[perm[j]]=-1;
+		c[perm[j]]=lab->get_label(i);
+	}
+	delete[] perm;
+	*/
+
+	// set up regression problem in standard form
 	docs=new long[2*totdoc];
 	label=new INT[2*totdoc];
 	c = new double[2*totdoc];

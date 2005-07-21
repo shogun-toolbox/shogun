@@ -29,7 +29,6 @@ LONG verbosity=1;
 /* /////////////////////////////////////////////////////////////// */
 
 # define DEF_PRECISION_LINEAR    1E-8
-# define DEF_PRECISION_NONLINEAR 1E-14
 
 double *optimize_qp();
 double *primal=0,*dual=0;
@@ -87,6 +86,8 @@ double *optimize_qp(QP *qp,double *epsilon_crit, long nx,double *threshold, long
   /* to a slower, but more robust setting. */
   for(margin=init_margin,iter=init_iter;
       (margin<=0.9999999) && (result!=OPTIMAL_SOLUTION);) {
+
+	opt_precision=CMath::max(opt_precision, DEF_PRECISION_LINEAR);
     sigdig=-log10(opt_precision);
 
     result=pr_loqo((int)qp->opt_n,(int)qp->opt_m,

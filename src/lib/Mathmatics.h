@@ -114,6 +114,24 @@ public:
 		return res ;
 	}
 
+	static inline INT* randperm(INT n)
+	{
+		INT* perm = new INT[n];
+
+		if (perm)
+		{
+			for (INT i=0; i<n; i++)
+				perm[i]=i;
+
+			for (INT i=0; i<n; i++)
+			{
+				swap( perm[(n*rand())/(RAND_MAX+1)], perm[i]);
+			}
+		}
+
+		return perm;
+	}
+
 	static inline LONG nchoosek(INT n, INT k)
 	{
 		long res=1 ;
