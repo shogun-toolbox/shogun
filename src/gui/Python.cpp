@@ -73,10 +73,14 @@ PyMODINIT_FUNC initgf(void)
 
 	// initialize callbacks
     Py_InitModule("gf", gfpythonmethods);
+
+	// set signal handler to trap ctrl+c
+	CSignal::set_handler();
 }
 
 void exitgf(void)
 {
+	CSignal::unset_handler();
 	CIO::message(M_INFO, "quitting...\n");
 	delete gui;
 }

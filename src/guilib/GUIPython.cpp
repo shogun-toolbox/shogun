@@ -7,6 +7,9 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "features/CharFeatures.h"
+#include "kernel/WeightedDegreeCharKernel.h"
+#include "kernel/WeightedDegreePositionCharKernel.h"
+#include "kernel/CombinedKernel.h"
 
 //next line is not necessary, however if disabled causes a warning
 #define libnumeric_UNIQUE_SYMBOL libnumeric_API
@@ -154,6 +157,63 @@ PyObject* CGUIPython::py_wd_pos_weights(PyObject* self, PyObject* args)
 
 PyObject* CGUIPython::py_get_subkernel_weights(PyObject* self, PyObject* args)
 {
+	CKernel* k = gui->guikernel.get_kernel() ;
+	INT degree=-1;
+	INT length=-1;
+
+	if (k)
+	{
+		if (k->get_kernel_type() == K_WEIGHTEDDEGREE)
+		{
+			CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) k;
+
+			const REAL* weights = kernel->get_degree_weights(degree, length) ;
+			if (length == 0)
+				length = 1;
+
+			PyArrayObject* py_weights=NA_NewArray(NULL, tFloat64, degree, length);
+
+			for (int i=0; i<degree; i++)
+				for (int j=0; j<length; j++)
+					NA_set2_Float64(py_weights, i, j, weights[i*length+j]);
+
+			return (PyObject*) py_weights;
+		}
+		else if (k->get_kernel_type() == K_WEIGHTEDDEGREEPOS)
+		{
+			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) k;
+
+			const REAL* weights = kernel->get_degree_weights(degree, length) ;
+			if (length == 0)
+				length = 1;
+
+			PyArrayObject* py_weights=NA_NewArray(NULL, tFloat64, degree, length);
+
+			for (int i=0; i<degree; i++)
+				for (int j=0; j<length; j++)
+					NA_set2_Float64(py_weights, i, j, weights[i*length+j]);
+
+			return (PyObject*) py_weights;
+		}
+		else if (k->get_kernel_type() == K_COMBINED)
+		{
+			CCombinedKernel *kernel = (CCombinedKernel *) k;
+			INT num_weights = -1 ;
+			const REAL* weights = kernel->get_subkernel_weights(num_weights) ;
+
+			PyArrayObject* py_weights=NA_NewArray(NULL, tFloat64, 1, num_weights);
+
+			for (int i=0; i<num_weights; i++)
+				NA_set1_Float64(py_weights, i, weights[i]);
+
+			return (PyObject*) py_weights;
+		}
+		else
+			CIO::message(M_ERROR, "kernel does not have any subkernel weights\n");
+	}
+	else
+		CIO::message(M_ERROR, "no kernel set\n");
+
 	return NULL;
 }
 

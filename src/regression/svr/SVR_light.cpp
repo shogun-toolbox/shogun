@@ -1,3 +1,9 @@
+#include "lib/config.h"
+
+#ifdef HAVE_PYTHON
+#include <Python.h>
+#endif
+
 #include "lib/io.h"
 #include "lib/Signal.h"
 #include "lib/Mathmatics.h"
@@ -470,23 +476,6 @@ void CSVRLight::svr_learn()
 	label=new INT[2*totdoc];
 	c = new double[2*totdoc];
 
-
-	/*
-	INT* perm=CMathmatics::randperm(2*totdoc);
-	assert(perm);
-
-	for(i=0;i<totdoc;i++) {   
-		docs[perm[i]]=i;
-		j=2*totdoc-1-i;
-		label[perm[i]]=+1;
-		c[perm[i]]=lab->get_label(i);
-		docs[perm[j]]=j;
-		label[perm[j]]=-1;
-		c[perm[j]]=lab->get_label(i);
-	}
-	delete[] perm;
-	*/
-
 	// set up regression problem in standard form
 	docs=new long[2*totdoc];
 	label=new INT[2*totdoc];
@@ -735,6 +724,11 @@ long CSVRLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
                             /* repeat this loop until we have convergence */
 
   for(;((!CSignal::cancel_computations()) && ((iteration<3) || (retrain && (!terminate))||((w_gap>get_weight_epsilon()) && get_mkl_enabled()))); iteration++){
+
+#ifdef HAVE_PYTHON
+	  if (PyErr_CheckSignals())
+		  break;
+#endif
 	  	  
 	  if(use_kernel_cache) 
 		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */

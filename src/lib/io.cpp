@@ -4,6 +4,10 @@
 #include "mex.h"
 #endif
 
+#ifdef HAVE_PYTHON
+#include <Python.h>
+#endif
+
 #include "lib/io.h"
 #include "lib/Signal.h"
 #include "lib/common.h"
@@ -28,7 +32,7 @@ CIO::CIO()
 
 void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 {
-#ifdef HAVE_MATLAB
+#if defined(HAVE_MATLAB) || defined(HAVE_PYTHON)
 	char str[4096];
     va_list list;
     va_start(list,fmt);
@@ -39,6 +43,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 	int p=get_prio_string(prio);
 	if (p>=0)
 	{
+#ifdef HAVE_MATLAB
 		switch (prio)
 		{
 			case M_DEBUG:
@@ -63,6 +68,34 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			default:
 				break;
 		}
+#else
+		switch (prio)
+		{
+			case M_DEBUG:
+			case M_INFO:
+			case M_NOTICE:
+			case M_MESSAGEONLY:
+				fprintf(target, message_strings[p]);
+				fprintf(target, "%s", str);
+				break;
+
+			case M_WARN:
+				PyErr_Warn(NULL, str);
+				break;
+
+			case M_ERROR:
+			case M_CRITICAL:
+			case M_ALERT:
+			case M_EMERGENCY:
+				PyErr_SetString(PyExc_RuntimeError,str);
+				fprintf(target, message_strings[p]);
+				fprintf(target, "%s", str);
+				break;
+			default:
+				break;
+		}
+
+#endif
 		fflush(target);
 	}
 #else

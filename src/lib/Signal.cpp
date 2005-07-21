@@ -1,10 +1,16 @@
+#include "lib/config.h"
+
+#ifdef HAVE_PYTHON
+#include <Python.h>
+#endif
+
 #include <stdlib.h>
 #include <signal.h>
 #include <string.h>
 
-#include "lib/config.h"
 #include "lib/io.h"
 #include "lib/Signal.h"
+
 
 struct sigaction CSignal::oldsigaction;
 bool CSignal::active=false;
@@ -35,6 +41,20 @@ void CSignal::handler(int signal)
 		cancel_computation=true;
 	else
 		CIO::message(M_MESSAGEONLY, "\n");
+#elif HAVE_PYTHON
+	CIO::message(M_MESSAGEONLY, "\nKill process / Prematurely finish computations / Do nothing (K/P/D)? ");
+	char answer=fgetc(stdin);
+
+	if (answer == 'K')
+	{
+		CIO::message(M_ERROR, "gf stopped by SIGINT\n");
+		unset_handler();
+		Py_Exit(0);
+	}
+	else if (answer == 'P')
+		cancel_computation=true;
+	else
+		CIO::message(M_MESSAGEONLY, "\n");
 #else
 	CIO::message(M_MESSAGEONLY, "\n");
 	CIO::message(M_ERROR, "gf stopped by SIGINT\n");
@@ -45,7 +65,6 @@ void CSignal::handler(int signal)
 
 bool CSignal::set_handler()
 {
-#ifdef HAVE_MATLAB
 	if (!active)
 	{
 		struct sigaction act;
@@ -71,13 +90,11 @@ bool CSignal::set_handler()
 		}
 	}
 	else
-#endif
 		return false;
 }
 
 bool CSignal::unset_handler()
 {
-#ifdef HAVE_MATLAB
 	if (active)
 	{
 		if (!sigaction(SIGINT, &oldsigaction, NULL))
@@ -89,15 +106,12 @@ bool CSignal::unset_handler()
 			return false;
 	}
 	else
-#endif
 		return false;
 }
 
 void CSignal::clear()
 {
-#ifdef HAVE_MATLAB
 	cancel_computation=false;
 	active=false;
 	memset(&CSignal::oldsigaction, 0, sizeof(CSignal::oldsigaction));
-#endif
 }
