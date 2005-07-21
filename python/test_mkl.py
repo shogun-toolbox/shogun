@@ -8,6 +8,7 @@ features=concatenate((randn(num,2)-1,randn(num,2)+1),0)
 
 gf.send_command('c 10')
 gf.send_command('new_svm LIGHT')
+gf.send_command('use_mkl 1')
 
 gf.set_labels("TRAIN", labels)
 gf.add_features("TRAIN", features)
