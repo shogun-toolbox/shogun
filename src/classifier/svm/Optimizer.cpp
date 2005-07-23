@@ -101,7 +101,7 @@ double *optimize_qp(QP *qp,double *epsilon_crit, long nx,double *threshold, long
 
     if(isnan(dual[0])) {     /* check for choldc problem */
       if(verbosity>=2) {
-	printf("NOTICE: Restarting PR_LOQO with more conservative parameters.\n");
+		  CIO::message(M_DEBUG, "Restarting PR_LOQO with more conservative parameters.\n");
       }
       if(init_margin<0.80) { /* become more conservative in general */
 	init_margin=(4.0*margin+1.0)/5.0;
@@ -109,7 +109,7 @@ double *optimize_qp(QP *qp,double *epsilon_crit, long nx,double *threshold, long
       margin=(margin+1.0)/2.0;
       (opt_precision)*=10.0;   /* reduce precision */
       if(verbosity>=2) {
-	printf("NOTICE: Reducing precision of PR_LOQO.\n");
+		  CIO::message(M_DEBUG, "Reducing precision of PR_LOQO.\n");
       }
     }
     else if(result!=OPTIMAL_SOLUTION) {
@@ -117,7 +117,7 @@ double *optimize_qp(QP *qp,double *epsilon_crit, long nx,double *threshold, long
       init_iter+=10;
       (opt_precision)*=10.0;   /* reduce precision */
       if(verbosity>=2) {
-	printf("NOTICE: Reducing precision of PR_LOQO due to (%ld).\n",result);
+		  CIO::message(M_DEBUG, "Reducing precision of PR_LOQO due to (%ld).\n",result);
       }      
     }
   }
@@ -182,22 +182,20 @@ double *optimize_qp(QP *qp,double *epsilon_crit, long nx,double *threshold, long
     (opt_precision)/=100.0;
     precision_violations++;
     if(verbosity>=2) {
-      printf("NOTICE: Increasing Precision of PR_LOQO.\n");
+		CIO::message(M_DEBUG, "Increasing Precision of PR_LOQO.\n");
     }
   }
 
   if(precision_violations > 500) { 
     (*epsilon_crit)*=10.0;
     precision_violations=0;
-    if(verbosity>=1) {
-      printf("\nWARNING: Relaxing epsilon on KT-Conditions.\n");
-    }
+	CIO::message(M_WARN, "Relaxing epsilon on KT-Conditions.\n");
   }	  
 
   (*threshold)=model_b;
 
   if(result!=OPTIMAL_SOLUTION) {
-    printf("\nERROR: PR_LOQO did not converge. \n");
+	  CIO::message(M_ERROR, "PR_LOQO did not converge.\n");
     return(qp->opt_xinit);
   }
   else {

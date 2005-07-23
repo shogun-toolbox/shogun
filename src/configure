@@ -70,7 +70,7 @@ cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
 
-	for _cc in gcc-3.4 gcc-3.3 gcc-3.2 gcc3 cc gcc
+	for _cc in cc gcc
 	do
 		if cc_check
 		then
@@ -81,7 +81,7 @@ EOF
 		fi
 	done
 
-	for _cc in g++-3.4 g++-3.3 g++-3.2 g++3 cxx CC c++ g++
+	for _cc in cxx CC c++ g++
 	do
 		if cc_check
 		then

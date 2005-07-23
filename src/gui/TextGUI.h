@@ -36,5 +36,6 @@ public:
 protected:
 	FILE* out_file;
 	CHAR input[10000];
+	bool echo;
 };
 #endif

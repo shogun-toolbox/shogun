@@ -3,6 +3,7 @@
 #ifdef HAVE_PYTHON
 #include "guilib/GUIPython.h"
 #include "gui/TextGUI.h"
+#include "lib/Version.h"
 #include "lib/common.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
@@ -10,6 +11,7 @@
 #include "kernel/WeightedDegreeCharKernel.h"
 #include "kernel/WeightedDegreePositionCharKernel.h"
 #include "kernel/CombinedKernel.h"
+#include "kernel/CustomKernel.h"
 
 //next line is not necessary, however if disabled causes a warning
 #define libnumeric_UNIQUE_SYMBOL libnumeric_API
@@ -55,7 +57,10 @@ PyObject* CGUIPython::py_system(PyObject* self, PyObject* args)
 
 PyObject* CGUIPython::py_help(PyObject* self, PyObject* args)
 {
-	return NULL;
+	gui->parse_line("help");
+
+	Py_INCREF(Py_None);
+	return Py_None;
 }
 
 PyObject* CGUIPython::py_crc(PyObject* self, PyObject* args)
@@ -142,6 +147,74 @@ PyObject* CGUIPython::py_compute_by_subkernels(PyObject* self, PyObject* args)
 
 PyObject* CGUIPython::py_set_subkernels_weights(PyObject* self, PyObject* args)
 {
+	PyObject* py_oweights = NULL;
+
+	if (PyArg_ParseTuple(args, "O", &py_oweights))
+	{
+		PyArrayObject* py_weights = NA_InputArray(py_oweights, tFloat64, NUM_C_ARRAY);
+		CKernel* k= gui->guikernel.get_kernel();
+
+		if (k && py_weights)
+		{
+			double* w= (double*) NA_OFFSETDATA(py_weights);
+
+			if (k->get_kernel_type() == K_WEIGHTEDDEGREE)
+			{
+				CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) k;
+				INT degree = kernel->get_degree() ;
+
+				if ((py_weights->nd == 1 && py_weights->dimensions[0] == degree) ||
+						(py_weights->nd == 2 && py_weights->dimensions[0] == degree))
+				{
+					if (py_weights->nd == 1)
+						kernel->set_weights(w, py_weights->dimensions[0], 0);
+					else
+						kernel->set_weights(w, py_weights->dimensions[0], py_weights->dimensions[1]);
+
+					Py_INCREF(Py_None);
+					return Py_None;
+				}
+				else
+					CIO::message(M_ERROR, "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
+
+			}
+			else if (k->get_kernel_type() == K_WEIGHTEDDEGREEPOS)
+			{
+				CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) k;
+				INT degree = kernel->get_degree() ;
+
+				if ((py_weights->nd == 1 && py_weights->dimensions[0] == degree) ||
+						(py_weights->nd == 2 && py_weights->dimensions[0] == degree))
+				{
+					if (py_weights->nd == 1)
+						kernel->set_weights(w, py_weights->dimensions[0], 0);
+					else
+						kernel->set_weights(w, py_weights->dimensions[0], py_weights->dimensions[1]);
+
+					Py_INCREF(Py_None);
+					return Py_None;
+				}
+				else
+					CIO::message(M_ERROR, "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
+			}
+			else
+			{
+				INT num_subkernels = k->get_num_subkernels() ;
+				if (py_weights->nd == 1 && py_weights->dimensions[0]==num_subkernels)
+				{
+					k->set_subkernel_weights(w, py_weights->dimensions[0]);
+					Py_INCREF(Py_None);
+					return Py_None;
+				}
+				else
+					CIO::message(M_ERROR, "dimension mismatch (should be 1 x num_subkernels)\n") ;
+			}
+
+		}
+	}
+	else
+		CIO::message(M_ERROR, "expected double array");
+
 	return NULL;
 }
 
@@ -224,17 +297,104 @@ PyObject* CGUIPython::py_last_subkernel_weights(PyObject* self, PyObject* args)
 
 PyObject* CGUIPython::py_get_features(PyObject* self, PyObject* args)
 {
+	char* target = NULL;
+
+	if (PyArg_ParseTuple(args, "s", &target))
+	{
+		CFeatures* f = NULL;
+
+		if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+		{
+			f=gui->guifeatures.get_train_features();
+		}
+		else if (!strncmp(target, "TEST", strlen("TEST")))
+		{
+			f=gui->guifeatures.get_test_features();
+		}
+		else
+			CIO::message(M_ERROR, "target is TRAIN|TEST");
+
+		if (f)
+		{
+			switch (f->get_feature_class())
+			{
+				case C_SIMPLE:
+					switch (f->get_feature_type())
+					{
+						case F_REAL:
+							INT num_vec= ((CRealFeatures*) f)->get_num_vectors();
+							INT num_feat= ((CRealFeatures*) f)->get_num_features();
+							Float64* feat=new Float64[num_vec*num_feat];
+
+							if (feat)
+							{
+								for (INT i=0; i<num_vec; i++)
+								{
+									INT len=0;
+									bool free_vec;
+									REAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free_vec);
+									assert(len==num_feat);
+									for (INT j=0; j<num_feat; j++)
+										feat[((CRealFeatures*) f)->get_num_vectors()*j+i]= (double) vec[j];
+									((CRealFeatures*) f)->free_feature_vector(vec, i, free_vec);
+								}
+								return (PyObject*) NA_NewArray(feat, tFloat64, 2, num_vec, num_feat);
+							}
+							break;
+						case F_WORD:
+						case F_SHORT:
+						case F_CHAR:
+						case F_BYTE:
+						default:
+							CIO::message(M_ERROR, "not implemented\n");
+					}
+					break;
+				case C_SPARSE:
+				case C_STRING:
+				default:
+					CIO::message(M_ERROR, "not implemented\n");
+			}
+		}
+
+	}
 	return NULL;
 }
 
 PyObject* CGUIPython::py_get_labels(PyObject* self, PyObject* args)
 {
+	char* target = NULL;
+
+	if (PyArg_ParseTuple(args, "s", &target))
+	{
+		CLabels* labels = NULL;
+
+		if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+		{
+			labels=gui->guilabels.get_train_labels();
+		}
+		else if (!strncmp(target, "TEST", strlen("TEST")))
+		{
+			labels=gui->guilabels.get_test_labels();
+		}
+		else
+			CIO::message(M_ERROR, "target is TRAIN|TEST");
+
+		Float64 *result=NULL;
+		int len=0;
+		if (labels)
+		{
+			result=labels->get_labels(len);
+
+			if(result)
+				return (PyObject*) NA_NewArray(result, tFloat64, 1, 1, len);
+		}
+	}
 	return NULL;
 }
 
 PyObject* CGUIPython::py_get_version(PyObject* self, PyObject* args)
 {
-	return NULL;
+	return PyLong_FromUnsignedLong(version.get_version_in_minutes());
 }
 
 PyObject* CGUIPython::py_get_preproc_init(PyObject* self, PyObject* args)
@@ -279,6 +439,52 @@ PyObject* CGUIPython::py_append_hmm(PyObject* self, PyObject* args)
 
 PyObject* CGUIPython::py_set_svm(PyObject* self, PyObject* args)
 {
+	CSVM* svm=gui->guisvm.get_svm();
+
+	if (svm)
+	{
+		PyObject* py_dict = NULL;
+		if (!PyArg_ParseTuple(args, "O", &py_dict))
+			return NULL;
+		if (!PyDict_Check(py_dict))
+			return NULL;
+
+		PyObject* py_oalphas = PyDict_GetItemString(py_dict, "alphas");
+		PyObject* py_osv_idx = PyDict_GetItemString(py_dict, "sv_idx");
+		PyObject* py_bias = PyDict_GetItemString(py_dict, "b");
+
+		if (py_oalphas && py_osv_idx && py_bias)
+		{
+			PyArrayObject* py_alphas = NA_InputArray(py_oalphas, tFloat64, NUM_C_ARRAY);
+			PyArrayObject* py_sv_idx = NA_InputArray(py_oalphas, tInt64, NUM_C_ARRAY);
+
+			if (py_alphas && py_sv_idx && py_bias && (py_alphas->nd == 1) && (py_alphas->dimensions[0] > 0) && NA_ShapeEqual(py_alphas, py_sv_idx))
+			{
+				svm->create_new_model(py_alphas->dimensions[0]);
+				svm->set_bias(PyFloat_AsDouble(py_bias));
+
+				for (int i=0; i< svm->get_num_support_vectors(); i++)
+				{
+					svm->set_alpha(i, NA_get_Float64(py_alphas,i));
+					svm->set_support_vector(i, (int) NA_get1_Int64(py_sv_idx,i));
+				}
+
+				if (!PyErr_Occurred())
+				{
+					Py_INCREF(Py_None);
+					return Py_None;
+				}
+			}
+			else
+				CIO::message(M_ERROR, "no svm object available\n") ;
+
+			Py_XDECREF(py_alphas);
+			Py_XDECREF(py_sv_idx);
+			Py_XDECREF(py_bias);
+		}
+		Py_XDECREF(py_dict);
+	}
+
 	return NULL;
 }
 
@@ -289,6 +495,84 @@ PyObject* CGUIPython::py_kernel_parameters(PyObject* self, PyObject* args)
 
 PyObject* CGUIPython::py_set_custom_kernel(PyObject* self, PyObject* args)
 {
+	PyObject* py_okernel = NULL;
+	PyArrayObject* py_akernel = NULL;
+	char* target = NULL;
+	bool source_is_diag = false;
+	bool dest_is_diag = false;
+
+
+	if (PyArg_ParseTuple(args, "Os", &py_okernel, target))
+	{
+		if ( (!strncmp(target, "DIAG", strlen("DIAG"))) || 
+				(!strncmp(target, "FULL", strlen("FULL"))) ) 
+		{
+			if (!strncmp(target, "FULL2DIAG", strlen("FULL2DIAG")))
+			{
+				source_is_diag = false;
+				dest_is_diag = true;
+			}
+			else if (!strncmp(target, "FULL", strlen("FULL")))
+			{
+				source_is_diag = false;
+				dest_is_diag = false;
+			}
+			else if (!strncmp(target, "DIAG", strlen("DIAG")))
+			{
+				source_is_diag = true;
+				dest_is_diag = true;
+			}
+
+			py_akernel  = NA_InputArray(py_okernel, tFloat64, NUM_C_ARRAY);
+
+			if (py_akernel)
+			{
+				double* km= (double*) NA_OFFSETDATA(py_akernel);
+				CCustomKernel* k=(CCustomKernel*)gui->guikernel.get_kernel();
+				if  (k && k->get_kernel_type() == K_COMBINED)
+				{
+					CIO::message(M_DEBUG, "identified combined kernel\n") ;
+					k = (CCustomKernel*)((CCombinedKernel*)k)->get_last_kernel() ;
+				}
+
+				if (k && k->get_kernel_type() == K_CUSTOM)
+				{
+					if (source_is_diag && dest_is_diag && (py_akernel->nd == 2 && py_akernel->dimensions[0] == py_akernel->dimensions[1]) )
+					{
+						if (k->set_diag_kernel_matrix_from_diag(km, py_akernel->dimensions[0]))
+						{
+							Py_INCREF(Py_None);
+							return Py_None;
+						}
+					}
+					else if (!source_is_diag && dest_is_diag && (py_akernel->nd == 2 && py_akernel->dimensions[0] == py_akernel->dimensions[1]) ) 
+					{
+						if (k->set_diag_kernel_matrix_from_full(km, py_akernel->dimensions[0]))
+						{
+							Py_INCREF(Py_None);
+							return Py_None;
+						}
+					}
+					else if (!source_is_diag && !dest_is_diag)
+					{
+						if (k->set_full_kernel_matrix_from_full(km, py_akernel->dimensions[0], py_akernel->dimensions[1]))
+						{
+							Py_INCREF(Py_None);
+							return Py_None;
+						}
+					}
+					else
+						CIO::message(M_ERROR,"not defined / general error\n");
+				}
+				else
+					CIO::message(M_ERROR, "not a custom kernel\n") ;
+			}
+			else
+				CIO::message(M_ERROR,"kernel matrix must by given as double matrix\n");
+		}
+		else
+			CIO::message(M_ERROR, "usage is gf('set_custom_kernel',[kernelmatrix, is_upperdiag])");
+	}
 	return NULL;
 }
 
@@ -367,11 +651,6 @@ PyObject* CGUIPython::py_add_features(PyObject* self, PyObject* args)
 
 	Py_INCREF(Py_None);
 	return Py_None;
-}
-
-PyObject* CGUIPython::py_clean_features(PyObject* self, PyObject* args)
-{
-	return NULL;
 }
 
 PyObject* CGUIPython::py_set_labels(PyObject* self, PyObject* args)
@@ -466,6 +745,17 @@ PyObject* CGUIPython::py_svm_classify(PyObject* self, PyObject* args)
 
 PyObject* CGUIPython::py_svm_classify_example(PyObject* self, PyObject* args)
 {
+	int idx = 0;
+
+	if (PyArg_ParseTuple(args, "i", &idx))
+	{
+		REAL result;
+		if (!gui->guisvm.classify_example(idx, result))
+			CIO::message(M_ERROR, "svm_classify_example failed\n") ;
+		else
+			return PyFloat_FromDouble(result);
+	}
+
 	return NULL;
 }
 
@@ -540,7 +830,6 @@ PyObject* CGUIPython::py_test(PyObject* self, PyObject* args)
 //	sts = system(command);
 //	return Py_BuildValue("i", sts);
 //}
-
 
 CFeatures* CGUIPython::set_features(PyObject* arg)
 {

@@ -48,7 +48,6 @@ public:
     static PyObject* py_set_kernel_init(PyObject* self, PyObject* args);
     static PyObject* py_set_features(PyObject* self, PyObject* args);
     static PyObject* py_add_features(PyObject* self, PyObject* args);
-    static PyObject* py_clean_features(PyObject* self, PyObject* args);
     static PyObject* py_set_labels(PyObject* self, PyObject* args);
     static PyObject* py_set_preproc_init(PyObject* self, PyObject* args);
     static PyObject* py_set_hmm_defs(PyObject* self, PyObject* args);

@@ -41,20 +41,6 @@ void CSignal::handler(int signal)
 		cancel_computation=true;
 	else
 		CIO::message(M_MESSAGEONLY, "\n");
-#elif HAVE_PYTHON
-	CIO::message(M_MESSAGEONLY, "\nKill process / Prematurely finish computations / Do nothing (K/P/D)? ");
-	char answer=fgetc(stdin);
-
-	if (answer == 'K')
-	{
-		CIO::message(M_ERROR, "gf stopped by SIGINT\n");
-		unset_handler();
-		Py_Exit(0);
-	}
-	else if (answer == 'P')
-		cancel_computation=true;
-	else
-		CIO::message(M_MESSAGEONLY, "\n");
 #else
 	CIO::message(M_MESSAGEONLY, "\n");
 	CIO::message(M_ERROR, "gf stopped by SIGINT\n");
@@ -72,7 +58,6 @@ bool CSignal::set_handler()
 
 		sigemptyset(&st);
 
-		act.sa_restorer = NULL; //just in case remove
 		act.sa_sigaction=NULL; //just in case
 		act.sa_handler=CSignal::handler;
 		act.sa_mask = st;

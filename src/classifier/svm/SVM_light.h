@@ -23,7 +23,6 @@ extern "C" {
 # define VERSION_DATE  "01.11.00 -- correct??"
 
 # define DEF_PRECISION_LINEAR    1E-8
-# define DEF_PRECISION_NONLINEAR 1E-14
 # define MAXSHRINK 50000
 
 class CSVMLight:public CSVM
@@ -153,6 +152,7 @@ typedef struct shrink_state {
 					   double *maxdiff, long int heldout, long int retrain);
   
   double compute_objective_function(double *a, double *lin, double *c, double eps, INT *label, long int *active2dnum);
+
   void   clear_index(long int *);
   void   add_to_index(long int *, long int);
   long int   compute_index(long int *,long, long int *);

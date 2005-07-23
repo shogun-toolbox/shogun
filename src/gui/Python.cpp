@@ -44,7 +44,6 @@ static PyMethodDef gfpythonmethods[] = {
     {"set_kernel_init",  (CGUIPython::py_set_kernel_init), METH_VARARGS, "Set kernel init."},
     {"set_features",  (CGUIPython::py_set_features), METH_VARARGS, "Set a feature object."},
     {"add_features",  (CGUIPython::py_add_features), METH_VARARGS, "Add another feature object."},
-    {"clean_features",  (CGUIPython::py_clean_features), METH_VARARGS, "Clean all feature objects."},
     {"set_labels",  (CGUIPython::py_set_labels), METH_VARARGS, "Set labels.."},
     {"set_preproc_init",  (CGUIPython::py_set_preproc_init), METH_VARARGS, "Set preprocessor init."},
     {"set_hmm_defs",  (CGUIPython::py_set_hmm_defs), METH_VARARGS, "Set HMM definitions."},
@@ -73,14 +72,10 @@ PyMODINIT_FUNC initgf(void)
 
 	// initialize callbacks
     Py_InitModule("gf", gfpythonmethods);
-
-	// set signal handler to trap ctrl+c
-	CSignal::set_handler();
 }
 
 void exitgf(void)
 {
-	CSignal::unset_handler();
 	CIO::message(M_INFO, "quitting...\n");
 	delete gui;
 }

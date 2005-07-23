@@ -1,3 +1,9 @@
+#include "lib/config.h"
+
+#ifdef HAVE_PYTHON
+#include <Python.h>
+#endif
+
 #include "lib/io.h"
 #include "lib/Signal.h"
 #include "lib/Mathmatics.h"
@@ -42,7 +48,6 @@ struct S_THREAD_PARAM
 
 CSVMLight::CSVMLight()
 {
-
 	W=NULL;
 	model=new MODEL[1];
 	learn_parm=new LEARN_PARM[1];
@@ -560,7 +565,7 @@ void CSVMLight::svm_learn()
 	CIO::message(M_DEBUG, "alpha:%d num_sv:%d\n", svm_model.alpha, get_num_support_vectors());
   if(svm_model.alpha && get_num_support_vectors()) {
     if(verbosity>=1) {
-      printf("Computing starting state..."); fflush(stdout);
+		CIO::message(M_INFO, "Computing starting state...");
     }
 
 	REAL* alpha = new REAL[totdoc];
@@ -607,14 +612,11 @@ void CSVMLight::svm_learn()
     delete[] alpha;
 
     if(verbosity>=1) {
-      printf("\ndone.\n");  fflush(stdout);
+		CIO::message(M_INFO,"done.\n");
     }   
   } 
 		CIO::message(M_DEBUG, "%d totdoc %d pos %d neg\n", totdoc, trainpos, trainneg);
-
-	if(verbosity==1) {
-		CIO::message(M_MESSAGEONLY, "Optimizing...\n");
-	}
+		CIO::message(M_DEBUG, "Optimizing...\n");
 
 	/* train the svm */
   iterations=optimize_to_convergence(docs,label,totdoc,
@@ -626,7 +628,7 @@ void CSVMLight::svm_learn()
 
 	if(verbosity>=1) {
 		if(verbosity==1)
-			CIO::message(M_MESSAGEONLY, "done. (%ld iterations)\n",iterations);
+			CIO::message(M_INFO, "done. (%ld iterations)\n",iterations);
 
 		misclassified=0;
 		for(i=0;(i<totdoc);i++) { /* get final statistic */
@@ -761,13 +763,18 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
                             /* repeat this loop until we have convergence */
 
   for(;((!CSignal::cancel_computations()) && ((iteration<3) || (retrain && (!terminate))||((w_gap>get_weight_epsilon()) && get_mkl_enabled()))); iteration++){
+
+#ifdef HAVE_PYTHON
+	  if (PyErr_CheckSignals())
+		  break;
+#endif
 	  	  
 	  if(use_kernel_cache) 
 		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
 	  
 	  if(verbosity>=2) t0=get_runtime();
 	  if(verbosity>=3) {
-		  CIO::message(M_MESSAGEONLY, "\nSelecting working set...%f "); 
+		  CIO::message(M_DEBUG, "\nSelecting working set...%f "); 
 	  }
 	  
 	  if(learn_parm->svm_newvarsinqp>learn_parm->svm_maxqpsize) 
@@ -916,8 +923,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		  /* long time no progress? */
 		  terminate=1;
 		  retrain=0;
-		  if(verbosity>=1) 
-			  printf("\nWARNING: Relaxing KT-Conditions due to slow progress! Terminating!\n");
+		  CIO::message(M_WARN, "Relaxing KT-Conditions due to slow progress! Terminating!\n");
 	  }
 	  
 	  noshrink=0;
@@ -943,8 +949,8 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		  timing_profile->time_shrink+=get_runtime()-t1;
 		  if (((verbosity>=1) && use_kernel_cache)
 			 || (verbosity>=2)) {
-			  printf("done.\n");  fflush(stdout);
-			  printf(" Number of inactive variables = %ld\n",inactivenum);
+			  CIO::message(M_INFO,"done.\n");
+			  CIO::message(M_INFO, "Number of inactive variables = %ld\n",inactivenum);
 		  }		  
 	  }
 	  
@@ -965,11 +971,6 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  }
 	  mymaxdiff=*maxdiff ;
 
-	  if(verbosity>=3) {
-		  CIO::message(M_MESSAGEONLY, "\n");
-	  }
-	  
-	  
 	  if (((iteration % 10) == 0) && (!noshrink))
 	  {
 		  activenum=shrink_problem(shrink_state,active2dnum,last_suboptimal_at,iteration,totdoc,
@@ -1000,7 +1001,6 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
   criterion=compute_objective_function(a,lin,c,learn_parm->eps,label, active2dnum);
   CSVM::set_objective(criterion);
 	  
-
   delete[] chosen;
   delete[] last_suboptimal_at;
   delete[] key;
@@ -1587,7 +1587,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 			}
 		}
 
-		CIO::message(M_MESSAGEONLY, "*") ;
+		CIO::message(M_DEBUG, "*") ;
 		
 		{ // add the new row
 			//CIO::message(M_INFO, "add the new row\n") ;
@@ -1715,7 +1715,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 		INT start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		CIO::message(M_MESSAGEONLY,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
 	}
 	
 	delete[] sumw;
@@ -1803,7 +1803,7 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 
 	if ((w_gap >= 0.9999*get_weight_epsilon()))// && (mymaxdiff < prev_mymaxdiff/2.0))
 	{
-		CIO::message(M_MESSAGEONLY, "*") ;
+		CIO::message(M_DEBUG, "*") ;
 		if (!lp_initialized)
 		{
 			CIO::message(M_INFO, "creating LP\n") ;
@@ -2033,7 +2033,7 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 		INT start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		CIO::message(M_MESSAGEONLY,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
 	}
 	
 	delete[] sumw;

@@ -190,7 +190,7 @@ REAL* CSVM::test()
 
 	  output[i]=classify_example(i);
   }
-  CIO::message(M_MESSAGEONLY, "done.           \n");
+  CIO::message(M_INFO, "done.           \n");
   return output;
 }
 
@@ -222,7 +222,7 @@ CLabels* CSVM::classify(CLabels* result)
 
 			result->set_label(vec, classify_example(vec));
 		}
-		CIO::message(M_MESSAGEONLY, "done.           \n");
+		CIO::message(M_INFO, "done.           \n");
 	}
 	else 
 		return NULL;

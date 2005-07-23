@@ -10,9 +10,7 @@
 #include "regression/svr/SVR_light.h"
 #include "classifier/svm/Optimizer.h"
 #include "kernel/KernelMachine.h"
-#include "features/WordFeatures.h"
 #include "kernel/CombinedKernel.h"
-#include "kernel/AUCKernel.h"
 
 #include <assert.h>
 #include <unistd.h>
@@ -83,190 +81,6 @@ CSVRLight::CSVRLight()
 	lp_initialized = false ;
 #endif
 	
-}
-
-#ifdef USE_CPLEX
-bool CSVRLight::init_cplex()
-{
-	while (env==NULL)
-	{
-		CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
-
-		int status = 0;
-		env = CPXopenCPLEX (&status);
-
-		if ( env == NULL )
-		{
-			char  errmsg[1024];
-			CIO::message(M_WARN, "Could not open CPLEX environment.\n");
-			CPXgeterrorstring (env, status, errmsg);
-			CIO::message(M_WARN, "%s", errmsg);
-			CIO::message(M_WARN, "retrying in 60 seconds\n");
-			sleep(60);
-		}
-		else
-		{
-			status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2);
-			if ( status )
-			{
-				CIO::message(M_ERROR, 
-						"Failure to select dual lp optimization, error %d.\n", status);
-			}
-			else
-			{
-				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
-				if ( status )
-				{
-					CIO::message(M_ERROR,
-							"Failure to turn on data checking, error %d.\n", status);
-				}	
-				else
-				{
-					lp = CPXcreateprob (env, &status, "light");
-
-					if ( lp == NULL )
-						CIO::message(M_ERROR, "Failed to create LP.\n");
-					else
-						CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
-				}
-			}
-		}
-	}
-
-	return (lp != NULL) && (env != NULL);
-}
-
-bool CSVRLight::cleanup_cplex()
-{
-	bool result=false;
-
-	if (lp)
-	{
-		INT status = CPXfreeprob(env, &lp);
-		lp = NULL;
-		lp_initialized = false;
-
-		if (status)
-			CIO::message(M_WARN, "CPXfreeprob failed, error code %d.\n", status);
-		else
-			result = true;
-	}
-
-	if (env)
-	{
-		INT status = CPXcloseCPLEX (&env);
-		env=NULL;
-		
-		if (status)
-		{
-			char  errmsg[1024];
-			CIO::message(M_WARN, "Could not close CPLEX environment.\n");
-			CPXgeterrorstring (env, status, errmsg);
-			CIO::message(M_WARN, "%s", errmsg);
-		}
-		else
-			result = true;
-	}
-	return result;
-}
-#endif
-
-CSVRLight::~CSVRLight()
-{
-
-  delete[] model->supvec;
-  delete[] model->alpha;
-  delete[] model->index;
-  delete[] model;
-  delete[] learn_parm;
-
-  // MKL stuff
-  delete[] W ;
-  delete[] buffer_num ;
-  delete[] buffer_numcols ;
-
-  if (precomputed_subkernels != NULL)
-  {
-	  for (INT i=0; i<num_precomputed_subkernels; i++)
-		  delete[] precomputed_subkernels[i] ;
-	  delete[] precomputed_subkernels ;
-	  precomputed_subkernels=NULL ;
-	  num_precomputed_subkernels=0 ;
-  }
-  
-}
-
-bool CSVRLight::setup_auc_maximization()
-{
-	CIO::message(M_INFO, "setting up AUC maximization\n") ;
-	
-	//CIO::message(M_DEBUG, "(before) k(0,0)=%1.1f\n", get_kernel()->kernel(0,0)) ;
-
-	// get the original labels
-	INT num=0;
-	CLabels* lab = CKernelMachine::get_labels();
-	assert(lab!=NULL);
-	INT* labels=lab->get_int_labels(num);
-	assert(get_kernel()->get_rhs()->get_num_vectors() == num) ;
-	
-	// count positive and negative
-	INT num_pos = 0 ;
-	INT num_neg = 0 ;
-	for (INT i=0; i<num; i++)
-		if (labels[i]==1)
-			num_pos++ ;
-		else 
-			num_neg++ ;
-	
-	// create AUC features and labels (alternate labels)
-	INT num_auc = num_pos*num_neg ;
-	CIO::message(M_INFO, "num_pos: %i  num_neg: %i  num_auc: %i\n", num_pos, num_neg, num_auc) ;
-
-	WORD* features_auc = new WORD[num_auc*2] ;
-	INT* labels_auc = new INT[num_auc] ;
-	INT n=0 ;
-	for (INT i=0; i<num; i++)
-		if (labels[i]==1)
-			for (INT j=0; j<num; j++)
-				if (labels[j]==-1)
-				{
-					if (n%2==0)
-					{
-						features_auc[n*2]=i ;
-						features_auc[n*2+1]=j ;
-						labels_auc[n] = 1 ;
-					}
-					else
-					{
-						features_auc[n*2]=j ;
-						features_auc[n*2+1]=i ;
-						labels_auc[n] = -1 ;
-					}
-					n++ ;
-					assert(n<=num_auc) ;
-				}
-
-	// create label object and attach it to svm
-	CLabels* lab_auc = new CLabels(num_auc) ;
-	lab_auc->set_int_labels(labels_auc, num_auc) ;
-	set_labels(lab_auc);
-	
-	// create feature object
-	CWordFeatures* f = new CWordFeatures((LONG)0,0) ;
-	f->set_feature_matrix(features_auc, 2, num_auc) ;
-
-	// create AUC kernel and attach the features
-	CAUCKernel *kernel = new CAUCKernel(10, get_kernel()) ;
-	kernel->init(f,f,1) ;
-
-	set_kernel(kernel) ;
-
-	
-	
-	delete[] labels ;
-	delete[] labels_auc ;
-
-	return true ;
 }
 
 bool CSVRLight::train()
@@ -444,13 +258,6 @@ bool CSVRLight::train()
 	return true ;
 }
 
-LONG CSVRLight::get_runtime() 
-{
-  clock_t start;
-  start = clock();
-  return((LONG)((double)start*100.0/(double)CLOCKS_PER_SEC));
-}
-
 void CSVRLight::svr_learn()
 {
 	LONG *inconsistent, i, j;
@@ -572,7 +379,7 @@ void CSVRLight::svr_learn()
 	}
 
 	if(verbosity==1) {
-		CIO::message(M_MESSAGEONLY, "Optimizing...\n");
+		CIO::message(M_DEBUG, "Optimizing...\n");
 	}
 
 	/* train the svm */
@@ -585,7 +392,7 @@ void CSVRLight::svr_learn()
 
 
 	if(verbosity>=1) {
-		CIO::message(M_MESSAGEONLY, "done. (%ld iterations)\n",iterations);
+		CIO::message(M_INFO, "done. (%ld iterations)\n",iterations);
 		CIO::message(M_INFO, "Optimization finished (maxdiff=%.5f).\n",maxdiff);
 		CIO::message(M_INFO, "obj = %.16f, rho = %.16f\n",get_objective(),model->b);
 
@@ -655,7 +462,7 @@ long CSVRLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
   long misclassified,supvecnum=0,*active2dnum,inactivenum;
   long *working2dnum,*selexam;
   long activenum;
-  double criterion,eq;
+  double criterion, eq;
   double *a_old;
   long t0=0,t1=0,t2=0,t3=0,t4=0,t5=0,t6=0; /* timing */
   long transductcycle;
@@ -735,7 +542,7 @@ long CSVRLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  
 	  if(verbosity>=2) t0=get_runtime();
 	  if(verbosity>=3) {
-		  CIO::message(M_MESSAGEONLY, "\nSelecting working set...%f "); 
+		  CIO::message(M_DEBUG, "\nSelecting working set...%f "); 
 	  }
 	  
 	  if(learn_parm->svm_newvarsinqp>learn_parm->svm_maxqpsize) 
@@ -884,8 +691,7 @@ long CSVRLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		  /* long time no progress? */
 		  terminate=1;
 		  retrain=0;
-		  if(verbosity>=1) 
-			  printf("\nWARNING: Relaxing KT-Conditions due to slow progress! Terminating!\n");
+		  CIO::message(M_WARN, "Relaxing KT-Conditions due to slow progress! Terminating!\n");
 	  }
 	  
 	  noshrink=0;
@@ -911,8 +717,8 @@ long CSVRLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		  timing_profile->time_shrink+=get_runtime()-t1;
 		  if (((verbosity>=1) && use_kernel_cache)
 			 || (verbosity>=2)) {
-			  printf("done.\n");  fflush(stdout);
-			  printf(" Number of inactive variables = %ld\n",inactivenum);
+			  CIO::message(M_INFO, "done.\n");
+			  CIO::message(M_INFO, "Number of inactive variables = %ld\n",inactivenum);
 		  }		  
 	  }
 	  
@@ -933,10 +739,6 @@ long CSVRLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  }
 	  mymaxdiff=*maxdiff ;
 
-	  if(verbosity>=3) {
-		  CIO::message(M_MESSAGEONLY, "\n");
-	  }
-	  
 	  
 	  if (((iteration % 10) == 0) && (!noshrink))
 	  {
@@ -1007,322 +809,6 @@ double CSVRLight::compute_objective_function(double *a, double *lin, double *c,
   return(criterion);
 }
 
-void CSVRLight::clear_index(LONG *index)  
-              /* initializes and empties index */
-{
-  index[0]=-1;
-} 
-
-void CSVRLight::add_to_index(LONG *index, LONG elem)
-     /* initializes and empties index */
-{
-  register long i;
-  for(i=0;index[i] != -1;i++);
-  index[i]=elem;
-  index[i+1]=-1;
-}
-
-LONG CSVRLight::compute_index(LONG *binfeature, LONG range, LONG *index)
-     /* create an inverted index of binfeature */
-{               
-  register long i,ii;
-
-  ii=0;
-  for(i=0;i<range;i++) {
-    if(binfeature[i]) {
-      index[ii]=i;
-      ii++;
-    }
-  }
-  for(i=0;i<4;i++) {
-    index[ii+i]=-1;
-  }
-  return(ii);
-}
-
-
-void CSVRLight::optimize_svm(LONG* docs, INT* label,
-		  long int *exclude_from_eq_const, double eq_target,
-		  long int *chosen, long int *active2dnum, MODEL *model, 
-		  long int totdoc, long int *working2dnum, long int varnum, 
-		  double *a, double *lin, double *c,
-		  REAL *aicache, QP *qp, 
-		  double *epsilon_crit_target)
-     /* Do optimization on the working set. */
-{
-    long i;
-    double *a_v;
-
-    compute_matrices_for_optimization(docs,label,
-				      exclude_from_eq_const,eq_target,chosen,
-				      active2dnum,working2dnum,model,a,lin,c,
-				      varnum,totdoc,aicache,qp);
-
-    if(verbosity>=3) {
-     CIO::message(M_DEBUG, "Running optimizer...");
-    }
-    /* call the qp-subsolver */
-    a_v=optimize_qp(qp,epsilon_crit_target,
-		    learn_parm->svm_maxqpsize,
-		    &(model->b),  				/* in case the optimizer gives us */
-            learn_parm->svm_maxqpsize); /* the threshold for free. otherwise */
-                                   		/* b is calculated in calculate_model. */
-    if(verbosity>=3) {         
-     CIO::message(M_DEBUG, "done\n");
-    }
-
-    for(i=0;i<varnum;i++) {
-      a[working2dnum[i]]=a_v[i];
-    }
-}
-
-void CSVRLight::compute_matrices_for_optimization(LONG* docs, INT* label, 
-												  long *exclude_from_eq_const, double eq_target,
-												  long int *chosen, long int *active2dnum, 
-												  long int *key, MODEL *model, double *a, double *lin, double *c, 
-												  long int varnum, long int totdoc,
-												  REAL *aicache, QP *qp)
-{
-  register long ki,kj,i,j;
-  register double kernel_temp;
-
-  qp->opt_n=varnum;
-  qp->opt_ce0[0]=-eq_target; /* compute the constant for equality constraint */
-  for(j=1;j<model->sv_num;j++) { /* start at 1 */
-    if((!chosen[model->supvec[j]])
-       && (!exclude_from_eq_const[(model->supvec[j])])) {
-      qp->opt_ce0[0]+=model->alpha[j];
-    }
-  } 
-  if(learn_parm->biased_hyperplane) 
-    qp->opt_m=1;
-  else 
-    qp->opt_m=0;  /* eq-constraint will be ignored */
-
-  /* init linear part of objective function */
-  for(i=0;i<varnum;i++) {
-    qp->opt_g0[i]=lin[key[i]];
-  }
-
-  for(i=0;i<varnum;i++) {
-	  ki=key[i];
-	  
-	  /* Compute the matrix for equality constraints */
-	  qp->opt_ce[i]=label[ki];
-	  qp->opt_low[i]=0;
-	  qp->opt_up[i]=learn_parm->svm_cost[ki];
-	  
-	  kernel_temp=compute_kernel(docs[ki], docs[ki]); 
-	  /* compute linear part of objective function */
-	  qp->opt_g0[i]-=(kernel_temp*a[ki]*(double)label[ki]); 
-	  /* compute quadratic part of objective function */
-	  qp->opt_g[varnum*i+i]=kernel_temp;
-	  for(j=i+1;j<varnum;j++) {
-		  kj=key[j];
-		  kernel_temp=compute_kernel(docs[ki], docs[kj]);
-		  /* compute linear part of objective function */
-		  qp->opt_g0[i]-=(kernel_temp*a[kj]*(double)label[kj]);
-		  qp->opt_g0[j]-=(kernel_temp*a[ki]*(double)label[ki]); 
-		  /* compute quadratic part of objective function */
-		  qp->opt_g[varnum*i+j]=(double)label[ki]*(double)label[kj]*kernel_temp;
-		  qp->opt_g[varnum*j+i]=qp->opt_g[varnum*i+j];//(double)label[ki]*(double)label[kj]*kernel_temp;
-	  }
-	  
-	  if(verbosity>=3) {
-		  if(i % 20 == 0) {
-			  CIO::message(M_DEBUG, "%ld..",i);
-		  }
-	  }
-  }
-  
-  for(i=0;i<varnum;i++) {
-	  /* assure starting at feasible point */
-	  qp->opt_xinit[i]=a[key[i]];
-	  /* set linear part of objective function */
-	  qp->opt_g0[i]=(learn_parm->eps-(double)label[key[i]]*c[key[i]])+qp->opt_g0[i]*(double)label[key[i]];    
-  }
-  
-  if(verbosity>=3) {
-	  CIO::message(M_DEBUG, "done\n");
-  }
-}
-
-long CSVRLight::calculate_svm_model(LONG* docs, INT *label,
-			 double *lin, double *a, double *a_old, double *c, 
-			 long int *working2dnum, long int *active2dnum, MODEL *model)
-     /* Compute decision function based on current values */
-     /* of alpha. */
-{
-  long i,ii,pos,b_calculated=0,first_low,first_high;
-  double ex_c,b_temp,b_low,b_high;
-
-  if(verbosity>=3) {
-   CIO::message(M_DEBUG, "Calculating model...");
-  }
-
-  if(!learn_parm->biased_hyperplane) {
-    model->b=0;
-    b_calculated=1;
-  }
-
-  for(ii=0;(i=working2dnum[ii])>=0;ii++) {
-    if((a_old[i]>0) && (a[i]==0)) { /* remove from model */
-      pos=model->index[i]; 
-      model->index[i]=-1;
-      (model->sv_num)--;
-      model->supvec[pos]=model->supvec[model->sv_num];
-      model->alpha[pos]=model->alpha[model->sv_num];
-      model->index[model->supvec[pos]]=pos;
-    }
-    else if((a_old[i]==0) && (a[i]>0)) { /* add to model */
-      model->supvec[model->sv_num]=docs[i];
-      model->alpha[model->sv_num]=a[i]*(double)label[i];
-      model->index[i]=model->sv_num;
-      (model->sv_num)++;
-    }
-    else if(a_old[i]==a[i]) { /* nothing to do */
-    }
-    else {  /* just update alpha */
-      model->alpha[model->index[i]]=a[i]*(double)label[i];
-    }
-      
-    ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
-    if((a_old[i]>=ex_c) && (a[i]<ex_c)) { 
-      (model->at_upper_bound)--;
-    }
-    else if((a_old[i]<ex_c) && (a[i]>=ex_c)) { 
-      (model->at_upper_bound)++;
-    }
-
-    if((!b_calculated) 
-       && (a[i]>learn_parm->epsilon_a) && (a[i]<ex_c)) {   /* calculate b */
-     	model->b=((double)label[i]*learn_parm->eps-c[i]+lin[i]); 
-	b_calculated=1;
-    }
-  }      
-
-  /* No alpha in the working set not at bounds, so b was not
-     calculated in the usual way. The following handles this special
-     case. */
-  if(learn_parm->biased_hyperplane 
-     && (!b_calculated)
-     && (model->sv_num-1 == model->at_upper_bound)) { 
-    first_low=1;
-    first_high=1;
-    b_low=0;
-    b_high=0;
-    for(ii=0;(i=active2dnum[ii])>=0;ii++) {
-      ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
-      if(a[i]<ex_c) { 
-	if(label[i]>0)  {
-	  b_temp=-(learn_parm->eps-c[i]+lin[i]);
-	  if((b_temp>b_low) || (first_low)) {
-	    b_low=b_temp;
-	    first_low=0;
-	  }
-	}
-	else {
-	  b_temp=-(-learn_parm->eps-c[i]+lin[i]);
-	  if((b_temp<b_high) || (first_high)) {
-	    b_high=b_temp;
-	    first_high=0;
-	  }
-	}
-      }
-      else {
-	if(label[i]<0)  {
-	  b_temp=-(-learn_parm->eps-c[i]+lin[i]);
-	  if((b_temp>b_low) || (first_low)) {
-	    b_low=b_temp;
-	    first_low=0;
-	  }
-	}
-	else {
-	  b_temp=-(learn_parm->eps-c[i]+lin[i]);
-	  if((b_temp<b_high) || (first_high)) {
-	    b_high=b_temp;
-	    first_high=0;
-	  }
-	}
-      }
-    }
-    if(first_high) {
-      model->b=-b_low;
-    }
-    else if(first_low) {
-      model->b=-b_high;
-    }
-    else {
-      model->b=-(b_high+b_low)/2.0;  /* select b as the middle of range */
-      /* printf("\nb_low=%f, b_high=%f,b=%f\n",b_low,b_high,model->b); */
-    }
-  }
-
-  if(verbosity>=3) {
-   CIO::message(M_DEBUG, "done\n");
-  }
-
-  return(model->sv_num-1); /* have to substract one, since element 0 is empty*/
-}
-
-long CSVRLight::check_optimality(MODEL *model, INT* label,
-		      double *a, double *lin, double *c, long int totdoc, 
-		      double *maxdiff, double epsilon_crit_org, long int *misclassified, 
-		      long int *inconsistent, long int *active2dnum,
-		      long int *last_suboptimal_at, 
-		      long int iteration)
-     /* Check KT-conditions */
-{
-  long i,ii,retrain;
-  double dist,ex_c,target;
-
-  learn_parm->epsilon_shrink=learn_parm->epsilon_shrink*0.7+(*maxdiff)*0.3; 
-  retrain=0;
-  (*maxdiff)=0;
-  (*misclassified)=0;
-  for(ii=0;(i=active2dnum[ii])>=0;ii++) {
-	  if((!inconsistent[i]) && label[i]) {
-		  dist=(lin[i]-model->b)*(double)label[i];/* 'distance' from
-													 hyperplane*/
-		  target=-(learn_parm->eps-(double)label[i]*c[i]);
-		  ex_c=learn_parm->svm_cost[i]-learn_parm->epsilon_a;
-		  if(dist <= 0) {       
-			  (*misclassified)++;  /* does not work due to deactivation of var */
-		  }
-		  if((a[i]>learn_parm->epsilon_a) && (dist > target)) {
-			  if((dist-target)>(*maxdiff))  /* largest violation */
-				  (*maxdiff)=dist-target;
-		  }
-		  else if((a[i]<ex_c) && (dist < target)) {
-			  if((target-dist)>(*maxdiff))  /* largest violation */
-				  (*maxdiff)=target-dist;
-		  }
-		  /* Count how long a variable was at lower/upper bound (and optimal).*/
-		  /* Variables, which were at the bound and optimal for a long */
-		  /* time are unlikely to become support vectors. In case our */
-		  /* cache is filled up, those variables are excluded to save */
-		  /* kernel evaluations. (See chapter 'Shrinking').*/ 
-		  if((a[i]>(learn_parm->epsilon_a)) 
-			 && (a[i]<ex_c)) { 
-			  last_suboptimal_at[i]=iteration;         /* not at bound */
-		  }
-		  else if((a[i]<=(learn_parm->epsilon_a)) 
-				  && (dist < (target+learn_parm->epsilon_shrink))) {
-			  last_suboptimal_at[i]=iteration;         /* not likely optimal */
-		  }
-		  else if((a[i]>=ex_c)
-				  && (dist > (target-learn_parm->epsilon_shrink)))  { 
-			  last_suboptimal_at[i]=iteration;         /* not likely optimal */
-		  }
-	  }   
-  }
-
-  /* termination criterion */
-  if((!retrain) && ((*maxdiff) > learn_parm->epsilon_crit)) {  
-	  retrain=1;
-  }
-  return(retrain);
-}
 
 void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label, 
 											long int *active2dnum, double *a, 
@@ -1557,7 +1043,7 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 			}
 		}
 
-		CIO::message(M_MESSAGEONLY, "*") ;
+		CIO::message(M_DEBUG, "*") ;
 		
 		{ // add the new row
 			//CIO::message(M_INFO, "add the new row\n") ;
@@ -1685,7 +1171,7 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 		INT start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		CIO::message(M_MESSAGEONLY,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
 	}
 	
 	delete[] sumw;
@@ -1770,7 +1256,7 @@ void CSVRLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 
 	if ((w_gap >= 0.9999*get_weight_epsilon()))// && (mymaxdiff < prev_mymaxdiff/2.0))
 	{
-		CIO::message(M_MESSAGEONLY, "*") ;
+		CIO::message(M_DEBUG, "*") ;
 		if (!lp_initialized)
 		{
 			CIO::message(M_INFO, "creating LP\n") ;
@@ -2000,7 +1486,7 @@ void CSVRLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 		INT start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		CIO::message(M_MESSAGEONLY,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
 	}
 	
 	delete[] sumw;
@@ -2113,312 +1599,6 @@ void CSVRLight::update_linear_component(LONG* docs, INT* label,
 	}
 }
 
-
-/*************************** Working set selection ***************************/
-
-long CSVRLight::select_next_qp_subproblem_grad(INT* label, 
-											   double *a, double *lin, 
-											   double *c, long int totdoc, 
-											   long int qp_size, 
-											   long int *inconsistent, 
-											   long int *active2dnum, 
-											   long int *working2dnum, 
-											   double *selcrit, 
-											   long int *select, 
-											   long int cache_only,
-											   long int *key, long int *chosen)
-	/* Use the feasible direction approach to select the next
-	   qp-subproblem (see chapter 'Selecting a good working set'). If
-	   'cache_only' is true, then the variables are selected only among
-	   those for which the kernel evaluations are cached. */
-{
-	long choosenum,i,j,k,activedoc,inum,valid;
-	double s;
-	
-	for(inum=0;working2dnum[inum]>=0;inum++); /* find end of index */
-	choosenum=0;
-	activedoc=0;
-	for(i=0;(j=active2dnum[i])>=0;i++) {
-		s=-label[j];
-		if(cache_only) 
-		{
-			if (use_kernel_cache)
-				valid=(get_kernel()->kernel_cache_check(j));
-			else 
-				valid = 1 ;
-		}
-		else
-			valid=1;
-		if(valid
-		   && (!((a[j]<=(0+learn_parm->epsilon_a)) && (s<0)))
-		   && (!((a[j]>=(learn_parm->svm_cost[j]-learn_parm->epsilon_a)) 
-				 && (s>0)))
-		   && (!chosen[j]) 
-		   && (label[j])
-		   && (!inconsistent[j]))
-		{
-			selcrit[activedoc]=(double)label[j]*(learn_parm->eps-(double)label[j]*c[j]+(double)label[j]*lin[j]);
-			key[activedoc]=j;
-			activedoc++;
-		}
-	}
-	select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
-	for(k=0;(choosenum<(qp_size/2)) && (k<(qp_size/2)) && (k<activedoc);k++) {
-		i=key[select[k]];
-		chosen[i]=1;
-		working2dnum[inum+choosenum]=i;
-		choosenum+=1;
-		if (use_kernel_cache)
-			CKernelMachine::get_kernel()->kernel_cache_touch(i); 
-        /* make sure it does not get kicked */
-		/* out of cache */
-	}
-	
-	activedoc=0;
-	for(i=0;(j=active2dnum[i])>=0;i++) {
-		s=label[j];
-		if(cache_only) 
-		{
-			if (use_kernel_cache)
-				valid=(get_kernel()->kernel_cache_check(j));
-			else
-				valid = 1 ;
-		}
-		else
-			valid=1;
-		if(valid
-		   && (!((a[j]<=(0+learn_parm->epsilon_a)) && (s<0)))
-		   && (!((a[j]>=(learn_parm->svm_cost[j]-learn_parm->epsilon_a)) 
-				 && (s>0))) 
-		   && (!chosen[j]) 
-		   && (label[j])
-		   && (!inconsistent[j])) 
-		{
-			selcrit[activedoc]=-(double)label[j]*(learn_parm->eps-(double)label[j]*c[j]+(double)label[j]*lin[j]);
-			/*  selcrit[activedoc]=-(double)(label[j]*(-1.0+(double)label[j]*lin[j])); */
-			key[activedoc]=j;
-			activedoc++;
-		}
-	}
-	select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
-	for(k=0;(choosenum<qp_size) && (k<(qp_size/2)) && (k<activedoc);k++) {
-		i=key[select[k]];
-		chosen[i]=1;
-		working2dnum[inum+choosenum]=i;
-		choosenum+=1;
-		if (use_kernel_cache)
-			CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
-		/* out of cache */
-	} 
-	working2dnum[inum+choosenum]=-1; /* complete index */
-	return(choosenum);
-}
-
-long CSVRLight::select_next_qp_subproblem_rand(INT* label, 
-				    double *a, double *lin, 
-				    double *c, long int totdoc, 
-				    long int qp_size, 
-				    long int *inconsistent, 
-				    long int *active2dnum, 
-				    long int *working2dnum, 
-				    double *selcrit, 
-				    long int *select, 
-				    long int *key, 
-				    long int *chosen, 
-				    long int iteration)
-/* Use the feasible direction approach to select the next
-   qp-subproblem (see section 'Selecting a good working set'). Chooses
-   a feasible direction at (pseudo) random to help jump over numerical
-   problem. */
-{
-  long choosenum,i,j,k,activedoc,inum;
-  double s;
-
-  for(inum=0;working2dnum[inum]>=0;inum++); /* find end of index */
-  choosenum=0;
-  activedoc=0;
-  for(i=0;(j=active2dnum[i])>=0;i++) {
-    s=-label[j];
-    if((!((a[j]<=(0+learn_parm->epsilon_a)) && (s<0)))
-       && (!((a[j]>=(learn_parm->svm_cost[j]-learn_parm->epsilon_a)) 
-	     && (s>0)))
-       && (!inconsistent[j]) 
-       && (label[j])
-       && (!chosen[j])) {
-      selcrit[activedoc]=(j+iteration) % totdoc;
-      key[activedoc]=j;
-      activedoc++;
-    }
-  }
-  select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
-  for(k=0;(choosenum<(qp_size/2)) && (k<(qp_size/2)) && (k<activedoc);k++) {
-    i=key[select[k]];
-    chosen[i]=1;
-    working2dnum[inum+choosenum]=i;
-    choosenum+=1;
-	if (use_kernel_cache)
-		CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
-                                        /* out of cache */
-  }
-
-  activedoc=0;
-  for(i=0;(j=active2dnum[i])>=0;i++) {
-    s=label[j];
-    if((!((a[j]<=(0+learn_parm->epsilon_a)) && (s<0)))
-       && (!((a[j]>=(learn_parm->svm_cost[j]-learn_parm->epsilon_a)) 
-	     && (s>0))) 
-       && (!inconsistent[j]) 
-       && (label[j])
-       && (!chosen[j])) {
-      selcrit[activedoc]=(j+iteration) % totdoc;
-      key[activedoc]=j;
-      activedoc++;
-    }
-  }
-  select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
-  for(k=0;(choosenum<qp_size) && (k<(qp_size/2)) && (k<activedoc);k++) {
-    i=key[select[k]];
-    chosen[i]=1;
-    working2dnum[inum+choosenum]=i;
-    choosenum+=1;
-	if (use_kernel_cache)
-		CKernelMachine::get_kernel()->kernel_cache_touch(i); /* make sure it does not get kicked */
-                                        /* out of cache */
-  } 
-  working2dnum[inum+choosenum]=-1; /* complete index */
-  return(choosenum);
-}
-
-
-
-void CSVRLight::select_top_n(double *selcrit, long range, long* select,
-		  long int n)
-{
-  register long i,j;
-
-  for(i=0;(i<n) && (i<range);i++) { /* Initialize with the first n elements */
-    for(j=i;j>=0;j--) {
-      if((j>0) && (selcrit[select[j-1]]<selcrit[i])){
-	select[j]=select[j-1];
-      }
-      else {
-	select[j]=i;
-	j=-1;
-      }
-    }
-  }
-  if(n>0) {
-    for(i=n;i<range;i++) {  
-      if(selcrit[i]>selcrit[select[n-1]]) {
-	for(j=n-1;j>=0;j--) {
-	  if((j>0) && (selcrit[select[j-1]]<selcrit[i])) {
-	    select[j]=select[j-1];
-	  }
-	  else {
-	    select[j]=i;
-	    j=-1;
-	  }
-	}
-      }
-    }
-  }
-}      
-      
-
-/******************************** Shrinking  *********************************/
-
-void CSVRLight::init_shrink_state(SHRINK_STATE *shrink_state, long int totdoc,
-		       long int maxhistory)
-{
-  long i;
-
-  shrink_state->deactnum=0;
-  shrink_state->active = new long[totdoc];
-  shrink_state->inactive_since = new long[totdoc];
-  shrink_state->a_history = new double*[maxhistory];
-  shrink_state->maxhistory=maxhistory;
-  shrink_state->last_lin = new double[totdoc];
-  shrink_state->last_a = new double[totdoc];
-
-  for(i=0;i<totdoc;i++) { 
-    shrink_state->active[i]=1;
-    shrink_state->inactive_since[i]=0;
-    shrink_state->last_a[i]=0;
-    shrink_state->last_lin[i]=0;
-  }
-}
-
-void CSVRLight::shrink_state_cleanup(SHRINK_STATE *shrink_state)
-{
-  delete[] shrink_state->active;
-  delete[] shrink_state->inactive_since;
-  if(shrink_state->deactnum > 0) 
-    delete[] (shrink_state->a_history[shrink_state->deactnum-1]);
-  delete[] (shrink_state->a_history);
-  delete[] (shrink_state->last_a);
-  delete[] (shrink_state->last_lin);
-}
-
-long CSVRLight::shrink_problem(SHRINK_STATE *shrink_state, 
-		    long int *active2dnum, 
-		    long int *last_suboptimal_at, 
-		    long int iteration, 
-		    long int totdoc, 
-		    long int minshrink, 
-		    double *a, 
-		    long int *inconsistent)
-     /* Shrink some variables away.  Do the shrinking only if at least
-        minshrink variables can be removed. */
-{
-  long i,ii,change,activenum,lastiter;
-  double *a_old=NULL;
-  
-  activenum=0;
-  change=0;
-  for(ii=0;active2dnum[ii]>=0;ii++) {
-	  i=active2dnum[ii];
-	  activenum++;
-      lastiter=last_suboptimal_at[i];
-	  if(((iteration-lastiter) > learn_parm->svm_iter_to_shrink) 
-		 || (inconsistent[i])) {
-		  change++;
-	  }
-  }
-  if((change>=minshrink) /* shrink only if sufficiently many candidates */
-     && (shrink_state->deactnum<shrink_state->maxhistory)) { /* and enough memory */
-	  /* Shrink problem by removing those variables which are */
-	  /* optimal at a bound for a minimum number of iterations */
-	  if(verbosity>=2) {
-		  CIO::message(M_INFO, " Shrinking...");
-	  }
-	  if (use_kernel_cache) { /*  non-linear case save alphas */
-		  a_old=new double[totdoc];
-		  shrink_state->a_history[shrink_state->deactnum]=a_old;
-		  for(i=0;i<totdoc;i++) {
-			  a_old[i]=a[i];
-		  }
-	  }
-	  for(ii=0;active2dnum[ii]>=0;ii++) {
-		  i=active2dnum[ii];
-		  lastiter=last_suboptimal_at[i];
-		  if(((iteration-lastiter) > learn_parm->svm_iter_to_shrink) 
-			 || (inconsistent[i])) {
-			  shrink_state->active[i]=0;
-			  shrink_state->inactive_since[i]=shrink_state->deactnum;
-		  }
-	  }
-	  activenum=compute_index(shrink_state->active,totdoc,active2dnum);
-	  shrink_state->deactnum++;
-	  if(!use_kernel_cache)
-		  shrink_state->deactnum=0;
-
-	  if(verbosity>=2) {
-		  CIO::message(M_INFO, "done.\n");
-		  CIO::message(M_INFO, " Number of inactive variables = %ld\n",totdoc-activenum);
-	  }
-  }
-  return(activenum);
-} 
 
 void CSVRLight::reactivate_inactive_examples(INT* label, 
 				  double *a, 

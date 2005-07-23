@@ -83,6 +83,7 @@ static const CHAR* N_PSEUDO=			"pseudo";
 static const CHAR* N_CONVERT=	"convert";
 static const CHAR* N_C=			     	"c";
 static const CHAR* N_LOGLEVEL=			     	"loglevel";
+static const CHAR* N_ECHO=			     	"echo";
 static const CHAR* N_SVMQPSIZE=			     	"svm_qpsize";
 static const CHAR* N_MKL_PARAMETERS=			"mkl_parameters";
 static const CHAR* N_SVM_EPSILON=			"svm_epsilon";
@@ -120,7 +121,7 @@ static const CHAR* N_TIC=              "tic" ;
 static const CHAR* N_TOC=              "toc" ;
 
 CTextGUI::CTextGUI(INT argc, char** argv)
-: CGUI(argc, argv), out_file(NULL)
+: CGUI(argc, argv), out_file(NULL), echo(true)
 {
 #ifdef WITHMATLAB
 	libmmfileInitialize() ;
@@ -280,7 +281,8 @@ bool CTextGUI::parse_line(CHAR* input)
 	if (strlen(input)>=1 && input[strlen(input)-1]=='\n')
 		input[strlen(input)-1]='\0';
 #ifndef HAVE_PYTHON
-	CIO::message(M_MESSAGEONLY, "%s\n",input) ;
+	if (echo)
+		CIO::message(M_MESSAGEONLY, "%s\n",input) ;
 #endif
 
 	if (!strncmp(input, N_NEW_HMM, strlen(N_NEW_HMM)))
@@ -656,6 +658,25 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_TOC, strlen(N_TOC)))
 	{
 		guitime.stop();
+	} 
+	else if (!strncmp(input, N_ECHO, strlen(N_ECHO)))
+	{
+		char* param=input+strlen(N_ECHO);
+		param=CIO::skip_spaces(param);
+
+		char level[1024];
+		strcpy(level, "ON");
+		sscanf(param, "%s", level) ;
+
+		if (!strncmp(param, "ON", strlen("ON")))
+			echo=true;
+		else if (!strncmp(param, "OFF", strlen("OFF")))
+			echo=false;
+		
+		if (echo)
+			CIO::message(M_INFO, "echo on\n");
+		else
+			CIO::message(M_INFO, "echo off\n");
 	} 
 	else if (!strncmp(input, N_LOGLEVEL, strlen(N_LOGLEVEL)))
 	{
