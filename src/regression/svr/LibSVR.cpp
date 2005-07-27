@@ -73,9 +73,7 @@ bool CLibSVR::train()
 	if (model)
 	{
 		assert(model->nr_class==2);
-		assert(model->l>0);
-		assert(model->SV);
-		assert(model->sv_coef && model->sv_coef[0]);
+		assert( (model->l==0) || (model->l > 0 && model->SV && model->sv_coef && model->sv_coef[0]) );
 
 		int num_sv=model->l;
 
