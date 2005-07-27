@@ -1237,8 +1237,15 @@ set_opts()
 				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/ilog/cplex90/include"
 			  ;;
 			  *)
-				LINKFLAGS="$LINKFLAGS -L/fml/ag-raetsch/share/software/ilog/cplex90/lib/x86_RHEL3.0_3.2/static_pic/ -lcplex"
-				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/ilog/cplex90/include"
+				  if test -d /fml/ag-raetsch/share/software/ilog/cplex90/lib/x86_RHEL3.0_3.2/static_pic
+				  then
+					  LINKFLAGS="$LINKFLAGS -L/fml/ag-raetsch/share/software/ilog/cplex90/lib/x86_RHEL3.0_3.2/static_pic/ -lcplex"
+					  INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/ilog/cplex90/include"
+				  else
+					  LINKFLAGS="$LINKFLAGS -L/home/neuro/software/ilog/cplex90/lib/i86_linux2_glibc2.3_gcc3.2/static_pic/ -lcplex"
+					  INCLUDES="$INCLUDES -I/home/neuro/software/ilog/cplex90/include"
+				  fi
+
 				;;
 			esac
 		fi
