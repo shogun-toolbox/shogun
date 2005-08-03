@@ -110,57 +110,54 @@ template<class T> class CCache
 			LONG min=-1;
 			bool found_free_line=false;
 
-			if (cache_table[min_idx])
+			LONG start=0;
+			for (start=0; start<nr_cache_lines; start++)
 			{
-				LONG start=0;
-				for (start=0; start<nr_cache_lines; start++)
+				if (!cache_table[start])
 				{
-					if (!cache_table[start])
-						break;
-					else
-					{
-						if (!cache_table[start]->locked)
-						{
-							min=cache_table[start]->usage_count;
-							min_idx=start;
-							break;
-						}
-					}
+					min_idx=start;
+					min=-1;
+					found_free_line=true;
+					break;
 				}
-				CIO::message(M_DEBUG,"start:%d min: %d min_idx: %d nr:%d\n", start, min, min_idx, nr_cache_lines);
-
-				for (LONG i=start; i<nr_cache_lines; i++)
+				else
 				{
-					if (!cache_table[i])
+					if (!cache_table[start]->locked)
 					{
-						min_idx=i;
-						min=-1;
+						min=cache_table[start]->usage_count;
+						min_idx=start;
 						found_free_line=true;
 						break;
 					}
-					else
-					{
-						LONG v=cache_table[i]->usage_count;
+				}
+			}
 
-						if (v<min && !cache_table[i]->locked)
-						{
-							min=v;
-							min_idx=i;
-							found_free_line=true;
-						}
+			for (LONG i=start; i<nr_cache_lines; i++)
+			{
+				if (!cache_table[i])
+				{
+					min_idx=i;
+					min=-1;
+					found_free_line=true;
+					break;
+				}
+				else
+				{
+					LONG v=cache_table[i]->usage_count;
+
+					if (v<min && !cache_table[i]->locked)
+					{
+						min=v;
+						min_idx=i;
+						found_free_line=true;
 					}
 				}
 			}
-			else
-				found_free_line=true;
 
 			CIO::message(M_DEBUG,"min: %d min_idx: %d nr:%d\n", min, min_idx, nr_cache_lines);
 
 			if (cache_table[nr_cache_lines-1]) //since this is an indicator for a full cache
 				cache_is_full=true;
-
-
-			assert(found_free_line);
 
 			if (found_free_line)
 			{
@@ -180,7 +177,16 @@ template<class T> class CCache
 				return lookup_table[number].obj;
 			}
 			else
+			{
+				for (int i=0; i<nr_cache_lines; i++)
+				{
+					CIO::message(M_DEBUG,"%d: usage: %d locked: %d obj: %d\n", cache_table[i]->usage_count, cache_table[i]->locked ? 1 : 0, cache_table[i]->obj)
+		LONG usage_count;
+		bool locked;
+		T* obj;
+				}
 				return NULL;
+			}
 		}
 		else 
 			return NULL;
