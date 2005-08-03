@@ -110,6 +110,9 @@ class CSVM : public CKernelMachine
 			return use_linadd ;
 		}
 
+		///compute and set objective
+		REAL compute_objective();
+
 		inline void set_objective(REAL v)
 		{
 			objective=v;

@@ -25,7 +25,7 @@ bool CMPDSVM::train()
 	//const REAL d = 1.0/n/nu; //NUSVC
 	const REAL d = get_C1(); //CSVC
 	const REAL primaleps=eps;
-	const REAL dualeps=eps;
+	const REAL dualeps=eps*n; //heuristic
 	long int niter=0;
 
 	kernel_cache = new CCache<KERNELCACHE_ELEM>(kernel->get_cache_size(), n, n);
@@ -108,7 +108,18 @@ bool CMPDSVM::train()
 			//stopfac = 1;
 
 		if (niter%10000 == 0)
-			CIO::message(M_DEBUG, "pviol:%f dviol:%f maxpidx:%d iter:%d\n", maxpviol, maxdviol, maxpidx, niter);
+		{
+			REAL obj=0;
+
+			for (int i=0; i<n; i++)
+			{
+				obj-=alphas[i];
+				for (int j=0; j<n; j++)
+					obj+=0.5*lab->get_label(i)*lab->get_label(j)*alphas[i]*alphas[j]*kernel->kernel(i,j);
+			}
+
+			CIO::message(M_DEBUG, "obj:%f pviol:%f dviol:%f maxpidx:%d iter:%d\n", obj, maxpviol, maxdviol, maxpidx, niter);
+		}
 
 		//for (int i=0; i<n; i++)
 		//	CIO::message(M_DEBUG, "alphas:%f dalphas:%f\n", alphas[i], dalphas[i]);
@@ -187,6 +198,7 @@ bool CMPDSVM::train()
 			nsv++;
 	}
 
+
 	create_new_model(nsv);
 	//set_bias(etas[0]/etas[1]);
 	set_bias(etas);
@@ -202,6 +214,9 @@ bool CMPDSVM::train()
 			j++;
 		}
 	}
+	compute_objective();
+	CIO::message(M_INFO, "obj = %.16f, rho = %.16f\n",get_objective(),get_bias());
+	CIO::message(M_INFO, "Number of SV: %ld\n", get_num_support_vectors());
 
 	delete[] alphas;
 	delete[] dalphas;

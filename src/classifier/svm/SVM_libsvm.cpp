@@ -372,7 +372,7 @@ void Solver::Solve(int l, const Kernel& Q, const double *b_, const schar *y_,
 		{
 			counter = min(l,1000);
 			if(shrinking) do_shrinking();
-			CIO::message(M_MESSAGEONLY, ".");
+			CIO::message(M_INFO, ".");
 		}
 
 		int i,j;
@@ -382,7 +382,7 @@ void Solver::Solve(int l, const Kernel& Q, const double *b_, const schar *y_,
 			reconstruct_gradient();
 			// reset active set size and check
 			active_size = l;
-			CIO::message(M_MESSAGEONLY, "*");
+			CIO::message(M_INFO, "*");
 			if(select_working_set(i,j)!=0)
 				break;
 			else
@@ -555,7 +555,7 @@ void Solver::Solve(int l, const Kernel& Q, const double *b_, const schar *y_,
 	si->upper_bound_p = Cp;
 	si->upper_bound_n = Cn;
 
-	CIO::message(M_MESSAGEONLY, "\noptimization finished, #iter = %d\n",iter);
+	CIO::message(M_INFO, "\noptimization finished, #iter = %d\n",iter);
 
 	delete[] b;
 	delete[] y;

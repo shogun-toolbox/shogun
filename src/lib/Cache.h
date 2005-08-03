@@ -112,9 +112,24 @@ template<class T> class CCache
 
 			if (cache_table[min_idx])
 			{
-				min=cache_table[min_idx]->usage_count;
+				LONG start=0;
+				for (start=0; start<nr_cache_lines; start++)
+				{
+					if (!cache_table[start])
+						break;
+					else
+					{
+						if (!cache_table[start]->locked)
+						{
+							min=cache_table[start]->usage_count;
+							min_idx=start;
+							break;
+						}
+					}
+				}
+				CIO::message(M_DEBUG,"start:%d min: %d min_idx: %d nr:%d\n", start, min, min_idx, nr_cache_lines);
 
-				for (LONG i=0; i<nr_cache_lines; i++)
+				for (LONG i=start; i<nr_cache_lines; i++)
 				{
 					if (!cache_table[i])
 					{
@@ -139,8 +154,13 @@ template<class T> class CCache
 			else
 				found_free_line=true;
 
+			CIO::message(M_DEBUG,"min: %d min_idx: %d nr:%d\n", min, min_idx, nr_cache_lines);
+
 			if (cache_table[nr_cache_lines-1]) //since this is an indicator for a full cache
 				cache_is_full=true;
+
+
+			assert(found_free_line);
 
 			if (found_free_line)
 			{

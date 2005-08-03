@@ -246,3 +246,29 @@ REAL CSVM::classify_example(INT num)
 		return (dist+get_bias());
 	}
 }
+
+
+REAL CSVM::compute_objective()
+{
+	CLabels* lab=CKernelMachine::get_labels();
+	INT n=get_num_support_vectors();
+	CKernel* k=CKernelMachine::get_kernel();
+
+	if (lab && k)
+	{
+		assert(lab);
+		assert(k);
+
+		objective=0;
+		for (int i=0; i<n; i++)
+		{
+			objective-=get_alpha(i)*lab->get_label(i);
+			for (int j=0; j<n; j++)
+				objective+=0.5*get_alpha(i)*get_alpha(j)*k->kernel(i,j);
+		}
+	}
+	else
+		CIO::message(M_ERROR, "cannot compute objective, labels or kernel not set\n");
+
+	return objective;
+}

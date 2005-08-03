@@ -19,7 +19,13 @@ class CMPDSVM : public CSVM
 
 		inline KERNELCACHE_ELEM* lock_kernel_row(int i)
 		{
-			KERNELCACHE_ELEM* line=kernel_cache->lock_entry(i);
+			KERNELCACHE_ELEM* line=NULL;
+
+			if (kernel_cache->is_cached(i))
+			{
+				line=kernel_cache->lock_entry(i);
+				assert(line);
+			}
 			
 			if (!line)
 			{
@@ -30,7 +36,6 @@ class CMPDSVM : public CSVM
 
 				for (int j=0; j<l->get_num_labels(); j++)
 					line[j]=(KERNELCACHE_ELEM) l->get_label(i)*l->get_label(j)*kernel->kernel(i,j);
-				line=kernel_cache->lock_entry(i);
 			}
 
 			return line;
