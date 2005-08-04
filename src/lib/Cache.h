@@ -154,8 +154,6 @@ template<class T> class CCache
 				}
 			}
 
-			CIO::message(M_DEBUG,"min: %d min_idx: %d nr:%d\n", min, min_idx, nr_cache_lines);
-
 			if (cache_table[nr_cache_lines-1]) //since this is an indicator for a full cache
 				cache_is_full=true;
 
@@ -177,16 +175,7 @@ template<class T> class CCache
 				return lookup_table[number].obj;
 			}
 			else
-			{
-				for (int i=0; i<nr_cache_lines; i++)
-				{
-					CIO::message(M_DEBUG,"%d: usage: %d locked: %d obj: %d\n", cache_table[i]->usage_count, cache_table[i]->locked ? 1 : 0, cache_table[i]->obj)
-		LONG usage_count;
-		bool locked;
-		T* obj;
-				}
 				return NULL;
-			}
 		}
 		else 
 			return NULL;
