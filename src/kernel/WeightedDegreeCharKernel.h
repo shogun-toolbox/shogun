@@ -52,7 +52,7 @@ class CWeightedDegreeCharKernel: public CCharKernel
 	  if (get_is_initialized())
 	  {
 		  delete_tree(NULL); 
-		  set_is_initialized(true);
+		  set_is_initialized(false);
 	  }
   }
   inline virtual void add_to_normal(INT idx, REAL weight) 

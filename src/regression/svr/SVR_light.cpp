@@ -40,6 +40,7 @@ struct S_THREAD_PARAM
 	LONG * active2dnum ;
 	LONG * docs ;
 	CKernel* kernel ;
+    INT num_vectors ;
 }  ;
 
 #endif
@@ -1494,6 +1495,14 @@ void CSVRLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 }
 
 #ifdef USE_SVMPARALLEL
+inline INT regression_fix_index2(INT i,INT num_vectors)
+{
+	if (i>=num_vectors)
+		i=2*num_vectors-1-i;
+
+	return i;
+}
+
 static void *update_linear_component_linadd_helper(void *params_)
 {
 	S_THREAD_PARAM * params = (S_THREAD_PARAM*) params_ ;
@@ -1502,7 +1511,7 @@ static void *update_linear_component_linadd_helper(void *params_)
 	
 	for(jj=params->start;(jj<params->end) && (j=params->active2dnum[jj])>=0;jj++) 
 	{
-		params->lin[j]+=params->kernel->compute_optimized(regression_fix_index(params->docs[j]));
+		params->lin[j]+=params->kernel->compute_optimized(regression_fix_index2(params->docs[j], params->num_vectors));
 	}
 	return NULL ;
 }
@@ -1559,6 +1568,8 @@ void CSVRLight::update_linear_component(LONG* docs, INT* label,
 				params[t].active2dnum=active2dnum ;
 				params[t].start = start ;
 				params[t].end = end ;
+				params[t].num_vectors=num_vectors ;
+				
 				start=end ;
 				end+=step ;
 				pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
