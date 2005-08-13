@@ -1305,68 +1305,21 @@ CHAR* CGUIMatlab::get_mxString(const mxArray* s)
 bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 {
 	CKernel* k = gui->guikernel.get_kernel();
-	CFeatures* f1 = NULL;
-	CFeatures* f2 = NULL;
-
 	if (k)
 	{
-		f1=k->get_lhs();
-		f2=k->get_rhs();
-	}
-	
-	if (f1 && f2)
-	{
-		int num_vec1=f1->get_num_vectors();
-		int num_vec2=f2->get_num_vectors();
-		int total_num = num_vec1 * num_vec2;
-		int num_done = 0;
+		int num_vec1=0;
+		int num_vec2=0;
 
-		CIO::message(M_DEBUG, "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 		mxArray* mx_result=mxCreateDoubleMatrix(num_vec1, num_vec2, mxREAL);
 		double* result=mxGetPr(mx_result);
 
-		if ( (f1 == f2) && (num_vec1 == num_vec2) )
-		{
-			for (int i=0; i<num_vec1; i++)
-			{
-				for (int j=i; j<num_vec1; j++)
-				{
-					double v=k->kernel(i,j);
-
-					result[i+j*num_vec1]=v;
-					result[j+i*num_vec1]=v;
-
-					if (num_done%100000)
-						CIO::progress(num_done, 0, total_num-1);
-
-					if (i!=j)
-						num_done+=2;
-					else
-						num_done+=1;
-				}
-			}
-		}
-		else
-		{
-			for (int i=0; i<num_vec1; i++)
-			{
-				for (int j=0; j<num_vec2; j++)
-				{
-					result[i+j*num_vec1]=k->kernel(i,j) ;
-
-					if (num_done%100000)
-						CIO::progress(num_done, 0, total_num-1);
-
-					num_done++;
-				}
-			}
-		}
-
-		CIO::message(M_MESSAGEONLY, "done.           \n");
-		
+		k->get_kernel_matrix(num_vec1, num_vec2, result);
 		retvals[0]=mx_result;
 		return true;
 	}
+	else
+		CIO::message(M_ERROR, "no kernel defined");
+
 	return false;
 }
 

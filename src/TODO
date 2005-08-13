@@ -1,18 +1,24 @@
-- clean up libsvm/svmlight regression stuff, derive from CSVMLight
+TODO
+
+- kerthi,olivier Lin-SVM implementieren, chunking ???
+- SVR regression bug when kernel cache does not fit into memory (see Debugging Genefinder) ?????
+- LPM implementieren
+- Perceptron implementieren
+- LDA Fisher implementieren
+- suffix tree impl
+- gf design document.
+- clean up get_kernel matrix (in Kernel.cpp / GUIMatlab.cpp)
 - remove use_precompute hack -> make it a temporary precomputed kernel
 - clear gf -> kabumm bei init_kernel  / vorher clean_kernels -> ok...
 - don't use List for preprocs/combined features -> use DYNARRAY!!!
--  linearen + commword fuer combined kernel ???
+- linearen + commword fuer combined kernel ???
 - SVMs linadd mpi implementation
 - SVMs generell parallelisieren (fuer MKL)
-- Python interface
+- finish Python interface
 - CommWordString /CommWordUlongKernel optimierung mit unique sort
 - ascii/gtk plot der dependencies
 - suffix tree ala leslie als extra classe...
 - generisches object mit set/get funktionen multiple classifiers/features/distributions/etc, make them interact via lists/indizes of who works with whom
-- LPM implementieren
-- Perceptron implementieren
-- Fisher implementieren
 - real detection for lapack/blas/matlab/cplex/readline etc
 - create generic Distribution class which combines all density related stuff HMM/gaussians/linear hmm ... this would
   allow for using PluginEstimate with *any* distribution and clean all the hmm_test hacks
@@ -32,6 +38,10 @@
 
 DONE
 
+- fuer python interface auch ctrl+c abfangen
+- clean up libsvm/svmlight regression stuff, derive from CSVMLight
+- fix LINADD & regression
+genefinder: trainings/test features gleiche dims check
 - regression fuer SVMlight/libSVM
 - CIO::message() mixed with printf's and matlabs mx* stuff -> we only need CIO::... ala gstreamer, outputlevel ala DEBUG/INFO/WARN/ERROR
 - k(x,y) = sum_i (x_i-y_i)^2/(x_i+y_i)) (chi^2 histogram kernel)

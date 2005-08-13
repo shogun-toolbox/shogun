@@ -34,7 +34,7 @@ CKernel::~CKernel()
 	precomputed_matrix=NULL ;
 }
 
-REAL* CKernel::get_kernel_matrix(int &num_vec1, int &num_vec2)
+REAL* CKernel::get_kernel_matrix(int &num_vec1, int &num_vec2, REAL* target)
 {
 	REAL* result = NULL;
 	CFeatures* f1 = get_lhs();
@@ -48,7 +48,13 @@ REAL* CKernel::get_kernel_matrix(int &num_vec1, int &num_vec2)
 		int num_done = 0;
 
 		CIO::message(M_DEBUG, "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
-		result=new REAL[total_num];
+
+		if (target)
+			result=target;
+		else
+			result=new REAL[total_num];
+
+		assert(result);
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
 		{

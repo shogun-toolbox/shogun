@@ -142,6 +142,19 @@ public:
 		return res/factorial(k) ;
 	}
 
+	static inline REAL dot(REAL* v1, REAL* v2, INT n)
+	{
+		REAL r=0;
+#ifdef HAVE_ATLAS
+		INT skip=1;
+		r = cblas_ddot(n, v1, skip, v2, skip);
+#else
+		for (INT i=0; i<n; i++)
+			r+=v1[i]*v2[i];
+#endif
+		return r;
+	}
+
 	/** performs a bubblesort on a given matrix a.
 	 * it is sorted from in ascending order from top to bottom
 	 * and left to right */

@@ -3,6 +3,7 @@
 
 #include "kernel/Kernel.h"
 #include "features/SimpleFeatures.h"
+#include "lib/io.h"
 
 template <class ST> class CSimpleKernel : public CKernel
 {
@@ -26,9 +27,13 @@ template <class ST> class CSimpleKernel : public CKernel
 		{
 			CKernel::init(l,r,do_init);
 
-			assert(l->get_feature_class() == C_SIMPLE);
-			assert(r->get_feature_class() == C_SIMPLE);
-
+			if ( (l->get_feature_class() != C_SIMPLE) ||
+					(r->get_feature_class() != C_SIMPLE) ||
+					((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
+			{
+				CIO::message(M_ERROR, "train or test features not of type SIMPLE, or #features mismatch (l:%d vs. r:%d)\n",
+						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) l)->get_num_features());
+			}
 			return true;
 		}
 
