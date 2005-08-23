@@ -20,6 +20,7 @@
 #include "kernel/CombinedKernel.h"
 #include "kernel/CommWordStringKernel.h"
 #include "kernel/CustomKernel.h"
+#include "kernel/LinearKernel.h"
 #include "classifier/svm/SVM.h"
 
 
@@ -1327,59 +1328,82 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[])
 {
 	CKernel *kernel_ = gui->guikernel.get_kernel() ;
 	
-	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
+	if (kernel_)
 	{
-		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
-		
-		if (kernel->get_max_mismatch()!=0)
-			return false ;
-		
-		INT len=0 ;
-		REAL* res=kernel->compute_abs_weights(len) ;
-		
-		mxArray* mx_result=mxCreateDoubleMatrix(4, len, mxREAL);
-		double* result=mxGetPr(mx_result);
-		for (int i=0; i<4*len; i++)
-			result[i]=res[i] ;
-		delete[] res ;
-		
-		retvals[0]=mx_result;
-		return true;
-	}
-	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
-	{
-		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
-		
-		if (kernel->get_max_mismatch()!=0)
-			return false ;
-		
-		INT len=0 ;
-		REAL* res=kernel->compute_abs_weights(len) ;
-		
-		mxArray* mx_result=mxCreateDoubleMatrix(4, len, mxREAL);
-		double* result=mxGetPr(mx_result);
-		for (int i=0; i<4*len; i++)
-			result[i]=res[i] ;
-		delete[] res ;
-		
-		retvals[0]=mx_result;
-		return true;
-	}
-	if (kernel_ && (kernel_->get_kernel_type() == K_COMMWORDSTRING))
-	{
-		CCommWordStringKernel *kernel = (CCommWordStringKernel *) kernel_ ;
-		
-		INT len=0 ;
-		REAL* weights ;
-		kernel->get_dictionary(len, weights) ;
-		
-		mxArray* mx_result=mxCreateDoubleMatrix(len, 1, mxREAL);
-		double* result=mxGetPr(mx_result);
-		for (int i=0; i<len; i++)
-			result[i]=weights[i] ;
-		
-		retvals[0]=mx_result;
-		return true;
+		switch (kernel_->get_kernel_type())
+		{
+			case K_WEIGHTEDDEGREE:
+				{
+					CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+
+					if (kernel->get_max_mismatch()!=0)
+						return false ;
+
+					INT len=0 ;
+					REAL* res=kernel->compute_abs_weights(len) ;
+
+					mxArray* mx_result=mxCreateDoubleMatrix(4, len, mxREAL);
+					double* result=mxGetPr(mx_result);
+					for (int i=0; i<4*len; i++)
+						result[i]=res[i] ;
+					delete[] res ;
+
+					retvals[0]=mx_result;
+					return true;
+				}
+			case K_WEIGHTEDDEGREEPOS:
+				{
+					CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+
+					if (kernel->get_max_mismatch()!=0)
+						return false ;
+
+					INT len=0 ;
+					REAL* res=kernel->compute_abs_weights(len) ;
+
+					mxArray* mx_result=mxCreateDoubleMatrix(4, len, mxREAL);
+					double* result=mxGetPr(mx_result);
+					for (int i=0; i<4*len; i++)
+						result[i]=res[i] ;
+					delete[] res ;
+
+					retvals[0]=mx_result;
+					return true;
+				}
+			case  K_COMMWORDSTRING:
+				{
+					CCommWordStringKernel *kernel = (CCommWordStringKernel *) kernel_ ;
+
+					INT len=0 ;
+					REAL* weights ;
+					kernel->get_dictionary(len, weights) ;
+
+					mxArray* mx_result=mxCreateDoubleMatrix(len, 1, mxREAL);
+					double* result=mxGetPr(mx_result);
+					for (int i=0; i<len; i++)
+						result[i]=weights[i] ;
+
+					retvals[0]=mx_result;
+					return true;
+				}
+			case  K_LINEAR:
+				{
+					CLinearKernel *kernel = (CLinearKernel *) kernel_ ;
+
+					INT len=0 ;
+					const double* weights = kernel->get_normal(len);
+
+					mxArray* mx_result=mxCreateDoubleMatrix(len, 1, mxREAL);
+					double* result=mxGetPr(mx_result);
+					for (int i=0; i<len; i++)
+						result[i]=weights[i] ;
+
+					retvals[0]=mx_result;
+					return true;
+				}
+			default:
+				break;
+		}
 	}
 	return false;
 }

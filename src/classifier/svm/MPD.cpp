@@ -71,6 +71,7 @@ bool CMPDSVM::train()
 		REAL maxpviol = -1;
 		//REAL maxdviol = CMath::abs(detas[0]);
 		REAL maxdviol = CMath::abs(detas);
+		bool free_alpha=false;
 
 		//if (CMath::abs(detas[1])> maxdviol)
 			//maxdviol=CMath::abs(detas[1]);
@@ -79,6 +80,9 @@ bool CMPDSVM::train()
 		for (int i=0; i<n; i++)
 		{
 			REAL v=CMath::abs(dalphas[i]);
+
+			if (alphas[i] > 0 && alphas[i] < d)
+				free_alpha=true;
 
 			if ( (dalphas[i]==0) ||
 					(alphas[i]==0 && dalphas[i] >0) ||
@@ -125,14 +129,18 @@ bool CMPDSVM::train()
 		//	CIO::message(M_DEBUG, "alphas:%f dalphas:%f\n", alphas[i], dalphas[i]);
 
 		primalcool = (maxpviol < primaleps*stopfac);
-		dualcool = (maxdviol < dualeps*stopfac);
+		dualcool = (maxdviol < dualeps*stopfac) || (!free_alpha);
 
 		// done?
 		if (primalcool && dualcool)
 		{
-			CIO::message(M_INFO, " done! #iter=%d\n", niter);
+			if (!free_alpha)
+				CIO::message(M_INFO, " no free alpha, stopping! #iter=%d\n", niter);
+			else
+				CIO::message(M_INFO, " done! #iter=%d\n", niter);
 			break;
 		}
+
 
 		// hessian updates
 		hstep=-hessres[maxpidx]/compute_H(maxpidx,maxpidx);

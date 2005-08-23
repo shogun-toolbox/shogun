@@ -33,6 +33,21 @@ class CLinearKernel: public CRealKernel
   virtual void clear_normal();
   virtual void add_to_normal(INT idx, REAL weight);
 
+  inline const double* get_normal(INT& len)
+  {
+
+	  if (lhs && normal)
+	  {
+		  len = ((CRealFeatures*) lhs)->get_num_features();
+		  return normal;
+	  }
+	  else
+	  {
+		  len = 0;
+		  return NULL;
+	  }
+  }
+
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
