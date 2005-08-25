@@ -1306,10 +1306,10 @@ CHAR* CGUIMatlab::get_mxString(const mxArray* s)
 bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 {
 	CKernel* k = gui->guikernel.get_kernel();
-	if (k)
+	if (k && k->get_rhs() && k->get_lhs())
 	{
-		int num_vec1=0;
-		int num_vec2=0;
+		int num_vec1=k->get_lhs()->get_num_vectors();
+		int num_vec2=k->get_rhs()->get_num_vectors();
 
 		mxArray* mx_result=mxCreateDoubleMatrix(num_vec1, num_vec2, mxREAL);
 		double* result=mxGetPr(mx_result);

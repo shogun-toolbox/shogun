@@ -42,6 +42,9 @@ REAL* CKernel::get_kernel_matrix(int &num_vec1, int &num_vec2, REAL* target)
 
 	if (f1 && f2)
 	{
+		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
+			CIO::message(M_ERROR, "kernel matrix does not fit into target\n");
+
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
 		int total_num = num_vec1 * num_vec2;
