@@ -9,9 +9,10 @@
 #include <assert.h>
 
 
-CSparseLinearKernel::CSparseLinearKernel(LONG size)
-  : CSparseRealKernel(size),scale(1.0)
+CSparseLinearKernel::CSparseLinearKernel(LONG size, bool do_rescale_, REAL scale_)
+  : CSparseRealKernel(size),scale(scale_),do_rescale(do_rescale_), normal_length(0), normal(NULL)
 {
+	properties |= KP_LINADD | KP_KERNCOMBINATION ;
 }
 
 CSparseLinearKernel::~CSparseLinearKernel() 
@@ -33,6 +34,8 @@ bool CSparseLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 void CSparseLinearKernel::init_rescale()
 {
+	if (!do_rescale)
+		return ;
 	double sum=0;
 	scale=1.0;
 	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
@@ -43,6 +46,7 @@ void CSparseLinearKernel::init_rescale()
 
 void CSparseLinearKernel::cleanup()
 {
+	delete_optimization();
 }
 
 bool CSparseLinearKernel::load_init(FILE* src)
@@ -53,6 +57,31 @@ bool CSparseLinearKernel::load_init(FILE* src)
 bool CSparseLinearKernel::save_init(FILE* dest)
 {
 	return false;
+}
+
+void CSparseLinearKernel::clear_normal()
+{
+	assert(normal_length);
+
+	if (normal==NULL)
+	{
+		normal = new REAL[normal_length];
+	}
+
+	for (int i=0; i<normal_length; i++)
+		normal[i] = 0;
+}
+
+void CSparseLinearKernel::add_to_normal(INT idx, REAL weight) 
+{
+	//INT vlen;
+	//bool vfree;
+	//double* vec=((CRealFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
+
+	//for (int i=0; i<vlen; i++)
+	//	normal[i]+= weight*vec[i];
+
+	//((CRealFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
 }
   
 REAL CSparseLinearKernel::compute(INT idx_a, INT idx_b)
@@ -113,4 +142,74 @@ REAL CSparseLinearKernel::compute(INT idx_a, INT idx_b)
   ((CSparseRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return result;
+}
+
+bool CSparseLinearKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* alphas) 
+{
+	//INT alen;
+	//bool afree;
+	//int i;
+
+	//int num_feat=((CRealFeatures*) lhs)->get_num_features();
+	//assert(num_feat);
+
+	//normal=new REAL[num_feat];
+	//assert(normal);
+
+	//for (i=0; i<num_feat; i++)
+	//	normal[i]=0;
+
+	//for (int i=0; i<num_suppvec; i++)
+	//{
+	//	REAL* avec=((CRealFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
+	//	assert(avec);
+
+	//	for (int j=0; j<num_feat; j++)
+	//		normal[j]+=alphas[i]*avec[j];
+
+	//	((CRealFeatures*) lhs)->free_feature_vector(avec, 0, afree);
+	//}
+
+	//set_is_initialized(true);
+	return false;
+}
+
+bool CSparseLinearKernel::delete_optimization()
+{
+	//delete[] normal;
+	//normal=NULL;
+	//set_is_initialized(false);
+
+	//return true;
+	return false;
+}
+
+REAL CSparseLinearKernel::compute_optimized(INT idx_b) 
+{
+	/*
+	INT blen;
+	bool bfree;
+
+	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+
+	INT ialen=(int) blen;
+
+#ifndef HAVE_ATLAS
+	REAL result=0;
+	{
+		for (INT i=0; i<ialen; i++)
+			result+=normal[i]*bvec[i];
+	}
+	result/=scale;
+#else
+	INT skip=1;
+	REAL result = cblas_ddot(ialen, normal, skip, bvec, skip)/scale;
+#endif
+
+	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+
+	return result;
+	*/
+	CIO::message(M_ERROR, "not impl.\n");
+	return 0;
 }

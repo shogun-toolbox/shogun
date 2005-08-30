@@ -131,7 +131,8 @@ enum EKernelType
 	K_AUC = 150 | K_OPTIMIZABLE,
 	K_CUSTOM = 160,
 	K_SIGMOID = 170,
-	K_CHI2 = 180
+	K_CHI2 = 180,
+	K_DIAG = 190
 };
 
 enum EKernelProperty

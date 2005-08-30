@@ -41,13 +41,19 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 		CSparseFeatures(const CSparseFeatures & orig) : 
 			CFeatures(orig), num_vectors(orig.num_vectors), num_features(orig.num_features), sparse_feature_matrix(orig.sparse_feature_matrix), feature_cache(orig.feature_cache)
+		{
+			if (orig.sparse_feature_matrix)
 			{
-				if (orig.sparse_feature_matrix)
+				sparse_feature_matrix=new TSparse<REAL>[num_vectors];
+				memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(TSparse<ST>)*num_vectors); 
+				for (INT i=0; i< num_vectors; i++)
 				{
-					sparse_feature_matrix=new TSparse<REAL>[num_vectors*num_features];
-					memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(double)*num_vectors*num_features); 
+					sparse_feature_matrix[i].features=new TSparseEntry<ST>[sparse_feature_matrix[i].num_feat_entries];
+					memcpy(sparse_feature_matrix[i].features, orig.sparse_feature_matrix[i].features, sizeof(TSparseEntry<ST>)*sparse_feature_matrix[i].num_feat_entries); 
+
 				}
 			}
+		}
 
 		CSparseFeatures(CHAR* fname) : CFeatures(fname), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL)
 		{
@@ -356,6 +362,15 @@ template <class ST> class CSparseFeatures: public CFeatures
 			if (free)
 				delete[] feat_vec ;
 		} 
+
+		long get_num_nonzero_entries()
+		{
+			long num=0;
+			for (int i=0; i<num_vectors; i++)
+				num+=sparse_feature_matrix[i].num_feat_entries;
+
+			return num;
+		}
 
 	protected:
 		/// compute feature vector for sample num

@@ -38,6 +38,7 @@
 #include "kernel/SparseGaussianKernel.h"
 #include "kernel/SparseNormSquaredKernel.h"
 #include "kernel/SparseRealKernel.h"
+#include "kernel/DiagKernel.h"
 #include "features/RealFileFeatures.h"
 #include "features/TOPFeatures.h"
 #include "features/FKFeatures.h"
@@ -1250,6 +1251,19 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			if (k)
 			{
 				CIO::message(M_INFO, "Custom Kernel created\n");
+				return k;
+			}
+		}
+		else if (strcmp(kern_type,"DIAG")==0)
+		{
+			REAL diag=1.0;
+
+			sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &diag);
+			delete k;
+			k = new CDiagKernel(size, diag);
+			if (k)
+			{
+				CIO::message(M_INFO, "Diag Kernel created\n");
 				return k;
 			}
 		}

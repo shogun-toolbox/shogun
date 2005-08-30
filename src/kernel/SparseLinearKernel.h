@@ -8,7 +8,7 @@
 class CSparseLinearKernel: public CSparseRealKernel
 {
  public:
-  CSparseLinearKernel(LONG size);
+  CSparseLinearKernel(LONG size, bool do_rescale=true, REAL scale=1.0);
   ~CSparseLinearKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -28,6 +28,15 @@ class CSparseLinearKernel: public CSparseRealKernel
   // return the name of a kernel
   virtual const CHAR* get_name() { return "SparseLinear" ; } ;
 
+  ///optimizable kernel, i.e. precompute normal vector and as phi(x)=x
+  ///do scalar product in input space
+  virtual bool init_optimization(INT num_suppvec, INT* sv_idx, REAL* alphas);
+  virtual bool delete_optimization();
+  virtual REAL compute_optimized(INT idx);
+
+  virtual void clear_normal();
+  virtual void add_to_normal(INT idx, REAL weight);
+
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
@@ -39,6 +48,11 @@ class CSparseLinearKernel: public CSparseRealKernel
   
  protected:
   double scale ;
+  bool do_rescale ;
+
+  /// normal vector (used in case of optimized kernel)
+  long normal_length;
+  REAL* normal;
 };
 
 #endif
