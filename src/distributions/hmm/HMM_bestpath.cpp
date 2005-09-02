@@ -10,15 +10,28 @@
 #include <time.h>
 #include <ctype.h>
 
+#include "fibheap.h"
+
 #ifdef SUNOS
 extern "C" int	finite(double);
 #endif
+
+// of the first three preprocessor directives below
+//    0 means dont use it ever, 
+//    1 means use it just for printing if DOPRINT is 1, and 
+//    2 means use it for final result 
+//  only one of the three possibilities below can be 2
+
+#define USEHEAP 0
+#define USEORIGINALLIST 0
+#define USEFIXEDLENLIST 2
+#define DOPRINT 0
 
 static const INT num_words = 4096 ;
 static const INT word_degree = 6 ;
 static const INT num_svms = 4 ;
 static bool word_used[num_words] ;
-static REAL svm_value_unnormalized[num_svms] ;
+static REAL svm_values_unnormalized[num_svms] ;
 static REAL *dict_weights ;
 static INT svm_pos_start ;
 static INT num_unique_words = 0 ;
@@ -56,16 +69,153 @@ inline void translate_from_single_order(WORD* obs, INT sequence_length,
 			obs[i-start]=obs[i];
 }
 
+
+struct svm_values_struct
+{
+  INT maxlookback ;
+  INT seqlen;
+  INT num_unique_words ;
+
+  REAL * svm_values_unnormalized ;
+  REAL * svm_values ;
+  bool * word_used ;
+} ;
+
+inline void init_svm_value(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT howmuchlookback)
+{
+  /*
+    See find_svm_values_till_pos for comments
+
+    svs.svm_values[i+s*svs.seqlen] has the value of the s-th SVM on genestr(pos(t_end-i):pos(t_end)) 
+       for every i satisfying pos(t_end)-pos(t_end-i) <= svs.maxlookback
+
+       where t_end is the end of all segments we are currently looking at
+  */
+
+        if (!svs.svm_values)
+        {
+	  svs.svm_values              = new REAL[seqlen*num_svms] ;
+	  svs.svm_values_unnormalized  = new REAL[num_svms] ;
+	  svs.word_used               = new bool[num_words] ;
+        }
+
+	for (INT i=0; i<seqlen*num_svms; i++)       // initializing this for safety, though we should be able to live without it
+	  svs.svm_values[i] = 0;
+
+        for (INT s=0; s<num_svms; s++)
+	  svs.svm_values_unnormalized[s] = 0 ;
+
+        for (INT i=0; i<num_words; i++)
+	  svs.word_used[i] = false ;
+
+        svs.maxlookback = howmuchlookback ;
+	svs.seqlen = seqlen;
+        svs.num_unique_words = 0 ;
+}
+
+inline void clear_svm_value(struct svm_values_struct & svs) 
+{
+        if (NULL != svs.svm_values)
+        {
+          delete[] svs.svm_values_unnormalized;
+          delete[] svs.svm_values;
+          delete[] svs.word_used;
+        }
+}
+
+
+inline void find_svm_values_till_pos(WORD* wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs, FILE* fid)
+{
+  /*
+    wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 corresponding to the 6-mer in genestr(i-5:i) 
+    pos is a vector of candidate transition positions (it is input to best_path_trans)
+    t_end is some index in pos
+    
+    svs has been initialized by init_svm_values
+
+    At the end of this procedure, 
+    svs.svm_values[i+s*svs.seqlen] has the value of the s-th SVM on genestr(pos(t_end-i):pos(t_end)) 
+       for every i satisfying pos(t_end)-pos(t_end-i) <= svs.maxlookback
+
+    The SVM weights are precomputed in dict_weights
+  */
+
+  INT plen = 1;
+  INT ts = t_end-1;        // index in pos; pos(ts) and pos(t) are indices of wordstr
+  INT offset;
+
+  /*
+  for (INT s=0; s<num_svms; s++)
+    {
+      offset = s*svs.seqlen;
+      for (INT i=0;i<word_degree; i++)
+	svs.svm_values[i+offset] = 0;
+    }
+  */
+
+  INT posprev = pos[t_end]-word_degree+1;
+  INT poscurrent = pos[ts];
+
+  if (poscurrent<0)
+    poscurrent = 0;
+
+  INT len = pos[t_end] - poscurrent;
+
+  while ((ts>=0) && (len <= svs.maxlookback))
+   {
+      for (int i=posprev-1 ; (i>=poscurrent) && (i>=0) ; i--)
+        {
+	  // 	  if (word_degree > (pos[t_end]-pos[ts]))
+	  //	    fprintf(fid, " *******  i=%d , wordstr[i]=%d   dict_weights[1,wordstr[i]]=%f  t_end=%d, ts=%d  pos[t_end]=%d  pos[ts]=%d   posprev=%d\n", i, wordstr[i], dict_weights[wordstr[i]], t_end,ts,pos[t_end],pos[ts],posprev);
+
+          if (wordstr[i]>=num_words)
+             CIO::message(M_DEBUG, "wordstr[%i]=%i\n", i, wordstr[i]) ;
+          if (!svs.word_used[wordstr[i]])
+            {
+              for (INT s=0; s<num_svms; s++)
+                svs.svm_values_unnormalized[s]+=dict_weights[wordstr[i]+s*num_words] ;
+
+              svs.word_used[wordstr[i]]=true ;
+              svs.num_unique_words++ ;
+            }
+        }
+      double normalization_factor = 1.0;
+      if (svs.num_unique_words > 0)
+        normalization_factor = sqrt((double)svs.num_unique_words);
+      for (INT s=0; s<num_svms; s++)
+        {
+          offset = s*svs.seqlen;
+          svs.svm_values[offset+plen] = svs.svm_values_unnormalized[s] / normalization_factor;
+        }
+
+      if (posprev > poscurrent)         // remember posprev initially set to pos[t_end]-word_degree+1... pos[ts] could be e.g. pos[t_end]-2
+	posprev = poscurrent;           
+
+      ts--;
+      plen++;
+
+      if (ts>=0)
+	{
+	  poscurrent=pos[ts];
+	  if (poscurrent<0)
+	    poscurrent = 0;
+	  len = pos[t_end] - poscurrent;
+	}
+   }
+}
+
+
+
 inline void reset_svm_value(INT pos, INT & last_svm_pos, REAL * svm_value) 
 {
 	for (int i=0; i<num_words; i++)
 		word_used[i]=false ;
 	for (INT s=0; s<num_svms; s++)
-		svm_value_unnormalized[s] = 0 ;
+		svm_values_unnormalized[s] = 0 ;
 	for (INT s=0; s<num_svms; s++)
 		svm_value[s] = 0 ;
-	last_svm_pos = pos - 6+1 ;
-	svm_pos_start = pos - 6 ;
+	last_svm_pos = pos - word_degree+1 ;
+	svm_pos_start = pos - word_degree ;
 	num_unique_words=0 ;
 }
 
@@ -80,7 +230,7 @@ void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, REAL* svm_value
 		if (!word_used[wordstr[i]])
 		{
 			for (INT s=0; s<num_svms; s++)
-				svm_value_unnormalized[s]+=dict_weights[wordstr[i]+s*num_words] ;
+				svm_values_unnormalized[s]+=dict_weights[wordstr[i]+s*num_words] ;
 
 			word_used[wordstr[i]]=true ;
 			num_unique_words++ ;
@@ -92,13 +242,13 @@ void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, REAL* svm_value
 		last_svm_pos=pos ;
 		if (did_something)
 			for (INT s=0; s<num_svms; s++)
-				svm_value[s]= svm_value_unnormalized[s]/sqrt((double)num_unique_words) ;  // full normalization
+				svm_value[s]= svm_values_unnormalized[s]/sqrt((double)num_unique_words) ;  // full normalization
 	}
 	else
 	{
 		// what should I do?
 		for (INT s=0; s<num_svms; s++)
-			svm_value[s]=0 ;
+		  svm_value[s]=0 ;
 	}
 	
 }
@@ -152,11 +302,14 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						   REAL *dictionary_weights, INT dict_len, 
 						   REAL *&PEN_values, INT &num_PEN_id, bool use_orf)
 {
+	FILE* fid = fopen("tmp.out","wt");        // if debugging
+
 	const INT default_look_back = 30000 ;
 	INT max_look_back = 0 ;
 	bool use_svm = false ;
 	assert(dict_len==num_svms*num_words) ;
 	dict_weights=dictionary_weights ;
+	int offset=0;
 
 	REAL svm_value[num_svms] ;
 	
@@ -185,6 +338,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	}
 	max_look_back = CMath::min(genestr_len, max_look_back) ;
 	//fprintf(stderr,"use_svm=%i\n", use_svm) ;
+	
 	
 	const INT look_back_buflen = max_look_back*nbest*N ;
 	const REAL mem_use = (REAL)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(short int)+sizeof(INT))+
@@ -221,10 +375,22 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	short int *ktable_end=new short int[nbest] ;
 	assert(ktable_end!=NULL) ;
 
-	REAL* tempvv=new REAL[look_back_buflen] ;
-	assert(tempvv!=NULL) ;
-	INT* tempii=new INT[look_back_buflen] ;
-	assert(tempii!=NULL) ;
+	#if USEFIXEDLENLIST > 0
+	REAL* fixedtempvv=new REAL[look_back_buflen] ;
+	assert(fixedtempvv!=NULL) ;
+	INT* fixedtempii=new INT[look_back_buflen] ;
+	assert(fixedtempii!=NULL) ;
+	#endif
+
+
+	// we always use oldtempvv and oldtempii, even if USEORIGINALLIST is 0
+	// as i didnt change the backtracking stuff
+
+	REAL* oldtempvv=new REAL[look_back_buflen] ;
+	assert(oldtempvv!=NULL) ;
+	INT* oldtempii=new INT[look_back_buflen] ;
+	assert(oldtempii!=NULL) ;
+
 
 	T_STATES* state_seq = new T_STATES[seq_len] ;
 	assert(state_seq!=NULL) ;
@@ -261,32 +427,42 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 			}
 		translate_from_single_order(wordstr, genestr_len) ;
 		//fprintf(stderr, "genestr_len=%i\n", genestr_len) ;
+
+		// wordstr is sent to extend_svm_value around line 357: extend_svm_value(wordstr, pos[ts], last_svm_pos, svm_value) ;
+
 	}
 	
-	
+  	
 	{ // initialization
+
 		for (T_STATES i=0; i<N; i++)
 		{
-			DELTA(0,i,0) = get_p(i) + SEQ(i,0) ;
+		  DELTA(0,i,0) = get_p(i) + SEQ(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
 			PSI(0,i,0)   = 0 ;
 			KTAB(0,i,0)  = 0 ;
 			PTAB(0,i,0)  = 0 ;
 			for (short int k=1; k<nbest; k++)
 			{
 				DELTA(0,i,k)    = -CMath::INFTY ;
-				PSI(0,i,0)      = 0 ;
+				PSI(0,i,0)      = 0 ;                  // <--- what's this for?
 				KTAB(0,i,k)     = 0 ;
 				PTAB(0,i,k)     = 0 ;
 			}
 		}
 	}
 
+        struct svm_values_struct svs;
+	svs.svm_values = NULL;
+
 	// recursion
 	for (INT t=1; t<seq_len; t++)
 	{
 		if (is_big && t%(seq_len/1000)==1)
 			CIO::progress(t, 0, seq_len);
-		
+
+		init_svm_value(svs, t, seq_len, max_look_back);
+		find_svm_values_till_pos (wordstr, pos, t, svs, fid);  
+	
 		for (T_STATES j=0; j<N; j++)
 		{
 			if (SEQ(j,t)<-1e20)
@@ -305,7 +481,18 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 				const T_STATES *elem_list = trans_list_forward[j] ;
 				const REAL *elem_val      = trans_list_forward_val[j] ;
 				
-				INT list_len=0 ;
+				#if USEFIXEDLENLIST > 0
+				INT fixed_list_len = 0 ;
+				#endif
+
+				#if USEORIGINALLIST > 0
+				INT old_list_len = 0 ;
+				#endif
+				
+				#if USEHEAP > 0
+				Heap* tempheap = new Heap;
+				#endif
+
 				for (INT i=0; i<num_elem; i++)
 				{
 					T_STATES ii = elem_list[i] ;
@@ -329,18 +516,16 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 					}
 
 					INT last_pos = pos[t] ;
-					INT last_svm_pos ;
-					if (use_svm)
-						reset_svm_value(pos[t], last_svm_pos, svm_value) ;
 
 					for (INT ts=t-1; ts>=0 && pos[t]-pos[ts]<=look_back; ts--)
 					{
 						bool ok ;
+						int plen=t-ts;
+
 						if (orf_target==-1)
 							ok=true ;
 						else if (pos[ts]!=-1 && (pos[t]-pos[ts])%3==orf_target)
 						{
-								
 							ok=(!use_orf) || extend_orf(genestr_stop, orf_from, orf_to, pos[ts], last_pos, pos[t]) ;
 							if (!ok) 
 							{
@@ -352,32 +537,122 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						
 						if (ok)
 						{
-							if (use_svm)
-								extend_svm_value(wordstr, pos[ts], last_svm_pos, svm_value) ;
-							
-							REAL pen_val = lookup_penalty(penalty, pos[t]-pos[ts], svm_value, true) ;
-							for (short int diff=0; diff<nbest; diff++)
+
+						  for (INT ss=0; ss<num_svms; ss++)
+						    {
+						      offset = ss*svs.seqlen;
+						      svm_value[ss]=svs.svm_values[offset+plen];
+						    }
+
+						  
+						  REAL pen_val = lookup_penalty(penalty, pos[t]-pos[ts], svm_value, true) ;
+						  for (short int diff=0; diff<nbest; diff++)
+						    {
+						      REAL  val        = DELTA(ts,ii,diff) + elem_val[i] ;
+						      val             += pen_val ;
+						      REAL mval = -val;
+
+                                                      #if USEHEAP > 0
+						      tempheap->Insert(mval,ii + diff*N + ts*N*nbest);
+						      #endif
+
+						      #if USEORIGINALLIST > 0
+						      oldtempvv[old_list_len] = mval ;
+						      oldtempii[old_list_len] = ii + diff*N + ts*N*nbest;
+						      old_list_len++ ;
+						      #endif
+
+						      #if USEFIXEDLENLIST > 0
+						      
+						      /* only place -val in fixedtempvv if it is one of the nbest lowest values in there */
+						      /* fixedtempvv[i], i=0:nbest-1, is sorted so that fixedtempvv[0] <= fixedtempvv[1] <= ...*/
+						      /* fixed_list_len has the number of elements in fixedtempvv */
+
+						      if ((fixed_list_len < nbest) || (mval < fixedtempvv[fixed_list_len-1]))
 							{
-								REAL  val        = DELTA(ts,ii,diff) + elem_val[i] ;
-								val             += pen_val ;
-								
-								tempvv[list_len] = -val ;
-								tempii[list_len] =  ii + diff*N + ts*N*nbest;
-								list_len++ ;
-							} ;
+							  if ( (fixed_list_len<nbest) && ((0==fixed_list_len) || (mval>fixedtempvv[fixed_list_len-1])) )
+							    {
+							      fixedtempvv[fixed_list_len] = mval ;
+							      fixedtempii[fixed_list_len] = ii + diff*N + ts*N*nbest;
+							      fixed_list_len++ ;
+							    }
+							  else  // must have mval < fixedtempvv[fixed_list_len-1]
+							    {
+							      int addhere = fixed_list_len;
+							      while ((addhere > 0) && (mval < fixedtempvv[addhere-1]))
+								addhere--;
+							      
+							      // move everything from addhere+1 one forward 
+							      
+							      for (int jj=fixed_list_len-1; jj>addhere; jj--)
+								{
+								  fixedtempvv[jj] = fixedtempvv[jj-1];
+								  fixedtempii[jj] = fixedtempii[jj-1];
+								}
+							      
+							      fixedtempvv[addhere] = mval;
+							      fixedtempii[addhere] = ii + diff*N + ts*N*nbest;
+							      
+							      if (fixed_list_len < nbest)
+								fixed_list_len++;
+							    }
+							}
+						      #endif
+
+						    }
 						}
 					}
 				}
-				CMath::nmin<INT>(tempvv, tempii, list_len, nbest) ;
 				
+				#if USEORIGINALLIST > 0
+				CMath::nmin<INT>(oldtempvv, oldtempii, old_list_len, nbest) ;
+				#endif
+
+
+				int numEnt = 0;
+				#if USEHEAP == 2
+				numEnt = tempheap->GetNumNodes();
+				#elif USEORIGINALLIST == 2
+				numEnt = old_list_len;
+				#elif USEFIXEDLENLIST == 2
+				numEnt = fixed_list_len;
+                                #endif
+
+				double minusscore;
+				long int fromtjk;
+
+				#if DOPRINT
+				fprintf(fid,"\n\n");
+				#endif
+
 				for (short int k=0; k<nbest; k++)
 				{
-					if (k<list_len)
+					if (k<numEnt)
 					{
-						DELTA(t,j,k)    = -tempvv[k] + SEQ(j,t);
-						PSI(t,j,k)      = (tempii[k]%N) ;
-						KTAB(t,j,k)     = (tempii[k]%(N*nbest)-PSI(t,j,k))/N ;
-						PTAB(t,j,k)     = (tempii[k]-(tempii[k]%(N*nbest)))/(N*nbest) ;
+					  #if (USEHEAP == 2)
+					    tempheap->ExtractMin(minusscore,fromtjk);
+					  #elif (USEORIGINALLIST == 2)
+					    minusscore = oldtempvv[k];
+					    fromtjk = oldtempii[k];
+					  #elif (USEFIXEDLENLIST == 2)
+					    minusscore = fixedtempvv[k];
+					    fromtjk = fixedtempii[k];
+                                          #endif
+					    
+					  #if ((USEORIGINALLIST > 0) && (DOPRINT))
+					    fprintf (fid,"ORIGINAL: %d-th best score is %f coming from tjk=%d\n",k+1,-minusscore, fromtjk);
+					  #endif
+					  #if ((USEFIXEDLENLIST > 0) && (DOPRINT))
+					    fprintf (fid,"FIXEDLENLIST: %d-th best score is %f coming from tjk=%d\n",k+1,-minusscore, fromtjk);
+					  #endif
+                                          #if ((USEHEAP > 0) && (DOPRINT))
+					    fprintf (fid,"HEAP: %d-th best score is %f coming from tjk=%d\n",k+1,-minusscore, fromtjk);
+                                          #endif
+
+					    DELTA(t,j,k)    = -minusscore + SEQ(j,t);
+					    PSI(t,j,k)      = (fromtjk%N) ;
+					    KTAB(t,j,k)     = (fromtjk%(N*nbest)-PSI(t,j,k))/N ;
+					    PTAB(t,j,k)     = (fromtjk-(fromtjk%(N*nbest)))/(N*nbest) ;
 					}
 					else
 					{
@@ -386,10 +661,22 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						KTAB(t,j,k)     = 0 ;
 						PTAB(t,j,k)     = 0 ;
 					}
+                                        #if DOPRINT
+					fprintf(fid,"\n\n");
+                                        #endif
+
 				}
+
+				#if USEHEAP > 0
+				delete tempheap;
+				#endif
 			}
 		}
 	}
+
+	clear_svm_value(svs);
+
+
 	
 	{ //termination
 		INT list_len = 0 ;
@@ -397,19 +684,19 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 		{
 			for (T_STATES i=0; i<N; i++)
 			{
-				tempvv[list_len] = -(DELTA(seq_len-1,i,diff)+get_q(i)) ;
-				tempii[list_len] = i + diff*N ;
+				oldtempvv[list_len] = -(DELTA(seq_len-1,i,diff)+get_q(i)) ;
+				oldtempii[list_len] = i + diff*N ;
 				list_len++ ;
 			}
 		}
 		
-		CMath::nmin(tempvv, tempii, list_len, nbest) ;
+		CMath::nmin(oldtempvv, oldtempii, list_len, nbest) ;
 		
 		for (short int k=0; k<nbest; k++)
 		{
-			DELTA_END(k) = -tempvv[k] ;
-			PATH_END(k) = (tempii[k]%N) ;
-			KTAB_END(k) = (tempii[k]-PATH_END(k))/N ;
+			DELTA_END(k) = -oldtempvv[k] ;
+			PATH_END(k) = (oldtempii[k]%N) ;
+			KTAB_END(k) = (oldtempii[k]-PATH_END(k))/N ;
 		}
 	}
 	
@@ -441,6 +728,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 			my_state_seq[num_states+k*seq_len]=-1 ;
 			my_pos_seq[num_states+k*seq_len]=-1 ;
 		}
+
 		REAL svm_value[num_svms] ;
 		for (INT s=0; s<num_svms; s++)
 			svm_value[s]=0 ;
@@ -499,10 +787,19 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	delete[] path_end ;
 	delete[] delta_end ;
 
-	delete[] tempvv ;
-	delete[] tempii ;
+
+	delete[] oldtempvv ;
+	delete[] oldtempii ;
+
+
+	#if USEFIXEDLENLIST
+	delete[] fixedtempvv ;
+	delete[] fixedtempii ;
+	#endif
 
 	delete[] state_seq ;
 	delete[] pos_seq ;
 	delete[] genestr_stop ;
+
+	fclose(fid);
 }
