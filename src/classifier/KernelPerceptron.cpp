@@ -31,3 +31,12 @@ REAL* CKernelPerceptron::test()
 	return NULL;
 }
 
+bool CKernelPerceptron::load(FILE* src)
+{
+	return false;
+}
+
+bool CKernelPerceptron::save(FILE* dst)
+{
+	return false;
+}

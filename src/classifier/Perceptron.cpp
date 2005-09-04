@@ -30,3 +30,13 @@ REAL* CPerceptron::test()
 {
 	return NULL;
 }
+
+bool CPerceptron::load(FILE* src)
+{
+	return false;
+}
+
+bool CPerceptron::save(FILE* dst)
+{
+	return false;
+}
