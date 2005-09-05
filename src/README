@@ -27,7 +27,7 @@ while prefix should usually be _0 ... _9 or _1_schering_final etc.
 
 naming conventions:
 	-objects which can deal with features of type REAL and class SIMPLE don't need to contain Real/Simple in class name
-	-others are required to clearify class/type they can handle, e.g. CSparseByteLinearKernel, CSparseGaussianKernel
+	-others are required to clarify class/type they can handle, e.g. CSparseByteLinearKernel, CSparseGaussianKernel
 
 - features
 	-featureclass Simple/Sparse

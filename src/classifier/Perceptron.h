@@ -4,20 +4,29 @@
 #include <stdio.h>
 #include "lib/common.h"
 #include "features/Features.h"
-#include "kernel/Kernel.h"
-#include "kernel/KernelMachine.h"
+#include "classifier/LinearClassifier.h"
 
-class CPerceptron : public CKernelMachine
+class CPerceptron : public CLinearClassifier
 {
 	public:
 		CPerceptron();
 		virtual ~CPerceptron();
 
 		virtual bool train();
-		virtual REAL* test();
 
-		virtual bool load(FILE* srcfile);
-		virtual bool save(FILE* dstfile);
+		/// set learn rate of gradient descent training algorithm
+		inline void set_learn_rate(REAL r)
+		{
+			learn_rate=r;
+		}
+
+		/// set maximum number of iterations
+		inline void set_max_iter(INT i)
+		{
+			max_iter=i;
+		}
+	protected:
+		REAL learn_rate;
+		INT max_iter;
 };
 #endif
-

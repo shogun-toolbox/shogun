@@ -79,7 +79,7 @@ public:
 
 	/// signum of type T variable a 
 	template <class T>
-	static inline REAL sign(REAL a)
+	static inline INT sign(REAL a)
 	{
 		if (a==0)
 			return 0;

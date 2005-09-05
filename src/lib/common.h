@@ -51,9 +51,17 @@ typedef UINT* P_UINT;
 typedef long LONG;
 typedef LONG* P_LONG;
 
-/// Type LONG is 8 bytes in size
+/// Type ULONG is 8 bytes in size
 typedef unsigned long ULONG;
 typedef ULONG* P_ULONG;
+
+/// Type LLONG is 16 bytes in size
+typedef long long LLONG;
+typedef LLONG* P_LLONG;
+
+/// Type ULLONG is 16 bytes in size
+typedef unsigned long long ULLONG;
+typedef ULLONG* P_ULLONG;
 
 /// Type SHORTREAL is 4 bytes in size
 typedef float SHORTREAL;

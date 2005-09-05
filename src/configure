@@ -11,7 +11,7 @@ EXT_OBJ_CPP=cpp.o
 EXT_OBJ_C=c.o
 
 #the defaults are
-_readline=yes
+_readline=no
 _matlab=no
 _python=no
 _octave=no

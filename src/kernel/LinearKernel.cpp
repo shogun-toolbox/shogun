@@ -117,29 +117,9 @@ REAL CLinearKernel::compute(INT idx_a, INT idx_b)
 
 bool CLinearKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* alphas) 
 {
-	INT alen;
-	bool afree;
-	int i;
-
-	int num_feat=((CRealFeatures*) lhs)->get_num_features();
-	assert(num_feat);
-
-	normal=new REAL[num_feat];
-	assert(normal);
-
-	for (i=0; i<num_feat; i++)
-		normal[i]=0;
-
+	clear_normal();
 	for (int i=0; i<num_suppvec; i++)
-	{
-		REAL* avec=((CRealFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
-		assert(avec);
-
-		for (int j=0; j<num_feat; j++)
-			normal[j]+=alphas[i]*avec[j];
-
-		((CRealFeatures*) lhs)->free_feature_vector(avec, 0, afree);
-	}
+		add_to_normal(sv_idx[i], alphas[i]);
 
 	set_is_initialized(true);
 	return true;
@@ -161,7 +141,7 @@ REAL CLinearKernel::compute_optimized(INT idx_b)
 
 	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-	INT ialen=(int) blen;
+	int ialen=(int) blen;
 
 #ifndef HAVE_ATLAS
 	REAL result=0;

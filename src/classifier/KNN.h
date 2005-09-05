@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "lib/common.h"
+#include "lib/io.h"
 #include "features/Features.h"
 #include "kernel/Kernel.h"
 #include "kernel/KernelMachine.h"
@@ -15,6 +16,11 @@ class CKNN : public CKernelMachine
 
 		virtual bool train();
 		virtual REAL* test();
+		virtual REAL classify_example(INT idx)
+		{
+			CIO::message(M_ERROR, "for performance reasons use test() instead of classify_example\n");
+			return 0;
+		}
 
 		virtual bool load(FILE* srcfile);
 		virtual bool save(FILE* dstfile);

@@ -204,7 +204,7 @@ bool CSVMLight::setup_auc_maximization()
 
 	// get the original labels
 	INT num=0;
-	CLabels* lab = CKernelMachine::get_labels();
+	CLabels* lab = get_labels();
 	assert(lab!=NULL);
 	INT* labels=lab->get_int_labels(num);
 	assert(get_kernel()->get_rhs()->get_num_vectors() == num) ;

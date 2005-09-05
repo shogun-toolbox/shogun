@@ -451,8 +451,10 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 		}
 	}
 
-        struct svm_values_struct svs;
+	struct svm_values_struct svs;
 	svs.svm_values = NULL;
+	svs.svm_values_unnormalized = NULL;
+	svs.word_used = NULL;
 
 	// recursion
 	for (INT t=1; t<seq_len; t++)

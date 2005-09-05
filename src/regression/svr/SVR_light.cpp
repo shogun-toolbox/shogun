@@ -159,7 +159,7 @@ bool CSVRLight::train()
 		init_cplex();
 #else
 	if (get_mkl_enabled())
-		CIO::message(M_ERROR, "MKL was disabled at compile-time\n");
+		CIO::message(M_ERROR, "CPLEX was disabled at compile-time\n");
 #endif
 	
 	if (precomputed_subkernels != NULL)
@@ -274,7 +274,7 @@ void CSVRLight::svr_learn()
 	INT* label;
 	LONG* docs;
 
-	CLabels* lab=CKernelMachine::get_labels();
+	CLabels* lab= CClassifier::get_labels();
 	assert(lab!=NULL);
 	INT totdoc=lab->get_num_labels();
 	num_vectors=totdoc;

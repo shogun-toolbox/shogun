@@ -1,6 +1,7 @@
 #include "classifier/svm/KerthiPrimalSVM.h"
 #include "lib/io.h"
 #include "lib/common.h"
+#include "features/Labels.h"
 #include "lib/Mathmatics.h"
 
 CKerthiPrimalSVM::CKerthiPrimalSVM()
@@ -14,7 +15,7 @@ CKerthiPrimalSVM::~CKerthiPrimalSVM()
 bool CKerthiPrimalSVM::train()
 {
 
-	CLabels* lab = CKernelMachine::get_labels();
+	CLabels* lab = CSVM::get_labels();
 	const int n=lab->get_num_labels();
 	const REAL* al_init=new REAL[n];
 	const REAL C=get_C1();
