@@ -13,8 +13,8 @@ CPerceptron::~CPerceptron()
 
 bool CPerceptron::train()
 {
-	assert(CKernelMachine::get_labels());
-	assert(CKernelMachine::get_features());
+	assert(get_labels());
+	assert(get_features());
 	bool converged=false;
 	INT iter=0;
 	INT num_train_labels=0;
@@ -63,15 +63,5 @@ bool CPerceptron::train()
 	delete[] output;
 	delete[] train_labels;
 
-	return false;
-}
-
-bool CPerceptron::load(FILE* src)
-{
-	return false;
-}
-
-bool CPerceptron::save(FILE* dst)
-{
 	return false;
 }

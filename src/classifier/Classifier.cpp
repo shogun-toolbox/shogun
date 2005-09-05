@@ -13,9 +13,10 @@ REAL* CClassifier::test()
 	if (labels)
 	{
 		INT num=labels->get_num_labels();
+		assert(num>0);
 		REAL* output=new REAL[num];
 
-		assert(REAL);
+		assert(output);
 		for (INT i=0; i<num; i++)
 			output[i]=classify_example(i);
 
