@@ -24,7 +24,7 @@ extern "C" int	finite(double);
 #define SEQ(j,t) seq[j+(t)*N]
 
 void CHMM::best_path_trans_simple(const REAL *seq, INT seq_len, short int nbest, 
-								  REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq)
+								  REAL *prob_nbest, INT *my_state_seq)
 {
 	INT max_look_back = 2 ;
 	const INT look_back_buflen = max_look_back*nbest*N ;
@@ -203,10 +203,8 @@ void CHMM::best_path_trans_simple(const REAL *seq, INT seq_len, short int nbest,
 			for (i=0; i<num_states;i++)
 			{
 				my_state_seq[i+k*seq_len] = state_seq[num_states-i-1] ;
-				my_pos_seq[i+k*seq_len]   = pos_seq[num_states-i-1] ;
 			}
 			my_state_seq[num_states+k*seq_len]=-1 ;
-			my_pos_seq[num_states+k*seq_len]=-1 ;
 		}
 
 	}

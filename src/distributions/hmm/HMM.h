@@ -566,9 +566,8 @@ public:
 						 REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 						 REAL *dictionary_weights, INT dict_len,
 						 REAL *&PEN_values, INT &num_PEN_id, bool use_orf) ;
-	void best_path_trans_simple(const REAL *seq, INT seq_len,
-								  short int nbest, 
-								  REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq) ;
+	void best_path_trans_simple(const REAL *seq, INT seq_len, short int nbest, 
+								REAL *prob_nbest, INT *my_state_seq) ;
 #endif
 
 	/// calculates probability that observations were generated 

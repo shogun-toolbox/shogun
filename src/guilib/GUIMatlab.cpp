@@ -611,13 +611,11 @@ bool CGUIMatlab::best_path_trans_simple(const mxArray* vals[], mxArray* retvals[
 			
 			INT *my_path = new INT[M*nbest] ;
 			memset(my_path, -1, M*nbest*sizeof(INT)) ;
-			INT *my_pos = new INT[M*nbest] ;
-			memset(my_pos, -1, M*nbest*sizeof(INT)) ;
 			
 			mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxREAL);
 			double* p_prob = mxGetPr(mx_prob);
 			
-			h->best_path_trans_simple(seq, M, nbest, p_prob, my_path, my_pos) ;
+			h->best_path_trans_simple(seq, M, nbest, p_prob, my_path) ;
 
 			// clean up 
 			delete h ;
@@ -625,22 +623,17 @@ bool CGUIMatlab::best_path_trans_simple(const mxArray* vals[], mxArray* retvals[
 			// transcribe result
 			mxArray* mx_my_path=mxCreateDoubleMatrix(nbest, M, mxREAL);
 			double* d_my_path=mxGetPr(mx_my_path);
-			mxArray* mx_my_pos=mxCreateDoubleMatrix(nbest, M, mxREAL);
-			double* d_my_pos=mxGetPr(mx_my_pos);
 			
 			for (INT k=0; k<nbest; k++)
 				for (INT i=0; i<M; i++)
 				{
 					d_my_path[i*nbest+k] = my_path[i+k*M] ;
-					d_my_pos[i*nbest+k] = my_pos[i+k*M] ;
 				}
 			
 			retvals[0]=mx_prob ;
 			retvals[1]=mx_my_path ;
-			retvals[2]=mx_my_pos ;
 
 			delete[] my_path ;
-			delete[] my_pos ;
 
 			return true;
 		}

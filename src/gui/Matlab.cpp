@@ -440,12 +440,12 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (!strncmp(action, N_BEST_PATH_TRANS_SIMPLE, strlen(N_BEST_PATH_TRANS_SIMPLE)))
 		{
-			if ((nrhs==1+12) & (nlhs==4))
+			if ((nrhs==1+5) & (nlhs==2))
 			{
 				gf_matlab.best_path_trans_simple(prhs,plhs);
 			}
 			else
-				CIO::message(M_ERROR, "usage is [prob,path,pos]=gf('best_path_trans_simple', p, q, a_trans, seq, nbest)");
+				CIO::message(M_ERROR, "usage is [prob,path]=gf('best_path_trans_simple', p, q, a_trans, seq, nbest)");
 		}
 		else if (!strncmp(action, N_BEST_PATH_TRANS, strlen(N_BEST_PATH_TRANS)))
 		{
