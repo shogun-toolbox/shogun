@@ -204,7 +204,7 @@ void CHMM::best_path_trans_simple(const REAL *seq, INT seq_len, short int nbest,
 			{
 				my_state_seq[i+k*seq_len] = state_seq[num_states-i-1] ;
 			}
-			my_state_seq[num_states+k*seq_len]=-1 ;
+			//my_state_seq[num_states+k*seq_len]=-1 ;
 		}
 
 	}
