@@ -42,6 +42,7 @@ static const CHAR* N_SET_HMM=			"set_hmm";
 static const CHAR* N_MODEL_PROB_NO_B_TRANS=			"model_prob_no_b_trans";
 static const CHAR* N_BEST_PATH_NO_B_TRANS=			"best_path_no_b_trans";
 static const CHAR* N_BEST_PATH_TRANS=			"best_path_trans";
+static const CHAR* N_BEST_PATH_TRANS_SIMPLE=			"best_path_trans_simple";
 static const CHAR* N_BEST_PATH_NO_B=			"best_path_no_b";
 static const CHAR* N_APPEND_HMM=			"append_hmm";
 static const CHAR* N_SET_SVM=			"set_svm";
@@ -436,6 +437,15 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				CIO::message(M_ERROR, "usage is [prob,path]=gf('best_path_no_b_trans',p,q,a_trans,max_iter,nbest)");
+		}
+		else if (!strncmp(action, N_BEST_PATH_TRANS_SIMPLE, strlen(N_BEST_PATH_TRANS_SIMPLE)))
+		{
+			if ((nrhs==1+12) & (nlhs==4))
+			{
+				gf_matlab.best_path_trans_simple(prhs,plhs);
+			}
+			else
+				CIO::message(M_ERROR, "usage is [prob,path,pos]=gf('best_path_trans_simple', p, q, a_trans, seq, nbest)");
 		}
 		else if (!strncmp(action, N_BEST_PATH_TRANS, strlen(N_BEST_PATH_TRANS)))
 		{

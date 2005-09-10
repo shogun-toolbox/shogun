@@ -48,6 +48,7 @@ public:
 	bool model_prob_no_b_trans(const mxArray* vals[], mxArray* retvals[]) ;
 	bool best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[]) ;
 	bool best_path_trans(const mxArray* vals[], mxArray* retvals[]) ;
+	bool best_path_trans_simple(const mxArray* vals[], mxArray* retvals[]) ;
 	bool append_hmm(const mxArray* vals[]);
 	bool hmm_classify_example(mxArray* retvals[], int idx);
 	bool hmm_classify(mxArray* retvals[]);
