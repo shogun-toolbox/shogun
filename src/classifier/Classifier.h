@@ -13,7 +13,7 @@ class CClassifier
 		virtual ~CClassifier();
 
 		virtual bool train()=0;
-		virtual REAL* test();
+		virtual CLabels* classify(CLabels* output=NULL);
 
 		virtual REAL classify_example(INT num)=0;
 

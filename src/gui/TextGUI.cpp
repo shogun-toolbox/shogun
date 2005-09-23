@@ -31,6 +31,7 @@ CHistogram* h;
 //names of menu commands
 static const CHAR* N_NEW_HMM=			"new_hmm";
 static const CHAR* N_NEW_SVM=			"new_svm";
+static const CHAR* N_NEW_CLASSIFIER=	"new_classifier";
 static const CHAR* N_NEW_KNN=			"new_knn";
 static const CHAR* N_NEW_PLUGIN_ESTIMATOR="new_plugin_estimator";
 static const CHAR* N_TRAIN_ESTIMATOR=	"train_estimator";
@@ -296,6 +297,10 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_NEW_SVM, strlen(N_NEW_SVM)))
 	{
 		guisvm.new_svm(input+strlen(N_NEW_SVM));
+	} 
+	else if (!strncmp(input, N_NEW_CLASSIFIER, strlen(N_NEW_CLASSIFIER)))
+	{
+		guiclassifier.new_classifier(input+strlen(N_NEW_CLASSIFIER));
 	} 
 	else if (!strncmp(input, N_NEW_KNN, strlen(N_NEW_KNN)))
 	{

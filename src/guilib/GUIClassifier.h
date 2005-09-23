@@ -1,0 +1,52 @@
+#ifndef _GUICLASSIFIER_H__
+#define _GUICLASSIFIER_H__ 
+
+#include "classifier/Classifier.h"
+
+class CGUI ;
+
+class CGUIClassifier
+{
+
+public:
+	CGUIClassifier(CGUI*);
+	~CGUIClassifier();
+
+	bool new_classifier(CHAR* param);
+	bool train(CHAR* param, bool auc_maximization);
+	bool test(CHAR* param);
+	bool load(CHAR* param);
+	bool save(CHAR* param);
+	CLabels* classify(CLabels* output=NULL);
+	bool classify_example(INT idx, REAL& result);
+	inline CClassifier* get_classifier() { return classifier; }
+
+	/// SVM functions
+	bool set_svm_C(CHAR* param);
+	bool set_svm_qpsize(CHAR* param);
+	bool set_svm_mkl_enabled(CHAR* param);
+	bool set_svm_linadd_enabled(CHAR* param);
+	bool set_svm_epsilon(CHAR* param);
+	bool set_svr_tube_epsilon(CHAR* param);
+	bool set_svm_mkl_parameters(CHAR* param) ;
+	bool set_svm_precompute_enabled(CHAR* param) ;
+
+
+ protected:
+	CGUI* gui;
+	CClassifier* classifier;
+
+	int svm_qpsize;
+	double svm_weight_epsilon;
+	double svm_epsilon;
+	double svm_tube_epsilon;
+	double svm_C1;
+	double svm_C2;
+	double svm_C_mkl;
+	bool svm_use_mkl;
+	bool svm_use_linadd;
+	bool svm_use_precompute;
+	bool svm_use_precompute_subkernel;
+	bool svm_use_precompute_subkernel_light;
+};
+#endif
