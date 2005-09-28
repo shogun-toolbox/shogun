@@ -1153,19 +1153,19 @@ set_opts()
 			TARGET="gf.mexaxp"
 			INCLUDES="$INCLUDES -I/opt/matlab-6.5-13/extern/include"
 			DEFINES="$DEFINES -DMATLAB_MEX_FILE"
-			COMPFLAGS_CPP="$COMPFLAGS_CPP -shared -ieee -pthread -std1"
-			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -pthread -std1"
+			COMPFLAGS_CPP="$COMPFLAGS_CPP -shared -ieee -pthread -std1 -fexceptions"
+			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -pthread -std1 -fexceptions"
 		elif darwin
 		then
 			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -undefined suppress -L/Applications/MATLAB7/bin/mac -lmx -lmex -lmat $LINKFLAGS"
-			INCLUDES="$INCLUDES -I/Applications/MATLAB7/extern/include"
+			INCLUDES="$INCLUDES -I/Applications/MATLAB7/extern/include -fexceptions"
 			TARGET="gf.mexmac"
 		elif linux
 		then
 			case "$host_arch" in
 			  x86_64|amd64)
-				COMPFLAGS_C="$COMPFLAGS_C -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE -pthread"
-				COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE -pthread"
+				COMPFLAGS_C="$COMPFLAGS_C -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE -pthread -fexceptions"
+				COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE -pthread -fexceptions"
 				LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/fml/ag-raetsch/share/software/matlab/extern/lib/glnxa64/mexFunction.map -Wl,--rpath-link,/fml/ag-raetsch/share/software/matlab/bin/glnxa64 -L/fml/ag-raetsch/share/software/matlab/bin/glnxa64 -lmx -lmex -lmat -lm -lstdc++"
 				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/matlab/extern/include/"
 				TARGET="gf.mexa64"
