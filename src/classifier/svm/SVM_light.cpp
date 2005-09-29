@@ -2082,47 +2082,52 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 		{
 			get_kernel()->clear_normal();
 			
+			INT num_working=0;
 			for(ii=0;(i=working2dnum[ii])>=0;ii++) {
 				if(a[i] != a_old[i]) {
 					get_kernel()->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
+					num_working++;
 				}
 			}
 			
-#ifdef USE_SVMPARALLEL
-			INT num_elem = 0 ;
-			for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
-
-			pthread_t threads[NUM_PARALLEL-1] ;
-			S_THREAD_PARAM params[NUM_PARALLEL-1] ;
-			INT start = 0 ;
-			INT step = num_elem/NUM_PARALLEL ;
-			INT end = step ;
-			
-			for (INT t=0; t<NUM_PARALLEL-1; t++)
+			if (num_working>0)
 			{
-				params[t].kernel = get_kernel() ;
-				params[t].lin = lin ;
-				params[t].docs = docs ;
-				params[t].active2dnum=active2dnum ;
-				params[t].start = start ;
-				params[t].end = end ;
-				start=end ;
-				end+=step ;
-				pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
-			}
-				
-			for(jj=params[NUM_PARALLEL-2].end;(j=active2dnum[jj])>=0;jj++) {
-				lin[j]+=get_kernel()->compute_optimized(docs[j]);
-			}
-			void* ret;
-			for (INT t=0; t<NUM_PARALLEL-1; t++)
-				pthread_join(threads[t], &ret) ;
+#ifdef USE_SVMPARALLEL
+				INT num_elem = 0 ;
+				for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
+
+				pthread_t threads[NUM_PARALLEL-1] ;
+				S_THREAD_PARAM params[NUM_PARALLEL-1] ;
+				INT start = 0 ;
+				INT step = num_elem/NUM_PARALLEL ;
+				INT end = step ;
+
+				for (INT t=0; t<NUM_PARALLEL-1; t++)
+				{
+					params[t].kernel = get_kernel() ;
+					params[t].lin = lin ;
+					params[t].docs = docs ;
+					params[t].active2dnum=active2dnum ;
+					params[t].start = start ;
+					params[t].end = end ;
+					start=end ;
+					end+=step ;
+					pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
+				}
+
+				for(jj=params[NUM_PARALLEL-2].end;(j=active2dnum[jj])>=0;jj++) {
+					lin[j]+=get_kernel()->compute_optimized(docs[j]);
+				}
+				void* ret;
+				for (INT t=0; t<NUM_PARALLEL-1; t++)
+					pthread_join(threads[t], &ret) ;
 
 #else			
-			for(jj=0;(j=active2dnum[jj])>=0;jj++) {
-				lin[j]+=get_kernel()->compute_optimized(docs[j]);
-			}
+				for(jj=0;(j=active2dnum[jj])>=0;jj++) {
+					lin[j]+=get_kernel()->compute_optimized(docs[j]);
+				}
 #endif
+			}
 		}
 	}
 	else 
@@ -2480,17 +2485,23 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 	  if (!get_kernel()->has_property(KP_KERNCOMBINATION))
 	  {
 		  get_kernel()->clear_normal();
+		  INT num_modified=0;
 		  for(i=0;i<totdoc;i++) {
 			  if(a[i] != a_old[i]) {
 				  get_kernel()->add_to_normal(docs[i], ((a[i]-a_old[i])*(double)label[i]));
 				  a_old[i]=a[i];
+				  num_modified++;
 			  }
 		  }
-		  for(i=0;i<totdoc;i++) {
-			  if(!shrink_state->active[i]) {
-				  lin[i]=shrink_state->last_lin[i]+get_kernel()->compute_optimized(docs[i]);
+
+		  if (num_modified>0)
+		  {
+			  for(i=0;i<totdoc;i++) {
+				  if(!shrink_state->active[i]) {
+					  lin[i]=shrink_state->last_lin[i]+get_kernel()->compute_optimized(docs[i]);
+				  }
+				  shrink_state->last_lin[i]=lin[i];
 			  }
-			  shrink_state->last_lin[i]=lin[i];
 		  }
 	  }
 	  else

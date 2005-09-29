@@ -12,7 +12,8 @@ CVersion::CVersion()
 	version_hour = VERSION_HOUR;
 	version_minute = VERSION_MINUTE;
 
-	CIO::message(M_MESSAGEONLY, "genefinder_" VERSION_RELEASE " (%d) (w) 2000-2005 Soeren Sonnenburg, Gunnar Raetsch\n", get_version_in_minutes());
+	CIO::message(M_MESSAGEONLY, "genefinder (%s/%s/%s-%d)\n\n (C) 2000-2005 Soeren Sonnenburg, Gunnar Raetsch\n\n", TARGET, MACHINE, VERSION_RELEASE, get_version_in_minutes());
+	CIO::message(M_MESSAGEONLY, "( configure options: \"%s\" compile flags: \"%s\" link flags: \"%s\" )\n", CONFIGURE_OPTIONS, COMPFLAGS_CPP, LINKFLAGS);
 }
 
 
