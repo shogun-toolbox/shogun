@@ -1,11 +1,19 @@
+#include "lib/config.h"
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/File.h"
+
 #include "kernel/Kernel.h"
 #include "features/Features.h"
 
 #include <string.h>
 #include <assert.h>
+
+#ifdef USE_SVMPARALLEL 
+#include "lib/Parallel.h"
+#include <unistd.h>
+#include <pthread.h>
+#endif
 
 CKernel::CKernel(KERNELCACHE_IDX size) 
 : kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1), 
@@ -274,12 +282,47 @@ void CKernel::cache_kernel_row(KERNELCACHE_IDX m)
 	}
 }
 
+#ifdef USE_SVMPARALLEL 
+void* CKernel::cache_multiple_kernel_row_helper(void* p)
+{
+	S_KTHREAD_PARAM* params = (S_KTHREAD_PARAM*) p;
+
+	for (KERNELCACHE_IDX i=params->start; i<params->end; i++)
+		params->kernel->cache_kernel_row(params->rows[i]);
+
+	return NULL;
+}
+#endif
+
 // Fills cache for the rows in key 
 void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 {
 	// fill up kernel cache 
+#ifdef USE_SVMPARALLEL 
+	pthread_t threads[CParallel::get_num_threads()-1];
+	S_KTHREAD_PARAM params[CParallel::get_num_threads()-1];
+	INT step= num_rows/CParallel::get_num_threads()-1;
+
+	for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+	{
+		params[t].rows = rows;
+		params[t].kernel = this;
+		params[t].start = t*step;
+		params[t].end = (t+1)*step;
+		pthread_create(&threads[t], NULL, CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]);
+	}
+
+	CIO::message(M_DEBUG, "%d rows\n", num_rows);
+
+	for (int i=params[CParallel::get_num_threads()-2].end; i<num_rows; i++)
+		cache_kernel_row(rows[i]);
+
+	for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+		pthread_join(threads[t], NULL);
+#else
 	for(KERNELCACHE_IDX i=0;i<num_rows;i++) 
 		cache_kernel_row(rows[i]);
+#endif
 }
 
 // remove numshrink columns in the cache

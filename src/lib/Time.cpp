@@ -22,12 +22,20 @@ clock_t CTime::start(bool verbose)
 	return start_time;
 }
 
-clock_t CTime::cur_time_diff(bool verbose)
+clock_t CTime::cur_time(bool verbose)
 {
 	clock_t cur_time=clock();
 	if (verbose)
 		CIO::message(M_INFO, "current %ld\n", (LONG) cur_time);
 	return cur_time;
+}
+
+clock_t CTime::cur_time_diff(bool verbose)
+{
+	clock_t cur_time_diff=clock()-start_time;
+	if (verbose)
+		CIO::message(M_INFO, "current diff %ld\n", (LONG) cur_time_diff);
+	return cur_time_diff;
 }
 
 clock_t CTime::stop(bool verbose)

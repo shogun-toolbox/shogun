@@ -166,6 +166,7 @@ class CKernel
 		/**@ cache kernel evalutations to improve speed
 		 */
 		//@{
+		static void* cache_multiple_kernel_row_helper(void* p);
 
 		/// init kernel cache of size megabytes
 		void   kernel_cache_init(KERNELCACHE_IDX size, bool regression_hack=false);
@@ -177,6 +178,14 @@ class CKernel
 
 		//@}
 
+		struct S_KTHREAD_PARAM 
+		{
+			LONG* rows;
+			INT start;
+			INT end;
+			CKernel* kernel;
+		};
+		
 		struct KERNEL_CACHE {
 			KERNELCACHE_IDX   *index;  
 			KERNELCACHE_ELEM  *buffer; 

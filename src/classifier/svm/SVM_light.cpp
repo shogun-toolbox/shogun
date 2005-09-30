@@ -7,10 +7,13 @@
 #include "lib/io.h"
 #include "lib/Signal.h"
 #include "lib/Mathmatics.h"
+#include "lib/Time.h"
+
+#include "features/WordFeatures.h"
 #include "classifier/svm/SVM_light.h"
 #include "classifier/svm/Optimizer.h"
+
 #include "kernel/KernelMachine.h"
-#include "features/WordFeatures.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/AUCKernel.h"
 
@@ -46,6 +49,31 @@ struct S_THREAD_PARAM
 	CKernel* kernel ;
 }  ;
 
+void* CSVMLight::update_linear_component_linadd_helper(void* p)
+{
+	S_THREAD_PARAM* params = (S_THREAD_PARAM*) p;
+	
+	INT jj=0, j=0 ;
+	
+	for(jj=params->start;(jj<params->end) && (j=params->active2dnum[jj])>=0;jj++) 
+	{
+		params->lin[j]+=params->kernel->compute_optimized(params->docs[j]);
+	}
+	return NULL ;
+}
+
+void* CSVMLight::update_linear_component_mkl_linadd_helper(void* p)
+{
+	S_THREAD_PARAM* params = (S_THREAD_PARAM*) p;
+
+	INT num_kernels=params->kernel->get_num_subkernels();
+
+	// determine contributions of different kernels
+	for (int i=params->start; i<params->end; i++)
+		params->kernel->compute_by_subkernel(i,&(params->W[i*num_kernels]));
+
+	return NULL ;
+}
 #endif
 
 CSVMLight::CSVMLight()
@@ -202,8 +230,6 @@ bool CSVMLight::setup_auc_maximization()
 {
 	CIO::message(M_INFO, "setting up AUC maximization\n") ;
 	
-	//CIO::message(M_DEBUG, "(before) k(0,0)=%1.1f\n", get_kernel()->kernel(0,0)) ;
-
 	// get the original labels
 	INT num=0;
 	CLabels* lab = get_labels();
@@ -261,13 +287,8 @@ bool CSVMLight::setup_auc_maximization()
 	CAUCKernel *kernel = new CAUCKernel(10, get_kernel()) ;
 	kernel->init(f,f,1) ;
 
-	//CIO::message(M_DEBUG, "(before) k(0,0)=%1.1f\n", get_kernel()->kernel(0,0)) ;
-	//CIO::message(M_DEBUG, "(after) k(0,0)=%1.1f\n", kernel->kernel(0,0)) ;
-
 	set_kernel(kernel) ;
 
-	
-	
 	delete[] labels ;
 	delete[] labels_auc ;
 
@@ -590,8 +611,6 @@ void CSVMLight::svm_learn()
 
 	if (use_kernel_cache)
 	{
-#ifdef USE_SVMPARALLEL
-#warning todo: compute cache lines in parallel
 		for(i=0;i<totdoc;i++)     /* fill kernel cache with unbounded SV */
 			if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i]) 
 			   && (get_kernel()->kernel_cache_space_available())) 
@@ -600,16 +619,6 @@ void CSVMLight::svm_learn()
 			if((alpha[i]==learn_parm->svm_cost[i]) 
 			   && (get_kernel()->kernel_cache_space_available())) 
 				get_kernel()->cache_kernel_row(i);
-#else
-		for(i=0;i<totdoc;i++)     /* fill kernel cache with unbounded SV */
-			if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i]) 
-			   && (get_kernel()->kernel_cache_space_available())) 
-				get_kernel()->cache_kernel_row(i);
-		for(i=0;i<totdoc;i++)     /* fill rest of kernel cache with bounded SV */
-			if((alpha[i]==learn_parm->svm_cost[i]) 
-			   && (get_kernel()->kernel_cache_space_available())) 
-				get_kernel()->cache_kernel_row(i);
-#endif
 	}
     (void)compute_index(index,totdoc,index2dnum);
     update_linear_component(docs,label,index2dnum,alpha,a,index2dnum,totdoc,
@@ -891,7 +900,11 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  if(verbosity>=2) t1=get_runtime();
 	  
 	  if (use_kernel_cache)
+	  {
+		  CTime tm;
 		  CKernelMachine::get_kernel()->cache_multiple_kernel_rows(working2dnum, choosenum); 
+		  CIO::message(M_DEBUG, "\ncache_multiple_kernel_rows took: %f seconds\n", tm.cur_time_diff_sec());
+	  }
 	  
 	  if(verbosity>=2) t2=get_runtime();
 	  if(retrain != 2) {
@@ -1773,24 +1786,18 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 			}
 		}
 
-#ifdef SVM_PARALLEL
-		pthread_t threads[CParallel::get_num_threads()-1] ;
-		S_THREAD_PARAM params[CParallel::get_num_threads()-1-1] ;
-		INT start = 0 ;
-		INT step = num/CParallel::get_num_threads()-1 ;
-		INT end = step ;
+#ifdef USE_SVMPARALLEL
+		pthread_t threads[CParallel::get_num_threads()-1];
+		S_THREAD_PARAM params[CParallel::get_num_threads()-1];
+		INT step= num/CParallel::get_num_threads()-1;
 
-		for (INT t=0; t<CParallel::get_num_threads()-1-1; t++)
+		for (INT t=0; t<CParallel::get_num_threads()-1; t++)
 		{
 			params[t].kernel = k;
 			params[t].W = W;
-			params[t].docs = docs;
-			params[t].active2dnum=active2dnum;
-			params[t].start = start;
-			params[t].end = end;
-			start=end;
-			end+=step;
-			pthread_create(&threads[t], NULL, update_linear_component_mkl_linadd_helper, (void*)&params[t]);
+			params[t].start = t*step;
+			params[t].end = (t+1)*step;
+			pthread_create(&threads[t], NULL, CSVMLight::update_linear_component_mkl_linadd_helper, (void*)&params[t]);
 		}
 
 		for (int i=params[CParallel::get_num_threads()-2].end; i<num; i++)
@@ -2081,35 +2088,6 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 
 }
 
-#ifdef USE_SVMPARALLEL
-void *update_linear_component_linadd_helper(void *params_)
-{
-	S_THREAD_PARAM * params = (S_THREAD_PARAM*) params_ ;
-	
-	INT jj=0, j=0 ;
-	
-	for(jj=params->start;(jj<params->end) && (j=params->active2dnum[jj])>=0;jj++) 
-	{
-		params->lin[j]+=params->kernel->compute_optimized(params->docs[j]);
-	}
-	return NULL ;
-}
-
-void *update_linear_component_mkl_linadd_helper(void* p)
-{
-	S_THREAD_PARAM * params = (S_THREAD_PARAM*) p;
-
-	INT num_kernels=params->kernel->get_num_subkernels();
-
-	// determine contributions of different kernels
-	for (int i=params->start; i<params->end; i++)
-		params->kernel->compute_by_subkernel(i,&(params->W[i*num_kernels]));
-
-	return NULL ;
-}
-#endif
-
-
 void CSVMLight::update_linear_component(LONG* docs, INT* label, 
 										long int *active2dnum, double *a, 
 										double *a_old, long int *working2dnum, 
@@ -2121,8 +2099,6 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
      /* in the current working set */
 {
 	register long i=0,ii=0,j=0,jj=0;
-	register double tec=0;
-
 
 	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) 
 	{
@@ -2150,12 +2126,12 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
 				pthread_t threads[CParallel::get_num_threads()-1] ;
-				S_THREAD_PARAM params[CParallel::get_num_threads()-1-1] ;
+				S_THREAD_PARAM params[CParallel::get_num_threads()-1] ;
 				INT start = 0 ;
 				INT step = num_elem/CParallel::get_num_threads()-1 ;
 				INT end = step ;
 
-				for (INT t=0; t<CParallel::get_num_threads()-1-1; t++)
+				for (INT t=0; t<CParallel::get_num_threads()-1; t++)
 				{
 					params[t].kernel = get_kernel() ;
 					params[t].lin = lin ;
@@ -2165,7 +2141,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					params[t].end = end ;
 					start=end ;
 					end+=step ;
-					pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
+					pthread_create(&threads[t], NULL, CSVMLight::update_linear_component_linadd_helper, (void*)&params[t]) ;
 				}
 
 				for(jj=params[CParallel::get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
@@ -2187,36 +2163,18 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 	{
 		if (get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
 		{
-#ifdef USE_SVMPARALLEL
-			//FIXME
-#else			
 			update_linear_component_mkl(docs, label, active2dnum, a, a_old, working2dnum, 
 										totdoc,	lin, aicache) ;
-#endif
 		}
 		else {
-#ifdef USE_SVMPARALLEL
-#warning fixme
 			for(jj=0;(i=working2dnum[jj])>=0;jj++) {
 				if(a[i] != a_old[i]) {
 					CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
 					for(ii=0;(j=active2dnum[ii])>=0;ii++) {
-						tec=aicache[j];
-						lin[j]+=(((a[i]*tec)-(a_old[i]*tec))*(double)label[i]);
+						lin[j]+=(((a[i]*aicache[j])-(a_old[i]*aicache[j]))*(double)label[i]);
 					}
 				}
 			}
-#else			
-			for(jj=0;(i=working2dnum[jj])>=0;jj++) {
-				if(a[i] != a_old[i]) {
-					CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
-					for(ii=0;(j=active2dnum[ii])>=0;ii++) {
-						tec=aicache[j];
-						lin[j]+=(((a[i]*tec)-(a_old[i]*tec))*(double)label[i]);
-					}
-				}
-			}
-#endif
 		}
 	}
 }

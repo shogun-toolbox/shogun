@@ -16,6 +16,9 @@ class CTime
 		/// when verbose is set the start time is printed
 		clock_t start(bool verbose=false);
 
+		/// returns the current time
+		clock_t cur_time(bool verbose=false);
+
 		/// returns time difference between start and NOW
 		/// when verbose is set the time difference is printed
 		clock_t cur_time_diff(bool verbose=false);
@@ -34,8 +37,7 @@ class CTime
 
 		static LONG get_runtime() 
 		{
-			clock_t start;
-			start = clock();
+			clock_t start = clock();
 			return((LONG)((double)start*100.0/(double)CLOCKS_PER_SEC));
 		}
 

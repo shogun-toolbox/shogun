@@ -263,6 +263,10 @@ protected:
 		   else
 			   return CKernelMachine::get_kernel()->kernel(i, j) ;
 	   }
+#ifdef USE_SVMPARALLEL 
+	static void* update_linear_component_linadd_helper(void* p);
+	static void* update_linear_component_mkl_linadd_helper(void* p);
+#endif
 
 #ifdef USE_CPLEX
 	bool init_cplex();
