@@ -31,10 +31,11 @@ extern "C" {
 #endif
 
 #ifdef USE_SVMPARALLEL 
+#include "lib/Parallel.h"
+
 #include <unistd.h>
 #include <pthread.h>
 
-static const INT NUM_PARALLEL = 4 ;
 struct S_THREAD_PARAM 
 {
 	REAL * lin ;
@@ -2053,7 +2054,6 @@ void *update_linear_component_linadd_helper(void *params_)
 	}
 	return NULL ;
 }
-
 #endif
 
 
@@ -2096,13 +2096,13 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				INT num_elem = 0 ;
 				for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-				pthread_t threads[NUM_PARALLEL-1] ;
-				S_THREAD_PARAM params[NUM_PARALLEL-1] ;
+				pthread_t threads[CParallel::get_num_threads()-1] ;
+				S_THREAD_PARAM params[CParallel::get_num_threads()-1-1] ;
 				INT start = 0 ;
-				INT step = num_elem/NUM_PARALLEL ;
+				INT step = num_elem/CParallel::get_num_threads()-1 ;
 				INT end = step ;
 
-				for (INT t=0; t<NUM_PARALLEL-1; t++)
+				for (INT t=0; t<CParallel::get_num_threads()-1-1; t++)
 				{
 					params[t].kernel = get_kernel() ;
 					params[t].lin = lin ;
@@ -2115,11 +2115,11 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
 				}
 
-				for(jj=params[NUM_PARALLEL-2].end;(j=active2dnum[jj])>=0;jj++) {
+				for(jj=params[CParallel::get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
 					lin[j]+=get_kernel()->compute_optimized(docs[j]);
 				}
 				void* ret;
-				for (INT t=0; t<NUM_PARALLEL-1; t++)
+				for (INT t=0; t<CParallel::get_num_threads()-1; t++)
 					pthread_join(threads[t], &ret) ;
 
 #else			
@@ -2134,10 +2134,17 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 	{
 		if (get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() ) 
 		{
+#ifdef USE_SVMPARALLEL
+			//FIXME
+#else			
 			update_linear_component_mkl(docs, label, active2dnum, a, a_old, working2dnum, 
 										totdoc,	lin, aicache) ;
+#endif
 		}
 		else {
+#ifdef USE_SVMPARALLEL
+			//FIXME
+#else			
 			for(jj=0;(i=working2dnum[jj])>=0;jj++) {
 				if(a[i] != a_old[i]) {
 					CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
@@ -2147,6 +2154,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					}
 				}
 			}
+#endif
 		}
 	}
 }
