@@ -31,7 +31,7 @@ class CLinearClassifier : public CClassifier
 #else
 			int len=(int) vlen;
 			int skip=1;
-			REAL result = cblas_ddot(len, normal, skip, vec, skip);
+			REAL result = cblas_ddot(len, w, skip, vec, skip);
 #endif
 
 			features->free_feature_vector(vec, idx, vfree);

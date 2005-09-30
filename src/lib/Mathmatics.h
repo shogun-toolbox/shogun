@@ -7,6 +7,12 @@
 #include <math.h>
 #include <stdio.h>
 
+#ifdef HAVE_ATLAS
+extern "C" {
+#include <cblas.h>
+}
+#endif
+
 //define finite for win32
 #ifdef _WIN32
 #include <float.h>

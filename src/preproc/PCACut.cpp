@@ -94,7 +94,7 @@ bool CPCACut::init(CFeatures* f)
 				vec[j]-=mean[j] ;
 
 			/// A = 1.0*xy^T+A blas
-			cblas_dger(CblasColmajor, num_features,num_features, 1.0, vec, 1, 
+			cblas_dger(CblasColMajor, num_features,num_features, 1.0, vec, 1, 
 				 vec, 1, cov, (int)num_features) ;
 
 			//for (INT k=0; k<num_features; k++)
@@ -199,7 +199,7 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 			for (i=0; i<num_features; i++)
 				sub_mean[i]=m[num_features*vec+i]-mean[i] ;
 
-			cblas_dgemv(CblasColmajor, CblasNoTrans, num_dim, num_features, 1.0,
+			cblas_dgemv(CblasColMajor, CblasNoTrans, num_dim, num_features, 1.0,
 				  T, num_dim, sub_mean, 1, 0, res, 1); 
 
 			REAL* m_transformed=&m[num_dim*vec];
@@ -222,16 +222,17 @@ REAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 REAL* CPCACut::apply_to_feature_vector(REAL* f, INT &len)
 {
 	REAL *ret=new REAL[num_dim];
-	INT onei=1 ;
-	double zerod=0, oned=1 ;
-	CHAR N='N' ;
 	REAL *sub_mean=new REAL[len];
 	for (INT i=0; i<len; i++)
 		sub_mean[i]=f[i]-mean[i];
 
-	INT numd=num_dim;
-
-	dgemv_(&N, &numd, &len, &oned, T, &numd, sub_mean, &onei, &zerod, ret, &onei) ;
+	cblas_dgemv(CblasColMajor, CblasNoTrans, num_dim, len, 1.0 , T, num_dim, sub_mean, 1, 0, ret, 1) ;
+//void cblas_dgemv(const enum CBLAS_ORDER order,
+//                 const enum CBLAS_TRANSPOSE TransA, const int M, const int N,
+//                 const double alpha, const double *A, const int lda,
+//                 const double *X, const int incX, const double beta,
+//                 double *Y, const int incY);
+//
 
 	delete[] sub_mean ;
 	len=num_dim ;
