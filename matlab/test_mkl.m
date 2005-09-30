@@ -1,5 +1,5 @@
 cache_size=50;
-C=10;
+C=0.000001;
 numtrain=1000;
 svm_eps=1e-4;
 mkl_eps=1e-4;
@@ -18,13 +18,13 @@ kmtrain{1}=ones(numtrain,numtrain);
 kmtrain{2}=ones(numtrain,numtrain);
 kmtrain{3}=ones(numtrain,numtrain);
 kmtrain{4}=ones(numtrain,numtrain);
-kmtrain{5}=ones(numtrain,numtrain);
+kmtrain{5}=eye(numtrain,numtrain);
 
 kmtest{1}=ones(numtrain,numtrain);
 kmtest{2}=ones(numtrain,numtrain);
 kmtest{3}=ones(numtrain,numtrain);
 kmtest{4}=ones(numtrain,numtrain);
-kmtest{5}=ones(numtrain,numtrain);
+kmtest{5}=eye(numtrain,numtrain);
 
 gf('send_command', 'new_svm LIGHT');
 gf('send_command', 'clean_features TRAIN');
@@ -35,8 +35,6 @@ gf('set_features','TRAIN', traindat);
 gf('send_command', sprintf('set_kernel GAUSSIAN REAL %d %f', cache_size, W0));
 gf('send_command', 'init_kernel TRAIN');
 kmcool=gf('get_kernel_matrix');
-
-keyboard
 
 gf('send_command', 'clean_features TRAIN');
 gf('send_command', 'clean_kernels') ;
@@ -96,3 +94,4 @@ gf('add_features','TEST', testdat);
 gf('set_labels', 'TEST', testlab);
 gf('send_command', 'init_kernel TEST');
 out=gf('svm_classify');
+mean(sign(out)~=testlab)

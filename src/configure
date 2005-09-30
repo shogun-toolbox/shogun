@@ -1283,7 +1283,7 @@ set_opts()
 		then
 			LINKFLAGS="$LINKFLAGS"
 		else
-			LINKFLAGS="$LINKFLAGS -llapack_pic -lcblas -lf77blas -ldl -lrt -lm -liberty -lg2c"
+			LINKFLAGS="$LINKFLAGS -llapack_pic -lcblas -lf77blas -ldl -lrt -lm -lg2c"
 		fi
 	fi
 
