@@ -909,17 +909,21 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 	
 	REAL objective=0;
 #ifdef HAVE_ATLAS
+	REAL *alphay  = buffer_num ;
 	REAL sumalpha = 0 ;
 	
+#warning untested, verify me
 	for (int i=0; i<num; i++)
+	{
+		alphay[i]=a[i]*label[i] ;
 		sumalpha+=a[i]*(learn_parm->eps-label[i]*c[i]);
+	}
 	
 	for (int i=0; i<num_kernels; i++)
 		sumw[i]=-sumalpha ;
 	
-#warning untested
 	cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, num,
-				0.5, W, num_kernels, a, 1, 1.0, sumw, 1) ;
+				0.5, W, num_kernels, alphay, 1, 1.0, sumw, 1) ;
 	
 	for (int i=0; i<num_kernels; i++)
 		objective+=w[i]*sumw[i] ;

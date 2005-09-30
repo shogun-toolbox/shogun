@@ -39,6 +39,7 @@ extern "C" {
 struct S_THREAD_PARAM 
 {
 	REAL * lin ;
+	REAL* W;
 	INT start, end;
 	LONG * active2dnum ;
 	LONG * docs ;
@@ -589,6 +590,8 @@ void CSVMLight::svm_learn()
 
 	if (use_kernel_cache)
 	{
+#ifdef USE_SVMPARALLEL
+#warning todo: compute cache lines in parallel
 		for(i=0;i<totdoc;i++)     /* fill kernel cache with unbounded SV */
 			if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i]) 
 			   && (get_kernel()->kernel_cache_space_available())) 
@@ -597,6 +600,16 @@ void CSVMLight::svm_learn()
 			if((alpha[i]==learn_parm->svm_cost[i]) 
 			   && (get_kernel()->kernel_cache_space_available())) 
 				get_kernel()->cache_kernel_row(i);
+#else
+		for(i=0;i<totdoc;i++)     /* fill kernel cache with unbounded SV */
+			if((alpha[i]>0) && (alpha[i]<learn_parm->svm_cost[i]) 
+			   && (get_kernel()->kernel_cache_space_available())) 
+				get_kernel()->cache_kernel_row(i);
+		for(i=0;i<totdoc;i++)     /* fill rest of kernel cache with bounded SV */
+			if((alpha[i]==learn_parm->svm_cost[i]) 
+			   && (get_kernel()->kernel_cache_space_available())) 
+				get_kernel()->cache_kernel_row(i);
+#endif
 	}
     (void)compute_index(index,totdoc,index2dnum);
     update_linear_component(docs,label,index2dnum,alpha,a,index2dnum,totdoc,
@@ -1759,35 +1772,62 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 				k->add_to_normal(docs[i], (a[i]-a_old[i])*(double)label[i]);
 			}
 		}
+
+#ifdef SVM_PARALLEL
+		pthread_t threads[CParallel::get_num_threads()-1] ;
+		S_THREAD_PARAM params[CParallel::get_num_threads()-1-1] ;
+		INT start = 0 ;
+		INT step = num/CParallel::get_num_threads()-1 ;
+		INT end = step ;
+
+		for (INT t=0; t<CParallel::get_num_threads()-1-1; t++)
+		{
+			params[t].kernel = k;
+			params[t].W = W;
+			params[t].docs = docs;
+			params[t].active2dnum=active2dnum;
+			params[t].start = start;
+			params[t].end = end;
+			start=end;
+			end+=step;
+			pthread_create(&threads[t], NULL, update_linear_component_mkl_linadd_helper, (void*)&params[t]);
+		}
+
+		for (int i=params[CParallel::get_num_threads()-2].end; i<num; i++)
+			k->compute_by_subkernel(i,&W[i*num_kernels]);
 		
+		for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+			pthread_join(threads[t], NULL);
+#else
 		// determine contributions of different kernels
 		for (int i=0; i<num; i++)
-			k->compute_by_subkernel(i,&W[i*num_kernels]) ;
+			k->compute_by_subkernel(i,&W[i*num_kernels]);
+#endif
 
 		// restore old weights
-		k->set_subkernel_weights(w_backup,num_weights) ;
+		k->set_subkernel_weights(w_backup,num_weights);
 		
-		delete[] w_backup ;
-		delete[] w1 ;
+		delete[] w_backup;
+		delete[] w1;
 	}
 	REAL objective=0;
 #ifdef HAVE_ATLAS
-	REAL *alphay  = buffer_num ;
-	REAL sumalpha = 0 ;
+	REAL *alphay  = buffer_num;
+	REAL sumalpha = 0;
 	
 	for (int i=0; i<num; i++)
 	{
-		alphay[i]=a[i]*label[i] ;
-		sumalpha+=a[i] ;
+		alphay[i]=a[i]*label[i];
+		sumalpha+=a[i];
 	}
 	for (int i=0; i<num_kernels; i++)
-		sumw[i]=-sumalpha ;
+		sumw[i]=-sumalpha;
 	
 	cblas_dgemv(CblasColMajor, CblasNoTrans, num_kernels, num,
-				0.5, W, num_kernels, alphay, 1, 1.0, sumw, 1) ;
+				0.5, W, num_kernels, alphay, 1, 1.0, sumw, 1);
 	
 	for (int i=0; i<num_kernels; i++)
-		objective+=w[i]*sumw[i] ;
+		objective+=w[i]*sumw[i];
 #else
 	for (int d=0; d<num_kernels; d++)
 	{
@@ -2054,6 +2094,19 @@ void *update_linear_component_linadd_helper(void *params_)
 	}
 	return NULL ;
 }
+
+void *update_linear_component_mkl_linadd_helper(void* p)
+{
+	S_THREAD_PARAM * params = (S_THREAD_PARAM*) p;
+
+	INT num_kernels=params->kernel->get_num_subkernels();
+
+	// determine contributions of different kernels
+	for (int i=params->start; i<params->end; i++)
+		params->kernel->compute_by_subkernel(i,&(params->W[i*num_kernels]));
+
+	return NULL ;
+}
 #endif
 
 
@@ -2143,7 +2196,16 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 		}
 		else {
 #ifdef USE_SVMPARALLEL
-			//FIXME
+#warning fixme
+			for(jj=0;(i=working2dnum[jj])>=0;jj++) {
+				if(a[i] != a_old[i]) {
+					CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
+					for(ii=0;(j=active2dnum[ii])>=0;ii++) {
+						tec=aicache[j];
+						lin[j]+=(((a[i]*tec)-(a_old[i]*tec))*(double)label[i]);
+					}
+				}
+			}
 #else			
 			for(jj=0;(i=working2dnum[jj])>=0;jj++) {
 				if(a[i] != a_old[i]) {
