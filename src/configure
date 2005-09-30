@@ -32,7 +32,7 @@ _debug=no
 _hmmdebug=no
 _pathdebug=no
 _svmmpidebug=no
-_profile=
+_profile=no
 _prefix="/usr/local"
 _bindir="$_prefix/bin"
 _datadir="$_prefix/share/genefinder"
@@ -52,7 +52,7 @@ INCLUDES=-I${SRCDIR}
 LINK=c++
 LINKFLAGS="-lm"
 TARGET="genefinder-${EXESUFFIX}"
-COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-mem -fforce-addr -fstrength-reduce -fomit-frame-pointer -unroll-loops"
+COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-mem -fforce-addr -fstrength-reduce -unroll-loops"
 #most defines are simply design bugs, use the ./configure --{disable,enable}-<options>
 DEFINES=
 
@@ -366,8 +366,8 @@ for ac_option do
   --enable-path-debug)  _pathdebug=yes ;;
   --disable-svmmpi-debug)	_svmmpidebug=no ;;
   --enable-svmmpi-debug)	_svmmpidebug=yes ;;
-  --disable-profile) 	_profile= ;;
-  --enable-profile) 	_profile='-p' ;;
+  --disable-profile) 	_profile=no ;;
+  --enable-profile) 	_profile=yes ;;
   --prefix=*)
     _prefix=`echo $ac_option | cut -d '=' -f 2`
     ;;
@@ -1209,7 +1209,9 @@ set_opts()
 
 	if test "$_profile" = yes
 	then
-		COMPFLAGS_CPP="$COMPFLAGS_CPP -g -p"
+		COMPFLAGS_CPP="$COMPFLAGS_CPP -g -pg"
+		COMPFLAGS_C="$COMPFLAGS_CPP -g -pg"
+		LINKFLAGS="$LINKFLAGS -g -pg"
 	fi
 
 	if test "$_readline" = yes

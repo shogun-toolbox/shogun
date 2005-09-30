@@ -528,7 +528,7 @@ bool CTextGUI::parse_line(CHAR* input)
 	} 
 	else if (!strncmp(input, N_EXIT, strlen(N_EXIT)))
 	{
-		return false;
+		exit(0);
 	} 
 	else if (!strncmp(input, N_QUIT, strlen(N_QUIT)))
 	{
