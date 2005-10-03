@@ -227,6 +227,28 @@ void CKernel::kernel_cache_init(KERNELCACHE_IDX buffsize, bool regression_hack)
 	kernel_cache.time=0;  
 } 
 
+KERNELCACHE_ELEM* CKernel::get_buffer_of_kernel_row(KERNELCACHE_IDX docnum, LONG* active2dnum, REAL* buffer)
+{
+	KERNELCACHE_IDX i,j,start;
+
+	/* is cached? */
+	if(kernel_cache.index[docnum] != -1) 
+	{
+		kernel_cache.lru[kernel_cache.index[docnum]]=kernel_cache.time; /* lru */
+		start=kernel_cache.activenum*kernel_cache.index[docnum];
+
+		for(i=0;(j=active2dnum[i])>=0;i++)
+		{
+			if(kernel_cache.totdoc2active[j] >= 0)
+				buffer[j]=kernel_cache.buffer[start+kernel_cache.totdoc2active[j]];
+			else
+				buffer[j]=(REAL) kernel(docnum, j);
+		}
+	}
+
+	return NULL;
+}
+
 void CKernel::get_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, REAL *buffer)     
 {
 	KERNELCACHE_IDX i,j,start;
@@ -242,7 +264,7 @@ void CKernel::get_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, REAL *bu
 			if(kernel_cache.totdoc2active[j] >= 0)
 				buffer[j]=kernel_cache.buffer[start+kernel_cache.totdoc2active[j]];
 			else
-				buffer[j]=(KERNELCACHE_ELEM) kernel(docnum, j);
+				buffer[j]=(REAL) kernel(docnum, j);
 		}
 	}
 	else 
@@ -321,7 +343,10 @@ void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 		pthread_join(threads[t], NULL);
 #else
 	for(KERNELCACHE_IDX i=0;i<num_rows;i++) 
+	{
+		CIO::message(M_DEBUG, "%d\n", rows[i]);
 		cache_kernel_row(rows[i]);
+	}
 #endif
 }
 

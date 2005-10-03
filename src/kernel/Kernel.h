@@ -69,10 +69,11 @@ class CKernel
 		inline int get_max_elems_cache() { return kernel_cache.max_elems; }
 		inline int get_activenum_cache() { return kernel_cache.activenum; }
 		void get_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, REAL *buffer) ;
+		KERNELCACHE_ELEM* get_buffer_of_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, REAL *buffer) ;
 		void cache_kernel_row(KERNELCACHE_IDX x);
 		void cache_multiple_kernel_rows(LONG* key, INT varnum);
 		void kernel_cache_reset_lru();
-		void   kernel_cache_shrink(KERNELCACHE_IDX totdoc, KERNELCACHE_IDX num_shrink, KERNELCACHE_IDX *after);
+		void kernel_cache_shrink(KERNELCACHE_IDX totdoc, KERNELCACHE_IDX num_shrink, KERNELCACHE_IDX *after);
 
 		void resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack=false);
 		
