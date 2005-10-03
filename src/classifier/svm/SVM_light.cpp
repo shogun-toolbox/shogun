@@ -1789,7 +1789,7 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 #ifdef USE_SVMPARALLEL
 		pthread_t threads[CParallel::get_num_threads()-1];
 		S_THREAD_PARAM params[CParallel::get_num_threads()-1];
-		INT step= num/CParallel::get_num_threads()-1;
+		INT step= num/CParallel::get_num_threads();
 
 		for (INT t=0; t<CParallel::get_num_threads()-1; t++)
 		{
@@ -2128,7 +2128,7 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				pthread_t threads[CParallel::get_num_threads()-1] ;
 				S_THREAD_PARAM params[CParallel::get_num_threads()-1] ;
 				INT start = 0 ;
-				INT step = num_elem/CParallel::get_num_threads()-1 ;
+				INT step = num_elem/CParallel::get_num_threads();
 				INT end = step ;
 
 				for (INT t=0; t<CParallel::get_num_threads()-1; t++)

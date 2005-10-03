@@ -69,7 +69,6 @@ class CKernel
 		inline int get_max_elems_cache() { return kernel_cache.max_elems; }
 		inline int get_activenum_cache() { return kernel_cache.activenum; }
 		void get_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, REAL *buffer) ;
-		KERNELCACHE_ELEM* get_buffer_of_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, REAL *buffer) ;
 		void cache_kernel_row(KERNELCACHE_IDX x);
 		void cache_multiple_kernel_rows(LONG* key, INT varnum);
 		void kernel_cache_reset_lru();
@@ -179,14 +178,6 @@ class CKernel
 
 		//@}
 
-		struct S_KTHREAD_PARAM 
-		{
-			LONG* rows;
-			INT start;
-			INT end;
-			CKernel* kernel;
-		};
-		
 		struct KERNEL_CACHE {
 			KERNELCACHE_IDX   *index;  
 			KERNELCACHE_ELEM  *buffer; 
@@ -201,6 +192,16 @@ class CKernel
 			KERNELCACHE_IDX   activenum;
 			KERNELCACHE_IDX   buffsize;
 			//			LONG   r_offs;
+		};
+
+		struct S_KTHREAD_PARAM 
+		{
+			CKernel* kernel;
+			KERNEL_CACHE* kernel_cache;
+			KERNELCACHE_ELEM** cache;
+			LONG* uncached_rows;
+			INT start;
+			INT end;
 		};
 
 	protected:

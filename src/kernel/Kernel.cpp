@@ -2,6 +2,7 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/File.h"
+#include "lib/Time.h"
 
 #include "kernel/Kernel.h"
 #include "features/Features.h"
@@ -227,28 +228,6 @@ void CKernel::kernel_cache_init(KERNELCACHE_IDX buffsize, bool regression_hack)
 	kernel_cache.time=0;  
 } 
 
-KERNELCACHE_ELEM* CKernel::get_buffer_of_kernel_row(KERNELCACHE_IDX docnum, LONG* active2dnum, REAL* buffer)
-{
-	KERNELCACHE_IDX i,j,start;
-
-	/* is cached? */
-	if(kernel_cache.index[docnum] != -1) 
-	{
-		kernel_cache.lru[kernel_cache.index[docnum]]=kernel_cache.time; /* lru */
-		start=kernel_cache.activenum*kernel_cache.index[docnum];
-
-		for(i=0;(j=active2dnum[i])>=0;i++)
-		{
-			if(kernel_cache.totdoc2active[j] >= 0)
-				buffer[j]=kernel_cache.buffer[start+kernel_cache.totdoc2active[j]];
-			else
-				buffer[j]=(REAL) kernel(docnum, j);
-		}
-	}
-
-	return NULL;
-}
-
 void CKernel::get_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, REAL *buffer)     
 {
 	KERNELCACHE_IDX i,j,start;
@@ -310,7 +289,18 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 	S_KTHREAD_PARAM* params = (S_KTHREAD_PARAM*) p;
 
 	for (KERNELCACHE_IDX i=params->start; i<params->end; i++)
-		params->kernel->cache_kernel_row(params->rows[i]);
+	{
+		KERNELCACHE_IDX j,k;
+		KERNELCACHE_ELEM* cache=params->cache[i];
+		KERNELCACHE_IDX m = params->uncached_rows[i];
+
+		for(j=0;j<params->kernel_cache->activenum;j++)  // fill cache 
+		{
+			k=params->kernel_cache->active2totdoc[j];
+
+			cache[j]=params->kernel->kernel(m, k);
+		}
+	}
 
 	return NULL;
 }
@@ -321,32 +311,67 @@ void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 {
 	// fill up kernel cache 
 #ifdef USE_SVMPARALLEL 
+	LONG uncached_rows[num_rows];
+	KERNELCACHE_ELEM* cache[num_rows];
 	pthread_t threads[CParallel::get_num_threads()-1];
 	S_KTHREAD_PARAM params[CParallel::get_num_threads()-1];
-	INT step= num_rows/CParallel::get_num_threads()-1;
+	INT num_threads=CParallel::get_num_threads()-1;
+	INT step=0;
+	INT num=0;
+	INT end=0;
 
-	for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+	// allocate cachelines if necessary
+	for(KERNELCACHE_IDX i=0; i<num_rows; i++) 
 	{
-		params[t].rows = rows;
-		params[t].kernel = this;
-		params[t].start = t*step;
-		params[t].end = (t+1)*step;
-		pthread_create(&threads[t], NULL, CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]);
+		if(!kernel_cache_check(rows[i])) 
+		{
+			uncached_rows[num]=rows[i];
+			cache[num]= kernel_cache_clean_and_malloc(rows[i]);
+			if (!cache[num] )
+				CIO::message(M_ERROR, "Kernel cache full! => increase cache size");
+
+			num++;
+		}
 	}
+		
+	if (num>0)
+	{
+		step= num/CParallel::get_num_threads();
 
-	CIO::message(M_DEBUG, "%d rows\n", num_rows);
+		if (step<1)
+		{
+			num_threads=num-1;
+			step=1;
+		}
 
-	for (int i=params[CParallel::get_num_threads()-2].end; i<num_rows; i++)
-		cache_kernel_row(rows[i]);
+		for (INT t=0; t<num_threads; t++)
+		{
+			params[t].kernel = this;
+			params[t].kernel_cache = &kernel_cache;
+			params[t].cache = cache;
+			params[t].uncached_rows = uncached_rows;
+			params[t].start = t*step;
+			params[t].end = (t+1)*step;
+			end=params[t].end;
+			pthread_create(&threads[t], NULL, CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]);
+		}
 
-	for (INT t=0; t<CParallel::get_num_threads()-1; t++)
-		pthread_join(threads[t], NULL);
+		S_KTHREAD_PARAM last_param;
+		last_param.kernel = this;
+		last_param.kernel_cache = &kernel_cache;
+		last_param.cache = cache;
+		last_param.uncached_rows = uncached_rows;
+		last_param.start = end;
+		last_param.end = num;
+
+		cache_multiple_kernel_row_helper(&last_param);
+
+		for (INT t=0; t<num_threads; t++)
+			pthread_join(threads[t], NULL);
+	}
 #else
 	for(KERNELCACHE_IDX i=0;i<num_rows;i++) 
-	{
-		CIO::message(M_DEBUG, "%d\n", rows[i]);
 		cache_kernel_row(rows[i]);
-	}
 #endif
 }
 
