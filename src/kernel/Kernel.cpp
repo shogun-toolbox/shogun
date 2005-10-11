@@ -286,19 +286,26 @@ void CKernel::cache_kernel_row(KERNELCACHE_IDX m)
 #ifdef USE_SVMPARALLEL 
 void* CKernel::cache_multiple_kernel_row_helper(void* p)
 {
+	KERNELCACHE_IDX j,k,l;
 	S_KTHREAD_PARAM* params = (S_KTHREAD_PARAM*) p;
 
+	CIO::message(M_DEBUG, "thread does %d-%d\n", params->start, params->end);
 	for (KERNELCACHE_IDX i=params->start; i<params->end; i++)
 	{
-		KERNELCACHE_IDX j,k;
 		KERNELCACHE_ELEM* cache=params->cache[i];
 		KERNELCACHE_IDX m = params->uncached_rows[i];
+		l=params->kernel_cache->totdoc2active[m];
 
 		for(j=0;j<params->kernel_cache->activenum;j++)  // fill cache 
 		{
 			k=params->kernel_cache->active2totdoc[j];
 
-			cache[j]=params->kernel->kernel(m, k);
+			if((params->kernel_cache->index[k] != -1) && (l != -1) && (k != m)) {
+				cache[j]=params->kernel_cache->buffer[params->kernel_cache->activenum
+					*params->kernel_cache->index[k]+l];
+			}
+			else
+				cache[j]=params->kernel->kernel(m, k);
 		}
 	}
 
@@ -353,6 +360,7 @@ void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 			params[t].start = t*step;
 			params[t].end = (t+1)*step;
 			end=params[t].end;
+			CIO::message(M_DEBUG, "thread[%d] does %d-%d\n", t, params[t].start, params[t].end);
 			pthread_create(&threads[t], NULL, CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]);
 		}
 
@@ -364,6 +372,7 @@ void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 		last_param.start = end;
 		last_param.end = num;
 
+		CIO::message(M_DEBUG, "thread[%d] does %d-%d\n", end, last_param.start, last_param.end);
 		cache_multiple_kernel_row_helper(&last_param);
 
 		for (INT t=0; t<num_threads; t++)

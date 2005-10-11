@@ -29,10 +29,11 @@ extern "C" {
 #endif
 
 #ifdef USE_SVMPARALLEL 
+#include "lib/Parallel.h"
+
 #include <unistd.h>
 #include <pthread.h>
 
-static const INT NUM_PARALLEL = 4 ;
 struct S_THREAD_PARAM 
 {
 	REAL * lin ;
@@ -1559,13 +1560,13 @@ void CSVRLight::update_linear_component(LONG* docs, INT* label,
 			INT num_elem = 0 ;
 			for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-			pthread_t threads[NUM_PARALLEL-1] ;
-			S_THREAD_PARAM params[NUM_PARALLEL-1] ;
+			pthread_t threads[CParallel::get_num_threads()-1] ;
+			S_THREAD_PARAM params[CParallel::get_num_threads()-1] ;
 			INT start = 0 ;
-			INT step = num_elem/NUM_PARALLEL ;
+			INT step = num_elem/CParallel::get_num_threads() ;
 			INT end = step ;
 			
-			for (INT t=0; t<NUM_PARALLEL-1; t++)
+			for (INT t=0; t<CParallel::get_num_threads()-1; t++)
 			{
 				params[t].kernel = get_kernel() ;
 				params[t].lin = lin ;
@@ -1580,11 +1581,11 @@ void CSVRLight::update_linear_component(LONG* docs, INT* label,
 				pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
 			}
 				
-			for(jj=params[NUM_PARALLEL-2].end;(j=active2dnum[jj])>=0;jj++) {
+			for(jj=params[CParallel::get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
 				lin[j]+=get_kernel()->compute_optimized(regression_fix_index(docs[j]));
 			}
 			void* ret;
-			for (INT t=0; t<NUM_PARALLEL-1; t++)
+			for (INT t=0; t<CParallel::get_num_threads()-1; t++)
 				pthread_join(threads[t], &ret) ;
 
 #else			

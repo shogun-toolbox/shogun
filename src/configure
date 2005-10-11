@@ -1200,7 +1200,7 @@ set_opts()
 
 	if test "$_octave" = yes
 	then
-		LINKFLAGS="-shared -L/usr/lib/octave-2.1.57 -loctinterp -loctave -lcruft -s /usr/lib/liblapack-3.so /usr/lib/libblas-3.so -lfftw3 -lreadline -lncurses -ldl -lhdf5 -lz -lm -L/usr/lib/gcc-lib/powerpc-linux/3.3.4 -L/usr/lib/gcc-lib/powerpc-linux/3.3.4/../../.. -lhdf5 -lz -lfrtbegin -lg2c -lm -lgcc_s $LINKFLAGS"
+		LINKFLAGS="-pthread -shared -L/usr/lib/octave-2.1.57 -loctinterp -loctave -lcruft -s /usr/lib/liblapack-3.so /usr/lib/libblas-3.so -lfftw3 -lreadline -lncurses -ldl -lhdf5 -lz -lm -L/usr/lib/gcc-lib/powerpc-linux/3.3.4 -L/usr/lib/gcc-lib/powerpc-linux/3.3.4/../../.. -lhdf5 -lz -lfrtbegin -lg2c -lm -lgcc_s $LINKFLAGS"
 		TARGET="gf.oct"
 		INCLUDES="$INCLUDES -I/usr/include/octave-2.1.57 -I/usr/include/octave-2.1.57/octave"
 		COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC"
@@ -1313,11 +1313,21 @@ set_opts()
 	then
 		USE_HMMPARALLELSTRUCTURES='#define USE_HMMPARALLELSTRUCTURES 1'
 		USE_HMMPARALLEL='#define USE_HMMPARALLEL 1'
+
+		if linux
+		then
+			LINKFLAGS="$LINKFLAGS -lpthread"
+		fi
 	fi
 
 	if test "$_svmparallel" = yes
 	then
 		USE_SVMPARALLEL='#define USE_SVMPARALLEL 1'
+
+		if linux
+		then
+			LINKFLAGS="$LINKFLAGS -lpthread"
+		fi
 	fi
 
 	if test "$_bigstates" = yes
