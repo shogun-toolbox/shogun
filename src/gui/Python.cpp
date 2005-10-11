@@ -72,6 +72,9 @@ PyMODINIT_FUNC initgf(void)
 
 	// initialize callbacks
     Py_InitModule("gf", gfpythonmethods);
+
+	// initialize threading (just in case it is needed)
+	PyEval_InitThreads();
 }
 
 void exitgf(void)

@@ -322,23 +322,25 @@ PyObject* CGUIPython::py_get_features(PyObject* self, PyObject* args)
 					switch (f->get_feature_type())
 					{
 						case F_REAL:
-							INT num_vec= ((CRealFeatures*) f)->get_num_vectors();
-							INT num_feat= ((CRealFeatures*) f)->get_num_features();
-							Float64* feat=new Float64[num_vec*num_feat];
-
-							if (feat)
 							{
-								for (INT i=0; i<num_vec; i++)
+								INT num_vec= ((CRealFeatures*) f)->get_num_vectors();
+								INT num_feat= ((CRealFeatures*) f)->get_num_features();
+								Float64* feat=new Float64[num_vec*num_feat];
+
+								if (feat)
 								{
-									INT len=0;
-									bool free_vec;
-									REAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free_vec);
-									assert(len==num_feat);
-									for (INT j=0; j<num_feat; j++)
-										feat[((CRealFeatures*) f)->get_num_vectors()*j+i]= (double) vec[j];
-									((CRealFeatures*) f)->free_feature_vector(vec, i, free_vec);
+									for (INT i=0; i<num_vec; i++)
+									{
+										INT len=0;
+										bool free_vec;
+										REAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free_vec);
+										assert(len==num_feat);
+										for (INT j=0; j<num_feat; j++)
+											feat[((CRealFeatures*) f)->get_num_vectors()*j+i]= (double) vec[j];
+										((CRealFeatures*) f)->free_feature_vector(vec, i, free_vec);
+									}
+									return (PyObject*) NA_NewArray(feat, tFloat64, 2, num_vec, num_feat);
 								}
-								return (PyObject*) NA_NewArray(feat, tFloat64, 2, num_vec, num_feat);
 							}
 							break;
 						case F_WORD:

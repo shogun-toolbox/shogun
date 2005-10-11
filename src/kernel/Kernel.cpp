@@ -10,6 +10,10 @@
 #include <string.h>
 #include <assert.h>
 
+#ifdef HAVE_PYTHON
+#include <Python.h>
+#endif
+
 #ifdef USE_SVMPARALLEL 
 #include "lib/Parallel.h"
 #include <unistd.h>
@@ -318,6 +322,10 @@ void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 {
 	// fill up kernel cache 
 #ifdef USE_SVMPARALLEL 
+
+#ifdef HAVE_PYTHON
+	Py_BEGIN_ALLOW_THREADS
+#endif
 	LONG uncached_rows[num_rows];
 	KERNELCACHE_ELEM* cache[num_rows];
 	pthread_t threads[CParallel::get_num_threads()-1];
@@ -378,6 +386,10 @@ void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 		for (INT t=0; t<num_threads; t++)
 			pthread_join(threads[t], NULL);
 	}
+#ifdef HAVE_PYTHON
+	Py_END_ALLOW_THREADS
+#endif
+
 #else
 	for(KERNELCACHE_IDX i=0;i<num_rows;i++) 
 		cache_kernel_row(rows[i]);
