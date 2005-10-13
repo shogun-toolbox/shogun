@@ -36,6 +36,8 @@ class CSVRLight:public CSVMLight
 				      long int *docs,MODEL *model,REAL *aicache,
 				      double* maxdiff) ;
 protected:
+static void* update_linear_component_linadd_helper(void *params);
+
 inline INT regression_fix_index(INT i)
 {
 	if (i>=num_vectors)

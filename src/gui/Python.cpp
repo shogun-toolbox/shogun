@@ -62,8 +62,15 @@ static PyMethodDef gfpythonmethods[] = {
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
+
 PyMODINIT_FUNC initgf(void)
 {
+	// initialize python interpreter
+	Py_Initialize();
+
+	// initialize threading (just in case it is needed)
+	PyEval_InitThreads();
+
 	// initialize textgui
 	gui=new CTextGUI(0, NULL) ;
 
@@ -72,9 +79,6 @@ PyMODINIT_FUNC initgf(void)
 
 	// initialize callbacks
     Py_InitModule("gf", gfpythonmethods);
-
-	// initialize threading (just in case it is needed)
-	PyEval_InitThreads();
 }
 
 void exitgf(void)

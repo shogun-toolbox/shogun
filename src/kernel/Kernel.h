@@ -166,18 +166,6 @@ class CKernel
 		/**@ cache kernel evalutations to improve speed
 		 */
 		//@{
-		static void* cache_multiple_kernel_row_helper(void* p);
-
-		/// init kernel cache of size megabytes
-		void   kernel_cache_init(KERNELCACHE_IDX size, bool regression_hack=false);
-		void   kernel_cache_cleanup();
-		KERNELCACHE_IDX   kernel_cache_malloc();
-		void   kernel_cache_free(KERNELCACHE_IDX cacheidx);
-		KERNELCACHE_IDX   kernel_cache_free_lru();
-		KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(KERNELCACHE_IDX);
-
-		//@}
-
 		struct KERNEL_CACHE {
 			KERNELCACHE_IDX   *index;  
 			KERNELCACHE_ELEM  *buffer; 
@@ -200,9 +188,23 @@ class CKernel
 			KERNEL_CACHE* kernel_cache;
 			KERNELCACHE_ELEM** cache;
 			LONG* uncached_rows;
+			INT num_uncached;
+			BYTE* needs_computation;
 			INT start;
 			INT end;
 		};
+		static void* cache_multiple_kernel_row_helper(void* p);
+
+		/// init kernel cache of size megabytes
+		void   kernel_cache_init(KERNELCACHE_IDX size, bool regression_hack=false);
+		void   kernel_cache_cleanup();
+		KERNELCACHE_IDX   kernel_cache_malloc();
+		void   kernel_cache_free(KERNELCACHE_IDX cacheidx);
+		KERNELCACHE_IDX   kernel_cache_free_lru();
+		KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(KERNELCACHE_IDX);
+
+		//@}
+
 
 	protected:
 		/// kernel cache

@@ -1509,7 +1509,7 @@ inline INT regression_fix_index2(INT i,INT num_vectors)
 	return i;
 }
 
-static void *update_linear_component_linadd_helper(void *params_)
+void* CSVRLight::update_linear_component_linadd_helper(void *params_)
 {
 	S_THREAD_PARAM * params = (S_THREAD_PARAM*) params_ ;
 	

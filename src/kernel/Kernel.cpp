@@ -1,4 +1,5 @@
 #include "lib/config.h"
+
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/File.h"
@@ -10,11 +11,7 @@
 #include <string.h>
 #include <assert.h>
 
-#ifdef HAVE_PYTHON
-#include <Python.h>
-#endif
-
-#ifdef USE_SVMPARALLEL 
+#ifdef USE_SVMPARALLEL
 #include "lib/Parallel.h"
 #include <unistd.h>
 #include <pthread.h>
@@ -287,13 +284,12 @@ void CKernel::cache_kernel_row(KERNELCACHE_IDX m)
 	}
 }
 
-#ifdef USE_SVMPARALLEL 
+#ifdef USE_SVMPARALLEL
 void* CKernel::cache_multiple_kernel_row_helper(void* p)
 {
 	KERNELCACHE_IDX j,k,l;
 	S_KTHREAD_PARAM* params = (S_KTHREAD_PARAM*) p;
 
-	CIO::message(M_DEBUG, "thread does %d-%d\n", params->start, params->end);
 	for (KERNELCACHE_IDX i=params->start; i<params->end; i++)
 	{
 		KERNELCACHE_ELEM* cache=params->cache[i];
@@ -304,15 +300,17 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 		{
 			k=params->kernel_cache->active2totdoc[j];
 
-			if((params->kernel_cache->index[k] != -1) && (l != -1) && (k != m)) {
+			if((params->kernel_cache->index[k] != -1) && (l != -1) && (!params->needs_computation[k])) {
 				cache[j]=params->kernel_cache->buffer[params->kernel_cache->activenum
 					*params->kernel_cache->index[k]+l];
 			}
 			else
 				cache[j]=params->kernel->kernel(m, k);
 		}
-	}
 
+		//now line m is cached
+		params->needs_computation[m]=0;
+	}
 	return NULL;
 }
 #endif
@@ -321,16 +319,17 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 {
 	// fill up kernel cache 
-#ifdef USE_SVMPARALLEL 
-
-#ifdef HAVE_PYTHON
-	Py_BEGIN_ALLOW_THREADS
-#endif
+#ifdef USE_SVMPARALLEL
 	LONG uncached_rows[num_rows];
 	KERNELCACHE_ELEM* cache[num_rows];
 	pthread_t threads[CParallel::get_num_threads()-1];
 	S_KTHREAD_PARAM params[CParallel::get_num_threads()-1];
 	INT num_threads=CParallel::get_num_threads()-1;
+	INT num_vec=get_lhs()->get_num_vectors();
+	assert(num_vec>0);
+	BYTE* needs_computation=new BYTE[num_vec];
+	assert(needs_computation);
+	memset(needs_computation,0,sizeof(BYTE)*num_vec);
 	INT step=0;
 	INT num=0;
 	INT end=0;
@@ -340,15 +339,17 @@ void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 	{
 		if(!kernel_cache_check(rows[i])) 
 		{
+			needs_computation[rows[i]]=1;
 			uncached_rows[num]=rows[i];
 			cache[num]= kernel_cache_clean_and_malloc(rows[i]);
+
 			if (!cache[num] )
 				CIO::message(M_ERROR, "Kernel cache full! => increase cache size");
 
 			num++;
 		}
 	}
-		
+
 	if (num>0)
 	{
 		step= num/CParallel::get_num_threads();
@@ -365,31 +366,40 @@ void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 			params[t].kernel_cache = &kernel_cache;
 			params[t].cache = cache;
 			params[t].uncached_rows = uncached_rows;
+			params[t].needs_computation = needs_computation;
+			params[t].num_uncached = num;
 			params[t].start = t*step;
 			params[t].end = (t+1)*step;
 			end=params[t].end;
 			CIO::message(M_DEBUG, "thread[%d] does %d-%d\n", t, params[t].start, params[t].end);
-			pthread_create(&threads[t], NULL, CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]);
+			if (pthread_create(&threads[t], NULL, CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]) != 0)
+			{
+				num_threads=t;
+				end=t*step;
+				CIO::message(M_WARN,"thread creation failed\n");
+				break;
+			}
 		}
-
-		S_KTHREAD_PARAM last_param;
-		last_param.kernel = this;
-		last_param.kernel_cache = &kernel_cache;
-		last_param.cache = cache;
-		last_param.uncached_rows = uncached_rows;
-		last_param.start = end;
-		last_param.end = num;
-
-		CIO::message(M_DEBUG, "thread[%d] does %d-%d\n", end, last_param.start, last_param.end);
-		cache_multiple_kernel_row_helper(&last_param);
-
-		for (INT t=0; t<num_threads; t++)
-			pthread_join(threads[t], NULL);
 	}
-#ifdef HAVE_PYTHON
-	Py_END_ALLOW_THREADS
-#endif
+	else
+		num_threads=-1;
 
+	S_KTHREAD_PARAM last_param;
+	last_param.kernel = this;
+	last_param.kernel_cache = &kernel_cache;
+	last_param.cache = cache;
+	last_param.uncached_rows = uncached_rows;
+	last_param.needs_computation = needs_computation;
+	last_param.start = end;
+	last_param.num_uncached = num;
+	last_param.end = num;
+
+	cache_multiple_kernel_row_helper(&last_param);
+
+	for (INT t=0; t<num_threads; t++)
+		pthread_join(threads[t], NULL);
+
+	delete[] needs_computation;
 #else
 	for(KERNELCACHE_IDX i=0;i<num_rows;i++) 
 		cache_kernel_row(rows[i]);
