@@ -215,7 +215,7 @@ void CKernel::kernel_cache_init(KERNELCACHE_IDX buffsize, bool regression_hack)
 		kernel_cache.index[i]=-1;
 		kernel_cache.lru[i]=0;
 	}
-	for(i=0;i<kernel_cache.max_elems;i++) {
+	for(i=0;i<totdoc;i++) {
 		kernel_cache.occu[i]=0;
 		kernel_cache.invindex[i]=-1;
 	}
