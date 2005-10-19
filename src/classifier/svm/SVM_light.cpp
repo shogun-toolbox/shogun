@@ -903,7 +903,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  {
 		  CTime tm;
 		  CKernelMachine::get_kernel()->cache_multiple_kernel_rows(working2dnum, choosenum); 
-		  CIO::message(M_DEBUG, "\ncache_multiple_kernel_rows took: %f seconds\n", tm.cur_time_diff_sec());
+		  //CIO::message(M_DEBUG, "\ncache_multiple_kernel_rows took: %f seconds\n", tm.cur_time_diff_sec());
 	  }
 	  
 	  if(verbosity>=2) t2=get_runtime();
@@ -2171,6 +2171,8 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 				if(a[i] != a_old[i]) {
 					CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
 					for(ii=0;(j=active2dnum[ii])>=0;ii++) {
+						if (CMath::abs(aicache[j]-((float) get_kernel()->kernel(i,j))) > 1e-6)
+							CIO::message(M_DEBUG,"(%d,%d) %f vs. %f\n",i,j,aicache[j], (float) get_kernel()->kernel(i,j));
 						lin[j]+=(((a[i]*aicache[j])-(a_old[i]*aicache[j]))*(double)label[i]);
 					}
 				}

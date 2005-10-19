@@ -371,7 +371,7 @@ void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 			params[t].start = t*step;
 			params[t].end = (t+1)*step;
 			end=params[t].end;
-			CIO::message(M_DEBUG, "thread[%d] does %d-%d\n", t, params[t].start, params[t].end);
+
 			if (pthread_create(&threads[t], NULL, CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]) != 0)
 			{
 				num_threads=t;
@@ -383,6 +383,7 @@ void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 	}
 	else
 		num_threads=-1;
+
 
 	S_KTHREAD_PARAM last_param;
 	last_param.kernel = this;
@@ -396,8 +397,12 @@ void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 
 	cache_multiple_kernel_row_helper(&last_param);
 
+
 	for (INT t=0; t<num_threads; t++)
-		pthread_join(threads[t], NULL);
+	{
+		if (pthread_join(threads[t], NULL) != 0)
+			CIO::message(M_WARN, "pthread_join failed\n");
+	}
 
 	delete[] needs_computation;
 #else
