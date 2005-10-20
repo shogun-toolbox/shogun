@@ -8,7 +8,7 @@
 
 CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
 	: CCharKernel(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), max_mismatch(max_mismatch_), seq_length(0),
-	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL), use_normalization(use_norm), block_computation(block)
+	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm), block_computation(block)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION;
 	lhs=NULL;
@@ -57,14 +57,12 @@ void CWeightedDegreeCharKernel::remove_lhs()
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
 	delete[] sqrtdiag_lhs;
-	delete[] match_vector;
 
 	lhs = NULL; 
 	rhs = NULL; 
 	initialized = false;
 	sqrtdiag_lhs = NULL;
 	sqrtdiag_rhs = NULL;
-	match_vector = NULL;
 	
 	if (trees!=NULL)
 	{
@@ -103,8 +101,6 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		INT alen ;
 		bool afree ;
 		CHAR* avec=((CCharFeatures*) l)->get_feature_vector(0, alen, afree);
-		delete[] match_vector ;
-		match_vector=new bool[alen] ;
 		
 		if (trees)
 		{
@@ -230,9 +226,6 @@ void CWeightedDegreeCharKernel::cleanup()
 	delete[] sqrtdiag_lhs;
 	sqrtdiag_lhs = NULL;
 
-	delete[] match_vector;
-	match_vector = NULL;
-
 	initialized=false;
 
 	if (trees!=NULL)
@@ -312,7 +305,7 @@ REAL CWeightedDegreeCharKernel::compute_with_mismatch(CHAR* avec, INT alen, CHAR
 		
 		for (INT j=0; (i+j<alen) && (j<degree); j++)
 		{
-			if (match_vector[i+j])
+			if (avec[i+j]!=bvec[i+j])
 			{
 				mismatches++ ;
 				if (mismatches>max_mismatch)
@@ -362,7 +355,7 @@ REAL CWeightedDegreeCharKernel::compute_without_mismatch(CHAR* avec, INT alen, C
 		
 		for (INT j=0; (i+j<alen) && (j<degree); j++)
 		{
-			if (match_vector[i+j])
+			if (avec[i+j]!=bvec[i+j])
 				break ;
 			sumi += weights[j];
 		}
@@ -383,7 +376,7 @@ REAL CWeightedDegreeCharKernel::compute_without_mismatch_matrix(CHAR* avec, INT 
 		REAL sumi=0.0 ;
 		for (INT j=0; (i+j<alen) && (j<degree); j++)
 		{
-			if (match_vector[i+j])
+			if (avec[i+j]!=bvec[i+j])
 				break;
 			sumi += weights[i*degree+j];
 		}
@@ -424,9 +417,6 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 	  result = compute_using_block(avec, alen, bvec, blen) ;
   else
   {
-	  for (INT i=0; i<alen; i++)
-		  match_vector[i]=(avec[i]!=bvec[i]) ;
-
 	  if (max_mismatch > 0)
 		  result = compute_with_mismatch(avec, alen, bvec, blen) ;
 	  else if (length==0)

@@ -212,7 +212,6 @@ class CWeightedDegreeCharKernel: public CCharKernel
   double* sqrtdiag_rhs;
 
   bool initialized ;
-  bool *match_vector ;
 
   struct SuffixTree **trees ;
   bool tree_initialized ;
