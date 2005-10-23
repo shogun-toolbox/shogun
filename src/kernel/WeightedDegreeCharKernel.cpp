@@ -389,6 +389,7 @@ REAL CWeightedDegreeCharKernel::compute_without_mismatch_matrix(CHAR* avec, INT 
 	return sum ;
 }
 
+
 REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 {
   INT alen, blen;
@@ -501,12 +502,9 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 							assert(!tree->has_floats) ;
 #ifdef USE_TREEMEM
 							tree->childs[vec[i+j]]=TreeMemPtr++;
-							if (TreeMemPtr>=TreeMemPtrMax) 
-							  {
-							    TreeMemPtrMax = (INT) ((double)TreeMemPtr*1.2) ;
-							    TreeMem = (struct Trie *)realloc(TreeMem,TreeMemPtrMax*sizeof(struct Trie)) ;
-							  } ;
-							tree=&TreeMem[tree->childs[vec[i+j]]] ;
+							INT tmp = tree->childs[vec[i+j]] ;
+							check_treemem() ;
+							tree=&TreeMem[tmp] ;
 #else
 							tree->childs[vec[i+j]]=new struct Trie ;
 							assert(tree->childs[vec[i+j]]!=NULL) ;
@@ -573,12 +571,9 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 				    assert(!tree->has_floats) ;
 #ifdef USE_TREEMEM
 				    tree->childs[vec[i+j]]=TreeMemPtr++;
-				    if (TreeMemPtr>=TreeMemPtrMax) 
-				      {
-					TreeMemPtrMax = (INT) ((double)TreeMemPtr*1.2) ;
-					TreeMem = (struct Trie *)realloc(TreeMem,TreeMemPtrMax*sizeof(struct Trie)) ;
-				      } ;
-				    tree=&TreeMem[tree->childs[vec[i+j]]] ;
+				    INT tmp=tree->childs[vec[i+j]] ;
+				    check_treemem() ;
+				    tree=&TreeMem[tmp] ;
 #else
 				    tree->childs[vec[i+j]] = new struct Trie ;
 				    assert(tree->childs[vec[i+j]]!=NULL) ;
@@ -690,12 +685,9 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch_recursion(struct Tr
 		  {
 #ifdef USE_TREEMEM
 		    tree->childs[vec[0]]=TreeMemPtr++ ;
-		    if (TreeMemPtr>=TreeMemPtrMax) 
-		      {
-			TreeMemPtrMax = (INT) ((double)TreeMemPtr*1.2) ;
-			TreeMem = (struct Trie *)realloc(TreeMem,TreeMemPtrMax*sizeof(struct Trie)) ;
-		      } ;
-		    subtree=&TreeMem[tree->childs[vec[0]]] ;
+		    INT tmp=tree->childs[vec[0]] ;
+		    check_treemem() ;
+		    subtree=&TreeMem[tmp] ;
 #else
 		    tree->childs[vec[0]]=new struct Trie ;
 		    assert(tree->childs[vec[0]]!=NULL) ;
@@ -728,12 +720,9 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch_recursion(struct Tr
 				{
 #ifdef USE_TREEMEM
 				  tree->childs[ot]=TreeMemPtr++ ;
-				  if (TreeMemPtr>=TreeMemPtrMax) 
-				    {
-				      TreeMemPtrMax = (INT) ((double)TreeMemPtr*1.2) ;
-				      TreeMem = (struct Trie *)realloc(TreeMem,TreeMemPtrMax*sizeof(struct Trie)) ;
-				    } ;
-				  subtree=&TreeMem[tree->childs[ot]] ;
+				  INT tmp=tree->childs[ot] ;
+				  check_treemem() ;
+				  subtree=&TreeMem[tmp] ;
 #else
 				  tree->childs[ot]=new struct Trie ;
 				  assert(tree->childs[ot]!=NULL) ;

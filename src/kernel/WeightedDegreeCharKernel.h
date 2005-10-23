@@ -238,6 +238,16 @@ class CWeightedDegreeCharKernel: public CCharKernel
   struct Trie* TreeMem ;
   INT TreeMemPtr ;
   INT TreeMemPtrMax ;
+  
+  inline void check_treemem()
+    {
+      if (TreeMemPtr+10>=TreeMemPtrMax) 
+	{
+	  TreeMemPtrMax = (INT) ((double)TreeMemPtr*1.2) ;
+	  TreeMem = (struct Trie *)realloc(TreeMem,TreeMemPtrMax*sizeof(struct Trie)) ;
+	} ;
+    } ;
+
 #endif
 };
 #endif
