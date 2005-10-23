@@ -33,8 +33,6 @@ extern "C" {
 }
 #endif
 
-bool COA = true ;
-
 #ifdef USE_SVMPARALLEL 
 #include "lib/Parallel.h"
 
@@ -52,21 +50,35 @@ struct S_THREAD_PARAM
 	CKernel* kernel ;
 }  ;
 
+struct S_THREAD_PARAM_KERNEL 
+{
+	REAL *Kval ;
+	INT *KI, *KJ ;
+	INT start, end;
+    CKernel * kernel;
+}  ;
+
 void* CSVMLight::update_linear_component_linadd_helper(void* p)
 {
 	S_THREAD_PARAM* params = (S_THREAD_PARAM*) p;
 	
 	INT jj=0, j=0 ;
 
-	if (!COA)
+	for(jj=params->start;(jj<params->end) && (j=params->active2dnum[jj])>=0;jj++) 
 	{
-		for(jj=params->start;(jj<params->end) && (j=params->active2dnum[jj])>=0;jj++) 
-		{
-			params->lin[j]+=params->kernel->compute_optimized(params->docs[j]);
-		}
+		params->lin[j]+=params->kernel->compute_optimized(params->docs[j]);
 	}
-	else
-		compute_optimized_active(params->start, params->end, params->active2dnum, params->docs, params->lin) ;
+
+	return NULL ;
+}
+
+void* CSVMLight::compute_kernel_helper(void* p)
+{
+	S_THREAD_PARAM_KERNEL* params = (S_THREAD_PARAM_KERNEL*) p;
+	
+	INT jj=0 ;
+	for(jj=params->start;jj<params->end;jj++) 
+		params->Kval[jj]=params->kernel->kernel(params->KI[jj], params->KJ[jj]) ;
 
 	return NULL ;
 }
@@ -351,6 +363,9 @@ bool CSVMLight::train()
 		get_kernel()->clear_normal();
 
 	// output some info
+#ifdef USE_SVMPARALLEL
+	CIO::message(M_DEBUG, "svm_threads = %i\n", CParallel::get_num_threads()) ;
+#endif
 	CIO::message(M_DEBUG, "qpsize = %i\n", learn_parm->svm_maxqpsize) ;
 	CIO::message(M_DEBUG, "epsilon = %1.1e\n", learn_parm->epsilon_crit) ;
 	CIO::message(M_DEBUG, "weight_epsilon = %1.1e\n", weight_epsilon) ;
@@ -1122,10 +1137,17 @@ void CSVMLight::optimize_svm(LONG* docs, INT* label,
     long i;
     double *a_v;
 
+/*#ifdef USE_SVMPARALLEL
+    compute_matrices_for_optimization_parallel(docs,label,
+											   exclude_from_eq_const,eq_target,chosen,
+											   active2dnum,working2dnum,model,a,lin,c,
+											   varnum,totdoc,aicache,qp);
+											   #else*/
     compute_matrices_for_optimization(docs,label,
-				      exclude_from_eq_const,eq_target,chosen,
-				      active2dnum,working2dnum,model,a,lin,c,
-				      varnum,totdoc,aicache,qp);
+									  exclude_from_eq_const,eq_target,chosen,
+									  active2dnum,working2dnum,model,a,lin,c,
+									  varnum,totdoc,aicache,qp);
+//#endif
 
     if(verbosity>=3) {
      CIO::message(M_DEBUG, "Running optimizer...");
@@ -1144,6 +1166,135 @@ void CSVMLight::optimize_svm(LONG* docs, INT* label,
       a[working2dnum[i]]=a_v[i];
     }
 }
+
+#ifdef USE_SVMPARALLEL
+void CSVMLight::compute_matrices_for_optimization_parallel(LONG* docs, INT* label, 
+														   long *exclude_from_eq_const, double eq_target,
+														   long int *chosen, long int *active2dnum, 
+														   long int *key, MODEL *model, double *a, double *lin, double *c, 
+														   long int varnum, long int totdoc,
+														   REAL *aicache, QP *qp)
+{
+	if (CParallel::get_num_threads()<=1)
+	{
+		compute_matrices_for_optimization(docs, label, exclude_from_eq_const, eq_target,
+												   chosen, active2dnum, key, model, a, lin, c, 
+												   varnum, totdoc, aicache, qp) ;
+		return ;
+	}
+	
+	register long ki,kj,i,j;
+	register double kernel_temp;
+	
+	qp->opt_n=varnum;
+	qp->opt_ce0[0]=-eq_target; /* compute the constant for equality constraint */
+	for(j=1;j<model->sv_num;j++) { /* start at 1 */
+		if((!chosen[model->supvec[j]])
+		   && (!exclude_from_eq_const[(model->supvec[j])])) {
+			qp->opt_ce0[0]+=model->alpha[j];
+		}
+	} 
+	if(learn_parm->biased_hyperplane) 
+		qp->opt_m=1;
+	else 
+		qp->opt_m=0;  /* eq-constraint will be ignored */
+	
+	/* init linear part of objective function */
+	for(i=0;i<varnum;i++) {
+		qp->opt_g0[i]=lin[key[i]];
+	}
+	
+	assert(CParallel::get_num_threads()>1) ;
+	INT *KI=new INT[varnum*varnum] ;
+	INT *KJ=new INT[varnum*varnum] ;
+	INT Knum=0 ;
+	REAL *Kval = new REAL[varnum*(varnum+1)/2] ;
+	for(i=0;i<varnum;i++) {
+		ki=key[i];
+		KI[Knum]=docs[ki] ;
+		KJ[Knum]=docs[ki] ;
+		Knum++ ;
+		for(j=i+1;j<varnum;j++) 
+		{
+			kj=key[j];
+			KI[Knum]=docs[ki] ;
+			KJ[Knum]=docs[kj] ;
+			Knum++ ;
+		}
+	}
+	assert(Knum<=varnum*(varnum+1)/2) ;
+	
+	pthread_t threads[CParallel::get_num_threads()-1];
+	S_THREAD_PARAM_KERNEL params[CParallel::get_num_threads()-1];
+	INT step= Knum/CParallel::get_num_threads();
+	//CIO::message(M_DEBUG, "\nkernel-step size: %i\n", step) ;
+	for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+	{
+		params[t].kernel = CKernelMachine::get_kernel() ;
+		params[t].start = t*step;
+		params[t].end = (t+1)*step;
+		params[t].KI=KI ;
+		params[t].KJ=KJ ;
+		params[t].Kval=Kval ;
+		pthread_create(&threads[t], NULL, CSVMLight::compute_kernel_helper, (void*)&params[t]);
+	}
+	for (INT i=params[CParallel::get_num_threads()-2].end; i<Knum; i++)
+		Kval[i]=CKernelMachine::get_kernel()->kernel(KI[i],KJ[i]) ;
+	
+	for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+		pthread_join(threads[t], NULL);
+	
+	Knum=0 ;
+	for(i=0;i<varnum;i++) {
+		ki=key[i];
+		
+		/* Compute the matrix for equality constraints */
+		qp->opt_ce[i]=label[ki];
+		qp->opt_low[i]=0;
+		qp->opt_up[i]=learn_parm->svm_cost[ki];
+		
+		kernel_temp=Kval[Knum] ;
+		Knum++ ;
+		/* compute linear part of objective function */
+		qp->opt_g0[i]-=(kernel_temp*a[ki]*(double)label[ki]); 
+		/* compute quadratic part of objective function */
+		qp->opt_g[varnum*i+i]=kernel_temp;
+		
+		for(j=i+1;j<varnum;j++) {
+			kj=key[j];
+			kernel_temp=Kval[Knum] ;
+			Knum++ ;
+			/* compute linear part of objective function */
+			qp->opt_g0[i]-=(kernel_temp*a[kj]*(double)label[kj]);
+			qp->opt_g0[j]-=(kernel_temp*a[ki]*(double)label[ki]); 
+			/* compute quadratic part of objective function */
+			qp->opt_g[varnum*i+j]=(double)label[ki]*(double)label[kj]*kernel_temp;
+			qp->opt_g[varnum*j+i]=qp->opt_g[varnum*i+j];//(double)label[ki]*(double)label[kj]*kernel_temp;
+		}
+		
+		if(verbosity>=3) {
+			if(i % 20 == 0) {
+				CIO::message(M_DEBUG, "%ld..",i);
+			}
+		}
+	}
+	
+	delete[] KI ;
+	delete[] KJ ;
+	delete[] Kval ;
+	
+	for(i=0;i<varnum;i++) {
+		/* assure starting at feasible point */
+		qp->opt_xinit[i]=a[key[i]];
+		/* set linear part of objective function */
+		qp->opt_g0[i]=(learn_parm->eps-(double)label[key[i]]*c[key[i]])+qp->opt_g0[i]*(double)label[key[i]];    
+	}
+	
+	if(verbosity>=3) {
+		CIO::message(M_DEBUG, "done\n");
+	}
+}
+#endif // USE_SVMPARALLEL
 
 void CSVMLight::compute_matrices_for_optimization(LONG* docs, INT* label, 
 												  long *exclude_from_eq_const, double eq_target,
@@ -1172,7 +1323,7 @@ void CSVMLight::compute_matrices_for_optimization(LONG* docs, INT* label,
   for(i=0;i<varnum;i++) {
     qp->opt_g0[i]=lin[key[i]];
   }
-
+  
   for(i=0;i<varnum;i++) {
 	  ki=key[i];
 	  
@@ -1186,9 +1337,11 @@ void CSVMLight::compute_matrices_for_optimization(LONG* docs, INT* label,
 	  qp->opt_g0[i]-=(kernel_temp*a[ki]*(double)label[ki]); 
 	  /* compute quadratic part of objective function */
 	  qp->opt_g[varnum*i+i]=kernel_temp;
+	  
 	  for(j=i+1;j<varnum;j++) {
 		  kj=key[j];
 		  kernel_temp=compute_kernel(docs[ki], docs[kj]);
+
 		  /* compute linear part of objective function */
 		  qp->opt_g0[i]-=(kernel_temp*a[kj]*(double)label[kj]);
 		  qp->opt_g0[j]-=(kernel_temp*a[ki]*(double)label[ki]); 
@@ -1203,7 +1356,7 @@ void CSVMLight::compute_matrices_for_optimization(LONG* docs, INT* label,
 		  }
 	  }
   }
-  
+
   for(i=0;i<varnum;i++) {
 	  /* assure starting at feasible point */
 	  qp->opt_xinit[i]=a[key[i]];
@@ -1215,6 +1368,7 @@ void CSVMLight::compute_matrices_for_optimization(LONG* docs, INT* label,
 	  CIO::message(M_DEBUG, "done\n");
   }
 }
+
 
 long CSVMLight::calculate_svm_model(LONG* docs, INT *label,
 			 double *lin, double *a, double *a_old, double *c, 
@@ -1796,24 +1950,30 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 		}
 
 #ifdef USE_SVMPARALLEL
-		pthread_t threads[CParallel::get_num_threads()-1];
-		S_THREAD_PARAM params[CParallel::get_num_threads()-1];
-		INT step= num/CParallel::get_num_threads();
-
-		for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+		if (CParallel::get_num_threads()>1)
 		{
-			params[t].kernel = k;
-			params[t].W = W;
-			params[t].start = t*step;
-			params[t].end = (t+1)*step;
-			pthread_create(&threads[t], NULL, CSVMLight::update_linear_component_mkl_linadd_helper, (void*)&params[t]);
+			pthread_t threads[CParallel::get_num_threads()-1];
+			S_THREAD_PARAM params[CParallel::get_num_threads()-1];
+			INT step= num/CParallel::get_num_threads();
+			
+			for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+			{
+				params[t].kernel = k;
+				params[t].W = W;
+				params[t].start = t*step;
+				params[t].end = (t+1)*step;
+				pthread_create(&threads[t], NULL, CSVMLight::update_linear_component_mkl_linadd_helper, (void*)&params[t]);
+			}
+			
+			for (int i=params[CParallel::get_num_threads()-2].end; i<num; i++)
+				k->compute_by_subkernel(i,&W[i*num_kernels]);
+			
+			for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+				pthread_join(threads[t], NULL);
 		}
-
-		for (int i=params[CParallel::get_num_threads()-2].end; i<num; i++)
-			k->compute_by_subkernel(i,&W[i*num_kernels]);
-		
-		for (INT t=0; t<CParallel::get_num_threads()-1; t++)
-			pthread_join(threads[t], NULL);
+		else
+			for (int i=0; i<num; i++)
+				k->compute_by_subkernel(i,&W[i*num_kernels]);
 #else
 		// determine contributions of different kernels
 		for (int i=0; i<num; i++)
@@ -2131,51 +2291,46 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 			if (num_working>0)
 			{
 #ifdef USE_SVMPARALLEL
-				INT num_elem = 0 ;
-				for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
-
-				pthread_t threads[CParallel::get_num_threads()-1] ;
-				S_THREAD_PARAM params[CParallel::get_num_threads()-1] ;
-				INT start = 0 ;
-				INT step = num_elem/CParallel::get_num_threads();
-				INT end = step ;
-
-				for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+				if (CParallel::get_num_threads()>1)
 				{
-					params[t].kernel = get_kernel() ;
-					params[t].lin = lin ;
-					params[t].docs = docs ;
-					params[t].active2dnum=active2dnum ;
-					params[t].start = start ;
-					params[t].end = end ;
-					start=end ;
-					end+=step ;
-					pthread_create(&threads[t], NULL, CSVMLight::update_linear_component_linadd_helper, (void*)&params[t]) ;
-				}
-
-				if (!COA)
-				{
+					INT num_elem = 0 ;
+					for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
+					
+					pthread_t threads[CParallel::get_num_threads()-1] ;
+					S_THREAD_PARAM params[CParallel::get_num_threads()-1] ;
+					INT start = 0 ;
+					INT step = num_elem/CParallel::get_num_threads();
+					INT end = step ;
+					
+					for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+					{
+						params[t].kernel = get_kernel() ;
+						params[t].lin = lin ;
+						params[t].docs = docs ;
+						params[t].active2dnum=active2dnum ;
+						params[t].start = start ;
+						params[t].end = end ;
+						start=end ;
+						end+=step ;
+						pthread_create(&threads[t], NULL, CSVMLight::update_linear_component_linadd_helper, (void*)&params[t]) ;
+					}
+					
 					for(jj=params[CParallel::get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=get_kernel()->compute_optimized(docs[j]);
 					}
+					
+					void* ret;
+					for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+						pthread_join(threads[t], &ret) ;
 				}
 				else
-					get_kernel()->compute_optimized_active(params[CParallel::get_num_threads()-2].end, -1, 
-														   active2dnum, docs, lin) ;
-
-				void* ret;
-				for (INT t=0; t<CParallel::get_num_threads()-1; t++)
-					pthread_join(threads[t], &ret) ;
-
-#else			
-				if (!COA)
-				{
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=get_kernel()->compute_optimized(docs[j]);
 					}
+#else			
+				for(jj=0;(j=active2dnum[jj])>=0;jj++) {
+					lin[j]+=get_kernel()->compute_optimized(docs[j]);
 				}
-				else
-					get_kernel()->compute_optimized_active(0, -1, active2dnum, docs, lin) ;
 #endif
 			}
 		}

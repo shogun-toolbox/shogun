@@ -165,11 +165,18 @@ typedef struct shrink_state {
 		  double *epsilon_crit_target);
 
   void compute_matrices_for_optimization(LONG* docs, INT* label, 
-		  long *exclude_from_eq_const, double eq_target,
-		  long int *chosen, long int *active2dnum, 
-		  long int *key, MODEL *model, double *a, double *lin, double *c, 
-		  long int varnum, long int totdoc, REAL *aicache, QP *qp);
-
+										 long *exclude_from_eq_const, double eq_target,
+										 long int *chosen, long int *active2dnum, 
+										 long int *key, MODEL *model, double *a, double *lin, double *c, 
+										 long int varnum, long int totdoc, REAL *aicache, QP *qp);
+#ifdef USE_SVMPARALLEL
+  void compute_matrices_for_optimization_parallel(LONG* docs, INT* label, 
+												  long *exclude_from_eq_const, double eq_target,
+												  long int *chosen, long int *active2dnum, 
+												  long int *key, MODEL *model, double *a, double *lin, double *c, 
+												  long int varnum, long int totdoc, REAL *aicache, QP *qp);
+#endif
+  
   long int   calculate_svm_model(LONG* docs, INT *label,double *lin, double *a, double* a_old, double *c, long int *working2dnum, long int *active2dnum, MODEL *model);
   long int   check_optimality(MODEL *model, INT *label, double *a, double* lin, double *c,
 			  long int totdoc, double *maxdiff, double epsilon_crit_org,
@@ -264,6 +271,7 @@ protected:
 			   return CKernelMachine::get_kernel()->kernel(i, j) ;
 	   }
 #ifdef USE_SVMPARALLEL 
+	static void* compute_kernel_helper(void* p);
 	static void* update_linear_component_linadd_helper(void* p);
 	static void* update_linear_component_mkl_linadd_helper(void* p);
 #endif

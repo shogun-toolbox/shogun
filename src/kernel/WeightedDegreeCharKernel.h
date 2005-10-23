@@ -57,8 +57,6 @@ class CWeightedDegreeCharKernel: public CCharKernel
     CIO::message(M_ERROR, "CWeightedDegreeCharKernel optimization not initialized\n") ;
     return 0 ;
   } ;
-  virtual INT compute_optimized_active(LONG start, LONG end, LONG *active_idx, LONG *example_idx, REAL *active_output) ;
-  inline REAL compute_optimized_active_helper(INT idx, INT tree_idx) ;
 
   // subkernel functionality
   inline virtual void clear_normal()
