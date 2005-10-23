@@ -33,11 +33,14 @@ extern "C" {
 }
 #endif
 
+bool COA = true ;
+
 #ifdef USE_SVMPARALLEL 
 #include "lib/Parallel.h"
 
 #include <unistd.h>
 #include <pthread.h>
+
 
 struct S_THREAD_PARAM 
 {
@@ -55,13 +58,15 @@ void* CSVMLight::update_linear_component_linadd_helper(void* p)
 	
 	INT jj=0, j=0 ;
 
-	/*
-	  for(jj=params->start;(jj<params->end) && (j=params->active2dnum[jj])>=0;jj++) 
-	  {
-	  params->lin[j]+=params->kernel->compute_optimized(params->docs[j]);
-	  }
-	*/
-	compute_optimized_active(params->start, params->end, params->active2dnum, params->docs, params->lin) ;
+	if (!COA)
+	{
+		for(jj=params->start;(jj<params->end) && (j=params->active2dnum[jj])>=0;jj++) 
+		{
+			params->lin[j]+=params->kernel->compute_optimized(params->docs[j]);
+		}
+	}
+	else
+		compute_optimized_active(params->start, params->end, params->active2dnum, params->docs, params->lin) ;
 
 	return NULL ;
 }
@@ -2148,21 +2153,29 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 					pthread_create(&threads[t], NULL, CSVMLight::update_linear_component_linadd_helper, (void*)&params[t]) ;
 				}
 
-				/*for(jj=params[CParallel::get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
-					lin[j]+=get_kernel()->compute_optimized(docs[j]);
-				}*/
-				get_kernel()->compute_optimized_active(params[CParallel::get_num_threads()-2].end, -1, 
-							 active2dnum, docs, lin) ;
+				if (!COA)
+				{
+					for(jj=params[CParallel::get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
+						lin[j]+=get_kernel()->compute_optimized(docs[j]);
+					}
+				}
+				else
+					get_kernel()->compute_optimized_active(params[CParallel::get_num_threads()-2].end, -1, 
+														   active2dnum, docs, lin) ;
 
 				void* ret;
 				for (INT t=0; t<CParallel::get_num_threads()-1; t++)
 					pthread_join(threads[t], &ret) ;
 
 #else			
-				/*for(jj=0;(j=active2dnum[jj])>=0;jj++) {
-				  lin[j]+=get_kernel()->compute_optimized(docs[j]);
-				  }*/
-				get_kernel()->compute_optimized_active(0, -1, active2dnum, docs, lin) ;
+				if (!COA)
+				{
+					for(jj=0;(j=active2dnum[jj])>=0;jj++) {
+						lin[j]+=get_kernel()->compute_optimized(docs[j]);
+					}
+				}
+				else
+					get_kernel()->compute_optimized_active(0, -1, active2dnum, docs, lin) ;
 #endif
 			}
 		}

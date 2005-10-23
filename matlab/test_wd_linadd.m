@@ -1,11 +1,11 @@
 C=10;
-svm_eps=1e-5;
+svm_eps=7e-1;
 debug=0;
-ORDER=10;
+ORDER=20;
 MISMATCH = 0 ;
 
 num=20000;
-dims=100;
+dims=200 ;
 numval=10000;
 
 rand('state',sum(100*clock));

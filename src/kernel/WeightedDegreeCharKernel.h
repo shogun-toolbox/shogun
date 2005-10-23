@@ -58,7 +58,7 @@ class CWeightedDegreeCharKernel: public CCharKernel
     return 0 ;
   } ;
   virtual INT compute_optimized_active(LONG start, LONG end, LONG *active_idx, LONG *example_idx, REAL *active_output) ;
-  REAL compute_optimized_active_helper(INT idx, INT tree_idx) ;
+  inline REAL compute_optimized_active_helper(INT idx, INT tree_idx) ;
 
   // subkernel functionality
   inline virtual void clear_normal()
@@ -240,14 +240,15 @@ class CWeightedDegreeCharKernel: public CCharKernel
   INT TreeMemPtrMax ;
   
   inline void check_treemem()
-    {
-      if (TreeMemPtr+10>=TreeMemPtrMax) 
-	{
-	  TreeMemPtrMax = (INT) ((double)TreeMemPtr*1.2) ;
-	  TreeMem = (struct Trie *)realloc(TreeMem,TreeMemPtrMax*sizeof(struct Trie)) ;
-	} ;
-    } ;
-
+	  {
+		  if (TreeMemPtr+10>=TreeMemPtrMax) 
+		  {
+			  CIO::message(M_DEBUG, "Extending TreeMem from %i to %i elements\n", TreeMemPtrMax, (INT) ((double)TreeMemPtrMax*1.2)) ;
+			  TreeMemPtrMax = (INT) ((double)TreeMemPtrMax*1.2) ;
+			  TreeMem = (struct Trie *)realloc(TreeMem,TreeMemPtrMax*sizeof(struct Trie)) ;
+		  } ;
+	  } ;
+  
 #endif
 };
 #endif
