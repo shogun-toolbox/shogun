@@ -4,7 +4,7 @@
 #include "lib/common.h"
 #include "kernel/CharKernel.h"
 
-#define USE_TREEMEM
+//#define USE_TREEMEM
 
 #ifdef USE_TREEMEM
 #define NO_CHILD ((INT)-1) 
