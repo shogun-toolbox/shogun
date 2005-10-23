@@ -759,6 +759,23 @@ REAL CKernel::compute_optimized(INT idx)
 	return 0;
 }
 
+// assumes active_idx to be a zero terminated list of example_idxs
+INT CKernel::compute_optimized_active(LONG start, LONG end, 
+				      LONG *active_idx, LONG *example_idx, REAL *active_output) 
+{
+  if (!is_optimizable())
+    {
+      CIO::message(M_ERROR, "kernel optimization not implemented\n") ;
+      return 0 ;
+    }
+  LONG jj=0, j=0 ;
+  for(jj=0; (j=active_idx[jj])>=0; jj++) 
+    {
+      active_output[j]+=compute_optimized(example_idx[j]);
+    }
+  return jj;
+}
+
 void CKernel::add_to_normal(INT idx, REAL weight)
 {
 	CIO::message(M_ERROR, "kernel add_to_normal not implemented\n") ;

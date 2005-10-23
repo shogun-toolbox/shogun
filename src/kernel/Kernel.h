@@ -121,7 +121,8 @@ class CKernel
 		virtual bool init_optimization(INT count, INT *IDX, REAL * weights); 
 		virtual bool delete_optimization();
 		virtual REAL compute_optimized(INT idx);
-
+		virtual INT compute_optimized_active(LONG start, LONG end, LONG *active_idx, LONG *example_idx, REAL *active_output) ;
+		
 		//add vector*factor to 'virtual' normal vector
 		virtual void add_to_normal(INT idx, REAL weight) ;
 		virtual void clear_normal();

@@ -1,6 +1,17 @@
 #ifndef _WEIGHTEDDEGREEPOSITIONCHARKERNELOLD_H___
 #define _WEIGHTEDDEGREEPOSITIONCHARKERNELOLD_H___
 
+struct SuffixTree
+{
+  unsigned short has_floats ;
+  unsigned short usage ;
+  float weight ;
+  union 
+  {
+    float child_weights[4] ;
+    struct SuffixTree *childs[4] ;
+  } ;
+} ;
 
 #include "lib/common.h"
 #include "kernel/CharKernel.h"
