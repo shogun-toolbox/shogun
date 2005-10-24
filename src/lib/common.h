@@ -143,6 +143,24 @@ enum EKernelType
 	K_DIAG = 190
 };
 
+enum EClassifierType
+{
+	CT_NONE = 0,
+	CT_LIGHT = 10,
+	CT_LIBSVM = 20,
+	CT_MPD = 30,
+	CT_GPBT = 40,
+	CT_PERCEPTRON = 50,
+	CT_KNN = 60
+};
+
+enum ERegressionType
+{
+	RT_NONE = 0,
+	RT_LIGHT = 10,
+	RT_LIBSVM = 20
+};
+
 enum EKernelProperty
 {
 	KP_NONE = 0,

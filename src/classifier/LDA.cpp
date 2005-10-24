@@ -1,49 +1,42 @@
-#include "classifier/LPM.h"
+#include "classifier/LDA.h"
 #include "features/Labels.h"
 #include "lib/Mathmatics.h"
 
-CLPM::CLPM() : CLinearClassifier(), learn_rate(0.1), max_iter(10000000)
+CLDA::CLDA() : CLinearClassifier(), learn_rate(0.1), max_iter(10000000)
 {
 }
 
 
-CLPM::~CLPM()
+CLDA::~CLDA()
 {
 }
 
-bool CLPM::train()
+bool CLDA::train()
 {
 
-//tr_ell = size(XT,2) ;
-//Y_tr   = LT ;
-//X_tr   = sparse([XT;-XT]) ;
+//priorP = ones(nClasses,1)/nClasses;
 //
-//A = [sparse(-Y_tr'.*ones(tr_ell,1)) -speye(tr_ell) sparse(-X_tr*sparse(spdiag(Y_tr)))'] ;
-//b = -ones(tr_ell,1) ;
-//INF=1e20 ; 
-//LB=[-INF;zeros(tr_ell,1); zeros(size(X_tr,1),1)] ;
-//UB=[ INF;INF*ones(tr_ell,1); INF*ones(size(X_tr,1),1)];
-//c=[0;PAR.C*ones(tr_ell,1)/tr_ell; ones(size(X_tr,1),1)] ;
-//clear X_tr 
+//d= size(xTr,1);
+//m= zeros(d, nClasses);
+//Sq= zeros(d, d);
+//for ci= 1:nClasses,
+//  cli= clInd{ci};
+//  m(:,ci)= mean(xTr(:,cli),2);
+//  yc= xTr(:,cli) - m(:,ci)*ones(1,N(ci));
+//  Sq= Sq + yc*yc';
+//end
+//Sq= Sq/(sum(N)-1);
+//Sq = (1-gamma)*Sq + gamma/d*trace(Sq)*eye(d);
+//Sq = pinv(Sq);
 //
-//disp('setting up problem');
-//[p_lp,how]=lp_gen(lpenv,c,A,b,LB,UB,0,1) ;
-//clear A c b LB UB Y_tr 
-//tic
-//  disp('solving problem');
-//  [sol,lambda,how]=lp_resolve(lpenv,p_lp,1,'bar') ;
-//toc
-//if equal(how,'OK')
-//  lp_close(lpenv,p_lp) ;
-//else
-//  how
-//  keyboard
-//end ;
-//b     = sol(1) ;
-//xis   = sol(2:tr_ell+1) ;
-//alpha = sol(tr_ell+2:end);
-//alpha = alpha(1:end/2)-alpha(end/2+1:end) ;
-//sum(abs(alpha))
+//C.w = Sq*m;
+//C.b = -0.5*sum(m.*C.w,1)' + log(priorP);
+//
+//if nClasses==2
+//  C.w = C.w(:,2) - C.w(:,1);
+//  C.b = C.b(2)-C.b(1);
+//end
+
 
 	assert(get_labels());
 	assert(get_features());

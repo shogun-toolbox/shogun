@@ -394,9 +394,13 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			}
 			else if (strcmp(data_type,"SPARSEREAL")==0)
 			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				double scale = -1 ;
+				sscanf(param, "%s %s %d %le", kern_type, data_type, &size, &scale);
 				delete k;
-				k=new CSparseLinearKernel(size);
+				if (scale==-1)
+					k=new CSparseLinearKernel(size, true);
+				else
+					k=new CSparseLinearKernel(size, false, scale);
 				return k;
 			}
 		}

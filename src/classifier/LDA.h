@@ -1,18 +1,17 @@
-#ifndef _PERCEPTRON_H___
-#define _PERCEPTRON_H___
+#ifndef _LDA_H___
+#define _LDA_H___
 
 #include <stdio.h>
 #include "lib/common.h"
 #include "features/Features.h"
 #include "classifier/LinearClassifier.h"
 
-class CPerceptron : public CLinearClassifier
+class CLDA : public CLinearClassifier
 {
 	public:
-		CPerceptron();
-		virtual ~CPerceptron();
+		CLDA();
+		virtual ~CLDA();
 
-		inline EClassifierType get_classifier_type() { return CT_PERCEPTRON; }
 		virtual bool train();
 
 		/// set learn rate of gradient descent training algorithm

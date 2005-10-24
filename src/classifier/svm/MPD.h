@@ -10,6 +10,8 @@ class CMPDSVM : public CSVM
 		CMPDSVM();
 		virtual ~CMPDSVM();
 		virtual bool train();
+
+		inline EClassifierType get_classifier_type() { return CT_MPD; }
 	protected:
 		inline REAL CMPDSVM::compute_H(int i, int j)
 		{

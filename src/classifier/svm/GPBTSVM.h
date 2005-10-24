@@ -12,6 +12,7 @@ class CGPBTSVM : public CSVM
 		CGPBTSVM();
 		virtual ~CGPBTSVM();
 		virtual bool train();
+		inline EClassifierType get_classifier_type() { return CT_GPBT; }
 
 	protected:
 		struct svm_model* model;

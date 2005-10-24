@@ -839,11 +839,13 @@ CFeatures* CGUIPython::set_features(PyObject* arg)
 	CFeatures* features = NULL;
 
 	/* Align, Byteswap, Contiguous, Typeconvert */
+
+	CIO::message(M_DEBUG,"%d : tInt8(%d),tUInt8(%d),tUInt32(%d),tInt32(%d)", NA_NumarrayType(arg), tInt8, tUInt8,tUInt32,tInt32);
 	switch (NA_NumarrayType(arg))
 	{
 		case tInt8:
 		case tUInt8:
-			py_afeat  = NA_InputArray(arg, tInt8, NUM_C_ARRAY);
+			py_afeat  = NA_InputArray(arg, tUInt8, NUM_C_ARRAY);
 			if ((py_afeat->nd == 2))
 			{
 				CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);

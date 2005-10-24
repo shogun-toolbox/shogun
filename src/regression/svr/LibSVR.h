@@ -12,6 +12,7 @@ class CLibSVR : public CSVM
 		CLibSVR();
 		virtual ~CLibSVR();
 		virtual bool train();
+		inline EClassifierType get_classifier_type() { return CT_NONE; }
 
 	protected:
 		svm_problem problem;

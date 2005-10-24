@@ -138,6 +138,7 @@ typedef struct shrink_state {
   
   virtual bool	train();
   bool setup_auc_maximization() ;
+  inline EClassifierType get_classifier_type() { return CT_LIGHT; }
 
   double classify_example(long int num);
   double model_length_s(MODEL*);

@@ -14,6 +14,7 @@ class CKNN : public CKernelMachine
 		CKNN();
 		virtual ~CKNN();
 
+		inline EClassifierType get_classifier_type() { return CT_KNN; }
 		virtual bool train();
 		virtual REAL* test();
 		virtual REAL classify_example(INT idx)

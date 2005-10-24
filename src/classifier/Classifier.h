@@ -23,6 +23,8 @@ class CClassifier
 		virtual inline void set_labels(CLabels* lab) { labels=lab; }
 		virtual inline CLabels* get_labels() { return labels; }
 
+		virtual EClassifierType get_classifier_type()=0;
+
 	protected:
 		CLabels* labels;
 };
