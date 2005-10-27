@@ -1,11 +1,11 @@
 C=10;
-svm_eps=7e-1;
+svm_eps=41e-4 ;
 debug=0;
 ORDER=20;
 MISMATCH = 0 ;
 
-num=20000;
-dims=200 ;
+num=10000000;
+dims=40 ;
 numval=10000;
 
 rand('state',sum(100*clock));
@@ -20,8 +20,9 @@ vallab=[ -ones(1,numval/2) ones(1,numval/2) ];
 for i=find(vallab==1)
   valdat(20:26,i)='AAAAAAA' ;
 end ;
-
 gf('send_command', 'loglevel ALL');
+gf('send_command', 'svm_threads 10') ;
+gf('send_command', 'svm_qpsize 150');
 
 gf('send_command', 'use_mkl 0') ;
 gf('send_command', 'use_linadd 1') ;
