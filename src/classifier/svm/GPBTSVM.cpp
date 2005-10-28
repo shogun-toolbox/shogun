@@ -32,6 +32,7 @@ bool CGPBTSVM::train()
 	prob.maxmw = get_kernel()->get_cache_size();
 	prob.verbosity       = 1;
 	prob.preprocess_size = -1;
+	prob.projection_projector = -1;
 	prob.c_const = get_C1();
 	prob.chunk_size = get_qpsize();
 
@@ -56,6 +57,12 @@ bool CGPBTSVM::train()
 	//  /*** compute the number of cache rows up to maxmw Mb. ***/
 	if (prob.preprocess_size == -1)
 		prob.preprocess_size = (int) ( (double)prob.chunk_size * 1.5 );
+
+	if (prob.projection_projector == -1)
+	{
+		if (prob.chunk_size <= 20) prob.projection_projector = 0;
+		else prob.projection_projector = 1;
+	}
 
 	/*** compute the problem solution *******************************************/
 	solution = new double[prob.ell];
