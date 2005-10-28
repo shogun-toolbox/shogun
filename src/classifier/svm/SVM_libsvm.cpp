@@ -1715,7 +1715,8 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				int ci = count[i], cj = count[j];
 				sub_prob.l = ci+cj;
 				sub_prob.x = Malloc(svm_node *,sub_prob.l);
-				sub_prob.y = Malloc(double,sub_prob.l);
+				sub_prob.y = Malloc(double,sub_prob.l+1); //dirty hack to surpress valgrind err
+
 				int k;
 				for(k=0;k<ci;k++)
 				{
@@ -1727,6 +1728,8 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 					sub_prob.x[ci+k] = x[sj+k];
 					sub_prob.y[ci+k] = -1;
 				}
+				sub_prob.y[sub_prob.l]=-1; //dirty hack to surpress valgrind err
+				
 				f[p] = svm_train_one(&sub_prob,param,weighted_C[i],weighted_C[j]);
 				for(k=0;k<ci;k++)
 					if(!nonzero[si+k] && fabs(f[p].alpha[k]) > 0)
@@ -1741,6 +1744,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 
 		// build output
 
+		model->objective = f[0].objective;
 		model->nr_class = nr_class;
 		
 		model->label = Malloc(int,nr_class);

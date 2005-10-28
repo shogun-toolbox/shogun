@@ -160,6 +160,7 @@ public:
   int     preprocess_size;
   int     verbosity;
   double  tau_proximal;
+  double objective_value;
 
 // ----------------- Public Methods ---------------
   QPproblem ();

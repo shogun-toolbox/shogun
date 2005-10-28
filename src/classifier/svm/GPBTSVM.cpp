@@ -69,6 +69,7 @@ bool CGPBTSVM::train()
 	prob.gpdtsolve(solution);
 	/****************************************************************************/
 
+  CSVM::set_objective(prob.objective_value);
 
 	int num_sv=0;
 	int bsv=0;
@@ -93,8 +94,8 @@ bool CGPBTSVM::train()
 	{
 		if (solution[i] > prob.DELTAsv)
 		{
-			set_support_vector(k++, i);
-			set_alpha(i, solution[i]*get_labels()->get_label(i));
+			set_support_vector(k, i);
+			set_alpha(k++, solution[i]*get_labels()->get_label(i));
 		}
 	}
 

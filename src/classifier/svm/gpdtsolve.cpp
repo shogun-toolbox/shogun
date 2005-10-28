@@ -1709,6 +1709,7 @@ double QPproblem::gpdtsolve(double *solution)
               "- Total gradient updating time: %lf\n", tot_st_time);
   }
   output_message( "- Objective function value: %lf\n", fval);
+  objective_value=fval;
   return aux;
 }
 
