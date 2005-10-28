@@ -28,7 +28,6 @@ extern "C" {
 }
 #endif
 
-#ifdef USE_SVMPARALLEL 
 #include "lib/Parallel.h"
 
 #include <unistd.h>
@@ -43,8 +42,6 @@ struct S_THREAD_PARAM
 	CKernel* kernel ;
     INT num_vectors ;
 }  ;
-
-#endif
 
 CSVRLight::CSVRLight()
 {
@@ -1500,7 +1497,6 @@ void CSVRLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 
 }
 
-#ifdef USE_SVMPARALLEL
 inline INT regression_fix_index2(INT i,INT num_vectors)
 {
 	if (i>=num_vectors)
@@ -1521,8 +1517,6 @@ void* CSVRLight::update_linear_component_linadd_helper(void *params_)
 	}
 	return NULL ;
 }
-
-#endif
 
 
 void CSVRLight::update_linear_component(LONG* docs, INT* label, 
@@ -1549,50 +1543,52 @@ void CSVRLight::update_linear_component(LONG* docs, INT* label,
 		else
 		{
 			get_kernel()->clear_normal();
-			
+
 			for(ii=0;(i=working2dnum[ii])>=0;ii++) {
 				if(a[i] != a_old[i]) {
 					get_kernel()->add_to_normal(regression_fix_index(docs[i]), (a[i]-a_old[i])*(double)label[i]);
 				}
 			}
-			
-#ifdef USE_SVMPARALLEL
-			INT num_elem = 0 ;
-			for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-			pthread_t threads[CParallel::get_num_threads()-1] ;
-			S_THREAD_PARAM params[CParallel::get_num_threads()-1] ;
-			INT start = 0 ;
-			INT step = num_elem/CParallel::get_num_threads() ;
-			INT end = step ;
-			
-			for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+			if (CParallel::get_num_threads() < 2)
 			{
-				params[t].kernel = get_kernel() ;
-				params[t].lin = lin ;
-				params[t].docs = docs ;
-				params[t].active2dnum=active2dnum ;
-				params[t].start = start ;
-				params[t].end = end ;
-				params[t].num_vectors=num_vectors ;
-				
-				start=end ;
-				end+=step ;
-				pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
+				for(jj=0;(j=active2dnum[jj])>=0;jj++) {
+					lin[j]+=get_kernel()->compute_optimized(regression_fix_index(docs[j]));
+				}
 			}
-				
-			for(jj=params[CParallel::get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
-				lin[j]+=get_kernel()->compute_optimized(regression_fix_index(docs[j]));
-			}
-			void* ret;
-			for (INT t=0; t<CParallel::get_num_threads()-1; t++)
-				pthread_join(threads[t], &ret) ;
+			else
+			{
+				INT num_elem = 0 ;
+				for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-#else			
-			for(jj=0;(j=active2dnum[jj])>=0;jj++) {
-				lin[j]+=get_kernel()->compute_optimized(regression_fix_index(docs[j]));
+				pthread_t threads[CParallel::get_num_threads()-1] ;
+				S_THREAD_PARAM params[CParallel::get_num_threads()-1] ;
+				INT start = 0 ;
+				INT step = num_elem/CParallel::get_num_threads() ;
+				INT end = step ;
+
+				for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+				{
+					params[t].kernel = get_kernel() ;
+					params[t].lin = lin ;
+					params[t].docs = docs ;
+					params[t].active2dnum=active2dnum ;
+					params[t].start = start ;
+					params[t].end = end ;
+					params[t].num_vectors=num_vectors ;
+
+					start=end ;
+					end+=step ;
+					pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
+				}
+
+				for(jj=params[CParallel::get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
+					lin[j]+=get_kernel()->compute_optimized(regression_fix_index(docs[j]));
+				}
+				void* ret;
+				for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+					pthread_join(threads[t], &ret) ;
 			}
-#endif
 		}
 	}
 	else 

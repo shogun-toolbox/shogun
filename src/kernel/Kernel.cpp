@@ -11,11 +11,9 @@
 #include <string.h>
 #include <assert.h>
 
-#ifdef USE_SVMPARALLEL
 #include "lib/Parallel.h"
 #include <unistd.h>
 #include <pthread.h>
-#endif
 
 CKernel::CKernel(KERNELCACHE_IDX size) 
 : kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1), 
@@ -284,7 +282,6 @@ void CKernel::cache_kernel_row(KERNELCACHE_IDX m)
 	}
 }
 
-#ifdef USE_SVMPARALLEL
 void* CKernel::cache_multiple_kernel_row_helper(void* p)
 {
 	KERNELCACHE_IDX j,k,l;
@@ -313,102 +310,104 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 	}
 	return NULL;
 }
-#endif
 
 // Fills cache for the rows in key 
 void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 {
-	// fill up kernel cache 
-#ifdef USE_SVMPARALLEL
-	LONG uncached_rows[num_rows];
-	KERNELCACHE_ELEM* cache[num_rows];
-	pthread_t threads[CParallel::get_num_threads()-1];
-	S_KTHREAD_PARAM params[CParallel::get_num_threads()-1];
-	INT num_threads=CParallel::get_num_threads()-1;
-	INT num_vec=get_lhs()->get_num_vectors();
-	assert(num_vec>0);
-	BYTE* needs_computation=new BYTE[num_vec];
-	assert(needs_computation);
-	memset(needs_computation,0,sizeof(BYTE)*num_vec);
-	INT step=0;
-	INT num=0;
-	INT end=0;
-
-	// allocate cachelines if necessary
-	for(KERNELCACHE_IDX i=0; i<num_rows; i++) 
+	if (CParallel::get_num_threads()<2)
 	{
-		if(!kernel_cache_check(rows[i])) 
-		{
-			needs_computation[rows[i]]=1;
-			uncached_rows[num]=rows[i];
-			cache[num]= kernel_cache_clean_and_malloc(rows[i]);
-
-			if (!cache[num] )
-				CIO::message(M_ERROR, "Kernel cache full! => increase cache size");
-
-			num++;
-		}
+		for(KERNELCACHE_IDX i=0;i<num_rows;i++) 
+			cache_kernel_row(rows[i]);
 	}
-
-	if (num>0)
+	else
 	{
-		step= num/CParallel::get_num_threads();
+		// fill up kernel cache 
+		LONG uncached_rows[num_rows];
+		KERNELCACHE_ELEM* cache[num_rows];
+		pthread_t threads[CParallel::get_num_threads()-1];
+		S_KTHREAD_PARAM params[CParallel::get_num_threads()-1];
+		INT num_threads=CParallel::get_num_threads()-1;
+		INT num_vec=get_lhs()->get_num_vectors();
+		assert(num_vec>0);
+		BYTE* needs_computation=new BYTE[num_vec];
+		assert(needs_computation);
+		memset(needs_computation,0,sizeof(BYTE)*num_vec);
+		INT step=0;
+		INT num=0;
+		INT end=0;
 
-		if (step<1)
+		// allocate cachelines if necessary
+		for(KERNELCACHE_IDX i=0; i<num_rows; i++) 
 		{
-			num_threads=num-1;
-			step=1;
+			if(!kernel_cache_check(rows[i])) 
+			{
+				needs_computation[rows[i]]=1;
+				uncached_rows[num]=rows[i];
+				cache[num]= kernel_cache_clean_and_malloc(rows[i]);
+
+				if (!cache[num] )
+					CIO::message(M_ERROR, "Kernel cache full! => increase cache size");
+
+				num++;
+			}
 		}
+
+		if (num>0)
+		{
+			step= num/CParallel::get_num_threads();
+
+			if (step<1)
+			{
+				num_threads=num-1;
+				step=1;
+			}
+
+			for (INT t=0; t<num_threads; t++)
+			{
+				params[t].kernel = this;
+				params[t].kernel_cache = &kernel_cache;
+				params[t].cache = cache;
+				params[t].uncached_rows = uncached_rows;
+				params[t].needs_computation = needs_computation;
+				params[t].num_uncached = num;
+				params[t].start = t*step;
+				params[t].end = (t+1)*step;
+				end=params[t].end;
+
+				if (pthread_create(&threads[t], NULL, CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]) != 0)
+				{
+					num_threads=t;
+					end=t*step;
+					CIO::message(M_WARN,"thread creation failed\n");
+					break;
+				}
+			}
+		}
+		else
+			num_threads=-1;
+
+
+		S_KTHREAD_PARAM last_param;
+		last_param.kernel = this;
+		last_param.kernel_cache = &kernel_cache;
+		last_param.cache = cache;
+		last_param.uncached_rows = uncached_rows;
+		last_param.needs_computation = needs_computation;
+		last_param.start = end;
+		last_param.num_uncached = num;
+		last_param.end = num;
+
+		cache_multiple_kernel_row_helper(&last_param);
+
 
 		for (INT t=0; t<num_threads; t++)
 		{
-			params[t].kernel = this;
-			params[t].kernel_cache = &kernel_cache;
-			params[t].cache = cache;
-			params[t].uncached_rows = uncached_rows;
-			params[t].needs_computation = needs_computation;
-			params[t].num_uncached = num;
-			params[t].start = t*step;
-			params[t].end = (t+1)*step;
-			end=params[t].end;
-
-			if (pthread_create(&threads[t], NULL, CKernel::cache_multiple_kernel_row_helper, (void*)&params[t]) != 0)
-			{
-				num_threads=t;
-				end=t*step;
-				CIO::message(M_WARN,"thread creation failed\n");
-				break;
-			}
+			if (pthread_join(threads[t], NULL) != 0)
+				CIO::message(M_WARN, "pthread_join failed\n");
 		}
+
+		delete[] needs_computation;
 	}
-	else
-		num_threads=-1;
-
-
-	S_KTHREAD_PARAM last_param;
-	last_param.kernel = this;
-	last_param.kernel_cache = &kernel_cache;
-	last_param.cache = cache;
-	last_param.uncached_rows = uncached_rows;
-	last_param.needs_computation = needs_computation;
-	last_param.start = end;
-	last_param.num_uncached = num;
-	last_param.end = num;
-
-	cache_multiple_kernel_row_helper(&last_param);
-
-
-	for (INT t=0; t<num_threads; t++)
-	{
-		if (pthread_join(threads[t], NULL) != 0)
-			CIO::message(M_WARN, "pthread_join failed\n");
-	}
-
-	delete[] needs_computation;
-#else
-	for(KERNELCACHE_IDX i=0;i<num_rows;i++) 
-		cache_kernel_row(rows[i]);
-#endif
 }
 
 // remove numshrink columns in the cache

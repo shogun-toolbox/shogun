@@ -87,7 +87,7 @@ static const CHAR* N_C=			     	"c";
 static const CHAR* N_LOGLEVEL=			     	"loglevel";
 static const CHAR* N_ECHO=			     	"echo";
 static const CHAR* N_SVMQPSIZE=			     	"svm_qpsize";
-static const CHAR* N_SVMTHREADS=			     	"svm_threads";
+static const CHAR* N_THREADS=			     	"threads";
 static const CHAR* N_MKL_PARAMETERS=			"mkl_parameters";
 static const CHAR* N_SVM_EPSILON=			"svm_epsilon";
 static const CHAR* N_SVR_TUBE_EPSILON=			"svr_tube_epsilon";
@@ -635,12 +635,12 @@ bool CTextGUI::parse_line(CHAR* input)
 	{
 		guisvm.set_qpsize(input+strlen(N_SVMQPSIZE));
 	} 
-	else if (!strncmp(input, N_SVMTHREADS, strlen(N_SVMTHREADS)))
+	else if (!strncmp(input, N_THREADS, strlen(N_THREADS)))
 	{
-		char* param=input+strlen(N_SVMTHREADS);
+		char* param=input+strlen(N_THREADS);
 		param=CIO::skip_spaces(param);
 
-		INT threads=4;
+		INT threads=1;
 
 		sscanf(param, "%d", &threads) ;
 
