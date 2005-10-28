@@ -7,10 +7,14 @@
  *** memory parallel environments. It uses the Joachims' problem            ***
  *** decomposition technique to split the whole quadratic programming (QP)  ***
  *** problem into a sequence of smaller QP subproblems, each one being      ***
- *** solved by a suitable gradient projection method (GPM). The currently   ***
- *** implemented GPMs are the Generalized Variable Projection Method (GVPM, ***
- *** by T. Serafini, G. Zanghirati, L. Zanni) and the Dai-Fletcher method   ***
- *** (DFGPM, by Y.H. Dai, R. Fletcher).                                     ***
+ *** solved by a suitable gradient projection method (GPM). The presently   ***
+ *** implemented GPMs are the Generalized Variable Projection Method        ***
+ *** GVPM (T. Serafini, G. Zanghirati, L. Zanni, "Gradient Projection       ***
+ *** Methods for Quadratic Programs and Applications in Training Support    ***
+ *** Vector Machines"; Optim. Meth. Soft. 20, 2005, 353-378) and the        ***
+ *** Dai-Fletcher Method DFGPM (Y. Dai and R. Fletcher,"New Algorithms for  ***
+ *** Singly Linear Constrained Quadratic Programs Subject to Lower and      ***
+ *** Upper Bounds"; Math. Prog. to appear).                                 ***
  ***                                                                        ***
  *** Authors:                                                               ***
  ***  Thomas Serafini, Luca Zanni                                           ***
@@ -58,8 +62,8 @@
  ***                                                                        ***
  *** File:     gpdt.h                                                       ***
  *** Type:     scalar                                                       ***
- *** Version:  0.9 beta                                                     ***
- *** Date:     July 21, 2004                                                ***
+ *** Version:  1.0                                                          ***
+ *** Date:     October, 2005                                                ***
  *** Revision: 1                                                            ***
  ***                                                                        ***
  ******************************************************************************/
@@ -74,12 +78,12 @@ enum {
   SOLVER_FLETCHER = 1
 };
 
-int vpmkt         (int n, float *g, double *q, double c, double e,
-                   int *iy, double *x, double tol, int *ls);
-int FletcherAlg2A (int n, float *g, double *q, double c, double e,
-                   int *iy, double *x, double tol, int *ls);
-int gpm_solver    (int Solver, int n, float *A, double *b, double c, double e,
-                   int *iy, double *x, double tol, int *ls);
+void output_message(const char *msg);
+void output_message(const char *msg, int v);
+void output_message(const char *msg, double v);
+int gpm_solver(int Solver, int Projector, int n, float *A, double *b, double c,
+               double e, int *iy, double *x, double tol, 
+               int *ls = 0, int *proj = 0);
 
 class sKernel
 {
@@ -102,7 +106,7 @@ public:
 
   void   SetData       (float **x_, int **ix_, int *lx_, int ell, int dim);
   void   SetSubproblem (sKernel* ker, int len, int *perm);
-  void   SetKernel     (int type, double sigma_, double degree_,
+  void   SetKernel     (int type, double sigma_, double degree_, 
                         double normalisation, double cp);
   double Get(int i, int j)
   {
@@ -142,16 +146,16 @@ public:
   int     chunk_size;
   int     ell;
   int    *y;
+  double DELTAsv;
   int     q;
   int     maxmw;
   double  c_const;
   double  bee;
   double  delta;
 
-  double DELTAsv;
   sKernel* KER;
   int     ker_type;
-  int     projection_solver;
+  int     projection_solver, projection_projector; 
   int     PreprocessMode;
   int     preprocess_size;
   int     verbosity;
@@ -161,6 +165,8 @@ public:
   QPproblem ();
   ~QPproblem();
   int  ReadSVMFile    (char *fInput);
+  int  ReadGPDTBinary(char *fName);
+  int  Check2Class    (void);
   void Subproblem     (QPproblem &ker, int len, int *perm);
   void PrepMP         (void);
 
@@ -180,7 +186,7 @@ private:
   int    my_spD_offset;    // offset of the current processor into sp_D matrix
   int    recvl[32], displ[32];
   double kktold;
-  double DELTAvpm, InitialDELTAvpm;
+  double DELTAvpm, InitialDELTAvpm, DELTAkin;
   double *alpha;
   double *grad, *st;
 
@@ -191,7 +197,7 @@ private:
   int  optimal     (void);
 
   bool is_zero(int  i) { return (alpha[i] < DELTAsv); }
-  bool is_free(int  i)
+  bool is_free(int  i) 
        { return (alpha[i] > DELTAsv && alpha[i] < (c_const - DELTAsv)); }
   bool is_bound(int i) { return (alpha[i] > (c_const - DELTAsv)); }
 

@@ -7,10 +7,14 @@
  *** memory parallel environments. It uses the Joachims' problem            ***
  *** decomposition technique to split the whole quadratic programming (QP)  ***
  *** problem into a sequence of smaller QP subproblems, each one being      ***
- *** solved by a suitable gradient projection method (GPM). The currently   ***
- *** implemented GPMs are the Generalized Variable Projection Method (GVPM, ***
- *** by T. Serafini, G. Zanghirati, L. Zanni) and the Dai-Fletcher method   ***
- *** (DFGPM, by Y.H. Dai, R. Fletcher).                                     ***
+ *** solved by a suitable gradient projection method (GPM). The presently   ***
+ *** implemented GPMs are the Generalized Variable Projection Method        ***
+ *** GVPM (T. Serafini, G. Zanghirati, L. Zanni, "Gradient Projection       ***
+ *** Methods for Quadratic Programs and Applications in Training Support    ***
+ *** Vector Machines"; Optim. Meth. Soft. 20, 2005, 353-378) and the        ***
+ *** Dai-Fletcher Method DFGPM (Y. Dai and R. Fletcher,"New Algorithms for  ***
+ *** Singly Linear Constrained Quadratic Programs Subject to Lower and      ***
+ *** Upper Bounds"; Math. Prog. to appear).                                 ***
  ***                                                                        ***
  *** Authors:                                                               ***
  ***  Thomas Serafini, Luca Zanni                                           ***
@@ -58,8 +62,8 @@
  ***                                                                        ***
  *** File:     gpm.cpp                                                      ***
  *** Type:     scalar                                                       ***
- *** Version:  0.9 beta                                                     ***
- *** Date:     July 21, 2004                                                ***
+ *** Version:  1.0                                                          ***
+ *** Date:     October, 2005                                                ***
  *** Revision: 1                                                            ***
  ***                                                                        ***
  ******************************************************************************/
@@ -69,14 +73,18 @@
 #include <math.h>
 #include "gpdt.h"
 
-extern unsigned int Randnext;
+#define maxvpm           30000  /* max number of method iterations allowed  */
+#define maxprojections   200
+#define in               8000   /* max size of the QP problem to solve      */
+#define alpha_max        1e10
+#define alpha_min        1e-10
 
-#define maxvpm    15000  /* max number of method iterations allowed  */
-#define in        8000   /* max size of the QP problem to solve      */
-#define alpha_max 1e10
-#define alpha_min 1e-10
+extern unsigned int Randnext;
 #define ThRand    (Randnext = Randnext * 1103515245L + 12345L)
 #define ThRandPos ((Randnext = Randnext * 1103515245L + 12345L) & 0x7fffffff)
+
+int InnerProjector(int method, int n, int *iy, double e, double *qk,
+                   double l, double u, double *x, double &lambda);
 
 /* Uncomment if you want to allocate vectors on the stack  *
  * instead of the heap. On some architectures this helps   *
@@ -87,85 +95,40 @@ extern unsigned int Randnext;
    in the GVPM solver                                      */
 #define VPM_ADA
 
-/* Uncomment if you want to use the scaled versions of     *
- * the GVPM and Dai-Fletcher solvers                                */
-// #define VS_SCALED
 
-/*** utility routines prototyping ***/
-//double max(double x,double y);
-int    Pardalos   (int n, int *iy, double e, double *qk, double *dia,
-                                   double l, double u,   double *x);
-void   quick_sort (double a[], int n);
-double dnrm2      (int n, double t[]);
-
-/******************************************************************************/
-/*** Encapsulating method to call the chosen Gradient Projection Method     ***/
-/******************************************************************************/
-int gpm_solver(int Solver, int n, float *A, double *b, double c, double e,
-               int *iy, double *x, double tol, int *ls)
-{
-  /*** Uncomment the following if you need to scale the QP Hessian matrix
-       before calling the chosen solver
-  int    i, j;
-  float  *ptrA;
-  double max, s;
-
-  max = fabs(A[0][0]);
-  for (i = 1; i < n; i++)
-      if (fabs(A[i][i]) > max)
-          max = fabs(A[i][i]);
-
-  s    = 1.0 / max;
-  ptrA = vecA;
-  for (i = 0; i < n; i++)
-      for (j = 0;j < n; j++)
-          *ptrA++ = (float)(A[i][j]*s);
-
-  if (Solver == SOLVER_FLETCHER)
-      j = FletcherAlg2A(n, vecA, b, c/s, e/s, iy, x, tol, ls);
-  else
-      j = vpmkt(n, vecA, b, c/s, e/s, iy, x, tol, ls);
-
-  for (i = 0; i < n; i++)
-      x[i] *= s;
-  ***/
-
-  /*** calling the chosen solver with unscaled data ***/
-  if (Solver == SOLVER_FLETCHER)
-    return FletcherAlg2A(n, A, b, c, e, iy, x, tol, ls);
-  else
-    return vpmkt(n, A, b, c, e, iy, x, tol, ls);
-}
-
-/******************************************************************************/
-/*** Variable Projection Method (VPM, by L. Zanni and V. Ruggiero, 2000)    ***/
-/******************************************************************************/
-int vpmkt(int n, float *vecA, double *b, double c, double e, int *iy,
-          double *x, double tol, int *ls)
+/******************************************************************************
+ *** Generalized Variable Projection Method (T. Serafini, G. Zanghirati,    ***
+ *** L. Zanni, "Gradient Projection Methods for Quadratic Programs and      ***
+ *** Applications in Training Support Vector Machines";                     ***
+ *** Optim. Meth. Soft. 20, 2005, 353-378)                                  ***
+ ******************************************************************************/
+int gvpm(int Projector, int n, float *vecA, double *b, double c, double e, 
+         int *iy, double *x, double tol, int *ls, int *proj)
 {
   int     i, j, iter, it, luv, info;
-  double  gd, max, normd, dAd, lam, alpha, kktlam, ak, bk;
+  double  gd, max, normd, dAd, lam, lamnew, alpha, kktlam, ak, bk;
 
-  int     lscount = 0;
+  int     lscount = 0, projcount = 0;
   double  eps     = 1.0e-16;
-  double  DELTAsv = EPS_SV * c;
+  double  DELTAsv, ProdDELTAsv;
+  double  lam_ext;
 
   /* solver-specific settings */
 #ifdef VPM_ADA
-  int    nc = 1, ia1 = -1;
-  double alpha1, alpha2;
+  int     nc = 1, ia1 = -1;
+  double  alpha1, alpha2;
 #endif
 
   /* allocation-dependant settings */
 #ifdef VARIABLES_ON_STACK
 
-  int    ipt[in], ipt2[in], uv[in];
-  double g[in], y[in], tempv[in], d[in], Ad[in], diaga[in], t[in];
+  int     ipt[in], ipt2[in], uv[in];
+  double  g[in], y[in], tempv[in], d[in], Ad[in], t[in];
 
 #else
 
-  int    *ipt, *ipt2, *uv;
-  double *g, *y, *tempv, *d, *Ad, *diaga, *t;
+  int     *ipt, *ipt2, *uv;
+  double  *g, *y, *tempv, *d, *Ad, *t;
 
   /*** array allocations ***/
   ipt   = (int    *)malloc(n * sizeof(int   ));
@@ -173,35 +136,23 @@ int vpmkt(int n, float *vecA, double *b, double c, double e, int *iy,
   uv    = (int    *)malloc(n * sizeof(int   ));
   g     = (double *)malloc(n * sizeof(double));
   y     = (double *)malloc(n * sizeof(double));
-  tempv = (double *)malloc(n * sizeof(double));
   d     = (double *)malloc(n * sizeof(double));
   Ad    = (double *)malloc(n * sizeof(double));
-  diaga = (double *)malloc(n * sizeof(double));
   t     = (double *)malloc(n * sizeof(double));
+  tempv = (double *)malloc(n * sizeof(double));
 
 #endif
 
-  Randnext = 1234;
-
-#ifdef VS_SCALED
-
-  for (i = 0; i < n; i++)
-      diaga[i] = (double)vecA[i*n+i];
-
-#else
-
-  for (i = 0; i < n; i++)
-      diaga[i] = 1.0;
-
-#endif
-
-//  memset(x, 0, n*sizeof(double));
-//  memset(tempv, 0, n*sizeof(double));
+  DELTAsv = EPS_SV * c;
+  if (tol <= 1.0e-5 || n <= 20)
+      ProdDELTAsv = 0.0F;
+  else
+      ProdDELTAsv = EPS_SV * c;
 
   for (i = 0; i < n; i++)
       tempv[i] = -x[i];
-
-  Pardalos(n, iy, e, tempv, diaga, 0, c, x);
+  lam_ext = 0.0;
+  projcount += InnerProjector(Projector, n, iy, e, tempv, 0, c, x, lam_ext);
 
   /* compute g = A*x + b in sparse form          *
    * (inline computation for better perfomrance) */
@@ -211,7 +162,7 @@ int vpmkt(int n, float *vecA, double *b, double c, double e, int *iy,
 
     it = 0;
     for (i = 0; i < n; i++)
-        if (fabs(x[i]) > DELTAsv*1e-2)
+        if (fabs(x[i]) > ProdDELTAsv*1e-2)
             ipt[it++] = i;
 
     memset(t, 0, n*sizeof(double));
@@ -219,22 +170,22 @@ int vpmkt(int n, float *vecA, double *b, double c, double e, int *iy,
     {
         tempA = vecA + ipt[i]*n;
         for (j = 0; j < n; j++)
-            t[j] += (tempA[j]*x[ipt[i]]);
+            t[j] += (tempA[j] * x[ipt[i]]);
     }
   }
 
   for (i = 0; i < n; i++)
   {
     g[i] = t[i] + b[i],
-    y[i] = g[i] - diaga[i]*x[i];
+    y[i] = g[i] - x[i];
   }
 
-  Pardalos(n, iy, e, y, diaga, 0, c, tempv);
+  projcount += InnerProjector(Projector, n, iy, e, y, 0, c, tempv, lam_ext);
 
   max = alpha_min;
   for (i = 0; i < n; i++)
   {
-      y[i] = sqrt(diaga[i]) * (tempv[i] - x[i]);
+      y[i] = tempv[i] - x[i];
       if (fabs(y[i]) > max)
           max = fabs(y[i]);
   }
@@ -251,9 +202,9 @@ int vpmkt(int n, float *vecA, double *b, double c, double e, int *iy,
   for (iter = 1; iter <= maxvpm; iter++)
   {
       for (i = 0; i < n; i++)
-          tempv[i] = alpha*g[i] - diaga[i]*x[i];
+          tempv[i] = alpha*g[i] - x[i];
 
-      it = Pardalos(n, iy, e, tempv, diaga, 0, c, y);
+      projcount += InnerProjector(Projector, n, iy, e, tempv, 0, c, y, lam_ext);
 
       gd = 0.0;
       for (i = 0; i < n; i++)
@@ -270,29 +221,29 @@ int vpmkt(int n, float *vecA, double *b, double c, double e, int *iy,
 
          it = it2 = 0;
          for (i = 0; i < n; i++)
-             if (fabs(d[i]) > (DELTAsv*1.0e-2))
+             if (fabs(d[i]) > (ProdDELTAsv*1.0e-2))
                  ipt[it++] = i;
          for (i = 0; i < n; i++)
-             if (fabs(y[i]) > DELTAsv)
+             if (fabs(y[i]) > ProdDELTAsv)
                  ipt2[it2++] = i;
 
          memset(Ad, 0, n*sizeof(double));
          if (it < it2) // Ad = A*d
          {
-            for (i = 0; i < it; i++)
-            {
-                tempA = vecA + ipt[i]*n;
-                for (j = 0; j < n; j++)
-                    Ad[j] += (tempA[j]*d[ipt[i]]);
-            }
+             for (i = 0; i < it; i++)
+             {
+                 tempA = vecA + ipt[i]*n;
+                 for (j = 0; j < n; j++)
+                     Ad[j] += (tempA[j] * d[ipt[i]]);
+             }
          }
-         else          // Ad = A*y-t
+         else          // Ad = A*y - t
          {
             for (i = 0; i < it2; i++)
             {
                 tempA = vecA + ipt2[i]*n;
                 for (j = 0; j < n; j++)
-                    Ad[j] += (tempA[j]*y[ipt2[i]]);
+                    Ad[j] += (tempA[j] * y[ipt2[i]]);
             }
             for (j = 0; j < n; j++)
                 Ad[j] -= t[j];
@@ -301,7 +252,7 @@ int vpmkt(int n, float *vecA, double *b, double c, double e, int *iy,
 
       normd = 0.0;
       for (i = 0; i < n; i++)
-          normd += d[i] * d[i] * diaga[i];
+          normd += d[i] * d[i];
 
       dAd = 0.0;
       for (i = 0; i < n; i++)
@@ -309,7 +260,7 @@ int vpmkt(int n, float *vecA, double *b, double c, double e, int *iy,
 
       if (dAd > eps*normd && gd < 0.0)
       {
-          lam = -gd/dAd;
+          lam = lamnew = -gd/dAd;
           if (lam > 1.0 || lam < 0.0)
               lam = 1.0;
           else
@@ -325,20 +276,20 @@ int vpmkt(int n, float *vecA, double *b, double c, double e, int *iy,
           // alpha2 = d'*Ad / (Ad' * (Ad./diaga));
           alpha2 = 0.0;
           for (i = 0; i < n; i++)
-               alpha2 += Ad[i] * Ad[i] / diaga[i];
+               alpha2 += Ad[i] * Ad[i];
           alpha2 = dAd / alpha2;
 
           if ( (nc > 2
                 && (
                      (ia1 == 1
                       && (
-                           lam < 0.1 || (alpha1 > alpha && alpha2 < alpha)
+                           lamnew < 0.1 || (alpha1 > alpha && alpha2 < alpha)
                          )
                      )
                      ||
                      (ia1 == -1
                       && (
-                           lam > 5.0 || (alpha1 > alpha && alpha2 < alpha)
+                           lamnew > 5.0 || (alpha1 > alpha && alpha2 < alpha)
                          )
                      )
                    )
@@ -369,14 +320,14 @@ int vpmkt(int n, float *vecA, double *b, double c, double e, int *iy,
           {
               alpha = 0.0;
               for (i = 0; i < n; i++)
-                  alpha += Ad[i] * Ad[i] / diaga[i];
+                  alpha += Ad[i] * Ad[i];
               alpha = dAd / alpha;
           }
           else                // alpha = (d'* (d.*diaga)) / (d'*Ad);
           {
               alpha = 0.0;
               for (i = 0; i < n; i++)
-                  alpha += d[i] * d[i] * diaga[i];
+                  alpha += d[i] * d[i];
               alpha = alpha / dAd;
           }
 
@@ -462,7 +413,7 @@ int vpmkt(int n, float *vecA, double *b, double c, double e, int *iy,
       } // stopping rule based on the norm of d_k
   }
 
-  printf("VPM exits after maxvpm = %d iterations.\n", maxvpm);
+  printf("GVPM exits after maxvpm = %d iterations.\n", maxvpm);
 
 Clean:
 
@@ -476,25 +427,26 @@ Clean:
   free(y);
   free(tempv);
   free(d);
-  free(diaga);
   free(Ad);
 #endif
 
-  if (ls != NULL)
-      *ls = lscount;
+  if (ls != NULL)   *ls   = lscount;
+  if (proj != NULL) *proj = projcount;
   return(iter);
 }
 
-/******************************************************************************/
-/*** Dai-Fletcher QP solver (Y. Dai, R. Fletcher, 2003)                     ***/
-/******************************************************************************/
-int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
-                  int *iy, double *x, double tol, int *ls)
+/******************************************************************************
+ *** Dai-Fletcher QP solver (Y. Dai and R. Fletcher,"New Algorithms for     ***
+ *** Singly Linear Constrained Quadratic Programs Subject to Lower and      *** 
+ *** Upper Bounds"; Math. Prog. to appear)                                  ***
+ ******************************************************************************/
+int FletcherAlg2A(int Projector, int n, float *vecA, double *b, double c, 
+                  double e, int *iy, double *x, double tol, int *ls, int *proj)
 {
-  int    i, j, iter, it, luv, info, lscount = 0;
-  double gd, max, ak, bk, akold, bkold, lamnew, alpha, kktlam;
+  int    i, j, iter, it, luv, info, lscount = 0, projcount = 0;
+  double gd, max, ak, bk, akold, bkold, lamnew, alpha, kktlam, lam_ext;
   double eps     = 1.0e-16;
-  double DELTAsv = EPS_SV * c;
+  double DELTAsv, ProdDELTAsv;
 
   /*** variables for the adaptive nonmonotone linesearch ***/
   int    L, llast;
@@ -504,12 +456,12 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
 #ifdef VARIABLES_ON_STACK
 
   int    ipt[in], ipt2[in], uv[in];
-  double g[in], y[in], tempv[in], d[in], Ad[in], diaga[in], t[in],
+  double g[in], y[in], tempv[in], d[in], Ad[in], t[in],
          xplus[in], tplus[in], sk[in], yk[in];
 #else
 
   int    *ipt, *ipt2, *uv;
-  double *g, *y, *tempv, *d, *Ad, *diaga, *t, *xplus, *tplus, *sk, *yk;
+  double *g, *y, *tempv, *d, *Ad, *t, *xplus, *tplus, *sk, *yk;
 
   /*** arrays allocation ***/
   ipt   = (int    *)malloc(n * sizeof(int   ));
@@ -520,7 +472,6 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
   tempv = (double *)malloc(n * sizeof(double));
   d     = (double *)malloc(n * sizeof(double));
   Ad    = (double *)malloc(n * sizeof(double));
-  diaga = (double *)malloc(n * sizeof(double));
   t     = (double *)malloc(n * sizeof(double));
   xplus = (double *)malloc(n * sizeof(double));
   tplus = (double *)malloc(n * sizeof(double));
@@ -529,22 +480,18 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
 
 #endif
 
-  Randnext = 1234;
+  DELTAsv = EPS_SV * c;
+  if (tol <= 1.0e-5 || n <= 20)
+      ProdDELTAsv = 0.0F;
+  else
+      ProdDELTAsv = EPS_SV * c;
 
-#ifdef VS_SCALED
-  for (i = 0; i < n; i++)
-      diaga[i] = (double)vecA[i*n+i];
-#else
-  for (i = 0; i < n; i++)
-      diaga[i] = 1.0;
-#endif
-
-  //memset(tempv, 0, n*sizeof(double));
   for (i = 0; i < n; i++)
       tempv[i] = -x[i];
 
-  /*** call the Pardalos-Kovoor solver ***/
-  Pardalos(n, iy, e, tempv, diaga, 0, c, x);
+  lam_ext = 0.0;
+  
+  projcount += InnerProjector(Projector, n, iy, e, tempv, 0, c, x, lam_ext);
 
   // g = A*x + b;
   // SparseProd(n, t, A, x, ipt);
@@ -554,7 +501,7 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
 
     it = 0;
     for (i = 0; i < n; i++)
-        if (fabs(x[i]) > DELTAsv)
+        if (fabs(x[i]) > ProdDELTAsv)
             ipt[it++] = i;
 
     memset(t, 0, n*sizeof(double));
@@ -569,16 +516,15 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
   for (i = 0; i < n; i++)
   {
     g[i] = t[i] + b[i],
-    y[i] = g[i] - diaga[i]*x[i];
+    y[i] = g[i] - x[i];
   }
 
-  /*** call the Pardalos-Kovoor solver ***/
-  Pardalos(n, iy, e, y, diaga, 0, c, tempv);
+  projcount += InnerProjector(Projector, n, iy, e, y, 0, c, tempv, lam_ext);
 
   max = alpha_min;
   for (i = 0; i < n; i++)
   {
-      y[i] = sqrt(diaga[i]) * (tempv[i] - x[i]);
+      y[i] = tempv[i] - x[i];
       if (fabs(y[i]) > max)
           max = fabs(y[i]);
   }
@@ -607,9 +553,9 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
   for (iter = 1; iter <= maxvpm; iter++)
   {
       for (i = 0; i < n; i++)
-          tempv[i] = alpha*g[i] - diaga[i]*x[i];
+          tempv[i] = alpha*g[i] - x[i];
 
-      it = Pardalos(n, iy, e, tempv, diaga, 0, c, y);
+      projcount += InnerProjector(Projector, n, iy, e, tempv, 0, c, y, lam_ext);
 
       gd = 0.0;
       for (i = 0; i < n; i++)
@@ -618,17 +564,17 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
           gd  += d[i] * g[i];
       }
 
-      /* compute Ad = A*d  or  Ad = Ay-t depending on their sparsity */
+      /* compute Ad = A*d  or  Ad = A*y - t depending on their sparsity */
       {
          int   i, it, it2;
          float *tempA;
 
          it = it2 = 0;
          for (i = 0; i < n; i++)
-             if (fabs(d[i]) > (DELTAsv*1.0e-2))
+             if (fabs(d[i]) > (ProdDELTAsv*1.0e-2))
                  ipt[it++]   = i;
          for (i = 0; i < n; i++)
-             if (fabs(y[i]) > DELTAsv)
+             if (fabs(y[i]) > ProdDELTAsv)
                  ipt2[it2++] = i;
 
          memset(Ad, 0, n*sizeof(double));
@@ -638,7 +584,7 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
             {
                 tempA = vecA + ipt[i]*n;
                 for (j = 0; j < n; j++)
-                    Ad[j] += (tempA[j]*d[ipt[i]]);
+                    Ad[j] += (tempA[j] * d[ipt[i]]);
             }
          }
          else          // compute Ad = A*y-t
@@ -647,7 +593,7 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
             {
                 tempA = vecA + ipt2[i]*n;
                 for (j = 0; j < n; j++)
-                    Ad[j] += (tempA[j]*y[ipt2[i]]);
+                    Ad[j] += (tempA[j] * y[ipt2[i]]);
             }
             for (j = 0; j < n; j++)
                 Ad[j] -= t[j];
@@ -656,7 +602,7 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
 
       ak = 0.0;
       for (i = 0; i < n; i++)
-          ak += d[i] * d[i] * diaga[i];
+          ak += d[i] * d[i];
 
       bk = 0.0;
       for (i = 0; i < n; i++)
@@ -678,8 +624,6 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
       if ((iter == 1 && fv >= fv0) || (iter > 1 && fv >= fr))
       {
           lscount++;
-          if (lamnew > 1 || lamnew < 0)
-              printf("\n Warning: lamnew = %lf\n", lamnew);
           fv = 0.0;
           for (i = 0; i < n; i++)
           {
@@ -721,8 +665,8 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
       ak = bk = 0.0;
       for (i = 0; i < n; i++)
       {
-          ak += sk[i]*sk[i];
-          bk += sk[i]*yk[i];
+          ak += sk[i] * sk[i];
+          bk += sk[i] * yk[i];
       }
 
       if (bk < eps*ak)
@@ -739,6 +683,7 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
           else if (alpha < alpha_min)
               alpha = alpha_min;
       }
+
       akold = ak;
       bkold = bk;
 
@@ -755,7 +700,7 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
           kktlam = 0.0;
           for (i = 0; i < n; i++)
           {
-              if (x[i]>DELTAsv && x[i]<c-DELTAsv)
+              if ((x[i] > DELTAsv) && (x[i] < c-DELTAsv))
               {
                   ipt[it++] = i;
                   kktlam    = kktlam - iy[i]*g[i];
@@ -773,10 +718,9 @@ int FletcherAlg2A(int n, float *vecA, double *b, double c, double e,
           {
 
               kktlam = kktlam/it;
-              //kktlam = -iy[ipt[0]]*g[ipt[0]];
               info   = 1;
-              for (i=0; i<it; i++)
-                  if (fabs(iy[ipt[i]]*g[ipt[i]]+kktlam) > tol)
+              for (i = 0; i < it; i++)
+                  if ( fabs(iy[ipt[i]] * g[ipt[i]] + kktlam) > tol )
                   {
                       info = 0;
                       break;
@@ -824,31 +768,281 @@ Clean:
   free(y);
   free(tempv);
   free(d);
-  free(diaga);
   free(Ad);
 #endif
 
-  if (ls != NULL)
-      *ls = lscount;
+  if (ls != NULL)   *ls   = lscount;
+  if (proj != NULL) *proj = projcount;
   return(iter);
 
 }
 
 /******************************************************************************/
-/*** Pardalos-Kovoor method                                                 ***/
+/*** Encapsulating method to call the chosen Gradient Projection Method     ***/
 /******************************************************************************/
-int Pardalos(int n, int *iy, double e,   double *qk, double *dia,
+int gpm_solver(int Solver, int Projector, int n, float *A, double *b, double c, 
+               double e, int *iy, double *x, double tol, int *ls, int *proj)
+{
+  /*** Uncomment the following if you need to scale the QP Hessian matrix
+   *** before calling the chosen solver
+  int    i, j;
+  float  *ptrA;
+  double max, s;
+
+  max = fabs(A[0][0]);
+  for (i = 1; i < n; i++)
+      if (fabs(A[i][i]) > max)
+          max = fabs(A[i][i]);
+
+  s    = 1.0 / max;
+  ptrA = vecA;
+  for (i = 0; i < n; i++)
+      for (j = 0;j < n; j++)
+          *ptrA++ = (float)(A[i][j]*s);
+
+  if (Solver == SOLVER_FLETCHER)
+      j = FletcherAlg2A(n, vecA, b, c/s, e/s, iy, x, tol, ls);
+  else
+      j = gvpm(n, vecA, b, c/s, e/s, iy, x, tol, ls);
+
+  for (i = 0; i < n; i++)
+      x[i] *= s;
+  ***/
+
+  /*** calling the chosen solver with unscaled data ***/
+  if (Solver == SOLVER_FLETCHER)
+    return FletcherAlg2A(Projector, n, A, b, c, e, iy, x, tol, ls, proj);
+  else
+    return gvpm(Projector, n, A, b, c, e, iy, x, tol, ls, proj);
+}
+
+/******************************************************************************
+ *** Piecewise linear monotone target function for the Dai-Fletcher         *** 
+ *** projector (Y. Dai and R. Fletcher, "New Algorithms for Singly Linear   ***
+ *** Constrained Quadratic Programs Subject to Lower and Upper Bounds";     ***
+ *** Math. Prog. to appear)                                                 ***
+ ******************************************************************************/
+double ProjectR(double *x, int n, double lambda, int *a, double b, double *c, 
+                double l, double u)
+{
+  int    i;
+  double r = 0.0;
+
+  for (i = 0; i < n; i++)
+  {
+      x[i] = -c[i] + lambda*(double)a[i];
+      if (x[i] >= u) x[i] = u;
+      else if (x[i] < l) x[i] = l;
+      r += (double)a[i]*x[i];
+  }
+
+  return (r - b);
+}
+
+/******************************************************************************
+ *** Dai-Fletcher QP projector (Y. Dai and R. Fletcher, "New Algorithms for ***
+ *** Singly Linear Constrained Quadratic Programs Subject to Lower and      ***
+ *** Upper Bounds"; Math. Prog. to appear)                                  ***
+ ******************************************************************************/
+/***                                                                        ***
+ *** Solves the problem        min  x'*x/2 + c'*x                           ***
+ ***                       subj to  a'*x - b = 0                            ***
+ ***                                l <= x <= u                             ***
+ ******************************************************************************/
+int ProjectDai(int n, int *a, double b, double *c, double l, double u, 
+               double *x, double &lam_ext)
+{
+  double lambda, lambdal, lambdau, dlambda, lambda_new, tol_lam;
+  double r, rl, ru, s, tol_r;
+  int    iter;
+
+  tol_lam = 1.0e-11;
+  tol_r   = 1.0e-10 * sqrt((u-l)*(double)n);
+  lambda  = lam_ext;
+  dlambda = 0.5;
+  iter    = 1;
+  b       = -b;
+
+  // Bracketing Phase
+  r = ProjectR(x, n, lambda, a, b, c, l, u);
+  if (fabs(r) < tol_r)
+      return 0;
+
+  if (r < 0.0)
+  {
+      lambdal = lambda;
+      rl      = r;
+      lambda  = lambda + dlambda;
+      r       = ProjectR(x, n, lambda, a, b, c, l, u);
+      while (r < 0.0)
+      {
+         lambdal = lambda;
+         s       = rl/r - 1.0;
+         if (s < 0.1) s = 0.1;
+         dlambda = dlambda + dlambda/s;
+         lambda  = lambda + dlambda;
+         rl      = r;
+         r       = ProjectR(x, n, lambda, a, b, c, l, u);
+      }
+      lambdau = lambda;
+      ru      = r;
+  }
+  else
+  {
+      lambdau = lambda;
+      ru      = r;
+      lambda  = lambda - dlambda;
+      r       = ProjectR(x, n, lambda, a, b, c, l, u);
+      while (r > 0.0)
+      {
+         lambdau = lambda;
+         s       = ru/r - 1.0;
+         if (s < 0.1) s = 0.1;
+         dlambda = dlambda + dlambda/s;
+         lambda  = lambda - dlambda;
+         ru      = r;
+         r       = ProjectR(x, n, lambda, a, b, c, l, u);
+      }
+    lambdal = lambda;
+    rl      = r;
+  }
+
+
+  // Secant Phase
+  s       = 1.0 - rl/ru;
+  dlambda = dlambda/s;
+  lambda  = lambdau - dlambda;
+  r       = ProjectR(x, n, lambda, a, b, c, l, u);
+
+  while (   fabs(r) > tol_r 
+         && dlambda > tol_lam * (1.0 + fabs(lambda)) 
+         && iter    < maxprojections                )
+  {
+     iter++;
+     if (r > 0.0)
+     {
+         if (s <= 2.0)
+         {
+             lambdau = lambda;
+             ru      = r;
+             s       = 1.0 - rl/ru;
+             dlambda = (lambdau - lambdal) / s;
+             lambda  = lambdau - dlambda;
+         }
+         else
+         {
+             s          = ru/r-1.0;
+             if (s < 0.1) s = 0.1;
+             dlambda    = (lambdau - lambda) / s;
+             lambda_new = 0.75*lambdal + 0.25*lambda;
+             if (lambda_new < (lambda - dlambda))
+                 lambda_new = lambda - dlambda;
+             lambdau    = lambda;
+             ru         = r;
+             lambda     = lambda_new;
+             s          = (lambdau - lambdal) / (lambdau - lambda);
+         }
+     }
+     else
+     {
+         if (s >= 2.0)
+         {
+             lambdal = lambda;
+             rl      = r;
+             s       = 1.0 - rl/ru;
+             dlambda = (lambdau - lambdal) / s;
+             lambda  = lambdau - dlambda;
+         }
+         else
+         {
+             s          = rl/r - 1.0;
+             if (s < 0.1) s = 0.1;
+             dlambda    = (lambda-lambdal) / s;
+             lambda_new = 0.75*lambdau + 0.25*lambda;
+             if (lambda_new > (lambda + dlambda))
+                 lambda_new = lambda + dlambda;
+             lambdal    = lambda;
+             rl         = r;
+             lambda     = lambda_new;
+             s          = (lambdau - lambdal) / (lambdau-lambda);
+         }
+     }
+     r = ProjectR(x, n, lambda, a, b, c, l, u);
+  }
+
+  lam_ext = lambda;
+  if (iter >= maxprojections)
+      printf("  error: Projector exits after max iterations: %d\n", iter);
+
+  return (iter);
+}
+
+#define SWAP(a,b) { register double t=(a);(a)=(b);(b)=t; }
+
+/*** Median computation using Quick Select ***/
+double quick_select(double *arr, int n)
+{
+  int low, high ;
+  int median;
+  int middle, l, h;
+
+  low    = 0; 
+  high   = n-1;
+  median = (low + high) / 2;
+  
+  for (;;)
+  {
+    if (high <= low)
+        return arr[median];
+
+    if (high == low + 1)
+    {
+        if (arr[low] > arr[high])
+            SWAP(arr[low], arr[high]);
+        return arr[median];
+    }
+
+    middle = (low + high) / 2;
+    if (arr[middle] > arr[high]) SWAP(arr[middle], arr[high]);
+    if (arr[low]    > arr[high]) SWAP(arr[low],    arr[high]);
+    if (arr[middle] > arr[low])  SWAP(arr[middle], arr[low]);
+
+    SWAP(arr[middle], arr[low+1]);
+
+    l = low + 1;
+    h = high;
+    for (;;)
+    {
+      do l++; while (arr[low] > arr[l]);
+      do h--; while (arr[h]   > arr[low]);
+      if (h < l)
+          break;
+      SWAP(arr[l], arr[h]);
+    }
+
+    SWAP(arr[low], arr[h]);
+    if (h <= median)
+        low = l;
+    if (h >= median)
+        high = h - 1;
+  }
+}
+
+/******************************************************************************
+ *** Pardalos-Kovoor projector (P.M. Pardalos and N. Kovoor, "An Algorithm  ***
+ *** for a Singly Constrained Class of Quadratic Programs Subject to Upper  ***
+ *** and Lower Bounds"; Math. Prog. 46, 1990, 321-328).                     ***
+ ******************************************************************************
+ *** Solves the problem                                                     ***
+ ***                       min  x'*x/2 + qk'*x                              ***
+ ***                   subj to  iy'*x + e = 0                               ***
+ ***                            l <= x <= u                                 ***
+ ***                            iy(i) ~= 0                                  ***
+ ******************************************************************************/
+
+int Pardalos(int n, int *iy, double e,   double *qk,
                              double low, double up,  double *x)
 {
-  /***********************************************************************
-   * This method solves the problem                                      *
-   *                    min     x'*diag(dia)*x/2 + qk'*x                 *
-   *                    subj to iy'*x = e                                *
-   *                            l <= x <= u                              *
-   *                            iy(i) ~= 0                               *
-   * by the Pardalos-Kovoor algorithm [Math. Prog. 46 (1990), 321-328].  *
-   ***********************************************************************/
-
   int    i, l, iter; /* conters    */
   int    luv, lxint; /* dimensions */
   double d, xmin, xmax, xmold, xmid, xx, ts, sw, s, s1, testsum;
@@ -879,7 +1073,7 @@ int Pardalos(int n, int *iy, double e,   double *qk, double *dia,
 
   d = 0.0;
   for (i = 0; i < n; i++)
-      d += iy[i] * qk[i] / dia[i];
+      d += iy[i] * qk[i];
   d = 0.5 * (d-e);
 
   for (i = 0; i < n; i++)
@@ -889,15 +1083,15 @@ int Pardalos(int n, int *iy, double e,   double *qk, double *dia,
        * with labels -1 and 1.                                               */
       if (iy[i] > 0)
       {
-          a[i] = ((qk[i] + dia[i]*low) * iy[i]) * 0.5;
-          b[i] = ((dia[i]*up + qk[i]) * iy[i]) * 0.5;
+          a[i] = ((qk[i] + low) * iy[i]) * 0.5;
+          b[i] = ((up + qk[i]) * iy[i]) * 0.5;
       }
       else
       {
-          b[i] = ((qk[i] + dia[i]*low) * iy[i]) * 0.5;
-          a[i] = ((dia[i]*up + qk[i]) * iy[i]) * 0.5;
+          b[i] = ((qk[i] + low) * iy[i]) * 0.5;
+          a[i] = ((up + qk[i]) * iy[i]) * 0.5;
       }
-      newdia[i] = (iy[i]*iy[i]) / dia[i];
+      newdia[i] = (iy[i]*iy[i]);
   }
 
   xmin = -1e33;
@@ -919,12 +1113,6 @@ int Pardalos(int n, int *iy, double e,   double *qk, double *dia,
   luv         = n;
   lxint       = 2*n+2;
 
-  /* sort the variables in ascending order */
-  quick_sort(xint,lxint);
-
-  /**********************************************************************/
-  /* Loop implementing the Joachim's method to choose the new variables */
-  /* entering the working set. It ends when luv = 0.                    */
   iter = 0;
   do {
      for (i = 0; i < luv; i++)
@@ -933,13 +1121,9 @@ int Pardalos(int n, int *iy, double e,   double *qk, double *dia,
          bt[i]    = b[uv[i]];
          newdt[i] = newdia[uv[i]];
      }
+
      xmold = xmid;
-
-     if ((lxint % 2) == 0)
-         xmid = (xint[lxint/2-1] + xint[lxint/2])/2;
-     else
-         xmid = xint[lxint/2];
-
+     xmid = quick_select(xint, lxint);
      if (xmold == xmid)
          xmid = xint[(int)(ThRandPos % lxint)];
 
@@ -983,8 +1167,7 @@ int Pardalos(int n, int *iy, double e,   double *qk, double *dia,
     luv = l;
     memcpy(uv, uvt, luv*sizeof(int));
     iter++;
-  } while(luv != 0);
-  /**********************************************************************/
+  } while(luv != 0 && iter < maxprojections);
 
   if (sw == 0)
       xx = xmin;
@@ -1004,7 +1187,7 @@ int Pardalos(int n, int *iy, double e,   double *qk, double *dia,
   }
 
   for (i = 0; i < n; i++)
-      x[i] = (2.0*x[i]*iy[i]-qk[i]) / dia[i];
+      x[i] = (2.0*x[i]*iy[i]-qk[i]);
 
 #ifndef VARIABLES_ON_STACK
   free(newdt);
@@ -1023,83 +1206,15 @@ int Pardalos(int n, int *iy, double e,   double *qk, double *dia,
 }
 
 /******************************************************************************/
-/*** Quick sort function                                                    ***/
+/*** Wrapper method to call the selected inner projector                    ***/
 /******************************************************************************/
-void quick_sort(double a[], int n)
+int InnerProjector(int method, int n, int *iy, double e, double *qk,
+                   double l, double u, double *x, double &lambda)
 {
-  /************************************************************************
-   * Here two partitions are used. At each step the smaller is considered *
-   * first: this way the sizing of arrays pd[] (right partition) and      *
-   * ps[] (left partition) is enough to sort up to 1000000 components.    *
-   ************************************************************************/
-  int    i, j, s, d, l, ps[20], pd[20];
-  double x, w;
-
-  l     = 0;
-  ps[0] = 0;
-  pd[0] = n-1;
-
-  do
-  {
-     s = ps[l];
-     d = pd[l];
-     l--;
-     do
-     {
-        i = s;
-        j = d;
-        x = a[(s+d)/2];
-        do
-        {
-           while (a[i] < x) i++;
-           while (a[j] > x) j--;
-           if (i <= j)
-           {
-               w=a[i];
-               a[i]=a[j];
-               i++;
-               a[j]=w;
-               j--;
-           }
-        } while (i <= j);
-
-        if (j-s > d-i)
-        {
-            l++;
-            ps[l] = s;
-            pd[l] = j;
-            s     = i;
-        }
-        else
-        {
-            if (i < d)
-            {
-                l++;
-                ps[l] = i;
-                pd[l] = d;
-            }
-            d = j;
-         };
-     } while (s < d);
-  } while (l >= 0);
-}
-
-/******************************************************************************/
-/*** Compute the vector Euclidean norm                                      ***/
-/******************************************************************************/
-double dnrm2(int n, double t[])
-{
-  /************************************************************************
-   * This implementation is not the best one and it is provided only for  *
-   * user opportunity: in most systems the far better BLAS implementation *
-   * is available by linking the native blas library and it should        *
-   * certainly be preferred to this one.                                  *
-   ************************************************************************/
-  int    i;
-  double s = 0.0;
-  for (i = n-1; i >= 0; i--)
-      s += t[i]*t[i];
-  return(sqrt(s));
+  if (method == 0)
+      return Pardalos(n, iy, e, qk, l, u, x);
+  else
+      return ProjectDai(n, iy, e, qk, l, u, x, lambda);
 }
 
 /******************************************************************************/

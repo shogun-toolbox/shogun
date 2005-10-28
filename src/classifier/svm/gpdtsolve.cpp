@@ -7,10 +7,14 @@
  *** memory parallel environments. It uses the Joachims' problem            ***
  *** decomposition technique to split the whole quadratic programming (QP)  ***
  *** problem into a sequence of smaller QP subproblems, each one being      ***
- *** solved by a suitable gradient projection method (GPM). The currently   ***
- *** implemented GPMs are the Generalized Variable Projection Method (GVPM, ***
- *** by T. Serafini, G. Zanghirati, L. Zanni) and the Dai-Fletcher method   ***
- *** (DFGPM, by Y.H. Dai, R. Fletcher).                                     ***
+ *** solved by a suitable gradient projection method (GPM). The presently   ***
+ *** implemented GPMs are the Generalized Variable Projection Method        ***
+ *** GVPM (T. Serafini, G. Zanghirati, L. Zanni, "Gradient Projection       ***
+ *** Methods for Quadratic Programs and Applications in Training Support    ***
+ *** Vector Machines"; Optim. Meth. Soft. 20, 2005, 353-378) and the        ***
+ *** Dai-Fletcher Method DFGPM (Y. Dai and R. Fletcher,"New Algorithms for  ***
+ *** Singly Linear Constrained Quadratic Programs Subject to Lower and      ***
+ *** Upper Bounds"; Math. Prog. to appear).                                 ***
  ***                                                                        ***
  *** Authors:                                                               ***
  ***  Thomas Serafini, Luca Zanni                                           ***
@@ -58,8 +62,8 @@
  ***                                                                        ***
  *** File:     gpdtsolve.cpp                                                ***
  *** Type:     scalar                                                       ***
- *** Version:  0.9 beta                                                     ***
- *** Date:     July 21, 2004                                                ***
+ *** Version:  1.0                                                          ***
+ *** Date:     October, 2005                                                ***
  *** Revision: 1                                                            ***
  ***                                                                        ***
  ******************************************************************************/
@@ -76,7 +80,7 @@
 #define y_out(i)     y[index_out[(i)]]
 #define alpha_in(i)  alpha[index_in[(i)]]
 #define alpha_out(i) alpha[index_out[(i)]]
-#define minfty       -1000000  // minus infinity
+#define minfty       (-1.0e+30)  // minus infinity
 
 unsigned int Randnext = 1;
 
@@ -84,13 +88,6 @@ unsigned int Randnext = 1;
 #define ThRandPos ((Randnext = Randnext * 1103515245L + 12345L) & 0x7fffffff)
 
 FILE        *fp;
-extern char cOutputStream[10000][80];
-extern int  nOutputStream;
-
-//#define OutputStream (cOutputStream[nOutputStream++])
-#define     OutputStream stdout
-/* the following is to quickly select file or console verbosity output */
-#define     sprintf fprintf
 
 /* utility routines prototyping */
 void quick_si (int    a[], int k);
@@ -416,7 +413,7 @@ double sKernel::Prod(double *v, int j)
 
   acc = 0.0;
   for (k = 0; k < n; k++)
-    acc += (double)xp[k] * v[ip[k]];
+      acc += (double)xp[k] * v[ip[k]];
   return acc;
 }
 
@@ -484,7 +481,7 @@ sCache::sCache(sKernel* sk, int Mbyte, int _ell) : KER(sk), ell(_ell)
 
   // size in dwords of one cache row
   maxmw = (sizeof(cache_entry) + sizeof(cache_entry *)
-          + ell*sizeof(cachetype)) / 4;
+           + ell*sizeof(cachetype)) / 4;
   // number of cache rows
   maxmw = Mbyte*1024*(1024/4) / maxmw;
 
@@ -611,11 +608,11 @@ int sCache::DivideMP(int *out, int *in, int n)
 {
    /********************************************************************
     * Input meaning:                                                   *
-    *   in  = vector containing row to be extracted in the cache       *
-    *   n   = size of in                                               *
-    *   out = the indexes of "in" of the components to be computed     *
-    *         by this processor (first those in the cache, then the    *
-    *         ones not yet computed)                                   *
+    *    in  = vector containing row to be extracted in the cache      *
+    *    n   = size of in                                              *
+    *    out = the indexes of "in" of the components to be computed    *
+    *          by this processor (first those in the cache, then the   *
+    *          ones not yet computed)                                  *
     * Returns: the number of components of this processor              *
     ********************************************************************/
 
@@ -648,10 +645,7 @@ int QPproblem::optimal()
 {
   /***********************************************************************
    * Returns 1 if the computed solution is optimal, otherwise returns 0. *
-   * To verify the optimality it checks (l - chunk_size) training set    *
-   * elements: if some sample violates the KKT optimality conditions     *
-   * then updates both index_in and index_out and construct the new      *
-   * working set.                                                        *
+   * To verify the optimality it checks the KKT optimality conditions.   *
    ***********************************************************************/
   register int i, j, margin_sv_number, z, k, s, kin, z1, znew=0, nnew;
 
@@ -762,9 +756,9 @@ int QPproblem::optimal()
   else
   {
       if (verbosity > 1)
-          sprintf(OutputStream, "  Max KKT violation: %lf\n", aux);
+          output_message("  Max KKT violation: %lf\n", aux);
       else if (verbosity > 0)
-          sprintf(OutputStream, "  %lf\n", aux);
+          output_message("  %lf\n", aux);
 
       if (fabs(kktold-aux) < delta*0.01 &&  aux < delta*2.0)
       {
@@ -772,13 +766,17 @@ int QPproblem::optimal()
           {
               DELTAvpm = (DELTAvpm*0.5 > InitialDELTAvpm*0.1 ?
                                             DELTAvpm*0.5 : InitialDELTAvpm*0.1);
-              sprintf(OutputStream,
-                      "Inner tolerance changed to: %lf\n", DELTAvpm);
+              output_message("Inner tolerance changed to: %lf\n", DELTAvpm);
           }
       }
 
       kktold = aux;
 
+ /*****************************************************************************
+  *** Update the working set (T. Serafini, L. Zanni, "On the Working Set    ***
+  *** Selection in Gradient Projection-based Decomposition Techniques for   ***
+  *** Support Vector Machines"; Optim. Meth. Soft. 20, 2005).               ***
+  *****************************************************************************/
       for (j = 0; j < chunk_size; j++)
           inold[j] = index_in[j];
 
@@ -801,8 +799,7 @@ int QPproblem::optimal()
               }
               i++;
           }
-          if (i == z1)
-              break;
+          if (i == z1) break;
 
           s = z1 - 1;
           while (znew < s)
@@ -818,8 +815,7 @@ int QPproblem::optimal()
               }
               s--;
           }
-          if (znew == s)
-          break;
+          if (znew == s) break;
 
           index_in[k++] = ing[z];
           index_in[k++] = ing[z1];
@@ -828,7 +824,7 @@ int QPproblem::optimal()
       if (k < q)
       {
           if (verbosity > 1)
-              sprintf(OutputStream, "  New q: %i\n", k);
+              output_message("  New q: %i\n", k);
           q = k;
       }
 
@@ -981,9 +977,30 @@ int QPproblem::optimal()
           q = q & (~1);
       }
 
+      if (kin == 0)
+      {
+          DELTAkin *= 0.1;
+          if (DELTAkin < 1.0e-6)
+          {
+              output_message("\n***ERROR***: GPDT stops with tolerance"); 
+              output_message( 
+              " %lf because it is unable to change the working set.\n", kktold);
+              return 1;
+          }
+          else
+          {
+              output_message("Inner tolerance temporary changed to:");
+              output_message(" %e\n", DELTAvpm*DELTAkin);
+          }
+      }
+      else
+          DELTAkin = 1.0;
+
       if (verbosity > 1)
-          sprintf(OutputStream,
-          "  Working set: new components: %i,  new parameter n: %i\n", kin, q);
+      {
+          output_message("  Working set: new components: %i", kin);
+          output_message(",  new parameter n: %i\n", q);
+      }
 
       return 0;
    }
@@ -1028,8 +1045,11 @@ int QPproblem::Preprocess1(sKernel* KER, int *aux, int *sv)
   sl = 1 + s / n;
 
   if (verbosity > 0)
-      sprintf(OutputStream,
-          "  Preprocessing: examples = %d, subp. = %d, size = %d\n",s,n,sl);
+  {
+      output_message("  Preprocessing: examples = %d", s);
+      output_message(", subp. = %d", n);
+      output_message(", size = %d\n",sl);
+  }
 
   sv_loc   = (int    *)malloc(s*sizeof(int    ));
   bsv_loc  = (int    *)malloc(s*sizeof(int    ));
@@ -1061,7 +1081,7 @@ int QPproblem::Preprocess1(sKernel* KER, int *aux, int *sv)
   for (i = 0; i < n; i++)
   {
       if (verbosity > 0)
-          sprintf(OutputStream, "%d...", i);
+          output_message("%d...", i);
       SplitParts(s, i, n, &ll, &off);
 
       if (sl < 500)
@@ -1078,8 +1098,8 @@ int QPproblem::Preprocess1(sKernel* KER, int *aux, int *sv)
           memset(sp_alpha, 0, sl*sizeof(double));
 
           /* call the gradient projection QP solver */
-          gpm_solver(projection_solver, ll, sp_D, sp_h, c_const, 0.0,
-                     sp_y, sp_alpha, delta*10, NULL);
+          gpm_solver(projection_solver, projection_projector, ll, sp_D, sp_h,
+                     c_const, 0.0, sp_y, sp_alpha, delta*10, NULL);
       }
       else
       {
@@ -1137,7 +1157,8 @@ int QPproblem::Preprocess1(sKernel* KER, int *aux, int *sv)
       sv[j] = 1;
   }
 
-  /* eventually fill up the working set with other components randomly chosen */
+  /* eventually fill up the working set with other components 
+     randomly chosen                                          */
   for (; i < chunk_size; i++)
   {
       do {
@@ -1156,8 +1177,10 @@ int QPproblem::Preprocess1(sKernel* KER, int *aux, int *sv)
   free(sp_alpha);
 
   if (verbosity > 0)
-      sprintf(OutputStream,
-              "\n  Preprocessing: SV = %d, BSV = %d\n", nsv, nbsv);
+  {
+      output_message("\n  Preprocessing: SV = %d", nsv);
+      output_message(", BSV = %d\n", nbsv);
+  }
 
   return(nsv);
 }
@@ -1168,13 +1191,15 @@ int QPproblem::Preprocess1(sKernel* KER, int *aux, int *sv)
 double QPproblem::gpdtsolve(double *solution)
 {
   int       i, j, k, z, iin, jin, nit, tot_vpm_iter, lsCount;
+  int       tot_vpm_secant, projCount, proximal_count;
+  int       vpmWarningThreshold;
   int       nzin, nzout;
   int       *sp_y;               /* labels vector                             */
   int       *indnzin, *indnzout; /* nonzero components indices vectors        */
   float     *sp_D;               /* quadratic part of the objective function  */
   double    *sp_h, *sp_hloc,     /* linear part of the objective function     */
             *sp_alpha,*stloc;    /* variables and gradient updating vectors   */
-  double    sp_e, aux, fval;
+  double    sp_e, aux, fval, tau_proximal_this, dfval;
   double    *vau;
   double    *weight;
   double    tot_prep_time, tot_vpm_time, tot_st_time, total_time;
@@ -1184,6 +1209,13 @@ double QPproblem::gpdtsolve(double *solution)
 
   Cache = new sCache(KER, maxmw, ell);
     if (chunk_size > ell) chunk_size = ell;
+
+  if (chunk_size <= 20)
+      vpmWarningThreshold = 30*chunk_size;
+  else if (chunk_size <= 200)
+      vpmWarningThreshold = 20*chunk_size + 200;
+  else
+      vpmWarningThreshold = 10*chunk_size + 2200;
 
   kktold = 10000.0;
   if (delta <= 5e-3)
@@ -1205,10 +1237,12 @@ double QPproblem::gpdtsolve(double *solution)
 
   InitialDELTAvpm = DELTAvpm;
   DELTAsv         = EPS_SV * c_const;
+  DELTAkin        = 1.0;
 
   q               = q & (~1);
   nb              = ell - chunk_size;
   tot_vpm_iter    = 0;
+  tot_vpm_secant  = 0;
 
   tot_prep_time = tot_vpm_time = tot_st_time = total_time = 0.0;
 
@@ -1227,7 +1261,7 @@ double QPproblem::gpdtsolve(double *solution)
   memset(ing,   0, ell*sizeof(int));
 
   if (verbosity > 0 && PreprocessMode != 0)
-      sprintf(OutputStream, "\n*********** Begin setup step...\n");
+      output_message("\n*********** Begin setup step...\n");
   t = clock();
 
   switch(PreprocessMode)
@@ -1247,9 +1281,8 @@ double QPproblem::gpdtsolve(double *solution)
   t = clock() - t;
   if (verbosity > 0 && PreprocessMode != 0)
   {
-      sprintf(OutputStream,
-              "  Time for setup: %.2lf\n", (double)t/CLOCKS_PER_SEC);
-      sprintf(OutputStream,
+      output_message( "  Time for setup: %.2lf\n", (double)t/CLOCKS_PER_SEC);
+      output_message(
               "\n\n*********** Begin decomposition technique...\n");
   }
 
@@ -1269,9 +1302,9 @@ double QPproblem::gpdtsolve(double *solution)
 
   for (i = 0; i < ell; i++)
   {
-    bmem[i] = 0;
-    cec[i]  = 0;
-    st[i]   = 0;
+      bmem[i] = 0;
+      cec[i]  = 0;
+      st[i]   = 0;
   }
 
   sp_y     = (int    *)malloc(chunk_size*sizeof(int               ));
@@ -1292,10 +1325,10 @@ double QPproblem::gpdtsolve(double *solution)
 
   if (verbosity == 1)
   {
-      sprintf(OutputStream, "  IT  | Prep Time | Solver IT | Solver Time |");
-      sprintf(OutputStream, " Grad Time | KKT violation\n");
-      sprintf(OutputStream, "------+-----------+-----------+-------------+");
-      sprintf(OutputStream, "-----------+--------------\n");
+      output_message( "  IT  | Prep Time | Solver IT | Solver Time |");
+      output_message( " Grad Time | KKT violation\n");
+      output_message( "------+-----------+-----------+-------------+");
+      output_message( "-----------+--------------\n");
   }
 
   /***************************************************************************/
@@ -1314,11 +1347,11 @@ double QPproblem::gpdtsolve(double *solution)
       }
 
       if (verbosity > 1)
-          sprintf(OutputStream, "\n*********** ITERATION: %d\n", nit + 1);
+          output_message("\n*********** ITERATION: %d\n", nit + 1);
       else if (verbosity > 0)
-          sprintf(OutputStream, "%5d |", nit + 1);
+          output_message( "%5d |", nit + 1);
       else
-          sprintf(OutputStream, ".");
+          output_message( ".");
       fflush(stdout);
 
       nzout = 0;
@@ -1337,7 +1370,7 @@ double QPproblem::gpdtsolve(double *solution)
       }
 
       if (verbosity > 1)
-          sprintf(OutputStream, "  spe: %e ", sp_e);
+          output_message( "  spe: %e ", sp_e);
 
       for (i = 0; i < chunk_size; i++)
           sp_y[i] = y_in(i);
@@ -1404,55 +1437,103 @@ double QPproblem::gpdtsolve(double *solution)
          }
       }
 
-    /*** Proximal point modification: first type ***/
-
-    aux = fabs(sp_D[0]);
-    for (i = 1; i < chunk_size; i++)
-        if (fabs(sp_D[i*chunk_size + i]) > aux)
-            aux = fabs(sp_D[i*chunk_size + i]);
-    for (i = 0; i < chunk_size; i++)
-    {
-        vau[i]                  = sp_D[i*chunk_size + i];
-        sp_h[i]                -= aux* tau_proximal * alpha_in(i);
-        sp_D[i*chunk_size + i] += (float)(aux*tau_proximal);
-    }
-
     t = clock() - t;
     if (verbosity > 1)
-        sprintf(OutputStream,
+        output_message(
                 "  Preparation Time: %.2lf\n", (double)t/CLOCKS_PER_SEC);
     else if (verbosity > 0)
-        sprintf(OutputStream, "  %8.2lf |", (double)t/CLOCKS_PER_SEC);
+        output_message( "  %8.2lf |", (double)t/CLOCKS_PER_SEC);
     tot_prep_time += (double)t/CLOCKS_PER_SEC;
 
-    t = clock();
-    if (kktold < delta*100)
-        for (i = 0; i < chunk_size; i++)
-            sp_alpha[i] = alpha_in(i);
+    /*** Proximal point modification: first type ***/
+
+    if (tau_proximal < 0.0)
+      tau_proximal_this = 0.0;
     else
+      tau_proximal_this = tau_proximal;
+    proximal_count = 0;
+    do {
+      t = clock();
+      for (i = 0; i < chunk_size; i++)
+      {
+          vau[i]                  = sp_D[i*chunk_size + i];
+          sp_h[i]                -= tau_proximal_this * alpha_in(i);
+          sp_D[i*chunk_size + i] += (float)tau_proximal_this;
+      }
+
+      if (kktold < delta*100)
+          for (i = 0; i < chunk_size; i++)
+              sp_alpha[i] = alpha_in(i);
+      else
+          for (i = 0; i < chunk_size; i++)
+              sp_alpha[i] = 0.0;
+
+      /*** call the chosen inner gradient projection QP solver ***/
+      i = gpm_solver(projection_solver, projection_projector, chunk_size, 
+                    sp_D, sp_h, c_const, sp_e, sp_y, sp_alpha, 
+                    DELTAvpm*DELTAkin, &lsCount, &projCount);
+
+      if (i > vpmWarningThreshold)
+      {
+        if (ker_type == 2)
+        {
+            output_message( "\n WARNING: inner subproblem hard to solve;");
+            output_message( " setting a smaller -q or");
+            output_message( " tuning -c and -g options might help.\n");
+        }
+        else
+        {
+            output_message( "\n WARNING: inner subproblem hard to solve;");
+            output_message( " set a smaller -q or");
+            output_message( " try a better data scaling.\n");
+        }
+      }
+
+      t = clock() - t;
+      tot_vpm_iter   += i;
+      tot_vpm_secant += projCount;
+      tot_vpm_time   += (double)t/CLOCKS_PER_SEC;
+      if (verbosity > 1)
+      {
+          output_message("  Solver it: %d", i);
+          output_message(", ls: %d", lsCount);
+          output_message(", time: %.2lf\n", (double)t/CLOCKS_PER_SEC);
+      }
+      else if (verbosity > 0)
+      {
+          output_message("    %6d", i);
+          output_message(" |    %8.2lf |", (double)t/CLOCKS_PER_SEC);
+      }
+
+      /*** Proximal point modification: second type ***/
+
+      for (i = 0; i < chunk_size; i++)
+          sp_D[i*chunk_size + i] = (float)vau[i];
+      tau_proximal_this = 0.0;
+      if (tau_proximal < 0.0)
+      {
+        dfval = 0.0;
         for (i = 0; i < chunk_size; i++)
-            sp_alpha[i] = 0.0;
+        {
+          aux = 0.0;
+          for (j = 0; j < chunk_size; j++)
+            aux += sp_D[i*chunk_size + j]*(alpha_in(j) - sp_alpha[j]);
+          dfval += (0.5*aux - st[index_in[i]]*y_in(i) + 1.0) * (alpha_in(i) - sp_alpha[i]);
+        }
+        
+        aux=0.0;
+        for (i = 0; i < chunk_size; i++)
+            aux +=  (alpha_in(i) - sp_alpha[i])*(alpha_in(i) - sp_alpha[i]);
 
-
-    /*** call the chosen inner gradient projection QP solver ***/
-    i = gpm_solver(projection_solver, chunk_size, sp_D, sp_h, c_const,
-                   sp_e, sp_y, sp_alpha, DELTAvpm, &lsCount);
-
-    t = clock() - t;
-    if (verbosity > 1)
-        sprintf(OutputStream, "  Solver it: %d, ls: %d, time: %.2lf\n",
-                                         i, lsCount, (double)t/CLOCKS_PER_SEC);
-    else if (verbosity > 0)
-        sprintf(OutputStream, "    %6d |    %8.2lf |",
-                                         i, (double)t/CLOCKS_PER_SEC);
-
-    tot_vpm_iter += i;
-    tot_vpm_time += (double)t/CLOCKS_PER_SEC;
-
-    /*** Proximal point modification: second type ***/
-
-    for (i = 0; i < chunk_size; i++)
-        sp_D[i*chunk_size + i] = (float)vau[i];
+        if ((-dfval/aux) < -0.5*tau_proximal)
+        {
+          tau_proximal_this = -tau_proximal;
+          if (verbosity > 0)
+            printf("tau threshold: %lf  ", -dfval/aux);
+        }
+      }
+      proximal_count++;
+    } while (tau_proximal_this != 0.0 && proximal_count < 2); // Proximal point loop
 
     t = clock();
 
@@ -1494,7 +1575,7 @@ double QPproblem::gpdtsolve(double *solution)
                     st[i] += alpha[jin] * y[jin] * ptmw[i];
             }
             if (verbosity > 1)
-                sprintf(OutputStream,
+                output_message(
                  "  G*x0 time: %.2lf\n", (double)(clock()-ti2)/CLOCKS_PER_SEC);
         }
     }
@@ -1519,13 +1600,13 @@ double QPproblem::gpdtsolve(double *solution)
 
     t = clock() - t;
     if (verbosity > 1)
-        sprintf(OutputStream,
+        output_message(
                 "  Gradient updating time: %.2lf\n", (double)t/CLOCKS_PER_SEC);
     else if (verbosity > 0)
-        sprintf(OutputStream, "  %8.2lf |", (double)t/CLOCKS_PER_SEC);
+        output_message( "  %8.2lf |", (double)t/CLOCKS_PER_SEC);
     tot_st_time += (double)t/CLOCKS_PER_SEC;
 
-    /* global updating of the solution vector */
+    /*** global updating of the solution vector ***/
     for (i = 0; i < chunk_size; i++)
         alpha_in(i) = sp_alpha[i];
 
@@ -1537,7 +1618,8 @@ double QPproblem::gpdtsolve(double *solution)
             if (is_free(i))  j++;
             if (is_bound(i)) k++;
         }
-        sprintf(OutputStream, "  SV: %d,  BSV: %d\n", j+k, k);
+        output_message("  SV: %d", j+k);
+        output_message(",  BSV: %d\n", k);
     }
     Cache->Iteration();
     nit = nit+1;
@@ -1559,9 +1641,9 @@ double QPproblem::gpdtsolve(double *solution)
   for (i = 0; i < ell; i++)
       fval += alpha[i]*(y[i]*st[i]*0.5 - 1.0);
 
-  sprintf(OutputStream, "\n------+-----------+-----------+-------------+");
-  sprintf(OutputStream, "-----------+--------------\n");
-  sprintf(OutputStream,
+  output_message("\n------+-----------+-----------+-------------+");
+  output_message("-----------+--------------\n");
+  output_message(
       "\n- TOTAL ITERATIONS: %i\n", nit);
 
   if (verbosity > 1)
@@ -1575,11 +1657,11 @@ double QPproblem::gpdtsolve(double *solution)
            if (cec[i] > 1) k++;
            if (cec[i] > 2) z++;
       }
-      sprintf(OutputStream,
+      output_message(
         "- Variables entering the working set at least one time:  %i\n", j);
-      sprintf(OutputStream,
+      output_message(
         "- Variables entering the working set at least two times:  %i\n", k);
-      sprintf(OutputStream,
+      output_message(
         "- Variables entering the working set at least three times:  %i\n", z);
   }
 
@@ -1609,16 +1691,24 @@ double QPproblem::gpdtsolve(double *solution)
   delete Cache;
 
   aux = KER->KernelEvaluations;
-  sprintf(OutputStream, "- Total CPU time: %lf\n", total_time);
+  output_message( "- Total CPU time: %lf\n", total_time);
   if (verbosity > 0)
   {
-    sprintf(OutputStream, "- Total kernel evaluations: %.0lf\n", aux);
-    sprintf(OutputStream, "- Total inner sover iterations: %i\n", tot_vpm_iter);
-    sprintf(OutputStream, "- Total preparation time: %lf\n", tot_prep_time);
-    sprintf(OutputStream, "- Total inner solver time: %lf\n", tot_vpm_time);
-    sprintf(OutputStream, "- Total gradient updating time: %lf\n", tot_st_time);
+      output_message( 
+              "- Total kernel evaluations: %.0lf\n", aux);
+      output_message( 
+              "- Total inner solver iterations: %i\n", tot_vpm_iter);
+      if (projection_projector == 1) 
+          output_message( 
+              "- Total projector iterations: %i\n", tot_vpm_secant);
+      output_message( 
+              "- Total preparation time: %lf\n", tot_prep_time);
+      output_message( 
+              "- Total inner solver time: %lf\n", tot_vpm_time);
+      output_message( 
+              "- Total gradient updating time: %lf\n", tot_st_time);
   }
-  sprintf(OutputStream, "- Objective function value: %lf\n", fval);
+  output_message( "- Objective function value: %lf\n", fval);
   return aux;
 }
 
@@ -1628,7 +1718,7 @@ double QPproblem::gpdtsolve(double *solution)
 void QPproblem::write_solution(FILE *fp, double *sol)
 {
   register int i, j;
-  int sv_number, bsv;
+  int      sv_number, bsv;
 
   bsv = sv_number = 0;
   for (i = 0; i < ell; i++)
@@ -1642,7 +1732,7 @@ void QPproblem::write_solution(FILE *fp, double *sol)
    *   This is intended to give the user the chance to use the    *
    *   SVMlight classification module 'svm_classify' to make      *
    *   predictions.                                               */
-  fprintf(fp, "GPDT model output (same format as Joachims' SVMlight)\n");
+  fprintf(fp, "SVM-light Version V6.01\n");
   fprintf(fp, "%d # kernel type\n", ker_type);
   fprintf(fp, "%d # kernel parameter -d\n", (int)KER->degree);
   fprintf(fp, "%.8g # kernel parameter -g\n", KER->sigma);
@@ -1663,9 +1753,9 @@ void QPproblem::write_solution(FILE *fp, double *sol)
               fprintf(fp, " %d:%.8g", KER->ix[i][j], (double)KER->x[i][j]);
           fprintf(fp, "\n");
       }
-  sprintf(OutputStream, "- SV  = %d\n", sv_number);
-  sprintf(OutputStream, "- BSV = %d\n", bsv);
-  sprintf(OutputStream, "- Threshold b = %.8g\n", -bee);
+  output_message( "- SV  = %d\n", sv_number);
+  output_message( "- BSV = %d\n", bsv);
+  output_message( "- Threshold b = %.8g\n", -bee);
 }
 
 

@@ -7,10 +7,14 @@
  *** memory parallel environments. It uses the Joachims' problem            ***
  *** decomposition technique to split the whole quadratic programming (QP)  ***
  *** problem into a sequence of smaller QP subproblems, each one being      ***
- *** solved by a suitable gradient projection method (GPM). The currently   ***
- *** implemented GPMs are the Generalized Variable Projection Method (GVPM, ***
- *** by T. Serafini, G. Zanghirati, L. Zanni) and the Dai-Fletcher method   ***
- *** (DFGPM, by Y.H. Dai, R. Fletcher).                                     ***
+ *** solved by a suitable gradient projection method (GPM). The presently   ***
+ *** implemented GPMs are the Generalized Variable Projection Method        ***
+ *** GVPM (T. Serafini, G. Zanghirati, L. Zanni, "Gradient Projection       ***
+ *** Methods for Quadratic Programs and Applications in Training Support    ***
+ *** Vector Machines"; Optim. Meth. Soft. 20, 2005, 353-378) and the        ***
+ *** Dai-Fletcher Method DFGPM (Y. Dai and R. Fletcher,"New Algorithms for  ***
+ *** Singly Linear Constrained Quadratic Programs Subject to Lower and      ***
+ *** Upper Bounds"; Math. Prog. to appear).                                 ***
  ***                                                                        ***
  *** Authors:                                                               ***
  ***  Thomas Serafini, Luca Zanni                                           ***
@@ -58,8 +62,8 @@
  ***                                                                        ***
  *** File:     gpdt.cpp                                                     ***
  *** Type:     scalar                                                       ***
- *** Version:  0.9 beta                                                     ***
- *** Date:     July 21, 2004                                                ***
+ *** Version:  1.0                                                          ***
+ *** Date:     October, 2005                                                ***
  *** Revision: 1                                                            ***
  ***                                                                        ***
  ******************************************************************************/
@@ -69,11 +73,6 @@
 #include <ctype.h>
 #include <math.h>
 #include "gpdt.h"
-
-char    cOutputStream[10000][80]; /* buffer array to store output messages */
-int     nOutputStream;
-
-#define OutputStream (cOutputStream[nOutputStream++])
 
 void    help_message(void);
 void    fatalError(const char *msg1, const char *msg2);
@@ -88,27 +87,28 @@ void    fatalError(const char *msg1, const char *msg2);
 void help_message(void)
 {
   fprintf(stderr, "usage: gpdt [options] example_file model_file\n");
-  fprintf(stderr, "option:\n");
+  fprintf(stderr, "options:\n");
   fprintf(stderr, "   -? this help\n");
   fprintf(stderr, "   -h display help message\n");
   fprintf(stderr, "   -v [0..2] verbosity level (default 1)\n");
   fprintf(stderr, "   -t [0..2] type of kernel function (default 2):\n");
-  fprintf(stderr, "       0: linear (xT y)\n");
-  fprintf(stderr, "       1: polynomial (s(xT y) + r)d\n");
-  fprintf(stderr, "       2: radial basis function (rbf): exp(-g||x - y||2)\n");
+  fprintf(stderr, "       0: linear (x'y)\n");
+  fprintf(stderr, "       1: polynomial (s(x'y) + r)^d\n");
+  fprintf(stderr, "       2: radial basis function (rbf): exp(-g||x - y||^2)\n");
   fprintf(stderr, "   -s parameter s in polynomial kernel (default 1.0)\n");
   fprintf(stderr, "   -r parameter r in polynomial kernel (default 1.0)\n");
   fprintf(stderr, "   -d parameter d in polynomial kernel (default 3)\n");
   fprintf(stderr, "   -g parameter g in rbf kernel (default 1.0)\n");
   fprintf(stderr, "   -c parameter C for SVM classification: trade-off between\n");
   fprintf(stderr, "      training error and margin (default 1.0)\n");
-  fprintf(stderr, "   -q size of the QP-subproblems: q . 2 (default 400)\n");
+  fprintf(stderr, "   -q size of the QP-subproblems: q >= 2 (default 400)\n");
   fprintf(stderr, "   -n maximum number of new indices entering the working set\n");
   fprintf(stderr, "      in each iteration: 2 <= n <= q, n even (default q/3)\n");
   fprintf(stderr, "   -e tolerance for termination criterion (default 0.001)\n");
   fprintf(stderr, "   -a [0, 1] gradient projection-type inner QP solver:\n");
   fprintf(stderr, "      0: Generalized Variable Projection method\n");
   fprintf(stderr, "      1: Dai-Fletcher Projected Gradient method (default)\n");
+  fprintf(stderr, "   -f projector type. 0: Pardalos, 1: Dai-Fletcher secant-based\n");
   fprintf(stderr, "   -m cache size in MB (default 40)\n");
   fprintf(stderr, "   -u parameter for proximal point modification (default 0)\n");
   exit(-1);
@@ -120,17 +120,18 @@ void help_message(void)
 QPproblem::QPproblem()
 {
   /*** set problem defaults ***/
-  maxmw             = 40;
-  c_const           = 10.0;
-  projection_solver = SOLVER_FLETCHER;
-  PreprocessMode    = 0;
-  delta             = 1.0e-3;
-  DELTAsv           = EPS_SV;
-  ker_type          = 2;
-  chunk_size        = 400;
-  q                 = -1;
-  y                 = NULL;
-  tau_proximal      = 0.0;
+  maxmw                = 40;
+  c_const              = 10.0;
+  projection_solver    = SOLVER_FLETCHER;
+  projection_projector = 1;
+  PreprocessMode       = 0;
+  delta                = 1.0e-3;
+  DELTAsv              = EPS_SV;
+  ker_type             = 2;
+  chunk_size           = 400;
+  q                    = -1;
+  y                    = NULL;
+  tau_proximal         = 0.0;
   dim = 1; //FIXME make linadd kernels efficient
 }
 
@@ -139,9 +140,12 @@ QPproblem::QPproblem()
 /******************************************************************************/
 QPproblem::~QPproblem()
 {
+  if (y != NULL) free(y);
 }
 
-/*** setter method for the subproblem features ***/
+/******************************************************************************/
+/*** Setter method for the subproblem features                              ***/
+/******************************************************************************/
 void QPproblem::Subproblem(QPproblem &p, int len, int *perm)
 {
   int k;
@@ -154,7 +158,6 @@ void QPproblem::Subproblem(QPproblem &p, int len, int *perm)
   for (k = 0; k < ell; k++)
       y[k] = p.y[perm[k]];
 }
-
 
 /******************************************************************************/
 /*** Extract the samples information from an SVMlight-compliant data file   ***/
@@ -181,24 +184,73 @@ int prescan_document(char *file, int *lines, int *vlen, int *ll)
     c = (char)ic;
     current_length++;
 
-    if(c == ' ')
-      current_vlen++;
+    if (c == ' ')
+        current_vlen++;
 
-    if(c == '\n')
+    if (c == '\n')
     {
-      (*lines)++;
-      if (current_length > (*ll))
-        *ll = current_length;
-      if (current_vlen > (*vlen))
-        *vlen = current_vlen;
-      current_length=0;
-      current_vlen=0;
+        (*lines)++;
+        if (current_length > (*ll))
+            *ll = current_length;
+        if (current_vlen > (*vlen))
+            *vlen = current_vlen;
+        current_length = 0;
+        current_vlen   = 0;
     }
   }
   fclose(fl);
   return(0);
 }
 
+/******************************************************************************/
+/*** Read in a GPDT-compliant binary data file                              ***/
+/******************************************************************************/
+int QPproblem::ReadGPDTBinary(char *fName)
+{
+  int   i, v;
+  int   **data_ix, *data_lx;
+  float **data_x;
+  FILE  *fp = fopen(fName, "rb");
+
+  if (fp == NULL) return -1;
+
+  fread(&v, 1, 4, fp);
+  if (v != 0)
+  {
+      fprintf(stderr, "Wrong binary file format.\n");
+      fclose(fp);
+      return -2;
+  }
+  fread(&ell, 1, 4, fp);
+  fread(&dim, 1, 4, fp);
+
+  data_lx = (int    *)malloc(ell*sizeof(int    ));
+  data_ix = (int   **)malloc(ell*sizeof(int *  ));
+  data_x  = (float **)malloc(ell*sizeof(float *));
+  y       = (int    *)malloc(ell*sizeof(int    ));
+
+  fread(data_lx, ell, 4, fp);
+  fread(y, ell, 4, fp);
+
+  for (i = 0; i < ell; i++)
+  {
+       data_ix[i] = (int   *)malloc(data_lx[i]*sizeof(int  ));
+       data_x[i]  = (float *)malloc(data_lx[i]*sizeof(float));
+       fread(data_ix[i], data_lx[i], 4, fp);
+       fread(data_x[i],  data_lx[i], 4, fp);
+  }
+  fclose(fp);
+
+  if (chunk_size > ell)
+      chunk_size = ell;
+  if (q > chunk_size)
+      q = chunk_size;
+
+  /*** set the data in the kernel object ***/
+  KER->SetData(data_x, data_ix, data_lx, ell, dim);
+
+  return 0;
+}
 
 /******************************************************************************/
 /*** Read the training data from an SVMlight-compliant file                 ***/
@@ -229,8 +281,8 @@ int QPproblem::ReadSVMFile(char *f1_input)
   data_x  = (float **)malloc(ell_space*sizeof(float *  ));
   y       = (int    *)malloc(ell_space*sizeof(int      ));
   line    = (char   *)malloc(max_row_length*sizeof(char));
-  line_ix = (int    *)malloc(vlen * sizeof(int         ));
-  line_x  = (float  *)malloc(vlen * sizeof(float       ));
+  line_ix = (int    *)malloc(vlen*sizeof(int           ));
+  line_x  = (float  *)malloc(vlen*sizeof(float         ));
 
   /*** open the training data file for input ***/
   fp1_in = fopen(f1_input, "r");
@@ -247,6 +299,11 @@ int QPproblem::ReadSVMFile(char *f1_input)
 
     if (sscanf(line, "%d", &j) != EOF)   // read the sample label
     {
+      if (j != -1 && j != 1)
+      {
+          fprintf(stderr, "ERROR line %d: label must be -1 or 1.\n", ell);
+          exit(0);
+      }
       y[ell] = j;
 
       j = i = 0;
@@ -254,9 +311,9 @@ int QPproblem::ReadSVMFile(char *f1_input)
       while (line[i] > ' ') i++;
       while (sscanf(line+i, "%d:%f", &line_ix[j], &line_x[j]) != EOF)
       {
-        while (line[i] == ' ' || line[i] == '\t') i++;
-        while (line[++i] > ' ');
-        j++;
+         while (line[i] == ' ' || line[i] == '\t') i++;
+         while (line[++i] > ' ');
+         j++;
       }
 
       data_lx[ell] = j;
@@ -273,8 +330,8 @@ int QPproblem::ReadSVMFile(char *f1_input)
       }
       else
       {
-          data_ix[ell] = (int   *)malloc(sizeof(int  ));
-          data_x[ell]  = (float *)malloc(sizeof(float));
+          data_ix[ell]    = (int   *)malloc(sizeof(int  ));
+          data_x[ell]     = (float *)malloc(sizeof(float));
           *(data_ix[ell]) = 0;
           *(data_x[ell])  = 0.0;
       }
@@ -306,6 +363,19 @@ int QPproblem::ReadSVMFile(char *f1_input)
 }
 
 /******************************************************************************/
+/*** return 1 if problem is single class, 0 if two-class                    ***/
+/******************************************************************************/
+int QPproblem::Check2Class(void)
+{
+  int i;
+
+  for (i = 1; i < ell; i++)
+      if (y[i] != y[0])
+          return 0;
+  return 1;
+}
+
+/******************************************************************************/
 /*** Compute the size of data splitting for preprocessing                   ***/
 /******************************************************************************/
 void SplitParts(int n, int part, int parts, int *dim, int *off)
@@ -331,6 +401,27 @@ void fatalError(const char* msg1, const char* msg2)
 {
   fprintf(stderr, ">>> FATAL ERROR: %s\n\t\t%s\n", msg1, msg2);
   exit(-1);
+}
+
+void output_message(const char* msg1)
+{
+  printf(msg1);
+}
+
+void output_message(const char* msg1, int v)
+{
+char str[256];
+
+  sprintf(str, msg1, v);
+  output_message(str);
+}
+
+void output_message(const char* msg1, double v)
+{
+char str[256];
+
+  sprintf(str, msg1, v);
+  output_message(str);
 }
 
 /******************************************************************************/
