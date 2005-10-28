@@ -162,7 +162,6 @@ void Cache::swap_index(int i, int j)
 //
 class QMatrix {
 public:
-	virtual ~QMatrix();
 	virtual Qfloat *get_Q(int column, int len) const = 0;
 	virtual Qfloat *get_QD() const = 0;
 	virtual void swap_index(int i, int j) const = 0;
