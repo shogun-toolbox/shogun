@@ -70,7 +70,7 @@
 #include "kernel/Kernel.h"
 
 #define MAXLENGTH 256
-#define cachetype float
+#define cachetype KERNELCACHE_ELEM
 #define EPS_SV    1.0e-9   /* precision for multipliers */
 
 enum {
