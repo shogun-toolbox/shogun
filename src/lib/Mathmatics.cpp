@@ -347,3 +347,25 @@ double CMath::entropy(REAL* p, INT len)
 
 	return e;
 }
+
+
+//Howto construct the pseudo inverse (from "The Matrix Cookbook")
+//
+//Assume A does not have full rank, i.e. A is n \times m and rank(A) = r < min(n;m).
+//
+//The matrix A+ known as the pseudo inverse is unique and does always exist.
+//
+//The pseudo inverse A+ can be constructed from the singular value
+//decomposition A = UDV^T , by  A^+ = V(D+)U^T.
+
+REAL* CMath::pinv(REAL* matrix, INT rows, INT cols, REAL* target)
+{
+	if (!target)
+		target= new REAL[rows*cols];
+
+	assert(target);
+
+
+	//svd
+	return NULL;
+}

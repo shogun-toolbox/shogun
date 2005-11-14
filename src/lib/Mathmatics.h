@@ -112,6 +112,8 @@ public:
 		return log(v)/log(10);
 	}
 
+	static REAL* pinv(REAL* matrix, INT rows, INT cols, REAL* target=NULL);
+
 	static inline LONG factorial(INT n)
 	{
 		LONG res=1 ;

@@ -473,7 +473,11 @@ determine_march_mcpu()
 	elif darwin
 	then
 		COMP_OPTS="-Wno-long-double $COMP_OPTS"
+	elif linux
+	then
+		LINKFLAGS="$LINKFLAGS -lpthread"
 	fi
+
 
 	OS="-D`echo $system_name | tr 'a-z-' 'A-Z_'`"
 	echo "Detected operating system: $system_name"
@@ -1309,11 +1313,6 @@ set_opts()
 	then
 		USE_HMMPARALLELSTRUCTURES='#define USE_HMMPARALLELSTRUCTURES 1'
 		USE_HMMPARALLEL='#define USE_HMMPARALLEL 1'
-
-		if linux
-		then
-			LINKFLAGS="$LINKFLAGS -lpthread"
-		fi
 	fi
 
 	if test "$_bigstates" = yes
