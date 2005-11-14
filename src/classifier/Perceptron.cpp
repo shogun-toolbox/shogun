@@ -65,3 +65,13 @@ bool CPerceptron::train()
 
 	return false;
 }
+
+bool CPerceptron::load(FILE* f)
+{
+	return false;
+}
+
+bool CPerceptron::save(FILE* f)
+{
+	return false;
+}

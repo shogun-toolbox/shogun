@@ -669,6 +669,9 @@ void CKernel::list_kernel()
 		case K_CUSTOM:
 			CIO::message(M_INFO, "K_CUSTOM ");
 			break;
+		case K_DIAG:
+			CIO::message(M_INFO, "K_DIAG ");
+			break;
 		default:
 			CIO::message(M_ERROR, "ERROR UNKNOWN KERNEL TYPE");
 			break;
