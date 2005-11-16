@@ -61,20 +61,35 @@ void nrerror(CHAR error_text[])
    leaves upper right triangle intact (rows first order)
    ***************************************************************/
 
-
 #ifdef HAVE_LAPACK
 bool choldc(double* a, int n, double* p)
 {
-	for (int i=0; i<n; i++)
-		p[i]=a[(n+1)*i];
-
-	int result=clapack_dpotrf(CblasRowMajor, CblasUpper, n, a, n);
-	if (result<0)
-		CIO::message(M_ERROR, "clapack_dpotrf wrong arguments\n");
+	double* a2=new double[n*n];
 
 	for (int i=0; i<n; i++)
-		CMath::swap(p[i],a[(n+1)*i]);
+	{
+		for (int j=0; j<n; j++)
+			a2[n*i+j]=a[n*i+j];
+	}
 
+	int result=clapack_dpotrf(CblasRowMajor, CblasUpper, n, a2, n);
+
+	for (int i=0; i<n; i++)
+		p[i]=a2[(n+1)*i];
+
+	for (int i=0; i<n; i++)
+	{
+		for (int j=i+1; j<n; j++)
+		{
+			a[n*j+i]=a2[n*i+j];
+		}
+	}
+
+	if (result>0)
+		CIO::message(M_WARN, "Choldc failed, matrix not positive definite\n");
+
+	delete[] a2;
+	
 	return result==0;
 }
 #else
