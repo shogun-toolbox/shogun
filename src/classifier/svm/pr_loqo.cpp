@@ -56,28 +56,73 @@ void nrerror(CHAR error_text[])
    leaves upper right triangle intact (rows first order)
    ***************************************************************/
 
+
+/* TODO replace with atlas chold version #include <clapack.h>
+int clapack_dpotrf(const enum ATLAS_ORDER Order, const enum ATLAS_UPLO Uplo,
+		                   const int N, double *A, const int lda);
+
+bool choldc(double* a, int n, double* p)
+{
+	void nrerror(CHAR error_text[]);
+	int i, k;
+	double sum;
+	for (i = 0; i < n; i++)
+	{
+		sum=a[(n+1)*i];
+
+		for (k=i-1; k>=0; k--)
+			sum -= a[n*i + k]*a[n*i + k];
+
+		if (sum <= 0.0)
+		{
+			nrerror("Choldc failed, matrix not positive definite");
+			sum = 0.0;
+			return false;
+		}
+
+		p[i]=sqrt(sum);
+		
+	}
+
+
+	clapack_dpotrf(CblasRowMajor, CblasUpper, n, a, n);
+	return true;
+}
+*/
+
 bool choldc(double a[], int n, double p[])
 {
-  void nrerror(CHAR error_text[]);
-  int i, j, k;
-  double sum;
+	void nrerror(CHAR error_text[]);
+	int i, j, k;
+	double sum;
 
-  for (i = 0; i < n; i++){
-    for (j = i; j < n; j++) {
-      sum=a[n*i + j];
-      for (k=i-1; k>=0; k--) sum -= a[n*i + k]*a[n*j + k];
-      if (i == j) {
-	if (sum <= 0.0) {
-	  nrerror("choldc failed, matrix not positive definite");
-	  sum = 0.0;
-	  return false;
+	for (i = 0; i < n; i++)
+	{
+		for (j = i; j < n; j++)
+		{
+			sum=a[n*i + j];
+
+			for (k=i-1; k>=0; k--)
+				sum -= a[n*i + k]*a[n*j + k];
+
+			if (i == j)
+			{
+				if (sum <= 0.0)
+				{
+					nrerror("Choldc failed, matrix not positive definite");
+					sum = 0.0;
+					return false;
+				}
+
+				p[i]=sqrt(sum);
+
+			} 
+			else
+				a[n*j + i] = sum/p[i];
+		}
 	}
-	p[i]=sqrt(sum);
-      } else a[n*j + i] = sum/p[i];
-    }
-  }
 
-  return true;
+	return true;
 }
 
 void cholsb(double a[], int n, double p[], double b[], double x[])
