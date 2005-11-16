@@ -27,6 +27,9 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef HAVE_ATLAS
+#include <clapack.h>
+#endif
 
 //#define	max(A, B)	((A) > (B) ? (A) : (B))
 //#define	min(A, B)	((A) < (B) ? (A) : (B))
@@ -57,39 +60,21 @@ void nrerror(CHAR error_text[])
    ***************************************************************/
 
 
-/* TODO replace with atlas chold version #include <clapack.h>
-int clapack_dpotrf(const enum ATLAS_ORDER Order, const enum ATLAS_UPLO Uplo,
-		                   const int N, double *A, const int lda);
-
+#ifdef HAVE_ATLAS
 bool choldc(double* a, int n, double* p)
 {
-	void nrerror(CHAR error_text[]);
-	int i, k;
-	double sum;
-	for (i = 0; i < n; i++)
-	{
-		sum=a[(n+1)*i];
+	for (int i=0; i<n; i++)
+		p[i]=a[(n+1)*i];
 
-		for (k=i-1; k>=0; k--)
-			sum -= a[n*i + k]*a[n*i + k];
+	int result=clapack_dpotrf(CblasRowMajor, CblasUpper, n, a, n);
+	if (result<0)
+		CIO::message(M_ERROR, "clapack_dpotrf wrong arguments\n");
+	return result==0;
 
-		if (sum <= 0.0)
-		{
-			nrerror("Choldc failed, matrix not positive definite");
-			sum = 0.0;
-			return false;
-		}
-
-		p[i]=sqrt(sum);
-		
-	}
-
-
-	clapack_dpotrf(CblasRowMajor, CblasUpper, n, a, n);
-	return true;
+	for (int i=0; i<n; i++)
+		CMath::swap(p[i],a[(n+1)*i]);
 }
-*/
-
+#else
 bool choldc(double a[], int n, double p[])
 {
 	void nrerror(CHAR error_text[]);
@@ -124,6 +109,7 @@ bool choldc(double a[], int n, double p[])
 
 	return true;
 }
+#endif
 
 void cholsb(double a[], int n, double p[], double b[], double x[])
 {

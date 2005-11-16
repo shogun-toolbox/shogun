@@ -23,8 +23,8 @@ _shortrealkernelcache=yes
 _logsumarray=no
 _hmmparallel=no
 _largefile=yes
-_lapack=no
-_atlas=no
+_lapack=yes
+_atlas=yes
 _bigstates=yes
 _hmmcache=yes
 _debug=no
@@ -266,6 +266,7 @@ Optional features:
 
   --disable-largefile           disable large file support (64bit file acces routines) [enabled]
   --disable-lapack    	        disable lapack math routines and use built in ones (slower!) [enabled]
+  --disable-atlas    	        disable atlas math routines and use built in ones (slower!) [enabled]
   --disable-bigstates	        disable big (16bit) state [enabled]
   --disable-hmmcache 	        disable HMM cache [enabled]
 
