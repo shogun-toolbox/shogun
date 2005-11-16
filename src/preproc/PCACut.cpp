@@ -5,12 +5,11 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 extern "C" {
 #include <cblas.h>
 }
 
-#ifdef HAVE_LAPACK
 #include "lib/lapack.h"
 
 #include "lib/common.h"
@@ -264,6 +263,4 @@ bool CPCACut::save_init_data(FILE* dst)
 	assert(fwrite(T, sizeof(double), num_dim*num_old_dim, dst)==(UINT) num_old_dim*num_dim);
 	return true;
 }
-
 #endif // HAVE_LAPACK
-#endif // HAVE_ATLAS

@@ -1,6 +1,6 @@
 #include "lib/config.h"
 
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 extern "C" {
 #include <cblas.h>
 }

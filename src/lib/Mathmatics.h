@@ -7,7 +7,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 extern "C" {
 #include <cblas.h>
 }
@@ -153,7 +153,7 @@ public:
 	static inline REAL dot(REAL* v1, REAL* v2, INT n)
 	{
 		REAL r=0;
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 		INT skip=1;
 		r = cblas_ddot(n, v1, skip, v2, skip);
 #else

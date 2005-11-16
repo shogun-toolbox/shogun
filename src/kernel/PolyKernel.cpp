@@ -1,6 +1,6 @@
 #include "lib/config.h"
 
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 extern "C" {
 #include <cblas.h>
 }
@@ -142,7 +142,7 @@ REAL CPolyKernel::compute(INT idx_a, INT idx_b)
 
   INT ialen=(int) alen;
 
-#ifndef HAVE_ATLAS
+#ifndef HAVE_LAPACK
   REAL result=0;
   {
     for (INT i=0; i<ialen; i++)
@@ -154,7 +154,7 @@ REAL CPolyKernel::compute(INT idx_a, INT idx_b)
 #else
   INT skip=1;
   REAL result=cblas_ddot(ialen, avec, skip, bvec, skip);
-#endif // HAVE_ATLAS
+#endif
 
   if (inhomogene)
 	  result+=1;

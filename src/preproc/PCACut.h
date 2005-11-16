@@ -3,7 +3,7 @@
 
 #include "lib/config.h"
 
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 
 #include <stdio.h>
 

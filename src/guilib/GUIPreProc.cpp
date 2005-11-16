@@ -43,7 +43,6 @@ bool CGUIPreProc::add_preproc(CHAR* param)
 	CPreProc* preproc=NULL;
 
 	param=CIO::skip_spaces(param);
-#ifdef HAVE_ATLAS
 #ifdef HAVE_LAPACK
 	if (strncmp(param,"PCACUT",6)==0)
 	{
@@ -54,8 +53,7 @@ bool CGUIPreProc::add_preproc(CHAR* param)
 		preproc=new CPCACut(do_whitening, thresh);
 	}
 	else 
-#endif // LAPACK
-#endif // ATLAS
+#endif
 	if (strncmp(param,"NORMONE",7)==0)
 	{
 		preproc=new CNormOne();
@@ -127,15 +125,13 @@ bool CGUIPreProc::load(CHAR* param)
 	{
 		assert(fread(id, sizeof(char), 4, file)==4);
 	
-#ifdef HAVE_ATLAS
 #ifdef HAVE_LAPACK
 		if (strncmp(id, "PCAC", 4)==0)
 		{
 			preproc=new CPCACut();
 		}
 		else 
-#endif // LAPACK
-#endif // ATLAS
+#endif
 		if (strncmp(id, "NRM1", 4)==0)
 		{
 			preproc=new CNormOne();

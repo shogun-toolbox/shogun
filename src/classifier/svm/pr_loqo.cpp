@@ -27,8 +27,10 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
+extern "C" {
 #include <clapack.h>
+}
 #endif
 
 //#define	max(A, B)	((A) > (B) ? (A) : (B))
@@ -60,7 +62,7 @@ void nrerror(CHAR error_text[])
    ***************************************************************/
 
 
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 bool choldc(double* a, int n, double* p)
 {
 	for (int i=0; i<n; i++)
@@ -69,10 +71,11 @@ bool choldc(double* a, int n, double* p)
 	int result=clapack_dpotrf(CblasRowMajor, CblasUpper, n, a, n);
 	if (result<0)
 		CIO::message(M_ERROR, "clapack_dpotrf wrong arguments\n");
-	return result==0;
 
 	for (int i=0; i<n; i++)
 		CMath::swap(p[i],a[(n+1)*i]);
+
+	return result==0;
 }
 #else
 bool choldc(double a[], int n, double p[])

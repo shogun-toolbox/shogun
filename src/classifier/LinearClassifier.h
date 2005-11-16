@@ -20,20 +20,7 @@ class CLinearClassifier : public CClassifier
 			INT vlen;
 			bool vfree;
 			double* vec=features->get_feature_vector(idx, vlen, vfree);
-
-
-#ifndef HAVE_ATLAS
-			REAL result=0;
-			{
-				for (INT i=0; i<vlen; i++)
-					result+=w[i]*vec[i];
-			}
-#else
-			int len=(int) vlen;
-			int skip=1;
-			REAL result = cblas_ddot(len, w, skip, vec, skip);
-#endif
-
+			REAL result=CMath::dot(w,vec,vlen);
 			features->free_feature_vector(vec, idx, vfree);
 
 			return result+bias;

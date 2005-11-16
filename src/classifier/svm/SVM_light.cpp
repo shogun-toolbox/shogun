@@ -21,7 +21,7 @@
 #include <unistd.h>
 
 
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 extern "C" {
 #include <cblas.h>
 }
@@ -1630,7 +1630,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 	}
 	
 	REAL objective=0;
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 	REAL *alphay  = buffer_num ;
 	REAL sumalpha = 0 ;
 	
@@ -1875,7 +1875,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 #endif
 	
 	// update lin
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 	cblas_dgemv(CblasColMajor,
 				CblasTrans, num_kernels, num,
 				1.0, W, num_kernels, w, 1, 0.0, lin,1);
@@ -1976,7 +1976,7 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 		delete[] w1;
 	}
 	REAL objective=0;
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 	REAL *alphay  = buffer_num;
 	REAL sumalpha = 0;
 	
@@ -2217,7 +2217,7 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 #endif
 	
 	// update lin
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 	cblas_dgemv(CblasColMajor,
 				CblasTrans, num_kernels, num,
 				1.0, W, num_kernels, w, 1, 0.0, lin,1);

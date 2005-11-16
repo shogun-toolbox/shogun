@@ -1,6 +1,6 @@
 #include "lib/config.h"
 
-#ifdef HAVE_ATLAS
+#ifdef HAVE_LAPACK
 extern "C" {
 #include <cblas.h>
 }
@@ -97,7 +97,7 @@ REAL CLinearKernel::compute(INT idx_a, INT idx_b)
 
   INT ialen=(int) alen;
 
-#ifndef HAVE_ATLAS
+#ifndef HAVE_LAPACK
   REAL result=0;
   {
     for (INT i=0; i<ialen; i++)
@@ -107,7 +107,7 @@ REAL CLinearKernel::compute(INT idx_a, INT idx_b)
 #else
   INT skip=1;
   REAL result = cblas_ddot(ialen, avec, skip, bvec, skip)/scale;
-#endif // HAVE_ATLAS
+#endif
 
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
@@ -143,7 +143,7 @@ REAL CLinearKernel::compute_optimized(INT idx_b)
 
 	int ialen=(int) blen;
 
-#ifndef HAVE_ATLAS
+#ifndef HAVE_LAPACK
 	REAL result=0;
 	{
 		for (INT i=0; i<ialen; i++)

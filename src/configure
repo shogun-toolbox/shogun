@@ -24,7 +24,6 @@ _logsumarray=no
 _hmmparallel=no
 _largefile=yes
 _lapack=yes
-_atlas=yes
 _bigstates=yes
 _hmmcache=yes
 _debug=no
@@ -265,8 +264,7 @@ Optional features:
   --enable-hmm-parallel          enable parallel structures in hmm training. genefinder will then run as many threads as the machine has (much faster) [disabled]
 
   --disable-largefile           disable large file support (64bit file acces routines) [enabled]
-  --disable-lapack    	        disable lapack math routines and use built in ones (slower!) [enabled]
-  --disable-atlas    	        disable atlas math routines and use built in ones (slower!) [enabled]
+  --disable-lapack    	        disable blas and lapack math routines and use built in ones (slower!) [enabled]
   --disable-bigstates	        disable big (16bit) state [enabled]
   --disable-hmmcache 	        disable HMM cache [enabled]
 
@@ -349,8 +347,6 @@ for ac_option do
   --enable-largefile)	_largefile=yes	;;
   --disable-lapack)		_lapack=no	;;
   --enable-lapack)		_lapack=yes	;;
-  --disable-atlas)		_atlas=no	;;
-  --enable-atlas)		_atlas=yes	;;
   --disable-bigstates)	_bigstates=no	;;
   --enable-bigstates)	_bigstates=yes	;;
   --disable-hmmcache)	_hmmcache=no	;;
@@ -1286,13 +1282,8 @@ set_opts()
 		then
 			LINKFLAGS="$LINKFLAGS"
 		else
-			LINKFLAGS="$LINKFLAGS -llapack_pic -lcblas -lf77blas -ldl -lrt -lm -lg2c"
+			LINKFLAGS="$LINKFLAGS -llapack-3 -lblas-3"
 		fi
-	fi
-
-	if test "$_atlas" = yes
-	then
-		HAVE_ATLAS='#define HAVE_ATLAS 1'
 	fi
 
 	if test "$_logcache" = yes
@@ -1398,7 +1389,6 @@ $HAVE_MATLAB
 $HAVE_OCTAVE
 $HAVE_LARGEFILE
 $HAVE_LAPACK
-$HAVE_ATLAS
 $USE_LOGCACHE
 $USE_SHORTREAL_KERNELCACHE
 $USE_LOGSUMARRAY
