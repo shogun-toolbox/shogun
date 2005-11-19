@@ -261,7 +261,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		assert(features);
 
 		CIO::message(M_DEBUG, "%d symbols in StringFeatures<CHAR>\n", sf->get_num_symbols());
-		INT max_val=0;
+		ST max_val=0;
 		for (i=0; i<num_vectors; i++)
 		{
 			INT len=sf->get_vector_length(i);
@@ -275,7 +275,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			for (INT j=0; j<len; j++)
 			{
 				str[j]=(ST) cf.remap(sf->get_feature(i,j));
-				max_val=CMath::max((INT) str[j],max_val);
+				max_val=CMath::max((ST) str[j], (ST) max_val);
 			}
 		}
 
@@ -310,7 +310,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			symbol_mask_table[i]=0;
 
 		ST mask=0;
-		for (i=0; i<max_val; i++)
+		for (i=0; i<(INT) max_val; i++)
 			mask=(mask<<1) | 1;
 
 		for (i=0; i<256; i++)

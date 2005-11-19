@@ -6,6 +6,7 @@
 #include "preproc/PCACut.h"
 #include "preproc/SortWord.h"
 #include "preproc/SortWordString.h"
+#include "preproc/SortUlongString.h"
 #include "features/RealFileFeatures.h"
 #include "features/TOPFeatures.h"
 #include "features/FKFeatures.h"
@@ -65,6 +66,10 @@ bool CGUIPreProc::add_preproc(CHAR* param)
 	else if (strncmp(param,"SORTWORDSTRING",14)==0)
 	{
 		preproc=new CSortWordString();
+	}
+	else if (strncmp(param,"SORTULONGSTRING",15)==0)
+	{
+		preproc=new CSortUlongString();
 	}
 	else if (strncmp(param,"SORTWORD",8)==0)
 	{
@@ -359,6 +364,8 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 			{
 				case F_WORD:
 					return ((CStringFeatures<WORD>*) f)->preproc_feature_strings(force);
+				case F_ULONG:
+					return ((CStringFeatures<ULONG>*) f)->preproc_feature_strings(force);
 				default:
 					CIO::not_implemented();
 			}

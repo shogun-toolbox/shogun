@@ -8,8 +8,8 @@
 class CCommWordStringKernel: public CStringKernel<WORD>
 {
  public:
-  CCommWordStringKernel(LONG size, bool use_sign, E_NormalizationType normalization_=E_FULL_NORMALIZATION ) ;
-  ~CCommWordStringKernel() ;
+  CCommWordStringKernel(LONG size, bool use_sign, E_NormalizationType normalization_=E_FULL_NORMALIZATION );
+  ~CCommWordStringKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();
@@ -22,17 +22,17 @@ class CCommWordStringKernel: public CStringKernel<WORD>
   virtual EKernelType get_kernel_type() { return K_COMMWORDSTRING; }
 
   // return the name of a kernel
-  virtual const CHAR* get_name() { return "CommWordString" ; } ;
+  virtual const CHAR* get_name() { return "CommWordString"; }
 
-  virtual bool init_optimization(INT count, INT *IDX, REAL * weights) ;
-  virtual bool delete_optimization() ;
-  virtual REAL compute_optimized(INT idx) ;
+  virtual bool init_optimization(INT count, INT *IDX, REAL * weights);
+  virtual bool delete_optimization();
+  virtual REAL compute_optimized(INT idx);
 
   virtual void add_to_normal(INT idx, REAL weight);
   virtual void clear_normal();
 
-  virtual void remove_lhs() ;
-  virtual void remove_rhs() ;
+  virtual void remove_lhs();
+  virtual void remove_rhs();
 
   inline virtual EFeatureType get_feature_type() { return F_WORD; }
   
@@ -41,7 +41,7 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 	  dsize=dictionary_size;
 	  dweights = dictionary_weights;
   }
-  
+
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
@@ -54,40 +54,39 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 	  {
 		  case E_NO_NORMALIZATION:
 			  return value;
-			  break ;
+			  break;
 		  case E_SQRT_NORMALIZATION:
-			  return value/sqrt(sqrtdiag_lhs[seq_num]) ;
-			  break ;
+			  return value/sqrt(sqrtdiag_lhs[seq_num]);
+			  break;
 		  case E_FULL_NORMALIZATION:
-			  return value/sqrtdiag_lhs[seq_num] ;
-			  break ;
+			  return value/sqrtdiag_lhs[seq_num];
+			  break;
 		  case E_SQRTLEN_NORMALIZATION:
-			  return value/sqrt(sqrt(seq_len)) ;
-			  break ;
+			  return value/sqrt(sqrt(seq_len));
+			  break;
 		  case E_LEN_NORMALIZATION:
-			  return value/sqrt(seq_len) ;
-			  break ;
+			  return value/sqrt(seq_len);
+			  break;
 		  case E_SQLEN_NORMALIZATION:
-			  return value/seq_len ;
-			  break ;
+			  return value/seq_len;
+			  break;
 		  default:
-			  assert(0) ;
+			  assert(0);
 	  }
 
 	  return -CMath::INFTY;
   }
 
  protected:
-  double* sqrtdiag_lhs;
-  double* sqrtdiag_rhs;
+  REAL* sqrtdiag_lhs;
+  REAL* sqrtdiag_rhs;
 
   bool initialized;
 
   INT dictionary_size;
   REAL* dictionary_weights;
-  bool use_sign ;
+  bool use_sign;
 
-  E_NormalizationType normalization ;
+  E_NormalizationType normalization;
 };
-
 #endif

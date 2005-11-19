@@ -6,6 +6,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <assert.h>
 
 #ifdef HAVE_LAPACK
 extern "C" {
@@ -255,70 +256,64 @@ public:
 	/* finds an element in a sorted array via binary search
      * returns -1 if not found */
 	template <class T>
-	static inline INT fast_find(T* output, INT size, T elem)
+	static inline INT binary_search(T* output, INT size, T elem)
 	{
-		INT start=0, end=size-1, middle=size/2 ;
+		INT start=0;
+		INT end=size-1;
 
-		if (output[start]>elem || output[end]<elem)
-			return -1 ;
+		if (size<1)
+			return -1;
 
-		while (1)
+		while (start<end)
 		{
+			INT middle=start+(end-start)/2; 
+
 			if (output[middle]>elem)
-			{
-				end = middle ;
-				middle=start+(end-start)/2 ;
-			} ;
-			if (output[middle]<elem)
-			{
-				start = middle ;
-				middle=start+(end-start)/2 ;
-			}
-			if (output[middle]==elem)
-				return middle ;
-			if (end-start<=1)
-			{
-				if (output[start]==elem)
-					return start ;
-				if (output[end]==elem)
-					return end ;
-				return -1 ;
-			}
+				end=middle-1;
+			else if (output[middle]<elem)
+				start=middle+1;
+			else
+				return middle;
 		}
+
+		if (start<size && output[start]==elem)
+			return start;
+		else
+			return -1;
 	}
 
-	/* finds an element in a sorted array via binary search
-	 * that is smaller-equal elem und the next element is larger-equal  */
-	static inline INT fast_find_range(REAL* output, INT size, REAL elem)
+	/* finds an element in a sorted array via binary search 
+	 * if it exists, else the index the largest smaller element
+	 * is returned
+	 * note: a successor is not mandatory */
+	template <class T>
+	static inline INT binary_search_max_lower_equal(T* output, INT size, T elem)
 	{
-		INT start=0, end=size-2, middle=(size-2)/2 ;
+		INT start=0;
+		INT end=size-1;
 
-		if (output[start]>elem)
-			return -1 ;
-		if (output[end]<=elem)
-			return size-1 ;
+		if (size<1)
+			return -1;
 
-		while (1)
+		while (start<end)
 		{
+			INT middle=start+(end-start)/2; 
+
 			if (output[middle]>elem)
-			{
-				end = middle ;
-				middle=start+(end-start)/2 ;
-			} ;
-			if (output[middle]<elem)
-			{
-				start = middle ;
-				middle=start+(end-start)/2 ;
-			}
-			if (output[middle]<=elem && output[middle+1]>=elem)
-				return middle ;
-			if (end-start<=1)
-			{
-				if (output[start]<=elem && output[start+1]>=elem)
-					return start ;
-				return end ;
-			}
+				end=middle-1;
+			else if (output[middle]<elem)
+				start=middle+1;
+			else
+				return middle;
 		}
+
+		if (start<size && output[start]<=elem)
+			return start;
+
+		if (start>0 && output[start-1]<=elem)
+			return start-1;
+
+		return -1;
 	}
 
 	/** calculates ROC into (fp,tp)

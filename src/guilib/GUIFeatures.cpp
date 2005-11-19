@@ -119,6 +119,10 @@ bool CGUIFeatures::load(CHAR* param)
 			{
 				*f_ptr=new CStringFeatures<WORD>(filename);
 			}
+			else if (strcmp(type, "ULONG")==0)
+			{
+				*f_ptr=new CStringFeatures<ULONG>(filename);
+			}
 			else
 			{
 				CIO::message(M_ERROR, "unknown type\n");

@@ -6,9 +6,8 @@
 
 #include <assert.h>
 
-CCommWordKernel::CCommWordKernel(LONG size, bool use_sign_)
-	: CWordKernel(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
-	  use_sign(use_sign_)
+CCommWordKernel::CCommWordKernel(LONG size, bool sign, E_NormalizationType n) 
+	: CWordKernel(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_sign(sign), normalization(n)
 {
 	properties |= KP_LINADD;
 	dictionary_size= 1<<(sizeof(WORD)*8);
@@ -37,33 +36,33 @@ void CCommWordKernel::remove_lhs()
 
 	lhs = NULL ; 
 	rhs = NULL ; 
-	initialized = false ;
-	sqrtdiag_lhs = NULL ;
-	sqrtdiag_rhs = NULL ;
-} ;
+	initialized = false;
+	sqrtdiag_lhs = NULL;
+	sqrtdiag_rhs = NULL;
+}
 
 void CCommWordKernel::remove_rhs()
 {
 	if (rhs)
-		cache_reset() ;
+		cache_reset();
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs = sqrtdiag_lhs ;
-	rhs = lhs ;
+	sqrtdiag_rhs = sqrtdiag_lhs;
+	rhs = lhs;
 }
 
 bool CCommWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	bool result=CWordKernel::init(l,r,do_init);
-	initialized = false ;
+	initialized = false;
 	INT i;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 	  delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs=NULL ;
+	sqrtdiag_rhs=NULL;
 	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs=NULL ;
+	sqrtdiag_lhs=NULL;
 
 	sqrtdiag_lhs= new REAL[lhs->get_num_vectors()];
 
@@ -116,7 +115,7 @@ bool CCommWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	this->lhs=(CWordFeatures*) l;
 	this->rhs=(CWordFeatures*) r;
 
-	initialized = true ;
+	initialized = true;
 	return result;
 }
 
@@ -126,7 +125,7 @@ void CCommWordKernel::cleanup()
 	clear_normal();
 
 	initialized=false;
-	
+
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
 
@@ -148,119 +147,133 @@ bool CCommWordKernel::save_init(FILE* dest)
   
 REAL CCommWordKernel::compute(INT idx_a, INT idx_b)
 {
-  INT alen, blen;
-  bool afree, bfree;
+	INT alen, blen;
+	bool afree, bfree;
 
-  WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  // can only deal with strings of same length
-  assert(alen==blen);
+	// can only deal with strings of same length
+	assert(alen==blen);
 
-  REAL sqrt_a= 1 ;
-  REAL sqrt_b= 1 ;
-  if (initialized)
-    {
-      sqrt_a=sqrtdiag_lhs[idx_a] ;
-      sqrt_b=sqrtdiag_rhs[idx_b] ;
-    } ;
+	INT result=0;
 
-  REAL sqrt_both=sqrt_a*sqrt_b;
+	INT left_idx=0;
+	INT right_idx=0;
 
-  INT result=0;
+	if (use_sign)
+	{
+		while (left_idx < alen && right_idx < blen)
+		{
+			if (avec[left_idx]==bvec[right_idx])
+			{
+				WORD sym=avec[left_idx];
 
-  INT left_idx=0;
-  INT right_idx=0;
+				while (left_idx< alen && avec[left_idx]==sym)
+					left_idx++;
 
-  if (use_sign)
-  {
-	  while (left_idx < alen && right_idx < blen)
-	  {
-		  if (avec[left_idx]==bvec[right_idx])
-		  {
-			  WORD sym=avec[left_idx];
-			  
-			  while (left_idx< alen && avec[left_idx]==sym)
-				  left_idx++;
-			  
-			  while (right_idx< alen && bvec[right_idx]==sym)
-				  right_idx++;
-			  
-			  result++ ;
-		  }
-		  else if (avec[left_idx]<bvec[right_idx])
-			  left_idx++;
-		  else
-			  right_idx++;
-	  }
-  }
-  else
-  {
-	  while (left_idx < alen && right_idx < blen)
-	  {
-		  if (avec[left_idx]==bvec[right_idx])
-		  {
-			  INT old_left_idx=left_idx;
-			  INT old_right_idx=right_idx;
-			  
-			  WORD sym=avec[left_idx];
-			  
-			  while (left_idx< alen && avec[left_idx]==sym)
-				  left_idx++;
-			  
-			  while (right_idx< alen && bvec[right_idx]==sym)
-				  right_idx++;
-			  
-			  result+=(left_idx-old_left_idx)*(right_idx-old_right_idx);
-		  }
-		  else if (avec[left_idx]<bvec[right_idx])
-			  left_idx++;
-		  else
-			  right_idx++;
-	  }
-  }
-  
-  ((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
-  
-  return result/sqrt_both;
+				while (right_idx< alen && bvec[right_idx]==sym)
+					right_idx++;
+
+				result++;
+			}
+			else if (avec[left_idx]<bvec[right_idx])
+				left_idx++;
+			else
+				right_idx++;
+		}
+	}
+	else
+	{
+		while (left_idx < alen && right_idx < blen)
+		{
+			if (avec[left_idx]==bvec[right_idx])
+			{
+				INT old_left_idx=left_idx;
+				INT old_right_idx=right_idx;
+
+				WORD sym=avec[left_idx];
+
+				while (left_idx< alen && avec[left_idx]==sym)
+					left_idx++;
+
+				while (right_idx< alen && bvec[right_idx]==sym)
+					right_idx++;
+
+				result+=(left_idx-old_left_idx)*(right_idx-old_right_idx);
+			}
+			else if (avec[left_idx]<bvec[right_idx])
+				left_idx++;
+			else
+				right_idx++;
+		}
+	}
+
+	((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+
+	if (initialized)
+	{
+		switch (normalization)
+		{
+			case E_NO_NORMALIZATION:
+				return result;
+			case E_SQRT_NORMALIZATION:
+				return result/sqrt(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
+			case E_FULL_NORMALIZATION:
+				return result/(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
+			case E_SQRTLEN_NORMALIZATION:
+				return result/sqrt(sqrt(alen*blen));
+			case E_LEN_NORMALIZATION:
+				return result/sqrt(alen*blen);
+			case E_SQLEN_NORMALIZATION:
+				return result/(alen*blen);
+			default:
+				CIO::message(M_ERROR, "Unknown Normalization in use!\n");
+				return -CMath::INFTY;
+		}
+	}
+	else
+		return result;
 }
 
 void CCommWordKernel::add_to_normal(INT vec_idx, REAL weight)
 {
-	INT alen=-1;
-	bool afree;
-	WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(vec_idx, alen, afree);
+	INT len=-1;
+	bool vfree;
+	WORD* vec=((CWordFeatures*) lhs)->get_feature_vector(vec_idx, len, vfree);
 
-	int j, last_j=0 ;
-	if (use_sign)
+	if (len>0)
 	{
-		for (j=1; j<alen; j++)
+		int j, last_j=0;
+		if (use_sign)
 		{
-			if (avec[j]==avec[j-1])
-				continue ;
+			for (j=1; j<len; j++)
+			{
+				if (vec[j]==vec[j-1])
+					continue;
 
-			dictionary_weights[(int) avec[j-1]] += weight/sqrtdiag_lhs[vec_idx] ;
+				dictionary_weights[(int) vec[j-1]] += normalize_weight(weight, vec_idx, len, normalization);
+			}
+
+			dictionary_weights[(int) vec[len-1]] += normalize_weight(weight, vec_idx, len, normalization);
 		}
-
-		dictionary_weights[(int) avec[alen-1]] += weight/sqrtdiag_lhs[vec_idx] ;
-	}
-	else
-	{
-		for (j=1; j<alen; j++)
+		else
 		{
-			if (avec[j]==avec[j-1])
-				continue ;
+			for (j=1; j<len; j++)
+			{
+				if (vec[j]==vec[j-1])
+					continue;
 
-			dictionary_weights[(int) avec[j-1]] += weight*(j-last_j)/sqrtdiag_lhs[vec_idx] ;
-			last_j = j ;
+				dictionary_weights[(int) vec[j-1]] += normalize_weight(weight*(j-last_j), vec_idx, len, normalization);
+				last_j = j;
+			}
+
+			dictionary_weights[(int) vec[len-1]] += normalize_weight(weight*(len-last_j), vec_idx, len, normalization);
 		}
-
-		dictionary_weights[(int) avec[alen-1]] += weight*(alen-last_j)/sqrtdiag_lhs[vec_idx] ;
+		set_is_initialized(true);
 	}
-	((CWordFeatures*) lhs)->free_feature_vector(avec, vec_idx, afree);
-
-	set_is_initialized(true);
+	((CWordFeatures*) lhs)->free_feature_vector(vec, vec_idx, vfree);
 }
 
 void CCommWordKernel::clear_normal()
@@ -269,18 +282,17 @@ void CCommWordKernel::clear_normal()
 	set_is_initialized(false);
 }
 
-
 bool CCommWordKernel::init_optimization(INT count, INT *IDX, REAL * weights) 
 {
 	if (count<=0)
 	{
-		set_is_initialized(true) ;
-		CIO::message(M_DEBUG, "empty set of SVs\n") ;
-		return true ;
+		set_is_initialized(true);
+		CIO::message(M_DEBUG, "empty set of SVs\n");
+		return true;
 	}
 
-	CIO::message(M_DEBUG, "initializing CCommWordKernel optimization\n") ;
-	
+	CIO::message(M_DEBUG, "initializing CCommWordKernel optimization\n");
+
 	for (int i=0; i<count; i++)
 	{
 		if ( (i % (count/10+1)) == 0)
@@ -289,10 +301,10 @@ bool CCommWordKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 		add_to_normal(IDX[i], weights[i]);
 	}
 
-	CIO::message(M_MESSAGEONLY, "Done.         \n") ;
+	CIO::message(M_MESSAGEONLY, "Done.         \n");
 	
-	set_is_initialized(true) ;
-	return true ;
+	set_is_initialized(true);
+	return true;
 }
 
 bool CCommWordKernel::delete_optimization() 
@@ -307,45 +319,64 @@ REAL CCommWordKernel::compute_optimized(INT i)
 { 
 	if (!get_is_initialized())
 	{
-		CIO::message(M_ERROR, "CCommWordKernel optimization not initialized\n") ;
+		CIO::message(M_ERROR, "CCommWordKernel optimization not initialized\n");
 		return 0 ; 
 	}
 
-	REAL result = 0 ;
-	INT alen = -1 ;
-	bool afree ;
-	WORD* avec=((CWordFeatures*) rhs)->get_feature_vector(i, alen, afree);
-	assert(avec!=NULL) ;
-	assert(alen!=-1) ;
+	REAL result = 0;
+	INT len = -1;
+	bool vfree;
+	WORD* vec=((CWordFeatures*) rhs)->get_feature_vector(i, len, vfree);
 
-	int j, last_j=0 ;
-	if (use_sign)
+	int j, last_j=0;
+	if (vec && len>0)
 	{
-		for (j=1; j<alen; j++)
+		if (use_sign)
 		{
-			if (avec[j]==avec[j-1])
-				continue ;
+			for (j=1; j<len; j++)
+			{
+				if (vec[j]==vec[j-1])
+					continue;
 
-			result += dictionary_weights[(int) avec[j-1]] ;
+				result += dictionary_weights[(int) vec[j-1]];
+			}
+
+			result += dictionary_weights[(int) vec[len-1]];
+		}
+		else
+		{
+			for (j=1; j<len; j++)
+			{
+				if (vec[j]==vec[j-1])
+					continue;
+
+				result += dictionary_weights[(int) vec[j-1]]*(j-last_j);
+				last_j = j;
+			}
+
+			result += dictionary_weights[(int) vec[len-1]]*(len-last_j);
 		}
 
-		result += dictionary_weights[(int) avec[alen-1]] ;
-	}
-	else
-	{
-		for (j=1; j<alen; j++)
+		((CWordFeatures*) rhs)->free_feature_vector(vec, i, vfree);
+
+		switch (normalization)
 		{
-			if (avec[j]==avec[j-1])
-				continue ;
-
-			result += dictionary_weights[(int) avec[j-1]]*(j-last_j) ;
-			last_j = j ;
+			case E_NO_NORMALIZATION:
+				return result;
+			case E_SQRT_NORMALIZATION:
+				return result/sqrt(sqrtdiag_rhs[i]);
+			case E_FULL_NORMALIZATION:
+				return result/sqrtdiag_rhs[i];
+			case E_SQRTLEN_NORMALIZATION:
+				return result/sqrt(sqrt(len));
+			case E_LEN_NORMALIZATION:
+				return result/sqrt(len);
+			case E_SQLEN_NORMALIZATION:
+				return result/len;
+			default:
+				CIO::message(M_ERROR, "Unknown Normalization in use!\n");
+				return -CMath::INFTY;
 		}
-
-		result += dictionary_weights[(int) avec[alen-1]]*(alen-last_j) ;
 	}
-	
-	((CWordFeatures*) rhs)->free_feature_vector(avec, i, afree);
-
-	return result/sqrtdiag_rhs[i] ;
+	return result;
 }
