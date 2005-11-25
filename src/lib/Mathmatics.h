@@ -164,6 +164,17 @@ public:
 		return r;
 	}
 
+	static inline REAL mean(REAL* vec, INT len)
+	{
+		assert(vec);
+		assert(len>0);
+
+		REAL mean=0;
+		for (INT i=0; i<len; i++)
+			mean+=vec[i];
+		return mean/len;
+	}
+
 	/** performs a bubblesort on a given matrix a.
 	 * it is sorted from in ascending order from top to bottom
 	 * and left to right */

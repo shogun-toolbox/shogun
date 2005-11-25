@@ -921,9 +921,21 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  
 	  if (use_kernel_cache)
 	  {
-		  CTime tm;
 		  CKernelMachine::get_kernel()->cache_multiple_kernel_rows(working2dnum, choosenum); 
-		  //CIO::message(M_DEBUG, "\ncache_multiple_kernel_rows took: %f seconds\n", tm.cur_time_diff_sec());
+
+		  // in case of MKL w/o linadd ALSO cache each kernel independently
+		  if ( get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() &&
+				  (!get_kernel()->has_property(KP_LINADD) || !get_linadd_enabled()) )
+		  {
+			  CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
+			  CKernel* kn = k->get_first_kernel();
+
+			  while (kn)
+			  {
+				  kn->cache_multiple_kernel_rows(working2dnum, choosenum); 
+				  kn = k->get_next_kernel(kn) ;
+			  }
+		  }
 	  }
 	  
 	  if(verbosity>=2) t2=get_runtime();
@@ -1587,8 +1599,13 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 			{
 				if(a[i] != a_old[i]) 
 				{
-					for(j=0;j<num;j++) 
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*kn->kernel(i,j)*(double)label[i];
+					CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
+					for(int ii=0;(j=active2dnum[ii])>=0;ii++) {
+						W[j*num_kernels+n]+=(((a[i]*aicache[j])-(a_old[i]*aicache[j]))*(double)label[i]);
+					}
+
+					//for(j=0;j<num;j++) 
+						//W[j*num_kernels+n]+=(a[i]-a_old[i])*kn->kernel(i,j)*(double)label[i];
 				}
 			}
 			kn = k->get_next_kernel(kn) ;
@@ -1599,6 +1616,7 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 	{
 		REAL* w_backup = new REAL[num_kernels] ;
 		REAL* w1 = new REAL[num_kernels] ;
+		INT j;
 		
 		// backup and set to zero
 		for (INT i=0; i<num_kernels; i++)
@@ -1615,8 +1633,12 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 			{
 				if(a[i] != a_old[i]) 
 				{
-					for(INT j=0;j<num;j++) 
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*k->kernel(i,j)*(double)label[i];
+					CKernelMachine::get_kernel()->get_kernel_row(i,active2dnum,aicache);
+					for(int ii=0;(j=active2dnum[ii])>=0;ii++) {
+						W[j*num_kernels+n]+=(((a[i]*aicache[j])-(a_old[i]*aicache[j]))*(double)label[i]);
+					}
+					//for(INT j=0;j<num;j++) 
+					//	W[j*num_kernels+n]+=(a[i]-a_old[i])*k->kernel(i,j)*(double)label[i];
 				}
 			}
 			w1[n]=0.0 ;
@@ -2719,6 +2741,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 		  compute_index(inactive,totdoc,inactive2dnum);
 		  compute_index(changed,totdoc,changed2dnum);
 		  
+		  ///FIXME in MKL case then don't compute
 		  for(ii=0;(i=changed2dnum[ii])>=0;ii++) {
 			  CKernelMachine::get_kernel()->get_kernel_row(i,inactive2dnum,aicache);
 			  for(jj=0;(j=inactive2dnum[jj])>=0;jj++) {

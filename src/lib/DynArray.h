@@ -89,7 +89,7 @@ public:
 		if (append_element(get_element(last_element_idx)))
 		{
 
-			for (INT i=last_element-1; i>index; i--)
+			for (INT i=last_element_idx-1; i>index; i--)
 			{
 				array[i]=array[i-1];
 			}

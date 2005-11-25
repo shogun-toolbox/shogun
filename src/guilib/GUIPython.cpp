@@ -14,9 +14,13 @@
 #include "kernel/CustomKernel.h"
 
 //next line is not necessary, however if disabled causes a warning
+extern "C" {
+#include <Python.h>
+#include <python2.3/object.h>
 #define libnumeric_UNIQUE_SYMBOL libnumeric_API
 #include <numarray/libnumarray.h>
 #include <numarray/arrayobject.h>
+}
 
 extern CTextGUI* gui;
 

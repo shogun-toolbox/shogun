@@ -4,7 +4,10 @@
 #ifndef __GUIPYTHON_H_
 #define __GUIPYTHON_H_
 
+
+extern "C" {
 #include <Python.h>
+}
 
 #include "features/Features.h"
 #include "features/Labels.h"
