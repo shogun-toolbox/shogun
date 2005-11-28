@@ -644,7 +644,25 @@ long CSVRLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  if(verbosity>=2) t1=get_runtime();
 	  
 	  if (use_kernel_cache)
-		  CKernelMachine::get_kernel()->cache_multiple_kernel_rows(working2dnum, choosenum); 
+	  {
+		  // in case of MKL w/o linadd ALSO cache each kernel independently
+		  if ( get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() &&
+				  (!get_kernel()->has_property(KP_LINADD) || !get_linadd_enabled()) &&
+				  (!((CCombinedKernel*)get_kernel())->get_append_subkernel_weights()) 
+			 )
+		  {
+			  CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
+			  CKernel* kn = k->get_first_kernel();
+
+			  while (kn)
+			  {
+				  kn->cache_multiple_kernel_rows(working2dnum, choosenum); 
+				  kn = k->get_next_kernel(kn) ;
+			  }
+		  }
+		  else
+			  CKernelMachine::get_kernel()->cache_multiple_kernel_rows(working2dnum, choosenum); 
+	  }
 	  
 	  if(verbosity>=2) t2=get_runtime();
 	  if(retrain != 2) {
@@ -863,8 +881,10 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 			{
 				if(a[i] != a_old[i]) 
 				{
-					for(j=0;j<num;j++) 
-						W[j*num_kernels+n]+=(a[i]-a_old[i])*kn->kernel(i,j)*(double)label[i];
+					kn->get_kernel_row(i,active2dnum,aicache);
+					for(int ii=0;(j=active2dnum[ii])>=0;ii++) {
+						W[j*num_kernels+n]+=(((a[i]*aicache[j])-(a_old[i]*aicache[j]))*(double)label[i]);
+					}
 				}
 			}
 			kn = k->get_next_kernel(kn) ;
@@ -1680,11 +1700,37 @@ void CSVRLight::reactivate_inactive_examples(INT* label,
 		  compute_index(inactive,totdoc,inactive2dnum);
 		  compute_index(changed,totdoc,changed2dnum);
 		  
-		  for(ii=0;(i=changed2dnum[ii])>=0;ii++) {
-			  CKernelMachine::get_kernel()->get_kernel_row(i,inactive2dnum,aicache);
-			  for(jj=0;(j=inactive2dnum[jj])>=0;jj++) {
-				  kernel_val=aicache[j];
-				  lin[j]+=(((a[i]*kernel_val)-(a_old[i]*kernel_val))*(double)label[i]);
+		  if ( get_kernel()->has_property(KP_KERNCOMBINATION) && get_mkl_enabled() &&
+				  (!get_kernel()->has_property(KP_LINADD) || !get_linadd_enabled()) &&
+				  (!((CCombinedKernel*)get_kernel())->get_append_subkernel_weights()) 
+			 )
+		  {
+			  for(ii=0;(i=changed2dnum[ii])>=0;ii++) {
+
+				  CCombinedKernel* k      = (CCombinedKernel*) get_kernel();
+				  CKernel* kn = k->get_first_kernel();
+
+				  while (kn)
+				  {
+					  kn->get_kernel_row(i,inactive2dnum,aicache);
+
+					  for(jj=0;(j=inactive2dnum[jj])>=0;jj++) {
+						  kernel_val=aicache[j];
+						  lin[j]+=(((a[i]*kernel_val)-(a_old[i]*kernel_val))*(double)label[i]);
+					  }
+
+					  kn = k->get_next_kernel(kn);
+				  }
+			  }
+		  }
+		  else
+		  {
+			  for(ii=0;(i=changed2dnum[ii])>=0;ii++) {
+				  CKernelMachine::get_kernel()->get_kernel_row(i,inactive2dnum,aicache);
+				  for(jj=0;(j=inactive2dnum[jj])>=0;jj++) {
+					  kernel_val=aicache[j];
+					  lin[j]+=(((a[i]*kernel_val)-(a_old[i]*kernel_val))*(double)label[i]);
+				  }
 			  }
 		  }
 	  }
