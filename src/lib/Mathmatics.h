@@ -175,6 +175,14 @@ public:
 		return mean/len;
 	}
 
+	static inline REAL trace(REAL* mat, INT cols, INT rows)
+	{
+		REAL trace=0;
+		for (INT i=0; i<rows; i++)
+			trace+=mat[i*cols+i];
+		return trace;
+	}
+
 	/** performs a bubblesort on a given matrix a.
 	 * it is sorted from in ascending order from top to bottom
 	 * and left to right */
