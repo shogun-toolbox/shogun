@@ -1,3 +1,5 @@
+#ifdef HAVE_LAPACK
+
 #include "classifier/LDA.h"
 #include "features/Labels.h"
 #include "lib/Mathmatics.h"
@@ -171,3 +173,4 @@ bool CLDA::train()
 //  C.w = C.w(:,2) - C.w(:,1);
 //  C.b = C.b(2)-C.b(1);
 //end
+#endif
