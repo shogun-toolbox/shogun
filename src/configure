@@ -2,8 +2,11 @@
 
 # some hopefully reasonable defaults
 SRCDIR=.
+SWIG=swig
+EXT_SRC_HEADER=c
 EXT_SRC_C=c
 EXT_SRC_CPP=cpp
+EXT_SRC_SWIG=i
 KERNELNAME=`uname`
 MACHINE=`uname -m | tr ' ' '-'`
 EXESUFFIX=${KERNELNAME}-${MACHINE}
@@ -23,6 +26,7 @@ _shortrealkernelcache=yes
 _logsumarray=no
 _hmmparallel=no
 _largefile=yes
+_swig=no 
 _lapack=yes
 _bigstates=yes
 _hmmcache=yes
@@ -345,6 +349,8 @@ for ac_option do
   --enable-hmm-parallel)	_hmmparallel=yes	;;
   --disable-largefile)	_largefile=no	;;
   --enable-largefile)	_largefile=yes	;;
+  --enable-swig)		_swig=yes	;;
+  --disable-swig)		_swig=no	;;
   --disable-lapack)		_lapack=no	;;
   --enable-lapack)		_lapack=yes	;;
   --disable-bigstates)	_bigstates=no	;;
@@ -1269,6 +1275,14 @@ set_opts()
 		HAVE_LARGEFILE='#define HAVE_LARGEFILE 1'
 	fi
 
+	if test "$_swig" = yes
+	then
+		HAVE_SWIG='#define HAVE_SWIG 1'
+		USE_SWIG='yes'
+	else
+		USE_SWIG='no'
+	fi
+
 	if test "$_lapack" = yes
 	then
 		HAVE_LAPACK='#define HAVE_LAPACK 1'
@@ -1359,8 +1373,12 @@ COMPFLAGS_C="$COMPFLAGS_CPP"
 
 cat > .config <<EOF
 MAKE 			= ${MAKE}
+SWIG 			= ${SWIG}
+USE_SWIG 		= ${USE_SWIG}
+EXT_SRC_HEADER	= ${EXT_SRC_HEADER}
 EXT_SRC_C 		= ${EXT_SRC_C}
 EXT_SRC_CPP 	= ${EXT_SRC_CPP}
+EXT_SRC_SWIG	= ${EXT_SRC_SWIG}
 KERNELNAME  	= ${KERNELNAME}
 MACHINE  		= ${MACHINE}
 TARGET			= ${TARGET}
@@ -1388,6 +1406,7 @@ $HAVE_PYTHON
 $HAVE_MATLAB
 $HAVE_OCTAVE
 $HAVE_LARGEFILE
+$HAVE_SWIG
 $HAVE_LAPACK
 $USE_LOGCACHE
 $USE_SHORTREAL_KERNELCACHE

@@ -23,6 +23,7 @@ endif
 SRCDIR = .
 
 # SRC/OBJFILES lie all in the subdir of SRCDIR
+HEADERFILES	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_HEADER)" )
 SRCFILES 	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )
 OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)"| grep -v '.cpuinfo.c' ))
 
@@ -112,6 +113,10 @@ $(OBJFILES): Makefile .config .depend
 
 $(TARGET): $(OBJFILES) $(SRCFILES)
 	$(LINK) $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ 
+
+
+%.${EXT_SRC_SWIG}:	%.$(EXT_SRC_HEADER)
+	$(SWIG) bla $<
 
 %.$(EXT_OBJ_CPP):	%.$(EXT_SRC_CPP)
 	$(COMP_CPP) $(DEFINES) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<
