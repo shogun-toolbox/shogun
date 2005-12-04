@@ -965,8 +965,9 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				INT i=0;
 				INT mkl_stepsize = 1 ;
 				INT block_computation = 1;
+				INT single_degree = -1;
 
-				sscanf(param, "%s %s %d %d %d %d %d %d", kern_type, data_type, &size, &d, &max_mismatch, &use_normalization, &mkl_stepsize, &block_computation);
+				sscanf(param, "%s %s %d %d %d %d %d %d %d", kern_type, data_type, &size, &d, &max_mismatch, &use_normalization, &mkl_stepsize, &block_computation, &single_degree);
 				REAL* weights=new REAL[d*(1+max_mismatch)];
 				REAL sum=0;
 
@@ -990,6 +991,16 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 						else
 							weights[i+j*d]= 0;
 						
+					}
+				}
+
+				if (single_degree>=0)
+				{
+					assert(single_degree<d);
+					for (i=0; i<d; i++)
+					{
+						if (i!=d)
+							weights[i]=0;
 					}
 				}
 				
