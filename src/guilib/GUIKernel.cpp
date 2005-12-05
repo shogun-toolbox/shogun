@@ -999,8 +999,10 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 					assert(single_degree<d);
 					for (i=0; i<d; i++)
 					{
-						if (i!=d)
+						if (i!=single_degree)
 							weights[i]=0;
+						else
+							weights[i]=1;
 					}
 				}
 				
