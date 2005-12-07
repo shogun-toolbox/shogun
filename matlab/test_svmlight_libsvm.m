@@ -9,7 +9,7 @@ gf('set_features', 'TRAIN', traindat);
 gf('set_labels', 'TRAIN', trainlab);
 gf('send_command', 'set_kernel GAUSSIAN REAL 100');
 gf('send_command', 'init_kernel TRAIN');
-gf('send_command', 'new_svm MPD');
+gf('send_command', 'new_svm GPBT');
 gf('send_command', 'c 2');
 gf('send_command', 'svm_train');
 [b, alphas]=gf('get_svm');
