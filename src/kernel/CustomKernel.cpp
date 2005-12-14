@@ -14,6 +14,28 @@ CCustomKernel::~CCustomKernel()
 {
 	cleanup();
 }
+
+SHORTREAL* CCustomKernel::get_kernel_matrix(int &num_vec1, int &num_vec2, SHORTREAL* target)
+{
+	if (target == NULL)
+		return CKernel::get_kernel_matrix(num_vec1, num_vec2, target);
+	else
+	{
+		CFeatures* f1 = get_lhs();
+		CFeatures* f2 = get_rhs();
+		if (f1 && f2)
+		{
+			num_vec1=f1->get_num_vectors();
+			num_vec2=f2->get_num_vectors();
+			return kmatrix;
+		}
+		else
+		{
+			CIO::message(M_ERROR, "no features assigned to kernel\n");
+			return NULL;
+		}
+	}
+}
   
 bool CCustomKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {

@@ -13,6 +13,8 @@ class CCustomKernel: public CKernel
  public:
   CCustomKernel();
   ~CCustomKernel() ;
+
+  virtual SHORTREAL* get_kernel_matrix(int &m, int &n, SHORTREAL* target=NULL);
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
   virtual void cleanup();

@@ -42,6 +42,76 @@ CKernel::~CKernel()
 	precomputed_matrix=NULL ;
 }
 
+SHORTREAL* CKernel::get_kernel_matrix(int &num_vec1, int &num_vec2, SHORTREAL* target)
+{
+	SHORTREAL* result = NULL;
+	CFeatures* f1 = get_lhs();
+	CFeatures* f2 = get_rhs();
+
+	if (f1 && f2)
+	{
+		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
+			CIO::message(M_ERROR, "kernel matrix does not fit into target\n");
+
+		num_vec1=f1->get_num_vectors();
+		num_vec2=f2->get_num_vectors();
+		int total_num = num_vec1 * num_vec2;
+		int num_done = 0;
+
+		CIO::message(M_DEBUG, "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
+
+		if (target)
+			result=target;
+		else
+			result=new SHORTREAL[total_num];
+
+		assert(result);
+
+		if ( (f1 == f2) && (num_vec1 == num_vec2) )
+		{
+			for (int i=0; i<num_vec1; i++)
+			{
+				for (int j=i; j<num_vec1; j++)
+				{
+					double v=kernel(i,j);
+
+					result[i+j*num_vec1]=v;
+					result[j+i*num_vec1]=v;
+
+					if (num_done%100000)
+						CIO::progress(num_done, 0, total_num-1);
+
+					if (i!=j)
+						num_done+=2;
+					else
+						num_done+=1;
+				}
+			}
+		}
+		else
+		{
+			for (int i=0; i<num_vec1; i++)
+			{
+				for (int j=0; j<num_vec2; j++)
+				{
+					result[i+j*num_vec1]=kernel(i,j) ;
+
+					if (num_done%100000)
+						CIO::progress(num_done, 0, total_num-1);
+
+					num_done++;
+				}
+			}
+		}
+
+		CIO::message(M_MESSAGEONLY, "done.           \n");
+	}
+	else
+		CIO::message(M_ERROR, "no features assigned to kernel\n");
+
+	return result;
+}
+
 REAL* CKernel::get_kernel_matrix(int &num_vec1, int &num_vec2, REAL* target)
 {
 	REAL* result = NULL;
@@ -660,6 +730,9 @@ void CKernel::list_kernel()
 		case K_COMMWORDSTRING:
 			CIO::message(M_INFO, "K_COMMWORDSTRING ");
 			break;
+		case K_COMMULONGSTRING:
+			CIO::message(M_INFO, "K_COMMULONGSTRING ");
+			break;
 		case K_SPARSENORMSQUARED:
 			CIO::message(M_INFO, "K_SPARSENORMSQUARED ");
 			break;
@@ -723,6 +796,9 @@ void CKernel::list_kernel()
 			break;
 		case F_WORD:
 			CIO::message(M_INFO, "F_WORD ");
+			break;
+		case F_ULONG:
+			CIO::message(M_INFO, "F_ULONG ");
 			break;
 		case F_ANY:
 			CIO::message(M_INFO, "F_ANY ");

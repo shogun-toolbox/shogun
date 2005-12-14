@@ -154,6 +154,9 @@ void CFeatures::list_feature_obj()
 		case F_WORD:
 			CIO::message(M_INFO, "F_WORD \n");
 			break;
+		case F_ULONG:
+			CIO::message(M_INFO, "F_ULONG ");
+			break;
 		case F_ANY:
 			CIO::message(M_INFO, "F_ANY \n");
 			break;

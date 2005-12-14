@@ -12,7 +12,7 @@
 #include "lib/Signal.h"
 
 
-int CSignal::signals[NUMTRAPPEDSIGS]={SIGINT, SIGHUP};
+int CSignal::signals[NUMTRAPPEDSIGS]={SIGINT, SIGURG};
 struct sigaction CSignal::oldsigaction[NUMTRAPPEDSIGS];
 bool CSignal::active=false;
 bool CSignal::cancel_computation=false;
@@ -45,7 +45,7 @@ void CSignal::handler(int signal)
 		else
 			CIO::message(M_MESSAGEONLY, "\n");
 	}
-	else if (signal == SIGHUP)
+	else if (signal == SIGURG)
 		cancel_computation=true;
 	else
 		CIO::message(M_ERROR, "unknown signal %d received\n", signal);

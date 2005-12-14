@@ -143,7 +143,8 @@ enum EClassifierType
 	CT_MPD = 30,
 	CT_GPBT = 40,
 	CT_PERCEPTRON = 50,
-	CT_KNN = 60
+	CT_KNN = 60,
+	CT_CPLEXSVM = 60,
 };
 
 enum ERegressionType
