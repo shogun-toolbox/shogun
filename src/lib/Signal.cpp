@@ -12,7 +12,8 @@
 #include "lib/Signal.h"
 
 
-struct sigaction CSignal::oldsigaction;
+int CSignal::signals[NUMTRAPPEDSIGS]={SIGINT, SIGHUP};
+struct sigaction CSignal::oldsigaction[NUMTRAPPEDSIGS];
 bool CSignal::active=false;
 bool CSignal::cancel_computation=false;
 
@@ -29,18 +30,25 @@ CSignal::~CSignal()
 void CSignal::handler(int signal)
 {
 #ifdef HAVE_MATLAB
-	CIO::message(M_MESSAGEONLY, "\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
-	char answer=fgetc(stdin);
-
-	if (answer == 'I')
+	if (signal == SIGINT)
 	{
-		unset_handler();
-		CIO::message(M_ERROR, "gf stopped by SIGINT\n");
+		CIO::message(M_MESSAGEONLY, "\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
+		char answer=fgetc(stdin);
+
+		if (answer == 'I')
+		{
+			unset_handler();
+			CIO::message(M_ERROR, "gf stopped by SIGINT\n");
+		}
+		else if (answer == 'P')
+			cancel_computation=true;
+		else
+			CIO::message(M_MESSAGEONLY, "\n");
 	}
-	else if (answer == 'P')
+	else if (signal == SIGHUP)
 		cancel_computation=true;
 	else
-		CIO::message(M_MESSAGEONLY, "\n");
+		CIO::message(M_ERROR, "unknown signal %d received\n", signal);
 #else
 	CIO::message(M_MESSAGEONLY, "\n");
 	CIO::message(M_ERROR, "gf stopped by SIGINT\n");
@@ -63,16 +71,20 @@ bool CSignal::set_handler()
 		act.sa_mask = st;
 		act.sa_flags = 0;
 
-		if (!sigaction(SIGINT, &act, &oldsigaction))
+		for (INT i=0; i<NUMTRAPPEDSIGS; i++)
 		{
-			active=true;
-			return true;
+			if (sigaction(signals[i], &act, &oldsigaction[i]))
+			{
+				for (INT j=i-1; j>=0; j--)
+					sigaction(signals[i], &oldsigaction[i], NULL);
+
+				clear();
+				return false;
+			}
 		}
-		else
-		{
-			clear();
-			return false;
-		}
+
+		active=true;
+		return true;
 	}
 	else
 		return false;
@@ -82,13 +94,21 @@ bool CSignal::unset_handler()
 {
 	if (active)
 	{
-		if (!sigaction(SIGINT, &oldsigaction, NULL))
+		bool result=true;
+
+		for (INT i=0; i<NUMTRAPPEDSIGS; i++)
 		{
-			clear();
-			return true;
+			if (sigaction(signals[i], &oldsigaction[i], NULL))
+			{
+				CIO::message(M_ERROR, "error uninitalizing signal handler for signal %d\n", signals[i]);
+				result=false;
+			}
 		}
-		else
-			return false;
+
+		if (result)
+			clear();
+
+		return result;
 	}
 	else
 		return false;

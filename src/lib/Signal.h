@@ -2,6 +2,7 @@
 #define __SIGNAL__H_
 
 #include <signal.h>
+#define NUMTRAPPEDSIGS 2
 
 class CSignal
 {
@@ -16,7 +17,8 @@ public:
 	static void clear();
 	static inline bool cancel_computations() { return cancel_computation; }
 protected:
-	static struct sigaction oldsigaction;
+	static int signals[NUMTRAPPEDSIGS];
+	static struct sigaction oldsigaction[NUMTRAPPEDSIGS];
 	static bool active;
 	static bool cancel_computation;
 };
