@@ -41,6 +41,6 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 #endif
 
 REAL lookup_penalty(const struct penalty_struct *PEN, INT p_value, 
-					REAL* svm_values, bool follow_next=true) ;
+					REAL* svm_values, bool follow_next, REAL &input_value) ;
 
 #endif

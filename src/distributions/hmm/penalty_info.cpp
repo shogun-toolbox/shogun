@@ -39,8 +39,9 @@ void init_penalty_struct_cache(struct penalty_struct &PEN)
 	REAL* cache=new REAL[PEN.max_len+1] ;
 	if (cache)
 	{
+		REAL input_value ;
 		for (INT i=0; i<=PEN.max_len; i++)
-			cache[i] = lookup_penalty(&PEN, i, 0, false) ;
+			cache[i] = lookup_penalty(&PEN, i, 0, false,input_value) ;
 		PEN.cache = cache ;
 	}
 }
@@ -248,12 +249,13 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 }
 #endif
 
-REAL lookup_penalty_svm(const struct penalty_struct *PEN, INT p_value, REAL *d_values)
+REAL lookup_penalty_svm(const struct penalty_struct *PEN, INT p_value, REAL *d_values, REAL &input_value)
 {	
 	if (PEN==NULL)
 		return 0 ;
 	assert(PEN->use_svm>0) ;
 	REAL d_value=d_values[PEN->use_svm-1] ;
+    input_value = d_value ;
 	//fprintf(stderr,"transform=%i, d_value=%1.2f\n", (INT)PEN->transform, d_value) ;
 	
 	switch (PEN->transform)
@@ -294,19 +296,21 @@ REAL lookup_penalty_svm(const struct penalty_struct *PEN, INT p_value, REAL *d_v
 	}
 	
 	if (PEN->next_pen)
-		ret+=lookup_penalty(PEN->next_pen, p_value, d_values);
+		ret+=lookup_penalty(PEN->next_pen, p_value, d_values, true, input_value);
 	
 	return ret ;
 }
 
 REAL lookup_penalty(const struct penalty_struct *PEN, INT p_value, 
-					REAL* svm_values, bool follow_next)
+					REAL* svm_values, bool follow_next, REAL &input_value)
 {	
 	if (PEN==NULL)
 		return 0 ;
 	if (PEN->use_svm)
-		return lookup_penalty_svm(PEN, p_value, svm_values) ;
+		return lookup_penalty_svm(PEN, p_value, svm_values, input_value) ;
 		
+	input_value = (REAL) p_value ;
+
 	if ((p_value<PEN->min_len) || (p_value>PEN->max_len))
 		return -CMath::INFTY ;
 	
@@ -314,7 +318,7 @@ REAL lookup_penalty(const struct penalty_struct *PEN, INT p_value,
 	{
 		REAL ret=PEN->cache[p_value] ;
 		if (PEN->next_pen && follow_next)
-			ret+=lookup_penalty(PEN->next_pen, p_value, svm_values);
+			ret+=lookup_penalty(PEN->next_pen, p_value, svm_values, true, input_value);
 		return ret ;
 	}
 	
@@ -359,7 +363,7 @@ REAL lookup_penalty(const struct penalty_struct *PEN, INT p_value,
 	//fprintf(stderr, "%s %i(%i) -> %1.2f\n", PEN->name, p_value, idx, ret) ;
 	
 	if (PEN->next_pen && follow_next)
-		ret+=lookup_penalty(PEN->next_pen, p_value, svm_values);
+		ret+=lookup_penalty(PEN->next_pen, p_value, svm_values, true, input_value);
 
 	return ret ;
 }

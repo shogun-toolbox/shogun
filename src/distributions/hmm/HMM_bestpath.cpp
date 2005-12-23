@@ -27,17 +27,23 @@ extern "C" int	finite(double);
 #define USEFIXEDLENLIST 2
 #define DOPRINT 0
 
-static const INT num_words = 4096 ;
-static const INT word_degree = 6 ;
+static const INT num_degrees = 6;
 static const INT num_svms = 4 ;
-static bool word_used[num_words] ;
-static REAL svm_values_unnormalized[num_svms] ;
+
+//static const INT word_degree[num_degrees] = {1,6} ;
+//static const INT cum_num_words[num_degrees+1] = {0,4,4100} ;
+//static const INT num_words[num_degrees] = {4,4096} ;
+static const INT word_degree[num_degrees] = {1,2,3,4,5,6} ;
+static const INT cum_num_words[num_degrees+1] = {0,4,20,84,340,1364,5460} ;
+static const INT num_words[num_degrees] = {4,20,84,256,1024,4096} ;
+static bool word_used[num_degrees][4096] ;
+static REAL svm_values_unnormalized[num_degrees][num_svms] ;
 static REAL *dict_weights ;
-static INT svm_pos_start ;
-static INT num_unique_words = 0 ;
+static INT svm_pos_start[num_degrees] ;
+static INT num_unique_words[num_degrees] ;
 
 inline void translate_from_single_order(WORD* obs, INT sequence_length, 
-										INT start=5, INT order=word_degree, 
+										INT start, INT order, 
 										INT max_val=2/*DNA->2bits*/)
 {
 	INT i,j;
@@ -62,7 +68,9 @@ inline void translate_from_single_order(WORD* obs, INT sequence_length,
 				value|=obs[j] << (max_val * (order-1));
 		}
 		obs[i]=value;
-		assert(value<num_words) ;
+		//if (value>=num_words[order-1])
+		//	fprintf(stderr,"%i %i\n", value, num_words[order-1]) ;
+		//assert(value<num_words[order]) ;
 	}
 	if (start>0)
 		for (i=start; i<sequence_length; i++)	
@@ -74,175 +82,213 @@ struct svm_values_struct
 {
   INT maxlookback ;
   INT seqlen;
-  INT num_unique_words ;
+  INT *num_unique_words ;
 
-  REAL * svm_values_unnormalized ;
+  REAL ** svm_values_unnormalized ;
   REAL * svm_values ;
-  bool * word_used ;
+  bool ** word_used ;
 } ;
 
 inline void init_svm_value(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT howmuchlookback)
 {
-  /*
-    See find_svm_values_till_pos for comments
-
-    svs.svm_values[i+s*svs.seqlen] has the value of the s-th SVM on genestr(pos(t_end-i):pos(t_end)) 
-       for every i satisfying pos(t_end)-pos(t_end-i) <= svs.maxlookback
-
-       where t_end is the end of all segments we are currently looking at
-  */
-
-        if (!svs.svm_values)
-        {
-	  svs.svm_values              = new REAL[seqlen*num_svms] ;
-	  svs.svm_values_unnormalized  = new REAL[num_svms] ;
-	  svs.word_used               = new bool[num_words] ;
-        }
-
+	/*
+	  See find_svm_values_till_pos for comments
+	  
+	  svs.svm_values[i+s*svs.seqlen] has the value of the s-th SVM on genestr(pos(t_end-i):pos(t_end)) 
+	  for every i satisfying pos(t_end)-pos(t_end-i) <= svs.maxlookback
+	  
+	  where t_end is the end of all segments we are currently looking at
+	*/
+	
+	if (!svs.svm_values)
+	{
+		svs.num_unique_words        = new INT[num_degrees] ;
+		svs.svm_values              = new REAL[seqlen*num_svms] ;
+		svs.svm_values_unnormalized = new (REAL*)[num_degrees] ;
+		svs.word_used               = new (bool*)[num_degrees] ;
+		for (INT j=0; j<num_degrees; j++)
+		{
+			//svs.svm_values[j]              = new REAL[seqlen*num_svms] ;
+			svs.svm_values_unnormalized[j] = new REAL[num_svms] ;
+			svs.word_used[j]               = new bool[num_words[j]] ;
+		}
+	}
+	
 	for (INT i=0; i<seqlen*num_svms; i++)       // initializing this for safety, though we should be able to live without it
-	  svs.svm_values[i] = 0;
+		svs.svm_values[i] = 0;
 
-        for (INT s=0; s<num_svms; s++)
-	  svs.svm_values_unnormalized[s] = 0 ;
+	for (INT j=0; j<num_degrees; j++)
+	{		
+		for (INT s=0; s<num_svms; s++)
+			svs.svm_values_unnormalized[j][s] = 0 ;
+		
+		for (INT i=0; i<num_words[j]; i++)
+			svs.word_used[j][i] = false ;
 
-        for (INT i=0; i<num_words; i++)
-	  svs.word_used[i] = false ;
-
-        svs.maxlookback = howmuchlookback ;
+		svs.num_unique_words[j] = 0 ;
+	}
+	
+	svs.maxlookback = howmuchlookback ;
 	svs.seqlen = seqlen;
-        svs.num_unique_words = 0 ;
 }
 
 inline void clear_svm_value(struct svm_values_struct & svs) 
 {
-        if (NULL != svs.svm_values)
-        {
-          delete[] svs.svm_values_unnormalized;
-          delete[] svs.svm_values;
-          delete[] svs.word_used;
-        }
-}
-
-
-inline void find_svm_values_till_pos(WORD* wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs, FILE* fid)
-{
-  /*
-    wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 corresponding to the 6-mer in genestr(i-5:i) 
-    pos is a vector of candidate transition positions (it is input to best_path_trans)
-    t_end is some index in pos
-    
-    svs has been initialized by init_svm_values
-
-    At the end of this procedure, 
-    svs.svm_values[i+s*svs.seqlen] has the value of the s-th SVM on genestr(pos(t_end-i):pos(t_end)) 
-       for every i satisfying pos(t_end)-pos(t_end-i) <= svs.maxlookback
-
-    The SVM weights are precomputed in dict_weights
-  */
-
-  INT plen = 1;
-  INT ts = t_end-1;        // index in pos; pos(ts) and pos(t) are indices of wordstr
-  INT offset;
-
-  /*
-  for (INT s=0; s<num_svms; s++)
-    {
-      offset = s*svs.seqlen;
-      for (INT i=0;i<word_degree; i++)
-	svs.svm_values[i+offset] = 0;
-    }
-  */
-
-  INT posprev = pos[t_end]-word_degree+1;
-  INT poscurrent = pos[ts];
-
-  if (poscurrent<0)
-    poscurrent = 0;
-
-  INT len = pos[t_end] - poscurrent;
-
-  while ((ts>=0) && (len <= svs.maxlookback))
-   {
-      for (int i=posprev-1 ; (i>=poscurrent) && (i>=0) ; i--)
-        {
-	  // 	  if (word_degree > (pos[t_end]-pos[ts]))
-	  //	    fprintf(fid, " *******  i=%d , wordstr[i]=%d   dict_weights[1,wordstr[i]]=%f  t_end=%d, ts=%d  pos[t_end]=%d  pos[ts]=%d   posprev=%d\n", i, wordstr[i], dict_weights[wordstr[i]], t_end,ts,pos[t_end],pos[ts],posprev);
-
-          if (wordstr[i]>=num_words)
-             CIO::message(M_DEBUG, "wordstr[%i]=%i\n", i, wordstr[i]) ;
-          if (!svs.word_used[wordstr[i]])
-            {
-              for (INT s=0; s<num_svms; s++)
-                svs.svm_values_unnormalized[s]+=dict_weights[wordstr[i]+s*num_words] ;
-
-              svs.word_used[wordstr[i]]=true ;
-              svs.num_unique_words++ ;
-            }
-        }
-      double normalization_factor = 1.0;
-      if (svs.num_unique_words > 0)
-        normalization_factor = sqrt((double)svs.num_unique_words);
-      for (INT s=0; s<num_svms; s++)
-        {
-          offset = s*svs.seqlen;
-          svs.svm_values[offset+plen] = svs.svm_values_unnormalized[s] / normalization_factor;
-        }
-
-      if (posprev > poscurrent)         // remember posprev initially set to pos[t_end]-word_degree+1... pos[ts] could be e.g. pos[t_end]-2
-	posprev = poscurrent;           
-
-      ts--;
-      plen++;
-
-      if (ts>=0)
+	if (NULL != svs.svm_values)
 	{
-	  poscurrent=pos[ts];
-	  if (poscurrent<0)
-	    poscurrent = 0;
-	  len = pos[t_end] - poscurrent;
+		for (INT j=0; j<num_degrees; j++)
+			delete[] svs.word_used[j] ;
+		for (INT j=0; j<num_degrees; j++)
+			delete[] svs.svm_values_unnormalized[j] ;
+		
+		delete[] svs.svm_values_unnormalized;
+		delete[] svs.svm_values;
+		delete[] svs.word_used;
+		svs.word_used=NULL ;
+		svs.svm_values=NULL ;
+		svs.svm_values_unnormalized=NULL ;
 	}
-   }
+}
+
+
+inline void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs, FILE* fid)
+{
+	/*
+	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 corresponding to the 6-mer in genestr(i-5:i) 
+	  pos is a vector of candidate transition positions (it is input to best_path_trans)
+	  t_end is some index in pos
+	  
+	  svs has been initialized by init_svm_values
+	  
+	  At the end of this procedure, 
+	  svs.svm_values[i+s*svs.seqlen] has the value of the s-th SVM on genestr(pos(t_end-i):pos(t_end)) 
+	  for every i satisfying pos(t_end)-pos(t_end-i) <= svs.maxlookback
+	  
+	  The SVM weights are precomputed in dict_weights
+	*/
+	for (INT j=0; j<num_degrees; j++)
+	{
+		INT plen = 1;
+		INT ts = t_end-1;        // index in pos; pos(ts) and pos(t) are indices of wordstr
+		INT offset;
+		
+		/*
+		  for (INT s=0; s<num_svms; s++)
+		  {
+		  offset = s*svs.seqlen;
+		  for (INT i=0;i<word_degree; i++)
+		  svs.svm_values[i+offset] = 0;
+		  }
+		*/
+		
+		INT posprev = pos[t_end]-word_degree[j]+1;
+		INT poscurrent = pos[ts];
+		
+		if (poscurrent<0)
+			poscurrent = 0;
+		
+		INT len = pos[t_end] - poscurrent;
+		
+		while ((ts>=0) && (len <= svs.maxlookback))
+		{
+			for (int i=posprev-1 ; (i>=poscurrent) && (i>=0) ; i--)
+			{
+				// 	  if (word_degree > (pos[t_end]-pos[ts]))
+				//	    fprintf(fid, " *******  i=%d , wordstr[i]=%d   dict_weights[1,wordstr[i]]=%f  t_end=%d, ts=%d  pos[t_end]=%d  pos[ts]=%d   posprev=%d\n", i, wordstr[i], dict_weights[wordstr[i]], t_end,ts,pos[t_end],pos[ts],posprev);
+				
+				if (wordstr[j][i]>=num_words[j])
+					fprintf(stderr, "wordstr[%i][%i]=%i\n", j, i, wordstr[j][i]) ;
+				assert(wordstr[j][i]<num_words[j]) ;
+				if (!svs.word_used[j][wordstr[j][i]])
+				{
+					for (INT s=0; s<num_svms; s++)
+						svs.svm_values_unnormalized[j][s]+=dict_weights[wordstr[j][i]+s*cum_num_words[num_degrees]+cum_num_words[j]] ;
+					
+					svs.word_used[j][wordstr[j][i]]=true ;
+					svs.num_unique_words[j]++ ;
+				}
+			}
+			double normalization_factor = 1.0;
+			if (svs.num_unique_words[j] > 0)
+				normalization_factor = sqrt((double)svs.num_unique_words[j]);
+			for (INT s=0; s<num_svms; s++)
+			{
+				offset = s*svs.seqlen;
+				if (j==0)
+					svs.svm_values[offset+plen]=0 ;
+				svs.svm_values[offset+plen] += svs.svm_values_unnormalized[j][s] / normalization_factor;
+			}
+			
+			if (posprev > poscurrent)         // remember posprev initially set to pos[t_end]-word_degree+1... pos[ts] could be e.g. pos[t_end]-2
+				posprev = poscurrent;           
+			
+			ts--;
+			plen++;
+			
+			if (ts>=0)
+			{
+				poscurrent=pos[ts];
+				if (poscurrent<0)
+					poscurrent = 0;
+				len = pos[t_end] - poscurrent;
+			}
+		}
+	}
 }
 
 
 
-inline void reset_svm_value(INT pos, INT & last_svm_pos, REAL * svm_value) 
+inline void reset_svm_value(INT pos, INT * last_svm_pos, REAL * svm_value) 
 {
-	for (int i=0; i<num_words; i++)
-		word_used[i]=false ;
-	for (INT s=0; s<num_svms; s++)
-		svm_values_unnormalized[s] = 0 ;
+	for (INT j=0; j<num_degrees; j++)
+	{
+		for (INT i=0; i<num_words[j]; i++)
+			word_used[j][i]=false ;
+		for (INT s=0; s<num_svms; s++)
+			svm_values_unnormalized[j][s] = 0 ;
+		num_unique_words[j]=0 ;
+		last_svm_pos[j] = pos - word_degree[j]+1 ;
+		svm_pos_start[j] = pos - word_degree[j] ;
+	}
 	for (INT s=0; s<num_svms; s++)
 		svm_value[s] = 0 ;
-	last_svm_pos = pos - word_degree+1 ;
-	svm_pos_start = pos - word_degree ;
-	num_unique_words=0 ;
 }
 
-void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, REAL* svm_value) 
+void extend_svm_value(WORD** wordstr, INT pos, INT *last_svm_pos, REAL* svm_value) 
 {
 	bool did_something = false ;
-	for (int i=last_svm_pos-1; (i>=pos) && (i>=0); i--)
+	for (INT j=0; j<num_degrees; j++)
 	{
-		if (wordstr[i]>=num_words)
-			CIO::message(M_DEBUG, "wordstr[%i]=%i\n", i, wordstr[i]) ;
-		
-		if (!word_used[wordstr[i]])
+		for (int i=last_svm_pos[j]-1; (i>=pos) && (i>=0); i--)
 		{
-			for (INT s=0; s<num_svms; s++)
-				svm_values_unnormalized[s]+=dict_weights[wordstr[i]+s*num_words] ;
+			if (wordstr[j][i]>=num_words[j])
+				CIO::message(M_DEBUG, "wordstr[%i]=%i\n", i, wordstr[j][i]) ;
 
-			word_used[wordstr[i]]=true ;
-			num_unique_words++ ;
-			did_something=true ;
-		}
+			assert(wordstr[j][i]<num_words[j]) ;
+			if (!word_used[j][wordstr[j][i]])
+			{
+				for (INT s=0; s<num_svms; s++)
+					svm_values_unnormalized[j][s]+=dict_weights[wordstr[j][i]+s*cum_num_words[num_degrees]+cum_num_words[j]] ;
+				
+				word_used[j][wordstr[j][i]]=true ;
+				num_unique_words[j]++ ;
+				did_something=true ;
+			} ;
+		} ;
+		if (num_unique_words[j]>0)
+			last_svm_pos[j]=pos ;
+
 	} ;
-	if (num_unique_words>0)
+	
+	if (num_unique_words[num_degrees-1]>0)
 	{
-		last_svm_pos=pos ;
 		if (did_something)
 			for (INT s=0; s<num_svms; s++)
-				svm_value[s]= svm_values_unnormalized[s]/sqrt((double)num_unique_words) ;  // full normalization
+			{
+				svm_value[s]=0.0 ;
+				for (INT j=0; j<num_degrees; j++)
+					svm_value[s]+= svm_values_unnormalized[j][s]/sqrt((double)num_unique_words[j]) ;  // full normalization
+			}
 	}
 	else
 	{
@@ -307,7 +353,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	const INT default_look_back = 30000 ;
 	INT max_look_back = 0 ;
 	bool use_svm = false ;
-	assert(dict_len==num_svms*num_words) ;
+	assert(dict_len==num_svms*cum_num_words[num_degrees]) ;
 	dict_weights=dictionary_weights ;
 	int offset=0;
 
@@ -411,25 +457,28 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	}
 
 	// translate to words, if svm is used
-	WORD* wordstr=NULL ;
-	if (use_svm)
+	WORD* wordstr[num_degrees] ;
 	{
-		assert(dict_weights!=NULL) ;
-		wordstr=new WORD[genestr_len] ;
-		for (INT i=0; i<genestr_len; i++)
-			switch (genestr[i])
+		for (INT j=0; j<num_degrees; j++)
+		{
+			wordstr[j]=NULL ;
+			if (use_svm)
 			{
-			case 'a': wordstr[i]=0 ; break ;
-			case 'c': wordstr[i]=1 ; break ;
-			case 'g': wordstr[i]=2 ; break ;
-			case 't': wordstr[i]=3 ; break ;
-			default: assert(0) ;
+				assert(dict_weights!=NULL) ;
+				wordstr[j]=new WORD[genestr_len] ;
+				for (INT i=0; i<genestr_len; i++)
+					switch (genestr[i])
+					{
+					case 'a': wordstr[j][i]=0 ; break ;
+					case 'c': wordstr[j][i]=1 ; break ;
+					case 'g': wordstr[j][i]=2 ; break ;
+					case 't': wordstr[j][i]=3 ; break ;
+					default: assert(0) ;
+					}
+				translate_from_single_order(wordstr[j], genestr_len,
+											word_degree[j]-1, word_degree[j]) ;
 			}
-		translate_from_single_order(wordstr, genestr_len) ;
-		//fprintf(stderr, "genestr_len=%i\n", genestr_len) ;
-
-		// wordstr is sent to extend_svm_value around line 357: extend_svm_value(wordstr, pos[ts], last_svm_pos, svm_value) ;
-
+		}
 	}
 	
   	
@@ -546,8 +595,8 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						      svm_value[ss]=svs.svm_values[offset+plen];
 						    }
 
-						  
-						  REAL pen_val = lookup_penalty(penalty, pos[t]-pos[ts], svm_value, true) ;
+						  REAL input_value ;
+						  REAL pen_val = lookup_penalty(penalty, pos[t]-pos[ts], svm_value, true, input_value) ;
 						  for (short int diff=0; diff<nbest; diff++)
 						    {
 						      REAL  val        = DELTA(ts,ii,diff) + elem_val[i] ;
@@ -753,15 +802,18 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 				INT to_pos     = my_pos_seq[i+1+k*seq_len] ;
 				
 				//CIO::message(M_DEBUG, "%i. from state %i pos %i[%i]  to  state %i pos %i[%i]  penalties:", k, from_state, pos[from_pos], from_pos, to_state, pos[to_pos], to_pos) ;
-				INT last_svm_pos = -1 ;
+				INT last_svm_pos[num_degrees] ;
+				for (INT qq=0; qq<num_degrees; qq++)
+					last_svm_pos[qq]=-1 ;
 				
 				reset_svm_value(pos[to_pos], last_svm_pos, svm_value) ;
 				extend_svm_value(wordstr, pos[from_pos], last_svm_pos, svm_value) ;
 				struct penalty_struct *penalty = PEN(to_state, from_state) ;
 				while (penalty)
 				{
-					REAL pen_val = lookup_penalty(penalty, pos[to_pos]-pos[from_pos], svm_value, false) ;
-					PEN_values[penalty->id + i*num_PEN_id + seq_len*num_PEN_id*k] += pen_val ;
+					REAL input_value=0 ;
+					REAL pen_val = lookup_penalty(penalty, pos[to_pos]-pos[from_pos], svm_value, false, input_value) ;
+					PEN_values[penalty->id + i*num_PEN_id + seq_len*num_PEN_id*k] += pen_val + floor(input_value*100000)*10 ;
 					PEN_names[penalty->id] = penalty->name ;
 					//CIO::message(M_DEBUG, "%s(%i;%1.2f), ", penalty->name, penalty->id, pen_val) ;
 					penalty = penalty->next_pen ;
@@ -779,6 +831,9 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	}
 	if (is_big)
 		CIO::message(M_MESSAGEONLY, "DONE.     \n") ;
+
+	for (INT j=0; j<num_degrees; j++)
+		delete[] wordstr[j] ;
 
 	delete[] delta ;
 	delete[] psi ;
