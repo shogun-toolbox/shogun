@@ -567,6 +567,14 @@ public:
 						 REAL *dictionary_weights, INT dict_len,
 						 REAL *&PEN_values, REAL *&PEN_input_values, 
 						 INT &num_PEN_id, bool use_orf) ;
+	void best_path_2struct(const REAL *seq, INT seq_len, const INT *pos, 
+						 struct penalty_struct **PEN_matrix, 
+						 const char *genestr, INT genestr_len,
+						 short int nbest, 
+						 REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
+						 REAL *dictionary_weights, INT dict_len, REAL *segment_sum_weights, 
+						 REAL *&PEN_values, REAL *&PEN_input_values, 
+						 INT &num_PEN_id) ;
 	void best_path_trans_simple(const REAL *seq, INT seq_len, short int nbest, 
 								REAL *prob_nbest, INT *my_state_seq) ;
 #endif

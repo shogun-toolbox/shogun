@@ -41,7 +41,10 @@ void init_penalty_struct_cache(struct penalty_struct &PEN)
 	{
 		REAL input_value ;
 		for (INT i=0; i<=PEN.max_len; i++)
-			cache[i] = lookup_penalty(&PEN, i, 0, false,input_value) ;
+			if (i<PEN.min_len)
+				cache[i] = -CMath::INFTY ;
+			else
+				cache[i] = lookup_penalty(&PEN, i, 0, false,input_value) ;
 		PEN.cache = cache ;
 	}
 }

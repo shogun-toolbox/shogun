@@ -525,7 +525,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			
 			mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxREAL);
 			double* p_prob = mxGetPr(mx_prob);
-			REAL* PEN_values=NULL, *PEN_input_values ;
+			REAL* PEN_values=NULL, *PEN_input_values=NULL ;
 			INT num_PEN_id = 0 ;
 			
 			h->best_path_trans(seq, M, pos, orf_info, PEN_matrix, genestr, L,
@@ -562,6 +562,170 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 				{
 					d_my_path[i*nbest+k] = my_path[i+k*M] ;
 					d_my_pos[i*nbest+k] = my_pos[i+k*M] ;
+				}
+			
+			retvals[0]=mx_prob ;
+			retvals[1]=mx_my_path ;
+			retvals[2]=mx_my_pos ;
+			retvals[3]=mx_PEN_values ;
+			retvals[4]=mx_PEN_input_values ;
+
+			delete[] my_path ;
+			delete[] my_pos ;
+			delete[] PEN_values ;
+			delete[] PEN_input_values ;
+
+			return true;
+		}
+		else
+			CIO::message(M_ERROR, "model matricies not matching in size\n");
+	}
+
+	return false;
+}
+
+bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
+{
+	const mxArray* mx_p=vals[1];
+	const mxArray* mx_q=vals[2];
+	const mxArray* mx_a_trans=vals[3];
+	const mxArray* mx_seq=vals[4];
+	const mxArray* mx_pos=vals[5];
+	const mxArray* mx_genestr=vals[6];
+	const mxArray* mx_penalties=vals[7];
+	const mxArray* mx_penalty_info=vals[8];
+	const mxArray* mx_nbest=vals[9];
+	const mxArray* mx_dict_weights=vals[10];
+	const mxArray* mx_segment_sum_weights=vals[11];
+
+	INT nbest    = (INT)mxGetScalar(mx_nbest) ;
+	if (nbest<1)
+		return false ;
+	
+	if ( mx_p && mx_q && mx_a_trans && mx_seq && mx_pos && 
+		 mx_penalties && mx_penalty_info && 
+		 mx_genestr && mx_dict_weights && mx_segment_sum_weights)
+	{
+		INT N=mxGetN(mx_p);
+		INT M=mxGetN(mx_pos);
+		INT P=mxGetN(mx_penalty_info) ;
+		INT L=mxGetN(mx_genestr) ;
+		INT D=mxGetM(mx_dict_weights) ;
+		
+		//CIO::message(M_DEBUG, "N=%i, M=%i, P=%i, L=%i, nbest=%i\n", N, M, P, L, nbest) ;
+		/*fprintf(stderr,"ok1=%i\n", mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
+				mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
+				mxGetN(mx_a_trans) == 3 &&
+				mxGetM(mx_seq) == N &&
+				mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1) ;
+		fprintf(stderr, "ok2=%i\n", 	mxGetM(mx_penalties)==N && 
+				mxGetN(mx_penalties)==N &&
+				mxGetM(mx_genestr)==1 &&
+				((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
+				 || mxIsEmpty(mx_penalty_info))) ;
+		fprintf(stderr, "ok3=%i\n", 				mxGetM(mx_genestr)==1 &&
+				((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
+				|| mxIsEmpty(mx_penalty_info))) ;
+		fprintf(stderr, "ok4=%i\n", mxGetM(mx_segment_sum_weights)==M &&
+		mxGetN(mx_segment_sum_weights)==N ) ;*/
+		
+		if (
+			mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
+			mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
+			mxGetN(mx_a_trans) == 3 &&
+			mxGetM(mx_seq) == N &&
+			mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 &&
+			mxGetM(mx_penalties)==N && 
+			mxGetN(mx_penalties)==N &&
+			mxGetM(mx_segment_sum_weights)==N &&
+			mxGetN(mx_segment_sum_weights)==M &&
+			mxGetM(mx_genestr)==1 &&
+			mxGetN(mx_dict_weights)==1 && 
+			((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
+			 || mxIsEmpty(mx_penalty_info))
+			)
+		{
+			double* p=mxGetPr(mx_p);
+			double* q=mxGetPr(mx_q);
+			double* a=mxGetPr(mx_a_trans);
+
+			double* seq=mxGetPr(mx_seq) ;
+
+			double* pos_=mxGetPr(mx_pos) ;
+			INT * pos = new INT[M] ;
+			for (INT i=0; i<M; i++)
+				pos[i]=(INT)pos_[i] ;
+
+			struct penalty_struct * PEN = 
+				read_penalty_struct_from_cell(mx_penalty_info, P) ;
+			if (PEN==NULL && P!=0)
+				return false ;
+			
+			struct penalty_struct **PEN_matrix = new struct penalty_struct*[N*N] ;
+			double* penalties=mxGetPr(mx_penalties) ;
+			for (INT i=0; i<N*N; i++)
+			{
+				INT id = (INT) penalties[i]-1 ;
+				if ((id<0 || id>=P) && (id!=-1))
+				{
+					CIO::message(M_ERROR, "id out of range\n") ;
+					delete_penalty_struct_array(PEN, P) ;
+					return false ;
+				}
+				if (id==-1)
+					PEN_matrix[i]=NULL ;
+				else
+					PEN_matrix[i]=&PEN[id] ;
+			} ;
+			char * genestr = mxArrayToString(mx_genestr) ;				
+			REAL * dict_weights = mxGetPr(mx_dict_weights) ;
+			REAL * segment_sum_weights = mxGetPr(mx_segment_sum_weights) ;
+			
+			CHMM* h=new CHMM(N, p, q, mxGetM(mx_a_trans), a);
+			
+			INT *my_path = new INT[(M+1)*nbest] ;
+			memset(my_path, -1, (M+1)*nbest*sizeof(INT)) ;
+			INT *my_pos = new INT[(M+1)*nbest] ;
+			memset(my_pos, -1, (M+1)*nbest*sizeof(INT)) ;
+			
+			mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxREAL);
+			double* p_prob = mxGetPr(mx_prob);
+			REAL* PEN_values=NULL, *PEN_input_values=NULL ;
+			INT num_PEN_id = 0 ;
+			
+			h->best_path_2struct(seq, M, pos, PEN_matrix, genestr, L,
+								 nbest, p_prob, my_path, my_pos, dict_weights, 
+								 D, segment_sum_weights, PEN_values, PEN_input_values, num_PEN_id) ;
+
+			int dims[3]={num_PEN_id,M,nbest};
+			mxArray* mx_PEN_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
+			double* p_PEN_values = mxGetPr(mx_PEN_values);
+			for (INT s=0; s<num_PEN_id*M*nbest; s++)
+				p_PEN_values[s]=PEN_values[s] ;
+
+			mxArray* mx_PEN_input_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
+			double* p_PEN_input_values = mxGetPr(mx_PEN_input_values);
+			for (INT s=0; s<num_PEN_id*M*nbest; s++)
+				p_PEN_input_values[s]=PEN_input_values[s] ;
+			
+			// clean up 
+			delete_penalty_struct_array(PEN, P) ;
+			delete[] PEN_matrix ;
+			delete[] pos ;
+			delete h ;
+			mxFree(genestr) ;
+
+			// transcribe result
+			mxArray* mx_my_path=mxCreateDoubleMatrix(nbest, M+1, mxREAL);
+			double* d_my_path=mxGetPr(mx_my_path);
+			mxArray* mx_my_pos=mxCreateDoubleMatrix(nbest, M+1, mxREAL);
+			double* d_my_pos=mxGetPr(mx_my_pos);
+			
+			for (INT k=0; k<nbest; k++)
+				for (INT i=0; i<M+1; i++)
+				{
+					d_my_path[i*nbest+k] = my_path[i+k*(M+1)] ;
+					d_my_pos[i*nbest+k] = my_pos[i+k*(M+1)] ;
 				}
 			
 			retvals[0]=mx_prob ;

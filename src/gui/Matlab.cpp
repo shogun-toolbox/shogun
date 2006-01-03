@@ -42,6 +42,7 @@ static const CHAR* N_SET_HMM=			"set_hmm";
 static const CHAR* N_MODEL_PROB_NO_B_TRANS=			"model_prob_no_b_trans";
 static const CHAR* N_BEST_PATH_NO_B_TRANS=			"best_path_no_b_trans";
 static const CHAR* N_BEST_PATH_TRANS=			"best_path_trans";
+static const CHAR* N_BEST_PATH_2STRUCT=			"best_path_2struct";
 static const CHAR* N_BEST_PATH_TRANS_SIMPLE=			"best_path_trans_simple";
 static const CHAR* N_BEST_PATH_NO_B=			"best_path_no_b";
 static const CHAR* N_APPEND_HMM=			"append_hmm";
@@ -454,7 +455,16 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				gf_matlab.best_path_trans(prhs,plhs);
 			}
 			else
-				CIO::message(M_ERROR, "usage is [prob,path,pos,PEN_values]=gf('best_path_trans',p,q,a_trans,seq,pos,orf_info, genestr, penalties, penalty_info, nbest, dict_weights, use_orf)");
+				CIO::message(M_ERROR, "usage is [prob,path,pos,PEN_values, PEN_input_values]=gf('best_path_trans',p,q,a_trans,seq,pos,orf_info, genestr, penalties, penalty_info, nbest, dict_weights, use_orf)");
+		}
+		else if (!strncmp(action, N_BEST_PATH_2STRUCT, strlen(N_BEST_PATH_2STRUCT)))
+		{
+			if ((nrhs==1+11) & (nlhs==5))
+			{
+				gf_matlab.best_path_2struct(prhs,plhs);
+			}
+			else
+				CIO::message(M_ERROR, "usage is [prob,path,pos,PEN_values, PEN_input_values]=gf('best_path_2struct',p,q,a_trans,seq,pos, genestr, penalties, penalty_info, nbest, dict_weights, segment_sum_weights)");
 		}
 		else if (!strncmp(action, N_MODEL_PROB_NO_B_TRANS, strlen(N_MODEL_PROB_NO_B_TRANS)))
 		{

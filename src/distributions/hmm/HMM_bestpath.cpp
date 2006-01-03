@@ -25,7 +25,7 @@ extern "C" int	finite(double);
 #define USEHEAP 0
 #define USEORIGINALLIST 0
 #define USEFIXEDLENLIST 2
-#define DOPRINT 0
+
 
 static const INT num_degrees = 4;
 static const INT num_svms = 8 ;
@@ -81,6 +81,59 @@ inline void translate_from_single_order(WORD* obs, INT sequence_length,
 			obs[i-start]=obs[i];
 }
 
+
+
+
+inline void reset_svm_value(INT pos, INT * last_svm_pos, REAL * svm_value) 
+{
+	for (INT j=0; j<num_degrees; j++)
+	{
+		for (INT i=0; i<num_words[j]; i++)
+			word_used[j][i]=false ;
+		for (INT s=0; s<num_svms; s++)
+			svm_values_unnormalized[j][s] = 0 ;
+		num_unique_words[j]=0 ;
+		last_svm_pos[j] = pos - word_degree[j]+1 ;
+		svm_pos_start[j] = pos - word_degree[j] ;
+	}
+	for (INT s=0; s<num_svms; s++)
+		svm_value[s] = 0 ;
+}
+
+void extend_svm_value(WORD** wordstr, INT pos, INT *last_svm_pos, REAL* svm_value) 
+{
+	bool did_something = false ;
+	for (INT j=0; j<num_degrees; j++)
+	{
+		for (int i=last_svm_pos[j]-1; (i>=pos) && (i>=0); i--)
+		{
+			if (wordstr[j][i]>=num_words[j])
+				CIO::message(M_DEBUG, "wordstr[%i]=%i\n", i, wordstr[j][i]) ;
+
+			assert(wordstr[j][i]<num_words[j]) ;
+			if (!word_used[j][wordstr[j][i]])
+			{
+				for (INT s=0; s<num_svms; s++)
+					svm_values_unnormalized[j][s]+=dict_weights[wordstr[j][i]+s*cum_num_words[num_degrees]+cum_num_words[j]] ;
+				
+				word_used[j][wordstr[j][i]]=true ;
+				num_unique_words[j]++ ;
+				did_something=true ;
+			} ;
+		} ;
+		if (num_unique_words[j]>0)
+			last_svm_pos[j]=pos ;
+	} ;
+	
+	if (did_something)
+		for (INT s=0; s<num_svms; s++)
+		{
+			svm_value[s]=0.0 ;
+			for (INT j=0; j<num_degrees; j++)
+				if (num_unique_words[j]>0)
+					svm_value[s]+= svm_values_unnormalized[j][s]/sqrt((double)num_unique_words[j]) ;  // full normalization
+		}
+}
 
 struct svm_values_struct
 {
@@ -240,58 +293,6 @@ inline void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end
 	}
 }
 
-
-
-inline void reset_svm_value(INT pos, INT * last_svm_pos, REAL * svm_value) 
-{
-	for (INT j=0; j<num_degrees; j++)
-	{
-		for (INT i=0; i<num_words[j]; i++)
-			word_used[j][i]=false ;
-		for (INT s=0; s<num_svms; s++)
-			svm_values_unnormalized[j][s] = 0 ;
-		num_unique_words[j]=0 ;
-		last_svm_pos[j] = pos - word_degree[j]+1 ;
-		svm_pos_start[j] = pos - word_degree[j] ;
-	}
-	for (INT s=0; s<num_svms; s++)
-		svm_value[s] = 0 ;
-}
-
-void extend_svm_value(WORD** wordstr, INT pos, INT *last_svm_pos, REAL* svm_value) 
-{
-	bool did_something = false ;
-	for (INT j=0; j<num_degrees; j++)
-	{
-		for (int i=last_svm_pos[j]-1; (i>=pos) && (i>=0); i--)
-		{
-			if (wordstr[j][i]>=num_words[j])
-				CIO::message(M_DEBUG, "wordstr[%i]=%i\n", i, wordstr[j][i]) ;
-
-			assert(wordstr[j][i]<num_words[j]) ;
-			if (!word_used[j][wordstr[j][i]])
-			{
-				for (INT s=0; s<num_svms; s++)
-					svm_values_unnormalized[j][s]+=dict_weights[wordstr[j][i]+s*cum_num_words[num_degrees]+cum_num_words[j]] ;
-				
-				word_used[j][wordstr[j][i]]=true ;
-				num_unique_words[j]++ ;
-				did_something=true ;
-			} ;
-		} ;
-		if (num_unique_words[j]>0)
-			last_svm_pos[j]=pos ;
-	} ;
-	
-	if (did_something)
-		for (INT s=0; s<num_svms; s++)
-		{
-			svm_value[s]=0.0 ;
-			for (INT j=0; j<num_degrees; j++)
-				if (num_unique_words[j]>0)
-					svm_value[s]+= svm_values_unnormalized[j][s]/sqrt((double)num_unique_words[j]) ;  // full normalization
-		}
-}
 
 inline bool extend_orf(const bool* genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to)
 {
