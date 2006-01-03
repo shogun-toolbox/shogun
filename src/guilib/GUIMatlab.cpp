@@ -470,7 +470,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			mxGetM(mx_genestr)==1 &&
 			mxGetM(mx_use_orf)==1 &&
 			mxGetN(mx_use_orf)==1 &&
-			mxGetN(mx_dict_weights)==4 && 
+			mxGetN(mx_dict_weights)==8 && 
 			((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			 || mxIsEmpty(mx_penalty_info))
 			)
@@ -525,18 +525,23 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			
 			mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxREAL);
 			double* p_prob = mxGetPr(mx_prob);
-			REAL* PEN_values=NULL ;
+			REAL* PEN_values=NULL, *PEN_input_values ;
 			INT num_PEN_id = 0 ;
 			
 			h->best_path_trans(seq, M, pos, orf_info, PEN_matrix, genestr, L,
 							   nbest, p_prob, my_path, my_pos, dict_weights, 
-							   4*D, PEN_values, num_PEN_id, use_orf) ;
+							   8*D, PEN_values, PEN_input_values, num_PEN_id, use_orf) ;
 
 			int dims[3]={num_PEN_id,M,nbest};
 			mxArray* mx_PEN_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
 			double* p_PEN_values = mxGetPr(mx_PEN_values);
 			for (INT s=0; s<num_PEN_id*M*nbest; s++)
 				p_PEN_values[s]=PEN_values[s] ;
+
+			mxArray* mx_PEN_input_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
+			double* p_PEN_input_values = mxGetPr(mx_PEN_input_values);
+			for (INT s=0; s<num_PEN_id*M*nbest; s++)
+				p_PEN_input_values[s]=PEN_input_values[s] ;
 			
 			// clean up 
 			delete_penalty_struct_array(PEN, P) ;
@@ -563,10 +568,12 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			retvals[1]=mx_my_path ;
 			retvals[2]=mx_my_pos ;
 			retvals[3]=mx_PEN_values ;
+			retvals[4]=mx_PEN_input_values ;
 
 			delete[] my_path ;
 			delete[] my_pos ;
 			delete[] PEN_values ;
+			delete[] PEN_input_values ;
 
 			return true;
 		}

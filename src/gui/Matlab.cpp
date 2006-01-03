@@ -449,7 +449,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (!strncmp(action, N_BEST_PATH_TRANS, strlen(N_BEST_PATH_TRANS)))
 		{
-			if ((nrhs==1+12) & (nlhs==4))
+			if ((nrhs==1+12) & (nlhs==5))
 			{
 				gf_matlab.best_path_trans(prhs,plhs);
 			}

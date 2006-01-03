@@ -27,15 +27,19 @@ extern "C" int	finite(double);
 #define USEFIXEDLENLIST 2
 #define DOPRINT 0
 
-static const INT num_degrees = 6;
-static const INT num_svms = 4 ;
+static const INT num_degrees = 4;
+static const INT num_svms = 8 ;
 
 //static const INT word_degree[num_degrees] = {1,6} ;
 //static const INT cum_num_words[num_degrees+1] = {0,4,4100} ;
 //static const INT num_words[num_degrees] = {4,4096} ;
-static const INT word_degree[num_degrees] = {1,2,3,4,5,6} ;
-static const INT cum_num_words[num_degrees+1] = {0,4,20,84,340,1364,5460} ;
-static const INT num_words[num_degrees] = {4,20,84,256,1024,4096} ;
+//static const INT word_degree[num_degrees] = {1,2,3,4,5,6} ;
+//static const INT cum_num_words[num_degrees+1] = {0,4,20,84,340,1364,5460} ;
+//static const INT num_words[num_degrees] = {4,20,64,256,1024,4096} ;
+static const INT word_degree[num_degrees] = {3,4,5,6} ;
+static const INT cum_num_words[num_degrees+1] = {0,64,320,1344,5440} ;
+static const INT num_words[num_degrees] = {64,256,1024,4096} ;
+
 static bool word_used[num_degrees][4096] ;
 static REAL svm_values_unnormalized[num_degrees][num_svms] ;
 static REAL *dict_weights ;
@@ -151,7 +155,7 @@ inline void clear_svm_value(struct svm_values_struct & svs)
 }
 
 
-inline void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs, FILE* fid)
+inline void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs)
 {
 	/*
 	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 corresponding to the 6-mer in genestr(i-5:i) 
@@ -277,26 +281,16 @@ void extend_svm_value(WORD** wordstr, INT pos, INT *last_svm_pos, REAL* svm_valu
 		} ;
 		if (num_unique_words[j]>0)
 			last_svm_pos[j]=pos ;
-
 	} ;
 	
-	if (num_unique_words[num_degrees-1]>0)
-	{
-		if (did_something)
-			for (INT s=0; s<num_svms; s++)
-			{
-				svm_value[s]=0.0 ;
-				for (INT j=0; j<num_degrees; j++)
-					svm_value[s]+= svm_values_unnormalized[j][s]/sqrt((double)num_unique_words[j]) ;  // full normalization
-			}
-	}
-	else
-	{
-		// what should I do?
+	if (did_something)
 		for (INT s=0; s<num_svms; s++)
-		  svm_value[s]=0 ;
-	}
-	
+		{
+			svm_value[s]=0.0 ;
+			for (INT j=0; j<num_degrees; j++)
+				if (num_unique_words[j]>0)
+					svm_value[s]+= svm_values_unnormalized[j][s]/sqrt((double)num_unique_words[j]) ;  // full normalization
+		}
 }
 
 inline bool extend_orf(const bool* genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to)
@@ -346,12 +340,11 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						   short int nbest, 
 						   REAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 						   REAL *dictionary_weights, INT dict_len, 
-						   REAL *&PEN_values, INT &num_PEN_id, bool use_orf)
+						   REAL *&PEN_values, REAL *&PEN_input_values, 
+						   INT &num_PEN_id, bool use_orf)
 {
-	FILE* fid = fopen("tmp.out","wt");        // if debugging
-
 	const INT default_look_back = 30000 ;
-	INT max_look_back = 0 ;
+	INT max_look_back = default_look_back ;
 	bool use_svm = false ;
 	assert(dict_len==num_svms*cum_num_words[num_degrees]) ;
 	dict_weights=dictionary_weights ;
@@ -367,20 +360,19 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	{ // determine maximal length of look-back
 		for (INT i=0; i<N; i++)
 			for (INT j=0; j<N; j++)
-				if (PEN(i,j)!=NULL)
+			{
+				struct penalty_struct *penij=PEN(i,j) ;
+				while (penij!=NULL)
 				{
-					if (PEN(i,j)->max_len>max_look_back)
-						max_look_back=PEN(i,j)->max_len ;
-					if (PEN(i,j)->use_svm)
+					if (penij->max_len>max_look_back)
+						max_look_back=penij->max_len ;
+					if (penij->use_svm)
 						use_svm=true ;
-					if (PEN(i,j)->next_pen)
-						if (PEN(i,j)->next_pen->use_svm)
-						use_svm=true ;
-					if (PEN(i,j)->id+1>num_PEN_id)
-						num_PEN_id=PEN(i,j)->id+1 ;
-				} else
-					if (max_look_back<default_look_back)
-						max_look_back=default_look_back ;
+					if (penij->id+1>num_PEN_id)
+						num_PEN_id=penij->id+1 ;
+					penij=penij->next_pen ;
+				} 
+			}
 	}
 	max_look_back = CMath::min(genestr_len, max_look_back) ;
 	//fprintf(stderr,"use_svm=%i\n", use_svm) ;
@@ -486,7 +478,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 
 		for (T_STATES i=0; i<N; i++)
 		{
-		  DELTA(0,i,0) = get_p(i) + SEQ(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
+			DELTA(0,i,0) = get_p(i) + SEQ(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
 			PSI(0,i,0)   = 0 ;
 			KTAB(0,i,0)  = 0 ;
 			PTAB(0,i,0)  = 0 ;
@@ -510,9 +502,9 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	{
 		if (is_big && t%(seq_len/1000)==1)
 			CIO::progress(t, 0, seq_len);
-
+		
 		init_svm_value(svs, t, seq_len, max_look_back);
-		find_svm_values_till_pos (wordstr, pos, t, svs, fid);  
+		find_svm_values_till_pos(wordstr, pos, t, svs);  
 	
 		for (T_STATES j=0; j<N; j++)
 		{
@@ -547,7 +539,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 				for (INT i=0; i<num_elem; i++)
 				{
 					T_STATES ii = elem_list[i] ;
-
+					
 					const struct penalty_struct * penalty = PEN(j,ii) ;
 					INT look_back = default_look_back ;
 					if (penalty!=NULL)
@@ -672,34 +664,19 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 				double minusscore;
 				long int fromtjk;
 
-				#if DOPRINT
-				fprintf(fid,"\n\n");
-				#endif
-
 				for (short int k=0; k<nbest; k++)
 				{
 					if (k<numEnt)
 					{
-					  #if (USEHEAP == 2)
+#if (USEHEAP == 2)
 					    tempheap->ExtractMin(minusscore,fromtjk);
-					  #elif (USEORIGINALLIST == 2)
+#elif (USEORIGINALLIST == 2)
 					    minusscore = oldtempvv[k];
 					    fromtjk = oldtempii[k];
-					  #elif (USEFIXEDLENLIST == 2)
+#elif (USEFIXEDLENLIST == 2)
 					    minusscore = fixedtempvv[k];
 					    fromtjk = fixedtempii[k];
-                                          #endif
-					    
-					  #if ((USEORIGINALLIST > 0) && (DOPRINT))
-					    fprintf (fid,"ORIGINAL: %d-th best score is %f coming from tjk=%d\n",k+1,-minusscore, fromtjk);
-					  #endif
-					  #if ((USEFIXEDLENLIST > 0) && (DOPRINT))
-					    fprintf (fid,"FIXEDLENLIST: %d-th best score is %f coming from tjk=%d\n",k+1,-minusscore, fromtjk);
-					  #endif
-                                          #if ((USEHEAP > 0) && (DOPRINT))
-					    fprintf (fid,"HEAP: %d-th best score is %f coming from tjk=%d\n",k+1,-minusscore, fromtjk);
-                                          #endif
-
+#endif
 					    DELTA(t,j,k)    = -minusscore + SEQ(j,t);
 					    PSI(t,j,k)      = (fromtjk%N) ;
 					    KTAB(t,j,k)     = (fromtjk%(N*nbest)-PSI(t,j,k))/N ;
@@ -712,10 +689,6 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 						KTAB(t,j,k)     = 0 ;
 						PTAB(t,j,k)     = 0 ;
 					}
-                                        #if DOPRINT
-					fprintf(fid,"\n\n");
-                                        #endif
-
 				}
 
 				#if USEHEAP > 0
@@ -783,9 +756,16 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 		REAL svm_value[num_svms] ;
 		for (INT s=0; s<num_svms; s++)
 			svm_value[s]=0 ;
+
+		// one more for the emissions: the first
+		num_PEN_id++ ;
+        // allocate memory
 		PEN_values = new REAL[num_PEN_id*seq_len*nbest] ;
 		for (INT s=0; s<num_PEN_id*seq_len*nbest; s++)
 			PEN_values[s]=0 ;
+		PEN_input_values = new REAL[num_PEN_id*seq_len*nbest] ;
+		for (INT s=0; s<num_PEN_id*seq_len*nbest; s++)
+			PEN_input_values[s]=0 ;
 		char * PEN_names[num_PEN_id] ;
 		for (INT s=0; s<num_PEN_id; s++)
 			PEN_names[s]=NULL ;
@@ -806,14 +786,19 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 				for (INT qq=0; qq<num_degrees; qq++)
 					last_svm_pos[qq]=-1 ;
 				
+				PEN_values[num_PEN_id-1 + i*num_PEN_id + seq_len*num_PEN_id*k] += SEQ(to_state, to_pos) ;
+				PEN_input_values[num_PEN_id-1 + i*num_PEN_id + seq_len*num_PEN_id*k] = to_state + to_pos*1000 ;
+
 				reset_svm_value(pos[to_pos], last_svm_pos, svm_value) ;
 				extend_svm_value(wordstr, pos[from_pos], last_svm_pos, svm_value) ;
+
 				struct penalty_struct *penalty = PEN(to_state, from_state) ;
 				while (penalty)
 				{
 					REAL input_value=0 ;
 					REAL pen_val = lookup_penalty(penalty, pos[to_pos]-pos[from_pos], svm_value, false, input_value) ;
-					PEN_values[penalty->id + i*num_PEN_id + seq_len*num_PEN_id*k] += pen_val + floor(input_value*100000)*10 ;
+					PEN_values[penalty->id + i*num_PEN_id + seq_len*num_PEN_id*k] += pen_val ;
+					PEN_input_values[penalty->id + i*num_PEN_id + seq_len*num_PEN_id*k] += input_value ;
 					PEN_names[penalty->id] = penalty->name ;
 					//CIO::message(M_DEBUG, "%s(%i;%1.2f), ", penalty->name, penalty->id, pen_val) ;
 					penalty = penalty->next_pen ;
@@ -858,5 +843,4 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	delete[] pos_seq ;
 	delete[] genestr_stop ;
 
-	fclose(fid);
 }
