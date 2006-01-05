@@ -20,12 +20,22 @@ ifeq (.config-local,$(wildcard .config-local))
 include .config-local
 endif
 
+# variablen fuer die wrapper generation mittels swig
+SWIG=swig
+SWIGFLAGS=-Wall -c++ -python
+EXT_INP_SWIG=i
+EXT_SRC_SWIG=_wrap.cxx
+EXT_LIB_SWIG=so
+
 SRCDIR = .
 
 # SRC/OBJFILES lie all in the subdir of SRCDIR
 HEADERFILES	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_HEADER)" )
 SRCFILES 	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )
 OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)"| grep -v '.cpuinfo.c' ))
+SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)"))
+SWIGLIBFILES 	= $(patsubst %.$(EXT_INP_SWIG),%.$(EXT_LIB_SWIG), $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)"))
+
 
 .PHONY: just-do-it all out clean doc texdoc htmldoc end condor purif profile dep depend targets warn2err err2warn ctags confgen depgen buildout buildend
 
@@ -38,6 +48,8 @@ just-do-it:	depgen depend
 		test -f .depend && $(MAKE)
 endif
 endif
+
+swig:	$(SWIGLIBFILES) $(SWIGSRCFILES)
 
 confgen:	
 	@echo ==================================
@@ -104,6 +116,8 @@ dep:	depend
 depend:	Makefile .config lib/versionstring.h 
 	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_SRC_CPP)" ) -o.$(EXT_OBJ_CPP) -f - >.depend
 	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' )  -o.$(EXT_OBJ_C) -f - >>.depend
+	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)" ) -o$(EXT_SRC_SWIG) -f - >>.depend
+	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)" ) -o.$(EXT_LIB_SWIG) -f - >>.depend
 
 lib/versionstring.h:	CVS/Entries
 		chmod u+x ./.version.sh
@@ -114,9 +128,11 @@ $(OBJFILES): Makefile .config .depend
 $(TARGET): $(OBJFILES) $(SRCFILES)
 	$(LINK) $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ 
 
+%${EXT_LIB_SWIG}:	%.$(EXT_SRC_SWIG)
+	$(LINK) $(LINKFLAGS) -o $@ $<
 
-%.${EXT_SRC_SWIG}:	%.$(EXT_SRC_HEADER)
-	$(SWIG) bla $<
+%${EXT_SRC_SWIG}:	%.$(EXT_INP_SWIG)
+	$(SWIG) $(SWIGFLAGS) $<
 
 %.$(EXT_OBJ_CPP):	%.$(EXT_SRC_CPP)
 	$(COMP_CPP) $(DEFINES) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<
