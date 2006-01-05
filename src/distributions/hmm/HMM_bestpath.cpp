@@ -46,7 +46,7 @@ static REAL *dict_weights ;
 static INT svm_pos_start[num_degrees] ;
 static INT num_unique_words[num_degrees] ;
 
-inline void translate_from_single_order(WORD* obs, INT sequence_length, 
+static void translate_from_single_order(WORD* obs, INT sequence_length, 
 										INT start, INT order, 
 										INT max_val=2/*DNA->2bits*/)
 {
@@ -84,7 +84,7 @@ inline void translate_from_single_order(WORD* obs, INT sequence_length,
 
 
 
-inline void reset_svm_value(INT pos, INT * last_svm_pos, REAL * svm_value) 
+static void reset_svm_value(INT pos, INT * last_svm_pos, REAL * svm_value) 
 {
 	for (INT j=0; j<num_degrees; j++)
 	{
@@ -100,7 +100,7 @@ inline void reset_svm_value(INT pos, INT * last_svm_pos, REAL * svm_value)
 		svm_value[s] = 0 ;
 }
 
-void extend_svm_value(WORD** wordstr, INT pos, INT *last_svm_pos, REAL* svm_value) 
+static void extend_svm_value(WORD** wordstr, INT pos, INT *last_svm_pos, REAL* svm_value) 
 {
 	bool did_something = false ;
 	for (INT j=0; j<num_degrees; j++)
@@ -146,7 +146,7 @@ struct svm_values_struct
   bool ** word_used ;
 } ;
 
-inline void init_svm_value(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT howmuchlookback)
+static void init_svm_value(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT howmuchlookback)
 {
 	/*
 	  See find_svm_values_till_pos for comments
@@ -161,8 +161,8 @@ inline void init_svm_value(struct svm_values_struct & svs, INT start_pos, INT se
 	{
 		svs.num_unique_words        = new INT[num_degrees] ;
 		svs.svm_values              = new REAL[seqlen*num_svms] ;
-		svs.svm_values_unnormalized = new (REAL*)[num_degrees] ;
-		svs.word_used               = new (bool*)[num_degrees] ;
+		svs.svm_values_unnormalized = new REAL*[num_degrees] ;
+		svs.word_used               = new bool*[num_degrees] ;
 		for (INT j=0; j<num_degrees; j++)
 		{
 			//svs.svm_values[j]              = new REAL[seqlen*num_svms] ;
@@ -189,7 +189,7 @@ inline void init_svm_value(struct svm_values_struct & svs, INT start_pos, INT se
 	svs.seqlen = seqlen;
 }
 
-inline void clear_svm_value(struct svm_values_struct & svs) 
+static void clear_svm_value(struct svm_values_struct & svs) 
 {
 	if (NULL != svs.svm_values)
 	{
@@ -208,7 +208,7 @@ inline void clear_svm_value(struct svm_values_struct & svs)
 }
 
 
-inline void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs)
+static void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs)
 {
 	/*
 	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 corresponding to the 6-mer in genestr(i-5:i) 
@@ -294,7 +294,7 @@ inline void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end
 }
 
 
-inline bool extend_orf(const bool* genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to)
+static bool extend_orf(const bool* genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to)
 {
 	if (start<0) 
 		start=0 ;
@@ -783,15 +783,16 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 				INT to_pos     = my_pos_seq[i+1+k*seq_len] ;
 				
 				//CIO::message(M_DEBUG, "%i. from state %i pos %i[%i]  to  state %i pos %i[%i]  penalties:", k, from_state, pos[from_pos], from_pos, to_state, pos[to_pos], to_pos) ;
+				
 				INT last_svm_pos[num_degrees] ;
 				for (INT qq=0; qq<num_degrees; qq++)
 					last_svm_pos[qq]=-1 ;
 				
-				PEN_values[num_PEN_id-1 + i*num_PEN_id + seq_len*num_PEN_id*k] += SEQ(to_state, to_pos) ;
-				PEN_input_values[num_PEN_id-1 + i*num_PEN_id + seq_len*num_PEN_id*k] = to_state + to_pos*1000 ;
-
 				reset_svm_value(pos[to_pos], last_svm_pos, svm_value) ;
 				extend_svm_value(wordstr, pos[from_pos], last_svm_pos, svm_value) ;
+
+				PEN_values[num_PEN_id-1 + i*num_PEN_id + seq_len*num_PEN_id*k] += SEQ(to_state, to_pos) ;
+				PEN_input_values[num_PEN_id-1 + i*num_PEN_id + seq_len*num_PEN_id*k] = to_state + to_pos*1000 ;
 
 				struct penalty_struct *penalty = PEN(to_state, from_state) ;
 				while (penalty)
