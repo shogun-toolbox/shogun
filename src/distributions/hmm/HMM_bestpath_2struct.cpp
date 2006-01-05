@@ -23,7 +23,7 @@ static REAL *dict_weights ;
 static INT num_unique_words = 0 ;
 
 
-inline void translate_from_single_order(WORD* obs, INT sequence_length, 
+static void translate_from_single_order(WORD* obs, INT sequence_length, 
 										INT start, INT order, 
 										INT max_val=2/*DNA->2bits*/)
 {
@@ -56,7 +56,7 @@ inline void translate_from_single_order(WORD* obs, INT sequence_length,
 			obs[i-start]=obs[i];
 }
 
-inline void reset_svm_value(INT pos, INT & last_svm_pos, REAL * svm_value) 
+static void reset_svm_value(INT pos, INT & last_svm_pos, REAL * svm_value) 
 {
 	for (int i=0; i<num_words; i++)
 		word_used[i]=false ;
@@ -68,7 +68,7 @@ inline void reset_svm_value(INT pos, INT & last_svm_pos, REAL * svm_value)
 	num_unique_words=0 ;
 }
 
-void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, REAL* svm_value) 
+static void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, REAL* svm_value) 
 {
 	bool did_something = false ;
 	for (int i=last_svm_pos-1; (i>=pos) && (i>=0); i--)
@@ -103,7 +103,7 @@ void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, REAL* svm_value
 }
 
 
-inline void reset_segment_sum_value(INT num_states, INT pos, INT & last_segment_sum_pos, REAL * segment_sum_value) 
+static void reset_segment_sum_value(INT num_states, INT pos, INT & last_segment_sum_pos, REAL * segment_sum_value) 
 {
 	for (INT s=0; s<num_states; s++)
 		segment_sum_value[s] = 0 ;
@@ -111,7 +111,7 @@ inline void reset_segment_sum_value(INT num_states, INT pos, INT & last_segment_
 	//fprintf(stderr, "start: %i\n", pos) ;
 }
 
-void extend_segment_sum_value(REAL *segment_sum_weights, INT seqlen, INT num_states,
+static void extend_segment_sum_value(REAL *segment_sum_weights, INT seqlen, INT num_states,
 							  INT pos, INT &last_segment_sum_pos, REAL* segment_sum_value) 
 {
 	for (int i=last_segment_sum_pos-1; (i>=pos) && (i>=0); i--)
