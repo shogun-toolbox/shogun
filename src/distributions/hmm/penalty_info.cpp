@@ -252,7 +252,8 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 }
 #endif
 
-REAL lookup_penalty_svm(const struct penalty_struct *PEN, INT p_value, REAL *d_values, REAL &input_value)
+REAL lookup_penalty_svm(const struct penalty_struct *PEN, INT p_value, REAL *d_values, bool follow_next, 
+						REAL &input_value)
 {	
 	if (PEN==NULL)
 		return 0 ;
@@ -298,8 +299,8 @@ REAL lookup_penalty_svm(const struct penalty_struct *PEN, INT p_value, REAL *d_v
 			   (PEN->limits[idx]-d_value)) / (PEN->limits[idx]-PEN->limits[idx-1]) ;  
 	}
 	
-	if (PEN->next_pen)
-		ret+=lookup_penalty(PEN->next_pen, p_value, d_values, true, input_value);
+	if (PEN->next_pen && follow_next)
+		ret+=lookup_penalty(PEN->next_pen, p_value, d_values, follow_next, input_value);
 	
 	return ret ;
 }
@@ -310,7 +311,7 @@ REAL lookup_penalty(const struct penalty_struct *PEN, INT p_value,
 	if (PEN==NULL)
 		return 0 ;
 	if (PEN->use_svm)
-		return lookup_penalty_svm(PEN, p_value, svm_values, input_value) ;
+		return lookup_penalty_svm(PEN, p_value, svm_values, follow_next, input_value) ;
 		
 	input_value = (REAL) p_value ;
 
