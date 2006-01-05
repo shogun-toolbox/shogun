@@ -1,3 +1,3 @@
 %module SalzbergWordKernel%{
- #include "SalzbergWordKernel.h" 
+ #include "kernel/SalzbergWordKernel.h" 
 %}

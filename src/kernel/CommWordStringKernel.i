@@ -1,3 +1,3 @@
 %module CommWordStringKernel%{
- #include "CommWordStringKernel.h" 
+ #include "kernel/CommWordStringKernel.h" 
 %}

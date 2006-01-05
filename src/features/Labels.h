@@ -10,6 +10,7 @@ class CLabels
 	public:
 		CLabels(INT num_labels);
 		CLabels(CHAR* fname);
+		CLabels();
 		~CLabels();
 
 		bool load(CHAR* fname);

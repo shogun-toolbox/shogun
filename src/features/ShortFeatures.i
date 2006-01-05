@@ -1,3 +1,3 @@
 %module ShortFeatures%{
- #include "ShortFeatures.h" 
+ #include "features/ShortFeatures.h" 
 %}

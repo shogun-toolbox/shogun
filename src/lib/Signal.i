@@ -1,3 +1,3 @@
 %module Signal%{
- #include "Signal.h" 
+ #include "lib/Signal.h" 
 %}

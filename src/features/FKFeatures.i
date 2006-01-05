@@ -1,3 +1,3 @@
 %module FKFeatures%{
- #include "FKFeatures.h" 
+ #include "features/FKFeatures.h" 
 %}

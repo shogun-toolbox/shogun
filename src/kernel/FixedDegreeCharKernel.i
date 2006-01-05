@@ -1,3 +1,3 @@
 %module FixedDegreeCharKernel%{
- #include "FixedDegreeCharKernel.h" 
+ #include "kernel/FixedDegreeCharKernel.h" 
 %}

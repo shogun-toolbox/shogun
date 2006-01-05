@@ -1,3 +1,3 @@
 %module SimpleLocalityImprovedCharKernel%{
- #include "SimpleLocalityImprovedCharKernel.h" 
+ #include "kernel/SimpleLocalityImprovedCharKernel.h" 
 %}

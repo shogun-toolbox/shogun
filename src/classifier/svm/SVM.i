@@ -1,14 +1,14 @@
 %module SVM
 %{
- #include "SVM.h"
+ #include "classifier/svm/SVM.h"
 %}
 /*
-%include "../../kernel/CharKernel.h"
-%include "../../kernel/SimpleKernel.h"
-%include "../../kernel/SimpleKernel.i"
-%include "../../kernel/Kernel.h"
+%include "kernel/CharKernel.h"
+%include "kernel/SimpleKernel.h"
+%include "kernel/SimpleKernel.i"
+%include "kernel/Kernel.h"
 */
-%include "../../kernel/KernelMachine.i"
+%include "kernel/KernelMachine.i"
 
 typedef float REAL;
 

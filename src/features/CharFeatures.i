@@ -1,9 +1,9 @@
 %module CharFeatures
 %{
- #include "CharFeatures.h" 
+ #include "features/CharFeatures.h" 
 %}
 
-%include "SimpleFeatures.i"
+%include "features/SimpleFeatures.i"
 %include "carrays.i"
 
 %array_class(char,charArray);

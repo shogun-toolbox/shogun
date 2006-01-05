@@ -1,3 +1,3 @@
 %module Distribution%{
- #include "Distribution.h" 
+ #include "distributions/Distribution.h" 
 %}

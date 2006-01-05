@@ -1,3 +1,3 @@
 %module ByteFeatures%{
- #include "ByteFeatures.h" 
+ #include "features/ByteFeatures.h" 
 %}

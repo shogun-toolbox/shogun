@@ -1,3 +1,3 @@
 %module Parallel%{
- #include "Parallel.h" 
+ #include "lib/Parallel.h" 
 %}

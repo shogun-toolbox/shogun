@@ -1,3 +1,3 @@
 %module CombinedKernel%{
- #include "CombinedKernel.h" 
+ #include "kernel/CombinedKernel.h" 
 %}

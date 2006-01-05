@@ -1,3 +1,3 @@
 %module WordFeatures%{
- #include "WordFeatures.h" 
+ #include "features/WordFeatures.h" 
 %}

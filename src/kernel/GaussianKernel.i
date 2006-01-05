@@ -1,3 +1,3 @@
 %module GaussianKernel%{
- #include "GaussianKernel.h" 
+ #include "kernel/GaussianKernel.h" 
 %}

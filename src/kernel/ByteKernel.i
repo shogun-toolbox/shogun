@@ -1,3 +1,3 @@
 %module ByteKernel%{
- #include "ByteKernel.h" 
+ #include "kernel/ByteKernel.h" 
 %}

@@ -1,3 +1,3 @@
 %module DynArray%{
- #include "DynArray.h" 
+ #include "lib/DynArray.h" 
 %}

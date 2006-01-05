@@ -1,3 +1,3 @@
 %module LDA%{
- #include "LDA.h" 
+ #include "classifier/LDA.h" 
 %}

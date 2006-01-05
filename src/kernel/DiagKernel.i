@@ -1,3 +1,3 @@
 %module DiagKernel%{
- #include "DiagKernel.h" 
+ #include "kernel/DiagKernel.h" 
 %}

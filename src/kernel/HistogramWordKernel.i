@@ -1,3 +1,3 @@
 %module HistogramWordKernel%{
- #include "HistogramWordKernel.h" 
+ #include "kernel/HistogramWordKernel.h" 
 %}

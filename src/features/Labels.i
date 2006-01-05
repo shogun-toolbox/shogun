@@ -1,5 +1,5 @@
 %module Labels%{
- #include "Labels.h" 
+ #include "features/Labels.h" 
 %}
 
 typedef int INT;
@@ -9,8 +9,8 @@ class CLabels
 {
 	public:
 		CLabels(INT num_labels);
-		CLabels();
 		CLabels(CHAR* fname);
+		CLabels();
 		~CLabels();
 
 		/// set/get INT label

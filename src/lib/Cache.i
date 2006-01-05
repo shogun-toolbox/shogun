@@ -1,3 +1,3 @@
 %module Cache%{
- #include "Cache.h" 
+ #include "lib/Cache.h" 
 %}

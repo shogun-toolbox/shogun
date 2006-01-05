@@ -1,3 +1,3 @@
 %module LocalityImprovedCharKernel%{
- #include "LocalityImprovedCharKernel.h" 
+ #include "kernel/LocalityImprovedCharKernel.h" 
 %}

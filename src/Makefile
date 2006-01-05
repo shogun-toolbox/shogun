@@ -25,6 +25,7 @@ SWIG=swig
 SWIGFLAGS=-Wall -c++ -python
 EXT_INP_SWIG=i
 EXT_SRC_SWIG=_wrap.cxx
+EXT_OBJ_SWIG=_wrap.cxx.o
 EXT_LIB_SWIG=so
 
 SRCDIR = .
@@ -34,6 +35,7 @@ HEADERFILES	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_HEADER)" )
 SRCFILES 	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )
 OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)"| grep -v '.cpuinfo.c' ))
 SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)"))
+SWIGOBJFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_OBJ_SWIG), $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)"))
 SWIGLIBFILES 	= $(patsubst %.$(EXT_INP_SWIG),%.$(EXT_LIB_SWIG), $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)"))
 
 
@@ -49,7 +51,7 @@ just-do-it:	depgen depend
 endif
 endif
 
-swig:	$(SWIGLIBFILES) $(SWIGSRCFILES)
+swig:	$(SWIGLIBFILES) $(SWIGOBJFILES) $(SWIGSRCFILES)
 
 confgen:	
 	@echo ==================================
@@ -106,7 +108,7 @@ distclean: clean
 		rm -f .config tags lib/config.h lib/versionstring.h
 
 clean: .config
-	rm -f $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(TARGET) ../doc/doxygen/*.html ../doc/doxygen/genefinder.tex gmon.out .depend configure.log .cpuinfo ./configure-*
+	rm -f $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" -o -name "*.$(EXT_LIB_SWIG)" -o -name "*.$(EXT_OBJ_SWIG)" -o -name "*.$(EXT_SRC_SWIG)" 2>/dev/null) $(TARGET) ../doc/doxygen/*.html ../doc/doxygen/genefinder.tex gmon.out .depend configure.log .cpuinfo ./configure-*
 
 config:	Makefile configure
 		chmod u+x ./configure
@@ -128,8 +130,11 @@ $(OBJFILES): Makefile .config .depend
 $(TARGET): $(OBJFILES) $(SRCFILES)
 	$(LINK) $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ 
 
-%${EXT_LIB_SWIG}:	%.$(EXT_SRC_SWIG)
-	$(LINK) $(LINKFLAGS) -o $@ $<
+%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG) $(OBJFILES) $(SRCFILES)
+	$(LINK) $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ 
+
+%${EXT_OBJ_SWIG}:	%$(EXT_SRC_SWIG)
+	$(COMP_CPP) $(DEFINES) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<
 
 %${EXT_SRC_SWIG}:	%.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $<

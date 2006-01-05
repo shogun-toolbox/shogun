@@ -1,3 +1,3 @@
 %module RealKernel%{
- #include "RealKernel.h" 
+ #include "kernel/RealKernel.h" 
 %}

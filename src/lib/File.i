@@ -1,3 +1,3 @@
 %module File%{
- #include "File.h" 
+ #include "lib/File.h" 
 %}

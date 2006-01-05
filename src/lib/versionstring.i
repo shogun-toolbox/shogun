@@ -1,3 +1,3 @@
 %module versionstring%{
- #include "versionstring.h" 
+ #include "lib/versionstring.h" 
 %}

@@ -1,3 +1,3 @@
 %module Time%{
- #include "Time.h" 
+ #include "lib/Time.h" 
 %}

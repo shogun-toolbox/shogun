@@ -1,3 +1,3 @@
 %module CommUlongStringKernel%{
- #include "CommUlongStringKernel.h" 
+ #include "kernel/CommUlongStringKernel.h" 
 %}

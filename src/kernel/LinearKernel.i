@@ -1,3 +1,3 @@
 %module LinearKernel%{
- #include "LinearKernel.h" 
+ #include "kernel/LinearKernel.h" 
 %}

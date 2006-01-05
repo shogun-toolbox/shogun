@@ -1,3 +1,3 @@
 %module SparseFeatures%{
- #include "SparseFeatures.h" 
+ #include "features/SparseFeatures.h" 
 %}

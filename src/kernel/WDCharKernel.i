@@ -1,3 +1,3 @@
 %module WDCharKernel%{
- #include "WDCharKernel.h" 
+ #include "kernel/WDCharKernel.h" 
 %}

@@ -1,3 +1,3 @@
 %module lapack%{
- #include "lapack.h" 
+ #include "lib/lapack.h" 
 %}

@@ -1,3 +1,3 @@
 %module AUCKernel%{
- #include "AUCKernel.h" 
+ #include "kernel/AUCKernel.h" 
 %}

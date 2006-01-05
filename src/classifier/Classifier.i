@@ -1,5 +1,5 @@
 %module Classifier%{
- #include "Classifier.h" 
+ #include "classifier/Classifier.h" 
 %}
 
 class CClassifier

@@ -1,3 +1,3 @@
 %module LinearCharKernel%{
- #include "LinearCharKernel.h" 
+ #include "kernel/LinearCharKernel.h" 
 %}

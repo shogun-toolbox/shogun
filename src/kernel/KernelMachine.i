@@ -1,8 +1,8 @@
 %module KernelMachine%{
- #include "KernelMachine.h"
+ #include "kernel/KernelMachine.h"
 %}
 
-%include "../classifier/Classifier.i"
+%include "classifier/Classifier.i"
 
 class CKernelMachine : public CClassifier {
 	public:

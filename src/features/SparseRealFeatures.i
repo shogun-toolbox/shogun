@@ -1,3 +1,3 @@
 %module SparseRealFeatures%{
- #include "SparseRealFeatures.h" 
+ #include "features/SparseRealFeatures.h" 
 %}

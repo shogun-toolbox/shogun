@@ -1,3 +1,3 @@
 %module KNN%{
- #include "KNN.h" 
+ #include "classifier/KNN.h" 
 %}

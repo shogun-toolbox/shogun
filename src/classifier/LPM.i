@@ -1,3 +1,3 @@
 %module LPM%{
- #include "LPM.h" 
+ #include "classifier/LPM.h" 
 %}

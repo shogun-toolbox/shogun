@@ -1,3 +1,3 @@
 %module WeightedDegreeCharKernelPolyA%{
- #include "WeightedDegreeCharKernelPolyA.h" 
+ #include "kernel/WeightedDegreeCharKernelPolyA.h" 
 %}

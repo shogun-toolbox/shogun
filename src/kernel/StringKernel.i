@@ -1,3 +1,3 @@
 %module StringKernel%{
- #include "StringKernel.h" 
+ #include "kernel/StringKernel.h" 
 %}

@@ -1,9 +1,9 @@
 %module CharKernel
 %{
-   #include "CharKernel.h" 
+   #include "kernel/CharKernel.h" 
 %}
 
-%include "SimpleKernel.i"
+%include "kernel/SimpleKernel.i"
 typedef char CHAR;
 
 class CCharKernel : public CSimpleKernel<CHAR>

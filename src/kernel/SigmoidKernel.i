@@ -1,3 +1,3 @@
 %module SigmoidKernel%{
- #include "SigmoidKernel.h" 
+ #include "kernel/SigmoidKernel.h" 
 %}

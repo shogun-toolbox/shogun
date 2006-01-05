@@ -1,3 +1,3 @@
 %module SimpleFile%{
- #include "SimpleFile.h" 
+ #include "lib/SimpleFile.h" 
 %}

@@ -1,3 +1,3 @@
 %module RealFeatures%{
- #include "RealFeatures.h" 
+ #include "features/RealFeatures.h" 
 %}

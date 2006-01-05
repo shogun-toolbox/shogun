@@ -1,3 +1,3 @@
 %module List%{
- #include "List.h" 
+ #include "lib/List.h" 
 %}

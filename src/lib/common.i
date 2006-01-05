@@ -1,3 +1,3 @@
 %module common%{
- #include "common.h" 
+ #include "lib/common.h" 
 %}

@@ -1,3 +1,3 @@
 %module WordKernel%{
- #include "WordKernel.h" 
+ #include "kernel/WordKernel.h" 
 %}

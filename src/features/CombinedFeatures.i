@@ -1,3 +1,3 @@
 %module CombinedFeatures%{
- #include "CombinedFeatures.h" 
+ #include "features/CombinedFeatures.h" 
 %}

@@ -1,3 +1,3 @@
 %module io%{
- #include "io.h" 
+ #include "lib/io.h" 
 %}

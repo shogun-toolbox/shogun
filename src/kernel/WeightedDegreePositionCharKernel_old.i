@@ -1,3 +1,3 @@
 %module WeightedDegreePositionCharKernel_old%{
- #include "WeightedDegreePositionCharKernel_old.h" 
+ #include "kernel/WeightedDegreePositionCharKernel_old.h" 
 %}

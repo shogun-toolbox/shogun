@@ -1,3 +1,3 @@
 %module SparseNormSquaredKernel%{
- #include "SparseNormSquaredKernel.h" 
+ #include "kernel/SparseNormSquaredKernel.h" 
 %}

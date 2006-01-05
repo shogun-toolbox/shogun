@@ -1,3 +1,3 @@
 %module SparseLinearKernel%{
- #include "SparseLinearKernel.h" 
+ #include "kernel/SparseLinearKernel.h" 
 %}

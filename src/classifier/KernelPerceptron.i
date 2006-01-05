@@ -1,3 +1,3 @@
 %module KernelPerceptron%{
- #include "KernelPerceptron.h" 
+ #include "classifier/KernelPerceptron.h" 
 %}

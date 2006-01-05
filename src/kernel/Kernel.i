@@ -1,6 +1,6 @@
 %module Kernel
 %{
-   #include "Kernel.h" 
+   #include "kernel/Kernel.h" 
 %}
 
 typedef double REAL;

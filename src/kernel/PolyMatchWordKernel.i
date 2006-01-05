@@ -1,3 +1,3 @@
 %module PolyMatchWordKernel%{
- #include "PolyMatchWordKernel.h" 
+ #include "kernel/PolyMatchWordKernel.h" 
 %}

@@ -1,3 +1,3 @@
 %module LinearClassifier%{
- #include "LinearClassifier.h" 
+ #include "classifier/LinearClassifier.h" 
 %}

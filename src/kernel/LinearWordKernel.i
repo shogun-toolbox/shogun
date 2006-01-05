@@ -1,3 +1,3 @@
 %module LinearWordKernel%{
- #include "LinearWordKernel.h" 
+ #include "kernel/LinearWordKernel.h" 
 %}

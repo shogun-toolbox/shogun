@@ -1,3 +1,3 @@
 %module WordMatchKernel%{
- #include "WordMatchKernel.h" 
+ #include "kernel/WordMatchKernel.h" 
 %}

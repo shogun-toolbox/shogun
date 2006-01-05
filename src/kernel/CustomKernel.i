@@ -1,9 +1,9 @@
 %module CustomKernel%{
- #include "CustomKernel.h" 
+ #include "kernel/CustomKernel.h" 
 %}
 
 
-%include "Kernel.i"
+%include "kernel/Kernel.i"
 %feature("notabstract") CCustomKernel;
 
 class CCustomKernel: public CKernel

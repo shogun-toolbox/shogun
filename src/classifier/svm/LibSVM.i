@@ -1,6 +1,6 @@
 %module SVM
 %{
- #include "LibSVM.h" 
+ #include "classifier/svm/LibSVM.h" 
 %}
 
 class CLibSVM : public CSVM

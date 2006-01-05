@@ -1,3 +1,3 @@
 %module StringFeatures%{
- #include "StringFeatures.h" 
+ #include "features/StringFeatures.h" 
 %}

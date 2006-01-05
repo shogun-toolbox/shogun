@@ -1,6 +1,6 @@
 %module SimpleKernel
 %{
-   #include "SimpleKernel.h" 
+   #include "kernel/SimpleKernel.h" 
 %}
 
 %include "Kernel.i"

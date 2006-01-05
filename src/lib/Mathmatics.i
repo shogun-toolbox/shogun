@@ -1,3 +1,3 @@
 %module Mathmatics%{
- #include "Mathmatics.h" 
+ #include "lib/Mathmatics.h" 
 %}

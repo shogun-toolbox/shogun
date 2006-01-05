@@ -1,3 +1,3 @@
 %module CharPolyKernel%{
- #include "CharPolyKernel.h" 
+ #include "kernel/CharPolyKernel.h" 
 %}

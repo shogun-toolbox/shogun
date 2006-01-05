@@ -1,5 +1,5 @@
 %module Features%{
- #include "Features.h" 
+ #include "features/Features.h" 
 %}
 
 

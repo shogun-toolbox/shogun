@@ -1,3 +1,3 @@
 %module SparseGaussianKernel%{
- #include "SparseGaussianKernel.h" 
+ #include "kernel/SparseGaussianKernel.h" 
 %}

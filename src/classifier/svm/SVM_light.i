@@ -1,16 +1,16 @@
 %module SVM_light
 %{
- #include "SVM_light.h" 
+ #include "classifier/svm/SVM_light.h" 
 %}
 
-%include "SVM.i" 
+%include "classifier/svm/SVM.i" 
 /*
-%include "../../kernel/CharKernel.h"
-%include "../../kernel/SimpleKernel.h"
-%include "../../kernel/Kernel.h"
+%include "kernel/CharKernel.h"
+%include "kernel/SimpleKernel.h"
+%include "kernel/Kernel.h"
 */
 
-%include "../../kernel/KernelMachine.i"
+%include "kernel/KernelMachine.i"
 
 %feature("notabstract") CSVMLight;
 

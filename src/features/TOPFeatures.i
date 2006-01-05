@@ -1,3 +1,3 @@
 %module TOPFeatures%{
- #include "TOPFeatures.h" 
+ #include "features/TOPFeatures.h" 
 %}

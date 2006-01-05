@@ -1,3 +1,3 @@
 %module PluginEstimate%{
- #include "PluginEstimate.h" 
+ #include "classifier/PluginEstimate.h" 
 %}

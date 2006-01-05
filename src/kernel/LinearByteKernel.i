@@ -1,3 +1,3 @@
 %module LinearByteKernel%{
- #include "LinearByteKernel.h" 
+ #include "kernel/LinearByteKernel.h" 
 %}

@@ -3,6 +3,7 @@
 
 #include "classifier/svm/SVM.h"
 #include "kernel/Kernel.h"
+#include "lib/Mathmatics.h"
 #include "lib/common.h"
 #include "classifier/svm/Optimizer.h"
 

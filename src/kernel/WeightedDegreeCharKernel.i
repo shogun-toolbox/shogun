@@ -1,8 +1,8 @@
 %module WeightedDegreeCharKernel%{
- #include "WeightedDegreeCharKernel.h" 
+ #include "kernel/WeightedDegreeCharKernel.h" 
 %}
 
-%include "CharKernel.i"
+%include "kernel/CharKernel.i"
 
 %include "carrays.i"
 %array_class(int, intArray);

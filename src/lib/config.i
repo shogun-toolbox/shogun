@@ -1,3 +1,3 @@
 %module config%{
- #include "config.h" 
+ #include "lib/config.h" 
 %}

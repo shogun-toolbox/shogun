@@ -1,3 +1,3 @@
 %module ShortKernel%{
- #include "ShortKernel.h" 
+ #include "kernel/ShortKernel.h" 
 %}
