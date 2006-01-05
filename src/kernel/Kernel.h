@@ -17,8 +17,8 @@ class CKernel
 		 */
 		REAL kernel(INT x, INT y);
 
-		virtual REAL* get_kernel_matrix(int &m, int &n, REAL* target=NULL);
-		virtual SHORTREAL* get_kernel_matrix(int &m, int &n, SHORTREAL* target=NULL);
+		virtual REAL* get_kernel_matrix_real(int &m, int &n, REAL* target);
+		virtual SHORTREAL* get_kernel_matrix_shortreal(int &m, int &n, SHORTREAL* target);
 
 		/** initialize kernel cache
 		 *  make sure to check that your kernel can deal with the
