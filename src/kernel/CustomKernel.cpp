@@ -18,7 +18,7 @@ CCustomKernel::~CCustomKernel()
 SHORTREAL* CCustomKernel::get_kernel_matrix(int &num_vec1, int &num_vec2, SHORTREAL* target)
 {
 	if (target == NULL)
-		return CKernel::get_kernel_matrix(num_vec1, num_vec2, target);
+		return CKernel::get_kernel_matrix_shortreal(num_vec1, num_vec2, target);
 	else
 	{
 		CFeatures* f1 = get_lhs();

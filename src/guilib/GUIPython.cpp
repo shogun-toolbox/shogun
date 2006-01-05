@@ -16,7 +16,7 @@
 //next line is not necessary, however if disabled causes a warning
 extern "C" {
 #include <Python.h>
-#include <python2.3/object.h>
+#include <python2.4/object.h>
 #define libnumeric_UNIQUE_SYMBOL libnumeric_API
 #include <numarray/libnumarray.h>
 #include <numarray/arrayobject.h>
@@ -130,7 +130,7 @@ PyObject* CGUIPython::py_get_kernel_matrix(PyObject* self, PyObject* args)
 	if (!k)
 		CIO::message(M_ERROR, "no kernel set\n");
 	else
-		result=k->get_kernel_matrix(m,n);
+		result=k->get_kernel_matrix_real(m,n,NULL);
 
 	if(result)
 		return (PyObject*) NA_NewArray(result, tFloat64, 2, m, n);
