@@ -42,7 +42,7 @@ CKernel::~CKernel()
 	precomputed_matrix=NULL ;
 }
 
-SHORTREAL* CKernel::get_kernel_matrix(int &num_vec1, int &num_vec2, SHORTREAL* target)
+SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2, SHORTREAL* target)
 {
 	SHORTREAL* result = NULL;
 	CFeatures* f1 = get_lhs();
@@ -112,7 +112,7 @@ SHORTREAL* CKernel::get_kernel_matrix(int &num_vec1, int &num_vec2, SHORTREAL* t
 	return result;
 }
 
-REAL* CKernel::get_kernel_matrix(int &num_vec1, int &num_vec2, REAL* target)
+REAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, REAL* target)
 {
 	REAL* result = NULL;
 	CFeatures* f1 = get_lhs();
