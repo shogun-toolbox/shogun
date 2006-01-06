@@ -1,5 +1,7 @@
 # include config options
 #
+#
+.SUFFIXES: .c .c.o .cpp .cpp.o .h .i .so _wrap.cxx _wrap.cxx.o
 
 ifeq (GNU,$(shell make --version 2>&1 | grep GNU >/dev/null && echo GNU))
 MAKE=make
@@ -20,26 +22,24 @@ ifeq (.config-local,$(wildcard .config-local))
 include .config-local
 endif
 
-# variablen fuer die wrapper generation mittels swig
-SWIG=swig
-SWIGFLAGS=-Wall -c++ -python
-EXT_INP_SWIG=i
-EXT_SRC_SWIG=_wrap.cxx
-EXT_OBJ_SWIG=_wrap.cxx.o
-EXT_LIB_SWIG=so
+ifeq (yes,$(USE_SWIG))
+TARGET=swig
+endif
 
 SRCDIR = .
 
 # SRC/OBJFILES lie all in the subdir of SRCDIR
 HEADERFILES	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_HEADER)" )
 SRCFILES 	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )
+ifeq (yes,$(USE_SWIG))
+OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)"| grep -v '.cpuinfo.c' )) $(patsubst %.$(EXT_INP_SWIG),%$(EXT_OBJ_SWIG), $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)"))
+else
 OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)"| grep -v '.cpuinfo.c' ))
+endif
 SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)"))
-SWIGOBJFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_OBJ_SWIG), $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)"))
-SWIGLIBFILES 	= $(patsubst %.$(EXT_INP_SWIG),%.$(EXT_LIB_SWIG), $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)"))
+SWIGLIBFILES 	= $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)"| sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/_\1so=')
 
-
-.PHONY: just-do-it all out clean doc texdoc htmldoc end condor purif profile dep depend targets warn2err err2warn ctags confgen depgen buildout buildend
+.PHONY: swig just-do-it all out clean doc texdoc htmldoc end condor purif profile dep depend targets warn2err err2warn ctags confgen depgen buildout buildend
 
 ifeq (.config,$(wildcard .config))
 ifeq (.depend,$(wildcard .depend))
@@ -51,7 +51,6 @@ just-do-it:	depgen depend
 endif
 endif
 
-swig:	$(SWIGLIBFILES) $(SWIGOBJFILES) $(SWIGSRCFILES)
 
 confgen:	
 	@echo ==================================
@@ -64,7 +63,7 @@ depgen:
 
 buildout:
 	@echo ========================================================================================
-	@echo ==== Building genefinder for platform $(KERNELNAME)-$(MACHINE)
+	@echo ==== Building genefinder for platform $(KERNELNAME)-$(MACHINE) target $(TARGET)
 	@echo ==== opts: $(COMPFLAGS_CPP)
 	@echo ========================================================================================
 	@echo 
@@ -88,10 +87,10 @@ err2warn: $(SRCFILES)
 ctags: tags
 
 tags:	$(SRCFILES)
-	ctags */*.cpp */*.h */*.c
+	ctags */*.$(EXT_SRC_CPP) */*.h */*.$(EXT_SRC_C)
 
 linecount:	$(SRCFILES)
-	wc -l */*.cpp */*.h */*.c | grep total
+	wc -l */*.$(EXT_SRC_CPP) */*.h */*.$(EXT_SRC_C) */*.$(EXT_SRC_SWIG) | grep total
 
 targets:
 	@echo "=========="
@@ -108,7 +107,7 @@ distclean: clean
 		rm -f .config tags lib/config.h lib/versionstring.h
 
 clean: .config
-	rm -f $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" -o -name "*.$(EXT_LIB_SWIG)" -o -name "*.$(EXT_OBJ_SWIG)" -o -name "*.$(EXT_SRC_SWIG)" 2>/dev/null) $(TARGET) ../doc/doxygen/*.html ../doc/doxygen/genefinder.tex gmon.out .depend configure.log .cpuinfo ./configure-*
+	rm -f $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" -o -name "*.$(EXT_LIB_SWIG)" -o -name "*$(EXT_OBJ_SWIG)" -o -name "*$(EXT_SRC_SWIG)" 2>/dev/null) $(TARGET) ../doc/doxygen/*.html ../doc/doxygen/genefinder.tex gmon.out .depend configure.log .cpuinfo ./configure-*
 
 config:	Makefile configure
 		chmod u+x ./configure
@@ -119,7 +118,7 @@ depend:	Makefile .config lib/versionstring.h
 	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_SRC_CPP)" ) -o.$(EXT_OBJ_CPP) -f - >.depend
 	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' )  -o.$(EXT_OBJ_C) -f - >>.depend
 	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)" ) -o$(EXT_SRC_SWIG) -f - >>.depend
-	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)" ) -o.$(EXT_LIB_SWIG) -f - >>.depend
+	makedepend -Y. $(shell find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_INP_SWIG)" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)") -o.$(EXT_LIB_SWIG) -f - | sed -e 's=/\([^/]*.so\)=/_\1=' -e 's/\.h/.cpp.o/g' | python .generate_link_dependencies.py >>.depend
 
 lib/versionstring.h:	CVS/Entries
 		chmod u+x ./.version.sh
@@ -127,11 +126,16 @@ lib/versionstring.h:	CVS/Entries
 
 $(OBJFILES): Makefile .config .depend
 
+ifeq (yes,$(USE_SWIG))
+$(TARGET): $(SWIGLIBFILES)
+#$(TARGET): $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES)
+else
 $(TARGET): $(OBJFILES) $(SRCFILES)
 	$(LINK) $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ 
+endif
 
-%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG) $(OBJFILES) $(SRCFILES)
-	$(LINK) $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ 
+_%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG)
+	$(LINK) $(LINKFLAGS) -o $@ $^
 
 %${EXT_OBJ_SWIG}:	%$(EXT_SRC_SWIG)
 	$(COMP_CPP) $(DEFINES) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<

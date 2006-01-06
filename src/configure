@@ -2,11 +2,16 @@
 
 # some hopefully reasonable defaults
 SRCDIR=.
-SWIG=swig
 EXT_SRC_HEADER=c
 EXT_SRC_C=c
 EXT_SRC_CPP=cpp
 EXT_SRC_SWIG=i
+EXT_SRC_SWIG=_wrap.cxx
+EXT_INP_SWIG=i
+EXT_OBJ_SWIG=_wrap.cxx.o
+EXT_LIB_SWIG=so
+SWIGFLAGS="-Wall -c++ -python"
+SWIG=swig
 KERNELNAME=`uname`
 MACHINE=`uname -m | tr ' ' '-'`
 EXESUFFIX=${KERNELNAME}-${MACHINE}
@@ -1375,6 +1380,11 @@ cat > .config <<EOF
 MAKE 			= ${MAKE}
 SWIG 			= ${SWIG}
 USE_SWIG 		= ${USE_SWIG}
+SWIGFLAGS		= ${SWIGFLAGS}
+EXT_INP_SWIG	= ${EXT_INP_SWIG}
+EXT_SRC_SWIG	= ${EXT_SRC_SWIG}
+EXT_OBJ_SWIG	= ${EXT_OBJ_SWIG}
+EXT_LIB_SWIG	= ${EXT_LIB_SWIG}
 EXT_SRC_HEADER	= ${EXT_SRC_HEADER}
 EXT_SRC_C 		= ${EXT_SRC_C}
 EXT_SRC_CPP 	= ${EXT_SRC_CPP}
