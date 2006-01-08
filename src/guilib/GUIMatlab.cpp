@@ -1552,7 +1552,7 @@ bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 		mxArray* mx_result=mxCreateDoubleMatrix(num_vec1, num_vec2, mxREAL);
 		double* result=mxGetPr(mx_result);
 
-		k->get_kernel_matrix(num_vec1, num_vec2, result);
+		k->get_kernel_matrix_real(num_vec1, num_vec2, result);
 		retvals[0]=mx_result;
 		return true;
 	}
