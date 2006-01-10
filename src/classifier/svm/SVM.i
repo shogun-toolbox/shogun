@@ -8,9 +8,10 @@
 %include "kernel/SimpleKernel.i"
 %include "kernel/Kernel.h"
 */
-%include "kernel/KernelMachine.i"
 
-typedef float REAL;
+%include "kernel/KernelMachine.i"
+%include "swigfiles/common.i"
+
 
 class CSVM : public CKernelMachine
 {

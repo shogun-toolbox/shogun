@@ -8,8 +8,7 @@
 
 %array_class(char,charArray);
 
-typedef char CHAR;
-typedef int LONG;
+%include "swigfiles/common.i"
 
 %feature("notabstract") CCharFeatures;
 

@@ -4,9 +4,7 @@
 %}
 
 %include "Kernel.i"
-
-typedef char CHAR;
-typedef int INT;
+%include "swigfiles/common.i"
 
 %feature("notabstract") SimpleKernel;
 

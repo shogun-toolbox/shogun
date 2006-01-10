@@ -10,10 +10,7 @@
 %array_class(double, doubleArray);
 %array_class(char, charArray);
 
-typedef int INT;
-typedef double REAL;
-typedef char CHAR;
-typedef int LONG;
+%include "swigfiles/common.i"
 
 %feature("notabstract") CWeightedDegreeCharKernel;
 

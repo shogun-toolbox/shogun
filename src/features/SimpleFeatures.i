@@ -3,9 +3,7 @@
 %}
 
 %include "Features.i"
-
-typedef char CHAR;
-typedef int INT;
+%include "swigfiles/common.i"
 
 template <class ST> class CSimpleFeatures;
 template <class ST> class CSimplePreProc;

@@ -1,6 +1,19 @@
-/*
+/* 
+ * This file is used by swig as a standard header with
+ * useful declarations, typedefs etc..
  * 
  */
 
 typedef int INT;
+typedef int LONG;
+typedef int KERNELCACHE_IDX;
+typedef int FNUM;
+typdef double FVAL;
+
 typedef char CHAR;
+
+typedef double REAL;
+
+typedef float SHORTREAL;
+typedef float REAL;
+

@@ -3,13 +3,11 @@
    #include "kernel/Kernel.h" 
 %}
 
-typedef double REAL;
-typedef float SHORTREAL;
 
 %include "carrays.i"
 %array_class(double,doubleArray)
 
-typedef int KERNELCACHE_IDX;
+%include "swigfiles/common.i"
 
 class CKernel
 {

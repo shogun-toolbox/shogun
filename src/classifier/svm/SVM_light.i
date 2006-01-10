@@ -12,6 +12,8 @@
 
 %include "kernel/KernelMachine.i"
 
+%include "swigfiles/common.i"
+
 %feature("notabstract") CSVMLight;
 
 class CSVMLight:public CSVM {
@@ -21,6 +23,3 @@ public:
   virtual bool	train();
 };
 
-
-typedef int FNUM;
-typedef double FVAL;  
