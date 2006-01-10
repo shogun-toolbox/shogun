@@ -1151,10 +1151,10 @@ set_opts()
 {
 	if test "$_python" = yes
 	then
-		INCLUDES="-I/usr/include/python2.3 $INCLUDES"
+		INCLUDES="-I/usr/include/python2.4 $INCLUDES"
 		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_CPP"
 		COMPFLAGS_C="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_C"
-		LINKFLAGS="-pthread -shared -L/usr/lib/python2.3/config -lpython2.3 $LINKFLAGS"
+		LINKFLAGS="-pthread -shared -L/usr/lib/python2.4/config -lpython2.4 $LINKFLAGS"
 		TARGET="gf.so"
 	fi
 

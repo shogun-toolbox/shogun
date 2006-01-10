@@ -2,8 +2,7 @@
  #include "features/Labels.h" 
 %}
 
-typedef int INT;
-typedef char CHAR;
+%include "swigfiles/common.i"
 
 class CLabels
 {
