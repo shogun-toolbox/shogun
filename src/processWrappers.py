@@ -106,6 +106,8 @@ for filename in interfaceFiles:
    cmd3=''
 
    if os.path.exists(basename + '.cpp.o'):
+      if basename == 'SVM_light':
+         depstring += "-llapack-3 -lblas-3"
       cmd3 = "g++ -shared -ggdb %s %s.cpp.o %s_wrap.o -o _%s.so" % (depstring,basename,basename,basename)
       print cmd3
 

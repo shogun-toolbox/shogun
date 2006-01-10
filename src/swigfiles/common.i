@@ -8,7 +8,7 @@ typedef int INT;
 typedef int LONG;
 typedef int KERNELCACHE_IDX;
 typedef int FNUM;
-typdef double FVAL;
+typedef double FVAL;
 
 typedef char CHAR;
 

@@ -13,6 +13,18 @@
 
 %feature("notabstract") CWeightedDegreeCharKernel;
 
+struct Trie
+{
+  unsigned short has_floats ;
+  unsigned short usage ;
+  float weight ;
+  union 
+  {
+    float child_weights[4] ;
+    struct Trie *childs[4] ;
+   };
+};
+
 class CWeightedDegreeCharKernel: public CCharKernel
 {
  public:
