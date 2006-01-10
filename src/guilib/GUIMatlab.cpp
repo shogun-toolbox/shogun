@@ -440,8 +440,8 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 		INT L=mxGetN(mx_genestr) ;
 		INT D=mxGetM(mx_dict_weights) ;
 		
-		//CIO::message(M_DEBUG, "N=%i, M=%i, P=%i, L=%i, nbest=%i\n", N, M, P, L, nbest) ;
-		/*fprintf(stderr,"ok1=%i\n", mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
+		CIO::message(M_DEBUG, "N=%i, M=%i, P=%i, L=%i, nbest=%i\n", N, M, P, L, nbest) ;
+		fprintf(stderr,"ok1=%i\n", mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
 				mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
 				mxGetN(mx_a_trans) == 3 &&
 				mxGetM(mx_seq) == N &&
@@ -455,7 +455,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 				 || mxIsEmpty(mx_penalty_info))) ;
 		fprintf(stderr, "ok3=%i\n", 				mxGetM(mx_genestr)==1 &&
 				((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
-				|| mxIsEmpty(mx_penalty_info))) ;*/
+				|| mxIsEmpty(mx_penalty_info))) ;
 		
 		if (
 			mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
