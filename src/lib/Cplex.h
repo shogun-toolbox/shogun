@@ -22,6 +22,7 @@ public:
 
 	bool init_cplex(E_PROB_TYPE t);
 	bool cleanup_cplex();
+	bool optimize(REAL& sol);
 
 
 protected:

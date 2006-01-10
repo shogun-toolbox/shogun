@@ -1,6 +1,7 @@
 #include "classifier/svm/CPLEXSVM.h"
-#include "lib/io.h"
 #include "lib/common.h"
+#ifdef USE_CPLEX
+#include "lib/io.h"
 #include "lib/Mathmatics.h"
 #include "lib/Cplex.h"
 #include "features/Labels.h"
@@ -73,3 +74,4 @@ bool CCPLEXSVM::train()
 
 	return result;
 }
+#endif
