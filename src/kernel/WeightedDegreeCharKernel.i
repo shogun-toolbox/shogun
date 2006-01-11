@@ -3,13 +3,13 @@
 %}
 
 %include "kernel/CharKernel.i"
+%include "swigfiles/common.i"
 
 %include "carrays.i"
 %array_class(int, intArray);
 %array_class(double, doubleArray);
 %array_class(char, charArray);
-
-%include "swigfiles/common.i"
+%array_class(REAL,realArray);
 
 %feature("notabstract") CWeightedDegreeCharKernel;
 

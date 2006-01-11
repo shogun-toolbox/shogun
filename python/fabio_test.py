@@ -17,14 +17,6 @@ iA[2] = 1
 iA[3] = 1
 iA[4] = -1
 
-#iA[0] = 2
-#iA[1] = 1
-#iA[2] = 0
-#iA[3] = 1
-#iA[4] = 2
-
-# size shift_score d mismatch shift_list shift_len use_norm mkl_stepsize
-#kernel = wd.CWeightedDegreePositionCharKernel(10,dA,2,0,iA,3,True,10)
 kernel = wd.CWeightedDegreeCharKernel(10,dA,2,0,True,False,1)
 
 seq1 = wd.charArray(3)
@@ -38,8 +30,6 @@ seq2[1] = 98
 seq2[2] = 97
 
 import features.CharFeatures as cf
-
-# test and train features
 
 features1 = cf.CCharFeatures(cf.DNA,"fileA.dna")
 features2 = cf.CCharFeatures(cf.DNA,"fileB.dna")
@@ -78,4 +68,3 @@ svm.classify(trainlabels)
 print 'Trainlabels'
 for i in range(2):
    print trainlabels.get_label(i)
-

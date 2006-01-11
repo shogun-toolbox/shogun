@@ -15,5 +15,6 @@ typedef char CHAR;
 typedef double REAL;
 
 typedef float SHORTREAL;
-typedef float REAL;
+/* typedef float REAL; */
+
 
