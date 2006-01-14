@@ -108,7 +108,7 @@ distclean: clean
 
 clean: .config
 	rm -f $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" -o -name "*.$(EXT_LIB_SWIG)" -o -name "*$(EXT_OBJ_SWIG)" -o -name "*$(EXT_SRC_SWIG)" 2>/dev/null) $(TARGET) ../doc/doxygen/*.html ../doc/doxygen/genefinder.tex gmon.out .depend configure.log .cpuinfo ./configure-*
-	rm -f $(shell find ./ -regex '.*/[^._].*\.py')
+	rm -f $(shell find ./ -name '*.py' ! -name '__*.py' ! -name '.*.py')
 
 config:	Makefile configure
 		chmod u+x ./configure
