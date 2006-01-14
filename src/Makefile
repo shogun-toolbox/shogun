@@ -106,15 +106,14 @@ htmldoc:
 distclean: clean
 		rm -f .config tags lib/config.h lib/versionstring.h
 
-clean: .config
-	rm -f $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" -o -name "*.$(EXT_LIB_SWIG)" -o -name "*$(EXT_OBJ_SWIG)" -o -name "*$(EXT_SRC_SWIG)" 2>/dev/null) $(TARGET) ../doc/doxygen/*.html ../doc/doxygen/genefinder.tex gmon.out .depend configure.log .cpuinfo ./configure-*
-	rm -f $(shell find ./ -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py')
+clean: 
+	rm -f $(shell find $(SRCDIR)/ -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) $(TARGET) ../doc/doxygen/*.html ../doc/doxygen/genefinder.tex gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find ./ -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py')
 
-config:	Makefile configure
+config: .config
+.config:	Makefile configure
 		chmod u+x ./configure
 		./configure
 
-.config: config
 
 dep:	depend
 depend:	Makefile .config lib/versionstring.h 
