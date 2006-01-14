@@ -39,7 +39,7 @@ endif
 SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)" | grep -v 'swigfiles'))
 SWIGLIBFILES 	= $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)" | grep -v 'swigfiles' | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/_\1so=')
 
-.PHONY: swig just-do-it all out clean doc texdoc htmldoc end condor purif profile dep depend targets warn2err err2warn ctags confgen depgen buildout buildend
+.PHONY: config swig just-do-it all out clean doc texdoc htmldoc end condor purif profile dep depend targets warn2err err2warn ctags confgen depgen buildout buildend
 
 ifeq (.config,$(wildcard .config))
 ifeq (.depend,$(wildcard .depend))
@@ -108,11 +108,13 @@ distclean: clean
 
 clean: .config
 	rm -f $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" -o -name "*.$(EXT_LIB_SWIG)" -o -name "*$(EXT_OBJ_SWIG)" -o -name "*$(EXT_SRC_SWIG)" 2>/dev/null) $(TARGET) ../doc/doxygen/*.html ../doc/doxygen/genefinder.tex gmon.out .depend configure.log .cpuinfo ./configure-*
-	rm -f $(shell find ./ -name '*.py*' ! -name '__*.py' ! -name '.*.py')
+	rm -f $(shell find ./ -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py')
 
 config:	Makefile configure
 		chmod u+x ./configure
 		./configure
+
+.config: config
 
 dep:	depend
 depend:	Makefile .config lib/versionstring.h 
