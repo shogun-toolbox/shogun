@@ -1,5 +1,5 @@
-#include "SortWord.h"
-#include "WordPreProc.h"
+#include "preproc/SortWord.h"
+#include "preproc/WordPreProc.h"
 #include "features/Features.h"
 #include "lib/Mathmatics.h"
 #include "features/WordFeatures.h"

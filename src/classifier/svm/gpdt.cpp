@@ -72,7 +72,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
-#include "gpdt.h"
+#include "classifier/svm/gpdt.h"
 
 void    help_message(void);
 void    fatalError(const char *msg1, const char *msg2);

@@ -1,7 +1,7 @@
 #ifndef _CSORTWORD__H__
 #define _CSORTWORD__H__
 
-#include "WordPreProc.h"
+#include "preproc/WordPreProc.h"
 #include "features/Features.h"
 #include "lib/common.h"
 

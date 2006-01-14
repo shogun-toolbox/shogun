@@ -12,7 +12,7 @@ extern CTextGUI* gui;
 #include "lib/io.h"
 
 #ifdef HAVE_MATLAB
-#include "mex.h"
+#include <mex.h>
 #endif
 
 #include "distributions/hmm/penalty_info.h"

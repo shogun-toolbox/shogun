@@ -1,4 +1,4 @@
-#include "PreProc.h"
+#include "preproc/PreProc.h"
 #include "lib/io.h"
 
 CPreProc::CPreProc(const CHAR* name, const CHAR* id)

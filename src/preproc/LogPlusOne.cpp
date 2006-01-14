@@ -1,5 +1,5 @@
-#include "LogPlusOne.h"
-#include "RealPreProc.h"
+#include "preproc/LogPlusOne.h"
+#include "preproc/RealPreProc.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/Mathmatics.h"

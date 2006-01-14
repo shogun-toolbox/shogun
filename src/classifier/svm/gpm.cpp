@@ -71,7 +71,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "gpdt.h"
+#include "classifier/svm/gpdt.h"
 
 #define maxvpm           30000  /* max number of method iterations allowed  */
 #define maxprojections   200

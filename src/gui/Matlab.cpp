@@ -6,7 +6,7 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include "mex.h"
+#include <mex.h>
 
 #include "guilib/GUIMatlab.h"
 #include "gui/TextGUI.h"

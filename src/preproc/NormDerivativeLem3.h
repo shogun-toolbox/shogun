@@ -1,7 +1,7 @@
 #ifndef _CNORM_DERIVATIVE_LEM3__H__
 #define _CNORM_DERIVATIVE_LEM3__H__
 
-#include "RealPreProc.h"
+#include "preproc/RealPreProc.h"
 #include "features/Features.h"
 #include "lib/common.h"
 

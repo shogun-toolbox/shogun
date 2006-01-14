@@ -2,7 +2,7 @@
  #include "features/SimpleFeatures.h" 
 %}
 
-%include "Features.i"
+%include "features/Features.i"
 %include "swigfiles/common.i"
 
 template <class ST> class CSimpleFeatures;

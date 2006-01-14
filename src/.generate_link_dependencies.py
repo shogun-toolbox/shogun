@@ -1,19 +1,37 @@
-#!/usr/bin/python
-import os;
-import sys;
-import re;
-lines=sys.stdin.readlines()
-#lines=file('.depend').readlines()
-for l in lines:
-	if ':' not in l:
-		continue
-	(so,deps)=re.split(':',l[:-1])
-	deps=re.split(' ', deps)
-	new_deps=''
-	for d in deps:
-		if os.path.isfile(os.path.splitext(d)[0]):
-			new_deps+=' '+d;
-	if (len(new_deps)):
-		print so + ':' + new_deps 
+import os,re,sys
 
-#file('b','w').writelines(x)
+incexpr=re.compile('^\s*[%#]include "(\S+)"',re.MULTILINE)
+deps=dict();
+deps['carrays.i']=[]
+
+def get_deps(f):
+	global deps
+	global fdep
+	for d in deps[f]:
+		if d not in fdep:
+			fdep+=[d]
+			get_deps(d)
+			cppfile=d[:-1]+'cpp'
+
+			if cppfile not in fdep and deps.has_key(cppfile):
+				fdep+=[cppfile]
+				get_deps(cppfile)
+
+#scan each file for potential includes
+files=sys.stdin.readlines()
+for f in files:
+	f=f[:-1]
+	deps[f]=re.findall(incexpr, file(f).read())
+
+#generate linker dependencies
+for f in deps.iterkeys():
+	if f[-1] == 'i':
+		str=os.path.join(os.path.dirname(f), '_' + os.path.basename(f)[:-2]) + '.so: ' + f[:-2]+'_wrap.cxx.o'
+
+		fdep=list();
+		get_deps(f)
+		for d in fdep:
+			if d[-4:]=='.cpp' or d[-2:]=='.c':
+				str+=' ' + d + '.o'
+
+		print str

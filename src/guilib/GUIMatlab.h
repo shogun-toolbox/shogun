@@ -7,7 +7,7 @@
 #include "features/Labels.h"
 #include "features/Features.h"
 
-#include "mex.h"
+#include <mex.h>
 
 class CGUIMatlab
 {

@@ -1,5 +1,5 @@
-#include "PruneVarSubMean.h"
-#include "RealPreProc.h"
+#include "preproc/PruneVarSubMean.h"
+#include "preproc/RealPreProc.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"

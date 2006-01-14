@@ -1,7 +1,7 @@
 #ifndef _CPRUNE_VAR_SUB_MEAN__H__
 #define _CPRUNE_VAR_SUB_MEAN__H__
 
-#include "RealPreProc.h"
+#include "preproc/RealPreProc.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/common.h"

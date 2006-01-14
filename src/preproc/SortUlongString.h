@@ -2,7 +2,7 @@
 #define _CSORTULONGSTRING__H__
 
 #include "features/StringFeatures.h"
-#include "StringPreProc.h"
+#include "preproc/StringPreProc.h"
 #include "lib/common.h"
 
 #include <stdio.h>

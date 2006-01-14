@@ -12,6 +12,7 @@ EXT_OBJ_SWIG=_wrap.cxx.o
 EXT_LIB_SWIG=so
 SWIGFLAGS="-Wall -c++ -python"
 SWIG=swig
+PYTHON=python
 KERNELNAME=`uname`
 MACHINE=`uname -m | tr ' ' '-'`
 EXESUFFIX=${KERNELNAME}-${MACHINE}
@@ -1379,6 +1380,7 @@ COMPFLAGS_C="$COMPFLAGS_CPP"
 cat > .config <<EOF
 MAKE 			= ${MAKE}
 SWIG 			= ${SWIG}
+PYTHON 			= ${PYTHON}
 USE_SWIG 		= ${USE_SWIG}
 SWIGFLAGS		= ${SWIGFLAGS}
 EXT_INP_SWIG	= ${EXT_INP_SWIG}

@@ -3,7 +3,7 @@
 
 #include "lib/common.h"
 #include "preproc/PreProc.h"
-#include "stdio.h"
+#include <stdio.h>
 
 class CPreProc;
 class CFeatures;

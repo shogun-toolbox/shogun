@@ -1,5 +1,5 @@
-#include "NormDerivativeLem3.h"
-#include "RealPreProc.h"
+#include "preproc/NormDerivativeLem3.h"
+#include "preproc/RealPreProc.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 

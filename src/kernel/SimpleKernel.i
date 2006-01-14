@@ -3,7 +3,7 @@
    #include "kernel/SimpleKernel.h" 
 %}
 
-%include "Kernel.i"
+%include "kernel/Kernel.i"
 %include "swigfiles/common.i"
 
 %feature("notabstract") SimpleKernel;

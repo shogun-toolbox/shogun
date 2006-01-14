@@ -13,8 +13,8 @@ extern "C" {
 #include "lib/lapack.h"
 
 #include "lib/common.h"
-#include "PCACut.h"
-#include "RealPreProc.h"
+#include "preproc/PCACut.h"
+#include "preproc/RealPreProc.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"

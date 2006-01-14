@@ -1,7 +1,7 @@
 #include "lib/config.h"
 
 #ifdef HAVE_MATLAB
-#include "mex.h"
+#include <mex.h>
 #endif
 
 #ifdef HAVE_PYTHON
