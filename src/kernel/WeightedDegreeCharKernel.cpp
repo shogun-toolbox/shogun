@@ -21,7 +21,7 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d
 		weights[i]=w[i];
 
 #ifdef USE_TREEMEM
-	TreeMemPtrMax=5000 ;
+	TreeMemPtrMax=1024*1024/sizeof(struct Trie) ;
 	TreeMemPtr=0 ;
 	TreeMem = (struct Trie*)malloc(TreeMemPtrMax*sizeof(struct Trie)) ;
 #endif

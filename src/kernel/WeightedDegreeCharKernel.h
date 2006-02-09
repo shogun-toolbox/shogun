@@ -14,8 +14,8 @@
 
 struct Trie
 {
-  unsigned short has_floats ;
-  unsigned short usage ;
+  WORD has_floats ;
+  WORD usage ;
   float weight ;
   union 
   {

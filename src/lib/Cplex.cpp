@@ -105,40 +105,42 @@ bool CCplex::cleanup_cplex()
 bool CCplex::optimize(REAL& sol)
 {
 
-   status = CPXcopylp (env, lp, COLSORIG, ROWSSUB, CPX_MIN, Hcost, Hrhs, 
-                       Hsense, Hmatbeg, Hmatcnt, Hmatind, Hmatval, 
-                       Hlb, Hub, NULL);
+	return false;
 
-	int      solnstat, solnmethod, solntype;
-	double   objval, maxviol;
+//   status = CPXcopylp (env, lp, COLSORIG, ROWSSUB, CPX_MIN, Hcost, Hrhs, 
+ //                      Hsense, Hmatbeg, Hmatcnt, Hmatind, Hmatval, 
+  //                     Hlb, Hub, NULL);
 
-	int status = CPXqpopt (env, lp);
-	if (status)
-		CIO::message(M_ERROR, "Failed to optimize QP.\n");
-
-	solnstat = CPXgetstat (env, lp);
-
-	if ( solnstat == CPX_STAT_UNBOUNDED )
-		CIO::message(M_INFO, "Model is unbounded\n");
-	else if ( solnstat == CPX_STAT_INFEASIBLE )
-		CIO::message(M_INFO, "Model is infeasible\n");
-	else if ( solnstat == CPX_STAT_INForUNBD )
-		CIO::message(M_INFO, "Model is infeasible or unbounded\n");
-
-	status = CPXsolninfo (env, lp, &solnmethod, &solntype, NULL, NULL);
-	if ( status )
-		CIO::message(M_ERROR, "Failed to obtain solution info.\n");
-
-	CIO::message(M_INFO, "Solution status %d, solution method %d\n", solnstat, solnmethod);
-
-	if ( solntype == CPX_NO_SOLN )
-		CIO::message(M_ERROR, "Solution not available.\n");
-
-	status = CPXgetobjval (env, lp, &objval);
-	if ( status )
-		CIO::message(M_ERROR, "Failed to obtain objective value.\n");
-	CIO::message(M_INFO, "Objective value %.10g.\n", objval);
-
+//	int      solnstat, solnmethod, solntype;
+//	double   objval, maxviol;
+//
+//	int status = CPXqpopt (env, lp);
+//	if (status)
+//		CIO::message(M_ERROR, "Failed to optimize QP.\n");
+//
+//	solnstat = CPXgetstat (env, lp);
+//
+//	if ( solnstat == CPX_STAT_UNBOUNDED )
+//		CIO::message(M_INFO, "Model is unbounded\n");
+//	else if ( solnstat == CPX_STAT_INFEASIBLE )
+//		CIO::message(M_INFO, "Model is infeasible\n");
+//	else if ( solnstat == CPX_STAT_INForUNBD )
+//		CIO::message(M_INFO, "Model is infeasible or unbounded\n");
+//
+//	status = CPXsolninfo (env, lp, &solnmethod, &solntype, NULL, NULL);
+//	if ( status )
+//		CIO::message(M_ERROR, "Failed to obtain solution info.\n");
+//
+//	CIO::message(M_INFO, "Solution status %d, solution method %d\n", solnstat, solnmethod);
+//
+//	if ( solntype == CPX_NO_SOLN )
+//		CIO::message(M_ERROR, "Solution not available.\n");
+//
+//	status = CPXgetobjval (env, lp, &objval);
+//	if ( status )
+//		CIO::message(M_ERROR, "Failed to obtain objective value.\n");
+//	CIO::message(M_INFO, "Objective value %.10g.\n", objval);
+//
 	///* The size of the problem should be obtained by asking CPLEX what
 	//   the actual size is.  cur_numrows and cur_numcols store the 
 	//   current number of rows and columns, respectively.  */
@@ -162,6 +164,6 @@ bool CCplex::optimize(REAL& sol)
 	//		goto TERMINATE;
 	//	}
 	//}
-	return (status==0);
+	//return (status==0);
 }
 #endif

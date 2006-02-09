@@ -29,6 +29,7 @@ _cplex=no
 _wtiming=no
 _logcache=no
 _shortrealkernelcache=yes
+_treemem=yes
 _logsumarray=no
 _hmmparallel=no
 _largefile=yes
@@ -349,6 +350,8 @@ for ac_option do
   --enable-logcache)	_logcache=yes	;;
   --disable-shortrealkernelcache)	_shortrealkernelcache=no	;;
   --enable-shortrealkernelcache)	_shortrealkernelcache=yes	;;
+  --disable-treemem)	_treemem=no  ;;
+  --enable-treemem)		_treemem=yes ;;
   --disable-logsum-array)_logsumarray=no	;;
   --enable-logsum-array)_logsumarray=yes	;;
   --disable-hmm-parallel)	_hmmparallel=no	;;
@@ -1316,6 +1319,11 @@ set_opts()
 		USE_SHORTREAL_KERNELCACHE='#define USE_SHORTREAL_KERNELCACHE 1'
 	fi
 
+	if test "$_treemem" = yes
+	then
+		USE_TREEMEM='#define USE_TREEMEM 1'
+	fi
+
 	if test "$_logsumarray" = yes
 	then
 		USE_LOGSUMARRAY='#define USE_LOGSUMARRAY 1'
@@ -1422,6 +1430,7 @@ $HAVE_SWIG
 $HAVE_LAPACK
 $USE_LOGCACHE
 $USE_SHORTREAL_KERNELCACHE
+$USE_TREEMEM
 $USE_LOGSUMARRAY
 $USE_HMMPARALLELSTRUCTURES
 $USE_HMMPARALLEL

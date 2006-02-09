@@ -13,12 +13,23 @@ CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, 
 	: CCharKernel(size),weights(NULL),position_weights(NULL),position_mask(NULL), counts(NULL),
 	  weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), 
 	  max_mismatch(max_mismatch_), seq_length(0), 
-	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
-	  match_vector(NULL), use_normalization(use_norm)
+	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), opt_type(WD_FASTBUTMEMHUNGRY),
+	  use_normalization(use_norm), acgt(NULL)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION;
 	lhs=NULL;
 	rhs=NULL;
+	acgt= new BYTE[256];
+	assert(acgt);
+	memset(acgt,0,256*sizeof(BYTE));
+	acgt['A']=0;
+	acgt['a']=0;
+	acgt['C']=1;
+	acgt['c']=1;
+	acgt['G']=2;
+	acgt['g']=2;
+	acgt['T']=3;
+	acgt['t']=3;
 
 	weights=new REAL[d*(1+max_mismatch)];
 	counts = new INT[d*(1+max_mismatch)];
@@ -39,6 +50,12 @@ CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, 
 	} ;
 	assert(max_shift>=0 && max_shift<=shift_len) ;
 
+#ifdef USE_TREEMEM
+	TreeMemPtrMax=1024*1024/sizeof(struct Trie) ;
+	TreeMemPtr=0 ;
+	TreeMem = (struct Trie*)malloc(TreeMemPtrMax*sizeof(struct Trie)) ;
+#endif
+
 	length=0 ;
 	trees=NULL ;
 
@@ -47,6 +64,7 @@ CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, 
 
 CWeightedDegreePositionCharKernel::~CWeightedDegreePositionCharKernel() 
 {
+	delete[] acgt;
 	delete[] shift;
 	shift = NULL;
 
@@ -66,6 +84,10 @@ CWeightedDegreePositionCharKernel::~CWeightedDegreePositionCharKernel()
 	weights_buffer = NULL ;
 	
 	cleanup();
+
+#ifdef USE_TREEMEM
+	free(TreeMem) ;
+#endif
 }
 
 void CWeightedDegreePositionCharKernel::remove_lhs() 
@@ -78,14 +100,12 @@ void CWeightedDegreePositionCharKernel::remove_lhs()
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
 	delete[] sqrtdiag_lhs;
-	delete[] match_vector ;
 
 	lhs = NULL ; 
 	rhs = NULL ; 
 	initialized = false ;
 	sqrtdiag_lhs = NULL ;
 	sqrtdiag_rhs = NULL ;
-	match_vector = NULL ;
 	
 	if (trees!=NULL)
 	{
@@ -128,8 +148,6 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do
 		INT alen ;
 		bool afree ;
 		CHAR* avec=((CCharFeatures*) l)->get_feature_vector(0, alen, afree);
-		delete[] match_vector ;
-		match_vector=new bool[alen] ;
 		
 		if (trees)
 		{
@@ -144,18 +162,16 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do
 		}
 		
 #ifdef OSF1
-		trees=new (struct SuffixTree**)[alen] ;		
+		trees=new (struct Trie**)[alen] ;		
 #else
-		trees=new struct SuffixTree*[alen] ;		
+		trees=new struct Trie*[alen] ;		
 #endif
 		for (INT i=0; i<alen; i++)
 		{
-			trees[i]=new struct SuffixTree ;
+			trees[i]=new struct Trie ;
 			trees[i]->weight=0 ;
-			trees[i]->has_floats=false ;
-			trees[i]->usage=0;
 			for (INT j=0; j<4; j++)
-				trees[i]->childs[j]=NULL ;
+				trees[i]->children[j]=NO_CHILD ;
 		} 
 		seq_length = alen ;
 		((CCharFeatures*) l)->free_feature_vector(avec, 0, afree);
@@ -267,7 +283,6 @@ void CWeightedDegreePositionCharKernel::cleanup()
 
 	seq_length = 0;
 	initialized = false;
-	match_vector = NULL;
 	tree_initialized = false;
 }
 
@@ -290,7 +305,8 @@ bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, 
 	}
 
 	delete_optimization();
-	
+	opt_type=WD_SLOWBUTMEMEFFICIENT;
+
 	CIO::message(M_DEBUG, "initializing CWeightedDegreePositionCharKernel optimization\n") ;
 	int i=0;
 	for (i=0; i<count; i++)
@@ -307,6 +323,7 @@ bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, 
 
 bool CWeightedDegreePositionCharKernel::delete_optimization() 
 { 
+
 	CIO::message(M_DEBUG, "deleting CWeightedDegreePositionCharKernel optimization\n");
 
 	if (get_is_initialized())
@@ -316,6 +333,7 @@ bool CWeightedDegreePositionCharKernel::delete_optimization()
 		return true;
 	}
 	
+	opt_type=WD_FASTBUTMEMHUNGRY;
 	return false;
 }
 
@@ -698,67 +716,117 @@ void CWeightedDegreePositionCharKernel::add_example_to_tree(INT idx, REAL alpha)
 
 	if (use_normalization)
 		alpha /=  sqrtdiag_lhs[idx] ;
-	
+
+	for (INT i=0; i<len; i++)
+		vec[i]=acgt[char_vec[i]];
+
+
 	for (INT i=0; i<len; i++)
 	{
-		if (char_vec[i]=='A') { vec[i]=0 ; continue ; } ;
-		if (char_vec[i]=='C') { vec[i]=1 ; continue ; } ;
-		if (char_vec[i]=='G') { vec[i]=2 ; continue ; } ;
-		if (char_vec[i]=='T') { vec[i]=3 ; continue ; } ;
-		if (char_vec[i]=='a') { vec[i]=0 ; continue ; } ;
-		if (char_vec[i]=='c') { vec[i]=1 ; continue ; } ;
-		if (char_vec[i]=='g') { vec[i]=2 ; continue ; } ;
-		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
-		vec[i]=0 ;
-	} ;
-		
-	for (INT i=0; i<len; i++)
-	{
-		struct SuffixTree *tree = trees[i] ;
-		
-		for (INT j=0; (j<degree) && (i+j<len); j++)
+		INT max_s=-1;
+
+		if (opt_type==WD_SLOWBUTMEMEFFICIENT)
+			max_s=0;
+		else if (opt_type==WD_FASTBUTMEMHUNGRY)
+			max_s=shift[i];
+		else
+			CIO::message(M_ERROR, "unknown optimization type\n");
+
+		for (INT s=0; s<=max_s; s++)
 		{
-			if ((!tree->has_floats) && (tree->childs[vec[i+j]]!=NULL))
+			struct Trie *tree = trees[i] ;
+
+			for (INT j=0; (i+j+s<len); j++)
 			{
-				tree=tree->childs[vec[i+j]] ;
-				tree->weight += alpha ;
-			} else 
-			{
-				if ((j==degree-1) && (tree->has_floats))
+				if ((j<degree-1) && (tree->children[vec[i+j+s]]!=NO_CHILD))
 				{
-					tree->child_weights[vec[i+j]] += alpha ;
+#ifdef USE_TREEMEM
+					tree=&TreeMem[tree->children[vec[i+j+s]]] ;
+#else
+					tree=tree->children[vec[i+j+s]] ;
+#endif
+					tree->weight += (s==0) ? (alpha) : (alpha/(2*s));
+				}
+				else if (j==degree-1)
+				{
+					tree->child_weights[vec[i+j+s]] += (s==0) ? (alpha) : (alpha/(2*s));
 					break ;
 				}
 				else
 				{
-					if (j==degree-1)
+#ifdef USE_TREEMEM
+					tree->children[vec[i+j+s]]=TreeMemPtr++;
+					INT tmp = tree->children[vec[i+j+s]] ;
+					check_treemem() ;
+					tree=&TreeMem[tmp] ;
+#else
+					tree->children[vec[i+j+s]]=new struct Trie ;
+					assert(tree->children[vec[i+j+s]]!=NULL) ;
+					tree=tree->children[vec[i+j+s]] ;
+#endif
+					if (j==degree-2)
 					{
-						assert(!tree->has_floats) ;
-						tree->has_floats=true ;
 						for (INT k=0; k<4; k++)
-						{
-							assert(tree->childs[k]==NULL) ;
-							tree->child_weights[k] =0 ;
-						}
-						tree->child_weights[vec[i+j]] += alpha ;
-						break ;
+							tree->child_weights[k]=0 ;
 					}
 					else
 					{
-						assert(!tree->has_floats) ;
-						tree->childs[vec[i+j]]=new struct SuffixTree ;
-						assert(tree->childs[vec[i+j]]!=NULL) ;
-						tree=tree->childs[vec[i+j]] ;
 						for (INT k=0; k<4; k++)
-							tree->childs[k]=NULL ;
-						tree->weight = alpha ;
-						tree->has_floats=false ;
-						tree->usage=0 ;
-					} ;
-				} ;
-			} ;
-		} ;
+							tree->children[k]=NO_CHILD;
+					}
+					tree->weight = (s==0) ? (alpha) : (alpha/(2*s));
+				}
+			}
+
+			if ((s==0) || (i+s>=len))
+				continue;
+
+			tree = trees[i+s] ;
+
+			for (INT j=0; (i+j<len); j++)
+			{
+				if ((j<degree-1) && (tree->children[vec[i+j]]!=NO_CHILD))
+				{
+#ifdef USE_TREEMEM
+					tree=&TreeMem[tree->children[vec[i+j]]] ;
+#else
+					tree=tree->children[vec[i+j]] ;
+#endif
+					tree->weight +=  alpha/(2*s);
+				}
+				else if (j==degree-1)
+				{
+					tree->child_weights[vec[i+j]] += alpha/(2*s);
+					break ;
+				}
+				else
+				{
+#ifdef USE_TREEMEM
+					tree->children[vec[i+j]]=TreeMemPtr++;
+					INT tmp = tree->children[vec[i+j]] ;
+					check_treemem() ;
+					tree=&TreeMem[tmp] ;
+#else
+					tree->children[vec[i+j]]=new struct Trie ;
+					assert(tree->children[vec[i+j]]!=NULL) ;
+					tree=tree->children[vec[i+j]] ;
+#endif
+					if (j==degree-2)
+					{
+						for (INT k=0; k<4; k++)
+							tree->child_weights[k]=0 ;
+					}
+					else
+					{
+						for (INT k=0; k<4; k++)
+							tree->children[k]=NO_CHILD;
+					}
+					tree->weight = alpha/(2*s);
+				}
+			}
+		}
 	}
+
 	((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
 	tree_initialized=true ;
@@ -771,30 +839,25 @@ REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx)
 	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
 	assert(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
-	
+
 	for (INT i=0; i<len; i++)
-	{
-		if (char_vec[i]=='A') { vec[i]=0 ; continue ; } ;
-		if (char_vec[i]=='C') { vec[i]=1 ; continue ; } ;
-		if (char_vec[i]=='G') { vec[i]=2 ; continue ; } ;
-		if (char_vec[i]=='T') { vec[i]=3 ; continue ; } ;
-		if (char_vec[i]=='a') { vec[i]=0 ; continue ; } ;
-		if (char_vec[i]=='c') { vec[i]=1 ; continue ; } ;
-		if (char_vec[i]=='g') { vec[i]=2 ; continue ; } ;
-		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
-		vec[i]=0 ;
-	} ;
+		vec[i]=acgt[char_vec[i]];
 	
 	REAL sum = 0 ;
 	for (INT i=0; i<len; i++)
 		sum += compute_by_tree_helper(vec, len, i, i, i) ;
 
-	for (INT i=0; i<len; i++)
-		for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
+	if (opt_type==WD_SLOWBUTMEMEFFICIENT)
+	{
+		for (INT i=0; i<len; i++)
 		{
-			sum+=compute_by_tree_helper(vec, len, i, i+k, i)/(2*k) ;
-			sum+=compute_by_tree_helper(vec, len, i+k, i, i)/(2*k) ;
+			for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
+			{
+				sum+=compute_by_tree_helper(vec, len, i, i+k, i)/(2*k) ;
+				sum+=compute_by_tree_helper(vec, len, i+k, i, i)/(2*k) ;
+			}
 		}
+	}
 	
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
@@ -812,19 +875,10 @@ void CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, REAL* LevelCont
 	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
 	assert(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
-	
+
 	for (INT i=0; i<len; i++)
-	{
-		if (char_vec[i]=='A') { vec[i]=0 ; continue ; } ;
-		if (char_vec[i]=='C') { vec[i]=1 ; continue ; } ;
-		if (char_vec[i]=='G') { vec[i]=2 ; continue ; } ;
-		if (char_vec[i]=='T') { vec[i]=3 ; continue ; } ;
-		if (char_vec[i]=='a') { vec[i]=0 ; continue ; } ;
-		if (char_vec[i]=='c') { vec[i]=1 ; continue ; } ;
-		if (char_vec[i]=='g') { vec[i]=2 ; continue ; } ;
-		if (char_vec[i]=='t') { vec[i]=3 ; continue ; } ;
-		vec[i]=0 ;
-	} ;
+		vec[i]=acgt[char_vec[i]];
+	
 
 	REAL factor = 1.0 ;
 
@@ -834,26 +888,28 @@ void CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, REAL* LevelCont
 	for (INT i=0; i<len; i++)
 		compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor) ;
 	
-	for (INT i=0; i<len; i++)
-		for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
-		{
-			compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, factor/(2*k)) ;
-			compute_by_tree_helper(vec, len, i+k, i, i, LevelContrib, factor/(2*k)) ;
-		}
+	//for (INT i=0; i<len; i++)
+	//	for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
+	//	{
+	//		compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, factor/(2*k)) ;
+	//		compute_by_tree_helper(vec, len, i+k, i, i, LevelContrib, factor/(2*k)) ;
+	//	}
 	
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
 }
 
-REAL CWeightedDegreePositionCharKernel::compute_abs_weights_tree(struct SuffixTree* p_tree) 
+REAL CWeightedDegreePositionCharKernel::compute_abs_weights_tree(struct Trie* p_tree, INT depth) 
 {
 	REAL ret=0 ;
 
 	if (p_tree==NULL)
 		return 0 ;
 		
-	if (p_tree->has_floats)
+	if (depth==degree-2)
 	{
+		ret+=(p_tree->weight) ;
+
 		for (INT k=0; k<4; k++)
 			ret+=(p_tree->child_weights[k]) ;
 		
@@ -863,8 +919,16 @@ REAL CWeightedDegreePositionCharKernel::compute_abs_weights_tree(struct SuffixTr
 	ret+=(p_tree->weight) ;
 
 	for (INT i=0; i<4; i++)
-		if (p_tree->childs[i]!=NULL)
-			ret += compute_abs_weights_tree(p_tree->childs[i])  ;
+	{
+		if (p_tree->children[i]!=NO_CHILD)
+		{
+#ifdef USE_TREEMEM
+			ret += compute_abs_weights_tree(&TreeMem[p_tree->children[i]], depth+1)  ;
+#else
+			ret += compute_abs_weights_tree(p_tree->children[i], depth+1)  ;
+#endif
+		}
+	}
 
 	return ret ;
 }
@@ -878,16 +942,20 @@ REAL *CWeightedDegreePositionCharKernel::compute_abs_weights(int &len)
 	
 	for (INT i=0; i<seq_length; i++)
 	{
-		struct SuffixTree *tree = trees[i] ;
+		struct Trie *tree = trees[i] ;
 		assert(tree!=NULL) ;
 		for (INT k=0; k<4; k++)
-			sum[i*4+k]=compute_abs_weights_tree(tree->childs[k]) ;
+#ifdef USE_TREEMEM
+			sum[i*4+k]=compute_abs_weights_tree(&TreeMem[tree->children[k]], 0) ;
+#else
+			sum[i*4+k]=compute_abs_weights_tree(tree->children[k], 0) ;
+#endif
 	}
 
 	return sum ;
 }
 
-void CWeightedDegreePositionCharKernel::delete_tree(struct SuffixTree * p_tree)
+void CWeightedDegreePositionCharKernel::delete_tree(struct Trie * p_tree, INT depth)
 {
 	if (p_tree==NULL)
 	{
@@ -896,29 +964,32 @@ void CWeightedDegreePositionCharKernel::delete_tree(struct SuffixTree * p_tree)
 
 		for (INT i=0; i<seq_length; i++)
 		{
-			delete_tree(trees[i]);
-
-			trees[i]->has_floats=false;
-			trees[i]->usage=0;
-
+#ifndef USE_TREEMEM
+			delete_tree(trees[i], depth+1);
+#endif
 			for (INT k=0; k<4; k++)
-				trees[i]->childs[k]=NULL;
+				trees[i]->children[k]=NO_CHILD;
 		}
 
 		tree_initialized=false;
+#ifdef USE_TREEMEM
+		TreeMemPtr=0;
+#endif
 		return;
 	}
 
-	if (p_tree->has_floats)
+	if (depth==degree-2)
 		return;
 	
 	for (INT i=0; i<4; i++)
 	{
-		if (p_tree->childs[i]!=NULL)
+		if (p_tree->children[i]!=NO_CHILD)
 		{
-			delete_tree(p_tree->childs[i]);
-			delete p_tree->childs[i];
-			p_tree->childs[i]=NULL;
+#ifndef USE_TREEMEM
+			delete_tree(p_tree->children[i], depth+1);
+			delete p_tree->children[i];
+#endif
+			p_tree->children[i]=NO_CHILD;
 		} 
 		p_tree->weight=0;
 	}
