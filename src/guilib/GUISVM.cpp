@@ -220,7 +220,7 @@ bool CGUISVM::test(CHAR* param)
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
 	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
 
-	if ( (gui->guikernel.get_kernel()->is_optimizable()) && (gui->guikernel.get_kernel()->get_is_initialized()))
+	if ( (gui->guikernel.get_kernel()->has_property(KP_LINADD)) && (gui->guikernel.get_kernel()->get_is_initialized()))
 		CIO::message(M_DEBUG, "using kernel optimization\n");
 
 	CLabels* outlab=svm->classify();
@@ -483,7 +483,7 @@ CLabels* CGUISVM::classify(CLabels* output)
 	  
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
 
-	if ((gui->guikernel.get_kernel()->is_optimizable()) && (gui->guikernel.get_kernel()->get_is_initialized()))
+	if ((gui->guikernel.get_kernel()->has_property(KP_LINADD)) && (gui->guikernel.get_kernel()->get_is_initialized()))
 		CIO::message(M_DEBUG, "using kernel optimization\n");
 
 	CIO::message(M_INFO, "starting svm testing\n") ;

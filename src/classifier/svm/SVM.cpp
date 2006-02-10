@@ -188,12 +188,39 @@ CLabels* CSVM::classify(CLabels* result)
 
 		ASSERT(result);
 		CIO::message(M_DEBUG, "computing output on %d test examples\n", num_vectors);
-		for (INT vec=0; vec<num_vectors; vec++)
-		{
-			if ( (vec% (num_vectors/10+1))== 0)
-				CIO::progress(vec, 0, num_vectors-1);
 
-			result->set_label(vec, classify_example(vec));
+		if (CKernelMachine::get_kernel()->has_property(KP_BATCHEVALUATION))
+		{
+			INT num_vec=0;
+			ASSERT(get_num_support_vectors()>0);
+			INT * sv_idx    = new INT[get_num_support_vectors()] ;
+			REAL* sv_weight = new REAL[get_num_support_vectors()] ;
+
+			for (INT i=0; i<get_num_support_vectors(); i++)
+			{
+				sv_idx[i]    = get_support_vector(i) ;
+				sv_weight[i] = get_alpha(i) ;
+			}
+
+			REAL* r=CKernelMachine::get_kernel()->compute_batch(num_vec, get_num_support_vectors(), sv_idx, sv_weight);
+			ASSERT(num_vec==num_vectors);
+
+			for (INT i=0; i<num_vec; i++)
+				result->set_label(i, get_bias()+r[i]);
+
+			delete[] sv_idx ;
+			delete[] sv_weight ;
+			delete[] r;
+		}
+		else
+		{
+			for (INT vec=0; vec<num_vectors; vec++)
+			{
+				if ( (vec% (num_vectors/10+1))== 0)
+					CIO::progress(vec, 0, num_vectors-1);
+
+				result->set_label(vec, classify_example(vec));
+			}
 		}
 		CIO::message(M_INFO, "done.           \n");
 	}
@@ -205,7 +232,9 @@ CLabels* CSVM::classify(CLabels* result)
 
 REAL CSVM::classify_example(INT num)
 {
-	if (CKernelMachine::get_kernel() && CKernelMachine::get_kernel()->is_optimizable() && (CKernelMachine::get_kernel()->get_is_initialized()))
+	ASSERT(CKernelMachine::get_kernel());
+
+	if (CKernelMachine::get_kernel()->has_property(KP_LINADD) && (CKernelMachine::get_kernel()->get_is_initialized()))
 	{
 		REAL dist = CKernelMachine::get_kernel()->compute_optimized(num);
 		return (dist+get_bias());

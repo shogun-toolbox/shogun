@@ -15,7 +15,7 @@ extern "C" {
 CLinearKernel::CLinearKernel(LONG size, bool do_rescale_, REAL scale_)
   : CRealKernel(size),scale(scale_),do_rescale(do_rescale_), normal(NULL)
 {
-	properties |= KP_LINADD | KP_KERNCOMBINATION ;
+	properties |= KP_LINADD;
 }
 
 CLinearKernel::~CLinearKernel() 

@@ -7,7 +7,7 @@ CCombinedKernel::CCombinedKernel(LONG size, bool append_subkernel_weights_)
 	: CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL), 
 	  subkernel_weights_buffer(NULL), append_subkernel_weights(append_subkernel_weights_)
 {
-	properties |= KP_LINADD | KP_KERNCOMBINATION;
+	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	kernel_list=new CList<CKernel*>(true);
 	CIO::message(M_INFO, "combined kernel created\n") ;
 	if (append_subkernel_weights)
@@ -189,7 +189,7 @@ bool CCombinedKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 	{
 		bool ret = true ;
 		
-		if (k && k->is_optimizable())
+		if (k && k->has_property(KP_LINADD))
 			ret = k->init_optimization(count, IDX, weights) ;
 		else
 		{
@@ -234,7 +234,7 @@ bool CCombinedKernel::delete_optimization()
 
 	while(k)
 	{
-		if (k->is_optimizable())
+		if (k->has_property(KP_LINADD))
 			k->delete_optimization();
 
 		k = get_next_kernel(current);
@@ -252,6 +252,12 @@ bool CCombinedKernel::delete_optimization()
 	return true;
 }
 
+REAL* CCombinedKernel::compute_batch(INT& num_vec, INT num_suppvec, INT* IDX, REAL* weights)
+{
+	num_vec=0;
+	return NULL;
+}
+
 REAL CCombinedKernel::compute_optimized(INT idx) 
 { 		  
 	if (!get_is_initialized())
@@ -266,7 +272,7 @@ REAL CCombinedKernel::compute_optimized(INT idx)
 	CKernel * k = get_first_kernel(current) ;
 	while(k)
 	{
-		if (k && k->is_optimizable() && 
+		if (k && k->has_property(KP_LINADD) && 
 			k->get_is_initialized())
 		{
 			if (k->get_combined_kernel_weight()!=0)

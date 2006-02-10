@@ -157,7 +157,7 @@ bool CGUIKernel::init_kernel_optimization(CHAR* param)
 
 	if (gui->guisvm.get_svm()!=NULL)
 	{
-		if (kernel->is_optimizable())
+		if (kernel->has_property(KP_LINADD))
 		{
 			INT * sv_idx    = new INT[gui->guisvm.get_svm()->get_num_support_vectors()] ;
 			REAL* sv_weight = new REAL[gui->guisvm.get_svm()->get_num_support_vectors()] ;
@@ -189,7 +189,7 @@ bool CGUIKernel::init_kernel_optimization(CHAR* param)
 
 bool CGUIKernel::delete_kernel_optimization(CHAR* param)
 {
-	if (kernel && kernel->is_optimizable() && kernel->get_is_initialized())
+	if (kernel && kernel->has_property(KP_LINADD) && kernel->get_is_initialized())
 		kernel->delete_optimization() ;
 
 	return true ;

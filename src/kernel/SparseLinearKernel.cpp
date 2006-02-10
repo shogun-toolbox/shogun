@@ -9,7 +9,7 @@
 CSparseLinearKernel::CSparseLinearKernel(LONG size, bool do_rescale_, REAL scale_)
   : CSparseRealKernel(size),scale(scale_),do_rescale(do_rescale_), normal_length(0), normal(NULL)
 {
-	properties |= KP_LINADD | KP_KERNCOMBINATION ;
+	properties |= KP_LINADD;
 }
 
 CSparseLinearKernel::~CSparseLinearKernel() 

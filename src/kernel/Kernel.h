@@ -108,36 +108,43 @@ class CKernel
 
 		void list_kernel();
 
+		inline bool has_property(EKernelProperty p) { return (properties & p) != 0; }
+
 		/** for optimizable kernels, i.e. kernels where the weight 
 		 * vector can be computed explicitely (if it fits into memory) 
 		 */
-
-		inline double get_combined_kernel_weight() { return combined_kernel_weight; }
-		inline void set_combined_kernel_weight(double nw) { combined_kernel_weight=nw; }
-
-		inline bool get_is_initialized() { return optimization_initialized; }
-		inline bool has_property(EKernelProperty p) { return (properties & p) != 0; }
+		virtual void clear_normal();
+		///add vector*factor to 'virtual' normal vector
+		virtual void add_to_normal(INT idx, REAL weight) ;
 
 		inline EOptimizationType get_optimization_type() { return opt_type; }
 		virtual inline void set_optimization_type(EOptimizationType t) { opt_type=t;}
 
-		bool is_optimizable();
+		inline bool get_is_initialized() { return optimization_initialized; }
 		virtual bool init_optimization(INT count, INT *IDX, REAL * weights); 
 		virtual bool delete_optimization();
 		virtual REAL compute_optimized(INT idx);
+
+		/** computes output for a batch of examples in an optimized fashion (favorable if kernel supports it,
+		 * i.e. has KP_BATCHEVALUATION.
+		 * returns newly allocated outputvector of size num>0 on success
+		 */
+		virtual REAL* compute_batch(INT& num, INT num_suppvec, INT* IDX, REAL* weights);
 		
+		virtual bool set_kernel_parameters(INT num, const double* param) { return false; }
 		
-		//add vector*factor to 'virtual' normal vector
-		virtual void add_to_normal(INT idx, REAL weight) ;
-		virtual void clear_normal();
+		inline double get_combined_kernel_weight() { return combined_kernel_weight; }
+		inline void set_combined_kernel_weight(double nw) { combined_kernel_weight=nw; }
 		virtual INT get_num_subkernels();
 		virtual void compute_by_subkernel(INT idx, REAL * subkernel_contrib);
 		virtual const REAL* get_subkernel_weights(INT& num_weights);
 		virtual void set_subkernel_weights(REAL* weights, INT num_weights);
 
-		virtual bool set_kernel_parameters(INT num, const double* param) { return false; }
-
-		virtual void set_precompute_matrix(bool flag, bool subkernel_flag) { 
+		//fixme: precompute matrix should be dropped, handling should be via customkernel
+		inline bool get_precompute_matrix() { return precompute_matrix ;  }
+		inline bool get_precompute_subkernel_matrix() { return precompute_subkernel_matrix ;  }
+		inline virtual void set_precompute_matrix(bool flag, bool subkernel_flag)
+		{ 
 			precompute_matrix = flag ; 
 			precompute_subkernel_matrix = subkernel_flag ; 
 
@@ -146,9 +153,7 @@ class CKernel
 				delete[] precomputed_matrix ;
 				precomputed_matrix = NULL ;
 			}
-		} ;
-		bool get_precompute_matrix() { return precompute_matrix ;  } ;
-		bool get_precompute_subkernel_matrix() { return precompute_subkernel_matrix ;  } ;
+		}
 		
 	protected:
 

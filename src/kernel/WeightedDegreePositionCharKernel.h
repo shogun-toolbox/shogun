@@ -48,16 +48,20 @@ public:
 	// return the name of a kernel
 	virtual const CHAR* get_name() { return "WeightedDegreePos" ; } ;
 
-	virtual bool init_optimization(INT count, INT *IDX, REAL * weights) ;
-	virtual bool delete_optimization() ;
-	virtual REAL compute_optimized(INT idx) 
+	inline virtual bool init_optimization(INT count, INT *IDX, REAL * weights)
 	{ 
-		if (get_is_initialized())
-			return compute_by_tree(idx); 
+		return init_optimization(count, IDX, weights, -1);
+	}
 
-		CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not initialized\n") ;
-		return 0 ;
-	} ;
+	virtual bool init_optimization(INT count, INT *IDX, REAL * weights, INT tree_num) ;
+	virtual bool delete_optimization() ;
+	inline virtual REAL compute_optimized(INT idx) 
+	{ 
+		ASSERT(get_is_initialized());
+		return compute_by_tree(idx); 
+	}
+
+	virtual REAL* compute_batch(INT& num_vec, INT num_suppvec, INT* IDX, REAL* weights);
 
 	// subkernel functionality
 	inline virtual void clear_normal()
@@ -181,12 +185,13 @@ public:
 	bool set_position_weights(REAL* position_weights, INT len=0); 
 	bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
-	REAL compute_by_tree(INT idx) ;
-	void compute_by_tree(INT idx, REAL* LevelContrib) ;
+	REAL compute_by_tree(INT idx, INT location=-1) ;
+	void compute_by_tree(INT idx, REAL* LevelContrib, INT location=-1) ;
 
 protected:
 
-	void add_example_to_tree(INT idx, REAL weight);
+	virtual void add_example_to_tree(INT idx, REAL weight);
+	void add_example_to_single_tree(INT idx, REAL weight, INT tree_num);
 	void delete_tree(struct Trie * p_tree=NULL, INT depth=0);
 
 	/// compute kernel function for features a and b

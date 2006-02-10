@@ -112,8 +112,7 @@ enum ENormalizationType
 enum EKernelType
 {
 	K_UNKNOWN = 0,
-	K_OPTIMIZABLE = 4096,
-	K_LINEAR = 10 | K_OPTIMIZABLE,
+	K_LINEAR = 10,
 	K_POLY	= 20,
 	K_GAUSSIAN = 30,
 	K_HISTOGRAM = 40,
@@ -121,20 +120,20 @@ enum EKernelType
 	K_LOCALITYIMPROVED = 50,
 	K_SIMPLELOCALITYIMPROVED = 60,
 	K_FIXEDDEGREE = 70,
-	K_WEIGHTEDDEGREE =    80 | K_OPTIMIZABLE,
-	K_WEIGHTEDDEGREEPOS = 81 | K_OPTIMIZABLE,
+	K_WEIGHTEDDEGREE =    80,
+	K_WEIGHTEDDEGREEPOS = 81,
 	K_WEIGHTEDDEGREEPOLYA =    82,
 	K_WD = 83,
-	K_WEIGHTEDDEGREEOLD =    84 | K_OPTIMIZABLE,
-	K_WEIGHTEDDEGREEPOSOLD = 85 | K_OPTIMIZABLE,
-	K_COMMWORD = 90 | K_OPTIMIZABLE ,
+	K_WEIGHTEDDEGREEOLD =    84,
+	K_WEIGHTEDDEGREEPOSOLD = 85,
+	K_COMMWORD = 90,
 	K_POLYMATCH = 100,
 	K_ALIGNMENT = 110,
-	K_COMMWORDSTRING = 120 | K_OPTIMIZABLE,
-	K_COMMULONGSTRING = 121 | K_OPTIMIZABLE,
+	K_COMMWORDSTRING = 120,
+	K_COMMULONGSTRING = 121,
 	K_SPARSENORMSQUARED = 130,
-	K_COMBINED = 140 | K_OPTIMIZABLE,
-	K_AUC = 150 | K_OPTIMIZABLE,
+	K_COMBINED = 140,
+	K_AUC = 150,
 	K_CUSTOM = 160,
 	K_SIGMOID = 170,
 	K_CHI2 = 180,
@@ -163,8 +162,9 @@ enum ERegressionType
 enum EKernelProperty
 {
 	KP_NONE = 0,
-	KP_LINADD = 1, 	// Kernels that can do normal updates w + dw
-	KP_KERNCOMBINATION = 2	// Kernels that are infact a linear combination of subkernels K=\sum_i b_i*K_i
+	KP_LINADD = 1, 	// Kernels that can be optimized via doing normal updates w + dw
+	KP_KERNCOMBINATION = 2,	// Kernels that are infact a linear combination of subkernels K=\sum_i b_i*K_i
+	KP_BATCHEVALUATION = 4  // Kernels that can on the fly generate normals in linadd and more quickly/memory efficient process batches instead of single examples
 };
 
 enum EFeatureType

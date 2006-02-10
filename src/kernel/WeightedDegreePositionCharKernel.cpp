@@ -14,7 +14,7 @@ CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
 	  use_normalization(use_norm), acgt(NULL)
 {
-	properties |= KP_LINADD | KP_KERNCOMBINATION;
+	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
 	rhs=NULL;
 	acgt= new BYTE[256];
@@ -294,7 +294,7 @@ bool CWeightedDegreePositionCharKernel::save_init(FILE* dest)
 	return false;
 }
 
-bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, REAL * alphas)
+bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, REAL * alphas, INT tree_num)
 {
 	if (max_mismatch!=0)
 	{
@@ -310,7 +310,10 @@ bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, 
 	{
 		if ( (i % (count/10+1)) == 0)
 			CIO::progress(i,0,count);
-		add_example_to_tree(IDX[i], alphas[i]) ;
+		if (tree_num<0)
+			add_example_to_tree(IDX[i], alphas[i]);
+		else
+			add_example_to_single_tree(IDX[i], alphas[i], tree_num) ;
 	}
 	CIO::message(M_MESSAGEONLY, "done.           \n");
 	
@@ -702,7 +705,7 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
   
 }
 
-void CWeightedDegreePositionCharKernel::add_example_to_tree(INT idx, REAL alpha) 
+void CWeightedDegreePositionCharKernel::add_example_to_tree(INT idx, REAL alpha)
 {
 	INT len ;
 	bool free ;
@@ -828,8 +831,134 @@ void CWeightedDegreePositionCharKernel::add_example_to_tree(INT idx, REAL alpha)
 	tree_initialized=true ;
 }
 
-REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx) 
+void CWeightedDegreePositionCharKernel::add_example_to_single_tree(INT idx, REAL alpha, INT tree_num) 
 {
+	INT len ;
+	bool free ;
+	CHAR* char_vec=((CCharFeatures*) lhs)->get_feature_vector(idx, len, free);
+	ASSERT(max_mismatch==0) ;
+	INT *vec = new INT[len] ;
+
+	if (use_normalization)
+		alpha /=  sqrtdiag_lhs[idx] ;
+
+	for (INT i=0; i<len; i++)
+		vec[i]=acgt[char_vec[i]];
+
+
+	INT max_s=-1;
+
+	if (opt_type==SLOWBUTMEMEFFICIENT)
+		max_s=0;
+	else if (opt_type==FASTBUTMEMHUNGRY)
+		max_s=shift[tree_num];
+	else
+		CIO::message(M_ERROR, "unknown optimization type\n");
+
+	for (INT s=0; s<=max_s; s++)
+	{
+		struct Trie *tree = trees[tree_num] ;
+
+		for (INT j=0; (tree_num+j+s<len); j++)
+		{
+			if ((j<degree-1) && (tree->children[vec[tree_num+j+s]]!=NO_CHILD))
+			{
+#ifdef USE_TREEMEM
+				tree=&TreeMem[tree->children[vec[tree_num+j+s]]] ;
+#else
+				tree=tree->children[vec[tree_num+j+s]] ;
+#endif
+				tree->weight += (s==0) ? (alpha) : (alpha/(2*s));
+			}
+			else if (j==degree-1)
+			{
+				tree->child_weights[vec[tree_num+j+s]] += (s==0) ? (alpha) : (alpha/(2*s));
+				break ;
+			}
+			else
+			{
+#ifdef USE_TREEMEM
+				tree->children[vec[tree_num+j+s]]=TreeMemPtr++;
+				INT tmp = tree->children[vec[tree_num+j+s]] ;
+				check_treemem() ;
+				tree=&TreeMem[tmp] ;
+#else
+				tree->children[vec[tree_num+j+s]]=new struct Trie ;
+				ASSERT(tree->children[vec[tree_num+j+s]]!=NULL) ;
+				tree=tree->children[vec[tree_num+j+s]] ;
+#endif
+				if (j==degree-2)
+				{
+					for (INT k=0; k<4; k++)
+						tree->child_weights[k]=0 ;
+				}
+				else
+				{
+					for (INT k=0; k<4; k++)
+						tree->children[k]=NO_CHILD;
+				}
+				tree->weight = (s==0) ? (alpha) : (alpha/(2*s));
+			}
+		}
+
+		INT i=tree_num-s;
+
+		if ((s==0) || (i+s>=len))
+			continue;
+
+		tree = trees[i+s] ;
+
+		for (INT j=0; (i+j<len); j++)
+		{
+			if ((j<degree-1) && (tree->children[vec[i+j]]!=NO_CHILD))
+			{
+#ifdef USE_TREEMEM
+				tree=&TreeMem[tree->children[vec[i+j]]] ;
+#else
+				tree=tree->children[vec[i+j]] ;
+#endif
+				tree->weight +=  alpha/(2*s);
+			}
+			else if (j==degree-1)
+			{
+				tree->child_weights[vec[i+j]] += alpha/(2*s);
+				break ;
+			}
+			else
+			{
+#ifdef USE_TREEMEM
+				tree->children[vec[i+j]]=TreeMemPtr++;
+				INT tmp = tree->children[vec[i+j]] ;
+				check_treemem() ;
+				tree=&TreeMem[tmp] ;
+#else
+				tree->children[vec[i+j]]=new struct Trie ;
+				ASSERT(tree->children[vec[i+j]]!=NULL) ;
+				tree=tree->children[vec[i+j]] ;
+#endif
+				if (j==degree-2)
+				{
+					for (INT k=0; k<4; k++)
+						tree->child_weights[k]=0 ;
+				}
+				else
+				{
+					for (INT k=0; k<4; k++)
+						tree->children[k]=NO_CHILD;
+				}
+				tree->weight = alpha/(2*s);
+			}
+		}
+	}
+
+	((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
+	delete[] vec ;
+	tree_initialized=true ;
+}
+
+REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, INT location) 
+{
+	REAL sum = 0 ;
 	INT len ;
 	bool free ;
 	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
@@ -839,18 +968,33 @@ REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx)
 	for (INT i=0; i<len; i++)
 		vec[i]=acgt[char_vec[i]];
 	
-	REAL sum = 0 ;
-	for (INT i=0; i<len; i++)
-		sum += compute_by_tree_helper(vec, len, i, i, i) ;
-
-	if (opt_type==SLOWBUTMEMEFFICIENT)
+	if (location<0)
 	{
 		for (INT i=0; i<len; i++)
+			sum += compute_by_tree_helper(vec, len, i, i, i) ;
+
+		if (opt_type==SLOWBUTMEMEFFICIENT)
 		{
-			for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
+			for (INT i=0; i<len; i++)
 			{
-				sum+=compute_by_tree_helper(vec, len, i, i+k, i)/(2*k) ;
-				sum+=compute_by_tree_helper(vec, len, i+k, i, i)/(2*k) ;
+				for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
+				{
+					sum+=compute_by_tree_helper(vec, len, i, i+k, i)/(2*k) ;
+					sum+=compute_by_tree_helper(vec, len, i+k, i, i)/(2*k) ;
+				}
+			}
+		}
+	}
+	else
+	{
+		sum += compute_by_tree_helper(vec, 1, location, location, location) ;
+
+		if (opt_type==SLOWBUTMEMEFFICIENT)
+		{
+			for (INT k=1; (k<=shift[location]) && (location+k<len); k++)
+			{
+				sum+=compute_by_tree_helper(vec, 1, location, location+k, location)/(2*k) ;
+				sum+=compute_by_tree_helper(vec, 1, location+k, location, location)/(2*k) ;
 			}
 		}
 	}
@@ -864,7 +1008,7 @@ REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx)
 		return sum ;
 }
 
-void CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, REAL* LevelContrib) 
+void CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, REAL* LevelContrib, INT location) 
 {
 	INT len ;
 	bool free ;
@@ -874,23 +1018,42 @@ void CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, REAL* LevelCont
 
 	for (INT i=0; i<len; i++)
 		vec[i]=acgt[char_vec[i]];
-	
+
 
 	REAL factor = 1.0 ;
 
 	if (use_normalization)
 		factor = 1.0/sqrtdiag_rhs[idx] ;
 
-	for (INT i=0; i<len; i++)
-		compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor) ;
-	
-	//for (INT i=0; i<len; i++)
-	//	for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
-	//	{
-	//		compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, factor/(2*k)) ;
-	//		compute_by_tree_helper(vec, len, i+k, i, i, LevelContrib, factor/(2*k)) ;
-	//	}
-	
+	if (location<0)
+	{
+		for (INT i=0; i<len; i++)
+			compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor) ;
+
+		if (opt_type==SLOWBUTMEMEFFICIENT)
+		{
+			for (INT i=0; i<len; i++)
+				for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
+				{
+					compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, factor/(2*k)) ;
+					compute_by_tree_helper(vec, len, i+k, i, i, LevelContrib, factor/(2*k)) ;
+				}
+		}
+	}
+	else
+	{
+		compute_by_tree_helper(vec, 1, location, location, location, LevelContrib, factor) ;
+
+		if (opt_type==SLOWBUTMEMEFFICIENT)
+		{
+			for (INT k=1; (k<=shift[location]) && (location+k<len); k++)
+			{
+				compute_by_tree_helper(vec, 1, location, location+k, location, LevelContrib, factor/(2*k)) ;
+				compute_by_tree_helper(vec, 1, location+k, location, location, LevelContrib, factor/(2*k)) ;
+			}
+		}
+	}
+
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
 }
@@ -1042,4 +1205,30 @@ bool CWeightedDegreePositionCharKernel::set_position_weights(REAL* pws, INT len)
 	}
 	else
 		return false;
+}
+
+
+REAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, INT num_suppvec, INT* IDX, REAL* weights)
+{
+	ASSERT(get_rhs());
+	num_vec=get_rhs()->get_num_vectors();
+	ASSERT(num_vec>0);
+	INT num_feat=((CCharFeatures*) get_rhs())->get_num_features();
+	ASSERT(num_feat>0);
+
+	REAL* result= new REAL[num_vec];
+	memset(result, 0, sizeof(REAL)*num_vec);
+
+	for (INT j=0; j<num_feat; j++)
+	{
+		delete_optimization();
+		init_optimization(num_suppvec, IDX, weights, j);
+
+		for (INT i=0; i<num_vec; i++)
+		{
+			result[i]+=compute_optimized(i);
+		}
+	}
+
+	return result;
 }

@@ -808,41 +808,39 @@ void CKernel::list_kernel()
 	CIO::message(M_INFO, "\n");
 }
 
-bool CKernel::is_optimizable()
-{
-	if (((get_kernel_type() & K_OPTIMIZABLE)!=0))
-		return true;
-	else
-		return false;
-}
-
 bool CKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 {
-	CIO::message(M_ERROR, "kernel optimization not implemented\n") ;
+	CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
 	return false ;
 }
 
 bool CKernel::delete_optimization() 
 {
-	if (!is_optimizable())
-		CIO::message(M_ERROR, "kernel optimization not implemented\n") ;
+	CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
 	return false;
 }
 
 REAL CKernel::compute_optimized(INT idx)
 {
-	CIO::message(M_ERROR, "kernel optimization not implemented\n") ;
+	CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
 	return 0;
+}
+
+REAL* CKernel::compute_batch(INT& num_vec, INT num_suppvec, INT* IDX, REAL* weights)
+{
+	CIO::message(M_ERROR, "kernel does not support batch computation\n") ;
+	num_vec=0;
+	return NULL;
 }
 
 void CKernel::add_to_normal(INT idx, REAL weight)
 {
-	CIO::message(M_ERROR, "kernel add_to_normal not implemented\n") ;
+	CIO::message(M_ERROR, "kernel does not support linadd optimization, add_to_normal not implemented\n") ;
 }
 
 void CKernel::clear_normal()
 {
-	CIO::message(M_ERROR, "kernel clear_normal not implemented\n") ;
+	CIO::message(M_ERROR, "kernel does not support linadd optimization, clear_normal not implemented\n") ;
 }
 
 INT CKernel::get_num_subkernels()
