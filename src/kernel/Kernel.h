@@ -119,7 +119,7 @@ class CKernel
 		inline bool has_property(EKernelProperty p) { return (properties & p) != 0; }
 
 		inline EOptimizationType get_optimization_type() { return opt_type; }
-		inline void set_optimization_type(EOptimizationType t) { opt_type=t;}
+		virtual inline void set_optimization_type(EOptimizationType t) { opt_type=t;}
 
 		bool is_optimizable();
 		virtual bool init_optimization(INT count, INT *IDX, REAL * weights); 
