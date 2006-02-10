@@ -1,7 +1,6 @@
 #include "lib/config.h"
 #include "lib/Mathmatics.h"
 
-#include <assert.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -35,8 +34,8 @@ bool CPCACut::init(CFeatures* f)
 {
 	if (!initialized)
 	{
-		assert(f->get_feature_class() == C_SIMPLE);
-		assert(f->get_feature_type() == F_REAL);
+		ASSERT(f->get_feature_class() == C_SIMPLE);
+		ASSERT(f->get_feature_type() == F_REAL);
 
 		CIO::message(M_INFO,"calling CPCACut::init\n") ;
 		INT num_vectors=((CRealFeatures*)f)->get_num_vectors() ;
@@ -74,7 +73,7 @@ bool CPCACut::init(CFeatures* f)
 
 		CIO::message(M_INFO,"done.\nComputing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0) ;
 		double *cov=new double[num_features*num_features] ;
-		assert(cov!=NULL) ;
+		ASSERT(cov!=NULL) ;
 
 		for (j=0; j<num_features*num_features; j++)
 			cov[j]=0.0 ;
@@ -142,7 +141,7 @@ bool CPCACut::init(CFeatures* f)
 		T=new REAL[num_dim*num_features] ;
 		num_old_dim=num_features;
 
-		assert(T!=NULL) ;
+		ASSERT(T!=NULL) ;
 		if (do_whitening)
 		{
 			INT offs=0 ;
@@ -242,25 +241,25 @@ REAL* CPCACut::apply_to_feature_vector(REAL* f, INT &len)
 /// initialize preprocessor from file
 bool CPCACut::load_init_data(FILE* src)
 {
-	assert(fread(&num_dim, sizeof(int), 1, src)==1);
-	assert(fread(&num_old_dim, sizeof(int), 1, src)==1);
+	ASSERT(fread(&num_dim, sizeof(int), 1, src)==1);
+	ASSERT(fread(&num_old_dim, sizeof(int), 1, src)==1);
 	delete[] mean;
 	delete[] T;
 	mean=new double[num_dim];
 	T=new double[num_dim*num_old_dim];
-	assert (mean!=NULL && T!=NULL);
-	assert(fread(mean, sizeof(double), num_old_dim, src)==(UINT) num_old_dim);
-	assert(fread(T, sizeof(double), num_dim*num_old_dim, src)==(UINT) num_old_dim*num_dim);
+	ASSERT (mean!=NULL && T!=NULL);
+	ASSERT(fread(mean, sizeof(double), num_old_dim, src)==(UINT) num_old_dim);
+	ASSERT(fread(T, sizeof(double), num_dim*num_old_dim, src)==(UINT) num_old_dim*num_dim);
 	return true;
 }
 
 /// save init-data (like transforamtion matrices etc) to file
 bool CPCACut::save_init_data(FILE* dst)
 {
-	assert(fwrite(&num_dim, sizeof(int), 1, dst)==1);
-	assert(fwrite(&num_old_dim, sizeof(int), 1, dst)==1);
-	assert(fwrite(mean, sizeof(double), num_old_dim, dst)==(UINT) num_old_dim);
-	assert(fwrite(T, sizeof(double), num_dim*num_old_dim, dst)==(UINT) num_old_dim*num_dim);
+	ASSERT(fwrite(&num_dim, sizeof(int), 1, dst)==1);
+	ASSERT(fwrite(&num_old_dim, sizeof(int), 1, dst)==1);
+	ASSERT(fwrite(mean, sizeof(double), num_old_dim, dst)==(UINT) num_old_dim);
+	ASSERT(fwrite(T, sizeof(double), num_dim*num_old_dim, dst)==(UINT) num_old_dim*num_dim);
 	return true;
 }
 #endif // HAVE_LAPACK

@@ -1,10 +1,8 @@
 #include "lib/common.h"
+#include "lib/io.h"
 #include "kernel/PolyMatchWordKernel.h"
 #include "features/Features.h"
 #include "features/WordFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CPolyMatchWordKernel::CPolyMatchWordKernel(LONG size, INT d, bool inhom, bool use_norm)
   : CWordKernel(size),degree(d),inhomogene(inhom),
@@ -46,8 +44,8 @@ bool CPolyMatchWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 				sqrtdiag_rhs[i]=1;
 		}
 
-		assert(sqrtdiag_lhs);
-		assert(sqrtdiag_rhs);
+		ASSERT(sqrtdiag_lhs);
+		ASSERT(sqrtdiag_rhs);
 
 		this->lhs=(CWordFeatures*) l;
 		this->rhs=(CWordFeatures*) l;
@@ -119,7 +117,7 @@ REAL CPolyMatchWordKernel::compute(INT idx_a, INT idx_b)
   WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
   WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   
-  assert(alen==blen);
+  ASSERT(alen==blen);
 
   REAL sqrt_a= 1 ;
   REAL sqrt_b= 1 ;

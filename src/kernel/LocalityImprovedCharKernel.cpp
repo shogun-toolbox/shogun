@@ -1,10 +1,8 @@
 #include "lib/common.h"
+#include "lib/io.h"
 #include "kernel/LocalityImprovedCharKernel.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CLocalityImprovedCharKernel::CLocalityImprovedCharKernel(LONG size, INT l, INT d1, INT d2)
   : CCharKernel(size),length(l),inner_degree(d1),outer_degree(d2),match(NULL)
@@ -52,7 +50,7 @@ REAL CLocalityImprovedCharKernel::compute(INT idx_a, INT idx_b)
   CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
   // can only deal with strings of same length
-  assert(alen==blen);
+  ASSERT(alen==blen);
 
   INT i,j,t;
 

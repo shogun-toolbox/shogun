@@ -4,22 +4,20 @@
 #include "lib/io.h"
 #include "lib/File.h"
 #include "lib/Time.h"
+#include "lib/Parallel.h"
 
 #include "kernel/Kernel.h"
 #include "features/Features.h"
 
 #include <string.h>
-#include <assert.h>
-
-#include "lib/Parallel.h"
 #include <unistd.h>
 #include <pthread.h>
 
 CKernel::CKernel(KERNELCACHE_IDX size) 
-: kernel_matrix(NULL), lhs(NULL), rhs(NULL), combined_kernel_weight(1), 
-  optimization_initialized(false), properties(KP_NONE), 
-  precompute_matrix(false), precompute_subkernel_matrix(false),
-  precomputed_matrix(NULL)
+: kernel_matrix(NULL), precomputed_matrix(NULL),
+	precompute_subkernel_matrix(false), precompute_matrix(false), 
+	lhs(NULL), rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
+	opt_type(SLOWBUTMEMEFFICIENT), properties(KP_NONE)
 {
 	if (size<10)
 		size=10;
@@ -65,7 +63,7 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2, SH
 		else
 			result=new SHORTREAL[total_num];
 
-		assert(result);
+		ASSERT(result);
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
 		{
@@ -135,7 +133,7 @@ REAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, REAL* target
 		else
 			result=new REAL[total_num];
 
-		assert(result);
+		ASSERT(result);
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
 		{
@@ -231,12 +229,12 @@ REAL CKernel::kernel(INT idx_a, INT idx_b)
 bool CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	//make sure features were indeed supplied
-	assert(l);
-	assert(r);
+	ASSERT(l);
+	ASSERT(r);
 
 	//make sure features are compatible
-	assert(l->get_feature_class() == r->get_feature_class());
-	assert(l->get_feature_type() == r->get_feature_type());
+	ASSERT(l->get_feature_class() == r->get_feature_class());
+	ASSERT(l->get_feature_type() == r->get_feature_type());
 
 	lhs=l;
 	rhs=r;
@@ -398,9 +396,9 @@ void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 		S_KTHREAD_PARAM params[CParallel::get_num_threads()-1];
 		INT num_threads=CParallel::get_num_threads()-1;
 		INT num_vec=get_lhs()->get_num_vectors();
-		assert(num_vec>0);
+		ASSERT(num_vec>0);
 		BYTE* needs_computation=new BYTE[num_vec];
-		assert(needs_computation);
+		ASSERT(needs_computation);
 		memset(needs_computation,0,sizeof(BYTE)*num_vec);
 		INT step=0;
 		INT num=0;
@@ -876,13 +874,13 @@ void CKernel::do_precompute_matrix()
 	INT num_right=get_rhs()->get_num_vectors();
 	CIO::message(M_INFO, "precomputing kernel matrix (%ix%i)\n", num_left, num_right) ;
 
-	assert(num_left == num_right) ;
-	assert(get_lhs()==get_rhs()) ;
+	ASSERT(num_left == num_right) ;
+	ASSERT(get_lhs()==get_rhs()) ;
 	INT num=num_left ;
 	
 	delete[] precomputed_matrix ;
 	precomputed_matrix=new SHORTREAL[num*(num+1)/2] ;
-	assert(precomputed_matrix!=NULL) ;
+	ASSERT(precomputed_matrix!=NULL) ;
 
 	for (INT i=0; i<num; i++)
 	{

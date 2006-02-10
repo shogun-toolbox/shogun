@@ -3,9 +3,6 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
-//#include "lib/Time.h"
-
-#include <assert.h>
 
 CGaussianKernel::CGaussianKernel(LONG size, double w)
   : CRealKernel(size),width(w)
@@ -44,7 +41,7 @@ REAL CGaussianKernel::compute(INT idx_a, INT idx_b)
   double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
   double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   
-  assert(alen==blen);
+  ASSERT(alen==blen);
 
   INT ialen=(int) alen;
 

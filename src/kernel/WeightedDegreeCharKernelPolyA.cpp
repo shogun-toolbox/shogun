@@ -1,10 +1,8 @@
 #include "lib/common.h"
+#include "lib/io.h"
 #include "kernel/WeightedDegreeCharKernelPolyA.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CWeightedDegreeCharKernelPolyA::CWeightedDegreeCharKernelPolyA(LONG size, double* w, INT d, INT max_mismatch_)
 	: CCharKernel(size),weights(NULL),degree(d), max_mismatch(max_mismatch_), 
@@ -13,7 +11,7 @@ CWeightedDegreeCharKernelPolyA::CWeightedDegreeCharKernelPolyA(LONG size, double
 	  down_stream(20), up_stream(20)
 {
 	weights=new REAL[d*(1+max_mismatch)];
-	assert(weights!=NULL);
+	ASSERT(weights!=NULL);
 	for (INT i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
 }
@@ -76,7 +74,7 @@ INT* CWeightedDegreeCharKernelPolyA::find_site(char* seq, INT len, INT & num)
 				((i>=99 && i<105) || (i>140 && i<160)))
 			{
 				buffer[num++]=i ;
-				assert(num<1000) ;
+				ASSERT(num<1000) ;
 			}
 	
 	INT * ret = new INT[num] ;
@@ -154,7 +152,7 @@ bool CWeightedDegreeCharKernelPolyA::init(CFeatures* l, CFeatures* r, bool do_in
 		delete[] sqrtdiag_lhs;
 		sqrtdiag_lhs=NULL ;
 		sqrtdiag_lhs= new REAL[lhs->get_num_vectors()];
-		assert(sqrtdiag_lhs) ;
+		ASSERT(sqrtdiag_lhs) ;
 		for (i=0; i<lhs->get_num_vectors(); i++)
 			sqrtdiag_lhs[i]=1;
 	}
@@ -164,14 +162,14 @@ bool CWeightedDegreeCharKernelPolyA::init(CFeatures* l, CFeatures* r, bool do_in
 	else if (rhs_changed)
 	{
 		sqrtdiag_rhs= new REAL[rhs->get_num_vectors()];
-		assert(sqrtdiag_rhs) ;
+		ASSERT(sqrtdiag_rhs) ;
 		
 		for (i=0; i<rhs->get_num_vectors(); i++)
 			sqrtdiag_rhs[i]=1;
 	}
 
-	assert(sqrtdiag_lhs);
-	assert(sqrtdiag_rhs);
+	ASSERT(sqrtdiag_lhs);
+	ASSERT(sqrtdiag_rhs);
 
 	if (lhs_changed)
 	{
@@ -301,7 +299,7 @@ REAL CWeightedDegreeCharKernelPolyA::compute_with_offset(INT idx_a, INT offset_a
   CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
   // can only deal with strings of same length
-  assert(alen==blen);
+  ASSERT(alen==blen);
 
   double sum=0;
 

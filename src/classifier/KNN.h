@@ -28,7 +28,7 @@ class CKNN : public CKernelMachine
 
 		inline void set_k(REAL k) 
 		{
-			assert(k>0);
+			ASSERT(k>0);
 			this->k=k;
 		}
 

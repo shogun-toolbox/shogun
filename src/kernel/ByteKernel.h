@@ -15,8 +15,8 @@ class CByteKernel : public CSimpleKernel<BYTE>
 		{
 			CSimpleKernel<BYTE>::init(l,r, do_init);
 
-			assert(l->get_feature_type()==F_BYTE);
-			assert(r->get_feature_type()==F_BYTE);
+			ASSERT(l->get_feature_type()==F_BYTE);
+			ASSERT(r->get_feature_type()==F_BYTE);
 
 			return true;
 		}

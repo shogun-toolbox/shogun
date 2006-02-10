@@ -9,7 +9,7 @@
 class CCommUlongStringKernel: public CStringKernel<ULONG>
 {
 	public:
-		CCommUlongStringKernel(LONG size, bool use_sign, E_NormalizationType normalization_=E_FULL_NORMALIZATION );
+		CCommUlongStringKernel(LONG size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION );
 		~CCommUlongStringKernel();
 
 		virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -29,7 +29,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		virtual bool delete_optimization();
 		virtual REAL compute_optimized(INT idx);
 
-		inline void merge_dictionaries(INT &t, INT j, INT &k, ULONG* vec, ULONG* dic, REAL* dic_weights, REAL weight, INT vec_idx, INT len, E_NormalizationType normalization)
+		inline void merge_dictionaries(INT &t, INT j, INT &k, ULONG* vec, ULONG* dic, REAL* dic_weights, REAL weight, INT vec_idx, INT len, ENormalizationType normalization)
 		{
 			while (k<dictionary.get_num_elements() && dictionary[k] < vec[j-1])
 			{
@@ -74,30 +74,30 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		/// in the corresponding feature object
 		REAL compute(INT idx_a, INT idx_b);
 
-		inline REAL normalize_weight(REAL value, INT seq_num, INT seq_len, E_NormalizationType normalization)
+		inline REAL normalize_weight(REAL value, INT seq_num, INT seq_len, ENormalizationType normalization)
 		{
 			switch (normalization)
 			{
-				case E_NO_NORMALIZATION:
+				case NO_NORMALIZATION:
 					return value;
 					break;
-				case E_SQRT_NORMALIZATION:
+				case SQRT_NORMALIZATION:
 					return value/sqrt(sqrtdiag_lhs[seq_num]);
 					break;
-				case E_FULL_NORMALIZATION:
+				case FULL_NORMALIZATION:
 					return value/sqrtdiag_lhs[seq_num];
 					break;
-				case E_SQRTLEN_NORMALIZATION:
+				case SQRTLEN_NORMALIZATION:
 					return value/sqrt(sqrt(seq_len));
 					break;
-				case E_LEN_NORMALIZATION:
+				case LEN_NORMALIZATION:
 					return value/sqrt(seq_len);
 					break;
-				case E_SQLEN_NORMALIZATION:
+				case SQLEN_NORMALIZATION:
 					return value/seq_len;
 					break;
 				default:
-					assert(0);
+					ASSERT(0);
 			}
 			return -CMath::INFTY;
 		}
@@ -112,6 +112,6 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		CDynamicArray<REAL> dictionary_weights;
 
 		bool use_sign;
-		E_NormalizationType normalization;
+		ENormalizationType normalization;
 };
 #endif

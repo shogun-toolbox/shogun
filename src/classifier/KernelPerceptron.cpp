@@ -13,7 +13,7 @@ CKernelPerceptron::~CKernelPerceptron()
 
 bool CKernelPerceptron::train()
 {
-	assert(CKernelMachine::get_labels());
+	ASSERT(CKernelMachine::get_labels());
 	//CLabels* train_labels=CKernelMachine::get_labels()->get_int_labels(num_train_labels);
 
 //

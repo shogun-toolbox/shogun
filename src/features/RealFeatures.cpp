@@ -110,7 +110,7 @@ REAL CRealFeatures::Align(CHAR * seq1, CHAR* seq2, INT l1, INT l2, REAL gapCost)
 
 bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, REAL gapCost)
 {
-	assert(cf);
+	ASSERT(cf);
 
 	num_vectors  = cf->get_num_vectors();
 	num_features = Ref->get_num_vectors();
@@ -118,7 +118,7 @@ bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, R
 	INT len=num_vectors*num_features;
 	delete[] feature_matrix;
 	feature_matrix=new REAL[len];
-	assert(feature_matrix);
+	ASSERT(feature_matrix);
 
 	INT num_cf_feat;
 	INT num_cf_vec;
@@ -128,8 +128,8 @@ bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, R
 	CHAR* fm_cf  = cf->get_feature_matrix(num_cf_feat, num_cf_vec);
 	CHAR* fm_ref = Ref->get_feature_matrix(num_ref_feat, num_ref_vec);
 
-	assert(num_cf_vec==num_vectors);
-	assert(num_ref_vec==num_features);
+	ASSERT(num_cf_vec==num_vectors);
+	ASSERT(num_ref_vec==num_features);
 
 	CIO::message(M_INFO, "computing aligments of %i vectors to %i reference vectors: ", num_cf_vec, num_ref_vec) ;
 	for (INT i=0; i< num_ref_vec; i++)

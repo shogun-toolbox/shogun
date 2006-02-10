@@ -4,8 +4,6 @@
 #include "lib/common.h"
 #include "lib/Mathmatics.h"
 
-#include <assert.h>
-
 /** dynamic array, i.e. array that can be used like a list or an array.
 it grows and shrinks dynamically, while elements can be accessed via index
 performance tuned for simple types as float etc.
@@ -21,7 +19,7 @@ public:
 		this->resize_granularity = resize_granularity;
 
 		array = (T*) calloc(resize_granularity, sizeof(T));
-		assert(array);
+		ASSERT(array);
 
 		num_elements = resize_granularity;
 		last_element_idx = -1;
@@ -55,14 +53,14 @@ public:
 	///return array element at index
 	inline T get_element(INT index)
 	{
-		assert((array != NULL) && (index >= 0) && (index <= last_element_idx));
+		ASSERT((array != NULL) && (index >= 0) && (index <= last_element_idx));
 		return array[index];
 	}
 
 	///set array element at index 'index' return false in case of trouble
 	inline bool set_element(T element, INT index)
 	{
-		assert((array != NULL) && (index >= 0));
+		ASSERT((array != NULL) && (index >= 0));
 		if (index <= last_element_idx)
 		{
 			array[index]=element;

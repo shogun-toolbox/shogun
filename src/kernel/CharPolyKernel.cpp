@@ -4,8 +4,6 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-#include <assert.h>
-
 CCharPolyKernel::CCharPolyKernel(LONG size, INT d, bool inhom, bool use_norm)
   : CCharKernel(size),degree(d),inhomogene(inhom),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
@@ -46,8 +44,8 @@ bool CCharPolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 				sqrtdiag_rhs[i]=1;
 		}
 
-		assert(sqrtdiag_lhs);
-		assert(sqrtdiag_rhs);
+		ASSERT(sqrtdiag_lhs);
+		ASSERT(sqrtdiag_rhs);
 
 		this->lhs=(CCharFeatures*) l;
 		this->rhs=(CCharFeatures*) l;
@@ -120,7 +118,7 @@ REAL CCharPolyKernel::compute(INT idx_a, INT idx_b)
   CHAR* avec=((CCharFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
   CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   
-  assert(alen==blen);
+  ASSERT(alen==blen);
 
   REAL sqrt_a= 1 ;
   REAL sqrt_b= 1 ;

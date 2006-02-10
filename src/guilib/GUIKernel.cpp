@@ -152,6 +152,7 @@ bool CGUIKernel::save_kernel_init(CHAR* param)
 
 bool CGUIKernel::init_kernel_optimization(CHAR* param)
 {
+
 	kernel->set_precompute_matrix(false, false);
 
 	if (gui->guisvm.get_svm()!=NULL)
@@ -166,6 +167,7 @@ bool CGUIKernel::init_kernel_optimization(CHAR* param)
 				sv_idx[i]    = gui->guisvm.get_svm()->get_support_vector(i) ;
 				sv_weight[i] = gui->guisvm.get_svm()->get_alpha(i) ;
 			}
+
 			bool ret = kernel->init_optimization(gui->guisvm.get_svm()->get_num_support_vectors(), sv_idx, sv_weight) ;
 			
 			delete[] sv_idx ;
@@ -536,42 +538,42 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				delete k;
 				INT use_sign = 0 ;
 				char normalization_str[100]="" ;
-				E_NormalizationType normalization = E_FULL_NORMALIZATION ;
+				ENormalizationType normalization = FULL_NORMALIZATION ;
 				
 				sscanf(param, "%s %s %d %d %s", kern_type, data_type, &size, &use_sign, normalization_str);
 				if (strlen(normalization_str)==0)
 				{
-					normalization = E_FULL_NORMALIZATION ;
+					normalization = FULL_NORMALIZATION ;
 					CIO::message(M_INFO, "using full normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "NO")==0)
 				{
-					normalization = E_NO_NORMALIZATION ;
+					normalization = NO_NORMALIZATION ;
 					CIO::message(M_INFO, "using no normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQRT")==0)
 				{
-					normalization = E_SQRT_NORMALIZATION ;
+					normalization = SQRT_NORMALIZATION ;
 					CIO::message(M_INFO, "using sqrt normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQRTLEN")==0)
 				{
-					normalization = E_SQRTLEN_NORMALIZATION ;
+					normalization = SQRTLEN_NORMALIZATION ;
 					CIO::message(M_INFO, "using sqrt-len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "LEN")==0)
 				{
-					normalization = E_LEN_NORMALIZATION ;
+					normalization = LEN_NORMALIZATION ;
 					CIO::message(M_INFO, "using len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQLEN")==0)
 				{
-					normalization = E_SQLEN_NORMALIZATION ;
+					normalization = SQLEN_NORMALIZATION ;
 					CIO::message(M_INFO, "using squared len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "FULL")==0)
 				{
-					normalization = E_FULL_NORMALIZATION ;
+					normalization = FULL_NORMALIZATION ;
 					CIO::message(M_INFO, "using full normalization\n") ;
 				}
 				else 
@@ -596,42 +598,42 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				delete k;
 				INT use_sign = 0 ;
 				char normalization_str[100]="" ;
-				E_NormalizationType normalization = E_FULL_NORMALIZATION ;
+				ENormalizationType normalization = FULL_NORMALIZATION ;
 				
 				sscanf(param, "%s %s %d %d %s", kern_type, data_type, &size, &use_sign, normalization_str);
 				if (strlen(normalization_str)==0)
 				{
-					normalization = E_FULL_NORMALIZATION ;
+					normalization = FULL_NORMALIZATION ;
 					CIO::message(M_INFO, "using full normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "NO")==0)
 				{
-					normalization = E_NO_NORMALIZATION ;
+					normalization = NO_NORMALIZATION ;
 					CIO::message(M_INFO, "using no normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQRT")==0)
 				{
-					normalization = E_SQRT_NORMALIZATION ;
+					normalization = SQRT_NORMALIZATION ;
 					CIO::message(M_INFO, "using sqrt normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQRTLEN")==0)
 				{
-					normalization = E_SQRTLEN_NORMALIZATION ;
+					normalization = SQRTLEN_NORMALIZATION ;
 					CIO::message(M_INFO, "using sqrt-len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "LEN")==0)
 				{
-					normalization = E_LEN_NORMALIZATION ;
+					normalization = LEN_NORMALIZATION ;
 					CIO::message(M_INFO, "using len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQLEN")==0)
 				{
-					normalization = E_SQLEN_NORMALIZATION ;
+					normalization = SQLEN_NORMALIZATION ;
 					CIO::message(M_INFO, "using squared len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "FULL")==0)
 				{
-					normalization = E_FULL_NORMALIZATION ;
+					normalization = FULL_NORMALIZATION ;
 					CIO::message(M_INFO, "using full normalization\n") ;
 				}
 				else 
@@ -996,7 +998,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (single_degree>=0)
 				{
-					assert(single_degree<d);
+					ASSERT(single_degree<d);
 					for (i=0; i<d; i++)
 					{
 						if (i!=single_degree)
@@ -1300,7 +1302,7 @@ bool CGUIKernel::add_kernel(CHAR* param)
 	{
 		delete kernel;
 		kernel= new CCombinedKernel(20,false);
-		assert(kernel);
+		ASSERT(kernel);
 	}
 
 	if (kernel)
@@ -1319,7 +1321,7 @@ bool CGUIKernel::add_kernel(CHAR* param)
 		}
 
 		CKernel* k=create_kernel(newparam);
-		assert(k);
+		ASSERT(k);
 		k->set_combined_kernel_weight(weight) ;
 		
 		bool bret = ((CCombinedKernel*) kernel)->append_kernel(k) ;
@@ -1352,6 +1354,38 @@ bool CGUIKernel::resize_kernel_cache(CHAR* param)
 		sscanf(param, "%ld", &size);
 		kernel->resize_kernel_cache(size) ;
 		return true ;
+	}
+	CIO::message(M_ERROR, "no kernel available\n") ;
+	return false;
+}
+
+bool CGUIKernel::set_optimization_type(CHAR* param)
+{
+	EOptimizationType opt=SLOWBUTMEMEFFICIENT;
+	char opt_type[1024];
+	param=CIO::skip_spaces(param);
+
+	if (kernel!=NULL) 
+	{
+		if (sscanf(param, "%s", opt_type)==1)
+		{
+			if (strcmp(opt_type,"FASTBUTMEMHUNGRY")==0)
+			{
+				CIO::message(M_INFO,"FAST METHOD selected\n");
+				opt=FASTBUTMEMHUNGRY;
+				kernel->set_optimization_type(opt);
+				return true;
+			}
+			else if (strcmp(opt_type,"SLOWBUTMEMEFFICIENT")==0)
+			{
+				CIO::message(M_INFO,"MEMORY EFFICIENT METHOD selected\n");
+				opt=SLOWBUTMEMEFFICIENT;
+				kernel->set_optimization_type(opt);
+				return true;
+			}
+			else
+				CIO::message(M_ERROR, "option missing\n");
+		}
 	}
 	CIO::message(M_ERROR, "no kernel available\n") ;
 	return false;

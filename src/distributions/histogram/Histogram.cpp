@@ -4,12 +4,11 @@
 #include "lib/io.h"
 #include "lib/Mathmatics.h"
 
-#include <assert.h>
 
 CHistogram::CHistogram()
 {
 	hist=new REAL[1<<16];
-	assert(hist);
+	ASSERT(hist);
 }
 
 CHistogram::~CHistogram()
@@ -24,9 +23,9 @@ bool CHistogram::train()
 	INT feat;
 	INT i;
 
-	assert(features);
-	assert(features->get_feature_class()==C_SIMPLE);
-	assert(features->get_feature_type()==F_WORD);
+	ASSERT(features);
+	ASSERT(features->get_feature_class()==C_SIMPLE);
+	ASSERT(features->get_feature_type()==F_WORD);
 
 	for (i=0; i< (INT) (1<<16); i++)
 		hist[i]=0;
@@ -53,9 +52,9 @@ bool CHistogram::train()
 
 REAL CHistogram::get_log_likelihood_example(INT num_example)
 {
-	assert(features);
-	assert(features->get_feature_class()==C_SIMPLE);
-	assert(features->get_feature_type()==F_WORD);
+	ASSERT(features);
+	ASSERT(features->get_feature_class()==C_SIMPLE);
+	ASSERT(features->get_feature_type()==F_WORD);
 
 	INT len;
 	bool to_free;
@@ -79,9 +78,9 @@ REAL CHistogram::get_log_derivative(INT num_example, INT param_num)
 		return -CMath::INFTY;
 	else
 	{
-		assert(features);
-		assert(features->get_feature_class()==C_SIMPLE);
-		assert(features->get_feature_type()==F_WORD);
+		ASSERT(features);
+		ASSERT(features->get_feature_class()==C_SIMPLE);
+		ASSERT(features->get_feature_type()==F_WORD);
 
 		INT len;
 		bool to_free;

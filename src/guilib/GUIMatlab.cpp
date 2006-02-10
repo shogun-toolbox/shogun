@@ -165,7 +165,7 @@ bool CGUIMatlab::best_path(mxArray* retvals[], int dim)
 bool CGUIMatlab::append_hmm(const mxArray* vals[])
 {
 	CHMM* old_h=gui->guihmm.get_current();
-	assert(old_h);
+	ASSERT(old_h);
 
 	const mxArray* mx_p=vals[1];
 	const mxArray* mx_q=vals[2];
@@ -1042,14 +1042,14 @@ bool CGUIMatlab::svm_classify_example(mxArray* retvals[], int idx)
 bool CGUIMatlab::set_plugin_estimate(const mxArray* vals[])
 {
   int num_params = mxGetM(vals[1]) ;
-  assert(mxGetN(vals[1])==2) ;
+  ASSERT(mxGetN(vals[1])==2) ;
   double* result=mxGetPr(vals[1]);
   REAL* pos_params = result;
   REAL* neg_params = &(result[num_params]) ;
   double* p_size=mxGetPr(vals[2]);
   int seq_length = (int)p_size[0] ;
   int num_symbols = (int)p_size[1] ;
-  assert(num_params == seq_length*num_symbols) ;
+  ASSERT(num_params == seq_length*num_symbols) ;
 
   gui->guipluginestimate.get_estimator()->set_model_params(pos_params, neg_params, seq_length, num_symbols) ;
 
@@ -1341,7 +1341,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 				INT num_vec=mxGetN(mx_feat);
 				INT num_feat=mxGetM(mx_feat);
 				REAL* fm=new REAL[num_vec*num_feat];
-				assert(fm);
+				ASSERT(fm);
 				double* feat=mxGetPr(mx_feat);
 
 				for (INT i=0; i<num_vec; i++)
@@ -1381,7 +1381,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 				INT num_vec=mxGetN(mx_feat);
 				INT num_feat=mxGetM(mx_feat);
 				CHAR* fm=new char[num_vec*num_feat+10];
-				assert(fm);
+				ASSERT(fm);
 				mxGetString(mx_feat, fm, num_vec*num_feat+5);
 
 				((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
@@ -1390,13 +1390,13 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 			{
 				int num_vec=mxGetNumberOfElements(mx_feat);
 
-				assert(num_vec>=1 && mxGetCell(mx_feat, 0));
+				ASSERT(num_vec>=1 && mxGetCell(mx_feat, 0));
 				T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
 
 				if (mxIsChar(mxGetCell(mx_feat, 0)))
 				{
 					f= new CStringFeatures<CHAR>();
-					assert(f);
+					ASSERT(f);
 
 					int maxlen=0;
 					int num_symbols=0;
@@ -1408,7 +1408,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					for (int i=0; i<num_vec; i++)
 					{
 						mxArray* e=mxGetCell(mx_feat, i);
-						assert(e && mxIsChar(e));
+						ASSERT(e && mxIsChar(e));
 						//note the .string here is 0 terminated although it is not required
 						//.length is the length of the string w/o 0
 						sc[i].string=get_mxString(e);

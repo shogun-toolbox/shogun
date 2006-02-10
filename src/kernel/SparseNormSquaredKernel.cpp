@@ -1,11 +1,9 @@
 #include "lib/common.h"
+#include "lib/io.h"
 #include "kernel/SparseNormSquaredKernel.h"
 #include "features/Features.h"
 #include "features/SparseRealFeatures.h"
 #include "features/SparseFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CSparseNormSquaredKernel::CSparseNormSquaredKernel(LONG size)
   : CSparseRealKernel(size)

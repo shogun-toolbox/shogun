@@ -18,9 +18,6 @@
 #include "regression/svr/SVR_light.h"
 #include "regression/svr/LibSVR.h"
 
-
-#include <assert.h>
-
 CGUIClassifier::CGUIClassifier(CGUI* g) : gui(g)
 {
 	classifier=NULL;
@@ -252,9 +249,9 @@ bool CGUIClassifier::test(CHAR* param)
 	INT total=	testfeatures->get_num_vectors();
 	INT* label= testlabels->get_int_labels(len);
 
-	assert(label);
+	ASSERT(label);
 	CIO::message(M_DEBUG, "len:%d total:%d\n", len, total);
-	assert(len==total);
+	ASSERT(len==total);
 
 	gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);
 

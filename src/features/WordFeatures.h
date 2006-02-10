@@ -41,7 +41,7 @@ class CWordFeatures: public CSimpleFeatures<WORD>
 		// specified by bits in the mask will be returned.
 		inline WORD get_masked_symbols(WORD symbol, BYTE mask)
 		{
-			assert(symbol_mask_table);
+			ASSERT(symbol_mask_table);
 			return symbol_mask_table[mask] & symbol;
 		}
 

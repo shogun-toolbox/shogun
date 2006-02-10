@@ -3,8 +3,6 @@
 #include "features/WordFeatures.h"
 #include "lib/io.h"
 
-#include <assert.h>
-
 CLinearHMM::CLinearHMM(CWordFeatures* f) : hist(NULL), log_hist(NULL), features(f)
 {
 	sequence_length = f->get_num_features();
@@ -30,7 +28,7 @@ bool CLinearHMM::train()
 	delete[] hist;
 	delete[] log_hist;
 	INT* int_hist = new int[num_params];
-	assert(int_hist);
+	ASSERT(int_hist);
 
 	INT vec;
 	INT i;
@@ -57,8 +55,8 @@ bool CLinearHMM::train()
 	hist= new REAL[num_params];
 	log_hist= new REAL[num_params];
 
-	assert(hist);
-	assert(log_hist);
+	ASSERT(hist);
+	ASSERT(log_hist);
 
 	for (i=0;i<sequence_length;i++)
 	{
@@ -84,7 +82,7 @@ bool CLinearHMM::train(const INT* indizes, INT num_indizes, REAL pseudo_count)
 	delete[] hist;
 	delete[] log_hist;
 	INT* int_hist = new int[num_params];
-	assert(int_hist);
+	ASSERT(int_hist);
 
 	INT vec;
 	INT i;
@@ -97,7 +95,7 @@ bool CLinearHMM::train(const INT* indizes, INT num_indizes, REAL pseudo_count)
 		INT len;
 		bool to_free;
 
-		assert(indizes[vec]>=0 && indizes[vec]<((CWordFeatures*) features)->get_num_vectors());
+		ASSERT(indizes[vec]>=0 && indizes[vec]<((CWordFeatures*) features)->get_num_vectors());
 		WORD* vector=((CWordFeatures*) features)->get_feature_vector(indizes[vec], len, to_free);
 
 		//just count the symbols per position -> histogram
@@ -112,8 +110,8 @@ bool CLinearHMM::train(const INT* indizes, INT num_indizes, REAL pseudo_count)
 	hist= new REAL[num_params];
 	log_hist= new REAL[num_params];
 
-	assert(hist);
-	assert(log_hist);
+	ASSERT(hist);
+	ASSERT(log_hist);
 
 	for (i=0;i<sequence_length;i++)
 	{

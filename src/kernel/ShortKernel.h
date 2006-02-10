@@ -15,8 +15,8 @@ class CShortKernel : public CSimpleKernel<SHORT>
 		{
 			CSimpleKernel<SHORT>::init(l,r, do_init);
 
-			assert(l->get_feature_type()==F_SHORT);
-			assert(r->get_feature_type()==F_SHORT);
+			ASSERT(l->get_feature_type()==F_SHORT);
+			ASSERT(r->get_feature_type()==F_SHORT);
 
 			return true;
 		}

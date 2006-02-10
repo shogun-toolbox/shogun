@@ -74,7 +74,7 @@ static void translate_from_single_order(WORD* obs, INT sequence_length,
 		obs[i]=value;
 		//if (value>=num_words[order-1])
 		//	fprintf(stderr,"%i %i\n", value, num_words[order-1]) ;
-		//assert(value<num_words[order]) ;
+		//ASSERT(value<num_words[order]) ;
 	}
 	if (start>0)
 		for (i=start; i<sequence_length; i++)	
@@ -110,7 +110,7 @@ static void extend_svm_value(WORD** wordstr, INT pos, INT *last_svm_pos, REAL* s
 			if (wordstr[j][i]>=num_words[j])
 				CIO::message(M_DEBUG, "wordstr[%i]=%i\n", i, wordstr[j][i]) ;
 
-			assert(wordstr[j][i]<num_words[j]) ;
+			ASSERT(wordstr[j][i]<num_words[j]) ;
 			if (!word_used[j][wordstr[j][i]])
 			{
 				for (INT s=0; s<num_svms; s++)
@@ -255,7 +255,7 @@ static void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end
 				
 				if (wordstr[j][i]>=num_words[j])
 					fprintf(stderr, "wordstr[%i][%i]=%i\n", j, i, wordstr[j][i]) ;
-				assert(wordstr[j][i]<num_words[j]) ;
+				ASSERT(wordstr[j][i]<num_words[j]) ;
 				if (!svs.word_used[j][wordstr[j][i]])
 				{
 					for (INT s=0; s<num_svms; s++)
@@ -347,7 +347,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	const INT default_look_back = 30000 ;
 	INT max_look_back = default_look_back ;
 	bool use_svm = false ;
-	assert(dict_len==num_svms*cum_num_words[num_degrees]) ;
+	ASSERT(dict_len==num_svms*cum_num_words[num_degrees]) ;
 	dict_weights=dictionary_weights ;
 	int offset=0;
 
@@ -394,31 +394,31 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 		CIO::message(M_DEBUG,"allocating %1.2fMB of memory\n", 
 					 mem_use) ;
 	}
-	assert(nbest<32000) ;
+	ASSERT(nbest<32000) ;
 		
 	bool * genestr_stop = new bool[genestr_len] ;
 
 	REAL* delta= new REAL[look_back_buflen] ;
-	assert(delta!=NULL) ;
+	ASSERT(delta!=NULL) ;
 	T_STATES *psi=new T_STATES[seq_len*N*nbest] ;
-	assert(psi!=NULL) ;
+	ASSERT(psi!=NULL) ;
 	short int *ktable=new short int[seq_len*N*nbest] ;
-	assert(ktable!=NULL) ;
+	ASSERT(ktable!=NULL) ;
 	INT *ptable=new INT[seq_len*N*nbest] ;
-	assert(ptable!=NULL) ;
+	ASSERT(ptable!=NULL) ;
 
 	REAL* delta_end= new REAL[nbest] ;
-	assert(delta_end!=NULL) ;
+	ASSERT(delta_end!=NULL) ;
 	T_STATES* path_end = new T_STATES[nbest] ;
-	assert(path_end!=NULL) ;
+	ASSERT(path_end!=NULL) ;
 	short int *ktable_end=new short int[nbest] ;
-	assert(ktable_end!=NULL) ;
+	ASSERT(ktable_end!=NULL) ;
 
 	#if USEFIXEDLENLIST > 0
 	REAL* fixedtempvv=new REAL[look_back_buflen] ;
-	assert(fixedtempvv!=NULL) ;
+	ASSERT(fixedtempvv!=NULL) ;
 	INT* fixedtempii=new INT[look_back_buflen] ;
-	assert(fixedtempii!=NULL) ;
+	ASSERT(fixedtempii!=NULL) ;
 	#endif
 
 
@@ -426,15 +426,15 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	// as i didnt change the backtracking stuff
 
 	REAL* oldtempvv=new REAL[look_back_buflen] ;
-	assert(oldtempvv!=NULL) ;
+	ASSERT(oldtempvv!=NULL) ;
 	INT* oldtempii=new INT[look_back_buflen] ;
-	assert(oldtempii!=NULL) ;
+	ASSERT(oldtempii!=NULL) ;
 
 
 	T_STATES* state_seq = new T_STATES[seq_len] ;
-	assert(state_seq!=NULL) ;
+	ASSERT(state_seq!=NULL) ;
 	INT * pos_seq   = new INT[seq_len] ;
-	assert(pos_seq!=NULL) ;
+	ASSERT(pos_seq!=NULL) ;
 
 	{ // precompute stop codons
 		for (INT i=0; i<genestr_len-2; i++)
@@ -457,7 +457,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 			wordstr[j]=NULL ;
 			if (use_svm)
 			{
-				assert(dict_weights!=NULL) ;
+				ASSERT(dict_weights!=NULL) ;
 				wordstr[j]=new WORD[genestr_len] ;
 				for (INT i=0; i<genestr_len; i++)
 					switch (genestr[i])
@@ -466,7 +466,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 					case 'c': wordstr[j][i]=1 ; break ;
 					case 'g': wordstr[j][i]=2 ; break ;
 					case 't': wordstr[j][i]=3 ; break ;
-					default: assert(0) ;
+					default: ASSERT(0) ;
 					}
 				translate_from_single_order(wordstr[j], genestr_len,
 											word_degree[j]-1, word_degree[j]) ;
@@ -549,14 +549,14 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 					INT orf_to   = ORF_TO(j) ;
 					if((orf_from!=-1)!=(orf_to!=-1))
 						fprintf(stderr,"j=%i  ii=%i  orf_from=%i orf_to=%i p=%1.2f\n", j, ii, orf_from, orf_to, elem_val[i]) ;
-					assert((orf_from!=-1)==(orf_to!=-1)) ;
+					ASSERT((orf_from!=-1)==(orf_to!=-1)) ;
 					
 					INT orf_target = -1 ;
 					if (orf_from!=-1)
 					{
 						orf_target=orf_to-orf_from ;
 						if (orf_target<0) orf_target+=3 ;
-						assert(orf_target>=0 && orf_target<3) ;
+						ASSERT(orf_target>=0 && orf_target<3) ;
 					}
 
 					INT last_pos = pos[t] ;
@@ -812,7 +812,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 				if (PEN_names[s])
 					CIO::message(M_DEBUG, "%s:\t%1.2f\n", PEN_names[s], PEN_values[s+num_PEN_id*k]) ;
 				else
-					assert(PEN_values[s]==0.0) ;
+					ASSERT(PEN_values[s]==0.0) ;
 					}*/
 		}
 	}

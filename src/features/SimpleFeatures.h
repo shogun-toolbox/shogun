@@ -10,7 +10,6 @@
 #include "features/Features.h"
 
 #include <string.h>
-#include <assert.h>
 
 
 template <class ST> class CSimpleFeatures;
@@ -59,7 +58,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 //	      free=false ;
 //	      return NULL ;
 //	    }
-//	  assert(num<num_vectors);
+//	  ASSERT(num<num_vectors);
 
 	  if (feature_matrix)
 	  {

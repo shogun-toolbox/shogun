@@ -1,18 +1,15 @@
 #include "lib/config.h"
+#include "lib/common.h"
+#include "lib/io.h"
+#include "kernel/SigmoidKernel.h"
+#include "features/Features.h"
+#include "features/RealFeatures.h"
 
 #ifdef HAVE_LAPACK
 extern "C" {
 #include <cblas.h>
 }
 #endif
-
-#include "lib/common.h"
-#include "kernel/SigmoidKernel.h"
-#include "features/Features.h"
-#include "features/RealFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CSigmoidKernel::CSigmoidKernel(LONG size, REAL g, REAL c)
   : CRealKernel(size),gamma(g), coef0(c)
@@ -52,7 +49,7 @@ REAL CSigmoidKernel::compute(INT idx_a, INT idx_b)
   double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
   double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   
-  assert(alen==blen);
+  ASSERT(alen==blen);
 
   INT ialen=(int) alen;
 

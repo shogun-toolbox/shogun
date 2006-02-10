@@ -6,7 +6,7 @@
 CLabels::CLabels(INT num_lab) : num_labels(num_lab)
 {
 	labels=new REAL[num_lab];
-	assert(labels);
+	ASSERT(labels);
 
 	for (INT i=0; i<num_lab; i++)
 		labels[i]=0;

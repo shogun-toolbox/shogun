@@ -14,8 +14,8 @@ class CSparseRealKernel : public CSparseKernel<REAL>
 		{
 			CSparseKernel<REAL>::init(l,r, do_init);
 
-			assert(l->get_feature_type()==F_REAL);
-			assert(r->get_feature_type()==F_REAL);
+			ASSERT(l->get_feature_type()==F_REAL);
+			ASSERT(r->get_feature_type()==F_REAL);
 
 			return true;
 		}

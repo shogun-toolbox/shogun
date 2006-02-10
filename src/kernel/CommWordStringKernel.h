@@ -8,7 +8,7 @@
 class CCommWordStringKernel: public CStringKernel<WORD>
 {
  public:
-  CCommWordStringKernel(LONG size, bool use_sign, E_NormalizationType normalization_=E_FULL_NORMALIZATION );
+  CCommWordStringKernel(LONG size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION );
   ~CCommWordStringKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -48,30 +48,30 @@ class CCommWordStringKernel: public CStringKernel<WORD>
   /// in the corresponding feature object
   REAL compute(INT idx_a, INT idx_b);
 
-  inline REAL normalize_weight(REAL value, INT seq_num, INT seq_len, E_NormalizationType normalization)
+  inline REAL normalize_weight(REAL value, INT seq_num, INT seq_len, ENormalizationType normalization)
   {
 	  switch (normalization)
 	  {
-		  case E_NO_NORMALIZATION:
+		  case NO_NORMALIZATION:
 			  return value;
 			  break;
-		  case E_SQRT_NORMALIZATION:
+		  case SQRT_NORMALIZATION:
 			  return value/sqrt(sqrtdiag_lhs[seq_num]);
 			  break;
-		  case E_FULL_NORMALIZATION:
+		  case FULL_NORMALIZATION:
 			  return value/sqrtdiag_lhs[seq_num];
 			  break;
-		  case E_SQRTLEN_NORMALIZATION:
+		  case SQRTLEN_NORMALIZATION:
 			  return value/sqrt(sqrt(seq_len));
 			  break;
-		  case E_LEN_NORMALIZATION:
+		  case LEN_NORMALIZATION:
 			  return value/sqrt(seq_len);
 			  break;
-		  case E_SQLEN_NORMALIZATION:
+		  case SQLEN_NORMALIZATION:
 			  return value/seq_len;
 			  break;
 		  default:
-			  assert(0);
+			  ASSERT(0);
 	  }
 
 	  return -CMath::INFTY;
@@ -87,6 +87,6 @@ class CCommWordStringKernel: public CStringKernel<WORD>
   REAL* dictionary_weights;
   bool use_sign;
 
-  E_NormalizationType normalization;
+  ENormalizationType normalization;
 };
 #endif

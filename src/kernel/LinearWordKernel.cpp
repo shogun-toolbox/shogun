@@ -1,11 +1,9 @@
 #include "lib/common.h"
+#include "lib/io.h"
 #include "lib/Mathmatics.h"
 #include "kernel/LinearWordKernel.h"
 #include "kernel/WordKernel.h"
 #include "features/WordFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CLinearWordKernel::CLinearWordKernel(LONG size)
   : CWordKernel(size),scale(1.0),normal(NULL)
@@ -84,7 +82,7 @@ REAL CLinearWordKernel::compute(INT idx_a, INT idx_b)
 	WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
 	WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-	assert(alen==blen);
+	ASSERT(alen==blen);
 	double sum=0;
 	for (LONG i=0; i<alen; i++)
 		sum+=((LONG) avec[i])*((LONG) bvec[i]);
@@ -104,10 +102,10 @@ bool CLinearWordKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* al
 	int i;
 
 	int num_feat=((CWordFeatures*) lhs)->get_num_features();
-	assert(num_feat);
+	ASSERT(num_feat);
 
 	normal=new REAL[num_feat];
-	assert(normal);
+	ASSERT(normal);
 
 	for (i=0; i<num_feat; i++)
 		normal[i]=0;
@@ -115,7 +113,7 @@ bool CLinearWordKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* al
 	for (int i=0; i<num_suppvec; i++)
 	{
 		WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
-		assert(avec);
+		ASSERT(avec);
 
 		for (int j=0; j<num_feat; j++)
 			normal[j]+=alphas[i] * ((double) avec[j]);

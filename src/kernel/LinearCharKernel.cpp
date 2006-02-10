@@ -1,11 +1,9 @@
 #include "lib/common.h"
+#include "lib/io.h"
 #include "lib/Mathmatics.h"
 #include "kernel/LinearCharKernel.h"
 #include "kernel/CharKernel.h"
 #include "features/CharFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CLinearCharKernel::CLinearCharKernel(LONG size)
   : CCharKernel(size),scale(1.0),normal(NULL)
@@ -84,7 +82,7 @@ REAL CLinearCharKernel::compute(INT idx_a, INT idx_b)
   CHAR* avec=((CCharFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
   CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  assert(alen==blen);
+  ASSERT(alen==blen);
   double sum=0;
   for (INT i=0; i<alen; i++)
 	  sum+=((LONG) avec[i])*((LONG) bvec[i]);
@@ -104,10 +102,10 @@ bool CLinearCharKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* al
 	int i;
 
 	int num_feat=((CCharFeatures*) lhs)->get_num_features();
-	assert(num_feat);
+	ASSERT(num_feat);
 
 	normal=new REAL[num_feat];
-	assert(normal);
+	ASSERT(normal);
 
 	for (i=0; i<num_feat; i++)
 		normal[i]=0;
@@ -115,7 +113,7 @@ bool CLinearCharKernel::init_optimization(INT num_suppvec, INT* sv_idx, REAL* al
 	for (int i=0; i<num_suppvec; i++)
 	{
 		CHAR* avec=((CCharFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
-		assert(avec);
+		ASSERT(avec);
 
 		for (int j=0; j<num_feat; j++)
 			normal[j]+= alphas[i] * ((double) avec[j]);

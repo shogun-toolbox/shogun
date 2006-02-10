@@ -37,13 +37,13 @@ class CSVM : public CKernelMachine
 
 		inline int get_support_vector(int idx)
 		{
-			assert(svm_model.svs && idx<svm_model.num_svs);
+			ASSERT(svm_model.svs && idx<svm_model.num_svs);
 			return svm_model.svs[idx];
 		}
 
 		inline REAL get_alpha(int idx)
 		{
-			assert(svm_model.alpha && idx<svm_model.num_svs);
+			ASSERT(svm_model.alpha && idx<svm_model.num_svs);
 			return svm_model.alpha[idx];
 		}
 

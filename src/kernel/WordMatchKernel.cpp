@@ -1,11 +1,9 @@
 #include "lib/common.h"
 #include "lib/Mathmatics.h"
+#include "lib/io.h"
 #include "kernel/WordMatchKernel.h"
 #include "kernel/WordKernel.h"
 #include "features/WordFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CWordMatchKernel::CWordMatchKernel(LONG size, INT d)
   : CWordKernel(size),scale(1.0),degree(d)
@@ -63,7 +61,7 @@ REAL CWordMatchKernel::compute(INT idx_a, INT idx_b)
   WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
   WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  assert(alen==blen);
+  ASSERT(alen==blen);
   double sum=0;
   for (INT i=0; i<alen; i++)
 	  sum+= (avec[i]==bvec[i]) ? 1 : 0;

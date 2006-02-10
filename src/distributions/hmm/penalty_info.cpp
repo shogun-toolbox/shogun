@@ -199,7 +199,7 @@ struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty
 			PEN[id].next_pen=&PEN[next_id] ;
 		//fprintf(stderr,"id=%i, next_id=%i\n", id, next_id) ;
 		
-		assert(next_id!=id) ;
+		ASSERT(next_id!=id) ;
 		PEN[id].use_svm=use_svm ;
 		PEN[id].limits = new REAL[len] ;
 		PEN[id].penalties = new REAL[len] ;
@@ -257,7 +257,7 @@ REAL lookup_penalty_svm(const struct penalty_struct *PEN, INT p_value, REAL *d_v
 {	
 	if (PEN==NULL)
 		return 0 ;
-	assert(PEN->use_svm>0) ;
+	ASSERT(PEN->use_svm>0) ;
 	REAL d_value=d_values[PEN->use_svm-1] ;
     input_value = d_value ;
 	//fprintf(stderr,"transform=%i, d_value=%1.2f\n", (INT)PEN->transform, d_value) ;

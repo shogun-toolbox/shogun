@@ -24,6 +24,7 @@ class CGUIKernel
 
 	bool clean_kernel(CHAR* param);
 	bool resize_kernel_cache(CHAR* param);
+	bool set_optimization_type(CHAR* param);
 	bool add_kernel(CHAR* param);
 	bool del_kernel(CHAR* param);
 	bool is_initialized() { return initialized ; } ;

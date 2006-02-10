@@ -15,8 +15,8 @@ CNormDerivativeLem3::~CNormDerivativeLem3()
 /// initialize preprocessor from features
 bool CNormDerivativeLem3::init(CFeatures* f)
 {
-	assert(f->get_feature_class() == C_SIMPLE);
-	assert(f->get_feature_type() == F_REAL);
+	ASSERT(f->get_feature_class() == C_SIMPLE);
+	ASSERT(f->get_feature_type() == F_REAL);
 	return true;
 }
 

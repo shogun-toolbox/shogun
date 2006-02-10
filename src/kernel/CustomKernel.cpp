@@ -3,8 +3,6 @@
 #include "features/Features.h"
 #include "lib/io.h"
 
-#include <assert.h>
-
 CCustomKernel::CCustomKernel()
   : CKernel(0),kmatrix(NULL),num_rows(0),num_cols(0),upper_diagonal(false)
 {
@@ -43,8 +41,8 @@ bool CCustomKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 	CIO::message(M_DEBUG, "num_vec_lhs: %d vs num_rows %d\n", l->get_num_vectors(), num_rows);
 	CIO::message(M_DEBUG, "num_vec_rhs: %d vs num_cols %d\n", r->get_num_vectors(), num_cols);
-	assert(l->get_num_vectors() == num_rows);
-	assert(r->get_num_vectors() == num_cols);
+	ASSERT(l->get_num_vectors() == num_rows);
+	ASSERT(r->get_num_vectors() == num_cols);
 	return true;
 }
 

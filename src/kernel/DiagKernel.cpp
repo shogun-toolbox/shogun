@@ -10,8 +10,6 @@ extern "C" {
 #include "kernel/DiagKernel.h"
 #include "lib/io.h"
 
-#include <assert.h>
-
 CDiagKernel::CDiagKernel(LONG size, REAL d)
   : CKernel(size),diag(d)
 {

@@ -54,8 +54,8 @@ class CPluginEstimate
 
 			seq_length = pos_model->get_sequence_length();
 			num_symbols = pos_model->get_num_symbols();
-			assert(pos_model->get_num_model_parameters() == neg_model->get_num_model_parameters());
-			assert(pos_model->get_num_symbols() == neg_model->get_num_symbols());
+			ASSERT(pos_model->get_num_model_parameters() == neg_model->get_num_model_parameters());
+			ASSERT(pos_model->get_num_symbols() == neg_model->get_num_symbols());
 			return true;
 		}
 
@@ -71,11 +71,11 @@ class CPluginEstimate
 
 			neg_model = new CLinearHMM(seq_length, num_symbols);
 
-			assert(pos_model);
-			assert(neg_model);
+			ASSERT(pos_model);
+			ASSERT(neg_model);
 
-			assert(seq_length*num_symbols == pos_model->get_num_model_parameters());
-			assert(pos_model->get_num_model_parameters() == neg_model->get_num_model_parameters());
+			ASSERT(seq_length*num_symbols == pos_model->get_num_model_parameters());
+			ASSERT(pos_model->get_num_model_parameters() == neg_model->get_num_model_parameters());
 
 			pos_model->set_log_hist(pos_params);
 			neg_model->set_log_hist(neg_params);

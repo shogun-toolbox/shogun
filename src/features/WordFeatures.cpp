@@ -21,7 +21,7 @@ CWordFeatures::~CWordFeatures()
 
 bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alphabet, INT start, INT order)
 {
-	assert(cf);
+	ASSERT(cf);
 
 	this->order=order;
 	delete[] symbol_mask_table;
@@ -33,15 +33,15 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alph
 	INT len=num_vectors*num_features;
 	delete[] feature_matrix;
 	feature_matrix=new WORD[len];
-	assert(feature_matrix);
+	ASSERT(feature_matrix);
 
 	INT num_cf_feat;
 	INT num_cf_vec;
 
 	CHAR* fm=cf->get_feature_matrix(num_cf_feat, num_cf_vec);
 
-	assert(num_cf_vec==num_vectors);
-	assert(num_cf_feat==num_features);
+	ASSERT(num_cf_vec==num_vectors);
+	ASSERT(num_cf_feat==num_features);
 
 	INT max_val=0;
 	for (INT i=0; i<len; i++)

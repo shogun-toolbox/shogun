@@ -1,5 +1,3 @@
-#include <assert.h>
-
 #include "guilib/GUIKNN.h"
 #include "lib/io.h"
 #include "gui/GUI.h"
@@ -115,7 +113,7 @@ bool CGUIKNN::test(CHAR* param)
 
 	INT len=0;
 	INT* label= testlabels->get_int_labels(len);
-	assert(label);
+	ASSERT(label);
 
 	gui->guimath.evaluate_results(output, label, len, outputfile, rocfile);
 

@@ -1,9 +1,10 @@
 #ifndef _CACHE_H__
 #define _CACHE_H__
 
-#include "lib/Mathmatics.h"
+#include "lib/common.h"
 #include "lib/io.h"
-#include <assert.h>
+#include "lib/Mathmatics.h"
+
 #include <stdlib.h>
 
 template<class T> class CCache
@@ -44,9 +45,9 @@ template<class T> class CCache
 		lookup_table=new TEntry[num_entries];
 		cache_table=new TEntry*[nr_cache_lines];
 
-		assert(cache_block != NULL);
-		assert(lookup_table != NULL);
-		assert(cache_table != NULL);
+		ASSERT(cache_block != NULL);
+		ASSERT(lookup_table != NULL);
+		ASSERT(cache_table != NULL);
 
 		LONG i;
 		for (i=0; i<nr_cache_lines; i++)

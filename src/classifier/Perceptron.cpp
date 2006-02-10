@@ -13,8 +13,8 @@ CPerceptron::~CPerceptron()
 
 bool CPerceptron::train()
 {
-	assert(get_labels());
-	assert(get_features());
+	ASSERT(get_labels());
+	ASSERT(get_features());
 	bool converged=false;
 	INT iter=0;
 	INT num_train_labels=0;
@@ -22,12 +22,12 @@ bool CPerceptron::train()
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 
-	assert(num_vec==num_train_labels);
+	ASSERT(num_vec==num_train_labels);
 	delete[] w;
 	w=new REAL[num_feat];
-	assert(w);
+	ASSERT(w);
 	REAL* output=new REAL[num_vec];
-	assert(output);
+	ASSERT(output);
 
 	//start with uniform w, bias=0
 	bias=0;

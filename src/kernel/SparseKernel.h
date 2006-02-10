@@ -26,8 +26,8 @@ template <class ST> class CSparseKernel : public CKernel
 		{
 			CKernel::init(l,r,do_init);
 
-			assert(l->get_feature_class() == C_SPARSE);
-			assert(r->get_feature_class() == C_SPARSE);
+			ASSERT(l->get_feature_class() == C_SPARSE);
+			ASSERT(r->get_feature_class() == C_SPARSE);
 			lhs=(CSparseFeatures<ST>*) l;
 			rhs=(CSparseFeatures<ST>*) r;
 

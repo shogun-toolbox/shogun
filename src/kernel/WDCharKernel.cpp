@@ -1,10 +1,8 @@
 #include "lib/common.h"
+#include "lib/io.h"
 #include "kernel/WDCharKernel.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CWDCharKernel::CWDCharKernel(LONG size, EWDKernType t, INT d, INT which_deg, bool use_norm)
 	: CCharKernel(size), type(t), which_degree(which_deg), degree(d), seq_length(0),
@@ -241,7 +239,7 @@ bool CWDCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			delete[] sqrtdiag_lhs;
 			sqrtdiag_lhs=NULL ;
 			sqrtdiag_lhs= new REAL[lhs->get_num_vectors()];
-			assert(sqrtdiag_lhs) ;
+			ASSERT(sqrtdiag_lhs) ;
 			for (i=0; i<lhs->get_num_vectors(); i++)
 				sqrtdiag_lhs[i]=1;
 		}
@@ -251,14 +249,14 @@ bool CWDCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		else if (rhs_changed)
 		{
 			sqrtdiag_rhs= new REAL[rhs->get_num_vectors()];
-			assert(sqrtdiag_rhs) ;
+			ASSERT(sqrtdiag_rhs) ;
 
 			for (i=0; i<rhs->get_num_vectors(); i++)
 				sqrtdiag_rhs[i]=1;
 		}
 
-		assert(sqrtdiag_lhs);
-		assert(sqrtdiag_rhs);
+		ASSERT(sqrtdiag_lhs);
+		ASSERT(sqrtdiag_rhs);
 
 		if (lhs_changed)
 		{
@@ -330,7 +328,7 @@ bool CWDCharKernel::set_kernel_parameters(INT num, const double* param)
 	if (param)
 	{
 		delete[] matching_weights_external;
-		assert(num>0);
+		ASSERT(num>0);
 		num_matching_weights_external = num;
 		matching_weights_external= new REAL[num];
 		for (int i=0; i<num; i++)
@@ -360,7 +358,7 @@ REAL CWDCharKernel::compute(INT idx_a, INT idx_b)
 	CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	// can only deal with strings of same length
-	assert(alen==blen);
+	ASSERT(alen==blen);
 
 	REAL sqrt_a= 1 ;
 	REAL sqrt_b= 1 ;

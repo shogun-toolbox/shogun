@@ -278,14 +278,14 @@ CHMM::CHMM(INT N, double* p, double* q, int num_trans, double* a_trans)
 			start_idx++;
 			
 			if (start_idx>1 && start_idx<num_trans)
-				assert(a_trans[start_idx+num_trans-1] <= a_trans[start_idx+num_trans]);
+				ASSERT(a_trans[start_idx+num_trans-1] <= a_trans[start_idx+num_trans]);
 		}
 		
 		if (start_idx>1 && start_idx<num_trans)
-			assert(a_trans[start_idx+num_trans-1] <= a_trans[start_idx+num_trans]);
+			ASSERT(a_trans[start_idx+num_trans-1] <= a_trans[start_idx+num_trans]);
 		
 		INT len=start_idx-old_start_idx;
-		assert(len>=0);
+		ASSERT(len>=0);
 		
 		trans_list_forward_cnt[j] = 0 ;
 		
@@ -308,13 +308,13 @@ CHMM::CHMM(INT N, double* p, double* q, int num_trans, double* a_trans)
 		REAL val = a_trans[i+num_trans*2] ;
 		//fprintf(stderr,"from=%i to=%i val=%1.3e %i\n", from, to, val, N) ;
 		
-		assert(from>=0 && from<N) ;
-		assert(to>=0 && to<N) ;
+		ASSERT(from>=0 && from<N) ;
+		ASSERT(to>=0 && to<N) ;
 		
 		trans_list_forward[from][trans_list_forward_cnt[from]]=to ;
 		trans_list_forward_val[from][trans_list_forward_cnt[from]]=val ;
 		trans_list_forward_cnt[from]++ ;
-		//assert(trans_list_forward_cnt[from]<3000) ;
+		//ASSERT(trans_list_forward_cnt[from]<3000) ;
 	} ;
 	
 	transition_matrix_a=NULL ;
@@ -1330,25 +1330,25 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int nbes
 #define PATH_ENDS(t,k) path_ends[(t)*nbest+k]
 
 	T_STATES *psi=new T_STATES[max_iter*N*nbest] ;
-	assert(psi!=NULL) ;
+	ASSERT(psi!=NULL) ;
 	short int *ktable=new short int[max_iter*N*nbest] ;
-	assert(ktable!=NULL) ;
+	ASSERT(ktable!=NULL) ;
 	short int *ktable_ends=new short int[max_iter*nbest] ;
-	assert(ktable_ends!=NULL) ;
+	ASSERT(ktable_ends!=NULL) ;
 
 	REAL* tempvv=new REAL[nbest*N] ;
-	assert(tempvv!=NULL) ;
+	ASSERT(tempvv!=NULL) ;
 	INT* tempii=new INT[nbest*N] ;
-	assert(tempii!=NULL) ;
+	ASSERT(tempii!=NULL) ;
 
 	T_STATES* path_ends = new T_STATES[max_iter*nbest] ;
-	assert(path_ends!=NULL) ;
+	ASSERT(path_ends!=NULL) ;
 	REAL* delta= new REAL[N*nbest] ;
-	assert(delta!=NULL) ;
+	ASSERT(delta!=NULL) ;
 	REAL* delta_new= new REAL[N*nbest] ;
-	assert(delta_new!=NULL) ;
+	ASSERT(delta_new!=NULL) ;
 	REAL* delta_end= new REAL[max_iter*nbest] ;
-	assert(delta_end!=NULL) ;
+	ASSERT(delta_end!=NULL) ;
 
 	{ // initialization
 		for (T_STATES i=0; i<N; i++)
@@ -1434,13 +1434,13 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int nbes
 		max_best_iter=0 ;
 		
 		REAL* sort_delta_end=new REAL[max_iter*nbest] ;
-		assert(sort_delta_end!=NULL) ;
+		ASSERT(sort_delta_end!=NULL) ;
 		short int* sort_k=new short int[max_iter*nbest] ;
-		assert(sort_k!=NULL) ;
+		ASSERT(sort_k!=NULL) ;
 		INT* sort_t=new INT[max_iter*nbest] ;
-		assert(sort_t!=NULL) ;
+		ASSERT(sort_t!=NULL) ;
 		INT* sort_idx=new INT[max_iter*nbest] ;
-		assert(sort_idx!=NULL) ;
+		ASSERT(sort_idx!=NULL) ;
 		
 		INT i=0 ;
 		for (INT iter=0; iter<max_iter-1; iter++)
@@ -1464,8 +1464,8 @@ void CHMM::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int nbes
 			if (iter>max_best_iter)
 				max_best_iter=iter ;
 			
-			assert(k<nbest) ;
-			assert(iter<max_iter) ;
+			ASSERT(k<nbest) ;
+			ASSERT(iter<max_iter) ;
 			
 			PATHS(iter,n) = PATH_ENDS(iter-1, k) ;
 			short int q   = KTAB_ENDS(iter-1, k) ;
@@ -1584,7 +1584,7 @@ void CHMM::best_path_no_b_trans1(INT max_iter, INT &max_best_iter, REAL *prob, I
 		prob[0]=-sort_delta_end[0] ;
 			
 		max_best_iter=iter ;
-		assert(iter<max_iter) ;
+		ASSERT(iter<max_iter) ;
 			
 		my_path[iter] = path_ends[iter-1] ;
 		for (INT t = iter; t>0; t--)
@@ -5822,7 +5822,7 @@ bool CHMM::linear_train(bool right_align)
 
 		INT i,dim;
 
-		assert(p_observations->get_max_vector_length()<=get_N());
+		ASSERT(p_observations->get_max_vector_length()<=get_N());
 
 		for (i=0; i<histsize; i++)
 			hist[i]=0;
@@ -5837,7 +5837,7 @@ bool CHMM::linear_train(bool right_align)
 				INT len=0;
 				WORD* obs=p_observations->get_feature_vector(dim, len);
 
-				assert(len<=get_N());
+				ASSERT(len<=get_N());
 
 				startendhist[(get_N()-len)]++;
 
@@ -5870,7 +5870,7 @@ bool CHMM::linear_train(bool right_align)
 				INT len=0;
 				WORD* obs=p_observations->get_feature_vector(dim, len);
 
-				assert(len<=get_N());
+				ASSERT(len<=get_N());
 				for (i=0;i<len;i++)
 					hist[i*get_M() + *obs++]++;
 				
@@ -5898,7 +5898,7 @@ bool CHMM::linear_train(bool right_align)
 						set_a(i,j, 0);
 				}
 			}
-			assert(total==0) ;
+			ASSERT(total==0) ;
 		}
 
 		for (i=0;i<get_N();i++)

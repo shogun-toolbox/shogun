@@ -17,13 +17,13 @@ bool CGPBTSVM::train()
 	double     *solution;                     /* store the solution found       */
 	QPproblem  prob;                          /* object containing the solvers  */
 
-	assert(get_kernel());
-	assert(get_labels() && get_labels()->get_num_labels());
+	ASSERT(get_kernel());
+	ASSERT(get_labels() && get_labels()->get_num_labels());
 	int num_lab = 0;
 	int* lab=get_labels()->get_int_labels(num_lab);
 	prob.KER=new sKernel(get_kernel(), num_lab);
 	prob.y=lab;
-	assert(prob.KER);
+	ASSERT(prob.KER);
 	prob.ell=get_labels()->get_num_labels();
 	CIO::message(M_INFO, "%d trainlabels\n", prob.ell);
 

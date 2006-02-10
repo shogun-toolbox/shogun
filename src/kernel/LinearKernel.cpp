@@ -7,12 +7,10 @@ extern "C" {
 #endif
 
 #include "lib/common.h"
+#include "lib/io.h"
 #include "kernel/LinearKernel.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CLinearKernel::CLinearKernel(LONG size, bool do_rescale_, REAL scale_)
   : CRealKernel(size),scale(scale_),do_rescale(do_rescale_), normal(NULL)
@@ -71,6 +69,8 @@ void CLinearKernel::clear_normal()
 		normal = new REAL[num] ;
 	for (int i=0; i<num; i++)
 		normal[i]=0;
+
+	set_is_initialized(true);
 }
 
 void CLinearKernel::add_to_normal(INT idx, REAL weight) 
@@ -83,6 +83,8 @@ void CLinearKernel::add_to_normal(INT idx, REAL weight)
 		normal[i]+= weight*vec[i];
 
 	((CRealFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
+
+	set_is_initialized(true);
 }
   
 REAL CLinearKernel::compute(INT idx_a, INT idx_b)
@@ -93,7 +95,7 @@ REAL CLinearKernel::compute(INT idx_a, INT idx_b)
   double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
   double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   
-  assert(alen==blen);
+  ASSERT(alen==blen);
 
   INT ialen=(int) alen;
 
@@ -140,6 +142,8 @@ REAL CLinearKernel::compute_optimized(INT idx_b)
 	bool bfree;
 
 	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+
+	ASSERT(get_is_initialized());
 
 	int ialen=(int) blen;
 

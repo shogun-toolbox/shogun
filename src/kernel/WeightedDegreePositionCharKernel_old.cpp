@@ -1,10 +1,8 @@
 #include "lib/common.h"
+#include "lib/io.h"
 #include "kernel/WeightedDegreePositionCharKernel_old.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CWeightedDegreePositionCharKernel_old::CWeightedDegreePositionCharKernel_old(LONG size, REAL* w, INT d, 
 																	 INT max_mismatch_, INT * shift_, 
@@ -23,7 +21,7 @@ CWeightedDegreePositionCharKernel_old::CWeightedDegreePositionCharKernel_old(LON
 	weights=new REAL[d*(1+max_mismatch)];
 	counts = new INT[d*(1+max_mismatch)];
 
-	assert(weights!=NULL);
+	ASSERT(weights!=NULL);
 	for (INT i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
 
@@ -37,7 +35,7 @@ CWeightedDegreePositionCharKernel_old::CWeightedDegreePositionCharKernel_old(LON
 		if (shift[i]>max_shift)
 			max_shift = shift[i] ;
 	} ;
-	assert(max_shift>=0 && max_shift<=shift_len) ;
+	ASSERT(max_shift>=0 && max_shift<=shift_len) ;
 
 	length=0 ;
 	trees=NULL ;
@@ -172,7 +170,7 @@ bool CWeightedDegreePositionCharKernel_old::init(CFeatures* l, CFeatures* r, boo
 			delete[] sqrtdiag_lhs;
 			sqrtdiag_lhs=NULL ;
 			sqrtdiag_lhs= new REAL[lhs->get_num_vectors()];
-			assert(sqrtdiag_lhs) ;
+			ASSERT(sqrtdiag_lhs) ;
 			for (i=0; i<lhs->get_num_vectors(); i++)
 				sqrtdiag_lhs[i]=1;
 		}
@@ -182,14 +180,14 @@ bool CWeightedDegreePositionCharKernel_old::init(CFeatures* l, CFeatures* r, boo
 		else if (rhs_changed)
 		{
 			sqrtdiag_rhs= new REAL[rhs->get_num_vectors()];
-			assert(sqrtdiag_rhs) ;
+			ASSERT(sqrtdiag_rhs) ;
 
 			for (i=0; i<rhs->get_num_vectors(); i++)
 				sqrtdiag_rhs[i]=1;
 		}
 
-		assert(sqrtdiag_lhs);
-		assert(sqrtdiag_rhs);
+		ASSERT(sqrtdiag_lhs);
+		ASSERT(sqrtdiag_rhs);
 
 		if (lhs_changed)
 		{
@@ -332,8 +330,8 @@ REAL CWeightedDegreePositionCharKernel_old::compute2(INT idx_a, INT idx_b)
   CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
   // can only deal with strings of same length
-  assert(alen == blen);
-  assert(shift_len == alen) ;
+  ASSERT(alen == blen);
+  ASSERT(shift_len == alen) ;
 
   REAL sqrt_a= 1 ;
   REAL sqrt_b= 1 ;
@@ -629,8 +627,8 @@ REAL CWeightedDegreePositionCharKernel_old::compute(INT idx_a, INT idx_b)
   CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
   // can only deal with strings of same length
-  assert(alen == blen);
-  assert(shift_len == alen) ;
+  ASSERT(alen == blen);
+  ASSERT(shift_len == alen) ;
 
   REAL sqrt_a= 1 ;
   REAL sqrt_b= 1 ;
@@ -655,7 +653,7 @@ REAL CWeightedDegreePositionCharKernel_old::compute(INT idx_a, INT idx_b)
   result/=sqrt_both;
   
   //REAL result2 = compute2(idx_a,idx_b) ;
-  //assert(fabs(result-result2)<1e-6);
+  //ASSERT(fabs(result-result2)<1e-6);
   
   return result ;
   
@@ -666,7 +664,7 @@ void CWeightedDegreePositionCharKernel_old::add_example_to_tree(INT idx, REAL al
 	INT len ;
 	bool free ;
 	CHAR* char_vec=((CCharFeatures*) lhs)->get_feature_vector(idx, len, free);
-	assert(max_mismatch==0) ;
+	ASSERT(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
 
 	if (use_normalization)
@@ -706,11 +704,11 @@ void CWeightedDegreePositionCharKernel_old::add_example_to_tree(INT idx, REAL al
 				{
 					if (j==degree-1)
 					{
-						assert(!tree->has_floats) ;
+						ASSERT(!tree->has_floats) ;
 						tree->has_floats=true ;
 						for (INT k=0; k<4; k++)
 						{
-							assert(tree->childs[k]==NULL) ;
+							ASSERT(tree->childs[k]==NULL) ;
 							tree->child_weights[k] =0 ;
 						}
 						tree->child_weights[vec[i+j]] += alpha ;
@@ -718,9 +716,9 @@ void CWeightedDegreePositionCharKernel_old::add_example_to_tree(INT idx, REAL al
 					}
 					else
 					{
-						assert(!tree->has_floats) ;
+						ASSERT(!tree->has_floats) ;
 						tree->childs[vec[i+j]]=new struct SuffixTree ;
-						assert(tree->childs[vec[i+j]]!=NULL) ;
+						ASSERT(tree->childs[vec[i+j]]!=NULL) ;
 						tree=tree->childs[vec[i+j]] ;
 						for (INT k=0; k<4; k++)
 							tree->childs[k]=NULL ;
@@ -742,7 +740,7 @@ REAL CWeightedDegreePositionCharKernel_old::compute_by_tree(INT idx)
 	INT len ;
 	bool free ;
 	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
-	assert(max_mismatch==0) ;
+	ASSERT(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
 	
 	for (INT i=0; i<len; i++)
@@ -783,7 +781,7 @@ void CWeightedDegreePositionCharKernel_old::compute_by_tree(INT idx, REAL* Level
 	INT len ;
 	bool free ;
 	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
-	assert(max_mismatch==0) ;
+	ASSERT(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
 	
 	for (INT i=0; i<len; i++)
@@ -852,7 +850,7 @@ REAL *CWeightedDegreePositionCharKernel_old::compute_abs_weights(int &len)
 	for (INT i=0; i<seq_length-degree; i++)
 	{
 		struct SuffixTree *tree = trees[i] ;
-		assert(tree!=NULL) ;
+		ASSERT(tree!=NULL) ;
 		for (INT k=0; k<4; k++)
 			sum[i*4+k]=compute_abs_weights_tree(tree->childs[k]) ;
 	}

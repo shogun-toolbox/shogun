@@ -6,8 +6,6 @@
 #include "kernel/Kernel.h"
 #include "features/Features.h"
 
-#include <assert.h>
-
 class CCustomKernel: public CKernel
 {
  public:
@@ -61,8 +59,8 @@ class CCustomKernel: public CKernel
   /// in the corresponding feature object
   inline virtual REAL compute(INT row, INT col)
   {
-	  assert(row < num_rows);
-	  assert(col < num_cols);
+	  ASSERT(row < num_rows);
+	  ASSERT(col < num_cols);
 
 	  if (upper_diagonal)
 	  {

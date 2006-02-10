@@ -118,10 +118,14 @@ class CKernel
 		inline bool get_is_initialized() { return optimization_initialized; }
 		inline bool has_property(EKernelProperty p) { return (properties & p) != 0; }
 
+		inline EOptimizationType get_optimization_type() { return opt_type; }
+		inline void set_optimization_type(EOptimizationType t) { opt_type=t;}
+
 		bool is_optimizable();
 		virtual bool init_optimization(INT count, INT *IDX, REAL * weights); 
 		virtual bool delete_optimization();
 		virtual REAL compute_optimized(INT idx);
+		
 		
 		//add vector*factor to 'virtual' normal vector
 		virtual void add_to_normal(INT idx, REAL weight) ;
@@ -147,6 +151,7 @@ class CKernel
 		bool get_precompute_subkernel_matrix() { return precompute_subkernel_matrix ;  } ;
 		
 	protected:
+
 		inline void set_property(EKernelProperty p)
 		{
 			properties |= p;
@@ -163,6 +168,9 @@ class CKernel
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
 		virtual REAL compute(INT x, INT y)=0;
+
+		/// matrix precomputation
+		void do_precompute_matrix() ;
 
 		/**@ cache kernel evalutations to improve speed
 		 */
@@ -218,6 +226,10 @@ class CKernel
 		/// usually not applicable / faster
 		KERNELCACHE_ELEM* kernel_matrix;
 
+		SHORTREAL * precomputed_matrix ;
+		bool precompute_subkernel_matrix ;
+		bool precompute_matrix ;
+
 		/// feature vectors to occur on left hand side
 		CFeatures* lhs;
 		/// feature vectors to occur on right hand side
@@ -226,13 +238,10 @@ class CKernel
 		REAL combined_kernel_weight ;
 	
 		bool optimization_initialized ;
+		/// optimization type (currently FASTBUTMEMHUNGRY and SLOWBUTMEMEFFICIENT)
+		EOptimizationType opt_type;
 
 		ULONG  properties;
 
-		// matrix precomputation
-		bool precompute_matrix ;
-		bool precompute_subkernel_matrix ;
-		SHORTREAL * precomputed_matrix ;
-		void do_precompute_matrix() ;
 };
 #endif

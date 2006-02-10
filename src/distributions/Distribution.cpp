@@ -1,8 +1,6 @@
 #include "distributions/Distribution.h"
 #include "lib/Mathmatics.h"
 
-#include <assert.h>
-
 CDistribution::CDistribution() : features(NULL), pseudo_count(0)
 {
 }
@@ -14,7 +12,7 @@ CDistribution::~CDistribution()
 
 REAL CDistribution::get_log_likelihood_sample()
 {
-	assert(features);
+	ASSERT(features);
 
 	REAL sum=0;
 	for (INT i=0; i<features->get_num_vectors(); i++)
@@ -25,10 +23,10 @@ REAL CDistribution::get_log_likelihood_sample()
 
 REAL* CDistribution::get_log_likelihood_all_examples()
 {
-	assert(features);
+	ASSERT(features);
 
 	REAL* output=new REAL[features->get_num_vectors()];
-	assert(output);
+	ASSERT(output);
 
 	for (INT i=0; i<features->get_num_vectors(); i++)
 		output[i]=get_log_likelihood_example(i);

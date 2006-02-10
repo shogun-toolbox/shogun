@@ -73,7 +73,7 @@ DEFUN_DLD (gf, prhs, nlhs, "genefinder.")
 	if (!gui)
 		gui=new CTextGUI(0, NULL);
 
-	assert(gui);
+	ASSERT(gui);
 	if (!nrhs)
 		CIO::message(M_ERROR, "No input arguments supplied.");
 	else if (!prhs(0).is_string())

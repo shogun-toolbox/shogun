@@ -1,10 +1,8 @@
 #include "lib/common.h"
+#include "lib/io.h"
 #include "kernel/SimpleLocalityImprovedCharKernel.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CSimpleLocalityImprovedCharKernel::CSimpleLocalityImprovedCharKernel(LONG size, INT l, INT d1, INT d2)
   : CCharKernel(size),length(l),inner_degree(d1),outer_degree(d2),match(NULL), pyramid_weights(NULL)
@@ -81,7 +79,7 @@ bool CSimpleLocalityImprovedCharKernel::save_init(FILE* dest)
 	return false;
 }
   
-static void assert2 (const INT ok, const CHAR* const msg)
+static void ASSERT2 (const INT ok, const CHAR* const msg)
 {
    if (! ok) {
       CIO::message(M_ERROR, msg );
@@ -119,8 +117,8 @@ static REAL dot_pyr (const CHAR* const x1,
     }
   } 
   
-  assert2 ((DEGREE1 & ~0x7) == 0, "DEGREE1");
-  assert2 ((DEGREE2 & ~0x7) == 0, "DEGREE2");
+  ASSERT2 ((DEGREE1 & ~0x7) == 0, "DEGREE1");
+  ASSERT2 ((DEGREE2 & ~0x7) == 0, "DEGREE2");
   
   pyra_len  = NOF_NTS - PYRAL + 1 ;
   pyra_len2 = (int) pyra_len / 2 ;
@@ -182,7 +180,7 @@ REAL CSimpleLocalityImprovedCharKernel::compute(INT idx_a, INT idx_b)
   CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
   // can only deal with strings of same length
-  assert(alen==blen);
+  ASSERT(alen==blen);
 
   //  CIO::message("start: %ld %ld", avec, bvec) ;
   REAL dpt ; 

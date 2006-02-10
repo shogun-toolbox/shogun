@@ -27,7 +27,7 @@ extern CTextGUI* gui;
 CGUIPython::CGUIPython()
 {
 	import_libnumarray();
-	assert(libnumeric_API);
+	ASSERT(libnumeric_API);
 }
 
 CGUIPython::~CGUIPython()
@@ -338,7 +338,7 @@ PyObject* CGUIPython::py_get_features(PyObject* self, PyObject* args)
 										INT len=0;
 										bool free_vec;
 										REAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free_vec);
-										assert(len==num_feat);
+										ASSERT(len==num_feat);
 										for (INT j=0; j<num_feat; j++)
 											feat[((CRealFeatures*) f)->get_num_vectors()*j+i]= (double) vec[j];
 										((CRealFeatures*) f)->free_feature_vector(vec, i, free_vec);
@@ -861,7 +861,7 @@ CFeatures* CGUIPython::set_features(PyObject* arg)
 					// FIXME allow for other alphabets
 					features= new CCharFeatures(DNA, (LONG) 0);
 					CHAR* fm=new CHAR[num_vec*num_feat];
-					assert(fm);
+					ASSERT(fm);
 					for(int i=0; i<num_vec; i++)
 					{
 						for(int j=0; j<num_feat; j++)
@@ -887,7 +887,7 @@ CFeatures* CGUIPython::set_features(PyObject* arg)
 				{
 					features= new CRealFeatures((LONG) 0);
 					REAL* fm=new REAL[num_vec*num_feat];
-					assert(fm);
+					ASSERT(fm);
 					for(int i=0; i<num_vec; i++)
 					{
 						for(int j=0; j<num_feat; j++)

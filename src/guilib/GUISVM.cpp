@@ -13,8 +13,6 @@
 
 #include "classifier/svm/MPD.h"
 
-#include <assert.h>
-
 CGUISVM::CGUISVM(CGUI * gui_)
   : gui(gui_)
 {
@@ -225,15 +223,19 @@ bool CGUISVM::test(CHAR* param)
 	if ( (gui->guikernel.get_kernel()->is_optimizable()) && (gui->guikernel.get_kernel()->get_is_initialized()))
 		CIO::message(M_DEBUG, "using kernel optimization\n");
 
-	REAL* output= svm->test();
-
+	CLabels* outlab=svm->classify();
+	ASSERT(outlab);
+	
 	INT len=0;
+	REAL* output=outlab->get_labels(len);
+	delete outlab;
+
 	INT total=	testfeatures->get_num_vectors();
 	INT* label= testlabels->get_int_labels(len);
 
-	assert(label);
+	ASSERT(label);
 	CIO::message(M_DEBUG, "len:%d total:%d\n", len, total);
-	assert(len==total);
+	ASSERT(len==total);
 
 	gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);
 

@@ -3,7 +3,6 @@
 
 #include <sys/time.h>
 #include <time.h>
-#include <assert.h>
 
 #include "lib/common.h"
 #include "lib/io.h"

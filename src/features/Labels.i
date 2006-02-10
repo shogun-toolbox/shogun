@@ -51,7 +51,7 @@ class CLabels
 		{
 			if (labels && idx<num_labels)
 			{
-				assert(labels[idx]== ((REAL) ((INT) labels[idx])));
+				ASSERT(labels[idx]== ((REAL) ((INT) labels[idx])));
 				return ((INT) labels[idx]);
 			}
 			else

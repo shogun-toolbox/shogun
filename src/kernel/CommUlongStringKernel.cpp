@@ -3,10 +3,8 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-#include <assert.h>
-
 CCommUlongStringKernel::CCommUlongStringKernel(LONG size, bool use_sign_, 
-											 E_NormalizationType normalization_) 
+											 ENormalizationType normalization_) 
   : CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
 	use_sign(use_sign_), normalization(normalization_)
 {
@@ -74,8 +72,8 @@ bool CCommUlongStringKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			sqrtdiag_rhs[i]=1;
 	}
 
-	assert(sqrtdiag_lhs);
-	assert(sqrtdiag_rhs);
+	ASSERT(sqrtdiag_lhs);
+	ASSERT(sqrtdiag_rhs);
 
 	this->lhs=(CStringFeatures<ULONG>*) l;
 	this->rhs=(CStringFeatures<ULONG>*) l;
@@ -204,17 +202,17 @@ REAL CCommUlongStringKernel::compute(INT idx_a, INT idx_b)
 	{
 		switch (normalization)
 		{
-			case E_NO_NORMALIZATION:
+			case NO_NORMALIZATION:
 				return result;
-			case E_SQRT_NORMALIZATION:
+			case SQRT_NORMALIZATION:
 				return result/sqrt(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
-			case E_FULL_NORMALIZATION:
+			case FULL_NORMALIZATION:
 				return result/(sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]);
-			case E_SQRTLEN_NORMALIZATION:
+			case SQRTLEN_NORMALIZATION:
 				return result/sqrt(sqrt(alen*blen));
-			case E_LEN_NORMALIZATION:
+			case LEN_NORMALIZATION:
 				return result/sqrt(alen*blen);
-			case E_SQLEN_NORMALIZATION:
+			case SQLEN_NORMALIZATION:
 				return result/(alen*blen);
 			default:
 				CIO::message(M_ERROR, "Unknown Normalization in use!\n");
@@ -400,17 +398,17 @@ REAL CCommUlongStringKernel::compute_optimized(INT i)
 
 		switch (normalization)
 		{
-			case E_NO_NORMALIZATION:
+			case NO_NORMALIZATION:
 				return result;
-			case E_SQRT_NORMALIZATION:
+			case SQRT_NORMALIZATION:
 				return result/sqrt(sqrtdiag_rhs[i]);
-			case E_FULL_NORMALIZATION:
+			case FULL_NORMALIZATION:
 				return result/sqrtdiag_rhs[i];
-			case E_SQRTLEN_NORMALIZATION:
+			case SQRTLEN_NORMALIZATION:
 				return result/sqrt(sqrt(alen));
-			case E_LEN_NORMALIZATION:
+			case LEN_NORMALIZATION:
 				return result/sqrt(alen);
-			case E_SQLEN_NORMALIZATION:
+			case SQLEN_NORMALIZATION:
 				return result/alen;
 			default:
 				CIO::message(M_ERROR, "Unknown Normalization in use!\n");

@@ -1,10 +1,8 @@
 #include "lib/common.h"
+#include "lib/io.h"
 #include "kernel/PolyMatchCharKernel.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CPolyMatchCharKernel::CPolyMatchCharKernel(LONG size, INT d, bool inhom, bool use_norm)
   : CCharKernel(size),degree(d),inhomogene(inhom),
@@ -46,8 +44,8 @@ bool CPolyMatchCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 				sqrtdiag_rhs[i]=1;
 		}
 
-		assert(sqrtdiag_lhs);
-		assert(sqrtdiag_rhs);
+		ASSERT(sqrtdiag_lhs);
+		ASSERT(sqrtdiag_rhs);
 
 		this->lhs=(CCharFeatures*) l;
 		this->rhs=(CCharFeatures*) l;
@@ -119,7 +117,7 @@ REAL CPolyMatchCharKernel::compute(INT idx_a, INT idx_b)
   CHAR* avec=((CCharFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
   CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   
-  assert(alen==blen);
+  ASSERT(alen==blen);
 
   REAL sqrt_a= 1 ;
   REAL sqrt_b= 1 ;

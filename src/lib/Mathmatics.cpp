@@ -13,7 +13,6 @@
 #include <math.h>
 #include <time.h>
 #include <unistd.h>
-#include <assert.h>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -363,7 +362,7 @@ REAL* CMath::pinv(REAL* matrix, INT rows, INT cols, REAL* target)
 	if (!target)
 		target= new REAL[rows*cols];
 
-	assert(target);
+	ASSERT(target);
 
 
 	//svd

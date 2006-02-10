@@ -1,5 +1,4 @@
 #include <string.h>
-#include <assert.h>
 
 #include "lib/File.h"
 #include "lib/SimpleFile.h"
@@ -49,7 +48,7 @@ CFile::~CFile()
 
 INT* CFile::load_int_data(INT* target, long& num)
 {
-	assert(expected_type==F_INT);
+	ASSERT(expected_type==F_INT);
 	CSimpleFile<INT> f(fname, file);
 	target=f.load(target, num);
 	status=(target!=NULL);
@@ -58,7 +57,7 @@ INT* CFile::load_int_data(INT* target, long& num)
 
 bool CFile::save_int_data(INT* src, LONG num)
 {
-	assert(expected_type==F_INT);
+	ASSERT(expected_type==F_INT);
 	CSimpleFile<INT> f(fname, file);
 	status=f.save(src, num);
 	return status;
@@ -66,7 +65,7 @@ bool CFile::save_int_data(INT* src, LONG num)
 
 REAL* CFile::load_real_data(REAL* target, long& num)
 {
-	assert(expected_type==F_REAL);
+	ASSERT(expected_type==F_REAL);
 	CSimpleFile<REAL> f(fname, file);
 	target=f.load(target, num);
 	status=(target!=NULL);
@@ -75,7 +74,7 @@ REAL* CFile::load_real_data(REAL* target, long& num)
 
 bool CFile::save_real_data(REAL* src, LONG num)
 {
-	assert(expected_type==F_REAL);
+	ASSERT(expected_type==F_REAL);
 	CSimpleFile<REAL> f(fname, file);
 	status=f.save(src, num);
 	return status;
@@ -83,7 +82,7 @@ bool CFile::save_real_data(REAL* src, LONG num)
 
 CHAR* CFile::load_char_data(CHAR* target, long& num)
 {
-	assert(expected_type==F_CHAR);
+	ASSERT(expected_type==F_CHAR);
 	CSimpleFile<CHAR> f(fname, file);
 	target=f.load(target, num);
 	status=(target!=NULL);
@@ -92,7 +91,7 @@ CHAR* CFile::load_char_data(CHAR* target, long& num)
 
 bool CFile::save_char_data(CHAR* src, LONG num)
 {
-	assert(expected_type==F_CHAR);
+	ASSERT(expected_type==F_CHAR);
 	CSimpleFile<CHAR> f(fname, file);
 	status=f.save(src, num);
 	return status;
@@ -100,7 +99,7 @@ bool CFile::save_char_data(CHAR* src, LONG num)
 
 BYTE* CFile::load_byte_data(BYTE* target, long& num)
 {
-	assert(expected_type==F_BYTE);
+	ASSERT(expected_type==F_BYTE);
 	CSimpleFile<BYTE> f(fname, file);
 	target=f.load(target, num);
 	status=(target!=NULL);
@@ -109,7 +108,7 @@ BYTE* CFile::load_byte_data(BYTE* target, long& num)
 
 bool CFile::save_byte_data(BYTE* src, LONG num)
 {
-	assert(expected_type==F_BYTE);
+	ASSERT(expected_type==F_BYTE);
 	CSimpleFile<BYTE> f(fname, file);
 	status=f.save(src, num);
 	return status;
@@ -117,7 +116,7 @@ bool CFile::save_byte_data(BYTE* src, LONG num)
 
 WORD* CFile::load_word_data(WORD* target, long& num)
 {
-	assert(expected_type==F_WORD);
+	ASSERT(expected_type==F_WORD);
 	CSimpleFile<WORD> f(fname, file);
 	target=f.load(target, num);
 	status=(target!=NULL);
@@ -126,7 +125,7 @@ WORD* CFile::load_word_data(WORD* target, long& num)
 
 bool CFile::save_word_data(WORD* src, LONG num)
 {
-	assert(expected_type==F_WORD);
+	ASSERT(expected_type==F_WORD);
 	CSimpleFile<WORD> f(fname, file);
 	status=f.save(src, num);
 	return status;
@@ -134,7 +133,7 @@ bool CFile::save_word_data(WORD* src, LONG num)
 
 SHORT* CFile::load_short_data(SHORT* target, long& num)
 {
-	assert(expected_type==F_SHORT);
+	ASSERT(expected_type==F_SHORT);
 	CSimpleFile<SHORT> f(fname, file);
 	target=f.load(target, num);
 	status=(target!=NULL);
@@ -143,7 +142,7 @@ SHORT* CFile::load_short_data(SHORT* target, long& num)
 
 bool CFile::save_short_data(SHORT* src, LONG num)
 {
-	assert(expected_type==F_SHORT);
+	ASSERT(expected_type==F_SHORT);
 	CSimpleFile<SHORT> f(fname, file);
 	status=f.save(src, num);
 	return status;
@@ -162,7 +161,7 @@ INT parse_next_header(EFeatureType &type)
 
 bool CFile::read_header()
 {
-    assert(file!=NULL);
+    ASSERT(file!=NULL);
     UINT intlen=0;
     UINT endian=0;
     UINT fourcc=0;

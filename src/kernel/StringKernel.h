@@ -26,8 +26,8 @@ template <class ST> class CStringKernel : public CKernel
 		{
 			CKernel::init(l,r,do_init);
 
-			assert(l->get_feature_class() == C_STRING);
-			assert(r->get_feature_class() == C_STRING);
+			ASSERT(l->get_feature_class() == C_STRING);
+			ASSERT(r->get_feature_class() == C_STRING);
 
 			return true;
 		}

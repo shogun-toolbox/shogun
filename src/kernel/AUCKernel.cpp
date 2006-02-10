@@ -5,8 +5,6 @@
 #include "features/WordFeatures.h"
 #include "lib/io.h"
 
-#include <assert.h>
-
 CAUCKernel::CAUCKernel(INT size, CKernel * subkernel_)
 	: CWordKernel(size),subkernel(subkernel_)
 {
@@ -46,10 +44,10 @@ REAL CAUCKernel::compute(INT idx_a, INT idx_b)
   WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
   WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  assert(alen==2);
-  assert(blen==2);
+  ASSERT(alen==2);
+  ASSERT(blen==2);
 
-  assert(subkernel!=NULL) ;
+  ASSERT(subkernel!=NULL) ;
   REAL k11,k12,k21,k22 ;
   INT idx_a1=avec[0], idx_a2=avec[1], idx_b1=bvec[0], idx_b2=bvec[1] ;
   

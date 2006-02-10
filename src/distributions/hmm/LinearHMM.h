@@ -30,7 +30,7 @@ class CLinearHMM : private CDistribution
 
 		virtual inline REAL get_derivative_obsolete(WORD* vector, INT len, INT pos)
 		{
-			assert(pos<len);
+			ASSERT(pos<len);
 			return get_likelihood_example(vector, len)/hist[pos*num_symbols+vector[pos]];
 		}
 
@@ -47,8 +47,8 @@ class CLinearHMM : private CDistribution
 
 		inline REAL get_log_model_parameter(INT param_num)
 		{
-			assert(log_hist);
-			assert(param_num<num_params);
+			ASSERT(log_hist);
+			ASSERT(param_num<num_params);
 
 			return log_hist[param_num];
 		}

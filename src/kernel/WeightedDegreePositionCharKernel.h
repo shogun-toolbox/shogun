@@ -15,12 +15,6 @@
 class CWeightedDegreePositionCharKernel: public CCharKernel
 {
 public:
-	enum EOptimizationType
-	{
-		WD_FASTBUTMEMHUNGRY,
-		WD_SLOWBUTMEMEFFICIENT
-	};
-
 	struct Trie
 	{
 		float weight;
@@ -254,7 +248,6 @@ protected:
 	struct Trie **trees ;
 	bool tree_initialized ;
 
-	EOptimizationType opt_type;
 	bool use_normalization ;
 	BYTE* acgt;
 
@@ -276,7 +269,7 @@ inline REAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 		return sum;
 
 	struct Trie *tree = trees[tree_pos] ;
-	assert(tree!=NULL) ;
+	ASSERT(tree!=NULL) ;
 
 	if (length==0) // weights is a vector (1 x degree)
 	{
@@ -352,7 +345,7 @@ inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 		REAL* LevelContrib, REAL factor) 
 {
 	struct Trie *tree = trees[tree_pos] ;
-	assert(tree!=NULL) ;
+	ASSERT(tree!=NULL) ;
 	if (factor==0)
 		return ;
 

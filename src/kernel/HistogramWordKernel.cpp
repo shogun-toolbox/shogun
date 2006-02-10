@@ -5,8 +5,6 @@
 #include "classifier/PluginEstimate.h"
 #include "lib/io.h"
 
-#include <assert.h>
-
 CHistogramWordKernel::CHistogramWordKernel(LONG size, CPluginEstimate* pie)
   : CWordKernel(size),estimate(pie), mean(NULL), variance(NULL), 
     sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), 
@@ -35,13 +33,13 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	bool result=CWordKernel::init(l,r,do_init);
 	initialized = false ;
-	assert(l!=NULL) ;
-	assert(r!=NULL) ;
+	ASSERT(l!=NULL) ;
+	ASSERT(r!=NULL) ;
 
 	CWordFeatures* lhs=(CWordFeatures*) l;
 	CWordFeatures* rhs=(CWordFeatures*) r;
-	assert(lhs) ;
-	assert(rhs) ;
+	ASSERT(lhs) ;
+	ASSERT(rhs) ;
 	
 	CIO::message(M_DEBUG, "init: lhs: %ld   rhs: %ld\n", lhs, rhs) ;
 	INT i;
@@ -90,8 +88,8 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	REAL *l_ld_mean_lhs = ld_mean_lhs ;
 	REAL *l_ld_mean_rhs = ld_mean_rhs ;
 	
-	assert(sqrtdiag_lhs);
-	assert(sqrtdiag_rhs);
+	ASSERT(sqrtdiag_lhs);
+	ASSERT(sqrtdiag_rhs);
 	
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
 	if (do_init)
@@ -122,8 +120,8 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	    mean= new REAL[num_params];
 	    variance= new REAL[num_params];
 	    
-	    assert(mean);
-	    assert(variance);
+	    ASSERT(mean);
+	    ASSERT(variance);
 	    
 	    
 	    for (i=0; i<num_params; i++)
@@ -143,7 +141,7 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			
 			mean[0]+=estimate->posterior_log_odds_obsolete(vec, len)/num_vectors;
 			
-			assert(len==lhs->get_num_features());
+			ASSERT(len==lhs->get_num_features());
 			
 			for (INT j=0; j<len; j++)
 			{
@@ -165,7 +163,7 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			
 			variance[0] += CMath::sq(estimate->posterior_log_odds_obsolete(vec, len)-mean[0])/num_vectors;
 			
-			assert(len==lhs->get_num_features());
+			ASSERT(len==lhs->get_num_features());
 			
 			for (INT j=0; j<len; j++)
 			{
@@ -361,7 +359,7 @@ REAL CHistogramWordKernel::compute(INT idx_a, INT idx_b)
   WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
   // can only deal with strings of same length
-  assert(alen==blen);
+  ASSERT(alen==blen);
 
   double result = plo_lhs[idx_a]*plo_rhs[idx_b]/variance[0];
   result+= sum_m2_s2 ; // does not contain 0-th element
@@ -391,7 +389,7 @@ REAL CHistogramWordKernel::compute(INT idx_a, INT idx_b)
   if (fabs(result - result2)>1e-10)
     {
       fprintf(stderr, "new=%e  old = %e  diff = %e\n", result, result2, result - result2) ;
-      assert(0) ;
+      ASSERT(0) ;
     } ;
 #endif
   return result;
@@ -410,7 +408,7 @@ REAL CHistogramWordKernel::compute_slow(INT idx_a, INT idx_b)
   WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
   // can only deal with strings of same length
-  // assert(alen==blen);
+  // ASSERT(alen==blen);
 
   double result=(estimate->posterior_log_odds_obsolete(avec, alen)-mean[0])*
     (estimate->posterior_log_odds_obsolete(bvec, blen)-mean[0])/(variance[0]);

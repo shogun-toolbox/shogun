@@ -5,7 +5,6 @@
 #include "lib/io.h"
 #include "lib/Mathmatics.h"
 
-#include <assert.h>
 CPruneVarSubMean::CPruneVarSubMean(bool divide)
   : CRealPreProc("PruneVarSubMean","PVSM"), idx(NULL), mean(NULL), std(NULL), num_idx(0), divide_by_std(divide), initialized(false)
 {
@@ -21,8 +20,8 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 {
 	if (!initialized)
 	{
-		assert(p_f->get_feature_class() == C_SIMPLE);
-		assert(p_f->get_feature_type() == F_REAL);
+		ASSERT(p_f->get_feature_class() == C_SIMPLE);
+		ASSERT(p_f->get_feature_type() == F_REAL);
 
 		CRealFeatures *f=(CRealFeatures*) p_f ;
 		INT num_examples=f->get_num_vectors() ;
@@ -128,7 +127,7 @@ void CPruneVarSubMean::cleanup()
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
 REAL* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
 {
-	assert(initialized);
+	ASSERT(initialized);
 
     INT num_vectors=0;
     INT num_features=0;
@@ -199,8 +198,8 @@ bool CPruneVarSubMean::load_init_data(FILE* src)
 	INT divide=0;
 	
 
-    assert(fread(&divide, sizeof(int), 1, src)==1) ;
-    assert(fread(&num_idx, sizeof(int), 1, src)==1) ;
+    ASSERT(fread(&divide, sizeof(int), 1, src)==1) ;
+    ASSERT(fread(&num_idx, sizeof(int), 1, src)==1) ;
 	CIO::message(M_INFO, "divide:%d num_idx:%d\n", divide, num_idx);
 	delete[] mean;
 	delete[] idx;
@@ -208,10 +207,10 @@ bool CPruneVarSubMean::load_init_data(FILE* src)
 	idx=new int[num_idx];
 	mean=new REAL[num_idx];
 	std=new REAL[num_idx];
-	assert (mean!=NULL && idx!=NULL && std!=NULL);
-    assert(fread(idx, sizeof(int), num_idx, src)==(UINT) num_idx) ;
-    assert(fread(mean, sizeof(REAL), num_idx, src)==(UINT) num_idx) ;
-    assert(fread(std, sizeof(REAL), num_idx, src)==(UINT) num_idx) ;
+	ASSERT (mean!=NULL && idx!=NULL && std!=NULL);
+    ASSERT(fread(idx, sizeof(int), num_idx, src)==(UINT) num_idx) ;
+    ASSERT(fread(mean, sizeof(REAL), num_idx, src)==(UINT) num_idx) ;
+    ASSERT(fread(std, sizeof(REAL), num_idx, src)==(UINT) num_idx) ;
 	result=true;
 	divide_by_std=(divide==1);
 	initialized=true;

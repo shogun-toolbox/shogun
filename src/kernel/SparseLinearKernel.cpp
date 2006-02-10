@@ -1,13 +1,10 @@
 #include "lib/common.h"
-#include "kernel/SparseLinearKernel.h"
+#include "lib/io.h"
 #include "features/Features.h"
 #include "features/SparseRealFeatures.h"
 #include "features/SparseFeatures.h"
+#include "kernel/SparseLinearKernel.h"
 #include "kernel/SparseKernel.h"
-#include "lib/io.h"
-
-#include <assert.h>
-
 
 CSparseLinearKernel::CSparseLinearKernel(LONG size, bool do_rescale_, REAL scale_)
   : CSparseRealKernel(size),scale(scale_),do_rescale(do_rescale_), normal_length(0), normal(NULL)

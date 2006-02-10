@@ -14,11 +14,11 @@ CKNN::~CKNN()
 
 bool CKNN::train()
 {
-	assert(CKernelMachine::get_labels());
+	ASSERT(CKernelMachine::get_labels());
 	train_labels=CKernelMachine::get_labels()->get_int_labels(num_train_labels);
 
-	assert(train_labels);
-	assert(num_train_labels>0);
+	ASSERT(train_labels);
+	ASSERT(num_train_labels>0);
 
 	int max_class=train_labels[0];
 	int min_class=train_labels[0];
@@ -42,9 +42,9 @@ bool CKNN::train()
 
 REAL* CKNN::test()
 {
-	assert(CKernelMachine::get_kernel());
-	assert(CKernelMachine::get_labels());
-	assert(CKernelMachine::get_labels()->get_num_labels());
+	ASSERT(CKernelMachine::get_kernel());
+	ASSERT(CKernelMachine::get_labels());
+	ASSERT(CKernelMachine::get_labels()->get_num_labels());
 
 	int num_lab=CKernelMachine::get_labels()->get_num_labels();
 	CKernel* kernel=CKernelMachine::get_kernel();
@@ -57,10 +57,10 @@ REAL* CKNN::test()
 	INT* classes=new INT[num_classes];
 	REAL* output=new REAL[num_lab];
 
-	assert(dists);
-	assert(train_lab);
-	assert(output);
-	assert(classes);
+	ASSERT(dists);
+	ASSERT(train_lab);
+	ASSERT(output);
+	ASSERT(classes);
 
 	CIO::message(M_INFO, "%d test examples\n", num_lab);
 	for (int i=0; i<num_lab; i++)

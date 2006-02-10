@@ -1,5 +1,4 @@
 #include <unistd.h>
-#include <assert.h>
 #include "lib/common.h"
 #include "guilib/GUIHMM.h"
 #include "gui/GUI.h"
@@ -461,7 +460,7 @@ bool CGUIHMM::one_class_test(CHAR* param)
 			working->set_observations(obs);
 
 			INT total=obs->get_num_vectors();
-			assert(lab && total == lab->get_num_labels());
+			ASSERT(lab && total == lab->get_num_labels());
 
 			REAL* output = new REAL[total];	
 			INT* label= new INT[total];	
@@ -628,12 +627,12 @@ bool CGUIHMM::hmm_test(CHAR* param)
 			CStringFeatures<WORD>* old_pos=pos->get_observations();
 			CStringFeatures<WORD>* old_neg=neg->get_observations();
 
-			assert(o);
+			ASSERT(o);
 			pos->set_observations(o);
 			neg->set_observations(o);
 
 			INT total=o->get_num_vectors();
-			assert(lab && total==lab->get_num_labels());
+			ASSERT(lab && total==lab->get_num_labels());
 
 			REAL* output = new REAL[total];	
 			INT* label= new INT[total];	
@@ -684,7 +683,7 @@ CLabels* CGUIHMM::classify(CLabels* result)
 	//CStringFeatures<WORD>* old_pos=pos->get_observations();
 	//CStringFeatures<WORD>* old_neg=neg->get_observations();
 
-	assert(obs!=NULL);
+	ASSERT(obs!=NULL);
 	pos->set_observations(obs);
 	neg->set_observations(obs);
 
@@ -703,7 +702,7 @@ REAL CGUIHMM::classify_example(INT idx)
 	//CStringFeatures<WORD>* old_pos=pos->get_observations();
 	//CStringFeatures<WORD>* old_neg=neg->get_observations();
 
-	assert(obs!=NULL);
+	ASSERT(obs!=NULL);
 	pos->set_observations(obs);
 	neg->set_observations(obs);
 
@@ -721,11 +720,11 @@ CLabels* CGUIHMM::one_class_classify(CLabels* result)
 	if (!result)
 	  result=new CLabels(num_vec);
 
-	assert(working);
+	ASSERT(working);
 
 	//CStringFeatures<WORD>* old_pos=working->get_observations();
 
-	assert(obs!=NULL);
+	ASSERT(obs!=NULL);
 	working->set_observations(obs);
 
 
@@ -746,10 +745,10 @@ CLabels* CGUIHMM::linear_one_class_classify(CLabels* result)
 
 	//CStringFeatures<WORD>* old_pos=working->get_observations();
 
-	assert(obs!=NULL);
+	ASSERT(obs!=NULL);
 	working->set_observations(obs);
 
-	assert(working);
+	ASSERT(working);
 
 	for (INT i=0; i<num_vec; i++)
 		result->set_label(i, working->linear_model_probability(i));
@@ -765,11 +764,11 @@ REAL CGUIHMM::one_class_classify_example(INT idx)
 
 	//CStringFeatures<WORD>* old_pos=pos->get_observations();
 
-	assert(obs!=NULL);
+	ASSERT(obs!=NULL);
 	pos->set_observations(obs);
 	neg->set_observations(obs);
 
-	assert(working);
+	ASSERT(working);
 	REAL result=working->model_probability(idx);
 	//working->set_observations(old_pos);
 	return result;
@@ -801,7 +800,7 @@ bool CGUIHMM::append_model(CHAR* param)
 
 					REAL* cur_o=new REAL[h->get_M()];
 					REAL* app_o=new REAL[h->get_M()];
-					assert(cur_o != NULL && app_o != NULL);
+					ASSERT(cur_o != NULL && app_o != NULL);
 
 					CIO::message(M_DEBUG, "h %d , M: %d\n", h, h->get_M());
 
@@ -1130,7 +1129,7 @@ bool CGUIHMM::save_path(CHAR* param)
 		  //else
 		  CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
 
-		  assert(obs!=NULL);
+		  ASSERT(obs!=NULL);
 		  working->set_observations(obs);
 		  
 		  result=working->save_path(file);

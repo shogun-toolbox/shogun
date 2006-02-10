@@ -15,7 +15,7 @@ CShortFeatures::CShortFeatures(CHAR* fname) : CSimpleFeatures<SHORT>(fname)
 
 bool CShortFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT order)
 {
-	assert(cf);
+	ASSERT(cf);
 
 	num_vectors=cf->get_num_vectors();
 	num_features=cf->get_num_features();
@@ -23,15 +23,15 @@ bool CShortFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT
 	INT len=num_vectors*num_features;
 	delete[] feature_matrix;
 	feature_matrix=new SHORT[len];
-	assert(feature_matrix);
+	ASSERT(feature_matrix);
 
 	INT num_cf_feat;
 	INT num_cf_vec;
 
 	CHAR* fm=cf->get_feature_matrix(num_cf_feat, num_cf_vec);
 
-	assert(num_cf_vec==num_vectors);
-	assert(num_cf_feat==num_features);
+	ASSERT(num_cf_vec==num_vectors);
+	ASSERT(num_cf_feat==num_features);
 
 	INT max_val=0;
 	for (INT i=0; i<len; i++)

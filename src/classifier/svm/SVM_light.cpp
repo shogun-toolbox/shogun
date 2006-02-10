@@ -17,7 +17,6 @@
 #include "kernel/CombinedKernel.h"
 #include "kernel/AUCKernel.h"
 
-#include <assert.h>
 #include <unistd.h>
 
 
@@ -252,9 +251,9 @@ bool CSVMLight::setup_auc_maximization()
 	// get the original labels
 	INT num=0;
 	CLabels* lab = get_labels();
-	assert(lab!=NULL);
+	ASSERT(lab!=NULL);
 	INT* labels=lab->get_int_labels(num);
-	assert(get_kernel()->get_rhs()->get_num_vectors() == num) ;
+	ASSERT(get_kernel()->get_rhs()->get_num_vectors() == num) ;
 	
 	// count positive and negative
 	INT num_pos = 0 ;
@@ -290,7 +289,7 @@ bool CSVMLight::setup_auc_maximization()
 						labels_auc[n] = -1 ;
 					}
 					n++ ;
-					assert(n<=num_auc) ;
+					ASSERT(n<=num_auc) ;
 				}
 
 	// create label object and attach it to svm
@@ -424,7 +423,7 @@ bool CSVMLight::train()
 		for (INT n=0; n<num_precomputed_subkernels; n++)
 		{
 			precomputed_subkernels[n]=new SHORTREAL[num*(num+1)/2] ;
-			assert(precomputed_subkernels[n]!=NULL) ;
+			ASSERT(precomputed_subkernels[n]!=NULL) ;
 		}
 		
 		for (INT n=0; n<num_precomputed_subkernels; n++)
@@ -506,9 +505,9 @@ void CSVMLight::svm_learn()
 	LONG trainpos=0, trainneg=0 ;
 	INT totdoc=0;
 	CLabels* lab=CKernelMachine::get_labels();
-	assert(lab!=NULL);
+	ASSERT(lab!=NULL);
 	INT* label=lab->get_int_labels(totdoc);
-	assert(label!=NULL);
+	ASSERT(label!=NULL);
 	LONG* docs=new long[totdoc];
 	delete[] W;
 	W=NULL;
@@ -1211,7 +1210,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(LONG* docs, INT* labe
 		qp->opt_g0[i]=lin[key[i]];
 	}
 	
-	assert(CParallel::get_num_threads()>1) ;
+	ASSERT(CParallel::get_num_threads()>1) ;
 	INT *KI=new INT[varnum*varnum] ;
 	INT *KJ=new INT[varnum*varnum] ;
 	INT Knum=0 ;
@@ -1229,7 +1228,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(LONG* docs, INT* labe
 			Knum++ ;
 		}
 	}
-	assert(Knum<=varnum*(varnum+1)/2) ;
+	ASSERT(Knum<=varnum*(varnum+1)/2) ;
 	
 	pthread_t threads[CParallel::get_num_threads()-1];
 	S_THREAD_PARAM_KERNEL params[CParallel::get_num_threads()-1];
@@ -1565,15 +1564,15 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 	INT num_kernels = k->get_num_subkernels() ;
 	const REAL* w   = k->get_subkernel_weights(num_weights);
 
-	assert(num_weights==num_kernels) ;
+	ASSERT(num_weights==num_kernels) ;
 	REAL* sumw = new REAL[num_kernels];
 
 	if (use_precomputed_subkernels) // everything is already precomputed
 	{
-		assert(precomputed_subkernels!=NULL) ;
+		ASSERT(precomputed_subkernels!=NULL) ;
 		for (INT n=0; n<num_kernels; n++)
 		{
-			assert(precomputed_subkernels[n]!=NULL) ;
+			ASSERT(precomputed_subkernels[n]!=NULL) ;
 			SHORTREAL * matrix = precomputed_subkernels[n] ;
 			for(INT i=0;i<num;i++) 
 			{
@@ -1934,7 +1933,7 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 	INT num_kernels = k->get_num_subkernels() ;
 	const REAL* w   = k->get_subkernel_weights(num_weights);
 	
-	assert(num_weights==num_kernels) ;
+	ASSERT(num_weights==num_kernels) ;
 	REAL* sumw = new REAL[num_kernels];
 	{
 		REAL* w_backup = new REAL[num_kernels] ;

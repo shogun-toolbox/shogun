@@ -1,7 +1,6 @@
 #ifndef _COMBINEDKERNEL_H___
 #define _COMBINEDKERNEL_H___
 
-#include <assert.h>
 #include "lib/List.h"
 #include "kernel/Kernel.h"
 #include "lib/io.h"
@@ -76,7 +75,7 @@ class CCombinedKernel : public CKernel
 
 		inline CKernel* get_next_kernel(const CKernel* current)
 		{
-			assert(kernel_list->get_current_element()==current) ;
+			ASSERT(kernel_list->get_current_element()==current) ;
 			return kernel_list->get_next_element();
 		}
 
@@ -144,6 +143,8 @@ class CCombinedKernel : public CKernel
 		virtual void compute_by_subkernel(INT idx, REAL * subkernel_contrib);
 		virtual const REAL* get_subkernel_weights(INT& num_weights);
 		virtual void set_subkernel_weights(REAL* weights, INT num_weights);
+
+		virtual void set_optimization_type(EOptimizationType t);
 
 		virtual void set_precompute_matrix(bool flag, bool subkernel_flag) 
 		{ 

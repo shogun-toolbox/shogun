@@ -26,11 +26,11 @@ bool CCPLEXSVM::train()
 		INT num_label=0;
 		REAL* y = lab->get_labels(num_label);
 		REAL* H = kernel->get_kernel_matrix_real(m, n, NULL);
-		assert(n>0 && n==m && n==num_label);
+		ASSERT(n>0 && n==m && n==num_label);
 		REAL* alphas=new REAL[n];
 		REAL* lb=new REAL[n];
 		REAL* ub=new REAL[n];
-		assert(lb && ub);
+		ASSERT(lb && ub);
 
 		//hessian y'y.*K
 		for (int i=0; i<n; i++)

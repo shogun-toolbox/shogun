@@ -64,6 +64,7 @@ static const CHAR* N_SET_KERNEL=		"set_kernel";
 static const CHAR* N_ADD_KERNEL=		"add_kernel";
 static const CHAR* N_CLEAN_KERNEL=		"clean_kernel";
 static const CHAR* N_RESIZE_KERNEL_CACHE=		"resize_kernel_cache";
+static const CHAR* N_SET_KERNEL_OPTIMIZATION_TYPE=		"set_kernel_optimization_type";
 static const CHAR* N_ATTACH_PREPROC=	"attach_preproc";
 static const CHAR* N_ADD_PREPROC=		"add_preproc";
 static const CHAR* N_DEL_PREPROC=		"del_preproc";
@@ -554,6 +555,10 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_SVM_TRAIN, strlen(N_SVM_TRAIN)))
 	{
 		guisvm.train(input+strlen(N_SVM_TRAIN), false);
+	} 
+	else if (!strncmp(input, N_SET_KERNEL_OPTIMIZATION_TYPE, strlen(N_SET_KERNEL_OPTIMIZATION_TYPE)))
+	{
+		guikernel.set_optimization_type(input+strlen(N_SET_KERNEL_OPTIMIZATION_TYPE));
 	} 
 	else if (!strncmp(input, N_SET_KERNEL, strlen(N_SET_KERNEL)))
 	{

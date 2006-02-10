@@ -15,7 +15,6 @@
 #include "distributions/Distribution.h"
 
 #include <stdio.h>
-#include <assert.h>
 
 #ifdef USE_HMMPARALLEL
 #define USE_HMMPARALLEL_STRUCTURES 1
@@ -475,7 +474,7 @@ public:
 		else if (param_num<N*(N+2+M))
 			return observation_matrix_b[param_num-N*(N+2)];
 
-		assert(false);
+		ASSERT(false);
 		return -1;
 	}
 
@@ -500,7 +499,7 @@ public:
 			return model_derivative_b(i,j, k);
 		}
 
-		assert(false);
+		ASSERT(false);
 		return -1;
 	}
 
@@ -620,7 +619,7 @@ public:
 	    WORD* o=p_observations->get_feature_vector(dimension, len);
 	    REAL* obs_b=observation_matrix_b;
 
-		assert(N==len);
+		ASSERT(N==len);
 
 	    for (INT i=0; i<N; i++)
 		{

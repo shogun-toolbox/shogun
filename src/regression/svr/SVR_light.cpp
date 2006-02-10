@@ -12,7 +12,6 @@
 #include "kernel/KernelMachine.h"
 #include "kernel/CombinedKernel.h"
 
-#include <assert.h>
 #include <unistd.h>
 
 
@@ -193,7 +192,7 @@ bool CSVRLight::train()
 		for (INT n=0; n<num_precomputed_subkernels; n++)
 		{
 			precomputed_subkernels[n]=new SHORTREAL[num*(num+1)/2] ;
-			assert(precomputed_subkernels[n]!=NULL) ;
+			ASSERT(precomputed_subkernels[n]!=NULL) ;
 		}
 		
 		for (INT n=0; n<num_precomputed_subkernels; n++)
@@ -273,7 +272,7 @@ void CSVRLight::svr_learn()
 	LONG* docs;
 
 	CLabels* lab= CClassifier::get_labels();
-	assert(lab!=NULL);
+	ASSERT(lab!=NULL);
 	INT totdoc=lab->get_num_labels();
 	num_vectors=totdoc;
 	
@@ -374,7 +373,7 @@ void CSVRLight::svr_learn()
 			learn_parm->svm_cost[i]=learn_parm->svm_c*fabs((double)label[i]);
 		}
 		else
-			assert(false);
+			ASSERT(false);
 	}
 
 	if(verbosity==1) {
@@ -839,15 +838,15 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 	INT num_kernels = k->get_num_subkernels() ;
 	const REAL* w   = k->get_subkernel_weights(num_weights);
 
-	assert(num_weights==num_kernels) ;
+	ASSERT(num_weights==num_kernels) ;
 	REAL* sumw = new REAL[num_kernels];
 
 	if (use_precomputed_subkernels) // everything is already precomputed
 	{
-		assert(precomputed_subkernels!=NULL) ;
+		ASSERT(precomputed_subkernels!=NULL) ;
 		for (INT n=0; n<num_kernels; n++)
 		{
-			assert(precomputed_subkernels[n]!=NULL) ;
+			ASSERT(precomputed_subkernels[n]!=NULL) ;
 			SHORTREAL * matrix = precomputed_subkernels[n] ;
 			for(INT ii=0;ii<num;ii++) 
 			{
@@ -1216,7 +1215,7 @@ void CSVRLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 	INT num_kernels = k->get_num_subkernels() ;
 	const REAL* w   = k->get_subkernel_weights(num_weights);
 	
-	assert(num_weights==num_kernels) ;
+	ASSERT(num_weights==num_kernels) ;
 	REAL* sumw = new REAL[num_kernels];
 	{
 		REAL* w_backup = new REAL[num_kernels] ;

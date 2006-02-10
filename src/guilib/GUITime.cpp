@@ -1,11 +1,9 @@
 #include "guilib/GUITime.h"
 
-#include <assert.h>
-
 CGUITime::CGUITime(CGUI* g) : gui(g)
 {
 	time=new CTime();
-	assert(time);
+	ASSERT(time);
 }
 
 CGUITime::~CGUITime()

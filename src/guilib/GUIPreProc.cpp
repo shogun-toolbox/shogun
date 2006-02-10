@@ -23,7 +23,6 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <assert.h>
 
 CGUIPreProc::CGUIPreProc(CGUI * gui_)
   : gui(gui_)
@@ -128,7 +127,7 @@ bool CGUIPreProc::load(CHAR* param)
 
 	if (file)
 	{
-		assert(fread(id, sizeof(char), 4, file)==4);
+		ASSERT(fread(id, sizeof(char), 4, file)==4);
 	
 #ifdef HAVE_LAPACK
 		if (strncmp(id, "PCAC", 4)==0)

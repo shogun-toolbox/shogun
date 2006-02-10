@@ -4,8 +4,6 @@
 #include "features/CharFeatures.h"
 #include "lib/io.h"
 
-#include <assert.h>
-
 CFixedDegreeCharKernel::CFixedDegreeCharKernel(LONG size, INT d)
   : CCharKernel(size),degree(d), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
@@ -42,8 +40,8 @@ bool CFixedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			sqrtdiag_rhs[i]=1;
 	}
 
-	assert(sqrtdiag_lhs);
-	assert(sqrtdiag_rhs);
+	ASSERT(sqrtdiag_lhs);
+	ASSERT(sqrtdiag_rhs);
 
 	this->lhs=(CCharFeatures*) l;
 	this->rhs=(CCharFeatures*) l;
@@ -114,7 +112,7 @@ REAL CFixedDegreeCharKernel::compute(INT idx_a, INT idx_b)
   CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
   // can only deal with strings of same length
-  assert(alen==blen);
+  ASSERT(alen==blen);
 
   REAL sqrt_a= 1 ;
   REAL sqrt_b= 1 ;

@@ -2,8 +2,6 @@
 #include "lib/io.h"
 #include "lib/Mathmatics.h"
 
-#include <assert.h>
-
 CTOPFeatures::CTOPFeatures(LONG size, CHMM* p, CHMM* n, bool neglin, bool poslin) : CRealFeatures(size), neglinear(neglin), poslinear(poslin)
 {
 	memset(&pos_relevant_indizes, 0, sizeof(pos_relevant_indizes));
@@ -36,7 +34,7 @@ CTOPFeatures::~CTOPFeatures()
 
 void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 {
-	assert(p!=NULL && n!=NULL);
+	ASSERT(p!=NULL && n!=NULL);
 
 	pos=p; 
 	neg=n;
@@ -232,29 +230,29 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 	if (hmm_idx->num_p > 0)
 	{
 		hmm_idx->idx_p=new INT[hmm_idx->num_p];
-		assert(hmm_idx->idx_p);
+		ASSERT(hmm_idx->idx_p);
 	}
 
 	if (hmm_idx->num_q > 0)
 	{
 		hmm_idx->idx_q=new INT[hmm_idx->num_q];
-		assert(hmm_idx->idx_q);
+		ASSERT(hmm_idx->idx_q);
 	}
 
 	if (hmm_idx->num_a > 0)
 	{
 		hmm_idx->idx_a_rows=new INT[hmm_idx->num_a];
 		hmm_idx->idx_a_cols=new INT[hmm_idx->num_a];
-		assert(hmm_idx->idx_a_rows);
-		assert(hmm_idx->idx_a_cols);
+		ASSERT(hmm_idx->idx_a_rows);
+		ASSERT(hmm_idx->idx_a_cols);
 	}
 
 	if (hmm_idx->num_b > 0)
 	{
 		hmm_idx->idx_b_rows=new INT[hmm_idx->num_b];
 		hmm_idx->idx_b_cols=new INT[hmm_idx->num_b];
-		assert(hmm_idx->idx_b_rows);
-		assert(hmm_idx->idx_b_cols);
+		ASSERT(hmm_idx->idx_b_rows);
+		ASSERT(hmm_idx->idx_b_cols);
 	}
 
 
@@ -267,13 +265,13 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 	{
 		if (hmm->get_p(i)>CMath::ALMOST_NEG_INFTY)
 		{
-			assert(idx_p < hmm_idx->num_p);
+			ASSERT(idx_p < hmm_idx->num_p);
 			hmm_idx->idx_p[idx_p++]=i;
 		}
 		
 		if (hmm->get_q(i)>CMath::ALMOST_NEG_INFTY)
 		{
-			assert(idx_q < hmm_idx->num_q);
+			ASSERT(idx_q < hmm_idx->num_q);
 			hmm_idx->idx_q[idx_q++]=i;
 		}
 
@@ -281,7 +279,7 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 		{
 			if (hmm->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
 			{
-				assert(idx_a < hmm_idx->num_a);
+				ASSERT(idx_a < hmm_idx->num_a);
 				hmm_idx->idx_a_rows[idx_a]=i;
 				hmm_idx->idx_a_cols[idx_a++]=j;
 			}
@@ -291,7 +289,7 @@ bool CTOPFeatures::compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx)
 		{
 			if (hmm->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
 			{
-				assert(idx_b < hmm_idx->num_b);
+				ASSERT(idx_b < hmm_idx->num_b);
 				hmm_idx->idx_b_rows[idx_b]=i;
 				hmm_idx->idx_b_cols[idx_b++]=j;
 			}

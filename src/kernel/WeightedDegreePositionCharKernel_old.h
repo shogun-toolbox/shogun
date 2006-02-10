@@ -233,7 +233,7 @@ inline REAL CWeightedDegreePositionCharKernel_old::compute_by_tree_helper(INT* v
 		return sum;
 
 	struct SuffixTree *tree = trees[tree_pos] ;
-	assert(tree!=NULL) ;
+	ASSERT(tree!=NULL) ;
 
 	if (length==0) // weights is a vector (1 x degree)
 	{
@@ -282,7 +282,7 @@ inline void CWeightedDegreePositionCharKernel_old::compute_by_tree_helper(INT* v
 																	  REAL* LevelContrib, REAL factor) 
 {
 	struct SuffixTree *tree = trees[tree_pos] ;
-	assert(tree!=NULL) ;
+	ASSERT(tree!=NULL) ;
 	if (factor==0)
 		return ;
 	

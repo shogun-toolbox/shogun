@@ -5,7 +5,6 @@
 #include "distributions/hmm/LinearHMM.h"
 #include "classifier/PluginEstimate.h"
 
-#include <assert.h>
 
 CPluginEstimate::CPluginEstimate() : pos_model(NULL), neg_model(NULL), test_features(NULL)
 {
@@ -28,7 +27,7 @@ bool CPluginEstimate::train(CWordFeatures* features, CLabels* labels, REAL pos_p
 	INT* pos_indizes=new INT[((CWordFeatures*) features)->get_num_vectors()];
 	INT* neg_indizes=new INT[((CWordFeatures*) features)->get_num_vectors()];
 
-	assert(labels->get_num_labels() == features->get_num_vectors());
+	ASSERT(labels->get_num_labels() == features->get_num_vectors());
 
 	INT pos_idx=0;
 	INT neg_idx=0;
@@ -54,7 +53,7 @@ bool CPluginEstimate::train(CWordFeatures* features, CLabels* labels, REAL pos_p
 REAL* CPluginEstimate::test()
 {
 	CWordFeatures* features=test_features;
-	assert(features);
+	ASSERT(features);
 
 	if ((!pos_model) || (!neg_model))
 	  {
@@ -63,7 +62,7 @@ REAL* CPluginEstimate::test()
 	  } ;
 
 	REAL* result=new REAL[features->get_num_vectors()];
-	assert(result);
+	ASSERT(result);
 
 	for (INT vec=0; vec<features->get_num_vectors(); vec++)
 		result[vec]=classify_example(vec);
@@ -75,12 +74,12 @@ CLabels* CPluginEstimate::classify(CLabels* result)
 {
 	CWordFeatures* features=test_features;
 
-	assert(features);
+	ASSERT(features);
 
 	if (!result)
 		result=new CLabels(features->get_num_vectors());
 
-	assert(result);
+	ASSERT(result);
 
 	for (INT vec=0; vec<features->get_num_vectors(); vec++)
 		result->set_label(vec, classify_example(vec));

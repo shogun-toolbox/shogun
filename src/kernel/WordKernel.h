@@ -15,8 +15,8 @@ class CWordKernel : public CSimpleKernel<WORD>
 		{
 			CSimpleKernel<WORD>::init(l,r, do_init);
 
-			assert(l->get_feature_type()==F_WORD);
-			assert(r->get_feature_type()==F_WORD);
+			ASSERT(l->get_feature_type()==F_WORD);
+			ASSERT(r->get_feature_type()==F_WORD);
 
 			return true;
 		}

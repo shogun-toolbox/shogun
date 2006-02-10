@@ -1,11 +1,9 @@
 #include "lib/common.h"
+#include "lib/io.h"
 #include "kernel/SparseGaussianKernel.h"
 #include "features/Features.h"
 #include "features/SparseRealFeatures.h"
 #include "features/SparseFeatures.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CSparseGaussianKernel::CSparseGaussianKernel(LONG size, double w)
   : CSparseRealKernel(size),width(w),sq_lhs(NULL),sq_rhs(NULL)
@@ -28,7 +26,7 @@ bool CSparseGaussianKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	CSparseRealKernel::init(l, r, do_init); 
 
 	sq_lhs= new REAL[lhs->get_num_vectors()];
-	assert(sq_lhs);
+	ASSERT(sq_lhs);
 
 
 	for (INT i=0; i<lhs->get_num_vectors(); i++)
@@ -47,7 +45,7 @@ bool CSparseGaussianKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	else
 	{
 		sq_rhs= new REAL[rhs->get_num_vectors()];
-		assert(sq_rhs);
+		ASSERT(sq_rhs);
 
 		for (INT i=0; i<rhs->get_num_vectors(); i++)
 		{

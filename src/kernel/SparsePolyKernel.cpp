@@ -1,12 +1,10 @@
 #include "lib/common.h"
+#include "lib/io.h"
 #include "kernel/SparsePolyKernel.h"
 #include "features/Features.h"
 #include "features/SparseRealFeatures.h"
 #include "features/SparseFeatures.h"
 #include "kernel/SparseKernel.h"
-#include "lib/io.h"
-
-#include <assert.h>
 
 CSparsePolyKernel::CSparsePolyKernel(LONG size, INT d, bool inhom, bool use_norm)
   : CSparseRealKernel(size), degree(d), inhomogene(inhom), 
@@ -48,8 +46,8 @@ bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 				sqrtdiag_rhs[i]=1;
 		}
 
-		assert(sqrtdiag_lhs);
-		assert(sqrtdiag_rhs);
+		ASSERT(sqrtdiag_lhs);
+		ASSERT(sqrtdiag_rhs);
 
 		this->lhs=(CSparseRealFeatures*) l;
 		this->rhs=(CSparseRealFeatures*) l;

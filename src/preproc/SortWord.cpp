@@ -15,8 +15,8 @@ CSortWord::~CSortWord()
 /// initialize preprocessor from features
 bool CSortWord::init(CFeatures* f)
 {
-	assert(f->get_feature_class() == C_SIMPLE);
-	assert(f->get_feature_type() == F_WORD);
+	ASSERT(f->get_feature_class() == C_SIMPLE);
+	ASSERT(f->get_feature_type() == F_WORD);
 	return true;
 }
 

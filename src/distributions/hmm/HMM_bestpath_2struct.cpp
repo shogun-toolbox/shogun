@@ -49,7 +49,7 @@ static void translate_from_single_order(WORD* obs, INT sequence_length,
 				value|=obs[j] << (max_val * (order-1));
 		}
 		obs[i]=value;
-		assert(value<num_words) ;
+		ASSERT(value<num_words) ;
 	}
 	if (start>0)
 		for (i=start; i<sequence_length; i++)	
@@ -145,7 +145,7 @@ void CHMM::best_path_2struct(const REAL *seq, INT seq_len, const INT *pos,
 	const INT default_look_back = 100 ;
 	INT max_look_back = default_look_back ;
 	bool use_svm = false ;
-	assert(dict_len==num_svms*num_words) ;
+	ASSERT(dict_len==num_svms*num_words) ;
 	dict_weights=dictionary_weights ;
 
 	REAL svm_value[num_svms] ;
@@ -193,39 +193,39 @@ void CHMM::best_path_2struct(const REAL *seq, INT seq_len, const INT *pos,
 		CIO::message(M_DEBUG,"allocating %1.2fMB of memory\n", 
 					 mem_use) ;
 	}
-	assert(nbest<32000) ;
+	ASSERT(nbest<32000) ;
 		
 	REAL* delta= new REAL[look_back_buflen] ;
-	assert(delta!=NULL) ;
+	ASSERT(delta!=NULL) ;
 	T_STATES *psi=new T_STATES[seq_len*N*nbest] ;
-	assert(psi!=NULL) ;
+	ASSERT(psi!=NULL) ;
 	short int *ktable=new short int[seq_len*N*nbest] ;
-	assert(ktable!=NULL) ;
+	ASSERT(ktable!=NULL) ;
 	INT *ptable=new INT[seq_len*N*nbest] ;
-	assert(ptable!=NULL) ;
+	ASSERT(ptable!=NULL) ;
 
 	REAL* delta_end= new REAL[nbest] ;
-	assert(delta_end!=NULL) ;
+	ASSERT(delta_end!=NULL) ;
 	T_STATES* path_end = new T_STATES[nbest] ;
-	assert(path_end!=NULL) ;
+	ASSERT(path_end!=NULL) ;
 	short int *ktable_end=new short int[nbest] ;
-	assert(ktable_end!=NULL) ;
+	ASSERT(ktable_end!=NULL) ;
 
 	REAL* tempvv=new REAL[look_back_buflen] ;
-	assert(tempvv!=NULL) ;
+	ASSERT(tempvv!=NULL) ;
 	INT* tempii=new INT[look_back_buflen] ;
-	assert(tempii!=NULL) ;
+	ASSERT(tempii!=NULL) ;
 
 	T_STATES* state_seq = new T_STATES[seq_len] ;
-	assert(state_seq!=NULL) ;
+	ASSERT(state_seq!=NULL) ;
 	INT * pos_seq   = new INT[seq_len] ;
-	assert(pos_seq!=NULL) ;
+	ASSERT(pos_seq!=NULL) ;
 
 	// translate to words, if svm is used
 	WORD* wordstr=NULL ;
 	if (use_svm)
 	{
-		assert(dict_weights!=NULL) ;
+		ASSERT(dict_weights!=NULL) ;
 		wordstr=new WORD[genestr_len] ;
 		for (INT i=0; i<genestr_len; i++)
 			switch (genestr[i])
@@ -234,7 +234,7 @@ void CHMM::best_path_2struct(const REAL *seq, INT seq_len, const INT *pos,
 			case 'c': wordstr[i]=1 ; break ;
 			case 'g': wordstr[i]=2 ; break ;
 			case 't': wordstr[i]=3 ; break ;
-			default: assert(0) ;
+			default: ASSERT(0) ;
 			}
 		translate_from_single_order(wordstr, genestr_len, word_degree-1, word_degree) ;
 	}
@@ -453,7 +453,7 @@ void CHMM::best_path_2struct(const REAL *seq, INT seq_len, const INT *pos,
 				if (PEN_names[s])
 					CIO::message(M_DEBUG, "%s:\t%1.2f\n", PEN_names[s], PEN_values[s+num_PEN_id*k]) ;
 				else
-					assert(PEN_values[s]==0.0) ;
+					ASSERT(PEN_values[s]==0.0) ;
 					}*/
 		}
 	}

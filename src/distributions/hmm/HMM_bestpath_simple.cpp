@@ -28,34 +28,34 @@ void CHMM::best_path_trans_simple(const REAL *seq, INT seq_len, short int nbest,
 {
 	INT max_look_back = 2 ;
 	const INT look_back_buflen = max_look_back*nbest*N ;
-	assert(nbest<32000) ;
+	ASSERT(nbest<32000) ;
 		
 	REAL* delta= new REAL[look_back_buflen] ;
-	assert(delta!=NULL) ;
+	ASSERT(delta!=NULL) ;
 	T_STATES *psi=new T_STATES[seq_len*N*nbest] ;
-	assert(psi!=NULL) ;
+	ASSERT(psi!=NULL) ;
 	short int *ktable=new short int[seq_len*N*nbest] ;
-	assert(ktable!=NULL) ;
+	ASSERT(ktable!=NULL) ;
 	INT *ptable=new INT[seq_len*N*nbest] ;
-	assert(ptable!=NULL) ;
+	ASSERT(ptable!=NULL) ;
 
 	REAL* delta_end= new REAL[nbest] ;
-	assert(delta_end!=NULL) ;
+	ASSERT(delta_end!=NULL) ;
 	T_STATES* path_end = new T_STATES[nbest] ;
-	assert(path_end!=NULL) ;
+	ASSERT(path_end!=NULL) ;
 	short int *ktable_end=new short int[nbest] ;
-	assert(ktable_end!=NULL) ;
+	ASSERT(ktable_end!=NULL) ;
 
 	REAL* oldtempvv=new REAL[look_back_buflen] ;
-	assert(oldtempvv!=NULL) ;
+	ASSERT(oldtempvv!=NULL) ;
 	INT* oldtempii=new INT[look_back_buflen] ;
-	assert(oldtempii!=NULL) ;
+	ASSERT(oldtempii!=NULL) ;
 
 
 	T_STATES* state_seq = new T_STATES[seq_len] ;
-	assert(state_seq!=NULL) ;
+	ASSERT(state_seq!=NULL) ;
 	INT * pos_seq   = new INT[seq_len] ;
-	assert(pos_seq!=NULL) ;
+	ASSERT(pos_seq!=NULL) ;
 
 	{ // initialization
 

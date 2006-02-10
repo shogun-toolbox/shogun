@@ -2,8 +2,7 @@
 #define _LABELS__H__
 
 #include "lib/common.h"
-
-#include <assert.h>
+#include "lib/io.h"
 
 class CLabels
 {
@@ -52,7 +51,7 @@ class CLabels
 		{
 			if (labels && idx<num_labels)
 			{
-				assert(labels[idx]== ((REAL) ((INT) labels[idx])));
+				ASSERT(labels[idx]== ((REAL) ((INT) labels[idx])));
 				return ((INT) labels[idx]);
 			}
 			else

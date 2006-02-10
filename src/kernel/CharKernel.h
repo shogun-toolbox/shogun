@@ -15,8 +15,8 @@ class CCharKernel : public CSimpleKernel<CHAR>
 		{
 			CSimpleKernel<CHAR>::init(l,r, do_init);
 
-			assert(l->get_feature_type()==F_CHAR);
-			assert(r->get_feature_type()==F_CHAR);
+			ASSERT(l->get_feature_type()==F_CHAR);
+			ASSERT(r->get_feature_type()==F_CHAR);
 
 			return true;
 		}

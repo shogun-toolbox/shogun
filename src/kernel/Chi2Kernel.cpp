@@ -4,8 +4,6 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-#include <assert.h>
-
 CChi2Kernel::CChi2Kernel(LONG size)
   : CRealKernel(size)
 {
@@ -46,7 +44,7 @@ REAL CChi2Kernel::compute(INT idx_a, INT idx_b)
 	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
 	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-	assert(alen==blen);
+	ASSERT(alen==blen);
 
 	REAL result=0;
 	for (INT i=0; i<alen; i++)

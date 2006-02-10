@@ -9,7 +9,6 @@
 #include "lib/Cache.h"
 
 #include <string.h>
-#include <assert.h>
 
 #include "features/Features.h"
 
@@ -108,7 +107,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 		  */
 		TSparseEntry<ST>* get_sparse_feature_vector(INT num, INT& len, bool& free)
 		{
-			assert(num<num_vectors);
+			ASSERT(num<num_vectors);
 			len= sparse_feature_matrix[num].num_feat_entries;
 
 			if (sparse_feature_matrix)
@@ -240,7 +239,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 			num_vec=num_vectors;
 
 			INT* num_feat_entries=new int[num_vectors];
-			assert(num_feat_entries);
+			ASSERT(num_feat_entries);
 
 			if (num_feat_entries)
 			{

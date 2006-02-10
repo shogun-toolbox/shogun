@@ -18,18 +18,18 @@ bool CLDA::train()
 	REAL prior=1.0;
 	REAL gamma=0;
 
-	assert(get_labels());
-	assert(get_features());
+	ASSERT(get_labels());
+	ASSERT(get_features());
 	INT num_train_labels=0;
 	INT* train_labels=get_labels()->get_int_labels(num_train_labels);
-	assert(train_labels);
+	ASSERT(train_labels);
 
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
-	assert(num_vec==num_train_labels);
+	ASSERT(num_vec==num_train_labels);
 
 	INT* classidx=new INT[num_vec];
-	assert(classidx);
+	ASSERT(classidx);
 
 	INT i=0;
 	INT j=0;
@@ -59,22 +59,22 @@ bool CLDA::train()
 
 	delete[] w;
 	w=new REAL[num_feat];
-	assert(w);
+	ASSERT(w);
 
 	REAL* mean_neg=new REAL[num_feat];
-	assert(mean_neg);
+	ASSERT(mean_neg);
 	memset(mean_neg,0,num_feat*sizeof(REAL));
 
 	REAL* mean_pos=new REAL[num_feat];
-	assert(mean_pos);
+	ASSERT(mean_pos);
 	memset(mean_pos,0,num_feat*sizeof(REAL));
 
 	REAL* scatter=new REAL[num_feat*num_feat];
-	assert(scatter);
+	ASSERT(scatter);
 	memset(scatter,0,num_feat*num_feat*sizeof(REAL));
 
 	REAL* buffer=new REAL[num_feat*CMath::max(num_neg, num_pos)];
-	assert(buffer);
+	ASSERT(buffer);
 
 	//neg
 	for (i=0; i<num_neg; i++)

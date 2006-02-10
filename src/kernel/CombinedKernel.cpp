@@ -3,8 +3,6 @@
 #include "features/CombinedFeatures.h"
 #include "lib/io.h"
 
-#include <assert.h>
-
 CCombinedKernel::CCombinedKernel(LONG size, bool append_subkernel_weights_)
 	: CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL), 
 	  subkernel_weights_buffer(NULL), append_subkernel_weights(append_subkernel_weights_)
@@ -29,10 +27,10 @@ CCombinedKernel::~CCombinedKernel()
 bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	CKernel::init(l,r, do_init);
-	assert(l->get_feature_class() == C_COMBINED);
-	assert(r->get_feature_class() == C_COMBINED);
-	assert(l->get_feature_type() == F_UNKNOWN);
-	assert(r->get_feature_type() == F_UNKNOWN);
+	ASSERT(l->get_feature_class() == C_COMBINED);
+	ASSERT(r->get_feature_class() == C_COMBINED);
+	ASSERT(l->get_feature_type() == F_UNKNOWN);
+	ASSERT(r->get_feature_type() == F_UNKNOWN);
 
 	CFeatures* lf=NULL;
 	CFeatures* rf=NULL;
@@ -277,8 +275,8 @@ REAL CCombinedKernel::compute_optimized(INT idx)
 		}
 		else
 		{
-			assert(sv_idx!=NULL || sv_count==0) ;
-			assert(sv_weight!=NULL || sv_count==0) ;
+			ASSERT(sv_idx!=NULL || sv_count==0) ;
+			ASSERT(sv_weight!=NULL || sv_count==0) ;
 			// CIO::message(M_DEBUG, "not optimized kernel computation\n") ;
 
 			if (k->get_combined_kernel_weight()!=0)
@@ -300,12 +298,6 @@ REAL CCombinedKernel::compute_optimized(INT idx)
 
 void CCombinedKernel::add_to_normal(INT idx, REAL weight) 
 { 
-	if (!get_is_initialized())
-	{
-		init_optimization(1, &idx, &weight) ;
-		return ;
-	}
-
 	CListElement<CKernel*> * current = NULL ;	
 	CKernel* k = get_first_kernel(current);
 
@@ -314,6 +306,7 @@ void CCombinedKernel::add_to_normal(INT idx, REAL weight)
 		k->add_to_normal(idx, weight);
 		k = get_next_kernel(current);
 	}
+	set_is_initialized(true) ;
 }
 
 void CCombinedKernel::clear_normal() 
@@ -326,6 +319,7 @@ void CCombinedKernel::clear_normal()
 		k->clear_normal() ;
 		k = get_next_kernel(current);
 	}
+	set_is_initialized(true) ;
 }
 
 void CCombinedKernel::compute_by_subkernel(INT idx, REAL * subkernel_contrib)
@@ -378,7 +372,7 @@ const REAL* CCombinedKernel::get_subkernel_weights(INT& num_weights)
 		{
 			INT num = -1 ;
 			const REAL *w = k->get_subkernel_weights(num);
-			assert(num==k->get_num_subkernels()) ;
+			ASSERT(num==k->get_num_subkernels()) ;
 			for (INT j=0; j<num; j++)
 				subkernel_weights_buffer[i+j]=w[j] ;
 			k = get_next_kernel(current);
@@ -432,5 +426,17 @@ void CCombinedKernel::set_subkernel_weights(REAL* weights, INT num_weights)
 			k = get_next_kernel(current);
 			i++ ;
 		}
+	}
+}
+
+void CCombinedKernel::set_optimization_type(EOptimizationType t)
+{ 
+	CListElement<CKernel*> * current = NULL ;	
+	CKernel* k = get_first_kernel(current);
+
+	while(k)
+	{
+		k->set_optimization_type(t);
+		k = get_next_kernel(current);
 	}
 }

@@ -1,5 +1,3 @@
-#include <assert.h>
-
 #include "guilib/GUIPluginEstimate.h"
 #include "features/WordFeatures.h"
 #include "lib/io.h"
@@ -32,7 +30,7 @@ bool CGUIPluginEstimate::train(CHAR* param)
 	{
 		if (trainfeatures)
 		{
-			assert(trainfeatures->get_feature_type()==F_WORD);
+			ASSERT(trainfeatures->get_feature_type()==F_WORD);
 
 			param=CIO::skip_spaces(param);
 			sscanf(param, "%le %le", &pos_pseudo, &neg_pseudo);
@@ -121,8 +119,8 @@ bool CGUIPluginEstimate::test(CHAR* param)
 	INT* label= testlabels->get_int_labels(len);
 
 	CIO::message(M_DEBUG, "out !!! %ld %ld\n", total, len);
-	assert(label);
-	assert(len==total);
+	ASSERT(label);
+	ASSERT(len==total);
 
 	gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);
 

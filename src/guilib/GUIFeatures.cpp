@@ -361,11 +361,11 @@ CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeatures* src, CHAR* param)
 {
 	CPluginEstimate* pie=gui->guipluginestimate.get_estimator();
-	assert(src->get_feature_type()==F_WORD && src->get_feature_class()==C_SIMPLE);
-	assert(pie);
+	ASSERT(src->get_feature_type()==F_WORD && src->get_feature_class()==C_SIMPLE);
+	ASSERT(pie);
 
 	CRealFeatures* target=new CRealFeatures(0l);
-	assert(target);
+	ASSERT(target);
 
 	INT num_feat=src->get_num_features();
 	INT num_vec=src->get_num_vectors();
@@ -378,7 +378,7 @@ CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeature
 			INT len=0;
 			bool to_free=false;
 			WORD* vec = src->get_feature_vector(i, len, to_free);
-			assert(num_feat==len);
+			ASSERT(num_feat==len);
 
 			for (INT j=0; j<num_feat; j++)
 				fm[i*num_feat+j]=pie->get_parameterwise_log_odds(vec[j], j);
@@ -472,7 +472,7 @@ CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<WO
 			bool poslinear=false;
 
 			tf = new CTOPFeatures(0l, gui->guihmm.get_pos(), gui->guihmm.get_neg(), neglinear, poslinear);		     
-			assert(tf && tf->set_feature_matrix());
+			ASSERT(tf && tf->set_feature_matrix());
 		}
 		else
 			CIO::message(M_ERROR, "HMMs not correctly assigned!\n");
@@ -505,7 +505,7 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD
 		else
 			CIO::message(M_ERROR, "need train features to set optimal a\n");
 
-		assert(fkf->set_feature_matrix());
+		ASSERT(fkf->set_feature_matrix());
 
 		gui->guihmm.get_pos()->set_observations(old_obs_pos);
 		gui->guihmm.get_neg()->set_observations(old_obs_neg);
@@ -529,7 +529,7 @@ CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(CSparseRealFeatu
 				//create dense features with 0 cache
 				CIO::message(M_INFO, "attempting to convert sparse feature matrix to a dense one\n");
 				CRealFeatures* rf = new CRealFeatures(0l);
-				assert(rf);
+				ASSERT(rf);
 				INT num_f=0;
 				INT num_v=0;
 				REAL* feats=src->get_full_feature_matrix(num_f, num_v);
@@ -747,7 +747,7 @@ bool CGUIFeatures::convert(CHAR* param)
 		if ( (*f_ptr)->get_feature_class() == C_COMBINED)
 		{
 			f_combined= (CCombinedFeatures*) (*f_ptr);
-			assert(f_combined);
+			ASSERT(f_combined);
 
 			*f_ptr=f_combined->get_last_feature_obj();
 		}
@@ -856,7 +856,7 @@ void CGUIFeatures::add_train_features(CFeatures* f)
 	if (!train_features)
 	{
 		train_features= new CCombinedFeatures();
-		assert(train_features);
+		ASSERT(train_features);
 	}
 
 	if (train_features)
@@ -869,7 +869,7 @@ void CGUIFeatures::add_train_features(CFeatures* f)
 			((CCombinedFeatures*) train_features)->list_feature_objs();
 		}
 
-		assert(f);
+		ASSERT(f);
 		bool result = ((CCombinedFeatures*) train_features)->append_feature_obj(f);
 		if (result)
 			((CCombinedFeatures*) train_features)->list_feature_objs();
@@ -885,7 +885,7 @@ void CGUIFeatures::add_test_features(CFeatures* f)
 	if (!test_features)
 	{
 		test_features= new CCombinedFeatures();
-		assert(test_features);
+		ASSERT(test_features);
 	}
 
 	if (test_features)
@@ -898,7 +898,7 @@ void CGUIFeatures::add_test_features(CFeatures* f)
 			((CCombinedFeatures*) test_features)->list_feature_objs();	
 		}
 
-		assert(f);
+		ASSERT(f);
 		bool result=((CCombinedFeatures*) test_features)->append_feature_obj(f);
 
 		if (result)

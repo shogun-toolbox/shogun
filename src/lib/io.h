@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#define ASSERT(x) { if (!(x)) CIO::message(M_ERROR, "ASSERTion %s failed in file %s line %d",#x, __FILE__, __LINE__);}
+
 #define NUM_LOG_LEVELS 9
 
 class CIO

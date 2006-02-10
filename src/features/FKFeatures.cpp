@@ -1,7 +1,6 @@
 #include "features/FKFeatures.h"
 #include "features/StringFeatures.h"
 #include "lib/io.h"
-#include <assert.h>
 
 CFKFeatures::CFKFeatures(LONG size, CHMM* p, CHMM* n) : CRealFeatures(size)
 {
@@ -75,8 +74,8 @@ double CFKFeatures::set_opt_a(double a)
 		CIO::message(M_INFO, "estimating a.\n");
 		pos_prob=new double[pos->get_observations()->get_num_vectors()];
 		neg_prob=new double[pos->get_observations()->get_num_vectors()];
-		assert(pos_prob!=NULL);
-		assert(neg_prob!=NULL);
+		ASSERT(pos_prob!=NULL);
+		ASSERT(neg_prob!=NULL);
 		for (INT i=0; i<pos->get_observations()->get_num_vectors(); i++)
 		{
 			pos_prob[i]=pos->model_probability(i) ;
@@ -109,7 +108,7 @@ double CFKFeatures::set_opt_a(double a)
 
 void CFKFeatures::set_models(CHMM* p, CHMM* n)
 {
-	assert(p!=NULL && n!=NULL);
+	ASSERT(p!=NULL && n!=NULL);
 
 	pos=p; 
 	neg=n;

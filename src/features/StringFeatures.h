@@ -11,7 +11,6 @@
 #include "lib/Mathmatics.h"
 
 #include <math.h>
-#include <assert.h>
 
 
 template <class T> struct T_STRING
@@ -35,12 +34,12 @@ template <class ST> class CStringFeatures: public CFeatures
 		if (orig.features)
 		{
 			features=new T_STRING<ST>[orig.num_vectors];
-			assert(features);
+			ASSERT(features);
 
 			for (INT i=0; i<num_vectors; i++)
 			{
 				features[i].string=new ST[orig.features[i].length];
-				assert(features[i].string!=NULL);
+				ASSERT(features[i].string!=NULL);
 				features[i].length=orig.features[i].length;
 				memcpy(features[i].string, orig.features[i].string, sizeof(ST)*orig.features[i].length); 
 			}
@@ -97,8 +96,8 @@ template <class ST> class CStringFeatures: public CFeatures
 	  */
 	virtual ST* get_feature_vector(INT num, INT& len)
 	{
-		assert(features!=NULL);
-		assert(num<num_vectors);
+		ASSERT(features!=NULL);
+		ASSERT(num<num_vectors);
 
 		len=features[num].length;
 		return features[num].string;
@@ -110,8 +109,8 @@ template <class ST> class CStringFeatures: public CFeatures
 	  */
 	virtual void set_feature_vector(INT num, ST* string, INT len)
 	{
-		assert(features!=NULL);
-		assert(num<num_vectors);
+		ASSERT(features!=NULL);
+		ASSERT(num<num_vectors);
 
 		features[num].length=len ;
 		features[num].string=string ;
@@ -119,15 +118,15 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	virtual ST inline get_feature(INT vec_num, INT feat_num)
 	{
-		assert(features && vec_num<num_vectors);
-		assert(feat_num < features[vec_num].length);
+		ASSERT(features && vec_num<num_vectors);
+		ASSERT(feat_num < features[vec_num].length);
 
 		return features[vec_num].string[feat_num];
 	}
 
 	virtual inline INT get_vector_length(INT vec_num)
 	{
-		assert(features && vec_num<num_vectors);
+		ASSERT(features && vec_num<num_vectors);
 		return features[vec_num].length;
 	}
 
@@ -153,7 +152,7 @@ template <class ST> class CStringFeatures: public CFeatures
 	// specified by bits in the mask will be returned.
 	inline ST get_masked_symbols(ST symbol, BYTE mask)
 	{
-		assert(symbol_mask_table);
+		ASSERT(symbol_mask_table);
 		return symbol_mask_table[mask] & symbol;
 	}
 
@@ -192,7 +191,7 @@ template <class ST> class CStringFeatures: public CFeatures
 
 				features[lines].length=columns;
 				features[lines].string=new ST[columns];
-				assert(features[lines].string);
+				ASSERT(features[lines].string);
 
 				max_string_length=CMath::max(max_string_length,columns);
 
@@ -248,7 +247,7 @@ template <class ST> class CStringFeatures: public CFeatures
 	inline bool obtain_from_char_features(CStringFeatures<CHAR>* sf, INT start, INT order)
 	{
 		INT i=0;
-		assert(sf);
+		ASSERT(sf);
 		E_ALPHABET alphabet=sf->get_alphabet();
 		this->order=order;
 		cleanup();
@@ -258,7 +257,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		num_vectors=sf->get_num_vectors();
 		max_string_length=sf->get_max_vector_length()-start;
 		features=new T_STRING<ST>[num_vectors];
-		assert(features);
+		ASSERT(features);
 
 		CIO::message(M_DEBUG, "%d symbols in StringFeatures<CHAR>\n", sf->get_num_symbols());
 		ST max_val=0;
@@ -268,7 +267,7 @@ template <class ST> class CStringFeatures: public CFeatures
 
 			features[i].string=new ST[len];
 			features[i].length=len;
-			assert(features[i].string);
+			ASSERT(features[i].string);
 
 			ST* str=features[i].string;
 

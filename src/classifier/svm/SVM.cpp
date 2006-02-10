@@ -168,31 +168,6 @@ bool CSVM::save(FILE* modelfl)
   return true ;
 } 
 
-REAL* CSVM::test()
-{
-  if (!CKernelMachine::get_kernel())
-  {
-      CIO::message(M_ERROR, "SVM can not proceed without kernel!\n");
-      return false ;
-  }
-
-  CLabels* lab=CKernelMachine::get_labels();
-  assert(lab!=NULL);
-  INT num_test=lab->get_num_labels();
-
-  CIO::message(M_DEBUG, "%d test examples\n", num_test);
-  REAL* output=new REAL[num_test];
-
-  for (INT i=0; i<num_test;  i++)
-  {
-	  if ( (i% (num_test/100+1))== 0)
-		  CIO::progress(i, 0, num_test-1);
-
-	  output[i]=classify_example(i);
-  }
-  CIO::message(M_INFO, "done.           \n");
-  return output;
-}
 
 CLabels* CSVM::classify(CLabels* result)
 {
@@ -211,10 +186,8 @@ CLabels* CSVM::classify(CLabels* result)
 		if (!result)
 			result=new CLabels(num_vectors);
 
-		assert(result);
+		ASSERT(result);
 		CIO::message(M_DEBUG, "computing output on %d test examples\n", num_vectors);
-
-		CIO::message(M_DEBUG, "using optimized kernel\n");
 		for (INT vec=0; vec<num_vectors; vec++)
 		{
 			if ( (vec% (num_vectors/10+1))== 0)
@@ -256,8 +229,8 @@ REAL CSVM::compute_objective()
 
 	if (lab && k)
 	{
-		assert(lab);
-		assert(k);
+		ASSERT(lab);
+		ASSERT(k);
 
 		objective=0;
 		for (int i=0; i<n; i++)

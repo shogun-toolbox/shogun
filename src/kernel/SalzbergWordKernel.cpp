@@ -1,12 +1,10 @@
 #include "lib/common.h"
+#include "lib/io.h"
 #include "kernel/SalzbergWordKernel.h"
 #include "features/Features.h"
 #include "features/WordFeatures.h"
-#include "classifier/PluginEstimate.h"
-#include "lib/io.h"
 #include "features/Labels.h"
-
-#include <assert.h>
+#include "classifier/PluginEstimate.h"
 
 CSalzbergWordKernel::CSalzbergWordKernel(LONG size, CPluginEstimate* pie)
   : CWordKernel(size),estimate(pie), mean(NULL), variance(NULL), 
@@ -26,15 +24,15 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 	bool result=CWordKernel::init(l,r,do_init);
 	initialized = false ;
-	assert(l!=NULL) ;
-	assert(r!=NULL) ;
+	ASSERT(l!=NULL) ;
+	ASSERT(r!=NULL) ;
 	
 	//  fprintf(stderr, "start\n") ;
 
 	CWordFeatures* lhs=(CWordFeatures*) l;
 	CWordFeatures* rhs=(CWordFeatures*) r;
-	assert(lhs) ;
-	assert(rhs) ;
+	ASSERT(lhs) ;
+	ASSERT(rhs) ;
 	
 	CIO::message(M_INFO, "init: lhs: %ld   rhs: %ld\n", lhs, rhs) ;
 	INT i;
@@ -73,8 +71,8 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	REAL *l_ld_mean_lhs = ld_mean_lhs ;
 	REAL *l_ld_mean_rhs = ld_mean_rhs ;
 	
-	assert(sqrtdiag_lhs);
-	assert(sqrtdiag_rhs);
+	ASSERT(sqrtdiag_lhs);
+	ASSERT(sqrtdiag_rhs);
 	
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
 	if (do_init)
@@ -102,8 +100,8 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	    mean= new REAL[num_params];
 	    variance= new REAL[num_params];
 	    
-	    assert(mean);
-	    assert(variance);
+	    ASSERT(mean);
+	    ASSERT(variance);
 	    
 	    
 	    for (i=0; i<num_params; i++)
@@ -121,7 +119,7 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			
 			WORD* vec=lhs->get_feature_vector(i, len, freevec);
 			
-			assert(len==lhs->get_num_features());
+			ASSERT(len==lhs->get_num_features());
 			
 			for (INT j=0; j<len; j++)
 			{
@@ -144,7 +142,7 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			
 			WORD* vec=lhs->get_feature_vector(i, len, freevec);
 			
-			assert(len==lhs->get_num_features());
+			ASSERT(len==lhs->get_num_features());
 			
 			for (INT j=0; j<len; j++)
 			{
@@ -321,7 +319,7 @@ REAL CSalzbergWordKernel::compute(INT idx_a, INT idx_b)
   WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
   // can only deal with strings of same length
-  assert(alen==blen);
+  ASSERT(alen==blen);
 
   double result = sum_m2_s2 ; // does not contain 0-th element
 

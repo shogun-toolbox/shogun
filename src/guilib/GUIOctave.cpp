@@ -86,7 +86,7 @@ bool CGUIOctave::get_hmm(octave_value_list& retvals)
 bool CGUIOctave::append_hmm(const octave_value_list& vals)
 {
 	CHMM* old_h=gui->guihmm.get_current();
-	assert(old_h);
+	ASSERT(old_h);
 
 	const RowVector vec_p=vals(1).row_vector_value();
 	const RowVector vec_q=vals(2).row_vector_value();
@@ -223,7 +223,7 @@ bool CGUIOctave::best_path_no_b(const octave_value_list& vals, octave_value_list
 
 		CHMM* h=new CHMM(N, p, q, a);
 
-		assert(h);
+		ASSERT(h);
 
 		INT* my_path = new INT[max_iter];
 		int best_iter = 0;
@@ -532,7 +532,7 @@ bool CGUIOctave::one_class_hmm_classify(octave_value_list& retvals, bool linear)
 	{
 		int num_vec=f->get_num_vectors();
 
-		assert(num_vec);
+		ASSERT(num_vec);
 
 		RowVector result = RowVector(num_vec);
 
@@ -663,7 +663,7 @@ bool CGUIOctave::set_plugin_estimate(const octave_value_list& vals)
 	RowVector sizes = vals(2).row_vector_value();
 
 	int num_params = model_parm.rows();
-	assert(model_parm.cols()==2);
+	ASSERT(model_parm.cols()==2);
 
 	const double* result=model_parm.data();
 	const REAL* pos_params = result;
@@ -671,7 +671,7 @@ bool CGUIOctave::set_plugin_estimate(const octave_value_list& vals)
 
 	int seq_length = (int) sizes(0);
 	int num_symbols = (int) sizes(1);
-	assert(num_params == seq_length*num_symbols) ;
+	ASSERT(num_params == seq_length*num_symbols) ;
 
 	gui->guipluginestimate.get_estimator()->set_model_params(pos_params, neg_params, seq_length, num_symbols) ;
 
@@ -823,7 +823,7 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 				INT num_vec = m.cols();
 				INT num_feat = m.rows();
 				REAL* fm = new REAL[num_vec*num_feat];
-				assert(fm);
+				ASSERT(fm);
 
 				for (INT i=0; i<num_vec; i++)
 					for (INT j=0; j<num_feat; j++)
@@ -839,7 +839,7 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 				INT num_vec = cm.cols();
 				INT num_feat = cm.rows();
 				CHAR* fm=new char[num_vec*num_feat+10];
-				assert(fm);
+				ASSERT(fm);
 
 				for (INT i=0; i<num_vec; i++)
 					for (INT j=0; j<num_feat; j++)

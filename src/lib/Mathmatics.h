@@ -6,7 +6,6 @@
 
 #include <math.h>
 #include <stdio.h>
-#include <assert.h>
 
 #ifdef HAVE_LAPACK
 extern "C" {
@@ -166,8 +165,8 @@ public:
 
 	static inline REAL mean(REAL* vec, INT len)
 	{
-		assert(vec);
-		assert(len>0);
+		ASSERT(vec);
+		ASSERT(len>0);
 
 		REAL mean=0;
 		for (INT i=0; i<len; i++)

@@ -3,7 +3,6 @@
 #include "lib/io.h"
 
 #include <string.h>
-#include <assert.h>
 
 CFeatures::CFeatures(LONG size) : cache_size(size), preproc(NULL), num_preproc(0), preprocessed(NULL) 
 {
@@ -13,7 +12,7 @@ CFeatures::CFeatures(LONG size) : cache_size(size), preproc(NULL), num_preproc(0
 CFeatures::CFeatures(const CFeatures& orig) : preproc(orig.preproc), num_preproc(orig.num_preproc), preprocessed(orig.preprocessed)
 {
 	preprocessed=new bool[orig.num_preproc];
-	assert(preprocessed);
+	ASSERT(preprocessed);
 	memcpy(preprocessed, orig.preprocessed, sizeof(bool)*orig.num_preproc);
 }
 

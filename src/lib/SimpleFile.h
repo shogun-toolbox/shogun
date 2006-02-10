@@ -4,7 +4,6 @@
 #include "lib/io.h"
 
 #include <stdio.h>
-#include <assert.h>
 #include <string.h>
 
 template <class T> class CSimpleFile
