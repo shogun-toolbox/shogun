@@ -732,7 +732,7 @@ void CWeightedDegreePositionCharKernel::add_example_to_tree(INT idx, REAL alpha)
 		else
 			CIO::message(M_ERROR, "unknown optimization type\n");
 
-		for (INT s=0; s<=max_s; s++)
+		for (INT s=max_s; s>=0; s--)
 		{
 			struct Trie *tree = trees[i] ;
 

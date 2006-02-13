@@ -97,12 +97,14 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		classifier= new CPerceptron();
 		CIO::message(M_INFO, "created Perceptron object\n") ;
 	}
+#ifdef HAVE_LAPACK
 	else if (strcmp(param,"LDA")==0)
 	{
 		delete classifier;
 		classifier= new CLDA();
 		CIO::message(M_INFO, "created LDA object\n") ;
 	}
+#endif
 	else if (strcmp(param,"LPM")==0)
 	{
 		delete classifier;

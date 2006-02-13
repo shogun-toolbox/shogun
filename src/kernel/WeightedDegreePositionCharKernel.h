@@ -10,17 +10,16 @@
 
 #include "lib/common.h"
 #include "kernel/CharKernel.h"
-#include "kernel/WeightedDegreeCharKernel.h"
 
 class CWeightedDegreePositionCharKernel: public CCharKernel
 {
 public:
 	struct Trie
 	{
-		float weight;
+		REAL weight;
 		union 
 		{
-			float child_weights[4];
+			SHORTREAL child_weights[4];
 #ifdef USE_TREEMEM
 			INT children[4];
 #else
