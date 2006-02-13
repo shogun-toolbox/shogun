@@ -1,9 +1,9 @@
 #ifndef _LDA_H___
 #define _LDA_H___
 
-#ifdef HAVE_LAPACK
-#include <stdio.h>
 #include "lib/common.h"
+
+#ifdef HAVE_LAPACK
 #include "features/Features.h"
 #include "classifier/LinearClassifier.h"
 
@@ -25,6 +25,11 @@ class CLDA : public CLinearClassifier
 		inline void set_max_iter(INT i)
 		{
 			max_iter=i;
+		}
+
+		inline virtual EClassifierType get_classifier_type()
+		{
+			return CT_LDA;
 		}
 	protected:
 		REAL learn_rate;

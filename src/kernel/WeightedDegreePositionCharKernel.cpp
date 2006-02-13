@@ -308,14 +308,18 @@ bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, 
 	int i=0;
 	for (i=0; i<count; i++)
 	{
-		if ( (i % (count/10+1)) == 0)
-			CIO::progress(i,0,count);
 		if (tree_num<0)
+		{
+			if ( (i % (count/10+1)) == 0)
+				CIO::progress(i,0,count);
 			add_example_to_tree(IDX[i], alphas[i]);
+		}
 		else
 			add_example_to_single_tree(IDX[i], alphas[i], tree_num) ;
 	}
-	CIO::message(M_MESSAGEONLY, "done.           \n");
+
+	if (tree_num<0)
+		CIO::message(M_MESSAGEONLY, "done.           \n");
 	
 	set_is_initialized(true) ;
 	return true ;
@@ -678,11 +682,13 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
 
   REAL sqrt_a= 1 ;
   REAL sqrt_b= 1 ;
+
   if (initialized && use_normalization)
-    {
-      sqrt_a=sqrtdiag_lhs[idx_a] ;
-      sqrt_b=sqrtdiag_rhs[idx_b] ;
-    } ;
+  {
+	  sqrt_a=sqrtdiag_lhs[idx_a] ;
+	  sqrt_b=sqrtdiag_rhs[idx_b] ;
+  }
+
   REAL sqrt_both=sqrt_a*sqrt_b;
 
   REAL result = 0 ;
@@ -698,11 +704,7 @@ REAL CWeightedDegreePositionCharKernel::compute(INT idx_a, INT idx_b)
   
   result/=sqrt_both;
   
-  //REAL result2 = compute2(idx_a,idx_b) ;
-  //ASSERT(fabs(result-result2)<1e-6);
-  
   return result ;
-  
 }
 
 void CWeightedDegreePositionCharKernel::add_example_to_tree(INT idx, REAL alpha)
@@ -718,7 +720,6 @@ void CWeightedDegreePositionCharKernel::add_example_to_tree(INT idx, REAL alpha)
 
 	for (INT i=0; i<len; i++)
 		vec[i]=acgt[char_vec[i]];
-
 
 	for (INT i=0; i<len; i++)
 	{
@@ -842,10 +843,6 @@ void CWeightedDegreePositionCharKernel::add_example_to_single_tree(INT idx, REAL
 	if (use_normalization)
 		alpha /=  sqrtdiag_lhs[idx] ;
 
-	for (INT i=0; i<len; i++)
-		vec[i]=acgt[char_vec[i]];
-
-
 	INT max_s=-1;
 
 	if (opt_type==SLOWBUTMEMEFFICIENT)
@@ -854,6 +851,9 @@ void CWeightedDegreePositionCharKernel::add_example_to_single_tree(INT idx, REAL
 		max_s=shift[tree_num];
 	else
 		CIO::message(M_ERROR, "unknown optimization type\n");
+
+	for (INT i=CMath::max(0,tree_num-max_s); i<CMath::min(len,tree_num+degree+max_s); i++)
+		vec[i]=acgt[char_vec[i]];
 
 	for (INT s=0; s<=max_s; s++)
 	{
@@ -900,41 +900,42 @@ void CWeightedDegreePositionCharKernel::add_example_to_single_tree(INT idx, REAL
 				tree->weight = (s==0) ? (alpha) : (alpha/(2*s));
 			}
 		}
+	}
 
-		INT i=tree_num-s;
-
-		if ((s==0) || (i+s>=len))
+	for (INT s=0; s<=CMath::min(max_s,tree_num-max_s); s++)
+	{
+		if ((s==0) || (tree_num>=len))
 			continue;
 
-		tree = trees[i+s] ;
+		struct Trie *tree = trees[tree_num] ;
 
-		for (INT j=0; (i+j<len); j++)
+		for (INT j=0; (tree_num-s+j<len); j++)
 		{
-			if ((j<degree-1) && (tree->children[vec[i+j]]!=NO_CHILD))
+			if ((j<degree-1) && (tree->children[vec[tree_num-s+j]]!=NO_CHILD))
 			{
 #ifdef USE_TREEMEM
-				tree=&TreeMem[tree->children[vec[i+j]]] ;
+				tree=&TreeMem[tree->children[vec[tree_num-s+j]]] ;
 #else
-				tree=tree->children[vec[i+j]] ;
+				tree=tree->children[vec[tree_num-s+j]] ;
 #endif
 				tree->weight +=  alpha/(2*s);
 			}
 			else if (j==degree-1)
 			{
-				tree->child_weights[vec[i+j]] += alpha/(2*s);
+				tree->child_weights[vec[tree_num-s+j]] += alpha/(2*s);
 				break ;
 			}
 			else
 			{
 #ifdef USE_TREEMEM
-				tree->children[vec[i+j]]=TreeMemPtr++;
-				INT tmp = tree->children[vec[i+j]] ;
+				tree->children[vec[tree_num-s+j]]=TreeMemPtr++;
+				INT tmp = tree->children[vec[tree_num-s+j]] ;
 				check_treemem() ;
 				tree=&TreeMem[tmp] ;
 #else
-				tree->children[vec[i+j]]=new struct Trie ;
-				ASSERT(tree->children[vec[i+j]]!=NULL) ;
-				tree=tree->children[vec[i+j]] ;
+				tree->children[vec[tree_num-s+j]]=new struct Trie ;
+				ASSERT(tree->children[vec[tree_num-s+j]]!=NULL) ;
+				tree=tree->children[vec[tree_num-s+j]] ;
 #endif
 				if (j==degree-2)
 				{
@@ -956,7 +957,7 @@ void CWeightedDegreePositionCharKernel::add_example_to_single_tree(INT idx, REAL
 	tree_initialized=true ;
 }
 
-REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, INT location) 
+REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx)
 {
 	REAL sum = 0 ;
 	INT len ;
@@ -967,38 +968,22 @@ REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, INT location)
 
 	for (INT i=0; i<len; i++)
 		vec[i]=acgt[char_vec[i]];
-	
-	if (location<0)
+
+	for (INT i=0; i<len; i++)
+		sum += compute_by_tree_helper(vec, len, i, i, i) ;
+
+	if (opt_type==SLOWBUTMEMEFFICIENT)
 	{
 		for (INT i=0; i<len; i++)
-			sum += compute_by_tree_helper(vec, len, i, i, i) ;
-
-		if (opt_type==SLOWBUTMEMEFFICIENT)
 		{
-			for (INT i=0; i<len; i++)
+			for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
 			{
-				for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
-				{
-					sum+=compute_by_tree_helper(vec, len, i, i+k, i)/(2*k) ;
-					sum+=compute_by_tree_helper(vec, len, i+k, i, i)/(2*k) ;
-				}
+				sum+=compute_by_tree_helper(vec, len, i, i+k, i)/(2*k) ;
+				sum+=compute_by_tree_helper(vec, len, i+k, i, i)/(2*k) ;
 			}
 		}
 	}
-	else
-	{
-		sum += compute_by_tree_helper(vec, 1, location, location, location) ;
 
-		if (opt_type==SLOWBUTMEMEFFICIENT)
-		{
-			for (INT k=1; (k<=shift[location]) && (location+k<len); k++)
-			{
-				sum+=compute_by_tree_helper(vec, 1, location, location+k, location)/(2*k) ;
-				sum+=compute_by_tree_helper(vec, 1, location+k, location, location)/(2*k) ;
-			}
-		}
-	}
-	
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
 
@@ -1008,7 +993,7 @@ REAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, INT location)
 		return sum ;
 }
 
-void CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, REAL* LevelContrib, INT location) 
+void CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 {
 	INT len ;
 	bool free ;
@@ -1019,39 +1004,22 @@ void CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, REAL* LevelCont
 	for (INT i=0; i<len; i++)
 		vec[i]=acgt[char_vec[i]];
 
-
 	REAL factor = 1.0 ;
 
 	if (use_normalization)
 		factor = 1.0/sqrtdiag_rhs[idx] ;
 
-	if (location<0)
+	for (INT i=0; i<len; i++)
+		compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor) ;
+
+	if (opt_type==SLOWBUTMEMEFFICIENT)
 	{
 		for (INT i=0; i<len; i++)
-			compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor) ;
-
-		if (opt_type==SLOWBUTMEMEFFICIENT)
-		{
-			for (INT i=0; i<len; i++)
-				for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
-				{
-					compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, factor/(2*k)) ;
-					compute_by_tree_helper(vec, len, i+k, i, i, LevelContrib, factor/(2*k)) ;
-				}
-		}
-	}
-	else
-	{
-		compute_by_tree_helper(vec, 1, location, location, location, LevelContrib, factor) ;
-
-		if (opt_type==SLOWBUTMEMEFFICIENT)
-		{
-			for (INT k=1; (k<=shift[location]) && (location+k<len); k++)
+			for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
 			{
-				compute_by_tree_helper(vec, 1, location, location+k, location, LevelContrib, factor/(2*k)) ;
-				compute_by_tree_helper(vec, 1, location+k, location, location, LevelContrib, factor/(2*k)) ;
+				compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, factor/(2*k)) ;
+				compute_by_tree_helper(vec, len, i+k, i, i, LevelContrib, factor/(2*k)) ;
 			}
-		}
 	}
 
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
@@ -1208,7 +1176,7 @@ bool CWeightedDegreePositionCharKernel::set_position_weights(REAL* pws, INT len)
 }
 
 
-REAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, INT num_suppvec, INT* IDX, REAL* weights)
+REAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, REAL* result, INT num_suppvec, INT* IDX, REAL* weights, REAL factor)
 {
 	ASSERT(get_rhs());
 	num_vec=get_rhs()->get_num_vectors();
@@ -1216,19 +1184,38 @@ REAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, INT num_sup
 	INT num_feat=((CCharFeatures*) get_rhs())->get_num_features();
 	ASSERT(num_feat>0);
 
-	REAL* result= new REAL[num_vec];
-	memset(result, 0, sizeof(REAL)*num_vec);
+	if (!result)
+	{
+		result= new REAL[num_vec];
+		ASSERT(result);
+		memset(result, 0, sizeof(REAL)*num_vec);
+	}
+
+	INT* vec= new INT[num_feat];
+
+	EOptimizationType opt_type_backup=get_optimization_type();
+	set_optimization_type(FASTBUTMEMHUNGRY);
 
 	for (INT j=0; j<num_feat; j++)
 	{
-		delete_optimization();
 		init_optimization(num_suppvec, IDX, weights, j);
 
 		for (INT i=0; i<num_vec; i++)
 		{
-			result[i]+=compute_optimized(i);
+			INT len=0;
+			bool freevec;
+			CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(i, len, freevec);
+			for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+degree+max_shift); i++)
+				vec[k]=acgt[char_vec[k]];
+
+			result[i] += factor*compute_by_tree_helper(vec, 1, i, i, i) ;
+
+			((CCharFeatures*) rhs)->free_feature_vector(char_vec, i, freevec);
 		}
 	}
+	set_optimization_type(opt_type_backup);
+
+	delete[] vec;
 
 	return result;
 }

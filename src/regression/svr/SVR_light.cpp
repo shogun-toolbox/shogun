@@ -929,7 +929,7 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 	REAL *alphay  = buffer_num ;
 	REAL sumalpha = 0 ;
 	
-#warning untested, verify me
+//fixme #warning untested, verify me
 	for (int i=0; i<num; i++)
 	{
 		alphay[i]=a[i]*label[i] ;

@@ -36,6 +36,7 @@ static const CHAR* N_NEW_CLASSIFIER=	"new_classifier";
 static const CHAR* N_NEW_KNN=			"new_knn";
 static const CHAR* N_NEW_PLUGIN_ESTIMATOR="new_plugin_estimator";
 static const CHAR* N_TRAIN_ESTIMATOR=	"train_estimator";
+static const CHAR* N_TRAIN_CLASSIFIER=	"train_classifier";
 static const CHAR* N_TEST_ESTIMATOR=	"test_estimator";
 static const CHAR* N_TRAIN_KNN=	"train_knn";
 static const CHAR* N_TEST_KNN=	"test_knn";
@@ -551,6 +552,10 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_SVM_TRAIN_AUC_MAXIMIZATION, strlen(N_SVM_TRAIN_AUC_MAXIMIZATION)))
 	{
 		guisvm.train(input+strlen(N_SVM_TRAIN_AUC_MAXIMIZATION), true);
+	} 
+	else if (!strncmp(input, N_TRAIN_CLASSIFIER, strlen(N_TRAIN_CLASSIFIER)))
+	{
+		guiclassifier.train(input+strlen(N_TRAIN_CLASSIFIER));
 	} 
 	else if (!strncmp(input, N_SVM_TRAIN, strlen(N_SVM_TRAIN)))
 	{

@@ -26,11 +26,6 @@ bool CKernelPerceptron::train()
 
 }
 
-REAL* CKernelPerceptron::test()
-{
-	return NULL;
-}
-
 bool CKernelPerceptron::load(FILE* srcfile)
 {
 	return false;
@@ -39,4 +34,10 @@ bool CKernelPerceptron::load(FILE* srcfile)
 bool CKernelPerceptron::save(FILE* dstfile)
 {
 	return false;
+}
+
+
+REAL CKernelPerceptron::classify_example(INT num)
+{
+	return 0;
 }

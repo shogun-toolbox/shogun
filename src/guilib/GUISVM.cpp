@@ -220,9 +220,6 @@ bool CGUISVM::test(CHAR* param)
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
 	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
 
-	if ( (gui->guikernel.get_kernel()->has_property(KP_LINADD)) && (gui->guikernel.get_kernel()->get_is_initialized()))
-		CIO::message(M_DEBUG, "using kernel optimization\n");
-
 	CLabels* outlab=svm->classify();
 	ASSERT(outlab);
 	
@@ -454,6 +451,7 @@ bool CGUISVM::set_linadd_enabled(CHAR* param)
 
 CLabels* CGUISVM::classify(CLabels* output)
 {
+	CLabels* testlabels=gui->guilabels.get_test_labels();
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
 	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
@@ -481,11 +479,8 @@ CLabels* CGUISVM::classify(CLabels* output)
 		return NULL;
 	}
 	  
+	((CKernelMachine*) svm)->set_labels(testlabels);
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
-
-	if ((gui->guikernel.get_kernel()->has_property(KP_LINADD)) && (gui->guikernel.get_kernel()->get_is_initialized()))
-		CIO::message(M_DEBUG, "using kernel optimization\n");
-
 	CIO::message(M_INFO, "starting svm testing\n") ;
 	return svm->classify(output);
 }

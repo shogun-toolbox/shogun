@@ -4,6 +4,8 @@
 #include "features/RealFileFeatures.h"
 #include "features/Labels.h"
 
+#include "classifier/LDA.h"
+#include "classifier/LPM.h"
 #include "classifier/KNN.h"
 #include "classifier/PluginEstimate.h"
 
@@ -83,22 +85,77 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		classifier= new CSVRLight();
 		CIO::message(M_INFO, "created SVRLight object\n") ;
 	}
+	else if (strcmp(param,"KERNELPERCEPTRON")==0)
+	{
+		delete classifier;
+		classifier= new CKernelPerceptron();
+		CIO::message(M_INFO, "created Kernel Perceptron object\n") ;
+	}
 	else if (strcmp(param,"PERCEPTRON")==0)
 	{
 		delete classifier;
 		classifier= new CPerceptron();
 		CIO::message(M_INFO, "created Perceptron object\n") ;
 	}
+	else if (strcmp(param,"LDA")==0)
+	{
+		delete classifier;
+		classifier= new CLDA();
+		CIO::message(M_INFO, "created LDA object\n") ;
+	}
+	else if (strcmp(param,"LPM")==0)
+	{
+		delete classifier;
+		classifier= new CLPM();
+		CIO::message(M_INFO, "created LPM object\n") ;
+	}
+	else if (strcmp(param,"KNN")==0)
+	{
+		delete classifier;
+		classifier= new CKNN();
+		CIO::message(M_INFO, "created KNN object\n") ;
+	}
 	else
+	{
+		CIO::message(M_ERROR, "unknown classifier \"%s\"\n", param);
 		return false;
+	}
 
 	return (classifier!=NULL);
 }
 
-bool CGUIClassifier::train(CHAR* param, bool auc_maximization)
+bool CGUIClassifier::train(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
+	ASSERT(classifier);
 
+	switch (classifier->get_classifier_type())
+	{
+		case CT_LIGHT:
+		case CT_LIBSVM:
+		case CT_MPD:
+		case CT_GPBT:
+		case CT_CPLEXSVM:
+		case CT_KERTHIPRIMAL:
+			return train_svm(param, false);
+			break;
+		case CT_PERCEPTRON:
+		case CT_KERNELPERCEPTRON:
+		case CT_LDA:
+		case CT_LPM:
+			return train_linear(param);
+			break;
+		case CT_KNN:
+			return train_knn(param);
+			break;
+		default:
+			CIO::message(M_ERROR, "unknown classifier type\n");
+			break;
+	};
+}
+
+bool CGUIClassifier::train_svm(CHAR* param, bool auc_maximization)
+{
 	CLabels* trainlabels=gui->guilabels.get_train_labels();
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CKernel* kernel=gui->guikernel.get_kernel();
@@ -164,6 +221,62 @@ bool CGUIClassifier::train(CHAR* param, bool auc_maximization)
 
 	kernel->set_precompute_matrix(false,false);
 	return result ;	
+}
+
+bool CGUIClassifier::train_knn(CHAR* param)
+{
+	CLabels* trainlabels=gui->guilabels.get_train_labels();
+	CKernel* kernel=gui->guikernel.get_kernel();
+
+	bool result=false;
+
+	if (trainlabels)
+	{
+		if (kernel)
+		{
+			param=CIO::skip_spaces(param);
+			INT k=3;
+			sscanf(param, "%d", &k);
+
+			((CKNN*) classifier)->set_labels(trainlabels);
+			((CKNN*) classifier)->set_kernel(kernel);
+			((CKNN*) classifier)->set_k(k);
+			result=((CKNN*) classifier)->train();
+		}
+		else
+			CIO::message(M_ERROR, "no kernel available\n") ;
+	}
+	else
+		CIO::message(M_ERROR, "no labels available\n") ;
+
+	return result;
+}
+
+bool CGUIClassifier::train_linear(CHAR* param)
+{
+	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
+	CLabels* trainlabels=gui->guilabels.get_train_labels();
+	CKernel* kernel=gui->guikernel.get_kernel();
+
+	bool result=false;
+
+	if (!trainfeatures)
+	{
+		CIO::message(M_ERROR, "no trainfeatures available\n") ;
+		return false ;
+	}
+
+	if (trainlabels)
+	{
+		CIO::message(M_ERROR, "no labels available\n") ;
+		return false;
+	}
+
+	((CLinearClassifier*) classifier)->set_labels(trainlabels);
+	((CLinearClassifier*) classifier)->set_features((CRealFeatures*) trainfeatures);
+	result=((CLinearClassifier*) classifier)->train();
+
+	return result;
 }
 
 bool CGUIClassifier::test(CHAR* param)
@@ -415,9 +528,79 @@ bool CGUIClassifier::set_svm_linadd_enabled(CHAR* param)
 
 CLabels* CGUIClassifier::classify(CLabels* output)
 {
+	ASSERT(classifier);
+
+	switch (classifier->get_classifier_type())
+	{
+		case CT_LIGHT:
+		case CT_LIBSVM:
+		case CT_MPD:
+		case CT_GPBT:
+		case CT_CPLEXSVM:
+		case CT_KERTHIPRIMAL:
+		case CT_KERNELPERCEPTRON:
+		case CT_KNN:
+			return classify_kernelmachine(output);
+			break;
+		case CT_PERCEPTRON:
+		case CT_LDA:
+		case CT_LPM:
+			return classify_linear(output);
+			break;
+		default:
+			CIO::message(M_ERROR, "unknown classifier type\n");
+			break;
+	};
+}
+
+CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
+{
+	CLabels* testlabels=gui->guilabels.get_test_labels();
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
 	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
+
+	if (!classifier)
+	{
+		CIO::message(M_ERROR, "no kernelmachine available\n") ;
+		return NULL;
+	}
+	if (!trainfeatures)
+	{
+		CIO::message(M_ERROR, "no training features available\n") ;
+		return NULL;
+	}
+
+	if (!testfeatures)
+	{
+		CIO::message(M_ERROR, "no test features available\n") ;
+		return NULL;
+	}
+
+	if (!testlabels)
+	{
+		CIO::message(M_ERROR, "no test labels available\n") ;
+		return NULL;
+	}
+
+	if (!gui->guikernel.is_initialized())
+	{
+		CIO::message(M_ERROR, "kernel not initialized\n") ;
+		return NULL;
+	}
+	  
+	((CKernelMachine*) classifier)->set_labels(testlabels);
+	((CKernelMachine*) classifier)->set_kernel(gui->guikernel.get_kernel()) ;
+	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
+	CIO::message(M_INFO, "starting kernel machine testing\n") ;
+	return classifier->classify(output);
+}
+
+CLabels* CGUIClassifier::classify_linear(CLabels* output)
+{
+	CLabels* testlabels=gui->guilabels.get_test_labels();
+	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
+	CFeatures* testfeatures=gui->guifeatures.get_test_features();
 
 	if (!classifier)
 	{
@@ -436,18 +619,14 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		return NULL;
 	}
 
-	if (!gui->guikernel.is_initialized())
+	if (!testlabels)
 	{
-		CIO::message(M_ERROR, "kernel not initialized\n") ;
+		CIO::message(M_ERROR, "no test labels available\n") ;
 		return NULL;
 	}
-	  
-	((CKernelMachine*) classifier)->set_kernel(gui->guikernel.get_kernel()) ;
 
-	if ((gui->guikernel.get_kernel()->has_property(KP_LINADD)) && (gui->guikernel.get_kernel()->get_is_initialized()))
-		CIO::message(M_DEBUG, "using kernel optimization\n");
-
-	CIO::message(M_INFO, "starting svm testing\n") ;
+	classifier->set_labels(testlabels);
+	CIO::message(M_INFO, "starting linear classifier testing\n") ;
 	return classifier->classify(output);
 }
 

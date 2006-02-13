@@ -60,6 +60,7 @@ static const CHAR* N_ONE_CLASS_LINEAR_HMM_CLASSIFY=		"one_class_linear_hmm_class
 static const CHAR* N_HMM_CLASSIFY=		"hmm_classify";
 static const CHAR* N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE=		"one_class_hmm_classify_example";
 static const CHAR* N_HMM_CLASSIFY_EXAMPLE=	"hmm_classify_example";
+static const CHAR* N_CLASSIFY=		"classify";
 static const CHAR* N_SVM_CLASSIFY=		"svm_classify";
 static const CHAR* N_SVM_CLASSIFY_EXAMPLE=	"svm_classify_example";
 static const CHAR* N_GET_PLUGIN_ESTIMATE=	"get_plugin_estimate";
@@ -221,6 +222,16 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				CIO::message(M_ERROR, "usage is [result]=gf('svm_classify_example', feature_vector_index)");
+		}
+		else if (!strncmp(action, N_CLASSIFY, strlen(N_CLASSIFY)))
+		{
+			if (nlhs==1)
+			  {
+			    if (!gf_matlab.classify(plhs))
+			      CIO::message(M_ERROR, "classify failed");
+			  }
+			else
+				CIO::message(M_ERROR, "usage is [result]=gf('classify')");
 		}
 		else if (!strncmp(action, N_SVM_CLASSIFY, strlen(N_SVM_CLASSIFY)))
 		{

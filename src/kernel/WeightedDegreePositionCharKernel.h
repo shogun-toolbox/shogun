@@ -61,7 +61,7 @@ public:
 		return compute_by_tree(idx); 
 	}
 
-	virtual REAL* compute_batch(INT& num_vec, INT num_suppvec, INT* IDX, REAL* weights);
+	virtual REAL* compute_batch(INT& num_vec, REAL* target, INT num_suppvec, INT* IDX, REAL* weights, REAL factor);
 
 	// subkernel functionality
 	inline virtual void clear_normal()
@@ -185,8 +185,8 @@ public:
 	bool set_position_weights(REAL* position_weights, INT len=0); 
 	bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
-	REAL compute_by_tree(INT idx, INT location=-1) ;
-	void compute_by_tree(INT idx, REAL* LevelContrib, INT location=-1) ;
+	REAL compute_by_tree(INT idx);
+	void compute_by_tree(INT idx, REAL* LevelContrib);
 
 protected:
 

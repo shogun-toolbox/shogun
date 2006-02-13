@@ -15,10 +15,10 @@ CKerthiPrimalSVM::~CKerthiPrimalSVM()
 bool CKerthiPrimalSVM::train()
 {
 
-	CLabels* lab = CSVM::get_labels();
-	const int n=lab->get_num_labels();
-	const REAL* al_init=new REAL[n];
-	const REAL C=get_C1();
+//	CLabels* lab = CSVM::get_labels();
+//	const int n=lab->get_num_labels();
+//	const REAL* al_init=new REAL[n];
+//	const REAL C=get_C1();
 
 //function [al, b] = sparse_primal2(Y,C,al_init)
 //  global X   % X is sparse and global to save memory

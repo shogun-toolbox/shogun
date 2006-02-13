@@ -826,7 +826,7 @@ REAL CKernel::compute_optimized(INT idx)
 	return 0;
 }
 
-REAL* CKernel::compute_batch(INT& num_vec, INT num_suppvec, INT* IDX, REAL* weights)
+REAL* CKernel::compute_batch(INT& num_vec, REAL* target, INT num_suppvec, INT* IDX, REAL* weights, REAL factor)
 {
 	CIO::message(M_ERROR, "kernel does not support batch computation\n") ;
 	num_vec=0;

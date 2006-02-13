@@ -60,6 +60,7 @@ public:
 	bool set_svm(const mxArray* vals[]);
 	bool svm_classify_example(mxArray* retvals[], int idx);
 	bool svm_classify(mxArray* retvals[]);
+	bool classify(mxArray* retvals[]);
 
 	bool set_plugin_estimate(const mxArray* vals[]);
 	bool get_plugin_estimate(mxArray* retvals[]);

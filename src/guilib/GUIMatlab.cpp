@@ -23,7 +23,6 @@
 #include "kernel/LinearKernel.h"
 #include "classifier/svm/SVM.h"
 
-
 extern CTextGUI* gui;
 
 CGUIMatlab::CGUIMatlab()
@@ -994,6 +993,33 @@ bool CGUIMatlab::set_svm(const mxArray* vals[])
 	else
 		CIO::message(M_ERROR, "no svm object available\n") ;
 
+	return false;
+}
+
+bool CGUIMatlab::classify(mxArray* retvals[])
+{
+	CFeatures* f=gui->guifeatures.get_test_features();
+	if (f)
+	{
+		int num_vec=f->get_num_vectors();
+
+		CLabels* l=gui->guiclassifier.classify();
+
+		if (!l)
+		{
+			CIO::message(M_ERROR, "classify failed\n") ;
+			return false ;
+		} ;
+
+		mxArray* mx_result=mxCreateDoubleMatrix(1, num_vec, mxREAL);
+		double* result=mxGetPr(mx_result);
+		for (int i=0; i<num_vec; i++)
+			result[i]=l->get_label(i);
+		delete l;
+
+		retvals[0]=mx_result;
+		return true;
+	}
 	return false;
 }
 

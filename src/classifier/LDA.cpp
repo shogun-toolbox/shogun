@@ -1,5 +1,6 @@
-#ifdef HAVE_LAPACK
+#include "lib/common.h"
 
+#ifdef HAVE_LAPACK
 #include "classifier/LDA.h"
 #include "features/Labels.h"
 #include "lib/Mathmatics.h"

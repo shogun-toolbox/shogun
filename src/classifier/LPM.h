@@ -25,6 +25,11 @@ class CLPM : public CLinearClassifier
 		{
 			max_iter=i;
 		}
+
+		inline virtual EClassifierType get_classifier_type()
+		{
+			return CT_LPM;
+		}
 	protected:
 		REAL learn_rate;
 		INT max_iter;

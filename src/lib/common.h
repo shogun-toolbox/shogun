@@ -11,7 +11,6 @@
 #define true 1
 #endif
 
-
 #ifndef LINUX
 #define RANDOM_MAX 2147483647
 #else
@@ -147,9 +146,13 @@ enum EClassifierType
 	CT_LIBSVM = 20,
 	CT_MPD = 30,
 	CT_GPBT = 40,
-	CT_PERCEPTRON = 50,
-	CT_KNN = 60,
-	CT_CPLEXSVM = 60,
+	CT_CPLEXSVM = 50,
+	CT_KERTHIPRIMAL = 60,
+	CT_PERCEPTRON = 70,
+	CT_KERNELPERCEPTRON = 80,
+	CT_LDA = 90,
+	CT_LPM = 100,
+	CT_KNN = 110
 };
 
 enum ERegressionType

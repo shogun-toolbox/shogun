@@ -494,6 +494,7 @@ void CHMM::best_path_trans(const REAL *seq, INT seq_len, const INT *pos, const I
 	}
 
 	struct svm_values_struct svs;
+	svs.num_unique_words = NULL;
 	svs.svm_values = NULL;
 	svs.svm_values_unnormalized = NULL;
 	svs.word_used = NULL;

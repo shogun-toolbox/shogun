@@ -3,6 +3,8 @@
 #include "features/CombinedFeatures.h"
 #include "lib/io.h"
 
+#include <string.h>
+
 CCombinedKernel::CCombinedKernel(LONG size, bool append_subkernel_weights_)
 	: CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL), 
 	  subkernel_weights_buffer(NULL), append_subkernel_weights(append_subkernel_weights_)
@@ -227,8 +229,6 @@ bool CCombinedKernel::init_optimization(INT count, INT *IDX, REAL * weights)
 
 bool CCombinedKernel::delete_optimization() 
 { 
-	//CIO::message(M_DEBUG, "deleting CCombinedKernel optimization\n") ;
-
 	CListElement<CKernel*> * current = NULL ;	
 	CKernel* k = get_first_kernel(current);
 
@@ -252,10 +252,70 @@ bool CCombinedKernel::delete_optimization()
 	return true;
 }
 
-REAL* CCombinedKernel::compute_batch(INT& num_vec, INT num_suppvec, INT* IDX, REAL* weights)
+REAL* CCombinedKernel::compute_batch(INT& num_vec, REAL* target, INT num_suppvec, INT* IDX, REAL* weights)
 {
-	num_vec=0;
-	return NULL;
+	ASSERT(get_rhs());
+	num_vec=get_rhs()->get_num_vectors();
+	ASSERT(num_vec>0);
+
+	REAL* result= new REAL[num_vec];
+	memset(result, 0, sizeof(REAL)*num_vec);
+
+	CListElement<CKernel*> * current = NULL ;	
+	CKernel * k = get_first_kernel(current) ;
+
+	while(k)
+	{
+		if (k && k->has_property(KP_BATCHEVALUATION))
+		{
+			INT n=num_vec;
+			k->compute_batch(n, result, num_suppvec, IDX, weights, get_combined_kernel_weight());
+			ASSERT(n==num_vec);
+		}
+		else
+			emulate_compute_batch(k, num_vec, target, num_suppvec, IDX, weights);
+
+		k = get_next_kernel(current);
+	}
+
+	return result;
+}
+
+void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, REAL* result, INT num_suppvec, INT* IDX, REAL* weights)
+{
+	ASSERT(k);
+	ASSERT(result);
+
+	if (k->has_property(KP_LINADD))
+	{
+		if (k->get_combined_kernel_weight()!=0)
+		{
+			k->init_optimization(num_suppvec, IDX, weights);
+
+			for (INT i=0; i<num_vec; i++)
+				result[i] += k->get_combined_kernel_weight()*k->compute_optimized(i);
+
+			k->delete_optimization();
+		}
+	}
+	else
+	{
+		ASSERT(sv_idx!=NULL || sv_count==0) ;
+		ASSERT(sv_weight!=NULL || sv_count==0) ;
+
+		if (k->get_combined_kernel_weight()!=0)
+		{ // compute the usual way for any non-optimized kernel
+			for (INT i=0; i<num_vec; i++)
+			{
+				int j=0;
+				REAL sub_result=0 ;
+				for (j=0; j<sv_count; j++)
+					sub_result += sv_weight[j] * k->kernel(sv_idx[j], i) ;
+
+				result[i] += k->get_combined_kernel_weight()*sub_result ;
+			}
+		}
+	}
 }
 
 REAL CCombinedKernel::compute_optimized(INT idx) 
@@ -283,7 +343,6 @@ REAL CCombinedKernel::compute_optimized(INT idx)
 		{
 			ASSERT(sv_idx!=NULL || sv_count==0) ;
 			ASSERT(sv_weight!=NULL || sv_count==0) ;
-			// CIO::message(M_DEBUG, "not optimized kernel computation\n") ;
 
 			if (k->get_combined_kernel_weight()!=0)
 			{ // compute the usual way for any non-optimized kernel

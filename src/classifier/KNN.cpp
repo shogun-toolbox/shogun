@@ -40,7 +40,7 @@ bool CKNN::train()
 	return true;
 }
 
-REAL* CKNN::test()
+CLabels* CKNN::classify(CLabels* output)
 {
 	ASSERT(CKernelMachine::get_kernel());
 	ASSERT(CKernelMachine::get_labels());
@@ -55,7 +55,8 @@ REAL* CKNN::test()
 
 	///histogram of classes and returned output
 	INT* classes=new INT[num_classes];
-	REAL* output=new REAL[num_lab];
+	if (!output)
+		output=new CLabels(num_lab);
 
 	ASSERT(dists);
 	ASSERT(train_lab);
@@ -100,7 +101,7 @@ REAL* CKNN::test()
 			}
 		}
 
-		output[i]=out_idx+min_label;
+		output->set_label(i, out_idx+min_label);
 	}
 
 	delete[] dists;

@@ -13,10 +13,16 @@ class CKernelPerceptron : public CKernelMachine
 		virtual ~CKernelPerceptron();
 
 		virtual bool train();
-		virtual REAL* test();
+
+		virtual REAL classify_example(INT num);
 
 		virtual bool load(FILE* srcfile);
 		virtual bool save(FILE* dstfile);
+
+		inline virtual EClassifierType get_classifier_type()
+		{
+			return CT_KERNELPERCEPTRON;
+		}
 };
 #endif
 

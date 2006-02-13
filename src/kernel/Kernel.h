@@ -127,9 +127,10 @@ class CKernel
 
 		/** computes output for a batch of examples in an optimized fashion (favorable if kernel supports it,
 		 * i.e. has KP_BATCHEVALUATION.
-		 * returns newly allocated outputvector of size num>0 on success
+		 * set target=NULL to make it freshly allocate memory
+		 * returns outputvector of size num>0 on success
 		 */
-		virtual REAL* compute_batch(INT& num, INT num_suppvec, INT* IDX, REAL* weights);
+		virtual REAL* compute_batch(INT& num, REAL* target, INT num_suppvec, INT* IDX, REAL* weights, REAL factor=1.0);
 		
 		virtual bool set_kernel_parameters(INT num, const double* param) { return false; }
 		

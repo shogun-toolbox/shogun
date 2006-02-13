@@ -13,11 +13,13 @@ public:
 	~CGUIClassifier();
 
 	bool new_classifier(CHAR* param);
-	bool train(CHAR* param, bool auc_maximization);
+	bool train(CHAR* param);
 	bool test(CHAR* param);
 	bool load(CHAR* param);
 	bool save(CHAR* param);
 	CLabels* classify(CLabels* output=NULL);
+	CLabels* classify_kernelmachine(CLabels* output=NULL);
+	CLabels* classify_linear(CLabels* output=NULL);
 	bool classify_example(INT idx, REAL& result);
 	inline CClassifier* get_classifier() { return classifier; }
 
@@ -30,6 +32,9 @@ public:
 	bool set_svr_tube_epsilon(CHAR* param);
 	bool set_svm_mkl_parameters(CHAR* param) ;
 	bool set_svm_precompute_enabled(CHAR* param) ;
+	bool train_svm(CHAR* param, bool auc_maximization);
+	bool train_knn(CHAR* param);
+	bool train_linear(CHAR* param);
 
 
  protected:

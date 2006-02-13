@@ -16,7 +16,7 @@ class CKNN : public CKernelMachine
 
 		inline EClassifierType get_classifier_type() { return CT_KNN; }
 		virtual bool train();
-		virtual REAL* test();
+		virtual CLabels* classify(CLabels* output=NULL);
 		virtual REAL classify_example(INT idx)
 		{
 			CIO::message(M_ERROR, "for performance reasons use test() instead of classify_example\n");

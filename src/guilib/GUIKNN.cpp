@@ -109,9 +109,9 @@ bool CGUIKNN::test(CHAR* param)
 	knn->set_kernel(kernel);
 
 	CIO::message(M_INFO, "starting knn classifier testing\n") ;
-	REAL* output=knn->test();
-
 	INT len=0;
+	CLabels* outlab=knn->classify(NULL);
+	REAL* output=outlab->get_labels(len);
 	INT* label= testlabels->get_int_labels(len);
 	ASSERT(label);
 

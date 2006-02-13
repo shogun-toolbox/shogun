@@ -202,7 +202,7 @@ CLabels* CSVM::classify(CLabels* result)
 				sv_weight[i] = get_alpha(i) ;
 			}
 
-			REAL* r=CKernelMachine::get_kernel()->compute_batch(num_vec, get_num_support_vectors(), sv_idx, sv_weight);
+			REAL* r=CKernelMachine::get_kernel()->compute_batch(num_vec, NULL, get_num_support_vectors(), sv_idx, sv_weight);
 			ASSERT(num_vec==num_vectors);
 
 			for (INT i=0; i<num_vec; i++)
