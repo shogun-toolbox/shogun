@@ -252,13 +252,15 @@ bool CCombinedKernel::delete_optimization()
 	return true;
 }
 
-REAL* CCombinedKernel::compute_batch(INT& num_vec, REAL* target, INT num_suppvec, INT* IDX, REAL* weights)
+REAL* CCombinedKernel::compute_batch(INT& num_vec, REAL* result, INT num_suppvec, INT* IDX, REAL* weights, REAL factor)
 {
 	ASSERT(get_rhs());
 	num_vec=get_rhs()->get_num_vectors();
 	ASSERT(num_vec>0);
 
-	REAL* result= new REAL[num_vec];
+	if (!result)
+		result= new REAL[num_vec];
+	ASSERT(result);
 	memset(result, 0, sizeof(REAL)*num_vec);
 
 	CListElement<CKernel*> * current = NULL ;	
@@ -273,7 +275,7 @@ REAL* CCombinedKernel::compute_batch(INT& num_vec, REAL* target, INT num_suppvec
 			ASSERT(n==num_vec);
 		}
 		else
-			emulate_compute_batch(k, num_vec, target, num_suppvec, IDX, weights);
+			emulate_compute_batch(k, num_vec, result, num_suppvec, IDX, weights);
 
 		k = get_next_kernel(current);
 	}

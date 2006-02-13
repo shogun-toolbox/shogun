@@ -319,7 +319,7 @@ bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, 
 	}
 
 	if (tree_num<0)
-		CIO::message(M_MESSAGEONLY, "done.           \n");
+		CIO::message(M_DEBUG, "done.           \n");
 	
 	set_is_initialized(true) ;
 	return true ;
@@ -902,11 +902,8 @@ void CWeightedDegreePositionCharKernel::add_example_to_single_tree(INT idx, REAL
 		}
 	}
 
-	for (INT s=0; s<=CMath::min(max_s,tree_num-max_s); s++)
+	for (INT s=1; s<=CMath::min(max_s,tree_num); s++)
 	{
-		if ((s==0) || (tree_num>=len))
-			continue;
-
 		struct Trie *tree = trees[tree_num] ;
 
 		for (INT j=0; (tree_num-s+j<len); j++)
@@ -1205,13 +1202,14 @@ REAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, REAL* resul
 			INT len=0;
 			bool freevec;
 			CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(i, len, freevec);
-			for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+degree+max_shift); i++)
+			for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+degree+max_shift); k++)
 				vec[k]=acgt[char_vec[k]];
 
-			result[i] += factor*compute_by_tree_helper(vec, 1, i, i, i) ;
+			result[i] += factor*compute_by_tree_helper(vec, len, j, j, j) ;
 
 			((CCharFeatures*) rhs)->free_feature_vector(char_vec, i, freevec);
 		}
+		CIO::progress(j,0,num_feat);
 	}
 	set_optimization_type(opt_type_backup);
 

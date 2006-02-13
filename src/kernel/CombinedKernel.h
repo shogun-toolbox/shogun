@@ -137,7 +137,7 @@ class CCombinedKernel : public CKernel
 		virtual bool init_optimization(INT count, INT *IDX, REAL * weights);
 		virtual bool delete_optimization();
 		virtual REAL compute_optimized(INT idx);
-		virtual REAL* compute_batch(INT& num_vec, REAL* target, INT num_suppvec, INT* IDX, REAL* weights);
+		virtual REAL* compute_batch(INT& num_vec, REAL* target, INT num_suppvec, INT* IDX, REAL* weights, REAL factor=1.0);
 		/// emulates batch computation, via linadd optimization w^t x or even down to \sum_i alpha_i K(x_i,x)
 		void emulate_compute_batch(CKernel* k, INT num_vec, REAL* target, INT num_suppvec, INT* IDX, REAL* weights);
 

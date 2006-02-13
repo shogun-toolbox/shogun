@@ -152,6 +152,7 @@ bool CGUIClassifier::train(CHAR* param)
 			CIO::message(M_ERROR, "unknown classifier type\n");
 			break;
 	};
+	return false;
 }
 
 bool CGUIClassifier::train_svm(CHAR* param, bool auc_maximization)
@@ -256,7 +257,6 @@ bool CGUIClassifier::train_linear(CHAR* param)
 {
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CLabels* trainlabels=gui->guilabels.get_train_labels();
-	CKernel* kernel=gui->guikernel.get_kernel();
 
 	bool result=false;
 
@@ -551,6 +551,8 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 			CIO::message(M_ERROR, "unknown classifier type\n");
 			break;
 	};
+
+	return false;
 }
 
 CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
