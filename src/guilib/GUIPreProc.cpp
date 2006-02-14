@@ -230,27 +230,34 @@ bool CGUIPreProc::attach_preproc(CHAR* param)
 						if (((CCombinedFeatures*) f_train)->check_feature_obj_compatibility((CCombinedFeatures*) f_test) )
 						{
 							//preprocess the last test feature obj
-							CFeatures* te_feat = ((CCombinedFeatures*) f_test)->get_last_feature_obj();
-							int num_combined= ((CCombinedFeatures*) f_test)->get_num_feature_obj();
-
+							CFeatures* te_feat = ((CCombinedFeatures*) f_test)->get_first_feature_obj();
 							CFeatures* tr_feat = ((CCombinedFeatures*) f_train)->get_first_feature_obj();
-							if (num_combined && tr_feat && te_feat)
+
+							INT num_combined= ((CCombinedFeatures*) f_test)->get_num_feature_obj();
+							ASSERT(((CCombinedFeatures*) f_train)->get_num_feature_obj() == num_combined);
+
+							if (!(num_combined && tr_feat && te_feat))
+								CIO::message(M_ERROR, "one of the combined features has no sub-features ?!\n");
+
+							CIO::message(M_INFO, "BEGIN PREPROCESSING COMBINED FEATURES (%d sub-featureobjects)\n", num_combined);
+							
+							int n=0;
+							while (n<num_combined && tr_feat && te_feat)
 							{
-								//fish out the corresponding train feature obj
-								num_combined--;
-								while ( (num_combined>0) && ((tr_feat = ((CCombinedFeatures*) f_train)->get_next_feature_obj()) != NULL) )
-									num_combined--;
-
-								if (num_combined != 0)
-									CIO::message(M_ERROR, "one of the combined testfeatures has no sub-features ?!\n");
-
 								// and preprocess using that one 
+								CIO::message(M_INFO, "TRAIN ");
+								tr_feat->list_feature_obj();
+								CIO::message(M_INFO, "TEST ");
+								te_feat->list_feature_obj();
 								preprocess_features(tr_feat, te_feat, force);
 
-								result=true;
+								tr_feat = ((CCombinedFeatures*) f_train)->get_next_feature_obj();
+								te_feat = ((CCombinedFeatures*) f_test)->get_next_feature_obj();
+								n++;
 							}
-							else
-								CIO::message(M_ERROR, "one of the combined features has no sub-features ?!\n");
+							ASSERT(n==num_combined);
+							result=true;
+							CIO::message(M_INFO, "END PREPROCESSING COMBINED FEATURES\n");
 						}
 						else
 							CIO::message(M_ERROR, "combined features not compatible\n");
@@ -294,9 +301,15 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 		{
 			// if we don't have a preproc for trainfeatures we 
 			// don't need a preproc for test features
-			CIO::message(M_DEBUG, "%d preprocessors attached to train features\n");
+			CIO::message(M_DEBUG, "%d preprocessors attached to train features %d to test features\n", trainfeat->get_num_preproc(), testfeat->get_num_preproc());
 
-			if (trainfeat->get_num_preproc())
+			if (trainfeat->get_num_preproc() < testfeat->get_num_preproc())
+			{
+				CIO::message(M_ERROR, "more preprocessors attached to test features than to train features\n");
+				return false;
+			}
+
+			if (trainfeat->get_num_preproc() && (trainfeat->get_num_preproc() > testfeat->get_num_preproc()))
 			{
 				for (INT i=0; i<trainfeat->get_num_preproc();  i++)
 				{

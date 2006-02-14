@@ -58,8 +58,14 @@ public:
 	/// get whether specified preprocessor was already applied
 	inline bool is_preprocessed(INT num) { return preprocessed[num]; }
 
+	/// get the number of applied preprocs
+	INT get_num_preprocessed();
+
 	/// get number of preprocessors
-	inline INT get_num_preproc() { return num_preproc; };
+	inline INT get_num_preproc() { return num_preproc; }
+
+	/// clears all preprocs
+	void clean_preprocs();
 
 	/// get cache size
 	inline LONG get_cache_size() { return cache_size; };

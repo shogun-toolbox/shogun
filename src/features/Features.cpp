@@ -63,42 +63,67 @@ CPreProc* CFeatures::get_preproc(INT num)
 		return NULL;
 }
 
+/// get whether specified preprocessor (or all if num=1) was/were already applied
+INT CFeatures::get_num_preprocessed()
+{
+	INT num=0;
+
+	for (INT i=0; i<num_preproc; i++)
+	{
+		if (preprocessed[i])
+			num++;
+	}
+
+	return num;
+}
+
+/// clears all preprocs
+void CFeatures::clean_preprocs()
+{
+	while (del_preproc(0));
+}
+
 /// del current preprocessor
 CPreProc* CFeatures::del_preproc(INT num)
 {
-	INT i,j;
 	CPreProc** pps=NULL; 
 	bool* preprocd=NULL; 
 	CPreProc* removed_preproc=NULL;
 
-	if (num_preproc>0)
+	if (num_preproc>0 && num<num_preproc)
+	{
 		removed_preproc=preproc[num];
 
-	if (num_preproc>1)
-	{
-		pps= new CPreProc*[num_preproc-1];
-		preprocd= new bool[num_preproc-1];
-	}
-
-	if (pps && preprocd)
-	{
-		j=0;
-		for (i=0; i<num_preproc; i++)
+		if (num_preproc>1)
 		{
-			if (i!=num)
+			pps= new CPreProc*[num_preproc-1];
+			preprocd= new bool[num_preproc-1];
+
+			if (pps && preprocd)
 			{
-				pps[j++]=preproc[i];
-				preprocd[j++]=preprocessed[i];
+				INT j=0;
+				for (INT i=0; i<num_preproc; i++)
+				{
+					if (i!=num)
+					{
+						pps[j]=preproc[i];
+						preprocd[j]=preprocessed[i];
+						j++;
+					}
+				}
 			}
 		}
+
+		delete[] preproc;
+		preproc=pps;
+		delete[] preprocessed;
+		preprocessed=preprocd;
+
 		num_preproc--;
+
+		for (INT i=0; i<num_preproc; i++)
+			CIO::message(M_INFO, "preproc[%d]=%s\n",i, preproc[i]->get_name()) ;
 	}
-
-	delete[] preproc;
-	preproc=pps;
-
-	for (i=0; i<num_preproc; i++)
-		CIO::message(M_INFO, "preproc[%d]=%s\n",i, preproc[i]->get_name()) ;
 
 	return removed_preproc;
 }

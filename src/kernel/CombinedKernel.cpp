@@ -302,8 +302,8 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, REAL* resul
 	}
 	else
 	{
-		ASSERT(sv_idx!=NULL || sv_count==0) ;
-		ASSERT(sv_weight!=NULL || sv_count==0) ;
+		ASSERT(IDX!=NULL || num_suppvec==0) ;
+		ASSERT(weights!=NULL || num_suppvec==0) ;
 
 		if (k->get_combined_kernel_weight()!=0)
 		{ // compute the usual way for any non-optimized kernel
@@ -311,8 +311,8 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, REAL* resul
 			{
 				int j=0;
 				REAL sub_result=0 ;
-				for (j=0; j<sv_count; j++)
-					sub_result += sv_weight[j] * k->kernel(sv_idx[j], i) ;
+				for (j=0; j<num_suppvec; j++)
+					sub_result += weights[j] * k->kernel(IDX[j], i) ;
 
 				result[i] += k->get_combined_kernel_weight()*sub_result ;
 			}
