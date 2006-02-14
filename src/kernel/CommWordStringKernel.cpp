@@ -272,6 +272,8 @@ void CCommWordStringKernel::clear_normal()
 
 bool CCommWordStringKernel::init_optimization(INT count, INT *IDX, REAL * weights) 
 {
+	delete_optimization();
+
 	if (count<=0)
 	{
 		set_is_initialized(true);

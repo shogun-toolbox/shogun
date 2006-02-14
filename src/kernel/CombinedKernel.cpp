@@ -263,6 +263,10 @@ REAL* CCombinedKernel::compute_batch(INT& num_vec, REAL* result, INT num_suppvec
 	ASSERT(result);
 	memset(result, 0, sizeof(REAL)*num_vec);
 
+	//we have to do the optimization business ourselves but lets
+	//make sure we start cleanly
+	delete_optimization();
+
 	CListElement<CKernel*> * current = NULL ;	
 	CKernel * k = get_first_kernel(current) ;
 
@@ -279,6 +283,9 @@ REAL* CCombinedKernel::compute_batch(INT& num_vec, REAL* result, INT num_suppvec
 
 		k = get_next_kernel(current);
 	}
+
+	//clean up
+	delete_optimization();
 
 	return result;
 }
