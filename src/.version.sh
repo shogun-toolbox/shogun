@@ -3,11 +3,12 @@
 OS=`uname -s`
 case "$OS" in
 	CYGWIN*|Linux)
-	year=`find ./ -name 'Entries' -exec date -r {} +%Y \; | sort -nr | head -n 1 2>/dev/null`
-	month=`find ./ -name 'Entries' -exec date -r {} +%m \; | sort -nr | head -n 1 2>/dev/null`
-	day=`find ./ -name 'Entries' -exec date -r {} +%d \; | sort -nr | head -n 1 2>/dev/null`
-	hour=`find ./ -name 'Entries' -exec date -r {} +%H \; | sort -nr | head -n 1 2>/dev/null`
-	minute=`find ./ -name 'Entries' -exec date -r {} +%M \; | sort -nr | head -n 1 2>/dev/null`
+	FILE=`find ./ -name 'Entries' -type f | ls -1t | head -n1`
+	year=`date -r "$FILE" +%Y`
+	month=`date -r "$FILE" +%m`
+	day=`date -r "$FILE" +%d`
+	hour=`date -r "$FILE" +%H`
+	minute=`date -r "$FILE" +%M`
 	;;
 	BSD/OS)
 	LS=`ls -lT CVS/Entries`
