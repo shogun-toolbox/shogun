@@ -29,6 +29,7 @@ endif
 SRCDIR = .
 
 # SRC/OBJFILES lie all in the subdir of SRCDIR
+CVSEntries = $(shell find $(SRCDIR)/ -name Entries -type f)
 HEADERFILES	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_HEADER)" )
 SRCFILES 	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )
 ifeq (yes,$(USE_SWIG))
@@ -122,7 +123,7 @@ depend:	Makefile .config lib/versionstring.h
 	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)" ) -o$(EXT_SRC_SWIG) -f - >>.depend
 	find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_INP_SWIG)" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" |  cut -c 3- | $(PYTHON) .generate_link_dependencies.py >>.depend
 
-lib/versionstring.h:	CVS/Entries
+lib/versionstring.h:	$(CVSEntries)
 		chmod u+x ./.version.sh
 		./.version.sh `$(COMP_CPP) -dumpversion` >lib/versionstring.h
 

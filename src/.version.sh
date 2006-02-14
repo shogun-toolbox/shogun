@@ -2,14 +2,14 @@
 
 OS=`uname -s`
 case "$OS" in
-     CYGWIN*|Linux)
-	year=`date -r CVS/Entries +%Y 2>/dev/null`
-	month=`date -r CVS/Entries +%m 2>/dev/null`
-	day=`date -r CVS/Entries +%d 2>/dev/null`
-	hour=`date -r CVS/Entries +%H 2>/dev/null`
-	minute=`date -r CVS/Entries +%M 2>/dev/null`
+	CYGWIN*|Linux)
+	year=`find ./ -name 'Entries' -exec date -r {} +%Y \; | sort -nr | head -n 1 2>/dev/null`
+	month=`find ./ -name 'Entries' -exec date -r {} +%m \; | sort -nr | head -n 1 2>/dev/null`
+	day=`find ./ -name 'Entries' -exec date -r {} +%d \; | sort -nr | head -n 1 2>/dev/null`
+	hour=`find ./ -name 'Entries' -exec date -r {} +%H \; | sort -nr | head -n 1 2>/dev/null`
+	minute=`find ./ -name 'Entries' -exec date -r {} +%M \; | sort -nr | head -n 1 2>/dev/null`
 	;;
-     BSD/OS)
+	BSD/OS)
 	LS=`ls -lT CVS/Entries`
 	year=`echo $LS | awk -F" " '{print $9}'`
 	month=`echo $LS | awk -F" " '{print $6}'`
@@ -18,7 +18,7 @@ case "$OS" in
 	hour=`echo $hms | awk -F":" '{print $1}'`
 	minute=`echo $hms | awk -F":" '{print $2}'`
 	;;
-     Darwin|*) 
+	Darwin|*) 
 	year=`date +%Y 2>/dev/null`
 	month=`date +%m 2>/dev/null`
 	day=`date +%d 2>/dev/null`
@@ -29,7 +29,7 @@ esac
 
 extra=""
 if test "$1" ; then
- extra="_$1"
+	extra="_$1"
 fi
 
 
