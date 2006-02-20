@@ -59,8 +59,10 @@ typedef float SHORTREAL;
 typedef SHORTREAL* P_SHORTREAL;
 
 /// Type REAL is 8 bytes in size
+namespace {
 typedef double REAL;
 typedef REAL* P_REAL;
+}
 
 /// Type LONGREAL is 16 bytes in size
 typedef long double LONGREAL;

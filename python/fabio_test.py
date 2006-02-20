@@ -34,8 +34,9 @@ import features.CharFeatures as cf
 features1 = cf.CCharFeatures(cf.DNA,"fileA.dna")
 features2 = cf.CCharFeatures(cf.DNA,"fileB.dna")
 
-kernel.init(features1,features2,True)
+kernel.init(features1,features1,True)
 kernel.set_precompute_matrix(True,True)
+
 
 import features.Labels as L
 
@@ -68,3 +69,7 @@ svm.classify(trainlabels)
 print 'Trainlabels'
 for i in range(2):
    print trainlabels.get_label(i)
+
+kmat = kernel.getKernelMatrixReal()
+print "Type of kmat is " + str(type(kmat))
+print kmat

@@ -222,3 +222,18 @@ class CKernel
 		SHORTREAL * precomputed_matrix ;
 		void do_precompute_matrix() ;
 };
+
+
+%extend CKernel {
+
+   REAL* getKernelMatrixReal(){
+      int n=0;
+      int m=0;
+      REAL *array=NULL; 
+      if( self->get_kernel_matrix_real(n,m,array) != NULL) {
+         return array;
+      }
+      return NULL;
+   }
+}
+
