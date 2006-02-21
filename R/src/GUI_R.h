@@ -3,8 +3,10 @@
 #include "features/Labels.h"
 #include "features/Features.h"
 
+namespace bla {
 #include <R.h>
 #include <Rinternals.h>
+}
 
 extern "C" {
 
@@ -100,6 +102,6 @@ public:
 	static CHAR* get_mxString(const mxArray* s);
    */
 //	void real_mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]);
-   void shogun(SEXP cmd_list);
+   void shogun(bla::SEXP cmd_list);
 };
 }

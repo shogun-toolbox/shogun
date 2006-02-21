@@ -3,8 +3,14 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "GUI_R.h"
 #include "gui/TextGUI.h"
+namespace bla
+{ 
+#include <R.h>
+#include <Rinternals.h>
+};
+
+#include "GUI_R.h"
 #include "gui/GUI.h"
 
 #include "lib/io.h"
@@ -36,7 +42,7 @@ bool CGUI_R::send_command(CHAR* cmd)
 }
 
 
-#ifdef 0
+#if 0
 /*
 bool CGUI_R::get_hmm(mxArray* retvals[])
 {

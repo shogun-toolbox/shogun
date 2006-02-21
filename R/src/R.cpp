@@ -10,6 +10,8 @@
 #include "gui/TextGUI.h"
 #include "gui/GUI.h"
 
+using namespace bla;
+
 extern "C" {
 
 static CGUI_R gf_R;
