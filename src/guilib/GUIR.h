@@ -1,0 +1,108 @@
+#include "lib/config.h"
+
+#include "features/Labels.h"
+#include "features/Features.h"
+
+namespace bla {
+#include <R.h>
+#include <Rinternals.h>
+#include <R_ext/Rdynload.h>
+}
+
+//extern "C" {
+
+class CGUI_R
+{
+public:
+	CGUI_R();
+
+	// this simply sends a cmd to genefinder
+	// 		gf('send_command', 'cmdline');
+	bool send_command(CHAR* cmd);
+
+// gf('what to do', params ...);
+//
+//
+// 		
+// 		[p,q,a,b]=gf('get_hmm');
+// 		[b,alpha]=gf('get_svm');
+// 		[parms]=gf('get_kernel_init');
+// 		[feature_matrix]=('get_features', 'train|test');
+// 		[labels]=gf('get_labels', 'train|test');
+// 		[parms]=gf('get_preproc_init');
+// 		[p,q,a,b]=gf('get_hmm_defs', 'cmdline');
+// 		OBSOLETE gf('get_obs', 'cmdline');
+//
+// 		
+// 		gf('set_hmm', p,q,a,b);
+// 		gf('set_svm', b,alpha);
+// 		gf('set_kernel_init', parms);
+// 		gf('set_features', 'train|test', feature_matrix);
+// 		gf('set_labels', 'train|test', labels);
+// 		gf('set_preproc_init', parms);
+// 		gf('set_hmm_defs', p,q,a,b);
+// 		OBSOLETE gf('set_obs', 'cmdline');
+
+   /*
+	bool get_hmm(mxArray* retvals[]);
+	bool set_hmm(const mxArray* vals[]);
+	bool best_path(mxArray* retvals[], int dim);
+	bool best_path_no_b(const mxArray* vals[], mxArray* retvals[]) ;
+	bool model_prob_no_b_trans(const mxArray* vals[], mxArray* retvals[]) ;
+	bool best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[]) ;
+	bool best_path_2struct(const mxArray* vals[], mxArray* retvals[]) ;
+	bool best_path_trans(const mxArray* vals[], mxArray* retvals[]) ;
+	bool best_path_trans_simple(const mxArray* vals[], mxArray* retvals[]) ;
+	bool append_hmm(const mxArray* vals[]);
+	bool hmm_classify_example(mxArray* retvals[], int idx);
+	bool hmm_classify(mxArray* retvals[]);
+	bool one_class_hmm_classify_example(mxArray* retvals[], int idx);
+	bool one_class_hmm_classify(mxArray* retvals[], bool linear);
+
+	bool get_svm( );
+	bool set_svm(const );
+	bool svm_classify_example(mxArray* retvals[], int idx);
+	bool svm_classify(mxArray* retvals[]);
+	bool classify(mxArray* retvals[]);
+
+	bool set_plugin_estimate(const mxArray* vals[]);
+	bool get_plugin_estimate(mxArray* retvals[]);
+	bool plugin_estimate_classify_example(mxArray* retvals[], int idx);
+	bool plugin_estimate_classify(mxArray* retvals[]);
+
+	//bool get_kernel_init();
+	bool get_features(mxArray* retvals[], CFeatures* features);
+	bool set_kernel_parameters(const mxArray* mx_arg);
+	CFeatures* set_features(const mxArray* vals[], int nrhs);
+
+	bool get_kernel_matrix(mxArray* retvals[]);
+	bool get_kernel_optimization(mxArray* retvals[]);
+
+	bool set_custom_kernel(const mxArray* vals[], bool source_is_diag, bool dest_is_diag) ;
+
+	// MKL Kernel stuff
+	bool compute_by_subkernels(mxArray* retvals[]);
+	bool get_subkernel_weights(mxArray* retvals[]);
+	bool get_last_subkernel_weights(mxArray* retvals[]);
+	bool set_subkernel_weights(const mxArray *mx_arg);
+	bool set_last_subkernel_weights(const mxArray *mx_arg);
+	bool get_WD_position_weights(mxArray* retvals[]);
+	bool set_WD_position_weights(const mxArray *mx_arg);
+
+	bool get_version(mxArray* retvals[]);
+	bool get_svm_objective(mxArray* retvals[]);
+	bool get_labels(mxArray* retvals[], CLabels* label);
+	CLabels* set_labels(const mxArray* vals[]);
+	//bool get_preproc_init();
+	//bool get_hmm_defs();
+
+	//bool set_kernel_init();
+	//bool set_preproc_init();
+	//bool set_hmm_defs();
+	
+	static CHAR* get_mxString(const mxArray* s);
+   */
+//	void real_mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]);
+   void shogun(bla::SEXP cmd_list);
+};
+//} extern "C"
