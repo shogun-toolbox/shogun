@@ -1,5 +1,6 @@
 #include "lib/config.h"
 
+#ifdef HAVE_R
 #include <stdio.h>
 #include <string.h>
 
@@ -783,3 +784,4 @@ void shogun(SEXP cmd_list)
 }
 }
 //} // extern "C"
+#endif

@@ -22,6 +22,7 @@ EXT_OBJ_C=c.o
 #the defaults are
 _readline=no
 _matlab=no
+_R=no
 _python=no
 _octave=no
 _svm_mpi=no
@@ -343,6 +344,8 @@ for ac_option do
   --enable-python)		_python=yes	;;
   --disable-matlab)		_matlab=no	;;
   --enable-matlab)		_matlab=yes	;;
+  --disable-R)		_R=no	;;
+  --enable-R)		_R=yes	;;
   --disable-octave)		_octave=no	;;
   --enable-octave)		_octave=yes	;;
   --disable-svmmpi)		_svmmpi=no	;;
@@ -1160,19 +1163,13 @@ EOF
 
 set_opts()
 {
-	if test "$_python" = yes
-	then
-		INCLUDES="-I/usr/include/python2.4 $INCLUDES"
-		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_CPP"
-		COMPFLAGS_C="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_C"
-		LINKFLAGS="-pthread -shared -L/usr/lib/python2.4/config -lpython2.4 $LINKFLAGS"
-		TARGET="gf.so"
-	fi
-
 	if test "$_matlab" = yes
 	then
-			COMPFLAGS_CPP="$COMPFLAGS_CPP -fexceptions"
-			COMPFLAGS_C="$COMPFLAGS_C -fexceptions"
+		HAVE_MATLAB='#define HAVE_MATLAB 1'
+
+		COMPFLAGS_CPP="$COMPFLAGS_CPP -fexceptions"
+		COMPFLAGS_C="$COMPFLAGS_C -fexceptions"
+
 		if osf1
 		then
 			LINKFLAGS="-pthread -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*' -L/opt/matlab-6.5-13/bin/alpha -lmx -lmex -lmat $LINKFLAGS"
@@ -1219,6 +1216,8 @@ set_opts()
 
 	if test "$_octave" = yes
 	then
+		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
+
 		LINKFLAGS="-pthread -shared -L/usr/lib/octave-2.1.57 -loctinterp -loctave -lcruft -s /usr/lib/liblapack-3.so /usr/lib/libblas-3.so -lfftw3 -lreadline -lncurses -ldl -lhdf5 -lz -lm -L/usr/lib/gcc-lib/powerpc-linux/3.3.4 -L/usr/lib/gcc-lib/powerpc-linux/3.3.4/../../.. -lhdf5 -lz -lfrtbegin -lg2c -lm -lgcc_s $LINKFLAGS"
 		TARGET="gf.oct"
 		INCLUDES="$INCLUDES -I/usr/include/octave-2.1.57 -I/usr/include/octave-2.1.57/octave"
@@ -1242,16 +1241,31 @@ set_opts()
 	if test "$_python" = yes
 	then
 		HAVE_PYTHON='#define HAVE_PYTHON 1'
+
+		INCLUDES="-I/usr/include/python2.4 $INCLUDES"
+		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_CPP"
+		COMPFLAGS_C="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_C"
+		LINKFLAGS="-pthread -shared -L/usr/lib/python2.4/config -lpython2.4 $LINKFLAGS"
+		TARGET="gf.so"
 	fi
 
-	if test "$_matlab" = yes
+	if test "$_R" = yes
 	then
-		HAVE_MATLAB='#define HAVE_MATLAB 1'
-	fi
+		HAVE_R='#define HAVE_R 1'
 
-	if test "$_octave" = yes
-	then
-		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
+		if test -d /usr/lib/R/include 
+		then
+			INCLUDES="-I/usr/lib/R/include $INCLUDES"
+		fi
+
+		if test -d /usr/share/R/include 
+		then
+			INCLUDES="-I/usr/share/R/include $INCLUDES"
+		fi
+		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_CPP"
+		COMPFLAGS_C="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_C"
+		LINKFLAGS="-pthread -shared $LINKFLAGS"
+		TARGET="gf.so"
 	fi
 
 	if test "$_cplex" = yes
@@ -1431,6 +1445,7 @@ cat >lib/config.h <<EOF
 $HAVE_READLINE
 $HAVE_PYTHON
 $HAVE_MATLAB
+$HAVE_R
 $HAVE_OCTAVE
 $HAVE_LARGEFILE
 $HAVE_SWIG
