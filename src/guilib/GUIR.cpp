@@ -1203,114 +1203,116 @@ SEXP CGUI_R::get_features(CFeatures* f)
 {
 	if (f)
 	{
-      SEXP feat;
+      SEXP feat=NULL;
 
       //Rprintf("feature class is %d\n", f->get_feature_class() );
 		switch (f->get_feature_class())
 		{
 			case C_SIMPLE:
-            //Rprintf("feature type is %d\n", f->get_feature_type() );
+				//Rprintf("feature type is %d\n", f->get_feature_type() );
 				switch (f->get_feature_type())
 				{
 					case F_DREAL:
-
-						int rows = ((CRealFeatures*) f)->get_num_vectors();
-                  int cols = ((CRealFeatures*) f)->get_num_features();
-                  
-                  //Rprintf("rows/cols %d/%d\n", rows , cols );
-
-                  PROTECT( feat = allocMatrix(REALSXP, rows, cols) );
-	   
-						for (INT i=0; i<((CRealFeatures*) f)->get_num_vectors(); i++)
-                  {
-                     INT num_feat;
-                     bool free_vec;
-                     DREAL* vec=((CRealFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
-               
-                     for (INT j=0; j<num_feat; j++) {
-                        //Rprintf("Value at %d/%d: %f\n", i,j, (double) vec[j]  );
-                        REAL(feat)[cols*i+j] = (double) vec[j];
-                     }
-                     ((CRealFeatures*) f)->free_feature_vector(vec, i, free_vec);
-                  }
-
-                  UNPROTECT(1) ;
-						break;
-/*
-					case F_WORD:
-
-						if (mx_feat)
 						{
-							WORD* feat=(WORD*) mxGetData(mx_feat);
 
-							for (INT i=0; i<((CWordFeatures*) f)->get_num_vectors(); i++)
+							int rows = ((CRealFeatures*) f)->get_num_features();
+							int cols = ((CRealFeatures*) f)->get_num_vectors();
+
+							//Rprintf("rows/cols %d/%d\n", rows , cols );
+
+							PROTECT( feat = allocMatrix(REALSXP, rows, cols) );
+
+							for (INT i=0; i<((CRealFeatures*) f)->get_num_vectors(); i++)
 							{
 								INT num_feat;
 								bool free_vec;
-								WORD* vec=((CWordFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
-								for (INT j=0; j<num_feat; j++)
-									feat[((CWordFeatures*) f)->get_num_vectors()*j+i]= vec[j];
-								((CWordFeatures*) f)->free_feature_vector(vec, i, free_vec);
+								DREAL* vec=((CRealFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
+
+								for (INT j=0; j<num_feat; j++) {
+									//Rprintf("Value at %d/%d: %f\n", i,j, (double) vec[j]  );
+									REAL(feat)[rows*i+j] = (double) vec[j];
+								}
+								((CRealFeatures*) f)->free_feature_vector(vec, i, free_vec);
 							}
+
+							UNPROTECT(1) ;
+							break;
 						}
+						/*
+						   case F_WORD:
+
+						   if (mx_feat)
+						   {
+						   WORD* feat=(WORD*) mxGetData(mx_feat);
+
+						   for (INT i=0; i<((CWordFeatures*) f)->get_num_vectors(); i++)
+						   {
+						   INT num_feat;
+						   bool free_vec;
+						   WORD* vec=((CWordFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
+						   for (INT j=0; j<num_feat; j++)
+						   feat[((CWordFeatures*) f)->get_num_vectors()*j+i]= vec[j];
+						   ((CWordFeatures*) f)->free_feature_vector(vec, i, free_vec);
+						   }
+						   }
+						   break;
+						   case F_SHORT:
+						   mx_feat=mxCreateNumericMatrix(((CShortFeatures*) f)->get_num_vectors(), ((CShortFeatures*) f)->get_num_features(), mxINT16_CLASS, mxDREAL);
+
+						   if (mx_feat)
+						   {
+						   SHORT* feat=(SHORT*) mxGetData(mx_feat);
+
+						   for (INT i=0; i<((CShortFeatures*) f)->get_num_vectors(); i++)
+						   {
+						   INT num_feat;
+						   bool free_vec;
+						   SHORT* vec=((CShortFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
+						   for (INT j=0; j<num_feat; j++)
+						   feat[((CShortFeatures*) f)->get_num_vectors()*j+i]= vec[j];
+						   ((CShortFeatures*) f)->free_feature_vector(vec, i, free_vec);
+						   }
+						   }
+						   break;
+						   case F_CHAR:
+						   mx_feat=mxCreateNumericMatrix(((CCharFeatures*) f)->get_num_vectors(), ((CCharFeatures*) f)->get_num_features(), mxCHAR_CLASS, mxDREAL);
+
+						   if (mx_feat)
+						   {
+						   CHAR* feat=(CHAR*) mxGetData(mx_feat);
+
+						   for (INT i=0; i<((CCharFeatures*) f)->get_num_vectors(); i++)
+						   {
+						   INT num_feat;
+						   bool free_vec;
+						   CHAR* vec=((CCharFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
+						   for (INT j=0; j<num_feat; j++)
+						   feat[((CCharFeatures*) f)->get_num_vectors()*j+i]= vec[j];
+						   ((CCharFeatures*) f)->free_feature_vector(vec, i, free_vec);
+						   }
+						   }
+						   break;
+						   case F_BYTE:
+						   mx_feat=mxCreateNumericMatrix(((CByteFeatures*) f)->get_num_vectors(), ((CByteFeatures*) f)->get_num_features(), mxUINT8_CLASS, mxDREAL);
+
+						   if (mx_feat)
+						   {
+						   BYTE* feat=(BYTE*) mxGetData(mx_feat);
+
+						   for (INT i=0; i<((CByteFeatures*) f)->get_num_vectors(); i++)
+						   {
+						   INT num_feat;
+						   bool free_vec;
+						   BYTE* vec=((CByteFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
+						   for (INT j=0; j<num_feat; j++)
+						   feat[((CByteFeatures*) f)->get_num_vectors()*j+i]= vec[j];
+						   ((CByteFeatures*) f)->free_feature_vector(vec, i, free_vec);
+						   }
+						   }
 						break;
-					case F_SHORT:
-						mx_feat=mxCreateNumericMatrix(((CShortFeatures*) f)->get_num_vectors(), ((CShortFeatures*) f)->get_num_features(), mxINT16_CLASS, mxDREAL);
-
-						if (mx_feat)
-						{
-							SHORT* feat=(SHORT*) mxGetData(mx_feat);
-
-							for (INT i=0; i<((CShortFeatures*) f)->get_num_vectors(); i++)
-							{
-								INT num_feat;
-								bool free_vec;
-								SHORT* vec=((CShortFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
-								for (INT j=0; j<num_feat; j++)
-									feat[((CShortFeatures*) f)->get_num_vectors()*j+i]= vec[j];
-								((CShortFeatures*) f)->free_feature_vector(vec, i, free_vec);
-							}
-						}
-						break;
-					case F_CHAR:
-						mx_feat=mxCreateNumericMatrix(((CCharFeatures*) f)->get_num_vectors(), ((CCharFeatures*) f)->get_num_features(), mxCHAR_CLASS, mxDREAL);
-
-						if (mx_feat)
-						{
-							CHAR* feat=(CHAR*) mxGetData(mx_feat);
-
-							for (INT i=0; i<((CCharFeatures*) f)->get_num_vectors(); i++)
-							{
-								INT num_feat;
-								bool free_vec;
-								CHAR* vec=((CCharFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
-								for (INT j=0; j<num_feat; j++)
-									feat[((CCharFeatures*) f)->get_num_vectors()*j+i]= vec[j];
-								((CCharFeatures*) f)->free_feature_vector(vec, i, free_vec);
-							}
-						}
-						break;
-					case F_BYTE:
-						mx_feat=mxCreateNumericMatrix(((CByteFeatures*) f)->get_num_vectors(), ((CByteFeatures*) f)->get_num_features(), mxUINT8_CLASS, mxDREAL);
-
-						if (mx_feat)
-						{
-							BYTE* feat=(BYTE*) mxGetData(mx_feat);
-
-							for (INT i=0; i<((CByteFeatures*) f)->get_num_vectors(); i++)
-							{
-								INT num_feat;
-								bool free_vec;
-								BYTE* vec=((CByteFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
-								for (INT j=0; j<num_feat; j++)
-									feat[((CByteFeatures*) f)->get_num_vectors()*j+i]= vec[j];
-								((CByteFeatures*) f)->free_feature_vector(vec, i, free_vec);
-							}
-						}
-						break;
+						*/
 					default:
-						CIO::message(M_ERROR, "not implemented\n");
-            */
+							CIO::message(M_ERROR, "not implemented\n");
 				}
 				break;
 			case C_SPARSE:
@@ -1321,41 +1323,41 @@ SEXP CGUI_R::get_features(CFeatures* f)
 						CIO::message(M_ERROR, "not implemented\n");
 				};
 				break;
-            /*
-			case C_STRING:
-				switch (f->get_feature_type())
-				{
-					case F_CHAR:
-						{
-							int num_vec=f->get_num_vectors();
-							mx_feat=mxCreateCellMatrix(1,num_vec);
+				/*
+				   case C_STRING:
+				   switch (f->get_feature_type())
+				   {
+				   case F_CHAR:
+				   {
+				   int num_vec=f->get_num_vectors();
+				   mx_feat=mxCreateCellMatrix(1,num_vec);
 
-							for (int i=0; i<num_vec; i++)
-							{
-								INT len=0;
-								CHAR* fv=((CStringFeatures<CHAR>*) f)->get_feature_vector(i, len);
+				   for (int i=0; i<num_vec; i++)
+				   {
+				   INT len=0;
+				   CHAR* fv=((CStringFeatures<CHAR>*) f)->get_feature_vector(i, len);
 
-								if (len>0)
-								{
-									char* str=new char[len+1];
-									strncpy(str, fv, len);
-									str[len]='\0';
+				   if (len>0)
+				   {
+				   char* str=new char[len+1];
+				   strncpy(str, fv, len);
+				   str[len]='\0';
 
-									mxSetCell(mx_feat,i,mxCreateString(str));
-								}
-								else
-									mxSetCell(mx_feat,i,mxCreateString(""));
-							}
-						}
-						break;
-					default:
-						CIO::message(M_ERROR, "not implemented\n");
-				};
-            
-				break;
+				   mxSetCell(mx_feat,i,mxCreateString(str));
+				   }
+				   else
+				   mxSetCell(mx_feat,i,mxCreateString(""));
+				   }
+				   }
+				   break;
+				   default:
+				   CIO::message(M_ERROR, "not implemented\n");
+				   };
+
+				   break;
+				   */
 			default:
-				CIO::message(M_ERROR, "not implemented\n");
-            */
+				   CIO::message(M_ERROR, "not implemented\n");
 		}
       
 		return feat;
@@ -1445,8 +1447,8 @@ CFeatures* CGUI_R::set_features(SEXP feat)
 			{
 				f= new CRealFeatures((LONG) 0);
 
-				INT num_vec=rows;
-				INT num_feat=cols;
+				INT num_vec=cols;
+				INT num_feat=rows;
 				DREAL* fm=new DREAL[num_vec*num_feat];
 				ASSERT(fm);
 
@@ -1609,7 +1611,7 @@ SEXP CGUI_R::get_labels(CLabels* label)
       PROTECT( lab = allocVector(INTSXP, label->get_num_labels()) );
 	   
       for (int i=0; i< label->get_num_labels(); i++)
-		   INTEGER(lab)[i]=label->get_label(i);
+		   INTEGER(lab)[i]=label->get_int_label(i);
       
       UNPROTECT(1) ;
       return lab ;

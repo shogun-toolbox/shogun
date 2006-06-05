@@ -1,4 +1,4 @@
 #!/bin/bash
 
-./configure.sg --enable-R 
+./configure.sg --enable-R --disable-lapack
 #--enable-debug

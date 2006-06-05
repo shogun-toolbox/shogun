@@ -159,6 +159,284 @@ SEXP return_test(SEXP args) {
    return ans;
 }
 
+SEXP sg_helper(SEXP args)
+{
+#ifdef DEBUG
+	Rprintf("length of args %d\n", length(args));
+#endif
+
+	int cmd_len = length(args)-1;
+	if ( cmd_len < 1 )
+		CIO::message(M_ERROR,"No input arguments supplied.");
+
+	args = CDR(args); /* pop "sg" out of list */
+	CHAR* action=CHAR(VECTOR_ELT(CAR(args), 0));
+
+#ifdef DEBUG
+	Rprintf("action is %s\n", action);
+#endif
+
+	args = CDR(args); /* pop action out of list */
+
+	if (action)
+	{
+		if (!strncmp(action, N_SEND_COMMAND, strlen(N_SEND_COMMAND)))
+		{
+			if (cmd_len==2)
+			{
+				CHAR* cmd=CHAR(STRING_ELT(CAR(args),0));
+#ifdef DEBUG
+				Rprintf("command is %s\n", cmd);
+#endif
+				sg_R.send_command(cmd);
+			}
+			else
+				CIO::message(M_ERROR, "usage is sg('send_command', 'cmdline')");
+		}
+
+		else if (!strncmp(action, N_HELP, strlen(N_HELP)))
+		{
+			if (cmd_len==1)
+			{
+				sg_R.send_command("help");
+			}
+			else
+				CIO::message(M_ERROR, "usage is sg('help')");
+		}
+
+		else if (!strncmp(action, N_GET_VERSION, strlen(N_GET_VERSION)))
+		{
+			return sg_R.get_version();
+		}
+
+		else if (!strncmp(action, N_GET_SVM, strlen(N_GET_SVM)))
+		{
+			return sg_R.get_svm();
+		}
+
+		/*
+		   else if (!strncmp(action, N_SVM_CLASSIFY_EXAMPLE, strlen(N_SVM_CLASSIFY_EXAMPLE)))
+		   {
+		   if (cmd_len==2)
+		   {
+		   if ( isDouble(VECTOR_ELT,(VECTOR_ELT(args, 1)),1) )
+		   {
+		   double* idx=REALSXP(VECTOR_ELT(args, 1));
+
+		   mxGetPr(prhs[1]);
+
+		   if (!sg_R.svm_classify_example(plhs, (int) (*idx) ))
+		   CIO::message(M_ERROR, "svm_classify_example failed");
+		   }
+		   else
+		   CIO::message(M_ERROR, "usage is [result]=sg('svm_classify_example', feature_vector_index)");
+		   }
+		   else
+		   CIO::message(M_ERROR, "usage is [result]=sg('svm_classify_example', feature_vector_index)");
+		   }
+		   */
+		   else if (!strncmp(action, N_GET_HMM, strlen(N_GET_HMM)))
+		   {
+			   return sg_R.get_hmm();
+			   //CIO::message(M_ERROR, "usage is [p,q,a,b]=sg('get_hmm')");
+		   }
+
+		   else if (!strncmp(action, N_SVM_CLASSIFY, strlen(N_SVM_CLASSIFY)))
+		   {
+			   return sg_R.svm_classify();
+		   }
+
+		   else if (!strncmp(action, N_HMM_CLASSIFY, strlen(N_HMM_CLASSIFY)))
+		   {
+			   return sg_R.hmm_classify();
+		   }
+
+		   else if (!strncmp(action, N_ADD_FEATURES, strlen(N_ADD_FEATURES)))
+		   {
+			   //	if (cmd_len>=3) 
+			   // {
+			   CHAR* target=CHAR(STRING_ELT(CAR(args),0));
+			   args = CDR(args); /* pop target out of list */
+
+			   if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
+					   (!strncmp(target, "TEST", strlen("TEST"))) ) 
+			   {
+
+				   SEXP features_mat = CAR(args); // Maybe results in NULL pointer 
+				   args = CDR(args); /* pop features out of list */
+
+				   CFeatures* features= sg_R.set_features(features_mat);
+
+				   if (features)
+				   {
+					   if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+					   {
+#ifdef DEBUG
+						   Rprintf("Adding features.\n");
+#endif
+						   gui->guifeatures.add_train_features(features);
+					   }
+					   else if (!strncmp(target, "TEST", strlen("TEST")))
+					   {
+						   gui->guifeatures.add_test_features(features);
+					   }
+				   }
+				   else
+					   CIO::message(M_ERROR, "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
+			   }
+			   else
+				   CIO::message(M_ERROR, "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
+			   /*
+				  }
+				  else 
+				  CIO::message(M_ERROR, "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
+				  CIO::message(M_INFO, "done\n");
+				  */
+		   }
+
+		   else if (!strncmp(action, N_SET_FEATURES, strlen(N_SET_FEATURES)))
+		   {
+			   if (cmd_len>=3)
+			   {
+				   CHAR* target=CHAR(STRING_ELT(CAR(args),0));
+				   args = CDR(args); /* pop target out of list */
+
+				   if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
+						   (!strncmp(target, "TEST", strlen("TEST"))) ) 
+				   {
+					   SEXP features_mat = CAR(args); // Maybe results in NULL pointer 
+					   args = CDR(args); /* pop features out of list */
+					   CFeatures* features = sg_R.set_features(features_mat);
+
+					   if (features)
+					   {
+						   if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+						   {
+#ifdef DEBUG
+							   Rprintf("Setting features.\n");
+#endif
+							   gui->guifeatures.set_train_features(features);
+						   }
+						   else if (!strncmp(target, "TEST", strlen("TEST")))
+						   {
+							   gui->guifeatures.set_test_features(features);
+						   }
+					   }
+					   else
+						   CIO::message(M_ERROR, "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
+				   }
+				   else
+					   CIO::message(M_ERROR, "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
+			   }
+			   else
+				   CIO::message(M_ERROR, "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
+			   CIO::message(M_INFO, "done\n");
+		   }
+
+
+		   else if (!strncmp(action, N_GET_FEATURES, strlen(N_GET_FEATURES)))
+		   {
+			   CFeatures* features=NULL;
+			   CHAR* target=CHAR(STRING_ELT(CAR(args),0));
+			   args = CDR(args); /* pop target out of list */
+
+			   if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+			   {
+				   features=gui->guifeatures.get_train_features();
+			   }
+			   else if (!strncmp(target, "TEST", strlen("TEST")))
+			   {
+				   features=gui->guifeatures.get_test_features();
+			   }
+			   //delete[] target;
+
+			   if (features)
+				   return sg_R.get_features(features);
+			   else
+				   CIO::message(M_ERROR, "usage is [features]=sg('get_features', 'TRAIN|TEST')");
+		   }
+
+		   /*
+			* This action returns the either the TEST or TRAIN labels 
+			* which were registered earlier.
+			*
+			*/
+		   else if (!strncmp(action, N_GET_LABELS, strlen(N_GET_LABELS)))
+		   {
+			   CLabels* labels=NULL;
+			   CHAR* target=CHAR(STRING_ELT(CAR(args),0));
+
+			   if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+			   {
+				   labels=gui->guilabels.get_train_labels();
+			   }
+			   else if (!strncmp(target, "TEST", strlen("TEST")))
+			   {
+				   labels=gui->guilabels.get_test_labels();
+			   }
+			   //delete[] target;
+
+			   if (labels)
+				   return sg_R.get_labels(labels);
+			   else
+				   CIO::message(M_ERROR, "usage is [lab]=sg('get_labels', 'TRAIN|TEST')");
+		   }
+
+		   else if (!strncmp(action, N_SET_LABELS, strlen(N_SET_LABELS)))
+		   {
+			   if (cmd_len==3)
+			   { 
+				   CHAR* target=CHAR(STRING_ELT(CAR(args),0));
+				   // pop target out of arglist
+				   args = CDR(args);
+
+				   if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
+						   (!strncmp(target, "TEST", strlen("TEST"))) )
+				   {
+
+					   SEXP labels_vec = CAR(args); // Maybe results in NULL pointer 
+					   args = CDR(args); /* pop labels out of list */
+					   CLabels* labels=sg_R.set_labels(labels_vec);
+
+					   if (labels && target)
+					   {
+						   if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+						   {
+							   gui->guilabels.set_train_labels(labels);
+						   }
+						   else if (!strncmp(target, "TEST", strlen("TEST")))
+						   {
+							   gui->guilabels.set_test_labels(labels);
+						   }
+						   //delete[] target;
+					   }
+					   else
+						   CIO::message(M_ERROR, "usage is sg('set_labels', 'TRAIN|TEST', labels)");
+				   }
+				   else
+					   CIO::message(M_ERROR, "usage is sg('set_labels', 'TRAIN|TEST', labels)");
+			   }
+			   else
+				   CIO::message(M_ERROR, "usage is sg('set_labels', 'TRAIN|TEST', labels)");
+		   }
+
+		   else if (!strncmp(action, N_GET_SUBKERNEL_WEIGHTS, strlen(N_GET_SUBKERNEL_WEIGHTS)))
+		   {
+			   return sg_R.get_subkernel_weights();
+		   }
+
+
+
+		   else if (!strncmp(action, N_GET_KERNEL_MATRIX, strlen(N_GET_KERNEL_MATRIX)))
+		   {
+			   return sg_R.get_kernel_matrix();
+		   }
+
+	}
+
+	return(R_NilValue);
+} // function sg
+
 /* The main function of the shogun R interface. All commands from the R command line
  * to the shogun backend are passed using the syntax:
  * .External("sg", "func", ... ) 
@@ -166,293 +444,22 @@ SEXP return_test(SEXP args) {
 
 SEXP sg(SEXP args)
 {
-   /* The SEXP (Simple Expression) args is a list of arguments of the .External call. 
-    * it consists of "sg", "func" and additional arguments.
-    * */
-   
-   CSignal::set_handler();
+	/* The SEXP (Simple Expression) args is a list of arguments of the .External call. 
+	 * it consists of "sg", "func" and additional arguments.
+	 * */
 
-   if (!gui)
-      gui=new CTextGUI(0, NULL);
+	CSignal::set_handler();
 
-   if (!gui)
-      CIO::message(M_ERROR,"gui could not be initialized.");
+	if (!gui)
+		gui=new CTextGUI(0, NULL);
 
-#ifdef DEBUG
-   Rprintf("lenght of args %d\n", length(args));
-#endif
+	if (!gui)
+		CIO::message(M_ERROR,"gui could not be initialized.");
 
-   int cmd_len = length(args)-1;
-   if ( cmd_len < 1 )
-      CIO::message(M_ERROR,"No input arguments supplied.");
-
-   args = CDR(args); /* pop "sg" out of list */
-   CHAR* action=CHAR(VECTOR_ELT(CAR(args), 0));
-
-#ifdef DEBUG
-   Rprintf("action is %s\n", action);
-#endif
-
-   args = CDR(args); /* pop action out of list */
-
-   if (action)
-   {
-      if (!strncmp(action, N_SEND_COMMAND, strlen(N_SEND_COMMAND)))
-      {
-         if (cmd_len==2)
-         {
-            CHAR* cmd=CHAR(STRING_ELT(CAR(args),0));
-#ifdef DEBUG
-            Rprintf("command is %s\n", cmd);
-#endif
-            sg_R.send_command(cmd);
-         }
-         else
-            CIO::message(M_ERROR, "usage is sg('send_command', 'cmdline')");
-      }
-      
-      else if (!strncmp(action, N_HELP, strlen(N_HELP)))
-      {
-         if (cmd_len==1)
-         {
-            sg_R.send_command("help");
-         }
-         else
-            CIO::message(M_ERROR, "usage is sg('help')");
-      }
-
-		else if (!strncmp(action, N_GET_VERSION, strlen(N_GET_VERSION)))
-		{
-         return sg_R.get_version();
-      }
-
-		else if (!strncmp(action, N_GET_SVM, strlen(N_GET_SVM)))
-		{
-			return sg_R.get_svm();
-		}
-         
-      /*
-		else if (!strncmp(action, N_SVM_CLASSIFY_EXAMPLE, strlen(N_SVM_CLASSIFY_EXAMPLE)))
-		{
-			if (cmd_len==2)
-			{
-				if ( isDouble(VECTOR_ELT,(VECTOR_ELT(args, 1)),1) )
-				{
-				  double* idx=REALSXP(VECTOR_ELT(args, 1));
-                 
-                 mxGetPr(prhs[1]);
-
-				  if (!sg_R.svm_classify_example(plhs, (int) (*idx) ))
-				    CIO::message(M_ERROR, "svm_classify_example failed");
-				}
-				else
-				CIO::message(M_ERROR, "usage is [result]=sg('svm_classify_example', feature_vector_index)");
-			}
-			else
-				CIO::message(M_ERROR, "usage is [result]=sg('svm_classify_example', feature_vector_index)");
-		}
-*/
-		else if (!strncmp(action, N_GET_HMM, strlen(N_GET_HMM)))
-		{
-			return sg_R.get_hmm();
-				//CIO::message(M_ERROR, "usage is [p,q,a,b]=sg('get_hmm')");
-		}
-
-		else if (!strncmp(action, N_SVM_CLASSIFY, strlen(N_SVM_CLASSIFY)))
-		{
-			return sg_R.svm_classify();
-		}
-      
-		else if (!strncmp(action, N_HMM_CLASSIFY, strlen(N_HMM_CLASSIFY)))
-		{
-         return sg_R.hmm_classify();
-		}
-
-		else if (!strncmp(action, N_ADD_FEATURES, strlen(N_ADD_FEATURES)))
-		{
-		//	if (cmd_len>=3) 
-        // {
-            CHAR* target=CHAR(STRING_ELT(CAR(args),0));
-            args = CDR(args); /* pop target out of list */
-
-				if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
-						(!strncmp(target, "TEST", strlen("TEST"))) ) 
-				{
-               
-               SEXP features_mat = CAR(args); // Maybe results in NULL pointer 
-               args = CDR(args); /* pop features out of list */
-               
-					CFeatures* features= sg_R.set_features(features_mat);
-
-					if (features)
-					{
-						if (!strncmp(target, "TRAIN", strlen("TRAIN")))
-						{
-#ifdef DEBUG
-                     Rprintf("Adding features.\n");
-#endif
-							gui->guifeatures.add_train_features(features);
-						}
-						else if (!strncmp(target, "TEST", strlen("TEST")))
-						{
-							gui->guifeatures.add_test_features(features);
-						}
-					}
-					else
-						CIO::message(M_ERROR, "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
-				}
-				else
-					CIO::message(M_ERROR, "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
-            /*
-            }
-			else 
-				CIO::message(M_ERROR, "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
-			CIO::message(M_INFO, "done\n");
-         */
-     }
-
-		else if (!strncmp(action, N_SET_FEATURES, strlen(N_SET_FEATURES)))
-		{
-			if (cmd_len>=3)
-			{
-            CHAR* target=CHAR(STRING_ELT(CAR(args),0));
-            args = CDR(args); /* pop target out of list */
-
-				if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
-						(!strncmp(target, "TEST", strlen("TEST"))) ) 
-				{
-               SEXP features_mat = CAR(args); // Maybe results in NULL pointer 
-               args = CDR(args); /* pop features out of list */
-					CFeatures* features = sg_R.set_features(features_mat);
-
-					if (features)
-					{
-						if (!strncmp(target, "TRAIN", strlen("TRAIN")))
-						{
-#ifdef DEBUG
-                     Rprintf("Setting features.\n");
-#endif
-							gui->guifeatures.set_train_features(features);
-						}
-						else if (!strncmp(target, "TEST", strlen("TEST")))
-						{
-							gui->guifeatures.set_test_features(features);
-						}
-					}
-					else
-						CIO::message(M_ERROR, "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
-				}
-				else
-					CIO::message(M_ERROR, "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
-			}
-			else
-				CIO::message(M_ERROR, "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
-			CIO::message(M_INFO, "done\n");
-		}
-      
-
-		else if (!strncmp(action, N_GET_FEATURES, strlen(N_GET_FEATURES)))
-      {
-         CFeatures* features=NULL;
-         CHAR* target=CHAR(STRING_ELT(CAR(args),0));
-         args = CDR(args); /* pop target out of list */
-
-         if (!strncmp(target, "TRAIN", strlen("TRAIN")))
-         {
-            features=gui->guifeatures.get_train_features();
-         }
-         else if (!strncmp(target, "TEST", strlen("TEST")))
-         {
-            features=gui->guifeatures.get_test_features();
-         }
-         //delete[] target;
-
-         if (features)
-            return sg_R.get_features(features);
-         else
-            CIO::message(M_ERROR, "usage is [features]=sg('get_features', 'TRAIN|TEST')");
-      }
-
-      /*
-       * This action returns the either the TEST or TRAIN labels 
-       * which were registered earlier.
-       *
-       */
-		else if (!strncmp(action, N_GET_LABELS, strlen(N_GET_LABELS)))
-      {
-				CLabels* labels=NULL;
-				CHAR* target=CHAR(STRING_ELT(CAR(args),0));
-
-				if (!strncmp(target, "TRAIN", strlen("TRAIN")))
-				{
-					labels=gui->guilabels.get_train_labels();
-				}
-				else if (!strncmp(target, "TEST", strlen("TEST")))
-				{
-					labels=gui->guilabels.get_test_labels();
-				}
-				//delete[] target;
-
-				if (labels)
-					return sg_R.get_labels(labels);
-				else
-					CIO::message(M_ERROR, "usage is [lab]=sg('get_labels', 'TRAIN|TEST')");
-      }
-
-		else if (!strncmp(action, N_SET_LABELS, strlen(N_SET_LABELS)))
-		{
-			if (cmd_len==3)
-			{ 
-            CHAR* target=CHAR(STRING_ELT(CAR(args),0));
-            // pop target out of arglist
-            args = CDR(args);
-            
-				if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
-						(!strncmp(target, "TEST", strlen("TEST"))) )
-				{
-               
-               SEXP labels_vec = CAR(args); // Maybe results in NULL pointer 
-               args = CDR(args); /* pop labels out of list */
-					CLabels* labels=sg_R.set_labels(labels_vec);
-               
-					if (labels && target)
-					{
-						if (!strncmp(target, "TRAIN", strlen("TRAIN")))
-						{
-							gui->guilabels.set_train_labels(labels);
-						}
-						else if (!strncmp(target, "TEST", strlen("TEST")))
-						{
-							gui->guilabels.set_test_labels(labels);
-						}
-						//delete[] target;
-					}
-					else
-						CIO::message(M_ERROR, "usage is sg('set_labels', 'TRAIN|TEST', labels)");
-				}
-				else
-					CIO::message(M_ERROR, "usage is sg('set_labels', 'TRAIN|TEST', labels)");
-			}
-			else
-				CIO::message(M_ERROR, "usage is sg('set_labels', 'TRAIN|TEST', labels)");
-		}
-
-		else if (!strncmp(action, N_GET_SUBKERNEL_WEIGHTS, strlen(N_GET_SUBKERNEL_WEIGHTS)))
-		{
-	   	return sg_R.get_subkernel_weights();
-		}
-
-
-
-		else if (!strncmp(action, N_GET_KERNEL_MATRIX, strlen(N_GET_KERNEL_MATRIX)))
-		{
-		   return sg_R.get_kernel_matrix();
-		}
-
-   }
-
-   return(R_NilValue);
-   } // function sg
+	SEXP result=sg_helper(args);
+	CSignal::unset_handler();
+	return result;
+}
 
 } // extern C
 
