@@ -14,6 +14,7 @@ package: copySrc
 
 copySrc: configure clean
 	@ echo "Copy all needed files from Shogun src"
+	
 	@ cp configure ./sg/src
 	@ cp -R ../src/classifier ../src/features ../src/gui ../src/guilib ../src/kernel ../src/lib ../src/preproc ../src/regression ../src/distributions ./sg/src
 	@ cp ../src/Makefile ../src/.generate_link_dependencies.py ../src/.version.sh ./sg/src
