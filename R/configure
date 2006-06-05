@@ -1,0 +1,4 @@
+#!/bin/bash
+
+./configure.sg --enable-R 
+#--enable-debug

@@ -1,0 +1,11 @@
+Package: sg
+Version: 0.1
+Date: 2006-02-20
+Title: The shogun package provides Hidden markov model and Support Vector Machine algorithms for gene finding and other tasks.
+Author: Soeren Sonneburg, Gunnar Raetsch, Fabio De Bona
+Maintainer: Joe Developer <joe.developer@somewhere.de>
+Depends: R (>= 2.1.0)
+Suggests:
+Description: A short (one paragraph) description of what the package does and why it may be useful.
+License: GPL version 2 or newer
+URL: http://www.r-project.org, http://www.another.url
