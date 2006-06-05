@@ -1,0 +1,18 @@
+#include "features/SparseRealFeatures.h"
+#include "lib/File.h"
+
+CFeatures* CSparseRealFeatures::duplicate() const
+{
+	return new CSparseRealFeatures(*this);
+}
+
+bool CSparseRealFeatures::load(CHAR* fname)
+{
+	return false;
+}
+
+bool CSparseRealFeatures::save(CHAR* fname)
+{
+	return false;
+}
+

@@ -1,0 +1,28 @@
+load_obs test3.seq POSTRAIN
+load_obs test3neg.seq NEGTRAIN
+load_obs test3test.seq POSTEST
+load_obs test3testneg.seq NEGTEST
+
+new 3 4 1
+assign_obs POSTRAIN
+convergence_criteria 10 1e-6
+bw
+set_pos_model
+
+new 9 4 1
+convergence_criteria 1 1e-6
+assign_obs NEGTRAIN
+bw
+set_neg_model
+
+set_svm_cplex
+c 10
+svm_train cplex.mod
+svm_test cplex.mod cplex.out
+
+set_svm_light
+c 10
+svm_train light.mod
+svm_test light.mod light.out
+
+quit
