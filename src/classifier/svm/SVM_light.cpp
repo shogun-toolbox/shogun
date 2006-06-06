@@ -15,7 +15,6 @@
 
 #include "kernel/KernelMachine.h"
 #include "kernel/CombinedKernel.h"
-#include "kernel/AUCKernel.h"
 
 #include <unistd.h>
 
@@ -241,75 +240,6 @@ CSVMLight::~CSVMLight()
 	  num_precomputed_subkernels=0 ;
   }
   
-}
-
-bool CSVMLight::setup_auc_maximization()
-{
-	CIO::message(M_INFO, "setting up AUC maximization\n") ;
-	
-	// get the original labels
-	INT num=0;
-	CLabels* lab = get_labels();
-	ASSERT(lab!=NULL);
-	INT* labels=lab->get_int_labels(num);
-	ASSERT(get_kernel()->get_rhs()->get_num_vectors() == num) ;
-	
-	// count positive and negative
-	INT num_pos = 0 ;
-	INT num_neg = 0 ;
-	for (INT i=0; i<num; i++)
-		if (labels[i]==1)
-			num_pos++ ;
-		else 
-			num_neg++ ;
-	
-	// create AUC features and labels (alternate labels)
-	INT num_auc = num_pos*num_neg ;
-	CIO::message(M_INFO, "num_pos: %i  num_neg: %i  num_auc: %i\n", num_pos, num_neg, num_auc) ;
-
-	WORD* features_auc = new WORD[num_auc*2] ;
-	INT* labels_auc = new INT[num_auc] ;
-	INT n=0 ;
-	for (INT i=0; i<num; i++)
-		if (labels[i]==1)
-			for (INT j=0; j<num; j++)
-				if (labels[j]==-1)
-				{
-					if (n%2==0)
-					{
-						features_auc[n*2]=i ;
-						features_auc[n*2+1]=j ;
-						labels_auc[n] = 1 ;
-					}
-					else
-					{
-						features_auc[n*2]=j ;
-						features_auc[n*2+1]=i ;
-						labels_auc[n] = -1 ;
-					}
-					n++ ;
-					ASSERT(n<=num_auc) ;
-				}
-
-	// create label object and attach it to svm
-	CLabels* lab_auc = new CLabels(num_auc) ;
-	lab_auc->set_int_labels(labels_auc, num_auc) ;
-	set_labels(lab_auc);
-	
-	// create feature object
-	CWordFeatures* f = new CWordFeatures((LONG)0,0) ;
-	f->set_feature_matrix(features_auc, 2, num_auc) ;
-
-	// create AUC kernel and attach the features
-	CAUCKernel *kernel = new CAUCKernel(10, get_kernel()) ;
-	kernel->init(f,f,1) ;
-
-	set_kernel(kernel) ;
-
-	delete[] labels ;
-	delete[] labels_auc ;
-
-	return true ;
 }
 
 bool CSVMLight::train()

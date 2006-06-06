@@ -94,7 +94,6 @@ static const CHAR* N_THREADS=			     	"threads";
 static const CHAR* N_MKL_PARAMETERS=			"mkl_parameters";
 static const CHAR* N_SVM_EPSILON=			"svm_epsilon";
 static const CHAR* N_SVR_TUBE_EPSILON=			"svr_tube_epsilon";
-static const CHAR* N_SVM_TRAIN_AUC_MAXIMIZATION=			"svm_train_auc_maximization";
 static const CHAR* N_ADD_STATES=	        "add_states";
 static const CHAR* N_APPEND_HMM=		"append_hmm";
 static const CHAR* N_BAUM_WELCH_TRAIN=	        "bw";
@@ -551,10 +550,6 @@ bool CTextGUI::parse_line(CHAR* input)
 	{
 		guihmm.linear_train(input+strlen(N_LINEAR_TRAIN));
 	} 
-	else if (!strncmp(input, N_SVM_TRAIN_AUC_MAXIMIZATION, strlen(N_SVM_TRAIN_AUC_MAXIMIZATION)))
-	{
-		guisvm.train(input+strlen(N_SVM_TRAIN_AUC_MAXIMIZATION), true);
-	} 
 	else if (!strncmp(input, N_TRAIN_CLASSIFIER, strlen(N_TRAIN_CLASSIFIER)))
 	{
 		guiclassifier.train(input+strlen(N_TRAIN_CLASSIFIER));
@@ -565,7 +560,7 @@ bool CTextGUI::parse_line(CHAR* input)
 	} 
 	else if (!strncmp(input, N_SVM_TRAIN, strlen(N_SVM_TRAIN)))
 	{
-		guisvm.train(input+strlen(N_SVM_TRAIN), false);
+		guisvm.train(input+strlen(N_SVM_TRAIN));
 	} 
 	else if (!strncmp(input, N_SET_KERNEL_OPTIMIZATION_TYPE, strlen(N_SET_KERNEL_OPTIMIZATION_TYPE)))
 	{

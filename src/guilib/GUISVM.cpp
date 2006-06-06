@@ -85,7 +85,7 @@ bool CGUISVM::new_svm(CHAR* param)
 	return (svm!=NULL);
 }
 
-bool CGUISVM::train(CHAR* param, bool auc_maximization)
+bool CGUISVM::train(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
@@ -138,9 +138,6 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 	((CSVM*) svm)->set_precomputed_subkernels_enabled(use_precompute_subkernel_light) ;
 	kernel->set_precompute_matrix(use_precompute, use_precompute_subkernel);
 	
-	if (auc_maximization)
-		((CSVMLight*)svm)->setup_auc_maximization() ;
-
 	bool result = svm->train();
 
 	//DREAL x=svm->compute_objective();

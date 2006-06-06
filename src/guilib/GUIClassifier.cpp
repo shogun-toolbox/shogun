@@ -143,7 +143,7 @@ bool CGUIClassifier::train(CHAR* param)
 		case CT_GPBT:
 		case CT_CPLEXSVM:
 		case CT_KERTHIPRIMAL:
-			return train_svm(param, false);
+			return train_svm(param);
 			break;
 		case CT_PERCEPTRON:
 			((CPerceptron*) classifier)->set_learn_rate(perceptron_learnrate);
@@ -163,7 +163,7 @@ bool CGUIClassifier::train(CHAR* param)
 	return false;
 }
 
-bool CGUIClassifier::train_svm(CHAR* param, bool auc_maximization)
+bool CGUIClassifier::train_svm(CHAR* param)
 {
 	CLabels* trainlabels=gui->guilabels.get_train_labels();
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
@@ -223,9 +223,6 @@ bool CGUIClassifier::train_svm(CHAR* param, bool auc_maximization)
 	((CSVM*) svm)->set_precomputed_subkernels_enabled(svm_use_precompute_subkernel_light) ;
 	kernel->set_precompute_matrix(svm_use_precompute, svm_use_precompute_subkernel);
 	
-	if (auc_maximization)
-		((CSVMLight*)svm)->setup_auc_maximization() ;
-
 	bool result = svm->train();
 
 	kernel->set_precompute_matrix(false,false);

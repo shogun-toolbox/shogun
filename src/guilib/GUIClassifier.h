@@ -35,7 +35,7 @@ public:
 	bool set_svr_tube_epsilon(CHAR* param);
 	bool set_svm_mkl_parameters(CHAR* param) ;
 	bool set_svm_precompute_enabled(CHAR* param) ;
-	bool train_svm(CHAR* param, bool auc_maximization);
+	bool train_svm(CHAR* param);
 	bool train_knn(CHAR* param);
 	bool train_linear(CHAR* param);
 
