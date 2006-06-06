@@ -20,7 +20,7 @@ struct SuffixTree
 class CWeightedDegreePositionCharKernel: public CCharKernel
 {
  public:
-  CWeightedDegreePositionCharKernel(LONG size, REAL* weights, INT degree, INT max_mismatch, 
+  CWeightedDegreePositionCharKernel(LONG size, DREAL* weights, INT degree, INT max_mismatch, 
 									INT * shift, INT shift_len, bool use_norm=false,
 									INT mkl_stepsize=1) ;
   ~CWeightedDegreePositionCharKernel() ;
@@ -38,9 +38,9 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
   // return the name of a kernel
   virtual const CHAR* get_name() { return "WeightedDegreePos" ; } ;
 
-  virtual bool init_optimization(INT count, INT *IDX, REAL * weights) ;
+  virtual bool init_optimization(INT count, INT *IDX, DREAL * weights) ;
   virtual bool delete_optimization() ;
-  virtual REAL compute_optimized(INT idx) 
+  virtual DREAL compute_optimized(INT idx) 
 	  { 
 		  if (get_is_initialized())
 			  return compute_by_tree(idx); 
@@ -58,7 +58,7 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
 			  set_is_initialized(false);
 		  }
 	  }
-  inline virtual void add_to_normal(INT idx, REAL weight) 
+  inline virtual void add_to_normal(INT idx, DREAL weight) 
 	  {
 		  add_example_to_tree(idx, weight);
 		  set_is_initialized(true);
@@ -73,7 +73,7 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
 			  return (INT) ceil(1.0*get_degree()/mkl_stepsize);
 		  return (INT) ceil(1.0*get_degree()*length/mkl_stepsize) ;
 	  }
-  inline void compute_by_subkernel(INT idx, REAL * subkernel_contrib)
+  inline void compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
 	  { 
 		  if (get_is_initialized())
 		  {
@@ -82,12 +82,12 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
 		  }
 		  CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not initialized\n") ;
 	  } ;
-  inline const REAL* get_subkernel_weights(INT& num_weights)
+  inline const DREAL* get_subkernel_weights(INT& num_weights)
 	  {
 		  num_weights = get_num_subkernels() ;
 		  
 		  delete[] weights_buffer ;
-		  weights_buffer = new REAL[num_weights] ;
+		  weights_buffer = new DREAL[num_weights] ;
 		  
 		  if (position_weights!=NULL)
 			  for (INT i=0; i<num_weights; i++)
@@ -98,7 +98,7 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
 		  
 		  return weights_buffer ;
 	  }
-  inline void set_subkernel_weights(REAL* weights2, INT num_weights2)
+  inline void set_subkernel_weights(DREAL* weights2, INT num_weights2)
 	  {
 		  INT num_weights = get_num_subkernels() ;
 		  if (num_weights!=num_weights2)
@@ -130,8 +130,8 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
   // other kernel tree operations  
   void prune_tree(struct SuffixTree * p_tree=NULL, int min_usage=2);
   void count_tree_usage(INT idx);
-  REAL *compute_abs_weights(INT & len);
-  REAL compute_abs_weights_tree(struct SuffixTree * p_tree);
+  DREAL *compute_abs_weights(INT & len);
+  DREAL compute_abs_weights_tree(struct SuffixTree * p_tree);
 
   INT tree_size(struct SuffixTree * p_tree=NULL);
   bool is_tree_initialized() { return tree_initialized; }
@@ -140,13 +140,13 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
   inline INT get_degree() { return degree; }
 
   // weight setting/getting operations
-  inline REAL *get_degree_weights(INT& d, INT& len)
+  inline DREAL *get_degree_weights(INT& d, INT& len)
 	  {
 		  d=degree;
 		  len=length;
 		  return weights;
 	  }
-  inline REAL *get_weights(INT& num_weights)
+  inline DREAL *get_weights(INT& num_weights)
 	  {
 		  if (position_weights!=NULL)
 		  {
@@ -159,48 +159,48 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
 			  num_weights = degree*length ;
 		  return weights;
 	  }
-  inline REAL *get_position_weights(INT& len)
+  inline DREAL *get_position_weights(INT& len)
 	  {
 		  len=seq_length;
 		  return position_weights;
 	  }
-  bool set_weights(REAL* weights, INT d, INT len=0);
-  bool set_position_weights(REAL* position_weights, INT len=0); 
+  bool set_weights(DREAL* weights, INT d, INT len=0);
+  bool set_position_weights(DREAL* position_weights, INT len=0); 
   bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
   
-  REAL compute_by_tree(INT idx) ;
-  void compute_by_tree(INT idx, REAL* LevelContrib) ;
+  DREAL compute_by_tree(INT idx) ;
+  void compute_by_tree(INT idx, DREAL* LevelContrib) ;
 
  protected:
 
-  void add_example_to_tree(INT idx, REAL weight);
+  void add_example_to_tree(INT idx, DREAL weight);
   void delete_tree(struct SuffixTree * p_tree=NULL);
 
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
-  REAL compute(INT idx_a, INT idx_b);
-  REAL compute2(INT idx_a, INT idx_b);
+  DREAL compute(INT idx_a, INT idx_b);
+  DREAL compute2(INT idx_a, INT idx_b);
   /*    compute_kernel*/
 
-  REAL compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
-  REAL compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
-  REAL compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
+  DREAL compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
+  DREAL compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
+  DREAL compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
 
   virtual void remove_lhs() ;
   virtual void remove_rhs() ;
 
-  REAL compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos) ;
+  DREAL compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos) ;
   void compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos,
-							  REAL* LevelContrib, REAL factor) ;
+							  DREAL* LevelContrib, DREAL factor) ;
   
  protected:
-  REAL* weights;
-  REAL* position_weights ;
+  DREAL* weights;
+  DREAL* position_weights ;
   bool* position_mask ;
   
   INT * counts ;
-  REAL* weights_buffer ;
+  DREAL* weights_buffer ;
   INT mkl_stepsize ;
 
   INT degree;
@@ -226,17 +226,17 @@ class CWeightedDegreePositionCharKernel: public CCharKernel
 };
 
 /* computes the simple kernel between position seq_pos and tree tree_pos */
-inline REAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, INT len_, INT seq_pos, 
+inline DREAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, INT len_, INT seq_pos, 
 																	  INT tree_pos,
 																	  INT weight_pos)
 {
-	REAL sum=0 ;
+	DREAL sum=0 ;
 
 	if ((position_weights!=NULL) && (position_weights[weight_pos]==0))
 		return sum;
 
 	struct SuffixTree *tree = trees[tree_pos] ;
-	assert(tree!=NULL) ;
+	ASSERT(tree!=NULL) ;
 
 	if (length==0) // weights is a vector (1 x degree)
 	{
@@ -301,10 +301,10 @@ inline REAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, 
 inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, INT len_,
 																	  INT seq_pos, INT tree_pos, 
 																	  INT weight_pos, 
-																	  REAL* LevelContrib, REAL factor) 
+																	  DREAL* LevelContrib, DREAL factor) 
 {
 	struct SuffixTree *tree = trees[tree_pos] ;
-	assert(tree!=NULL) ;
+	ASSERT(tree!=NULL) ;
 	if (factor==0)
 		return ;
 	

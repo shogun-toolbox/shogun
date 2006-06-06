@@ -31,7 +31,7 @@ struct Trie
 class CWeightedDegreeCharKernel: public CCharKernel
 {
  public:
-  CWeightedDegreeCharKernel(LONG size, REAL* weights, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1) ;
+  CWeightedDegreeCharKernel(LONG size, DREAL* weights, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1) ;
   ~CWeightedDegreeCharKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -47,9 +47,9 @@ class CWeightedDegreeCharKernel: public CCharKernel
   // return the name of a kernel
   virtual const CHAR* get_name() { return "WeightedDegree" ; } ;
 
-  virtual bool init_optimization(INT count, INT * IDX, REAL * weights) ;
+  virtual bool init_optimization(INT count, INT * IDX, DREAL * weights) ;
   virtual bool delete_optimization() ;
-  virtual REAL compute_optimized(INT idx) 
+  virtual DREAL compute_optimized(INT idx) 
   { 
     if (get_is_initialized())
       return compute_by_tree(idx); 
@@ -67,7 +67,7 @@ class CWeightedDegreeCharKernel: public CCharKernel
 		  set_is_initialized(false);
 	  }
   }
-  inline virtual void add_to_normal(INT idx, REAL weight) 
+  inline virtual void add_to_normal(INT idx, DREAL weight) 
   {
 	  if (max_mismatch==0)
 		  add_example_to_tree(idx, weight);
@@ -86,7 +86,7 @@ class CWeightedDegreeCharKernel: public CCharKernel
 			  return (INT) ceil(1.0*get_degree()/mkl_stepsize);
 		  return (INT) ceil(1.0*get_degree()*length/mkl_stepsize) ;
 	  }
-  inline void compute_by_subkernel(INT idx, REAL * subkernel_contrib)
+  inline void compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
 	  { 
 		  if (get_is_initialized())
 		  {
@@ -95,12 +95,12 @@ class CWeightedDegreeCharKernel: public CCharKernel
 		  }
 		  CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not initialized\n") ;
 	  } ;
-  inline const REAL* get_subkernel_weights(INT& num_weights)
+  inline const DREAL* get_subkernel_weights(INT& num_weights)
 	  {
 		  num_weights = get_num_subkernels() ;
 		  
 		  delete[] weights_buffer ;
-		  weights_buffer = new REAL[num_weights] ;
+		  weights_buffer = new DREAL[num_weights] ;
 		  
 		  if (position_weights!=NULL)
 			  for (INT i=0; i<num_weights; i++)
@@ -111,7 +111,7 @@ class CWeightedDegreeCharKernel: public CCharKernel
 		  
 		  return weights_buffer ;
 	  }
-  inline void set_subkernel_weights(REAL* weights2, INT num_weights2)
+  inline void set_subkernel_weights(DREAL* weights2, INT num_weights2)
 	  {
 		  INT num_weights = get_num_subkernels() ;
 		  if (num_weights!=num_weights2)
@@ -143,22 +143,22 @@ class CWeightedDegreeCharKernel: public CCharKernel
   // other kernel tree operations  
   void prune_tree(struct Trie * p_tree=NULL, int min_usage=2);
   void count_tree_usage(INT idx);
-  REAL *compute_abs_weights(INT & len);
-  REAL compute_abs_weights_tree(struct Trie * p_tree);
-  void compute_by_tree(INT idx, REAL *LevelContrib);
+  DREAL *compute_abs_weights(INT & len);
+  DREAL compute_abs_weights_tree(struct Trie * p_tree);
+  void compute_by_tree(INT idx, DREAL *LevelContrib);
 
   INT tree_size(struct Trie * p_tree=NULL);
   bool is_tree_initialized() { return tree_initialized; }
 
   inline INT get_max_mismatch() { return max_mismatch; }
   inline INT get_degree() { return degree; }
-  inline REAL *get_degree_weights(INT& d, INT& len)
+  inline DREAL *get_degree_weights(INT& d, INT& len)
   {
 	  d=degree;
 	  len=length;
 	  return weights;
   }
-  inline REAL *get_weights(INT& num_weights)
+  inline DREAL *get_weights(INT& num_weights)
   {
 	  if (position_weights!=NULL)
 	  {
@@ -171,37 +171,37 @@ class CWeightedDegreeCharKernel: public CCharKernel
 		  num_weights = degree*length ;
 	  return weights;
   }
-  inline REAL *get_position_weights(INT& len)
+  inline DREAL *get_position_weights(INT& len)
   {
 	  len=seq_length;
 	  return position_weights;
   }
 
-  bool set_weights(REAL* weights, INT d, INT len=0);
-  bool set_position_weights(REAL* position_weights, INT len=0);
+  bool set_weights(DREAL* weights, INT d, INT len=0);
+  bool set_position_weights(DREAL* position_weights, INT len=0);
   bool init_matching_weights_wd();
   bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
  protected:
 
-  void add_example_to_tree(INT idx, REAL weight);
-  void add_example_to_tree_mismatch(INT idx, REAL weight);
-  void add_example_to_tree_mismatch_recursion(struct Trie *tree,  REAL alpha,
+  void add_example_to_tree(INT idx, DREAL weight);
+  void add_example_to_tree_mismatch(INT idx, DREAL weight);
+  void add_example_to_tree_mismatch_recursion(struct Trie *tree,  DREAL alpha,
 											  INT *vec, INT len_rem, 
 											  INT depth_rec, INT mismatch_rec) ;
   
-  REAL compute_by_tree(INT idx);
+  DREAL compute_by_tree(INT idx);
   void delete_tree(struct Trie * p_tree=NULL);
 
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
-  REAL compute(INT idx_a, INT idx_b);
+  DREAL compute(INT idx_a, INT idx_b);
   /*    compute_kernel*/
-  REAL compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
-  REAL compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
-  REAL compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
-  REAL compute_using_block(CHAR* avec, INT alen, CHAR* bvec, INT blen);
+  DREAL compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
+  DREAL compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
+  DREAL compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
+  DREAL compute_using_block(CHAR* avec, INT alen, CHAR* bvec, INT blen);
 
   virtual void remove_lhs() ;
   virtual void remove_rhs() ;
@@ -210,9 +210,9 @@ class CWeightedDegreeCharKernel: public CCharKernel
 
   ///degree*length weights
   ///length must match seq_length if != 0
-  REAL* weights;
-  REAL* position_weights ;
-  REAL* weights_buffer ;
+  DREAL* weights;
+  DREAL* position_weights ;
+  DREAL* weights_buffer ;
   INT mkl_stepsize ;
   INT degree;
   INT length;
@@ -230,7 +230,7 @@ class CWeightedDegreeCharKernel: public CCharKernel
   bool use_normalization ;
   bool block_computation;
 
-  REAL* matching_weights;
+  DREAL* matching_weights;
 
 #ifdef USE_TREEMEM
   struct Trie* TreeMem ;

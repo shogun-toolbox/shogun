@@ -13,7 +13,7 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d
 	rhs=NULL;
 	matching_weights=NULL;
 
-	weights=new REAL[d*(1+max_mismatch)];
+	weights=new DREAL[d*(1+max_mismatch)];
 	ASSERT(weights!=NULL);
 	for (INT i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
@@ -148,7 +148,7 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		{
 			delete[] sqrtdiag_lhs;
 			sqrtdiag_lhs=NULL ;
-			sqrtdiag_lhs= new REAL[lhs->get_num_vectors()];
+			sqrtdiag_lhs= new DREAL[lhs->get_num_vectors()];
 			ASSERT(sqrtdiag_lhs) ;
 			for (i=0; i<lhs->get_num_vectors(); i++)
 				sqrtdiag_lhs[i]=1;
@@ -158,7 +158,7 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			sqrtdiag_rhs=sqrtdiag_lhs;
 		else if (rhs_changed)
 		{
-			sqrtdiag_rhs= new REAL[rhs->get_num_vectors()];
+			sqrtdiag_rhs= new DREAL[rhs->get_num_vectors()];
 			ASSERT(sqrtdiag_rhs) ;
 
 			for (i=0; i<rhs->get_num_vectors(); i++)
@@ -250,7 +250,7 @@ bool CWeightedDegreeCharKernel::save_init(FILE* dest)
 }
   
 
-bool CWeightedDegreeCharKernel::init_optimization(INT count, INT * IDX, REAL * alphas)
+bool CWeightedDegreeCharKernel::init_optimization(INT count, INT * IDX, DREAL * alphas)
 {
 	/*if (max_mismatch!=0)
 	{
@@ -292,13 +292,13 @@ bool CWeightedDegreeCharKernel::delete_optimization()
 }
 
 
-REAL CWeightedDegreeCharKernel::compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen)
+DREAL CWeightedDegreeCharKernel::compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen)
 {
-	REAL sum = 0.0 ;
+	DREAL sum = 0.0 ;
 	
 	for (INT i=0; i<alen; i++)
 	{
-		REAL sumi = 0.0 ;
+		DREAL sumi = 0.0 ;
 		INT mismatches=0 ;
 		
 		for (INT j=0; (i+j<alen) && (j<degree); j++)
@@ -319,9 +319,9 @@ REAL CWeightedDegreeCharKernel::compute_with_mismatch(CHAR* avec, INT alen, CHAR
 	return sum ;
 }
 
-REAL CWeightedDegreeCharKernel::compute_using_block(CHAR* avec, INT alen, CHAR* bvec, INT blen)
+DREAL CWeightedDegreeCharKernel::compute_using_block(CHAR* avec, INT alen, CHAR* bvec, INT blen)
 {
-	REAL sum=0;
+	DREAL sum=0;
 
 	INT match_len=-1;
 
@@ -343,13 +343,13 @@ REAL CWeightedDegreeCharKernel::compute_using_block(CHAR* avec, INT alen, CHAR* 
 	return sum;
 }
 
-REAL CWeightedDegreeCharKernel::compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen)
+DREAL CWeightedDegreeCharKernel::compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen)
 {
-	REAL sum = 0.0 ;
+	DREAL sum = 0.0 ;
 	
 	for (INT i=0; i<alen; i++)
 	{
-		REAL sumi = 0.0 ;
+		DREAL sumi = 0.0 ;
 		
 		for (INT j=0; (i+j<alen) && (j<degree); j++)
 		{
@@ -365,13 +365,13 @@ REAL CWeightedDegreeCharKernel::compute_without_mismatch(CHAR* avec, INT alen, C
 	return sum ;
 }
 
-REAL CWeightedDegreeCharKernel::compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen)
+DREAL CWeightedDegreeCharKernel::compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen)
 {
-	REAL sum = 0.0 ;
+	DREAL sum = 0.0 ;
 
 	for (INT i=0; i<alen; i++)
 	{
-		REAL sumi=0.0 ;
+		DREAL sumi=0.0 ;
 		for (INT j=0; (i+j<alen) && (j<degree); j++)
 		{
 			if (avec[i+j]!=bvec[i+j])
@@ -388,7 +388,7 @@ REAL CWeightedDegreeCharKernel::compute_without_mismatch_matrix(CHAR* avec, INT 
 }
 
 
-REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
+DREAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 {
   INT alen, blen;
   bool afree, bfree;
@@ -400,15 +400,15 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
   // can only deal with strings of same length
   ASSERT(alen==blen);
 
-  REAL sqrt_a= 1 ;
-  REAL sqrt_b= 1 ;
+  DREAL sqrt_a= 1 ;
+  DREAL sqrt_b= 1 ;
   if (initialized && use_normalization)
     {
       sqrt_a=sqrtdiag_lhs[idx_a] ;
       sqrt_b=sqrtdiag_rhs[idx_b] ;
     } ;
 
-  REAL sqrt_both=sqrt_a*sqrt_b;
+  DREAL sqrt_both=sqrt_a*sqrt_b;
 
   double result=0;
 
@@ -430,7 +430,7 @@ REAL CWeightedDegreeCharKernel::compute(INT idx_a, INT idx_b)
   return (double) result/sqrt_both;
 }
 
-void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha) 
+void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, DREAL alpha) 
 {
 	INT len ;
 	bool free ;
@@ -459,7 +459,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 		for (INT i=0; i<len; i++)
 		{
 			struct Trie *tree = trees[i] ;
-			REAL alpha_pw = alpha ;
+			DREAL alpha_pw = alpha ;
 			if (position_weights!=NULL)
 				alpha_pw = alpha*position_weights[i] ;
 			if (alpha_pw==0.0)
@@ -524,7 +524,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 		for (INT i=0; i<len; i++)
 		{
 			struct Trie *tree = trees[i] ;
-			REAL alpha_pw = alpha ;
+			DREAL alpha_pw = alpha ;
 			if (position_weights!=NULL) 
 				alpha_pw = alpha*position_weights[i] ;
 			if (alpha_pw==0.0)
@@ -592,7 +592,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, REAL alpha)
 	tree_initialized=true ;
 }
 
-void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, REAL alpha) 
+void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, DREAL alpha) 
 {
 	INT len ;
 	bool free ;
@@ -619,7 +619,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, REAL alpha
 	for (INT i=0; i<len; i++)
 	{
 		struct Trie *tree = trees[i] ;
-		REAL alpha_pw = alpha ;
+		DREAL alpha_pw = alpha ;
 		if (position_weights!=NULL)
 			alpha_pw = alpha*position_weights[i] ;
 		if (alpha_pw==0.0)
@@ -633,7 +633,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, REAL alpha
 	tree_initialized=true ;
 }
 
-void CWeightedDegreeCharKernel::add_example_to_tree_mismatch_recursion(struct Trie *tree,  REAL alpha,
+void CWeightedDegreeCharKernel::add_example_to_tree_mismatch_recursion(struct Trie *tree,  DREAL alpha,
 																	   INT *vec, INT len_rem, 
 																	   INT degree_rec, INT mismatch_rec) 
 {
@@ -742,7 +742,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch_recursion(struct Tr
 }
 
 
-REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx) 
+DREAL CWeightedDegreeCharKernel::compute_by_tree(INT idx) 
 {
 	INT len ;
 	bool free ;
@@ -763,7 +763,7 @@ REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx)
 		vec[i]=0 ;
 	} ;
 		
-	REAL sum=0 ;
+	DREAL sum=0 ;
 	for (INT i=0; i<len; i++)
 	{
 		struct Trie *tree = trees[i] ;
@@ -797,7 +797,7 @@ REAL CWeightedDegreeCharKernel::compute_by_tree(INT idx)
 	return sum;
 }
 
-void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib) 
+void CWeightedDegreeCharKernel::compute_by_tree(INT idx, DREAL* LevelContrib) 
 {
 	INT slen ;
 	bool free ;
@@ -818,7 +818,7 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 		vec[i]=0 ;
 	} ;
 
-	REAL factor = 1.0 ;
+	DREAL factor = 1.0 ;
 	if (use_normalization)
 		factor = 1.0/sqrtdiag_rhs[idx] ;
 
@@ -912,9 +912,9 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, REAL* LevelContrib)
 	delete[] vec ;
 }
 
-REAL CWeightedDegreeCharKernel::compute_abs_weights_tree(struct Trie* p_tree) 
+DREAL CWeightedDegreeCharKernel::compute_abs_weights_tree(struct Trie* p_tree) 
 {
-  REAL ret=0 ;
+  DREAL ret=0 ;
   
   if (p_tree==NULL)
     return 0 ;
@@ -942,9 +942,9 @@ REAL CWeightedDegreeCharKernel::compute_abs_weights_tree(struct Trie* p_tree)
   return ret ;
 }
 
-REAL *CWeightedDegreeCharKernel::compute_abs_weights(int &len) 
+DREAL *CWeightedDegreeCharKernel::compute_abs_weights(int &len) 
 {
-	REAL * sum=new REAL[seq_length*4] ;
+	DREAL * sum=new DREAL[seq_length*4] ;
 	for (INT i=0; i<seq_length*4; i++)
 		sum[i]=0 ;
 	len=seq_length ;
@@ -1117,7 +1117,7 @@ INT CWeightedDegreeCharKernel::tree_size(struct Trie * p_tree)
 	return ret ;
 } 
 
-bool CWeightedDegreeCharKernel::set_weights(REAL* ws, INT d, INT len)
+bool CWeightedDegreeCharKernel::set_weights(DREAL* ws, INT d, INT len)
 {
 	CIO::message(M_DEBUG, "degree = %i  d=%i\n", degree, d) ;
 	degree = d ;
@@ -1127,7 +1127,7 @@ bool CWeightedDegreeCharKernel::set_weights(REAL* ws, INT d, INT len)
 		len=1;
 	
 	delete[] weights;
-	weights=new REAL[d*len];
+	weights=new DREAL[d*len];
 	
 	if (weights)
 	{
@@ -1139,7 +1139,7 @@ bool CWeightedDegreeCharKernel::set_weights(REAL* ws, INT d, INT len)
 		return false;
 }
 
-bool CWeightedDegreeCharKernel::set_position_weights(REAL* pws, INT len)
+bool CWeightedDegreeCharKernel::set_position_weights(DREAL* pws, INT len)
 {
 	if (len==0)
 	{
@@ -1153,7 +1153,7 @@ bool CWeightedDegreeCharKernel::set_position_weights(REAL* pws, INT len)
 		return false ;
 	}
 	delete[] position_weights;
-	position_weights=new REAL[len];
+	position_weights=new DREAL[len];
 	
 	if (position_weights)
 	{
@@ -1168,7 +1168,7 @@ bool CWeightedDegreeCharKernel::set_position_weights(REAL* pws, INT len)
 bool CWeightedDegreeCharKernel::init_matching_weights_wd()
 {
 	delete[] matching_weights;
-	matching_weights=new REAL[seq_length];
+	matching_weights=new DREAL[seq_length];
 
 	if (matching_weights)
 	{
