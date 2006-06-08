@@ -8,6 +8,11 @@
 #include <Python.h>
 #endif
 
+#ifdef HAVE_R
+#include <R.h>
+#include <Rinternals.h>
+#endif
+
 #include "lib/io.h"
 #include "lib/Signal.h"
 #include "lib/common.h"
@@ -32,7 +37,7 @@ CIO::CIO()
 
 void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 {
-#if defined(HAVE_MATLAB) || defined(HAVE_PYTHON)
+#if defined(HAVE_MATLAB) || defined(HAVE_PYTHON) || defined(HAVE_R)
 	char str[4096];
     va_list list;
     va_start(list,fmt);
@@ -68,7 +73,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			default:
 				break;
 		}
-#else
+#elif defined(HAVE_PYTHON)
 		switch (prio)
 		{
 			case M_DEBUG:
@@ -90,6 +95,47 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 				PyErr_SetString(PyExc_RuntimeError,str);
 				fprintf(target, message_strings[p]);
 				fprintf(target, "%s", str);
+				break;
+			default:
+				break;
+		}
+#elif defined(HAVE_R)
+		switch (prio)
+		{
+			case M_DEBUG:
+			case M_INFO:
+			case M_NOTICE:
+			case M_MESSAGEONLY:
+			case M_WARN:
+				{
+					int p=get_prio_string(prio);
+
+					if (p>=0)
+					{
+						Rprintf("%s",message_strings[p]);
+						va_list list;
+						va_start(list,fmt);
+						Rvprintf(fmt,list);
+						va_end(list);
+					}
+				}
+				break;
+			case M_ERROR:
+			case M_CRITICAL:
+			case M_ALERT:
+			case M_EMERGENCY:
+				{
+					int p=get_prio_string(prio);
+
+					if (p>=0)
+					{
+						REprintf("%s",message_strings[p]);
+						va_list list;
+						va_start(list,fmt);
+						REvprintf(fmt,list);
+						va_end(list);
+					}
+				}
 				break;
 			default:
 				break;

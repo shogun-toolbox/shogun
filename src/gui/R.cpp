@@ -3,6 +3,7 @@
 #ifdef HAVE_R
 #include <stdio.h>
 #include <string.h>
+#include <Rdefines.h>
 
 #include "lib/common.h"
 #include "lib/io.h"
@@ -68,102 +69,17 @@ static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY=	"plugin_estimate_classify";
 static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE=	"plugin_estimate_classify_example";
 
 extern "C" {
-   
-SEXP test(SEXP args) {
-   Rprintf("command vector length is %d\n", length(args));
 
-   int idx=0;
-   int argLength = length(args);
-   for(;idx <argLength; idx++) {
-      args = CDR(args);
-
-      if( TYPEOF(CAR(args)) == STRSXP ) {
-         Rprintf("element number %i of args is %s\n", idx, CHAR(STRING_ELT(CAR(args),0)));
-      }
-      
-      if( TYPEOF(CAR(args)) == REALSXP ) {
-         for(int j=0; j<length(CAR(args)); j++) {
-            Rprintf("element number %i of args element %i is %f\n", j, idx, REAL(CAR(args))[j] );
-         }
-      }
-      
-      if( TYPEOF(CAR(args)) == NILSXP ) {
-         Rprintf("end of list");
-      }
-      
-      Rprintf("type of elem %d is %d\n", idx, TYPEOF(CAR(args)));
-   }
-   return(R_NilValue);
-}
-
-
-SEXP matrix_test(SEXP args) {
-   Rprintf("command vector length is %d\n", length(args));
-   
-   int argLength = length(args);
-   Rprintf("argument length is %i\n", argLength);
-
-   // pop matrix_test out
-   args = CDR(args);
-
-   int size = length(CAR(args));
-   Rprintf("size is %i\n", size);
-   int r = Rf_nrows(CAR(args));
-   int c = Rf_ncols(CAR(args));
-   Rprintf("int: num rows is %i\n", r);
-   Rprintf("int: num cols is %i\n", c);
-   //args = CDR(args);
-
-   return(R_NilValue);
-}
-
-SEXP return_test(SEXP args) {
-   SEXP ans, mat1, mat2, dim1, dim2;
-   
-   PROTECT( mat1 = allocMatrix(REALSXP, 10, 10) );
-   PROTECT( dim1 = allocVector(INTSXP, 2) );
-   INTEGER(dim1)[0] = 10;
-   INTEGER(dim1)[1] = 10;
-   setAttrib(mat1, R_DimSymbol, dim1);
-
-   PROTECT( mat2 = allocMatrix(REALSXP, 5, 5) );
-   PROTECT( dim2 = allocVector(INTSXP, 2) );
-   INTEGER(dim2)[0] = 5;
-   INTEGER(dim2)[1] = 5;
-   setAttrib(mat2, R_DimSymbol, dim2);
-   
-   for(int i=0; i<10; i++) {
-      for(int j=0; j<10; j++) {
-         if( i < 5 && j < 5)
-            REAL(mat2)[i+5*j] = i+j;
-         REAL(mat1)[i+10*j] = i+j;
-      }
-   }
-
-   ans = R_NilValue;
-   PROTECT(ans);
-   ans = CONS(mat1, ans);
-   SET_TAG(ans, install("alphas"));
-   //UNPROTECT(1);
-
-   // go to the next element in the list
-   
-   //PROTECT(ans);
-   ans = CONS(mat2, ans);
-   SET_TAG(ans, install("b"));
-   UNPROTECT(1);
-
-   UNPROTECT(4);
-
-   Rprintf("matrix created!\n");
-   return ans;
-}
-
-SEXP sg_helper(SEXP args)
+static void successful(SEXP& result, bool v)
 {
-#ifdef DEBUG
-	Rprintf("length of args %d\n", length(args));
-#endif
+	PROTECT(result);
+	*LOGICAL(result)=v;
+	UNPROTECT(1);
+}
+   
+static SEXP sg_helper(SEXP args)
+{
+	CIO::message(M_DEBUG,"length of args %d\n", length(args));
 
 	int cmd_len = length(args)-1;
 	if ( cmd_len < 1 )
@@ -172,9 +88,12 @@ SEXP sg_helper(SEXP args)
 	args = CDR(args); /* pop "sg" out of list */
 	CHAR* action=CHAR(VECTOR_ELT(CAR(args), 0));
 
-#ifdef DEBUG
-	Rprintf("action is %s\n", action);
-#endif
+	SEXP result=NEW_LOGICAL(1);
+	PROTECT(result);
+	*LOGICAL(result)=FALSE;
+	UNPROTECT(1);
+
+	CIO::message(M_DEBUG,"action is %s\n", action);
 
 	args = CDR(args); /* pop action out of list */
 
@@ -185,15 +104,12 @@ SEXP sg_helper(SEXP args)
 			if (cmd_len==2)
 			{
 				CHAR* cmd=CHAR(STRING_ELT(CAR(args),0));
-#ifdef DEBUG
-				Rprintf("command is %s\n", cmd);
-#endif
+				CIO::message(M_DEBUG,"command is %s\n", cmd);
 				sg_R.send_command(cmd);
 			}
 			else
 				CIO::message(M_ERROR, "usage is sg('send_command', 'cmdline')");
 		}
-
 		else if (!strncmp(action, N_HELP, strlen(N_HELP)))
 		{
 			if (cmd_len==1)
@@ -203,12 +119,10 @@ SEXP sg_helper(SEXP args)
 			else
 				CIO::message(M_ERROR, "usage is sg('help')");
 		}
-
 		else if (!strncmp(action, N_GET_VERSION, strlen(N_GET_VERSION)))
 		{
 			return sg_R.get_version();
 		}
-
 		else if (!strncmp(action, N_GET_SVM, strlen(N_GET_SVM)))
 		{
 			return sg_R.get_svm();
@@ -271,9 +185,7 @@ SEXP sg_helper(SEXP args)
 				   {
 					   if (!strncmp(target, "TRAIN", strlen("TRAIN")))
 					   {
-#ifdef DEBUG
-						   Rprintf("Adding features.\n");
-#endif
+						   CIO::message(M_DEBUG,"Adding features.\n");
 						   gui->guifeatures.add_train_features(features);
 					   }
 					   else if (!strncmp(target, "TEST", strlen("TEST")))
@@ -311,16 +223,9 @@ SEXP sg_helper(SEXP args)
 					   if (features)
 					   {
 						   if (!strncmp(target, "TRAIN", strlen("TRAIN")))
-						   {
-#ifdef DEBUG
-							   Rprintf("Setting features.\n");
-#endif
-							   gui->guifeatures.set_train_features(features);
-						   }
+							   successful(result, gui->guifeatures.set_train_features(features));
 						   else if (!strncmp(target, "TEST", strlen("TEST")))
-						   {
-							   gui->guifeatures.set_test_features(features);
-						   }
+							   successful(result, gui->guifeatures.set_test_features(features));
 					   }
 					   else
 						   CIO::message(M_ERROR, "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
@@ -348,12 +253,15 @@ SEXP sg_helper(SEXP args)
 			   {
 				   features=gui->guifeatures.get_test_features();
 			   }
+			   else
+				   CIO::message(M_ERROR, "usage is [features]=sg('get_features', 'TRAIN|TEST')");
+
 			   //delete[] target;
 
 			   if (features)
 				   return sg_R.get_features(features);
 			   else
-				   CIO::message(M_ERROR, "usage is [features]=sg('get_features', 'TRAIN|TEST')");
+				   CIO::message(M_ERROR, "no features set\n");
 		   }
 
 		   /*
@@ -401,13 +309,9 @@ SEXP sg_helper(SEXP args)
 					   if (labels && target)
 					   {
 						   if (!strncmp(target, "TRAIN", strlen("TRAIN")))
-						   {
-							   gui->guilabels.set_train_labels(labels);
-						   }
+							   successful(result, gui->guilabels.set_train_labels(labels));
 						   else if (!strncmp(target, "TEST", strlen("TEST")))
-						   {
-							   gui->guilabels.set_test_labels(labels);
-						   }
+							   successful(result, gui->guilabels.set_test_labels(labels));
 						   //delete[] target;
 					   }
 					   else
@@ -434,7 +338,7 @@ SEXP sg_helper(SEXP args)
 
 	}
 
-	return(R_NilValue);
+	return result;
 } // function sg
 
 /* The main function of the shogun R interface. All commands from the R command line
@@ -483,9 +387,6 @@ void R_init_sg(DllInfo *info) {
 
    R_CallMethodDef callMethods[] = {
       {"sg", (void*(*)()) &sg, 1},
-      {"test", (void*(*)()) &test, 1},
-      {"matrix_test", (void*(*)()) &matrix_test, 1},
-      {"return_test", (void*(*)()) &return_test, 1},
       {NULL, NULL, 0} };
 
    

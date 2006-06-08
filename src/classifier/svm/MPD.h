@@ -13,7 +13,7 @@ class CMPDSVM : public CSVM
 
 		inline EClassifierType get_classifier_type() { return CT_MPD; }
 	protected:
-		inline DREAL CMPDSVM::compute_H(int i, int j)
+		inline DREAL compute_H(int i, int j)
 		{
 			CLabels* l = CKernelMachine::get_labels();
 			return l->get_label(i)*l->get_label(j)*kernel->kernel(i,j);
