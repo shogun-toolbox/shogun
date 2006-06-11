@@ -109,7 +109,7 @@ distclean: clean
 		rm -f .config tags lib/config.h lib/versionstring.h
 
 clean: 
-	rm -f $(shell find ./ -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.mex* sg.so shogun ../doc/doxygen/*.html ../doc/doxygen/shogun.tex gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find ./ -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py')
+	rm -f $(shell find ./ -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.mex* sg.so shogun ../doc/doxygen/*.html ../doc/doxygen/shogun.tex gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find ./ -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
 
 config: .config
 .config:	Makefile configure

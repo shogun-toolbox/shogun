@@ -18,55 +18,55 @@ extern CTextGUI* gui;
 static const CHAR* N_SEND_COMMAND=		"send_command";
 static const CHAR* N_HELP=		        "help";
 static const CHAR* N_CRC=			"crc";
-static const CHAR* N_TRANSLATE_STRING=			"translate_string";
+//static const CHAR* N_TRANSLATE_STRING=			"translate_string";
 static const CHAR* N_GET_HMM=			"get_hmm";
-static const CHAR* N_GET_VITERBI_PATH=			"get_viterbi_path";
+//static const CHAR* N_GET_VITERBI_PATH=			"get_viterbi_path";
 static const CHAR* N_GET_SVM=			"get_svm";
-static const CHAR* N_GET_SVM_OBJECTIVE=		"get_svm_objective";
-static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
+//static const CHAR* N_GET_SVM_OBJECTIVE=		"get_svm_objective";
+//static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
 static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
-static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
-static const CHAR* N_COMPUTE_BY_SUBKERNELS=	        "compute_by_subkernels";
-static const CHAR* N_SET_SUBKERNEL_WEIGHTS=	        "set_subkernel_weights";
-static const CHAR* N_SET_LAST_SUBKERNEL_WEIGHTS=	        "set_last_subkernel_weights";
-static const CHAR* N_SET_WD_POS_WEIGHTS=	        "set_WD_position_weights";
+//static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
+//static const CHAR* N_COMPUTE_BY_SUBKERNELS=	        "compute_by_subkernels";
+//static const CHAR* N_SET_SUBKERNEL_WEIGHTS=	        "set_subkernel_weights";
+//static const CHAR* N_SET_LAST_SUBKERNEL_WEIGHTS=	        "set_last_subkernel_weights";
+//static const CHAR* N_SET_WD_POS_WEIGHTS=	        "set_WD_position_weights";
 static const CHAR* N_GET_SUBKERNEL_WEIGHTS=	        "get_subkernel_weights";
-static const CHAR* N_GET_LAST_SUBKERNEL_WEIGHTS=	        "get_last_subkernel_weights";
-static const CHAR* N_GET_WD_POS_WEIGHTS=	        "get_WD_position_weights";
+//static const CHAR* N_GET_LAST_SUBKERNEL_WEIGHTS=	        "get_last_subkernel_weights";
+//static const CHAR* N_GET_WD_POS_WEIGHTS=	        "get_WD_position_weights";
 static const CHAR* N_GET_FEATURES=		"get_features";
 static const CHAR* N_GET_LABELS=		"get_labels";
 static const CHAR* N_GET_VERSION=		"get_version";
-static const CHAR* N_GET_PREPROC_INIT=	        "get_preproc_init";
-static const CHAR* N_GET_HMM_DEFS=		"get_hmm_defs";
+//static const CHAR* N_GET_PREPROC_INIT=	        "get_preproc_init";
+//static const CHAR* N_GET_HMM_DEFS=		"get_hmm_defs";
 static const CHAR* N_SET_HMM=			"set_hmm";
-static const CHAR* N_MODEL_PROB_NO_B_TRANS=			"model_prob_no_b_trans";
-static const CHAR* N_BEST_PATH_NO_B_TRANS=			"best_path_no_b_trans";
-static const CHAR* N_BEST_PATH_TRANS=			"best_path_trans";
-static const CHAR* N_BEST_PATH_2STRUCT=			"best_path_2struct";
-static const CHAR* N_BEST_PATH_TRANS_SIMPLE=			"best_path_trans_simple";
-static const CHAR* N_BEST_PATH_NO_B=			"best_path_no_b";
-static const CHAR* N_APPEND_HMM=			"append_hmm";
+//static const CHAR* N_MODEL_PROB_NO_B_TRANS=			"model_prob_no_b_trans";
+//static const CHAR* N_BEST_PATH_NO_B_TRANS=			"best_path_no_b_trans";
+//static const CHAR* N_BEST_PATH_TRANS=			"best_path_trans";
+//static const CHAR* N_BEST_PATH_2STRUCT=			"best_path_2struct";
+//static const CHAR* N_BEST_PATH_TRANS_SIMPLE=			"best_path_trans_simple";
+//static const CHAR* N_BEST_PATH_NO_B=			"best_path_no_b";
+//static const CHAR* N_APPEND_HMM=			"append_hmm";
 static const CHAR* N_SET_SVM=			"set_svm";
-static const CHAR* N_SET_KERNEL_PARAMETERS=	        "set_kernel_parameters";
-static const CHAR* N_SET_CUSTOM_KERNEL=	        "set_custom_kernel";
-static const CHAR* N_SET_KERNEL_INIT=	        "set_kernel_init";
+//static const CHAR* N_SET_KERNEL_PARAMETERS=	        "set_kernel_parameters";
+//static const CHAR* N_SET_CUSTOM_KERNEL=	        "set_custom_kernel";
+//static const CHAR* N_SET_KERNEL_INIT=	        "set_kernel_init";
 static const CHAR* N_SET_FEATURES=		"set_features";
 static const CHAR* N_ADD_FEATURES=		"add_features";
 static const CHAR* N_SET_LABELS=		"set_labels";
-static const CHAR* N_SET_PREPROC_INIT=	        "set_preproc_init";
-static const CHAR* N_SET_HMM_DEFS=		"set_hmm_defs";
-static const CHAR* N_ONE_CLASS_HMM_CLASSIFY=		"one_class_hmm_classify";
-static const CHAR* N_ONE_CLASS_LINEAR_HMM_CLASSIFY=		"one_class_linear_hmm_classify";
+//static const CHAR* N_SET_PREPROC_INIT=	        "set_preproc_init";
+//static const CHAR* N_SET_HMM_DEFS=		"set_hmm_defs";
+//static const CHAR* N_ONE_CLASS_HMM_CLASSIFY=		"one_class_hmm_classify";
+//static const CHAR* N_ONE_CLASS_LINEAR_HMM_CLASSIFY=		"one_class_linear_hmm_classify";
 static const CHAR* N_HMM_CLASSIFY=		"hmm_classify";
-static const CHAR* N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE=		"one_class_hmm_classify_example";
-static const CHAR* N_HMM_CLASSIFY_EXAMPLE=	"hmm_classify_example";
-static const CHAR* N_CLASSIFY=		"classify";
+//static const CHAR* N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE=		"one_class_hmm_classify_example";
+//static const CHAR* N_HMM_CLASSIFY_EXAMPLE=	"hmm_classify_example";
+//static const CHAR* N_CLASSIFY=		"classify";
 static const CHAR* N_SVM_CLASSIFY=		"svm_classify";
-static const CHAR* N_SVM_CLASSIFY_EXAMPLE=	"svm_classify_example";
-static const CHAR* N_GET_PLUGIN_ESTIMATE=	"get_plugin_estimate";
-static const CHAR* N_SET_PLUGIN_ESTIMATE=	"set_plugin_estimate";
-static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY=	"plugin_estimate_classify";
-static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE=	"plugin_estimate_classify_example";
+//static const CHAR* N_SVM_CLASSIFY_EXAMPLE=	"svm_classify_example";
+//static const CHAR* N_GET_PLUGIN_ESTIMATE=	"get_plugin_estimate";
+//static const CHAR* N_SET_PLUGIN_ESTIMATE=	"set_plugin_estimate";
+//static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY=	"plugin_estimate_classify";
+//static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE=	"plugin_estimate_classify_example";
 
 extern "C" {
 
@@ -159,12 +159,32 @@ static SEXP sg_helper(SEXP args)
 		   {
 			   return sg_R.svm_classify();
 		   }
-
 		   else if (!strncmp(action, N_HMM_CLASSIFY, strlen(N_HMM_CLASSIFY)))
 		   {
 			   return sg_R.hmm_classify();
 		   }
+		   else if (!strncmp(action, N_CRC, strlen(N_CRC)))
+		   {
+			   //if ((nrhs==2) && (nlhs==1))
+			   //{
+			   //CHAR* target=CHAR(STRING_ELT(CAR(args),0));
+			   //    CHAR* string=CGUIMatlab::get_mxString(prhs[1]);
+			   //    UINT sl = strlen(string) ;
 
+			   //    BYTE* bstring = new BYTE[sl] ;
+			   //    for (UINT i=0; i<sl; i++)
+			   // 	   bstring[i] = string[i] ;
+			   //    UINT res = CMath::crc32(bstring, sl) ;
+			   //    plhs[0] = mxCreateDoubleMatrix(1, 1, mxREAL);
+			   //    DREAL * p=mxGetPr(plhs[0]) ;
+			   //    *p = res ;
+			   //    delete[] bstring ;
+			   //    mxFree(string) ;
+			   //}
+			   //else
+			//	   CIO::message(M_ERROR, "usage is crc32=sg('crc', string)");
+
+		   }
 		   else if (!strncmp(action, N_ADD_FEATURES, strlen(N_ADD_FEATURES)))
 		   {
 			   //	if (cmd_len>=3) 
@@ -237,8 +257,20 @@ static SEXP sg_helper(SEXP args)
 				   CIO::message(M_ERROR, "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
 			   CIO::message(M_INFO, "done\n");
 		   }
-
-
+		   else if (!strncmp(action, N_SET_HMM, strlen(N_SET_HMM)))
+		   {
+			   if (cmd_len==1+4)
+				   successful(result, sg_R.set_hmm(args));
+			   else
+				   CIO::message(M_ERROR, "usage is sg('set_hmm',[p,q,a,b])");
+		   }
+		   else if (!strncmp(action, N_SET_SVM, strlen(N_SET_SVM)))
+		   {
+			   if (cmd_len==3)
+				   successful(result, sg_R.set_svm(args));
+			   else
+				   CIO::message(M_ERROR, "usage is sg('set_svm', [ b, alphas])");
+		   }
 		   else if (!strncmp(action, N_GET_FEATURES, strlen(N_GET_FEATURES)))
 		   {
 			   CFeatures* features=NULL;

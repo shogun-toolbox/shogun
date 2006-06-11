@@ -1037,33 +1037,36 @@ extern "C"
 		return R_NilValue;
 	}
 
-#if 0
 
-	bool CGUI_R::set_svm(const mxArray* vals[])
+	bool CGUI_R::set_svm(SEXP arg_list)
 	{
+		if( TYPEOF(arg_list) != LISTSXP ) {
+			CIO::message(M_ERROR, "You have to supply an argument list of length four.\n");
+			return false;
+		}
+
 		CSVM* svm=gui->guisvm.get_svm();
 
 		if (svm)
 		{
-			const mxArray* mx_b=vals[1];
-			const mxArray* mx_alphas=vals[2];
+		SEXP b,alphas;
+
+		b = CAR(arg_list);
+		arg_list = CDR(arg_list);
+		alphas = CAR(arg_list);
 
 			if (
-					mx_b && mx_alphas &&
-					mxGetN(mx_b) == 1 && mxGetM(mx_b) == 1 &&
-					mxGetN(mx_alphas) == 2
+					Rf_nrows(b)==1  && Rf_ncols(b) == 1 &&
+					Rf_ncols(alphas) == 2 && Rf_nrows(alphas)>0
 			   )
 			{
-				double* b=mxGetPr(mx_b);
-				double* alphas=mxGetPr(mx_alphas);
-
-				svm->create_new_model(mxGetM(mx_alphas));
-				svm->set_bias(*b);
+				svm->create_new_model(Rf_nrows(alphas));
+				svm->set_bias(REAL(b)[0]);
 
 				for (int i=0; i< svm->get_num_support_vectors(); i++)
 				{
-					svm->set_alpha(i, alphas[i]);
-					svm->set_support_vector(i, (int) alphas[i+svm->get_num_support_vectors()]);
+					svm->set_alpha(i, REAL(alphas)[i]);
+					svm->set_support_vector(i, (int) REAL(alphas)[i+svm->get_num_support_vectors()]);
 				}
 
 				return true;
@@ -1075,6 +1078,7 @@ extern "C"
 		return false;
 	}
 
+#if 0
 
 	bool CGUI_R::classify(mxArray* retvals[])
 	{

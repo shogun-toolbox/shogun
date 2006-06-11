@@ -45,6 +45,7 @@ public:
 
 	SEXP get_hmm();
 	bool set_hmm(SEXP arg_list);
+	bool set_svm(SEXP arg_list);
    /*
 	bool best_path(mxArray* retvals[], int dim);
 	bool best_path_no_b(const mxArray* vals[], mxArray* retvals[]) ;
@@ -58,7 +59,6 @@ public:
 	bool one_class_hmm_classify_example(mxArray* retvals[], int idx);
 	bool one_class_hmm_classify(mxArray* retvals[], bool linear);
 
-	bool set_svm(const );
 	bool svm_classify_example(mxArray* retvals[], int idx);
 	bool classify(mxArray* retvals[]);
 

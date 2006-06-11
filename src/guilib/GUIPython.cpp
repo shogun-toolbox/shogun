@@ -841,39 +841,80 @@ CFeatures* CGUIPython::set_features(PyObject* arg)
 {
 	PyArrayObject *py_afeat = NULL;
 	CFeatures* features = NULL;
-
+	int typeno=-1;
 	/* Align, Byteswap, Contiguous, Typeconvert */
 
-	CIO::message(M_DEBUG,"%d : tInt8(%d),tUInt8(%d),tUInt32(%d),tInt32(%d)", NA_NumarrayType(arg), tInt8, tUInt8,tUInt32,tInt32);
-	switch (NA_NumarrayType(arg))
+	if (!NA_NumArrayCheck(arg) && !NA_NDArrayCheck(arg))
+	{
+		CIO::message(M_ERROR, "no numarray type\n");
+		return NULL;
+	}
+
+	typeno=PyArray(arg)->descr->type_num;
+
+	//strangely this seems to be a CharacterArray...
+	if (NA_NDArrayCheck(arg) && PyArray(arg)->descr->type_num == PyArray_NOTYPE)
+		typeno=tUInt8;
+
+	CIO::message(M_DEBUG,"%d (%d) vs. %d : tInt8(%d),tUInt8(%d),tUInt32(%d),tInt32(%d)\n", typeno, PyArray_NOTYPE, NA_NumarrayType(arg), tInt8, tUInt8,tUInt32,tInt32);
+	switch (typeno)
 	{
 		case tInt8:
 		case tUInt8:
 			py_afeat  = NA_InputArray(arg, tUInt8, NUM_C_ARRAY);
-			if ((py_afeat->nd == 2))
+			if (NA_NDArrayCheck(arg))
 			{
-				CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
-				int num_vec=py_afeat->dimensions[0];
-				int num_feat=py_afeat->dimensions[1];
-
-				if (feat)
+				if ((py_afeat->nd == 1))
 				{
-					// FIXME allow for other alphabets
-					features= new CCharFeatures(DNA, (LONG) 0);
-					CHAR* fm=new CHAR[num_vec*num_feat];
-					ASSERT(fm);
-					for(int i=0; i<num_vec; i++)
+					CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
+					int num_vec=py_afeat->dimensions[0];
+					int num_feat=PyArray(py_afeat)->itemsize;
+					CIO::message(M_DEBUG, "vec: %d dim:%d\n", num_vec, num_feat);
+
+					if (feat)
 					{
-						for(int j=0; j<num_feat; j++)
-							fm[i*num_feat+j]=feat[i*num_feat+j];
+						// FIXME allow for other alphabets
+						features= new CCharFeatures(DNA, (LONG) 0);
+						CHAR* fm=new CHAR[num_vec*num_feat];
+						ASSERT(fm);
+						for(int i=0; i<num_vec; i++)
+						{
+							for(int j=0; j<num_feat; j++)
+								fm[i*num_feat+j]=feat[i*num_feat+j];
+						}
+						((CCharFeatures*) features)->set_feature_matrix(fm, num_feat, num_vec);
 					}
-					((CCharFeatures*) features)->set_feature_matrix(fm, num_feat, num_vec);
+					else
+						CIO::message(M_ERROR,"empty feats ??\n");
 				}
-				else
-					CIO::message(M_ERROR,"empty feats ??\n");
 			}
 			else
-				CIO::message(M_ERROR, "set_features: arrays must have 2 dimension.\n");
+			{
+				if ((py_afeat->nd == 2))
+				{
+					CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
+					int num_vec=py_afeat->dimensions[0];
+					int num_feat=py_afeat->dimensions[1];
+
+					if (feat)
+					{
+						// FIXME allow for other alphabets
+						features= new CCharFeatures(DNA, (LONG) 0);
+						CHAR* fm=new CHAR[num_vec*num_feat];
+						ASSERT(fm);
+						for(int i=0; i<num_vec; i++)
+						{
+							for(int j=0; j<num_feat; j++)
+								fm[i*num_feat+j]=feat[i*num_feat+j];
+						}
+						((CCharFeatures*) features)->set_feature_matrix(fm, num_feat, num_vec);
+					}
+					else
+						CIO::message(M_ERROR,"empty feats ??\n");
+				}
+				else
+					CIO::message(M_ERROR, "set_features: arrays must have 2 dimension.\n");
+			}
 			break;
 		case tFloat64:
 			py_afeat  = NA_InputArray(arg, tFloat64, NUM_C_ARRAY);

@@ -1244,8 +1244,8 @@ set_opts()
 		HAVE_PYTHON='#define HAVE_PYTHON 1'
 
 		INCLUDES="-I/usr/include/python2.4 $INCLUDES"
-		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_CPP"
-		COMPFLAGS_C="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_C"
+		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
+		COMPFLAGS_C="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
 		LINKFLAGS="-pthread -shared -L/usr/lib/python2.4/config -lpython2.4 $LINKFLAGS"
 		TARGET="sg.so"
 	fi
@@ -1263,8 +1263,8 @@ set_opts()
 		then
 			INCLUDES="-I/usr/share/R/include $INCLUDES"
 		fi
-		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_CPP"
-		COMPFLAGS_C="-pthread -fno-strict-aliasing -DNDEBUG -Wall -fPIC $COMPFLAGS_C"
+		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
+		COMPFLAGS_C="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
 		LINKFLAGS="-pthread -shared $LINKFLAGS"
 
 		if test -d /usr/lib/R/lib 
