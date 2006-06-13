@@ -73,7 +73,7 @@ public:
 
 	SEXP hmm_classify(); 
 	SEXP get_features(CFeatures* features);
-	CFeatures* set_features(SEXP feat);
+	CFeatures* set_features(SEXP features, SEXP feature_length);
    
 	CLabels* set_labels(SEXP labelsR);
 	SEXP get_labels(CLabels* label);
@@ -81,14 +81,14 @@ public:
    
 	SEXP get_kernel_matrix();
 	SEXP get_svm();
+	SEXP get_svm_objective();
+	//bool set_custom_kernel(SEXP args) ;
    
 /*
 	bool get_kernel_optimization(mxArray* retvals[]);
-	bool set_custom_kernel(const mxArray* vals[], bool source_is_diag, bool dest_is_diag) ;
 
 	// MKL Kernel stuff
 	bool compute_by_subkernels(mxArray* retvals[]);
-	SEXP get_svm_objective();
 	bool get_last_subkernel_weights(mxArray* retvals[]);
 	bool set_subkernel_weights(const mxArray *mx_arg);
 	bool set_last_subkernel_weights(const mxArray *mx_arg);

@@ -1363,7 +1363,6 @@ extern "C"
 	}
 
 #if 0
-
 	bool CGUI_R::set_kernel_parameters(const mxArray* mx_arg)
 	{
 		if (mx_arg && mxGetM(mx_arg)==1 )
@@ -1380,10 +1379,14 @@ extern "C"
 
 		return false;
 	}
+   
+//bool CGUI_R::set_custom_kernel(const mxArray* vals[], bool source_is_diag, bool dest_is_diag) {
+bool CGUI_R::set_custom_kernel(SEXP args) {
 
-	bool CGUI_R::set_custom_kernel(const mxArray* vals[], bool source_is_diag, bool dest_is_diag)
-	{
-		const mxArray* mx_kernel=vals[1];
+	* action=REAL(VECTOR_ELT(CAR(args), 0));
+	args = CDR(args); /* pop action out of list */
+
+   const mxArray* mx_kernel=vals[1];
 
 		if (mxIsDouble(mx_kernel))
 		{
@@ -1412,19 +1415,18 @@ extern "C"
 		else
 			CIO::message(M_ERROR,"kernel matrix must by given as double matrix\n");
 
-		return false;
+		return R_NilValue;
 	}
 
-#endif 
+#endif
 
-	CFeatures* CGUI_R::set_features(SEXP feat)
+	CFeatures* CGUI_R::set_features(SEXP feat, SEXP feature_length)
 	{
 		CFeatures* f=NULL;
 		CIO::message(M_INFO, "start CGUI_R::set_features\n") ;
 
-		if (feat)
+		if (feat && feature_length)
 		{
-
 			if (false)
 				CIO::not_implemented();
 			else
@@ -1464,7 +1466,8 @@ extern "C"
 					for (int i=0; i<num_vec; i++)
 					{
 						CHAR* c= CHAR(STRING_ELT(feat,i));
-						int len=strlen(c);
+						//int len=strlen(c);
+                  int len = *INTEGER(feature_length);
 						CHAR* dst=new CHAR[len];
 						sc[i].string=strncpy(dst, c, len);
 						sc[i].length=len;
@@ -1496,28 +1499,28 @@ extern "C"
 		return ans;
 	}
 
-#if 0
+   
+SEXP CGUI_R::get_svm_objective() {
+   SEXP ans;
+	//mxArray* mx_v=mxCreateDoubleMatrix(1, 1, mxDREAL);
+	PROTECT( ans = allocVector(REALSXP, 1));
+	CSVM* svm=gui->guisvm.get_svm();
 
-	bool CGUI_R::get_svm_objective(mxArray* retvals[])
+	if (svm)
 	{
-		mxArray* mx_v=mxCreateDoubleMatrix(1, 1, mxDREAL);
-		CSVM* svm=gui->guisvm.get_svm();
+		//double* v=mxGetPr(mx_v);
+		//*v = svm->get_objective();
+      REAL(ans)[0] = svm->get_objective();
 
-		if (mx_v && svm)
-		{
-			double* v=mxGetPr(mx_v);
-
-			*v = svm->get_objective();
-
-			retvals[0]=mx_v;
-			return true;
-		}
-		else
-			CIO::message(M_ERROR, "no svm set\n");
-
-		return false;
+		//retvals[0]=mx_v;
+      UNPROTECT(1);
+	   return ans;
 	}
-#endif
+	else
+	   CIO::message(M_ERROR, "no svm set\n");
+
+	return R_NilValue;
+	}
 
 	SEXP CGUI_R::get_labels(CLabels* label)
 	{

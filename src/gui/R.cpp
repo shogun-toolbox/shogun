@@ -22,7 +22,7 @@ static const CHAR* N_CRC=			"crc";
 static const CHAR* N_GET_HMM=			"get_hmm";
 //static const CHAR* N_GET_VITERBI_PATH=			"get_viterbi_path";
 static const CHAR* N_GET_SVM=			"get_svm";
-//static const CHAR* N_GET_SVM_OBJECTIVE=		"get_svm_objective";
+static const CHAR* N_GET_SVM_OBJECTIVE=		"get_svm_objective";
 //static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
 static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
 //static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
@@ -48,7 +48,7 @@ static const CHAR* N_SET_HMM=			"set_hmm";
 //static const CHAR* N_APPEND_HMM=			"append_hmm";
 static const CHAR* N_SET_SVM=			"set_svm";
 //static const CHAR* N_SET_KERNEL_PARAMETERS=	        "set_kernel_parameters";
-//static const CHAR* N_SET_CUSTOM_KERNEL=	        "set_custom_kernel";
+static const CHAR* N_SET_CUSTOM_KERNEL=	        "set_custom_kernel";
 //static const CHAR* N_SET_KERNEL_INIT=	        "set_kernel_init";
 static const CHAR* N_SET_FEATURES=		"set_features";
 static const CHAR* N_ADD_FEATURES=		"add_features";
@@ -127,6 +127,17 @@ static SEXP sg_helper(SEXP args)
 		{
 			return sg_R.get_svm();
 		}
+      
+		else if (!strncmp(action, N_GET_SVM_OBJECTIVE, strlen(N_GET_SVM_OBJECTIVE)))
+		{
+			return sg_R.get_svm_objective();
+		}
+      
+		else if (!strncmp(action, N_SET_CUSTOM_KERNEL, strlen(N_SET_CUSTOM_KERNEL)))
+		{
+         CIO::message(M_ERROR, "Not implemented yet");
+			return R_NilValue;
+		}
 
 		/*
 		   else if (!strncmp(action, N_SVM_CLASSIFY_EXAMPLE, strlen(N_SVM_CLASSIFY_EXAMPLE)))
@@ -198,8 +209,10 @@ static SEXP sg_helper(SEXP args)
 
 				   SEXP features_mat = CAR(args); // Maybe results in NULL pointer 
 				   args = CDR(args); /* pop features out of list */
+				   SEXP feature_length = CAR(args); // Maybe results in NULL pointer 
+				   args = CDR(args); /* pop features out of list */
 
-				   CFeatures* features= sg_R.set_features(features_mat);
+				   CFeatures* features= sg_R.set_features(features_mat,feature_length);
 
 				   if (features)
 				   {
@@ -238,7 +251,10 @@ static SEXP sg_helper(SEXP args)
 				   {
 					   SEXP features_mat = CAR(args); // Maybe results in NULL pointer 
 					   args = CDR(args); /* pop features out of list */
-					   CFeatures* features = sg_R.set_features(features_mat);
+					   SEXP feature_length = CAR(args); // Maybe results in NULL pointer 
+					   args = CDR(args); /* pop features out of list */
+
+					   CFeatures* features = sg_R.set_features(features_mat,feature_length);
 
 					   if (features)
 					   {
