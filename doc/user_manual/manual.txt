@@ -1,0 +1,155 @@
+====================
+SHOGUN - User manual
+====================
+
+Chapter 0 - About this document
+===============================
+This is the user manual for the SHOGUN toolbox.
+
+
+Chapter 1 - Introduction to SHOGUN
+==================================
+The SHOGUN machine learning toolbox's focus is on kernel methods and especially on
+Support Vector Machines (SVM). It provides a generic SVM object interfacing
+to several different SVM implementations, among them the state of the art
+LibSVM[1] and SVMlight[2].  Each of the SVMs can be combined with a variety
+of kernels. The toolbox not only provides efficient implementations of the
+most common kernels, like the Linear, Polynomial, Gaussian and Sigmoid
+Kernel but also comes with a number of recent string kernels as e.g. the
+Locality Improved[3], Fischer[4], TOP[5], Spectrum[6], Weighted Degree
+Kernel (with shifts)[7]. For the latter the efficient LINADD[8]
+optimizations are implemented.  Also SHOGUN offers the freedom of working
+with custom pre-computed kernels.  One of its key features is the \``combined
+kernel'' which can be constructed by a weighted linear combination of a
+number of sub-kernels, each of which not necessarily working on the same
+domain. An optimal sub-kernel weighting can be learned using Multiple Kernel
+Learning[9]. 
+Currently SVM 2-class classification and regression problems can be dealt
+with. However SHOGUN also implements a number of linear methods like Linear
+Discriminant Analysis (LDA), Linear Programming Machine (LPM), (Kernel)
+Perceptrons and features algorithms to train hidden markov models.
+The input feature-objects can be dense, sparse or strings and
+of type int/short/double/char and can be converted into different feature types. 
+Chains of \``preprocessors'' (e.g. substracting the mean) can be attached to
+each feature object allowing for on-the-fly pre-processing.
+License: GPL version 2 or newer
+URL: http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun
+
+
+Section 1.1 Notes
+-----------------
+As mentioned above SHOGUN interfaces to several programming languages and
+toolkits such as Matlab(tm), R, Python, Octave. The following sections shall
+give you an overview over the commands of SHOGUN. We tried to preserve the
+syntax of the commands in a consistent manner through all the different
+languages. However where it was not possible we give there will be special
+infos on the subtle differences of syntax and semantic in the respective
+toolkit
+
+Section 1.2 Commands
+--------------------
+
+In general all commands in SHOGUN are issued using the function sg(...).
+To invoke the SHOGUN command help one types::
+
+   sg("send_command","help")
+
+and then a help text appears giving a short description of all commands.
+
+
+Subsection 1.2.1 send_command
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Currently send_command supports the following options:
+
+   1. help: Gives you a help text.
+
+   2. loglevel: has the additional options ALL, WARN, ERROR. 
+      i. ALL: verbose logging output (useful for debugging).
+      ii. WARN: less logging output (useful for error search).
+      iii. ERROR:  only logging output on critical errors.
+
+      For example::
+
+         sg("send_command","loglevel ALL")
+
+      gives you a very verbose description of all the things happening in the
+      SHGOGUN core.
+
+   3. clean_features: Deletes the features which we assigned before in the
+      actual SHOGUN session.
+
+   4. clean_kernels: Deletes the kernels which we assigned before in the
+      actual SHOGUN session.
+
+   5. new_svm: Creates a new SVM instance.
+
+   6. init_kernel: Initilizes the kernel.
+
+   7. svm_train: Starts the training of the SVM on the assigned features and
+      kernels.
+
+
+Subsection 1.2.2 set_features and set_labels
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The set_features commands is responsible for assigning features to the SHOGUN
+core. Suppose you have a matlab matrix or R vector  \"traindat\" which
+contains your training data and you want to register this data, you simply
+type::
+
+   sg("set_features", "TRAIN", traindat)
+
+telling SHOGUN that this is the data you want to train your classifier on.
+To register test data on issues::
+
+   sg("set_features", "TEST", testdat)
+
+where testdat is a datastructure with your test data.
+
+One proceeds similar when assigning labels to the training data.
+The command::
+
+   sg("set_labels", "TRAIN", trainlab) 
+
+tells SHOGUN that the labels of the assigned training data reside in trainlab.
+
+Subsection 1.2.3 get_kernel_matrix
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The purpose of the get_kernel_matrix commands is to return a symmetric matrix
+representing the kernel matrix for the actual classification problem. 
+
+km=sg("get_kernel_matrix")
+
+
+Subsection 1.2.4 get_svm
+~~~~~~~~~~~~~~~~~~~~~~~~
+The get_svm command returns some properties of an SVM such as the weights the
+b and the index of the support vectors.
+
+For several reasons this commands differs a bit in the different target
+languages.
+
+In R:
+
+svmAsList=sg("get_svm") returns a vector with the named entities alphas,b and SV.
+
+In Matlab:
+
+[b, alphas]=sg('get_svm');
+
+
+Subsection 1.2.5 svm_classify
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+out=sg("classify")
+
+
+Section 1.3 Kernels
+-------------------
+The following kernels are implemented in SHOGUN
+
+   1. Gaussian
+   2. Linear
+
+Chapter 2 - References
+===============================
+See
+
