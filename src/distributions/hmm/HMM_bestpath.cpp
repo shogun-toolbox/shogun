@@ -1,3 +1,7 @@
+/* Written by Gunnar Raetsch and Soeren Sonnenburg.
+   Dinoj Surendran helped optimizing and extending the code.
+ */
+
 #include <math.h>
 #include "distributions/hmm/HMM.h"
 #include "lib/Mathmatics.h"
