@@ -31,4 +31,4 @@ of type int/short/double/char and can be converted into different feature types.
 Chains of ``preprocessors'' (e.g. substracting the mean) can be attached to
 each feature object allowing for on-the-fly pre-processing.
 License: GPL version 2 or newer
-URL: http://www.r-project.org, http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun
+URL: http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun
