@@ -39,7 +39,7 @@
 #include "classifier/svm/SVM.h"
 
 // This extern C declaration is needed to link
-// shogun-R with the R interpreter.
+// shogun-R with the R interpreter (symbol differences)
 
 extern "C"
 {
@@ -119,10 +119,10 @@ extern "C"
 		return (R_NilValue);
 	}
 
-#if 0
-	bool CGUI_R::best_path(mxArray* retvals[], int dim)
+	SEXP CGUI_R::best_path(int dim)
 	{
 		CHMM* h=gui->guihmm.get_current();
+		CIO::message(M_DEBUG, "dim: %d\n", dim);
 
 		if (h)
 		{
@@ -132,6 +132,7 @@ extern "C"
 					&& (f->get_feature_type() == F_WORD)
 			   )
 			{
+				h->set_observations((CStringFeatures<WORD>*) f);
 				INT num_feat;
 
 				WORD* fv = ((CStringFeatures<WORD>*) f)->get_feature_vector(dim, num_feat);
@@ -140,69 +141,35 @@ extern "C"
 
 				if (fv && num_feat>0)
 				{
-					mxArray* mx_path = mxCreateDoubleMatrix(1, num_feat, mxDREAL);
-					mxArray* mx_lik = mxCreateDoubleMatrix(1, 1, mxDREAL);
+					SEXP ans, lik, path;
 
-					double* lik = mxGetPr(mx_lik);
-					double* path = mxGetPr(mx_path);
-					T_STATES* s = h->get_path(dim, *lik);
+					PROTECT( lik = allocVector(REALSXP, 1 ));
+					PROTECT( path = allocVector(REALSXP, num_feat ));
+
+					T_STATES* s = h->get_path(dim, REAL(lik)[0]);
 
 					for (int i=0; i<num_feat; i++)
-						path[i]=s[i];
+						REAL(path)[i]=s[i];
 
 					delete[] s;
 
-					retvals[0]=mx_path;
-					retvals[1]=mx_lik;
-					return true;
+					PROTECT( ans = allocList(0) );
+					ans = CONS(lik, ans);
+					SET_TAG(ans, install("likelihood"));
+					ans = CONS(path, ans);
+					SET_TAG(ans, install("path"));
+					UNPROTECT(3);
+					return ans;
 				}
 			}
 		}
-		return false;
 
-		if (h)
-		{
-			mxArray* mx_p=mxCreateDoubleMatrix(1, h->get_N(), mxDREAL);
-			mxArray* mx_q=mxCreateDoubleMatrix(1, h->get_N(), mxDREAL);
-			mxArray* mx_a=mxCreateDoubleMatrix(h->get_N(), h->get_N(), mxDREAL);
-			mxArray* mx_b=mxCreateDoubleMatrix(h->get_N(), h->get_M(), mxDREAL);
-
-			if (mx_p && mx_q && mx_a && mx_b)
-			{
-				double* p=mxGetPr(mx_p);
-				double* q=mxGetPr(mx_q);
-				double* a=mxGetPr(mx_a);
-				double* b=mxGetPr(mx_b);
-
-				int i,j;
-				for (i=0; i< h->get_N(); i++)
-				{
-					p[i]=h->get_p(i);
-					q[i]=h->get_q(i);
-				}
-
-				for (i=0; i< h->get_N(); i++)
-					for (j=0; j< h->get_N(); j++)
-						a[i+j*h->get_N()]=h->get_a(i,j);
-
-				for (i=0; i< h->get_N(); i++)
-					for (j=0; j< h->get_M(); j++)
-						b[i+j*h->get_N()]=h->get_b(i,j);
-
-				retvals[0]=mx_p;
-				retvals[1]=mx_q;
-				retvals[2]=mx_a;
-				retvals[3]=mx_b;
-
-				return true;
-			}
-		}
-
-		return false;
+		return R_NilValue;
 	}
 
-	bool CGUI_R::append_hmm(const mxArray* vals[])
+	bool CGUI_R::append_hmm(const SEXP arg_list)
 	{
+		/*
 		CHMM* old_h=gui->guihmm.get_current();
 		ASSERT(old_h);
 
@@ -265,9 +232,9 @@ extern "C"
 					CIO::message(M_ERROR, "model matricies not matching in size\n");
 			}
 		}
+		*/
 		return false;
 	}
-#endif
 
 	bool CGUI_R::set_hmm(SEXP arg_list)
 	{
@@ -332,589 +299,19 @@ extern "C"
 		return false;
 	}
 
-#if 0
-
-	bool CGUI_R::best_path_no_b(const mxArray* vals[], mxArray* retvals[])
+	SEXP CGUI_R::hmm_classify_example(int idx)
 	{
-		const mxArray* mx_p=vals[1];
-		const mxArray* mx_q=vals[2];
-		const mxArray* mx_a=vals[3];
-		const mxArray* mx_max_iter=vals[4];
-
-		INT max_iter = (INT)mxGetScalar(mx_max_iter) ;
-
-		INT N=mxGetN(mx_a);
-
-		if ( mx_p && mx_q && mx_a)
-		{
-			if (
-					mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-					mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-					mxGetN(mx_a) == N && mxGetM(mx_a) == N
-			   )
-			{
-				double* p=mxGetPr(mx_p);
-				double* q=mxGetPr(mx_q);
-				double* a=mxGetPr(mx_a);
-
-				CHMM* h=new CHMM(N, p, q, a);
-
-				INT *my_path = new INT[max_iter] ;
-				int best_iter = 0 ;
-				DREAL prob = h->best_path_no_b(max_iter, best_iter, my_path) ;
-
-				mxArray* mx_prob = mxCreateDoubleMatrix(1, 1, mxDREAL);
-				double* p_prob = mxGetPr(mx_prob);
-				p_prob[0] = prob ;
-
-				mxArray* mx_result = mxCreateDoubleMatrix(1, best_iter+1, mxDREAL);
-				double* result = mxGetPr(mx_result);
-				for (INT i=0; i<best_iter+1; i++)
-					result[i]=my_path[i] ;
-
-				retvals[0]=mx_prob ;
-				retvals[1]=mx_result ;
-				delete h ;
-
-				return true;
-			}
-			else
-				CIO::message(M_ERROR, "model matricies not matching in size\n");
-		}
-
-		return false;
-	}
-
-	bool CGUI_R::best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[])
-	{
-		const mxArray* mx_p=vals[1];
-		const mxArray* mx_q=vals[2];
-		const mxArray* mx_a_trans=vals[3];
-		const mxArray* mx_max_iter=vals[4];
-		const mxArray* mx_nbest=vals[5];
-
-		INT max_iter = (INT)mxGetScalar(mx_max_iter) ;
-		INT nbest    = (INT)mxGetScalar(mx_nbest) ;
-		if (nbest<1)
-			return false ;
-		if (max_iter<1)
-			return false ;
-
-		INT N=mxGetN(mx_p);
-
-		if ( mx_p && mx_q && mx_a_trans)
-		{
-			if (
-					mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-					mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-					mxGetN(mx_a_trans) == 3
-			   )
-			{
-				double* p=mxGetPr(mx_p);
-				double* q=mxGetPr(mx_q);
-				double* a=mxGetPr(mx_a_trans);
-
-				CHMM* h=new CHMM(N, p, q, mxGetM(mx_a_trans), a);
-
-				INT *my_path = new INT[(max_iter+1)*nbest] ;
-				memset(my_path, -1, (max_iter+1)*nbest*sizeof(INT)) ;
-
-				int max_best_iter = 0 ;
-				mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxDREAL);
-				double* p_prob = mxGetPr(mx_prob);
-
-				h->best_path_no_b_trans(max_iter, max_best_iter, nbest, p_prob, my_path) ;
-
-				mxArray* mx_result=mxCreateDoubleMatrix(nbest, max_best_iter+1, mxDREAL);
-				double* result=mxGetPr(mx_result);
-
-				for (INT k=0; k<nbest; k++)
-				{
-					for (INT i=0; i<max_best_iter+1; i++)
-						result[i*nbest+k] = my_path[i+k*(max_iter+1)] ;
-				}
-
-
-				retvals[0]=mx_prob ;
-				retvals[1]=mx_result ;
-
-				delete h ;
-				delete[] my_path ;
-				return true;
-			}
-			else
-				CIO::message(M_ERROR, "model matricies not matching in size\n");
-		}
-
-		return false;
-	}
-
-
-
-
-	bool CGUI_R::best_path_trans(const mxArray* vals[], mxArray* retvals[])
-	{
-		const mxArray* mx_p=vals[1];
-		const mxArray* mx_q=vals[2];
-		const mxArray* mx_a_trans=vals[3];
-		const mxArray* mx_seq=vals[4];
-		const mxArray* mx_pos=vals[5];
-		const mxArray* mx_orf_info=vals[6];
-		const mxArray* mx_genestr=vals[7];
-		const mxArray* mx_penalties=vals[8];
-		const mxArray* mx_penalty_info=vals[9];
-		const mxArray* mx_nbest=vals[10];
-		const mxArray* mx_dict_weights=vals[11];
-		const mxArray* mx_use_orf=vals[12];
-
-		INT nbest    = (INT)mxGetScalar(mx_nbest) ;
-		if (nbest<1)
-			return false ;
-
-		if ( mx_p && mx_q && mx_a_trans && mx_seq && mx_pos && 
-				mx_penalties && mx_penalty_info && mx_orf_info && 
-				mx_genestr && mx_dict_weights)
-		{
-			INT N=mxGetN(mx_p);
-			INT M=mxGetN(mx_pos);
-			INT P=mxGetN(mx_penalty_info) ;
-			INT L=mxGetN(mx_genestr) ;
-			INT D=mxGetM(mx_dict_weights) ;
-
-			CIO::message(M_DEBUG, "N=%i, M=%i, P=%i, L=%i, nbest=%i\n", N, M, P, L, nbest) ;
-			fprintf(stderr,"ok1=%i\n", mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-					mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-					mxGetN(mx_a_trans) == 3 &&
-					mxGetM(mx_seq) == N &&
-					mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1) ;
-			fprintf(stderr, "ok2=%i\n", 	mxGetM(mx_penalties)==N && 
-					mxGetN(mx_penalties)==N &&
-					mxGetM(mx_orf_info)==N &&
-					mxGetN(mx_orf_info)==2 &&
-					mxGetM(mx_genestr)==1 &&
-					((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
-					 || mxIsEmpty(mx_penalty_info))) ;
-			fprintf(stderr, "ok3=%i\n", 				mxGetM(mx_genestr)==1 &&
-					((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
-					 || mxIsEmpty(mx_penalty_info))) ;
-
-			if (
-					mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-					mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-					mxGetN(mx_a_trans) == 3 &&
-					mxGetM(mx_seq) == N &&
-					mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 &&
-					mxGetM(mx_penalties)==N && 
-					mxGetN(mx_penalties)==N &&
-					mxGetM(mx_orf_info)==N &&
-					mxGetN(mx_orf_info)==2 &&
-					mxGetM(mx_genestr)==1 &&
-					mxGetM(mx_use_orf)==1 &&
-					mxGetN(mx_use_orf)==1 &&
-					mxGetN(mx_dict_weights)==8 && 
-					((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
-					 || mxIsEmpty(mx_penalty_info))
-			   )
-			{
-				double* p=mxGetPr(mx_p);
-				double* q=mxGetPr(mx_q);
-				double* a=mxGetPr(mx_a_trans);
-				INT use_orf=(INT)*mxGetPr(mx_use_orf) ;
-
-				double* seq=mxGetPr(mx_seq) ;
-
-				double* pos_=mxGetPr(mx_pos) ;
-				INT * pos = new INT[M] ;
-				for (INT i=0; i<M; i++)
-					pos[i]=(INT)pos_[i] ;
-
-				double* orf_info_=mxGetPr(mx_orf_info) ;
-				INT * orf_info = new INT[2*N] ;
-				for (INT i=0; i<2*N; i++)
-					orf_info[i]=(INT)orf_info_[i] ;
-
-				struct penalty_struct * PEN = 
-					read_penalty_struct_from_cell(mx_penalty_info, P) ;
-				if (PEN==NULL && P!=0)
-					return false ;
-
-				struct penalty_struct **PEN_matrix = new struct penalty_struct*[N*N] ;
-				double* penalties=mxGetPr(mx_penalties) ;
-				for (INT i=0; i<N*N; i++)
-				{
-					INT id = (INT) penalties[i]-1 ;
-					if ((id<0 || id>=P) && (id!=-1))
-					{
-						CIO::message(M_ERROR, "id out of range\n") ;
-						delete_penalty_struct_array(PEN, P) ;
-						return false ;
-					}
-					if (id==-1)
-						PEN_matrix[i]=NULL ;
-					else
-						PEN_matrix[i]=&PEN[id] ;
-				} ;
-				char * genestr = mxArrayToString(mx_genestr) ;				
-				DREAL * dict_weights = mxGetPr(mx_dict_weights) ;
-
-				CHMM* h=new CHMM(N, p, q, mxGetM(mx_a_trans), a);
-
-				INT *my_path = new INT[M*nbest] ;
-				memset(my_path, -1, M*nbest*sizeof(INT)) ;
-				INT *my_pos = new INT[M*nbest] ;
-				memset(my_pos, -1, M*nbest*sizeof(INT)) ;
-
-				mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxDREAL);
-				double* p_prob = mxGetPr(mx_prob);
-				DREAL* PEN_values=NULL, *PEN_input_values=NULL ;
-				INT num_PEN_id = 0 ;
-
-				h->best_path_trans(seq, M, pos, orf_info, PEN_matrix, genestr, L,
-						nbest, p_prob, my_path, my_pos, dict_weights, 
-						8*D, PEN_values, PEN_input_values, num_PEN_id, use_orf) ;
-
-				int dims[3]={num_PEN_id,M,nbest};
-				mxArray* mx_PEN_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxDREAL);
-				double* p_PEN_values = mxGetPr(mx_PEN_values);
-				for (INT s=0; s<num_PEN_id*M*nbest; s++)
-					p_PEN_values[s]=PEN_values[s] ;
-
-				mxArray* mx_PEN_input_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxDREAL);
-				double* p_PEN_input_values = mxGetPr(mx_PEN_input_values);
-				for (INT s=0; s<num_PEN_id*M*nbest; s++)
-					p_PEN_input_values[s]=PEN_input_values[s] ;
-
-				// clean up 
-				delete_penalty_struct_array(PEN, P) ;
-				delete[] PEN_matrix ;
-				delete[] pos ;
-				delete[] orf_info ;
-				delete h ;
-				mxFree(genestr) ;
-
-				// transcribe result
-				mxArray* mx_my_path=mxCreateDoubleMatrix(nbest, M, mxDREAL);
-				double* d_my_path=mxGetPr(mx_my_path);
-				mxArray* mx_my_pos=mxCreateDoubleMatrix(nbest, M, mxDREAL);
-				double* d_my_pos=mxGetPr(mx_my_pos);
-
-				for (INT k=0; k<nbest; k++)
-					for (INT i=0; i<M; i++)
-					{
-						d_my_path[i*nbest+k] = my_path[i+k*M] ;
-						d_my_pos[i*nbest+k] = my_pos[i+k*M] ;
-					}
-
-				retvals[0]=mx_prob ;
-				retvals[1]=mx_my_path ;
-				retvals[2]=mx_my_pos ;
-				retvals[3]=mx_PEN_values ;
-				retvals[4]=mx_PEN_input_values ;
-
-				delete[] my_path ;
-				delete[] my_pos ;
-				delete[] PEN_values ;
-				delete[] PEN_input_values ;
-
-				return true;
-			}
-			else
-				CIO::message(M_ERROR, "model matricies not matching in size\n");
-		}
-
-		return false;
-	}
-
-	bool CGUI_R::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
-	{
-		const mxArray* mx_p=vals[1];
-		const mxArray* mx_q=vals[2];
-		const mxArray* mx_a_trans=vals[3];
-		const mxArray* mx_seq=vals[4];
-		const mxArray* mx_pos=vals[5];
-		const mxArray* mx_genestr=vals[6];
-		const mxArray* mx_penalties=vals[7];
-		const mxArray* mx_penalty_info=vals[8];
-		const mxArray* mx_nbest=vals[9];
-		const mxArray* mx_dict_weights=vals[10];
-		const mxArray* mx_segment_sum_weights=vals[11];
-
-		INT nbest    = (INT)mxGetScalar(mx_nbest) ;
-		if (nbest<1)
-			return false ;
-
-		if ( mx_p && mx_q && mx_a_trans && mx_seq && mx_pos && 
-				mx_penalties && mx_penalty_info && 
-				mx_genestr && mx_dict_weights && mx_segment_sum_weights)
-		{
-			INT N=mxGetN(mx_p);
-			INT M=mxGetN(mx_pos);
-			INT P=mxGetN(mx_penalty_info) ;
-			INT L=mxGetN(mx_genestr) ;
-			INT D=mxGetM(mx_dict_weights) ;
-
-			//CIO::message(M_DEBUG, "N=%i, M=%i, P=%i, L=%i, nbest=%i\n", N, M, P, L, nbest) ;
-			//
-			//		fprintf(stderr,"ok1=%i\n", mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-			//				mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-			//				mxGetN(mx_a_trans) == 3 &&
-			//				mxGetM(mx_seq) == N &&
-			//				mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1) ;
-			//		fprintf(stderr, "ok2=%i\n", 	mxGetM(mx_penalties)==N && 
-			//				mxGetN(mx_penalties)==N &&
-			//				mxGetM(mx_genestr)==1 &&
-			//				((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
-			//				 || mxIsEmpty(mx_penalty_info))) ;
-			//		fprintf(stderr, "ok3=%i\n", 				mxGetM(mx_genestr)==1 &&
-			//				((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
-			//				|| mxIsEmpty(mx_penalty_info))) ;
-			//		fprintf(stderr, "ok4=%i\n", mxGetM(mx_segment_sum_weights)==M &&
-			//		mxGetN(mx_segment_sum_weights)==N ) ;
-
-			if (
-					mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-					mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-					mxGetN(mx_a_trans) == 3 &&
-					mxGetM(mx_seq) == N &&
-					mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 &&
-					mxGetM(mx_penalties)==N && 
-					mxGetN(mx_penalties)==N &&
-					mxGetM(mx_segment_sum_weights)==N &&
-					mxGetN(mx_segment_sum_weights)==M &&
-					mxGetM(mx_genestr)==1 &&
-					mxGetN(mx_dict_weights)==1 && 
-					((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
-					 || mxIsEmpty(mx_penalty_info))
-			   )
-			{
-				double* p=mxGetPr(mx_p);
-				double* q=mxGetPr(mx_q);
-				double* a=mxGetPr(mx_a_trans);
-
-				double* seq=mxGetPr(mx_seq) ;
-
-				double* pos_=mxGetPr(mx_pos) ;
-				INT * pos = new INT[M] ;
-				for (INT i=0; i<M; i++)
-					pos[i]=(INT)pos_[i] ;
-
-				struct penalty_struct * PEN = 
-					read_penalty_struct_from_cell(mx_penalty_info, P) ;
-				if (PEN==NULL && P!=0)
-					return false ;
-
-				struct penalty_struct **PEN_matrix = new struct penalty_struct*[N*N] ;
-				double* penalties=mxGetPr(mx_penalties) ;
-				for (INT i=0; i<N*N; i++)
-				{
-					INT id = (INT) penalties[i]-1 ;
-					if ((id<0 || id>=P) && (id!=-1))
-					{
-						CIO::message(M_ERROR, "id out of range\n") ;
-						delete_penalty_struct_array(PEN, P) ;
-						return false ;
-					}
-					if (id==-1)
-						PEN_matrix[i]=NULL ;
-					else
-						PEN_matrix[i]=&PEN[id] ;
-				} ;
-				char * genestr = mxArrayToString(mx_genestr) ;				
-				DREAL * dict_weights = mxGetPr(mx_dict_weights) ;
-				DREAL * segment_sum_weights = mxGetPr(mx_segment_sum_weights) ;
-
-				CHMM* h=new CHMM(N, p, q, mxGetM(mx_a_trans), a);
-
-				INT *my_path = new INT[(M+1)*nbest] ;
-				memset(my_path, -1, (M+1)*nbest*sizeof(INT)) ;
-				INT *my_pos = new INT[(M+1)*nbest] ;
-				memset(my_pos, -1, (M+1)*nbest*sizeof(INT)) ;
-
-				mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxDREAL);
-				double* p_prob = mxGetPr(mx_prob);
-				DREAL* PEN_values=NULL, *PEN_input_values=NULL ;
-				INT num_PEN_id = 0 ;
-
-				h->best_path_2struct(seq, M, pos, PEN_matrix, genestr, L,
-						nbest, p_prob, my_path, my_pos, dict_weights, 
-						D, segment_sum_weights, PEN_values, PEN_input_values, num_PEN_id) ;
-
-				int dims[3]={num_PEN_id,M,nbest};
-				mxArray* mx_PEN_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxDREAL);
-				double* p_PEN_values = mxGetPr(mx_PEN_values);
-				for (INT s=0; s<num_PEN_id*M*nbest; s++)
-					p_PEN_values[s]=PEN_values[s] ;
-
-				mxArray* mx_PEN_input_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxDREAL);
-				double* p_PEN_input_values = mxGetPr(mx_PEN_input_values);
-				for (INT s=0; s<num_PEN_id*M*nbest; s++)
-					p_PEN_input_values[s]=PEN_input_values[s] ;
-
-				// clean up 
-				delete_penalty_struct_array(PEN, P) ;
-				delete[] PEN_matrix ;
-				delete[] pos ;
-				delete h ;
-				mxFree(genestr) ;
-
-				// transcribe result
-				mxArray* mx_my_path=mxCreateDoubleMatrix(nbest, M+1, mxDREAL);
-				double* d_my_path=mxGetPr(mx_my_path);
-				mxArray* mx_my_pos=mxCreateDoubleMatrix(nbest, M+1, mxDREAL);
-				double* d_my_pos=mxGetPr(mx_my_pos);
-
-				for (INT k=0; k<nbest; k++)
-					for (INT i=0; i<M+1; i++)
-					{
-						d_my_path[i*nbest+k] = my_path[i+k*(M+1)] ;
-						d_my_pos[i*nbest+k] = my_pos[i+k*(M+1)] ;
-					}
-
-				retvals[0]=mx_prob ;
-				retvals[1]=mx_my_path ;
-				retvals[2]=mx_my_pos ;
-				retvals[3]=mx_PEN_values ;
-				retvals[4]=mx_PEN_input_values ;
-
-				delete[] my_path ;
-				delete[] my_pos ;
-				delete[] PEN_values ;
-				delete[] PEN_input_values ;
-
-				return true;
-			}
-			else
-				CIO::message(M_ERROR, "model matricies not matching in size\n");
-		}
-
-		return false;
-	}
-
-
-	bool CGUI_R::best_path_trans_simple(const mxArray* vals[], mxArray* retvals[])
-	{
-		const mxArray* mx_p=vals[1];
-		const mxArray* mx_q=vals[2];
-		const mxArray* mx_a_trans=vals[3];
-		const mxArray* mx_seq=vals[4];
-		const mxArray* mx_nbest=vals[5];
-
-		INT nbest    = (INT)mxGetScalar(mx_nbest) ;
-		if (nbest<1)
-			return false ;
-
-		if ( mx_p && mx_q && mx_a_trans && mx_seq)
-		{
-			INT N=mxGetN(mx_p);
-			INT M=mxGetN(mx_seq);
-
-			if (
-					mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-					mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-					mxGetN(mx_a_trans) == 3 &&
-					mxGetM(mx_seq) == N)
-			{
-				double* p=mxGetPr(mx_p);
-				double* q=mxGetPr(mx_q);
-				double* a=mxGetPr(mx_a_trans);
-
-				double* seq=mxGetPr(mx_seq) ;
-
-				CHMM* h=new CHMM(N, p, q, mxGetM(mx_a_trans), a);
-
-				INT *my_path = new INT[M*nbest] ;
-				memset(my_path, -1, M*nbest*sizeof(INT)) ;
-
-				mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxDREAL);
-				double* p_prob = mxGetPr(mx_prob);
-
-				h->best_path_trans_simple(seq, M, nbest, p_prob, my_path) ;
-
-				// clean up 
-				delete h ;
-
-				// transcribe result
-				mxArray* mx_my_path=mxCreateDoubleMatrix(nbest, M, mxDREAL);
-				double* d_my_path=mxGetPr(mx_my_path);
-
-				for (INT k=0; k<nbest; k++)
-					for (INT i=0; i<M; i++)
-					{
-						d_my_path[i*nbest+k] = my_path[i+k*M] ;
-					}
-
-				retvals[0]=mx_prob ;
-				retvals[1]=mx_my_path ;
-
-				delete[] my_path ;
-
-				return true;
-			}
-			else
-				CIO::message(M_ERROR, "model matricies not matching in size\n");
-		}
-
-		return false;
-	}
-
-
-	bool CGUI_R::model_prob_no_b_trans(const mxArray* vals[], mxArray* retvals[])
-	{
-		const mxArray* mx_p=vals[1];
-		const mxArray* mx_q=vals[2];
-		const mxArray* mx_a_trans=vals[3];
-		const mxArray* mx_max_iter=vals[4];
-
-		INT max_iter = (INT)mxGetScalar(mx_max_iter) ;
-		if (max_iter<1)
-			return false ;
-
-		INT N=mxGetN(mx_p);
-
-		if ( mx_p && mx_q && mx_a_trans)
-		{
-			if (
-					mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-					mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-					mxGetN(mx_a_trans) == 3
-			   )
-			{
-				double* p=mxGetPr(mx_p);
-				double* q=mxGetPr(mx_q);
-				double* a=mxGetPr(mx_a_trans);
-
-				CHMM* h=new CHMM(N, p, q, mxGetM(mx_a_trans), a);
-
-				mxArray* mx_prob = mxCreateDoubleMatrix(1, max_iter, mxDREAL);
-				double* p_prob = mxGetPr(mx_prob);
-
-				h->model_prob_no_b_trans(max_iter, p_prob) ;
-
-				retvals[0]=mx_prob ;
-
-				delete h ;
-				return true;
-			}
-			else
-				CIO::message(M_ERROR, "model matricies not matching in size\n");
-		}
-
-		return false;
-	}
-
-
-
-	bool CGUI_R::hmm_classify_example(mxArray* retvals[], int idx)
-	{
+		/*
 		mxArray* mx_result=mxCreateDoubleMatrix(1, 1, mxDREAL);
 		double* result=mxGetPr(mx_result);
 		*result=gui->guihmm.classify_example(idx);
-		retvals[0]=mx_result;
-		return true;
+		retvals[0]=mx_result;*/
+		return R_NilValue;
 	}
 
-	bool CGUI_R::one_class_hmm_classify(mxArray* retvals[], bool linear)
+	SEXP CGUI_R::one_class_hmm_classify()
 	{
+		/*
 		CFeatures* f=gui->guifeatures.get_test_features();
 		if (f)
 		{
@@ -937,19 +334,20 @@ extern "C"
 			retvals[0]=mx_result;
 			return true;
 		}
-		return false;
+		*/
+		return R_NilValue;
 	}
 
-	bool CGUI_R::one_class_hmm_classify_example(mxArray* retvals[], int idx)
+	SEXP CGUI_R::one_class_hmm_classify_example(int idx)
 	{
+		/*
 		mxArray* mx_result=mxCreateDoubleMatrix(1, 1, mxDREAL);
 		double* result=mxGetPr(mx_result);
 		*result=gui->guihmm.one_class_classify_example(idx);
 		retvals[0]=mx_result;
-		return true;
+		*/
+		return R_NilValue;
 	}
-
-#endif
 
 	SEXP CGUI_R::hmm_classify()
 	{
@@ -1090,38 +488,9 @@ extern "C"
 		return false;
 	}
 
-#if 0
-
-	bool CGUI_R::classify(mxArray* retvals[])
+	SEXP CGUI_R::svm_classify_example(int idx)
 	{
-		CFeatures* f=gui->guifeatures.get_test_features();
-		if (f)
-		{
-			int num_vec=f->get_num_vectors();
-
-			CLabels* l=gui->guiclassifier.classify();
-
-			if (!l)
-			{
-				CIO::message(M_ERROR, "classify failed\n") ;
-				return false ;
-			} ;
-
-			mxArray* mx_result=mxCreateDoubleMatrix(1, num_vec, mxDREAL);
-			double* result=mxGetPr(mx_result);
-			for (int i=0; i<num_vec; i++)
-				result[i]=l->get_label(i);
-			delete l;
-
-			retvals[0]=mx_result;
-			return true;
-		}
-		return false;
-	}
-
-
-	bool CGUI_R::svm_classify_example(mxArray* retvals[], int idx)
-	{
+		/*
 		mxArray* mx_result=mxCreateDoubleMatrix(1, 1, mxDREAL);
 		retvals[0]=mx_result;
 		double* result=mxGetPr(mx_result);
@@ -1131,87 +500,9 @@ extern "C"
 			CIO::message(M_ERROR, "svm_classify_example failed\n") ;
 			return false ;
 		} ;
-
-		return true;
+*/
+		return R_NilValue;
 	}
-
-	bool CGUI_R::set_plugin_estimate(const mxArray* vals[])
-	{
-		int num_params = mxGetM(vals[1]) ;
-		ASSERT(mxGetN(vals[1])==2) ;
-		double* result=mxGetPr(vals[1]);
-		DREAL* pos_params = result;
-		DREAL* neg_params = &(result[num_params]) ;
-		double* p_size=mxGetPr(vals[2]);
-		int seq_length = (int)p_size[0] ;
-		int num_symbols = (int)p_size[1] ;
-		ASSERT(num_params == seq_length*num_symbols) ;
-
-		gui->guipluginestimate.get_estimator()->set_model_params(pos_params, neg_params, seq_length, num_symbols) ;
-
-		return true;
-	}
-
-	bool CGUI_R::get_plugin_estimate(mxArray* retvals[])
-	{
-		DREAL* pos_params, * neg_params ;
-		int num_params = 0, seq_length=0, num_symbols=0 ;
-
-		if (!gui->guipluginestimate.get_estimator()->get_model_params(pos_params, neg_params, seq_length, num_symbols))
-			return false ;
-
-		num_params = seq_length * num_symbols ;
-
-		mxArray* mx_result=mxCreateDoubleMatrix(num_params, 2, mxDREAL);
-		double* result=mxGetPr(mx_result);
-		for (int i=0; i<num_params; i++)
-			result[i] = pos_params[i] ;
-		for (int i=0; i<num_params; i++)
-			result[i+num_params] = neg_params[i] ;
-
-		retvals[0]=mx_result;
-
-		mxArray* mx_size=mxCreateDoubleMatrix(1, 2, mxDREAL);
-		double* p_size=mxGetPr(mx_size);
-		p_size[0]=(double)seq_length ;
-		p_size[1]=(double)num_symbols ;
-
-		retvals[1]=mx_size ;
-		return true;
-	}
-
-	bool CGUI_R::plugin_estimate_classify(mxArray* retvals[])
-	{
-		CFeatures* f=gui->guifeatures.get_test_features();
-		if (f)
-		{
-			int num_vec=f->get_num_vectors();
-
-			mxArray* mx_result=mxCreateDoubleMatrix(1, num_vec, mxDREAL);
-			double* result=mxGetPr(mx_result);
-			CLabels* l=gui->guipluginestimate.classify();
-
-			for (int i=0; i<num_vec; i++)
-				result[i]=l->get_label(i);
-
-			delete l;
-
-			retvals[0]=mx_result;
-			return true;
-		}
-		return false;
-	}
-
-	bool CGUI_R::plugin_estimate_classify_example(mxArray* retvals[], int idx)
-	{
-		mxArray* mx_result=mxCreateDoubleMatrix(1, 1, mxDREAL);
-		double* result=mxGetPr(mx_result);
-		*result=gui->guipluginestimate.classify_example(idx);
-		retvals[0]=mx_result;
-		return true;
-	}
-
-#endif
 
 	SEXP CGUI_R::get_features(CFeatures* f)
 	{

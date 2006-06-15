@@ -33,8 +33,6 @@ public:
 	bool send_command(CHAR* cmd);
 
 // sg('what to do', params ...);
-//
-//
 // 		
 // 		[p,q,a,b]=sg('get_hmm');
 // 		[b,alpha]=sg('get_svm');
@@ -43,7 +41,6 @@ public:
 // 		[labels]=sg('get_labels', 'train|test');
 // 		[parms]=sg('get_preproc_init');
 // 		[p,q,a,b]=sg('get_hmm_defs', 'cmdline');
-// 		OBSOLETE sg('get_obs', 'cmdline');
 //
 // 		
 // 		sg('set_hmm', p,q,a,b);
@@ -53,35 +50,15 @@ public:
 // 		sg('set_labels', 'train|test', labels);
 // 		sg('set_preproc_init', parms);
 // 		sg('set_hmm_defs', p,q,a,b);
-// 		OBSOLETE sg('set_obs', 'cmdline');
 
 	SEXP get_hmm();
 	bool set_hmm(SEXP arg_list);
 	bool set_svm(SEXP arg_list);
-   /*
-	bool best_path(mxArray* retvals[], int dim);
-	bool best_path_no_b(const mxArray* vals[], mxArray* retvals[]) ;
-	bool model_prob_no_b_trans(const mxArray* vals[], mxArray* retvals[]) ;
-	bool best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[]) ;
-	bool best_path_2struct(const mxArray* vals[], mxArray* retvals[]) ;
-	bool best_path_trans(const mxArray* vals[], mxArray* retvals[]) ;
-	bool best_path_trans_simple(const mxArray* vals[], mxArray* retvals[]) ;
-	SEXP hmm_classify_example(mxArray* retvals[], int idx);
-	bool append_hmm(const mxArray* vals[]);
-	bool one_class_hmm_classify_example(mxArray* retvals[], int idx);
-	bool one_class_hmm_classify(mxArray* retvals[], bool linear);
-
-	bool svm_classify_example(mxArray* retvals[], int idx);
-	bool classify(mxArray* retvals[]);
-
-	bool set_plugin_estimate(const mxArray* vals[]);
-	bool get_plugin_estimate(mxArray* retvals[]);
-	bool plugin_estimate_classify_example(mxArray* retvals[], int idx);
-	bool plugin_estimate_classify(mxArray* retvals[]);
-
-	//bool get_kernel_init();
-	bool set_kernel_parameters(const mxArray* mx_arg);
-   */
+	SEXP best_path(int dim);
+	SEXP hmm_classify_example(int idx);
+	bool append_hmm(const SEXP arg_list);
+	SEXP one_class_hmm_classify_example(int idx);
+	SEXP one_class_hmm_classify();
 
 	SEXP hmm_classify(); 
 	SEXP get_features(CFeatures* features);
@@ -90,25 +67,13 @@ public:
 	CLabels* set_labels(SEXP labelsR);
 	SEXP get_labels(CLabels* label);
 	SEXP svm_classify();
+	SEXP svm_classify_example(INT idx);
    
 	SEXP get_kernel_matrix();
 	SEXP get_svm();
 	SEXP get_svm_objective();
-	//bool set_custom_kernel(SEXP args) ;
+	bool set_custom_kernel(SEXP args) ;
    
-/*
-	bool get_kernel_optimization(mxArray* retvals[]);
-
-	// MKL Kernel stuff
-	bool compute_by_subkernels(mxArray* retvals[]);
-	bool get_last_subkernel_weights(mxArray* retvals[]);
-	bool set_subkernel_weights(const mxArray *mx_arg);
-	bool set_last_subkernel_weights(const mxArray *mx_arg);
-	bool get_WD_position_weights(mxArray* retvals[]);
-	bool set_WD_position_weights(const mxArray *mx_arg);
-
-	static CHAR* get_mxString(const mxArray* s);
-   */
 	SEXP get_subkernel_weights();
 	SEXP get_version();
 };

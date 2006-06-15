@@ -54,6 +54,7 @@ const DREAL CMath::ALMOST_NEG_INFTY =  -1000;
 
 CHAR CMath::rand_state[256];
 
+
 CMath::CMath()
 {
 	struct timeval tv;
@@ -380,3 +381,6 @@ DREAL* CMath::pinv(DREAL* matrix, INT rows, INT cols, DREAL* target)
 	//svd
 	return NULL;
 }
+
+//this creates a math object for the purpose of the constructor to be called at least once
+volatile CMath math;

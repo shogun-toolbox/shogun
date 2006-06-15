@@ -136,7 +136,7 @@ bool CGUIHMM::baum_welch_train(CHAR* param)
 				fclose(file) ;
 				CIO::message(M_INFO, "done.") ;
 #endif
-			
+			}
 		}
 		delete working_estimate;
 		working_estimate=NULL;
