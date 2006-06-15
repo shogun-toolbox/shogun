@@ -1,3 +1,15 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 1999-2006 Soeren Sonnenburg
+ * Written (W) 1999-2006 Gunnar Raetsch
+ * Written (W) 1999-2006 Fabio De Bona
+ * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 #ifndef __GUIHMM__H
 #define __GUIHMM__H
 
@@ -32,7 +44,6 @@ public:
 	bool set_hmm_as(CHAR* param);
 	bool set_pseudo(CHAR* param) ;
 	bool convergence_criteria(CHAR* param) ;
-	bool output_hmm_path(CHAR* param);
 	bool output_hmm(CHAR* param);
 	bool output_hmm_defined(CHAR* param);
 	bool best_path(CHAR* param);

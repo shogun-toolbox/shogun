@@ -1,3 +1,20 @@
+/***********************************************************************/
+/*                                                                     */
+/*   Optimizer.h                                                       */
+/*                                                                     */
+/*   Interface to the PR_LOQO optimization package for SVM.            */
+/*                                                                     */
+/*   Author: Thorsten Joachims                                         */
+/*   Date: 19.07.99                                                    */
+/*                                                                     */
+/*   Copyright (c) 1999  Universitaet Dortmund - All rights reserved   */
+/*                                                                     */
+/*   This software is available for non-commercial use only. It must   */
+/*   not be modified and distributed without prior permission of the   */
+/*   author. The author is not responsible for implications from the   */
+/*   use of this software.                                             */
+/*                                                                     */
+/***********************************************************************/
 #ifndef __OPTIMIZER__H__
 #define __OPTIMIZER__H__
 

@@ -1,3 +1,24 @@
+/***********************************************************************/
+/*                                                                     */
+/*   SVM_light.h                                                       */
+/*                                                                     */
+/*   Author: Thorsten Joachims                                         */
+/*   Date: 19.07.99                                                    */
+/*                                                                     */
+/*   Copyright (c) 1999  Universitaet Dortmund - All rights reserved   */
+/*                                                                     */
+/*   This software is available for non-commercial use only. It must   */
+/*   not be modified and distributed without prior permission of the   */
+/*   author. The author is not responsible for implications from the   */
+/*   use of this software.                                             */
+/*                                                                     */
+/*   THIS INCLUDES THE FOLLOWING ADDITIONS                             */
+/*   Generic Kernel Interfacing: Soeren Sonnenburg                     */
+/*   Parallizations: Soeren Sonnenburg                                 */
+/*   Multiple Kernel Learning: Gunnar Raetsch, Soeren Sonnenburg       */
+/*   Linadd Speedup: Gunnar Raetsch, Soeren Sonnenburg                 */
+/*                                                                     */
+/***********************************************************************/
 #ifndef _SVMLight_H___
 #define _SVMLight_H___
 

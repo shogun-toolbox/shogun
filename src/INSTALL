@@ -1,0 +1,20 @@
+GENERAL
+
+On most platforms (Linux,MacOSX) it is sufficient to issue
+
+./configure --enable-<interface>
+make
+
+where <interface> is one of the following R, matlab, python, octave.
+See ./configure --help for additional options.
+
+SPECIAL FEATURES
+
+To enable Multiple Kernel Learning CPLEX(tm) is needed and one needs
+to issue configure with ./configure --enable-<interface> --enable-cplex
+
+PROBLEMS
+
+In case header files or libraries are not at standard locations one needs
+to manually adjust the .config file (copy .config to .config-local and modify
+		that version).

@@ -1,3 +1,15 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 1999-2006 Soeren Sonnenburg
+ * Written (W) 1999-2006 Gunnar Raetsch
+ * Written (W) 1999-2006 Fabio De Bona
+ * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 #ifndef _CSTRINGFEATURES__H__
 #define _CSTRINGFEATURES__H__
 
@@ -244,7 +256,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			return true;
 		}
 
-	inline bool obtain_from_char_features(CStringFeatures<CHAR>* sf, INT start, INT order)
+	bool obtain_from_char_features(CStringFeatures<CHAR>* sf, INT start, INT order)
 	{
 		INT i=0;
 		ASSERT(sf);
@@ -382,7 +394,10 @@ template <class ST> class CStringFeatures: public CFeatures
 
 		//number of bits the maximum value in feature matrix requires to get stored
 		max_val= (int) ceil(log((double) max_val+1)/log((double) 2));
-		num_symbols=1<<(max_val*order);
+		if (order>1)
+			num_symbols=1<<(max_val*order);
+		else
+			num_symbols=original_num_symbols;
 
 		CIO::message(M_INFO, "max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, order, num_symbols);
 

@@ -1,4 +1,16 @@
 /*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 1999-2006 Soeren Sonnenburg
+ * Written (W) 1999-2006 Gunnar Raetsch
+ * Written (W) 1999-2006 Fabio De Bona
+ * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
+/*
  * File:        pr_loqo.h
  * Purpose:     solves quadratic programming problem for pattern recognition
  *              for support vectors
@@ -6,14 +18,6 @@
  * Author:      Alex J. Smola
  * Created:     10/14/97
  * Updated:     11/08/97
- *
- * 
- * Copyright (c) 1997  GMD Berlin - All rights reserved
- * THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE of GMD Berlin
- * The copyright notice above does not evidence any
- * actual or intended publication of this work.
- *
- * Unauthorized commercial use of this software is not allowed
  */
 
 /* verbosity levels */

@@ -1,3 +1,15 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 1999-2006 Soeren Sonnenburg
+ * Written (W) 1999-2006 Gunnar Raetsch
+ * Written (W) 1999-2006 Fabio De Bona
+ * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 // HMM.h: interface for the CHMM class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -554,6 +566,12 @@ public:
 	 * @param dimension dimension of observation for which the most probable path is calculated (observations are a matrix, where a row stands for one dimension i.e. 0_0,O_1,...,O_{T-1} 
 	 */
 	DREAL best_path(INT dimension);
+	inline WORD get_best_path_state(INT dim, INT t)
+	{
+		ASSERT(PATH(dim));
+		return PATH(dim)[t];
+	}
+	
 	DREAL best_path_no_b(INT max_iter, INT & best_iter, INT *my_path) ;
 	void best_path_no_b_trans(INT max_iter, INT & max_best_iter, short int nbest, DREAL *prob_nbest, INT *my_paths) ;
 	//void best_path_no_b_trans1(INT max_iter, INT & max_best_iter, DREAL *prob_nbest, INT *my_paths) ;
@@ -694,17 +712,6 @@ public:
 
 	/// performs output_model only for the defined transitions etc
 	void output_model_defined(bool verbose=false);
-#ifndef NOVIT
-	/** prints the state sequence and the symbols that were most likely in each state.
-	 * @param verbose when false only probability of viterbi path is printed
-	 * @param from start dimension
-	 * @param to end dimension
-	 */
-	void output_model_sequence(bool verbose=false,INT from=0,INT to=10);
-
-	/// does not produce senseful output at the moment.
-	void output_gene_positions(bool verbose=false);
-#endif //NOVIT
 	//@}
 
 

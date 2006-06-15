@@ -1,3 +1,15 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 1999-2006 Soeren Sonnenburg
+ * Written (W) 1999-2006 Gunnar Raetsch
+ * Written (W) 1999-2006 Fabio De Bona
+ * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 // HMM.cpp: implementation of the CHMM class.
 // $Id$
 //////////////////////////////////////////////////////////////////////
@@ -2999,41 +3011,6 @@ void CHMM::output_model_defined(bool verbose)
 	printf("\n");
 }
 
-#ifndef NOVIT
-//output gene-positions
-void CHMM::output_gene_positions(bool verbose)
-{
-	INT t,o;
-
-	//get path
-	best_path(0);
-
-	//output state sequence
-	printf("\nmodel estimated the DNA to look like the following:\n\n ");
-
-
-	printf("<START");
-	o=-1;
-	for (t=0; t<p_observations->get_vector_length(0)-1; t++)
-	{
-		if (o!=PATH(0)[t])
-		{
-			if (PATH(0)[t]==0)		//intergenic state
-			{
-				printf(">%d<--INTERGENIC--",t);
-			} 
-			else if (PATH(0)[t]==9)	//genic state
-			{
-				printf(">%d<--GENE--",t);
-			}
-			o=PATH(0)[t];
-		}
-	}
-	printf("><END>");
-
-}
-#endif // NOVIT
-
 //------------------------------------------------------------------------------------//
 
 //convert model to log probabilities
@@ -5931,7 +5908,7 @@ void CHMM::set_observation_nocache(CStringFeatures<WORD>* obs)
 
 	if (obs)
 		if (obs->get_num_symbols() > M)
-			CIO::message(M_ERROR, "number of symbols (%d) larger than number of symbols (%d)\n", obs->get_num_symbols(), M);
+			CIO::message(M_ERROR, "number of symbols (%d) larger than number of observation-symbols (%d)\n", obs->get_num_symbols(), M);
 
 	if (!reused_caches)
 	{

@@ -1,3 +1,15 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 1999-2006 Soeren Sonnenburg
+ * Written (W) 1999-2006 Gunnar Raetsch
+ * Written (W) 1999-2006 Fabio De Bona
+ * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 #include <unistd.h>
 #include "lib/common.h"
 #include "guilib/GUIHMM.h"
@@ -82,8 +94,8 @@ bool CGUIHMM::baum_welch_train(CHAR* param)
 	    CIO::message(M_ERROR, "Features must be STRING of type WORD\n") ;
 	    return false ;
 	  } ;
-CStringFeatures<WORD>* csf = ((CStringFeatures<WORD>*) (gui->guifeatures.get_train_features()));
-	CIO::message(M_DEBUG, "Stringfeatures have %d orig_symbols %d symbols %d order %d max_symbols\n",  csf->get_original_num_symbols(), csf->get_num_symbols(), csf->get_order(), csf->get_max_num_symbols());
+	CStringFeatures<WORD>* sf = ((CStringFeatures<WORD>*) (gui->guifeatures.get_train_features()));
+	CIO::message(M_DEBUG, "Stringfeatures have %d orig_symbols %d symbols %d order %d max_symbols\n",  sf->get_original_num_symbols(), sf->get_num_symbols(), sf->get_order(), sf->get_max_num_symbols());
 
 	mkstemp(templname);
 	CHAR templname_best[40] ;
@@ -93,49 +105,44 @@ CStringFeatures<WORD>* csf = ((CStringFeatures<WORD>*) (gui->guifeatures.get_tra
 
 	if (working) 
 	{
-		if (gui->guifeatures.get_train_features())
+		working->set_observations(sf);
+		CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
+
+		double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
+
+		while (!converge(prob,prob_train))
 		{
-			working->set_observations((CStringFeatures<WORD>*) gui->guifeatures.get_train_features());
-			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
-
-			double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
-
-			while (!converge(prob,prob_train))
+			switch_model(&working, &working_estimate);
+			prob=prob_train ;
+			working->estimate_model_baum_welch(working_estimate);
+			prob_train=working_estimate->model_probability();
+			if (prob_max<prob_train)
 			{
-				switch_model(&working, &working_estimate);
-				prob=prob_train ;
-				working->estimate_model_baum_welch(working_estimate);
-				prob_train=working_estimate->model_probability();
-				if (prob_max<prob_train)
-				{
-					prob_max=prob_train ;
+				prob_max=prob_train ;
 #ifdef TMP_SAVE
-					FILE* file=fopen(templname_best, "w");
-					CIO::message(M_INFO, "\nsaving best model with filename %s ... ", templname_best) ;
-					working->save_model(file) ;
-					fclose(file) ;
-					CIO::message(M_INFO, "done.") ;
+				FILE* file=fopen(templname_best, "w");
+				CIO::message(M_INFO, "\nsaving best model with filename %s ... ", templname_best) ;
+				working->save_model(file) ;
+				fclose(file) ;
+				CIO::message(M_INFO, "done.") ;
 #endif
-				} 
-				else
-				{
+			} 
+			else
+			{
 #ifdef TMP_SAVE
-					FILE* file=fopen(templname, "w");
-					CIO::message(M_INFO, "\nsaving model with filename %s ... ", templname) ;
-					working->save_model(file) ;
-					fclose(file) ;
-					CIO::message(M_INFO, "done.") ;
+				FILE* file=fopen(templname, "w");
+				CIO::message(M_INFO, "\nsaving model with filename %s ... ", templname) ;
+				working->save_model(file) ;
+				fclose(file) ;
+				CIO::message(M_INFO, "done.") ;
 #endif
-				}
-			}
-			delete working_estimate;
-			working_estimate=NULL;
+			
 		}
-		else
-			CIO::message(M_ERROR, "load train features first\n");
+		delete working_estimate;
+		working_estimate=NULL;
 	}
 	else
-		CIO::message(M_ERROR, "create model first\n");
+		CIO::message(M_ERROR, "create hmm first\n");
 
 	return false;
 }
@@ -1207,10 +1214,25 @@ bool CGUIHMM::output_hmm_defined(CHAR* param)
 
 bool CGUIHMM::best_path(CHAR* param)
 {
+	param=CIO::skip_spaces(param);
+	INT from, to;
+
+	if (sscanf(param, "%d %d", &from, &to) != 2)
+	{
+		from=0; 
+		to=100;
+	}
+
 	if (working)
 	{
-		CIO::not_implemented();
-		//working->output_model_sequence(false);
+		//get path
+		working->best_path(0);
+
+		for (INT t=0; t<working->get_observations()->get_vector_length(0)-1 && t<to; t++)
+			CIO::message(M_MESSAGEONLY, "%d ", working->get_best_path_state(0,t));
+		CIO::message(M_MESSAGEONLY, "\n");
+		//for (t=0; t<p_observations->get_vector_length(0)-1 && t<to; t++)
+		//	CIO::message(M_MESSAGEONLY, "%d ", PATH(0)[t]);
 		return true;
 	}
 	else
@@ -1228,29 +1250,6 @@ bool CGUIHMM::normalize(CHAR* param)
 	if (working)
 	{
 		working->normalize(keep_dead_states==1);
-		return true;
-	}
-	else
-		CIO::message(M_ERROR, "create model first\n");
-
-	return false;
-}
-
-bool CGUIHMM::output_hmm_path(CHAR* param)
-{
-	param=CIO::skip_spaces(param);
-	INT from, to;
-
-	if (sscanf(param, "%d %d", &from, &to) != 2)
-	{
-		from=0; 
-		to=10 ;
-	}
-
-	if (working)
-	{
-		//working->output_model_sequence(true,from,to);
-		CIO::not_implemented();
 		return true;
 	}
 	else

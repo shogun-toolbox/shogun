@@ -1,3 +1,15 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 1999-2006 Soeren Sonnenburg
+ * Written (W) 1999-2006 Gunnar Raetsch
+ * Written (W) 1999-2006 Fabio De Bona
+ * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 #ifndef VERSION_H__
 #define VERSION_H__
 class CVersion
@@ -14,6 +26,11 @@ public:
 	inline const char* get_version_release()
 	{
 		return version_release;
+	}
+
+	inline int get_version_revision()
+	{
+		return version_revision;
 	}
 
 	inline int get_version_year()
@@ -49,6 +66,7 @@ public:
 	char* version_release;
 	char* version_extra;
 
+	int version_revision;
 	int version_year;
 	int version_month;
 	int version_day;

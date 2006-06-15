@@ -1,3 +1,15 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 1999-2006 Soeren Sonnenburg
+ * Written (W) 1999-2006 Gunnar Raetsch
+ * Written (W) 1999-2006 Fabio De Bona
+ * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 #include "gui/TextGUI.h"
 
 #include <ctype.h>
@@ -77,7 +89,6 @@ static const CHAR* N_INIT_KERNEL_OPTIMIZATION  =		"init_kernel_optimization";
 static const CHAR* N_SAVE_PATH=			"save_hmm_path";
 static const CHAR* N_SAVE_LIKELIHOOD=	"save_hmm_likelihood";
 static const CHAR* N_BEST_PATH=			"best_path";
-static const CHAR* N_OUTPUT_PATH=      		"output_hmm_path";
 static const CHAR* N_VITERBI_TRAIN=	       	"vit";
 static const CHAR* N_VITERBI_TRAIN_DEFINED=     "vit_def";
 static const CHAR* N_LINEAR_TRAIN=       	"linear_train";
@@ -186,10 +197,9 @@ void CTextGUI::print_help()
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t- does viterbi training only on defined transitions etc\n",N_VITERBI_TRAIN_DEFINED);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t- does baum welch training on current HMM\n",N_BAUM_WELCH_TRAIN);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t- does baum welch training only on defined transitions etc.\n",N_BAUM_WELCH_TRAIN_DEFINED);
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t- find the best path using viterbi\n",N_BEST_PATH);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t- find HMM likelihood\n",N_LIKELIHOOD);
 	CIO::message(M_MESSAGEONLY, "\n[HMM-OUTPUT]\n");
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [from to]\t- outputs best path\n",N_OUTPUT_PATH);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [from to]\t- finds the best path using viterbi and outputs best path\n",N_BEST_PATH);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t- output whole HMM\n",N_OUTPUT_HMM_DEFINED);
 	CIO::message(M_MESSAGEONLY, "\n[FEATURES]\n");
@@ -483,10 +493,6 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_OUTPUT_HMM_DEFINED, strlen(N_OUTPUT_HMM_DEFINED)))
 	{
 		guihmm.output_hmm_defined(input+strlen(N_OUTPUT_HMM_DEFINED));
-	} 
-	else if (!strncmp(input, N_OUTPUT_PATH, strlen(N_OUTPUT_PATH)))
-	{
-		guihmm.output_hmm_path(input+strlen(N_OUTPUT_PATH));
 	} 
 	else if (!strncmp(input, N_OUTPUT_HMM, strlen(N_OUTPUT_HMM)))
 	{

@@ -1,3 +1,15 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 1999-2006 Soeren Sonnenburg
+ * Written (W) 1999-2006 Gunnar Raetsch
+ * Written (W) 1999-2006 Fabio De Bona
+ * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
 #include "lib/config.h"
 
 #ifdef HAVE_R
@@ -89,16 +101,16 @@ extern "C"
 			PROTECT( ans = allocList(0) );
 
 			ans = CONS(b, ans);
-			SET_TAG(ans, install("emissions"));
+			SET_TAG(ans, install("b"));
 
 			ans = CONS(a, ans);
-			SET_TAG(ans, install("transitions"));
+			SET_TAG(ans, install("a"));
 
 			ans = CONS(q, ans);
-			SET_TAG(ans, install("acceptingStateDist"));
+			SET_TAG(ans, install("q"));
 
 			ans = CONS(p, ans);
-			SET_TAG(ans, install("initialStateDist"));
+			SET_TAG(ans, install("p"));
 
 			UNPROTECT(5);
 			return ans;
@@ -1466,8 +1478,8 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 					for (int i=0; i<num_vec; i++)
 					{
 						CHAR* c= CHAR(STRING_ELT(feat,i));
-						//int len=strlen(c);
-                  int len = *INTEGER(feature_length);
+						int len=strlen(c);
+                  //int len = *INTEGER(feature_length);
 						CHAR* dst=new CHAR[len];
 						sc[i].string=strncpy(dst, c, len);
 						sc[i].length=len;
@@ -1494,7 +1506,7 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 	{
 		SEXP ans;
 		PROTECT( ans = allocVector(REALSXP, 1));
-		REAL(ans)[0] = version.get_version_in_minutes();
+		REAL(ans)[0] = version.get_version_revision();
 		UNPROTECT(1);
 		return ans;
 	}

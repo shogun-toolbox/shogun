@@ -1,6 +1,6 @@
 /***********************************************************************/
 /*                                                                     */
-/*   svm_loqo.c                                                        */
+/*   Optimizer.cpp                                                     */
 /*                                                                     */
 /*   Interface to the PR_LOQO optimization package for SVM.            */
 /*                                                                     */
