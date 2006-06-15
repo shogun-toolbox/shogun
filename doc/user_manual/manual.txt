@@ -191,7 +191,6 @@ are additional options for the respective kernel.
 
 Please refer to section 1.3 for detailed information on kernels.
 
-
 Section 1.3 Kernels
 -------------------
 
@@ -205,8 +204,17 @@ The following kernels are implemented in SHOGUN:
 Subsection 1.3.1 Linear Kernel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-BYTE, WORD CHAR, REAL, SPARSEREAL
+A linear kernel is created via::
 
+   ("send_command", "add_kernel LINEAR TYPE CACHESIZE");
+
+For example::
+
+   ('send_command', 'add_kernel LINEAR REAL 50')
+
+creates a linear kernel of cache size 50 for real datavalues.
+
+Available types for the linear kernel: BYTE, WORD CHAR, REAL, SPARSEREAL.
 
 Subsection 1.3.1 Polynomial Kernel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
