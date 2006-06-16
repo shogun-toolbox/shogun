@@ -129,7 +129,7 @@ depend:	Makefile .config lib/versionstring.h
 
 lib/versionstring.h:	$(CVSEntries)
 		chmod u+x ./.version.sh
-		./.version.sh `$(COMP_CPP) -dumpversion` >lib/versionstring.h
+		./.version.sh >lib/versionstring.h
 
 $(OBJFILES): Makefile .config .depend
 
