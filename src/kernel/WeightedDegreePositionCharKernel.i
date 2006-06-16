@@ -14,21 +14,6 @@
 
 %feature("notabstract") CWeightedDegreeCharKernel;
 
-struct Trie
-{
-  unsigned short has_floats ;
-  unsigned short usage ;
-  float weight ;
-  union 
-  {
-    float child_weights[4] ;
-#ifdef USE_TREEMEM
-    INT childs[4] ; // int32 should be sufficient
-#else
-    struct Trie *childs[4] ;
-#endif
-  } ;
-} ;
 
 class CWeightedDegreeCharKernel: public CCharKernel
 {
@@ -143,13 +128,9 @@ class CWeightedDegreeCharKernel: public CCharKernel
 	  }
   
   // other kernel tree operations  
-  void prune_tree(struct Trie * p_tree=NULL, int min_usage=2);
-  void count_tree_usage(INT idx);
   DREAL *compute_abs_weights(INT & len);
-  DREAL compute_abs_weights_tree(struct Trie * p_tree);
   void compute_by_tree(INT idx, DREAL *LevelContrib);
 
-  INT tree_size(struct Trie * p_tree=NULL);
   bool is_tree_initialized() { return tree_initialized; }
 
   inline INT get_max_mismatch() { return max_mismatch; }
@@ -188,12 +169,8 @@ class CWeightedDegreeCharKernel: public CCharKernel
 
   void add_example_to_tree(INT idx, DREAL weight);
   void add_example_to_tree_mismatch(INT idx, DREAL weight);
-  void add_example_to_tree_mismatch_recursion(struct Trie *tree,  DREAL alpha,
-											  INT *vec, INT len_rem, 
-											  INT depth_rec, INT mismatch_rec) ;
   
   DREAL compute_by_tree(INT idx);
-  void delete_tree(struct Trie * p_tree=NULL);
 
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
@@ -227,7 +204,6 @@ class CWeightedDegreeCharKernel: public CCharKernel
 
   bool initialized ;
 
-  struct Trie **trees ;
   bool tree_initialized ;
   bool use_normalization ;
   bool block_computation;
@@ -235,7 +211,6 @@ class CWeightedDegreeCharKernel: public CCharKernel
   DREAL* matching_weights;
 
 #ifdef USE_TREEMEM
-  struct Trie* TreeMem ;
   INT TreeMemPtr ;
   INT TreeMemPtrMax ;
   
@@ -245,7 +220,6 @@ class CWeightedDegreeCharKernel: public CCharKernel
 		  {
 			  CIO::message(M_DEBUG, "Extending TreeMem from %i to %i elements\n", TreeMemPtrMax, (INT) ((double)TreeMemPtrMax*1.2)) ;
 			  TreeMemPtrMax = (INT) ((double)TreeMemPtrMax*1.2) ;
-			  TreeMem = (struct Trie *)realloc(TreeMem,TreeMemPtrMax*sizeof(struct Trie)) ;
 		  } ;
 	  } ;
 #endif

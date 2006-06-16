@@ -128,8 +128,6 @@ class CSVM : public CKernelMachine
 			return objective ;
 		}
 
-		DREAL* test();
-
 		CLabels* classify(CLabels* labels=NULL);
 		DREAL classify_example(INT num);
 		void set_precomputed_subkernels_enabled(bool flag)

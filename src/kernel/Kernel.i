@@ -105,7 +105,6 @@ class CKernel
 		inline bool get_is_initialized() { return optimization_initialized; }
 		inline bool has_property(EKernelProperty p) { return (properties & p) != 0; }
 
-		bool is_optimizable();
 		virtual bool init_optimization(INT count, INT *IDX, DREAL * weights); 
 		virtual bool delete_optimization();
 		virtual DREAL compute_optimized(INT idx);

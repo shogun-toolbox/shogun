@@ -13,18 +13,6 @@
 
 %feature("notabstract") CWeightedDegreeCharKernel;
 
-struct Trie
-{
-  unsigned short has_floats ;
-  unsigned short usage ;
-  float weight ;
-  union 
-  {
-    float child_weights[4] ;
-    struct Trie *childs[4] ;
-   };
-};
-
 class CWeightedDegreeCharKernel: public CCharKernel
 {
  public:
@@ -54,7 +42,4 @@ class CWeightedDegreeCharKernel: public CCharKernel
 
   void add_example_to_tree(INT idx, DREAL weight);
   void add_example_to_tree_mismatch(INT idx, DREAL weight);
-  void add_example_to_tree_mismatch_recursion(struct Trie *tree,  DREAL alpha,
-											  INT *vec, INT len_rem, 
-											  INT depth_rec, INT mismatch_rec) ;
 };
