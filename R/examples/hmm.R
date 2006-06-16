@@ -54,8 +54,6 @@ b=exp(h$b)
 
 y=c(vector(mode='numeric', length(cube[[1]])),vector(mode='numeric', length(cube[[2]]))+1, vector(mode='numeric', length(cube[[2]]))+2)
 matplot(1:length(y), y-0.01,type='l',col='red')
-readline()
 matplot(1:length(path$path), path$path,type='l',col='blue',add=T)
-readline()
 g=new("graphAM",a>1e-6,edgemode = "directed")
 plot(g, "neato")

@@ -55,7 +55,6 @@ _libdir="$_prefix/lib"
 CONFIGURE_OPTIONS="compile options $@"
 GDB=gdb
 MAKE=make
-CCACHE=ccache
 COMP_C=cc
 COMP_CPP=c++
 COMPFLAGS_C=
@@ -122,12 +121,6 @@ EOF
 	else
 		echores "no C++ compiler detected - cannot do anything"
 		exit 1
-	fi
-
-	if ${CCACHE} -V >/dev/null 2>&1 ; then
-		COMP_C="${CCACHE} ${COMP_C}"
-		COMP_CPP="${CCACHE} ${COMP_CPP}"
-		LINK="${CCACHE} ${LINK}"
 	fi
 }
 

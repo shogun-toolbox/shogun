@@ -12,7 +12,6 @@ meshgrid <- function(a,b) {
 dims=2;
 num=100;
 
-#traindat <- t(matrix(c(rnorm(dims*num)-0.1,rnorm(dims*num)+0.1),dims,2*num))
 traindat <- matrix(c(rnorm(dims*num)-0.5,rnorm(dims*num)+0.5),dims,2*num)
 trainlab <- c(vector(mode="numeric", num)-1, vector(mode="numeric", num)+1)
 
@@ -29,7 +28,6 @@ x1=(-49:+50)/10
 x2=(-49:+50)/10
 testdat=meshgrid(x1,x2)
 testdat=t(matrix(c(testdat$x, testdat$y),10000,2))
-#testdat=outer(x1,x2,"^")
 
 sg("set_features", "TEST", testdat)
 sg("send_command", "init_kernel TEST")
