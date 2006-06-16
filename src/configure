@@ -409,7 +409,7 @@ for ac_option do
   esac
 done
 
-determine_march_mcpu()
+determine_march_mtune()
 {
 	# Determine our OS name and CPU architecture
 	if test -z "$_target" ; then
@@ -715,23 +715,23 @@ EOF
 		_cpuinfo=".cpuinfo"
 	fi
 
-	  pname=`$_cpuinfo | grep 'model name' | cut -d ':' -f 2 | head -1`
-	  pvendor=`$_cpuinfo | grep 'vendor_id' | cut -d ':' -f 2  | cut -d ' ' -f 2 | head -1`
-	  pfamily=`$_cpuinfo | grep 'cpu family' | cut -d ':' -f 2 | cut -d ' ' -f 2 | head -1`
-	  pmodel=`$_cpuinfo | grep -v 'model name' | grep 'model' | cut -d ':' -f 2 | cut -d ' ' -f 2 | head -1`
-	  pstepping=`$_cpuinfo | grep 'stepping' | cut -d ':' -f 2 | cut -d ' ' -f 2 | head -1`
+	  pname=`$_cpuinfo | grep 'model name' | cut -d ':' -f 2 | head -n 1`
+	  pvendor=`$_cpuinfo | grep 'vendor_id' | cut -d ':' -f 2  | cut -d ' ' -f 2 | head -n 1`
+	  pfamily=`$_cpuinfo | grep 'cpu family' | cut -d ':' -f 2 | cut -d ' ' -f 2 | head -n 1`
+	  pmodel=`$_cpuinfo | grep -v 'model name' | grep 'model' | cut -d ':' -f 2 | cut -d ' ' -f 2 | head -n 1`
+	  pstepping=`$_cpuinfo | grep 'stepping' | cut -d ':' -f 2 | cut -d ' ' -f 2 | head -n 1`
 
-	  pparam=`$_cpuinfo | grep 'features' | cut -d ':' -f 2 | head -1`
+	  pparam=`$_cpuinfo | grep 'features' | cut -d ':' -f 2 | head -n 1`
 	  if test -z "$pparam" ; then
-		pparam=`$_cpuinfo | grep '^flags' | cut -d ':' -f 2 | head -1`
+		pparam=`$_cpuinfo | grep '^flags' | cut -d ':' -f 2 | head -n 1`
 	  fi
 
 	  if test -z "$pparam" ; then
-		pparam=`$_cpuinfo | grep 'cpu' | cut -d ':' -f 2 | head -1`
+		pparam=`$_cpuinfo | grep 'cpu' | cut -d ':' -f 2 | head -n 1`
 	  fi
 
 	  if test -z "$pname" ; then
-		pname=`$_cpuinfo | grep 'cpu' | cut -d ':' -f 2 | head -1`
+		pname=`$_cpuinfo | grep 'cpu' | cut -d ':' -f 2 | head -n 1`
 	  fi
 
 	  _mmx=no
@@ -894,7 +894,7 @@ EOF
 	  esac
 
 		# check that gcc supports our cpu, if not, fallback to earlier ones
-		# LGB: check -mcpu and -march swithing step by step with enabling
+		# LGB: check -mtune and -march swithing step by step with enabling
 		# to fall back till 386.
 
 		echocheck "GCC & CPU optimization abilities"
@@ -902,14 +902,14 @@ cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
 		if test "$proc" = "athlon-xp" || test "$proc" = "athlon-4" || test "$proc" = "athlon-tbird"; then
-		  cc_check -march=$proc -mcpu=$proc || proc=athlon
+		  cc_check -march=$proc -mtune=$proc || proc=athlon
 		fi
 		if test "$proc" = "k6-3" || test "$proc" = "k6-2"; then
-		  cc_check -march=$proc -mcpu=$proc  || proc=k6
+		  cc_check -march=$proc -mtune=$proc  || proc=k6
 		fi
 		if test "$proc" = "k6"; then
-		  if not cc_check -march=$proc -mcpu=$proc; then
-			if cc_check -march=i586 -mcpu=i686; then
+		  if not cc_check -march=$proc -mtune=$proc; then
+			if cc_check -march=i586 -mtune=i686; then
 			  proc=i586-i686
 			else 
 			  proc=i586
@@ -917,45 +917,45 @@ EOF
 		  fi
 		fi
 		if test "$proc" = "pentium4" || test "$proc" = "pentium3" || test "$proc" = "pentium2" || test "$proc" = "athlon"; then
-		  cc_check -march=$proc -mcpu=$proc  || proc=i686
+		  cc_check -march=$proc -mtune=$proc  || proc=i686
 		fi
 		if test "$proc" = "i686" || test "$proc" = "pentium-mmx"; then
-		  cc_check -march=$proc -mcpu=$proc  || proc=i586
+		  cc_check -march=$proc -mtune=$proc  || proc=i586
 		fi
 		if test "$proc" = "i586" ; then
-		  cc_check -march=$proc -mcpu=$proc  || proc=i486
+		  cc_check -march=$proc -mtune=$proc  || proc=i486
 		fi
 		if test "$proc" = "i486" ; then
-		  cc_check -march=$proc -mcpu=$proc  || proc=i386
+		  cc_check -march=$proc -mtune=$proc  || proc=i386
 		fi
 		if test "$proc" = "i386" ; then
-		  cc_check -march=$proc -mcpu=$proc  || proc=error
+		  cc_check -march=$proc -mtune=$proc  || proc=error
 		fi
 		if test "$proc" = "error" ; then
-		  echores "Your $COMP_C does not support even \"i386\" for '-march' and '-mcpu'."
-		  _mcpu=""
+		  echores "Your $COMP_C does not support even \"i386\" for '-march' and '-mtune'."
+		  _mtune=""
 		  _march=""
 		  _optimizing=""
 		elif test "$proc" = "i586-i686"; then
 		  _march="-march=i586"
-		  _mcpu="-mcpu=i686"
+		  _mtune="-mtune=i686"
 		  _optimizing=""
 		else
 		  _march="-march=$proc"
-		  _mcpu="-mcpu=$proc"
+		  _mtune="-mtune=$proc"
 		  _optimizing=""
 		fi
 
 		## Gabucino : --target takes effect here (hopefully...) by overwriting
-		##             autodetected mcpu/march parameters
+		##             autodetected mtune/march parameters
 		if test "$_target" ; then
 		  # TODO: it may be a good idea to check GCC and fallback in all cases
 		  if test "$host_arch" = "i586-i686"; then
 			_march="-march=i586"
-			_mcpu="-mcpu=i686"
+			_mtune="-mtune=i686"
 		  else      
 			_march="-march=$host_arch"
-			_mcpu="-mcpu=$host_arch"
+			_mtune="-mtune=$host_arch"
 		  fi
 		
 		  proc="$host_arch"
@@ -978,7 +978,7 @@ EOF
 		iproc='ia64'
 		proc=''
 		_march=''
-		_mcpu=''
+		_mtune=''
 		;;
 
 	  x86_64|amd64)
@@ -987,7 +987,7 @@ EOF
 		iproc='x86_64'
 		proc=''
 		_march=''
-		_mcpu=''
+		_mtune=''
 
 		case "$pvendor" in
 			AuthenticAMD)
@@ -1000,7 +1000,7 @@ EOF
 			proc=x86-64 iproc=x86-64;;
 		esac
 
-		cc_check -march=$proc -mcpu=$proc  || proc=x86-64
+		cc_check -march=$proc -mtune=$proc  || proc=x86-64
 		;;
 
 	  sparc)
@@ -1009,7 +1009,7 @@ EOF
 		iproc='sparc'
 		proc='v8'
 		_march=''
-		_mcpu=''
+		_mtune=''
 		;;
 
 	  arm)
@@ -1018,7 +1018,7 @@ EOF
 		iproc=arm
 		proc=''
 		_march=''
-		_mcpu=''
+		_mtune=''
 		;;
 
 	  ppc)
@@ -1027,16 +1027,16 @@ EOF
 		iproc='ppc'
 		proc=''
 		_march=''
-		_mcpu=''
+		_mtune=''
 		cpu750=`$_cpuinfo | grep "cpu.*750"`
 		if test -n "$cpu750"; then
-		_march='-mcpu=750'
-		_mcpu='-mtune=750'
+		_march='-mtune=750'
+		_mtune='-mtune=750'
 		fi
 		cpu745x=`$_cpuinfo | grep "cpu.*745."`
 		if test -n "$cpu745x"; then
-		_march='-mcpu=7450'
-		_mcpu='-mtune=7450'
+		_march='-mtune=7450'
+		_mtune='-mtune=7450'
 		_optimizing='-maltivec -mabi=altivec'
 		fi
 		;;
@@ -1056,15 +1056,15 @@ EOF
 			if test "$proc" = "ev67" ; then
 			  cc_check -arch $proc || proc=ev6
 			fi
-			_mcpu="-arch $proc"
+			_mtune="-arch $proc"
 		else
 			if test "$proc" = "ev68" ; then
-			  cc_check -mcpu=$proc || proc=ev67
+			  cc_check -mtune=$proc || proc=ev67
 			fi
 			if test "$proc" = "ev67" ; then
-			  cc_check -mcpu=$proc || proc=ev6
+			  cc_check -mtune=$proc || proc=ev6
 			fi
-			_mcpu="-mcpu=$proc"
+			_mtune="-mtune=$proc"
 		fi
 		echores "$proc"
 		;;
@@ -1075,7 +1075,7 @@ EOF
 		iproc='sgi-mips'
 		proc=''
 		_march=''
-		_mcpu=''
+		_mtune=''
 		;;
 
 	  hppa)
@@ -1084,7 +1084,7 @@ EOF
 		iproc='PA-RISC'
 		proc=''
 		_march=''
-		_mcpu=''
+		_mtune=''
 		;;
 
 	  s390)
@@ -1093,7 +1093,7 @@ EOF
 		iproc='390'
 		proc=''
 		_march=''
-		_mcpu=''
+		_mtune=''
 		;;
 
 	  s390x)
@@ -1102,7 +1102,7 @@ EOF
 		iproc='390x'
 		proc=''
 		_march=''
-		_mcpu=''
+		_mtune=''
 		;;
 
 	  *)
@@ -1415,7 +1415,7 @@ write_dot_config()
 {
 
 #set autodetected options
-COMPFLAGS_CPP="$COMPFLAGS_CPP $OS $_march $_mcpu $_optimizing $COMP_OPTS"
+COMPFLAGS_CPP="$COMPFLAGS_CPP $OS $_march $_mtune $_optimizing $COMP_OPTS"
 COMPFLAGS_C="$COMPFLAGS_CPP"
 
 cat > .config <<EOF
@@ -1520,7 +1520,7 @@ clean_up()
 
 detect_cc
 check_make
-determine_march_mcpu
+determine_march_mtune
 set_opts
 svmlight_warn_license
 write_dot_config

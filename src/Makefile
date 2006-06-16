@@ -114,7 +114,7 @@ clean:
 config: .config
 .config:	Makefile configure
 		chmod u+x ./configure
-		./configure
+		./configure #use default options
 dist:	distclean
 	rm -f $(TAR).gz
 	tar -cvf $(TAR) -C ../../ shogun/src && gzip -9 $(TAR)
@@ -139,6 +139,7 @@ $(TARGET): $(SWIGLIBFILES)
 else
 $(TARGET): $(OBJFILES) $(SRCFILES)
 	$(LINK) $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ 
+	#removeconfighunk
 endif
 
 _%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG)

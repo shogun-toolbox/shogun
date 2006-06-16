@@ -2,29 +2,24 @@ library(graph)
 library(Rgraphviz)
 library(sg)
 
-generate_train_data <- function()
+cube=list(NULL,NULL,NULL)
+num=vector(mode='numeric',length=18)+100
+num[1]=0;
+num[2]=0;
+num[3]=0;
+num[10]=0;
+num[11]=0;
+num[12]=0;
+
+for (c in 1:3)
 {
-	cube=list(NULL,NULL,NULL)
-	num=vector(mode='numeric',length=18)+100
-	num[1]=0;
-	num[2]=0;
-	num[3]=0;
-	num[10]=0;
-	num[11]=0;
-	num[12]=0;
-
-	for (c in 1:3)
-	{
-		for (i in 1:6)
-			cube[[c]] <- c(cube[[c]], vector(mode='numeric',length=num[(c-1)*6+i])+i)
-		cube[[c]] <- sample(cube[[c]],300,replace=TRUE);
-	}
-
-	x <- c(cube[[1]],cube[[2]],cube[[3]])
-	x <- paste(x,sep="",collapse="")
-
-	return(x)
+	for (i in 1:6)
+		cube[[c]] <- c(cube[[c]], vector(mode='numeric',length=num[(c-1)*6+i])+i)
+	cube[[c]] <- sample(cube[[c]],300,replace=TRUE);
 }
+
+x <- c(cube[[1]],cube[[2]],cube[[3]])
+x <- paste(x,sep="",collapse="")
 
 sg('set_features','TRAIN',x)
 sg('send_command','convert TRAIN STRING CHAR STRING WORD CUBE 1')
