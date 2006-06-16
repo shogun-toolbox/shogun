@@ -11,7 +11,8 @@ sg_0.1-1.tar.gz: configure
 	@ cp -R ../src/classifier ../src/features ../src/gui ../src/guilib ../src/kernel ../src/lib ../src/preproc ../src/regression ../src/distributions ./sg/src
 	@ cp ../src/Makefile ../src/.generate_link_dependencies.py ../src/.version.sh ./sg/src
 	@ cp ../src/configure ./sg/src/configure.sg
-	@ chmod +x ./sg/src/configure.sg ./sg/src/configure
+	@ cp ../src/AUTHORS ../src/CONTRIBUTIONS ../src/ChangeLog ../src/INSTALL ../src/LICENSE ../src/LICENSE.SVMlight ../src/README ../src/README.developer ../src/TODO ./sg/inst/doc
+	@ chmod +x ./sg/src/configure.sg ./sg/src/configure ./sg/src/.version.sh
 	@ rm `find ./sg -iname *.i -o -iname *.o`
 	@ echo "Compile package..."
 	@ R CMD build sg
