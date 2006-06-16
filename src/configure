@@ -1242,7 +1242,7 @@ set_opts()
 		INCLUDES="-I/usr/include/python2.4 $INCLUDES"
 		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
 		COMPFLAGS_C="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
-		LINKFLAGS="-pthread -shared -L/usr/lib/python2.4/config -lpython2.4 -ldl -lutil $LINKFLAGS"
+		LINKFLAGS="-pthread -shared -lpython2.4 -ldl -lutil $LINKFLAGS"
 		TARGET="sg.so"
 	fi
 
