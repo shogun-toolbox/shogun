@@ -41,7 +41,7 @@ SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SR
 SWIGLIBFILES 	= $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)" | grep -v 'swigfiles' | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/_\1so=')
 TAR:=../shogun-$(shell date +%Y-%m-%d).tar
 
-.PHONY: config swig just-do-it all out clean end condor purif profile dep depend targets warn2err err2warn ctags confgen depgen buildout buildend dist
+.PHONY: config swig swigclean just-do-it all out clean end condor purif profile dep depend targets warn2err err2warn ctags confgen depgen buildout buildend dist
 
 ifeq (.config,$(wildcard .config))
 ifeq (.depend,$(wildcard .depend))
@@ -102,9 +102,11 @@ targets:
 
 distclean: clean
 		rm -f .config tags lib/config.h lib/versionstring.h
+swigclean:
+	rm -f $(shell find -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) 
 
-clean: 
-	rm -f $(shell find ./ -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.mex* sg.so shogun gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find ./ -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
+clean: swigclean
+	rm -f $(shell find ./ -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.mex* sg.so shogun gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find ./ -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
 
 config: .config
 .config:	Makefile configure
