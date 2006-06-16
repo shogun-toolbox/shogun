@@ -1240,9 +1240,9 @@ set_opts()
 		HAVE_PYTHON='#define HAVE_PYTHON 1'
 
 		INCLUDES="-I/usr/include/python2.4 $INCLUDES"
-		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
+		COMPFLAGS_CPP="--pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
 		COMPFLAGS_C="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
-		LINKFLAGS="-pthread -shared -L/usr/lib/python2.4/config -lpython2.4 $LINKFLAGS"
+		LINKFLAGS="-pthread -shared -L/usr/lib/python2.4/config -lpython2.4 -ldl -lutil $LINKFLAGS"
 		TARGET="sg.so"
 	fi
 
@@ -1522,7 +1522,7 @@ detect_cc
 check_make
 determine_march_mtune
 set_opts
-svmlight_warn_license
+#svmlight_warn_license
 write_dot_config
 write_config_h
 clean_up
