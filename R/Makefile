@@ -23,4 +23,6 @@ $(SHOGUN): configure
 	@ R CMD check sg
 
 clean: 
-	@ rm -rf sg/src/* sg.Rcheck/ $(SHOGUN)
+	@ rm -rf ./sg/src/* sg.Rcheck/ $(SHOGUN)
+	@ rm -f ./sg/inst/doc/AUTHORS ./sg/inst/doc/CONTRIBUTIONS ./sg/inst/doc/ChangeLog ./sg/inst/doc/INSTALL ./sg/inst/doc/LICENSE ./sg/inst/doc/LICENSE.SVMlight ./sg/inst/doc/README ./sg/inst/doc/README.developer ./sg/inst/doc/TODO
+	@ rm -f sg/src/.generate_link_dependencies.py sg/src/.version.sh sg/src/.depend
