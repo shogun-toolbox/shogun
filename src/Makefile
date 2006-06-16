@@ -29,7 +29,7 @@ endif
 SRCDIR = .
 
 # SRC/OBJFILES lie all in the subdir of SRCDIR
-CVSEntries = $(shell find $(SRCDIR)/ -name Entries -type f)
+SVNEntries = $(shell find $(SRCDIR)/ -name entries -type f)
 HEADERFILES	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_HEADER)" )
 SRCFILES 	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )
 ifeq (yes,$(USE_SWIG))
@@ -116,17 +116,17 @@ dist:	distclean
 
 
 dep:	depend
-depend:	Makefile .config lib/versionstring.h 
+depend:	Makefile .config
 	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_SRC_CPP)" ) -o.$(EXT_OBJ_CPP) -f - >.depend
 	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' )  -o.$(EXT_OBJ_C) -f - >>.depend
 	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)" ) -o$(EXT_SRC_SWIG) -f - >>.depend
 	find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_INP_SWIG)" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" |  cut -c 3- | $(PYTHON) .generate_link_dependencies.py >>.depend
 
-lib/versionstring.h:	$(CVSEntries)
+lib/versionstring.h:	$(SVNEntries)
 		chmod u+x ./.version.sh
 		./.version.sh >lib/versionstring.h
 
-$(OBJFILES): Makefile .config .depend
+$(OBJFILES): Makefile .config .depend lib/versionstring.h 
 
 ifeq (yes,$(USE_SWIG))
 $(TARGET): $(SWIGLIBFILES)
