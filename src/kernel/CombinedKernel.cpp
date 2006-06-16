@@ -113,8 +113,10 @@ void CCombinedKernel::remove_lhs()
 {
 	delete_optimization();
 
+#ifdef SVMLIGHT
 	if (lhs)
 		cache_reset() ;
+#endif
 	lhs=NULL ;
 	
 	CListElement<CKernel*> * current = NULL ;	
@@ -129,8 +131,10 @@ void CCombinedKernel::remove_lhs()
 
 void CCombinedKernel::remove_rhs()
 {
+#ifdef SVMLIGHT
 	if (rhs)
 		cache_reset() ;
+#endif
 	rhs=NULL ;
 
 	CListElement<CKernel*> * current = NULL ;	

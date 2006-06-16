@@ -11,6 +11,7 @@
  */
 
 #include "lib/config.h"
+#ifdef USE_SVMLIGHT
 
 #ifdef HAVE_PYTHON
 #include <Python.h>
@@ -1392,3 +1393,4 @@ void CSVRLight::reactivate_inactive_examples(INT* label,
 	  }
   }
 }
+#endif //USE_SVMLIGHT

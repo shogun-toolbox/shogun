@@ -34,8 +34,11 @@ void CWDCharKernel::remove_lhs()
 { 
 	if (get_is_initialized())
 		delete_optimization();
+
+#ifdef SVMLIGHT
 	if (lhs)
 		cache_reset();
+#endif
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
@@ -52,8 +55,10 @@ void CWDCharKernel::remove_lhs()
 
 void CWDCharKernel::remove_rhs()
 {
+#ifdef SVMLIGHT
 	if (rhs)
 		cache_reset();
+#endif
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;

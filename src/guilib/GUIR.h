@@ -60,6 +60,7 @@ public:
 	SEXP one_class_hmm_classify_example(int idx);
 	SEXP one_class_hmm_classify();
 
+	SEXP hmm_likelihood(); 
 	SEXP hmm_classify(); 
 	SEXP get_features(CFeatures* features);
 	CFeatures* set_features(SEXP features, SEXP feature_length);

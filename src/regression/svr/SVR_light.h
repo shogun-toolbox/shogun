@@ -13,7 +13,10 @@
 #ifndef _SVRLight_H___
 #define _SVRLight_H___
 
+#include "lib/config.h"
 #include "classifier/svm/SVM_light.h"
+
+#ifdef USE_SVMLIGHT
 class CSVRLight:public CSVMLight
 {
  public:
@@ -86,4 +89,5 @@ inline virtual DREAL compute_kernel(INT i, INT j)
 
   INT num_vectors; //number of train elements
 };
+#endif //USE_SVMLIGHT
 #endif

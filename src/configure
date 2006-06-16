@@ -26,6 +26,7 @@ _R=no
 _python=no
 _octave=no
 _svm_mpi=no
+_svm_light=yes
 _cplex=no
 _wtiming=no
 _logcache=no
@@ -345,14 +346,16 @@ for ac_option do
   --enable-python)		_python=yes	;;
   --disable-matlab)		_matlab=no	;;
   --enable-matlab)		_matlab=yes	;;
-  --disable-R)		_R=no	;;
-  --enable-R)		_R=yes	;;
+  --disable-R)			_R=no	;;
+  --enable-R)			_R=yes	;;
   --disable-octave)		_octave=no	;;
   --enable-octave)		_octave=yes	;;
-  --disable-svmmpi)		_svmmpi=no	;;
-  --enable-svmmpi)		_svmmpi=yes	;;
-  --disable-readline)		_readline=no	;;
-  --enable-readline)		_readline=yes	;;
+  --disable-svm-mpi)	_svm_mpi=no	;;
+  --enable-svm-mpi)		_svm_mpi=yes	;;
+  --disable-svm-light)	_svm_light=no	;;
+  --enable-svm-light)	_svm_light=yes	;;
+  --disable-readline)	_readline=no	;;
+  --enable-readline)	_readline=yes	;;
   --disable-cplex)		_cplex=no	;;
   --enable-cplex)		_cplex=yes	;;
   --disable-w-timing)	_wtiming=no	;;
@@ -1406,6 +1409,11 @@ set_opts()
 	then
 		USE_SVMMPI='#define USE_SVMMPI 1'
 	fi
+
+	if test "$_svm_light" = yes
+	then
+		USE_SVMLIGHT='#define USE_SVMLIGHT 1'
+	fi
 }
 
 #write the actual config
@@ -1450,6 +1458,29 @@ LINKFLAGS 		= ${LINKFLAGS}
 EOF
 }
 
+svmlight_warn_license()
+{
+	if test "$_svm_light" = yes
+	then
+		cat <<EOF
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+WARNING: SHOGUN is build using SVMlight which was written
+by Thorsten Joachims and uses a different non GPL compatible license.
+To build a fully GPL'd SHOGUN use 
+
+./configure --disable-svm-light
+
+The SVMlight license can be found in LICENSE.SVMlight.  In case
+you do not know or cannot agree to the licensing terms expressed in
+LICENSE.SVMlight press ctrl+c to abort configure now.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+EOF
+		sleep 10
+	fi
+}
+
 write_config_h()
 {
 cat >lib/config.h <<EOF
@@ -1477,6 +1508,7 @@ $USE_HMMDEBUG
 $USE_SVMMPIDEBUG
 $USE_PATHDEBUG
 $USE_SVMMPI
+$USE_SVMLIGHT
 $USE_CPLEX
 $USE_W_TIMING
 #define CONFIGURE_OPTIONS "$CONFIGURE_OPTIONS"
@@ -1497,6 +1529,7 @@ detect_cc
 check_make
 determine_march_mcpu
 set_opts
+svmlight_warn_license
 write_dot_config
 write_config_h
 clean_up

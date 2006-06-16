@@ -52,16 +52,6 @@ extern "C"
 		return (gui->parse_line(cmd));
 	}
 
-	/* ATTENTION:
-	 * methods that have NOT been tested so far:
-	 * - get_hmm
-	 * - set_hmm
-	 *
-	 *
-	 *
-	 *
-	 */
-
 	SEXP CGUI_R::get_hmm()
 	{
 		CHMM* h=gui->guihmm.get_current();
@@ -100,23 +90,38 @@ extern "C"
 
 			PROTECT( ans = allocList(0) );
 
-			ans = CONS(b, ans);
-			SET_TAG(ans, install("b"));
-
-			ans = CONS(a, ans);
-			SET_TAG(ans, install("a"));
+			ans = CONS(p, ans);
+			SET_TAG(ans, install("p"));
 
 			ans = CONS(q, ans);
 			SET_TAG(ans, install("q"));
 
-			ans = CONS(p, ans);
-			SET_TAG(ans, install("p"));
+			ans = CONS(a, ans);
+			SET_TAG(ans, install("a"));
+
+			ans = CONS(b, ans);
+			SET_TAG(ans, install("b"));
 
 			UNPROTECT(5);
 			return ans;
 		}
 
 		return (R_NilValue);
+	}
+	
+	SEXP CGUI_R::hmm_likelihood()
+	{
+		CHMM* h=gui->guihmm.get_current();
+
+		if (h)
+		{
+			SEXP lik;
+			PROTECT( lik = allocVector(REALSXP, 1 ));
+			REAL(lik)[0]=h->model_probability();
+			UNPROTECT(1);
+			return lik;
+		}
+		return R_NilValue;
 	}
 
 	SEXP CGUI_R::best_path(int dim)
@@ -239,20 +244,20 @@ extern "C"
 	bool CGUI_R::set_hmm(SEXP arg_list)
 	{
 		if( TYPEOF(arg_list) != LISTSXP ) {
-			CIO::message(M_ERROR, "You have to supply an argument list of length four.\n");
+			CIO::message(M_ERROR, "You have to supply an argument pairlist of length four.\n");
 			return false;
 		}
 
 		SEXP p,q,a,b;
 
-		p = CAR(arg_list);
-		arg_list = CDR(arg_list);
-		q = CAR(arg_list);
+		b = CAR(arg_list);
 		arg_list = CDR(arg_list);
 		a = CAR(arg_list);
 		arg_list = CDR(arg_list);
-		b = CAR(arg_list);
-
+		q = CAR(arg_list);
+		arg_list = CDR(arg_list);
+		p = CAR(arg_list);
+		
 		INT N=Rf_nrows(a);
 		INT M=Rf_ncols(b);
 
@@ -261,18 +266,12 @@ extern "C"
 
 		if (h)
 		{
-			CIO::message(M_ERROR, "N:%d M:%d p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
-					N, M,
-					Rf_nrows(p), Rf_ncols(p), 
-					Rf_nrows(q), Rf_ncols(q), 
-					Rf_nrows(a), Rf_ncols(a), 
-					Rf_nrows(b), Rf_ncols(b));
 
 			if (
 					Rf_nrows(p) == h->get_N() && Rf_ncols(p) == 1 &&
 					Rf_nrows(q) == h->get_N() && Rf_ncols(q) == 1 &&
 					Rf_nrows(a) == h->get_N() && Rf_ncols(a) == h->get_N() &&
-					Rf_nrows(b) == h->get_M() && Rf_ncols(b) == h->get_N()
+					Rf_nrows(b) == h->get_N() && Rf_ncols(b) == h->get_M()
 			   )
 			{
 				int i,j;
@@ -294,7 +293,15 @@ extern "C"
 				return true;
 			}
 			else
+			{
 				CIO::message(M_ERROR, "model matricies not matching in size\n");
+				CIO::message(M_ERROR, "N:%d M:%d p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
+						N, M,
+						Rf_nrows(p), Rf_ncols(p), 
+						Rf_nrows(q), Rf_ncols(q), 
+						Rf_nrows(a), Rf_ncols(a), 
+						Rf_nrows(b), Rf_ncols(b));
+			}
 		}
 		return false;
 	}

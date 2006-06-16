@@ -38,8 +38,10 @@ CWeightedDegreeCharKernelPolyA::~CWeightedDegreeCharKernelPolyA()
 
 void CWeightedDegreeCharKernelPolyA::remove_lhs() 
 { 
+#ifdef SVMLIGHT
 	if (lhs)
 		cache_reset() ;
+#endif
 	
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
@@ -56,8 +58,10 @@ void CWeightedDegreeCharKernelPolyA::remove_lhs()
 
 void CWeightedDegreeCharKernelPolyA::remove_rhs()
 {
+#ifdef SVMLIGHT
 	if (rhs)
 		cache_reset() ;
+#endif
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;

@@ -85,8 +85,6 @@ class CKernel
 		inline CFeatures* get_lhs() { return lhs; } ;
 		inline CFeatures* get_rhs() { return rhs;  } ;
 
-		inline void cache_reset() {	resize_kernel_cache(cache_size) ; } ;
-		
 		/// takes all necessary steps if the lhs is removed from kernel
 		virtual void remove_lhs();
 
@@ -107,9 +105,11 @@ class CKernel
 		// return the name of a kernel
 		virtual const CHAR* get_name()=0 ;
 
+
 		// return the size of the kernel cache
 		inline int get_cache_size() { return cache_size; }
-
+#ifdef USE_SVMLIGHT
+		inline void cache_reset() {	resize_kernel_cache(cache_size) ; } ;
 		inline int get_max_elems_cache() { return kernel_cache.max_elems; }
 		inline int get_activenum_cache() { return kernel_cache.activenum; }
 		void get_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, DREAL *buffer, bool full_line=false) ;
@@ -148,6 +148,7 @@ class CKernel
 		{
 			return(kernel_cache.elems < kernel_cache.max_elems);
 		}
+#endif
 
 		void list_kernel();
 
@@ -221,6 +222,7 @@ class CKernel
 		/// matrix precomputation
 		void do_precompute_matrix() ;
 
+#ifdef USE_SVMLIGHT
 		/**@ cache kernel evalutations to improve speed
 		 */
 		//@{
@@ -259,17 +261,18 @@ class CKernel
 		void   kernel_cache_free(KERNELCACHE_IDX cacheidx);
 		KERNELCACHE_IDX   kernel_cache_free_lru();
 		KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(KERNELCACHE_IDX);
-
+#endif
 		//@}
 
 
 	protected:
-		/// kernel cache
-		KERNEL_CACHE kernel_cache;
-
 		/// cache_size in MB
 		KERNELCACHE_IDX cache_size;
 
+#ifdef USE_SVMLIGHT
+		/// kernel cache
+		KERNEL_CACHE kernel_cache;
+#endif
 		/// this *COULD* store the whole kernel matrix
 		/// usually not applicable / faster
 		KERNELCACHE_ELEM* kernel_matrix;

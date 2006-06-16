@@ -77,7 +77,9 @@ static const CHAR* N_PERMUTATION_ENTROPY="permutation_entropy";
 static const CHAR* N_SET_KERNEL=		"set_kernel";
 static const CHAR* N_ADD_KERNEL=		"add_kernel";
 static const CHAR* N_CLEAN_KERNEL=		"clean_kernel";
+#ifdef USE_SVMLIGHT
 static const CHAR* N_RESIZE_KERNEL_CACHE=		"resize_kernel_cache";
+#endif
 static const CHAR* N_SET_KERNEL_OPTIMIZATION_TYPE=		"set_kernel_optimization_type";
 static const CHAR* N_ATTACH_PREPROC=	"attach_preproc";
 static const CHAR* N_ADD_PREPROC=		"add_preproc";
@@ -589,10 +591,12 @@ bool CTextGUI::parse_line(CHAR* input)
 	{
 		guikernel.clean_kernel(input+strlen(N_CLEAN_KERNEL));
 	} 
+#ifdef USE_SVMLIGHT
 	else if (!strncmp(input, N_RESIZE_KERNEL_CACHE, strlen(N_RESIZE_KERNEL_CACHE)))
 	{
 		guikernel.resize_kernel_cache(input+strlen(N_RESIZE_KERNEL_CACHE));
 	} 
+#endif
 	else if (!strncmp(input, N_DEL_PREPROC, strlen(N_DEL_PREPROC)))
 	{
 		guipreproc.del_preproc(input+strlen(N_DEL_PREPROC));

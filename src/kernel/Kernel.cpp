@@ -39,7 +39,9 @@ CKernel::CKernel(KERNELCACHE_IDX size)
 
 	cache_size=size;
 	CIO::message(M_INFO, "using a kernel cache of size %i MB\n", size) ;
+#ifdef USE_SVMLIGHT
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
+#endif
 	if (get_is_initialized()) 
 		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
 }
@@ -49,7 +51,9 @@ CKernel::~CKernel()
 	if (get_is_initialized()) 
 		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
 
+#ifdef USE_SVMLIGHT
 	kernel_cache_cleanup();
+#endif
 
 	delete[] precomputed_matrix ;
 	precomputed_matrix=NULL ;
@@ -195,6 +199,8 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 	return result;
 }
 
+
+#ifdef USE_SVMLIGHT
 void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 {
 	if (size<10)
@@ -209,6 +215,7 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 	if (lhs!=NULL && rhs!=NULL)
 		kernel_cache_init(cache_size, regression_hack);
 }
+#endif
 
 bool CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
@@ -223,9 +230,11 @@ bool CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	lhs=l;
 	rhs=r;
 
+#ifdef USE_SVMLIGHT
 	// allocate kernel cache but clean up beforehand
 	kernel_cache_cleanup();
 	kernel_cache_init(cache_size);
+#endif
 
 	delete[] precomputed_matrix ;
 	precomputed_matrix=NULL ;
@@ -233,6 +242,7 @@ bool CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	return true;
 }
 
+#ifdef USE_SVMLIGHT
 /****************************** Cache handling *******************************/
 
 void CKernel::kernel_cache_init(KERNELCACHE_IDX buffsize, bool regression_hack)
@@ -639,6 +649,8 @@ KERNELCACHE_ELEM* CKernel::kernel_cache_clean_and_malloc(KERNELCACHE_IDX cacheid
 				+(kernel_cache.activenum*sizeof(KERNELCACHE_ELEM)*
 					kernel_cache.index[cacheidx])));
 }
+#endif
+
 bool CKernel::load(CHAR* fname)
 {
 	return false;
@@ -677,8 +689,10 @@ bool CKernel::save(CHAR* fname)
 
 void CKernel::remove_lhs()
 { 
+#ifdef USE_SVMLIGHT
 	if (lhs)
 		cache_reset();
+#endif
 
 	lhs = NULL;
 }
@@ -686,8 +700,10 @@ void CKernel::remove_lhs()
 /// takes all necessary steps if the rhs is removed from kernel
 void CKernel::remove_rhs()
 {
+#ifdef USE_SVMLIGHT
 	if (rhs)
 		cache_reset();
+#endif
 	rhs = NULL;
 }
 

@@ -37,6 +37,7 @@ static const CHAR* N_GET_SVM=			"get_svm";
 static const CHAR* N_GET_SVM_OBJECTIVE=		"get_svm_objective";
 //static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
 static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
+static const CHAR* N_HMM_LIKELIHOOD=	        "hmm_likelihood";
 //static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
 //static const CHAR* N_COMPUTE_BY_SUBKERNELS=	        "compute_by_subkernels";
 //static const CHAR* N_SET_SUBKERNEL_WEIGHTS=	        "set_subkernel_weights";
@@ -182,6 +183,10 @@ static SEXP sg_helper(SEXP args)
 				else
 					CIO::message(M_ERROR, "usage is [path, lik]=sg('get_viterbi_path',dim)");
 			}
+			else if (!strncmp(action, N_HMM_LIKELIHOOD, strlen(N_HMM_LIKELIHOOD)))
+			{
+				return sg_R.hmm_likelihood();
+			}
 			else if (!strncmp(action, N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE, strlen(N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE)))
 			{
 				if (cmd_len == 2)
@@ -318,10 +323,10 @@ static SEXP sg_helper(SEXP args)
 			}
 			else if (!strncmp(action, N_SET_HMM, strlen(N_SET_HMM)))
 			{
-				if (cmd_len==1+4)
-					successful(result, sg_R.set_hmm(args));
+				if (cmd_len==2)
+					successful(result, sg_R.set_hmm(CAR(args)));
 				else
-					CIO::message(M_ERROR, "usage is sg('set_hmm',[p,q,a,b])");
+					CIO::message(M_ERROR, "usage is sg('set_hmm',hmm$[p,q,a,b])");
 			}
 		else if (!strncmp(action, N_APPEND_HMM, strlen(N_APPEND_HMM)))
 		{

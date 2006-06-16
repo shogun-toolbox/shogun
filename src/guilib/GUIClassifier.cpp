@@ -65,18 +65,26 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
-	if (strcmp(param,"SVMLIGHT")==0)
-	{
-		delete classifier;
-		classifier= new CSVMLight();
-		CIO::message(M_INFO, "created SVMLight object\n") ;
-	}
-	else if (strcmp(param,"LIBSVM")==0)
+	if (strcmp(param,"LIBSVM")==0)
 	{
 		delete classifier;
 		classifier= new CLibSVM();
 		CIO::message(M_INFO, "created SVMlibsvm object\n") ;
 	}
+#ifdef SVM_LIGHT
+	else if (strcmp(param,"SVMLIGHT")==0)
+	{
+		delete classifier;
+		classifier= new CSVMLight();
+		CIO::message(M_INFO, "created SVMLight object\n") ;
+	}
+	else if (strcmp(param,"SVRLIGHT")==0)
+	{
+		delete classifier;
+		classifier= new CSVRLight();
+		CIO::message(M_INFO, "created SVRLight object\n") ;
+	}
+#endif
 	else if (strcmp(param,"GPBTSVM")==0)
 	{
 		delete classifier;
@@ -94,12 +102,6 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		delete classifier;
 		classifier= new CLibSVR();
 		CIO::message(M_INFO, "created SVRlibsvm object\n") ;
-	}
-	else if (strcmp(param,"SVRLIGHT")==0)
-	{
-		delete classifier;
-		classifier= new CSVRLight();
-		CIO::message(M_INFO, "created SVRLight object\n") ;
 	}
 	else if (strcmp(param,"KERNELPERCEPTRON")==0)
 	{
@@ -235,8 +237,10 @@ bool CGUIClassifier::train_svm(CHAR* param, bool auc_maximization)
 	((CSVM*) svm)->set_precomputed_subkernels_enabled(svm_use_precompute_subkernel_light) ;
 	kernel->set_precompute_matrix(svm_use_precompute, svm_use_precompute_subkernel);
 	
+#ifdef USE_SVMLIGHT
 	if (auc_maximization)
 		((CSVMLight*)svm)->setup_auc_maximization() ;
+#endif
 
 	bool result = svm->train();
 

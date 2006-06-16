@@ -2,12 +2,12 @@
 SHOGUN - User manual
 ====================
 
-Chapter 0 - About this document
+About this document
 ===============================
 
 This is the user manual for the SHOGUN toolbox.
 
-Chapter 1 - Introduction to SHOGUN
+Introduction to SHOGUN
 ==================================
 
 The SHOGUN machine learning toolbox's focus is on kernel methods and especially on
@@ -36,7 +36,7 @@ each feature object allowing for on-the-fly pre-processing.
 License: GPL version 2 or newer
 URL: http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun
 
-Section 1.1 Notes
+Notes
 -----------------
 
 As mentioned above SHOGUN interfaces to several programming languages and
@@ -47,7 +47,7 @@ languages. However where it was not possible we give there will be special
 infos on the subtle differences of syntax and semantic in the respective
 toolkit
 
-Section 1.2 Commands
+Commands
 --------------------
 
 To fire up SHOGUN in R make sure that you have SHOGUN correctly installed in
@@ -78,7 +78,7 @@ To invoke the SHOGUN command help one types::
 and then a help text appears giving a short description of all commands.
 
 
-Subsection 1.2.1 send_command
+send_command
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Currently send_command supports the following options:
@@ -113,7 +113,7 @@ Currently send_command supports the following options:
    7. svm_train: Starts the training of the SVM on the assigned features and
       kernels.
 
-Subsection 1.2.2 set_features and set_labels
+set_features and set_labels
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The set_features commands is responsible for assigning features to the SHOGUN
@@ -137,7 +137,7 @@ The command::
 
 tells SHOGUN that the labels of the assigned training data reside in trainlab.
 
-Subsection 1.2.3 get_kernel_matrix
+get_kernel_matrix
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The purpose of the get_kernel_matrix commands is to return a symmetric matrix
@@ -149,7 +149,7 @@ After typing::
 
 km refers to a matrix object.
 
-Subsection 1.2.4 get_svm
+get_svm
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 The get_svm command returns some properties of an SVM such as the Langrange
@@ -170,7 +170,7 @@ In Matlab::
  
 return the b and the alphas only.
 
-Subsection 1.2.5 svm_classify
+svm_classify
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The result of the classification of the test samples is obtained via::
@@ -179,7 +179,7 @@ The result of the classification of the test samples is obtained via::
 
 where out is a vector containing the classification result for each datapoint.
 
-Subsection 1.2.6 set_kernel
+set_kernel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In general one sets a kernel by typing::
@@ -191,7 +191,7 @@ are additional options for the respective kernel.
 
 Please refer to section 1.3 for detailed information on kernels.
 
-Section 1.3 Kernels
+Kernels
 -------------------
 
 The following kernels are implemented in SHOGUN:
@@ -201,36 +201,36 @@ The following kernels are implemented in SHOGUN:
    3. Gaussian
    4. Sigmoid
 
-Subsection 1.3.1 Linear Kernel
+Linear Kernel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A linear kernel is created via::
 
-   ("send_command", "add_kernel LINEAR TYPE CACHESIZE");
+   sg("send_command", "add_kernel LINEAR TYPE CACHESIZE");
 
 For example::
 
-   ('send_command', 'add_kernel LINEAR REAL 50')
+   sg('send_command', 'add_kernel LINEAR REAL 50')
 
 creates a linear kernel of cache size 50 for real datavalues.
 
 Available types for the linear kernel: BYTE, WORD CHAR, REAL, SPARSEREAL.
 
-Subsection 1.3.1 Polynomial Kernel
+Polynomial Kernel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A polynomial kernel is created via::
 
-   ('send_command', 'add_kernel POLY TYPE CACHESIZE DEGREE INHOMOGENE NORMALIZE');
+   sg('send_command', 'add_kernel POLY TYPE CACHESIZE DEGREE INHOMOGENE NORMALIZE');
 
 For example::
 
-   ('send_command', 'add_kernel POLY REAL 50 3 0')
+   sg('send_command', 'add_kernel POLY REAL 50 3 0')
 
 creates a polynomial kernel.
 Available types for the polynomial kernel: REAL, CHAR, SPARSEREAL.
 
-Subsection 1.3.3 Gaussian Kernel
+Gaussian Kernel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To work with a gaussian kernel on real values one issues::
@@ -245,7 +245,7 @@ creates a gaussian kernel on real values with a cache size of 40MB and a sigma
 value of one.
 Available types for the gaussian kernel: REAL, SPARSEREAL.
 
-Subsection 1.3.4 Sigmoid Kernel
+Sigmoid Kernel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To work with a sigmoid kernel on real values one issues::
@@ -262,7 +262,7 @@ value of 0.1 and a coefficient of 0.1.
 Available types for the gaussian kernel: REAL.
 
 
-Section 1.4 Let's get started
+Let's get started
 -----------------------------
 
 Equipped with the above information on the basic SHOGUN commands you are now

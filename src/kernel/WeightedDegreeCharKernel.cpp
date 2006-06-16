@@ -63,8 +63,10 @@ void CWeightedDegreeCharKernel::remove_lhs()
 { 
 	delete_optimization();
 
+#ifdef SVMLIGHT
 	if (lhs)
 		cache_reset();
+#endif
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
@@ -90,8 +92,10 @@ void CWeightedDegreeCharKernel::remove_lhs()
 
 void CWeightedDegreeCharKernel::remove_rhs()
 {
+#ifdef SVMLIGHT
 	if (rhs)
 		cache_reset() ;
+#endif
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;

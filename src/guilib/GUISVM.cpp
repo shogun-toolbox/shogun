@@ -55,18 +55,26 @@ bool CGUISVM::new_svm(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
-	if (strcmp(param,"LIGHT")==0)
-	{
-		delete svm;
-		svm= new CSVMLight();
-		CIO::message(M_INFO, "created SVMLight object\n") ;
-	}
-	else if (strcmp(param,"LIBSVM")==0)
+	if (strcmp(param,"LIBSVM")==0)
 	{
 		delete svm;
 		svm= new CLibSVM();
 		CIO::message(M_INFO, "created SVMlibsvm object\n") ;
 	}
+#ifdef USE_SVMLIGHT
+	else if (strcmp(param,"LIGHT")==0)
+	{
+		delete svm;
+		svm= new CSVMLight();
+		CIO::message(M_INFO, "created SVMLight object\n") ;
+	}
+	else if (strcmp(param,"SVRLIGHT")==0)
+	{
+		delete svm;
+		svm= new CSVRLight();
+		CIO::message(M_INFO, "created SVRLight object\n") ;
+	}
+#endif
 	else if (strcmp(param,"GPBT")==0)
 	{
 		delete svm;
@@ -84,12 +92,6 @@ bool CGUISVM::new_svm(CHAR* param)
 		delete svm;
 		svm= new CLibSVR();
 		CIO::message(M_INFO, "created SVRlibsvm object\n") ;
-	}
-	else if (strcmp(param,"SVRLIGHT")==0)
-	{
-		delete svm;
-		svm= new CSVRLight();
-		CIO::message(M_INFO, "created SVRLight object\n") ;
 	}
 	else
 		return false;
@@ -150,8 +152,10 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 	((CSVM*) svm)->set_precomputed_subkernels_enabled(use_precompute_subkernel_light) ;
 	kernel->set_precompute_matrix(use_precompute, use_precompute_subkernel);
 	
+#ifdef USE_SVMLIGHT
 	if (auc_maximization)
 		((CSVMLight*)svm)->setup_auc_maximization() ;
+#endif
 
 	bool result = svm->train();
 

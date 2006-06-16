@@ -42,9 +42,10 @@ million training examples, others with 7 billion test examples.
 
 LICENSE
 
-Except for the files classifier/svm/Optimizer.{cpp,h} and 
-classifier/svm/SVM_light.{cpp,h} and the kernel caching functions in
-kernel/Kernel.{cpp,h} which are (C) Torsten Joachims and follow a different
+Except for the files classifier/svm/Optimizer.{cpp,h}, 
+classifier/svm/SVM_light.{cpp,h}, regression/svr/SVR_light.{cpp,h}
+and the kernel caching functions in kernel/Kernel.{cpp,h} 
+which are (C) Torsten Joachims and follow a different
 licensing scheme (cf. LICENSE.SVMLight) SHOGUN is licensed under the GPL
 version 2 or any later version (cf. LICENSE).
 

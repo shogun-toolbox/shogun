@@ -36,8 +36,10 @@ void CCommWordStringKernel::remove_lhs()
 { 
 	delete_optimization();
 
+#ifdef SVMLIGHT
 	if (lhs)
 		cache_reset();
+#endif
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
@@ -52,8 +54,10 @@ void CCommWordStringKernel::remove_lhs()
 
 void CCommWordStringKernel::remove_rhs()
 {
+#ifdef SVMLIGHT
 	if (rhs)
 		cache_reset();
+#endif
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
