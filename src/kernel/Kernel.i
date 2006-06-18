@@ -14,6 +14,8 @@ class CKernel
 {
 	public:
 		CKernel(KERNELCACHE_IDX size);
+		CKernel(CFeatures* lhs, CFeatures* rhs, KERNELCACHE_IDX size);
+
 		virtual ~CKernel();
 
 		DREAL kernel(INT x, INT y);

@@ -41,6 +41,33 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d
 	tree_initialized=false ;
 }
 
+CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(CCharFeatures* l, CCharFeatures* r, LONG size, double* w, INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
+	: CCharKernel(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), max_mismatch(max_mismatch_), seq_length(0),
+	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm), block_computation(block)
+{
+	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
+	lhs=NULL;
+	rhs=NULL;
+	matching_weights=NULL;
+
+	weights=new DREAL[d*(1+max_mismatch)];
+	ASSERT(weights!=NULL);
+	for (INT i=0; i<d*(1+max_mismatch); i++)
+		weights[i]=w[i];
+
+#ifdef USE_TREEMEM
+	TreeMemPtrMax=1024*1024/sizeof(struct Trie) ;
+	TreeMemPtr=0 ;
+	TreeMem = (struct Trie*)malloc(TreeMemPtrMax*sizeof(struct Trie)) ;
+#endif
+
+	length = 0;
+	trees=NULL;
+	tree_initialized=false ;
+
+    init(l,r, true);
+}
+
 CWeightedDegreeCharKernel::~CWeightedDegreeCharKernel() 
 {
 	cleanup();

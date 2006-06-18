@@ -35,6 +35,12 @@ CCharFeatures::CCharFeatures(const CCharFeatures & orig) : CSimpleFeatures<CHAR>
 {
 }
 
+CCharFeatures::CCharFeatures(E_ALPHABET alphabet, CHAR* feature_matrix, INT num_feat, INT num_vec) : CSimpleFeatures<CHAR>(feature_matrix, num_feat, num_vec)
+{
+	alphabet_type=alphabet;
+	init_map_table();
+}
+
 CCharFeatures::CCharFeatures(E_ALPHABET a, CHAR* fname) : CSimpleFeatures<CHAR>(fname)
 {
 	alphabet_type=a;

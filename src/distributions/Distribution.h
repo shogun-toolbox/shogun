@@ -14,8 +14,7 @@
 #define _DISTRIBUTION_H___
 
 #include "features/Features.h"
-
-#include <lib/Mathmatics.h>
+#include "lib/Mathmatics.h"
 
 class CDistribution
 {

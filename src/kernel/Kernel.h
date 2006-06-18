@@ -25,6 +25,7 @@ class CKernel
 {
 	public:
 		CKernel(KERNELCACHE_IDX size);
+		CKernel(CFeatures* lhs, CFeatures* rhs, KERNELCACHE_IDX size);
 		virtual ~CKernel();
 
 		/** get kernel function for lhs feature vector a 

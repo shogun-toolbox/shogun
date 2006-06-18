@@ -22,6 +22,7 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
 	public:
 		CCharFeatures(E_ALPHABET alphabet, LONG size);
 		CCharFeatures(const CCharFeatures & orig);
+        CCharFeatures(E_ALPHABET alphabet, CHAR* feature_matrix, INT num_feat, INT num_vec);
 		CCharFeatures(E_ALPHABET alphabet, CHAR* fname);
 
 		/// remap element e.g translate ACGT to 0123

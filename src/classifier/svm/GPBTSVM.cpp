@@ -12,6 +12,7 @@
 
 #include "classifier/svm/GPBTSVM.h"
 #include "classifier/svm/gpdt.h"
+#include "classifier/svm/gpdtsolve.h"
 #include "lib/io.h"
 
 CGPBTSVM::CGPBTSVM()

@@ -17,8 +17,9 @@ enum E_ALPHABET { DNA=0, PROTEIN=1, ALPHANUM=2, CUBE=3, NONE=4 };
 class CCharFeatures: public CSimpleFeatures<CHAR>
 {
 	public:
-/*		CCharFeatures(E_ALPHABET alphabet, LONG size); */
+		CCharFeatures(E_ALPHABET alphabet, LONG size);
 		CCharFeatures(const CCharFeatures & orig);
+        CCharFeatures(E_ALPHABET alphabet, CHAR* feature_matrix, INT num_feat, INT num_vec);
 		CCharFeatures(E_ALPHABET alphabet, CHAR* fname);
 
 		/// remap element e.g translate ACGT to 0123

@@ -1030,12 +1030,12 @@ EOF
 		_mtune=''
 		cpu750=`$_cpuinfo | grep "cpu.*750"`
 		if test -n "$cpu750"; then
-		_march='-mtune=750'
+		_march='-mcpu=750'
 		_mtune='-mtune=750'
 		fi
 		cpu745x=`$_cpuinfo | grep "cpu.*745."`
 		if test -n "$cpu745x"; then
-		_march='-mtune=7450'
+		_march='-mcpu=7450'
 		_mtune='-mtune=7450'
 		_optimizing='-maltivec -mabi=altivec'
 		fi

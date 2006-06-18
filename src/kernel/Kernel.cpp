@@ -46,6 +46,27 @@ CKernel::CKernel(KERNELCACHE_IDX size)
 		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
 }
 
+		
+CKernel::CKernel(CFeatures* lhs, CFeatures* rhs, KERNELCACHE_IDX size)
+: kernel_matrix(NULL), precomputed_matrix(NULL),
+	precompute_subkernel_matrix(false), precompute_matrix(false), 
+	lhs(NULL), rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
+	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE)
+{
+	if (size<10)
+		size=10;
+
+	cache_size=size;
+	CIO::message(M_INFO, "using a kernel cache of size %i MB\n", size) ;
+#ifdef USE_SVMLIGHT
+	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
+#endif
+	if (get_is_initialized()) 
+		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+
+	init(lhs, rhs, true);
+}
+
 CKernel::~CKernel()
 {
 	if (get_is_initialized()) 

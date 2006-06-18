@@ -27,6 +27,11 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 }
 	 }
 
+	 CSimpleFeatures(ST* feature_matrix, INT num_vectors, INT num_features ) : CFeatures(0), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
+	 {
+		 set_feature_matrix(feature_matrix, num_feat, num_vec)
+	 }
+
 	CSimpleFeatures(CHAR* fname) : CFeatures(fname), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
 	{
 	}
