@@ -41,19 +41,21 @@ bool CLDA::train()
 	INT num_vec=features->get_num_vectors();
 	ASSERT(num_vec==num_train_labels);
 
-	INT* classidx=new INT[num_vec];
-	ASSERT(classidx);
+	INT* classidx_neg=new INT[num_vec];
+	ASSERT(classidx_neg);
+	INT* classidx_pos=new INT[num_vec];
+	ASSERT(classidx_pos);
 
 	INT i=0;
 	INT j=0;
 	INT num_neg=0;
-	INT num_pos=num_feat-1;
+	INT num_pos=0;
 	for (i=0; i<num_train_labels; i++)
 	{
 		if (train_labels[i]==-1)
-			classidx[num_neg++]=i;
+			classidx_neg[num_neg++]=i;
 		else if (train_labels[i]==+1)
-			classidx[num_pos++]=i;
+			classidx_pos[num_pos++]=i;
 		else
 		{
 			CIO::message(M_ERROR, "found label != +/- 1 bailing...");
@@ -61,14 +63,13 @@ bool CLDA::train()
 		}
 	}
 
+	CIO::message(M_DEBUG,"num_neg: %d num_pos: %d\n", num_neg, num_pos);
+
 	if (num_neg<=0 && num_pos<=0)
 	{
 		CIO::message(M_ERROR, "whooooo ? only a single class found\n");
 		return false;
 	}
-
-	INT* classidx_neg=classidx;
-	INT* classidx_pos=&classidx[num_neg];
 
 	delete[] w;
 	w=new DREAL[num_feat];
@@ -95,6 +96,7 @@ bool CLDA::train()
 		INT vlen;
 		bool vfree;
 		double* vec=features->get_feature_vector(classidx_neg[i], vlen, vfree);
+		ASSERT(vec);
 
 		for (j=0; j<vlen; j++)
 		{
@@ -121,10 +123,11 @@ bool CLDA::train()
 		INT vlen;
 		bool vfree;
 		double* vec=features->get_feature_vector(classidx_pos[i], vlen, vfree);
+		ASSERT(vec);
 
 		for (j=0; j<vlen; j++)
 		{
-			mean_neg[j]+=vec[j];
+			mean_pos[j]+=vec[j];
 			buffer[num_feat*i+j]=vec[j];
 		}
 
@@ -149,18 +152,24 @@ bool CLDA::train()
 	for (i=0; i<num_feat; i++)
 		scatter[i*num_feat+i]+= trace*gamma/num_feat;
 	
-	DREAL* p= CMath::pinv(scatter, num_feat, num_feat, NULL);
-	bias=log(prior);
-	memcpy(buffer,mean_neg,sizeof(DREAL)*num_feat);
-	cblas_dtrmv(CblasRowMajor, CblasUpper, CblasNoTrans, CblasUnit, num_feat, scatter, num_feat, mean_neg, 1);
-	bias-=0.5*CMath::dot(mean_neg, buffer, num_feat);
-	cblas_dtrmv(CblasRowMajor, CblasUpper, CblasNoTrans, CblasUnit, num_feat, scatter, num_feat, mean_pos, 1);
-	bias+=0.5*CMath::dot(mean_pos, buffer, num_feat);
+	//DREAL* p= CMath::pinv(scatter, num_feat, num_feat, NULL);
+	//bias=log(prior);
+	//memcpy(buffer,mean_neg,sizeof(DREAL)*num_feat);
+	//cblas_dtrmv(CblasRowMajor, CblasUpper, CblasNoTrans, CblasUnit, num_feat, scatter, num_feat, mean_neg, 1);
+	//bias-=0.5*CMath::dot(mean_neg, buffer, num_feat);
+	//cblas_dtrmv(CblasRowMajor, CblasUpper, CblasNoTrans, CblasUnit, num_feat, scatter, num_feat, mean_pos, 1);
+	//bias+=0.5*CMath::dot(mean_pos, buffer, num_feat);
 
 	for (i=0; i<num_feat; i++)
 		w[i]=mean_pos[i]-mean_neg[i];
 
 	delete[] train_labels;
+	delete[] mean_neg;
+	delete[] mean_pos;
+	delete[] scatter;
+	delete[] classidx_neg;
+	delete[] classidx_pos;
+	delete[] buffer;
 	return false;
 }
 

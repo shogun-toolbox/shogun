@@ -1328,6 +1328,8 @@ set_opts()
 			LINKFLAGS="$LINKFLAGS -lsunperf -Bstatic -xlic_lib=sunperf -Bdynamic -lF77 -lM77 -lsunmath -mt -lsocket -lnsl"
 		elif darwin
 		then
+			#INCLUDES="$INCLUDES -I/sw/include"
+			INCLUDES="$INCLUDES -I /System/Library/Frameworks/vecLib.framework/Headers/"
 			LINKFLAGS="$LINKFLAGS"
 		elif osf1
 		then

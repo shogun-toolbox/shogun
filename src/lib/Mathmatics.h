@@ -22,7 +22,13 @@
 #ifdef HAVE_LAPACK
 extern "C" {
 #include <cblas.h>
+#include <clapack.h>
 }
+
+#ifdef DARWIN
+int clapack_dpotrf(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
+			                   const int N, double *A, const int lda);
+#endif
 #endif
 
 //define finite for win32
@@ -31,6 +37,7 @@ extern "C" {
 #define finite _finite
 #define isnan _isnan
 #endif
+
 
 #ifndef NAN
 #include <stdlib.h>

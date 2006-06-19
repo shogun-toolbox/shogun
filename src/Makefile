@@ -29,16 +29,16 @@ endif
 SRCDIR = .
 
 # SRC/OBJFILES lie all in the subdir of SRCDIR
-SVNEntries = $(shell find $(SRCDIR)/ -name entries -type f)
-HEADERFILES	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_HEADER)" )
-SRCFILES 	= $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )
+SVNEntries = $(shell find $(SRCDIR) -name entries -type f)
+HEADERFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_HEADER)" )
+SRCFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )
 ifeq (yes,$(USE_SWIG))
-OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)"| grep -v '.cpuinfo.c' )) $(patsubst %.$(EXT_INP_SWIG),%$(EXT_OBJ_SWIG), $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)"))
+OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)"| grep -v '.cpuinfo.c' )) $(patsubst %.$(EXT_INP_SWIG),%$(EXT_OBJ_SWIG), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)"))
 else
-OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR)/ -name "*.$(EXT_SRC_C)"| grep -v '.cpuinfo.c' ))
+OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' )) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)"| grep -v '.cpuinfo.c' ))
 endif
-SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)" | grep -v 'swigfiles'))
-SWIGLIBFILES 	= $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)" | grep -v 'swigfiles' | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/_\1so=')
+SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" | grep -v 'swigfiles'))
+SWIGLIBFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" | grep -v 'swigfiles' | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/_\1so=')
 TAR:=../shogun-$(shell date +%Y-%m-%d).tar
 
 .PHONY: config swig swigclean just-do-it all out clean end condor purif profile dep depend targets warn2err err2warn ctags confgen depgen buildout buildend dist
@@ -106,7 +106,7 @@ swigclean:
 	rm -f $(shell find -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) 
 
 clean: swigclean
-	rm -f $(shell find ./ -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.mex* sg.so shogun gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find ./ -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
+	rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.mex* sg.so shogun gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find . -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
 
 config: .config
 .config:	Makefile configure
@@ -119,10 +119,10 @@ dist:	distclean
 
 dep:	depend
 depend:	Makefile .config lib/versionstring.h
-	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_SRC_CPP)" ) -o.$(EXT_OBJ_CPP) -f - >.depend
-	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' )  -o.$(EXT_OBJ_C) -f - >>.depend
-	makedepend $(INCLUDES) $(shell find $(SRCDIR)/ -name "*.$(EXT_INP_SWIG)" ) -o$(EXT_SRC_SWIG) -f - >>.depend
-	find $(SRCDIR)/ -name "*.h" -o -name "*.$(EXT_INP_SWIG)" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" |  cut -c 3- | $(PYTHON) .generate_link_dependencies.py >>.depend
+	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_CPP)" ) -o.$(EXT_OBJ_CPP) -f - >.depend
+	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' )  -o.$(EXT_OBJ_C) -f - >>.depend
+	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" ) -o$(EXT_SRC_SWIG) -f - >>.depend
+	find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_INP_SWIG)" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" |  cut -c 3- | $(PYTHON) .generate_link_dependencies.py >>.depend
 
 lib/versionstring.h:	$(SVNEntries)
 		chmod u+x ./.version.sh
@@ -135,7 +135,7 @@ $(TARGET): $(SWIGLIBFILES)
 #$(TARGET): $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES)
 else
 $(TARGET): $(OBJFILES) $(SRCFILES)
-	$(LINK) $(shell find $(SRCDIR)/ -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ 
+	$(LINK) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ 
 	#removeconfighunk
 endif
 

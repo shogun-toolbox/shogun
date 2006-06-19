@@ -26,6 +26,20 @@
 #include <time.h>
 #include <unistd.h>
 
+#if defined(HAVE_LAPACK) && defined(DARWIN)
+int clapack_dpotrf(const enum ATLAS_ORDER Order, const enum ATLAS_UPLO Uplo,
+			                   const int N, double *A, const int lda);
+{
+	ASSERT(Order==CblasColMajor);
+        //call dgemm ( 'T', 'T', alpha, B, ldb, A, lda, beta, C, ldc )
+	char uplo = 'U';
+	int info=0;
+	if (Uplo==CblasLower)
+		uplo='L';
+	dpotrf_(&uplo, &N, A, &lda, &info);
+	return info;
+}
+#endif
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
