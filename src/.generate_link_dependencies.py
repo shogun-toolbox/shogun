@@ -3,6 +3,8 @@ import os,re,sys
 incexpr=re.compile('^\s*[%#]include "(\S+)"',re.MULTILINE)
 deps=dict();
 deps['carrays.i']=[]
+deps['cpointer.i']=[]
+
 
 def get_deps(f):
 	global deps
