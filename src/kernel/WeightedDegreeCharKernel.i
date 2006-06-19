@@ -5,12 +5,6 @@
 %include "kernel/CharKernel.i"
 %include "swigfiles/common.i"
 
-%include "carrays.i"
-%array_class(int, intArray);
-%array_class(double, doubleArray);
-%array_class(char, charArray);
-%array_class(DREAL,realArray);
-
 %feature("notabstract") CWeightedDegreeCharKernel;
 
 class CWeightedDegreeCharKernel: public CCharKernel

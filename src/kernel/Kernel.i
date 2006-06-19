@@ -5,8 +5,6 @@
 
 
 %include "carrays.i"
-%array_class(double,doubleArray)
-
 
 %include "swigfiles/common.i"
 
