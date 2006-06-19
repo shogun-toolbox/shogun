@@ -4,7 +4,6 @@ import kernel.WeightedDegreeCharKernel as wd
 import features.CharFeatures as cf
 import features.Labels as L
 import classifier.svm.SVM_light as S
-
 import lib.common as lc
 
 dA = lc.createDoubleArray([0.167, 0.25, 0.5, 0.25, 0.167])
@@ -40,11 +39,12 @@ svm.set_precomputed_subkernels_enabled(False)
 result = svm.train();
 print result
 
-svm.classify(trainlabels)
-print 'Trainlabels'
-for i in range(2):
-   print trainlabels.get_label(i)
+print svm.classify_example(1)
 
-kmat = kernel.getKernelMatrixReal()
-print "Type of kmat is " + str(type(kmat))
-print kmat
+#print 'Trainlabels'
+#for i in range(2):
+#   print trainlabels.get_label(i)
+
+#kmat = kernel.getKernelMatrixReal()
+#print "Type of kmat is " + str(type(kmat))
+#print kmat
