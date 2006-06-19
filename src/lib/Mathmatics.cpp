@@ -27,16 +27,19 @@
 #include <unistd.h>
 
 #if defined(HAVE_LAPACK) && defined(DARWIN)
-int clapack_dpotrf(const enum ATLAS_ORDER Order, const enum ATLAS_UPLO Uplo,
-			                   const int N, double *A, const int lda);
+int clapack_dpotrf(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
+			                   const int N, double *A, const int LDA)
 {
 	ASSERT(Order==CblasColMajor);
         //call dgemm ( 'T', 'T', alpha, B, ldb, A, lda, beta, C, ldc )
 	char uplo = 'U';
-	int info=0;
+	__CLPK_integer info=0;
+	__CLPK_integer n=N;
+	__CLPK_integer lda=LDA;
+
 	if (Uplo==CblasLower)
 		uplo='L';
-	dpotrf_(&uplo, &N, A, &lda, &info);
+	dpotrf_(&uplo, &n, A, &lda, &info);
 	return info;
 }
 #endif

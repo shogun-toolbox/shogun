@@ -15,9 +15,11 @@
 
 #include "lib/common.h"
 
+#ifndef DARWIN
 extern "C" {
 
 INT dsyev_(CHAR*, CHAR*, int*, double*, int*, double*, double*, int*, int*);
 
 }
+#endif
 #endif

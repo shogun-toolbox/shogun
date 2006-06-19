@@ -123,20 +123,30 @@ bool CPCACut::init(CFeatures* f)
 		CIO::message(M_INFO,"done\n") ;
 
 		CIO::message(M_INFO,"Computing Eigenvalues ... ") ;
+		CHAR V='V';
+		CHAR U='U';
+#ifdef DARWIN
+		__CLPK_integer ord= (int) num_features;
+		__CLPK_integer lda= (int) num_features;
+		__CLPK_integer info;
+		__CLPK_integer lwork=3*num_features ;
+		__CLPK_doublereal* work=new __CLPK_doublereal[lwork] ;
+		__CLPK_doublereal* eigenvalues=new __CLPK_doublereal[num_features] ;
+#else
+		INT info;
+		INT ord= (int) num_features;
+		INT lda= (int) num_features;
 		INT lwork=3*num_features ;
 		double* work=new double[lwork] ;
 		double* eigenvalues=new double[num_features] ;
-		INT info;
-		CHAR V='V';
-		CHAR U='U';
-		INT ord= (int) num_features;
-		INT lda= (int) num_features;
+#endif
 
 		for (i=0; i<num_features; i++)
 			eigenvalues[i]=0;
 
 		// lapack sym matrix eigenvalues+vectors
 		dsyev_(&V, &U, &ord, cov, &lda, eigenvalues, work, &lwork, &info) ;
+
 		delete[] work;
 
 		num_dim=0;
