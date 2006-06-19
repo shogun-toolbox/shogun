@@ -1,44 +1,21 @@
 #!/usr/bin/env python
 
 import kernel.WeightedDegreeCharKernel as wd
+import features.CharFeatures as cf
+import features.Labels as L
+import classifier.svm.SVM_light as S
 
-iA = wd.intArray(5)
-dA = wd.doubleArray(5)
+import lib.common as lc
 
-dA[0] = 0.167
-dA[1] = 0.25
-dA[2] = 0.5
-dA[3] = 0.25
-dA[4] = 0.167
-
-iA[0] = -1
-iA[1] = 1
-iA[2] = 1
-iA[3] = 1
-iA[4] = -1
+dA = lc.createDoubleArray([0.167, 0.25, 0.5, 0.25, 0.167])
 
 kernel = wd.CWeightedDegreeCharKernel(10,dA,2,0,True,False,1)
-
-seq1 = wd.charArray(3)
-seq2 = wd.charArray(3)
-seq1[0] = 97
-seq1[1] = 98
-seq1[2] = 97
-
-seq2[0] = 97
-seq2[1] = 98
-seq2[2] = 97
-
-import features.CharFeatures as cf
 
 features1 = cf.CCharFeatures(cf.DNA,"fileA.dna")
 features2 = cf.CCharFeatures(cf.DNA,"fileB.dna")
 
 kernel.init(features1,features1,True)
 kernel.set_precompute_matrix(True,True)
-
-
-import features.Labels as L
 
 trainlabels = L.CLabels(2)
 trainlabels.set_int_label(0,1)
@@ -47,8 +24,6 @@ trainlabels.set_int_label(1,-1)
 testlabels = L.CLabels(2)
 testlabels.set_int_label(0,1)
 testlabels.set_int_label(1,1)
-
-import classifier.svm.SVM_light as S
 
 svm = S.CSVMLight()
 svm.set_weight_epsilon(1e-5)
