@@ -61,7 +61,7 @@ COMPFLAGS_C=
 COMPFLAGS_CPP=
 INCLUDES=-I${SRCDIR}
 LINK=c++
-LINKFLAGS="-lm -Xlinker --no-undefined"
+LINKFLAGS="-lm"
 TARGET="shogun-${EXESUFFIX}"
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
 #most defines are simply design bugs, use the ./configure --{disable,enable}-<options>
@@ -94,7 +94,7 @@ EOF
 		fi
 	done
 
-	for _cc in cxx CC c++ g++
+	for _cc in cxx c++ CC g++
 	do
 		if cc_check
 		then
@@ -1160,6 +1160,13 @@ EOF
 
 set_opts()
 {
+	if darwin
+	then
+		LINKFLAGS="$LINKFLAGS -undefined error"
+	else
+		LINKFLAGS="$LINKFLAGS -Xlinker --no-undefined"
+	fi
+
 	if test "$_matlab" = yes
 	then
 		HAVE_MATLAB='#define HAVE_MATLAB 1'
@@ -1177,7 +1184,7 @@ set_opts()
 			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -pthread -std1"
 		elif darwin
 		then
-			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -undefined suppress -L/Applications/MATLAB7/bin/mac -lmx -lmex -lmat -lpthread $LINKFLAGS"
+			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -L/Applications/MATLAB7/bin/mac -lmx -lmex -lmat -lpthread $LINKFLAGS"
 			INCLUDES="$INCLUDES -I/Applications/MATLAB7/extern/include"
 			TARGET="sg.mexmac"
 		elif linux
@@ -1215,7 +1222,7 @@ set_opts()
 	then
 		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
 
-		LINKFLAGS="-pthread -shared -L/usr/lib/octave-2.1.57 -loctinterp -loctave -lcruft -s /usr/lib/liblapack-3.so /usr/lib/libblas-3.so -lfftw3 -lreadline -lncurses -ldl -lhdf5 -lz -lm -L/usr/lib/gcc-lib/powerpc-linux/3.3.4 -L/usr/lib/gcc-lib/powerpc-linux/3.3.4/../../.. -lhdf5 -lz -lfrtbegin -lg2c -lm -lgcc_s $LINKFLAGS"
+		LINKFLAGS="-pthread -shared -L/usr/lib/octave-2.1.57 -loctinterp -loctave -lcruft -s -lfftw3 -lncurses -ldl -lhdf5 -lz -lm -L/usr/lib/gcc-lib/powerpc-linux/3.3.4 -L/usr/lib/gcc-lib/powerpc-linux/3.3.4/../../.. -lhdf5 -lz -lfrtbegin -lg2c -lm -lgcc_s $LINKFLAGS"
 		TARGET="sg.oct"
 		INCLUDES="$INCLUDES -I/usr/include/octave-2.1.57 -I/usr/include/octave-2.1.57/octave"
 		COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC"
@@ -1249,30 +1256,36 @@ set_opts()
 	if test "$_R" = yes
 	then
 		HAVE_R='#define HAVE_R 1'
-
-		if test -d /usr/lib/R/include 
-		then
-			INCLUDES="-I/usr/lib/R/include $INCLUDES"
-		fi
-
-		if test -d /usr/share/R/include 
-		then
-			INCLUDES="-I/usr/share/R/include $INCLUDES"
-		fi
-		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
-		COMPFLAGS_C="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
-		LINKFLAGS="-pthread -shared $LINKFLAGS"
-
-		if test -d /usr/lib/R/lib 
-		then
-			LINKFLAGS="-L/usr/lib/R/lib -lR $LINKFLAGS"
-		fi
-
-		if test -d /usr/share/R/lib 
-		then
-			LINKFLAGS="-L/usr/share/R/lib -lR $LINKFLAGS"
-		fi
 		TARGET="sg.so"
+
+		if darwin
+		then
+			INCLUDES="$INCLUDES -I/sw/Library/Frameworks/R.framework/Headers"
+			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -F/sw/Library/Frameworks -framework R"
+		else
+			if test -d /usr/lib/R/include 
+			then
+				INCLUDES="-I/usr/lib/R/include $INCLUDES"
+			fi
+
+			if test -d /usr/share/R/include 
+			then
+				INCLUDES="-I/usr/share/R/include $INCLUDES"
+			fi
+			COMPFLAGS_CPP="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
+			COMPFLAGS_C="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
+			LINKFLAGS="-pthread -shared $LINKFLAGS"
+
+			if test -d /usr/lib/R/lib 
+			then
+				LINKFLAGS="-L/usr/lib/R/lib -lR $LINKFLAGS"
+			fi
+
+			if test -d /usr/share/R/lib 
+			then
+				LINKFLAGS="-L/usr/share/R/lib -lR $LINKFLAGS"
+			fi
+		fi
 	fi
 
 	if test "$_cplex" = yes
@@ -1328,9 +1341,12 @@ set_opts()
 			LINKFLAGS="$LINKFLAGS -lsunperf -Bstatic -xlic_lib=sunperf -Bdynamic -lF77 -lM77 -lsunmath -mt -lsocket -lnsl"
 		elif darwin
 		then
+			echores "Disabling lapack/atlas on DARWIN!"
+			unset HAVE_LAPACK
 			#INCLUDES="$INCLUDES -I/sw/include"
-			INCLUDES="$INCLUDES -I /System/Library/Frameworks/vecLib.framework/Headers/"
-			LINKFLAGS="$LINKFLAGS"
+			#LINKFLAGS="$LINKFLAGS -L/sw/lib -llapack -lcblas"
+			#INCLUDES="$INCLUDES -I/sw/System/Library/Frameworks/vecLib.framework/Headers/"
+			#LINKFLAGS="$LINKFLAGS -framework Accelerate"
 		elif osf1
 		then
 			LINKFLAGS="$LINKFLAGS"

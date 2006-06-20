@@ -19,8 +19,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#define ASSERT(x) { if (!(x)) CIO::message(M_ERROR, "assertion %s failed in file %s line %d",#x, __FILE__, __LINE__);}
-
 #define NUM_LOG_LEVELS 9
 
 class CIO
@@ -57,4 +55,7 @@ protected:
 	const static char* message_strings[NUM_LOG_LEVELS];
 	const static EMessageType levels[NUM_LOG_LEVELS];
 };
+
+#define ASSERT(x) { if (!(x)) CIO::message(M_ERROR, "assertion %s failed in file %s line %d",#x, __FILE__, __LINE__);}
+
 #endif

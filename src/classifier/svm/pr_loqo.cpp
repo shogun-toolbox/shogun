@@ -22,9 +22,10 @@
  */
 
 #include "lib/common.h"
-#include "classifier/svm/pr_loqo.h"
 #include "lib/io.h"
+#include "lib/lapack.h"
 #include "lib/Mathmatics.h"
+#include "classifier/svm/pr_loqo.h"
 
 #include <math.h>
 #include <time.h>
@@ -32,7 +33,9 @@
 #include <stdio.h>
 #ifdef HAVE_LAPACK
 extern "C" {
+#ifndef DARWIN
 #include <clapack.h>
+#endif
 }
 #endif
 

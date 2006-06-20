@@ -15,11 +15,19 @@
 
 #include "lib/common.h"
 
-#ifndef DARWIN
-extern "C" {
+#ifdef HAVE_LAPACK
+#ifdef DARWIN
+#include <cblas.h>
+#endif
+
 
 INT dsyev_(CHAR*, CHAR*, int*, double*, int*, double*, double*, int*, int*);
+INT dpotrf_ (char *uplo, int *n, double *a, int *lda, int *info);
 
-}
+
+#ifdef DARWIN
+int clapack_dpotrf(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
+			                   const int N, double *A, const int lda);
+#endif
 #endif
 #endif
