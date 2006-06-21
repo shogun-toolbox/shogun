@@ -9,6 +9,7 @@ install: $(SHOGUN)
 #@ ~/projects/R.debug/R-2.3.0/bin/R CMD INSTALL --library=/tmp/myRLib/ $(SHOGUN)
 $(SHOGUN): configure
 	@ echo "Copy all needed files from Shogun src"
+	@ cd ../src && make lib/versionstring.h
 	@ cp configure ./sg/src
 	@ cp -R ../src/classifier ../src/features ../src/gui ../src/guilib ../src/kernel ../src/lib ../src/preproc ../src/regression ../src/distributions ./sg/src
 	@ cp ../src/.generate_link_dependencies.py ../src/.version.sh ./sg/src
@@ -17,6 +18,7 @@ $(SHOGUN): configure
 	@ cp ../src/AUTHORS ../src/CONTRIBUTIONS ../src/ChangeLog ../src/INSTALL ../src/LICENSE ../src/LICENSE.SVMlight ../src/README ../src/README.developer ../src/TODO ./sg/inst/doc
 	@ chmod +x ./sg/src/configure.sg ./sg/src/configure ./sg/src/.version.sh
 	@ rm `find ./sg -iname *.i -o -iname *.o`
+	@ find ./sg/src -type d -name .svn -exec rm -rf {} \; 2>/dev/null || true
 	@ echo "Compile package..."
 	@ R CMD build sg
 	@ echo "Check package..."
