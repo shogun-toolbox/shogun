@@ -2,7 +2,7 @@ clear all;
 leng=50;
 rep=5;
 weight=1;
-num_hmms=1;
+num_hmms=30;
 
 % generate a sequence with characters 1-6 drawn from 3 loaded cubes
 for i = 1:3,
@@ -25,7 +25,7 @@ for i = 1:length(s),
 end
 
 % train 30 hmms on sequence with pseudocount 1e-10
-sg('send_command','loglevel ALL');
+sg('send_command','loglevel ERROR');
 sg('send_command','pseudo 1e-10');
 hmms=[];
 liks=[];
