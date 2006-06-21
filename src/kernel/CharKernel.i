@@ -4,7 +4,7 @@
 %}
 
 %include "kernel/SimpleKernel.i"
-%include "swigfiles/common.i"
+%include "lib/common.i"
 
 class CCharKernel : public CSimpleKernel<CHAR>
 {

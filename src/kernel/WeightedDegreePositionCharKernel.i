@@ -3,7 +3,7 @@
 #include "kernel/WeightedDegreeCharKernel.h" 
 %}
 
-%include "swigfiles/common.i"
+%include "lib/common.i"
 
 %include "kernel/CharKernel.i"
 

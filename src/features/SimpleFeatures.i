@@ -3,7 +3,7 @@
 %}
 
 %include "features/Features.i"
-%include "swigfiles/common.i"
+%include "lib/common.i"
 
 template <class ST> class CSimpleFeatures;
 template <class ST> class CSimplePreProc;

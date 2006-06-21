@@ -3,7 +3,7 @@
 %}
 
 %include "kernel/CharKernel.i"
-%include "swigfiles/common.i"
+%include "lib/common.i"
 
 %feature("notabstract") CWeightedDegreeCharKernel;
 
