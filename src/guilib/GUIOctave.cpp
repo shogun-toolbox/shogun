@@ -747,8 +747,7 @@ bool CGUIOctave::get_features(octave_value_list& retvals, CFeatures* f)
 {
 	if (f)
 	{
-		///matlab can only deal with Simple (==rectangular) features
-		///or sparse ones
+		///octave can only deal with Simple (==rectangular) features
 
 		if (f->get_feature_class()==C_SIMPLE || f->get_feature_class()==C_SPARSE)
 		{
@@ -761,12 +760,14 @@ bool CGUIOctave::get_features(octave_value_list& retvals, CFeatures* f)
 					{
 						case F_DREAL:
 							{
-								Matrix mat_feat=Matrix(((CRealFeatures*) f)->get_num_vectors(), ((CRealFeatures*) f)->get_num_features());
+								Matrix mat_feat=Matrix(((CRealFeatures*) f)->get_num_features(), ((CRealFeatures*) f)->get_num_vectors());
 
-								if ( (!mat_feat.cols() == ((CRealFeatures*) f)->get_num_vectors()) &&
+								CIO::message(M_DEBUG, "cols:%d rows:%d\n", mat_feat.cols(), mat_feat.rows());
+								if ( (mat_feat.cols() == ((CRealFeatures*) f)->get_num_vectors()) &&
 										(mat_feat.rows() == ((CRealFeatures*) f)->get_num_features()) 
 								   )
 								{
+									CIO::message(M_DEBUG, "conversion\n");
 									for (INT i=0; i<((CRealFeatures*) f)->get_num_vectors(); i++)
 									{
 										INT num_feat;
@@ -785,7 +786,7 @@ bool CGUIOctave::get_features(octave_value_list& retvals, CFeatures* f)
 						case F_CHAR:
 						case F_BYTE:
 						default:
-							CIO::message(M_ERROR, "not implemented\n");
+							CIO::not_implemented();
 					}
 					break;
 				case C_SPARSE:
@@ -793,11 +794,11 @@ bool CGUIOctave::get_features(octave_value_list& retvals, CFeatures* f)
 					{
 						case F_DREAL:
 						default:
-							CIO::message(M_ERROR, "not implemented\n");
+							CIO::not_implemented();
 					};
 					break;
 				default:
-					CIO::message(M_ERROR, "not implemented\n");
+					CIO::not_implemented();
 			}
 			if (!value.is_empty())
 				retvals(0)=value;
@@ -828,7 +829,7 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 		//}
 		//else
 		{
-			//if (mat_feat.is_real_matrix())
+			if (mat_feat.is_real_matrix())
 			{
 				Matrix m = mat_feat.matrix_value();
 
@@ -841,29 +842,29 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 
 				for (INT i=0; i<num_vec; i++)
 					for (INT j=0; j<num_feat; j++)
-						fm[i*num_feat+j]= (double) m(i,j);
+						fm[i*num_feat+j]= (double) m(j,i);
 
 				((CRealFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
 			}
-			//else if (mat_feat.is_char_matrix())
-			//{
+			else if (mat_feat.is_char_matrix())
+			{
 
-			//	charMatrix cm = mat_feat.char_matrix_value();
-			//	f= new CCharFeatures(DNA, (LONG) 0);
-			//	INT num_vec = cm.cols();
-			//	INT num_feat = cm.rows();
-			//	CHAR* fm=new char[num_vec*num_feat+10];
-			//	ASSERT(fm);
+				charMatrix cm = mat_feat.char_matrix_value();
+				f= new CCharFeatures(DNA, (LONG) 0);
+				INT num_vec = cm.cols();
+				INT num_feat = cm.rows();
+				CHAR* fm=new char[num_vec*num_feat+10];
+				ASSERT(fm);
 
-			//	for (INT i=0; i<num_vec; i++)
-			//		for (INT j=0; j<num_feat; j++)
-			//			fm[i*num_feat+j]= (char) cm(i,j);
+				for (INT i=0; i<num_vec; i++)
+					for (INT j=0; j<num_feat; j++)
+						fm[i*num_feat+j]= (char) cm(i,j);
 
-			//	((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
-			//}
-			/////and so on
-			//else
-			//	CIO::message(M_ERROR, "not implemented\n");
+				((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+			}
+			///and so on
+			else
+				CIO::message(M_ERROR, "not implemented\n");
 		}
 	}
 	return f;

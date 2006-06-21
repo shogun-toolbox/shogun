@@ -1222,9 +1222,9 @@ set_opts()
 	then
 		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
 
-		LINKFLAGS="-pthread -shared -L/usr/lib/octave-2.1.57 -loctinterp -loctave -lcruft -s -lfftw3 -lncurses -ldl -lhdf5 -lz -lm -L/usr/lib/gcc-lib/powerpc-linux/3.3.4 -L/usr/lib/gcc-lib/powerpc-linux/3.3.4/../../.. -lhdf5 -lz -lfrtbegin -lg2c -lm -lgcc_s $LINKFLAGS"
+		LINKFLAGS="-pthread -shared -L`octave-config -p OCTLIBDIR` -loctinterp $LINKFLAGS"
 		TARGET="sg.oct"
-		INCLUDES="$INCLUDES -I/usr/include/octave-2.1.57 -I/usr/include/octave-2.1.57/octave"
+		INCLUDES="$INCLUDES -I`octave-config -p OCTINCLUDEDIR`"
 		COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC"
 		COMPFLAGS_C="$COMPFLAGS_C -fPIC"
 	fi
@@ -1410,17 +1410,6 @@ set_opts()
 		TARGET="shogun-${EXESUFFIX}.debug"
 	fi
 
-	if test "$_svmmpidebug" = yes
-	then
-		USE_PATHDEBUG='#define USE_SVMMPIDEBUG 1'
-		TARGET="shogun-${EXESUFFIX}.debug"
-	fi
-
-	if test "$_svm_mpi" = yes
-	then
-		USE_SVMMPI='#define USE_SVMMPI 1'
-	fi
-
 	if test "$_svm_light" = yes
 	then
 		USE_SVMLIGHT='#define USE_SVMLIGHT 1'
@@ -1516,9 +1505,7 @@ $USE_HMMCACHE
 $USE_KERNELCACHE
 $USE_DEBUG
 $USE_HMMDEBUG
-$USE_SVMMPIDEBUG
 $USE_PATHDEBUG
-$USE_SVMMPI
 $USE_SVMLIGHT
 $USE_CPLEX
 $USE_W_TIMING
