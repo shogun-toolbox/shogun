@@ -74,10 +74,10 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 			  return value/sqrtdiag_lhs[seq_num];
 			  break;
 		  case SQRTLEN_NORMALIZATION:
-			  return value/sqrt(sqrt(seq_len));
+			  return value/sqrt(sqrt((double) seq_len));
 			  break;
 		  case LEN_NORMALIZATION:
-			  return value/sqrt(seq_len);
+			  return value/sqrt((double) seq_len);
 			  break;
 		  case SQLEN_NORMALIZATION:
 			  return value/seq_len;

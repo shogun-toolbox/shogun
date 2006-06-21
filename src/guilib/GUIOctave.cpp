@@ -95,6 +95,64 @@ bool CGUIOctave::get_hmm(octave_value_list& retvals)
 	return false;
 }
 
+bool CGUIOctave::hmm_likelihood(octave_value_list& retvals)
+{
+	CHMM* h=gui->guihmm.get_current();
+
+	if (h)
+	{
+
+		RowVector s=RowVector(1);
+		s(0)=h->model_probability();
+		retvals(0)=s;
+		return true;
+	}
+	return false;
+}
+
+bool CGUIOctave::best_path(octave_value_list& retvals, int dim)
+{
+	CHMM* h=gui->guihmm.get_current();
+	CIO::message(M_DEBUG, "dim: %d\n", dim);
+
+	if (h)
+	{
+		CFeatures* f=gui->guifeatures.get_test_features();
+
+		if ((f) && (f->get_feature_class() == C_STRING)
+				&& (f->get_feature_type() == F_WORD)
+		   )
+		{
+			h->set_observations((CStringFeatures<WORD>*) f);
+			INT num_feat;
+
+			WORD* fv = ((CStringFeatures<WORD>*) f)->get_feature_vector(dim, num_feat);
+
+			CIO::message(M_DEBUG, "computing viterbi path for vector %d (length %d)\n", dim, num_feat);
+
+			if (fv && num_feat>0)
+			{
+				RowVector path = RowVector(num_feat);
+				RowVector lik = RowVector(1);
+
+				double l=0;
+				T_STATES* s = h->get_path(dim, l);
+				lik(0)=l;
+
+				for (int i=0; i<num_feat; i++)
+					path(i)=s[i];
+
+				delete[] s;
+
+				retvals(0)=path;
+				retvals(1)=lik;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 bool CGUIOctave::append_hmm(const octave_value_list& vals)
 {
 	CHMM* old_h=gui->guihmm.get_current();
@@ -533,7 +591,10 @@ bool CGUIOctave::hmm_classify(octave_value_list& retvals)
 
 bool CGUIOctave::hmm_classify_example(octave_value_list& retvals, int idx)
 {
-	retvals(0) = gui->guihmm.classify_example(idx);
+	double result=gui->guihmm.classify_example(idx);
+	RowVector r=RowVector(1);
+	r(0)=result;
+	retvals(0) = r;
 	return true;
 }
 
@@ -654,7 +715,7 @@ bool CGUIOctave::svm_classify(octave_value_list& retvals)
 	return false;
 }
 
-bool svm_classify_example(octave_value_list& retvals, int idx)
+bool CGUIOctave::svm_classify_example(octave_value_list& retvals, int idx)
 {
 	double result=0;
 
@@ -664,7 +725,9 @@ bool svm_classify_example(octave_value_list& retvals, int idx)
 		return false ;
 	}
 
-	retvals(0)=result;
+	RowVector r=RowVector(1);
+	r(0)=result;
+	retvals(0)=r;
 
 	return true;
 }
@@ -821,7 +884,7 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 
 	if (!mat_feat.is_empty())
 	{
-		CIO::message(M_DEBUG, "%d %d %d\n", mat_feat.is_real_matrix(), mat_feat.is_real_scalar(), mat_feat.is_real_nd_array());	
+		CIO::message(M_DEBUG, "%d %d %d %d\n", mat_feat.is_real_matrix(), mat_feat.is_real_scalar(), mat_feat.is_real_nd_array(), mat_feat.is_char_matrix());	
 		///octave does not yet support sparse matrices
 		//if (mat_feat.is_sparse())
 		//{
@@ -829,7 +892,23 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 		//}
 		//else
 		{
-			if (mat_feat.is_real_matrix())
+			if (mat_feat.is_char_matrix())
+			{
+				charMatrix cm = mat_feat.char_matrix_value();
+				f= new CCharFeatures(DNA, (LONG) 0);
+				INT num_vec = cm.cols();
+				INT num_feat = cm.rows();
+				CIO::message(M_DEBUG, "char matrix, cols:%d row:%d!\n", num_vec, num_feat);
+				CHAR* fm=new char[num_vec*num_feat+10];
+				ASSERT(fm);
+
+				for (INT i=0; i<num_vec; i++)
+					for (INT j=0; j<num_feat; j++)
+						fm[i*num_feat+j]= (char) cm(j,i);
+
+				((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+			}
+			else if (mat_feat.is_real_matrix())
 			{
 				Matrix m = mat_feat.matrix_value();
 
@@ -845,22 +924,6 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 						fm[i*num_feat+j]= (double) m(j,i);
 
 				((CRealFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
-			}
-			else if (mat_feat.is_char_matrix())
-			{
-
-				charMatrix cm = mat_feat.char_matrix_value();
-				f= new CCharFeatures(DNA, (LONG) 0);
-				INT num_vec = cm.cols();
-				INT num_feat = cm.rows();
-				CHAR* fm=new char[num_vec*num_feat+10];
-				ASSERT(fm);
-
-				for (INT i=0; i<num_vec; i++)
-					for (INT j=0; j<num_feat; j++)
-						fm[i*num_feat+j]= (char) cm(i,j);
-
-				((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
 			}
 			///and so on
 			else

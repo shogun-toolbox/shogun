@@ -126,7 +126,7 @@ public:
 
 	static inline DREAL log10(DREAL v)
 	{
-		return log(v)/log(10);
+		return log(v)/log(10.0);
 	}
 
 	static DREAL* pinv(DREAL* matrix, INT rows, INT cols, DREAL* target=NULL);

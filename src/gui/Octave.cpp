@@ -41,8 +41,10 @@ static const CHAR* N_CRC=			"crc";
 static const CHAR* N_TRANSLATE_STRING=			"translate_string";
 static const CHAR* N_GET_HMM=			"get_hmm";
 static const CHAR* N_GET_SVM=			"get_svm";
+static const CHAR* N_GET_VITERBI_PATH=			"get_viterbi_path";
 static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
 static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
+static const CHAR* N_HMM_LIKELIHOOD=	        "hmm_likelihood";
 static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
 static const CHAR* N_GET_FEATURES=		"get_features";
 static const CHAR* N_GET_LABELS=		"get_labels";
@@ -124,6 +126,26 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 			else
 				CIO::message(M_ERROR, "usage is [p,q,a,b]=sg('get_hmm')");
 		}
+		else if (!strncmp(action, N_GET_VITERBI_PATH, strlen(N_GET_VITERBI_PATH)))
+		{
+			if ((nlhs==2) && (nrhs == 2))
+			{
+				if (prhs(1).is_real_scalar())
+				{
+					int dim = prhs(1).int_value();
+					sg_octave.best_path(plhs, dim);
+				}
+				else
+					CIO::message(M_ERROR, "usage is [path, lik]=sg('get_viterbi_path',dim)");
+			}
+			else
+				CIO::message(M_ERROR, "usage is [path, lik]=sg('get_viterbi_path',dim)");
+		}
+		else if (!strncmp(action, N_HMM_LIKELIHOOD, strlen(N_HMM_LIKELIHOOD)))
+		{
+			if ( !((nlhs==1) && (nrhs == 1) && sg_octave.hmm_likelihood(plhs)) )
+				CIO::message(M_ERROR, "usage is [lik]=sg('hmm_likelihood')");
+		}
 		else if (!strncmp(action, N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE, strlen(N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE)))
 		{
 			if (nlhs==1 && nrhs==2)
@@ -200,7 +222,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				if (prhs(1).is_real_scalar())
 				{
 					int idx = prhs(1).int_value();
-					//FIXMEif (!sg_octave.svm_classify_example(plhs, idx ))
+					if (!sg_octave.svm_classify_example(plhs, idx ))
 						CIO::message(M_ERROR, "svm_classify_example failed");
 				}
 				else

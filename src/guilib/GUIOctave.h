@@ -92,6 +92,9 @@ public:
 
 	bool get_labels(octave_value_list& retvals, CLabels* label);
 	CLabels* set_labels(const octave_value_list& vals);
+
+	bool best_path(octave_value_list& retvals, int dim);
+	bool hmm_likelihood(octave_value_list& retvals);
 	//bool get_preproc_init();
 	//bool get_hmm_defs();
 
