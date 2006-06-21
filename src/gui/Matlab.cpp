@@ -37,6 +37,7 @@ static const CHAR* N_GET_SVM=			"get_svm";
 static const CHAR* N_GET_SVM_OBJECTIVE=		"get_svm_objective";
 static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
 static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
+static const CHAR* N_HMM_LIKELIHOOD=	        "hmm_likelihood";
 static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
 static const CHAR* N_COMPUTE_BY_SUBKERNELS=	        "compute_by_subkernels";
 static const CHAR* N_SET_SUBKERNEL_WEIGHTS=	        "set_subkernel_weights";
@@ -142,6 +143,11 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				CIO::message(M_ERROR, "usage is [path, lik]=sg('get_viterbi_path',dim)");
+		}
+		else if (!strncmp(action, N_HMM_LIKELIHOOD, strlen(N_HMM_LIKELIHOOD)))
+		{
+			if ( !((nlhs==1) && (nrhs == 1) && sg_matlab.hmm_likelihood(plhs)) )
+				CIO::message(M_ERROR, "usage is [lik]=sg('hmm_likelihood')");
 		}
 		else if (!strncmp(action, N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE, strlen(N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE)))
 		  {

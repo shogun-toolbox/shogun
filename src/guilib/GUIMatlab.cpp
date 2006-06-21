@@ -164,9 +164,28 @@ bool CGUIMatlab::get_hmm(mxArray* retvals[])
 	return false;
 }
 
+bool CGUIMatlab::hmm_likelihood(mxArray* retvals[])
+{
+	CHMM* h=gui->guihmm.get_current();
+
+	if (h)
+	{
+		mxArray* mx_p=mxCreateDoubleMatrix(1, 1, mxREAL);
+		ASSERT(mx_p);
+		double* p=mxGetPr(mx_p);
+		ASSERT(p);
+
+		*p=h->model_probability();
+		retvals[0]=mx_p;
+		return true;
+	}
+	return false;
+}
+
 bool CGUIMatlab::best_path(mxArray* retvals[], int dim)
 {
 	CHMM* h=gui->guihmm.get_current();
+	CIO::message(M_DEBUG, "dim: %d\n", dim);
 
 	if (h)
 	{
@@ -176,6 +195,7 @@ bool CGUIMatlab::best_path(mxArray* retvals[], int dim)
 				&& (f->get_feature_type() == F_WORD)
 		   )
 		{
+			h->set_observations((CStringFeatures<WORD>*) f);
 			INT num_feat;
 
 			WORD* fv = ((CStringFeatures<WORD>*) f)->get_feature_vector(dim, num_feat);
@@ -203,47 +223,6 @@ bool CGUIMatlab::best_path(mxArray* retvals[], int dim)
 		}
 	}
 	return false;
-/*
-	if (h)
-	{
-		mxArray* mx_p=mxCreateDoubleMatrix(1, h->get_N(), mxREAL);
-		mxArray* mx_q=mxCreateDoubleMatrix(1, h->get_N(), mxREAL);
-		mxArray* mx_a=mxCreateDoubleMatrix(h->get_N(), h->get_N(), mxREAL);
-		mxArray* mx_b=mxCreateDoubleMatrix(h->get_N(), h->get_M(), mxREAL);
-
-		if (mx_p && mx_q && mx_a && mx_b)
-		{
-			double* p=mxGetPr(mx_p);
-			double* q=mxGetPr(mx_q);
-			double* a=mxGetPr(mx_a);
-			double* b=mxGetPr(mx_b);
-
-			int i,j;
-			for (i=0; i< h->get_N(); i++)
-			{
-				p[i]=h->get_p(i);
-				q[i]=h->get_q(i);
-			}
-
-			for (i=0; i< h->get_N(); i++)
-				for (j=0; j< h->get_N(); j++)
-					a[i+j*h->get_N()]=h->get_a(i,j);
-
-			for (i=0; i< h->get_N(); i++)
-				for (j=0; j< h->get_M(); j++)
-					b[i+j*h->get_N()]=h->get_b(i,j);
-
-			retvals[0]=mx_p;
-			retvals[1]=mx_q;
-			retvals[2]=mx_a;
-			retvals[3]=mx_b;
-
-			return true;
-		}
-	}
-
-	return false;
-	*/
 }
 
 bool CGUIMatlab::append_hmm(const mxArray* vals[])
@@ -331,12 +310,12 @@ bool CGUIMatlab::set_hmm(const mxArray* vals[])
 
 		if (h)
 		{
-			CIO::message(M_ERROR, "N:%d M:%d p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
+			CIO::message(M_DEBUG, "N:%d M:%d p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
 					N, M,
-					mxGetN(mx_p), mxGetM(mx_p), 
-					mxGetN(mx_q), mxGetM(mx_q), 
-					mxGetN(mx_a), mxGetM(mx_a), 
-					mxGetN(mx_b), mxGetM(mx_b));
+					mxGetM(mx_p), mxGetN(mx_p), 
+					mxGetM(mx_q), mxGetN(mx_q), 
+					mxGetM(mx_a), mxGetN(mx_a), 
+					mxGetM(mx_b), mxGetN(mx_b));
 
 			if (
 					mxGetN(mx_p) == h->get_N() && mxGetM(mx_p) == 1 &&

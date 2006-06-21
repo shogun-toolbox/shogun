@@ -318,7 +318,6 @@ CHMM::CHMM(INT N, double* p, double* q, int num_trans, double* a_trans)
 		INT from = (INT)a_trans[i+num_trans] ;
 		INT to   = (INT)a_trans[i] ;
 		DREAL val = a_trans[i+num_trans*2] ;
-		//fprintf(stderr,"from=%i to=%i val=%1.3e %i\n", from, to, val, N) ;
 		
 		ASSERT(from>=0 && from<N) ;
 		ASSERT(to>=0 && to<N) ;
@@ -716,7 +715,6 @@ DREAL CHMM::forward_comp(INT time, INT state, INT dimension)
 	    return sum;
 	  else
 	    {
-	      /*printf("setting alpha_cache.dim=%i\n", dimension) ;*/
 	      ALPHA_CACHE(dimension).dimension=dimension;
 	      ALPHA_CACHE(dimension).updated=true;
 	      ALPHA_CACHE(dimension).sum=sum;
@@ -849,7 +847,6 @@ DREAL CHMM::forward_comp_old(INT time, INT state, INT dimension)
 				return sum;
 			else
 			{
-				/*printf("setting alpha_cache.dim=%i\n", dimension) ;*/
 				ALPHA_CACHE(dimension).dimension=dimension;
 				ALPHA_CACHE(dimension).updated=true;
 				ALPHA_CACHE(dimension).sum=sum;
@@ -912,7 +909,6 @@ DREAL CHMM::backward_comp(INT time, INT state, INT dimension)
 		  sum= CMath::logarithmic_sum(sum, get_a(i, jj) + get_b(jj, p_observations->get_feature(dimension,t)) + beta[jj]);
 		} ;
 	      beta_new[i]=sum;
-	      //printf("beta[%d][%d]=%f\n",t,i,(double)sum);
 	    }
 	  
 	  if (!BETA_CACHE(dimension).table)
@@ -946,7 +942,6 @@ DREAL CHMM::backward_comp(INT time, INT state, INT dimension)
 	      DREAL sum=-CMath::INFTY; 
 	      for (register INT j=0; j<N; j++)
 		sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
-	      //printf("sum=%f,osum=%f,diff=%f\n",sum,BETA_CACHE(dimension).sum,sum-BETA_CACHE(dimension).sum) ;
 	      BETA_CACHE(dimension).sum=sum;
 	      BETA_CACHE(dimension).dimension=dimension;
 	      BETA_CACHE(dimension).updated=true;
@@ -1022,7 +1017,6 @@ DREAL CHMM::backward_comp_old(INT time, INT state, INT dimension)
 					sum= CMath::logarithmic_sum(sum, get_a(i, j) + get_b(j, p_observations->get_feature(dimension,t)) + beta[j]);
 
 				beta_new[i]=sum;
-				//printf("beta[%d][%d]=%f\n",t,i,(double)sum);
 #endif //USE_LOGSUMARRAY
 			}
 
@@ -1077,7 +1071,6 @@ DREAL CHMM::backward_comp_old(INT time, INT state, INT dimension)
 				DREAL sum=-CMath::INFTY; 
 				for (register INT j=0; j<N; j++)
 					sum= CMath::logarithmic_sum(sum, get_p(j) + get_b(j, p_observations->get_feature(dimension,0))+beta[j]);
-				//printf("sum=%f,osum=%f,diff=%f\n",sum,BETA_CACHE(dimension).sum,sum-BETA_CACHE(dimension).sum) ;
 				BETA_CACHE(dimension).sum=sum;
 #endif //USE_LOGSUMARRAY
 				BETA_CACHE(dimension).dimension=dimension;
@@ -1111,7 +1104,7 @@ DREAL CHMM::best_path(INT dimension)
 	{
 		if (!all_path_prob_updated)
 		{
-			printf("computing full viterbi likelihood\n") ;
+			CIO::message(M_INFO, "computing full viterbi likelihood\n") ;
 			DREAL sum = 0 ;
 			for (INT i=0; i<p_observations->get_num_vectors(); i++)
 				sum+=best_path(i) ;
@@ -2111,7 +2104,6 @@ void CHMM::estimate_model_baum_welch_old(CHMM* train)
 	//change summation order to make use of alpha/beta caches
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 	  {
-	    fprintf(stderr,"%i\n", dim) ;
 	    dimmodprob=train->model_probability(dim);
 	    fullmodprob+=dimmodprob ;
 	    
@@ -2881,14 +2873,14 @@ void CHMM::output_model(bool verbose)
 	DREAL checksum;
 
 	//generic info
-	printf("log(Pr[O|model])=%e, #states: %i, #observationssymbols: %i, #observations: %ix%i\n", 
+	CIO::message(M_INFO, "log(Pr[O|model])=%e, #states: %i, #observationssymbols: %i, #observations: %ix%i\n", 
 			(double)((p_observations) ? model_probability() : -CMath::INFTY), 
 			N, M, ((p_observations) ? p_observations->get_max_vector_length() : 0), ((p_observations) ? p_observations->get_num_vectors() : 0));
 
 	if (verbose)
 	{
 		// tranisition matrix a
-		printf("\ntransition matrix\n");
+		CIO::message(M_INFO, "\ntransition matrix\n");
 		for (i=0; i<N; i++)
 		{
 			checksum= get_q(i);
@@ -2896,10 +2888,10 @@ void CHMM::output_model(bool verbose)
 			{
 				checksum= CMath::logarithmic_sum(checksum, get_a(i,j));
 
-				printf("a(%02i,%02i)=%1.4f ",i,j, (float) exp(get_a(i,j)));
+				CIO::message(M_INFO, "a(%02i,%02i)=%1.4f ",i,j, (float) exp(get_a(i,j)));
 
 				if (j % 4 == 3)
-					printf("\n");
+					CIO::message(M_MESSAGEONLY, "\n");
 			}
 			if (fabs(checksum)>1e-5)
 				CIO::message(M_DEBUG, " checksum % E ******* \n",checksum);
@@ -2908,14 +2900,14 @@ void CHMM::output_model(bool verbose)
 		}
 
 		// distribution of start states p
-		printf("\ndistribution of start states\n");
+		CIO::message(M_INFO, "\ndistribution of start states\n");
 		checksum=-CMath::INFTY;
 		for (i=0; i<N; i++)
 		{
 			checksum= CMath::logarithmic_sum(checksum, get_p(i));
-			printf("p(%02i)=%1.4f ",i, (float) exp(get_p(i)));
+			CIO::message(M_INFO, "p(%02i)=%1.4f ",i, (float) exp(get_p(i)));
 			if (i % 4 == 3)
-				printf("\n");
+				CIO::message(M_MESSAGEONLY, "\n");
 		}
 		if (fabs(checksum)>1e-5)
 			CIO::message(M_DEBUG, " checksum % E ******* \n",checksum);
@@ -2923,14 +2915,14 @@ void CHMM::output_model(bool verbose)
 			CIO::message(M_DEBUG, " checksum=% E\n", checksum);
 
 		// distribution of terminal states p
-		printf("\ndistribution of terminal states\n");
+		CIO::message(M_INFO, "\ndistribution of terminal states\n");
 		checksum=-CMath::INFTY;
 		for (i=0; i<N; i++)
 		{
 			checksum= CMath::logarithmic_sum(checksum, get_q(i));
-			printf("q(%02i)=%1.4f ",i, (float) exp(get_q(i)));
+			CIO::message(M_INFO,"q(%02i)=%1.4f ",i, (float) exp(get_q(i)));
 			if (i % 4 == 3)
-				printf("\n");
+				CIO::message(M_INFO,"\n");
 		}
 		if (fabs(checksum)>1e-5)
 			CIO::message(M_DEBUG, " checksum % E ******* \n",checksum);
@@ -2938,16 +2930,16 @@ void CHMM::output_model(bool verbose)
 			CIO::message(M_DEBUG, " checksum=% E\n", checksum);
 
 		// distribution of observations given the state b
-		printf("\ndistribution of observations given the state\n");
+		CIO::message(M_INFO,"\ndistribution of observations given the state\n");
 		for (i=0; i<N; i++)
 		{
 			checksum=-CMath::INFTY;
 			for (j=0; j<M; j++)
 			{
 				checksum=CMath::logarithmic_sum(checksum, get_b(i,j));
-				printf("b(%02i,%02i)=%1.4f ",i,j, (float) exp(get_b(i,j)));
+				CIO::message(M_INFO,"b(%02i,%02i)=%1.4f ",i,j, (float) exp(get_b(i,j)));
 				if (j % 4 == 3)
-					printf("\n");
+					CIO::message(M_MESSAGEONLY,"\n");
 			}
 			if (fabs(checksum)>1e-5)
 				CIO::message(M_DEBUG, " checksum % E ******* \n",checksum);
@@ -2955,7 +2947,7 @@ void CHMM::output_model(bool verbose)
 				CIO::message(M_DEBUG, " checksum % E\n",checksum);
 		}
 	}
-	printf("\n");
+	CIO::message(M_MESSAGEONLY,"\n");
 }
 
 //to give an idea what the model looks like
@@ -2966,14 +2958,14 @@ void CHMM::output_model_defined(bool verbose)
 		return ;
 
 	//generic info
-	printf("log(Pr[O|model])=%e, #states: %i, #observationssymbols: %i, #observations: %ix%i\n", 
+	CIO::message(M_INFO,"log(Pr[O|model])=%e, #states: %i, #observationssymbols: %i, #observations: %ix%i\n", 
 			(double)((p_observations) ? model_probability() : -CMath::INFTY), 
 			N, M, ((p_observations) ? p_observations->get_max_vector_length() : 0), ((p_observations) ? p_observations->get_num_vectors() : 0));
 
 	if (verbose)
 	{
 		// tranisition matrix a
-		printf("\ntransition matrix\n");
+		CIO::message(M_INFO,"\ntransition matrix\n");
 
 		//initialize a values that have to be learned
 		i=0;
@@ -2983,15 +2975,15 @@ void CHMM::output_model_defined(bool verbose)
 			if (j!=model->get_learn_a(i,0))
 			{
 				j=model->get_learn_a(i,0);
-				printf("\n");
+				CIO::message(M_MESSAGEONLY,"\n");
 			}
 
-			printf("a(%02i,%02i)=%1.4f ",model->get_learn_a(i,0), model->get_learn_a(i,1), (float) exp(get_a(model->get_learn_a(i,0), model->get_learn_a(i,1))));
+			CIO::message(M_INFO,"a(%02i,%02i)=%1.4f ",model->get_learn_a(i,0), model->get_learn_a(i,1), (float) exp(get_a(model->get_learn_a(i,0), model->get_learn_a(i,1))));
 			i++;
 		}
 
 		// distribution of observations given the state b
-		printf("\n\ndistribution of observations given the state\n");
+		CIO::message(M_INFO,"\n\ndistribution of observations given the state\n");
 		i=0;
 		j=model->get_learn_b(i,0);
 		while (model->get_learn_b(i,0)!=-1)
@@ -2999,16 +2991,16 @@ void CHMM::output_model_defined(bool verbose)
 			if (j!=model->get_learn_b(i,0))
 			{
 				j=model->get_learn_b(i,0);
-				printf("\n");
+				CIO::message(M_MESSAGEONLY,"\n");
 			}
 
-			printf("b(%02i,%02i)=%1.4f ",model->get_learn_b(i,0),model->get_learn_b(i,1), (float) exp(get_b(model->get_learn_b(i,0),model->get_learn_b(i,1))));
+			CIO::message(M_INFO,"b(%02i,%02i)=%1.4f ",model->get_learn_b(i,0),model->get_learn_b(i,1), (float) exp(get_b(model->get_learn_b(i,0),model->get_learn_b(i,1))));
 			i++;
 		}
 
-		printf("\n");
+		CIO::message(M_MESSAGEONLY,"\n");
 	}
-	printf("\n");
+	CIO::message(M_MESSAGEONLY,"\n");
 }
 
 //------------------------------------------------------------------------------------//
@@ -3492,7 +3484,6 @@ bool CHMM::comma_or_space(FILE* file)
 bool CHMM::get_numbuffer(FILE* file, CHAR* buffer, INT length)
 {
 	signed char value;
-	/*printf("par: len:%i\n",length) ;*/
 
 	while (((value=fgetc(file)) != EOF) && 
 			!isdigit(value) && (value!='A') 
@@ -4120,7 +4111,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 							model->set_learn_b(i++, combine);
 							if (combine>=M)
 
-								printf("invalid value for learn_b(%i,1): %i\n",i/2-1,(int)value) ;
+								CIO::message(M_ERROR,"invalid value for learn_b(%i,1): %i\n",i/2-1,(int)value) ;
 						}
 						close_bracket(file);
 						if (verbose) 
@@ -4296,7 +4287,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 
 #ifdef USE_HMMDEBUG
 							if (verbose)
-								printf("const_a(%i,%i)=%e\n", model->get_const_a((int)i/2-1,0),model->get_const_a((int)i/2-1,1),model->get_const_a_val((int)i/2-1)) ;
+								CIO::message(M_ERROR,"const_a(%i,%i)=%e\n", model->get_const_a((int)i/2-1,0),model->get_const_a((int)i/2-1,1),model->get_const_a_val((int)i/2-1)) ;
 #endif
 							close_bracket(file);
 						}
@@ -4335,7 +4326,6 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 							{
 								if (get_numbuffer(file, buffer, 10))	//get num
 								{
-									//printf("j=%i; buffer='%s'\n",j, buffer) ;
 									if (j==0)
 									{
 										value=atoi(buffer);
@@ -4385,10 +4375,10 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 							close_bracket(file);
 							model->set_const_b(i++, combine);
 							if (combine>=M)
-								printf("invalid value for const_b(%i,1): %i\n",i/2-1, combine) ;
+								CIO::message(M_ERROR,"invalid value for const_b(%i,1): %i\n",i/2-1, combine) ;
 #ifdef USE_HMMDEBUG
 							if (verbose && !finished)
-								printf("const_b(%i,%i)=%e\n", model->get_const_b((int)i/2-1,0),model->get_const_b((int)i/2-1,1),model->get_const_b_val((int)i/2-1)) ;
+								CIO::message(M_ERROR,"const_b(%i,%i)=%e\n", model->get_const_b((int)i/2-1,0),model->get_const_b((int)i/2-1,1),model->get_const_b_val((int)i/2-1)) ;
 #endif
 						}
 						close_bracket(file);
@@ -4461,7 +4451,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 
 #ifdef USE_HMMDEBUG
 							if (verbose)
-								printf("const_p(%i)=%e\n", model->get_const_p(i-1),model->get_const_p_val(i-1)) ;
+								CIO::message(M_DEBUG,"const_p(%i)=%e\n", model->get_const_p(i-1),model->get_const_p_val(i-1)) ;
 #endif
 						}
 						if (verbose) 
@@ -4523,7 +4513,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 										break;
 									}
 									if ((dvalue>1) || (dvalue<0))
-										printf("invalid value for const_q_val(%i): %e\n",i,(double) dvalue) ;
+										CIO::message(M_ERROR,"invalid value for const_q_val(%i): %e\n",i,(double) dvalue) ;
 								}
 								else
 									model->set_const_q_val(i++, 1.0);
@@ -4531,7 +4521,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 							close_bracket(file);
 #ifdef USE_HMMDEBUG
 							if (verbose)
-								printf("const_q(%i)=%e\n", model->get_const_q(i-1),model->get_const_q_val(i-1)) ;
+								CIO::message(M_DEBUG,"const_q(%i)=%e\n", model->get_const_q(i-1),model->get_const_q_val(i-1)) ;
 #endif
 						}
 						if (verbose)
@@ -4742,7 +4732,7 @@ bool CHMM::save_path(FILE* file)
 	      fprintf(file,"%d", PATH(dim)[p_observations->get_vector_length(dim)-1]);
 	      fprintf(file,"\n\n") ;
 	    }
-	  printf("done\n") ;
+	  CIO::message(M_INFO,"done\n") ;
 	  result=true;
 	}
 
@@ -5096,7 +5086,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 						FLOATWRITE(file, model_derivative_b(i,j,dim));
 
 				if (dim==0)
-					printf("Number of parameters (including posterior prob.): %i\n", num_floats) ;
+					CIO::message(M_INFO,"Number of parameters (including posterior prob.): %i\n", num_floats) ;
 			} ;
 		} 
 		else
@@ -5127,7 +5117,7 @@ bool CHMM::save_model_derivatives_bin(FILE* file)
 					FLOATWRITE(file, model_derivative_b(i,j,dim));
 				} ;
 				if (dim==0)
-					printf("Number of parameters (including posterior prob.): %i\n", num_floats) ;
+					CIO::message(M_INFO,"Number of parameters (including posterior prob.): %i\n", num_floats) ;
 			} ;
 		} ;
 	}
@@ -5252,7 +5242,7 @@ bool CHMM::check_model_derivatives_combined()
 			{
 				deriv_calc+=exp(model_derivative_b(i, j, dim)-model_probability(dim)) ;
 				if (j==1)
-					printf("deriv_calc[%i]=%e\n",dim,deriv_calc) ;
+					CIO::message(M_INFO,"deriv_calc[%i]=%e\n",dim,deriv_calc) ;
 			} ;
 
 			CIO::message(M_ERROR, "b(%i,%i)=%e  db(%i,%i) = %e:%e\t (%1.5f%%)\n", i,j,exp(old_b),i,j, deriv_calc,  deriv, 100.0*(deriv-deriv_calc)/deriv_calc);		
@@ -6016,17 +6006,17 @@ void CHMM::set_observations(CStringFeatures<WORD>* obs, CHMM* lambda)
 			for (INT i=0; i<NUM_PARALLEL; i++)
 			{
 				if ((states_per_observation_psi[i]=new T_STATES[max_T*N])!=NULL)
-					printf("path_table[%i] successfully allocated\n",i) ;
+					CIO::message(M_DEBUG, "path_table[%i] successfully allocated\n",i) ;
 				else
-					printf("failed allocating memory for path_table[%i].\n",i) ;
+					CIO::message(M_ERROR, "failed allocating memory for path_table[%i].\n",i) ;
 				path[i]=new T_STATES[max_T];
 			}
 #else // no USE_HMMPARALLEL_STRUCTURES 
-			printf("allocating mem of size %.2f Megabytes (%d*%d) for path-table ....", ((float)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
+			CIO::message(M_INFO, "allocating mem of size %.2f Megabytes (%d*%d) for path-table ....", ((float)max_T)*N*sizeof(T_STATES)/(1024*1024), max_T, N);
 			if ((states_per_observation_psi=new T_STATES[max_T*N]) != NULL)
-				printf("done.\n") ;
+				CIO::message(M_DEBUG, "done.\n") ;
 			else
-				printf("failed.\n") ;
+				CIO::message(M_ERROR, "failed.\n") ;
 
 			path=new T_STATES[max_T];
 #endif // USE_HMMPARALLEL_STRUCTURES
@@ -6037,25 +6027,25 @@ void CHMM::set_observations(CStringFeatures<WORD>* obs, CHMM* lambda)
 			for (INT i=0; i<NUM_PARALLEL; i++)
 			{
 				if ((alpha_cache[i].table=new T_ALPHA_BETA_TABLE[max_T*N])!=NULL)
-					printf("alpha_cache[%i].table successfully allocated\n",i) ;
+					CIO::message(M_DEBUG, "alpha_cache[%i].table successfully allocated\n",i) ;
 				else
-					printf("allocation of alpha_cache[%i].table failed\n",i) ;
+					CIO::message(M_ERROR,"allocation of alpha_cache[%i].table failed\n",i) ;
 
 				if ((beta_cache[i].table=new T_ALPHA_BETA_TABLE[max_T*N]) != NULL)
-					printf("beta_cache[%i].table successfully allocated\n",i) ;
+					CIO::message(M_DEBUG,"beta_cache[%i].table successfully allocated\n",i) ;
 				else
-					printf("allocation of beta_cache[%i].table failed\n",i) ;
+					CIO::message(M_ERROR,"allocation of beta_cache[%i].table failed\n",i) ;
 			} ;
 #else // USE_HMMPARALLEL_STRUCTURES
 			if ((alpha_cache.table=new T_ALPHA_BETA_TABLE[max_T*N]) != NULL)
-				printf("alpha_cache.table successfully allocated\n") ;
+				CIO::message(M_DEBUG, "alpha_cache.table successfully allocated\n") ;
 			else
-				printf("allocation of alpha_cache.table failed\n") ;
+				CIO::message(M_ERROR, "allocation of alpha_cache.table failed\n") ;
 
 			if ((beta_cache.table=new T_ALPHA_BETA_TABLE[max_T*N]) != NULL)
-				printf("beta_cache.table successfully allocated\n") ;
+				CIO::message(M_DEBUG, "beta_cache.table successfully allocated\n") ;
 			else
-				printf("allocation of beta_cache.table failed\n") ;
+				CIO::message(M_ERROR, "allocation of beta_cache.table failed\n") ;
 
 #endif // USE_HMMPARALLEL_STRUCTURES
 #else // USE_HMMCACHE
