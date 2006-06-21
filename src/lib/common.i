@@ -13,7 +13,6 @@
 
 %array_class(int, intArray);
 %array_class(double, doubleArray);
-
 %array_class(char, charArray);
 %array_class(DREAL,realArray);
 

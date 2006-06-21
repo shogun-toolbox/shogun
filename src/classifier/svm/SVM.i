@@ -10,7 +10,7 @@
 */
 
 %include "kernel/KernelMachine.i"
-%include "swigfiles/common.i"
+%include "lib/common.i"
 
 
 class CSVM : public CKernelMachine
