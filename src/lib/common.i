@@ -1,10 +1,9 @@
 %module common
 
-/*
 %{
  #include "lib/common.h" 
 %}
-*/
+
 
 %include "cpointer.i"
 %pointer_class(int, iptr);
@@ -12,10 +11,9 @@
 %pointer_class(char, cptr);
 
 %include "carrays.i"
-%array_class(int, intArray);
 %array_class(double, doubleArray);
 %array_class(char, charArray);
-/* %array_class(DREAL,realArray); */
+%array_class(DREAL,realArray); 
 
 %typemap(in) char ** {
   /* Check if is a list */
