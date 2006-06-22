@@ -1,20 +1,21 @@
 %module common
 
+/*
 %{
  #include "lib/common.h" 
 %}
+*/
 
 %include "cpointer.i"
-%include "carrays.i"
-
 %pointer_class(int, iptr);
 %pointer_class(double, dptr);
 %pointer_class(char, cptr);
 
+%include "carrays.i"
 %array_class(int, intArray);
 %array_class(double, doubleArray);
 %array_class(char, charArray);
-%array_class(DREAL,realArray);
+/* %array_class(DREAL,realArray); */
 
 %typemap(in) char ** {
   /* Check if is a list */
@@ -40,6 +41,12 @@
 }
 
 %pythoncode %{
+
+def createRealArray(list):
+   array = realArray(len(list))
+   for i in range(len(list)):
+      array[i] = list[i]
+   return array
 
 def createDoubleArray(list):
    array = doubleArray(len(list))
