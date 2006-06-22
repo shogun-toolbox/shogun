@@ -5,7 +5,7 @@
 %}
 
 %include "features/SimpleFeatures.i"
-/* %include "lib/common.i" */
+%include "lib/common.i"
 
 %feature("notabstract") CCharFeatures;
 
