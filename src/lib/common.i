@@ -53,4 +53,10 @@ def createIntArray(list):
       array[i] = list[i]
    return array
 
+def createCharArray(list):
+   array = charArray(len(list))
+   for i in range(len(list)):
+      array[i] = list[i]
+   return array
+
 %}

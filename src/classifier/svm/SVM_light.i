@@ -4,12 +4,6 @@
 %}
 
 %include "classifier/svm/SVM.i" 
-/*
-%include "kernel/CharKernel.h"
-%include "kernel/SimpleKernel.h"
-%include "kernel/Kernel.h"
-*/
-
 %include "kernel/KernelMachine.i"
 
 %include "lib/common.i"
@@ -20,6 +14,6 @@ class CSVMLight:public CSVM {
 public:
   CSVMLight();
   virtual ~CSVMLight();
-  virtual bool	train();
+  virtual bool train();
 };
 
