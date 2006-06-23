@@ -58,9 +58,9 @@ if __name__ == '__main__':
 
     import kernel.GaussianKernel as gk
 
-    kernel = gk.CGaussianKernel(200,1)
+    kernel = gk.CGaussianKernel(feat1, feat2, 200,1)
 
-    kernel.init(feat1,feat2,True)
+    #kernel.init(feat1,feat2,True)
 
     #kernel.set_precompute_matrix(True,True)
 
