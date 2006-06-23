@@ -51,10 +51,10 @@ if __name__ == '__main__':
     cl1ar = rf.createDoubleArray(coordList)
     cl2ar = rf.createDoubleArray(coordList)
 
-    import features.allFeatures as af
+    #import features.allFeatures as af
 
-    feat1 = af.CRealFeatures(cl1ar,2,100)
-    feat2 = af.CRealFeatures(cl2ar,2,100)
+    feat1 = rf.CRealFeatures(cl1ar,2,100)
+    feat2 = rf.CRealFeatures(cl2ar,2,100)
 
     import kernel.GaussianKernel as gk
 
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     svmList = [None]*20
 
     for i in range(20):
-        svmList[i] = createSVM()
+        svmList[i] = createSVM(trainlabels, kernel)
 
     for j in range(20):
         print "Training svm nr. %d" % (j)
