@@ -21,6 +21,12 @@ CGaussianKernel::CGaussianKernel(LONG size, double w)
 {
 }
 
+CGaussianKernel::CGaussianKernel(CRealFeatures* l, CRealFeatures* r, LONG size, double w)
+  : CRealKernel(size),width(w)
+{
+	init(l,r, true);
+}
+
 CGaussianKernel::~CGaussianKernel() 
 {
 }

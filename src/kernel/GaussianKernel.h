@@ -21,6 +21,7 @@ class CGaussianKernel: public CRealKernel
 {
  public:
   CGaussianKernel(LONG size, double width);
+  CGaussianKernel(CRealFeatures* l, CRealFeatures* r, LONG size, double width);
   ~CGaussianKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
