@@ -4,8 +4,8 @@
     #include "features/CharFeatures.h" 
 %}
 
-%include "features/SimpleFeatures.i"
 %include "lib/common.i"
+%include "features/SimpleFeatures.i"
 
 %feature("notabstract") CCharFeatures;
 

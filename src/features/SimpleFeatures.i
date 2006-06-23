@@ -231,7 +231,7 @@
         CCache<ST>* feature_cache;
 };
 
+%template(CSimpleRealFeatures) CSimpleFeatures<DREAL>;
 %template(CSimpleCharFeatures) CSimpleFeatures<CHAR>;
-%template(CSimpleDREALFeatures) CSimpleFeatures<DREAL>;
 %template(CSimpleIntFeatures)  CSimpleFeatures<INT>;
 
