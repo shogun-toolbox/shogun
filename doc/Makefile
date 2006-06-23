@@ -1,3 +1,5 @@
+.PHONY: all clean distclean doxygen manual 
+
 all:	doxygen manual/manual.pdf
 
 manual: manual/manual.pdf manual/manual.html
@@ -11,7 +13,8 @@ manual/manual.html: manual/manual.txt
 doxygen:
 	doxygen
 
+distclean: clean
+
 clean: 
 	rm -f doxygen/*.html doxygen/shogun.tex
 	rm -f manual/manual.{out,aux,log,pdf,html} manual/texput.log
-
