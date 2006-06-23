@@ -28,7 +28,7 @@ class CRealFeatures: public CSimpleFeatures<DREAL>
   {
   }
 
-  CCharFeatures(DREAL* feature_matrix, INT num_feat, INT num_vec) : CSimpleFeatures<DREAL>(feature_matrix, num_feat, num_vec)
+  CRealFeatures(DREAL* feature_matrix, INT num_feat, INT num_vec) : CSimpleFeatures<DREAL>(feature_matrix, num_feat, num_vec)
   {
   }
 
