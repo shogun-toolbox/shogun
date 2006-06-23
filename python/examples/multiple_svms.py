@@ -30,16 +30,9 @@ def generateData(size,flag):
 
 def createSVM(trainlabels,kernel):
     svm = S.CSVMLight()
-    svm.set_weight_epsilon(1e-5)
-    svm.set_epsilon(1e-5)
-    svm.set_tube_epsilon(1e-2)
     svm.set_C(10,10)
-    svm.set_qpsize(41)
-    svm.set_mkl_enabled(False)
-    svm.set_linadd_enabled(False)
     svm.set_labels(trainlabels)
     svm.set_kernel(kernel)
-    svm.set_precomputed_subkernels_enabled(False)
     return svm
 
 if __name__ == '__main__':
@@ -86,6 +79,8 @@ if __name__ == '__main__':
     for j in range(20):
         print "Training svm nr. %d" % (j)
         currentSVM = svmList[j]
-        currentSVM.train()
+        print "Trained"
+        #currentSVM.train()
+        print "Trained"
 
 
