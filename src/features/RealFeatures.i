@@ -5,6 +5,8 @@
 %}
 
 %include "lib/common.i"
+%include "features/SimpleFeatures.i"
+
 %feature("notabstract") CRealFeatures;
 
 class CRealFeatures: public CSimpleFeatures<DREAL>
