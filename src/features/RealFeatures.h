@@ -14,8 +14,8 @@
 #define _DREALFEATURES__H__
 
 #include "features/SimpleFeatures.h"
-#include "lib/common.h"
 #include "features/CharFeatures.h"
+#include "lib/common.h"
 
 class CRealFeatures: public CSimpleFeatures<DREAL>
 {
