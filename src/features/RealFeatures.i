@@ -6,11 +6,10 @@
 
 %include "features/SimpleFeatures.i"
 %include "lib/common.i"
-%include "features/CharFeatures.i"
 
 %feature("notabstract") CRealFeatures;
-%include "carrays.i"
 
+%include "carrays.i"
 %array_class(double, doubleArray);
 
 class CRealFeatures: public CSimpleFeatures<DREAL>
@@ -53,13 +52,6 @@ def createDoubleArray(list):
    for i in range(len(list)):
       array[i] = list[i]
    return array
-
-def createDoubleArray2(list):
-   array = doubleArray2(len(list))
-   for i in range(len(list)):
-      array[i] = list[i]
-   return array
-
 
 %}
 
