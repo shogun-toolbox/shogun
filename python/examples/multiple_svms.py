@@ -37,8 +37,8 @@ def createSVM(trainlabels,kernel):
 
 if __name__ == '__main__':
 
-    cl1 = generateData(100,1)
-    cl2 = generateData(100,2)
+    cl1 = generateData(200,1)
+    cl2 = generateData(200,2)
 
     coordList = cl1[0]+cl2[0]+cl1[1]+cl2[1]
     cl1ar = rf.createDoubleArray(coordList)
@@ -46,12 +46,12 @@ if __name__ == '__main__':
 
     #import features.allFeatures as af
 
-    feat1 = rf.CRealFeatures(cl1ar,2,100)
-    feat2 = rf.CRealFeatures(cl2ar,2,100)
+    traindat = rf.CRealFeatures(cl1ar,2,200)
+    testdat = rf.CRealFeatures(cl2ar,2,200)
 
     import kernel.GaussianKernel as gk
 
-    kernel = gk.CGaussianKernel(feat1, feat2, 200,1)
+    kernel = gk.CGaussianKernel(traindat, traindat, 200,1)
 
     #kernel.init(feat1,feat2,True)
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
         print "Training svm nr. %d" % (j)
         currentSVM = svmList[j]
         print "Trained"
-        #currentSVM.train()
+        currentSVM.train()
         print "Trained"
 
 
