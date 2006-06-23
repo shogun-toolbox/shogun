@@ -32,5 +32,6 @@ template <class ST> class CSimpleKernel : public CKernel
 		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
 };
 
+%template(CSimpleRealKernel) CSimpleKernel<DREAL>;
 %template(CSimpleCharKernel) CSimpleKernel<CHAR>;
 %template(CSimpleIntKernel) CSimpleKernel<INT>;

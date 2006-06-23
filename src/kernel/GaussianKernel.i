@@ -1,20 +1,21 @@
 %module GaussianKernel
 
 %include "features/RealFeatures.i"
+%include "kernel/RealKernel.i"
 
 %{
     #include "features/RealFeatures.h" 
+	#include "kernel/RealKernel.h"
     #include "kernel/GaussianKernel.h" 
 %}
 
-%include "kernel/CharKernel.i"
-
-%feature("notabstract") CWeightedDegreeCharKernel;
+%feature("notabstract") CGaussianKernel;
 
 class CGaussianKernel: public CRealKernel
 {
  public:
   CGaussianKernel(LONG size, double width);
+  CGaussianKernel(CRealFeatures* l, CRealFeatures* r, LONG size, double width);
   ~CGaussianKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
