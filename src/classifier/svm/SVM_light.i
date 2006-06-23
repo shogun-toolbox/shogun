@@ -3,10 +3,8 @@
  #include "classifier/svm/SVM_light.h" 
 %}
 
-%include "classifier/svm/SVM.i" 
-%include "kernel/KernelMachine.i"
-
 %include "lib/common.i"
+%include "classifier/svm/SVM.i" 
 
 %feature("notabstract") CSVMLight;
 
