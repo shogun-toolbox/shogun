@@ -10,7 +10,8 @@
 
 %feature("notabstract") CRealFeatures;
 %include "carrays.i"
-%array_class(DREAL, doubleArray);
+
+%array_class(double, doubleArray);
 
 class CRealFeatures: public CSimpleFeatures<DREAL>
 {
@@ -43,3 +44,22 @@ class CRealFeatures: public CSimpleFeatures<DREAL>
   DREAL Align(CHAR * seq1, CHAR* seq2, INT l1, INT l2, DREAL GapCost) ;
 
 };
+
+%pythoncode 
+%{
+
+def createDoubleArray(list):
+   array = doubleArray(len(list))
+   for i in range(len(list)):
+      array[i] = list[i]
+   return array
+
+def createDoubleArray2(list):
+   array = doubleArray2(len(list))
+   for i in range(len(list)):
+      array[i] = list[i]
+   return array
+
+
+%}
+

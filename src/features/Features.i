@@ -80,4 +80,4 @@
       virtual bool save(CHAR* fname);
 
       bool check_feature_compatibility(CFeatures* f);
-};	
+};

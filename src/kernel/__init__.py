@@ -1,1 +1,1 @@
-__all__ = ['WeightedDegreeCharKernel.py']
+__all__ = ['WeightedDegreeCharKernel', 'GaussianKernel']
