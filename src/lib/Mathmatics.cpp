@@ -15,6 +15,7 @@
 //////////////////////////////////////////////////////////////////////
 
 
+#include "lib/common.h"
 #include "lib/Mathmatics.h"
 #include "lib/io.h"
 
@@ -77,7 +78,9 @@ CMath::CMath()
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	UINT seed=(UINT) (4223517*getpid()*tv.tv_sec*tv.tv_usec);
+#ifndef CYGWIN
 	initstate(seed, CMath::rand_state, sizeof(CMath::rand_state));
+#endif
 	CIO::message(M_INFO, "seeding random number generator with %u\n", seed);
 
 #ifdef USE_LOGCACHE
