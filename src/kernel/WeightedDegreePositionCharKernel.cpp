@@ -16,6 +16,39 @@
 #include "features/Features.h"
 #include "features/CharFeatures.h"
 
+//#define NEWSTUFF
+
+#ifdef NEWSTUFF
+#include <ctype.h>
+
+const int ProtSimThresh = 20 ;
+const char ProtSimStr[21]="ARNDCQEGHILKMFPSTWYV" ;
+const int ProtSimMat[20][20]=
+{{  100, 22, 26, 24, 21, 38, 26, 32, 21, 27, 27, 36, 41, 19, 19, 54, 44, 10, 21, 44},
+ {22,  100, 27, 21,  9, 48, 24, 13, 27, 16, 17, 60, 27, 12, 13, 29, 29,  6, 14, 20},
+ {26, 27,  100, 42, 12, 42, 28, 24, 27, 16, 16, 41, 25, 14, 12, 40, 39,  7, 16, 21},
+ {24, 21, 42, 100, 10, 37, 40, 18, 20, 14, 13, 34, 21, 12, 14, 33, 31,  5, 13, 18},
+ {21,  9, 12, 10, 100, 14,  8,  9,  9, 19, 19, 13, 24, 13,  7, 19, 22,  6, 11, 25},
+ {38, 48, 42, 37, 14, 100, 62, 24, 39, 24, 25, 62, 42, 19, 19, 50, 42, 10, 23, 31},
+ {26, 24, 28, 40,  8, 62, 100, 14, 27, 13, 13, 48, 26, 12, 13, 37, 30,  6, 14, 19},
+ {32, 13, 24, 18,  9, 24, 14, 100, 13, 10, 13, 23, 18, 11, 10, 28, 22,  6, 11, 16},
+ {21, 27, 27, 20,  9, 39, 27, 13, 100, 14, 17, 30, 25, 18, 10, 28, 24,  8, 34, 18},
+ {27, 16, 16, 14, 19, 24, 13, 10, 14, 100, 60, 23, 70, 32, 10, 23, 35, 11, 23, 89},
+ {27, 17, 16, 13, 19, 25, 13, 13, 17, 60, 100, 24, 89, 41, 12, 24, 31, 14, 25, 68},
+ {36, 60, 41, 34, 13, 62, 48, 23, 30, 23, 24, 100, 36, 17, 21, 42, 40,  9, 19, 29},
+ {41, 27, 25, 21, 24, 42, 26, 18, 25, 70, 89, 36, 100, 47, 17, 37, 45, 16, 31, 80},
+ {19, 12, 14, 12, 13, 19, 12, 11, 18, 32, 41, 17, 47, 100,  9, 20, 24, 17, 58, 37},
+ {19, 13, 12, 14,  7, 19, 13, 10, 10, 10, 12, 21, 17,  9, 100, 21, 17,  4,  8, 15},
+ {54, 29, 40, 33, 19, 50, 37, 28, 28, 23, 24, 42, 37, 20, 21, 100, 56,  9, 22, 34},
+ {44, 29, 39, 31, 22, 42, 30, 22, 24, 35, 31, 40, 45, 24, 17, 56, 100,  9, 23, 48},
+ {10,  6,  7,  5,  6, 10,  6,  6,  8, 11, 14,  9, 16, 17,  4,  9,  9, 100, 22, 13},
+ {21, 14, 16, 13, 11, 23, 14, 11, 34, 23, 25, 19, 31, 58,  8, 22, 23, 22, 100, 27},
+ {44, 20, 21, 18, 25, 31, 19, 16, 18, 89, 68, 29, 80, 37, 15, 34, 48, 13, 27, 100}};
+
+int ProtSim[128][128] ;
+
+#endif
+
 CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, DREAL* w, INT d, 
 																	 INT max_mismatch_, INT * shift_, 
 																	 INT shift_len_, bool use_norm,
@@ -26,6 +59,21 @@ CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
 	  use_normalization(use_norm)
 {
+#ifdef NEWSTUFF
+	fprintf(stderr, "initializing protein similarity table -- experimental\n") ;
+	for (int i=0; i<128; i++)
+		for (int j=0; j<128; j++)
+			ProtSim[i][j]=0 ;
+	for (int i=0; i<20; i++)
+		for (int j=0; j<20; j++)
+		{
+			ProtSim[(int)ProtSimStr[i]][(int)ProtSimStr[j]]=ProtSimMat[i][j] ;
+			ProtSim[(int)tolower(ProtSimStr[i])][(int)tolower(ProtSimStr[j])]=ProtSimMat[i][j] ;
+			ProtSim[(int)tolower(ProtSimStr[i])][(int)ProtSimStr[j]]=ProtSimMat[i][j] ;
+			ProtSim[(int)ProtSimStr[i]][(int)tolower(ProtSimStr[j])]=ProtSimMat[i][j] ;
+		}
+#endif 
+
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
 	rhs=NULL;
@@ -422,6 +470,76 @@ DREAL CWeightedDegreePositionCharKernel::compute_with_mismatch(CHAR* avec, INT a
 	return result ;
 }
 
+#ifdef NEWSTUFF
+
+DREAL CWeightedDegreePositionCharKernel::compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
+{
+	DREAL sum0=0 ;
+	DREAL *sum1=new DREAL[max_shift] ;
+	for (INT i=0; i<max_shift; i++)
+		sum1[i]=0 ;
+	
+	// no shift
+	for (INT i=0; i<alen; i++)
+	{
+		if ((position_weights!=NULL) && (position_weights[i]==0.0))
+			continue ;
+		DREAL sumi = 0.0 ;
+		for (INT j=0; (j<degree) && (i+j<alen); j++)
+		{
+			int sim = ProtSim[(int)avec[i+j]][(int)bvec[i+j]] ;
+			if (sim<ProtSimThresh)
+				break ;
+			sumi += weights[j]*((double)sim) ;
+		}
+		sumi/=100.0 ;
+		if (position_weights!=NULL)
+			sum0 += position_weights[i]*sumi ;
+		else
+			sum0 += sumi ;
+	} ;
+	
+	for (INT i=0; i<alen; i++)
+	{
+		if ((position_weights!=NULL) && (position_weights[i]==0.0))
+			continue ;
+		for (INT k=1; (k<=shift[i]) && (i+k<alen); k++)
+		{
+			DREAL sumi = 0.0 ;
+			// shift in sequence a
+			for (INT j=0; (j<degree) && (i+j+k<alen); j++)
+			{
+				int sim = ProtSim[(int)avec[i+j+k]][(int)bvec[i+j]] ;
+				if (sim<ProtSimThresh)
+					break ;
+				sumi += weights[j]*((double)sim) ;
+			}
+			// shift in sequence b
+			for (INT j=0; (j<degree) && (i+j+k<alen); j++)
+			{
+				int sim = ProtSim[(int)avec[i+j]][(int)bvec[i+j+k]] ;
+				if (sim<ProtSimThresh)
+					break ;
+				sumi += weights[j]*((double)sim) ;
+			}
+			sumi/=100.0 ;
+			if (position_weights!=NULL)
+				sum1[k-1] += position_weights[i]*sumi ;
+			else
+				sum1[k-1] += sumi ;
+		} ;
+	}
+
+	DREAL result = sum0 ;
+	for (INT i=0; i<max_shift; i++)
+		result += sum1[i]/(2*(i+1)) ;
+
+	delete[] sum1 ;
+	return result ;
+}
+
+#else
+
 DREAL CWeightedDegreePositionCharKernel::compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
 {
 	DREAL sum0=0 ;
@@ -482,6 +600,8 @@ DREAL CWeightedDegreePositionCharKernel::compute_without_mismatch(CHAR* avec, IN
 	delete[] sum1 ;
 	return result ;
 }
+
+#endif
 
 DREAL CWeightedDegreePositionCharKernel::compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
 {
