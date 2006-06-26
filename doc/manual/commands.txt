@@ -1,85 +1,19 @@
-====================
-SHOGUN - User manual
-====================
-
-About this document
-===============================
-
-This is the user manual for the SHOGUN toolbox.
-
-Introduction to SHOGUN
-==================================
-
-The SHOGUN machine learning toolbox's focus is on kernel methods and especially on
-Support Vector Machines (SVM). It provides a generic SVM object interfacing
-to several different SVM implementations, among them the state of the art
-LibSVM[1] and SVMlight[2].  Each of the SVMs can be combined with a variety
-of kernels. The toolbox not only provides efficient implementations of the
-most common kernels, like the Linear, Polynomial, Gaussian and Sigmoid
-Kernel but also comes with a number of recent string kernels as e.g. the
-Locality Improved[3], Fischer[4], TOP[5], Spectrum[6], Weighted Degree
-Kernel (with shifts)[7]. For the latter the efficient LINADD[8]
-optimizations are implemented.  Also SHOGUN offers the freedom of working
-with custom pre-computed kernels.  One of its key features is the "combined
-kernel" which can be constructed by a weighted linear combination of a
-number of sub-kernels, each of which not necessarily working on the same
-domain. An optimal sub-kernel weighting can be learned using Multiple Kernel
-Learning[9]. 
-Currently SVM 2-class classification and regression problems can be dealt
-with. However SHOGUN also implements a number of linear methods like Linear
-Discriminant Analysis (LDA), Linear Programming Machine (LPM), (Kernel)
-Perceptrons and features algorithms to train hidden markov models.
-The input feature-objects can be dense, sparse or strings and
-of type int/short/double/char and can be converted into different feature types. 
-Chains of "preprocessors" (e.g. substracting the mean) can be attached to
-each feature object allowing for on-the-fly pre-processing.
-License: GPL version 2 or newer
-URL: http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun
 
 Notes
------------------
+~~~~~
 
 As mentioned above SHOGUN interfaces to several programming languages and
 toolkits such as Matlab(tm), R, Python, Octave. The following sections shall
 give you an overview over the commands of SHOGUN. We tried to preserve the
 syntax of the commands in a consistent manner through all the different
-languages. However where it was not possible we give there will be special
-infos on the subtle differences of syntax and semantic in the respective
-toolkit
+languages. However as in some cases this was not possible we document
+the subtle differences of syntax and semantic in the respective toolkit.
 
 Commands
---------------------
-
-To fire up SHOGUN in R make sure that you have SHOGUN correctly installed in
-R. You can check this by typing ( let ">" be the R prompt )::
-
-   > library()
-
-inside of R, this command should list all R packages that have been
-installed on your system.
-You should have an entry like::
-
-   sg                      The shogun package provides Hidden markov model
-                           and Support Vector Machine algorithms for gene
-                           finding and other tasks.
-
-After you made sure that SHOGUN is installed correctly you can start it via::
-
-   > library("sg")
-
-you will see some informations of the SHOGUN core.
-After this command R and SHOGUN are ready to receive your commands.
-
-In general all commands in SHOGUN are issued using the function sg(...).
-To invoke the SHOGUN command help one types::
-
-   > sg("send_command","help")
-
-and then a help text appears giving a short description of all commands.
-
+========
 
 send_command
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------
 
 Currently send_command supports the following options:
 
@@ -345,4 +279,5 @@ This small example has a few SHOGUN commands which will be discussed now.
 
    11. **out=sg("svm_classify")** gives you the classification result as a
    vector.
+
 

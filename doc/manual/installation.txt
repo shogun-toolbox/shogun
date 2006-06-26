@@ -1,0 +1,54 @@
+
+Installation
+============
+
+Currently SHOGUN has been confirmed to be /fully functional/ on PowerPC,
+i386 and AMD64 Linux (tested on debian/ubuntu and gentoo).  We also managed
+to compile SHOGUN on MacOSX and via cygwin on WIN32 platforms. However some
+manual tweakings of configuration files might be necessary (see below).
+
+Binary Packages
+---------------
+
+For Debian and Ubuntu Linux we provide binary packages downloadable from
+http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/download .
+
+Either install them via dpkg -i <package.deb> and manually take care of the
+(probably many) missing dependencies or put this line in
+/etc/apt/sources.list::
+
+	deb http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/ debian/
+	deb-src http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/ debian/
+
+Installing from Source
+----------------------
+
+Download the (.tar.gz) source code from 
+http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun/download .
+
+Extract the source in a directory of your choice via::
+	tar xzf <source.tar.gz>
+
+Compiling SHOGUN
+~~~~~~~~~~~~~~~~
+
+To compile shogun enter the "shogun-<ver>/src" directory. From there you
+need to call:: ./configure <options>
+
+Configure Options::
+
+  --help						show the list of configure options
+  --enable-python				enable python (shogun can be called
+		  						from within python) support [disabled]
+  --enable-matlab				enable matlab (shogun can be called
+		  						from within matlab) support [disabled]
+  --enable-octave				enable octave (shogun can be called
+		  						from within octave) support [disabled]
+  --enable-R				    enable R      (shogun can be called
+		  						from within R)      support [disabled]
+  --enable-cplex				enable code using CPLEX  [disabled]
+  --enable-shortrealkernelcache enable kernelcache to use 4-byte-floating-point
+  								values instead of 8-byte-doubles [disabled]
+  --disable-lapack				disable blas and lapack math routines and
+  								use built in ones (slower!) [enabled]
+

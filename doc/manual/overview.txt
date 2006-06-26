@@ -1,0 +1,9 @@
+Help topics:
+
+introduction -- Introduction to SHOGUN
+interfaces -- Description of the Interfaces
+classifier -- Classifiers such as Support Vector Machines
+distributions -- Distributions such as Hidden Markov Models
+
+Type "help" followed by a topic name for documentation overview.
+Type "help" followed by command name for full documentation.
