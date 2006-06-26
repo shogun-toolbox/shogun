@@ -5,8 +5,8 @@
 SHOGUN:=sg_0.1-1.tar.gz
 
 install: $(SHOGUN)
-	@ R CMD INSTALL $(SHOGUN)
-#@ ~/projects/R.debug/R-2.3.0/bin/R CMD INSTALL --library=/tmp/myRLib/ $(SHOGUN)
+	#@ R CMD INSTALL $(SHOGUN)
+	@ ~/projects/R.debug/R-2.3.0/bin/R CMD INSTALL --library=/tmp/myRLib/ $(SHOGUN)
 $(SHOGUN): configure
 	@ echo "Copy all needed files from Shogun src"
 	@ cd ../src && make lib/versionstring.h

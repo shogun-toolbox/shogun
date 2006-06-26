@@ -19,7 +19,7 @@ def createSVM(trainlabels,kernel):
 
 if __name__ == '__main__':
     SIZE = 400
-    numSVMs = 4
+    numSVMs = 10
     num = SIZE
 
     samples = ny.random.uniform(0, 20.0, (SIZE, 2))

@@ -4,9 +4,14 @@ RELEASENAME:=shogun-0.1.1
 
 all: doc release matlab python octave R
 
-release:
+src/lib/versionstring.h: 
+	make -C src lib/versionstring.h
+
+release: src/lib/versionstring.h
 	make -C doc distclean 
+	cp -p src/lib/versionstring.h versionstring.h
 	make -C src distclean 
+	mv versionstring.h src/lib/versionstring.h
 	make -C R clean 
 	rm -rf ../$(RELEASENAME) || true
 	rm -f ../$(RELEASENAME).tar.bz2 || true
