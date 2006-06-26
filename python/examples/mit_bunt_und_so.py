@@ -5,6 +5,7 @@ import features.RealFeatures as rf
 import features.Labels as L
 import classifier.svm.SVM_light as S
 import math
+import random
 
 import pylab
 from MLab import *
@@ -18,83 +19,83 @@ def createSVM(trainlabels,kernel):
     return svm
 
 if __name__ == '__main__':
-    SIZE = 400
-    numSVMs = 10
-    num = SIZE
-
-    samples = ny.random.uniform(0, 20.0, (SIZE, 2))
-
-    samples[0:SIZE/2,0] = samples[0:SIZE/2,0] + 1  
-    samples[0:SIZE/2,1] = samples[0:SIZE/2,1] + 1  
-
-    samples[SIZE/2:,0] = samples[SIZE/2:,0] - 1  
-    samples[SIZE/2:,1] = samples[SIZE/2:,1] - 1  
-
-    trainCoords = samples[:,0] + samples[:,1]
-
-    trainfeat = rf.createDoubleArray(trainCoords)
-    testfeat = rf.createDoubleArray(trainCoords)
-
-    traindat = rf.CRealFeatures(trainfeat,2,SIZE)
-    testdat = rf.CRealFeatures(testfeat,2,SIZE)
-    features = samples
-
-    import kernel.GaussianKernel as gk
-
-    sigma = 1
-    kernel = gk.CGaussianKernel(traindat, traindat, num,sigma)
-
-    trainlabels = L.CLabels(SIZE)
-    labels = [0]*SIZE
-
-    for i in range(SIZE):
-        if i < SIZE/2:
-            trainlabels.set_int_label(i,1)
-            labels[i] = 1
-        else:
-            trainlabels.set_int_label(i,-1)
-            labels[i] = -1
+    SIZE = 30
+    numSVMs = 6
 
     svmList = [None]*numSVMs
 
-    for i in range(numSVMs):
-        svmList[i] = createSVM(trainlabels, kernel)
-
     for j in range(numSVMs):
+        pos = ny.random.uniform(0, 2, (SIZE/2, 2)) + random.random()
+        neg = ny.random.uniform(0, 2, (SIZE/2, 2)) - random.random()
+
+        trainCoords = ny.mat([pos.ravel(),neg.ravel()])
+        trainCoords2 = ny.array(trainCoords.flatten(0))
+        trainCoords2 = trainCoords2[0]
+
+        trainfeat = rf.createDoubleArray(trainCoords2)
+        traindat = rf.CRealFeatures(trainfeat,2,SIZE)
+
+        import kernel.GaussianKernel as gk
+
+        sigma = 1.0
+        kernel = gk.CGaussianKernel(traindat, traindat, 20,sigma)
+
+        trainlabels = L.CLabels(SIZE)
+        labels = [0]*SIZE
+
+        for i in range(SIZE):
+            if i < SIZE/2:
+                trainlabels.set_int_label(i,1)
+                labels[i] = 1
+            else:
+                trainlabels.set_int_label(i,-1)
+                labels[i] = -1
+
+        svmList[j] = createSVM(trainlabels, kernel)
+
         print "Training svm nr. %d\n" % (j)
         currentSVM = svmList[j]
         currentSVM.train()
         print "Trained"
-        
-        #kernel2 = gk.CGaussianKernel(traindat, testdat, num,sigma)
-        kernel2 = gk.CGaussianKernel(traindat, traindat, num,sigma)
-        currentSVM.set_kernel(kernel2)
 
         pylab.subplot(numSVMs/2,2,j+1)
-        x1=pylab.linspace(1.2*(features[:,0]).min(),1.2*(features[:,0]).max(), 20)
-        x2=pylab.linspace(1.2*(features[:,1]).min(),1.2*(features[:,1]).max(), 20)
+        x1=pylab.linspace(1.5*neg[:,0].min(),1.5*pos[:,0].max(), 50)
+        x2=pylab.linspace(1.5*neg[:,1].min(),1.5*pos[:,1].max(), 50)
         x,y=pylab.meshgrid(x1,x2);
+
+        all_features = [0.0]*2*len(x.ravel())
+
+        for i in range(len(x.ravel())):
+            all_features[2*i] = x.ravel()[i]
+            all_features[2*i+1] = y.ravel()[i]
+
+        test_features = rf.createDoubleArray(all_features)
+
+        testdat = rf.CRealFeatures(test_features,2,len(all_features)/2)
+        kernel2 = gk.CGaussianKernel(traindat, testdat, 10,sigma)
+        currentSVM.set_kernel(kernel2)
 
         out = []
         resultLabels = currentSVM.classify()
+
         for i in range(resultLabels.get_num_labels()):
             out.append(resultLabels.get_label(i))
 
-        out_a = ny.array(out)
-        z=ny.reshape(out_a,(20,20))
-        pylab.pcolor(x, y, z.transpose(), shading='flat')
-        #pylab.pcolor(x, y, z, shading='flat')
-        pylab.scatter(features[:,0],features[:,1], s=20, c=labels, marker='o', hold=True)
-        pylab.contour(x, y, z.transpose(), linewidths=1, colors='black', hold=True)
-        #pylab.contour(x, y, z, linewidths=1, colors='black', hold=True)
-        #pylab.colorbar()
 
-    locals_dict = locals()
-    for elem in dir():
-        try:
-            locals_dict[elem].thisown = 0
-        except:
-            pass
+        out_a = ny.array(out)
+        z=ny.reshape(out_a,(50,50))
+        pylab.pcolor(x, y, z.transpose(), shading='interp')
+        pylab.contour(x, y, z.transpose(), linewidths=1, colors='black', hold=True)
+        pylab.scatter(pos[:,0],pos[:,1],s=50, c=labels[:(SIZE/2)], marker='o', hold=True)
+        pylab.scatter(neg[:,0],neg[:,1], s=50, c=labels[(SIZE/2):], marker='o', hold=True)
+
+        locals_dict = locals()
+        for elem in dir():
+            try:
+                locals_dict[elem].thisown = 0
+            except:
+                pass
+
 
     for elem in svmList:
         elem.thisown = 0
