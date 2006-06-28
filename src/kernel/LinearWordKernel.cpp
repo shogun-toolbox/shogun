@@ -41,7 +41,7 @@ bool CLinearWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 void CLinearWordKernel::init_rescale()
 {
-	LONGDREAL sum=0;
+	LONGREAL sum=0;
 	scale=1.0;
 	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
 		sum+=compute(i, i);

@@ -378,8 +378,10 @@ bool CSVMLight::train()
 
 	if (weight_epsilon<=0)
 		weight_epsilon=1e-2 ;
+
+	// in case of LINADD enabled kernels cleanup!
 	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
-		get_kernel()->clear_normal();
+		get_kernel()->clear_normal() ;
 
 	// output some info
 	CIO::message(M_DEBUG, "threads = %i\n", CParallel::get_num_threads()) ;
@@ -505,8 +507,12 @@ bool CSVMLight::train()
 		precomputed_subkernels=NULL ;
 	}
 
+	// in case of LINADD enabled kernels cleanup!
 	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
+	{
 		get_kernel()->clear_normal() ;
+		get_kernel()->delete_optimization() ;
+	}
 	
 	return true ;
 }

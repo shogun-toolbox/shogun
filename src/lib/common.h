@@ -74,9 +74,9 @@ typedef SHORTREAL* P_SHORTREAL;
 typedef double DREAL;
 typedef DREAL* P_DREAL;
 
-/// Type LONGDREAL is 16 bytes in size
-typedef long double LONGDREAL;
-typedef LONGDREAL* P_LONGDREAL;
+/// Type LONGREAL is 16 bytes in size
+typedef long double LONGREAL;
+typedef LONGREAL* P_LONGREAL;
 
 #ifdef USE_SHORTREAL_KERNELCACHE
 	typedef SHORTREAL KERNELCACHE_ELEM;
