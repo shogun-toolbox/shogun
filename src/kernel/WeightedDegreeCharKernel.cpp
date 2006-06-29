@@ -497,10 +497,10 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, DREAL alpha)
 
 	if (use_normalization)
 		alpha /=  sqrtdiag_lhs[idx] ;
-	
+
 	for (INT i=0; i<len; i++)
 		vec[i]=((CCharFeatures*) lhs)->remap(char_vec[i]);
-		
+
 	if (length == 0 || max_mismatch > 0)
 	{
 		for (INT i=0; i<len; i++)
@@ -513,7 +513,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, DREAL alpha)
 				continue ;
 			for (INT j=0; (j<degree) && (i+j<len); j++)
 			{
-			  if (tree->children[vec[i+j]]!=NO_CHILD)
+				if ((j<degree-1) && (tree->children[vec[i+j]]!=NO_CHILD))
 				{
 #ifdef USE_TREEMEM
 					tree=&TreeMem[tree->children[vec[i+j]]] ;
@@ -522,42 +522,34 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, DREAL alpha)
 #endif
 					tree->weight += alpha_pw*weights[j];
 				}
-				else 
+				else if (j==degree-1)
 				{
-					if (j==degree-1)
+					tree->child_weights[vec[i+j]] += alpha_pw*weights[j];
+					break ;
+				}
+				else
+				{
+#ifdef USE_TREEMEM
+					tree->children[vec[i+j]]=TreeMemPtr++;
+					INT tmp = tree->children[vec[i+j]] ;
+					check_treemem() ;
+					tree=&TreeMem[tmp] ;
+#else
+					tree->children[vec[i+j]]=new struct Trie ;
+					ASSERT(tree->children[vec[i+j]]!=NULL) ;
+					tree=tree->children[vec[i+j]] ;
+#endif
+					if (j==degree-2)
 					{
-						tree->child_weights[vec[i+j]] += alpha_pw*weights[j];
-						break ;
+						for (INT k=0; k<4; k++)
+							tree->child_weights[k]=0;
 					}
 					else
 					{
-						if (j==degree-1)
-						{
-							for (INT k=0; k<4; k++)
-							{
-							  ASSERT(tree->children[k]==NO_CHILD) ;
-							  tree->child_weights[k] =0 ;
-							}
-							tree->child_weights[vec[i+j]] += alpha_pw*weights[j];
-							break ;
-						}
-						else
-						{
-#ifdef USE_TREEMEM
-							tree->children[vec[i+j]]=TreeMemPtr++;
-							INT tmp = tree->children[vec[i+j]] ;
-							check_treemem() ;
-							tree=&TreeMem[tmp] ;
-#else
-							tree->children[vec[i+j]]=new struct Trie ;
-							ASSERT(tree->children[vec[i+j]]!=NULL) ;
-							tree=tree->children[vec[i+j]] ;
-#endif
-							for (INT k=0; k<4; k++)
-							  tree->children[k]=NO_CHILD ;
-							tree->weight = alpha_pw*weights[j] ;
-						}
+						for (INT k=0; k<4; k++)
+							tree->children[k]=NO_CHILD;
 					}
+					tree->weight = alpha_pw*weights[j] ;
 				}
 			}
 		}
@@ -576,53 +568,48 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, DREAL alpha)
 			for (INT j=0; (j<degree) && (i+j<len); j++)
 				if (CMath::abs(weights[i*degree + j]*alpha_pw)>1e-8)
 					max_depth = j+1 ;
-			
+
 			for (INT j=0; (j<max_depth) && (i+j<len); j++)
 			{
-			  if (tree->children[vec[i+j]]!=NO_CHILD)
-			    {
+				if ((j<degree-1) && (tree->children[vec[i+j]]!=NO_CHILD))
+				{
 #ifdef USE_TREEMEM
-			      tree=&TreeMem[tree->children[vec[i+j]]] ;
+					tree=&TreeMem[tree->children[vec[i+j]]] ;
 #else
-			      tree=tree->children[vec[i+j]] ;
+					tree=tree->children[vec[i+j]] ;
 #endif
-			      tree->weight += alpha_pw*weights[i*degree + j];
-			    } else 
-			    if (j==degree-1)
-			      {
-				tree->child_weights[vec[i+j]] += alpha_pw*weights[i*degree + j];
-				break ;
-			      }
-			    else
-			      {
-				if (j==degree-1)
-				  {
-				    for (INT k=0; k<4; k++)
-				      {
-					ASSERT(tree->children[k]==NO_CHILD) ;
-					tree->child_weights[k] =0 ;
-				      }
-				    tree->child_weights[vec[i+j]] += alpha_pw*weights[i*degree + j];
-				    break ;
-				  }
+					tree->weight += alpha_pw*weights[i*degree + j];
+				}
+				else if (j==degree-1)
+				{
+					tree->child_weights[vec[i+j]] += alpha_pw*weights[i*degree + j];
+					break ;
+				}
 				else
-				  {
+				{
 #ifdef USE_TREEMEM
-				    tree->children[vec[i+j]]=TreeMemPtr++;
-				    INT tmp=tree->children[vec[i+j]] ;
-				    check_treemem() ;
-				    tree=&TreeMem[tmp] ;
+					tree->children[vec[i+j]]=TreeMemPtr++;
+					INT tmp=tree->children[vec[i+j]] ;
+					check_treemem() ;
+					tree=&TreeMem[tmp] ;
 #else
-				    tree->children[vec[i+j]] = new struct Trie ;
-				    ASSERT(tree->children[vec[i+j]]!=NULL) ;
-				    tree=tree->children[vec[i+j]] ;
+					tree->children[vec[i+j]] = new struct Trie ;
+					ASSERT(tree->children[vec[i+j]]!=NULL) ;
+					tree=tree->children[vec[i+j]] ;
 #endif
-				    for (INT k=0; k<4; k++)
-				      tree->children[k]=NO_CHILD ;
-				    tree->weight = alpha_pw*weights[i*degree + j] ;
-				  } ;
-			      } ;
-			} ;
+					if (j==degree-2)
+					{
+						for (INT k=0; k<4; k++)
+							tree->child_weights[k]=0;
+					}
+					else
+					{
+						for (INT k=0; k<4; k++)
+							tree->children[k]=NO_CHILD;
+					}
+					tree->weight = alpha_pw*weights[i*degree + j] ;
+				}
+			}
 		}
 	}
 	((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
@@ -641,7 +628,7 @@ void CWeightedDegreeCharKernel::add_example_to_single_tree(INT idx, DREAL alpha,
 	if (use_normalization)
 		alpha /=  sqrtdiag_lhs[idx] ;
 
-	for (INT i=0; i<len; i++)
+	for (INT i=tree_num; i<tree_num+degree && i<len; i++)
 		vec[i]=((CCharFeatures*) lhs)->remap(char_vec[i]);
 
 	if (length == 0 || max_mismatch > 0)
@@ -650,54 +637,47 @@ void CWeightedDegreeCharKernel::add_example_to_single_tree(INT idx, DREAL alpha,
 		DREAL alpha_pw = alpha ;
 		if (position_weights!=NULL)
 			alpha_pw = alpha*position_weights[tree_num] ;
-		if (alpha_pw==0.0)
-			return;
-		for (INT j=0; (j<degree) && (tree_num+j<len); j++)
+		if (alpha_pw!=0.0)
 		{
-			if (tree->children[vec[tree_num+j]]!=NO_CHILD)
+			for (INT j=0; (j<degree) && (tree_num+j<len); j++)
 			{
+				if ((j<degree-1) && (tree->children[vec[tree_num+j]]!=NO_CHILD))
+				{
 #ifdef USE_TREEMEM
-				tree=&TreeMem[tree->children[vec[tree_num+j]]] ;
+					tree=&TreeMem[tree->children[vec[tree_num+j]]] ;
 #else
-				tree=tree->children[vec[tree_num+j]] ;
+					tree=tree->children[vec[tree_num+j]] ;
 #endif
-				tree->weight += alpha_pw*weights[j];
-			}
-			else 
-			{
-				if (j==degree-1)
+					tree->weight += alpha_pw*weights[j];
+				}
+				else if (j==degree-1)
 				{
 					tree->child_weights[vec[tree_num+j]] += alpha_pw*weights[j];
 					break ;
 				}
 				else
 				{
-					if (j==degree-1)
+#ifdef USE_TREEMEM
+					tree->children[vec[tree_num+j]]=TreeMemPtr++;
+					INT tmp = tree->children[vec[tree_num+j]] ;
+					check_treemem() ;
+					tree=&TreeMem[tmp] ;
+#else
+					tree->children[vec[tree_num+j]]=new struct Trie ;
+					ASSERT(tree->children[vec[tree_num+j]]!=NULL) ;
+					tree=tree->children[vec[tree_num+j]] ;
+#endif
+					if (j==degree-2)
 					{
 						for (INT k=0; k<4; k++)
-						{
-							ASSERT(tree->children[k]==NO_CHILD) ;
-							tree->child_weights[k] =0 ;
-						}
-						tree->child_weights[vec[tree_num+j]] += alpha_pw*weights[j];
-						break ;
+							tree->child_weights[k]=0;
 					}
 					else
 					{
-#ifdef USE_TREEMEM
-						tree->children[vec[tree_num+j]]=TreeMemPtr++;
-						INT tmp = tree->children[vec[tree_num+j]] ;
-						check_treemem() ;
-						tree=&TreeMem[tmp] ;
-#else
-						tree->children[vec[tree_num+j]]=new struct Trie ;
-						ASSERT(tree->children[vec[tree_num+j]]!=NULL) ;
-						tree=tree->children[vec[tree_num+j]] ;
-#endif
 						for (INT k=0; k<4; k++)
-							tree->children[k]=NO_CHILD ;
-						tree->weight = alpha_pw*weights[j] ;
+							tree->children[k]=NO_CHILD;
 					}
+					tree->weight = alpha_pw*weights[j] ;
 				}
 			}
 		}
@@ -708,59 +688,52 @@ void CWeightedDegreeCharKernel::add_example_to_single_tree(INT idx, DREAL alpha,
 		DREAL alpha_pw = alpha ;
 		if (position_weights!=NULL) 
 			alpha_pw = alpha*position_weights[tree_num] ;
-		if (alpha_pw==0.0)
-			return;
-		INT max_depth = 0 ;
-		for (INT j=0; (j<degree) && (tree_num+j<len); j++)
-			if (CMath::abs(weights[tree_num*degree + j]*alpha_pw)>1e-8)
-				max_depth = j+1 ;
-
-		for (INT j=0; (j<max_depth) && (tree_num+j<len); j++)
+		if (alpha_pw!=0.0)
 		{
-			if (tree->children[vec[tree_num+j]]!=NO_CHILD)
+			INT max_depth = 0 ;
+			for (INT j=0; (j<degree) && (tree_num+j<len); j++)
+				if (CMath::abs(weights[tree_num*degree + j]*alpha_pw)>1e-8)
+					max_depth = j+1 ;
+
+			for (INT j=0; (j<max_depth) && (tree_num+j<len); j++)
 			{
+				if ((j<degree-1) && (tree->children[vec[tree_num+j]]!=NO_CHILD))
+				{
 #ifdef USE_TREEMEM
-				tree=&TreeMem[tree->children[vec[tree_num+j]]] ;
+					tree=&TreeMem[tree->children[vec[tree_num+j]]] ;
 #else
-				tree=tree->children[vec[tree_num+j]] ;
+					tree=tree->children[vec[tree_num+j]] ;
 #endif
-				tree->weight += alpha_pw*weights[tree_num*degree + j];
-			}
-			else 
-			{
-				if (j==degree-1)
+					tree->weight += alpha_pw*weights[tree_num*degree + j];
+				}
+				else if (j==degree-1)
 				{
 					tree->child_weights[vec[tree_num+j]] += alpha_pw*weights[tree_num*degree + j];
 					break ;
 				}
 				else
 				{
-					if (j==degree-1)
+#ifdef USE_TREEMEM
+					tree->children[vec[tree_num+j]]=TreeMemPtr++;
+					INT tmp=tree->children[vec[tree_num+j]] ;
+					check_treemem() ;
+					tree=&TreeMem[tmp] ;
+#else
+					tree->children[vec[tree_num+j]] = new struct Trie ;
+					ASSERT(tree->children[vec[tree_num+j]]!=NULL) ;
+					tree=tree->children[vec[tree_num+j]] ;
+#endif
+					if (j==degree-2)
 					{
 						for (INT k=0; k<4; k++)
-						{
-							ASSERT(tree->children[k]==NO_CHILD) ;
-							tree->child_weights[k] =0 ;
-						}
-						tree->child_weights[vec[tree_num+j]] += alpha_pw*weights[tree_num*degree + j];
-						break ;
+							tree->child_weights[k]=0;
 					}
 					else
 					{
-#ifdef USE_TREEMEM
-						tree->children[vec[tree_num+j]]=TreeMemPtr++;
-						INT tmp=tree->children[vec[tree_num+j]] ;
-						check_treemem() ;
-						tree=&TreeMem[tmp] ;
-#else
-						tree->children[vec[tree_num+j]] = new struct Trie ;
-						ASSERT(tree->children[vec[tree_num+j]]!=NULL) ;
-						tree=tree->children[vec[tree_num+j]] ;
-#endif
 						for (INT k=0; k<4; k++)
-							tree->children[k]=NO_CHILD ;
-						tree->weight = alpha_pw*weights[tree_num*degree + j] ;
+							tree->children[k]=NO_CHILD;
 					}
+					tree->weight = alpha_pw*weights[tree_num*degree + j] ;
 				}
 			}
 		}
@@ -775,7 +748,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, DREAL alph
 	INT len ;
 	bool free ;
 	CHAR* char_vec=((CCharFeatures*) lhs)->get_feature_vector(idx, len, free);
-	//ASSERT(max_mismatch==0) ;
+	
 	INT *vec = new INT[len] ;
 
 	if (use_normalization)
@@ -794,7 +767,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, DREAL alph
 			continue ;
 		add_example_to_tree_mismatch_recursion(tree, alpha_pw, &vec[i], len-i, 0, 0) ;
 	}
-	//fprintf(stdout,"*") ;
+
 
 	((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
@@ -806,26 +779,21 @@ void CWeightedDegreeCharKernel::add_example_to_single_tree_mismatch(INT idx, DRE
 	INT len ;
 	bool free ;
 	CHAR* char_vec=((CCharFeatures*) lhs)->get_feature_vector(idx, len, free);
-	//ASSERT(max_mismatch==0) ;
+
 	INT *vec = new INT[len] ;
 
 	if (use_normalization)
 		alpha /=  sqrtdiag_lhs[idx] ;
-	
-	for (INT i=0; i<len; i++)
+
+	for (INT i=tree_num; i<len && i<tree_num+degree; i++)
 		vec[i]=((CCharFeatures*) lhs)->remap(char_vec[i]);
 
-	for (INT i=0; i<len; i++)
-	{
-		struct Trie *tree = trees[i] ;
-		DREAL alpha_pw = alpha ;
-		if (position_weights!=NULL)
-			alpha_pw = alpha*position_weights[i] ;
-		if (alpha_pw==0.0)
-			continue ;
-		add_example_to_tree_mismatch_recursion(tree, alpha_pw, &vec[i], len-i, 0, 0) ;
-	}
-	//fprintf(stdout,"*") ;
+	struct Trie *tree = trees[tree_num] ;
+	DREAL alpha_pw = alpha ;
+	if (position_weights!=NULL)
+		alpha_pw = alpha*position_weights[tree_num] ;
+	if (alpha_pw!=0.0)
+		add_example_to_tree_mismatch_recursion(tree, alpha_pw, &vec[tree_num], len-tree_num, 0, 0) ;
 
 	((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
@@ -845,26 +813,10 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch_recursion(struct Tr
 
 	if (degree_rec==degree-1)
 	{
-		//if (tree->has_floats)
-		//{
-		//	tree->child_weights[vec[0]] += alpha*weights[degree_rec+degree*mismatch_rec];
-		//	if (mismatch_rec+1<=max_mismatch)
-		//		for (INT o=0; o<3; o++)
-		//			tree->child_weights[other[vec[0]][o]] += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
-		//}
-		//else
-		//{
-		//	tree->has_floats=true ;
-		//	for (INT k=0; k<4; k++)
-		//	{
-		//	  ASSERT(tree->children[k]==NO_CHILD) ;
-		//	  tree->child_weights[k] =0 ;
-		//	}
-		//	tree->child_weights[vec[0]] += alpha*weights[degree_rec+degree*mismatch_rec];
-		//	if (mismatch_rec+1<=max_mismatch)
-		//		for (INT o=0; o<3; o++)
-		//			tree->child_weights[other[vec[0]][o]] += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
-		//}
+		tree->child_weights[vec[0]] += alpha*weights[degree_rec+degree*mismatch_rec];
+		if (mismatch_rec+1<=max_mismatch)
+			for (INT o=0; o<3; o++)
+				tree->child_weights[other[vec[0]][o]] += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
 		return ;
 	}
 	else
@@ -877,22 +829,31 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch_recursion(struct Tr
 		  subtree=tree->children[vec[0]] ;
 #endif
 		  subtree->weight += alpha*weights[degree_rec+degree*mismatch_rec];
-		} else 
-		  {
+		}
+		else 
+		{
 #ifdef USE_TREEMEM
-		    tree->children[vec[0]]=TreeMemPtr++ ;
-		    INT tmp=tree->children[vec[0]] ;
-		    check_treemem() ;
-		    subtree=&TreeMem[tmp] ;
+			tree->children[vec[0]]=TreeMemPtr++ ;
+			INT tmp=tree->children[vec[0]] ;
+			check_treemem() ;
+			subtree=&TreeMem[tmp] ;
 #else
-		    tree->children[vec[0]]=new struct Trie ;
-		    ASSERT(tree->children[vec[0]]!=NULL) ;
-		    subtree=tree->children[vec[0]] ;
+			tree->children[vec[0]]=new struct Trie ;
+			ASSERT(tree->children[vec[0]]!=NULL) ;
+			subtree=tree->children[vec[0]] ;
 #endif			
-		    for (INT k=0; k<4; k++)
-		      subtree->children[k]=NO_CHILD ;
-		    subtree->weight = alpha*weights[degree_rec+degree*mismatch_rec] ;
-		  }
+			if (degree_rec==degree-2)
+			{
+				for (INT k=0; k<4; k++)
+					tree->child_weights[k]=0;
+			}
+			else
+			{
+				for (INT k=0; k<4; k++)
+					tree->children[k]=NO_CHILD;
+			}
+			subtree->weight = alpha*weights[degree_rec+degree*mismatch_rec] ;
+		}
 		add_example_to_tree_mismatch_recursion(subtree,  alpha,
 						       &vec[1], len_rem-1, 
 						       degree_rec+1, mismatch_rec) ;
@@ -905,31 +866,40 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch_recursion(struct Tr
 				if (tree->children[ot]!=NO_CHILD)
 				{
 #ifdef USE_TREEMEM
-				  subtree=&TreeMem[tree->children[ot]] ;
+					subtree=&TreeMem[tree->children[ot]] ;
 #else
-				  subtree=tree->children[ot] ;
+					subtree=tree->children[ot] ;
 #endif
 					subtree->weight += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
-				} else 
+				}
+				else 
 				{
 #ifdef USE_TREEMEM
-				  tree->children[ot]=TreeMemPtr++ ;
-				  INT tmp=tree->children[ot] ;
-				  check_treemem() ;
-				  subtree=&TreeMem[tmp] ;
+					tree->children[ot]=TreeMemPtr++ ;
+					INT tmp=tree->children[ot] ;
+					check_treemem() ;
+					subtree=&TreeMem[tmp] ;
 #else
-				  tree->children[ot]=new struct Trie ;
-				  ASSERT(tree->children[ot]!=NULL) ;
-				  subtree=tree->children[ot] ;
+					tree->children[ot]=new struct Trie ;
+					ASSERT(tree->children[ot]!=NULL) ;
+					subtree=tree->children[ot] ;
 #endif
-				  for (INT k=0; k<4; k++)
-				    subtree->children[k]=NO_CHILD ;
-				  subtree->weight = alpha*weights[degree_rec+degree*(mismatch_rec+1)] ;
+					if (degree_rec==degree-2)
+					{
+						for (INT k=0; k<4; k++)
+							tree->child_weights[k]=0;
+					}
+					else
+					{
+						for (INT k=0; k<4; k++)
+							tree->children[k]=NO_CHILD;
+					}
+					subtree->weight = alpha*weights[degree_rec+degree*(mismatch_rec+1)] ;
 				}
-				
+
 				add_example_to_tree_mismatch_recursion(subtree,  alpha,
-								       &vec[1], len_rem-1, 
-								       degree_rec+1, mismatch_rec+1) ;
+						&vec[1], len_rem-1, 
+						degree_rec+1, mismatch_rec+1) ;
 			}
 		}
 	}
@@ -961,103 +931,22 @@ DREAL CWeightedDegreeCharKernel::compute_by_tree(INT idx)
 
 void CWeightedDegreeCharKernel::compute_by_tree(INT idx, DREAL* LevelContrib) 
 {
-	INT slen ;
+	INT len ;
 	bool free ;
-	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, slen, free);
+	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
 
-	INT *vec = new INT[slen] ;
-	
-	for (INT i=0; i<slen; i++)
+	INT *vec = new INT[len] ;
+
+	for (INT i=0; i<len; i++)
 		vec[i]=((CCharFeatures*) lhs)->remap(char_vec[i]);
 
 	DREAL factor = 1.0 ;
 	if (use_normalization)
 		factor = 1.0/sqrtdiag_rhs[idx] ;
 
-	if (position_weights!=NULL)
-	{
-		for (INT i=0; i<slen; i++)
-		{
-			struct Trie *tree = trees[i] ;
-			ASSERT(tree!=NULL) ;
-			
-			for (INT j=0; (j<degree) && (i+j<slen); j++)
-			  {
-			    if (tree->children[vec[i+j]]!=NO_CHILD)
-			      {
-#ifdef USE_TREEMEM
-				tree=&TreeMem[tree->children[vec[i+j]]] ;
-#else
-				tree=tree->children[vec[i+j]] ;
-#endif
-				LevelContrib[i/mkl_stepsize] += factor*tree->weight ;
-			      } else
-				{
-			      //if (tree->has_floats)
-				  LevelContrib[i/mkl_stepsize] += factor*tree->child_weights[vec[i+j]] ;
-				break ;
-				}
-			  } 
-		}
-	}
-	else if (length==0)
-	{
-		//for (INT j=0; j<degree; j++)
-		//LevelContrib[j]=0 ;
-		for (INT i=0; i<slen; i++)
-		{
-			struct Trie *tree = trees[i] ;
-			ASSERT(tree!=NULL) ;
-			
-			for (INT j=0; (j<degree) && (i+j<slen); j++)
-			{
-				if (tree->children[vec[i+j]]!=NO_CHILD)
-				{
-#ifdef USE_TREEMEM
-					tree=&TreeMem[tree->children[vec[i+j]]] ;
-#else
-					tree=tree->children[vec[i+j]] ;
-#endif
-					LevelContrib[j/mkl_stepsize] += factor*tree->weight ;
-				}
-				else
-				{
-					//if (tree->has_floats)
-						LevelContrib[j/mkl_stepsize] += factor*tree->child_weights[vec[i+j]] ;
-				break ;
-				}
-			} 
-		}
-	} 
-	else
-	{
-		//for (INT j=0; j<degree*length; j++)
-		//LevelContrib[j]=0 ;
-		for (INT i=0; i<slen; i++)
-		{
-			struct Trie *tree = trees[i] ;
-			ASSERT(tree!=NULL) ;
-			
-			for (INT j=0; (j<degree) && (i+j<slen); j++)
-			{
-			  if (tree->children[vec[i+j]]!=NO_CHILD)
-			    {
-#ifdef USE_TREEMEM
-			      tree=&TreeMem[tree->children[vec[i+j]]] ;
-#else
-			      tree=tree->children[vec[i+j]] ;
-#endif
-			      LevelContrib[(j+degree*i)/mkl_stepsize] += factor*tree->weight ;
-			    } else
-				{
-			    //if (tree->has_floats)
-				LevelContrib[(j+degree*i)/mkl_stepsize] += factor*tree->child_weights[vec[i+j]] ;
-			      break ;
-				}
-			} 
-		}
-	} ;
-	
+	for (INT i=0; i<len; i++)
+		compute_by_tree_helper(vec, len, i, LevelContrib, factor);
+
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
 }
@@ -1233,9 +1122,6 @@ DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT
 
 	INT* vec= new INT[num_feat];
 
-	EOptimizationType opt_type_backup=get_optimization_type();
-	set_optimization_type(FASTBUTMEMHUNGRY);
-
 	for (INT j=0; j<num_feat; j++)
 	{
 		init_optimization(num_suppvec, IDX, weights, j);
@@ -1248,13 +1134,15 @@ DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT
 			for (INT k=j; k<CMath::min(len,j+degree); k++)
 				vec[k]=((CCharFeatures*) lhs)->remap(char_vec[k]);
 
-			//result[i] += factor*compute_by_tree_helper(vec, len, j, j, j) ;
+			if (use_normalization)
+				result[i] += factor*compute_by_tree_helper(vec, len, j)/sqrtdiag_rhs[i];
+			else
+				result[i] += factor*compute_by_tree_helper(vec, len, j);
 
 			((CCharFeatures*) rhs)->free_feature_vector(char_vec, i, freevec);
 		}
 		CIO::progress(j,0,num_feat);
 	}
-	set_optimization_type(opt_type_backup);
 
 	delete[] vec;
 

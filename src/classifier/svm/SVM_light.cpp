@@ -36,6 +36,7 @@
 #include "classifier/svm/SVM_light.h"
 #include "classifier/svm/Optimizer.h"
 
+#include "kernel/Kernel.h"
 #include "kernel/KernelMachine.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/AUCKernel.h"
@@ -2784,6 +2785,12 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 	  a_old=shrink_state->last_a;    
 
 	  get_kernel()->clear_normal();
+
+	  //For now always use SLOWBUTMEMEFFICIENT, TODO: make use of faster batch_computation,
+	  //if kernel supports it
+	  EOptimizationType opt_type_backup=get_kernel()->get_optimization_type();
+	  get_kernel()->set_optimization_type(SLOWBUTMEMEFFICIENT);
+
 	  INT num_modified=0;
 	  for(i=0;i<totdoc;i++) {
 		  if(a[i] != a_old[i]) {
@@ -2792,6 +2799,8 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 			  num_modified++;
 		  }
 	  }
+
+	  CIO::message(M_DEBUG,"\n\nmodified %d a's\n\n", num_modified);
 
 	  if (num_modified>0)
 	  {
@@ -2802,6 +2811,9 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 			  shrink_state->last_lin[i]=lin[i];
 		  }
 	  }
+	  //reset optimization type & delete optimization
+	  get_kernel()->set_optimization_type(opt_type_backup);
+	  get_kernel()->delete_optimization();
   }
   else 
   {

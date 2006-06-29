@@ -109,7 +109,7 @@ class CWeightedDegreeCharKernel: public CCharKernel
 		  compute_by_tree(idx, subkernel_contrib); 
 		  return ;
 	  }
-	  CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not initialized\n") ;
+	  CIO::message(M_ERROR, "CWeightedDegreeCharKernel optimization not initialized\n") ;
   } ;
   inline const DREAL* get_subkernel_weights(INT& num_weights)
   {

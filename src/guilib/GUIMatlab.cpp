@@ -61,7 +61,7 @@ bool CGUIMatlab::relative_entropy(mxArray* retvals[])
 			double* entropy=mxGetPr(mx_entropy);
 			ASSERT(entropy);
 			double* p=new double[pos->get_M()];
-			double* q=new double[pos->get_M()];
+			double* q=new double[neg->get_M()];
 
 			for (INT i=0; i<pos->get_N(); i++)
 			{
@@ -97,16 +97,17 @@ bool CGUIMatlab::entropy(mxArray* retvals[])
 		mxArray* mx_entropy=mxCreateDoubleMatrix(1, current->get_N(), mxREAL);
 		ASSERT(mx_entropy);
 		double* entropy=mxGetPr(mx_entropy);
+		double* p=new double[current->get_M()];
 		ASSERT(entropy);
 
 		for (INT i=0; i<current->get_N(); i++)
 		{
 			for (INT j=0; j<current->get_M(); j++)
 			{
-				entropy[j]=current->get_b(i,j);
+				p[j]=current->get_b(i,j);
 			}
 
-			entropy[i]=CMath::entropy(entropy, current->get_M());
+			entropy[i]=CMath::entropy(p, current->get_M());
 		}
 
 		retvals[0]=mx_entropy;

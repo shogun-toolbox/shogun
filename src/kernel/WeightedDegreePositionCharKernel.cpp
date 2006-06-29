@@ -233,6 +233,8 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do
 	initialized = false ;
 	INT i;
 
+	CIO::message(M_DEBUG, "use normalization:%d\n", (use_normalization) ? 1 : 0);
+
 	if (use_normalization)
 	{
 		if (rhs_changed)
@@ -881,7 +883,6 @@ void CWeightedDegreePositionCharKernel::add_example_to_single_tree(INT idx, DREA
 		{
 			for (INT j=0; (tree_num+j+s<len); j++)
 			{
-
 				if ((j<degree-1) && (tree->children[vec[tree_num+j+s]]!=NO_CHILD))
 				{
 #ifdef USE_TREEMEM
@@ -926,7 +927,7 @@ void CWeightedDegreePositionCharKernel::add_example_to_single_tree(INT idx, DREA
 
 	if (opt_type==FASTBUTMEMHUNGRY)
 	{
-		for (INT i=CMath::max(0,tree_num-max_shift); i<CMath::min(len,tree_num+max_shift); i++)
+		for (INT i=CMath::max(0,tree_num-max_shift); i<CMath::min(len,tree_num+max_shift+1); i++)
 		{
 			INT s=tree_num-i;
 
@@ -1235,7 +1236,10 @@ DREAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, DREAL* res
 			for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+degree+max_shift); k++)
 				vec[k]=((CCharFeatures*) lhs)->remap(char_vec[k]);
 
-			result[i] += factor*compute_by_tree_helper(vec, len, j, j, j) ;
+			if (use_normalization)
+				result[i] += factor*compute_by_tree_helper(vec, len, j, j, j)/sqrtdiag_rhs[i];
+			else
+				result[i] += factor*compute_by_tree_helper(vec, len, j, j, j);
 
 			((CCharFeatures*) rhs)->free_feature_vector(char_vec, i, freevec);
 		}
