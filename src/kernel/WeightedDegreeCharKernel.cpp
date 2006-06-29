@@ -521,7 +521,8 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, DREAL alpha)
 					tree=tree->children[vec[i+j]] ;
 #endif
 					tree->weight += alpha_pw*weights[j];
-				} else 
+				}
+				else 
 				{
 					if (j==degree-1)
 					{
