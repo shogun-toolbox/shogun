@@ -2,7 +2,7 @@
 # Makefile for automated Shogun-R package generation
 #
 #
-SHOGUN:=sg_0.1-1.tar.gz
+SHOGUN:=sg_0.1-2.tar.gz
 
 install: $(SHOGUN)
 	@ R CMD INSTALL $(SHOGUN)
