@@ -1519,7 +1519,7 @@ detect_cc
 check_make
 determine_march_mtune
 set_opts
-#svmlight_warn_license
+svmlight_warn_license
 write_dot_config
 write_config_h
 clean_up
