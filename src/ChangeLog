@@ -1,3 +1,13 @@
+2006-06-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* SHOGUN Release 0.1.2
+	* compile fixes for R on MaxOSX
+	* some compile fixes for cygwin/WIN32
+	* Weighted Degree/Weighted Degree Shift kernel speedups & fixes
+	* python build fixes
+	* initial *workin* swig support 
+	* entropy example
+
 2006-06-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
-	* SHOGUNRelease version 0.1-pre1
+	* SHOGUN Release version 0.1-pre1
