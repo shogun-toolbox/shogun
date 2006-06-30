@@ -1,4 +1,4 @@
-RELEASENAME:=shogun-0.1.1
+RELEASENAME:=shogun-0.1.2
 
 .PHONY: doc release matlab python octave R
 
