@@ -1155,7 +1155,12 @@ set_opts()
 {
 	if darwin
 	then
-		LINKFLAGS="$LINKFLAGS -undefined error"
+		if test "$_matlab" = yes
+		then
+			LINKFLAGS="$LINKFLAGS -undefined suppress"
+		else
+			LINKFLAGS="$LINKFLAGS -undefined error"
+		fi
 	else
 		LINKFLAGS="$LINKFLAGS -Xlinker --no-undefined"
 	fi
