@@ -21,7 +21,7 @@
 #ifdef NEWSTUFF
 #include <ctype.h>
 
-const int ProtSimThresh = 20 ;
+const int ProtSimThresh = 0 ;
 const char ProtSimStr[21]="ARNDCQEGHILKMFPSTWYV" ;
 const int ProtSimMat[20][20]=
 {{  100, 22, 26, 24, 21, 38, 26, 32, 21, 27, 27, 36, 41, 19, 19, 54, 44, 10, 21, 44},
