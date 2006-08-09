@@ -74,6 +74,40 @@ TMPO="./configure-$RANDOM-$$.o"
 TMPS="./configure-$RANDOM-$$.S"
 TMPSS="./configure-$RANDOM-$$.s"
 
+add_include_path()
+{
+	PKG="$1"
+	echores "checking for $PKG include path"
+
+    while shift ; do
+      [ -z "$0" ] && break
+      if test -d "$1" ; then
+        INCLUDES="$INCLUDES -I\"$1\""
+		return 0
+      fi
+	done
+
+	echores "include path for $PKG not found"
+	exit 1
+}
+
+add_library_path()
+{
+	PKG="$1"
+	echores "checking for $PKG library path"
+
+    while shift ; do
+      [ -z "$1" ] && break
+      if test -d "$1" ; then
+        LINKFLAGS="$LINKFLAGS -L\"$1\""
+		return 0
+      fi
+	done
+
+	echores "library path for $PKG not found"
+	exit 1
+}
+
 detect_cc()
 {
 		echocheck "c/c++ compiler"
@@ -1174,16 +1208,20 @@ set_opts()
 
 		if osf1
 		then
-			LINKFLAGS="-pthread -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*' -L/opt/matlab-6.5-13/bin/alpha -lmx -lmex -lmat $LINKFLAGS"
+			LINKFLAGS="-pthread -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*'"
+			add_library_path "Matlab(tm)" "/opt/matlab-6.5-13/bin/alpha"
+			LINKFLAGS="$LINKFLAGS -lmx -lmex -lmat $LINKFLAGS"
 			TARGET="sg.mexaxp"
-			INCLUDES="$INCLUDES -I/opt/matlab-6.5-13/extern/include"
+			add_include_path "Matlab(tm)" "/opt/matlab-6.5-13/extern/include"
 			DEFINES="$DEFINES -DMATLAB_MEX_FILE"
 			COMPFLAGS_CPP="$COMPFLAGS_CPP -shared -ieee -pthread -std1"
 			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -pthread -std1"
 		elif darwin
 		then
-			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -L/Applications/MATLAB7/bin/mac -lmx -lmex -lmat -lpthread $LINKFLAGS"
-			INCLUDES="$INCLUDES -I/Applications/MATLAB7/extern/include"
+			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace"
+			add_library_path "Matlab(tm)" "/Applications/MATLAB7/bin/mac"
+			LINKFLAGS="$LINKFLAGS -lmx -lmex -lmat -lpthread $LINKFLAGS"
+			add_include_path "Matlab(tm)" "/Applications/MATLAB7/extern/include"
 			TARGET="sg.mexmac"
 		elif linux
 		then
@@ -1258,31 +1296,23 @@ set_opts()
 
 		if darwin
 		then
-			INCLUDES="$INCLUDES -I/sw/Library/Frameworks/R.framework/Headers"
-			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -F/sw/Library/Frameworks -framework R"
+			add_include_path R /sw/Library/Frameworks/R.framework/Headers /Library/Frameworks/R.framework/Versions/2.3/Resources/include
+			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace"
+			if echo "$INCLUDES" | grep -q '/sw/Library' 
+			then
+				LINKFLAGS="$LINKFLAGS -F/sw/Library/Frameworks -framework R"
+			else
+				LINKFLAGS="$LINKFLAGS -F/Library/Frameworks -framework R"
+			fi
 		else
-			if test -d /usr/lib/R/include 
-			then
-				INCLUDES="-I/usr/lib/R/include $INCLUDES"
-			fi
+			add_include_path R /usr/lib/R/include /usr/share/R/include 
 
-			if test -d /usr/share/R/include 
-			then
-				INCLUDES="-I/usr/share/R/include $INCLUDES"
-			fi
 			COMPFLAGS_CPP="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
 			COMPFLAGS_C="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
 			LINKFLAGS="-pthread -shared $LINKFLAGS"
+			add_library_path R /usr/lib/R/lib /usr/share/R/lib
 
-			if test -d /usr/lib/R/lib 
-			then
-				LINKFLAGS="-L/usr/lib/R/lib -lR $LINKFLAGS"
-			fi
-
-			if test -d /usr/share/R/lib 
-			then
-				LINKFLAGS="-L/usr/share/R/lib -lR $LINKFLAGS"
-			fi
+			LINKFLAGS="$LINKFLAGS -lR"
 		fi
 	fi
 
@@ -1297,15 +1327,9 @@ set_opts()
 				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/ilog/cplex90/include"
 			  ;;
 			  *)
-				  if test -d /fml/ag-raetsch/share/software/ilog/cplex90/lib/x86_RHEL3.0_3.2/static_pic
-				  then
-					  LINKFLAGS="$LINKFLAGS -L/fml/ag-raetsch/share/software/ilog/cplex90/lib/x86_RHEL3.0_3.2/static_pic/ -lcplex"
-					  INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/ilog/cplex90/include"
-				  else
-					  LINKFLAGS="$LINKFLAGS -L/home/neuro/software/ilog/cplex90/lib/i86_linux2_glibc2.3_gcc3.2/static_pic/ -lcplex"
-					  INCLUDES="$INCLUDES -I/home/neuro/software/ilog/cplex90/include"
-				  fi
-
+			  add_include_path CPLEX /fml/ag-raetsch/share/software/ilog/cplex90/include /home/neuro/software/ilog/cplex90/include
+			  add_library_path CPLEX /fml/ag-raetsch/share/software/ilog/cplex90/lib/x86_RHEL3.0_3.2/static_pic/ /home/neuro/software/ilog/cplex90/lib/i86_linux2_glibc2.3_gcc3.2/static_pic/
+			  LINKFLAGS="$LINKFLAGS -lcplex"
 				;;
 			esac
 		fi
