@@ -205,6 +205,7 @@ enum EFeatureClass
 	C_SIMPLE = 10,
 	C_SPARSE = 20,
 	C_STRING = 30,
+	C_GRAM = 35,
 	C_COMBINED = 40,
 	C_ANY = 50
 };

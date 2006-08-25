@@ -135,6 +135,13 @@ bool CGUIFeatures::load(CHAR* param)
 			{
 				*f_ptr=new CStringFeatures<ULONG>(filename);
 			}
+#ifdef HAVE_MINDY
+			else if (strcmp(type, "MINDY")==0)
+			{
+				//FIXME
+				*f_ptr=new CGramFeatures(filename, NULL, 3);
+			}
+#endif
 			else
 			{
 				CIO::message(M_ERROR, "unknown type\n");
@@ -310,6 +317,40 @@ CSparseRealFeatures* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFeatu
 	return NULL;
 }
 
+#ifdef HAVE_MINDY
+
+CGramFeatures* CGUIFeatures::convert_string_char_to_mindy_ngrams(CStringFeatures<CHAR> *src, CHAR* param)
+{
+	CHAR alph[1024]="";
+	CHAR dummy[1024]="";
+	INT len=-1;
+
+	if (!src || !param  || (sscanf(param, "%s %s %s %s %s %s %d", dummy,dummy,dummy,dummy,dummy, alph, &len)!=7) )
+	{
+		CIO::message(M_ERROR, "invalid arguments: \"%s\"\n",param);
+		return NULL;
+	}
+
+	CIO::message(M_INFO, "Converting string features to mindy n-grams\n");                
+	return new CGramFeatures(src, alph, len);
+}
+
+CGramFeatures* CGUIFeatures::convert_string_char_to_mindy_words(CStringFeatures<CHAR> *src, CHAR* param)
+{
+	CHAR dummy[1024]="";
+	CHAR alph[1024]="";
+	CHAR delim[1024]="";
+
+	if (!src || !param  || (sscanf(param, "%s %s %s %s %s %s %s", dummy,dummy,dummy,dummy,dummy, alph, delim)!=7) )
+	{
+		CIO::message(M_ERROR, "invalid arguments: \"%s\"\n",param);
+		return NULL;
+	}
+
+	CIO::message(M_INFO, "Converting string features to mindy words\n");                
+	return new CGramFeatures(src, alph, (byte_t *) delim, strlen(delim));
+}
+#endif
 
 CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFeatures* src, CHAR* param)
 {
@@ -870,6 +911,12 @@ bool CGUIFeatures::convert(CHAR* param)
 					result = convert_string_char_to_string_word(((CStringFeatures<CHAR>*) (*f_ptr)), param);
 				else if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"ULONG")==0)
 					result = convert_string_char_to_string_ulong(((CStringFeatures<CHAR>*) (*f_ptr)), param);
+#ifdef HAVE_MINDY
+				else if (strcmp(to_class, "MIGRAM")==0 && strcmp(to_type,"ULONG")==0)
+					result = convert_string_char_to_mindy_ngrams(((CStringFeatures<CHAR>*) (*f_ptr)), param);
+				else if (strcmp(to_class, "MIWORD")==0 && strcmp(to_type,"ULONG")==0)
+					result = convert_string_char_to_mindy_words(((CStringFeatures<CHAR>*) (*f_ptr)), param);
+#endif
 				else
 					CIO::not_implemented();
 			}
