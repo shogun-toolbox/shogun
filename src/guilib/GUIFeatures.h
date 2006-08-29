@@ -26,7 +26,7 @@
 #include "features/RealFeatures.h"
 #include "features/SparseRealFeatures.h"
 #include "features/CombinedFeatures.h"
-#include "features/GramFeatures.h"
+#include "features/MindyGramFeatures.h"
 
 class CGUI;
 
@@ -91,8 +91,7 @@ class CGUIFeatures
 		CRealFeatures* convert_sparse_real_to_simple_real(CSparseRealFeatures* src, CHAR* param);
 
 #ifdef HAVE_MINDY
-		CGramFeatures* CGUIFeatures::convert_string_char_to_mindy_ngrams(CStringFeatures<CHAR> *src, CHAR* param);
-		CGramFeatures* CGUIFeatures::convert_string_char_to_mindy_words(CStringFeatures<CHAR> *src, CHAR* param);		
+		CMindyGramFeatures* CGUIFeatures::convert_string_char_to_mindy_grams(CStringFeatures<CHAR> *src, CHAR* param);
 #endif
 
 		bool set_ref_features(CHAR* param) ;

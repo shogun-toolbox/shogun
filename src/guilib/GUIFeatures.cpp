@@ -135,13 +135,6 @@ bool CGUIFeatures::load(CHAR* param)
 			{
 				*f_ptr=new CStringFeatures<ULONG>(filename);
 			}
-#ifdef HAVE_MINDY
-			else if (strcmp(type, "MINDY")==0)
-			{
-				//FIXME
-				*f_ptr=new CGramFeatures(filename, NULL, 3);
-			}
-#endif
 			else
 			{
 				CIO::message(M_ERROR, "unknown type\n");
@@ -319,36 +312,40 @@ CSparseRealFeatures* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFeatu
 
 #ifdef HAVE_MINDY
 
-CGramFeatures* CGUIFeatures::convert_string_char_to_mindy_ngrams(CStringFeatures<CHAR> *src, CHAR* param)
+CMindyGramFeatures* CGUIFeatures::convert_string_char_to_mindy_grams(CStringFeatures<CHAR> *src, CHAR* param)
 {
-	CHAR alph[1024]="";
-	CHAR dummy[1024]="";
+	CHAR mode[256]="";
+	CHAR alph[256]="";
+	CHAR delim[256]="";
 	INT len=-1;
 
-	if (!src || !param  || (sscanf(param, "%s %s %s %s %s %s %d", dummy,dummy,dummy,dummy,dummy, alph, &len)!=7) )
-	{
+	if (!src || !param) {
 		CIO::message(M_ERROR, "invalid arguments: \"%s\"\n",param);
 		return NULL;
 	}
 
-	CIO::message(M_INFO, "Converting string features to mindy n-grams\n");                
-	return new CGramFeatures(src, alph, len);
-}
-
-CGramFeatures* CGUIFeatures::convert_string_char_to_mindy_words(CStringFeatures<CHAR> *src, CHAR* param)
-{
-	CHAR dummy[1024]="";
-	CHAR alph[1024]="";
-	CHAR delim[1024]="";
-
-	if (!src || !param  || (sscanf(param, "%s %s %s %s %s %s %s", dummy,dummy,dummy,dummy,dummy, alph, delim)!=7) )
-	{
-		CIO::message(M_ERROR, "invalid arguments: \"%s\"\n",param);
+	if (sscanf(param, "%*s %*s %*s %*s %*s %255s %255s", mode, alph) < 2) {
+		CIO::message(M_ERROR, "too few arguments\n");
 		return NULL;
 	}
 
-	CIO::message(M_INFO, "Converting string features to mindy words\n");                
-	return new CGramFeatures(src, alph, (byte_t *) delim, strlen(delim));
+	if (!strcasecmp(mode, "words")) {
+		if (sscanf(param, "%*s %*s %*s %*s %*s %*s %*s %255s", delim) < 1) {
+			CIO::message(M_ERROR, "too few arguments\n");
+			return NULL;
+		}
+	
+		CIO::message(M_INFO, "Converting string features to mindy words of %s by %s\n", alph, delim);                
+		return new CMindyGramFeatures(src, alph, delim);
+	} else {
+		if (sscanf(param, "%*s %*s %*s %*s %*s %*s %*s %d", &len) < 1) {
+			CIO::message(M_ERROR, "too few arguments\n");
+			return NULL;
+		}
+	
+		CIO::message(M_INFO, "Converting string features to mindy %d-grams of %s\n", len, alph);                
+		return new CMindyGramFeatures(src, alph, len);
+	} 
 }
 #endif
 
@@ -912,10 +909,8 @@ bool CGUIFeatures::convert(CHAR* param)
 				else if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"ULONG")==0)
 					result = convert_string_char_to_string_ulong(((CStringFeatures<CHAR>*) (*f_ptr)), param);
 #ifdef HAVE_MINDY
-				else if (strcmp(to_class, "MIGRAM")==0 && strcmp(to_type,"ULONG")==0)
-					result = convert_string_char_to_mindy_ngrams(((CStringFeatures<CHAR>*) (*f_ptr)), param);
-				else if (strcmp(to_class, "MIWORD")==0 && strcmp(to_type,"ULONG")==0)
-					result = convert_string_char_to_mindy_words(((CStringFeatures<CHAR>*) (*f_ptr)), param);
+				else if (strcmp(to_class, "MINDYGRAM")==0 && strcmp(to_type,"ULONG")==0)
+					result = convert_string_char_to_mindy_grams(((CStringFeatures<CHAR>*) (*f_ptr)), param);
 #endif
 				else
 					CIO::not_implemented();

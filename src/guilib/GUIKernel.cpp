@@ -55,6 +55,7 @@
 #include "kernel/SparseNormSquaredKernel.h"
 #include "kernel/SparseRealKernel.h"
 #include "kernel/DiagKernel.h"
+#include "kernel/MindyGramKernel.h"
 #include "features/RealFileFeatures.h"
 #include "features/TOPFeatures.h"
 #include "features/FKFeatures.h"
@@ -1367,6 +1368,48 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			{
 				CIO::message(M_INFO, "Diag Kernel created\n");
 				return k;
+			}
+		}
+		else if (strcmp(kern_type,"MINDYGRAM")==0)
+		{
+			delete k;
+			char norm_str[256]="";
+			char param_str[256]="";
+			
+			ENormalizationType normalization = FULL_NORMALIZATION ;
+				
+			sscanf(param, "%s %s %d %255s %255s", kern_type, data_type, &size, param_str, norm_str);
+			if (strlen(norm_str)==0)
+			{
+				normalization = FULL_NORMALIZATION ;
+				CIO::message(M_INFO, "using full normalization (default)\n") ;
+			}
+			else if (strcmp(norm_str, "NO")==0)
+			{
+				normalization = NO_NORMALIZATION ;
+				CIO::message(M_INFO, "using no normalization\n") ;
+			}
+			else if (strcmp(norm_str, "SQRT")==0)
+			{
+				normalization = SQRT_NORMALIZATION ;
+				CIO::message(M_INFO, "using sqrt normalization\n") ;
+			}
+			else if (strcmp(norm_str, "FULL")==0)
+			{
+				normalization = FULL_NORMALIZATION ;
+				CIO::message(M_INFO, "using full normalization\n") ;
+			}
+			else 
+			{
+				CIO::message(M_ERROR, "unknow normalization: %s\n", norm_str) ;
+				return NULL ;
+			}
+
+			k = new CMindyGramKernel(size, param, normalization);
+			if (k)
+			{
+			    CIO::message(M_INFO, "MindyGramKernel with %s created\n", param_str);
+			    return k;
 			}
 		}
 		else

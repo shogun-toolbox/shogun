@@ -8,5 +8,5 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "features/GramFeatures.h"
+#include "features/MindyGramFeatures.h"
 #include "lib/common.h"

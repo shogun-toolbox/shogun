@@ -151,7 +151,8 @@ enum EKernelType
 	K_CONST = 200,
 	K_HAMMINGWORD = 210,
 	K_MANHATTENWORD = 220,
-	K_CANBERRAWORD = 230
+	K_CANBERRAWORD = 230,
+	K_MINDYGRAM = 240
 };
 
 enum EClassifierType
@@ -205,9 +206,9 @@ enum EFeatureClass
 	C_SIMPLE = 10,
 	C_SPARSE = 20,
 	C_STRING = 30,
-	C_GRAM = 35,
 	C_COMBINED = 40,
-	C_ANY = 50
+	C_ANY = 50,
+	C_MINDYGRAM = 60
 };
 
 /// Alphabet of charfeatures/observations
