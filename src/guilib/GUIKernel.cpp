@@ -1413,6 +1413,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				return k;
 			}
 		}
+#ifdef HAVE_MINDY
 		else if (strcmp(kern_type,"MINDYGRAM")==0)
 		{
 			delete k;
@@ -1455,6 +1456,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			    return k;
 			}
 		}
+#endif
 		else
 			CIO::not_implemented();
 	}

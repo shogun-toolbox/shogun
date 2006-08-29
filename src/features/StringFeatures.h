@@ -532,9 +532,9 @@ template <class ST> class CStringFeatures: public CFeatures
 		for (i=start; i<sequence_length; i++)	
 			obs[i-start]=obs[i];
 
-		/*for (i=0; i<sequence_length; i++)
-			fprintf(stderr, "%i, ", obs[i]) ;
-			fprintf(stderr, "\n") ;*/
+		//for (i=0; i<sequence_length; i++)
+		//	fprintf(stderr, "%i, ", obs[i]) ;
+		//	fprintf(stderr, "\n") ;
 		
 	}
 
