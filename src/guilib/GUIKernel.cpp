@@ -599,7 +599,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 					return NULL ;
 				}
 
-				k=new CCommWordStringKernel(size, use_sign, normalization);
+				k=new CCommWordStringKernel(size, use_sign==1, normalization);
 				
 				if (k)
 				{
@@ -676,10 +676,53 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			if (strcmp(data_type,"WORD")==0)
 			{
 				INT use_sign = 0 ;
+				char normalization_str[100]="" ;
+				ENormalizationType normalization = FULL_NORMALIZATION ;
 				
-				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &use_sign);
+				sscanf(param, "%s %s %d %d %s", kern_type, data_type, &size, &use_sign, normalization_str);
+				if (strlen(normalization_str)==0)
+				{
+					normalization = FULL_NORMALIZATION ;
+					CIO::message(M_INFO, "using full normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "NO")==0)
+				{
+					normalization = NO_NORMALIZATION ;
+					CIO::message(M_INFO, "using no normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "SQRT")==0)
+				{
+					normalization = SQRT_NORMALIZATION ;
+					CIO::message(M_INFO, "using sqrt normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "SQRTLEN")==0)
+				{
+					normalization = SQRTLEN_NORMALIZATION ;
+					CIO::message(M_INFO, "using sqrt-len normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "LEN")==0)
+				{
+					normalization = LEN_NORMALIZATION ;
+					CIO::message(M_INFO, "using len normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "SQLEN")==0)
+				{
+					normalization = SQLEN_NORMALIZATION ;
+					CIO::message(M_INFO, "using squared len normalization\n") ;
+				}
+				else if (strcmp(normalization_str, "FULL")==0)
+				{
+					normalization = FULL_NORMALIZATION ;
+					CIO::message(M_INFO, "using full normalization\n") ;
+				}
+				else 
+				{
+					CIO::message(M_ERROR, "unknow normalization: %s\n", normalization_str) ;
+					return NULL ;
+				}
+
 				delete k;
-				k=new CCommWordKernel(size, use_sign==1);
+				k=new CCommWordKernel(size, use_sign==1, normalization);
 
 				if (k)
 				{

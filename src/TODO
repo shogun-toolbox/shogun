@@ -1,5 +1,6 @@
 TODO
 
+- kernel is_initialized -> is_optimization_initialized
 - use CharFeatures type in convert* in WordFeatures
 - kerthi,olivier Lin-SVM implementieren, chunking ???
 - SVR regression bug when kernel cache does not fit into memory (see Debugging Genefinder) ?????
