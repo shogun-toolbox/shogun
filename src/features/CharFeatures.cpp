@@ -168,6 +168,7 @@ void CCharFeatures::init_map_table()
               for (i=0; i<256; i++)
                   maptable[i]=i;
           }
+		  break;
       case DNA:
       default:
           maptable[(BYTE) 'A']=B_A;

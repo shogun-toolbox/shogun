@@ -263,7 +263,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		E_ALPHABET alphabet=sf->get_alphabet();
 		this->order=order;
 		cleanup();
-		CCharFeatures cf(alphabet, 0l);
+		CCharFeatures cf(alphabet, 0);
 		delete[] symbol_mask_table;
 		symbol_mask_table=new ST[256];
 		num_vectors=sf->get_num_vectors();
@@ -304,7 +304,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			return false;
 		}
 
-		CIO::message(M_DEBUG, "translate: start=%i order=%i\n", start, order) ;
+		CIO::message(M_DEBUG, "translate: start=%i order=%i (size:%i)\n", start, order, sizeof(ST)) ;
 		for (INT line=0; line<num_vectors; line++)
 		{
 			INT len=0;
@@ -408,6 +408,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			return false;
 		}
 
+		CIO::message(M_DEBUG, "translate: start=%i order=%i gap=%i(size:%i)\n", start, order, gap, sizeof(ST)) ;
 		for (INT line=0; line<num_vectors; line++)
 		{
 			INT len=0;
@@ -481,7 +482,6 @@ template <class ST> class CStringFeatures: public CFeatures
 		
 		const INT start_gap = (order - gap)/2 ;
 		const INT end_gap = start_gap + gap ;
-		//fprintf(stderr, "order=%i, start=%i, gap=%i, start_gap=%i, end_gap=%i\n", order, start, gap, start_gap, end_gap) ;
 		
 		INT i,j;
 		ST value=0;
@@ -494,15 +494,12 @@ template <class ST> class CStringFeatures: public CFeatures
 			{
 				if (i-j<start_gap)
 				{
-					//fprintf(stderr, "<") ;
 					value= (value >> max_val) | (obs[j] << (max_val * (order-1-gap)));
 				}
 				else if (i-j>=end_gap)
 				{
-					//fprintf(stderr, ">") ;
 					value= (value >> max_val) | (obs[j] << (max_val * (order-1-gap)));
 				}
-				//fprintf(stderr, "i=%i, j=%i, value=%d, obs[j]=%i\n", i, j, value, obs[j]) ;
 			}
 			obs[i]= (ST) value;
 		}
@@ -532,11 +529,6 @@ template <class ST> class CStringFeatures: public CFeatures
 		// shifting
 		for (i=start; i<sequence_length; i++)	
 			obs[i-start]=obs[i];
-
-		//for (i=0; i<sequence_length; i++)
-		//	fprintf(stderr, "%i, ", obs[i]) ;
-		//	fprintf(stderr, "\n") ;
-		
 	}
 
 	protected:
