@@ -26,9 +26,9 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
 		CCharFeatures(E_ALPHABET alphabet, CHAR* fname);
 
 		/// remap element e.g translate ACGT to 0123
-		inline CHAR remap(CHAR c)
+		inline BYTE remap(BYTE c)
 		{
-			return maptable[ (BYTE) c];
+			return maptable[c];
 		}
 
 		inline E_ALPHABET get_alphabet()
@@ -51,7 +51,7 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
 		static const BYTE B_n;
 	protected:
 		void init_map_table();
-		CHAR maptable[1 << (sizeof(CHAR)*8)];
+		BYTE maptable[1 << (sizeof(CHAR)*8)];
 		E_ALPHABET alphabet_type;
 };
 #endif

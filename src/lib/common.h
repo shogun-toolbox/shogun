@@ -35,7 +35,7 @@
 //@{
 
 /// Type CHAR
-typedef char CHAR;
+typedef signed char CHAR;
 typedef CHAR* P_CHAR;
 
 /// Type BYTE 
