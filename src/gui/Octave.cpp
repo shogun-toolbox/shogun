@@ -422,7 +422,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 		}
 		else if (!strncmp(action, N_SET_FEATURES, strlen(N_SET_FEATURES)))
 		{
-			if (nrhs==3)
+			if (nrhs>=3)
 			{
 				CHAR* target=CGUIOctave::get_octaveString(prhs(1).string_value());
 
@@ -455,7 +455,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 		}
 		else if (!strncmp(action, N_ADD_FEATURES, strlen(N_ADD_FEATURES)))
 		{
-			if (nrhs==3)
+			if (nrhs>=3)
 			{
 				CHAR* target=CGUIOctave::get_octaveString(prhs(1).string_value());
 

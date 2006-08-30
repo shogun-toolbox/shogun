@@ -603,8 +603,10 @@ PyObject* CGUIPython::py_set_features(PyObject* self, PyObject* args)
 {
 	PyObject   *py_ofeat = NULL;
 	char* target = NULL;
+	char* cmdline = NULL;
 
-	if (PyArg_ParseTuple(args, "sO", &target, &py_ofeat))
+	if (PyArg_ParseTuple(args, "sO", &target, &py_ofeat, &cmdline) ||
+            PyArg_ParseTuple(args, "sO", &target, &py_ofeat))
 	{
 		if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
 				(!strncmp(target, "TEST", strlen("TEST"))) ) 
@@ -615,11 +617,11 @@ PyObject* CGUIPython::py_set_features(PyObject* self, PyObject* args)
 			{
 				if (!strncmp(target, "TRAIN", strlen("TRAIN")))
 				{
-					gui->guifeatures.set_train_features(features);
+					gui->guifeatures.set_train_features(features, cmdline);
 				}
 				else if (!strncmp(target, "TEST", strlen("TEST")))
 				{
-					gui->guifeatures.set_test_features(features);
+					gui->guifeatures.set_test_features(features, cmdline);
 				}
 			}
 			else
@@ -639,8 +641,10 @@ PyObject* CGUIPython::py_add_features(PyObject* self, PyObject* args)
 {
 	PyObject   *py_ofeat = NULL;
 	char* target = NULL;
+	char* cmdline = NULL;
 
-	if (PyArg_ParseTuple(args, "sO", &target, &py_ofeat))
+	if (PyArg_ParseTuple(args, "sOs", &target, &py_ofeat, &cmdline) ||
+            PyArg_ParseTuple(args, "sO", &target, &py_ofeat))
 	{
 		if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
 				(!strncmp(target, "TEST", strlen("TEST"))) ) 
@@ -652,11 +656,11 @@ PyObject* CGUIPython::py_add_features(PyObject* self, PyObject* args)
 			{
 				if (!strncmp(target, "TRAIN", strlen("TRAIN")))
 				{
-					gui->guifeatures.add_train_features(features);
+					gui->guifeatures.add_train_features(features,cmdline);
 				}
 				else if (!strncmp(target, "TEST", strlen("TEST")))
 				{
-					gui->guifeatures.add_test_features(features);
+					gui->guifeatures.add_test_features(features,cmdline);
 				}
 			}
 			else
@@ -849,7 +853,7 @@ PyObject* CGUIPython::py_test(PyObject* self, PyObject* args)
 //	return Py_BuildValue("i", sts);
 //}
 
-CFeatures* CGUIPython::set_features(PyObject* arg)
+CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 {
 	PyArrayObject *py_afeat = NULL;
 	CFeatures* features = NULL;
@@ -875,58 +879,87 @@ CFeatures* CGUIPython::set_features(PyObject* arg)
 		case tUInt8:
 			py_afeat  = NA_InputArray(arg, tUInt8, NUM_C_ARRAY);
 			if (NA_NDArrayCheck(arg))
-			{
-				if ((py_afeat->nd == 1))
-				{
-					CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
-					int num_vec=py_afeat->dimensions[0];
-					int num_feat=PyArray(py_afeat)->itemsize;
-					CIO::message(M_DEBUG, "vec: %d dim:%d\n", num_vec, num_feat);
+            {
+                if ((py_afeat->nd == 1))
+                {
+                    CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
+                    int num_vec=py_afeat->dimensions[0];
+                    int num_feat=PyArray(py_afeat)->itemsize;
+                    CIO::message(M_DEBUG, "vec: %d dim:%d\n", num_vec, num_feat);
 
-					if (feat)
-					{
-						// FIXME allow for other alphabets
-						features= new CCharFeatures(DNA, (LONG) 0);
-						CHAR* fm=new CHAR[num_vec*num_feat];
-						ASSERT(fm);
-						for(int i=0; i<num_vec; i++)
-						{
-							for(int j=0; j<num_feat; j++)
-								fm[i*num_feat+j]=feat[i*num_feat+j];
-						}
-						((CCharFeatures*) features)->set_feature_matrix(fm, num_feat, num_vec);
-					}
-					else
-						CIO::message(M_ERROR,"empty feats ??\n");
-				}
-			}
+                    if (feat)
+                    {
+                        // FIXME allow for other alphabets
+                        E_ALPHABET alpha = DNA;
+
+                        if (args)
+                        {
+                            if (!strncmp(args, "DNA", strlen("DNA")))
+                                alpha = DNA;
+                            else if (!strncmp(args, "PROTEIN", strlen("PROTEIN")))
+                                alpha = PROTEIN;
+                            else if (!strncmp(args, "ALPHANUM", strlen("ALPHANUM")))
+                                alpha = ALPHANUM;
+                            else if (!strncmp(args, "CUBE", strlen("CUBE")))
+                                alpha = CUBE;
+                            else if (!strncmp(args, "BYTE", strlen("BYTE")))
+                                alpha = BYTE;
+                        }
+                        features= new CCharFeatures(alphabet, (LONG) 0);
+                        CHAR* fm=new CHAR[num_vec*num_feat];
+                        ASSERT(fm);
+                        for(int i=0; i<num_vec; i++)
+                        {
+                            for(int j=0; j<num_feat; j++)
+                                fm[i*num_feat+j]=feat[i*num_feat+j];
+                        }
+                        ((CCharFeatures*) features)->set_feature_matrix(fm, num_feat, num_vec);
+                    }
+                    else
+                        CIO::message(M_ERROR,"empty feats ??\n");
+                }
+            }
 			else
-			{
-				if ((py_afeat->nd == 2))
-				{
-					CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
-					int num_vec=py_afeat->dimensions[0];
-					int num_feat=py_afeat->dimensions[1];
+            {
+                if ((py_afeat->nd == 2))
+                {
+                    CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
+                    int num_vec=py_afeat->dimensions[0];
+                    int num_feat=py_afeat->dimensions[1];
 
-					if (feat)
-					{
-						// FIXME allow for other alphabets
-						features= new CCharFeatures(DNA, (LONG) 0);
-						CHAR* fm=new CHAR[num_vec*num_feat];
-						ASSERT(fm);
-						for(int i=0; i<num_vec; i++)
-						{
-							for(int j=0; j<num_feat; j++)
-								fm[i*num_feat+j]=feat[i*num_feat+j];
-						}
-						((CCharFeatures*) features)->set_feature_matrix(fm, num_feat, num_vec);
-					}
-					else
-						CIO::message(M_ERROR,"empty feats ??\n");
-				}
-				else
-					CIO::message(M_ERROR, "set_features: arrays must have 2 dimension.\n");
-			}
+                    if (feat)
+                    {
+                        E_ALPHABET alpha = DNA;
+
+                        if (args)
+                        {
+                            if (!strncmp(args, "DNA", strlen("DNA")))
+                                alpha = DNA;
+                            else if (!strncmp(args, "PROTEIN", strlen("PROTEIN")))
+                                alpha = PROTEIN;
+                            else if (!strncmp(args, "ALPHANUM", strlen("ALPHANUM")))
+                                alpha = ALPHANUM;
+                            else if (!strncmp(args, "CUBE", strlen("CUBE")))
+                                alpha = CUBE;
+                            else if (!strncmp(args, "BYTE", strlen("BYTE")))
+                                alpha = BYTE;
+                        }
+                        features= new CCharFeatures(alpha, (LONG) 0);
+                        CHAR* fm=new CHAR[num_vec*num_feat];
+                        ASSERT(fm);
+                        for(int i=0; i<num_vec; i++)
+                        {
+                            for(int j=0; j<num_feat; j++)
+                                fm[i*num_feat+j]=feat[i*num_feat+j];
+                        }
+                        ((CCharFeatures*) features)->set_feature_matrix(fm, num_feat, num_vec);
+                    }
+                    else
+                        CIO::message(M_ERROR,"empty feats ??\n");
+                }
+                else
+                    CIO::message(M_ERROR, "set_features: arrays must have 2 dimension.\n");
+            }
 			break;
 		case tFloat64:
 			py_afeat  = NA_InputArray(arg, tFloat64, NUM_C_ARRAY);

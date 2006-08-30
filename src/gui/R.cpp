@@ -258,10 +258,10 @@ static SEXP sg_helper(SEXP args)
 
 					SEXP features_mat = CAR(args); // Maybe results in NULL pointer 
 					args = CDR(args); /* pop features out of list */
-					SEXP feature_length = CAR(args); // Maybe results in NULL pointer 
+					SEXP alphabet = CAR(args); // Maybe results in NULL pointer 
 					args = CDR(args); /* pop features out of list */
 
-					CFeatures* features= sg_R.set_features(features_mat,feature_length);
+					CFeatures* features= sg_R.set_features(features_mat,alphabet);
 
 					if (features)
 					{
@@ -299,10 +299,10 @@ static SEXP sg_helper(SEXP args)
 					{
 						SEXP features_mat = CAR(args); // Maybe results in NULL pointer 
 						args = CDR(args); /* pop features out of list */
-						SEXP feature_length = CAR(args); // Maybe results in NULL pointer 
+						SEXP alphabet = CAR(args); // Maybe results in NULL pointer 
 						args = CDR(args); /* pop features out of list */
 
-						CFeatures* features = sg_R.set_features(features_mat,feature_length);
+						CFeatures* features = sg_R.set_features(features_mat,alphabet);
 
 						if (features)
 						{

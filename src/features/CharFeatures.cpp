@@ -116,69 +116,75 @@ void CCharFeatures::init_map_table()
     maptable[i] = MAPTABLE_UNDEF ;
 
   switch (alphabet_type)
-    {
-	case CUBE:
-	    maptable[(BYTE) '1']=0;
-	    maptable[(BYTE) '2']=1;
-	    maptable[(BYTE) '3']=2;
-	    maptable[(BYTE) '4']=3;	
-	    maptable[(BYTE) '5']=4;	
-	    maptable[(BYTE) '6']=5;	//Translation '123456' -> 012345
+  {
+      case CUBE:
+          maptable[(BYTE) '1']=0;
+          maptable[(BYTE) '2']=1;
+          maptable[(BYTE) '3']=2;
+          maptable[(BYTE) '4']=3;	
+          maptable[(BYTE) '5']=4;	
+          maptable[(BYTE) '6']=5;	//Translation '123456' -> 012345
 
-	    maptable[(BYTE) 0]='1';
-	    maptable[(BYTE) 1]='2';
-	    maptable[(BYTE) 2]='3';
-	    maptable[(BYTE) 3]='4';
-	    maptable[(BYTE) 4]='5';
-	    maptable[(BYTE) 5]='6';	//Translation 012345->'123456'
+          maptable[(BYTE) 0]='1';
+          maptable[(BYTE) 1]='2';
+          maptable[(BYTE) 2]='3';
+          maptable[(BYTE) 3]='4';
+          maptable[(BYTE) 4]='5';
+          maptable[(BYTE) 5]='6';	//Translation 012345->'123456'
 
-	    break;
-    case PROTEIN:
-      {
-	INT skip=0 ;
-	for (i=0; i<21; i++)
-	  {
-	    if (i==1) skip++ ;
-	    if (i==8) skip++ ;
-	    if (i==12) skip++ ;
-	    if (i==17) skip++ ;
-	    maptable[i]='a'+i+skip ;
-	    maptable['a'+i+skip]=i ;
-	    //printf("maptable[%c]=%i\n", 'a'+i+skip, i) ;
-	  } ;                   //Translation 012345->acde...xy -- the protein code
-      } ;
-      break;
-    case ALPHANUM:
-      {
-	for (i=0; i<26; i++)
-	  {
-	    maptable[i]='a'+i ;
-	    maptable['a'+i]=i ;
-	  } ;
-	for (i=0; i<10; i++)
-	  {
-	    maptable[26+i]='0'+i ;
-	    maptable['0'+i]=26+i ;
-	  } ;        //Translation 012345->acde...xy0123456789
-      } ;
-      break;
-    case DNA:
-    default:
-	maptable[(BYTE) 'A']=B_A;
-	maptable[(BYTE) 'C']=B_C;
-	maptable[(BYTE) 'G']=B_G;
-	maptable[(BYTE) 'T']=B_T;	
-	maptable[(BYTE) '*']=B_star;	
-	maptable[(BYTE) 'N']=B_N;	
-	maptable[(BYTE) 'n']=B_n;	//Translation ACGTNn -> 012345
+          break;
+      case PROTEIN:
+          {
+              INT skip=0 ;
+              for (i=0; i<21; i++)
+              {
+                  if (i==1) skip++ ;
+                  if (i==8) skip++ ;
+                  if (i==12) skip++ ;
+                  if (i==17) skip++ ;
+                  maptable[i]='a'+i+skip ;
+                  maptable['a'+i+skip]=i ;
+                  //printf("maptable[%c]=%i\n", 'a'+i+skip, i) ;
+              } ;                   //Translation 012345->acde...xy -- the protein code
+          } ;
+          break;
+      case ALPHANUM:
+          {
+              for (i=0; i<26; i++)
+              {
+                  maptable[i]='a'+i ;
+                  maptable['a'+i]=i ;
+              } ;
+              for (i=0; i<10; i++)
+              {
+                  maptable[26+i]='0'+i ;
+                  maptable['0'+i]=26+i ;
+              } ;        //Translation 012345->acde...xy0123456789
+          } ;
+          break;
+      case BYTE:
+          {
+              //identity
+              for (i=0; i<256; i++)
+                  maptable[i]=i;
+          }
+      case DNA:
+      default:
+          maptable[(BYTE) 'A']=B_A;
+          maptable[(BYTE) 'C']=B_C;
+          maptable[(BYTE) 'G']=B_G;
+          maptable[(BYTE) 'T']=B_T;	
+          maptable[(BYTE) '*']=B_star;	
+          maptable[(BYTE) 'N']=B_N;	
+          maptable[(BYTE) 'n']=B_n;	//Translation ACGTNn -> 012345
 
-	maptable[B_A]='A';
-	maptable[B_C]='C';
-	maptable[B_G]='G';
-	maptable[B_T]='T';
-	maptable[B_star]='*';
-	maptable[B_N]='N';
-	maptable[B_n]='n';	//Translation 012345->ACGTNn
-      break;
-    };
+          maptable[B_A]='A';
+          maptable[B_C]='C';
+          maptable[B_G]='G';
+          maptable[B_T]='T';
+          maptable[B_star]='*';
+          maptable[B_N]='N';
+          maptable[B_n]='n';	//Translation 012345->ACGTNn
+          break;
+  };
 }

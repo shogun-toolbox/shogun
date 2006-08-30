@@ -730,7 +730,7 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 
 #endif
 
-	CFeatures* CGUI_R::set_features(SEXP feat, SEXP feature_length)
+	CFeatures* CGUI_R::set_features(SEXP feat, SEXP feature_length, SEXP alphabet)
 	{
 		CFeatures* f=NULL;
 		CIO::message(M_INFO, "start CGUI_R::set_features\n") ;
@@ -760,41 +760,62 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 					((CRealFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
 				}
 				else if (TYPEOF(feat) == STRSXP )
-				{
-					E_ALPHABET alpha = DNA;
+                {
+                    E_ALPHABET alpha = DNA;
+                    if (alphabet && TYPEOF(CAR(alphabet)) == STRSXP)
+                    {
+                        CHAR* al=NULL;
+                        al=CHAR(VECTOR_ELT(alphabet, 0));
 
-					int num_vec = length(feat);
-					T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
-					f= new CStringFeatures<CHAR>();
-					int maxlen=0;
-					int num_symbols=0;
-					int syms[256];
+                        if (al)
+                        {
+                            if (!strncmp(al, "DNA", strlen("DNA")))
+                                alpha = DNA;
+                            else if (!strncmp(al, "PROTEIN", strlen("PROTEIN")))
+                                alpha = PROTEIN;
+                            else if (!strncmp(al, "ALPHANUM", strlen("ALPHANUM")))
+                                alpha = ALPHANUM;
+                            else if (!strncmp(al, "CUBE", strlen("CUBE")))
+                                alpha = CUBE;
+                            else if (!strncmp(al, "BYTE", strlen("BYTE")))
+                                alpha = BYTE;
+                        }
+                    }
 
-					for (int i=0; i<256; i++)
-						syms[i]=0;
+                    int num_vec = length(feat);
+                    T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
+                    f= new CStringFeatures<CHAR>();
+                    int maxlen=0;
+                    int num_symbols=0;
+                    int syms[256];
 
-					for (int i=0; i<num_vec; i++)
-					{
-						CHAR* c= CHAR(STRING_ELT(feat,i));
-						int len=strlen(c);
-                  //int len = *INTEGER(feature_length);
-						CHAR* dst=new CHAR[len];
-						sc[i].string=strncpy(dst, c, len);
-						sc[i].length=len;
+                    for (int i=0; i<256; i++)
+                        syms[i]=0;
 
-						for (int j=0; j<sc[i].length; j++)
-							syms[(int) sc[i].string[j]]++;
+                    for (int i=0; i<num_vec; i++)
+                    {
+                        SEXP* s= CHAR(STRING_ELT(feat,i));
+                        CHAR* c= CHAR(s);
+                        int len=LENGTH(s);
+                        //int len=strlen(c);
+                        //int len = *INTEGER(feature_length);
+                        CHAR* dst=new CHAR[len];
+                        sc[i].string=strncpy(dst, c, len);
+                        sc[i].length=len;
 
-						maxlen=CMath::max(maxlen, len);
-					}
+                        for (int j=0; j<sc[i].length; j++)
+                            syms[(int) sc[i].string[j]]++;
 
-					for (int i=0; i<256; i++)
-					{
-						if (syms[i]>0)
-							num_symbols++;
-					}
-					((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen, num_symbols, alpha);
-				}
+                        maxlen=CMath::max(maxlen, len);
+                    }
+
+                    for (int i=0; i<256; i++)
+                    {
+                        if (syms[i]>0)
+                            num_symbols++;
+                    }
+                    ((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen, num_symbols, alpha);
+                }
 			}
 		}
 		return f;

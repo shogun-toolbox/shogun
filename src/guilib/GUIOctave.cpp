@@ -895,7 +895,26 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 			if (mat_feat.is_char_matrix())
 			{
 				charMatrix cm = mat_feat.char_matrix_value();
-				f= new CCharFeatures(DNA, (LONG) 0);
+
+				E_ALPHABET alpha = DNA;
+
+				if (vals.length()==4)
+				{
+					CHAR* al=CGUIOctave::get_octaveString(vals(3).string_value());
+
+						if (!strncmp(al, "DNA", strlen("DNA")))
+							alpha = DNA;
+						else if (!strncmp(al, "PROTEIN", strlen("PROTEIN")))
+							alpha = PROTEIN;
+						else if (!strncmp(al, "ALPHANUM", strlen("ALPHANUM")))
+							alpha = ALPHANUM;
+						else if (!strncmp(al, "CUBE", strlen("CUBE")))
+							alpha = CUBE;
+						else if (!strncmp(al, "BYTE", strlen("BYTE")))
+							alpha = BYTE;
+				}
+
+				f= new CCharFeatures(alpha, (LONG) 0);
 				INT num_vec = cm.cols();
 				INT num_feat = cm.rows();
 				CIO::message(M_DEBUG, "char matrix, cols:%d row:%d!\n", num_vec, num_feat);

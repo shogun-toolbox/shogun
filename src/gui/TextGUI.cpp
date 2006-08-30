@@ -189,7 +189,7 @@ void CTextGUI::print_help()
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <<num> [<value>]>\t\t\t- add num (def 1) states,initialize with value (def rnd)\n", N_ADD_STATES);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <filename> [<INT> <INT>]\t\t\t- append HMM <filename> to current HMM\n", N_APPEND_HMM);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [pseudovalue]\t\t\t- changes pseudo value\n", N_PSEUDO);
-	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <PROTEIN|DNA|ALPHANUM|CUBE>\t\t\t- changes alphabet type\n", N_ALPHABET);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <PROTEIN|DNA|ALPHANUM|BYTE|CUBE>\t\t\t- changes alphabet type\n", N_ALPHABET);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <max_dim>\t - set maximum number of patterns\n",N_SET_MAX_DIM);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <num>\t - set number of forw/backw.-tables\n",N_SET_NUM_TABLES);

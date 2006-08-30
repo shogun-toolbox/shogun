@@ -383,9 +383,6 @@ CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 
 	switch (src->get_alphabet())
 	{
-		case DNA:
-			num_symbols = 4;
-			break;
 		case PROTEIN:
 			num_symbols = 26;
 			break;
@@ -395,9 +392,13 @@ CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 		case CUBE:
 			num_symbols = 6;
 			break;
+		case BYTE:
+			num_symbols = 256;
+			break;
 		case NONE:
 			num_symbols = 0;
 			break;
+		case DNA:
 		default:
 			num_symbols = 4;
 	}
@@ -467,6 +468,8 @@ CStringFeatures<ULONG>* CGUIFeatures::convert_string_char_to_string_ulong(CStrin
 			alphabet=DNA;
 		else if (strcmp(alpha,"CUBE")==0)
 			alphabet=CUBE;
+		else if (strcmp(alpha,"BYTE")==0)
+			alphabet=BYTE;
 		else
 		{
 			CIO::message(M_ERROR, "unknown alphabet!\n");
@@ -525,6 +528,8 @@ CStringFeatures<WORD>* CGUIFeatures::convert_string_char_to_string_word(CStringF
 			alphabet=DNA;
 		else if (strcmp(alpha,"CUBE")==0)
 			alphabet=CUBE;
+		else if (strcmp(alpha,"BYTE")==0)
+			alphabet=BYTE;
 		else
 		{
 			CIO::message(M_ERROR, "unknown alphabet!\n");
@@ -674,6 +679,8 @@ CWordFeatures* CGUIFeatures::convert_simple_char_to_simple_word(CCharFeatures* s
 			alphabet=DNA;
 		else if (strcmp(alpha,"CUBE")==0)
 			alphabet=CUBE;
+		else if (strcmp(alpha,"BYTE")==0)
+			alphabet=BYTE;
 		else
 		{
 			CIO::message(M_ERROR, "unknown alphabet!\n");

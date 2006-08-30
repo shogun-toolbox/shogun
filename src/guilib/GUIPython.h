@@ -79,7 +79,7 @@ public:
     static PyObject* py_plugin_estimate_classify_example(PyObject* self, PyObject* args);
     static PyObject* py_test(PyObject* self, PyObject* args);
 
-    static CFeatures* set_features(PyObject* arg);
+    static CFeatures* set_features(PyObject* arg, char* args);
     static CLabels* set_labels(PyObject* arg);
 };
 #endif

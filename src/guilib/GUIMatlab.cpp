@@ -1451,21 +1451,15 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					CHAR* al = CGUIMatlab::get_mxString(vals[3]);
 
 						if (!strncmp(al, "DNA", strlen("DNA")))
-						{
 							alpha = DNA;
-						}
 						else if (!strncmp(al, "PROTEIN", strlen("PROTEIN")))
-						{
 							alpha = PROTEIN;
-						}
 						else if (!strncmp(al, "ALPHANUM", strlen("ALPHANUM")))
-						{
 							alpha = ALPHANUM;
-						}
 						else if (!strncmp(al, "CUBE", strlen("CUBE")))
-						{
 							alpha = CUBE;
-						}
+						else if (!strncmp(al, "BYTE", strlen("BYTE")))
+							alpha = BYTE;
 				}
 
 				f= new CCharFeatures(alpha, (LONG) 0);
@@ -1486,6 +1480,23 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 
 				if (mxIsChar(mxGetCell(mx_feat, 0)))
 				{
+                    E_ALPHABET alpha = DNA;
+
+                    if (nrhs==4)
+                    {
+                        CHAR* al = CGUIMatlab::get_mxString(vals[3]);
+
+                        if (!strncmp(al, "DNA", strlen("DNA")))
+                            alpha = DNA;
+                        else if (!strncmp(al, "PROTEIN", strlen("PROTEIN")))
+                            alpha = PROTEIN;
+                        else if (!strncmp(al, "ALPHANUM", strlen("ALPHANUM")))
+                            alpha = ALPHANUM;
+                        else if (!strncmp(al, "CUBE", strlen("CUBE")))
+                            alpha = CUBE;
+                        else if (!strncmp(al, "BYTE", strlen("BYTE")))
+                            alpha = BYTE;
+                    }
 					f= new CStringFeatures<CHAR>();
 					ASSERT(f);
 
@@ -1524,9 +1535,8 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 							num_symbols++;
 					}
 
-					CIO::message(M_DEBUG, "setting alphabet to DNA. num_symbols: %d\n", num_symbols);
+					CIO::message(M_DEBUG, "num_symbols: %d\n", num_symbols);
 
-					E_ALPHABET alpha=DNA; //FIXME
 					((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen, num_symbols, alpha);
 				}
 
