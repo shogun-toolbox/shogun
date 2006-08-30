@@ -201,7 +201,7 @@ DREAL CMindyGramKernel::compute(INT i, INT j)
     CMindyGramFeatures *rm = (CMindyGramFeatures *) rhs;
 
     /* Call (internal) mindy comparison function */
-    DREAL result = _gram_cmp(kernel, lm->get_feature_vector(i),
+    DREAL result = gram_cmp(kernel, lm->get_feature_vector(i),
         rm->get_feature_vector(j));
 
     if (!initialized)
@@ -310,7 +310,7 @@ DREAL CMindyGramKernel::compute_optimized(INT i)
     }
 
     CMindyGramFeatures *rm = (CMindyGramFeatures *) rhs;
-    DREAL result = _gram_cmp(kernel, rm->get_feature_vector(i), normal);
+    DREAL result = gram_cmp(kernel, rm->get_feature_vector(i), normal);
 
     switch (norm) {
         case NO_NORMALIZATION:
