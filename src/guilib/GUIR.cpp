@@ -777,8 +777,8 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
                                 alpha = ALPHANUM;
                             else if (!strncmp(al, "CUBE", strlen("CUBE")))
                                 alpha = CUBE;
-                            else if (!strncmp(al, "BYTE", strlen("BYTE")))
-                                alpha = BYTE;
+                            else if (!strncmp(al, "BYTE", strlen("BYTE")) || )!strncmp(al, "RAW", strlen("RAW"))
+                                alpha = RAW;
                         }
                     }
 

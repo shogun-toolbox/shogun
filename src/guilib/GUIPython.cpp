@@ -902,8 +902,8 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
                                 alpha = ALPHANUM;
                             else if (!strncmp(args, "CUBE", strlen("CUBE")))
                                 alpha = CUBE;
-                            else if (!strncmp(args, "BYTE", strlen("BYTE")))
-                                alpha = BYTE;
+                            else if (!strncmp(args, "BYTE", strlen("BYTE")) || )!strncmp(args, "RAW", strlen("RAW"))
+                                alpha = RAW;
                         }
                         features= new CCharFeatures(alphabet, (LONG) 0);
                         CHAR* fm=new CHAR[num_vec*num_feat];
@@ -941,8 +941,8 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
                                 alpha = ALPHANUM;
                             else if (!strncmp(args, "CUBE", strlen("CUBE")))
                                 alpha = CUBE;
-                            else if (!strncmp(args, "BYTE", strlen("BYTE")))
-                                alpha = BYTE;
+                            else if (!strncmp(args, "BYTE", strlen("BYTE")) || )!strncmp(args, "RAW", strlen("RAW"))
+                                alpha = RAW;
                         }
                         features= new CCharFeatures(alpha, (LONG) 0);
                         CHAR* fm=new CHAR[num_vec*num_feat];

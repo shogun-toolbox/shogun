@@ -162,7 +162,7 @@ void CCharFeatures::init_map_table()
               } ;        //Translation 012345->acde...xy0123456789
           } ;
           break;
-      case BYTE:
+      case RAW:
           {
               //identity
               for (i=0; i<256; i++)

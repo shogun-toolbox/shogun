@@ -226,8 +226,8 @@ enum E_ALPHABET
 	/// CUBE - [1-6]
 	CUBE=3,
 
-	/// BYTE - [0-255]
-	BYTE=4,
+	/// RAW BYTE - [0-255]
+	RAW=4,
 
 	/// NONE - type has no alphabet
 	NONE=5

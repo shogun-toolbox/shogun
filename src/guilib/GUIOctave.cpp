@@ -910,8 +910,8 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 							alpha = ALPHANUM;
 						else if (!strncmp(al, "CUBE", strlen("CUBE")))
 							alpha = CUBE;
-						else if (!strncmp(al, "BYTE", strlen("BYTE")))
-							alpha = BYTE;
+						else if (!strncmp(al, "BYTE", strlen("BYTE")) || (!strncmp(al, "RAW", strlen("RAW"))))
+							alpha = RAW;
 				}
 
 				f= new CCharFeatures(alpha, (LONG) 0);

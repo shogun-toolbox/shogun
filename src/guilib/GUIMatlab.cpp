@@ -1458,8 +1458,8 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 							alpha = ALPHANUM;
 						else if (!strncmp(al, "CUBE", strlen("CUBE")))
 							alpha = CUBE;
-						else if (!strncmp(al, "BYTE", strlen("BYTE")))
-							alpha = BYTE;
+						else if (!strncmp(al, "BYTE", strlen("BYTE")) || (!strncmp(al, "RAW", strlen("RAW"))))
+							alpha = RAW;
 				}
 
 				f= new CCharFeatures(alpha, (LONG) 0);
@@ -1494,8 +1494,8 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
                             alpha = ALPHANUM;
                         else if (!strncmp(al, "CUBE", strlen("CUBE")))
                             alpha = CUBE;
-                        else if (!strncmp(al, "BYTE", strlen("BYTE")))
-                            alpha = BYTE;
+						else if (!strncmp(al, "BYTE", strlen("BYTE")) || (!strncmp(al, "RAW", strlen("RAW"))))
+							alpha = RAW;
                     }
 					f= new CStringFeatures<CHAR>();
 					ASSERT(f);
