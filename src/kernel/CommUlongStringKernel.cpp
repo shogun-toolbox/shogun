@@ -177,7 +177,7 @@ DREAL CCommUlongStringKernel::compute(INT idx_a, INT idx_b)
 				while (left_idx< alen && avec[left_idx]==sym)
 					left_idx++;
 
-				while (right_idx< alen && bvec[right_idx]==sym)
+				while (right_idx< blen && bvec[right_idx]==sym)
 					right_idx++;
 
 				result++;
@@ -202,7 +202,7 @@ DREAL CCommUlongStringKernel::compute(INT idx_a, INT idx_b)
 				while (left_idx< alen && avec[left_idx]==sym)
 					left_idx++;
 
-				while (right_idx< alen && bvec[right_idx]==sym)
+				while (right_idx< blen && bvec[right_idx]==sym)
 					right_idx++;
 
 				result+=(left_idx-old_left_idx)*(right_idx-old_right_idx);

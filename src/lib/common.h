@@ -63,7 +63,12 @@ typedef long LONG;
 typedef LONG* P_LONG;
 
 /// Type ULONG is 8 bytes in size
+#ifndef SUNOS
+#include <stdint.h>
+typedef uint64_t ULONG;
+#else
 typedef unsigned long ULONG;
+#endif
 typedef ULONG* P_ULONG;
 
 /// Type SHORTREAL is 4 bytes in size

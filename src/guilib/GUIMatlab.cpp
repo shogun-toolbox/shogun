@@ -1516,7 +1516,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 						sc[i].string=get_mxString(e);
 						if (sc[i].string)
 						{
-							sc[i].length=strlen(sc[i].string);
+							sc[i].length=mxGetN(e); 
 							maxlen=CMath::max(maxlen, sc[i].length);
 
 							for (int j=0; j<sc[i].length; j++)
