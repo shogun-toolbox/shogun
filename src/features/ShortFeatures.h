@@ -20,7 +20,7 @@
 class CShortFeatures: public CSimpleFeatures<SHORT>
 {
 	public:
-		CShortFeatures(LONG size);
+		CShortFeatures(INT size);
 		CShortFeatures(const CShortFeatures & orig);
 
 		/** load features from file

@@ -22,8 +22,8 @@
 # define DEF_PRECISION 1E-14
 
 typedef struct quadratic_program {
-  LONG   opt_n;            /* number of variables */
-  LONG   opt_m;            /* number of linear equality constraints */
+  INT   opt_n;            /* number of variables */
+  INT   opt_m;            /* number of linear equality constraints */
   double *opt_ce,*opt_ce0; /* linear equality constraints */
   double *opt_g;           /* hessian of objective */
   double *opt_g0;          /* linear part of objective */
@@ -32,5 +32,5 @@ typedef struct quadratic_program {
 } QP;
     
 /* interface to QP-solver */
-double *optimize_qp(QP *qp,double *epsilon_crit, long nx,double *threshold, long& svm_maxqpsize);
+double *optimize_qp(QP *qp,double *epsilon_crit, INT nx,double *threshold, INT& svm_maxqpsize);
 #endif

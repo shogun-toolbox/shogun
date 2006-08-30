@@ -25,23 +25,23 @@
 #include "lib/Mathmatics.h"
 
 
-LONG verbosity=1;
+INT verbosity=1;
 
 /* /////////////////////////////////////////////////////////////// */
 
 double *optimize_qp();
 double *primal=0,*dual=0;
 double init_margin=0.15;
-long   init_iter=500,precision_violations=0;
+INT   init_iter=500,precision_violations=0;
 double model_b;
 double opt_precision=DEF_PRECISION;
 
 /* /////////////////////////////////////////////////////////////// */
 
 /* start the optimizer and return the optimal values */
-double *optimize_qp(QP *qp,double *epsilon_crit, long nx,double *threshold, long& svm_maxqpsize)
+double *optimize_qp(QP *qp,double *epsilon_crit, INT nx,double *threshold, INT& svm_maxqpsize)
 {
-  register long i,j,result;
+  register INT i,j,result;
   double margin,obj_before,obj_after;
   double sigdig,dist,epsilon_loqo;
   int iter;
@@ -58,13 +58,13 @@ double *optimize_qp(QP *qp,double *epsilon_crit, long nx,double *threshold, long
       for(j=0;j<qp->opt_n;j++) {
 	printf("%f ",qp->opt_g[i*qp->opt_n+j]);
       }
-      printf(": a%ld=%.10f < %f",i,qp->opt_xinit[i],qp->opt_up[i]);
+      printf(": a%d=%.10f < %f",i,qp->opt_xinit[i],qp->opt_up[i]);
       printf(": y=%f\n",qp->opt_ce[i]);
     }
     for(j=0;j<qp->opt_m;j++) {
-      printf("EQ-%ld: %f*a0",j,qp->opt_ce[j]);
+      printf("EQ-%d: %f*a0",j,qp->opt_ce[j]);
       for(i=1;i<qp->opt_n;i++) {
-	printf(" + %f*a%ld",qp->opt_ce[i],i);
+	printf(" + %f*a%d",qp->opt_ce[i],i);
       }
       printf(" = %f\n\n",-qp->opt_ce0[0]);
     }

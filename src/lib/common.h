@@ -59,7 +59,12 @@ typedef unsigned int UINT;
 typedef UINT* P_UINT;
 
 /// Type LONG is 8 bytes in size
+#ifndef SUNOS
+#include <stdint.h>
+typedef int64_t LONG;
+#else
 typedef long LONG;
+#endif
 typedef LONG* P_LONG;
 
 /// Type ULONG is 8 bytes in size
@@ -89,7 +94,7 @@ typedef LONGREAL* P_LONGREAL;
 	typedef DREAL KERNELCACHE_ELEM;
 #endif
 
-typedef LONG KERNELCACHE_IDX;
+typedef INT KERNELCACHE_IDX;
 
 /// The io libs output [DEBUG] etc in front of every CIO::message
 /// 'higher' messages filter output depending on the loglevel, i.e. CRITICAL messages

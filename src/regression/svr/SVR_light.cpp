@@ -49,8 +49,8 @@ struct S_THREAD_PARAM
 {
 	DREAL * lin ;
 	INT start, end;
-	LONG * active2dnum ;
-	LONG * docs ;
+	INT * active2dnum ;
+	INT * docs ;
 	CKernel* kernel ;
     INT num_vectors ;
 }  ;
@@ -264,18 +264,18 @@ bool CSVRLight::train()
 
 void CSVRLight::svr_learn()
 {
-	LONG *inconsistent, i, j;
-	LONG inconsistentnum;
-	LONG upsupvecnum;
+	INT *inconsistent, i, j;
+	INT inconsistentnum;
+	INT upsupvecnum;
 	double maxdiff, *lin, *c, *a;
-	LONG runtime_start,runtime_end;
-	LONG iterations;
+	INT runtime_start,runtime_end;
+	INT iterations;
 	double *xi_fullset; /* buffer for storing xi on full sample in loo */
 	double *a_fullset;  /* buffer for storing alpha on full sample in loo */
 	TIMING timing_profile;
 	SHRINK_STATE shrink_state;
 	INT* label;
-	LONG* docs;
+	INT* docs;
 
 	CLabels* lab= CClassifier::get_labels();
 	ASSERT(lab!=NULL);
@@ -283,7 +283,7 @@ void CSVRLight::svr_learn()
 	num_vectors=totdoc;
 	
 	// set up regression problem in standard form
-	docs=new long[2*totdoc];
+	docs=new INT[2*totdoc];
 	label=new INT[2*totdoc];
 	c = new double[2*totdoc];
 
@@ -348,9 +348,9 @@ void CSVRLight::svr_learn()
 		learn_parm->svm_newvarsinqp=learn_parm->svm_maxqpsize;
 	}
 
-	init_shrink_state(&shrink_state,totdoc,(LONG)MAXSHRINK);
+	init_shrink_state(&shrink_state,totdoc,(INT)MAXSHRINK);
 
-	inconsistent = new long[totdoc];
+	inconsistent = new INT[totdoc];
 	a = new double[totdoc];
 	a_fullset = new double[totdoc];
 	xi_fullset = new double[totdoc];
@@ -360,9 +360,9 @@ void CSVRLight::svr_learn()
 	delete[] model->supvec;
 	delete[] model->alpha;
 	delete[] model->index;
-	model->supvec = new long[totdoc+2];
+	model->supvec = new INT[totdoc+2];
 	model->alpha = new double[totdoc+2];
-	model->index = new long[totdoc+2];
+	model->index = new INT[totdoc+2];
 
 	model->at_upper_bound=0;
 	model->b=0;	       
@@ -406,8 +406,8 @@ void CSVRLight::svr_learn()
   iterations=optimize_to_convergence(docs,label,totdoc,
                      &shrink_state,model,inconsistent,a,lin,
                      c,&timing_profile,
-                     &maxdiff,(long)-1,
-                     (long)1);
+                     &maxdiff,(INT)-1,
+                     (INT)1);
 
 
 	if(verbosity>=1) {
@@ -480,10 +480,10 @@ double CSVRLight::compute_objective_function(double *a, double *lin, double *c,
 }
 
 
-void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label, 
-											long int *active2dnum, double *a, 
-											double *a_old, long int *working2dnum, 
-											long int totdoc,
+void CSVRLight::update_linear_component_mkl(INT* docs, INT* label, 
+											INT *active2dnum, double *a, 
+											double *a_old, INT *working2dnum, 
+											INT totdoc,
 											double *lin, DREAL *aicache, double* c)
 {
 	CKernel* k      = get_kernel();
@@ -853,10 +853,10 @@ void CSVRLight::update_linear_component_mkl(LONG* docs, INT* label,
 }
 
 
-void CSVRLight::update_linear_component_mkl_linadd(LONG* docs, INT* label, 
-												   long int *active2dnum, double *a, 
-												   double *a_old, long int *working2dnum, 
-												   long int totdoc,
+void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label, 
+												   INT *active2dnum, double *a, 
+												   double *a_old, INT *working2dnum, 
+												   INT totdoc,
 												   double *lin, DREAL *aicache, double* c)
 {
 	// kernel with LP_LINADD property is assumed to have 
@@ -1182,17 +1182,17 @@ void* CSVRLight::update_linear_component_linadd_helper(void *params_)
 }
 
 
-void CSVRLight::update_linear_component(LONG* docs, INT* label, 
-										long int *active2dnum, double *a, 
-										double *a_old, long int *working2dnum, 
-										long int totdoc,
+void CSVRLight::update_linear_component(INT* docs, INT* label, 
+										INT *active2dnum, double *a, 
+										double *a_old, INT *working2dnum, 
+										INT totdoc,
 										double *lin, DREAL *aicache, double* c)
      /* keep track of the linear component */
      /* lin of the gradient etc. by updating */
      /* based on the change of the variables */
      /* in the current working set */
 {
-	register long i=0,ii=0,j=0,jj=0;
+	register INT i=0,ii=0,j=0,jj=0;
 
 	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) 
 	{
@@ -1282,10 +1282,10 @@ void CSVRLight::reactivate_inactive_examples(INT* label,
 				  SHRINK_STATE *shrink_state, 
 				  double *lin, 
 				  double *c, 
-				  long int totdoc, 
-				  long int iteration, 
-				  long int *inconsistent, 
-				  LONG* docs, 
+				  INT totdoc, 
+				  INT iteration, 
+				  INT *inconsistent, 
+				  INT* docs, 
 				  MODEL *model, 
 				  DREAL *aicache, 
 				  double *maxdiff)
@@ -1293,8 +1293,8 @@ void CSVRLight::reactivate_inactive_examples(INT* label,
         shrinking. */
      /* Computes lin for those variables from scratch. */
 {
-  register long i=0,j,ii=0,jj,t,*changed2dnum,*inactive2dnum;
-  long *changed,*inactive;
+  register INT i=0,j,ii=0,jj,t,*changed2dnum,*inactive2dnum;
+  INT *changed,*inactive;
   register double *a_old,dist;
   double ex_c,target;
 
@@ -1323,10 +1323,10 @@ void CSVRLight::reactivate_inactive_examples(INT* label,
   }
   else 
   {
-	  changed=new long[totdoc];
-	  changed2dnum=new long[totdoc+11];
-	  inactive=new long[totdoc];
-	  inactive2dnum=new long[totdoc+11];
+	  changed=new INT[totdoc];
+	  changed2dnum=new INT[totdoc+11];
+	  inactive=new INT[totdoc];
+	  inactive2dnum=new INT[totdoc+11];
 	  for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) {
 		  if(verbosity>=2) {
 			  CIO::message(M_INFO, "%ld..",t);

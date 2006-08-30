@@ -27,24 +27,24 @@ class CSVRLight:public CSVMLight
   void   svr_learn();
 
   virtual double compute_objective_function(double *a, double *lin, double *c, double eps, INT *label, INT totdoc);
-  virtual void update_linear_component(LONG* docs, INT *label, 
-							   long int *active2dnum, double *a, double* a_old,
-							   long int *working2dnum, long int totdoc,
+  virtual void update_linear_component(INT* docs, INT *label, 
+							   INT *active2dnum, double *a, double* a_old,
+							   INT *working2dnum, INT totdoc,
 							   double *lin, DREAL *aicache, double* c);
   // MKL stuff
-  virtual void update_linear_component_mkl(LONG* docs, INT *label, 
-								   long int *active2dnum, double *a, double* a_old,
-								   long int *working2dnum, long int totdoc,
+  virtual void update_linear_component_mkl(INT* docs, INT *label, 
+								   INT *active2dnum, double *a, double* a_old,
+								   INT *working2dnum, INT totdoc,
 								   double *lin, DREAL *aicache, double* c);
-  virtual void update_linear_component_mkl_linadd(LONG* docs, INT *label, 
-										  long int *active2dnum, double *a, double* a_old,
-										  long int *working2dnum, long int totdoc,
+  virtual void update_linear_component_mkl_linadd(INT* docs, INT *label, 
+										  INT *active2dnum, double *a, double* a_old,
+										  INT *working2dnum, INT totdoc,
 										  double *lin, DREAL *aicache, double* c);
 
   virtual void   reactivate_inactive_examples(INT *label,double *a,SHRINK_STATE *shrink_state,
-				      double *lin, double *c, long int totdoc,long int iteration,
-				      long int *inconsistent,
-				      long int *docs,MODEL *model,DREAL *aicache,
+				      double *lin, double *c, INT totdoc,INT iteration,
+				      INT *inconsistent,
+				      INT *docs,MODEL *model,DREAL *aicache,
 				      double* maxdiff) ;
 protected:
 static void* update_linear_component_linadd_helper(void *params);

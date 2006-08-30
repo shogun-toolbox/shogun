@@ -37,7 +37,7 @@ template <class ST> class CStringFeatures: public CFeatures
 //	class CStringPreProc<ST> ;
 	
 	public:
-	CStringFeatures(INT num_sym=-1) : CFeatures(0l), num_vectors(0), features(NULL), max_string_length(0), num_symbols(num_sym), original_num_symbols(num_sym), order(0), symbol_mask_table(NULL)
+	CStringFeatures(INT num_sym=-1) : CFeatures(0), num_vectors(0), features(NULL), max_string_length(0), num_symbols(num_sym), original_num_symbols(num_sym), order(0), symbol_mask_table(NULL)
 	{
 	}
 
@@ -344,7 +344,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		ASSERT(sf);
 		this->order=order;
 		cleanup();
-		CCharFeatures cf(alphabet, 0l);
+		CCharFeatures cf(alphabet, 0);
 		delete[] symbol_mask_table;
 		symbol_mask_table=new ST[256];
 

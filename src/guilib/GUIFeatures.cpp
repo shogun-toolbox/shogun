@@ -295,7 +295,7 @@ CSparseRealFeatures* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFeatu
 			{
 				//create sparse features with 0 cache
 				CIO::message(M_INFO, "attempting to convert dense feature matrix to a sparse one\n");
-				CSparseRealFeatures* target=new CSparseRealFeatures(0l);
+				CSparseRealFeatures* target=new CSparseRealFeatures(0);
 				INT num_f=0;
 				INT num_v=0;
 				DREAL* feats=src->get_feature_matrix(num_f, num_v);
@@ -415,7 +415,7 @@ CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeature
 	ASSERT(src->get_feature_type()==F_WORD && src->get_feature_class()==C_SIMPLE);
 	ASSERT(pie);
 
-	CRealFeatures* target=new CRealFeatures(0l);
+	CRealFeatures* target=new CRealFeatures(0);
 	ASSERT(target);
 
 	INT num_feat=src->get_num_features();
@@ -578,7 +578,7 @@ CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<WO
 			bool neglinear=false;
 			bool poslinear=false;
 
-			tf = new CTOPFeatures(0l, gui->guihmm.get_pos(), gui->guihmm.get_neg(), neglinear, poslinear);		     
+			tf = new CTOPFeatures(0, gui->guihmm.get_pos(), gui->guihmm.get_neg(), neglinear, poslinear);		     
 			ASSERT(tf && tf->set_feature_matrix());
 		}
 		else
@@ -606,7 +606,7 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD
 		gui->guihmm.get_pos()->set_observations(string_feat);
 		gui->guihmm.get_neg()->set_observations(string_feat);
 
-		CFKFeatures* fkf = new CFKFeatures(0l, gui->guihmm.get_pos(), gui->guihmm.get_neg());//, neglinear, poslinear);		     
+		CFKFeatures* fkf = new CFKFeatures(0, gui->guihmm.get_pos(), gui->guihmm.get_neg());//, neglinear, poslinear);		     
 		if (train_features)
 			fkf->set_opt_a(((CFKFeatures*) train_features)->get_weight_a());
 		else
@@ -635,7 +635,7 @@ CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(CSparseRealFeatu
 			{
 				//create dense features with 0 cache
 				CIO::message(M_INFO, "attempting to convert sparse feature matrix to a dense one\n");
-				CRealFeatures* rf = new CRealFeatures(0l);
+				CRealFeatures* rf = new CRealFeatures(0);
 				ASSERT(rf);
 				INT num_f=0;
 				INT num_v=0;
@@ -698,7 +698,7 @@ CWordFeatures* CGUIFeatures::convert_simple_char_to_simple_word(CCharFeatures* s
 		//create dense features with 0 cache
 		CIO::message(M_INFO, "converting CHAR features to WORD ones\n");
 
-		CWordFeatures* wf = new CWordFeatures(0l);
+		CWordFeatures* wf = new CWordFeatures(0);
 
 		if ( (wf) && (wf->obtain_from_char_features(src, alphabet, start, order, gap)))
 		{
@@ -737,7 +737,7 @@ CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(CCharFeatures*
 			//create dense features with 0 cache
 			CIO::message(M_INFO, "converting CHAR features to WORD ones\n");
 
-			CShortFeatures* sf = new CShortFeatures(0l);
+			CShortFeatures* sf = new CShortFeatures(0);
 
 			if (sf)
 			{
@@ -779,7 +779,7 @@ CRealFeatures* CGUIFeatures::convert_simple_char_to_simple_align(CCharFeatures* 
 		//create dense features with 0 cache
 		CIO::message(M_INFO, "converting CHAR features to REAL ones\n");
 
-		CRealFeatures* rf=new CRealFeatures(0l);
+		CRealFeatures* rf=new CRealFeatures(0);
 		if (rf)
 		{
 			CIO::message(M_INFO, "start aligment with gapCost=%1.2f\n", gapCost);

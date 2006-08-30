@@ -19,7 +19,7 @@
 class CSparseRealFeatures: public CSparseFeatures<DREAL>
 {
  public:
-  CSparseRealFeatures(LONG size) : CSparseFeatures<DREAL>(size)
+  CSparseRealFeatures(INT size) : CSparseFeatures<DREAL>(size)
   {
   }
 

@@ -30,7 +30,7 @@ template <class ST> class CSimplePreProc;
 template <class ST> class CSimpleFeatures: public CFeatures
 {
  public:
-	 CSimpleFeatures(LONG size) : CFeatures(size), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
+	 CSimpleFeatures(INT size) : CFeatures(size), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
 	 {
 	 }
 
@@ -44,7 +44,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 }
 	 }
 
-	 CSimpleFeatures(ST* fm, INT num_feat, INT num_vec) : CFeatures(0L), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
+	 CSimpleFeatures(ST* fm, INT num_feat, INT num_vec) : CFeatures(0), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
 	 {
 		 set_feature_matrix(fm, num_feat, num_vec);
 	 }

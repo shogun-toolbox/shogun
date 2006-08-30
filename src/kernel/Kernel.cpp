@@ -310,7 +310,7 @@ void CKernel::kernel_cache_init(KERNELCACHE_IDX buffsize, bool regression_hack)
 	kernel_cache.time=0;  
 } 
 
-void CKernel::get_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, DREAL *buffer, bool full_line)
+void CKernel::get_kernel_row(KERNELCACHE_IDX docnum, INT *active2dnum, DREAL *buffer, bool full_line)
 {
 	KERNELCACHE_IDX i,j,start;
 
@@ -425,7 +425,7 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 }
 
 // Fills cache for the rows in key 
-void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
+void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 {
 	if (CParallel::get_num_threads()<2)
 	{
@@ -435,7 +435,7 @@ void CKernel::cache_multiple_kernel_rows(LONG* rows, INT num_rows)
 	else
 	{
 		// fill up kernel cache 
-		LONG uncached_rows[num_rows];
+		INT uncached_rows[num_rows];
 		KERNELCACHE_ELEM* cache[num_rows];
 		pthread_t threads[CParallel::get_num_threads()-1];
 		S_KTHREAD_PARAM params[CParallel::get_num_threads()-1];

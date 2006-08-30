@@ -25,7 +25,7 @@ const BYTE CCharFeatures::B_star=4;
 const BYTE CCharFeatures::B_N=5;
 const BYTE CCharFeatures::B_n=6;
 
-CCharFeatures::CCharFeatures(E_ALPHABET a, LONG size) : CSimpleFeatures<CHAR>(size)
+CCharFeatures::CCharFeatures(E_ALPHABET a, INT size) : CSimpleFeatures<CHAR>(size)
 {
 	alphabet_type=a;
 	init_map_table();

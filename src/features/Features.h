@@ -29,7 +29,7 @@ public:
 	 *
 	 * size - cache size
 	*/
-	CFeatures(LONG size);
+	CFeatures(INT size);
 
 	// copy constructor
 	CFeatures(const CFeatures& orig);
@@ -80,7 +80,7 @@ public:
 	void clean_preprocs();
 
 	/// get cache size
-	inline LONG get_cache_size() { return cache_size; };
+	inline INT get_cache_size() { return cache_size; };
 
 	/// return the number of examples
 	virtual INT get_num_vectors()=0 ;
@@ -102,7 +102,7 @@ public:
 	
 private:
 	/// size of cache in MB
-	LONG cache_size;
+	INT cache_size;
 
 	/// list of preprocessors
 	CPreProc** preproc;

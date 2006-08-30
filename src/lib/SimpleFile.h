@@ -35,7 +35,7 @@ public:
 	}
 
 	//num is the number of read elements
-	T* load(T* target, long& num=0)
+	T* load(T* target, LONG& num=0)
 	{
 		if (status)
 		{

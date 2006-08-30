@@ -43,12 +43,12 @@ public:
 
 	// set target to NULL to get it automagically allocated
 	// set num to 0 if whole file is to be read
-	INT*   load_int_data(INT* target, long& num);
-	DREAL*  load_real_data(DREAL* target, long& num);
-	CHAR*  load_char_data(CHAR* target, long& num);
-	BYTE*  load_byte_data(BYTE* target, long& num);
-	WORD*  load_word_data(WORD* target, long& num);
-	SHORT* load_short_data(SHORT* target, long& num);
+	INT*   load_int_data(INT* target, LONG& num);
+	DREAL*  load_real_data(DREAL* target, LONG& num);
+	CHAR*  load_char_data(CHAR* target, LONG& num);
+	BYTE*  load_byte_data(BYTE* target, LONG& num);
+	WORD*  load_word_data(WORD* target, LONG& num);
+	SHORT* load_short_data(SHORT* target, LONG& num);
 
 	bool save_int_data(INT* src, LONG num);
 	bool save_real_data(DREAL* src, LONG num);

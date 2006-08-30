@@ -66,8 +66,8 @@ struct S_THREAD_PARAM
 	DREAL * lin ;
 	DREAL* W;
 	INT start, end;
-	LONG * active2dnum ;
-	LONG * docs ;
+	INT * active2dnum ;
+	INT * docs ;
 	CKernel* kernel ;
 }  ;
 
@@ -321,7 +321,7 @@ bool CSVMLight::setup_auc_maximization()
 	set_labels(lab_auc);
 	
 	// create feature object
-	CWordFeatures* f = new CWordFeatures((LONG)0,0) ;
+	CWordFeatures* f = new CWordFeatures((INT)0,0) ;
 	f->set_feature_matrix(features_auc, 2, num_auc) ;
 
 	// create AUC kernel and attach the features
@@ -518,28 +518,28 @@ bool CSVMLight::train()
 	return true ;
 }
 
-LONG CSVMLight::get_runtime() 
+INT CSVMLight::get_runtime() 
 {
   clock_t start;
   start = clock();
-  return((LONG)((double)start*100.0/(double)CLOCKS_PER_SEC));
+  return((INT)((double)start*100.0/(double)CLOCKS_PER_SEC));
 }
 
 void CSVMLight::svm_learn()
 {
-	LONG *inconsistent, i;
-	LONG inconsistentnum;
-	LONG misclassified,upsupvecnum;
+	INT *inconsistent, i;
+	INT inconsistentnum;
+	INT misclassified,upsupvecnum;
 	double maxdiff, *lin, *c, *a;
-	LONG runtime_start,runtime_end;
-	LONG iterations;
-	LONG trainpos=0, trainneg=0 ;
+	INT runtime_start,runtime_end;
+	INT iterations;
+	INT trainpos=0, trainneg=0 ;
 	INT totdoc=0;
 	CLabels* lab=CKernelMachine::get_labels();
 	ASSERT(lab!=NULL);
 	INT* label=lab->get_int_labels(totdoc);
 	ASSERT(label!=NULL);
-	LONG* docs=new long[totdoc];
+	INT* docs=new INT[totdoc];
 	delete[] W;
 	W=NULL;
 	rho=0 ;
@@ -577,9 +577,9 @@ void CSVMLight::svm_learn()
 		learn_parm->svm_newvarsinqp=learn_parm->svm_maxqpsize;
 	}
 
-	init_shrink_state(&shrink_state,totdoc,(LONG)MAXSHRINK);
+	init_shrink_state(&shrink_state,totdoc,(INT)MAXSHRINK);
 
-	inconsistent = new long[totdoc];
+	inconsistent = new INT[totdoc];
 	c = new double[totdoc];
 	a = new double[totdoc];
 	a_fullset = new double[totdoc];
@@ -590,9 +590,9 @@ void CSVMLight::svm_learn()
 	delete[] model->supvec;
 	delete[] model->alpha;
 	delete[] model->index;
-	model->supvec = new long[totdoc+2];
+	model->supvec = new INT[totdoc+2];
 	model->alpha = new double[totdoc+2];
-	model->index = new long[totdoc+2];
+	model->index = new INT[totdoc+2];
 
 	model->at_upper_bound=0;
 	model->b=0;	       
@@ -649,8 +649,8 @@ void CSVMLight::svm_learn()
 	for (i=0; i<get_num_support_vectors(); i++)
 		alpha[get_support_vector(i)]=get_alpha(i);
 	
-    long* index = new long[totdoc];
-    long* index2dnum = new long[totdoc+11];
+    INT* index = new INT[totdoc];
+    INT* index2dnum = new INT[totdoc+11];
     DREAL* aicache = new DREAL[totdoc];
     for(i=0;i<totdoc;i++) {    /* create full index and clip alphas */
       index[i]=1;
@@ -721,8 +721,8 @@ void CSVMLight::svm_learn()
   iterations=optimize_to_convergence(docs,label,totdoc,
                      &shrink_state,model,inconsistent,a,lin,
                      c,&timing_profile,
-                     &maxdiff,(long)-1,
-                     (long)1);
+                     &maxdiff,(INT)-1,
+                     (INT)1);
 
 
 	if(verbosity>=1) {
@@ -767,12 +767,12 @@ void CSVMLight::svm_learn()
 	delete[] docs;
 }
 
-long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc, 
+INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc, 
 			     SHRINK_STATE *shrink_state, MODEL *model, 
-			     long int *inconsistent,
+			     INT *inconsistent,
 			     double *a, double *lin, double *c, 
 			     TIMING *timing_profile, double *maxdiff, 
-			     long int heldout, long int retrain)
+			     INT heldout, INT retrain)
      /* docs: Training vectors (x-part) */
      /* label: Training labels/value (y-part, zero if test example for
 			      transduction) */
@@ -791,20 +791,20 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
      /* heldout: marks held-out example for leave-one-out (or -1) */
      /* retrain: selects training mode (1=regular / 2=holdout) */
 {
-  long *chosen,*key,i,j,jj,*last_suboptimal_at,noshrink;
-  long inconsistentnum,choosenum,already_chosen=0,iteration;
-  long misclassified,supvecnum=0,*active2dnum,inactivenum;
-  long *working2dnum,*selexam;
-  long activenum;
+  INT *chosen,*key,i,j,jj,*last_suboptimal_at,noshrink;
+  INT inconsistentnum,choosenum,already_chosen=0,iteration;
+  INT misclassified,supvecnum=0,*active2dnum,inactivenum;
+  INT *working2dnum,*selexam;
+  INT activenum;
   double criterion, eq;
   double *a_old;
-  long t0=0,t1=0,t2=0,t3=0,t4=0,t5=0,t6=0; /* timing */
-  long transductcycle;
-  long transduction;
+  INT t0=0,t1=0,t2=0,t3=0,t4=0,t5=0,t6=0; /* timing */
+  INT transductcycle;
+  INT transduction;
   double epsilon_crit_org; 
   double bestmaxdiff;
   double worstmaxdiff;
-  long   bestmaxdiffiter,terminate;
+  INT   bestmaxdiffiter,terminate;
   bool reactivated=false;
 
   double *selcrit;  /* buffer for sorting */        
@@ -820,15 +820,15 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
   (*maxdiff)=1;
 
   CIO::message(M_DEBUG,"totdoc:%d\n",totdoc);
-  chosen = new long[totdoc];
-  last_suboptimal_at =new long[totdoc];
-  key =new long[totdoc+11];
+  chosen = new INT[totdoc];
+  last_suboptimal_at =new INT[totdoc];
+  key =new INT[totdoc+11];
   selcrit =new double[totdoc];
-  selexam =new long[totdoc];
+  selexam =new INT[totdoc];
   a_old =new double[totdoc];
   aicache =new DREAL[totdoc];
-  working2dnum =new long[totdoc+11];
-  active2dnum =new long[totdoc+11];
+  working2dnum =new INT[totdoc+11];
+  active2dnum =new INT[totdoc+11];
   qp.opt_ce =new double[learn_parm->svm_maxqpsize];
   qp.opt_ce0 =new double[1];
   qp.opt_g =new double[learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize];
@@ -946,7 +946,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 				  /* select part of the working set from cache */
 				  already_chosen=select_next_qp_subproblem_grad(
 					  label,a,lin,c,totdoc,
-					  (long)(CMath::min(learn_parm->svm_maxqpsize-choosenum,
+					  (INT)(CMath::min(learn_parm->svm_maxqpsize-choosenum,
 										learn_parm->svm_newvarsinqp)/2),
 					  inconsistent,active2dnum,
 					  working2dnum,selcrit,selexam,1,
@@ -1042,7 +1042,7 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		  bestmaxdiffiter=iteration;
 	  }
 	  if(iteration > (bestmaxdiffiter+learn_parm->maxiter)) { 
-		  /* long time no progress? */
+		  /* INT time no progress? */
 		  terminate=1;
 		  retrain=0;
 		  CIO::message(M_WARN, "Relaxing KT-Conditions due to slow progress! Terminating!\n");
@@ -1104,8 +1104,8 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 	  if ((!get_mkl_enabled()) && ((iteration % 10) == 0) && (!noshrink))
 	  {
 		  activenum=shrink_problem(shrink_state,active2dnum,last_suboptimal_at,iteration,totdoc,
-								   CMath::max((LONG)(activenum/10),
-											  CMath::max((LONG)(totdoc/500),(LONG) 100)),
+								   CMath::max((INT)(activenum/10),
+											  CMath::max((INT)(totdoc/500),(INT) 100)),
 								   a,inconsistent, c, lin, label);
 
 		  inactivenum=totdoc-activenum;
@@ -1114,10 +1114,10 @@ long CSVMLight::optimize_to_convergence(LONG* docs, INT* label, long int totdoc,
 		  {
 		      //don't shrink w/ mkl
 		      if( (!get_mkl_enabled()) && (supvecnum>get_kernel()->get_max_elems_cache()) 
-		    		  && ((get_kernel()->get_activenum_cache()-activenum)>CMath::max((LONG)(activenum/10),(LONG) 500))) {
+		    		  && ((get_kernel()->get_activenum_cache()-activenum)>CMath::max((INT)(activenum/10),(INT) 500))) {
 
-		    	  get_kernel()->kernel_cache_shrink(totdoc, CMath::min((LONG) (get_kernel()->get_activenum_cache()-activenum),
-		    														   (LONG) (get_kernel()->get_activenum_cache()-supvecnum)),
+		    	  get_kernel()->kernel_cache_shrink(totdoc, CMath::min((INT) (get_kernel()->get_activenum_cache()-activenum),
+		    														   (INT) (get_kernel()->get_activenum_cache()-supvecnum)),
 		    										shrink_state->active); 
 		      }
 		  }
@@ -1197,25 +1197,25 @@ double CSVMLight::compute_objective_function(double *a, double *lin, double *c, 
 }
 
 
-void CSVMLight::clear_index(LONG *index)  
+void CSVMLight::clear_index(INT *index)  
               /* initializes and empties index */
 {
   index[0]=-1;
 } 
 
-void CSVMLight::add_to_index(LONG *index, LONG elem)
+void CSVMLight::add_to_index(INT *index, INT elem)
      /* initializes and empties index */
 {
-  register long i;
+  register INT i;
   for(i=0;index[i] != -1;i++);
   index[i]=elem;
   index[i+1]=-1;
 }
 
-LONG CSVMLight::compute_index(LONG *binfeature, LONG range, LONG *index)
+INT CSVMLight::compute_index(INT *binfeature, INT range, INT *index)
      /* create an inverted index of binfeature */
 {               
-  register long i,ii;
+  register INT i,ii;
 
   ii=0;
   for(i=0;i<range;i++) {
@@ -1231,16 +1231,16 @@ LONG CSVMLight::compute_index(LONG *binfeature, LONG range, LONG *index)
 }
 
 
-void CSVMLight::optimize_svm(LONG* docs, INT* label,
-		  long int *exclude_from_eq_const, double eq_target,
-		  long int *chosen, long int *active2dnum, MODEL *model, 
-		  long int totdoc, long int *working2dnum, long int varnum, 
+void CSVMLight::optimize_svm(INT* docs, INT* label,
+		  INT *exclude_from_eq_const, double eq_target,
+		  INT *chosen, INT *active2dnum, MODEL *model, 
+		  INT totdoc, INT *working2dnum, INT varnum, 
 		  double *a, double *lin, double *c,
 		  DREAL *aicache, QP *qp, 
 		  double *epsilon_crit_target)
      /* Do optimization on the working set. */
 {
-    long i;
+    INT i;
     double *a_v;
 
     //compute_matrices_for_optimization_parallel(docs,label,
@@ -1270,11 +1270,11 @@ void CSVMLight::optimize_svm(LONG* docs, INT* label,
       a[working2dnum[i]]=a_v[i];
 }
 
-void CSVMLight::compute_matrices_for_optimization_parallel(LONG* docs, INT* label, 
-														   long *exclude_from_eq_const, double eq_target,
-														   long int *chosen, long int *active2dnum, 
-														   long int *key, MODEL *model, double *a, double *lin, double *c, 
-														   long int varnum, long int totdoc,
+void CSVMLight::compute_matrices_for_optimization_parallel(INT* docs, INT* label, 
+														   INT *exclude_from_eq_const, double eq_target,
+														   INT *chosen, INT *active2dnum, 
+														   INT *key, MODEL *model, double *a, double *lin, double *c, 
+														   INT varnum, INT totdoc,
 														   DREAL *aicache, QP *qp)
 {
 	if (CParallel::get_num_threads()<=1)
@@ -1285,7 +1285,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(LONG* docs, INT* labe
 		return ;
 	}
 	
-	register long ki,kj,i,j;
+	register INT ki,kj,i,j;
 	register double kernel_temp;
 	
 	qp->opt_n=varnum;
@@ -1397,14 +1397,14 @@ void CSVMLight::compute_matrices_for_optimization_parallel(LONG* docs, INT* labe
 	}
 }
 
-void CSVMLight::compute_matrices_for_optimization(LONG* docs, INT* label, 
-												  long *exclude_from_eq_const, double eq_target,
-												  long int *chosen, long int *active2dnum, 
-												  long int *key, MODEL *model, double *a, double *lin, double *c, 
-												  long int varnum, long int totdoc,
+void CSVMLight::compute_matrices_for_optimization(INT* docs, INT* label, 
+												  INT *exclude_from_eq_const, double eq_target,
+												  INT *chosen, INT *active2dnum, 
+												  INT *key, MODEL *model, double *a, double *lin, double *c, 
+												  INT varnum, INT totdoc,
 												  DREAL *aicache, QP *qp)
 {
-  register long ki,kj,i,j;
+  register INT ki,kj,i,j;
   register double kernel_temp;
 
   qp->opt_n=varnum;
@@ -1471,13 +1471,13 @@ void CSVMLight::compute_matrices_for_optimization(LONG* docs, INT* label,
 }
 
 
-long CSVMLight::calculate_svm_model(LONG* docs, INT *label,
+INT CSVMLight::calculate_svm_model(INT* docs, INT *label,
 			 double *lin, double *a, double *a_old, double *c, 
-			 long int *working2dnum, long int *active2dnum, MODEL *model)
+			 INT *working2dnum, INT *active2dnum, MODEL *model)
      /* Compute decision function based on current values */
      /* of alpha. */
 {
-  long i,ii,pos,b_calculated=0,first_low,first_high;
+  INT i,ii,pos,b_calculated=0,first_low,first_high;
   double ex_c,b_temp,b_low,b_high;
 
   if(verbosity>=3) {
@@ -1589,15 +1589,15 @@ long CSVMLight::calculate_svm_model(LONG* docs, INT *label,
   return(model->sv_num-1); /* have to substract one, since element 0 is empty*/
 }
 
-long CSVMLight::check_optimality(MODEL *model, INT* label,
-		      double *a, double *lin, double *c, long int totdoc, 
-		      double *maxdiff, double epsilon_crit_org, long int *misclassified, 
-		      long int *inconsistent, long int *active2dnum,
-		      long int *last_suboptimal_at, 
-		      long int iteration)
+INT CSVMLight::check_optimality(MODEL *model, INT* label,
+		      double *a, double *lin, double *c, INT totdoc, 
+		      double *maxdiff, double epsilon_crit_org, INT *misclassified, 
+		      INT *inconsistent, INT *active2dnum,
+		      INT *last_suboptimal_at, 
+		      INT iteration)
      /* Check KT-conditions */
 {
-  long i,ii,retrain;
+  INT i,ii,retrain;
   double dist,ex_c,target;
 
   learn_parm->epsilon_shrink=learn_parm->epsilon_shrink*0.7+(*maxdiff)*0.3; 
@@ -1621,8 +1621,8 @@ long CSVMLight::check_optimality(MODEL *model, INT* label,
 			  if((target-dist)>(*maxdiff))  /* largest violation */
 				  (*maxdiff)=target-dist;
 		  }
-		  /* Count how long a variable was at lower/upper bound (and optimal).*/
-		  /* Variables, which were at the bound and optimal for a long */
+		  /* Count how INT a variable was at lower/upper bound (and optimal).*/
+		  /* Variables, which were at the bound and optimal for a INT */
 		  /* time are unlikely to become support vectors. In case our */
 		  /* cache is filled up, those variables are excluded to save */
 		  /* kernel evaluations. (See chapter 'Shrinking').*/ 
@@ -1648,10 +1648,10 @@ long CSVMLight::check_optimality(MODEL *model, INT* label,
   return(retrain);
 }
 
-void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label, 
-											long int *active2dnum, double *a, 
-											double *a_old, long int *working2dnum, 
-											long int totdoc,
+void CSVMLight::update_linear_component_mkl(INT* docs, INT* label, 
+											INT *active2dnum, double *a, 
+											double *a_old, INT *working2dnum, 
+											INT totdoc,
 											double *lin, DREAL *aicache)
 {
 	CKernel* k      = get_kernel();
@@ -2014,10 +2014,10 @@ void CSVMLight::update_linear_component_mkl(LONG* docs, INT* label,
 }
 
 
-void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label, 
-												   long int *active2dnum, double *a, 
-												   double *a_old, long int *working2dnum, 
-												   long int totdoc,
+void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label, 
+												   INT *active2dnum, double *a, 
+												   double *a_old, INT *working2dnum, 
+												   INT totdoc,
 												   double *lin, DREAL *aicache)
 {
 	// kernel with LP_LINADD property is assumed to have 
@@ -2356,17 +2356,17 @@ void CSVMLight::update_linear_component_mkl_linadd(LONG* docs, INT* label,
 
 }
 
-void CSVMLight::update_linear_component(LONG* docs, INT* label, 
-										long int *active2dnum, double *a, 
-										double *a_old, long int *working2dnum, 
-										long int totdoc,
+void CSVMLight::update_linear_component(INT* docs, INT* label, 
+										INT *active2dnum, double *a, 
+										double *a_old, INT *working2dnum, 
+										INT totdoc,
 										double *lin, DREAL *aicache, double* c)
      /* keep track of the linear component */
      /* lin of the gradient etc. by updating */
      /* based on the change of the variables */
      /* in the current working set */
 {
-	register long i=0,ii=0,j=0,jj=0;
+	register INT i=0,ii=0,j=0,jj=0;
 
 	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) 
 	{
@@ -2451,23 +2451,23 @@ void CSVMLight::update_linear_component(LONG* docs, INT* label,
 
 /*************************** Working set selection ***************************/
 
-long CSVMLight::select_next_qp_subproblem_grad(INT* label, 
+INT CSVMLight::select_next_qp_subproblem_grad(INT* label, 
 											   double *a, double *lin, 
-											   double *c, long int totdoc, 
-											   long int qp_size, 
-											   long int *inconsistent, 
-											   long int *active2dnum, 
-											   long int *working2dnum, 
+											   double *c, INT totdoc, 
+											   INT qp_size, 
+											   INT *inconsistent, 
+											   INT *active2dnum, 
+											   INT *working2dnum, 
 											   double *selcrit, 
-											   long int *select, 
-											   long int cache_only,
-											   long int *key, long int *chosen)
+											   INT *select, 
+											   INT cache_only,
+											   INT *key, INT *chosen)
 	/* Use the feasible direction approach to select the next
 	   qp-subproblem (see chapter 'Selecting a good working set'). If
 	   'cache_only' is true, then the variables are selected only among
 	   those for which the kernel evaluations are cached. */
 {
-	long choosenum,i,j,k,activedoc,inum,valid;
+	INT choosenum,i,j,k,activedoc,inum,valid;
 	double s;
 	
 	for(inum=0;working2dnum[inum]>=0;inum++); /* find end of index */
@@ -2497,7 +2497,7 @@ long CSVMLight::select_next_qp_subproblem_grad(INT* label,
 			activedoc++;
 		}
 	}
-	select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
+	select_top_n(selcrit,activedoc,select,(INT)(qp_size/2));
 	for(k=0;(choosenum<(qp_size/2)) && (k<(qp_size/2)) && (k<activedoc);k++) {
 		i=key[select[k]];
 		chosen[i]=1;
@@ -2535,7 +2535,7 @@ long CSVMLight::select_next_qp_subproblem_grad(INT* label,
 			activedoc++;
 		}
 	}
-	select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
+	select_top_n(selcrit,activedoc,select,(INT)(qp_size/2));
 	for(k=0;(choosenum<qp_size) && (k<(qp_size/2)) && (k<activedoc);k++) {
 		i=key[select[k]];
 		chosen[i]=1;
@@ -2549,24 +2549,24 @@ long CSVMLight::select_next_qp_subproblem_grad(INT* label,
 	return(choosenum);
 }
 
-long CSVMLight::select_next_qp_subproblem_rand(INT* label, 
+INT CSVMLight::select_next_qp_subproblem_rand(INT* label, 
 				    double *a, double *lin, 
-				    double *c, long int totdoc, 
-				    long int qp_size, 
-				    long int *inconsistent, 
-				    long int *active2dnum, 
-				    long int *working2dnum, 
+				    double *c, INT totdoc, 
+				    INT qp_size, 
+				    INT *inconsistent, 
+				    INT *active2dnum, 
+				    INT *working2dnum, 
 				    double *selcrit, 
-				    long int *select, 
-				    long int *key, 
-				    long int *chosen, 
-				    long int iteration)
+				    INT *select, 
+				    INT *key, 
+				    INT *chosen, 
+				    INT iteration)
 /* Use the feasible direction approach to select the next
    qp-subproblem (see section 'Selecting a good working set'). Chooses
    a feasible direction at (pseudo) random to help jump over numerical
    problem. */
 {
-  long choosenum,i,j,k,activedoc,inum;
+  INT choosenum,i,j,k,activedoc,inum;
   double s;
 
   for(inum=0;working2dnum[inum]>=0;inum++); /* find end of index */
@@ -2585,7 +2585,7 @@ long CSVMLight::select_next_qp_subproblem_rand(INT* label,
       activedoc++;
     }
   }
-  select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
+  select_top_n(selcrit,activedoc,select,(INT)(qp_size/2));
   for(k=0;(choosenum<(qp_size/2)) && (k<(qp_size/2)) && (k<activedoc);k++) {
     i=key[select[k]];
     chosen[i]=1;
@@ -2610,7 +2610,7 @@ long CSVMLight::select_next_qp_subproblem_rand(INT* label,
       activedoc++;
     }
   }
-  select_top_n(selcrit,activedoc,select,(long)(qp_size/2));
+  select_top_n(selcrit,activedoc,select,(INT)(qp_size/2));
   for(k=0;(choosenum<qp_size) && (k<(qp_size/2)) && (k<activedoc);k++) {
     i=key[select[k]];
     chosen[i]=1;
@@ -2626,10 +2626,10 @@ long CSVMLight::select_next_qp_subproblem_rand(INT* label,
 
 
 
-void CSVMLight::select_top_n(double *selcrit, long range, long* select,
-		  long int n)
+void CSVMLight::select_top_n(double *selcrit, INT range, INT* select,
+		  INT n)
 {
-  register long i,j;
+  register INT i,j;
 
   for(i=0;(i<n) && (i<range);i++) { /* Initialize with the first n elements */
     for(j=i;j>=0;j--) {
@@ -2662,14 +2662,14 @@ void CSVMLight::select_top_n(double *selcrit, long range, long* select,
 
 /******************************** Shrinking  *********************************/
 
-void CSVMLight::init_shrink_state(SHRINK_STATE *shrink_state, long int totdoc,
-		       long int maxhistory)
+void CSVMLight::init_shrink_state(SHRINK_STATE *shrink_state, INT totdoc,
+		       INT maxhistory)
 {
-  long i;
+  INT i;
 
   shrink_state->deactnum=0;
-  shrink_state->active = new long[totdoc];
-  shrink_state->inactive_since = new long[totdoc];
+  shrink_state->active = new INT[totdoc];
+  shrink_state->inactive_since = new INT[totdoc];
   shrink_state->a_history = new double*[maxhistory];
   shrink_state->maxhistory=maxhistory;
   shrink_state->last_lin = new double[totdoc];
@@ -2694,21 +2694,21 @@ void CSVMLight::shrink_state_cleanup(SHRINK_STATE *shrink_state)
   delete[] (shrink_state->last_lin);
 }
 
-long CSVMLight::shrink_problem(SHRINK_STATE *shrink_state, 
-		    long int *active2dnum, 
-		    long int *last_suboptimal_at, 
-		    long int iteration, 
-		    long int totdoc, 
-		    long int minshrink, 
+INT CSVMLight::shrink_problem(SHRINK_STATE *shrink_state, 
+		    INT *active2dnum, 
+		    INT *last_suboptimal_at, 
+		    INT iteration, 
+		    INT totdoc, 
+		    INT minshrink, 
 		    double *a, 
-		    long int *inconsistent,
+		    INT *inconsistent,
 			double* c,
 			double* lin,
 			int* label)
      /* Shrink some variables away.  Do the shrinking only if at least
         minshrink variables can be removed. */
 {
-  long i,ii,change,activenum,lastiter;
+  INT i,ii,change,activenum,lastiter;
   double *a_old=NULL;
   
   activenum=0;
@@ -2765,10 +2765,10 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 				  SHRINK_STATE *shrink_state, 
 				  double *lin, 
 				  double *c, 
-				  long int totdoc, 
-				  long int iteration, 
-				  long int *inconsistent, 
-				  LONG* docs, 
+				  INT totdoc, 
+				  INT iteration, 
+				  INT *inconsistent, 
+				  INT* docs, 
 				  MODEL *model, 
 				  DREAL *aicache, 
 				  double *maxdiff)
@@ -2776,8 +2776,8 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
         shrinking. */
      /* Computes lin for those variables from scratch. */
 {
-  register long i=0,j,ii=0,jj,t,*changed2dnum,*inactive2dnum;
-  long *changed,*inactive;
+  register INT i=0,j,ii=0,jj,t,*changed2dnum,*inactive2dnum;
+  INT *changed,*inactive;
   register double *a_old,dist;
   double ex_c,target;
 
@@ -2817,10 +2817,10 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
   }
   else 
   {
-	  changed=new long[totdoc];
-	  changed2dnum=new long[totdoc+11];
-	  inactive=new long[totdoc];
-	  inactive2dnum=new long[totdoc+11];
+	  changed=new INT[totdoc];
+	  changed2dnum=new INT[totdoc+11];
+	  inactive=new INT[totdoc];
+	  inactive2dnum=new INT[totdoc+11];
 	  for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) {
 		  if(verbosity>=2) {
 			  CIO::message(M_INFO, "%ld..",t);

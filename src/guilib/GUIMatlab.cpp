@@ -1428,7 +1428,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 		{
 			if (mxIsDouble(mx_feat))
 			{
-				f= new CRealFeatures((LONG) 0);
+				f= new CRealFeatures(0);
 				INT num_vec=mxGetN(mx_feat);
 				INT num_feat=mxGetM(mx_feat);
 				DREAL* fm=new DREAL[num_vec*num_feat];
@@ -1462,7 +1462,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 							alpha = RAW;
 				}
 
-				f= new CCharFeatures(alpha, (LONG) 0);
+				f= new CCharFeatures(alpha, 0);
 				INT num_vec=mxGetN(mx_feat);
 				INT num_feat=mxGetM(mx_feat);
 				CHAR* fm=new char[num_vec*num_feat+10];

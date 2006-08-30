@@ -13,7 +13,7 @@
 #include "features/ShortFeatures.h"
 #include "features/CharFeatures.h"
 
-CShortFeatures::CShortFeatures(LONG size) : CSimpleFeatures<SHORT>(size)
+CShortFeatures::CShortFeatures(INT size) : CSimpleFeatures<SHORT>(size)
 {
 }
 

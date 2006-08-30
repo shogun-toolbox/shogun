@@ -16,7 +16,7 @@
 
 #include <string.h>
 
-CFeatures::CFeatures(LONG size) : cache_size(size), preproc(NULL), num_preproc(0), preprocessed(NULL) 
+CFeatures::CFeatures(INT size) : cache_size(size), preproc(NULL), num_preproc(0), preprocessed(NULL) 
 {
 	CIO::message(M_INFO, "Feature object created (%ld)\n",this);
 }

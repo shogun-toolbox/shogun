@@ -6089,7 +6089,7 @@ bool CHMM::permutation_entropy(INT window_width, INT sequence_number)
 			WORD* obs=p_observations->get_feature_vector(sequence_number, sequence_length);
 
 			INT histsize=get_M();
-			LONG* hist=new long[histsize];
+			LONG* hist=new LONG[histsize];
 			INT i,j;
 
 			for (i=0; i<sequence_length-window_width; i++)

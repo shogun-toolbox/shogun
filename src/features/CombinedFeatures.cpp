@@ -15,12 +15,12 @@
 
 class CCombinedFeatures;
 
-CCombinedFeatures::CCombinedFeatures() : CFeatures(0l)
+CCombinedFeatures::CCombinedFeatures() : CFeatures(0)
 {
 	feature_list=new CList<CFeatures*>(true);
 }
 
-CCombinedFeatures::CCombinedFeatures(const CCombinedFeatures & orig) : CFeatures(0l)
+CCombinedFeatures::CCombinedFeatures(const CCombinedFeatures & orig) : CFeatures(0)
 {
 }
 

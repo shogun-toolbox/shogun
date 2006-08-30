@@ -113,16 +113,16 @@ class CKernel
 		inline void cache_reset() {	resize_kernel_cache(cache_size) ; } ;
 		inline int get_max_elems_cache() { return kernel_cache.max_elems; }
 		inline int get_activenum_cache() { return kernel_cache.activenum; }
-		void get_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, DREAL *buffer, bool full_line=false) ;
+		void get_kernel_row(KERNELCACHE_IDX docnum, INT *active2dnum, DREAL *buffer, bool full_line=false) ;
 		void cache_kernel_row(KERNELCACHE_IDX x);
-		void cache_multiple_kernel_rows(LONG* key, INT varnum);
+		void cache_multiple_kernel_rows(INT* key, INT varnum);
 		void kernel_cache_reset_lru();
 		void kernel_cache_shrink(KERNELCACHE_IDX totdoc, KERNELCACHE_IDX num_shrink, KERNELCACHE_IDX *after);
 
 		void resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack=false);
 		
 		/// set the time used for lru	
-		inline void set_time(LONG t)
+		inline void set_time(INT t)
 		{
 			kernel_cache.time=t;
 		}
@@ -144,7 +144,7 @@ class CKernel
 			return(kernel_cache.index[cacheidx] >= 0);
 		}
 
-		inline long kernel_cache_space_available()
+		inline INT kernel_cache_space_available()
 			/* Is there room for one more row? */
 		{
 			return(kernel_cache.elems < kernel_cache.max_elems);
@@ -247,7 +247,7 @@ class CKernel
 			CKernel* kernel;
 			KERNEL_CACHE* kernel_cache;
 			KERNELCACHE_ELEM** cache;
-			LONG* uncached_rows;
+			INT* uncached_rows;
 			INT num_uncached;
 			BYTE* needs_computation;
 			INT start;

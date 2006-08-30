@@ -1522,8 +1522,8 @@ bool CGUIKernel::resize_kernel_cache(CHAR* param)
 {
 	if (kernel!=NULL) 
 	{
-		LONG size = 10 ;
-		sscanf(param, "%ld", &size);
+		INT size = 10 ;
+		sscanf(param, "%d", &size);
 		kernel->resize_kernel_cache(size) ;
 		return true ;
 	}

@@ -20,7 +20,7 @@
 class CCharFeatures: public CSimpleFeatures<CHAR>
 {
 	public:
-		CCharFeatures(E_ALPHABET alphabet, LONG size);
+		CCharFeatures(E_ALPHABET alphabet, INT size);
 		CCharFeatures(const CCharFeatures & orig);
         CCharFeatures(E_ALPHABET alphabet, CHAR* feature_matrix, INT num_feat, INT num_vec);
 		CCharFeatures(E_ALPHABET alphabet, CHAR* fname);

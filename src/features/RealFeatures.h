@@ -20,7 +20,7 @@
 class CRealFeatures: public CSimpleFeatures<DREAL>
 {
  public:
-  CRealFeatures(LONG size) : CSimpleFeatures<DREAL>(size)
+  CRealFeatures(INT size) : CSimpleFeatures<DREAL>(size)
   {
   }
 
