@@ -28,7 +28,7 @@ public:
 
 	static void set_target(FILE* target);
 	static void set_loglevel(EMessageType level);
-	static void message(EMessageType prio, const CHAR *fmt, ... );
+	static void message(EMessageType prio, const char *fmt, ... );
 	static void progress(DREAL current_val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
 	static void absolute_progress(DREAL current_val, DREAL val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
 

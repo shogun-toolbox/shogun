@@ -384,11 +384,6 @@ template <class ST> class CStringFeatures: public CFeatures
 			INT len=features[i].length;
 			ST* str=features[i].string;
 			
-			fprintf(stderr, "Str[%d](%d) ", i, len);
-			for (INT k=0; k<len; k++)
-				fprintf(stderr,"%.2x", str[k]);
-			fprintf(stderr,"\n");	
-				
 			for (INT j=0; j<len; j++)
 				hist[str[j]]++;
 		}

@@ -1520,7 +1520,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 							maxlen=CMath::max(maxlen, sc[i].length);
 
 							for (int j=0; j<sc[i].length; j++)
-								syms[(int) sc[i].string[j]]++;
+								syms[(BYTE) sc[i].string[j]]++;
 						}
 						else
 						{
