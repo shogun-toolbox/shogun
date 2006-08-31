@@ -71,7 +71,7 @@ public:
 		return compute_by_tree(idx); 
 	}
 
-	virtual DREAL* compute_batch(INT& num_vec, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor);
+	virtual DREAL* compute_batch(INT& num_vec, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor=1.0);
 
 	// subkernel functionality
 	inline virtual void clear_normal()

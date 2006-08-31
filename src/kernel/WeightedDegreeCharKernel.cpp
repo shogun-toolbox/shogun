@@ -1148,3 +1148,73 @@ DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT
 
 	return result;
 }
+
+DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights)
+{
+	num_feat=((CCharFeatures*) get_rhs())->get_num_features();
+	ASSERT(num_feat>0);
+	ASSERT(((CCharFeatures*) get_rhs())->get_alphabet() == DNA);
+	num_sym=4; //for now works only w/ DNA
+	INT sym_offset=(INT) pow(num_sym,max_degree);
+
+	if (!result)
+	{
+		INT buflen=(INT) num_feat*sym_offset;
+		result= new DREAL[];
+		ASSERT(result);
+		memset(result, 0, sizeof(DREAL)*buflen);
+	}
+
+	for (INT k=0; k<num_feat; k++)
+	{
+		init_optimization(num_suppvec, IDX, weights, k);
+
+		for (INT j=0; k+j<num_feat; j++)
+		{
+			struct Trie* tree = trees[k+j] ;
+			ASSERT(tree!=NULL) ;
+
+			if (j<degree-1)
+			{
+				for (INT i=0; i<num_sym; i++)
+				{
+					if (tree->children[i]!=NO_CHILD)
+					{
+#ifdef USE_TREEMEM
+						struct Trie* child=&TreeMem[tree->children[i]];
+#else
+						struct Trie* child=tree->children[i];
+#endif
+						DREAL v=child->weight;
+
+						if (use_normalization)
+							result[sum_offset*(k+j)+i] += v/sqrtdiag_rhs[i];
+						else
+							result[sum_offset*(k+j)+i] += v;
+					}
+				}
+			}
+			else // j==degree-1 -> end of tree, different leaf handling+break
+			{
+				if (j==degree-1)
+				{
+					for (INT i=0; i<num_sym; i++)
+					{
+						DREAL v= tree->child_weights[i];
+
+						if (use_normalization)
+							result[sum_offset*(k+j)+i] += v/sqrtdiag_rhs[i];
+						else
+							result[sum_offset*(k+j)+i] += v;
+					}
+				}
+				break;
+			}
+		}
+		CIO::progress(k,0,num_feat);
+	}
+
+	delete[] vec;
+
+	return result;
+}

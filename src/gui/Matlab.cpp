@@ -46,6 +46,7 @@ static const CHAR* N_SET_WD_POS_WEIGHTS=	        "set_WD_position_weights";
 static const CHAR* N_GET_SUBKERNEL_WEIGHTS=	        "get_subkernel_weights";
 static const CHAR* N_GET_LAST_SUBKERNEL_WEIGHTS=	        "get_last_subkernel_weights";
 static const CHAR* N_GET_WD_POS_WEIGHTS=	        "get_WD_position_weights";
+static const CHAR* N_GET_WD_SCORING=	        "get_WD_scoring";
 static const CHAR* N_GET_FEATURES=		"get_features";
 static const CHAR* N_GET_LABELS=		"get_labels";
 static const CHAR* N_GET_VERSION=		"get_version";
@@ -373,6 +374,16 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				CIO::message(M_ERROR, "usage is W=sg('get_WD_position_weights')");
+		}
+		else if (!strncmp(action, N_GET_WD_SCORING, strlen(N_GET_WD_SCORING)))
+		{
+			if ((nlhs==1) && (nrhs==1))
+			{
+				if (!sg_matlab.get_WD_scoring(plhs))
+					CIO::message(M_ERROR, "error executing command");
+			}
+			else
+				CIO::message(M_ERROR, "usage is W=sg('get_WD_scoring')");
 		}
 		else if (!strncmp(action, N_SET_LAST_SUBKERNEL_WEIGHTS, strlen(N_SET_LAST_SUBKERNEL_WEIGHTS)))
 		{
