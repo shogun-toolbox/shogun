@@ -1148,6 +1148,44 @@ DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT
 	return result;
 }
 
+void compute_scoring_helper(struct Trie* tree, INT i, INT j, REAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, DREAL* result)
+{
+	d++;
+
+	if (i+j<num_feat)
+	{
+		if (j<degree-1)
+		{
+			for (INT k=0; k<num_sym; k++)
+			{
+				if (tree->children[k]!=NO_CHILD)
+				{
+#ifdef USE_TREEMEM
+					struct Trie* child=&TreeMem[tree->children[k]];
+#else
+					struct Trie* child=tree->children[k];
+#endif
+					weight += child->weight;
+
+					//do recursion starting from this position
+					compute_scoring_helper(child, i, j+1, 0.0, max_degree, max_degree, num_feat, num_sym, sym_offset, result);
+
+					//continue recursion if not yet at max_degree, else add to result
+					if (d==max_degree)
+						result[sym_offset*(i+j)+k] += weight;
+					else
+						compute_scoring_helper(child, i, j+1, weight, d-1, max_degree, num_feat, num_sym, sym_offset, result);
+				}
+			}
+		}
+		else if (j==degree-1)
+		{
+			for (INT k=0; k<num_sym; k++)
+				result[sym_offset*(i+j)+k] += tree->child_weights[i];
+		}
+	}
+}
+
 DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights)
 {
 	num_feat=((CCharFeatures*) get_rhs())->get_num_features();
@@ -1164,54 +1202,14 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 		memset(result, 0, sizeof(DREAL)*buflen);
 	}
 
-	for (INT k=0; k<num_feat; k++)
+	for (INT i=0; i<num_feat; i++)
 	{
-		init_optimization(num_suppvec, IDX, weights, k);
+		init_optimization(num_suppvec, IDX, weights, i);
 
-		INT j=0;
-		for (INT j=0; k+j<num_feat; j++)
-		{
-			struct Trie* tree = trees[k+j] ;
-			ASSERT(tree!=NULL) ;
-
-			if (j<degree-1)
-			{
-				for (INT i=0; i<num_sym; i++)
-				{
-					if (tree->children[i]!=NO_CHILD)
-					{
-#ifdef USE_TREEMEM
-						struct Trie* child=&TreeMem[tree->children[i]];
-#else
-						struct Trie* child=tree->children[i];
-#endif
-						DREAL v=child->weight;
-
-						if (use_normalization)
-							result[sym_offset*(k+j)+i] += v/sqrtdiag_rhs[i];
-						else
-							result[sym_offset*(k+j)+i] += v;
-					}
-				}
-			}
-			//else // j==degree-1 -> end of tree, different leaf handling+break
-			//{
-			//	if (j==degree-1)
-			//	{
-			//		for (INT i=0; i<num_sym; i++)
-			//		{
-			//			DREAL v= tree->child_weights[i];
-
-			//			if (use_normalization)
-			//				result[sym_offset*(k+j)+i] += v/sqrtdiag_rhs[i];
-			//			else
-			//				result[sym_offset*(k+j)+i] += v;
-			//		}
-			//	}
-			//	break;
-			//}
-		}
-		CIO::progress(k,0,num_feat);
+		struct Trie* tree = trees[i];
+		ASSERT(tree!=NULL);
+		compute_scoring_helper(tree, i, 0, 0.0, 0, max_degree, num_feat, num_sym, sym_offset, result);
+		CIO::progress(i,0,num_feat);
 	}
 
 	return result;
