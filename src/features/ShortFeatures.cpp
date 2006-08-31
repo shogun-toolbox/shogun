@@ -6,7 +6,6 @@
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
  * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -32,6 +31,9 @@ bool CShortFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT
 	num_vectors=cf->get_num_vectors();
 	num_features=cf->get_num_features();
 
+	CAlphabet* alpha=cf->get_alphabet();
+	ASSERT(alpha);
+
 	INT len=num_vectors*num_features;
 	delete[] feature_matrix;
 	feature_matrix=new SHORT[len];
@@ -48,7 +50,7 @@ bool CShortFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT
 	INT max_val=0;
 	for (INT i=0; i<len; i++)
 	{
-		feature_matrix[i]=(SHORT) cf->remap(fm[i]);
+		feature_matrix[i]=(SHORT) alpha->remap(fm[i]);
 		max_val=CMath::max((INT) feature_matrix[i],max_val);
 	}
 

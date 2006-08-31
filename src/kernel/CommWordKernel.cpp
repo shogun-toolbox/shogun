@@ -5,8 +5,6 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
- * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -186,7 +184,7 @@ DREAL CCommWordKernel::compute(INT idx_a, INT idx_b)
 				while (left_idx< alen && avec[left_idx]==sym)
 					left_idx++;
 
-				while (right_idx< alen && bvec[right_idx]==sym)
+				while (right_idx< blen && bvec[right_idx]==sym)
 					right_idx++;
 
 				result++;
@@ -211,7 +209,7 @@ DREAL CCommWordKernel::compute(INT idx_a, INT idx_b)
 				while (left_idx< alen && avec[left_idx]==sym)
 					left_idx++;
 
-				while (right_idx< alen && bvec[right_idx]==sym)
+				while (right_idx< blen && bvec[right_idx]==sym)
 					right_idx++;
 
 				result+=(left_idx-old_left_idx)*(right_idx-old_right_idx);

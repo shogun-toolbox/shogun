@@ -6,7 +6,6 @@
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
  * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -378,33 +377,8 @@ CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFea
 		src->free_feature_vector(str, i, to_free);
 	}
 
-
-	int num_symbols = 4; //DNA is default
-
-	switch (src->get_alphabet())
-	{
-		case PROTEIN:
-			num_symbols = 26;
-			break;
-		case ALPHANUM:
-			num_symbols = 36;
-			break;
-		case CUBE:
-			num_symbols = 6;
-			break;
-		case RAW:
-			num_symbols = 256;
-			break;
-		case NONE:
-			num_symbols = 0;
-			break;
-		case DNA:
-		default:
-			num_symbols = 4;
-	}
-
-	CStringFeatures<CHAR>* target= new CStringFeatures<CHAR>(num_symbols);
-	target->set_features(strings, num_vec, max_len, num_symbols, src->get_alphabet());
+	CStringFeatures<CHAR>* target= new CStringFeatures<CHAR>(new CAlphabet(src->get_alphabet()));
+	target->set_features(strings, num_vec, max_len);
 
 	return target;
 }
@@ -449,36 +423,15 @@ CStringFeatures<ULONG>* CGUIFeatures::convert_string_char_to_string_ulong(CStrin
 	CHAR from_type[1024]="";
 	CHAR to_class[1024]="";
 	CHAR to_type[1024]="";
-	CHAR alpha[1024]="";
 	INT order=1;
 	INT start=0;
 	INT gap = 0 ;
 	
-	E_ALPHABET alphabet=DNA;
-
 	param=CIO::skip_spaces(param);
 
-	if ((sscanf(param, "%s %s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, alpha, &order, &start, &gap))>=6)
+	if ((sscanf(param, "%s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, &order, &start, &gap))<6)
 	{
-		if (strcmp(alpha,"PROTEIN")==0)
-			alphabet=PROTEIN;
-		else if (strcmp(alpha,"ALPHANUM")==0)
-			alphabet=ALPHANUM;
-		else if (strcmp(alpha,"DNA")==0)
-			alphabet=DNA;
-		else if (strcmp(alpha,"CUBE")==0)
-			alphabet=CUBE;
-		else if (strcmp(alpha,"RAW")==0 || (strcmp(alpha,"BYTE")==0))
-			alphabet=RAW;
-		else
-		{
-			CIO::message(M_ERROR, "unknown alphabet!\n");
-			return NULL;
-		}
-	}
-	else
-	{
-		CIO::message(M_ERROR, "see help for params (target, from_class, from_type, to_class, to_type, alphabet, order, start, gap)\n");
+		CIO::message(M_ERROR, "see help for params (target, from_class, from_type, to_class, to_type, order, start, gap)\n");
 		return NULL;
 	}
 
@@ -487,8 +440,8 @@ CStringFeatures<ULONG>* CGUIFeatures::convert_string_char_to_string_ulong(CStrin
 		//create dense features with 0 cache
 		CIO::message(M_INFO, "converting CHAR STRING features to ULONG STRING ones (order=%i)\n",order);
 
-		CStringFeatures<ULONG>* sf=new CStringFeatures<ULONG>();
-		if (sf && sf->obtain_from_char_features(src, alphabet, start, order, gap))
+		CStringFeatures<ULONG>* sf=new CStringFeatures<ULONG>(new CAlphabet(src->get_alphabet()));
+		if (sf && sf->obtain_from_char_features(src, start, order, gap))
 		{
 			CIO::message(M_INFO, "conversion successful\n");
 			return sf;
@@ -509,36 +462,15 @@ CStringFeatures<WORD>* CGUIFeatures::convert_string_char_to_string_word(CStringF
 	CHAR from_type[1024]="";
 	CHAR to_class[1024]="";
 	CHAR to_type[1024]="";
-	CHAR alpha[1024]="";
 	INT order=1;
 	INT start=0;
 	INT gap = 0 ;
 	
-	E_ALPHABET alphabet=DNA;
-
 	param=CIO::skip_spaces(param);
 
-	if ((sscanf(param, "%s %s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, alpha, &order, &start, &gap))>=6)
+	if ((sscanf(param, "%s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, &order, &start, &gap))<6)
 	{
-		if (strcmp(alpha,"PROTEIN")==0)
-			alphabet=PROTEIN;
-		else if (strcmp(alpha,"ALPHANUM")==0)
-			alphabet=ALPHANUM;
-		else if (strcmp(alpha,"DNA")==0)
-			alphabet=DNA;
-		else if (strcmp(alpha,"CUBE")==0)
-			alphabet=CUBE;
-		else if (strcmp(alpha,"RAW")==0 || (strcmp(alpha,"BYTE")==0))
-			alphabet=RAW;
-		else
-		{
-			CIO::message(M_ERROR, "unknown alphabet!\n");
-			return NULL;
-		}
-	}
-	else
-	{
-		CIO::message(M_ERROR, "see help for params (target, from_class, from_type, to_class, to_type, alphabet, order, start, gap)\n");
+		CIO::message(M_ERROR, "see help for params (target, from_class, from_type, to_class, to_type, order, start, gap)\n");
 		return NULL;
 	}
 
@@ -547,8 +479,8 @@ CStringFeatures<WORD>* CGUIFeatures::convert_string_char_to_string_word(CStringF
 		//create dense features with 0 cache
 		CIO::message(M_INFO, "converting CHAR STRING features to WORD STRING ones (order=%i)\n",order);
 
-		CStringFeatures<WORD>* sf=new CStringFeatures<WORD>();
-		if (sf && sf->obtain_from_char_features(src, alphabet, start, order, gap))
+		CStringFeatures<WORD>* sf=new CStringFeatures<WORD>(new CAlphabet(src->get_alphabet()));
+		if (sf && sf->obtain_from_char_features(src, start, order, gap))
 		{
 			CIO::message(M_INFO, "conversion successful\n");
 			return sf;
@@ -660,36 +592,14 @@ CWordFeatures* CGUIFeatures::convert_simple_char_to_simple_word(CCharFeatures* s
 	CHAR from_type[1024]="";
 	CHAR to_class[1024]="";
 	CHAR to_type[1024]="";
-	CHAR alpha[1024]="";
 	INT order=1;
 	INT start=0;
 	INT gap = 0 ;
 	
-	E_ALPHABET alphabet=DNA;
-
-
 	param=CIO::skip_spaces(param);
-	if ((sscanf(param, "%s %s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, alpha, &order, &start, &gap))>=6)
+	if ((sscanf(param, "%s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, &order, &start, &gap))<6)
 	{
-		if (strcmp(alpha,"PROTEIN")==0)
-			alphabet=PROTEIN;
-		else if (strcmp(alpha,"ALPHANUM")==0)
-			alphabet=ALPHANUM;
-		else if (strcmp(alpha,"DNA")==0)
-			alphabet=DNA;
-		else if (strcmp(alpha,"CUBE")==0)
-			alphabet=CUBE;
-		else if (strcmp(alpha,"RAW")==0 || (strcmp(alpha,"BYTE")==0))
-			alphabet=RAW;
-		else
-		{
-			CIO::message(M_ERROR, "unknown alphabet!\n");
-			return NULL;
-		}
-	}
-	else
-	{
-		CIO::message(M_ERROR, "see help for params (target, from_class, from_type, to_class, to_type, alphabet, order, start, gap)\n");
+		CIO::message(M_ERROR, "see help for params (target, from_class, from_type, to_class, to_type, order, start, gap)\n");
 		return NULL;
 	}
 
@@ -700,7 +610,7 @@ CWordFeatures* CGUIFeatures::convert_simple_char_to_simple_word(CCharFeatures* s
 
 		CWordFeatures* wf = new CWordFeatures(0);
 
-		if ( (wf) && (wf->obtain_from_char_features(src, alphabet, start, order, gap)))
+		if ( (wf) && (wf->obtain_from_char_features(src, start, order, gap)))
 		{
 			CIO::message(M_INFO, "conversion successful\n");
 			return wf;
@@ -727,7 +637,7 @@ CShortFeatures* CGUIFeatures::convert_simple_char_to_simple_short(CCharFeatures*
 	INT gap=0 ;
 
 	param=CIO::skip_spaces(param);
-	if ((sscanf(param, "%s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, &order, &start, &gap))<5)
+	if ((sscanf(param, "%s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, &order, &start, &gap))<6)
 		CIO::message(M_ERROR, "see help for params (target, from_class, from_type, to_class, to_type, order, start, gap)\n");
 	
 	if (src)

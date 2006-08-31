@@ -9,7 +9,6 @@
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
  * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 

@@ -6,7 +6,6 @@
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
  * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -31,7 +30,7 @@ CWordFeatures::~CWordFeatures()
 	delete[] symbol_mask_table;
 }
 
-bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alphabet, INT start, INT order, INT gap)
+bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT order, INT gap)
 {
 	ASSERT(cf);
 
@@ -41,6 +40,9 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alph
 
 	num_vectors=cf->get_num_vectors();
 	num_features=cf->get_num_features();
+
+	CAlphabet* alpha=cf->get_alphabet();
+	ASSERT(alpha);
 
 	INT len=num_vectors*num_features;
 	delete[] feature_matrix;
@@ -58,7 +60,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alph
 	INT max_val=0;
 	for (INT i=0; i<len; i++)
 	{
-		feature_matrix[i]=(WORD) cf->remap(fm[i]);
+		feature_matrix[i]=(WORD) alpha->remap(fm[i]);
 		max_val=CMath::max((INT) feature_matrix[i],max_val);
 	}
 
@@ -70,7 +72,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alph
 
 	for (INT i=0; i<len; i++)
 	{
-		feature_matrix[i]=(WORD) cf->remap(fm[i]);
+		feature_matrix[i]=(WORD) alpha->remap(fm[i]);
 		hist[feature_matrix[i]]++ ;
 	}
 	for (INT i=0; i<=max_val; i++)
@@ -133,7 +135,6 @@ void CWordFeatures::translate_from_single_order(WORD* obs, INT sequence_length, 
 	
 	const INT start_gap = (order - gap)/2 ;
 	const INT end_gap = start_gap + gap ;
-	//fprintf(stderr, "order=%i, start=%i, gap=%i, start_gap=%i, end_gap=%i\n", order, start, gap, start_gap, end_gap) ;
 	
 	INT i,j;
 	WORD value=0;
@@ -146,15 +147,12 @@ void CWordFeatures::translate_from_single_order(WORD* obs, INT sequence_length, 
 		{
 			if (i-j<start_gap)
 			{
-				//fprintf(stderr, "<") ;
 				value= (value >> max_val) | (obs[j] << (max_val * (order-1-gap)));
 			}
 			else if (i-j>=end_gap)
 			{
-				//fprintf(stderr, ">") ;
 				value= (value >> max_val) | (obs[j] << (max_val * (order-1-gap)));
 			}
-			//fprintf(stderr, "i=%i, j=%i, value=%d, obs[j]=%i\n", i, j, value, obs[j]) ;
 		}
 		obs[i]= (WORD) value;
 	}
@@ -184,11 +182,6 @@ void CWordFeatures::translate_from_single_order(WORD* obs, INT sequence_length, 
 	// shifting
 	for (i=start; i<sequence_length; i++)	
 		obs[i-start]=obs[i];
-
-	/*for (i=0; i<sequence_length; i++)
-		fprintf(stderr, "%i, ", obs[i]) ;
-		fprintf(stderr, "\n") ;*/
-	
 }
 
 CFeatures* CWordFeatures::duplicate() const
@@ -228,11 +221,8 @@ bool CWordFeatures::save(CHAR* fname)
 }
 
 /* 
-
 XT=['ATTTTTTAA';'ATTTTTTAA']' ;
 sg('send_command', 'loglevel ALL') ;
 sg('set_features', 'TRAIN', XT)
 sg('send_command', 'convert TRAIN SIMPLE CHAR SIMPLE WORD DNA 3 2 0') ;
-
-
 */

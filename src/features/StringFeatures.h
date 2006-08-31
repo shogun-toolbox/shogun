@@ -6,7 +6,6 @@
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
  * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -17,6 +16,7 @@
 #include "preproc/StringPreProc.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
+#include "features/Alphabet.h"
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/File.h"
@@ -37,12 +37,18 @@ template <class ST> class CStringFeatures: public CFeatures
 //	class CStringPreProc<ST> ;
 	
 	public:
-	CStringFeatures(INT num_sym=-1) : CFeatures(0), num_vectors(0), features(NULL), max_string_length(0), num_symbols(num_sym), original_num_symbols(num_sym), order(0), symbol_mask_table(NULL)
+	CStringFeatures(CAlphabet* alpha) : CFeatures(0), num_vectors(0), features(NULL), max_string_length(0), order(0), symbol_mask_table(NULL)
 	{
+		alphabet=alpha;
+		ASSERT(alpha);
+		num_symbols=alphabet->get_num_symbols();
+		original_num_symbols=num_symbols;
 	}
 
 	CStringFeatures(const CStringFeatures & orig) : CFeatures(orig), num_vectors(orig.num_vectors), max_string_length(orig.max_string_length), num_symbols(orig.num_symbols), original_num_symbols(orig.original_num_symbols), order(orig.order)
 	{
+		alphabet=new CAlphabet(orig.alphabet);
+
 		if (orig.features)
 		{
 			features=new T_STRING<ST>[orig.num_vectors];
@@ -65,15 +71,18 @@ template <class ST> class CStringFeatures: public CFeatures
 		}
 	}
 
-	CStringFeatures(char* fname, E_ALPHABET alpha=NONE) : CFeatures(fname), num_vectors(0), features(NULL), max_string_length(0), num_symbols(0), original_num_symbols(0), order(0), symbol_mask_table(NULL)
+	CStringFeatures(char* fname, E_ALPHABET alpha=DNA) : CFeatures(fname), num_vectors(0), features(NULL), max_string_length(0), order(0), symbol_mask_table(NULL)
 	{
-		alphabet_type=alpha;
-		num_symbols=4; //FIXME
+		alphabet=new CAlphabet(alpha);
+		num_symbols=alphabet->get_num_symbols();
+		original_num_symbols=num_symbols;
 		load(fname);
 	}
 
 	virtual ~CStringFeatures()
 	{
+		delete alphabet;
+		alphabet=NULL;
 		cleanup();
 	}
 
@@ -92,9 +101,9 @@ template <class ST> class CStringFeatures: public CFeatures
 	virtual EFeatureClass get_feature_class() { return C_STRING ; } ;
 	virtual EFeatureType get_feature_type();
 
-	inline E_ALPHABET get_alphabet()
+	inline CAlphabet* get_alphabet()
 	{
-		return alphabet_type;
+		return alphabet;
 	}
 
 	virtual CFeatures* duplicate() const 
@@ -149,15 +158,15 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	virtual inline INT get_num_vectors() { return num_vectors; }
 
-	inline INT get_num_symbols() { return num_symbols; }
-	inline INT get_max_num_symbols() { return (1<<(sizeof(ST)*8)); }
+	inline LONGREAL get_num_symbols() { return num_symbols; }
+	inline LONGREAL get_max_num_symbols() { return (1<<(sizeof(ST)*8)); }
 	
 	// these functions are necessary to find out about a former conversion process
 	
 	// number of symbols before higher order mapping
-	inline INT get_original_num_symbols() { return original_num_symbols; }
+	inline LONGREAL get_original_num_symbols() { return original_num_symbols; }
 
-	// order used when higher order mapping was done
+	// order used for higher order mapping
 	inline INT get_order() { return order; }
 
 	// a higher order mapped symbol will be shaped such that the symbols in
@@ -222,14 +231,12 @@ template <class ST> class CStringFeatures: public CFeatures
 		return false;
 	}
 
-	void set_features(T_STRING<ST>* features, INT num_vectors, INT max_string_length, INT num_symbols, E_ALPHABET alphabet)
+	void set_features(T_STRING<ST>* features, INT num_vectors, INT max_string_length)
 	{
 		cleanup();
 		this->features=features;
 		this->num_vectors=num_vectors;
 		this->max_string_length=max_string_length;
-		this->num_symbols=num_symbols;
-		this->alphabet_type=alphabet;
 	}
 
 	virtual bool save(CHAR* dest)
@@ -241,110 +248,25 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	/// preprocess the feature_matrix
 	virtual bool preproc_feature_strings(bool force_preprocessing=false)
-		{
-			CIO::message(M_DEBUG, "force: %d\n", force_preprocessing);
-			
-			for (INT i=0; i<get_num_preproc(); i++)
-			{ 
-				CIO::message(M_INFO, "preprocessing using preproc %s\n", get_preproc(i)->get_name());
-				bool ok=((CStringPreProc<ST>*) get_preproc(i))->apply_to_feature_strings(this) ;
-				
-//					if (!((CStringPreProc<ST>*) get_preproc(i))->apply_to_feature_strings(this))
-				if (!ok)
-					return false;
-			}
-			return true;
-		}
-
-	bool obtain_from_char_features(CStringFeatures<CHAR>* sf, INT start, INT order)
 	{
-		INT i=0;
-		ASSERT(sf);
-		E_ALPHABET alphabet=sf->get_alphabet();
-		this->order=order;
-		cleanup();
-		CCharFeatures cf(alphabet, 0);
-		delete[] symbol_mask_table;
-		symbol_mask_table=new ST[256];
-		num_vectors=sf->get_num_vectors();
-		max_string_length=sf->get_max_vector_length()-start;
-		features=new T_STRING<ST>[num_vectors];
-		ASSERT(features);
+		CIO::message(M_DEBUG, "force: %d\n", force_preprocessing);
 
-		CIO::message(M_DEBUG, "%d symbols in StringFeatures<CHAR>\n", sf->get_num_symbols());
-		ST max_val=0;
-		for (i=0; i<num_vectors; i++)
-		{
-			INT len=sf->get_vector_length(i);
+		for (INT i=0; i<get_num_preproc(); i++)
+		{ 
+			CIO::message(M_INFO, "preprocessing using preproc %s\n", get_preproc(i)->get_name());
+			bool ok=((CStringPreProc<ST>*) get_preproc(i))->apply_to_feature_strings(this) ;
 
-			features[i].string=new ST[len];
-			features[i].length=len;
-			ASSERT(features[i].string);
-
-			ST* str=features[i].string;
-
-			for (INT j=0; j<len; j++)
-			{
-				str[j]=(ST) cf.remap(sf->get_feature(i,j));
-				max_val=CMath::max((ST) str[j], (ST) max_val);
-			}
-		}
-
-		original_num_symbols=max_val+1;
-
-		//number of bits the maximum value in feature matrix requires to get stored
-		max_val= (int) ceil(log((double) max_val+1)/log((double) 2));
-		num_symbols=1<<(max_val*order);
-
-		CIO::message(M_DEBUG, "max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, order, num_symbols);
-
-		if ( ((long double) num_symbols) > pow(((long double) 2),((long double) sizeof(ST)*8)) )
-		{
-			CIO::message(M_DEBUG, "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
-			return false;
-		}
-
-		CIO::message(M_DEBUG, "translate: start=%i order=%i (size:%i)\n", start, order, sizeof(ST)) ;
-		for (INT line=0; line<num_vectors; line++)
-		{
-			INT len=0;
-			ST* fv=get_feature_vector(line, len);
-			translate_from_single_order(fv, len, start, order, max_val);
-
-			/* fix the length of the string -- hacky */
-			features[line].length-=start ;
-			if (features[line].length<0)
-				features[line].length=0 ;
-		}
-
-		for (i=0; i<256; i++)
-			symbol_mask_table[i]=0;
-
-		ST mask=0;
-		for (i=0; i<(INT) max_val; i++)
-			mask=(mask<<1) | 1;
-
-		for (i=0; i<256; i++)
-		{
-			BYTE bits=(BYTE) i;
-
-			for (INT j=0; j<8; j++)
-			{
-				if (bits & 1)
-					symbol_mask_table[i]|=mask<<(max_val*j);
-
-				bits>>=1;
-			}
+			if (!ok)
+				return false;
 		}
 		return true;
 	}
 
-	bool obtain_from_char_features(CStringFeatures<CHAR>* sf, E_ALPHABET alphabet, INT start, INT order, INT gap)
+	bool obtain_from_char_features(CStringFeatures<CHAR>* sf, INT start, INT order, INT gap)
 	{
 		ASSERT(sf);
 		this->order=order;
 		cleanup();
-		CCharFeatures cf(alphabet, 0);
 		delete[] symbol_mask_table;
 		symbol_mask_table=new ST[256];
 
@@ -353,54 +275,41 @@ template <class ST> class CStringFeatures: public CFeatures
 		features=new T_STRING<ST>[num_vectors];
 		ASSERT(features);
 
+		CAlphabet* alpha=sf->get_alphabet();
+		alpha->clear_histogram();
+
 		CIO::message(M_DEBUG, "%d symbols in StringFeatures<CHAR>\n", sf->get_num_symbols());
 
-		ST max_val=0;
 		for (INT i=0; i<num_vectors; i++)
 		{
-			INT len=sf->get_vector_length(i);
+			INT len=-1;
+			CHAR* c=sf->get_feature_vector(i, len);
 
 			features[i].string=new ST[len];
 			features[i].length=len;
 			ASSERT(features[i].string);
 
+			alpha->add_string_to_histogram(c, len);
 			ST* str=features[i].string;
-
 			for (INT j=0; j<len; j++)
 			{
-				str[j]=(ST) cf.remap(sf->get_feature(i,j));
-				max_val=CMath::max((ST) str[j], (ST) max_val);
+				str[j]=(ST) alpha->remap(c[j]);
+				alpha->add_byte_to_histogram(c[j]);
 			}
+
 		}
 
-		original_num_symbols=max_val+1;
-		
-		INT* hist = new int[max_val+1] ;
-		for (INT i=0; i<= (LONG) max_val; i++)
-		  hist[i]=0 ;
+		original_num_symbols=alpha->get_num_symbols();
+		alpha->print_histogram();
+		alpha->check_alphabet_size();
 
-		for (INT i=0; i<num_vectors; i++)
-		{
-			INT len=features[i].length;
-			ST* str=features[i].string;
-			
-			for (INT j=0; j<len; j++)
-				hist[str[j]]++;
-		}
-		for (INT i=0; i<=(LONG) max_val; i++)
-		  if (hist[i]>0)
-			CIO::message(M_DEBUG, "symbol: %i  number of occurence: %i\n", i, hist[i]) ;
-
-		delete[] hist;
-
-		//number of bits the maximum value in feature matrix requires to get stored
-		max_val= (int) ceil(log((double) max_val+1)/log((double) 2));
+		INT max_val=alpha->get_num_bits();
 		if (order>1)
-			num_symbols=1<<(max_val*order);
+			num_symbols=powl(2,max_val*order);
 		else
 			num_symbols=original_num_symbols;
 
-		CIO::message(M_INFO, "max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, order, num_symbols);
+		CIO::message(M_INFO, "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, order, num_symbols);
 
 		if ( ((long double) num_symbols) > pow(((long double) 2),((long double) sizeof(ST)*8)) )
 		{
@@ -419,10 +328,8 @@ template <class ST> class CStringFeatures: public CFeatures
 			features[line].length-=start+gap ;
 			if (features[line].length<0)
 				features[line].length=0 ;
-			  
-        for (INT j = 0; j < len; j++) 
-             fprintf(stderr, "%.16llx\n", fv[j]);
-                }         
+
+		}         
        
 		ULONG mask=0;
 		for (INT i=0; i< (LONG) max_val; i++)
@@ -478,7 +385,7 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	void translate_from_single_order(ST* obs, INT sequence_length, INT start, INT order, INT max_val, INT gap)
 	{
-		CIO::message(M_DEBUG, "max_val is: %d\n", max_val);
+		CIO::message(M_DEBUG, "max_val is: %d order: %d\n", max_val, order);
 		ASSERT(gap>=0) ;
 		
 		const INT start_gap = (order - gap)/2 ;
@@ -533,6 +440,10 @@ template <class ST> class CStringFeatures: public CFeatures
 	}
 
 	protected:
+
+	/// alphabet
+	CAlphabet* alphabet;
+
 	/// number of string vectors
 	INT num_vectors;
 
@@ -543,13 +454,10 @@ template <class ST> class CStringFeatures: public CFeatures
 	INT max_string_length;
 
 	/// number of used symbols
-	INT num_symbols;
+	LONGREAL num_symbols;
 
 	/// original number of used symbols (before higher order mapping)
-	INT original_num_symbols;
-
-	/// alphabet
-	E_ALPHABET alphabet_type;
+	LONGREAL original_num_symbols;
 
 	/// order used in higher order mapping
 	INT order;

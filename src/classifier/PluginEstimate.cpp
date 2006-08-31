@@ -5,8 +5,6 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
- * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -108,8 +106,8 @@ DREAL CPluginEstimate::classify_example(INT idx)
 
 	if ((!pos_model) || (!neg_model))
 	  {
-	    CIO::message(M_ERROR, "model(s) not assigned\n") ;
-	    return NAN ;
+	    CIO::message(M_ERROR, "model(s) not assigned\n");
+	    return NAN;
 	  } ;
 	  
 	DREAL result=pos_model->get_log_likelihood_example(vector, len) - neg_model->get_log_likelihood_example(vector, len);

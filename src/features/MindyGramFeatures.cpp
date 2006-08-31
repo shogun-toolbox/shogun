@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2006 Konrad Rieck
- * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 2006 Fraunhofer Institute FIRST and Max-Planck-Society
  *
  * Indentation: bcpp -f 1 -s -ylcnc -bcl -i 4
  */

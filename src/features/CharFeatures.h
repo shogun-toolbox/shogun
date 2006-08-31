@@ -5,8 +5,6 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
- * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -15,25 +13,23 @@
 
 #include "features/SimpleFeatures.h"
 #include "features/CharFeatures.h"
+#include "features/Alphabet.h"
 #include "lib/common.h"
 
 class CCharFeatures: public CSimpleFeatures<CHAR>
 {
 	public:
-		CCharFeatures(E_ALPHABET alphabet, INT size);
+		CCharFeatures(E_ALPHABET, INT size);
+		CCharFeatures(CAlphabet* alpha, INT size);
 		CCharFeatures(const CCharFeatures & orig);
         CCharFeatures(E_ALPHABET alphabet, CHAR* feature_matrix, INT num_feat, INT num_vec);
 		CCharFeatures(E_ALPHABET alphabet, CHAR* fname);
 
-		/// remap element e.g translate ACGT to 0123
-		inline BYTE remap(BYTE c)
-		{
-			return maptable[c];
-		}
+		~CCharFeatures();
 
-		inline E_ALPHABET get_alphabet()
+		inline CAlphabet* get_alphabet()
 		{
-			return alphabet_type;
+			return alphabet;
 		}
 
 		virtual EFeatureType get_feature_type() { return F_CHAR; }
@@ -41,17 +37,7 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
 		virtual CFeatures* duplicate() const;
 		virtual bool load(CHAR* fname);
 		virtual bool save(CHAR* fname);
-	public:
-		static const BYTE B_A;
-		static const BYTE B_C;
-		static const BYTE B_G;
-		static const BYTE B_T;
-		static const BYTE B_star;
-		static const BYTE B_N;
-		static const BYTE B_n;
 	protected:
-		void init_map_table();
-		BYTE maptable[1 << (sizeof(CHAR)*8)];
-		E_ALPHABET alphabet_type;
+		CAlphabet* alphabet;
 };
 #endif

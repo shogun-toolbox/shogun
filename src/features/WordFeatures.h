@@ -6,7 +6,6 @@
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
  * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -31,7 +30,7 @@ class CWordFeatures: public CSimpleFeatures<WORD>
 
 		virtual ~CWordFeatures();
 
-		bool obtain_from_char_features(CCharFeatures* cf, E_ALPHABET alphabet, INT start, INT order, INT gap=0);
+		bool obtain_from_char_features(CCharFeatures* cf, INT start, INT order, INT gap=0);
 
 		virtual EFeatureType get_feature_type() { return F_WORD; }
 
@@ -46,7 +45,7 @@ class CWordFeatures: public CSimpleFeatures<WORD>
 		// number of symbols before higher order mapping
 		inline INT get_original_num_symbols() { return original_num_symbols; }
 
-		// order used when higher order mapping was done
+		// order used for higher order mapping
 		inline INT get_order() { return order; }
 
 		// a higher order mapped symbol will be shaped such that the symbols in

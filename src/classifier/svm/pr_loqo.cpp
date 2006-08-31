@@ -4,21 +4,13 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2006 Soeren Sonnenburg
- * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
- * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
- */
-
-/*
- * File:        pr_loqo.c
  * Purpose:     solves quadratic programming problem for pattern recognition
  *              for support vectors
  *
- * Author:      Alex J. Smola
- * Created:     10/14/97
- * Updated:     11/08/97
- * Updated:     13/08/98
+ * Written (W) 1997-1998 Alex J. Smola
+ * Written (W) 1999-2006 Soeren Sonnenburg
+ * Written (W) 1999-2006 Gunnar Raetsch
+ * Copyright (C) 1997-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/common.h"

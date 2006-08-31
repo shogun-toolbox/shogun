@@ -6,7 +6,6 @@
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
  * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -25,6 +24,7 @@
 #include "distributions/hmm/penalty_info.h"
 #include "distributions/hmm/HMM.h"
 #include "distributions/hmm/penalty_info.h"
+#include "features/Alphabet.h"
 #include "features/Labels.h"
 #include "features/RealFeatures.h"
 #include "kernel/WeightedDegreeCharKernel.h"
@@ -1443,33 +1443,23 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 			}
 			else if (mxIsChar(mx_feat))
 			{
-
-				E_ALPHABET alpha = DNA;
-
 				if (nrhs==4)
 				{
 					CHAR* al = CGUIMatlab::get_mxString(vals[3]);
+					CAlphabet* alpha = new CAlphabet(al, strlen(al));
 
-						if (!strncmp(al, "DNA", strlen("DNA")))
-							alpha = DNA;
-						else if (!strncmp(al, "PROTEIN", strlen("PROTEIN")))
-							alpha = PROTEIN;
-						else if (!strncmp(al, "ALPHANUM", strlen("ALPHANUM")))
-							alpha = ALPHANUM;
-						else if (!strncmp(al, "CUBE", strlen("CUBE")))
-							alpha = CUBE;
-						else if (!strncmp(al, "BYTE", strlen("BYTE")) || (!strncmp(al, "RAW", strlen("RAW"))))
-							alpha = RAW;
+					f= new CCharFeatures(alpha, 0);
+					INT num_vec=mxGetN(mx_feat);
+					INT num_feat=mxGetM(mx_feat);
+					CHAR* fm=new char[num_vec*num_feat+10];
+					ASSERT(fm);
+					mxGetString(mx_feat, fm, num_vec*num_feat+5);
+
+					((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
 				}
+				else
+					CIO::message(M_ERROR, "please specify alphabet!\n");
 
-				f= new CCharFeatures(alpha, 0);
-				INT num_vec=mxGetN(mx_feat);
-				INT num_feat=mxGetM(mx_feat);
-				CHAR* fm=new char[num_vec*num_feat+10];
-				ASSERT(fm);
-				mxGetString(mx_feat, fm, num_vec*num_feat+5);
-
-				((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
 			}
 			else if (mxIsCell(mx_feat))
 			{
@@ -1480,64 +1470,48 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 
 				if (mxIsChar(mxGetCell(mx_feat, 0)))
 				{
-                    E_ALPHABET alpha = DNA;
-
-                    if (nrhs==4)
-                    {
-                        CHAR* al = CGUIMatlab::get_mxString(vals[3]);
-
-                        if (!strncmp(al, "DNA", strlen("DNA")))
-                            alpha = DNA;
-                        else if (!strncmp(al, "PROTEIN", strlen("PROTEIN")))
-                            alpha = PROTEIN;
-                        else if (!strncmp(al, "ALPHANUM", strlen("ALPHANUM")))
-                            alpha = ALPHANUM;
-                        else if (!strncmp(al, "CUBE", strlen("CUBE")))
-                            alpha = CUBE;
-						else if (!strncmp(al, "BYTE", strlen("BYTE")) || (!strncmp(al, "RAW", strlen("RAW"))))
-							alpha = RAW;
-                    }
-					f= new CStringFeatures<CHAR>();
-					ASSERT(f);
-
-					int maxlen=0;
-					int num_symbols=0;
-					int syms[256];
-
-					for (int i=0; i<256; i++)
-						syms[i]=0;
-
-					for (int i=0; i<num_vec; i++)
+					if (nrhs==4)
 					{
-						mxArray* e=mxGetCell(mx_feat, i);
-						ASSERT(e && mxIsChar(e));
-						//note the .string here is 0 terminated although it is not required
-						//.length is the length of the string w/o 0
-						sc[i].string=get_mxString(e);
-						if (sc[i].string)
+						CHAR* al = CGUIMatlab::get_mxString(vals[3]);
+						CAlphabet* alpha = new CAlphabet(al, strlen(al));
+						ASSERT(alpha);
+
+						f= new CStringFeatures<CHAR>(alpha);
+						ASSERT(f);
+
+						int maxlen=0;
+						int num_symbols=0;
+						alpha->clear_histogram();
+
+						for (int i=0; i<num_vec; i++)
 						{
-							sc[i].length=mxGetN(e); 
-							maxlen=CMath::max(maxlen, sc[i].length);
-
-							for (int j=0; j<sc[i].length; j++)
-								syms[(BYTE) sc[i].string[j]]++;
+							mxArray* e=mxGetCell(mx_feat, i);
+							ASSERT(e && mxIsChar(e));
+							//note the .string here is 0 terminated although it is not required
+							//.length is the length of the string w/o 0
+							sc[i].string=get_mxString(e);
+							if (sc[i].string)
+							{
+								sc[i].length=mxGetN(e); 
+								maxlen=CMath::max(maxlen, sc[i].length);
+								alpha->add_string_to_histogram(sc[i].string, sc[i].length);
+							}
+							else
+							{
+								CIO::message(M_WARN, "string with index %d has zero length\n", i+1);
+								sc[i].length=0;
+							}
 						}
-						else
-						{
-							CIO::message(M_WARN, "string with index %d has zero length\n", i+1);
-							sc[i].length=0;
-						}
+
+						alpha->check_alphabet_size();
+						num_symbols=alpha->get_num_symbols();
+
+						CIO::message(M_DEBUG, "num_symbols: %d\n", num_symbols);
+
+						((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
 					}
-
-					for (int i=0; i<256; i++)
-					{
-						if (syms[i]>0)
-							num_symbols++;
-					}
-
-					CIO::message(M_DEBUG, "num_symbols: %d\n", num_symbols);
-
-					((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen, num_symbols, alpha);
+					else
+						CIO::message(M_ERROR, "please specify alphabet!\n");
 				}
 
 			}
@@ -2038,7 +2012,7 @@ bool CGUIMatlab::get_WD_scoring(mxArray* retvals[])
 
 		const DREAL* position_weights = kernel->compute_scoring(1, num_feat, num_sym, NULL, num_suppvec, sv_idx, sv_weight);
 		mxArray* mx_result ;
-		mx_result=mxCreateDoubleMatrix(num_feat, num_sym, mxREAL);
+		mx_result=mxCreateDoubleMatrix(num_sym, num_feat, mxREAL);
 		double* result=mxGetPr(mx_result);
 
 		for (int i=0; i<num_feat; i++)

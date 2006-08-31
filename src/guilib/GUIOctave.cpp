@@ -5,8 +5,6 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
- * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -902,30 +900,23 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 				{
 					CHAR* al=CGUIOctave::get_octaveString(vals(3).string_value());
 
-						if (!strncmp(al, "DNA", strlen("DNA")))
-							alpha = DNA;
-						else if (!strncmp(al, "PROTEIN", strlen("PROTEIN")))
-							alpha = PROTEIN;
-						else if (!strncmp(al, "ALPHANUM", strlen("ALPHANUM")))
-							alpha = ALPHANUM;
-						else if (!strncmp(al, "CUBE", strlen("CUBE")))
-							alpha = CUBE;
-						else if (!strncmp(al, "BYTE", strlen("BYTE")) || (!strncmp(al, "RAW", strlen("RAW"))))
-							alpha = RAW;
+					CAlphabet* alpha new CAlphabet(al);
+					f= new CCharFeatures(alpha, (LONG) 0);
+					INT num_vec = cm.cols();
+					INT num_feat = cm.rows();
+					CIO::message(M_DEBUG, "char matrix, cols:%d row:%d!\n", num_vec, num_feat);
+					CHAR* fm=new char[num_vec*num_feat+10];
+					ASSERT(fm);
+
+					for (INT i=0; i<num_vec; i++)
+						for (INT j=0; j<num_feat; j++)
+							fm[i*num_feat+j]= (char) cm(j,i);
+
+					((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
 				}
+				else
+					CIO::message(M_ERROR, "please specify alphabet!\n");
 
-				f= new CCharFeatures(alpha, (LONG) 0);
-				INT num_vec = cm.cols();
-				INT num_feat = cm.rows();
-				CIO::message(M_DEBUG, "char matrix, cols:%d row:%d!\n", num_vec, num_feat);
-				CHAR* fm=new char[num_vec*num_feat+10];
-				ASSERT(fm);
-
-				for (INT i=0; i<num_vec; i++)
-					for (INT j=0; j<num_feat; j++)
-						fm[i*num_feat+j]= (char) cm(j,i);
-
-				((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
 			}
 			else if (mat_feat.is_real_matrix())
 			{

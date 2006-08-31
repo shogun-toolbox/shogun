@@ -6,7 +6,6 @@
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
  * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -20,6 +19,7 @@
 #include "lib/config.h"
 #include "features/StringFeatures.h"
 #include "features/CharFeatures.h"
+#include "features/Alphabet.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -3505,22 +3505,22 @@ bool CHMM::get_numbuffer(FILE* file, CHAR* buffer, INT length)
 		switch (value)
 		{
 			case 'A':
-				value='0' +CCharFeatures::B_A;
+				value='0' +CAlphabet::B_A;
 				break;
 			case 'C':
-				value='0' +CCharFeatures::B_C;
+				value='0' +CAlphabet::B_C;
 				break;
 			case 'G':
-				value='0' +CCharFeatures::B_G;
+				value='0' +CAlphabet::B_G;
 				break;
 			case 'T':
-				value='0' +CCharFeatures::B_T;
+				value='0' +CAlphabet::B_T;
 				break;
 			case 'N':
-				value='0' +CCharFeatures::B_N;
+				value='0' +CAlphabet::B_N;
 				break;
 			case 'n':
-				value='0' +CCharFeatures::B_n;
+				value='0' +CAlphabet::B_n;
 				break;
 		};
 
@@ -3534,22 +3534,22 @@ bool CHMM::get_numbuffer(FILE* file, CHAR* buffer, INT length)
 			switch (value)
 			{
 				case 'A':
-					value='0' +CCharFeatures::B_A;
+					value='0' +CAlphabet::B_A;
 					break;
 				case 'C':
-					value='0' +CCharFeatures::B_C;
+					value='0' +CAlphabet::B_C;
 					break;
 				case 'G':
-					value='0' +CCharFeatures::B_G;
+					value='0' +CAlphabet::B_G;
 					break;
 				case 'T':
-					value='0' +CCharFeatures::B_T;
+					value='0' +CAlphabet::B_T;
 					break;
 				case 'N':
-					value='0' +CCharFeatures::B_N;
+					value='0' +CAlphabet::B_N;
 					break;
 				case 'n':
-					value='0' +CCharFeatures::B_n;
+					value='0' +CAlphabet::B_n;
 					break;
 				case '1': case '2': case'3': case '4': case'5':
 				case '6': case '7': case'8': case '9': case '0': break ;

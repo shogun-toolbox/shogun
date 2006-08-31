@@ -5,10 +5,8 @@
  * (at your option) any later version.
  *
  * Written (W) 2006 Konrad Rieck
- * Written (W) 1999-2006 Soeren Sonnenburg
- * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
- * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006 Soeren Sonnenburg
+ * Copyright (C) 2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/config.h"

@@ -6,7 +6,6 @@
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
  * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -219,8 +218,8 @@ public:
 		}
 		else
 		{
-			DREAL split=output[(size*rand())/(RAND_MAX+1)];
-			//DREAL split=output[size/2];
+			T split=output[(size*rand())/(RAND_MAX+1)];
+			//T split=output[size/2];
 
 			INT left=0;
 			INT right=size-1;

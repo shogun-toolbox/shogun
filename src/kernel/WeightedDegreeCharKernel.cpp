@@ -6,7 +6,6 @@
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
  * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -139,8 +138,8 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	CIO::message(M_DEBUG, "lhs_changed: %i\n", lhs_changed);
 	CIO::message(M_DEBUG, "rhs_changed: %i\n", rhs_changed);
 
-	ASSERT(l && ((CCharFeatures*) l)->get_alphabet()==DNA);
-	ASSERT(r && ((CCharFeatures*) r)->get_alphabet()==DNA);
+	ASSERT(l && ((CCharFeatures*) l)->get_alphabet()->get_alphabet()==DNA);
+	ASSERT(r && ((CCharFeatures*) r)->get_alphabet()->get_alphabet()==DNA);
 	
 	if (lhs_changed) 
 	{
@@ -499,7 +498,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, DREAL alpha)
 		alpha /=  sqrtdiag_lhs[idx] ;
 
 	for (INT i=0; i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
 
 	if (length == 0 || max_mismatch > 0)
 	{
@@ -629,7 +628,7 @@ void CWeightedDegreeCharKernel::add_example_to_single_tree(INT idx, DREAL alpha,
 		alpha /=  sqrtdiag_lhs[idx] ;
 
 	for (INT i=tree_num; i<tree_num+degree && i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
 
 	if (length == 0 || max_mismatch > 0)
 	{
@@ -755,7 +754,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, DREAL alph
 		alpha /=  sqrtdiag_lhs[idx] ;
 	
 	for (INT i=0; i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
 
 	for (INT i=0; i<len; i++)
 	{
@@ -786,7 +785,7 @@ void CWeightedDegreeCharKernel::add_example_to_single_tree_mismatch(INT idx, DRE
 		alpha /=  sqrtdiag_lhs[idx] ;
 
 	for (INT i=tree_num; i<len && i<tree_num+degree; i++)
-		vec[i]=((CCharFeatures*) lhs)->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
 
 	struct Trie *tree = trees[tree_num] ;
 	DREAL alpha_pw = alpha ;
@@ -914,7 +913,7 @@ DREAL CWeightedDegreeCharKernel::compute_by_tree(INT idx)
 	INT *vec = new INT[len] ;
 	
 	for (INT i=0; i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
 		
 	DREAL sum=0 ;
 	for (INT i=0; i<len; i++)
@@ -938,7 +937,7 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, DREAL* LevelContrib)
 	INT *vec = new INT[len] ;
 
 	for (INT i=0; i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
 
 	DREAL factor = 1.0 ;
 	if (use_normalization)
@@ -1132,7 +1131,7 @@ DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT
 			bool freevec;
 			CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(i, len, freevec);
 			for (INT k=j; k<CMath::min(len,j+degree); k++)
-				vec[k]=((CCharFeatures*) lhs)->remap(char_vec[k]);
+				vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[k]);
 
 			if (use_normalization)
 				result[i] += factor*compute_by_tree_helper(vec, len, j)/sqrtdiag_rhs[i];
@@ -1153,7 +1152,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 {
 	num_feat=((CCharFeatures*) get_rhs())->get_num_features();
 	ASSERT(num_feat>0);
-	ASSERT(((CCharFeatures*) get_rhs())->get_alphabet() == DNA);
+	ASSERT(((CCharFeatures*) get_rhs())->get_alphabet()->get_alphabet() == DNA);
 	num_sym=4; //for now works only w/ DNA
 	INT sym_offset=(INT) pow(num_sym,max_degree);
 
@@ -1169,6 +1168,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 	{
 		init_optimization(num_suppvec, IDX, weights, k);
 
+		INT j=0;
 		for (INT j=0; k+j<num_feat; j++)
 		{
 			struct Trie* tree = trees[k+j] ;
@@ -1194,22 +1194,22 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 					}
 				}
 			}
-			else // j==degree-1 -> end of tree, different leaf handling+break
-			{
-				if (j==degree-1)
-				{
-					for (INT i=0; i<num_sym; i++)
-					{
-						DREAL v= tree->child_weights[i];
+			//else // j==degree-1 -> end of tree, different leaf handling+break
+			//{
+			//	if (j==degree-1)
+			//	{
+			//		for (INT i=0; i<num_sym; i++)
+			//		{
+			//			DREAL v= tree->child_weights[i];
 
-						if (use_normalization)
-							result[sym_offset*(k+j)+i] += v/sqrtdiag_rhs[i];
-						else
-							result[sym_offset*(k+j)+i] += v;
-					}
-				}
-				break;
-			}
+			//			if (use_normalization)
+			//				result[sym_offset*(k+j)+i] += v/sqrtdiag_rhs[i];
+			//			else
+			//				result[sym_offset*(k+j)+i] += v;
+			//		}
+			//	}
+			//	break;
+			//}
 		}
 		CIO::progress(k,0,num_feat);
 	}

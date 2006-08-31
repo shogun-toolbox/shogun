@@ -5,8 +5,6 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
- * Written (W) 1999-2006 Gunnar Raetsch
- * Written (W) 1999-2006 Fabio De Bona
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -881,40 +879,30 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 			if (NA_NDArrayCheck(arg))
             {
                 if ((py_afeat->nd == 1))
-                {
-                    CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
-                    int num_vec=py_afeat->dimensions[0];
-                    int num_feat=PyArray(py_afeat)->itemsize;
-                    CIO::message(M_DEBUG, "vec: %d dim:%d\n", num_vec, num_feat);
+				{
+					CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
+					int num_vec=py_afeat->dimensions[0];
+					int num_feat=PyArray(py_afeat)->itemsize;
+					CIO::message(M_DEBUG, "vec: %d dim:%d\n", num_vec, num_feat);
 
-                    if (feat)
-                    {
-                        // FIXME allow for other alphabets
-                        E_ALPHABET alpha = DNA;
-
-                        if (args)
-                        {
-                            if (!strncmp(args, "DNA", strlen("DNA")))
-                                alpha = DNA;
-                            else if (!strncmp(args, "PROTEIN", strlen("PROTEIN")))
-                                alpha = PROTEIN;
-                            else if (!strncmp(args, "ALPHANUM", strlen("ALPHANUM")))
-                                alpha = ALPHANUM;
-                            else if (!strncmp(args, "CUBE", strlen("CUBE")))
-                                alpha = CUBE;
-                            else if (!strncmp(args, "BYTE", strlen("BYTE")) || )!strncmp(args, "RAW", strlen("RAW"))
-                                alpha = RAW;
-                        }
-                        features= new CCharFeatures(alphabet, (LONG) 0);
-                        CHAR* fm=new CHAR[num_vec*num_feat];
-                        ASSERT(fm);
-                        for(int i=0; i<num_vec; i++)
-                        {
-                            for(int j=0; j<num_feat; j++)
-                                fm[i*num_feat+j]=feat[i*num_feat+j];
-                        }
-                        ((CCharFeatures*) features)->set_feature_matrix(fm, num_feat, num_vec);
-                    }
+					if (feat)
+					{
+						if (args)
+						{
+							CAlphabet* alphabet=new CAlphabet("args");
+							features= new CCharFeatures(alphabet, (LONG) 0);
+							CHAR* fm=new CHAR[num_vec*num_feat];
+							ASSERT(fm);
+							for(int i=0; i<num_vec; i++)
+							{
+								for(int j=0; j<num_feat; j++)
+									fm[i*num_feat+j]=feat[i*num_feat+j];
+							}
+							((CCharFeatures*) features)->set_feature_matrix(fm, num_feat, num_vec);
+						}
+						else
+							CIO::message(M_ERROR, "please specify alphabet!\n");
+					}
                     else
                         CIO::message(M_ERROR,"empty feats ??\n");
                 }
