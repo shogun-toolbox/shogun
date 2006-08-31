@@ -2022,7 +2022,7 @@ bool CGUIMatlab::get_WD_scoring(mxArray* retvals[])
 	if (k && (k->get_kernel_type() == K_WEIGHTEDDEGREE))
 	{
 		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) k;
-		CSVM* svm=gui->guisvm->get_svm();
+		CSVM* svm=gui->guisvm.get_svm();
 		ASSERT(svm);
 		INT num_suppvec = svm->get_num_support_vectors();
 		INT* sv_idx    = new INT[num_suppvec];
@@ -2030,10 +2030,10 @@ bool CGUIMatlab::get_WD_scoring(mxArray* retvals[])
 		INT num_feat=-1;
 		INT num_sym=-1;
 
-		for (INT i=0; i<get_num_support_vectors(); i++)
+		for (INT i=0; i<num_suppvec; i++)
 		{
-			sv_idx[i]    = get_support_vector(i);
-			sv_weight[i] = get_alpha(i);
+			sv_idx[i]    = svm->get_support_vector(i);
+			sv_weight[i] = svm->get_alpha(i);
 		}
 
 		const DREAL* position_weights = kernel->compute_scoring(1, num_feat, num_sym, NULL, num_suppvec, sv_idx, sv_weight);
@@ -2041,10 +2041,10 @@ bool CGUIMatlab::get_WD_scoring(mxArray* retvals[])
 		mx_result=mxCreateDoubleMatrix(num_feat, num_sym, mxREAL);
 		double* result=mxGetPr(mx_result);
 
-		for (int i=0; i<length; i++)
+		for (int i=0; i<num_feat; i++)
 		{
-			for (int j=0; j<length; j++)
-				result[i*num_feat+j] = position_weights[i*num_feat+j] ;
+			for (int j=0; j<num_sym; j++)
+				result[i*num_sym+j] = position_weights[i*num_sym+j] ;
 		}
 		retvals[0]=mx_result;
 		return true;

@@ -74,7 +74,7 @@ class CWeightedDegreeCharKernel: public CCharKernel
     return 0 ;
   } ;
 
-  virtual DREAL* compute_batch(INT& num_vec, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor=1.0);
+  virtual DREAL* compute_batch(INT& num_vec, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor);
 
   // subkernel functionality
   inline virtual void clear_normal()
@@ -201,14 +201,14 @@ class CWeightedDegreeCharKernel: public CCharKernel
 	  len=seq_length;
 	  return position_weights;
   }
+  /// compute positional scoring function, which assigns a weight per position, per symbol in the sequence
+  DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
 
   bool set_weights(DREAL* weights, INT d, INT len=0);
   bool set_position_weights(DREAL* position_weights, INT len=0);
   bool init_matching_weights_wd();
   bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
-  /// compute positional scoring function, which assigns a weight per position, per symbol in the sequence
-  DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights)
 
  protected:
 

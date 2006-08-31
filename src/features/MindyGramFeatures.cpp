@@ -51,7 +51,7 @@ CMindyGramFeatures::CMindyGramFeatures(CHAR * fname, CHAR * aname, BYTE nlen) : 
  * @param aname Alphabet name, e.g. bytes, ascii, text, dna
  * @param nlen N-gram length
  */
-CMindyGramFeatures::CMindyGramFeatures(CStringFeatures < CHAR > *sf, CHAR * aname, BYTE nlen) : CFeatures(0l)
+CMindyGramFeatures::CMindyGramFeatures(CStringFeatures < CHAR > *sf, CHAR * aname, BYTE nlen) : CFeatures(0)
 {
     ASSERT(aname && nlen > 0);
 
@@ -90,7 +90,7 @@ CMindyGramFeatures::CMindyGramFeatures(CHAR *fname, CHAR *aname, CHAR *delim) : 
  * @param delim Escaped string of delimiters, e.g. '%20.,'
  * @param len   Length of byte array
  */
-CMindyGramFeatures::CMindyGramFeatures(CStringFeatures<CHAR> *sf, CHAR *aname, CHAR *delim) : CFeatures(0l)
+CMindyGramFeatures::CMindyGramFeatures(CStringFeatures<CHAR> *sf, CHAR *aname, CHAR *delim) : CFeatures(0)
 {
     ASSERT(aname && delim);
 

@@ -28,7 +28,7 @@ CLDA::~CLDA()
 
 bool CLDA::train()
 {
-	DREAL prior=1.0;
+	//DREAL prior=1.0;
 	DREAL gamma=0;
 
 	ASSERT(get_labels());

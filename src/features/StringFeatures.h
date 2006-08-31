@@ -424,7 +424,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		for (INT i=0; i<256; i++)
 			symbol_mask_table[i]=0;
 
-		WORD mask=0;
+		ULONG mask=0;
 		for (INT i=0; i< (LONG) max_val; i++)
 			mask=(mask<<1) | 1;
 

@@ -1149,7 +1149,7 @@ DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT
 	return result;
 }
 
-DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights)
+DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights)
 {
 	num_feat=((CCharFeatures*) get_rhs())->get_num_features();
 	ASSERT(num_feat>0);
@@ -1160,7 +1160,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 	if (!result)
 	{
 		INT buflen=(INT) num_feat*sym_offset;
-		result= new DREAL[];
+		result= new DREAL[buflen];
 		ASSERT(result);
 		memset(result, 0, sizeof(DREAL)*buflen);
 	}
@@ -1188,9 +1188,9 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 						DREAL v=child->weight;
 
 						if (use_normalization)
-							result[sum_offset*(k+j)+i] += v/sqrtdiag_rhs[i];
+							result[sym_offset*(k+j)+i] += v/sqrtdiag_rhs[i];
 						else
-							result[sum_offset*(k+j)+i] += v;
+							result[sym_offset*(k+j)+i] += v;
 					}
 				}
 			}
@@ -1203,9 +1203,9 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 						DREAL v= tree->child_weights[i];
 
 						if (use_normalization)
-							result[sum_offset*(k+j)+i] += v/sqrtdiag_rhs[i];
+							result[sym_offset*(k+j)+i] += v/sqrtdiag_rhs[i];
 						else
-							result[sum_offset*(k+j)+i] += v;
+							result[sym_offset*(k+j)+i] += v;
 					}
 				}
 				break;
@@ -1213,8 +1213,6 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 		}
 		CIO::progress(k,0,num_feat);
 	}
-
-	delete[] vec;
 
 	return result;
 }
