@@ -62,6 +62,14 @@ CMindyGramFeatures::CMindyGramFeatures(CStringFeatures < CHAR > *sf, CHAR * anam
     cfg = gram_cfg_ngrams(alph_create(at), (byte_t) nlen);
 
     import(sf);
+    
+    for (INT i = 0; i < num_vectors; i++) {
+       printf("=======\n");
+       for (INT j = 0; j < vectors[i]->num; j++) {
+          fprintf(stderr, "%d:%.16llx\n", (int) vectors[i]->count[j], 
+                  vectors[i]->gram[j]);    
+       }           
+    }   
 }
 
 /**

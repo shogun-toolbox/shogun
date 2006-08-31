@@ -419,11 +419,11 @@ template <class ST> class CStringFeatures: public CFeatures
 			features[line].length-=start+gap ;
 			if (features[line].length<0)
 				features[line].length=0 ;
-		}
-		
-		for (INT i=0; i<256; i++)
-			symbol_mask_table[i]=0;
-
+			  
+        for (INT j = 0; j < len; j++) 
+             fprintf(stderr, "%.16llx\n", fv[j]);
+                }         
+       
 		ULONG mask=0;
 		for (INT i=0; i< (LONG) max_val; i++)
 			mask=(mask<<1) | 1;
@@ -478,6 +478,7 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	void translate_from_single_order(ST* obs, INT sequence_length, INT start, INT order, INT max_val, INT gap)
 	{
+		CIO::message(M_DEBUG, "max_val is: %d\n", max_val);
 		ASSERT(gap>=0) ;
 		
 		const INT start_gap = (order - gap)/2 ;
