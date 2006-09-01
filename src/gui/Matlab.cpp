@@ -376,13 +376,17 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (!strncmp(action, N_GET_WD_SCORING, strlen(N_GET_WD_SCORING)))
 		{
-			if ((nlhs==1) && (nrhs==1))
+		    if (nlhs==1 && nrhs==2)
 			{
-				if (!sg_matlab.get_WD_scoring(plhs))
-					CIO::message(M_ERROR, "error executing command");
+				if (mxIsDouble(prhs[1]))
+				{
+					double* idx=mxGetPr(prhs[1]);
+					if (!sg_matlab.get_WD_scoring(plhs, (INT) (*idx)))
+						CIO::message(M_ERROR, "error executing command");
+				}
 			}
 			else
-				CIO::message(M_ERROR, "usage is W=sg('get_WD_scoring')");
+				CIO::message(M_ERROR, "usage is W=sg('get_WD_scoring', max_order)");
 		}
 		else if (!strncmp(action, N_SET_LAST_SUBKERNEL_WEIGHTS, strlen(N_SET_LAST_SUBKERNEL_WEIGHTS)))
 		{

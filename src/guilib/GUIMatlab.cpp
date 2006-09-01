@@ -1989,13 +1989,12 @@ bool CGUIMatlab::get_WD_position_weights(mxArray* retvals[])
 	return false;
 }
 
-bool CGUIMatlab::get_WD_scoring(mxArray* retvals[])
+bool CGUIMatlab::get_WD_scoring(mxArray* retvals[], INT max_order)
 {
 	CKernel *k= gui->guikernel.get_kernel() ;
 
-	if (k && (k->get_kernel_type() == K_WEIGHTEDDEGREE))
+	if (k && (k->get_kernel_type() == K_WEIGHTEDDEGREE || k->get_kernel_type() == K_WEIGHTEDDEGREEPOS) )
 	{
-		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) k;
 		CSVM* svm=gui->guisvm.get_svm();
 		ASSERT(svm);
 		INT num_suppvec = svm->get_num_support_vectors();
@@ -2010,7 +2009,16 @@ bool CGUIMatlab::get_WD_scoring(mxArray* retvals[])
 			sv_weight[i] = svm->get_alpha(i);
 		}
 
-		const DREAL* position_weights = kernel->compute_scoring(1, num_feat, num_sym, NULL, num_suppvec, sv_idx, sv_weight);
+		if ((max_order < 1) || (max_order > 8))
+		{
+			CIO::message(M_WARN, "max_order out of range 1..8 (%d) setting to 1\n", max_order);
+			max_order=1;
+		}
+		DREAL* position_weights;
+		if (k->get_kernel_type() == K_WEIGHTEDDEGREE)
+			 position_weights= ((CWeightedDegreeCharKernel*) k)->compute_scoring(max_order, num_feat, num_sym, NULL, num_suppvec, sv_idx, sv_weight);
+		else
+			 position_weights= ((CWeightedDegreePositionCharKernel*) k)->compute_scoring(max_order, num_feat, num_sym, NULL, num_suppvec, sv_idx, sv_weight);
 		mxArray* mx_result ;
 		mx_result=mxCreateDoubleMatrix(num_sym, num_feat, mxREAL);
 		double* result=mxGetPr(mx_result);
@@ -2023,6 +2031,8 @@ bool CGUIMatlab::get_WD_scoring(mxArray* retvals[])
 		retvals[0]=mx_result;
 		return true;
 	}
+	else
+		CIO::message(M_ERROR, "one cannot compute a scoring using this kernel function\n");
 	return false;
 }
 

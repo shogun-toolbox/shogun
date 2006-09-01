@@ -99,7 +99,7 @@ public:
 	bool set_subkernel_weights(const mxArray *mx_arg);
 	bool set_last_subkernel_weights(const mxArray *mx_arg);
 	bool get_WD_position_weights(mxArray* retvals[]);
-	bool get_WD_scoring(mxArray* retvals[]);
+	bool get_WD_scoring(mxArray* retvals[], INT max_order);
 	bool set_WD_position_weights(const mxArray *mx_arg);
 
 	bool get_version(mxArray* retvals[]);

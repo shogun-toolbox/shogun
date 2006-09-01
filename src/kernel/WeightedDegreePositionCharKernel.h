@@ -197,6 +197,10 @@ public:
 	DREAL compute_by_tree(INT idx);
 	void compute_by_tree(INT idx, DREAL* LevelContrib);
 
+	/// compute positional scoring function, which assigns a weight per position, per symbol in the sequence
+	DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
+	void compute_scoring_helper(struct Trie* tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result);
+
 protected:
 
 	virtual void add_example_to_tree(INT idx, DREAL weight);

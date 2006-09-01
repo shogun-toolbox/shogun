@@ -1250,3 +1250,70 @@ DREAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, DREAL* res
 
 	return result;
 }
+
+void CWeightedDegreePositionCharKernel::compute_scoring_helper(struct Trie* tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result)
+{
+	if (i+j<num_feat)
+	{
+		if (j<degree-1)
+		{
+			for (INT k=0; k<num_sym; k++)
+			{
+				if (tree->children[k]!=NO_CHILD)
+				{
+#ifdef USE_TREEMEM
+					struct Trie* child=&TreeMem[tree->children[k]];
+#else
+					struct Trie* child=tree->children[k];
+#endif
+					weight += child->weight;
+
+					//continue recursion if not yet at max_degree, else add to result
+					if (d<max_degree-1)
+						compute_scoring_helper(child, i, j+1, weight, d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
+					else
+						result[sym_offset*(i+j)+num_sym*offs+k] += weight;
+
+					//do recursion starting from this position
+					if (d==0)
+						compute_scoring_helper(child, i, j+1, 0.0, 0, max_degree, num_feat, num_sym, sym_offset, offs, result);
+				}
+			}
+		}
+		else if (j==degree-1)
+		{
+			for (INT k=0; k<num_sym; k++)
+				result[sym_offset*(i+j)+num_sym*offs+k] += tree->child_weights[k];
+		}
+	}
+}
+
+DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights)
+{
+	num_feat=((CCharFeatures*) get_rhs())->get_num_features();
+	ASSERT(num_feat>0);
+	ASSERT(((CCharFeatures*) get_rhs())->get_alphabet()->get_alphabet() == DNA);
+	num_sym=4; //for now works only w/ DNA
+	INT sym_offset=(INT) pow(num_sym,max_degree);
+
+	if (!result)
+	{
+		INT buflen=(INT) num_feat*sym_offset;
+		result= new DREAL[buflen];
+		ASSERT(result);
+		memset(result, 0, sizeof(DREAL)*buflen);
+	}
+
+	for (INT i=0; i<num_feat; i++)
+	{
+		init_optimization(num_suppvec, IDX, weights, i);
+
+		struct Trie* tree = trees[i];
+		ASSERT(tree!=NULL);
+		compute_scoring_helper(tree, i, 0, 0.0, 0, max_degree, num_feat, num_sym, sym_offset, 0, result);
+		CIO::progress(i,0,num_feat);
+	}
+	num_sym=sym_offset;
+
+	return result;
+}
