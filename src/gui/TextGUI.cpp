@@ -740,6 +740,8 @@ bool CTextGUI::parse_line(CHAR* input)
 
 		if (!strncmp(param, "ALL", strlen("ALL")))
 			CIO::set_loglevel(M_DEBUG);
+		else if (!strncmp(param, "INFO", strlen("INFO")))
+			CIO::set_loglevel(M_INFO);
 		else if (!strncmp(param, "WARN", strlen("WARN")))
 			CIO::set_loglevel(M_WARN);
 		else if (!strncmp(param, "ERROR", strlen("ERROR")))

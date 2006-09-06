@@ -31,17 +31,19 @@
  * @param aname Alphabet name, e.g. bytes, ascii, text, dna
  * @param nlen N-gram length
  */
-CMindyGramFeatures::CMindyGramFeatures(CHAR * fname, CHAR * aname, BYTE nlen) : CFeatures(fname)
+CMindyGramFeatures::CMindyGramFeatures(CHAR * fname, CHAR * aname, CHAR * embed, BYTE nlen) : CFeatures(fname)
 {
-    ASSERT(fname && aname && nlen > 0);
+    ASSERT(fname && aname && embed && nlen > 0);
 
     /* Allocate and generate gram configuration (n-grams) */
-    CIO::message(M_DEBUG, "Creating alphabet %s\n", aname);
+    CIO::message(M_DEBUG, "Initializing Mindy gram features\n");    
     alph_type_t at = alph_get_type(aname);
-    CIO::message(M_DEBUG, "Creating %d-gram configuration\n", nlen);
     cfg = gram_cfg_ngrams(alph_create(at), (byte_t) nlen);
+    set_embedding(cfg, embed);
 
-    CIO::message(M_DEBUG, "Loading data file %s\n", fname);
+    CIO::message(M_INFO, "Mindy in n-gram mode (n: %d, a: %s, e: %s)\n", 
+                 nlen, alph_get_name(at), gram_cfg_get_embed(cfg->embed));
+
     load(fname);
 }
 
@@ -51,25 +53,20 @@ CMindyGramFeatures::CMindyGramFeatures(CHAR * fname, CHAR * aname, BYTE nlen) : 
  * @param aname Alphabet name, e.g. bytes, ascii, text, dna
  * @param nlen N-gram length
  */
-CMindyGramFeatures::CMindyGramFeatures(CStringFeatures < CHAR > *sf, CHAR * aname, BYTE nlen) : CFeatures(0)
+CMindyGramFeatures::CMindyGramFeatures(CStringFeatures < CHAR > *sf, CHAR * aname, CHAR * embed, BYTE nlen) : CFeatures(0)
 {
-    ASSERT(aname && nlen > 0);
+    ASSERT(sf && aname && embed && nlen > 0);
 
     /* Allocate and generate gram configuration (n-grams) */
-    CIO::message(M_DEBUG, "Creating alphabet %s\n", aname);
+    CIO::message(M_DEBUG, "Initializing Mindy gram features\n");
     alph_type_t at = alph_get_type(aname);
-    CIO::message(M_DEBUG, "Creating %d-gram configuration\n", nlen);
     cfg = gram_cfg_ngrams(alph_create(at), (byte_t) nlen);
+    set_embedding(cfg, embed);    
+
+    CIO::message(M_INFO, "Mindy in n-gram mode (n: %d, a: %s, e: %s)\n", 
+                 nlen, alph_get_name(at), gram_cfg_get_embed(cfg->embed));
 
     import(sf);
-    
-    for (INT i = 0; i < num_vectors; i++) {
-       printf("=======\n");
-       for (INT j = 0; j < vectors[i]->num; j++) {
-          fprintf(stderr, "%d:%.16llx\n", (int) vectors[i]->count[j], 
-                  vectors[i]->gram[j]);    
-       }           
-    }   
 }
 
 /**
@@ -78,15 +75,18 @@ CMindyGramFeatures::CMindyGramFeatures(CStringFeatures < CHAR > *sf, CHAR * anam
  * @param aname Alphabet name, e.g. bytes, ascii, text, dna
  * @param delim Escaped string of delimiters, e.g. '%20.,'
  */
-CMindyGramFeatures::CMindyGramFeatures(CHAR *fname, CHAR *aname, CHAR *delim) : CFeatures(fname)
+CMindyGramFeatures::CMindyGramFeatures(CHAR *fname, CHAR *aname, CHAR *embed, CHAR *delim) : CFeatures(fname)
 {
-    ASSERT(fname && aname && delim);
+    ASSERT(fname && aname && embed && delim);
 
     /* Allocate and generate gram configuration (words) */
-    CIO::message(M_DEBUG, "Creating alphabet %s\n", aname);
+    CIO::message(M_DEBUG, "Initializing Mindy gram features\n");    
     alph_type_t at = alph_get_type(aname);
-    CIO::message(M_DEBUG, "Creating word configuration\n");
     cfg = gram_cfg_words(alph_create(at), delim);
+    set_embedding(cfg, embed);
+
+    CIO::message(M_INFO, "Mindy in word mode (d: '%s', a: %s, e: %s)\n", 
+                 delim, alph_get_name(at), gram_cfg_get_embed(cfg->embed));
 
     load(fname);
 }
@@ -98,15 +98,18 @@ CMindyGramFeatures::CMindyGramFeatures(CHAR *fname, CHAR *aname, CHAR *delim) : 
  * @param delim Escaped string of delimiters, e.g. '%20.,'
  * @param len   Length of byte array
  */
-CMindyGramFeatures::CMindyGramFeatures(CStringFeatures<CHAR> *sf, CHAR *aname, CHAR *delim) : CFeatures(0)
+CMindyGramFeatures::CMindyGramFeatures(CStringFeatures<CHAR> *sf, CHAR *aname, CHAR *embed, CHAR *delim) : CFeatures(0)
 {
-    ASSERT(aname && delim);
+    ASSERT(sf && aname && embed && delim);
 
     /* Allocate and generate gram configuration (words) */
-    CIO::message(M_DEBUG, "Creating alphabet %s\n", aname);
+    CIO::message(M_DEBUG, "Initializing Mindy gram features\n");    
     alph_type_t at = alph_get_type(aname);
-    CIO::message(M_DEBUG, "Creating word configuration\n");
     cfg = gram_cfg_words(alph_create(at), delim);
+    set_embedding(cfg, embed);
+
+    CIO::message(M_INFO, "Mindy in word mode (d: '%s', a: %s, e: %s)\n", 
+                 delim, alph_get_name(at), gram_cfg_get_embed(cfg->embed));
 
     import(sf);
 }
@@ -117,7 +120,7 @@ CMindyGramFeatures::CMindyGramFeatures(CStringFeatures<CHAR> *sf, CHAR *aname, C
  */
 CMindyGramFeatures::CMindyGramFeatures(const CMindyGramFeatures & orig) : CFeatures(orig)
 {
-    CIO::message(M_DEBUG, "Duplicating mindy gram features\n");
+    CIO::message(M_DEBUG, "Duplicating Mindy gram features\n");
     num_vectors = orig.num_vectors;
 
     /* Clone configuration */
@@ -134,7 +137,7 @@ CMindyGramFeatures::CMindyGramFeatures(const CMindyGramFeatures & orig) : CFeatu
  */
 CMindyGramFeatures::~CMindyGramFeatures()
 {
-    CIO::message(M_DEBUG, "Destroying mindy gram features\n");
+    CIO::message(M_DEBUG, "Destroying Mindy gram features\n");
     /* Destroy gram vectors */
     for (INT i = 0; i < num_vectors; i++)
         gram_destroy(vectors[i]);
@@ -182,6 +185,18 @@ void CMindyGramFeatures::set_feature_vector(INT i, gram_t * g)
     vectors[i] = g;
 }
 
+void CMindyGramFeatures::set_embedding(gram_cfg_t *cfg, CHAR *embed)
+{
+    if (!strcasecmp(embed, "count"))
+        gram_cfg_set_embed(cfg, GE_COUNT);
+    else if (!strcasecmp(embed, "freq"))
+        gram_cfg_set_embed(cfg, GE_FREQ);
+    else if (!strcasecmp(embed, "bin")) 
+        gram_cfg_set_embed(cfg, GE_BIN);
+    else
+        CIO::message(M_ERROR, "Unknown embedding '%s'\n", embed);    
+}
+
 /**
  * Get a feature (gram) from a gram vector
  * @param i Index of gram vector
@@ -189,12 +204,12 @@ void CMindyGramFeatures::set_feature_vector(INT i, gram_t * g)
  * @param b Buffer to hold gram of at least 65 bytes
  * @return gram (e.g. an n-gram or word)
  */
-inline byte_t *CMindyGramFeatures::get_feature(INT i, INT j)
+inline ULONG CMindyGramFeatures::get_feature(INT i, INT j)
 {
     ASSERT(vectors && i < num_vectors);
     ASSERT(j < (signed) vectors[i]->num);
 
-    return gram_restore(vectors[i]->gram[j], cfg);
+    return vectors[i]->gram[j];
 }
 
 /**
@@ -221,7 +236,7 @@ bool CMindyGramFeatures::import(CStringFeatures < CHAR > *sf)
 
     vectors = (gram_t **) calloc(num_vectors, sizeof(gram_t *));
     if (!vectors) {
-        CIO::message(M_ERROR, "could not allocate memory\n");
+        CIO::message(M_ERROR, "Could not allocate memory\n");
         return false;
     }
 
@@ -230,8 +245,8 @@ bool CMindyGramFeatures::import(CStringFeatures < CHAR > *sf)
         CHAR *s = sf->get_feature_vector(i, len);
         vectors[i] = gram_extract(cfg, (byte_t *) s, (size_t) len);
 
-        CIO::message(M_DEBUG, "Vector %d: %d grams\n", i,
-            vectors[i]->num);
+        CIO::message(M_DEBUG, "Extracted gram vector %d: %d grams\n", i, 
+                     vectors[i]->num);
     }
 
     return true;
@@ -244,7 +259,7 @@ bool CMindyGramFeatures::import(CStringFeatures < CHAR > *sf)
  */
 bool CMindyGramFeatures::load(CHAR * fname)
 {
-    CIO::message(M_INFO, "loading...\n");
+    CIO::message(M_INFO, "Loading strings from %s\n", fname);
     LONG len = 0;
     CHAR *s, *t;
 
@@ -252,7 +267,7 @@ bool CMindyGramFeatures::load(CHAR * fname)
     CHAR *data = f.load_char_data(NULL, len);
 
     if (!f.is_ok()) {
-        CIO::message(M_ERROR, "reading file failed\n");
+        CIO::message(M_ERROR, "Reading file failed\n");
         return false;
     }
 
@@ -260,12 +275,12 @@ bool CMindyGramFeatures::load(CHAR * fname)
     num_vectors = 0;
     for (LONG i = 0; i < len; i++)
         if (data[i] == '\n')
-            CIO::message(M_INFO, "file contains %ld vectors\n",
+            CIO::message(M_INFO, "File contains %ld string vectors\n",
                 num_vectors);
 
     vectors = (gram_t **) calloc(num_vectors, sizeof(gram_t *));
     if (!vectors) {
-        CIO::message(M_ERROR, "could not allocate memory\n");
+        CIO::message(M_ERROR, "Could not allocate memory\n");
         return false;
     }
 

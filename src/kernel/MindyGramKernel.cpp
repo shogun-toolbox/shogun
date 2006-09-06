@@ -14,18 +14,32 @@
 
 #ifdef HAVE_MINDY
 
+#include <mindy.h>
+
 #include "lib/common.h"
 #include "features/MindyGramFeatures.h"
 #include "lib/io.h"
 #include "kernel/MindyGramKernel.h"
 
+/*
+ * Similarity parameters
+ */
+param_spec_t p_map[] = {
+    { "expo",  SP_EXPO,  2.0,  "Exponent (polynomial, minkowski)" },
+    { "shift", SP_SHIFT, 0.0,  "Shift value (polynomial)" },
+    { "dist",  SP_DIST,  ST_MINKOWSKI, "Distance name (rbf)" },
+    { "width", SP_WIDTH, 1.0,  "Kernel width (rbf)" },
+    { NULL },
+};
+
 /**
  * Mindy kernel constructor
  * @param cache Cache size to use (?)
+ * @param measure Similarity measure to use
  * @param param String of mindy parameters
  * @param n Normalization type
  */
-CMindyGramKernel::CMindyGramKernel(LONG cache, CHAR *param, ENormalizationType n) : CKernel(cache)
+CMindyGramKernel::CMindyGramKernel(LONG cache, CHAR *measure, CHAR *param, ENormalizationType n) : CKernel(cache)
 {
     /* Init attributes */
     sdiag_lhs = NULL;
@@ -34,13 +48,36 @@ CMindyGramKernel::CMindyGramKernel(LONG cache, CHAR *param, ENormalizationType n
     norm = n;
 
     /* Create similarity measure */
-    kernel = sm_create(KERN_LINEAR);
+    CIO::message(M_INFO, "Initializing Mindy kernel\n");
+    kernel = sm_create(sm_get_type(measure));
+   
+    CIO::message(M_INFO, "Mindy similarity measure: %s\n", 
+	         sm_get_descr(kernel->type));
+
+    /* Parse and set parameters */
+    parse_params(param);
+
+    /* Display paramater list */
+    for (INT i = 0; p_map[i].name; i++) {
+        if (p_map[i].idx != SP_DIST)
+            CIO::message(M_INFO, "Param %8s=%8.6f\t %s\n", 
+			p_map[i].name, p_map[i].val, p_map[i].descr);
+        else
+            CIO::message(M_INFO, "Param %8s=%s\t %s\n", p_map[i].name, 
+                        sm_get_name((sm_type_t) p_map[i].val), 
+                        p_map[i].descr);
+    }
 
     /* Initialize optimization */
-    properties |= KP_LINADD;
+    if (kernel->type == ST_LINEAR) {
+	CIO::message(M_INFO, "Optimization supported\n");
+        properties |= KP_LINADD;
+    }
+    
     normal = NULL;
     clear_normal();
 }
+
 
 /**
  * Mindy kernel destructor
@@ -50,6 +87,40 @@ CMindyGramKernel::~CMindyGramKernel()
     cleanup();
     sm_destroy(kernel);
 }
+
+/**
+ * Parse provided parameters
+ */
+void CMindyGramKernel::parse_params(CHAR *pa)
+{
+    INT i;
+    CHAR *t, *p;
+
+    if (strlen(pa) == 0)
+        return;
+
+    /* Loop over delimited parameter definitions */
+    while ((t = strsep(&pa, ",;"))) {
+        for (i = 0; p_map[i].name; i++) {
+            /* Check for parameter name */
+            size_t l = strlen(p_map[i].name);
+            if (!strncasecmp(t, p_map[i].name, l)) {
+                p = t + l + 1;
+                if (p_map[i].idx == SP_DIST)
+                    p_map[i].val = sm_get_type(p);
+                else
+                    p_map[i].val = atof(p);
+                break;
+            }
+        }
+     	if (!p_map[i].name)
+            CIO::message(M_WARN, "Unknown parameter '%s'. Skipping", t);
+     }   
+
+     /* Set parameters */	
+     for (i = 0; p_map[i].name; i++)
+	sm_set_param(kernel, p_map[i].idx, p_map[i].val);	 
+} 
 
 /**
  * Clean up method
@@ -203,6 +274,10 @@ DREAL CMindyGramKernel::compute(INT i, INT j)
     /* Call (internal) mindy comparison function */
     DREAL result = gram_cmp(kernel, lm->get_feature_vector(i),
         rm->get_feature_vector(j));
+
+    /* Sloppy and incorrect distance to kernel conversion ;) */    
+    if (sm_get_class(kernel->type) == SC_DIST)
+        result = 1 / (result + 1);
 
     if (!initialized)
         return result;

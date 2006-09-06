@@ -1418,10 +1418,11 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			delete k;
 			char norm_str[256]="";
 			char param_str[256]="";
+			char meas_str[256]="";
 			
 			ENormalizationType normalization = FULL_NORMALIZATION ;
 				
-			sscanf(param, "%s %s %d %255s %255s", kern_type, data_type, &size, param_str, norm_str);
+			sscanf(param, "%s %s %d %255s %255s %255s", kern_type, data_type, &size, meas_str, norm_str, param_str);
 			if (strlen(norm_str)==0)
 			{
 				normalization = FULL_NORMALIZATION ;
@@ -1448,10 +1449,10 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				return NULL ;
 			}
 
-			k = new CMindyGramKernel(size, param, normalization);
+			k = new CMindyGramKernel(size, meas_str, param_str, normalization);
 			if (k)
 			{
-			    CIO::message(M_INFO, "MindyGramKernel with %s created\n", param_str);
+			    CIO::message(M_INFO, "MindyGramKernel with %s (%s) created\n", meas_str, param_str);
 			    return k;
 			}
 		}

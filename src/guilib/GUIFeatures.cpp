@@ -313,37 +313,42 @@ CSparseRealFeatures* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFeatu
 
 CMindyGramFeatures* CGUIFeatures::convert_string_char_to_mindy_grams(CStringFeatures<CHAR> *src, CHAR* param)
 {
-	CHAR mode[256]="";
-	CHAR alph[256]="";
-	CHAR delim[256]="";
-	INT len=-1;
+	CHAR mode[256]="", alph[256]="", embed[256]="",delim[256]="";
+	INT nlen=-1;
 
 	if (!src || !param) {
 		CIO::message(M_ERROR, "invalid arguments: \"%s\"\n",param);
 		return NULL;
 	}
 
-	if (sscanf(param, "%*s %*s %*s %*s %*s %255s %255s", mode, alph) < 2) {
+	if (sscanf(param, "%*s %*s %*s %*s %*s %255s %255s %255s", 
+		   mode, alph, embed) < 3) {
 		CIO::message(M_ERROR, "too few arguments\n");
 		return NULL;
 	}
 
 	if (!strcasecmp(mode, "words")) {
-		if (sscanf(param, "%*s %*s %*s %*s %*s %*s %*s %255s", delim) < 1) {
+		if (sscanf(param, "%*s %*s %*s %*s %*s %*s %*s %*s %255s", 
+		           delim) < 1) {
 			CIO::message(M_ERROR, "too few arguments\n");
 			return NULL;
 		}
 	
-		CIO::message(M_INFO, "Converting string features to mindy words of %s by %s\n", alph, delim);                
-		return new CMindyGramFeatures(src, alph, delim);
+		CIO::message(M_INFO, "Converting strings to Mindy words "
+		             "(a: %s, e: %s, d: '%s')\n", alph, embed, delim);                
+
+		return new CMindyGramFeatures(src, alph, embed, delim);
 	} else {
-		if (sscanf(param, "%*s %*s %*s %*s %*s %*s %*s %d", &len) < 1) {
+		if (sscanf(param, "%*s %*s %*s %*s %*s %*s %*s %*s %d", 
+		           &nlen) < 1) {
 			CIO::message(M_ERROR, "too few arguments\n");
 			return NULL;
 		}
 	
-		CIO::message(M_INFO, "Converting string features to mindy %d-grams of %s\n", len, alph);                
-		return new CMindyGramFeatures(src, alph, len);
+		CIO::message(M_INFO, "Converting strings to Mindy n-grams "
+		             "(a: %s, e: %s, n: %d)\n", alph, embed, nlen);                
+
+		return new CMindyGramFeatures(src, alph, embed, nlen);
 	} 
 }
 #endif

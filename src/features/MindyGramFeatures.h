@@ -29,19 +29,20 @@ class CMindyGramFeatures:public CFeatures
     public:
 
         /* Constructors */
-        CMindyGramFeatures(CHAR * fname, CHAR * aname, BYTE nlen);
-        CMindyGramFeatures(CStringFeatures < CHAR > *sf, CHAR * aname, BYTE nlen);
-        CMindyGramFeatures(CHAR *fname, CHAR *aname, CHAR *delim);
-        CMindyGramFeatures(CStringFeatures<CHAR> *sf, CHAR *aname, CHAR *delim);
+        CMindyGramFeatures(CHAR *fname, CHAR *aname, CHAR *embed, BYTE nlen);
+        CMindyGramFeatures(CStringFeatures < CHAR > *sf, CHAR *aname, CHAR *embed, BYTE nlen);
+        CMindyGramFeatures(CHAR *fname, CHAR *aname, CHAR *embed, CHAR *delim);
+        CMindyGramFeatures(CStringFeatures<CHAR> *sf, CHAR *aname, CHAR *embed, CHAR *delim);
         CMindyGramFeatures(const CMindyGramFeatures & orig);
         ~CMindyGramFeatures();
 
         CFeatures *duplicate() const;
 
         /* Feature and vector functions */
+        void set_embedding(gram_cfg_t *, CHAR *);
         gram_t *get_feature_vector(INT i);
         void set_feature_vector(INT i, gram_t * g);
-        inline byte_t *get_feature(INT i, INT j);
+        inline ULONG get_feature(INT i, INT j);
         inline INT get_vector_length(INT i);
 
         /* Simple functions */

@@ -18,15 +18,24 @@
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
+/* Parameter specifications */
+typedef struct {
+    char *name;                 /* Name of parameter */
+    int idx;                    /* Index in param array (see sm.h) */
+    real_t val;                 /* Default value */
+    char *descr;                /* Description */
+} param_spec_t;
+
 class CMindyGramKernel: public CKernel
 {
 
     public:
         /* Constructors */
-        CMindyGramKernel(LONG cache, CHAR *param, ENormalizationType n);
+        CMindyGramKernel(LONG cache, CHAR *measure, CHAR *param, ENormalizationType n);
         ~CMindyGramKernel();
 
         /* Init and cleanup functions */
+        void parse_params(CHAR *);
         virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
         virtual void cleanup();
         virtual void remove_lhs();
@@ -74,6 +83,7 @@ class CMindyGramKernel: public CKernel
         /* Arrays of kernel matrix diagonals */
         DREAL* sdiag_lhs;
         DREAL* sdiag_rhs;
+
         /* Initialization flag */
         bool initialized;
         /* Normalization mode */
