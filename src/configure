@@ -49,8 +49,10 @@ _datadir="$_prefix/share/shogun"
 _mandir="$_prefix/man"
 _confdir="$_prefix/etc/shogun"
 _libdir="$_prefix/lib"
-_inc_extra="-I$INCLUDES"
-_ld_extra="-L$LIBS"
+_inc_extra=""
+_ld_extra=""
+test -z "$INCLUDES" || _inc_extra="-I$INCLUDES"
+test -z "$LIBS" || _ld_extra="-L$LIBS"
 
 # these ones will be autodetected
 CONFIGURE_OPTIONS="compile options $@"
