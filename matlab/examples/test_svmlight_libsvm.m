@@ -2,8 +2,8 @@
 rand('state',123455);
 for i=1:1000,
 sg('send_command', 'loglevel ALL');
-num=ceil(5000*rand);
-dims=ceil(1000*rand);
+num=ceil(1000*rand);
+dims=ceil(100*rand);
 dist=rand;
 traindat=[rand(dims,num)-dist rand(dims,num)+dist];
 trainlab=[-ones(1,num) ones(1,num)];

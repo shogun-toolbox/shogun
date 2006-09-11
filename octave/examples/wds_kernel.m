@@ -12,7 +12,7 @@ aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
 C=1;
 
 %Weighted Degree kernel parameters
-max_order=5;
+max_order=8;
 order=20;
 shift=15;
 max_mismatch=0;
@@ -70,4 +70,24 @@ sg('send_command', 'init_kernel TEST');
 out=sg('svm_classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==testlab))
 
-x=sg('get_WD_scoring', max_order)
+x={};
+X=zeros(max_order,size(x{1},2));
+for i=1:max_order,
+	x{i}=sg('get_WD_scoring', i);
+	X(i,:)=sum(abs(x{i}),1);
+end
+
+for i=1:max_order,
+	X(i,:)=mean(abs(x{i}),1);
+	figure(i)
+	imagesc(x{i})
+	colorbar
+end
+
+figure(1000)
+imagesc(X)
+colorbar
+
+figure(1001)
+imagesc(X>0.7*max(X(:)))
+colorbar
