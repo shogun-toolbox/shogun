@@ -71,7 +71,7 @@ out=sg('svm_classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==testlab))
 
 x={};
-X=zeros(max_order,size(x{1},2));
+X=zeros(max_order,len);
 for i=1:max_order,
 	x{i}=sg('get_WD_scoring', i);
 	X(i,:)=sum(abs(x{i}),1);
