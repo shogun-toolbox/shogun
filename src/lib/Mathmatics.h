@@ -123,6 +123,12 @@ public:
 		return x*x;
 	}
 
+	/// x^n
+	static inline long double powl(long double x, long double n)
+	{
+		return powl(x, n);
+	}
+
 	static inline DREAL log10(DREAL v)
 	{
 		return log(v)/log(10.0);

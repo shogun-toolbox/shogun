@@ -304,8 +304,9 @@ template <class ST> class CStringFeatures: public CFeatures
 		alpha->check_alphabet_size();
 
 		INT max_val=alpha->get_num_bits();
+
 		if (order>1)
-			num_symbols=powl(2,max_val*order);
+			num_symbols=CMath::powl(2, max_val*order);
 		else
 			num_symbols=original_num_symbols;
 

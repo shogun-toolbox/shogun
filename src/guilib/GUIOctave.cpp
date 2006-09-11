@@ -900,8 +900,8 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 				{
 					CHAR* al=CGUIOctave::get_octaveString(vals(3).string_value());
 
-					CAlphabet* alpha new CAlphabet(al);
-					f= new CCharFeatures(alpha, (LONG) 0);
+					CAlphabet* alpha= new CAlphabet(al, strlen(al));
+					f= new CCharFeatures(alpha, 0);
 					INT num_vec = cm.cols();
 					INT num_feat = cm.rows();
 					CIO::message(M_DEBUG, "char matrix, cols:%d row:%d!\n", num_vec, num_feat);
@@ -922,7 +922,7 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 			{
 				Matrix m = mat_feat.matrix_value();
 
-				f = new CRealFeatures((LONG) 0);
+				f = new CRealFeatures(0);
 				INT num_vec = m.cols();
 				INT num_feat = m.rows();
 				CIO::message(M_DEBUG, "vec: %d feat:%d\n", num_vec, num_feat);

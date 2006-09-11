@@ -1,3 +1,19 @@
+2006-09-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* incorporated MINDY support
+	* new alphabet class, all string features now have a defined
+	alphabet plus mapping function
+	* RAW (i.e. 8bit) alphabet added
+	* fixes for CommStringUlongKernel (was buggy when strings have different
+			lengths)
+	* new get_WD_scoring function
+	* compile fixes for octave and matlab on osx
+	* configure now scans a number of variants to detect include and library paths
+	* configure obeys INCLUDES LIBS environment variables and optional
+	  paths specified by --libraries --includes 
+	* updated copyright infos
+	* updated license infos
+
 2006-06-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
 	* SHOGUN Release 0.1.2

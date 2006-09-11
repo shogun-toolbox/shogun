@@ -49,6 +49,8 @@ _datadir="$_prefix/share/shogun"
 _mandir="$_prefix/man"
 _confdir="$_prefix/etc/shogun"
 _libdir="$_prefix/lib"
+_inc_extra="-I$INCLUDES"
+_ld_extra="-L$LIBS"
 
 # these ones will be autodetected
 CONFIGURE_OPTIONS="compile options $@"
@@ -325,6 +327,8 @@ Miscellaneous options:
   --install-path=PATH           the path to a custom install program (useful if
                                 your OS uses a GNU-incompatible install utility by
                                 default and you want to point to the GNU version)
+  --includes=DIR				include DIR when searching for includes
+  --libs=DIR					include DIR when searching for libraries on linking
 EOF
     exit 0
   fi
@@ -337,6 +341,7 @@ _cc=gcc
 test "$CC" && _cc="$CC"
 _as=auto
 _runtime_cpudetection=no
+
 for ac_option do
   case "$ac_option" in
   --target=*)
@@ -357,12 +362,11 @@ for ac_option do
   --enable-static=*)
     _ld_static="-static `echo $ac_option | cut -d '=' -f 2`"
     ;;
-  --with-extraincdir=*)
-    _inc_extra=-I`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -I,g'`
+  --includes=*)
+    _inc_extra="-I`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -I,g'` $_inc_extra"
     ;;
-  --with-extralibdir=*)
-    _ld_extra=-L`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -L,g'`
-#    _ld_extra="${_ld_extra} -Wl,-R"`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -Wl\,-R,g'`" -L"`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -L,g'`
+  --libs=*)
+    _ld_extra="-L`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -L,g'` $_ld_extra"
     ;;
   --install-path=*)
     _install=`echo $ac_option | cut -d '=' -f 2 | sed 's/\/$//'`"/install"
@@ -1261,7 +1265,7 @@ set_opts()
 	then
 		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
 
-		LINKFLAGS="-pthread -shared -L`octave-config -p OCTLIBDIR` -loctinterp $LINKFLAGS"
+		LINKFLAGS="-pthread -shared -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
 		TARGET="sg.oct"
 		INCLUDES="$INCLUDES -I`octave-config -p OCTINCLUDEDIR`"
 		COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC"
@@ -1446,6 +1450,9 @@ set_opts()
 	then
 		USE_SVMLIGHT='#define USE_SVMLIGHT 1'
 	fi
+
+	INCLUDES="$_inc_extra $INCLUDES"
+	LINKFLAGS="$_ld_extra $LINKFLAGS"
 }
 
 #write the actual config

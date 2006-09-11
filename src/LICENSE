@@ -1,3 +1,8 @@
+When configure is run with --enable-svm-light, you may as an exception to
+the GPL link the code with SVMlight and redistribute the resulting
+binaries under the terms of the SVMlight license. Please read LICENSE.SVMlight.
+
+
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 
