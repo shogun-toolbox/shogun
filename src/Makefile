@@ -116,6 +116,8 @@ dist:	distclean
 	rm -f $(TAR).gz
 	tar -cvf $(TAR) -C ../../ shogun/src && gzip -9 $(TAR)
 
+install: $(TARGET)
+	install -D -m755 $(TARGET) $(DESTDIR)$(BINDIR)
 
 dep:	depend
 depend:	Makefile .config lib/versionstring.h
