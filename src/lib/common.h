@@ -95,7 +95,7 @@ typedef LONGREAL* P_LONGREAL;
 	typedef DREAL KERNELCACHE_ELEM;
 #endif
 
-typedef INT KERNELCACHE_IDX;
+typedef LONG KERNELCACHE_IDX;
 
 /// The io libs output [DEBUG] etc in front of every CIO::message
 /// 'higher' messages filter output depending on the loglevel, i.e. CRITICAL messages

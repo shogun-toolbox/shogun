@@ -23,8 +23,8 @@
 class CKernel
 {
 	public:
-		CKernel(KERNELCACHE_IDX size);
-		CKernel(CFeatures* lhs, CFeatures* rhs, KERNELCACHE_IDX size);
+		CKernel(INT size);
+		CKernel(CFeatures* lhs, CFeatures* rhs, INT size);
 		virtual ~CKernel();
 
 		/** get kernel function for lhs feature vector a 
@@ -112,11 +112,11 @@ class CKernel
 		inline void cache_reset() {	resize_kernel_cache(cache_size) ; } ;
 		inline int get_max_elems_cache() { return kernel_cache.max_elems; }
 		inline int get_activenum_cache() { return kernel_cache.activenum; }
-		void get_kernel_row(KERNELCACHE_IDX docnum, INT *active2dnum, DREAL *buffer, bool full_line=false) ;
-		void cache_kernel_row(KERNELCACHE_IDX x);
+		void get_kernel_row(INT docnum, INT *active2dnum, DREAL *buffer, bool full_line=false) ;
+		void cache_kernel_row(INT x);
 		void cache_multiple_kernel_rows(INT* key, INT varnum);
 		void kernel_cache_reset_lru();
-		void kernel_cache_shrink(KERNELCACHE_IDX totdoc, KERNELCACHE_IDX num_shrink, KERNELCACHE_IDX *after);
+		void kernel_cache_shrink(INT totdoc, INT num_shrink, INT *after);
 
 		void resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack=false);
 		
@@ -127,7 +127,7 @@ class CKernel
 		}
 
 		// Update lru time to avoid removal from cache.
-		inline KERNELCACHE_IDX kernel_cache_touch(KERNELCACHE_IDX cacheidx)
+		inline INT kernel_cache_touch(INT cacheidx)
 		{
 			if(kernel_cache.index[cacheidx] != -1)
 			{
@@ -138,7 +138,7 @@ class CKernel
 		}
 
 		/// Is that row cached?
-		inline KERNELCACHE_IDX kernel_cache_check(KERNELCACHE_IDX cacheidx)
+		inline INT kernel_cache_check(INT cacheidx)
 		{
 			return(kernel_cache.index[cacheidx] >= 0);
 		}
@@ -227,17 +227,18 @@ class CKernel
 		 */
 		//@{
 		struct KERNEL_CACHE {
-			KERNELCACHE_IDX   *index;  
+			INT   *index;  
+			INT   *invindex;
+			INT   *active2totdoc;
+			INT   *totdoc2active;
+			INT   *lru;
+			INT   *occu;
+			INT   elems;
+			INT   max_elems;
+			INT   time;
+			INT   activenum;
+
 			KERNELCACHE_ELEM  *buffer; 
-			KERNELCACHE_IDX   *invindex;
-			KERNELCACHE_IDX   *active2totdoc;
-			KERNELCACHE_IDX   *totdoc2active;
-			KERNELCACHE_IDX   *lru;
-			KERNELCACHE_IDX   *occu;
-			KERNELCACHE_IDX   elems;
-			KERNELCACHE_IDX   max_elems;
-			KERNELCACHE_IDX   time;
-			KERNELCACHE_IDX   activenum;
 			KERNELCACHE_IDX   buffsize;
 		};
 
@@ -255,12 +256,12 @@ class CKernel
 		static void* cache_multiple_kernel_row_helper(void* p);
 
 		/// init kernel cache of size megabytes
-		void   kernel_cache_init(KERNELCACHE_IDX size, bool regression_hack=false);
+		void   kernel_cache_init(INT size, bool regression_hack=false);
+		void   kernel_cache_free(INT cacheidx);
 		void   kernel_cache_cleanup();
-		KERNELCACHE_IDX   kernel_cache_malloc();
-		void   kernel_cache_free(KERNELCACHE_IDX cacheidx);
-		KERNELCACHE_IDX   kernel_cache_free_lru();
-		KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(KERNELCACHE_IDX);
+		INT   kernel_cache_malloc();
+		INT   kernel_cache_free_lru();
+		KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(INT cacheidx);
 #endif
 		//@}
 
