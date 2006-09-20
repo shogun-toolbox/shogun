@@ -1,20 +1,44 @@
 GENERAL
 
-On most platforms (Linux,MacOSX) it is sufficient to issue
+On most platforms (Linux,MacOSX,cygwin) it is sufficient to issue
 
 ./configure --enable-<interface>
 make
 
 where <interface> is one of the following R, matlab, python, octave.
+Just running ./configure will compile a stand-a-lone version.
+
 See ./configure --help for additional options.
+
 
 SPECIAL FEATURES
 
 To enable Multiple Kernel Learning CPLEX(tm) is needed and one needs
 to issue configure with ./configure --enable-<interface> --enable-cplex
 
+
+REQUIREMENTS
+
+To compile the R interface you need to have the R developer files 
+(debian package r-base-dev) installed.
+
+To compile the octave interface you need to have the octave developer files 
+(debian package octave2.1-headers or octave2.9-headers) installed.
+
+To compile the python interface you need to have numarray 
+(debian package python-numarray and python-numarray-ext) installed.
+
+Also you will need atlas and lapack (debian lapack3-dev, 
+atlas3-headers atlas3-base-dev or atlas3-altivec-dev atlas3-sse2-dev)
+installed. In case atlas/lapack is unavailable use --disable-lapack
+to nevertheless compile a slightly slower version.
+
+
 PROBLEMS
 
 In case header files or libraries are not at standard locations one needs
 to manually adjust the .config file (copy .config to .config-local and modify
 		that version).
+
+The current gcc/g++ version in cygwin is broken. Please downgrade to 
+gcc/g++ 3.x.x to get a working octave interface.
