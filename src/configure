@@ -274,6 +274,10 @@ cxx_check() {
   return "$TMP"
 }
 
+tmp_run() {
+  "$TMPO" >> "$TMPLOG" 2>&1
+}
+
 # Display error message, flushes tempfile, exit
 die () {
   echo
