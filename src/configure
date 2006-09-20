@@ -56,7 +56,7 @@ test -z "$INCLUDES" || _inc_extra="-L`echo $INCLUDES | sed 's,:, -I,g'`"
 test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
 
 # these ones will be autodetected
-CONFIGURE_OPTIONS="compile options $@"
+CONFIGURE_OPTIONS="configure options $@"
 GDB=gdb
 MAKE=make
 test "$CC" && COMP_C="$CC"
@@ -65,7 +65,7 @@ COMPFLAGS_C=
 COMPFLAGS_CPP=
 INCLUDES=-I${SRCDIR}
 LINK=c++
-LINKFLAGS="-lm"
+LINKFLAGS=""
 TARGET="shogun"
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
 #most defines are simply design bugs, use the ./configure --{disable,enable}-<options>
@@ -1655,14 +1655,10 @@ fi
 	  LINKFLAGS="-fast -xchip=native -xarch=v9 -xO5 -g +w2 $LINKFLAGS"
   elif osf1
   then
-	  COMP_OPTS="-O5 -inline speed -pthread -om"
-	  LINKFLAGS="-pthread $LINKFLAGS"
+	  COMP_OPTS="-O5 -inline speed -om"
   elif darwin
   then
 	  COMP_OPTS="-Wno-long-double $COMP_OPTS"
-  elif linux
-  then
-	  LINKFLAGS="$LINKFLAGS -lpthread"
   fi
 }
 
@@ -1689,28 +1685,28 @@ set_opts()
 
 		if osf1
 		then
-			LINKFLAGS="-pthread -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*'"
+			LINKFLAGS="$LINKFLAGS -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*'"
 			add_library_path "Matlab(tm)" "/opt/matlab-6.5-13/bin/alpha"
 			LINKFLAGS="$LINKFLAGS -lmx -lmex -lmat $LINKFLAGS"
 			TARGET="sg.mexaxp"
 			add_include_path "Matlab(tm)" "/opt/matlab-6.5-13/extern/include"
 			DEFINES="$DEFINES -DMATLAB_MEX_FILE"
-			COMPFLAGS_CPP="$COMPFLAGS_CPP -shared -ieee -pthread -std1"
-			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -pthread -std1"
+			COMPFLAGS_CPP="$COMPFLAGS_CPP -shared -ieee -std1"
+			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -std1"
 		elif darwin
 		then
 			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace"
 			add_library_path "Matlab(tm)" "/Applications/MATLAB7/bin/mac"
-			LINKFLAGS="$LINKFLAGS -lmx -lmex -lmat -lpthread $LINKFLAGS"
+			LINKFLAGS="$LINKFLAGS -lmx -lmex -lmat $LINKFLAGS"
 			add_include_path "Matlab(tm)" "/Applications/MATLAB7/extern/include"
 			TARGET="sg.mexmac"
 		elif linux
 		then
 			case "$host_arch" in
 			  x86_64|amd64)
-				COMPFLAGS_C="$COMPFLAGS_C -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE -pthread"
-				COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE -pthread"
-				LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/fml/ag-raetsch/share/software/matlab/extern/lib/glnxa64/mexFunction.map -Wl,--rpath-link,/fml/ag-raetsch/share/software/matlab/bin/glnxa64 -L/fml/ag-raetsch/share/software/matlab/bin/glnxa64 -lmx -lmex -lmat -lm -lstdc++"
+				COMPFLAGS_C="$COMPFLAGS_C -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
+				COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
+				LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,/fml/ag-raetsch/share/software/matlab/extern/lib/glnxa64/mexFunction.map -Wl,--rpath-link,/fml/ag-raetsch/share/software/matlab/bin/glnxa64 -L/fml/ag-raetsch/share/software/matlab/bin/glnxa64 -lmx -lmex -lmat -lstdc++"
 				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/matlab/extern/include/"
 				TARGET="sg.mexa64"
 			  ;;
@@ -1718,32 +1714,51 @@ set_opts()
 
 			  if test -d /fml/ag-raetsch/share/software/matlab/extern/include
 			  then
-				  LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/fml/ag-raetsch/share/software/matlab/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/fml/ag-raetsch/share/software/matlab/extern/lib/glnx86,--rpath-link,/fml/ag-raetsch/share/software/matlab/bin/glnx86 -L/fml/ag-raetsch/share/software/matlab/bin/glnx86 -lmx -lmex -lmat"
+				  LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,/fml/ag-raetsch/share/software/matlab/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/fml/ag-raetsch/share/software/matlab/extern/lib/glnx86,--rpath-link,/fml/ag-raetsch/share/software/matlab/bin/glnx86 -L/fml/ag-raetsch/share/software/matlab/bin/glnx86 -lmx -lmex -lmat"
 				  INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/matlab/extern/include/"
 				  TARGET="sg.mexglx"
 			  else
-				  LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
+				  LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
 				  INCLUDES="$INCLUDES -I/home/matrix/matlab/extern/include/"
 				  TARGET="sg.mexglx"
 			  fi
 				;;
 			esac
 		else
-			LINKFLAGS="$LINKFLAGS -pthread -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
+			LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
 			INCLUDES="$INCLUDES -I/home/matrix/matlab/extern/include/"
 			TARGET="sg.mexglx"
 		fi
 	fi
 
-	if test "$_octave" = yes
+cat > $TMPC << EOF
+#include <math.h>
+int main(void) { return 0; }
+EOF
+	echocheck "Math support (-lm)"
+	if cc_check -lm
 	then
-		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
+		LINKFLAGS="$LINKFLAGS -lm"
+		echores "yes"
+	else
+		echores "no"
+		exit 1
+	fi
 
-		LINKFLAGS="-pthread -shared -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
-		TARGET="sg.oct"
-		INCLUDES="$INCLUDES -I`octave-config -p OCTINCLUDEDIR`"
-		COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC"
-		COMPFLAGS_C="$COMPFLAGS_C -fPIC"
+cat > $TMPC << EOF
+#include <pthread.h>
+int main(void) { return 0; }
+EOF
+	echocheck "Posix threads support"
+	if cc_check -pthread -lpthread
+	then
+		COMPLAGS_C="$COMPFLAGS_C -pthread"
+		COMPLAGS_CPP="$COMPFLAGS_CPP -pthread"
+		LINKFLAGS="$LINKFLAGS -lpthread"
+		echores "yes"
+	else
+		echores "no"
+		exit 1
 	fi
 
 	if test "$_readline" = yes || test "$_readline" = auto;
@@ -1780,16 +1795,46 @@ EOF
 		fi
 	fi
 
+	if test "$_lapack" = yes || test "$_lapack" = auto
+	then
+cat > $TMPC << EOF
+#include <cblas.h>
+int main(void) { return 0; }
+EOF
+		echocheck "Lapack/Atlas support"
+		if cc_check -llapack-3 -lblas-3
+		then
+			echores "yes"
+			HAVE_LAPACK='#define HAVE_LAPACK 1'
+			LINKFLAGS="$LINKFLAGS -llapack-3 -lblas-3"
+		else
+			echores "no"
+		fi
+	fi
+
+
+	if test "$_octave" = yes
+	then
+		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
+
+		LINKFLAGS="-shared -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
+		TARGET="sg.oct"
+		INCLUDES="$INCLUDES -I`octave-config -p OCTINCLUDEDIR`"
+		COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC"
+		COMPFLAGS_C="$COMPFLAGS_C -fPIC"
+	fi
+
+
 	if test "$_python" = yes
 	then
 		HAVE_PYTHON='#define HAVE_PYTHON 1'
 
 		test -n "$_pyinclude" || _pyinclude=`python -c "import sys; print sys.prefix+'/include/python'+sys.version[0:3]"`
 		test -n "$_pylibs" || _pylibs=`python -c "import sys; print 'python'+sys.version[0:3]"`
-		INCLUDES="-I\"$pyinclude\" $INCLUDES"
-		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
-		COMPFLAGS_C="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
-		LINKFLAGS="-pthread -shared -l\"$_pylibs\" -ldl -lutil $LINKFLAGS"
+		INCLUDES="-I\"$_pyinclude\" $INCLUDES"
+		COMPFLAGS_CPP="-fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
+		COMPFLAGS_C="-fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
+		LINKFLAGS="-shared -l\"$_pylibs\" -ldl -lutil $LINKFLAGS"
 		TARGET="sg.so"
 	fi
 
@@ -1798,8 +1843,8 @@ EOF
 		HAVE_R='#define HAVE_R 1'
 		TARGET="sg.so"
 
-		INCLUDES="`R CMD config --cppflags` $INCLUDES"
-		LINKFLAGS="`R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
+		INCLUDES="$INCLUDES `R CMD config --cppflags` $INCLUDES"
+		LINKFLAGS="$LINKFLAGS `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
 	fi
 
 	if test "$_cplex" = yes
@@ -1839,23 +1884,6 @@ EOF
 		USE_SWIG='yes'
 	else
 		USE_SWIG='no'
-	fi
-
-	if test "$_lapack" = yes || test "$_lapack" = auto
-	then
-cat > $TMPC << EOF
-#include <cblas.h>
-int main(void) { return 0; }
-EOF
-		echocheck "Lapack/Atlas support"
-		if cc_check -llapack-3 -lblas-3
-		then
-			echores "yes"
-			HAVE_LAPACK='#define HAVE_LAPACK 1'
-			LINKFLAGS="$LINKFLAGS -llapack-3 -lblas-3"
-		else
-			echores "no"
-		fi
 	fi
 
 	if test "$_logcache" = yes
@@ -1986,7 +2014,7 @@ LICENSE.SVMlight press ctrl+c to abort configure now.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 EOF
-		sleep 10
+		sleep 1
 	fi
 }
 
@@ -2028,6 +2056,33 @@ $USE_W_TIMING
 EOF
 }
 
+type_buildinfo()
+{
+	if test -n "$HAVE_MATLAB";
+	then
+		INTERFACE="matlab"
+	elif test -n "$HAVE_OCTAVE";
+	then
+		INTERFACE="octave"
+	elif test -n "$HAVE_PYTHON";
+	then
+		INTERFACE="python"
+	elif test -n "$HAVE_R";
+	then
+		INTERFACE="R"
+	else 
+		INTERFACE="stand-a-lone"
+	fi
+	cat <<EOF
+
+SHOGUN was configured for $INTERFACE interface with the following 
+$CONFIGURE_OPTIONS
+
+type "make" now to compile
+
+EOF
+}
+
 clean_up()
 {
 	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS" "$TMPSS"
@@ -2037,7 +2092,8 @@ detect_cc
 check_make
 determine_march_mtune
 set_opts
-#svmlight_warn_license
+svmlight_warn_license
 write_dot_config
 write_config_h
 clean_up
+type_buildinfo

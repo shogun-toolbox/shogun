@@ -39,7 +39,7 @@ CAlphabet::CAlphabet(CHAR* al, INT len)
 		alpha = CUBE;
 	else if (len>=(INT) strlen("BYTE") && !strncmp(al, "BYTE", strlen("BYTE")) || 
 			(len>=(INT) strlen("RAW") && !strncmp(al, "RAW", strlen("RAW"))))
-		alpha = RAW;
+		alpha = RAWBYTE;
 	
 	set_alphabet(alpha);
 }
@@ -77,7 +77,7 @@ bool CAlphabet::set_alphabet(E_ALPHABET alpha)
 		case CUBE:
 			num_symbols = 6;
 			break;
-		case RAW:
+		case RAWBYTE:
 			num_symbols = 256;
 			break;
 		case NONE:
@@ -150,7 +150,7 @@ void CAlphabet::init_map_table()
 				} ;        //Translation 012345->acde...xy0123456789
 			} ;
 			break;
-		case RAW:
+		case RAWBYTE:
 			{
 				//identity
 				for (i=0; i<256; i++)
@@ -271,7 +271,7 @@ const CHAR* CAlphabet::get_alphabet_name(E_ALPHABET alphabet)
 		case CUBE:
 			idx=3;
 			break;
-		case RAW:
+		case RAWBYTE:
 			idx=4;
 			break;
 		case NONE:

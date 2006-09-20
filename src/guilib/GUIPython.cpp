@@ -603,23 +603,23 @@ PyObject* CGUIPython::py_set_features(PyObject* self, PyObject* args)
 	char* target = NULL;
 	char* cmdline = NULL;
 
-	if (PyArg_ParseTuple(args, "sO", &target, &py_ofeat, &cmdline) ||
+	if (PyArg_ParseTuple(args, "sOs", &target, &py_ofeat, &cmdline) ||
             PyArg_ParseTuple(args, "sO", &target, &py_ofeat))
 	{
 		if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
 				(!strncmp(target, "TEST", strlen("TEST"))) ) 
 		{
-			CFeatures* features=set_features(py_ofeat);
+			CFeatures* features=set_features(py_ofeat, cmdline);
 
 			if (features && target)
 			{
 				if (!strncmp(target, "TRAIN", strlen("TRAIN")))
 				{
-					gui->guifeatures.set_train_features(features, cmdline);
+					gui->guifeatures.set_train_features(features);
 				}
 				else if (!strncmp(target, "TEST", strlen("TEST")))
 				{
-					gui->guifeatures.set_test_features(features, cmdline);
+					gui->guifeatures.set_test_features(features);
 				}
 			}
 			else
@@ -648,17 +648,17 @@ PyObject* CGUIPython::py_add_features(PyObject* self, PyObject* args)
 				(!strncmp(target, "TEST", strlen("TEST"))) ) 
 		{
 
-			CFeatures* features=set_features(py_ofeat);
+			CFeatures* features=set_features(py_ofeat, cmdline);
 
 			if (features && target)
 			{
 				if (!strncmp(target, "TRAIN", strlen("TRAIN")))
 				{
-					gui->guifeatures.add_train_features(features,cmdline);
+					gui->guifeatures.add_train_features(features);
 				}
 				else if (!strncmp(target, "TEST", strlen("TEST")))
 				{
-					gui->guifeatures.add_test_features(features,cmdline);
+					gui->guifeatures.add_test_features(features);
 				}
 			}
 			else
@@ -889,8 +889,8 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 					{
 						if (args)
 						{
-							CAlphabet* alphabet=new CAlphabet("args");
-							features= new CCharFeatures(alphabet, (LONG) 0);
+							CAlphabet* alphabet=new CAlphabet(args, strlen(args));
+							features= new CCharFeatures(alphabet, 0);
 							CHAR* fm=new CHAR[num_vec*num_feat];
 							ASSERT(fm);
 							for(int i=0; i<num_vec; i++)
@@ -917,22 +917,8 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 
                     if (feat)
                     {
-                        E_ALPHABET alpha = DNA;
-
-                        if (args)
-                        {
-                            if (!strncmp(args, "DNA", strlen("DNA")))
-                                alpha = DNA;
-                            else if (!strncmp(args, "PROTEIN", strlen("PROTEIN")))
-                                alpha = PROTEIN;
-                            else if (!strncmp(args, "ALPHANUM", strlen("ALPHANUM")))
-                                alpha = ALPHANUM;
-                            else if (!strncmp(args, "CUBE", strlen("CUBE")))
-                                alpha = CUBE;
-                            else if (!strncmp(args, "BYTE", strlen("BYTE")) || )!strncmp(args, "RAW", strlen("RAW"))
-                                alpha = RAW;
-                        }
-                        features= new CCharFeatures(alpha, (LONG) 0);
+						CAlphabet* alpha = new CAlphabet(args, strlen(args));
+                        features= new CCharFeatures(alpha, 0);
                         CHAR* fm=new CHAR[num_vec*num_feat];
                         ASSERT(fm);
                         for(int i=0; i<num_vec; i++)
@@ -959,7 +945,7 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 
 				if (feat)
 				{
-					features= new CRealFeatures((LONG) 0);
+					features= new CRealFeatures(0);
 					DREAL* fm=new DREAL[num_vec*num_feat];
 					ASSERT(fm);
 					for(int i=0; i<num_vec; i++)

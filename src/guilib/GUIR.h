@@ -62,7 +62,7 @@ public:
 	SEXP hmm_likelihood(); 
 	SEXP hmm_classify(); 
 	SEXP get_features(CFeatures* features);
-	CFeatures* set_features(SEXP features, SEXP alphabet);
+	CFeatures* set_features(SEXP feat, SEXP alphabet);
    
 	CLabels* set_labels(SEXP labelsR);
 	SEXP get_labels(CLabels* label);

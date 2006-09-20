@@ -10,6 +10,7 @@
 
 #ifndef _LIBSVM_H___
 #define _LIBSVM_H___
+
 #include "lib/common.h"
 #include "classifier/svm/SVM.h"
 #include "classifier/svm/SVM_libsvm.h"
