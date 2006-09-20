@@ -410,8 +410,8 @@ bool CGUIOctave::best_path_trans(const octave_value_list& vals, octave_value_lis
 	INT N = vec_p.cols();
 	INT M = vec_pos.cols();
 	INT P = cel_penalty_info.cols();
-	INT L = vec_genestr.cols();
-	INT D = mat_dict_weights.rows();
+	//INT L = vec_genestr.cols();
+	//INT D = mat_dict_weights.rows();
 
 	if (
 			vec_p.cols() == N &&
@@ -432,7 +432,7 @@ bool CGUIOctave::best_path_trans(const octave_value_list& vals, octave_value_lis
 		double* q = (double*) vec_q.fortran_vec();
 		double* a = (double*) mat_a.fortran_vec();
 
-		const double* seq = mat_seq.data();
+		//const double* seq = mat_seq.data();
 
 		INT* pos = new INT[M] ;
 		INT* orf_info = new INT[2*N];
@@ -878,23 +878,74 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 {
 	octave_value mat_feat = vals(2);
 	CFeatures* f=NULL;
-	CIO::message(M_INFO, "start CGUIOctave::set_features\n") ;
 
 	if (!mat_feat.is_empty())
 	{
-		CIO::message(M_DEBUG, "%d %d %d %d\n", mat_feat.is_real_matrix(), mat_feat.is_real_scalar(), mat_feat.is_real_nd_array(), mat_feat.is_char_matrix());	
-		///octave does not yet support sparse matrices
-		//if (mat_feat.is_sparse())
-		//{
-		//	CIO::message(M_ERROR, "no, no, no. this is not implemented yet\n");
-		//}
-		//else
+		if (mat_feat.is_cell())
+		{
+			Cell c=mat_feat.cell_value();
+			CIO::message(M_DEBUG, "cell has %d cols, %d rows\n", c.cols(), c.rows());
+			ASSERT(c.rows() == 1 && c(0,0).is_char_matrix());
+
+			int num_vec=c.cols();
+			ASSERT(num_vec>=1);
+
+			T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
+
+			if (c(0,0).char_matrix_value()(0,0))
+			{
+				if (vals.length()==4)
+				{
+					CHAR* al = CGUIOctave::get_octaveString(vals(3).string_value());
+
+					CAlphabet* alpha = new CAlphabet(al, strlen(al));
+					ASSERT(alpha);
+					f= new CStringFeatures<CHAR>(alpha);
+					ASSERT(f);
+
+					int maxlen=0;
+					int num_symbols=0;
+					alpha->clear_histogram();
+
+					for (int i=0; i<num_vec; i++)
+					{
+						//note the .string here is 0 terminated although it is not required
+						charMatrix line=c(0,i).char_matrix_value();
+						ASSERT(line.rows() == 1);
+						//.length is the length of the string w/o 0
+						sc[i].string=new CHAR[line.length()];
+
+						if (sc[i].string)
+						{
+							for (int j=0; j<line.length(); j++)
+								sc[i].string[j]=line(0,j);
+							sc[i].length=line.length(); 
+							maxlen=CMath::max(maxlen, sc[i].length);
+							alpha->add_string_to_histogram(sc[i].string, sc[i].length);
+						}
+						else
+						{
+							CIO::message(M_WARN, "string with index %d has zero length\n", i+1);
+							sc[i].length=0;
+						}
+					}
+
+					alpha->check_alphabet_size();
+					num_symbols=alpha->get_num_symbols();
+
+					CIO::message(M_DEBUG, "num_symbols: %d\n", num_symbols);
+
+					((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
+				}
+				else
+					CIO::message(M_ERROR, "please specify alphabet!\n");
+			}
+		}
+		else
 		{
 			if (mat_feat.is_char_matrix())
 			{
 				charMatrix cm = mat_feat.char_matrix_value();
-
-				E_ALPHABET alpha = DNA;
 
 				if (vals.length()==4)
 				{
@@ -1033,25 +1084,25 @@ bool CGUIOctave::get_kernel_optimization(octave_value_list& retvals)
 		return true;
 	}
 
-	if (kernel_ && (kernel_->get_kernel_type() == K_COMMWORDSTRING))
-	{
-		CCommWordStringKernel *kernel = (CCommWordStringKernel *) kernel_ ;
+	//if (kernel_ && (kernel_->get_kernel_type() == K_COMMWORDSTRING))
+	//{
+	//	CCommWordStringKernel *kernel = (CCommWordStringKernel *) kernel_ ;
 
-		INT len=0 ;
-		WORD* dict ;
-		DREAL* weights ;
-		//FIXMEkernel->get_dictionary(len, dict, weights) ;
+	//	INT len=0 ;
+	//	WORD* dict ;
+	//	DREAL* weights ;
+	//	//FIXMEkernel->get_dictionary(len, dict, weights) ;
 
-		Matrix result = Matrix(len, 2);
+	//	Matrix result = Matrix(len, 2);
 
-		for (int i=0; i<len; i++)
-			result(0,i) = dict[i] ;
-		for (int i=0; i<len; i++)
-			result(1,i) = weights[i] ;
+	//	for (int i=0; i<len; i++)
+	//		result(0,i) = dict[i] ;
+	//	for (int i=0; i<len; i++)
+	//		result(1,i) = weights[i] ;
 
-		retvals(0)=result;
-		return true;
-	}
+	//	retvals(0)=result;
+	//	return true;
+	//}
 	return false;
 }
 #endif
