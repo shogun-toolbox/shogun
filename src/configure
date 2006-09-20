@@ -51,6 +51,7 @@ _confdir=""
 _libdir=""
 _inc_extra=""
 _ld_extra=""
+_optimizing=""
 test -z "$INCLUDES" || _inc_extra="-I$INCLUDES"
 test -z "$LIBS" || _ld_extra="-L$LIBS"
 
@@ -1172,15 +1173,12 @@ EOF
         echores "CPU optimization disabled. CPU not recognized or your compiler is too old."
       _mcpu=""
       _march=""
-      _optimizing=""
     elif test "$proc" = "i586-i686"; then
       _march="-march=i586"
       _mcpu="$cpuopt=i686"
-      _optimizing="$proc"
     else
       _march="-march=$proc"
       _mcpu="$cpuopt=$proc"
-      _optimizing="$proc"
     fi
   else # if test "$_runtime_cpudetection" = no
     # i686 is probably the most common CPU - optimize for it
@@ -1224,7 +1222,6 @@ EOF
     proc=''
     _march=''
     _mcpu=''
-    _optimizing=''
     ;;
 
   x86_64|amd64)
@@ -1285,8 +1282,6 @@ EOF
       _mcpu=""
     fi
     
-    _optimizing=""
-
     echores "$proc"
     ;;
 
@@ -1312,7 +1307,6 @@ EOF
     fi
     _march=''
     _mcpu="-mcpu=$proc"
-    _optimizing="$proc"
     ;;
 
   sparc64)
@@ -1324,7 +1318,6 @@ EOF
     proc='v9'
     _march=''
     _mcpu="-mcpu=$proc"
-    _optimizing="$proc"
     ;;
 
   arm|armv4l|armv5tel)
@@ -1334,7 +1327,6 @@ EOF
     proc=''
     _march=''
     _mcpu=''
-    _optimizing=''
     ;;
 
   ppc)
@@ -1345,7 +1337,6 @@ EOF
     proc=''
     _march=''
     _mcpu=''
-    _optimizing=''
     _altivec=no
 
     echocheck "CPU type"
@@ -1432,13 +1423,7 @@ EOF
 	fi
     fi
 
-    if test -n "$_mcpu"; then
-        _optimizing=`echo $_mcpu | cut -c 8-`
-        echores "$_optimizing"
-    else
-        echores "none"
-    fi
-
+	echores "none"
     ;;
 
   alpha)
@@ -1480,8 +1465,6 @@ EOF
     _mcpu="-mcpu=$proc"
     echores "$proc"
     
-    _optimizing="$proc"
-
     echocheck "MVI instruction support in GCC"
     if test "$_cc_major" -ge "3" && test "$cpu_understands_mvi" = "1" ; then
         _def_gcc_mvi_support="#define CAN_COMPILE_ALPHA_MVI 1"
@@ -1499,7 +1482,6 @@ EOF
     proc=''
     _march=''
     _mcpu=''
-    _optimizing=''
 
     if irix ; then
 	echocheck "CPU type"
@@ -1524,7 +1506,6 @@ EOF
     proc=''
     _march=''
     _mcpu=''
-    _optimizing=''
     ;;
 
   s390)
@@ -1534,7 +1515,6 @@ EOF
     proc=''
     _march=''
     _mcpu=''
-    _optimizing=''
     ;;
 
   s390x)
@@ -1544,7 +1524,6 @@ EOF
     proc=''
     _march=''
     _mcpu=''
-    _optimizing=''
     ;;
 
   vax)
@@ -1554,7 +1533,6 @@ EOF
     proc=''
     _march=''
     _mcpu=''
-    _optimizing=''
     ;;
 
   *)
@@ -1572,6 +1550,7 @@ if test "$_runtime_cpudetection" = yes ; then
     _mmxext=yes
     _sse=yes
     _sse2=yes
+    _sse3=yes
     _mtrr=yes
   fi
   if ppc; then
@@ -1582,7 +1561,7 @@ fi
 if x86 && test "$_runtime_cpudetection" = no ; then
   extcheck() {
     if test "$1" = yes ; then
-      echocheck "kernel support of $2"
+      echocheck "compiler and kernel support of $2"
       cat > $TMPC <<EOF
 #include <signal.h>
 void catch() { exit(1); }
@@ -1592,14 +1571,12 @@ int main(void){
 }
 EOF
 
-      if cc_check && tmp_run ; then
+      if cc_check "-m$2" && tmp_run ; then
         echores "yes"
-	_optimizing="$_optimizing $2"
+		_optimizing="$_optimizing -m$2"
         return 0
       else
         echores "failed"
-        echo "It seems that your kernel does not correctly support $2."
-        echo "To use $2 extensions in MPlayer, you have to upgrade/recompile your kernel!"
 	return 1
       fi
     fi
@@ -1607,17 +1584,10 @@ EOF
   }
 
   extcheck $_mmx "mmx" "emms" || _mmx=no
-  extcheck $_mmxext "mmxext" "sfence" || _mmxext=no
   extcheck $_3dnow "3dnow" "femms" || _3dnow=no
-  extcheck $_3dnowext "3dnowext" "pswapd %%mm0, %%mm0" || _3dnowext=no
   extcheck $_sse "sse" "xorps %%xmm0, %%xmm0" || _sse=no _gcc3_ext="$_gcc3_ext -mno-sse"
   extcheck $_sse2 "sse2" "xorpd %%xmm0, %%xmm0" || _sse2=no _gcc3_ext="$_gcc3_ext -mno-sse2"
-  echocheck "mtrr support"
-  echores "$_mtrr"
-
-  if test "$_mtrr" = yes ; then
-    _optimizing="$_optimizing mtrr"
-  fi
+  extcheck $_pni "sse3" "addsubpd %%xmm0, %%xmm1" || _sse3=no _gcc3_ext="$_gcc3_ext -mno-sse3"
 
   if test "$_gcc3_ext" != ""; then
     # if we had to disable sse/sse2 because the active kernel does not
