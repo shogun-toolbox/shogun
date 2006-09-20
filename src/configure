@@ -139,21 +139,19 @@ EOF
 			LINK=$_cc
 			_cppveropts='-v'
 			"$_cc" "$_cppveropts" >/dev/null 2>&1 || _cppveropts='-V'
-			echores $_cc
 			break;
 		fi
 	done
 
-
 	if test -n "$COMP_C" ; then
-		COMP_C_VER=`$COMP_C $_ccveropts 2>&1 | egrep -ve '^(Reading specs from|Configured with:|Thread model:)'`
+		COMP_C_VER=`$COMP_C $_ccveropts 2>&1 | egrep -ve '^(Using built-in specs|Target:|Reading specs from|Configured with:|Thread model:)'`
 		echores "detected: $COMP_C ( $COMP_C_VER )"
 	else
 		echores "no C compiler detected - cannot do anything"
 		exit 1
 	fi
 	if test -n "$COMP_CPP" ; then
-		COMP_CPP_VER=`$COMP_CPP $_cppveropts 2>&1 | egrep -ve '^(Reading specs from|Configured with:|Thread model:)'`
+		COMP_CPP_VER=`$COMP_CPP $_cppveropts 2>&1 | egrep -ve '^(Using built-in specs|Target:|Reading specs from|Configured with:|Thread model:)'`
 		echores "detected: $COMP_CPP ( $COMP_CPP_VER )"
 	else
 		echores "no C++ compiler detected - cannot do anything"
@@ -463,7 +461,7 @@ determine_march_mtune()
 	  # OS name
 	  system_name=`( uname -s ) 2>&1`
 	  case "$system_name" in
-	  Linux|FreeBSD|NetBSD|BSD/OS|OpenBSD|SunOS|QNX|Darwin|GNU|OSF1)
+	  Linux|FreeBSD|NetBSD|BSD/OS|OpenBSD|SunOS|QNX|Darwin|GNU|OSF1|BeOS|MorphOS|AIX)
 		;;
 	  IRIX*)
 		system_name=IRIX
@@ -496,17 +494,26 @@ determine_march_mtune()
 
 		  # x86/x86pc is used by QNX
 		  case "`( uname -m ) 2>&1`" in
-		  i[3-9]86*|x86|x86pc|k5|k6|k6_2|k6_3|k6-2|k6-3|pentium*|athlon*|i586_i686|i586-i686) host_arch=i386 ;;
+		  i[3-9]86*|x86|x86pc|k5|k6|k6_2|k6_3|k6-2|k6-3|pentium*|athlon*|i586_i686|i586-i686|BePC) host_arch=i386 ;;
 		  ia64) host_arch=ia64 ;;
-		  x86_64) host_arch=x86_64 ;;
-		  ppc) host_arch=ppc ;;
+		  x86_64|amd64)
+			if [ -n "`$_cc -dumpmachine | sed -n '/^x86_64-/p;/^amd64-/p'`" -a \
+				 -z "`echo $CFLAGS | grep -- -m32`"  ]; then
+			  host_arch=x86_64
+			else
+			  host_arch=i386
+			fi
+		  ;;
+		  macppc|ppc|ppc64) host_arch=ppc ;;
 		  alpha) host_arch=alpha ;;
-		  sparc*) host_arch=sparc ;;
-		  9000*) host_arch=hppa ;;
-		  arm*) host_arch=arm ;;
+		  sparc) host_arch=sparc ;;
+		  sparc64) host_arch=sparc64 ;;
+		  parisc*|hppa*|9000*) host_arch=hppa ;;
+		  arm*|zaurus|cats) host_arch=arm ;;
 		  s390) host_arch=s390 ;;
 		  s390x) host_arch=s390x ;;
 		  mips) host_arch=mips ;;
+		  vax) host_arch=vax ;;
 		  *) host_arch=UNKNOWN ;;
 		esac
 		;;
@@ -521,10 +528,16 @@ determine_march_mtune()
 		openbsd) system_name=OpenBSD ;;
 		sunos) system_name=SunOS ;;
 		qnx) system_name=QNX ;;
+		morphos) system_name=MorphOS ;;
+		mingw32msvc) system_name=MINGW32 ;;
 	  esac
 	  # We need to convert underscores so that values like k6-2 and pentium-mmx can be passed
 	  host_arch=`echo $_target | cut -d '-' -f 1 | tr '_' '-'`
 	fi
+
+	OS="-D`echo $system_name | tr 'a-z-' 'A-Z_'`"
+	echo "Detected operating system: $system_name"
+	echo "Detected host architecture: $host_arch"
 
 	if sunos
 	then
@@ -544,10 +557,6 @@ determine_march_mtune()
 		LINKFLAGS="$LINKFLAGS -lpthread"
 	fi
 
-
-	OS="-D`echo $system_name | tr 'a-z-' 'A-Z_'`"
-	echo "Detected operating system: $system_name"
-	echo "Detected host architecture: $host_arch"
 
 # Try to find the available options for the current CPU
 	if x86 || x86_64 || ppc; then
