@@ -19,9 +19,9 @@ EXT_OBJ_CPP=cpp.o
 EXT_OBJ_C=c.o
 
 #the defaults are
-_readline=no
+_readline=auto
 _matlab=no
-_mindy=no
+_mindy=auto
 _R=no
 _python=no
 _octave=no
@@ -35,7 +35,7 @@ _logsumarray=no
 _hmmparallel=no
 _largefile=yes
 _swig=no 
-_lapack=yes
+_lapack=auto
 _bigstates=yes
 _hmmcache=yes
 _debug=no
@@ -52,8 +52,8 @@ _libdir=""
 _inc_extra=""
 _ld_extra=""
 _optimizing=""
-test -z "$INCLUDES" || _inc_extra="-I$INCLUDES"
-test -z "$LIBS" || _ld_extra="-L$LIBS"
+test -z "$INCLUDES" || _inc_extra="-L`echo $INCLUDES | sed 's,:, -I,g'`"
+test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
 
 # these ones will be autodetected
 CONFIGURE_OPTIONS="compile options $@"
@@ -239,9 +239,9 @@ cc_check() {
   echo >> "$TMPLOG"
   cat "$TMPC" >> "$TMPLOG"
   echo >> "$TMPLOG"
-  echo "$COMP_C $TMPC -o $TMPO $@" >> "$TMPLOG"
+  echo "$COMP_C $TMPC $INCLUDES -o $TMPO $LINKFLAGS $@" >> "$TMPLOG"
   rm -f "$TMPO"
-  ( "$COMP_C" "$TMPC" -o "$TMPO" "$@" ) >> "$TMPLOG" 2>&1
+  ( "$COMP_C" $INCLUDES "$TMPC" -o "$TMPO" $LINKFLAGS "$@" ) >> "$TMPLOG" 2>&1
   TMP="$?"
   if test -f "$TMPO"
   then
@@ -259,9 +259,9 @@ cxx_check() {
   echo >> "$TMPLOG"
   cat "$TMPC" >> "$TMPLOG"
   echo >> "$TMPLOG"
-  echo "$COMP_CPP $TMPC -o $TMPO $@" >> "$TMPLOG"
+  echo "$COMP_CPP $TMPC $INCLUDES -o $TMPO $LINKFLAGS $@" >> "$TMPLOG"
   rm -f "$TMPO"
-  ( "$COMP_CPP" "$TMPC" -o "$TMPO" "$@" ) >> "$TMPLOG" 2>&1
+  ( "$COMP_CPP" $INCLUDES "$TMPC" -o "$TMPO" $LINKFLAGS "$@" ) >> "$TMPLOG" 2>&1
   TMP="$?"
   if test -f "$TMPO"
   then
@@ -394,7 +394,7 @@ Optional features:
   --enable-mindy				enable mindy library support (for more efficient n-gram, word-in-a-bag kernel implementations)
   --enable-swig                 together with --enable-python builds swig objects instead of single binary interface [disabled]
   --enable-cplex    	        enable code using CPLEX  [disabled]
-  --enable-readline    	        enable readline in stand-a-lone interface [disabled]
+  --enable-readline    	        enable readline in stand-a-lone interface [auto]
   --enable-w-timing    	        enable code using W timing  [disabled]
   --enable-logcache             enable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
   --enable-shortrealkernelcache enable kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles [enabled]
@@ -403,7 +403,7 @@ Optional features:
 
   --disable-treemem             disable more efficient treemem support and use malloc's for each node instead [enabled]
   --disable-largefile           disable large file support (64bit file acces routines) [enabled]
-  --disable-lapack    	        disable blas and lapack math routines and use built in ones (slower!) [enabled]
+  --disable-lapack    	        disable blas and lapack math routines and use built in ones (slower!) [auto]
   --disable-bigstates	        disable big (16bit) state [enabled]
   --disable-hmmcache 	        disable HMM cache [enabled]
   --disable-svm-light 	        disable building of SVM-light and thus result in pure GPLv2 code [enabled]
@@ -1558,7 +1558,7 @@ if test "$_runtime_cpudetection" = yes ; then
   fi
 fi
 
-if x86 && test "$_runtime_cpudetection" = no ; then
+if x86 || x86_64 && test "$_runtime_cpudetection" = no ; then
   extcheck() {
     if test "$1" = yes ; then
       echocheck "compiler and kernel support of $2"
@@ -1746,28 +1746,50 @@ set_opts()
 		COMPFLAGS_C="$COMPFLAGS_C -fPIC"
 	fi
 
-	if test "$_readline" = yes
+	if test "$_readline" = yes || test "$_readline" = auto;
 	then
-		HAVE_READLINE='#define HAVE_READLINE 1'
-		LINKFLAGS="$LINKFLAGS -lreadline"
+cat > $TMPC << EOF
+#include <readline/readline.h>
+int main(void) { return 0; }
+EOF
+		echocheck "Readline support"
+		if cc_check -lreadline
+		then
+			HAVE_READLINE='#define HAVE_READLINE 1'
+			LINKFLAGS="$LINKFLAGS -lreadline"
+			echores "yes"
+		else
+			echores "no"
+		fi
 	fi
 
-	if test "$_mindy" = yes
+	if test "$_mindy" = yes || test "$_mindy" = auto
 	then
-		HAVE_MINDY='#define HAVE_MINDY 1'
-		add_library_path Mindy $HOME/usr/lib /usr/lib /usr/local/lib
-		add_include_path Mindy $HOME/usr/include /usr/include /usr/local/include
-		LINKFLAGS="$LINKFLAGS -lmindy"
+cat > $TMPC << EOF
+#include <mindy.h>
+int main(void) { return 0; }
+EOF
+		echocheck "Mindy support"
+		if cc_check -lmindy
+		then
+			HAVE_MINDY='#define HAVE_MINDY 1'
+			LINKFLAGS="$LINKFLAGS -lmindy"
+			echores "yes"
+		else
+			echores "no"
+		fi
 	fi
 
 	if test "$_python" = yes
 	then
 		HAVE_PYTHON='#define HAVE_PYTHON 1'
 
-		INCLUDES="-I/usr/include/python2.4 $INCLUDES"
+		test -n "$_pyinclude" || _pyinclude=`python -c "import sys; print sys.prefix+'/include/python'+sys.version[0:3]"`
+		test -n "$_pylibs" || _pylibs=`python -c "import sys; print 'python'+sys.version[0:3]"`
+		INCLUDES="-I\"$pyinclude\" $INCLUDES"
 		COMPFLAGS_CPP="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
 		COMPFLAGS_C="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
-		LINKFLAGS="-pthread -shared -lpython2.4 -ldl -lutil $LINKFLAGS"
+		LINKFLAGS="-pthread -shared -l\"$_pylibs\" -ldl -lutil $LINKFLAGS"
 		TARGET="sg.so"
 	fi
 
@@ -1776,26 +1798,8 @@ set_opts()
 		HAVE_R='#define HAVE_R 1'
 		TARGET="sg.so"
 
-		if darwin
-		then
-			add_include_path R /sw/Library/Frameworks/R.framework/Headers /Library/Frameworks/R.framework/Versions/2.3/Resources/include
-			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace"
-			if echo "$INCLUDES" | grep -q '/sw/Library' 
-			then
-				LINKFLAGS="$LINKFLAGS -F/sw/Library/Frameworks -framework R"
-			else
-				LINKFLAGS="$LINKFLAGS -F/Library/Frameworks -framework R"
-			fi
-		else
-			add_include_path R /usr/lib/R/include /usr/share/R/include 
-
-			COMPFLAGS_CPP="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
-			COMPFLAGS_C="-pthread -fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
-			LINKFLAGS="-pthread -shared $LINKFLAGS"
-			add_library_path R /usr/lib/R/lib /usr/share/R/lib
-
-			LINKFLAGS="$LINKFLAGS -lR"
-		fi
+		INCLUDES="`R CMD config --cppflags` $INCLUDES"
+		LINKFLAGS="`R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
 	fi
 
 	if test "$_cplex" = yes
@@ -1837,25 +1841,20 @@ set_opts()
 		USE_SWIG='no'
 	fi
 
-	if test "$_lapack" = yes
+	if test "$_lapack" = yes || test "$_lapack" = auto
 	then
-		HAVE_LAPACK='#define HAVE_LAPACK 1'
-		if sunos
+cat > $TMPC << EOF
+#include <cblas.h>
+int main(void) { return 0; }
+EOF
+		echocheck "Lapack/Atlas support"
+		if cc_check -llapack-3 -lblas-3
 		then
-			LINKFLAGS="$LINKFLAGS -lsunperf -Bstatic -xlic_lib=sunperf -Bdynamic -lF77 -lM77 -lsunmath -mt -lsocket -lnsl"
-		elif darwin
-		then
-			echores "Disabling lapack/atlas on DARWIN!"
-			unset HAVE_LAPACK
-			#INCLUDES="$INCLUDES -I/sw/include"
-			#LINKFLAGS="$LINKFLAGS -L/sw/lib -llapack -lcblas"
-			#INCLUDES="$INCLUDES -I/sw/System/Library/Frameworks/vecLib.framework/Headers/"
-			#LINKFLAGS="$LINKFLAGS -framework Accelerate"
-		elif osf1
-		then
-			LINKFLAGS="$LINKFLAGS"
-		else
+			echores "yes"
+			HAVE_LAPACK='#define HAVE_LAPACK 1'
 			LINKFLAGS="$LINKFLAGS -llapack-3 -lblas-3"
+		else
+			echores "no"
 		fi
 	fi
 
@@ -1917,9 +1916,6 @@ set_opts()
 	then
 		USE_SVMLIGHT='#define USE_SVMLIGHT 1'
 	fi
-
-	INCLUDES="$_inc_extra $INCLUDES"
-	LINKFLAGS="$_ld_extra $LINKFLAGS"
 }
 
 #write the actual config
