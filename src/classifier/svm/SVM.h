@@ -27,6 +27,7 @@ class CSVM : public CKernelMachine
 		bool load(FILE* svm_file);
 		bool save(FILE* svm_file);
 
+		inline void set_nu(DREAL nue) { nu=nue; }
 		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
 		inline void set_weight_epsilon(DREAL eps) { weight_epsilon=eps; }
 		inline void set_epsilon(DREAL eps) { epsilon=eps; }
@@ -36,6 +37,7 @@ class CSVM : public CKernelMachine
 
 		inline DREAL get_weight_epsilon() { return weight_epsilon; }
 		inline DREAL get_epsilon() { return epsilon; }
+		inline DREAL get_nu() { return nu; }
 		inline DREAL get_C1() { return C1; }
 		inline DREAL get_C2() { return C2; }
 		inline int get_qpsize() { return qpsize; }
@@ -170,6 +172,7 @@ class CSVM : public CKernelMachine
 		DREAL epsilon;
 		DREAL tube_epsilon;
 
+		DREAL nu;
 		DREAL C1;
 		DREAL C2;
 		DREAL C_mkl ;

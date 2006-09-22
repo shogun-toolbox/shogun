@@ -179,7 +179,8 @@ enum EClassifierType
 	CT_KERNELPERCEPTRON = 80,
 	CT_LDA = 90,
 	CT_LPM = 100,
-	CT_KNN = 110
+	CT_KNN = 110,
+	CT_LIBSVMONECLASS=120
 };
 
 enum ERegressionType

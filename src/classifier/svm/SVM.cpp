@@ -29,6 +29,7 @@ CSVM::CSVM()
 
 	qpsize=41;
 	weight_epsilon=1e-5;
+	nu=0.5;
 	C1=1;
 	C2=1;
 	C_mkl=0;

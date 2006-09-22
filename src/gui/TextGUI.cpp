@@ -106,6 +106,7 @@ static const CHAR* N_THREADS=			     	"threads";
 static const CHAR* N_MKL_PARAMETERS=			"mkl_parameters";
 static const CHAR* N_SVM_EPSILON=			"svm_epsilon";
 static const CHAR* N_SVR_TUBE_EPSILON=			"svr_tube_epsilon";
+static const CHAR* N_SVM_ONE_CLASS_NU=			"svm_one_class_nu";
 static const CHAR* N_SVM_TRAIN_AUC_MAXIMIZATION=			"svm_train_auc_maximization";
 static const CHAR* N_ADD_STATES=	        "add_states";
 static const CHAR* N_APPEND_HMM=		"append_hmm";
@@ -217,6 +218,7 @@ void CTextGUI::print_help()
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [threads]\t\t\t- changes svm_threads value\n", N_SVMQPSIZE);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [epsilon-value]\t\t\t- changes svm-epsilon value\n", N_SVM_EPSILON);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [epsilon-value]\t\t\t- changes svr-tube-epsilon value\n", N_SVR_TUBE_EPSILON);
+	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [nu-value]\t\t\t- changes svm-one-class nu value\n", N_SVM_ONE_CLASS_NU);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m [epsilon-value C-lp]\t\t\t- changes mkl parameters\n", N_MKL_PARAMETERS);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m <LINEAR|GAUSSIAN|POLY|...> <REAL|BYTE|SPARSEREAL|SLIK> [<CACHESIZE> [OPTS]]\t\t\t- set kernel type\n", N_SET_KERNEL);
 	CIO::message(M_MESSAGEONLY, "\033[1;31m%s\033[0m\t\t- obtains svm from TRAINFEATURES\n",N_SVM_TRAIN);
@@ -697,6 +699,10 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_SVR_TUBE_EPSILON, strlen(N_SVR_TUBE_EPSILON)))
 	{
 		guisvm.set_svr_tube_epsilon(input+strlen(N_SVR_TUBE_EPSILON));
+	} 
+	else if (!strncmp(input, N_SVM_ONE_CLASS_NU, strlen(N_SVM_ONE_CLASS_NU)))
+	{
+		guisvm.set_svm_one_class_nu(input+strlen(N_SVM_ONE_CLASS_NU));
 	} 
 	else if (!strncmp(input, N_MKL_PARAMETERS, strlen(N_MKL_PARAMETERS)))
 	{

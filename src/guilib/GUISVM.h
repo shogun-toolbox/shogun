@@ -35,6 +35,7 @@ public:
 	bool set_linadd_enabled(CHAR* param);
 	bool set_svm_epsilon(CHAR* param);
 	bool set_svr_tube_epsilon(CHAR* param);
+	bool set_svm_one_class_nu(CHAR* param);
 	bool set_mkl_parameters(CHAR* param) ;
 	bool set_precompute_enabled(CHAR* param) ;
 
@@ -50,6 +51,7 @@ public:
 	double weight_epsilon;
 	double epsilon;
 	double tube_epsilon;
+	double nu;
 	double C1;
 	double C2;
 	double C_mkl ;

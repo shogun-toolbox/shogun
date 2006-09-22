@@ -276,7 +276,7 @@ void CKernel::kernel_cache_init(INT buffsize, bool regression_hack)
 	if (buffer_size>((ULONG) totdoc)*totdoc)
 		buffer_size=((ULONG) totdoc)*totdoc;
 
-	CIO::message(M_INFO, "using a kernel cache of size %i MB (%lld bytes) for %s Kernel\n", buffer_size*sizeof(KERNELCACHE_ELEM)/1024/1024, buffer_size*sizeof(KERNELCACHE_ELEM), get_name());
+	CIO::message(M_INFO, "using a kernel cache of size %lld MB (%lld bytes) for %s Kernel\n", buffer_size*sizeof(KERNELCACHE_ELEM)/1024/1024, buffer_size*sizeof(KERNELCACHE_ELEM), get_name());
 
 	//make sure it fits in the *signed* KERNELCACHE_IDX type
 	ASSERT(buffer_size < (((ULONG) 1) << (sizeof(KERNELCACHE_IDX)*8-1)));

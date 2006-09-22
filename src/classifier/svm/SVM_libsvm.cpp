@@ -1564,7 +1564,12 @@ decision_function svm_train_one(
 		if(fabs(alpha[i]) > 0)
 		{
 			++nSV;
-			if(prob->y[i] > 0)
+			if(!prob->y)
+			{
+				if(fabs(alpha[i]) >= si.upper_bound_n)
+					++nBSV;
+			}
+			else if(prob->y[i] > 0)
 			{
 				if(fabs(alpha[i]) >= si.upper_bound_p)
 					++nBSV;
@@ -1659,6 +1664,8 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 	   param->svm_type == EPSILON_SVR ||
 	   param->svm_type == NU_SVR)
 	{
+		CIO::message(M_INFO,"training one class svm\n");
+
 		// regression or one-class-svm
 		model->nr_class = 2;
 		model->label = NULL;

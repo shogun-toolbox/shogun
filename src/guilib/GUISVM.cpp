@@ -18,6 +18,7 @@
 #include "classifier/svm/SVM_light.h"
 #include "classifier/svm/LibSVM.h"
 #include "classifier/svm/GPBTSVM.h"
+#include "classifier/svm/LibSVM_oneclass.h"
 
 #include "regression/svr/SVR_light.h"
 #include "regression/svr/LibSVR.h"
@@ -35,6 +36,7 @@ CGUISVM::CGUISVM(CGUI * gui_)
 	weight_epsilon=1e-5;
 	epsilon=1e-5;
 	tube_epsilon=1e-2;
+	nu=1e-2;
 
     // MKL stuff
 	use_mkl = false ;
@@ -59,6 +61,12 @@ bool CGUISVM::new_svm(CHAR* param)
 		delete svm;
 		svm= new CLibSVM();
 		CIO::message(M_INFO, "created SVMlibsvm object\n") ;
+	}
+	else if (strcmp(param,"LIBSVM_ONECLASS")==0)
+	{
+		delete svm;
+		svm = new CLibSVMOneclass();
+		CIO::message(M_INFO, "created SVMlibsvm object for oneclass\n");
 	}
 #ifdef USE_SVMLIGHT
 	else if (strcmp(param,"LIGHT")==0)
@@ -102,7 +110,11 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 {
 	param=CIO::skip_spaces(param);
 
-	CLabels* trainlabels=gui->guilabels.get_train_labels();
+	bool oneclass = (svm->get_classifier_type()==CT_LIBSVMONECLASS);
+	
+	CLabels* trainlabels=NULL;
+	if(!oneclass)
+		trainlabels=gui->guilabels.get_train_labels();
 	CKernel* kernel=gui->guikernel.get_kernel();
 
 	if (!svm)
@@ -117,7 +129,7 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 		return false ;
 	}
 
-	if (!trainlabels)
+	if (!trainlabels && !oneclass)
 	{
 		CIO::message(M_ERROR, "no trainlabels available\n");
 		return false ;
@@ -129,24 +141,26 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 		return 0;
 	}
 
-	if (trainlabels->get_num_labels() != kernel->get_lhs()->get_num_vectors())
+	if (!oneclass && trainlabels->get_num_labels() != kernel->get_lhs()->get_num_vectors())
 	{
 		CIO::message(M_ERROR, "number of train labels (%d) and training vectors (%d) differs!\n", 
 				trainlabels->get_num_labels(), kernel->get_lhs()->get_num_vectors()) ;
 		return 0;
 	}
 
-	CIO::message(M_INFO, "starting svm training on %ld vectors using C1=%lf C2=%lf\n", trainlabels->get_num_labels(), C1, C2) ;
+	CIO::message(M_INFO, "starting svm training on %ld vectors using C1=%lf C2=%lf\n", kernel->get_lhs()->get_num_vectors(), C1, C2) ;
 
 	svm->set_weight_epsilon(weight_epsilon);
 	svm->set_epsilon(epsilon);
 	svm->set_tube_epsilon(tube_epsilon);
+	svm->set_nu(nu);
 	svm->set_C_mkl(C_mkl);
 	svm->set_C(C1, C2);
 	svm->set_qpsize(qpsize);
 	svm->set_mkl_enabled(use_mkl);
 	svm->set_linadd_enabled(use_linadd);
-	((CKernelMachine*) svm)->set_labels(trainlabels);
+	if(!oneclass)
+		((CKernelMachine*) svm)->set_labels(trainlabels);
 	((CKernelMachine*) svm)->set_kernel(kernel);
 	((CSVM*) svm)->set_precomputed_subkernels_enabled(use_precompute_subkernel_light) ;
 	kernel->set_precompute_matrix(use_precompute, use_precompute_subkernel);
@@ -354,6 +368,19 @@ bool CGUISVM::set_svr_tube_epsilon(CHAR* param)
 		tube_epsilon=1e-2;
 
 	CIO::message(M_INFO, "Set to svr_tube_epsilon=%f\n", tube_epsilon);
+	return true ;  
+}
+
+bool CGUISVM::set_svm_one_class_nu(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	sscanf(param, "%le", &nu) ;
+
+	if (nu<0 || nu>1)
+		nu=0.5;
+
+	CIO::message(M_INFO, "Set to nu=%f\n", nu);
 	return true ;  
 }
 
