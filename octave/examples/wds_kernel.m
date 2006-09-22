@@ -23,7 +23,7 @@ shifts = sprintf( '%i ', x(end:-1:1) );
 
 
 %generate some toy data
-acgt='ACGT';
+acgt='TTTT';
 rand('state',1);
 traindat=acgt(ceil(4*rand(len,num_train)));
 trainlab=[-ones(1,num_train/2),ones(1,num_train/2)];
