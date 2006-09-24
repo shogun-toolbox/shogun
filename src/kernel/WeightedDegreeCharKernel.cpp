@@ -299,8 +299,11 @@ bool CWeightedDegreeCharKernel::save_init(FILE* dest)
 }
   
 
-bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* alphas, INT tree_num)
+bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* alphas, INT tree_num, INT upto_tree)
 {
+	if (upto_tree<0)
+		upto_tree=tree_num;
+
 	delete_optimization();
 	
 	CIO::message(M_DEBUG, "initializing CWeightedDegreeCharKernel optimization\n") ;
@@ -319,10 +322,13 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* al
 		}
 		else
 		{
-			if (max_mismatch==0)
-				add_example_to_single_tree(IDX[i], alphas[i], tree_num) ;
-			else
-				add_example_to_single_tree_mismatch(IDX[i], alphas[i], tree_num) ;
+			for (INT t=tree_num; t<=tree_num; t++)
+			{
+				if (max_mismatch==0)
+					add_example_to_single_tree(IDX[i], alphas[i], t) ;
+				else
+					add_example_to_single_tree_mismatch(IDX[i], alphas[i], t) ;
+			}
 		}
 	}
 
@@ -1163,13 +1169,11 @@ void CWeightedDegreeCharKernel::compute_scoring_helper(struct Trie* tree, INT i,
 #else
 					struct Trie* child=tree->children[k];
 #endif
-					weight += child->weight;
-
 					//continue recursion if not yet at max_degree, else add to result
 					if (d<max_degree-1)
-						compute_scoring_helper(child, i, j+1, weight, d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
+						compute_scoring_helper(child, i, j+1, weight+child->weight, d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
 					else
-						result[sym_offset*(i+j)+num_sym*offs+k] += weight;
+						result[sym_offset*(i+j-max_degree+1)+num_sym*offs+k] += weight;
 
 					//do recursion starting from this position
 					if (d==0)
@@ -1180,7 +1184,13 @@ void CWeightedDegreeCharKernel::compute_scoring_helper(struct Trie* tree, INT i,
 		else if (j==degree-1)
 		{
 			for (INT k=0; k<num_sym; k++)
-				result[sym_offset*(i+j)+num_sym*offs+k] += tree->child_weights[k];
+			{
+				//continue recursion if not yet at max_degree, else add to result
+				if (d<max_degree-1 && i<num_feat-1)
+					compute_scoring_helper(trees[i+1], i+1, 0, weight+tree->child_weights[k], d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
+				else
+					result[sym_offset*(i+j-max_degree+1)+num_sym*offs+k] += weight+tree->child_weights[k];
+			}
 		}
 	}
 }
@@ -1203,7 +1213,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 
 	for (INT i=0; i<num_feat; i++)
 	{
-		init_optimization(num_suppvec, IDX, weights, i);
+		init_optimization(num_suppvec, IDX, weights, i, CMath::min(num_feat-1,i+1));
 
 		struct Trie* tree = trees[i];
 		ASSERT(tree!=NULL);

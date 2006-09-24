@@ -5,7 +5,7 @@ rand('seed',17);
 len=100;
 num_train=1000;
 num_test=5000;
-num_a=3;
+num_a=8;
 aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
 
 %SVM regularization factor C
@@ -19,11 +19,12 @@ max_mismatch=0;
 cache=10;
 single_degree=-1;
 x=shift*ones(1,len);
+x(:)=0;
 shifts = sprintf( '%i ', x(end:-1:1) );
 
 
 %generate some toy data
-acgt='TTTT';
+acgt='ACGT';
 rand('state',1);
 traindat=acgt(ceil(4*rand(len,num_train)));
 trainlab=[-ones(1,num_train/2),ones(1,num_train/2)];
@@ -91,3 +92,5 @@ colorbar
 figure(1001)
 imagesc(X>0.7*max(X(:)))
 colorbar
+
+save x.mat

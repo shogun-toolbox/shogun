@@ -62,7 +62,8 @@ public:
 		return init_optimization(count, IDX, weights, -1);
 	}
 
-	virtual bool init_optimization(INT count, INT *IDX, DREAL * weights, INT tree_num) ;
+	/// do initialization for tree_num up to upto_tree, use tree_num=-1 to construct all trees
+	virtual bool init_optimization(INT count, INT *IDX, DREAL * weights, INT tree_num, INT upto_tree=-1);
 	virtual bool delete_optimization() ;
 	inline virtual DREAL compute_optimized(INT idx) 
 	{ 
