@@ -40,6 +40,8 @@ CAlphabet::CAlphabet(CHAR* al, INT len)
 	else if (len>=(INT) strlen("BYTE") && !strncmp(al, "BYTE", strlen("BYTE")) || 
 			(len>=(INT) strlen("RAW") && !strncmp(al, "RAW", strlen("RAW"))))
 		alpha = RAWBYTE;
+	else
+		CIO::message(M_ERROR, "unknown alphabet %s\n", al);
 	
 	set_alphabet(alpha);
 }
