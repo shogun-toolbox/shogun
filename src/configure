@@ -460,9 +460,11 @@ for ac_option do
     ;;
   --includes=*)
     _inc_extra="-I`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -I,g'` $_inc_extra"
+	INCLUDES="$_inc_extra $INCLUDES "
     ;;
   --libs=*)
     _ld_extra="-L`echo $ac_option | cut -d '=' -f 2 | sed 's,:, -L,g'` $_ld_extra"
+	LINKFLAGS="$_ld_extra $LINKFLAGS "
     ;;
   --install-path=*)
     _install=`echo $ac_option | cut -d '=' -f 2 | sed 's/\/$//'`"/install"
