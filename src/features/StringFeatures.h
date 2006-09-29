@@ -303,24 +303,30 @@ template <class ST> class CStringFeatures: public CFeatures
 		alpha->print_histogram();
 		alpha->check_alphabet_size();
 
+		CIO::message(M_DEBUG,"hi\n");
+
 		INT max_val=alpha->get_num_bits();
+		CIO::message(M_DEBUG,"hi2\n");
 
 		if (order>1)
-			num_symbols=CMath::powl(2, max_val*order);
+			num_symbols=CMath::powl((long double) 2, (long double) max_val*order);
 		else
 			num_symbols=original_num_symbols;
+		CIO::message(M_DEBUG,"hi3\n");
 
 		CIO::message(M_INFO, "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, order, num_symbols);
 
-		if ( ((long double) num_symbols) > pow(((long double) 2),((long double) sizeof(ST)*8)) )
+		if ( ((long double) num_symbols) > CMath::powl(((long double) 2),((long double) sizeof(ST)*8)) )
 		{
 			CIO::message(M_ERROR, "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
 			return false;
 		}
+		CIO::message(M_DEBUG,"hi4\n");
 
 		CIO::message(M_DEBUG, "translate: start=%i order=%i gap=%i(size:%i)\n", start, order, gap, sizeof(ST)) ;
 		for (INT line=0; line<num_vectors; line++)
 		{
+			CIO::message(M_DEBUG,"line: %d\n", line);
 			INT len=0;
 			ST* fv=get_feature_vector(line, len);
 			translate_from_single_order(fv, len, start+gap, order+gap, max_val, gap);
