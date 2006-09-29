@@ -35,7 +35,7 @@ public:
 			struct Trie *children[4];
 #endif
 			char seq[16] ;
-		};
+		}; 
 	};
 	
 public:

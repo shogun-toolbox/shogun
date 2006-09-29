@@ -243,5 +243,4 @@ class CWeightedDegreeCharKernel: public CCharKernel
   CTrie tries ;
 };
 
-
 #endif

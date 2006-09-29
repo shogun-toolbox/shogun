@@ -74,7 +74,7 @@ void CTrie::delete_tree(struct Trie * p_tree)
 			for (INT k=0; k<4; k++)
 				trees[i]->children[k]=NO_CHILD;
 		}
-
+ 
 #ifdef USE_TREEMEM
 		TreeMemPtr=0;
 #endif

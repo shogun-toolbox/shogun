@@ -63,6 +63,7 @@ CWeightedDegreeCharKernel::~CWeightedDegreeCharKernel()
 
 }
 
+
 void CWeightedDegreeCharKernel::remove_lhs() 
 { 
 	delete_optimization();
