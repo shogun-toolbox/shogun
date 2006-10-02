@@ -1058,7 +1058,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 									   docs,model,aicache,
 									   maxdiff);
 		  reactivated=true;
-		  CIO::message(M_DEBUG, "done reactivating inactive examples\n");
+		  CIO::message(M_DEBUG, "done reactivating inactive examples (maxdiff:%8f eps_crit:%8f orig_eps:%8f\n)", *maxdiff, learn_parm->epsilon_crit, epsilon_crit_org);
 		  /* Update to new active variables. */
 		  activenum=compute_index(shrink_state->active,totdoc,active2dnum);
 		  inactivenum=totdoc-activenum;
@@ -1074,10 +1074,8 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 			  CIO::message(M_WARN, "restarting optimization as we are - due to shrinking - deviating too much (maxdiff(%f) > eps(%f)\n", *maxdiff, learn_parm->epsilon_crit);
 		      retrain=1;
 		  }
-		  else
-			  terminate=1;
 		  timing_profile->time_shrink+=get_runtime()-t1;
-		  if (((verbosity>=1) && use_kernel_cache)
+		  if (((verbosity>=1) && (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())))
 		     || (verbosity>=2)) {
 		      CIO::message(M_INFO, "done.\n");
 		      CIO::message(M_INFO, "Number of inactive variables = %ld\n",inactivenum);
@@ -1087,7 +1085,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 	  if((!retrain) && (learn_parm->epsilon_crit>(*maxdiff))) 
 		  learn_parm->epsilon_crit=(*maxdiff);
 	  if((!retrain) && (learn_parm->epsilon_crit>epsilon_crit_org)) {
-		  learn_parm->epsilon_crit/=2.0;
+		  learn_parm->epsilon_crit/=4.0;
 		  retrain=1;
 		  noshrink=1;
 	  }
@@ -2731,7 +2729,7 @@ INT CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 		  CIO::message(M_INFO, " Shrinking...");
 	  }
 
-	  if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) { /*  non-linear case save alphas */
+	  if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) { /*  non-linear case save alphas */
 	 
 		  a_old=new double[totdoc];
 		  shrink_state->a_history[shrink_state->deactnum]=a_old;
@@ -2800,8 +2798,6 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 			  num_modified++;
 		  }
 	  }
-
-	  CIO::message(M_DEBUG,"\n\nmodified %d a's\n\n", num_modified);
 
 	  if (num_modified>0)
 	  {
