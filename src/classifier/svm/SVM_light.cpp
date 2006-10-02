@@ -941,7 +941,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 		  if(iteration % 101)
 		  {
 			  already_chosen=0;
-			  if(CMath::min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4 && use_kernel_cache)
+			  if(CMath::min(learn_parm->svm_newvarsinqp, learn_parm->svm_maxqpsize-choosenum)>=4 && (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())))
 			  {
 				  /* select part of the working set from cache */
 				  already_chosen=select_next_qp_subproblem_grad(
@@ -1049,7 +1049,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 	  }
 	  
 	  noshrink=0;
-	  if ((!get_mkl_enabled()) && (!retrain) && (inactivenum>0) && (!learn_parm->skip_final_opt_check)) { 
+	  if ((!get_mkl_enabled()) && (!retrain) && (inactivenum>0) && ((!learn_parm->skip_final_opt_check) || (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()))) { 
 		  t1=get_runtime();
 		  CIO::message(M_DEBUG, "reactivating inactive examples\n");
 
@@ -1101,25 +1101,22 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 	  }
 	  mymaxdiff=*maxdiff ;
 
+	  //don't shrink w/ mkl
 	  if ((!get_mkl_enabled()) && ((iteration % 10) == 0) && (!noshrink))
 	  {
 		  activenum=shrink_problem(shrink_state,active2dnum,last_suboptimal_at,iteration,totdoc,
-								   CMath::max((INT)(activenum/10),
-											  CMath::max((INT)(totdoc/500),(INT) 100)),
-								   a,inconsistent, c, lin, label);
+				  CMath::max((INT)(activenum/10),
+					  CMath::max((INT)(totdoc/500),(INT) 100)),
+				  a,inconsistent, c, lin, label);
 
 		  inactivenum=totdoc-activenum;
 
-		  if (use_kernel_cache)
-		  {
-		      //don't shrink w/ mkl
-		      if( (!get_mkl_enabled()) && (supvecnum>get_kernel()->get_max_elems_cache()) 
-		    		  && ((get_kernel()->get_activenum_cache()-activenum)>CMath::max((INT)(activenum/10),(INT) 500))) {
+		  if (use_kernel_cache && (supvecnum>get_kernel()->get_max_elems_cache()) 
+				  && ((get_kernel()->get_activenum_cache()-activenum)>CMath::max((INT)(activenum/10),(INT) 500))) {
 
-		    	  get_kernel()->kernel_cache_shrink(totdoc, CMath::min((INT) (get_kernel()->get_activenum_cache()-activenum),
-		    														   (INT) (get_kernel()->get_activenum_cache()-supvecnum)),
-		    										shrink_state->active); 
-		      }
+			  get_kernel()->kernel_cache_shrink(totdoc, CMath::min((INT) (get_kernel()->get_activenum_cache()-activenum),
+						  (INT) (get_kernel()->get_activenum_cache()-supvecnum)),
+					  shrink_state->active); 
 		  }
 	  }
 
@@ -1600,7 +1597,10 @@ INT CSVMLight::check_optimality(MODEL *model, INT* label,
   INT i,ii,retrain;
   double dist,ex_c,target;
 
-  learn_parm->epsilon_shrink=learn_parm->epsilon_shrink*0.7+(*maxdiff)*0.3; 
+  if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
+	  learn_parm->epsilon_shrink=-learn_parm->epsilon_crit+epsilon_crit_org;
+  else
+	  learn_parm->epsilon_shrink=learn_parm->epsilon_shrink*0.7+(*maxdiff)*0.3; 
   retrain=0;
   (*maxdiff)=0;
   (*misclassified)=0;
@@ -2731,7 +2731,8 @@ INT CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 		  CIO::message(M_INFO, " Shrinking...");
 	  }
 
-	  if (use_kernel_cache) { /*  non-linear case save alphas */
+	  if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) { /*  non-linear case save alphas */
+	 
 		  a_old=new double[totdoc];
 		  shrink_state->a_history[shrink_state->deactnum]=a_old;
 		  for(i=0;i<totdoc;i++) {
@@ -2749,7 +2750,7 @@ INT CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 	  }
 	  activenum=compute_index(shrink_state->active,totdoc,active2dnum);
 	  shrink_state->deactnum++;
-	  if(!use_kernel_cache)
+	  if(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
 		  shrink_state->deactnum=0;
 
 	  if(verbosity>=2) {
@@ -2877,7 +2878,8 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
       }
     }
   }
-  if (use_kernel_cache) { /* update history for non-linear */
+
+  if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) { /* update history for non-linear */
 	  for(i=0;i<totdoc;i++) {
 		  (shrink_state->a_history[shrink_state->deactnum-1])[i]=a[i];
 	  }
