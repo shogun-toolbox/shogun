@@ -13,9 +13,9 @@
 #define _WEIGHTEDDEGREECHARKERNEL_H___
 
 #include "lib/common.h"
+#include "lib/Trie.h"
 #include "kernel/CharKernel.h"
 #include "features/CharFeatures.h"
-#include "Trie.h"
 
 class CWeightedDegreeCharKernel: public CCharKernel
 {

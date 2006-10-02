@@ -11,10 +11,10 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/Trie.h"
 #include "kernel/WeightedDegreeCharKernel.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
-#include "kernel/Trie.h"
 	
 CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
 	: CCharKernel(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), max_mismatch(max_mismatch_), seq_length(0),

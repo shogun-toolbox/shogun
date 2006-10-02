@@ -1,6 +1,6 @@
 #include "lib/common.h"
 #include "lib/io.h"
-#include "kernel/Trie.h"
+#include "lib/Trie.h"
 #include "lib/Mathmatics.h"
 
 CTrie::CTrie(INT d): degree(d)
