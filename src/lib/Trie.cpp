@@ -3,7 +3,7 @@
 #include "lib/Trie.h"
 #include "lib/Mathmatics.h"
 
-CTrie::CTrie(INT d): degree(d)
+CTrie::CTrie(INT d): degree(d), position_weights(NULL)
 {
 #ifdef USE_TREEMEM
 	TreeMemPtrMax=1024*1024/sizeof(struct Trie) ;
@@ -13,6 +13,7 @@ CTrie::CTrie(INT d): degree(d)
 	
 	length = 0;
 	trees=NULL;
+	tree_initialized=false ;
 } ;
 
 
