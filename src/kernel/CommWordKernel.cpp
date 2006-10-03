@@ -168,7 +168,7 @@ DREAL CCommWordKernel::compute(INT idx_a, INT idx_b)
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 
-	INT result=0;
+	DREAL result=0;
 
 	INT left_idx=0;
 	INT right_idx=0;

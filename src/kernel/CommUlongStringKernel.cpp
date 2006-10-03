@@ -159,7 +159,7 @@ DREAL CCommUlongStringKernel::compute(INT idx_a, INT idx_b)
 	ULONG* avec=((CStringFeatures<ULONG>*) lhs)->get_feature_vector(idx_a, alen);
 	ULONG* bvec=((CStringFeatures<ULONG>*) rhs)->get_feature_vector(idx_b, blen);
 
-	INT result=0;
+	DREAL result=0;
 
 	INT left_idx=0;
 	INT right_idx=0;
