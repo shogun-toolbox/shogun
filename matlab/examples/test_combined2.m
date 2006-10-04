@@ -4,19 +4,19 @@ XT3=rand(5,1000);
 
 LT=sign(rand(1,1000)-0.5);
 
-gf('set_labels', 'TRAIN', LT);
-gf('add_features', 'TRAIN', XT1);
-gf('add_features', 'TRAIN', XT2);
-gf('add_features', 'TRAIN', XT3);
-gf('add_features', 'TEST', XT1);
-gf('add_features', 'TEST', XT2);
-gf('add_features', 'TEST', XT3);
+sg('set_labels', 'TRAIN', LT);
+sg('add_features', 'TRAIN', XT1);
+sg('add_features', 'TRAIN', XT2);
+sg('add_features', 'TRAIN', XT3);
+sg('add_features', 'TEST', XT1);
+sg('add_features', 'TEST', XT2);
+sg('add_features', 'TEST', XT3);
 
 %combined kernel with 200 mb cache for the comb. kernel
-gf('send_command', 'set_kernel COMBINED 200');
+sg('send_command', 'set_kernel COMBINED 200');
 
-%gf('send_command', 'add_kernel 1 CUSTOM ANY 50');
-%gf('set_custom_kernel',kt,'FULL2DIAG');
+%sg('send_command', 'add_kernel 1 CUSTOM ANY 50');
+%sg('set_custom_kernel',kt,'FULL2DIAG');
 %other kernels (linear 10 mb cache, gaussian 20 mb cache sigma 1, poly 50mb
 %cache degreee 3 homogene
 gf_('send_command', 'add_kernel 1 LINEAR REAL 10 ');

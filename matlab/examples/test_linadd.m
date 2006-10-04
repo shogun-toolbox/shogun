@@ -12,34 +12,34 @@ trainlab=[ -ones(1,num/2) ones(1,num/2) ];
 valdat=[ (rand(dims,numval/2)-0.1) (rand(dims,numval/2)+0.1) ];
 vallab=[ -ones(1,numval/2) ones(1,numval/2) ];
 
-gf('send_command', 'loglevel ALL');
+sg('send_command', 'loglevel ALL');
 
-gf('send_command', 'use_mkl 0') ;
-gf('send_command', 'use_linadd 1') ;
-gf('send_command', 'use_precompute 0') ;
-gf('send_command', 'mkl_parameters 1e-5 0') ;
-gf('send_command', sprintf('svm_epsilon %f', svm_eps)) ;
-gf('send_command', 'clean_features TRAIN') ;
-gf('send_command', 'clean_kernels') ;
+sg('send_command', 'use_mkl 0') ;
+sg('send_command', 'use_linadd 1') ;
+sg('send_command', 'use_precompute 0') ;
+sg('send_command', 'mkl_parameters 1e-5 0') ;
+sg('send_command', sprintf('svm_epsilon %f', svm_eps)) ;
+sg('send_command', 'clean_features TRAIN') ;
+sg('send_command', 'clean_kernels') ;
 
-gf('set_features', 'TRAIN', traindat);
-gf('set_labels', 'TRAIN', trainlab);
-gf('send_command', 'set_kernel LINEAR REAL 10 1.0'); %die 1.0 entspricht scaling
-gf('send_command', 'init_kernel TRAIN');
-gf('send_command', 'new_svm LIGHT');
-gf('send_command', sprintf('c %f', C));
-gf('send_command', 'svm_train');
-[b, alpha_tmp]=gf('get_svm');
-gf('send_command', 'init_kernel_optimization') ;
+sg('set_features', 'TRAIN', traindat);
+sg('set_labels', 'TRAIN', trainlab);
+sg('send_command', 'set_kernel LINEAR REAL 10 1.0'); %die 1.0 entspricht scaling
+sg('send_command', 'init_kernel TRAIN');
+sg('send_command', 'new_svm LIGHT');
+sg('send_command', sprintf('c %f', C));
+sg('send_command', 'svm_train');
+[b, alpha_tmp]=sg('get_svm');
+sg('send_command', 'init_kernel_optimization') ;
 
-gf('set_features', 'TEST', valdat);
-gf('set_labels', 'TEST', vallab);
-gf('send_command', 'init_kernel TEST');
-gf('send_command', 'init_kernel_optimization');
-w=gf('get_kernel_optimization');
+sg('set_features', 'TEST', valdat);
+sg('set_labels', 'TEST', vallab);
+sg('send_command', 'init_kernel TEST');
+sg('send_command', 'init_kernel_optimization');
+w=sg('get_kernel_optimization');
 
 
-out=gf('svm_classify');
+out=sg('svm_classify');
 valerr=mean(vallab~=sign(out));
 valerr
 
@@ -55,7 +55,7 @@ if debug == 1
 
 	abs(w'*valdat(:,1)+b - out(1)) % sollte <1e-9 oder so sein
 
-	w2=gf('get_kernel_optimization');
+	w2=sg('get_kernel_optimization');
 	max(abs(w-w2))
 	abs(w'*valdat(:,1)+b - out(1)) % sollte <1e-9 oder so sein
 end

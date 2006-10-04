@@ -27,63 +27,63 @@ trainlab = sin(f(kk)*traindat);
 testdat = 1:(((10*2*pi)-1)/(no_obs-1)):10*2*pi;
 testlab = sin(f(kk)*traindat);
 
-gf('send_command', 'new_svm LIBSVR');
-%gf('send_command', 'new_svm SVRLIGHT');
-gf('send_command', 'clean_features TRAIN' );
-gf('set_features','TRAIN', traindat);
-gf('set_labels', 'TRAIN', trainlab);
-gf('send_command', sprintf('set_kernel GAUSSIAN REAL %d %f', cache_size, rbf_width(1)));
-gf('send_command', 'init_kernel TRAIN');
-kernels{1}=gf('get_kernel_matrix');
+sg('send_command', 'new_svm LIBSVR');
+%sg('send_command', 'new_svm SVRLIGHT');
+sg('send_command', 'clean_features TRAIN' );
+sg('set_features','TRAIN', traindat);
+sg('set_labels', 'TRAIN', trainlab);
+sg('send_command', sprintf('set_kernel GAUSSIAN REAL %d %f', cache_size, rbf_width(1)));
+sg('send_command', 'init_kernel TRAIN');
+kernels{1}=sg('get_kernel_matrix');
 
-gf('set_features','TRAIN', traindat);
-gf('send_command', sprintf('set_kernel GAUSSIAN REAL %d %f', cache_size, rbf_width(2)));
-gf('send_command', 'init_kernel TRAIN');
-kernels{2}=gf('get_kernel_matrix');
+sg('set_features','TRAIN', traindat);
+sg('send_command', sprintf('set_kernel GAUSSIAN REAL %d %f', cache_size, rbf_width(2)));
+sg('send_command', 'init_kernel TRAIN');
+kernels{2}=sg('get_kernel_matrix');
 
-gf('set_features','TRAIN', traindat);
-gf('send_command', sprintf('set_kernel GAUSSIAN REAL %d %f', cache_size, rbf_width(3)));
-gf('send_command', 'init_kernel TRAIN');
-kernels{3}=gf('get_kernel_matrix');
+sg('set_features','TRAIN', traindat);
+sg('send_command', sprintf('set_kernel GAUSSIAN REAL %d %f', cache_size, rbf_width(3)));
+sg('send_command', 'init_kernel TRAIN');
+kernels{3}=sg('get_kernel_matrix');
 
-gf('set_features','TRAIN', traindat);
-gf('send_command', sprintf('set_kernel GAUSSIAN REAL %d %f', cache_size, rbf_width(4)));
-gf('send_command', 'init_kernel TRAIN');
-kernels{4}=gf('get_kernel_matrix');
+sg('set_features','TRAIN', traindat);
+sg('send_command', sprintf('set_kernel GAUSSIAN REAL %d %f', cache_size, rbf_width(4)));
+sg('send_command', 'init_kernel TRAIN');
+kernels{4}=sg('get_kernel_matrix');
 
-gf('set_features','TRAIN', traindat);
-gf('send_command', sprintf('set_kernel GAUSSIAN REAL %d %f', cache_size, rbf_width(5)));
-gf('send_command', 'init_kernel TRAIN');
-kernels{5}=gf('get_kernel_matrix');
+sg('set_features','TRAIN', traindat);
+sg('send_command', sprintf('set_kernel GAUSSIAN REAL %d %f', cache_size, rbf_width(5)));
+sg('send_command', 'init_kernel TRAIN');
+kernels{5}=sg('get_kernel_matrix');
 
-gf('send_command', 'clean_features TRAIN' );
-gf('add_features','TRAIN', traindat);
-gf('add_features','TRAIN', traindat);
-gf('add_features','TRAIN', traindat);
-gf('add_features','TRAIN', traindat);
-gf('add_features','TRAIN', traindat);
-gf('send_command', sprintf('set_kernel COMBINED %d', cache_size));
-gf('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(1)));
-gf('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(2)));
-gf('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(3)));
-gf('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(4)));
-gf('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(5)));
+sg('send_command', 'clean_features TRAIN' );
+sg('add_features','TRAIN', traindat);
+sg('add_features','TRAIN', traindat);
+sg('add_features','TRAIN', traindat);
+sg('add_features','TRAIN', traindat);
+sg('add_features','TRAIN', traindat);
+sg('send_command', sprintf('set_kernel COMBINED %d', cache_size));
+sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(1)));
+sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(2)));
+sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(3)));
+sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(4)));
+sg('send_command', sprintf('add_kernel 1 GAUSSIAN REAL %d %f', cache_size, rbf_width(5)));
 
-gf('send_command', 'init_kernel TRAIN');
-gf('send_command', 'use_mkl 0');
-gf('send_command', 'loglevel ALL');
-gf('send_command', 'use_precompute 0');
-gf('send_command', 'mkl_parameters 1e-3 0');
-gf('send_command', sprintf('c %f',C));
-gf('send_command', sprintf('svm_epsilon %f',svm_eps));
-gf('send_command', sprintf('svr_tube_epsilon %f',svm_tube));
+sg('send_command', 'init_kernel TRAIN');
+sg('send_command', 'use_mkl 0');
+sg('send_command', 'loglevel ALL');
+sg('send_command', 'use_precompute 0');
+sg('send_command', 'mkl_parameters 1e-3 0');
+sg('send_command', sprintf('c %f',C));
+sg('send_command', sprintf('svm_epsilon %f',svm_eps));
+sg('send_command', sprintf('svr_tube_epsilon %f',svm_tube));
 
-betas=gf('get_subkernel_weights') ;
+betas=sg('get_subkernel_weights') ;
 betas=betas/sum(betas(:)) ;
-gf('set_subkernel_weights',betas) ;
+sg('set_subkernel_weights',betas) ;
 
-gf('send_command', 'init_kernel TRAIN') ;
-gf('send_command', sprintf('c %1.2e', C)) ;
+sg('send_command', 'init_kernel TRAIN') ;
+sg('send_command', sprintf('c %1.2e', C)) ;
 
 
 OBJ=[] ;
@@ -102,26 +102,26 @@ tic
 for ii=1:100,
 	% find most violated constraints
 	% 1. compute optimal alphas
-	gf('send_command', 'new_svm LIBSVR');
-	%gf('send_command', 'new_svm SVRLIGHT');
-	gf('send_command', 'svm_train');
-	betas=gf('get_subkernel_weights') ;
-	[b,alpha_idx]=gf('get_svm') ;
+	sg('send_command', 'new_svm LIBSVR');
+	%sg('send_command', 'new_svm SVRLIGHT');
+	sg('send_command', 'svm_train');
+	betas=sg('get_subkernel_weights') ;
+	[b,alpha_idx]=sg('get_svm') ;
 	alpha_svmlight{ii}=alpha_idx;
 	b_svmlight(ii)=b;
 	beta_svmlight{ii}=betas;
-	obj_svmlight(ii)=gf('get_svm_objective');
+	obj_svmlight(ii)=sg('get_svm_objective');
 
 
-	%gf('send_command', 'new_svm LIBSVR');
-	gf('send_command', 'new_svm SVRLIGHT');
-	gf('send_command', 'svm_train');
-	betas=gf('get_subkernel_weights') ;
-	[b,alpha_idx]=gf('get_svm') ;
+	%sg('send_command', 'new_svm LIBSVR');
+	sg('send_command', 'new_svm SVRLIGHT');
+	sg('send_command', 'svm_train');
+	betas=sg('get_subkernel_weights') ;
+	[b,alpha_idx]=sg('get_svm') ;
 	alpha_libsvm{ii}=alpha_idx;
 	b_libsvm(ii)=b;
 	beta_libsvm{ii}=betas;
-	obj_libsvm(ii)=gf('get_svm_objective');
+	obj_libsvm(ii)=sg('get_svm_objective');
 
 	obj_libsvm(ii)-obj_svmlight(ii)
 	if abs(obj_libsvm(ii)-obj_svmlight(ii))>1e-3 | abs(b_libsvm(ii)-b_svmlight(ii))>1e-3,
@@ -137,7 +137,7 @@ for ii=1:100,
 	alphas(alpha_idx(:,2)+1)=alpha_idx(:,1) ;
 
 	% 2. compute current SVM objective
-	OBJ(ii)=gf('get_svm_objective');
+	OBJ(ii)=sg('get_svm_objective');
 
 	sum_contrib=0;
 	for i=1:5,
@@ -170,20 +170,20 @@ for ii=1:100,
 	end
 
 	% update betas in gf
-	gf('set_subkernel_weights',betas) ;
-	gf('send_command', 'init_kernel TRAIN') ;
+	sg('set_subkernel_weights',betas) ;
+	sg('send_command', 'init_kernel TRAIN') ;
 end
 toc
 
-gf('send_command', 'clean_features TEST' );
-gf('add_features','TEST', testdat);
-gf('add_features','TEST', testdat);
-gf('add_features','TEST', testdat);
-gf('add_features','TEST', testdat);
-gf('add_features','TEST', testdat);
-gf('set_labels', 'TEST', testlab);
-gf('send_command', 'init_kernel TEST');
-out2=gf('svm_classify');
+sg('send_command', 'clean_features TEST' );
+sg('add_features','TEST', testdat);
+sg('add_features','TEST', testdat);
+sg('add_features','TEST', testdat);
+sg('add_features','TEST', testdat);
+sg('add_features','TEST', testdat);
+sg('set_labels', 'TEST', testlab);
+sg('send_command', 'init_kernel TEST');
+out2=sg('svm_classify');
 
 sum(abs(testlab-out2))
 sum((testlab-out2).^2)

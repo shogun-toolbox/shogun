@@ -9,13 +9,13 @@ case 1
 	sequence=sequence(1:end-1);
 	char(sequence)'
 
-	gf('send_command','pseudo 1e-10');
-	gf('send_command','new_hmm 1 6');
-	gf('set_features','TRAIN',char(sequence),'CUBE');
-	gf('send_command', 'convert TRAIN SIMPLE CHAR STRING CHAR');
-	gf('send_command', 'convert TRAIN STRING CHAR STRING WORD');
-	gf('send_command', 'bw');
-	[hmm_p,hmm_q,hmm_a,hmm_b]=gf('get_hmm');
+	sg('send_command','pseudo 1e-10');
+	sg('send_command','new_hmm 1 6');
+	sg('set_features','TRAIN',char(sequence),'CUBE');
+	sg('send_command', 'convert TRAIN SIMPLE CHAR STRING CHAR');
+	sg('send_command', 'convert TRAIN STRING CHAR STRING WORD');
+	sg('send_command', 'bw');
+	[hmm_p,hmm_q,hmm_a,hmm_b]=sg('get_hmm');
 
 	exp(hmm_p)
 	exp(hmm_q)
@@ -30,13 +30,13 @@ case 2
 
 	sequence=sequence(1:end-1);
 
-	gf('send_command','pseudo 1e-10');
-	gf('send_command','new_hmm 3 6');
-	gf('set_features','TRAIN',char(sequence),'CUBE');
-	gf('send_command', 'convert TRAIN SIMPLE CHAR STRING CHAR');
-	gf('send_command', 'convert TRAIN STRING CHAR STRING WORD');
-	gf('send_command', 'bw');
-	[hmm_p,hmm_q,hmm_a,hmm_b]=gf('get_hmm');
+	sg('send_command','pseudo 1e-10');
+	sg('send_command','new_hmm 3 6');
+	sg('set_features','TRAIN',char(sequence),'CUBE');
+	sg('send_command', 'convert TRAIN SIMPLE CHAR STRING CHAR');
+	sg('send_command', 'convert TRAIN STRING CHAR STRING WORD');
+	sg('send_command', 'bw');
+	[hmm_p,hmm_q,hmm_a,hmm_b]=sg('get_hmm');
 
 	exp(hmm_p)
 	exp(hmm_q)
@@ -46,10 +46,10 @@ case 2
 	disp('Verteilung: Wuerfel 2:0.398977 0.231458 0.149616 0.006394 0.039642 0.173913');
 	disp('Verteilung: Wuerfel 3:0.101786 0.172024 0.168452 0.261905 0.066667 0.229167');
 	
-	gf('set_features','TEST',char(sequence),'CUBE');
-	gf('send_command', 'convert TEST SIMPLE CHAR STRING CHAR');
-	gf('send_command', 'convert TEST STRING CHAR STRING WORD');
-	[path,lik]=gf('get_viterbi_path',0);
+	sg('set_features','TEST',char(sequence),'CUBE');
+	sg('send_command', 'convert TEST SIMPLE CHAR STRING CHAR');
+	sg('send_command', 'convert TEST STRING CHAR STRING WORD');
+	[path,lik]=sg('get_viterbi_path',0);
 case 3
 	fid=fopen('/home/neuro/sonne/bb_hmm_examples/dna/acc_train.neg','r');
 	negacc=fread(fid, inf, 'char');
@@ -70,26 +70,26 @@ case 3
 	negacc=negacc';
 	posacc=posacc';
 
-	gf('send_command','pseudo 1e-10');
-	gf('send_command','new_hmm 4 4');
-	gf('set_features','TRAIN',char(posacc),'DNA');
-	gf('send_command', 'convert TRAIN SIMPLE CHAR STRING CHAR');
-	gf('send_command', 'convert TRAIN STRING CHAR STRING WORD');
-	gf('send_command', 'bw');
-	gf('send_command','set_hmm_as POS')
+	sg('send_command','pseudo 1e-10');
+	sg('send_command','new_hmm 4 4');
+	sg('set_features','TRAIN',char(posacc),'DNA');
+	sg('send_command', 'convert TRAIN SIMPLE CHAR STRING CHAR');
+	sg('send_command', 'convert TRAIN STRING CHAR STRING WORD');
+	sg('send_command', 'bw');
+	sg('send_command','set_hmm_as POS')
 
-	gf('send_command','pseudo 1e-10');
-	gf('send_command','new_hmm 4 4');
-	gf('set_features','TRAIN',char(negacc),'DNA');
-	gf('send_command', 'convert TRAIN SIMPLE CHAR STRING CHAR');
-	gf('send_command', 'convert TRAIN STRING CHAR STRING WORD');
-	gf('send_command', 'bw');
-	gf('send_command','set_hmm_as NEG')
+	sg('send_command','pseudo 1e-10');
+	sg('send_command','new_hmm 4 4');
+	sg('set_features','TRAIN',char(negacc),'DNA');
+	sg('send_command', 'convert TRAIN SIMPLE CHAR STRING CHAR');
+	sg('send_command', 'convert TRAIN STRING CHAR STRING WORD');
+	sg('send_command', 'bw');
+	sg('send_command','set_hmm_as NEG')
 
 	testacc=[negacc;posacc];
 
-	gf('set_features','TEST',char(testacc)','DNA');
-	gf('send_command', 'convert TEST SIMPLE CHAR STRING CHAR');
-	gf('send_command', 'convert TEST STRING CHAR STRING WORD');
-	out=gf('hmm_classify');
+	sg('set_features','TEST',char(testacc)','DNA');
+	sg('send_command', 'convert TEST SIMPLE CHAR STRING CHAR');
+	sg('send_command', 'convert TEST STRING CHAR STRING WORD');
+	out=sg('hmm_classify');
 end
