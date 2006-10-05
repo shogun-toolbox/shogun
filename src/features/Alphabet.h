@@ -66,7 +66,7 @@ class CAlphabet
 		void print_histogram();
 
 		/// check whether symbols in histogram ALL fit in alphabet
-		bool check_alphabet_size();
+		bool check_alphabet_size(bool print_error=true);
 
 		/// return number of symbols in histogram
 		INT get_num_symbols_in_histogram();

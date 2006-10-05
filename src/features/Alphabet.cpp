@@ -195,13 +195,13 @@ void CAlphabet::add_string_to_histogram(BYTE* p, INT len)
 void CAlphabet::add_string_to_histogram(CHAR* p, INT len)
 {
 	for (INT i=0; i<len; i++)
-		add_byte_to_histogram((BYTE) p[i]);
+		add_byte_to_histogram(p[i]);
 }
 
 INT CAlphabet::get_max_value_in_histogram()
 {
 	INT max_sym=-1;
-	for (INT i=(INT) (1 <<(sizeof(BYTE)*8));i>0; --i)
+	for (INT i=(INT) (1 <<(sizeof(BYTE)*8))-1;i>=0; i--)
 	{
 		if (histogram[i])
 		{
@@ -243,11 +243,15 @@ void CAlphabet::print_histogram()
 	}
 }
 
-bool CAlphabet::check_alphabet_size()
+bool CAlphabet::check_alphabet_size(bool print_error)
 {
 	if (get_num_bits_in_histogram() > get_num_bits())
 	{
-		CIO::message(M_WARN, "ALPHABET too small to contain all symbols in histogram\n");
+		if (print_error)
+		{
+			print_histogram();
+			CIO::message(M_ERROR, "ALPHABET too small to contain all symbols in histogram\n");
+		}
 		return false;
 	}
 	else

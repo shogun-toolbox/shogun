@@ -276,9 +276,9 @@ template <class ST> class CStringFeatures: public CFeatures
 		ASSERT(features);
 
 		CAlphabet* alpha=sf->get_alphabet();
-		alpha->clear_histogram();
+		ASSERT(alpha->get_num_symbols_in_histogram() > 0);
 
-		CIO::message(M_DEBUG, "%d symbols in StringFeatures<CHAR>\n", sf->get_num_symbols());
+		CIO::message(M_DEBUG, "%1.0llf symbols in StringFeatures<CHAR>\n", sf->get_num_symbols());
 
 		for (INT i=0; i<num_vectors; i++)
 		{
@@ -289,7 +289,6 @@ template <class ST> class CStringFeatures: public CFeatures
 			features[i].length=len;
 			ASSERT(features[i].string);
 
-			alpha->add_string_to_histogram(c, len);
 			ST* str=features[i].string;
 			for (INT j=0; j<len; j++)
 				str[j]=(ST) alpha->remap(c[j]);
@@ -297,19 +296,12 @@ template <class ST> class CStringFeatures: public CFeatures
 		}
 
 		original_num_symbols=alpha->get_num_symbols();
-		alpha->print_histogram();
-		alpha->check_alphabet_size();
-
 		INT max_val=alpha->get_num_bits();
-		CIO::message(M_DEBUG,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
-		CIO::message(M_DEBUG,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
 
 		if (order>1)
 			num_symbols=CMath::powl((long double) 2, (long double) max_val*order);
 		else
 			num_symbols=original_num_symbols;
-		CIO::message(M_DEBUG,"hi3\n");
-
 		CIO::message(M_INFO, "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, order, num_symbols);
 
 		if ( ((long double) num_symbols) > CMath::powl(((long double) 2),((long double) sizeof(ST)*8)) )
@@ -317,12 +309,10 @@ template <class ST> class CStringFeatures: public CFeatures
 			CIO::message(M_ERROR, "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
 			return false;
 		}
-		CIO::message(M_DEBUG,"hi4\n");
 
 		CIO::message(M_DEBUG, "translate: start=%i order=%i gap=%i(size:%i)\n", start, order, gap, sizeof(ST)) ;
 		for (INT line=0; line<num_vectors; line++)
 		{
-			CIO::message(M_DEBUG,"line: %d\n", line);
 			INT len=0;
 			ST* fv=get_feature_vector(line, len);
 			translate_from_single_order(fv, len, start+gap, order+gap, max_val, gap);
@@ -331,7 +321,6 @@ template <class ST> class CStringFeatures: public CFeatures
 			features[line].length-=start+gap ;
 			if (features[line].length<0)
 				features[line].length=0 ;
-
 		}         
        
 		ULONG mask=0;
@@ -388,7 +377,6 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	void translate_from_single_order(ST* obs, INT sequence_length, INT start, INT order, INT max_val, INT gap)
 	{
-		CIO::message(M_DEBUG, "max_val is: %d order: %d\n", max_val, order);
 		ASSERT(gap>=0) ;
 		
 		const INT start_gap = (order - gap)/2 ;

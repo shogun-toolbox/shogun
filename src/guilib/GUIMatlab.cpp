@@ -1480,7 +1480,6 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 						ASSERT(f);
 
 						int maxlen=0;
-						int num_symbols=0;
 						alpha->clear_histogram();
 
 						for (int i=0; i<num_vec; i++)
@@ -1503,12 +1502,16 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 							}
 						}
 
-						alpha->check_alphabet_size();
-						num_symbols=alpha->get_num_symbols();
-
-						CIO::message(M_DEBUG, "num_symbols: %d\n", num_symbols);
-
-						((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
+						CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+						CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+						if (alpha->check_alphabet_size())
+							((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
+						else
+						{
+							((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
+							delete f;
+							f=NULL;
+						}
 					}
 					else
 						CIO::message(M_ERROR, "please specify alphabet!\n");
