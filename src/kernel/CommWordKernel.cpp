@@ -212,7 +212,7 @@ DREAL CCommWordKernel::compute(INT idx_a, INT idx_b)
 				while (right_idx< blen && bvec[right_idx]==sym)
 					right_idx++;
 
-				result+=(left_idx-old_left_idx)*(right_idx-old_right_idx);
+				result+=((DREAL) (left_idx-old_left_idx)) * ((DREAL) (right_idx-old_right_idx));
 			}
 			else if (avec[left_idx]<bvec[right_idx])
 				left_idx++;

@@ -195,7 +195,7 @@ void CAlphabet::add_string_to_histogram(BYTE* p, INT len)
 void CAlphabet::add_string_to_histogram(CHAR* p, INT len)
 {
 	for (INT i=0; i<len; i++)
-		add_byte_to_histogram(p[i]);
+		add_byte_to_histogram((BYTE) p[i]);
 }
 
 INT CAlphabet::get_max_value_in_histogram()
@@ -203,7 +203,7 @@ INT CAlphabet::get_max_value_in_histogram()
 	INT max_sym=-1;
 	for (INT i=(INT) (1 <<(sizeof(BYTE)*8));i>0; --i)
 	{
-		if (histogram[i]>0)
+		if (histogram[i])
 		{
 			max_sym=i;
 			break;
@@ -218,7 +218,7 @@ INT CAlphabet::get_num_symbols_in_histogram()
 	INT num_sym=0;
 	for (INT i=0; i<(INT) (1 <<(sizeof(BYTE)*8)); i++)
 	{
-		if (histogram[i]>0)
+		if (histogram[i])
 			num_sym++;
 	}
 
@@ -239,7 +239,7 @@ void CAlphabet::print_histogram()
 	for (INT i=0; i<(INT) (1 <<(sizeof(BYTE)*8)); i++)
 	{
 		if (histogram[i])
-			CIO::message(M_MESSAGEONLY, "hist[%d]=%d\n", i, histogram[i]);
+			CIO::message(M_MESSAGEONLY, "hist[%d]=%ld\n", i, histogram[i]);
 	}
 }
 

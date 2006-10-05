@@ -292,10 +292,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			alpha->add_string_to_histogram(c, len);
 			ST* str=features[i].string;
 			for (INT j=0; j<len; j++)
-			{
 				str[j]=(ST) alpha->remap(c[j]);
-				alpha->add_byte_to_histogram(c[j]);
-			}
 
 		}
 
@@ -303,10 +300,9 @@ template <class ST> class CStringFeatures: public CFeatures
 		alpha->print_histogram();
 		alpha->check_alphabet_size();
 
-		CIO::message(M_DEBUG,"hi\n");
-
 		INT max_val=alpha->get_num_bits();
-		CIO::message(M_DEBUG,"hi2\n");
+		CIO::message(M_DEBUG,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+		CIO::message(M_DEBUG,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
 
 		if (order>1)
 			num_symbols=CMath::powl((long double) 2, (long double) max_val*order);
