@@ -24,7 +24,7 @@ CByteFeatures::CByteFeatures(CAlphabet* a, INT size) : CSimpleFeatures<BYTE>(siz
 
 CByteFeatures::CByteFeatures(const CByteFeatures & orig) : CSimpleFeatures<BYTE>(orig)
 {
-	alphabet=orig.alphabet();
+	alphabet=orig.alphabet;
 }
 
 CByteFeatures::CByteFeatures(E_ALPHABET a, BYTE* feature_matrix, INT num_feat, INT num_vec) : CSimpleFeatures<BYTE>(feature_matrix, num_feat, num_vec)

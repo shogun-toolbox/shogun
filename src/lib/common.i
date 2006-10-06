@@ -4,15 +4,7 @@
  #include "lib/common.h" 
 %}
 
-
-typedef int INT;
-typedef int LONG;
-typedef int KERNELCACHE_IDX;
-typedef int FNUM;
-typedef double FVAL;
-typedef char CHAR;
-typedef double DREAL;
-typedef float SHORTREAL;
+%include "lib/common.h"
 
 %include "cpointer.i"
 %pointer_class(int, iptr);

@@ -13,6 +13,7 @@
 #define _TRIE_H___
 
 #include "lib/common.h"
+#include "lib/io.h"
 
 #ifdef USE_TREEMEM
 #define NO_CHILD ((INT)-1) 

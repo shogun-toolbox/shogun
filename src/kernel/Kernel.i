@@ -61,41 +61,7 @@
 
       inline int get_max_elems_cache() { return kernel_cache.max_elems; }
       inline int get_activenum_cache() { return kernel_cache.activenum; }
-      void get_kernel_row(KERNELCACHE_IDX docnum, LONG *active2dnum, DREAL *buffer) ;
-      void cache_kernel_row(KERNELCACHE_IDX x);
-      void cache_multiple_kernel_rows(LONG* key, INT varnum);
-      void kernel_cache_reset_lru();
-      void kernel_cache_shrink(KERNELCACHE_IDX totdoc, KERNELCACHE_IDX num_shrink, KERNELCACHE_IDX *after);
 
-      void resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack=false);
-
-      /// set the time used for lru	
-      inline void set_time(LONG t)
-      {
-         kernel_cache.time=t;
-      }
-
-      // Update lru time to avoid removal from cache.
-      inline KERNELCACHE_IDX kernel_cache_touch(KERNELCACHE_IDX cacheidx)
-      {
-         if(kernel_cache.index[cacheidx] != -1)
-         {
-            kernel_cache.lru[kernel_cache.index[cacheidx]]=kernel_cache.time; 
-            return(1);
-         }
-         return(0);
-      }
-
-      /// Is that row cached?
-      inline KERNELCACHE_IDX kernel_cache_check(KERNELCACHE_IDX cacheidx)
-      {
-         return(kernel_cache.index[cacheidx] >= 0);
-      }
-
-      inline long kernel_cache_space_available()
-      {
-         return(kernel_cache.elems < kernel_cache.max_elems);
-      }
 
       void list_kernel();
 
@@ -150,60 +116,7 @@
       /// in the corresponding feature object
       virtual DREAL compute(INT x, INT y)=0;
 
-      /**@ cache kernel evalutations to improve speed
-       */
-      //@{
-      struct KERNEL_CACHE {
-         KERNELCACHE_IDX   *index;  
-         KERNELCACHE_ELEM  *buffer; 
-         KERNELCACHE_IDX   *invindex;
-         KERNELCACHE_IDX   *active2totdoc;
-         KERNELCACHE_IDX   *totdoc2active;
-         KERNELCACHE_IDX   *lru;
-         KERNELCACHE_IDX   *occu;
-         KERNELCACHE_IDX   elems;
-         KERNELCACHE_IDX   max_elems;
-         KERNELCACHE_IDX   time;
-         KERNELCACHE_IDX   activenum;
-         KERNELCACHE_IDX   buffsize;
-         // LONG   r_offs;
-      };
-
-      struct S_KTHREAD_PARAM 
-      {
-         CKernel* kernel;
-         KERNEL_CACHE* kernel_cache;
-         KERNELCACHE_ELEM** cache;
-         LONG* uncached_rows;
-         INT num_uncached;
-         BYTE* needs_computation;
-         INT start;
-         INT end;
-      };
-      static void* cache_multiple_kernel_row_helper(void* p);
-
-      /// init kernel cache of size megabytes
-      void   kernel_cache_init(KERNELCACHE_IDX size, bool regression_hack=false);
-      void   kernel_cache_cleanup();
-      KERNELCACHE_IDX   kernel_cache_malloc();
-      void   kernel_cache_free(KERNELCACHE_IDX cacheidx);
-      KERNELCACHE_IDX   kernel_cache_free_lru();
-      KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(KERNELCACHE_IDX);
-
-      //@}
-
-
    protected:
-      /// kernel cache
-      KERNEL_CACHE kernel_cache;
-
-      /// cache_size in MB
-      KERNELCACHE_IDX cache_size;
-
-      /// this *COULD* store the whole kernel matrix
-      /// usually not applicable / faster
-      KERNELCACHE_ELEM* kernel_matrix;
-
       /// feature vectors to occur on left hand side
       CFeatures* lhs;
       /// feature vectors to occur on right hand side

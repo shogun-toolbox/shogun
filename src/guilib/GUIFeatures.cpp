@@ -86,7 +86,8 @@ bool CGUIFeatures::load(CHAR* param)
 			}
 			else if (strcmp(type, "BYTE")==0)
 			{
-				*f_ptr=new CByteFeatures(filename);
+				///FIXME make CHAR type configurable... it is DNA by default
+				*f_ptr=new CByteFeatures(DNA, filename);
 			}
 			else if (strcmp(type, "CHAR")==0)
 			{
@@ -115,7 +116,8 @@ bool CGUIFeatures::load(CHAR* param)
 			}
 			else if (strcmp(type, "BYTE")==0)
 			{
-				*f_ptr=new CStringFeatures<BYTE>(filename);
+				///FIXME make CHAR type configurable... it is DNA by default
+				*f_ptr=new CStringFeatures<BYTE>(filename, DNA);
 			}
 			else if (strcmp(type, "CHAR")==0)
 			{

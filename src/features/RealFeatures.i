@@ -12,7 +12,7 @@
 class CRealFeatures: public CSimpleFeatures<DREAL>
 {
  public:
-  CRealFeatures(LONG size) : CSimpleFeatures<DREAL>(size)
+  CRealFeatures(INT size) : CSimpleFeatures<DREAL>(size)
   {
   }
 
@@ -28,15 +28,4 @@ class CRealFeatures: public CSimpleFeatures<DREAL>
   {
     load(fname);
   }
-
-  bool Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, DREAL gapCost) ;
-
-  virtual CFeatures* duplicate() const;
-  virtual EFeatureType get_feature_type() { return F_DREAL; }
-
-  virtual bool load(CHAR* fname);
-  virtual bool save(CHAR* fname);
- protected:
-  DREAL Align(CHAR * seq1, CHAR* seq2, INT l1, INT l2, DREAL GapCost) ;
-
 };

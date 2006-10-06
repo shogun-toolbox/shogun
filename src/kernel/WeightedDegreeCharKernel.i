@@ -24,16 +24,6 @@ class CWeightedDegreeCharKernel: public CCharKernel {
 
         virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREE; }
         virtual const CHAR* get_name() { return "WeightedDegree" ; } ;
-
-        virtual bool init_optimization(INT count, INT * IDX, DREAL * weights) ;
-        virtual bool delete_optimization() ;
-        virtual DREAL compute_optimized(INT idx);
-
-        inline virtual void clear_normal();
-    protected:
-
-        void add_example_to_tree(INT idx, DREAL weight);
-        void add_example_to_tree_mismatch(INT idx, DREAL weight);
 };
 
 %pythoncode 
