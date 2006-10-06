@@ -26,68 +26,6 @@
 #include <mindy.h>
 
 /**
- * Constructor for n-gram features extracted from a text file
- * @param fname File name to load data from
- * @param aname Alphabet name, e.g. bytes, ascii, text, dna
- * @param nlen N-gram length
- */
-CMindyGramFeatures::CMindyGramFeatures(CHAR * fname, CHAR * aname, CHAR * embed, BYTE nlen) : CFeatures(fname)
-{
-    ASSERT(fname && aname && embed && nlen > 0);
-
-    /* Allocate and generate gram configuration (n-grams) */
-    CIO::message(M_DEBUG, "Initializing Mindy gram features\n");    
-    alph_type_t at = alph_get_type(aname);
-    cfg = gram_cfg_ngrams(alph_create(at), (byte_t) nlen);
-    set_embedding(cfg, embed);
-
-    CIO::message(M_INFO, "Mindy in n-gram mode (n: %d, a: %s, e: %s)\n", 
-                 nlen, alph_get_name(at), gram_cfg_get_embed(cfg->embed));
-
-    load(fname);
-}
-
-/**
- * Constructor for word features extracted from a text file
- * @param fname Filen ame to load data from
- * @param aname Alphabet name, e.g. bytes, ascii, text, dna
- * @param delim Escaped string of delimiters, e.g. '%20.,'
- */
-CMindyGramFeatures::CMindyGramFeatures(CHAR *fname, CHAR *aname, CHAR *embed, CHAR *delim) : CFeatures(fname)
-{
-    ASSERT(fname && aname && embed && delim);
-
-    /* Allocate and generate gram configuration (words) */
-    CIO::message(M_DEBUG, "Initializing Mindy gram features\n");    
-    alph_type_t at = alph_get_type(aname);
-    cfg = gram_cfg_words(alph_create(at), delim);
-    set_embedding(cfg, embed);
-
-    CIO::message(M_INFO, "Mindy in word mode (d: '%s', a: %s, e: %s)\n", 
-                 delim, alph_get_name(at), gram_cfg_get_embed(cfg->embed));
-
-    load(fname);
-}
-
-/**
- * Copy constructor for gram features
- * @param orig Gram feature object to copy
- */
-CMindyGramFeatures::CMindyGramFeatures(const CMindyGramFeatures & orig) : CFeatures(orig)
-{
-    CIO::message(M_DEBUG, "Duplicating Mindy gram features\n");
-    num_vectors = orig.num_vectors;
-
-    /* Clone configuration */
-    cfg = gram_cfg_clone(orig.cfg);
-
-    /* Clone gram vectors */
-    vectors = (gram_t **) calloc(num_vectors, sizeof(gram_t *));
-    for (INT i = 0; i < num_vectors; i++)
-        vectors[i] = gram_clone(orig.vectors[i]);
-}
-
-/**
  * Destructor for gram features
  */
 CMindyGramFeatures::~CMindyGramFeatures()

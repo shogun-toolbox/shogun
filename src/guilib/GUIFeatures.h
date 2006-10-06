@@ -93,7 +93,7 @@ class CGUIFeatures
 
 
 		template <class CT, class ST> 
-		CStringFeatures<ST>* CGUIFeatures::convert_string_char_to_string_generic(CStringFeatures<CT>* src, CHAR* param)
+		CStringFeatures<ST>* convert_string_char_to_string_generic(CStringFeatures<CT>* src, CHAR* param)
 		{
 			CHAR target[1024]="";
 			CHAR from_class[1024]="";
@@ -135,7 +135,7 @@ class CGUIFeatures
 #ifdef HAVE_MINDY
 
 		template <class CT>
-		CMindyGramFeatures* CGUIFeatures::convert_string_char_to_mindy_grams(CStringFeatures<CT> *src, CHAR* param)
+		CMindyGramFeatures* convert_string_char_to_mindy_grams(CStringFeatures<CT> *src, CHAR* param)
 		{
 			CHAR mode[256]="", alph[256]="", embed[256]="",delim[256]="";
 			INT nlen=-1;
@@ -174,6 +174,8 @@ class CGUIFeatures
 
 				return new CMindyGramFeatures(src, alph, embed, nlen);
 			} 
+			
+			return NULL;
 		}
 #endif
 

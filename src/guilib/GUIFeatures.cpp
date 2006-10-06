@@ -713,7 +713,7 @@ bool CGUIFeatures::convert(CHAR* param)
 					result = convert_string_char_to_string_generic<CHAR,ULONG>(((CStringFeatures<CHAR>*) (*f_ptr)), param);
 #ifdef HAVE_MINDY
 				else if (strcmp(to_class, "MINDYGRAM")==0 && strcmp(to_type,"ULONG")==0)
-					result = convert_string_char_to_mindy_grams(((CStringFeatures<CHAR>*) (*f_ptr)), param);
+					result = convert_string_char_to_mindy_grams<CHAR>(((CStringFeatures<CHAR>*) (*f_ptr)), param);
 #endif
 				else
 					CIO::not_implemented();
@@ -726,7 +726,7 @@ bool CGUIFeatures::convert(CHAR* param)
 					result = convert_string_char_to_string_generic<BYTE,ULONG>(((CStringFeatures<BYTE>*) (*f_ptr)), param);
 #ifdef HAVE_MINDY
 				else if (strcmp(to_class, "MINDYGRAM")==0 && strcmp(to_type,"ULONG")==0)
-					result = convert_string_char_to_mindy_grams(((CStringFeatures<BYTE>*) (*f_ptr)), param);
+					result = convert_string_char_to_mindy_grams<BYTE>(((CStringFeatures<BYTE>*) (*f_ptr)), param);
 #endif
 				else
 					CIO::not_implemented();
