@@ -12,17 +12,36 @@
 #include "lib/common.h"
 #include "lib/File.h"
 
-CByteFeatures::CByteFeatures(LONG size) : CSimpleFeatures<BYTE>(size)
+CByteFeatures::CByteFeatures(E_ALPHABET a, INT size) : CSimpleFeatures<BYTE>(size)
 {
+	alphabet=new CAlphabet(a);
+}
+
+CByteFeatures::CByteFeatures(CAlphabet* a, INT size) : CSimpleFeatures<BYTE>(size)
+{
+	alphabet=a;
 }
 
 CByteFeatures::CByteFeatures(const CByteFeatures & orig) : CSimpleFeatures<BYTE>(orig)
 {
+	alphabet=orig.alphabet();
 }
 
-CByteFeatures::CByteFeatures(CHAR* fname) : CSimpleFeatures<BYTE>(fname)
+CByteFeatures::CByteFeatures(E_ALPHABET a, BYTE* feature_matrix, INT num_feat, INT num_vec) : CSimpleFeatures<BYTE>(feature_matrix, num_feat, num_vec)
 {
+	alphabet=new CAlphabet(a);
+}
+
+CByteFeatures::CByteFeatures(E_ALPHABET a, CHAR* fname) : CSimpleFeatures<BYTE>(fname)
+{
+	alphabet=new CAlphabet(a);
 	load(fname);
+}
+
+CByteFeatures::~CByteFeatures()
+{
+	delete alphabet;
+	alphabet=NULL;
 }
 
 CFeatures* CByteFeatures::duplicate() const
@@ -33,19 +52,52 @@ CFeatures* CByteFeatures::duplicate() const
 
 bool CByteFeatures::load(CHAR* fname)
 {
-	bool status=false;
-	num_vectors=1;
+	CIO::message(M_INFO, "loading...\n");
+    LONG length=0;
+	LONG linelen=0;
+
 	CFile f(fname, 'r', F_BYTE);
-	LONG numf=0 ;
-	feature_matrix=f.load_byte_data(NULL, numf);
-	num_features=numf;
+	feature_matrix=f.load_byte_data(NULL, length);
 
-    if (!f.is_ok())
-		CIO::message(M_ERROR, "loading file \"%s\" failed", fname);
+    if (f.is_ok())
+	{
+		for (linelen=0; linelen<length; linelen++)
+		{
+			if (feature_matrix[linelen]=='\n')
+			{
+				num_features=linelen;
+				linelen++;
+				break;
+			}
+		}
+
+		num_vectors=length/linelen;
+
+		CIO::message(M_INFO, "file contains %ldx%ld vectors x features\n", num_vectors, num_features);
+
+		if (length && (num_vectors*linelen==length))
+		{
+			for (INT lines=0; lines<num_vectors; lines++)
+			{
+				for (INT columns=0; columns<num_features; columns++)
+					feature_matrix[lines*num_features+columns]=feature_matrix[lines*linelen+columns];
+
+				if (feature_matrix[lines*linelen+num_features]!='\n')
+				{
+					CIO::message(M_ERROR, "line %d in file \"%s\" is corrupt\n", lines, fname);
+					return false;
+				}
+			}
+
+			return true;
+		}
+		else
+			CIO::message(M_ERROR, "file is of zero size or no rectangular featurematrix of type BYTE\n");
+	}
 	else
-		status=true;
+		CIO::message(M_ERROR, "reading file failed\n");
 
-	return status;
+	return false;
 }
 
 bool CByteFeatures::save(CHAR* fname)

@@ -13,19 +13,31 @@
 
 #include "features/SimpleFeatures.h"
 #include "features/CharFeatures.h"
+#include "features/Alphabet.h"
 #include "lib/common.h"
 
 class CByteFeatures: public CSimpleFeatures<BYTE>
 {
 	public:
-		CByteFeatures(LONG size);
+		CByteFeatures(E_ALPHABET, INT size);
+		CByteFeatures(CAlphabet* alpha, INT size);
 		CByteFeatures(const CByteFeatures & orig);
-		CByteFeatures(CHAR* fname);
+        CByteFeatures(E_ALPHABET alphabet, BYTE* feature_matrix, INT num_feat, INT num_vec);
+		CByteFeatures(E_ALPHABET alphabet, CHAR* fname);
+
+		~CByteFeatures();
+
+		inline CAlphabet* get_alphabet()
+		{
+			return alphabet;
+		}
 
 		virtual EFeatureType get_feature_type() { return F_BYTE; }
 
 		virtual CFeatures* duplicate() const;
 		virtual bool load(CHAR* fname);
 		virtual bool save(CHAR* fname);
+	protected:
+		CAlphabet* alphabet;
 };
 #endif
