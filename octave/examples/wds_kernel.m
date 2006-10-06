@@ -3,10 +3,11 @@ addpath('../octave/examples')
 rand('seed',17);
 %sequence lengths, number of sequences
 len=100;
-num_train=1000;
+num_train=5000;
 num_test=5000;
-num_a=8;
+num_a=3;
 aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
+top_perc=0.1;
 
 %SVM regularization factor C
 C=1;
@@ -24,7 +25,7 @@ shifts = sprintf( '%i ', x(end:-1:1) );
 
 
 %generate some toy data
-acgt='ACGT';
+acgt='CCGT';
 rand('state',1);
 traindat=acgt(ceil(4*rand(len,num_train)));
 trainlab=[-ones(1,num_train/2),ones(1,num_train/2)];
@@ -32,6 +33,17 @@ aas=floor((shift+1)*rand(num_train,1));
 idx=find(trainlab==1);
 for i=1:length(idx),
 	traindat(aa+aas(i),idx(i))='A';
+end
+aas=floor((shift+1)*rand(num_train,num_a));
+idx=find(trainlab==-1);
+for i=1:length(idx)/2,
+	for j=1:num_a,
+		traindat(aa(1)+aas(i,j),idx(i))='A';
+	end
+end
+for i=length(idx)/2+1:length(idx),
+	traindat(aa(1:2)+aas(i,1),idx(i))='AA';
+	traindat(aa(1)+1+aas(i,2),idx(i))='A';
 end
 
 testdat=acgt(ceil(4*rand(len,num_test)));
@@ -70,27 +82,3 @@ sg('set_labels', 'TEST', testlab);
 sg('send_command', 'init_kernel TEST');
 out=sg('svm_classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==testlab))
-
-x={};
-X=zeros(max_order,len);
-for i=1:max_order,
-	x{i}=sg('get_WD_scoring', i);
-	X(i,:)=sum(abs(x{i}),1);
-end
-
-for i=1:max_order,
-	X(i,:)=mean(abs(x{i}),1);
-	figure(i)
-	imagesc(x{i})
-	colorbar
-end
-
-figure(1000)
-imagesc(X)
-colorbar
-
-figure(1001)
-imagesc(X>0.7*max(X(:)))
-colorbar
-
-save x.mat

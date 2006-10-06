@@ -114,7 +114,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		{
 			if (nrhs==2)
 			{
-				CHAR* cmd=CGUIMatlab::get_mxString(prhs[1], len);
+				CHAR* cmd=CGUIMatlab::get_mxString(prhs[1], len, true);
 				sg_matlab.send_command(cmd);
 				delete[] cmd;
 			}

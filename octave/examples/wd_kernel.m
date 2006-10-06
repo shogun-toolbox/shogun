@@ -52,5 +52,3 @@ sg('set_labels', 'TEST', testlab);
 sg('send_command', 'init_kernel TEST');
 out=sg('svm_classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==testlab))
-
-x=sg('get_WD_scoring', max_order)

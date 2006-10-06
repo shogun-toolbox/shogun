@@ -1610,17 +1610,24 @@ CLabels* CGUIMatlab::set_labels(const mxArray* vals[])
 }
 
 
-CHAR* CGUIMatlab::get_mxString(const mxArray* s, INT& len)
+CHAR* CGUIMatlab::get_mxString(const mxArray* s, INT& len, bool zero_terminate)
 {
 	if ( (mxIsChar(s)) && (mxGetM(s)==1) )
 	{
 		len = mxGetN(s);
-		CHAR* string=new CHAR[len];
+		CHAR* string=NULL;
+		if (zero_terminate)
+			string=new CHAR[len+1];
+		else
+			string=new CHAR[len];
 		ASSERT(string);
 		mxChar* c=mxGetChars(s);
 		ASSERT(c);
 		for (INT i=0; i<len; i++)
 			string[i]= (CHAR) (c[i]);
+
+		if (zero_terminate)
+			string[len]='\0';
 
 		return string;
 	}
