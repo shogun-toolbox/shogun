@@ -1465,12 +1465,12 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					CIO::message(M_ERROR, "please specify alphabet!\n");
 
 			}
-			else if (mxIsClass(mx_feat,"uint8") || mxIsClass(mx_feat, "int8")
+			else if (mxIsClass(mx_feat,"uint8") || mxIsClass(mx_feat, "int8"))
 			{
 				if (nrhs==4)
 				{
 					INT len=0;
-					BYTE* al = CGUIMatlab::get_mxBytes(vals[3], len);
+					CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
 					CAlphabet* alpha = new CAlphabet(al, len);
 
 					f= new CByteFeatures(alpha, 0);
@@ -1478,7 +1478,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					INT num_feat=mxGetM(mx_feat);
 					BYTE* fm=new BYTE[num_vec*num_feat];
 					ASSERT(fm);
-					BYTE* c=mxGetData(mx_feat);
+					BYTE* c=(BYTE*) mxGetData(mx_feat);
 
 					for (LONG l=0; l<((LONG) num_vec)* ((LONG) num_feat); l++)
 						fm[l]=c[l];
@@ -1549,12 +1549,12 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					if (nrhs==4)
 					{
 						INT len=0;
-						BYTE* al = CGUIMatlab::get_mxBytes(vals[3], len);
+						CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
 						CAlphabet* alpha = new CAlphabet(al, len);
-                                                T_STRING<BYTE>* sc=new T_STRING<BYTE>[num_vec];
+						T_STRING<BYTE>* sc=new T_STRING<BYTE>[num_vec];
 						ASSERT(alpha);
 
-						f= new CStringFeatures<BYTES>(alpha);
+						f= new CStringFeatures<BYTE>(alpha);
 						ASSERT(f);
 
 						int maxlen=0;
@@ -1563,7 +1563,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 						for (int i=0; i<num_vec; i++)
 						{
 							mxArray* e=mxGetCell(mx_feat, i);
-							ASSERT(e && mxIsChar(e));
+							ASSERT(e && (mxIsClass(e, "uint8") || mxIsClass(e, "int8")));
 							INT len=0;
 							sc[i].string=get_mxBytes(e, len);
 							if (sc[i].string)
@@ -1710,8 +1710,7 @@ CHAR* CGUIMatlab::get_mxString(const mxArray* s, INT& len, bool zero_terminate)
 
 BYTE* CGUIMatlab::get_mxBytes(const mxArray* s, INT& len)
 {
-	if ( (mxIsClass(s, "uint8") || mxIsClass(s, "int8") && 
-	     (mxGetM(s)==1) )
+	if ( (mxIsClass(s, "uint8") || mxIsClass(s, "int8")) && (mxGetM(s)==1) )
 	{
 		len = mxGetN(s);
 		BYTE* bytes=new BYTE[len];

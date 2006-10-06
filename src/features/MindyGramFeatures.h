@@ -28,11 +28,88 @@ class CMindyGramFeatures:public CFeatures
 
     public:
 
+/**
+ * Constructor for word features extracted from string features
+ * @param sf String features to use
+ * @param aname Alphabet name, e.g. bytes, ascii, text, dna
+ * @param delim Escaped string of delimiters, e.g. '%20.,'
+ * @param len   Length of byte array
+ */
+template <class T> 
+CMindyGramFeatures(CStringFeatures<T> *sf, CHAR *aname, CHAR *embed, CHAR *delim) : CFeatures(0)
+{
+    ASSERT(sf && aname && embed && delim);
+
+    /* Allocate and generate gram configuration (words) */
+    CIO::message(M_DEBUG, "Initializing Mindy gram features\n");    
+    alph_type_t at = alph_get_type(aname);
+    cfg = gram_cfg_words(alph_create(at), delim);
+    set_embedding(cfg, embed);
+
+    CIO::message(M_INFO, "Mindy in word mode (d: '%s', a: %s, e: %s)\n", 
+                 delim, alph_get_name(at), gram_cfg_get_embed(cfg->embed));
+
+    import(sf);
+}
+
+
+/**
+ * Constructor for n-gram features extracted from string features
+ * @param sf String feature objects
+ * @param aname Alphabet name, e.g. bytes, ascii, text, dna
+ * @param nlen N-gram length
+ */
+template <class T> 
+CMindyGramFeatures(CStringFeatures <T> *sf, CHAR * aname, CHAR * embed, BYTE nlen) : CFeatures(0)
+{
+    ASSERT(sf && aname && embed && nlen > 0);
+
+    /* Allocate and generate gram configuration (n-grams) */
+    CIO::message(M_DEBUG, "Initializing Mindy gram features\n");
+    alph_type_t at = alph_get_type(aname);
+    cfg = gram_cfg_ngrams(alph_create(at), (byte_t) nlen);
+    set_embedding(cfg, embed);    
+
+    CIO::message(M_INFO, "Mindy in n-gram mode (n: %d, a: %s, e: %s)\n", 
+                 nlen, alph_get_name(at), gram_cfg_get_embed(cfg->embed));
+
+    import(sf);
+}
+
+
+/**
+ * Imports gram features from a string feature object
+ * @param sf String feature object
+ * @return true on success, false otherwise
+ */
+template <class T>
+bool import(CStringFeatures<T> *sf)
+{
+    INT i;
+    num_vectors = sf->get_num_vectors();
+    CIO::message(M_INFO, "Importing %ld string features\n", num_vectors);
+
+    vectors = (gram_t **) calloc(num_vectors, sizeof(gram_t *));
+    if (!vectors) {
+        CIO::message(M_ERROR, "Could not allocate memory\n");
+        return false;
+    }
+
+    for (i = 0; i < num_vectors; i++) {
+        INT len;
+        T *s = sf->get_feature_vector(i, len);
+        vectors[i] = gram_extract(cfg, (byte_t *) s, (size_t) len);
+
+        CIO::message(M_DEBUG, "Extracted gram vector %d: %d grams\n", i, 
+                     vectors[i]->num);
+    }
+
+    return true;
+}
+
         /* Constructors */
         CMindyGramFeatures(CHAR *fname, CHAR *aname, CHAR *embed, BYTE nlen);
-        CMindyGramFeatures(CStringFeatures < CHAR > *sf, CHAR *aname, CHAR *embed, BYTE nlen);
         CMindyGramFeatures(CHAR *fname, CHAR *aname, CHAR *embed, CHAR *delim);
-        CMindyGramFeatures(CStringFeatures<CHAR> *sf, CHAR *aname, CHAR *embed, CHAR *delim);
         CMindyGramFeatures(const CMindyGramFeatures & orig);
         ~CMindyGramFeatures();
 
@@ -54,7 +131,6 @@ class CMindyGramFeatures:public CFeatures
     protected:
 
         /* Import and load functions */
-        virtual bool import(CStringFeatures < CHAR > *sf);
         virtual bool load(CHAR * fname);
 
     private:

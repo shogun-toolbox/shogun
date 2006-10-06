@@ -262,7 +262,8 @@ template <class ST> class CStringFeatures: public CFeatures
 		return true;
 	}
 
-	bool obtain_from_char_features(CStringFeatures<CHAR>* sf, INT start, INT order, INT gap)
+        template <class CT>
+	bool obtain_from_char_features(CStringFeatures<CT>* sf, INT start, INT order, INT gap)
 	{
 		ASSERT(sf);
 		this->order=order;
@@ -278,12 +279,12 @@ template <class ST> class CStringFeatures: public CFeatures
 		CAlphabet* alpha=sf->get_alphabet();
 		ASSERT(alpha->get_num_symbols_in_histogram() > 0);
 
-		CIO::message(M_DEBUG, "%1.0llf symbols in StringFeatures<CHAR>\n", sf->get_num_symbols());
+		CIO::message(M_DEBUG, "%1.0llf symbols in StringFeatures<*>\n", sf->get_num_symbols());
 
 		for (INT i=0; i<num_vectors; i++)
 		{
 			INT len=-1;
-			CHAR* c=sf->get_feature_vector(i, len);
+			CT* c=sf->get_feature_vector(i, len);
 
 			features[i].string=new ST[len];
 			features[i].length=len;

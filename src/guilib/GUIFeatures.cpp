@@ -311,50 +311,6 @@ CSparseRealFeatures* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFeatu
 	return NULL;
 }
 
-#ifdef HAVE_MINDY
-
-CMindyGramFeatures* CGUIFeatures::convert_string_char_to_mindy_grams(CStringFeatures<CHAR> *src, CHAR* param)
-{
-	CHAR mode[256]="", alph[256]="", embed[256]="",delim[256]="";
-	INT nlen=-1;
-
-	if (!src || !param) {
-		CIO::message(M_ERROR, "invalid arguments: \"%s\"\n",param);
-		return NULL;
-	}
-
-	if (sscanf(param, "%*s %*s %*s %*s %*s %255s %255s %255s", 
-		   mode, alph, embed) < 3) {
-		CIO::message(M_ERROR, "too few arguments\n");
-		return NULL;
-	}
-
-	if (!strcasecmp(mode, "words")) {
-		if (sscanf(param, "%*s %*s %*s %*s %*s %*s %*s %*s %255s", 
-		           delim) < 1) {
-			CIO::message(M_ERROR, "too few arguments\n");
-			return NULL;
-		}
-	
-		CIO::message(M_INFO, "Converting strings to Mindy words "
-		             "(a: %s, e: %s, d: '%s')\n", alph, embed, delim);                
-
-		return new CMindyGramFeatures(src, alph, embed, delim);
-	} else {
-		if (sscanf(param, "%*s %*s %*s %*s %*s %*s %*s %*s %d", 
-		           &nlen) < 1) {
-			CIO::message(M_ERROR, "too few arguments\n");
-			return NULL;
-		}
-	
-		CIO::message(M_INFO, "Converting strings to Mindy n-grams "
-		             "(a: %s, e: %s, n: %d)\n", alph, embed, nlen);                
-
-		return new CMindyGramFeatures(src, alph, embed, nlen);
-	} 
-}
-#endif
-
 CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFeatures* src, CHAR* param)
 {
 	INT num_vec=src->get_num_vectors();
@@ -423,83 +379,6 @@ CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeature
 	return target;
 }
 
-CStringFeatures<ULONG>* CGUIFeatures::convert_string_char_to_string_ulong(CStringFeatures<CHAR>* src, CHAR* param)
-{
-	CHAR target[1024]="";
-	CHAR from_class[1024]="";
-	CHAR from_type[1024]="";
-	CHAR to_class[1024]="";
-	CHAR to_type[1024]="";
-	INT order=1;
-	INT start=0;
-	INT gap = 0 ;
-	
-	param=CIO::skip_spaces(param);
-
-	if ((sscanf(param, "%s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, &order, &start, &gap))<6)
-	{
-		CIO::message(M_ERROR, "see help for params (target, from_class, from_type, to_class, to_type, order, start, gap)\n");
-		return NULL;
-	}
-
-	if ( (src) && ( (src->get_feature_class()) == C_STRING)  && ( (src->get_feature_type()) == F_CHAR) )
-	{
-		//create dense features with 0 cache
-		CIO::message(M_INFO, "converting CHAR STRING features to ULONG STRING ones (order=%i)\n",order);
-
-		CStringFeatures<ULONG>* sf=new CStringFeatures<ULONG>(new CAlphabet(src->get_alphabet()));
-		if (sf && sf->obtain_from_char_features(src, start, order, gap))
-		{
-			CIO::message(M_INFO, "conversion successful\n");
-			return sf;
-		}
-
-		delete sf;
-	}
-	else
-		CIO::message(M_ERROR, "no features of class/type STRING/CHAR available\n");
-
-	return NULL;
-}
-
-CStringFeatures<WORD>* CGUIFeatures::convert_string_char_to_string_word(CStringFeatures<CHAR>* src, CHAR* param)
-{
-	CHAR target[1024]="";
-	CHAR from_class[1024]="";
-	CHAR from_type[1024]="";
-	CHAR to_class[1024]="";
-	CHAR to_type[1024]="";
-	INT order=1;
-	INT start=0;
-	INT gap = 0 ;
-	
-	param=CIO::skip_spaces(param);
-
-	if ((sscanf(param, "%s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, &order, &start, &gap))<6)
-	{
-		CIO::message(M_ERROR, "see help for params (target, from_class, from_type, to_class, to_type, order, start, gap)\n");
-		return NULL;
-	}
-
-	if ( (src) && ( (src->get_feature_class()) == C_STRING)  && ( (src->get_feature_type()) == F_CHAR) )
-	{
-		//create dense features with 0 cache
-		CIO::message(M_INFO, "converting CHAR STRING features to WORD STRING ones (order=%i)\n",order);
-
-		CStringFeatures<WORD>* sf=new CStringFeatures<WORD>(new CAlphabet(src->get_alphabet()));
-		if (sf && sf->obtain_from_char_features(src, start, order, gap))
-		{
-			CIO::message(M_INFO, "conversion successful\n");
-			return sf;
-		}
-
-		delete sf;
-	}
-	else
-		CIO::message(M_ERROR, "no features of class/type STRING/CHAR available\n");
-
-	return NULL;
-}
 
 CTOPFeatures* CGUIFeatures::convert_string_word_to_simple_top(CStringFeatures<WORD>* src, CHAR* param)
 {
@@ -829,12 +708,25 @@ bool CGUIFeatures::convert(CHAR* param)
 			if (strcmp(from_type, "CHAR")==0)
 			{
 				if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"WORD")==0)
-					result = convert_string_char_to_string_word(((CStringFeatures<CHAR>*) (*f_ptr)), param);
+					result = convert_string_char_to_string_generic<CHAR,WORD>(((CStringFeatures<CHAR>*) (*f_ptr)), param);
 				else if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"ULONG")==0)
-					result = convert_string_char_to_string_ulong(((CStringFeatures<CHAR>*) (*f_ptr)), param);
+					result = convert_string_char_to_string_generic<CHAR,ULONG>(((CStringFeatures<CHAR>*) (*f_ptr)), param);
 #ifdef HAVE_MINDY
 				else if (strcmp(to_class, "MINDYGRAM")==0 && strcmp(to_type,"ULONG")==0)
 					result = convert_string_char_to_mindy_grams(((CStringFeatures<CHAR>*) (*f_ptr)), param);
+#endif
+				else
+					CIO::not_implemented();
+			}
+			else if (strcmp(from_type, "BYTE")==0)
+			{
+				if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"WORD")==0)
+					result = convert_string_char_to_string_generic<BYTE,WORD>(((CStringFeatures<BYTE>*) (*f_ptr)), param);
+				else if (strcmp(to_class, "STRING")==0 && strcmp(to_type,"ULONG")==0)
+					result = convert_string_char_to_string_generic<BYTE,ULONG>(((CStringFeatures<BYTE>*) (*f_ptr)), param);
+#ifdef HAVE_MINDY
+				else if (strcmp(to_class, "MINDYGRAM")==0 && strcmp(to_type,"ULONG")==0)
+					result = convert_string_char_to_mindy_grams(((CStringFeatures<BYTE>*) (*f_ptr)), param);
 #endif
 				else
 					CIO::not_implemented();
