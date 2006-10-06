@@ -114,7 +114,7 @@ public:
 	//bool set_hmm_defs();
 	
 	void real_mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]);
-	static CHAR* get_mxString(const mxArray* s);
+	static CHAR* get_mxString(const mxArray* s, INT& len);
 };
 #endif
 #endif

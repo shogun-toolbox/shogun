@@ -83,6 +83,15 @@ static const CHAR* N_SET_PLUGIN_ESTIMATE=	"set_plugin_estimate";
 static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY=	"plugin_estimate_classify";
 static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE=	"plugin_estimate_classify_example";
 
+/// return true if str starts with cmd
+/// cmd is a 0 terminated string const
+/// str is a string of length len (not 0 terminated)
+static bool strmatch(CHAR* str, UINT len, const CHAR* cmd)
+{
+	return (len>=strlen(cmd) 
+			&& !strncmp(str, cmd, strlen(cmd)));
+}
+
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
 	if (!gui)
@@ -96,22 +105,23 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 	if (!nrhs)
 		CIO::message(M_ERROR,"No input arguments supplied.");
 
-	CHAR* action=CGUIMatlab::get_mxString(prhs[0]);
+	INT len=0;
+	CHAR* action=CGUIMatlab::get_mxString(prhs[0], len);
 
 	if (action)
 	{
-		if (!strncmp(action, N_SEND_COMMAND, strlen(N_SEND_COMMAND)))
+		if (strmatch(action, len, N_SEND_COMMAND))
 		{
 			if (nrhs==2)
 			{
-				CHAR* cmd=CGUIMatlab::get_mxString(prhs[1]);
+				CHAR* cmd=CGUIMatlab::get_mxString(prhs[1], len);
 				sg_matlab.send_command(cmd);
 				delete[] cmd;
 			}
 			else
 				CIO::message(M_ERROR, "usage is sg('send_command', 'cmdline')");
 		}
-		else if (!strncmp(action, N_HELP, strlen(N_HELP)))
+		else if (strmatch(action, len, N_HELP))
 		{
 			if (nrhs==1)
 			{
@@ -120,7 +130,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is sg('help')");
 		}
-		else if (!strncmp(action, N_GET_HMM, strlen(N_GET_HMM)))
+		else if (strmatch(action, len, N_GET_HMM))
 		{
 			if (nlhs==4)
 			{
@@ -129,7 +139,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [p,q,a,b]=sg('get_hmm')");
 		}
-		else if (!strncmp(action, N_GET_VITERBI_PATH, strlen(N_GET_VITERBI_PATH)))
+		else if (strmatch(action, len, N_GET_VITERBI_PATH))
 		{
 			if ((nlhs==2) && (nrhs == 2))
 			{
@@ -144,12 +154,12 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [path, lik]=sg('get_viterbi_path',dim)");
 		}
-		else if (!strncmp(action, N_HMM_LIKELIHOOD, strlen(N_HMM_LIKELIHOOD)))
+		else if (strmatch(action, len, N_HMM_LIKELIHOOD))
 		{
 			if ( !((nlhs==1) && (nrhs == 1) && sg_matlab.hmm_likelihood(plhs)) )
 				CIO::message(M_ERROR, "usage is [lik]=sg('hmm_likelihood')");
 		}
-		else if (!strncmp(action, N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE, strlen(N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE)))
+		else if (strmatch(action, len, N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE))
 		  {
 		    if (nlhs==1 && nrhs==2)
 		      {
@@ -164,21 +174,21 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		    else
 		      CIO::message(M_ERROR, "usage is [result]=sg('one_class_hmm_classify_example', feature_vector_index)");
 		}
-		else if (!strncmp(action, N_ONE_CLASS_HMM_CLASSIFY, strlen(N_ONE_CLASS_HMM_CLASSIFY)))
+		else if (strmatch(action, len, N_ONE_CLASS_HMM_CLASSIFY))
 		{
 			if (nlhs==1)
 				sg_matlab.one_class_hmm_classify(plhs, false);
 			else
 				CIO::message(M_ERROR, "usage is [result]=sg('hmm_classify')");
 		}
-		else if (!strncmp(action, N_ONE_CLASS_LINEAR_HMM_CLASSIFY, strlen(N_ONE_CLASS_HMM_CLASSIFY)))
+		else if (strmatch(action, len, N_ONE_CLASS_LINEAR_HMM_CLASSIFY))
 		{
 			if (nlhs==1)
 				sg_matlab.one_class_hmm_classify(plhs, true);
 			else
 				CIO::message(M_ERROR, "usage is [result]=sg('hmm_classify')");
 		}
-		else if (!strncmp(action, N_HMM_CLASSIFY_EXAMPLE, strlen(N_HMM_CLASSIFY_EXAMPLE)))
+		else if (strmatch(action, len, N_HMM_CLASSIFY_EXAMPLE))
 		{
 			if (nlhs==1 && nrhs==2)
 			{
@@ -193,7 +203,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
 		}
-		else if (!strncmp(action, N_RELATIVE_ENTROPY, strlen(N_RELATIVE_ENTROPY)))
+		else if (strmatch(action, len, N_RELATIVE_ENTROPY))
 		{
 			if (nlhs==1 && nrhs==1)
 			{
@@ -202,7 +212,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [result]=sg('relative_entropy')");
 		}
-		else if (!strncmp(action, N_ENTROPY, strlen(N_ENTROPY)))
+		else if (strmatch(action, len, N_ENTROPY))
 		{
 			if (nlhs==1 && nrhs==1)
 			{
@@ -211,14 +221,14 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [result]=sg('permuation_entropy')");
 		}
-		else if (!strncmp(action, N_HMM_CLASSIFY, strlen(N_HMM_CLASSIFY)))
+		else if (strmatch(action, len, N_HMM_CLASSIFY))
 		{
 			if (nlhs==1)
 				sg_matlab.hmm_classify(plhs);
 			else
 				CIO::message(M_ERROR, "usage is [result]=sg('hmm_classify')");
 		}
-		else if (!strncmp(action, N_GET_SVM_OBJECTIVE, strlen(N_GET_SVM_OBJECTIVE)))
+		else if (strmatch(action, len, N_GET_SVM_OBJECTIVE))
 		{
 			if (nlhs==1)
 			{
@@ -227,7 +237,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [obj]=sg('get_svm_objective')");
 		}
-		else if (!strncmp(action, N_GET_SVM, strlen(N_GET_SVM)))
+		else if (strmatch(action, len, N_GET_SVM))
 		{
 			if (nlhs==2)
 			{
@@ -236,7 +246,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [b,alphas]=sg('get_svm')");
 		}
-		else if (!strncmp(action, N_SET_SVM, strlen(N_SET_SVM)))
+		else if (strmatch(action, len, N_SET_SVM))
 		{
 			if (nrhs==3)
 			{
@@ -245,7 +255,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is sg('set_svm', [ b, alphas])");
 		}
-		else if (!strncmp(action, N_SVM_CLASSIFY_EXAMPLE, strlen(N_SVM_CLASSIFY_EXAMPLE)))
+		else if (strmatch(action, len, N_SVM_CLASSIFY_EXAMPLE))
 		{
 			if (nlhs==1 && nrhs==2)
 			{
@@ -261,7 +271,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [result]=sg('svm_classify_example', feature_vector_index)");
 		}
-		else if (!strncmp(action, N_CLASSIFY, strlen(N_CLASSIFY)))
+		else if (strmatch(action, len, N_CLASSIFY))
 		{
 			if (nlhs==1)
 			  {
@@ -271,7 +281,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [result]=sg('classify')");
 		}
-		else if (!strncmp(action, N_SVM_CLASSIFY, strlen(N_SVM_CLASSIFY)))
+		else if (strmatch(action, len, N_SVM_CLASSIFY))
 		{
 			if (nlhs==1)
 			  {
@@ -281,7 +291,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [result]=sg('svm_classify')");
 		}
-		else if (!strncmp(action, N_GET_PLUGIN_ESTIMATE, strlen(N_GET_PLUGIN_ESTIMATE)))
+		else if (strmatch(action, len, N_GET_PLUGIN_ESTIMATE))
 		{
 			if (nlhs==2)
 			{
@@ -290,7 +300,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [emission_probs, model_sizes]=sg('get_plugin_estimate')");
 		}
-		else if (!strncmp(action, N_SET_PLUGIN_ESTIMATE, strlen(N_SET_PLUGIN_ESTIMATE)))
+		else if (strmatch(action, len, N_SET_PLUGIN_ESTIMATE))
 		{
 			if (nrhs==3)
 			{
@@ -299,7 +309,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is sg('set_plugin_estimate', emission_probs, model_sizes)");
 		}
-		else if (!strncmp(action, N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE, strlen(N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE)))
+		else if (strmatch(action, len, N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE))
 		{
 			if (nlhs==1 && nrhs==2)
 			{
@@ -314,7 +324,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [result]=sg('plugin_estimate_classify_example', feature_vector_index)");
 		}
-		else if (!strncmp(action, N_PLUGIN_ESTIMATE_CLASSIFY, strlen(N_PLUGIN_ESTIMATE_CLASSIFY)))
+		else if (strmatch(action, len, N_PLUGIN_ESTIMATE_CLASSIFY))
 		{
 			if (nlhs==1)
 			{
@@ -324,7 +334,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [result]=sg('plugin_estimate_classify')");
 		}
-		else if (!strncmp(action, N_GET_KERNEL_OPTIMIZATION, strlen(N_GET_KERNEL_OPTIMIZATION)))
+		else if (strmatch(action, len, N_GET_KERNEL_OPTIMIZATION))
 		{
 			if ((nlhs==1) && (nrhs==1))
 			{
@@ -334,7 +344,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is W=sg('get_kernel_optimization')");
 		}
-		else if (!strncmp(action, N_COMPUTE_BY_SUBKERNELS, strlen(N_COMPUTE_BY_SUBKERNELS)))
+		else if (strmatch(action, len, N_COMPUTE_BY_SUBKERNELS))
 		{
 			if ((nlhs==1) && (nrhs==1))
 			{
@@ -344,7 +354,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is W=sg('compute_by_subkernels')");
 		}
-		else if (!strncmp(action, N_GET_LAST_SUBKERNEL_WEIGHTS, strlen(N_GET_LAST_SUBKERNEL_WEIGHTS)))
+		else if (strmatch(action, len, N_GET_LAST_SUBKERNEL_WEIGHTS))
 		{
 			if ((nlhs==1) && (nrhs==1))
 			{
@@ -354,7 +364,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is W=sg('get_last_subkernel_weights')");
 		}
-		else if (!strncmp(action, N_GET_SUBKERNEL_WEIGHTS, strlen(N_GET_SUBKERNEL_WEIGHTS)))
+		else if (strmatch(action, len, N_GET_SUBKERNEL_WEIGHTS))
 		{
 			if ((nlhs==1) && (nrhs==1))
 			{
@@ -364,7 +374,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is W=sg('get_subkernel_weights')");
 		}
-		else if (!strncmp(action, N_GET_WD_POS_WEIGHTS, strlen(N_GET_WD_POS_WEIGHTS)))
+		else if (strmatch(action, len, N_GET_WD_POS_WEIGHTS))
 		{
 			if ((nlhs==1) && (nrhs==1))
 			{
@@ -374,7 +384,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is W=sg('get_WD_position_weights')");
 		}
-		else if (!strncmp(action, N_GET_WD_SCORING, strlen(N_GET_WD_SCORING)))
+		else if (strmatch(action, len, N_GET_WD_SCORING))
 		{
 		    if (nlhs==1 && nrhs==2)
 			{
@@ -388,7 +398,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is W=sg('get_WD_scoring', max_order)");
 		}
-		else if (!strncmp(action, N_SET_LAST_SUBKERNEL_WEIGHTS, strlen(N_SET_LAST_SUBKERNEL_WEIGHTS)))
+		else if (strmatch(action, len, N_SET_LAST_SUBKERNEL_WEIGHTS))
 		{
 			if ((nlhs==0) && (nrhs==2))
 			{
@@ -398,7 +408,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is sg('set_last_subkernel_weights', W)");
 		}
-		else if (!strncmp(action, N_SET_SUBKERNEL_WEIGHTS, strlen(N_SET_SUBKERNEL_WEIGHTS)))
+		else if (strmatch(action, len, N_SET_SUBKERNEL_WEIGHTS))
 		{
 			if ((nlhs==0) && (nrhs==2))
 			{
@@ -408,7 +418,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is sg('set_subkernel_weights', W)");
 		}
-		else if (!strncmp(action, N_SET_WD_POS_WEIGHTS, strlen(N_SET_WD_POS_WEIGHTS)))
+		else if (strmatch(action, len, N_SET_WD_POS_WEIGHTS))
 		{
 			if ((nlhs==0) && (nrhs==2))
 			{
@@ -418,28 +428,29 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is sg('set_WD_position_weights', W)");
 		}
-		else if (!strncmp(action, N_GET_KERNEL_MATRIX, strlen(N_GET_KERNEL_MATRIX)))
+		else if (strmatch(action, len, N_GET_KERNEL_MATRIX))
 		{
 			if ((nlhs==1) && (nrhs==1))
 				sg_matlab.get_kernel_matrix(plhs);
 			else
 				CIO::message(M_ERROR, "usage is K=sg('get_kernel_matrix')");
 		}
-		else if (!strncmp(action, N_GET_KERNEL_INIT, strlen(N_GET_KERNEL_INIT)))
+		else if (strmatch(action, len, N_GET_KERNEL_INIT))
 		{
 		}
-		else if (!strncmp(action, N_GET_FEATURES, strlen(N_GET_FEATURES)))
+		else if (strmatch(action, len, N_GET_FEATURES))
 		{
 			if (nrhs==2 && nlhs==1)
 			{
+				INT slen=0;
 				CFeatures* features=NULL;
-				CHAR* target=CGUIMatlab::get_mxString(prhs[1]);
+				CHAR* target=CGUIMatlab::get_mxString(prhs[1], slen);
 
-				if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+				if (strmatch(target, slen, "TRAIN"))
 				{
 					features=gui->guifeatures.get_train_features();
 				}
-				else if (!strncmp(target, "TEST", strlen("TEST")))
+				else if (strmatch(target, slen, "TEST"))
 				{
 					features=gui->guifeatures.get_test_features();
 				}
@@ -453,18 +464,19 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [features]=sg('get_features', 'TRAIN|TEST')");
 		}
-		else if (!strncmp(action, N_GET_LABELS, strlen(N_GET_LABELS)))
+		else if (strmatch(action, len, N_GET_LABELS))
 		{
 			if (nrhs==2 && nlhs==1)
 			{
+				INT slen=0;
 				CLabels* labels=NULL;
-				CHAR* target=CGUIMatlab::get_mxString(prhs[1]);
+				CHAR* target=CGUIMatlab::get_mxString(prhs[1], slen);
 
-				if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+				if (strmatch(target, slen, "TRAIN"))
 				{
 					labels=gui->guilabels.get_train_labels();
 				}
-				else if (!strncmp(target, "TEST", strlen("TEST")))
+				else if (strmatch(target, slen, "TEST"))
 				{
 					labels=gui->guilabels.get_test_labels();
 				}
@@ -478,7 +490,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [lab]=sg('get_labels', 'TRAIN|TEST')");
 		}
-		else if (!strncmp(action, N_GET_VERSION, strlen(N_GET_VERSION)))
+		else if (strmatch(action, len, N_GET_VERSION))
 		{
 			if (nrhs==1 && nlhs==1)
 			{
@@ -487,13 +499,13 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [lab]=sg('get_version')");
 		}
-		else if (!strncmp(action, N_GET_PREPROC_INIT, strlen(N_GET_PREPROC_INIT)))
+		else if (strmatch(action, len, N_GET_PREPROC_INIT))
 		{
 		}
-		else if (!strncmp(action, N_GET_HMM_DEFS, strlen(N_GET_HMM_DEFS)))
+		else if (strmatch(action, len, N_GET_HMM_DEFS))
 		{
 		}
-		else if (!strncmp(action, N_BEST_PATH_NO_B_TRANS, strlen(N_BEST_PATH_NO_B_TRANS)))
+		else if (strmatch(action, len, N_BEST_PATH_NO_B_TRANS))
 		{
 			if ((nrhs==1+5) & (nlhs==2))
 			{
@@ -502,7 +514,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [prob,path]=sg('best_path_no_b_trans',p,q,a_trans,max_iter,nbest)");
 		}
-		else if (!strncmp(action, N_BEST_PATH_TRANS_SIMPLE, strlen(N_BEST_PATH_TRANS_SIMPLE)))
+		else if (strmatch(action, len, N_BEST_PATH_TRANS_SIMPLE))
 		{
 			if ((nrhs==1+5) & (nlhs==2))
 			{
@@ -511,7 +523,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [prob,path]=sg('best_path_trans_simple', p, q, a_trans, seq, nbest)");
 		}
-		else if (!strncmp(action, N_BEST_PATH_TRANS, strlen(N_BEST_PATH_TRANS)))
+		else if (strmatch(action, len, N_BEST_PATH_TRANS))
 		{
 			if ((nrhs==1+12) & (nlhs==5))
 			{
@@ -520,7 +532,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [prob,path,pos,PEN_values, PEN_input_values]=sg('best_path_trans',p,q,a_trans,seq,pos,orf_info, genestr, penalties, penalty_info, nbest, dict_weights, use_orf)");
 		}
-		else if (!strncmp(action, N_BEST_PATH_2STRUCT, strlen(N_BEST_PATH_2STRUCT)))
+		else if (strmatch(action, len, N_BEST_PATH_2STRUCT))
 		{
 			if ((nrhs==1+11) & (nlhs==5))
 			{
@@ -529,7 +541,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [prob,path,pos,PEN_values, PEN_input_values]=sg('best_path_2struct',p,q,a_trans,seq,pos, genestr, penalties, penalty_info, nbest, dict_weights, segment_sum_weights)");
 		}
-		else if (!strncmp(action, N_MODEL_PROB_NO_B_TRANS, strlen(N_MODEL_PROB_NO_B_TRANS)))
+		else if (strmatch(action, len, N_MODEL_PROB_NO_B_TRANS))
 		{
 			if ((nrhs==1+4) & (nlhs==1))
 			{
@@ -538,7 +550,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is probs=sg('model_prob_no_b_trans',p,q,a_trans,max_iter)");
 		}
-		else if (!strncmp(action, N_BEST_PATH_NO_B, strlen(N_BEST_PATH_NO_B)))
+		else if (strmatch(action, len, N_BEST_PATH_NO_B))
 		{
 			if ((nrhs==1+4) & (nlhs==2))
 			{
@@ -547,7 +559,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [prob,path]=sg('best_path_no_b',p,q,a,max_iter)");
 		}
-		else if (!strncmp(action, N_SET_HMM, strlen(N_SET_HMM)))
+		else if (strmatch(action, len, N_SET_HMM))
 		{
 			if (nrhs==1+4)
 			{
@@ -556,7 +568,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is sg('set_hmm',[p,q,a,b])");
 		}
-		else if (!strncmp(action, N_APPEND_HMM, strlen(N_APPEND_HMM)))
+		else if (strmatch(action, len, N_APPEND_HMM))
 		{
 			if (nrhs==1+4)
 			{
@@ -565,7 +577,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is sg('append_hmm',[p,q,a,b])");
 		}
-		else if (!strncmp(action, N_SET_SVM, strlen(N_SET_SVM)))
+		else if (strmatch(action, len, N_SET_SVM))
 		{
 			if (nrhs==1+2)
 			{
@@ -574,29 +586,30 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is sg('set_svm',[b,alphas])");
 		}
-		else if (!strncmp(action, N_SET_KERNEL_PARAMETERS, strlen(N_SET_KERNEL_PARAMETERS)))
+		else if (strmatch(action, len, N_SET_KERNEL_PARAMETERS))
 		{
 			if (nlhs!=0 || nrhs!=2 || !sg_matlab.set_kernel_parameters(prhs[1]))
 				CIO::message(M_ERROR, "usage is sg('set_kernel_parameters',[parm])");
 		}
-		else if (!strncmp(action, N_SET_CUSTOM_KERNEL, strlen(N_SET_CUSTOM_KERNEL)))
+		else if (strmatch(action, len, N_SET_CUSTOM_KERNEL))
 		{
 			if (nlhs==0 && nrhs==3)
 			{
-				CHAR* target=CGUIMatlab::get_mxString(prhs[2]);
+				INT slen=0;
+				CHAR* target=CGUIMatlab::get_mxString(prhs[2], slen);
 
-				if ( (!strncmp(target, "DIAG", strlen("DIAG"))) || 
-						(!strncmp(target, "FULL", strlen("FULL"))) ) 
+				if ( (strmatch(target, slen, "DIAG")) || 
+						(strmatch(target, slen, "FULL")) ) 
 				{
-					if (!strncmp(target, "FULL2DIAG", strlen("FULL2DIAG")))
+					if (strmatch(target, slen, "FULL2DIAG"))
 					{
 						sg_matlab.set_custom_kernel(prhs, false, true);
 					}
-					else if (!strncmp(target, "FULL", strlen("FULL")))
+					else if (strmatch(target, slen, "FULL"))
 					{
 						sg_matlab.set_custom_kernel(prhs, false, false);
 					}
-					else if (!strncmp(target, "DIAG", strlen("DIAG")))
+					else if (strmatch(target, slen, "DIAG"))
 					{
 						sg_matlab.set_custom_kernel(prhs, true, true);
 					}
@@ -608,27 +621,28 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is sg('set_custom_kernel',[kernelmatrix, is_upperdiag])");
 		}
-		else if (!strncmp(action, N_SET_KERNEL_INIT, strlen(N_SET_KERNEL_INIT)))
+		else if (strmatch(action, len, N_SET_KERNEL_INIT))
 		{
 		}
-		else if (!strncmp(action, N_SET_FEATURES, strlen(N_SET_FEATURES)))
+		else if (strmatch(action, len, N_SET_FEATURES))
 		{
 			if (nrhs>=3)
 			{
-				CHAR* target=CGUIMatlab::get_mxString(prhs[1]);
+				INT slen=0;
+				CHAR* target=CGUIMatlab::get_mxString(prhs[1], slen);
 
-				if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
-						(!strncmp(target, "TEST", strlen("TEST"))) ) 
+				if ( (strmatch(target, slen, "TRAIN")) || 
+						(strmatch(target, slen, "TEST")) ) 
 				{
 					CFeatures* features=sg_matlab.set_features(prhs, nrhs);
 
 					if (features && target)
 					{
-						if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+						if (strmatch(target, slen, "TRAIN"))
 						{
 							gui->guifeatures.set_train_features(features);
 						}
-						else if (!strncmp(target, "TEST", strlen("TEST")))
+						else if (strmatch(target, slen, "TEST"))
 						{
 							gui->guifeatures.set_test_features(features);
 						}
@@ -644,24 +658,25 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				CIO::message(M_ERROR, "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
 			CIO::message(M_INFO, "done\n");
 		}
-		else if (!strncmp(action, N_ADD_FEATURES, strlen(N_ADD_FEATURES)))
+		else if (strmatch(action, len, N_ADD_FEATURES))
 		{
 			if (nrhs>=3)
 			{
-				CHAR* target=CGUIMatlab::get_mxString(prhs[1]);
+				INT slen=0;
+				CHAR* target=CGUIMatlab::get_mxString(prhs[1], slen);
 
-				if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
-						(!strncmp(target, "TEST", strlen("TEST"))) ) 
+				if ( (strmatch(target, slen, "TRAIN")) || 
+						(strmatch(target, slen, "TEST")) ) 
 				{
 					CFeatures* features=sg_matlab.set_features(prhs, nrhs);
 
 					if (features && target)
 					{
-						if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+						if (strmatch(target, slen, "TRAIN"))
 						{
 							gui->guifeatures.add_train_features(features);
 						}
-						else if (!strncmp(target, "TEST", strlen("TEST")))
+						else if (strmatch(target, slen, "TEST"))
 						{
 							gui->guifeatures.add_test_features(features);
 						}
@@ -680,7 +695,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				CIO::message(M_ERROR, "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
 			CIO::message(M_INFO, "done\n");
 		}
-		else if (!strncmp(action, N_TRANSLATE_STRING, strlen(N_TRANSLATE_STRING)))
+		else if (strmatch(action, len, N_TRANSLATE_STRING))
 		{
 			if ((nrhs==4) && (nlhs==1))
 			{
@@ -745,17 +760,17 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				CIO::message(M_ERROR, "usage is translation=sg('translate_string', string, order, start)");
 			
 		}
-		else if (!strncmp(action, N_CRC, strlen(N_CRC)))
+		else if (strmatch(action, len, N_CRC))
 		{
 			if ((nrhs==2) && (nlhs==1))
 			{
-				CHAR* string=CGUIMatlab::get_mxString(prhs[1]);
-				UINT sl = strlen(string) ;
+				INT slen=0;
+				CHAR* string=CGUIMatlab::get_mxString(prhs[1], slen);
 				
-				BYTE* bstring = new BYTE[sl] ;
-				for (UINT i=0; i<sl; i++)
+				BYTE* bstring = new BYTE[slen] ;
+				for (INT i=0; i<slen; i++)
 					bstring[i] = string[i] ;
-				UINT res = CMath::crc32(bstring, sl) ;
+				UINT res = CMath::crc32(bstring, slen) ;
 				plhs[0] = mxCreateDoubleMatrix(1, 1, mxREAL);
 				DREAL * p=mxGetPr(plhs[0]) ;
 				*p = res ;
@@ -766,23 +781,24 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				CIO::message(M_ERROR, "usage is crc32=sg('crc', string)");
 			
 		}
-		else if (!strncmp(action, N_SET_LABELS, strlen(N_SET_LABELS)))
+		else if (strmatch(action, len, N_SET_LABELS))
 		{
 			if (nrhs==3)
 			{ 
-				CHAR* target=CGUIMatlab::get_mxString(prhs[1]);
-				if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
-						(!strncmp(target, "TEST", strlen("TEST"))) )
+				INT slen=0;
+				CHAR* target=CGUIMatlab::get_mxString(prhs[1], slen);
+				if ( (strmatch(target, slen, "TRAIN")) || 
+						(strmatch(target, slen, "TEST")) )
 				{
 					CLabels* labels=sg_matlab.set_labels(prhs);
 
 					if (labels && target)
 					{
-						if (!strncmp(target, "TRAIN", strlen("TRAIN")))
+						if (strmatch(target, slen, "TRAIN"))
 						{
 							gui->guilabels.set_train_labels(labels);
 						}
-						else if (!strncmp(target, "TEST", strlen("TEST")))
+						else if (strmatch(target, slen, "TEST"))
 						{
 							gui->guilabels.set_test_labels(labels);
 						}
@@ -797,10 +813,10 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is sg('set_labels', 'TRAIN|TEST', labels)");
 		}
-		else if (!strncmp(action, N_SET_PREPROC_INIT, strlen(N_SET_PREPROC_INIT)))
+		else if (strmatch(action, len, N_SET_PREPROC_INIT))
 		{
 		}
-		else if (!strncmp(action, N_SET_HMM_DEFS, strlen(N_SET_HMM_DEFS)))
+		else if (strmatch(action, len, N_SET_HMM_DEFS))
 		{
 		}
 		else

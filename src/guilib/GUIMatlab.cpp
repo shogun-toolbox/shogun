@@ -1445,15 +1445,19 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 			{
 				if (nrhs==4)
 				{
-					CHAR* al = CGUIMatlab::get_mxString(vals[3]);
-					CAlphabet* alpha = new CAlphabet(al, strlen(al));
+					INT len=0;
+					CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
+					CAlphabet* alpha = new CAlphabet(al, len);
 
 					f= new CCharFeatures(alpha, 0);
 					INT num_vec=mxGetN(mx_feat);
 					INT num_feat=mxGetM(mx_feat);
-					CHAR* fm=new char[num_vec*num_feat+10];
+					CHAR* fm=new CHAR[num_vec*num_feat];
 					ASSERT(fm);
-					mxGetString(mx_feat, fm, num_vec*num_feat+5);
+					mxChar* c=mxGetChars(mx_feat);
+
+					for (LONG l=0; l<((LONG) num_vec)* ((LONG) num_feat); l++)
+						fm[l]=c[l];
 
 					((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
 				}
@@ -1472,8 +1476,9 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 				{
 					if (nrhs==4)
 					{
-						CHAR* al = CGUIMatlab::get_mxString(vals[3]);
-						CAlphabet* alpha = new CAlphabet(al, strlen(al));
+						INT len=0;
+						CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
+						CAlphabet* alpha = new CAlphabet(al, len);
 						ASSERT(alpha);
 
 						f= new CStringFeatures<CHAR>(alpha);
@@ -1486,12 +1491,11 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 						{
 							mxArray* e=mxGetCell(mx_feat, i);
 							ASSERT(e && mxIsChar(e));
-							//note the .string here is 0 terminated although it is not required
-							//.length is the length of the string w/o 0
-							sc[i].string=get_mxString(e);
+							INT len=0;
+							sc[i].string=get_mxString(e, len);
 							if (sc[i].string)
 							{
-								sc[i].length=mxGetN(e); 
+								sc[i].length=len;
 								maxlen=CMath::max(maxlen, sc[i].length);
 								alpha->add_string_to_histogram(sc[i].string, sc[i].length);
 							}
@@ -1606,13 +1610,18 @@ CLabels* CGUIMatlab::set_labels(const mxArray* vals[])
 }
 
 
-CHAR* CGUIMatlab::get_mxString(const mxArray* s)
+CHAR* CGUIMatlab::get_mxString(const mxArray* s, INT& len)
 {
 	if ( (mxIsChar(s)) && (mxGetM(s)==1) )
 	{
-		int buflen = (mxGetN(s) * sizeof(mxChar)) + 1;
-		CHAR* string=new char[buflen];
-		mxGetString(s, string, buflen);
+		len = mxGetN(s);
+		CHAR* string=new CHAR[len];
+		ASSERT(string);
+		mxChar* c=mxGetChars(s);
+		ASSERT(c);
+		for (INT i=0; i<len; i++)
+			string[i]= (CHAR) (c[i]);
+
 		return string;
 	}
 	else
