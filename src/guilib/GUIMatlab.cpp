@@ -1465,12 +1465,35 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					CIO::message(M_ERROR, "please specify alphabet!\n");
 
 			}
+			else if (mxIsClass(mx_feat,"uint8") || mxIsClass(mx_feat, "int8")
+			{
+				if (nrhs==4)
+				{
+					INT len=0;
+					BYTE* al = CGUIMatlab::get_mxBytes(vals[3], len);
+					CAlphabet* alpha = new CAlphabet(al, len);
+
+					f= new CByteFeatures(alpha, 0);
+					INT num_vec=mxGetN(mx_feat);
+					INT num_feat=mxGetM(mx_feat);
+					BYTE* fm=new BYTE[num_vec*num_feat];
+					ASSERT(fm);
+					BYTE* c=mxGetData(mx_feat);
+
+					for (LONG l=0; l<((LONG) num_vec)* ((LONG) num_feat); l++)
+						fm[l]=c[l];
+
+					((CByteFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+				}
+				else
+					CIO::message(M_ERROR, "please specify alphabet!\n");
+			}			
 			else if (mxIsCell(mx_feat))
 			{
 				int num_vec=mxGetNumberOfElements(mx_feat);
 
 				ASSERT(num_vec>=1 && mxGetCell(mx_feat, 0));
-				T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
+
 
 				if (mxIsChar(mxGetCell(mx_feat, 0)))
 				{
@@ -1479,6 +1502,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 						INT len=0;
 						CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
 						CAlphabet* alpha = new CAlphabet(al, len);
+                                                T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
 						ASSERT(alpha);
 
 						f= new CStringFeatures<CHAR>(alpha);
@@ -1513,6 +1537,55 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 						else
 						{
 							((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
+							delete f;
+							f=NULL;
+						}
+					}
+					else
+						CIO::message(M_ERROR, "please specify alphabet!\n");
+				}
+				else if (mxIsClass(mxGetCell(mx_feat, 0), "uint8") || mxIsClass(mxGetCell(mx_feat, 0), "int8"))
+				{
+					if (nrhs==4)
+					{
+						INT len=0;
+						BYTE* al = CGUIMatlab::get_mxBytes(vals[3], len);
+						CAlphabet* alpha = new CAlphabet(al, len);
+                                                T_STRING<BYTE>* sc=new T_STRING<BYTE>[num_vec];
+						ASSERT(alpha);
+
+						f= new CStringFeatures<BYTES>(alpha);
+						ASSERT(f);
+
+						int maxlen=0;
+						alpha->clear_histogram();
+
+						for (int i=0; i<num_vec; i++)
+						{
+							mxArray* e=mxGetCell(mx_feat, i);
+							ASSERT(e && mxIsChar(e));
+							INT len=0;
+							sc[i].string=get_mxBytes(e, len);
+							if (sc[i].string)
+							{
+								sc[i].length=len;
+								maxlen=CMath::max(maxlen, sc[i].length);
+								alpha->add_string_to_histogram(sc[i].string, sc[i].length);
+							}
+							else
+							{
+								CIO::message(M_WARN, "string with index %d has zero length\n", i+1);
+								sc[i].length=0;
+							}
+						}
+
+						CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+						CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+						if (alpha->check_alphabet_size())
+							((CStringFeatures<BYTE>*) f)->set_features(sc, num_vec, maxlen);
+						else
+						{
+							((CStringFeatures<BYTE>*) f)->set_features(sc, num_vec, maxlen);
 							delete f;
 							f=NULL;
 						}
@@ -1630,6 +1703,25 @@ CHAR* CGUIMatlab::get_mxString(const mxArray* s, INT& len, bool zero_terminate)
 			string[len]='\0';
 
 		return string;
+	}
+	else
+		return NULL;
+}
+
+BYTE* CGUIMatlab::get_mxBytes(const mxArray* s, INT& len)
+{
+	if ( (mxIsClass(s, "uint8") || mxIsClass(s, "int8") && 
+	     (mxGetM(s)==1) )
+	{
+		len = mxGetN(s);
+		BYTE* bytes=new BYTE[len];
+		ASSERT(bytes);
+		BYTE* c=(BYTE *) mxGetData(s);
+		ASSERT(c);
+		for (INT i=0; i<len; i++)
+			bytes[i]= (BYTE) (c[i]);
+
+		return bytes;
 	}
 	else
 		return NULL;
