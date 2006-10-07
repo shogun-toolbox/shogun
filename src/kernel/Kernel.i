@@ -1,14 +1,12 @@
 %module Kernel
 %{
 #include "kernel/Kernel.h" 
-   %}
+%}
 
+%include "lib/common.i"
+%include "carrays.i"
 
-   %include "carrays.i"
-
-   %include "lib/common.i"
-
-   class CKernel
+class CKernel
 {
    public:
       CKernel(KERNELCACHE_IDX size);
@@ -61,7 +59,6 @@
 
       inline int get_max_elems_cache() { return kernel_cache.max_elems; }
       inline int get_activenum_cache() { return kernel_cache.activenum; }
-
 
       void list_kernel();
 

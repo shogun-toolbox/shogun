@@ -102,6 +102,16 @@ class CSVM : public CKernelMachine
 			return (svm_model.alpha!=NULL && svm_model.svs!=NULL);
 		}
 
+		inline void set_shriniking_enabled(bool enable)
+		{
+			use_shriniking=enable;
+		}
+
+		inline bool get_shrinking_enabled()
+		{
+			return use_shrinking;
+		}
+
 		inline void set_mkl_enabled(bool enable)
 		{
 			use_mkl=enable;
@@ -180,6 +190,7 @@ class CSVM : public CKernelMachine
 		DREAL objective;
 
 		int qpsize;
+		bool use_shrinking;
 		bool use_mkl;
 		bool use_batch_computation;
 		bool use_linadd;

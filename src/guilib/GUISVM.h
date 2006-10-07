@@ -57,5 +57,6 @@ public:
 	double C_mkl ;
 	bool use_mkl, use_batch_computation, use_linadd, use_precompute, use_precompute_subkernel, 
 		use_precompute_subkernel_light ;
+	bool use_shrinking;
 };
 #endif

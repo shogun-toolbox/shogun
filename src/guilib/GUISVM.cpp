@@ -37,6 +37,7 @@ CGUISVM::CGUISVM(CGUI * gui_)
 	epsilon=1e-5;
 	tube_epsilon=1e-2;
 	nu=1e-2;
+	use_shrinking = true ;
 
     // MKL stuff
 	use_mkl = false ;
@@ -158,6 +159,7 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 	svm->set_C(C1, C2);
 	svm->set_qpsize(qpsize);
 	svm->set_mkl_enabled(use_mkl);
+	svm->set_shrinking_enabled(use_shrinking);
 	svm->set_linadd_enabled(use_linadd);
 	if(!oneclass)
 		((CKernelMachine*) svm)->set_labels(trainlabels);
@@ -446,6 +448,23 @@ bool CGUISVM::set_mkl_enabled(CHAR* param)
 		CIO::message(M_INFO, "Enabling MKL optimization\n") ;
 	else
 		CIO::message(M_INFO, "Disabling MKL optimization\n") ;
+
+	return true ;  
+}
+
+bool CGUISVM::set_shrinking_enabled(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	int shrinking=1;
+	sscanf(param, "%d", &shrinking) ;
+
+	use_shrinking = (shrinking==1);
+
+	if (use_shrinking)
+		CIO::message(M_INFO, "Enabling shrinking optimization\n") ;
+	else
+		CIO::message(M_INFO, "Disabling shrinking optimization\n") ;
 
 	return true ;  
 }

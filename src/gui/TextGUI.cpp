@@ -117,6 +117,7 @@ static const CHAR* N_LIKELIHOOD=	       	"likelihood";
 static const CHAR* N_ALPHABET=			"alphabet";
 static const CHAR* N_USE_BATCH_COMPUTATION =			"use_batch_computation";
 static const CHAR* N_USE_MKL =			"use_mkl";
+static const CHAR* N_USE_SHRINKING=			"use_shrinking";
 static const CHAR* N_USE_LINADD=			"use_linadd";
 static const CHAR* N_USE_PRECOMPUTE=			"use_precompute";
 static const CHAR* N_OUTPUT_HMM=		"output_hmm";
@@ -683,6 +684,10 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_USE_MKL, strlen(N_USE_MKL)))
 	{
 		guisvm.set_mkl_enabled(input+strlen(N_USE_MKL));
+	} 
+	else if (!strncmp(input, N_USE_SHRINKING, strlen(N_USE_SHRINKING)))
+	{
+		guisvm.set_shrinking_enabled(input+strlen(N_USE_SHRINKING));
 	} 
 	else if (!strncmp(input, N_USE_BATCH_COMPUTATION, strlen(N_USE_BATCH_COMPUTATION)))
 	{
