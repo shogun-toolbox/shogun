@@ -17,7 +17,7 @@
 class CRealKernel : public CSimpleKernel<DREAL>
 {
 	public:
-		CRealKernel(LONG cachesize) : CSimpleKernel<DREAL>(cachesize)
+		CRealKernel(INT cachesize) : CSimpleKernel<DREAL>(cachesize)
 		{
 		}
 

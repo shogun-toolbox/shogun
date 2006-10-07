@@ -14,12 +14,12 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-CGaussianKernel::CGaussianKernel(LONG size, double w)
+CGaussianKernel::CGaussianKernel(INT size, double w)
   : CRealKernel(size),width(w)
 {
 }
 
-CGaussianKernel::CGaussianKernel(CRealFeatures* l, CRealFeatures* r, LONG size, double w)
+CGaussianKernel::CGaussianKernel(CRealFeatures* l, CRealFeatures* r, INT size, double w)
   : CRealKernel(size),width(w)
 {
 	init(l,r, true);

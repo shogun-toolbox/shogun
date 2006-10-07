@@ -31,6 +31,7 @@ public:
 	bool set_C(CHAR* param);
 	bool set_qpsize(CHAR* param);
 	bool set_mkl_enabled(CHAR* param);
+	bool set_shrinking_enabled(CHAR* param);
 	bool set_batch_computation_enabled(CHAR* param);
 	bool set_linadd_enabled(CHAR* param);
 	bool set_svm_epsilon(CHAR* param);

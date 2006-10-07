@@ -1048,7 +1048,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 		  CIO::message(M_WARN, "Relaxing KT-Conditions due to slow progress! Terminating!\n");
 	  }
 	  
-	  noshrink= (get_use_shrinking()) ? 0 : 1;
+	  noshrink= (get_shrinking_enabled()) ? 0 : 1;
 	  if ((!get_mkl_enabled()) && (!retrain) && (inactivenum>0) && ((!learn_parm->skip_final_opt_check) || (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()))) { 
 		  t1=get_runtime();
 		  CIO::message(M_DEBUG, "reactivating inactive examples\n");

@@ -268,7 +268,7 @@ class CKernel
 
 	protected:
 		/// cache_size in MB
-		KERNELCACHE_IDX cache_size;
+		INT cache_size;
 
 #ifdef USE_SVMLIGHT
 		/// kernel cache

@@ -102,9 +102,9 @@ class CSVM : public CKernelMachine
 			return (svm_model.alpha!=NULL && svm_model.svs!=NULL);
 		}
 
-		inline void set_shriniking_enabled(bool enable)
+		inline void set_shrinking_enabled(bool enable)
 		{
-			use_shriniking=enable;
+			use_shrinking=enable;
 		}
 
 		inline bool get_shrinking_enabled()
