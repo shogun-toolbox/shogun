@@ -58,12 +58,12 @@ confgen:
 	@echo ==================================
 	@echo ==== Generating configuration ====
 	@echo ==================================
-depgen:	
+depgen:	.config
 	@echo =================================
 	@echo ==== Generating dependencies ====
 	@echo =================================
 
-buildout:
+buildout:	.depend .config
 	@echo ========================================================================================
 	@echo ==== Building shogun for platform $(KERNELNAME)-$(MACHINE) target $(TARGET)
 	@echo ==== opts: $(COMPFLAGS_CPP)
@@ -74,7 +74,7 @@ linkout:
 	@echo ==== Linking ====
 	@echo =================
 	@echo 
-buildend:	
+buildend:	$(TARGET)	
 	@echo 
 	@echo ============================================================
 	@echo ==== Done. Start with shogun.$(UNAME)
@@ -133,8 +133,8 @@ lib/versionstring.h:	$(SVNEntries)
 $(OBJFILES): Makefile .config .depend lib/versionstring.h 
 
 ifeq (yes,$(USE_SWIG))
-$(TARGET): $(SWIGLIBFILES)
-#$(TARGET): $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES)
+#$(TARGET): $(SWIGLIBFILES)
+$(TARGET): $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
 else
 $(TARGET): $(OBJFILES) $(SRCFILES)
 	$(LINK) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ 
