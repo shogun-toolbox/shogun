@@ -3,16 +3,15 @@
 #include "kernel/Kernel.h" 
 %}
 
-
 %include "lib/common.i"
 
 %feature("director") CKernel;
 
-/*%feature("notabstract") CKernel;*/
-
 %include "kernel/Kernel.h"
 %include "carrays.i"
-/* %include "kernel/GaussianKernel.i"*/
+%include "kernel/GaussianKernel.i"
+%include "kernel/WeightedDegreeCharKernel.i" 
+
 
 %extend CKernel {
 

@@ -182,7 +182,7 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
   }
   /// compute positional scoring function, which assigns a weight per position, per symbol in the sequence
   DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
-  void compute_scoring_helper(struct Trie* tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result);
+  //void compute_scoring_helper(struct Trie* tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result);
 
   bool set_weights(DREAL* weights, INT d, INT len=0);
   bool set_position_weights(DREAL* position_weights, INT len=0);
