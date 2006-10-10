@@ -13,14 +13,14 @@
 
 %include "features/Alphabet.i"
 %include "features/ByteFeatures.i"
+%include "features/RealFeatures.i"
+%include "features/Labels.i"
 /*
 %include "features/CharFeatures.i"
 %include "features/CombinedFeatures.i"
 %include "features/Features.i"
 %include "features/FKFeatures.i"
-%include "features/Labels.i"
 %include "features/MindyGramFeatures.i"
-%include "features/RealFeatures.i"
 %include "features/RealFileFeatures.i"
 %include "features/ShortFeatures.i"
 %include "features/SimpleFeatures.i"
