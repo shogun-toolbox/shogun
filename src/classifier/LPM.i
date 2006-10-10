@@ -1,3 +1,5 @@
-%module LPM%{
+%{
  #include "classifier/LPM.h" 
 %}
+
+%include "classifier/LPM.h" 

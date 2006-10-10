@@ -1,12 +1,6 @@
-%module SimpleKernel
 %{
    #include "kernel/SimpleKernel.h" 
 %}
-
-%include "kernel/Kernel.i"
-%include "lib/common.i"
-
-%feature("notabstract") SimpleKernel;
 
 %include "kernel/SimpleKernel.h"
 

@@ -1,3 +1,5 @@
-%module LinearCharKernel%{
+%{
  #include "kernel/LinearCharKernel.h" 
 %}
+
+%include "kernel/LinearCharKernel.h" 

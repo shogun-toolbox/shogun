@@ -3,10 +3,9 @@
 #include "kernel/Kernel.h" 
 %}
 
-%include "lib/common.i"
 %include "carrays.i"
-
 %include "kernel/Kernel.h"
+%include "kernel/GaussianKernel.i"
 
 
 %extend CKernel {

@@ -8,7 +8,3 @@
     #include "features/RealFeatures.h" 
 %}
 
-%include "features/Features.i" 
-%include "features/SimpleFeatures.i" 
-%include "features/RealFeatures.i" 
-
