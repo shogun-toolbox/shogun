@@ -1,9 +1,14 @@
-%module Kernel
+%module(directors="1") Kernel
 %{
 #include "kernel/Kernel.h" 
 %}
 
-%feature("notabstract") CKernel;
+
+%include "lib/common.i"
+
+%feature("director") CKernel;
+
+/*%feature("notabstract") CKernel;*/
 
 %include "kernel/Kernel.h"
 %include "carrays.i"
