@@ -6,17 +6,6 @@
 %}
 
 
-/*
-%include "features/SimpleFeatures.i" 
-%include "features/StringFeatures.i" 
-%include "features/Features.i" 
-%include "features/SimpleFeatures.i" 
-%include "features/RealFeatures.i" 
-%include "features/CharFeatures.i" 
-%include "features/StringFeatures.i" 
-*/
-
-%include "features/allFeatures.i"
 %include "features/Alphabet.i"
 %include "features/ByteFeatures.i"
 %include "features/CharFeatures.i"
