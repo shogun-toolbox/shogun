@@ -11,15 +11,18 @@ initial_deps=deps.copy()
 def get_deps(f):
 	global deps
 	global fdep
-	for d in deps[f]:
-		if d not in fdep:
-			fdep+=[d]
-			get_deps(d)
-			cppfile=d[:-1]+'cpp'
+	try:
+		for d in deps[f]:
+			if d not in fdep:
+				fdep+=[d]
+				get_deps(d)
+				cppfile=d[:-1]+'cpp'
 
-			if cppfile not in fdep and deps.has_key(cppfile):
-				fdep+=[cppfile]
-				get_deps(cppfile)
+				if cppfile not in fdep and deps.has_key(cppfile):
+					fdep+=[cppfile]
+					get_deps(cppfile)
+	except KeyError:
+		print >>sys.stderr, "generate_link_dependencies: warning: could not find dependencies for '%s'" % f 
 
 #scan each file for potential includes
 files=sys.stdin.readlines()
@@ -29,7 +32,7 @@ for f in files:
 
 #generate linker dependencies
 for f in deps.iterkeys():
-	if f[-1] == 'i' and not initial_deps.has_key(f) and file(f).read().find('%module')>0:
+	if f[-1] == 'i':
 		str=os.path.join(os.path.dirname(f), '_' + os.path.basename(f)[:-2]) + '.so: ' + f[:-2]+'_wrap.cxx.o'
 
 		fdep=list();
