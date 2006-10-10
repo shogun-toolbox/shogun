@@ -34,8 +34,6 @@ template <class T> struct T_STRING
 // StringFeatures do not yet support PREPROCS
 template <class ST> class CStringFeatures: public CFeatures
 {
-//	class CStringPreProc<ST> ;
-	
 	public:
 	CStringFeatures(CAlphabet* alpha) : CFeatures(0), num_vectors(0), features(NULL), max_string_length(0), order(0), symbol_mask_table(NULL)
 	{
@@ -98,8 +96,8 @@ template <class ST> class CStringFeatures: public CFeatures
 		delete[] symbol_mask_table;
 	}
 
-	virtual EFeatureClass get_feature_class() { return C_STRING ; } ;
-	virtual EFeatureType get_feature_type();
+	inline virtual EFeatureClass get_feature_class() { return C_STRING ; } ;
+	inline virtual EFeatureType get_feature_type();
 
 	inline CAlphabet* get_alphabet()
 	{

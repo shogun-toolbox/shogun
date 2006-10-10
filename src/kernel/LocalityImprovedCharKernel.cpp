@@ -16,7 +16,7 @@
 #include "features/CharFeatures.h"
 
 CLocalityImprovedCharKernel::CLocalityImprovedCharKernel(LONG size, INT l, INT d1, INT d2)
-  : CCharKernel(size),length(l),inner_degree(d1),outer_degree(d2),match(NULL)
+  : CSimpleKernel<CHAR>(size),length(l),inner_degree(d1),outer_degree(d2),match(NULL)
 {
 	CIO::message(M_INFO, "LIK with parms: l=%d, d1=%d, d2=%d created!\n", l, d1, d2);
 }
@@ -28,7 +28,7 @@ CLocalityImprovedCharKernel::~CLocalityImprovedCharKernel()
 
 bool CLocalityImprovedCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	bool result=CCharKernel::init(l,r,do_init);
+	bool result=CSimpleKernel<CHAR>::init(l,r,do_init);
 
 	if (result)
 		match=new CHAR[((CCharFeatures*) l)->get_num_features()];

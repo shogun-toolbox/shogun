@@ -15,7 +15,7 @@
 #include "features/CharFeatures.h"
 
 CSimpleLocalityImprovedCharKernel::CSimpleLocalityImprovedCharKernel(LONG size, INT l, INT d1, INT d2)
-  : CCharKernel(size),length(l),inner_degree(d1),outer_degree(d2),match(NULL), pyramid_weights(NULL)
+  : CSimpleKernel<CHAR>(size),length(l),inner_degree(d1),outer_degree(d2),match(NULL), pyramid_weights(NULL)
 {
 }
 
@@ -26,7 +26,7 @@ CSimpleLocalityImprovedCharKernel::~CSimpleLocalityImprovedCharKernel()
 
 bool CSimpleLocalityImprovedCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	bool result=CCharKernel::init(l,r,do_init);
+	bool result=CSimpleKernel<CHAR>::init(l,r,do_init);
 
 	if (result)
 	  {

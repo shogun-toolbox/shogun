@@ -15,7 +15,7 @@
 #include "features/WordFeatures.h"
 
 CPolyMatchWordKernel::CPolyMatchWordKernel(LONG size, INT d, bool inhom, bool use_norm)
-  : CWordKernel(size),degree(d),inhomogene(inhom),
+  : CSimpleKernel<WORD>(size),degree(d),inhomogene(inhom),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
 {
 }
@@ -27,7 +27,7 @@ CPolyMatchWordKernel::~CPolyMatchWordKernel()
   
 bool CPolyMatchWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	bool result=CWordKernel::init(l,r,do_init);
+	bool result=CSimpleKernel<WORD>::init(l,r,do_init);
 
 	initialized = false ;
 	INT i;

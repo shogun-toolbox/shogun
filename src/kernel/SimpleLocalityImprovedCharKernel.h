@@ -12,9 +12,9 @@
 #define _SIMPLELOCALITYIMPROVEDCHARKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/CharKernel.h"
+#include "kernel/SimpleKernel.h"
 
-class CSimpleLocalityImprovedCharKernel: public CCharKernel
+class CSimpleLocalityImprovedCharKernel: public CSimpleKernel<CHAR>
 {
  public:
   CSimpleLocalityImprovedCharKernel(LONG size, INT length, INT inner_degree, INT outer_degree) ;

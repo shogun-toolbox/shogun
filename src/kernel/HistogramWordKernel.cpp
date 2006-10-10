@@ -17,7 +17,7 @@
 #include "lib/io.h"
 
 CHistogramWordKernel::CHistogramWordKernel(LONG size, CPluginEstimate* pie)
-  : CWordKernel(size),estimate(pie), mean(NULL), variance(NULL), 
+  : CSimpleKernel<WORD>(size),estimate(pie), mean(NULL), variance(NULL), 
     sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), 
     ld_mean_lhs(NULL), ld_mean_rhs(NULL),
     plo_lhs(NULL), plo_rhs(NULL),
@@ -42,7 +42,7 @@ CHistogramWordKernel::~CHistogramWordKernel()
 
 bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	bool result=CWordKernel::init(l,r,do_init);
+	bool result=CSimpleKernel<WORD>::init(l,r,do_init);
 	initialized = false ;
 	ASSERT(l!=NULL) ;
 	ASSERT(r!=NULL) ;

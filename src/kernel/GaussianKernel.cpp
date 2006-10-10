@@ -15,12 +15,12 @@
 #include "lib/io.h"
 
 CGaussianKernel::CGaussianKernel(INT size, double w)
-  : CRealKernel(size),width(w)
+  : CSimpleKernel<DREAL>(size),width(w)
 {
 }
 
 CGaussianKernel::CGaussianKernel(CRealFeatures* l, CRealFeatures* r, INT size, double w)
-  : CRealKernel(size),width(w)
+  : CSimpleKernel<DREAL>(size),width(w)
 {
 	init(l,r, true);
 }
@@ -31,7 +31,7 @@ CGaussianKernel::~CGaussianKernel()
   
 bool CGaussianKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CRealKernel::init(l, r, do_init); 
+	CSimpleKernel<DREAL>::init(l, r, do_init); 
 	return true;
 }
 

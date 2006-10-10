@@ -4,8 +4,7 @@
 %}
 
 %include "lib/common.i"
-
-%include "kernel/CharKernel.i"
+%include "kernel/SimpleKernel.i"
 
 
 %feature("notabstract") CWeightedDegreeCharKernel;

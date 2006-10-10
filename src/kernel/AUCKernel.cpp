@@ -11,12 +11,11 @@
 #include "lib/common.h"
 #include "lib/Mathmatics.h"
 #include "kernel/AUCKernel.h"
-#include "kernel/WordKernel.h"
 #include "features/WordFeatures.h"
 #include "lib/io.h"
 
 CAUCKernel::CAUCKernel(INT size, CKernel * subkernel_)
-	: CWordKernel(size),subkernel(subkernel_)
+	: CSimpleKernel<WORD>(size),subkernel(subkernel_)
 {
 }
 
@@ -27,7 +26,7 @@ CAUCKernel::~CAUCKernel()
   
 bool CAUCKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CWordKernel::init(l, r, do_init); 
+	CSimpleKernel<WORD>::init(l, r, do_init); 
 	return true;
 }
 

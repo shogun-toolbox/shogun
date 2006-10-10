@@ -15,7 +15,7 @@
 #include "lib/io.h"
 
 CChi2Kernel::CChi2Kernel(LONG size)
-  : CRealKernel(size)
+  : CSimpleKernel<DREAL>(size)
 {
 }
 
@@ -26,7 +26,7 @@ CChi2Kernel::~CChi2Kernel()
   
 bool CChi2Kernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	bool result=CRealKernel::init(l,r,do_init);
+	bool result=CSimpleKernel<DREAL>::init(l,r,do_init);
 	initialized = true ;
 	return result;
 }

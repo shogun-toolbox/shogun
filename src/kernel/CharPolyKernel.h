@@ -12,10 +12,9 @@
 #define _CHARPOLYKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/CharKernel.h"
-#include "features/CharFeatures.h"
+#include "kernel/SimpleKernel.h"
 
-class CCharPolyKernel: public CCharKernel
+class CCharPolyKernel: public CSimpleKernel<CHAR>
 {
  public:
   CCharPolyKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);

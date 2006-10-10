@@ -12,11 +12,10 @@
 #include "lib/io.h"
 #include "lib/Mathmatics.h"
 #include "kernel/LinearWordKernel.h"
-#include "kernel/WordKernel.h"
 #include "features/WordFeatures.h"
 
 CLinearWordKernel::CLinearWordKernel(LONG size)
-  : CWordKernel(size),scale(1.0),normal(NULL)
+  : CSimpleKernel<WORD>(size),scale(1.0),normal(NULL)
 {
 }
 
@@ -27,7 +26,7 @@ CLinearWordKernel::~CLinearWordKernel()
 
 bool CLinearWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CWordKernel::init(l, r, do_init); 
+	CSimpleKernel<WORD>::init(l, r, do_init); 
 
 	if (do_init)
 		init_rescale() ;

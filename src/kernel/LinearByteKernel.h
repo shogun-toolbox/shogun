@@ -12,10 +12,10 @@
 #define _LINEARBYTEKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/ByteKernel.h"
+#include "kernel/SimpleKernel.h"
 #include "features/ByteFeatures.h"
 
-class CLinearByteKernel: public CByteKernel
+class CLinearByteKernel: public CSimpleKernel<BYTE>
 {
  public:
   CLinearByteKernel(LONG size);

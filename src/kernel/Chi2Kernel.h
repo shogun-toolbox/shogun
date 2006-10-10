@@ -12,10 +12,9 @@
 #define _CHI2KERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/RealKernel.h"
-#include "features/RealFeatures.h"
+#include "kernel/SimpleKernel.h"
 
-class CChi2Kernel: public CRealKernel
+class CChi2Kernel: public CSimpleKernel<DREAL>
 {
  public:
   CChi2Kernel(LONG size);

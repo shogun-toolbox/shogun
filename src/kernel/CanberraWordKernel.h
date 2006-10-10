@@ -12,9 +12,9 @@
 #define _CANBERRAWORDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/WordKernel.h"
+#include "kernel/SimpleKernel.h"
 
-class CCanberraWordKernel: public CWordKernel
+class CCanberraWordKernel: public CSimpleKernel<WORD>
 {
  public:
   CCanberraWordKernel(LONG size, DREAL width);

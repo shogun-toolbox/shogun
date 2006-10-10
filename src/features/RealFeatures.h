@@ -40,7 +40,6 @@ class CRealFeatures: public CSimpleFeatures<DREAL>
   bool Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, DREAL gapCost) ;
 
   virtual CFeatures* duplicate() const;
-  virtual EFeatureType get_feature_type() { return F_DREAL; }
 
   virtual bool load(CHAR* fname);
   virtual bool save(CHAR* fname);

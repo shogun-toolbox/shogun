@@ -38,6 +38,8 @@ template <class ST> class CStringKernel : public CKernel
 
 			ASSERT(l->get_feature_class() == C_STRING);
 			ASSERT(r->get_feature_class() == C_STRING);
+			ASSERT(l->get_feature_type()==this->get_feature_type());
+			ASSERT(r->get_feature_type()==this->get_feature_type());
 
 			return true;
 		}
@@ -45,6 +47,23 @@ template <class ST> class CStringKernel : public CKernel
 		/** return feature class the kernel can deal with
 		  */
 		inline virtual EFeatureClass get_feature_class() { return C_STRING; }
+
+		/** return feature type the kernel can deal with
+		  */
+		virtual EFeatureType get_feature_type();
 };
+
+template<> inline EFeatureType CStringKernel<DREAL>::get_feature_type() { return F_DREAL; }
+
+template<> inline EFeatureType CStringKernel<ULONG>::get_feature_type() { return F_ULONG; }
+
+template<> inline EFeatureType CStringKernel<WORD>::get_feature_type() { return F_WORD; }
+
+template<> inline EFeatureType CStringKernel<SHORT>::get_feature_type() { return F_SHORT; }
+
+template<> inline EFeatureType CStringKernel<BYTE>::get_feature_type() { return F_BYTE; }
+
+template<> inline EFeatureType CStringKernel<CHAR>::get_feature_type() { return F_CHAR; }
+
 #endif
 

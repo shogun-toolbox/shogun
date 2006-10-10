@@ -12,11 +12,10 @@
 #include "lib/io.h"
 #include "lib/Mathmatics.h"
 #include "kernel/LinearCharKernel.h"
-#include "kernel/CharKernel.h"
 #include "features/CharFeatures.h"
 
 CLinearCharKernel::CLinearCharKernel(LONG size)
-  : CCharKernel(size),scale(1.0),normal(NULL)
+  : CSimpleKernel<CHAR>(size),scale(1.0),normal(NULL)
 {
 }
 
@@ -27,7 +26,7 @@ CLinearCharKernel::~CLinearCharKernel()
   
 bool CLinearCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CCharKernel::init(l, r, do_init); 
+	CSimpleKernel<CHAR>::init(l, r, do_init); 
 
 	if (do_init)
 		init_rescale() ;

@@ -2,12 +2,6 @@
 %{
  #include "classifier/svm/SVM.h"
 %}
-/*
-%include "kernel/CharKernel.h"
-%include "kernel/SimpleKernel.h"
-%include "kernel/SimpleKernel.i"
-%include "kernel/Kernel.h"
-*/
 
 %include "kernel/KernelMachine.i"
 %include "lib/common.i"

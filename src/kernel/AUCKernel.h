@@ -12,10 +12,9 @@
 #define _AUCKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/WordKernel.h"
-#include "features/WordFeatures.h"
+#include "kernel/SimpleKernel.h"
 
-class CAUCKernel: public CWordKernel
+class CAUCKernel: public CSimpleKernel<WORD>
 {
  public:
   CAUCKernel(INT size, CKernel* subkernel);

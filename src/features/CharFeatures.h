@@ -12,7 +12,6 @@
 #define _CHARFEATURES__H__
 
 #include "features/SimpleFeatures.h"
-#include "features/CharFeatures.h"
 #include "features/Alphabet.h"
 #include "lib/common.h"
 
@@ -31,8 +30,6 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
 		{
 			return alphabet;
 		}
-
-		virtual EFeatureType get_feature_type() { return F_CHAR; }
 
 		virtual CFeatures* duplicate() const;
 		virtual bool load(CHAR* fname);

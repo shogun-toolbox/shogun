@@ -13,7 +13,7 @@
 #define _WEIGHTEDDEGREEPOSITIONCHARKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/CharKernel.h"
+#include "kernel/SimpleKernel.h"
 
 #ifdef USE_TREEMEM
 #define NO_CHILD ((INT)-1) 
@@ -21,7 +21,7 @@
 #define NO_CHILD NULL
 #endif
 
-class CWeightedDegreePositionCharKernel: public CCharKernel
+class CWeightedDegreePositionCharKernel: public CSimpleKernel<CHAR>
 {
 public:
 	struct Trie

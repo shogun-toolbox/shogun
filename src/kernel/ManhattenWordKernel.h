@@ -12,9 +12,9 @@
 #define _MANHATTENWORDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/WordKernel.h"
+#include "kernel/SimpleKernel.h"
 
-class CManhattenWordKernel: public CWordKernel
+class CManhattenWordKernel: public CSimpleKernel<WORD>
 {
  public:
   CManhattenWordKernel(LONG size, DREAL width);

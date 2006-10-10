@@ -12,11 +12,10 @@
 #include "lib/Mathmatics.h"
 #include "lib/io.h"
 #include "kernel/WordMatchKernel.h"
-#include "kernel/WordKernel.h"
 #include "features/WordFeatures.h"
 
 CWordMatchKernel::CWordMatchKernel(LONG size, INT d)
-  : CWordKernel(size),scale(1.0),degree(d)
+  : CSimpleKernel<WORD>(size),scale(1.0),degree(d)
 {
 }
 
@@ -27,7 +26,7 @@ CWordMatchKernel::~CWordMatchKernel()
   
 bool CWordMatchKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CWordKernel::init(l, r, do_init); 
+	CSimpleKernel<WORD>::init(l, r, do_init); 
 
 	if (do_init)
 		init_rescale() ;

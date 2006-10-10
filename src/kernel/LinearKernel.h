@@ -12,10 +12,10 @@
 #define _LINEARKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/RealKernel.h"
+#include "kernel/SimpleKernel.h"
 #include "features/RealFeatures.h"
 
-class CLinearKernel: public CRealKernel
+class CLinearKernel: public CSimpleKernel<DREAL>
 {
  public:
   CLinearKernel(LONG size, bool do_rescale=true, DREAL scale=1.0);

@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 CSigmoidKernel::CSigmoidKernel(LONG size, DREAL g, DREAL c)
-  : CRealKernel(size),gamma(g), coef0(c)
+  : CSimpleKernel<DREAL>(size),gamma(g), coef0(c)
 {
 }
 
@@ -33,7 +33,7 @@ CSigmoidKernel::~CSigmoidKernel()
   
 bool CSigmoidKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CRealKernel::init(l, r, do_init); 
+	CSimpleKernel<DREAL>::init(l, r, do_init); 
 	return true;
 }
 

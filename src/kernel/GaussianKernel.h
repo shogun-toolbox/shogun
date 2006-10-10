@@ -12,10 +12,10 @@
 #define _GAUSSIANKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/RealKernel.h"
+#include "kernel/SimpleKernel.h"
 #include "features/RealFeatures.h"
 
-class CGaussianKernel: public CRealKernel
+class CGaussianKernel: public CSimpleKernel<DREAL>
 {
  public:
   CGaussianKernel(INT size, double width);

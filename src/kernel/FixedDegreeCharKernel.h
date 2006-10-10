@@ -12,9 +12,9 @@
 #define _FIXEDDEGREECHARKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/CharKernel.h"
+#include "kernel/SimpleKernel.h"
 
-class CFixedDegreeCharKernel: public CCharKernel
+class CFixedDegreeCharKernel: public CSimpleKernel<CHAR>
 {
  public:
   CFixedDegreeCharKernel(LONG size, INT degree) ;

@@ -14,10 +14,10 @@
 
 #include "lib/common.h"
 #include "lib/Trie.h"
-#include "kernel/CharKernel.h"
+#include "kernel/SimpleKernel.h"
 #include "features/CharFeatures.h"
 
-class CWeightedDegreeCharKernel: public CCharKernel
+class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
 {
  public:
   CWeightedDegreeCharKernel(LONG size, DREAL* weights, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1) ;

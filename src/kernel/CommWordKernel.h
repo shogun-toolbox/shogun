@@ -13,9 +13,9 @@
 #define _COMMWORDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/WordKernel.h"
+#include "kernel/SimpleKernel.h"
 
-class CCommWordKernel: public CWordKernel
+class CCommWordKernel: public CSimpleKernel<WORD>
 {
  public:
   CCommWordKernel(LONG size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION);

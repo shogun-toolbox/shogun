@@ -52,7 +52,7 @@ CWeightedDegreePositionCharKernel::CWeightedDegreePositionCharKernel(LONG size, 
 																	 INT max_mismatch_, INT * shift_, 
 																	 INT shift_len_, bool use_norm,
 																	 INT mkl_stepsize_)
-	: CCharKernel(size),weights(NULL),position_weights(NULL),position_mask(NULL), counts(NULL),
+	: CSimpleKernel<CHAR>(size),weights(NULL),position_weights(NULL),position_mask(NULL), counts(NULL),
 	  weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), 
 	  max_mismatch(max_mismatch_), seq_length(0), 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
@@ -228,7 +228,7 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do
 		((CCharFeatures*) l)->free_feature_vector(avec, 0, afree);
 	} 
 
-	bool result=CCharKernel::init(l,r,do_init);
+	bool result=CSimpleKernel<CHAR>::init(l,r,do_init);
 	initialized = false ;
 	INT i;
 

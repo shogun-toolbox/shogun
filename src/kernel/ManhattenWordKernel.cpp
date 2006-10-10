@@ -15,7 +15,7 @@
 #include "lib/io.h"
 
 CManhattenWordKernel::CManhattenWordKernel(LONG size, DREAL w)
-	: CWordKernel(size), width(w)
+	: CSimpleKernel<WORD>(size), width(w)
 {
 	CIO::message(M_DEBUG, "CManhattenWordKernel with cache size: %d width: %f created\n", size, width);
 	dictionary_size= 1<<(sizeof(WORD)*8);
@@ -32,7 +32,7 @@ CManhattenWordKernel::~CManhattenWordKernel()
   
 bool CManhattenWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	bool result=CWordKernel::init(l,r,do_init);
+	bool result=CSimpleKernel<WORD>::init(l,r,do_init);
 	return result;
 }
 

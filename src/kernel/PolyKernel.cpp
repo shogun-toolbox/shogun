@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 CPolyKernel::CPolyKernel(LONG size, INT d, bool inhom, bool use_norm)
-  : CRealKernel(size),degree(d),inhomogene(inhom),
+  : CSimpleKernel<DREAL>(size),degree(d),inhomogene(inhom),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
 {
 }
@@ -34,7 +34,7 @@ CPolyKernel::~CPolyKernel()
   
 bool CPolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	bool result=CRealKernel::init(l,r,do_init);
+	bool result=CSimpleKernel<DREAL>::init(l,r,do_init);
 
 	initialized = false ;
 	INT i;

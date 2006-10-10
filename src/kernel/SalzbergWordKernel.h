@@ -12,10 +12,10 @@
 #define _SALZBERGWORDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/WordKernel.h"
+#include "kernel/SimpleKernel.h"
 #include "classifier/PluginEstimate.h"
 
-class CSalzbergWordKernel: public CWordKernel
+class CSalzbergWordKernel: public CSimpleKernel<WORD>
 {
  public:
   CSalzbergWordKernel(LONG size, CPluginEstimate* pie);

@@ -1,3 +1,17 @@
+2006-10-09  Soeren Sonnenburg <debian@nn7.de>
+
+	* some autodetection magic in ./configure
+	* fixed a serious bug occuring with shrinking & SVM light (target epsilon
+			was not achieved as we erreanously terminated optimization)
+	* fixed a serious bug when using charfeatures (or strings) w/ mxGetString
+	in matlab interface (the mxGetString function has the undocumented
+			`feature' of returning locale dependent results!)
+	* new command use_shrinking 0/1
+	* new svm classifier SVM LIBSVM_ONECLASS
+	* new function get_WD_scoring
+	* make much more use of templates, i.e. remove all the
+	{Real,Char,Word,Byte,*}Kernel.* files
+
 2006-09-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
 	* incorporated MINDY support

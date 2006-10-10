@@ -44,11 +44,33 @@ template <class ST> class CSimpleKernel : public CKernel
 				CIO::message(M_ERROR, "train or test features not of type SIMPLE, or #features mismatch (l:%d vs. r:%d)\n",
 						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) l)->get_num_features());
 			}
+
+			ASSERT(l->get_feature_type()==this->get_feature_type());
+			ASSERT(r->get_feature_type()==this->get_feature_type());
 			return true;
 		}
 
 		/** return feature class the kernel can deal with
 		  */
 		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+
+		/** return feature type the kernel can deal with
+		  */
+		inline virtual EFeatureType get_feature_type();
 };
+
+
+template<> inline EFeatureType CSimpleKernel<DREAL>::get_feature_type() { return F_DREAL; }
+
+template<> inline EFeatureType CSimpleKernel<ULONG>::get_feature_type() { return F_ULONG; }
+
+template<> inline EFeatureType CSimpleKernel<WORD>::get_feature_type() { return F_WORD; }
+
+template<> inline EFeatureType CSimpleKernel<SHORT>::get_feature_type() { return F_SHORT; }
+
+template<> inline EFeatureType CSimpleKernel<BYTE>::get_feature_type() { return F_BYTE; }
+
+template<> inline EFeatureType CSimpleKernel<CHAR>::get_feature_type() { return F_CHAR; }
+
+
 #endif

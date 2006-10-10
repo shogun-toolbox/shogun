@@ -23,7 +23,7 @@ extern "C" {
 #include "features/RealFeatures.h"
 
 CLinearKernel::CLinearKernel(LONG size, bool do_rescale_, DREAL scale_)
-  : CRealKernel(size),scale(scale_),do_rescale(do_rescale_), normal(NULL)
+  : CSimpleKernel<DREAL>(size),scale(scale_),do_rescale(do_rescale_), normal(NULL)
 {
 	properties |= KP_LINADD;
 }
@@ -35,7 +35,7 @@ CLinearKernel::~CLinearKernel()
   
 bool CLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CRealKernel::init(l, r, do_init); 
+	CSimpleKernel<DREAL>::init(l, r, do_init); 
 
 	if (do_init)
 		init_rescale() ;

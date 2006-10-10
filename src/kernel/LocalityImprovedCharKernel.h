@@ -13,9 +13,9 @@
 #define _LOCALITYIMPROVEDCHARKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/CharKernel.h"
+#include "kernel/SimpleKernel.h"
 
-class CLocalityImprovedCharKernel: public CCharKernel
+class CLocalityImprovedCharKernel: public CSimpleKernel<CHAR>
 {
  public:
   CLocalityImprovedCharKernel(LONG size, INT length, INT inner_degree, INT outer_degree) ;

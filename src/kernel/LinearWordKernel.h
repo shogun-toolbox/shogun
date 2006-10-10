@@ -12,10 +12,9 @@
 #define _LINEARWORDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/WordKernel.h"
-#include "features/WordFeatures.h"
+#include "kernel/SimpleKernel.h"
 
-class CLinearWordKernel: public CWordKernel
+class CLinearWordKernel: public CSimpleKernel<WORD>
 {
  public:
   CLinearWordKernel(LONG size);

@@ -15,7 +15,7 @@
 #include "features/CharFeatures.h"
 
 CWeightedDegreeCharKernelPolyA::CWeightedDegreeCharKernelPolyA(LONG size, double* w, INT d, INT max_mismatch_)
-	: CCharKernel(size),weights(NULL),degree(d), max_mismatch(max_mismatch_), 
+	: CSimpleKernel<CHAR>(size),weights(NULL),degree(d), max_mismatch(max_mismatch_), 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), match_vector(NULL), 
 	  lhs_sites(NULL), lhs_sites_num(NULL), rhs_sites(NULL), rhs_sites_num(NULL), lhs_num(0), rhs_num(0),
 	  down_stream(20), up_stream(20)
@@ -151,7 +151,7 @@ bool CWeightedDegreeCharKernelPolyA::init(CFeatures* l, CFeatures* r, bool do_in
 		((CCharFeatures*) r)->free_feature_vector(bvec, i, bfree);		
 	}
 
-	bool result=CCharKernel::init(l,r,do_init);
+	bool result=CSimpleKernel<CHAR>::init(l,r,do_init);
 	initialized = false ;
 	INT i;
 

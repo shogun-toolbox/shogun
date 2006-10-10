@@ -4,9 +4,9 @@
     #include "kernel/WeightedDegreeCharKernel.h" 
 %}
 
-%include "kernel/CharKernel.i"
+%include "kernel/SimpleKernel.i"
 %include "carrays.i"
-/* %array_class(double, doubleArray); */
+
 %array_class(DREAL, doubleArray);
 
 %feature("notabstract") CWeightedDegreeCharKernel;
@@ -36,6 +36,3 @@ def createDoubleArray(list):
    return array
 
 %}
-
-
-

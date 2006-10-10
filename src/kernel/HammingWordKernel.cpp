@@ -15,7 +15,7 @@
 #include "lib/io.h"
 
 CHammingWordKernel::CHammingWordKernel(LONG size, DREAL w, bool sign)
-	: CWordKernel(size), width(w), use_sign(sign)
+	: CSimpleKernel<WORD>(size), width(w), use_sign(sign)
 {
 	CIO::message(M_DEBUG, "CHammingWordKernel with cache size: %d width: %f sign: %d created\n", size, width, (sign) ? 1 : 0);
 	dictionary_size= 1<<(sizeof(WORD)*8);
@@ -32,7 +32,7 @@ CHammingWordKernel::~CHammingWordKernel()
   
 bool CHammingWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	bool result=CWordKernel::init(l,r,do_init);
+	bool result=CSimpleKernel<WORD>::init(l,r,do_init);
 	return result;
 }
 

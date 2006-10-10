@@ -17,7 +17,7 @@
 #include "features/CharFeatures.h"
 	
 CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
-	: CCharKernel(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0), 
+	: CSimpleKernel<CHAR>(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0), 
 	  max_mismatch(max_mismatch_), seq_length(0), 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm), block_computation(block), tries(d)
 {
@@ -33,7 +33,7 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d
 }
 
 CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(CCharFeatures* l, CCharFeatures* r, LONG size, double* w, INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
-	: CCharKernel(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0), 
+	: CSimpleKernel<CHAR>(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0), 
 	  max_mismatch(max_mismatch_), seq_length(0),
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm), block_computation(block), tries(d)
 {
@@ -126,7 +126,7 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		((CCharFeatures*) l)->free_feature_vector(avec, 0, afree);
 	} 
 
-	bool result=CCharKernel::init(l,r,do_init);
+	bool result=CSimpleKernel<CHAR>::init(l,r,do_init);
 	initialized = false ;
 	INT i;
 

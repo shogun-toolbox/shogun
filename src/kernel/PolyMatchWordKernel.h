@@ -12,10 +12,9 @@
 #define _POLYMATCHWORDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/WordKernel.h"
-#include "features/WordFeatures.h"
+#include "kernel/SimpleKernel.h"
 
-class CPolyMatchWordKernel: public CWordKernel
+class CPolyMatchWordKernel: public CSimpleKernel<WORD>
 {
  public:
   CPolyMatchWordKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);

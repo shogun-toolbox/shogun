@@ -12,7 +12,7 @@
 #define _WDCHARKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/CharKernel.h"
+#include "kernel/SimpleKernel.h"
 #include "kernel/WeightedDegreeCharKernel.h"
 
 enum EWDKernType
@@ -27,7 +27,7 @@ enum EWDKernType
 	E_EXTERNAL=7
 };
 
-class CWDCharKernel: public CCharKernel
+class CWDCharKernel: public CSimpleKernel<CHAR>
 {
 	public:
 		CWDCharKernel(LONG size, EWDKernType type, INT degree, INT which_deg=-1, bool use_normalization=true);

@@ -13,10 +13,10 @@
 #define _HISTOGRAMWORDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/WordKernel.h"
+#include "kernel/SimpleKernel.h"
 #include "classifier/PluginEstimate.h"
 
-class CHistogramWordKernel: public CWordKernel
+class CHistogramWordKernel: public CSimpleKernel<WORD>
 {
  public:
   CHistogramWordKernel(LONG size, CPluginEstimate* pie);

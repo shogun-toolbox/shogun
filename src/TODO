@@ -1,38 +1,26 @@
 TODO
 
-- kernel is_initialized -> is_optimization_initialized
-- use CharFeatures type in convert* in WordFeatures
+- design the python swig interface
 - kerthi,olivier Lin-SVM implementieren, chunking ???
-- SVR regression bug when kernel cache does not fit into memory (see Debugging Genefinder) ?????
 - LPM implementieren
-- Perceptron implementieren
 - LDA Fisher implementieren
 - Commstring kernel mit suffixtrie impl.
-- suffix trie als extra klasse
 - sg design document.
 - clean up get_kernel matrix (in Kernel.cpp / GUIMatlab.cpp)
 - remove use_precompute hack -> make it a temporary precomputed kernel
-- clear sg -> kabumm bei init_kernel  / vorher clean_kernels -> ok...
 - don't use List for preprocs/combined features -> use DYNARRAY!!!
-- linearen + commword fuer combined kernel ???
 - SVMs linadd mpi implementation
-- SVMs generell parallelisieren (fuer MKL)
-- finish Python interface
 - CommWordString /CommWordUlongKernel optimierung mit unique sort
-- ascii/gtk plot der dependencies
 - suffix tree ala leslie als extra classe...
 - generisches object mit set/get funktionen multiple classifiers/features/distributions/etc, make them interact via lists/indizes of who works with whom
-- real detection for lapack/blas/matlab/cplex/readline etc
 - create generic Distribution class which combines all density related stuff HMM/gaussians/linear hmm ... this would
   allow for using PluginEstimate with *any* distribution and clean all the hmm_test hacks
 - create a one class classifier to avoid hacky one_class_hmm_test
 - put things (== estimator/svm/hmm/features/kernel...) in some kind of list to be able to use/select them/many
   for certain purposes
-- create generic Classifier class which combines i.e. KNN/Perceptron/SVM/PluginEstimate
 - make unified testing possible, e.g. set_classifier XXX ; calc_output ; get_results etc.
 - no standardized File IO (there needs to be some header parsing stuff/ little/big endian conversion...)
   atm, lots of things just use fopen/read/close...
-- all outputs are labels
 - tcp/ip io fixen
 - type (INT/LONG etc) fixes, clear policy
 - fix linear HMM to be equiv. with MMs
@@ -41,6 +29,18 @@ TODO
 
 DONE
 
+- kernel is_initialized -> is_optimization_initialized
+- clear sg -> kabumm bei init_kernel  / vorher clean_kernels -> ok...
+- all outputs are labels
+- ascii/gtk plot der dependencies
+- SVMs generell parallelisieren
+- SVMs parralel w/ MKL
+- Perceptron implementieren
+- use CharFeatures type in convert* in WordFeatures
+- SVR regression bug when kernel cache does not fit into memory (see Debugging Genefinder) ?????
+- suffix trie als extra klasse
+- real detection for lapack/blas/matlab/cplex/readline etc
+- create generic Classifier class which combines i.e. KNN/Perceptron/SVM/PluginEstimate
 - fuer python interface auch ctrl+c abfangen
 - clean up libsvm/svmlight regression stuff, derive from CSVMLight
 - fix LINADD & regression

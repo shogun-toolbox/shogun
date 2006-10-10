@@ -12,10 +12,9 @@
 #define _LINEARCHARKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/CharKernel.h"
-#include "features/CharFeatures.h"
+#include "kernel/SimpleKernel.h"
 
-class CLinearCharKernel: public CCharKernel
+class CLinearCharKernel: public CSimpleKernel<CHAR>
 {
  public:
   CLinearCharKernel(LONG size);

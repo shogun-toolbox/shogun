@@ -10,6 +10,6 @@
 
 %include "kernel/SimpleKernel.h"
 
-%template(CSimpleRealKernel) CSimpleKernel<DREAL>;
-%template(CSimpleCharKernel) CSimpleKernel<CHAR>;
-%template(CSimpleIntKernel) CSimpleKernel<INT>;
+%template(RealKernel) CSimpleKernel<DREAL>;
+%template(CharKernel) CSimpleKernel<CHAR>;
+%template(IntKernel) CSimpleKernel<INT>;

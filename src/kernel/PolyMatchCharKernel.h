@@ -12,10 +12,9 @@
 #define _POLYMATCHCHARKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/CharKernel.h"
-#include "features/CharFeatures.h"
+#include "kernel/SimpleKernel.h"
 
-class CPolyMatchCharKernel: public CCharKernel
+class CPolyMatchCharKernel: public CSimpleKernel<CHAR>
 {
  public:
   CPolyMatchCharKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);

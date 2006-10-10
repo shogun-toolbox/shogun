@@ -12,11 +12,10 @@
 #include "lib/io.h"
 #include "lib/Mathmatics.h"
 #include "kernel/LinearByteKernel.h"
-#include "kernel/ByteKernel.h"
 #include "features/ByteFeatures.h"
 
 CLinearByteKernel::CLinearByteKernel(LONG size)
-  : CByteKernel(size),scale(1.0),normal(NULL)
+  : CSimpleKernel<BYTE>(size),scale(1.0),normal(NULL)
 {
 }
 
@@ -27,7 +26,7 @@ CLinearByteKernel::~CLinearByteKernel()
   
 bool CLinearByteKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CByteKernel::init(l, r, do_init); 
+	CSimpleKernel<BYTE>::init(l, r, do_init); 
 
 	if (do_init)
 		init_rescale() ;

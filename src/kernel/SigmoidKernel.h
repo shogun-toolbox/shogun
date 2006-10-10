@@ -12,10 +12,9 @@
 #define _SIGMOIDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/RealKernel.h"
-#include "features/RealFeatures.h"
+#include "kernel/SimpleKernel.h"
 
-class CSigmoidKernel: public CRealKernel
+class CSigmoidKernel: public CSimpleKernel<DREAL>
 {
  public:
   CSigmoidKernel(LONG size, DREAL gamma, DREAL coef0);

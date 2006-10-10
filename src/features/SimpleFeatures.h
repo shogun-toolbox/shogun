@@ -219,6 +219,8 @@ template <class ST> class CSimpleFeatures: public CFeatures
   
   /// return that we are simple minded features (just fixed size matrices)
   inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+  /// return feature type
+  inline virtual EFeatureType get_feature_type();
   
   virtual bool reshape(INT num_features, INT num_vectors)
   {
@@ -251,4 +253,34 @@ protected:
   ST* feature_matrix;
   CCache<ST>* feature_cache;
 };
+
+template<> inline EFeatureType CSimpleFeatures<DREAL>::get_feature_type()
+{
+	return F_DREAL;
+}
+
+template<> inline EFeatureType CSimpleFeatures<SHORT>::get_feature_type()
+{
+	return F_SHORT;
+}
+
+template<> inline EFeatureType CSimpleFeatures<CHAR>::get_feature_type()
+{
+	return F_CHAR;
+}
+
+template<> inline EFeatureType CSimpleFeatures<BYTE>::get_feature_type()
+{
+	return F_BYTE;
+}
+
+template<> inline EFeatureType CSimpleFeatures<WORD>::get_feature_type()
+{
+	return F_WORD;
+}
+
+template<> inline EFeatureType CSimpleFeatures<ULONG>::get_feature_type()
+{
+	return F_ULONG;
+}
 #endif

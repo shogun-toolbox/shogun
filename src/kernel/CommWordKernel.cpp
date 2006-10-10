@@ -15,7 +15,7 @@
 #include "lib/io.h"
 
 CCommWordKernel::CCommWordKernel(LONG size, bool sign, ENormalizationType n) 
-	: CWordKernel(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_sign(sign), normalization(n)
+	: CSimpleKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_sign(sign), normalization(n)
 {
 	properties |= KP_LINADD;
 	dictionary_size= 1<<(sizeof(WORD)*8);
@@ -66,7 +66,7 @@ void CCommWordKernel::remove_rhs()
 
 bool CCommWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	bool result=CWordKernel::init(l,r,do_init);
+	bool result=CSimpleKernel<WORD>::init(l,r,do_init);
 	initialized = false;
 	INT i;
 

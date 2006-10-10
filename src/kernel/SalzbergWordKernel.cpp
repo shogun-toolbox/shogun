@@ -17,7 +17,7 @@
 #include "classifier/PluginEstimate.h"
 
 CSalzbergWordKernel::CSalzbergWordKernel(LONG size, CPluginEstimate* pie)
-  : CWordKernel(size),estimate(pie), mean(NULL), variance(NULL), 
+  : CSimpleKernel<WORD>(size),estimate(pie), mean(NULL), variance(NULL), 
     sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), 
     ld_mean_lhs(NULL), ld_mean_rhs(NULL),
     num_params(0), num_symbols(0), sum_m2_s2(0), pos_prior(0.5),
@@ -32,7 +32,7 @@ CSalzbergWordKernel::~CSalzbergWordKernel()
 
 bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	bool result=CWordKernel::init(l,r,do_init);
+	bool result=CSimpleKernel<WORD>::init(l,r,do_init);
 	initialized = false ;
 	ASSERT(l!=NULL) ;
 	ASSERT(r!=NULL) ;

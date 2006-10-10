@@ -12,9 +12,9 @@
 #define _HAMMINGWORDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/WordKernel.h"
+#include "kernel/SimpleKernel.h"
 
-class CHammingWordKernel: public CWordKernel
+class CHammingWordKernel: public CSimpleKernel<WORD>
 {
  public:
   CHammingWordKernel(LONG size, DREAL width, bool use_sign);

@@ -13,9 +13,9 @@
 #define _WEIGHTEDDEGREECHARKERNELPOLYA_H___
 
 #include "lib/common.h"
-#include "kernel/CharKernel.h"
+#include "kernel/SimpleKernel.h"
 
-class CWeightedDegreeCharKernelPolyA: public CCharKernel
+class CWeightedDegreeCharKernelPolyA: public CSimpleKernel<CHAR>
 {
  public:
   CWeightedDegreeCharKernelPolyA(LONG size, DREAL* weights, INT degree, INT max_mismatch) ;

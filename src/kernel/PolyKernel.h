@@ -12,10 +12,9 @@
 #define _POLYKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/RealKernel.h"
-#include "features/RealFeatures.h"
+#include "kernel/SimpleKernel.h"
 
-class CPolyKernel: public CRealKernel
+class CPolyKernel: public CSimpleKernel<DREAL>
 {
  public:
   CPolyKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);

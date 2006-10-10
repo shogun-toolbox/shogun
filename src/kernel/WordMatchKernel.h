@@ -12,10 +12,9 @@
 #define _WORDMATCHKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/WordKernel.h"
-#include "features/WordFeatures.h"
+#include "kernel/SimpleKernel.h"
 
-class CWordMatchKernel: public CWordKernel
+class CWordMatchKernel: public CSimpleKernel<WORD>
 {
  public:
   CWordMatchKernel(LONG size, INT degree);
