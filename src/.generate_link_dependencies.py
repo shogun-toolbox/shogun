@@ -5,6 +5,8 @@ deps=dict();
 deps['carrays.i']=[]
 deps['cpointer.i']=[]
 
+initial_deps=deps.copy()
+
 
 def get_deps(f):
 	global deps
@@ -27,7 +29,7 @@ for f in files:
 
 #generate linker dependencies
 for f in deps.iterkeys():
-	if f[-1] == 'i':
+	if f[-1] == 'i' and not initial_deps.has_key(f) and file(f).read().find('%module')>0:
 		str=os.path.join(os.path.dirname(f), '_' + os.path.basename(f)[:-2]) + '.so: ' + f[:-2]+'_wrap.cxx.o'
 
 		fdep=list();
