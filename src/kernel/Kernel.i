@@ -3,10 +3,11 @@
 #include "kernel/Kernel.h" 
 %}
 
-%include "carrays.i"
-%include "kernel/Kernel.h"
-%include "kernel/GaussianKernel.i"
+%feature("notabstract") CKernel;
 
+%include "kernel/Kernel.h"
+%include "carrays.i"
+/* %include "kernel/GaussianKernel.i"*/
 
 %extend CKernel {
 

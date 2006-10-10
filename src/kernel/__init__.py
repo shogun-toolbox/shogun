@@ -1,1 +1,1 @@
-__all__ = ['WeightedDegreeCharKernel', 'GaussianKernel']
+__all__ = ['Kernel']
