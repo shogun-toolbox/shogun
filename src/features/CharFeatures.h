@@ -27,9 +27,23 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
 		~CCharFeatures();
 
       void testNumpy(char *feature_matrix, int d1, int d2) {
-         CIO::message(M_MESSAGEONLY,"%d",d1);
-         CIO::message(M_MESSAGEONLY,"%d",d2);
+         CIO::message(M_MESSAGEONLY,"d1:%d\n",d1);
+         CIO::message(M_MESSAGEONLY,"d2:%d\n",d2);
+
+		 for (int i=0; i<d1*d2; i++)
+			 CIO::message(M_MESSAGEONLY,"%c",feature_matrix[i]);
       }
+
+      void testNumpy2(int *feature_matrix, int d1, int d2) {
+         CIO::message(M_MESSAGEONLY,"d1:%d\n",d1);
+         CIO::message(M_MESSAGEONLY,"d2:%d\n",d2);
+      }
+
+		double doubleSum(double* series, int size) {
+			double result = 0.0;
+			for (int i=0; i<size; ++i) result += series[i];
+			return result;
+		}
 
 		inline CAlphabet* get_alphabet()
 		{

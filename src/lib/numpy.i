@@ -122,7 +122,10 @@ PyArrayObject* make_contiguous(PyArrayObject* ary, int* is_new_object,
     *is_new_object = 0;
   }
   else {
-    result = (PyArrayObject*) PyArray_ContiguousFromObject((PyObject*)ary, array_type(ary), min_dims, max_dims);
+    result = (PyArrayObject*) PyArray_ContiguousFromObject((PyObject*)ary, 
+							   array_type(ary), 
+							   min_dims,
+							   max_dims);
     *is_new_object = 1;
   }
   return result;
@@ -139,7 +142,8 @@ PyArrayObject* obj_to_array_contiguous_allow_conversion(PyObject* input,
   int is_new1 = 0;
   int is_new2 = 0;
   PyArrayObject* ary2;
-  PyArrayObject* ary1 = obj_to_array_allow_conversion(input, typecode, &is_new1);
+  PyArrayObject* ary1 = obj_to_array_allow_conversion(input, typecode, 
+						      &is_new1);
   if (ary1) {
     ary2 = make_contiguous(ary1, &is_new2, 0, 0);
     if ( is_new1 && is_new2) {
@@ -171,7 +175,8 @@ int require_contiguous(PyArrayObject* ary) {
 int require_dimensions(PyArrayObject* ary, int exact_dimensions) {
   int success = 1;
   if (array_dimensions(ary) != exact_dimensions) {
-    PyErr_Format(PyExc_TypeError, "Array must be have %d dimensions.  Given array has %d dimensions", 
+    PyErr_Format(PyExc_TypeError, 
+		 "Array must be have %d dimensions.  Given array has %d dimensions", 
 		 exact_dimensions, array_dimensions(ary));
     success = 0;
   }
@@ -436,7 +441,6 @@ TYPEMAP_INPLACE2(PyObject,      PyArray_OBJECT)
   $1 = (type*) malloc($1_dim0*sizeof(type));
   if (!$1) {
     PyErr_SetString(PyExc_RuntimeError, "Failed to allocate memory");
-    printf("Inside typemap\n");
     SWIG_fail;
   }
 }

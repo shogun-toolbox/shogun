@@ -1,12 +1,17 @@
 %module(directors="1") Features
 
 %{
+#define SWIG_FILE_WITH_INIT
 #include "features/Features.h" 
 #include "features/StringFeatures.h" 
 %}
 
 %include "lib/common.i"
 %include "lib/numpy.i"
+
+%init %{
+	  import_array();
+%}
 
 %feature("director") CFeatures;
 
