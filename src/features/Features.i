@@ -6,6 +6,7 @@
 %}
 
 %include "lib/common.i"
+%include "lib/numpy.i"
 
 %feature("director") CFeatures;
 
