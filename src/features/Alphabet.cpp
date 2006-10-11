@@ -19,9 +19,6 @@ const BYTE CAlphabet::B_A=0;
 const BYTE CAlphabet::B_C=1;
 const BYTE CAlphabet::B_G=2;
 const BYTE CAlphabet::B_T=3;
-const BYTE CAlphabet::B_star=4;
-const BYTE CAlphabet::B_N=5;
-const BYTE CAlphabet::B_n=6;
 const BYTE CAlphabet::MAPTABLE_UNDEF=0xff;
 const CHAR* CAlphabet::alphabet_names[]={"DNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "NONE", "UNKNOWN"};
 
@@ -103,24 +100,35 @@ void CAlphabet::init_map_table()
 {
 	INT i;
 	for (i=0; i<(1<<(8*sizeof(BYTE))); i++)
-		maptable[i] = MAPTABLE_UNDEF ;
+	{
+		maptable_to_bin[i] = MAPTABLE_UNDEF;
+		maptable_to_char[i] = MAPTABLE_UNDEF;
+		valid_chars[i] = 0;
+	}
 
 	switch (alphabet)
 	{
 		case CUBE:
-			maptable[(BYTE) '1']=0;
-			maptable[(BYTE) '2']=1;
-			maptable[(BYTE) '3']=2;
-			maptable[(BYTE) '4']=3;	
-			maptable[(BYTE) '5']=4;	
-			maptable[(BYTE) '6']=5;	//Translation '123456' -> 012345
+			valid_chars[(BYTE) '1']=1;
+			valid_chars[(BYTE) '2']=1;
+			valid_chars[(BYTE) '3']=1;
+			valid_chars[(BYTE) '4']=1;	
+			valid_chars[(BYTE) '5']=1;	
+			valid_chars[(BYTE) '6']=1;	//Translation '123456' -> 012345
 
-			maptable[(BYTE) 0]='1';
-			maptable[(BYTE) 1]='2';
-			maptable[(BYTE) 2]='3';
-			maptable[(BYTE) 3]='4';
-			maptable[(BYTE) 4]='5';
-			maptable[(BYTE) 5]='6';	//Translation 012345->'123456'
+			maptable_to_bin[(BYTE) '1']=0;
+			maptable_to_bin[(BYTE) '2']=1;
+			maptable_to_bin[(BYTE) '3']=2;
+			maptable_to_bin[(BYTE) '4']=3;	
+			maptable_to_bin[(BYTE) '5']=4;	
+			maptable_to_bin[(BYTE) '6']=5;	//Translation '123456' -> 012345
+
+			maptable_to_char[(BYTE) 0]='1';
+			maptable_to_char[(BYTE) 1]='2';
+			maptable_to_char[(BYTE) 2]='3';
+			maptable_to_char[(BYTE) 3]='4';
+			maptable_to_char[(BYTE) 4]='5';
+			maptable_to_char[(BYTE) 5]='6';	//Translation 012345->'123456'
 
 			break;
 		case PROTEIN:
@@ -132,9 +140,9 @@ void CAlphabet::init_map_table()
 					if (i==8) skip++ ;
 					if (i==12) skip++ ;
 					if (i==17) skip++ ;
-					maptable[i]='a'+i+skip ;
-					maptable['a'+i+skip]=i ;
-					//printf("maptable[%c]=%i\n", 'a'+i+skip, i) ;
+					valid_chars['a'+i+skip]=1;
+					maptable_to_bin['a'+i+skip]=i ;
+					maptable_to_char[i]='a'+i+skip ;
 				} ;                   //Translation 012345->acde...xy -- the protein code
 			} ;
 			break;
@@ -142,13 +150,15 @@ void CAlphabet::init_map_table()
 			{
 				for (i=0; i<26; i++)
 				{
-					maptable[i]='a'+i ;
-					maptable['a'+i]=i ;
+					valid_chars['a'+i]=1;
+					maptable_to_bin['a'+i]=i ;
+					maptable_to_char[i]='a'+i ;
 				} ;
 				for (i=0; i<10; i++)
 				{
-					maptable[26+i]='0'+i ;
-					maptable['0'+i]=26+i ;
+					valid_chars['0'+i]=1;
+					maptable_to_bin['0'+i]=26+i ;
+					maptable_to_char[26+i]='0'+i ;
 				} ;        //Translation 012345->acde...xy0123456789
 			} ;
 			break;
@@ -156,25 +166,28 @@ void CAlphabet::init_map_table()
 			{
 				//identity
 				for (i=0; i<256; i++)
-					maptable[i]=i;
+				{
+					valid_chars[i]=1;
+					maptable_to_char[i]=i;
+					maptable_to_char[i]=i;
+				}
 			}
 			break;
 		case DNA:
-			maptable[(BYTE) 'A']=B_A;
-			maptable[(BYTE) 'C']=B_C;
-			maptable[(BYTE) 'G']=B_G;
-			maptable[(BYTE) 'T']=B_T;	
-			maptable[(BYTE) '*']=B_star;	
-			maptable[(BYTE) 'N']=B_N;	
-			maptable[(BYTE) 'n']=B_n;	//Translation ACGTNn -> 012345
+			valid_chars[(BYTE) 'A']=B_A;
+			valid_chars[(BYTE) 'C']=B_C;
+			valid_chars[(BYTE) 'G']=B_G;
+			valid_chars[(BYTE) 'T']=B_T;	
 
-			maptable[B_A]='A';
-			maptable[B_C]='C';
-			maptable[B_G]='G';
-			maptable[B_T]='T';
-			maptable[B_star]='*';
-			maptable[B_N]='N';
-			maptable[B_n]='n';	//Translation 012345->ACGTNn
+			maptable_to_bin[(BYTE) 'A']=B_A;
+			maptable_to_bin[(BYTE) 'C']=B_C;
+			maptable_to_bin[(BYTE) 'G']=B_G;
+			maptable_to_bin[(BYTE) 'T']=B_T;	
+
+			maptable_to_char[B_A]='A';
+			maptable_to_char[B_C]='C';
+			maptable_to_char[B_G]='G';
+			maptable_to_char[B_T]='T';
 			break;
 		default:
 			break; //leave uninitialised
@@ -241,6 +254,28 @@ void CAlphabet::print_histogram()
 		if (histogram[i])
 			CIO::message(M_MESSAGEONLY, "hist[%d]=%ld\n", i, histogram[i]);
 	}
+}
+
+bool CAlphabet::check_alphabet(bool print_error)
+{
+	bool result = true;
+
+	for (INT i=0; i<(INT) (1 <<(sizeof(BYTE)*8)); i++)
+	{
+		if (histogram[i]>0 && valid_chars[i]==0)
+		{
+			result=false;
+			break;
+		}
+	}
+
+	if (!result && print_error)
+	{
+		print_histogram();
+		CIO::message(M_ERROR, "ALPHABET does not contain all symbols in histogram\n");
+	}
+
+	return result;
 }
 
 bool CAlphabet::check_alphabet_size(bool print_error)

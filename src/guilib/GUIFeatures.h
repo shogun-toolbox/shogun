@@ -23,7 +23,7 @@
 #include "features/WordFeatures.h"
 #include "features/ShortFeatures.h"
 #include "features/RealFeatures.h"
-#include "features/SparseRealFeatures.h"
+#include "features/SparseFeatures.h"
 #include "features/CombinedFeatures.h"
 #include "features/MindyGramFeatures.h"
 
@@ -75,7 +75,7 @@ class CGUIFeatures
 
 		bool convert(CHAR* param);
 
-		CSparseRealFeatures* convert_simple_real_to_sparse_real(CRealFeatures* src, CHAR* param);
+		CSparseFeatures<DREAL>* convert_simple_real_to_sparse_real(CRealFeatures* src, CHAR* param);
 		CStringFeatures<CHAR>* convert_simple_char_to_string_char(CCharFeatures* src, CHAR* param);
 		CWordFeatures* convert_simple_char_to_simple_word(CCharFeatures* src, CHAR* param);
 		CShortFeatures* convert_simple_char_to_simple_short(CCharFeatures* src, CHAR* param);
@@ -89,7 +89,7 @@ class CGUIFeatures
 		CTOPFeatures* convert_string_word_to_simple_top(CStringFeatures<WORD>* src, CHAR* param);
 		CFKFeatures* convert_string_word_to_simple_fk(CStringFeatures<WORD>* src, CHAR* param);
 
-		CRealFeatures* convert_sparse_real_to_simple_real(CSparseRealFeatures* src, CHAR* param);
+		CRealFeatures* convert_sparse_real_to_simple_real(CSparseFeatures<DREAL>* src, CHAR* param);
 
 
 		template <class CT, class ST> 

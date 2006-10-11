@@ -60,7 +60,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 	INT max_val=0;
 	for (INT i=0; i<len; i++)
 	{
-		feature_matrix[i]=(WORD) alpha->remap(fm[i]);
+		feature_matrix[i]=(WORD) alpha->remap_to_bin(fm[i]);
 		max_val=CMath::max((INT) feature_matrix[i],max_val);
 	}
 
@@ -72,7 +72,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 
 	for (INT i=0; i<len; i++)
 	{
-		feature_matrix[i]=(WORD) alpha->remap(fm[i]);
+		feature_matrix[i]=(WORD) alpha->remap_to_bin(fm[i]);
 		hist[feature_matrix[i]]++ ;
 	}
 	for (INT i=0; i<=max_val; i++)

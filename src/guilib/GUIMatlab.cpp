@@ -1532,7 +1532,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 
 						CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
 						CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
-						if (alpha->check_alphabet_size())
+						if (alpha->check_alphabet_size() && alpha->check_alphabet())
 							((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
 						else
 						{
@@ -1581,7 +1581,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 
 						CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
 						CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
-						if (alpha->check_alphabet_size())
+						if (alpha->check_alphabet_size() && alpha->check_alphabet())
 							((CStringFeatures<BYTE>*) f)->set_features(sc, num_vec, maxlen);
 						else
 						{

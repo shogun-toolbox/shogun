@@ -286,7 +286,7 @@ bool CGUIFeatures::reshape(CHAR* param)
 	return result;
 }
 
-CSparseRealFeatures* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFeatures* src, CHAR* param)
+CSparseFeatures<DREAL>* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFeatures* src, CHAR* param)
 {
 	if (src)
 	{
@@ -296,7 +296,7 @@ CSparseRealFeatures* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFeatu
 			{
 				//create sparse features with 0 cache
 				CIO::message(M_INFO, "attempting to convert dense feature matrix to a sparse one\n");
-				CSparseRealFeatures* target=new CSparseRealFeatures(0);
+				CSparseFeatures<DREAL>* target=new CSparseFeatures<DREAL>(0);
 				INT num_f=0;
 				INT num_v=0;
 				DREAL* feats=src->get_feature_matrix(num_f, num_v);
@@ -442,7 +442,7 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD
 }
 
 
-CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(CSparseRealFeatures* src, CHAR* param)
+CRealFeatures* CGUIFeatures::convert_sparse_real_to_simple_real(CSparseFeatures<DREAL>* src, CHAR* param)
 {
 
 	if (src)
@@ -696,7 +696,7 @@ bool CGUIFeatures::convert(CHAR* param)
 			if (strcmp(from_type, "REAL")==0)
 			{
 				if (strcmp(to_class, "SIMPLE")==0 && strcmp(to_type,"REAL")==0)
-					result = convert_sparse_real_to_simple_real(((CSparseRealFeatures*) (*f_ptr)), param);
+					result = convert_sparse_real_to_simple_real(((CSparseFeatures<DREAL>*) (*f_ptr)), param);
 				else
 					CIO::not_implemented();
 			}

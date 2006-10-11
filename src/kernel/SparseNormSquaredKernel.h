@@ -13,7 +13,7 @@
 
 #include "lib/common.h"
 #include "kernel/SparseKernel.h"
-#include "features/SparseRealFeatures.h"
+#include "features/SparseFeatures.h"
 
 class CSparseNormSquaredKernel: public CSparseKernel<DREAL>
 {

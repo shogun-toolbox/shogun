@@ -11,7 +11,6 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "features/Features.h"
-#include "features/SparseRealFeatures.h"
 #include "features/SparseFeatures.h"
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/SparseKernel.h"
@@ -68,7 +67,7 @@ bool CSparseLinearKernel::save_init(FILE* dest)
 
 void CSparseLinearKernel::clear_normal()
 {
-	int num = ((CSparseRealFeatures*) lhs)->get_num_features();
+	int num = ((CSparseFeatures<DREAL>*) lhs)->get_num_features();
 	if (normal==NULL)
 		normal = new DREAL[num] ;
 	for (int i=0; i<num; i++)
@@ -79,12 +78,12 @@ void CSparseLinearKernel::add_to_normal(INT idx, DREAL weight)
 {
 	INT vlen;
 	bool vfree;
-	TSparseEntry<DREAL>* vec=((CSparseRealFeatures*) rhs)->get_sparse_feature_vector(idx, vlen, vfree);
+	TSparseEntry<DREAL>* vec=((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(idx, vlen, vfree);
 
 	for (int i=0; i<vlen; i++)
 		normal[vec[i].feat_index]+= weight*vec[i].entry;
 
-	((CSparseRealFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
+	((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(vec, idx, vfree);
 }
   
 DREAL CSparseLinearKernel::compute(INT idx_a, INT idx_b)
@@ -94,8 +93,8 @@ DREAL CSparseLinearKernel::compute(INT idx_a, INT idx_b)
   bool afree=false;
   bool bfree=false;
 
-  TSparseEntry<DREAL>* avec=((CSparseRealFeatures*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
-  TSparseEntry<DREAL>* bvec=((CSparseRealFeatures*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
+  TSparseEntry<DREAL>* avec=((CSparseFeatures<DREAL>*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
+  TSparseEntry<DREAL>* bvec=((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
   
   DREAL result=0;
 
@@ -140,8 +139,8 @@ DREAL CSparseLinearKernel::compute(INT idx_a, INT idx_b)
 	  result/=scale;
   }
 
-  ((CSparseRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CSparseRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+  ((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(avec, idx_a, afree);
+  ((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return result;
 }
@@ -171,14 +170,14 @@ DREAL CSparseLinearKernel::compute_optimized(INT idx)
 	INT vlen;
 	bool vfree;
 
-	TSparseEntry<DREAL>* vec=((CSparseRealFeatures*) rhs)->get_sparse_feature_vector(idx, vlen, vfree);
+	TSparseEntry<DREAL>* vec=((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(idx, vlen, vfree);
 
 	DREAL result=0;
 	for (INT i=0; i<vlen; i++)
 		result+=normal[vec[i].feat_index]*vec[i].entry;
 	result/=scale;
 
-	((CSparseRealFeatures*) rhs)->free_sparse_feature_vector(vec, idx, vfree);
+	((CSparseFeatures<DREAL>*) rhs)->free_sparse_feature_vector(vec, idx, vfree);
 
 	return result;
 }

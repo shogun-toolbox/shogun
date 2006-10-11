@@ -274,6 +274,11 @@ template<> inline EFeatureType CSimpleFeatures<BYTE>::get_feature_type()
 	return F_BYTE;
 }
 
+template<> inline EFeatureType CSimpleFeatures<INT>::get_feature_type()
+{
+	return F_INT;
+}
+
 template<> inline EFeatureType CSimpleFeatures<WORD>::get_feature_type()
 {
 	return F_WORD;

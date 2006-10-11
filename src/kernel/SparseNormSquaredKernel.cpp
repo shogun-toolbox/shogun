@@ -12,7 +12,6 @@
 #include "lib/io.h"
 #include "kernel/SparseNormSquaredKernel.h"
 #include "features/Features.h"
-#include "features/SparseRealFeatures.h"
 #include "features/SparseFeatures.h"
 
 CSparseNormSquaredKernel::CSparseNormSquaredKernel(INT size)
@@ -51,8 +50,8 @@ DREAL CSparseNormSquaredKernel::compute(INT idx_a, INT idx_b)
   INT alen, blen;
   bool afree, bfree;
 
-  TSparseEntry<DREAL>* avec=((CSparseRealFeatures*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
-  TSparseEntry<DREAL>* bvec=((CSparseRealFeatures*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
+  TSparseEntry<DREAL>* avec=((CSparseFeatures<DREAL>*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
+  TSparseEntry<DREAL>* bvec=((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
   
   DREAL result=0;
 
@@ -99,8 +98,8 @@ DREAL CSparseNormSquaredKernel::compute(INT idx_a, INT idx_b)
 	  }
   }
 
-  ((CSparseRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CSparseRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+  ((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(avec, idx_a, afree);
+  ((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return result;
 }

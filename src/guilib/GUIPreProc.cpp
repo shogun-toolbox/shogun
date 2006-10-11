@@ -26,7 +26,7 @@
 #include "features/ByteFeatures.h"
 #include "features/ShortFeatures.h"
 #include "features/RealFeatures.h"
-#include "features/SparseRealFeatures.h"
+#include "features/SparseFeatures.h"
 #include "features/CombinedFeatures.h"
 #include "features/Features.h"
 #include "lib/io.h"
@@ -397,7 +397,7 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 			switch (f->get_feature_type())
 			{
 				case F_DREAL:
-					return ((CSparseRealFeatures*) f)->preproc_feature_matrix(force);
+					return ((CSparseFeatures<DREAL>*) f)->preproc_feature_matrix(force);
 				default:
 					CIO::not_implemented();
 			};

@@ -57,6 +57,8 @@ template<> inline EFeatureType CStringKernel<DREAL>::get_feature_type() { return
 
 template<> inline EFeatureType CStringKernel<ULONG>::get_feature_type() { return F_ULONG; }
 
+template<> inline EFeatureType CStringKernel<INT>::get_feature_type() { return F_INT; }
+
 template<> inline EFeatureType CStringKernel<WORD>::get_feature_type() { return F_WORD; }
 
 template<> inline EFeatureType CStringKernel<SHORT>::get_feature_type() { return F_SHORT; }

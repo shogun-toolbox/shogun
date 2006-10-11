@@ -13,7 +13,6 @@
 #define __GUIKERNEL__H
 
 #include "kernel/Kernel.h"
-#include "features/Features.h"
 
 class CGUI ;
 

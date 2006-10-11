@@ -12,7 +12,6 @@
 #include "lib/io.h"
 #include "kernel/SparseGaussianKernel.h"
 #include "features/Features.h"
-#include "features/SparseRealFeatures.h"
 #include "features/SparseFeatures.h"
 
 CSparseGaussianKernel::CSparseGaussianKernel(INT size, double w)
@@ -42,12 +41,12 @@ bool CSparseGaussianKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	for (INT i=0; i<lhs->get_num_vectors(); i++)
 	{
 		sq_lhs[i]=0;
-		TSparseEntry<DREAL>* vec = ((CSparseRealFeatures*) lhs)->get_sparse_feature_vector(i, len, do_free);
+		TSparseEntry<DREAL>* vec = ((CSparseFeatures<DREAL>*) lhs)->get_sparse_feature_vector(i, len, do_free);
 
 		for (INT j=0; j<len; j++)
 			sq_lhs[i] += vec[j].entry * vec[j].entry;
 
-		((CSparseRealFeatures*) lhs)->free_feature_vector(vec, i, do_free);
+		((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(vec, i, do_free);
 	}
 
 	if (lhs==rhs)
@@ -60,12 +59,12 @@ bool CSparseGaussianKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		for (INT i=0; i<rhs->get_num_vectors(); i++)
 		{
 			sq_rhs[i]=0;
-			TSparseEntry<DREAL>* vec = ((CSparseRealFeatures*) rhs)->get_sparse_feature_vector(i, len, do_free);
+			TSparseEntry<DREAL>* vec = ((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(i, len, do_free);
 
 			for (INT j=0; j<len; j++)
 				sq_rhs[i] += vec[j].entry * vec[j].entry;
 
-			((CSparseRealFeatures*) rhs)->free_feature_vector(vec, i, do_free);
+			((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(vec, i, do_free);
 		}
 	}
 	
@@ -97,8 +96,8 @@ DREAL CSparseGaussianKernel::compute(INT idx_a, INT idx_b)
   INT alen, blen;
   bool afree, bfree;
 
-  TSparseEntry<DREAL>* avec=((CSparseRealFeatures*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
-  TSparseEntry<DREAL>* bvec=((CSparseRealFeatures*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
+  TSparseEntry<DREAL>* avec=((CSparseFeatures<DREAL>*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
+  TSparseEntry<DREAL>* bvec=((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
   
   DREAL result = sq_lhs[idx_a] + sq_rhs[idx_b];
 
@@ -138,8 +137,8 @@ DREAL CSparseGaussianKernel::compute(INT idx_a, INT idx_b)
   }
   result=exp(-result/width);
 
-  ((CSparseRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CSparseRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+  ((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(avec, idx_a, afree);
+  ((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return result;
 }

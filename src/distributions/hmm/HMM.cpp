@@ -3516,12 +3516,6 @@ bool CHMM::get_numbuffer(FILE* file, CHAR* buffer, INT length)
 			case 'T':
 				value='0' +CAlphabet::B_T;
 				break;
-			case 'N':
-				value='0' +CAlphabet::B_N;
-				break;
-			case 'n':
-				value='0' +CAlphabet::B_n;
-				break;
 		};
 
 		buffer[i++]=value;
@@ -3544,12 +3538,6 @@ bool CHMM::get_numbuffer(FILE* file, CHAR* buffer, INT length)
 					break;
 				case 'T':
 					value='0' +CAlphabet::B_T;
-					break;
-				case 'N':
-					value='0' +CAlphabet::B_N;
-					break;
-				case 'n':
-					value='0' +CAlphabet::B_n;
 					break;
 				case '1': case '2': case'3': case '4': case'5':
 				case '6': case '7': case'8': case '9': case '0': break ;

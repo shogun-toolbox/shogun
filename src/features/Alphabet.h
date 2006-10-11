@@ -44,9 +44,14 @@ class CAlphabet
 		}
 
 		/// remap element e.g translate ACGT to 0123
-		inline BYTE remap(BYTE c)
+		inline BYTE remap_to_bin(BYTE c)
 		{
-			return maptable[c];
+			return maptable_to_bin[c];
+		}
+		/// remap element e.g translate 0123 to ACGT
+		inline BYTE remap_to_char(BYTE c)
+		{
+			return maptable_to_char[c];
 		}
 
 		/// clear histogram
@@ -64,6 +69,10 @@ class CAlphabet
 
 		/// print histogram
 		void print_histogram();
+
+		/// check whether symbols in histogram are valid in alphabet
+		/// e.g. for DNA if only letters ACGT appear
+		bool check_alphabet(bool print_error=true);
 
 		/// check whether symbols in histogram ALL fit in alphabet
 		bool check_alphabet_size(bool print_error=true);
@@ -88,16 +97,15 @@ class CAlphabet
 		static const BYTE B_C;
 		static const BYTE B_G;
 		static const BYTE B_T;
-		static const BYTE B_star;
-		static const BYTE B_N;
-		static const BYTE B_n;
 		static const BYTE MAPTABLE_UNDEF;
 		static const CHAR* alphabet_names[];
 	protected:
 		E_ALPHABET alphabet;
 		INT num_symbols;
 		INT num_bits;
-		BYTE maptable[1 << (sizeof(BYTE)*8)];
+		BYTE valid_chars[1 << (sizeof(BYTE)*8)];
+		BYTE maptable_to_bin[1 << (sizeof(BYTE)*8)];
+		BYTE maptable_to_char[1 << (sizeof(BYTE)*8)];
 		LONG histogram[1 << (sizeof(BYTE)*8)];
 };
 #endif

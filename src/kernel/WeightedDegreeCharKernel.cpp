@@ -447,7 +447,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, DREAL alpha)
 		alpha /=  sqrtdiag_lhs[idx] ;
 
 	for (INT i=0; i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 
 	if (length == 0 || max_mismatch > 0)
 	{
@@ -490,7 +490,7 @@ void CWeightedDegreeCharKernel::add_example_to_single_tree(INT idx, DREAL alpha,
 		alpha /=  sqrtdiag_lhs[idx] ;
 	
 	for (INT i=tree_num; i<tree_num+degree && i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 	
 	if (length == 0 || max_mismatch > 0)
 	{
@@ -525,7 +525,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, DREAL alph
 		alpha /=  sqrtdiag_lhs[idx] ;
 	
 	for (INT i=0; i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 
 	for (INT i=0; i<len; i++)
 	{
@@ -555,7 +555,7 @@ void CWeightedDegreeCharKernel::add_example_to_single_tree_mismatch(INT idx, DRE
 		alpha /=  sqrtdiag_lhs[idx] ;
 
 	for (INT i=tree_num; i<len && i<tree_num+degree; i++)
-		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 
 	DREAL alpha_pw = alpha ;
 	if (position_weights!=NULL)
@@ -577,7 +577,7 @@ DREAL CWeightedDegreeCharKernel::compute_by_tree(INT idx)
 	INT *vec = new INT[len] ;
 	
 	for (INT i=0; i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 		
 	DREAL sum=0 ;
 	for (INT i=0; i<len; i++)
@@ -601,7 +601,7 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, DREAL* LevelContrib)
 	INT *vec = new INT[len] ;
 
 	for (INT i=0; i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 
 	DREAL factor = 1.0 ;
 	if (use_normalization)
@@ -716,7 +716,7 @@ DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT
 			bool freevec;
 			CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(i, len, freevec);
 			for (INT k=j; k<CMath::min(len,j+degree); k++)
-				vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[k]);
+				vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[k]);
 
 			if (use_normalization)
 				result[i] += factor*tries.compute_by_tree_helper(vec, len, j)/sqrtdiag_rhs[i];

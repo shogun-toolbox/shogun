@@ -45,7 +45,7 @@ public:
 template <class ST> class CSparseFeatures: public CFeatures
 {
 	public:
-		CSparseFeatures(LONG size) : CFeatures(size), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL)
+		CSparseFeatures(INT size) : CFeatures(size), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL)
 		{
 		}
 
@@ -76,6 +76,11 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 			delete[] sparse_feature_matrix;
 			delete feature_cache;
+		}
+
+		virtual CFeatures* duplicate() const
+		{
+			return new CSparseFeatures<ST>(*this);
 		}
 
 		/** converts a sparse feature vector into a dense one
@@ -364,6 +369,9 @@ template <class ST> class CSparseFeatures: public CFeatures
 		/// return that we are sparse features
 		inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
 
+		/// return feature type
+		inline virtual EFeatureType get_feature_type();
+
 		void free_feature_vector(TSparseEntry<ST>* feat_vec, INT num, bool free)
 		{
 			if (feature_cache)
@@ -403,4 +411,39 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 		CCache< TSparseEntry<ST> >* feature_cache;
 };
+
+template<> inline EFeatureType CSparseFeatures<DREAL>::get_feature_type()
+{
+	return F_DREAL;
+}
+
+template<> inline EFeatureType CSparseFeatures<SHORT>::get_feature_type()
+{
+	return F_SHORT;
+}
+
+template<> inline EFeatureType CSparseFeatures<CHAR>::get_feature_type()
+{
+	return F_CHAR;
+}
+
+template<> inline EFeatureType CSparseFeatures<BYTE>::get_feature_type()
+{
+	return F_BYTE;
+}
+
+template<> inline EFeatureType CSparseFeatures<INT>::get_feature_type()
+{
+	return F_INT;
+}
+
+template<> inline EFeatureType CSparseFeatures<WORD>::get_feature_type()
+{
+	return F_WORD;
+}
+
+template<> inline EFeatureType CSparseFeatures<ULONG>::get_feature_type()
+{
+	return F_ULONG;
+}
 #endif

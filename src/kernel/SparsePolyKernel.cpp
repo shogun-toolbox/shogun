@@ -12,7 +12,6 @@
 #include "lib/io.h"
 #include "kernel/SparsePolyKernel.h"
 #include "features/Features.h"
-#include "features/SparseRealFeatures.h"
 #include "features/SparseFeatures.h"
 #include "kernel/SparseKernel.h"
 
@@ -59,8 +58,8 @@ bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		ASSERT(sqrtdiag_lhs);
 		ASSERT(sqrtdiag_rhs);
 
-		this->lhs=(CSparseRealFeatures*) l;
-		this->rhs=(CSparseRealFeatures*) l;
+		this->lhs=(CSparseFeatures<DREAL>*) l;
+		this->rhs=(CSparseFeatures<DREAL>*) l;
 
 		//compute normalize to 1 values
 		for (i=0; i<lhs->get_num_vectors(); i++)
@@ -76,8 +75,8 @@ bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		// compute also the normalization for rhs
 		if (sqrtdiag_lhs!=sqrtdiag_rhs)
 		{
-			this->lhs=(CSparseRealFeatures*) r;
-			this->rhs=(CSparseRealFeatures*) r;
+			this->lhs=(CSparseFeatures<DREAL>*) r;
+			this->rhs=(CSparseFeatures<DREAL>*) r;
 
 			//compute normalize to 1 values
 			for (i=0; i<rhs->get_num_vectors(); i++)
@@ -91,8 +90,8 @@ bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		}
 	}
 
-	this->lhs=(CSparseRealFeatures*) l;
-	this->rhs=(CSparseRealFeatures*) r;
+	this->lhs=(CSparseFeatures<DREAL>*) l;
+	this->rhs=(CSparseFeatures<DREAL>*) r;
 
 	initialized = true;
 	CIO::message(M_INFO, "SparsePolyKernel initialized\n");
@@ -129,8 +128,8 @@ DREAL CSparsePolyKernel::compute(INT idx_a, INT idx_b)
   bool bfree=false;
 
   //fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
-  TSparseEntry<DREAL>* avec=((CSparseRealFeatures*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
-  TSparseEntry<DREAL>* bvec=((CSparseRealFeatures*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
+  TSparseEntry<DREAL>* avec=((CSparseFeatures<DREAL>*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
+  TSparseEntry<DREAL>* bvec=((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
 
   DREAL sqrt_a= 1 ;
   DREAL sqrt_b= 1 ;
@@ -196,8 +195,8 @@ DREAL CSparsePolyKernel::compute(INT idx_a, INT idx_b)
 		  result=1.0;
   }
 
-  ((CSparseRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CSparseRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+  ((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(avec, idx_a, afree);
+  ((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return result/sqrt_both;
 }

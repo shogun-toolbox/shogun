@@ -290,7 +290,7 @@ template <class ST> class CStringFeatures: public CFeatures
 
 			ST* str=features[i].string;
 			for (INT j=0; j<len; j++)
-				str[j]=(ST) alpha->remap(c[j]);
+				str[j]=(ST) alpha->remap_to_bin(c[j]);
 
 		}
 
@@ -474,6 +474,11 @@ template<> inline EFeatureType CStringFeatures<CHAR>::get_feature_type()
 template<> inline EFeatureType CStringFeatures<BYTE>::get_feature_type()
 {
 	return F_BYTE;
+}
+
+template<> inline EFeatureType CStringFeatures<INT>::get_feature_type()
+{
+	return F_INT;
 }
 
 template<> inline EFeatureType CStringFeatures<WORD>::get_feature_type()

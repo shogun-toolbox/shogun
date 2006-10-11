@@ -744,7 +744,7 @@ void CWeightedDegreePositionCharKernel::add_example_to_tree(INT idx, DREAL alpha
 		alpha /=  sqrtdiag_lhs[idx] ;
 
 	for (INT i=0; i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 
 	for (INT i=0; i<len; i++)
 	{
@@ -878,7 +878,7 @@ void CWeightedDegreePositionCharKernel::add_example_to_single_tree(INT idx, DREA
 		CIO::message(M_ERROR, "unknown optimization type\n");
 
 	for (INT i=CMath::max(0,tree_num-max_shift); i<CMath::min(len,tree_num+degree+max_shift); i++)
-		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 
 	for (INT s=max_s; s>=0; s--)
 	{
@@ -1000,7 +1000,7 @@ DREAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx)
 	INT *vec = new INT[len] ;
 
 	for (INT i=0; i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 
 	for (INT i=0; i<len; i++)
 		sum += compute_by_tree_helper(vec, len, i, i, i) ;
@@ -1035,7 +1035,7 @@ void CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, DREAL* LevelCon
 	INT *vec = new INT[len] ;
 
 	for (INT i=0; i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[i]);
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 
 	DREAL factor = 1.0 ;
 
@@ -1239,7 +1239,7 @@ DREAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, DREAL* res
 			bool freevec;
 			CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(i, len, freevec);
 			for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+degree+max_shift); k++)
-				vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap(char_vec[k]);
+				vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[k]);
 
 			if (use_normalization)
 				result[i] += factor*compute_by_tree_helper(vec, len, j, j, j)/sqrtdiag_rhs[i];
