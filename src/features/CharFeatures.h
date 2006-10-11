@@ -26,6 +26,11 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
 
 		~CCharFeatures();
 
+      void testNumpy(char *feature_matrix, int d1, int d2) {
+         CIO::message(M_MESSAGEONLY,"%d",d1);
+         CIO::message(M_MESSAGEONLY,"%d",d2);
+      }
+
 		inline CAlphabet* get_alphabet()
 		{
 			return alphabet;
