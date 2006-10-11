@@ -17,7 +17,7 @@
 template <class ST> class CSparseKernel : public CKernel
 {
 	public:
-		CSparseKernel(LONG cachesize) : CKernel(cachesize)
+		CSparseKernel(INT cachesize) : CKernel(cachesize)
 		{
 		}
 
@@ -38,14 +38,34 @@ template <class ST> class CSparseKernel : public CKernel
 
 			ASSERT(l->get_feature_class() == C_SPARSE);
 			ASSERT(r->get_feature_class() == C_SPARSE);
+			ASSERT(l->get_feature_type()==this->get_feature_type());
+			ASSERT(r->get_feature_type()==this->get_feature_type());
 			lhs=(CSparseFeatures<ST>*) l;
 			rhs=(CSparseFeatures<ST>*) r;
 
+			if (((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
+			{
+				CIO::message(M_ERROR, "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) l)->get_num_features());
+			}
 			return true;
 		}
 
 		/** return feature class the kernel can deal with
 		  */
 		inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
+		inline virtual EFeatureType get_feature_type();
 };
+
+template<> inline EFeatureType CSparseKernel<DREAL>::get_feature_type() { return F_DREAL; }
+
+template<> inline EFeatureType CSparseKernel<ULONG>::get_feature_type() { return F_ULONG; }
+
+template<> inline EFeatureType CSparseKernel<WORD>::get_feature_type() { return F_WORD; }
+
+template<> inline EFeatureType CSparseKernel<SHORT>::get_feature_type() { return F_SHORT; }
+
+template<> inline EFeatureType CSparseKernel<BYTE>::get_feature_type() { return F_BYTE; }
+
+template<> inline EFeatureType CSparseKernel<CHAR>::get_feature_type() { return F_CHAR; }
 #endif

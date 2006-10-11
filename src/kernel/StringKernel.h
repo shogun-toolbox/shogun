@@ -17,7 +17,7 @@
 template <class ST> class CStringKernel : public CKernel
 {
 	public:
-		CStringKernel(LONG cachesize) : CKernel(cachesize)
+		CStringKernel(INT cachesize) : CKernel(cachesize)
 		{
 		}
 

@@ -37,16 +37,16 @@ template <class ST> class CSimpleKernel : public CKernel
 		{
 			CKernel::init(l,r,do_init);
 
-			if ( (l->get_feature_class() != C_SIMPLE) ||
-					(r->get_feature_class() != C_SIMPLE) ||
-					((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
-			{
-				CIO::message(M_ERROR, "train or test features not of type SIMPLE, or #features mismatch (l:%d vs. r:%d)\n",
-						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) l)->get_num_features());
-			}
-
+			ASSERT(l->get_feature_class() == C_SIMPLE);
+			ASSERT(r->get_feature_class() == C_SIMPLE);
 			ASSERT(l->get_feature_type()==this->get_feature_type());
 			ASSERT(r->get_feature_type()==this->get_feature_type());
+
+			if ( ((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
+			{
+				CIO::message(M_ERROR, "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) l)->get_num_features());
+			}
 			return true;
 		}
 
