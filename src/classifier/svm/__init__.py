@@ -1,1 +1,1 @@
-__all__ = ['SVM', 'SVM_light','LibSVM']
+__all__ = ['SVM']

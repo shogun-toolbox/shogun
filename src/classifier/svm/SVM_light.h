@@ -24,7 +24,7 @@
 
 #include "lib/config.h"
 
-#ifdef USE_SVMLIGHT
+//#ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM.h"
 #include "kernel/Kernel.h"
 #include "lib/Mathmatics.h"
@@ -335,5 +335,5 @@ protected:
 #endif
 
 };
-#endif //USE_SVMLIGHT
+//#endif //USE_SVMLIGHT
 #endif
