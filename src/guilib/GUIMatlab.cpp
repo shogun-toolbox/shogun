@@ -1448,6 +1448,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					INT len=0;
 					CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
 					CAlphabet* alpha = new CAlphabet(al, len);
+					alpha->clear_histogram();
 
 					f= new CCharFeatures(alpha, 0);
 					INT num_vec=mxGetN(mx_feat);
@@ -1459,7 +1460,18 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					for (LONG l=0; l<((LONG) num_vec)* ((LONG) num_feat); l++)
 						fm[l]=c[l];
 
-					((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+					alpha->add_string_to_histogram(fm, ((LONG) num_vec)* ((LONG) num_feat));
+						CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+						CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+
+					if (alpha->check_alphabet_size() && alpha->check_alphabet())
+						((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+					else
+					{
+						((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+						delete f;
+						f=NULL;
+					}
 				}
 				else
 					CIO::message(M_ERROR, "please specify alphabet!\n");
@@ -1472,6 +1484,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					INT len=0;
 					CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
 					CAlphabet* alpha = new CAlphabet(al, len);
+					alpha->clear_histogram();
 
 					f= new CByteFeatures(alpha, 0);
 					INT num_vec=mxGetN(mx_feat);
@@ -1480,10 +1493,18 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					ASSERT(fm);
 					BYTE* c=(BYTE*) mxGetData(mx_feat);
 
+					alpha->add_string_to_histogram(fm, ((LONG) num_vec)* ((LONG) num_feat));
 					for (LONG l=0; l<((LONG) num_vec)* ((LONG) num_feat); l++)
 						fm[l]=c[l];
 
-					((CByteFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+					if (alpha->check_alphabet_size() && alpha->check_alphabet())
+						((CByteFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+					else
+					{
+						((CByteFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+						delete f;
+						f=NULL;
+					}
 				}
 				else
 					CIO::message(M_ERROR, "please specify alphabet!\n");

@@ -58,8 +58,8 @@ class CAlphabet
 		void clear_histogram();
 
 		/// make histogram for whole string
-		void add_string_to_histogram(CHAR* p, INT len);
-		void add_string_to_histogram(BYTE* p, INT len);
+		void add_string_to_histogram(CHAR* p, LONG len);
+		void add_string_to_histogram(BYTE* p, LONG len);
 
 		/// add to histogram
 		inline void add_byte_to_histogram(BYTE p)

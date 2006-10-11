@@ -187,10 +187,10 @@ void CAlphabet::init_map_table()
 			break;
 
 		case DNA:
-			valid_chars[(BYTE) 'A']=B_A;
-			valid_chars[(BYTE) 'C']=B_C;
-			valid_chars[(BYTE) 'G']=B_G;
-			valid_chars[(BYTE) 'T']=B_T;	
+			valid_chars[(BYTE) 'A']=1;
+			valid_chars[(BYTE) 'C']=1;
+			valid_chars[(BYTE) 'G']=1;
+			valid_chars[(BYTE) 'T']=1;	
 
 			maptable_to_bin[(BYTE) 'A']=B_A;
 			maptable_to_bin[(BYTE) 'C']=B_C;
@@ -338,15 +338,15 @@ void CAlphabet::clear_histogram()
 	memset(histogram, 0, sizeof(LONG) * (1 << (sizeof(BYTE)*8)));
 }
 
-void CAlphabet::add_string_to_histogram(BYTE* p, INT len)
+void CAlphabet::add_string_to_histogram(BYTE* p, LONG len)
 {
-	for (INT i=0; i<len; i++)
+	for (LONG i=0; i<len; i++)
 		add_byte_to_histogram(p[i]);
 }
 
-void CAlphabet::add_string_to_histogram(CHAR* p, INT len)
+void CAlphabet::add_string_to_histogram(CHAR* p, LONG len)
 {
-	for (INT i=0; i<len; i++)
+	for (LONG i=0; i<len; i++)
 		add_byte_to_histogram(p[i]);
 }
 
