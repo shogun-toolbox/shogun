@@ -241,8 +241,14 @@ enum E_ALPHABET
 	/// RAW BYTE - [0-255]
 	RAWBYTE=4,
 
+	/// IUPAC_NUCLEIC_ACID
+	IUPAC_NUCLEIC_ACID=5,
+
+	/// IUPAC_AMINO_ACID
+	IUPAC_AMINO_ACID=6,
+
 	/// NONE - type has no alphabet
-	NONE=5
+	NONE=7
 };
 
 //@}

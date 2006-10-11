@@ -20,7 +20,7 @@ const BYTE CAlphabet::B_C=1;
 const BYTE CAlphabet::B_G=2;
 const BYTE CAlphabet::B_T=3;
 const BYTE CAlphabet::MAPTABLE_UNDEF=0xff;
-const CHAR* CAlphabet::alphabet_names[]={"DNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "NONE", "UNKNOWN"};
+const CHAR* CAlphabet::alphabet_names[]={"DNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
 
 CAlphabet::CAlphabet(CHAR* al, INT len)
 {
@@ -37,6 +37,10 @@ CAlphabet::CAlphabet(CHAR* al, INT len)
 	else if (len>=(INT) strlen("BYTE") && !strncmp(al, "BYTE", strlen("BYTE")) || 
 			(len>=(INT) strlen("RAW") && !strncmp(al, "RAW", strlen("RAW"))))
 		alpha = RAWBYTE;
+	else if (len>=(INT) strlen("IUPAC_NUCLEIC_ACID") && !strncmp(al, "IUPAC_NUCLEIC_ACID", strlen("IUPAC_NUCLEIC_ACID")))
+		alpha = IUPAC_NUCLEIC_ACID;
+	else if (len>=(INT) strlen("IUPAC_AMINO_ACID") && !strncmp(al, "IUPAC_AMINO_ACID", strlen("IUPAC_AMINO_ACID")))
+		alpha = IUPAC_AMINO_ACID;
 	else
 		CIO::message(M_ERROR, "unknown alphabet %s\n", al);
 	
@@ -78,6 +82,12 @@ bool CAlphabet::set_alphabet(E_ALPHABET alpha)
 			break;
 		case RAWBYTE:
 			num_symbols = 256;
+			break;
+		case IUPAC_NUCLEIC_ACID:
+			num_symbols = 16;
+			break;
+		case IUPAC_AMINO_ACID:
+			num_symbols = 23;
 			break;
 		case NONE:
 			num_symbols = 0;
@@ -129,8 +139,8 @@ void CAlphabet::init_map_table()
 			maptable_to_char[(BYTE) 3]='4';
 			maptable_to_char[(BYTE) 4]='5';
 			maptable_to_char[(BYTE) 5]='6';	//Translation 012345->'123456'
-
 			break;
+
 		case PROTEIN:
 			{
 				INT skip=0 ;
@@ -146,6 +156,7 @@ void CAlphabet::init_map_table()
 				} ;                   //Translation 012345->acde...xy -- the protein code
 			} ;
 			break;
+
 		case ALPHANUM:
 			{
 				for (i=0; i<26; i++)
@@ -162,6 +173,7 @@ void CAlphabet::init_map_table()
 				} ;        //Translation 012345->acde...xy0123456789
 			} ;
 			break;
+
 		case RAWBYTE:
 			{
 				//identity
@@ -173,6 +185,7 @@ void CAlphabet::init_map_table()
 				}
 			}
 			break;
+
 		case DNA:
 			valid_chars[(BYTE) 'A']=B_A;
 			valid_chars[(BYTE) 'C']=B_C;
@@ -189,6 +202,132 @@ void CAlphabet::init_map_table()
 			maptable_to_char[B_G]='G';
 			maptable_to_char[B_T]='T';
 			break;
+
+		case IUPAC_NUCLEIC_ACID:
+			valid_chars[(BYTE) 'A']=1; // A	Adenine
+			valid_chars[(BYTE) 'C']=1; // C	Cytosine
+			valid_chars[(BYTE) 'G']=1; // G	Guanine
+			valid_chars[(BYTE) 'T']=1; // T	Thymine
+			valid_chars[(BYTE) 'U']=1; // U	Uracil
+			valid_chars[(BYTE) 'R']=1; // R	Purine (A or G)
+			valid_chars[(BYTE) 'Y']=1; // Y	Pyrimidine (C, T, or U)
+			valid_chars[(BYTE) 'M']=1; // M	C or A
+			valid_chars[(BYTE) 'K']=1; // K	T, U, or G
+			valid_chars[(BYTE) 'W']=1; // W	T, U, or A
+			valid_chars[(BYTE) 'S']=1; // S	C or G
+			valid_chars[(BYTE) 'B']=1; // B	C, T, U, or G (not A)
+			valid_chars[(BYTE) 'D']=1; // D	A, T, U, or G (not C)
+			valid_chars[(BYTE) 'H']=1; // H	A, T, U, or C (not G)
+			valid_chars[(BYTE) 'V']=1; // V	A, C, or G (not T, not U)
+			valid_chars[(BYTE) 'N']=1; // N	Any base (A, C, G, T, or U)
+
+			maptable_to_bin[(BYTE) 'A']=0; // A	Adenine
+			maptable_to_bin[(BYTE) 'C']=1; // C	Cytosine
+			maptable_to_bin[(BYTE) 'G']=2; // G	Guanine
+			maptable_to_bin[(BYTE) 'T']=3; // T	Thymine
+			maptable_to_bin[(BYTE) 'U']=4; // U	Uracil
+			maptable_to_bin[(BYTE) 'R']=5; // R	Purine (A or G)
+			maptable_to_bin[(BYTE) 'Y']=6; // Y	Pyrimidine (C, T, or U)
+			maptable_to_bin[(BYTE) 'M']=7; // M	C or A
+			maptable_to_bin[(BYTE) 'K']=8; // K	T, U, or G
+			maptable_to_bin[(BYTE) 'W']=9; // W	T, U, or A
+			maptable_to_bin[(BYTE) 'S']=10; // S	C or G
+			maptable_to_bin[(BYTE) 'B']=11; // B	C, T, U, or G (not A)
+			maptable_to_bin[(BYTE) 'D']=12; // D	A, T, U, or G (not C)
+			maptable_to_bin[(BYTE) 'H']=13; // H	A, T, U, or C (not G)
+			maptable_to_bin[(BYTE) 'V']=14; // V	A, C, or G (not T, not U)
+			maptable_to_bin[(BYTE) 'N']=15; // N	Any base (A, C, G, T, or U)
+
+			maptable_to_char[0]=(BYTE) 'A'; // A	Adenine
+			maptable_to_char[1]=(BYTE) 'C'; // C	Cytosine
+			maptable_to_char[2]=(BYTE) 'G'; // G	Guanine
+			maptable_to_char[3]=(BYTE) 'T'; // T	Thymine
+			maptable_to_char[4]=(BYTE) 'U'; // U	Uracil
+			maptable_to_char[5]=(BYTE) 'R'; // R	Purine (A or G)
+			maptable_to_char[6]=(BYTE) 'Y'; // Y	Pyrimidine (C, T, or U)
+			maptable_to_char[7]=(BYTE) 'M'; // M	C or A
+			maptable_to_char[8]=(BYTE) 'K'; // K	T, U, or G
+			maptable_to_char[9]=(BYTE) 'W'; // W	T, U, or A
+			maptable_to_char[10]=(BYTE) 'S'; // S	C or G
+			maptable_to_char[11]=(BYTE) 'B'; // B	C, T, U, or G (not A)
+			maptable_to_char[12]=(BYTE) 'D'; // D	A, T, U, or G (not C)
+			maptable_to_char[13]=(BYTE) 'H'; // H	A, T, U, or C (not G)
+			maptable_to_char[14]=(BYTE) 'V'; // V	A, C, or G (not T, not U)
+			maptable_to_char[15]=(BYTE) 'N'; // N	Any base (A, C, G, T, or U)
+			break;
+
+		case IUPAC_AMINO_ACID:
+			valid_chars[(BYTE) 'A']=0;  //A	Ala	Alanine
+			valid_chars[(BYTE) 'R']=1;  //R	Arg	Arginine
+			valid_chars[(BYTE) 'N']=2;  //N	Asn	Asparagine
+			valid_chars[(BYTE) 'D']=3;  //D	Asp	Aspartic acid
+			valid_chars[(BYTE) 'C']=4;  //C	Cys	Cysteine
+			valid_chars[(BYTE) 'Q']=5;  //Q	Gln	Glutamine
+			valid_chars[(BYTE) 'E']=6;  //E	Glu	Glutamic acid
+			valid_chars[(BYTE) 'G']=7;  //G	Gly	Glycine
+			valid_chars[(BYTE) 'H']=8;  //H	His	Histidine
+			valid_chars[(BYTE) 'I']=9;  //I	Ile	Isoleucine
+			valid_chars[(BYTE) 'L']=10; //L	Leu	Leucine
+			valid_chars[(BYTE) 'K']=11; //K	Lys	Lysine
+			valid_chars[(BYTE) 'M']=12; //M	Met	Methionine
+			valid_chars[(BYTE) 'F']=13; //F	Phe	Phenylalanine
+			valid_chars[(BYTE) 'P']=14; //P	Pro	Proline
+			valid_chars[(BYTE) 'S']=15; //S	Ser	Serine
+			valid_chars[(BYTE) 'T']=16; //T	Thr	Threonine
+			valid_chars[(BYTE) 'W']=17; //W	Trp	Tryptophan
+			valid_chars[(BYTE) 'Y']=18; //Y	Tyr	Tyrosine
+			valid_chars[(BYTE) 'V']=19; //V	Val	Valine
+			valid_chars[(BYTE) 'B']=20; //B	Asx	Aspartic acid or Asparagine
+			valid_chars[(BYTE) 'Z']=21; //Z	Glx	Glutamine or Glutamic acid
+			valid_chars[(BYTE) 'X']=22; //X	Xaa	Any amino acid
+
+			maptable_to_bin[(BYTE) 'A']=0;  //A	Ala	Alanine
+			maptable_to_bin[(BYTE) 'R']=1;  //R	Arg	Arginine
+			maptable_to_bin[(BYTE) 'N']=2;  //N	Asn	Asparagine
+			maptable_to_bin[(BYTE) 'D']=3;  //D	Asp	Aspartic acid
+			maptable_to_bin[(BYTE) 'C']=4;  //C	Cys	Cysteine
+			maptable_to_bin[(BYTE) 'Q']=5;  //Q	Gln	Glutamine
+			maptable_to_bin[(BYTE) 'E']=6;  //E	Glu	Glutamic acid
+			maptable_to_bin[(BYTE) 'G']=7;  //G	Gly	Glycine
+			maptable_to_bin[(BYTE) 'H']=8;  //H	His	Histidine
+			maptable_to_bin[(BYTE) 'I']=9;  //I	Ile	Isoleucine
+			maptable_to_bin[(BYTE) 'L']=10; //L	Leu	Leucine
+			maptable_to_bin[(BYTE) 'K']=11; //K	Lys	Lysine
+			maptable_to_bin[(BYTE) 'M']=12; //M	Met	Methionine
+			maptable_to_bin[(BYTE) 'F']=13; //F	Phe	Phenylalanine
+			maptable_to_bin[(BYTE) 'P']=14; //P	Pro	Proline
+			maptable_to_bin[(BYTE) 'S']=15; //S	Ser	Serine
+			maptable_to_bin[(BYTE) 'T']=16; //T	Thr	Threonine
+			maptable_to_bin[(BYTE) 'W']=17; //W	Trp	Tryptophan
+			maptable_to_bin[(BYTE) 'Y']=18; //Y	Tyr	Tyrosine
+			maptable_to_bin[(BYTE) 'V']=19; //V	Val	Valine
+			maptable_to_bin[(BYTE) 'B']=20; //B	Asx	Aspartic acid or Asparagine
+			maptable_to_bin[(BYTE) 'Z']=21; //Z	Glx	Glutamine or Glutamic acid
+			maptable_to_bin[(BYTE) 'X']=22; //X	Xaa	Any amino acid
+
+			maptable_to_char[0]=(BYTE) 'A';  //A	Ala	Alanine
+			maptable_to_char[1]=(BYTE) 'R';  //R	Arg	Arginine
+			maptable_to_char[2]=(BYTE) 'N';  //N	Asn	Asparagine
+			maptable_to_char[3]=(BYTE) 'D';  //D	Asp	Aspartic acid
+			maptable_to_char[4]=(BYTE) 'C';  //C	Cys	Cysteine
+			maptable_to_char[5]=(BYTE) 'Q';  //Q	Gln	Glutamine
+			maptable_to_char[6]=(BYTE) 'E';  //E	Glu	Glutamic acid
+			maptable_to_char[7]=(BYTE) 'G';  //G	Gly	Glycine
+			maptable_to_char[8]=(BYTE) 'H';  //H	His	Histidine
+			maptable_to_char[9]=(BYTE) 'I';  //I	Ile	Isoleucine
+			maptable_to_char[10]=(BYTE) 'L'; //L	Leu	Leucine
+			maptable_to_char[11]=(BYTE) 'K'; //K	Lys	Lysine
+			maptable_to_char[12]=(BYTE) 'M'; //M	Met	Methionine
+			maptable_to_char[13]=(BYTE) 'F'; //F	Phe	Phenylalanine
+			maptable_to_char[14]=(BYTE) 'P'; //P	Pro	Proline
+			maptable_to_char[15]=(BYTE) 'S'; //S	Ser	Serine
+			maptable_to_char[16]=(BYTE) 'T'; //T	Thr	Threonine
+			maptable_to_char[17]=(BYTE) 'W'; //W	Trp	Tryptophan
+			maptable_to_char[18]=(BYTE) 'Y'; //Y	Tyr	Tyrosine
+			maptable_to_char[19]=(BYTE) 'V'; //V	Val	Valine
+			maptable_to_char[20]=(BYTE) 'B'; //B	Asx	Aspartic acid or Asparagine
+			maptable_to_char[21]=(BYTE) 'Z'; //Z	Glx	Glutamine or Glutamic acid
+			maptable_to_char[22]=(BYTE) 'X'; //X	Xaa	Any amino acid
 		default:
 			break; //leave uninitialised
 	};
@@ -315,11 +454,17 @@ const CHAR* CAlphabet::get_alphabet_name(E_ALPHABET alphabet)
 		case RAWBYTE:
 			idx=4;
 			break;
-		case NONE:
+		case IUPAC_NUCLEIC_ACID:
 			idx=5;
 			break;
-		default:
+		case IUPAC_AMINO_ACID:
 			idx=6;
+			break;
+		case NONE:
+			idx=7;
+			break;
+		default:
+			idx=8;
 			break;
 	}
 	return alphabet_names[idx];
