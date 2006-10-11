@@ -12,13 +12,13 @@
 #define _SPARSELINEARKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SparseRealKernel.h"
+#include "kernel/SparseKernel.h"
 #include "features/SparseRealFeatures.h"
 
-class CSparseLinearKernel: public CSparseRealKernel
+class CSparseLinearKernel: public CSparseKernel<DREAL>
 {
  public:
-  CSparseLinearKernel(LONG size, bool do_rescale=true, DREAL scale=1.0);
+  CSparseLinearKernel(INT size, bool do_rescale=true, DREAL scale=1.0);
   ~CSparseLinearKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);

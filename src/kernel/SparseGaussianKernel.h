@@ -12,13 +12,13 @@
 #define _SPARSEGAUSSIANKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SparseRealKernel.h"
+#include "kernel/SparseKernel.h"
 #include "features/SparseRealFeatures.h"
 
-class CSparseGaussianKernel: public CSparseRealKernel
+class CSparseGaussianKernel: public CSparseKernel<DREAL>
 {
  public:
-  CSparseGaussianKernel(LONG size, double width);
+  CSparseGaussianKernel(INT size, double width);
   ~CSparseGaussianKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);

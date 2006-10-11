@@ -13,7 +13,7 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CCommUlongStringKernel::CCommUlongStringKernel(LONG size, bool use_sign_, 
+CCommUlongStringKernel::CCommUlongStringKernel(INT size, bool use_sign_, 
 											 ENormalizationType normalization_) 
   : CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
 	use_sign(use_sign_), normalization(normalization_)

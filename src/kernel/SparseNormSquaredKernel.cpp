@@ -15,8 +15,8 @@
 #include "features/SparseRealFeatures.h"
 #include "features/SparseFeatures.h"
 
-CSparseNormSquaredKernel::CSparseNormSquaredKernel(LONG size)
-  : CSparseRealKernel(size)
+CSparseNormSquaredKernel::CSparseNormSquaredKernel(INT size)
+  : CSparseKernel<DREAL>(size)
 {
 }
 
@@ -27,7 +27,7 @@ CSparseNormSquaredKernel::~CSparseNormSquaredKernel()
   
 bool CSparseNormSquaredKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CSparseRealKernel::init(l, r, do_init); 
+	CSparseKernel<DREAL>::init(l, r, do_init); 
 
 	return true;
 }

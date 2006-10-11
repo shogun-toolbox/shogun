@@ -12,13 +12,13 @@
 #define _SPARSENORMSQUARED_H__
 
 #include "lib/common.h"
-#include "kernel/SparseRealKernel.h"
+#include "kernel/SparseKernel.h"
 #include "features/SparseRealFeatures.h"
 
-class CSparseNormSquaredKernel: public CSparseRealKernel
+class CSparseNormSquaredKernel: public CSparseKernel<DREAL>
 {
  public:
-  CSparseNormSquaredKernel(LONG size);
+  CSparseNormSquaredKernel(INT size);
   ~CSparseNormSquaredKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);

@@ -12,13 +12,13 @@
 #define _SPARSEPOLYKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SparseRealKernel.h"
+#include "kernel/SparseKernel.h"
 #include "features/SparseRealFeatures.h"
 
-class CSparsePolyKernel: public CSparseRealKernel
+class CSparsePolyKernel: public CSparseKernel<DREAL>
 {
  public:
-  CSparsePolyKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);
+  CSparsePolyKernel(INT size, INT degree, bool inhomogene, bool use_normalization=true);
   ~CSparsePolyKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);

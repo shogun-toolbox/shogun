@@ -15,8 +15,8 @@
 #include "features/SparseRealFeatures.h"
 #include "features/SparseFeatures.h"
 
-CSparseGaussianKernel::CSparseGaussianKernel(LONG size, double w)
-  : CSparseRealKernel(size),width(w),sq_lhs(NULL),sq_rhs(NULL)
+CSparseGaussianKernel::CSparseGaussianKernel(INT size, double w)
+  : CSparseKernel<DREAL>(size),width(w),sq_lhs(NULL),sq_rhs(NULL)
 {
 }
 
@@ -33,7 +33,7 @@ bool CSparseGaussianKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	///free sq_{r,l}hs first
 	cleanup();
 
-	CSparseRealKernel::init(l, r, do_init); 
+	CSparseKernel<DREAL>::init(l, r, do_init); 
 
 	sq_lhs= new DREAL[lhs->get_num_vectors()];
 	ASSERT(sq_lhs);

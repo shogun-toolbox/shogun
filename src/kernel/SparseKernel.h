@@ -40,13 +40,11 @@ template <class ST> class CSparseKernel : public CKernel
 			ASSERT(r->get_feature_class() == C_SPARSE);
 			ASSERT(l->get_feature_type()==this->get_feature_type());
 			ASSERT(r->get_feature_type()==this->get_feature_type());
-			lhs=(CSparseFeatures<ST>*) l;
-			rhs=(CSparseFeatures<ST>*) r;
 
-			if (((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
+			if (((CSparseFeatures<ST>*) lhs)->get_num_features() != ((CSparseFeatures<ST>*) rhs)->get_num_features() )
 			{
 				CIO::message(M_ERROR, "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
-						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) l)->get_num_features());
+						((CSparseFeatures<ST>*) lhs)->get_num_features(),((CSparseFeatures<ST>*)rhs)->get_num_features());
 			}
 			return true;
 		}

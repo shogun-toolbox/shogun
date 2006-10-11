@@ -16,8 +16,8 @@
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/SparseKernel.h"
 
-CSparseLinearKernel::CSparseLinearKernel(LONG size, bool do_rescale_, DREAL scale_)
-  : CSparseRealKernel(size),scale(scale_),do_rescale(do_rescale_), normal_length(0), normal(NULL)
+CSparseLinearKernel::CSparseLinearKernel(INT size, bool do_rescale_, DREAL scale_)
+  : CSparseKernel<DREAL>(size),scale(scale_),do_rescale(do_rescale_), normal_length(0), normal(NULL)
 {
 	properties |= KP_LINADD;
 }
@@ -29,7 +29,7 @@ CSparseLinearKernel::~CSparseLinearKernel()
   
 bool CSparseLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
-	CSparseRealKernel::init(l, r, do_init); 
+	CSparseKernel<DREAL>::init(l, r, do_init); 
 
 	if (do_init)
 		init_rescale() ;
