@@ -48,101 +48,98 @@ extern "C" {
 
 # define MAXSHRINK 50000
 
-class CSVMLight:public CSVM
-{
- protected:
-  typedef struct model {
-    INT    sv_num;	
-    INT    at_upper_bound;
-    double  b;
-    INT*	supvec;
-    double  *alpha;
-    INT    *index;       /* index from docnum to position in model */
-    INT    totdoc;       /* number of training documents */
-    CKernel* kernel; /* kernel */
-    
-    /* the following values are not written to file */
-    double  loo_error,loo_recall,loo_precision; /* leave-one-out estimates */
-    double  xa_error,xa_recall,xa_precision;    /* xi/alpha estimates */
-  } MODEL;
-  
-  /** the type used for storing feature ids */
-  typedef INT FNUM;
-  
-  /** the type used for storing feature values */
-  typedef double FVAL;  
+typedef struct model {
+INT    sv_num;	
+INT    at_upper_bound;
+double  b;
+INT*	supvec;
+double  *alpha;
+INT    *index;       /* index from docnum to position in model */
+INT    totdoc;       /* number of training documents */
+CKernel* kernel; /* kernel */
 
-  typedef struct learn_parm {
-	  INT   type;                 /* selects between regression and
-									  classification */
-	  double svm_c;                /* upper bound C on alphas */
-	  double eps;                  /* regression epsilon (eps=1.0 for
-									  classification */
-	  double svm_costratio;        /* factor to multiply C for positive examples */
-	  double transduction_posratio;/* fraction of unlabeled examples to be */
-	  /* classified as positives */
-	  INT   biased_hyperplane;    /* if nonzero, use hyperplane w*x+b=0 
-									  otherwise w*x=0 */
-	  INT   sharedslack;          /* if nonzero, it will use the shared
-									  slack variable mode in
-									  svm_learn_optimization. It requires
-									  that the slackid is set for every
-									  training example */
-	  INT   svm_maxqpsize;        /* size q of working set */
-	  INT   svm_newvarsinqp;      /* new variables to enter the working set 
-									  in each iteration */
-	  INT   kernel_cache_size;    /* size of kernel cache in megabytes */
-	  double epsilon_crit;         /* tolerable error for distances used 
-									  in stopping criterion */
-	  double epsilon_shrink;       /* how much a multiplier should be above 
-									  zero for shrinking */
-	  INT   svm_iter_to_shrink;   /* iterations h after which an example can
-									  be removed by shrinking */
-	  INT   maxiter;              /* number of iterations after which the
-									  optimizer terminates, if there was
-									  no progress in maxdiff */
-	  INT   remove_inconsistent;  /* exclude examples with alpha at C and 
-									  retrain */
-	  INT   skip_final_opt_check; /* do not check KT-Conditions at the end of
-									  optimization for examples removed by 
-									  shrinking. WARNING: This might lead to 
-									  sub-optimal solutions! */
-	  INT   compute_loo;          /* if nonzero, computes leave-one-out
-									  estimates */
-	  double rho;                  /* parameter in xi/alpha-estimates and for
-									  pruning leave-one-out range [1..2] */
-	  INT   xa_depth;             /* parameter in xi/alpha-estimates upper
-									  bounding the number of SV the current
-									  alpha_t is distributed over */
-	  char predfile[200];          /* file for predicitions on unlabeled examples
-									  in transduction */
-	  char alphafile[200];         /* file to store optimal alphas in. use  
-									  empty string if alphas should not be 
-									  output */
+/* the following values are not written to file */
+double  loo_error,loo_recall,loo_precision; /* leave-one-out estimates */
+double  xa_error,xa_recall,xa_precision;    /* xi/alpha estimates */
+} MODEL;
 
-	  /* you probably do not want to touch the following */
-	  double epsilon_const;        /* tolerable error on eq-constraint */
-	  double epsilon_a;            /* tolerable error on alphas at bounds */
-	  double opt_precision;        /* precision of solver, set to e.g. 1e-21 
-									  if you get convergence problems */
+/** the type used for storing feature ids */
+typedef INT FNUM;
 
-	  /* the following are only for internal use */
-	  INT   svm_c_steps;          /* do so many steps for finding optimal C */
-	  double svm_c_factor;         /* increase C by this factor every step */
-	  double svm_costratio_unlab;
-	  double svm_unlabbound;
-	  double *svm_cost;            /* individual upper bounds for each var */
-  } LEARN_PARM;
+/** the type used for storing feature values */
+typedef double FVAL;  
 
-  typedef struct timing_profile {
-	  INT   time_kernel;
-	  INT   time_opti;
-	  INT   time_shrink;
-	  INT   time_update;
-	  INT   time_model;
-	  INT   time_check;
-	  INT   time_select;
-  } TIMING;
+typedef struct learn_parm {
+  INT   type;                 /* selects between regression and
+								  classification */
+  double svm_c;                /* upper bound C on alphas */
+  double eps;                  /* regression epsilon (eps=1.0 for
+								  classification */
+  double svm_costratio;        /* factor to multiply C for positive examples */
+  double transduction_posratio;/* fraction of unlabeled examples to be */
+  /* classified as positives */
+  INT   biased_hyperplane;    /* if nonzero, use hyperplane w*x+b=0 
+								  otherwise w*x=0 */
+  INT   sharedslack;          /* if nonzero, it will use the shared
+								  slack variable mode in
+								  svm_learn_optimization. It requires
+								  that the slackid is set for every
+								  training example */
+  INT   svm_maxqpsize;        /* size q of working set */
+  INT   svm_newvarsinqp;      /* new variables to enter the working set 
+								  in each iteration */
+  INT   kernel_cache_size;    /* size of kernel cache in megabytes */
+  double epsilon_crit;         /* tolerable error for distances used 
+								  in stopping criterion */
+  double epsilon_shrink;       /* how much a multiplier should be above 
+								  zero for shrinking */
+  INT   svm_iter_to_shrink;   /* iterations h after which an example can
+								  be removed by shrinking */
+  INT   maxiter;              /* number of iterations after which the
+								  optimizer terminates, if there was
+								  no progress in maxdiff */
+  INT   remove_inconsistent;  /* exclude examples with alpha at C and 
+								  retrain */
+  INT   skip_final_opt_check; /* do not check KT-Conditions at the end of
+								  optimization for examples removed by 
+								  shrinking. WARNING: This might lead to 
+								  sub-optimal solutions! */
+  INT   compute_loo;          /* if nonzero, computes leave-one-out
+								  estimates */
+  double rho;                  /* parameter in xi/alpha-estimates and for
+								  pruning leave-one-out range [1..2] */
+  INT   xa_depth;             /* parameter in xi/alpha-estimates upper
+								  bounding the number of SV the current
+								  alpha_t is distributed over */
+  char predfile[200];          /* file for predicitions on unlabeled examples
+								  in transduction */
+  char alphafile[200];         /* file to store optimal alphas in. use  
+								  empty string if alphas should not be 
+								  output */
+
+  /* you probably do not want to touch the following */
+  double epsilon_const;        /* tolerable error on eq-constraint */
+  double epsilon_a;            /* tolerable error on alphas at bounds */
+  double opt_precision;        /* precision of solver, set to e.g. 1e-21 
+								  if you get convergence problems */
+
+  /* the following are only for internal use */
+  INT   svm_c_steps;          /* do so many steps for finding optimal C */
+  double svm_c_factor;         /* increase C by this factor every step */
+  double svm_costratio_unlab;
+  double svm_unlabbound;
+  double *svm_cost;            /* individual upper bounds for each var */
+} LEARN_PARM;
+
+typedef struct timing_profile {
+  INT   time_kernel;
+  INT   time_opti;
+  INT   time_shrink;
+  INT   time_update;
+  INT   time_model;
+  INT   time_check;
+  INT   time_select;
+} TIMING;
   
 
 typedef struct shrink_state {                                              
@@ -155,6 +152,8 @@ typedef struct shrink_state {
   double *last_lin;    /* for shrinking with linear kernel */
 } SHRINK_STATE;                                                         
 
+class CSVMLight:public CSVM
+{
  public:
   CSVMLight();
   virtual ~CSVMLight();
@@ -163,9 +162,6 @@ typedef struct shrink_state {
   bool setup_auc_maximization() ;
   inline EClassifierType get_classifier_type() { return CT_LIGHT; }
 
-  double model_length_s(MODEL*);
-  void   clear_vector_n(double *, INT);
-  void   read_model(CHAR *, MODEL *, INT, INT);
   INT   get_runtime();
   void   svm_learn();
   
@@ -204,16 +200,6 @@ typedef struct shrink_state {
 			  INT *misclassified, INT *inconsistent,INT* active2dnum, 
 			  INT *last_suboptimal_at, INT iteration) ;
 
-  INT   identify_inconsistent(double *, INT *, INT *, INT, LEARN_PARM *, 
-			       INT *, INT *);
-  INT   identify_misclassified(double *, INT *, INT,
-				MODEL *, INT *, INT *);
-  INT   identify_one_misclassified(double *, INT *, INT,
-				    MODEL *, INT *, INT *);
-  INT   incorporate_unlabeled_examples(MODEL *, INT *,INT *, INT *,
-					double *, double *, INT, double *,
-					INT *, INT *, INT, LEARN_PARM *);
-
   virtual void update_linear_component(INT* docs, INT *label, 
 							   INT *active2dnum, double *a, double* a_old,
 							   INT *working2dnum, INT totdoc,
@@ -250,28 +236,6 @@ typedef struct shrink_state {
 				      INT *inconsistent,
 				      INT *docs,MODEL *model,DREAL *aicache,
 				      double* maxdiff) ;
-  void compute_xa_estimates(MODEL *, INT *, INT *, INT, INT num, 
-			    double *, double *, LEARN_PARM *, double *, double *, double *);
-  double xa_estimate_error(MODEL *, INT *, INT *, INT, INT num, 
-			   double *, double *, LEARN_PARM *);
-  double xa_estimate_recall(MODEL *, INT *, INT *, INT, INT num, 
-			    double *, double *, LEARN_PARM *);
-  double xa_estimate_precision(MODEL *, INT *, INT *, INT, INT num, 
-			       double *, double *, LEARN_PARM *);
-  void avg_similarity_of_sv_of_one_class(MODEL *, INT num, double *, INT *, double *, double *);
-  double most_similar_sv_of_same_class(MODEL *, INT num, double *, INT, INT *, LEARN_PARM *);
-  double distribute_alpha_t_greedily(INT *, INT, INT num, double *, INT, INT *, LEARN_PARM *, double);
-  double distribute_alpha_t_greedily_noindex(MODEL *, INT num, double *, INT, INT *, LEARN_PARM *, double); 
-  double estimate_margin_vcdim(MODEL *, double, double);
-  double estimate_sphere(MODEL *);
-  double estimate_r_delta_average(INT num, INT); 
-  double estimate_r_delta(INT num, INT); 
-  double length_of_INTest_document_vector(INT num, INT); 
-  
-  void   write_model(FILE *, MODEL *);
-  void   write_prediction(CHAR *, MODEL *, double *, double *, INT *, INT *, INT, LEARN_PARM *);
-   void   write_alphas(CHAR *, double *, INT *, INT);
-
 protected:
    inline virtual DREAL compute_kernel(INT i, INT j)
 	   {

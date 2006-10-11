@@ -23,7 +23,7 @@ include .config-local
 endif
 
 ifeq (yes,$(USE_SWIG))
-TARGET=swig -Wall
+TARGET=swig
 endif
 
 SRCDIR = .
