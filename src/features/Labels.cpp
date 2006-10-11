@@ -14,6 +14,11 @@
 #include "lib/File.h"
 #include "lib/io.h"
 
+CLabels::CLabels(DREAL* labels, INT len) {
+   this->labels = labels;
+	num_labels = len ;
+}
+
 CLabels::CLabels(INT num_lab) : num_labels(num_lab)
 {
 	labels=new DREAL[num_lab];
@@ -33,7 +38,9 @@ CLabels::CLabels(CHAR* fname)
 
 CLabels::~CLabels()
 {
+#ifndef HAVE_SWIG
 	delete[] labels;
+#endif
 	num_labels=0;
 	labels=NULL;
 }
@@ -72,7 +79,9 @@ INT* CLabels::get_int_labels(INT &len)
 void CLabels::set_int_labels(INT * mylabels, INT len)
 {
 	num_labels = len ;
+#ifndef HAVE_SWIG
 	delete[] labels ;
+#endif
 	
 	labels = new DREAL[num_labels] ;
 	for (INT i=0; i<num_labels; i++)

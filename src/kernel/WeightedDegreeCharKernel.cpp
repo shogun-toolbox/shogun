@@ -16,7 +16,7 @@
 #include "features/Features.h"
 #include "features/CharFeatures.h"
 	
-CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
+CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(INT size, double* w, INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
 	: CSimpleKernel<CHAR>(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0), 
 	  max_mismatch(max_mismatch_), seq_length(0), 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm), block_computation(block), tries(d)
@@ -32,7 +32,7 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(LONG size, double* w, INT d
 		weights[i]=w[i];
 }
 
-CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(CCharFeatures* l, CCharFeatures* r, LONG size, double* w, INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
+CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(CCharFeatures* l, CCharFeatures* r, INT size, double* w, INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
 	: CSimpleKernel<CHAR>(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0), 
 	  max_mismatch(max_mismatch_), seq_length(0),
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm), block_computation(block), tries(d)

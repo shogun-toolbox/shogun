@@ -18,6 +18,7 @@
 class CLabels
 {
 	public:
+      CLabels(DREAL* labels, INT len);
 		CLabels(INT num_labels);
 		CLabels(CHAR* fname);
       CLabels(){;}

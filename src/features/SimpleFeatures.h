@@ -54,7 +54,9 @@ template <class ST> class CSimpleFeatures: public CFeatures
 
 	 virtual ~CSimpleFeatures()
 	 {
+#ifndef HAVE_SWIG
 		 delete[] feature_matrix;
+#endif
 		 delete feature_cache;
 	 }
   

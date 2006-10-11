@@ -37,6 +37,9 @@
   }
 }
 
+/* %typemap(in)  */
+
+
 %pythoncode %{
 
 def createDoubleArray(list):

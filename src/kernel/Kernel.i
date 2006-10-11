@@ -12,7 +12,6 @@
 %include "kernel/GaussianKernel.i"
 %include "kernel/WeightedDegreeCharKernel.i" 
 
-
 %extend CKernel {
 
    DREAL* getKernelMatrixReal(){

@@ -2,6 +2,7 @@
    #include "kernel/SimpleKernel.h" 
 %}
 
+%include "lib/common.i"
 %include "kernel/Kernel.i"
 %include "kernel/SimpleKernel.h"
 
