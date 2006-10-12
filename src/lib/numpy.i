@@ -6,6 +6,8 @@
 #include "stdio.h"
 #include <numpy/arrayobject.h>
 
+#include "lib/common.h"
+
 /* The following code originally appeared in enthought/kiva/agg/src/numeric.i,
  * author unknown.  It was translated from C++ to C by John Hunter.  Bill
  * Spotz has modified it slightly to fix some minor bugs, add some comments
@@ -257,6 +259,8 @@ int require_size(PyArrayObject* ary, int* size, int n) {
 
 %}
 
+%include "lib/common.i"
+
 /* TYPEMAP_IN macros
  *
  * This family of typemaps allows pure input C arguments of the form
@@ -283,7 +287,7 @@ int require_size(PyArrayObject* ary, int* size, int n) {
 
 /* One dimensional input arrays */
 %define TYPEMAP_IN1(type,typecode)
-%typemap(in) (type* IN_ARRAY1, int DIM1)
+%typemap(in) (type* IN_ARRAY1, INT DIM1)
              (PyArrayObject* array=NULL, int is_new_object) {
   int size[1] = {-1};
   array = obj_to_array_contiguous_allow_conversion($input, typecode, &is_new_object);
@@ -291,13 +295,14 @@ int require_size(PyArrayObject* ary, int* size, int n) {
   $1 = (type*) array->data;
   $2 = array->dimensions[0];
 }
-%typemap(freearg) (type* IN_ARRAY1, int DIM1) {
+%typemap(freearg) (type* IN_ARRAY1, INT DIM1) {
   if (is_new_object$argnum && array$argnum) Py_DECREF(array$argnum);
 }
 %enddef
 
 /* Define concrete examples of the TYPEMAP_IN1 macros */
 TYPEMAP_IN1(char,          PyArray_CHAR  )
+TYPEMAP_IN1(DREAL,          PyArray_DOUBLE  )
 TYPEMAP_IN1(unsigned char, PyArray_UBYTE )
 TYPEMAP_IN1(signed char,   PyArray_SBYTE )
 TYPEMAP_IN1(short,         PyArray_SHORT )
