@@ -34,7 +34,7 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
             CIO::message(M_MESSAGEONLY,"d1:%d\n",alphabet);
         }
 
-        void testAddParam3(double* feature_matrix, int num_feat, int num_vec,int alphabet) {
+        void testAddParam3(int alphabet, double* feature_matrix, int num_feat, int num_vec) {
             CIO::message(M_MESSAGEONLY,"d1:%d\n",alphabet);
         }
       void testNumpy(char *feature_matrix, int d1, int d2) {
@@ -46,6 +46,11 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
       }
 
       void testNumpy2(int *feature_matrix, int d1, int d2) {
+         CIO::message(M_MESSAGEONLY,"d1:%d\n",d1);
+         CIO::message(M_MESSAGEONLY,"d2:%d\n",d2);
+      }
+
+      void testNumpy3(double*feature_matrix, int d1, int d2) {
          CIO::message(M_MESSAGEONLY,"d1:%d\n",d1);
          CIO::message(M_MESSAGEONLY,"d2:%d\n",d2);
       }

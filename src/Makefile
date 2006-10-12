@@ -116,8 +116,13 @@ dist:	distclean
 	rm -f $(TAR).gz
 	tar -cvf $(TAR) -C ../../ shogun/src && gzip -9 $(TAR)
 
+ifeq (yes,$(USE_SWIG))
+install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
+	install -D -m755 $(SWIGLIBFILES) $(DESTDIR)
+else
 install: $(TARGET)
 	install -D -m755 $(TARGET) $(DESTDIR)$(BINDIR)
+endif
 
 dep:	depend
 depend:	Makefile .config lib/versionstring.h
@@ -133,7 +138,6 @@ lib/versionstring.h:	$(SVNEntries)
 $(OBJFILES): Makefile .config .depend lib/versionstring.h 
 
 ifeq (yes,$(USE_SWIG))
-#$(TARGET): $(SWIGLIBFILES)
 $(TARGET): $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
 else
 $(TARGET): $(OBJFILES) $(SRCFILES)
