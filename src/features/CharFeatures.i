@@ -9,10 +9,9 @@
 
 %apply (double* IN_ARRAY1, int DIM1) {(double* series, int size)};
 
-/*%apply (char *IN_ARRAY1, int DIM1) {char *feature_matrix, int num_feat};*/
+%apply (int PARA, char* IN_ARRAY2, int DIM1, int DIM2) {(int alphabet, char* feature_matrix, int num_feat, INT num_vec)};
 
-/* CCharFeatures(E_ALPHABET alphabet, CHAR* feature_matrix, INT num_feat, INT num_vec);*/
+%apply (int PARA, double* IN_ARRAY2, int DIM1, int DIM2) {(int alphabet, char* feature_matrix, int num_feat, INT num_vec)};
 
-%include "features/SimpleFeatures.i"
+%apply (double* IN_ARRAY2, int DIM1, int DIM2, int PARA ) {(char* feature_matrix, int num_feat, INT num_vec, int alphabet)};
 %include "features/CharFeatures.h"
-

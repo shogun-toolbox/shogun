@@ -25,7 +25,18 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
 		CCharFeatures(E_ALPHABET alphabet, CHAR* fname);
 
 		~CCharFeatures();
+      
+        void testAddParam(int alphabet, char* feature_matrix, int num_feat, int num_vec) {
+            CIO::message(M_MESSAGEONLY,"d1:%d\n",alphabet);
+        }
+        
+        void testAddParam2(int alphabet, double* feature_matrix, int num_feat, int num_vec) {
+            CIO::message(M_MESSAGEONLY,"d1:%d\n",alphabet);
+        }
 
+        void testAddParam3(double* feature_matrix, int num_feat, int num_vec,int alphabet) {
+            CIO::message(M_MESSAGEONLY,"d1:%d\n",alphabet);
+        }
       void testNumpy(char *feature_matrix, int d1, int d2) {
          CIO::message(M_MESSAGEONLY,"d1:%d\n",d1);
          CIO::message(M_MESSAGEONLY,"d2:%d\n",d2);

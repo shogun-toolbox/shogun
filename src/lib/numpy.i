@@ -338,6 +338,7 @@ TYPEMAP_IN2(PyObject,      PyArray_OBJECT)
 
 #undef TYPEMAP_IN2
 
+
 /* TYPEMAP_INPLACE macros
  *
  * This family of typemaps allows input/output C arguments of the form
@@ -486,3 +487,39 @@ TYPEMAP_ARGOUT2(double,        PyArray_DOUBLE)
 TYPEMAP_ARGOUT2(PyObject,      PyArray_OBJECT)
 
 #undef TYPEMAP_ARGOUT2
+
+
+/* Addtional stuff by Fabio*/
+
+ /* Two dimensional input arrays */
+%define TYPEMAP_IN2_ADD(type,typecode) 
+  %typemap(in) (type* IN_ARRAY2, int DIM1, int DIM2, int PARA )
+               (PyArrayObject* array=NULL, int is_new_object) {
+  printf("inside E_ALPABET typemap...\n");
+  int size[2] = {-1,-1};
+  $input = (IN_ARRAY2,DIM1,DIM2);
+  array = obj_to_array_contiguous_allow_conversion($input, typecode, &is_new_object);
+  if (!array || !require_dimensions(array,2) || !require_size(array,size,1)) SWIG_fail;
+  $4 = PARA;
+  $1 = (type*) array->data;
+  $2 = array->dimensions[0];
+  $3 = array->dimensions[1];
+}
+%typemap(freearg) (type* IN_ARRAY2, int DIM1, int DIM2,int PARA ) {
+  if (is_new_object$argnum && array$argnum) Py_DECREF(array$argnum);
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_IN2_ADD macros */
+TYPEMAP_IN2_ADD(char,          PyArray_CHAR  )
+TYPEMAP_IN2_ADD(unsigned char, PyArray_UBYTE )
+TYPEMAP_IN2_ADD(signed char,   PyArray_SBYTE )
+TYPEMAP_IN2_ADD(short,         PyArray_SHORT )
+TYPEMAP_IN2_ADD(int,           PyArray_INT   )
+TYPEMAP_IN2_ADD(long,          PyArray_LONG  )
+TYPEMAP_IN2_ADD(float,         PyArray_FLOAT )
+TYPEMAP_IN2_ADD(double,        PyArray_DOUBLE)
+TYPEMAP_IN2_ADD(PyObject,      PyArray_OBJECT)
+
+#undef TYPEMAP_IN2_ADD
+
