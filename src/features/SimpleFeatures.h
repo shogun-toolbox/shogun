@@ -149,7 +149,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	  num_vec=num_vectors;
 	  return feature_matrix;
   }
-  
+
   /** set feature matrix
       necessary to set feature_matrix, num_features, num_vectors, where
       num_features is the column offset, and columns are linear in memory

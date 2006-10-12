@@ -244,7 +244,7 @@ int require_size(PyArrayObject* ary, int* size, int n) {
     len = strlen(desired_dims);
     desired_dims[len-1] = ']';
     for (i = 0; i < n; i++) {
-      sprintf(s, "%d,", array_size(ary,i));                            
+      sprintf(s, "%ld,", (LONG) array_size(ary,i));                            
       strcat(actual_dims,s);
     }
     len = strlen(actual_dims);
@@ -301,22 +301,24 @@ int require_size(PyArrayObject* ary, int* size, int n) {
 %enddef
 
 /* Define concrete examples of the TYPEMAP_IN1 macros */
-TYPEMAP_IN1(char,          PyArray_CHAR  )
-TYPEMAP_IN1(DREAL,          PyArray_DOUBLE  )
-TYPEMAP_IN1(unsigned char, PyArray_UBYTE )
-TYPEMAP_IN1(signed char,   PyArray_SBYTE )
-TYPEMAP_IN1(short,         PyArray_SHORT )
-TYPEMAP_IN1(int,           PyArray_INT   )
-TYPEMAP_IN1(long,          PyArray_LONG  )
-TYPEMAP_IN1(float,         PyArray_FLOAT )
-TYPEMAP_IN1(double,        PyArray_DOUBLE)
-TYPEMAP_IN1(PyObject,      PyArray_OBJECT)
+TYPEMAP_IN1(CHAR,          NPY_CHAR )
+TYPEMAP_IN1(BYTE,          NPY_UBYTE )
+TYPEMAP_IN1(SHORT,         NPY_SHORT )
+TYPEMAP_IN1(WORD,          NPY_USHORT )
+TYPEMAP_IN1(INT,           NPY_INT )
+TYPEMAP_IN1(UINT,          NPY_UINT )
+TYPEMAP_IN1(LONG,          NPY_LONGLONG )
+TYPEMAP_IN1(ULONG,         NPY_ULONGLONG )
+TYPEMAP_IN1(SHORTREAL,     NPY_FLOAT )
+TYPEMAP_IN1(DREAL,         NPY_DOUBLE)
+TYPEMAP_IN1(LONGREAL,      NPY_LONGDOUBLE)
+TYPEMAP_IN1(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_IN1
 
  /* Two dimensional input arrays */
 %define TYPEMAP_IN2(type,typecode)
-  %typemap(in) (type* IN_ARRAY2, int DIM1, int DIM2)
+  %typemap(in) (type* IN_ARRAY2, INT DIM1, INT DIM2)
                (PyArrayObject* array=NULL, int is_new_object) {
   int size[2] = {-1,-1};
   array = obj_to_array_contiguous_allow_conversion($input, typecode, &is_new_object);
@@ -325,21 +327,24 @@ TYPEMAP_IN1(PyObject,      PyArray_OBJECT)
   $2 = array->dimensions[0];
   $3 = array->dimensions[1];
 }
-%typemap(freearg) (type* IN_ARRAY2, int DIM1, int DIM2) {
+%typemap(freearg) (type* IN_ARRAY2, INT DIM1, INT DIM2) {
   if (is_new_object$argnum && array$argnum) Py_DECREF(array$argnum);
 }
 %enddef
 
 /* Define concrete examples of the TYPEMAP_IN2 macros */
-TYPEMAP_IN2(char,          PyArray_CHAR  )
-TYPEMAP_IN2(unsigned char, PyArray_UBYTE )
-TYPEMAP_IN2(signed char,   PyArray_SBYTE )
-TYPEMAP_IN2(short,         PyArray_SHORT )
-TYPEMAP_IN2(int,           PyArray_INT   )
-TYPEMAP_IN2(long,          PyArray_LONG  )
-TYPEMAP_IN2(float,         PyArray_FLOAT )
-TYPEMAP_IN2(double,        PyArray_DOUBLE)
-TYPEMAP_IN2(PyObject,      PyArray_OBJECT)
+TYPEMAP_IN2(CHAR,          NPY_CHAR )
+TYPEMAP_IN2(BYTE,          NPY_UBYTE )
+TYPEMAP_IN2(SHORT,         NPY_SHORT )
+TYPEMAP_IN2(WORD,          NPY_USHORT )
+TYPEMAP_IN2(INT,           NPY_INT )
+TYPEMAP_IN2(UINT,          NPY_UINT )
+TYPEMAP_IN2(LONG,          NPY_LONGLONG )
+TYPEMAP_IN2(ULONG,         NPY_ULONGLONG )
+TYPEMAP_IN2(SHORTREAL,     NPY_FLOAT )
+TYPEMAP_IN2(DREAL,         NPY_DOUBLE)
+TYPEMAP_IN2(LONGREAL,      NPY_LONGDOUBLE)
+TYPEMAP_IN2(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_IN2
 
@@ -370,7 +375,7 @@ TYPEMAP_IN2(PyObject,      PyArray_OBJECT)
 
  /* One dimensional input/output arrays */
 %define TYPEMAP_INPLACE1(type,typecode)
-%typemap(in) (type* INPLACE_ARRAY1, int DIM1) (PyArrayObject* temp=NULL) {
+%typemap(in) (type* INPLACE_ARRAY1, INT DIM1) (PyArrayObject* temp=NULL) {
   int i;
   temp = obj_to_array_no_conversion($input,typecode);
   if (!temp  || !require_contiguous(temp)) SWIG_fail;
@@ -381,21 +386,24 @@ TYPEMAP_IN2(PyObject,      PyArray_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_INPLACE1 macro */
-TYPEMAP_INPLACE1(char,          PyArray_CHAR  )
-TYPEMAP_INPLACE1(unsigned char, PyArray_UBYTE )
-TYPEMAP_INPLACE1(signed char,   PyArray_SBYTE )
-TYPEMAP_INPLACE1(short,         PyArray_SHORT )
-TYPEMAP_INPLACE1(int,           PyArray_INT   )
-TYPEMAP_INPLACE1(long,          PyArray_LONG  )
-TYPEMAP_INPLACE1(float,         PyArray_FLOAT )
-TYPEMAP_INPLACE1(double,        PyArray_DOUBLE)
-TYPEMAP_INPLACE1(PyObject,      PyArray_OBJECT)
+TYPEMAP_INPLACE1(CHAR,          NPY_CHAR )
+TYPEMAP_INPLACE1(BYTE,          NPY_UBYTE )
+TYPEMAP_INPLACE1(SHORT,         NPY_SHORT )
+TYPEMAP_INPLACE1(WORD,          NPY_USHORT )
+TYPEMAP_INPLACE1(INT,           NPY_INT )
+TYPEMAP_INPLACE1(UINT,          NPY_UINT )
+TYPEMAP_INPLACE1(LONG,          NPY_LONGLONG )
+TYPEMAP_INPLACE1(ULONG,         NPY_ULONGLONG )
+TYPEMAP_INPLACE1(SHORTREAL,     NPY_FLOAT )
+TYPEMAP_INPLACE1(DREAL,         NPY_DOUBLE)
+TYPEMAP_INPLACE1(LONGREAL,      NPY_LONGDOUBLE)
+TYPEMAP_INPLACE1(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_INPLACE1
 
  /* Two dimensional input/output arrays */
 %define TYPEMAP_INPLACE2(type,typecode)
-  %typemap(in) (type* INPLACE_ARRAY2, int DIM1, int DIM2) (PyArrayObject* temp=NULL) {
+  %typemap(in) (type* INPLACE_ARRAY2, INT DIM1, INT DIM2) (PyArrayObject* temp=NULL) {
   temp = obj_to_array_no_conversion($input,typecode);
   if (!temp || !require_contiguous(temp)) SWIG_fail;
   $1 = (type*) temp->data;
@@ -405,15 +413,18 @@ TYPEMAP_INPLACE1(PyObject,      PyArray_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_INPLACE2 macro */
-TYPEMAP_INPLACE2(char,          PyArray_CHAR  )
-TYPEMAP_INPLACE2(unsigned char, PyArray_UBYTE )
-TYPEMAP_INPLACE2(signed char,   PyArray_SBYTE )
-TYPEMAP_INPLACE2(short,         PyArray_SHORT )
-TYPEMAP_INPLACE2(int,           PyArray_INT   )
-TYPEMAP_INPLACE2(long,          PyArray_LONG  )
-TYPEMAP_INPLACE2(float,         PyArray_FLOAT )
-TYPEMAP_INPLACE2(double,        PyArray_DOUBLE)
-TYPEMAP_INPLACE2(PyObject,      PyArray_OBJECT)
+TYPEMAP_INPLACE2(CHAR,          NPY_CHAR )
+TYPEMAP_INPLACE2(BYTE,          NPY_UBYTE )
+TYPEMAP_INPLACE2(SHORT,         NPY_SHORT )
+TYPEMAP_INPLACE2(WORD,          NPY_USHORT )
+TYPEMAP_INPLACE2(INT,           NPY_INT )
+TYPEMAP_INPLACE2(UINT,          NPY_UINT )
+TYPEMAP_INPLACE2(LONG,          NPY_LONGLONG )
+TYPEMAP_INPLACE2(ULONG,         NPY_ULONGLONG )
+TYPEMAP_INPLACE2(SHORTREAL,     NPY_FLOAT )
+TYPEMAP_INPLACE2(DREAL,         NPY_DOUBLE)
+TYPEMAP_INPLACE2(LONGREAL,      NPY_LONGDOUBLE)
+TYPEMAP_INPLACE2(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_INPLACE2
 
@@ -457,21 +468,24 @@ TYPEMAP_INPLACE2(PyObject,      PyArray_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_ARGOUT1 macro */
-TYPEMAP_ARGOUT1(char,          PyArray_CHAR  )
-TYPEMAP_ARGOUT1(unsigned char, PyArray_UBYTE )
-TYPEMAP_ARGOUT1(signed char,   PyArray_SBYTE )
-TYPEMAP_ARGOUT1(short,         PyArray_SHORT )
-TYPEMAP_ARGOUT1(int,           PyArray_INT   )
-TYPEMAP_ARGOUT1(long,          PyArray_LONG  )
-TYPEMAP_ARGOUT1(float,         PyArray_FLOAT )
-TYPEMAP_ARGOUT1(double,        PyArray_DOUBLE)
-TYPEMAP_ARGOUT1(PyObject,      PyArray_OBJECT)
+TYPEMAP_ARGOUT1(CHAR,          NPY_CHAR )
+TYPEMAP_ARGOUT1(BYTE,          NPY_UBYTE )
+TYPEMAP_ARGOUT1(SHORT,         NPY_SHORT )
+TYPEMAP_ARGOUT1(WORD,          NPY_USHORT )
+TYPEMAP_ARGOUT1(INT,           NPY_INT )
+TYPEMAP_ARGOUT1(UINT,          NPY_UINT )
+TYPEMAP_ARGOUT1(LONG,          NPY_LONGLONG )
+TYPEMAP_ARGOUT1(ULONG,         NPY_ULONGLONG )
+TYPEMAP_ARGOUT1(SHORTREAL,     NPY_FLOAT )
+TYPEMAP_ARGOUT1(DREAL,         NPY_DOUBLE)
+TYPEMAP_ARGOUT1(LONGREAL,      NPY_LONGDOUBLE)
+TYPEMAP_ARGOUT1(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_ARGOUT1
 
  /* Two dimensional input/output arrays */
 %define TYPEMAP_ARGOUT2(type,typecode)
-  %typemap(in) (type* ARGOUT_ARRAY2, int DIM1, int DIM2) (PyArrayObject* temp=NULL) {
+  %typemap(in) (type* ARGOUT_ARRAY2, INT DIM1, INT DIM2) (PyArrayObject* temp=NULL) {
   temp = obj_to_array_no_conversion($input,typecode);
   if (!temp || !require_contiguous(temp)) SWIG_fail;
   $1 = (type*) temp->data;
@@ -481,14 +495,17 @@ TYPEMAP_ARGOUT1(PyObject,      PyArray_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_ARGOUT2 macro */
-TYPEMAP_ARGOUT2(char,          PyArray_CHAR  )
-TYPEMAP_ARGOUT2(unsigned char, PyArray_UBYTE )
-TYPEMAP_ARGOUT2(signed char,   PyArray_SBYTE )
-TYPEMAP_ARGOUT2(short,         PyArray_SHORT )
-TYPEMAP_ARGOUT2(int,           PyArray_INT   )
-TYPEMAP_ARGOUT2(long,          PyArray_LONG  )
-TYPEMAP_ARGOUT2(float,         PyArray_FLOAT )
-TYPEMAP_ARGOUT2(double,        PyArray_DOUBLE)
-TYPEMAP_ARGOUT2(PyObject,      PyArray_OBJECT)
+TYPEMAP_ARGOUT2(CHAR,          NPY_CHAR )
+TYPEMAP_ARGOUT2(BYTE,          NPY_UBYTE )
+TYPEMAP_ARGOUT2(SHORT,         NPY_SHORT )
+TYPEMAP_ARGOUT2(WORD,          NPY_USHORT )
+TYPEMAP_ARGOUT2(INT,           NPY_INT )
+TYPEMAP_ARGOUT2(UINT,          NPY_UINT )
+TYPEMAP_ARGOUT2(LONG,          NPY_LONGLONG )
+TYPEMAP_ARGOUT2(ULONG,         NPY_ULONGLONG )
+TYPEMAP_ARGOUT2(SHORTREAL,     NPY_FLOAT )
+TYPEMAP_ARGOUT2(DREAL,         NPY_DOUBLE)
+TYPEMAP_ARGOUT2(LONGREAL,      NPY_LONGDOUBLE)
+TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_ARGOUT2

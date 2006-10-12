@@ -14,9 +14,10 @@
 #include "lib/File.h"
 #include "lib/io.h"
 
-CLabels::CLabels(DREAL* labels, INT len) {
-   this->labels = labels;
-	num_labels = len ;
+CLabels::CLabels()
+{
+	labels = NULL;
+	num_labels = 0;
 }
 
 CLabels::CLabels(INT num_lab) : num_labels(num_lab)
@@ -45,9 +46,14 @@ CLabels::~CLabels()
 	labels=NULL;
 }
 
+void CLabels::set_labels(DREAL* labels, INT len)
+{
+	this->labels = labels;
+	num_labels = len;
+}
+
 DREAL* CLabels::get_labels(INT &len)
 {
-
 	len=num_labels;
 
 	if (num_labels>0)

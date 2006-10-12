@@ -20,7 +20,7 @@ const BYTE CAlphabet::B_C=1;
 const BYTE CAlphabet::B_G=2;
 const BYTE CAlphabet::B_T=3;
 const BYTE CAlphabet::MAPTABLE_UNDEF=0xff;
-const CHAR* CAlphabet::alphabet_names[]={"DNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
+const CHAR* CAlphabet::alphabet_names[9]={"DNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
 
 CAlphabet::CAlphabet(CHAR* al, INT len)
 {

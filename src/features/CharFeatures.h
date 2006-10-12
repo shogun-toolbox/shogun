@@ -25,41 +25,6 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
 		CCharFeatures(E_ALPHABET alphabet, CHAR* fname);
 
 		~CCharFeatures();
-      
-        void testAddParam(int alphabet, char* feature_matrix, int num_feat, int num_vec) {
-            CIO::message(M_MESSAGEONLY,"d1:%d\n",alphabet);
-        }
-        
-        void testAddParam2(int alphabet, double* feature_matrix, int num_feat, int num_vec) {
-            CIO::message(M_MESSAGEONLY,"d1:%d\n",alphabet);
-        }
-
-        void testAddParam3(int alphabet, double* feature_matrix, int num_feat, int num_vec) {
-            CIO::message(M_MESSAGEONLY,"d1:%d\n",alphabet);
-        }
-      void testNumpy(char *feature_matrix, int d1, int d2) {
-         CIO::message(M_MESSAGEONLY,"d1:%d\n",d1);
-         CIO::message(M_MESSAGEONLY,"d2:%d\n",d2);
-
-		 for (int i=0; i<d1*d2; i++)
-			 CIO::message(M_MESSAGEONLY,"%c",feature_matrix[i]);
-      }
-
-      void testNumpy2(int *feature_matrix, int d1, int d2) {
-         CIO::message(M_MESSAGEONLY,"d1:%d\n",d1);
-         CIO::message(M_MESSAGEONLY,"d2:%d\n",d2);
-      }
-
-      void testNumpy3(double*feature_matrix, int d1, int d2) {
-         CIO::message(M_MESSAGEONLY,"d1:%d\n",d1);
-         CIO::message(M_MESSAGEONLY,"d2:%d\n",d2);
-      }
-
-		double doubleSum(double* series, int size) {
-			double result = 0.0;
-			for (int i=0; i<size; ++i) result += series[i];
-			return result;
-		}
 
 		inline CAlphabet* get_alphabet()
 		{

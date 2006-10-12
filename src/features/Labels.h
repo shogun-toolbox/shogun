@@ -18,10 +18,9 @@
 class CLabels
 {
 	public:
-      CLabels(DREAL* labels, INT len);
+		CLabels();
 		CLabels(INT num_labels);
 		CLabels(CHAR* fname);
-      CLabels(){;}
 		~CLabels();
 
 		bool load(CHAR* fname);
@@ -73,6 +72,9 @@ class CLabels
 		/// get label vector
 		/// caller has to clean up
 		DREAL* get_labels(INT &len) ;
+
+		/// set label vector
+		void set_labels(DREAL* labels, INT len);
 
 		/// get INT label vector
 		/// caller has to clean up

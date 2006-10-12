@@ -98,7 +98,7 @@ class CAlphabet
 		static const BYTE B_G;
 		static const BYTE B_T;
 		static const BYTE MAPTABLE_UNDEF;
-		static const CHAR* alphabet_names[];
+		static const CHAR* alphabet_names[9];
 	protected:
 		E_ALPHABET alphabet;
 		INT num_symbols;
