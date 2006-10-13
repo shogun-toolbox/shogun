@@ -12,5 +12,5 @@
   class CharFeatures(CCharFeatures):
      def __init__(self,p1,p2): 
         CCharFeatures.__init__(self,p2,0)
-        self.set_feature_matrix(p1)
+        self.copy_feature_matrix(p1)
 %}

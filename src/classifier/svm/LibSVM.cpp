@@ -16,6 +16,15 @@ CLibSVM::CLibSVM()
 	model=NULL;
 }
 
+CLibSVM::CLibSVM(DREAL C, CKernel* k, CLabels* lab)
+{
+	model=NULL;
+
+	set_C(C,C);
+	set_labels(lab);
+	set_kernel(k);
+}
+
 CLibSVM::~CLibSVM()
 {
 	free(model);

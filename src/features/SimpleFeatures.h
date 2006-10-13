@@ -162,6 +162,20 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	  num_vectors=num_vec;
   }
 
+  /** copy feature matrix
+      store copy of feature_matrix, where 
+      num_features is the column offset, and columns are linear in memory
+      see below for definition of feature_matrix
+  */
+  virtual void copy_feature_matrix(ST* src, INT num_feat, INT num_vec)
+  {
+	  feature_matrix=(ST*) malloc(sizeof(ST)*((LONG) num_feat)*num_vec);
+	  ASSERT(feature_matrix);
+	  memcpy(feature_matrix, src, (sizeof(ST)*((LONG) num_feat)*num_vec));
+	  num_features=num_feat;
+	  num_vectors=num_vec;
+  }
+
   /// preprocess the feature_matrix
   virtual bool preproc_feature_matrix(bool force_preprocessing=false)
   {

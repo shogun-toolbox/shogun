@@ -119,6 +119,8 @@ dist:	distclean
 ifeq (yes,$(USE_SWIG))
 install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
 	install -D -m755 $(SWIGLIBFILES) $(DESTDIR)
+
+
 else
 install: $(TARGET)
 	install -D -m755 $(TARGET) $(DESTDIR)$(BINDIR)

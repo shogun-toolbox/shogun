@@ -39,17 +39,21 @@ CLabels::CLabels(CHAR* fname)
 
 CLabels::~CLabels()
 {
-#ifndef HAVE_SWIG
 	delete[] labels;
-#endif
 	num_labels=0;
 	labels=NULL;
 }
 
 void CLabels::set_labels(DREAL* labels, INT len)
 {
-	this->labels = labels;
+	ASSERT(len>0);
 	num_labels = len;
+
+	this->labels = new DREAL[len];
+	ASSERT(this->labels);
+
+	for (INT i=0; i<len; i++)
+		this->labels[i]=labels[i];
 }
 
 DREAL* CLabels::get_labels(INT &len)
@@ -65,6 +69,21 @@ DREAL* CLabels::get_labels(INT &len)
 	}
 	else 
 		return NULL;
+}
+
+void CLabels::get_labels(DREAL** labels, INT* len)
+{
+	ASSERT(*labels && len);
+	*labels=NULL;
+	*len=num_labels;
+
+	if (num_labels>0)
+	{
+		*labels=new DREAL[num_labels];
+
+		for (INT i=0; i<num_labels; i++)
+			(*labels)[i]=get_label(i);
+	}
 }
 
 INT* CLabels::get_int_labels(INT &len)

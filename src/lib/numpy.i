@@ -153,6 +153,7 @@ PyArrayObject* obj_to_array_contiguous_allow_conversion(PyObject* input,
     }
     ary1 = ary2;    
   }
+
   *is_new_object = is_new1 || is_new2;
   return ary1;
 }
@@ -428,46 +429,126 @@ TYPEMAP_INPLACE2(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_INPLACE2
 
-/* TYPEMAP_ARGOUT macros
+/* TYPEMAP_ARRAYOUT macros
  *
  * This family of typemaps allows output C arguments of the form
  *
- *     (type* ARGOUT_ARRAY[ANY])
- *     (type* ARGOUT_ARRAY[ANY][ANY])
+ *     (type* ARRAYOUT_ARRAY[ANY])
+ *     (type* ARRAYOUT_ARRAY[ANY][ANY])
  *
  * where "type" is any type supported by the Numeric module, to be
  * called in python with an argument list of a single contiguous
  * Numeric array.  This can be applied to an existing function using
  * the %apply directive:
  *
- *     %apply (double* ARGOUT_ARRAY[ANY] {double series, int length}
- *     %apply (double* ARGOUT_ARRAY[ANY][ANY]) {double* mx, int rows, int cols}
+ *     %apply (double* ARRAYOUT_ARRAY[ANY] {double series, int length}
+ *     %apply (double* ARRAYOUT_ARRAY[ANY][ANY]) {double* mx, int rows, int cols}
  *     void negate(double* series, int length);
  *     void normalize(double* mx, int rows, int cols);
  *     
  *
  * or with
  *
- *     void sum(double* ARGOUT_ARRAY[ANY]);
- *     void sum(double* ARGOUT_ARRAY[ANY][ANY]);
+ *     void sum(double* ARRAYOUT_ARRAY[ANY]);
+ *     void sum(double* ARRAYOUT_ARRAY[ANY][ANY]);
  */
 
  /* One dimensional input/output arrays */
-%define TYPEMAP_ARGOUT1(type,typecode)
-%typemap(in,numinputs=0) type ARGOUT_ARRAY[ANY] {
+%define TYPEMAP_ARRAYOUT1(type,typecode)
+%typemap(in,numinputs=0) type ARRAYOUT_ARRAY[ANY] {
   $1 = (type*) malloc($1_dim0*sizeof(type));
   if (!$1) {
     PyErr_SetString(PyExc_RuntimeError, "Failed to allocate memory");
     SWIG_fail;
   }
 }
-%typemap(argout) ARGOUT_ARRAY[ANY] {
+%typemap(argout) ARRAYOUT_ARRAY[ANY] {
   int dimensions[1] = {$1_dim0};
   PyObject* outArray = PyArray_FromDimsAndData(1, dimensions, typecode, (char*)$1);
 }
 %enddef
 
-/* Define concrete examples of the TYPEMAP_ARGOUT1 macro */
+/* Define concrete examples of the TYPEMAP_ARRAYOUT1 macro */
+TYPEMAP_ARRAYOUT1(CHAR,          NPY_CHAR )
+TYPEMAP_ARRAYOUT1(BYTE,          NPY_UBYTE )
+TYPEMAP_ARRAYOUT1(SHORT,         NPY_SHORT )
+TYPEMAP_ARRAYOUT1(WORD,          NPY_USHORT )
+TYPEMAP_ARRAYOUT1(INT,           NPY_INT )
+TYPEMAP_ARRAYOUT1(UINT,          NPY_UINT )
+TYPEMAP_ARRAYOUT1(LONG,          NPY_LONGLONG )
+TYPEMAP_ARRAYOUT1(ULONG,         NPY_ULONGLONG )
+TYPEMAP_ARRAYOUT1(SHORTREAL,     NPY_FLOAT )
+TYPEMAP_ARRAYOUT1(DREAL,         NPY_DOUBLE)
+TYPEMAP_ARRAYOUT1(LONGREAL,      NPY_LONGDOUBLE)
+TYPEMAP_ARRAYOUT1(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_ARRAYOUT1
+
+ /* Two dimensional input/output arrays */
+%define TYPEMAP_ARRAYOUT2(type,typecode)
+  %typemap(in) (type* ARRAYOUT_ARRAY2, INT DIM1, INT DIM2) (PyArrayObject* temp=NULL) {
+  temp = obj_to_array_no_conversion($input,typecode);
+  if (!temp || !require_contiguous(temp)) SWIG_fail;
+  $1 = (type*) temp->data;
+  $2 = temp->dimensions[0];
+  $3 = temp->dimensions[1];
+}
+%enddef
+
+/* Define concrete examples of the TYPEMAP_ARRAYOUT2 macro */
+TYPEMAP_ARRAYOUT2(CHAR,          NPY_CHAR )
+TYPEMAP_ARRAYOUT2(BYTE,          NPY_UBYTE )
+TYPEMAP_ARRAYOUT2(SHORT,         NPY_SHORT )
+TYPEMAP_ARRAYOUT2(WORD,          NPY_USHORT )
+TYPEMAP_ARRAYOUT2(INT,           NPY_INT )
+TYPEMAP_ARRAYOUT2(UINT,          NPY_UINT )
+TYPEMAP_ARRAYOUT2(LONG,          NPY_LONGLONG )
+TYPEMAP_ARRAYOUT2(ULONG,         NPY_ULONGLONG )
+TYPEMAP_ARRAYOUT2(SHORTREAL,     NPY_FLOAT )
+TYPEMAP_ARRAYOUT2(DREAL,         NPY_DOUBLE)
+TYPEMAP_ARRAYOUT2(LONGREAL,      NPY_LONGDOUBLE)
+TYPEMAP_ARRAYOUT2(PyObject,      NPY_OBJECT)
+
+#undef TYPEMAP_ARRAYOUT2
+
+/* TYPEMAP_ARGOUT macros
+ *
+ * This family of typemaps allows output C arguments of the form
+ *
+ *     (type** ARGOUT_ARRAY)
+ *
+ * where "type" is any type supported by the Numeric module, to be
+ * called in python with an argument list of a single contiguous
+ * Numeric array.  This can be applied to an existing function using
+ * the %apply directive:
+ *
+ *     %apply (DREAL** ARGOUT_ARRAY1, {(DREAL** series, INT* len)}
+ *     %apply (DREAL** ARGOUT_ARRAY2, {(DREAL** matrix, INT* d1, INT* d2)}
+ *
+ * with
+ *
+ *     void sum(DREAL* series, INT* len);
+ *     void sum(DREAL** series, INT* len);
+ *     void sum(DREAL** matrix, INT* d1, INT* d2);
+ *
+ * where sum mallocs the array and assigns dimensions and the pointer
+ *
+ */
+%define TYPEMAP_ARGOUT1(type,typecode)
+%typemap(in, numinputs=0) (type** ARGOUT1, INT* DIM1) {
+	   $1 = (type**) malloc(sizeof(type**));
+	   $2 = (INT*) malloc(sizeof(INT*));
+}
+
+%typemap(argout) (type** ARGOUT1, INT* DIM1) {
+	npy_intp* dims=(npy_intp*) malloc(sizeof(npy_int));
+	dims[0]=*$2;
+	PyObject* outArray = PyArray_SimpleNewFromData(1, dims, typecode, (void*)*$1);
+	free(dims); free($1); free($2);
+	$result=outArray;
+}
+%enddef
+
 TYPEMAP_ARGOUT1(CHAR,          NPY_CHAR )
 TYPEMAP_ARGOUT1(BYTE,          NPY_UBYTE )
 TYPEMAP_ARGOUT1(SHORT,         NPY_SHORT )
@@ -483,18 +564,22 @@ TYPEMAP_ARGOUT1(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_ARGOUT1
 
- /* Two dimensional input/output arrays */
 %define TYPEMAP_ARGOUT2(type,typecode)
-  %typemap(in) (type* ARGOUT_ARRAY2, INT DIM1, INT DIM2) (PyArrayObject* temp=NULL) {
-  temp = obj_to_array_no_conversion($input,typecode);
-  if (!temp || !require_contiguous(temp)) SWIG_fail;
-  $1 = (type*) temp->data;
-  $2 = temp->dimensions[0];
-  $3 = temp->dimensions[1];
+%typemap(in, numinputs=0) (type** ARGOUT2, INT* DIM1, INT* DIM2) {
+	   $1 = (type**) malloc(sizeof(type**));
+	   $2 = (INT*) malloc(sizeof(INT*));
+	   $3 = (INT*) malloc(sizeof(INT*));
+}
+
+%typemap(argout) (type** ARGOUT2, INT* DIM1, INT* DIM2) {
+	npy_intp* dims=(npy_intp*) malloc(2*sizeof(npy_int));
+	dims[0]=*$2; dims[1]=*$3;
+	PyObject* outArray = PyArray_SimpleNewFromData(2, dims, typecode, (void*)*$1);
+	free(dims); free($1); free($2); free($3);
+	$result=outArray;
 }
 %enddef
 
-/* Define concrete examples of the TYPEMAP_ARGOUT2 macro */
 TYPEMAP_ARGOUT2(CHAR,          NPY_CHAR )
 TYPEMAP_ARGOUT2(BYTE,          NPY_UBYTE )
 TYPEMAP_ARGOUT2(SHORT,         NPY_SHORT )

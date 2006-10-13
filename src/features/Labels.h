@@ -72,6 +72,8 @@ class CLabels
 		/// get label vector
 		/// caller has to clean up
 		DREAL* get_labels(INT &len) ;
+		
+		void get_labels(DREAL** labels, INT* len);
 
 		/// set label vector
 		void set_labels(DREAL* labels, INT len);

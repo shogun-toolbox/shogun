@@ -156,8 +156,10 @@ class CSVMLight:public CSVM
 {
  public:
   CSVMLight();
+  CSVMLight(DREAL C, CKernel* k, CLabels* lab);
   virtual ~CSVMLight();
   
+  void init();
   virtual bool	train();
   bool setup_auc_maximization() ;
   inline EClassifierType get_classifier_type() { return CT_LIGHT; }

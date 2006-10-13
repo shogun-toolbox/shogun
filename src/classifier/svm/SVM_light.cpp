@@ -119,6 +119,19 @@ void* CSVMLight::update_linear_component_mkl_linadd_helper(void* p)
 
 CSVMLight::CSVMLight()
 {
+	init();
+}
+
+CSVMLight::CSVMLight(DREAL C, CKernel* k, CLabels* lab)
+{
+	init();
+	set_C(C,C);
+	set_labels(lab);
+	set_kernel(k);
+}
+
+void CSVMLight::init()
+{
 	W=NULL;
 	model=new MODEL[1];
 	learn_parm=new LEARN_PARM[1];
@@ -153,7 +166,6 @@ CSVMLight::CSVMLight()
 	env = NULL ;
 	lp_initialized = false ;
 #endif
-	
 }
 
 #ifdef USE_CPLEX
