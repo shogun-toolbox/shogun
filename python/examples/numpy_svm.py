@@ -11,3 +11,8 @@ svm = SVMLight(10, gk, lab)
 svm.train()
 print svm.classify().get_labels()
 print lab.get_labels()
+
+feat_test = RealFeatures(rand(5,10))
+gk_test=GaussianKernel(feat,feat_test, 10,1)
+svm.set_kernel(gk_test)
+output_test = svm.classify().get_labels() 
