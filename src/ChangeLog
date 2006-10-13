@@ -1,4 +1,8 @@
-2006-10-09  Soeren Sonnenburg <debian@nn7.de>
+2006-10-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* swig python interface (works w/ multiple svms etc etc)
+
+2006-10-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
 	* some autodetection magic in ./configure
 	* fixed a serious bug occuring with shrinking & SVM light (target epsilon

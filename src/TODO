@@ -1,7 +1,6 @@
 TODO
 
 - move svmlight structs  (MODEL...) inside CSVMLight class (again!, if it works with swig somehow)
-- design the python swig interface
 - kerthi,olivier Lin-SVM implementieren, chunking ???
 - LPM implementieren
 - LDA Fisher implementieren
@@ -30,6 +29,7 @@ TODO
 
 DONE
 
+- design the python swig interface
 - kernel is_initialized -> is_optimization_initialized
 - clear sg -> kabumm bei init_kernel  / vorher clean_kernels -> ok...
 - all outputs are labels
