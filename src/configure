@@ -1871,7 +1871,7 @@ EOF
 		fi
 
 		echocheck "octave-config"
-		if test -n `octave-config -p OCTLIBDIR` && test -n `octave-config -p OCTINCLUDEDIR`
+		if test -n "`octave-config -p OCTLIBDIR`" && test -n "`octave-config -p OCTINCLUDEDIR`" && test -n "`octave-config -p INCLUDEDIR`"
 		then
 			echores "yes"
 		else
@@ -1898,9 +1898,14 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 EOF
 		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
 
-		LINKFLAGS="-shared -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
+		if darwin
+                then
+		    LINKFLAGS="-bundle -Wl,-flat_namespace -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
+                else
+		    LINKFLAGS="-shared -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
+                fi
 		TARGET="sg.oct"
-		INCLUDES="$INCLUDES -I`octave-config -p OCTINCLUDEDIR`"
+		INCLUDES="$INCLUDES -I`octave-config -p OCTINCLUDEDIR` -I`octave-config -p INCLUDEDIR`"
 		COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC"
 		COMPFLAGS_C="$COMPFLAGS_C -fPIC"
 
