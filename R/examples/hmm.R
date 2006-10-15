@@ -1,5 +1,5 @@
-#library(graph)
-#library(Rgraphviz)
+library(graph)
+library(Rgraphviz)
 library(sg)
 
 cube=list(NULL,NULL,NULL)
