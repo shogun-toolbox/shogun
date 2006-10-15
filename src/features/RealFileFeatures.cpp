@@ -61,11 +61,6 @@ working_file(orig.working_file), status(orig.status)
     }
 }
 
-CFeatures* CRealFileFeatures::duplicate() const
-{
-    return new CRealFileFeatures(*this);
-}
-
 DREAL* CRealFileFeatures::compute_feature_vector(INT num, INT &len, DREAL* target)
 {
     ASSERT(num<num_vectors);

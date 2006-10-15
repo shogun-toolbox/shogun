@@ -161,9 +161,13 @@ private:
 
 	unsigned int				m_sortTime;
 
-	Stack<unsigned int>			m_chainMatchLengthStack;
 
-	Stack<int>				m_chainCountStack;
+
+	// m_ISA:
+	// The address of the working space which, when the sort is
+	// completed, will contain the inverse suffix array for the 
+	// source string.
+	unsigned int *				m_ISA;
 
 	Stack<unsigned int>			m_chainHeadStack;
 
@@ -181,12 +185,6 @@ private:
 
 	unsigned int				m_sourceLengthMinusOne;
 
-	// m_ISA:
-	// The address of the working space which, when the sort is
-	// completed, will contain the inverse suffix array for the 
-	// source string.
-	unsigned int *				m_ISA;
-
 	// m_nextSortedSuffixValue:
 	unsigned int				m_nextSortedSuffixValue;
 
@@ -202,6 +200,10 @@ private:
 	unsigned int				m_numNewChains;
 
 	Stack<InductionSortObject>	m_suffixesSortedByInduction;
+
+	Stack<unsigned int>			m_chainMatchLengthStack;
+
+	Stack<int>				m_chainCountStack;
 
 	unsigned int				m_suffixMatchLength;
 

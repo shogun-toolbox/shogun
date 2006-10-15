@@ -1,4 +1,4 @@
-import features.Features as f
+import shogun.Features as f
 import numpy as N
 
 feat1 = f.CharFeatures(N.chararray((10,5),1),f.DNA)

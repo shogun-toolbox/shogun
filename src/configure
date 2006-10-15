@@ -10,7 +10,7 @@ EXT_SRC_SWIG=_wrap.cxx
 EXT_INP_SWIG=i
 EXT_OBJ_SWIG=_wrap.cxx.o
 EXT_LIB_SWIG=so
-SWIGFLAGS="-Wall -c++ -python"
+SWIGFLAGS="-w473 -w403 -c++ -python"
 SWIG=swig
 PYTHON=python
 KERNELNAME=`uname`
@@ -49,6 +49,7 @@ _datadir=""
 _mandir=""
 _confdir=""
 _libdir=""
+_pydir=""
 _inc_extra=""
 _ld_extra=""
 _optimizing=""
@@ -67,13 +68,14 @@ INCLUDES=-I${SRCDIR}
 LINK=c++
 LINKFLAGS=""
 TARGET="shogun"
-COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
+COMP_OPTS="-g -Wall -O0 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
 #most defines are simply design bugs, use the ./configure --{disable,enable}-<options>
 DEFINES=
 
 # stuff needed for autodetections (definitely needs cleanup)
 TMPLOG="configure.log"
 rm -f "$TMPLOG"
+TMPMAK="./configure-$RANDOM-$$-makefile"
 TMPC="./configure-$RANDOM-$$.c"
 TMPCPP="./configure-$RANDOM-$$.cpp"
 TMPO="./configure-$RANDOM-$$.o"
@@ -218,6 +220,32 @@ EOF
 
 	if test -z "$COMP_CPP" ; then
 		echores "no C++ compiler detected - cannot do anything"
+		exit 1
+	fi
+}
+
+check_python()
+{
+	echocheck "Python"
+	if python -V >/dev/null 2>&1
+	then
+		echores "`python -V 2>&1 | grep Python | cut -f 2 -d ' '`"
+	else
+		echores "python not detected (required)"
+	fi
+}
+
+check_makedepend()
+{
+	echocheck "makedepend"
+	touch ${TMPMAK}
+	if makedepend -f${TMPMAK} >/dev/null 2>&1
+	then
+		echores "yes"
+	 	rm -f ${TMPMAK} ${TMPMAK}.bak
+	else
+		echores "no"
+	 	rm -f ${TMPMAK} ${TMPMAK}.bak
 		exit 1
 	fi
 }
@@ -532,6 +560,9 @@ for ac_option do
     ;;
   --libdir=*)
     _libdir=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --pydir=*)
+    _pydir=`echo $ac_option | cut -d '=' -f 2`
     ;;
 
   *)
@@ -1680,6 +1711,15 @@ set_opts()
 
 	if test "$_matlab" = yes
 	then
+		echocheck "Matlab"
+		if echo quit | matlab >/dev/null 2>&1
+		then
+			echores "`echo quit | matlab`"
+		else
+			echores "no"
+			exit 1
+		fi
+
 		HAVE_MATLAB='#define HAVE_MATLAB 1'
 
 		COMPFLAGS_CPP="$COMPFLAGS_CPP -fexceptions"
@@ -1814,9 +1854,43 @@ EOF
 		fi
 	fi
 
-
 	if test "$_octave" = yes
 	then
+		echocheck "Octave"
+		if echo version | octave >/dev/null 2>&1
+		then
+			echores "`echo version | octave | grep ans | cut -f 3- -d ' '`"
+		else
+			echores "no"
+			exit 1
+		fi
+
+		echocheck "octave-config"
+		if test -n `octave-config -p OCTLIBDIR` && test -n `octave-config -p OCTINCLUDEDIR`
+		then
+			echores "yes"
+		else
+			echores "no"
+			exit 1
+		fi
+
+cat > $TMPC << EOF
+
+#include <octave/config.h>
+
+#include <octave/defun-dld.h>
+#include <octave/error.h>
+#include <octave/oct-obj.h>
+#include <octave/pager.h>
+#include <octave/symtab.h>
+#include <octave/variables.h>
+
+DEFUN_DLD (sg, prhs, nlhs, "shogun.")
+{
+	int nrhs = prhs.length();
+	octave_value_list plhs;
+}
+EOF
 		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
 
 		LINKFLAGS="-shared -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
@@ -1824,34 +1898,105 @@ EOF
 		INCLUDES="$INCLUDES -I`octave-config -p OCTINCLUDEDIR`"
 		COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC"
 		COMPFLAGS_C="$COMPFLAGS_C -fPIC"
-	fi
 
+		echocheck "Octave Developer Files"
+		if LD_LIBRARY_PATH=`octave-config -p OCTLIBDIR` cxx_check
+		then
+			echores "yes"
+		else
+			echores "no"
+			exit 1
+		fi
+	fi
 
 	if test "$_python" = yes
 	then
-		HAVE_PYTHON='#define HAVE_PYTHON 1'
+		echocheck "Python numpy support"
+		if python -c "import sys; import numpy" >/dev/null 2>&1
+		then
+			echores "`python -c 'import numpy; print numpy.__version__'`"
+		else
+			echores "no"
+			exit 1
+		fi
 
-		test -n "$_pyinclude" || _pyinclude=`python -c "import sys; print sys.prefix+'/include/python'+sys.version[0:3]"`
+		HAVE_PYTHON='#define HAVE_PYTHON 1'
+		test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
+		test -n "$_pyinclude" || _pyinclude=`python -c "import numpy; import sys; print '-I'+sys.prefix+'/include/python'+sys.version[0:3]+' -I'+numpy.get_include()"`
 		test -n "$_pylibs" || _pylibs=`python -c "import sys; print 'python'+sys.version[0:3]"`
-		INCLUDES="-I\"$_pyinclude\" $INCLUDES"
+		INCLUDES="$_pyinclude $INCLUDES"
 		COMPFLAGS_CPP="-fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
 		COMPFLAGS_C="-fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
-		LINKFLAGS="-shared -l\"$_pylibs\" -ldl -lutil $LINKFLAGS"
+		LINKFLAGS="-shared -l$_pylibs -ldl -lutil $LINKFLAGS"
 		TARGET="sg.so"
+
+cat > $TMPC << EOF
+#include <Python.h>
+#include <stdlib.h>
+#include <numpy/arrayobject.h>
+
+PyMODINIT_FUNC initsg(void)
+{
+	double* array=(double*) malloc(10*sizeof(double));
+	npy_intp* dims=(npy_intp*) malloc(sizeof(npy_int));
+	dims[0]=10;
+	Py_Initialize();
+	PyObject* outArray = PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, (void*)array);
+}
+
+PyMODINIT_FUNC initsg(void);
+EOF
+		echocheck "Python/Python Numpy Developer Files"
+		if cc_check
+		then
+			echores "yes"
+		else
+			echores "no"
+			exit 1
+		fi
 	fi
 
 	if test "$_R" = yes
 	then
+		echocheck "R"
+		if ( echo 'version; quit()' | R --no-save ) >/dev/null 2>&1 
+		then
+			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
+		else
+			echores "no"
+			exit 1
+		fi
+
 		HAVE_R='#define HAVE_R 1'
 		TARGET="sg.so"
 
-		INCLUDES="$INCLUDES `R CMD config --cppflags` $INCLUDES"
+		INCLUDES="$INCLUDES `R CMD config --cppflags`"
 		LINKFLAGS="$LINKFLAGS `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
+
+cat > $TMPC << EOF
+#include <R.h>
+#include <Rinternals.h>
+#include <R_ext/Rdynload.h>
+#include <Rdefines.h>
+
+static SEXP sg_helper(SEXP args)
+{
+	SEXP result=NEW_LOGICAL(1);
+	return result;
+}
+EOF
+		echocheck "R Developer Files"
+		if cc_check
+		then
+			echores "yes"
+		else
+			echores "no"
+			exit 1
+		fi
 	fi
 
 	if test "$_cplex" = yes
 	then
-
 		if linux
 		then
 			case "$host_arch" in
@@ -1882,8 +2027,18 @@ EOF
 
 	if test "$_swig" = yes
 	then
+		echocheck "SWIG"
+		if swig -version >/dev/null 2>&1
+		then
+			echores "`swig -version | grep Version | cut -f 3 -d ' '`"
+		else
+			echores "no"
+			exit 1
+		fi
+
 		HAVE_SWIG='#define HAVE_SWIG 1'
 		USE_SWIG='yes'
+		test -n "$_pydir" || _pydir="$_libdir/`python -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
 	else
 		USE_SWIG='no'
 	fi
@@ -1994,6 +2149,7 @@ DATADIR			= ${_datadir}
 MANDIR			= ${_mandir}
 CONFDIR			= ${_confdir}
 LIBDIR			= ${_libdir}
+PYDIR			= ${_pydir}
 EOF
 }
 
@@ -2091,6 +2247,8 @@ clean_up()
 }
 
 detect_cc
+check_makedepend
+check_python
 check_make
 determine_march_mtune
 set_opts

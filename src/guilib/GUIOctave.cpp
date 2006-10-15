@@ -53,7 +53,6 @@ bool CGUIOctave::get_hmm(octave_value_list& retvals)
 
 	if (h)
 	{
-		fprintf(stderr, "N=%i  M=%i\n", h->get_N(), h->get_M()) ;
 		RowVector vec_p=RowVector(h->get_N());
 		RowVector vec_q=RowVector(h->get_N());
 		Matrix mat_a=Matrix(h->get_N(), h->get_N());
@@ -904,7 +903,6 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 					ASSERT(f);
 
 					int maxlen=0;
-					int num_symbols=0;
 					alpha->clear_histogram();
 
 					for (int i=0; i<num_vec; i++)
@@ -930,10 +928,10 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 						}
 					}
 
+                    CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+                    CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
 					alpha->check_alphabet_size();
-					num_symbols=alpha->get_num_symbols();
-
-					CIO::message(M_DEBUG, "num_symbols: %d\n", num_symbols);
+					alpha->check_alphabet();
 
 					((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
 				}
@@ -955,15 +953,26 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 					f= new CCharFeatures(alpha, 0);
 					INT num_vec = cm.cols();
 					INT num_feat = cm.rows();
-					CIO::message(M_DEBUG, "char matrix, cols:%d row:%d!\n", num_vec, num_feat);
-					CHAR* fm=new char[num_vec*num_feat+10];
+					CIO::message(M_DEBUG, "char matrix, cols:%d rows:%d\n", num_vec, num_feat);
+					CHAR* fm=new CHAR[num_vec*num_feat];
 					ASSERT(fm);
 
 					for (INT i=0; i<num_vec; i++)
 						for (INT j=0; j<num_feat; j++)
-							fm[i*num_feat+j]= (char) cm(j,i);
+							fm[i*num_feat+j]= (CHAR) cm(j,i);
 
-					((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+					alpha->add_string_to_histogram(fm, ((LONG) num_vec)* ((LONG) num_feat));
+                    CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+                    CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+
+					if (alpha->check_alphabet_size() && alpha->check_alphabet())
+						((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+					else
+					{
+						((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+						delete f;
+						f=NULL;
+					}
 				}
 				else
 					CIO::message(M_ERROR, "please specify alphabet!\n");

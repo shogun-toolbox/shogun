@@ -184,11 +184,6 @@ void CWordFeatures::translate_from_single_order(WORD* obs, INT sequence_length, 
 		obs[i-start]=obs[i];
 }
 
-CFeatures* CWordFeatures::duplicate() const
-{
-	return new CWordFeatures(*this);
-}
-
 bool CWordFeatures::load(CHAR* fname)
 {
 	return false;

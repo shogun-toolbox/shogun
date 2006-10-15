@@ -64,11 +64,17 @@ class CAlphabet
 		/// add to histogram
 		inline void add_byte_to_histogram(BYTE p)
 		{
-			histogram[p]++;
+			histogram[(INT) p]++;
 		}
 
 		/// print histogram
 		void print_histogram();
+
+		/// print histogram
+		inline const LONG* get_histogram()
+        {
+            return &histogram[0];
+        }
 
 		/// check whether symbols in histogram are valid in alphabet
 		/// e.g. for DNA if only letters ACGT appear
@@ -91,6 +97,7 @@ class CAlphabet
 
 	protected:
 		void init_map_table();
+		void copy_histogram(CAlphabet* src);
 
 	public:
 		static const BYTE B_A;

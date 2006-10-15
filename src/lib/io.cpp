@@ -11,6 +11,12 @@
 
 #include "lib/config.h"
 
+#ifdef HAVE_OCTAVE
+#include <octave/config.h>
+#include <octave/error.h>
+#include <octave/lo-error.h>
+#endif
+
 #ifdef HAVE_MATLAB
 #include <mex.h>
 #endif
@@ -22,6 +28,7 @@
 #ifdef HAVE_R
 #include <R.h>
 #include <Rinternals.h>
+#include <R_ext/RS.h>
 #endif
 
 #include "lib/io.h"
@@ -48,7 +55,7 @@ CIO::CIO()
 
 void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 {
-#if defined(HAVE_MATLAB) || defined(HAVE_PYTHON) || defined(HAVE_R)
+#if defined(HAVE_MATLAB) || defined(HAVE_PYTHON) || defined(HAVE_OCTAVE) || defined(HAVE_R)
 	char str[4096];
     va_list list;
     va_start(list,fmt);
@@ -80,6 +87,31 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			case M_EMERGENCY:
 				CSignal::unset_handler();
 				mexErrMsgTxt(str);
+				break;
+			default:
+				break;
+		}
+#elif defined(HAVE_OCTAVE)
+		switch (prio)
+		{
+			case M_DEBUG:
+			case M_INFO:
+			case M_NOTICE:
+			case M_MESSAGEONLY:
+				fprintf(target, message_strings[p]);
+				fprintf(target, "%s", str);
+				break;
+
+			case M_WARN:
+				::warning(str);
+				break;
+
+			case M_ERROR:
+			case M_CRITICAL:
+			case M_ALERT:
+			case M_EMERGENCY:
+				CSignal::unset_handler();
+				error("%s", str);
 				break;
 			default:
 				break;
@@ -135,18 +167,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			case M_CRITICAL:
 			case M_ALERT:
 			case M_EMERGENCY:
-				{
-					int p=get_prio_string(prio);
-
-					if (p>=0)
-					{
-						REprintf("%s",message_strings[p]);
-						va_list list;
-						va_start(list,fmt);
-						REvprintf(fmt,list);
-						va_end(list);
-					}
-				}
+				error("%s", str);
 				break;
 			default:
 				break;

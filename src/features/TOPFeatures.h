@@ -42,8 +42,6 @@ class CTOPFeatures: public CRealFeatures
 	void set_models(CHMM* p, CHMM* n);
 	virtual DREAL* set_feature_matrix();
 
-	virtual CFeatures* duplicate() const;
-
 	INT compute_num_features();
 
 	bool compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx);

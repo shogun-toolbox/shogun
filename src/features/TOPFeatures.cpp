@@ -65,11 +65,6 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	CIO::message(M_DEBUG, "pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i] -> %i features\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features) ;
 }
 
-CFeatures* CTOPFeatures::duplicate() const
-{
-	return new CTOPFeatures(*this);
-}
-
 DREAL* CTOPFeatures::compute_feature_vector(INT num, INT &len, DREAL* target)
 {
 	DREAL* featurevector=target;

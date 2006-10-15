@@ -759,45 +759,57 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 					((CRealFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
 				}
 				else if (TYPEOF(feat) == STRSXP )
-                {
-                    if (alphabet && TYPEOF(CAR(alphabet)) == STRSXP)
+				{
+					if (alphabet && TYPEOF(alphabet) == STRSXP)
 					{
+						int num_vec = length(feat);
 						CHAR* al=CHAR(VECTOR_ELT(alphabet, 0));
 						CAlphabet* alpha = new CAlphabet(al, strlen(al));
-
-						int num_vec = length(feat);
 						T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
-						f= new CStringFeatures<CHAR>(alpha);
-						int maxlen=0;
-						int num_symbols=0;
-						int syms[256];
+						ASSERT(alpha);
+						ASSERT(sc);
 
-						for (int i=0; i<256; i++)
-							syms[i]=0;
+						f= new CStringFeatures<CHAR>(alpha);
+						ASSERT(f);
+
+						int maxlen=0;
+						alpha->clear_histogram();
 
 						for (int i=0; i<num_vec; i++)
 						{
 							SEXPREC* s= STRING_ELT(feat,i);
 							CHAR* c= CHAR(s);
 							int len=LENGTH(s);
-							CHAR* dst=new CHAR[len];
-							sc[i].string=strncpy(dst, c, len);
-							sc[i].length=len;
 
-							for (int j=0; j<sc[i].length; j++)
-								syms[(int) sc[i].string[j]]++;
+							if (len && c)
+							{
+								CHAR* dst=new CHAR[len];
+								sc[i].string=(CHAR*) memcpy(dst, c, len*sizeof(CHAR));
+								sc[i].length=len;
+								maxlen=CMath::max(maxlen, len);
+								alpha->add_string_to_histogram(sc[i].string, sc[i].length);
+							}
+							else
+							{
+								CIO::message(M_WARN, "string with index %d has zero length\n", i+1);
+								sc[i].string=0;
+								sc[i].length=0;
+							}
 
-							maxlen=CMath::max(maxlen, len);
 						}
 
-						for (int i=0; i<256; i++)
+						CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+						CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+						if (alpha->check_alphabet_size() && alpha->check_alphabet())
+							((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
+						else
 						{
-							if (syms[i]>0)
-								num_symbols++;
+							((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
+							delete f;
+							f=NULL;
 						}
-						((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
 					}
-                }
+				}
 			}
 		}
 		return f;

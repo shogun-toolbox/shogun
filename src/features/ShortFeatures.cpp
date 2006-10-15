@@ -121,11 +121,6 @@ void CShortFeatures::translate_from_single_order(SHORT* obs, INT sequence_length
 		obs[i-start]=obs[i];
 }
 
-CFeatures* CShortFeatures::duplicate() const
-{
-	return new CShortFeatures(*this);
-}
-
 bool CShortFeatures::load(CHAR* fname)
 {
 	return false;

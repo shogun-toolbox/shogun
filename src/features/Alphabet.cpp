@@ -55,6 +55,7 @@ CAlphabet::CAlphabet(E_ALPHABET alpha)
 CAlphabet::CAlphabet(CAlphabet* a)
 {
 	set_alphabet(a->get_alphabet());
+    copy_histogram(a);
 }
 
 CAlphabet::~CAlphabet()
@@ -100,6 +101,7 @@ bool CAlphabet::set_alphabet(E_ALPHABET alpha)
 
 	num_bits=(INT) ceil(log((double) num_symbols)/log((double) 2));
 	init_map_table();
+    clear_histogram();
 
 	CIO::message(M_DEBUG, "initialised alphabet %s\n", get_alphabet_name(alphabet));
 
@@ -335,7 +337,8 @@ void CAlphabet::init_map_table()
 
 void CAlphabet::clear_histogram()
 {
-	memset(histogram, 0, sizeof(LONG) * (1 << (sizeof(BYTE)*8)));
+	memset(histogram, 0, sizeof(histogram));
+    print_histogram();
 }
 
 void CAlphabet::add_string_to_histogram(BYTE* p, LONG len)
@@ -391,7 +394,7 @@ void CAlphabet::print_histogram()
 	for (INT i=0; i<(INT) (1 <<(sizeof(BYTE)*8)); i++)
 	{
 		if (histogram[i])
-			CIO::message(M_MESSAGEONLY, "hist[%d]=%ld\n", i, histogram[i]);
+			CIO::message(M_MESSAGEONLY, "hist[%d]=%lld\n", i, histogram[i]);
 	}
 }
 
@@ -431,6 +434,11 @@ bool CAlphabet::check_alphabet_size(bool print_error)
 	else
 		return true;
 
+}
+
+void CAlphabet::copy_histogram(CAlphabet* a)
+{
+	memcpy(histogram, a->get_histogram(), sizeof(histogram));
 }
 
 const CHAR* CAlphabet::get_alphabet_name(E_ALPHABET alphabet)

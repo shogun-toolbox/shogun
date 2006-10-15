@@ -12,12 +12,12 @@
 #include "lib/common.h"
 #if defined(HAVE_LAPACK) && defined(DARWIN)
 #include "lib/lapack.h"
-#include <assert.h>
+#include "lib/io.h"
 
 int clapack_dpotrf(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
 			                   const int N, double *A, const int LDA)
 {
-	assert(Order==CblasColMajor);
+	ASSERT(Order==CblasColMajor);
         //call dgemm ( 'T', 'T', alpha, B, ldb, A, lda, beta, C, ldc )
 	char uplo = 'U';
 	int info=0;

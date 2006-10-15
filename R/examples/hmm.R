@@ -1,5 +1,5 @@
-library(graph)
-library(Rgraphviz)
+#library(graph)
+#library(Rgraphviz)
 library(sg)
 
 cube=list(NULL,NULL,NULL)
@@ -21,8 +21,8 @@ for (c in 1:3)
 x <- c(cube[[1]],cube[[2]],cube[[3]])
 x <- paste(x,sep="",collapse="")
 
-sg('set_features','TRAIN',x)
-sg('send_command','convert TRAIN STRING CHAR STRING WORD CUBE 1')
+sg('set_features','TRAIN',x,'CUBE')
+sg('send_command','convert TRAIN STRING CHAR STRING WORD 1')
 
 #train 10 HMM models 
 liks=vector(mode='numeric', length=10)-Inf
@@ -38,8 +38,8 @@ for (i in 1:10)
 #choose the most likely model and compute viterbi path
 h=models[[which(liks==max(liks))]]
 sg('set_hmm',h)
-sg('set_features','TEST',x)
-sg('send_command','convert TEST STRING CHAR STRING WORD CUBE 1')
+sg('set_features','TEST',x,'CUBE')
+sg('send_command','convert TEST STRING CHAR STRING WORD 1')
 path=sg('get_viterbi_path',0)
 
 p=exp(h$p)

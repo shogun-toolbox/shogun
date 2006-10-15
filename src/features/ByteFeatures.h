@@ -34,7 +34,6 @@ class CByteFeatures: public CSimpleFeatures<BYTE>
 
 		virtual EFeatureType get_feature_type() { return F_BYTE; }
 
-		virtual CFeatures* duplicate() const;
 		virtual bool load(CHAR* fname);
 		virtual bool save(CHAR* fname);
 	protected:

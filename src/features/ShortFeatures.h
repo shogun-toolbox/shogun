@@ -32,7 +32,6 @@ class CShortFeatures: public CSimpleFeatures<SHORT>
 
 		virtual EFeatureType get_feature_type() { return F_SHORT; }
 
-		virtual CFeatures* duplicate() const;
 		virtual bool load(CHAR* fname);
 		virtual bool save(CHAR* fname);
 	protected:

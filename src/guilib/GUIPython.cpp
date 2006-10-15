@@ -23,13 +23,11 @@
 #include "kernel/CombinedKernel.h"
 #include "kernel/CustomKernel.h"
 
-//next line is not necessary, however if disabled causes a warning
 extern "C" {
 #include <Python.h>
 #include <python2.4/object.h>
-//#define libnumeric_UNIQUE_SYMBOL libnumeric_API
-#include <numarray/libnumarray.h>
-#include <numarray/arrayobject.h>
+#include <../../numarray/numpy/libnumarray.h>
+#include <numpy/ndarrayobject.h>
 }
 
 extern CTextGUI* gui;
@@ -603,8 +601,8 @@ PyObject* CGUIPython::py_set_features(PyObject* self, PyObject* args)
 	char* target = NULL;
 	char* cmdline = NULL;
 
-	if (PyArg_ParseTuple(args, "sOs", &target, &py_ofeat, &cmdline) ||
-            PyArg_ParseTuple(args, "sO", &target, &py_ofeat))
+	if ( (PyArg_ParseTuple(args, "sO", &target, &py_ofeat)) ||
+			(PyArg_ParseTuple(args, "sOs", &target, &py_ofeat, &cmdline)) )
 	{
 		if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
 				(!strncmp(target, "TEST", strlen("TEST"))) ) 
@@ -754,6 +752,7 @@ PyObject* CGUIPython::py_svm_classify(PyObject* self, PyObject* args)
 		if (l)
 		{
 			py_result = NA_NewArray(NULL, tFloat64, 1, num_vec);
+			ASSERT(py_result)
 			for (int i=0; i<num_vec; i++)
 				NA_set1_Float64(py_result, i, l->get_label(i));
 			delete l;
@@ -860,7 +859,7 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 
 	if (!NA_NumArrayCheck(arg) && !NA_NDArrayCheck(arg))
 	{
-		CIO::message(M_ERROR, "no numarray type\n");
+		CIO::message(M_ERROR, "no numpy type\n");
 		return NULL;
 	}
 
@@ -882,7 +881,8 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 				{
 					CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
 					int num_vec=py_afeat->dimensions[0];
-					int num_feat=PyArray(py_afeat)->itemsize;
+					int num_feat=0;
+					//int num_feat=PyArray(py_afeat)->itemsize;
 					CIO::message(M_DEBUG, "vec: %d dim:%d\n", num_vec, num_feat);
 
 					if (feat)
@@ -962,7 +962,7 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 				CIO::message(M_ERROR, "set_features: arrays must have 2 dimension.\n");
 			break;
 		default:
-			CIO::message(M_ERROR, "Unknown nummarray type\n");
+			CIO::message(M_ERROR, "Unknown numpy type\n");
 	};
 
 	Py_XDECREF(py_afeat);

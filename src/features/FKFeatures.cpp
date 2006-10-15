@@ -136,11 +136,6 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 		num_features=1+pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M()) ;
 }
 
-CFeatures* CFKFeatures::duplicate() const
-{
-	return new CFKFeatures(*this);
-}
-
 DREAL* CFKFeatures::compute_feature_vector(INT num, INT &len, DREAL* target)
 {
   DREAL* featurevector=target;

@@ -44,12 +44,6 @@ CCharFeatures::~CCharFeatures()
 	alphabet=NULL;
 }
 
-CFeatures* CCharFeatures::duplicate() const
-{
-	return new CCharFeatures(*this);
-}
-
-
 bool CCharFeatures::load(CHAR* fname)
 {
 	CIO::message(M_INFO, "loading...\n");

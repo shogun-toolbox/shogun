@@ -32,7 +32,6 @@ class CWordFeatures: public CSimpleFeatures<WORD>
 
 		bool obtain_from_char_features(CCharFeatures* cf, INT start, INT order, INT gap=0);
 
-		virtual CFeatures* duplicate() const;
 		virtual bool load(CHAR* fname);
 		virtual bool save(CHAR* fname);
 

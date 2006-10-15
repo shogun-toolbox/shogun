@@ -1,9 +1,7 @@
-addpath('../octave/examples')
-
 rand('seed',17);
 %sequence lengths, number of sequences
 len=100;
-num_train=5000;
+num_train=1000;
 num_test=5000;
 num_a=3;
 aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
@@ -20,7 +18,7 @@ max_mismatch=0;
 cache=10;
 single_degree=-1;
 x=shift*ones(1,len);
-x(:)=0;
+%x(:)=0;
 shifts = sprintf( '%i ', x(end:-1:1) );
 
 
@@ -42,7 +40,8 @@ for i=1:length(idx)/2,
 	end
 end
 for i=length(idx)/2+1:length(idx),
-	traindat(aa(1:2)+aas(i,1),idx(i))='AA';
+	traindat(aa(1)+aas(i,1),idx(i))='A';
+	traindat(aa(2)+aas(i,1),idx(i))='A';
 	traindat(aa(1)+1+aas(i,2),idx(i))='A';
 end
 

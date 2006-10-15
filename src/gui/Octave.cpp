@@ -101,7 +101,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 			{
 				CHAR* cmd=CGUIOctave::get_octaveString(prhs(1).string_value());
 				sg_octave.send_command(cmd);
-				delete[] cmd;
+				free(cmd);
 			}
 			else
 				CIO::message(M_ERROR, "usage is sg('send_command', 'cmdline')");
@@ -499,7 +499,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 							gui->guifeatures.set_train_features(NULL);
 						else if (!strncmp(target, "TEST", strlen("TEST")))
 							gui->guifeatures.set_test_features(NULL);
-						delete[] target;
+						free(target);
 					}
 					else
 						CIO::message(M_ERROR, "usage is sg('clean_features', 'TRAIN|TEST')");
@@ -637,7 +637,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 			CIO::message(M_ERROR, "action not defined");
 		}
 
-		delete[] action;
+		free(action);
 	}
 	else
 		CIO::message(M_ERROR, "string expected as first argument");

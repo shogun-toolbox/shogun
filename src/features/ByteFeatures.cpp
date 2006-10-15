@@ -44,12 +44,6 @@ CByteFeatures::~CByteFeatures()
 	alphabet=NULL;
 }
 
-CFeatures* CByteFeatures::duplicate() const
-{
-	return new CByteFeatures(*this);
-}
-
-
 bool CByteFeatures::load(CHAR* fname)
 {
 	CIO::message(M_INFO, "loading...\n");

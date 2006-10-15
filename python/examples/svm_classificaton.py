@@ -1,7 +1,9 @@
 import sg
-import pylab
-from MLab import *
-from numarray import *
+from pylab import figure,pcolor,scatter,contour,colorbar,show
+from numpy import meshgrid,reshape,linspace,ones,min,max,concatenate,transpose
+from numpy import ravel,array
+from numpy.random import randn
+import numpy
 
 num=200;
 sg.send_command('loglevel ALL')
@@ -16,20 +18,20 @@ sg.send_command('c 100')
 sg.send_command('svm_train')
 sv=sg.get_svm();
 print sv
-pylab.figure()
+figure()
 
-x1=pylab.linspace(1.2*min(features)[0],1.2*max(features)[0], 50)
-x2=pylab.linspace(1.2*min(features)[1],1.2*max(features)[1], 50)
-x,y=pylab.meshgrid(x1,x2);
+x1=linspace(1.2*min(features),1.2*max(features), 50)
+x2=linspace(1.2*min(features),1.2*max(features), 50)
+x,y=meshgrid(x1,x2);
 testfeatures=transpose(array((ravel(x), ravel(y))))
 
 sg.set_features("TEST", testfeatures)
 sg.send_command('init_kernel TEST')
-out=sg.svm_classify();
+z=sg.svm_classify()
 
-z=reshape(out,(50,50))
-pylab.pcolor(x, y, transpose(z), shading='flat')
-pylab.scatter(features[:,0],features[:,1], s=20, marker='o', c=labels, hold=True)
-pylab.contour(x, y, transpose(z), linewidths=1, colors='black', hold=True)
-pylab.colorbar()
-pylab.show()
+z.resize((50,50))
+pcolor(x, y, transpose(z), shading='flat')
+scatter(features[:,0],features[:,1], s=20, marker='o', c=labels, hold=True)
+contour(x, y, transpose(z), linewidths=1, colors='black', hold=True)
+colorbar()
+show()

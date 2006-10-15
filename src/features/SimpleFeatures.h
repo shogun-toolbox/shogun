@@ -52,6 +52,11 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	{
 	}
 
+	virtual CFeatures* duplicate() const
+	{
+		return new CSimpleFeatures<ST>(*this);
+	}
+
 	 virtual ~CSimpleFeatures()
 	 {
 #ifndef HAVE_SWIG

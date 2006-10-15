@@ -10,8 +10,8 @@
 
 #ifdef HAVE_PYTHON
 
-#ifndef __GFPYTHON__
-#define __GFPYTHON__
+#ifndef __SHOGUN_PYTHON__
+#define __SHOGUN_PYTHON__
 
 extern "C" {
 #include <Python.h>

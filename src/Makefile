@@ -39,6 +39,7 @@ OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR)
 endif
 SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
 SWIGLIBFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/_\1so=')
+SWIGPYFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1py=')
 TAR:=../shogun-$(shell date +%Y-%m-%d).tar
 
 .PHONY: config swig swigclean just-do-it all out clean end condor purif profile dep depend targets warn2err err2warn ctags confgen depgen buildout buildend dist
@@ -48,7 +49,7 @@ ifeq (.depend,$(wildcard .depend))
 include .depend
 just-do-it:	buildout $(TARGET) buildend
 else
-just-do-it:	depgen depend
+just-do-it:	depgen .depend
 		test -f .depend && $(MAKE)
 endif
 endif
@@ -68,11 +69,6 @@ buildout:	.depend .config
 	@echo ==== Building shogun for platform $(KERNELNAME)-$(MACHINE) target $(TARGET)
 	@echo ==== opts: $(COMPFLAGS_CPP)
 	@echo ========================================================================================
-	@echo 
-linkout:
-	@echo =================
-	@echo ==== Linking ====
-	@echo =================
 	@echo 
 buildend:	$(TARGET)	
 	@echo 
@@ -109,7 +105,10 @@ clean: swigclean
 	rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.mex* sg.so shogun gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find . -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
 
 config: .config
-.config:	Makefile configure
+.config:	configure
+		@echo "========================================="
+		@echo "=running configure using default options="
+		@echo "========================================="
 		chmod u+x ./configure
 		./configure #use default options
 dist:	distclean
@@ -118,16 +117,19 @@ dist:	distclean
 
 ifeq (yes,$(USE_SWIG))
 install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
-	install -D -m755 $(SWIGLIBFILES) $(DESTDIR)
-
-
+	install -d -m755 "$(PYDIR)/shogun"
+	install -m755 $(SWIGLIBFILES) $(SWIGPYFILES) "$(PYDIR)/shogun"
+	echo -n '__all__= [' > "$(PYDIR)/shogun/__init__.py"
+	for i in $(SWIGPYFILES) ; do echo -n $$i | sed -e 's=.*/="=' -e 's/\.py/", /' >>$(PYDIR)/shogun/__init__.py; done
+	echo ']' >> "$(PYDIR)/shogun/__init__.py"
 else
 install: $(TARGET)
 	install -D -m755 $(TARGET) $(DESTDIR)$(BINDIR)
 endif
 
-dep:	depend
-depend:	Makefile .config lib/versionstring.h
+dep:	.depend
+depend:	.depend
+.depend:	.config lib/versionstring.h
 	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_CPP)" ) -o.$(EXT_OBJ_CPP) -f - >.depend
 	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' )  -o.$(EXT_OBJ_C) -f - >>.depend
 	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; ) -o$(EXT_SRC_SWIG) -f - >>.depend
@@ -137,7 +139,7 @@ lib/versionstring.h:	$(SVNEntries)
 		chmod u+x ./.version.sh
 		./.version.sh >lib/versionstring.h
 
-$(OBJFILES): Makefile .config .depend lib/versionstring.h 
+$(OBJFILES): .config .depend lib/versionstring.h 
 
 ifeq (yes,$(USE_SWIG))
 $(TARGET): $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)

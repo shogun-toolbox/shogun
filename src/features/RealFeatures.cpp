@@ -12,11 +12,6 @@
 #include "features/RealFeatures.h"
 #include "lib/File.h"
 
-CFeatures* CRealFeatures::duplicate() const
-{
-	return new CRealFeatures(*this);
-}
-
 bool CRealFeatures::load(CHAR* fname)
 {
 	bool status=false;

@@ -40,8 +40,6 @@ class CFKFeatures: public CRealFeatures
 
   virtual DREAL* set_feature_matrix();
   
-  virtual CFeatures* duplicate() const;
-
   double set_opt_a(double a=-1) ;
   inline double get_weight_a()  { return weight_a; };
 

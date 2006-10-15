@@ -1,5 +1,3 @@
-addpath('../octave/examples')
-
 rand('seed',17);
 %sequence lengths, number of sequences
 len=100;
@@ -22,7 +20,7 @@ block=0;
 single_degree=-1;
 
 %generate some toy data
-acgt='ACGU';
+acgt='ACGT';
 rand('state',1);
 traindat=acgt(ceil(4*rand(len,num_train)));
 trainlab=[-ones(1,num_train/2),ones(1,num_train/2)];

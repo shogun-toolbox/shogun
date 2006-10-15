@@ -32,13 +32,18 @@ for f in files:
 
 #generate linker dependencies
 for f in deps.iterkeys():
-	if f[-1] == 'i':
-		str=os.path.join(os.path.dirname(f), '_' + os.path.basename(f)[:-2]) + '.so: ' + f[:-2]+'_wrap.cxx.o'
+	if f[-1] == 'i' and not initial_deps.has_key(f):
+		str1=os.path.join(os.path.dirname(f), '_' + os.path.basename(f)[:-2]) + '.so: ' + f[:-2]+'_wrap.cxx.o'
+		str2=os.path.join(os.path.dirname(f), os.path.basename(f)[:-2]) + '_wrap.cxx: ' + f
+
 
 		fdep=list();
 		get_deps(f)
 		for d in fdep:
 			if d[-4:]=='.cpp' or d[-2:]=='.c':
-				str+=' ' + d + '.o'
+				str1+=' ' + d + '.o'
+			if d[-2:]=='.h' or d[-2:]=='.i':
+				str2+=' ' + d 
 
-		print str
+		print str1
+		print str2

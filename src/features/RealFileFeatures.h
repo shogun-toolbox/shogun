@@ -25,7 +25,6 @@ class CRealFileFeatures: public CRealFeatures
   virtual ~CRealFileFeatures();
   
   virtual DREAL* load_feature_matrix();
-  virtual CFeatures* duplicate() const;
 
   INT get_label(INT idx);
 

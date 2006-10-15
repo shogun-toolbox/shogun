@@ -31,7 +31,6 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
 			return alphabet;
 		}
 
-		virtual CFeatures* duplicate() const;
 		virtual bool load(CHAR* fname);
 		virtual bool save(CHAR* fname);
 	protected:

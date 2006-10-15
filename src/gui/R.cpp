@@ -279,12 +279,6 @@ static SEXP sg_helper(SEXP args)
 				}
 				else
 					CIO::message(M_ERROR, "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
-				/*
-				   }
-				   else 
-				   CIO::message(M_ERROR, "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
-				   CIO::message(M_INFO, "done\n");
-				   */
 			}
 			else if (!strncmp(action, N_SET_FEATURES, strlen(N_SET_FEATURES)))
 			{
@@ -358,8 +352,6 @@ static SEXP sg_helper(SEXP args)
 				else
 					CIO::message(M_ERROR, "usage is [features]=sg('get_features', 'TRAIN|TEST')");
 
-				//delete[] target;
-
 				if (features)
 					return sg_R.get_features(features);
 				else
@@ -383,7 +375,6 @@ static SEXP sg_helper(SEXP args)
 				{
 					labels=gui->guilabels.get_test_labels();
 				}
-				//delete[] target;
 
 				if (labels)
 					return sg_R.get_labels(labels);
@@ -412,7 +403,6 @@ static SEXP sg_helper(SEXP args)
 								successful(result, gui->guilabels.set_train_labels(labels));
 							else if (!strncmp(target, "TEST", strlen("TEST")))
 								successful(result, gui->guilabels.set_test_labels(labels));
-							//delete[] target;
 						}
 						else
 							CIO::message(M_ERROR, "usage is sg('set_labels', 'TRAIN|TEST', labels)");
