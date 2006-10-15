@@ -536,8 +536,8 @@ TYPEMAP_ARRAYOUT2(PyObject,      NPY_OBJECT)
  */
 %define TYPEMAP_ARGOUT1(type,typecode)
 %typemap(in, numinputs=0) (type** ARGOUT1, INT* DIM1) {
-	   $1 = (type**) malloc(sizeof(type**));
-	   $2 = (INT*) malloc(sizeof(INT*));
+	   $1 = (type**) malloc(sizeof(type*));
+	   $2 = (INT*) malloc(sizeof(INT));
 }
 
 %typemap(argout) (type** ARGOUT1, INT* DIM1) {
@@ -566,9 +566,9 @@ TYPEMAP_ARGOUT1(PyObject,      NPY_OBJECT)
 
 %define TYPEMAP_ARGOUT2(type,typecode)
 %typemap(in, numinputs=0) (type** ARGOUT2, INT* DIM1, INT* DIM2) {
-	   $1 = (type**) malloc(sizeof(type**));
-	   $2 = (INT*) malloc(sizeof(INT*));
-	   $3 = (INT*) malloc(sizeof(INT*));
+	   $1 = (type**) malloc(sizeof(type*));
+	   $2 = (INT*) malloc(sizeof(INT));
+	   $3 = (INT*) malloc(sizeof(INT));
 }
 
 %typemap(argout) (type** ARGOUT2, INT* DIM1, INT* DIM2) {
