@@ -1940,7 +1940,13 @@ EOF
                 else
 		    LINKFLAGS="-shared $_pylibpath -l$_pylibs -ldl -lutil $LINKFLAGS"
                 fi
-		TARGET="sg.so"
+
+		if win32
+                then
+		    TARGET="sg.dll"
+                else
+		    TARGET="sg.so"
+                fi
 
 cat > $TMPC << EOF
 #include <Python.h>
@@ -1980,7 +1986,13 @@ EOF
 		fi
 
 		HAVE_R='#define HAVE_R 1'
-		TARGET="sg.so"
+
+		if win32
+                then
+		    TARGET="sg.dll"
+                else
+		    TARGET="sg.so"
+                fi
 
 		INCLUDES="$INCLUDES `R CMD config --cppflags`"
 		LINKFLAGS="$LINKFLAGS `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
