@@ -227,9 +227,9 @@ EOF
 check_python()
 {
 	echocheck "Python"
-	if python -V >/dev/null 2>&1
+	if $PYTHON -V >/dev/null 2>&1
 	then
-		echores "`python -V 2>&1 | grep Python | cut -f 2 -d ' '`"
+		echores "`$PYTHON -V 2>&1 | grep Python | cut -f 2 -d ' '`"
 	else
 		echores "python not detected (required)"
 	fi
@@ -325,6 +325,7 @@ linux()   { issystem "Linux"   ; return "$?" ; }
 sunos()   { issystem "SunOS"   ; return "$?" ; }
 hpux()    { issystem "HP-UX"   ; return "$?" ; }
 irix()    { issystem "IRIX"    ; return "$?" ; }
+aix()     { issystem "AIX"     ; return "$?" ; }
 cygwin()  { issystem "CYGWIN"  ; return "$?" ; }
 freebsd() { issystem "FreeBSD" ; return "$?" ; }
 netbsd()  { issystem "NetBSD"  ; return "$?" ; }
@@ -419,7 +420,7 @@ Optional features:
   --enable-matlab               enable matlab (shogun can be called from within matlab) support [disabled]
   --enable-octave               enable octave (shogun can be called from within octave) support [disabled]
   --enable-R                    enable R      (shogun can be called from within R)      support [disabled]
-  --enable-mindy				enable mindy library support (for more efficient n-gram, word-in-a-bag kernel implementations)
+  --enable-mindy                enable mindy library support (for more efficient n-gram, word-in-a-bag kernel implementations)
   --enable-swig                 together with --enable-python builds swig objects instead of single binary interface [disabled]
   --enable-cplex    	        enable code using CPLEX  [disabled]
   --enable-readline    	        enable readline in stand-a-lone interface [auto]
@@ -437,19 +438,20 @@ Optional features:
   --disable-svm-light 	        disable building of SVM-light and thus result in pure GPLv2 code [enabled]
 
 Miscellaneous options:
-  --enable-debug	            enable debugging [disabled]
+  --enable-debug                enable debugging [disabled]
   --enable-path-debug	        enable viterbi path debugging [disabled]
   --enable-profile              compile profiling information into shogun [disable]
   --enable-static               build a statically linked binary. Set further linking
                                 options with --enable-static="-lslang -lncurses"
+  --python=python               use this python executable [python]
   --cc=COMPILER                 use this C compiler to build shogun [gcc]
   --cxx=COMPILER                use this C++ compiler to build shogun [g++]
   --target=PLATFORM             target platform (i386-linux, arm-linux, etc)
   --install-path=PATH           the path to a custom install program (useful if
                                 your OS uses a GNU-incompatible install utility by
                                 default and you want to point to the GNU version)
-  --includes=DIR				include DIR when searching for includes
-  --libs=DIR					include DIR when searching for libraries on linking
+  --includes=DIR                include DIR when searching for includes
+  --libs=DIR                    include DIR when searching for libraries on linking
 EOF
     exit 0
   fi
@@ -468,9 +470,12 @@ for ac_option do
   --target=*)
     _target=`echo $ac_option | cut -d '=' -f 2`
     ;;
+  --python=*)
+    PYTHON=`echo $ac_option | cut -d '=' -f 2`
+    ;;
   --cc=*)
     COMP_C=`echo $ac_option | cut -d '=' -f 2`
-	;;
+    ;;
   --cxx=*)
     COMP_CPP=`echo $ac_option | cut -d '=' -f 2`
     ;;
@@ -1912,9 +1917,9 @@ EOF
 	if test "$_python" = yes
 	then
 		echocheck "Python numpy support"
-		if python -c "import sys; import numpy" >/dev/null 2>&1
+		if $PYTHON -c "import sys; import numpy" >/dev/null 2>&1
 		then
-			echores "`python -c 'import numpy; print numpy.__version__'`"
+			echores "`$PYTHON -c 'import numpy; print numpy.__version__'`"
 		else
 			echores "no"
 			exit 1
@@ -1922,12 +1927,19 @@ EOF
 
 		HAVE_PYTHON='#define HAVE_PYTHON 1'
 		test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
-		test -n "$_pyinclude" || _pyinclude=`python -c "import numpy; import sys; print '-I'+sys.prefix+'/include/python'+sys.version[0:3]+' -I'+numpy.get_include()"`
-		test -n "$_pylibs" || _pylibs=`python -c "import sys; print 'python'+sys.version[0:3]"`
+		test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "import numpy; import sys; print '-I'+sys.prefix+'/include/python'+sys.version[0:3]+' -I'+numpy.get_include()"`
+		test -n "$_pylibpath" && _pylibpath="-I$_pylibpath"
+		test -n "$_pylibpath" || _pylibpath=`$PYTHON -c "import sys; print '-L'+sys.exec_prefix+'/lib/python'+sys.version[0:3]+'/config'"`
+		test -n "$_pylibs" || _pylibs=`$PYTHON -c "import sys; print 'python'+sys.version[0:3]"`
 		INCLUDES="$_pyinclude $INCLUDES"
 		COMPFLAGS_CPP="-fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
 		COMPFLAGS_C="-fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
-		LINKFLAGS="-shared -l$_pylibs -ldl -lutil $LINKFLAGS"
+		if darwin
+                then
+                    LINKFLAGS="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $LINKFLAGS"
+                else
+		    LINKFLAGS="-shared $_pylibpath -l$_pylibs -ldl -lutil $LINKFLAGS"
+                fi
 		TARGET="sg.so"
 
 cat > $TMPC << EOF
@@ -2038,7 +2050,7 @@ EOF
 
 		HAVE_SWIG='#define HAVE_SWIG 1'
 		USE_SWIG='yes'
-		test -n "$_pydir" || _pydir="$_libdir/`python -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
+		test -n "$_pydir" || _pydir="$_libdir/`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
 	else
 		USE_SWIG='no'
 	fi
@@ -2134,6 +2146,7 @@ EXT_OBJ_C   	= ${EXT_OBJ_C}
 EXT_SRC_CPP 	= ${EXT_SRC_CPP}
 EXT_SRC_C   	= ${EXT_SRC_C}
 GDB				= ${GDB}
+PYTHON			= ${PYTHON}
 COMP_C			= ${COMP_C}
 COMP_CPP		= ${COMP_CPP}
 DEFINES			= ${DEFINES}

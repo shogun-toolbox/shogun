@@ -127,12 +127,16 @@ install: $(TARGET)
 	install -D -m755 $(TARGET) $(DESTDIR)$(BINDIR)
 endif
 
-dep:	.depend
-depend:	.depend
+dep:	depend
+depend:		.config lib/versionstring.h
+	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_CPP)" ) -o.$(EXT_OBJ_CPP) -f - >.depend || true
+	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' )  -o.$(EXT_OBJ_C) -f - >>.depend || true
+	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; ) -o$(EXT_SRC_SWIG) -f - >>.depend || true
+	( find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -a -exec grep -le '^%module' {} \; ; find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" ) |  cut -c 3- | $(PYTHON) .generate_link_dependencies.py >>.depend
 .depend:	.config lib/versionstring.h
-	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_CPP)" ) -o.$(EXT_OBJ_CPP) -f - >.depend
-	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' )  -o.$(EXT_OBJ_C) -f - >>.depend
-	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; ) -o$(EXT_SRC_SWIG) -f - >>.depend
+	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_CPP)" ) -o.$(EXT_OBJ_CPP) -f - >.depend || true
+	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' )  -o.$(EXT_OBJ_C) -f - >>.depend || true
+	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; ) -o$(EXT_SRC_SWIG) -f - >>.depend || true
 	( find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -a -exec grep -le '^%module' {} \; ; find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" ) |  cut -c 3- | $(PYTHON) .generate_link_dependencies.py >>.depend
 
 lib/versionstring.h:	$(SVNEntries)

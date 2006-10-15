@@ -25,7 +25,7 @@
 
 extern "C" {
 #include <Python.h>
-#include <python2.4/object.h>
+#include <object.h>
 #include <../../numarray/numpy/libnumarray.h>
 #include <numpy/ndarrayobject.h>
 }
