@@ -267,9 +267,9 @@ cc_check() {
   echo >> "$TMPLOG"
   cat "$TMPC" >> "$TMPLOG"
   echo >> "$TMPLOG"
-  echo "$COMP_C $TMPC $INCLUDES -o $TMPO $LINKFLAGS $@" >> "$TMPLOG"
+  echo "$COMP_C $INCLUDES $COMPFLAGS_C $TMPC -o $TMPO $LINKFLAGS $@" >> "$TMPLOG"
   rm -f "$TMPO"
-  ( "$COMP_C" $INCLUDES "$TMPC" -o "$TMPO" $LINKFLAGS "$@" ) >> "$TMPLOG" 2>&1
+  ( "$COMP_C" $INCLUDES $COMPFLAGS_C "$TMPC" -o "$TMPO" $LINKFLAGS "$@" ) >> "$TMPLOG" 2>&1
   TMP="$?"
   if test -f "$TMPO"
   then
@@ -287,9 +287,9 @@ cxx_check() {
   echo >> "$TMPLOG"
   cat "$TMPC" >> "$TMPLOG"
   echo >> "$TMPLOG"
-  echo "$COMP_CPP $TMPC $INCLUDES -o $TMPO $LINKFLAGS $@" >> "$TMPLOG"
+  echo "$COMP_CPP $TMPC $INCLUDES $COMPFLAGS_CPP -o $TMPO $LINKFLAGS $@" >> "$TMPLOG"
   rm -f "$TMPO"
-  ( "$COMP_CPP" $INCLUDES "$TMPC" -o "$TMPO" $LINKFLAGS "$@" ) >> "$TMPLOG" 2>&1
+  ( "$COMP_CPP" $INCLUDES "$TMPC" $COMPFLAGS_CPP -o "$TMPO" $LINKFLAGS "$@" ) >> "$TMPLOG" 2>&1
   TMP="$?"
   if test -f "$TMPO"
   then
@@ -1717,9 +1717,9 @@ set_opts()
 	if test "$_matlab" = yes
 	then
 		echocheck "Matlab"
-		if echo quit | matlab >/dev/null 2>&1
+		if matlab -nodisplay -r 'version;quit' >/dev/null 2>&1
 		then
-			echores "`echo quit | matlab`"
+			 echores "`matlab -nodisplay -r \"sprintf('ver:%s',version),quit\" | grep '^ver:' | cut -f '2-' -d ':'`"
 		else
 			echores "no"
 			exit 1
@@ -1940,18 +1940,18 @@ EOF
 		COMPFLAGS_CPP="-fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
 		COMPFLAGS_C="-fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
 		if darwin
-                then
-                    LINKFLAGS="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $LINKFLAGS"
-                else
-		    LINKFLAGS="-shared $_pylibpath -l$_pylibs -ldl -lutil $LINKFLAGS"
-                fi
+		then
+			LINKFLAGS="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $LINKFLAGS"
+		else
+			LINKFLAGS="-shared $_pylibpath -l$_pylibs -ldl -lutil $LINKFLAGS"
+		fi
 
 		if win32
-                then
-		    TARGET="sg.dll"
-                else
-		    TARGET="sg.so"
-                fi
+		then
+			TARGET="sg.dll"
+		else
+			TARGET="sg.so"
+		fi
 
 cat > $TMPC << EOF
 #include <Python.h>
@@ -2059,7 +2059,7 @@ EOF
 		echocheck "SWIG"
 		if swig -version >/dev/null 2>&1
 		then
-			echores "`swig -version | grep Version | cut -f 3 -d ' '`"
+			echores "`swig -version 2>&1 | grep Version | cut -f 3 -d ' '`"
 		else
 			echores "no"
 			exit 1
