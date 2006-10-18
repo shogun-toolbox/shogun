@@ -1727,8 +1727,8 @@ set_opts()
 
 		HAVE_MATLAB='#define HAVE_MATLAB 1'
 
-		COMPFLAGS_CPP="$COMPFLAGS_CPP -fexceptions"
-		COMPFLAGS_C="$COMPFLAGS_C -fexceptions"
+		COMPFLAGS_CPP="$COMPFLAGS_CPP"
+		COMPFLAGS_C="$COMPFLAGS_C"
 
 		if osf1
 		then
