@@ -1,3 +1,17 @@
+from numpy import array,zeros,concatenate,uint8
+from shogun.Features import *
+from shogun.SVM import *
+from shogun.Kernel import *
+
+dat=zeros([10,100],dtype=uint8)
+feat = ByteFeatures(dat)
+lab = Labels(concatenate(ones(1,50),ones(1,50),axis=1))
+wdk=WeightedDegreeCharKernel(feat,feat, 10,1)
+svm = SVMLight(10, wdk, lab)
+svm.train()
+print svm.classify().get_labels()
+print lab.get_labels()
+
 import kernel.Kernel as k
 import features.Features as f
 import classifier.svm.SVM as svm

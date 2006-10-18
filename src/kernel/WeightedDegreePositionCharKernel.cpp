@@ -1261,6 +1261,10 @@ void CWeightedDegreePositionCharKernel::compute_scoring_helper(struct Trie* tree
 {
 	if (i+j<num_feat)
 	{
+		DREAL decay=1.0; //no decay by default
+		if (j>d)
+			decay=pow(0.5,j); //marginalize out lower order matches
+
 		if (j<degree-1)
 		{
 			for (INT k=0; k<num_sym; k++)
@@ -1274,9 +1278,9 @@ void CWeightedDegreePositionCharKernel::compute_scoring_helper(struct Trie* tree
 #endif
 					//continue recursion if not yet at max_degree, else add to result
 					if (d<max_degree-1)
-						compute_scoring_helper(child, i, j+1, weight+child->weight, d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
+						compute_scoring_helper(child, i, j+1, weight+decay*child->weight, d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
 					else
-						result[sym_offset*(i+j-max_degree+1)+num_sym*offs+k] += weight+child->weight;
+						result[sym_offset*(i+j-max_degree+1)+num_sym*offs+k] += weight+decay*child->weight;
 
 					////do recursion starting from this position
 					if (d==0)
@@ -1290,9 +1294,9 @@ void CWeightedDegreePositionCharKernel::compute_scoring_helper(struct Trie* tree
 			{
 				//continue recursion if not yet at max_degree, else add to result
 				if (d<max_degree-1 && i<num_feat-1)
-					compute_scoring_helper(trees[i+1], i+1, 0, weight+tree->child_weights[k], d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
+					compute_scoring_helper(trees[i+1], i+1, 0, weight+decay*tree->child_weights[k], d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
 				else
-					result[sym_offset*(i+j-max_degree+1)+num_sym*offs+k] += weight+tree->child_weights[k];
+					result[sym_offset*(i+j-max_degree+1)+num_sym*offs+k] += weight+decay*tree->child_weights[k];
 			}
 		}
 	}

@@ -145,6 +145,17 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	  if (free)
 		  delete[] feat_vec ;
   } 
+
+  /// get the pointer to the feature matrix
+  /// num_feat,num_vectors are returned by reference
+  void get_fm(DREAL** dst, INT* d1, INT* d2)
+  {
+	  LONG num=num_features*num_vectors;
+      *d1=num_features;
+      *d2=num_vectors;
+      *dst=new DREAL[num];
+      memcpy(*dst, feature_matrix, num * sizeof(DREAL));
+  }
   
   /// get the pointer to the feature matrix
   /// num_feat,num_vectors are returned by reference
@@ -177,6 +188,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	  feature_matrix=(ST*) malloc(sizeof(ST)*((LONG) num_feat)*num_vec);
 	  ASSERT(feature_matrix);
 	  memcpy(feature_matrix, src, (sizeof(ST)*((LONG) num_feat)*num_vec));
+
 	  num_features=num_feat;
 	  num_vectors=num_vec;
   }

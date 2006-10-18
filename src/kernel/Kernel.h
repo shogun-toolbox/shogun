@@ -60,6 +60,7 @@ class CKernel
 			return compute(idx_a, idx_b);
 		}
 
+		void get_kernel_matrix(DREAL** dst, INT* m, INT* n);
 		virtual DREAL* get_kernel_matrix_real(int &m, int &n, DREAL* target);
 		virtual SHORTREAL* get_kernel_matrix_shortreal(int &m, int &n, SHORTREAL* target);
 

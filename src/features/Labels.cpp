@@ -73,7 +73,7 @@ DREAL* CLabels::get_labels(INT &len)
 
 void CLabels::get_labels(DREAL** labels, INT* len)
 {
-	ASSERT(*labels && len);
+	ASSERT(labels && len);
 	*labels=NULL;
 	*len=num_labels;
 

@@ -3,7 +3,7 @@
 #ifndef SWIG_FILE_WITH_INIT
 #  define NO_IMPORT_ARRAY
 #endif
-#include "stdio.h"
+#include <stdio.h>
 #include <numpy/arrayobject.h>
 
 #include "lib/common.h"
@@ -16,7 +16,7 @@
 
 /* Macros to extract array attributes.
  */
-#define is_array(a)            ((a) && PyArray_Check((PyArrayObject *)a))
+#define is_array(a)            ((a) && PyArray_Check((PyObject *)a))
 #define array_type(a)          (int)(PyArray_TYPE(a))
 #define array_dimensions(a)    (((PyArrayObject *)a)->nd)
 #define array_size(a,i)        (((PyArrayObject *)a)->dimensions[i])
@@ -92,19 +92,19 @@ PyArrayObject* obj_to_array_no_conversion(PyObject* input, int typecode) {
  * correct type.  On failure, the python error string will be set and
  * the routine returns NULL.
  */
-PyArrayObject* obj_to_array_allow_conversion(PyObject* input, int typecode,
+PyObject* obj_to_array_allow_conversion(PyObject* input, int typecode,
                                              int* is_new_object)
 {
-  PyArrayObject* ary = NULL;
+  PyObject* ary = NULL;
   PyObject* py_obj;
   if (is_array(input) && (typecode == PyArray_NOTYPE || type_match(array_type(input),typecode))) {
-    ary = (PyArrayObject*) input;
+    ary = (PyObject*) input;
     *is_new_object = 0;
   }
   else {
     py_obj = PyArray_FromObject(input, typecode, 0, 0);
     /* If NULL, PyArray_FromObject will have set python error value.*/
-    ary = (PyArrayObject*) py_obj;
+    ary = (PyObject*) py_obj;
     *is_new_object = 1;
   }
   return ary;
@@ -115,54 +115,28 @@ PyArrayObject* obj_to_array_allow_conversion(PyObject* input, int typecode,
  * not contiguous, create a new PyArrayObject using the original data,
  * flag it as a new object and return the pointer.
  */
-PyArrayObject* make_contiguous(PyArrayObject* ary, int* is_new_object,
+PyObject* make_contiguous(PyObject* ary, int* is_new_object,
                                int min_dims, int max_dims)
 {
-  PyArrayObject* result;
-  if (array_is_contiguous(ary)) {
+  PyObject* result;
+  if (PyArray_ISFARRAY(ary)) {
     result = ary;
     *is_new_object = 0;
   }
   else {
-    result = (PyArrayObject*) PyArray_ContiguousFromObject((PyObject*)ary, 
-							   array_type(ary), 
-							   min_dims,
-							   max_dims);
+    result=PyArray_FromAny((PyObject*)ary, PyArray_DescrFromType(array_type(ary)), min_dims, max_dims,
+            NPY_FARRAY | NPY_ENSURECOPY, NULL);
     *is_new_object = 1;
   }
   return result;
 }
 
-/* Convert a given PyObject to a contiguous PyArrayObject of the
- * specified type.  If the input object is not a contiguous
- * PyArrayObject, a new one will be created and the new object flag
- * will be set.
- */
-PyArrayObject* obj_to_array_contiguous_allow_conversion(PyObject* input,
-                                                        int typecode,
-                                                        int* is_new_object) {
-  int is_new1 = 0;
-  int is_new2 = 0;
-  PyArrayObject* ary2;
-  PyArrayObject* ary1 = obj_to_array_allow_conversion(input, typecode, 
-						      &is_new1);
-  if (ary1) {
-    ary2 = make_contiguous(ary1, &is_new2, 0, 0);
-    if ( is_new1 && is_new2) {
-      Py_DECREF(ary1);
-    }
-    ary1 = ary2;    
-  }
-
-  *is_new_object = is_new1 || is_new2;
-  return ary1;
-}
 
 /* Test whether a python object is contiguous.  If array is
  * contiguous, return 1.  Otherwise, set the python error string and
  * return 0.
  */
-int require_contiguous(PyArrayObject* ary) {
+int require_contiguous(PyObject* ary) {
   int contiguous = 1;
   if (!array_is_contiguous(ary)) {
     PyErr_SetString(PyExc_TypeError, "Array must be contiguous.  A discontiguous array was given");
@@ -171,11 +145,11 @@ int require_contiguous(PyArrayObject* ary) {
   return contiguous;
 }
 
-/* Require the given PyArrayObject to have a specified number of
+/* Require the given PyObject to have a specified number of
  * dimensions.  If the array has the specified number of dimensions,
  * return 1.  Otherwise, set the python error string and return 0.
  */
-int require_dimensions(PyArrayObject* ary, int exact_dimensions) {
+int require_dimensions(PyObject* ary, int exact_dimensions) {
   int success = 1;
   if (array_dimensions(ary) != exact_dimensions) {
     PyErr_Format(PyExc_TypeError, 
@@ -186,12 +160,12 @@ int require_dimensions(PyArrayObject* ary, int exact_dimensions) {
   return success;
 }
 
-/* Require the given PyArrayObject to have one of a list of specified
+/* Require the given PyObject to have one of a list of specified
  * number of dimensions.  If the array has one of the specified number
  * of dimensions, return 1.  Otherwise, set the python error string
  * and return 0.
  */
-int require_dimensions_n(PyArrayObject* ary, int* exact_dimensions, int n) {
+int require_dimensions_n(PyObject* ary, int* exact_dimensions, int n) {
   int success = 0;
   int i;
   char dims_str[255] = "";
@@ -215,11 +189,11 @@ int require_dimensions_n(PyArrayObject* ary, int* exact_dimensions, int n) {
   return success;
 }    
 
-/* Require the given PyArrayObject to have a specified shape.  If the
+/* Require the given PyObject to have a specified shape.  If the
  * array has the specified shape, return 1.  Otherwise, set the python
  * error string and return 0.
  */
-int require_size(PyArrayObject* ary, int* size, int n) {
+int require_size(PyObject* ary, int* size, int n) {
   int i;
   int success = 1;
   int len;
@@ -289,12 +263,12 @@ int require_size(PyArrayObject* ary, int* size, int n) {
 /* One dimensional input arrays */
 %define TYPEMAP_IN1(type,typecode)
 %typemap(in) (type* IN_ARRAY1, INT DIM1)
-             (PyArrayObject* array=NULL, int is_new_object) {
+             (PyObject* array=NULL, int is_new_object) {
   int size[1] = {-1};
-  array = obj_to_array_contiguous_allow_conversion($input, typecode, &is_new_object);
+  array = make_contiguous($input, &is_new_object, 0, 0);
   if (!array || !require_dimensions(array,1) || !require_size(array,size,1)) SWIG_fail;
-  $1 = (type*) array->data;
-  $2 = array->dimensions[0];
+  $1 = (type*) PyArray_BYTES(array);
+  $2 = PyArray_DIM(array,0);
 }
 %typemap(freearg) (type* IN_ARRAY1, INT DIM1) {
   if (is_new_object$argnum && array$argnum) Py_DECREF(array$argnum);
@@ -320,13 +294,14 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
  /* Two dimensional input arrays */
 %define TYPEMAP_IN2(type,typecode)
   %typemap(in) (type* IN_ARRAY2, INT DIM1, INT DIM2)
-               (PyArrayObject* array=NULL, int is_new_object) {
+               (PyObject* array=NULL, int is_new_object) {
   int size[2] = {-1,-1};
-  array = obj_to_array_contiguous_allow_conversion($input, typecode, &is_new_object);
+
+  array = make_contiguous($input, &is_new_object, 0, 0);
   if (!array || !require_dimensions(array,2) || !require_size(array,size,1)) SWIG_fail;
-  $1 = (type*) array->data;
-  $2 = array->dimensions[0];
-  $3 = array->dimensions[1];
+  $1 = (type*) PyArray_BYTES(array);
+  $2 = PyArray_DIM(array,0);
+  $3 = PyArray_DIM(array,1);
 }
 %typemap(freearg) (type* IN_ARRAY2, INT DIM1, INT DIM2) {
   if (is_new_object$argnum && array$argnum) Py_DECREF(array$argnum);
@@ -376,13 +351,13 @@ TYPEMAP_IN2(PyObject,      NPY_OBJECT)
 
  /* One dimensional input/output arrays */
 %define TYPEMAP_INPLACE1(type,typecode)
-%typemap(in) (type* INPLACE_ARRAY1, INT DIM1) (PyArrayObject* temp=NULL) {
+%typemap(in) (type* INPLACE_ARRAY1, INT DIM1) (PyObject* temp=NULL) {
   int i;
   temp = obj_to_array_no_conversion($input,typecode);
   if (!temp  || !require_contiguous(temp)) SWIG_fail;
-  $1 = (type*) temp->data;
+  $1 = (type*) PyArray_BYTES(temp);
   $2 = 1;
-  for (i=0; i<temp->nd; ++i) $2 *= temp->dimensions[i];
+  for (i=0; i<PyArray_NDIM(temp); ++i) $2 *= PyArray_DIM(temp,i);
 }
 %enddef
 
@@ -404,12 +379,12 @@ TYPEMAP_INPLACE1(PyObject,      NPY_OBJECT)
 
  /* Two dimensional input/output arrays */
 %define TYPEMAP_INPLACE2(type,typecode)
-  %typemap(in) (type* INPLACE_ARRAY2, INT DIM1, INT DIM2) (PyArrayObject* temp=NULL) {
+  %typemap(in) (type* INPLACE_ARRAY2, INT DIM1, INT DIM2) (PyObject* temp=NULL) {
   temp = obj_to_array_no_conversion($input,typecode);
   if (!temp || !require_contiguous(temp)) SWIG_fail;
-  $1 = (type*) temp->data;
-  $2 = temp->dimensions[0];
-  $3 = temp->dimensions[1];
+  $1 = (type*) PyArray_BYTES(temp);
+  $2 = PyArray_DIM(temp,0);
+  $3 = PyArray_DIM(temp,1);
 }
 %enddef
 
@@ -486,12 +461,12 @@ TYPEMAP_ARRAYOUT1(PyObject,      NPY_OBJECT)
 
  /* Two dimensional input/output arrays */
 %define TYPEMAP_ARRAYOUT2(type,typecode)
-  %typemap(in) (type* ARRAYOUT_ARRAY2, INT DIM1, INT DIM2) (PyArrayObject* temp=NULL) {
+  %typemap(in) (type* ARRAYOUT_ARRAY2, INT DIM1, INT DIM2) (PyObject* temp=NULL) {
   temp = obj_to_array_no_conversion($input,typecode);
   if (!temp || !require_contiguous(temp)) SWIG_fail;
-  $1 = (type*) temp->data;
-  $2 = temp->dimensions[0];
-  $3 = temp->dimensions[1];
+  $1 = (type*) PyArray_BYTES(temp);
+  $2 = PyArray_DIM(temp,0);
+  $3 = PyArray_DIM(temp,1);
 }
 %enddef
 
@@ -544,7 +519,7 @@ TYPEMAP_ARRAYOUT2(PyObject,      NPY_OBJECT)
 	npy_intp* dims=(npy_intp*) malloc(sizeof(npy_int));
 	dims[0]=*$2;
 	PyObject* outArray = PyArray_SimpleNewFromData(1, dims, typecode, (void*)*$1);
-	free(dims); free($1); free($2);
+	free(dims); free($2);
 	$result=outArray;
 }
 %enddef
@@ -573,9 +548,9 @@ TYPEMAP_ARGOUT1(PyObject,      NPY_OBJECT)
 
 %typemap(argout) (type** ARGOUT2, INT* DIM1, INT* DIM2) {
 	npy_intp* dims=(npy_intp*) malloc(2*sizeof(npy_int));
-	dims[0]=*$2; dims[1]=*$3;
-	PyObject* outArray = PyArray_SimpleNewFromData(2, dims, typecode, (void*)*$1);
-	free(dims); free($1); free($2); free($3);
+	dims[0]=*($2); dims[1]=*($3);
+    PyObject* outArray = PyArray_SimpleNewFromData(2, dims, typecode, (void*)*$1);
+	free(dims); free($2); free($3);
 	$result=outArray;
 }
 %enddef

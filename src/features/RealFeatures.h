@@ -35,6 +35,10 @@ class CRealFeatures: public CSimpleFeatures<DREAL>
 
   bool Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, DREAL gapCost) ;
 
+  inline virtual void get_fm(DREAL** dst, INT* d1, INT* d2)
+  {
+      CSimpleFeatures<DREAL>::get_fm(dst, d1, d2);
+  }
   inline virtual void copy_feature_matrix(DREAL* src, INT num_feat, INT num_vec)
   {
       CSimpleFeatures<DREAL>::copy_feature_matrix(src, num_feat, num_vec);

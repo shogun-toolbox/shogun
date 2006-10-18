@@ -5,7 +5,6 @@ num_train=1000;
 num_test=5000;
 num_a=3;
 aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
-top_perc=0.1;
 
 %SVM regularization factor C
 C=1;
@@ -21,9 +20,8 @@ x=shift*ones(1,len);
 %x(:)=0;
 shifts = sprintf( '%i ', x(end:-1:1) );
 
-
 %generate some toy data
-acgt='CCGT';
+acgt='ACGT';
 rand('state',1);
 traindat=acgt(ceil(4*rand(len,num_train)));
 trainlab=[-ones(1,num_train/2),ones(1,num_train/2)];
@@ -31,18 +29,6 @@ aas=floor((shift+1)*rand(num_train,1));
 idx=find(trainlab==1);
 for i=1:length(idx),
 	traindat(aa+aas(i),idx(i))='A';
-end
-aas=floor((shift+1)*rand(num_train,num_a));
-idx=find(trainlab==-1);
-for i=1:length(idx)/2,
-	for j=1:num_a,
-		traindat(aa(1)+aas(i,j),idx(i))='A';
-	end
-end
-for i=length(idx)/2+1:length(idx),
-	traindat(aa(1)+aas(i,1),idx(i))='A';
-	traindat(aa(2)+aas(i,1),idx(i))='A';
-	traindat(aa(1)+1+aas(i,2),idx(i))='A';
 end
 
 testdat=acgt(ceil(4*rand(len,num_test)));
