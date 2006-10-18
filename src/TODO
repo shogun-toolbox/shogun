@@ -1,5 +1,13 @@
 TODO
 
+- R wrapper
+- error checks/exception modell w/ python-swig-objects (fabio example)
+- doc-strings w/ python-swig-objects (fabio example, rbf,svmlight,realfeat)
+- memory inplace mit Py_INCREF ? or copy w/ python-swig-objects
+- convert each and every object to be fully functional w/ swig/python
+	* fabio classifier
+	* soeren string/sparse feat
+	* fabio real kernel/ soeren rest
 - move svmlight structs  (MODEL...) inside CSVMLight class (again!, if it works with swig somehow)
 - kerthi,olivier Lin-SVM implementieren, chunking ???
 - LPM implementieren
