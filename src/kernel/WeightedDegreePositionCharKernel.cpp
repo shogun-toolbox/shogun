@@ -1302,6 +1302,42 @@ void CWeightedDegreePositionCharKernel::compute_scoring_helper(struct Trie* tree
 	}
 }
 
+
+return Trie* CWeightedDegreePositionCharKernel::get_tree_at_position(INT i)
+{
+	num_feat=((CCharFeatures*) get_rhs())->get_num_features();
+	ASSERT(num_feat>0 && i<num_feat);
+	return trees[i];
+}
+
+void CWeightedDegreePositionCharKernel::traverse(struct Trie* tree, INT depth)
+{
+		if (depth<degree-1)
+		{
+			for (INT k=0; k<num_sym; k++)
+			{
+				if (tree->children[k]!=NO_CHILD)
+				{
+#ifdef USE_TREEMEM
+					struct Trie* child=&TreeMem[tree->children[k]];
+#else
+					struct Trie* child=tree->children[k];
+#endif
+					///do sth. with child->weight
+					traverse(child, depth+1);
+				}
+			}
+		}
+		else if (depth==degree-1)
+		{
+			for (INT k=0; k<num_sym; k++)
+			{
+					///do sth. with tree->child_weights[k];
+			}
+		}
+}
+
+
 DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights)
 {
 	num_feat=((CCharFeatures*) get_rhs())->get_num_features();

@@ -355,6 +355,9 @@ inline DREAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec,
 		return sum ;
 }
 
+return Trie* get_tree_at_position(INT i);
+void traverse(struct Trie* tree, INT depth);
+
 /* computes the simple kernel between position seq_pos and tree tree_pos */
 inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, INT len,
 		INT seq_pos, INT tree_pos, 
