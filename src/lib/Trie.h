@@ -25,8 +25,8 @@
 #define TRIE_ASSERT_EVERYTHING(x) 
 #endif
 
-//#define TRIE_ASSERT(x) ASSERT(x)
-#define TRIE_ASSERT(x) 
+#define TRIE_ASSERT(x) ASSERT(x)
+//#define TRIE_ASSERT(x) 
 
 class CTrie
 {
