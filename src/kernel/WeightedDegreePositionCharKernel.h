@@ -167,7 +167,7 @@ public:
 	inline INT get_degree() { return degree; }
 
 	Trie* get_tree_at_position(INT i);
-	void traverse(struct Trie* tree, INT depth);
+	void traverse( const struct Trie* tree, INT p, const INT depth, INT* x, const INT k, DREAL* C_k, DREAL* L_k, DREAL* R_k );
 
 	// weight setting/getting operations
 	inline DREAL *get_degree_weights(INT& d, INT& len)

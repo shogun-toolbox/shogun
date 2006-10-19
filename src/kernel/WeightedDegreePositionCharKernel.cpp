@@ -1313,117 +1313,142 @@ CWeightedDegreePositionCharKernel::Trie* CWeightedDegreePositionCharKernel::get_
 
 
 
-void CWeightedDegreePositionCharKernel::traverse( struct const Trie* const tree, INT const depth, INT* x, const INT k, DREAL* C_k, DREAL* L_k, DREAL* R_k )
+void CWeightedDegreePositionCharKernel::traverse( const struct Trie* tree, INT p, const INT depth, INT* x, const INT k, DREAL* C_k, DREAL* L_k, DREAL* R_k )
 {
-  const INT num_sym=4;
-  INT sym;
-  if (depth<degree-1)
-    {
-      for (sym=0; sym<num_sym; ++sym)
+	const INT num_sym=4;
+	const INT nofKmers = (INT) pow( num_sym, k );
+
+	INT sym;
+	if (depth<degree-1)
 	{
-	  if (tree->children[sym]!=NO_CHILD)
-	    {
+		for (sym=0; sym<num_sym; ++sym)
+		{
+			if (tree->children[sym]!=NO_CHILD)
+			{
 #ifdef USE_TREEMEM
-	      struct Trie* child=&TreeMem[tree->children[sym]];
+				struct Trie* child=&TreeMem[tree->children[sym]];
 #else
-	      struct Trie* child=tree->children[sym];
+				struct Trie* child=tree->children[sym];
 #endif
-	      x[depth] = sym;
-	      if( depth > k ) {
-		const DREAL margWeight =  child->weight * pow( 0.25, depth-k );
-		for( i = 0; i < depth-k; ++i ) {
-		  int y;
-		  y = 0;
-		  for( j = 0; j < k; ++k ) {
-		    y = y*num_sym + x[i+j];
-		  }
-		  C_k( p+i, y ) += margWeight;
+				x[depth] = sym;
+				if ( depth > k )
+				{
+					const DREAL margWeight =  child->weight * pow( 0.25, depth-k );
+					for(INT i = 0; i < depth-k; ++i )
+					{
+						INT j = 0;
+						INT y=0;
+
+						for(j = 0; j < k; j++)
+						{
+							y = y*num_sym + x[i+j];
+						}
+						y += nofKmers*(p-i);
+						C_k[y] += margWeight;
+
+						if( depth > k )
+						{
+							INT oL=0;
+							INT oR=0;
+							for( j = 0; j < k; j++ )
+							{
+								oL = oL*num_sym + x[i+j];
+								oR = oR*num_sym + x[i+j];
+							}
+
+							const INT offsL=nofKmers * (p-k)+oL;
+							const INT offsR=nofKmers * (p-k)+oR;
+
+							L_k[offsL] += margWeight; 
+							R_k[offsR] += margWeight;
+						}
+					}
+				}
+				//    # N.x = substring represented by N
+				//    # N.d = length of N.x
+				//    # N.s = starting position of N.x
+				//    # N.w = weight for feature represented by N
+				//    if( N.d >= k )
+				//      margContrib = w / 4^(N.d-k)
+				//      for i = 1 to (N.d-k+1)
+				//        y = N.x[i:(i+k-1)]  # overlapped k-mer
+				//        C_k[ N.s+i-1, y ] += margContrib
+				//      end;
+				//      if( N.d > k )
+				//        L_k[ N.s+N.d-k, N.x[N.d-k+(1:k)] ] += margContrib  # j-suffix of N.x
+				//        R_k[ N.s, N.x[1:k] ] += margContrib                # j-prefix of N.x
+				//      end;
+				//    end;
+				// do sth. with child->weight
+				traverse( child, p, depth+1, x, k, C_k, L_k, R_k );
+			}
 		}
-	      }
-	      //    # N.x = substring represented by N
-	      //    # N.d = length of N.x
-	      //    # N.s = starting position of N.x
-	      //    # N.w = weight for feature represented by N
-	      //    if( N.d >= k )
-	      //      margContrib = w / 4^(N.d-k)
-	      //      for i = 1 to (N.d-k+1)
-	      //        y = N.x[i:(i+k-1)]  # overlapped k-mer
-	      //        C_k[ N.s+i-1, y ] += margContrib
-	      //      end;
-	      //      if( N.d > k )
-	      //        L_k[ N.s+N.d-k, N.x[N.d-k+(1:k)] ] += margContrib  # j-suffix of N.x
-	      //        R_k[ N.s, N.x[1:k] ] += margContrib                # j-prefix of N.x
-	      //      end;
-	      //    end;
-	      // do sth. with child->weight
-	      traverse( child, depth+1, x, k, C_k, L_k, R_k );
-	    }
 	}
-    }
-  else if (depth==degree-1)
-    {
-      for (INT k=0; k<num_sym; k++)
+	else if (depth==degree-1)
 	{
-	  ///do sth. with tree->child_weights[k];
+		for (INT k=0; k<num_sym; k++)
+		{
+			///do sth. with tree->child_weights[k];
+		}
 	}
-    }
 }
 
 
 DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights)
 {
-  num_feat=((CCharFeatures*) get_rhs())->get_num_features();
-  ASSERT(num_feat>0);
-  ASSERT(((CCharFeatures*) get_rhs())->get_alphabet()->get_alphabet() == DNA);
-  num_sym=4; //for now works only w/ DNA
-  
-  DREAL** C = new DREAL[ max_degree ];
-  DREAL** L = new DREAL[ max_degree ];
-  DREAL** R = new DREAL[ max_degree ];
-  INT* x = new INT[ degree ];
-  int k;
-  int i;
-  int j;
+	num_feat=((CCharFeatures*) get_rhs())->get_num_features();
+	ASSERT(num_feat>0);
+	ASSERT(((CCharFeatures*) get_rhs())->get_alphabet()->get_alphabet() == DNA);
+	num_sym=4; //for now works only w/ DNA
 
-  // === init table
-  for( k = 0; k < max_degree; ++k ) {
-    const int nofKmers = (INT) pow( num_sym, k );
-    const int tabSize = nofKmers * num_feat;
-    C[k] = new DREAL[ tabSize ];
-    L[k] = new DREAL[ tabSize ];
-    R[k] = new DREAL[ tabSize ];
-    for( i = 0; i < tabSize; ++i ) {
-      C[k][i] = 0.0;
-      L[k][i] = 0.0;
-      R[k][i] = 0.0;
-    }
-  }
+	DREAL** C = new DREAL*[max_degree];
+	DREAL** L = new DREAL*[max_degree];
+	DREAL** R = new DREAL*[max_degree];
+	INT* x = new INT[degree];
+	INT k;
 
-  // === main loop
-  for( k = 0; k < max_degree; ++k ) {
-    const int nofKmers = (INT) pow( num_sym, k );
+	// === init table
+	for( k = 0; k < max_degree; ++k )
+	{
+		const INT nofKmers = (INT) pow( num_sym, k );
+		const INT tabSize = nofKmers * num_feat;
+		C[k] = new DREAL[ tabSize ];
+		L[k] = new DREAL[ tabSize ];
+		R[k] = new DREAL[ tabSize ];
 
-    // --- run over all trees
-    for( p = 0; p < num_feat; ++p ) {
-      const Trie* const tree = get_tree_at_position( p );
-      for( j = 0; j < max_depth; ++j ) {
-	x[j] = -1;
-      }
-      traverse( tree, 0, x, k, C[k], L[k], R[k] );
-    }
+		for(INT i = 0; i < tabSize; i++ )
+		{
+			C[k][i] = 0.0;
+			L[k][i] = 0.0;
+			R[k][i] = 0.0;
+		}
+	}
 
-    // --- add partial overlap scores
-    
-  }
-  
-  result = C[ max_degree-1 ];
-  delete[] C;
-  delete[] L;
-  delete[] R;
-  return result;
+	// === main loop
+	for( k = 0; k < max_degree; ++k )
+	{
+		const INT nofKmers = (INT) pow( num_sym, k );
+
+		// --- run over all trees
+		for(INT p = 0; p < num_feat; ++p )
+		{
+			const Trie* const tree = get_tree_at_position( p );
+			for(INT j = 0; j < degree; j++ )
+			{
+				x[j] = -1;
+			}
+			traverse( tree, p, 0, x, k, C[k], L[k], R[k] );
+		}
+
+		// --- add partial overlap scores
+	}
+
+	result = C[ max_degree-1 ];
+	delete[] C;
+	delete[] L;
+	delete[] R;
+	return result;
 }
-
-
 
 /*
 DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights)
