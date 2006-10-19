@@ -12,7 +12,7 @@
 #define _DISTRIBUTION_H___
 
 #include "features/Features.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 class CDistribution
 {

@@ -35,7 +35,7 @@
 #include "lib/Signal.h"
 #include "lib/common.h"
 #include "lib/Time.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 #include <stdio.h>
 #include <stdarg.h>

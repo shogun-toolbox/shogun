@@ -9,7 +9,7 @@
  */
 
 #include "distributions/Distribution.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 CDistribution::CDistribution() : features(NULL), pseudo_count(0)
 {

@@ -11,7 +11,7 @@
 
 #include "features/TOPFeatures.h"
 #include "lib/io.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 CTOPFeatures::CTOPFeatures(LONG size, CHMM* p, CHMM* n, bool neglin, bool poslin) : CRealFeatures(size), neglinear(neglin), poslinear(poslin)
 {

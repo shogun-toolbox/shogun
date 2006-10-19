@@ -13,7 +13,7 @@
 #ifdef HAVE_LAPACK
 #include "classifier/LDA.h"
 #include "features/Labels.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 CLDA::CLDA() : CLinearClassifier(), learn_rate(0.1), max_iter(10000000)
 {

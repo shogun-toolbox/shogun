@@ -14,7 +14,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "distributions/hmm/HMM.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "lib/io.h"
 #include "lib/config.h"
 #include "features/StringFeatures.h"

@@ -11,7 +11,7 @@
 #ifndef _CONSTKERNEL_H___
 #define _CONSTKERNEL_H___
 
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 #include "features/Features.h"

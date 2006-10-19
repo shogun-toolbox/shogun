@@ -10,7 +10,7 @@
 
 #include <math.h>
 #include "distributions/hmm/HMM.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "lib/io.h"
 #include "features/StringFeatures.h"
 #include "features/CharFeatures.h"

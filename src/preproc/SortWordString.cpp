@@ -12,7 +12,7 @@
 #include "preproc/SortWordString.h"
 #include "features/Features.h"
 #include "features/StringFeatures.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 CSortWordString::CSortWordString() : CStringPreProc<WORD>("SortWordString", "STWS") 
 {

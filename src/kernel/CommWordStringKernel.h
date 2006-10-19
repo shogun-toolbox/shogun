@@ -13,7 +13,7 @@
 #define _COMMWORDSTRINGKERNEL_H___
 
 #include "lib/common.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "kernel/StringKernel.h"
 
 class CCommWordStringKernel: public CStringKernel<WORD>

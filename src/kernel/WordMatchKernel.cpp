@@ -9,7 +9,7 @@
  */
 
 #include "lib/common.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "lib/io.h"
 #include "kernel/WordMatchKernel.h"
 #include "features/WordFeatures.h"

@@ -12,7 +12,7 @@
 #define __PENALTY_INFO_H__
 
 #include "lib/common.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 #ifdef HAVE_MATLAB
 #include <mex.h>

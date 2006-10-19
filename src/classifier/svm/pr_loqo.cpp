@@ -16,7 +16,7 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/lapack.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "classifier/svm/pr_loqo.h"
 
 #include <math.h>

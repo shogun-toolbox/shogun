@@ -10,7 +10,7 @@
  */
 
 #include "lib/config.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 #include <string.h>
 #include <stdlib.h>

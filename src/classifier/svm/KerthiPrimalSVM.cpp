@@ -12,7 +12,7 @@
 #include "lib/io.h"
 #include "lib/common.h"
 #include "features/Labels.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 CKerthiPrimalSVM::CKerthiPrimalSVM()
 {

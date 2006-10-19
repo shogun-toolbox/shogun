@@ -11,7 +11,7 @@
 #include "classifier/svm/MPD.h"
 #include "lib/io.h"
 #include "lib/common.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 CMPDSVM::CMPDSVM()
 {

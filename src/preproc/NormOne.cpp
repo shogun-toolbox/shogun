@@ -10,7 +10,7 @@
 
 #include "preproc/NormOne.h"
 #include "preproc/RealPreProc.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 

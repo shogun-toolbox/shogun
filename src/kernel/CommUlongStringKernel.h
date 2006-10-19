@@ -13,7 +13,7 @@
 #define _COMMULONGSTRINGKERNEL_H___
 
 #include "lib/common.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "lib/DynArray.h"
 #include "kernel/StringKernel.h"
 

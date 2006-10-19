@@ -10,7 +10,7 @@
 
 #include "classifier/KNN.h"
 #include "features/Labels.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 CKNN::CKNN(): k(3), num_classes(0), num_train_labels(0), train_labels(NULL)
 {

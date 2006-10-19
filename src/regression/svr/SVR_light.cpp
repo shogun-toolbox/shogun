@@ -17,7 +17,7 @@
 
 #include "lib/io.h"
 #include "lib/Signal.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "regression/svr/SVR_light.h"
 #include "classifier/svm/Optimizer.h"
 #include "kernel/KernelMachine.h"

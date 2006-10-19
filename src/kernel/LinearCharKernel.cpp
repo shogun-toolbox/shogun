@@ -10,7 +10,7 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "kernel/LinearCharKernel.h"
 #include "features/CharFeatures.h"
 

@@ -1,3 +1,4 @@
+
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +19,7 @@
 
 #include "distributions/hmm/penalty_info.h"
 
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/config.h"

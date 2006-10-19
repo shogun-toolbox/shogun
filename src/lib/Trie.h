@@ -124,6 +124,8 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, DREAL* we
 				  this_weight += weights[j+k] ;
 			  }
 			  sum += TreeMem[tree].weight * this_weight ;
+			  if (isnan(sum))
+				  fprintf(stderr, "nan at end 2 %i\n") ;
 			  break ;
 		  }
 		  else
@@ -141,10 +143,14 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, DREAL* we
 		  ASSERT(!TreeMem[tree].has_seq) ;
 		  if (j==degree-1)
 			  sum += TreeMem[tree].child_weights[vec[pos+j]];
+		  if (isnan(sum))
+			  fprintf(stderr, "nan at end 3 %i\n") ;
 		  break;
 	  }
   } 
   
+  if (isnan(sum))
+	  fprintf(stderr, "nan at end %i\n") ;
   if (position_weights!=NULL)
 	  return sum*position_weights[pos] ;
   else

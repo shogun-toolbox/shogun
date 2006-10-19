@@ -20,7 +20,7 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/File.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 #include <math.h>
 

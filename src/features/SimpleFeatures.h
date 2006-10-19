@@ -13,7 +13,7 @@
 #define _SIMPLEFEATURES__H__
 
 #include "lib/common.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "lib/Cache.h"
 #include "lib/io.h"
 #include "lib/Cache.h"

@@ -11,7 +11,7 @@
 #ifndef _CGHMM_H___
 #define _CGHMM_H___
 
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "features/Features.h"
 #include "distributions/Distribution.h"
 

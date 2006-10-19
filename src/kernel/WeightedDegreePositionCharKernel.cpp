@@ -188,8 +188,10 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do
     CIO::message(M_DEBUG, "lhs_changed: %i\n", lhs_changed) ;
     CIO::message(M_DEBUG, "rhs_changed: %i\n", rhs_changed) ;
 
-    ASSERT(l && ((CCharFeatures*) l)->get_alphabet()->get_alphabet()==DNA);
-    ASSERT(r && ((CCharFeatures*) r)->get_alphabet()->get_alphabet()==DNA);
+	ASSERT(l && ((((CCharFeatures*) l)->get_alphabet()->get_alphabet()==DNA) || 
+				 (((CCharFeatures*) l)->get_alphabet()->get_alphabet()==RNA)));
+	ASSERT(r && ((((CCharFeatures*) r)->get_alphabet()->get_alphabet()==DNA) || 
+				 (((CCharFeatures*) r)->get_alphabet()->get_alphabet()==RNA)));
 
     delete[] position_mask ;
     position_mask = NULL ;

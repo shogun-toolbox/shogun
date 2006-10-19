@@ -11,7 +11,7 @@
 #ifndef _CUSTOMKERNEL_H___
 #define _CUSTOMKERNEL_H___
 
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 #include "features/Features.h"

@@ -61,7 +61,7 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
   {
 	  if (get_is_initialized())
 	  {
-		  tries.delete_tree(NULL); 
+		  tries.delete_trees(); 
 		  set_is_initialized(false);
 	  }
   }

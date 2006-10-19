@@ -12,7 +12,7 @@
 #include "kernel/Kernel.h"
 #include "lib/io.h"
 #include "lib/common.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 #include <stdio.h>
 #include <stdlib.h>

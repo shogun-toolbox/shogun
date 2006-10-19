@@ -10,7 +10,7 @@
 
 #include "classifier/KernelPerceptron.h"
 #include "features/Labels.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 CKernelPerceptron::CKernelPerceptron()
 {

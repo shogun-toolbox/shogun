@@ -110,8 +110,10 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	CIO::message(M_DEBUG, "lhs_changed: %i\n", lhs_changed);
 	CIO::message(M_DEBUG, "rhs_changed: %i\n", rhs_changed);
 
-	ASSERT(l && ((CCharFeatures*) l)->get_alphabet()->get_alphabet()==DNA);
-	ASSERT(r && ((CCharFeatures*) r)->get_alphabet()->get_alphabet()==DNA);
+	ASSERT(l && ((((CCharFeatures*) l)->get_alphabet()->get_alphabet()==DNA) || 
+				 (((CCharFeatures*) l)->get_alphabet()->get_alphabet()==RNA)));
+	ASSERT(r && ((((CCharFeatures*) r)->get_alphabet()->get_alphabet()==DNA) || 
+				 (((CCharFeatures*) r)->get_alphabet()->get_alphabet()==RNA)));
 	
 	if (lhs_changed) 
 	{
@@ -287,7 +289,7 @@ bool CWeightedDegreeCharKernel::delete_optimization()
 
 	if (get_is_initialized())
 	{
-		tries.delete_tree(); 
+		tries.delete_trees(); 
 		set_is_initialized(false);
 		return true;
 	}
@@ -534,7 +536,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, DREAL alph
 			alpha_pw = alpha*position_weights[i] ;
 		if (alpha_pw==0.0)
 			continue ;
-		tries.add_example_to_tree_mismatch_recursion(NULL, i, alpha_pw, &vec[i], len-i, 0, 0, max_mismatch, weights) ;
+		tries.add_example_to_tree_mismatch_recursion(NO_CHILD, i, alpha_pw, &vec[i], len-i, 0, 0, max_mismatch, weights) ;
 	}
 
 
@@ -561,7 +563,7 @@ void CWeightedDegreeCharKernel::add_example_to_single_tree_mismatch(INT idx, DRE
 	if (position_weights!=NULL)
 		alpha_pw = alpha*position_weights[tree_num] ;
 	if (alpha_pw!=0.0)
-		tries.add_example_to_tree_mismatch_recursion(NULL, tree_num, alpha_pw, &vec[tree_num], len-tree_num, 0, 0, max_mismatch, weights) ;
+		tries.add_example_to_tree_mismatch_recursion(NO_CHILD, tree_num, alpha_pw, &vec[tree_num], len-tree_num, 0, 0, max_mismatch, weights) ;
 
 	((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
@@ -755,7 +757,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 	{
 		init_optimization(num_suppvec, IDX, weights, i, CMath::min(num_feat-1,i+1));
 
-		tries.compute_scoring_helper(NULL, i, 0, 0.0, 0, max_degree, num_feat, num_sym, sym_offset, 0, result);
+		tries.compute_scoring_helper(NO_CHILD, i, 0, 0.0, 0, max_degree, num_feat, num_sym, sym_offset, 0, result);
 		CIO::progress(i,0,num_feat);
 	}
 	num_sym=sym_offset;

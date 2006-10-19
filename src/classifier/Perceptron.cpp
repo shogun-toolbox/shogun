@@ -10,7 +10,7 @@
 
 #include "classifier/Perceptron.h"
 #include "features/Labels.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 CPerceptron::CPerceptron() : CLinearClassifier(), learn_rate(0.1), max_iter(1000)
 {

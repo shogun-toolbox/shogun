@@ -29,7 +29,7 @@
 
 #include "lib/io.h"
 #include "lib/Signal.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "lib/Time.h"
 
 #include "features/WordFeatures.h"

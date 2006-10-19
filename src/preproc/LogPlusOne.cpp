@@ -12,7 +12,7 @@
 #include "preproc/RealPreProc.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 CLogPlusOne::CLogPlusOne() : CRealPreProc("LogPlusOne", "LG+1") 
 {
