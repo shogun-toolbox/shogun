@@ -1,3 +1,30 @@
+- coding conventions:
+
+functions look like
+
+INT* fun(INT* foo)
+{
+	return foo;
+}
+
+
+indenting uses stroustrup style with tabsize 4, i.e. for emacs use in your
+~/.emacs
+
+(add-hook 'c-mode-common-hook
+ (lambda ()
+  (show-paren-mode 1)
+  (setq indent-tabs-mode t)
+  (c-set-style "stroustrup")
+  (setq tab-width 4)))
+
+
+for vim in ~/.vimrc
+
+set cindent         " C style indenting
+set ts=4            " tabstop 
+set sw=4            " shiftwidth
+
 - versioning scheme
 
 an automagic version will be created from the date of the last svn update.
