@@ -17,7 +17,7 @@
 #include "lib/Mathematics.h"
 
 #define NO_CHILD ((INT)-1) 
-#define TRIE_CHECK_EVERYTHING
+//#define TRIE_CHECK_EVERYTHING
 
 #ifdef TRIE_CHECK_EVERYTHING
 #define TRIE_ASSERT_EVERYTHING(x) ASSERT(x)
@@ -25,7 +25,8 @@
 #define TRIE_ASSERT_EVERYTHING(x) 
 #endif
 
-#define TRIE_ASSERT(x) ASSERT(x)
+//#define TRIE_ASSERT(x) ASSERT(x)
+#define TRIE_ASSERT(x) 
 
 class CTrie
 {
@@ -70,7 +71,7 @@ public:
 		TreeMem[ret].has_seq=false ;
 		TreeMem[ret].has_floats=false ;
 #endif
-		TreeMem[ret].weight=0.0; 
+		//TreeMem[ret].weight=0.0; 
 		return ret ;
 	} ;
 	
@@ -112,8 +113,6 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, DREAL* we
   for (INT j=0; pos+j < len; j++)
   {
 	  TRIE_ASSERT((vec[pos+j]<4) && (vec[pos+j]>=0)) ;
-	  if (isnan(sum))
-		  fprintf(stderr, "nan at level %i\n", j) ;
 
 	  if ((j<degree-1) && (TreeMem[tree].children[vec[pos+j]]!=NO_CHILD))
 	  {
@@ -133,16 +132,12 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, DREAL* we
 				  this_weight += weights[j+k] ;
 			  }
 			  sum += TreeMem[tree].weight * this_weight ;
-			  if (isnan(sum))
-				  fprintf(stderr, "nan at end 2\n") ;
 			  break ;
 		  }
 		  else
 		  {
 			  tree = TreeMem[tree].children[vec[pos+j]];
-			  //fprintf(stderr, "pos=%i  j=%i has_seq=%i\n", pos, j, TreeMem[tree].has_seq) ;
 			  
-			  //TreeMem[tree].has_seq=false ;
 			  TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
 			  sum += TreeMem[tree].weight;
 		  }
@@ -150,7 +145,6 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, DREAL* we
 	  else
 	  {
 		  TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
-		  DREAL sum2=sum ;
 		  if (j==degree-1)
 		  {
 			  TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) ;
@@ -159,14 +153,10 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, DREAL* we
 		  else
 			  TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
 		  
-		  if (isnan(sum))
-			  fprintf(stderr, "nan at end 3 %f %f %f %i\n", sum2, sum, TreeMem[tree].child_weights[vec[pos+j]], TreeMem[tree].children[vec[pos+j]]) ;
 		  break;
 	  }
   } 
   
-  if (isnan(sum))
-	  fprintf(stderr, "nan at end\n") ;
   if (position_weights!=NULL)
 	  return sum*position_weights[pos] ;
   else

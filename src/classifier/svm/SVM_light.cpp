@@ -1070,7 +1070,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 									   docs,model,aicache,
 									   maxdiff);
 		  reactivated=true;
-		  CIO::message(M_DEBUG, "done reactivating inactive examples (maxdiff:%8f eps_crit:%8f orig_eps:%8f\n)", *maxdiff, learn_parm->epsilon_crit, epsilon_crit_org);
+		  CIO::message(M_DEBUG, "done reactivating inactive examples (maxdiff:%8f eps_crit:%8f orig_eps:%8f)\n", *maxdiff, learn_parm->epsilon_crit, epsilon_crit_org);
 		  /* Update to new active variables. */
 		  activenum=compute_index(shrink_state->active,totdoc,active2dnum);
 		  inactivenum=totdoc-activenum;
@@ -1083,7 +1083,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 		  retrain=0;
 		  if((*maxdiff) > learn_parm->epsilon_crit) 
 		  {
-			  CIO::message(M_WARN, "restarting optimization as we are - due to shrinking - deviating too much (maxdiff(%f) > eps(%f)\n", *maxdiff, learn_parm->epsilon_crit);
+			  CIO::message(M_WARN, "restarting optimization as we are - due to shrinking - deviating too much (maxdiff(%f) > eps(%f))\n", *maxdiff, learn_parm->epsilon_crit);
 		      retrain=1;
 		  }
 		  timing_profile->time_shrink+=get_runtime()-t1;
