@@ -179,12 +179,14 @@ void CTrie::add_to_trie(int i, INT * vec, float alpha, DREAL *weights)
 #else
 	      tree=tree->children[vec[i+j]] ;
 #endif
+	      ASSERT(!tree->has_seq) ;
 	      tree->weight += alpha*weights[j];
 	    }
 	}
       else if (j==degree-1)
 	{
 	  // special treatment of the last node
+	  ASSERT(!tree->has_seq) ;
 	  tree->child_weights[vec[i+j]] += alpha*weights[j];
 	  break ;
 	}

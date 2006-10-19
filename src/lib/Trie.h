@@ -101,6 +101,8 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, DREAL* we
 	{
 	  if (tree->children[vec[pos+j]]<0)
 	    {
+	      tree=&TreeMem[-tree->children[vec[pos+j]]];
+	      ASSERT(tree->has_seq) ;
 	      DREAL this_weight=0.0 ;
 	      for (INT k=0; (j+k<degree) && (pos+j+k<length); k++)
 		{
@@ -118,6 +120,7 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, DREAL* we
 #else
 	      tree=tree->children[vec[pos+j]];
 #endif
+	      ASSERT(!tree->has_seq) ;
 	      sum += tree->weight;
 	    }
 	}
@@ -137,101 +140,169 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, DREAL* we
  
 inline void CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, DREAL* LevelContrib, DREAL factor, INT mkl_stepsize, DREAL * weights) 
 {
-	struct Trie *tree = trees[pos] ;
-	ASSERT(tree!=NULL) ;
-	if (factor==0)
-		return ;
-
-	if (position_weights!=NULL)
+  struct Trie *tree = trees[pos] ;
+  ASSERT(tree!=NULL) ;
+  if (factor==0)
+    return ;
+  
+  if (position_weights!=NULL)
+    {
+      factor *= position_weights[pos] ;
+      if (factor==0)
+	return ;
+      if (length==0) // with position_weigths, weights is a vector (1 x degree)
 	{
-		factor *= position_weights[pos] ;
-		if (factor==0)
-			return ;
-		if (length==0) // with position_weigths, weights is a vector (1 x degree)
+	  for (INT j=0; pos+j<len; j++)
+	    {
+	      if ((j<degree-1) && (tree->children[vec[pos+j]]!=NO_CHILD))
 		{
-			for (INT j=0; pos+j<len; j++)
+		  if (tree->children[vec[pos+j]]<0)
+		    {
+		      tree=&TreeMem[-tree->children[vec[pos+j]]];
+		      ASSERT(tree->has_seq) ;
+		      for (INT k=0; (j+k<degree) && (pos+j+k<length); k++)
 			{
-				if ((j<degree-1) && (tree->children[vec[pos+j]]!=NO_CHILD))
-				{
-#ifdef USE_TREEMEM
-					tree=&TreeMem[tree->children[vec[pos+j]]];
-#else
-					tree=tree->children[vec[pos+j]];
-#endif
-					LevelContrib[pos/mkl_stepsize] += factor*tree->weight*weights[j] ;
-				} 
-				else
-				{
-					if (j==degree-1)
-						LevelContrib[pos/mkl_stepsize] += factor*tree->child_weights[vec[pos+j]]*weights[j] ;
-				}
+			  if (tree->seq[k]!=vec[pos+j+k])
+			    break ;
+			  LevelContrib[pos/mkl_stepsize] += factor*tree->weight*weights[j+k] ;
 			}
+		      break ;
+		    }
+		  else
+		    {
+#ifdef USE_TREEMEM
+		      tree=&TreeMem[tree->children[vec[pos+j]]];
+#else
+		      tree=tree->children[vec[pos+j]];
+#endif
+		      ASSERT(!tree->has_seq) ;
+		      LevelContrib[pos/mkl_stepsize] += factor*tree->weight*weights[j] ;
+		    }
 		} 
-		else // with position_weigths, weights is a matrix (len x degree)
+	      else
 		{
-			for (INT j=0; pos+j<len; j++)
-			{
-				if ((j<degree-1) && (tree->children[vec[pos+j]]!=NO_CHILD))
-				{
-#ifdef USE_TREEMEM
-					tree=&TreeMem[tree->children[vec[pos+j]]];
-#else
-					tree=tree->children[vec[pos+j]];
-#endif
-					LevelContrib[pos/mkl_stepsize] += factor*tree->weight*weights[j+pos*degree] ;
-				} 
-				else
-				{
-					if (j==degree-1)
-						LevelContrib[pos/mkl_stepsize] += factor*tree->child_weights[vec[pos+j]]*weights[j+pos*degree] ;
-
-					break ;
-				}
-			}
-		} 
-	}
-	else if (length==0) // no position_weigths, weights is a vector (1 x degree)
-	{
-		for (INT j=0; pos+j<len; j++)
-		{
-			if ((j<degree-1) && (tree->children[vec[pos+j]]!=NO_CHILD))
-			{
-#ifdef USE_TREEMEM
-				tree=&TreeMem[tree->children[vec[pos+j]]];
-#else
-				tree=tree->children[vec[pos+j]];
-#endif
-				LevelContrib[j/mkl_stepsize] += factor*tree->weight*weights[j] ;
-			}
-			else
-			{
-				if (j==degree-1)
-					LevelContrib[j/mkl_stepsize] += factor*tree->child_weights[vec[pos+j]]*weights[j] ;
-				break ;
-			}
-		} 
+		  ASSERT(!tree->has_seq) ;
+		  if (j==degree-1)
+		    LevelContrib[pos/mkl_stepsize] += factor*tree->child_weights[vec[pos+j]]*weights[j] ;
+		}
+	    }
 	} 
-	else // no position_weigths, weights is a matrix (len x degree)
+      else // with position_weigths, weights is a matrix (len x degree)
 	{
-		for (INT j=0; pos+j<len; j++)
+	  for (INT j=0; pos+j<len; j++)
+	    {
+	      if ((j<degree-1) && (tree->children[vec[pos+j]]!=NO_CHILD))
 		{
-			if ((j<degree-1) && (tree->children[vec[pos+j]]!=NO_CHILD))
+		  if (tree->children[vec[pos+j]]<0)
+		    {
+		      tree=&TreeMem[-tree->children[vec[pos+j]]];
+		      ASSERT(tree->has_seq) ;
+		      for (INT k=0; (j+k<degree) && (pos+j+k<length); k++)
 			{
+			  if (tree->seq[k]!=vec[pos+j+k])
+			    break ;
+			  LevelContrib[pos/mkl_stepsize] += factor*tree->weight*weights[j+k+pos*degree] ;
+			}
+		      break ;
+		    }
+		  else
+		    {
 #ifdef USE_TREEMEM
-				tree=&TreeMem[tree->children[vec[pos+j]]];
+		      tree=&TreeMem[tree->children[vec[pos+j]]];
 #else
-				tree=tree->children[vec[pos+j]];
+		      tree=tree->children[vec[pos+j]];
 #endif
-				LevelContrib[(j+degree*pos)/mkl_stepsize] += factor * tree->weight * weights[j+pos*degree] ;
-			}
-			else
-			{
-				if (j==degree-1)
-					LevelContrib[(j+degree*pos)/mkl_stepsize] += factor * tree->child_weights[vec[pos+j]] * weights[j+pos*degree] ;
-				break ;
-			}
+		      ASSERT(!tree->has_seq) ;
+		      LevelContrib[pos/mkl_stepsize] += factor*tree->weight*weights[j+pos*degree] ;
+		    }
 		} 
-	}
+	      else
+		{
+		  ASSERT(!tree->has_seq) ;
+		  if (j==degree-1)
+		    LevelContrib[pos/mkl_stepsize] += factor*tree->child_weights[vec[pos+j]]*weights[j+pos*degree] ;
+		  
+		  break ;
+		}
+	    }
+	} 
+    }
+  else if (length==0) // no position_weigths, weights is a vector (1 x degree)
+    {
+      for (INT j=0; pos+j<len; j++)
+	{
+	  if ((j<degree-1) && (tree->children[vec[pos+j]]!=NO_CHILD))
+	    {
+	      if (tree->children[vec[pos+j]]<0)
+		{
+		  tree=&TreeMem[-tree->children[vec[pos+j]]];
+		  ASSERT(tree->has_seq) ;
+		  for (INT k=0; (j+k<degree) && (pos+j+k<length); k++)
+		    {
+		      if (tree->seq[k]!=vec[pos+j+k])
+			break ;
+		      LevelContrib[(j+k)/mkl_stepsize] += factor*tree->weight*weights[j+k] ;
+		    }
+		  break ;
+		}
+	      else
+		{
+#ifdef USE_TREEMEM
+		  tree=&TreeMem[tree->children[vec[pos+j]]];
+#else
+		  tree=tree->children[vec[pos+j]];
+#endif
+		  ASSERT(!tree->has_seq) ;
+		  LevelContrib[j/mkl_stepsize] += factor*tree->weight*weights[j] ;
+		}
+	    }
+	  else
+	    {
+	      ASSERT(!tree->has_seq) ;
+	      if (j==degree-1)
+		LevelContrib[j/mkl_stepsize] += factor*tree->child_weights[vec[pos+j]]*weights[j] ;
+	      break ;
+	    }
+	} 
+    } 
+  else // no position_weigths, weights is a matrix (len x degree)
+    {
+      for (INT j=0; pos+j<len; j++)
+	{
+	  if ((j<degree-1) && (tree->children[vec[pos+j]]!=NO_CHILD))
+	    {
+	      if (tree->children[vec[pos+j]]<0)
+		{
+		  tree=&TreeMem[-tree->children[vec[pos+j]]];
+		  ASSERT(tree->has_seq) ;
+		  for (INT k=0; (j+k<degree) && (pos+j+k<length); k++)
+		    {
+		      if (tree->seq[k]!=vec[pos+j+k])
+			break ;
+		      LevelContrib[(j+k+degree*pos)/mkl_stepsize] += factor*tree->weight*weights[j+k+pos*degree] ;
+		    }
+		  break ;
+		}
+	      else
+		{
+#ifdef USE_TREEMEM
+		  tree=&TreeMem[tree->children[vec[pos+j]]];
+#else
+		  tree=tree->children[vec[pos+j]];
+#endif
+		  ASSERT(!tree->has_seq) ;
+		  LevelContrib[(j+degree*pos)/mkl_stepsize] += factor * tree->weight * weights[j+pos*degree] ;
+		}
+	    }
+	  else
+	    {
+	      ASSERT(!tree->has_seq) ;
+	      if (j==degree-1)
+		LevelContrib[(j+degree*pos)/mkl_stepsize] += factor * tree->child_weights[vec[pos+j]] * weights[j+pos*degree] ;
+	      break ;
+	    }
+	} 
+    }
 }
 
 
