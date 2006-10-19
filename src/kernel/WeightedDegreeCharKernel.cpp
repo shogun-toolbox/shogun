@@ -571,25 +571,25 @@ void CWeightedDegreeCharKernel::add_example_to_single_tree_mismatch(INT idx, DRE
 
 DREAL CWeightedDegreeCharKernel::compute_by_tree(INT idx) 
 {
-	INT len ;
-	bool free ;
-	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
-	INT *vec = new INT[len] ;
-	
-	for (INT i=0; i<len; i++)
-		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
-		
-	DREAL sum=0 ;
-	for (INT i=0; i<len; i++)
-		sum += tries.compute_by_tree_helper(vec, len, i);
-
-	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
-	delete[] vec ;
-	
-	if (use_normalization)
+  INT len ;
+  bool free ;
+  CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
+  INT *vec = new INT[len] ;
+  
+  for (INT i=0; i<len; i++)
+    vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+  
+  DREAL sum=0 ;
+  for (INT i=0; i<len; i++)
+    sum += tries.compute_by_tree_helper(vec, len, i, weights);
+  
+  ((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
+  delete[] vec ;
+  
+  if (use_normalization)
 		 return sum/sqrtdiag_rhs[idx];
-	else
-		return sum;
+  else
+    return sum;
 }
 
 void CWeightedDegreeCharKernel::compute_by_tree(INT idx, DREAL* LevelContrib) 
@@ -719,9 +719,9 @@ DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT
 				vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[k]);
 
 			if (use_normalization)
-				result[i] += factor*tries.compute_by_tree_helper(vec, len, j)/sqrtdiag_rhs[i];
+			  result[i] += factor*tries.compute_by_tree_helper(vec, len, j, weights)/sqrtdiag_rhs[i];
 			else
-				result[i] += factor*tries.compute_by_tree_helper(vec, len, j);
+			  result[i] += factor*tries.compute_by_tree_helper(vec, len, j, weights);
 
 			((CCharFeatures*) rhs)->free_feature_vector(char_vec, i, freevec);
 		}
