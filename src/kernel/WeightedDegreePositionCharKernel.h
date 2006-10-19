@@ -166,6 +166,9 @@ public:
 	inline INT get_max_mismatch() { return max_mismatch; }
 	inline INT get_degree() { return degree; }
 
+	Trie* get_tree_at_position(INT i);
+	void traverse(struct Trie* tree, INT depth);
+
 	// weight setting/getting operations
 	inline DREAL *get_degree_weights(INT& d, INT& len)
 	{
@@ -354,10 +357,6 @@ inline DREAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec,
 	else
 		return sum ;
 }
-
-return Trie* get_tree_at_position(INT i);
-void traverse(struct Trie* tree, INT depth);
-
 /* computes the simple kernel between position seq_pos and tree tree_pos */
 inline void CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, INT len,
 		INT seq_pos, INT tree_pos, 
