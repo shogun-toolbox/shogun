@@ -74,6 +74,9 @@ bool CAlphabet::set_alphabet(E_ALPHABET alpha)
 		case DNA:
 			num_symbols = 4;
 			break;
+		case RNA:
+			num_symbols = 4;
+			break;
 		case PROTEIN:
 			num_symbols = 26;
 			break;
@@ -446,6 +449,7 @@ bool CAlphabet::check_alphabet_size(bool print_error)
 		if (print_error)
 		{
 			print_histogram();
+			fprintf(stderr, "get_num_bits_in_histogram()=%i > get_num_bits()=%i\n", get_num_bits_in_histogram(), get_num_bits()) ;
 			CIO::message(M_ERROR, "ALPHABET too small to contain all symbols in histogram\n");
 		}
 		return false;
