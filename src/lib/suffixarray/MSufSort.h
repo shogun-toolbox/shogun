@@ -347,7 +347,7 @@ inline bool MSufSort::IsTandemRepeat()
 inline void MSufSort::PassTandemRepeat()
 {
 	unsigned int nextIndex;
-	unsigned int lastIndex;
+	unsigned int lastIndex=0;
 	// unsigned int firstIndex = m_currentSuffixIndex;
 
 	while ((m_currentSuffixIndex + m_suffixMatchLength) == ((nextIndex = m_ISA[m_currentSuffixIndex]) + 1))
