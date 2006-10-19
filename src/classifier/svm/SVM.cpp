@@ -231,13 +231,7 @@ CLabels* CSVM::classify(CLabels* result)
 			for (INT vec=0; vec<num_vectors && !CSignal::cancel_computations(); vec++)
 			{
 				if ( (vec% (num_vectors/10+1))== 0)
-				{
-					fprintf(stderr, "vec=%i\n", vec) ;
-					fprintf(stderr, "num_vectors=%i\n", num_vectors) ;
-					DREAL min_val = 0.0 ;
-					
-					CIO::progress(vec, min_val, num_vectors-1);
-				}
+					CIO::progress(vec, 0.0, num_vectors-1);
 
 				result->set_label(vec, classify_example(vec));
 			}
