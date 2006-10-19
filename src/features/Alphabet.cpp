@@ -20,7 +20,7 @@ const BYTE CAlphabet::B_C=1;
 const BYTE CAlphabet::B_G=2;
 const BYTE CAlphabet::B_T=3;
 const BYTE CAlphabet::MAPTABLE_UNDEF=0xff;
-const CHAR* CAlphabet::alphabet_names[9]={"DNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
+const CHAR* CAlphabet::alphabet_names[10]={"DNA", "RNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
 
 CAlphabet::CAlphabet(CHAR* al, INT len)
 {
@@ -28,6 +28,8 @@ CAlphabet::CAlphabet(CHAR* al, INT len)
 
 	if (len>=(INT) strlen("DNA") && !strncmp(al, "DNA", strlen("DNA")))
 		alpha = DNA;
+	else if (len>=(INT) strlen("RNA") && !strncmp(al, "RNA", strlen("RNA")))
+		alpha = RNA;
 	else if (len>=(INT) strlen("PROTEIN") && !strncmp(al, "PROTEIN", strlen("PROTEIN")))
 		alpha = PROTEIN;
 	else if (len>=(INT) strlen("ALPHANUM") && !strncmp(al, "ALPHANUM", strlen("ALPHANUM")))
@@ -203,6 +205,23 @@ void CAlphabet::init_map_table()
 			maptable_to_char[B_C]='C';
 			maptable_to_char[B_G]='G';
 			maptable_to_char[B_T]='T';
+			break;
+
+		case RNA:
+			valid_chars[(BYTE) 'A']=1;
+			valid_chars[(BYTE) 'C']=1;
+			valid_chars[(BYTE) 'G']=1;
+			valid_chars[(BYTE) 'U']=1;	
+
+			maptable_to_bin[(BYTE) 'A']=B_A;
+			maptable_to_bin[(BYTE) 'C']=B_C;
+			maptable_to_bin[(BYTE) 'G']=B_G;
+			maptable_to_bin[(BYTE) 'U']=B_T;	
+
+			maptable_to_char[B_A]='A';
+			maptable_to_char[B_C]='C';
+			maptable_to_char[B_G]='G';
+			maptable_to_char[B_T]='U';
 			break;
 
 		case IUPAC_NUCLEIC_ACID:
@@ -450,29 +469,32 @@ const CHAR* CAlphabet::get_alphabet_name(E_ALPHABET alphabet)
 		case DNA:
 			idx=0;
 			break;
-		case PROTEIN:
+		case RNA:
 			idx=1;
 			break;
-		case ALPHANUM:
+		case PROTEIN:
 			idx=2;
 			break;
-		case CUBE:
+		case ALPHANUM:
 			idx=3;
 			break;
-		case RAWBYTE:
+		case CUBE:
 			idx=4;
 			break;
-		case IUPAC_NUCLEIC_ACID:
+		case RAWBYTE:
 			idx=5;
 			break;
-		case IUPAC_AMINO_ACID:
+		case IUPAC_NUCLEIC_ACID:
 			idx=6;
 			break;
-		case NONE:
+		case IUPAC_AMINO_ACID:
 			idx=7;
 			break;
-		default:
+		case NONE:
 			idx=8;
+			break;
+		default:
+			idx=9;
 			break;
 	}
 	return alphabet_names[idx];

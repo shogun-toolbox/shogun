@@ -229,26 +229,29 @@ enum E_ALPHABET
 	/// DNA - letters A,C,G,T,*,N,n
 	DNA=0,
 
+	/// DNA - letters A,C,G,U,*,N,n
+	RNA=1,
+
 	/// PROTEIN - letters a-z
-	PROTEIN=1,
+	PROTEIN=2,
 
 	/// ALPHANUM - [0-9a-z]
-	ALPHANUM=2,
+	ALPHANUM=3,
 
 	/// CUBE - [1-6]
-	CUBE=3,
+	CUBE=4,
 
 	/// RAW BYTE - [0-255]
-	RAWBYTE=4,
+	RAWBYTE=5,
 
 	/// IUPAC_NUCLEIC_ACID
-	IUPAC_NUCLEIC_ACID=5,
+	IUPAC_NUCLEIC_ACID=6,
 
 	/// IUPAC_AMINO_ACID
-	IUPAC_AMINO_ACID=6,
+	IUPAC_AMINO_ACID=7,
 
 	/// NONE - type has no alphabet
-	NONE=7
+	NONE=8
 };
 
 //@}
