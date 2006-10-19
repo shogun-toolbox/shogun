@@ -20,8 +20,8 @@
 class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
 {
  public:
+  CWeightedDegreeCharKernel(INT size, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1) ;
   CWeightedDegreeCharKernel(INT size, DREAL* weights, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1) ;
-  CWeightedDegreeCharKernel(CCharFeatures* l, CCharFeatures* r, INT size, DREAL* weights, INT degree, INT max_mismatch=0, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1) ;
   ~CWeightedDegreeCharKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -184,7 +184,12 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
   DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
   //void compute_scoring_helper(struct Trie* tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result);
 
-  bool set_weights(DREAL* weights, INT d, INT len=0);
+  void set_wd_weights(DREAL* weights, INT d)
+  {
+      set_weights(weights,d,0);
+  }
+
+  bool set_weights(DREAL* weights, INT d, INT len);
   bool set_position_weights(DREAL* position_weights, INT len=0);
   bool init_matching_weights_wd();
   bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;

@@ -15,7 +15,18 @@
 #include "kernel/WeightedDegreeCharKernel.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
-	
+
+CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(INT size, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
+	: CSimpleKernel<CHAR>(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_),degree(0), length(0), 
+	  max_mismatch(max_mismatch_), seq_length(0), 
+	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm), block_computation(block), tries(0)
+{
+	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
+	lhs=NULL;
+	rhs=NULL;
+	matching_weights=NULL;
+}
+
 CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(INT size, double* w, INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
 	: CSimpleKernel<CHAR>(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0), 
 	  max_mismatch(max_mismatch_), seq_length(0), 
@@ -30,24 +41,6 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(INT size, double* w, INT d,
 	ASSERT(weights!=NULL);
 	for (INT i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
-}
-
-CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(CCharFeatures* l, CCharFeatures* r, INT size, double* w, INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
-	: CSimpleKernel<CHAR>(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0), 
-	  max_mismatch(max_mismatch_), seq_length(0),
-	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm), block_computation(block), tries(d)
-{
-	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
-	lhs=NULL;
-	rhs=NULL;
-	matching_weights=NULL;
-
-	weights=new DREAL[d*(1+max_mismatch)];
-	ASSERT(weights!=NULL);
-	for (INT i=0; i<d*(1+max_mismatch); i++)
-		weights[i]=w[i];
-
-    init(l,r, true);
 }
 
 CWeightedDegreeCharKernel::~CWeightedDegreeCharKernel() 

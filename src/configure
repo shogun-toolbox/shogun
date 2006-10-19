@@ -1815,7 +1815,7 @@ cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
 		echocheck "Readline support"
-		if cc_check -lreadline
+		if cc_check -lreadline >/dev/null 2>&1
 		then
 			HAVE_READLINE='#define HAVE_READLINE 1'
 			LINKFLAGS="$LINKFLAGS -lreadline"

@@ -125,11 +125,9 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
     *is_new_object = 0;
   }
   else {
-      CIO::message(M_MESSAGEONLY, "D:%d\n", PyArray_DescrFromType(array_type(ary)));
-    result=PyArray_FromAny((PyObject*)ary, PyArray_DescrFromType(array_type(ary)), min_dims, max_dims,
-            NPY_FARRAY | NPY_ENSURECOPY, NULL);
-      CIO::message(M_MESSAGEONLY, "A:%d\n", result);
-    *is_new_object = 1;
+      result=PyArray_FromAny((PyObject*)ary, NULL, min_dims, max_dims,
+              NPY_FARRAY | NPY_ENSURECOPY, NULL);
+      *is_new_object = 1;
   }
   return result;
 }
@@ -156,7 +154,7 @@ int require_dimensions(PyObject* ary, int exact_dimensions) {
   int success = 1;
   if (array_dimensions(ary) != exact_dimensions) {
     PyErr_Format(PyExc_TypeError, 
-		 "Array must be have %d dimensions.  Given array has %d dimensions", 
+		 "Array must have %d dimensions.  Given array has %d dimensions", 
 		 exact_dimensions, array_dimensions(ary));
     success = 0;
   }
@@ -186,7 +184,7 @@ int require_dimensions_n(PyObject* ary, int* exact_dimensions, int n) {
     sprintf(s, " or %d", exact_dimensions[n-1]);            
     strcat(dims_str,s);
     PyErr_Format(PyExc_TypeError, 
-		 "Array must be have %s dimensions.  Given array has %d dimensions",
+		 "Array must have %s dimensions.  Given array has %d dimensions",
 		 dims_str, array_dimensions(ary));
   }
   return success;
@@ -228,7 +226,7 @@ int require_size(PyObject* ary, int* size, int n) {
     len = strlen(actual_dims);
     actual_dims[len-1] = ']';
     PyErr_Format(PyExc_TypeError, 
-		 "Array must be have shape of %s.  Given array has shape of %s",
+		 "Array must have shape of %s.  Given array has shape of %s",
 		 desired_dims, actual_dims);
   }
   return success;
@@ -269,7 +267,7 @@ int require_size(PyObject* ary, int* size, int n) {
              (PyObject* array=NULL, int is_new_object) {
   int size[1] = {-1};
   array = make_contiguous($input, &is_new_object, 0, 0);
-  if (!array || !require_dimensions(array,1) || !require_size(array,size,1)) SWIG_fail;
+  if (!array || !require_dimensions(array,1) || !require_size(array,size,1) || PyArray_TYPE(array) != PyArray_TYPE($input)) SWIG_fail;
   $1 = (type*) PyArray_BYTES(array);
   $2 = PyArray_DIM(array,0);
 }
@@ -300,11 +298,8 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
                (PyObject* array=NULL, int is_new_object) {
   int size[2] = {-1,-1};
 
-  CIO::message(M_MESSAGEONLY, "hey-ya1...\n");
   array = make_contiguous($input, &is_new_object, 0, 0);
-  CIO::message(M_MESSAGEONLY, "hey-ya2...\n");
-  if (!array || !require_dimensions(array,2) || !require_size(array,size,1)) SWIG_fail;
-  CIO::message(M_MESSAGEONLY, "hey-ya3...\n");
+  if (!array || !require_dimensions(array,2) || !require_size(array,size,1) || PyArray_TYPE(array) != PyArray_TYPE($input)) SWIG_fail;
   $1 = (type*) PyArray_BYTES(array);
   $2 = PyArray_DIM(array,0);
   $3 = PyArray_DIM(array,1);
@@ -315,7 +310,7 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_IN2 macros */
-TYPEMAP_IN2(CHAR,          NPY_CHAR )
+TYPEMAP_IN2(CHAR,          NPY_STRING )
 TYPEMAP_IN2(BYTE,          NPY_UBYTE )
 TYPEMAP_IN2(SHORT,         NPY_SHORT )
 TYPEMAP_IN2(WORD,          NPY_USHORT )
