@@ -25,6 +25,7 @@ public:
 	{
 		DREAL weight;
 		bool has_seq ;
+		bool has_floats ;
 		
 		union 
 		{
@@ -56,6 +57,7 @@ public:
 		for (INT q=0; q<4; q++)
 			TreeMem[ret].children[q]=NO_CHILD ;
 		TreeMem[ret].has_seq=false ;
+		TreeMem[ret].has_floats=false ;
 		TreeMem[ret].weight=0.0; 
 		return ret ;
 	} ;
@@ -110,6 +112,8 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, DREAL* we
 
 	  if ((j<degree-1) && (TreeMem[tree].children[vec[pos+j]]!=NO_CHILD))
 	  {
+		  ASSERT(!TreeMem[tree].has_floats) ;
+		  
 		  if (TreeMem[tree].children[vec[pos+j]]<0)
 		  {
 			  tree = - TreeMem[tree].children[vec[pos+j]];
@@ -125,7 +129,7 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, DREAL* we
 			  }
 			  sum += TreeMem[tree].weight * this_weight ;
 			  if (isnan(sum))
-				  fprintf(stderr, "nan at end 2 %i\n") ;
+				  fprintf(stderr, "nan at end 2\n") ;
 			  break ;
 		  }
 		  else
@@ -141,16 +145,23 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, DREAL* we
 	  else
 	  {
 		  ASSERT(!TreeMem[tree].has_seq) ;
+		  DREAL sum2=sum ;
 		  if (j==degree-1)
+		  {
+			  ASSERT(TreeMem[tree].has_floats) ;
 			  sum += TreeMem[tree].child_weights[vec[pos+j]];
+		  }
+		  else
+			  ASSERT(!TreeMem[tree].has_floats) ;
+		  
 		  if (isnan(sum))
-			  fprintf(stderr, "nan at end 3 %i\n") ;
+			  fprintf(stderr, "nan at end 3 %f %f %f %i\n", sum2, sum, TreeMem[tree].child_weights[vec[pos+j]], TreeMem[tree].children[vec[pos+j]]) ;
 		  break;
 	  }
   } 
   
   if (isnan(sum))
-	  fprintf(stderr, "nan at end %i\n") ;
+	  fprintf(stderr, "nan at end\n") ;
   if (position_weights!=NULL)
 	  return sum*position_weights[pos] ;
   else
