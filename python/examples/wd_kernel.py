@@ -1,10 +1,16 @@
 from numpy import array,zeros,concatenate,uint8
+import shogun.Features as f
+import numpy as N
 from shogun.Features import *
 from shogun.SVM import *
 from shogun.Kernel import *
 
 dat=zeros([10,100],dtype=uint8)
-feat = ByteFeatures(dat)
+feat1 = f.CharFeatures(N.chararray((10,5)),f.DNA)
+feat5 = f.ByteFeatures(N.zeros((10,5),N.uint8),f.DNA)
+#feat = CharFeatures(zeros([10,100]),DNA)
+#feat = CharFeatures(dat)
+feat = ByteFeatures(dat,DNA)
 lab = Labels(concatenate(ones(1,50),ones(1,50),axis=1))
 wdk=WeightedDegreeCharKernel(feat,feat, 10,1)
 svm = SVMLight(10, wdk, lab)
@@ -23,20 +29,6 @@ dA[1] = 0.25
 dA[2] = 0.5
 dA[3] = 0.25
 dA[4] = 0.167
-
-cA = N.chararray((12,1),1)
-cA[0] = 'A'
-cA[1] = 'A'
-cA[2] = 'A'
-cA[3] = 'A'
-cA[4] = 'A'
-cA[5] = 'A'
-cA[6] = 'A'
-cA[7] = 'A'
-cA[8] = 'A'
-cA[9] = 'A'
-cA[10] = 'A'
-cA[11] = 'A'
 
 #f=cf.CCharFeatures(cf.DNA,'ACGTAAACCGGT',4,3)
 feat123=f.CCharFeatures(f.DNA,4)

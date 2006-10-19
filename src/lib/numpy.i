@@ -3,6 +3,7 @@
 #ifndef SWIG_FILE_WITH_INIT
 #  define NO_IMPORT_ARRAY
 #endif
+#include "lib/io.h"
 #include <stdio.h>
 #include <numpy/arrayobject.h>
 
@@ -124,8 +125,10 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
     *is_new_object = 0;
   }
   else {
+      CIO::message(M_MESSAGEONLY, "D:%d\n", PyArray_DescrFromType(array_type(ary)));
     result=PyArray_FromAny((PyObject*)ary, PyArray_DescrFromType(array_type(ary)), min_dims, max_dims,
             NPY_FARRAY | NPY_ENSURECOPY, NULL);
+      CIO::message(M_MESSAGEONLY, "A:%d\n", result);
     *is_new_object = 1;
   }
   return result;
@@ -297,8 +300,11 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
                (PyObject* array=NULL, int is_new_object) {
   int size[2] = {-1,-1};
 
+  CIO::message(M_MESSAGEONLY, "hey-ya1...\n");
   array = make_contiguous($input, &is_new_object, 0, 0);
+  CIO::message(M_MESSAGEONLY, "hey-ya2...\n");
   if (!array || !require_dimensions(array,2) || !require_size(array,size,1)) SWIG_fail;
+  CIO::message(M_MESSAGEONLY, "hey-ya3...\n");
   $1 = (type*) PyArray_BYTES(array);
   $2 = PyArray_DIM(array,0);
   $3 = PyArray_DIM(array,1);

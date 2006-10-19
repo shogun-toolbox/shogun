@@ -31,6 +31,11 @@ class CCharFeatures: public CSimpleFeatures<CHAR>
 			return alphabet;
 		}
 
+        inline virtual void copy_feature_matrix(CHAR* src, INT num_feat, INT num_vec)
+        {
+            CSimpleFeatures<CHAR>::copy_feature_matrix(src, num_feat, num_vec);
+        }
+
 		virtual bool load(CHAR* fname);
 		virtual bool save(CHAR* fname);
 	protected:

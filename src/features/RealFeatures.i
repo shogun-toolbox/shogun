@@ -1,6 +1,6 @@
 %{
-    #include "features/SimpleFeatures.h" 
-    #include "features/RealFeatures.h" 
+#include "features/SimpleFeatures.h" 
+#include "features/RealFeatures.h" 
 %}
 
 %include "lib/numpy.i"
@@ -8,7 +8,6 @@
 %apply (DREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** dst, INT* d1, INT* d2)};
 
 %include "features/SimpleFeatures.i"
-
 %include "features/RealFeatures.h"
 
 %pythoncode %{

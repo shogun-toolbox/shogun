@@ -32,6 +32,11 @@ class CByteFeatures: public CSimpleFeatures<BYTE>
 			return alphabet;
 		}
 
+		inline virtual void copy_feature_matrix(BYTE* src, INT num_feat, INT num_vec)
+		{
+			CSimpleFeatures<BYTE>::copy_feature_matrix(src, num_feat, num_vec);
+		}
+
 		virtual EFeatureType get_feature_type() { return F_BYTE; }
 
 		virtual bool load(CHAR* fname);

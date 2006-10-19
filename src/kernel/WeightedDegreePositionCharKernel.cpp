@@ -1262,10 +1262,8 @@ void CWeightedDegreePositionCharKernel::compute_scoring_helper(struct Trie* tree
 	if (i+j<num_feat)
 	{
 		DREAL decay=1.0; //no decay by default
-		if (j>d)
-			decay=pow(4,j); //marginalize out lower order matches
-			//decay=1.0/weights[j];
-			//decay=pow(2,j); //marginalize out lower order matches
+		//if (j>d)
+		//	decay=pow(0.5,j); //marginalize out lower order matches
 
 		if (j<degree-1)
 		{
