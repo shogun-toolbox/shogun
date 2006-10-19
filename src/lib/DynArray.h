@@ -12,7 +12,7 @@
 #define _DYNARRAY_H_
 
 #include "lib/common.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 /** dynamic array, i.e. array that can be used like a list or an array.
 it grows and shrinks dynamically, while elements can be accessed via index

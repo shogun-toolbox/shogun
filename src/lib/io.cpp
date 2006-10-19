@@ -212,8 +212,12 @@ void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, INT decimals
 	char str[1000];
 	DREAL v=-1, estimate=0, total_estimate=0 ;
 	check_target();
+	//min_val=0.0 ;
+	
+	fprintf(stderr, "min_val=%f\n", min_val) ;
+	fprintf(stderr, "max_val=%f\n", max_val) ;
 
-	if (max_val-min_val>0)
+	if (max_val-min_val>0.0)
 		v=100*(current_val-min_val+1)/(max_val-min_val+1);
 
 	if (decimals < 1)
