@@ -1421,14 +1421,24 @@ DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& n
     INT* x = new INT[degree+1];
     INT k;
 
-    // === init table
+	INT bigtabSize = 0;
+    for( k = 0; k < max_degree; ++k )
+    {
+		const INT tabSize = nofKmers * num_feat;
+		bigtabSize+=tabSize;
+	}
+	result= new DREAL[bigtabSize];
+
+    // init table
+	INT tabOffs=0;
     for( k = 0; k < max_degree; ++k )
     {
 	const INT nofKmers = (INT) pow( num_sym, k+1 );
 	const INT tabSize = nofKmers * num_feat;
-	C[k] = new DREAL[ tabSize ];
+	C[k] = &bigtabSize[tabOffs];
 	L[k] = new DREAL[ tabSize ];
 	R[k] = new DREAL[ tabSize ];
+	tabOffs+=tabSize;
 
 	for(INT i = 0; i < tabSize; i++ )
 	{
@@ -1438,7 +1448,7 @@ DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& n
 	}
     }
 
-    // === main loop
+    // main loop
     for( k = 0; k < max_degree; ++k )
     {
 	const INT nofKmers = (INT) pow( num_sym, k+1 );
@@ -1492,13 +1502,17 @@ DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& n
 	
     }
 
-    //result = L[0];
-    //num_sym=4;
-    result = C[ max_degree-1 ];
-    num_sym = (INT) pow( num_sym, max_degree );
-    //result = R[0];
-    //num_sym=4;
+	//return a vector
+	num_feat=1;
+    num_sym = bigTabsize;
+
     delete[] C;
+
+    for( k = 0; k < max_degree; ++k )
+    {
+		delete L[k];
+		delete R[k];
+	}
     delete[] L;
     delete[] R;
     return result;
