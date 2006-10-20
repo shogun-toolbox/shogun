@@ -38,6 +38,22 @@ public:
 		};
 	};
 
+private:
+struct TreeParseInfo {
+  INT num_sym;
+  INT num_feat;
+  INT p;
+  INT k;
+  INT* nofsKmers;
+  DREAL* margFactors;
+  INT* x;
+  INT* substrs;
+  INT y0;
+  DREAL* C_k;
+  DREAL* L_k;
+  DREAL* R_k;
+};
+
 public:
 	CWeightedDegreePositionCharKernel(LONG size, DREAL* weights, INT degree, INT max_mismatch, 
 			INT * shift, INT shift_len, bool use_norm=false,
@@ -166,9 +182,11 @@ public:
 	inline INT get_max_mismatch() { return max_mismatch; }
 	inline INT get_degree() { return degree; }
 
-	void count( const DREAL w, const INT p, const INT depth, INT* x, const INT k, DREAL* C_k, DREAL* L_k, DREAL* R_k );
 	Trie* get_tree_at_position(INT i);
-	void traverse( const struct Trie* tree, INT p, const INT depth, INT* x, const INT k, DREAL* C_k, DREAL* L_k, DREAL* R_k );
+	void count( const DREAL w, const INT depth, const struct TreeParseInfo info, const INT p, INT* x, const INT k );
+	void traverse( const struct Trie* tree, const INT p, struct TreeParseInfo info, const INT depth, INT* const x, const INT k );
+        //void count( const DREAL w, const INT p, const INT depth, INT* x, const INT k, DREAL* C_k, DREAL* L_k, DREAL* R_k );
+	//void traverse( const struct Trie* tree, INT p, const INT depth, INT* x, const INT k, DREAL* C_k, DREAL* L_k, DREAL* R_k );
 
 	// weight setting/getting operations
 	inline DREAL *get_degree_weights(INT& d, INT& len)
