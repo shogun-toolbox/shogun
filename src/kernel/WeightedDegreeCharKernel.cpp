@@ -236,11 +236,8 @@ bool CWeightedDegreeCharKernel::save_init(FILE* dest)
 }
   
 
-bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* alphas, INT tree_num, INT upto_tree)
+bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* alphas, INT tree_num)
 {
-	if (upto_tree<0)
-		upto_tree=tree_num;
-
 	delete_optimization();
 	
 	CIO::message(M_DEBUG, "initializing CWeightedDegreeCharKernel optimization\n") ;
@@ -251,7 +248,7 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* al
 		{
 			if ( (i % (count/10+1)) == 0)
 				CIO::progress(i, 0, count);
-
+			
 			if (max_mismatch==0)
 				add_example_to_tree(IDX[i], alphas[i]) ;
 			else
@@ -259,16 +256,13 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* al
 		}
 		else
 		{
-			for (INT t=tree_num; t<=tree_num; t++)
-			{
-				if (max_mismatch==0)
-					add_example_to_single_tree(IDX[i], alphas[i], t) ;
-				else
-					add_example_to_single_tree_mismatch(IDX[i], alphas[i], t) ;
-			}
+			if (max_mismatch==0)
+				add_example_to_single_tree(IDX[i], alphas[i], tree_num) ;
+			else
+				add_example_to_single_tree_mismatch(IDX[i], alphas[i], tree_num) ;
 		}
 	}
-
+	
 	if (tree_num<0)
 		CIO::message(M_MESSAGEONLY, "done.           \n");
 	
@@ -684,7 +678,8 @@ bool CWeightedDegreeCharKernel::init_matching_weights_wd()
 	return (matching_weights!=NULL);
 }
 
-DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor)
+
+DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor)
 {
 	ASSERT(get_rhs());
 	num_vec=get_rhs()->get_num_vectors();
@@ -703,8 +698,8 @@ DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT
 
 	for (INT j=0; j<num_feat; j++)
 	{
-		init_optimization(num_suppvec, IDX, weights, j);
-
+		init_optimization(num_suppvec, IDX, alphas, j);
+		
 		for (INT i=0; i<num_vec; i++)
 		{
 			INT len=0;
@@ -716,7 +711,7 @@ DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT
 			if (use_normalization)
 			  result[i] += factor*tries.compute_by_tree_helper(vec, len, j, weights)/sqrtdiag_rhs[i];
 			else
-			  result[i] += factor*tries.compute_by_tree_helper(vec, len, j, weights);
+			result[i] += factor*tries.compute_by_tree_helper(vec, len, j, weights);
 
 			((CCharFeatures*) rhs)->free_feature_vector(char_vec, i, freevec);
 		}
@@ -730,7 +725,8 @@ DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT
 
 
 
-DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights)
+
+DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas)
 {
 	num_feat=((CCharFeatures*) get_rhs())->get_num_features();
 	ASSERT(num_feat>0);
@@ -748,7 +744,8 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 
 	for (INT i=0; i<num_feat; i++)
 	{
-		init_optimization(num_suppvec, IDX, weights, i, CMath::min(num_feat-1,i+1));
+		//init_optimization(num_suppvec, IDX, alphas, i, CMath::min(num_feat-1,i+1));
+		init_optimization(num_suppvec, IDX, alphas, i);
 
 		tries.compute_scoring_helper(NO_CHILD, i, 0, 0.0, 0, max_degree, num_feat, num_sym, sym_offset, 0, result);
 		CIO::progress(i,0,num_feat);

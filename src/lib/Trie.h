@@ -71,7 +71,7 @@ public:
 		TreeMem[ret].has_seq=false ;
 		TreeMem[ret].has_floats=false ;
 #endif
-		//TreeMem[ret].weight=0.0; 
+		TreeMem[ret].weight=0.0; 
 		return ret ;
 	} ;
 	

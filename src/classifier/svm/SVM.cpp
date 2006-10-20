@@ -192,8 +192,8 @@ CLabels* CSVM::classify(CLabels* result)
 	}
 
 	if ( (CKernelMachine::get_kernel()) &&
-			(CKernelMachine::get_kernel())->get_rhs() &&
-			(CKernelMachine::get_kernel())->get_rhs()->get_num_vectors())
+		 (CKernelMachine::get_kernel())->get_rhs() &&
+		 (CKernelMachine::get_kernel())->get_rhs()->get_num_vectors())
 	{
 		INT num_vectors=(CKernelMachine::get_kernel())->get_rhs()->get_num_vectors();
 

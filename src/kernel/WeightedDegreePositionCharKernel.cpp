@@ -375,7 +375,7 @@ bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, 
 	}
 	else
 	{
-	    for (INT t=tree_num; t<=tree_num; t++)
+	    for (INT t=tree_num; t<=upto_tree; t++)
 		add_example_to_single_tree(IDX[i], alphas[i], t);
 	}
     }
@@ -1211,7 +1211,7 @@ bool CWeightedDegreePositionCharKernel::set_position_weights(DREAL* pws, INT len
 }
 
 
-DREAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor)
+DREAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor)
 {
     ASSERT(get_rhs());
     num_vec=get_rhs()->get_num_vectors();
@@ -1233,7 +1233,7 @@ DREAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, DREAL* res
 
     for (INT j=0; j<num_feat; j++)
     {
-	init_optimization(num_suppvec, IDX, weights, j);
+	init_optimization(num_suppvec, IDX, alphas, j);
 
 	for (INT i=0; i<num_vec; i++)
 	{
@@ -1409,7 +1409,7 @@ void CWeightedDegreePositionCharKernel::traverse( const struct Trie* tree, const
 }
 
 
-DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights)
+DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas)
 {
     num_feat=((CCharFeatures*) get_rhs())->get_num_features();
     ASSERT(num_feat>0);
@@ -1459,7 +1459,7 @@ DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& n
 	// --- run over all trees
 	for(INT p = 0; p < num_feat; ++p )
 	{
-	    init_optimization( num_suppvec, IDX, weights, p );
+	    init_optimization( num_suppvec, IDX, alphas, p );
 	    const Trie* const tree = get_tree_at_position( p );
 	    for(INT j = 0; j < degree+1; j++ ) {
 		x[j] = -1;

@@ -49,16 +49,10 @@ void CTrie::delete_trees()
 {
 	if (trees==NULL)
 		return;
-	
+
+	TreeMemPtr=0 ;
 	for (INT i=0; i<length; i++)
-	{
-		for (INT k=0; k<4; k++)
-			TreeMem[trees[i]].children[k]=NO_CHILD;
-#ifdef TRIE_CHECK_EVERYTHING
-		TreeMem[trees[i]].has_seq=false ;
-#endif
-	}
-	TreeMemPtr=length;
+		trees[i]=get_node() ;
 } 
 
 

@@ -57,13 +57,13 @@ public:
 	// return the name of a kernel
 	virtual const CHAR* get_name() { return "WeightedDegreePos" ; } ;
 
-	inline virtual bool init_optimization(INT count, INT *IDX, DREAL * weights)
+	inline virtual bool init_optimization(INT count, INT *IDX, DREAL * alphas)
 	{ 
-		return init_optimization(count, IDX, weights, -1);
+		return init_optimization(count, IDX, alphas, -1);
 	}
 
 	/// do initialization for tree_num up to upto_tree, use tree_num=-1 to construct all trees
-	virtual bool init_optimization(INT count, INT *IDX, DREAL * weights, INT tree_num, INT upto_tree=-1);
+	virtual bool init_optimization(INT count, INT *IDX, DREAL * alphas, INT tree_num, INT upto_tree=-1);
 	virtual bool delete_optimization() ;
 	inline virtual DREAL compute_optimized(INT idx) 
 	{ 
@@ -71,7 +71,7 @@ public:
 		return compute_by_tree(idx); 
 	}
 
-	virtual DREAL* compute_batch(INT& num_vec, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor=1.0);
+	virtual DREAL* compute_batch(INT& num_vec, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
 
 	// subkernel functionality
 	inline virtual void clear_normal()
