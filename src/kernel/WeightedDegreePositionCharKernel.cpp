@@ -1342,17 +1342,14 @@ void CWeightedDegreePositionCharKernel::count( const DREAL w, const INT p, const
 	INT yL = 0;  // k-suffix
 	INT yR = 0;  // k-prefix
 	for( j = 0; j < k+1; j++ ) {
-		ASSERT(x[depth-k+j]>=0);
 	    yL = yL*num_sym + x[depth-k+j];
 	    yR = yR*num_sym + x[j];
 	}
 	ASSERT( 0 <= yL && yL < nofKmers );
 	ASSERT( 0 <= yR && yR < nofKmers );
-	//const INT offsL = yL + nofKmers * (p+degree-k);
 	const INT offsL = yL + nofKmers * (p+depth-k);
 	const INT offsR = yR + nofKmers * p;
 	if( p+depth-k < num_feat ) {
-	//if( p+degree-k < num_feat ) {
 	    L_k[offsL] += margWeight; 
 	}
 	R_k[offsR] += margWeight;
@@ -1470,8 +1467,9 @@ DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& n
 		for( y = 0; y < nofJmers; ++y ) {
 		    for( sym = 0; sym < num_sym; ++sym ) {
 			const INT y_sym = num_sym*y + sym;
-			//const INT sym_y = nofJmers*sym + y;
-			const INT sym_y = num_sym*y + sym;
+			const INT sym_y = nofJmers*sym + y;
+			ASSERT( 0 <= y_sym && y_sym < nofKmers );
+			ASSERT( 0 <= sym_y && sym_y < nofKmers );
 			C[k][ y_sym + offsetK ] += L[j][ y + offsetJ ];
 			if( p < num_feat-1 ) {
 			    C[k][ sym_y + offsetK ] += R[j][ y + offsetJ1 ];
