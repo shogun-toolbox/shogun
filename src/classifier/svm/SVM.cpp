@@ -182,6 +182,32 @@ bool CSVM::save(FILE* modelfl)
   return true ;
 } 
 
+bool CSVM::init_kernel_optimization()
+{
+	if (get_kernel() && get_kernel()->has_property(KP_LINADD) && get_num_support_vectors())
+	{
+		INT * sv_idx    = new INT[get_num_support_vectors()] ;
+		DREAL* sv_weight = new DREAL[get_num_support_vectors()] ;
+
+		for(INT i=0; i<get_num_support_vectors(); i++)
+		{
+			sv_idx[i]    = get_support_vector(i) ;
+			sv_weight[i] = get_alpha(i) ;
+		}
+
+		bool ret = kernel->init_optimization(get_num_support_vectors(), sv_idx, sv_weight) ;
+
+		delete[] sv_idx ;
+		delete[] sv_weight ;
+
+		if (!ret)
+			CIO::message(M_ERROR, "initialization of kernel optimization failed\n") ;
+
+		return ret;
+	}
+
+	return false;
+}
 
 CLabels* CSVM::classify(CLabels* result)
 {

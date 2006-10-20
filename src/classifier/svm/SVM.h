@@ -155,7 +155,7 @@ class CSVM : public CKernelMachine
 			return objective ;
 		}
 
-		void init_kernel_optimization();
+		bool init_kernel_optimization();
 
 		CLabels* classify(CLabels* labels=NULL);
 		DREAL classify_example(INT num);

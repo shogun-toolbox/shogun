@@ -1,11 +1,11 @@
-from numpy import array
+from numpy import array,double
 from numpy.random import rand
 from shogun.Features import *
 from shogun.SVM import *
 from shogun.Kernel import *
 
 feat = RealFeatures(rand(5,10))
-lab = Labels(array([-1,1,1,-1,1,1,-1,-1,-1,1]))
+lab = Labels(array([-1,1,1,-1,1,1,-1,-1,-1,1],dtype=double))
 gk=GaussianKernel(feat,feat, 10,1)
 svm = SVMLight(10, gk, lab)
 svm.train()
