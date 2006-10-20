@@ -1335,7 +1335,8 @@ void CWeightedDegreePositionCharKernel::count( const DREAL w, const INT p, const
 	    ASSERT( 0 <= x[i+j] && x[i+j] < num_sym );
 	    y = y*num_sym + x[i+j];
 	}
-	C_k[ y + nofKmers*(p+i) ] += margWeight;
+	if (p+i<num_feat)
+		C_k[ y + nofKmers*(p+i) ] += margWeight;
     }
     if( depth > k )
     {
@@ -1419,11 +1420,12 @@ DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& n
     DREAL** L = new DREAL*[max_degree];
     DREAL** R = new DREAL*[max_degree];
     INT* x = new INT[degree+1];
-    INT k;
+    INT i,k;
 
 	INT bigtabSize = 0;
     for( k = 0; k < max_degree; ++k )
     {
+		const INT nofKmers = (INT) pow( num_sym, k+1 );
 		const INT tabSize = nofKmers * num_feat;
 		bigtabSize+=tabSize;
 	}
@@ -1435,12 +1437,12 @@ DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& n
     {
 	const INT nofKmers = (INT) pow( num_sym, k+1 );
 	const INT tabSize = nofKmers * num_feat;
-	C[k] = &bigtabSize[tabOffs];
+	C[k] = &result[tabOffs];
 	L[k] = new DREAL[ tabSize ];
 	R[k] = new DREAL[ tabSize ];
 	tabOffs+=tabSize;
 
-	for(INT i = 0; i < tabSize; i++ )
+	for(i = 0; i < tabSize; i++ )
 	{
 	    C[k][i] = 0.0;
 	    L[k][i] = 0.0;
@@ -1448,6 +1450,7 @@ DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& n
 	}
     }
 
+	i=0; // total progress
     // main loop
     for( k = 0; k < max_degree; ++k )
     {
@@ -1462,6 +1465,8 @@ DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& n
 		x[j] = -1;
 	    }
 	    traverse( tree, p, 0, x, k, C[k], L[k], R[k] );
+
+		CIO::progress(i++,0,num_feat*max_degree);
 	}
 
 	// --- add partial overlap scores
@@ -1504,7 +1509,7 @@ DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& n
 
 	//return a vector
 	num_feat=1;
-    num_sym = bigTabsize;
+    num_sym = bigtabSize;
 
     delete[] C;
 
