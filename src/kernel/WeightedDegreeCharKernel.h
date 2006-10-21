@@ -238,14 +238,14 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
   double* sqrtdiag_rhs;
 
   bool initialized ;
-
-  bool tree_initialized ;
-  bool use_normalization ;
   bool block_computation;
-
+  bool use_normalization ;
+  
   DREAL* matching_weights;
-
+  
   CTrie tries ;
+  bool tree_initialized ;
+  
 };
 
 #endif
