@@ -18,7 +18,7 @@
 
 #define NO_CHILD ((INT)-1) 
 #define WEIGHTS_IN_TRIE 
-//#define TRIE_CHECK_EVERYTHING
+#define TRIE_CHECK_EVERYTHING
 
 #ifdef TRIE_CHECK_EVERYTHING
 #define TRIE_ASSERT_EVERYTHING(x) ASSERT(x)
@@ -259,7 +259,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 #ifdef WEIGHTS_IN_TRIE
 				TreeMem[tree].weight += alpha*weights[j];
 #else
-				TreeMem[tree].weight += alpha*weights[j];
+				TreeMem[tree].weight += alpha
 #endif
 			}
 		}
