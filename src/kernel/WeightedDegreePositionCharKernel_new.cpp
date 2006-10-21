@@ -707,12 +707,12 @@ void CWeightedDegreePositionCharKernel_new::add_example_to_tree(INT idx, DREAL a
 		{
 			DREAL alpha_pw = (s==0) ? (alpha) : (alpha/(2*s)) ;
 			
-			tries.add_to_trie(i, s, vec, alpha_pw, weights) ;
+			tries.add_to_trie(i, s, vec, alpha_pw, weights, (length!=0)) ;
 			
 			if ((s==0) || (i+s>=len))
 				continue;
 			
-			tries.add_to_trie(i+s, -s, vec, alpha_pw, weights) ;
+			tries.add_to_trie(i+s, -s, vec, alpha_pw, weights, (length!=0)) ;
 		}
     }
 	
@@ -747,7 +747,7 @@ void CWeightedDegreePositionCharKernel_new::add_example_to_single_tree(INT idx, 
     for (INT s=max_s; s>=0; s--)
     {
 		DREAL alpha_pw = (s==0) ? (alpha) : (alpha/(2*s)) ;
-		tries.add_to_trie(tree_num, s, vec, alpha_pw, weights) ;
+		tries.add_to_trie(tree_num, s, vec, alpha_pw, weights, (length!=0)) ;
 	} 
 	
     if (opt_type==FASTBUTMEMHUNGRY)
@@ -759,7 +759,7 @@ void CWeightedDegreePositionCharKernel_new::add_example_to_single_tree(INT idx, 
 			if (i+s<len && s>=1 && s<=shift[i])
 			{
 				DREAL alpha_pw = (s==0) ? (alpha) : (alpha/(2*s)) ;
-				tries.add_to_trie(tree_num, 0, vec, alpha_pw, weights) ;
+				tries.add_to_trie(tree_num, 0, vec, alpha_pw, weights, (length!=0)) ;
 			}
 		}
     }
@@ -782,7 +782,7 @@ DREAL CWeightedDegreePositionCharKernel_new::compute_by_tree(INT idx)
     vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
   
   for (INT i=0; i<len; i++)
-    sum += tries.compute_by_tree_helper(vec, len, i, i, i, weights) ;
+    sum += tries.compute_by_tree_helper(vec, len, i, i, i, weights, length) ;
   
   if (opt_type==SLOWBUTMEMEFFICIENT)
     {
@@ -790,8 +790,8 @@ DREAL CWeightedDegreePositionCharKernel_new::compute_by_tree(INT idx)
 	{
 	  for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
 	    {
-	      sum+=tries.compute_by_tree_helper(vec, len, i, i+k, i, weights)/(2*k) ;
-	      sum+=tries.compute_by_tree_helper(vec, len, i+k, i, i, weights)/(2*k) ;
+	      sum+=tries.compute_by_tree_helper(vec, len, i, i+k, i, weights, length)/(2*k) ;
+	      sum+=tries.compute_by_tree_helper(vec, len, i+k, i, i, weights, length)/(2*k) ;
 	    }
 	}
     }
@@ -822,15 +822,15 @@ void CWeightedDegreePositionCharKernel_new::compute_by_tree(INT idx, DREAL* Leve
     factor = 1.0/sqrtdiag_rhs[idx] ;
   
   for (INT i=0; i<len; i++)
-    tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor, mkl_stepsize, weights) ;
+    tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor, mkl_stepsize, weights, length) ;
   
   if (opt_type==SLOWBUTMEMEFFICIENT)
     {
       for (INT i=0; i<len; i++)
 	for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
 	  {
-	    tries.compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, factor/(2*k), mkl_stepsize, weights) ;
-	    tries.compute_by_tree_helper(vec, len, i+k, i, i, LevelContrib, factor/(2*k), mkl_stepsize, weights) ;
+	    tries.compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, factor/(2*k), mkl_stepsize, weights, length) ;
+	    tries.compute_by_tree_helper(vec, len, i+k, i, i, LevelContrib, factor/(2*k), mkl_stepsize, weights, length) ;
 	  }
     }
   
@@ -872,28 +872,28 @@ bool CWeightedDegreePositionCharKernel_new::set_position_weights(DREAL* pws, INT
 {
     if (len==0)
     {
-	delete[] position_weights ;
-	position_weights = NULL ;
+		delete[] position_weights ;
+		position_weights = NULL ;
     }
     if (seq_length==0)
-	seq_length = len ;
-
+		seq_length = len ;
+	
     if (seq_length!=len) 
     {
-	CIO::message(M_ERROR, "seq_length = %i, position_weights_length=%i\n", seq_length, len) ;
-	return false ;
+		CIO::message(M_ERROR, "seq_length = %i, position_weights_length=%i\n", seq_length, len) ;
+		return false ;
     }
     delete[] position_weights;
     position_weights=new DREAL[len];
 	
     if (position_weights)
     {
-	for (int i=0; i<len; i++)
-	    position_weights[i]=pws[i];
-	return true;
+		for (int i=0; i<len; i++)
+			position_weights[i]=pws[i];
+		return true;
     }
     else
-	return false;
+		return false;
 }
 
 
@@ -930,9 +930,9 @@ DREAL* CWeightedDegreePositionCharKernel_new::compute_batch(INT& num_vec, DREAL*
 	      vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[k]);
 	    
 	    if (use_normalization)
-	      result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights)/sqrtdiag_rhs[i];
+	      result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, length)/sqrtdiag_rhs[i];
 	    else
-	      result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights);
+	      result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, length);
 	    
 	    ((CCharFeatures*) rhs)->free_feature_vector(char_vec, i, freevec);
 	  }

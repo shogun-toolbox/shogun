@@ -145,9 +145,9 @@ void CTrie::compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, INT d, 
 }
 
 void CTrie::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha,
-						   INT *vec, INT len_rem, 
-						   INT degree_rec, INT mismatch_rec, 
-						   INT max_mismatch, DREAL * weights) 
+												   INT *vec, INT len_rem, 
+												   INT degree_rec, INT mismatch_rec, 
+												   INT max_mismatch, DREAL * weights) 
 {
 	if (tree==NO_CHILD)
 		tree=trees[i] ;

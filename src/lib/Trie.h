@@ -17,7 +17,7 @@
 #include "lib/Mathematics.h"
 
 #define NO_CHILD ((INT)-1) 
-#define WEIGHTS_IN_TRIE 
+//#define WEIGHTS_IN_TRIE 
 #define TRIE_CHECK_EVERYTHING
 
 #ifdef TRIE_CHECK_EVERYTHING
@@ -53,12 +53,12 @@ public:
 	void destroy() ;
 	void create(INT len) ;
 	void delete_trees();
-	void add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights) ;
+	void add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights, bool degree_times_position_weights) ;
 	DREAL compute_abs_weights_tree(INT tree, INT depth) ;
 	DREAL *compute_abs_weights(int &len) ;
 	
-	DREAL compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos, DREAL * weights) ;
-	void compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos, DREAL* LevelContrib, DREAL factor, INT mkl_stepsize, DREAL * weights) ;
+	DREAL compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos, DREAL * weights, bool degree_times_position_weights) ;
+	void compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos, DREAL* LevelContrib, DREAL factor, INT mkl_stepsize, DREAL * weights, bool degree_times_position_weights) ;
 	void compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result) ;
 	void add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha, INT *vec, INT len_rem, INT degree_rec, INT mismatch_rec, INT max_mismatch, DREAL * weights) ;
 	
@@ -103,15 +103,24 @@ protected:
 
 } ;
 
-inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights)
+inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights, bool degree_times_position_weights)
 {
 	INT tree = trees[i] ;
 	
 	INT max_depth = 0 ;
 #ifdef WEIGHTS_IN_TRIE
-	for (INT j=0; (j<degree) && (i+j<length); j++)
-		if (CMath::abs(weights[j]*alpha)>1e-10)
-			max_depth = j+1 ;
+	if (degree_times_position_weights)
+	{
+		for (INT j=0; (j<degree) && (i+j<length); j++)
+			if (CMath::abs(weights[j+i*degree]*alpha)>0) // FIXME: i should be weight_pos
+				max_depth = j+1 ;
+	}
+	else
+	{
+		for (INT j=0; (j<degree) && (i+j<length); j++)
+			if (CMath::abs(weights[j]*alpha)>0)
+				max_depth = j+1 ;
+	}
 #else
 	// don't use the weights
 	max_depth=degree ;
@@ -258,7 +267,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 #ifdef WEIGHTS_IN_TRIE
 				TreeMem[tree].weight += alpha*weights[j];
 #else
-				TreeMem[tree].weight += alpha
+				TreeMem[tree].weight += alpha ;
 #endif
 			}
 		}
@@ -331,7 +340,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 }
 
 
-inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, INT pos2, INT pos3, DREAL* weights)
+/*inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, INT pos2, INT pos3, DREAL* weights)
 {
   DREAL sum=0 ;
   
@@ -388,24 +397,26 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, INT pos2,
 	  return sum*position_weights[pos] ;
   else
 	  return sum ;
-}
+}*/
 
-/*
+
 inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT seq_pos, 
 										   INT tree_pos,
-										   INT weight_pos, DREAL* weights)
+										   INT weight_pos, DREAL* weights, 
+										   bool degree_times_position_weights)
 {
+	ASSERT(tree_pos==seq_pos) ;
+	ASSERT(tree_pos==weight_pos) ;
+	
 	INT tree = trees[tree_pos] ;
 	
 	if ((position_weights!=NULL) && (position_weights[weight_pos]==0))
 		return 0.0;
 	
 	DREAL *weights_column=NULL ;
-	if (length==0) // weights is a vector (1 x degree)
-		weights_column=weights ;
-	else 
+	if (degree_times_position_weights)
     { // weights is a vector (degree x length)
-	weights_column=&weights[weight_pos*degree] ;*/
+		weights_column=&weights[weight_pos*degree] ;
 		/*if (!position_mask)
 		  {		
 		  position_mask = new bool[len] ;
@@ -423,7 +434,9 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT seq_pos,
 		  }
 		  if (!position_mask[weight_pos])
 		  return 0 ;*/
-/*    }
+    }
+	else // weights is a vector (1 x degree)
+		weights_column=weights ;
 	
 	DREAL sum=0 ;
 	for (INT j=0; seq_pos+j < len; j++)
@@ -484,13 +497,14 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT seq_pos,
 	else
 		return sum ;
 }
-*/
 
 inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 										  INT seq_pos, INT tree_pos, 
 										  INT weight_pos, 
 										  DREAL* LevelContrib, DREAL factor, 
-										  INT mkl_stepsize, DREAL * weights) 
+										  INT mkl_stepsize, 
+										  DREAL * weights, 
+										  bool degree_times_position_weights) 
 {
 	INT tree = trees[tree_pos] ;
 	if (factor==0)
@@ -501,7 +515,7 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 		factor *= position_weights[weight_pos] ;
 		if (factor==0)
 			return ;
-		if (length==0) // with position_weigths, weights is a vector (1 x degree)
+		if (!degree_times_position_weights) // with position_weigths, weights is a vector (1 x degree)
 		{
 			for (INT j=0; seq_pos+j<len; j++)
 			{
@@ -597,7 +611,7 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 			}
 		} 
     }
-	else if (length==0) // no position_weigths, weights is a vector (1 x degree)
+	else if (!degree_times_position_weights) // no position_weigths, weights is a vector (1 x degree)
     {
 		for (INT j=0; seq_pos+j<len; j++)
 		{
