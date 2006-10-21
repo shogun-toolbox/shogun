@@ -255,6 +255,8 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* al
 				add_example_to_tree(IDX[i], alphas[i]) ;
 			else
 				add_example_to_tree_mismatch(IDX[i], alphas[i]) ;
+
+			CIO::message(M_DEBUG, "number of used trie nodes: %i\n", tries.get_num_used_nodes()) ;
 		}
 		else
 		{
@@ -439,7 +441,7 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, DREAL alpha)
 
 	for (INT i=0; i<len; i++)
 		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
-
+	
 	if (length == 0 || max_mismatch > 0)
 	{
 		for (INT i=0; i<len; i++)
@@ -562,25 +564,25 @@ void CWeightedDegreeCharKernel::add_example_to_single_tree_mismatch(INT idx, DRE
 
 DREAL CWeightedDegreeCharKernel::compute_by_tree(INT idx) 
 {
-  INT len ;
-  bool free ;
-  CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
-  INT *vec = new INT[len] ;
-  
-  for (INT i=0; i<len; i++)
-    vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
-  
-  DREAL sum=0 ;
-  for (INT i=0; i<len; i++)
-    sum += tries.compute_by_tree_helper(vec, len, i, i, i, weights, length);
-  
-  ((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
-  delete[] vec ;
-  
-  if (use_normalization)
-		 return sum/sqrtdiag_rhs[idx];
-  else
-    return sum;
+	INT len ;
+	bool free ;
+	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
+	INT *vec = new INT[len] ;
+	
+	for (INT i=0; i<len; i++)
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+	
+	DREAL sum=0 ;
+	for (INT i=0; i<len; i++)
+		sum += tries.compute_by_tree_helper(vec, len, i, i, i, weights, (length!=0));
+	
+	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
+	delete[] vec ;
+	
+	if (use_normalization)
+		return sum/sqrtdiag_rhs[idx];
+	else
+		return sum;
 }
 
 void CWeightedDegreeCharKernel::compute_by_tree(INT idx, DREAL* LevelContrib) 
@@ -599,7 +601,7 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, DREAL* LevelContrib)
 		factor = 1.0/sqrtdiag_rhs[idx] ;
 
 	for (INT i=0; i<len; i++)
-	  tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor, mkl_stepsize, weights, length);
+	  tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor, mkl_stepsize, weights, (length!=0));
 
 	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
@@ -709,9 +711,9 @@ DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT
 				vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[k]);
 
 			if (use_normalization)
-			  result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, length)/sqrtdiag_rhs[i];
+			  result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/sqrtdiag_rhs[i];
 			else
-			  result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, length);
+			  result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0));
 
 			((CCharFeatures*) rhs)->free_feature_vector(char_vec, i, freevec);
 		}

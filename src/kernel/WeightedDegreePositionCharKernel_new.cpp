@@ -56,7 +56,7 @@ CWeightedDegreePositionCharKernel_new::CWeightedDegreePositionCharKernel_new(LON
       weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0),
       max_mismatch(max_mismatch_), seq_length(0), 
       sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
-      use_normalization(use_norm), tries(0), tree_initialized(false)
+      use_normalization(use_norm), tries(d), tree_initialized(false)
 {
 #ifdef NEWSTUFF
     fprintf(stderr, "initializing protein similarity table -- experimental\n") ;
@@ -160,101 +160,101 @@ bool CWeightedDegreePositionCharKernel_new::init(CFeatures* l, CFeatures* r, boo
 {
     INT lhs_changed = (lhs!=l) ;
     INT rhs_changed = (rhs!=r) ;
-
+	
     CIO::message(M_DEBUG, "lhs_changed: %i\n", lhs_changed) ;
     CIO::message(M_DEBUG, "rhs_changed: %i\n", rhs_changed) ;
-
+	
 	ASSERT(l && ((((CCharFeatures*) l)->get_alphabet()->get_alphabet()==DNA) || 
 				 (((CCharFeatures*) l)->get_alphabet()->get_alphabet()==RNA)));
 	ASSERT(r && ((((CCharFeatures*) r)->get_alphabet()->get_alphabet()==DNA) || 
 				 (((CCharFeatures*) r)->get_alphabet()->get_alphabet()==RNA)));
-
+	
     delete[] position_mask ;
     position_mask = NULL ;
 	
     if (lhs_changed) 
     {
-	INT alen ;
-	bool afree ;
-	CHAR* avec=((CCharFeatures*) l)->get_feature_vector(0, alen, afree);		
-	seq_length = alen ;
-	((CCharFeatures*) l)->free_feature_vector(avec, 0, afree);
-
-	tries.destroy() ;
-	tries.create(alen) ;
+		INT alen ;
+		bool afree ;
+		CHAR* avec=((CCharFeatures*) l)->get_feature_vector(0, alen, afree);		
+		seq_length = alen ;
+		((CCharFeatures*) l)->free_feature_vector(avec, 0, afree);
+		
+		tries.destroy() ;
+		tries.create(alen) ;
     } 
-
+	
     bool result=CSimpleKernel<CHAR>::init(l,r,do_init);
     initialized = false ;
     INT i;
-
+	
     CIO::message(M_DEBUG, "use normalization:%d\n", (use_normalization) ? 1 : 0);
-
+	
     if (use_normalization)
     {
-	if (rhs_changed)
-	{
-	    if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	    sqrtdiag_rhs=NULL ;
-	}
-	if (lhs_changed)
-	{
-	    delete[] sqrtdiag_lhs;
-	    sqrtdiag_lhs=NULL ;
-	    sqrtdiag_lhs= new DREAL[lhs->get_num_vectors()];
-	    ASSERT(sqrtdiag_lhs) ;
-	    for (i=0; i<lhs->get_num_vectors(); i++)
-		sqrtdiag_lhs[i]=1;
-	}
-
-	if (l==r)
-	    sqrtdiag_rhs=sqrtdiag_lhs;
-	else if (rhs_changed)
-	{
-	    sqrtdiag_rhs= new DREAL[rhs->get_num_vectors()];
-	    ASSERT(sqrtdiag_rhs) ;
-
-	    for (i=0; i<rhs->get_num_vectors(); i++)
-		sqrtdiag_rhs[i]=1;
-	}
-
-	ASSERT(sqrtdiag_lhs);
-	ASSERT(sqrtdiag_rhs);
-
-	if (lhs_changed)
-	{
-	    this->lhs=(CCharFeatures*) l;
-	    this->rhs=(CCharFeatures*) l;
-
-	    //compute normalize to 1 values
-	    for (i=0; i<lhs->get_num_vectors(); i++)
-	    {
-		sqrtdiag_lhs[i]=sqrt(compute(i,i));
-
-		//trap divide by zero exception
-		if (sqrtdiag_lhs[i]==0)
-		    sqrtdiag_lhs[i]=1e-16;
-	    }
-	}
-
-	// if lhs is different from rhs (train/test data)
-	// compute also the normalization for rhs
-	if ((sqrtdiag_lhs!=sqrtdiag_rhs) & rhs_changed)
-	{
-	    this->lhs=(CCharFeatures*) r;
-	    this->rhs=(CCharFeatures*) r;
-
-	    //compute normalize to 1 values
-	    for (i=0; i<rhs->get_num_vectors(); i++)
-	    {
-		sqrtdiag_rhs[i]=sqrt(compute(i,i));
-
-		//trap divide by zero exception
-		if (sqrtdiag_rhs[i]==0)
-		    sqrtdiag_rhs[i]=1e-16;
-	    }
-	}
+		if (rhs_changed)
+		{
+			if (sqrtdiag_lhs != sqrtdiag_rhs)
+				delete[] sqrtdiag_rhs;
+			sqrtdiag_rhs=NULL ;
+		}
+		if (lhs_changed)
+		{
+			delete[] sqrtdiag_lhs;
+			sqrtdiag_lhs=NULL ;
+			sqrtdiag_lhs= new DREAL[lhs->get_num_vectors()];
+			ASSERT(sqrtdiag_lhs) ;
+			for (i=0; i<lhs->get_num_vectors(); i++)
+				sqrtdiag_lhs[i]=1;
+		}
+		
+		if (l==r)
+			sqrtdiag_rhs=sqrtdiag_lhs;
+		else if (rhs_changed)
+		{
+			sqrtdiag_rhs= new DREAL[rhs->get_num_vectors()];
+			ASSERT(sqrtdiag_rhs) ;
+			
+			for (i=0; i<rhs->get_num_vectors(); i++)
+				sqrtdiag_rhs[i]=1;
+		}
+		
+		ASSERT(sqrtdiag_lhs);
+		ASSERT(sqrtdiag_rhs);
+		
+		if (lhs_changed)
+		{
+			this->lhs=(CCharFeatures*) l;
+			this->rhs=(CCharFeatures*) l;
+			
+			//compute normalize to 1 values
+			for (i=0; i<lhs->get_num_vectors(); i++)
+			{
+				sqrtdiag_lhs[i]=sqrt(compute(i,i));
+				
+				//trap divide by zero exception
+				if (sqrtdiag_lhs[i]==0)
+					sqrtdiag_lhs[i]=1e-16;
+			}
+		}
+		
+		// if lhs is different from rhs (train/test data)
+		// compute also the normalization for rhs
+		if ((sqrtdiag_lhs!=sqrtdiag_rhs) & rhs_changed)
+		{
+			this->lhs=(CCharFeatures*) r;
+			this->rhs=(CCharFeatures*) r;
+			
+			//compute normalize to 1 values
+			for (i=0; i<rhs->get_num_vectors(); i++)
+			{
+				sqrtdiag_rhs[i]=sqrt(compute(i,i));
+				
+				//trap divide by zero exception
+				if (sqrtdiag_rhs[i]==0)
+					sqrtdiag_rhs[i]=1e-16;
+			}
+		}
     }
 	
     this->lhs=(CCharFeatures*) l;
@@ -298,35 +298,38 @@ bool CWeightedDegreePositionCharKernel_new::save_init(FILE* dest)
 bool CWeightedDegreePositionCharKernel_new::init_optimization(INT count, INT * IDX, DREAL * alphas, INT tree_num, INT upto_tree)
 {
     if (upto_tree<0)
-	upto_tree=tree_num;
+		upto_tree=tree_num;
 
     if (max_mismatch!=0)
     {
-	CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel_new optimization not implemented for mismatch!=0\n") ;
-	return false ;
+		CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel_new optimization not implemented for mismatch!=0\n") ;
+		return false ;
     }
-
+	//for (int i=0; i<degree; i++)
+	//	fprintf(stderr, "w[%i]=%1.3f\n", i, weights[i]) ;
+	
     delete_optimization();
-
+	
     CIO::message(M_DEBUG, "initializing CWeightedDegreePositionCharKernel_new optimization\n") ;
     int i=0;
     for (i=0; i<count; i++)
     {
-	if (tree_num<0)
-	{
-	    if ( (i % (count/10+1)) == 0)
-		CIO::progress(i,0,count);
-	    add_example_to_tree(IDX[i], alphas[i]);
-	}
-	else
-	{
-	    for (INT t=tree_num; t<=upto_tree; t++)
-		add_example_to_single_tree(IDX[i], alphas[i], t);
-	}
+		if (tree_num<0)
+		{
+			if ( (i % (count/10+1)) == 0)
+				CIO::progress(i,0,count);
+			add_example_to_tree(IDX[i], alphas[i]);
+			CIO::message(M_DEBUG, "number of used trie nodes: %i\n", tries.get_num_used_nodes()) ;
+		}
+		else
+		{
+			for (INT t=tree_num; t<=upto_tree; t++)
+				add_example_to_single_tree(IDX[i], alphas[i], t);
+		}
     }
-
+	
     if (tree_num<0)
-	CIO::message(M_DEBUG, "done.           \n");
+		CIO::message(M_DEBUG, "done.           \n");
 	
     set_is_initialized(true) ;
     return true ;
@@ -705,15 +708,16 @@ void CWeightedDegreePositionCharKernel_new::add_example_to_tree(INT idx, DREAL a
 		
 		for (INT s=max_s; s>=0; s--)
 		{
-			DREAL alpha_pw = (s==0) ? (alpha) : (alpha/(2*s)) ;
-			
+			DREAL alpha_pw = (s==0) ? (alpha) : (alpha/(2.0*s)) ;
 			tries.add_to_trie(i, s, vec, alpha_pw, weights, (length!=0)) ;
+//			fprintf(stderr, "s=%i,alpha_pw=%1.2f",s,alpha_pw) ;
 			
 			if ((s==0) || (i+s>=len))
 				continue;
 			
 			tries.add_to_trie(i+s, -s, vec, alpha_pw, weights, (length!=0)) ;
 		}
+//		fprintf(stderr, "*") ;
     }
 	
   ((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
@@ -771,38 +775,38 @@ void CWeightedDegreePositionCharKernel_new::add_example_to_single_tree(INT idx, 
 
 DREAL CWeightedDegreePositionCharKernel_new::compute_by_tree(INT idx)
 {
-  DREAL sum = 0 ;
-  INT len ;
-  bool free ;
-  CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
-  ASSERT(max_mismatch==0) ;
-  INT *vec = new INT[len] ;
-  
-  for (INT i=0; i<len; i++)
-    vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
-  
-  for (INT i=0; i<len; i++)
-    sum += tries.compute_by_tree_helper(vec, len, i, i, i, weights, length) ;
-  
-  if (opt_type==SLOWBUTMEMEFFICIENT)
+	DREAL sum = 0 ;
+	INT len ;
+	bool free ;
+	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
+	ASSERT(max_mismatch==0) ;
+	INT *vec = new INT[len] ;
+	
+	for (INT i=0; i<len; i++)
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+	
+	for (INT i=0; i<len; i++)
+		sum += tries.compute_by_tree_helper(vec, len, i, i, i, weights, (length!=0)) ;
+	
+	if (opt_type==SLOWBUTMEMEFFICIENT)
     {
-      for (INT i=0; i<len; i++)
-	{
-	  for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
-	    {
-	      sum+=tries.compute_by_tree_helper(vec, len, i, i+k, i, weights, length)/(2*k) ;
-	      sum+=tries.compute_by_tree_helper(vec, len, i+k, i, i, weights, length)/(2*k) ;
-	    }
-	}
+		for (INT i=0; i<len; i++)
+		{
+			for (INT s=1; (s<=shift[i]) && (i+s<len); s++)
+			{
+				sum+=tries.compute_by_tree_helper(vec, len, i, i+s, i, weights, (length!=0))/(2*s) ;
+				sum+=tries.compute_by_tree_helper(vec, len, i+s, i, i, weights, (length!=0))/(2*s) ;
+			}
+		}
     }
-  
-  ((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
-  delete[] vec ;
-  
-  if (use_normalization)
-    return sum/sqrtdiag_rhs[idx];
-  else
-    return sum;
+	
+	((CCharFeatures*) rhs)->free_feature_vector(char_vec, idx, free);
+	delete[] vec ;
+	
+	if (use_normalization)
+		return sum/sqrtdiag_rhs[idx];
+	else
+		return sum;
 }
 
 void CWeightedDegreePositionCharKernel_new::compute_by_tree(INT idx, DREAL* LevelContrib)
@@ -822,15 +826,15 @@ void CWeightedDegreePositionCharKernel_new::compute_by_tree(INT idx, DREAL* Leve
     factor = 1.0/sqrtdiag_rhs[idx] ;
   
   for (INT i=0; i<len; i++)
-    tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor, mkl_stepsize, weights, length) ;
+    tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor, mkl_stepsize, weights, (length!=0)) ;
   
   if (opt_type==SLOWBUTMEMEFFICIENT)
     {
       for (INT i=0; i<len; i++)
 	for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
 	  {
-	    tries.compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, factor/(2*k), mkl_stepsize, weights, length) ;
-	    tries.compute_by_tree_helper(vec, len, i+k, i, i, LevelContrib, factor/(2*k), mkl_stepsize, weights, length) ;
+	    tries.compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, factor/(2*k), mkl_stepsize, weights, (length!=0)) ;
+	    tries.compute_by_tree_helper(vec, len, i+k, i, i, LevelContrib, factor/(2*k), mkl_stepsize, weights, (length!=0)) ;
 	  }
     }
   
@@ -930,9 +934,9 @@ DREAL* CWeightedDegreePositionCharKernel_new::compute_batch(INT& num_vec, DREAL*
 	      vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[k]);
 	    
 	    if (use_normalization)
-	      result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, length)/sqrtdiag_rhs[i];
+	      result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/sqrtdiag_rhs[i];
 	    else
-	      result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, length);
+	      result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0));
 	    
 	    ((CCharFeatures*) rhs)->free_feature_vector(char_vec, i, freevec);
 	  }

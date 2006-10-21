@@ -17,7 +17,7 @@
 #include "lib/Mathematics.h"
 
 #define NO_CHILD ((INT)-1) 
-//#define WEIGHTS_IN_TRIE 
+#define WEIGHTS_IN_TRIE 
 #define TRIE_CHECK_EVERYTHING
 
 #ifdef TRIE_CHECK_EVERYTHING
@@ -61,6 +61,11 @@ public:
 	void compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos, DREAL* LevelContrib, DREAL factor, INT mkl_stepsize, DREAL * weights, bool degree_times_position_weights) ;
 	void compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result) ;
 	void add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha, INT *vec, INT len_rem, INT degree_rec, INT mismatch_rec, INT max_mismatch, DREAL * weights) ;
+
+	inline INT get_num_used_nodes()
+		{
+			return TreeMemPtr ;
+		}
 	
 	inline INT get_node() 
 	{
@@ -106,6 +111,7 @@ protected:
 inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights, bool degree_times_position_weights)
 {
 	INT tree = trees[i] ;
+	//ASSERT(seq_offset==0) ;
 	
 	INT max_depth = 0 ;
 #ifdef WEIGHTS_IN_TRIE
@@ -125,9 +131,13 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 	// don't use the weights
 	max_depth=degree ;
 #endif
+	//max_depth=degree ;
+	//ASSERT(seq_offset==0) ;
 	
+	//fprintf(stderr, "max_depth=%i, i=%i, seq_offset=%i, length=%i\n", max_depth, i, seq_offset, length) ;
 	for (INT j=0; (j<max_depth) && (i+j+seq_offset<length); j++)
     {
+		//fprintf(stderr, "j=%i\n", j) ;
 		TRIE_ASSERT((vec[i+j+seq_offset]>=0) && (vec[i+j+seq_offset]<4)) ;
 		if ((j<degree-1) && (TreeMem[tree].children[vec[i+j+seq_offset]]!=NO_CHILD))
 		{
@@ -150,7 +160,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 				{
 					TRIE_ASSERT((vec[i+j+seq_offset+k]>=0) && (vec[i+j+seq_offset+k]<4)) ;
 					if (TreeMem[node].seq[k]>=4)
-						fprintf(stderr, "i=%i j=%i seq[%i]=%i\n", i, j, k, TreeMem[node].seq[k]) ;
+						fprintf(stderr, "\ni=%i j=%i seq[%i]=%i\n", i, j, k, TreeMem[node].seq[k]) ;
 					TRIE_ASSERT(TreeMem[node].seq[k]<4) ;
 					TRIE_ASSERT(k<16) ;
 					if (TreeMem[node].seq[k]!=vec[i+j+seq_offset+k])
