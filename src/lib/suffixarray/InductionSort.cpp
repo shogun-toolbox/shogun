@@ -24,7 +24,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include "InductionSort.h"
+#include "lib/suffixarray/InductionSort.h"
 
 InductionSortObject::InductionSortObject(unsigned int inductionPosition, unsigned int inductionValue, 
 										 unsigned int suffixIndex)

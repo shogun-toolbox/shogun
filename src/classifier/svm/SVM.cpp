@@ -37,6 +37,7 @@ CSVM::CSVM()
 	epsilon=1e-5;
 	use_mkl = false;
 	use_batch_computation = true;
+	use_shrinking= true;
 	use_linadd = false;
 	use_precomputed_subkernels = false ;
 	objective=0;

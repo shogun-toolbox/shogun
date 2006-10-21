@@ -39,10 +39,11 @@
 //==================================================================//
 
 
-#include "stdio.h"
-#include "Stack.h"
-#include "IntroSort.h"
-#include "InductionSort.h"
+#include "lib/suffixarray/Stack.h"
+#include "lib/suffixarray/IntroSort.h"
+#include "lib/suffixarray/InductionSort.h"
+
+#include <stdio.h>
 
 
 //==================================================================//

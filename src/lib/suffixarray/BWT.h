@@ -40,7 +40,7 @@
 
 
 
-#include "MSufSort.h"
+#include "lib/suffixarray/MSufSort.h"
 
 
 

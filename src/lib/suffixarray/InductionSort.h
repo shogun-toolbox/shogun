@@ -27,7 +27,7 @@
 #ifndef MSUFSORT_INDUCTION_SORTING_H
 #define MSUFSORT_INDUCTION_SORTING_H
 
-#include "IntroSort.h"
+#include "lib/suffixarray/IntroSort.h"
 
 
 class InductionSortObject

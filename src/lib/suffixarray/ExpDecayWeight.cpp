@@ -39,7 +39,7 @@
 #ifndef EXPDECAYWEIGHT_CPP
 #define EXPDECAYWEIGHT_CPP
 
-#include "ExpDecayWeight.h"
+#include "lib/suffixarray/ExpDecayWeight.h"
 #include <cmath>
 #include <cassert>
 

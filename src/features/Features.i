@@ -13,6 +13,7 @@
 %}
 
 %feature("director") CFeatures;
+%rename(Features) CFeatures;
 
 %include "features/Features.h" 
 
@@ -22,5 +23,5 @@
 %include "features/ShortFeatures.i"
 %include "features/WordFeatures.i"
 %include "features/RealFeatures.i"
-/*%include "features/StringFeatures.i"*/
+%include "features/StringFeatures.i"
 %include "features/Labels.i"

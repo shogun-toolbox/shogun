@@ -38,7 +38,7 @@
 #ifndef LCP_CPP
 #define LCP_CPP
 
-#include "LCP.h"
+#include "lib/suffixarray/LCP.h"
 
 // Threshold for compacting LCP[]
 const Real THRESHOLD = 0.3;

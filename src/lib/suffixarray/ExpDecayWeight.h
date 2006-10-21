@@ -38,9 +38,9 @@
 #ifndef EXPDECAYWEIGHT_H
 #define EXPDECAYWEIGHT_H
 
-#include "DataType.h"
-#include "ErrorCode.h"
-#include "I_WeightFactory.h"
+#include "lib/suffixarray/DataType.h"
+#include "lib/suffixarray/ErrorCode.h"
+#include "lib/suffixarray/I_WeightFactory.h"
 #include <iostream>
 
 class ExpDecayWeight : public I_WeightFactory

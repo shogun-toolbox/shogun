@@ -38,7 +38,7 @@
 #ifndef CHILDTABLE_CPP
 #define CHILDTABLE_CPP
 
-#include "ChildTable.h"
+#include "lib/suffixarray/ChildTable.h"
 #include <cassert>
 
 /**

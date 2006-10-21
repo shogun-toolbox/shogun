@@ -39,9 +39,10 @@
 #ifndef ESA_CPP
 #define ESA_CPP
 
-#include "ESA.h"
-#include "W_msufsort.h"
-#include "W_kasai_lcp.h"
+#include "lib/suffixarray/ESA.h"
+#include "lib/suffixarray/W_msufsort.h"
+#include "lib/suffixarray/W_kasai_lcp.h"
+
 #include <vector>
 #include <stack>
 #include <queue>

@@ -39,9 +39,9 @@
 #ifndef CHILDTABLE_H
 #define CHILDTABLE_H
 
-#include "DataType.h"
-#include "ErrorCode.h"
-#include "LCP.h"
+#include "lib/suffixarray/DataType.h"
+#include "lib/suffixarray/ErrorCode.h"
+#include "lib/suffixarray/LCP.h"
 #include <vector>
 #include <iostream>
 

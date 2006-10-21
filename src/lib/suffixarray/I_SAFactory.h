@@ -40,8 +40,8 @@
 #ifndef I_SAFACTORY_H
 #define I_SAFACTORY_H
 
-#include "DataType.h"
-#include "ErrorCode.h"
+#include "lib/suffixarray/DataType.h"
+#include "lib/suffixarray/ErrorCode.h"
 
 
 class I_SAFactory

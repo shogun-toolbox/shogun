@@ -38,7 +38,7 @@
 #ifndef BOUNDEDRANGEWEIGHT_CPP
 #define BOUNDEDRANGEWEIGHT_CPP
 
-#include "BoundedRangeWeight.h"
+#include "lib/suffixarray/BoundedRangeWeight.h"
 #include <cassert>
 
 

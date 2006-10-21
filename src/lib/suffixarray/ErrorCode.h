@@ -39,7 +39,7 @@
 #ifndef _ERRORCODE_H_
 #define _ERRORCODE_H_
 
-#include "DataType.h"
+#include "lib/suffixarray/DataType.h"
 //#define DEBUG
 
 // Levels of output info dumping

@@ -4,7 +4,7 @@
 
 %include "features/StringFeatures.h" 
 
-%template(StringRealFeatures) CStringFeatures<DREAL>;
 %template(StringCharFeatures) CStringFeatures<CHAR>;
-%template(StringUlongFeatures) CStringFeatures<ULONG>;
+%template(StringByteFeatures) CStringFeatures<BYTE>;
 %template(StringWordFeatures) CStringFeatures<WORD>;
+%template(StringUlongFeatures) CStringFeatures<ULONG>;

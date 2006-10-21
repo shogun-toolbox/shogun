@@ -39,9 +39,9 @@
 #ifndef I_LCPFACTORY_H
 #define I_LCPFACTORY_H
 
-#include "DataType.h"
-#include "ErrorCode.h"
-#include "LCP.h"
+#include "lib/suffixarray/DataType.h"
+#include "lib/suffixarray/ErrorCode.h"
+#include "lib/suffixarray/LCP.h"
 
 class I_LCPFactory
 {

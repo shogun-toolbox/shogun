@@ -24,7 +24,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include "MSufSort.h"
+#include "lib/suffixarray/MSufSort.h"
 #include <stdio.h>
 #include <time.h>
 #include <string.h>

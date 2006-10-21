@@ -40,9 +40,9 @@
 #ifndef W_MSUFSORT_H
 #define W_MSUFSORT_H
 
-#include "DataType.h"
-#include "I_SAFactory.h"
-#include "MSufSort.h"
+#include "lib/suffixarray/DataType.h"
+#include "lib/suffixarray/I_SAFactory.h"
+#include "lib/suffixarray/MSufSort.h"
 
 
 class W_msufsort : public I_SAFactory

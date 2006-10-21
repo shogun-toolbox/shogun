@@ -39,10 +39,10 @@
 #ifndef W_KASAI_LCP_H
 #define W_KASAI_LCP_H
 
-#include "DataType.h"
-#include "ErrorCode.h"
-#include "I_LCPFactory.h"
-#include "LCP.h"
+#include "lib/suffixarray/DataType.h"
+#include "lib/suffixarray/ErrorCode.h"
+#include "lib/suffixarray/I_LCPFactory.h"
+#include "lib/suffixarray/LCP.h"
 
 /**
  * Kasai et al's LCP array computation algorithm is

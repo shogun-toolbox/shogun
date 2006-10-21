@@ -39,8 +39,9 @@
 #ifndef LCP_H
 #define LCP_H
 
-#include "DataType.h"
-#include "ErrorCode.h"
+#include "lib/suffixarray/DataType.h"
+#include "lib/suffixarray/ErrorCode.h"
+
 #include <iostream>
 #include <vector>
 #include <algorithm>

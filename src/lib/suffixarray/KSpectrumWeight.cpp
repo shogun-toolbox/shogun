@@ -39,7 +39,7 @@
 #ifndef KSPECTRUMWEIGHT_CPP
 #define KSPECTRUMWEIGHT_CPP
 
-#include "KSpectrumWeight.h"
+#include "lib/suffixarray/KSpectrumWeight.h"
 #include <cassert>
 
 

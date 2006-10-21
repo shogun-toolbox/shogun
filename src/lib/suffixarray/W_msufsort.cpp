@@ -40,7 +40,8 @@
 #ifndef W_MSUFSORT_CPP
 #define W_MSUFSORT_CPP
 
-#include "W_msufsort.h"
+#include "lib/suffixarray/W_msufsort.h"
+
 #include <iostream>
 #include <cstring>
 #include <cassert>

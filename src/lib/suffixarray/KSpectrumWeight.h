@@ -39,9 +39,9 @@
 #ifndef KSPECTRUMWEIGHT_H
 #define KSPECTRUMWEIGHT_H
 
-#include "DataType.h"
-#include "ErrorCode.h"
-#include "I_WeightFactory.h"
+#include "lib/suffixarray/DataType.h"
+#include "lib/suffixarray/ErrorCode.h"
+#include "lib/suffixarray/I_WeightFactory.h"
 
 
 //' K-spectrum weight class

@@ -38,7 +38,7 @@
 #ifndef CONSTANTWEIGHT_CPP
 #define CONSTANTWEIGHT_CPP
 
-#include "ConstantWeight.h"
+#include "lib/suffixarray/ConstantWeight.h"
 #include <cassert>
 
 /**

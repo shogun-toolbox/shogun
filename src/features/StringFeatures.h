@@ -37,7 +37,7 @@ template <class ST> class CStringFeatures: public CFeatures
 	public:
 	CStringFeatures(CAlphabet* alpha) : CFeatures(0), num_vectors(0), features(NULL), max_string_length(0), order(0), symbol_mask_table(NULL)
 	{
-		alphabet=alpha;
+		alphabet=new CAlphabet(alpha);
 		ASSERT(alpha);
 		num_symbols=alphabet->get_num_symbols();
 		original_num_symbols=num_symbols;
@@ -157,7 +157,7 @@ template <class ST> class CStringFeatures: public CFeatures
 	virtual inline INT get_num_vectors() { return num_vectors; }
 
 	inline LONGREAL get_num_symbols() { return num_symbols; }
-	inline LONGREAL get_max_num_symbols() { return (1<<(sizeof(ST)*8)); }
+	inline LONGREAL get_max_num_symbols() { return CMath::powl(2,sizeof(ST)*8); }
 	
 	// these functions are necessary to find out about a former conversion process
 	
@@ -230,6 +230,14 @@ template <class ST> class CStringFeatures: public CFeatures
 	}
 
 	void set_features(T_STRING<ST>* features, INT num_vectors, INT max_string_length)
+	{
+		cleanup();
+		this->features=features;
+		this->num_vectors=num_vectors;
+		this->max_string_length=max_string_length;
+	}
+
+	void copy_features(T_STRING<ST>* features, INT num_vectors, INT max_string_length)
 	{
 		cleanup();
 		this->features=features;

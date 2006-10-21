@@ -38,8 +38,8 @@
 #ifndef I_WEIGHTFACTORY_H
 #define I_WEIGHTFACTORY_H
 
-#include "DataType.h"
-#include "ErrorCode.h"
+#include "lib/suffixarray/DataType.h"
+#include "lib/suffixarray/ErrorCode.h"
 
 
 /// Weight Factory interface for string kernel

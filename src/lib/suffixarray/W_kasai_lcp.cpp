@@ -39,7 +39,7 @@
 #ifndef W_KASAI_LCP_CPP
 #define W_KASAI_LCP_CPP
 
-#include "W_kasai_lcp.h"
+#include "lib/suffixarray/W_kasai_lcp.h"
 #include <vector>
 
 /**

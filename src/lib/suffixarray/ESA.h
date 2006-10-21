@@ -39,12 +39,12 @@
 #ifndef ESA_H
 #define ESA_H
 
-#include "DataType.h"
-#include "ErrorCode.h"
-#include "LCP.h"
-#include "ChildTable.h"
-#include "I_LCPFactory.h"
-#include "I_SAFactory.h"
+#include "lib/suffixarray/DataType.h"
+#include "lib/suffixarray/ErrorCode.h"
+#include "lib/suffixarray/LCP.h"
+#include "lib/suffixarray/ChildTable.h"
+#include "lib/suffixarray/I_LCPFactory.h"
+#include "lib/suffixarray/I_SAFactory.h"
 #include <vector>
 #include <algorithm>
 

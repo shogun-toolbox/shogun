@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2006 Soeren Sonnenburg
  * Written (W) 1999-2006 Gunnar Raetsch
+ * Written (W) 2006 Alexander Zien
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
