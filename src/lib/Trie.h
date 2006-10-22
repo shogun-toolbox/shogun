@@ -362,7 +362,7 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT seq_pos,
 	if (degree_times_position_weights)
     { // weights is a vector (degree x length)
 		weights_column=&weights[weight_pos*degree] ;
-		/*if (!position_mask)
+	    /*if (!position_mask)
 		  {		
 		  position_mask = new bool[len] ;
 		  for (INT i=0; i<len; i++)
