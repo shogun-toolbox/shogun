@@ -1219,44 +1219,44 @@ DREAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, DREAL* res
     ASSERT(num_vec>0);
     INT num_feat=((CCharFeatures*) get_rhs())->get_num_features();
     ASSERT(num_feat>0);
-
+	
     if (!result)
     {
-	result= new DREAL[num_vec];
-	ASSERT(result);
-	memset(result, 0, sizeof(DREAL)*num_vec);
+		result= new DREAL[num_vec];
+		ASSERT(result);
+		memset(result, 0, sizeof(DREAL)*num_vec);
     }
-
+	
     INT* vec= new INT[num_feat];
-
+	
     EOptimizationType opt_type_backup=get_optimization_type();
     set_optimization_type(FASTBUTMEMHUNGRY);
-
+	
     for (INT j=0; j<num_feat; j++)
     {
-	init_optimization(num_suppvec, IDX, alphas, j);
-
-	for (INT i=0; i<num_vec; i++)
-	{
-	    INT len=0;
-	    bool freevec;
-	    CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(i, len, freevec);
-	    for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+degree+max_shift); k++)
-		vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[k]);
-
-	    if (use_normalization)
-		result[i] += factor*compute_by_tree_helper(vec, len, j, j, j)/sqrtdiag_rhs[i];
-	    else
-		result[i] += factor*compute_by_tree_helper(vec, len, j, j, j);
-
-	    ((CCharFeatures*) rhs)->free_feature_vector(char_vec, i, freevec);
-	}
-	CIO::progress(j,0,num_feat);
+		init_optimization(num_suppvec, IDX, alphas, j);
+		
+		for (INT i=0; i<num_vec; i++)
+		{
+			INT len=0;
+			bool freevec;
+			CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(i, len, freevec);
+			for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+degree+max_shift); k++)
+				vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[k]);
+			
+			if (use_normalization)
+				result[i] += factor*compute_by_tree_helper(vec, len, j, j, j)/sqrtdiag_rhs[i];
+			else
+				result[i] += factor*compute_by_tree_helper(vec, len, j, j, j);
+			
+			((CCharFeatures*) rhs)->free_feature_vector(char_vec, i, freevec);
+		}
+		CIO::progress(j,0,num_feat);
     }
     set_optimization_type(opt_type_backup);
-
+	
     delete[] vec;
-
+	
     return result;
 }
 

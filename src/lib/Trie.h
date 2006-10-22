@@ -12,13 +12,14 @@
 #ifndef _TRIE_H___
 #define _TRIE_H___
 
+#include <string.h>
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
 #define NO_CHILD ((INT)-1) 
 #define WEIGHTS_IN_TRIE 
-#define TRIE_CHECK_EVERYTHING
+//#define TRIE_CHECK_EVERYTHING
 
 #ifdef TRIE_CHECK_EVERYTHING
 #define TRIE_ASSERT_EVERYTHING(x) ASSERT(x)
@@ -26,8 +27,10 @@
 #define TRIE_ASSERT_EVERYTHING(x) 
 #endif
 
-#define TRIE_ASSERT(x) ASSERT(x)
-//#define TRIE_ASSERT(x) 
+//#define TRIE_ASSERT(x) ASSERT(x)
+#define TRIE_ASSERT(x) 
+
+#define TRIE_TERMINAL_CHARACTER  7
 
 class CTrie
 {
@@ -131,13 +134,9 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 	// don't use the weights
 	max_depth=degree ;
 #endif
-	//max_depth=degree ;
-	//ASSERT(seq_offset==0) ;
-	
-	//fprintf(stderr, "max_depth=%i, i=%i, seq_offset=%i, length=%i\n", max_depth, i, seq_offset, length) ;
+
 	for (INT j=0; (j<max_depth) && (i+j+seq_offset<length); j++)
     {
-		//fprintf(stderr, "j=%i\n", j) ;
 		TRIE_ASSERT((vec[i+j+seq_offset]>=0) && (vec[i+j+seq_offset]<4)) ;
 		if ((j<degree-1) && (TreeMem[tree].children[vec[i+j+seq_offset]]!=NO_CHILD))
 		{
@@ -159,9 +158,10 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 				for (int k=0; (j+k<max_depth) && (i+j+seq_offset+k<length); k++)
 				{
 					TRIE_ASSERT((vec[i+j+seq_offset+k]>=0) && (vec[i+j+seq_offset+k]<4)) ;
-					if (TreeMem[node].seq[k]>=4)
-						fprintf(stderr, "\ni=%i j=%i seq[%i]=%i\n", i, j, k, TreeMem[node].seq[k]) ;
-					TRIE_ASSERT(TreeMem[node].seq[k]<4) ;
+					// ###
+					if ((TreeMem[node].seq[k]>=4) && (TreeMem[node].seq[k]!=TRIE_TERMINAL_CHARACTER))
+						fprintf(stderr, "+++i=%i j=%i seq[%i]=%i\n", i, j, k, TreeMem[node].seq[k]) ;
+					TRIE_ASSERT((TreeMem[node].seq[k]<4) || (TreeMem[node].seq[k]==TRIE_TERMINAL_CHARACTER)) ;
 					TRIE_ASSERT(k<16) ;
 					if (TreeMem[node].seq[k]!=vec[i+j+seq_offset+k])
 					{
@@ -180,7 +180,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 					// 2. add a branch with old string (old node) and the new string (new node)
 				{
 					// replace old node
-					INT tmp = get_node() ;
+/*					INT tmp = get_node() ;
 					TreeMem[tree].children[vec[i+j+seq_offset]]=tmp ;
 					INT last_node = tmp ;
 #ifdef WEIGHTS_IN_TRIE
@@ -189,10 +189,12 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 					TreeMem[last_node].weight=(TreeMem[node].weight+alpha) ;
 #endif
 					TRIE_ASSERT(vec[i+j+seq_offset]==TreeMem[node].seq[0]) ;
-					
+*/
+					INT last_node=tree ;
+
 					// create new nodes until mismatch
 					INT k ;
-					for (k=1; k<mismatch_pos; k++)
+					for (k=0; k<mismatch_pos; k++)
 					{
 						TRIE_ASSERT((vec[i+j+seq_offset+k]>=0) && (vec[i+j+seq_offset+k]<4)) ;
 						TRIE_ASSERT(vec[i+j+seq_offset+k]==TreeMem[node].seq[k]) ;
@@ -207,7 +209,9 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 #endif
 						TRIE_ASSERT(j+k!=degree-1) ;
 					}
-					TRIE_ASSERT(TreeMem[node].seq[mismatch_pos]<4);
+					if ((TreeMem[node].seq[mismatch_pos]>=4) && (TreeMem[node].seq[mismatch_pos]!=TRIE_TERMINAL_CHARACTER))
+						fprintf(stderr, "**i=%i j=%i seq[%i]=%i\n", i, j, k, TreeMem[node].seq[mismatch_pos]) ;
+					ASSERT((TreeMem[node].seq[mismatch_pos]<4) || (TreeMem[node].seq[mismatch_pos]==TRIE_TERMINAL_CHARACTER)) ;
 					TRIE_ASSERT(vec[i+j+seq_offset+mismatch_pos]!=TreeMem[node].seq[mismatch_pos]) ;
 					
 					if (j+k==degree-1)
@@ -215,13 +219,15 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 						for (INT q=0; q<4; q++)
 							TreeMem[last_node].child_weights[q]=0.0 ;
 #ifdef WEIGHTS_IN_TRIE
-						TreeMem[last_node].child_weights[TreeMem[node].seq[mismatch_pos]]=TreeMem[node].weight*weights[degree-1] ;
+						if (TreeMem[node].seq[mismatch_pos]<4) // i.e. !=TRIE_TERMINAL_CHARACTER
+							TreeMem[last_node].child_weights[TreeMem[node].seq[mismatch_pos]]=TreeMem[node].weight*weights[degree-1] ;
 						TreeMem[last_node].child_weights[vec[i+j+seq_offset+k]] = alpha*weights[degree-1] ;
 #else
-						TreeMem[last_node].child_weights[TreeMem[node].seq[mismatch_pos]]=TreeMem[node].weight ;
+						if (TreeMem[node].seq[mismatch_pos]<4) // i.e. !=TRIE_TERMINAL_CHARACTER
+							TreeMem[last_node].child_weights[TreeMem[node].seq[mismatch_pos]]=TreeMem[node].weight ;
 						TreeMem[last_node].child_weights[vec[i+j+seq_offset+k]] = alpha ;
 #endif
-
+						
 #ifdef TRIE_CHECK_EVERYTHING
 						TreeMem[last_node].has_floats=true ;
 #endif
@@ -229,25 +235,23 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 					else
 					{
 						// the branch for the existing string
-						TRIE_ASSERT(TreeMem[node].seq[mismatch_pos]<4) ;
-						TreeMem[last_node].children[TreeMem[node].seq[mismatch_pos]] = -node ;
+						if (TreeMem[node].seq[mismatch_pos]<4) // i.e. !=TRIE_TERMINAL_CHARACTER
+						{
+							TreeMem[last_node].children[TreeMem[node].seq[mismatch_pos]] = -node ;
+
+							// move string by mismatch_pos positions
+							for (INT q=0; q<16; q++)
+							{
+								if ((j+q+mismatch_pos<degree) && (i+j+seq_offset+q+mismatch_pos<length))
+									TreeMem[node].seq[q] = TreeMem[node].seq[q+mismatch_pos] ;
+								else
+									TreeMem[node].seq[q] = TRIE_TERMINAL_CHARACTER ;
+							}
 #ifdef TRIE_CHECK_EVERYTHING
-						for (INT q=0; q<16; q++)
-						{
-							TRIE_ASSERT(q<16);
-							if ((j+q+mismatch_pos<degree) && (i+j+seq_offset+q+mismatch_pos<length))
-								TreeMem[node].seq[q] = TreeMem[node].seq[q+mismatch_pos] ;
-							else
-								TreeMem[node].seq[q]=5 ;
-						}
-						TreeMem[node].has_seq=true ;
-#else
-						for (INT q=0; (j+q+mismatch_pos<max_depth) && (i+j+seq_offset+q+mismatch_pos<length); q++)
-						{
-							TRIE_ASSERT(q<16);
-							TreeMem[node].seq[q] = TreeMem[node].seq[q+mismatch_pos] ;
-						}
+							TreeMem[node].has_seq=true ;
 #endif
+						}
+						
 						// the new branch
 						TRIE_ASSERT((vec[i+j+seq_offset+mismatch_pos]>=0) && (vec[i+j+seq_offset+mismatch_pos]<4)) ;
 						{
@@ -259,10 +263,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 #ifdef TRIE_CHECK_EVERYTHING
 						TreeMem[last_node].has_seq = true ;
 #endif
-#ifdef TRIE_CHECK_EVERYTHING
-						for (INT q=0; q<16; q++)
-							TreeMem[last_node].seq[q] = 6;
-#endif
+						memset(TreeMem[last_node].seq, TRIE_TERMINAL_CHARACTER, 16) ;
 						for (INT q=0; (j+q+mismatch_pos<degree) && (i+j+seq_offset+q+mismatch_pos<length); q++)
 							TreeMem[last_node].seq[q] = vec[i+j+seq_offset+mismatch_pos+q] ;
 					}
@@ -295,7 +296,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 		}
 		else
 		{
-			bool use_seq = (j>degree-16) ;
+			bool use_seq = (j>degree-15) ;
 			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
 			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
 
@@ -313,10 +314,8 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 			if (use_seq)
 			{
 				TreeMem[tree].weight = alpha ;
-#ifdef TRIE_CHECK_EVERYTHING
-				for (INT q=0; q<16; q++)
-					TreeMem[tree].seq[q]=7 ;
-#endif
+				// important to have the terminal characters (see ###)
+				memset(TreeMem[tree].seq, TRIE_TERMINAL_CHARACTER, 16) ;
 				for (INT q=0; (j+q<degree) && (i+j+seq_offset+q<length); q++)
 				{
 					TRIE_ASSERT(q<16) ;
@@ -349,75 +348,11 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
     }
 }
 
-
-/*inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT pos, INT pos2, INT pos3, DREAL* weights)
-{
-  DREAL sum=0 ;
-  
-  INT tree = trees[pos] ;
-  
-  for (INT j=0; pos+j < len; j++)
-  {
-	  TRIE_ASSERT((vec[pos+j]<4) && (vec[pos+j]>=0)) ;
-
-	  if ((j<degree-1) && (TreeMem[tree].children[vec[pos+j]]!=NO_CHILD))
-	  {
-		  TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
-		  
-		  if (TreeMem[tree].children[vec[pos+j]]<0)
-		  {
-			  tree = - TreeMem[tree].children[vec[pos+j]];
-			  TRIE_ASSERT(tree>=0) ;
-			  TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) ;
-			  DREAL this_weight=0.0 ;
-			  for (INT k=0; (j+k<degree) && (pos+j+k<length); k++)
-			  {
-				  TRIE_ASSERT((vec[pos+j+k]<4) && (vec[pos+j+k]>=0)) ;
-				  if (TreeMem[tree].seq[k]!=vec[pos+j+k])
-					  break ;
-				  this_weight += weights[j+k] ;
-			  }
-			  sum += TreeMem[tree].weight * this_weight ;
-			  break ;
-		  }
-		  else
-		  {
-			  tree = TreeMem[tree].children[vec[pos+j]];
-			  
-			  TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
-			  sum += TreeMem[tree].weight;
-		  }
-	  }
-	  else
-	  {
-		  TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
-		  if (j==degree-1)
-		  {
-			  TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) ;
-			  sum += TreeMem[tree].child_weights[vec[pos+j]];
-		  }
-		  else
-			  TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
-		  
-		  break;
-	  }
-  } 
-  
-  if (position_weights!=NULL)
-	  return sum*position_weights[pos] ;
-  else
-	  return sum ;
-}*/
-
-
 inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT seq_pos, 
 										   INT tree_pos,
 										   INT weight_pos, DREAL* weights, 
 										   bool degree_times_position_weights)
 {
-	ASSERT(tree_pos==seq_pos) ;
-	ASSERT(tree_pos==weight_pos) ;
-	
 	INT tree = trees[tree_pos] ;
 	
 	if ((position_weights!=NULL) && (position_weights[weight_pos]==0))
