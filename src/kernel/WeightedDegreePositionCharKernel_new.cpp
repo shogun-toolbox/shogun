@@ -317,7 +317,6 @@ bool CWeightedDegreePositionCharKernel_new::init_optimization(INT count, INT * I
 			if ( (i % (count/10+1)) == 0)
 				CIO::progress(i,0,count);
 			add_example_to_tree(IDX[i], alphas[i]);
-//			CIO::message(M_DEBUG, "number of used trie nodes: %i\n", tries.get_num_used_nodes()) ;
 		}
 		else
 		{
@@ -913,9 +912,6 @@ DREAL* CWeightedDegreePositionCharKernel_new::compute_batch(INT& num_vec, DREAL*
 
     INT* vec= new INT[num_feat];
 	
-    EOptimizationType opt_type_backup=get_optimization_type();
-    set_optimization_type(FASTBUTMEMHUNGRY);
-    
     for (INT j=0; j<num_feat; j++)
 	{
 		init_optimization(num_suppvec, IDX, alphas, j);
@@ -928,16 +924,28 @@ DREAL* CWeightedDegreePositionCharKernel_new::compute_batch(INT& num_vec, DREAL*
 			for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+degree+max_shift); k++)
 				vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[k]);
 			
+			DREAL norm_fac = 1.0 ;
 			if (use_normalization)
-				result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/sqrtdiag_rhs[i];
-			else
-				result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0));
+				norm_fac=1.0/sqrtdiag_rhs[i] ;
+			
+			result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))*norm_fac ;
+
+			if (opt_type==SLOWBUTMEMEFFICIENT)
+			{
+				for (INT q=CMath::max(0,j-max_shift); q<CMath::min(len,j+max_shift+1); q++)
+				{
+					INT s=j-q ;
+					if ((s>=1) && (s<=shift[q]) && (q+s<len))
+						result[i] += tries.compute_by_tree_helper(vec, len, q, q+s, q, weights, (length!=0))*norm_fac/(2.0*s) ;
+				}
+				for (INT s=1; (s<=shift[j]) && (j+s<len); s++)
+					result[i] += tries.compute_by_tree_helper(vec, len, j+s, j, j, weights, (length!=0))*norm_fac/(2.0*s) ;
+			}
 			
 			((CCharFeatures*) rhs)->free_feature_vector(char_vec, i, freevec);
 		}
 		CIO::progress(j,0,num_feat);
 	}
-    set_optimization_type(opt_type_backup);
     
     delete[] vec;
 	
