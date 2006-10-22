@@ -12,9 +12,9 @@ C=1;
 %Weighted Degree kernel parameters
 max_order=8;
 order=20;
-shift=15;
+shift=16 ;
 max_mismatch=0;
-cache=10;
+cache=100;
 single_degree=-1;
 x=shift*ones(1,len);
 %x(:)=0;
@@ -45,14 +45,61 @@ input('key to continue')
 %train svm
 sg('send_command', 'use_linadd 1' );
 sg('send_command', 'use_batch_computation 1');
+sg('send_command', 'loglevel ALL');
 sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS2 CHAR 10 %i %i %i %s', order, max_mismatch, len, shifts ) );
+sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS2_new CHAR 10 %i %i %i %s', order, max_mismatch, len, shifts ) );
 %sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
 sg('send_command', 'init_kernel TRAIN');
 sg('send_command', 'new_svm LIGHT');
 sg('send_command', sprintf('c %f',C));
 sg('send_command', 'svm_train');
+
+sg('set_features', 'TEST', testdat,'DNA');
+sg('set_labels', 'TEST', testlab);
+sg('send_command', 'init_kernel TEST');
+
+sg('send_command', 'use_batch_computation 0');
+sg('send_command', 'delete_kernel_optimization');
+out1=sg('svm_classify');
+fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
+
+
+sg('send_command', 'set_kernel_optimization_type SLOWBUTMEMEFFICIENT') ;
+sg('send_command', 'use_batch_computation 1');
+sg('send_command', 'delete_kernel_optimization');
+out2=sg('svm_classify');
+fprintf('accuracy: %f                                                                                         \n', mean(sign(out2)==testlab))
+
+sg('send_command', 'set_kernel_optimization_type FASTBUTMEMHUNGRY') ;
+sg('send_command', 'use_batch_computation 1');
+sg('send_command', 'delete_kernel_optimization');
+out3=sg('svm_classify');
+fprintf('accuracy: %f                                                                                         \n', mean(sign(out3)==testlab))
+
+
+sg('send_command', 'set_kernel_optimization_type SLOWBUTMEMEFFICIENT') ;
+sg('send_command', 'use_batch_computation 0');
+tic;sg('send_command', 'init_kernel_optimization');toc;
+%sg('send_command', 'delete_kernel_optimization');
+tic;out4=sg('svm_classify');toc;
+fprintf('accuracy: %f                                                                                         \n', mean(sign(out4)==testlab))
+
+sg('send_command', 'set_kernel_optimization_type FASTBUTMEMHUNGRY') ;
+sg('send_command', 'use_batch_computation 0');
+tic;sg('send_command', 'init_kernel_optimization');toc;
+%sg('send_command', 'delete_kernel_optimization');
+tic;out5=sg('svm_classify');toc;
+fprintf('accuracy: %f                                                                                         \n', mean(sign(out5)==testlab))
+
+
+max(abs(out1-out2))
+max(abs(out1-out3))
+max(abs(out1-out4))
+max(abs(out1-out5))
+%max(abs(out2-out3))
+%xmax(abs(out3-out4))
+return
 
 %evaluate svm on train data
 sg('set_features', 'TEST', traindat,'DNA');
