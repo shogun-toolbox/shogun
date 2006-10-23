@@ -64,6 +64,7 @@ CWeightedDegreeCharKernel::~CWeightedDegreeCharKernel()
 
 void CWeightedDegreeCharKernel::remove_lhs() 
 { 
+	CIO::message(M_DEBUG, "deleting CWeightedDegreeCharKernel optimization\n");
 	delete_optimization();
 
 #ifdef SVMLIGHT
@@ -205,6 +206,7 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 void CWeightedDegreeCharKernel::cleanup()
 {
+	CIO::message(M_DEBUG, "deleting CWeightedDegreeCharKernel optimization\n");
 	delete_optimization();
 
 	delete[] matching_weights;
@@ -240,9 +242,13 @@ bool CWeightedDegreeCharKernel::save_init(FILE* dest)
 
 bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* alphas, INT tree_num)
 {
+	if (tree_num<0)
+		CIO::message(M_DEBUG, "deleting CWeightedDegreeCharKernel optimization\n");
 	delete_optimization();
-	
-	CIO::message(M_DEBUG, "initializing CWeightedDegreeCharKernel optimization\n") ;
+
+	if (tree_num<0)
+		CIO::message(M_DEBUG, "initializing CWeightedDegreeCharKernel optimization\n") ;
+
 	int i=0;
 	for (i=0; i<count; i++)
 	{
@@ -256,7 +262,7 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* al
 			else
 				add_example_to_tree_mismatch(IDX[i], alphas[i]) ;
 
-			CIO::message(M_DEBUG, "number of used trie nodes: %i\n", tries.get_num_used_nodes()) ;
+			//CIO::message(M_DEBUG, "number of used trie nodes: %i\n", tries.get_num_used_nodes()) ;
 		}
 		else
 		{
@@ -276,8 +282,6 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* al
 
 bool CWeightedDegreeCharKernel::delete_optimization() 
 { 
-	CIO::message(M_DEBUG, "deleting CWeightedDegreeCharKernel optimization\n");
-
 	if (get_is_initialized())
 	{
 		tries.delete_trees(); 

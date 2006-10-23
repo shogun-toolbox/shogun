@@ -16,7 +16,7 @@
 #include "kernel/SimpleKernel.h"
 
 #ifdef USE_TREEMEM
-#define NO_CHILD ((INT)-1) 
+#define NO_CHILD ((INT)-2147483648)
 #else
 #define NO_CHILD NULL
 #endif

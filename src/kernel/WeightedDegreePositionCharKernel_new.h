@@ -63,21 +63,31 @@ class CWeightedDegreePositionCharKernel_new: public CSimpleKernel<CHAR>
   virtual bool init_optimization(INT count, INT *IDX, DREAL * alphas, INT tree_num, INT upto_tree=-1);
   virtual bool delete_optimization() ;
   inline virtual DREAL compute_optimized(INT idx) 
-  { 
-    ASSERT(get_is_initialized());
-    return compute_by_tree(idx); 
-  }
+	  { 
+		  ASSERT(get_is_initialized());
+		  return compute_by_tree(idx); 
+	  }
   
   virtual DREAL* compute_batch(INT& num_vec, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
   
   // subkernel functionality
   inline virtual void clear_normal()
-  {
-    if (get_is_initialized())
-      {
-	tries.delete_trees(); 
-	set_is_initialized(false);
-      }
+	  {
+		  if ((opt_type==FASTBUTMEMHUNGRY) && (tries.get_use_compact_terminal_nodes())) 
+		  {
+			  tries.set_use_compact_terminal_nodes(false) ;
+			  CIO::message(M_DEBUG, "disabling compact trie nodes with FASTBUTMEMHUNGRY\n") ;
+		  }
+		  if (get_is_initialized())
+		  {
+			  if (opt_type==SLOWBUTMEMEFFICIENT)
+				  tries.delete_trees(true); 
+			  else if (opt_type==FASTBUTMEMHUNGRY)
+				  tries.delete_trees(false);  // still buggy
+			  else
+				  CIO::message(M_ERROR, "unknown optimization type\n");
+			  set_is_initialized(false);
+		  }
   }
   
   inline virtual void add_to_normal(INT idx, DREAL weight) 
@@ -98,14 +108,14 @@ class CWeightedDegreePositionCharKernel_new: public CSimpleKernel<CHAR>
   }
   
   inline void compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
-  { 
-    if (get_is_initialized())
-      {
-	compute_by_tree(idx, subkernel_contrib); 
-	return ;
-      }
-    CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel_new optimization not initialized\n") ;
-  }
+	  { 
+		  if (get_is_initialized())
+		  {
+			  compute_by_tree(idx, subkernel_contrib); 
+			  return ;
+		  }
+		  CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel_new optimization not initialized\n") ;
+	  }
   
   inline const DREAL* get_subkernel_weights(INT& num_weights)
   {

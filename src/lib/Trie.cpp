@@ -3,7 +3,8 @@
 #include "lib/Trie.h"
 #include "lib/Mathematics.h"
 
-CTrie::CTrie(INT d): degree(d), position_weights(NULL)
+CTrie::CTrie(INT d, INT p_use_compact_terminal_nodes)
+	: degree(d), position_weights(NULL), use_compact_terminal_nodes(p_use_compact_terminal_nodes)
 {
 	TreeMemPtrMax=1024*1024/sizeof(struct Trie) ;
 	TreeMemPtr=0 ;
@@ -15,7 +16,7 @@ CTrie::CTrie(INT d): degree(d), position_weights(NULL)
 } ;
 
 CTrie::CTrie(const CTrie & to_copy)
-	: degree(to_copy.degree), position_weights(NULL)
+	: degree(to_copy.degree), position_weights(NULL), use_compact_terminal_nodes(to_copy.use_compact_terminal_nodes)
 {
 	if (to_copy.position_weights!=NULL)
 	{
@@ -41,6 +42,8 @@ CTrie::CTrie(const CTrie & to_copy)
 const CTrie &CTrie::operator=(const CTrie & to_copy)
 {
 	degree=to_copy.degree ;
+	use_compact_terminal_nodes=to_copy.use_compact_terminal_nodes ;
+	
 	delete[] position_weights ;
 	position_weights=NULL ;
 	if (to_copy.position_weights!=NULL)
@@ -426,17 +429,22 @@ void CTrie::destroy()
 	}
 }
 
-void CTrie::create(INT len)
+void CTrie::create(INT len, INT p_use_compact_terminal_nodes)
 {
+	if (trees)
+		delete[] trees ;
+	
 	trees=new INT[len] ;		
 	TreeMemPtr=0 ;
 	for (INT i=0; i<len; i++)
 		trees[i]=get_node() ;
 	length = len ;
+
+	use_compact_terminal_nodes=p_use_compact_terminal_nodes ;
 }
 
 
-void CTrie::delete_trees()
+void CTrie::delete_trees(INT p_use_compact_terminal_nodes)
 {
 	if (trees==NULL)
 		return;
@@ -444,6 +452,8 @@ void CTrie::delete_trees()
 	TreeMemPtr=0 ;
 	for (INT i=0; i<length; i++)
 		trees[i]=get_node() ;
+
+	use_compact_terminal_nodes=p_use_compact_terminal_nodes ;
 } 
 
 DREAL CTrie::compute_abs_weights_tree(INT tree, INT depth) 

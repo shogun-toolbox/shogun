@@ -52,7 +52,7 @@ public:
 	};
 	
 public:
-	CTrie(INT d) ;
+	CTrie(INT d, INT p_use_compact_terminal_nodes=true) ;
 	CTrie(const CTrie & to_copy) ;
 	~CTrie() ;
 
@@ -63,8 +63,8 @@ public:
 	INT find_deepest_node(INT start_node, INT &deepest_node) const ;
 	void display_node(INT node) const ;
 	void destroy() ;
-	void create(INT len) ;
-	void delete_trees();
+	void create(INT len, INT p_use_compact_terminal_nodes=true) ;
+	void delete_trees(INT p_use_compact_terminal_nodes=true);
 	void add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights, bool degree_times_position_weights) ;
 	DREAL compute_abs_weights_tree(INT tree, INT depth) ;
 	DREAL *compute_abs_weights(int &len) ;
@@ -74,6 +74,15 @@ public:
 	void compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result) ;
 	void add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha, INT *vec, INT len_rem, INT degree_rec, INT mismatch_rec, INT max_mismatch, DREAL * weights) ;
 
+	bool get_use_compact_terminal_nodes()
+		{
+			return use_compact_terminal_nodes ;
+		}
+	void set_use_compact_terminal_nodes(bool p_use_compact_terminal_nodes)
+		{
+			use_compact_terminal_nodes=p_use_compact_terminal_nodes ;
+		}
+	
 	inline INT get_num_used_nodes()
 		{
 			return TreeMemPtr ;
@@ -117,7 +126,7 @@ protected:
 	struct Trie* TreeMem ;
 	INT TreeMemPtr ;
 	INT TreeMemPtrMax ;
-
+	bool use_compact_terminal_nodes ;
 } ;
 
 inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights, bool degree_times_position_weights)
@@ -179,15 +188,8 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 						break ;
 					}
 				}
-				if (0)//mismatch_pos==-1)
-					if (TreeMem[node].seq[k]!=TRIE_TERMINAL_CHARACTER)
-					{
-						mismatch_pos=k ;
-						if (mismatch_pos<0)
-							mismatch_pos=0 ;
-						fprintf(stderr, "setting mismatch_pos=%i seq_offset=%i\n", mismatch_pos, seq_offset) ;
-					}
-				
+				// what happens when the .seq sequence is longer than vec? should we branch???
+
 				if (mismatch_pos==-1)
 					// if so, then just increase the weight by alpha and stop
 					TreeMem[node].weight+=alpha ;
@@ -220,10 +222,9 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 					if ((TreeMem[node].seq[mismatch_pos]>=4) && (TreeMem[node].seq[mismatch_pos]!=TRIE_TERMINAL_CHARACTER))
 						fprintf(stderr, "**i=%i j=%i seq[%i]=%i\n", i, j, k, TreeMem[node].seq[mismatch_pos]) ;
 					ASSERT((TreeMem[node].seq[mismatch_pos]<4) || (TreeMem[node].seq[mismatch_pos]==TRIE_TERMINAL_CHARACTER)) ;
-					//if (i+j+seq_offset+mismatch_pos<length)
 					TRIE_ASSERT(vec[i+j+seq_offset+mismatch_pos]!=TreeMem[node].seq[mismatch_pos]) ;
 					
-					if (j+k==degree)
+					if (j+k==degree-1)
 					{
 						for (INT q=0; q<4; q++)
 							TreeMem[last_node].child_weights[q]=0.0 ;
@@ -262,22 +263,19 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 						}
 						
 						// the new branch
-						//if (i+j+seq_offset+mismatch_pos<length)
+						TRIE_ASSERT((vec[i+j+seq_offset+mismatch_pos]>=0) && (vec[i+j+seq_offset+mismatch_pos]<4)) ;
 						{
-							TRIE_ASSERT((vec[i+j+seq_offset+mismatch_pos]>=0) && (vec[i+j+seq_offset+mismatch_pos]<4)) ;
-							{
-								INT tmp = get_node() ;
-								TreeMem[last_node].children[vec[i+j+seq_offset+mismatch_pos]] = -tmp ;
-								last_node=tmp ;
-							}
-							TreeMem[last_node].weight = alpha ;
-#ifdef TRIE_CHECK_EVERYTHING
-							TreeMem[last_node].has_seq = true ;
-#endif
-							memset(TreeMem[last_node].seq, TRIE_TERMINAL_CHARACTER, 16) ;
-							for (INT q=0; (j+q+mismatch_pos<degree) && (i+j+seq_offset+q+mismatch_pos<length); q++)
-								TreeMem[last_node].seq[q] = vec[i+j+seq_offset+mismatch_pos+q] ;
+							INT tmp = get_node() ;
+							TreeMem[last_node].children[vec[i+j+seq_offset+mismatch_pos]] = -tmp ;
+							last_node=tmp ;
 						}
+						TreeMem[last_node].weight = alpha ;
+#ifdef TRIE_CHECK_EVERYTHING
+						TreeMem[last_node].has_seq = true ;
+#endif
+						memset(TreeMem[last_node].seq, TRIE_TERMINAL_CHARACTER, 16) ;
+						for (INT q=0; (j+q+mismatch_pos<degree) && (i+j+seq_offset+q+mismatch_pos<length); q++)
+							TreeMem[last_node].seq[q] = vec[i+j+seq_offset+mismatch_pos+q] ;
 					}
 				}
 				break ;
@@ -298,7 +296,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 		{
 			// special treatment of the last node
 			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
-			if (!TreeMem[tree].has_floats)
+			/*if (!TreeMem[tree].has_floats)
 			{
 				fprintf(stderr, "%i\n", TreeMem[tree].children[vec[i+j+seq_offset]]) ;
 				if (TreeMem[tree].children[vec[i+j+seq_offset]]>=0)
@@ -320,19 +318,19 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 				
 			}
 			else
-			{
+			{*/
 				TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) ;
 #ifdef WEIGHTS_IN_TRIE
 				TreeMem[tree].child_weights[vec[i+j+seq_offset]] += alpha*weights[j] ;
 #else
 				TreeMem[tree].child_weights[vec[i+j+seq_offset]] += alpha;
 #endif
-			}
+				//}
 			break ;
 		}
 		else
 		{
-			bool use_seq = (j>degree-15) ;
+			bool use_seq = use_compact_terminal_nodes && (j>degree-16) ;
 			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
 			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
 
