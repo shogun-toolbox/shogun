@@ -503,6 +503,7 @@ DREAL *CTrie::compute_abs_weights(int &len)
   return sum ;
 }
 
+/*
 void CTrie::compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result)
 {
   if (tree==NO_CHILD)
@@ -544,6 +545,7 @@ void CTrie::compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, INT d, 
 	  }
   }
 }
+*/
 
 void CTrie::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha,
 												   INT *vec, INT len_rem, 
@@ -633,3 +635,144 @@ void CTrie::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha
 		}
     }
 }
+
+
+void CTrie::compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result)
+{
+	if (i+j<num_feat)
+    {
+		DREAL decay=1.0; //no decay by default
+		//if (j>d)
+		//	decay=pow(0.5,j); //marginalize out lower order matches
+		
+		if (j<degree-1)
+		{
+			for (INT k=0; k<num_sym; k++)
+			{
+				if (TreeMem[tree].children[k]!=NO_CHILD)
+				{
+					INT child=TreeMem[tree].children[k];
+					//continue recursion if not yet at max_degree, else add to result
+					if (d<max_degree-1)
+						compute_scoring_helper(child, i, j+1, weight+decay*TreeMem[child].weight, d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
+					else
+						result[sym_offset*(i+j-max_degree+1)+num_sym*offs+k] += weight+decay*TreeMem[child].weight;
+					
+					////do recursion starting from this position
+					if (d==0)
+						compute_scoring_helper(child, i, j+1, 0.0, 0, max_degree, num_feat, num_sym, sym_offset, offs, result);
+				}
+			}
+		}
+		else if (j==degree-1)
+		{
+			for (INT k=0; k<num_sym; k++)
+			{
+				//continue recursion if not yet at max_degree, else add to result
+				if (d<max_degree-1 && i<num_feat-1)
+					compute_scoring_helper(trees[i+1], i+1, 0, weight+decay*TreeMem[tree].child_weights[k], d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
+				else
+					result[sym_offset*(i+j-max_degree+1)+num_sym*offs+k] += weight+decay*TreeMem[tree].child_weights[k];
+			}
+		}
+    }
+}
+
+void CTrie::traverse( INT tree, const INT p, struct TreeParseInfo info, const INT depth, INT* const x, const INT k )
+{
+    const INT num_sym = info.num_sym;
+    const INT y0 = info.y0;
+    const INT y1 = (k==0) ? 0 : y0 - ( (depth<k) ? 0 : info.nofsKmers[k-1] * x[depth-k] );
+    //const INT temp = info.substrs[depth]*num_sym - ( (depth<=k) ? 0 : info.nofsKmers[k] * x[depth-k-1] );
+    //if( !( info.y0 == temp ) ) {
+    //  printf( "\n temp=%d y0=%d k=%d depth=%d \n", temp, info.y0, k, depth );
+    //}
+    //ASSERT( info.y0 == temp );
+    INT sym;
+    ASSERT( depth < degree );
+    //ASSERT( 0 <= info.substrs[depth] && info.substrs[depth] < info.nofsKmers[k] );
+    if (depth<degree-1)
+    {
+		for( sym=0; sym<num_sym; ++sym ) {
+			const INT childNum = TreeMem[tree].children[ sym ];
+			if( childNum != NO_CHILD ) {
+				INT child = childNum ;
+				x[depth] = sym;
+				info.substrs[depth+1] = y0 + sym;
+				info.y0 = (k==0) ? 0 : (y1+sym)*num_sym;
+				//ASSERT( info.y0 == ( info.substrs[depth+1]*num_sym - ( (depth<k) ? 0 : info.nofsKmers[k] * x[depth-k] ) ) );
+				count( TreeMem[child].weight, depth, info, p, x, k );
+				traverse( child, p, info, depth+1, x, k );
+				x[depth] = -1;
+			}
+		}
+    }
+    else if( depth == degree-1 )
+    {
+        for( sym=0; sym<num_sym; ++sym ) {
+			const DREAL w = TreeMem[tree].child_weights[ sym ];
+			if( w != 0.0 ) {
+				x[depth] = sym;
+				info.substrs[depth+1] = y0 + sym;
+				info.y0 = (k==0) ? 0 : (y1+sym)*num_sym;
+				//ASSERT( info.y0 == ( info.substrs[depth+1]*num_sym - ( (depth<k) ? 0 : info.nofsKmers[k] * x[depth-k] ) ) );
+				count( w, depth, info, p, x, k );
+				x[depth] = -1;
+			}
+		}
+    }
+    //info.substrs[depth+1] = -1;
+    //info.y0 = temp;
+}
+
+void CTrie::count( const DREAL w, const INT depth, const struct TreeParseInfo info, const INT p, INT* x, const INT k )
+{
+    ASSERT( fabs(w) < 1e10 );
+    ASSERT( x[depth] >= 0 );
+    ASSERT( x[depth+1] < 0 );
+    if ( depth < k ) {
+		return;
+    }
+    //ASSERT( info.margFactors[ depth-k ] == pow( 0.25, depth-k ) );
+    const INT nofKmers = info.nofsKmers[k];
+    const DREAL margWeight =  w * info.margFactors[ depth-k ];
+    const INT m_a = depth - k + 1;
+    const INT m_b = info.num_feat - p;
+    const INT m = ( m_a < m_b ) ? m_a : m_b;
+    // all proper k-substrings
+    const INT offset0 = nofKmers * p;
+    register INT i;
+    register INT offset;
+    offset = offset0;
+    for( i = 0; i < m; ++i ) {
+        const INT y = info.substrs[i+k+1];
+		info.C_k[ y + offset ] += margWeight;
+		offset += nofKmers;
+    }
+    if( depth > k ) {
+		// k-prefix
+		const INT offsR = info.substrs[k+1] + offset0;
+		info.R_k[offsR] += margWeight;
+		// k-suffix
+		if( p+depth-k < info.num_feat ) {
+			const INT offsL = info.substrs[depth+1] + nofKmers * (p+depth-k);
+			info.L_k[offsL] += margWeight; 
+		}
+    }
+    //    # N.x = substring represented by N
+    //    # N.d = length of N.x
+    //    # N.s = starting position of N.x
+    //    # N.w = weight for feature represented by N
+    //    if( N.d >= k )
+    //      margContrib = w / 4^(N.d-k)
+    //      for i = 1 to (N.d-k+1)
+    //        y = N.x[i:(i+k-1)]  # overlapped k-mer
+    //        C_k[ N.s+i-1, y ] += margContrib
+    //      end;
+    //      if( N.d > k )
+    //        L_k[ N.s+N.d-k, N.x[N.d-k+(1:k)] ] += margContrib  # j-suffix of N.x
+    //        R_k[ N.s,       N.x[1:k]         ] += margContrib  # j-prefix of N.x
+    //      end;
+    //    end;
+}
+

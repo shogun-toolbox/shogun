@@ -986,160 +986,6 @@ DREAL* CWeightedDegreePositionCharKernel_new::compute_batch(INT& num_vec, DREAL*
     return result;
 }
 
-/*void CWeightedDegreePositionCharKernel_new::compute_scoring_helper(struct Trie* tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result)
-{
-  if (i+j<num_feat)
-    {
-      DREAL decay=1.0; //no decay by default
-      //if (j>d)
-      //	decay=pow(0.5,j); //marginalize out lower order matches
-      
-      if (j<degree-1)
-	{
-	  for (INT k=0; k<num_sym; k++)
-	    {
-	      if (tree->children[k]!=NO_CHILD)
-		{
-		  struct Trie* child=&TreeMem[tree->children[k]];
-		  //continue recursion if not yet at max_degree, else add to result
-		  if (d<max_degree-1)
-		    compute_scoring_helper(child, i, j+1, weight+decay*child->weight, d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
-		  else
-		    result[sym_offset*(i+j-max_degree+1)+num_sym*offs+k] += weight+decay*child->weight;
-		  
-		  ////do recursion starting from this position
-		  if (d==0)
-		    compute_scoring_helper(child, i, j+1, 0.0, 0, max_degree, num_feat, num_sym, sym_offset, offs, result);
-		}
-	    }
-	}
-      else if (j==degree-1)
-	{
-	  for (INT k=0; k<num_sym; k++)
-	    {
-	      //continue recursion if not yet at max_degree, else add to result
-	      if (d<max_degree-1 && i<num_feat-1)
-		compute_scoring_helper(trees[i+1], i+1, 0, weight+decay*tree->child_weights[k], d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
-	      else
-		result[sym_offset*(i+j-max_degree+1)+num_sym*offs+k] += weight+decay*tree->child_weights[k];
-	    }
-	}
-    }
-}
-
-CWeightedDegreePositionCharKernel_new::Trie* CWeightedDegreePositionCharKernel_new::get_tree_at_position(INT i)
-{
-    const INT num_feat=((CCharFeatures*) get_rhs())->get_num_features();
-    ASSERT(num_feat>0 && i<num_feat);
-    return trees[i];
-}
-
-
-void CWeightedDegreePositionCharKernel_new::count( const DREAL w, const INT depth, const struct TreeParseInfo info, const INT p, INT* x, const INT k )
-{
-    ASSERT( fabs(w) < 1e10 );
-    ASSERT( x[depth] >= 0 );
-    ASSERT( x[depth+1] < 0 );
-    if ( depth < k ) {
-	return;
-    }
-    //ASSERT( info.margFactors[ depth-k ] == pow( 0.25, depth-k ) );
-    const INT nofKmers = info.nofsKmers[k];
-    const DREAL margWeight =  w * info.margFactors[ depth-k ];
-    const INT m_a = depth - k + 1;
-    const INT m_b = info.num_feat - p;
-    const INT m = ( m_a < m_b ) ? m_a : m_b;
-    // all proper k-substrings
-    const INT offset0 = nofKmers * p;
-    register INT i;
-    register INT offset;
-    offset = offset0;
-    for( i = 0; i < m; ++i ) {
-        const INT y = info.substrs[i+k+1];
-	info.C_k[ y + offset ] += margWeight;
-	offset += nofKmers;
-    }
-    if( depth > k ) {
-	// k-prefix
-	const INT offsR = info.substrs[k+1] + offset0;
-	info.R_k[offsR] += margWeight;
-	// k-suffix
-	if( p+depth-k < info.num_feat ) {
-  	    const INT offsL = info.substrs[depth+1] + nofKmers * (p+depth-k);
-	    info.L_k[offsL] += margWeight; 
-	}
-    }
-    //    # N.x = substring represented by N
-    //    # N.d = length of N.x
-    //    # N.s = starting position of N.x
-    //    # N.w = weight for feature represented by N
-    //    if( N.d >= k )
-    //      margContrib = w / 4^(N.d-k)
-    //      for i = 1 to (N.d-k+1)
-    //        y = N.x[i:(i+k-1)]  # overlapped k-mer
-    //        C_k[ N.s+i-1, y ] += margContrib
-    //      end;
-    //      if( N.d > k )
-    //        L_k[ N.s+N.d-k, N.x[N.d-k+(1:k)] ] += margContrib  # j-suffix of N.x
-    //        R_k[ N.s,       N.x[1:k]         ] += margContrib  # j-prefix of N.x
-    //      end;
-    //    end;
-}
-
-
-void CWeightedDegreePositionCharKernel_new::traverse( const struct Trie* tree, const INT p, struct TreeParseInfo info, const INT depth, INT* const x, const INT k )
-{
-    const INT num_sym = info.num_sym;
-    const INT y0 = info.y0;
-    const INT y1 = (k==0) ? 0 : y0 - ( (depth<k) ? 0 : info.nofsKmers[k-1] * x[depth-k] );
-    //const INT temp = info.substrs[depth]*num_sym - ( (depth<=k) ? 0 : info.nofsKmers[k] * x[depth-k-1] );
-    //if( !( info.y0 == temp ) ) {
-    //  printf( "\n temp=%d y0=%d k=%d depth=%d \n", temp, info.y0, k, depth );
-    //}
-    //ASSERT( info.y0 == temp );
-    INT sym;
-    ASSERT( depth < degree );
-    //ASSERT( 0 <= info.substrs[depth] && info.substrs[depth] < info.nofsKmers[k] );
-    if (depth<degree-1)
-    {
-	for( sym=0; sym<num_sym; ++sym ) {
-#ifdef USE_TREEMEM
-	    const INT childNum = tree->children[ sym ];
-	    if( childNum != NO_CHILD ) {
-	        struct Trie* child = &TreeMem[ childNum ];
-#else
-	    struct Trie* child = tree->children[ sym ];
-	    if( child != NO_CHILD ) {
-#endif
-		x[depth] = sym;
-		info.substrs[depth+1] = y0 + sym;
-		info.y0 = (k==0) ? 0 : (y1+sym)*num_sym;
-		//ASSERT( info.y0 == ( info.substrs[depth+1]*num_sym - ( (depth<k) ? 0 : info.nofsKmers[k] * x[depth-k] ) ) );
-		count( child->weight, depth, info, p, x, k );
-		traverse( child, p, info, depth+1, x, k );
-		x[depth] = -1;
-	    }
-	}
-    }
-    else if( depth == degree-1 )
-    {
-        for( sym=0; sym<num_sym; ++sym ) {
-	    const DREAL w = tree->child_weights[ sym ];
-	    if( w != 0.0 ) {
-		x[depth] = sym;
-		info.substrs[depth+1] = y0 + sym;
-		info.y0 = (k==0) ? 0 : (y1+sym)*num_sym;
-		//ASSERT( info.y0 == ( info.substrs[depth+1]*num_sym - ( (depth<k) ? 0 : info.nofsKmers[k] * x[depth-k] ) ) );
-		count( w, depth, info, p, x, k );
-		x[depth] = -1;
-	    }
-	}
-    }
-    //info.substrs[depth+1] = -1;
-    //info.y0 = temp;
-}
-
-
 DREAL* CWeightedDegreePositionCharKernel_new::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas)
 {
     num_feat=((CCharFeatures*) get_rhs())->get_num_features();
@@ -1158,29 +1004,29 @@ DREAL* CWeightedDegreePositionCharKernel_new::compute_scoring(INT max_degree, IN
     // --- return table
     INT bigtabSize = 0;
     for( k = 0; k < max_degree; ++k ) {
-	nofsKmers[k] = (INT) pow( num_sym, k+1 );
+		nofsKmers[k] = (INT) pow( num_sym, k+1 );
         const INT tabSize = nofsKmers[k] * num_feat;
         bigtabSize += tabSize;
     }
     result= new DREAL[ bigtabSize ];
-
+	
     // --- auxilliary tables
     INT tabOffs=0;
     for( k = 0; k < max_degree; ++k )
     {
-	const INT tabSize = nofsKmers[k] * num_feat;
-	C[k] = &result[tabOffs];
-	L[k] = new DREAL[ tabSize ];
-	R[k] = new DREAL[ tabSize ];
-	tabOffs+=tabSize;
-	for(i = 0; i < tabSize; i++ )
-	{
-	    C[k][i] = 0.0;
-	    L[k][i] = 0.0;
-	    R[k][i] = 0.0;
-	}
+		const INT tabSize = nofsKmers[k] * num_feat;
+		C[k] = &result[tabOffs];
+		L[k] = new DREAL[ tabSize ];
+		R[k] = new DREAL[ tabSize ];
+		tabOffs+=tabSize;
+		for(i = 0; i < tabSize; i++ )
+		{
+			C[k][i] = 0.0;
+			L[k][i] = 0.0;
+			R[k][i] = 0.0;
+		}
     }
-
+	
     // --- tree parsing info
     DREAL* margFactors = new DREAL[ degree ];
     INT* x = new INT[ degree+1 ];
@@ -1189,12 +1035,12 @@ DREAL* CWeightedDegreePositionCharKernel_new::compute_scoring(INT max_degree, IN
     margFactors[0] = 1.0;
     substrs[0] = 0;
     for( k=1; k < degree; ++k ) {
-      margFactors[k] = 0.25 * margFactors[k-1];
-      substrs[k] = -1;
+		margFactors[k] = 0.25 * margFactors[k-1];
+		substrs[k] = -1;
     }
     substrs[degree] = -1;
     // - fill struct
-    struct TreeParseInfo info;
+    struct CTrie::TreeParseInfo info;
     info.num_sym = num_sym;
     info.num_feat = num_feat;
     info.p = -1;
@@ -1207,52 +1053,52 @@ DREAL* CWeightedDegreePositionCharKernel_new::compute_scoring(INT max_degree, IN
     info.C_k = NULL;
     info.L_k = NULL;
     info.R_k = NULL;
-
+	
     // === main loop
     i = 0; // total progress
     for( k = 0; k < max_degree; ++k )
     {
-	const INT nofKmers = nofsKmers[ k ];
-	info.C_k = C[k];
-	info.L_k = L[k];
-	info.R_k = R[k];
-
-	// --- run over all trees
-	for(INT p = 0; p < num_feat; ++p )
-	{
-	    init_optimization( num_suppvec, IDX, alphas, p );
-	    const Trie* const tree = get_tree_at_position( p );
-	    for(INT j = 0; j < degree+1; j++ ) {
-		x[j] = -1;
-	    }
-	    traverse( tree, p, info, 0, x, k );
-	    CIO::progress(i++,0,num_feat*max_degree);
-	}
-
-	// --- add partial overlap scores
-	if( k > 0 ) {
-	    const INT j = k - 1;
-	    const INT nofJmers = (INT) pow( num_sym, j+1 );
-	    for(INT p = 0; p < num_feat; ++p ) {
-		const INT offsetJ = nofJmers * p;
-		const INT offsetJ1 = nofJmers * (p+1);
-		const INT offsetK = nofKmers * p;
-		INT y;
-		INT sym;
-		for( y = 0; y < nofJmers; ++y ) {
-		    for( sym = 0; sym < num_sym; ++sym ) {
-			const INT y_sym = num_sym*y + sym;
-			const INT sym_y = nofJmers*sym + y;
-			ASSERT( 0 <= y_sym && y_sym < nofKmers );
-			ASSERT( 0 <= sym_y && sym_y < nofKmers );
-			C[k][ y_sym + offsetK ] += L[j][ y + offsetJ ];
-			if( p < num_feat-1 ) {
-			  C[k][ sym_y + offsetK ] += R[j][ y + offsetJ1 ];
+		const INT nofKmers = nofsKmers[ k ];
+		info.C_k = C[k];
+		info.L_k = L[k];
+		info.R_k = R[k];
+		
+		// --- run over all trees
+		for(INT p = 0; p < num_feat; ++p )
+		{
+			init_optimization( num_suppvec, IDX, alphas, p );
+			INT tree = p ;
+			for(INT j = 0; j < degree+1; j++ ) {
+				x[j] = -1;
 			}
-		    }
-		}
-	    }
+			tries.traverse( tree, p, info, 0, x, k );
+			CIO::progress(i++,0,num_feat*max_degree);
 	}
+		
+		// --- add partial overlap scores
+		if( k > 0 ) {
+			const INT j = k - 1;
+			const INT nofJmers = (INT) pow( num_sym, j+1 );
+			for(INT p = 0; p < num_feat; ++p ) {
+				const INT offsetJ = nofJmers * p;
+				const INT offsetJ1 = nofJmers * (p+1);
+				const INT offsetK = nofKmers * p;
+				INT y;
+				INT sym;
+				for( y = 0; y < nofJmers; ++y ) {
+					for( sym = 0; sym < num_sym; ++sym ) {
+						const INT y_sym = num_sym*y + sym;
+						const INT sym_y = nofJmers*sym + y;
+						ASSERT( 0 <= y_sym && y_sym < nofKmers );
+						ASSERT( 0 <= sym_y && sym_y < nofKmers );
+						C[k][ y_sym + offsetK ] += L[j][ y + offsetJ ];
+						if( p < num_feat-1 ) {
+							C[k][ sym_y + offsetK ] += R[j][ y + offsetJ1 ];
+						}
+					}
+				}
+			}
+		}
         //   if( k > 1 )
         //     j = k-1
         //     for all positions p
@@ -1265,7 +1111,7 @@ DREAL* CWeightedDegreePositionCharKernel_new::compute_scoring(INT max_degree, IN
         //     end;
         //   end;
     }
-
+	
     // === return a vector
     num_feat=1;
     num_sym = bigtabSize;
@@ -1276,13 +1122,14 @@ DREAL* CWeightedDegreePositionCharKernel_new::compute_scoring(INT max_degree, IN
     delete[] x;
     delete[] C;
     for( k = 0; k < max_degree; ++k ) {
-      delete L[k];
-      delete R[k];
+		delete L[k];
+		delete R[k];
     }
     delete[] L;
     delete[] R;
     return result;
 }
-*/
+
+
 
 

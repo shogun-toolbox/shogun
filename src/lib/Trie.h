@@ -51,6 +51,21 @@ public:
 		}; 
 	};
 	
+	struct TreeParseInfo {
+		INT num_sym;
+		INT num_feat;
+		INT p;
+		INT k;
+		INT* nofsKmers;
+		DREAL* margFactors;
+		INT* x;
+		INT* substrs;
+		INT y0;
+		DREAL* C_k;
+		DREAL* L_k;
+		DREAL* R_k;
+	};
+	
 public:
 	CTrie(INT d, INT p_use_compact_terminal_nodes=true) ;
 	CTrie(const CTrie & to_copy) ;
@@ -73,7 +88,9 @@ public:
 	void compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos, DREAL* LevelContrib, DREAL factor, INT mkl_stepsize, DREAL * weights, bool degree_times_position_weights) ;
 	void compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result) ;
 	void add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha, INT *vec, INT len_rem, INT degree_rec, INT mismatch_rec, INT max_mismatch, DREAL * weights) ;
-
+	void traverse( INT tree, const INT p, struct TreeParseInfo info, const INT depth, INT* const x, const INT k ) ;
+	void count( const DREAL w, const INT depth, const struct TreeParseInfo info, const INT p, INT* x, const INT k ) ;
+	
 	bool get_use_compact_terminal_nodes()
 		{
 			return use_compact_terminal_nodes ;

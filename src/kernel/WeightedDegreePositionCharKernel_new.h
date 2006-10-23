@@ -19,22 +19,6 @@
 
 class CWeightedDegreePositionCharKernel_new: public CSimpleKernel<CHAR>
 {
- private:
-  struct TreeParseInfo {
-    INT num_sym;
-    INT num_feat;
-    INT p;
-    INT k;
-    INT* nofsKmers;
-    DREAL* margFactors;
-    INT* x;
-    INT* substrs;
-    INT y0;
-    DREAL* C_k;
-    DREAL* L_k;
-    DREAL* R_k;
-  };
-  
  public:
   CWeightedDegreePositionCharKernel_new(LONG size, DREAL* weights, INT degree, INT max_mismatch, 
 					INT * shift, INT shift_len, bool use_norm=false,
