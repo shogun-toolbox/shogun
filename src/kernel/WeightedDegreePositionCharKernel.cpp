@@ -872,122 +872,122 @@ void CWeightedDegreePositionCharKernel::add_example_to_single_tree(INT idx, DREA
 	alpha /=  sqrtdiag_lhs[idx] ;
 
     INT max_s=-1;
-
+	
     if (opt_type==SLOWBUTMEMEFFICIENT)
-	max_s=0;
+		max_s=0;
     else if (opt_type==FASTBUTMEMHUNGRY)
-	max_s=shift[tree_num];
+		max_s=shift[tree_num];
     else
-	CIO::message(M_ERROR, "unknown optimization type\n");
-
+		CIO::message(M_ERROR, "unknown optimization type\n");
+	
     for (INT i=CMath::max(0,tree_num-max_shift); i<CMath::min(len,tree_num+degree+max_shift); i++)
-	vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
-
+		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
+	
     for (INT s=max_s; s>=0; s--)
     {
-	struct Trie *tree = trees[tree_num] ;
-
-	if (tree_num == tree_num)
-	{
-	    for (INT j=0; (tree_num+j+s<len); j++)
-	    {
-		if ((j<degree-1) && (tree->children[vec[tree_num+j+s]]!=NO_CHILD))
+		struct Trie *tree = trees[tree_num] ;
+		
+		if (tree_num == tree_num)
 		{
+			for (INT j=0; (tree_num+j+s<len); j++)
+			{
+				if ((j<degree-1) && (tree->children[vec[tree_num+j+s]]!=NO_CHILD))
+				{
 #ifdef USE_TREEMEM
-		    tree=&TreeMem[tree->children[vec[tree_num+j+s]]] ;
+					tree=&TreeMem[tree->children[vec[tree_num+j+s]]] ;
 #else
-		    tree=tree->children[vec[tree_num+j+s]] ;
+					tree=tree->children[vec[tree_num+j+s]] ;
 #endif
-		    tree->weight += (s==0) ? (alpha) : (alpha/(2*s));
-		}
-		else if (j==degree-1)
-		{
-		    tree->child_weights[vec[tree_num+j+s]] += (s==0) ? (alpha) : (alpha/(2*s));
-		    break ;
-		}
-		else
-		{
+					tree->weight += (s==0) ? (alpha) : (alpha/(2*s));
+				}
+				else if (j==degree-1)
+				{
+					tree->child_weights[vec[tree_num+j+s]] += (s==0) ? (alpha) : (alpha/(2*s));
+					break ;
+				}
+				else
+				{
 #ifdef USE_TREEMEM
-		    tree->children[vec[tree_num+j+s]]=TreeMemPtr++;
-		    INT tmp = tree->children[vec[tree_num+j+s]] ;
-		    check_treemem() ;
-		    tree=&TreeMem[tmp] ;
+					tree->children[vec[tree_num+j+s]]=TreeMemPtr++;
+					INT tmp = tree->children[vec[tree_num+j+s]] ;
+					check_treemem() ;
+					tree=&TreeMem[tmp] ;
 #else
-		    tree->children[vec[tree_num+j+s]]=new struct Trie ;
-		    ASSERT(tree->children[vec[tree_num+j+s]]!=NULL) ;
-		    tree=tree->children[vec[tree_num+j+s]] ;
+					tree->children[vec[tree_num+j+s]]=new struct Trie ;
+					ASSERT(tree->children[vec[tree_num+j+s]]!=NULL) ;
+					tree=tree->children[vec[tree_num+j+s]] ;
 #endif
-		    if (j==degree-2)
-		    {
-			for (INT k=0; k<4; k++)
-			    tree->child_weights[k]=0 ;
-		    }
-		    else
-		    {
-			for (INT k=0; k<4; k++)
-			    tree->children[k]=NO_CHILD;
-		    }
-		    tree->weight = (s==0) ? (alpha) : (alpha/(2*s));
+					if (j==degree-2)
+					{
+						for (INT k=0; k<4; k++)
+							tree->child_weights[k]=0 ;
+					}
+					else
+					{
+						for (INT k=0; k<4; k++)
+							tree->children[k]=NO_CHILD;
+					}
+					tree->weight = (s==0) ? (alpha) : (alpha/(2*s));
+				}
+			}
 		}
-	    }
-	}
     }
-
+	
     if (opt_type==FASTBUTMEMHUNGRY)
     {
-	for (INT i=CMath::max(0,tree_num-max_shift); i<CMath::min(len,tree_num+max_shift+1); i++)
-	{
-	    INT s=tree_num-i;
-
-	    if (i+s<len && s>=1 && s<=shift[i])
-	    {
-		struct Trie *tree = trees[tree_num] ;
-
-		for (INT j=0; (i+j<len); j++)
+		for (INT i=CMath::max(0,tree_num-max_shift); i<CMath::min(len,tree_num+max_shift+1); i++)
 		{
-		    if ((j<degree-1) && (tree->children[vec[i+j]]!=NO_CHILD))
-		    {
-#ifdef USE_TREEMEM
-			tree=&TreeMem[tree->children[vec[i+j]]] ;
-#else
-			tree=tree->children[vec[i+j]] ;
-#endif
-			tree->weight +=  alpha/(2*s);
-		    }
-		    else if (j==degree-1)
-		    {
-			tree->child_weights[vec[i+j]] += alpha/(2*s);
-			break ;
-		    }
-		    else
-		    {
-#ifdef USE_TREEMEM
-			tree->children[vec[i+j]]=TreeMemPtr++;
-			INT tmp = tree->children[vec[i+j]] ;
-			check_treemem() ;
-			tree=&TreeMem[tmp] ;
-#else
-			tree->children[vec[i+j]]=new struct Trie ;
-			ASSERT(tree->children[vec[i+j]]!=NULL) ;
-			tree=tree->children[vec[i+j]] ;
-#endif
-			if (j==degree-2)
+			INT s=tree_num-i;
+			
+			if (i+s<len && s>=1 && s<=shift[i])
 			{
-			    for (INT k=0; k<4; k++)
-				tree->child_weights[k]=0 ;
+				struct Trie *tree = trees[tree_num] ;
+				
+				for (INT j=0; (i+j<len); j++)
+				{
+					if ((j<degree-1) && (tree->children[vec[i+j]]!=NO_CHILD))
+					{
+#ifdef USE_TREEMEM
+						tree=&TreeMem[tree->children[vec[i+j]]] ;
+#else
+						tree=tree->children[vec[i+j]] ;
+#endif
+						tree->weight +=  alpha/(2*s);
+					}
+					else if (j==degree-1)
+					{
+						tree->child_weights[vec[i+j]] += alpha/(2*s);
+						break ;
+					}
+					else
+					{
+#ifdef USE_TREEMEM
+						tree->children[vec[i+j]]=TreeMemPtr++;
+						INT tmp = tree->children[vec[i+j]] ;
+						check_treemem() ;
+						tree=&TreeMem[tmp] ;
+#else
+						tree->children[vec[i+j]]=new struct Trie ;
+						ASSERT(tree->children[vec[i+j]]!=NULL) ;
+						tree=tree->children[vec[i+j]] ;
+#endif
+						if (j==degree-2)
+						{
+							for (INT k=0; k<4; k++)
+								tree->child_weights[k]=0 ;
+						}
+						else
+						{
+							for (INT k=0; k<4; k++)
+								tree->children[k]=NO_CHILD;
+						}
+						tree->weight = alpha/(2*s);
+					}
+				}
 			}
-			else
-			{
-			    for (INT k=0; k<4; k++)
-				tree->children[k]=NO_CHILD;
-			}
-			tree->weight = alpha/(2*s);
-		    }
 		}
-	    }
-	}
     }
-
+	
     ((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
     delete[] vec ;
     tree_initialized=true ;

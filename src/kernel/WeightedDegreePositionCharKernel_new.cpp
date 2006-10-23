@@ -305,13 +305,16 @@ bool CWeightedDegreePositionCharKernel_new::init_optimization(INT count, INT * I
 		CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel_new optimization not implemented for mismatch!=0\n") ;
 		return false ;
     }
+
+	delete_optimization();
+	tries.destroy() ;
+	tries.create(((CCharFeatures*) get_rhs())->get_num_features()) ;
 	
-    delete_optimization();
-	
-    CIO::message(M_DEBUG, "initializing CWeightedDegreePositionCharKernel_new optimization\n") ;
-    int i=0;
-    for (i=0; i<count; i++)
-    {
+	CIO::message(M_DEBUG, "initializing CWeightedDegreePositionCharKernel_new optimization\n") ;
+	CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;
+	int i=0;
+	for (i=0; i<count; i++)
+	{
 		if (tree_num<0)
 		{
 			if ( (i % (count/10+1)) == 0)
@@ -323,8 +326,46 @@ bool CWeightedDegreePositionCharKernel_new::init_optimization(INT count, INT * I
 			for (INT t=tree_num; t<=upto_tree; t++)
 				add_example_to_single_tree(IDX[i], alphas[i], t);
 		}
-    }
+	}
+	CIO::message(M_DEBUG, "============================\n") ;
 	
+	CTrie my_tries(degree) ;
+	my_tries.create(((CCharFeatures*) get_rhs())->get_num_features());
+	my_tries=tries ;
+	ASSERT(tries.compare(my_tries)) ;
+	 
+	delete_optimization();
+	tries.destroy() ;
+	tries.create(((CCharFeatures*) get_rhs())->get_num_features()) ;
+	i=0;
+    for (i=0; i<count; i++)
+    {
+		if (tree_num<0)
+		{
+			if ( (i % (count/10+1)) == 0)
+				CIO::progress(i,0,count);
+			INT num_feat=((CCharFeatures*) get_rhs())->get_num_features();
+			for (INT t=0; t<num_feat; t++)
+				add_example_to_single_tree(IDX[i], alphas[i], t);
+		}
+		else
+		{
+			for (INT t=tree_num; t<=upto_tree; t++)
+				add_example_to_single_tree(IDX[i], alphas[i], t);
+		}
+    }
+	CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;
+	
+	INT deepest_node ;
+	fprintf(stderr, "tries.deepest_node: %i", tries.find_deepest_node(NO_CHILD, deepest_node)) ;
+	tries.display_node(deepest_node) ;
+	fprintf(stderr, "my_tries.deepest_node: %i", my_tries.find_deepest_node(NO_CHILD, deepest_node)) ;
+	my_tries.display_node(deepest_node) ;
+
+	tries.compare(my_tries) ;
+
+	//tries=my_tries ;
+
     if (tree_num<0)
 		CIO::message(M_DEBUG, "done.           \n");
 	
@@ -707,11 +748,13 @@ void CWeightedDegreePositionCharKernel_new::add_example_to_tree(INT idx, DREAL a
 		{
 			DREAL alpha_pw = (s==0) ? (alpha) : (alpha/(2.0*s)) ;
 			tries.add_to_trie(i, s, vec, alpha_pw, weights, (length!=0)) ;
+			fprintf(stderr, "tree=%i, s=%i, example=%i, alpha_pw=%1.2f\n", i, s, idx, alpha_pw) ;
 			
 			if ((s==0) || (i+s>=len))
 				continue;
 			
 			tries.add_to_trie(i+s, -s, vec, alpha_pw, weights, (length!=0)) ;
+			fprintf(stderr, "tree=%i, s=%i, example=%i, alpha_pw=%1.2f\n", i+s, -s, idx, alpha_pw) ;
 		}
     }
 	
@@ -745,8 +788,9 @@ void CWeightedDegreePositionCharKernel_new::add_example_to_single_tree(INT idx, 
 	
     for (INT s=max_s; s>=0; s--)
     {
-		DREAL alpha_pw = (s==0) ? (alpha) : (alpha/(2*s)) ;
+		DREAL alpha_pw = (s==0) ? (alpha) : (alpha/(2.0*s)) ;
 		tries.add_to_trie(tree_num, s, vec, alpha_pw, weights, (length!=0)) ;
+		fprintf(stderr, "tree=%i, s=%i, example=%i, alpha_pw=%1.2f\n", tree_num, s, idx, alpha_pw) ;
 	} 
 	
     if (opt_type==FASTBUTMEMHUNGRY)
@@ -754,10 +798,11 @@ void CWeightedDegreePositionCharKernel_new::add_example_to_single_tree(INT idx, 
 		for (INT i=CMath::max(0,tree_num-max_shift); i<CMath::min(len,tree_num+max_shift+1); i++)
 		{
 			INT s=tree_num-i;
-			if (i+s<len && s>=1 && s<=shift[i])
+			if ((i+s<len) && (s>=1) && (s<=shift[i]))
 			{
-				DREAL alpha_pw = (s==0) ? (alpha) : (alpha/(2*s)) ;
+				DREAL alpha_pw = (s==0) ? (alpha) : (alpha/(2.0*s)) ;
 				tries.add_to_trie(tree_num, -s, vec, alpha_pw, weights, (length!=0)) ; 
+				fprintf(stderr, "tree=%i, s=%i, example=%i, alpha_pw=%1.2f\n", tree_num, -s, idx, alpha_pw) ;
 			}
 		}
     }

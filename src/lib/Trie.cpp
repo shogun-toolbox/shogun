@@ -14,6 +14,397 @@ CTrie::CTrie(INT d): degree(d), position_weights(NULL)
 	tree_initialized=false ;
 } ;
 
+CTrie::CTrie(const CTrie & to_copy)
+	: degree(to_copy.degree), position_weights(NULL)
+{
+	if (to_copy.position_weights!=NULL)
+	{
+		position_weights = new DREAL[to_copy.length] ;
+		for (INT i=0; i<to_copy.length; i++)
+			position_weights[i]=to_copy.position_weights[i] ;
+	}
+	else
+		position_weights=NULL ;
+	
+	TreeMemPtrMax=to_copy.TreeMemPtrMax ;
+	TreeMemPtr=to_copy.TreeMemPtr ;
+	TreeMem = (struct Trie*)malloc(TreeMemPtrMax*sizeof(struct Trie)) ;
+	memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(struct Trie)) ;
+	
+	length = to_copy.length ;
+	trees=new INT[length] ;		
+	for (INT i=0; i<length; i++)
+		trees[i]=to_copy.trees[i] ;
+	tree_initialized=to_copy.tree_initialized ;
+}
+
+const CTrie &CTrie::operator=(const CTrie & to_copy)
+{
+	degree=to_copy.degree ;
+	delete[] position_weights ;
+	position_weights=NULL ;
+	if (to_copy.position_weights!=NULL)
+	{
+		position_weights = new DREAL[to_copy.length] ;
+		for (INT i=0; i<to_copy.length; i++)
+			position_weights[i]=to_copy.position_weights[i] ;
+	}
+	else
+		position_weights=NULL ;
+		
+	TreeMemPtrMax=to_copy.TreeMemPtrMax ;
+	TreeMemPtr=to_copy.TreeMemPtr ;
+	free(TreeMem) ;
+	TreeMem = (struct Trie*)malloc(TreeMemPtrMax*sizeof(struct Trie)) ;
+	memcpy(TreeMem, to_copy.TreeMem, TreeMemPtrMax*sizeof(struct Trie)) ;
+	
+	length = to_copy.length ;
+	if (trees)
+		delete[] trees ;
+	trees=new INT[length] ;		
+	for (INT i=0; i<length; i++)
+		trees[i]=to_copy.trees[i] ;
+	tree_initialized=to_copy.tree_initialized ;
+
+	return *this ;
+}
+
+INT CTrie::find_deepest_node(INT start_node, INT& deepest_node) const 
+{
+	INT ret=0 ;
+	fprintf(stderr, "start_node=%i\n", start_node) ;
+	
+	if (start_node==NO_CHILD) 
+	{
+		for (INT i=0; i<length; i++)
+		{
+			INT my_deepest_node ;
+			INT depth=find_deepest_node(i, my_deepest_node) ;
+			fprintf(stderr, "start_node %i depth=%i\n", i, depth) ;
+			if (depth>ret)
+			{
+				deepest_node=my_deepest_node ;
+				ret=depth ;
+			}
+		}
+		return ret ;
+	}
+	
+	if (TreeMem[start_node].has_seq)
+	{
+		for (INT q=0; q<16; q++)
+			if (TreeMem[start_node].seq[q]!=TRIE_TERMINAL_CHARACTER)
+				ret++ ;
+		deepest_node=start_node ;
+		return ret ;
+	}
+	if (TreeMem[start_node].has_floats)
+	{
+		deepest_node=start_node ;
+		return 1 ;
+	}
+	
+	for (INT q=0; q<4; q++)
+	{
+		INT my_deepest_node ;
+		if (TreeMem[start_node].children[q]==NO_CHILD)
+			continue ;
+		INT depth=find_deepest_node(abs(TreeMem[start_node].children[q]), my_deepest_node) ;
+		if (depth>ret)
+		{
+			deepest_node=my_deepest_node ;
+			ret=depth ;
+		}
+	}
+	return ret ;
+}
+
+
+bool CTrie::compare_traverse(INT node, const CTrie & other, INT other_node) 
+{
+	fprintf(stderr, "checking nodes %i and %i\n", node, other_node) ;
+	if (fabs(TreeMem[node].weight-other.TreeMem[other_node].weight)>=1e-5)
+	{
+		CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].weight=%f!=other.TreeMem[%i].weight=%f\n", node, TreeMem[node].weight, other_node,other.TreeMem[other_node].weight) ;
+		CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+		display_node(node) ;
+		CIO::message(M_DEBUG, "============================================================\n") ;			
+		other.display_node(other_node) ;
+		CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
+		return false ;
+	}
+	
+#ifdef TRIE_CHECK_EVERYTHING
+	if (TreeMem[node].has_seq!=other.TreeMem[other_node].has_seq)
+	{
+		CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].has_seq=%i!=other.TreeMem[%i].has_seq=%i\n", node, TreeMem[node].has_seq, other_node,other.TreeMem[other_node].has_seq) ;
+		CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+		display_node(node) ;
+		CIO::message(M_DEBUG, "============================================================\n") ;			
+		other.display_node(other_node) ;
+		CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;
+		return false ;
+	}
+	if (TreeMem[node].has_floats!=other.TreeMem[other_node].has_floats)
+	{
+		CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].has_floats=%i!=other.TreeMem[%i].has_floats=%i\n", node, TreeMem[node].has_floats, other_node, other.TreeMem[other_node].has_floats) ;
+		return false ;
+	}
+	if (other.TreeMem[other_node].has_floats)
+	{
+		for (INT q=0; q<4; q++)
+			if (fabs(TreeMem[node].child_weights[q]-other.TreeMem[other_node].child_weights[q])>1e-5)
+			{
+				CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].child_weights[%i]=%e!=other.TreeMem[%i].child_weights[%i]=%e\n", node, q,TreeMem[node].child_weights[q], other_node,q,other.TreeMem[other_node].child_weights[q]) ;
+				CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+				display_node(node) ;
+				CIO::message(M_DEBUG, "============================================================\n") ;			
+				other.display_node(other_node) ;
+				CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
+				return false ;
+			}
+	}
+	if (other.TreeMem[other_node].has_seq)
+	{
+		for (INT q=0; q<16; q++)
+			if ((TreeMem[node].seq[q]!=other.TreeMem[other_node].seq[q]) && ((TreeMem[node].seq[q]<4)||(other.TreeMem[other_node].seq[q]<4)))
+			{
+				CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].seq[%i]=%i!=other.TreeMem[%i].seq[%i]=%i\n", node,q,TreeMem[node].seq[q], other_node,q,other.TreeMem[other_node].seq[q]) ;
+				CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+				display_node(node) ;
+				CIO::message(M_DEBUG, "============================================================\n") ;			
+				other.display_node(other_node) ;
+				CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
+				return false ;
+			}
+	}
+	if (!other.TreeMem[other_node].has_seq && !other.TreeMem[other_node].has_floats)
+	{
+		for (INT q=0; q<4; q++)
+		{
+			if ((TreeMem[node].children[q]==NO_CHILD) && (other.TreeMem[other_node].children[q]==NO_CHILD))
+				continue ;
+			if ((TreeMem[node].children[q]==NO_CHILD)!=(other.TreeMem[other_node].children[q]==NO_CHILD))
+			{
+				CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].children[%i]=%i!=other.TreeMem[%i].children[%i]=%i\n", node,q,TreeMem[node].children[q], other_node,q,other.TreeMem[other_node].children[q]) ;
+				CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+				display_node(node) ;
+				CIO::message(M_DEBUG, "============================================================\n") ;			
+				other.display_node(other_node) ;
+				CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;
+				return false ;
+			}
+			if (!compare_traverse(abs(TreeMem[node].children[q]), other, abs(other.TreeMem[other_node].children[q])))
+				return false ;
+		}
+	}
+
+#endif
+	
+	return true ;
+}
+
+bool CTrie::compare(const CTrie & other)
+{
+	/*if (TreeMemPtr!=other.TreeMemPtr)
+	{
+		CIO::message(M_DEBUG, "CTrie::compare: TreeMemPtr=%i!=other.TreeMemPtr=%i\n", TreeMemPtr, other.TreeMemPtr) ;
+		return false ;
+	}
+	if (length!=other.length)
+	{
+		CIO::message(M_DEBUG, "CTrie::compare: unequal number of trees\n") ;
+		return false ;
+	}
+	if (tree_initialized!=other.tree_initialized)
+	{
+		CIO::message(M_DEBUG, "CTrie::compare: unequal initialized status\n") ;
+		return false ;
+		}*/
+	
+	bool ret=true ;
+	for (INT i=0; i<length; i++)
+		if (!compare_traverse(trees[i], other, other.trees[i]))
+			return false ;
+		else
+			fprintf(stderr, "two tries at %i identical\n", i) ;
+
+	/*
+	for (INT i=0; i<TreeMemPtr; i++)
+	{
+		if (TreeMem[i].weight!=other.TreeMem[i].weight)
+		{
+			CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].weight=%f!=other.TreeMem[%i].weight=%f\n", i,TreeMem[i].weight,i,other.TreeMem[i].weight) ;
+			CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+			display_node(i) ;
+			CIO::message(M_DEBUG, "============================================================\n") ;			
+			other.display_node(i) ;
+			CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
+			ret=false ;
+			break ;
+		}
+#ifdef TRIE_CHECK_EVERYTHING
+		if (TreeMem[i].has_seq!=other.TreeMem[i].has_seq)
+		{
+			CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].has_seq=%i!=other.TreeMem[%i].has_seq=%i\n", i,TreeMem[i].has_seq,i,other.TreeMem[i].has_seq) ;
+			ret=false ;
+		}
+		if (TreeMem[i].has_floats!=other.TreeMem[i].has_floats)
+		{
+			CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].has_floats=%i!=other.TreeMem[%i].has_floats=%i\n", i,TreeMem[i].has_floats,i,other.TreeMem[i].has_floats) ;
+			ret=false ;
+		}
+		if (other.TreeMem[i].has_floats)
+		{
+			for (INT q=0; q<4; q++)
+				if (fabs(TreeMem[i].child_weights[q]-other.TreeMem[i].child_weights[q])>1e-6)
+				{
+					CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].child_weights[%i]=%e!=other.TreeMem[%i].child_weights[%i]=%e\n", i,q,TreeMem[i].child_weights[q],i,q,other.TreeMem[i].child_weights[q]) ;
+					CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+					display_node(i) ;
+					CIO::message(M_DEBUG, "============================================================\n") ;			
+					other.display_node(i) ;
+					CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
+					ret=false ;
+					break ;
+				}
+		}
+		if (other.TreeMem[i].has_seq)
+		{
+			for (INT q=0; q<16; q++)
+				if (TreeMem[i].seq[q]!=other.TreeMem[i].seq[q])
+				{
+					CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].seq[%i]=%i!=other.TreeMem[%i].seq[%i]=%i\n", i,q,TreeMem[i].seq[q],i,q,other.TreeMem[i].seq[q]) ;
+					CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+					display_node(i) ;
+					CIO::message(M_DEBUG, "============================================================\n") ;			
+					other.display_node(i) ;
+					CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
+					ret=false ;
+					break ;
+				}
+		}
+		if (!other.TreeMem[i].has_seq && !other.TreeMem[i].has_floats)
+		{
+			for (INT q=0; q<4; q++)
+				if (TreeMem[i].children[q]!=other.TreeMem[i].children[q])
+				{
+					CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].children[%i]=%i!=other.TreeMem[%i].children[%i]=%i\n", i,q,TreeMem[i].children[q],i,q,other.TreeMem[i].children[q]) ;
+					CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+					display_node(i) ;
+					CIO::message(M_DEBUG, "============================================================\n") ;			
+					other.display_node(i) ;
+					CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
+					ret=false ;
+					break ;
+				}
+		}
+
+
+#endif
+	}
+	if (ret)
+		CIO::message(M_DEBUG, "CTrie::compare: no differences found\n") ;
+	else
+		CIO::message(M_DEBUG, "CTrie::compare: the tries differ\n") ;
+	*/
+	return ret ;
+}
+
+bool CTrie::find_node(INT node, INT * trace, INT& trace_len) const 
+{
+	ASSERT(trace_len-1>=0) ;
+	//fprintf(stderr, "node=%i, trace_len=%i, trace=%i\n", node, trace_len, trace[trace_len-1]) ;
+	ASSERT((trace[trace_len-1]>=0) && (trace[trace_len-1]<TreeMemPtrMax))
+	if (TreeMem[trace[trace_len-1]].has_seq)
+		return false ;
+	if (TreeMem[trace[trace_len-1]].has_floats)
+		return false ;
+
+	for (INT q=0; q<4; q++)
+	{
+		if (TreeMem[trace[trace_len-1]].children[q]==NO_CHILD)
+			continue ;
+		INT tl=trace_len+1 ;
+		if (TreeMem[trace[trace_len-1]].children[q]>=0)
+			trace[trace_len]=TreeMem[trace[trace_len-1]].children[q] ;
+		else
+			trace[trace_len]=-TreeMem[trace[trace_len-1]].children[q] ;
+
+		if (trace[trace_len]==node)
+		{
+			trace_len=tl ;
+			return true ;
+		}
+		if (find_node(node, trace, tl))
+		{
+			trace_len=tl ;
+			return true ;
+		}
+	}
+	trace_len=0 ;
+	return false ;
+}
+
+void CTrie::display_node(INT node) const
+{
+	INT * trace=new INT[2*degree] ;
+	INT trace_len=-1 ;
+	bool found = false ;
+	INT tree=-1 ;
+	for (tree=0; tree<length; tree++)
+	{
+		trace[0]=trees[tree] ;
+		trace_len=1 ;
+		found=find_node(node, trace, trace_len) ;
+		if (found)
+			break ;
+	}
+	ASSERT(found) ;
+	CIO::message(M_MESSAGEONLY, "position %i  trace: ", tree) ;
+	
+	for (INT i=0; i<trace_len-1; i++)
+	{
+		INT branch=-1 ;
+		for (INT q=0; q<4; q++)
+			if (abs(TreeMem[trace[i]].children[q])==trace[i+1])
+			{
+				branch=q;
+				break ;
+			}
+		ASSERT(branch!=-1) ;
+		char acgt[5]="ACGT" ;
+		CIO::message(M_MESSAGEONLY, "%c", acgt[branch]) ;
+	}
+	CIO::message(M_MESSAGEONLY, "\nnode=%i\nweight=%f\nhas_seq=%i\nhas_floats=%i\n", node, TreeMem[node].weight, TreeMem[node].has_seq, TreeMem[node].has_floats) ;
+	if (TreeMem[node].has_floats)
+	{
+		for (INT q=0; q<4; q++)
+			CIO::message(M_MESSAGEONLY, "child_weighs[%i] = %f\n", q, TreeMem[node].child_weights[q]) ;
+	}
+	if (TreeMem[node].has_seq)
+	{
+		for (INT q=0; q<16; q++)
+			CIO::message(M_MESSAGEONLY, "seq[%i] = %i\n", q, TreeMem[node].seq[q]) ;
+	}
+	if (!TreeMem[node].has_seq && !TreeMem[node].has_floats)
+	{
+		for (INT q=0; q<4; q++)
+		{
+			if (TreeMem[node].children[q]!=NO_CHILD)
+			{
+				CIO::message(M_MESSAGEONLY, "children[%i] = %i -> \n", q, TreeMem[node].children[q]) ;
+				display_node(abs(TreeMem[node].children[q])) ;
+			}
+			else
+				CIO::message(M_MESSAGEONLY, "children[%i] = NO_CHILD -| \n", q, TreeMem[node].children[q]) ;
+		}
+		
+	}
+	
+	delete[] trace ;
+}
+
 
 CTrie::~CTrie()
 {

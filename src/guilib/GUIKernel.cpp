@@ -869,7 +869,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				delete k;
 				k=new CWeightedDegreePositionCharKernel_new(size, weights, 
 														d, max_mismatch, 
-														shift, length, true);
+														shift, length, false);
 
 				delete[] shift ;
 				delete[] weights ;
