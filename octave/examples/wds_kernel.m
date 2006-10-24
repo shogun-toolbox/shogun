@@ -52,7 +52,7 @@ sg('send_command', 'use_batch_computation 1');
 sg('send_command', 'loglevel ALL');
 sg('set_features', 'TRAIN', traindat,'DNA');
 sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS2_new CHAR 10 %i %i %i %s', order, max_mismatch, len, shifts ) );
+sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS2 CHAR 10 %i %i %i %s', order, max_mismatch, len, shifts ) );
 %sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
 sg('send_command', 'init_kernel TRAIN');
 sg('send_command', 'new_svm LIGHT');
