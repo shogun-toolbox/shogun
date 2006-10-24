@@ -1,7 +1,7 @@
 rand('seed',17);
 %sequence lengths, number of sequences
-len=100;
-num_train=100;
+len=10;
+num_train=20;
 num_test=500;
 num_a=2;
 aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
@@ -11,7 +11,7 @@ C=1;
 
 %Weighted Degree kernel parameters
 max_order=5;
-order=20
+order=15
 max_mismatch=0;
 cache=100;
 normalize=1;
@@ -56,7 +56,6 @@ sg('send_command', 'use_batch_computation 0');
 sg('send_command', 'delete_kernel_optimization');
 out1=sg('svm_classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out1)==testlab))
-
 
 sg('send_command', 'init_kernel TEST');
 sg('send_command', 'use_batch_computation 1');
