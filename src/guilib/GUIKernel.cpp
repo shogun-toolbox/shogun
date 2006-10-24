@@ -24,7 +24,7 @@
 #include "kernel/WeightedDegreeCharKernel.h"
 #include "kernel/WeightedDegreeCharKernelPolyA.h"
 #include "kernel/WeightedDegreePositionCharKernel.h"
-#include "kernel/WeightedDegreePositionCharKernel_new.h"
+//#include "kernel/WeightedDegreePositionCharKernel_new.h"
 #include "kernel/FixedDegreeCharKernel.h"
 #include "kernel/LocalityImprovedCharKernel.h"
 #include "kernel/SimpleLocalityImprovedCharKernel.h"
@@ -802,81 +802,6 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (k)
 				{
 					CIO::message(M_INFO, "FixedDegreeCharKernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS2_new")==0)
-		{
-			if (strcmp(data_type,"CHAR")==0)
-			{
-				INT d=3;
-				INT max_mismatch = 0 ;
-				INT i=0;
-				INT length = 0 ;
-				char * rest = new char[strlen(param)] ;
-				char * rest2 = new char[strlen(param)] ;
-				
-				sscanf(param, "%s %s %d %d %d %d %[0-9 .+-]", 
-					   kern_type, data_type, &size, &d, &max_mismatch, 
-					   &length, rest);
-
-				INT *shift = new INT[length] ;
-				for (i=0; i<length; i++)
-				{
-					int args = sscanf(rest, "%i %[0-9 .+-]", &shift[i], rest2) ;
-					if (((args!=2) && (i<length-1)) || (args<1))
-					{
-						CIO::message(M_ERROR, "failed to read list at position %i\n", i) ;
-						return false ;
-					} ;
-					if (shift[i]>length)
-					{
-						CIO::message(M_ERROR, "shift longer than sequence: %i \n", shift[i]) ;
-						return false ;
-					} ;
-					strcpy(rest,rest2) ;
-				}
-				//for (INT i=0; i<length; i++)
-				//  CIO::message(M_INFO, "shift[%i]=%i\n", i, shift[i]) ;
-				
-				DREAL* weights=new DREAL[d*(1+max_mismatch)];
-				DREAL sum=0;
-
-				for (i=0; i<d; i++)
-				{
-					weights[i]=d-i;
-					sum+=weights[i];
-				}
-				for (i=0; i<d; i++)
-					weights[i]/=sum;
-				
-				for (i=0; i<d; i++)
-				{
-					for (INT j=1; j<=max_mismatch; j++)
-					{
-						if (j<i+1)
-						{
-							INT nk=CMath::nchoosek(i+1, j) ;
-							weights[i+j*d]=weights[i]/(nk*pow(3,j)) ;
-						}
-						else
-							weights[i+j*d]= 0;
-					} ;
-				} ;
-				
-				
-				delete k;
-				k=new CWeightedDegreePositionCharKernel_new(size, weights, 
-															d, max_mismatch, 
-															shift, length, false);
-
-				delete[] shift ;
-				delete[] weights ;
-				
-				if (k)
-				{
-					CIO::message(M_INFO, "WeightedDegreePositionCharKernel_new(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
 					return k;
 				}
 			}
