@@ -21,7 +21,7 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(INT size, INT max_mismatch_
 	  weights_buffer(NULL), mkl_stepsize(mkl_stepsize_),degree(0), length(0), 
 	  max_mismatch(max_mismatch_), seq_length(0), 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), 
-	  block_computation(block), use_normalization(use_norm), tries(0), tree_initialized(false)
+	  block_computation(block), use_normalization(use_norm), tries(0,max_mismatch_==0), tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
@@ -33,7 +33,7 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(INT size, double* w, INT d,
 	: CSimpleKernel<CHAR>(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0), 
 	  max_mismatch(max_mismatch_), seq_length(0), 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), 
-	  block_computation(block), use_normalization(use_norm), tries(d)
+	  block_computation(block), use_normalization(use_norm), tries(d,max_mismatch_==0)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
@@ -121,7 +121,7 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		((CCharFeatures*) l)->free_feature_vector(avec, 0, afree);
 
 		tries.destroy() ;
-		tries.create(alen) ;
+		tries.create(alen, max_mismatch==0) ;
 	} 
 
 	bool result=CSimpleKernel<CHAR>::init(l,r,do_init);
@@ -275,7 +275,9 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* al
 	
 	if (tree_num<0)
 		CIO::message(M_MESSAGEONLY, "done.           \n");
-	
+
+	//tries.compact_nodes(NO_CHILD, 0, weights) ;
+
 	set_is_initialized(true) ;
 	return true ;
 }
@@ -284,7 +286,7 @@ bool CWeightedDegreeCharKernel::delete_optimization()
 { 
 	if (get_is_initialized())
 	{
-		tries.delete_trees(); 
+		tries.delete_trees(max_mismatch==0); 
 		set_is_initialized(false);
 		return true;
 	}
@@ -517,13 +519,16 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, DREAL alph
 	CHAR* char_vec=((CCharFeatures*) lhs)->get_feature_vector(idx, len, free);
 	
 	INT *vec = new INT[len] ;
-
+	
 	if (use_normalization)
 		alpha /=  sqrtdiag_lhs[idx] ;
 	
 	for (INT i=0; i<len; i++)
 		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
-
+	
+	/*for (INT q=0; q<40; q++)
+	  fprintf(stderr, "w[%i]=%f\n", q,weights[q]) ;*/
+	
 	for (INT i=0; i<len; i++)
 	{
 		DREAL alpha_pw = alpha ;
@@ -533,8 +538,8 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, DREAL alph
 			continue ;
 		tries.add_example_to_tree_mismatch_recursion(NO_CHILD, i, alpha_pw, &vec[i], len-i, 0, 0, max_mismatch, weights) ;
 	}
-
-
+	
+	
 	((CCharFeatures*) lhs)->free_feature_vector(char_vec, idx, free);
 	delete[] vec ;
 	tree_initialized=true ;
@@ -669,7 +674,7 @@ bool CWeightedDegreeCharKernel::set_position_weights(DREAL* pws, INT len)
 bool CWeightedDegreeCharKernel::init_matching_weights_wd()
 {
 	delete[] matching_weights;
-	matching_weights=new DREAL[seq_length];
+	matching_weights=new DREAL[CMath::max(seq_length,degree)];
 
 	if (matching_weights)
 	{

@@ -19,6 +19,7 @@
 
 #define NO_CHILD ((INT)-2147483648)
 //#define NO_CHILD ((INT)-1) 
+
 //#define WEIGHTS_IN_TRIE 
 #define TRIE_CHECK_EVERYTHING
 
@@ -90,6 +91,7 @@ public:
 	void add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha, INT *vec, INT len_rem, INT degree_rec, INT mismatch_rec, INT max_mismatch, DREAL * weights) ;
 	void traverse( INT tree, const INT p, struct TreeParseInfo info, const INT depth, INT* const x, const INT k ) ;
 	void count( const DREAL w, const INT depth, const struct TreeParseInfo info, const INT p, INT* x, const INT k ) ;
+	INT compact_nodes(INT start_node, INT depth, DREAL * weights) ;
 	
 	bool get_use_compact_terminal_nodes()
 		{
@@ -347,7 +349,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 		}
 		else
 		{
-			bool use_seq = use_compact_terminal_nodes && (j>degree-16) ;
+			bool use_seq = false;//use_compact_terminal_nodes && (j>degree-16) ;
 			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
 			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
 
@@ -474,15 +476,15 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT seq_pos,
 			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
 			if (j==degree-1)
 			{
-				if (TreeMem[tree].has_floats)
-				{
+/*				if (TreeMem[tree].has_floats)
+				{*/
 					TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) ;
 #ifdef WEIGHTS_IN_TRIE
 					sum += TreeMem[tree].child_weights[vec[seq_pos+j]] ;
 #else
 					sum += TreeMem[tree].child_weights[vec[seq_pos+j]] * weights_column[j] ;
 #endif
-				}
+/*				}
 				else
 				{
 					if (TreeMem[tree].children[vec[seq_pos+j]]!=NO_CHILD)
@@ -507,6 +509,7 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT seq_pos,
 						}
 					}
 				}
+*/
 			}
 			else
 				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;

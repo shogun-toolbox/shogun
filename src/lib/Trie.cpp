@@ -74,6 +74,7 @@ const CTrie &CTrie::operator=(const CTrie & to_copy)
 
 INT CTrie::find_deepest_node(INT start_node, INT& deepest_node) const 
 {
+#ifdef TRIE_CHECK_EVERYTHING
 	INT ret=0 ;
 	fprintf(stderr, "start_node=%i\n", start_node) ;
 	
@@ -120,6 +121,117 @@ INT CTrie::find_deepest_node(INT start_node, INT& deepest_node) const
 		}
 	}
 	return ret ;
+#else
+	CIO::message(M_ERROR, "not implemented\n") ;
+	return 0 ;
+#endif
+}
+
+INT CTrie::compact_nodes(INT start_node, INT depth, DREAL * weights) 
+{
+	CIO::message(M_ERROR, "code buggy\n") ;
+	
+	INT ret=0 ;
+	//fprintf(stderr, "start_node=%i\n", start_node) ;
+	
+	if (start_node==NO_CHILD) 
+	{
+		for (INT i=0; i<length; i++)
+			compact_nodes(i,1, weights) ;
+		return 0 ;
+	}
+	if (start_node<0)
+		return -1 ;
+
+	if (depth==degree-1)
+	{
+		TRIE_ASSERT_EVERYTHING(TreeMem[start_node].has_floats) ;
+		INT num_used=0 ;
+		for (INT q=0; q<4; q++)
+			if (TreeMem[start_node].child_weights[q]!=0.0)
+				num_used++ ;
+		if (num_used>1)
+			return -1 ;
+		return 1 ;
+	}
+	TRIE_ASSERT_EVERYTHING(!TreeMem[start_node].has_floats) ;
+	
+	INT num_used = 0 ;
+	INT q_used=-1 ;
+	
+	for (INT q=0; q<4; q++)
+	{
+		if (TreeMem[start_node].children[q]==NO_CHILD)
+			continue ;
+		num_used++ ;
+		q_used=q ;
+	}
+	if (num_used>1)
+	{
+		if (depth>=degree-2)
+			return -1 ;
+		for (INT q=0; q<4; q++)
+		{
+			if (TreeMem[start_node].children[q]==NO_CHILD)
+				continue ;
+			INT num=compact_nodes(abs(TreeMem[start_node].children[q]), depth+1, weights) ;
+			if (num<=2)
+				continue ;
+			INT node=get_node() ;
+			//fprintf(stderr, "creating node:\n ") ;
+			INT last_node=TreeMem[start_node].children[q] ;
+#ifdef WEIGHTS_IN_TRIE 
+			ASSERT(weights[depth]!=0.0) ;
+			TreeMem[node].weight=TreeMem[last_node].weight/weights[depth] ;
+#else
+			TreeMem[node].weight=TreeMem[last_node].weight ;
+#endif
+#ifdef TRIE_CHECK_EVERYTHING
+			TreeMem[node].has_seq=true ;
+#endif
+			memset(TreeMem[node].seq, TRIE_TERMINAL_CHARACTER, 16) ;
+			for (INT n=0; n<num; n++)
+			{
+				ASSERT(depth+n+1<=degree-1) ;
+				ASSERT(last_node!=NO_CHILD) ;
+				if (depth+n+1==degree-1)
+				{
+					TRIE_ASSERT_EVERYTHING(TreeMem[last_node].has_floats) ;
+					INT  k ;
+					for (k=0; k<4; k++)
+						if (TreeMem[last_node].child_weights[k]!=0.0)
+							break ;
+					if (k==4)
+						break ;
+					TreeMem[node].seq[n]=k ;
+					//fprintf(stderr, "seq[%i]=%i\n", n, k) ;
+					break ;
+				}
+				else
+				{
+					TRIE_ASSERT_EVERYTHING(!TreeMem[last_node].has_floats) ;
+					INT k ;
+					for (k=0; k<4; k++)
+						if (TreeMem[last_node].children[k]!=NO_CHILD)
+							break ;
+					if (k==4)
+						break ;
+					TreeMem[node].seq[n]=k ;
+					//fprintf(stderr, "seq[%i]=%i\n", n, k) ;
+					last_node=TreeMem[last_node].children[k] ;
+				}
+			}
+			TreeMem[start_node].children[q]=-node ;
+		}
+		return -1 ;
+	}
+	if (num_used==0)
+		return 0 ;
+	
+	ret=compact_nodes(abs(TreeMem[start_node].children[q_used]), depth+1, weights) ;
+	if (ret<0)
+		return ret ;
+	return ret+1 ;
 }
 
 
@@ -201,7 +313,8 @@ bool CTrie::compare_traverse(INT node, const CTrie & other, INT other_node)
 				return false ;
 		}
 	}
-
+#else
+	CIO::message(M_ERROR, "not implemented\n") ;
 #endif
 	
 	return true ;
@@ -232,90 +345,12 @@ bool CTrie::compare(const CTrie & other)
 		else
 			fprintf(stderr, "two tries at %i identical\n", i) ;
 
-	/*
-	for (INT i=0; i<TreeMemPtr; i++)
-	{
-		if (TreeMem[i].weight!=other.TreeMem[i].weight)
-		{
-			CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].weight=%f!=other.TreeMem[%i].weight=%f\n", i,TreeMem[i].weight,i,other.TreeMem[i].weight) ;
-			CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
-			display_node(i) ;
-			CIO::message(M_DEBUG, "============================================================\n") ;			
-			other.display_node(i) ;
-			CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
-			ret=false ;
-			break ;
-		}
-#ifdef TRIE_CHECK_EVERYTHING
-		if (TreeMem[i].has_seq!=other.TreeMem[i].has_seq)
-		{
-			CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].has_seq=%i!=other.TreeMem[%i].has_seq=%i\n", i,TreeMem[i].has_seq,i,other.TreeMem[i].has_seq) ;
-			ret=false ;
-		}
-		if (TreeMem[i].has_floats!=other.TreeMem[i].has_floats)
-		{
-			CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].has_floats=%i!=other.TreeMem[%i].has_floats=%i\n", i,TreeMem[i].has_floats,i,other.TreeMem[i].has_floats) ;
-			ret=false ;
-		}
-		if (other.TreeMem[i].has_floats)
-		{
-			for (INT q=0; q<4; q++)
-				if (fabs(TreeMem[i].child_weights[q]-other.TreeMem[i].child_weights[q])>1e-6)
-				{
-					CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].child_weights[%i]=%e!=other.TreeMem[%i].child_weights[%i]=%e\n", i,q,TreeMem[i].child_weights[q],i,q,other.TreeMem[i].child_weights[q]) ;
-					CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
-					display_node(i) ;
-					CIO::message(M_DEBUG, "============================================================\n") ;			
-					other.display_node(i) ;
-					CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
-					ret=false ;
-					break ;
-				}
-		}
-		if (other.TreeMem[i].has_seq)
-		{
-			for (INT q=0; q<16; q++)
-				if (TreeMem[i].seq[q]!=other.TreeMem[i].seq[q])
-				{
-					CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].seq[%i]=%i!=other.TreeMem[%i].seq[%i]=%i\n", i,q,TreeMem[i].seq[q],i,q,other.TreeMem[i].seq[q]) ;
-					CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
-					display_node(i) ;
-					CIO::message(M_DEBUG, "============================================================\n") ;			
-					other.display_node(i) ;
-					CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
-					ret=false ;
-					break ;
-				}
-		}
-		if (!other.TreeMem[i].has_seq && !other.TreeMem[i].has_floats)
-		{
-			for (INT q=0; q<4; q++)
-				if (TreeMem[i].children[q]!=other.TreeMem[i].children[q])
-				{
-					CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].children[%i]=%i!=other.TreeMem[%i].children[%i]=%i\n", i,q,TreeMem[i].children[q],i,q,other.TreeMem[i].children[q]) ;
-					CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
-					display_node(i) ;
-					CIO::message(M_DEBUG, "============================================================\n") ;			
-					other.display_node(i) ;
-					CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
-					ret=false ;
-					break ;
-				}
-		}
-
-
-#endif
-	}
-	if (ret)
-		CIO::message(M_DEBUG, "CTrie::compare: no differences found\n") ;
-	else
-		CIO::message(M_DEBUG, "CTrie::compare: the tries differ\n") ;
-	*/
 	return ret ;
 }
 
 bool CTrie::find_node(INT node, INT * trace, INT& trace_len) const 
 {
+#ifdef TRIE_CHECK_EVERYTHING
 	ASSERT(trace_len-1>=0) ;
 	//fprintf(stderr, "node=%i, trace_len=%i, trace=%i\n", node, trace_len, trace[trace_len-1]) ;
 	ASSERT((trace[trace_len-1]>=0) && (trace[trace_len-1]<TreeMemPtrMax))
@@ -347,10 +382,15 @@ bool CTrie::find_node(INT node, INT * trace, INT& trace_len) const
 	}
 	trace_len=0 ;
 	return false ;
+#else
+	CIO::message(M_ERROR, "not implemented\n") ;
+	return false ;
+#endif
 }
 
 void CTrie::display_node(INT node) const
 {
+#ifdef TRIE_CHECK_EVERYTHING
 	INT * trace=new INT[2*degree] ;
 	INT trace_len=-1 ;
 	bool found = false ;
@@ -406,6 +446,9 @@ void CTrie::display_node(INT node) const
 	}
 	
 	delete[] trace ;
+#else
+	CIO::message(M_ERROR, "not implemented\n") ;
+#endif
 }
 
 
@@ -503,50 +546,6 @@ DREAL *CTrie::compute_abs_weights(int &len)
   return sum ;
 }
 
-/*
-void CTrie::compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result)
-{
-  if (tree==NO_CHILD)
-    tree=trees[i] ;
-  
-  TRIE_ASSERT(tree!=NO_CHILD) ;
-  
-  if (i+j<num_feat)
-  {
-      if (j<degree-1)
-	  {
-		  for (INT k=0; k<num_sym; k++)
-		  {
-			  if (TreeMem[tree].children[k]!=NO_CHILD)
-			  {
-				  INT child=TreeMem[tree].children[k];
-				  //continue recursion if not yet at max_degree, else add to result
-				  if (d<max_degree-1)
-					  compute_scoring_helper(child, i, j+1, weight+TreeMem[child].weight, d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
-				  else
-					  result[sym_offset*(i+j-max_degree+1)+num_sym*offs+k] += weight;
-				  
-				  //do recursion starting from this position
-				  if (d==0)
-					  compute_scoring_helper(child, i, j+1, 0.0, 0, max_degree, num_feat, num_sym, sym_offset, offs, result);
-			  }
-		  }
-	  }
-      else if (j==degree-1)
-	  {
-		  for (INT k=0; k<num_sym; k++)
-		  {
-			  //continue recursion if not yet at max_degree, else add to result
-			  if (d<max_degree-1 && i<num_feat-1)
-				  compute_scoring_helper(trees[i+1], i+1, 0, weight+TreeMem[tree].child_weights[k], d+1, max_degree, num_feat, num_sym, sym_offset, num_sym*offs+k, result);
-			  else
-				  result[sym_offset*(i+j-max_degree+1)+num_sym*offs+k] += weight+TreeMem[tree].child_weights[k];
-		  }
-	  }
-  }
-}
-*/
-
 void CTrie::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha,
 												   INT *vec, INT len_rem, 
 												   INT degree_rec, INT mismatch_rec, 
@@ -564,36 +563,65 @@ void CTrie::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha
 	
 	if (degree_rec==degree-1)
     {
+		TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) ;
+#ifdef WEIGHTS_IN_TRIE 
 		TreeMem[tree].child_weights[vec[0]] += alpha*weights[degree_rec+degree*mismatch_rec];
+#else
+		if (weights[degree_rec]!=0.0)
+			TreeMem[tree].child_weights[vec[0]] += alpha*weights[degree_rec+degree*mismatch_rec]/weights[degree_rec];
+#endif
 		if (mismatch_rec+1<=max_mismatch)
 			for (INT o=0; o<3; o++)
+			{
+#ifdef WEIGHTS_IN_TRIE 
 				TreeMem[tree].child_weights[other[vec[0]][o]] += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
+#else
+				if (weights[degree_rec]!=0.0)
+					TreeMem[tree].child_weights[other[vec[0]][o]] += alpha*weights[degree_rec+degree*(mismatch_rec+1)]/weights[degree_rec];
+#endif
+			}
 		return ;
     }
 	else
     {
+		TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
 		if (TreeMem[tree].children[vec[0]]!=NO_CHILD)
 		{
 			subtree=TreeMem[tree].children[vec[0]] ;
+#ifdef WEIGHTS_IN_TRIE 
 			TreeMem[subtree].weight += alpha*weights[degree_rec+degree*mismatch_rec];
+#else
+			if (weights[degree_rec]!=0.0)
+				TreeMem[subtree].weight += alpha*weights[degree_rec+degree*mismatch_rec]/weights[degree_rec];
+#endif
 		}
 		else 
 		{
-			TreeMem[tree].children[vec[0]]=TreeMemPtr++ ;
-			INT tmp=TreeMem[tree].children[vec[0]] ;
-			check_treemem() ;
+			INT tmp = get_node() ;
+			ASSERT(tmp>=0) ;
+			TreeMem[tree].children[vec[0]]=tmp ;
 			subtree=tmp ;
 			if (degree_rec==degree-2)
 			{
+#ifdef TRIE_CHECK_EVERYTHING
+				TreeMem[subtree].has_floats=true ;
+#endif
 				for (INT k=0; k<4; k++)
-					TreeMem[tree].child_weights[k]=0;
+					TreeMem[subtree].child_weights[k]=0;
 			}
 			else
 			{
 				for (INT k=0; k<4; k++)
-					TreeMem[tree].children[k]=NO_CHILD;
+					TreeMem[subtree].children[k]=NO_CHILD;
 			}
+#ifdef WEIGHTS_IN_TRIE 
 			TreeMem[subtree].weight = alpha*weights[degree_rec+degree*mismatch_rec] ;
+#else
+			if (weights[degree_rec]!=0.0)
+				TreeMem[subtree].weight = alpha*weights[degree_rec+degree*mismatch_rec]/weights[degree_rec] ;
+			else
+				TreeMem[subtree].weight = 0.0 ;
+#endif
 		}
 		add_example_to_tree_mismatch_recursion(subtree,  i, alpha,
 											   &vec[1], len_rem-1, 
@@ -601,31 +629,47 @@ void CTrie::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha
 		
 		if (mismatch_rec+1<=max_mismatch)
 		{
+			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
 			for (INT o=0; o<3; o++)
 			{
 				INT ot = other[vec[0]][o] ;
 				if (TreeMem[tree].children[ot]!=NO_CHILD)
 				{
 					subtree=TreeMem[tree].children[ot] ;
+#ifdef WEIGHTS_IN_TRIE 
 					TreeMem[subtree].weight += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
+#else
+					if (weights[degree_rec]!=0.0)
+						TreeMem[subtree].weight += alpha*weights[degree_rec+degree*(mismatch_rec+1)]/weights[degree_rec];
+#endif
 				}
 				else 
 				{
-					TreeMem[tree].children[ot]=TreeMemPtr++ ;
-					INT tmp=TreeMem[tree].children[ot] ;
-					check_treemem() ;
+					INT tmp = get_node() ;
+					ASSERT(tmp>=0) ;
+					TreeMem[tree].children[ot]=tmp ;
 					subtree=tmp ;
 					if (degree_rec==degree-2)
 					{
+#ifdef TRIE_CHECK_EVERYTHING
+						TreeMem[subtree].has_floats=true ;
+#endif
 						for (INT k=0; k<4; k++)
-							TreeMem[tree].child_weights[k]=0;
+							TreeMem[subtree].child_weights[k]=0;
 					}
 					else
 					{
 						for (INT k=0; k<4; k++)
-							TreeMem[tree].children[k]=NO_CHILD;
+							TreeMem[subtree].children[k]=NO_CHILD;
 					}
+#ifdef WEIGHTS_IN_TRIE 
 					TreeMem[subtree].weight = alpha*weights[degree_rec+degree*(mismatch_rec+1)] ;
+#else
+					if (weights[degree_rec]!=0.0)
+						TreeMem[subtree].weight = alpha*weights[degree_rec+degree*(mismatch_rec+1)]/weights[degree_rec] ;
+					else
+						TreeMem[subtree].weight = 0.0 ;
+#endif
 				}
 				
 				add_example_to_tree_mismatch_recursion(subtree,  i, alpha,
@@ -635,7 +679,6 @@ void CTrie::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha
 		}
     }
 }
-
 
 void CTrie::compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result)
 {
