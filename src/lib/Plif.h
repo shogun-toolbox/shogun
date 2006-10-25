@@ -36,12 +36,11 @@ class CPlif
 public:
 	CPlif() ;
 	~CPlif() ;
-	//void delete_penalty_struct_array(struct penalty_struct *PEN, INT len) ;
 	void init_penalty_struct_cache() ;
 	
-	
-	DREAL lookup_penalty_svm(INT p_value, DREAL *d_values, bool follow_next, DREAL &input_value) ;
-	DREAL lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) ;
+	DREAL lookup_penalty_svm(INT p_value, DREAL *d_values, bool follow_next, DREAL &input_value) const ;
+	DREAL lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const ;
+
 	
 	bool set_transform_type(const char *type_str) ;
 	
@@ -57,10 +56,18 @@ public:
 	{
 		next_pen=p_next_pen ;
 	}
+	CPlif* get_next_pen() 
+	{
+		return next_pen ;
+	}
 
 	void set_use_svm(INT p_use_svm) 
 	{
 		use_svm=p_use_svm ;
+	}
+	INT get_use_svm()
+	{
+		return use_svm ;
 	}
 	void set_plif(INT p_len, DREAL *p_limits, DREAL* p_penalties) 
 	{
@@ -79,11 +86,20 @@ public:
 	{
 		max_len=p_max_len ;
 	}
+	INT get_max_len() const 
+	{
+		return max_len ;
+	}
 	void set_min_len(INT p_min_len) 
 	{
 		min_len=p_min_len ;
 	}
 	void set_name(char *p_name) ;
+	char * get_name() 
+	{
+		return name ;
+	}
+	
 	
 protected:
 

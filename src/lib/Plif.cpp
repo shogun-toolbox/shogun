@@ -265,7 +265,7 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT &P)
 }
 #endif
 
-DREAL CPlif::lookup_penalty_svm(INT p_value, DREAL *d_values, bool follow_next, DREAL &input_value)
+DREAL CPlif::lookup_penalty_svm(INT p_value, DREAL *d_values, bool follow_next, DREAL &input_value) const
 {	
 	ASSERT(use_svm>0) ;
 	DREAL d_value=d_values[use_svm-1] ;
@@ -315,7 +315,7 @@ DREAL CPlif::lookup_penalty_svm(INT p_value, DREAL *d_values, bool follow_next, 
 	return ret ;
 }
 
-DREAL CPlif::lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DREAL &input_value)
+DREAL CPlif::lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const
 {	
 	if (use_svm)
 		return lookup_penalty_svm(p_value, svm_values, follow_next, input_value) ;

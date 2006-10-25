@@ -347,7 +347,7 @@ static bool extend_orf(const bool* genestr_stop, INT orf_from, INT orf_to, INT s
 #define ORF_TO(i) orf_info[N+i] 
 
 void CHMM::best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const INT *orf_info,
-						   struct penalty_struct **PEN_matrix, 
+						   CPlif **PEN_matrix, 
 						   const char *genestr, INT genestr_len,
 						   short int nbest, 
 						   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
@@ -375,16 +375,16 @@ void CHMM::best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const 
 		for (INT i=0; i<N; i++)
 			for (INT j=0; j<N; j++)
 			{
-				struct penalty_struct *penij=PEN(i,j) ;
+				CPlif *penij=PEN(i,j) ;
 				while (penij!=NULL)
 				{
-					if (penij->max_len>max_look_back)
-						max_look_back=penij->max_len ;
-					if (penij->use_svm)
+					if (penij->get_max_len()>max_look_back)
+						max_look_back=penij->get_max_len() ;
+					if (penij->get_use_svm())
 						use_svm=true ;
-					if (penij->id+1>num_PEN_id)
-						num_PEN_id=penij->id+1 ;
-					penij=penij->next_pen ;
+					if (penij->get_id()+1>num_PEN_id)
+						num_PEN_id=penij->get_id()+1 ;
+					penij=penij->get_next_pen() ;
 				} 
 			}
 	}
@@ -555,10 +555,10 @@ void CHMM::best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const 
 				{
 					T_STATES ii = elem_list[i] ;
 					
-					const struct penalty_struct * penalty = PEN(j,ii) ;
+					const CPlif * penalty = PEN(j,ii) ;
 					INT look_back = default_look_back ;
 					if (penalty!=NULL)
-						look_back=penalty->max_len ;
+						look_back=penalty->get_max_len() ;
 					INT orf_from = ORF_FROM(ii) ;
 					INT orf_to   = ORF_TO(j) ;
 					if((orf_from!=-1)!=(orf_to!=-1))
@@ -603,7 +603,7 @@ void CHMM::best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const 
 						    }
 
 						  DREAL input_value ;
-						  DREAL pen_val = lookup_penalty(penalty, pos[t]-pos[ts], svm_value, true, input_value) ;
+						  DREAL pen_val = penalty->lookup_penalty(pos[t]-pos[ts], svm_value, true, input_value) ;
 						  for (short int diff=0; diff<nbest; diff++)
 						    {
 						      DREAL  val        = DELTA(ts,ii,diff) + elem_val[i] ;
@@ -808,16 +808,16 @@ void CHMM::best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const 
 				PEN_values[num_PEN_id-1 + i*num_PEN_id + seq_len*num_PEN_id*k] += SEQ(to_state, to_pos) ;
 				PEN_input_values[num_PEN_id-1 + i*num_PEN_id + seq_len*num_PEN_id*k] = to_state + to_pos*1000 ;
 
-				struct penalty_struct *penalty = PEN(to_state, from_state) ;
+				CPlif *penalty = PEN(to_state, from_state) ;
 				while (penalty)
 				{
 					DREAL input_value=0 ;
-					DREAL pen_val = lookup_penalty(penalty, pos[to_pos]-pos[from_pos], svm_value, false, input_value) ;
-					PEN_values[penalty->id + i*num_PEN_id + seq_len*num_PEN_id*k] += pen_val ;
-					PEN_input_values[penalty->id + i*num_PEN_id + seq_len*num_PEN_id*k] += input_value ;
-					PEN_names[penalty->id] = penalty->name ;
+					DREAL pen_val = penalty->lookup_penalty(pos[to_pos]-pos[from_pos], svm_value, false, input_value) ;
+					PEN_values[penalty->get_id() + i*num_PEN_id + seq_len*num_PEN_id*k] += pen_val ;
+					PEN_input_values[penalty->get_id() + i*num_PEN_id + seq_len*num_PEN_id*k] += input_value ;
+					PEN_names[penalty->get_id()] = penalty->get_name() ;
 					//CIO::message(M_DEBUG, "%s(%i;%1.2f), ", penalty->name, penalty->id, pen_val) ;
-					penalty = penalty->next_pen ;
+					penalty = penalty->get_next_pen() ;
 				}
 				//CIO::message(M_DEBUG, "\n") ;
 			}
