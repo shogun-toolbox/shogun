@@ -12,6 +12,7 @@
 #include "distributions/hmm/HMM.h"
 #include "lib/Mathematics.h"
 #include "lib/io.h"
+#include "lib/Plif.h"
 #include "features/StringFeatures.h"
 #include "features/CharFeatures.h"
 
@@ -145,7 +146,7 @@ static void extend_segment_sum_value(DREAL *segment_sum_weights, INT seqlen, INT
 #define PEN(i,j) PEN_matrix[(j)*N+i]
 
 void CHMM::best_path_2struct(const DREAL *seq, INT seq_len, const INT *pos,
-							 struct penalty_struct **PEN_matrix, 
+							 CPlif **PEN_matrix, 
 							 const char *genestr, INT genestr_len,
 							 short int nbest, 
 							 DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
@@ -170,16 +171,16 @@ void CHMM::best_path_2struct(const DREAL *seq, INT seq_len, const INT *pos,
 		for (INT i=0; i<N; i++)
 			for (INT j=0; j<N; j++)
 			{
-				struct penalty_struct *penij=PEN(i,j) ;
+				CPlif *penij=PEN(i,j) ;
 				while (penij!=NULL)
 				{
-					if (penij->max_len>max_look_back)
-						max_look_back=penij->max_len ;
-					if (penij->use_svm)
+					if (penij->get_max_len()>max_look_back)
+						max_look_back=penij->get_max_len() ;
+					if (penij->get_use_svm())
 						use_svm=true ;
-					if (penij->id+1>num_PEN_id)
-						num_PEN_id=penij->id+1 ;
-					penij=penij->next_pen ;
+					if (penij->get_id()+1>num_PEN_id)
+						num_PEN_id=penij->get_id()+1 ;
+					penij=penij->get_next_pen() ;
 				} 
 			}
 	}
@@ -297,10 +298,10 @@ void CHMM::best_path_2struct(const DREAL *seq, INT seq_len, const INT *pos,
 					T_STATES ii = elem_list[i] ;
 					//fprintf(stderr, "i=%i  ii=%i  num_elem=%i  PEN=%ld\n", i, ii, num_elem, PEN(j,ii)) ;
 					
-					const struct penalty_struct * penalty = PEN(j,ii) ;
+					const CPlif * penalty = PEN(j,ii) ;
 					INT look_back = default_look_back ;
 					if (penalty!=NULL)
-						look_back=penalty->max_len ;
+						look_back=penalty->get_max_len() ;
 					
 					INT last_svm_pos ;
 					if (use_svm)
@@ -317,7 +318,7 @@ void CHMM::best_path_2struct(const DREAL *seq, INT seq_len, const INT *pos,
 						extend_segment_sum_value(segment_sum_weights, seq_len, N, pos[ts], last_segment_sum_pos, segment_sum_value) ;
 						
 						DREAL input_value ;
-						DREAL pen_val = lookup_penalty(penalty, pos[t]-pos[ts], svm_value, true, input_value) + segment_sum_value[j] ;
+						DREAL pen_val = penalty->lookup_penalty(pos[t]-pos[ts], svm_value, true, input_value) + segment_sum_value[j] ;
 						for (short int diff=0; diff<nbest; diff++)
 						{
 							DREAL  val        = DELTA(ts,ii,diff) + elem_val[i] ;
@@ -445,16 +446,16 @@ void CHMM::best_path_2struct(const DREAL *seq, INT seq_len, const INT *pos,
 				PEN_values[num_PEN_id-1 + i*num_PEN_id + seq_len*num_PEN_id*k] = SEQ(to_state, to_pos) + segment_sum_value[to_state] ;
 				//PEN_input_values[num_PEN_id-1 + i*num_PEN_id + seq_len*num_PEN_id*k] = segment_sum_value[to_state] ;
 
-				struct penalty_struct *penalty = PEN(to_state, from_state) ;
+				CPlif *penalty = PEN(to_state, from_state) ;
 				while (penalty)
 				{
 					DREAL input_value=0 ;
-					DREAL pen_val = lookup_penalty(penalty, pos[to_pos]-pos[from_pos], svm_value, false, input_value) ;
-					PEN_values[penalty->id + i*num_PEN_id + seq_len*num_PEN_id*k] += pen_val ;
-					PEN_input_values[penalty->id + i*num_PEN_id + seq_len*num_PEN_id*k] += input_value ;
-					PEN_names[penalty->id] = penalty->name ;
+					DREAL pen_val = penalty->lookup_penalty(pos[to_pos]-pos[from_pos], svm_value, false, input_value) ;
+					PEN_values[penalty->get_id() + i*num_PEN_id + seq_len*num_PEN_id*k] += pen_val ;
+					PEN_input_values[penalty->get_id() + i*num_PEN_id + seq_len*num_PEN_id*k] += input_value ;
+					PEN_names[penalty->get_id()] = penalty->get_name() ;
 					//CIO::message(M_DEBUG, "%s(%i;%1.2f), ", penalty->name, penalty->id, pen_val) ;
-					penalty = penalty->next_pen ;
+					penalty = penalty->get_next_pen() ;
 				}
 				//CIO::message(M_DEBUG, "\n") ;
 			}
