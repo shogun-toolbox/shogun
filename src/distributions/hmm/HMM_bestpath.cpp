@@ -9,6 +9,7 @@
  */
 
 #include <math.h>
+#include "lib/Plif.h"
 #include "distributions/hmm/HMM.h"
 #include "lib/Mathematics.h"
 #include "lib/io.h"

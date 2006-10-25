@@ -17,12 +17,11 @@
 #ifndef __CHMM_H__
 #define __CHMM_H__
 
-#include "distributions/hmm/penalty_info.h"
-
 #include "lib/Mathematics.h"
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/config.h"
+#include "lib/Plif.h"
 #include "features/StringFeatures.h"
 #include "distributions/Distribution.h"
 
@@ -577,7 +576,7 @@ public:
 	//void best_path_no_b_trans1(INT max_iter, INT & max_best_iter, DREAL *prob_nbest, INT *my_paths) ;
 	void model_prob_no_b_trans(INT max_iter, DREAL *prob_iter) ;
 	void best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const INT *orf_info,
-						 struct penalty_struct **PEN_matrix, 
+						 CPlif **PEN_matrix, 
 						 const char *genestr, INT genestr_len,
 						 short int nbest, 
 						 DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
@@ -585,13 +584,13 @@ public:
 						 DREAL *&PEN_values, DREAL *&PEN_input_values, 
 						 INT &num_PEN_id, bool use_orf) ;
 	void best_path_2struct(const DREAL *seq, INT seq_len, const INT *pos, 
-						 struct penalty_struct **PEN_matrix, 
-						 const char *genestr, INT genestr_len,
-						 short int nbest, 
-						 DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
-						 DREAL *dictionary_weights, INT dict_len, DREAL *segment_sum_weights, 
-						 DREAL *&PEN_values, DREAL *&PEN_input_values, 
-						 INT &num_PEN_id) ;
+						   CPlif **PEN_matrix, 
+						   const char *genestr, INT genestr_len,
+						   short int nbest, 
+						   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
+						   DREAL *dictionary_weights, INT dict_len, DREAL *segment_sum_weights, 
+						   DREAL *&PEN_values, DREAL *&PEN_input_values, 
+						   INT &num_PEN_id) ;
 	void best_path_trans_simple(const DREAL *seq, INT seq_len, short int nbest, 
 								DREAL *prob_nbest, INT *my_state_seq) ;
 #endif

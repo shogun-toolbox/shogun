@@ -46,7 +46,7 @@ void init_penalty_struct(struct penalty_struct &PEN) ;
 void delete_penalty_struct(struct penalty_struct &PEN) ;
 void delete_penalty_struct_array(struct penalty_struct *PEN, INT len) ;
 
-#ifdef HAVE_MATLAB
+#ifdef HAVE_MATLAB_XXX
 struct penalty_struct * read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT &P) ;
 #endif
 
