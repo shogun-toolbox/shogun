@@ -19,7 +19,7 @@
 #include "features/Features.h"
 
 #include "float.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 
 #include <stdio.h>
 

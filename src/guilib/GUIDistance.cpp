@@ -30,7 +30,6 @@
 #include "features/ByteFeatures.h"
 #include "features/ShortFeatures.h"
 #include "features/RealFeatures.h"
-#include "features/SparseRealFeatures.h"
 #include "features/Features.h"
 
 #include "lib/io.h"
