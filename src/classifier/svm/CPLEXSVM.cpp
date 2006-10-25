@@ -12,7 +12,7 @@
 #include "lib/common.h"
 #ifdef USE_CPLEX
 #include "lib/io.h"
-#include "lib/Mathmatics.h"
+#include "lib/Mathematics.h"
 #include "lib/Cplex.h"
 #include "features/Labels.h"
 
