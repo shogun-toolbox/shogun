@@ -250,25 +250,25 @@ bool CGUIClassifier::train_svm(CHAR* param, bool auc_maximization)
 bool CGUIClassifier::train_knn(CHAR* param)
 {
 	CLabels* trainlabels=gui->guilabels.get_train_labels();
-	CKernel* kernel=gui->guikernel.get_kernel();
+	CDistance* distance=gui->guidistance.get_distance();
 
 	bool result=false;
 
 	if (trainlabels)
 	{
-		if (kernel)
+		if (distance)
 		{
 			param=CIO::skip_spaces(param);
 			INT k=3;
 			sscanf(param, "%d", &k);
 
 			((CKNN*) classifier)->set_labels(trainlabels);
-			((CKNN*) classifier)->set_kernel(kernel);
+			((CKNN*) classifier)->set_distance(distance);
 			((CKNN*) classifier)->set_k(k);
 			result=((CKNN*) classifier)->train();
 		}
 		else
-			CIO::message(M_ERROR, "no kernel available\n") ;
+			CIO::message(M_ERROR, "no distance available\n") ;
 	}
 	else
 		CIO::message(M_ERROR, "no labels available\n") ;
@@ -578,7 +578,7 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_KERTHIPRIMAL:
 		case CT_KERNELPERCEPTRON:
 		case CT_KNN:
-			return classify_kernelmachine(output);
+			return classify_distancemachine(output);
 			break;
 		case CT_PERCEPTRON:
 		case CT_LDA:
@@ -635,6 +635,50 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 	CIO::message(M_INFO, "starting kernel machine testing\n") ;
 	return classifier->classify(output);
 }
+
+CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
+{
+	CLabels* testlabels=gui->guilabels.get_test_labels();
+	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
+	CFeatures* testfeatures=gui->guifeatures.get_test_features();
+	gui->guidistance.get_distance()->set_precompute_matrix(false);
+
+	if (!classifier)
+	{
+		CIO::message(M_ERROR, "no kernelmachine available\n") ;
+		return NULL;
+	}
+	if (!trainfeatures)
+	{
+		CIO::message(M_ERROR, "no training features available\n") ;
+		return NULL;
+	}
+
+	if (!testfeatures)
+	{
+		CIO::message(M_ERROR, "no test features available\n") ;
+		return NULL;
+	}
+
+	if (!testlabels)
+	{
+		CIO::message(M_ERROR, "no test labels available\n") ;
+		return NULL;
+	}
+
+	if (!gui->guidistance.is_initialized())
+	{
+		CIO::message(M_ERROR, "distance not initialized\n") ;
+		return NULL;
+	}
+	  
+	((CDistanceMachine*) classifier)->set_labels(testlabels);
+	((CDistanceMachine*) classifier)->set_distance(gui->guidistance.get_distance()) ;
+	gui->guidistance.get_distance()->set_precompute_matrix(false);
+	CIO::message(M_INFO, "starting distance machine testing\n") ;
+	return classifier->classify(output);
+}
+
 
 CLabels* CGUIClassifier::classify_linear(CLabels* output)
 {

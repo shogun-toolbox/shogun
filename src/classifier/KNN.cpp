@@ -4,7 +4,9 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2006 Soeren Sonnenburg
+ * 
+ * Written (W) 2006 Soeren Sonnenburg
+ * Written (W) 2006 Christian Gehl
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -24,8 +26,9 @@ CKNN::~CKNN()
 
 bool CKNN::train()
 {
-	ASSERT(CKernelMachine::get_labels());
-	train_labels=CKernelMachine::get_labels()->get_int_labels(num_train_labels);
+	ASSERT(CDistanceMachine::get_labels());
+	
+	train_labels=CDistanceMachine::get_labels()->get_int_labels(num_train_labels);
 
 	ASSERT(train_labels);
 	ASSERT(num_train_labels>0);
@@ -52,12 +55,13 @@ bool CKNN::train()
 
 CLabels* CKNN::classify(CLabels* output)
 {
-	ASSERT(CKernelMachine::get_kernel());
-	ASSERT(CKernelMachine::get_labels());
-	ASSERT(CKernelMachine::get_labels()->get_num_labels());
+	ASSERT(CDistanceMachine::get_distance());
+	ASSERT(CDistanceMachine::get_labels());
+	ASSERT(CDistanceMachine::get_labels()->get_num_labels());
 
-	int num_lab=CKernelMachine::get_labels()->get_num_labels();
-	CKernel* kernel=CKernelMachine::get_kernel();
+	int num_lab=CDistanceMachine::get_labels()->get_num_labels();
+	
+	CDistance* distance=CDistanceMachine::get_distance();
 
 	//distances to train data and working buffer of train_labels
 	DREAL* dists=new DREAL[num_train_labels];
@@ -84,7 +88,8 @@ CLabels* CKNN::classify(CLabels* output)
 		{
 			//copy back train labels and compute distance
 			train_lab[j]=train_labels[j];
-			dists[j]=kernel->kernel(j,i);
+			
+			dists[j]=distance->distance(j,i);
 		}
 
 		//sort the distance vector for test example j to all train examples

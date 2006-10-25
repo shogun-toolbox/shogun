@@ -8,6 +8,7 @@
  * Written (W) 1999-2006 Gunnar Raetsch
  * Written (W) 2006 Fabio De Bona
  * Written (W) 2006 Konrad Rieck
+ * Written (W) 2006 Christian Gehl
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -182,6 +183,17 @@ enum EClassifierType
 	CT_LPM = 100,
 	CT_KNN = 110,
 	CT_LIBSVMONECLASS=120
+};
+
+enum EDistanceType
+{
+	D_UNKNOWN = 0,
+	D_MINKOWSKI = 10,
+	D_MANHATTAN = 20,
+	D_CANBERRA = 30,
+	D_CHEBYSHEW = 40,
+	D_GEODESIC = 50,
+	D_JENSEN = 60	
 };
 
 enum ERegressionType

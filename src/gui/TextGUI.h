@@ -21,6 +21,8 @@
 #include "gui/GUI.h"
 #include "lib/Signal.h"
 
+#include "guilib/GUIDistance.h"
+
 class CTextGUI: public CGUI
 {
 public:

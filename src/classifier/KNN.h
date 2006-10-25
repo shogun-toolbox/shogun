@@ -4,27 +4,29 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
+ * Written (W) 2006 Christian Gehl
  * Written (W) 1999-2006 Soeren Sonnenburg
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _KNN_H___
-#define _KNN_H___
+#ifndef _KNN_H__
+#define _KNN_H__
 
 #include <stdio.h>
 #include "lib/common.h"
 #include "lib/io.h"
 #include "features/Features.h"
-#include "kernel/Kernel.h"
-#include "kernel/KernelMachine.h"
+#include "distance/Distance.h"
+#include "distance/DistanceMachine.h"
 
-class CKNN : public CKernelMachine
+class CKNN : public CDistanceMachine
 {
 	public:
 		CKNN();
 		virtual ~CKNN();
 
 		inline EClassifierType get_classifier_type() { return CT_KNN; }
+		//inline EDistanceType get_distance_type() { return DT_KNN;}
 		virtual bool train();
 		virtual CLabels* classify(CLabels* output=NULL);
 		virtual DREAL classify_example(INT idx)

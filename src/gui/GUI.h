@@ -24,12 +24,14 @@
 #include "guilib/GUILabels.h"
 #include "guilib/GUITime.h"
 
+#include "guilib/GUIDistance.h"
+
 class CGUI
 {
  public:
 
   CGUI(INT ac, char** av): guisvm(this), guiclassifier(this), guihmm(this), guipluginestimate(this), guiknn(this), guikernel(this), 
-    guipreproc(this), guifeatures(this), guilabels(this), guimath(this), guitime(this), argc(ac), argv(av) {} ;
+    guipreproc(this), guifeatures(this), guilabels(this), guimath(this), guitime(this), guidistance(this) ,argc(ac), argv(av) {} ;
 
   CGUISVM guisvm;
   CGUIClassifier guiclassifier;
@@ -42,6 +44,8 @@ class CGUI
   CGUILabels guilabels;
   CGUIMath guimath;
   CGUITime guitime;
+	
+  CGUIDistance guidistance;
 
   INT argc ;
   char** argv ;

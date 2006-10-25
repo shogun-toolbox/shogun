@@ -74,6 +74,7 @@ static const CHAR* N_RELATIVE_ENTROPY=	"relative_entropy";
 static const CHAR* N_ENTROPY=			"entropy";
 static const CHAR* N_PERMUTATION_ENTROPY="permutation_entropy";
 static const CHAR* N_SET_KERNEL=		"set_kernel";
+static const CHAR* N_SET_DISTANCE=		"set_distance";
 static const CHAR* N_ADD_KERNEL=		"add_kernel";
 static const CHAR* N_CLEAN_KERNEL=		"clean_kernel";
 #ifdef USE_SVMLIGHT
@@ -85,6 +86,7 @@ static const CHAR* N_ADD_PREPROC=		"add_preproc";
 static const CHAR* N_DEL_PREPROC=		"del_preproc";
 static const CHAR* N_CLEAN_PREPROC=		"clean_preproc";
 static const CHAR* N_INIT_KERNEL=		"init_kernel";
+static const CHAR* N_INIT_DISTANCE=		"init_distance";
 static const CHAR* N_DELETE_KERNEL_OPTIMIZATION=		"delete_kernel_optimization";
 static const CHAR* N_INIT_KERNEL_OPTIMIZATION  =		"init_kernel_optimization";
 static const CHAR* N_SAVE_PATH=			"save_hmm_path";
@@ -398,6 +400,10 @@ bool CTextGUI::parse_line(CHAR* input)
 	else if (!strncmp(input, N_INIT_KERNEL, strlen(N_INIT_KERNEL)))
 	{
 		guikernel.init_kernel(input+strlen(N_INIT_KERNEL));
+	}
+	else if (!strncmp(input, N_INIT_DISTANCE, strlen(N_INIT_DISTANCE)))
+	{
+		guidistance.init_distance(input+strlen(N_INIT_DISTANCE));
 	} 
 	else if (!strncmp(input, N_LOAD_KERNEL_INIT, strlen(N_LOAD_KERNEL_INIT)))
 	{
@@ -585,6 +591,10 @@ bool CTextGUI::parse_line(CHAR* input)
 	{
 		guikernel.set_kernel(input+strlen(N_SET_KERNEL));
 	} 
+	else if (!strncmp(input, N_SET_DISTANCE, strlen(N_SET_DISTANCE)))
+	{
+		guidistance.set_distance(input+strlen(N_SET_DISTANCE));
+	}
 	else if (!strncmp(input, N_ADD_KERNEL, strlen(N_ADD_KERNEL)))
 	{
 		guikernel.add_kernel(input+strlen(N_ADD_KERNEL));

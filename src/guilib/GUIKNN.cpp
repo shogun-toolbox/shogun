@@ -29,13 +29,13 @@ bool CGUIKNN::new_knn(CHAR* param)
 bool CGUIKNN::train(CHAR* param)
 {
 	CLabels* trainlabels=gui->guilabels.get_train_labels();
-	CKernel* kernel=gui->guikernel.get_kernel();
+	CDistance* distance=gui->guidistance.get_distance();
 
 	bool result=false;
 
 	if (trainlabels)
 	{
-		if (kernel)
+		if (distance)
 		{
 			param=CIO::skip_spaces(param);
 			k=3;
@@ -44,7 +44,7 @@ bool CGUIKNN::train(CHAR* param)
 			if (knn)
 			{
 				knn->set_labels(trainlabels);
-				knn->set_kernel(kernel);
+				knn->set_distance(distance);
 				knn->set_k(k);
 				result=knn->train();
 			}
@@ -52,7 +52,7 @@ bool CGUIKNN::train(CHAR* param)
 				CIO::message(M_ERROR, "no knn classifier available\n");
 		}
 		else
-			CIO::message(M_ERROR, "no kernel available\n") ;
+			CIO::message(M_ERROR, "no distance available\n") ;
 	}
 	else
 		CIO::message(M_ERROR, "no labels available\n") ;
@@ -95,7 +95,7 @@ bool CGUIKNN::test(CHAR* param)
 	}
 
 	CLabels* testlabels=gui->guilabels.get_test_labels();
-	CKernel* kernel=gui->guikernel.get_kernel();
+	CDistance* distance=gui->guidistance.get_distance();
 
 	if (!knn)
 	{
@@ -103,9 +103,9 @@ bool CGUIKNN::test(CHAR* param)
 		return false ;
 	}
 
-	if (!kernel)
+	if (!distance)
 	{
-		CIO::message(M_ERROR, "no kernel available\n") ;
+		CIO::message(M_ERROR, "no distance available\n") ;
 		return false ;
 	}
 
@@ -116,7 +116,7 @@ bool CGUIKNN::test(CHAR* param)
 	}
 
 	knn->set_labels(testlabels);
-	knn->set_kernel(kernel);
+	knn->set_distance(distance);
 
 	CIO::message(M_INFO, "starting knn classifier testing\n") ;
 	INT len=0;
