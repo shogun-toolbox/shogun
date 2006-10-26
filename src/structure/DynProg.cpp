@@ -25,10 +25,6 @@
 #include "lib/DynArray3.h"
 #include "lib/fibheap.h"
 
-CDynamicArray<INT> tt1(1) ;
-CDynamicArray2<INT> tt2(1,1) ;
-CDynamicArray3<INT> tt3(1,1,1) ;
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -37,8 +33,6 @@ CDynamicArray3<INT> tt3(1,1,1) ;
 #ifdef SUNOS
 extern "C" int	finite(double);
 #endif
-
-#define ARRAY_SIZE 65356
 
 #define USEHEAP 0
 #define USEORIGINALLIST 0
@@ -71,18 +65,14 @@ INT CDynProg::svm_pos_start[num_degrees] ;
 INT CDynProg::num_unique_words[num_degrees] ;
 
 
-
 CDynProg::CDynProg(INT N, double* p, double* q, double* a)
+	: transition_matrix_a(a,N,N,false), initial_state_distribution_p(p,N,N,false), end_state_distribution_q(q,N,N,false)
 {
 	this->N=N;
-	
-	transition_matrix_a=a ;
-	initial_state_distribution_p=p ;
-	end_state_distribution_q=q ;
-	
 }
 
 CDynProg::CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans)
+	: transition_matrix_a(N,N), initial_state_distribution_p(p,N,N,false), end_state_distribution_q(q,N,N,false)
 {
 	this->N=N;
 	
@@ -92,11 +82,6 @@ CDynProg::CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans)
 	trans_list_backward = NULL ;
 	trans_list_backward_cnt = NULL ;
 	trans_list_len = 0 ;
-	mem_initialized = false ;
-
-	this->transition_matrix_a=NULL;
-	this->initial_state_distribution_p=NULL;
-	this->end_state_distribution_q=NULL;
 
 	mem_initialized = true ;
 
@@ -153,10 +138,6 @@ CDynProg::CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans)
 		trans_list_forward_cnt[from]++ ;
 		//ASSERT(trans_list_forward_cnt[from]<3000) ;
 	} ;
-	
-	transition_matrix_a=NULL ;
-	initial_state_distribution_p=p ;
-	end_state_distribution_q=q ;
 }
 
 
@@ -187,70 +168,19 @@ CDynProg::~CDynProg()
 		delete[] trans_list_backward[i] ;
 	    delete[] trans_list_backward ;
 	  } ;
-
-	free_state_dependend_arrays();
 }
 
-bool CDynProg::alloc_state_dependend_arrays()
-{
-	if (!transition_matrix_a && !initial_state_distribution_p && !end_state_distribution_q)
-	{
-		transition_matrix_a=new DREAL[N*N];
-		initial_state_distribution_p=new DREAL[N];
-		end_state_distribution_q=new DREAL[N];
-	}
-	return ((transition_matrix_a != NULL) && (initial_state_distribution_p != NULL) &&
-			(end_state_distribution_q != NULL));
-}
-
-void CDynProg::free_state_dependend_arrays()
-{
-	if (transition_matrix_a)
-	{
-		delete[] transition_matrix_a;
-		delete[] initial_state_distribution_p;
-		delete[] end_state_distribution_q;
-	} ;
-	
-	transition_matrix_a=NULL;
-	initial_state_distribution_p=NULL;
-	end_state_distribution_q=NULL;
-}
-
-bool CDynProg::initialize(CModel* model)
-{
-	trans_list_forward = NULL ;
-	trans_list_forward_cnt = NULL ;
-	trans_list_forward_val = NULL ;
-	trans_list_backward = NULL ;
-	trans_list_backward_cnt = NULL ;
-	trans_list_len = 0 ;
-	mem_initialized = false ;
-
-	this->transition_matrix_a=NULL;
-	this->initial_state_distribution_p=NULL;
-	this->end_state_distribution_q=NULL;
-
-	alloc_state_dependend_arrays();
-
-	this->loglikelihood=false;
-	mem_initialized = true ;
-
-	return	((transition_matrix_a != NULL) && (initial_state_distribution_p != NULL) &&
-			(end_state_distribution_q != NULL));
-}
 
 DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 {
 	CDynamicArray2<T_STATES> psi(max_iter, N) ;
-	
-	DREAL* delta= new DREAL[N] ;
-	DREAL* delta_new= new DREAL[N] ;
+	CDynamicArray<DREAL>* delta = new CDynamicArray<DREAL>(N) ;
+	CDynamicArray<DREAL>* delta_new = new CDynamicArray<DREAL>(N) ;
 	
 	{ // initialization
 		for (INT i=0; i<N; i++)
 		{
-			delta[i] = get_p(i) ;
+			delta->element(i) = get_p(i) ;
 			psi.element(0, i)= 0 ;
 		}
 	} 
@@ -261,17 +191,16 @@ DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 	// recursion
 	for (INT t=1; t<max_iter; t++)
 	{
-		DREAL* dummy;
+		CDynamicArray<DREAL>* dummy;
 		INT NN=N ;
 		for (INT j=0; j<NN; j++)
 		{
-			DREAL * matrix_a = &transition_matrix_a[j*N] ; // sorry for that
-			DREAL maxj = delta[0] + matrix_a[0];
+			DREAL maxj = delta->element(0) + transition_matrix_a.element(0,j);
 			INT argmax=0;
 			
 			for (INT i=1; i<NN; i++)
 			{
-				DREAL temp = delta[i] + matrix_a[i];
+				DREAL temp = delta->element(i) + transition_matrix_a.element(i,j);
 				
 				if (temp>maxj)
 				{
@@ -279,7 +208,7 @@ DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 					argmax=i;
 				}
 			}
-			delta_new[j]=maxj ;
+			delta_new->element(j)=maxj ;
 			psi.element(t, j)=argmax ;
 		}
 		
@@ -288,12 +217,12 @@ DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 		delta_new=dummy;	//switch delta/delta_new
 		
 		{ //termination
-			DREAL maxj=delta[0]+get_q(0);
+			DREAL maxj=delta->element(0)+get_q(0);
 			INT argmax=0;
 			
 			for (INT i=1; i<N; i++)
 			{
-				DREAL temp=delta[i]+get_q(i);
+				DREAL temp=delta->element(i)+get_q(i);
 				
 				if (temp>maxj)
 				{
@@ -316,12 +245,12 @@ DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 	{ //state sequence backtracking
 		for (INT t = best_iter; t>0; t--)
 		{
-			my_path[t-1]=get_psi(t, my_path[t]);
+			my_path[t-1]=psi.element(t, my_path[t]);
 		}
 	}
 
-	delete[] delta ;
-	delete[] delta_new ;
+	delete delta ;
+	delete delta_new ;
 	
 	return best_iter_prob ;
 }
@@ -427,14 +356,10 @@ void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int 
 	{ //state sequence backtracking
 		max_best_iter=0 ;
 		
-		DREAL* sort_delta_end=new DREAL[max_iter*nbest] ;
-		ASSERT(sort_delta_end!=NULL) ;
-		short int* sort_k=new short int[max_iter*nbest] ;
-		ASSERT(sort_k!=NULL) ;
-		INT* sort_t=new INT[max_iter*nbest] ;
-		ASSERT(sort_t!=NULL) ;
-		INT* sort_idx=new INT[max_iter*nbest] ;
-		ASSERT(sort_idx!=NULL) ;
+		CDynamicArray<DREAL> sort_delta_end(max_iter*nbest) ;
+		CDynamicArray<short int> sort_k(max_iter*nbest) ;
+		CDynamicArray<INT> sort_t(max_iter*nbest) ;
+		CDynamicArray<INT> sort_idx(max_iter*nbest) ;
 		
 		INT i=0 ;
 		for (INT iter=0; iter<max_iter-1; iter++)
@@ -447,7 +372,7 @@ void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int 
 				i++ ;
 			}
 		
-		CMath::qsort(sort_delta_end, sort_idx, (max_iter-1)*nbest) ;
+		CMath::qsort(sort_delta_end.get_array(), sort_idx.get_array(), (max_iter-1)*nbest) ;
 
 		for (short int n=0; n<nbest; n++)
 		{
@@ -470,10 +395,6 @@ void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int 
 				q = ktable.element(t, paths.element(t,n), q) ;
 			}
 		}
-		delete[] sort_delta_end ;
-		delete[] sort_k ;
-		delete[] sort_t ;
-		delete[] sort_idx ;
 	}
 
 	delete delta ;
@@ -1336,18 +1257,18 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				const T_STATES *elem_list = trans_list_forward[j] ;
 				const DREAL *elem_val      = trans_list_forward_val[j] ;
 				
-				#if USEFIXEDLENLIST > 0
+#if USEFIXEDLENLIST > 0
 				INT fixed_list_len = 0 ;
-				#endif
-
-				#if USEORIGINALLIST > 0
-				INT old_list_len = 0 ;
-				#endif
+#endif
 				
-				#if USEHEAP > 0
+#if USEORIGINALLIST > 0
+				INT old_list_len = 0 ;
+#endif
+				
+#if USEHEAP > 0
 				Heap* tempheap = new Heap;
-				#endif
-
+#endif
+				
 				for (INT i=0; i<num_elem; i++)
 				{
 					T_STATES ii = elem_list[i] ;
@@ -1369,14 +1290,14 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 						if (orf_target<0) orf_target+=3 ;
 						ASSERT(orf_target>=0 && orf_target<3) ;
 					}
-
+					
 					INT last_pos = pos[t] ;
-
+					
 					for (INT ts=t-1; ts>=0 && pos[t]-pos[ts]<=look_back; ts--)
 					{
 						bool ok ;
 						int plen=t-ts;
-
+						
 						if (orf_target==-1)
 							ok=true ;
 						else if (pos[ts]!=-1 && (pos[t]-pos[ts])%3==orf_target)
@@ -1822,381 +1743,3 @@ void CDynProg::best_path_trans_simple(const DREAL *seq_array, INT seq_len, short
 	}
 }
 
-/*
-void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int nbest, DREAL *prob_nbest, INT *my_paths)
-{
-#define PSI(t,j,k) psi[nbest*((t)*N+(j))+(k)]	
-#define delta->elements(j,k) delta[(j)*nbest+k]
-#define DELTA_NEW(j,k) delta_new[(j)*nbest+k]
-#define delta_end.element(t,k) delta_end[(t)*nbest+k]
-#define ktable.element(t,j,k) ktable[nbest*((t)*N+j)+k]
-#define KTAB_ENDS(t,k) ktable_ends[nbest*(t)+k]
-#define PATHS(t,k) my_paths[(k)*(max_iter+1)+t] 
-#define path_ends.element(t,k) path_ends[(t)*nbest+k]
-
-	T_STATES *psi=new T_STATES[max_iter*N*nbest] ;
-	ASSERT(psi!=NULL) ;
-	short int *ktable=new short int[max_iter*N*nbest] ;
-	ASSERT(ktable!=NULL) ;
-	short int *ktable_ends=new short int[max_iter*nbest] ;
-	ASSERT(ktable_ends!=NULL) ;
-
-	DREAL* tempvv=new DREAL[nbest*N] ;
-	ASSERT(tempvv!=NULL) ;
-	INT* tempii=new INT[nbest*N] ;
-	ASSERT(tempii!=NULL) ;
-
-	T_STATES* path_ends = new T_STATES[max_iter*nbest] ;
-	ASSERT(path_ends!=NULL) ;
-	DREAL* delta= new DREAL[N*nbest] ;
-	ASSERT(delta!=NULL) ;
-	DREAL* delta_new= new DREAL[N*nbest] ;
-	ASSERT(delta_new!=NULL) ;
-	DREAL* delta_end= new DREAL[max_iter*nbest] ;
-	ASSERT(delta_end!=NULL) ;
-
-	{ // initialization
-		for (T_STATES i=0; i<N; i++)
-		{
-			delta->elements(i,0) = get_p(i) ;
-			for (short int k=1; k<nbest; k++)
-			{
-				delta->elements(i,k)=-CMath::INFTY ;
-				ktable.element(0,i,k)=0 ;
-			}
-		}
-	}
-	
-	// recursion
-	for (INT t=1; t<max_iter; t++)
-	{
-		DREAL* dummy;
-
-		for (T_STATES j=0; j<N; j++)
-		{
-			const T_STATES num_elem   = trans_list_forward_cnt[j] ;
-			const T_STATES *elem_list = trans_list_forward[j] ;
-			const DREAL *elem_val = trans_list_forward_val[j] ;
-			
-			INT list_len=0 ;
-			for (short int diff=0; diff<nbest; diff++)
-			{
-				for (INT i=0; i<num_elem; i++)
-				{
-					T_STATES ii = elem_list[i] ;
-					
-					tempvv[list_len] = -(delta->elements(ii,diff) + elem_val[i]) ;
-					tempii[list_len] = diff*N + ii ;
-					list_len++ ;
-				}
-			}
-			CMath::qsort(tempvv, tempii, list_len) ;
-			
-			for (short int k=0; k<nbest; k++)
-			{
-				if (k<list_len)
-				{
-					delta_new->elements(j,k)  = -tempvv[k] ;
-					PSI(t,j,k)      = (tempii[k]%N) ;
-					ktable.element(t,j,k)     = (tempii[k]-(tempii[k]%N))/N ;
-				}
-				else
-				{
-					delta_new->elements(j,k)  = -CMath::INFTY ;
-					PSI(t,j,k)      = 0 ;
-					ktable.element(t,j,k)     = 0 ;
-				}
-			}
-		}
-		
-		dummy=delta;
-		delta=delta_new;
-		delta_new=dummy;	//switch delta/delta_new
-		
-		{ //termination
-			INT list_len = 0 ;
-			for (short int diff=0; diff<nbest; diff++)
-			{
-				for (T_STATES i=0; i<N; i++)
-				{
-					tempvv[list_len] = -(delta->elements(i,diff)+get_q(i));
-					tempii[list_len] = diff*N + i ;
-					list_len++ ;
-				}
-			}
-			CMath::qsort(tempvv, tempii, list_len) ;
-			
-			for (short int k=0; k<nbest; k++)
-			{
-				delta_end.element(t-1,k) = -tempvv[k] ;
-				path_ends.element(t-1,k) = (tempii[k]%N) ;
-				KTAB_ENDS(t-1,k) = (tempii[k]-(tempii[k]%N))/N ;
-			}
-		}
-	}
-	
-	{ //state sequence backtracking
-		max_best_iter=0 ;
-		
-		DREAL* sort_delta_end=new DREAL[max_iter*nbest] ;
-		ASSERT(sort_delta_end!=NULL) ;
-		short int* sort_k=new short int[max_iter*nbest] ;
-		ASSERT(sort_k!=NULL) ;
-		INT* sort_t=new INT[max_iter*nbest] ;
-		ASSERT(sort_t!=NULL) ;
-		INT* sort_idx=new INT[max_iter*nbest] ;
-		ASSERT(sort_idx!=NULL) ;
-		
-		INT i=0 ;
-		for (INT iter=0; iter<max_iter-1; iter++)
-			for (short int k=0; k<nbest; k++)
-			{
-				sort_delta_end[i]=-delta_end.element(iter,k) ;
-				sort_k[i]=k ;
-				sort_t[i]=iter+1 ;
-				sort_idx[i]=i ;
-				i++ ;
-			}
-		
-		CMath::qsort(sort_delta_end, sort_idx, (max_iter-1)*nbest) ;
-
-		for (short int n=0; n<nbest; n++)
-		{
-			short int k=sort_k[sort_idx[n]] ;
-			INT iter=sort_t[sort_idx[n]] ;
-			prob_nbest[n]=-sort_delta_end[n] ;
-
-			if (iter>max_best_iter)
-				max_best_iter=iter ;
-			
-			ASSERT(k<nbest) ;
-			ASSERT(iter<max_iter) ;
-			
-			PATHS(iter,n) = path_ends.element(iter-1, k) ;
-			short int q   = KTAB_ENDS(iter-1, k) ;
-			
-			for (INT t = iter; t>0; t--)
-			{
-				PATHS(t-1,n)=PSI(t, PATHS(t,n), q);
-				q = ktable.element(t, PATHS(t,n), q) ;
-			}
-		}
-		delete[] sort_delta_end ;
-		delete[] sort_k ;
-		delete[] sort_t ;
-		delete[] sort_idx ;
-	}
-
-	delete[] psi ;
-	delete[] ktable;
-	delete[] ktable_ends;
-
-	delete[] tempvv ;
-	delete[] tempii ;
-
-	delete[] path_ends ;
-	delete[] delta ;
-	delete[] delta_new ;
-	delete[] delta_end ;
-}
-
-
-DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
-{
-
-    CDynamicArray2<T_STATES> psi(max_iter, N) ;
-		
-	DREAL* delta= new DREAL[N] ;
-	DREAL* delta_new= new DREAL[N] ;
-	
-	{ // initialization
-		for (INT i=0; i<N; i++)
-		{
-			delta[i] = get_p(i) ;
-			psi.element(0, i) = 0;
-		}
-	} 
-	
-	DREAL best_iter_prob = CMath::ALMOST_NEG_INFTY ;
-	best_iter = 0 ;
-	
-	// recursion
-	for (INT t=1; t<max_iter; t++)
-	{
-		DREAL* dummy;
-		INT NN=N ;
-		for (INT j=0; j<NN; j++)
-		{
-			DREAL * matrix_a = &transition_matrix_a[j*N] ; // sorry for that
-			DREAL maxj = delta[0] + matrix_a[0];
-			INT argmax=0;
-			
-			for (INT i=1; i<NN; i++)
-			{
-				DREAL temp = delta[i] + matrix_a[i];
-				
-				if (temp>maxj)
-				{
-					maxj=temp;
-					argmax=i;
-				}
-			}
-			delta_new[j]=maxj ;
-			psi.element(t, j)=argmax;
-		}
-		
-		dummy=delta;
-		delta=delta_new;
-		delta_new=dummy;	//switch delta/delta_new
-		
-		{ //termination
-			DREAL maxj=delta[0]+get_q(0);
-			INT argmax=0;
-			
-			for (INT i=1; i<N; i++)
-			{
-				DREAL temp=delta[i]+get_q(i);
-				
-				if (temp>maxj)
-				{
-					maxj=temp;
-					argmax=i;
-				}
-			}
-			pat_prob=maxj;
-			
-			if (pat_prob>best_iter_prob)
-			{
-				my_path[t]=argmax;
-				best_iter=t ;
-				best_iter_prob = pat_prob ;
-			} ;
-		} ;
-	}
-
-	
-	{ //state sequence backtracking
-		for (INT t = best_iter; t>0; t--)
-		{
-			my_path[t-1]=get_psi(t, my_path[t]);
-		}
-	}
-
-	delete[] delta ;
-	delete[] delta_new ;
-	
-	delete[] states_per_observation_psi ;
-	states_per_observation_psi=NULL ;
-
-	return best_iter_prob ;
-}
-*/
-
-/*
-void CDynProg::best_path_no_b_trans1(INT max_iter, INT &max_best_iter, DREAL *prob, INT *my_path)
-{
-	T_STATES *psi=new T_STATES[max_iter*N] ;
-
-	DREAL* tempvv=new DREAL[N] ;
-	INT* tempii=new INT[N] ;
-
-	INT* path_ends = new INT[max_iter] ;
-	DREAL* delta= new DREAL[N] ;
-	DREAL* delta_new= new DREAL[N] ;
-	DREAL* delta_end= new DREAL[max_iter] ;
-
-	for (INT i=0; i<N; i++)
-	{
-		delta[i] = get_p(i) ;
-	}
-	
-	// recursion
-	for (INT t=1; t<max_iter; t++)
-	{
-		DREAL* dummy;
-
-		for (INT j=0; j<N; j++)
-		{
-			const INT num_elem   = trans_list_forward_cnt[j] ;
-			const INT *elem_list = trans_list_forward[j] ;
-			const DREAL *elem_val = trans_list_forward_val[j] ;
-			
-			INT min_state=0 ;
-			DREAL min_val = CMath::INFTY ;
-			
-			for (INT i=0; i<num_elem; i++)
-			{
-				INT ii = elem_list[i] ;
-				DREAL val = -(delta[ii] + elem_val[i]) ;
-				if (val<min_val)
-				{
-					min_val=val ;
-					min_state=ii ;
-				}
-			}
-			delta_new[j]  = -min_val ;
-			psi[t*N+j]    = min_state ;
-		}
-		
-		dummy=delta;
-		delta=delta_new;
-		delta_new=dummy;	//switch delta/delta_new
-		
-		{ //termination
-			INT min_state = 0 ;
-			DREAL min_val = CMath::INFTY ;
-			
-			for (INT i=0; i<N; i++)
-			{
-				DREAL val = -(delta[i]+get_q(i));
-				if (val<min_val)
-				{
-					min_val=val ;
-					min_state=i ;
-				}
-			}
-			
-			delta_end[t-1] = -min_val ;
-			path_ends[t-1] = min_state ;
-		}
-	}
-	
-	{ //state sequence backtracking
-		max_best_iter=0 ;
-		
-		DREAL* sort_delta_end=new DREAL[max_iter] ;
-		INT* sort_t=new INT[max_iter] ;
-		
-		INT i=0 ; 
-		DREAL
-		for (INT iter=0; iter<max_iter-1; iter++)
-		{
-			sort_delta_end[i]=-delta_end[iter] ;
-			sort_t[i]=iter+1 ;
-			i++ ;
-		}
-		CMath::qmin(sort_delta_end, sort_t, max_iter-1) ;
-
-		INT iter=sort_t[0] ;
-		prob[0]=-sort_delta_end[0] ;
-			
-		max_best_iter=iter ;
-		ASSERT(iter<max_iter) ;
-			
-		my_path[iter] = path_ends[iter-1] ;
-		for (INT t = iter; t>0; t--)
-			my_path[t-1]=psi[t*N + my_path[t]];
-		
-		delete[] sort_delta_end ;
-		delete[] sort_t ;
-	} ;
-
-    delete[] delta ;
-	delete[] delta_new ;
-	delete[] tempvv ;
-	delete[] tempii ;
-	delete[] psi ;
-	delete[] path_ends ;
-	delete[] delta_end ;
-}
-*/

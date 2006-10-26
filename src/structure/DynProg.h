@@ -52,240 +52,6 @@ private:
 	T_STATES *trans_list_backward_cnt  ;
 	bool mem_initialized ;
 	
-	/** Train definitions.
-	 * Encapsulates Modelparameters that are constant/shall be learned.
-	 * Consists of structures and access functions for learning only defined transitions and constants.
-	 */
-	class CModel
-		{
-		public:
-			/// Constructor - initializes all variables/structures
-			CModel();
-			
-			/// Destructor - cleans up
-			virtual ~CModel();
-			
-			/// sorts learn_a matrix
-			inline void sort_learn_a()
-				{
-					CMath::sort(learn_a,2) ;
-				}
-			
-			/// sorts learn_b matrix
-			inline void sort_learn_b()
-				{
-					CMath::sort(learn_b,2) ;
-				}
-			
-			/**@name read access functions.
-			 * For learn arrays and const arrays
-			 */
-			//@{
-			/// get entry out of learn_a matrix
-			inline INT get_learn_a(INT line, INT column) const
-				{
-					return learn_a[line*2 + column];
-				}
-			
-			/// get entry out of learn_b matrix
-			inline INT get_learn_b(INT line, INT column) const 
-				{
-					return learn_b[line*2 + column];
-				}
-			
-			/// get entry out of learn_p vector
-			inline INT get_learn_p(INT offset) const 
-				{
-					return learn_p[offset];
-				}
-			
-			/// get entry out of learn_q vector
-			inline INT get_learn_q(INT offset) const 
-				{
-					return learn_q[offset];
-				}
-			
-			/// get entry out of const_a matrix
-			inline INT get_const_a(INT line, INT column) const
-				{
-					return const_a[line*2 + column];
-				}
-			
-			/// get entry out of const_b matrix
-			inline INT get_const_b(INT line, INT column) const 
-				{
-					return const_b[line*2 + column];
-				}
-			
-			/// get entry out of const_p vector
-			inline INT get_const_p(INT offset) const 
-				{
-					return const_p[offset];
-				}
-			
-			/// get entry out of const_q vector
-			inline INT get_const_q(INT offset) const
-				{
-					return const_q[offset];
-				}
-			
-			/// get value out of const_a_val vector
-			inline DREAL get_const_a_val(INT line) const
-				{
-					return const_a_val[line];
-				}
-			
-			/// get value out of const_b_val vector
-			inline DREAL get_const_b_val(INT line) const 
-				{
-					return const_b_val[line];
-				}
-			
-			/// get value out of const_p_val vector
-			inline DREAL get_const_p_val(INT offset) const 
-				{
-					return const_p_val[offset];
-				}
-			
-			/// get value out of const_q_val vector
-			inline DREAL get_const_q_val(INT offset) const
-				{
-					return const_q_val[offset];
-				}
-			//@}
-			
-			/**@name write access functions
-			 * For learn and const arrays
-			 */
-			//@{
-			/// set value in learn_a matrix
-			inline void set_learn_a(INT offset, INT value)
-				{
-					learn_a[offset]=value;
-				}
-			
-			/// set value in learn_b matrix
-			inline void set_learn_b(INT offset, INT value)
-				{
-					learn_b[offset]=value;
-				}
-			
-			/// set value in learn_p vector
-			inline void set_learn_p(INT offset, INT value)
-				{
-					learn_p[offset]=value;
-				}
-			
-			/// set value in learn_q vector
-			inline void set_learn_q(INT offset, INT value)
-				{
-					learn_q[offset]=value;
-				}
-			
-			/// set value in const_a matrix
-			inline void set_const_a(INT offset, INT value)
-				{
-					const_a[offset]=value;
-				}
-			
-			/// set value in const_b matrix
-			inline void set_const_b(INT offset, INT value)
-				{
-					const_b[offset]=value;
-				}
-			
-			/// set value in const_p vector
-			inline void set_const_p(INT offset, INT value)
-				{
-					const_p[offset]=value;
-				}
-			
-			/// set value in const_q vector
-			inline void set_const_q(INT offset, INT value)
-				{
-					const_q[offset]=value;
-				}
-			
-			/// set value in const_a_val vector
-			inline void set_const_a_val(INT offset, DREAL value)
-				{
-					const_a_val[offset]=value;
-				}
-			
-			/// set value in const_b_val vector
-			inline void set_const_b_val(INT offset, DREAL value)
-				{
-					const_b_val[offset]=value;
-				}
-			
-			/// set value in const_p_val vector
-			inline void set_const_p_val(INT offset, DREAL value)
-				{
-					const_p_val[offset]=value;
-				}
-			
-			/// set value in const_q_val vector
-			inline void set_const_q_val(INT offset, DREAL value)
-				{
-					const_q_val[offset]=value;
-				}
-			//@}
-			
-		protected:
-			/**@name learn arrays.
-			 * Everything that is to be learned is enumerated here.
-			 * All values will be inititialized with random values
-			 * and normalized to satisfy stochasticity.
-			 */
-			//@{
-			/// transitions to be learned 
-			INT* learn_a;
-			
-			/// emissions to be learned
-			INT* learn_b;
-			
-			/// start states to be learned
-			INT* learn_p;
-			
-			/// end states to be learned
-			INT* learn_q;
-			//@}
-			
-			/**@name constant arrays.
-			 * These arrays hold constant fields. All values that
-			 * are not constant and will not be learned are initialized
-			 * with 0.
-			 */
-			//@{
-			/// transitions that have constant probability
-			INT* const_a;
-			
-			/// emissions that have constant probability
-			INT* const_b;
-			
-			/// start states that have constant probability
-			INT* const_p;
-			
-			/// end states that have constant probability
-			INT* const_q;		
-			
-			
-			/// values for transitions that have constant probability
-			DREAL* const_a_val;
-			
-			/// values for emissions that have constant probability
-			DREAL* const_b_val;
-			
-			/// values for start states that have constant probability
-			DREAL* const_p_val;
-			
-			/// values for end states that have constant probability
-			DREAL* const_q_val;		
-			
-			//@}
-		};
-	
-
 public:
 	/**@name Constructor/Destructor and helper function
 	 */
@@ -295,48 +61,12 @@ public:
 	 * @param M number of emissions
 	 * @param model model which holds definitions of states to be learned + consts
 	 */
-	CDynProg(INT N, INT M,	CModel* model);
 	CDynProg(INT N, double* p, double* q, double* a) ;
 	CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans) ;
-
-	/// Constructor - Clone model h
-	CDynProg(CDynProg* h);
 
 	/// Destructor - Cleanup
 	virtual ~CDynProg();
 	
-	/** initialization function - gets called by constructors.
-	 * @param model model which holds definitions of states to be learned + consts
-	 */
-	bool initialize(CModel* model);
-	//@}
-	
-	/// allocates memory that depends on N
-	bool alloc_state_dependend_arrays();
-
-	/// free memory that depends on N
-	void free_state_dependend_arrays();
-
-	inline T_STATES get_psi(INT time, T_STATES state) const
-	{
-#ifdef HMM_DEBUG
-	  if ((time>=p_observations->get_max_vector_length())||(state>N))
-	    CIO::message(stderr,"index out of range in get_psi(%i,%i) [%i,%i]\n",time,state,p_observations->get_max_vector_length(),N) ;
-#endif
-	  return states_per_observation_psi[time*N+state];
-	}
-	inline void set_psi(INT time, T_STATES state, T_STATES value)
-	{
-#ifdef HMM_DEBUG
-	  if ((time>=p_observations->get_max_vector_length())||(state>N))
-	    CIO::message(stderr,"index out of range in set_psi(%i,%i,.) [%i,%i]\n",time,state,p_observations->get_max_vector_length(),N) ;
-#endif
-	  states_per_observation_psi[time*N+state]=value;
-	}
-
-	void translate_from_single_order(WORD* obs, INT sequence_length, 
-									 INT start, INT order, 
-									 INT max_val=2/*DNA->2bits*/) ;
 
 	/** calculates probability of best state sequence s_0,...,s_T-1 AND path itself using viterbi algorithm.
 	 * The path can be found in the array PATH(dimension)[0..T-1] afterwards
@@ -410,7 +140,7 @@ public:
 	  if ((line_>N)||(column>N))
 	    CIO::message(stderr,"index out of range in set_a(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
 #endif
-	  transition_matrix_a[line_+column*N]=value; // look also best_path!
+	  transition_matrix_a.element(line_,column)=value; // look also best_path!
 	}
 
 	/** access function for probability of end states
@@ -450,10 +180,15 @@ public:
 	  if ((line_>N)||(column>N))
 	    CIO::message(stderr,"index out of range in get_a(%i,%i) [%i,%i]\n",line_,column,N,N) ;
 #endif
-	  return transition_matrix_a[line_+column*N]; // look also best_path()!
+	  return transition_matrix_a.element(line_,column) ; // look also best_path()!
 	}
 	//@}
 protected:
+
+	/* helper functions */
+	void translate_from_single_order(WORD* obs, INT sequence_length, 
+									 INT start, INT order, 
+									 INT max_val=2/*DNA->2bits*/) ;
 
 	void reset_svm_value(INT pos, INT & last_svm_pos, DREAL * svm_value)  ;
 	void extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, DREAL* svm_value) ;
@@ -487,27 +222,13 @@ protected:
 	INT N;
 
 	/// transition matrix 
-	DREAL* transition_matrix_a;
+	CDynamicArray2<DREAL> transition_matrix_a;
 
 	/// initial distribution of states
-	DREAL* initial_state_distribution_p;
+	CDynamicArray<DREAL> initial_state_distribution_p;
 
 	/// distribution of end-states
-	DREAL* end_state_distribution_q;		
-
-	T_STATES* states_per_observation_psi ;
-	
-	/// probability of model
-	DREAL mod_prob;	
-
-	/// true if model probability is up to date
-	bool mod_prob_updated;	
-	
-	// true if model is using log likelihood
-	bool loglikelihood;		
-
-	// true->ok, false->error
-	bool status;			
+	CDynamicArray<DREAL> end_state_distribution_q;		
 
 	//@}
 
