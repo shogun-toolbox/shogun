@@ -94,7 +94,7 @@ CDynamicArray2(T* p_array, INT dim1, INT dim2, bool p_free_array=true, bool p_co
 	{
 		ASSERT(idx1>=0 && idx1<dim1_size) ;		
 		ASSERT(idx2>=0 && idx2<dim2_size) ;		
-		return get_element(idx1+dim1_size*idx2) ;
+		return CDynamicArray<T>::get_element(idx1+dim1_size*idx2) ;
 	}
 
 	///set array element at index 'index' return false in case of trouble
@@ -102,19 +102,19 @@ CDynamicArray2(T* p_array, INT dim1, INT dim2, bool p_free_array=true, bool p_co
 	{
 		ASSERT(idx1>=0 && idx1<dim1_size) ;		
 		ASSERT(idx2>=0 && idx2<dim2_size) ;		
-		return set_element(element, idx1+dim1_size*idx2) ;
+		return CDynamicArray<T>::set_element(element, idx1+dim1_size*idx2) ;
 	}
 	
 	inline const T& element(INT idx1, INT idx2) const
 	{
-		return element(idx1,idx2) ;
+		return get_element(idx1,idx2) ;
 	}
-
+	
 	inline T& element(INT idx1, INT idx2) 
 	{
 		ASSERT(idx1>=0 && idx1<dim1_size) ;		
 		ASSERT(idx2>=0 && idx2<dim2_size) ;		
-		return element(idx1,idx2) ;
+		return CDynamicArray<T>::element(idx1+dim1_size*idx2) ;
 	}
 
 	///// operator overload for array assignment

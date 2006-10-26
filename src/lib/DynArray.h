@@ -24,30 +24,30 @@ template <class T> class CDynamicArray;
 template <class T> class CDynamicArray
 {
 public:
-	CDynamicArray(INT resize_granularity = 128)
-		: free_array(true) 
+CDynamicArray(INT resize_granularity = 128)
+	: free_array(true) 
 	{
 		this->resize_granularity = resize_granularity;
-
+		
 		array = (T*) calloc(resize_granularity, sizeof(T));
 		ASSERT(array);
-
+		
 		num_elements = resize_granularity;
 		last_element_idx = -1;
 	}
-
-	CDynamicArray(T* p_array, INT p_num_elements, INT p_array_size, bool p_free_array=true, bool p_copy_array=false)
-		: array(NULL), free_array(false)
-		{
-			set_array(p_array, p_num_elements, p_array_size, p_free_array, p_copy_array) ;
-		}
-
+	
+CDynamicArray(T* p_array, INT p_num_elements, INT p_array_size, bool p_free_array=true, bool p_copy_array=false)
+	: array(NULL), free_array(false)
+	{
+		set_array(p_array, p_num_elements, p_array_size, p_free_array, p_copy_array) ;
+	}
+	
 	~CDynamicArray()
 	{
 		if (free_array)
 			free(array);
 	}
-
+	
 	/// set the resize granularity and return what has been set (minimum is 128) 
 	inline INT set_granularity(INT g)
 	{
@@ -67,20 +67,20 @@ public:
 	{
 		return num_elements;
 	}
-
+	
 	/// return index of element which is at the end of the array
 	inline INT get_num_elements()
 	{
 		return last_element_idx+1;
 	}
-
+	
 	///return array element at index
 	inline const T& get_element(INT index) const
 	{
 		ASSERT((array != NULL) && (index >= 0) && (index <= last_element_idx));
 		return array[index];
 	}
-
+	
 	///set array element at index 'index' return false in case of trouble
 	inline bool set_element(const T& element, INT index)
 	{
@@ -104,7 +104,7 @@ public:
 				return false;
 		}
 	}
-
+	
 	inline const T& element(INT idx1) const
 	{
 		return get_element(idx1) ;
