@@ -549,7 +549,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				CIO::message(M_ERROR, "usage is probs=sg('model_prob_no_b_trans',p,q,a_trans,max_iter)");
-				}*/
+				}*/ 
 		else if (strmatch(action, len, N_BEST_PATH_NO_B))
 		{
 			if ((nrhs==1+4) & (nlhs==2))
