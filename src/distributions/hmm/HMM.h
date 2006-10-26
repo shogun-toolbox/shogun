@@ -1,4 +1,5 @@
 
+
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +22,6 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/config.h"
-#include "lib/Plif.h"
 #include "features/StringFeatures.h"
 #include "distributions/Distribution.h"
 
@@ -570,29 +570,6 @@ public:
 		ASSERT(PATH(dim));
 		return PATH(dim)[t];
 	}
-	
-	DREAL best_path_no_b(INT max_iter, INT & best_iter, INT *my_path) ;
-	void best_path_no_b_trans(INT max_iter, INT & max_best_iter, short int nbest, DREAL *prob_nbest, INT *my_paths) ;
-	//void best_path_no_b_trans1(INT max_iter, INT & max_best_iter, DREAL *prob_nbest, INT *my_paths) ;
-	void model_prob_no_b_trans(INT max_iter, DREAL *prob_iter) ;
-	void best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const INT *orf_info,
-						 CPlif **PEN_matrix, 
-						 const char *genestr, INT genestr_len,
-						 short int nbest, 
-						 DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
-						 DREAL *dictionary_weights, INT dict_len,
-						 DREAL *&PEN_values, DREAL *&PEN_input_values, 
-						 INT &num_PEN_id, bool use_orf) ;
-	void best_path_2struct(const DREAL *seq, INT seq_len, const INT *pos, 
-						   CPlif **PEN_matrix, 
-						   const char *genestr, INT genestr_len,
-						   short int nbest, 
-						   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
-						   DREAL *dictionary_weights, INT dict_len, DREAL *segment_sum_weights, 
-						   DREAL *&PEN_values, DREAL *&PEN_input_values, 
-						   INT &num_PEN_id) ;
-	void best_path_trans_simple(const DREAL *seq, INT seq_len, short int nbest, 
-								DREAL *prob_nbest, INT *my_state_seq) ;
 #endif
 
 	/// calculates probability that observations were generated 

@@ -60,7 +60,7 @@ public:
 	bool hmm_likelihood(mxArray* retvals[]);
 	bool best_path(mxArray* retvals[], int dim);
 	bool best_path_no_b(const mxArray* vals[], mxArray* retvals[]) ;
-	bool model_prob_no_b_trans(const mxArray* vals[], mxArray* retvals[]) ;
+	//bool model_prob_no_b_trans(const mxArray* vals[], mxArray* retvals[]) ;
 	bool best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[]) ;
 	bool best_path_2struct(const mxArray* vals[], mxArray* retvals[]) ;
 	bool best_path_trans(const mxArray* vals[], mxArray* retvals[]) ;

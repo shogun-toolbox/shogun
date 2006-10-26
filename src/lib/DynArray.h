@@ -25,6 +25,7 @@ template <class T> class CDynamicArray
 {
 public:
 	CDynamicArray(INT resize_granularity = 128)
+		: free_array(true) 
 	{
 		this->resize_granularity = resize_granularity;
 
@@ -35,9 +36,16 @@ public:
 		last_element_idx = -1;
 	}
 
+	CDynamicArray(T* p_array, INT p_num_elements, INT p_array_size, bool p_free_array=true)
+		: array(NULL), free_array(false)
+		{
+			set_array(p_array, p_num_elements, p_array_size, p_free_array) ;
+		}
+
 	~CDynamicArray()
 	{
-		free(array);
+		if (free_array)
+			free(array);
 	}
 
 	/// set the resize granularity and return what has been set (minimum is 128) 
@@ -61,14 +69,14 @@ public:
 	}
 
 	///return array element at index
-	inline T get_element(INT index)
+	inline const T& get_element(INT index) const
 	{
 		ASSERT((array != NULL) && (index >= 0) && (index <= last_element_idx));
 		return array[index];
 	}
 
 	///set array element at index 'index' return false in case of trouble
-	inline bool set_element(T element, INT index)
+	inline bool set_element(const T& element, INT index)
 	{
 		ASSERT((array != NULL) && (index >= 0));
 		if (index <= last_element_idx)
@@ -91,12 +99,35 @@ public:
 		}
 	}
 
+	inline const T& element(INT idx1) const
+	{
+		return get_element(idx1) ;
+	}
+
+	inline T& element(INT index) 
+	{
+		ASSERT((array != NULL) && (index >= 0));
+		if (index <= last_element_idx)
+		{
+			return array[index] ;
+		}
+		else if (index < num_elements)
+		{
+			last_element_idx=index;
+			return array[index] ;
+		}
+		else
+		{
+			resize_array(index) ;
+			return element(index);
+		}
+	}
+
 	///set array element at index 'index' return false in case of trouble
-	inline bool insert_element(T element, INT index)
+	inline bool insert_element(const T& element, INT index)
 	{
 		if (append_element(get_element(last_element_idx)))
 		{
-
 			for (INT i=last_element_idx-1; i>index; i--)
 			{
 				array[i]=array[i-1];
@@ -108,7 +139,7 @@ public:
 	}
 
 	///set array element at index 'index' return false in case of trouble
-	inline bool append_element(T element)
+	inline bool append_element(const T& element)
 	{
 		return append_element(element, last_element_idx+1);
 	}
@@ -164,12 +195,14 @@ public:
 	}
 
 	/// set the array pointer and free previously allocated memory
-	inline void set_array(T* array, INT num_elements, INT array_size)
+	inline void set_array(T* array, INT num_elements, INT array_size, bool free_array=true)
 	{
-		free(this->array);
+		if (this->free_array)
+			free(this->array);
 		this->array=array;
 		this->num_elements=array_size;
 		this->last_element_idx=num_elements-1;
+		this->free_array=free_array ;
 	}
 
 	/// clear the array (with zeros)
@@ -184,9 +217,14 @@ public:
 	/// use set_element() for write access (will also make the array dynamically grow)
 	///
 	/// DOES NOT DO ANY BOUNDS CHECKING
-	inline T operator[](INT index)
+	inline const T& operator[](INT index) const
 	{
 		return array[index];
+	}
+
+	inline T& operator[](INT index) 
+	{
+		return element(index);
 	}
 
 	///// operator overload for array assignment
@@ -212,5 +250,8 @@ protected:
 
 	/// the element in the array that has largest index
 	INT last_element_idx;
+
+	/// 
+	bool free_array ;
 };
 #endif

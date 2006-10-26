@@ -21,7 +21,7 @@
 #include <mex.h>
 #endif
 
-#include "lib/Plif.h"
+#include "structure/Plif.h"
 
 CPlif::CPlif()
 {

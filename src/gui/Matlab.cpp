@@ -52,7 +52,7 @@ static const CHAR* N_GET_VERSION=		"get_version";
 static const CHAR* N_GET_PREPROC_INIT=	        "get_preproc_init";
 static const CHAR* N_GET_HMM_DEFS=		"get_hmm_defs";
 static const CHAR* N_SET_HMM=			"set_hmm";
-static const CHAR* N_MODEL_PROB_NO_B_TRANS=			"model_prob_no_b_trans";
+//static const CHAR* N_MODEL_PROB_NO_B_TRANS=			"model_prob_no_b_trans";
 static const CHAR* N_BEST_PATH_NO_B_TRANS=			"best_path_no_b_trans";
 static const CHAR* N_BEST_PATH_TRANS=			"best_path_trans";
 static const CHAR* N_BEST_PATH_2STRUCT=			"best_path_2struct";
@@ -541,7 +541,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is [prob,path,pos,PEN_values, PEN_input_values]=sg('best_path_2struct',p,q,a_trans,seq,pos, genestr, penalties, penalty_info, nbest, dict_weights, segment_sum_weights)");
 		}
-		else if (strmatch(action, len, N_MODEL_PROB_NO_B_TRANS))
+		/*else if (strmatch(action, len, N_MODEL_PROB_NO_B_TRANS))
 		{
 			if ((nrhs==1+4) & (nlhs==1))
 			{
@@ -549,7 +549,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				CIO::message(M_ERROR, "usage is probs=sg('model_prob_no_b_trans',p,q,a_trans,max_iter)");
-		}
+				}*/
 		else if (strmatch(action, len, N_BEST_PATH_NO_B))
 		{
 			if ((nrhs==1+4) & (nlhs==2))

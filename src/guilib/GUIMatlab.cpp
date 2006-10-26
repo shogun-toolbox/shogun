@@ -21,7 +21,8 @@
 
 #include "lib/io.h"
 #include "lib/Version.h"
-#include "lib/Plif.h"
+#include "structure/Plif.h"
+#include "structure/DynProg.h"
 #include "distributions/hmm/HMM.h"
 #include "features/Alphabet.h"
 #include "features/Labels.h"
@@ -379,7 +380,7 @@ bool CGUIMatlab::best_path_no_b(const mxArray* vals[], mxArray* retvals[])
 			double* q=mxGetPr(mx_q);
 			double* a=mxGetPr(mx_a);
 			
-			CHMM* h=new CHMM(N, p, q, a);
+			CDynProg* h=new CDynProg(N, p, q, a);
 			
 			INT *my_path = new INT[max_iter] ;
 			int best_iter = 0 ;
@@ -436,7 +437,7 @@ bool CGUIMatlab::best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[])
 			double* q=mxGetPr(mx_q);
 			double* a=mxGetPr(mx_a_trans);
 			
-			CHMM* h=new CHMM(N, p, q, mxGetM(mx_a_trans), a);
+			CDynProg* h=new CDynProg(N, p, q, mxGetM(mx_a_trans), a);
 			
 			INT *my_path = new INT[(max_iter+1)*nbest] ;
 			memset(my_path, -1, (max_iter+1)*nbest*sizeof(INT)) ;
@@ -579,7 +580,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			char * genestr = mxArrayToString(mx_genestr) ;				
 			DREAL * dict_weights = mxGetPr(mx_dict_weights) ;
 			
-			CHMM* h=new CHMM(N, p, q, mxGetM(mx_a_trans), a);
+			CDynProg* h=new CDynProg(N, p, q, mxGetM(mx_a_trans), a);
 			
 			INT *my_path = new INT[M*nbest] ;
 			memset(my_path, -1, M*nbest*sizeof(INT)) ;
@@ -744,7 +745,7 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 			DREAL * dict_weights = mxGetPr(mx_dict_weights) ;
 			DREAL * segment_sum_weights = mxGetPr(mx_segment_sum_weights) ;
 			
-			CHMM* h=new CHMM(N, p, q, mxGetM(mx_a_trans), a);
+			CDynProg* h=new CDynProg(N, p, q, mxGetM(mx_a_trans), a);
 			
 			INT *my_path = new INT[(M+1)*nbest] ;
 			memset(my_path, -1, (M+1)*nbest*sizeof(INT)) ;
@@ -841,7 +842,7 @@ bool CGUIMatlab::best_path_trans_simple(const mxArray* vals[], mxArray* retvals[
 
 			double* seq=mxGetPr(mx_seq) ;
 			
-			CHMM* h=new CHMM(N, p, q, mxGetM(mx_a_trans), a);
+			CDynProg* h=new CDynProg(N, p, q, mxGetM(mx_a_trans), a);
 			
 			INT *my_path = new INT[M*nbest] ;
 			memset(my_path, -1, M*nbest*sizeof(INT)) ;
@@ -879,7 +880,7 @@ bool CGUIMatlab::best_path_trans_simple(const mxArray* vals[], mxArray* retvals[
 }
 
 
-bool CGUIMatlab::model_prob_no_b_trans(const mxArray* vals[], mxArray* retvals[])
+/*bool CGUIMatlab::model_prob_no_b_trans(const mxArray* vals[], mxArray* retvals[])
 {
 	const mxArray* mx_p=vals[1];
 	const mxArray* mx_q=vals[2];
@@ -922,7 +923,7 @@ bool CGUIMatlab::model_prob_no_b_trans(const mxArray* vals[], mxArray* retvals[]
 
 	return false;
 }
-
+*/
 
 
 bool CGUIMatlab::hmm_classify(mxArray* retvals[])
