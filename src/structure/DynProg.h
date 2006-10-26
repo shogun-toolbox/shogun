@@ -87,7 +87,11 @@ protected:
 	CDynamicArray<CPlif*> m_plif_list ;
 	CDynamicArray2<CPlif*> m_PEN ;
 	CDynamicArray<CHAR> m_genestr ;
-	CDynamicArray<CHAR> m_dict_weights ;
+	CDynamicArray2<DREAL> m_dict_weights ;
+
+	CDynamicArray<DREAL> m_scores ;
+	CDynamicArray2<INT> m_states ;
+	CDynamicArray2<INT> m_positions ;
 	
 public:
 	void set_p(DREAL *p, INT N) ;
@@ -100,13 +104,14 @@ public:
 	void best_path_set_plif_list(CPlif **plif_list, INT num_plif) ;
 	void best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n) ;
 	void best_path_set_genestr(CHAR* genestr, INT genestr_len) ;
-	void best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len) ;
+	void best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len, INT n) ;
 	
 	void best_path_call(INT nbest, bool use_orf) ;
 	
-	void best_path_get_score(DREAL **score, INT *N) ;
-	void best_path_get_states(INT **states, INT *N, INT *M) ;
-	void best_path_get_positions(INT **positions, INT *N, INT *M) ;
+	void best_path_get_score(DREAL **scores, INT *n) ;
+	void best_path_get_states(INT **states, INT *m, INT *n) ;
+	void best_path_get_positions(INT **positions, INT *m, INT *n) ;
+
 ////////////////////////////////////////////////////////////////////////////////
 
 	void best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const INT *orf_info,

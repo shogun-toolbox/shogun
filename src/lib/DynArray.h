@@ -62,6 +62,12 @@ public:
 		return num_elements;
 	}
 
+	/// return total array size (including granularity buffer)
+	inline INT get_dim1()
+	{
+		return num_elements;
+	}
+
 	/// return index of element which is at the end of the array
 	inline INT get_num_elements()
 	{

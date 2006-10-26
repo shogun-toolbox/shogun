@@ -31,8 +31,8 @@ public:
 		this->resize_granularity = dim1 ;
 	}
 
-	CDynamicArray3(T* p_array, INT dim1, INT dim2, INT dim3, bool p_free_array=true)
-		: CDynamicArray<T>(p_array, dim1*dim2*dim3, dim1*dim2*dim3, p_free_array),
+CDynamicArray3(T* p_array, INT dim1, INT dim2, INT dim3, bool p_free_array=true, bool p_copy_array=false)
+	: CDynamicArray<T>(p_array, dim1*dim2*dim3, dim1*dim2*dim3, p_free_array, p_copy_array),
 		dim1_size(dim1), dim2_size(dim2), dim3_size(dim3)
 		{
 		}
@@ -48,6 +48,31 @@ public:
 		dim2=dim2_size ;
 		dim3=dim3_size ;
 	}
+	/// return dimension 1
+	inline INT get_dim1()
+	{
+		return dim1_size ;
+	}
+
+	/// return dimension 2
+	inline INT get_dim2()
+	{
+		return dim2_size ;
+	}
+
+	/// return dimension 3
+	inline INT get_dim3()
+	{
+		return dim3_size ;
+	}
+
+	/// get the array
+	/// call get_array just before messing with it DO NOT call any [],resize/delete functions after get_array(), the pointer may become invalid !
+	inline T* get_array()
+	{
+		return CDynamicArray<T>::array;
+	}
+
 	/// set the array pointer and free previously allocated memory
 	inline void set_array(T* array, INT dim1, INT dim2, INT dim3, bool free_array, bool copy_array=false)
 	{

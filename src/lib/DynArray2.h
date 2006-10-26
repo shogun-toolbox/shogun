@@ -32,8 +32,8 @@ CDynamicArray2(INT dim1, INT dim2)
 		CDynamicArray<T>::last_element_idx = dim1*dim2-1 ;
 	}
 
-	CDynamicArray2(T* p_array, INT dim1, INT dim2, bool p_free_array=true)
-		: CDynamicArray<T>(p_array, dim1*dim2, dim1*dim2, p_free_array),
+CDynamicArray2(T* p_array, INT dim1, INT dim2, bool p_free_array=true, bool p_copy_array=false)
+	: CDynamicArray<T>(p_array, dim1*dim2, dim1*dim2, p_free_array, p_copy_array),
 		dim1_size(dim1), dim2_size(dim2)
 		{
 		}
@@ -47,6 +47,25 @@ CDynamicArray2(INT dim1, INT dim2)
 	{
 		dim1=dim1_size ;
 		dim2=dim2_size ;
+	}
+
+	/// return dimension 1
+	inline INT get_dim1()
+	{
+		return dim1_size ;
+	}
+
+	/// return dimension 2
+	inline INT get_dim2()
+	{
+		return dim2_size ;
+	}
+
+	/// get the array
+	/// call get_array just before messing with it DO NOT call any [],resize/delete functions after get_array(), the pointer may become invalid !
+	inline T* get_array()
+	{
+		return CDynamicArray<T>::array;
 	}
 
 	/// set the array pointer and free previously allocated memory
