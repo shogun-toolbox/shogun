@@ -76,6 +76,22 @@ public:
 	void best_path_no_b_trans(INT max_iter, INT & max_best_iter, short int nbest, DREAL *prob_nbest, INT *my_paths) ;
 	//void best_path_no_b_trans1(INT max_iter, INT & max_best_iter, DREAL *prob_nbest, INT *my_paths) ;
 	void model_prob_no_b_trans(INT max_iter, DREAL *prob_iter) ;
+
+////////////////////////////////////////////////////////////////////////////////
+	void best_path_set_seq(DREAL *seq, INT N, INT seq_len) ;
+	void best_path_set_pos(INT *pos, INT seq_len)  ;
+	void best_path_set_orf_info(INT *orf_info, INT N2) ;
+	void best_path_set_pen(CPlif **PEN, INT N_N) ;
+	void best_path_set_genestr(char* PEN, INT genestr_len) ;
+	void best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len) ;
+	
+	void best_path_call(INT nbest, bool use_orf) ;
+	
+	void best_path_get_score(DREAL **score, INT &N) ;
+	void best_path_get_states(INT **states, INT &N, INT &M) ;
+	void best_path_get_positions(INT **positions, INT &N, INT &M) ;
+////////////////////////////////////////////////////////////////////////////////
+
 	void best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const INT *orf_info,
 						 CPlif **PEN_matrix, 
 						 const char *genestr, INT genestr_len,
@@ -84,6 +100,7 @@ public:
 						 DREAL *dictionary_weights, INT dict_len,
 						 DREAL *&PEN_values, DREAL *&PEN_input_values, 
 						 INT &num_PEN_id, bool use_orf) ;
+
 	void best_path_2struct(const DREAL *seq, INT seq_len, const INT *pos, 
 						   CPlif **PEN_matrix, 
 						   const char *genestr, INT genestr_len,
