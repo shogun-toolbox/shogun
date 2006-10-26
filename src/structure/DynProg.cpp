@@ -67,7 +67,7 @@ INT CDynProg::num_unique_words[num_degrees] ;
 CDynProg::CDynProg()
 	: m_seq(1,1), m_pos(1), m_orf_info(1,2), m_plif_list(1), m_PEN(1,1), 
 	  m_genestr(1), m_dict_weights(1),
-	  transition_matrix_a(1,1), initial_state_distribution_p(1,1), end_state_distribution_q(1,1)
+	  transition_matrix_a(1,1), initial_state_distribution_p(1), end_state_distribution_q(1)
 {
 	this->N=1;
 	m_step=0 ;
@@ -184,8 +184,12 @@ CDynProg::~CDynProg()
 
 void CDynProg::set_p(DREAL *p, INT N) 
 {
-	m_seq(N,1), m_pos(1), m_orf_info(N,2), m_plif_list(1), m_PEN(N,N), 
-	  m_genestr(1), m_dict_weights(1),
+	m_seq.resize_array(N,1) ;
+	m_pos.resize_array(1) ;
+	m_orf_info.resize_array(N,2) ;
+	m_plif_list.resize_array(1) ;
+	m_PEN.resize_array(N,N) ;
+	//m_genestr(1), m_dict_weights(1),
 
 	initial_state_distribution_p.set_array(p, N, N, true, true) ;
 	this->N=N ;
@@ -193,7 +197,7 @@ void CDynProg::set_p(DREAL *p, INT N)
 
 void CDynProg::set_q(DREAL *q, INT N) 
 {
-	end_state_distribution_q.seq_array(q, N, N, true, true) ;
+	end_state_distribution_q.set_array(q, N, N, true, true) ;
 }
 
 void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans) 
@@ -308,7 +312,7 @@ void CDynProg::best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n)
 	if (m_step!=5)
 		CIO::message(M_ERROR, "please call best_path_set_plif_list first\n") ;
 
-	m_PEN.set_array(plif_list, num_plif, num_plif, true, true) ;
+	//m_PEN.set_array(plif_list, num_plif, num_plif, true, true) ;
 
 	m_step=6 ;
 }

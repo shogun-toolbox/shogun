@@ -48,20 +48,28 @@ public:
 		dim1=dim1_size ;
 		dim2=dim2_size ;
 	}
+
 	/// set the array pointer and free previously allocated memory
 	inline void set_array(T* array, INT dim1, INT dim2, bool free_array=true, bool copy_array=false)
 		{
-			CDynamicArray<T>.set_array(array, dim1*dim2, dim1*dim2, free_array, copy_array) ;
+			dim1_size=dim1 ;
+			dim2_size=dim2 ;
+			CDynamicArray<T>::
+set_array(array, dim1*dim2, dim1*dim2, free_array, copy_array) ;
 		}
 
-	if (CDynamicArray<T>.resize(dim1*dim2*dim3))
-	{
-		last_element_idx=dim1*dim2*dim3-1 ;
-		return true ;
-	}
-	else 
-		return false ;
-	
+	inline bool resize_array(INT dim1, INT dim2)
+		{
+			dim1_size=dim1 ;
+			dim2_size=dim2 ;
+			if (CDynamicArray<T>::resize_array(dim1*dim2))
+			{
+				last_element_idx=dim1*dim2-1 ;
+				return true ;
+			}
+			else 
+				return false ;
+		}
 
 	///return array element at index
 	inline const T& get_element(INT idx1, INT idx2) const
@@ -89,12 +97,6 @@ public:
 		ASSERT(idx1>=0 && idx1<dim1_size) ;		
 		ASSERT(idx2>=0 && idx2<dim2_size) ;		
 		return element(idx1,idx2) ;
-	}
-
-	///resize the array 
-	bool resize_array(INT dim1, INT dim2)
-	{
-		return resize_array(dim1*dim2) ;
 	}
 
 	///// operator overload for array assignment

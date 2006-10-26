@@ -51,12 +51,18 @@ public:
 	/// set the array pointer and free previously allocated memory
 	inline void set_array(T* array, INT dim1, INT dim2, INT dim3, bool free_array, bool copy_array=false)
 	{
-		CDynamicArray<T>.set_array(array, dim1*dim2*dim3, dim1*dim2*dim3, free_array, copy_array) ;
+		dim1_size=dim1 ;
+		dim2_size=dim2 ;
+		dim3_size=dim3 ;
+		CDynamicArray<T>::set_array(array, dim1*dim2*dim3, dim1*dim2*dim3, free_array, copy_array) ;
 	}
 
 	inline bool resize_array(INT dim1, INT dim2, INT dim3)
 		{
-			if (CDynamicArray<T>.resize(dim1*dim2*dim3))
+			dim1_size=dim1 ;
+			dim2_size=dim2 ;
+			dim3_size=dim3 ;
+			if (CDynamicArray<T>::resize_array(dim1*dim2*dim3))
 			{
 				last_element_idx=dim1*dim2*dim3-1 ;
 				return true ;
@@ -93,12 +99,6 @@ public:
 		return array[idx1+dim1_size*(idx2+dim2_size*idx3)] ;
 	}
 	
-	///resize the array 
-	bool resize_array(INT dim1, INT dim2, INT dim3)
-	{
-		return resize_array(dim1*dim2*dim3) ;
-	}
-
 	///// operator overload for array assignment
 	CDynamicArray<T>& operator=(CDynamicArray<T>& orig)
 	{
