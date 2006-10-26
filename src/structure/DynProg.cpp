@@ -72,122 +72,19 @@ INT CDynProg::num_unique_words[num_degrees] ;
 
 
 
-CDynProg::CModel::CModel()
-{
-	const_a=new int[ARRAY_SIZE];				///////static fixme 
-	const_b=new int[ARRAY_SIZE];
-	const_p=new int[ARRAY_SIZE];
-	const_q=new int[ARRAY_SIZE];
-	const_a_val=new DREAL[ARRAY_SIZE];			///////static fixme 
-	const_b_val=new DREAL[ARRAY_SIZE];
-	const_p_val=new DREAL[ARRAY_SIZE];
-	const_q_val=new DREAL[ARRAY_SIZE];
-
-
-	learn_a=new int[ARRAY_SIZE];
-	learn_b=new int[ARRAY_SIZE];
-	learn_p=new int[ARRAY_SIZE];
-	learn_q=new int[ARRAY_SIZE];
-
-#ifdef FIX_POS
-	fix_pos_state = new char[ARRAY_SIZE];
-#endif
-	for (INT i=0; i<ARRAY_SIZE; i++)
-	{
-		const_a[i]=-1 ;
-		const_b[i]=-1 ;
-		const_p[i]=-1 ;
-		const_q[i]=-1 ;
-		const_a_val[i]=1.0 ;
-		const_b_val[i]=1.0 ;
-		const_p_val[i]=1.0 ;
-		const_q_val[i]=1.0 ;
-		learn_a[i]=-1 ;
-		learn_b[i]=-1 ;
-		learn_p[i]=-1 ;
-		learn_q[i]=-1 ;
-#ifdef FIX_POS
-		fix_pos_state[i] = FIX_DEFAULT ;
-#endif
-	} ;
-}
-
-CDynProg::CModel::~CModel()
-{
-	delete[] const_a;
-	delete[] const_b;
-	delete[] const_p;
-	delete[] const_q;
-	delete[] const_a_val;
-	delete[] const_b_val;
-	delete[] const_p_val;
-	delete[] const_q_val;
-
-	delete[] learn_a;
-	delete[] learn_b;
-	delete[] learn_p;
-	delete[] learn_q;
-
-#ifdef FIX_POS
-	delete[] fix_pos_state;
-#endif
-
-}
-
-CDynProg::CDynProg(CDynProg* h)
-{
-	this->N=h->get_N();
-	this->M=h->get_M();
-	status=initialize(NULL);
-}
-
-CDynProg::CDynProg(INT N, INT M, CModel* model)
-{
-	this->N=N;
-	this->M=M;
-	model=NULL ;
-	status=initialize(model);
-}
-
 CDynProg::CDynProg(INT N, double* p, double* q, double* a)
 {
 	this->N=N;
-	this->M=0;
-	model=NULL ;
 	
-	trans_list_forward = NULL ;
-	trans_list_forward_cnt = NULL ;
-	trans_list_forward_val = NULL ;
-	trans_list_backward = NULL ;
-	trans_list_backward_cnt = NULL ;
-	trans_list_len = 0 ;
-	mem_initialized = false ;
-
-	this->transition_matrix_a=NULL;
-	this->observation_matrix_b=NULL;
-	this->initial_state_distribution_p=NULL;
-	this->end_state_distribution_q=NULL;
-	this->model= model;
-	this->reused_caches=false;
-
-	mem_initialized = true ;
-
 	transition_matrix_a=a ;
-	observation_matrix_b=NULL ;
 	initial_state_distribution_p=p ;
 	end_state_distribution_q=q ;
-	transition_matrix_A=NULL ;
-	observation_matrix_B=NULL ;
 	
-//	this->invalidate_model();
 }
 
 CDynProg::CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans)
 {
-	model=NULL ;
-	
 	this->N=N;
-	this->M=0;
 	
 	trans_list_forward = NULL ;
 	trans_list_forward_cnt = NULL ;
@@ -198,11 +95,8 @@ CDynProg::CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans)
 	mem_initialized = false ;
 
 	this->transition_matrix_a=NULL;
-	this->observation_matrix_b=NULL;
 	this->initial_state_distribution_p=NULL;
 	this->end_state_distribution_q=NULL;
-	this->model= model;
-	this->reused_caches=false;
 
 	mem_initialized = true ;
 
@@ -261,20 +155,13 @@ CDynProg::CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans)
 	} ;
 	
 	transition_matrix_a=NULL ;
-	observation_matrix_b=NULL ;
 	initial_state_distribution_p=p ;
 	end_state_distribution_q=q ;
-	transition_matrix_A=NULL ;
-	observation_matrix_B=NULL ;
-
-//	this->invalidate_model();
 }
 
 
 CDynProg::~CDynProg()
 {
-	delete model ;
-
 	if (trans_list_forward_cnt)
 	  delete[] trans_list_forward_cnt ;
 	if (trans_list_backward_cnt)
@@ -306,37 +193,26 @@ CDynProg::~CDynProg()
 
 bool CDynProg::alloc_state_dependend_arrays()
 {
-	if (!transition_matrix_a && !observation_matrix_b && !initial_state_distribution_p && !end_state_distribution_q)
+	if (!transition_matrix_a && !initial_state_distribution_p && !end_state_distribution_q)
 	{
 		transition_matrix_a=new DREAL[N*N];
-		observation_matrix_b=new DREAL[N*M];	
 		initial_state_distribution_p=new DREAL[N];
 		end_state_distribution_q=new DREAL[N];
 	}
-	transition_matrix_A=new DREAL[this->N*this->N];
-	observation_matrix_B=new DREAL[this->N*this->M];
-
-	return ((transition_matrix_A != NULL) && (observation_matrix_B != NULL) && 
-			(transition_matrix_a != NULL) && (observation_matrix_b != NULL) && (initial_state_distribution_p != NULL) &&
+	return ((transition_matrix_a != NULL) && (initial_state_distribution_p != NULL) &&
 			(end_state_distribution_q != NULL));
 }
 
 void CDynProg::free_state_dependend_arrays()
 {
-	if (observation_matrix_b)
+	if (transition_matrix_a)
 	{
-		delete[] transition_matrix_A;
-		delete[] observation_matrix_B;
 		delete[] transition_matrix_a;
-		delete[] observation_matrix_b;
 		delete[] initial_state_distribution_p;
 		delete[] end_state_distribution_q;
 	} ;
 	
-	transition_matrix_A=NULL;
-	observation_matrix_B=NULL;
 	transition_matrix_a=NULL;
-	observation_matrix_b=NULL;
 	initial_state_distribution_p=NULL;
 	end_state_distribution_q=NULL;
 }
@@ -352,28 +228,21 @@ bool CDynProg::initialize(CModel* model)
 	mem_initialized = false ;
 
 	this->transition_matrix_a=NULL;
-	this->observation_matrix_b=NULL;
 	this->initial_state_distribution_p=NULL;
 	this->end_state_distribution_q=NULL;
-	this->model= model;
-	this->reused_caches=false;
 
 	alloc_state_dependend_arrays();
 
 	this->loglikelihood=false;
 	mem_initialized = true ;
 
-	return	((transition_matrix_A != NULL) && (observation_matrix_B != NULL) && 
-			(transition_matrix_a != NULL) && (observation_matrix_b != NULL) && (initial_state_distribution_p != NULL) &&
+	return	((transition_matrix_a != NULL) && (initial_state_distribution_p != NULL) &&
 			(end_state_distribution_q != NULL));
 }
 
 DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 {
-	delete[] states_per_observation_psi ;
-	states_per_observation_psi=new T_STATES[max_iter*N] ;
-	
-	ASSERT(states_per_observation_psi!=NULL) ;
+	CDynamicArray2<T_STATES> psi(max_iter, N) ;
 	
 	DREAL* delta= new DREAL[N] ;
 	DREAL* delta_new= new DREAL[N] ;
@@ -382,7 +251,7 @@ DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 		for (INT i=0; i<N; i++)
 		{
 			delta[i] = get_p(i) ;
-			set_psi(0, i, 0);
+			psi.element(0, i)= 0 ;
 		}
 	} 
 	
@@ -411,7 +280,7 @@ DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 				}
 			}
 			delta_new[j]=maxj ;
-			set_psi(t, j, argmax);
+			psi.element(t, j)=argmax ;
 		}
 		
 		dummy=delta;
@@ -454,7 +323,6 @@ DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 	delete[] delta ;
 	delete[] delta_new ;
 	
-	delete[] states_per_observation_psi ;
 	return best_iter_prob ;
 }
 
@@ -2135,12 +2003,9 @@ void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int 
 
 DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 {
-	delete[] states_per_observation_psi ;
-	states_per_observation_psi=new T_STATES[max_iter*N] ;
-	
-	if (!STATES_PER_OBSERVATION_PSI(0))
-		return CMath::ALMOST_NEG_INFTY ;
-	
+
+    CDynamicArray2<T_STATES> psi(max_iter, N) ;
+		
 	DREAL* delta= new DREAL[N] ;
 	DREAL* delta_new= new DREAL[N] ;
 	
@@ -2148,7 +2013,7 @@ DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 		for (INT i=0; i<N; i++)
 		{
 			delta[i] = get_p(i) ;
-			set_psi(0, i, 0);
+			psi.element(0, i) = 0;
 		}
 	} 
 	
@@ -2177,7 +2042,7 @@ DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 				}
 			}
 			delta_new[j]=maxj ;
-			set_psi(t, j, argmax);
+			psi.element(t, j)=argmax;
 		}
 		
 		dummy=delta;

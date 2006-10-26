@@ -373,12 +373,6 @@ public:
 	    return N ;
 	  }
 	
-	/// access function for number of observations M
-	inline INT get_M() const
-	  {
-	    return M ;
-	  }
-	
 	/** access function for probability of end states
 	 * @param offset index 0...N-1
 	 * @param value value to be set
@@ -405,20 +399,6 @@ public:
 		initial_state_distribution_p[offset]=value;
 	}
 
-	/** access function for matrix A
-	 * @param line row in matrix 0...N-1
-	 * @param column column in matrix 0...N-1
-	 * @param value value to be set
-	 */
-	inline void set_A(T_STATES line_, T_STATES column, DREAL value)
-	{
-#ifdef HMM_DEBUG
-	  if ((line_>N)||(column>N))
-	    CIO::message(stderr,"index out of range in set_A(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
-#endif
-		transition_matrix_A[line_+column*N]=value;
-	}
-
 	/** access function for matrix a 
 	 * @param line row in matrix 0...N-1
 	 * @param column column in matrix 0...N-1
@@ -431,34 +411,6 @@ public:
 	    CIO::message(stderr,"index out of range in set_a(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
 #endif
 	  transition_matrix_a[line_+column*N]=value; // look also best_path!
-	}
-
-	/** access function for matrix B
-	 * @param line row in matrix 0...N-1
-	 * @param column column in matrix 0...M-1
-	 * @param value value to be set
-	 */
-	inline void set_B(T_STATES line_, WORD column, DREAL value)
-	{
-#ifdef HMM_DEBUG
-	  if ((line_>=N)||(column>=M))
-	    CIO::message(stderr,"index out of range in set_B(%i,%i) [%i,%i]\n", line_, column,N,M) ;
-#endif
-	  observation_matrix_B[line_*M+column]=value;
-	}
-
-	/** access function for matrix b
-	 * @param line row in matrix 0...N-1
-	 * @param column column in matrix 0...M-1
-	 * @param value value to be set
-	 */
-	inline void set_b(T_STATES line_, WORD column, DREAL value)
-	{
-#ifdef HMM_DEBUG
-	  if ((line_>=N)||(column>=M))
-	    CIO::message(stderr,"index out of range in set_b(%i,%i) [%i,%i]\n", line_, column,N,M) ;
-#endif
-		observation_matrix_b[line_*M+column]=value;
 	}
 
 	/** access function for probability of end states
@@ -487,20 +439,6 @@ public:
 		return initial_state_distribution_p[offset];
 	}
 
-	/** access function for matrix A
-	 * @param line row in matrix 0...N-1
-	 * @param column column in matrix 0...N-1
-	 * @return value at position line colum
-	 */
-	inline DREAL get_A(T_STATES line_, T_STATES column) const
-	{
-#ifdef HMM_DEBUG
-	  if ((line_>N)||(column>N))
-	    CIO::message(stderr,"index out of range in get_A(%i,%i) [%i,%i]\n",line_,column,N,N) ;
-#endif
-		return transition_matrix_A[line_+column*N];
-	}
-
 	/** access function for matrix a
 	 * @param line row in matrix 0...N-1
 	 * @param column column in matrix 0...N-1
@@ -514,35 +452,6 @@ public:
 #endif
 	  return transition_matrix_a[line_+column*N]; // look also best_path()!
 	}
-
-	/** access function for matrix B
-	 * @param line row in matrix 0...N-1
-	 * @param column column in matrix 0...M-1
-	 * @return value at position line colum
-	 */
-	inline DREAL get_B(T_STATES line_, WORD column) const
-	{
-#ifdef HMM_DEBUG
-	  if ((line_>=N)||(column>=M))
-	    CIO::message(stderr,"index out of range in get_B(%i,%i) [%i,%i]\n", line_, column,N,M) ;
-#endif
-		return observation_matrix_B[line_*M+column];
-	}
-
-	/** access function for matrix b
-	 * @param line row in matrix 0...N-1
-	 * @param column column in matrix 0...M-1
-	 * @return value at position line colum
-	 */
-	inline DREAL get_b(T_STATES line_, WORD column) const 
-	{
-#ifdef HMM_DEBUG
-	  if ((line_>=N)||(column>=M))
-	    CIO::message(stderr,"index out of range in get_b(%i,%i) [%i,%i]\n", line_, column,N,M) ;
-#endif
-	  return observation_matrix_b[line_*M+column];
-	}
-
 	//@}
 protected:
 
@@ -574,20 +483,8 @@ protected:
 	 * these are p,q,a,b,N,M etc 
 	 */
 	//@{
-	/// number of observation symbols eg. ACGT -> 0123
-	INT M;
-
 	/// number of states
 	INT N;
-
-	//train definition for HMM
-	CModel* model;
-
-	/// matrix  of absolute counts of transitions 
-	DREAL* transition_matrix_A;
-
-	/// matrix of absolute counts of observations within each state
-	DREAL* observation_matrix_B;
 
 	/// transition matrix 
 	DREAL* transition_matrix_a;
@@ -597,9 +494,6 @@ protected:
 
 	/// distribution of end-states
 	DREAL* end_state_distribution_q;		
-
-	/// distribution of observations within each state
-	DREAL* observation_matrix_b;	
 
 	T_STATES* states_per_observation_psi ;
 	
@@ -615,8 +509,6 @@ protected:
 	// true->ok, false->error
 	bool status;			
 
-	// true->stolen from other HMMs, false->got own
-	bool reused_caches;
 	//@}
 
 	static const INT num_degrees ;
