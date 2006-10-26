@@ -427,7 +427,7 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 					m_genestr.get_array(), m_genestr.get_dim1(),
 					nbest, 
 					m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
-					m_dict_weights.get_array(), m_dict_weights.get_dim1(),
+					m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2(),
 					PEN_values, PEN_input_values, 
 					num_PEN_id, use_orf) ;
 
@@ -445,7 +445,7 @@ void CDynProg::best_path_2struct_call(INT nbest)
 		CIO::message(M_ERROR, "please call best_path_set_segment_sum_weights first\n") ;
 	ASSERT(N==m_seq.get_dim1()) ;
 	ASSERT(m_seq.get_dim2()==m_pos.get_dim1()) ;
-
+	
 	m_scores.resize_array(nbest) ;
 	m_states.resize_array(nbest, m_seq.get_dim2()) ;
 	m_positions.resize_array(nbest, m_seq.get_dim2()) ;
@@ -461,7 +461,7 @@ void CDynProg::best_path_2struct_call(INT nbest)
 					  m_genestr.get_array(), m_genestr.get_dim1(),
 					  nbest, 
 					  m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
-					  m_dict_weights.get_array(), m_dict_weights.get_dim1(), 
+					  m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2(), 
 					  m_segment_sum_weights.get_array(),
 					  PEN_values, PEN_input_values, num_PEN_id) ;
 
@@ -487,7 +487,7 @@ void CDynProg::best_path_simple_call(INT nbest)
 	best_path_trans_simple(m_seq.get_array(), m_seq.get_dim2(), 
 						   nbest, 
 						   m_scores.get_array(), m_states.get_array()) ;
-
+	
 	m_step=9 ;
 }
 
@@ -495,7 +495,7 @@ void CDynProg::best_path_simple_call(INT nbest)
 void CDynProg::best_path_get_scores(DREAL **scores, INT *m) 
 {
 	if (m_step!=9)
-		CIO::message(M_ERROR, "please call best_path_call first\n") ;
+		CIO::message(M_ERROR, "please call best_path*_call first\n") ;
 
 	*scores=m_scores.get_array() ;
 	*m=m_scores.get_dim1() ;
@@ -629,7 +629,7 @@ void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int 
 	CDynamicArray2<DREAL> delta_end(max_iter,nbest) ;
 
 	CDynamicArray2<INT> paths(max_iter,nbest) ;
-	paths.set_array(my_paths, max_iter*nbest, max_iter*nbest) ;
+	paths.set_array(my_paths, max_iter*nbest, max_iter*nbest, false, false) ;
 
 	{ // initialization
 		for (T_STATES i=0; i<N; i++)
@@ -885,7 +885,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 	INT max_look_back = default_look_back ;
 	bool use_svm = false ;
 	ASSERT(dict_len==num_svms*num_words_single) ;
-	dict_weights.set_array(dictionary_weights, dict_len, num_svms, false) ;
+	dict_weights.set_array(dictionary_weights, dict_len, num_svms, false, false) ;
 
 	CDynamicArray2<CPlif*> PEN(PEN_matrix, N, N, false) ;
 	CDynamicArray2<DREAL> seq((DREAL *)seq_array, N, seq_len, false) ;
@@ -1443,13 +1443,11 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							   DREAL *&PEN_values, DREAL *&PEN_input_values, 
 							   INT &num_PEN_id, bool use_orf)
 {
-	//fprintf(stderr, "use_orf=%i\n", use_orf) ;
-	
 	const INT default_look_back = 30000 ;
 	INT max_look_back = default_look_back ;
 	bool use_svm = false ;
 	ASSERT(dict_len==num_svms*cum_num_words[num_degrees]) ;
-	dict_weights.set_array(dictionary_weights, cum_num_words[num_degrees], num_svms, false) ;
+	dict_weights.set_array(dictionary_weights, cum_num_words[num_degrees], num_svms, false, false) ;
 	int offset=0;
 	
 	DREAL svm_value[num_svms] ;
