@@ -203,6 +203,8 @@ CDynProg::~CDynProg()
 	  } ;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 void CDynProg::set_p(DREAL *p, INT N) 
 {
 	//m_seq.resize_array(N,1) ;
@@ -525,6 +527,7 @@ void CDynProg::best_path_get_positions(INT **positions, INT *m, INT *n)
 	*n=m_positions.get_dim2() ;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
 DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 {
