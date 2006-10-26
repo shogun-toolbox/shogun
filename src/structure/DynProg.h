@@ -80,15 +80,20 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////
 protected:
+	// control info
 	INT m_step ;
+	INT m_call ;
+	// input arguments
 	CDynamicArray2<DREAL> m_seq ;
 	CDynamicArray<INT> m_pos ;
 	CDynamicArray2<INT> m_orf_info ;
+	CDynamicArray<DREAL> m_segment_sum_weights ;
 	CDynamicArray<CPlif*> m_plif_list ;
 	CDynamicArray2<CPlif*> m_PEN ;
 	CDynamicArray<CHAR> m_genestr ;
 	CDynamicArray2<DREAL> m_dict_weights ;
 
+	// output arguments
 	CDynamicArray<DREAL> m_scores ;
 	CDynamicArray2<INT> m_states ;
 	CDynamicArray2<INT> m_positions ;
@@ -100,15 +105,18 @@ public:
 
 	void best_path_set_seq(DREAL *seq, INT N, INT seq_len) ;
 	void best_path_set_pos(INT *pos, INT seq_len)  ;
-	void best_path_set_orf_info(INT *orf_info, INT m, INT n) ;
+	void best_path_set_orf_info(INT *orf_info, INT m, INT n) ;            // only for best_path_trans
+	void best_path_set_segment_sum_weights(DREAL *segment_sum_weights, INT num_states, INT seq_len) ; // only for best_path_2struct
 	void best_path_set_plif_list(CPlif **plif_list, INT num_plif) ;
 	void best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n) ;
 	void best_path_set_genestr(CHAR* genestr, INT genestr_len) ;
 	void best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len, INT n) ;
 	
 	void best_path_call(INT nbest, bool use_orf) ;
+	void best_path_2struct_call(INT nbest) ;
+	void best_path_simple_call(INT nbest) ;
 	
-	void best_path_get_score(DREAL **scores, INT *n) ;
+	void best_path_get_scores(DREAL **scores, INT *n) ;
 	void best_path_get_states(INT **states, INT *m, INT *n) ;
 	void best_path_get_positions(INT **positions, INT *m, INT *n) ;
 

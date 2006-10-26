@@ -299,6 +299,7 @@ void CDynProg::best_path_set_seq(DREAL *seq, INT N, INT seq_len)
 	m_seq.set_array(seq, N, seq_len, true, true) ;
 	this->N=N ;
 
+	m_call=3 ;
 	m_step=2 ;
 }
 
@@ -306,6 +307,9 @@ void CDynProg::best_path_set_pos(INT *pos, INT seq_len)
 {
 	if (m_step!=2)
 		CIO::message(M_ERROR, "please call best_path_set_seq first\n") ;
+	
+	if (seq_len!=m_seq.get_dim2())
+		CIO::message(M_ERROR, "pos size does not match previous info %i!=%i\n", seq_len, m_seq.get_dim2()) ;
 
 	m_pos.set_array(pos, seq_len, seq_len, true, true) ;
 
@@ -317,19 +321,36 @@ void CDynProg::best_path_set_orf_info(INT *orf_info, INT m, INT n)
 	if (m_step!=3)
 		CIO::message(M_ERROR, "please call best_path_set_pos first\n") ;
 		
-	m_orf_info.set_array(orf_info, m, n, true, true) ;
 	if (m!=N)
 		CIO::message(M_ERROR, "orf_info size does not match previous info %i!=%i\n", m, N) ;
 	if (n!=2)
 		CIO::message(M_ERROR, "orf_info size incorrect %i!=2\n", n) ;
+	m_orf_info.set_array(orf_info, m, n, true, true) ;
 	
+	m_call=1 ;
+	m_step=4 ;
+}
+
+void CDynProg::best_path_set_segment_sum_weights(DREAL *segment_sum_weights, INT num_states, INT seq_len) 
+{
+	if (m_step!=3)
+		CIO::message(M_ERROR, "please call best_path_set_pos first\n") ;
+		
+	if (num_states!=N)
+		CIO::message(M_ERROR, "segment_sum_weights size does not match previous info %i!=%i\n", num_states, N) ;
+	if (seq_len!=m_pos.get_dim1())
+		CIO::message(M_ERROR, "segment_sum_weights size incorrect %i!=%i\n", seq_len, m_pos.get_dim1()) ;
+
+	m_segment_sum_weights.set_array(segment_sum_weights, num_states, seq_len, true, true) ;
+	
+	m_call=2 ;
 	m_step=4 ;
 }
 
 void CDynProg::best_path_set_plif_list(CPlif **plif_list, INT num_plif) 
 {
 	if (m_step!=4)
-		CIO::message(M_ERROR, "please call best_path_set_orf_info first\n") ;
+		CIO::message(M_ERROR, "please call best_path_set_orf_info or best_path_segment_sum_weights first\n") ;
 
 	m_plif_list.set_array(plif_list, num_plif, num_plif, true, true) ;
 
@@ -383,7 +404,9 @@ void CDynProg::best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_le
 void CDynProg::best_path_call(INT nbest, bool use_orf) 
 {
 	if (m_step!=8)
-		CIO::message(M_ERROR, "please call best_path_set_orf_dict_weights first\n") ;
+		CIO::message(M_ERROR, "please call best_path_set_dict_weights first\n") ;
+	if (m_call!=1)
+		CIO::message(M_ERROR, "please call best_path_set_orf_info first\n") ;
 	ASSERT(N==m_seq.get_dim1()) ;
 	ASSERT(m_seq.get_dim2()==m_pos.get_dim1()) ;
 
@@ -394,6 +417,8 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 	DREAL* PEN_values = NULL ;
 	DREAL * PEN_input_values = NULL ;
 	INT num_PEN_id = 0 ;
+
+	m_call=1 ;
 
 	best_path_trans(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), m_orf_info.get_array(),
 					m_PEN.get_array(), 
@@ -410,8 +435,62 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 	m_step=9 ;
 }
 
+void CDynProg::best_path_2struct_call(INT nbest) 
+{
+	if (m_step!=8)
+		CIO::message(M_ERROR, "please call best_path_set_orf_dict_weights first\n") ;
+	if (m_call!=2)
+		CIO::message(M_ERROR, "please call best_path_set_segment_sum_weights first\n") ;
+	ASSERT(N==m_seq.get_dim1()) ;
+	ASSERT(m_seq.get_dim2()==m_pos.get_dim1()) ;
 
-void CDynProg::best_path_get_score(DREAL **scores, INT *m) 
+	m_scores.resize_array(nbest) ;
+	m_states.resize_array(nbest, m_seq.get_dim2()) ;
+	m_positions.resize_array(nbest, m_seq.get_dim2()) ;
+
+	m_call=2 ;
+
+	DREAL* PEN_values = NULL ;
+	DREAL * PEN_input_values = NULL ;
+	INT num_PEN_id = 0 ;
+
+	best_path_2struct(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
+					  m_PEN.get_array(), 
+					  m_genestr.get_array(), m_genestr.get_dim1(),
+					  nbest, 
+					  m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
+					  m_dict_weights.get_array(), m_dict_weights.get_dim1(), 
+					  m_segment_sum_weights.get_array(),
+					  PEN_values, PEN_input_values, num_PEN_id) ;
+
+	delete[] PEN_values ;
+	delete[] PEN_input_values ;
+
+	m_step=9 ;
+}
+
+void CDynProg::best_path_simple_call(INT nbest) 
+{
+	if (m_step!=2)
+		CIO::message(M_ERROR, "please call best_path_set_seq first\n") ;
+	if (m_call!=3)
+		CIO::message(M_ERROR, "please call best_path_set_seq first\n") ;
+	ASSERT(N==m_seq.get_dim1()) ;
+
+	m_scores.resize_array(nbest) ;
+	m_states.resize_array(nbest, m_seq.get_dim2()) ;
+
+	m_call=3 ;
+
+	best_path_trans_simple(m_seq.get_array(), m_seq.get_dim2(), 
+						   nbest, 
+						   m_scores.get_array(), m_states.get_array()) ;
+
+	m_step=9 ;
+}
+
+
+void CDynProg::best_path_get_scores(DREAL **scores, INT *m) 
 {
 	if (m_step!=9)
 		CIO::message(M_ERROR, "please call best_path_call first\n") ;
@@ -438,7 +517,9 @@ void CDynProg::best_path_get_positions(INT **positions, INT *m, INT *n)
 {
 	if (m_step!=11)
 		CIO::message(M_ERROR, "please call best_path_get_positions first\n") ;
-
+	if (m_call==3)
+		CIO::message(M_ERROR, "no position information for best_path_simple\n") ;
+	
 	*positions=m_positions.get_array() ;
 	*m=m_positions.get_dim1() ;
 	*n=m_positions.get_dim2() ;
