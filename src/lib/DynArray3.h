@@ -49,10 +49,21 @@ public:
 		dim3=dim3_size ;
 	}
 	/// set the array pointer and free previously allocated memory
-	inline void set_array(T* array, INT dim1, INT dim2, INT dim3, bool free_array)
+	inline void set_array(T* array, INT dim1, INT dim2, INT dim3, bool free_array, bool copy_array=false)
 	{
-		CDynamicArray<T>(array, dim1*dim2*dim3, dim1*dim2*dim3, free_array) ;
+		CDynamicArray<T>.set_array(array, dim1*dim2*dim3, dim1*dim2*dim3, free_array, copy_array) ;
 	}
+
+	inline bool resize_array(INT dim1, INT dim2, INT dim3)
+		{
+			if (CDynamicArray<T>.resize(dim1*dim2*dim3))
+			{
+				last_element_idx=dim1*dim2*dim3-1 ;
+				return true ;
+			}
+			else 
+				return false ;
+		}
 
 	///return array element at index
 	inline T get_element(INT idx1, INT idx2, INT idx3) const

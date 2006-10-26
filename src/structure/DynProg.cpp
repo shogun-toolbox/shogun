@@ -56,7 +56,7 @@ const INT CDynProg::word_degree_single = 1 ;
 const INT CDynProg::num_svms_single = 1 ;
 bool CDynProg::word_used_single[CDynProg::num_words_single] ;
 DREAL CDynProg::svm_value_unnormalized_single[CDynProg::num_svms_single] ;
-DREAL *CDynProg::dict_weights=NULL ;
+CDynamicArray2<DREAL> CDynProg::dict_weights(1,1) ;
 INT CDynProg::num_unique_words_single = 0 ;
 
 CDynamicArray2<bool> CDynProg::word_used(CDynProg::num_degrees,4096) ;
@@ -64,15 +64,27 @@ CDynamicArray2<DREAL> CDynProg::svm_values_unnormalized(num_degrees,num_svms) ;
 INT CDynProg::svm_pos_start[num_degrees] ;
 INT CDynProg::num_unique_words[num_degrees] ;
 
+CDynProg::CDynProg()
+	: m_seq(1,1), m_pos(1), m_orf_info(1,2), m_plif_list(1), m_PEN(1,1), 
+	  m_genestr(1), m_dict_weights(1),
+	  transition_matrix_a(1,1), initial_state_distribution_p(1,1), end_state_distribution_q(1,1)
+{
+	this->N=1;
+	m_step=0 ;
+}
 
 CDynProg::CDynProg(INT N, double* p, double* q, double* a)
-	: transition_matrix_a(a,N,N,false), initial_state_distribution_p(p,N,N,false), end_state_distribution_q(q,N,N,false)
+	: m_seq(N,1), m_pos(1), m_orf_info(N,2), m_plif_list(1), m_PEN(N,N), 
+	  m_genestr(1), m_dict_weights(1),
+	  transition_matrix_a(a,N,N,false), initial_state_distribution_p(p,N,N,false), end_state_distribution_q(q,N,N,false)
 {
 	this->N=N;
 }
 
 CDynProg::CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans)
-	: transition_matrix_a(N,N), initial_state_distribution_p(p,N,N,false), end_state_distribution_q(q,N,N,false)
+	: m_seq(N,1), m_pos(1), m_orf_info(N,2), m_plif_list(1), m_PEN(N,N), 
+	  m_genestr(1), m_dict_weights(1),
+	  transition_matrix_a(N,N), initial_state_distribution_p(p,N,N,false), end_state_distribution_q(q,N,N,false)
 {
 	this->N=N;
 	
@@ -168,6 +180,187 @@ CDynProg::~CDynProg()
 		delete[] trans_list_backward[i] ;
 	    delete[] trans_list_backward ;
 	  } ;
+}
+
+void CDynProg::set_p(DREAL *p, INT N) 
+{
+	m_seq(N,1), m_pos(1), m_orf_info(N,2), m_plif_list(1), m_PEN(N,N), 
+	  m_genestr(1), m_dict_weights(1),
+
+	initial_state_distribution_p.set_array(p, N, N, true, true) ;
+	this->N=N ;
+}
+
+void CDynProg::set_q(DREAL *q, INT N) 
+{
+	end_state_distribution_q.seq_array(q, N, N, true, true) ;
+}
+
+void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans) 
+{
+	trans_list_forward = NULL ;
+	trans_list_forward_cnt = NULL ;
+	trans_list_forward_val = NULL ;
+	trans_list_backward = NULL ;
+	trans_list_backward_cnt = NULL ;
+	trans_list_len = 0 ;
+
+	mem_initialized = true ;
+
+	trans_list_forward_cnt=NULL ;
+	trans_list_len = N ;
+	trans_list_forward = new T_STATES*[N] ;
+	trans_list_forward_val = new DREAL*[N] ;
+	trans_list_forward_cnt = new T_STATES[N] ;
+	
+	INT start_idx=0;
+	for (INT j=0; j<N; j++)
+	{
+		INT old_start_idx=start_idx;
+
+		while (start_idx<num_trans && a_trans[start_idx+num_trans]==j)
+		{
+			start_idx++;
+			
+			if (start_idx>1 && start_idx<num_trans)
+				ASSERT(a_trans[start_idx+num_trans-1] <= a_trans[start_idx+num_trans]);
+		}
+		
+		if (start_idx>1 && start_idx<num_trans)
+			ASSERT(a_trans[start_idx+num_trans-1] <= a_trans[start_idx+num_trans]);
+		
+		INT len=start_idx-old_start_idx;
+		ASSERT(len>=0);
+		
+		trans_list_forward_cnt[j] = 0 ;
+		
+		if (len>0)
+		{
+			trans_list_forward[j]     = new T_STATES[len] ;
+			trans_list_forward_val[j] = new DREAL[len] ;
+		}
+		else
+		{
+			trans_list_forward[j]     = NULL;
+			trans_list_forward_val[j] = NULL;
+		}
+	}
+	
+	for (INT i=0; i<num_trans; i++)
+	{
+		INT from = (INT)a_trans[i+num_trans] ;
+		INT to   = (INT)a_trans[i] ;
+		DREAL val = a_trans[i+num_trans*2] ;
+		
+		ASSERT(from>=0 && from<N) ;
+		ASSERT(to>=0 && to<N) ;
+		
+		trans_list_forward[from][trans_list_forward_cnt[from]]=to ;
+		trans_list_forward_val[from][trans_list_forward_cnt[from]]=val ;
+		trans_list_forward_cnt[from]++ ;
+		//ASSERT(trans_list_forward_cnt[from]<3000) ;
+	} ;
+
+}
+
+void CDynProg::best_path_set_seq(DREAL *seq, INT N, INT seq_len) 
+{
+	m_seq.set_array(seq, N, seq_len, true, true) ;
+	m_step=2 ;
+}
+
+void CDynProg::best_path_set_pos(INT *pos, INT seq_len)  
+{
+	if (m_step!=2)
+		CIO::message(M_ERROR, "please call best_path_set_seq first\n") ;
+
+	m_pos.set_array(pos, seq_len, seq_len, true, true) ;
+
+	m_step=3 ;
+}
+
+void CDynProg::best_path_set_orf_info(INT *orf_info, INT m, INT n) 
+{
+	if (m_step!=3)
+		CIO::message(M_ERROR, "please call best_path_set_pos first\n") ;
+		
+	m_orf_info.set_array(orf_info, m, n, true, true) ;
+	if (m!=N)
+		CIO::message(M_ERROR, "orf_info size does not match previous info %i!=%i\n", m, N) ;
+	if (n!=2)
+		CIO::message(M_ERROR, "orf_info size incorrect %i!=2\n", n) ;
+	
+	m_step=4 ;
+}
+
+void CDynProg::best_path_set_plif_list(CPlif **plif_list, INT num_plif) 
+{
+	if (m_step!=4)
+		CIO::message(M_ERROR, "please call best_path_set_orf_info first\n") ;
+
+	m_plif_list.set_array(plif_list, num_plif, num_plif, true, true) ;
+
+	m_step=5 ;
+}
+
+void CDynProg::best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n) 
+{
+	if (m_step!=5)
+		CIO::message(M_ERROR, "please call best_path_set_plif_list first\n") ;
+
+	m_PEN.set_array(plif_list, num_plif, num_plif, true, true) ;
+
+	m_step=6 ;
+}
+
+void CDynProg::best_path_set_genestr(CHAR* genestr, INT genestr_len)
+{
+	if (m_step!=6)
+		CIO::message(M_ERROR, "please call best_path_set_plif_id_matrix first\n") ;
+
+	m_step=7 ;
+}
+
+void CDynProg::best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len) 
+{
+	if (m_step!=7)
+		CIO::message(M_ERROR, "please call best_path_set_genestr first\n") ;
+
+	m_step=7 ;
+}
+
+
+void CDynProg::best_path_call(INT nbest, bool use_orf) 
+{
+	if (m_step!=8)
+		CIO::message(M_ERROR, "please call best_path_set_orf_dict_weights first\n") ;
+
+	m_step=9 ;
+}
+
+
+void CDynProg::best_path_get_score(DREAL **score, INT *N) 
+{
+	if (m_step!=9)
+		CIO::message(M_ERROR, "please call best_path_call first\n") ;
+
+	m_step=10 ;
+}
+
+void CDynProg::best_path_get_states(INT **states, INT *N, INT *M) 
+{
+	if (m_step!=10)
+		CIO::message(M_ERROR, "please call best_path_get_score first\n") ;
+
+	m_step=11 ;
+}
+
+void CDynProg::best_path_get_positions(INT **positions, INT *N, INT *M) 
+{
+	if (m_step!=11)
+		CIO::message(M_ERROR, "please call best_path_get_positions first\n") ;
+
+	m_step=12 ;
 }
 
 
@@ -403,8 +596,8 @@ void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int 
 
 
 void CDynProg::translate_from_single_order(WORD* obs, INT sequence_length, 
-										INT start, INT order, 
-										INT max_val)
+										   INT start, INT order, 
+										   INT max_val)
 {
 	INT i,j;
 	WORD value=0;
@@ -458,8 +651,8 @@ void CDynProg::extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, DREAL
 		if (!word_used_single[wordstr[i]])
 		{
 			for (INT s=0; s<num_svms_single; s++)
-				svm_value_unnormalized_single[s]+=dict_weights[wordstr[i]+s*num_words_single] ;
-
+				svm_value_unnormalized_single[s]+=dict_weights.element(wordstr[i],s) ;
+			
 			word_used_single[wordstr[i]]=true ;
 			num_unique_words_single++ ;
 			did_something=true ;
@@ -527,7 +720,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 	INT max_look_back = default_look_back ;
 	bool use_svm = false ;
 	ASSERT(dict_len==num_svms*num_words_single) ;
-	dict_weights=dictionary_weights ;
+	dict_weights.set_array(dictionary_weights, dict_len, num_svms, false) ;
 
 	CDynamicArray2<CPlif*> PEN(PEN_matrix, N, N, false) ;
 	CDynamicArray2<DREAL> seq((DREAL *)seq_array, N, seq_len, false) ;
@@ -598,7 +791,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 	WORD* wordstr=NULL ;
 	if (use_svm)
 	{
-		ASSERT(dict_weights!=NULL) ;
+		ASSERT(dictionary_weights!=NULL) ;
 		wordstr=new WORD[genestr_len] ;
 		for (INT i=0; i<genestr_len; i++)
 			switch (genestr[i])
@@ -864,7 +1057,8 @@ void CDynProg::extend_svm_values(WORD** wordstr, INT pos, INT *last_svm_pos, DRE
 			if (!word_used.element(j,wordstr[j][i]))
 			{
 				for (INT s=0; s<num_svms; s++)
-					svm_values_unnormalized.element(j,s)+=dict_weights[wordstr[j][i]+s*cum_num_words[num_degrees]+cum_num_words[j]] ;
+					svm_values_unnormalized.element(j,s)+=dict_weights.element(wordstr[j][i]+cum_num_words[j],s) ;
+				//svm_values_unnormalized.element(j,s)+=dict_weights[wordstr[j][i]+s*cum_num_words[num_degrees]+cum_num_words[j]] ;
 				
 				word_used.element(j,wordstr[j][i])=true ;
 				num_unique_words[j]++ ;
@@ -999,7 +1193,7 @@ void CDynProg::find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_
 				if (!svs.word_used[j][wordstr[j][i]])
 				{
 					for (INT s=0; s<num_svms; s++)
-						svs.svm_values_unnormalized[j][s]+=dict_weights[wordstr[j][i]+s*cum_num_words[num_degrees]+cum_num_words[j]] ;
+						svs.svm_values_unnormalized[j][s]+=dict_weights.element(wordstr[j][i]+cum_num_words[j], s) ;
 					
 					svs.word_used[j][wordstr[j][i]]=true ;
 					svs.num_unique_words[j]++ ;
@@ -1090,7 +1284,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	INT max_look_back = default_look_back ;
 	bool use_svm = false ;
 	ASSERT(dict_len==num_svms*cum_num_words[num_degrees]) ;
-	dict_weights=dictionary_weights ;
+	dict_weights.set_array(dictionary_weights, cum_num_words[num_degrees], num_svms, false) ;
 	int offset=0;
 	
 	DREAL svm_value[num_svms] ;
@@ -1188,7 +1382,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 			wordstr[j]=NULL ;
 			if (use_svm)
 			{
-				ASSERT(dict_weights!=NULL) ;
+				ASSERT(dictionary_weights!=NULL) ;
 				wordstr[j]=new WORD[genestr_len] ;
 				for (INT i=0; i<genestr_len; i++)
 					switch (genestr[i])

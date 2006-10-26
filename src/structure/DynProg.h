@@ -61,6 +61,7 @@ public:
 	 * @param M number of emissions
 	 * @param model model which holds definitions of states to be learned + consts
 	 */
+	CDynProg() ;
 	CDynProg(INT N, double* p, double* q, double* a) ;
 	CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans) ;
 
@@ -78,18 +79,34 @@ public:
 	void model_prob_no_b_trans(INT max_iter, DREAL *prob_iter) ;
 
 ////////////////////////////////////////////////////////////////////////////////
+protected:
+	INT m_step ;
+	CDynamicArray2<DREAL> m_seq ;
+	CDynamicArray<INT> m_pos ;
+	CDynamicArray2<INT> m_orf_info ;
+	CDynamicArray<CPlif*> m_plif_list ;
+	CDynamicArray2<CPlif*> m_PEN ;
+	CDynamicArray<CHAR> m_genestr ;
+	CDynamicArray<CHAR> m_dict_weights ;
+	
+public:
+	void set_p(DREAL *p, INT N) ;
+	void set_q(DREAL *q, INT N) ;
+	void set_a_trans(DREAL *a_trans, INT num_trans) ;
+
 	void best_path_set_seq(DREAL *seq, INT N, INT seq_len) ;
 	void best_path_set_pos(INT *pos, INT seq_len)  ;
-	void best_path_set_orf_info(INT *orf_info, INT N2) ;
-	void best_path_set_pen(CPlif **PEN, INT N_N) ;
-	void best_path_set_genestr(char* PEN, INT genestr_len) ;
+	void best_path_set_orf_info(INT *orf_info, INT m, INT n) ;
+	void best_path_set_plif_list(CPlif **plif_list, INT num_plif) ;
+	void best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n) ;
+	void best_path_set_genestr(CHAR* genestr, INT genestr_len) ;
 	void best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len) ;
 	
 	void best_path_call(INT nbest, bool use_orf) ;
 	
-	void best_path_get_score(DREAL **score, INT &N) ;
-	void best_path_get_states(INT **states, INT &N, INT &M) ;
-	void best_path_get_positions(INT **positions, INT &N, INT &M) ;
+	void best_path_get_score(DREAL **score, INT *N) ;
+	void best_path_get_states(INT **states, INT *N, INT *M) ;
+	void best_path_get_positions(INT **positions, INT *N, INT *M) ;
 ////////////////////////////////////////////////////////////////////////////////
 
 	void best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const INT *orf_info,
@@ -126,10 +143,6 @@ public:
 	 */
 	inline void set_q(T_STATES offset, DREAL value)
 	{
-#ifdef HMM_DEBUG
-	  if (offset>=N)
-	    CIO::message(stderr,"index out of range in set_q(%i,%e) [%i]\n", offset,value,N) ;
-#endif
 		end_state_distribution_q[offset]=value;
 	}
 
@@ -139,10 +152,6 @@ public:
 	 */
 	inline void set_p(T_STATES offset, DREAL value)
 	{
-#ifdef HMM_DEBUG
-	  if (offset>=N)
-	    CIO::message(stderr,"index out of range in set_p(%i,.) [%i]\n", offset,N) ;
-#endif
 		initial_state_distribution_p[offset]=value;
 	}
 
@@ -153,10 +162,6 @@ public:
 	 */
 	inline void set_a(T_STATES line_, T_STATES column, DREAL value)
 	{
-#ifdef HMM_DEBUG
-	  if ((line_>N)||(column>N))
-	    CIO::message(stderr,"index out of range in set_a(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
-#endif
 	  transition_matrix_a.element(line_,column)=value; // look also best_path!
 	}
 
@@ -166,10 +171,6 @@ public:
 	 */
 	inline DREAL get_q(T_STATES offset) const 
 	{
-#ifdef HMM_DEBUG
-	  if (offset>=N)
-	    CIO::message(stderr,"index out of range in %e=get_q(%i) [%i]\n", end_state_distribution_q[offset],offset,N) ;
-#endif
 		return end_state_distribution_q[offset];
 	}
 
@@ -179,10 +180,6 @@ public:
 	 */
 	inline DREAL get_p(T_STATES offset) const 
 	{
-#ifdef HMM_DEBUG
-	  if (offset>=N)
-	    CIO::message(stderr,"index out of range in get_p(%i,.) [%i]\n", offset,N) ;
-#endif
 		return initial_state_distribution_p[offset];
 	}
 
@@ -193,10 +190,6 @@ public:
 	 */
 	inline DREAL get_a(T_STATES line_, T_STATES column) const
 	{
-#ifdef HMM_DEBUG
-	  if ((line_>N)||(column>N))
-	    CIO::message(stderr,"index out of range in get_a(%i,%i) [%i,%i]\n",line_,column,N,N) ;
-#endif
 	  return transition_matrix_a.element(line_,column) ; // look also best_path()!
 	}
 	//@}
@@ -258,7 +251,6 @@ protected:
 
 	static CDynamicArray2<bool> word_used ;
 	static CDynamicArray2<DREAL> svm_values_unnormalized ;
-	static DREAL *dict_weights ;
 	static INT svm_pos_start[] ;
 	static INT num_unique_words[] ;
 
@@ -270,5 +262,6 @@ protected:
 	static bool word_used_single[] ;
 	static DREAL svm_value_unnormalized_single[] ;
 	static INT num_unique_words_single ;
+	static CDynamicArray2<DREAL> dict_weights ;
 };
 #endif

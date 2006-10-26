@@ -36,10 +36,10 @@ public:
 		last_element_idx = -1;
 	}
 
-	CDynamicArray(T* p_array, INT p_num_elements, INT p_array_size, bool p_free_array=true)
+	CDynamicArray(T* p_array, INT p_num_elements, INT p_array_size, bool p_free_array=true, bool p_copy_array=false)
 		: array(NULL), free_array(false)
 		{
-			set_array(p_array, p_num_elements, p_array_size, p_free_array) ;
+			set_array(p_array, p_num_elements, p_array_size, p_free_array, p_copy_array) ;
 		}
 
 	~CDynamicArray()
@@ -195,11 +195,17 @@ public:
 	}
 
 	/// set the array pointer and free previously allocated memory
-	inline void set_array(T* array, INT num_elements, INT array_size, bool free_array=true)
+	inline void set_array(T* array, INT num_elements, INT array_size, bool free_array=true, bool copy_array=false)
 	{
 		if (this->free_array)
 			free(this->array);
-		this->array=array;
+		if (copy_array)
+		{
+			this->array=(T*)malloc(array_size*sizeof(T)) ;
+			memcpy(this->array, array, array_size*sizeof(T)) ;
+		}
+		else
+			this->array=array;
 		this->num_elements=array_size;
 		this->last_element_idx=num_elements-1;
 		this->free_array=free_array ;
