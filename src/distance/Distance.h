@@ -16,10 +16,8 @@
 #define _DISTANCE_H___
 
 #include "lib/common.h"
-#include "features/Features.h"
-
-#include <float.h>
 #include "lib/Mathematics.h"
+#include "features/Features.h"
 
 #include <stdio.h>
 

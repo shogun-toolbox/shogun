@@ -17,6 +17,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <float.h>
 
 #ifdef HAVE_LAPACK
 extern "C" {
