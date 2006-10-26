@@ -1,5 +1,6 @@
 TODO
 
+- move translate* functions from stringfeatures/charfeatures/dynprog/matlab.cpp into alphabet!
 - R wrapper
 - error checks/exception modell w/ python-swig-objects (fabio example)
 - doc-strings w/ python-swig-objects (fabio example, rbf,svmlight,realfeat)
