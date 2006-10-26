@@ -25,11 +25,11 @@ template <class T> class CDynamicArray2;
 template <class T> class CDynamicArray2: CDynamicArray<T>
 {
 public:
-	CDynamicArray2(INT dim1, INT dim2)
-		: CDynamicArray<T>(dim1*dim2), dim1_size(dim1), dim2_size(dim2)
+CDynamicArray2(INT dim1, INT dim2)
+	: CDynamicArray<T>(dim1*dim2), dim1_size(dim1), dim2_size(dim2)
 	{
 		this->resize_granularity = dim1 ;
-		last_element_idx=dim1*dim2-1 ;
+		CDynamicArray<T>::last_element_idx = dim1*dim2-1 ;
 	}
 
 	CDynamicArray2(T* p_array, INT dim1, INT dim2, bool p_free_array=true)
@@ -54,8 +54,7 @@ public:
 		{
 			dim1_size=dim1 ;
 			dim2_size=dim2 ;
-			CDynamicArray<T>::
-set_array(array, dim1*dim2, dim1*dim2, free_array, copy_array) ;
+			CDynamicArray<T>::set_array(array, dim1*dim2, dim1*dim2, free_array, copy_array) ;
 		}
 
 	inline bool resize_array(INT dim1, INT dim2)
@@ -64,7 +63,7 @@ set_array(array, dim1*dim2, dim1*dim2, free_array, copy_array) ;
 			dim2_size=dim2 ;
 			if (CDynamicArray<T>::resize_array(dim1*dim2))
 			{
-				last_element_idx=dim1*dim2-1 ;
+				CDynamicArray<T>::last_element_idx=dim1*dim2-1 ;
 				return true ;
 			}
 			else 
