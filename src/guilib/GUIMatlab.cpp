@@ -719,12 +719,12 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 			for (INT i=0; i<M; i++)
 				pos[i]=(INT)pos_[i] ;
 
-			struct penalty_struct * PEN = 
+			CPlif * PEN = 
 				read_penalty_struct_from_cell(mx_penalty_info, P) ;
 			if (PEN==NULL && P!=0)
 				return false ;
 			
-			struct penalty_struct **PEN_matrix = new struct penalty_struct*[N*N] ;
+			CPlif **PEN_matrix = new CPlif*[N*N] ;
 			double* penalties=mxGetPr(mx_penalties) ;
 			for (INT i=0; i<N*N; i++)
 			{
@@ -732,7 +732,7 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 				if ((id<0 || id>=P) && (id!=-1))
 				{
 					CIO::message(M_ERROR, "id out of range\n") ;
-					delete_penalty_struct_array(PEN, P) ;
+					delete[] PEN ;
 					return false ;
 				}
 				if (id==-1)
@@ -772,7 +772,7 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 				p_PEN_input_values[s]=PEN_input_values[s] ;
 			
 			// clean up 
-			delete_penalty_struct_array(PEN, P) ;
+			delete[] PEN ;
 			delete[] PEN_matrix ;
 			delete[] pos ;
 			delete h ;

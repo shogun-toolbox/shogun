@@ -27,10 +27,6 @@ enum ETransformType
 	T_LINEAR_PLUS3
 }  ;
 
-#ifdef HAVE_MATLAB
-	void read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT &P) ;
-#endif
-
 class CPlif
 {
 public:
@@ -116,5 +112,8 @@ protected:
 	INT use_svm ;
 } ;
 
+#ifdef HAVE_MATLAB
+CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT &P) ;
+#endif
 
 #endif
