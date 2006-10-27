@@ -122,11 +122,17 @@ CDynamicArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
 
 	inline const T& element(INT idx1, INT idx2, INT idx3) const
 	{
-		return get_element(idx1,idx2,idx3) ;
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(idx3>=0 && idx3<dim3_size) ;		
+		return CDynamicArray<T>::element(idx1+dim1_size*(idx2+dim2_size*idx3)) ;
 	}
 
 	inline T& element(INT idx1, INT idx2, INT idx3) 
 	{
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(idx3>=0 && idx3<dim3_size) ;		
 		return CDynamicArray<T>::element(idx1+dim1_size*(idx2+dim2_size*idx3)) ;
 	}
 	

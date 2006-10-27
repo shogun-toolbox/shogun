@@ -867,18 +867,6 @@ void CDynProg::extend_segment_sum_value(DREAL *segment_sum_weights, INT seqlen, 
 }
 
 
-//#define PSI(t,j,k) psi[nbest*((t)*N+(j))+(k)]	
-//#define DELTA(t,j,k) delta[(j)*nbest*max_look_back+((t)%max_look_back)*nbest+k]
-//#define ktable.element(t,j,k) ktable[nbest*((t)*N+j)+k]
-//#define ptable.element(t,j,k) ptable[nbest*((t)*N+j)+k]
-//#define delta_end.element(k) delta_end[k]
-//#define ktable_end.element(k) ktable_end[k]
-//#define path_ends.element(k) path_end[k]
-//#define seq.element(j,t) seq[j+(t)*N]
-//#define PEN(i,j) PEN_matrix[(j)*N+i]
-
-
-
 void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT *pos,
 							 CPlif **PEN_matrix, 
 							 const char *genestr, INT genestr_len,
@@ -943,7 +931,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 	}
 	ASSERT(nbest<32000) ;
 		
-	CDynamicArray3<DREAL> delta(max_look_back+1,nbest,N) ;
+	CDynamicArray3<DREAL> delta(max_look_back+1, N, nbest) ;
 	CDynamicArray3<T_STATES> psi(seq_len,N,nbest) ;
 	CDynamicArray3<short int> ktable(seq_len,N,nbest) ;
 	CDynamicArray3<INT> ptable(seq_len,N,nbest) ;
@@ -1006,7 +994,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 			{ // if we cannot observe the symbol here, then we can omit the rest
 				for (short int k=0; k<nbest; k++)
 				{
-					delta.element(t,j,k)    = seq.element(j,t) ;
+					delta.element(t%max_look_back,j,k)    = seq.element(j,t) ;
 					psi.element(t,j,k)      = 0 ;
 					ktable.element(t,j,k)     = 0 ;
 					ptable.element(t,j,k)     = 0 ;
@@ -1049,7 +1037,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 							pen_val=penalty->lookup_penalty(pos[t]-pos[ts], svm_value, true, input_value) + segment_sum_value[j] ;
 						for (short int diff=0; diff<nbest; diff++)
 						{
-							DREAL  val        = delta.element(ts,ii,diff) + elem_val[i] ;
+							DREAL  val        = delta.element(ts%max_look_back,ii,diff) + elem_val[i] ;
 							val             += pen_val ;
 							
 							tempvv[list_len] = -val ;
@@ -1065,14 +1053,14 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 				{
 					if (k<list_len)
 					{
-						delta.element(t,j,k)    = -tempvv[k] + seq.element(j,t);
+						delta.element(t%max_look_back,j,k)    = -tempvv[k] + seq.element(j,t);
 						psi.element(t,j,k)      = (tempii[k]%N) ;
 						ktable.element(t,j,k)     = (tempii[k]%(N*nbest)-psi.element(t,j,k))/N ;
 						ptable.element(t,j,k)     = (tempii[k]-(tempii[k]%(N*nbest)))/(N*nbest) ;
 					}
 					else
 					{
-						delta.element(t,j,k)    = -CMath::INFTY ;
+						delta.element(t%max_look_back,j,k)    = -CMath::INFTY ;
 						psi.element(t,j,k)      = 0 ;
 						ktable.element(t,j,k)     = 0 ;
 						ptable.element(t,j,k)     = 0 ;
@@ -1088,7 +1076,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 		{
 			for (T_STATES i=0; i<N; i++)
 			{
-				tempvv[list_len] = -(delta.element(seq_len-1,i,diff)+get_q(i)) ;
+				tempvv[list_len] = -(delta.element((seq_len-1)%max_look_back,i,diff)+get_q(i)) ;
 				tempii[list_len] = i + diff*N ;
 				list_len++ ;
 			}
@@ -1479,9 +1467,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	
 	const INT look_back_buflen = max_look_back*nbest*N ;
 	const DREAL mem_use = (DREAL)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(short int)+sizeof(INT))+
-								look_back_buflen*(2*sizeof(DREAL)+sizeof(INT))+
-								seq_len*(sizeof(T_STATES)+sizeof(INT))+
-								genestr_len*sizeof(bool))/(1024*1024)
+								  look_back_buflen*(2*sizeof(DREAL)+sizeof(INT))+
+								  seq_len*(sizeof(T_STATES)+sizeof(INT))+
+								  genestr_len*sizeof(bool))/(1024*1024)
 		 ;
     bool is_big = (mem_use>200) || (seq_len>5000) ;
 
@@ -1494,32 +1482,32 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	}
 	ASSERT(nbest<32000) ;
 		
-	CDynamicArray<bool> genestr_stop(genestr_len) ;
+	CDynamicArray<bool> genestr_stop(genestr_len,genestr_len-1) ;
 
-	CDynamicArray3<DREAL> delta(max_look_back, nbest, N) ;
-	CDynamicArray3<T_STATES> psi(seq_len,N,nbest) ;
-	CDynamicArray3<short int> ktable(seq_len,N,nbest) ;
-	CDynamicArray3<INT> ptable(seq_len,N,nbest) ;
+	CDynamicArray3<DREAL> delta(max_look_back, N, nbest) ;
+	CDynamicArray3<T_STATES> psi(seq_len, N, nbest) ;
+	CDynamicArray3<short int> ktable(seq_len, N, nbest) ;
+	CDynamicArray3<INT> ptable(seq_len, N, nbest) ;
 
-	CDynamicArray<DREAL> delta_end(nbest) ;
-	CDynamicArray<T_STATES> path_ends(nbest) ;
-	CDynamicArray<short int> ktable_end(nbest) ;
+	CDynamicArray<DREAL> delta_end(nbest, nbest-1) ;
+	CDynamicArray<T_STATES> path_ends(nbest, nbest-1) ;
+	CDynamicArray<short int> ktable_end(nbest, nbest-1) ;
 
 #if USEFIXEDLENLIST > 0
-	CDynamicArray<DREAL> fixedtempvv(look_back_buflen) ;
-	CDynamicArray<INT> fixedtempii(look_back_buflen) ;
+	CDynamicArray<DREAL> fixedtempvv(look_back_buflen,look_back_buflen-1) ;
+	CDynamicArray<INT> fixedtempii(look_back_buflen,look_back_buflen-1) ;
 #endif
 
 
 	// we always use oldtempvv and oldtempii, even if USEORIGINALLIST is 0
 	// as i didnt change the backtracking stuff
 
-	CDynamicArray<DREAL> oldtempvv(look_back_buflen) ;
-	CDynamicArray<INT> oldtempii(look_back_buflen) ;
+	CDynamicArray<DREAL> oldtempvv(look_back_buflen,look_back_buflen-1) ;
+	CDynamicArray<INT> oldtempii(look_back_buflen,look_back_buflen-1) ;
 
 
-	CDynamicArray<T_STATES> state_seq(seq_len) ;
-	CDynamicArray<INT> pos_seq(seq_len) ;
+	CDynamicArray<T_STATES> state_seq(seq_len,seq_len-1) ;
+	CDynamicArray<INT> pos_seq(seq_len,seq_len-1) ;
 
 	{ // precompute stop codons
 		for (INT i=0; i<genestr_len-2; i++)
@@ -1599,7 +1587,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 			{ // if we cannot observe the symbol here, then we can omit the rest
 				for (short int k=0; k<nbest; k++)
 				{
-					delta.element(t,j,k)    = seq.element(j,t) ;
+					delta.element(t%max_look_back,j,k)    = seq.element(j,t) ;
 					psi.element(t,j,k)      = 0 ;
 					ktable.element(t,j,k)     = 0 ;
 					ptable.element(t,j,k)     = 0 ;
@@ -1680,7 +1668,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 								pen_val=penalty->lookup_penalty(pos[t]-pos[ts], svm_value, true, input_value) ;
 							for (short int diff=0; diff<nbest; diff++)
 						    {
-								DREAL  val        = delta.element(ts,ii,diff) + elem_val[i] ;
+								DREAL  val        = delta.element(ts%max_look_back,ii,diff) + elem_val[i] ;
 								val             += pen_val ;
 								DREAL mval = -val;
 								
@@ -1766,14 +1754,14 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					    minusscore = fixedtempvv[k];
 					    fromtjk = fixedtempii[k];
 #endif
-					    delta.element(t,j,k)    = -minusscore + seq.element(j,t);
+					    delta.element(t%max_look_back,j,k)    = -minusscore + seq.element(j,t);
 					    psi.element(t,j,k)      = (fromtjk%N) ;
 					    ktable.element(t,j,k)     = (fromtjk%(N*nbest)-psi.element(t,j,k))/N ;
 					    ptable.element(t,j,k)     = (fromtjk-(fromtjk%(N*nbest)))/(N*nbest) ;
 					}
 					else
 					{
-						delta.element(t,j,k)    = -CMath::INFTY ;
+						delta.element(t%max_look_back,j,k)    = -CMath::INFTY ;
 						psi.element(t,j,k)      = 0 ;
 						ktable.element(t,j,k)     = 0 ;
 						ptable.element(t,j,k)     = 0 ;
@@ -1797,7 +1785,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		{
 			for (T_STATES i=0; i<N; i++)
 			{
-				oldtempvv[list_len] = -(delta.element(seq_len-1,i,diff)+get_q(i)) ;
+				oldtempvv[list_len] = -(delta.element((seq_len-1)%max_look_back,i,diff)+get_q(i)) ;
 				oldtempii[list_len] = i + diff*N ;
 				list_len++ ;
 			}
@@ -1922,7 +1910,7 @@ void CDynProg::best_path_trans_simple(const DREAL *seq_array, INT seq_len, short
 		
 	CDynamicArray2<DREAL> seq((DREAL *)seq_array, N, seq_len, false) ;
 
-	CDynamicArray3<DREAL> delta(max_look_back, nbest, N) ;
+	CDynamicArray3<DREAL> delta(max_look_back, N, nbest) ;
 	CDynamicArray3<T_STATES> psi(seq_len, N, nbest) ;
 	CDynamicArray3<short int> ktable(seq_len,N,nbest) ;
 	CDynamicArray3<INT> ptable(seq_len,N,nbest) ;
@@ -1964,7 +1952,7 @@ void CDynProg::best_path_trans_simple(const DREAL *seq_array, INT seq_len, short
 			{ // if we cannot observe the symbol here, then we can omit the rest
 				for (short int k=0; k<nbest; k++)
 				{
-					delta.element(t,j,k)    = seq.element(j,t) ;
+					delta.element(t%max_look_back,j,k)    = seq.element(j,t) ;
 					psi.element(t,j,k)      = 0 ;
 					ktable.element(t,j,k)     = 0 ;
 					ptable.element(t,j,k)     = 0 ;
@@ -1993,7 +1981,7 @@ void CDynProg::best_path_trans_simple(const DREAL *seq_array, INT seq_len, short
 						  
 						  for (short int diff=0; diff<nbest; diff++)
 						    {
-						      DREAL  val        = delta.element(ts,ii,diff) + elem_val[i] ;
+						      DREAL  val        = delta.element(ts%max_look_back,ii,diff) + elem_val[i] ;
 						      DREAL mval = -val;
 
 						      oldtempvv[old_list_len] = mval ;
@@ -2019,14 +2007,14 @@ void CDynProg::best_path_trans_simple(const DREAL *seq_array, INT seq_len, short
 					    minusscore = oldtempvv[k];
 					    fromtjk = oldtempii[k];
 					    
-					    delta.element(t,j,k)    = -minusscore + seq.element(j,t);
+					    delta.element(t%max_look_back,j,k)    = -minusscore + seq.element(j,t);
 					    psi.element(t,j,k)      = (fromtjk%N) ;
 					    ktable.element(t,j,k)     = (fromtjk%(N*nbest)-psi.element(t,j,k))/N ;
 					    ptable.element(t,j,k)     = (fromtjk-(fromtjk%(N*nbest)))/(N*nbest) ;
 					}
 					else
 					{
-						delta.element(t,j,k)    = -CMath::INFTY ;
+						delta.element(t%max_look_back,j,k)    = -CMath::INFTY ;
 						psi.element(t,j,k)      = 0 ;
 						ktable.element(t,j,k)     = 0 ;
 						ptable.element(t,j,k)     = 0 ;
@@ -2044,7 +2032,7 @@ void CDynProg::best_path_trans_simple(const DREAL *seq_array, INT seq_len, short
 		{
 			for (T_STATES i=0; i<N; i++)
 			{
-				oldtempvv[list_len] = -(delta.element(seq_len-1,i,diff)+get_q(i)) ;
+				oldtempvv[list_len] = -(delta.element((seq_len-1)%max_look_back,i,diff)+get_q(i)) ;
 				oldtempii[list_len] = i + diff*N ;
 				list_len++ ;
 			}

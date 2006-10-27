@@ -24,7 +24,7 @@ template <class T> class CDynamicArray;
 template <class T> class CDynamicArray
 {
 public:
-CDynamicArray(INT resize_granularity = 128)
+CDynamicArray(INT resize_granularity = 128, INT p_last_element_idx=-1)
 	: free_array(true) 
 	{
 		this->resize_granularity = resize_granularity;
@@ -33,7 +33,7 @@ CDynamicArray(INT resize_granularity = 128)
 		ASSERT(array);
 		
 		num_elements = resize_granularity;
-		last_element_idx = -1;
+		last_element_idx = p_last_element_idx;
 	}
 	
 CDynamicArray(T* p_array, INT p_num_elements, INT p_array_size, bool p_free_array=true, bool p_copy_array=false)
@@ -98,12 +98,14 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 		}
 		else if (index < num_elements)
 		{
+			CIO::message(M_DEBUG, "changing last_element idx  %i to %i elements in set_element\n", last_element_idx, index) ;
 			array[index]=element;
 			last_element_idx=index;
 			return true;
 		}
 		else
 		{
+			CIO::message(M_DEBUG, "resizing array from %i to %i elements in set_element\n", num_elements, index) ;
 			if (resize_array(index))
 				return set_element(element, index);
 			else
@@ -125,11 +127,13 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 		}
 		else if (index < num_elements)
 		{
+			CIO::message(M_DEBUG, "changing last_element idx  %i to %i elements in element\n", last_element_idx, index) ;
 			last_element_idx=index;
 			return array[index] ;
 		}
 		else
 		{
+			CIO::message(M_DEBUG, "resizing array from %i to %i elements in element\n", num_elements, index) ;
 			resize_array(index) ;
 			return element(index);
 		}
