@@ -42,7 +42,7 @@ CDynamicArray(T* p_array, INT p_num_elements, INT p_array_size, bool p_free_arra
 		set_array(p_array, p_num_elements, p_array_size, p_free_array, p_copy_array) ;
 	}
 	
-	~CDynamicArray()
+	virtual ~CDynamicArray()
 	{
 		if (free_array)
 			free(array);

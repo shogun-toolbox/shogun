@@ -62,11 +62,11 @@ public:
 	 * @param model model which holds definitions of states to be learned + consts
 	 */
 	CDynProg() ;
-	CDynProg(INT N, double* p, double* q, double* a) ;
-	CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans) ;
+	//CDynProg(INT N, double* p, double* q, double* a) ;
+	//CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans) ;
 
 	/// Destructor - Cleanup
-	virtual ~CDynProg();
+	~CDynProg();
 	
 
 	/** calculates probability of best state sequence s_0,...,s_T-1 AND path itself using viterbi algorithm.
@@ -101,7 +101,8 @@ protected:
 public:
 	void set_p(DREAL *p, INT N) ;
 	void set_q(DREAL *q, INT N) ;
-	void set_a_trans(DREAL *a_trans, INT num_trans) ;
+	void set_a(DREAL *a, INT M, INT N) ;
+	void set_a_trans(DREAL *a_trans, INT num_trans, INT N) ;
 
 	void best_path_set_seq(DREAL *seq, INT N, INT seq_len) ;
 	void best_path_set_pos(INT *pos, INT seq_len)  ;
@@ -254,27 +255,28 @@ protected:
 	CDynamicArray<DREAL> end_state_distribution_q;		
 
 	//@}
-
-	static const INT num_degrees ;
-	static const INT num_svms  ;
 	
-	static const INT word_degree[] ;
-	static const INT cum_num_words[] ;
-	static const INT num_words[] ;
+	CDynamicArray2<DREAL> dict_weights ;
 
-	static CDynamicArray2<bool> word_used ;
-	static CDynamicArray2<DREAL> svm_values_unnormalized ;
-	static INT svm_pos_start[] ;
-	static INT num_unique_words[] ;
+	INT num_degrees ;
+	INT num_svms  ;
+	
+	CDynamicArray<INT> word_degree ;
+	CDynamicArray<INT> cum_num_words ;
+	CDynamicArray<INT> num_words ;
 
-	static const INT num_svms_single  ;
-	static const INT word_degree_single ;
-	static const INT cum_num_words_single ;
-	static const INT num_words_single ;
+	CDynamicArray2<bool> word_used ;
+	CDynamicArray2<DREAL> svm_values_unnormalized ;
+	CDynamicArray<INT> svm_pos_start ;
+	CDynamicArray<INT> num_unique_words ;
 
-	static bool word_used_single[] ;
-	static DREAL svm_value_unnormalized_single[] ;
-	static INT num_unique_words_single ;
-	static CDynamicArray2<DREAL> dict_weights ;
+	INT num_svms_single  ;
+	INT word_degree_single ;
+	INT cum_num_words_single ;
+	INT num_words_single ;
+
+	CDynamicArray<bool> word_used_single ;
+	CDynamicArray<DREAL> svm_value_unnormalized_single ;
+	INT num_unique_words_single ;
 };
 #endif

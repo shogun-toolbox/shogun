@@ -38,37 +38,35 @@ extern "C" int	finite(double);
 #define USEORIGINALLIST 0
 #define USEFIXEDLENLIST 2
 
-const INT CDynProg::num_degrees = 4;
-const INT CDynProg::num_svms = 8 ;
-
-//static const INT word_degree[num_degrees] = {1,6} ;
-//static const INT cum_num_words[num_degrees+1] = {0,4,4100} ;
-//static const INT num_words[num_degrees] = {4,4096} ;
-//static const INT word_degree[num_degrees] = {1,2,3,4,5,6} ;
-//static const INT cum_num_words[num_degrees+1] = {0,4,20,84,340,1364,5460} ;
-//static const INT num_words[num_degrees] = {4,20,64,256,1024,4096} ;
-const INT CDynProg::word_degree[CDynProg::num_degrees] = {3,4,5,6} ;
-const INT CDynProg::cum_num_words[CDynProg::num_degrees+1] = {0,64,320,1344,5440} ;
-const INT CDynProg::num_words[CDynProg::num_degrees] = {64,256,1024,4096} ;
-
-const INT CDynProg::num_words_single = 4 ;
-const INT CDynProg::word_degree_single = 1 ;
-const INT CDynProg::num_svms_single = 1 ;
-bool CDynProg::word_used_single[CDynProg::num_words_single] ;
-DREAL CDynProg::svm_value_unnormalized_single[CDynProg::num_svms_single] ;
-CDynamicArray2<DREAL> CDynProg::dict_weights(1,1) ;
-INT CDynProg::num_unique_words_single = 0 ;
-
-CDynamicArray2<bool> CDynProg::word_used(CDynProg::num_degrees,4096) ;
-CDynamicArray2<DREAL> CDynProg::svm_values_unnormalized(num_degrees,num_svms) ;
-INT CDynProg::svm_pos_start[num_degrees] ;
-INT CDynProg::num_unique_words[num_degrees] ;
+static INT word_degree_default[4]={3,4,5,6} ;
+static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
+static INT num_words_default[4]={64,256,1024,4096} ;
 
 CDynProg::CDynProg()
 	: m_seq(1,1), m_pos(1), m_orf_info(1,2), m_plif_list(1), m_PEN(1,1), 
 	  m_genestr(1), m_dict_weights(1,1), 
 	  m_scores(1), m_states(1,1), m_positions(1,1),
-	  transition_matrix_a(1,1), initial_state_distribution_p(1), end_state_distribution_q(1)
+	  transition_matrix_a(1,1), initial_state_distribution_p(1), end_state_distribution_q(1),
+	  dict_weights(1,1), 
+
+	  // multi svm
+	  num_degrees(4), 
+	  num_svms(8), 
+	  word_degree(word_degree_default, num_degrees, num_degrees, true, true),
+	  cum_num_words(cum_num_words_default, num_degrees+1, num_degrees+1, true, true),
+	  num_words(num_words_default, num_degrees, num_degrees, true, true),
+	  word_used(num_degrees, num_words[num_degrees-1]),
+	  svm_values_unnormalized(num_degrees,num_svms),
+	  svm_pos_start(num_degrees),
+	  num_unique_words(num_degrees),
+
+	  // single svm
+	  num_svms_single(1),
+	  word_degree_single(1),
+	  num_words_single(4), 
+	  word_used_single(num_words_single),
+	  svm_value_unnormalized_single(num_svms_single),
+	  num_unique_words_single(0)
 {
 	trans_list_forward = NULL ;
 	trans_list_forward_cnt = NULL ;
@@ -83,7 +81,7 @@ CDynProg::CDynProg()
 	m_step=0 ;
 }
 
-CDynProg::CDynProg(INT N, double* p, double* q, double* a)
+/*CDynProg::CDynProg(INT N, double* p, double* q, double* a)
 	: m_seq(N,1), m_pos(1), m_orf_info(N,2), m_plif_list(1), m_PEN(N,N), 
 	  m_genestr(1), m_dict_weights(1,1),
 	  m_scores(1), m_states(1,1), m_positions(1,1),
@@ -172,7 +170,7 @@ CDynProg::CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans)
 		//ASSERT(trans_list_forward_cnt[from]<3000) ;
 	} ;
 }
-
+*/
 
 CDynProg::~CDynProg()
 {
@@ -201,6 +199,9 @@ CDynProg::~CDynProg()
 		delete[] trans_list_backward[i] ;
 	    delete[] trans_list_backward ;
 	  } ;
+
+	//delete[] word_used_single ;
+	//delete[] svm_value_unnormalized_single ;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -223,8 +224,15 @@ void CDynProg::set_q(DREAL *q, INT N)
 	end_state_distribution_q.set_array(q, N, N, true, true) ;
 }
 
-void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans) 
+void CDynProg::set_a(DREAL *a, INT M, INT N) 
 {
+	ASSERT(M==N) ;
+	transition_matrix_a.set_array(a, N, N, true, true) ;
+}
+
+void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans, INT N) 
+{
+	ASSERT(N==3) ;
 	delete[] trans_list_forward ;
 	delete[] trans_list_forward_cnt ;
 	delete[] trans_list_forward_val ;
@@ -298,6 +306,9 @@ void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans)
 
 void CDynProg::best_path_set_seq(DREAL *seq, INT N, INT seq_len) 
 {
+	ASSERT(initial_state_distribution_p.get_dim1()==N) ;
+	ASSERT(end_state_distribution_q.get_dim1()==N) ;	
+
 	m_seq.set_array(seq, N, seq_len, true, true) ;
 	this->N=N ;
 

@@ -380,7 +380,10 @@ bool CGUIMatlab::best_path_no_b(const mxArray* vals[], mxArray* retvals[])
 			double* q=mxGetPr(mx_q);
 			double* a=mxGetPr(mx_a);
 			
-			CDynProg* h=new CDynProg(N, p, q, a);
+			CDynProg* h=new CDynProg();
+			h->set_p(p, N) ;
+			h->set_q(q, N) ;
+			h->set_a(a, N, N) ;
 			
 			INT *my_path = new INT[max_iter] ;
 			int best_iter = 0 ;
@@ -437,7 +440,10 @@ bool CGUIMatlab::best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[])
 			double* q=mxGetPr(mx_q);
 			double* a=mxGetPr(mx_a_trans);
 			
-			CDynProg* h=new CDynProg(N, p, q, mxGetM(mx_a_trans), a);
+			CDynProg* h=new CDynProg() ;
+			h->set_p(p, N) ;
+			h->set_q(q, N) ;
+			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;
 			
 			INT *my_path = new INT[(max_iter+1)*nbest] ;
 			memset(my_path, -1, (max_iter+1)*nbest*sizeof(INT)) ;
@@ -580,8 +586,11 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			char * genestr = mxArrayToString(mx_genestr) ;				
 			DREAL * dict_weights = mxGetPr(mx_dict_weights) ;
 			
-			CDynProg* h=new CDynProg(N, p, q, mxGetM(mx_a_trans), a);
-			
+			CDynProg* h=new CDynProg();
+			h->set_p(p, N) ;
+			h->set_q(q, N) ;
+			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;
+
 			INT *my_path = new INT[M*nbest] ;
 			memset(my_path, -1, M*nbest*sizeof(INT)) ;
 			INT *my_pos = new INT[M*nbest] ;
@@ -745,7 +754,10 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 			DREAL * dict_weights = mxGetPr(mx_dict_weights) ;
 			DREAL * segment_sum_weights = mxGetPr(mx_segment_sum_weights) ;
 			
-			CDynProg* h=new CDynProg(N, p, q, mxGetM(mx_a_trans), a);
+			CDynProg* h=new CDynProg();
+			h->set_p(p, N) ;
+			h->set_q(q, N) ;
+			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;
 			
 			INT *my_path = new INT[(M+1)*nbest] ;
 			memset(my_path, -1, (M+1)*nbest*sizeof(INT)) ;
@@ -842,7 +854,10 @@ bool CGUIMatlab::best_path_trans_simple(const mxArray* vals[], mxArray* retvals[
 
 			double* seq=mxGetPr(mx_seq) ;
 			
-			CDynProg* h=new CDynProg(N, p, q, mxGetM(mx_a_trans), a);
+			CDynProg* h=new CDynProg();
+			h->set_p(p, N) ;
+			h->set_q(q, N) ;
+			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;
 			
 			INT *my_path = new INT[M*nbest] ;
 			memset(my_path, -1, M*nbest*sizeof(INT)) ;

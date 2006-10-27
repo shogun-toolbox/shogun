@@ -37,7 +37,7 @@ CDynamicArray3(T* p_array, INT dim1, INT dim2, INT dim3, bool p_free_array=true,
 		{
 		}
 
-	~CDynamicArray3()
+	virtual ~CDynamicArray3()
 	{
 	}
 
