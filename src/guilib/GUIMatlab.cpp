@@ -499,6 +499,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 	INT nbest    = (INT)mxGetScalar(mx_nbest) ;
 	if (nbest<1)
 		return false ;
+
 	
 	if ( mx_p && mx_q && mx_a_trans && mx_seq && mx_pos && 
 		 mx_penalties && mx_penalty_info && mx_orf_info && 
@@ -601,6 +602,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			DREAL* PEN_values=NULL, *PEN_input_values=NULL ;
 			INT num_PEN_id = 0 ;
 			
+
 			h->best_path_trans(seq, M, pos, orf_info, PEN_matrix, genestr, L,
 							   nbest, p_prob, my_path, my_pos, dict_weights, 
 							   8*D, PEN_values, PEN_input_values, num_PEN_id, use_orf) ;

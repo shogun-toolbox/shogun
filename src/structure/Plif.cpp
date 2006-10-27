@@ -52,6 +52,8 @@ bool CPlif::set_transform_type(const char *type_str)
 {
 	if (strcmp(type_str, "linear")==0)
 		transform = T_LINEAR ;
+	else if (strcmp(type_str, "")==0)
+		transform = T_LINEAR ;
 	else if (strcmp(type_str, "log")==0)
 		transform = T_LOG ;
 	else if (strcmp(type_str, "log(+1)")==0)
@@ -62,8 +64,8 @@ bool CPlif::set_transform_type(const char *type_str)
 		transform = T_LINEAR_PLUS3 ;
 	else
 	{
-		return false ;
 		CIO::message(M_ERROR, "unknown transform type (%s)\n", type_str) ;
+		return false ;
 	}
 	return true ;
 }
@@ -243,6 +245,7 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT &P)
 
 		if (!PEN[id].set_transform_type(transform_str))
 		{
+			CIO::message(M_ERROR, "transform type not recognized ('%s')\n", transform_str) ;
 			delete[] PEN;
 			mxFree(transform_str) ;
 			return NULL ;

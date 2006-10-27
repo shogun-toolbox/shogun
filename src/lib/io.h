@@ -55,6 +55,7 @@ protected:
 	const static EMessageType levels[NUM_LOG_LEVELS];
 };
 
-#define ASSERT(x) { if (!(x)) CIO::message(M_ERROR, "assertion %s failed in file %s line %d",#x, __FILE__, __LINE__);}
+//#define ASSERT(x) { if (!(x)) { CIO::message(M_ERROR, "assertion %s failed in file %s line %d",#x, __FILE__, __LINE__);}}
+#define ASSERT(x) { if (!(x)) { INT *y=NULL; CIO::message(M_ERROR, "assertion %s failed in file %s line %d (*NULL=%i)",#x, __FILE__, __LINE__, *y);}}
 
 #endif

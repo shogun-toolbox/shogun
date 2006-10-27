@@ -38,6 +38,12 @@ CDynamicArray2(T* p_array, INT dim1, INT dim2, bool p_free_array=true, bool p_co
 		{
 		}
 
+CDynamicArray2(const T* p_array, INT dim1, INT dim2)
+	: CDynamicArray<T>(p_array, dim1*dim2, dim1*dim2),
+		dim1_size(dim1), dim2_size(dim2)
+		{
+		}
+
 	virtual ~CDynamicArray2()
 	{
 	}

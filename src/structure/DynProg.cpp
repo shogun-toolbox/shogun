@@ -199,40 +199,34 @@ CDynProg::~CDynProg()
 		delete[] trans_list_backward[i] ;
 	    delete[] trans_list_backward ;
 	  } ;
-
-	//delete[] word_used_single ;
-	//delete[] svm_value_unnormalized_single ;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void CDynProg::set_p(DREAL *p, INT N) 
+void CDynProg::set_p(DREAL *p, INT p_N) 
 {
-	//m_seq.resize_array(N,1) ;
-	//m_pos.resize_array(1) ;
-	m_orf_info.resize_array(N,2) ;
-	//m_plif_list.resize_array(1) ;
-	m_PEN.resize_array(N,N) ;
-	//m_genestr(1), m_dict_weights(1),
+	m_orf_info.resize_array(p_N,2) ;
+	m_PEN.resize_array(p_N,p_N) ;
 
-	initial_state_distribution_p.set_array(p, N, N, true, true) ;
-	this->N=N ;
+	initial_state_distribution_p.set_array(p, p_N, p_N, true, true) ;
+	N=p_N ;
 }
 
-void CDynProg::set_q(DREAL *q, INT N) 
+void CDynProg::set_q(DREAL *q, INT p_N) 
 {
-	end_state_distribution_q.set_array(q, N, N, true, true) ;
+	end_state_distribution_q.set_array(q, p_N, p_N, true, true) ;
 }
 
-void CDynProg::set_a(DREAL *a, INT M, INT N) 
+void CDynProg::set_a(DREAL *a, INT p_M, INT p_N) 
 {
-	ASSERT(M==N) ;
-	transition_matrix_a.set_array(a, N, N, true, true) ;
+	ASSERT(p_M==p_N) ;
+	transition_matrix_a.set_array(a, p_N, p_N, true, true) ;
 }
 
-void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans, INT N) 
+void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans, INT p_N) 
 {
-	ASSERT(N==3) ;
+	ASSERT(p_N==3) ;
+
 	delete[] trans_list_forward ;
 	delete[] trans_list_forward_cnt ;
 	delete[] trans_list_forward_val ;
@@ -304,11 +298,12 @@ void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans, INT N)
 
 }
 
-void CDynProg::best_path_set_seq(DREAL *seq, INT N, INT seq_len) 
+void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len) 
 {
+	ASSERT(p_N==N) ;
 	ASSERT(initial_state_distribution_p.get_dim1()==N) ;
 	ASSERT(end_state_distribution_q.get_dim1()==N) ;	
-
+	
 	m_seq.set_array(seq, N, seq_len, true, true) ;
 	this->N=N ;
 
@@ -1049,7 +1044,9 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 						extend_segment_sum_value(segment_sum_weights, seq_len, N, pos[ts], last_segment_sum_pos, segment_sum_value) ;
 						
 						DREAL input_value ;
-						DREAL pen_val = penalty->lookup_penalty(pos[t]-pos[ts], svm_value, true, input_value) + segment_sum_value[j] ;
+						DREAL pen_val = 0.0 ;
+						if (penalty)
+							pen_val=penalty->lookup_penalty(pos[t]-pos[ts], svm_value, true, input_value) + segment_sum_value[j] ;
 						for (short int diff=0; diff<nbest; diff++)
 						{
 							DREAL  val        = delta.element(ts,ii,diff) + elem_val[i] ;
@@ -1433,19 +1430,7 @@ bool CDynProg::extend_orf(const CDynamicArray<bool>& genestr_stop, INT orf_from,
 }
 
 
-//#define PSI(t,j,k) psi[nbest*((t)*N+(j))+(k)]	
-//#define delta->elements(t,j,k) delta[(j)*nbest*max_look_back+((t)%max_look_back)*nbest+k]
-//#define ktable.element(t,j,k) ktable[nbest*((t)*N+j)+k]
-//#define ptable.element(t,j,k) ptable[nbest*((t)*N+j)+k]
-//#define delta_end.element(k) delta_end[k]
-//#define ktable_end.element(k) ktable_end[k]
-//#define path_ends.element(k) path_end[k]
-//#define seq.element(j,t) seq[j+(t)*N]
-//#define PEN(i,j) PEN_matrix[(j)*N+i]
-#define ORF_FROM(i) orf_info[i] 
-#define ORF_TO(i) orf_info[N+i] 
-
-void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *pos, const INT *orf_info,
+void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *pos, const INT *orf_info_array,
 							   CPlif **PEN_matrix, 
 							   const char *genestr, INT genestr_len,
 							   short int nbest, 
@@ -1462,8 +1447,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	int offset=0;
 	
 	DREAL svm_value[num_svms] ;
-	CDynamicArray2<CPlif*> PEN(PEN_matrix, N, N, false) ;
-	CDynamicArray2<DREAL> seq((DREAL *)seq_array, N, seq_len, false) ;
+	CDynamicArray2<CPlif*> PEN(PEN_matrix, N, N, false, false) ;
+	CDynamicArray2<DREAL> seq(seq_array, N, seq_len) ;
+	CDynamicArray2<INT> orf_info(orf_info_array, N, 2) ;
 	
 	{ // initialize svm_svalue
 		for (INT s=0; s<num_svms; s++)
@@ -1645,8 +1631,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					INT look_back = default_look_back ;
 					if (penalty!=NULL)
 						look_back=penalty->get_max_len() ;
-					INT orf_from = ORF_FROM(ii) ;
-					INT orf_to   = ORF_TO(j) ;
+					INT orf_from = orf_info.element(ii,0) ;
+					INT orf_to   = orf_info.element(j,1) ;
 					if((orf_from!=-1)!=(orf_to!=-1))
 						fprintf(stderr,"j=%i  ii=%i  orf_from=%i orf_to=%i p=%1.2f\n", j, ii, orf_from, orf_to, elem_val[i]) ;
 					ASSERT((orf_from!=-1)==(orf_to!=-1)) ;
@@ -1681,47 +1667,49 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 						
 						if (ok)
 						{
-
-						  for (INT ss=0; ss<num_svms; ss++)
+							
+							for (INT ss=0; ss<num_svms; ss++)
 						    {
-						      offset = ss*svs.seqlen;
-						      svm_value[ss]=svs.svm_values[offset+plen];
+								offset = ss*svs.seqlen;
+								svm_value[ss]=svs.svm_values[offset+plen];
 						    }
-
-						  DREAL input_value ;
-						  DREAL pen_val = penalty->lookup_penalty(pos[t]-pos[ts], svm_value, true, input_value) ;
-						  for (short int diff=0; diff<nbest; diff++)
+							
+							DREAL input_value ;
+							DREAL pen_val = 0.0 ;
+							if (penalty)
+								pen_val=penalty->lookup_penalty(pos[t]-pos[ts], svm_value, true, input_value) ;
+							for (short int diff=0; diff<nbest; diff++)
 						    {
-						      DREAL  val        = delta.element(ts,ii,diff) + elem_val[i] ;
-						      val             += pen_val ;
-						      DREAL mval = -val;
-
-                                                      #if USEHEAP > 0
-						      tempheap->Insert(mval,ii + diff*N + ts*N*nbest);
-						      #endif
-
-						      #if USEORIGINALLIST > 0
-						      oldtempvv[old_list_len] = mval ;
-						      oldtempii[old_list_len] = ii + diff*N + ts*N*nbest;
-						      old_list_len++ ;
-						      #endif
-
-						      #if USEFIXEDLENLIST > 0
-						      
-						      /* only place -val in fixedtempvv if it is one of the nbest lowest values in there */
-						      /* fixedtempvv[i], i=0:nbest-1, is sorted so that fixedtempvv[0] <= fixedtempvv[1] <= ...*/
-						      /* fixed_list_len has the number of elements in fixedtempvv */
-
-						      if ((fixed_list_len < nbest) || (mval < fixedtempvv[fixed_list_len-1]))
-							{
-							  if ( (fixed_list_len<nbest) && ((0==fixed_list_len) || (mval>fixedtempvv[fixed_list_len-1])) )
-							    {
-							      fixedtempvv[fixed_list_len] = mval ;
-							      fixedtempii[fixed_list_len] = ii + diff*N + ts*N*nbest;
-							      fixed_list_len++ ;
-							    }
+								DREAL  val        = delta.element(ts,ii,diff) + elem_val[i] ;
+								val             += pen_val ;
+								DREAL mval = -val;
+								
+#if USEHEAP > 0
+								tempheap->Insert(mval,ii + diff*N + ts*N*nbest);
+#endif
+								
+#if USEORIGINALLIST > 0
+								oldtempvv[old_list_len] = mval ;
+								oldtempii[old_list_len] = ii + diff*N + ts*N*nbest;
+								old_list_len++ ;
+#endif
+								
+#if USEFIXEDLENLIST > 0
+								
+								/* only place -val in fixedtempvv if it is one of the nbest lowest values in there */
+								/* fixedtempvv[i], i=0:nbest-1, is sorted so that fixedtempvv[0] <= fixedtempvv[1] <= ...*/
+								/* fixed_list_len has the number of elements in fixedtempvv */
+								
+								if ((fixed_list_len < nbest) || (mval < fixedtempvv[fixed_list_len-1]))
+								{
+									if ( (fixed_list_len<nbest) && ((0==fixed_list_len) || (mval>fixedtempvv[fixed_list_len-1])) )
+									{
+										fixedtempvv[fixed_list_len] = mval ;
+										fixedtempii[fixed_list_len] = ii + diff*N + ts*N*nbest;
+										fixed_list_len++ ;
+									}
 							  else  // must have mval < fixedtempvv[fixed_list_len-1]
-							    {
+							  {
 							      int addhere = fixed_list_len;
 							      while ((addhere > 0) && (mval < fixedtempvv[addhere-1]))
 								addhere--;
@@ -1924,15 +1912,6 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 }
 
-
-/*#define PSI(t,j,k) psi[nbest*((t)*N+(j))+(k)]	
-#define DELTA(t,j,k) delta[(j)*nbest*max_look_back+((t)%max_look_back)*nbest+k]
-#define ktable.element(t,j,k) ktable[nbest*((t)*N+j)+k]
-#define ptable.element(t,j,k) ptable[nbest*((t)*N+j)+k]
-#define delta_end.element(k) delta_end[k]
-#define ktable_end.element(k) ktable_end[k]
-#define path_ends.element(k) path_end[k]
-#define seq.element(j,t) seq[j+(t)*N]*/
 
 void CDynProg::best_path_trans_simple(const DREAL *seq_array, INT seq_len, short int nbest, 
 									  DREAL *prob_nbest, INT *my_state_seq)
