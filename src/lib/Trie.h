@@ -17,8 +17,8 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
-#define NO_CHILD ((INT)-2147483648)
-//#define NO_CHILD ((INT)-1) 
+//#define NO_CHILD ((INT)-2147483648)
+#define NO_CHILD ((INT)-1073741824) 
 
 //#define WEIGHTS_IN_TRIE 
 //#define TRIE_CHECK_EVERYTHING

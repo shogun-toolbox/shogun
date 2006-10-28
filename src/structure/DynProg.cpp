@@ -1464,7 +1464,6 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	max_look_back = CMath::min(genestr_len, max_look_back) ;
 	//fprintf(stderr,"use_svm=%i\n", use_svm) ;
 	
-	
 	const INT look_back_buflen = max_look_back*nbest*N ;
 	const DREAL mem_use = (DREAL)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(short int)+sizeof(INT))+
 								  look_back_buflen*(2*sizeof(DREAL)+sizeof(INT))+
@@ -1492,22 +1491,52 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	CDynamicArray<DREAL> delta_end(nbest, nbest-1) ;
 	CDynamicArray<T_STATES> path_ends(nbest, nbest-1) ;
 	CDynamicArray<short int> ktable_end(nbest, nbest-1) ;
+	
 
 #if USEFIXEDLENLIST > 0
+#ifdef USE_TMP_ARRAYCLASS
 	CDynamicArray<DREAL> fixedtempvv(look_back_buflen,look_back_buflen-1) ;
 	CDynamicArray<INT> fixedtempii(look_back_buflen,look_back_buflen-1) ;
+#else
+	DREAL * fixedtempvv=new DREAL[look_back_buflen] ;
+	INT * fixedtempii=new INT[look_back_buflen] ;
 #endif
-
+#endif
 
 	// we always use oldtempvv and oldtempii, even if USEORIGINALLIST is 0
 	// as i didnt change the backtracking stuff
-
+	
 	CDynamicArray<DREAL> oldtempvv(look_back_buflen,look_back_buflen-1) ;
 	CDynamicArray<INT> oldtempii(look_back_buflen,look_back_buflen-1) ;
 
-
 	CDynamicArray<T_STATES> state_seq(seq_len,seq_len-1) ;
 	CDynamicArray<INT> pos_seq(seq_len,seq_len-1) ;
+
+#ifdef DYNARRAY_STATISTICS
+	PEN.set_name("PEN") ;
+	seq.set_name("seq") ;
+	orf_info.set_name("orf_info") ;
+	
+	genestr_stop.set_name("genestr_stop") ;
+	delta.set_name("delta") ;
+	psi.set_name("psi") ;
+	ktable.set_name("ktable") ;
+	ptable.set_name("ptable") ;
+	delta_end.set_name("delta_end") ;
+	path_ends.set_name("path_ends") ;
+	ktable_end.set_name("ktable_end") ;
+
+#ifdef USE_TMP_ARRAYCLASS
+	fixedtempvv.set_name("fixedtempvv") ;
+	fixedtempii.set_name("fixedtempvv") ;
+#endif
+
+	oldtempvv.set_name("oldtempvv") ;
+	oldtempii.set_name("oldtempii") ;
+
+	state_seq.set_name("state_seq") ;
+	pos_seq.set_name("pos_seq") ;
+#endif
 
 	{ // precompute stop codons
 		for (INT i=0; i<genestr_len-2; i++)
@@ -1898,6 +1927,12 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	for (INT j=0; j<num_degrees; j++)
 		delete[] wordstr[j] ;
 
+#if USEFIXEDLENLIST > 0
+#ifdef USE_TMP_ARRAYCLASS
+	delete[] fixedtempvv ;
+	delete[] fixedtempii
+#endif
+#endif
 }
 
 

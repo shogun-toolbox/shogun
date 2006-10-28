@@ -46,7 +46,17 @@ CDynamicArray2(const T* p_array, INT dim1, INT dim2)
 
 	virtual ~CDynamicArray2()
 	{
+#ifdef DYNARRAY_STATISTICS
+		CIO::message(M_DEBUG, "destroying CDynamicArray2 array of size %i x %i\n", dim1_size, dim2_size) ;
+#endif
 	}
+
+#ifdef DYNARRAY_STATISTICS
+	inline void set_name(const char * p_name) 
+	{
+		CDynamicArray<T>::set_name(p_name) ;
+	}
+#endif
 
 	/// return total array size (including granularity buffer)
 	inline void get_array_size(INT & dim1, INT & dim2)

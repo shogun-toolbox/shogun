@@ -11,6 +11,8 @@
 #ifndef _DYNARRAY_H_
 #define _DYNARRAY_H_
 
+#define DYNARRAY_STATISTICS
+
 #include "lib/common.h"
 #include "lib/Mathematics.h"
 
@@ -41,7 +43,7 @@ CDynamicArray(T* p_array, INT p_num_elements, INT p_array_size, bool p_free_arra
 	{
 		set_array(p_array, p_num_elements, p_array_size, p_free_array, p_copy_array) ;
 	}
-
+	
 CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	: array(NULL), free_array(false)
 	{
@@ -50,10 +52,23 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	
 	virtual ~CDynamicArray()
 	{
+#ifdef DYNARRAY_STATISTICS
+		if (!name)
+			name="unnamed" ;
+		CIO::message(M_DEBUG, "destroying CDynamicArray array '%s' of size %i(%i)\n", name, num_elements, last_element_idx) ;
+		CIO::message(M_DEBUG, "access statistics:\nconst element    %i\nelement    %i\nset_element    %i\nget_element    %i\nstat_operator[]    %i\nconst_operator[]    %i\nset_array    %i\nget_array    %i\nresize_array    %i\n", stat_const_element, stat_element, stat_set_element, stat_get_element, stat_operator, stat_const_operator, stat_set_array, stat_get_array, stat_resize_array) ;
+#endif
 		if (free_array)
 			free(array);
 	}
-	
+
+#ifdef DYNARRAY_STATISTICS
+	inline void set_name(const char * p_name) 
+	{
+		name = p_name ;
+	}
+#endif
+
 	/// set the resize granularity and return what has been set (minimum is 128) 
 	inline INT set_granularity(INT g)
 	{
@@ -84,6 +99,9 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	inline const T& get_element(INT index) const
 	{
 		ASSERT((array != NULL) && (index >= 0) && (index <= last_element_idx));
+#ifdef DYNARRAY_STATISTICS
+		((CDynamicArray<T>*)this)->stat_get_element++ ;
+#endif
 		return array[index];
 	}
 	
@@ -91,6 +109,9 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	inline bool set_element(const T& element, INT index)
 	{
 		ASSERT((array != NULL) && (index >= 0));
+#ifdef DYNARRAY_STATISTICS
+		((CDynamicArray<T>*)this)->stat_set_element++ ;
+#endif
 		if (index <= last_element_idx)
 		{
 			array[index]=element;
@@ -115,12 +136,19 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	
 	inline const T& element(INT idx1) const
 	{
+#ifndef DYNARRAY_STATISTICS
+		// hack to get rid of the const
+		((CDynamicArray<T>*)this)->stat_const_element++ ;
+#endif
 		return get_element(idx1) ;
 	}
 
 	inline T& element(INT index) 
 	{
 		ASSERT((array != NULL) && (index >= 0));
+#ifdef DYNARRAY_STATISTICS
+		((CDynamicArray<T>*)this)->stat_element++ ;
+#endif
 		if (index <= last_element_idx)
 		{
 			return array[index] ;
@@ -181,6 +209,9 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	///resize the array 
 	bool resize_array(INT n)
 	{
+#ifdef DYNARRAY_STATISTICS
+		((CDynamicArray<T>*)this)->stat_resize_array++ ;
+#endif
 		INT new_num_elements= ((n/resize_granularity)+1)*resize_granularity;
 
 		T* p= (T*) realloc(array, sizeof(T)*new_num_elements);
@@ -207,12 +238,18 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	/// call get_array just before messing with it DO NOT call any [],resize/delete functions after get_array(), the pointer may become invalid !
 	inline T* get_array()
 	{
+#ifdef DYNARRAY_STATISTICS
+		((CDynamicArray<T>*)this)->stat_get_array++ ;
+#endif
 		return array;
 	}
 
 	/// set the array pointer and free previously allocated memory
 	inline void set_array(T* array, INT num_elements, INT array_size, bool free_array=true, bool copy_array=false)
 	{
+#ifdef DYNARRAY_STATISTICS
+		((CDynamicArray<T>*)this)->stat_set_array++ ;
+#endif
 		if (this->free_array)
 			free(this->array);
 		if (copy_array)
@@ -230,6 +267,9 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	/// set the array pointer and free previously allocated memory
 	inline void set_array(const T* array, INT num_elements, INT array_size)
 	{
+#ifdef DYNARRAY_STATISTICS
+		((CDynamicArray<T>*)this)->stat_set_array++ ;
+#endif
 		if (this->free_array)
 			free(this->array);
 		this->array=(T*)malloc(array_size*sizeof(T)) ;
@@ -253,14 +293,20 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	/// DOES NOT DO ANY BOUNDS CHECKING
 	inline const T& operator[](INT index) const
 	{
+#ifndef DYNARRAY_STATISTICS
+		((CDynamicArray<T>*)this)->stat_const_operator++ ;
+#endif
 		return array[index];
 	}
-
+	
 	inline T& operator[](INT index) 
 	{
+#ifndef DYNARRAY_STATISTICS
+		((CDynamicArray<T>*)this)->stat_operator++ ;
+#endif
 		return element(index);
 	}
-
+	
 	///// operator overload for array assignment
 	CDynamicArray<T>& operator=(CDynamicArray<T>& orig)
 	{
@@ -287,5 +333,10 @@ protected:
 
 	/// 
 	bool free_array ;
+
+#ifdef DYNARRAY_STATISTICS
+	const char * name ;
+	INT stat_const_element, stat_element, stat_set_element, stat_get_element, stat_operator, stat_const_operator, stat_set_array, stat_get_array, stat_resize_array;
+#endif
 };
 #endif
