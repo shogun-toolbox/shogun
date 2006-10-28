@@ -47,14 +47,16 @@ CDynProg::CDynProg()
 	  m_genestr(1), m_dict_weights(1,1), 
 	  m_scores(1), m_states(1,1), m_positions(1,1),
 	  transition_matrix_a(1,1), initial_state_distribution_p(1), end_state_distribution_q(1),
-	  dict_weights(1,1), 
+	  dict_weights(1,1), dict_weights_array(dict_weights.get_array()),
 
 	  // multi svm
 	  num_degrees(4), 
 	  num_svms(8), 
 	  word_degree(word_degree_default, num_degrees, num_degrees, true, true),
 	  cum_num_words(cum_num_words_default, num_degrees+1, num_degrees+1, true, true),
+	  cum_num_words_array(cum_num_words.get_array()),
 	  num_words(num_words_default, num_degrees, num_degrees, true, true),
+	  num_words_array(num_words.get_array()),
 	  word_used(num_degrees, num_words[num_degrees-1]),
 	  svm_values_unnormalized(num_degrees,num_svms),
 	  svm_pos_start(num_degrees),
@@ -409,7 +411,7 @@ void CDynProg::best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_le
 		CIO::message(M_ERROR, "dict_weights array does not match num_svms=%i!=%i\n", num_svms, n) ;
 
 	m_dict_weights.set_array(dictionary_weights, dict_len, num_svms, true, true) ;
-
+	
 	m_step=7 ;
 }
 
@@ -1197,7 +1199,7 @@ void CDynProg::reset_svm_values(INT pos, INT * last_svm_pos, DREAL * svm_value)
 {
 	for (INT j=0; j<num_degrees; j++)
 	{
-		for (INT i=0; i<num_words[j]; i++)
+		for (INT i=0; i<num_words_array[j]; i++)
 			word_used.element(j,i)=false ;
 		for (INT s=0; s<num_svms; s++)
 			svm_values_unnormalized.element(j,s) = 0 ;
@@ -1216,15 +1218,15 @@ void CDynProg::extend_svm_values(WORD** wordstr, INT pos, INT *last_svm_pos, DRE
 	{
 		for (int i=last_svm_pos[j]-1; (i>=pos) && (i>=0); i--)
 		{
-			if (wordstr[j][i]>=num_words[j])
+			if (wordstr[j][i]>=num_words_array[j])
 				CIO::message(M_DEBUG, "wordstr[%i]=%i\n", i, wordstr[j][i]) ;
 
-			ASSERT(wordstr[j][i]<num_words[j]) ;
+			ASSERT(wordstr[j][i]<num_words_array[j]) ;
 			if (!word_used.element(j,wordstr[j][i]))
 			{
 				for (INT s=0; s<num_svms; s++)
-					svm_values_unnormalized.element(j,s)+=dict_weights.element(wordstr[j][i]+cum_num_words[j],s) ;
-				//svm_values_unnormalized.element(j,s)+=dict_weights[wordstr[j][i]+s*cum_num_words[num_degrees]+cum_num_words[j]] ;
+					svm_values_unnormalized.element(j,s)+=dict_weights_array[wordstr[j][i]+cum_num_words[j]+s*cum_num_words[num_degrees]] ;
+					//svm_values_unnormalized.element(j,s)+=dict_weights.element(wordstr[j][i]+cum_num_words_array[j],s) ;
 				
 				word_used.element(j,wordstr[j][i])=true ;
 				num_unique_words[j]++ ;
@@ -1267,7 +1269,7 @@ void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, IN
 		{
 			//svs.svm_values[j]              = new DREAL[seqlen*num_svms] ;
 			svs.svm_values_unnormalized[j] = new DREAL[num_svms] ;
-			svs.word_used[j]               = new bool[num_words[j]] ;
+			svs.word_used[j]               = new bool[num_words_array[j]] ;
 		}
 	}
 	
@@ -1279,7 +1281,7 @@ void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, IN
 		for (INT s=0; s<num_svms; s++)
 			svs.svm_values_unnormalized[j][s] = 0 ;
 		
-		for (INT i=0; i<num_words[j]; i++)
+		for (INT i=0; i<num_words_array[j]; i++)
 			svs.word_used[j][i] = false ;
 
 		svs.num_unique_words[j] = 0 ;
@@ -1353,13 +1355,14 @@ void CDynProg::find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_
 				// 	  if (word_degree > (pos[t_end]-pos[ts]))
 				//	    fprintf(fid, " *******  i=%d , wordstr[i]=%d   dict_weights[1,wordstr[i]]=%f  t_end=%d, ts=%d  pos[t_end]=%d  pos[ts]=%d   posprev=%d\n", i, wordstr[i], dict_weights[wordstr[i]], t_end,ts,pos[t_end],pos[ts],posprev);
 				
-				if (wordstr[j][i]>=num_words[j])
+				if (wordstr[j][i]>=num_words_array[j])
 					fprintf(stderr, "wordstr[%i][%i]=%i\n", j, i, wordstr[j][i]) ;
-				ASSERT(wordstr[j][i]<num_words[j]) ;
+				ASSERT(wordstr[j][i]<num_words_array[j]) ;
 				if (!svs.word_used[j][wordstr[j][i]])
 				{
 					for (INT s=0; s<num_svms; s++)
-						svs.svm_values_unnormalized[j][s]+=dict_weights.element(wordstr[j][i]+cum_num_words[j], s) ;
+						svs.svm_values_unnormalized[j][s]+=dict_weights_array[wordstr[j][i]+cum_num_words[j]+s*cum_num_words[num_degrees]] ;
+					//svs.svm_values_unnormalized[j][s]+=dict_weights.element(wordstr[j][i]+cum_num_words_array[j], s) ;
 					
 					svs.word_used[j][wordstr[j][i]]=true ;
 					svs.num_unique_words[j]++ ;
@@ -1435,8 +1438,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	const INT default_look_back = 30000 ;
 	INT max_look_back = default_look_back ;
 	bool use_svm = false ;
-	ASSERT(dict_len==num_svms*cum_num_words[num_degrees]) ;
-	dict_weights.set_array(dictionary_weights, cum_num_words[num_degrees], num_svms, false, false) ;
+	ASSERT(dict_len==num_svms*cum_num_words_array[num_degrees]) ;
+	dict_weights.set_array(dictionary_weights, cum_num_words_array[num_degrees], num_svms, false, false) ;
 	int offset=0;
 	
 	DREAL svm_value[num_svms] ;

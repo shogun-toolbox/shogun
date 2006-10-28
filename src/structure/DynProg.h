@@ -257,13 +257,16 @@ protected:
 	//@}
 	
 	CDynamicArray2<DREAL> dict_weights ;
+	DREAL * dict_weights_array ;
 
 	INT num_degrees ;
 	INT num_svms  ;
 	
 	CDynamicArray<INT> word_degree ;
 	CDynamicArray<INT> cum_num_words ;
+	INT * cum_num_words_array ;
 	CDynamicArray<INT> num_words ;
+	INT * num_words_array ;
 
 	CDynamicArray2<bool> word_used ;
 	CDynamicArray2<DREAL> svm_values_unnormalized ;
