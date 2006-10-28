@@ -79,6 +79,11 @@ CDynProg::CDynProg()
 
 	this->N=1;
 	m_step=0 ;
+
+#ifdef DYNARRAY_STATISTICS
+	word_degree.set_name("word_degree") ;
+#endif
+
 }
 
 /*CDynProg::CDynProg(INT N, double* p, double* q, double* a)
