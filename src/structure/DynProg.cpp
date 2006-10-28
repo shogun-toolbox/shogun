@@ -1518,6 +1518,14 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	CDynamicArray<INT> pos_seq(seq_len,seq_len-1) ;
 
 #ifdef DYNARRAY_STATISTICS
+	word_degree.set_name("word_degree") ;
+	cum_num_words.set_name("cum_num_words") ;
+	num_words.set_name("num_words") ;
+	word_used.set_name("word_used") ;
+	svm_values_unnormalized.set_name("svm_values_unnormalized") ;
+	svm_pos_start.set_name("svm_pos_start") ;
+	num_unique_words.set_name("num_unique_words") ;
+
 	PEN.set_name("PEN") ;
 	seq.set_name("seq") ;
 	orf_info.set_name("orf_info") ;

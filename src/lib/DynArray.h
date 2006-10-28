@@ -52,6 +52,9 @@ CDynamicArray(T* p_array, INT p_num_elements, INT p_array_size, bool p_free_arra
 	
 CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	: array(NULL), free_array(false)
+#ifdef DYNARRAY_STATISTICS
+		, name(NULL), stat_const_element(0), stat_element(0), stat_set_element(0), stat_get_element(0), stat_operator(0), stat_const_operator(0), stat_set_array(0), stat_get_array(0), stat_resize_array(0)
+#endif
 	{
 		set_array(p_array, p_num_elements, p_array_size) ;
 	}
