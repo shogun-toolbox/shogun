@@ -11,7 +11,7 @@
 #ifndef _DYNARRAY_H_
 #define _DYNARRAY_H_
 
-#define DYNARRAY_STATISTICS
+//#define DYNARRAY_STATISTICS
 
 #include "lib/common.h"
 #include "lib/Mathematics.h"
@@ -302,7 +302,7 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	/// DOES NOT DO ANY BOUNDS CHECKING
 	inline const T& operator[](INT index) const
 	{
-#ifndef DYNARRAY_STATISTICS
+#ifdef DYNARRAY_STATISTICS
 		((CDynamicArray<T>*)this)->stat_const_operator++ ;
 #endif
 		return array[index];
@@ -310,7 +310,7 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	
 	inline T& operator[](INT index) 
 	{
-#ifndef DYNARRAY_STATISTICS
+#ifdef DYNARRAY_STATISTICS
 		((CDynamicArray<T>*)this)->stat_operator++ ;
 #endif
 		return element(index);
