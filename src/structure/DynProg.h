@@ -269,6 +269,7 @@ protected:
 	INT * num_words_array ;
 
 	CDynamicArray2<bool> word_used ;
+	bool *word_used_array ;
 	CDynamicArray2<DREAL> svm_values_unnormalized ;
 	CDynamicArray<INT> svm_pos_start ;
 	CDynamicArray<INT> num_unique_words ;

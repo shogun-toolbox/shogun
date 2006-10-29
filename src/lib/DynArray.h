@@ -59,7 +59,7 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 		set_array(p_array, p_num_elements, p_array_size) ;
 	}
 	
-	virtual ~CDynamicArray()
+	~CDynamicArray()
 	{
 #ifdef DYNARRAY_STATISTICS
 		if (!name)

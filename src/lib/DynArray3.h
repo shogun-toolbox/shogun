@@ -43,7 +43,7 @@ CDynamicArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
 		{
 		}
 
-	virtual ~CDynamicArray3()
+	~CDynamicArray3()
 	{
 #ifdef DYNARRAY_STATISTICS
 		CIO::message(M_DEBUG, "destroying CDynamicArray3 array of size %i x %i x %i\n", dim1_size, dim2_size, dim3_size) ;
@@ -144,6 +144,26 @@ CDynamicArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
 		ASSERT(idx2>=0 && idx2<dim2_size) ;		
 		ASSERT(idx3>=0 && idx3<dim3_size) ;		
 		return CDynamicArray<T>::element(idx1+dim1_size*(idx2+dim2_size*idx3)) ;
+	}
+
+	inline T& element(T* p_array, INT idx1, INT idx2, INT idx3) 
+	{
+		ASSERT(p_array==array) ;		
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(idx3>=0 && idx3<dim3_size) ;		
+		return p_array[idx1+dim1_size*(idx2+dim2_size*idx3)] ;
+	}
+	
+	inline T& element(T* p_array, INT idx1, INT idx2, INT idx3, INT p_dim1_size, INT p_dim2_size) 
+	{
+		ASSERT(p_array==array) ;		
+		ASSERT(p_dim1_size==dim1_size) ;		
+		ASSERT(p_dim2_size==dim2_size) ;		
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(idx3>=0 && idx3<dim3_size) ;		
+		return p_array[idx1+p_dim1_size*(idx2+p_dim2_size*idx3)] ;
 	}
 	
 	///// operator overload for array assignment

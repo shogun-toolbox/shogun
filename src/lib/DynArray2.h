@@ -44,7 +44,7 @@ CDynamicArray2(const T* p_array, INT dim1, INT dim2)
 		{
 		}
 
-	virtual ~CDynamicArray2()
+	~CDynamicArray2()
 	{
 #ifdef DYNARRAY_STATISTICS
 		CIO::message(M_DEBUG, "destroying CDynamicArray2 array of size %i x %i\n", dim1_size, dim2_size) ;
@@ -131,6 +131,23 @@ CDynamicArray2(const T* p_array, INT dim1, INT dim2)
 		ASSERT(idx1>=0 && idx1<dim1_size) ;		
 		ASSERT(idx2>=0 && idx2<dim2_size) ;		
 		return CDynamicArray<T>::element(idx1+dim1_size*idx2) ;
+	}
+
+	inline T& element(T* p_array, INT idx1, INT idx2) 
+	{
+		ASSERT(array==p_array) ;
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		return p_array[idx1+dim1_size*idx2] ;
+	}
+
+	inline T& element(T* p_array, INT idx1, INT idx2, INT p_dim1_size) 
+	{
+		ASSERT(array==p_array) ;
+		ASSERT(p_dim1_size==dim1_size) ;
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		return p_array[idx1+p_dim1_size*idx2] ;
 	}
 
 	///// operator overload for array assignment
