@@ -63,6 +63,7 @@ CDynProg::CDynProg()
 	  svm_values_unnormalized(num_degrees,num_svms),
 	  svm_pos_start(num_degrees),
 	  num_unique_words(num_degrees),
+	  svm_arrays_clean(true),
 
 	  // single svm
 	  num_svms_single(1),
@@ -304,11 +305,95 @@ void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans, INT p_N)
 		trans_list_forward_cnt[from]++ ;
 		//ASSERT(trans_list_forward_cnt[from]<3000) ;
 	} ;
+}
 
+void CDynProg::init_svm_arrays(INT p_num_degrees, INT p_num_svms)
+{
+	svm_arrays_clean=false ;
+
+	word_degree.resize_array(num_degrees) ;
+
+	cum_num_words.resize_array(num_degrees+1) ;
+	cum_num_words_array=cum_num_words.get_array() ;
+
+	num_words.resize_array(num_degrees) ;
+	num_words_array=num_words.get_array() ;
+	
+	svm_values_unnormalized.resize_array(num_degrees, num_svms) ;
+	svm_pos_start.resize_array(num_degrees) ;
+	num_unique_words.resize_array(num_degrees) ;
+} 
+
+
+void CDynProg::init_word_degree_array(INT * p_word_degree_array, INT num_elem)
+{
+	svm_arrays_clean=false ;
+
+	word_degree.resize_array(num_degrees) ;
+	ASSERT(num_degrees==num_elem) ;
+
+	for (INT i=0; i<num_degrees; i++)
+		word_degree[i]=p_word_degree_array[i] ;
+
+} 
+
+void CDynProg::init_cum_num_words_array(INT * p_cum_num_words_array, INT num_elem)
+{
+	svm_arrays_clean=false ;
+
+	cum_num_words.resize_array(num_degrees+1) ;
+	cum_num_words_array=cum_num_words.get_array() ;
+	ASSERT(num_degrees+1==num_elem) ;
+
+	for (INT i=0; i<num_degrees+1; i++)
+		cum_num_words[i]=p_cum_num_words_array[i] ;
+} 
+
+void CDynProg::init_num_words_array(INT * p_num_words_array, INT num_elem)
+{
+	svm_arrays_clean=false ;
+
+	num_words.resize_array(num_degrees) ;
+	num_words_array=num_words.get_array() ;
+	ASSERT(num_degrees==num_elem) ;
+
+	for (INT i=0; i<num_degrees; i++)
+		num_words[i]=p_num_words_array[i] ;
+
+	word_used.resize_array(num_degrees, num_words[num_degrees-1]) ;
+	word_used_array=word_used.get_array() ;
+} 
+
+bool CDynProg::check_svm_arrays()
+{
+	if ((word_degree.get_dim1()==num_degrees) &&
+		(cum_num_words.get_dim1()==num_degrees+1) &&
+		(num_words.get_dim1()==num_degrees) &&
+		(word_used.get_dim1()==num_degrees) &&
+		(word_used.get_dim2()==num_words[num_degrees-1]) &&
+		(svm_values_unnormalized.get_dim1()==num_degrees) &&
+		(svm_values_unnormalized.get_dim2()==num_svms) &&
+		(svm_pos_start.get_dim1()==num_degrees) &&
+		(num_unique_words.get_dim1()==num_degrees))
+	{
+		svm_arrays_clean=true ;
+		return true ;
+	}
+	else
+	{
+		svm_arrays_clean=false ;
+		return false ;	
+	}
 }
 
 void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len) 
 {
+	if (!svm_arrays_clean)
+	{
+		CIO::message(M_ERROR, "SVM arrays not clean") ;
+		return ;
+	} ;
+
 	ASSERT(p_N==N) ;
 	ASSERT(initial_state_distribution_p.get_dim1()==N) ;
 	ASSERT(end_state_distribution_q.get_dim1()==N) ;	
@@ -1749,51 +1834,50 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 										fixedtempii[fixed_list_len] = ii + diff*N + ts*N*nbest;
 										fixed_list_len++ ;
 									}
-							  else  // must have mval < fixedtempvv[fixed_list_len-1]
-							  {
-							      int addhere = fixed_list_len;
-							      while ((addhere > 0) && (mval < fixedtempvv[addhere-1]))
-								addhere--;
-							      
-							      // move everything from addhere+1 one forward 
-							      
-							      for (int jj=fixed_list_len-1; jj>addhere; jj--)
-								{
-								  fixedtempvv[jj] = fixedtempvv[jj-1];
-								  fixedtempii[jj] = fixedtempii[jj-1];
+									else  // must have mval < fixedtempvv[fixed_list_len-1]
+									{
+										int addhere = fixed_list_len;
+										while ((addhere > 0) && (mval < fixedtempvv[addhere-1]))
+											addhere--;
+										
+										// move everything from addhere+1 one forward 
+										
+										for (int jj=fixed_list_len-1; jj>addhere; jj--)
+										{
+											fixedtempvv[jj] = fixedtempvv[jj-1];
+											fixedtempii[jj] = fixedtempii[jj-1];
+										}
+										
+										fixedtempvv[addhere] = mval;
+										fixedtempii[addhere] = ii + diff*N + ts*N*nbest;
+										
+										if (fixed_list_len < nbest)
+											fixed_list_len++;
+									}
 								}
-							      
-							      fixedtempvv[addhere] = mval;
-							      fixedtempii[addhere] = ii + diff*N + ts*N*nbest;
-							      
-							      if (fixed_list_len < nbest)
-								fixed_list_len++;
-							    }
-							}
-						      #endif
-
+#endif
+								
 						    }
 						}
 					}
 				}
 				
-				#if USEORIGINALLIST > 0
+#if USEORIGINALLIST > 0
 				CMath::nmin<INT>(oldtempvv, oldtempii, old_list_len, nbest) ;
-				#endif
-
-
+#endif
+				
 				int numEnt = 0;
-				#if USEHEAP == 2
+#if USEHEAP == 2
 				numEnt = tempheap->GetNumNodes();
-				#elif USEORIGINALLIST == 2
+#elif USEORIGINALLIST == 2
 				numEnt = old_list_len;
-				#elif USEFIXEDLENLIST == 2
+#elif USEFIXEDLENLIST == 2
 				numEnt = fixed_list_len;
-                                #endif
-
+#endif
+				
 				double minusscore;
 				long int fromtjk;
-
+				
 				for (short int k=0; k<nbest; k++)
 				{
 					if (k<numEnt)
@@ -1820,18 +1904,16 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 						ptable.element(t,j,k)     = 0 ;
 					}
 				}
-
-				#if USEHEAP > 0
+				
+#if USEHEAP > 0
 				delete tempheap;
-				#endif
+#endif
 			}
 		}
 	}
-
+	
 	clear_svm_values(svs);
 
-
-	
 	{ //termination
 		INT list_len = 0 ;
 		for (short int diff=0; diff<nbest; diff++)

@@ -135,7 +135,7 @@ CDynamicArray2(const T* p_array, INT dim1, INT dim2)
 
 	inline T& element(T* p_array, INT idx1, INT idx2) 
 	{
-		ASSERT(array==p_array) ;
+		ASSERT(CDynamicArray<T>::array==p_array) ;
 		ASSERT(idx1>=0 && idx1<dim1_size) ;		
 		ASSERT(idx2>=0 && idx2<dim2_size) ;		
 		return p_array[idx1+dim1_size*idx2] ;
@@ -143,7 +143,7 @@ CDynamicArray2(const T* p_array, INT dim1, INT dim2)
 
 	inline T& element(T* p_array, INT idx1, INT idx2, INT p_dim1_size) 
 	{
-		ASSERT(array==p_array) ;
+		ASSERT(CDynamicArray<T>::array==p_array) ;
 		ASSERT(p_dim1_size==dim1_size) ;
 		ASSERT(idx1>=0 && idx1<dim1_size) ;		
 		ASSERT(idx2>=0 && idx2<dim2_size) ;		

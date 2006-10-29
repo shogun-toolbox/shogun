@@ -99,11 +99,20 @@ protected:
 	CDynamicArray2<INT> m_positions ;
 	
 public:
+	// model related stuff
 	void set_p(DREAL *p, INT N) ;
 	void set_q(DREAL *q, INT N) ;
 	void set_a(DREAL *a, INT M, INT N) ;
 	void set_a_trans(DREAL *a_trans, INT num_trans, INT N) ;
 
+	// content svm related setup functions
+	void init_svm_arrays(INT p_num_degrees, INT p_num_svms) ;
+	void init_word_degree_array(INT * p_word_degree_array, INT num_elem) ;
+	void init_cum_num_words_array(INT * p_cum_num_words_array, INT num_elem) ;
+	void init_num_words_array(INT * p_num_words_array, INT num_elem) ;
+	bool check_svm_arrays() ; // call this function to check consistency
+
+	// best_path preparation functions
 	void best_path_set_seq(DREAL *seq, INT N, INT seq_len) ;
 	void best_path_set_pos(INT *pos, INT seq_len)  ;
 	void best_path_set_orf_info(INT *orf_info, INT m, INT n) ;            // only for best_path_trans
@@ -113,10 +122,12 @@ public:
 	void best_path_set_genestr(CHAR* genestr, INT genestr_len) ;
 	void best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len, INT n) ;
 	
+	// best_path functions
 	void best_path_call(INT nbest, bool use_orf) ;
 	void best_path_2struct_call(INT nbest) ;
 	void best_path_simple_call(INT nbest) ;
 	
+	// best_path result retrieval functions
 	void best_path_get_scores(DREAL **scores, INT *n) ;
 	void best_path_get_states(INT **states, INT *m, INT *n) ;
 	void best_path_get_positions(INT **positions, INT *m, INT *n) ;
@@ -273,6 +284,7 @@ protected:
 	CDynamicArray2<DREAL> svm_values_unnormalized ;
 	CDynamicArray<INT> svm_pos_start ;
 	CDynamicArray<INT> num_unique_words ;
+	bool svm_arrays_clean ;
 
 	INT num_svms_single  ;
 	INT word_degree_single ;
