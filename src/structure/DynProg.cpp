@@ -37,6 +37,7 @@ extern "C" int	finite(double);
 #define USEHEAP 0
 #define USEORIGINALLIST 0
 #define USEFIXEDLENLIST 2
+//#define USE_TMP_ARRAYCLASS
 
 static INT word_degree_default[4]={3,4,5,6} ;
 static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -1496,6 +1497,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	CDynamicArray<bool> genestr_stop(genestr_len,genestr_len-1) ;
 
 	CDynamicArray3<DREAL> delta(max_look_back, N, nbest) ;
+	DREAL* delta_array = delta.get_array() ;
 	CDynamicArray3<T_STATES> psi(seq_len, N, nbest) ;
 	CDynamicArray3<short int> ktable(seq_len, N, nbest) ;
 	CDynamicArray3<INT> ptable(seq_len, N, nbest) ;
@@ -1602,13 +1604,14 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 		for (T_STATES i=0; i<N; i++)
 		{
-			delta.element(0,i,0) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
+			//delta.element(0, i, 0) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
+			delta.element(delta_array, 0, i, 0, max_look_back, N) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
 			psi.element(0,i,0)   = 0 ;
 			ktable.element(0,i,0)  = 0 ;
 			ptable.element(0,i,0)  = 0 ;
 			for (short int k=1; k<nbest; k++)
 			{
-				delta.element(0,i,k)    = -CMath::INFTY ;
+				delta.element(delta_array, 0, i, k, max_look_back, N)    = -CMath::INFTY ;
 				psi.element(0,i,0)      = 0 ;                  // <--- what's this for?
 				ktable.element(0,i,k)     = 0 ;
 				ptable.element(0,i,k)     = 0 ;
@@ -1637,7 +1640,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 			{ // if we cannot observe the symbol here, then we can omit the rest
 				for (short int k=0; k<nbest; k++)
 				{
-					delta.element(t%max_look_back,j,k)    = seq.element(j,t) ;
+					delta.element(delta_array, t%max_look_back, j, k, max_look_back, N)    = seq.element(j,t) ;
 					psi.element(t,j,k)      = 0 ;
 					ktable.element(t,j,k)     = 0 ;
 					ptable.element(t,j,k)     = 0 ;
@@ -1718,7 +1721,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 								pen_val=penalty->lookup_penalty(pos[t]-pos[ts], svm_value, true, input_value) ;
 							for (short int diff=0; diff<nbest; diff++)
 						    {
-								DREAL  val        = delta.element(ts%max_look_back,ii,diff) + elem_val[i] ;
+								DREAL  val        = delta.element(delta_array, ts%max_look_back, ii, diff, max_look_back, N) + elem_val[i] ;
 								val             += pen_val ;
 								DREAL mval = -val;
 								
@@ -1804,14 +1807,14 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					    minusscore = fixedtempvv[k];
 					    fromtjk = fixedtempii[k];
 #endif
-					    delta.element(t%max_look_back,j,k)    = -minusscore + seq.element(j,t);
+					    delta.element(delta_array, t%max_look_back, j, k, max_look_back, N)    = -minusscore + seq.element(j,t);
 					    psi.element(t,j,k)      = (fromtjk%N) ;
 					    ktable.element(t,j,k)     = (fromtjk%(N*nbest)-psi.element(t,j,k))/N ;
 					    ptable.element(t,j,k)     = (fromtjk-(fromtjk%(N*nbest)))/(N*nbest) ;
 					}
 					else
 					{
-						delta.element(t%max_look_back,j,k)    = -CMath::INFTY ;
+						delta.element(delta_array, t%max_look_back, j, k, max_look_back, N)    = -CMath::INFTY ;
 						psi.element(t,j,k)      = 0 ;
 						ktable.element(t,j,k)     = 0 ;
 						ptable.element(t,j,k)     = 0 ;
@@ -1835,7 +1838,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		{
 			for (T_STATES i=0; i<N; i++)
 			{
-				oldtempvv[list_len] = -(delta.element((seq_len-1)%max_look_back,i,diff)+get_q(i)) ;
+				oldtempvv[list_len] = -(delta.element(delta_array, (seq_len-1)%max_look_back, i, diff, max_look_back, N)+get_q(i)) ;
 				oldtempii[list_len] = i + diff*N ;
 				list_len++ ;
 			}
