@@ -14,7 +14,7 @@
 
 #include "lib/common.h"
 #include "lib/Mathematics.h"
-#include "lib/DynArray.h"
+#include "lib/DynamicArray.h"
 #include "kernel/StringKernel.h"
 
 class CCommUlongStringKernel: public CStringKernel<ULONG>

@@ -21,8 +21,9 @@
 #include "features/CharFeatures.h"
 #include "features/Alphabet.h"
 #include "structure/Plif.h"
-#include "lib/DynArray2.h"
-#include "lib/DynArray3.h"
+#include "lib/Array.h"
+#include "lib/Array2.h"
+#include "lib/Array3.h"
 #include "lib/fibheap.h"
 
 #include <stdlib.h>
@@ -44,7 +45,7 @@ static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
 static INT num_words_default[4]={64,256,1024,4096} ;
 
 CDynProg::CDynProg()
-	: m_seq(1,1), m_pos(1), m_orf_info(1,2), m_plif_list(1), m_PEN(1,1), 
+	: m_seq(1,1), m_pos(1), m_orf_info(1,2), m_segment_sum_weights(1,1), m_plif_list(1), m_PEN(1,1), 
 	  m_genestr(1), m_dict_weights(1,1), 
 	  m_scores(1), m_states(1,1), m_positions(1,1),
 	  transition_matrix_a(1,1), initial_state_distribution_p(1), end_state_distribution_q(1),
@@ -53,14 +54,14 @@ CDynProg::CDynProg()
 	  // multi svm
 	  num_degrees(4), 
 	  num_svms(8), 
-	  word_degree(word_degree_default, num_degrees, num_degrees, true, true),
-	  cum_num_words(cum_num_words_default, num_degrees+1, num_degrees+1, true, true),
+	  word_degree(word_degree_default, num_degrees, true, true),
+	  cum_num_words(cum_num_words_default, num_degrees+1, true, true),
 	  cum_num_words_array(cum_num_words.get_array()),
-	  num_words(num_words_default, num_degrees, num_degrees, true, true),
+	  num_words(num_words_default, num_degrees, true, true),
 	  num_words_array(num_words.get_array()),
 	  word_used(num_degrees, num_words[num_degrees-1]),
 	  word_used_array(word_used.get_array()),
-	  svm_values_unnormalized(num_degrees,num_svms),
+	  svm_values_unnormalized(num_degrees, num_svms),
 	  svm_pos_start(num_degrees),
 	  num_unique_words(num_degrees),
 	  svm_arrays_clean(true),
@@ -85,7 +86,7 @@ CDynProg::CDynProg()
 	this->N=1;
 	m_step=0 ;
 
-#ifdef DYNARRAY_STATISTICS
+#ifdef ARRAY_STATISTICS
 	word_degree.set_name("word_degree") ;
 #endif
 
@@ -218,13 +219,13 @@ void CDynProg::set_p(DREAL *p, INT p_N)
 	m_orf_info.resize_array(p_N,2) ;
 	m_PEN.resize_array(p_N,p_N) ;
 
-	initial_state_distribution_p.set_array(p, p_N, p_N, true, true) ;
+	initial_state_distribution_p.set_array(p, p_N, true, true) ;
 	N=p_N ;
 }
 
 void CDynProg::set_q(DREAL *q, INT p_N) 
 {
-	end_state_distribution_q.set_array(q, p_N, p_N, true, true) ;
+	end_state_distribution_q.set_array(q, p_N, true, true) ;
 }
 
 void CDynProg::set_a(DREAL *a, INT p_M, INT p_N) 
@@ -413,7 +414,7 @@ void CDynProg::best_path_set_pos(INT *pos, INT seq_len)
 	if (seq_len!=m_seq.get_dim2())
 		CIO::message(M_ERROR, "pos size does not match previous info %i!=%i\n", seq_len, m_seq.get_dim2()) ;
 
-	m_pos.set_array(pos, seq_len, seq_len, true, true) ;
+	m_pos.set_array(pos, seq_len, true, true) ;
 
 	m_step=3 ;
 }
@@ -454,7 +455,7 @@ void CDynProg::best_path_set_plif_list(CPlif **plif_list, INT num_plif)
 	if (m_step!=4)
 		CIO::message(M_ERROR, "please call best_path_set_orf_info or best_path_segment_sum_weights first\n") ;
 
-	m_plif_list.set_array(plif_list, num_plif, num_plif, true, true) ;
+	m_plif_list.set_array(plif_list, num_plif, true, true) ;
 
 	m_step=5 ;
 }
@@ -467,7 +468,7 @@ void CDynProg::best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n)
 	if ((m!=N) || (n!=N))
 		CIO::message(M_ERROR, "orf_info size does not match previous info %i!=%i or %i!=%i\n", m, N, n, N) ;
 
-	CDynamicArray2<INT> id_matrix(plif_id_matrix, N, N, false, false) ;
+	CArray2<INT> id_matrix(plif_id_matrix, N, N, false, false) ;
 	m_PEN.resize_array(N, N) ;
 	for (INT i=0; i<N; i++)
 		for (INT j=0; j<N; j++)
@@ -484,7 +485,7 @@ void CDynProg::best_path_set_genestr(CHAR* genestr, INT genestr_len)
 	if (m_step!=6)
 		CIO::message(M_ERROR, "please call best_path_set_plif_id_matrix first\n") ;
 
-	m_genestr.set_array(genestr, genestr_len, genestr_len, true, true) ;
+	m_genestr.set_array(genestr, genestr_len, true, true) ;
 
 	m_step=7 ;
 }
@@ -631,9 +632,9 @@ void CDynProg::best_path_get_positions(INT **positions, INT *m, INT *n)
 
 DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 {
-	CDynamicArray2<T_STATES> psi(max_iter, N) ;
-	CDynamicArray<DREAL>* delta = new CDynamicArray<DREAL>(N) ;
-	CDynamicArray<DREAL>* delta_new = new CDynamicArray<DREAL>(N) ;
+	CArray2<T_STATES> psi(max_iter, N) ;
+	CArray<DREAL>* delta = new CArray<DREAL>(N) ;
+	CArray<DREAL>* delta_new = new CArray<DREAL>(N) ;
 	
 	{ // initialization
 		for (INT i=0; i<N; i++)
@@ -649,7 +650,7 @@ DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 	// recursion
 	for (INT t=1; t<max_iter; t++)
 	{
-		CDynamicArray<DREAL>* dummy;
+		CArray<DREAL>* dummy;
 		INT NN=N ;
 		for (INT j=0; j<NN; j++)
 		{
@@ -716,19 +717,19 @@ DREAL CDynProg::best_path_no_b(INT max_iter, INT &best_iter, INT *my_path)
 void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int nbest, DREAL *prob_nbest, INT *my_paths)
 {
 	//T_STATES *psi=new T_STATES[max_iter*N*nbest] ;
-	CDynamicArray3<T_STATES> psi(max_iter, N, nbest) ;
-	CDynamicArray3<short int> ktable(max_iter, N, nbest) ;
-	CDynamicArray2<short int> ktable_ends(max_iter, nbest) ;
+	CArray3<T_STATES> psi(max_iter, N, nbest) ;
+	CArray3<short int> ktable(max_iter, N, nbest) ;
+	CArray2<short int> ktable_ends(max_iter, nbest) ;
 
-	CDynamicArray<DREAL> tempvv(nbest*N) ;
-	CDynamicArray<INT> tempii(nbest*N) ;
+	CArray<DREAL> tempvv(nbest*N) ;
+	CArray<INT> tempii(nbest*N) ;
 
-	CDynamicArray2<T_STATES> path_ends(max_iter, nbest) ;
-	CDynamicArray2<DREAL> *delta=new CDynamicArray2<DREAL>(N, nbest) ;
-	CDynamicArray2<DREAL> *delta_new=new CDynamicArray2<DREAL>(N, nbest) ;
-	CDynamicArray2<DREAL> delta_end(max_iter, nbest) ;
+	CArray2<T_STATES> path_ends(max_iter, nbest) ;
+	CArray2<DREAL> *delta=new CArray2<DREAL>(N, nbest) ;
+	CArray2<DREAL> *delta_new=new CArray2<DREAL>(N, nbest) ;
+	CArray2<DREAL> delta_end(max_iter, nbest) ;
 
-	CDynamicArray2<INT> paths(max_iter, nbest) ;
+	CArray2<INT> paths(max_iter, nbest) ;
 	paths.set_array(my_paths, max_iter, nbest, false, false) ;
 
 	{ // initialization
@@ -746,7 +747,7 @@ void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int 
 	// recursion
 	for (INT t=1; t<max_iter; t++)
 	{
-		CDynamicArray2<DREAL>* dummy=NULL;
+		CArray2<DREAL>* dummy=NULL;
 
 		for (T_STATES j=0; j<N; j++)
 		{
@@ -814,10 +815,10 @@ void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int 
 	{ //state sequence backtracking
 		max_best_iter=0 ;
 		
-		CDynamicArray<DREAL> sort_delta_end(max_iter*nbest) ;
-		CDynamicArray<short int> sort_k(max_iter*nbest) ;
-		CDynamicArray<INT> sort_t(max_iter*nbest) ;
-		CDynamicArray<INT> sort_idx(max_iter*nbest) ;
+		CArray<DREAL> sort_delta_end(max_iter*nbest) ;
+		CArray<short int> sort_k(max_iter*nbest) ;
+		CArray<INT> sort_t(max_iter*nbest) ;
+		CArray<INT> sort_idx(max_iter*nbest) ;
 		
 		INT i=0 ;
 		for (INT iter=0; iter<max_iter-1; iter++)
@@ -976,8 +977,8 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 	dict_weights.set_array(dictionary_weights, dict_len, num_svms, false, false) ;
 	dict_weights_array=dict_weights.get_array() ;
 
-	CDynamicArray2<CPlif*> PEN(PEN_matrix, N, N, false) ;
-	CDynamicArray2<DREAL> seq((DREAL *)seq_array, N, seq_len, false) ;
+	CArray2<CPlif*> PEN(PEN_matrix, N, N, false) ;
+	CArray2<DREAL> seq((DREAL *)seq_array, N, seq_len, false) ;
 	
 	DREAL svm_value[num_svms] ;
 	DREAL segment_sum_value[N] ;
@@ -1026,20 +1027,20 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 	}
 	ASSERT(nbest<32000) ;
 		
-	CDynamicArray3<DREAL> delta(max_look_back+1, N, nbest) ;
-	CDynamicArray3<T_STATES> psi(seq_len,N,nbest) ;
-	CDynamicArray3<short int> ktable(seq_len,N,nbest) ;
-	CDynamicArray3<INT> ptable(seq_len,N,nbest) ;
+	CArray3<DREAL> delta(max_look_back+1, N, nbest) ;
+	CArray3<T_STATES> psi(seq_len,N,nbest) ;
+	CArray3<short int> ktable(seq_len,N,nbest) ;
+	CArray3<INT> ptable(seq_len,N,nbest) ;
 
-	CDynamicArray<DREAL> delta_end(nbest) ;
-	CDynamicArray<T_STATES> path_ends(nbest) ;
-	CDynamicArray<short int> ktable_end(nbest) ;
+	CArray<DREAL> delta_end(nbest) ;
+	CArray<T_STATES> path_ends(nbest) ;
+	CArray<short int> ktable_end(nbest) ;
 
-	CDynamicArray<DREAL> tempvv(look_back_buflen) ;
-	CDynamicArray<INT> tempii(look_back_buflen) ;
+	CArray<DREAL> tempvv(look_back_buflen) ;
+	CArray<INT> tempii(look_back_buflen) ;
 
-	CDynamicArray<T_STATES> state_seq(seq_len) ;
-	CDynamicArray<INT> pos_seq(seq_len) ;
+	CArray<T_STATES> state_seq(seq_len) ;
+	CArray<INT> pos_seq(seq_len) ;
 
 	// translate to words, if svm is used
 	WORD* wordstr=NULL ;
@@ -1486,7 +1487,7 @@ void CDynProg::find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_
 }
 
 
-bool CDynProg::extend_orf(const CDynamicArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to)
+bool CDynProg::extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to)
 {
 	if (start<0) 
 		start=0 ;
@@ -1533,9 +1534,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	int offset=0;
 	
 	DREAL svm_value[num_svms] ;
-	CDynamicArray2<CPlif*> PEN(PEN_matrix, N, N, false, false) ;
-	CDynamicArray2<DREAL> seq(seq_array, N, seq_len) ;
-	CDynamicArray2<INT> orf_info(orf_info_array, N, 2) ;
+	CArray2<CPlif*> PEN(PEN_matrix, N, N, false, false) ;
+	CArray2<DREAL> seq(seq_array, N, seq_len) ;
+	CArray2<INT> orf_info(orf_info_array, N, 2) ;
 	
 	{ // initialize svm_svalue
 		for (INT s=0; s<num_svms; s++)
@@ -1579,23 +1580,23 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	}
 	ASSERT(nbest<32000) ;
 		
-	CDynamicArray<bool> genestr_stop(genestr_len,genestr_len-1) ;
+	CArray<bool> genestr_stop(genestr_len) ;
 
-	CDynamicArray3<DREAL> delta(max_look_back, N, nbest) ;
+	CArray3<DREAL> delta(max_look_back, N, nbest) ;
 	DREAL* delta_array = delta.get_array() ;
-	CDynamicArray3<T_STATES> psi(seq_len, N, nbest) ;
-	CDynamicArray3<short int> ktable(seq_len, N, nbest) ;
-	CDynamicArray3<INT> ptable(seq_len, N, nbest) ;
+	CArray3<T_STATES> psi(seq_len, N, nbest) ;
+	CArray3<short int> ktable(seq_len, N, nbest) ;
+	CArray3<INT> ptable(seq_len, N, nbest) ;
 
-	CDynamicArray<DREAL> delta_end(nbest, nbest-1) ;
-	CDynamicArray<T_STATES> path_ends(nbest, nbest-1) ;
-	CDynamicArray<short int> ktable_end(nbest, nbest-1) ;
+	CArray<DREAL> delta_end(nbest) ;
+	CArray<T_STATES> path_ends(nbest) ;
+	CArray<short int> ktable_end(nbest) ;
 	
 
 #if USEFIXEDLENLIST > 0
 #ifdef USE_TMP_ARRAYCLASS
-	CDynamicArray<DREAL> fixedtempvv(look_back_buflen,look_back_buflen-1) ;
-	CDynamicArray<INT> fixedtempii(look_back_buflen,look_back_buflen-1) ;
+	CArray<DREAL> fixedtempvv(look_back_buflen) ;
+	CArray<INT> fixedtempii(look_back_buflen) ;
 #else
 	DREAL * fixedtempvv=new DREAL[look_back_buflen] ;
 	INT * fixedtempii=new INT[look_back_buflen] ;
@@ -1605,13 +1606,13 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	// we always use oldtempvv and oldtempii, even if USEORIGINALLIST is 0
 	// as i didnt change the backtracking stuff
 	
-	CDynamicArray<DREAL> oldtempvv(look_back_buflen,look_back_buflen-1) ;
-	CDynamicArray<INT> oldtempii(look_back_buflen,look_back_buflen-1) ;
+	CArray<DREAL> oldtempvv(look_back_buflen) ;
+	CArray<INT> oldtempii(look_back_buflen) ;
 
-	CDynamicArray<T_STATES> state_seq(seq_len,seq_len-1) ;
-	CDynamicArray<INT> pos_seq(seq_len,seq_len-1) ;
+	CArray<T_STATES> state_seq(seq_len) ;
+	CArray<INT> pos_seq(seq_len) ;
 
-#ifdef DYNARRAY_STATISTICS
+#ifdef ARRAY_STATISTICS
 	dict_weights.set_name("dict_weights") ;
 	word_degree.set_name("word_degree") ;
 	cum_num_words.set_name("cum_num_words") ;
@@ -2049,22 +2050,22 @@ void CDynProg::best_path_trans_simple(const DREAL *seq_array, INT seq_len, short
 	const INT look_back_buflen = max_look_back*nbest*N ;
 	ASSERT(nbest<32000) ;
 		
-	CDynamicArray2<DREAL> seq((DREAL *)seq_array, N, seq_len, false) ;
+	CArray2<DREAL> seq((DREAL *)seq_array, N, seq_len, false) ;
 
-	CDynamicArray3<DREAL> delta(max_look_back, N, nbest) ;
-	CDynamicArray3<T_STATES> psi(seq_len, N, nbest) ;
-	CDynamicArray3<short int> ktable(seq_len,N,nbest) ;
-	CDynamicArray3<INT> ptable(seq_len,N,nbest) ;
+	CArray3<DREAL> delta(max_look_back, N, nbest) ;
+	CArray3<T_STATES> psi(seq_len, N, nbest) ;
+	CArray3<short int> ktable(seq_len,N,nbest) ;
+	CArray3<INT> ptable(seq_len,N,nbest) ;
 
-	CDynamicArray<DREAL> delta_end(nbest) ;
-	CDynamicArray<T_STATES> path_ends(nbest) ;
-	CDynamicArray<short int> ktable_end(nbest) ;
+	CArray<DREAL> delta_end(nbest) ;
+	CArray<T_STATES> path_ends(nbest) ;
+	CArray<short int> ktable_end(nbest) ;
 
-	CDynamicArray<DREAL> oldtempvv(look_back_buflen) ;
-	CDynamicArray<INT> oldtempii(look_back_buflen) ;
+	CArray<DREAL> oldtempvv(look_back_buflen) ;
+	CArray<INT> oldtempii(look_back_buflen) ;
 
-	CDynamicArray<T_STATES> state_seq(seq_len) ;
-	CDynamicArray<INT> pos_seq(seq_len) ;
+	CArray<T_STATES> state_seq(seq_len) ;
+	CArray<INT> pos_seq(seq_len) ;
 
 	{ // initialization
 

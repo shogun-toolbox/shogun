@@ -24,7 +24,8 @@
 #include "structure/Plif.h"
 #include "features/StringFeatures.h"
 #include "distributions/Distribution.h"
-#include "lib/DynArray2.h"
+#include "lib/Array.h"
+#include "lib/Array2.h"
 
 #include <stdio.h>
 
@@ -84,19 +85,19 @@ protected:
 	INT m_step ;
 	INT m_call ;
 	// input arguments
-	CDynamicArray2<DREAL> m_seq ;
-	CDynamicArray<INT> m_pos ;
-	CDynamicArray2<INT> m_orf_info ;
-	CDynamicArray<DREAL> m_segment_sum_weights ;
-	CDynamicArray<CPlif*> m_plif_list ;
-	CDynamicArray2<CPlif*> m_PEN ;
-	CDynamicArray<CHAR> m_genestr ;
-	CDynamicArray2<DREAL> m_dict_weights ;
+	CArray2<DREAL> m_seq ;
+	CArray<INT> m_pos ;
+	CArray2<INT> m_orf_info ;
+	CArray2<DREAL> m_segment_sum_weights ;
+	CArray<CPlif*> m_plif_list ;
+	CArray2<CPlif*> m_PEN ;
+	CArray<CHAR> m_genestr ;
+	CArray2<DREAL> m_dict_weights ;
 
 	// output arguments
-	CDynamicArray<DREAL> m_scores ;
-	CDynamicArray2<INT> m_states ;
-	CDynamicArray2<INT> m_positions ;
+	CArray<DREAL> m_scores ;
+	CArray2<INT> m_states ;
+	CArray2<INT> m_positions ;
 	
 public:
 	// model related stuff
@@ -247,7 +248,7 @@ protected:
 	void init_svm_values(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT howmuchlookback) ;
 	void clear_svm_values(struct svm_values_struct & svs) ;
 	void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs) ;
-	bool extend_orf(const CDynamicArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to) ;
+	bool extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to) ;
 
 	/**@name model specific variables.
 	 * these are p,q,a,b,N,M etc 
@@ -257,33 +258,33 @@ protected:
 	INT N;
 
 	/// transition matrix 
-	CDynamicArray2<DREAL> transition_matrix_a;
+	CArray2<DREAL> transition_matrix_a;
 
 	/// initial distribution of states
-	CDynamicArray<DREAL> initial_state_distribution_p;
+	CArray<DREAL> initial_state_distribution_p;
 
 	/// distribution of end-states
-	CDynamicArray<DREAL> end_state_distribution_q;		
+	CArray<DREAL> end_state_distribution_q;		
 
 	//@}
 	
-	CDynamicArray2<DREAL> dict_weights ;
+	CArray2<DREAL> dict_weights ;
 	DREAL * dict_weights_array ;
 
 	INT num_degrees ;
 	INT num_svms  ;
 	
-	CDynamicArray<INT> word_degree ;
-	CDynamicArray<INT> cum_num_words ;
+	CArray<INT> word_degree ;
+	CArray<INT> cum_num_words ;
 	INT * cum_num_words_array ;
-	CDynamicArray<INT> num_words ;
+	CArray<INT> num_words ;
 	INT * num_words_array ;
 
-	CDynamicArray2<bool> word_used ;
+	CArray2<bool> word_used ;
 	bool *word_used_array ;
-	CDynamicArray2<DREAL> svm_values_unnormalized ;
-	CDynamicArray<INT> svm_pos_start ;
-	CDynamicArray<INT> num_unique_words ;
+	CArray2<DREAL> svm_values_unnormalized ;
+	CArray<INT> svm_pos_start ;
+	CArray<INT> num_unique_words ;
 	bool svm_arrays_clean ;
 
 	INT num_svms_single  ;
@@ -291,8 +292,8 @@ protected:
 	INT cum_num_words_single ;
 	INT num_words_single ;
 
-	CDynamicArray<bool> word_used_single ;
-	CDynamicArray<DREAL> svm_value_unnormalized_single ;
+	CArray<bool> word_used_single ;
+	CArray<DREAL> svm_value_unnormalized_single ;
 	INT num_unique_words_single ;
 };
 #endif
