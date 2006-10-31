@@ -453,8 +453,8 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, DREAL alpha)
 		for (INT i=0; i<len; i++)
 		{
 			DREAL alpha_pw = alpha ;
-			if (position_weights!=NULL)
-				alpha_pw *= position_weights[i] ;
+			/*if (position_weights!=NULL)
+			  alpha_pw *= position_weights[i] ;*/
 			if (alpha_pw==0.0)
 				continue ;
 			tries.add_to_trie(i, 0, vec, alpha_pw, weights, (length!=0)) ;
@@ -465,8 +465,8 @@ void CWeightedDegreeCharKernel::add_example_to_tree(INT idx, DREAL alpha)
 		for (INT i=0; i<len; i++)
 		{
 			DREAL alpha_pw = alpha ;
-			if (position_weights!=NULL) 
-				alpha_pw = alpha*position_weights[i] ;
+			/*if (position_weights!=NULL) 
+			  alpha_pw = alpha*position_weights[i] ;*/
 			if (alpha_pw==0.0)
 				continue ;
 			tries.add_to_trie(i, 0, vec, alpha_pw, weights, (length!=0)) ;		
@@ -494,16 +494,16 @@ void CWeightedDegreeCharKernel::add_example_to_single_tree(INT idx, DREAL alpha,
 	if (length == 0 || max_mismatch > 0)
 	{
 		DREAL alpha_pw = alpha ;
-		if (position_weights!=NULL)
-			alpha_pw = alpha*position_weights[tree_num] ;
+		/*if (position_weights!=NULL)
+		  alpha_pw = alpha*position_weights[tree_num] ;*/
 		if (alpha_pw!=0.0)
 			tries.add_to_trie(tree_num, 0, vec, alpha_pw, weights, (length!=0)) ;
 	}
 	else
 	{
 		DREAL alpha_pw = alpha ;
-		if (position_weights!=NULL) 
-			alpha_pw = alpha*position_weights[tree_num] ;
+		/*if (position_weights!=NULL) 
+		  alpha_pw = alpha*position_weights[tree_num] ;*/
 		if (alpha_pw!=0.0)
 			tries.add_to_trie(tree_num, 0, vec, alpha_pw, weights, (length!=0)) ;
 	}
@@ -532,8 +532,8 @@ void CWeightedDegreeCharKernel::add_example_to_tree_mismatch(INT idx, DREAL alph
 	for (INT i=0; i<len; i++)
 	{
 		DREAL alpha_pw = alpha ;
-		if (position_weights!=NULL)
-			alpha_pw = alpha*position_weights[i] ;
+		/*if (position_weights!=NULL)
+		  alpha_pw = alpha*position_weights[i] ;*/
 		if (alpha_pw==0.0)
 			continue ;
 		tries.add_example_to_tree_mismatch_recursion(NO_CHILD, i, alpha_pw, &vec[i], len-i, 0, 0, max_mismatch, weights) ;
@@ -560,8 +560,8 @@ void CWeightedDegreeCharKernel::add_example_to_single_tree_mismatch(INT idx, DRE
 		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 
 	DREAL alpha_pw = alpha ;
-	if (position_weights!=NULL)
-		alpha_pw = alpha*position_weights[tree_num] ;
+	/*if (position_weights!=NULL)
+	  alpha_pw = alpha*position_weights[tree_num] ;*/
 	if (alpha_pw!=0.0)
 		tries.add_example_to_tree_mismatch_recursion(NO_CHILD, tree_num, alpha_pw, &vec[tree_num], len-tree_num, 0, 0, max_mismatch, weights) ;
 
@@ -651,6 +651,7 @@ bool CWeightedDegreeCharKernel::set_position_weights(DREAL* pws, INT len)
 	{
 		delete[] position_weights ;
 		position_weights = NULL ;
+		tries.set_position_weights(position_weights) ;
 	}
 	
     if (seq_length!=len) 
@@ -660,6 +661,7 @@ bool CWeightedDegreeCharKernel::set_position_weights(DREAL* pws, INT len)
 	}
 	delete[] position_weights;
 	position_weights=new DREAL[len];
+	tries.set_position_weights(position_weights) ;
 	
 	if (position_weights)
 	{

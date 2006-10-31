@@ -1107,7 +1107,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 							weights[i]=1;
 					}
 				}
-				
+
 				delete k;
 				k=new CWeightedDegreeCharKernel(size, weights, d, max_mismatch, use_normalization==1, block_computation==1, mkl_stepsize);
 				delete[] weights ;

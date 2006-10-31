@@ -29,8 +29,8 @@
 #define TRIE_ASSERT_EVERYTHING(x) 
 #endif
 
-#define TRIE_ASSERT(x) ASSERT(x)
-//#define TRIE_ASSERT(x) 
+//#define TRIE_ASSERT(x) ASSERT(x)
+#define TRIE_ASSERT(x) 
 
 #define TRIE_TERMINAL_CHARACTER  7
 
@@ -107,6 +107,12 @@ public:
 			return TreeMemPtr ;
 		}
 	
+	inline void set_position_weights(const DREAL * p_position_weights)
+		{
+			position_weights=p_position_weights ;
+		}
+	
+
 	inline INT get_node() 
 	{
 		INT ret = TreeMemPtr++;
@@ -140,7 +146,7 @@ protected:
 	bool tree_initialized ;
 	
 	INT degree ;
-	DREAL * position_weights ;
+	DREAL const *  position_weights ;
 	
 	struct Trie* TreeMem ;
 	INT TreeMemPtr ;
@@ -349,7 +355,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 		}
 		else
 		{
-			bool use_seq = false;//use_compact_terminal_nodes && (j>degree-16) ;
+			bool use_seq = use_compact_terminal_nodes && (j>degree-16) ;
 			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
 			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
 

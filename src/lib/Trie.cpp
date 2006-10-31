@@ -20,9 +20,10 @@ CTrie::CTrie(const CTrie & to_copy)
 {
 	if (to_copy.position_weights!=NULL)
 	{
-		position_weights = new DREAL[to_copy.length] ;
+		position_weights = to_copy.position_weights ;
+		/*new DREAL[to_copy.length] ;
 		for (INT i=0; i<to_copy.length; i++)
-			position_weights[i]=to_copy.position_weights[i] ;
+		position_weights[i]=to_copy.position_weights[i] ;*/
 	}
 	else
 		position_weights=NULL ;
@@ -48,9 +49,10 @@ const CTrie &CTrie::operator=(const CTrie & to_copy)
 	position_weights=NULL ;
 	if (to_copy.position_weights!=NULL)
 	{
-		position_weights = new DREAL[to_copy.length] ;
+		position_weights=to_copy.position_weights ;
+		/*position_weights = new DREAL[to_copy.length] ;
 		for (INT i=0; i<to_copy.length; i++)
-			position_weights[i]=to_copy.position_weights[i] ;
+		position_weights[i]=to_copy.position_weights[i] ;*/
 	}
 	else
 		position_weights=NULL ;
