@@ -49,10 +49,6 @@ static const CHAR* N_GET_LABELS=		"get_labels";
 static const CHAR* N_GET_PREPROC_INIT=	        "get_preproc_init";
 static const CHAR* N_GET_HMM_DEFS=		"get_hmm_defs";
 static const CHAR* N_SET_HMM=			"set_hmm";
-static const CHAR* N_MODEL_PROB_NO_B_TRANS=			"model_prob_no_b_trans";
-static const CHAR* N_BEST_PATH_NO_B_TRANS=			"best_path_no_b_trans";
-static const CHAR* N_BEST_PATH_TRANS=			"best_path_trans";
-static const CHAR* N_BEST_PATH_NO_B=			"best_path_no_b";
 static const CHAR* N_APPEND_HMM=			"append_hmm";
 static const CHAR* N_SET_SVM=			"set_svm";
 static const CHAR* N_SET_KERNEL_INIT=	        "set_kernel_init";
@@ -351,42 +347,6 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 		}
 		else if (!strncmp(action, N_GET_HMM_DEFS, strlen(N_GET_HMM_DEFS)))
 		{
-		}
-		else if (!strncmp(action, N_BEST_PATH_NO_B_TRANS, strlen(N_BEST_PATH_NO_B_TRANS)))
-		{
-			if ((nrhs==1+5) & (nlhs==2))
-			{
-				sg_octave.best_path_no_b_trans(prhs,plhs);
-			}
-			else
-				CIO::message(M_ERROR, "usage is [prob,path]=sg('best_path_no_b_trans',p,q,a_trans,max_iter,nbest)");
-		}
-		else if (!strncmp(action, N_BEST_PATH_TRANS, strlen(N_BEST_PATH_TRANS)))
-		{
-			if ((nrhs==1+11) & (nlhs==3))
-			{
-				sg_octave.best_path_trans(prhs,plhs);
-			}
-			else
-				CIO::message(M_ERROR, "usage is [prob,path,pos]=sg('best_path_trans',p,q,a_trans,seq,pos,orf_info, genestr, penalties, penalty_info, nbest, dict_weights)");
-		}
-		else if (!strncmp(action, N_MODEL_PROB_NO_B_TRANS, strlen(N_MODEL_PROB_NO_B_TRANS)))
-		{
-			if ((nrhs==1+4) & (nlhs==1))
-			{
-				sg_octave.model_prob_no_b_trans(prhs,plhs);
-			}
-			else
-				CIO::message(M_ERROR, "usage is probs=sg('model_prob_no_b_trans',p,q,a_trans,max_iter)");
-		}
-		else if (!strncmp(action, N_BEST_PATH_NO_B, strlen(N_BEST_PATH_NO_B)))
-		{
-			if ((nrhs==1+4) & (nlhs==2))
-			{
-				sg_octave.best_path_no_b(prhs,plhs);
-			}
-			else
-				CIO::message(M_ERROR, "usage is [prob,path]=sg('best_path_no_b',p,q,a,max_iter)");
 		}
 		else if (!strncmp(action, N_SET_HMM, strlen(N_SET_HMM)))
 		{

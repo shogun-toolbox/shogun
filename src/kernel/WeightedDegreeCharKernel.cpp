@@ -812,6 +812,8 @@ bool CWeightedDegreeCharKernel::init_matching_weights_external()
 
 bool CWeightedDegreeCharKernel::init_matching_weights()
 {
+			return init_matching_weights_wd();
+			/*
 	switch (type)
 	{
 		case E_WD:
@@ -833,7 +835,7 @@ bool CWeightedDegreeCharKernel::init_matching_weights()
 		default:
 			return false;
 	};
-
+*/
 }
 
 
