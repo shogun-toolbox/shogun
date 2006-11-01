@@ -48,7 +48,9 @@ CDynProg::CDynProg()
 	: m_seq(1,1), m_pos(1), m_orf_info(1,2), m_segment_sum_weights(1,1), m_plif_list(1), m_PEN(1,1), 
 	  m_genestr(1), m_dict_weights(1,1), 
 	  m_scores(1), m_states(1,1), m_positions(1,1),
-	  transition_matrix_a(1,1), initial_state_distribution_p(1), end_state_distribution_q(1),
+	  transition_matrix_a(1,1), transition_matrix_a_deriv(1,1), 
+	  initial_state_distribution_p(1), initial_state_distribution_p_deriv(1), 
+	  end_state_distribution_q(1), end_state_distribution_q_deriv(1), 
 	  dict_weights(1,1), dict_weights_array(dict_weights.get_array()),
 
 	  // multi svm
@@ -114,7 +116,9 @@ CDynProg::CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans)
 	: m_seq(N,1), m_pos(1), m_orf_info(N,2), m_plif_list(1), m_PEN(N,N), 
 	  m_genestr(1), m_dict_weights(1,1),
 	  m_scores(1), m_states(1,1), m_positions(1,1),
-	  transition_matrix_a(N,N), initial_state_distribution_p(p,N,N,false), end_state_distribution_q(q,N,N,false)
+	  transition_matrix_a(N,N), transition_matrix_a_deriv(N,N), 
+	  initial_state_distribution_p(p,N,N,false), initial_state_distribution_p_deriv(N), 
+	  end_state_distribution_q(q,N,N,false), end_state_distribution_q_deriv(N)
 {
 	this->N=N;
 	
@@ -232,6 +236,7 @@ void CDynProg::set_a(DREAL *a, INT p_M, INT p_N)
 {
 	ASSERT(p_M==p_N) ;
 	transition_matrix_a.set_array(a, p_N, p_N, true, true) ;
+	transition_matrix_a_deriv.resize_array(p_N, p_N) ;
 }
 
 void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans, INT p_N) 
@@ -963,7 +968,7 @@ void CDynProg::extend_segment_sum_value(DREAL *segment_sum_weights, INT seqlen, 
 
 
 void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT *pos,
-							 CPlif **PEN_matrix, 
+							 CPlif **Plif_matrix, 
 							 const char *genestr, INT genestr_len,
 							 short int nbest, 
 							 DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
@@ -977,7 +982,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 	dict_weights.set_array(dictionary_weights, dict_len, num_svms, false, false) ;
 	dict_weights_array=dict_weights.get_array() ;
 
-	CArray2<CPlif*> PEN(PEN_matrix, N, N, false) ;
+	CArray2<CPlif*> PEN(Plif_matrix, N, N, false) ;
 	CArray2<DREAL> seq((DREAL *)seq_array, N, seq_len, false) ;
 	
 	DREAL svm_value[num_svms] ;
@@ -1517,7 +1522,7 @@ bool CDynProg::extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT or
 
 
 void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *pos, const INT *orf_info_array,
-							   CPlif **PEN_matrix, 
+							   CPlif **Plif_matrix, 
 							   const char *genestr, INT genestr_len,
 							   short int nbest, 
 							   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
@@ -1534,7 +1539,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	int offset=0;
 	
 	DREAL svm_value[num_svms] ;
-	CArray2<CPlif*> PEN(PEN_matrix, N, N, false, false) ;
+	CArray2<CPlif*> PEN(Plif_matrix, N, N, false, false) ;
 	CArray2<DREAL> seq(seq_array, N, seq_len) ;
 	CArray2<INT> orf_info(orf_info_array, N, 2) ;
 	
@@ -2030,6 +2035,121 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	}
 	if (is_big)
 		CIO::message(M_MESSAGEONLY, "DONE.     \n") ;
+
+	for (INT j=0; j<num_degrees; j++)
+		delete[] wordstr[j] ;
+
+#if USEFIXEDLENLIST > 0
+#ifdef USE_TMP_ARRAYCLASS
+	delete[] fixedtempvv ;
+	delete[] fixedtempii
+#endif
+#endif
+}
+
+void CDynProg::best_path_trans_deriv(const DREAL *seq_array, INT seq_len, const INT *pos, const INT *orf_info_array,
+									 CPlif **Plif_matrix, 
+									 const char *genestr, INT genestr_len,
+									 INT *my_state_seq, INT *my_pos_seq, INT my_seq_len, 
+									 DREAL *dictionary_weights, INT dict_len,
+									 INT max_plif_id, INT max_limits_len, DREAL *Plif_deriv)
+{
+	bool use_svm = false ;
+	ASSERT(dict_len==num_svms*cum_num_words_array[num_degrees]) ;
+	dict_weights.set_array(dictionary_weights, cum_num_words_array[num_degrees], num_svms, false, false) ;
+	dict_weights_array=dict_weights.get_array() ;
+	
+	CArray2<CPlif*> PEN(Plif_matrix, N, N, false, false) ;
+	CArray2<DREAL> seq(seq_array, N, seq_len) ;
+	CArray2<INT> orf_info(orf_info_array, N, 2) ;
+	
+	{ // determine whether to use svm outputs and clear derivatives
+		for (INT i=0; i<N; i++)
+			for (INT j=0; j<N; j++)
+			{
+				CPlif *penij=PEN.element(i,j) ;
+				while (penij!=NULL)
+				{
+					if (penij->get_use_svm())
+						use_svm=true ;
+					ASSERT(penij->get_id()<=max_plif_id) ;
+					penij->penalty_clear_derivative(false) ;
+					penij=penij->get_next_pen() ;
+				} 
+			}
+	}
+
+	// translate to words, if svm is used
+	WORD* wordstr[num_degrees] ;
+	{
+		for (INT j=0; j<num_degrees; j++)
+		{
+			wordstr[j]=NULL ;
+			if (use_svm)
+			{
+				ASSERT(dictionary_weights!=NULL) ;
+				wordstr[j]=new WORD[genestr_len] ;
+				for (INT i=0; i<genestr_len; i++)
+					switch (genestr[i])
+					{
+					case 'a': wordstr[j][i]=0 ; break ;
+					case 'c': wordstr[j][i]=1 ; break ;
+					case 'g': wordstr[j][i]=2 ; break ;
+					case 't': wordstr[j][i]=3 ; break ;
+					default: ASSERT(0) ;
+					}
+				translate_from_single_order(wordstr[j], genestr_len,
+											word_degree[j]-1, word_degree[j]) ;
+			}
+		}
+	}
+	
+	{ // set derivatives of p, q and a to zero
+		for (INT i=0; i<N; i++)
+		{
+			initial_state_distribution_p_deriv.element(i)=0 ;
+			end_state_distribution_q_deriv.element(i)=0 ;
+			for (INT j=0; j<N; j++)
+				transition_matrix_a_deriv.element(i,j)=0 ;
+		}
+	}
+		
+	{ // compute derivatives for given path
+		DREAL svm_value[num_svms] ;
+		for (INT s=0; s<num_svms; s++)
+			svm_value[s]=0 ;
+		
+		ASSERT(my_state_seq[0]>=0) ;
+		end_state_distribution_q_deriv.element(my_state_seq[0])++ ;
+		ASSERT(my_state_seq[my_seq_len-1]>=0) ;
+		initial_state_distribution_p_deriv.element(my_state_seq[my_seq_len-1])++ ;
+
+		for (INT i=0; i<my_seq_len-1; i++)
+		{
+			if (my_state_seq[i+1]==-1)
+				break ;
+			INT from_state = my_state_seq[i] ;
+			INT to_state   = my_state_seq[i+1] ;
+			INT from_pos   = my_pos_seq[i] ;
+			INT to_pos     = my_pos_seq[i+1] ;
+			
+			// increase usage of this transition
+			transition_matrix_a_deriv.element(from_state, to_state)++ ;
+
+			INT last_svm_pos[num_degrees] ;
+			for (INT qq=0; qq<num_degrees; qq++)
+				last_svm_pos[qq]=-1 ;
+			
+			if (use_svm)
+			{
+				reset_svm_values(pos[to_pos], last_svm_pos, svm_value) ;
+				extend_svm_values(wordstr, pos[from_pos], last_svm_pos, svm_value) ;
+			}
+			
+			CPlif *penalty = PEN.element(to_state, from_state) ;
+			penalty->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value, true) ;
+		}
+	}
 
 	for (INT j=0; j<num_degrees; j++)
 		delete[] wordstr[j] ;

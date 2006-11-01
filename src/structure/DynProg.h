@@ -129,22 +129,29 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 	void best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const INT *orf_info,
-						 CPlif **PEN_matrix, 
+						 CPlif **PLif_matrix, 
 						 const char *genestr, INT genestr_len,
 						 short int nbest, 
 						 DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 						 DREAL *dictionary_weights, INT dict_len,
-						 DREAL *&PEN_values, DREAL *&PEN_input_values, 
-						 INT &num_PEN_id, bool use_orf) ;
+						 DREAL *&Plif_values, DREAL *&Plif_input_values, 
+						 INT &num_Plif_id, bool use_orf) ;
+
+	void best_path_trans_deriv(const DREAL *seq, INT seq_len, const INT *pos, const INT *orf_info,
+							   CPlif **Plif_matrix, 
+							   const char *genestr, INT genestr_len,
+							   INT *my_state_seq, INT *my_pos_seq, INT my_seq_len, 
+							   DREAL *dictionary_weights, INT dict_len,
+							   INT num_pen, INT max_limits_len, DREAL *Plif_deriv) ;
 
 	void best_path_2struct(const DREAL *seq, INT seq_len, const INT *pos, 
-						   CPlif **PEN_matrix, 
+						   CPlif **Plif_matrix, 
 						   const char *genestr, INT genestr_len,
 						   short int nbest, 
 						   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 						   DREAL *dictionary_weights, INT dict_len, DREAL *segment_sum_weights, 
-						   DREAL *&PEN_values, DREAL *&PEN_input_values, 
-						   INT &num_PEN_id) ;
+						   DREAL *&Plif_values, DREAL *&Plif_input_values, 
+						   INT &num_Plif_id) ;
 	void best_path_trans_simple(const DREAL *seq, INT seq_len, short int nbest, 
 								DREAL *prob_nbest, INT *my_state_seq) ;
 
@@ -252,12 +259,15 @@ protected:
 
 	/// transition matrix 
 	CArray2<DREAL> transition_matrix_a;
+	CArray2<DREAL> transition_matrix_a_deriv ;
 
 	/// initial distribution of states
 	CArray<DREAL> initial_state_distribution_p;
+	CArray<DREAL> initial_state_distribution_p_deriv ;
 
 	/// distribution of end-states
 	CArray<DREAL> end_state_distribution_q;		
+	CArray<DREAL> end_state_distribution_q_deriv ;		
 
 	//@}
 	
