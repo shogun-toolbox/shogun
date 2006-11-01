@@ -17,11 +17,25 @@
 #include "kernel/SimpleKernel.h"
 #include "features/CharFeatures.h"
 
+enum EWDKernType
+{
+	E_WD=0,
+	E_CONST=1,
+	E_LINEAR=2,
+	E_SQPOLY=3,
+	E_CUBICPOLY=4,
+	E_EXP=5,
+	E_LOG=6,
+	E_EXTERNAL=7
+};
+
 class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
 {
  public:
-  CWeightedDegreeCharKernel(INT size, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1) ;
-  CWeightedDegreeCharKernel(INT size, DREAL* weights, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1) ;
+  CWeightedDegreeCharKernel(INT size, EWDKernType type, INT degree, INT max_mismatch, 
+		  bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
+  CWeightedDegreeCharKernel(INT size, DREAL* weights, INT degree, INT max_mismatch, 
+		  bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
   ~CWeightedDegreeCharKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
@@ -191,7 +205,17 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
 
   bool set_weights(DREAL* weights, INT d, INT len);
   bool set_position_weights(DREAL* position_weights, INT len=0);
+
+  bool init_matching_weights();
   bool init_matching_weights_wd();
+  bool init_matching_weights_const();
+  bool init_matching_weights_linear();
+  bool init_matching_weights_sqpoly();
+  bool init_matching_weights_cubicpoly();
+  bool init_matching_weights_exp();
+  bool init_matching_weights_log();
+  bool init_matching_weights_external();
+
   bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
 
@@ -241,7 +265,12 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
   bool block_computation;
   bool use_normalization ;
   
+  INT num_matching_weights_external;
+  DREAL* matching_weights_external;
+
   DREAL* matching_weights;
+  EWDKernType type;
+  INT which_degree;
   
   CTrie tries ;
   bool tree_initialized ;

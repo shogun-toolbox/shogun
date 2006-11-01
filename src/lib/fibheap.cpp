@@ -1,13 +1,3 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * Written (W) 1999-2006 Gunnar Raetsch
- * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
- */
-
 //***************************************************************************
 // FIBTEST.CPP
 //
@@ -18,7 +8,6 @@
 
 #ifndef _FIBHEAP_CPP
 #define _FIBHEAP_CPP
-
 
 #include <math.h>
 
@@ -34,7 +23,7 @@ extern void _main();
 #include <time.h>
 #include <stdlib.h>
 
-#include "fibheap.h"
+#include "lib/fibheap.h"
 
 
 //***************************************************************************

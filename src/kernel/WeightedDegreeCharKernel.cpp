@@ -16,29 +16,33 @@
 #include "features/Features.h"
 #include "features/CharFeatures.h"
 
-CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(INT size, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
+CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(INT size, EWDKernType typ, INT degree, INT max_mismatch_,
+		bool use_norm, bool block, INT mkl_stepsize_, INT which_deg)
 	: CSimpleKernel<CHAR>(size),weights(NULL),position_weights(NULL),
 	  weights_buffer(NULL), mkl_stepsize(mkl_stepsize_),degree(0), length(0), 
 	  max_mismatch(max_mismatch_), seq_length(0), 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), 
-	  block_computation(block), use_normalization(use_norm), tries(0,max_mismatch_==0), tree_initialized(false)
+	  block_computation(block), use_normalization(use_norm), 
+	  num_matching_weights_external(0), matching_weights_external(NULL), matching_weights(NULL),
+	  type(typ), which_degree(which_deg), tries(0,max_mismatch_==0), tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
 	rhs=NULL;
-	matching_weights=NULL;
 }
 
-CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(INT size, double* w, INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_)
+CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(INT size, double* w, INT d, INT max_mismatch_, 
+		bool use_norm, bool block, INT mkl_stepsize_, INT which_deg)
 	: CSimpleKernel<CHAR>(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0), 
 	  max_mismatch(max_mismatch_), seq_length(0), 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), 
-	  block_computation(block), use_normalization(use_norm), tries(d,max_mismatch_==0)
+	  block_computation(block), use_normalization(use_norm),
+	  num_matching_weights_external(0), matching_weights_external(NULL), matching_weights(NULL),
+	  type(E_EXTERNAL), which_degree(which_deg), tries(d,max_mismatch_==0), tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
 	rhs=NULL;
-	matching_weights=NULL;
 
 	weights=new DREAL[d*(1+max_mismatch)];
 	ASSERT(weights!=NULL);
@@ -128,7 +132,7 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	initialized = false ;
 	INT i;
 
-	init_matching_weights_wd();
+	init_matching_weights();
 
 	if (use_normalization)
 	{
@@ -689,6 +693,147 @@ bool CWeightedDegreeCharKernel::init_matching_weights_wd()
 	}
 
 	return (matching_weights!=NULL);
+}
+
+bool CWeightedDegreeCharKernel::init_matching_weights_const()
+{
+	delete[] matching_weights;
+	matching_weights=new DREAL[seq_length];
+
+	if (matching_weights)
+	{
+		for (int i=1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=1.0/seq_length;
+	}
+
+	return (matching_weights!=NULL);
+}
+
+bool CWeightedDegreeCharKernel::init_matching_weights_linear()
+{
+	delete[] matching_weights;
+	matching_weights=new DREAL[seq_length];
+
+	if (matching_weights)
+	{
+		for (int i=1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=degree*i;
+	}
+
+	return (matching_weights!=NULL);
+}
+
+bool CWeightedDegreeCharKernel::init_matching_weights_sqpoly()
+{
+	delete[] matching_weights;
+	matching_weights=new DREAL[seq_length];
+
+	if (matching_weights)
+	{
+		for (int i=1; i<degree+1 ; i++)
+			matching_weights[i-1]=((double) i)*i;
+
+		for (int i=degree+1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=i;
+	}
+
+	return (matching_weights!=NULL);
+}
+
+bool CWeightedDegreeCharKernel::init_matching_weights_cubicpoly()
+{
+	delete[] matching_weights;
+	matching_weights=new DREAL[seq_length];
+
+	if (matching_weights)
+	{
+		for (int i=1; i<degree+1 ; i++)
+			matching_weights[i-1]=((double) i)*i*i;
+
+		for (int i=degree+1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=i;
+	}
+
+	return (matching_weights!=NULL);
+}
+
+bool CWeightedDegreeCharKernel::init_matching_weights_exp()
+{
+	delete[] matching_weights;
+	matching_weights=new DREAL[seq_length];
+
+	if (matching_weights)
+	{
+		for (int i=1; i<degree+1 ; i++)
+			matching_weights[i-1]=exp(((double) i/10.0));
+
+		for (int i=degree+1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=i;
+	}
+
+	return (matching_weights!=NULL);
+}
+
+bool CWeightedDegreeCharKernel::init_matching_weights_log()
+{
+	delete[] matching_weights;
+	matching_weights=new DREAL[seq_length];
+
+	if (matching_weights)
+	{
+		for (int i=1; i<degree+1 ; i++)
+			matching_weights[i-1]=pow(log(i),2);
+
+		for (int i=degree+1; i<seq_length+1 ; i++)
+			matching_weights[i-1]=i-degree+1+pow(log(degree+1),2);
+	}
+
+	return (matching_weights!=NULL);
+}
+
+bool CWeightedDegreeCharKernel::init_matching_weights_external()
+{
+	if (matching_weights_external && (seq_length == num_matching_weights_external) )
+	{
+		delete[] matching_weights;
+		matching_weights=new DREAL[seq_length];
+
+		if (matching_weights)
+		{
+			for (int i=0; i<seq_length; i++)
+				matching_weights[i]=matching_weights_external[i];
+		}
+	}
+	else
+		CIO::message(M_ERROR, "sequence longer then weights (seqlen:%d, wlen:%d)\n", seq_length, matching_weights_external);
+
+	return (matching_weights!=NULL);
+}
+
+bool CWeightedDegreeCharKernel::init_matching_weights()
+{
+	switch (type)
+	{
+		case E_WD:
+			return init_matching_weights_wd();
+		case E_CONST:
+			return init_matching_weights_const();
+		case E_LINEAR:
+			return init_matching_weights_linear();
+		case E_SQPOLY:
+			return init_matching_weights_sqpoly();
+		case E_CUBICPOLY:
+			return init_matching_weights_cubicpoly();
+		case E_EXP:
+			return init_matching_weights_exp();
+		case E_LOG:
+			return init_matching_weights_log();
+		case E_EXTERNAL:
+			return init_matching_weights_external();
+		default:
+			return false;
+	};
+
 }
 
 

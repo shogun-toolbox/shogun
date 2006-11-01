@@ -9,8 +9,6 @@
  */
 
 #include "lib/config.h"
-/*#include "features/CharFeatures.h"
-  #include "features/StringFeatures.h"*/
 
 #include <stdio.h>
 #include <string.h>

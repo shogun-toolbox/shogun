@@ -19,6 +19,8 @@
 #include "distance/Distance.h"
 #include "distance/DistanceMachine.h"
 
+class CDistanceMachine;
+
 class CKNN : public CDistanceMachine
 {
 	public:

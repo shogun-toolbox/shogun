@@ -287,9 +287,9 @@ cxx_check() {
   echo >> "$TMPLOG"
   cat "$TMPC" >> "$TMPLOG"
   echo >> "$TMPLOG"
-  echo "$COMP_CPP $TMPC $INCLUDES $COMPFLAGS_CPP -o $TMPO $LINKFLAGS $@" >> "$TMPLOG"
+  echo "$COMP_CPP $INCLUDES $COMPFLAGS_CPP $TMPC -o $TMPO $LINKFLAGS $@" >> "$TMPLOG"
   rm -f "$TMPO"
-  ( "$COMP_CPP" $INCLUDES "$TMPC" $COMPFLAGS_CPP -o "$TMPO" $LINKFLAGS "$@" ) >> "$TMPLOG" 2>&1
+  ( "$COMP_CPP" $INCLUDES $COMPFLAGS_CPP "$TMPC" -o "$TMPO" $LINKFLAGS "$@" ) >> "$TMPLOG" 2>&1
   TMP="$?"
   if test -f "$TMPO"
   then
@@ -1924,7 +1924,13 @@ EOF
 		echocheck "Python numpy support"
 		if $PYTHON -c "import sys; import numpy" >/dev/null 2>&1
 		then
-			echores "`$PYTHON -c 'import numpy; print numpy.__version__'`"
+			if [ `$PYTHON -c 'import numpy; print numpy.__version__' | cut -c 1` -gt 0 ]
+			then
+				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`"
+			else
+				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`... too old version 1.0 or later required"
+				exit 1
+			fi
 		else
 			echores "no"
 			exit 1

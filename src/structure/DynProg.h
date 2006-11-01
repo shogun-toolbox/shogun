@@ -1,18 +1,13 @@
-
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2006 Soeren Sonnenburg
  * Written (W) 1999-2006 Gunnar Raetsch
+ * Written (W) 1999-2006 Soeren Sonnenburg
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
-
-// HMM.h: interface for the CHMM class.
-//
-//////////////////////////////////////////////////////////////////////
 
 #ifndef __CDYNPROG_H__
 #define __CDYNPROG_H__
@@ -76,8 +71,6 @@ public:
 	 */
 	DREAL best_path_no_b(INT max_iter, INT & best_iter, INT *my_path) ;
 	void best_path_no_b_trans(INT max_iter, INT & max_best_iter, short int nbest, DREAL *prob_nbest, INT *my_paths) ;
-	//void best_path_no_b_trans1(INT max_iter, INT & max_best_iter, DREAL *prob_nbest, INT *my_paths) ;
-	void model_prob_no_b_trans(INT max_iter, DREAL *prob_iter) ;
 
 ////////////////////////////////////////////////////////////////////////////////
 protected:
@@ -100,7 +93,7 @@ protected:
 	CArray2<INT> m_positions ;
 	
 public:
-	// model related stuff
+	// model related functions
 	void set_p(DREAL *p, INT N) ;
 	void set_q(DREAL *q, INT N) ;
 	void set_a(DREAL *a, INT M, INT N) ;

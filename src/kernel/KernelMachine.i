@@ -1,4 +1,4 @@
-%module(director="1") KernelMachine
+ %module(directors="1") CKernelMachine
 %{
  #include "kernel/KernelMachine.h"
 %}
@@ -7,5 +7,4 @@
 
 %feature("director") CKernelMachine;
 
-%include "classifier/Classifier.i"
 %include "kernel/KernelMachine.h"
