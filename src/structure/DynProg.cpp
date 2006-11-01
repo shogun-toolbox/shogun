@@ -2047,7 +2047,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 #endif
 }
 
-void CDynProg::best_path_trans_deriv(const DREAL *seq_array, INT seq_len, const INT *pos, const INT *orf_info_array,
+void CDynProg::best_path_trans_deriv(const DREAL *seq_array, INT seq_len, const INT *pos,
 									 CPlif **Plif_matrix, 
 									 const char *genestr, INT genestr_len,
 									 INT *my_state_seq, INT *my_pos_seq, INT my_seq_len, 
@@ -2061,7 +2061,6 @@ void CDynProg::best_path_trans_deriv(const DREAL *seq_array, INT seq_len, const 
 	
 	CArray2<CPlif*> PEN(Plif_matrix, N, N, false, false) ;
 	CArray2<DREAL> seq(seq_array, N, seq_len) ;
-	CArray2<INT> orf_info(orf_info_array, N, 2) ;
 	
 	{ // determine whether to use svm outputs and clear derivatives
 		for (INT i=0; i<N; i++)
@@ -2120,10 +2119,10 @@ void CDynProg::best_path_trans_deriv(const DREAL *seq_array, INT seq_len, const 
 			svm_value[s]=0 ;
 		
 		ASSERT(my_state_seq[0]>=0) ;
-		end_state_distribution_q_deriv.element(my_state_seq[0])++ ;
+		initial_state_distribution_p_deriv.element(my_state_seq[0])++ ;
 		ASSERT(my_state_seq[my_seq_len-1]>=0) ;
-		initial_state_distribution_p_deriv.element(my_state_seq[my_seq_len-1])++ ;
-
+		end_state_distribution_q_deriv.element(my_state_seq[my_seq_len-1])++ ;
+		
 		for (INT i=0; i<my_seq_len-1; i++)
 		{
 			if (my_state_seq[i+1]==-1)
@@ -2146,20 +2145,13 @@ void CDynProg::best_path_trans_deriv(const DREAL *seq_array, INT seq_len, const 
 				extend_svm_values(wordstr, pos[from_pos], last_svm_pos, svm_value) ;
 			}
 			
-			CPlif *penalty = PEN.element(to_state, from_state) ;
-			penalty->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value, true) ;
+			PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value, true) ;
 		}
 	}
 
 	for (INT j=0; j<num_degrees; j++)
 		delete[] wordstr[j] ;
 
-#if USEFIXEDLENLIST > 0
-#ifdef USE_TMP_ARRAYCLASS
-	delete[] fixedtempvv ;
-	delete[] fixedtempii
-#endif
-#endif
 }
 
 
