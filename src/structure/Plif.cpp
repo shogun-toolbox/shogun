@@ -27,6 +27,7 @@ CPlif::CPlif()
 {
 	limits=NULL ;
 	penalties=NULL ;
+	cum_derivatives=NULL ;
 	id=-1 ;
 	next_pen=NULL ;
 	transform = T_LINEAR ;
@@ -45,11 +46,15 @@ CPlif::~CPlif()
 		delete[] penalties ;
 		delete[] name ;
 		delete[] cache ;
+		delete[] cum_derivatives ; 
 	}
 }
 
 bool CPlif::set_transform_type(const char *type_str) 
 {
+	delete[] cache ;
+	cache=NULL ;
+
 	if (strcmp(type_str, "linear")==0)
 		transform = T_LINEAR ;
 	else if (strcmp(type_str, "")==0)
@@ -83,7 +88,7 @@ void CPlif::init_penalty_struct_cache()
 			if (i<min_len)
 				cache[i] = -CMath::INFTY ;
 			else
-				cache[i] = lookup_penalty(i, 0, false,input_value) ;
+				cache[i] = lookup_penalty(i, 0, false, input_value) ;
 		cache = cache ;
 	}
 }
@@ -95,14 +100,6 @@ void CPlif::set_name(char *p_name)
 	name=new char[strlen(p_name)+1] ;
 	strcpy(name,p_name) ;
 }
-
-/*void CPlif::delete_penalty_struct_array(struct penalty_struct *PEN, INT len)
-{
-	for (int i=0; i<len; i++)
-		delete_penalty_struct(PEN[i]) ;
-	delete[] PEN ;
-	}*/
-
 
 #ifdef HAVE_MATLAB
 CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT &P)
@@ -380,4 +377,111 @@ DREAL CPlif::lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DR
 		ret+=next_pen->lookup_penalty(p_value, svm_values, true, input_value);
 
 	return ret ;
+}
+
+void CPlif::penalty_clear_derivative(bool follow_next) 
+{
+	for (INT i=0; i<len; i++)
+		cum_derivatives[i]=0.0 ;
+	
+	if (next_pen && follow_next)
+		next_pen->penalty_clear_derivative(true);
+}
+
+void CPlif::penalty_add_derivative(INT p_value, DREAL* svm_values, bool follow_next) 
+{
+	if (use_svm)
+	{
+		penalty_add_derivative_svm(p_value, svm_values, follow_next) ;
+		return ;
+	}
+		
+	if ((p_value<min_len) || (p_value>max_len))
+		return ;
+	
+	DREAL d_value = (DREAL) p_value ;
+	switch (transform)
+	{
+	case T_LINEAR:
+		break ;
+	case T_LOG:
+		d_value = log(d_value) ;
+		break ;
+	case T_LOG_PLUS1:
+		d_value = log(d_value+1) ;
+		break ;
+	case T_LOG_PLUS3:
+		d_value = log(d_value+3) ;
+		break ;
+	case T_LINEAR_PLUS3:
+		d_value = d_value+3 ;
+		break ;
+	default:
+		CIO::message(M_ERROR, "unknown transform\n") ;
+		break ;
+	}
+
+	INT idx = 0 ;
+	for (INT i=0; i<len; i++)
+		if (limits[i]<=d_value)
+			idx++ ;
+	
+	if (idx==0)
+		cum_derivatives[0]+=1 ;
+	else if (idx==len)
+		cum_derivatives[len-1]+=1 ;
+	else
+	{
+		cum_derivatives[idx]+=(d_value-limits[idx-1])/(limits[idx]-limits[idx-1]) ;
+		cum_derivatives[idx-1]+=(limits[idx]-d_value)/(limits[idx]-limits[idx-1]) ;
+	}
+	
+	if (next_pen && follow_next)
+		next_pen->penalty_add_derivative(p_value, svm_values, true);
+
+}
+
+void CPlif::penalty_add_derivative_svm(INT p_value, DREAL *d_values, bool follow_next) 
+{	
+	ASSERT(use_svm>0) ;
+	DREAL d_value=d_values[use_svm-1] ;
+	
+	switch (transform)
+	{
+	case T_LINEAR:
+		break ;
+	case T_LOG:
+		d_value = log(d_value) ;
+		break ;
+	case T_LOG_PLUS1:
+		d_value = log(d_value+1) ;
+		break ;
+	case T_LOG_PLUS3:
+		d_value = log(d_value+3) ;
+		break ;
+	case T_LINEAR_PLUS3:
+		d_value = d_value+3 ;
+		break ;
+	default:
+		CIO::message(M_ERROR, "unknown transform\n") ;
+		break ;
+	}
+	
+	INT idx = 0 ;
+	for (INT i=0; i<len; i++)
+		if (limits[i]<=d_value)
+			idx++ ;
+	
+	if (idx==0)
+		cum_derivatives[0]+=1 ;
+	else if (idx==len)
+		cum_derivatives[len-1]+=1 ;
+	else
+	{
+		cum_derivatives[idx]+=(d_value-limits[idx-1])/(limits[idx]-limits[idx-1]) ;
+		cum_derivatives[idx-1]+=(limits[idx]-d_value)/(limits[idx]-limits[idx-1]) ;
+	}
+
+	if (next_pen && follow_next)
+		next_pen->penalty_add_derivative(p_value, d_values, follow_next);
 }

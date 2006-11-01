@@ -37,6 +37,14 @@ public:
 	DREAL lookup_penalty_svm(INT p_value, DREAL *d_values, bool follow_next, DREAL &input_value) const ;
 	DREAL lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const ;
 
+	void penalty_clear_derivative(bool follow_next) ;
+	void penalty_add_derivative_svm(INT p_value, DREAL* svm_values, bool follow_next) ;
+	void penalty_add_derivative(INT p_value, DREAL* svm_values, bool follow_next) ;
+	const DREAL * get_cum_derivative(INT & p_len) const 
+	{
+		p_len = len ;
+		return cum_derivatives ;
+	}
 	
 	bool set_transform_type(const char *type_str) ;
 	
@@ -59,27 +67,40 @@ public:
 
 	void set_use_svm(INT p_use_svm) 
 	{
+		delete[] cache ;
+		cache=NULL ;
 		use_svm=p_use_svm ;
 	}
 	INT get_use_svm()
 	{
 		return use_svm ;
 	}
+
 	void set_plif(INT p_len, DREAL *p_limits, DREAL* p_penalties) 
 	{
 		len=p_len ;
 		delete[] limits ;
 		delete[] penalties ;
+		delete[] cum_derivatives ;
+		delete[] cache ;
+		cache=NULL ;
 		limits=new DREAL[len] ;
 		penalties=new DREAL[len] ;
+		cum_derivatives=new DREAL[len] ;
+
 		for (INT i=0; i<len; i++)
 		{
 			limits[i]=p_limits[i] ;
 			penalties[i]=p_penalties[i] ;
 		}
+
+		penalty_clear_derivative(false) ;
 	}
+
 	void set_max_len(INT p_max_len) 
 	{
+		delete[] cache ;
+		cache=NULL ;
 		max_len=p_max_len ;
 	}
 	INT get_max_len() const 
@@ -88,6 +109,8 @@ public:
 	}
 	void set_min_len(INT p_min_len) 
 	{
+		delete[] cache ;
+		cache=NULL ;
 		min_len=p_min_len ;
 	}
 	void set_name(char *p_name) ;
@@ -102,6 +125,7 @@ protected:
 	INT len ;
 	DREAL *limits ;
 	DREAL *penalties ;
+	DREAL *cum_derivatives ;
 	INT max_len ;
 	INT min_len ;
 	DREAL *cache ;
