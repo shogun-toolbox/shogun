@@ -5,7 +5,10 @@
 
 %include "lib/common.i"
 
-%feature("director") CClassifier;
+%feature("director");
+
+/* %feature("director") CClassifier;*/
+
 
 %rename(Classifer) CClassifier;
 

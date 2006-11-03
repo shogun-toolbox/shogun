@@ -1,4 +1,4 @@
- %module(directors="1") SVM
+%module(directors="1") SVM
 %{
  #include "classifier/svm/SVM.h"
  #include "classifier/svm/SVM_light.h"

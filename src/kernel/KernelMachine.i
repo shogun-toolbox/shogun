@@ -5,6 +5,8 @@
 
 %include "lib/common.i"
 
-%feature("director") CKernelMachine;
+%feature("director");
+/* %feature("director") CKernelMachine; */
 
+%include "classifier/Classifier.i"
 %include "kernel/KernelMachine.h"
