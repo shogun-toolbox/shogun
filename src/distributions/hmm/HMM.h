@@ -67,6 +67,279 @@ typedef T_STATES* P_STATES ;
 
 //@}
 
+class CModel
+{
+public:
+	/// Constructor - initializes all variables/structures
+	CModel();
+	
+	/// Destructor - cleans up
+	virtual ~CModel();
+
+	/// sorts learn_a matrix
+	inline void sort_learn_a()
+	{
+		CMath::sort(learn_a,2) ;
+	}
+	
+	/// sorts learn_b matrix
+	inline void sort_learn_b()
+	{
+		CMath::sort(learn_b,2) ;
+	}
+
+	/**@name read access functions.
+	 * For learn arrays and const arrays
+	 */
+	//@{
+	/// get entry out of learn_a matrix
+	inline INT get_learn_a(INT line, INT column) const
+	{
+		return learn_a[line*2 + column];
+	}
+
+	/// get entry out of learn_b matrix
+	inline INT get_learn_b(INT line, INT column) const 
+	{
+		return learn_b[line*2 + column];
+	}
+
+	/// get entry out of learn_p vector
+	inline INT get_learn_p(INT offset) const 
+	{
+		return learn_p[offset];
+	}
+
+	/// get entry out of learn_q vector
+	inline INT get_learn_q(INT offset) const 
+	{
+		return learn_q[offset];
+	}
+
+	/// get entry out of const_a matrix
+	inline INT get_const_a(INT line, INT column) const
+	{
+		return const_a[line*2 + column];
+	}
+
+	/// get entry out of const_b matrix
+	inline INT get_const_b(INT line, INT column) const 
+	{
+		return const_b[line*2 + column];
+	}
+
+	/// get entry out of const_p vector
+	inline INT get_const_p(INT offset) const 
+	{
+		return const_p[offset];
+	}
+
+	/// get entry out of const_q vector
+	inline INT get_const_q(INT offset) const
+	{
+		return const_q[offset];
+	}
+
+	/// get value out of const_a_val vector
+	inline DREAL get_const_a_val(INT line) const
+	{
+		return const_a_val[line];
+	}
+
+	/// get value out of const_b_val vector
+	inline DREAL get_const_b_val(INT line) const 
+	{
+		return const_b_val[line];
+	}
+
+	/// get value out of const_p_val vector
+	inline DREAL get_const_p_val(INT offset) const 
+	{
+		return const_p_val[offset];
+	}
+
+	/// get value out of const_q_val vector
+	inline DREAL get_const_q_val(INT offset) const
+	{
+		return const_q_val[offset];
+	}
+#ifdef FIX_POS
+	/// get value out of fix_pos_state array
+	inline CHAR get_fix_pos_state(INT pos, T_STATES state, T_STATES num_states)
+	{
+#ifdef HMM_DEBUG
+	  if ((pos<0)||(pos*num_states+state>65336))
+		CIO::message(stderr,"index out of range in get_fix_pos_state(%i,%i,%i) \n", pos,state,num_states) ;
+#endif
+	  return fix_pos_state[pos*num_states+state] ;
+	}
+#endif
+	//@}
+	
+	/**@name write access functions
+	 * For learn and const arrays
+	 */
+	//@{
+	/// set value in learn_a matrix
+	inline void set_learn_a(INT offset, INT value)
+	{
+		learn_a[offset]=value;
+	}
+
+	/// set value in learn_b matrix
+	inline void set_learn_b(INT offset, INT value)
+	{
+		learn_b[offset]=value;
+	}
+
+	/// set value in learn_p vector
+	inline void set_learn_p(INT offset, INT value)
+	{
+		learn_p[offset]=value;
+	}
+
+	/// set value in learn_q vector
+	inline void set_learn_q(INT offset, INT value)
+	{
+		learn_q[offset]=value;
+	}
+
+	/// set value in const_a matrix
+	inline void set_const_a(INT offset, INT value)
+	{
+		const_a[offset]=value;
+	}
+
+	/// set value in const_b matrix
+	inline void set_const_b(INT offset, INT value)
+	{
+		const_b[offset]=value;
+	}
+
+	/// set value in const_p vector
+	inline void set_const_p(INT offset, INT value)
+	{
+		const_p[offset]=value;
+	}
+
+	/// set value in const_q vector
+	inline void set_const_q(INT offset, INT value)
+	{
+		const_q[offset]=value;
+	}
+
+	/// set value in const_a_val vector
+	inline void set_const_a_val(INT offset, DREAL value)
+	{
+		const_a_val[offset]=value;
+	}
+
+	/// set value in const_b_val vector
+	inline void set_const_b_val(INT offset, DREAL value)
+	{
+		const_b_val[offset]=value;
+	}
+
+	/// set value in const_p_val vector
+	inline void set_const_p_val(INT offset, DREAL value)
+	{
+		const_p_val[offset]=value;
+	}
+
+	/// set value in const_q_val vector
+	inline void set_const_q_val(INT offset, DREAL value)
+	{
+		const_q_val[offset]=value;
+	}
+#ifdef FIX_POS
+	/// set value in fix_pos_state vector
+	inline void set_fix_pos_state(INT pos, T_STATES state, T_STATES num_states, CHAR value)
+	{
+#ifdef HMM_DEBUG
+		  if ((pos<0)||(pos*num_states+state>65336))
+		CIO::message(stderr,"index out of range in set_fix_pos_state(%i,%i,%i,%i) [%i]\n", pos,state,num_states,(int)value, pos*num_states+state) ;
+#endif
+	  fix_pos_state[pos*num_states+state]=value;
+	  if (value==FIX_ALLOWED)
+		for (INT i=0; i<num_states; i++)
+		  if (get_fix_pos_state(pos,i,num_states)==FIX_DEFAULT)
+		set_fix_pos_state(pos,i,num_states,FIX_DISALLOWED) ;
+	}
+	//@}
+
+	/// FIX_DISALLOWED - state is forbidden and will be penalized with DISALLOWED_PENALTY
+	const static CHAR FIX_DISALLOWED ;
+
+	/// FIX_ALLOWED - state is allowed
+	const static CHAR FIX_ALLOWED ;
+
+	/// FIX_DEFAULT - default value 
+	const static CHAR FIX_DEFAULT ;
+
+	/// DISALLOWED_PENALTY - states in FIX_DISALLOWED will be penalized with this value
+	const static DREAL DISALLOWED_PENALTY ;
+#endif
+protected:
+	/**@name learn arrays.
+	 * Everything that is to be learned is enumerated here.
+	 * All values will be inititialized with random values
+	 * and normalized to satisfy stochasticity.
+	 */
+	//@{
+	/// transitions to be learned 
+	INT* learn_a;
+	
+	/// emissions to be learned
+	INT* learn_b;
+
+	/// start states to be learned
+	INT* learn_p;
+
+	/// end states to be learned
+	INT* learn_q;
+	//@}
+
+	/**@name constant arrays.
+	 * These arrays hold constant fields. All values that
+	 * are not constant and will not be learned are initialized
+	 * with 0.
+	 */
+	//@{
+	/// transitions that have constant probability
+	INT* const_a;
+
+	/// emissions that have constant probability
+	INT* const_b;
+
+	/// start states that have constant probability
+	INT* const_p;
+
+	/// end states that have constant probability
+	INT* const_q;		
+
+	
+	/// values for transitions that have constant probability
+	DREAL* const_a_val;
+
+	/// values for emissions that have constant probability
+	DREAL* const_b_val;
+
+	/// values for start states that have constant probability
+	DREAL* const_p_val;
+
+	/// values for end states that have constant probability
+	DREAL* const_q_val;		
+
+#ifdef FIX_POS
+	/** states in whose the model has to be at specific times/states which the model has to avoid.
+	 * only used in viterbi
+	 */
+	CHAR* fix_pos_state;
+#endif
+	//@}
+};
+
+
 /** Hidden Markov Model.
  * Structure and Function collection.
  * This Class implements a Hidden Markov Model.
@@ -168,278 +441,6 @@ class CHMM : private CDistribution
 	 * Encapsulates Modelparameters that are constant/shall be learned.
 	 * Consists of structures and access functions for learning only defined transitions and constants.
 	 */
-	class CModel
-	{
-	public:
-		/// Constructor - initializes all variables/structures
-		CModel();
-		
-		/// Destructor - cleans up
-		virtual ~CModel();
-
-		/// sorts learn_a matrix
-		inline void sort_learn_a()
-		{
-			CMath::sort(learn_a,2) ;
-		}
-		
-		/// sorts learn_b matrix
-		inline void sort_learn_b()
-		{
-			CMath::sort(learn_b,2) ;
-		}
-
-		/**@name read access functions.
-		 * For learn arrays and const arrays
-		 */
-		//@{
-		/// get entry out of learn_a matrix
-		inline INT get_learn_a(INT line, INT column) const
-		{
-			return learn_a[line*2 + column];
-		}
-
-		/// get entry out of learn_b matrix
-		inline INT get_learn_b(INT line, INT column) const 
-		{
-			return learn_b[line*2 + column];
-		}
-
-		/// get entry out of learn_p vector
-		inline INT get_learn_p(INT offset) const 
-		{
-			return learn_p[offset];
-		}
-
-		/// get entry out of learn_q vector
-		inline INT get_learn_q(INT offset) const 
-		{
-			return learn_q[offset];
-		}
-
-		/// get entry out of const_a matrix
-		inline INT get_const_a(INT line, INT column) const
-		{
-			return const_a[line*2 + column];
-		}
-
-		/// get entry out of const_b matrix
-		inline INT get_const_b(INT line, INT column) const 
-		{
-			return const_b[line*2 + column];
-		}
-
-		/// get entry out of const_p vector
-		inline INT get_const_p(INT offset) const 
-		{
-			return const_p[offset];
-		}
-
-		/// get entry out of const_q vector
-		inline INT get_const_q(INT offset) const
-		{
-			return const_q[offset];
-		}
-
-		/// get value out of const_a_val vector
-		inline DREAL get_const_a_val(INT line) const
-		{
-			return const_a_val[line];
-		}
-
-		/// get value out of const_b_val vector
-		inline DREAL get_const_b_val(INT line) const 
-		{
-			return const_b_val[line];
-		}
-
-		/// get value out of const_p_val vector
-		inline DREAL get_const_p_val(INT offset) const 
-		{
-			return const_p_val[offset];
-		}
-
-		/// get value out of const_q_val vector
-		inline DREAL get_const_q_val(INT offset) const
-		{
-			return const_q_val[offset];
-		}
-#ifdef FIX_POS
-		/// get value out of fix_pos_state array
-		inline CHAR get_fix_pos_state(INT pos, T_STATES state, T_STATES num_states)
-		{
-#ifdef HMM_DEBUG
-		  if ((pos<0)||(pos*num_states+state>65336))
-		    CIO::message(stderr,"index out of range in get_fix_pos_state(%i,%i,%i) \n", pos,state,num_states) ;
-#endif
-		  return fix_pos_state[pos*num_states+state] ;
-		}
-#endif
-		//@}
-		
-		/**@name write access functions
-		 * For learn and const arrays
-		 */
-		//@{
-		/// set value in learn_a matrix
-		inline void set_learn_a(INT offset, INT value)
-		{
-			learn_a[offset]=value;
-		}
-
-		/// set value in learn_b matrix
-		inline void set_learn_b(INT offset, INT value)
-		{
-			learn_b[offset]=value;
-		}
-
-		/// set value in learn_p vector
-		inline void set_learn_p(INT offset, INT value)
-		{
-			learn_p[offset]=value;
-		}
-
-		/// set value in learn_q vector
-		inline void set_learn_q(INT offset, INT value)
-		{
-			learn_q[offset]=value;
-		}
-
-		/// set value in const_a matrix
-		inline void set_const_a(INT offset, INT value)
-		{
-			const_a[offset]=value;
-		}
-
-		/// set value in const_b matrix
-		inline void set_const_b(INT offset, INT value)
-		{
-			const_b[offset]=value;
-		}
-
-		/// set value in const_p vector
-		inline void set_const_p(INT offset, INT value)
-		{
-			const_p[offset]=value;
-		}
-
-		/// set value in const_q vector
-		inline void set_const_q(INT offset, INT value)
-		{
-			const_q[offset]=value;
-		}
-
-		/// set value in const_a_val vector
-		inline void set_const_a_val(INT offset, DREAL value)
-		{
-			const_a_val[offset]=value;
-		}
-
-		/// set value in const_b_val vector
-		inline void set_const_b_val(INT offset, DREAL value)
-		{
-			const_b_val[offset]=value;
-		}
-
-		/// set value in const_p_val vector
-		inline void set_const_p_val(INT offset, DREAL value)
-		{
-			const_p_val[offset]=value;
-		}
-
-		/// set value in const_q_val vector
-		inline void set_const_q_val(INT offset, DREAL value)
-		{
-			const_q_val[offset]=value;
-		}
-#ifdef FIX_POS
-		/// set value in fix_pos_state vector
-		inline void set_fix_pos_state(INT pos, T_STATES state, T_STATES num_states, CHAR value)
-		{
-#ifdef HMM_DEBUG
-       		  if ((pos<0)||(pos*num_states+state>65336))
-		    CIO::message(stderr,"index out of range in set_fix_pos_state(%i,%i,%i,%i) [%i]\n", pos,state,num_states,(int)value, pos*num_states+state) ;
-#endif
-		  fix_pos_state[pos*num_states+state]=value;
-		  if (value==FIX_ALLOWED)
-		    for (INT i=0; i<num_states; i++)
-		      if (get_fix_pos_state(pos,i,num_states)==FIX_DEFAULT)
-			set_fix_pos_state(pos,i,num_states,FIX_DISALLOWED) ;
-		}
-		//@}
-
-		/// FIX_DISALLOWED - state is forbidden and will be penalized with DISALLOWED_PENALTY
-		const static CHAR FIX_DISALLOWED ;
-
-		/// FIX_ALLOWED - state is allowed
-		const static CHAR FIX_ALLOWED ;
-
-		/// FIX_DEFAULT - default value 
-		const static CHAR FIX_DEFAULT ;
-
-		/// DISALLOWED_PENALTY - states in FIX_DISALLOWED will be penalized with this value
-		const static DREAL DISALLOWED_PENALTY ;
-#endif
-	protected:
-		/**@name learn arrays.
-		 * Everything that is to be learned is enumerated here.
-		 * All values will be inititialized with random values
-		 * and normalized to satisfy stochasticity.
-		 */
-		//@{
-		/// transitions to be learned 
-		INT* learn_a;
-		
-		/// emissions to be learned
-		INT* learn_b;
-	
-		/// start states to be learned
-		INT* learn_p;
-	
-		/// end states to be learned
-		INT* learn_q;
-		//@}
-
-		/**@name constant arrays.
-		 * These arrays hold constant fields. All values that
-		 * are not constant and will not be learned are initialized
-		 * with 0.
-		 */
-		//@{
-		/// transitions that have constant probability
-		INT* const_a;
-
-		/// emissions that have constant probability
-		INT* const_b;
-
-		/// start states that have constant probability
-		INT* const_p;
-
-		/// end states that have constant probability
-		INT* const_q;		
-
-		
-		/// values for transitions that have constant probability
-		DREAL* const_a_val;
-
-		/// values for emissions that have constant probability
-		DREAL* const_b_val;
-
-		/// values for start states that have constant probability
-		DREAL* const_p_val;
-
-		/// values for end states that have constant probability
-		DREAL* const_q_val;		
-
-#ifdef FIX_POS
-		/** states in whose the model has to be at specific times/states which the model has to avoid.
-		 * only used in viterbi
-		 */
-		CHAR* fix_pos_state;
-#endif
-		//@}
-	};
-
 
 public:
 	/**@name Constructor/Destructor and helper function
@@ -592,16 +593,6 @@ public:
 	  }
 	
 	/** calculates likelihood for linear model
-	 * efficient implementation (for larger files >1MB)
-	 * @param file filehandle to observation data
-	 * @param WIDTH number of characters in a line (including <CR>)
-	 * @param UPTO number of columns we are interested in
-	 * @param singleline only one line is read, probability for that line is returned
- 	 * @return model probability
-	 */
-	DREAL linear_likelihood(FILE* file, INT WIDTH, INT UPTO, bool singleline=false);
-
-	/** calculates likelihood for linear model
 	 * on observations in MEMORY
 	 * @param dimension dimension for which probability is calculated
  	 * @return model probability
@@ -663,13 +654,6 @@ public:
 	 */
 	void estimate_model_viterbi_defined(CHMM* train);
 	
-	/** estimates linear model
-	 * efficient implementation (for larger files >1MB)
-	 * @param file filehandle to observation data
-	 * @param WIDTH number of characters in a line (including <CR>)
-	 * @param UPTO number of columns we are interested in
-	 */
-	bool linear_train(FILE* file, const INT WIDTH, const INT UPTO);
 	//@}
 
 	/// estimates linear model from observations.
@@ -970,8 +954,10 @@ public:
 	*/
 	bool save_path_derivatives_bin(FILE* file);
 	
+#ifdef USE_HMMDEBUG
 	/// numerically check whether derivates were calculated right
 	bool check_path_derivatives() ;
+#endif //USE_HMMDEBUG
 #endif //NOVIT
 
 	/** save model probability in binary format

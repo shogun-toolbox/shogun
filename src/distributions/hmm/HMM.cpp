@@ -89,13 +89,13 @@ enum E_STATE
 
 
 #ifdef FIX_POS
-const CHAR CHMM::CModel::FIX_DISALLOWED=0 ;
-const CHAR CHMM::CModel::FIX_ALLOWED=1 ;
-const CHAR CHMM::CModel::FIX_DEFAULT=-1 ;
-const DREAL CHMM::CModel::DISALLOWED_PENALTY=CMath::ALMOST_NEG_INFTY ;
+const CHAR CModel::FIX_DISALLOWED=0 ;
+const CHAR CModel::FIX_ALLOWED=1 ;
+const CHAR CModel::FIX_DEFAULT=-1 ;
+const DREAL CModel::DISALLOWED_PENALTY=CMath::ALMOST_NEG_INFTY ;
 #endif
 
-CHMM::CModel::CModel()
+CModel::CModel()
 {
 	const_a=new int[ARRAY_SIZE];				///////static fixme 
 	const_b=new int[ARRAY_SIZE];
@@ -135,7 +135,7 @@ CHMM::CModel::CModel()
 	} ;
 }
 
-CHMM::CModel::~CModel()
+CModel::~CModel()
 {
 	delete[] const_a;
 	delete[] const_b;

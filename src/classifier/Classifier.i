@@ -7,9 +7,6 @@
 
 %feature("director");
 
-/* %feature("director") CClassifier;*/
-
-
 %rename(Classifer) CClassifier;
 
 %include "classifier/Classifier.h" 

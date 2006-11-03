@@ -6,7 +6,7 @@
 
 %include "lib/common.i"
 
-%feature("director") CSVM;
+%feature("director");
 
 %rename(SVM) CSVM;
 
