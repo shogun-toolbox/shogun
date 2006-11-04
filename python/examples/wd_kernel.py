@@ -32,10 +32,9 @@ weights=ones(20,dtype=double)
 wdk=WeightedDegreeCharKernel(trainfeat,trainfeat, 10, weights)
 svm = SVMLight(10, wdk, trainlab)
 #svm.set_linadd_enabled(True)
-svm.set_linadd_enabled(False)
-#svm.set_batch_computation_enabled(True)
-svm.set_batch_computation_enabled(False)
-wdk.set_precompute_matrix(False,False);
+#svm.set_linadd_enabled(False)
+svm.set_batch_computation_enabled(True)
+#svm.set_batch_computation_enabled(False)
 svm.train()
 print svm.get_num_support_vectors()
 #svm.init_kernel_optimization()
@@ -45,7 +44,7 @@ svs=[ (svm.get_alpha(i),svm.get_support_vector(i)) for i in range(svm.get_num_su
 #test
 #wdk_test=WeightedDegreeCharKernel(trainfeat,testfeat, 10, weights)
 #svm.set_kernel(wdk_test)
-svm.init_kernel_optimization()
+#svm.init_kernel_optimization()
 wdk.init(trainfeat,testfeat, True)
 testout=svm.classify().get_labels()
 

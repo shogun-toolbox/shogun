@@ -20,13 +20,15 @@
 enum EWDKernType
 {
 	E_WD=0,
-	E_CONST=1,
-	E_LINEAR=2,
-	E_SQPOLY=3,
-	E_CUBICPOLY=4,
-	E_EXP=5,
-	E_LOG=6,
-	E_EXTERNAL=7
+	E_EXTERNAL=1,
+
+	E_BLOCK_CONST=2,
+	E_BLOCK_LINEAR=3,
+	E_BLOCK_SQPOLY=4,
+	E_BLOCK_CUBICPOLY=5,
+	E_BLOCK_EXP=6,
+	E_BLOCK_LOG=7,
+	E_BLOCK_EXTERNAL=8
 };
 
 class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
@@ -198,6 +200,8 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
   DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
   //void compute_scoring_helper(struct Trie* tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result);
 
+  bool set_wd_weights_by_type(EWDKernType type);
+
   void set_wd_weights(DREAL* weights, INT d)
   {
       set_weights(weights,d,0);
@@ -206,15 +210,16 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
   bool set_weights(DREAL* weights, INT d, INT len);
   bool set_position_weights(DREAL* position_weights, INT len=0);
 
-  bool init_matching_weights();
-  bool init_matching_weights_wd();
-  bool init_matching_weights_const();
-  bool init_matching_weights_linear();
-  bool init_matching_weights_sqpoly();
-  bool init_matching_weights_cubicpoly();
-  bool init_matching_weights_exp();
-  bool init_matching_weights_log();
-  bool init_matching_weights_external();
+  bool init_block_weights();
+  bool init_block_weights_from_wd();
+  bool init_block_weights_from_wd_external();
+  bool init_block_weights_const();
+  bool init_block_weights_linear();
+  bool init_block_weights_sqpoly();
+  bool init_block_weights_cubicpoly();
+  bool init_block_weights_exp();
+  bool init_block_weights_log();
+  bool init_block_weights_external();
 
   bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
@@ -265,10 +270,10 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
   bool block_computation;
   bool use_normalization ;
   
-  INT num_matching_weights_external;
-  DREAL* matching_weights_external;
+  INT num_block_weights_external;
+  DREAL* block_weights_external;
 
-  DREAL* matching_weights;
+  DREAL* block_weights;
   EWDKernType type;
   INT which_degree;
   
