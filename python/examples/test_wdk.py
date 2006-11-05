@@ -16,25 +16,37 @@ ex3 += 'ACTGAAGAAGATCTGAATAAATTTGAGTCTCTTACCATGGGGGCAAAGAAGAAGCTCAAG'
 XT = transpose([ex1,ex2,ex3])
 
 trainfeat = CharFeatures(XT,DNA)
-weights = arange(1,degree+1,dtype=double)[::-1]/sum(arange(1,degree+1,dtype=double))
-print weights
-wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, 10, weights, block_computation=False, use_normalization=False)
+
+wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree)
 K = mat(wdk.get_kernel_matrix())
 print K
 
 weights = arange(1,degree+1,dtype=double)[::-1]/sum(arange(1,degree+1,dtype=double))
-wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, 10, weights, block_computation=True, use_normalization=False)
+wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree, weights=weights)
+K = mat(wdk.get_kernel_matrix())
+print K
+
+wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree, block_computation=False, use_normalization=False)
+K = mat(wdk.get_kernel_matrix())
+print K
+
+weights = arange(1,degree+1,dtype=double)[::-1]/sum(arange(1,degree+1,dtype=double))
+wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree, block_computation=False, use_normalization=False, weights=weights)
+K = mat(wdk.get_kernel_matrix())
+print K
+
+weights = arange(1,degree+1,dtype=double)[::-1]/sum(arange(1,degree+1,dtype=double))
+wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree, block_computation=True, use_normalization=False, weights=weights)
 K = mat(wdk.get_kernel_matrix())
 print K
 
 weights = arange(1,degree+1,dtype=double)
-print weights
-wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, 10, weights, block_computation=False, use_normalization=False)
+wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree, block_computation=False, use_normalization=False, weights=weights)
 K = mat(wdk.get_kernel_matrix())
 print K
 
 weights = arange(1,degree+1,dtype=double)
-wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, 10, weights, block_computation=True, use_normalization=False)
+wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree, block_computation=True, use_normalization=False, weights=weights)
 K = mat(wdk.get_kernel_matrix())
 print K
 

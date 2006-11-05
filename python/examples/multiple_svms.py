@@ -16,7 +16,7 @@ kernelList = [None]*20
 for i in range(20):
 	traindatList[i] = RealFeatures(randn(5,200))
 	trainlabList[i] = Labels(concatenate((-ones(100), ones(100))))
-	kernelList[i] = GaussianKernel(traindatList[i], traindatList[i], 10,1)
+	kernelList[i] = GaussianKernel(traindatList[i], traindatList[i],1)
 	svmList[i] = SVMLight(10, kernelList[i], trainlabList[i])
 
 for i in range(20):

@@ -19,7 +19,7 @@ CGaussianKernel::CGaussianKernel(INT size, double w)
 {
 }
 
-CGaussianKernel::CGaussianKernel(CRealFeatures* l, CRealFeatures* r, INT size, double w)
+CGaussianKernel::CGaussianKernel(CRealFeatures* l, CRealFeatures* r, double w, INT size)
   : CSimpleKernel<DREAL>(size),width(w)
 {
 	init(l,r, true);

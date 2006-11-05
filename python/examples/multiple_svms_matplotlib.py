@@ -27,7 +27,7 @@ for i in range(num_svms):
 	trainfeatList[i] = RealFeatures(traindatList[i])
 	trainlabList[i] = Labels(concatenate((-ones(num_dat), ones(num_dat))))
 	trainlabsList[i] = concatenate((-ones(num_dat), ones(num_dat)))
-	kernelList[i] = GaussianKernel(trainfeatList[i], trainfeatList[i], 10, width)
+	kernelList[i] = GaussianKernel(trainfeatList[i], trainfeatList[i], width)
 	svmList[i] = SVMLight(10, kernelList[i], trainlabList[i])
 
 for i in range(num_svms):
@@ -40,8 +40,7 @@ for i in range(num_svms):
 	x2=linspace(1.2*min(traindatList[i][1]),1.2*max(traindatList[i][1]), 50)
 	x,y=meshgrid(x1,x2);
 	testdat=RealFeatures(array((ravel(x), ravel(y))))
-	k=GaussianKernel(trainfeatList[i], testdat, 10, width)
-	currentSVM.set_kernel(k)
+	kernelList[i].init(trainfeatList[i], testdat, True)
 	l = currentSVM.classify()
 	z = currentSVM.classify().get_labels().reshape((50,50))
 	subplot(num_svms/2,2,i+1)
