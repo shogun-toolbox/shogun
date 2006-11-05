@@ -474,6 +474,12 @@ void CTrie::destroy()
 	}
 }
 
+void CTrie::set_degree(INT d)
+{
+	delete_trees(get_use_compact_terminal_nodes());
+	degree=d;
+}
+
 void CTrie::create(INT len, INT p_use_compact_terminal_nodes)
 {
 	if (trees)

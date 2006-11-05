@@ -4,6 +4,7 @@ from shogun.Features import *
 from shogun.SVM import *
 from shogun.Kernel import *
 
+degree=20
 num_dat=50
 len=70
 acgt=array(['A','C','G','T'])
@@ -28,26 +29,16 @@ testfeat = CharFeatures(tedat,DNA)
 testlab = Labels(telab)
 
 #train svm
-weights=ones(20,dtype=double)
-wdk=WeightedDegreeCharKernel(trainfeat,trainfeat, 10, weights)
+wdk=WeightedDegreeCharKernel(trainfeat,trainfeat, degree)
 svm = SVMLight(10, wdk, trainlab)
-#svm.set_linadd_enabled(True)
-#svm.set_linadd_enabled(False)
-svm.set_batch_computation_enabled(True)
-#svm.set_batch_computation_enabled(False)
 svm.train()
 print svm.get_num_support_vectors()
-#svm.init_kernel_optimization()
-#svm.set_linadd_enabled(False)
 trainout=svm.classify().get_labels()
 svs=[ (svm.get_alpha(i),svm.get_support_vector(i)) for i in range(svm.get_num_support_vectors())]
+
 #test
-#wdk_test=WeightedDegreeCharKernel(trainfeat,testfeat, 10, weights)
-#svm.set_kernel(wdk_test)
-#svm.init_kernel_optimization()
-wdk.init(trainfeat,testfeat, True)
+wdk.init(trainfeat,testfeat, False)
 testout=svm.classify().get_labels()
 
-k=wdk.get_kernel_matrix()
 print trainout
 print testout

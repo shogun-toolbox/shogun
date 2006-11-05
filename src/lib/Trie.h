@@ -79,6 +79,7 @@ public:
 	INT find_deepest_node(INT start_node, INT &deepest_node) const ;
 	void display_node(INT node) const ;
 	void destroy() ;
+	void set_degree(INT d);
 	void create(INT len, INT p_use_compact_terminal_nodes=true) ;
 	void delete_trees(INT p_use_compact_terminal_nodes=true);
 	void add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights, bool degree_times_position_weights) ;

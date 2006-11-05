@@ -24,7 +24,7 @@ CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(INT size, EWDKernType typ, 
 	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), 
 	  block_computation(block), use_normalization(use_norm), 
 	  num_block_weights_external(0), block_weights_external(NULL), block_weights(NULL),
-	  type(typ), which_degree(which_deg), tries(0,max_mismatch_==0), tree_initialized(false)
+	  type(typ), which_degree(which_deg), tries(deg,max_mismatch_==0), tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
@@ -586,11 +586,12 @@ DREAL CWeightedDegreeCharKernel::compute_by_tree(INT idx)
 	INT len ;
 	bool free ;
 	CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(idx, len, free);
+	ASSERT(char_vec && len>0);
 	INT *vec = new INT[len] ;
 	
 	for (INT i=0; i<len; i++)
 		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
-	
+
 	DREAL sum=0 ;
 	for (INT i=0; i<len; i++)
 		sum += tries.compute_by_tree_helper(vec, len, i, i, i, weights, (length!=0));
@@ -687,6 +688,7 @@ bool CWeightedDegreeCharKernel::set_weights(DREAL* ws, INT d, INT len)
 {
 	CIO::message(M_DEBUG, "degree = %i  d=%i\n", degree, d) ;
 	degree = d ;
+	tries.set_degree(d);
 	length=len;
 	
 	if (len == 0)

@@ -185,18 +185,20 @@ bool CSVM::save(FILE* modelfl)
 
 bool CSVM::init_kernel_optimization()
 {
-	if (get_kernel() && get_kernel()->has_property(KP_LINADD) && get_num_support_vectors())
-	{
-		INT * sv_idx    = new INT[get_num_support_vectors()] ;
-		DREAL* sv_weight = new DREAL[get_num_support_vectors()] ;
+	INT num_sv=get_num_support_vectors();
 
-		for(INT i=0; i<get_num_support_vectors(); i++)
+	if (get_kernel() && get_kernel()->has_property(KP_LINADD) && num_sv>0)
+	{
+		INT * sv_idx    = new INT[num_sv] ;
+		DREAL* sv_weight = new DREAL[num_sv] ;
+
+		for(INT i=0; i<num_sv; i++)
 		{
 			sv_idx[i]    = get_support_vector(i) ;
 			sv_weight[i] = get_alpha(i) ;
 		}
 
-		bool ret = kernel->init_optimization(get_num_support_vectors(), sv_idx, sv_weight) ;
+		bool ret = kernel->init_optimization(num_sv, sv_idx, sv_weight) ;
 
 		delete[] sv_idx ;
 		delete[] sv_weight ;
@@ -206,6 +208,8 @@ bool CSVM::init_kernel_optimization()
 
 		return ret;
 	}
+	else
+		CIO::message(M_ERROR, "initialization of kernel optimization failed\n") ;
 
 	return false;
 }
