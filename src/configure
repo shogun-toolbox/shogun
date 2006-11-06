@@ -1742,7 +1742,7 @@ set_opts()
 		if matlab -nodisplay -r 'version;quit' >/dev/null 2>&1
 		then
 			 echores "`matlab -nodisplay -r \"sprintf('ver:%s',version),quit\" | grep '^ver:' | cut -f '2-' -d ':'`"
-			 MATLAB_DIR=`echo '!echo $MATLAB' | matlab -nodisplay`
+			 MATLAB_DIR=`echo '!env' | matlab -nodisplay | grep '^MATLAB=' | cut -c 8-`
 			 MATLAB_INCDIR="$MATLAB_DIR/extern/include"
 			 MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
 			 MATLAB_BINDIR="$MATLAB_DIR/bin"
@@ -1781,6 +1781,7 @@ set_opts()
 				INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
 				TARGET="sg.mexa64"
 			elif x86
+			then
 				LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,$MATLAB_LIBDIR/glnx86/mexFunction.map -Wl,--rpath-link,$MATLAB_BINDIR/glnx86,--rpath-link,$MATLAB_BINDIR/glnx86 -lmx -lmex -lmat"
 				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/matlab/extern/include/"
 				TARGET="sg.mexglx"
