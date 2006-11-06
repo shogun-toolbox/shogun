@@ -1,7 +1,7 @@
 rand('seed',17);
 %sequence lengths, number of sequences
-len=10;
-num_train=20;
+len=200;
+num_train=500;
 num_test=500;
 num_a=2;
 aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
@@ -40,7 +40,9 @@ sg('send_command', 'loglevel ALL');
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
+%sg('set_WD_position_weights', ones(1,100)/100) ;
 sg('send_command', 'init_kernel TRAIN');
+%sg('set_WD_position_weights', ones(1,200)/200) ;
 sg('send_command', 'new_svm LIGHT');
 sg('send_command', sprintf('c %f',C));
 tic;sg('send_command', 'svm_train');toc;

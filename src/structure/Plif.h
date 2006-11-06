@@ -76,6 +76,7 @@ public:
 		return use_svm ;
 	}
 
+	// for swig use set_plif_len, set_plif_limits, set_plif_penalty
 	void set_plif(INT p_len, DREAL *p_limits, DREAL* p_penalties) 
 	{
 		len=p_len ;
@@ -93,6 +94,50 @@ public:
 			limits[i]=p_limits[i] ;
 			penalties[i]=p_penalties[i] ;
 		}
+
+		penalty_clear_derivative(false) ;
+	}
+
+	void set_plif_length(INT p_len) 
+	{
+		if (len!=p_len)
+		{
+			len=p_len ;
+			delete[] limits ;
+			delete[] penalties ;
+			delete[] cum_derivatives ;
+			limits=new DREAL[len] ;
+			penalties=new DREAL[len] ;
+			cum_derivatives=new DREAL[len] ;
+		}
+		delete[] cache ;
+		cache=NULL ;
+		for (INT i=0; i<len; i++)
+		{
+			limits[i]=0.0 ;
+			penalties[i]=0.0 ;
+		}
+		penalty_clear_derivative(false) ;
+	}
+
+	void set_plif_limits(DREAL *p_limits, INT p_len) 
+	{
+		delete[] cache ;
+		cache=NULL ;
+
+		for (INT i=0; i<len; i++)
+			limits[i]=p_limits[i] ;
+
+		penalty_clear_derivative(false) ;
+	}
+
+	void set_plif_penalty(DREAL *p_penalties, INT p_len) 
+	{
+		delete[] cache ;
+		cache=NULL ;
+
+		for (INT i=0; i<len; i++)
+			penalties[i]=p_penalties[i] ;
 
 		penalty_clear_derivative(false) ;
 	}

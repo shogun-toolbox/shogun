@@ -627,8 +627,6 @@ void CWeightedDegreeCharKernel::compute_by_tree(INT idx, DREAL* LevelContrib)
 	delete[] vec ;
 }
 
-
-
 DREAL *CWeightedDegreeCharKernel::compute_abs_weights(int &len) 
 {
 	return tries.compute_abs_weights(len) ;
