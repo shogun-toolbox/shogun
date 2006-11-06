@@ -395,6 +395,15 @@ echores() {
   echo "$@"
 }
 
+mangle_homedir_tilde() {
+	if test `echo "$1" | head -c 1` == '~'
+	then
+		echo "$1" | sed -e "s#\~#$HOME#g"
+	else
+		echo "$1"
+	fi
+}
+
 for parm in "$@" ; do
   if test "$parm" = "--help" || test "$parm" = "-help" || test "$parm" = "-h" ; then
     cat << EOF
@@ -500,7 +509,7 @@ for ac_option do
 	LINKFLAGS="$_ld_extra $LINKFLAGS "
     ;;
   --install-path=*)
-    _install=`echo $ac_option | cut -d '=' -f 2 | sed 's/\/$//'`"/install"
+    _install=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2 | sed 's/\/$//'`/install")
     ;;
   --disable-python)		_python=no	;;
   --enable-python)		_python=yes	;;
@@ -549,25 +558,25 @@ for ac_option do
   --disable-profile) 	_profile=no ;;
   --enable-profile) 	_profile=yes ;;
   --prefix=*)
-    _prefix=`echo $ac_option | cut -d '=' -f 2`
+    _prefix=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
   --bindir=*)
-    _bindir=`echo $ac_option | cut -d '=' -f 2`
+    _bindir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
   --datadir=*)
-    _datadir=`echo $ac_option | cut -d '=' -f 2`
+    _datadir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
   --mandir=*)
-    _mandir=`echo $ac_option | cut -d '=' -f 2`
+    _mandir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
   --confdir=*)
-    _confdir=`echo $ac_option | cut -d '=' -f 2`
+    _confdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
   --libdir=*)
-    _libdir=`echo $ac_option | cut -d '=' -f 2`
+    _libdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
   --pydir=*)
-    _pydir=`echo $ac_option | cut -d '=' -f 2`
+    _pydir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
 
   *)
