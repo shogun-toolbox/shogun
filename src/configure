@@ -1782,8 +1782,8 @@ set_opts()
 				TARGET="sg.mexa64"
 			elif x86
 			then
-				LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,$MATLAB_LIBDIR/glnx86/mexFunction.map -Wl,--rpath-link,$MATLAB_BINDIR/glnx86,--rpath-link,$MATLAB_BINDIR/glnx86 -lmx -lmex -lmat"
-				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/matlab/extern/include/"
+				LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,$MATLAB_LIBDIR/glnx86/mexFunction.map -Wl,--rpath-link,$MATLAB_LIBDIR/glnx86 -L$MATLAB_BINDIR/glnx86 -lmx -lmex -lmat"
+				INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
 				TARGET="sg.mexglx"
 			else
 				die "matlab only supports x86_84 and x86 linux architectures"
@@ -1791,6 +1791,19 @@ set_opts()
 		else
 			die "non supported matlab architecture"
 		fi
+	fi
+
+	echocheck "Matlab developer support (-lmx -lmex -lmat)"
+cat > $TMPC << EOF
+#include <mex.h>
+int main(void) { return 0; }
+EOF
+	if cc_check
+	then
+		echores "yes"
+	else
+		echores "no"
+		exit 1
 	fi
 
 cat > $TMPC << EOF
