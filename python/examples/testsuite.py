@@ -1,8 +1,7 @@
 #!/usr/bin/python
 
-
-# A testsuite for the Kernels 
 #
+# A testsuite for the Kernels 
 #
 
 import unittest as ut
@@ -15,6 +14,9 @@ from numpy import *
 from numpy.random import *
 
 class TestKernels(ut.TestCase):
+   """
+
+   """
    
    def setUp(self):
       num_dat=50
@@ -61,7 +63,10 @@ class TestKernels(ut.TestCase):
       pass
    
    def testChi2Kernel(self):
-      pass
+      #chi2k=Chi2Kernel(self.real_feat,self.real_feat, 1)
+      #chi2k.get_kernel_type == K_CHI2
+      #km = chi2k.get_kernel_matrix()
+      #print km
    
    def testCombinedKernel(self):
       pass
@@ -90,7 +95,6 @@ class TestKernels(ut.TestCase):
    def testGaussianKernel(self):
       gk=GaussianKernel(self.real_feat,self.real_feat, 1)
       km = gk.get_kernel_matrix()
-      print km
       
    def testHammingWordKernel(self):
       pass
@@ -111,7 +115,7 @@ class TestKernels(ut.TestCase):
       lk = LinearKernel(self.real_feat,self.real_feat,1)
       lk.get_kernel_type == K_LINEAR
       km = lk.get_kernel_matrix()
-      lk.cleanup
+      lk.cleanup()
       
    def testLinearWordKernel(self):
       pass
@@ -129,7 +133,7 @@ class TestKernels(ut.TestCase):
       pk = PolyKernel(self.real_feat,self.real_feat,1,2,True,True)
       pk.get_kernel_type = K_POLY
       km = pk.get_kernel_matrix()
-      pk.cleanup
+      pk.cleanup()
 
       
    def testPolyMatchCharKernel(self):
@@ -142,7 +146,10 @@ class TestKernels(ut.TestCase):
       pass
       
    def testSigmoidKernel(self):
-      pass
+      sk = SigmoidKernel(self.real_feat,self.real_feat,1,2.0,1.0)
+      sk.get_kernel_type = K_SIGMOID
+      km = sk.get_kernel_matrix()
+      sk.cleanup()
       
    def testSimpleLocalityImprovedCharKernel(self):
       pass
@@ -176,6 +183,16 @@ class TestKernels(ut.TestCase):
 
    def tearDown(self):
       pass
+
+
+class ClassifierTest(ut.TestCase):
+
+   def setUp():
+      pass
+
+   def tearDown():
+      pass
+
 
 if __name__ == '__main__': 
    ut.main()
