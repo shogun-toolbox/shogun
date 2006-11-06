@@ -13,7 +13,6 @@
 #include "lib/io.h"
 #include "kernel/PolyKernel.h"
 #include "features/Features.h"
-#include "features/RealFeatures.h"
 
 #ifdef HAVE_LAPACK
 extern "C" {
@@ -26,6 +25,15 @@ CPolyKernel::CPolyKernel(LONG size, INT d, bool inhom, bool use_norm)
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
 {
 }
+
+
+CPolyKernel::CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT size, INT d, bool inhom, bool use_norm)
+  : CSimpleKernel<DREAL>(size),degree(d),inhomogene(inhom),
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
+{
+	init(l,r, true);
+}
+
 
 CPolyKernel::~CPolyKernel() 
 {

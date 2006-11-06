@@ -28,6 +28,12 @@ CLinearKernel::CLinearKernel(LONG size, bool do_rescale_, DREAL scale_)
 	properties |= KP_LINADD;
 }
 
+CLinearKernel::CLinearKernel(CRealFeatures* l, CRealFeatures* r, INT size, bool do_rescale_, DREAL scale_)
+  : CSimpleKernel<DREAL>(size),scale(scale_),do_rescale(do_rescale_), normal(NULL)
+{
+	init(l,r, true);
+}
+
 CLinearKernel::~CLinearKernel() 
 {
 	cleanup();

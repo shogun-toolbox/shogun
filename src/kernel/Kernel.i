@@ -22,6 +22,7 @@
 
 
 %include "kernel/Kernel.h"
+%include "kernel/SimpleKernel.i"
 %include "kernel/AUCKernel.i"
 %include "kernel/PolyKernel.i"
 %include "kernel/LinearKernel.i"

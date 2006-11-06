@@ -19,6 +19,8 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 {
  public:
   CLinearKernel(LONG size, bool do_rescale=true, DREAL scale=1.0);
+  CLinearKernel(CRealFeatures* l, CRealFeatures* r, INT size, bool do_rescale=true, DREAL scale=1.0);
+
   virtual ~CLinearKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);

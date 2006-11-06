@@ -13,11 +13,16 @@
 
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
+#include "features/RealFeatures.h"
 
 class CPolyKernel: public CSimpleKernel<DREAL>
 {
  public:
-  CPolyKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);
+
+  CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT size, INT d, bool inhom, bool use_norm);
+
+  CPolyKernel(LONG size, INT degree, bool inhomogene=true, bool use_normalization=true);
+
   ~CPolyKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
