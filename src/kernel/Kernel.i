@@ -26,6 +26,10 @@
 %include "kernel/AUCKernel.i"
 %include "kernel/PolyKernel.i"
 %include "kernel/LinearKernel.i"
+
+%include "kernel/Chi2Kernel.i"
+%include "kernel/SigmoidKernel.i"
+
 %include "kernel/GaussianKernel.i"
 %include "kernel/WeightedDegreeCharKernel.i" 
 %include "kernel/ConstKernel.i" 

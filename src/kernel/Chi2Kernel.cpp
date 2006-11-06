@@ -19,6 +19,12 @@ CChi2Kernel::CChi2Kernel(LONG size)
 {
 }
 
+CChi2Kernel::CChi2Kernel(CRealFeatures* l, CRealFeatures* r, INT size)
+  : CSimpleKernel<DREAL>(size)
+{
+	init(l,r, true);
+}
+
 CChi2Kernel::~CChi2Kernel() 
 {
 	cleanup();

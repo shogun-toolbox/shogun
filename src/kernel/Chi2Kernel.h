@@ -13,11 +13,16 @@
 
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
+#include "features/Features.h"
+#include "features/RealFeatures.h"
 
 class CChi2Kernel: public CSimpleKernel<DREAL>
 {
  public:
   CChi2Kernel(LONG size);
+
+  CChi2Kernel(CRealFeatures* l, CRealFeatures* r, INT size);
+
   ~CChi2Kernel();
   
   virtual bool init(CFeatures* l, CFeatures* r, bool do_init);

@@ -26,6 +26,13 @@ CSigmoidKernel::CSigmoidKernel(LONG size, DREAL g, DREAL c)
 {
 }
 
+CSigmoidKernel::CSigmoidKernel(CRealFeatures* l, CRealFeatures* r, INT size, DREAL g, DREAL c)
+  : CSimpleKernel<DREAL>(size),gamma(g), coef0(c)
+
+{
+	init(l,r, true);
+}
+
 CSigmoidKernel::~CSigmoidKernel() 
 {
 	cleanup();
