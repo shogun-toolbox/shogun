@@ -1788,6 +1788,11 @@ set_opts()
 			else
 				die "matlab only supports x86_84 and x86 linux architectures"
 			fi
+		elif cygwin
+		then
+			LINKFLAGS="$LINKFLAGS -shared -mno-cygwin -Wl,--version-script,$MATLAB_LIBDIR/win32/mexFunction.def -Wl,--rpath-link,$MATLAB_LIBDIR/win32 -L$MATLAB_BINDIR/win32 -lmx -lmex -lmat"
+			INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
+			TARGET="sg.dll"
 		else
 			die "non supported matlab architecture"
 		fi
