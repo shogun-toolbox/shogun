@@ -577,6 +577,19 @@ for ac_option do
   esac
 done
 
+
+#gui interfaces are exclusive or
+test "$_R" = yes -a "$_python" = yes && die "only one of --enable-R or --enable-python can be used"
+test "$_R" = yes -a "$_matlab" = yes && die "only one of --enable-R or --enable-matlab can be used"
+test "$_R" = yes -a "$_octave" = yes && die "only one of --enable-R or --enable-octave can be used"
+test "$_python" = yes -a "$_matlab" = yes && die "only one of --enable-python or --enable-matlab can be used"
+test "$_python" = yes -a "$_octave" = yes && die "only one of --enable-python or --enable-octave can be used"
+test "$_matlab" = yes -a "$_octave" = yes && die "only one of --enable-matlab or --enable-octave can be used"
+
+#test for swig+python
+test "$_swig" = yes -a "$_python" = no && die "--enable-swig requires --enable-python"
+
+#set install dirs
 test -z "$_bindir" && _bindir="$_prefix/bin"
 test -z "$_datadir" && _datadir="$_prefix/share/shogun"
 test -z "$_mandir" && _mandir="$_prefix/man"
