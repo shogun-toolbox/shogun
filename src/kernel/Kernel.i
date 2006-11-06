@@ -22,8 +22,9 @@
 
 
 %include "kernel/Kernel.h"
-
 %include "kernel/AUCKernel.i"
+%include "kernel/PolyKernel.i"
+%include "kernel/LinearKernel.i"
 %include "kernel/GaussianKernel.i"
 %include "kernel/WeightedDegreeCharKernel.i" 
 %include "kernel/ConstKernel.i" 
