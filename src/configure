@@ -1742,6 +1742,10 @@ set_opts()
 		if matlab -nodisplay -r 'version;quit' >/dev/null 2>&1
 		then
 			 echores "`matlab -nodisplay -r \"sprintf('ver:%s',version),quit\" | grep '^ver:' | cut -f '2-' -d ':'`"
+			 MATLAB_DIR=`echo '!echo $MATLAB' | matlab -nodisplay`
+			 MATLAB_INCDIR="$MATLAB_DIR/extern/include"
+			 MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
+			 MATLAB_BINDIR="$MATLAB_DIR/bin"
 		else
 			echores "no"
 			exit 1
@@ -1754,14 +1758,12 @@ set_opts()
 
 		if osf1
 		then
-			LINKFLAGS="$LINKFLAGS -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*'"
-			add_library_path "Matlab(tm)" "/opt/matlab-6.5-13/bin/alpha"
-			LINKFLAGS="$LINKFLAGS -lmx -lmex -lmat $LINKFLAGS"
-			TARGET="sg.mexaxp"
-			add_include_path "Matlab(tm)" "/opt/matlab-6.5-13/extern/include"
 			DEFINES="$DEFINES -DMATLAB_MEX_FILE"
-			COMPFLAGS_CPP="$COMPFLAGS_CPP -shared -ieee -std1"
 			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -std1"
+			COMPFLAGS_CPP="$COMPFLAGS_CPP -shared -ieee -std1"
+			LINKFLAGS="$LINKFLAGS -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*' -L$MATLAB_BINDIR/alpha -lmx -lmex -lmat"
+			INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
+			TARGET="sg.mexaxp"
 		elif darwin
 		then
 			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace"
@@ -1771,32 +1773,22 @@ set_opts()
 			TARGET="sg.mexmac"
 		elif linux
 		then
-			case "$host_arch" in
-			  x86_64|amd64)
+			if x86_64
+			then
 				COMPFLAGS_C="$COMPFLAGS_C -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
 				COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
-				LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,/fml/ag-raetsch/share/software/matlab/extern/lib/glnxa64/mexFunction.map -Wl,--rpath-link,/fml/ag-raetsch/share/software/matlab/bin/glnxa64 -L/fml/ag-raetsch/share/software/matlab/bin/glnxa64 -lmx -lmex -lmat -lstdc++"
-				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/matlab/extern/include/"
+				LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,$MATLAB_LIBDIR/glnxa64/mexFunction.map -Wl,--rpath-link,$MATLAB_BINDIR/glnxa64 -L$MATLAB_BINDIR/glnxa64 -lmx -lmex -lmat"
+				INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
 				TARGET="sg.mexa64"
-			  ;;
-			  *)
-
-			  if test -d /fml/ag-raetsch/share/software/matlab/extern/include
-			  then
-				  LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,/fml/ag-raetsch/share/software/matlab/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/fml/ag-raetsch/share/software/matlab/extern/lib/glnx86,--rpath-link,/fml/ag-raetsch/share/software/matlab/bin/glnx86 -L/fml/ag-raetsch/share/software/matlab/bin/glnx86 -lmx -lmex -lmat"
-				  INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/matlab/extern/include/"
-				  TARGET="sg.mexglx"
-			  else
-				  LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
-				  INCLUDES="$INCLUDES -I/home/matrix/matlab/extern/include/"
-				  TARGET="sg.mexglx"
-			  fi
-				;;
-			esac
+			elif x86
+				LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,$MATLAB_LIBDIR/glnx86/mexFunction.map -Wl,--rpath-link,$MATLAB_BINDIR/glnx86,--rpath-link,$MATLAB_BINDIR/glnx86 -lmx -lmex -lmat"
+				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/matlab/extern/include/"
+				TARGET="sg.mexglx"
+			else
+				die "matlab only supports x86_84 and x86 linux architectures"
+			fi
 		else
-			LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,/home/matrix/matlab6.5/extern/lib/glnx86/mexFunction.map -Wl,--rpath-link,/home/matrix/matlab6.5/extern/lib/glnx86,--rpath-link,/home/matrix/matlab6.5/bin/glnx86 -L/home/matrix/matlab6.5/bin/glnx86 -lmx -lmex -lmat"
-			INCLUDES="$INCLUDES -I/home/matrix/matlab/extern/include/"
-			TARGET="sg.mexglx"
+			die "non supported matlab architecture"
 		fi
 	fi
 
