@@ -1796,19 +1796,19 @@ set_opts()
 		else
 			die "non supported matlab architecture"
 		fi
-	fi
 
-	echocheck "Matlab developer support (-lmx -lmex -lmat)"
+		echocheck "Matlab developer support (-lmx -lmex -lmat)"
 cat > $TMPC << EOF
 #include <mex.h>
 int main(void) { return 0; }
 EOF
-	if cc_check
-	then
-		echores "yes"
-	else
-		echores "no"
-		exit 1
+		if cc_check
+		then
+			echores "yes"
+		else
+			echores "no"
+			exit 1
+		fi
 	fi
 
 cat > $TMPC << EOF
