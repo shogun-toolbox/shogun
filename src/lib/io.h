@@ -39,6 +39,9 @@ public:
 	static void buffered_message(EMessageType prio, const CHAR *fmt, ... );
 	static CHAR* skip_spaces(CHAR* str);
 
+	static EMessageType loglevel;
+	static const EMessageType levels[NUM_LOG_LEVELS];
+
 protected:
 	static void check_target();
 
@@ -50,9 +53,9 @@ protected:
 	static LONG last_progress_time, progress_start_time ;
 	static DREAL last_progress ;
 
-	static EMessageType loglevel;
-	const static char* message_strings[NUM_LOG_LEVELS];
-	const static EMessageType levels[NUM_LOG_LEVELS];
+	//const static char* message_strings[NUM_LOG_LEVELS];
+	//const static EMessageType levels[NUM_LOG_LEVELS];
+	static const char* message_strings[NUM_LOG_LEVELS];
 };
 
 //#define ASSERT(x) 
