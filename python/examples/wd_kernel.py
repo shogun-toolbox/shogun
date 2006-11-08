@@ -5,7 +5,7 @@ from shogun.SVM import *
 from shogun.Kernel import *
 
 degree=20
-num_dat=500
+num_dat=50
 len=70
 acgt=array(['A','C','G','T'])
 
@@ -45,6 +45,9 @@ testout=svm.classify().get_labels()
 errors=0 ;
 for i in range(2*num_dat):
   if testout[i]*telab[i]<0: errors = errors + 1 
+
+print "\n"
+print errors
   
-print trainout
+#print trainout
 print testout
