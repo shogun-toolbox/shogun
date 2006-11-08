@@ -396,7 +396,7 @@ echores() {
 }
 
 mangle_homedir_tilde() {
-	if test `echo "$1" | head -c 1` == '~'
+	if test `echo "$1" | head -c 1` = '~'
 	then
 		echo "$1" | sed -e "s#\~#$HOME#g"
 	else
