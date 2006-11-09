@@ -2797,31 +2797,69 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 
 	  get_kernel()->clear_normal();
 
-	  //For now always use SLOWBUTMEMEFFICIENT, TODO: make use of faster batch_computation,
-	  //if kernel supports it
-	  EOptimizationType opt_type_backup=get_kernel()->get_optimization_type();
-	  get_kernel()->set_optimization_type(SLOWBUTMEMEFFICIENT);
-
-	  INT num_modified=0;
-	  for(i=0;i<totdoc;i++) {
-		  if(a[i] != a_old[i]) {
-			  get_kernel()->add_to_normal(docs[i], ((a[i]-a_old[i])*(double)label[i]));
-			  a_old[i]=a[i];
-			  num_modified++;
-		  }
-	  }
-
-	  if (num_modified>0)
+	  if (!use_batch_computation || !use_linadd ||
+		  !get_kernel()->has_property(KP_LINADD) ||
+		  !get_kernel()->has_property(KP_BATCHEVALUATION))
 	  {
-		  for(i=0;i<totdoc;i++) {
-			  if(!shrink_state->active[i]) {
-				  lin[i]=shrink_state->last_lin[i]+get_kernel()->compute_optimized(docs[i]);
+		  //For now always use SLOWBUTMEMEFFICIENT, TODO: make use of faster batch_computation,
+		  //if kernel supports it
+		  EOptimizationType opt_type_backup=get_kernel()->get_optimization_type();
+		  get_kernel()->set_optimization_type(SLOWBUTMEMEFFICIENT);
+		  
+		  INT num_modified=0;
+		  for(INT i=0;i<totdoc;i++) {
+			  if(a[i] != a_old[i]) {
+				  get_kernel()->add_to_normal(docs[i], ((a[i]-a_old[i])*(double)label[i]));
+				  a_old[i]=a[i];
+				  num_modified++;
 			  }
-			  shrink_state->last_lin[i]=lin[i];
+		  }
+		  
+		  if (num_modified>0)
+		  {
+			  for(INT i=0;i<totdoc;i++) {
+				  if(!shrink_state->active[i]) {
+					  lin[i] = shrink_state->last_lin[i]+get_kernel()->compute_optimized(docs[i]);
+				  }
+				  shrink_state->last_lin[i]=lin[i];
+			  }
+		  }
+		  //reset optimization type & delete optimization
+		  get_kernel()->set_optimization_type(opt_type_backup);
+	  }
+	  else 
+	  {
+		  // TODO: only compute the inactive ones
+		  DREAL* target = NULL ;
+		  DREAL *alphas = new DREAL[totdoc] ;
+		  INT *idx = new INT[totdoc] ;
+		  INT num_suppvec=0 ;
+
+		  for (INT i=0; i<totdoc; i++)
+			  if(a[i] != a_old[i]) 
+			  {
+				  alphas[num_suppvec] = a[i]-a_old[i] ;
+				  idx[num_suppvec] = i ;
+				  a_old[i] = a[i] ;
+				  num_suppvec++ ;
+			  }
+
+		  INT num_vec = 0 ;
+		  target = get_kernel()->compute_batch(num_vec, target, num_suppvec, idx, alphas, 1.0);
+		  ASSERT(target!=NULL) ;
+		  ASSERT(num_vec=totdoc) ;
+		  
+		  if (num_suppvec>0)
+		  {
+			  for(INT i=0;i<totdoc;i++) {
+				  if(!shrink_state->active[i]) {
+					  lin[i] = shrink_state->last_lin[i] + target[i] ;
+				  }
+				  shrink_state->last_lin[i]=lin[i];
+			  }
 		  }
 	  }
-	  //reset optimization type & delete optimization
-	  get_kernel()->set_optimization_type(opt_type_backup);
+
 	  get_kernel()->delete_optimization();
   }
   else 
