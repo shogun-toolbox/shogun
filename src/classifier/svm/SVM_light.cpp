@@ -2801,11 +2801,6 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 		  !get_kernel()->has_property(KP_LINADD) ||
 		  !get_kernel()->has_property(KP_BATCHEVALUATION))
 	  {
-		  //For now always use SLOWBUTMEMEFFICIENT, TODO: make use of faster batch_computation,
-		  //if kernel supports it
-		  EOptimizationType opt_type_backup=get_kernel()->get_optimization_type();
-		  get_kernel()->set_optimization_type(SLOWBUTMEMEFFICIENT);
-		  
 		  INT num_modified=0;
 		  for(INT i=0;i<totdoc;i++) {
 			  if(a[i] != a_old[i]) {
@@ -2824,18 +2819,22 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 				  shrink_state->last_lin[i]=lin[i];
 			  }
 		  }
-		  //reset optimization type & delete optimization
-		  get_kernel()->set_optimization_type(opt_type_backup);
 	  }
 	  else 
 	  {
 		  // TODO: only compute the inactive ones
-		  DREAL* target = NULL ;
+		  DREAL* target = NULL;
 		  DREAL *alphas = new DREAL[totdoc] ;
 		  INT *idx = new INT[totdoc] ;
 		  INT num_suppvec=0 ;
 
+		  ASSERT(alphas);
+		  ASSERT(idx);
+
+		  memset(target, 0, sizeof(DREAL)*totdoc);
+
 		  for (INT i=0; i<totdoc; i++)
+		  {
 			  if(a[i] != a_old[i]) 
 			  {
 				  alphas[num_suppvec] = a[i]-a_old[i] ;
@@ -2843,21 +2842,25 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 				  a_old[i] = a[i] ;
 				  num_suppvec++ ;
 			  }
+		  }
 
-		  INT num_vec = 0 ;
-		  target = get_kernel()->compute_batch(num_vec, target, num_suppvec, idx, alphas, 1.0);
-		  ASSERT(target!=NULL) ;
-		  ASSERT(num_vec=totdoc) ;
-		  
 		  if (num_suppvec>0)
 		  {
+			  INT num_vec = 0 ;
+			  target = get_kernel()->compute_batch(num_vec, target, num_suppvec, idx, alphas, 1.0);
+			  ASSERT(target);
+			  ASSERT(num_vec=totdoc) ;
+
 			  for(INT i=0;i<totdoc;i++) {
 				  if(!shrink_state->active[i]) {
 					  lin[i] = shrink_state->last_lin[i] + target[i] ;
 				  }
 				  shrink_state->last_lin[i]=lin[i];
 			  }
+			  delete[] target;
 		  }
+		  delete[] alphas;
+		  delete[] idx;
 	  }
 
 	  get_kernel()->delete_optimization();
