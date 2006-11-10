@@ -968,6 +968,158 @@ DREAL* CWeightedDegreeCharKernel::compute_batch(INT& num_vec, DREAL* result, INT
 
 
 
+DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas)
+{
+    num_feat=((CCharFeatures*) get_rhs())->get_num_features();
+    ASSERT(num_feat>0);
+    ASSERT(((CCharFeatures*) get_rhs())->get_alphabet()->get_alphabet() == DNA);
+    num_sym=4; //for now works only w/ DNA
+
+    // === variables
+    INT* nofsKmers = new INT[ max_degree ];
+    DREAL** C = new DREAL*[ max_degree ];
+    DREAL** L = new DREAL*[ max_degree ];
+    DREAL** R = new DREAL*[ max_degree ];
+    INT i;
+    INT k;
+
+    // --- return table
+    INT bigtabSize = 0;
+    for( k = 0; k < max_degree; ++k ) {
+		nofsKmers[k] = (INT) pow( num_sym, k+1 );
+        const INT tabSize = nofsKmers[k] * num_feat;
+        bigtabSize += tabSize;
+    }
+    result= new DREAL[ bigtabSize ];
+	
+    // --- auxilliary tables
+    INT tabOffs=0;
+    for( k = 0; k < max_degree; ++k )
+    {
+		const INT tabSize = nofsKmers[k] * num_feat;
+		C[k] = &result[tabOffs];
+		L[k] = new DREAL[ tabSize ];
+		R[k] = new DREAL[ tabSize ];
+		tabOffs+=tabSize;
+		for(i = 0; i < tabSize; i++ )
+		{
+			C[k][i] = 0.0;
+			L[k][i] = 0.0;
+			R[k][i] = 0.0;
+		}
+    }
+	
+    // --- tree parsing info
+    DREAL* margFactors = new DREAL[ degree ];
+    INT* x = new INT[ degree+1 ];
+    INT* substrs = new INT[ degree+1 ];
+    // - fill arrays
+    margFactors[0] = 1.0;
+    substrs[0] = 0;
+    for( k=1; k < degree; ++k ) {
+		margFactors[k] = 0.25 * margFactors[k-1];
+		substrs[k] = -1;
+    }
+    substrs[degree] = -1;
+    // - fill struct
+    struct CTrie::TreeParseInfo info;
+    info.num_sym = num_sym;
+    info.num_feat = num_feat;
+    info.p = -1;
+    info.k = -1;
+    info.nofsKmers = nofsKmers;
+    info.margFactors = margFactors;
+    info.x = x;
+    info.substrs = substrs;
+    info.y0 = 0;
+    info.C_k = NULL;
+    info.L_k = NULL;
+    info.R_k = NULL;
+	
+	bool orig_use_compact_terminal_nodes = tries.get_use_compact_terminal_nodes() ;
+	tries.set_use_compact_terminal_nodes(false) ;
+	
+    // === main loop
+    i = 0; // total progress
+    for( k = 0; k < max_degree; ++k )
+    {
+		const INT nofKmers = nofsKmers[ k ];
+		info.C_k = C[k];
+		info.L_k = L[k];
+		info.R_k = R[k];
+		
+		// --- run over all trees
+		for(INT p = 0; p < num_feat; ++p )
+		{
+			init_optimization( num_suppvec, IDX, alphas, p );
+			INT tree = p ;
+			for(INT j = 0; j < degree+1; j++ ) {
+				x[j] = -1;
+			}
+			tries.traverse( tree, p, info, 0, x, k );
+			CIO::progress(i++,0,num_feat*max_degree);
+	}
+		
+		// --- add partial overlap scores
+		if( k > 0 ) {
+			const INT j = k - 1;
+			const INT nofJmers = (INT) pow( num_sym, j+1 );
+			for(INT p = 0; p < num_feat; ++p ) {
+				const INT offsetJ = nofJmers * p;
+				const INT offsetJ1 = nofJmers * (p+1);
+				const INT offsetK = nofKmers * p;
+				INT y;
+				INT sym;
+				for( y = 0; y < nofJmers; ++y ) {
+					for( sym = 0; sym < num_sym; ++sym ) {
+						const INT y_sym = num_sym*y + sym;
+						const INT sym_y = nofJmers*sym + y;
+						ASSERT( 0 <= y_sym && y_sym < nofKmers );
+						ASSERT( 0 <= sym_y && sym_y < nofKmers );
+						C[k][ y_sym + offsetK ] += L[j][ y + offsetJ ];
+						if( p < num_feat-1 ) {
+							C[k][ sym_y + offsetK ] += R[j][ y + offsetJ1 ];
+						}
+					}
+				}
+			}
+		}
+        //   if( k > 1 )
+        //     j = k-1
+        //     for all positions p
+        //       for all j-mers y
+        //          for n in {A,C,G,T}
+        //            C_k[ p, [y,n] ] += L_j[ p, y ]
+        //            C_k[ p, [n,y] ] += R_j[ p+1, y ]
+        //          end;
+        //       end;
+        //     end;
+        //   end;
+    }
+
+	tries.set_use_compact_terminal_nodes(orig_use_compact_terminal_nodes) ;
+	
+    // === return a vector
+    num_feat=1;
+    num_sym = bigtabSize;
+    // --- clean up
+    delete[] nofsKmers;
+    delete[] margFactors;
+    delete[] substrs;
+    delete[] x;
+    delete[] C;
+    for( k = 0; k < max_degree; ++k ) {
+		delete L[k];
+		delete R[k];
+    }
+    delete[] L;
+    delete[] R;
+    return result;
+}
+
+
+/*
+
 
 DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas)
 {
@@ -997,3 +1149,4 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 
 	return result;
 }
+*/
