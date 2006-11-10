@@ -67,6 +67,7 @@ COMPFLAGS_CPP=
 INCLUDES=-I${SRCDIR}
 LINK=c++
 LINKFLAGS=""
+POSTLINKFLAGS=""
 TARGET="shogun"
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
 #most defines are simply design bugs, use the ./configure --{disable,enable}-<options>
@@ -2107,6 +2108,12 @@ EOF
 		HAVE_SWIG='#define HAVE_SWIG 1'
 		USE_SWIG='yes'
 		test -n "$_pydir" || _pydir="$_libdir/`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
+
+		if cygwin
+		then
+			EXT_LIB_SWIG=dll
+			POSTLINKFLAGS=$LINKFLAGS
+		fi
 	else
 		USE_SWIG='no'
 	fi
@@ -2211,6 +2218,7 @@ COMPFLAGS_CPP	= ${COMPFLAGS_CPP}
 INCLUDES		= ${INCLUDES}
 LINK			= ${LINK}
 LINKFLAGS 		= ${LINKFLAGS}
+POSTLINKFLAGS 		= ${POSTLINKFLAGS}
 PREFIX			= ${_prefix}
 DESTDIR			= ${_destdir}
 BINDIR			= ${_bindir}
@@ -2279,7 +2287,7 @@ $USE_W_TIMING
 #define TARGET "$TARGET"
 #define COMPFLAGS_C	"$COMPFLAGS_C"
 #define COMPFLAGS_CPP "$COMPFLAGS_CPP"
-#define LINKFLAGS "$COMPFLAGS_CPP"
+#define LINKFLAGS "$LINKFLAGS"
 EOF
 }
 

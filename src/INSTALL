@@ -10,6 +10,8 @@ Just running ./configure will compile a stand-a-lone version.
 
 See ./configure --help for additional options.
 
+If this does not work for you, see the SPECIFIC BUILD INSTRUCTIONS below
+
 
 SPECIAL FEATURES
 
@@ -19,19 +21,199 @@ to issue configure with ./configure --enable-<interface> --enable-cplex
 
 REQUIREMENTS
 
+Apart from the standard linux utils like bash, grep, test, sed, cut, ldd, uname gcc g++ and cat
+python (debian package: python2.3 or python2.4 or python2.5), 
+as well as makedepend (xutils-dev package) need to be installed, for the ./configure to work.
+
 To compile the R interface you need to have the R developer files 
 (debian package r-base-dev) installed.
 
 To compile the octave interface you need to have the octave developer files 
 (debian package octave2.1-headers or octave2.9-headers) installed.
 
-To compile the python interface you need to have numarray 
-(debian package python-numarray and python-numarray-ext) installed.
+To compile the python interface you need to have numpy version 1.x installed 
+(debian package python-numpy and python-numpy-ext) installed.
 
 Also you will need atlas and lapack (debian lapack3-dev, 
 atlas3-headers atlas3-base-dev or atlas3-altivec-dev atlas3-sse2-dev)
 installed. In case atlas/lapack is unavailable use --disable-lapack
 to nevertheless compile a slightly slower version.
+
+
+SPECIFIC BUILD INSTRUCTIONS
+
+
+BUILDING ON DEBIAN GNU LINUX
+
+Python (python2.3 or python2.4 or python2.5), as well as makedepend (xutils-dev package)
+need to be installed.  To get atlas/lapack optimizations optionally also install the atlas3-*
+packages aswell as the lapack3-* packages.
+
+standalone:
+===========
+
+cd src
+./configure
+make
+
+a shogun executable can be found in src/
+
+octave
+======
+
+To compile the octave interface you need to have the octave developer files 
+(debian package octave2.1-headers or octave2.9-headers).
+
+then do a
+
+./configure --enable-octave
+make
+
+a sg.oct file should be created. as a test start octave in the src/ directory
+and type
+
+addpath('../octave/examples')
+svr_regression
+
+R
+=
+
+To compile the R interface you need to have the R developer files 
+(debian package r-base-dev) installed.
+
+do the usual R CMD INSTALL <package>
+
+python
+======
+
+To compile the python interface you need to have numpy version 1.x installed 
+(debian package python-numpy and python-numpy-ext) and optionally for plotting
+python-matplotlib installed. When using matplotlib, make sure you use numpy as
+the underlying numeric toolkit, i.e. you have the line 
+
+numerix      : numpy
+
+in your /etc/matplotlibrc
+
+
+then do a
+./configure --enable-python
+make
+
+A sg.so file should be created in the src/ directory:
+To test whether it is working try
+PYTHONPATH=`pwd` python ../python/examples/svm_classification.py
+
+object oriented python/swig interface:
+======================================
+
+proceed as for the python interface but now in addition install the swig package and
+configure+compile shogun with:
+
+  ./configure --enable-python --enable-siwg
+  make
+  sudo make install
+
+to test if it is working try python ../python/examples/numpy_svm_matplotlib.py
+
+BUILDING ON MACOSX
+
+On powerpc archs don't use gcc-4.0 / gcc-4.1 as it will fail with an internal compiler
+error. Try gcc-4.2 instead or disable optimization (using -O0).
+
+You similarly named packages as for debian above. Also make sure you don't mix python versions
+(i.e. python2.4 and python2.5) on build/runtime. All of the instructions for debian should work then.
+
+
+BUILDING ON WINDOWS / CYGWIN
+
+	install gcc version 3.3 (gcc-3.4 is currently broken)
+
+standalone:
+===========
+
+	cd src
+	./configure
+	make
+
+	a shogun.exe can be found in src/
+
+
+octave:
+=======
+
+	install octave and octave-headers
+	cd src
+	./configure --enable-octave
+	make
+
+	a sg.oct file can be found in src/
+	try
+
+	cd src
+	octave
+	addpath('../octave/examples')
+	svr_regression
+
+
+python:
+=======
+
+  install python2.4. then get numpy 1.0 from http://sourceforge.net/project/showfiles.php?group_id=1369&package_id=175103
+  
+  extract the archive and in the numpy-1.0 directory type 
+
+	python setup.py install
+
+  this will eventually fail creating the _capi.dll library, as the libmingwex.a
+  lib is not beeing linked with. as a workaround type
+
+	gcc -shared -Wl,--enable-auto-image-base build/temp.cygwin-1.5.21-i686-2.4/numpy/numarray/_capi.o -L/usr/lib/python2.4/config -lpython2.4 -o build/lib.cygwin-1.5.21-i686-2.4/numpy/numarray/_capi.dll /usr/lib/mingw/libmingwex.a
+
+  followed by another 
+
+	python setup.py install
+
+  to test whether all worked out do
+
+	 cd
+	 python
+	 import numpy
+	 print numpy.__version__
+	 
+	 it should list 1.0
+
+  install matplotlib (optional):
+
+  to do so first get the following cygwin packages: freetype2, libpng, zlib (don't forget the devel packages)
+  then download the matplotlib src
+  http://prdownloads.sourceforge.net/matplotlib/matplotlib-0.87.7.tar.gz?download and extract the archive
+
+  add missing library links: ln -s /lib/libtk84.a /lib/libtk8.4.a and ln -s /lib/libtcl84.a /lib/libtcl8.4.a 
+  edit the setup.py file: and modify the line: rc = dict({'backend':'GTKAgg', 'numerix':'numpy'})
+  do unset DISPLAY; python setup.py install 
+
+
+  now compile shogun:
+	./configure --enable-python
+	make
+
+  this will create a sg.dll in the src/ dir
+
+  to test if it is working, try:
+	 cd src
+	 PYTHONPATH=`pwd` python ../python/examples/svm_classification.py
+
+object oriented python/swig interface:
+======================================
+
+do all of the above but now in addition install the swig package and
+configure+compile shogun with:
+
+  ./configure --enable-python --enable-siwg
+  make install
+
+to test if it is working try python ../python/examples/numpy_svm_matplotlib.py
 
 
 PROBLEMS

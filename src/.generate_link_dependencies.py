@@ -1,5 +1,10 @@
 import os,re,sys
 
+try:
+	suffix=sys.argv[1]
+except IndexError:
+	suffix='so'
+
 incexpr=re.compile('^\s*[%#]include "(\S+)"',re.MULTILINE)
 deps=dict();
 deps['carrays.i']=[]
@@ -34,7 +39,7 @@ for f in files:
 for f in deps.iterkeys():
 	if f[-1] == 'i' and not initial_deps.has_key(f):
 		if file(f).read().find('%module')>-1:
-			str1=os.path.join(os.path.dirname(f), '_' + os.path.basename(f)[:-2]) + '.so: ' + f[:-2]+'_wrap.cxx.o'
+			str1=os.path.join(os.path.dirname(f), '_' + os.path.basename(f)[:-2]) + '.' + suffix + ': ' + f[:-2]+'_wrap.cxx.o'
 			str2=os.path.join(os.path.dirname(f), os.path.basename(f)[:-2]) + '_wrap.cxx: ' + f
 
 			fdep=list();
