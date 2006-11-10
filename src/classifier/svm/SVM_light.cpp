@@ -408,6 +408,7 @@ bool CSVMLight::train()
 	CIO::message(M_DEBUG, "get_kernel()->get_optimization_type() = %s\n", get_kernel()->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" ) ;
 	CIO::message(M_DEBUG, "get_mkl_enabled() = %i\n", get_mkl_enabled()) ;
 	CIO::message(M_DEBUG, "get_linadd_enabled() = %i\n", get_linadd_enabled()) ;
+	CIO::message(M_DEBUG, "get_batch_computation_enabled() = %i\n", get_batch_computation_enabled()) ;
 	CIO::message(M_DEBUG, "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
 	CIO::message(M_DEBUG, "estimated time: %1.1f minutes\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/60) ;
 
@@ -2795,12 +2796,11 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
   if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()) { /* special linear case */
 	  a_old=shrink_state->last_a;    
 
-	  get_kernel()->clear_normal();
-
-	  if (!use_batch_computation || !use_linadd ||
-		  !get_kernel()->has_property(KP_LINADD) ||
-		  !get_kernel()->has_property(KP_BATCHEVALUATION))
+	  if (!use_batch_computation || !get_kernel()->has_property(KP_BATCHEVALUATION))
 	  {
+		  CIO::message(M_DEBUG, " clear normal - linadd\n");
+		  get_kernel()->clear_normal();
+
 		  INT num_modified=0;
 		  for(INT i=0;i<totdoc;i++) {
 			  if(a[i] != a_old[i]) {
@@ -2831,13 +2831,11 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 		  ASSERT(alphas);
 		  ASSERT(idx);
 
-		  memset(target, 0, sizeof(DREAL)*totdoc);
-
 		  for (INT i=0; i<totdoc; i++)
 		  {
 			  if(a[i] != a_old[i]) 
 			  {
-				  alphas[num_suppvec] = a[i]-a_old[i] ;
+				  alphas[num_suppvec] = (a[i]-a_old[i])*(double)label[i];
 				  idx[num_suppvec] = i ;
 				  a_old[i] = a[i] ;
 				  num_suppvec++ ;

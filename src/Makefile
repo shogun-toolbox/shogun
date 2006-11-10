@@ -102,7 +102,7 @@ swigclean:
 	rm -f $(shell find -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) 
 
 clean: swigclean
-	rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*.dll" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.mex* sg.so shogun gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find . -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
+	rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*.dll" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.oct sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find . -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
 
 config: .config
 .config:	configure

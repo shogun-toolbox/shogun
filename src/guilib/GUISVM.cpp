@@ -161,6 +161,7 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 	svm->set_mkl_enabled(use_mkl);
 	svm->set_shrinking_enabled(use_shrinking);
 	svm->set_linadd_enabled(use_linadd);
+	svm->set_batch_computation_enabled(use_batch_computation);
 	if(!oneclass)
 		((CKernelMachine*) svm)->set_labels(trainlabels);
 	((CKernelMachine*) svm)->set_kernel(kernel);
