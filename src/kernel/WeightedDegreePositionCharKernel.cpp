@@ -931,21 +931,16 @@ bool CWeightedDegreePositionCharKernel::set_position_weights(DREAL* pws, INT len
 }
 
 
-DREAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor)
+void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor)
 {
     ASSERT(get_rhs());
-    num_vec=get_rhs()->get_num_vectors();
+    ASSERT(num_vec<=get_rhs()->get_num_vectors());
     ASSERT(num_vec>0);
+	ASSERT(vec_idx);
+	ASSERT(result);
+
     INT num_feat=((CCharFeatures*) get_rhs())->get_num_features();
     ASSERT(num_feat>0);
-	
-    if (!result)
-    {
-		result= new DREAL[num_vec];
-		ASSERT(result);
-		memset(result, 0, sizeof(DREAL)*num_vec);
-    }
-
     INT* vec= new INT[num_feat];
 	
     for (INT j=0; j<num_feat; j++)
@@ -956,13 +951,13 @@ DREAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, DREAL* res
 		{
 			INT len=0;
 			bool freevec;
-			CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(i, len, freevec);
+			CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(vec_idx[i], len, freevec);
 			for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+degree+max_shift); k++)
 				vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[k]);
 			
 			DREAL norm_fac = 1.0 ;
 			if (use_normalization)
-				norm_fac=1.0/sqrtdiag_rhs[i] ;
+				norm_fac=1.0/sqrtdiag_rhs[vec_idx[i]] ;
 			
 			result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))*norm_fac ;
 
@@ -978,14 +973,12 @@ DREAL* CWeightedDegreePositionCharKernel::compute_batch(INT& num_vec, DREAL* res
 					result[i] += tries.compute_by_tree_helper(vec, len, j+s, j, j, weights, (length!=0))*norm_fac/(2.0*s) ;
 			}
 			
-			((CCharFeatures*) rhs)->free_feature_vector(char_vec, i, freevec);
+			((CCharFeatures*) rhs)->free_feature_vector(char_vec, vec_idx[i], freevec);
 		}
 		CIO::progress(j,0,num_feat);
 	}
     
     delete[] vec;
-	
-    return result;
 }
 
 DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas)
@@ -1124,8 +1117,8 @@ DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& n
     delete[] x;
     delete[] C;
     for( k = 0; k < max_degree; ++k ) {
-		delete L[k];
-		delete R[k];
+		delete[] L[k];
+		delete[] R[k];
     }
     delete[] L;
     delete[] R;

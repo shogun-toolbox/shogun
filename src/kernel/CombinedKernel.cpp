@@ -267,16 +267,13 @@ bool CCombinedKernel::delete_optimization()
 	return true;
 }
 
-DREAL* CCombinedKernel::compute_batch(INT& num_vec, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor)
+void CCombinedKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor)
 {
 	ASSERT(get_rhs());
-	num_vec=get_rhs()->get_num_vectors();
+	ASSERT(num_vec<=get_rhs()->get_num_vectors())
 	ASSERT(num_vec>0);
-
-	if (!result)
-		result= new DREAL[num_vec];
+	ASSERT(vec_idx);
 	ASSERT(result);
-	memset(result, 0, sizeof(DREAL)*num_vec);
 
 	//we have to do the optimization business ourselves but lets
 	//make sure we start cleanly
@@ -289,23 +286,20 @@ DREAL* CCombinedKernel::compute_batch(INT& num_vec, DREAL* result, INT num_suppv
 	{
 		if (k && k->has_property(KP_BATCHEVALUATION))
 		{
-			INT n=num_vec;
-			k->compute_batch(n, result, num_suppvec, IDX, weights, get_combined_kernel_weight());
-			ASSERT(n==num_vec);
+			if (k->get_combined_kernel_weight()!=0)
+				k->compute_batch(num_vec, vec_idx, result, num_suppvec, IDX, weights, k->get_combined_kernel_weight());
 		}
 		else
-			emulate_compute_batch(k, num_vec, result, num_suppvec, IDX, weights);
+			emulate_compute_batch(k, num_vec, vec_idx, result, num_suppvec, IDX, weights);
 
 		k = get_next_kernel(current);
 	}
 
 	//clean up
 	delete_optimization();
-
-	return result;
 }
 
-void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights)
+void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights)
 {
 	ASSERT(k);
 	ASSERT(result);
@@ -317,7 +311,7 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, DREAL* resu
 			k->init_optimization(num_suppvec, IDX, weights);
 
 			for (INT i=0; i<num_vec; i++)
-				result[i] += k->get_combined_kernel_weight()*k->compute_optimized(i);
+				result[i] += k->get_combined_kernel_weight()*k->compute_optimized(vec_idx[i]);
 
 			k->delete_optimization();
 		}
@@ -334,7 +328,7 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, DREAL* resu
 				int j=0;
 				DREAL sub_result=0 ;
 				for (j=0; j<num_suppvec; j++)
-					sub_result += weights[j] * k->kernel(IDX[j], i) ;
+					sub_result += weights[j] * k->kernel(IDX[j], vec_idx[i]) ;
 
 				result[i] += k->get_combined_kernel_weight()*sub_result ;
 			}

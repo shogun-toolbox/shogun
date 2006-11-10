@@ -2822,8 +2822,6 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 	  }
 	  else 
 	  {
-		  // TODO: only compute the inactive ones
-		  DREAL* target = NULL;
 		  DREAL *alphas = new DREAL[totdoc] ;
 		  INT *idx = new INT[totdoc] ;
 		  INT num_suppvec=0 ;
@@ -2844,18 +2842,45 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 
 		  if (num_suppvec>0)
 		  {
-			  INT num_vec = 0 ;
-			  target = get_kernel()->compute_batch(num_vec, target, num_suppvec, idx, alphas, 1.0);
-			  ASSERT(target);
-			  ASSERT(num_vec=totdoc) ;
+			  INT num_inactive=0;
+			  INT* inactive_idx=new INT[totdoc]; // infact we only need a subset 
+			  ASSERT(inactive_idx);
 
-			  for(INT i=0;i<totdoc;i++) {
-				  if(!shrink_state->active[i]) {
-					  lin[i] = shrink_state->last_lin[i] + target[i] ;
+			  INT j=0;
+
+			  for(INT i=0;i<totdoc;i++) 
+			  {
+				  if(!shrink_state->active[i])
+				  {
+					  inactive_idx[j++] = i;
+					  num_inactive++;
 				  }
-				  shrink_state->last_lin[i]=lin[i];
 			  }
-			  delete[] target;
+
+			  if (num_inactive>0)
+			  {
+				  DREAL* target = new DREAL[num_inactive];
+				  ASSERT(target);
+				  memset(target, 0, sizeof(DREAL)*num_inactive);
+
+				  get_kernel()->compute_batch(num_inactive, inactive_idx, target, num_suppvec, idx, alphas);
+
+				  INT j=0;
+				  for(INT i=0;i<totdoc;i++) {
+					  if(!shrink_state->active[i]) {
+						  lin[i] = shrink_state->last_lin[i] + target[j++] ;
+					  }
+					  shrink_state->last_lin[i]=lin[i];
+				  }
+
+				  delete[] target;
+			  }
+			  else
+			  {
+				  for(INT i=0;i<totdoc;i++)
+					  shrink_state->last_lin[i]=lin[i];
+			  }
+			  delete[] inactive_idx;
 		  }
 		  delete[] alphas;
 		  delete[] idx;

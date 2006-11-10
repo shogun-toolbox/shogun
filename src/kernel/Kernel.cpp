@@ -950,11 +950,9 @@ DREAL CKernel::compute_optimized(INT idx)
 	return 0;
 }
 
-DREAL* CKernel::compute_batch(INT& num_vec, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor)
+void CKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor)
 {
 	CIO::message(M_ERROR, "kernel does not support batch computation\n") ;
-	num_vec=0;
-	return NULL;
 }
 
 void CKernel::add_to_normal(INT idx, DREAL weight)

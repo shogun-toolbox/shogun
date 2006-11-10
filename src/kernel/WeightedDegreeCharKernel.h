@@ -70,7 +70,7 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
     return 0 ;
   } ;
 
-  virtual DREAL* compute_batch(INT& num_vec, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor);
+  virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
 
   // subkernel functionality
   inline virtual void clear_normal()

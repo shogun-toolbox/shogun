@@ -52,7 +52,7 @@ public:
 			return compute_by_tree(idx); 
 		}
 	
-	virtual DREAL* compute_batch(INT& num_vec, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
+	virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
 	
 	// subkernel functionality
 	inline virtual void clear_normal()

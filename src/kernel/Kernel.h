@@ -172,10 +172,11 @@ class CKernel
 
 		/** computes output for a batch of examples in an optimized fashion (favorable if kernel supports it,
 		 * i.e. has KP_BATCHEVALUATION.
-		 * set target=NULL to make it freshly allocate memory
-		 * returns outputvector of size num>0 on success
+		 * to the outputvector target (of length num_vec elements) the output for the examples enumerated
+		 * in vec_idx are added. therefore make sure that it is initialized with ZERO. the following num_suppvec,
+		 * IDX, alphas arguments are the number of support vectors, their indices and weights
 		 */
-		virtual DREAL* compute_batch(INT& num, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor=1.0);
+		virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
 		
 		virtual bool set_kernel_parameters(INT num, const double* param) { return false; }
 		

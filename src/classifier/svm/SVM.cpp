@@ -236,10 +236,22 @@ CLabels* CSVM::classify(CLabels* result)
 
 		if (CKernelMachine::get_kernel()->has_property(KP_BATCHEVALUATION) && get_batch_computation_enabled())
 		{
-			INT num_vec=0;
 			ASSERT(get_num_support_vectors()>0);
 			INT * sv_idx    = new INT[get_num_support_vectors()] ;
 			DREAL* sv_weight = new DREAL[get_num_support_vectors()] ;
+			INT* idx = new INT[num_vectors];
+			DREAL* output = new DREAL[num_vectors];
+
+			ASSERT(sv_idx);
+			ASSERT(sv_weight);
+
+			ASSERT(idx);
+			ASSERT(output);
+			memset(output, 0, sizeof(DREAL)*num_vectors);
+
+			//compute output for all vectors v[0]...v[num_vectors-1]
+			for (INT i=0; i<num_vectors; i++)
+				idx[i]=i;
 
 			for (INT i=0; i<get_num_support_vectors(); i++)
 			{
@@ -247,15 +259,15 @@ CLabels* CSVM::classify(CLabels* result)
 				sv_weight[i] = get_alpha(i) ;
 			}
 
-			DREAL* r=CKernelMachine::get_kernel()->compute_batch(num_vec, NULL, get_num_support_vectors(), sv_idx, sv_weight);
-			ASSERT(num_vec==num_vectors);
+			CKernelMachine::get_kernel()->compute_batch(num_vectors, idx, output, get_num_support_vectors(), sv_idx, sv_weight);
 
-			for (INT i=0; i<num_vec && !CSignal::cancel_computations(); i++)
-				result->set_label(i, get_bias()+r[i]);
+			for (INT i=0; i<num_vectors && !CSignal::cancel_computations(); i++)
+				result->set_label(i, get_bias()+output[i]);
 
 			delete[] sv_idx ;
 			delete[] sv_weight ;
-			delete[] r;
+			delete[] idx;
+			delete[] output;
 		}
 		else
 		{

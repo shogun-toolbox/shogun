@@ -148,9 +148,9 @@ class CCombinedKernel : public CKernel
 		virtual bool init_optimization(INT count, INT *IDX, DREAL * weights);
 		virtual bool delete_optimization();
 		virtual DREAL compute_optimized(INT idx);
-		virtual DREAL* compute_batch(INT& num_vec, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor=1.0);
+	    virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
 		/// emulates batch computation, via linadd optimization w^t x or even down to \sum_i alpha_i K(x_i,x)
-		void emulate_compute_batch(CKernel* k, INT num_vec, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
+		void emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
 
 		virtual void add_to_normal(INT idx, DREAL weight) ;
 		virtual void clear_normal();
