@@ -70,6 +70,7 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
     return 0 ;
   } ;
 
+  static void* compute_batch_helper(void* p); 
   virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
 
   // subkernel functionality
@@ -223,6 +224,7 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
 
   bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
+  inline bool get_use_normalization() { return use_normalization; }
 
  protected:
 

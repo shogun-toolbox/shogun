@@ -11,9 +11,31 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/Parallel.h"
+
 #include "kernel/WeightedDegreePositionCharKernel.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
+
+#include <pthread.h>
+
+struct S_THREAD_PARAM 
+{
+	INT* vec;
+	DREAL* result;
+	DREAL* weights;
+	CWeightedDegreePositionCharKernel* kernel;
+	CTrie* tries;
+	DREAL factor;
+	INT j;
+	INT start;
+	INT end;
+	INT length;
+	INT max_shift;
+	INT* shift;
+	INT* vec_idx;
+	DREAL* sqrtdiag_rhs;
+};
 
 //#define NEWSTUFF
 
@@ -930,6 +952,53 @@ bool CWeightedDegreePositionCharKernel::set_position_weights(DREAL* pws, INT len
 		return false;
 }
 
+void* CWeightedDegreePositionCharKernel::compute_batch_helper(void* p)
+{
+	S_THREAD_PARAM* params = (S_THREAD_PARAM*) p;
+	INT j=params->j;
+	CWeightedDegreePositionCharKernel* wd=params->kernel;
+	CTrie* tries=params->tries;
+	DREAL* weights=params->weights;
+	INT length=params->length;
+	INT max_shift=params->max_shift;
+	DREAL* sqrtdiag_rhs=params->sqrtdiag_rhs;
+	INT* vec=params->vec;
+	DREAL* result=params->result;
+	DREAL factor=params->factor;
+	INT* shift=params->shift;
+	INT* vec_idx=params->vec_idx;
+
+	for (INT i=params->start; i<params->end; i++)
+	{
+		INT len=0;
+		bool freevec;
+		CHAR* char_vec=((CCharFeatures*) wd->get_rhs())->get_feature_vector(vec_idx[i], len, freevec);
+		for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+wd->get_degree()+max_shift); k++)
+			vec[k]=((CCharFeatures*) wd->get_lhs())->get_alphabet()->remap_to_bin(char_vec[k]);
+
+			DREAL norm_fac = 1.0 ;
+			if (wd->get_use_normalization())
+				norm_fac=1.0/sqrtdiag_rhs[vec_idx[i]] ;
+			
+			result[i] += factor*tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))*norm_fac ;
+
+		if (wd->get_optimization_type()==SLOWBUTMEMEFFICIENT)
+		{
+			for (INT q=CMath::max(0,j-max_shift); q<CMath::min(len,j+max_shift+1); q++)
+			{
+				INT s=j-q ;
+				if ((s>=1) && (s<=shift[q]) && (q+s<len))
+					result[i] += tries->compute_by_tree_helper(vec, len, q, q+s, q, weights, (length!=0))*norm_fac/(2.0*s) ;
+			}
+			for (INT s=1; (s<=shift[j]) && (j+s<len); s++)
+				result[i] += tries->compute_by_tree_helper(vec, len, j+s, j, j, weights, (length!=0))*norm_fac/(2.0*s) ;
+		}
+
+		((CCharFeatures*) wd->get_rhs())->free_feature_vector(char_vec, vec_idx[i], freevec);
+	}
+
+	return NULL;
+}
 
 void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor)
 {
@@ -941,41 +1010,86 @@ void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx,
 
     INT num_feat=((CCharFeatures*) get_rhs())->get_num_features();
     ASSERT(num_feat>0);
-    INT* vec= new INT[num_feat];
+	INT num_threads=CParallel::get_num_threads();
+	ASSERT(num_threads>0);
+	INT* vec= new INT[num_threads*num_feat];
+	ASSERT(vec);
 	
-    for (INT j=0; j<num_feat; j++)
-	{
-		init_optimization(num_suppvec, IDX, alphas, j);
-		
-		for (INT i=0; i<num_vec; i++)
-		{
-			INT len=0;
-			bool freevec;
-			CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(vec_idx[i], len, freevec);
-			for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+degree+max_shift); k++)
-				vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[k]);
-			
-			DREAL norm_fac = 1.0 ;
-			if (use_normalization)
-				norm_fac=1.0/sqrtdiag_rhs[vec_idx[i]] ;
-			
-			result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))*norm_fac ;
+    if (!result)
+    {
+		result= new DREAL[num_vec];
+		ASSERT(result);
+		memset(result, 0, sizeof(DREAL)*num_vec);
+    }
 
-			if (opt_type==SLOWBUTMEMEFFICIENT)
-			{
-				for (INT q=CMath::max(0,j-max_shift); q<CMath::min(len,j+max_shift+1); q++)
-				{
-					INT s=j-q ;
-					if ((s>=1) && (s<=shift[q]) && (q+s<len))
-						result[i] += tries.compute_by_tree_helper(vec, len, q, q+s, q, weights, (length!=0))*norm_fac/(2.0*s) ;
-				}
-				for (INT s=1; (s<=shift[j]) && (j+s<len); s++)
-					result[i] += tries.compute_by_tree_helper(vec, len, j+s, j, j, weights, (length!=0))*norm_fac/(2.0*s) ;
-			}
-			
-			((CCharFeatures*) rhs)->free_feature_vector(char_vec, vec_idx[i], freevec);
+	if (num_threads < 2)
+	{
+		for (INT j=0; j<num_feat; j++)
+		{
+			init_optimization(num_suppvec, IDX, alphas, j);
+			S_THREAD_PARAM params;
+			params.vec=vec;
+			params.weights=weights;
+			params.tries=&tries;
+			params.factor=factor;
+			params.j=j;
+			params.start=0;
+			params.end=num_vec;
+			params.length=length;
+			params.max_shift=max_shift;
+			params.sqrtdiag_rhs=sqrtdiag_rhs;
+			params.shift=shift;
+			params.vec_idx=vec_idx;
+			compute_batch_helper((void*) &params);
+
+			CIO::progress(j,0,num_feat);
 		}
-		CIO::progress(j,0,num_feat);
+	}
+	else
+	{
+		for (INT j=0; j<num_feat; j++)
+		{
+			init_optimization(num_suppvec, IDX, alphas, j);
+			pthread_t threads[num_threads-1];
+			S_THREAD_PARAM params[num_threads];
+			INT step= num_vec/num_threads;
+			INT t;
+
+			for (t=0; t<num_threads-1; t++)
+			{
+				params[t].vec=&vec[num_feat*t];
+				params[t].vec=vec;
+				params[t].weights=weights;
+				params[t].tries=&tries;
+				params[t].factor=factor;
+				params[t].j=j;
+				params[t].start = t*step;
+				params[t].end = (t+1)*step;
+				params[t].length=length;
+				params[t].max_shift=max_shift;
+				params[t].sqrtdiag_rhs=sqrtdiag_rhs;
+				params[t].shift=shift;
+				params[t].vec_idx=vec_idx;
+				pthread_create(&threads[t], NULL, CWeightedDegreePositionCharKernel::compute_batch_helper, (void*)&params[t]);
+			}
+			params[t].vec=&vec[num_feat*t];
+			params[t].weights=weights;
+			params[t].tries=&tries;
+			params[t].factor=factor;
+			params[t].j=j;
+			params[t].start=t*step;
+			params[t].end=num_vec;
+			params[t].length=length;
+			params[t].max_shift=max_shift;
+			params[t].sqrtdiag_rhs=sqrtdiag_rhs;
+			params[t].shift=shift;
+			params[t].vec_idx=vec_idx;
+			compute_batch_helper((void*) &params[t]);
+
+			for (t=0; t<num_threads-1; t++)
+				pthread_join(threads[t], NULL);
+			CIO::progress(j,0,num_feat);
+		}
 	}
     
     delete[] vec;

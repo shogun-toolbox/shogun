@@ -12,9 +12,29 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/Trie.h"
+#include "lib/Parallel.h"
+
 #include "kernel/WeightedDegreeCharKernel.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
+
+#include <pthread.h>
+
+struct S_THREAD_PARAM 
+{
+	INT* vec;
+	DREAL* result;
+	DREAL* weights;
+	CWeightedDegreeCharKernel* kernel;
+	CTrie* tries;
+	DREAL factor;
+	INT j;
+	INT start;
+	INT end;
+	INT length;
+	DREAL* sqrtdiag_rhs;
+	INT* vec_idx;
+};
 
 CWeightedDegreeCharKernel::CWeightedDegreeCharKernel(INT size, EWDKernType typ, INT deg, INT max_mismatch_,
 		bool use_norm, bool block, INT mkl_stepsize_, INT which_deg)
@@ -922,6 +942,39 @@ bool CWeightedDegreeCharKernel::init_block_weights()
 }
 
 
+void* CWeightedDegreeCharKernel::compute_batch_helper(void* p)
+{
+	S_THREAD_PARAM* params = (S_THREAD_PARAM*) p;
+	INT j=params->j;
+	CWeightedDegreeCharKernel* wd=params->kernel;
+	CTrie* tries=params->tries;
+	DREAL* weights=params->weights;
+	INT length=params->length;
+	DREAL* sqrtdiag_rhs=params->sqrtdiag_rhs;
+	INT* vec=params->vec;
+	DREAL* result=params->result;
+	DREAL factor=params->factor;
+	INT* vec_idx=params->vec_idx;
+
+	for (INT i=params->start; i<params->end; i++)
+	{
+		INT len=0;
+		bool freevec;
+		CHAR* char_vec=((CCharFeatures*) wd->get_rhs())->get_feature_vector(vec_idx[i], len, freevec);
+		for (INT k=j; k<CMath::min(len,j+wd->get_degree()); k++)
+			vec[k]=((CCharFeatures*) wd->get_lhs())->get_alphabet()->remap_to_bin(char_vec[k]);
+
+		if (wd->get_use_normalization())
+			result[i] += factor*tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/sqrtdiag_rhs[vec_idx[i]];
+		else
+			result[i] += factor*tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0));
+
+		((CCharFeatures*) wd->get_rhs())->free_feature_vector(char_vec, i, freevec);
+	}
+
+	return NULL;
+}
+
 void CWeightedDegreeCharKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor)
 {
 	ASSERT(get_rhs());
@@ -932,28 +985,79 @@ void CWeightedDegreeCharKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* 
 
 	INT num_feat=((CCharFeatures*) get_rhs())->get_num_features();
 	ASSERT(num_feat>0);
-	INT* vec= new INT[num_feat];
+	INT num_threads=CParallel::get_num_threads();
+	ASSERT(num_threads>0);
+	INT* vec= new INT[num_threads*num_feat];
+	ASSERT(vec);
 
-	for (INT j=0; j<num_feat; j++)
+	if (!result)
 	{
-		init_optimization(num_suppvec, IDX, alphas, j);
-		
-		for (INT i=0; i<num_vec; i++)
+		result= new DREAL[num_vec];
+		ASSERT(result);
+		memset(result, 0, sizeof(DREAL)*num_vec);
+	}
+
+	if (num_threads < 2)
+	{
+		for (INT j=0; j<num_feat; j++)
 		{
-			INT len=0;
-			bool freevec;
-			CHAR* char_vec=((CCharFeatures*) rhs)->get_feature_vector(vec_idx[i], len, freevec);
-			for (INT k=j; k<CMath::min(len,j+degree); k++)
-				vec[k]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[k]);
+			init_optimization(num_suppvec, IDX, alphas, j);
+			S_THREAD_PARAM params;
+			params.vec=vec;
+			params.weights=weights;
+			params.tries=&tries;
+			params.factor=factor;
+			params.j=j;
+			params.start=0;
+			params.end=num_vec;
+			params.length=length;
+			params.sqrtdiag_rhs=sqrtdiag_rhs;
+			params.vec_idx=vec_idx;
+			compute_batch_helper((void*) &params);
 
-			if (use_normalization)
-			  result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/sqrtdiag_rhs[vec_idx[i]];
-			else
-			  result[i] += factor*tries.compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0));
-
-			((CCharFeatures*) rhs)->free_feature_vector(char_vec, vec_idx[i], freevec);
+			CIO::progress(j,0,num_feat);
 		}
-		CIO::progress(j,0,num_feat);
+	}
+	else
+	{
+		for (INT j=0; j<num_feat; j++)
+		{
+			init_optimization(num_suppvec, IDX, alphas, j);
+			pthread_t threads[num_threads-1];
+			S_THREAD_PARAM params[num_threads];
+			INT step= num_vec/num_threads;
+			INT t;
+
+			for (t=0; t<num_threads-1; t++)
+			{
+				params[t].vec=&vec[num_feat*t];
+				params[t].weights=weights;
+				params[t].tries=&tries;
+				params[t].factor=factor;
+				params[t].j=j;
+				params[t].start = t*step;
+				params[t].end = (t+1)*step;
+				params[t].length=length;
+				params[t].sqrtdiag_rhs=sqrtdiag_rhs;
+				params[t].vec_idx=vec_idx;
+				pthread_create(&threads[t], NULL, CWeightedDegreeCharKernel::compute_batch_helper, (void*)&params[t]);
+			}
+			params[t].vec=&vec[num_feat*t];
+			params[t].weights=weights;
+			params[t].tries=&tries;
+			params[t].factor=factor;
+			params[t].j=j;
+			params[t].start=t*step;
+			params[t].end=num_vec;
+			params[t].length=length;
+			params[t].sqrtdiag_rhs=sqrtdiag_rhs;
+			params[t].vec_idx=vec_idx;
+			compute_batch_helper((void*) &params[t]);
+
+			for (t=0; t<num_threads-1; t++)
+				pthread_join(threads[t], NULL);
+			CIO::progress(j,0,num_feat);
+		}
 	}
 
 	delete[] vec;
@@ -968,7 +1072,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
     ASSERT(((CCharFeatures*) get_rhs())->get_alphabet()->get_alphabet() == DNA);
     num_sym=4; //for now works only w/ DNA
 
-    // === variables
+    // variables
     INT* nofsKmers = new INT[ max_degree ];
     DREAL** C = new DREAL*[ max_degree ];
     DREAL** L = new DREAL*[ max_degree ];
@@ -976,7 +1080,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
     INT i;
     INT k;
 
-    // --- return table
+    // return table
     INT bigtabSize = 0;
     for( k = 0; k < max_degree; ++k ) {
 		nofsKmers[k] = (INT) pow( num_sym, k+1 );
@@ -985,7 +1089,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
     }
     result= new DREAL[ bigtabSize ];
 	
-    // --- auxilliary tables
+    // auxilliary tables
     INT tabOffs=0;
     for( k = 0; k < max_degree; ++k )
     {
@@ -1002,7 +1106,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 		}
     }
 	
-    // --- tree parsing info
+    // tree parsing info
     DREAL* margFactors = new DREAL[ degree ];
     INT* x = new INT[ degree+1 ];
     INT* substrs = new INT[ degree+1 ];
@@ -1032,7 +1136,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 	bool orig_use_compact_terminal_nodes = tries.get_use_compact_terminal_nodes() ;
 	tries.set_use_compact_terminal_nodes(false) ;
 	
-    // === main loop
+    // main loop
     i = 0; // total progress
     for( k = 0; k < max_degree; ++k )
     {
@@ -1041,7 +1145,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 		info.L_k = L[k];
 		info.R_k = R[k];
 		
-		// --- run over all trees
+		// run over all trees
 		for(INT p = 0; p < num_feat; ++p )
 		{
 			init_optimization( num_suppvec, IDX, alphas, p );
@@ -1053,7 +1157,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 			CIO::progress(i++,0,num_feat*max_degree);
 	}
 		
-		// --- add partial overlap scores
+		// add partial overlap scores
 		if( k > 0 ) {
 			const INT j = k - 1;
 			const INT nofJmers = (INT) pow( num_sym, j+1 );
@@ -1092,10 +1196,10 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 
 	tries.set_use_compact_terminal_nodes(orig_use_compact_terminal_nodes) ;
 	
-    // === return a vector
+    // return a vector
     num_feat=1;
     num_sym = bigtabSize;
-    // --- clean up
+    // clean up
     delete[] nofsKmers;
     delete[] margFactors;
     delete[] substrs;

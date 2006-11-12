@@ -52,6 +52,7 @@ public:
 			return compute_by_tree(idx); 
 		}
 	
+	static void* compute_batch_helper(void* p); 
 	virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
 	
 	// subkernel functionality
@@ -192,6 +193,7 @@ public:
 	bool set_position_weights(DREAL* position_weights, INT len=0); 
 	bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 	
+	inline bool get_use_normalization() { return use_normalization; }
 	DREAL compute_by_tree(INT idx);
 	void compute_by_tree(INT idx, DREAL* LevelContrib);
 	
