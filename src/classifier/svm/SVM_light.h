@@ -260,6 +260,8 @@ protected:
 	static void* compute_kernel_helper(void* p);
 	static void* update_linear_component_linadd_helper(void* p);
 	static void* update_linear_component_mkl_linadd_helper(void* p);
+	static void* reactivate_inactive_examples_vanilla_helper(void* p);
+	static void* reactivate_inactive_examples_linadd_helper(void* p);
 
 #ifdef USE_CPLEX
 	bool init_cplex();

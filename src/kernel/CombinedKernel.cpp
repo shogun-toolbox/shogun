@@ -9,12 +9,30 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/common.h"
+#include "lib/io.h"
+#include "lib/Signal.h"
+#include "lib/Parallel.h"
+
 #include "kernel/Kernel.h"
 #include "kernel/CombinedKernel.h"
 #include "features/CombinedFeatures.h"
-#include "lib/io.h"
 
 #include <string.h>
+#include <pthread.h>
+
+struct S_THREAD_PARAM 
+{
+	CKernel* kernel;
+	DREAL* result;
+	INT* vec_idx;
+	INT start;
+	INT end;
+	/// required only for non optimized kernels
+	DREAL* weights;
+	INT* IDX;
+	INT num_suppvec;
+};
 
 CCombinedKernel::CCombinedKernel(LONG size, bool append_subkernel_weights_)
 	: CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL), 
@@ -299,6 +317,42 @@ void CCombinedKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* result, IN
 	delete_optimization();
 }
 
+void* CCombinedKernel::compute_optimized_kernel_helper(void* p)
+{
+	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
+	INT* vec_idx=params->vec_idx;
+	CKernel* k=params->kernel;
+	DREAL* result=params->result;
+
+	for (INT i=params->start; i<params->end; i++)
+		result[i] += k->get_combined_kernel_weight()*k->compute_optimized(vec_idx[i]);
+
+	return NULL;
+}
+
+void* CCombinedKernel::compute_kernel_helper(void* p)
+{
+	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
+	INT* vec_idx=params->vec_idx;
+	CKernel* k=params->kernel;
+	DREAL* result=params->result;
+	DREAL* weights=params->weights;
+	INT* IDX=params->IDX;
+	INT num_suppvec=params->num_suppvec;
+
+	for (INT i=params->start; i<params->end; i++)
+	{
+		int j=0;
+		DREAL sub_result=0 ;
+		for (j=0; j<num_suppvec; j++)
+			sub_result += weights[j] * k->kernel(IDX[j], vec_idx[i]) ;
+
+		result[i] += k->get_combined_kernel_weight()*sub_result ;
+	}
+
+	return NULL;
+}
+
 void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* weights)
 {
 	ASSERT(k);
@@ -310,8 +364,48 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 		{
 			k->init_optimization(num_suppvec, IDX, weights);
 
-			for (INT i=0; i<num_vec; i++)
-				result[i] += k->get_combined_kernel_weight()*k->compute_optimized(vec_idx[i]);
+			INT num_threads=CParallel::get_num_threads();
+			ASSERT(num_threads>0);
+
+			if (num_threads < 2)
+			{
+				S_THREAD_PARAM params;
+				params.kernel=k;
+				params.result=result;
+				params.start=0;
+				params.end=num_vec;
+				params.vec_idx = vec_idx;
+				compute_optimized_kernel_helper((void*) &params);
+			}
+			else
+			{
+				pthread_t threads[num_threads-1];
+				S_THREAD_PARAM params[num_threads];
+				INT step= num_vec/num_threads;
+
+				INT t;
+
+				for (t=0; t<num_threads-1; t++)
+				{
+					params[t].kernel = k;
+					params[t].result = result;
+					params[t].start = t*step;
+					params[t].end = (t+1)*step;
+					params[t].vec_idx = vec_idx;
+					pthread_create(&threads[t], NULL, CCombinedKernel::compute_optimized_kernel_helper, (void*)&params[t]);
+				}
+
+				params[t].kernel = k;
+				params[t].result = result;
+				params[t].start = t*step;
+				params[t].end = num_vec;
+				params[t].vec_idx = vec_idx;
+				pthread_create(&threads[t], NULL, CCombinedKernel::compute_optimized_kernel_helper, (void*)&params[t]);
+
+				for (t=0; t<num_threads-1; t++)
+					pthread_join(threads[t], NULL);
+
+			}
 
 			k->delete_optimization();
 		}
@@ -323,14 +417,56 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 
 		if (k->get_combined_kernel_weight()!=0)
 		{ // compute the usual way for any non-optimized kernel
-			for (INT i=0; i<num_vec; i++)
-			{
-				int j=0;
-				DREAL sub_result=0 ;
-				for (j=0; j<num_suppvec; j++)
-					sub_result += weights[j] * k->kernel(IDX[j], vec_idx[i]) ;
+			INT num_threads=CParallel::get_num_threads();
+			ASSERT(num_threads>0);
 
-				result[i] += k->get_combined_kernel_weight()*sub_result ;
+			if (num_threads < 2)
+			{
+				S_THREAD_PARAM params;
+				params.kernel=k;
+				params.result=result;
+				params.start=0;
+				params.end=num_vec;
+				params.vec_idx = vec_idx;
+				params.IDX = IDX;
+				params.weights = weights;
+				params.num_suppvec = num_suppvec;
+				compute_kernel_helper((void*) &params);
+			}
+			else
+			{
+				pthread_t threads[num_threads-1];
+				S_THREAD_PARAM params[num_threads];
+				INT step= num_vec/num_threads;
+
+				INT t;
+
+				for (t=0; t<num_threads-1; t++)
+				{
+					params[t].kernel = k;
+					params[t].result = result;
+					params[t].start = t*step;
+					params[t].end = (t+1)*step;
+					params[t].vec_idx = vec_idx;
+					params[t].IDX = IDX;
+					params[t].weights = weights;
+					params[t].num_suppvec = num_suppvec;
+					pthread_create(&threads[t], NULL, CCombinedKernel::compute_kernel_helper, (void*)&params[t]);
+				}
+
+				params[t].kernel = k;
+				params[t].result = result;
+				params[t].start = t*step;
+				params[t].end = num_vec;
+				params[t].vec_idx = vec_idx;
+				params[t].IDX = IDX;
+				params[t].weights = weights;
+				params[t].num_suppvec = num_suppvec;
+				pthread_create(&threads[t], NULL, CCombinedKernel::compute_kernel_helper, (void*)&params[t]);
+
+				for (t=0; t<num_threads-1; t++)
+					pthread_join(threads[t], NULL);
+
 			}
 		}
 	}

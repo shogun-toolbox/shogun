@@ -11,6 +11,8 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/Signal.h"
+#include "lib/Trie.h"
 #include "lib/Parallel.h"
 
 #include "kernel/WeightedDegreePositionCharKernel.h"
@@ -1024,7 +1026,7 @@ void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx,
 
 	if (num_threads < 2)
 	{
-		for (INT j=0; j<num_feat; j++)
+		for (INT j=0; j<num_feat && !CSignal::cancel_computations; j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			S_THREAD_PARAM params;
@@ -1047,7 +1049,7 @@ void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx,
 	}
 	else
 	{
-		for (INT j=0; j<num_feat; j++)
+		for (INT j=0; j<num_feat && !CSignal::cancel_computations; j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			pthread_t threads[num_threads-1];
@@ -1072,6 +1074,7 @@ void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx,
 				params[t].vec_idx=vec_idx;
 				pthread_create(&threads[t], NULL, CWeightedDegreePositionCharKernel::compute_batch_helper, (void*)&params[t]);
 			}
+
 			params[t].vec=&vec[num_feat*t];
 			params[t].weights=weights;
 			params[t].tries=&tries;

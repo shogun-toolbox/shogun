@@ -11,10 +11,21 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/Signal.h"
+#include "lib/Parallel.h"
 
 #include "classifier/svm/SVM.h"
 
 #include <string.h>
+#include <pthread.h>
+
+struct S_THREAD_PARAM 
+{
+	CSVM* svm;
+	CLabels* result;
+	INT start;
+	INT end;
+	bool verbose;
+};
 
 CSVM::CSVM()
 {
@@ -214,6 +225,27 @@ bool CSVM::init_kernel_optimization()
 	return false;
 }
 
+void* CSVM::classify_example_helper(void* p)
+{
+	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
+	INT num_vectors=params->end - params->start;
+	CLabels* result=params->result;
+	CSVM* svm=params->svm;
+
+	for (INT vec=params->start; vec<params->end && !CSignal::cancel_computations(); vec++)
+	{
+		if (params->verbose)
+		{
+			if ( (vec% (num_vectors/10+1))== 0)
+				CIO::progress(vec, 0.0, num_vectors-1);
+		}
+
+		result->set_label(vec, svm->classify_example(vec));
+	}
+
+	return NULL;
+}
+
 CLabels* CSVM::classify(CLabels* result)
 {
 	if (!CKernelMachine::get_kernel())
@@ -261,7 +293,7 @@ CLabels* CSVM::classify(CLabels* result)
 
 			CKernelMachine::get_kernel()->compute_batch(num_vectors, idx, output, get_num_support_vectors(), sv_idx, sv_weight);
 
-			for (INT i=0; i<num_vectors && !CSignal::cancel_computations(); i++)
+			for (INT i=0; i<num_vectors; i++)
 				result->set_label(i, get_bias()+output[i]);
 
 			delete[] sv_idx ;
@@ -271,14 +303,49 @@ CLabels* CSVM::classify(CLabels* result)
 		}
 		else
 		{
-			for (INT vec=0; vec<num_vectors && !CSignal::cancel_computations(); vec++)
-			{
-				if ( (vec% (num_vectors/10+1))== 0)
-					CIO::progress(vec, 0.0, num_vectors-1);
+			INT num_threads=CParallel::get_num_threads();
+			ASSERT(num_threads>0);
 
-				result->set_label(vec, classify_example(vec));
+			if (num_threads < 2)
+			{
+				S_THREAD_PARAM params;
+				params.svm=this;
+				params.result=result;
+				params.start=0;
+				params.end=num_vectors;
+				params.verbose=true;
+				classify_example_helper((void*) &params);
+			}
+			else
+			{
+				pthread_t threads[num_threads-1];
+				S_THREAD_PARAM params[num_threads];
+				INT step= num_vectors/num_threads;
+
+				INT t;
+
+				for (t=0; t<num_threads-1; t++)
+				{
+					params[t].svm = this;
+					params[t].result = result;
+					params[t].start = t*step;
+					params[t].end = (t+1)*step;
+					params[t].verbose = false;
+					pthread_create(&threads[t], NULL, CSVM::classify_example_helper, (void*)&params[t]);
+				}
+
+				params[t].svm = this;
+				params[t].result = result;
+				params[t].start = t*step;
+				params[t].end = num_vectors;
+				params[t].verbose = true;
+				pthread_create(&threads[t], NULL, CSVM::classify_example_helper, (void*)&params[t]);
+
+				for (t=0; t<num_threads-1; t++)
+					pthread_join(threads[t], NULL);
 			}
 		}
+
 		if ( CSignal::cancel_computations() )
 			CIO::message(M_INFO, "prematurely stopped.           \n");
 		else
