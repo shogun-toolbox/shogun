@@ -228,7 +228,6 @@ bool CSVM::init_kernel_optimization()
 void* CSVM::classify_example_helper(void* p)
 {
 	S_THREAD_PARAM* params= (S_THREAD_PARAM*) p;
-	INT num_vectors=params->end - params->start;
 	CLabels* result=params->result;
 	CSVM* svm=params->svm;
 
@@ -236,8 +235,10 @@ void* CSVM::classify_example_helper(void* p)
 	{
 		if (params->verbose)
 		{
-			if ( (vec% (num_vectors/10+1))== 0)
-				CIO::progress(vec, 0.0, num_vectors-1);
+			INT num_vectors=params->end - params->start;
+			INT v=vec-params->start;
+			if ( (v% (num_vectors/100+1))== 0)
+				CIO::progress(v, 0.0, num_vectors-1);
 		}
 
 		result->set_label(vec, svm->classify_example(vec));
@@ -339,7 +340,7 @@ CLabels* CSVM::classify(CLabels* result)
 				params[t].start = t*step;
 				params[t].end = num_vectors;
 				params[t].verbose = true;
-				pthread_create(&threads[t], NULL, CSVM::classify_example_helper, (void*)&params[t]);
+				classify_example_helper((void*) &params[t]);
 
 				for (t=0; t<num_threads-1; t++)
 					pthread_join(threads[t], NULL);

@@ -1109,7 +1109,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 		  retrain=0;
 		  if((*maxdiff) > learn_parm->epsilon_crit) 
 		  {
-			  CIO::message(M_WARN, "restarting optimization as we are - due to shrinking - deviating too much (maxdiff(%f) > eps(%f))\n", *maxdiff, learn_parm->epsilon_crit);
+			  CIO::message(M_INFO, "restarting optimization as we are - due to shrinking - deviating too much (maxdiff(%f) > eps(%f))\n", *maxdiff, learn_parm->epsilon_crit);
 		      retrain=1;
 		  }
 		  timing_profile->time_shrink+=get_runtime()-t1;
@@ -2823,6 +2823,15 @@ void* CSVMLight::reactivate_inactive_examples_linadd_helper(void* p)
 void* CSVMLight::reactivate_inactive_examples_vanilla_helper(void* p)
 {
 	S_THREAD_PARAM_REACTIVATE_VANILLA* params = (S_THREAD_PARAM_REACTIVATE_VANILLA*) p;
+	ASSERT(params);
+	ASSERT(params->kernel);
+	ASSERT(params->lin);
+	ASSERT(params->aicache);
+	ASSERT(params->a);
+	ASSERT(params->a_old);
+	ASSERT(params->changed2dnum);
+	ASSERT(params->inactive2dnum);
+	ASSERT(params->label);
 
 	CKernel* k = params->kernel;
 	DREAL* lin = params->lin;
@@ -2839,7 +2848,7 @@ void* CSVMLight::reactivate_inactive_examples_vanilla_helper(void* p)
 	{
 		INT i=changed2dnum[ii];
 		INT j=0;
-		ASSERT(i>=0);
+		ASSERT(i>=0); //this gets triggered w multiple threads
 
 		k->get_kernel_row(i,inactive2dnum,aicache);
 		for(INT jj=0;(j=inactive2dnum[jj])>=0;jj++)
@@ -2929,7 +2938,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 				  params[t].active=shrink_state->active;
 				  params[t].start = t*step;
 				  params[t].end = totdoc;
-				  pthread_create(&threads[t], NULL, CSVMLight::reactivate_inactive_examples_linadd_helper, (void*)&params[t]);
+				  reactivate_inactive_examples_linadd_helper((void*) &params[t]);
 
 				  for (t=0; t<num_threads-1; t++)
 					  pthread_join(threads[t], NULL);
@@ -3039,65 +3048,68 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 		  }
 		  else
 		  {
-			  pthread_t threads[num_threads-1];
-			  S_THREAD_PARAM_REACTIVATE_VANILLA params[num_threads];
-
 			  //find number of the changed ones
 			  INT num_changed=0;
-			  for(ii=0;(i=changed2dnum[ii])>=0;ii++)
+			  for(ii=0;changed2dnum[ii]>=0;ii++)
 				  num_changed++;
 			
-			  INT step= num_changed/num_threads;
-			  
-			  // alloc num_threads many tmp buffers
-			  DREAL* tmp_lin=new DREAL[totdoc*num_threads];
-			  DREAL* tmp_aicache=new DREAL[totdoc*num_threads];
-			  ASSERT(tmp_lin);
-			  ASSERT(tmp_aicache);
-			  memset(tmp_lin, 0, sizeof(DREAL)*((ULONG) totdoc)*num_threads);
-			  memset(tmp_aicache, 0, sizeof(DREAL)*((ULONG) totdoc)*num_threads);
-
-			  INT t;
-
-			  for (t=0; t<num_threads-1; t++)
+			  if (num_changed>0)
 			  {
+				  INT t;
+				  pthread_t threads[num_threads-1];
+				  S_THREAD_PARAM_REACTIVATE_VANILLA params[num_threads];
+				  INT step= num_changed/num_threads;
+
+				  // alloc num_threads many tmp buffers
+				  DREAL* tmp_lin=new DREAL[totdoc*num_threads];
+				  DREAL* tmp_aicache=new DREAL[totdoc*num_threads];
+				  ASSERT(tmp_lin);
+				  ASSERT(tmp_aicache);
+				  memset(tmp_lin, 0, sizeof(DREAL)*((size_t) totdoc)*num_threads);
+				  memset(tmp_aicache, 0, sizeof(DREAL)*((size_t) totdoc)*num_threads);
+
+				  for (t=0; t<num_threads-1; t++)
+				  {
+					  params[t].kernel=get_kernel();
+					  params[t].lin=&tmp_lin[t*totdoc];
+					  params[t].aicache=&tmp_aicache[t*totdoc];
+					  params[t].a=a;
+					  params[t].a_old=a_old;
+					  params[t].changed2dnum=changed2dnum;
+					  params[t].inactive2dnum=inactive2dnum;
+					  params[t].label=label;
+					  params[t].start = t*step;
+					  params[t].end = (t+1)*step;
+					  pthread_create(&threads[t], NULL, CSVMLight::reactivate_inactive_examples_vanilla_helper, (void*)&params[t]);
+				  }
+
 				  params[t].kernel=get_kernel();
 				  params[t].lin=&tmp_lin[t*totdoc];
-				  params[t].changed2dnum=changed2dnum;
-				  params[t].inactive2dnum=inactive2dnum;
 				  params[t].aicache=&tmp_aicache[t*totdoc];
 				  params[t].a=a;
 				  params[t].a_old=a_old;
+				  params[t].changed2dnum=changed2dnum;
+				  params[t].inactive2dnum=inactive2dnum;
 				  params[t].label=label;
 				  params[t].start = t*step;
-				  params[t].end = (t+1)*step;
-				  pthread_create(&threads[t], NULL, CSVMLight::reactivate_inactive_examples_vanilla_helper, (void*)&params[t]);
-			  }
+				  params[t].end = num_changed;
+				  reactivate_inactive_examples_vanilla_helper((void*) &params[t]);
 
-			  params[t].kernel=get_kernel();
-			  params[t].lin=&tmp_lin[t*totdoc];
-			  params[t].changed2dnum=changed2dnum;
-			  params[t].aicache=&tmp_aicache[t*totdoc];
-			  params[t].a=a;
-			  params[t].a_old=a_old;
-			  params[t].label=label;
-			  params[t].start = t*step;
-			  params[t].end = totdoc;
-			  pthread_create(&threads[t], NULL, CSVMLight::reactivate_inactive_examples_vanilla_helper, (void*)&params[t]);
-
-			  for (t=0; t<num_threads-1; t++)
-			  {
-				  pthread_join(threads[t], NULL);
-
-				  //add up results
 				  for(jj=0;(j=inactive2dnum[jj])>=0;jj++)
-				  	lin[j]+=tmp_lin[totdoc*t+j];
+					  lin[j]+=tmp_lin[totdoc*t+j];
+
+				  for (t=0; t<num_threads-1; t++)
+				  {
+					  pthread_join(threads[t], NULL);
+
+					  //add up results
+					  for(jj=0;(j=inactive2dnum[jj])>=0;jj++)
+						  lin[j]+=tmp_lin[totdoc*t+j];
+				  }
+
+				  delete[] tmp_lin;
+				  delete[] tmp_aicache;
 			  }
-
-
-			  delete[] tmp_lin;
-			  delete[] tmp_aicache;
-
 		  }
 	  }
 	  delete[] changed;

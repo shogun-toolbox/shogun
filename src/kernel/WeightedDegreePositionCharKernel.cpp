@@ -1017,21 +1017,16 @@ void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx,
 	INT* vec= new INT[num_threads*num_feat];
 	ASSERT(vec);
 	
-    if (!result)
-    {
-		result= new DREAL[num_vec];
-		ASSERT(result);
-		memset(result, 0, sizeof(DREAL)*num_vec);
-    }
-
 	if (num_threads < 2)
 	{
-		for (INT j=0; j<num_feat && !CSignal::cancel_computations; j++)
+		for (INT j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			S_THREAD_PARAM params;
 			params.vec=vec;
+			params.result=result;
 			params.weights=weights;
+			params.kernel=this;
 			params.tries=&tries;
 			params.factor=factor;
 			params.j=j;
@@ -1039,9 +1034,9 @@ void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx,
 			params.end=num_vec;
 			params.length=length;
 			params.max_shift=max_shift;
-			params.sqrtdiag_rhs=sqrtdiag_rhs;
 			params.shift=shift;
 			params.vec_idx=vec_idx;
+			params.sqrtdiag_rhs=sqrtdiag_rhs;
 			compute_batch_helper((void*) &params);
 
 			CIO::progress(j,0,num_feat);
@@ -1049,7 +1044,7 @@ void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx,
 	}
 	else
 	{
-		for (INT j=0; j<num_feat && !CSignal::cancel_computations; j++)
+		for (INT j=0; j<num_feat && !CSignal::cancel_computations(); j++)
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			pthread_t threads[num_threads-1];
@@ -1060,8 +1055,9 @@ void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx,
 			for (t=0; t<num_threads-1; t++)
 			{
 				params[t].vec=&vec[num_feat*t];
-				params[t].vec=vec;
+				params[t].result=result;
 				params[t].weights=weights;
+				params[t].kernel=this;
 				params[t].tries=&tries;
 				params[t].factor=factor;
 				params[t].j=j;
@@ -1069,14 +1065,16 @@ void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx,
 				params[t].end = (t+1)*step;
 				params[t].length=length;
 				params[t].max_shift=max_shift;
-				params[t].sqrtdiag_rhs=sqrtdiag_rhs;
 				params[t].shift=shift;
 				params[t].vec_idx=vec_idx;
+				params[t].sqrtdiag_rhs=sqrtdiag_rhs;
 				pthread_create(&threads[t], NULL, CWeightedDegreePositionCharKernel::compute_batch_helper, (void*)&params[t]);
 			}
 
 			params[t].vec=&vec[num_feat*t];
+			params[t].result=result;
 			params[t].weights=weights;
+			params[t].kernel=this;
 			params[t].tries=&tries;
 			params[t].factor=factor;
 			params[t].j=j;
@@ -1084,9 +1082,9 @@ void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx,
 			params[t].end=num_vec;
 			params[t].length=length;
 			params[t].max_shift=max_shift;
-			params[t].sqrtdiag_rhs=sqrtdiag_rhs;
 			params[t].shift=shift;
 			params[t].vec_idx=vec_idx;
+			params[t].sqrtdiag_rhs=sqrtdiag_rhs;
 			compute_batch_helper((void*) &params[t]);
 
 			for (t=0; t<num_threads-1; t++)
