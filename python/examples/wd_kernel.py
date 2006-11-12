@@ -5,7 +5,7 @@ from shogun.SVM import *
 from shogun.Kernel import *
 
 degree=20
-num_dat=500
+num_dat=50
 len=70
 acgt=array(['A','C','G','T'])
 C=1
@@ -44,4 +44,3 @@ wdk.init(trainfeat,testfeat, False)
 testout=svm.classify().get_labels()
 
 print "\n classification error:" + `mean(sign(testout)!=telab)`
-
