@@ -64,6 +64,7 @@ public:
 	bool best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[]) ;
 	bool best_path_2struct(const mxArray* vals[], mxArray* retvals[]) ;
 	bool best_path_trans(const mxArray* vals[], mxArray* retvals[]) ;
+	bool best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]) ;
 	bool best_path_trans_simple(const mxArray* vals[], mxArray* retvals[]) ;
 	bool append_hmm(const mxArray* vals[]);
 	bool hmm_classify_example(mxArray* retvals[], int idx);

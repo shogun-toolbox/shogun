@@ -163,6 +163,11 @@ public:
 	{
 		return name ;
 	}
+
+	INT get_plif_len()
+	{
+		return len ;
+	}
 	
 	
 protected:

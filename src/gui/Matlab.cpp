@@ -54,6 +54,7 @@ static const CHAR* N_GET_HMM_DEFS=		"get_hmm_defs";
 static const CHAR* N_SET_HMM=			"set_hmm";
 //static const CHAR* N_MODEL_PROB_NO_B_TRANS=			"model_prob_no_b_trans";
 static const CHAR* N_BEST_PATH_NO_B_TRANS=			"best_path_no_b_trans";
+static const CHAR* N_BEST_PATH_TRANS_DERIV=			"best_path_trans_deriv";
 static const CHAR* N_BEST_PATH_TRANS=			"best_path_trans";
 static const CHAR* N_BEST_PATH_2STRUCT=			"best_path_2struct";
 static const CHAR* N_BEST_PATH_TRANS_SIMPLE=			"best_path_trans_simple";
@@ -522,6 +523,15 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				CIO::message(M_ERROR, "usage is [prob,path]=sg('best_path_trans_simple', p, q, a_trans, seq, nbest)");
+		}
+		else if (strmatch(action, len, N_BEST_PATH_TRANS_DERIV))
+		{
+			if ((nrhs==1+12) & (nlhs==5))
+			{
+				sg_matlab.best_path_trans_deriv(prhs,plhs);
+			}
+			else
+				CIO::message(M_ERROR, "usage is [p_deriv, q_deriv, a_deriv, penalties_deriv]=sg('best_path_trans_deriv', my_path, my_pos, p,q,a_trans,seq, pos, genestr, penalties, penalty_info, dict_weights)");
 		}
 		else if (strmatch(action, len, N_BEST_PATH_TRANS))
 		{

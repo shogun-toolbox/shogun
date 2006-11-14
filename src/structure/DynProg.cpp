@@ -2047,10 +2047,10 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 #endif
 }
 
-void CDynProg::best_path_trans_deriv(const DREAL *seq_array, INT seq_len, const INT *pos,
+void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my_seq_len, 
+									 const DREAL *seq_array, INT seq_len, const INT *pos,
 									 CPlif **Plif_matrix, 
 									 const char *genestr, INT genestr_len,
-									 INT *my_state_seq, INT *my_pos_seq, INT my_seq_len, 
 									 DREAL *dictionary_weights, INT dict_len,
 									 INT max_plif_id, INT max_limits_len, DREAL *Plif_deriv)
 {
