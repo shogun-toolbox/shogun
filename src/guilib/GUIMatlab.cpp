@@ -1622,7 +1622,6 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					CAlphabet* alpha = new CAlphabet(al, len);
 					alpha->clear_histogram();
 
-					f= new CCharFeatures(alpha, 0);
 					INT num_vec=mxGetN(mx_feat);
 					INT num_feat=mxGetM(mx_feat);
 					CHAR* fm=new CHAR[num_vec*num_feat];
@@ -1635,6 +1634,9 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					alpha->add_string_to_histogram(fm, ((LONG) num_vec)* ((LONG) num_feat));
                     CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
                     CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+
+					f= new CCharFeatures(alpha, 0);
+					ASSERT(f);
 
 					if (alpha->check_alphabet_size() && alpha->check_alphabet())
 						((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
@@ -1658,7 +1660,6 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					CAlphabet* alpha = new CAlphabet(al, len);
 					alpha->clear_histogram();
 
-					f= new CByteFeatures(alpha, 0);
 					INT num_vec=mxGetN(mx_feat);
 					INT num_feat=mxGetM(mx_feat);
 					BYTE* fm=new BYTE[num_vec*num_feat];
@@ -1668,6 +1669,9 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					alpha->add_string_to_histogram(fm, ((LONG) num_vec)* ((LONG) num_feat));
 					for (LONG l=0; l<((LONG) num_vec)* ((LONG) num_feat); l++)
 						fm[l]=c[l];
+
+					f= new CByteFeatures(alpha, 0);
+					ASSERT(f);
 
 					if (alpha->check_alphabet_size() && alpha->check_alphabet())
 						((CByteFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
@@ -1699,9 +1703,6 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 						ASSERT(alpha);
 						ASSERT(sc);
 
-						f= new CStringFeatures<CHAR>(alpha);
-						ASSERT(f);
-
 						int maxlen=0;
 						alpha->clear_histogram();
 
@@ -1726,6 +1727,9 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 
 						CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
 						CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+						f= new CStringFeatures<CHAR>(alpha);
+						ASSERT(f);
+
 						if (alpha->check_alphabet_size() && alpha->check_alphabet())
 							((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
 						else
@@ -1747,9 +1751,6 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 						CAlphabet* alpha = new CAlphabet(al, len);
 						T_STRING<BYTE>* sc=new T_STRING<BYTE>[num_vec];
 						ASSERT(alpha);
-
-						f= new CStringFeatures<BYTE>(alpha);
-						ASSERT(f);
 
 						int maxlen=0;
 						alpha->clear_histogram();
@@ -1775,6 +1776,9 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 
 						CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
 						CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+						f= new CStringFeatures<BYTE>(alpha);
+						ASSERT(f);
+
 						if (alpha->check_alphabet_size() && alpha->check_alphabet())
 							((CStringFeatures<BYTE>*) f)->set_features(sc, num_vec, maxlen);
 						else
