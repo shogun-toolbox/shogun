@@ -89,6 +89,22 @@ class CSVM : public CKernelMachine
 			return svm_model.num_svs;
 		}
 
+      
+      void get_alphas(DREAL** alphas, INT* d1) {
+         int nsv = get_num_support_vectors();
+
+         ASSERT(alphas && d1);
+         *alphas=NULL;
+         *d1=nsv;
+
+         if (nsv>0)
+         {
+            *alphas = new DREAL[nsv];
+            for(int i=0; i<nsv; i++)
+               (*alphas)[i] = get_alpha(i);
+         } 
+      }
+
 		inline bool create_new_model(int num)
 		{
 			delete[] svm_model.alpha;
