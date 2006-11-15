@@ -2317,9 +2317,9 @@ bool CGUIMatlab::get_WD_scoring(mxArray* retvals[], INT max_order)
 			sv_weight[i] = svm->get_alpha(i);
 		}
 
-		if ((max_order < 1) || (max_order > 10))
+		if ((max_order < 1) || (max_order > 12))
 		{
-			CIO::message(M_WARN, "max_order out of range 1..10 (%d) setting to 1\n", max_order);
+			CIO::message(M_WARN, "max_order out of range 1..12 (%d) setting to 1\n", max_order);
 			max_order=1;
 		}
 		DREAL* position_weights;
