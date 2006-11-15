@@ -24,9 +24,7 @@
 
 #include "lib/io.h"
 #include "lib/Version.h"
-#include "distributions/hmm/penalty_info.h"
 #include "distributions/hmm/HMM.h"
-#include "distributions/hmm/penalty_info.h"
 #include "features/Labels.h"
 #include "features/RealFeatures.h"
 #include "kernel/WeightedDegreeCharKernel.h"

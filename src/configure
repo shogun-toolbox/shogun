@@ -1883,11 +1883,11 @@ cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
 		echocheck "Lapack/Atlas support"
-		if cc_check -llapack-3 -lblas-3
+		if cc_check -llapack -lblas
 		then
 			echores "yes"
 			HAVE_LAPACK='#define HAVE_LAPACK 1'
-			LINKFLAGS="$LINKFLAGS -llapack-3 -lblas-3"
+			LINKFLAGS="$LINKFLAGS -llapack -lblas"
 		else
 			echores "no"
 		fi
