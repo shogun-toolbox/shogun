@@ -67,6 +67,7 @@ class TestKernels(ut.TestCase):
       #chi2k.get_kernel_type == K_CHI2
       #km = chi2k.get_kernel_matrix()
       #print km
+	  pass
    
    def testCombinedKernel(self):
       pass

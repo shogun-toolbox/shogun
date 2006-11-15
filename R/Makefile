@@ -2,7 +2,7 @@
 # Makefile for automated Shogun-R package generation
 #
 #
-SHOGUN:=sg_0.2-1.tar.gz
+SHOGUN:=sg_0.3-1.tar.gz
 
 install: $(SHOGUN)
 	@ R CMD INSTALL $(SHOGUN)
@@ -12,14 +12,14 @@ $(SHOGUN): configure ./sg/src/configure.sg
 	cd sg/src && ./configure
 	@echo "Compile package..."
 	sh -c "R CMD build sg"
-	@echo "Check package..."
-	sh -c "R CMD check sg"
+	#@echo "Check package..."
+	#sh -c "R CMD check sg"
 
 ./sg/src/configure.sg: configure
 	@echo "Copy all needed files from Shogun src"
 	sh -c "cd ../src && make lib/versionstring.h"
 	cp configure ./sg/src
-	cp -R ../src/classifier ../src/features ../src/gui ../src/guilib ../src/kernel ../src/lib ../src/preproc ../src/regression ../src/distributions ./sg/src
+	cp -R ../src/classifier ../src/features ../src/gui ../src/guilib ../src/kernel ../src/lib ../src/preproc ../src/regression ../src/distributions ../src/distance ./sg/src
 	cp ../src/.generate_link_dependencies.py ../src/.version.sh ./sg/src
 	cat ../src/Makefile | sed 's/#removeconfighunk/rm -f .config/' >./sg/src/Makefile
 	cp ../src/configure ./sg/src/configure.sg
