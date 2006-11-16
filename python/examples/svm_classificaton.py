@@ -1,5 +1,5 @@
 import sg
-from pylab import figure,pcolor,scatter,contour,colorbar,show
+from pylab import figure,pcolor,scatter,contour,colorbar,show,imshow
 from numpy import meshgrid,reshape,linspace,ones,min,max,concatenate,transpose
 from numpy import ravel,array
 from numpy.random import randn
@@ -30,8 +30,9 @@ sg.send_command('init_kernel TEST')
 z=sg.svm_classify()
 
 z.resize((50,50))
-pcolor(x, y, transpose(z), shading='flat')
+#pcolor(x, y, transpose(z), shading='flat') #for non-smooth visualization
+i=imshow(transpose(z),  origin='lower', extent=(1.2*min(features),1.2*max(features),1.2*min(features),1.2*max(features))) #for smooth visualization
 scatter(features[:,0],features[:,1], s=20, marker='o', c=labels, hold=True)
 contour(x, y, transpose(z), linewidths=1, colors='black', hold=True)
-colorbar()
+colorbar(i)
 show()
