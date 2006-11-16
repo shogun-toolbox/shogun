@@ -14,8 +14,32 @@ all:	just-do-it
 ifeq (.config,$(wildcard .config))
 include .config
 else
-just-do-it:	confgen config
-		test -f .config && $(MAKE)
+just-do-it:
+	@echo ==================
+	@echo SHOGUN - Makefile
+	@echo ==================
+	@echo
+	@echo
+	@echo !!! Please run ./configure with the appropriate options first !!!
+	@echo
+	@echo
+	@echo for standalone interface:
+	@echo "              ./configure"
+	@echo for python interface: 
+	@echo "              ./configure --enable-python"
+	@echo for python object oriented interface: 
+	@echo "              ./configure --enable-python --enable-swig"
+	@echo for R interface: 
+	@echo "              ./configure --enable-R"
+	@echo for octave interface: 
+	@echo "              ./configure --enable-octave"
+	@echo for matlab interface: 
+	@echo "              ./configure --enable-matlab"
+	@echo
+	@echo For additional options see
+	@echo "              ./configure --help"
+	@echo
+	@exit 1
 endif
 
 ifeq (.config-local,$(wildcard .config-local))
@@ -42,7 +66,7 @@ SWIGLIBFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le 
 SWIGPYFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1py=')
 TAR:=../shogun-$(shell date +%Y-%m-%d).tar
 
-.PHONY: config swig swigclean just-do-it all out clean end condor purif profile dep depend targets warn2err err2warn ctags confgen depgen buildout buildend dist
+.PHONY: config swig swigclean just-do-it all out clean end condor purif profile dep depend targets warn2err err2warn ctags depgen buildout buildend dist
 
 ifeq (.config,$(wildcard .config))
 ifeq (.depend,$(wildcard .depend))
@@ -55,10 +79,6 @@ endif
 endif
 
 
-confgen:	
-	@echo ==================================
-	@echo ==== Generating configuration ====
-	@echo ==================================
 depgen:	.config
 	@echo =================================
 	@echo ==== Generating dependencies ====
@@ -104,13 +124,6 @@ swigclean:
 clean: swigclean
 	rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*.dll" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.oct sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find . -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn)
 
-config: .config
-.config:	configure
-		@echo "========================================="
-		@echo "=running configure using default options="
-		@echo "========================================="
-		chmod u+x ./configure
-		./configure #use default options
 dist:	distclean
 	rm -f $(TAR).gz
 	tar -cvf $(TAR) -C ../../ shogun/src && gzip -9 $(TAR)

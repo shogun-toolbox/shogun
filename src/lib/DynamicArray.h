@@ -187,6 +187,10 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	///resize the array 
 	bool resize_array(INT n)
 	{
+		// one cannot shrink below resize_granularity
+		if (n<resize_granularity)
+			n=resize_granularity;
+
 		if (!CArray<T>::resize_array(n))
 			return false ;
 		

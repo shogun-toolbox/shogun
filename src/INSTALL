@@ -34,10 +34,12 @@ To compile the octave interface you need to have the octave developer files
 To compile the python interface you need to have numpy version 1.x installed 
 (debian package python-numpy and python-numpy-ext) installed.
 
-Also you will need atlas and lapack (debian lapack3-dev, 
+Optionally you will need atlas and lapack (debian packages lapack3-dev, 
 atlas3-headers atlas3-base-dev or atlas3-altivec-dev atlas3-sse2-dev)
-installed. In case atlas/lapack is unavailable use --disable-lapack
-to nevertheless compile a slightly slower version.
+installed. Note that atlas/lapack is only supported under linux (high
+performance computing should be done under linux only anyway). In case
+ atlas/lapack is unavailable, don't worry shogun will work without, though
+slightly slower versions are used.
 
 
 SPECIFIC BUILD INSTRUCTIONS
@@ -118,12 +120,97 @@ to test if it is working try python ../python/examples/numpy_svm_matplotlib.py
 
 BUILDING ON MACOSX
 
-On powerpc archs don't use gcc-4.0 / gcc-4.1 as it will fail with an internal compiler
+python:
+=======
+Get the precompiled binary packages
+python, matplotlib, NumPy and wxPython from http://pythonmac.org/packages/py24-fat/index.html
+
+Make sure you installed the XCode tools including X11 (such that makedepend
+/usr/X11R6/bin/makedepend exists).
+
+Note: On powerpc archs don't use gcc-4.0 / gcc-4.1 as it will fail with an internal compiler
 error. Try gcc-4.2 instead or disable optimization (using -O0).
+Also make sure you don't mix python versions (i.e. python2.4 and python2.5) on build/runtime.
+You can specify the python version as a argument to configure, e.g.: --python=python2.4
 
-You similarly named packages as for debian above. Also make sure you don't mix python versions
-(i.e. python2.4 and python2.5) on build/runtime. All of the instructions for debian should work then.
+./configure --enable-python
+make
 
+to test if it is working try:
+
+PYTHONPATH=`pwd` python ../python/examples/svm_classification.py
+
+object oriented python/swig interface:
+======================================
+Follow the above instructions for python. Then use fink/darwinports to install swig.
+
+./configure --enable-python
+make
+sudo make install
+
+to test if it is working try python ../python/examples/numpy_svm_matplotlib.py
+
+octave:
+=======
+Use fink/darwinports to install octave. For intel-macs octave currently is only in the
+unstable repository + it has to be compiled from source. Also note that g77
+ got replaced by gfortran, so you might need to do a fink install gcc4 first (which takes
+ an endless amount time to compile).
+
+then do:
+
+./configure --enable-octave
+make
+
+a sg.oct file should be created. as a test start octave in the src/ directory
+and type
+
+addpath('../octave/examples')
+svr_regression
+
+standalone:
+===========
+cd src
+./configure
+make
+
+The shogun executable can be found in src/
+
+R:
+==
+Install the full R package (e.g. the 93MB R-2.4.0.dmg image from
+http://cran.r-project.org/bin/macosx/ )
+
+then do the usual R CMD INSTALL <pkg>
+
+After starting the R aqua gui, choose File->Source File and select the
+shogun/R/examples/svm_classification.R example
+
+If that does not work out (send us a bug report) and also please try the following:
+
+Enter the src/ directory and do:
+
+./configure --enable-R
+(if that fails attach the configure.log in the bug report)
+make
+
+a sg.so file should be created. To test if that file is OK try in the
+src/ directory:
+
+R
+>> dyn.load('sg.so')
+sg <- function(...) .External("sg",...,PACKAGE="sg")
+sg('help')
+
+if that was still working go to the shogun/R directory and try
+make clean
+make
+
+if a .tar.gz is successfully created, then the R CMD INSTALL <file>.tar.gz
+should go through.
+
+matlab:
+=======
 
 BUILDING ON WINDOWS / CYGWIN
 
@@ -219,8 +306,8 @@ to test if it is working try python ../python/examples/numpy_svm_matplotlib.py
 PROBLEMS
 
 In case header files or libraries are not at standard locations one needs
-to manually adjust the .config file (copy .config to .config-local and modify
-		that version).
+to manually adjust the libray/include paths using --includes or --libs
+(see configure --help for additional options) 
 
 The current gcc/g++ version in cygwin is broken. Please downgrade to 
 gcc/g++ 3.x.x to get a working octave interface.

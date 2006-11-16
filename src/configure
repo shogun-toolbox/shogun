@@ -1717,9 +1717,9 @@ fi
   elif osf1
   then
 	  COMP_OPTS="-O5 -inline speed -om"
-  elif darwin
-  then
-	  COMP_OPTS="-Wno-long-double $COMP_OPTS"
+#  elif darwin
+#  then
+#	  COMP_OPTS="-Wno-long-double $COMP_OPTS"
   fi
 }
 
@@ -1730,6 +1730,9 @@ set_opts()
 		if test "$_matlab" = yes
 		then
 			LINKFLAGS="$LINKFLAGS -undefined suppress"
+		elif test "$_R" = yes
+		then
+			true #nop	
 		else
 			LINKFLAGS="$LINKFLAGS -undefined error"
 		fi
@@ -1880,16 +1883,31 @@ EOF
 	then
 cat > $TMPC << EOF
 #include <cblas.h>
-int main(void) { return 0; }
+#include <clapack.h>
+int main(void)
+{ 
+	int skip=1;
+	int n=10; double* a=NULL; double* v1=NULL; double* v2=NULL;
+	int result=clapack_dpotrf(CblasRowMajor, CblasUpper, n, a, n);
+	int r = cblas_ddot(n, v1, skip, v2, skip);
+	return 0;
+}
 EOF
 		echocheck "Lapack/Atlas support"
-		if cc_check -llapack -lblas
+		if cc_check -llapack-3 -lblas-3
 		then
 			echores "yes"
 			HAVE_LAPACK='#define HAVE_LAPACK 1'
-			LINKFLAGS="$LINKFLAGS -llapack -lblas"
+			LINKFLAGS="$LINKFLAGS -llapack-3 -lblas-3"
 		else
-			echores "no"
+			if cc_check -llapack -lblas
+			then
+				echores "yes"
+				HAVE_LAPACK='#define HAVE_LAPACK 1'
+				LINKFLAGS="$LINKFLAGS -llapack-3 -lblas-3"
+			else
+				echores "no"
+			fi
 		fi
 	fi
 
