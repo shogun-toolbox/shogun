@@ -215,13 +215,11 @@ EOF
 	echores "$cxx_version"
 
 	if test -z "$COMP_C" ; then
-		echores "no C compiler detected - cannot do anything"
-		exit 1
+		die "no C compiler detected - cannot do anything"
 	fi
 
 	if test -z "$COMP_CPP" ; then
-		echores "no C++ compiler detected - cannot do anything"
-		exit 1
+		die "no C++ compiler detected - cannot do anything"
 	fi
 }
 
@@ -247,7 +245,7 @@ check_makedepend()
 	else
 		echores "no"
 	 	rm -f ${TMPMAK} ${TMPMAK}.bak
-		exit 1
+		die "makedepend not found, but required to proceed. please install xutils-dev"
 	fi
 }
 
@@ -581,8 +579,7 @@ for ac_option do
     ;;
 
   *)
-    echo "Unknown parameter: $ac_option"
-    exit 1
+    die "Unknown parameter: $ac_option"
     ;;
   esac
 done
@@ -1742,23 +1739,39 @@ set_opts()
 
 	if test "$_matlab" = yes
 	then
-		echocheck "Matlab"
-		if matlab -nodisplay -r 'version;quit' >/dev/null 2>&1
+		if win32
 		then
-			 echores "`matlab -nodisplay -r \"sprintf('ver:%s',version),quit\" | grep '^ver:' | cut -f '2-' -d ':'`"
-			 MATLAB_DIR=`echo '!env' | matlab -nodisplay | grep '^MATLAB=' | cut -c 8-`
-			 MATLAB_INCDIR="$MATLAB_DIR/extern/include"
-			 MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
-			 MATLAB_BINDIR="$MATLAB_DIR/bin"
+			echocheck "Matlab"
+			matlab.exe /nosplash /minimize /r "fid=fopen('matlab_version.txt','wb');fprintf(fid,version);fclose(fid);quit"
+			if test -f matlab_version.txt
+			then
+				echores `cat matlab_version.txt`
+				matlab.exe /nosplash /minimize /r "system('env > matlab_path.txt');quit"
+				MATLAB_DIR=`cut -c 3- matlab_path.txt`
+				MATLAB_INCDIR="$MATLAB_DIR/extern/include"
+				MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
+				MATLAB_BINDIR="$MATLAB_DIR/bin"
+			else
+				echores "no"
+				die "could not find matlab in path / matlab crashed"
+			fi
+
 		else
-			echores "no"
-			exit 1
+			echocheck "Matlab"
+			if matlab -nodisplay -r 'version;quit' >/dev/null 2>&1
+			then
+				 echores "`matlab -nodisplay -r \"sprintf('ver:%s',version),quit\" | grep '^ver:' | cut -f '2-' -d ':'`"
+				 MATLAB_DIR=`echo '!env' | matlab -nodisplay | grep '^MATLAB=' | cut -c 8-`
+				 MATLAB_INCDIR="$MATLAB_DIR/extern/include"
+				 MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
+				 MATLAB_BINDIR="$MATLAB_DIR/bin"
+			else
+				echores "no"
+				die "could not find matlab in path / matlab crashed"
+			fi
 		fi
 
 		HAVE_MATLAB='#define HAVE_MATLAB 1'
-
-		COMPFLAGS_CPP="$COMPFLAGS_CPP"
-		COMPFLAGS_C="$COMPFLAGS_C"
 
 		if osf1
 		then
@@ -1811,7 +1824,7 @@ EOF
 			echores "yes"
 		else
 			echores "no"
-			exit 1
+			die "could not find matlab developer files (e.g. mex.h)"
 		fi
 	fi
 
@@ -1826,7 +1839,7 @@ EOF
 		echores "yes"
 	else
 		echores "no"
-		exit 1
+		die "could not find math library (libm)"
 	fi
 
 cat > $TMPC << EOF
@@ -1842,7 +1855,7 @@ EOF
 		echores "yes"
 	else
 		echores "no"
-		exit 1
+		die "no posix threading support found (libpthread)"
 	fi
 
 	if test "$_readline" = yes || test "$_readline" = auto;
@@ -1919,7 +1932,7 @@ EOF
 			echores "`echo version | octave | grep ans | cut -f 3- -d ' '`"
 		else
 			echores "no"
-			exit 1
+			die "could not find octave in path / octave crashed"
 		fi
 
 		echocheck "octave-config"
@@ -1928,7 +1941,7 @@ EOF
 			echores "yes"
 		else
 			echores "no"
-			exit 1
+			die "could not find octave-config in path / octave-config crashed"
 		fi
 
 cat > $TMPC << EOF
@@ -1951,11 +1964,11 @@ EOF
 		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
 
 		if darwin
-                then
-		    LINKFLAGS="-bundle -Wl,-flat_namespace -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
-                else
-		    LINKFLAGS="-shared -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
-                fi
+		then
+			LINKFLAGS="-bundle -Wl,-flat_namespace -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
+		else
+			LINKFLAGS="-shared -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
+		fi
 		TARGET="sg.oct"
 		INCLUDES="$INCLUDES -I`octave-config -p OCTINCLUDEDIR` -I`octave-config -p INCLUDEDIR`"
 		COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC"
@@ -1967,7 +1980,7 @@ EOF
 			echores "yes"
 		else
 			echores "no"
-			exit 1
+			die "octave developer files missing"
 		fi
 	fi
 
@@ -1981,11 +1994,11 @@ EOF
 				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`"
 			else
 				echores "`$PYTHON -c 'import numpy; print numpy.__version__'`... too old version 1.0 or later required"
-				exit 1
+				die "python numpy outdated"
 			fi
 		else
 			echores "no"
-			exit 1
+			die "python numpy package missing"
 		fi
 
 		HAVE_PYTHON='#define HAVE_PYTHON 1'
@@ -2033,7 +2046,7 @@ EOF
 			echores "yes"
 		else
 			echores "no"
-			exit 1
+			die "python/numpy developer files missing"
 		fi
 	fi
 
@@ -2045,17 +2058,17 @@ EOF
 			echores "`echo 'version; quit()' | R  --no-save 2>&1 | grep version\.string | cut -f 4 -d ' '`"
 		else
 			echores "no"
-			exit 1
+			die "cannot find R executable in path"
 		fi
 
 		HAVE_R='#define HAVE_R 1'
 
 		if win32
-                then
-		    TARGET="sg.dll"
-                else
-		    TARGET="sg.so"
-                fi
+		then
+			TARGET="sg.dll"
+		else
+			TARGET="sg.so"
+		fi
 
 		INCLUDES="$INCLUDES `R CMD config --cppflags`"
 		LINKFLAGS="$LINKFLAGS `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
@@ -2078,7 +2091,7 @@ EOF
 			echores "yes"
 		else
 			echores "no"
-			exit 1
+			die "cannot find R developer files"
 		fi
 	fi
 
@@ -2120,7 +2133,7 @@ EOF
 			echores "`swig -version 2>&1 | grep Version | cut -f 3 -d ' '`"
 		else
 			echores "no"
-			exit 1
+			die "cannot find swig executable in path"
 		fi
 
 		HAVE_SWIG='#define HAVE_SWIG 1'
