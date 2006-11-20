@@ -98,7 +98,9 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 	if (!gui)
 		gui=new CTextGUI(0, NULL);
 
+#ifndef CYGWIN
 	CSignal::set_handler();
+#endif
 
 	if (!gui)
 		CIO::message(M_ERROR,"gui could not be initialized.");
@@ -839,6 +841,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 	else
 		CIO::message(M_ERROR, "string expected as first argument");
 
+#ifndef CYGWIN
 	CSignal::unset_handler();
+#endif
 }
 #endif

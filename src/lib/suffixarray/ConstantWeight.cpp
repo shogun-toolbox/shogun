@@ -38,8 +38,8 @@
 #ifndef CONSTANTWEIGHT_CPP
 #define CONSTANTWEIGHT_CPP
 
+#include "lib/io.h"
 #include "lib/suffixarray/ConstantWeight.h"
-#include <cassert>
 
 /**
  *  Constant weight function.
@@ -55,7 +55,7 @@ ErrorCode
 ConstantWeight::ComputeWeight(const UInt32 &floor_len, const UInt32 &x_len,	Real &weight)
 {
 	//' Input validation
-	assert(x_len >= floor_len);
+	ASSERT(x_len >= floor_len);
 		
 	//' x_len == floor_len when the substring found ends on an interval.
 

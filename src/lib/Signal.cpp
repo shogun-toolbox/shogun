@@ -10,6 +10,7 @@
 
 #include "lib/config.h"
 
+#ifndef CYGWIN
 #ifdef HAVE_PYTHON
 #include <Python.h>
 #endif
@@ -39,7 +40,7 @@ CSignal::~CSignal()
 
 void CSignal::handler(int signal)
 {
-#ifdef HAVE_MATLAB
+#ifndef HAVE_MATLAB
 	if (signal == SIGINT)
 	{
 		CIO::message(M_MESSAGEONLY, "\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
@@ -130,3 +131,4 @@ void CSignal::clear()
 	active=false;
 	memset(&CSignal::oldsigaction, 0, sizeof(CSignal::oldsigaction));
 }
+#endif //CYGWIN

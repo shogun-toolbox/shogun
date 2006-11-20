@@ -40,11 +40,11 @@
 #ifndef W_MSUFSORT_CPP
 #define W_MSUFSORT_CPP
 
+#include "lib/io.h"
 #include "lib/suffixarray/W_msufsort.h"
 
 #include <iostream>
 #include <cstring>
-#include <cassert>
 
 
 W_msufsort::W_msufsort()
@@ -73,7 +73,7 @@ W_msufsort::ConstructSA(SYMBOL *text, const UInt32 &len, UInt32 *&array){
 
 	//' chteo: BUGBUG
 	//' redundant?
-	assert(text_copy != NULL);
+	ASSERT(text_copy != NULL);
 
 	memcpy(text_copy, text, sizeof(SYMBOL)*len);
 	msuffixsorter->Sort(text_copy, len);

@@ -39,6 +39,7 @@
 #ifndef ESA_CPP
 #define ESA_CPP
 
+#include "lib/io.h"
 #include "lib/suffixarray/ESA.h"
 #include "lib/suffixarray/W_msufsort.h"
 #include "lib/suffixarray/W_kasai_lcp.h"
@@ -47,7 +48,6 @@
 #include <stack>
 #include <queue>
 #include <algorithm> 
-#include <cassert>
 #include <numeric>
 #include <fstream>
 #include <ctime>
@@ -81,8 +81,8 @@ ESA::ESA(const UInt32 & size_, SYMBOL *text_, int verb):
   I_LCPFactory* lcp_fac = 0;
 
 	//' input validation
-	assert(size > 0);
-	assert(text[size-1] == SENTINEL);
+	ASSERT(size > 0);
+	ASSERT(text[size-1] == SENTINEL);
 
 
 	//' Construct Suffix Array
@@ -194,8 +194,8 @@ ErrorCode
 ESA::ConstructChildTable(){
 	
 	// Input validation
-	assert(text);
-	assert(suftab);
+	ASSERT(text);
+	ASSERT(suftab);
 
 	
 	//' stack for lcp-intervals
@@ -336,7 +336,7 @@ ESA::ConstructChildTable(){
 		lit.pop();
 	}
 
-	assert(lit.empty());
+	ASSERT(lit.empty());
   return NOERROR;
 }
 
@@ -356,8 +356,8 @@ ESA::GetSuflink(const UInt32 &i, const UInt32 &j,	UInt32 &sl_i, UInt32 &sl_j)
 	ErrorCode ec;
 
 	//' Input validation
-	assert(i<j);
-	assert(i>=0 && j<size);
+	ASSERT(i<j);
+	ASSERT(i>=0 && j<size);
 
 	UInt32 idx;
 
@@ -370,7 +370,7 @@ ESA::GetSuflink(const UInt32 &i, const UInt32 &j,	UInt32 &sl_i, UInt32 &sl_j)
 	sl_j = suflink[idx+idx+1];
 
 	//' Validate suffix link interval
-	assert(sl_i < sl_j && (sl_j-sl_i) >= (j-i));
+	ASSERT(sl_i < sl_j && (sl_j-sl_i) >= (j-i));
 
 	return NOERROR;
 }
@@ -418,8 +418,8 @@ ESA::GetSuflink(const UInt32 &i, const UInt32 &j,
 		ch = text[suftab[i]+lcp+1];
 	}
 	
-	assert(sl_j > sl_i);
-	assert((sl_j-sl_i) >= (j-i));
+	ASSERT(sl_j > sl_i);
+	ASSERT((sl_j-sl_i) >= (j-i));
 	
 	return NOERROR;
 }
@@ -465,7 +465,7 @@ ESA::ConstructBcktab(const UInt32 &alphabet_size)
 		//' (2)
 		bcktab_key4 = new UInt32[bcktab_size];
 		bcktab_val = new UInt32[bcktab_size];
-		assert(bcktab_key4 && bcktab_val);	
+		ASSERT(bcktab_key4 && bcktab_val);	
 
 		//' (3)
 		coef4 =  new UInt32[4];
@@ -492,7 +492,7 @@ ESA::ConstructBcktab(const UInt32 &alphabet_size)
 		//' (2)
 		bcktab_key8 = new UInt64[bcktab_size];
 		bcktab_val = new UInt32[bcktab_size];
-		assert(bcktab_key8 && bcktab_val);	
+		ASSERT(bcktab_key8 && bcktab_val);	
 
 		//' (3)
 		coef8 =  new UInt64[9];
@@ -545,7 +545,7 @@ ESA::GetSuflink(const UInt32 &i, const UInt32 &j,
 {
 	ErrorCode ec;
 	
-	assert(j-i >= 1); //' the interval [i..j] must has at least 2 suffixes.
+	ASSERT(j-i >= 1); //' the interval [i..j] must has at least 2 suffixes.
 
 
 	//' Variables
@@ -572,7 +572,7 @@ ESA::GetSuflink(const UInt32 &i, const UInt32 &j,
 	//'   the constraint of  prefix uniqueness.
 	offset = MIN(orig_lcp-1, bcktab_depth);
 
-	assert(offset>=0);
+	ASSERT(offset>=0);
 
 	if(bcktab_key4) {
 		hash_value4 = 0;
@@ -617,8 +617,8 @@ ESA::GetSuflink(const UInt32 &i, const UInt32 &j,
 	}
 	tmp_right = right;
 
-	assert(right <= size-1);
-	assert(right > left);
+	ASSERT(right <= size-1);
+	ASSERT(right > left);
 
 
 	offset = 0;
@@ -653,7 +653,7 @@ ESA::GetSuflink(const UInt32 &i, const UInt32 &j,
 			}
 			else {
 				//' mlcp == orig_lcp-1
-				assert(mlcp == orig_lcp-1);
+				ASSERT(mlcp == orig_lcp-1);
 				//' target found, but want to make sure it is the LEFTmost...
 				right = mid;	
 				rlcp = mlcp;
@@ -701,7 +701,7 @@ ESA::GetSuflink(const UInt32 &i, const UInt32 &j,
 			}
 			else {
 				//' mlcp == orig_lcp-1
-				assert(mlcp == orig_lcp-1);
+				ASSERT(mlcp == orig_lcp-1);
 				//' target found, but want to make sure it is the RIGHTmost...
 				left = mid;	
 				llcp = mlcp;
@@ -715,7 +715,7 @@ ESA::GetSuflink(const UInt32 &i, const UInt32 &j,
 		sl_j = right;
 	}
 
-	assert(sl_i < sl_j);
+	ASSERT(sl_i < sl_j);
 	return NOERROR;
 }
 
@@ -744,7 +744,7 @@ ESA::FindSuflink(const UInt32 &parent_i, const UInt32 &parent_j,
 {
 	ErrorCode ec;
 
-	assert(child_i != child_j);
+	ASSERT(child_i != child_j);
 
 	//' Variables
 	SYMBOL ch;
@@ -768,7 +768,7 @@ ESA::FindSuflink(const UInt32 &parent_i, const UInt32 &parent_j,
 		//' (2)
 		lcp_parent = 0;
 		ec = GetLcp(child_i,child_j,lcp_child); CHECKERROR(ec);		
-		assert(lcp_child  >  0);
+		ASSERT(lcp_child  >  0);
 	}
 	else {
 		//' (1)
@@ -778,7 +778,7 @@ ESA::FindSuflink(const UInt32 &parent_i, const UInt32 &parent_j,
 		//' (2)
 		ec = GetLcp(parent_i,parent_j,lcp_parent); CHECKERROR(ec);
 		ec = GetLcp(child_i,child_j,lcp_child); CHECKERROR(ec);				
-		assert(lcp_child > 0);
+		ASSERT(lcp_child > 0);
 	}
 
 
@@ -795,11 +795,11 @@ ESA::FindSuflink(const UInt32 &parent_i, const UInt32 &parent_j,
 
 		
 		ec = GetIntervalByChar(tmp_i, tmp_j, ch, lcp_sl, sl_i, sl_j); CHECKERROR(ec);
-		assert(sl_i<sl_j);  //' There must be a suflink interval for every interval.
+		ASSERT(sl_i<sl_j);  //' There must be a suflink interval for every interval.
 
 		ec = GetLcp(sl_i, sl_j, lcp_sl); CHECKERROR(ec);
 
-		assert(lcp_sl <= lcp_child-1);
+		ASSERT(lcp_sl <= lcp_child-1);
 	}
 	
 	return NOERROR;
@@ -851,7 +851,7 @@ ESA::ConstructSuflink()
 			//' Notes: interval.first := left bound of suffix link interval
 			//'        interval.second := right bound of suffix link interval
 			
-			assert(interval.first>=0 && interval.second < size);
+			ASSERT(interval.first>=0 && interval.second < size);
 			ec = GetIntervalByIndex(interval.first, interval.second, start_idx, i, j); 
 			CHECKERROR(ec);
 			
@@ -859,7 +859,7 @@ ESA::ConstructSuflink()
 				//' [i..j] is non-singleton interval
 				ec = FindSuflink(interval.first, interval.second, i,j, sl_i, sl_j); CHECKERROR(ec);
 				
-				assert(!(sl_i == i && sl_j == j));
+				ASSERT(!(sl_i == i && sl_j == j));
 
 				//' Store suflink of [i..j]
 				UInt32 idx=0;
@@ -903,11 +903,11 @@ ESA::GetChildIntervals(const UInt32 &lb, const UInt32 &rb,
 
 
 	//' Input validation
-	assert(rb-lb >= 1);
+	ASSERT(rb-lb >= 1);
 
 	k = lb;
 	do {
-		assert(lb>=0 && rb<size);
+		ASSERT(lb>=0 && rb<size);
 		ec = GetIntervalByIndex(lb,rb,k,i,j); CHECKERROR(ec);
 		if(j-i> 0) {
 			//' Non-singleton interval
@@ -949,7 +949,7 @@ ESA::GetIntervalByIndex(const UInt32 &parent_i, const UInt32 &parent_j,
 	UInt32 lcp_child_j = 0;
   
 	//' Input validation
-	assert( (parent_i < parent_j) && (parent_i >= 0) &&  
+	ASSERT( (parent_i < parent_j) && (parent_i >= 0) &&  
           (parent_j < size) && (start_idx >= parent_i) &&  
           (start_idx < parent_j));
 	
@@ -1008,7 +1008,7 @@ ESA::GetIntervalByChar(const UInt32 &parent_i, const UInt32 &parent_j,
 	ErrorCode ec;
 
 	//' Input validation
-	assert(parent_i < parent_j  &&  parent_i >= 0  &&  parent_j < size);
+	ASSERT(parent_i < parent_j  &&  parent_i >= 0  &&  parent_j < size);
 
 
 	//' Variables
@@ -1036,7 +1036,7 @@ ESA::GetIntervalByChar(const UInt32 &parent_i, const UInt32 &parent_j,
 	//' Step 2.1: Get first l-index
 	ec = childtab.l_idx(parent_i, parent_j, idx); CHECKERROR(ec);
 
-	assert(idx > parent_i && idx <= parent_j);
+	ASSERT(idx > parent_i && idx <= parent_j);
 
 	if(text[suftab[idx-1]+lcp] == ch) {
 		child_i = parent_i;
@@ -1097,7 +1097,7 @@ ESA::GetLcp(const UInt32 &i, const UInt32 &j, UInt32 &val)
 
 	
 	//' Input validation
-	assert(i < j  &&  i >= 0  &&  j < size);
+	ASSERT(i < j  &&  i >= 0  &&  j < size);
 
 	//' Variables
 	UInt32 up, down;
@@ -1189,7 +1189,7 @@ ESA::ExactSuffixMatch(const UInt32 &i, const UInt32 &j, const UInt32 &offset,
 	ErrorCode ec;
 
 	//' Input validation
-	assert(i != j);
+	ASSERT(i != j);
 
 	
 	//' Variables
@@ -1215,7 +1215,7 @@ ESA::ExactSuffixMatch(const UInt32 &i, const UInt32 &j, const UInt32 &offset,
 		floor_len = lcp;
 
 		ec = GetIntervalByChar(floor_lb, floor_rb, pattern[lcp], lcp, lb, rb); CHECKERROR(ec);
-		assert(lb <= rb);
+		ASSERT(lb <= rb);
 				
 		if(lb == rb)
 			break;
@@ -1239,7 +1239,7 @@ ESA::ExactSuffixMatch(const UInt32 &i, const UInt32 &j, const UInt32 &offset,
 					return NOERROR;
 			}
 
-			assert(matched_len == min);
+			ASSERT(matched_len == min);
 
 			//' Full pattern found!
 			if(matched_len == p_len) return NOERROR;

@@ -82,7 +82,7 @@ bool CGUIHMM::new_hmm(CHAR* param)
 bool CGUIHMM::baum_welch_train(CHAR* param)
 {
 	CHAR templname[]=TMP_DIR "bw_model_XXXXXX" ;
-#ifdef SUNOS
+#if defined SUNOS || defined CYGWIN
 #define mkstemp(name) mktemp(name);
 #endif
 	if ((gui->guifeatures.get_train_features()->get_feature_type()

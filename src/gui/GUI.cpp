@@ -14,11 +14,14 @@
 #include "lib/config.h"
 
 #include <string.h>
+
+#ifndef CYGWIN
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#endif
 
 #include "gui/TextGUI.h"
 #include "lib/Signal.h"
@@ -46,6 +49,7 @@ int main(int argc, char* argv[])
 				CIO::message(M_INFO, "if -i is specified shogun will listen on port 7367 (==hex(sg), *dangerous* as commands from any source are accepted");
 				return 1;
 			}
+#ifndef CYGWIN
 			else if ( argc>2 || !strcmp(argv[1], "-i") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help"))
 			{
 				int s=socket(AF_INET, SOCK_STREAM, 0);
@@ -76,6 +80,7 @@ int main(int argc, char* argv[])
 				while(gui->parse_line(input));
 				return 0;
 			}
+#endif
 			else
 			{
 				FILE* file=fopen(argv[1], "r");

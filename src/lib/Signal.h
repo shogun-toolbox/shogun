@@ -11,6 +11,9 @@
 #ifndef __SIGNAL__H_
 #define __SIGNAL__H_
 
+#include "lib/config.h"
+
+#ifndef CYGWIN
 #include <signal.h>
 #define NUMTRAPPEDSIGS 2
 
@@ -33,3 +36,4 @@ protected:
 	static bool cancel_computation;
 };
 #endif
+#endif //CYGWIN

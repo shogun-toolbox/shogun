@@ -39,9 +39,10 @@
 #ifndef EXPDECAYWEIGHT_CPP
 #define EXPDECAYWEIGHT_CPP
 
+#include "lib/io.h"
 #include "lib/suffixarray/ExpDecayWeight.h"
+
 #include <cmath>
-#include <cassert>
 
 
 /**
@@ -59,7 +60,7 @@ ExpDecayWeight::ComputeWeight(const UInt32 &floor_len, const UInt32 &x_len,
 															Real &weight)
 {
 	//' Input validation
-	assert(x_len >= floor_len);
+	ASSERT(x_len >= floor_len);
 	
 	//' x_len == floor_len when the substring found ends on an interval.
 	if(floor_len == x_len) {

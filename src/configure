@@ -1695,6 +1695,7 @@ fi
 
   COMPFLAGS_C="-W -Wall -O2 $_march $_mcpu"
   COMPFLAGS_CPP="-W -Wall -O2 $_march $_mcpu"
+
   if test "$_cc_major" -ge "3" ; then
     COMPFLAGS_C=`echo "$CFLAGS" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter/'`
     COMPFLAGS_CPP=`echo "$CFLAGS" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter/'`
@@ -1737,97 +1738,6 @@ set_opts()
 		LINKFLAGS="$LINKFLAGS -Xlinker --no-undefined"
 	fi
 
-	if test "$_matlab" = yes
-	then
-		if win32
-		then
-			echocheck "Matlab"
-			matlab.exe /nosplash /minimize /r "fid=fopen('matlab_version.txt','wb');fprintf(fid,version);fclose(fid);quit"
-			if test -f matlab_version.txt
-			then
-				echores `cat matlab_version.txt`
-				matlab.exe /nosplash /minimize /r "system('env > matlab_path.txt');quit"
-				MATLAB_DIR=`cut -c 3- matlab_path.txt`
-				MATLAB_INCDIR="$MATLAB_DIR/extern/include"
-				MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
-				MATLAB_BINDIR="$MATLAB_DIR/bin"
-			else
-				echores "no"
-				die "could not find matlab in path / matlab crashed"
-			fi
-
-		else
-			echocheck "Matlab"
-			if matlab -nodisplay -r 'version;quit' >/dev/null 2>&1
-			then
-				 echores "`matlab -nodisplay -r \"sprintf('ver:%s',version),quit\" | grep '^ver:' | cut -f '2-' -d ':'`"
-				 MATLAB_DIR=`echo '!env' | matlab -nodisplay | grep '^MATLAB=' | cut -c 8-`
-				 MATLAB_INCDIR="$MATLAB_DIR/extern/include"
-				 MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
-				 MATLAB_BINDIR="$MATLAB_DIR/bin"
-			else
-				echores "no"
-				die "could not find matlab in path / matlab crashed"
-			fi
-		fi
-
-		HAVE_MATLAB='#define HAVE_MATLAB 1'
-
-		if osf1
-		then
-			DEFINES="$DEFINES -DMATLAB_MEX_FILE"
-			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -std1"
-			COMPFLAGS_CPP="$COMPFLAGS_CPP -shared -ieee -std1"
-			LINKFLAGS="$LINKFLAGS -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*' -L$MATLAB_BINDIR/alpha -lmx -lmex -lmat"
-			INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
-			TARGET="sg.mexaxp"
-		elif darwin
-		then
-			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace"
-			add_library_path "Matlab(tm)" "/Applications/MATLAB7/bin/mac"
-			LINKFLAGS="$LINKFLAGS -lmx -lmex -lmat $LINKFLAGS"
-			add_include_path "Matlab(tm)" "/Applications/MATLAB7/extern/include"
-			TARGET="sg.mexmac"
-		elif linux
-		then
-			if x86_64
-			then
-				COMPFLAGS_C="$COMPFLAGS_C -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
-				COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
-				LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,$MATLAB_LIBDIR/glnxa64/mexFunction.map -Wl,--rpath-link,$MATLAB_BINDIR/glnxa64 -L$MATLAB_BINDIR/glnxa64 -lmx -lmex -lmat"
-				INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
-				TARGET="sg.mexa64"
-			elif x86
-			then
-				LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,$MATLAB_LIBDIR/glnx86/mexFunction.map -Wl,--rpath-link,$MATLAB_LIBDIR/glnx86 -L$MATLAB_BINDIR/glnx86 -lmx -lmex -lmat"
-				INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
-				TARGET="sg.mexglx"
-			else
-				die "matlab only supports x86_84 and x86 linux architectures"
-			fi
-		elif cygwin
-		then
-			LINKFLAGS="$LINKFLAGS -shared -mno-cygwin -Wl,--version-script,$MATLAB_LIBDIR/win32/mexFunction.def -Wl,--rpath-link,$MATLAB_LIBDIR/win32 -L$MATLAB_BINDIR/win32 -lmx -lmex -lmat"
-			INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
-			TARGET="sg.dll"
-		else
-			die "non supported matlab architecture"
-		fi
-
-		echocheck "Matlab developer support (-lmx -lmex -lmat)"
-cat > $TMPC << EOF
-#include <mex.h>
-int main(void) { return 0; }
-EOF
-		if cc_check
-		then
-			echores "yes"
-		else
-			echores "no"
-			die "could not find matlab developer files (e.g. mex.h)"
-		fi
-	fi
-
 cat > $TMPC << EOF
 #include <math.h>
 int main(void) { return 0; }
@@ -1849,8 +1759,8 @@ EOF
 	echocheck "Posix threads support"
 	if cc_check -pthread -lpthread
 	then
-		COMPLAGS_C="$COMPFLAGS_C -pthread"
-		COMPLAGS_CPP="$COMPFLAGS_CPP -pthread"
+		COMPFLAGS_C="$COMPFLAGS_C -pthread"
+		COMPFLAGS_CPP="$COMPFLAGS_CPP -pthread"
 		LINKFLAGS="$LINKFLAGS -lpthread"
 		echores "yes"
 	else
@@ -1923,6 +1833,102 @@ EOF
 			fi
 		fi
 	fi
+
+	if test "$_matlab" = yes
+	then
+		if win32
+		then
+			#echocheck "Matlab"
+			#matlab.exe /nosplash /minimize /r "fid=fopen('matlab_version.txt','wb');fprintf(fid,version);fclose(fid);quit"
+			#if test -f matlab_version.txt
+			#then
+				#echores `cat matlab_version.txt`
+				#matlab.exe /nosplash /minimize /r "system('env > matlab_path.txt');quit"
+				#MATLAB_DIR=`cut -c 3- matlab_path.txt`
+				MATLAB_DIR=/cygdrive/c/MATLAB6p5p2
+				MATLAB_INCDIR="$MATLAB_DIR/extern/include"
+				MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
+				MATLAB_BINDIR="$MATLAB_DIR/bin"
+			#else
+				#echores "no"
+				#die "could not find matlab in path / matlab crashed"
+			#fi
+
+		else
+			echocheck "Matlab"
+			if matlab -nodisplay -r 'version;quit' >/dev/null 2>&1
+			then
+				 echores "`matlab -nodisplay -r \"sprintf('ver:%s',version),quit\" | grep '^ver:' | cut -f '2-' -d ':'`"
+				 MATLAB_DIR=`echo '!env' | matlab -nodisplay | grep '^MATLAB=' | cut -c 8-`
+				 MATLAB_INCDIR="$MATLAB_DIR/extern/include"
+				 MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
+				 MATLAB_BINDIR="$MATLAB_DIR/bin"
+			else
+				echores "no"
+				die "could not find matlab in path / matlab crashed"
+			fi
+		fi
+
+		HAVE_MATLAB='#define HAVE_MATLAB 1'
+
+		if osf1
+		then
+			DEFINES="$DEFINES -DMATLAB_MEX_FILE"
+			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -std1"
+			COMPFLAGS_CPP="$COMPFLAGS_CPP -shared -ieee -std1"
+			LINKFLAGS="$LINKFLAGS -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*' -L$MATLAB_BINDIR/alpha -lmx -lmex -lmat"
+			INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
+			TARGET="sg.mexaxp"
+		elif darwin
+		then
+			LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace"
+			add_library_path "Matlab(tm)" "/Applications/MATLAB7/bin/mac"
+			LINKFLAGS="$LINKFLAGS -lmx -lmex -lmat $LINKFLAGS"
+			add_include_path "Matlab(tm)" "/Applications/MATLAB7/extern/include"
+			TARGET="sg.mexmac"
+		elif linux
+		then
+			if x86_64
+			then
+				COMPFLAGS_C="$COMPFLAGS_C -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
+				COMPFLAGS_CPP="$COMPFLAGS_CPP -fPIC -fno-omit-frame-pointer -ansi -D_GNU_SOURCE"
+				LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,$MATLAB_LIBDIR/glnxa64/mexFunction.map -Wl,--rpath-link,$MATLAB_BINDIR/glnxa64 -L$MATLAB_BINDIR/glnxa64 -lmx -lmex -lmat"
+				INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
+				TARGET="sg.mexa64"
+			elif x86
+			then
+				LINKFLAGS="$LINKFLAGS -shared -Wl,--version-script,$MATLAB_LIBDIR/glnx86/mexFunction.map -Wl,--rpath-link,$MATLAB_LIBDIR/glnx86 -L$MATLAB_BINDIR/glnx86 -lmx -lmex -lmat"
+				INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
+				TARGET="sg.mexglx"
+			else
+				die "matlab only supports x86_84 and x86 linux architectures"
+			fi
+		elif cygwin
+		then
+			COMPFLAGS_C="$COMPFLAGS_C -DMATLAB_MEX_FILE"
+			COMPFLAGS_CPP="$COMPFLAGS_CPP -DMATLAB_MEX_FILE"
+			LINKFLAGS="$LINKFLAGS -shared -mno-cygwin -Wl,--version-script,mexFunction.map -Wl,--rpath-link,$MATLAB_LIBDIR/win32 -L$MATLAB_BINDIR/win32 -lmx -lmex -lmat"
+			#LINKFLAGS="$LINKFLAGS -shared -mno-cygwin -Wl,--version-script,$MATLAB_LIBDIR/win32/lcc/mexFunction.def -Wl,--rpath-link,$MATLAB_LIBDIR/win32 -L$MATLAB_BINDIR/win32 -lmx -lmex -lmat"
+			INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
+			TARGET="sg.dll"
+		else
+			die "non supported matlab architecture"
+		fi
+
+		echocheck "Matlab developer support (-lmx -lmex -lmat)"
+cat > $TMPC << EOF
+#include <mex.h>
+int main(void) { return 0; }
+EOF
+		if cc_check
+		then
+			echores "yes"
+		else
+			echores "no"
+			die "could not find matlab developer files (e.g. mex.h)"
+		fi
+	fi
+
 
 	if test "$_octave" = yes
 	then

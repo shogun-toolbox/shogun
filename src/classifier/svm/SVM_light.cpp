@@ -904,7 +904,11 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 
                             /* repeat this loop until we have convergence */
 
+#ifdef CYGWIN
+  for(;((iteration<3) || (retrain && (!terminate))||((w_gap>get_weight_epsilon()) && get_mkl_enabled())); iteration++){
+#else
   for(;((!CSignal::cancel_computations()) && ((iteration<3) || (retrain && (!terminate))||((w_gap>get_weight_epsilon()) && get_mkl_enabled()))); iteration++){
+#endif
 
 #ifdef HAVE_PYTHON
 	  if (PyErr_CheckSignals())

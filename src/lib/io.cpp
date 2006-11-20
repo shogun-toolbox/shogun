@@ -85,7 +85,9 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			case M_CRITICAL:
 			case M_ALERT:
 			case M_EMERGENCY:
+#ifndef CYGWIN
 				CSignal::unset_handler();
+#endif
 				mexErrMsgTxt(str);
 				break;
 			default:

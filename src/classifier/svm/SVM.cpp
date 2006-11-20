@@ -231,7 +231,11 @@ void* CSVM::classify_example_helper(void* p)
 	CLabels* result=params->result;
 	CSVM* svm=params->svm;
 
+#ifdef CYGWIN
+	for (INT vec=params->start; vec<params->end; vec++)
+#else
 	for (INT vec=params->start; vec<params->end && !CSignal::cancel_computations(); vec++)
+#endif
 	{
 		if (params->verbose)
 		{
@@ -347,9 +351,11 @@ CLabels* CSVM::classify(CLabels* result)
 			}
 		}
 
+#ifndef CYGWIN
 		if ( CSignal::cancel_computations() )
 			CIO::message(M_INFO, "prematurely stopped.           \n");
 		else
+#endif
 			CIO::message(M_INFO, "done.           \n");
 	}
 	else 

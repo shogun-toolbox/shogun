@@ -36,6 +36,11 @@ extern "C" {
 #define isnan _isnan
 #endif
 
+//define finite/nan for CYGWIN
+#ifdef CYGWIN
+#include <ieeefp.h>
+#endif
+
 
 #ifndef NAN
 #include <stdlib.h>
@@ -150,6 +155,15 @@ public:
 		for (int i=2; i<=n; i++)
 			res*=i ;
 		return res ;
+	}
+	
+	static INT random()
+	{
+#ifdef CYGWIN
+		return rand();
+#else
+		return ::random();
+#endif
 	}
 
 	static inline INT* randperm(INT n)

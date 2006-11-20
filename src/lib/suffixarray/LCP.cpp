@@ -38,6 +38,7 @@
 #ifndef LCP_CPP
 #define LCP_CPP
 
+#include "lib/io.h"
 #include "lib/suffixarray/LCP.h"
 
 // Threshold for compacting LCP[]
@@ -61,7 +62,7 @@ ErrorCode
 LCP::compact(void){
   
   // Validate pre-conditions
-	assert(!array.empty() && array.size() == _size);
+	ASSERT(!array.empty() && array.size() == _size);
   
   // Already compact. Nothing to do
   if (_is_compact) return NOERROR;
@@ -115,7 +116,7 @@ UInt32
 LCP::operator [] (const UInt32 &idx) {
   
   // input is valid?
-	// assert (idx >= 0 && idx < _size);
+	// ASSERT (idx >= 0 && idx < _size);
   
 	if(!_is_compact){
     // LCP array has not been compacted yet!

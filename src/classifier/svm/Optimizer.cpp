@@ -24,7 +24,6 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
-
 INT verbosity=1;
 
 /* /////////////////////////////////////////////////////////////// */

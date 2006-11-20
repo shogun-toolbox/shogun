@@ -2,7 +2,6 @@
 #include <queue>
 #include <vector>
 #include <algorithm>
-#include <cassert>
 #include <numeric>
 
 CSpectrumKernel::CSpectrumKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT cachesize) : CStringKernel<CHAR>(cachesize)
@@ -127,7 +126,7 @@ CSpectrumKernel::IterativeCompute(const UInt32 &left, const UInt32 &right)
 	//' Step 2: Do breadth-first traversal. For every interval, compute val and add
 	//'           it to all its non-singleton child-intervals' val-entries in val[].
 	//'         Start with child-interval [i..j] of 0-[0..size-1].
-	//'         assert(j != size-1)
+	//'         ASSERT(j != size-1)
 	while(!q.empty()) {
 		//' Step 2.1: Get an interval from queue, #q#.
 		p = q.front(); q.pop();
@@ -180,7 +179,7 @@ CSpectrumKernel::IterativeCompute(const UInt32 &left, const UInt32 &right)
 
 			ec = esa->childtab.l_idx(tmp_p.first, tmp_p.second, firstlIndex2);
 			CHECKERROR(ec);
-			// assert( val[firstlIndex2] == 0 );
+			// ASSERT( val[firstlIndex2] == 0 );
 			val[firstlIndex2] = val[firstlIndex1]; // cur_val;
 						
 			//' (b)
@@ -206,7 +205,7 @@ CSpectrumKernel::PrecomputeVal()
 	ErrorCode ec;
 
 	//' Memory space requirement check.
-	assert(val != NULL);
+	ASSERT(val != NULL);
 
 
 	//' Initialise all val entries to zero!
@@ -265,13 +264,13 @@ CSpectrumKernel::Compute_K(SYMBOL *x, const UInt32 &x_len, Real &value)
 			
 		//' Step 2: Get suffix link for [floor_i..floor_j]
 		ec = esa->GetSuflink(floor_i, floor_j, lb, rb); CHECKERROR(ec);
-		assert((floor_j-floor_i) <= (rb-lb));  //' Range check
+		ASSERT((floor_j-floor_i) <= (rb-lb));  //' Range check
 
 				
 		//' Step 3: Compute contribution of this matched substring
 		ec = esa->childtab.l_idx(floor_i, floor_j, firstlIndex); CHECKERROR(ec);
-		assert(firstlIndex > floor_i && firstlIndex <= floor_j);
-		assert(floor_len <= matched_len);
+		ASSERT(firstlIndex > floor_i && firstlIndex <= floor_j);
+		ASSERT(floor_len <= matched_len);
 
 		ec = weigher->ComputeWeight(floor_len, matched_len, edge_weight); CHECKERROR(ec);
 		value += val[firstlIndex] + edge_weight*(lvs[j+1] - lvs[i]);
@@ -328,12 +327,12 @@ CSpectrumKernel::Set_Lvs(const Real *leafWeight, const UInt32 *len, const UInt32
 
 	//' clen[] is a cumulative array of len[]
 	partial_sum(len,len+m,clen);
-	assert(clen[m-1] == esa->size);
+	ASSERT(clen[m-1] == esa->size);
 
 
 	//' Allocate memory space for lvs[]
 	lvs = new (nothrow) Real[esa->size+1]; 
-	assert(lvs);
+	ASSERT(lvs);
 
 
 	//' Assign leaf weight to lvs element according to its position in text.
@@ -386,7 +385,7 @@ CSpectrumKernel::Set_Lvs()
 	lvs = new (nothrow) Real[esa->size+1]; 
 	
 	//' Check if memory correctly allocated.
-	assert(lvs != NULL);
+	ASSERT(lvs != NULL);
 
 	//' Range := [0..esa->size]
 	for(UInt32 i=0; i<= esa->size; i++)

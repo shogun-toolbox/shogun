@@ -38,8 +38,8 @@
 #ifndef CHILDTABLE_CPP
 #define CHILDTABLE_CPP
 
+#include "lib/io.h"
 #include "lib/suffixarray/ChildTable.h"
-#include <cassert>
 
 /**
  *  Return the value of idx-th "up" field of child table. 
@@ -62,7 +62,7 @@ ChildTable::up(const UInt32 &idx, UInt32 &val){
 	UInt32 lcp_idx = 0, lcp_prev_idx = 0;
   lcp_idx = _lcptab[idx];
 	lcp_prev_idx = _lcptab[idx-1];
-  assert(lcp_prev_idx > lcp_idx);
+  ASSERT(lcp_prev_idx > lcp_idx);
   val = (*this)[idx-1];
 
 	return NOERROR;
@@ -87,7 +87,7 @@ ChildTable::down(const UInt32 &idx, UInt32 &val){
 	UInt32 lcp_idx = 0, lcp_nextidx = 0;
 	lcp_nextidx = _lcptab[(*this)[idx]];
 	lcp_idx = _lcptab[idx];
-	assert(lcp_nextidx > lcp_idx);
+	ASSERT(lcp_nextidx > lcp_idx);
 
 	// childtab[i].down := childtab[i].nextlIndex
 	val = (*this)[idx];

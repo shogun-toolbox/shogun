@@ -1019,7 +1019,11 @@ void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx,
 	
 	if (num_threads < 2)
 	{
+#ifdef CYGWIN
+		for (INT j=0; j<num_feat; j++)
+#else
 		for (INT j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+#endif
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			S_THREAD_PARAM params;
@@ -1044,7 +1048,11 @@ void CWeightedDegreePositionCharKernel::compute_batch(INT num_vec, INT* vec_idx,
 	}
 	else
 	{
+#ifdef CYGWIN
+		for (INT j=0; j<num_feat; j++)
+#else
 		for (INT j=0; j<num_feat && !CSignal::cancel_computations(); j++)
+#endif
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			pthread_t threads[num_threads-1];
