@@ -21,7 +21,7 @@ template <class T> class CArray3: CArray<T>
 public:
 
 CArray3(INT dim1, INT dim2, INT dim3)
-	: CArray<T>(dim1*dim2), dim1_size(dim1), dim2_size(dim2), dim3_size(dim3)
+	: CArray<T>(dim1*dim2*dim3), dim1_size(dim1), dim2_size(dim2), dim3_size(dim3)
 	{
 	}
 	

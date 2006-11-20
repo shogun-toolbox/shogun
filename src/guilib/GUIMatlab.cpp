@@ -381,6 +381,7 @@ bool CGUIMatlab::best_path_no_b(const mxArray* vals[], mxArray* retvals[])
 			double* a=mxGetPr(mx_a);
 			
 			CDynProg* h=new CDynProg();
+			h->set_N(N) ;
 			h->set_p(p, N) ;
 			h->set_q(q, N) ;
 			h->set_a(a, N, N) ;
@@ -441,6 +442,7 @@ bool CGUIMatlab::best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[])
 			double* a=mxGetPr(mx_a_trans);
 			
 			CDynProg* h=new CDynProg() ;
+			h->set_N(N) ;
 			h->set_p(p, N) ;
 			h->set_q(q, N) ;
 			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;
@@ -588,6 +590,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			DREAL * dict_weights = mxGetPr(mx_dict_weights) ;
 			
 			CDynProg* h=new CDynProg();
+			h->set_N(N) ;
 			h->set_p(p, N) ;
 			h->set_q(q, N) ;
 			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;
@@ -683,24 +686,32 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 		INT P=mxGetN(mx_penalty_info) ;
 		INT L=mxGetN(mx_genestr) ;
 		INT D=mxGetM(mx_dict_weights) ;
-		INT my_seqlen = mxGetM(mx_my_path) ;
+		INT my_seqlen = mxGetN(mx_my_path) ;
 				
-		if (
-			mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-			mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-			mxGetN(mx_a_trans) == 3 &&
-			mxGetM(mx_seq) == N &&
-			mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 &&
-			mxGetM(mx_penalties)==N && 
-			mxGetN(mx_penalties)==N &&
-			mxGetM(mx_genestr)==1 &&
-			mxGetM(mx_my_pos)==mxGetM(mx_my_path) &&
-			mxGetN(mx_my_path)==1 &&
-			mxGetN(mx_my_pos)==1 &&
-			mxGetN(mx_dict_weights)==8 && 
-			((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
-			 || mxIsEmpty(mx_penalty_info))
-			)
+		if (!(mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
+			  mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
+			  mxGetN(mx_a_trans) == 3))
+			CIO::message(M_ERROR, "model matricies not matching in size\n");
+
+		if (!(mxGetM(mx_seq) == N &&
+			  mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 &&
+			  mxGetM(mx_genestr)==1))
+			CIO::message(M_ERROR, "sequence and position matrices sizes wrong\n");
+		
+		if (!(mxGetM(mx_penalties)==N && 
+			  mxGetN(mx_penalties)==N))
+			CIO::message(M_ERROR, "size of penalties wrong\n");
+			
+		if (!(mxGetN(mx_my_pos)==mxGetN(mx_my_path) &&
+			  mxGetM(mx_my_path)==1 &&
+			  mxGetM(mx_my_pos)==1))
+			CIO::message(M_ERROR, "size of position and path don't match\n");
+
+		if (!(mxGetN(mx_dict_weights)==8 && 
+			  ((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
+			   || mxIsEmpty(mx_penalty_info))))
+			CIO::message(M_ERROR, "dict_weights of penalty_info wrong\n");
+
 		{
 			double* p=mxGetPr(mx_p);
 			double* q=mxGetPr(mx_q);
@@ -747,6 +758,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 			DREAL * dict_weights = mxGetPr(mx_dict_weights) ;
 			
 			CDynProg* h=new CDynProg();
+			h->set_N(N) ;
 			h->set_p(p, N) ;
 			h->set_q(q, N) ;
 			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;
@@ -765,9 +777,10 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 				my_pos[i] = (INT)d_my_pos[i] ;
 			}
 						
-			int dims_plif[2]={max_plif_id, max_plif_len};
+			int dims_plif[2]={max_plif_id+1, max_plif_len};
 			mxArray* Plif_deriv = mxCreateNumericArray(2, dims_plif, mxDOUBLE_CLASS, mxREAL);
 			double* p_Plif_deriv = mxGetPr(Plif_deriv);
+			CArray2<double> a_Plif_deriv(p_Plif_deriv, max_plif_id+1, max_plif_len, false, false) ;
 
 			int dims_A[2]={N,N};
 			mxArray* A_deriv = mxCreateNumericArray(2, dims_A, mxDOUBLE_CLASS, mxREAL);
@@ -780,14 +793,24 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 			double* p_q_deriv = mxGetPr(q_deriv);
 
 			h->best_path_trans_deriv(my_path, my_pos, my_seqlen, seq, M, pos, PEN_matrix, genestr, L,
-									 dict_weights, 8*D, max_plif_id, max_plif_len, p_Plif_deriv) ;
+									 dict_weights, 8*D) ;
 
 			for (INT i=0; i<N; i++)
 			{
 				for (INT j=0; j<N; j++)
-					p_A_deriv[i+j*N] = h->get_a(i, j) ;
-				p_p_deriv[i]=h->get_p(i) ;
-				p_q_deriv[i]=h->get_q(i) ;
+					p_A_deriv[i+j*N] = h->get_a_deriv(i, j) ;
+				p_p_deriv[i]=h->get_p_deriv(i) ;
+				p_q_deriv[i]=h->get_q_deriv(i) ;
+			}
+			
+			for (INT id=0; id<=max_plif_id; id++)
+			{
+				INT len=0 ;
+				const DREAL * deriv = PEN[id].get_cum_derivative(len) ;
+				fprintf(stderr, "len=%i, max_plif_len=%i\n", len, max_plif_len) ;
+				ASSERT(len<=max_plif_len) ;
+				for (INT j=0; j<max_plif_len; j++)
+					a_Plif_deriv.element(id, j)= deriv[j] ;
 			}
 
 			// clean up 
@@ -807,8 +830,6 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 
 			return true;
 		}
-		else
-			CIO::message(M_ERROR, "model matricies not matching in size\n");
 	}
 
 	return false;
@@ -912,6 +933,7 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 			DREAL * segment_sum_weights = mxGetPr(mx_segment_sum_weights) ;
 			
 			CDynProg* h=new CDynProg();
+			h->set_N(N) ;
 			h->set_p(p, N) ;
 			h->set_q(q, N) ;
 			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;
@@ -1012,6 +1034,7 @@ bool CGUIMatlab::best_path_trans_simple(const mxArray* vals[], mxArray* retvals[
 			double* seq=mxGetPr(mx_seq) ;
 			
 			CDynProg* h=new CDynProg();
+			h->set_N(N) ;
 			h->set_p(p, N) ;
 			h->set_q(q, N) ;
 			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;

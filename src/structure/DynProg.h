@@ -94,6 +94,7 @@ protected:
 	
 public:
 	// model related functions
+	void set_N(INT p_N) ; // use this function to set N first
 	void set_p(DREAL *p, INT N) ;
 	void set_q(DREAL *q, INT N) ;
 	void set_a(DREAL *a, INT M, INT N) ;
@@ -141,8 +142,7 @@ public:
 							   const DREAL *seq_array, INT seq_len, const INT *pos,
 							   CPlif **Plif_matrix, 
 							   const char *genestr, INT genestr_len,
-							   DREAL *dictionary_weights, INT dict_len,
-							   INT max_plif_id, INT max_limits_len, DREAL *Plif_deriv) ;
+							   DREAL *dictionary_weights, INT dict_len) ;
 
 	void best_path_2struct(const DREAL *seq, INT seq_len, const INT *pos, 
 						   CPlif **Plif_matrix, 
@@ -200,6 +200,11 @@ public:
 		return end_state_distribution_q[offset];
 	}
 
+	inline DREAL get_q_deriv(T_STATES offset) const 
+	{
+		return end_state_distribution_q_deriv[offset];
+	}
+
 	/** access function for probability of initial states
 	 * @param offset index 0...N-1
 	 * @return value at offset
@@ -207,6 +212,11 @@ public:
 	inline DREAL get_p(T_STATES offset) const 
 	{
 		return initial_state_distribution_p[offset];
+	}
+
+	inline DREAL get_p_deriv(T_STATES offset) const 
+	{
+		return initial_state_distribution_p_deriv[offset];
 	}
 
 	/** access function for matrix a
@@ -217,6 +227,11 @@ public:
 	inline DREAL get_a(T_STATES line_, T_STATES column) const
 	{
 	  return transition_matrix_a.element(line_,column) ; // look also best_path()!
+	}
+
+	inline DREAL get_a_deriv(T_STATES line_, T_STATES column) const
+	{
+	  return transition_matrix_a_deriv.element(line_,column) ; // look also best_path()!
 	}
 	//@}
 protected:

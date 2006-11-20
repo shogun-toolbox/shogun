@@ -218,22 +218,39 @@ CDynProg::~CDynProg()
 
 ////////////////////////////////////////////////////////////////////////////////
 
+void CDynProg::set_N(INT p_N)
+{
+	N=p_N ;
+
+	transition_matrix_a.resize_array(N,N) ;
+	transition_matrix_a_deriv.resize_array(N,N) ;
+	initial_state_distribution_p.resize_array(N) ;
+	initial_state_distribution_p_deriv.resize_array(N) ;
+	end_state_distribution_q.resize_array(N);
+	end_state_distribution_q_deriv.resize_array(N) ;
+
+	m_orf_info.resize_array(N,2) ;
+	m_PEN.resize_array(N,N) ;
+}
+
 void CDynProg::set_p(DREAL *p, INT p_N) 
 {
+	ASSERT(p_N==N) ;
 	m_orf_info.resize_array(p_N,2) ;
 	m_PEN.resize_array(p_N,p_N) ;
 
 	initial_state_distribution_p.set_array(p, p_N, true, true) ;
-	N=p_N ;
 }
 
 void CDynProg::set_q(DREAL *q, INT p_N) 
 {
+	ASSERT(p_N==N) ;
 	end_state_distribution_q.set_array(q, p_N, true, true) ;
 }
 
 void CDynProg::set_a(DREAL *a, INT p_M, INT p_N) 
 {
+	ASSERT(p_N==N) ;
 	ASSERT(p_M==p_N) ;
 	transition_matrix_a.set_array(a, p_N, p_N, true, true) ;
 	transition_matrix_a_deriv.resize_array(p_N, p_N) ;
@@ -1702,6 +1719,10 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 			ptable.element(0,i,0)  = 0 ;
 			for (short int k=1; k<nbest; k++)
 			{
+				INT dim1, dim2, dim3 ;
+				delta.get_array_size(dim1, dim2, dim3) ;
+				//fprintf(stderr, "i=%i, k=%i -- %i, %i, %i\n", i, k, dim1, dim2, dim3) ;
+				//delta.element(0, i, k)    = -CMath::INFTY ;
 				delta.element(delta_array, 0, i, k, max_look_back, N)    = -CMath::INFTY ;
 				psi.element(0,i,0)      = 0 ;                  // <--- what's this for?
 				ktable.element(0,i,k)     = 0 ;
@@ -2051,8 +2072,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my_
 									 const DREAL *seq_array, INT seq_len, const INT *pos,
 									 CPlif **Plif_matrix, 
 									 const char *genestr, INT genestr_len,
-									 DREAL *dictionary_weights, INT dict_len,
-									 INT max_plif_id, INT max_limits_len, DREAL *Plif_deriv)
+									 DREAL *dictionary_weights, INT dict_len)
 {
 	bool use_svm = false ;
 	ASSERT(dict_len==num_svms*cum_num_words_array[num_degrees]) ;
@@ -2071,7 +2091,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my_
 				{
 					if (penij->get_use_svm())
 						use_svm=true ;
-					ASSERT(penij->get_id()<=max_plif_id) ;
+					//ASSERT(penij->get_id()<=max_plif_id) ;
 					penij->penalty_clear_derivative(false) ;
 					penij=penij->get_next_pen() ;
 				} 
@@ -2123,6 +2143,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my_
 		ASSERT(my_state_seq[my_seq_len-1]>=0) ;
 		end_state_distribution_q_deriv.element(my_state_seq[my_seq_len-1])++ ;
 		
+		fprintf(stderr, "seq_len=%i\n", my_seq_len) ;
 		for (INT i=0; i<my_seq_len-1; i++)
 		{
 			if (my_state_seq[i+1]==-1)
@@ -2145,7 +2166,11 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my_
 				extend_svm_values(wordstr, pos[from_pos], last_svm_pos, svm_value) ;
 			}
 			
-			PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value, true) ;
+			if (PEN.element(to_state, from_state)!=NULL)
+			{
+				fprintf(stderr, "penalty: from=%i to=%i\n", from_state, to_state) ;
+				PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value, true) ;
+			}
 		}
 	}
 
