@@ -1607,9 +1607,11 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					{
 						// decode the two parts and use them with the two plifs
 						INT part1 = (INT) seq_input.element(i,j) ;
-						INT part2 = (INT) ((seq_input.element(i,j)-(DREAL)part1)*100000.) ;
-						DREAL input1 = part1/1000. ;
-						DREAL input2 = part2/1000. ;
+						INT part2 = (INT) ((seq_input.element(i,j)-(DREAL)part1)*100.) ;
+						DREAL input1 = part1/1000000. - 50. ;
+						DREAL input2 = part2 - 50. ;
+						ASSERT((input1>-50) && (input1<50)) ;
+						ASSERT((input2>-50) && (input2<50)) ;
 						
 						seq.element(i,j) = PEN_state_signals.element(i,1)->lookup_penalty(input1, svm_value, true, tmp) ;
 						seq.element(i,j) += PEN_state_signals.element(i,2)->lookup_penalty(input2, svm_value, true, tmp) ;
@@ -2251,9 +2253,11 @@ DREAL CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my
 				{
 					// decode the two parts and use them with the two plifs
 					INT part1 = (INT) seq_input.element(to_state,to_pos) ;
-					INT part2 = (INT) ((seq_input.element(to_state, to_pos)- (DREAL)part1)*100000.) ;
-					DREAL input1 = part1/1000. ;
-					DREAL input2 = part2/1000. ;
+					INT part2 = (INT) ((seq_input.element(to_state,to_pos)-(DREAL)part1)*100.) ;
+					DREAL input1 = part1/1000000. - 50. ;
+					DREAL input2 = part2 - 50. ;
+					ASSERT((input1>-50) && (input1<50)) ;
+					ASSERT((input2>-50) && (input2<50)) ;
 
 					DREAL tmp=0.0 ;
 					DREAL nscore1 = PEN_state_signals.element(to_state,1)->lookup_penalty(input1, svm_value, true, tmp) ;
