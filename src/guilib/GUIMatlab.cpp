@@ -481,8 +481,6 @@ bool CGUIMatlab::best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[])
 }
 
 
-
-
 bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 {
 	const mxArray* mx_p=vals[1];
@@ -493,25 +491,29 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 	const mxArray* mx_orf_info=vals[6];
 	const mxArray* mx_genestr=vals[7];
 	const mxArray* mx_penalties=vals[8];
-	const mxArray* mx_penalty_info=vals[9];
-	const mxArray* mx_nbest=vals[10];
-	const mxArray* mx_dict_weights=vals[11];
-	const mxArray* mx_use_orf=vals[12];
+	const mxArray* mx_state_signals=vals[9];
+	const mxArray* mx_penalty_info=vals[10];
+	const mxArray* mx_nbest=vals[11];
+	const mxArray* mx_dict_weights=vals[12];
+	const mxArray* mx_use_orf=vals[13];
 
 	INT nbest    = (INT)mxGetScalar(mx_nbest) ;
 	if (nbest<1)
 		return false ;
-
 	
 	if ( mx_p && mx_q && mx_a_trans && mx_seq && mx_pos && 
-		 mx_penalties && mx_penalty_info && mx_orf_info && 
-		 mx_genestr && mx_dict_weights)
+		 mx_penalties && mx_state_signals && mx_penalty_info && 
+		 mx_orf_info && mx_genestr && mx_dict_weights)
 	{
 		INT N=mxGetN(mx_p);
 		INT M=mxGetN(mx_pos);
 		INT P=mxGetN(mx_penalty_info) ;
 		INT L=mxGetN(mx_genestr) ;
 		INT D=mxGetM(mx_dict_weights) ;
+		
+		if (!(mxGetM(mx_state_signals)==N && 
+			  mxGetN(mx_state_signals)==2))
+			CIO::message(M_ERROR, "size of state_signals wrong\n");
 		
 		/*CIO::message(M_DEBUG, "N=%i, M=%i, P=%i, L=%i, nbest=%i\n", N, M, P, L, nbest) ;
 		fprintf(stderr,"ok1=%i\n", mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
@@ -538,6 +540,8 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 &&
 			mxGetM(mx_penalties)==N && 
 			mxGetN(mx_penalties)==N &&
+			mxGetM(mx_state_signals)==N && 
+			mxGetN(mx_state_signals)==2 &&
 			mxGetM(mx_orf_info)==N &&
 			mxGetN(mx_orf_info)==2 &&
 			mxGetM(mx_genestr)==1 &&
@@ -586,6 +590,24 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 				else
 					PEN_matrix[i]=&PEN[id] ;
 			} ;
+
+			CPlif **PEN_state_signal = new CPlif*[2*N] ;
+			double* state_signals=mxGetPr(mx_state_signals) ;
+			for (INT i=0; i<2*N; i++)
+			{
+				INT id = (INT) state_signals[i]-1 ;
+				if ((id<0 || id>=P) && (id!=-1))
+				{
+					CIO::message(M_ERROR, "id out of range\n") ;
+					delete[] PEN ;
+					return false ;
+				}
+				if (id==-1)
+					PEN_state_signal[i]=NULL ;
+				else
+					PEN_state_signal[i]=&PEN[id] ;
+			} ;
+
 			char * genestr = mxArrayToString(mx_genestr) ;				
 			DREAL * dict_weights = mxGetPr(mx_dict_weights) ;
 			
@@ -606,7 +628,8 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			INT num_PEN_id = 0 ;
 			
 
-			h->best_path_trans(seq, M, pos, orf_info, PEN_matrix, genestr, L,
+			h->best_path_trans(seq, M, pos, orf_info,
+							   PEN_matrix, PEN_state_signal, genestr, L,
 							   nbest, p_prob, my_path, my_pos, dict_weights, 
 							   8*D, PEN_values, PEN_input_values, num_PEN_id, use_orf) ;
 
@@ -673,12 +696,13 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 	const mxArray* mx_pos=vals[7];
 	const mxArray* mx_genestr=vals[8];
 	const mxArray* mx_penalties=vals[9];
-	const mxArray* mx_penalty_info=vals[10];
-	const mxArray* mx_dict_weights=vals[11];
+	const mxArray* mx_state_signals=vals[10];
+	const mxArray* mx_penalty_info=vals[11];
+	const mxArray* mx_dict_weights=vals[12];
 
 	
 	if ( mx_my_path && mx_my_pos && mx_p && mx_q && mx_a_trans && mx_seq && mx_pos && 
-		 mx_penalties && mx_penalty_info &&
+		 mx_penalties && mx_state_signals && mx_penalty_info &&
 		 mx_genestr && mx_dict_weights)
 	{
 		INT N=mxGetN(mx_p);
@@ -701,6 +725,10 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 		if (!(mxGetM(mx_penalties)==N && 
 			  mxGetN(mx_penalties)==N))
 			CIO::message(M_ERROR, "size of penalties wrong\n");
+
+		if (!(mxGetM(mx_state_signals)==N && 
+			  mxGetN(mx_state_signals)==2))
+			CIO::message(M_ERROR, "size of state_signals wrong\n");
 			
 		if (!(mxGetN(mx_my_pos)==mxGetN(mx_my_path) &&
 			  mxGetM(mx_my_path)==1 &&
@@ -731,6 +759,16 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 
 			INT max_plif_id = 0 ;
 			INT max_plif_len = 1 ;
+			for (INT i=0; i<P; i++)
+			{
+				ASSERT(PEN[i].get_id()==i) ;
+				if (i>max_plif_id)
+					max_plif_id=i ;
+				if (PEN[i].get_plif_len()>max_plif_len)
+					max_plif_len=PEN[i].get_plif_len() ;
+			} ;
+
+
 			CPlif **PEN_matrix = new CPlif*[N*N] ;
 			double* penalties=mxGetPr(mx_penalties) ;
 			for (INT i=0; i<N*N; i++)
@@ -745,15 +783,26 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 				if (id==-1)
 					PEN_matrix[i]=NULL ;
 				else
-				{
 					PEN_matrix[i]=&PEN[id] ;
-					ASSERT(PEN[id].get_id()==id) ;
-					if (id>max_plif_id)
-						max_plif_id=id ;
-					if (PEN[id].get_plif_len()>max_plif_len)
-						max_plif_len=PEN[id].get_plif_len() ;
-				}
 			} ;
+
+			CPlif **PEN_state_signal = new CPlif*[2*N] ;
+			double* state_signals=mxGetPr(mx_state_signals) ;
+			for (INT i=0; i<2*N; i++)
+			{
+				INT id = (INT) state_signals[i]-1 ;
+				if ((id<0 || id>=P) && (id!=-1))
+				{
+					CIO::message(M_ERROR, "id out of range\n") ;
+					delete[] PEN ;
+					return false ;
+				}
+				if (id==-1)
+					PEN_state_signal[i]=NULL ;
+				else
+					PEN_state_signal[i]=&PEN[id] ;
+			} ;
+
 			char * genestr = mxArrayToString(mx_genestr) ;				
 			DREAL * dict_weights = mxGetPr(mx_dict_weights) ;
 			
@@ -792,7 +841,8 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 			double* p_p_deriv = mxGetPr(p_deriv);
 			double* p_q_deriv = mxGetPr(q_deriv);
 
-			h->best_path_trans_deriv(my_path, my_pos, my_seqlen, seq, M, pos, PEN_matrix, genestr, L,
+			h->best_path_trans_deriv(my_path, my_pos, my_seqlen, seq, M, pos, 
+									 PEN_matrix, PEN_state_signal, genestr, L,
 									 dict_weights, 8*D) ;
 
 			for (INT i=0; i<N; i++)

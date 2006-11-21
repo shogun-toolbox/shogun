@@ -528,21 +528,21 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (strmatch(action, len, N_BEST_PATH_TRANS_DERIV))
 		{
-			if ((nrhs==1+11) & (nlhs==4))
+			if ((nrhs==1+12) & (nlhs==4))
 			{
 				sg_matlab.best_path_trans_deriv(prhs,plhs);
 			}
 			else
-				CIO::message(M_ERROR, "usage is [p_deriv, q_deriv, a_deriv, penalties_deriv]=sg('best_path_trans_deriv', my_path, my_pos, p,q,a_trans,seq, pos, genestr, penalties, penalty_info, dict_weights) [%i,%i]", nrhs, nlhs);
+				CIO::message(M_ERROR, "usage is [p_deriv, q_deriv, a_deriv, penalties_deriv]=sg('best_path_trans_deriv', my_path, my_pos, p,q,a_trans,seq, pos, genestr, penalties, state_signals, penalty_info, dict_weights) [%i,%i]", nrhs, nlhs);
 		}
 		else if (strmatch(action, len, N_BEST_PATH_TRANS))
 		{
-			if ((nrhs==1+12) & (nlhs==5))
+			if ((nrhs==1+13) & (nlhs==5))
 			{
 				sg_matlab.best_path_trans(prhs,plhs);
 			}
 			else
-				CIO::message(M_ERROR, "usage is [prob,path,pos,PEN_values, PEN_input_values]=sg('best_path_trans',p,q,a_trans,seq,pos,orf_info, genestr, penalties, penalty_info, nbest, dict_weights, use_orf)");
+				CIO::message(M_ERROR, "usage is [prob,path,pos,PEN_values, PEN_input_values]=sg('best_path_trans',p,q,a_trans,seq,pos,orf_info, genestr, penalties, state_signals, penalty_info, nbest, dict_weights, use_orf)");
 		}
 		else if (strmatch(action, len, N_BEST_PATH_2STRUCT))
 		{

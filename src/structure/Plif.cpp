@@ -100,9 +100,9 @@ void CPlif::set_name(char *p_name)
 }
 
 #ifdef HAVE_MATLAB
-CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT &P)
+CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 {
-	P = mxGetN(mx_penalty_info) ;
+	//P = mxGetN(mx_penalty_info) ;
 	
 	CPlif* PEN = new CPlif[P] ;
 	
@@ -263,7 +263,7 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT &P)
 }
 #endif
 
-DREAL CPlif::lookup_penalty_svm(INT p_value, DREAL *d_values, bool follow_next, DREAL &input_value) const
+DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values, bool follow_next, DREAL &input_value) const
 {	
 	ASSERT(use_svm>0) ;
 	DREAL d_value=d_values[use_svm-1] ;
@@ -314,7 +314,7 @@ DREAL CPlif::lookup_penalty_svm(INT p_value, DREAL *d_values, bool follow_next, 
 }
 
 DREAL CPlif::lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const
-{	
+{
 	if (use_svm)
 		return lookup_penalty_svm(p_value, svm_values, follow_next, input_value) ;
 		
@@ -330,6 +330,18 @@ DREAL CPlif::lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DR
 			ret+=next_pen->lookup_penalty(p_value, svm_values, true, input_value);
 		return ret ;
 	}
+	return lookup_penalty((DREAL) p_value, svm_values, follow_next, input_value) ;
+}
+
+DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const
+{	
+	if (use_svm)
+		return lookup_penalty_svm(p_value, svm_values, follow_next, input_value) ;
+		
+	input_value = (DREAL) p_value ;
+
+	if ((p_value<min_len) || (p_value>max_len))
+		return -CMath::INFTY ;
 	
 	DREAL d_value = (DREAL) p_value ;
 	switch (transform)
@@ -386,7 +398,7 @@ void CPlif::penalty_clear_derivative(bool follow_next)
 		next_pen->penalty_clear_derivative(true);
 }
 
-void CPlif::penalty_add_derivative(INT p_value, DREAL* svm_values, bool follow_next) 
+void CPlif::penalty_add_derivative(DREAL p_value, DREAL* svm_values, bool follow_next) 
 {
 	if (use_svm)
 	{
@@ -439,7 +451,7 @@ void CPlif::penalty_add_derivative(INT p_value, DREAL* svm_values, bool follow_n
 
 }
 
-void CPlif::penalty_add_derivative_svm(INT p_value, DREAL *d_values, bool follow_next) 
+void CPlif::penalty_add_derivative_svm(DREAL p_value, DREAL *d_values, bool follow_next) 
 {	
 	ASSERT(use_svm>0) ;
 	DREAL d_value=d_values[use_svm-1] ;

@@ -34,12 +34,13 @@ public:
 	~CPlif() ;
 	void init_penalty_struct_cache() ;
 	
-	DREAL lookup_penalty_svm(INT p_value, DREAL *d_values, bool follow_next, DREAL &input_value) const ;
+	DREAL lookup_penalty_svm(DREAL p_value, DREAL *d_values, bool follow_next, DREAL &input_value) const ;
+	DREAL lookup_penalty(DREAL p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const ;
 	DREAL lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const ;
 
 	void penalty_clear_derivative(bool follow_next) ;
-	void penalty_add_derivative_svm(INT p_value, DREAL* svm_values, bool follow_next) ;
-	void penalty_add_derivative(INT p_value, DREAL* svm_values, bool follow_next) ;
+	void penalty_add_derivative_svm(DREAL p_value, DREAL* svm_values, bool follow_next) ;
+	void penalty_add_derivative(DREAL p_value, DREAL* svm_values, bool follow_next) ;
 	const DREAL * get_cum_derivative(INT & p_len) const 
 	{
 		p_len = len ;
@@ -187,7 +188,7 @@ protected:
 } ;
 
 #ifdef HAVE_MATLAB
-CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT &P) ;
+CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P) ;
 #endif
 
 #endif

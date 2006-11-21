@@ -84,6 +84,7 @@ protected:
 	CArray2<DREAL> m_segment_sum_weights ;
 	CArray<CPlif*> m_plif_list ;
 	CArray2<CPlif*> m_PEN ;
+	CArray2<CPlif*> m_PEN_state_signals ;
 	CArray<CHAR> m_genestr ;
 	CArray2<DREAL> m_dict_weights ;
 
@@ -114,6 +115,7 @@ public:
 	void best_path_set_segment_sum_weights(DREAL *segment_sum_weights, INT num_states, INT seq_len) ; // only for best_path_2struct
 	void best_path_set_plif_list(CPlif **plif_list, INT num_plif) ;
 	void best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n) ;
+	void best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m, INT n) ;
 	void best_path_set_genestr(CHAR* genestr, INT genestr_len) ;
 	void best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len, INT n) ;
 	
@@ -130,7 +132,7 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 	void best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const INT *orf_info,
-						 CPlif **PLif_matrix, 
+						 CPlif **PLif_matrix, CPlif **Plif_state_signals,
 						 const char *genestr, INT genestr_len,
 						 short int nbest, 
 						 DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
@@ -138,9 +140,9 @@ public:
 						 DREAL *&Plif_values, DREAL *&Plif_input_values, 
 						 INT &num_Plif_id, bool use_orf) ;
 
-	void best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my_seq_len, 
+	DREAL best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my_seq_len, 
 							   const DREAL *seq_array, INT seq_len, const INT *pos,
-							   CPlif **Plif_matrix, 
+							   CPlif **Plif_matrix, CPlif **Plif_state_signals,
 							   const char *genestr, INT genestr_len,
 							   DREAL *dictionary_weights, INT dict_len) ;
 
