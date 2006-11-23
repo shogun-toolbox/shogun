@@ -1,3 +1,4 @@
+
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,6 +78,17 @@ public:
 		return use_svm ;
 	}
 
+	void set_use_cache(INT p_use_cache) 
+	{
+		delete[] cache ;
+		cache=NULL ;
+		use_cache=p_use_cache ;
+	}
+	INT get_use_cache()
+	{
+		return use_cache ;
+	}
+
 	// for swig use set_plif_len, set_plif_limits, set_plif_penalty
 	void set_plif(INT p_len, DREAL *p_limits, DREAL* p_penalties) 
 	{
@@ -86,6 +98,9 @@ public:
 		delete[] cum_derivatives ;
 		delete[] cache ;
 		cache=NULL ;
+
+		//fprintf(stderr, "set_plif len=%i\n", p_len) ;
+
 		limits=new DREAL[len] ;
 		penalties=new DREAL[len] ;
 		cum_derivatives=new DREAL[len] ;
@@ -107,6 +122,7 @@ public:
 			delete[] limits ;
 			delete[] penalties ;
 			delete[] cum_derivatives ;
+			fprintf(stderr, "set_plif len=%i\n", p_len) ;
 			limits=new DREAL[len] ;
 			penalties=new DREAL[len] ;
 			cum_derivatives=new DREAL[len] ;
@@ -185,6 +201,7 @@ protected:
 	CPlif *next_pen ;
 	char * name ;
 	INT use_svm ;
+	bool use_cache ;
 } ;
 
 #ifdef HAVE_MATLAB

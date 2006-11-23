@@ -699,7 +699,6 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 	const mxArray* mx_state_signals=vals[10];
 	const mxArray* mx_penalty_info=vals[11];
 	const mxArray* mx_dict_weights=vals[12];
-
 	
 	if ( mx_my_path && mx_my_pos && mx_p && mx_q && mx_a_trans && mx_seq && mx_pos && 
 		 mx_penalties && mx_state_signals && mx_penalty_info &&
@@ -744,14 +743,13 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 			double* p=mxGetPr(mx_p);
 			double* q=mxGetPr(mx_q);
 			double* a=mxGetPr(mx_a_trans);
-
 			double* seq=mxGetPr(mx_seq) ;
-
 			double* pos_=mxGetPr(mx_pos) ;
+
 			INT * pos = new INT[M] ;
 			for (INT i=0; i<M; i++)
 				pos[i]=(INT)pos_[i] ;
-
+			
 			CPlif * PEN = 
 				read_penalty_struct_from_cell(mx_penalty_info, P) ;
 			if (PEN==NULL && P!=0)
@@ -855,7 +853,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 					p_A_deriv[i+j*N] = h->get_a_deriv(i, j) ;
 				p_p_deriv[i]=h->get_p_deriv(i) ;
 				p_q_deriv[i]=h->get_q_deriv(i) ;
-			}
+				}
 			
 			for (INT id=0; id<=max_plif_id; id++)
 			{
@@ -870,8 +868,9 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 			// clean up 
 			delete[] PEN ;
 			delete[] PEN_matrix ;
+			delete[] PEN_state_signal ;
 			delete[] pos ;
-			delete h ;
+			//delete h ;
 			mxFree(genestr) ;
 
 			retvals[0]=p_deriv ;

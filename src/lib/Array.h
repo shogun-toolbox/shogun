@@ -137,6 +137,7 @@ CArray(const T* p_array, INT p_array_size)
 #ifdef ARRAY_STATISTICS
 		((CArray<T>*)this)->stat_resize_array++ ;
 #endif
+		ASSERT(free_array) ;
 		T* p= (T*) realloc(array, sizeof(T)*n);
 		if (p)
 		{
@@ -191,7 +192,7 @@ CArray(const T* p_array, INT p_array_size)
 		this->array=(T*)malloc(array_size*sizeof(T)) ;
 		memcpy(this->array, array, array_size*sizeof(T)) ;
 		this->array_size=array_size;
-		this->free_array=free_array ;
+		this->free_array=true ;
 	}
 
 	/// clear the array (with zeros)

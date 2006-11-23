@@ -142,7 +142,7 @@ public:
 
 	void best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, 
 								INT my_seq_len, 
-								DREAL *seq_array, INT seq_len, const INT *pos,
+								const DREAL *seq_array, INT seq_len, const INT *pos,
 								CPlif **Plif_matrix, CPlif **Plif_state_signals,
 								const char *genestr, INT genestr_len,
 								DREAL *dictionary_weights, INT dict_len) ;

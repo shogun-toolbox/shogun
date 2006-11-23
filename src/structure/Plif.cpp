@@ -34,11 +34,13 @@ CPlif::CPlif()
 	min_len=0 ;
 	cache=NULL ;
 	use_svm=0 ;
+	use_cache=false ;
 }
 
 CPlif::~CPlif()
 {
-	if (id!=-1)
+	//fprintf(stderr, "plif destructor\n") ;
+	//if (id!=-1)
 	{
 		delete[] limits ;
 		delete[] penalties ;
@@ -75,12 +77,15 @@ bool CPlif::set_transform_type(const char *type_str)
 
 void CPlif::init_penalty_struct_cache()
 {
+	if (!use_cache)
+		return ;
 	if (cache || use_svm)
 		return ;
 	if (max_len<0)
 		return ;
+	//fprintf(stderr, "init cache of size %i byte\n", (max_len+1)*sizeof(DREAL)) ;
 	
-	DREAL* cache=new DREAL[max_len+1] ;
+	cache=new DREAL[max_len+1] ;
 	if (cache)
 	{
 		DREAL input_value ;
@@ -89,7 +94,6 @@ void CPlif::init_penalty_struct_cache()
 				cache[i] = -CMath::INFTY ;
 			else
 				cache[i] = lookup_penalty(i, 0, false, input_value) ;
-		cache = cache ;
 	}
 }
 
@@ -105,6 +109,7 @@ void CPlif::set_name(char *p_name)
 CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 {
 	//P = mxGetN(mx_penalty_info) ;
+	//fprintf(stderr, "p=%i size=%i\n", P, P*sizeof(CPlif)) ;
 	
 	CPlif* PEN = new CPlif[P] ;
 	
@@ -182,7 +187,16 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 			return NULL ;
 		}
 		INT use_svm = (INT) mxGetScalar(mx_use_svm_field) ;
-		//fprintf(stderr, "use_svm_field=%i\n", use_svm) ;
+
+		const mxArray* mx_use_cache_field = mxGetField(mx_elem, 0, "use_cache") ;
+		if (mx_use_cache_field==NULL || !mxIsNumeric(mx_use_cache_field) ||
+			mxGetM(mx_use_cache_field)!=1 || mxGetN(mx_use_cache_field)!=1)
+		{
+			CIO::message(M_ERROR, "missing use_cache field\n") ;
+			delete[] PEN;
+			return NULL ;
+		}
+		INT use_cache = (INT) mxGetScalar(mx_use_cache_field) ;
 		
 		const mxArray* mx_next_id_field = mxGetField(mx_elem, 0, "next_id") ;
 		if (mx_next_id_field==NULL || !mxIsNumeric(mx_next_id_field) ||
@@ -232,6 +246,7 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		
 		ASSERT(next_id!=id) ;
 		PEN[id].set_use_svm(use_svm) ;
+		PEN[id].set_use_cache(use_cache) ;
 
 		double * limits = mxGetPr(mx_limits_field) ;
 		double * penalties = mxGetPr(mx_penalties_field) ;

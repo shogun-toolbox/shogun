@@ -2125,7 +2125,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores,
 									 INT my_seq_len, 
-									 DREAL *seq_array, INT seq_len, const INT *pos,
+									 const DREAL *seq_array, INT seq_len, const INT *pos,
 									 CPlif **Plif_matrix, CPlif **Plif_state_signals,
 									 const char *genestr, INT genestr_len,
 									 DREAL *dictionary_weights, INT dict_len)
@@ -2137,7 +2137,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 	
 	CArray2<CPlif*> PEN(Plif_matrix, N, N, false, false) ;
 	CArray2<CPlif*> PEN_state_signals(Plif_state_signals, N, 2, false, false) ;
-	CArray2<DREAL> seq_input(seq_array, N, seq_len, false, false) ;
+	CArray2<DREAL> seq_input(seq_array, N, seq_len) ;
 	
 	{ // determine whether to use svm outputs and clear derivatives
 		for (INT i=0; i<N; i++)
