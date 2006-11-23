@@ -2071,13 +2071,16 @@ EOF
 
 		if win32
 		then
+			RPATH=$(cygpath -u $(cygpath -d "`which R | sed 's#/bin/R##'`"))
 			TARGET="sg.dll"
+			INCLUDES="$INCLUDES -I$RPATH/include"
+			LINKFLAGS="$LINKFLAGS -L$RPATH/bin -lR -shared"
 		else
 			TARGET="sg.so"
+			INCLUDES="$INCLUDES `R CMD config --cppflags`"
+			LINKFLAGS="$LINKFLAGS `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
 		fi
 
-		INCLUDES="$INCLUDES `R CMD config --cppflags`"
-		LINKFLAGS="$LINKFLAGS `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
 
 cat > $TMPC << EOF
 #include <R.h>
