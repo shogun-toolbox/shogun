@@ -140,11 +140,12 @@ public:
 						 DREAL *&Plif_values, DREAL *&Plif_input_values, 
 						 INT &num_Plif_id, bool use_orf) ;
 
-	DREAL best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my_seq_len, 
-							   const DREAL *seq_array, INT seq_len, const INT *pos,
-							   CPlif **Plif_matrix, CPlif **Plif_state_signals,
-							   const char *genestr, INT genestr_len,
-							   DREAL *dictionary_weights, INT dict_len) ;
+	void best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, 
+								INT my_seq_len, 
+								DREAL *seq_array, INT seq_len, const INT *pos,
+								CPlif **Plif_matrix, CPlif **Plif_state_signals,
+								const char *genestr, INT genestr_len,
+								DREAL *dictionary_weights, INT dict_len) ;
 
 	void best_path_2struct(const DREAL *seq, INT seq_len, const INT *pos, 
 						   CPlif **Plif_matrix, 

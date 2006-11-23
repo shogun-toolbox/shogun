@@ -1595,14 +1595,14 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 			for (INT j=0; j<N; j++)
 			{
 				DREAL tmp ;
-				if (PEN_state_signals.element(i,1)==NULL)
+				if (PEN_state_signals.element(i,0)==NULL)
 					// no plif
 					seq.element(i,j) = seq_input.element(i,j) ;
 				else
 				{
-					if (PEN_state_signals.element(i,2)==NULL)
+					if (PEN_state_signals.element(i,1)==NULL)
 						// just one plif
-						seq.element(i,j) = PEN_state_signals.element(i,1)->lookup_penalty(seq_input.element(i,j), svm_value, true, tmp) ;
+						seq.element(i,j) = PEN_state_signals.element(i,0)->lookup_penalty(seq_input.element(i,j), svm_value, true, tmp) ;
 					else
 					{
 						// decode the two parts and use them with the two plifs
@@ -1613,8 +1613,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 						ASSERT((input1>-50) && (input1<50)) ;
 						ASSERT((input2>-50) && (input2<50)) ;
 						
-						seq.element(i,j) = PEN_state_signals.element(i,1)->lookup_penalty(input1, svm_value, true, tmp) ;
-						seq.element(i,j) += PEN_state_signals.element(i,2)->lookup_penalty(input2, svm_value, true, tmp) ;
+						seq.element(i,j) = PEN_state_signals.element(i,0)->lookup_penalty(input1, svm_value, true, tmp) ;
+						seq.element(i,j) += PEN_state_signals.element(i,1)->lookup_penalty(input2, svm_value, true, tmp) ;
 					}
 				}
 			}
@@ -2123,8 +2123,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 #endif
 }
 
-DREAL CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my_seq_len, 
-									 const DREAL *seq_array, INT seq_len, const INT *pos,
+void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores,
+									 INT my_seq_len, 
+									 DREAL *seq_array, INT seq_len, const INT *pos,
 									 CPlif **Plif_matrix, CPlif **Plif_state_signals,
 									 const char *genestr, INT genestr_len,
 									 DREAL *dictionary_weights, INT dict_len)
@@ -2136,9 +2137,8 @@ DREAL CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my
 	
 	CArray2<CPlif*> PEN(Plif_matrix, N, N, false, false) ;
 	CArray2<CPlif*> PEN_state_signals(Plif_state_signals, N, 2, false, false) ;
-	CArray2<DREAL> seq_input(seq_array, N, seq_len) ;
+	CArray2<DREAL> seq_input(seq_array, N, seq_len, false, false) ;
 	
-	DREAL score = 0 ;
 	{ // determine whether to use svm outputs and clear derivatives
 		for (INT i=0; i<N; i++)
 			for (INT j=0; j<N; j++)
@@ -2200,7 +2200,12 @@ DREAL CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my
 				transition_matrix_a_deriv.element(i,j)=0 ;
 		}
 	}
-		
+	
+	{ // clear score vector
+		for (INT i=0; i<my_seq_len; i++)
+			my_scores[i]=0.0 ;
+	}
+	
 	{ // compute derivatives for given path
 		DREAL svm_value[num_svms] ;
 		for (INT s=0; s<num_svms; s++)
@@ -2208,13 +2213,13 @@ DREAL CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my
 		
 		ASSERT(my_state_seq[0]>=0) ;
 		initial_state_distribution_p_deriv.element(my_state_seq[0])++ ;
-		score += initial_state_distribution_p.element(my_state_seq[0]) ;
+		my_scores[0] += initial_state_distribution_p.element(my_state_seq[0]) ;
 
 		ASSERT(my_state_seq[my_seq_len-1]>=0) ;
 		end_state_distribution_q_deriv.element(my_state_seq[my_seq_len-1])++ ;
-		score += end_state_distribution_q.element(my_state_seq[my_seq_len-1]);
+		my_scores[my_seq_len-1] += end_state_distribution_q.element(my_state_seq[my_seq_len-1]);
 		
-		fprintf(stderr, "seq_len=%i\n", my_seq_len) ;
+		//fprintf(stderr, "seq_len=%i\n", my_seq_len) ;
 		for (INT i=0; i<my_seq_len-1; i++)
 		{
 			if (my_state_seq[i+1]==-1)
@@ -2226,7 +2231,7 @@ DREAL CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my
 			
 			// increase usage of this transition
 			transition_matrix_a_deriv.element(from_state, to_state)++ ;
-			score += transition_matrix_a.element(from_state, to_state) ;
+			my_scores[i] += transition_matrix_a.element(from_state, to_state) ;
 
 			INT last_svm_pos[num_degrees] ;
 			for (INT qq=0; qq<num_degrees; qq++)
@@ -2242,14 +2247,15 @@ DREAL CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my
 			{
 				DREAL tmp=0.0 ;
 				DREAL nscore = PEN.element(to_state, from_state)->lookup_penalty(pos[to_pos]-pos[from_pos], svm_value, true, tmp) ;
-				score += nscore ;
-				fprintf(stderr, "transition penalty: from=%i to=%i value=%i\n", from_state, to_state, pos[to_pos]-pos[from_pos]) ;
+				my_scores[i] += nscore ;
+				fprintf(stderr, "%i. transition penalty: from_state=%i to_state=%i from_pos=%i to_pos=%i value=%i\n", i, from_state, to_state, from_pos, to_pos, pos[to_pos]-pos[from_pos]) ;
 				PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value, true) ;
 			}
 
-			if (PEN_state_signals.element(to_state,1)!=NULL)
+			//fprintf(stderr, "emmission penalty skipped: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", to_state, to_pos, seq_input.element(to_state, to_pos), 0.0) ;
+			if (PEN_state_signals.element(to_state,0)!=NULL)
 			{
-				if (PEN_state_signals.element(to_state,2)!=NULL)
+				if (PEN_state_signals.element(to_state,1)!=NULL)
 				{
 					// decode the two parts and use them with the two plifs
 					INT part1 = (INT) seq_input.element(to_state,to_pos) ;
@@ -2260,20 +2266,22 @@ DREAL CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my
 					ASSERT((input2>-50) && (input2<50)) ;
 
 					DREAL tmp=0.0 ;
-					DREAL nscore1 = PEN_state_signals.element(to_state,1)->lookup_penalty(input1, svm_value, true, tmp) ;
-					DREAL nscore2 = PEN_state_signals.element(to_state,2)->lookup_penalty(input2, svm_value, true, tmp) ;
-					score += nscore1 + nscore2 ;
-					fprintf(stderr, "emmission penalty: to=%i value1=%1.2f value2=%1.2f score1=%1.2f score2=%1.2f\n", to_state, input1, input2, nscore1, nscore2) ;
-					PEN_state_signals.element(to_state,1)->penalty_add_derivative(input1, svm_value, true) ;
-					PEN_state_signals.element(to_state,2)->penalty_add_derivative(input2, svm_value, true) ;
+					DREAL nscore1 = PEN_state_signals.element(to_state,0)->lookup_penalty(input1, svm_value, true, tmp) ;
+					DREAL nscore2 = PEN_state_signals.element(to_state,1)->lookup_penalty(input2, svm_value, true, tmp) ;
+					my_scores[i] += nscore1 + nscore2 ;
+					fprintf(stderr, "%i. emmission penalty: to_state=%i to_pos=%i value1=%1.2f value2=%1.2f score1=%1.2f score2=%1.2f\n", i, to_state, to_pos, input1, input2, nscore1, nscore2) ;
+
+					PEN_state_signals.element(to_state,0)->penalty_add_derivative(input1, svm_value, true) ;
+					PEN_state_signals.element(to_state,1)->penalty_add_derivative(input2, svm_value, true) ;
 				}
 				else
 				{
 					DREAL tmp=0.0 ;
-					DREAL nscore = PEN_state_signals.element(to_state,1)->lookup_penalty(seq_input.element(to_state, to_pos), svm_value, true, tmp) ;
-					score += nscore ;
-					fprintf(stderr, "emmission penalty: to=%i value=%1.2f score=%1.2f\n", to_state, seq_input.element(to_state, to_pos), nscore) ;
-					PEN_state_signals.element(to_state,1)->penalty_add_derivative(seq_input.element(to_state, to_pos), svm_value, true) ;
+					DREAL nscore = PEN_state_signals.element(to_state,0)->lookup_penalty(seq_input.element(to_state, to_pos), svm_value, true, tmp) ;
+					my_scores[i] += nscore ;
+					fprintf(stderr, "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos), nscore) ;
+
+					PEN_state_signals.element(to_state,0)->penalty_add_derivative(seq_input.element(to_state, to_pos), svm_value, true) ;
 				}
 			}
 		}
@@ -2281,7 +2289,6 @@ DREAL CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, INT my
 
 	for (INT j=0; j<num_degrees; j++)
 		delete[] wordstr[j] ;
-	return score ;
 }
 
 

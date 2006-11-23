@@ -77,6 +77,8 @@ void CPlif::init_penalty_struct_cache()
 {
 	if (cache || use_svm)
 		return ;
+	if (max_len<0)
+		return ;
 	
 	DREAL* cache=new DREAL[max_len+1] ;
 	if (cache)
@@ -200,7 +202,7 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 			return NULL ;
 		}
 		INT max_len = (INT) mxGetScalar(mx_max_len_field) ;
-		if (max_len<0 || max_len>1024*1024*100)
+		if (max_len<-1024*1024*100 || max_len>1024*1024*100)
 		{
 			CIO::message(M_ERROR, "max_len out of range\n") ;
 			delete[] PEN;
@@ -209,7 +211,7 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		PEN[id].set_max_len(max_len) ;
 
 		INT min_len = (INT) mxGetScalar(mx_min_len_field) ;
-		if (min_len<0 || min_len>1024*1024*100)
+		if (min_len<-1024*1024*100 || min_len>1024*1024*100)
 		{
 			CIO::message(M_ERROR, "min_len out of range\n") ;
 			delete[] PEN;

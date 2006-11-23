@@ -841,10 +841,14 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 			double* p_p_deriv = mxGetPr(p_deriv);
 			double* p_q_deriv = mxGetPr(q_deriv);
 
-			h->best_path_trans_deriv(my_path, my_pos, my_seqlen, seq, M, pos, 
+			int dims_score[1]={my_seqlen};
+			mxArray* my_scores = mxCreateNumericArray(1, dims_score, mxDOUBLE_CLASS, mxREAL);
+			double* p_my_scores = mxGetPr(my_scores);
+
+			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, my_seqlen, seq, M, pos, 
 									 PEN_matrix, PEN_state_signal, genestr, L,
 									 dict_weights, 8*D) ;
-
+			
 			for (INT i=0; i<N; i++)
 			{
 				for (INT j=0; j<N; j++)
@@ -857,7 +861,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 			{
 				INT len=0 ;
 				const DREAL * deriv = PEN[id].get_cum_derivative(len) ;
-				fprintf(stderr, "len=%i, max_plif_len=%i\n", len, max_plif_len) ;
+				//fprintf(stderr, "len=%i, max_plif_len=%i\n", len, max_plif_len) ;
 				ASSERT(len<=max_plif_len) ;
 				for (INT j=0; j<max_plif_len; j++)
 					a_Plif_deriv.element(id, j)= deriv[j] ;
@@ -874,15 +878,16 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 			retvals[1]=q_deriv ;
 			retvals[2]=A_deriv ;
 			retvals[3]=Plif_deriv ;
+			retvals[4]=my_scores ;
 
 			delete[] my_path ;
 			delete[] my_pos ;
 
-			return true;
+			return true ;
 		}
 	}
 
-	return false;
+	return false ;
 }
 
 bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
