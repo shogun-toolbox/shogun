@@ -8,6 +8,7 @@
 %include "lib/numpy.i"
 
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** alphas, INT* d1)};
+%apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* alphas, INT d)};
 
 %rename(SVM) CSVM;
 

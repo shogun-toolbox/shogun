@@ -90,20 +90,31 @@ class CSVM : public CKernelMachine
 		}
 
       
-      void get_alphas(DREAL** alphas, INT* d1) {
-         int nsv = get_num_support_vectors();
+        void set_alphas(DREAL* alphas, INT d)
+        {
+            ASSERT(alphas);
+            ASSERT(d>0);
+            create_new_model(d);
 
-         ASSERT(alphas && d1);
-         *alphas=NULL;
-         *d1=nsv;
+            for(int i=0; i<d; i++)
+                set_alpha(i, alphas[i]);
+        }
 
-         if (nsv>0)
-         {
-            *alphas = new DREAL[nsv];
-            for(int i=0; i<nsv; i++)
-               (*alphas)[i] = get_alpha(i);
-         } 
-      }
+        void get_alphas(DREAL** alphas, INT* d1)
+        {
+            int nsv = get_num_support_vectors();
+
+            ASSERT(alphas && d1);
+            *alphas=NULL;
+            *d1=nsv;
+
+            if (nsv>0)
+            {
+                *alphas = new DREAL[nsv];
+                for(int i=0; i<nsv; i++)
+                    (*alphas)[i] = get_alpha(i);
+            } 
+        }
 
 		inline bool create_new_model(int num)
 		{
