@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # some hopefully reasonable defaults
-SRCDIR=.
+SRCDIR="`dirname $0`"
 EXT_SRC_HEADER=c
 EXT_SRC_C=c
 EXT_SRC_CPP=cpp
@@ -556,6 +556,9 @@ for ac_option do
   --enable-path-debug)  _pathdebug=yes ;;
   --disable-profile) 	_profile=no ;;
   --enable-profile) 	_profile=yes ;;
+  --destdir=*)
+    _destdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
+    ;;
   --prefix=*)
     _prefix=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
@@ -2227,7 +2230,7 @@ write_dot_config()
 COMPFLAGS_CPP="$COMPFLAGS_CPP $OS $_march $_mtune $_optimizing $COMP_OPTS"
 COMPFLAGS_C="$COMPFLAGS_CPP"
 
-cat > .config <<EOF
+cat > "$SRCDIR/.config" <<EOF
 MAKE 			= ${MAKE}
 SWIG 			= ${SWIG}
 PYTHON 			= ${PYTHON}
@@ -2295,7 +2298,7 @@ EOF
 
 write_config_h()
 {
-cat >lib/config.h <<EOF
+cat >"$SRCDIR/lib/config.h" <<EOF
 $HAVE_READLINE
 $HAVE_MINDY
 $HAVE_PYTHON
