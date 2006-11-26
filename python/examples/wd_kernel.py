@@ -1,7 +1,7 @@
 from numpy import *
 from numpy.random import *
 from shogun.Features import *
-from shogun.SVM import *
+from shogun.Classifier import *
 from shogun.Kernel import *
 
 degree=20

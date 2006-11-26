@@ -21,7 +21,7 @@
 class CSVM : public CKernelMachine
 {
 	public:
-		CSVM();
+		CSVM(INT num_sv=0);
 		virtual ~CSVM();
 
 		bool load(FILE* svm_file);
@@ -93,11 +93,19 @@ class CSVM : public CKernelMachine
         void set_alphas(DREAL* alphas, INT d)
         {
             ASSERT(alphas);
-            ASSERT(d>0);
-            create_new_model(d);
+            ASSERT(d>0 && d<=svm_model.num_svs);
 
             for(int i=0; i<d; i++)
                 set_alpha(i, alphas[i]);
+        }
+
+        void set_support_vectors(INT* svs, INT d)
+        {
+            ASSERT(svs);
+            ASSERT(d>0 && d<=svm_model.num_svs);
+
+            for(int i=0; i<d; i++)
+                set_support_vector(i, svs[i]);
         }
 
         void get_alphas(DREAL** alphas, INT* d1)

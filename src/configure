@@ -66,12 +66,11 @@ COMPFLAGS_C=
 COMPFLAGS_CPP=
 INCLUDES=-I${SRCDIR}
 LINK=c++
-LINKFLAGS=""
-POSTLINKFLAGS=""
+LINKFLAGS=
+POSTLINKFLAGS=
+DEFINES=
 TARGET="shogun"
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
-#most defines are simply design bugs, use the ./configure --{disable,enable}-<options>
-DEFINES=
 
 # stuff needed for autodetections (definitely needs cleanup)
 TMPLOG="configure.log"
@@ -1771,20 +1770,24 @@ EOF
 		die "no posix threading support found (libpthread)"
 	fi
 
-	if test "$_readline" = yes || test "$_readline" = auto;
+	if test "$_R" != yes -a "$_python" != yes -a "$_matlab" != yes -a "$_octave" != yes
 	then
+		if test "$_readline" = yes || test "$_readline" = auto;
+		then
 cat > $TMPC << EOF
 #include <readline/readline.h>
 int main(void) { return 0; }
 EOF
-		echocheck "Readline support"
-		if cc_check -lreadline >/dev/null 2>&1
-		then
-			HAVE_READLINE='#define HAVE_READLINE 1'
-			LINKFLAGS="$LINKFLAGS -lreadline"
-			echores "yes"
-		else
-			echores "no"
+			echocheck "Readline support"
+			if cc_check -lreadline >/dev/null 2>&1
+			then
+				HAVE_READLINE='#define HAVE_READLINE 1'
+				DEFINES="$DEFINES -DHAVE_READLINE"
+				LINKFLAGS="$LINKFLAGS -lreadline"
+				echores "yes"
+			else
+				echores "no"
+			fi
 		fi
 	fi
 
@@ -1798,6 +1801,7 @@ EOF
 		if cc_check -lmindy
 		then
 			HAVE_MINDY='#define HAVE_MINDY 1'
+			DEFINES="$DEFINES -DHAVE_MINDY"
 			LINKFLAGS="$LINKFLAGS -lmindy"
 			echores "yes"
 		else
@@ -1824,12 +1828,14 @@ EOF
 		then
 			echores "yes"
 			HAVE_LAPACK='#define HAVE_LAPACK 1'
+			DEFINES="$DEFINES -DHAVE_LAPACK"
 			LINKFLAGS="$LINKFLAGS -llapack-3 -lblas-3"
 		else
 			if cc_check -llapack -lblas
 			then
 				echores "yes"
 				HAVE_LAPACK='#define HAVE_LAPACK 1'
+				DEFINES="$DEFINES -DHAVE_LAPACK"
 				LINKFLAGS="$LINKFLAGS -llapack-3 -lblas-3"
 			else
 				echores "no"
@@ -1873,12 +1879,12 @@ EOF
 		fi
 
 		HAVE_MATLAB='#define HAVE_MATLAB 1'
+		DEFINES="$DEFINES -DHAVE_MATLAB"
 
 		if osf1
 		then
-			DEFINES="$DEFINES -DMATLAB_MEX_FILE"
-			COMPFLAGS_C="$COMPFLAGS_C -shared -ieee -std1"
-			COMPFLAGS_CPP="$COMPFLAGS_CPP -shared -ieee -std1"
+			COMPFLAGS_C="-DMATLAB_MEX_FILE$COMPFLAGS_C -shared -ieee -std1"
+			COMPFLAGS_CPP="-DMATLAB_MEX_FILE $COMPFLAGS_CPP -shared -ieee -std1"
 			LINKFLAGS="$LINKFLAGS -shared -Wl,-expect_unresolved,'*',-hidden,-exported_symbol,mexFunction,-exported_symbol,mexVersion,-exported_symbol,'__*' -L$MATLAB_BINDIR/alpha -lmx -lmex -lmat"
 			INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
 			TARGET="sg.mexaxp"
@@ -1971,6 +1977,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 }
 EOF
 		HAVE_OCTAVE='#define HAVE_OCTAVE 1'
+		DEFINES="$DEFINES -DHAVE_OCTAVE"
 
 		if darwin
 		then
@@ -2011,6 +2018,7 @@ EOF
 		fi
 
 		HAVE_PYTHON='#define HAVE_PYTHON 1'
+		DEFINES="$DEFINES -DHAVE_PYTHON"
 		test -n "$_pyinclude" && _pyinclude="-I$_pyinclude"
 		test -n "$_pyinclude" || _pyinclude=`$PYTHON -c "import numpy; import sys; print '-I'+sys.prefix+'/include/python'+sys.version[0:3]+' -I'+numpy.get_include()"`
 		test -n "$_pylibpath" && _pylibpath="-I$_pylibpath"
@@ -2071,6 +2079,7 @@ EOF
 		fi
 
 		HAVE_R='#define HAVE_R 1'
+		DEFINES="$DEFINES -DHAVE_R"
 
 		if win32
 		then
@@ -2125,16 +2134,19 @@ EOF
 		fi
 
 		USE_CPLEX='#define USE_CPLEX 1'
+		DEFINES="$DEFINES -DUSE_CPLEX"
 	fi
 
 	if test "$_wtiming" = yes
 	then
 		USE_W_TIMING='#define USE_W_TIMING 1'
+		DEFINES="$DEFINES -DUSE_W_TIMING"
 	fi
 
 	if test "$_largefile" = yes
 	then
 		HAVE_LARGEFILE='#define HAVE_LARGEFILE 1'
+		DEFINES="$DEFINES -DHAVE_LARGEFILE"
 	fi
 
 	if test "$_swig" = yes
@@ -2149,6 +2161,8 @@ EOF
 		fi
 
 		HAVE_SWIG='#define HAVE_SWIG 1'
+		DEFINES="$DEFINES -DHAVE_SWIG"
+
 		USE_SWIG='yes'
 		test -n "$_pydir" || _pydir="$_libdir/`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
 
@@ -2164,37 +2178,45 @@ EOF
 	if test "$_logcache" = yes
 	then
 		USE_LOGCACHE='#define USE_LOGCACHE 1'
+		DEFINES="$DEFINES -DUSE_LOGCACHE"
 	fi
 
 	if test "$_shortrealkernelcache" = yes
 	then
 		USE_SHORTREAL_KERNELCACHE='#define USE_SHORTREAL_KERNELCACHE 1'
+		DEFINES="$DEFINES -DUSE_SHORTREAL_KERNELCACHE"
 	fi
 
 	if test "$_treemem" = yes
 	then
 		USE_TREEMEM='#define USE_TREEMEM 1'
+		DEFINES="$DEFINES -DUSE_TREEMEM"
 	fi
 
 	if test "$_logsumarray" = yes
 	then
 		USE_LOGSUMARRAY='#define USE_LOGSUMARRAY 1'
+		DEFINES="$DEFINES -DUSE_LOGSUMARRAY"
 	fi
 
 	if test "$_hmmparallel" = yes
 	then
 		USE_HMMPARALLELSTRUCTURES='#define USE_HMMPARALLELSTRUCTURES 1'
+		DEFINES="$DEFINES -DUSE_HMMPARALLELSTRUCTURES"
 		USE_HMMPARALLEL='#define USE_HMMPARALLEL 1'
+		DEFINES="$DEFINES -DUSE_HMMPARALLEL"
 	fi
 
 	if test "$_bigstates" = yes
 	then
 		USE_BIGSTATES='#define USE_BIGSTATES 1'
+		DEFINES="$DEFINES -DUSE_BIGSTATES"
 	fi
 
 	if test "$_hmmcache" = yes
 	then
 		USE_HMMCACHE='#define USE_HMMCACHE 1'
+		DEFINES="$DEFINES -DUSE_HMMCACHE"
 	fi
 
 	if test "$_debug" = yes
@@ -2206,18 +2228,21 @@ EOF
 	if test "$_hmmdebug" = yes
 	then
 		USE_HMMDEBUG='#define USE_HMMDEBUG 1'
+		DEFINES="$DEFINES -DUSE_HMMDEBUG"
 		TARGET="shogun-debug"
 	fi
 
 	if test "$_pathdebug" = yes
 	then
 		USE_PATHDEBUG='#define USE_PATHDEBUG 1'
+		DEFINES="$DEFINES -DUSE_PATHDEBUG"
 		TARGET="shogun-debug"
 	fi
 
 	if test "$_svm_light" = yes
 	then
 		USE_SVMLIGHT='#define USE_SVMLIGHT 1'
+		DEFINES="$DEFINES -DUSE_SVMLIGHT"
 	fi
 }
 
@@ -2255,13 +2280,13 @@ GDB				= ${GDB}
 PYTHON			= ${PYTHON}
 COMP_C			= ${COMP_C}
 COMP_CPP		= ${COMP_CPP}
-DEFINES			= ${DEFINES}
+DEFINES			=${DEFINES}
 COMPFLAGS_C		= ${COMPFLAGS_C}
 COMPFLAGS_CPP	= ${COMPFLAGS_CPP}
 INCLUDES		= ${INCLUDES}
 LINK			= ${LINK}
 LINKFLAGS 		= ${LINKFLAGS}
-POSTLINKFLAGS 		= ${POSTLINKFLAGS}
+POSTLINKFLAGS 	= ${POSTLINKFLAGS}
 PREFIX			= ${_prefix}
 DESTDIR			= ${_destdir}
 BINDIR			= ${_bindir}

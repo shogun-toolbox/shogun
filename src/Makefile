@@ -142,12 +142,12 @@ endif
 
 dep:	depend
 depend:		.config lib/versionstring.h
-	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_CPP)" | grep -v 'configure-' ) -o.$(EXT_OBJ_CPP) -f - >.depend || true
-	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' | grep -v 'configure-' ) -o.$(EXT_OBJ_C) -f - >>.depend || true
+	makedepend $(DEFINES) $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_CPP)" | grep -v 'configure-' ) -o.$(EXT_OBJ_CPP) -f - >.depend || true
+	makedepend $(DEFINES) $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' | grep -v 'configure-' ) -o.$(EXT_OBJ_C) -f - >>.depend || true
 	find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -o -name "*.h" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" | grep -v 'configure-' |  cut -c 3- | $(PYTHON) .generate_link_dependencies.py $(EXT_LIB_SWIG) >>.depend
 .depend:	.config lib/versionstring.h
-	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_CPP)" | grep -v 'configure-*' ) -o.$(EXT_OBJ_CPP) -f - >.depend || true
-	makedepend $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' | grep -v 'configure-' ) -o.$(EXT_OBJ_C) -f - >>.depend || true
+	makedepend $(DEFINES) $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_CPP)" | grep -v 'configure-*' ) -o.$(EXT_OBJ_CPP) -f - >.depend || true
+	makedepend $(DEFINES) $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' | grep -v 'configure-' ) -o.$(EXT_OBJ_C) -f - >>.depend || true
 	find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -o -name "*.h" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" | grep -v 'configure-' |  cut -c 3- | $(PYTHON) .generate_link_dependencies.py $(EXT_LIB_SWIG) >>.depend
 
 lib/versionstring.h:	$(SVNEntries)
@@ -168,13 +168,13 @@ _%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG)
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(POSTLINKFLAGS)
 
 %${EXT_OBJ_SWIG}:	%$(EXT_SRC_SWIG)
-	$(COMP_CPP) $(DEFINES) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<
+	$(COMP_CPP) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<
 
 %${EXT_SRC_SWIG}:	%.$(EXT_INP_SWIG)
-	$(SWIG) $(SWIGFLAGS) $<
+	$(SWIG) $(SWIGFLAGS) $(DEFINES) $<
 
 %.$(EXT_OBJ_CPP):	%.$(EXT_SRC_CPP)
-	$(COMP_CPP) $(DEFINES) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<
+	$(COMP_CPP) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<
 
 %.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
-	$(COMP_C) $(DEFINES) $(COMPFLAGS_C) -c $(INCLUDES) -o $@ $<
+	$(COMP_C) $(COMPFLAGS_C) -c $(INCLUDES) -o $@ $<

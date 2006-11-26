@@ -12,6 +12,7 @@
 #define _CLASSIFIER_H__
 
 #include "lib/common.h"
+#include "lib/Mathematics.h"
 #include "features/Labels.h"
 
 #include <stdio.h>
@@ -22,18 +23,18 @@ class CClassifier
 		CClassifier();
 		virtual ~CClassifier();
 
-		virtual bool train()=0;
+		virtual bool train() { return false; }
 		virtual CLabels* classify(CLabels* output=NULL);
 
-		virtual DREAL classify_example(INT num)=0;
+		virtual DREAL classify_example(INT num) { return CMath::INFTY; }
 
-		virtual bool load(FILE* srcfile)=0;
-		virtual bool save(FILE* dstfile)=0;
+		virtual bool load(FILE* srcfile) { return false; }
+		virtual bool save(FILE* dstfile) { return false; }
 
 		virtual inline void set_labels(CLabels* lab) { labels=lab; }
 		virtual inline CLabels* get_labels() { return labels; }
 
-		virtual EClassifierType get_classifier_type()=0;
+		virtual EClassifierType get_classifier_type() { return CT_NONE; }
 
 	protected:
 		CLabels* labels;

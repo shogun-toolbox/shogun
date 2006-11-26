@@ -27,7 +27,7 @@ struct S_THREAD_PARAM
 	bool verbose;
 };
 
-CSVM::CSVM()
+CSVM::CSVM(INT num_sv)
 {
 	CKernelMachine::kernel=NULL;
 
@@ -49,9 +49,12 @@ CSVM::CSVM()
 	use_mkl = false;
 	use_batch_computation = true;
 	use_shrinking= true;
-	use_linadd = false;
+	use_linadd = true;
 	use_precomputed_subkernels = false ;
 	objective=0;
+
+    if (num_sv>0)
+        create_new_model(num_sv);
 }
 
 CSVM::~CSVM()
