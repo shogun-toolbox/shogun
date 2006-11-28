@@ -21,7 +21,7 @@
 
 #include "structure/Plif.h"
 
-CPlif::CPlif()
+CPlif::CPlif(INT len)
 {
 	limits=NULL ;
 	penalties=NULL ;
@@ -35,6 +35,9 @@ CPlif::CPlif()
 	cache=NULL ;
 	use_svm=0 ;
 	use_cache=false ;
+
+	if (len>0)
+		set_plif_length(len);
 }
 
 CPlif::~CPlif()

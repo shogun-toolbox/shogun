@@ -31,7 +31,7 @@ enum ETransformType
 class CPlif
 {
 public:
-	CPlif() ;
+	CPlif(INT len=0) ;
 	~CPlif() ;
 	void init_penalty_struct_cache() ;
 	
