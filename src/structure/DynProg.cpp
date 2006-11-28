@@ -1880,12 +1880,14 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					{ // find maximal lookback length
 						CPlif *pen = (CPlif*) penalty ;
 						if (pen!=NULL)
-							look_back=pen->get_max_len() ;
-						while (pen->get_next_pen()!=NULL)
 						{
-							pen=pen->get_next_pen() ;
-							if (pen->get_max_len()<look_back)
-								look_back=pen->get_max_len() ;
+							look_back=pen->get_max_len() ;
+							while (pen->get_next_pen()!=NULL)
+							{
+								pen=pen->get_next_pen() ;
+								if (pen->get_max_len()<look_back)
+									look_back=pen->get_max_len() ;
+							}
 						}
 						ASSERT(look_back<1e6);
 					}
