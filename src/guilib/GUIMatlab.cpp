@@ -511,9 +511,30 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 		INT L=mxGetN(mx_genestr) ;
 		INT D=mxGetM(mx_dict_weights) ;
 		
+
+		if (!(mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
+			  mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
+			  mxGetN(mx_a_trans) == 3))
+			CIO::message(M_ERROR, "model matricies not matching in size \n");
+
+		if (!(mxGetM(mx_seq) == N &&
+			  mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 &&
+			  mxGetM(mx_genestr)==1))
+			CIO::message(M_ERROR, "sequence and position matrices sizes wrong\n");
+		
+		if (!(mxGetM(mx_penalties)==N && 
+			  mxGetN(mx_penalties)==N))
+			CIO::message(M_ERROR, "size of penalties wrong (%i!=%i or %i!=%i)\n", mxGetM(mx_penalties), N, mxGetN(mx_penalties), N);
+
 		if (!(mxGetM(mx_state_signals)==N && 
 			  mxGetN(mx_state_signals)==2))
-			CIO::message(M_ERROR, "size of state_signals wrong\n");
+			CIO::message(M_ERROR, "size of state_signals wrong (%i!=%i or %i!=2)\n", mxGetM(mx_state_signals), N, mxGetN(mx_state_signals));
+			
+		if (!(mxGetN(mx_dict_weights)==8 && 
+			  ((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
+			   || mxIsEmpty(mx_penalty_info))))
+			CIO::message(M_ERROR, "dict_weights of penalty_info wrong\n");
+
 		
 		/*CIO::message(M_DEBUG, "N=%i, M=%i, P=%i, L=%i, nbest=%i\n", N, M, P, L, nbest) ;
 		fprintf(stderr,"ok1=%i\n", mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
@@ -533,17 +554,6 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 				|| mxIsEmpty(mx_penalty_info))) ;*/
 		
 		if (
-			mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-			mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-			mxGetN(mx_a_trans) == 3 &&
-			mxGetM(mx_seq) == N &&
-			mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 &&
-			mxGetM(mx_penalties)==N && 
-			mxGetN(mx_penalties)==N &&
-			mxGetM(mx_state_signals)==N && 
-			mxGetN(mx_state_signals)==2 &&
-			mxGetM(mx_orf_info)==N &&
-			mxGetN(mx_orf_info)==2 &&
 			mxGetM(mx_genestr)==1 &&
 			mxGetM(mx_use_orf)==1 &&
 			mxGetN(mx_use_orf)==1 &&
@@ -714,7 +724,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 		if (!(mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
 			  mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
 			  mxGetN(mx_a_trans) == 3))
-			CIO::message(M_ERROR, "model matricies not matching in size\n");
+			CIO::message(M_ERROR, "model matricies not matching in size \n");
 
 		if (!(mxGetM(mx_seq) == N &&
 			  mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 &&
@@ -727,7 +737,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 
 		if (!(mxGetM(mx_state_signals)==N && 
 			  mxGetN(mx_state_signals)==2))
-			CIO::message(M_ERROR, "size of state_signals wrong\n");
+			CIO::message(M_ERROR, "size of state_signals wrong (%i!=%i or %i!=2)\n", mxGetM(mx_state_signals), N, mxGetN(mx_state_signals));
 			
 		if (!(mxGetN(mx_my_pos)==mxGetN(mx_my_path) &&
 			  mxGetM(mx_my_path)==1 &&

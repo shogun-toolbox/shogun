@@ -1064,7 +1064,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 
 	if (is_big)
 	{
-		CIO::message(M_DEBUG,"calling best_path_trans: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
+		CIO::message(M_DEBUG,"calling best_path_2struct: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
 					 seq_len, N, max_look_back, nbest) ;
 		CIO::message(M_DEBUG,"allocating %1.2fMB of memory\n", 
 					 mem_use) ;
@@ -1577,13 +1577,14 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	dict_weights_array=dict_weights.get_array() ;
 	int offset=0;
 	
-	DREAL svm_value[num_svms] ;
 	CArray2<CPlif*> PEN(Plif_matrix, N, N, false, false) ;
 	CArray2<CPlif*> PEN_state_signals(Plif_state_signals, N, 2, false, false) ;
 	CArray2<DREAL> seq_input(seq_array, N, seq_len) ;
 	CArray2<DREAL> seq(N, seq_len) ;
+	//seq.zero() ;
 	CArray2<INT> orf_info(orf_info_array, N, 2) ;
 	
+	DREAL svm_value[num_svms] ;
 	{ // initialize svm_svalue
 		for (INT s=0; s<num_svms; s++)
 			svm_value[s]=0 ;
@@ -1592,7 +1593,11 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	{ // convert seq_input to seq
       // this is independent of the svm values 
 		for (INT i=0; i<N; i++)
-			for (INT j=0; j<N; j++)
+			for (INT j=0; j<seq_len; j++)
+				seq.element(i,j) = 0 ;
+
+		for (INT i=0; i<N; i++)
+			for (INT j=0; j<seq_len; j++)
 			{
 				DREAL tmp ;
 				if (PEN_state_signals.element(i,0)==NULL)
@@ -1601,21 +1606,34 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				else
 				{
 					if (PEN_state_signals.element(i,1)==NULL)
+					{
 						// just one plif
-						seq.element(i,j) = PEN_state_signals.element(i,0)->lookup_penalty(seq_input.element(i,j), svm_value, true, tmp) ;
+						if (finite(seq_input.element(i,j)))
+							seq.element(i,j) = PEN_state_signals.element(i,0)->lookup_penalty(seq_input.element(i,j), svm_value, true, tmp) ;
+						else
+							seq.element(i,j) = seq_input.element(i,j) ;
+					}
 					else
 					{
 						// decode the two parts and use them with the two plifs
-						INT part1 = (INT) seq_input.element(i,j) ;
-						INT part2 = (INT) ((seq_input.element(i,j)-(DREAL)part1)*100.) ;
-						DREAL input1 = part1/1000000. - 50. ;
-						DREAL input2 = part2 - 50. ;
-						ASSERT((input1>-50) && (input1<50)) ;
-						ASSERT((input2>-50) && (input2<50)) ;
-						
-						seq.element(i,j) = PEN_state_signals.element(i,0)->lookup_penalty(input1, svm_value, true, tmp) ;
-						seq.element(i,j) += PEN_state_signals.element(i,1)->lookup_penalty(input2, svm_value, true, tmp) ;
-					}
+						if (finite(seq_input.element(i,j)))
+						{
+							INT part1 = (INT) seq_input.element(i,j) ;
+							INT part2 = (INT) ((seq_input.element(i,j)-(DREAL)part1)*100.) ;
+							DREAL input1 = part1/1000000. - 50. ;
+							DREAL input2 = part2 - 50. ;
+							if (!((input1>-50) && (input1<50)) || !((input2>-50) && (input2<50)))
+								fprintf(stderr, "(%i, %i), (%f, %f), %e", part1, part2, input1, input2, seq_input.element(i,j)) ;
+							
+							ASSERT((input1>-50) && (input1<50)) ;
+							ASSERT((input2>-50) && (input2<50)) ;
+							
+							seq.element(i,j) = PEN_state_signals.element(i,0)->lookup_penalty(input1, svm_value, true, tmp) ;
+							seq.element(i,j) += PEN_state_signals.element(i,1)->lookup_penalty(input2, svm_value, true, tmp) ;
+						}
+						else
+							seq.element(i,j) = seq_input.element(i,j) ;
+				    }
 				}
 			}
 	}
@@ -1658,25 +1676,41 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	ASSERT(nbest<32000) ;
 		
 	CArray<bool> genestr_stop(genestr_len) ;
-
+	//genestr_stop.zero() ;
+	
 	CArray3<DREAL> delta(max_look_back, N, nbest) ;
 	DREAL* delta_array = delta.get_array() ;
+	//delta.zero() ;
+	
 	CArray3<T_STATES> psi(seq_len, N, nbest) ;
+	//psi.zero() ;
+	
 	CArray3<short int> ktable(seq_len, N, nbest) ;
+	//ktable.zero() ;
+	
 	CArray3<INT> ptable(seq_len, N, nbest) ;
+	//ptable.zero() ;
 
 	CArray<DREAL> delta_end(nbest) ;
-	CArray<T_STATES> path_ends(nbest) ;
-	CArray<short int> ktable_end(nbest) ;
+	//delta_end.zero() ;
 	
+	CArray<T_STATES> path_ends(nbest) ;
+	//path_ends.zero() ;
+	
+	CArray<short int> ktable_end(nbest) ;
+	//ktable_end.zero() ;
 
 #if USEFIXEDLENLIST > 0
 #ifdef USE_TMP_ARRAYCLASS
 	CArray<DREAL> fixedtempvv(look_back_buflen) ;
 	CArray<INT> fixedtempii(look_back_buflen) ;
+	//fixedtempvv.zero() ;
+	//fixedtempii.zero() ;
 #else
 	DREAL * fixedtempvv=new DREAL[look_back_buflen] ;
+	memset(fixedtempvv, 0, look_back_buflen*sizeof(DREAL)) ;
 	INT * fixedtempii=new INT[look_back_buflen] ;
+	memset(fixedtempii, 0, look_back_buflen*sizeof(INT)) ;
 #endif
 #endif
 
@@ -1684,11 +1718,17 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	// as i didnt change the backtracking stuff
 	
 	CArray<DREAL> oldtempvv(look_back_buflen) ;
+	//oldtempvv.zero() ;
+	
 	CArray<INT> oldtempii(look_back_buflen) ;
+	//oldtempii.zero() ;
 
 	CArray<T_STATES> state_seq(seq_len) ;
+	//state_seq.zero() ;
+	
 	CArray<INT> pos_seq(seq_len) ;
-
+	//pos_seq.zero() ;
+	
 #ifdef ARRAY_STATISTICS
 	dict_weights.set_name("dict_weights") ;
 	word_degree.set_name("word_degree") ;
@@ -1837,8 +1877,18 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					
 					const CPlif * penalty = PEN.element(j,ii) ;
 					INT look_back = default_look_back ;
-					if (penalty!=NULL)
-						look_back=penalty->get_max_len() ;
+					{ // find maximal lookback length
+						CPlif *pen = (CPlif*) penalty ;
+						if (pen!=NULL)
+							look_back=pen->get_max_len() ;
+						while (pen->get_next_pen()!=NULL)
+						{
+							pen=pen->get_next_pen() ;
+							if (pen->get_max_len()<look_back)
+								look_back=pen->get_max_len() ;
+						}
+						ASSERT(look_back<1e6);
+					}
 					INT orf_from = orf_info.element(ii,0) ;
 					INT orf_to   = orf_info.element(j,1) ;
 					if((orf_from!=-1)!=(orf_to!=-1))
@@ -1888,7 +1938,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 								pen_val=penalty->lookup_penalty(pos[t]-pos[ts], svm_value, true, input_value) ;
 							for (short int diff=0; diff<nbest; diff++)
 						    {
-								DREAL  val        = delta.element(delta_array, ts%max_look_back, ii, diff, max_look_back, N) + elem_val[i] ;
+								//DREAL  val        = delta.element(delta_array, ts%max_look_back, ii, diff, max_look_back, N) + elem_val[i] ;
+								DREAL  val        = delta.element(ts%max_look_back, ii, diff) + elem_val[i] ;
 								val             += pen_val ;
 								DREAL mval = -val;
 								
@@ -1908,8 +1959,15 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 								/* fixedtempvv[i], i=0:nbest-1, is sorted so that fixedtempvv[0] <= fixedtempvv[1] <= ...*/
 								/* fixed_list_len has the number of elements in fixedtempvv */
 								
-								if ((fixed_list_len < nbest) || (mval < fixedtempvv[fixed_list_len-1]))
+								if ((fixed_list_len < nbest) || ((0==fixed_list_len) || (mval < fixedtempvv[fixed_list_len-1])))
 								{
+									//fprintf(stderr, "nbest=%i\n", nbest) ;
+									//fprintf(stderr, "fixed_list_len=%i\n", fixed_list_len) ;
+									//fprintf(stderr, "mval=%f\n", mval) ;
+									//fprintf(stderr, "max_look_back=%i\n", max_look_back) ;
+									//if (fixed_list_len!=0)
+									//	fprintf(stderr, "fixedtempvv[fixed_list_len-1]=%f\n", fixedtempvv[fixed_list_len-1]) ;
+
 									if ( (fixed_list_len<nbest) && ((0==fixed_list_len) || (mval>fixedtempvv[fixed_list_len-1])) )
 									{
 										fixedtempvv[fixed_list_len] = mval ;
@@ -2116,9 +2174,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		delete[] wordstr[j] ;
 
 #if USEFIXEDLENLIST > 0
-#ifdef USE_TMP_ARRAYCLASS
+#ifndef USE_TMP_ARRAYCLASS
 	delete[] fixedtempvv ;
-	delete[] fixedtempii
+	delete[] fixedtempii ;
 #endif
 #endif
 }
@@ -2211,6 +2269,9 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 		for (INT s=0; s<num_svms; s++)
 			svm_value[s]=0 ;
 		
+		for (INT i=0; i<my_seq_len; i++)
+			my_scores[i]=0.0 ;
+		
 		ASSERT(my_state_seq[0]>=0) ;
 		initial_state_distribution_p_deriv.element(my_state_seq[0])++ ;
 		my_scores[0] += initial_state_distribution_p.element(my_state_seq[0]) ;
@@ -2283,6 +2344,10 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 
 					PEN_state_signals.element(to_state,0)->penalty_add_derivative(seq_input.element(to_state, to_pos), svm_value, true) ;
 				}
+			} else
+			{
+				fprintf(stderr, "%i. emmission penalty: to_state=%i to_pos=%i score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos)) ;
+				my_scores[i] += seq_input.element(to_state, to_pos) ;
 			}
 		}
 	}

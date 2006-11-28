@@ -69,6 +69,11 @@ CArray2(const T* p_array, INT dim1, INT dim2)
 		return dim2_size ;
 	}
 
+	inline void zero()
+	{
+		CArray<T>::zero() ;
+	}
+
 	/// get the array
 	/// call get_array just before messing with it DO NOT call any [],resize/delete functions after get_array(), the pointer may become invalid !
 	inline T* get_array()

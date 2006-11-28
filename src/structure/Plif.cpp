@@ -81,11 +81,11 @@ void CPlif::init_penalty_struct_cache()
 		return ;
 	if (cache || use_svm)
 		return ;
-	if (max_len<0)
+	if (max_len<=0)
 		return ;
 	//fprintf(stderr, "init cache of size %i byte\n", (max_len+1)*sizeof(DREAL)) ;
 	
-	cache=new DREAL[max_len+1] ;
+	DREAL* cache=new DREAL[max_len+1] ;
 	if (cache)
 	{
 		DREAL input_value ;
@@ -95,6 +95,7 @@ void CPlif::init_penalty_struct_cache()
 			else
 				cache[i] = lookup_penalty(i, 0, false, input_value) ;
 	}
+	this->cache=cache ;
 }
 
 	
@@ -144,7 +145,7 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		if (mx_penalties_field==NULL || !mxIsNumeric(mx_penalties_field) ||
 			mxGetM(mx_penalties_field)!=1 || mxGetN(mx_penalties_field)!=len)
 		{
-			CIO::message(M_ERROR, "missing penalties field\n") ;
+			CIO::message(M_ERROR, "missing penalties field (%i)\n", i) ;
 			delete[] PEN ;
 			return NULL ;
 		}

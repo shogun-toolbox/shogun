@@ -81,6 +81,12 @@ CArray(const T* p_array, INT p_array_size)
 	{
 		return array_size;
 	}
+
+	inline void zero()
+	{
+		for (INT i=0; i< array_size; i++)
+			array[i]=0 ;
+	}
 	
 	///return array element at index
 	inline const T& get_element(INT index) const
