@@ -2311,7 +2311,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				DREAL tmp=0.0 ;
 				DREAL nscore = PEN.element(to_state, from_state)->lookup_penalty(pos[to_pos]-pos[from_pos], svm_value, true, tmp) ;
 				my_scores[i] += nscore ;
-				fprintf(stderr, "%i. transition penalty: from_state=%i to_state=%i from_pos=%i to_pos=%i value=%i\n", i, from_state, to_state, from_pos, to_pos, pos[to_pos]-pos[from_pos]) ;
+				CIO::message(M_DEBUG, "%i. transition penalty: from_state=%i to_state=%i from_pos=%i to_pos=%i value=%i\n", i, from_state, to_state, from_pos, to_pos, pos[to_pos]-pos[from_pos]) ;
 				PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value, true) ;
 			}
 
@@ -2332,7 +2332,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 					DREAL nscore1 = PEN_state_signals.element(to_state,0)->lookup_penalty(input1, svm_value, true, tmp) ;
 					DREAL nscore2 = PEN_state_signals.element(to_state,1)->lookup_penalty(input2, svm_value, true, tmp) ;
 					my_scores[i] += nscore1 + nscore2 ;
-					fprintf(stderr, "%i. emmission penalty: to_state=%i to_pos=%i value1=%1.2f value2=%1.2f score1=%1.2f score2=%1.2f\n", i, to_state, to_pos, input1, input2, nscore1, nscore2) ;
+					CIO::message(M_DEBUG, "%i. emmission penalty: to_state=%i to_pos=%i value1=%1.2f value2=%1.2f score1=%1.2f score2=%1.2f\n", i, to_state, to_pos, input1, input2, nscore1, nscore2) ;
 
 					PEN_state_signals.element(to_state,0)->penalty_add_derivative(input1, svm_value, true) ;
 					PEN_state_signals.element(to_state,1)->penalty_add_derivative(input2, svm_value, true) ;
@@ -2342,13 +2342,13 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 					DREAL tmp=0.0 ;
 					DREAL nscore = PEN_state_signals.element(to_state,0)->lookup_penalty(seq_input.element(to_state, to_pos), svm_value, true, tmp) ;
 					my_scores[i] += nscore ;
-					fprintf(stderr, "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos), nscore) ;
+					CIO::message(M_DEBUG, "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos), nscore) ;
 
 					PEN_state_signals.element(to_state,0)->penalty_add_derivative(seq_input.element(to_state, to_pos), svm_value, true) ;
 				}
 			} else
 			{
-				fprintf(stderr, "%i. emmission penalty: to_state=%i to_pos=%i score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos)) ;
+				CIO::message(M_DEBUG, "%i. emmission penalty: to_state=%i to_pos=%i score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos)) ;
 				my_scores[i] += seq_input.element(to_state, to_pos) ;
 			}
 		}
