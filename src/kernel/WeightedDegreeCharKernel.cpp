@@ -19,7 +19,9 @@
 #include "features/Features.h"
 #include "features/CharFeatures.h"
 
+#ifndef WIN32
 #include <pthread.h>
+#endif
 
 struct S_THREAD_PARAM 
 {
@@ -1018,13 +1020,10 @@ void CWeightedDegreeCharKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* 
 			CIO::progress(j,0,num_feat);
 		}
 	}
+#ifndef WIN32
 	else
 	{
-#ifdef CYGWIN
-		for (INT j=0; j<num_feat; j++)
-#else
 		for (INT j=0; j<num_feat && !CSignal::cancel_computations(); j++)
-#endif
 		{
 			init_optimization(num_suppvec, IDX, alphas, j);
 			pthread_t threads[num_threads-1];
@@ -1067,6 +1066,7 @@ void CWeightedDegreeCharKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* 
 			CIO::progress(j,0,num_feat);
 		}
 	}
+#endif
 
 	delete[] vec;
 }

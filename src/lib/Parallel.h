@@ -12,6 +12,7 @@
 #define PARALLEL_H__
 
 #include "lib/common.h"
+#include "lib/io.h"
 
 class CParallel
 {
@@ -21,6 +22,9 @@ public:
 
 	static inline void set_num_threads(INT n)
 	{
+#ifdef WIN32
+		ASSERT(n==1);
+#endif
 		num_threads=n;
 	}
 

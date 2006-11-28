@@ -1847,21 +1847,20 @@ EOF
 	then
 		if win32
 		then
-			#echocheck "Matlab"
-			#matlab.exe /nosplash /minimize /r "fid=fopen('matlab_version.txt','wb');fprintf(fid,version);fclose(fid);quit"
-			#if test -f matlab_version.txt
-			#then
-				#echores `cat matlab_version.txt`
-				#matlab.exe /nosplash /minimize /r "system('env > matlab_path.txt');quit"
-				#MATLAB_DIR=`cut -c 3- matlab_path.txt`
-				MATLAB_DIR=/cygdrive/c/MATLAB6p5p2
+			echocheck "Matlab"
+			matlab.exe /nosplash /minimize /r "fid=fopen('matlab_version.txt','wb');fprintf(fid,version);fclose(fid);quit"
+			if test -f matlab_version.txt
+			then
+				echores `cat matlab_version.txt`
+				matlab.exe /nosplash /minimize /r "system('env > matlab_path.txt');quit"
+				MATLAB_DIR=`grep '^_=' matlab_path.txt | cut -c 3- | sed 's#/bin/win32/matlab.exe##'`
 				MATLAB_INCDIR="$MATLAB_DIR/extern/include"
 				MATLAB_LIBDIR="$MATLAB_DIR/extern/lib"
 				MATLAB_BINDIR="$MATLAB_DIR/bin"
-			#else
-				#echores "no"
-				#die "could not find matlab in path / matlab crashed"
-			#fi
+			else
+				echores "no"
+				die "could not find matlab in path / matlab crashed"
+			fi
 
 		else
 			echocheck "Matlab"
@@ -1914,10 +1913,15 @@ EOF
 			fi
 		elif cygwin
 		then
-			COMPFLAGS_C="$COMPFLAGS_C -DMATLAB_MEX_FILE"
-			COMPFLAGS_CPP="$COMPFLAGS_CPP -DMATLAB_MEX_FILE"
+cat >mexFunction.map <<EOF
+MEX {
+_mexFunction;
+_mexVersion;
+};
+EOF
+			COMPFLAGS_C="$COMPFLAGS_C -mno-cygwin -DMATLAB_MEX_FILE"
+			COMPFLAGS_CPP="$COMPFLAGS_CPP -mno-cygwin -DMATLAB_MEX_FILE"
 			LINKFLAGS="$LINKFLAGS -shared -mno-cygwin -Wl,--version-script,mexFunction.map -Wl,--rpath-link,$MATLAB_LIBDIR/win32 -L$MATLAB_BINDIR/win32 -lmx -lmex -lmat"
-			#LINKFLAGS="$LINKFLAGS -shared -mno-cygwin -Wl,--version-script,$MATLAB_LIBDIR/win32/lcc/mexFunction.def -Wl,--rpath-link,$MATLAB_LIBDIR/win32 -L$MATLAB_BINDIR/win32 -lmx -lmex -lmat"
 			INCLUDES="$INCLUDES -I$MATLAB_INCDIR"
 			TARGET="sg.dll"
 		else
@@ -2085,8 +2089,10 @@ EOF
 		then
 			RPATH=$(cygpath -u $(cygpath -d "`which R | sed 's#/bin/R##'`"))
 			TARGET="sg.dll"
+			COMPFLAGS_C="$COMPFLAGS_C -mno-cygwin"
+			COMPFLAGS_CPP="$COMPFLAGS_CPP -mno-cygwin"
 			INCLUDES="$INCLUDES -I$RPATH/include"
-			LINKFLAGS="$LINKFLAGS -L$RPATH/bin -lR -shared"
+			LINKFLAGS="$LINKFLAGS -L$RPATH/bin -lR -shared -mno-cygwin"
 		else
 			TARGET="sg.so"
 			INCLUDES="$INCLUDES `R CMD config --cppflags`"

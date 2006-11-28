@@ -25,7 +25,10 @@
 
 #include <string.h>
 #include <unistd.h>
+
+#ifndef WIN32
 #include <pthread.h>
+#endif
 
 CKernel::CKernel(INT size) 
 : kernel_matrix(NULL), precomputed_matrix(NULL),
@@ -501,10 +504,13 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 // Fills cache for the rows in key 
 void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 {
+#ifndef WIN32
 	if (CParallel::get_num_threads()<2)
 	{
+#endif
 		for(INT i=0;i<num_rows;i++) 
 			cache_kernel_row(rows[i]);
+#ifndef WIN32
 	}
 	else
 	{
@@ -595,6 +601,7 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 
 		delete[] needs_computation;
 	}
+#endif
 }
 
 // remove numshrink columns in the cache

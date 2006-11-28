@@ -74,7 +74,11 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			case M_NOTICE:
 			case M_MESSAGEONLY:
 				fprintf(target, message_strings[p]);
+#ifdef WIN32
+				mexPrintf("%s", str);
+#else
 				fprintf(target, "%s", str);
+#endif
 				break;
 
 			case M_WARN:

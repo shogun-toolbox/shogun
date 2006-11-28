@@ -13,7 +13,7 @@
 
 #include "lib/config.h"
 
-#ifndef CYGWIN
+#ifndef WIN32
 #include <signal.h>
 #define NUMTRAPPEDSIGS 2
 

@@ -19,7 +19,10 @@
 #include "features/CombinedFeatures.h"
 
 #include <string.h>
+
+#ifndef WIN32
 #include <pthread.h>
+#endif
 
 struct S_THREAD_PARAM 
 {
@@ -377,6 +380,7 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 				params.vec_idx = vec_idx;
 				compute_optimized_kernel_helper((void*) &params);
 			}
+#ifndef WIN32
 			else
 			{
 				pthread_t threads[num_threads-1];
@@ -406,6 +410,7 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 					pthread_join(threads[t], NULL);
 
 			}
+#endif
 
 			k->delete_optimization();
 		}
@@ -433,6 +438,7 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 				params.num_suppvec = num_suppvec;
 				compute_kernel_helper((void*) &params);
 			}
+#ifndef WIN32
 			else
 			{
 				pthread_t threads[num_threads-1];
@@ -468,6 +474,7 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 					pthread_join(threads[t], NULL);
 
 			}
+#endif
 		}
 	}
 }

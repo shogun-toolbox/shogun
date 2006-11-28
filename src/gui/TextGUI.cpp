@@ -13,9 +13,13 @@
 
 #include <ctype.h>
 #include <sys/types.h>
+
+#ifndef WIN32
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#endif
+
 #include <string.h>
 #include <unistd.h>
 #include <string.h>

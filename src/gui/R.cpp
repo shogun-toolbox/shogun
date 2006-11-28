@@ -444,7 +444,9 @@ SEXP sg(SEXP args)
 	 * it consists of "sg", "func" and additional arguments.
 	 * */
 
+#ifndef WIN32
 	CSignal::set_handler();
+#endif
 
 	if (!gui)
 		gui=new CTextGUI(0, NULL);
@@ -453,7 +455,9 @@ SEXP sg(SEXP args)
 		CIO::message(M_ERROR,"gui could not be initialized.");
 
 	SEXP result=sg_helper(args);
+#ifndef WIN32
 	CSignal::unset_handler();
+#endif
 	return result;
 }
 

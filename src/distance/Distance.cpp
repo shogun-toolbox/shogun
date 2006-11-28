@@ -22,7 +22,6 @@
 
 #include <string.h>
 #include <unistd.h>
-#include <pthread.h>
 
 CDistance::CDistance() 
 : precomputed_matrix(NULL), precompute_matrix(false), 

@@ -137,7 +137,7 @@ public:
 		penalty_clear_derivative(false) ;
 	}
 
-	void set_plif_limits(DREAL *p_limits, INT p_len) 
+	void set_plif_limits(DREAL* p_limits, INT p_len) 
 	{
 		delete[] cache ;
 		cache=NULL ;
@@ -148,7 +148,7 @@ public:
 		penalty_clear_derivative(false) ;
 	}
 
-	void set_plif_penalty(DREAL *p_penalties, INT p_len) 
+	void set_plif_penalty(DREAL* p_penalties, INT p_len) 
 	{
 		delete[] cache ;
 		cache=NULL ;

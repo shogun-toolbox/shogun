@@ -10,7 +10,7 @@
 
 #include "lib/config.h"
 
-#ifndef CYGWIN
+#ifndef WIN32
 #ifdef HAVE_PYTHON
 #include <Python.h>
 #endif

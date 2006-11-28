@@ -216,6 +216,47 @@ BUILDING ON WINDOWS / CYGWIN
 
 	install gcc version 3.3 (gcc-3.4 is currently broken)
 
+R:
+==
+I did not try the long and painful way of compiling R to get etc/Makeconf etc.
+to be setup correctly. Thus the usual R CMD INSTALL <pkg> won't work (help welcome).
+
+Instead install the R package from cran (i.e. using the R-2.4.0-win32.exe
+		installer from http://cran.r-project.org/bin/windows/base/ )
+
+Enter the src/ directory and do:
+
+./configure --enable-R
+(if that fails attach the configure.log in the bug report)
+make
+
+a sg.dll file should be created. To test if that file is OK try in the
+src/ directory:
+
+R
+>> dyn.load('sg.dll')
+sg <- function(...) .External("sg",...,PACKAGE="sg")
+sg('help')
+
+Instead of using library(sg) in your .R scripts you now have to use 
+
+dyn.load('<path_to_shogun>/sg.dll')
+sg <- function(...) .External("sg",...,PACKAGE="sg").
+
+After this modification, The examples in R/examples should all work. To get
+them to go start the R gui, choose File->Source R Code and select 
+shogun/R/examples/svr_regression.R  (as this example has no other package dependencies).
+
+matlab:
+=======
+	cd src
+	./configure --enable-matlab
+	make
+
+	a sg.dll can be found in src/
+
+	startup matlab and type sg('help') 
+
 standalone:
 ===========
 

@@ -16,7 +16,10 @@
 #include "classifier/svm/SVM.h"
 
 #include <string.h>
+
+#ifndef WIN32
 #include <pthread.h>
+#endif
 
 struct S_THREAD_PARAM 
 {
@@ -324,6 +327,7 @@ CLabels* CSVM::classify(CLabels* result)
 				params.verbose=true;
 				classify_example_helper((void*) &params);
 			}
+#ifndef WIN32
 			else
 			{
 				pthread_t threads[num_threads-1];
@@ -352,6 +356,7 @@ CLabels* CSVM::classify(CLabels* result)
 				for (t=0; t<num_threads-1; t++)
 					pthread_join(threads[t], NULL);
 			}
+#endif
 		}
 
 #ifndef CYGWIN

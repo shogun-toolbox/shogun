@@ -41,7 +41,10 @@ extern "C" {
 #include "lib/Parallel.h"
 
 #include <unistd.h>
+
+#ifndef WIN32
 #include <pthread.h>
+#endif
 
 struct S_THREAD_PARAM 
 {
@@ -1219,6 +1222,7 @@ void CSVRLight::update_linear_component(INT* docs, INT* label,
 						lin[j]+=get_kernel()->compute_optimized(regression_fix_index(docs[j]));
 					}
 				}
+#ifndef WIN32
 				else
 				{
 					INT num_elem = 0 ;
@@ -1252,6 +1256,7 @@ void CSVRLight::update_linear_component(INT* docs, INT* label,
 					for (INT t=0; t<CParallel::get_num_threads()-1; t++)
 						pthread_join(threads[t], &ret) ;
 				}
+#endif
 			}
 		}
 	}

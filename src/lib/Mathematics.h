@@ -32,13 +32,20 @@ extern "C" {
 //define finite for win32
 #ifdef _WIN32
 #include <float.h>
+#ifndef finite
 #define finite _finite
+#endif
+
+#ifndef isnan
 #define isnan _isnan
+#endif
 #endif
 
 //define finite/nan for CYGWIN
 #ifdef CYGWIN
+#ifndef finite
 #include <ieeefp.h>
+#endif
 #endif
 
 
