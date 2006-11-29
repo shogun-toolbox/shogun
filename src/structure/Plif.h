@@ -139,6 +139,7 @@ public:
 	{
 		delete[] cache ;
 		cache=NULL ;
+		ASSERT(len==p_len);
 
 		for (INT i=0; i<len; i++)
 			limits[i]=p_limits[i] ;
@@ -150,6 +151,7 @@ public:
 	{
 		delete[] cache ;
 		cache=NULL ;
+		ASSERT(len==p_len);
 
 		for (INT i=0; i<len; i++)
 			penalties[i]=p_penalties[i] ;

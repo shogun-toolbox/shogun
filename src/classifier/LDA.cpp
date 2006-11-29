@@ -15,7 +15,7 @@
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 
-CLDA::CLDA() : CLinearClassifier(), learn_rate(0.1), max_iter(10000000)
+CLDA::CLDA(DREAL p) : CLinearClassifier(), prior(p), learn_rate(0.1), max_iter(10000000)
 {
 }
 
@@ -88,7 +88,7 @@ bool CLDA::train()
 	DREAL* buffer=new DREAL[num_feat*CMath::max(num_neg, num_pos)];
 	ASSERT(buffer);
 
-	//neg
+	//mean neg
 	for (i=0; i<num_neg; i++)
 	{
 		INT vlen;
@@ -150,13 +150,13 @@ bool CLDA::train()
 	for (i=0; i<num_feat; i++)
 		scatter[i*num_feat+i]+= trace*gamma/num_feat;
 	
-	//DREAL* p= CMath::pinv(scatter, num_feat, num_feat, NULL);
-	//bias=log(prior);
-	//memcpy(buffer,mean_neg,sizeof(DREAL)*num_feat);
-	//cblas_dtrmv(CblasRowMajor, CblasUpper, CblasNoTrans, CblasUnit, num_feat, scatter, num_feat, mean_neg, 1);
-	//bias-=0.5*CMath::dot(mean_neg, buffer, num_feat);
-	//cblas_dtrmv(CblasRowMajor, CblasUpper, CblasNoTrans, CblasUnit, num_feat, scatter, num_feat, mean_pos, 1);
-	//bias+=0.5*CMath::dot(mean_pos, buffer, num_feat);
+	DREAL* inv_scatter= CMath::pinv(scatter, num_feat, num_feat, NULL);
+	bias=log(prior);
+	memcpy(buffer,mean_neg,sizeof(DREAL)*num_feat);
+	cblas_dtrmv(CblasRowMajor, CblasUpper, CblasNoTrans, CblasUnit, num_feat, inv_scatter, num_feat, mean_neg, 1);
+	bias-=0.5*CMath::dot(mean_neg, buffer, num_feat);
+	cblas_dtrmv(CblasRowMajor, CblasUpper, CblasNoTrans, CblasUnit, num_feat, inv_scatter, num_feat, mean_pos, 1);
+	bias+=0.5*CMath::dot(mean_pos, buffer, num_feat);
 
 	for (i=0; i<num_feat; i++)
 		w[i]=mean_pos[i]-mean_neg[i];
@@ -165,6 +165,7 @@ bool CLDA::train()
 	delete[] mean_neg;
 	delete[] mean_pos;
 	delete[] scatter;
+	delete[] inv_scatter;
 	delete[] classidx_neg;
 	delete[] classidx_pos;
 	delete[] buffer;

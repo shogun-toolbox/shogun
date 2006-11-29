@@ -20,7 +20,7 @@
 class CLDA : public CLinearClassifier
 {
 	public:
-		CLDA();
+		CLDA(DREAL prior=1);
 		virtual ~CLDA();
 
 		virtual bool train();
@@ -42,6 +42,7 @@ class CLDA : public CLinearClassifier
 			return CT_LDA;
 		}
 	protected:
+		DREAL prior;
 		DREAL learn_rate;
 		INT max_iter;
 };

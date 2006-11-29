@@ -398,7 +398,7 @@ DREAL* CMath::pinv(DREAL* matrix, INT rows, INT cols, DREAL* target)
 
 
 	//svd
-	return NULL;
+	return target;
 }
 
 //this creates a math object for the purpose of the constructor to be called at least once
