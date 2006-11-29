@@ -136,9 +136,15 @@ install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
 	for i in $(SWIGPYFILES) ; do echo -n $$i | sed -e 's=.*/="=' -e 's/\.py/", /' >>$(DESTDIR)$(PYDIR)/shogun/__init__.py; done
 	echo ']' >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
 else
+ifeq (sg.oct,$(TARGET))
+install: $(TARGET)
+	install -d -m755 $(DESTDIR)$(OCTDIR)
+	install -D -m755 $(TARGET) $(DESTDIR)$(OCTDIR)
+else
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(BINDIR)
 	install -D -m755 $(TARGET) $(DESTDIR)$(BINDIR)
+endif
 endif
 
 dep:	depend

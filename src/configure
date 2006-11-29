@@ -50,6 +50,7 @@ _mandir=""
 _confdir=""
 _libdir=""
 _pydir=""
+_octdir=""
 _inc_extra=""
 _ld_extra=""
 _optimizing=""
@@ -578,6 +579,9 @@ for ac_option do
     ;;
   --pydir=*)
     _pydir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
+	;;
+  --octdir=*)
+    _octdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
 
   *)
@@ -1957,6 +1961,7 @@ EOF
 		echocheck "octave-config"
 		if test -n "`octave-config -p OCTLIBDIR`" && test -n "`octave-config -p OCTINCLUDEDIR`" && test -n "`octave-config -p INCLUDEDIR`"
 		then
+			test -n "$_octdir" || _octdir=`octave-config --print LOCALAPIOCTFILEDIR`
 			echores "yes"
 		else
 			echores "no"
@@ -2303,6 +2308,7 @@ MANDIR			= ${_mandir}
 CONFDIR			= ${_confdir}
 LIBDIR			= ${_libdir}
 PYDIR			= ${_pydir}
+OCTDIR			= ${_octdir}
 EOF
 }
 
