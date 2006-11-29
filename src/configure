@@ -1987,7 +1987,8 @@ EOF
 		then
 			LINKFLAGS="-bundle -Wl,-flat_namespace -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
 		else
-			LINKFLAGS="-shared -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
+			OCTLIBDIR=`octave-config -p OCTLIBDIR`
+			LINKFLAGS="-shared -L $OCTLIBDIR -Wl,-rpath $OCTLIBDIR -loctinterp -lcruft -loctave $LINKFLAGS"
 		fi
 		TARGET="sg.oct"
 		INCLUDES="$INCLUDES -I`octave-config -p OCTINCLUDEDIR` -I`octave-config -p INCLUDEDIR`"
@@ -2096,7 +2097,8 @@ EOF
 		else
 			TARGET="sg.so"
 			INCLUDES="$INCLUDES `R CMD config --cppflags`"
-			LINKFLAGS="$LINKFLAGS `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
+			RPATH=`R CMD config --ldflags | sed -e's/-L/-Wl,-rpath /' -e's/-l[^ ]*//'`
+			LINKFLAGS="$LINKFLAGS `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS` $RPATH"
 		fi
 
 

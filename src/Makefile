@@ -130,13 +130,14 @@ dist:	distclean
 
 ifeq (yes,$(USE_SWIG))
 install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
-	install -d -m755 "$(PYDIR)/shogun"
-	install -m755 $(SWIGLIBFILES) $(SWIGPYFILES) "$(PYDIR)/shogun"
-	echo -n '__all__= [' > "$(PYDIR)/shogun/__init__.py"
-	for i in $(SWIGPYFILES) ; do echo -n $$i | sed -e 's=.*/="=' -e 's/\.py/", /' >>$(PYDIR)/shogun/__init__.py; done
-	echo ']' >> "$(PYDIR)/shogun/__init__.py"
+	install -d -m755 "$(DESTDIR)$(PYDIR)/shogun"
+	install -m755 $(SWIGLIBFILES) $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)/shogun"
+	echo -n '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
+	for i in $(SWIGPYFILES) ; do echo -n $$i | sed -e 's=.*/="=' -e 's/\.py/", /' >>$(DESTDIR)$(PYDIR)/shogun/__init__.py; done
+	echo ']' >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
 else
 install: $(TARGET)
+	install -d -m755 $(DESTDIR)$(BINDIR)
 	install -D -m755 $(TARGET) $(DESTDIR)$(BINDIR)
 endif
 

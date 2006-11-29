@@ -86,6 +86,7 @@ bool CLDA::train()
 	memset(scatter,0,num_feat*num_feat*sizeof(DREAL));
 
 	DREAL* buffer=new DREAL[num_feat*CMath::max(num_neg, num_pos)];
+	//DREAL* buffer=new DREAL[num_feat*num_vec];
 	ASSERT(buffer);
 
 	//mean neg
@@ -133,12 +134,12 @@ bool CLDA::train()
 	}
 
 	for (j=0; j<num_feat; j++)
-		mean_neg[j]/=num_neg;
+		mean_pos[j]/=num_pos;
 
-	for (i=num_neg; i<num_train_labels; i++)
+	for (i=0; i<num_pos; i++)
 	{
 		for (j=0; j<num_feat; j++)
-			buffer[num_feat*i+j]-=mean_neg[j];
+			buffer[num_feat*i+j]-=mean_pos[j];
 	}
 	cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, num_feat, num_feat, num_feat, 1.0, buffer, num_feat, buffer, num_feat, 1.0, scatter, num_feat);
 
