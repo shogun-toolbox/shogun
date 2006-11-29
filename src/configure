@@ -1836,7 +1836,7 @@ EOF
 				echores "yes"
 				HAVE_LAPACK='#define HAVE_LAPACK 1'
 				DEFINES="$DEFINES -DHAVE_LAPACK"
-				LINKFLAGS="$LINKFLAGS -llapack-3 -lblas-3"
+				LINKFLAGS="$LINKFLAGS -llapack -lblas"
 			else
 				echores "no"
 			fi

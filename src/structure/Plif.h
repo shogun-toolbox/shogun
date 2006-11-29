@@ -99,8 +99,6 @@ public:
 		delete[] cache ;
 		cache=NULL ;
 
-		//fprintf(stderr, "set_plif len=%i\n", p_len) ;
-
 		limits=new DREAL[len] ;
 		penalties=new DREAL[len] ;
 		cum_derivatives=new DREAL[len] ;
@@ -122,7 +120,7 @@ public:
 			delete[] limits ;
 			delete[] penalties ;
 			delete[] cum_derivatives ;
-			fprintf(stderr, "set_plif len=%i\n", p_len) ;
+			CIO::message(M_DEBUG, "set_plif len=%i\n", p_len);
 			limits=new DREAL[len] ;
 			penalties=new DREAL[len] ;
 			cum_derivatives=new DREAL[len] ;
