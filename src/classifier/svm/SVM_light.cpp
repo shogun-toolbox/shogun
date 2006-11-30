@@ -220,23 +220,30 @@ bool CSVMLight::init_cplex()
 			status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2);
 			if ( status )
 			{
-				CIO::message(M_ERROR, 
-						"Failure to select dual lp optimization, error %d.\n", status);
+            char buf[200];
+            sprintf(buf,"Failure to select dual lp optimization, error %d.\n", status);
+            throw SVMException(buf);
+				//CIO::message(M_ERROR, 
+            //"Failure to select dual lp optimization, error %d.\n", status);
 			}
 			else
 			{
 				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
 				if ( status )
 				{
-					CIO::message(M_ERROR,
-							"Failure to turn on data checking, error %d.\n", status);
+               char buf[200];
+               sprintf(buf,"Failure to turn on data checking, error %d.\n", status);
+               throw SVMException(buf);
+					//CIO::message(M_ERROR,
+					//		"Failure to turn on data checking, error %d.\n", status);
 				}	
 				else
 				{
 					lp = CPXcreateprob (env, &status, "light");
 
 					if ( lp == NULL )
-						CIO::message(M_ERROR, "Failed to create LP.\n");
+                  throw SVMException("Failed to create LP.\n");
+						//CIO::message(M_ERROR, "Failed to create LP.\n");
 					else
 						CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
 				}
@@ -408,8 +415,9 @@ bool CSVMLight::train()
 
 	if (!CKernelMachine::get_kernel())
 	{
-		CIO::message(M_ERROR, "SVM_light can not proceed without kernel!\n");
-		return false ;
+      throw SVMException("SVM_light can not proceed without kernel!\n");
+		//CIO::message(M_ERROR, "SVM_light can not proceed without kernel!\n");
+		//return false ;
 	}
 
 	// MKL stuff
@@ -456,7 +464,8 @@ bool CSVMLight::train()
 		init_cplex();
 #else
 	if (get_mkl_enabled())
-		CIO::message(M_ERROR, "CPLEX was disabled at compile-time\n");
+      throw SVMException("CPLEX was disabled at compile-time\n");
+		//CIO::message(M_ERROR, "CPLEX was disabled at compile-time\n");
 #endif
 	
 	if (precomputed_subkernels != NULL)
@@ -1846,7 +1855,10 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 			if ( status ) {
 				char  errmsg[1024];
 				CPXgeterrorstring (env, status, errmsg);
-				CIO::message(M_ERROR, "%s", errmsg);
+            char buf[200];
+            sprintf(buf,"%s", errmsg);
+            throw SVMException(buf);
+				//CIO::message(M_ERROR, "%s", errmsg);
 			}
 			
 			// add constraint sum(w)=1 ;
@@ -1873,7 +1885,8 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 								 rhs, sense, rmatbeg,
 								 rmatind, rmatval, NULL, NULL);
 			if ( status ) {
-				CIO::message(M_ERROR, "Failed to add the first row.\n");
+            throw SVMException("Failed to add the first row.\n");
+				//CIO::message(M_ERROR, "Failed to add the first row.\n");
 			}
 			lp_initialized = true ;
 			
@@ -1903,7 +1916,8 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-						CIO::message(M_ERROR, "Failed to add a smothness row (1).\n");
+                  throw SVMException("Failed to add a smothness row (1).\n");
+						//CIO::message(M_ERROR, "Failed to add a smothness row (1).\n");
 					}
 					
 					rmatbeg[0] = 0;
@@ -1919,7 +1933,8 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-						CIO::message(M_ERROR, "Failed to add a smothness row (2).\n");
+                  throw SVMException("Failed to add a smothness row (2).\n");
+						//CIO::message(M_ERROR, "Failed to add a smothness row (2).\n");
 					}
 				}
 			}
@@ -1952,13 +1967,15 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 									 rhs, sense, rmatbeg,
 									 rmatind, rmatval, NULL, NULL);
 			if ( status ) 
-				CIO::message(M_ERROR, "Failed to add the new row.\n");
+            throw SVMException("Failed to add the new row.\n");
+				//CIO::message(M_ERROR, "Failed to add the new row.\n");
 		}
 		
 		{ // optimize
 			INT status = CPXlpopt (env, lp);
 			if ( status ) 
-				CIO::message(M_ERROR, "Failed to optimize LP.\n");
+            throw SVMException("Failed to optimize LP.\n");
+				//CIO::message(M_ERROR, "Failed to optimize LP.\n");
 			
 			// obtain solution
 			INT cur_numrows = CPXgetnumrows (env, lp);
@@ -1976,14 +1993,16 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 				 slack == NULL ||
 				 pi    == NULL   ) {
 				status = CPXERR_NO_MEMORY;
-				CIO::message(M_ERROR, "Could not allocate memory for solution.\n") ;
+            throw SVMException("Could not allocate memory for solution.\n");
+				//CIO::message(M_ERROR, "Could not allocate memory for solution.\n") ;
 			}
 			INT solstat = 0 ;
 			DREAL objval = 0 ;
 			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
 			INT solution_ok = (!status) ;
 			if ( status ) {
-				CIO::message(M_ERROR, "Failed to obtain solution.\n");
+            throw SVMException("Failed to obtain solution.\n");
+				//CIO::message(M_ERROR, "Failed to obtain solution.\n");
 			}
 			
 			num_active_rows=0 ;
@@ -2013,7 +2032,8 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_row,num_rows) ;
 					INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
 					if ( status ) 
-						CIO::message(M_ERROR, "Failed to remove an old row.\n");
+                  throw SVMException("Failed to remove an old row.\n");
+						//CIO::message(M_ERROR, "Failed to remove an old row.\n");
 				}
 
 				// set weights, store new rho and compute new w gap
@@ -2194,7 +2214,10 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 			if ( status ) {
 				char  errmsg[1024];
 				CPXgeterrorstring (env, status, errmsg);
-				CIO::message(M_ERROR, "%s", errmsg);
+            char buf[200];
+            sprintf(buf,"%s", errmsg);
+            throw SVMException(buf);
+				//CIO::message(M_ERROR, "%s", errmsg);
 			}
 			
 			// add constraint sum(w)=1 ;
@@ -2221,7 +2244,8 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 								 rhs, sense, rmatbeg,
 								 rmatind, rmatval, NULL, NULL);
 			if ( status ) {
-				CIO::message(M_ERROR, "Failed to add the first row.\n");
+            throw SVMException("Failed to add the first row.\n");
+				//CIO::message(M_ERROR, "Failed to add the first row.\n");
 			}
 			lp_initialized=true ;
 			if (C_mkl!=0.0)
@@ -2249,7 +2273,8 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-						CIO::message(M_ERROR, "Failed to add a smothness row (1).\n");
+                  throw SVMException("Failed to add a smothness row (1).\n");
+						//CIO::message(M_ERROR, "Failed to add a smothness row (1).\n");
 					}
 					
 					rmatbeg[0] = 0;
@@ -2265,7 +2290,8 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-						CIO::message(M_ERROR, "Failed to add a smothness row (2).\n");
+                  throw SVMException("Failed to add a smothness row (2).\n");
+						//CIO::message(M_ERROR, "Failed to add a smothness row (2).\n");
 					}
 				}
 			}
@@ -2296,13 +2322,15 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 									 rhs, sense, rmatbeg,
 									 rmatind, rmatval, NULL, NULL);
 			if ( status ) 
-				CIO::message(M_ERROR, "Failed to add the new row.\n");
+            throw SVMException("Failed to add the new row.\n");
+				//CIO::message(M_ERROR, "Failed to add the new row.\n");
 		}
 		
 		{ // optimize
 			INT status = CPXlpopt (env, lp);
 			if ( status ) 
-				CIO::message(M_ERROR, "Failed to optimize LP.\n");
+            throw SVMException("Failed to optimize LP.\n");
+				//CIO::message(M_ERROR, "Failed to optimize LP.\n");
 			
 			// obtain solution
 			INT cur_numrows = CPXgetnumrows (env, lp);
@@ -2320,14 +2348,16 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 				 slack == NULL ||
 				 pi    == NULL   ) {
 				status = CPXERR_NO_MEMORY;
-				CIO::message(M_ERROR, "Could not allocate memory for solution.\n") ;
+            throw SVMException("Could not allocate memory for solution.\n");
+				//CIO::message(M_ERROR, "Could not allocate memory for solution.\n") ;
 			}
 			INT solstat = 0 ;
 			DREAL objval = 0 ;
 			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
 			INT solution_ok = (!status) ;
 			if ( status ) {
-				CIO::message(M_ERROR, "Failed to obtain solution.\n");
+            throw SVMException("Failed to obtain solution.\n");
+				//CIO::message(M_ERROR, "Failed to obtain solution.\n");
 			}
 			
 			num_active_rows=0 ;
@@ -2357,7 +2387,8 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_row,num_rows) ;
 					INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
 					if ( status ) 
-						CIO::message(M_ERROR, "Failed to remove an old row.\n");
+                  throw SVMException("Failed to remove an old row.\n");
+						//CIO::message(M_ERROR, "Failed to remove an old row.\n");
 				}
 
 				// set weights, store new rho and compute new w gap

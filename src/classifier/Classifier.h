@@ -16,6 +16,23 @@
 #include "features/Labels.h"
 
 #include <stdio.h>
+#include <cstring>
+using namespace std;
+
+class ClassifierException {
+      private:
+         char *mes;
+      public:
+         ClassifierException(const char *_mes) {
+            mes = new char[strlen(_mes)];
+            strcpy(mes,_mes);
+         }
+
+         char* get_debug_string() {
+            return mes;
+         }
+};
+
 
 class CClassifier
 {

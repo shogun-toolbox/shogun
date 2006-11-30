@@ -56,7 +56,8 @@ bool CLDA::train()
 			classidx_pos[num_pos++]=i;
 		else
 		{
-			CIO::message(M_ERROR, "found label != +/- 1 bailing...");
+         throw ClassifierException("found label != +/- 1 bailing...");
+			//CIO::message(M_ERROR, "found label != +/- 1 bailing...");
 			return false;
 		}
 	}
@@ -65,7 +66,8 @@ bool CLDA::train()
 
 	if (num_neg<=0 && num_pos<=0)
 	{
-		CIO::message(M_ERROR, "whooooo ? only a single class found\n");
+      throw ClassifierException("whooooo ? only a single class found\n");
+		//CIO::message(M_ERROR, "whooooo ? only a single class found\n");
 		return false;
 	}
 

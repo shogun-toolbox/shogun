@@ -15,6 +15,24 @@
 #include "features/Labels.h"
 #include "distributions/hmm/LinearHMM.h"
 
+#include <cstring>
+using namespace std;
+
+class PluginException {
+      private:
+         char *mes;
+      public:
+         PluginException(const char *_mes) {
+            mes = new char[strlen(_mes)];
+            strcpy(mes,_mes);
+         }
+
+         char* get_debug_string() {
+            return mes;
+         }
+};
+
+
 class CPluginEstimate
 {
 	public:
@@ -55,8 +73,9 @@ class CPluginEstimate
 		{
 			if ((!pos_model) || (!neg_model))
 			{
-				CIO::message(M_ERROR, "no model available\n");
-				return false;
+            throw PluginException("no model available\n");
+				//CIO::message(M_ERROR, "no model available\n");
+				//return false;
 			}
 
 			pos_params = pos_model->get_log_hist();

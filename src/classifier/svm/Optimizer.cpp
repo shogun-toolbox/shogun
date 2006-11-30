@@ -193,7 +193,8 @@ double *optimize_qp(QP *qp,double *epsilon_crit, INT nx,double *threshold, INT& 
   (*threshold)=model_b;
 
   if(result!=OPTIMAL_SOLUTION) {
-	  CIO::message(M_ERROR, "PR_LOQO did not converge.\n");
+     throw SVMException("PR_LOQO did not converge.\n");
+	  //CIO::message(M_ERROR, "PR_LOQO did not converge.\n");
     return(qp->opt_xinit);
   }
   else {

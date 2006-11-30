@@ -1,6 +1,11 @@
-
+%module SVM
 %{
+#define SWIG_FILE_WITH_INIT
  #include "classifier/svm/SVM.h"
+%}
+
+%init %{
+	  import_array();
 %}
 
 %include "lib/common.i"

@@ -113,7 +113,8 @@ bool CMPDSVM::train()
 		}
 
 		if (maxpidx<0 || maxdviol<0)
-			CIO::message(M_ERROR, "no violation no convergence, should not happen!\n");
+         throw SVMException("no violation no convergence, should not happen!\n");
+			//CIO::message(M_ERROR, "no violation no convergence, should not happen!\n");
 
 		// ... and evaluate stopping conditions
 		//if (nustop)
