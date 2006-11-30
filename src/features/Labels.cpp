@@ -125,8 +125,12 @@ bool CLabels::load(CHAR* fname)
 	labels=f.load_real_data(NULL, num_lab);
 	num_labels=num_lab;
 
-    if (!f.is_ok())
-		CIO::message(M_ERROR, "loading file \"%s\" failed", fname);
+    if (!f.is_ok()) {
+      char buf[200];
+      sprintf(buf,"loading file \"%s\" failed", fname);
+      throw LabelException(buf);
+		//CIO::message(M_ERROR, "loading file \"%s\" failed", fname);
+    }
 	else
 	{
 		CIO::message(M_INFO, "%ld labels successfully read\n", num_labels);

@@ -89,8 +89,11 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 
 	if (num_symbols>(1<<(sizeof(WORD)*8)))
 	{
-		CIO::message(M_ERROR, "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
-		return false;
+      char buf[200];
+      sprintf(buf,"symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
+      throw FeatureException(buf);
+		//CIO::message(M_ERROR, "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
+		//return false;
 	}
 
 	for (INT line=0; line<num_vectors; line++)

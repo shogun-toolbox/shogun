@@ -178,7 +178,8 @@ DREAL* CTOPFeatures::set_feature_matrix()
 	feature_matrix=new DREAL[num_features*num_vectors];
 	if (!feature_matrix)
 	{
-		CIO::message(M_ERROR, "allocation not successful!");
+      throw FeatureException("allocation not successful!");
+		//CIO::message(M_ERROR, "allocation not successful!");
 		return NULL ;
 	} ;
 

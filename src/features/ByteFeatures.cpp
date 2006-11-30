@@ -78,18 +78,23 @@ bool CByteFeatures::load(CHAR* fname)
 
 				if (feature_matrix[lines*linelen+num_features]!='\n')
 				{
-					CIO::message(M_ERROR, "line %d in file \"%s\" is corrupt\n", lines, fname);
-					return false;
+               char buf[200];
+               sprintf(buf,"line %d in file \"%s\" is corrupt\n", lines, fname);
+               throw FeatureException(buf);
+					//CIO::message(M_ERROR, "line %d in file \"%s\" is corrupt\n", lines, fname);
+					//return false;
 				}
 			}
 
 			return true;
 		}
 		else
-			CIO::message(M_ERROR, "file is of zero size or no rectangular featurematrix of type BYTE\n");
+         throw FeatureException("file is of zero size or no rectangular featurematrix of type BYTE\n");
+			//CIO::message(M_ERROR, "file is of zero size or no rectangular featurematrix of type BYTE\n");
 	}
 	else
-		CIO::message(M_ERROR, "reading file failed\n");
+      throw FeatureException("reading file failed\n");
+		//CIO::message(M_ERROR, "reading file failed\n");
 
 	return false;
 }

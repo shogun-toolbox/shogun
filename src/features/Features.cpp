@@ -163,7 +163,8 @@ void CFeatures::list_feature_obj()
 			CIO::message(M_INFO, "C_ANY ");
 			break;
 		default:
-			CIO::message(M_INFO, "ERROR UNKNOWN FEATURE CLASS");
+         throw FeatureException("ERROR UNKNOWN FEATURE CLASS");
+			//CIO::message(M_INFO, "ERROR UNKNOWN FEATURE CLASS");
 	}
 
 	switch (get_feature_type())
@@ -196,7 +197,8 @@ void CFeatures::list_feature_obj()
 			CIO::message(M_INFO, "F_ANY \n");
 			break;
 		default:
-			CIO::message(M_INFO, "ERROR UNKNOWN FEATURE TYPE\n");
+         throw FeatureException("ERROR UNKNOWN FEATURE TYPE\n");
+			//CIO::message(M_INFO, "ERROR UNKNOWN FEATURE TYPE\n");
 	}
 }
 

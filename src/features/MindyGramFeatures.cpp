@@ -86,8 +86,12 @@ void CMindyGramFeatures::set_embedding(gram_cfg_t *cfg, CHAR *embed)
         gram_cfg_set_embed(cfg, GE_FREQ);
     else if (!strcasecmp(embed, "bin")) 
         gram_cfg_set_embed(cfg, GE_BIN);
-    else
-        CIO::message(M_ERROR, "Unknown embedding '%s'\n", embed);    
+    else {
+         char buf[200];
+         sprintf(buf,"Unknown embedding '%s'\n", embed);
+         throw FeatureException(buf);
+        //CIO::message(M_ERROR, "Unknown embedding '%s'\n", embed);    
+    }
 }
 
 /**
@@ -131,8 +135,9 @@ bool CMindyGramFeatures::load(CHAR * fname)
     CHAR *data = f.load_char_data(NULL, len);
 
     if (!f.is_ok()) {
-        CIO::message(M_ERROR, "Reading file failed\n");
-        return false;
+        throw FeatureException("Reading file failed\n");
+        //CIO::message(M_ERROR, "Reading file failed\n");
+        //return false;
     }
 
     /* Count strings terminated by \n */
@@ -144,8 +149,9 @@ bool CMindyGramFeatures::load(CHAR * fname)
 
     vectors = (gram_t **) calloc(num_vectors, sizeof(gram_t *));
     if (!vectors) {
-        CIO::message(M_ERROR, "Could not allocate memory\n");
-        return false;
+        throw FeatureException("Could not allocate memory\n");
+        //CIO::message(M_ERROR, "Could not allocate memory\n");
+        //return false;
     }
 
     /* Extract grams from strings */

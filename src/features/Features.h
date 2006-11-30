@@ -15,9 +15,25 @@
 #include "lib/common.h"
 #include "preproc/PreProc.h"
 #include <stdio.h>
+#include <cstring>
+using namespace std;
 
 class CPreProc;
 class CFeatures;
+
+class FeatureException{
+      private:
+         char *mes;
+      public:
+         FeatureException(const char *_mes) {
+            mes = new char[strlen(_mes)];
+            strcpy(mes,_mes);
+         }
+
+         char* get_debug_string() {
+            return mes;
+         }
+};
 
 class CFeatures
 {

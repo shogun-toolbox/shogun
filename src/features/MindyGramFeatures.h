@@ -109,8 +109,9 @@ class CMindyGramFeatures:public CFeatures
 
 			vectors = (gram_t **) calloc(num_vectors, sizeof(gram_t *));
 			if (!vectors) {
-				CIO::message(M_ERROR, "Could not allocate memory\n");
-				return false;
+            throw FeatureException("Could not allocate memory\n");
+				//CIO::message(M_ERROR, "Could not allocate memory\n");
+				//return false;
 			}
 
 			for (i = 0; i < num_vectors; i++) {

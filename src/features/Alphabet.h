@@ -12,6 +12,22 @@
 #define _CALPHABET__H__
 
 #include "lib/common.h"
+#include <cstring>
+using namespace std;
+
+class AlphabetException{
+      private:
+         char *mes;
+      public:
+         AlphabetException(const char *_mes) {
+            mes = new char[strlen(_mes)];
+            strcpy(mes,_mes);
+         }
+
+         char* get_debug_string() {
+            return mes;
+         }
+};
 
 class CAlphabet
 {

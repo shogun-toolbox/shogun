@@ -14,6 +14,24 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
+#include <stdio.h>
+#include <cstring>
+using namespace std;
+
+class LabelException{
+      private:
+         char *mes;
+      public:
+         LabelException(const char *_mes) {
+            mes = new char[strlen(_mes)];
+            strcpy(mes,_mes);
+         }
+
+         char* get_debug_string() {
+            return mes;
+         }
+};
+
 
 class CLabels
 {
