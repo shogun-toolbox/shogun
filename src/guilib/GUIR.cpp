@@ -767,9 +767,6 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 						ASSERT(alpha);
 						ASSERT(sc);
 
-						f= new CStringFeatures<CHAR>(alpha);
-						ASSERT(f);
-
 						int maxlen=0;
 						alpha->clear_histogram();
 
@@ -798,6 +795,10 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 
 						CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
 						CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+
+						f= new CStringFeatures<CHAR>(alpha);
+						ASSERT(f);
+
 						if (alpha->check_alphabet_size() && alpha->check_alphabet())
 							((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
 						else
