@@ -18,19 +18,8 @@
 
 #include <stdio.h>
 
-class SVMException {
-      private:
-         char *mes;
-      public:
-         SVMException(const char *_mes) {
-            mes = new char[strlen(_mes)];
-            strcpy(mes,_mes);
-         }
+#include "exceptions/SVMException.h"
 
-         char* get_debug_string() {
-            return mes;
-         }
-};
 
 class CSVM : public CKernelMachine
 {
