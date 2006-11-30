@@ -11,7 +11,7 @@ features=concatenate((randn(num,2)-1,randn(num,2)+1),0)
 labels=concatenate((-ones([1,num]), ones([1,num])),1).flat
 sg.set_features("TRAIN", features)
 sg.set_labels("TRAIN", labels)
-sg.send_command('set_kernel GAUSSIAN REAL 10 5000')
+sg.send_command('set_kernel GAUSSIAN REAL 10 5')
 sg.send_command('init_kernel TRAIN')
 sg.send_command('new_svm GPBT')
 sg.send_command('c 100')
