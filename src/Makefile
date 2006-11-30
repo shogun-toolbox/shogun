@@ -15,6 +15,7 @@ ifeq (.config,$(wildcard .config))
 include .config
 else
 just-do-it:
+#runconfigurehunkstart
 	@echo ==================
 	@echo SHOGUN - Makefile
 	@echo ==================
@@ -40,6 +41,7 @@ just-do-it:
 	@echo "              ./configure --help"
 	@echo
 	@exit 1
+#runconfigurehunkend
 endif
 
 ifeq (.config-local,$(wildcard .config-local))

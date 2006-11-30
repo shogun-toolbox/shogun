@@ -1993,7 +1993,7 @@ EOF
 			LINKFLAGS="-bundle -Wl,-flat_namespace -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
 		else
 			OCTLIBDIR=`octave-config -p OCTLIBDIR`
-			LINKFLAGS="-shared -L $OCTLIBDIR -Wl,-rpath $OCTLIBDIR -loctinterp -lcruft -loctave $LINKFLAGS"
+			LINKFLAGS="-shared -L $OCTLIBDIR -loctinterp -lcruft -loctave $LINKFLAGS"
 		fi
 		TARGET="sg.oct"
 		INCLUDES="$INCLUDES -I`octave-config -p OCTINCLUDEDIR` -I`octave-config -p INCLUDEDIR`"
@@ -2101,9 +2101,10 @@ EOF
 			LINKFLAGS="$LINKFLAGS -L$RPATH/bin -lR -shared -mno-cygwin"
 		else
 			TARGET="sg.so"
+			#unset makeflags as R uses -w and that leads to screwed up R CMD config --ldflags
+			unset MAKEFLAGS MFLAGS
 			INCLUDES="$INCLUDES `R CMD config --cppflags`"
-			RPATH=`R CMD config --ldflags | sed -e's/-L/-Wl,-rpath /' -e's/-l[^ ]*//'`
-			LINKFLAGS="$LINKFLAGS `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS` $RPATH"
+			LINKFLAGS="$LINKFLAGS `R CMD config --ldflags` `R CMD config DYLIB_LDFLAGS`"
 		fi
 
 
