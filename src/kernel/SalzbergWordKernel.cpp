@@ -94,13 +94,15 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			rhs->get_num_features() * rhs->get_num_symbols();
 	    if ((!estimate) || (!estimate->check_models()))
 		{
-			CIO::message(M_ERROR, "no estimate available\n") ;
-			return false ;
+         throw KernelException("no estimate available\n");
+			//CIO::message(M_ERROR, "no estimate available\n") ;
+			//return false ;
 		} ;
 	    if (num_params2!=estimate->get_num_params())
 		{
-			CIO::message(M_ERROR, "number of parameters of estimate and feature representation do not match\n") ;
-			return false ;
+         throw KernelException("number of parameters of estimate and feature representation do not match\n");
+			//CIO::message(M_ERROR, "number of parameters of estimate and feature representation do not match\n") ;
+			//return false ;
 		} ;
 	    
 	    delete[] variance;

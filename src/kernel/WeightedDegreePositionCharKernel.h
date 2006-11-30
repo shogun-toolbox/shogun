@@ -69,8 +69,10 @@ public:
 					tries.delete_trees(true); 
 				else if (opt_type==FASTBUTMEMHUNGRY)
 					tries.delete_trees(false);  // still buggy
-				else
-					CIO::message(M_ERROR, "unknown optimization type\n");
+				else {
+               throw KernelException("unknown optimization type\n");
+					//CIO::message(M_ERROR, "unknown optimization type\n");
+            }
 				set_is_initialized(false);
 			}
 		}
@@ -99,7 +101,9 @@ public:
 				compute_by_tree(idx, subkernel_contrib); 
 				return ;
 			}
-			CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not initialized\n") ;
+
+         throw KernelException("CWeightedDegreePositionCharKernel optimization not initialized\n");
+			//CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not initialized\n") ;
 		}
 	
 	inline const DREAL* get_subkernel_weights(INT& num_weights)
@@ -122,8 +126,10 @@ public:
 	inline void set_subkernel_weights(DREAL* weights2, INT num_weights2)
 		{
 			INT num_weights = get_num_subkernels() ;
-			if (num_weights!=num_weights2)
-				CIO::message(M_ERROR, "number of weights do not match\n") ;
+			if (num_weights!=num_weights2) {
+            throw KernelException("number of weights do not match\n");
+				//CIO::message(M_ERROR, "number of weights do not match\n") ;
+            }
 			
 			if (position_weights!=NULL)
 				for (INT i=0; i<num_weights; i++)

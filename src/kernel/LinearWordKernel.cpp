@@ -43,8 +43,12 @@ void CLinearWordKernel::init_rescale()
 	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
 		sum+=compute(i, i);
 
-	if ( sum > (pow((double) 2, (double) 8*sizeof(LONG))) )
-		CIO::message(M_ERROR, "the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
+	if ( sum > (pow((double) 2, (double) 8*sizeof(LONG))) ) {
+      char buf[200];
+      sprintf(buf,"the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
+      throw KernelException(buf);
+		//CIO::message(M_ERROR, "the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
+   }
 	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
 }
 

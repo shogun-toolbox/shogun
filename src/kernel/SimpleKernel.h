@@ -43,9 +43,13 @@ template <class ST> class CSimpleKernel : public CKernel
 			ASSERT(r->get_feature_type()==this->get_feature_type());
 
 			if ( ((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
-			{
-				CIO::message(M_ERROR, "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+			{  
+            char buf[200];
+            sprintf(buf,"train or test features #dimension mismatch (l:%d vs. r:%d)\n",
 						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) r)->get_num_features());
+            throw KernelException(buf);
+				//CIO::message(M_ERROR, "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+				//		((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) r)->get_num_features());
 			}
 			return true;
 		}

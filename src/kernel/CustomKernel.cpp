@@ -39,8 +39,9 @@ SHORTREAL* CCustomKernel::get_kernel_matrix(int &num_vec1, int &num_vec2, SHORTR
 		}
 		else
 		{
-			CIO::message(M_ERROR, "no features assigned to kernel\n");
-			return NULL;
+         throw KernelException("no features assigned to kernel\n");
+			//CIO::message(M_ERROR, "no features assigned to kernel\n");
+			//return NULL;
 		}
 	}
 }

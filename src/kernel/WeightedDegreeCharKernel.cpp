@@ -739,7 +739,10 @@ bool CWeightedDegreeCharKernel::set_position_weights(DREAL* pws, INT len)
 	
     if (seq_length!=len) 
 	{
-		CIO::message(M_ERROR, "seq_length = %i, position_weights_length=%i\n", seq_length, len) ;
+      char buf[200];
+      sprintf(buf,"seq_length = %i, position_weights_length=%i\n",seq_length, len);
+      throw KernelException(buf);
+      //CIO::message(M_ERROR, "seq_length = %i, position_weights_length=%i\n", seq_length, len) ;
 		return false ;
 	}
 	delete[] position_weights;
@@ -911,9 +914,12 @@ bool CWeightedDegreeCharKernel::init_block_weights_external()
 				block_weights[i]=block_weights_external[i];
 		}
 	}
-	else
-		CIO::message(M_ERROR, "sequence longer then weights (seqlen:%d, wlen:%d)\n", seq_length, block_weights_external);
-
+	else {
+      char buf[200];
+      sprintf(buf,"sequence longer then weights (seqlen:%d, wlen:%d)\n", seq_length, block_weights_external);
+      throw KernelException(buf);
+		//CIO::message(M_ERROR, "sequence longer then weights (seqlen:%d, wlen:%d)\n", seq_length, block_weights_external);
+   }
 	return (block_weights!=NULL);
 }
 

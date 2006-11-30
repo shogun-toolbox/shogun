@@ -66,7 +66,8 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
     if (get_is_initialized())
       return compute_by_tree(idx); 
     
-    CIO::message(M_ERROR, "CWeightedDegreeCharKernel optimization not initialized\n") ;
+    throw KernelException("CWeightedDegreeCharKernel optimization not initialized\n");
+    //CIO::message(M_ERROR, "CWeightedDegreeCharKernel optimization not initialized\n") ;
     return 0 ;
   } ;
 
@@ -106,7 +107,9 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
 		  compute_by_tree(idx, subkernel_contrib); 
 		  return ;
 	  }
-	  CIO::message(M_ERROR, "CWeightedDegreeCharKernel optimization not initialized\n") ;
+     
+     throw KernelException("CWeightedDegreeCharKernel optimization not initialized\n");
+	  //CIO::message(M_ERROR, "CWeightedDegreeCharKernel optimization not initialized\n") ;
   } ;
   inline const DREAL* get_subkernel_weights(INT& num_weights)
   {
@@ -128,7 +131,8 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
   {
 	  INT num_weights = get_num_subkernels() ;
 	  if (num_weights!=num_weights2)
-		  CIO::message(M_ERROR, "number of weights do not match\n") ;
+        throw KernelException("number of weights do not match\n");
+		  //CIO::message(M_ERROR, "number of weights do not match\n") ;
 
 	  if (position_weights!=NULL)
 	  {

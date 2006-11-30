@@ -44,7 +44,8 @@ CKernel::CKernel(INT size)
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 #endif
 	if (get_is_initialized()) 
-		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+		//CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+      throw KernelException("COptimizableKernel still initialized on destruction");
 }
 
 		
@@ -62,7 +63,8 @@ CKernel::CKernel(CFeatures* lhs, CFeatures* rhs, INT size)
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 #endif
 	if (get_is_initialized()) 
-		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+		//CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+      throw KernelException("COptimizableKernel still initialized on destruction");
 
 	init(lhs, rhs, true);
 }
@@ -70,7 +72,9 @@ CKernel::CKernel(CFeatures* lhs, CFeatures* rhs, INT size)
 CKernel::~CKernel()
 {
 	if (get_is_initialized()) 
-		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+		//CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+      throw KernelException("COptimizableKernel still initialized on destruction");
+
 
 #ifdef USE_SVMLIGHT
 	kernel_cache_cleanup();
@@ -144,7 +148,8 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 		CIO::message(M_MESSAGEONLY, "done.           \n");
 	}
 	else
-		CIO::message(M_ERROR, "no features assigned to kernel\n");
+		//CIO::message(M_ERROR, "no features assigned to kernel\n");
+      throw KernelException("no features assigned to kernel\n");
 
 	*dst=result;
 }
@@ -158,7 +163,8 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2, SH
 	if (f1 && f2)
 	{
 		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
-			CIO::message(M_ERROR, "kernel matrix does not fit into target\n");
+			//CIO::message(M_ERROR, "kernel matrix does not fit into target\n");
+         throw KernelException("kernel matrix does not fit into target\n");
 
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
@@ -214,7 +220,8 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2, SH
 		CIO::message(M_MESSAGEONLY, "done.           \n");
 	}
 	else
-		CIO::message(M_ERROR, "no features assigned to kernel\n");
+      throw KernelException("no features assigned to kernel\n");
+		//CIO::message(M_ERROR, "no features assigned to kernel\n");
 
 	return result;
 }
@@ -228,7 +235,8 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 	if (f1 && f2)
 	{
 		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
-			CIO::message(M_ERROR, "kernel matrix does not fit into target\n");
+         throw KernelException("kernel matrix does not fit into target\n");
+			//CIO::message(M_ERROR, "kernel matrix does not fit into target\n");
 
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
@@ -284,7 +292,8 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 		CIO::message(M_MESSAGEONLY, "done.           \n");
 	}
 	else
-		CIO::message(M_ERROR, "no features assigned to kernel\n");
+      throw KernelException("no features assigned to kernel\n");
+		//CIO::message(M_ERROR, "no features assigned to kernel\n");
 
 	return result;
 }
@@ -539,7 +548,8 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 				cache[num]= kernel_cache_clean_and_malloc(rows[i]);
 
 				if (!cache[num] )
-					CIO::message(M_ERROR, "Kernel cache full! => increase cache size");
+               throw KernelException("Kernel cache full! => increase cache size");
+					//CIO::message(M_ERROR, "Kernel cache full! => increase cache size");
 
 				num++;
 			}
@@ -875,7 +885,8 @@ void CKernel::list_kernel()
 			CIO::message(M_INFO, "K_DIAG ");
 			break;
 		default:
-			CIO::message(M_ERROR, "ERROR UNKNOWN KERNEL TYPE");
+         throw KernelException("ERROR UNKNOWN KERNEL TYPE");
+			//CIO::message(M_ERROR, "ERROR UNKNOWN KERNEL TYPE");
 			break;
 	}
 
@@ -900,7 +911,8 @@ void CKernel::list_kernel()
 			CIO::message(M_INFO, "C_ANY ");
 			break;
 		default:
-			CIO::message(M_ERROR, "ERROR UNKNOWN FEATURE CLASS");
+         throw KernelException("ERROR UNKNOWN FEATURE CLASS");
+			//CIO::message(M_ERROR, "ERROR UNKNOWN FEATURE CLASS");
 	}
 
 	switch (get_feature_type())
@@ -933,7 +945,8 @@ void CKernel::list_kernel()
 			CIO::message(M_INFO, "F_ANY ");
 			break;
 		default:
-			CIO::message(M_ERROR, "ERROR UNKNOWN FEATURE TYPE");
+         throw KernelException("ERROR UNKNOWN FEATURE TYPE");
+			//CIO::message(M_ERROR, "ERROR UNKNOWN FEATURE TYPE");
 			break;
 	}
 	CIO::message(M_INFO, "\n");
@@ -941,35 +954,41 @@ void CKernel::list_kernel()
 
 bool CKernel::init_optimization(INT count, INT *IDX, DREAL * weights)
 {
-	CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
+   throw KernelException("kernel does not support linadd optimization\n");
+	//CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
 	return false ;
 }
 
 bool CKernel::delete_optimization() 
 {
-	CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
+   throw KernelException("kernel does not support linadd optimization\n");
+	//CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
 	return false;
 }
 
 DREAL CKernel::compute_optimized(INT idx)
 {
-	CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
+   throw KernelException("kernel does not support linadd optimization\n");
+	//CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
 	return 0;
 }
 
 void CKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor)
 {
-	CIO::message(M_ERROR, "kernel does not support batch computation\n") ;
+   throw KernelException("kernel does not support batch computation\n");
+	//CIO::message(M_ERROR, "kernel does not support batch computation\n") ;
 }
 
 void CKernel::add_to_normal(INT idx, DREAL weight)
 {
-	CIO::message(M_ERROR, "kernel does not support linadd optimization, add_to_normal not implemented\n") ;
+   throw KernelException("kernel does not support linadd optimization, add_to_normal not implemented\n");
+	//CIO::message(M_ERROR, "kernel does not support linadd optimization, add_to_normal not implemented\n") ;
 }
 
 void CKernel::clear_normal()
 {
-	CIO::message(M_ERROR, "kernel does not support linadd optimization, clear_normal not implemented\n") ;
+   throw KernelException("kernel does not support linadd optimization, clear_normal not implemented\n");
+	//CIO::message(M_ERROR, "kernel does not support linadd optimization, clear_normal not implemented\n") ;
 }
 
 INT CKernel::get_num_subkernels()
@@ -979,7 +998,8 @@ INT CKernel::get_num_subkernels()
 
 void CKernel::compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
 {
-	CIO::message(M_ERROR, "kernel compute_by_subkernel not implemented\n") ;
+   throw KernelException("kernel compute_by_subkernel not implemented\n");
+	//CIO::message(M_ERROR, "kernel compute_by_subkernel not implemented\n") ;
 }
 
 const DREAL* CKernel::get_subkernel_weights(INT &num_weights)
@@ -992,7 +1012,8 @@ void CKernel::set_subkernel_weights(DREAL* weights, INT num_weights)
 {
 	combined_kernel_weight = weights[0] ;
 	if (num_weights!=1)
-		CIO::message(M_ERROR, "number of subkernel weights should be one ...\n") ;
+      throw KernelException("number of subkernel weights should be one ...\n");
+		//CIO::message(M_ERROR, "number of subkernel weights should be one ...\n") ;
 }
 
 void CKernel::do_precompute_matrix()

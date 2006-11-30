@@ -229,7 +229,8 @@ DREAL CCommUlongStringKernel::compute(INT idx_a, INT idx_b)
 			case SQLEN_NORMALIZATION:
 				return result/(alen*blen);
 			default:
-				CIO::message(M_ERROR, "Unknown Normalization in use!\n");
+            throw KernelException("Unknown Normalization in use!\n");
+				//CIO::message(M_ERROR, "Unknown Normalization in use!\n");
 				return -CMath::INFTY;
 		}
 	}
@@ -352,7 +353,8 @@ DREAL CCommUlongStringKernel::compute_optimized(INT i)
 
 	if (!get_is_initialized())
 	{
-		CIO::message(M_ERROR, "CCommUlongStringKernel optimization not initialized\n");
+      throw KernelException("CCommUlongStringKernel optimization not initialized\n");
+		//CIO::message(M_ERROR, "CCommUlongStringKernel optimization not initialized\n");
 		return 0 ; 
 	}
 
@@ -425,7 +427,8 @@ DREAL CCommUlongStringKernel::compute_optimized(INT i)
 			case SQLEN_NORMALIZATION:
 				return result/alen;
 			default:
-				CIO::message(M_ERROR, "Unknown Normalization in use!\n");
+            throw KernelException("Unknown Normalization in use!\n");
+				//CIO::message(M_ERROR, "Unknown Normalization in use!\n");
 				return -CMath::INFTY;
 		}
 	}

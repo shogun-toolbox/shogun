@@ -291,7 +291,8 @@ DREAL CMindyGramKernel::compute(INT i, INT j)
         case FULL_NORMALIZATION:
             return result/(sdiag_lhs[i]*sdiag_rhs[j]);
         default:
-            CIO::message(M_ERROR, "Unknown Normalization in use!\n");
+            throw KernelException("Unknown Normalization in use!\n");
+            //CIO::message(M_ERROR, "Unknown Normalization in use!\n");
             return -CMath::INFTY;
     }
 }
@@ -380,7 +381,8 @@ bool CMindyGramKernel::delete_optimization()
 DREAL CMindyGramKernel::compute_optimized(INT i)
 {
     if (!get_is_initialized()) {
-        CIO::message(M_ERROR, "MindyGramKernel optimization not initialized\n");
+        throw KernelException("MindyGramKernel optimization not initialized\n");
+        //CIO::message(M_ERROR, "MindyGramKernel optimization not initialized\n");
         return -CMath::INFTY;
     }
 
@@ -395,7 +397,8 @@ DREAL CMindyGramKernel::compute_optimized(INT i)
         case FULL_NORMALIZATION:
             return result/sdiag_rhs[i];
         default:
-            CIO::message(M_ERROR, "Unknown Normalization in use!\n");
+            throw KernelException("Unknown Normalization in use!\n");
+            //CIO::message(M_ERROR, "Unknown Normalization in use!\n");
             return -CMath::INFTY;
     }
 }

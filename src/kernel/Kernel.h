@@ -19,6 +19,23 @@
 #include "features/Features.h"
 
 #include <stdio.h>
+#include <cstring>
+using namespace std;
+
+class KernelException {
+      private:
+         char *mes;
+      public:
+         KernelException(const char *_mes) {
+            mes = new char[strlen(_mes)];
+            strcpy(mes,_mes);
+         }
+
+         char* get_debug_string() {
+            return mes;
+         }
+};
+
 
 class CKernel
 {
