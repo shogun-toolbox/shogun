@@ -1,5 +1,5 @@
+MAINVERSION := 0.1.2
 #EXTRAVERSION := +svn20061202
-RELEASENAME := shogun-0.1.2$(EXTRAVERSION)
 COMPRESS := bzip2
 
 .PHONY: doc release matlab python octave R
@@ -12,6 +12,7 @@ all: doc release matlab python octave R
 #
 # to use gzip instead of bzip2 and to append an extra version string.
 
+RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
 DESTDIR := ../$(RELEASENAME)
 
 src/lib/versionstring.h:
