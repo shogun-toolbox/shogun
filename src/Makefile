@@ -160,8 +160,7 @@ depend:		.config lib/versionstring.h
 	find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -o -name "*.h" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" | grep -v 'configure-' |  cut -c 3- | $(PYTHON) .generate_link_dependencies.py $(EXT_LIB_SWIG) >>.depend
 
 lib/versionstring.h:	$(SVNEntries)
-		chmod u+x ./.version.sh
-		./.version.sh >lib/versionstring.h
+		sh .version.sh >lib/versionstring.h
 
 $(OBJFILES): .config .depend lib/versionstring.h 
 

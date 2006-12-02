@@ -12,19 +12,16 @@ all: doc release matlab python octave R
 #
 # to use gzip instead of bzip2 and to append an extra version string.
 
-CURDIR := $(shell pwd)
-DESTDIR := $(CURDIR)/../$(RELEASENAME)
-FINDFILTER := \( -name .svn -o -name '.*.swp' -o -name '.nfs*' -o -name '*~' \)
+DESTDIR := ../$(RELEASENAME)
 
-release:
-	make -C doc distclean 
-	make -C src distclean 
-	make -C R clean 
+src/lib/versionstring.h:
+	make -C src lib/versionstring.h
+
+# We assume that a release is always created from a SVN working copy.
+release: src/lib/versionstring.h
 	rm -rf $(DESTDIR) $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
-	cp -rl $(CURDIR) $(DESTDIR)
-	make -C $(DESTDIR)/src lib/versionstring.h
-	find $(DESTDIR) $(FINDFILTER) -print0 | xargs -0 rm -rf
+	svn export . $(DESTDIR)
+	mv -f src/lib/versionstring.h $(DESTDIR)/src/lib/
 	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
 	$(COMPRESS) -9 $(DESTDIR).tar
 	rm -rf $(DESTDIR)
-
