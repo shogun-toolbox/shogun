@@ -1,21 +1,30 @@
-RELEASENAME:=shogun-0.1.2
+#EXTRAVERSION := +svn20061202
+RELEASENAME := shogun-0.1.2$(EXTRAVERSION)
+COMPRESS := bzip2
 
 .PHONY: doc release matlab python octave R
 
 all: doc release matlab python octave R
 
-src/lib/versionstring.h: 
-	make -C src lib/versionstring.h
+# You can execute
+#
+# make release COMPRESS=gzip EXTRAVERSION=+svn20061202
+#
+# to use gzip instead of bzip2 and to append an extra version string.
 
-release: src/lib/versionstring.h
+CURDIR := $(shell pwd)
+DESTDIR := $(CURDIR)/../$(RELEASENAME)
+FINDFILTER := \( -name .svn -o -name '.*.swp' -o -name '.nfs*' -o -name '*~' \)
+
+release:
 	make -C doc distclean 
-	cp -p src/lib/versionstring.h versionstring.h
 	make -C src distclean 
-	mv versionstring.h src/lib/versionstring.h
 	make -C R clean 
-	rm -rf ../$(RELEASENAME) || true
-	rm -f ../$(RELEASENAME).tar.bz2 || true
-	cd .. && cp -a trunk $(RELEASENAME) && \
-	(find ./$(RELEASENAME) \( -name .svn -o -name '.*.swp' -o -name '.nfs*' -o -name '*~' \) -exec rm -rf \{\} \; 2>/dev/null ; \
-	tar cvf $(RELEASENAME).tar $(RELEASENAME) && bzip2 -9 $(RELEASENAME).tar && rm -rf $(RELEASENAME))
+	rm -rf $(DESTDIR) $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
+	cp -rl $(CURDIR) $(DESTDIR)
+	make -C $(DESTDIR)/src lib/versionstring.h
+	find $(DESTDIR) $(FINDFILTER) -print0 | xargs -0 rm -rf
+	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
+	$(COMPRESS) -9 $(DESTDIR).tar
+	rm -rf $(DESTDIR)
 
