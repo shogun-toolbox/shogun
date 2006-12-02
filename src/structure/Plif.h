@@ -185,6 +185,15 @@ public:
 	{
 		return len ;
 	}
+
+	DREAL get_plif_loss()
+	{
+		return loss ;
+	}
+	void set_plif_loss(DREAL p_loss)
+	{
+		loss = p_loss ;
+	}
 	
 	
 protected:
@@ -202,6 +211,7 @@ protected:
 	char * name ;
 	INT use_svm ;
 	bool use_cache ;
+	DREAL loss ;
 } ;
 
 #ifdef HAVE_MATLAB

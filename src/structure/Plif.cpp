@@ -36,6 +36,7 @@ CPlif::CPlif(INT l)
 	use_svm=0 ;
 	use_cache=false ;
 	len=0;
+	loss = 0 ;
 
 	if (l>0)
 		set_plif_length(l);
@@ -202,6 +203,18 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 			return NULL ;
 		}
 		INT use_cache = (INT) mxGetScalar(mx_use_cache_field) ;
+
+		const mxArray* mx_loss_field = mxGetField(mx_elem, 0, "loss") ;
+		DREAL loss = 0.0 ;
+		if (mx_loss_field!=NULL)
+			if (!mxIsNumeric(mx_loss_field) ||
+				mxGetM(mx_loss_field)!=1 || mxGetN(mx_loss_field)!=1)
+			{
+				CIO::message(M_ERROR, "missing loss field\n") ;
+				delete[] PEN;
+				return NULL ;
+			}
+		loss = (INT) mxGetScalar(mx_loss_field) ;
 		
 		const mxArray* mx_next_id_field = mxGetField(mx_elem, 0, "next_id") ;
 		if (mx_next_id_field==NULL || !mxIsNumeric(mx_next_id_field) ||
@@ -252,6 +265,7 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		ASSERT(next_id!=id) ;
 		PEN[id].set_use_svm(use_svm) ;
 		PEN[id].set_use_cache(use_cache) ;
+		PEN[id].set_loss(loss) ;
 
 		double * limits = mxGetPr(mx_limits_field) ;
 		double * penalties = mxGetPr(mx_penalties_field) ;
