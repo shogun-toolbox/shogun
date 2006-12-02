@@ -511,7 +511,10 @@ for ac_option do
     _install=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2 | sed 's/\/$//'`/install")
     ;;
   --disable-python)		_python=no	;;
-  --enable-python)		_python=yes	;;
+  --enable-python)
+    _python=yes
+    test -n "$_pydir" || _pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
+    ;;
   --disable-matlab)		_matlab=no	;;
   --enable-matlab)		_matlab=yes	;;
   --disable-octave)		_octave=no	;;
@@ -2178,7 +2181,6 @@ EOF
 		DEFINES="$DEFINES -DHAVE_SWIG"
 
 		USE_SWIG='yes'
-		test -n "$_pydir" || _pydir="$_libdir/`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
 
 		if cygwin
 		then
@@ -2308,7 +2310,7 @@ DATADIR			= ${_datadir}
 MANDIR			= ${_mandir}
 CONFDIR			= ${_confdir}
 LIBDIR			= ${_libdir}
-PYDIR			= ${_pydir}
+PYDIR			= ${_libdir}/${_pydir}
 OCTDIR			= ${_octdir}
 EOF
 }
