@@ -26,7 +26,7 @@ sg/src:
 	find ./sg/src -type d -name .svn -exec rm -rf {} \; 2>/dev/null || true
 	cd sg/src && $(RM) .config .depend
 	sed -i -f Makefile.sed sg/src/Makefile
-	cd ../src && cp -a $(DOCFILES) ../R/sg/inst/doc/
+	-cd ../src && cp -a $(DOCFILES) ../R/sg/inst/doc/
 
 clean: 
 	rm -rf sg/src sg.Rcheck

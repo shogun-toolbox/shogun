@@ -15,7 +15,10 @@
 #include "features/RealFileFeatures.h"
 #include "features/Labels.h"
 
+#ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM_light.h"
+#endif
+
 #include "classifier/svm/LibSVM.h"
 #include "classifier/svm/GPBTSVM.h"
 #include "classifier/svm/LibSVM_oneclass.h"

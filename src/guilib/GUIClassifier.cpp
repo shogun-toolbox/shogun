@@ -23,7 +23,10 @@
 #include "classifier/Perceptron.h"
 #include "classifier/KernelPerceptron.h"
 
+#ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM_light.h"
+#endif
+
 #include "classifier/svm/LibSVM.h"
 #include "classifier/svm/GPBTSVM.h"
 #include "classifier/svm/MPD.h"

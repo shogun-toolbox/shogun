@@ -25,7 +25,11 @@ _mindy=auto
 _R=no
 _python=no
 _octave=no
-_svm_light=yes
+if [ -e classifier/svm/SVM_light.cpp ]; then
+  _svm_light=yes
+else
+  _svm_light=no
+fi
 _cplex=no
 _wtiming=no
 _logcache=no

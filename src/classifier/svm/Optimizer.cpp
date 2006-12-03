@@ -19,7 +19,11 @@
 #include "classifier/svm/pr_loqo.h"
 #include "classifier/svm/Optimizer.h"
 #include "classifier/svm/SVM.h"
+
+#ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM_light.h"
+#endif
+
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/Mathematics.h"

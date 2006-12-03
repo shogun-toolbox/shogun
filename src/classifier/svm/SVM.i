@@ -17,7 +17,11 @@
 
 %include "kernel/KernelMachine.i"
 %include "classifier/svm/SVM.h"
+
+#ifdef USE_SVMLIGHT
 %include "classifier/svm/SVM_light.i"
+#endif
+
 %include "classifier/svm/LibSVM.i"
 
 %pythoncode %{

@@ -12,7 +12,10 @@
 #define _SVRLight_H___
 
 #include "lib/config.h"
+
+#ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM_light.h"
+#endif
 
 #ifdef USE_SVMLIGHT
 class CSVRLight:public CSVMLight

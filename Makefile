@@ -1,6 +1,7 @@
 MAINVERSION := 0.1.2
 #EXTRAVERSION := +svn20061202
 COMPRESS := bzip2
+SVMLIGHT := yes
 
 .PHONY: doc release matlab python octave R
 
@@ -14,6 +15,7 @@ all: doc release matlab python octave R
 
 RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
 DESTDIR := ../$(RELEASENAME)
+REMOVE_SVMLIGHT := find $(DESTDIR) -iname '*svm*light*' | xargs rm -f
 
 src/lib/versionstring.h:
 	make -C src lib/versionstring.h
@@ -22,6 +24,12 @@ src/lib/versionstring.h:
 release: src/lib/versionstring.h
 	rm -rf $(DESTDIR) $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	svn export . $(DESTDIR)
+	if [ ! $(SVMLIGHT) = yes ]; then $(REMOVE_SVMLIGHT); fi
+
+	# FIXME: This is a hack because .generate_link_dependencies.py is buggy
+	# and should better be replaced by 'swig -MM':
+	touch $(DESTDIR)/src/classifier/svm/SVM_light.i
+	
 	mv -f src/lib/versionstring.h $(DESTDIR)/src/lib/
 	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
 	$(COMPRESS) -9 $(DESTDIR).tar
