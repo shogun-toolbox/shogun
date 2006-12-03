@@ -130,6 +130,7 @@ dist:	distclean
 	rm -f $(TAR).gz
 	tar -cvf $(TAR) -C ../../ shogun/src && gzip -9 $(TAR)
 
+# Python + Swig
 ifeq (yes,$(USE_SWIG))
 install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
 	install -d -m755 "$(DESTDIR)$(PYDIR)/shogun"
@@ -137,22 +138,21 @@ install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
 	echo -n '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
 	for i in $(SWIGPYFILES) ; do echo -n $$i | sed -e 's=.*/="=' -e 's/\.py/", /' >>$(DESTDIR)$(PYDIR)/shogun/__init__.py; done
 	echo ']' >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
-else
-ifneq (,$(PYDIR))
+# Python without Swig
+else ifneq (,$(PYDIR))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(PYDIR)
 	install -D -m755 $(TARGET) $(DESTDIR)$(PYDIR)
-else
-ifeq (sg.oct,$(TARGET))
+# Octave
+else ifeq (sg.oct,$(TARGET))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(OCTDIR)
 	install -D -m755 $(TARGET) $(DESTDIR)$(OCTDIR)
+# R, Readline, or Matlab
 else
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(BINDIR)
 	install -D -m755 $(TARGET) $(DESTDIR)$(BINDIR)
-endif
-endif
 endif
 
 dep:	depend
