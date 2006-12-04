@@ -1,20 +1,16 @@
 #ifndef _LABEL_EXCEPTION_H_
 #define _LABEL_EXCEPTION_H_
 
-#include <cstring>
-using namespace std;
+#include "exceptions/Exception.h"
 
-class LabelException{
+class LabelException {
       private:
-         char *mes;
+         char* val;
       public:
-         LabelException(const char *_mes) {
-            mes = new char[strlen(_mes)];
-            strcpy(mes,_mes);
-         }
-
+         LabelException(const char *fmt, ... );
+   
          char* get_debug_string() {
-            return mes;
+            return val;
          }
 };
 

@@ -1,18 +1,18 @@
 #ifndef _SVM_EXCEPTION_H_
 #define _SVM_EXCEPTION_H_
 
+#include "exceptions/Exception.h"
+
 class SVMException {
       private:
-         char *mes;
+         char* val;
       public:
-         SVMException(const char *_mes) {
-            mes = new char[strlen(_mes)];
-            strcpy(mes,_mes);
-         }
-
+         SVMException(const char *fmt, ... );
+   
          char* get_debug_string() {
-            return mes;
+            return val;
          }
 };
+
 
 #endif // _SVM_EXCEPTION_H_

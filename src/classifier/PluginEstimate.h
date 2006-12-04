@@ -18,19 +18,7 @@
 #include <cstring>
 using namespace std;
 
-class PluginException {
-      private:
-         char *mes;
-      public:
-         PluginException(const char *_mes) {
-            mes = new char[strlen(_mes)];
-            strcpy(mes,_mes);
-         }
-
-         char* get_debug_string() {
-            return mes;
-         }
-};
+#include "exceptions/PluginException.h"
 
 
 class CPluginEstimate
@@ -73,9 +61,12 @@ class CPluginEstimate
 		{
 			if ((!pos_model) || (!neg_model))
 			{
+#ifdef HAVE_PYTHON
             throw PluginException("no model available\n");
-				//CIO::message(M_ERROR, "no model available\n");
-				//return false;
+#else
+				CIO::message(M_ERROR, "no model available\n");
+#endif
+				return false;
 			}
 
 			pos_params = pos_model->get_log_hist();

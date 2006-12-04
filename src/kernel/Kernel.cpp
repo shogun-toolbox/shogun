@@ -44,8 +44,11 @@ CKernel::CKernel(INT size)
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 #endif
 	if (get_is_initialized()) 
-		//CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+#ifdef HAVE_PYTHON
       throw KernelException("COptimizableKernel still initialized on destruction");
+#else
+		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+#endif
 }
 
 		
@@ -63,8 +66,11 @@ CKernel::CKernel(CFeatures* lhs, CFeatures* rhs, INT size)
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 #endif
 	if (get_is_initialized()) 
-		//CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+#ifdef HAVE_PYTHON
       throw KernelException("COptimizableKernel still initialized on destruction");
+#else
+		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+#endif
 
 	init(lhs, rhs, true);
 }
@@ -72,8 +78,11 @@ CKernel::CKernel(CFeatures* lhs, CFeatures* rhs, INT size)
 CKernel::~CKernel()
 {
 	if (get_is_initialized()) 
-		//CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+#ifdef HAVE_PYTHON
       throw KernelException("COptimizableKernel still initialized on destruction");
+#else
+		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
+#endif
 
 
 #ifdef USE_SVMLIGHT
@@ -148,8 +157,11 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 		CIO::message(M_MESSAGEONLY, "done.           \n");
 	}
 	else
-		//CIO::message(M_ERROR, "no features assigned to kernel\n");
+#ifdef HAVE_PYTHON
       throw KernelException("no features assigned to kernel\n");
+#else
+		CIO::message(M_ERROR, "no features assigned to kernel\n");
+#endif
 
 	*dst=result;
 }
@@ -163,8 +175,11 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2, SH
 	if (f1 && f2)
 	{
 		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
-			//CIO::message(M_ERROR, "kernel matrix does not fit into target\n");
+#ifdef HAVE_PYTHON
          throw KernelException("kernel matrix does not fit into target\n");
+#else
+			CIO::message(M_ERROR, "kernel matrix does not fit into target\n");
+#endif
 
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
@@ -220,8 +235,11 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2, SH
 		CIO::message(M_MESSAGEONLY, "done.           \n");
 	}
 	else
+#ifdef HAVE_PYTHON
       throw KernelException("no features assigned to kernel\n");
-		//CIO::message(M_ERROR, "no features assigned to kernel\n");
+#else
+		CIO::message(M_ERROR, "no features assigned to kernel\n");
+#endif
 
 	return result;
 }
@@ -235,8 +253,11 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 	if (f1 && f2)
 	{
 		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
+#ifdef HAVE_PYTHON
          throw KernelException("kernel matrix does not fit into target\n");
-			//CIO::message(M_ERROR, "kernel matrix does not fit into target\n");
+#else
+			CIO::message(M_ERROR, "kernel matrix does not fit into target\n");
+#endif
 
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
@@ -292,8 +313,11 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 		CIO::message(M_MESSAGEONLY, "done.           \n");
 	}
 	else
+#ifdef HAVE_PYTHON
       throw KernelException("no features assigned to kernel\n");
-		//CIO::message(M_ERROR, "no features assigned to kernel\n");
+#else
+		CIO::message(M_ERROR, "no features assigned to kernel\n");
+#endif
 
 	return result;
 }
@@ -548,8 +572,11 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 				cache[num]= kernel_cache_clean_and_malloc(rows[i]);
 
 				if (!cache[num] )
+#ifdef HAVE_PYTHON
                throw KernelException("Kernel cache full! => increase cache size");
-					//CIO::message(M_ERROR, "Kernel cache full! => increase cache size");
+#else
+					CIO::message(M_ERROR, "Kernel cache full! => increase cache size");
+#endif
 
 				num++;
 			}
@@ -885,8 +912,11 @@ void CKernel::list_kernel()
 			CIO::message(M_INFO, "K_DIAG ");
 			break;
 		default:
+#ifdef HAVE_PYTHON
          throw KernelException("ERROR UNKNOWN KERNEL TYPE");
-			//CIO::message(M_ERROR, "ERROR UNKNOWN KERNEL TYPE");
+#else
+			CIO::message(M_ERROR, "ERROR UNKNOWN KERNEL TYPE");
+#endif
 			break;
 	}
 
@@ -911,8 +941,11 @@ void CKernel::list_kernel()
 			CIO::message(M_INFO, "C_ANY ");
 			break;
 		default:
+#ifdef HAVE_PYTHON
          throw KernelException("ERROR UNKNOWN FEATURE CLASS");
-			//CIO::message(M_ERROR, "ERROR UNKNOWN FEATURE CLASS");
+#else
+			CIO::message(M_ERROR, "ERROR UNKNOWN FEATURE CLASS");
+#endif
 	}
 
 	switch (get_feature_type())
@@ -945,8 +978,11 @@ void CKernel::list_kernel()
 			CIO::message(M_INFO, "F_ANY ");
 			break;
 		default:
+#ifdef HAVE_PYTHON
          throw KernelException("ERROR UNKNOWN FEATURE TYPE");
-			//CIO::message(M_ERROR, "ERROR UNKNOWN FEATURE TYPE");
+#else
+			CIO::message(M_ERROR, "ERROR UNKNOWN FEATURE TYPE");
+#endif
 			break;
 	}
 	CIO::message(M_INFO, "\n");
@@ -954,41 +990,59 @@ void CKernel::list_kernel()
 
 bool CKernel::init_optimization(INT count, INT *IDX, DREAL * weights)
 {
+#ifdef HAVE_PYTHON
    throw KernelException("kernel does not support linadd optimization\n");
-	//CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
+#else
+	CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
+#endif
 	return false ;
 }
 
 bool CKernel::delete_optimization() 
 {
+#ifdef HAVE_PYTHON
    throw KernelException("kernel does not support linadd optimization\n");
-	//CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
+#else
+	CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
+#endif
 	return false;
 }
 
 DREAL CKernel::compute_optimized(INT idx)
 {
+#ifdef HAVE_PYTHON
    throw KernelException("kernel does not support linadd optimization\n");
-	//CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
+#else
+	CIO::message(M_ERROR, "kernel does not support linadd optimization\n") ;
+#endif
 	return 0;
 }
 
 void CKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor)
 {
+#ifdef HAVE_PYTHON
    throw KernelException("kernel does not support batch computation\n");
-	//CIO::message(M_ERROR, "kernel does not support batch computation\n") ;
+#else
+	CIO::message(M_ERROR, "kernel does not support batch computation\n") ;
+#endif
 }
 
 void CKernel::add_to_normal(INT idx, DREAL weight)
 {
+#ifdef HAVE_PYTHON
    throw KernelException("kernel does not support linadd optimization, add_to_normal not implemented\n");
-	//CIO::message(M_ERROR, "kernel does not support linadd optimization, add_to_normal not implemented\n") ;
+#else
+	CIO::message(M_ERROR, "kernel does not support linadd optimization, add_to_normal not implemented\n") ;
+#endif
 }
 
 void CKernel::clear_normal()
 {
+#ifdef HAVE_PYTHON
    throw KernelException("kernel does not support linadd optimization, clear_normal not implemented\n");
-	//CIO::message(M_ERROR, "kernel does not support linadd optimization, clear_normal not implemented\n") ;
+#else
+	CIO::message(M_ERROR, "kernel does not support linadd optimization, clear_normal not implemented\n") ;
+#endif
 }
 
 INT CKernel::get_num_subkernels()
@@ -998,8 +1052,11 @@ INT CKernel::get_num_subkernels()
 
 void CKernel::compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
 {
+#ifdef HAVE_PYTHON
    throw KernelException("kernel compute_by_subkernel not implemented\n");
-	//CIO::message(M_ERROR, "kernel compute_by_subkernel not implemented\n") ;
+#else
+	CIO::message(M_ERROR, "kernel compute_by_subkernel not implemented\n") ;
+#endif
 }
 
 const DREAL* CKernel::get_subkernel_weights(INT &num_weights)
@@ -1012,8 +1069,11 @@ void CKernel::set_subkernel_weights(DREAL* weights, INT num_weights)
 {
 	combined_kernel_weight = weights[0] ;
 	if (num_weights!=1)
+#ifdef HAVE_PYTHON
       throw KernelException("number of subkernel weights should be one ...\n");
-		//CIO::message(M_ERROR, "number of subkernel weights should be one ...\n") ;
+#else
+		CIO::message(M_ERROR, "number of subkernel weights should be one ...\n") ;
+#endif
 }
 
 void CKernel::do_precompute_matrix()

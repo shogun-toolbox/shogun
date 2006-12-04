@@ -9,15 +9,16 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+
 #ifndef _CFEATURES__H__
 #define _CFEATURES__H__
 
 #include "lib/common.h"
 #include "preproc/PreProc.h"
 #include <stdio.h>
-
 #include "exceptions/FeatureException.h"
 
+class FeatureException;
 class CPreProc;
 class CFeatures;
 

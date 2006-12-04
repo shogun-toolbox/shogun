@@ -234,8 +234,11 @@ template <class ST> class CSparseFeatures: public CFeatures
 				}
 			}
 			else
+#ifdef HAVE_PYTHON
             throw FeatureException("error allocating memory for dense feature matrix\n");
-				//CIO::message(M_ERROR, "error allocating memory for dense feature matrix\n");
+#else
+				CIO::message(M_ERROR, "error allocating memory for dense feature matrix\n");
+#endif
 
 			return fm;
 		}
@@ -315,8 +318,11 @@ template <class ST> class CSparseFeatures: public CFeatures
 					}
 					else
 					{
+#ifdef HAVE_PYTHON
                   throw FeatureException("allocation of sparse feature matrix failed\n");
-						//CIO::message(M_ERROR, "allocation of sparse feature matrix failed\n");
+#else
+						CIO::message(M_ERROR, "allocation of sparse feature matrix failed\n");
+#endif
 						result=false;
 					}
 
@@ -324,8 +330,11 @@ template <class ST> class CSparseFeatures: public CFeatures
 				}
 				else
 				{
+#ifdef HAVE_PYTHON
                throw FeatureException("huh ? zero size matrix given ?\n");
-					//CIO::message(M_ERROR, "huh ? zero size matrix given ?\n");
+#else
+					CIO::message(M_ERROR, "huh ? zero size matrix given ?\n");
+#endif
 					result=false;
 				}
 			}

@@ -44,10 +44,11 @@ void CLinearWordKernel::init_rescale()
 		sum+=compute(i, i);
 
 	if ( sum > (pow((double) 2, (double) 8*sizeof(LONG))) ) {
-      char buf[200];
-      sprintf(buf,"the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
-      throw KernelException(buf);
-		//CIO::message(M_ERROR, "the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
+#ifdef HAVE_PYTHON
+      throw KernelException("the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
+#else
+		CIO::message(M_ERROR, "the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
+#endif
    }
 	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
 }

@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 
+class FeatureException;
 class CFeatures;
 
 class CPreProc

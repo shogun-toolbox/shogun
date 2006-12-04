@@ -5,15 +5,12 @@
 
 class KernelException {
       private:
-         char *mes;
+         char* val;
       public:
-         KernelException(const char *_mes) {
-            mes = new char[strlen(_mes)];
-            strcpy(mes,_mes);
-         }
-
+         KernelException(const char *fmt, ... );
+   
          char* get_debug_string() {
-            return mes;
+            return val;
          }
 };
 

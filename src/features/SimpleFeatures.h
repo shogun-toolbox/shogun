@@ -217,12 +217,18 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	else
 	{
 		if (!feature_matrix)
+#ifdef HAVE_PYTHON
          throw FeatureException("no feature matrix\n");
-			//CIO::message(M_ERROR, "no feature matrix\n");
+#else
+			CIO::message(M_ERROR, "no feature matrix\n");
+#endif
 
 		if (!get_num_preproc())
+#ifdef HAVE_PYTHON
          throw FeatureException("no preprocessors available\n");
-			//CIO::message(M_ERROR, "no preprocessors available\n");
+#else
+			CIO::message(M_ERROR, "no preprocessors available\n");
+#endif
 		return false;
 	}
   }

@@ -92,8 +92,11 @@ bool CSimpleLocalityImprovedCharKernel::save_init(FILE* dest)
 static void ASSERT2 (const INT ok, const CHAR* const msg)
 {
    if (! ok) {
+#ifdef HAVE_PYTHON
       throw KernelException(msg);
-      //CIO::message(M_ERROR, msg );
+#else
+      CIO::message(M_ERROR, msg );
+#endif
    }
 }
 

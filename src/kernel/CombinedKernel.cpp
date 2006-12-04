@@ -483,8 +483,11 @@ DREAL CCombinedKernel::compute_optimized(INT idx)
 { 		  
 	if (!get_is_initialized())
 	{
+#ifdef HAVE_PYTHON
 		throw KernelException("CCombinedKernel optimization not initialized\n") ;
-		//CIO::message(M_ERROR, "CCombinedKernel optimization not initialized\n") ;
+#else
+		CIO::message(M_ERROR, "CCombinedKernel optimization not initialized\n") ;
+#endif
 		return 0 ;
 	}
 	

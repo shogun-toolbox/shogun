@@ -67,9 +67,12 @@ DREAL* CPluginEstimate::test()
 
 	if ((!pos_model) || (!neg_model))
 	  {
+#ifdef HAVE_PYTHON
        throw PluginException("model(s) not assigned\n");
-	    //CIO::message(M_ERROR, "model(s) not assigned\n") ;
-	    //return NULL ;
+#else
+	    CIO::message(M_ERROR, "model(s) not assigned\n") ;
+#endif
+	    return NULL ;
 	  } ;
 
 	DREAL* result=new DREAL[features->get_num_vectors()];
@@ -107,9 +110,12 @@ DREAL CPluginEstimate::classify_example(INT idx)
 
 	if ((!pos_model) || (!neg_model))
 	  {
+#ifdef HAVE_PYTHON
        throw PluginException("model(s) not assigned\n");
-	    //CIO::message(M_ERROR, "model(s) not assigned\n");
-	    //return NAN;
+#else
+	    CIO::message(M_ERROR, "model(s) not assigned\n");
+#endif
+	    return NAN;
 	  } ;
 	  
 	DREAL result=pos_model->get_log_likelihood_example(vector, len) - neg_model->get_log_likelihood_example(vector, len);

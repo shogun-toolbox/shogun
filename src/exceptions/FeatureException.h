@@ -1,19 +1,16 @@
 #ifndef _FEATURE_EXCEPTION_H_
-#define _FEATURE_EXCEPTION_H_
+#define _FEATURE_EXCEPTION_H_ 
 
 #include "exceptions/Exception.h"
 
-class FeatureException{
+class FeatureException {
       private:
-         char *mes;
+         char* val;
       public:
-         FeatureException(const char *_mes) {
-            mes = new char[strlen(_mes)];
-            strcpy(mes,_mes);
-         }
-
+         FeatureException(const char *fmt, ... );
+   
          char* get_debug_string() {
-            return mes;
+            return val;
          }
 };
 

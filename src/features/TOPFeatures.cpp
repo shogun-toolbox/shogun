@@ -178,8 +178,11 @@ DREAL* CTOPFeatures::set_feature_matrix()
 	feature_matrix=new DREAL[num_features*num_vectors];
 	if (!feature_matrix)
 	{
+#ifdef HAVE_PYTHON
       throw FeatureException("allocation not successful!");
-		//CIO::message(M_ERROR, "allocation not successful!");
+#else
+		CIO::message(M_ERROR, "allocation not successful!");
+#endif
 		return NULL ;
 	} ;
 

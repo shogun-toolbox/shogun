@@ -206,10 +206,11 @@ template <class ST> class CStringFeatures: public CFeatures
 				for (columns=0; index+columns<length && p[columns]!='\n'; columns++);
 
 				if (index+columns>=length && p[columns]!='\n') {
-               char buf[200];
-               sprintf(buf,"error in \"%s\":%d\n", fname, lines);
-               throw FeatureException(buf);
-					//CIO::message(M_ERROR, "error in \"%s\":%d\n", fname, lines);
+#ifdef HAVE_PYTHON
+               throw FeatureException("error in \"%s\":%d\n", fname, lines);
+#else
+					CIO::message(M_ERROR, "error in \"%s\":%d\n", fname, lines);
+#endif
             }
 
 				features[lines].length=columns;
@@ -228,8 +229,11 @@ template <class ST> class CStringFeatures: public CFeatures
 			return true;
 		}
 		else
+#ifdef HAVE_PYTHON
          throw FeatureException("reading file failed\n");
-			//CIO::message(M_ERROR, "reading file failed\n");
+#else
+			CIO::message(M_ERROR, "reading file failed\n");
+#endif
 
 		return false;
 	}
@@ -318,11 +322,12 @@ template <class ST> class CStringFeatures: public CFeatures
 
 		if ( ((long double) num_symbols) > CMath::powl(((long double) 2),((long double) sizeof(ST)*8)) )
 		{
-         char buf[200];
-         sprintf(buf,"symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
-         throw FeatureException(buf);
-			//CIO::message(M_ERROR, "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
-			//return false;
+#ifdef HAVE_PYTHON
+         throw FeatureException("symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
+#else
+			CIO::message(M_ERROR, "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
+#endif
+			return false;
 		}
 
 		CIO::message(M_DEBUG, "translate: start=%i order=%i gap=%i(size:%i)\n", start, order, gap, sizeof(ST)) ;

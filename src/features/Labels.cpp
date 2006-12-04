@@ -126,10 +126,11 @@ bool CLabels::load(CHAR* fname)
 	num_labels=num_lab;
 
     if (!f.is_ok()) {
-      char buf[200];
-      sprintf(buf,"loading file \"%s\" failed", fname);
-      throw LabelException(buf);
-		//CIO::message(M_ERROR, "loading file \"%s\" failed", fname);
+#ifdef HAVE_PYTHON
+      throw LabelException("loading file \"%s\" failed", fname);
+#else
+		CIO::message(M_ERROR, "loading file \"%s\" failed", fname);
+#endif
     }
 	else
 	{

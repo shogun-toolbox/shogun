@@ -112,15 +112,21 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			rhs->get_num_features() * rhs->get_num_symbols();
 	    if ((!estimate) || (!estimate->check_models()))
 		{
+#ifdef HAVE_PYTHON
          throw KernelException("no estimate available\n");
-			//CIO::message(M_ERROR, "no estimate available\n") ;
-			//return false ;
+#else
+			CIO::message(M_ERROR, "no estimate available\n") ;
+#endif
+			return false ;
 		} ;
 	    if (num_params!=estimate->get_num_params())
 		{
+#ifdef HAVE_PYTHON
          throw KernelException("number of parameters of estimate and feature representation do not match\n");
-			//CIO::message(M_ERROR, "number of parameters of estimate and feature representation do not match\n") ;
-			//return false ;
+#else
+			CIO::message(M_ERROR, "number of parameters of estimate and feature representation do not match\n") ;
+#endif
+			return false ;
 		} ;
 	    
 	    //add 1 as we have the 'bias' also in this vector

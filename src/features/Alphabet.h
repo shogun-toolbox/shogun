@@ -15,19 +15,7 @@
 #include <cstring>
 using namespace std;
 
-class AlphabetException{
-      private:
-         char *mes;
-      public:
-         AlphabetException(const char *_mes) {
-            mes = new char[strlen(_mes)];
-            strcpy(mes,_mes);
-         }
-
-         char* get_debug_string() {
-            return mes;
-         }
-};
+#include "exceptions/AlphabetException.h"
 
 class CAlphabet
 {

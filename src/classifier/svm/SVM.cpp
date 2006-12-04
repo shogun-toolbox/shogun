@@ -79,10 +79,11 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%4s\n", char_buffer)==EOF)
 	{
 		result=false;
-      char buf[200];
-      sprintf(buf,"error in svm file, line nr:%d\n", line_number);
-      throw SVMException(buf);
-		//CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#ifdef HAVE_PYTHON
+      throw SVMException("error in svm file, line nr:%d\n", line_number);
+#else
+		CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#endif
 	}
 	else
 	{
@@ -90,10 +91,11 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("%SVM", char_buffer)!=0)
 		{
 			result=false;
-         char buf[200];
-         sprintf(buf,"error in svm file, line nr:%d\n", line_number);
-         throw SVMException(buf);
-			//CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#ifdef HAVE_PYTHON
+         throw SVMException("error in svm file, line nr:%d\n", line_number);
+#else
+			CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#endif
 		}
 		line_number++;
 	}
@@ -102,10 +104,11 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl," numsv=%d; \n", &int_buffer) != 1)
 	{
 		result=false;
-      char buf[200];
-      sprintf(buf,"error in svm file, line nr:%d\n", line_number);
-      throw SVMException(buf);
-		//CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#ifdef HAVE_PYTHON
+      throw SVMException("error in svm file, line nr:%d\n", line_number);
+#else
+		CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#endif
 	}
 
 	if (!feof(modelfl))
@@ -117,10 +120,11 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl," kernel='%s'; \n", char_buffer) != 1)
 	{
 		result=false;
-      char buf[200];
-      sprintf(buf,"error in svm file, line nr:%d\n", line_number);
-      throw SVMException(buf);
-		//CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#ifdef HAVE_PYTHON
+      throw SVMException("error in svm file, line nr:%d\n", line_number);
+#else
+		CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#endif
 	}
 
 	if (!feof(modelfl))
@@ -131,10 +135,11 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl," b=%lf; \n", &double_buffer) != 1)
 	{
 		result=false;
-      char buf[200];
-      sprintf(buf,"error in svm file, line nr:%d\n", line_number);
-      throw SVMException(buf);
-		//CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#ifdef HAVE_PYTHON
+      throw SVMException("error in svm file, line nr:%d\n", line_number);
+#else
+		CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#endif
 	}
 	
 	if (!feof(modelfl))
@@ -145,10 +150,11 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%8s\n", char_buffer) == EOF)
 	{
 		result=false;
-      char buf[200];
-      sprintf(buf,"error in svm file, line nr:%d\n", line_number);
-      throw SVMException(buf);
-		//CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#ifdef HAVE_PYTHON
+      throw SVMException("error in svm file, line nr:%d\n", line_number);
+#else
+		CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#endif
 	}
 	else
 	{
@@ -156,10 +162,11 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("alphas=[", char_buffer)!=0)
 		{
 			result=false;
-         char buf[200];
-         sprintf(buf,"error in svm file, line nr:%d\n", line_number);
-         throw SVMException(buf);
-			//CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#ifdef HAVE_PYTHON
+         throw SVMException("error in svm file, line nr:%d\n", line_number);
+#else
+			CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#endif
 		}
 		line_number++;
 	}
@@ -172,10 +179,11 @@ bool CSVM::load(FILE* modelfl)
 		if (fscanf(modelfl," \[%lf,%d]; \n", &double_buffer, &int_buffer) != 2)
 		{
 			result=false;
-         char buf[200];
-         sprintf(buf,"error in svm file, line nr:%d\n", line_number);
-         throw SVMException(buf);
-			//CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#ifdef HAVE_PYTHON
+         throw SVMException("error in svm file, line nr:%d\n", line_number);
+#else
+			CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#endif
 		}
 
 		if (!feof(modelfl))
@@ -188,10 +196,11 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%2s", char_buffer) == EOF)
 	{
 		result=false;
-      char buf[200];
-      sprintf(buf,"error in svm file, line nr:%d\n", line_number);
-      throw SVMException(buf);
-		//CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#ifdef HAVE_PYTHON
+      throw SVMException("error in svm file, line nr:%d\n", line_number);
+#else
+		CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#endif
 	}
 	else
 	{
@@ -199,10 +208,11 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("];", char_buffer)!=0)
 		{
 			result=false;
-         char buf[200];
-         sprintf(buf,"error in svm file, line nr:%d\n", line_number);
-         throw SVMException(buf);
-			//CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#ifdef HAVE_PYTHON
+         throw SVMException("error in svm file, line nr:%d\n", line_number);
+#else
+			CIO::message(M_ERROR, "error in svm file, line nr:%d\n", line_number);
+#endif
 		}
 		line_number++;
 	}
@@ -251,15 +261,21 @@ bool CSVM::init_kernel_optimization()
 		delete[] sv_weight ;
 
 		if (!ret) {
+#ifdef HAVE_PYTHON
          throw SVMException("initialization of kernel optimization failed\n");
-			//CIO::message(M_ERROR, "initialization of kernel optimization failed\n") ;
+#else
+			CIO::message(M_ERROR, "initialization of kernel optimization failed\n") ;
+#endif
       }
 
 		return ret;
 	}
 	else {
+#ifdef HAVE_PYTHON
       throw SVMException("initialization of kernel optimization failed\n");
-		//CIO::message(M_ERROR, "initialization of kernel optimization failed\n") ;
+#else
+		CIO::message(M_ERROR, "initialization of kernel optimization failed\n") ;
+#endif
    }
 
 	return false;
@@ -295,9 +311,12 @@ CLabels* CSVM::classify(CLabels* result)
 {
 	if (!CKernelMachine::get_kernel())
 	{
+#ifdef HAVE_PYTHON
       throw SVMException("SVM can not proceed without kernel!\n");
-		//CIO::message(M_ERROR, "SVM can not proceed without kernel!\n");
-		//return false ;
+#else
+		CIO::message(M_ERROR, "SVM can not proceed without kernel!\n");
+#endif
+		return false ;
 	}
 
 	if ( (CKernelMachine::get_kernel()) &&
@@ -447,8 +466,11 @@ DREAL CSVM::compute_objective()
 		}
 	}
 	else {
+#ifdef HAVE_PYTHON
       throw SVMException("cannot compute objective, labels or kernel not set\n");
-		//CIO::message(M_ERROR, "cannot compute objective, labels or kernel not set\n");
+#else
+		CIO::message(M_ERROR, "cannot compute objective, labels or kernel not set\n");
+#endif
    }
 
 	return objective;

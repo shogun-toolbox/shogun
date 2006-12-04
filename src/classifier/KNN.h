@@ -33,8 +33,11 @@ class CKNN : public CDistanceMachine
 		virtual CLabels* classify(CLabels* output=NULL);
 		virtual DREAL classify_example(INT idx)
 		{
+#ifdef HAVE_PYTHON
          throw ClassifierException("for performance reasons use test() instead of classify_example\n");
-			//CIO::message(M_ERROR, "for performance reasons use test() instead of classify_example\n");
+#else
+			CIO::message(M_ERROR, "for performance reasons use test() instead of classify_example\n");
+#endif
 			return 0;
 		}
 

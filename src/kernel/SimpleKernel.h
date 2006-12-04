@@ -44,12 +44,13 @@ template <class ST> class CSimpleKernel : public CKernel
 
 			if ( ((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
 			{  
-            char buf[200];
-            sprintf(buf,"train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+#ifdef HAVE_PYTHON
+            throw KernelException("train or test features #dimension mismatch (l:%d vs. r:%d)\n",
 						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) r)->get_num_features());
-            throw KernelException(buf);
-				//CIO::message(M_ERROR, "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
-				//		((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) r)->get_num_features());
+#else
+				CIO::message(M_ERROR, "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) r)->get_num_features());
+#endif
 			}
 			return true;
 		}

@@ -163,8 +163,11 @@ void CFeatures::list_feature_obj()
 			CIO::message(M_INFO, "C_ANY ");
 			break;
 		default:
+#ifdef HAVE_PYTHON
          throw FeatureException("ERROR UNKNOWN FEATURE CLASS");
-			//CIO::message(M_INFO, "ERROR UNKNOWN FEATURE CLASS");
+#else
+			CIO::message(M_INFO, "ERROR UNKNOWN FEATURE CLASS");
+#endif
 	}
 
 	switch (get_feature_type())
@@ -197,8 +200,11 @@ void CFeatures::list_feature_obj()
 			CIO::message(M_INFO, "F_ANY \n");
 			break;
 		default:
+#ifdef HAVE_PYTHON
          throw FeatureException("ERROR UNKNOWN FEATURE TYPE\n");
-			//CIO::message(M_INFO, "ERROR UNKNOWN FEATURE TYPE\n");
+#else
+			CIO::message(M_INFO, "ERROR UNKNOWN FEATURE TYPE\n");
+#endif
 	}
 }
 

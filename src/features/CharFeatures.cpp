@@ -78,23 +78,30 @@ bool CCharFeatures::load(CHAR* fname)
 
 				if (feature_matrix[lines*linelen+num_features]!='\n')
 				{
-               char buf[200];
-               sprintf(buf,"line %d in file \"%s\" is corrupt\n", lines, fname);
-               throw FeatureException(buf);
-					//CIO::message(M_ERROR, "line %d in file \"%s\" is corrupt\n", lines, fname);
-					//return false;
+#ifdef HAVE_PYTHON
+               throw FeatureException("line %d in file \"%s\" is corrupt\n", lines, fname);
+#else
+					CIO::message(M_ERROR, "line %d in file \"%s\" is corrupt\n", lines, fname);
+#endif
+					return false;
 				}
 			}
 
 			return true;
 		}
 		else
+#ifdef HAVE_PYTHON
          throw FeatureException("file is of zero size or no rectangular featurematrix of type CHAR\n");
-			//CIO::message(M_ERROR, "file is of zero size or no rectangular featurematrix of type CHAR\n");
+#else
+			CIO::message(M_ERROR, "file is of zero size or no rectangular featurematrix of type CHAR\n");
+#endif
 	}
 	else
+#ifdef HAVE_PYTHON
       throw FeatureException("reading file failed\n");
-		//CIO::message(M_ERROR, "reading file failed\n");
+#else
+		CIO::message(M_ERROR, "reading file failed\n");
+#endif
 
 	return false;
 }

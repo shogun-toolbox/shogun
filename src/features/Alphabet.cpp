@@ -44,10 +44,11 @@ CAlphabet::CAlphabet(CHAR* al, INT len)
 	else if (len>=(INT) strlen("IUPAC_AMINO_ACID") && !strncmp(al, "IUPAC_AMINO_ACID", strlen("IUPAC_AMINO_ACID")))
 		alpha = IUPAC_AMINO_ACID;
 	else {
-      char buf[200];
-      sprintf(buf,"unknown alphabet %s\n", al);
-      throw AlphabetException(buf);
-		//CIO::message(M_ERROR, "unknown alphabet %s\n", al);
+#ifdef HAVE_PYTHON
+      throw AlphabetException("unknown alphabet %s\n", al);
+#else
+		CIO::message(M_ERROR, "unknown alphabet %s\n", al);
+#endif
    }
 	
 	set_alphabet(alpha);
@@ -440,8 +441,11 @@ bool CAlphabet::check_alphabet(bool print_error)
 	if (!result && print_error)
 	{
 		print_histogram();
+#ifdef HAVE_PYTHON
       throw AlphabetException("ALPHABET does not contain all symbols in histogram\n");
-		//CIO::message(M_ERROR, "ALPHABET does not contain all symbols in histogram\n");
+#else
+		CIO::message(M_ERROR, "ALPHABET does not contain all symbols in histogram\n");
+#endif
 	}
 
 	return result;
@@ -455,8 +459,11 @@ bool CAlphabet::check_alphabet_size(bool print_error)
 		{
 			print_histogram();
 			fprintf(stderr, "get_num_bits_in_histogram()=%i > get_num_bits()=%i\n", get_num_bits_in_histogram(), get_num_bits()) ;
+#ifdef HAVE_PYTHON
          throw AlphabetException("ALPHABET too small to contain all symbols in histogram\n");
-			//CIO::message(M_ERROR, "ALPHABET too small to contain all symbols in histogram\n");
+#else
+			CIO::message(M_ERROR, "ALPHABET too small to contain all symbols in histogram\n");
+#endif
 		}
 		return false;
 	}
