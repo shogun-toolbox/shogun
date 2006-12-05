@@ -4,7 +4,7 @@
 from numpy import array,concatenate,ones
 from numpy.random import randn
 from shogun.Features import *
-from shogun.SVM import *
+from shogun.Classifier import *
 from shogun.Kernel import *
 
 

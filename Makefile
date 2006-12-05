@@ -1,4 +1,4 @@
-MAINVERSION := 0.1.2
+MAINVERSION := 0.2.1
 #EXTRAVERSION := +svn20061202
 COMPRESS := bzip2
 SVMLIGHT := yes
@@ -33,4 +33,7 @@ release: src/lib/versionstring.h
 	mv -f src/lib/versionstring.h $(DESTDIR)/src/lib/
 	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
 	$(COMPRESS) -9 $(DESTDIR).tar
+
+	#build R package
+	cd $(DESTDIR)/R && make package && cp *.tar.gz ../../
 	rm -rf $(DESTDIR)

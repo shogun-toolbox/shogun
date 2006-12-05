@@ -1,7 +1,7 @@
 from numpy import array,double
 from numpy.random import rand
 from shogun.Features import *
-from shogun.SVM import *
+from shogun.Classifier import *
 from shogun.Kernel import *
 
 feat = RealFeatures(rand(5,10))

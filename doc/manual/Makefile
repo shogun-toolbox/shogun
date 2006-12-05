@@ -16,4 +16,4 @@ manual.txt: $(DOCFILES)
 distclean: clean
 
 clean:
-	rm -f manual/manual.{out,aux,log,pdf,html,txt} manual/texput.log
+	rm -f manual.{out,aux,log,pdf,html,txt,tex} texput.log

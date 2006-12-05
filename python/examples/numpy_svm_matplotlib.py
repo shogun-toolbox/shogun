@@ -3,7 +3,7 @@ from numpy import array,meshgrid,reshape,linspace,ones,min,max
 from numpy import concatenate,transpose,ravel,double
 from numpy.random import randn
 from shogun.Features import *
-from shogun.SVM import *
+from shogun.Classifier import *
 from shogun.Kernel import *
 
 num_dat=200

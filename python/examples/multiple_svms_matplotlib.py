@@ -6,7 +6,7 @@ from numpy import array,meshgrid,reshape,linspace,ones,min,max
 from numpy import concatenate,transpose,ravel
 from numpy.random import randn
 from shogun.Features import *
-from shogun.SVM import *
+from shogun.Classifier import *
 from shogun.Kernel import *
 import gc
 

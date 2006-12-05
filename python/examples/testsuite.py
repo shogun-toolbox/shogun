@@ -8,7 +8,7 @@ import unittest as ut
 
 from shogun.Features import *
 from shogun.Kernel import *
-from shogun.SVM import *
+from shogun.Classifier import *
 
 from numpy import *
 from numpy.random import *
