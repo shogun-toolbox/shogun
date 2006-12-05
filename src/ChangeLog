@@ -1,3 +1,7 @@
+2006-12-05  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.2.1
+
 2006-10-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
 	* swig python interface (works w/ multiple svms etc etc)
