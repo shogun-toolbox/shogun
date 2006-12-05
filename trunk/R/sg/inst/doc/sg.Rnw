@@ -1,0 +1,471 @@
+% -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
+\documentclass{article}
+\SweaveOpts{echo=FALSE}
+\usepackage[a4paper,margin=2.5cm,nohead]{geometry}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage[utf-8]{inputenc}
+
+\newenvironment{deflist}[1]{%
+\begin{list}{}
+{\renewcommand{\makelabel}[1]{\textbf{##1}\hfill}
+\settowidth{\labelwidth}{\textbf{#1}}
+\leftmargin=\labelwidth
+\advance \leftmargin\labelsep}}
+{\end{list}}
+\newenvironment{optlist}[1]{%
+\begin{list}{}
+{\renewcommand{\makelabel}[1]{\texttt{##1}\hfill}
+\settowidth{\labelwidth}{\texttt{#1}}
+\leftmargin=\labelwidth
+\advance \leftmargin\labelsep}}
+{\end{list}}
+\newenvironment{pullquote}{\begin{quotation}\Large}{\end{quotation}}
+\setlength{\extrarowheight}{2pt}
+
+\newcommand{\transition}{\begin{center}\rule{.8\textwidth}{0.2pt}\end{center}}
+\newcommand{\subtitle}[1]{{\large\textsc{#1}}}
+\newcommand{\subs}[1]{\raisebox{-0.7ex}{\footnotesize #1}}
+\newcommand{\sups}[1]{\raisebox{0.7ex}{\footnotesize #1}}
+\newcommand{\attribution}[1]{\raggedleft\textit{#1}}
+
+\usepackage[pdftex]{hyperref}
+
+\hypersetup{pdfcreator={VST, LaTeX, hyperref},
+bookmarksopen=true,
+bookmarksopenlevel=2,
+colorlinks=true,urlcolor=blue,
+pdftitle={SHOGUN - User manual},
+}
+
+\begin{document}
+\title{SHOGUN - User manual}
+\maketitle
+\hypertarget{labout-this-document}{}
+\section{About this document}
+
+This is the user manual for the SHOGUN toolbox.
+
+\hypertarget{lintroduction-to-shogun}{}
+\section{Introduction to SHOGUN}
+
+The SHOGUN machine learning toolbox's focus is on kernel methods and especially on
+Support Vector Machines (SVM). It provides a generic SVM object interfacing
+to several different SVM implementations, among them the state of the art
+LibSVM[1] and SVMlight[2]. Each of the SVMs can be combined with a variety
+of kernels. The toolbox not only provides efficient implementations of the
+most common kernels, like the Linear, Polynomial, Gaussian and Sigmoid
+Kernel but also comes with a number of recent string kernels as e.g. the
+Locality Improved[3], Fischer[4], TOP[5], Spectrum[6], Weighted Degree
+Kernel (with shifts)[7]. For the latter the efficient LINADD[8]
+optimizations are implemented. Also SHOGUN offers the freedom of working
+with custom pre-computed kernels. One of its key features is the "combined
+kernel" which can be constructed by a weighted linear combination of a
+number of sub-kernels, each of which not necessarily working on the same
+domain. An optimal sub-kernel weighting can be learned using Multiple Kernel
+Learning[9]. 
+Currently SVM 2-class classification and regression problems can be dealt
+with. However SHOGUN also implements a number of linear methods like Linear
+Discriminant Analysis (LDA), Linear Programming Machine (LPM), (Kernel)
+Perceptrons and features algorithms to train hidden markov models.
+The input feature-objects can be dense, sparse or strings and
+of type int/short/double/char and can be converted into different feature types. 
+Chains of "preprocessors" (e.g. substracting the mean) can be attached to
+each feature object allowing for on-the-fly pre-processing.
+License: GPL version 2 or newer
+URL: \href{http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun}{http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun}
+
+\hypertarget{lnotes}{}
+\subsection{Notes}
+
+As mentioned above SHOGUN interfaces to several programming languages and
+toolkits such as Matlab(tm), R, Python, Octave. The following sections shall
+give you an overview over the commands of SHOGUN. We tried to preserve the
+syntax of the commands in a consistent manner through all the different
+languages. However where it was not possible we give there will be special
+infos on the subtle differences of syntax and semantic in the respective
+toolkit
+
+\hypertarget{lcommands}{}
+\subsection{Commands}
+
+To fire up SHOGUN in R make sure that you have SHOGUN correctly installed in
+R. You can check this by typing ( let "$>$" be the R prompt ):
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~>~library()}\\
+\end{flushleft}\end{ttfamily}
+
+inside of R, this command should list all R packages that have been
+installed on your system.
+You should have an entry like:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~sg~~~~~~~~~~~~~~~~~~~~~~The~shogun~package~provides~Hidden~markov~model}\\
+\mbox{~~~~~~~~~~~~~~~~~~~~~~~~~and~Support~Vector~Machine~algorithms~for~gene}\\
+\mbox{~~~~~~~~~~~~~~~~~~~~~~~~~finding~and~other~tasks.}\\
+\end{flushleft}\end{ttfamily}
+
+After you made sure that SHOGUN is installed correctly you can start it via:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~>~library("sg")}\\
+\end{flushleft}\end{ttfamily}
+
+you will see some informations of the SHOGUN core.
+After this command R and SHOGUN are ready to receive your commands.
+
+In general all commands in SHOGUN are issued using the function sg(...).
+To invoke the SHOGUN command help one types:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~>~sg("send\_command","help")}\\
+\end{flushleft}\end{ttfamily}
+
+and then a help text appears giving a short description of all commands.
+
+\hypertarget{lsend-command}{}
+\subsubsection{send\_command}
+
+Currently send\_command supports the following options:
+
+ \begin{enumerate}[label=\arabic*.]
+\item 
+
+help: Gives you a help text.
+\item 
+
+loglevel: has the additional options ALL, WARN, ERROR.
+
+ \begin{enumerate}[label=\roman*.]
+\item 
+
+ALL: verbose logging output (useful for debugging).
+\item 
+
+WARN: less logging output (useful for error search).
+\item 
+
+ERROR: only logging output on critical errors.
+ \end{enumerate}
+
+ For example:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~sg("send\_command","loglevel~ALL")}\\
+\end{flushleft}\end{ttfamily}
+
+ gives you a very verbose description of all the things happening in the
+ SHGOGUN core.
+\item 
+
+clean\_features: Deletes the features which we assigned before in the
+actual SHOGUN session.
+\item 
+
+clean\_kernels: Deletes the kernels which we assigned before in the
+actual SHOGUN session.
+\item 
+
+new\_svm: Creates a new SVM instance.
+\item 
+
+init\_kernel: Initializes the kernel
+\item 
+
+svm\_train: Starts the training of the SVM on the assigned features and
+kernels.
+\end{enumerate}
+\hypertarget{lset-features-and-set-labels}{}
+\subsubsection{set\_features and set\_labels}
+
+The set\_features commands is responsible for assigning features to the SHOGUN
+core. Suppose you have a matlab matrix or R vector "traindat" which
+contains your training data and you want to register this data, you simply
+type:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~sg("set\_features",~"TRAIN",~traindat)}\\
+\end{flushleft}\end{ttfamily}
+
+telling SHOGUN that this is the data you want to train your classifier on.
+To register test data on issues:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~sg("set\_features",~"TEST",~testdat)}\\
+\end{flushleft}\end{ttfamily}
+
+where testdat is a datastructure with your test data.
+T
+One proceeds similar when assigning labels to the training data.
+The command:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~sg("set\_labels",~"TRAIN",~trainlab)}\\
+\end{flushleft}\end{ttfamily}
+
+tells SHOGUN that the labels of the assigned training data reside in trainlab.
+
+\hypertarget{lget-kernel-matrix}{}
+\subsubsection{get\_kernel\_matrix}
+
+The purpose of the get\_kernel\_matrix commands is to return a symmetric matrix
+representing the kernel matrix for the actual classification problem.
+
+After typing:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~km=sg("get\_kernel\_matrix")}\\
+\end{flushleft}\end{ttfamily}
+
+km refers to a matrix object.
+
+\hypertarget{lget-svm}{}
+\subsubsection{get\_svm}
+
+The get\_svm command returns some properties of an SVM such as the Langrange
+multipliers alpha, the bias b and the index of the support vectors SV (zero
+based).
+
+For several reasons this commands differs a bit in the different target
+languages.
+
+In R:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~**svmAsList=sg("get\_svm")**}\\
+\end{flushleft}\end{ttfamily}
+
+returns a vector with the named entities alphas,b and SV.
+In Matlab:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~**[b,~alphas]=sg('get\_svm');**}\\
+\end{flushleft}\end{ttfamily}
+
+return the b and the alphas only.
+
+\hypertarget{lsvm-classify}{}
+\subsubsection{svm\_classify}
+
+The result of the classification of the test samples is obtained via:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~out=sg("classify")}\\
+\end{flushleft}\end{ttfamily}
+
+where out is a vector containing the classification result for each datapoint.
+
+\hypertarget{lset-kernel}{}
+\subsubsection{set\_kernel}
+
+In general one sets a kernel by typing:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~sg("send\_command",~"set\_kernel~NAME~..."~)}\\
+\end{flushleft}\end{ttfamily}
+
+where NAME is the name of the kernel one wishes to use and ...
+are additional options for the respective kernel.
+
+Please refer to section 1.3 for detailed information on kernels.
+
+\hypertarget{lkernels}{}
+\subsection{Kernels}
+
+The following kernels are implemented in SHOGUN:
+
+ \begin{enumerate}[label=\arabic*.]
+\item 
+
+Linear
+\item 
+
+Polynomial
+\item 
+
+Gaussian
+\item 
+
+Sigmoid
+\end{enumerate}
+\hypertarget{llinear-kernel}{}
+\subsubsection{Linear Kernel}
+
+A linear kernel is created via:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~sg("send\_command",~"add\_kernel~LINEAR~TYPE~CACHESIZE");}\\
+\end{flushleft}\end{ttfamily}
+
+For example:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~sg('send\_command',~'add\_kernel~LINEAR~REAL~50')}\\
+\end{flushleft}\end{ttfamily}
+
+creates a linear kernel of cache size 50 for real datavalues.
+
+Available types for the linear kernel: BYTE, WORD CHAR, REAL, SPARSEREAL.
+
+\hypertarget{lpolynomial-kernel}{}
+\subsubsection{Polynomial Kernel}
+
+A polynomial kernel is created via:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~('send\_command',~'add\_kernel~POLY~TYPE~CACHESIZE~DEGREE~INHOMOGENE~NORMALIZE');}\\
+\end{flushleft}\end{ttfamily}
+
+For example:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~('send\_command',~'add\_kernel~POLY~REAL~50~3~0')}\\
+\end{flushleft}\end{ttfamily}
+
+creates a polynomial kernel.
+Available types for the polynomial kernel: REAL, CHAR, SPARSEREAL.
+
+\hypertarget{lgaussian-kernel}{}
+\subsubsection{Gaussian Kernel}
+
+To work with a gaussian kernel on real values one issues:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~sg("send\_command",~"set\_kernel~GAUSSIAN~TYPE~CACHESIZE~SIGMA")}\\
+\end{flushleft}\end{ttfamily}
+
+For example:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~sg("send\_command",~"set\_kernel~GAUSSIAN~REAL~40~1")}\\
+\end{flushleft}\end{ttfamily}
+
+creates a gaussian kernel on real values with a cache size of 40MB and a sigma
+value of one.
+Available types for the gaussian kernel: REAL, SPARSEREAL.
+
+\hypertarget{lsigmoid-kernel}{}
+\subsubsection{Sigmoid Kernel}
+
+To work with a sigmoid kernel on real values one issues:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~sg("send\_command",~"set\_kernel~SIGMOID~TYPE~CACHESIZE~GAMMA~COEFF")}\\
+\end{flushleft}\end{ttfamily}
+
+For example:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~sg("send\_command",~"set\_kernel~SIGMOID~REAL~40~0.1~0.1")}\\
+\end{flushleft}\end{ttfamily}
+
+creates a sigmoid kernel on real values with a cache size of 40MB, a gamma
+value of 0.1 and a coefficient of 0.1.
+
+Available types for the gaussian kernel: REAL.
+
+\hypertarget{llet39s-get-started}{}
+\subsection{Let's get started}
+
+Equipped with the above information on the basic SHOGUN commands you are now
+able to create your own SHOGUN applications.
+
+Let us discuss an example:
+
+\begin{ttfamily}\begin{flushleft}
+\mbox{~require(graphics)}\\
+\mbox{~require(lattice)}\\
+\mbox{~library("sg")}\\
+\mbox{}\\
+\mbox{~meshgrid~<-~function(a,b)~\{}\\
+\mbox{~~~~list(}\\
+\mbox{~~~~~~~~~~x=outer(b*0,a,FUN="+"),}\\
+\mbox{~~~~~~~~~~y=outer(b,a*0,FUN="+")}\\
+\mbox{~~~~~~~)}\\
+\mbox{~\}~}\\
+\mbox{}\\
+\mbox{~dims=2;}\\
+\mbox{~num=100;}\\
+\mbox{}\\
+\mbox{~traindat~<-~matrix(c(rnorm(dims*num)-0.5,rnorm(dims*num)+0.5),dims,2*num)}\\
+\mbox{~trainlab~<-~c(vector(mode="numeric",~num)-1,~vector(mode="numeric",~num)+1)}\\
+\mbox{}\\
+\mbox{~sg("send\_command","loglevel~ALL")}\\
+\mbox{~sg("set\_features",~"TRAIN",~traindat)}\\
+\mbox{~sg("set\_labels",~"TRAIN",~trainlab)}\\
+\mbox{~sg("send\_command",~"set\_kernel~GAUSSIAN~REAL~40~1")}\\
+\mbox{~sg("send\_command",~"init\_kernel~TRAIN")}\\
+\mbox{~sg("send\_command",~"new\_svm~LIGHT")}\\
+\mbox{~sg("send\_command",~"c~10.0")}\\
+\mbox{~sg("send\_command",~"svm\_train")}\\
+\mbox{}\\
+\mbox{~x1=(-49:+50)/10}\\
+\mbox{~x2=(-49:+50)/10}\\
+\mbox{~testdat=meshgrid(x1,x2)}\\
+\mbox{~testdat=t(matrix(c(testdat\$x,~testdat\$y),10000,2))}\\
+\mbox{}\\
+\mbox{~sg("set\_features",~"TEST",~testdat)}\\
+\mbox{~sg("send\_command",~"init\_kernel~TEST")}\\
+\mbox{~out=sg("svm\_classify")}\\
+\mbox{}\\
+\mbox{~z=matrix(out,~100,100)}\\
+\mbox{}\\
+\mbox{~image(x1,x2,z,col=topo.colors(1000))}\\
+\mbox{~contour(x1,x2,z,add=T)}\\
+\mbox{~i=which(trainlab==+1);}\\
+\mbox{~matplot(traindat[1,i],traindat[2,i],cex=2.0,pch="o",~type~=~"p",~col="red",add=T)}\\
+\mbox{~i=which(trainlab==-1);}\\
+\mbox{~matplot(traindat[1,i],traindat[2,i],cex=2.0,pch="x",~type~=~"p",~col="black",add=T)}\\
+\mbox{}\\
+\mbox{~wireframe(z,~shade~=~TRUE,~aspect~=~c(61/87,~0.4),~light.source~=~c(10,0,10))}\\
+\end{flushleft}\end{ttfamily}
+
+This small example has a few SHOGUN commands which will be discussed now.
+
+ \begin{enumerate}[label=\arabic*.]
+\item 
+
+\textbf{sg("send\_command","loglevel ALL")} sets an extra verbose loglevel.
+ \end{enumerate}
+
+ 2. \textbf{sg("set\_features", "TRAIN", traindat)} registers the training samples which
+ reside in traindat.
+
+ \begin{enumerate}[label=\arabic*.,start=3]
+\item 
+
+\textbf{sg("set\_labels", "TRAIN", trainlab)} registers the training labels.
+ \end{enumerate}
+
+ 4. sg("send\_command", "set\_kernel GAUSSIAN REAL 40 1") creates a new
+ gaussian kernel for reals with cache size 40Mb and width = 2**sigma\^{}2.
+
+ 5. \textbf{sg("send\_command", "init\_kernel TRAIN")} attaches the data to the
+ kernel and does some initialization.
+
+ 6. \textbf{sg("send\_command", "new\_svm LIGHT")} creates a new SVM object inside
+ the SHOGUN core.
+
+ \begin{enumerate}[label=\arabic*.,start=7]
+\item 
+
+\textbf{sg("send\_command", "c 10.0")} sets the C value of the new SVM to 10.0.
+\item 
+
+\textbf{sg("send\_command", "svm\_train")} starts the training on the samples.
+\item 
+
+\textbf{sg("set\_features", "TEST", testdat)} registers the test samples
+ \end{enumerate}
+
+ 10. \textbf{sg("send\_command", "init\_kernel TEST")} attaches the data to the
+ kernel.
+
+ 11. \textbf{out=sg("svm\_classify")} gives you the classification result as a
+ vector.
+\end{document}
+

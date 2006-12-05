@@ -1,0 +1,5 @@
+x-max_class			- MKL christmas star example
+mkl_sine_regression - MKL sine example
+mkl_lin_sine_mix 	- MKL sine mixture example
+wd_mkl				- MKL wd kernel example
+string_kernel		- spectrum kernel example

@@ -1,0 +1,5 @@
+# First the list of files which we want to build
+file_list = Split('BWT.cpp InductionSort.cpp MSufSort.cpp MSufSortDemo.cpp')
+
+# Now a simple command to build the actual executable
+Program("mssd", file_list, CCFLAGS='-c -Wall')

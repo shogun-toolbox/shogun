@@ -1,0 +1,13 @@
+We integrated the work of the following people:
+
+ Alex J. Smola
+ 	- the pr_loqo optimizer
+
+ Thorsten Joachims 
+ 	- SVMLight
+
+ Chih-Chung Chang and and Chih-Jen Lin	
+ 	- LibSVM
+
+ Thomas Serafini, Luca Zanni, Gaetano Zanghirati
+ 	- the Gradient Projection Decomposition Technique (GPDT) - SVM

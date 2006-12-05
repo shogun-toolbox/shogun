@@ -1,0 +1,10 @@
+%{
+ #include "kernel/StringKernel.h" 
+%}
+
+%include "kernel/StringKernel.h" 
+
+%template(StringRealKernel) CStringKernel<DREAL>;
+%template(StringWordKernel) CStringKernel<WORD>;
+%template(StringCharKernel) CStringKernel<CHAR>;
+%template(StringIntKernel) CStringKernel<INT>;

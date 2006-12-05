@@ -1,0 +1,80 @@
+TODO
+
+- move translate* functions from stringfeatures/charfeatures/dynprog/matlab.cpp into alphabet!
+- R wrapper
+- error checks/exception modell w/ python-swig-objects (fabio example)
+- doc-strings w/ python-swig-objects (fabio example, rbf,svmlight,realfeat)
+- memory inplace mit Py_INCREF ? or copy w/ python-swig-objects
+- convert each and every object to be fully functional w/ swig/python
+	* fabio classifier
+	* soeren string/sparse feat
+	* fabio real kernel/ soeren rest
+- move svmlight structs  (MODEL...) inside CSVMLight class (again!, if it works with swig somehow)
+- kerthi,olivier Lin-SVM implementieren, chunking ???
+- LPM implementieren
+- LDA Fisher implementieren
+- Commstring kernel mit suffixtrie impl.
+- sg design document.
+- clean up get_kernel matrix (in Kernel.cpp / GUIMatlab.cpp)
+- remove use_precompute hack -> make it a temporary precomputed kernel
+- don't use List for preprocs/combined features -> use DYNARRAY!!!
+- SVMs linadd mpi implementation
+- CommWordString /CommWordUlongKernel optimierung mit unique sort
+- suffix tree ala leslie als extra classe...
+- generisches object mit set/get funktionen multiple classifiers/features/distributions/etc, make them interact via lists/indizes of who works with whom
+- create generic Distribution class which combines all density related stuff HMM/gaussians/linear hmm ... this would
+  allow for using PluginEstimate with *any* distribution and clean all the hmm_test hacks
+- create a one class classifier to avoid hacky one_class_hmm_test
+- put things (== estimator/svm/hmm/features/kernel...) in some kind of list to be able to use/select them/many
+  for certain purposes
+- make unified testing possible, e.g. set_classifier XXX ; calc_output ; get_results etc.
+- no standardized File IO (there needs to be some header parsing stuff/ little/big endian conversion...)
+  atm, lots of things just use fopen/read/close...
+- tcp/ip io fixen
+- type (INT/LONG etc) fixes, clear policy
+- fix linear HMM to be equiv. with MMs
+- testsuite
+- deal with remove_lhs/rhs in kernel cleanup() function
+
+DONE
+
+- design the python swig interface
+- kernel is_initialized -> is_optimization_initialized
+- clear sg -> kabumm bei init_kernel  / vorher clean_kernels -> ok...
+- all outputs are labels
+- ascii/gtk plot der dependencies
+- SVMs generell parallelisieren
+- SVMs parralel w/ MKL
+- Perceptron implementieren
+- use CharFeatures type in convert* in WordFeatures
+- SVR regression bug when kernel cache does not fit into memory (see Debugging Genefinder) ?????
+- suffix trie als extra klasse
+- real detection for lapack/blas/matlab/cplex/readline etc
+- create generic Classifier class which combines i.e. KNN/Perceptron/SVM/PluginEstimate
+- fuer python interface auch ctrl+c abfangen
+- clean up libsvm/svmlight regression stuff, derive from CSVMLight
+- fix LINADD & regression
+shogun: trainings/test features gleiche dims check
+- regression fuer SVMlight/libSVM
+- CIO::message() mixed with printf's and matlabs mx* stuff -> we only need CIO::... ala gstreamer, outputlevel ala DEBUG/INFO/WARN/ERROR
+- k(x,y) = sum_i (x_i-y_i)^2/(x_i+y_i)) (chi^2 histogram kernel)
+- CommWordString /CommWordUlongKernel testen/fixen (division durch 0 in normalize) optimierung mit unique sort
+- add iterator to CList/make it thread safe
+- vor svm training auf gleiche anzahl XT,LT gucken
+- Commword kernel als lookup impl.
+- was ist denn penalty_info im distributions dir ?
+- src aufrauemen/cleaner main weg
+- remove or fix all the unused hacky stuff (svm_mpi/grad_descent...)
+- svm cplex & svm_mpi killen
+- grad_descent weghauen
+- commword linadd faehig machen
+- combined kernel update LINADD property wenn kern hinzu kommt...
+r- get_features
+- convert_char_to_word -> DNA 
+- shogun SVM save temporary results / alphas Ws...
+test custom kernel
+- customkernel speichert nur diagonale
+- get kernel matrix berechnet nur haelfte
+- M_PROGRESS mit current min/max (output nur alle 5s)
+- option to disable normalisation for polynomial kernel
+- WD kern Rand fixen

@@ -1,0 +1,10 @@
+
+Interfaces
+==========
+
+SHOGUN comes as a stand-a-lone program accepting input via command-line or
+from a *script* file, where standard file IO is used to read in /write out
+data (optionally even tcp/ip). More importantly, it interfaces to
+established matrix and statistics packages, such as Matlab(tm), Octave, R
+and Python.
+

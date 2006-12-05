@@ -1,0 +1,51 @@
+2006-12-05  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.2.1
+
+2006-10-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* swig python interface (works w/ multiple svms etc etc)
+
+2006-10-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* some autodetection magic in ./configure
+	* fixed a serious bug occuring with shrinking & SVM light (target epsilon
+			was not achieved as we erreanously terminated optimization)
+	* fixed a serious bug when using charfeatures (or strings) w/ mxGetString
+	in matlab interface (the mxGetString function has the undocumented
+			`feature' of returning locale dependent results!)
+	* new command use_shrinking 0/1
+	* new svm classifier SVM LIBSVM_ONECLASS
+	* new function get_WD_scoring
+	* make much more use of templates, i.e. remove all the
+	{Real,Char,Word,Byte,*}Kernel.* files
+
+2006-09-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* incorporated MINDY support
+	* new alphabet class, all string features now have a defined
+	alphabet plus mapping function
+	* RAW (i.e. 8bit) alphabet added
+	* fixes for CommStringUlongKernel (was buggy when strings have different
+			lengths)
+	* new get_WD_scoring function
+	* compile fixes for octave and matlab on osx
+	* configure now scans a number of variants to detect include and library paths
+	* configure obeys INCLUDES LIBS environment variables and optional
+	  paths specified by --libraries --includes 
+	* updated copyright infos
+	* updated license infos
+
+2006-06-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* SHOGUN Release 0.1.2
+	* compile fixes for R on MaxOSX
+	* some compile fixes for cygwin/WIN32
+	* Weighted Degree/Weighted Degree Shift kernel speedups & fixes
+	* python build fixes
+	* initial *workin* swig support 
+	* entropy example
+
+2006-06-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* SHOGUN Release version 0.1-pre1

@@ -1,0 +1,32 @@
+
+R Interface
+----------------
+
+To fire up SHOGUN in R make sure that you have SHOGUN correctly installed in
+R. You can check this by typing ( let ">" be the R prompt )::
+
+   > library()
+
+inside of R, this command should list all R packages that have been
+installed on your system.
+You should have an entry like::
+
+   sg                      The shogun package provides Hidden markov model
+                           and Support Vector Machine algorithms for gene
+                           finding and other tasks.
+
+After you made sure that SHOGUN is installed correctly you can start it via::
+
+   > library("sg")
+
+you will see some informations of the SHOGUN core.
+After this command R and SHOGUN are ready to receive your commands.
+
+In general all commands in SHOGUN are issued using the function sg(...).
+To invoke the SHOGUN command help one types::
+
+   > sg("send_command","help")
+
+and then a help text appears giving a short description of all commands.
+
+
