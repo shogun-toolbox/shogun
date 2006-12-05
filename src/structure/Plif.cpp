@@ -265,7 +265,7 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		ASSERT(next_id!=id) ;
 		PEN[id].set_use_svm(use_svm) ;
 		PEN[id].set_use_cache(use_cache) ;
-		PEN[id].set_loss(loss) ;
+		PEN[id].set_plif_loss(loss) ;
 
 		double * limits = mxGetPr(mx_limits_field) ;
 		double * penalties = mxGetPr(mx_penalties_field) ;
