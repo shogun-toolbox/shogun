@@ -32,7 +32,7 @@ liks=[];
 for i=1:num_hmms,
 	sg('send_command','new_hmm 3 6');
 	sg('set_features','TRAIN',sequence,'CUBE');
-	sg('send_command', 'convert TRAIN STRING CHAR STRING WORD CUBE 1');
+	sg('send_command', 'convert TRAIN STRING CHAR STRING WORD 1');
 	sg('send_command', 'bw');
 	[hmms(i).p, hmms(i).q, hmms(i).a, hmms(i).b]=sg('get_hmm');
 	hmms(i).lik=sg('hmm_likelihood');
@@ -44,7 +44,7 @@ sg('set_hmm', hmms(idx).p,hmms(idx).q,hmms(idx).a,hmms(idx).b);
 
 % compute viterbi path
 sg('set_features','TEST',sequence,'CUBE');
-sg('send_command', 'convert TEST STRING CHAR STRING WORD CUBE 1');
+sg('send_command', 'convert TEST STRING CHAR STRING WORD 1');
 [path,lik]=sg('get_viterbi_path',0);
 path=path+1; %path is zero based in shogun but one based in matlab
 
