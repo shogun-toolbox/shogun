@@ -18,6 +18,7 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include <mex.h>
+#include <mexversion.c>
 
 #include "guilib/GUIMatlab.h"
 #include "gui/TextGUI.h"
