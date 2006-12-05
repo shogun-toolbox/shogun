@@ -207,6 +207,7 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		const mxArray* mx_loss_field = mxGetField(mx_elem, 0, "loss") ;
 		DREAL loss = 0.0 ;
 		if (mx_loss_field!=NULL)
+		{
 			if (!mxIsNumeric(mx_loss_field) ||
 				mxGetM(mx_loss_field)!=1 || mxGetN(mx_loss_field)!=1)
 			{
@@ -214,7 +215,8 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 				delete[] PEN;
 				return NULL ;
 			}
-		loss = (INT) mxGetScalar(mx_loss_field) ;
+			loss = (INT) mxGetScalar(mx_loss_field) ;
+		}
 		
 		const mxArray* mx_next_id_field = mxGetField(mx_elem, 0, "next_id") ;
 		if (mx_next_id_field==NULL || !mxIsNumeric(mx_next_id_field) ||
