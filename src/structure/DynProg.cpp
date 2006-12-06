@@ -47,9 +47,9 @@ static INT num_words_default[4]={64,256,1024,4096} ;
 CDynProg::CDynProg()
 	: m_seq(1,1), m_pos(1), m_orf_info(1,2), m_segment_sum_weights(1,1), m_plif_list(1), 
 	  m_PEN(1,1), m_PEN_state_signals(1,2), 
-	  m_genestr(1), m_dict_weights(1,1), 
+	  m_genestr(1), m_dict_weights(1,1), m_segment_loss(2, 1,1), m_segment_ids_mask(1,1),
 	  m_scores(1), m_states(1,1), m_positions(1,1),
-	  transition_matrix_a(1,1), transition_matrix_a_deriv(1,1), 
+	  transition_matrix_a_id(1,1), transition_matrix_a(1,1), transition_matrix_a_deriv(1,1), 
 	  initial_state_distribution_p(1), initial_state_distribution_p_deriv(1), 
 	  end_state_distribution_q(1), end_state_distribution_q_deriv(1), 
 	  dict_weights(1,1), dict_weights_array(dict_weights.get_array()),
@@ -75,13 +75,13 @@ CDynProg::CDynProg()
 	  num_words_single(4), 
 	  word_used_single(num_words_single),
 	  svm_value_unnormalized_single(num_svms_single),
-	  num_unique_words_single(0)
+	  num_unique_words_single(0),
+
+	  max_a_id(0)
 {
 	trans_list_forward = NULL ;
 	trans_list_forward_cnt = NULL ;
 	trans_list_forward_val = NULL ;
-	trans_list_backward = NULL ;
-	trans_list_backward_cnt = NULL ;
 	trans_list_len = 0 ;
 
 	mem_initialized = true ;
@@ -95,105 +95,10 @@ CDynProg::CDynProg()
 
 }
 
-/*CDynProg::CDynProg(INT N, double* p, double* q, double* a)
-	: m_seq(N,1), m_pos(1), m_orf_info(N,2), m_plif_list(1), m_PEN(N,N), 
-	  m_genestr(1), m_dict_weights(1,1),
-	  m_scores(1), m_states(1,1), m_positions(1,1),
-	  transition_matrix_a(a,N,N,false), initial_state_distribution_p(p,N,N,false), end_state_distribution_q(q,N,N,false)
-{
-	trans_list_forward = NULL ;
-	trans_list_forward_cnt = NULL ;
-	trans_list_forward_val = NULL ;
-	trans_list_backward = NULL ;
-	trans_list_backward_cnt = NULL ;
-	trans_list_len = 0 ;
-
-	mem_initialized = true ;
-
-	this->N=N;
-}
-
-CDynProg::CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans)
-	: m_seq(N,1), m_pos(1), m_orf_info(N,2), m_plif_list(1), m_PEN(N,N), 
-	  m_genestr(1), m_dict_weights(1,1),
-	  m_scores(1), m_states(1,1), m_positions(1,1),
-	  transition_matrix_a(N,N), transition_matrix_a_deriv(N,N), 
-	  initial_state_distribution_p(p,N,N,false), initial_state_distribution_p_deriv(N), 
-	  end_state_distribution_q(q,N,N,false), end_state_distribution_q_deriv(N)
-{
-	this->N=N;
-	
-	trans_list_forward = NULL ;
-	trans_list_forward_cnt = NULL ;
-	trans_list_forward_val = NULL ;
-	trans_list_backward = NULL ;
-	trans_list_backward_cnt = NULL ;
-	trans_list_len = 0 ;
-
-	mem_initialized = true ;
-
-	trans_list_forward_cnt=NULL ;
-	trans_list_len = N ;
-	trans_list_forward = new T_STATES*[N] ;
-	trans_list_forward_val = new DREAL*[N] ;
-	trans_list_forward_cnt = new T_STATES[N] ;
-	
-	INT start_idx=0;
-	for (INT j=0; j<N; j++)
-	{
-		INT old_start_idx=start_idx;
-
-		while (start_idx<num_trans && a_trans[start_idx+num_trans]==j)
-		{
-			start_idx++;
-			
-			if (start_idx>1 && start_idx<num_trans)
-				ASSERT(a_trans[start_idx+num_trans-1] <= a_trans[start_idx+num_trans]);
-		}
-		
-		if (start_idx>1 && start_idx<num_trans)
-			ASSERT(a_trans[start_idx+num_trans-1] <= a_trans[start_idx+num_trans]);
-		
-		INT len=start_idx-old_start_idx;
-		ASSERT(len>=0);
-		
-		trans_list_forward_cnt[j] = 0 ;
-		
-		if (len>0)
-		{
-			trans_list_forward[j]     = new T_STATES[len] ;
-			trans_list_forward_val[j] = new DREAL[len] ;
-		}
-		else
-		{
-			trans_list_forward[j]     = NULL;
-			trans_list_forward_val[j] = NULL;
-		}
-	}
-	
-	for (INT i=0; i<num_trans; i++)
-	{
-		INT from = (INT)a_trans[i+num_trans] ;
-		INT to   = (INT)a_trans[i] ;
-		DREAL val = a_trans[i+num_trans*2] ;
-		
-		ASSERT(from>=0 && from<N) ;
-		ASSERT(to>=0 && to<N) ;
-		
-		trans_list_forward[from][trans_list_forward_cnt[from]]=to ;
-		trans_list_forward_val[from][trans_list_forward_cnt[from]]=val ;
-		trans_list_forward_cnt[from]++ ;
-		//ASSERT(trans_list_forward_cnt[from]<3000) ;
-	} ;
-}
-*/
-
 CDynProg::~CDynProg()
 {
 	if (trans_list_forward_cnt)
 	  delete[] trans_list_forward_cnt ;
-	if (trans_list_backward_cnt)
-		delete[] trans_list_backward_cnt ;
 	if (trans_list_forward)
 	{
 	    for (INT i=0; i<trans_list_len; i++)
@@ -208,13 +113,6 @@ CDynProg::~CDynProg()
 				delete[] trans_list_forward_val[i] ;
 	    delete[] trans_list_forward_val ;
 	}
-	if (trans_list_backward)
-	  {
-	    for (INT i=0; i<trans_list_len; i++)
-	      if (trans_list_backward[i])
-		delete[] trans_list_backward[i] ;
-	    delete[] trans_list_backward ;
-	  } ;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -223,6 +121,7 @@ void CDynProg::set_N(INT p_N)
 {
 	N=p_N ;
 
+	transition_matrix_a_id.resize_array(N,N) ;
 	transition_matrix_a.resize_array(N,N) ;
 	transition_matrix_a_deriv.resize_array(N,N) ;
 	initial_state_distribution_p.resize_array(N) ;
@@ -258,30 +157,42 @@ void CDynProg::set_a(DREAL *a, INT p_M, INT p_N)
 	transition_matrix_a_deriv.resize_array(p_N, p_N) ;
 }
 
+void CDynProg::set_a_id(INT *a, INT p_M, INT p_N) 
+{
+	ASSERT(p_N==N) ;
+	ASSERT(p_M==p_N) ;
+	transition_matrix_a_id.set_array(a, p_N, p_N, true, true) ;
+	max_a_id = 0 ;
+	for (INT i=0; i<p_N; i++)
+		for (INT j=0; j<p_N; j++)
+			max_a_id = CMath::max(max_a_id, transition_matrix_a_id.element(i,j)) ;
+}
+
 void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans, INT p_N) 
 {
-	ASSERT(p_N==3) ;
+	ASSERT((p_N==3) || (p_N==4)) ;
 
 	delete[] trans_list_forward ;
 	delete[] trans_list_forward_cnt ;
 	delete[] trans_list_forward_val ;
-	delete[] trans_list_backward ;
-	delete[] trans_list_backward_cnt ;
+	delete[] trans_list_forward_id ;
 
 	trans_list_forward = NULL ;
 	trans_list_forward_cnt = NULL ;
 	trans_list_forward_val = NULL ;
-	trans_list_backward = NULL ;
-	trans_list_backward_cnt = NULL ;
 	trans_list_len = 0 ;
+
+	transition_matrix_a.zero() ;
+	transition_matrix_a_id.zero() ;
 
 	mem_initialized = true ;
 
 	trans_list_forward_cnt=NULL ;
 	trans_list_len = N ;
 	trans_list_forward = new T_STATES*[N] ;
-	trans_list_forward_val = new DREAL*[N] ;
 	trans_list_forward_cnt = new T_STATES[N] ;
+	trans_list_forward_val = new DREAL*[N] ;
+	trans_list_forward_id = new INT*[N] ;
 	
 	INT start_idx=0;
 	for (INT j=0; j<N; j++)
@@ -318,18 +229,28 @@ void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans, INT p_N)
 	
 	for (INT i=0; i<num_trans; i++)
 	{
-		INT from = (INT)a_trans[i+num_trans] ;
 		INT to   = (INT)a_trans[i] ;
+		INT from = (INT)a_trans[i+num_trans] ;
 		DREAL val = a_trans[i+num_trans*2] ;
+		INT id = 0 ;
+		if (p_N==4)
+			id = (INT)a_trans[i+num_trans*3] ;
 		
 		ASSERT(from>=0 && from<N) ;
 		ASSERT(to>=0 && to<N) ;
 		
 		trans_list_forward[from][trans_list_forward_cnt[from]]=to ;
 		trans_list_forward_val[from][trans_list_forward_cnt[from]]=val ;
+		trans_list_forward_id[from][trans_list_forward_cnt[from]]=id ;
 		trans_list_forward_cnt[from]++ ;
-		//ASSERT(trans_list_forward_cnt[from]<3000) ;
+		transition_matrix_a.element(from, to) = val ;
+		transition_matrix_a_id.element(from, to) = id ;
 	} ;
+
+	max_a_id = 0 ;
+	for (INT i=0; i<p_N; i++)
+		for (INT j=0; j<p_N; j++)
+			max_a_id = CMath::max(max_a_id, transition_matrix_a_id.element(i,j)) ;
 }
 
 void CDynProg::init_svm_arrays(INT p_num_degrees, INT p_num_svms)
@@ -543,8 +464,34 @@ void CDynProg::best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_le
 		CIO::message(M_ERROR, "dict_weights array does not match num_svms=%i!=%i\n", num_svms, n) ;
 
 	m_dict_weights.set_array(dictionary_weights, dict_len, num_svms, true, true) ;
-	
-	m_step=7 ;
+
+	// initialize, so it does not bother when not used
+	m_segment_loss.resize_array(2, max_a_id+1, max_a_id+1) ;
+	m_segment_loss.zero() ;
+	m_segment_ids_mask.resize_array(2, m_seq.get_dim2()) ;
+	m_segment_ids_mask.zero() ;
+
+	m_step=8 ;
+}
+
+void CDynProg::best_path_set_segment_loss(DREAL* segment_loss, INT m, INT n) 
+{
+	// here we need two matrices. Store it in one: 2N x N
+	if (m!=2*n)
+		CIO::message(M_ERROR, "segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n) ;
+
+	if (n!=max_a_id+1)
+		CIO::message(M_ERROR, "segment_loss size should match max_a_id: %i!=%i\n", n, max_a_id+1) ;
+
+	m_segment_loss.set_array(segment_loss, 2, m/2, n, true, true) ;
+}
+
+void CDynProg::best_path_set_segment_ids_mask(INT* segment_ids_mask, INT m, INT n) 
+{
+	if (m!=2 || n!=m_seq.get_dim2())
+		CIO::message(M_ERROR, "segment_ids_mask should be a 2 x seglen matrix: %i!=2 and %i!=%i\n", m, m_seq.get_dim2(), n) ;
+
+	m_segment_ids_mask.set_array(segment_ids_mask, m, n, true, true) ;
 }
 
 
@@ -1382,6 +1329,130 @@ void CDynProg::extend_svm_values(WORD** wordstr, INT pos, INT *last_svm_pos, DRE
 }
 
 
+void CDynProg::init_segment_loss(struct segment_loss_struct & loss, INT start_pos, INT seqlen, INT howmuchlookback)
+{
+	if (!loss.num_segment_id)
+	{
+		loss.segments_changed       = new INT[seqlen] ;
+		loss.num_segment_id         = new INT[(max_a_id+1)*seqlen] ;
+		loss.length_segment_id      = new INT[(max_a_id+1)*seqlen] ;
+	}
+	
+	for (INT j=0; j<seqlen; j++)
+	{
+		loss.segments_changed[j]=0 ;
+		for (INT i=0; i<max_a_id+1; i++)       
+		{
+			loss.num_segment_id[i*seqlen+j] = 0;
+			loss.length_segment_id[i*seqlen+j] = 0;
+		}
+	}
+
+	loss.maxlookback = howmuchlookback ;
+	loss.seqlen = seqlen;
+}
+
+void CDynProg::clear_segment_loss(struct segment_loss_struct & loss) 
+{
+	if (loss.num_segment_id != NULL)
+	{
+		delete[] loss.segments_changed ;
+		delete[] loss.num_segment_id ;
+		delete[] loss.length_segment_id ;
+		loss.segments_changed = NULL ;
+		loss.num_segment_id = NULL ;
+		loss.length_segment_id = NULL ;
+	}
+}
+
+DREAL CDynProg::extend_segment_loss(struct segment_loss_struct & loss, const INT * pos_array, INT segment_id, INT pos, INT & last_pos, DREAL &last_value) 
+{
+	if (pos==last_pos)
+		return last_value ;
+	ASSERT(pos<last_pos) ;
+
+	last_pos-- ;
+	bool changed = false ;
+	while (last_pos>=pos)
+	{
+		if (loss.segments_changed[last_pos])
+		{
+			changed=true ;
+			break ;
+		}
+		last_pos-- ;
+	}
+	if (!changed)
+	{
+		DREAL ret = last_value + (pos_array[last_pos]-pos_array[pos])*m_segment_loss.element(1, m_segment_ids_mask.element(0, pos), segment_id) ;
+		last_pos = pos ;
+		return ret ;
+	}
+
+	CArray2<INT> num_segment_id(loss.num_segment_id, loss.seqlen, max_a_id+1, false, false) ;
+	CArray2<INT> length_segment_id(loss.length_segment_id, loss.seqlen, max_a_id+1, false, false) ;
+	DREAL ret = 0.0 ;
+	for (INT i=0; i<max_a_id+1; i++)
+	{
+		if (num_segment_id.element(pos, i)!=0)
+			ret += num_segment_id.element(loss.num_segment_id, pos, i, loss.seqlen)*m_segment_loss.element(0, i, segment_id) ;
+		if (length_segment_id.element(pos, i)!=0)
+			ret += length_segment_id.element(loss.num_segment_id, pos, i, loss.seqlen)*m_segment_loss.element(1, i, segment_id) ;
+	}
+	last_pos = pos ;
+	last_value = ret ;
+	return ret ;
+}
+
+void CDynProg::find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<INT>& segment_ids_mask, struct segment_loss_struct & loss) 
+{
+	CArray2<INT> num_segment_id(loss.num_segment_id, loss.seqlen, max_a_id+1, false, false) ;
+	CArray2<INT> length_segment_id(loss.length_segment_id, loss.seqlen, max_a_id+1, false, false) ;
+
+	for (INT i=0; i<max_a_id+1; i++)
+	{
+		num_segment_id.element(t_end, i) = 0 ;
+		length_segment_id.element(t_end, i) = 0 ;
+	}
+
+	INT wobble_pos_segment_id_switch = 0 ;
+	INT last_segment_id = -1 ;
+	INT ts = t_end-1 ;       
+	while ((ts>=0) && (pos[t_end] - pos[ts] <= loss.maxlookback))
+	{
+		INT cur_segment_id = segment_ids_mask.element(0, ts) ;
+		bool wobble_pos = (segment_ids_mask.element(1, ts)==0) ;
+
+		for (INT i=0; i<max_a_id+1; i++)
+		{
+			num_segment_id.element(ts, i) = num_segment_id.element(ts+1, i) ;
+			length_segment_id.element(ts, i) = length_segment_id.element(ts+1, i) ;
+		}
+
+		if (cur_segment_id!=last_segment_id)
+		{
+			if (wobble_pos)
+			{
+				wobble_pos_segment_id_switch++ ;
+				ASSERT(wobble_pos_segment_id_switch<=1) ;
+			}
+			else
+			{
+				loss.segments_changed[ts]=true ;
+				num_segment_id.element(ts, cur_segment_id)++ ;
+				length_segment_id.element(ts, cur_segment_id)+= pos[ts+1]-pos[ts] ;
+				wobble_pos_segment_id_switch = 0 ;
+			}
+			last_segment_id = cur_segment_id ;
+		} 
+		else
+			if (!wobble_pos)
+				length_segment_id.element(ts, cur_segment_id) += pos[ts+1] - pos[ts] ;
+
+		ts--;
+	}
+}
+
 void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT howmuchlookback)
 {
 	/*
@@ -1447,7 +1518,8 @@ void CDynProg::clear_svm_values(struct svm_values_struct & svs)
 void CDynProg::find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs)
 {
 	/*
-	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 corresponding to the 6-mer in genestr(i-5:i) 
+	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 
+	  corresponding to the 6-mer in genestr(i-5:i) 
 	  pos is a vector of candidate transition positions (it is input to best_path_trans)
 	  t_end is some index in pos
 	  
@@ -1728,6 +1800,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	
 	CArray<INT> pos_seq(seq_len) ;
 	//pos_seq.zero() ;
+
 	
 #ifdef ARRAY_STATISTICS
 	dict_weights.set_name("dict_weights") ;
@@ -1832,6 +1905,10 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	svs.svm_values_unnormalized = NULL;
 	svs.word_used = NULL;
 
+	struct segment_loss_struct loss;
+	loss.segments_changed = NULL;
+	loss.num_segment_id = NULL;
+
 	// recursion
 	for (INT t=1; t<seq_len; t++)
 	{
@@ -1840,10 +1917,13 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		
 		init_svm_values(svs, t, seq_len, max_look_back);
 		find_svm_values_till_pos(wordstr, pos, t, svs);  
+
+		init_segment_loss(loss, t, seq_len, max_look_back);
+		find_segment_loss_till_pos(pos, t, m_segment_ids_mask, loss);  
 	
 		for (T_STATES j=0; j<N; j++)
 		{
-			if (seq.element(j,t)<-1e20)
+			if (seq.element(j,t)<=-1e20)
 			{ // if we cannot observe the symbol here, then we can omit the rest
 				for (short int k=0; k<nbest; k++)
 				{
@@ -1858,6 +1938,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				const T_STATES num_elem   = trans_list_forward_cnt[j] ;
 				const T_STATES *elem_list = trans_list_forward[j] ;
 				const DREAL *elem_val      = trans_list_forward_val[j] ;
+				const INT *elem_id      = trans_list_forward_id[j] ;
 				
 #if USEFIXEDLENLIST > 0
 				INT fixed_list_len = 0 ;
@@ -1877,7 +1958,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					
 					const CPlif * penalty = PEN.element(j,ii) ;
 					INT look_back = default_look_back ;
-					{ // find maximal lookback length
+					{ // find lookback length
 						CPlif *pen = (CPlif*) penalty ;
 						if (pen!=NULL)
 						{
@@ -1905,8 +1986,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 						ASSERT(orf_target>=0 && orf_target<3) ;
 					}
 					
-					INT last_pos = pos[t] ;
-					
+					INT orf_last_pos = pos[t] ;
+					INT loss_last_pos = t ;
+					DREAL last_loss = 0.0 ;
 					for (INT ts=t-1; ts>=0 && pos[t]-pos[ts]<=look_back; ts--)
 					{
 						bool ok ;
@@ -1916,7 +1998,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							ok=true ;
 						else if (pos[ts]!=-1 && (pos[t]-pos[ts])%3==orf_target)
 						{
-							ok=(!use_orf) || extend_orf(genestr_stop, orf_from, orf_to, pos[ts], last_pos, pos[t]) ;
+							ok=(!use_orf) || extend_orf(genestr_stop, orf_from, orf_to, pos[ts], orf_last_pos, pos[t]) ;
 							if (!ok) 
 							{
 								//CIO::message(M_DEBUG, "no orf from %i[%i] to %i[%i]\n", pos[ts], orf_from, pos[t], orf_to) ;
@@ -1927,7 +2009,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 						
 						if (ok)
 						{
-							
+							DREAL segment_loss = extend_segment_loss(loss, pos, elem_id[i], ts, loss_last_pos, last_loss) ;
+
 							for (INT ss=0; ss<num_svms; ss++)
 						    {
 								offset = ss*svs.seqlen;
@@ -1937,16 +2020,19 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							DREAL input_value ;
 							DREAL pen_val = 0.0 ;
 							if (penalty)
-								pen_val=penalty->lookup_penalty(pos[t]-pos[ts], svm_value, true, input_value) ;
+								pen_val = penalty->lookup_penalty(pos[t]-pos[ts], svm_value, true, input_value) ;
+
 							for (short int diff=0; diff<nbest; diff++)
 						    {
-								//DREAL  val        = delta.element(delta_array, ts%max_look_back, ii, diff, max_look_back, N) + elem_val[i] ;
-								DREAL  val        = delta.element(ts%max_look_back, ii, diff) + elem_val[i] ;
-								val             += pen_val ;
+								DREAL  val        = delta.element(delta_array, ts%max_look_back, ii, diff, max_look_back, N) + elem_val[i] ;
+								//DREAL  val        = delta.element(ts%max_look_back, ii, diff) + elem_val[i] ;
+								val              += pen_val ;
+								val              += segment_loss ;
+								ASSERT((val>-1e20) && (val<1e20))
 								DREAL mval = -val;
 								
 #if USEHEAP > 0
-								tempheap->Insert(mval,ii + diff*N + ts*N*nbest);
+								tempheap->Insert(mval, ii + diff*N + ts*N*nbest);
 #endif
 								
 #if USEORIGINALLIST > 0
@@ -2054,6 +2140,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		}
 	}
 	
+	clear_segment_loss(loss);
 	clear_svm_values(svs);
 
 	{ //termination
@@ -2183,7 +2270,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 #endif
 }
 
-void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores,
+void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, DREAL* my_losses,
 									 INT my_seq_len, 
 									 const DREAL *seq_array, INT seq_len, const INT *pos,
 									 CPlif **Plif_matrix, CPlif **Plif_state_signals,
@@ -2263,7 +2350,10 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 	
 	{ // clear score vector
 		for (INT i=0; i<my_seq_len; i++)
+		{
 			my_scores[i]=0.0 ;
+			my_losses[i]=0.0 ;
+		}
 	}
 	
 	{ // compute derivatives for given path
@@ -2272,7 +2362,10 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			svm_value[s]=0 ;
 		
 		for (INT i=0; i<my_seq_len; i++)
+		{
 			my_scores[i]=0.0 ;
+			my_losses[i]=0.0 ;
+		}
 		
 		ASSERT(my_state_seq[0]>=0) ;
 		initial_state_distribution_p_deriv.element(my_state_seq[0])++ ;
@@ -2281,6 +2374,10 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 		ASSERT(my_state_seq[my_seq_len-1]>=0) ;
 		end_state_distribution_q_deriv.element(my_state_seq[my_seq_len-1])++ ;
 		my_scores[my_seq_len-1] += end_state_distribution_q.element(my_state_seq[my_seq_len-1]);
+		
+		struct segment_loss_struct loss;
+		loss.segments_changed = NULL;
+		loss.num_segment_id = NULL;
 		
 		//fprintf(stderr, "seq_len=%i\n", my_seq_len) ;
 		for (INT i=0; i<my_seq_len-1; i++)
@@ -2291,7 +2388,15 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			INT to_state   = my_state_seq[i+1] ;
 			INT from_pos   = my_pos_seq[i] ;
 			INT to_pos     = my_pos_seq[i+1] ;
-			
+
+			// compute loss relative to another segmentation using the segment_loss function
+			init_segment_loss(loss, to_pos, seq_len, pos[to_pos]-pos[from_pos]+10);
+			find_segment_loss_till_pos(pos, to_pos, m_segment_ids_mask, loss);  
+			INT loss_last_pos = to_pos ;
+			DREAL last_loss = 0.0 ;
+			INT elem_id = transition_matrix_a_id.element(from_state, to_state) ;
+			my_losses[i] = extend_segment_loss(loss, pos, elem_id, from_pos, loss_last_pos, last_loss) ;
+
 			// increase usage of this transition
 			transition_matrix_a_deriv.element(from_state, to_state)++ ;
 			my_scores[i] += transition_matrix_a.element(from_state, to_state) ;
@@ -2352,6 +2457,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				my_scores[i] += seq_input.element(to_state, to_pos) ;
 			}
 		}
+		clear_segment_loss(loss);
 	}
 
 	for (INT j=0; j<num_degrees; j++)

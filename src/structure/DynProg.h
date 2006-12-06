@@ -21,6 +21,7 @@
 #include "distributions/Distribution.h"
 #include "lib/Array.h"
 #include "lib/Array2.h"
+#include "lib/Array3.h"
 
 #include <stdio.h>
 
@@ -44,8 +45,7 @@ private:
 	T_STATES **trans_list_forward  ;
 	T_STATES *trans_list_forward_cnt  ;
 	DREAL **trans_list_forward_val ;
-	T_STATES **trans_list_backward  ;
-	T_STATES *trans_list_backward_cnt  ;
+	INT **trans_list_forward_id ;
 	bool mem_initialized ;
 	
 public:
@@ -87,6 +87,8 @@ protected:
 	CArray2<CPlif*> m_PEN_state_signals ;
 	CArray<CHAR> m_genestr ;
 	CArray2<DREAL> m_dict_weights ;
+	CArray3<DREAL> m_segment_loss ;
+	CArray2<INT> m_segment_ids_mask ;
 
 	// output arguments
 	CArray<DREAL> m_scores ;
@@ -99,6 +101,7 @@ public:
 	void set_p(DREAL *p, INT N) ;
 	void set_q(DREAL *q, INT N) ;
 	void set_a(DREAL *a, INT M, INT N) ;
+	void set_a_id(INT *a, INT M, INT N) ;
 	void set_a_trans(DREAL *a_trans, INT num_trans, INT N) ;
 
 	// content svm related setup functions
@@ -118,6 +121,8 @@ public:
 	void best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m, INT n) ;
 	void best_path_set_genestr(CHAR* genestr, INT genestr_len) ;
 	void best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len, INT n) ;
+	void best_path_set_segment_loss(DREAL * segment_loss, INT num_segment_id, INT num_segment_id) ;
+	void best_path_set_segment_ids_mask(INT* segment_ids_mask, INT m, INT n) ;
 	
 	// best_path functions
 	void best_path_call(INT nbest, bool use_orf) ;
@@ -140,7 +145,7 @@ public:
 						 DREAL *&Plif_values, DREAL *&Plif_input_values, 
 						 INT &num_Plif_id, bool use_orf) ;
 
-	void best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, 
+	void best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, DREAL* my_losses,
 								INT my_seq_len, 
 								const DREAL *seq_array, INT seq_len, const INT *pos,
 								CPlif **Plif_matrix, CPlif **Plif_state_signals,
@@ -268,6 +273,20 @@ protected:
 	void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs) ;
 	bool extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to) ;
 
+	struct segment_loss_struct
+	{
+		INT maxlookback ;
+		INT seqlen;
+		INT *segments_changed ;
+		INT *num_segment_id ;
+		INT *length_segment_id ;
+	} ;
+
+	void init_segment_loss(struct segment_loss_struct & loss, INT start_pos, INT seqlen, INT howmuchlookback);
+	void clear_segment_loss(struct segment_loss_struct & loss) ;
+	DREAL extend_segment_loss(struct segment_loss_struct & loss, const INT * pos_array, INT segment_id, INT pos, INT& last_pos, DREAL &last_value) ;
+	void find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<INT>& segment_ids, struct segment_loss_struct & loss) ;
+
 	/**@name model specific variables.
 	 * these are p,q,a,b,N,M etc 
 	 */
@@ -276,6 +295,7 @@ protected:
 	INT N;
 
 	/// transition matrix 
+	CArray2<INT> transition_matrix_a_id ;
 	CArray2<DREAL> transition_matrix_a;
 	CArray2<DREAL> transition_matrix_a_deriv ;
 
@@ -316,5 +336,7 @@ protected:
 	CArray<bool> word_used_single ;
 	CArray<DREAL> svm_value_unnormalized_single ;
 	INT num_unique_words_single ;
+
+	INT max_a_id ;
 };
 #endif

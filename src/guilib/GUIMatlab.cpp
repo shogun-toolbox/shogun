@@ -481,7 +481,7 @@ bool CGUIMatlab::best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[])
 }
 
 
-bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
+bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retvals[])
 {
 	const mxArray* mx_p=vals[1];
 	const mxArray* mx_q=vals[2];
@@ -496,6 +496,16 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 	const mxArray* mx_nbest=vals[11];
 	const mxArray* mx_dict_weights=vals[12];
 	const mxArray* mx_use_orf=vals[13];
+	const mxArray* mx_segment_loss=NULL ;
+	const mxArray* mx_segment_ids_mask=NULL ;
+
+	ASSERT(nrhs==16 || nrhs==14) ;
+
+	if (nrhs==16)
+	{
+		mx_segment_loss=vals[14];
+		mx_segment_ids_mask=vals[15];
+	} ;
 
 	INT nbest    = (INT)mxGetScalar(mx_nbest) ;
 	if (nbest<1)
@@ -514,7 +524,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 
 		if (!(mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
 			  mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-			  mxGetN(mx_a_trans) == 3))
+			  ((mxGetN(mx_a_trans) == 3)||(mxGetN(mx_a_trans) == 4)) ))
 			CIO::message(M_ERROR, "model matricies not matching in size \n");
 
 		if (!(mxGetM(mx_seq) == N &&
@@ -533,26 +543,15 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 		if (!(mxGetN(mx_dict_weights)==8 && 
 			  ((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			   || mxIsEmpty(mx_penalty_info))))
-			CIO::message(M_ERROR, "dict_weights of penalty_info wrong\n");
+			CIO::message(M_ERROR, "size dict_weights wrong\n");
 
-		
-		/*CIO::message(M_DEBUG, "N=%i, M=%i, P=%i, L=%i, nbest=%i\n", N, M, P, L, nbest) ;
-		fprintf(stderr,"ok1=%i\n", mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-				mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-				mxGetN(mx_a_trans) == 3 &&
-				mxGetM(mx_seq) == N &&
-				mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1) ;
-		fprintf(stderr, "ok2=%i\n", 	mxGetM(mx_penalties)==N && 
-				mxGetN(mx_penalties)==N &&
-				mxGetM(mx_orf_info)==N &&
-				mxGetN(mx_orf_info)==2 &&
-				mxGetM(mx_genestr)==1 &&
-				((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
-				 || mxIsEmpty(mx_penalty_info))) ;
-		fprintf(stderr, "ok3=%i\n", 				mxGetM(mx_genestr)==1 &&
-				((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
-				|| mxIsEmpty(mx_penalty_info))) ;*/
-		
+		if (mx_segment_loss!=NULL && (mxGetM(mx_segment_loss)!=2*mxGetN(mx_segment_loss)))
+			CIO::message(M_ERROR, "size of segment_loss wrong\n");
+
+		if (mx_segment_ids_mask!=NULL && ((mxGetM(mx_segment_ids_mask)!=2) ||
+										  (mxGetM(mx_segment_ids_mask)!=M)))
+			CIO::message(M_ERROR, "size of segment_ids_mask wrong\n");
+
 		if (
 			mxGetM(mx_genestr)==1 &&
 			mxGetM(mx_use_orf)==1 &&
@@ -625,7 +624,10 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			h->set_N(N) ;
 			h->set_p(p, N) ;
 			h->set_q(q, N) ;
-			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;
+			if (mx_segment_ids_mask!=NULL)
+				h->set_a_trans(a, mxGetM(mx_a_trans), mxGetN(mx_a_trans)) ;
+			else
+				h->set_a_trans(a, mxGetM(mx_a_trans), 3) ; // segment_id = 0 
 
 			INT *my_path = new INT[M*nbest] ;
 			memset(my_path, -1, M*nbest*sizeof(INT)) ;
@@ -636,7 +638,25 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 			double* p_prob = mxGetPr(mx_prob);
 			DREAL* PEN_values=NULL, *PEN_input_values=NULL ;
 			INT num_PEN_id = 0 ;
-			
+
+			if (mx_segment_ids_mask!=NULL)
+			{
+				h->best_path_set_segment_loss(mxGetPr(mx_segment_loss), mxGetM(mx_segment_loss), mxGetN(mx_segment_loss)) ;
+				DREAL *dbuffer = mxGetPr(mx_segment_ids_mask) ;
+				INT *ibuffer = new INT[2*M] ;
+				for (INT i=0; i<2*M; i++)
+					ibuffer[i] = (INT)dbuffer[i] ;
+				h->best_path_set_segment_ids_mask(ibuffer, mxGetM(mx_segment_ids_mask), mxGetN(mx_segment_ids_mask)) ;
+				delete[] ibuffer ;
+			}
+			else
+			{
+				DREAL zero = 0. ;
+				h->best_path_set_segment_loss(&zero, 1, 1) ;
+				INT *zeros = new INT[2*M] ;
+				h->best_path_set_segment_ids_mask(zeros, 2, M) ;
+				delete[] zeros ;
+			} ;
 
 			h->best_path_trans(seq, M, pos, orf_info,
 							   PEN_matrix, PEN_state_signal, genestr, L,
@@ -695,7 +715,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], mxArray* retvals[])
 	return false;
 }
 
-bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[])
+bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray* retvals[], INT nlhs)
 {
 	const mxArray* mx_my_path=vals[1];
 	const mxArray* mx_my_pos=vals[2];
@@ -709,7 +729,18 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 	const mxArray* mx_state_signals=vals[10];
 	const mxArray* mx_penalty_info=vals[11];
 	const mxArray* mx_dict_weights=vals[12];
+	const mxArray* mx_segment_loss=NULL ;
+	const mxArray* mx_segment_ids_mask=NULL ;
 	
+	ASSERT(nrhs==15 || nrhs==13) ;
+	ASSERT(nlhs==5 || nlhs==6) ;
+
+	if (nrhs==15)
+	{
+		mx_segment_loss=vals[13];
+		mx_segment_ids_mask=vals[14];
+	} ;
+
 	if ( mx_my_path && mx_my_pos && mx_p && mx_q && mx_a_trans && mx_seq && mx_pos && 
 		 mx_penalties && mx_state_signals && mx_penalty_info &&
 		 mx_genestr && mx_dict_weights)
@@ -748,6 +779,13 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 			  ((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			   || mxIsEmpty(mx_penalty_info))))
 			CIO::message(M_ERROR, "dict_weights of penalty_info wrong\n");
+
+		if (mx_segment_loss!=NULL && (mxGetM(mx_segment_loss)!=2*mxGetN(mx_segment_loss)))
+			CIO::message(M_ERROR, "size of segment_loss wrong\n");
+
+		if (mx_segment_ids_mask!=NULL && ((mxGetM(mx_segment_ids_mask)!=2) ||
+										  (mxGetM(mx_segment_ids_mask)!=M)))
+			CIO::message(M_ERROR, "size of segment_ids_mask wrong\n");
 
 		{
 			double* p=mxGetPr(mx_p);
@@ -818,7 +856,10 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 			h->set_N(N) ;
 			h->set_p(p, N) ;
 			h->set_q(q, N) ;
-			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;
+			if (mx_segment_ids_mask!=NULL) 
+				h->set_a_trans(a, mxGetM(mx_a_trans), mxGetN(mx_a_trans)) ;
+			else
+				h->set_a_trans(a, mxGetM(mx_a_trans), 3) ; // segment_id = 0 
 
 			INT *my_path = new INT[my_seqlen+1] ;
 			memset(my_path, -1, my_seqlen*sizeof(INT)) ;
@@ -833,6 +874,25 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 				my_path[i] = (INT)d_my_path[i] ;
 				my_pos[i] = (INT)d_my_pos[i] ;
 			}
+
+			if (mx_segment_ids_mask!=NULL) 
+			{
+				h->best_path_set_segment_loss(mxGetPr(mx_segment_loss), mxGetM(mx_segment_loss), mxGetN(mx_segment_loss)) ;
+				DREAL *dbuffer = mxGetPr(mx_segment_ids_mask) ;
+				INT *ibuffer = new INT[2*M] ;
+				for (INT i=0; i<2*M; i++)
+					ibuffer[i] = (INT)dbuffer[i] ;
+				h->best_path_set_segment_ids_mask(ibuffer, mxGetM(mx_segment_ids_mask), mxGetN(mx_segment_ids_mask)) ;
+				delete[] ibuffer ;
+			}
+			else
+			{
+				DREAL zero = 0. ;
+				h->best_path_set_segment_loss(&zero, 1, 1) ;
+				INT *zeros = new INT[2*M] ;
+				h->best_path_set_segment_ids_mask(zeros, 2, M) ;
+				delete[] zeros ;
+			} ;
 						
 			int dims_plif[2]={max_plif_id+1, max_plif_len};
 			mxArray* Plif_deriv = mxCreateNumericArray(2, dims_plif, mxDOUBLE_CLASS, mxREAL);
@@ -853,7 +913,11 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 			mxArray* my_scores = mxCreateNumericArray(1, dims_score, mxDOUBLE_CLASS, mxREAL);
 			double* p_my_scores = mxGetPr(my_scores);
 
-			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, my_seqlen, seq, M, pos, 
+			mxArray* my_losses = mxCreateNumericArray(1, dims_score, mxDOUBLE_CLASS, mxREAL);
+			double* p_my_losses = mxGetPr(my_losses);
+			
+			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, p_my_losses, 
+									 my_seqlen, seq, M, pos, 
 									 PEN_matrix, PEN_state_signal, genestr, L,
 									 dict_weights, 8*D) ;
 			
@@ -888,6 +952,10 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], mxArray* retvals[]
 			retvals[2]=A_deriv ;
 			retvals[3]=Plif_deriv ;
 			retvals[4]=my_scores ;
+			if (nlhs==6)
+				retvals[5]=my_losses ;
+			else
+				mxFree(my_losses) ;
 
 			delete[] my_path ;
 			delete[] my_pos ;
