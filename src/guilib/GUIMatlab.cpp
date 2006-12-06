@@ -887,8 +887,8 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			}
 			else
 			{
-				DREAL zero = 0. ;
-				h->best_path_set_segment_loss(&zero, 1, 1) ;
+				const DREAL zero2[2] = {0.0, 0.0} ;
+				h->best_path_set_segment_loss(zero2, 2, 1) ;
 				INT *zeros = new INT[2*M] ;
 				h->best_path_set_segment_ids_mask(zeros, 2, M) ;
 				delete[] zeros ;
