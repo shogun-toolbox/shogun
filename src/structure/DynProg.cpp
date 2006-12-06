@@ -2060,7 +2060,11 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 								//DREAL  val        = delta.element(ts%max_look_back, ii, diff) + elem_val[i] ;
 								val              += pen_val ;
 								val              += segment_loss ;
-								ASSERT((val>-1e20) && (val<1e20))
+								//if (val<-1e20)
+								//	continue ;
+								//if (!((val>-1e20) && (val<1e20)))
+								//	fprintf(stderr, "%f, %f, %f\n", val, pen_val, segment_loss) ;
+								
 								DREAL mval = -val;
 								
 #if USEHEAP > 0

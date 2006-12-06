@@ -549,7 +549,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			CIO::message(M_ERROR, "size of segment_loss wrong\n");
 
 		if (mx_segment_ids_mask!=NULL && ((mxGetM(mx_segment_ids_mask)!=2) ||
-										  (mxGetM(mx_segment_ids_mask)!=M)))
+										  (mxGetN(mx_segment_ids_mask)!=M)))
 			CIO::message(M_ERROR, "size of segment_ids_mask wrong\n");
 
 		if (
