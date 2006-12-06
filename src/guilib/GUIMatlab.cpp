@@ -651,9 +651,12 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			}
 			else
 			{
-				DREAL zero = 0. ;
-				h->best_path_set_segment_loss(&zero, 1, 1) ;
+				DREAL zero2[2] = {0.0, 0.0} ;
+				h->best_path_set_segment_loss(zero2, 2, 1) ;
+				//fprintf(stderr, "M=%i\n", M) ;
 				INT *zeros = new INT[2*M] ;
+				for (INT i=0; i<2*M; i++)
+					zeros[i]=0 ;
 				h->best_path_set_segment_ids_mask(zeros, 2, M) ;
 				delete[] zeros ;
 			} ;
@@ -754,7 +757,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 				
 		if (!(mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
 			  mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-			  mxGetN(mx_a_trans) == 3))
+			  ((mxGetN(mx_a_trans) == 3) || (mxGetN(mx_a_trans) == 4))))
 			CIO::message(M_ERROR, "model matricies not matching in size \n");
 
 		if (!(mxGetM(mx_seq) == N &&
@@ -784,7 +787,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			CIO::message(M_ERROR, "size of segment_loss wrong\n");
 
 		if (mx_segment_ids_mask!=NULL && ((mxGetM(mx_segment_ids_mask)!=2) ||
-										  (mxGetM(mx_segment_ids_mask)!=M)))
+										  (mxGetN(mx_segment_ids_mask)!=M)))
 			CIO::message(M_ERROR, "size of segment_ids_mask wrong\n");
 
 		{
@@ -887,9 +890,12 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			}
 			else
 			{
-				const DREAL zero2[2] = {0.0, 0.0} ;
+				DREAL zero2[2] = {0.0, 0.0} ;
 				h->best_path_set_segment_loss(zero2, 2, 1) ;
+				//fprintf(stderr, "M=%i\n", M) ;
 				INT *zeros = new INT[2*M] ;
+				for (INT i=0; i<2*M; i++)
+					zeros[i]=0 ;
 				h->best_path_set_segment_ids_mask(zeros, 2, M) ;
 				delete[] zeros ;
 			} ;
@@ -954,8 +960,6 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			retvals[4]=my_scores ;
 			if (nlhs==6)
 				retvals[5]=my_losses ;
-			else
-				mxFree(my_losses) ;
 
 			delete[] my_path ;
 			delete[] my_pos ;

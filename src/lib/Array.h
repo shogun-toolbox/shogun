@@ -12,8 +12,8 @@
 #define _ARRAY_H_
 
 //#define ARRAY_STATISTICS
-//#define ARRAY_ASSERT(x) ASSERT(x)
-#define ARRAY_ASSERT(x) 
+#define ARRAY_ASSERT(x) ASSERT(x)
+//#define ARRAY_ASSERT(x) 
 
 #include "lib/common.h"
 

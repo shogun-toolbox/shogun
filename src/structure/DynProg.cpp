@@ -82,6 +82,7 @@ CDynProg::CDynProg()
 	trans_list_forward = NULL ;
 	trans_list_forward_cnt = NULL ;
 	trans_list_forward_val = NULL ;
+	trans_list_forward_id = NULL ;
 	trans_list_len = 0 ;
 
 	mem_initialized = true ;
@@ -112,6 +113,13 @@ CDynProg::~CDynProg()
 			if (trans_list_forward_val[i])
 				delete[] trans_list_forward_val[i] ;
 	    delete[] trans_list_forward_val ;
+	}
+	if (trans_list_forward_id)
+	{
+	    for (INT i=0; i<trans_list_len; i++)
+			if (trans_list_forward_id[i])
+				delete[] trans_list_forward_id[i] ;
+	    delete[] trans_list_forward_id ;
 	}
 }
 
@@ -219,11 +227,13 @@ void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans, INT p_N)
 		{
 			trans_list_forward[j]     = new T_STATES[len] ;
 			trans_list_forward_val[j] = new DREAL[len] ;
+			trans_list_forward_id[j] = new INT[len] ;
 		}
 		else
 		{
 			trans_list_forward[j]     = NULL;
 			trans_list_forward_val[j] = NULL;
+			trans_list_forward_id[j]  = NULL;
 		}
 	}
 	
@@ -251,6 +261,7 @@ void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans, INT p_N)
 	for (INT i=0; i<p_N; i++)
 		for (INT j=0; j<p_N; j++)
 			max_a_id = CMath::max(max_a_id, transition_matrix_a_id.element(i,j)) ;
+	max_a_id = 8 ;
 }
 
 void CDynProg::init_svm_arrays(INT p_num_degrees, INT p_num_svms)
@@ -480,16 +491,16 @@ void CDynProg::best_path_set_segment_loss(DREAL* segment_loss, INT m, INT n)
 	if (m!=2*n)
 		CIO::message(M_ERROR, "segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n) ;
 
-	if (n!=max_a_id+1)
-		CIO::message(M_ERROR, "segment_loss size should match max_a_id: %i!=%i\n", n, max_a_id+1) ;
+	//if (n!=max_a_id+1)
+	//CIO::message(M_ERROR, "segment_loss size should match max_a_id: %i!=%i\n", n, max_a_id+1) ;
 
 	m_segment_loss.set_array(segment_loss, 2, m/2, n, true, true) ;
 }
 
 void CDynProg::best_path_set_segment_ids_mask(INT* segment_ids_mask, INT m, INT n) 
 {
-	if (m!=2 || n!=m_seq.get_dim2())
-		CIO::message(M_ERROR, "segment_ids_mask should be a 2 x seglen matrix: %i!=2 and %i!=%i\n", m, m_seq.get_dim2(), n) ;
+	if (m!=2)// || n!=m_seq.get_dim2())
+		CIO::message(M_ERROR, "segment_ids_mask should be a 2 x seq_len matrix: %i!=2 and %i!=%i\n", m, m_seq.get_dim2(), n) ;
 
 	m_segment_ids_mask.set_array(segment_ids_mask, m, n, true, true) ;
 }
@@ -1382,9 +1393,15 @@ DREAL CDynProg::extend_segment_loss(struct segment_loss_struct & loss, const INT
 		}
 		last_pos-- ;
 	}
+	if (last_pos<pos)
+		last_pos = pos ;
+	
 	if (!changed)
 	{
-		DREAL ret = last_value + (pos_array[last_pos]-pos_array[pos])*m_segment_loss.element(1, m_segment_ids_mask.element(0, pos), segment_id) ;
+		ASSERT(last_pos>=0) ;
+		ASSERT(last_pos<loss.seqlen) ;
+		DREAL length_contrib = (pos_array[last_pos]-pos_array[pos])*m_segment_loss.element(1, m_segment_ids_mask.element(0, pos), segment_id) ;
+		DREAL ret = last_value + length_contrib ;
 		last_pos = pos ;
 		return ret ;
 	}
@@ -1415,14 +1432,23 @@ void CDynProg::find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<IN
 		length_segment_id.element(t_end, i) = 0 ;
 	}
 
+	
 	INT wobble_pos_segment_id_switch = 0 ;
 	INT last_segment_id = -1 ;
 	INT ts = t_end-1 ;       
 	while ((ts>=0) && (pos[t_end] - pos[ts] <= loss.maxlookback))
 	{
+		//fprintf(stderr, "%i x %i (%i)\n", segment_ids_mask.get_dim1(), segment_ids_mask.get_dim2(), ts) ;
+
 		INT cur_segment_id = segment_ids_mask.element(0, ts) ;
 		bool wobble_pos = (segment_ids_mask.element(1, ts)==0) ;
-
+		//fprintf(stderr, "ts:%i  ", ts) ;
+		//fprintf(stderr, "max_a_id:%i  ", max_a_id) ;
+		//fprintf(stderr, "s_id:%i  ", cur_segment_id) ;
+		ASSERT(cur_segment_id<=max_a_id) ;
+		ASSERT(cur_segment_id>=0) ;
+		//fprintf(stderr, "wp=%i\n", wobble_pos) ;
+		
 		for (INT i=0; i<max_a_id+1; i++)
 		{
 			num_segment_id.element(ts, i) = num_segment_id.element(ts+1, i) ;
@@ -1434,7 +1460,7 @@ void CDynProg::find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<IN
 			if (wobble_pos)
 			{
 				wobble_pos_segment_id_switch++ ;
-				ASSERT(wobble_pos_segment_id_switch<=1) ;
+				//ASSERT(wobble_pos_segment_id_switch<=1) ;
 			}
 			else
 			{
