@@ -545,7 +545,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			   || mxIsEmpty(mx_penalty_info))))
 			CIO::message(M_ERROR, "size dict_weights wrong\n");
 
-		if (mx_segment_loss!=NULL && (mxGetM(mx_segment_loss)!=2*mxGetN(mx_segment_loss)))
+		if (mx_segment_loss!=NULL && (mxGetN(mx_segment_loss)!=2*mxGetM(mx_segment_loss)))
 			CIO::message(M_ERROR, "size of segment_loss wrong\n");
 
 		if (mx_segment_ids_mask!=NULL && ((mxGetM(mx_segment_ids_mask)!=2) ||
@@ -783,7 +783,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			   || mxIsEmpty(mx_penalty_info))))
 			CIO::message(M_ERROR, "dict_weights of penalty_info wrong\n");
 
-		if (mx_segment_loss!=NULL && (mxGetM(mx_segment_loss)!=2*mxGetN(mx_segment_loss)))
+		if (mx_segment_loss!=NULL && (mxGetN(mx_segment_loss)!=2*mxGetM(mx_segment_loss)))
 			CIO::message(M_ERROR, "size of segment_loss wrong\n");
 
 		if (mx_segment_ids_mask!=NULL && ((mxGetM(mx_segment_ids_mask)!=2) ||

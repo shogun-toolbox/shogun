@@ -47,7 +47,7 @@ static INT num_words_default[4]={64,256,1024,4096} ;
 CDynProg::CDynProg()
 	: m_seq(1,1), m_pos(1), m_orf_info(1,2), m_segment_sum_weights(1,1), m_plif_list(1), 
 	  m_PEN(1,1), m_PEN_state_signals(1,2), 
-	  m_genestr(1), m_dict_weights(1,1), m_segment_loss(2, 1,1), m_segment_ids_mask(1,1),
+	  m_genestr(1), m_dict_weights(1,1), m_segment_loss(1,1,2), m_segment_ids_mask(1,1),
 	  m_scores(1), m_states(1,1), m_positions(1,1),
 	  transition_matrix_a_id(1,1), transition_matrix_a(1,1), transition_matrix_a_deriv(1,1), 
 	  initial_state_distribution_p(1), initial_state_distribution_p_deriv(1), 
@@ -239,29 +239,34 @@ void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans, INT p_N)
 	
 	for (INT i=0; i<num_trans; i++)
 	{
-		INT to   = (INT)a_trans[i] ;
-		INT from = (INT)a_trans[i+num_trans] ;
+		INT from_state   = (INT)a_trans[i] ;
+		INT to_state = (INT)a_trans[i+num_trans] ;
 		DREAL val = a_trans[i+num_trans*2] ;
 		INT id = 0 ;
 		if (p_N==4)
 			id = (INT)a_trans[i+num_trans*3] ;
+		//fprintf(stderr, "id=%i\n", id) ;
+			
+		ASSERT(to_state>=0 && to_state<N) ;
+		ASSERT(from_state>=0 && from_state<N) ;
 		
-		ASSERT(from>=0 && from<N) ;
-		ASSERT(to>=0 && to<N) ;
-		
-		trans_list_forward[from][trans_list_forward_cnt[from]]=to ;
-		trans_list_forward_val[from][trans_list_forward_cnt[from]]=val ;
-		trans_list_forward_id[from][trans_list_forward_cnt[from]]=id ;
-		trans_list_forward_cnt[from]++ ;
-		transition_matrix_a.element(from, to) = val ;
-		transition_matrix_a_id.element(from, to) = id ;
+		trans_list_forward[to_state][trans_list_forward_cnt[to_state]]=from_state ;
+		trans_list_forward_val[to_state][trans_list_forward_cnt[to_state]]=val ;
+		trans_list_forward_id[to_state][trans_list_forward_cnt[to_state]]=id ;
+		trans_list_forward_cnt[to_state]++ ;
+		transition_matrix_a.element(from_state, to_state) = val ;
+		transition_matrix_a_id.element(from_state, to_state) = id ;
 	} ;
 
 	max_a_id = 0 ;
-	for (INT i=0; i<p_N; i++)
-		for (INT j=0; j<p_N; j++)
+	for (INT i=0; i<N; i++)
+		for (INT j=0; j<N; j++)
+		{
+			//if (transition_matrix_a_id.element(i,j))
+			//fprintf(stderr, "(%i,%i)=%i\n", i,j, transition_matrix_a_id.element(i,j)) ;
 			max_a_id = CMath::max(max_a_id, transition_matrix_a_id.element(i,j)) ;
-	max_a_id = 8 ;
+		}
+	//fprintf(stderr, "max_a_id=%i\n", max_a_id) ;
 }
 
 void CDynProg::init_svm_arrays(INT p_num_degrees, INT p_num_svms)
@@ -477,7 +482,7 @@ void CDynProg::best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_le
 	m_dict_weights.set_array(dictionary_weights, dict_len, num_svms, true, true) ;
 
 	// initialize, so it does not bother when not used
-	m_segment_loss.resize_array(2, max_a_id+1, max_a_id+1) ;
+	m_segment_loss.resize_array(max_a_id+1, max_a_id+1, 2) ;
 	m_segment_loss.zero() ;
 	m_segment_ids_mask.resize_array(2, m_seq.get_dim2()) ;
 	m_segment_ids_mask.zero() ;
@@ -488,13 +493,16 @@ void CDynProg::best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_le
 void CDynProg::best_path_set_segment_loss(DREAL* segment_loss, INT m, INT n) 
 {
 	// here we need two matrices. Store it in one: 2N x N
-	if (m!=2*n)
-		CIO::message(M_ERROR, "segment_loss should be 2 x quadratic matrix: %i!=%i\n", 2*m, n) ;
+	if (2*m!=n)
+		CIO::message(M_ERROR, "segment_loss should be 2 x quadratic matrix: %i!=%i\n", m, 2*n) ;
 
-	//if (n!=max_a_id+1)
-	//CIO::message(M_ERROR, "segment_loss size should match max_a_id: %i!=%i\n", n, max_a_id+1) ;
+	if (m!=max_a_id+1)
+		CIO::message(M_ERROR, "segment_loss size should match max_a_id: %i!=%i\n", m, max_a_id+1) ;
 
-	m_segment_loss.set_array(segment_loss, 2, m/2, n, true, true) ;
+	m_segment_loss.set_array(segment_loss, m, n/2, 2, true, true) ;
+	/*for (INT i=0; i<n; i++)
+		for (INT j=0; j<n; j++)
+		fprintf(stderr, "loss(%i,%i)=%f\n", i,j, m_segment_loss.element(0,i,j)) ;*/
 }
 
 void CDynProg::best_path_set_segment_ids_mask(INT* segment_ids_mask, INT m, INT n) 
@@ -1400,7 +1408,7 @@ DREAL CDynProg::extend_segment_loss(struct segment_loss_struct & loss, const INT
 	{
 		ASSERT(last_pos>=0) ;
 		ASSERT(last_pos<loss.seqlen) ;
-		DREAL length_contrib = (pos_array[last_pos]-pos_array[pos])*m_segment_loss.element(1, m_segment_ids_mask.element(0, pos), segment_id) ;
+		DREAL length_contrib = (pos_array[last_pos]-pos_array[pos])*m_segment_loss.element(m_segment_ids_mask.element(0, pos), segment_id, 1) ;
 		DREAL ret = last_value + length_contrib ;
 		last_pos = pos ;
 		return ret ;
@@ -1411,10 +1419,13 @@ DREAL CDynProg::extend_segment_loss(struct segment_loss_struct & loss, const INT
 	DREAL ret = 0.0 ;
 	for (INT i=0; i<max_a_id+1; i++)
 	{
+		//fprintf(stderr, "%i: %i, %i, %f (%f), %f (%f)\n", pos, num_segment_id.element(pos, i), length_segment_id.element(pos, i), num_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id,0), m_segment_loss.element(i, segment_id, 0), length_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 1), m_segment_loss.element(i, segment_id,1)) ;
+
 		if (num_segment_id.element(pos, i)!=0)
-			ret += num_segment_id.element(loss.num_segment_id, pos, i, loss.seqlen)*m_segment_loss.element(0, i, segment_id) ;
+			ret += num_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 0) ;
+
 		if (length_segment_id.element(pos, i)!=0)
-			ret += length_segment_id.element(loss.num_segment_id, pos, i, loss.seqlen)*m_segment_loss.element(1, i, segment_id) ;
+			ret += length_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 1) ;
 	}
 	last_pos = pos ;
 	last_value = ret ;
@@ -1431,42 +1442,37 @@ void CDynProg::find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<IN
 		num_segment_id.element(t_end, i) = 0 ;
 		length_segment_id.element(t_end, i) = 0 ;
 	}
-
-	
 	INT wobble_pos_segment_id_switch = 0 ;
 	INT last_segment_id = -1 ;
 	INT ts = t_end-1 ;       
 	while ((ts>=0) && (pos[t_end] - pos[ts] <= loss.maxlookback))
 	{
-		//fprintf(stderr, "%i x %i (%i)\n", segment_ids_mask.get_dim1(), segment_ids_mask.get_dim2(), ts) ;
-
 		INT cur_segment_id = segment_ids_mask.element(0, ts) ;
-		bool wobble_pos = (segment_ids_mask.element(1, ts)==0) ;
-		//fprintf(stderr, "ts:%i  ", ts) ;
-		//fprintf(stderr, "max_a_id:%i  ", max_a_id) ;
-		//fprintf(stderr, "s_id:%i  ", cur_segment_id) ;
+		// allow at most one wobble
+		bool wobble_pos = (segment_ids_mask.element(1, ts)==0) && (wobble_pos_segment_id_switch==0) ;
 		ASSERT(cur_segment_id<=max_a_id) ;
 		ASSERT(cur_segment_id>=0) ;
-		//fprintf(stderr, "wp=%i\n", wobble_pos) ;
 		
 		for (INT i=0; i<max_a_id+1; i++)
 		{
 			num_segment_id.element(ts, i) = num_segment_id.element(ts+1, i) ;
 			length_segment_id.element(ts, i) = length_segment_id.element(ts+1, i) ;
 		}
-
+		
 		if (cur_segment_id!=last_segment_id)
 		{
 			if (wobble_pos)
 			{
+				//fprintf(stderr, "no change at %i: %i, %i\n", ts, last_segment_id, cur_segment_id) ;
 				wobble_pos_segment_id_switch++ ;
 				//ASSERT(wobble_pos_segment_id_switch<=1) ;
 			}
 			else
 			{
+				//fprintf(stderr, "change at %i: %i, %i\n", ts, last_segment_id, cur_segment_id) ;
 				loss.segments_changed[ts]=true ;
 				num_segment_id.element(ts, cur_segment_id)++ ;
-				length_segment_id.element(ts, cur_segment_id)+= pos[ts+1]-pos[ts] ;
+				length_segment_id.element(ts, cur_segment_id) += pos[ts+1]-pos[ts] ;
 				wobble_pos_segment_id_switch = 0 ;
 			}
 			last_segment_id = cur_segment_id ;
@@ -2420,9 +2426,11 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			find_segment_loss_till_pos(pos, to_pos, m_segment_ids_mask, loss);  
 			INT loss_last_pos = to_pos ;
 			DREAL last_loss = 0.0 ;
+			//INT elem_id = transition_matrix_a_id.element(to_state, from_state) ;
 			INT elem_id = transition_matrix_a_id.element(from_state, to_state) ;
 			my_losses[i] = extend_segment_loss(loss, pos, elem_id, from_pos, loss_last_pos, last_loss) ;
-			fprintf(stderr, "%i. segment loss %f\n", i, my_losses[i]) ;
+			CIO::message(M_DEBUG, "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;
+
 			// increase usage of this transition
 			transition_matrix_a_deriv.element(from_state, to_state)++ ;
 			my_scores[i] += transition_matrix_a.element(from_state, to_state) ;
