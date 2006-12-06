@@ -2422,7 +2422,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			DREAL last_loss = 0.0 ;
 			INT elem_id = transition_matrix_a_id.element(from_state, to_state) ;
 			my_losses[i] = extend_segment_loss(loss, pos, elem_id, from_pos, loss_last_pos, last_loss) ;
-
+			fprintf(stderr, "%i. segment loss %f\n", i, my_losses[i]) ;
 			// increase usage of this transition
 			transition_matrix_a_deriv.element(from_state, to_state)++ ;
 			my_scores[i] += transition_matrix_a.element(from_state, to_state) ;
