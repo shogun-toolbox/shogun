@@ -24,7 +24,6 @@
 #include "lib/Array.h"
 #include "lib/Array2.h"
 #include "lib/Array3.h"
-#include "lib/fibheap.h"
 
 #include <stdlib.h>
 #include <stdio.h>
