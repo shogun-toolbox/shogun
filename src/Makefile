@@ -26,10 +26,10 @@ just-do-it:
 	@echo
 	@echo for standalone interface:
 	@echo "              ./configure"
+	@echo for python object oriented interface: 
+	@echo "              ./configure --enable-swig-python"
 	@echo for python interface: 
 	@echo "              ./configure --enable-python"
-	@echo for python object oriented interface: 
-	@echo "              ./configure --enable-python --enable-swig"
 	@echo for R interface: 
 	@echo "              ./configure --enable-R"
 	@echo for octave interface: 

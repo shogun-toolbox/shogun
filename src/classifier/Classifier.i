@@ -24,3 +24,4 @@
 %include "classifier/PluginEstimate.i"
 %include "classifier/KNN.i"
 %include "classifier/svm/SVM.i"
+%include "classifier/svm/SVMLin.i"

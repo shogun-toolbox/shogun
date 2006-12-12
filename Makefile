@@ -26,6 +26,9 @@ release: src/lib/versionstring.h
 	svn export . $(DESTDIR)
 	if [ ! $(SVMLIGHT) = yes ]; then $(REMOVE_SVMLIGHT); fi
 
+	# remove top level makefile from distribution
+	rm -f $(DESTDIR)/Makefile
+
 	# FIXME: This is a hack because .generate_link_dependencies.py is buggy
 	# and should better be replaced by 'swig -MM':
 	touch $(DESTDIR)/src/classifier/svm/SVM_light.i

@@ -182,7 +182,8 @@ enum EClassifierType
 	CT_LDA = 90,
 	CT_LPM = 100,
 	CT_KNN = 110,
-	CT_LIBSVMONECLASS=120
+	CT_LIBSVMONECLASS=120,
+	CT_SVMLIN=130
 };
 
 enum EDistanceType
