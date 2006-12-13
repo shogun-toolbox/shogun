@@ -28,5 +28,15 @@ sg/src:
 	sed -i -f Makefile.sed sg/src/Makefile
 	-cd ../src && cp -a $(DOCFILES) ../R/sg/inst/doc/
 
+debian:
+	@echo "Copy all needed files from Shogun src"
+	if [ -d .svn ]; then make -C ../src distclean lib/versionstring.h; fi
+	rm -rf sg/src
+	cp -a ../src sg/src
+	find ./sg -iname *.i -o -iname *.o -exec rm {} \; 2>/dev/null || true
+	find ./sg/src -type d -name .svn -exec rm -rf {} \; 2>/dev/null || true
+	cd sg/src && ( $(RM) .config .depend ;  && ./configure --enable-R )
+	-cd ../src && cp -a $(DOCFILES) ../R/sg/inst/doc/
+
 clean: 
 	rm -rf sg/src sg.Rcheck
