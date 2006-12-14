@@ -417,6 +417,7 @@ Configuration:
   -h, --help                    display this help and exit
 
 Installation directories:
+  --destdir=DIR                 use this as the root dir to install shogun to [/]
   --prefix=DIR                  use this prefix for installing shogun [/usr/local]
   --bindir=DIR                  use this prefix for installing shogun binary
                                 [PREFIX/bin]
