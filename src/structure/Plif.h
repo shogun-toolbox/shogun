@@ -39,6 +39,20 @@ public:
 	DREAL lookup_penalty(DREAL p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const ;
 	DREAL lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const ;
 
+	inline DREAL lookup_penalty(DREAL p_value)
+	{
+		DREAL dummy;
+		ASSERT(use_svm == 0);
+		return lookup_penalty(p_value, NULL, false, dummy);
+	}
+
+	inline DREAL lookup_penalty(INT p_value)
+	{
+		DREAL dummy;
+		ASSERT(use_svm == 0);
+		return lookup_penalty(p_value, NULL, false, dummy);
+	}
+
 	void penalty_clear_derivative(bool follow_next) ;
 	void penalty_add_derivative_svm(DREAL p_value, DREAL* svm_values, bool follow_next) ;
 	void penalty_add_derivative(DREAL p_value, DREAL* svm_values, bool follow_next) ;
