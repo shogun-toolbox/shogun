@@ -112,6 +112,16 @@ public:
 		return floor(d+0.5);
 	}
 
+	static inline DREAL floor(DREAL d)
+	{
+		return floor(d);
+	}
+
+	static inline DREAL ceil(DREAL d)
+	{
+		return ceil(d);
+	}
+
 	/// signum of type T variable a 
 	template <class T>
 	static inline INT sign(DREAL a)

@@ -1004,8 +1004,8 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 				CPlif *penij=PEN.element(i,j) ;
 				while (penij!=NULL)
 				{
-					if (penij->get_max_len()>max_look_back)
-						max_look_back=penij->get_max_len() ;
+					if (penij->get_max_value()>max_look_back)
+						max_look_back=(INT) CMath::ceil(penij->get_max_value());
 					if (penij->get_use_svm())
 						use_svm=true ;
 					if (penij->get_id()+1>num_PEN_id)
@@ -1120,7 +1120,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 					const CPlif * penalty = PEN.element(j,ii) ;
 					INT look_back = default_look_back ;
 					if (penalty!=NULL)
-						look_back=penalty->get_max_len() ;
+						look_back=(INT) (CMath::ceil(penalty->get_max_value()));
 					
 					INT last_svm_pos ;
 					if (use_svm)
@@ -1748,8 +1748,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				CPlif *penij=PEN.element(i,j) ;
 				while (penij!=NULL)
 				{
-					if (penij->get_max_len()>max_look_back)
-						max_look_back=penij->get_max_len() ;
+					if (penij->get_max_value()>max_look_back)
+						max_look_back=(INT) (CMath::ceil(penij->get_max_value()));
 					if (penij->get_use_svm())
 						use_svm=true ;
 					if (penij->get_id()+1>num_PEN_id)
@@ -1993,12 +1993,12 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 						CPlif *pen = (CPlif*) penalty ;
 						if (pen!=NULL)
 						{
-							look_back=pen->get_max_len() ;
+							look_back=(INT) (CMath::ceil(pen->get_max_value()));
 							while (pen->get_next_pen()!=NULL)
 							{
 								pen=pen->get_next_pen() ;
-								if (pen->get_max_len()<look_back)
-									look_back=pen->get_max_len() ;
+								if (pen->get_max_value()<look_back)
+									look_back=(INT) (CMath::ceil(pen->get_max_value()));
 							}
 						}
 						ASSERT(look_back<1e6);

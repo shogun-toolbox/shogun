@@ -517,7 +517,6 @@ for ac_option do
   --disable-python)		_python=no	;;
   --enable-python)
     _python=yes
-    test -n "$_pydir" || _pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
     ;;
   --disable-matlab)		_matlab=no	;;
   --enable-matlab)		_matlab=yes	;;
@@ -612,6 +611,7 @@ test -z "$_datadir" && _datadir="$_prefix/share/shogun"
 test -z "$_mandir" && _mandir="$_prefix/man"
 test -z "$_confdir" && _confdir="$_prefix/etc/shogun"
 test -z "$_libdir" && _libdir="$_prefix/lib"
+test -z "$_pydir" && _pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
 
 determine_march_mtune()
 {

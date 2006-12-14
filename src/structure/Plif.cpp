@@ -30,8 +30,8 @@ CPlif::CPlif(INT l)
 	next_pen=NULL ;
 	transform = T_LINEAR ;
 	name = NULL ;
-	max_len=0 ;
-	min_len=0 ;
+	max_value=0 ;
+	min_value=0 ;
 	cache=NULL ;
 	use_svm=0 ;
 	use_cache=false ;
@@ -86,16 +86,16 @@ void CPlif::init_penalty_struct_cache()
 		return ;
 	if (cache || use_svm)
 		return ;
-	if (max_len<=0)
+	if (max_value<=0)
 		return ;
-	//fprintf(stderr, "init cache of size %i byte\n", (max_len+1)*sizeof(DREAL)) ;
+	//fprintf(stderr, "init cache of size %i byte\n", (max_value+1)*sizeof(DREAL)) ;
 	
-	DREAL* cache=new DREAL[max_len+1] ;
+	DREAL* cache=new DREAL[((INT) (CMath::ceil(max_value)))+1] ;
 	if (cache)
 	{
 		DREAL input_value ;
-		for (INT i=0; i<=max_len; i++)
-			if (i<min_len)
+		for (INT i=0; i<=max_value; i++)
+			if (i<min_value)
 				cache[i] = -CMath::INFTY ;
 			else
 				cache[i] = lookup_penalty(i, 0, false, input_value) ;
@@ -168,19 +168,19 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 			delete[] PEN;
 			return NULL ;
 		}
-		const mxArray* mx_max_len_field = mxGetField(mx_elem, 0, "max_len") ;
-		if (mx_max_len_field==NULL || !mxIsNumeric(mx_max_len_field) ||
-			mxGetM(mx_max_len_field)!=1 || mxGetN(mx_max_len_field)!=1)
+		const mxArray* mx_max_value_field = mxGetField(mx_elem, 0, "max_value") ;
+		if (mx_max_value_field==NULL || !mxIsNumeric(mx_max_value_field) ||
+			mxGetM(mx_max_value_field)!=1 || mxGetN(mx_max_value_field)!=1)
 		{
-			CIO::message(M_ERROR, "missing max_len field\n") ;
+			CIO::message(M_ERROR, "missing max_value field\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
-		const mxArray* mx_min_len_field = mxGetField(mx_elem, 0, "min_len") ;
-		if (mx_min_len_field==NULL || !mxIsNumeric(mx_min_len_field) ||
-			mxGetM(mx_min_len_field)!=1 || mxGetN(mx_min_len_field)!=1)
+		const mxArray* mx_min_value_field = mxGetField(mx_elem, 0, "min_value") ;
+		if (mx_min_value_field==NULL || !mxIsNumeric(mx_min_value_field) ||
+			mxGetM(mx_min_value_field)!=1 || mxGetN(mx_min_value_field)!=1)
 		{
-			CIO::message(M_ERROR, "missing min_len field\n") ;
+			CIO::message(M_ERROR, "missing min_value field\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
@@ -235,23 +235,23 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 			delete[] PEN;
 			return NULL ;
 		}
-		INT max_len = (INT) mxGetScalar(mx_max_len_field) ;
-		if (max_len<-1024*1024*100 || max_len>1024*1024*100)
+		INT max_value = (INT) mxGetScalar(mx_max_value_field) ;
+		if (max_value<-1024*1024*100 || max_value>1024*1024*100)
 		{
-			CIO::message(M_ERROR, "max_len out of range\n") ;
+			CIO::message(M_ERROR, "max_value out of range\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
-		PEN[id].set_max_len(max_len) ;
+		PEN[id].set_max_value(max_value) ;
 
-		INT min_len = (INT) mxGetScalar(mx_min_len_field) ;
-		if (min_len<-1024*1024*100 || min_len>1024*1024*100)
+		INT min_value = (INT) mxGetScalar(mx_min_value_field) ;
+		if (min_value<-1024*1024*100 || min_value>1024*1024*100)
 		{
-			CIO::message(M_ERROR, "min_len out of range\n") ;
+			CIO::message(M_ERROR, "min_value out of range\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
-		PEN[id].set_min_len(min_len) ;
+		PEN[id].set_min_value(min_value) ;
 
 		if (PEN[id].get_id()!=-1)
 		{
@@ -287,11 +287,11 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		PEN[id].init_penalty_struct_cache() ;
 
 /*		if (PEN->cache)
-/			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_len=%i max_len=%i transform='%s' (cache initialized)\n", PEN[id].name,
-					PEN[id].id, PEN[id].len, PEN[id].min_len, PEN[id].max_len, transform_str) ;
+/			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_value=%i max_value=%i transform='%s' (cache initialized)\n", PEN[id].name,
+					PEN[id].id, PEN[id].len, PEN[id].min_value, PEN[id].max_value, transform_str) ;
 		else
-			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_len=%i max_len=%i transform='%s'\n", PEN[id].name,
-					PEN[id].id, PEN[id].len, PEN[id].min_len, PEN[id].max_len, transform_str) ;
+			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_value=%i max_value=%i transform='%s'\n", PEN[id].name,
+					PEN[id].id, PEN[id].len, PEN[id].min_value, PEN[id].max_value, transform_str) ;
 */
 		
 		mxFree(transform_str) ;
@@ -358,10 +358,10 @@ DREAL CPlif::lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DR
 		
 	input_value = (DREAL) p_value ;
 
-	if ((p_value<min_len) || (p_value>max_len))
+	if ((p_value<min_value) || (p_value>max_value))
 		return -CMath::INFTY ;
 	
-	if (cache!=NULL && (p_value>=0) && (p_value<=max_len))
+	if (cache!=NULL && (p_value>=0) && (p_value<=max_value))
 	{
 		DREAL ret=cache[p_value] ;
 		if (next_pen && follow_next)
@@ -378,7 +378,7 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values, bool follow_next, 
 		
 	input_value = (DREAL) p_value ;
 
-	if ((p_value<min_len) || (p_value>max_len))
+	if ((p_value<min_value) || (p_value>max_value))
 		return -CMath::INFTY ;
 	
 	DREAL d_value = (DREAL) p_value ;
@@ -444,7 +444,7 @@ void CPlif::penalty_add_derivative(DREAL p_value, DREAL* svm_values, bool follow
 		return ;
 	}
 		
-	if ((p_value<min_len) || (p_value>max_len))
+	if ((p_value<min_value) || (p_value>max_value))
 		return ;
 	
 	DREAL d_value = (DREAL) p_value ;

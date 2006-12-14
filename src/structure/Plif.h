@@ -39,14 +39,7 @@ public:
 	DREAL lookup_penalty(DREAL p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const ;
 	DREAL lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const ;
 
-	inline DREAL lookup_penalty(DREAL p_value)
-	{
-		DREAL dummy;
-		ASSERT(use_svm == 0);
-		return lookup_penalty(p_value, NULL, false, dummy);
-	}
-
-	inline DREAL lookup_penalty(INT p_value)
+	inline DREAL lookup(DREAL p_value)
 	{
 		DREAL dummy;
 		ASSERT(use_svm == 0);
@@ -173,38 +166,46 @@ public:
 		penalty_clear_derivative(false) ;
 	}
 
-	void set_max_len(INT p_max_len) 
+	inline void set_max_value(DREAL p_max_value) 
 	{
 		delete[] cache ;
 		cache=NULL ;
-		max_len=p_max_len ;
+		max_value=p_max_value ;
 	}
-	INT get_max_len() const 
+
+	inline DREAL get_max_value() const 
 	{
-		return max_len ;
+		return max_value ;
 	}
-	void set_min_len(INT p_min_len) 
+
+	inline void set_min_value(DREAL p_min_value) 
 	{
 		delete[] cache ;
 		cache=NULL ;
-		min_len=p_min_len ;
+		min_value=p_min_value ;
 	}
+
+	inline DREAL get_min_value() const 
+	{
+		return min_value ;
+	}
+
 	void set_name(char *p_name) ;
-	char * get_name() 
+	inline char * get_name() 
 	{
 		return name ;
 	}
 
-	INT get_plif_len()
+	inline INT get_plif_len()
 	{
 		return len ;
 	}
 
-	DREAL get_plif_loss()
+	inline DREAL get_plif_loss()
 	{
 		return loss ;
 	}
-	void set_plif_loss(DREAL p_loss)
+	inline void set_plif_loss(DREAL p_loss)
 	{
 		loss = p_loss ;
 	}
@@ -216,8 +217,8 @@ protected:
 	DREAL *limits ;
 	DREAL *penalties ;
 	DREAL *cum_derivatives ;
-	INT max_len ;
-	INT min_len ;
+	DREAL max_value ;
+	DREAL min_value ;
 	DREAL *cache ;
 	enum ETransformType transform ;
 	INT id ;
