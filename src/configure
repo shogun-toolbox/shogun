@@ -2138,29 +2138,33 @@ EOF
 		echocheck "CPLEX support"
 		if echo quit | cplex >/dev/null 2>&1
 		then
-			echores "yes"
+			CPLEXVER=`echo quit | cplex 2>&1 | grep ^ILOG | cut -d ' ' -f 3 | tr -d ','`
+			echores "$CPLEXVER"
 
 			echocheck "CPLEX developer files"
 			if linux
 			then
-				CPLEXVER=`echo quit | cplex 2>&1 | grep ^ILOG | cut -d ' ' -f 3`
 				CPLEXVER=`echo $CPLEXVER | cut -f 1 -d '.'``echo $CPLEXVER | cut -f 2 -d '.' | cut -c 1`
 				CPLEXPATH=`env | grep ^ILOG_LICENSE_FILE | cut -f 2 -d '=' | sed 's/ilog.*$/ilog/'`/cplex$CPLEXVER
 
-				case "$host_arch" in
-					x86)
+				if x86
+				then
+					if test -d $CPLEXPATH/lib/i86_linux2_glibc2.3_gcc3.2/static_pic
+					then
+						CPLEXLINKFLAGS="-L$CPLEXPATH/lib/i86_linux2_glibc2.3_gcc3.2/static_pic/ -lcplex"
+					elif test -d $CPLEXPATH/lib/x86_RHEL3.0_3.2/static_pic
+					then
 						CPLEXLINKFLAGS="-L$CPLEXPATH/lib/x86_RHEL3.0_3.2/static_pic/ -lcplex"
-						CPLEXINCLUDES="-I$CPLEXPATH/include"
-					;;
-					x86_64|amd64)
-						CPLEXLINKFLAGS="-L$CPLEXPATH/lib/x86-64_RHEL3.0_3.2/static_pic/ -lcplex"
-						CPLEXINCLUDES="-I$CPLEXPATH/include"
-					;;
-					*)
-						CPLEXLINKFLAGS="-lcplex"
-						CPLEXINCLUDES=""
-					;;
-				esac
+					fi
+					CPLEXINCLUDES="-I$CPLEXPATH/include"
+				elif x86_64
+				then
+					CPLEXLINKFLAGS="-L$CPLEXPATH/lib/x86-64_RHEL3.0_3.2/static_pic/ -lcplex"
+					CPLEXINCLUDES="-I$CPLEXPATH/include"
+				else
+					CPLEXLINKFLAGS="-lcplex"
+					CPLEXINCLUDES=""
+				fi
 
 				if cc_check $CPLEXINCLUDES $CPLEXLINKFLAGS
 				then
