@@ -2178,8 +2178,10 @@ EOF
 					echores "no"
 				fi
 			else
-				echores "no"
+				die "non supported matlab architecture"
 			fi
+		else
+			echores "no"
 		fi
 	fi
 
