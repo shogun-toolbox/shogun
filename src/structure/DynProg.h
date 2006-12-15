@@ -49,53 +49,13 @@ private:
 	bool mem_initialized ;
 	
 public:
-	/**@name Constructor/Destructor and helper function
-	 */
-	//@{
-	/** Constructor
-	 * @param N number of states
-	 * @param M number of emissions
-	 * @param model model which holds definitions of states to be learned + consts
-	 */
 	CDynProg() ;
-	//CDynProg(INT N, double* p, double* q, double* a) ;
-	//CDynProg(INT N, double* p, double* q, int num_trans, double* a_trans) ;
-
-	/// Destructor - Cleanup
 	~CDynProg();
 	
-
-	/** calculates probability of best state sequence s_0,...,s_T-1 AND path itself using viterbi algorithm.
-	 * The path can be found in the array PATH(dimension)[0..T-1] afterwards
-	 * @param dimension dimension of observation for which the most probable path is calculated (observations are a matrix, where a row stands for one dimension i.e. 0_0,O_1,...,O_{T-1} 
-	 */
 	DREAL best_path_no_b(INT max_iter, INT & best_iter, INT *my_path) ;
 	void best_path_no_b_trans(INT max_iter, INT & max_best_iter, short int nbest, DREAL *prob_nbest, INT *my_paths) ;
 
-////////////////////////////////////////////////////////////////////////////////
-protected:
-	// control info
-	INT m_step ;
-	INT m_call ;
-	// input arguments
-	CArray2<DREAL> m_seq ;
-	CArray<INT> m_pos ;
-	CArray2<INT> m_orf_info ;
-	CArray2<DREAL> m_segment_sum_weights ;
-	CArray<CPlif*> m_plif_list ;
-	CArray2<CPlif*> m_PEN ;
-	CArray2<CPlif*> m_PEN_state_signals ;
-	CArray<CHAR> m_genestr ;
-	CArray2<DREAL> m_dict_weights ;
-	CArray3<DREAL> m_segment_loss ;
-	CArray2<INT> m_segment_ids_mask ;
-
-	// output arguments
-	CArray<DREAL> m_scores ;
-	CArray2<INT> m_states ;
-	CArray2<INT> m_positions ;
 	
-public:
 	// model related functions
 	void set_N(INT p_N) ; // use this function to set N first
 	void set_p(DREAL *p, INT N) ;
@@ -338,5 +298,26 @@ protected:
 	INT num_unique_words_single ;
 
 	INT max_a_id ;
+	
+	// control info
+	INT m_step ;
+	INT m_call ;
+	// input arguments
+	CArray2<DREAL> m_seq ;
+	CArray<INT> m_pos ;
+	CArray2<INT> m_orf_info ;
+	CArray2<DREAL> m_segment_sum_weights ;
+	CArray<CPlif*> m_plif_list ;
+	CArray2<CPlif*> m_PEN ;
+	CArray2<CPlif*> m_PEN_state_signals ;
+	CArray<CHAR> m_genestr ;
+	CArray2<DREAL> m_dict_weights ;
+	CArray3<DREAL> m_segment_loss ;
+	CArray2<INT> m_segment_ids_mask ;
+
+	// output arguments
+	CArray<DREAL> m_scores ;
+	CArray2<INT> m_states ;
+	CArray2<INT> m_positions ;
 };
 #endif
