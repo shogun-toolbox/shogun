@@ -2,7 +2,7 @@
  #include "structure/DynProg.h" 
 %}
 
-%rename(CDynProg) DynProg;
+%rename(DynProg) CDynProg;
 
 /* model related functions */
 %apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* p, INT N)};

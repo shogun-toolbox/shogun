@@ -44,11 +44,7 @@ static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
 static INT num_words_default[4]={64,256,1024,4096} ;
 
 CDynProg::CDynProg()
-	: m_seq(1,1), m_pos(1), m_orf_info(1,2), m_segment_sum_weights(1,1), m_plif_list(1), 
-	  m_PEN(1,1), m_PEN_state_signals(1,2), 
-	  m_genestr(1), m_dict_weights(1,1), m_segment_loss(1,1,2), m_segment_ids_mask(1,1),
-	  m_scores(1), m_states(1,1), m_positions(1,1),
-	  transition_matrix_a_id(1,1), transition_matrix_a(1,1), transition_matrix_a_deriv(1,1), 
+	: transition_matrix_a_id(1,1), transition_matrix_a(1,1), transition_matrix_a_deriv(1,1), 
 	  initial_state_distribution_p(1), initial_state_distribution_p_deriv(1), 
 	  end_state_distribution_q(1), end_state_distribution_q_deriv(1), 
 	  dict_weights(1,1), dict_weights_array(dict_weights.get_array()),
@@ -76,7 +72,12 @@ CDynProg::CDynProg()
 	  svm_value_unnormalized_single(num_svms_single),
 	  num_unique_words_single(0),
 
-	  max_a_id(0)
+	  max_a_id(0), m_seq(1,1), m_pos(1), m_orf_info(1,2), 
+      m_segment_sum_weights(1,1), m_plif_list(1), 
+	  m_PEN(1,1), m_PEN_state_signals(1,2), 
+	  m_genestr(1), m_dict_weights(1,1), m_segment_loss(1,1,2), 
+      m_segment_ids_mask(1,1),
+	  m_scores(1), m_states(1,1), m_positions(1,1)
 {
 	trans_list_forward = NULL ;
 	trans_list_forward_cnt = NULL ;
@@ -141,7 +142,7 @@ void CDynProg::set_N(INT p_N)
 	m_PEN_state_signals.resize_array(N,2) ;
 }
 
-void CDynProg::set_p(DREAL *p, INT p_N) 
+void CDynProg::set_p_vector(DREAL *p, INT p_N) 
 {
 	ASSERT(p_N==N) ;
 	//m_orf_info.resize_array(p_N,2) ;
@@ -150,10 +151,10 @@ void CDynProg::set_p(DREAL *p, INT p_N)
 	initial_state_distribution_p.set_array(p, p_N, true, true) ;
 }
 
-void CDynProg::set_q(DREAL *q, INT p_N) 
+void CDynProg::set_q_vector(DREAL *q, INT q_N) 
 {
-	ASSERT(p_N==N) ;
-	end_state_distribution_q.set_array(q, p_N, true, true) ;
+	ASSERT(q_N==N) ;
+	end_state_distribution_q.set_array(q, q_N, true, true) ;
 }
 
 void CDynProg::set_a(DREAL *a, INT p_M, INT p_N) 
@@ -175,7 +176,7 @@ void CDynProg::set_a_id(INT *a, INT p_M, INT p_N)
 			max_a_id = CMath::max(max_a_id, transition_matrix_a_id.element(i,j)) ;
 }
 
-void CDynProg::set_a_trans(DREAL *a_trans, INT num_trans, INT p_N) 
+void CDynProg::set_a_trans_matrix(DREAL *a_trans, INT num_trans, INT p_N) 
 {
 	ASSERT((p_N==3) || (p_N==4)) ;
 
@@ -355,6 +356,7 @@ void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len)
 		return ;
 	} ;
 
+    CIO::message(M_MESSAGEONLY, "p len: %d N:%d seq len:%d\n", p_N, N, seq_len);
 	ASSERT(p_N==N) ;
 	ASSERT(initial_state_distribution_p.get_dim1()==N) ;
 	ASSERT(end_state_distribution_q.get_dim1()==N) ;	

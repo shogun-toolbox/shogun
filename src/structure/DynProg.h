@@ -57,12 +57,12 @@ public:
 
 	
 	// model related functions
-	void set_N(INT p_N) ; // use this function to set N first
-	void set_p(DREAL *p, INT N) ;
-	void set_q(DREAL *q, INT N) ;
-	void set_a(DREAL *a, INT M, INT N) ;
-	void set_a_id(INT *a, INT M, INT N) ;
-	void set_a_trans(DREAL *a_trans, INT num_trans, INT N) ;
+	void set_N(INT p_N); // use this function to set N first
+	void set_p_vector(DREAL* p, INT N);
+	void set_q_vector(DREAL* q, INT N);
+	void set_a(DREAL* a, INT M, INT N);
+	void set_a_id(INT *a, INT M, INT N);
+	void set_a_trans_matrix(DREAL *a_trans, INT num_trans, INT N);
 
 	// content svm related setup functions
 	void init_svm_arrays(INT p_num_degrees, INT p_num_svms) ;
