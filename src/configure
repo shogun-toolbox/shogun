@@ -30,7 +30,7 @@ if [ -e classifier/svm/SVM_light.cpp ]; then
 else
   _svm_light=no
 fi
-_cplex=no
+_cplex=auto
 _wtiming=no
 _logcache=no
 _shortrealkernelcache=yes
@@ -106,40 +106,6 @@ if test "`(echo line1 ; echo line2) | tail -1 2>/dev/null`" = "line2" ; then
 else
   _tail() { tail -n $1 2>/dev/null ; }
 fi
-
-add_include_path()
-{
-	PKG="$1"
-	echores "Checking for $PKG include path"
-
-    while shift ; do
-      [ -z "$0" ] && break
-      if test -d "$1" ; then
-        INCLUDES="$INCLUDES -I\"$1\""
-		return 0
-      fi
-	done
-
-	echores "include path for $PKG not found"
-	exit 1
-}
-
-add_library_path()
-{
-	PKG="$1"
-	echores "Checking for $PKG library path"
-
-    while shift ; do
-      [ -z "$1" ] && break
-      if test -d "$1" ; then
-        LINKFLAGS="$LINKFLAGS -L\"$1\""
-		return 0
-      fi
-	done
-
-	echores "library path for $PKG not found"
-	exit 1
-}
 
 detect_cc()
 {
@@ -435,7 +401,6 @@ Optional features:
   --enable-octave               enable octave (shogun can be called from within octave) support [disabled]
   --enable-R                    enable R      (shogun can be called from within R)      support [disabled]
   --enable-mindy                enable mindy library support (for more efficient n-gram, word-in-a-bag kernel implementations)
-  --enable-cplex    	        enable code using CPLEX  [disabled]
   --enable-readline    	        enable readline in stand-a-lone interface [auto]
   --enable-w-timing    	        enable code using W timing  [disabled]
   --enable-logcache             enable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
@@ -446,6 +411,7 @@ Optional features:
   --disable-treemem             disable more efficient treemem support and use malloc's for each node instead [enabled]
   --disable-largefile           disable large file support (64bit file acces routines) [enabled]
   --disable-lapack    	        disable blas and lapack math routines and use built in ones (slower!) [auto]
+  --disable-cplex    	        disable code using CPLEX  [auto]
   --disable-bigstates	        disable big (16bit) state [enabled]
   --disable-hmmcache 	        disable HMM cache [enabled]
   --disable-svm-light 	        disable building of SVM-light and thus result in pure GPLv2 code [enabled]
@@ -531,8 +497,6 @@ for ac_option do
   --enable-svm-light)	_svm_light=yes	;;
   --disable-readline)	_readline=no	;;
   --enable-readline)	_readline=yes	;;
-  --disable-cplex)		_cplex=no	;;
-  --enable-cplex)		_cplex=yes	;;
   --disable-w-timing)	_wtiming=no	;;
   --enable-w-timing)	_wtiming=yes	;;
   --disable-logcache)	_logcache=no	;;
@@ -551,6 +515,8 @@ for ac_option do
   --disable-swig-python)_swig=no ; _python=no ;;
   --disable-lapack)		_lapack=no	;;
   --enable-lapack)		_lapack=yes	;;
+  --disable-cplex)		_cplex=no	;;
+  --enable-cplex)		_cplex=yes	;;
   --disable-bigstates)	_bigstates=no	;;
   --enable-bigstates)	_bigstates=yes	;;
   --disable-hmmcache)	_hmmcache=no	;;
@@ -2155,25 +2121,61 @@ EOF
 		fi
 	fi
 
-	if test "$_cplex" = yes
+	if test "$_cplex" = yes || test "$_cplex" = auto
 	then
-		if linux
+cat > $TMPC << EOF
+#include <ilcplex/cplex.h>
+int
+main (int argc, char **argv)
+{
+	int status = 0;
+	CPXENVptr     env = NULL;
+	CPXLPptr      lp = NULL;
+	env = CPXopenCPLEX (&status);
+  status = CPXcloseCPLEX (&env);
+}
+EOF
+		echocheck "CPLEX support"
+		if echo quit | cplex >/dev/null 2>&1
 		then
-			case "$host_arch" in
-			  x86_64|amd64)
-				LINKFLAGS="$LINKFLAGS -L/fml/ag-raetsch/share/software/ilog/cplex90/lib/x86-64_RHEL3.0_3.2/static_pic/ -lcplex"
-				INCLUDES="$INCLUDES -I/fml/ag-raetsch/share/software/ilog/cplex90/include"
-			  ;;
-			  *)
-			  add_include_path CPLEX /fml/ag-raetsch/share/software/ilog/cplex90/include /home/neuro/software/ilog/cplex90/include
-			  add_library_path CPLEX /fml/ag-raetsch/share/software/ilog/cplex90/lib/x86_RHEL3.0_3.2/static_pic/ /home/neuro/software/ilog/cplex90/lib/i86_linux2_glibc2.3_gcc3.2/static_pic/
-			  LINKFLAGS="$LINKFLAGS -lcplex"
-				;;
-			esac
-		fi
+			echores "yes"
 
-		USE_CPLEX='#define USE_CPLEX 1'
-		DEFINES="$DEFINES -DUSE_CPLEX"
+			echocheck "CPLEX developer files"
+			if linux
+			then
+				CPLEXVER=`echo quit | cplex 2>&1 | grep ^ILOG | cut -d ' ' -f 3`
+				CPLEXVER=`echo $CPLEXVER | cut -f 1 -d '.'``echo $CPLEXVER | cut -f 2 -d '.' | cut -c 1`
+				CPLEXPATH=`env | grep ^ILOG_LICENSE_FILE | cut -f 2 -d '=' | sed 's/ilog.*$/ilog/'`/cplex$CPLEXVER
+
+				case "$host_arch" in
+					x86)
+						CPLEXLINKFLAGS="-L$CPLEXPATH/lib/x86_RHEL3.0_3.2/static_pic/ -lcplex"
+						CPLEXINCLUDES="-I$CPLEXPATH/include"
+					;;
+					x86_64|amd64)
+						CPLEXLINKFLAGS="-L$CPLEXPATH/lib/x86-64_RHEL3.0_3.2/static_pic/ -lcplex"
+						CPLEXINCLUDES="-I$CPLEXPATH/include"
+					;;
+					*)
+						CPLEXLINKFLAGS="-lcplex"
+						CPLEXINCLUDES=""
+					;;
+				esac
+
+				if cc_check $CPLEXINCLUDES $CPLEXLINKFLAGS
+				then
+					echores "yes"
+					USE_CPLEX='#define USE_CPLEX 1'
+					DEFINES="$DEFINES -DUSE_CPLEX"
+					INCLUDES="$INCLUDES $CPLEXINCLUDES"
+					LINKFLAGS="$LINKFLAGS $CPLEXLINKFLAGS"
+				else
+					echores "no"
+				fi
+			else
+				echores "no"
+			fi
+		fi
 	fi
 
 	if test "$_wtiming" = yes
