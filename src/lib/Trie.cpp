@@ -4,7 +4,7 @@
 #include "lib/Mathematics.h"
 
 CTrie::CTrie(INT d, INT p_use_compact_terminal_nodes)
-	: degree(d), position_weights(NULL), use_compact_terminal_nodes(p_use_compact_terminal_nodes)
+	: degree(d), position_weights(NULL), use_compact_terminal_nodes(p_use_compact_terminal_nodes), weights_in_tree(true) 
 {
 	TreeMemPtrMax=1024*1024/sizeof(struct Trie) ;
 	TreeMemPtr=0 ;
@@ -182,12 +182,14 @@ INT CTrie::compact_nodes(INT start_node, INT depth, DREAL * weights)
 			INT node=get_node() ;
 			//fprintf(stderr, "creating node:\n ") ;
 			INT last_node=TreeMem[start_node].children[q] ;
-#ifdef WEIGHTS_IN_TRIE 
-			ASSERT(weights[depth]!=0.0) ;
-			TreeMem[node].weight=TreeMem[last_node].weight/weights[depth] ;
-#else
-			TreeMem[node].weight=TreeMem[last_node].weight ;
-#endif
+			if (weights_in_tree)
+			{
+				ASSERT(weights[depth]!=0.0) ;
+				TreeMem[node].weight=TreeMem[last_node].weight/weights[depth] ;
+			}
+			else
+				TreeMem[node].weight=TreeMem[last_node].weight ;
+
 #ifdef TRIE_CHECK_EVERYTHING
 			TreeMem[node].has_seq=true ;
 #endif
@@ -572,21 +574,19 @@ void CTrie::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha
 	if (degree_rec==degree-1)
     {
 		TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) ;
-#ifdef WEIGHTS_IN_TRIE 
-		TreeMem[tree].child_weights[vec[0]] += alpha*weights[degree_rec+degree*mismatch_rec];
-#else
-		if (weights[degree_rec]!=0.0)
-			TreeMem[tree].child_weights[vec[0]] += alpha*weights[degree_rec+degree*mismatch_rec]/weights[degree_rec];
-#endif
+		if (weights_in_tree)
+			TreeMem[tree].child_weights[vec[0]] += alpha*weights[degree_rec+degree*mismatch_rec];
+		else
+			if (weights[degree_rec]!=0.0)
+				TreeMem[tree].child_weights[vec[0]] += alpha*weights[degree_rec+degree*mismatch_rec]/weights[degree_rec];
 		if (mismatch_rec+1<=max_mismatch)
 			for (INT o=0; o<3; o++)
 			{
-#ifdef WEIGHTS_IN_TRIE 
-				TreeMem[tree].child_weights[other[vec[0]][o]] += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
-#else
-				if (weights[degree_rec]!=0.0)
-					TreeMem[tree].child_weights[other[vec[0]][o]] += alpha*weights[degree_rec+degree*(mismatch_rec+1)]/weights[degree_rec];
-#endif
+				if (weights_in_tree)
+					TreeMem[tree].child_weights[other[vec[0]][o]] += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
+				else
+					if (weights[degree_rec]!=0.0)
+						TreeMem[tree].child_weights[other[vec[0]][o]] += alpha*weights[degree_rec+degree*(mismatch_rec+1)]/weights[degree_rec];
 			}
 		return ;
     }
@@ -596,12 +596,11 @@ void CTrie::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha
 		if (TreeMem[tree].children[vec[0]]!=NO_CHILD)
 		{
 			subtree=TreeMem[tree].children[vec[0]] ;
-#ifdef WEIGHTS_IN_TRIE 
-			TreeMem[subtree].weight += alpha*weights[degree_rec+degree*mismatch_rec];
-#else
-			if (weights[degree_rec]!=0.0)
-				TreeMem[subtree].weight += alpha*weights[degree_rec+degree*mismatch_rec]/weights[degree_rec];
-#endif
+			if (weights_in_tree)
+				TreeMem[subtree].weight += alpha*weights[degree_rec+degree*mismatch_rec];
+			else
+				if (weights[degree_rec]!=0.0)
+					TreeMem[subtree].weight += alpha*weights[degree_rec+degree*mismatch_rec]/weights[degree_rec];
 		}
 		else 
 		{
@@ -622,14 +621,13 @@ void CTrie::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha
 				for (INT k=0; k<4; k++)
 					TreeMem[subtree].children[k]=NO_CHILD;
 			}
-#ifdef WEIGHTS_IN_TRIE 
-			TreeMem[subtree].weight = alpha*weights[degree_rec+degree*mismatch_rec] ;
-#else
-			if (weights[degree_rec]!=0.0)
-				TreeMem[subtree].weight = alpha*weights[degree_rec+degree*mismatch_rec]/weights[degree_rec] ;
+			if (weights_in_tree)
+				TreeMem[subtree].weight = alpha*weights[degree_rec+degree*mismatch_rec] ;
 			else
-				TreeMem[subtree].weight = 0.0 ;
-#endif
+				if (weights[degree_rec]!=0.0)
+					TreeMem[subtree].weight = alpha*weights[degree_rec+degree*mismatch_rec]/weights[degree_rec] ;
+				else
+					TreeMem[subtree].weight = 0.0 ;
 		}
 		add_example_to_tree_mismatch_recursion(subtree,  i, alpha,
 											   &vec[1], len_rem-1, 
@@ -644,12 +642,11 @@ void CTrie::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha
 				if (TreeMem[tree].children[ot]!=NO_CHILD)
 				{
 					subtree=TreeMem[tree].children[ot] ;
-#ifdef WEIGHTS_IN_TRIE 
-					TreeMem[subtree].weight += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
-#else
-					if (weights[degree_rec]!=0.0)
-						TreeMem[subtree].weight += alpha*weights[degree_rec+degree*(mismatch_rec+1)]/weights[degree_rec];
-#endif
+					if (weights_in_tree)
+						TreeMem[subtree].weight += alpha*weights[degree_rec+degree*(mismatch_rec+1)];
+					else
+						if (weights[degree_rec]!=0.0)
+							TreeMem[subtree].weight += alpha*weights[degree_rec+degree*(mismatch_rec+1)]/weights[degree_rec];
 				}
 				else 
 				{
@@ -670,14 +667,13 @@ void CTrie::add_example_to_tree_mismatch_recursion(INT tree,  INT i, DREAL alpha
 						for (INT k=0; k<4; k++)
 							TreeMem[subtree].children[k]=NO_CHILD;
 					}
-#ifdef WEIGHTS_IN_TRIE 
-					TreeMem[subtree].weight = alpha*weights[degree_rec+degree*(mismatch_rec+1)] ;
-#else
-					if (weights[degree_rec]!=0.0)
-						TreeMem[subtree].weight = alpha*weights[degree_rec+degree*(mismatch_rec+1)]/weights[degree_rec] ;
+					if (weights_in_tree)
+						TreeMem[subtree].weight = alpha*weights[degree_rec+degree*(mismatch_rec+1)] ;
 					else
-						TreeMem[subtree].weight = 0.0 ;
-#endif
+						if (weights[degree_rec]!=0.0)
+							TreeMem[subtree].weight = alpha*weights[degree_rec+degree*(mismatch_rec+1)]/weights[degree_rec] ;
+						else
+							TreeMem[subtree].weight = 0.0 ;
 				}
 				
 				add_example_to_tree_mismatch_recursion(subtree,  i, alpha,

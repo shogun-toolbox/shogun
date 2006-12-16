@@ -953,7 +953,7 @@ bool CWeightedDegreePositionCharKernel::set_position_weights(DREAL* pws, INT len
 		delete[] position_weights ;
 		position_weights = NULL ;
 		tries.set_position_weights(position_weights) ;
-		return ;
+		return true ;
     }
     if (seq_length==0)
 		seq_length = len ;

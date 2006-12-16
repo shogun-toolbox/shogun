@@ -20,7 +20,7 @@
 //#define NO_CHILD ((INT)-2147483648)
 #define NO_CHILD ((INT)-1073741824) 
 
-//#define WEIGHTS_IN_TRIE 
+#define WEIGHTS_IN_TRIE 
 //#define TRIE_CHECK_EVERYTHING
 
 #ifdef TRIE_CHECK_EVERYTHING
@@ -140,6 +140,16 @@ public:
 				CIO::message(M_ERROR, "out of memory\n");
 		}
 	}
+
+	inline void set_weights_in_tree(bool weights_in_tree_)
+	{
+		weights_in_tree = weights_in_tree_ ;
+	}
+
+	inline bool set_weights_in_tree()
+	{
+		return weights_in_tree ;
+	}
 	
 protected:
 	INT length ;
@@ -153,6 +163,8 @@ protected:
 	INT TreeMemPtr ;
 	INT TreeMemPtrMax ;
 	bool use_compact_terminal_nodes ;
+
+	bool weights_in_tree ;
 } ;
 
 inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights, bool degree_times_position_weights)
@@ -161,23 +173,24 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 	//ASSERT(seq_offset==0) ;
 	
 	INT max_depth = 0 ;
-#ifdef WEIGHTS_IN_TRIE
-	if (degree_times_position_weights)
+	if (weights_in_tree)
 	{
-		for (INT j=0; (j<degree) && (i+j<length); j++)
-			if (CMath::abs(weights[j+i*degree]*alpha)>0) // FIXME: i should be weight_pos
+		if (degree_times_position_weights)
+		{
+			for (INT j=0; (j<degree) && (i+j<length); j++)
+				if (CMath::abs(weights[j+i*degree]*alpha)>0) // FIXME: i should be weight_pos
+					max_depth = j+1 ;
+		}
+		else
+		{
+			for (INT j=0; (j<degree) && (i+j<length); j++)
+				if (CMath::abs(weights[j]*alpha)>0)
 				max_depth = j+1 ;
+		}
 	}
 	else
-	{
-		for (INT j=0; (j<degree) && (i+j<length); j++)
-			if (CMath::abs(weights[j]*alpha)>0)
-				max_depth = j+1 ;
-	}
-#else
-	// don't use the weights
-	max_depth=degree ;
-#endif
+		// don't use the weights
+		max_depth=degree ;
 
 	for (INT j=0; (j<max_depth) && (i+j+seq_offset<length); j++)
     {
@@ -238,11 +251,10 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 						INT tmp=get_node() ;
 						TreeMem[last_node].children[vec[i+j+seq_offset+k]]=tmp ;
 						last_node=tmp ;
-#ifdef WEIGHTS_IN_TRIE
-						TreeMem[last_node].weight = (TreeMem[node].weight+alpha)*weights[j+k] ;
-#else
-						TreeMem[last_node].weight = (TreeMem[node].weight+alpha) ;
-#endif
+						if (weights_in_tree)
+							TreeMem[last_node].weight = (TreeMem[node].weight+alpha)*weights[j+k] ;
+						else
+							TreeMem[last_node].weight = (TreeMem[node].weight+alpha) ;
 						TRIE_ASSERT(j+k!=degree-1) ;
 					}
 					if ((TreeMem[node].seq[mismatch_pos]>=4) && (TreeMem[node].seq[mismatch_pos]!=TRIE_TERMINAL_CHARACTER))
@@ -254,15 +266,18 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 					{
 						for (INT q=0; q<4; q++)
 							TreeMem[last_node].child_weights[q]=0.0 ;
-#ifdef WEIGHTS_IN_TRIE
-						if (TreeMem[node].seq[mismatch_pos]<4) // i.e. !=TRIE_TERMINAL_CHARACTER
-							TreeMem[last_node].child_weights[TreeMem[node].seq[mismatch_pos]]+=TreeMem[node].weight*weights[degree-1] ;
-						TreeMem[last_node].child_weights[vec[i+j+seq_offset+k]] += alpha*weights[degree-1] ;
-#else
-						if (TreeMem[node].seq[mismatch_pos]<4) // i.e. !=TRIE_TERMINAL_CHARACTER
-							TreeMem[last_node].child_weights[TreeMem[node].seq[mismatch_pos]]=TreeMem[node].weight ;
-						TreeMem[last_node].child_weights[vec[i+j+seq_offset+k]] = alpha ;
-#endif
+						if (weights_in_tree)
+						{
+							if (TreeMem[node].seq[mismatch_pos]<4) // i.e. !=TRIE_TERMINAL_CHARACTER
+								TreeMem[last_node].child_weights[TreeMem[node].seq[mismatch_pos]]+=TreeMem[node].weight*weights[degree-1] ;
+							TreeMem[last_node].child_weights[vec[i+j+seq_offset+k]] += alpha*weights[degree-1] ;
+						}
+						else
+						{
+							if (TreeMem[node].seq[mismatch_pos]<4) // i.e. !=TRIE_TERMINAL_CHARACTER
+								TreeMem[last_node].child_weights[TreeMem[node].seq[mismatch_pos]]=TreeMem[node].weight ;
+							TreeMem[last_node].child_weights[vec[i+j+seq_offset+k]] = alpha ;
+						}
 						
 #ifdef TRIE_CHECK_EVERYTHING
 						TreeMem[last_node].has_floats=true ;
@@ -311,11 +326,10 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 				tree=TreeMem[tree].children[vec[i+j+seq_offset]] ;
 				TRIE_ASSERT((tree>=0) && (tree<TreeMemPtrMax)) ;
 				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
-#ifdef WEIGHTS_IN_TRIE
-				TreeMem[tree].weight += alpha*weights[j];
-#else
-				TreeMem[tree].weight += alpha ;
-#endif
+				if (weights_in_tree)
+					TreeMem[tree].weight += alpha*weights[j];
+				else
+					TreeMem[tree].weight += alpha ;
 			}
 		}
 		else if (j==degree-1)
@@ -346,11 +360,10 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 			else
 			{*/
 				TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) ;
-#ifdef WEIGHTS_IN_TRIE
-				TreeMem[tree].child_weights[vec[i+j+seq_offset]] += alpha*weights[j] ;
-#else
-				TreeMem[tree].child_weights[vec[i+j+seq_offset]] += alpha;
-#endif
+				if (weights_in_tree)
+					TreeMem[tree].child_weights[vec[i+j+seq_offset]] += alpha*weights[j] ;
+				else
+					TreeMem[tree].child_weights[vec[i+j+seq_offset]] += alpha;
 				//}
 			break ;
 		}
@@ -385,11 +398,10 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 			}
 			else
 			{
-#ifdef WEIGHTS_IN_TRIE
-				TreeMem[tree].weight = alpha*weights[j] ;
-#else
-				TreeMem[tree].weight = alpha ;
-#endif
+				if (weights_in_tree)
+					TreeMem[tree].weight = alpha*weights[j] ;
+				else
+					TreeMem[tree].weight = alpha ;
 				if (j==degree-2)
 				{
 #ifdef TRIE_CHECK_EVERYTHING
@@ -471,11 +483,10 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT seq_pos,
 			{
 				tree=TreeMem[tree].children[vec[seq_pos+j]];
 				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
-#ifdef WEIGHTS_IN_TRIE
-				sum += TreeMem[tree].weight ;
-#else
-				sum += TreeMem[tree].weight * weights_column[j] ;
-#endif
+				if (weights_in_tree)
+					sum += TreeMem[tree].weight ;
+				else
+					sum += TreeMem[tree].weight * weights_column[j] ;
 			} ;
 		}
 		else
@@ -486,11 +497,10 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT seq_pos,
 /*				if (TreeMem[tree].has_floats)
 				{*/
 					TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) ;
-#ifdef WEIGHTS_IN_TRIE
-					sum += TreeMem[tree].child_weights[vec[seq_pos+j]] ;
-#else
-					sum += TreeMem[tree].child_weights[vec[seq_pos+j]] * weights_column[j] ;
-#endif
+					if (weights_in_tree)
+						sum += TreeMem[tree].child_weights[vec[seq_pos+j]] ;
+					else
+						sum += TreeMem[tree].child_weights[vec[seq_pos+j]] * weights_column[j] ;
 /*				}
 				else
 				{
@@ -562,11 +572,10 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 						{
 							if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
 								break ;
-#ifdef WEIGHTS_IN_TRIE
-							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
-#else
-							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+k] ;
-#endif
+							if (weights_in_tree)
+								LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
+							else
+								LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+k] ;
 						}
 						break ;
 					}
@@ -574,11 +583,10 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 					{
 						tree=TreeMem[tree].children[vec[seq_pos+j]];
 						TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
-#ifdef WEIGHTS_IN_TRIE
-						LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
-#else
-						LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j] ;
-#endif
+						if (weights_in_tree)
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
+						else
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j] ;
 					}
 				} 
 				else
@@ -586,11 +594,10 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
 					if (j==degree-1)
 					{
-#ifdef WEIGHTS_IN_TRIE
-						LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]] ;
-#else
-						LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]]*weights[j] ;
-#endif
+						if (weights_in_tree)
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]] ;
+						else
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]]*weights[j] ;
 					}
 				}
 			}
@@ -609,11 +616,10 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 						{
 							if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
 								break ;
-#ifdef WEIGHTS_IN_TRIE
-							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
-#else
-							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+k+weight_pos*degree] ;
-#endif
+							if (weights_in_tree)
+								LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
+							else
+								LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+k+weight_pos*degree] ;
 						}
 						break ;
 					}
@@ -621,11 +627,10 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 					{
 						tree=TreeMem[tree].children[vec[seq_pos+j]];
 						TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
-#ifdef WEIGHTS_IN_TRIE
-						LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
-#else
-						LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+weight_pos*degree] ;
-#endif
+						if (weights_in_tree)
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
+						else
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+weight_pos*degree] ;
 					}
 				} 
 				else
@@ -633,11 +638,10 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
 					if (j==degree-1)
 					{
-#ifdef WEIGHTS_IN_TRIE
-						LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]] ;
-#else
-						LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]]*weights[j+weight_pos*degree] ;
-#endif
+						if (weights_in_tree)
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]] ;
+						else
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]]*weights[j+weight_pos*degree] ;
 					}		  
 					break ;
 				}
@@ -658,11 +662,10 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 					{
 						if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
 							break ;
-#ifdef WEIGHTS_IN_TRIE
-						LevelContrib[(j+k)/mkl_stepsize] += factor*TreeMem[tree].weight ;
-#else
-						LevelContrib[(j+k)/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+k] ;
-#endif
+						if (weights_in_tree)
+							LevelContrib[(j+k)/mkl_stepsize] += factor*TreeMem[tree].weight ;
+						else
+							LevelContrib[(j+k)/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+k] ;
 					}
 					break ;
 				}
@@ -670,11 +673,10 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 				{
 					tree=TreeMem[tree].children[vec[seq_pos+j]];
 					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
-#ifdef WEIGHTS_IN_TRIE
-					LevelContrib[j/mkl_stepsize] += factor*TreeMem[tree].weight ;
-#else
-					LevelContrib[j/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j] ;
-#endif
+					if (weights_in_tree)
+						LevelContrib[j/mkl_stepsize] += factor*TreeMem[tree].weight ;
+					else
+						LevelContrib[j/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j] ;
 				}
 			}
 			else
@@ -682,11 +684,10 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
 				if (j==degree-1)
 				{
-#ifdef WEIGHTS_IN_TRIE
-					LevelContrib[j/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]] ;
-#else
-					LevelContrib[j/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]]*weights[j] ;
-#endif
+					if (weights_in_tree)
+						LevelContrib[j/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]] ;
+					else
+						LevelContrib[j/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]]*weights[j] ;
 				}
 				break ;
 			}
@@ -724,11 +725,10 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 					{
 						if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
 							break ;
-#ifdef WEIGHTS_IN_TRIE
-						LevelContrib[(j+k+degree*weight_pos)/mkl_stepsize] += factor*TreeMem[tree].weight ;
-#else
-						LevelContrib[(j+k+degree*weight_pos)/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+k+weight_pos*degree] ;
-#endif
+						if (weights_in_tree)
+							LevelContrib[(j+k+degree*weight_pos)/mkl_stepsize] += factor*TreeMem[tree].weight ;
+						else
+							LevelContrib[(j+k+degree*weight_pos)/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+k+weight_pos*degree] ;
 					}
 					break ;
 				}
@@ -736,11 +736,10 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 				{
 					tree=TreeMem[tree].children[vec[seq_pos+j]];
 					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
-#ifdef WEIGHTS_IN_TRIE
-					LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * TreeMem[tree].weight ;
-#else
-					LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * TreeMem[tree].weight * weights[j+weight_pos*degree] ;
-#endif
+					if (weights_in_tree)
+						LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * TreeMem[tree].weight ;
+					else
+						LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * TreeMem[tree].weight * weights[j+weight_pos*degree] ;
 				} 
 			}
 			else
@@ -748,11 +747,10 @@ inline void CTrie::compute_by_tree_helper(INT* vec, INT len,
 				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
 				if (j==degree-1)
 				{
-#ifdef WEIGHTS_IN_TRIE
-					LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * TreeMem[tree].child_weights[vec[seq_pos+j]] ;
-#else
-					LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * TreeMem[tree].child_weights[vec[seq_pos+j]] * weights[j+weight_pos*degree] ;
-#endif
+					if (weights_in_tree)
+						LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * TreeMem[tree].child_weights[vec[seq_pos+j]] ;
+					else
+						LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * TreeMem[tree].child_weights[vec[seq_pos+j]] * weights[j+weight_pos*degree] ;
 				}
 				break ;
 			}

@@ -205,7 +205,7 @@ public:
 			return position_weights;
 		}
 	virtual bool set_weights(DREAL* weights, INT d, INT len=0);
-	bool set_position_weights(DREAL* position_weights, INT len=0); 
+	virtual bool set_position_weights(DREAL* position_weights, INT len=0); 
 	bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 	
 	inline bool get_use_normalization() { return use_normalization; }
