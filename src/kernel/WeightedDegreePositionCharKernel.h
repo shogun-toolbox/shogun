@@ -204,7 +204,7 @@ public:
 			len=seq_length;
 			return position_weights;
 		}
-	bool set_weights(DREAL* weights, INT d, INT len=0);
+	virtual bool set_weights(DREAL* weights, INT d, INT len=0);
 	bool set_position_weights(DREAL* position_weights, INT len=0); 
 	bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 	
@@ -224,7 +224,7 @@ protected:
 	/// compute kernel function for features a and b
 	/// idx_{a,b} denote the index of the feature vectors
 	/// in the corresponding feature object
-	DREAL compute(INT idx_a, INT idx_b);
+	virtual DREAL compute(INT idx_a, INT idx_b);
 	
 	DREAL compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
 	DREAL compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
@@ -253,6 +253,7 @@ protected:
 	INT *shift ;
 	INT shift_len ;
 	INT max_shift ;
+	DREAL* max_shift_vec ;
 	
 	double* sqrtdiag_lhs;
 	double* sqrtdiag_rhs;
@@ -264,79 +265,5 @@ protected:
 	bool tree_initialized ;
 	
 };
-
-/* computes the simple kernel between position seq_pos and tree tree_pos */
-/*
-inline DREAL CWeightedDegreePositionCharKernel::compute_by_tree_helper(INT* vec, INT len, INT seq_pos, 
-									   INT tree_pos,
-									   INT weight_pos)
-{
-  DREAL sum=0 ;
-  
-  if ((position_weights!=NULL) && (position_weights[weight_pos]==0))
-    return sum;
-  
-  struct Trie *tree = trees[tree_pos] ;
-  ASSERT(tree!=NULL) ;
-  
-  if (length==0) // weights is a vector (1 x degree)
-    {
-      for (INT j=0; seq_pos+j < len; j++)
-	{
-	  if ((j<degree-1) && (tree->children[vec[seq_pos+j]]!=NO_CHILD))
-	    {
-	      tree=tree->children[vec[seq_pos+j]];
-	      sum += tree->weight * weights[j] ;
-	    }
-	  else
-	    {
-	      if (j==degree-1)
-		sum += tree->child_weights[vec[seq_pos+j]] * weights[j] ;
-	      break;
-	    }
-	} 
-    }
-  else // weights is a matrix (len x degree)
-    {
-      if (!position_mask)
-	{		
-	  position_mask = new bool[len] ;
-	  for (INT i=0; i<len; i++)
-	    {
-	      position_mask[i]=false ;
-	      
-	      for (INT j=0; j<degree; j++)
-		if (weights[i*degree+j]!=0.0)
-		  {
-		    position_mask[i]=true ;
-		    break ;
-		  }
-	    }
-	}
-      if (position_mask[weight_pos]==0)
-	return 0 ;
-      
-      for (INT j=0; seq_pos+j<len; j++)
-	{
-	  if ((j<degree-1) && (tree->children[vec[seq_pos+j]]!=NO_CHILD))
-	    {
-	      tree=&TreeMem[tree->children[vec[seq_pos+j]]];
-	      sum += tree->weight * weights[j+weight_pos*degree] ;
-	    }
-	  else
-	    {
-	      if (j==degree-1)
-		sum += tree->child_weights[vec[seq_pos+j]] * weights[j+weight_pos*degree] ;
-	      break ;
-	    }
-	} 
-    }
-  
-  if (position_weights!=NULL)
-    return sum*position_weights[weight_pos] ;
-  else
-    return sum ;
-}
-*/
 
 #endif
