@@ -607,6 +607,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 				for (INT j=0; j<N; j++)
 				{
 					CPlifArray * plif_array = new CPlifArray() ;
+					CPlif * plif = NULL ;
 					plif_array->clear() ;
 					for (INT k=0; k<penalties_dim3; k++)
 					{
@@ -619,12 +620,19 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 							delete[] PEN ;
 							return false ;
 						}
-						plif_array->add_plif(&PEN[id]) ;
+						plif = &PEN[id] ;
+						plif_array->add_plif(plif) ;
 					}
-					if (plif_array->is_empty())
+					if (plif_array->get_num_plifs()==0)
 					{
 						delete plif_array ;
 						PEN_matrix[i+j*N] = NULL ;
+					}
+					else if (plif_array->get_num_plifs()==1)
+					{
+						delete plif_array ;
+						ASSERT(plif!=NULL) ;
+						PEN_matrix[i+j*N] = plif ;
 					}
 					else
 						PEN_matrix[i+j*N] = plif_array ;

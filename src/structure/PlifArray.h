@@ -33,9 +33,9 @@ public:
 		{
 			m_array.resize_array(0) ;
 		}
-	bool is_empty()
+	INT get_num_plifs()
 		{
-			return m_array.get_array_size()==0 ;
+			return m_array.get_array_size() ;
 		}
 	
 
