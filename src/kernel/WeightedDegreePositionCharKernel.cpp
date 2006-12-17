@@ -876,7 +876,7 @@ DREAL CWeightedDegreePositionCharKernel::compute_by_tree(INT idx)
 			for (INT s=1; (s<=shift[i]) && (i+s<len); s++)
 			{
 				sum+=tries.compute_by_tree_helper(vec, len, i, i+s, i, weights, (length!=0))/(2*s) ;
-				sum+=tries.compute_by_tree_helper(vec, len, i+s, i, i, weights, (length!=0))/(2*s) ;
+				sum+=tries.compute_by_tree_helper(vec, len, i+s, i, i+s, weights, (length!=0))/(2*s) ;
 			}
 		}
     }
@@ -915,7 +915,7 @@ void CWeightedDegreePositionCharKernel::compute_by_tree(INT idx, DREAL* LevelCon
 	for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
 	  {
 	    tries.compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, factor/(2*k), mkl_stepsize, weights, (length!=0)) ;
-	    tries.compute_by_tree_helper(vec, len, i+k, i, i, LevelContrib, factor/(2*k), mkl_stepsize, weights, (length!=0)) ;
+	    tries.compute_by_tree_helper(vec, len, i+k, i, i+k, LevelContrib, factor/(2*k), mkl_stepsize, weights, (length!=0)) ;
 	  }
     }
   
@@ -1029,7 +1029,7 @@ void* CWeightedDegreePositionCharKernel::compute_batch_helper(void* p)
 					result[i] += tries->compute_by_tree_helper(vec, len, q, q+s, q, weights, (length!=0))*norm_fac/(2.0*s) ;
 			}
 			for (INT s=1; (s<=shift[j]) && (j+s<len); s++)
-				result[i] += tries->compute_by_tree_helper(vec, len, j+s, j, j, weights, (length!=0))*norm_fac/(2.0*s) ;
+				result[i] += tries->compute_by_tree_helper(vec, len, j+s, j, j+s, weights, (length!=0))*norm_fac/(2.0*s) ;
 		}
 
 		((CCharFeatures*) wd->get_rhs())->free_feature_vector(char_vec, vec_idx[i], freevec);
