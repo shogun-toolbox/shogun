@@ -476,7 +476,7 @@ DREAL CWeightedDegreePositionCharKernel::compute_with_mismatch(CHAR* avec, INT a
 				sumi2 += weights[j+degree*mismatches];
 			}
 			if (position_weights!=NULL)
-				max_shift_vec[k-1] += position_weights[i]*sumi + position_weights[i+k]*sumi2 ;
+				max_shift_vec[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
 			else
 				max_shift_vec[k-1] += sumi1 + sumi2 ;
 		} ;
