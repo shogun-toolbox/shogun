@@ -21,7 +21,9 @@
 
 #include "lib/io.h"
 #include "lib/Version.h"
+#include "structure/PlifBase.h"
 #include "structure/Plif.h"
+#include "structure/PlifArray.h"
 #include "structure/DynProg.h"
 #include "distributions/hmm/HMM.h"
 #include "features/Alphabet.h"
@@ -36,6 +38,8 @@
 #include "kernel/CustomKernel.h"
 #include "kernel/LinearKernel.h"
 #include "classifier/svm/SVM.h"
+#include "lib/Array.h"
+#include "lib/Array3.h"
 
 extern CTextGUI* gui;
 
@@ -533,9 +537,20 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			  mxGetM(mx_genestr)==1))
 			CIO::message(M_ERROR, "sequence and position matrices sizes wrong\n");
 		
-		if (!(mxGetM(mx_penalties)==N && 
-			  mxGetN(mx_penalties)==N))
-			CIO::message(M_ERROR, "size of penalties wrong (%i!=%i or %i!=%i)\n", mxGetM(mx_penalties), N, mxGetN(mx_penalties), N);
+		INT penalty_num_dimensions = mxGetNumberOfDimensions(mx_penalties) ;
+		if ((penalty_num_dimensions==2) || (penalty_num_dimensions==3))
+			CIO::message(M_ERROR, "penalties should have 2 or three dimensions (has %i)", penalty_num_dimensions);
+
+		const int *penalty_dimensions = mxGetDimensions(mx_penalties) ;		
+		if (!(penalty_dimensions[0]==N && 
+			  penalty_dimensions[1]==N))
+			CIO::message(M_ERROR, "size of penalties wrong (%i!=%i or %i!=%i)\n", penalty_dimensions[0], N, penalty_dimensions[1], N);
+
+		INT penalties_dim3 = 1 ;
+		if (penalty_num_dimensions==3)
+			penalties_dim3 = penalty_dimensions[2] ;
+		CIO::message(M_DEBUG, "considering up to %i Plifs in a PlifArray\n", penalties_dim3) ;
+		ASSERT(penalties_dim3>0) ;
 
 		if (!(mxGetM(mx_state_signals)==N && 
 			  mxGetN(mx_state_signals)==2))
@@ -584,24 +599,38 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			if (PEN==NULL && P!=0)
 				return false ;
 			
-			CPlif **PEN_matrix = new CPlif*[N*N] ;
-			double* penalties=mxGetPr(mx_penalties) ;
-			for (INT i=0; i<N*N; i++)
-			{
-				INT id = (INT) penalties[i]-1 ;
-				if ((id<0 || id>=P) && (id!=-1))
+			CPlifBase **PEN_matrix = new CPlifBase*[N*N] ;
+			double* penalties_array=mxGetPr(mx_penalties) ;
+			CArray3<double> penalties(penalties_array, N, N, penalties_dim3, false, false) ;
+			
+			for (INT i=0; i<N; i++)
+				for (INT j=0; j<N; j++)
 				{
-					CIO::message(M_ERROR, "id out of range\n") ;
-					delete[] PEN ;
-					return false ;
+					CPlifArray * plif_array = new CPlifArray() ;
+					plif_array->clear() ;
+					for (INT k=0; k<penalties_dim3; k++)
+					{
+						if (penalties.element(i,j,k)==0)
+							continue ;
+						INT id = (INT) penalties.element(i,j,k)-1 ;
+						if ((id<0 || id>=P) && (id!=-1))
+						{
+							CIO::message(M_ERROR, "id out of range\n") ;
+							delete[] PEN ;
+							return false ;
+						}
+						plif_array->add_plif(&PEN[id]) ;
+					}
+					if (plif_array->is_empty())
+					{
+						delete plif_array ;
+						PEN_matrix[i+j*N] = NULL ;
+					}
+					else
+						PEN_matrix[i+j*N] = plif_array ;
 				}
-				if (id==-1)
-					PEN_matrix[i]=NULL ;
-				else
-					PEN_matrix[i]=&PEN[id] ;
-			} ;
 
-			CPlif **PEN_state_signal = new CPlif*[2*N] ;
+			CPlifBase **PEN_state_signal = new CPlifBase*[2*N] ;
 			double* state_signals=mxGetPr(mx_state_signals) ;
 			for (INT i=0; i<2*N; i++)
 			{
@@ -664,8 +693,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 
 			h->best_path_trans(seq, M, pos, orf_info,
 							   PEN_matrix, PEN_state_signal, genestr, L,
-							   nbest, p_prob, my_path, my_pos, dict_weights, 
-							   8*D, PEN_values, PEN_input_values, num_PEN_id, use_orf) ;
+							   nbest, p_prob, my_path, my_pos, dict_weights, 8*D, use_orf) ;
 
 			int dims[3]={num_PEN_id,M,nbest};
 			mxArray* mx_PEN_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
@@ -819,7 +847,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			} ;
 
 
-			CPlif **PEN_matrix = new CPlif*[N*N] ;
+			CPlifBase **PEN_matrix = new CPlifBase*[N*N] ;
 			double* penalties=mxGetPr(mx_penalties) ;
 			for (INT i=0; i<N*N; i++)
 			{
@@ -836,7 +864,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 					PEN_matrix[i]=&PEN[id] ;
 			} ;
 
-			CPlif **PEN_state_signal = new CPlif*[2*N] ;
+			CPlifBase **PEN_state_signal = new CPlifBase*[2*N] ;
 			double* state_signals=mxGetPr(mx_state_signals) ;
 			for (INT i=0; i<2*N; i++)
 			{
@@ -1049,7 +1077,7 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 			if (PEN==NULL && P!=0)
 				return false ;
 			
-			CPlif **PEN_matrix = new CPlif*[N*N] ;
+			CPlifBase **PEN_matrix = new CPlifBase*[N*N] ;
 			double* penalties=mxGetPr(mx_penalties) ;
 			for (INT i=0; i<N*N; i++)
 			{
@@ -1082,24 +1110,11 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 			
 			mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxREAL);
 			double* p_prob = mxGetPr(mx_prob);
-			DREAL* PEN_values=NULL, *PEN_input_values=NULL ;
-			INT num_PEN_id = 0 ;
 			
 			h->best_path_2struct(seq, M, pos, PEN_matrix, genestr, L,
 								 nbest, p_prob, my_path, my_pos, dict_weights, 
-								 D, segment_sum_weights, PEN_values, PEN_input_values, num_PEN_id) ;
+								 D, segment_sum_weights) ;
 
-			int dims[3]={num_PEN_id,M,nbest};
-			mxArray* mx_PEN_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
-			double* p_PEN_values = mxGetPr(mx_PEN_values);
-			for (INT s=0; s<num_PEN_id*M*nbest; s++)
-				p_PEN_values[s]=PEN_values[s] ;
-
-			mxArray* mx_PEN_input_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
-			double* p_PEN_input_values = mxGetPr(mx_PEN_input_values);
-			for (INT s=0; s<num_PEN_id*M*nbest; s++)
-				p_PEN_input_values[s]=PEN_input_values[s] ;
-			
 			// clean up 
 			delete[] PEN ;
 			delete[] PEN_matrix ;
@@ -1123,13 +1138,9 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 			retvals[0]=mx_prob ;
 			retvals[1]=mx_my_path ;
 			retvals[2]=mx_my_pos ;
-			retvals[3]=mx_PEN_values ;
-			retvals[4]=mx_PEN_input_values ;
 
 			delete[] my_path ;
 			delete[] my_pos ;
-			delete[] PEN_values ;
-			delete[] PEN_input_values ;
 
 			return true;
 		}

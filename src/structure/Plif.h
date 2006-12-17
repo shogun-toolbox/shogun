@@ -14,6 +14,7 @@
 
 #include "lib/common.h"
 #include "lib/Mathematics.h"
+#include "structure/PlifBase.h"
 
 #ifdef HAVE_MATLAB
 #include <mex.h>
@@ -28,27 +29,26 @@ enum ETransformType
 	T_LINEAR_PLUS3
 }  ;
 
-class CPlif
+class CPlif: public CPlifBase
 {
 public:
 	CPlif(INT len=0) ;
 	~CPlif() ;
 	void init_penalty_struct_cache() ;
 	
-	DREAL lookup_penalty_svm(DREAL p_value, DREAL *d_values, bool follow_next, DREAL &input_value) const ;
-	DREAL lookup_penalty(DREAL p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const ;
-	DREAL lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const ;
-
+	DREAL lookup_penalty_svm(DREAL p_value, DREAL *d_values) const ;
+	DREAL lookup_penalty(DREAL p_value, DREAL* svm_values) const ;
+	DREAL lookup_penalty(INT p_value, DREAL* svm_values) const ;
+	
 	inline DREAL lookup(DREAL p_value)
 	{
-		DREAL dummy;
 		ASSERT(use_svm == 0);
-		return lookup_penalty(p_value, NULL, false, dummy);
+		return lookup_penalty(p_value, NULL);
 	}
 
-	void penalty_clear_derivative(bool follow_next) ;
-	void penalty_add_derivative_svm(DREAL p_value, DREAL* svm_values, bool follow_next) ;
-	void penalty_add_derivative(DREAL p_value, DREAL* svm_values, bool follow_next) ;
+	void penalty_clear_derivative() ;
+	void penalty_add_derivative_svm(DREAL p_value, DREAL* svm_values) ;
+	void penalty_add_derivative(DREAL p_value, DREAL* svm_values) ;
 	const DREAL * get_cum_derivative(INT & p_len) const 
 	{
 		p_len = len ;
@@ -61,18 +61,14 @@ public:
 	{
 		id=p_id ;
 	}
-	INT get_id() 
+	INT get_id() const 
 	{
 		return id ;
 	}
-	void set_next_pen(CPlif * p_next_pen) 
-	{
-		next_pen=p_next_pen ;
-	}
-	CPlif* get_next_pen() 
-	{
-		return next_pen ;
-	}
+	INT get_max_id() const
+		{
+			return get_id() ;
+		}
 
 	void set_use_svm(INT p_use_svm) 
 	{
@@ -80,10 +76,15 @@ public:
 		cache=NULL ;
 		use_svm=p_use_svm ;
 	}
-	INT get_use_svm()
+	INT get_use_svm() const 
 	{
 		return use_svm ;
 	}
+	virtual bool uses_svm_values() const
+		{
+			return (get_use_svm()!=0) ;
+		}
+	
 
 	void set_use_cache(INT p_use_cache) 
 	{
@@ -116,7 +117,7 @@ public:
 			penalties[i]=p_penalties[i] ;
 		}
 
-		penalty_clear_derivative(false) ;
+		penalty_clear_derivative() ;
 	}
 
 	void set_plif_length(INT p_len) 
@@ -139,7 +140,7 @@ public:
 			limits[i]=0.0 ;
 			penalties[i]=0.0 ;
 		}
-		penalty_clear_derivative(false) ;
+		penalty_clear_derivative() ;
 	}
 
 	void set_plif_limits(DREAL* p_limits, INT p_len) 
@@ -151,7 +152,7 @@ public:
 		for (INT i=0; i<len; i++)
 			limits[i]=p_limits[i] ;
 
-		penalty_clear_derivative(false) ;
+		penalty_clear_derivative() ;
 	}
 
 	void set_plif_penalty(DREAL* p_penalties, INT p_len) 
@@ -163,7 +164,7 @@ public:
 		for (INT i=0; i<len; i++)
 			penalties[i]=p_penalties[i] ;
 
-		penalty_clear_derivative(false) ;
+		penalty_clear_derivative() ;
 	}
 
 	inline void set_max_value(DREAL p_max_value) 
@@ -222,7 +223,6 @@ protected:
 	DREAL *cache ;
 	enum ETransformType transform ;
 	INT id ;
-	CPlif *next_pen ;
 	char * name ;
 	INT use_svm ;
 	bool use_cache ;

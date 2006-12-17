@@ -27,7 +27,6 @@ CPlif::CPlif(INT l)
 	penalties=NULL ;
 	cum_derivatives=NULL ;
 	id=-1 ;
-	next_pen=NULL ;
 	transform = T_LINEAR ;
 	name = NULL ;
 	max_value=0 ;
@@ -93,12 +92,11 @@ void CPlif::init_penalty_struct_cache()
 	DREAL* cache=new DREAL[((INT) (CMath::ceil(max_value)))+1] ;
 	if (cache)
 	{
-		DREAL input_value ;
 		for (INT i=0; i<=max_value; i++)
 			if (i<min_value)
 				cache[i] = -CMath::INFTY ;
 			else
-				cache[i] = lookup_penalty(i, 0, false, input_value) ;
+				cache[i] = lookup_penalty(i, 0) ;
 	}
 	this->cache=cache ;
 }
@@ -218,16 +216,6 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 			loss = (INT) mxGetScalar(mx_loss_field) ;
 		}
 		
-		const mxArray* mx_next_id_field = mxGetField(mx_elem, 0, "next_id") ;
-		if (mx_next_id_field==NULL || !mxIsNumeric(mx_next_id_field) ||
-			mxGetM(mx_next_id_field)!=1 || mxGetN(mx_next_id_field)!=1)
-		{
-			CIO::message(M_ERROR, "missing next_id field\n") ;
-			delete[] PEN;
-			return NULL ;
-		}
-		INT next_id = (INT) mxGetScalar(mx_next_id_field)-1 ;
-		
 		INT id = (INT) mxGetScalar(mx_id_field)-1 ;
 		if (i<0 || i>P-1)
 		{
@@ -260,11 +248,7 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 			return NULL ;
 		}
 		PEN[id].set_id(id) ;
-		if (next_id>=0)
-			PEN[id].set_next_pen(&PEN[next_id]) ;
-		//fprintf(stderr,"id=%i, next_id=%i\n", id, next_id) ;
 		
-		ASSERT(next_id!=id) ;
 		PEN[id].set_use_svm(use_svm) ;
 		PEN[id].set_use_cache(use_cache) ;
 		PEN[id].set_plif_loss(loss) ;
@@ -301,12 +285,10 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 }
 #endif
 
-DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values, bool follow_next, DREAL &input_value) const
+DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
 {	
 	ASSERT(use_svm>0) ;
 	DREAL d_value=d_values[use_svm-1] ;
-    input_value = d_value ;
-	//fprintf(stderr,"transform=%i, d_value=%1.2f\n", (INT)PEN->transform, d_value) ;
 	
 	switch (transform)
 	{
@@ -345,18 +327,13 @@ DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values, bool follow_next
 			   (limits[idx]-d_value)) / (limits[idx]-limits[idx-1]) ;  
 	}
 	
-	if (next_pen && follow_next)
-		ret+=next_pen->lookup_penalty(p_value, d_values, follow_next, input_value);
-	
 	return ret ;
 }
 
-DREAL CPlif::lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const
+DREAL CPlif::lookup_penalty(INT p_value, DREAL* svm_values) const
 {
 	if (use_svm)
-		return lookup_penalty_svm(p_value, svm_values, follow_next, input_value) ;
-		
-	input_value = (DREAL) p_value ;
+		return lookup_penalty_svm(p_value, svm_values) ;
 
 	if ((p_value<min_value) || (p_value>max_value))
 		return -CMath::INFTY ;
@@ -364,19 +341,15 @@ DREAL CPlif::lookup_penalty(INT p_value, DREAL* svm_values, bool follow_next, DR
 	if (cache!=NULL && (p_value>=0) && (p_value<=max_value))
 	{
 		DREAL ret=cache[p_value] ;
-		if (next_pen && follow_next)
-			ret+=next_pen->lookup_penalty(p_value, svm_values, true, input_value);
 		return ret ;
 	}
-	return lookup_penalty((DREAL) p_value, svm_values, follow_next, input_value) ;
+	return lookup_penalty((DREAL) p_value, svm_values) ;
 }
 
-DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values, bool follow_next, DREAL &input_value) const
+DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 {	
 	if (use_svm)
-		return lookup_penalty_svm(p_value, svm_values, follow_next, input_value) ;
-		
-	input_value = (DREAL) p_value ;
+		return lookup_penalty_svm(p_value, svm_values) ;
 
 	if ((p_value<min_value) || (p_value>max_value))
 		return -CMath::INFTY ;
@@ -421,29 +394,23 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values, bool follow_next, 
 	//if (p_value>=30 && p_value<150)
 	//fprintf(stderr, "%s %i(%i) -> %1.2f\n", PEN->name, p_value, idx, ret) ;
 	
-	if (next_pen && follow_next)
-		ret+=next_pen->lookup_penalty(p_value, svm_values, true, input_value);
-
 	return ret ;
 }
 
-void CPlif::penalty_clear_derivative(bool follow_next) 
+void CPlif::penalty_clear_derivative() 
 {
 	for (INT i=0; i<len; i++)
 		cum_derivatives[i]=0.0 ;
-	
-	if (next_pen && follow_next)
-		next_pen->penalty_clear_derivative(true);
 }
 
-void CPlif::penalty_add_derivative(DREAL p_value, DREAL* svm_values, bool follow_next) 
+void CPlif::penalty_add_derivative(DREAL p_value, DREAL* svm_values) 
 {
 	if (use_svm)
 	{
-		penalty_add_derivative_svm(p_value, svm_values, follow_next) ;
+		penalty_add_derivative_svm(p_value, svm_values) ;
 		return ;
 	}
-		
+	
 	if ((p_value<min_value) || (p_value>max_value))
 		return ;
 	
@@ -483,13 +450,9 @@ void CPlif::penalty_add_derivative(DREAL p_value, DREAL* svm_values, bool follow
 		cum_derivatives[idx]+=(d_value-limits[idx-1])/(limits[idx]-limits[idx-1]) ;
 		cum_derivatives[idx-1]+=(limits[idx]-d_value)/(limits[idx]-limits[idx-1]) ;
 	}
-	
-	if (next_pen && follow_next)
-		next_pen->penalty_add_derivative(p_value, svm_values, true);
-
 }
 
-void CPlif::penalty_add_derivative_svm(DREAL p_value, DREAL *d_values, bool follow_next) 
+void CPlif::penalty_add_derivative_svm(DREAL p_value, DREAL *d_values) 
 {	
 	ASSERT(use_svm>0) ;
 	DREAL d_value=d_values[use_svm-1] ;
@@ -529,7 +492,4 @@ void CPlif::penalty_add_derivative_svm(DREAL p_value, DREAL *d_values, bool foll
 		cum_derivatives[idx]+=(d_value-limits[idx-1])/(limits[idx]-limits[idx-1]) ;
 		cum_derivatives[idx-1]+=(limits[idx]-d_value)/(limits[idx]-limits[idx-1]) ;
 	}
-
-	if (next_pen && follow_next)
-		next_pen->penalty_add_derivative(p_value, d_values, follow_next);
 }

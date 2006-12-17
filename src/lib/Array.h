@@ -71,7 +71,7 @@ CArray(const T* p_array, INT p_array_size)
 #endif
 
 	/// return total array size (including granularity buffer)
-	inline INT get_array_size()
+	inline INT get_array_size() const
 	{
 		return array_size;
 	}
