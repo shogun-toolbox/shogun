@@ -2132,6 +2132,7 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[])
 					return true;
 				}
 			case K_WEIGHTEDDEGREEPOS:
+			case K_WEIGHTEDDEGREEPOSPHYL:
 				{
 					CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 
@@ -2243,7 +2244,7 @@ bool CGUIMatlab::compute_by_subkernels(mxArray* retvals[])
 		retvals[0]=mx_result;
 		return true;
 	}
-	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+	if (kernel_ && ((kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)||(kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOSPHYL)))
 	{
 		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 		
@@ -2306,7 +2307,7 @@ bool CGUIMatlab::get_subkernel_weights(mxArray* retvals[])
 		return true;
 	}
 
-	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+	if (kernel_ && ((kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)||(kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOSPHYL)))
 	{
 		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 
@@ -2369,7 +2370,7 @@ bool CGUIMatlab::get_last_subkernel_weights(mxArray* retvals[])
 			return true;
 		}
 		
-		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+		if (kernel_ && ((kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)||(kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOSPHYK)))
 		{
 			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 			
@@ -2434,7 +2435,7 @@ bool CGUIMatlab::get_WD_position_weights(mxArray* retvals[])
 		retvals[0]=mx_result;
 		return true;
 	}
-	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+	if (kernel_ && ((kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)||(kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOSPHYL)))
 	{
 		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 
@@ -2460,7 +2461,7 @@ bool CGUIMatlab::get_WD_scoring(mxArray* retvals[], INT max_order)
 {
 	CKernel *k= gui->guikernel.get_kernel() ;
 
-	if (k && (k->get_kernel_type() == K_WEIGHTEDDEGREE || k->get_kernel_type() == K_WEIGHTEDDEGREEPOS) )
+	if (k && (k->get_kernel_type() == K_WEIGHTEDDEGREE || k->get_kernel_type() == K_WEIGHTEDDEGREEPOS || k->get_kernel_type() == K_WEIGHTEDDEGREEPOSPHYL ) )
 	{
 		CSVM* svm=gui->guisvm.get_svm();
 		ASSERT(svm);
@@ -2526,7 +2527,7 @@ bool CGUIMatlab::set_subkernel_weights(const mxArray* mx_arg)
 		
 	}
 
-	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+	if (kernel_ && ((kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)||(kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOSPHYL)))
 	{
 		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 		INT degree = kernel->get_degree() ;
@@ -2582,7 +2583,7 @@ bool CGUIMatlab::set_last_subkernel_weights(const mxArray* mx_arg)
 			return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), len);
 			
 		}
-		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+		if (kernel_ && ((kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)||(kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOSPHYL)))
 		{
 			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 			INT degree = kernel->get_degree() ;
@@ -2637,7 +2638,7 @@ bool CGUIMatlab::set_WD_position_weights(const mxArray* mx_arg)
 		return kernel->set_position_weights(mxGetPr(mx_arg), len);
 		
 	}
-	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+	if (kernel_ && ((kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)||(kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)))
 	{
 		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 		if (mxGetM(mx_arg)!=1 & mxGetN(mx_arg)>0)

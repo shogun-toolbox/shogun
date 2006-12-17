@@ -884,6 +884,9 @@ void CKernel::list_kernel()
 		case K_WEIGHTEDDEGREEPOS:
 			CIO::message(M_INFO, "K_WEIGHTEDDEGREEPOS ");
 			break;
+		case K_WEIGHTEDDEGREEPOSPHYL:
+			CIO::message(M_INFO, "K_WEIGHTEDDEGREEPOSPHYL ");
+			break;
 		case K_COMMWORD:
 			CIO::message(M_INFO, "K_COMMWORD ");
 			break;

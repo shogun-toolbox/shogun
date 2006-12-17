@@ -9,7 +9,7 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _WEIGHTEDDEGREEPOSITIONCHARKERNE_H___
+#ifndef _WEIGHTEDDEGREEPOSITIONCHARKERNEL_H___
 #define _WEIGHTEDDEGREEPOSITIONCHARKERNEL_H___
 
 #include "lib/common.h"

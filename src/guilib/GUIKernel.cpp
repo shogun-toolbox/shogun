@@ -23,7 +23,7 @@
 #include "kernel/WeightedDegreeCharKernel.h"
 #include "kernel/WeightedDegreeCharKernelPolyA.h"
 #include "kernel/WeightedDegreePositionCharKernel.h"
-//#include "kernel/WeightedDegreePositionCharKernel_new.h"
+#include "kernel/WeightedDegreePositionPhylCharKernel.h"
 #include "kernel/FixedDegreeCharKernel.h"
 #include "kernel/LocalityImprovedCharKernel.h"
 #include "kernel/SimpleLocalityImprovedCharKernel.h"
@@ -805,7 +805,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 			}
 		}
-		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS2")==0)
+		else if ((strcmp(kern_type,"WEIGHTEDDEGREEPOS2")==0) || (strcmp(kern_type,"WEIGHTEDDEGREEPOSPHYL2")==0))
 		{
 			if (strcmp(data_type,"CHAR")==0)
 			{
@@ -866,9 +866,15 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				
 				delete k;
-				k=new CWeightedDegreePositionCharKernel(size, weights, 
-														d, max_mismatch, 
-														shift, length, true);
+
+				if (strcmp(kern_type,"WEIGHTEDDEGREEPOS2")==0)
+					k=new CWeightedDegreePositionCharKernel(size, weights, 
+															d, max_mismatch, 
+															shift, length, true);
+				else
+					k=new CWeightedDegreePositionPhylCharKernel(size, weights, 
+															d, max_mismatch, 
+															shift, length, true);
 
 				delete[] shift ;
 				delete[] weights ;
@@ -880,7 +886,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 			}
 		}
-		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS3")==0)
+		else if ((strcmp(kern_type,"WEIGHTEDDEGREEPOS3")==0) || (strcmp(kern_type,"WEIGHTEDDEGREEPOSPHYL3")==0))
 		{
 			if (strcmp(data_type,"CHAR")==0)
 			{
@@ -970,10 +976,18 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				
 				delete k;
-				k=new CWeightedDegreePositionCharKernel(size, weights, 
-														d, max_mismatch, 
-														shift, length, false, 
-														mkl_stepsize);
+
+				if (strcmp(kern_type,"WEIGHTEDDEGREEPOS3")==0)
+					k=new CWeightedDegreePositionCharKernel(size, weights, 
+															d, max_mismatch, 
+															shift, length, false, 
+															mkl_stepsize);
+				else
+					k=new CWeightedDegreePositionPhylCharKernel(size, weights, 
+																d, max_mismatch, 
+																shift, length, false, 
+																mkl_stepsize);
+
 				((CWeightedDegreePositionCharKernel*)k)->set_position_weights(position_weights, length) ;
 				
 				delete[] shift ;
@@ -987,7 +1001,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 			}
 		}
-		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS")==0)
+		else if ((strcmp(kern_type,"WEIGHTEDDEGREEPOS")==0) || (strcmp(kern_type,"WEIGHTEDDEGREEPOSPHYL")==0))
 		{
 			if (strcmp(data_type,"CHAR")==0)
 			{
@@ -1043,9 +1057,15 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				  CIO::message(M_INFO, "shift[%i]=%i\n", i, shift[i]) ;
 				
 				delete k;
-				k=new CWeightedDegreePositionCharKernel(size, weights, 
-															 d, max_mismatch, 
-															 shift, length);
+
+				if (strcmp(kern_type,"WEIGHTEDDEGREEPOS")==0)
+					k=new CWeightedDegreePositionCharKernel(size, weights, 
+															d, max_mismatch, 
+															shift, length);
+				else
+					k=new CWeightedDegreePositionCharKernel(size, weights, 
+															d, max_mismatch, 
+															shift, length);
 				delete[] shift ;
 				delete[] weights ;
 				

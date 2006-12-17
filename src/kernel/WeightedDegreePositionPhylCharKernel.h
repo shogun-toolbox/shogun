@@ -29,7 +29,7 @@ public:
 	virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
 
 	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREEPHYLPOS; }
+	virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREEPOSPHYL; }
 	
 	// return the name of a kernel
 	virtual const CHAR* get_name() { return "WeightedDegreePhylPos" ; } ;
