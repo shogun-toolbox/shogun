@@ -36,14 +36,9 @@ public:
 	
 	// set conservation weights (length x num_examples)
 	virtual bool set_weights(DREAL* weights, INT len, INT num_examples);
-	virtual bool set_position_weights(DREAL* position_weights, INT len)
-	{
-		CIO::message(M_ERROR, "not implemented\n") ; 
-		return false ;
-	}
 
-	DREAL compute_by_tree(INT idx);
-	void compute_by_tree(INT idx, DREAL* LevelContrib); // not implemented
+	virtual DREAL compute_by_tree(INT idx);
+	virtual void compute_by_tree(INT idx, DREAL* LevelContrib); // not implemented
 	
 	DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
 	virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
@@ -57,6 +52,7 @@ protected:
 	void add_example_to_single_tree(INT idx, DREAL weight, INT tree_num);
 
 	DREAL* lhs_phyl_weights, *rhs_phyl_weights ;
+	INT lhs_phyl_weights_len, rhs_phyl_weights_len ;
 	DREAL* weights_buffer ;
 };
 

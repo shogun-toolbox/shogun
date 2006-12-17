@@ -5,7 +5,7 @@ from shogun.Classifier import *
 from shogun.Kernel import *
 
 degree=20
-num_dat=50
+num_dat=5000
 len=70
 acgt=array(['A','C','G','T'])
 C=1

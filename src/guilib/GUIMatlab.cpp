@@ -29,6 +29,7 @@
 #include "features/RealFeatures.h"
 #include "kernel/WeightedDegreeCharKernel.h"
 #include "kernel/WeightedDegreePositionCharKernel.h"
+#include "kernel/WeightedDegreePositionPhylCharKernel.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/CommWordStringKernel.h"
 #include "kernel/CommWordKernel.h"
@@ -382,8 +383,8 @@ bool CGUIMatlab::best_path_no_b(const mxArray* vals[], mxArray* retvals[])
 			
 			CDynProg* h=new CDynProg();
 			h->set_N(N) ;
-			h->set_p(p, N) ;
-			h->set_q(q, N) ;
+			h->set_p_vector(p, N) ;
+			h->set_q_vector(q, N) ;
 			h->set_a(a, N, N) ;
 			
 			INT *my_path = new INT[max_iter] ;
@@ -443,9 +444,9 @@ bool CGUIMatlab::best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[])
 			
 			CDynProg* h=new CDynProg() ;
 			h->set_N(N) ;
-			h->set_p(p, N) ;
-			h->set_q(q, N) ;
-			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;
+			h->set_p_vector(p, N) ;
+			h->set_q_vector(q, N) ;
+			h->set_a_trans_matrix(a, mxGetM(mx_a_trans), 3) ;
 			
 			INT *my_path = new INT[(max_iter+1)*nbest] ;
 			memset(my_path, -1, (max_iter+1)*nbest*sizeof(INT)) ;
@@ -622,12 +623,12 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			
 			CDynProg* h=new CDynProg();
 			h->set_N(N) ;
-			h->set_p(p, N) ;
-			h->set_q(q, N) ;
+			h->set_p_vector(p, N) ;
+			h->set_q_vector(q, N) ;
 			if (mx_segment_ids_mask!=NULL)
-				h->set_a_trans(a, mxGetM(mx_a_trans), mxGetN(mx_a_trans)) ;
+				h->set_a_trans_matrix(a, mxGetM(mx_a_trans), mxGetN(mx_a_trans)) ;
 			else
-				h->set_a_trans(a, mxGetM(mx_a_trans), 3) ; // segment_id = 0 
+				h->set_a_trans_matrix(a, mxGetM(mx_a_trans), 3) ; // segment_id = 0 
 
 			INT *my_path = new INT[M*nbest] ;
 			memset(my_path, -1, M*nbest*sizeof(INT)) ;
@@ -857,12 +858,12 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			
 			CDynProg* h=new CDynProg();
 			h->set_N(N) ;
-			h->set_p(p, N) ;
-			h->set_q(q, N) ;
+			h->set_p_vector(p, N) ;
+			h->set_q_vector(q, N) ;
 			if (mx_segment_ids_mask!=NULL) 
-				h->set_a_trans(a, mxGetM(mx_a_trans), mxGetN(mx_a_trans)) ;
+				h->set_a_trans_matrix(a, mxGetM(mx_a_trans), mxGetN(mx_a_trans)) ;
 			else
-				h->set_a_trans(a, mxGetM(mx_a_trans), 3) ; // segment_id = 0 
+				h->set_a_trans_matrix(a, mxGetM(mx_a_trans), 3) ; // segment_id = 0 
 
 			INT *my_path = new INT[my_seqlen+1] ;
 			memset(my_path, -1, my_seqlen*sizeof(INT)) ;
@@ -1070,9 +1071,9 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 			
 			CDynProg* h=new CDynProg();
 			h->set_N(N) ;
-			h->set_p(p, N) ;
-			h->set_q(q, N) ;
-			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;
+			h->set_p_vector(p, N) ;
+			h->set_q_vector(q, N) ;
+			h->set_a_trans_matrix(a, mxGetM(mx_a_trans), 3) ;
 			
 			INT *my_path = new INT[(M+1)*nbest] ;
 			memset(my_path, -1, (M+1)*nbest*sizeof(INT)) ;
@@ -1171,9 +1172,9 @@ bool CGUIMatlab::best_path_trans_simple(const mxArray* vals[], mxArray* retvals[
 			
 			CDynProg* h=new CDynProg();
 			h->set_N(N) ;
-			h->set_p(p, N) ;
-			h->set_q(q, N) ;
-			h->set_a_trans(a, mxGetM(mx_a_trans), 3) ;
+			h->set_p_vector(p, N) ;
+			h->set_q_vector(q, N) ;
+			h->set_a_trans_matrix(a, mxGetM(mx_a_trans), 3) ;
 			
 			INT *my_path = new INT[M*nbest] ;
 			memset(my_path, -1, M*nbest*sizeof(INT)) ;
@@ -2370,7 +2371,7 @@ bool CGUIMatlab::get_last_subkernel_weights(mxArray* retvals[])
 			return true;
 		}
 		
-		if (kernel_ && ((kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)||(kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOSPHYK)))
+		if (kernel_ && ((kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)||(kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOSPHYL)))
 		{
 			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 			
@@ -2527,7 +2528,7 @@ bool CGUIMatlab::set_subkernel_weights(const mxArray* mx_arg)
 		
 	}
 
-	if (kernel_ && ((kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)||(kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOSPHYL)))
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
 	{
 		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 		INT degree = kernel->get_degree() ;
@@ -2536,13 +2537,19 @@ bool CGUIMatlab::set_subkernel_weights(const mxArray* mx_arg)
 			CIO::message(M_ERROR, "dimension mismatch (should be (seq_length | 1) x degree)\n") ;
 			return false ;
 		}
-
+		
 		INT len = mxGetN(mx_arg);
-
+		
 		if (len ==  1)
 			len = 0;
-
+		
 		return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), len);
+	}
+
+	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOSPHYL))
+	{
+		CWeightedDegreePositionPhylCharKernel *kernel = (CWeightedDegreePositionPhylCharKernel *) kernel_ ;
+		return kernel->set_weights(mxGetPr(mx_arg), mxGetM(mx_arg), mxGetN(mx_arg));
 	}
 
 	// all other kernels
@@ -2638,7 +2645,7 @@ bool CGUIMatlab::set_WD_position_weights(const mxArray* mx_arg)
 		return kernel->set_position_weights(mxGetPr(mx_arg), len);
 		
 	}
-	if (kernel_ && ((kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)||(kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)))
+	if (kernel_ && ((kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS)||(kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOSPHYL)))
 	{
 		CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 		if (mxGetM(mx_arg)!=1 & mxGetN(mx_arg)>0)

@@ -173,20 +173,17 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 	//ASSERT(seq_offset==0) ;
 	
 	INT max_depth = 0 ;
+	DREAL* weights_column ;
+	if (degree_times_position_weights)
+		weights_column = &weights[(i+seq_offset)*degree] ;
+	else
+		weights_column = weights ;
+	
 	if (weights_in_tree)
 	{
-		if (degree_times_position_weights)
-		{
-			for (INT j=0; (j<degree) && (i+j<length); j++)
-				if (CMath::abs(weights[j+i*degree]*alpha)>0) // FIXME: i should be weight_pos
-					max_depth = j+1 ;
-		}
-		else
-		{
-			for (INT j=0; (j<degree) && (i+j<length); j++)
-				if (CMath::abs(weights[j]*alpha)>0)
+		for (INT j=0; (j<degree) && (i+j<length); j++)
+			if (CMath::abs(weights_column[j]*alpha)>0)
 				max_depth = j+1 ;
-		}
 	}
 	else
 		// don't use the weights
@@ -252,7 +249,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 						TreeMem[last_node].children[vec[i+j+seq_offset+k]]=tmp ;
 						last_node=tmp ;
 						if (weights_in_tree)
-							TreeMem[last_node].weight = (TreeMem[node].weight+alpha)*weights[j+k] ;
+							TreeMem[last_node].weight = (TreeMem[node].weight+alpha)*weights_column[j+k] ;
 						else
 							TreeMem[last_node].weight = (TreeMem[node].weight+alpha) ;
 						TRIE_ASSERT(j+k!=degree-1) ;
@@ -269,8 +266,8 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 						if (weights_in_tree)
 						{
 							if (TreeMem[node].seq[mismatch_pos]<4) // i.e. !=TRIE_TERMINAL_CHARACTER
-								TreeMem[last_node].child_weights[TreeMem[node].seq[mismatch_pos]]+=TreeMem[node].weight*weights[degree-1] ;
-							TreeMem[last_node].child_weights[vec[i+j+seq_offset+k]] += alpha*weights[degree-1] ;
+								TreeMem[last_node].child_weights[TreeMem[node].seq[mismatch_pos]]+=TreeMem[node].weight*weights_column[degree-1] ;
+							TreeMem[last_node].child_weights[vec[i+j+seq_offset+k]] += alpha*weights_column[degree-1] ;
 						}
 						else
 						{
@@ -327,7 +324,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 				TRIE_ASSERT((tree>=0) && (tree<TreeMemPtrMax)) ;
 				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
 				if (weights_in_tree)
-					TreeMem[tree].weight += alpha*weights[j];
+					TreeMem[tree].weight += alpha*weights_column[j];
 				else
 					TreeMem[tree].weight += alpha ;
 			}
@@ -361,7 +358,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 			{*/
 				TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) ;
 				if (weights_in_tree)
-					TreeMem[tree].child_weights[vec[i+j+seq_offset]] += alpha*weights[j] ;
+					TreeMem[tree].child_weights[vec[i+j+seq_offset]] += alpha*weights_column[j] ;
 				else
 					TreeMem[tree].child_weights[vec[i+j+seq_offset]] += alpha;
 				//}
@@ -399,7 +396,7 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 			else
 			{
 				if (weights_in_tree)
-					TreeMem[tree].weight = alpha*weights[j] ;
+					TreeMem[tree].weight = alpha*weights_column[j] ;
 				else
 					TreeMem[tree].weight = alpha ;
 				if (j==degree-2)
@@ -432,26 +429,7 @@ inline DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT seq_pos,
 	
 	DREAL *weights_column=NULL ;
 	if (degree_times_position_weights)
-    { // weights is a vector (degree x length)
 		weights_column=&weights[weight_pos*degree] ;
-	    /*if (!position_mask)
-		  {		
-		  position_mask = new bool[len] ;
-		  for (INT i=0; i<len; i++)
-		  {
-		  position_mask[i]=false ;
-		  
-		  for (INT j=0; j<degree; j++)
-		  if (weights[i*degree+j]!=0.0)
-		  {
-		  position_mask[i]=true ;
-		  break ;
-		  }
-		  }
-		  }
-		  if (!position_mask[weight_pos])
-		  return 0 ;*/
-    }
 	else // weights is a vector (1 x degree)
 		weights_column=weights ;
 	

@@ -976,7 +976,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				
 				delete k;
-
+				
 				if (strcmp(kern_type,"WEIGHTEDDEGREEPOS3")==0)
 					k=new CWeightedDegreePositionCharKernel(size, weights, 
 															d, max_mismatch, 
@@ -987,7 +987,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 																d, max_mismatch, 
 																shift, length, false, 
 																mkl_stepsize);
-
+				
 				((CWeightedDegreePositionCharKernel*)k)->set_position_weights(position_weights, length) ;
 				
 				delete[] shift ;

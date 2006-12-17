@@ -45,8 +45,8 @@ CWeightedDegreePositionPhylCharKernel::CWeightedDegreePositionPhylCharKernel(LON
 																			 INT max_mismatch_, INT * shift_, 
 																			 INT shift_len_, bool use_norm,
 																			 INT mkl_stepsize_)
-	: CWeightedDegreePositionCharKernel(size, w, d, max_mismatch, shift_, shift_len_, use_norm, mkl_stepsize_), 
-	  lhs_phyl_weights(NULL), rhs_phyl_weights(NULL), weights_buffer(NULL)
+	: CWeightedDegreePositionCharKernel(size, w, d, max_mismatch_, shift_, shift_len_, use_norm, mkl_stepsize_), 
+	  lhs_phyl_weights(NULL), rhs_phyl_weights(NULL), lhs_phyl_weights_len(0), rhs_phyl_weights_len(0), weights_buffer(NULL)
 {
 }
 
@@ -98,22 +98,27 @@ bool CWeightedDegreePositionPhylCharKernel::init(CFeatures* l, CFeatures* r, boo
 			CIO::message(M_ERROR, "unknown optimization type\n");
 #endif
 		}
-		if (!lhs_phyl_weights)
+
+		if ((!lhs_phyl_weights) || (lhs_phyl_weights_len != seq_length * l->get_num_vectors()))
 		{
 			CIO::message(M_DEBUG, "initializing lhs_phyl_weights\n") ;
+			delete[] lhs_phyl_weights ;
 			lhs_phyl_weights = new DREAL[seq_length * l->get_num_vectors()] ;
 			for (INT i=0; i<alen*l->get_num_vectors(); i++)
 				lhs_phyl_weights[i]=1.0 ;
+			lhs_phyl_weights_len = seq_length * l->get_num_vectors() ;
 		}
     } 
     if (rhs_changed)
 	{
-		if (!rhs_phyl_weights)
+		if ((!rhs_phyl_weights) || (rhs_phyl_weights_len != seq_length * r->get_num_vectors()))
 		{
 			CIO::message(M_DEBUG, "initializing rhs_phyl_weights\n") ;
+			delete[] rhs_phyl_weights ;
 			rhs_phyl_weights = new DREAL[seq_length * r->get_num_vectors()] ;
 			for (INT i=0; i<seq_length * r->get_num_vectors(); i++)
 				rhs_phyl_weights[i]=1.0 ;
+			rhs_phyl_weights_len = seq_length * r->get_num_vectors() ;
 		}
 	}	
 	
@@ -201,57 +206,72 @@ DREAL CWeightedDegreePositionPhylCharKernel::compute_without_mismatch(CHAR* avec
 																	  CHAR* bvec, DREAL *bphyl, INT blen) 
 {
     DREAL sum0=0 ;
-    DREAL *sum1=new DREAL[max_shift] ;
     for (INT i=0; i<max_shift; i++)
-		sum1[i]=0 ;
+		max_shift_vec[i]=0 ;
 	
     // no shift
     for (INT i=0; i<alen; i++)
     {
+		if ((position_weights!=NULL) && (position_weights[i]==0.0))
+			continue ;
+
 		DREAL sumi = 0.0 ;
-		DREAL phyl = 0.0 ;
+		DREAL sum_aphyl = 0.0, sum_bphyl = 0.0 ;
 		for (INT j=0; (j<degree) && (i+j<alen); j++)
 		{
 			if (avec[i+j]!=bvec[i+j])
 				break ;
-			phyl += aphyl[i+j] * bphyl[i+j] ;
-			sumi += weights[j] * phyl / (j+1.0) ;
+			sum_aphyl += aphyl[i+j] ;
+			sum_bphyl += bphyl[i+j] ;
+			sumi += weights[j] * sum_aphyl * sum_bphyl / ((j+1.0)*(j+1.0)) ;
 		}
-		sum0 += sumi ;
+		if (position_weights!=NULL)
+			sum0 += position_weights[i]*sumi ;
+		else
+			sum0 += sumi ;
     } ;
 	
     for (INT i=0; i<alen; i++)
     {
 		for (INT k=1; (k<=shift[i]) && (i+k<alen); k++)
 		{
-			DREAL sumi = 0.0 ;
-			DREAL phyl = 0.0 ;
+			if ((position_weights!=NULL) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
+				continue ;
+
+			DREAL sumi1 = 0.0 ;
+			DREAL sum_aphyl = 0.0, sum_bphyl = 0.0 ;
 			// shift in sequence a
 			for (INT j=0; (j<degree) && (i+j+k<alen); j++)
 			{
 				if (avec[i+j+k]!=bvec[i+j])
 					break ;
-				phyl += aphyl[i+j+k] * bphyl[i+j] ;
-				sumi += weights[j] * phyl / (j+1.0) ;
+				sum_aphyl += aphyl[i+j+k]  ;
+				sum_bphyl += bphyl[i+j] ;
+				sumi1 += weights[j] * sum_aphyl * sum_bphyl / ((j+1.0)*(j+1.0)) ;
 			}
 			// shift in sequence b
-			phyl = 0.0 ;
+			DREAL sumi2 = 0.0 ;
+			sum_aphyl = 0.0 ;
+			sum_bphyl = 0.0 ;
 			for (INT j=0; (j<degree) && (i+j+k<alen); j++)
 			{
 				if (avec[i+j]!=bvec[i+j+k])
 					break ;
-				phyl += aphyl[i+j] * bphyl[i+j+k] ;
-				sumi += weights[j] * phyl / (j+1.0) ;
+				sum_aphyl += aphyl[i+j] ;
+				sum_bphyl += bphyl[i+j+k] ;
+				sumi2 += weights[j] * sum_aphyl * sum_bphyl / ((j+1.0) * (j+1.0)) ;
 			}
-			sum1[k-1] += sumi ;
+			if (position_weights!=NULL)
+				max_shift_vec[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
+			else
+				max_shift_vec[k-1] += sumi1 + sumi2 ;
 		} ;
     }
 	
     DREAL result = sum0 ;
     for (INT i=0; i<max_shift; i++)
-		result += sum1[i]/(2*(i+1)) ;
+		result += max_shift_vec[i]/(2*(i+1)) ;
 	
-    delete[] sum1 ;
     return result ;
 }
 
@@ -319,13 +339,15 @@ void CWeightedDegreePositionPhylCharKernel::add_example_to_tree(INT idx, DREAL a
 	ASSERT(len==seq_length) ;
 	if (!weights_buffer)
 		weights_buffer=new DREAL[seq_length*degree] ;
+
 	for (INT i=0; i<seq_length; i++)
 	{
 		DREAL sum_phyl = 0.0 ;
 		for (INT j=0; j<degree; j++)
 		{
-			sum_phyl += phyl[i] ;
-			weights_buffer[j+i*degree] = weights[j]*sum_phyl / (j+1.0) ;
+			if (i+j<seq_length)
+				sum_phyl += phyl[i+j] ;
+			weights_buffer[j+i*degree] = weights[j] * sum_phyl / (j+1.0) ;
 		}
 	}
 	
@@ -364,7 +386,7 @@ void CWeightedDegreePositionPhylCharKernel::add_example_to_tree(INT idx, DREAL a
 
 void CWeightedDegreePositionPhylCharKernel::add_example_to_single_tree(INT idx, DREAL alpha, INT tree_num) 
 {
-	CIO::message(M_ERROR, "sorry not implemented") ;
+	CIO::message(M_ERROR, "add_example_to_single_tree: sorry not implemented") ;
 }
 
 DREAL CWeightedDegreePositionPhylCharKernel::compute_by_tree(INT idx)
@@ -383,13 +405,15 @@ DREAL CWeightedDegreePositionPhylCharKernel::compute_by_tree(INT idx)
 	ASSERT(len==seq_length) ;
 	if (!weights_buffer)
 		weights_buffer=new DREAL[seq_length*degree] ;
+
 	for (INT i=0; i<seq_length; i++)
 	{
 		DREAL sum_phyl = 0.0 ;
 		for (INT j=0; j<degree; j++)
 		{
-			sum_phyl += phyl[i] ;
-			weights_buffer[j+i*degree] = weights[j]*sum_phyl / (j+1.0) ;
+			if (i+j<seq_length)
+				sum_phyl += phyl[i+j] ;
+			weights_buffer[j+i*degree] = sum_phyl / (j+1.0) ; // weights are in trie, don't need them here
 		}
 	}
 	
@@ -406,7 +430,7 @@ DREAL CWeightedDegreePositionPhylCharKernel::compute_by_tree(INT idx)
 			for (INT s=1; (s<=shift[i]) && (i+s<len); s++)
 			{
 				sum+=tries.compute_by_tree_helper(vec, len, i, i+s, i, weights_buffer, true)/(2*s) ;
-				sum+=tries.compute_by_tree_helper(vec, len, i+s, i, i, weights_buffer, true)/(2*s) ;
+				sum+=tries.compute_by_tree_helper(vec, len, i+s, i, i+s, weights_buffer, true)/(2*s) ;
 			}
 		}
     }
@@ -422,7 +446,7 @@ DREAL CWeightedDegreePositionPhylCharKernel::compute_by_tree(INT idx)
 
 void CWeightedDegreePositionPhylCharKernel::compute_by_tree(INT idx, DREAL* LevelContrib)
 {
-	CIO::message(M_ERROR, "not implemented") ;
+	CIO::message(M_ERROR, "compute_by_tree: not implemented") ;
 }
 
 bool CWeightedDegreePositionPhylCharKernel::set_weights(DREAL* ws, INT length, INT num_examples)
@@ -440,6 +464,7 @@ bool CWeightedDegreePositionPhylCharKernel::set_weights(DREAL* ws, INT length, I
 		ASSERT(lhs_phyl_weights) ;
 		for (int i=0; i<length*num_examples; i++)
 			lhs_phyl_weights[i]=ws[i];
+		lhs_phyl_weights_len = seq_length * lhs->get_num_vectors() ;
 	} ;
 
 	if (rhs->get_num_vectors()==num_examples)
@@ -450,6 +475,7 @@ bool CWeightedDegreePositionPhylCharKernel::set_weights(DREAL* ws, INT length, I
 		ASSERT(rhs_phyl_weights) ;
 		for (int i=0; i<length*num_examples; i++)
 			rhs_phyl_weights[i]=ws[i];
+		rhs_phyl_weights_len = seq_length * rhs->get_num_vectors() ;
 	} ;
 
 	CFeatures *orig_lhs=lhs, *orig_rhs=rhs ;
@@ -460,12 +486,12 @@ bool CWeightedDegreePositionPhylCharKernel::set_weights(DREAL* ws, INT length, I
 
 void CWeightedDegreePositionPhylCharKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor)
 {
-	CIO::message(M_ERROR, "not implemented") ;
+	CIO::message(M_ERROR, "compute_batch: not implemented") ;
 }
 
 DREAL* CWeightedDegreePositionPhylCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas)
 {
-	CIO::message(M_ERROR, "not implemented") ;
+	CIO::message(M_ERROR, "compute_scoring: not implemented") ;
 	return NULL ;
 }
 

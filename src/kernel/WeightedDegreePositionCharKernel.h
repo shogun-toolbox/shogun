@@ -209,8 +209,8 @@ public:
 	bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 	
 	inline bool get_use_normalization() { return use_normalization; }
-	DREAL compute_by_tree(INT idx);
-	void compute_by_tree(INT idx, DREAL* LevelContrib);
+	virtual DREAL compute_by_tree(INT idx);
+	virtual void compute_by_tree(INT idx, DREAL* LevelContrib);
 	
 	/// compute positional scoring function, which assigns a weight per position, per symbol in the sequence
 	DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
