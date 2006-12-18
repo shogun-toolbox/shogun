@@ -30,11 +30,11 @@ CDistance::CDistance()
 }
 
 		
-CDistance::CDistance(CFeatures* lhs, CFeatures* rhs)
+CDistance::CDistance(CFeatures* p_lhs, CFeatures* p_rhs)
 :  precomputed_matrix(NULL), precompute_matrix(false), 
 	lhs(NULL), rhs(NULL)
 {
-	init(lhs, rhs, true);
+	init(p_lhs, p_rhs, true);
 }
 
 CDistance::~CDistance()

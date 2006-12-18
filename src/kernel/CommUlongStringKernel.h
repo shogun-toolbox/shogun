@@ -40,7 +40,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		virtual bool delete_optimization();
 		virtual DREAL compute_optimized(INT idx);
 
-		inline void merge_dictionaries(INT &t, INT j, INT &k, ULONG* vec, ULONG* dic, DREAL* dic_weights, DREAL weight, INT vec_idx, INT len, ENormalizationType normalization)
+		inline void merge_dictionaries(INT &t, INT j, INT &k, ULONG* vec, ULONG* dic, DREAL* dic_weights, DREAL weight, INT vec_idx, INT len, ENormalizationType p_normalization)
 		{
 			while (k<dictionary.get_num_elements() && dictionary[k] < vec[j-1])
 			{
@@ -53,13 +53,13 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 			if (k<dictionary.get_num_elements() && dictionary[k]==vec[j-1])
 			{
 				dic[t]=vec[j-1];
-				dic_weights[t]=dictionary_weights[k]+normalize_weight(weight, vec_idx, len, normalization);
+				dic_weights[t]=dictionary_weights[k]+normalize_weight(weight, vec_idx, len, p_normalization);
 				k++;
 			}
 			else
 			{
 				dic[t]=vec[j-1];
-				dic_weights[t]=normalize_weight(weight, vec_idx, len, normalization);
+				dic_weights[t]=normalize_weight(weight, vec_idx, len, p_normalization);
 			}
 			t++;
 		}
@@ -85,9 +85,9 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 		/// in the corresponding feature object
 		DREAL compute(INT idx_a, INT idx_b);
 
-		inline DREAL normalize_weight(DREAL value, INT seq_num, INT seq_len, ENormalizationType normalization)
+		inline DREAL normalize_weight(DREAL value, INT seq_num, INT seq_len, ENormalizationType p_normalization)
 		{
-			switch (normalization)
+			switch (p_normalization)
 			{
 				case NO_NORMALIZATION:
 					return value;

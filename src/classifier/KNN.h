@@ -44,10 +44,10 @@ class CKNN : public CDistanceMachine
 		virtual bool load(FILE* srcfile);
 		virtual bool save(FILE* dstfile);
 
-		inline void set_k(DREAL k) 
+		inline void set_k(DREAL p_k) 
 		{
 			ASSERT(k>0);
-			this->k=k;
+			this->k=p_k;
 		}
 
 		inline DREAL get_k()

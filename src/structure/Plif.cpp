@@ -42,15 +42,11 @@ CPlif::CPlif(INT l)
 
 CPlif::~CPlif()
 {
-	//fprintf(stderr, "plif destructor\n") ;
-	//if (id!=-1)
-	{
-		delete[] limits ;
-		delete[] penalties ;
-		delete[] name ;
-		delete[] cache ;
-		delete[] cum_derivatives ; 
-	}
+	delete[] limits ;
+	delete[] penalties ;
+	delete[] name ;
+	delete[] cache ;
+	delete[] cum_derivatives ; 
 }
 
 bool CPlif::set_transform_type(const char *type_str) 
@@ -86,16 +82,18 @@ void CPlif::init_penalty_struct_cache()
 		return ;
 	if (max_value<=0)
 		return ;
-	//fprintf(stderr, "init cache of size %i byte\n", (max_value+1)*sizeof(DREAL)) ;
+
+	DREAL* cache=new DREAL[ ((INT) max_value) + 2] ;
 	
-	DREAL* cache=new DREAL[((INT) (CMath::ceil(max_value)))+1] ;
 	if (cache)
 	{
 		for (INT i=0; i<=max_value; i++)
+		{
 			if (i<min_value)
 				cache[i] = -CMath::INFTY ;
 			else
-				cache[i] = lookup_penalty(i, 0) ;
+				cache[i] = lookup_penalty(i, NULL) ;
+		}
 	}
 	this->cache=cache ;
 }
@@ -109,15 +107,19 @@ void CPlif::set_name(char *p_name)
 }
 
 #ifdef HAVE_MATLAB
-CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
+CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 {
 	//P = mxGetN(mx_penalty_info) ;
 	//fprintf(stderr, "p=%i size=%i\n", P, P*sizeof(CPlif)) ;
 	
-	CPlif* PEN = new CPlif[P] ;
+	CPlif** PEN = new CPlif*[P] ;
+	for (INT i=0; i<P; i++)
+		PEN[i]=new CPlif() ;
 	
 	for (INT i=0; i<P; i++)
 	{
+		fprintf(stderr, "i=%i/%i\n", i, P) ;
+		
 		const mxArray* mx_elem = mxGetCell(mx_penalty_info, i) ;
 		if (mx_elem==NULL || !mxIsStruct(mx_elem))
 		{
@@ -215,7 +217,7 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 			delete[] PEN;
 			return NULL ;
 		}
-		PEN[id].set_max_value(max_value) ;
+		PEN[id]->set_max_value(max_value) ;
 
 		INT min_value = (INT) mxGetScalar(mx_min_value_field) ;
 		if (min_value<-1024*1024*100 || min_value>1024*1024*100)
@@ -224,42 +226,43 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 			delete[] PEN;
 			return NULL ;
 		}
-		PEN[id].set_min_value(min_value) ;
-
-		if (PEN[id].get_id()!=-1)
+		PEN[id]->set_min_value(min_value) ;
+		
+		if (PEN[id]->get_id()!=-1)
 		{
 			CIO::message(M_ERROR, "penalty id already used\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
-		PEN[id].set_id(id) ;
+		PEN[id]->set_id(id) ;
 		
-		PEN[id].set_use_svm(use_svm) ;
-		PEN[id].set_use_cache(use_cache) ;
+		PEN[id]->set_use_svm(use_svm) ;
+		PEN[id]->set_use_cache(use_cache) ;
 
 		double * limits = mxGetPr(mx_limits_field) ;
 		double * penalties = mxGetPr(mx_penalties_field) ;
-		PEN[id].set_plif(len, limits, penalties) ;
+		PEN[id]->set_plif(len, limits, penalties) ;
 		
 		char *transform_str = mxArrayToString(mx_transform_field) ;				
 		char *name_str = mxArrayToString(mx_name_field) ;				
 
-		if (!PEN[id].set_transform_type(transform_str))
+		if (!PEN[id]->set_transform_type(transform_str))
 		{
 			CIO::message(M_ERROR, "transform type not recognized ('%s')\n", transform_str) ;
 			delete[] PEN;
 			mxFree(transform_str) ;
 			return NULL ;
 		}
-		PEN[id].set_name(name_str) ;
-		PEN[id].init_penalty_struct_cache() ;
+
+		PEN[id]->set_name(name_str) ;
+		PEN[id]->init_penalty_struct_cache() ;
 
 /*		if (PEN->cache)
-/			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_value=%i max_value=%i transform='%s' (cache initialized)\n", PEN[id].name,
-					PEN[id].id, PEN[id].len, PEN[id].min_value, PEN[id].max_value, transform_str) ;
+/			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_value=%i max_value=%i transform='%s' (cache initialized)\n", PEN[id]->name,
+					PEN[id]->id, PEN[id]->len, PEN[id]->min_value, PEN[id]->max_value, transform_str) ;
 		else
-			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_value=%i max_value=%i transform='%s'\n", PEN[id].name,
-					PEN[id].id, PEN[id].len, PEN[id].min_value, PEN[id].max_value, transform_str) ;
+			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_value=%i max_value=%i transform='%s'\n", PEN[id]->name,
+					PEN[id]->id, PEN[id]->len, PEN[id]->min_value, PEN[id]->max_value, transform_str) ;
 */
 		
 		mxFree(transform_str) ;
@@ -267,6 +270,14 @@ CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 	}
 	return PEN ;
 }
+
+void delete_penalty_struct(CPlif** PEN, INT P) 
+{
+	for (INT i=0; i<P; i++)
+		delete PEN[i] ;
+	delete[] PEN ;
+}
+
 #endif
 
 DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const

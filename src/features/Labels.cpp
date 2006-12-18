@@ -44,7 +44,7 @@ CLabels::~CLabels()
 	labels=NULL;
 }
 
-void CLabels::set_labels(DREAL* labels, INT len)
+void CLabels::set_labels(DREAL* p_labels, INT len)
 {
 	ASSERT(len>0);
 	num_labels = len;
@@ -53,7 +53,7 @@ void CLabels::set_labels(DREAL* labels, INT len)
 	ASSERT(this->labels);
 
 	for (INT i=0; i<len; i++)
-		this->labels[i]=labels[i];
+		this->labels[i] = p_labels[i];
 }
 
 DREAL* CLabels::get_labels(INT &len)
@@ -62,27 +62,27 @@ DREAL* CLabels::get_labels(INT &len)
 
 	if (num_labels>0)
 	{
-		DREAL* labels=new DREAL[num_labels] ;
+		DREAL* _labels=new DREAL[num_labels] ;
 		for (INT i=0; i<len; i++)
-			labels[i]=get_label(i) ;
-		return labels ;
+			_labels[i]=get_label(i) ;
+		return _labels ;
 	}
 	else 
 		return NULL;
 }
 
-void CLabels::get_labels(DREAL** labels, INT* len)
+void CLabels::get_labels(DREAL** p_labels, INT* len)
 {
-	ASSERT(labels && len);
-	*labels=NULL;
+	ASSERT(p_labels && len);
+	*p_labels=NULL;
 	*len=num_labels;
 
 	if (num_labels>0)
 	{
-		*labels=new DREAL[num_labels];
+		*p_labels=new DREAL[num_labels];
 
 		for (INT i=0; i<num_labels; i++)
-			(*labels)[i]=get_label(i);
+			(*p_labels)[i]=get_label(i);
 	}
 }
 
@@ -92,10 +92,10 @@ INT* CLabels::get_int_labels(INT &len)
 
 	if (num_labels>0)
 	{
-		INT* labels=new INT[num_labels] ;
+		INT* _labels=new INT[num_labels] ;
 		for (INT i=0; i<len; i++)
-			labels[i]= (INT) get_label(i) ;
-		return labels ;
+			_labels[i]= (INT) get_label(i) ;
+		return _labels ;
 	}
 	else 
 		return NULL;

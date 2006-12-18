@@ -209,21 +209,24 @@ inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DR
 				
                 // check whether the same string is stored
 				INT mismatch_pos = -1 ;
-				INT k ;
-				for (k=0; (j+k<max_depth) && (i+j+seq_offset+k<length); k++)
 				{
-					TRIE_ASSERT((vec[i+j+seq_offset+k]>=0) && (vec[i+j+seq_offset+k]<4)) ;
-					// ###
-					if ((TreeMem[node].seq[k]>=4) && (TreeMem[node].seq[k]!=TRIE_TERMINAL_CHARACTER))
-						fprintf(stderr, "+++i=%i j=%i seq[%i]=%i\n", i, j, k, TreeMem[node].seq[k]) ;
-					TRIE_ASSERT((TreeMem[node].seq[k]<4) || (TreeMem[node].seq[k]==TRIE_TERMINAL_CHARACTER)) ;
-					TRIE_ASSERT(k<16) ;
-					if (TreeMem[node].seq[k]!=vec[i+j+seq_offset+k])
+					INT k ;
+					for (k=0; (j+k<max_depth) && (i+j+seq_offset+k<length); k++)
 					{
-						mismatch_pos=k ;
-						break ;
+						TRIE_ASSERT((vec[i+j+seq_offset+k]>=0) && (vec[i+j+seq_offset+k]<4)) ;
+						// ###
+						if ((TreeMem[node].seq[k]>=4) && (TreeMem[node].seq[k]!=TRIE_TERMINAL_CHARACTER))
+							fprintf(stderr, "+++i=%i j=%i seq[%i]=%i\n", i, j, k, TreeMem[node].seq[k]) ;
+						TRIE_ASSERT((TreeMem[node].seq[k]<4) || (TreeMem[node].seq[k]==TRIE_TERMINAL_CHARACTER)) ;
+						TRIE_ASSERT(k<16) ;
+						if (TreeMem[node].seq[k]!=vec[i+j+seq_offset+k])
+						{
+							mismatch_pos=k ;
+							break ;
+						}
 					}
 				}
+				
 				// what happens when the .seq sequence is longer than vec? should we branch???
 
 				if (mismatch_pos==-1)

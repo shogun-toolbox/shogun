@@ -24,11 +24,11 @@ public:
 	T data;
 	
 public:
-	CListElement(T data, CListElement* prev = NULL, CListElement* next = NULL)
+	CListElement(T p_data, CListElement* p_prev = NULL, CListElement* p_next = NULL)
 		{
-			this->data = data;
-			this->next = next;
-			this->prev = prev;
+			this->data = p_data;
+			this->next = p_next;
+			this->prev = p_prev;
 		} ;
 	
 	/// Destruktor
@@ -41,14 +41,14 @@ public:
 template <class T> class CList
 {
 public:
-	CList(bool delete_data=false)
+	CList(bool p_delete_data=false)
 	{
 		first  = NULL;
-		actual = NULL;
+		current = NULL;
 		last   = NULL;
 
 		num_elements = 0;
-		this->delete_data=delete_data;
+		this->delete_data=p_delete_data;
 	}
 
 	~CList()
@@ -72,8 +72,8 @@ public:
 	{
 		if (first != NULL)
 		{
-			actual = first;
-			return actual->data;
+			current = first;
+			return current->data;
 		}
 		else 
 			return NULL;
@@ -85,8 +85,8 @@ public:
 	{
 		if (last != NULL)
 		{
-			actual = last;
-			return actual->data;
+			current = last;
+			return current->data;
 		}
 		else 
 			return NULL;
@@ -95,67 +95,6 @@ public:
 
 	/// go to next element in list and return it (or NULL if not available)
 	inline T get_next_element()
-	{
-		if ((actual != NULL) && (actual->next != NULL))
-		{
-			actual = actual->next;
-			return actual->data;
-		}
-		else
-			return NULL;
-	}
-
-
-	/// go to previous element in list and return it (or NULL if not available)
-	inline T get_previous_element()
-	{
-		if ((actual != NULL) && (actual->prev != NULL))
-		{
-			actual = actual->prev;
-			return actual->data;
-		}
-		else
-			return NULL;
-	}
-
-	/// return current element in list (or NULL if not available)
-	inline T get_current_element()
-	{
-		if (actual != NULL)
-			return actual->data;
-		else 
-			return NULL;
-	}
-
-
-	/**@name Thread safe list access functions*/
-	//@{
-	/// go to first element and return it (or NULL if list is empty)
-	inline T get_first_element(CListElement<T> *&current)
-	{
-		if (first != NULL)
-		{
-			current = first;
-			return current->data;
-		}
-		else 
-			return NULL;
-	}
-
-	/// go to last element in list and return it (or NULL if list is empty)
-	inline T get_last_element(CListElement<T> *&current)
-	{
-		if (last != NULL)
-		{
-			current = last;
-			return current->data;
-		}
-		else 
-			return NULL;
-	}
-
-	/// go to next element in list and return it (or NULL if not available)
-	inline T get_next_element(CListElement<T> *& current)
 	{
 		if ((current != NULL) && (current->next != NULL))
 		{
@@ -166,8 +105,9 @@ public:
 			return NULL;
 	}
 
+
 	/// go to previous element in list and return it (or NULL if not available)
-	inline T get_previous_element(CListElement<T> *& current)
+	inline T get_previous_element()
 	{
 		if ((current != NULL) && (current->prev != NULL))
 		{
@@ -179,10 +119,70 @@ public:
 	}
 
 	/// return current element in list (or NULL if not available)
-	inline T get_current_element(CListElement<T> *& current)
+	inline T get_current_element()
 	{
 		if (current != NULL)
 			return current->data;
+		else 
+			return NULL;
+	}
+
+
+	/**@name Thread safe list access functions*/
+	//@{
+	/// go to first element and return it (or NULL if list is empty)
+	inline T get_first_element(CListElement<T> *&p_current)
+	{
+		if (first != NULL)
+		{
+			p_current = first;
+			return p_current->data;
+		}
+		else 
+			return NULL;
+	}
+
+	/// go to last element in list and return it (or NULL if list is empty)
+	inline T get_last_element(CListElement<T> *&p_current)
+	{
+		if (last != NULL)
+		{
+			p_current = last;
+			return p_current->data;
+		}
+		else 
+			return NULL;
+	}
+
+	/// go to next element in list and return it (or NULL if not available)
+	inline T get_next_element(CListElement<T> *& p_current)
+	{
+		if ((p_current != NULL) && (p_current->next != NULL))
+		{
+			p_current = p_current->next;
+			return p_current->data;
+		}
+		else
+			return NULL;
+	}
+
+	/// go to previous element in list and return it (or NULL if not available)
+	inline T get_previous_element(CListElement<T> *& p_current)
+	{
+		if ((p_current != NULL) && (p_current->prev != NULL))
+		{
+			p_current = p_current->prev;
+			return p_current->data;
+		}
+		else
+			return NULL;
+	}
+
+	/// return current element in list (or NULL if not available)
+	inline T get_current_element(CListElement<T> *& p_current)
+	{
+		if (p_current != NULL)
+			return p_current->data;
 		else 
 			return NULL;
 	}
@@ -191,7 +191,7 @@ public:
 	/// append element AFTER the current element. return true on success
 	inline bool append_element(T data)
 	{
-		if (actual != NULL)    // none available, case is shattered in insert_element()
+		if (current != NULL)    // none available, case is shattered in insert_element()
 		{
 			if (get_next_element())
 			{
@@ -203,10 +203,10 @@ public:
 				// case with no successor but nonempty
 				CListElement<T>* element;
 
-				if ((element = new CListElement<T>(data, actual)) != NULL)
+				if ((element = new CListElement<T>(data, current)) != NULL)
 				{
-					actual->next = element;
-					actual       = element;
+					current->next = element;
+					current       = element;
 					last         = element;
 
 					num_elements++;
@@ -226,11 +226,11 @@ public:
 	{
 		CListElement<T>* element;
 
-		if (actual == NULL)                 
+		if (current == NULL)                 
 		{
 			if ((element = new CListElement<T> (data)) != NULL)
 			{
-				actual = element;
+				current = element;
 				first  = element;
 				last   = element;  
 
@@ -243,15 +243,15 @@ public:
 		}
 		else
 		{
-			if ((element = new CListElement<T>(data, actual->prev, actual)) != NULL)
+			if ((element = new CListElement<T>(data, current->prev, current)) != NULL)
 			{
-				if (actual->prev != NULL)
-					actual->prev->next = element;
+				if (current->prev != NULL)
+					current->prev->next = element;
 				else
 					first = element;
 
-				actual->prev = element;
-				actual       = element;
+				current->prev = element;
+				current       = element;
 
 				num_elements++;
 
@@ -271,7 +271,7 @@ public:
 
 		if (data)
 		{
-			CListElement<T> *element = actual;
+			CListElement<T> *element = current;
 
 			if (element->prev)
 				element->prev->next = element->next;
@@ -280,9 +280,9 @@ public:
 				element->next->prev = element->prev; 
 
 			if (element->next)
-				actual = element->next;
+				current = element->next;
 			else
-				actual = element->prev;
+				current = element->prev;
 
 			if (element == first)
 				first = element->next;
@@ -303,7 +303,7 @@ public:
 private:
 	bool delete_data;
 	CListElement<T>* first;
-	CListElement<T>* actual;
+	CListElement<T>* current;
 	CListElement<T>* last;
 	int num_elements;
 };

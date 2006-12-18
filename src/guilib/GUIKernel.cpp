@@ -922,8 +922,8 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 				
 				DREAL *position_weights = new DREAL[length] ;
-				for (INT i=0; i<length; i++)
-					position_weights[i]=1.0/length ;
+				for (INT ii=0; ii<length; ii++)
+					position_weights[ii]=1.0/length ;
 				if (strlen(rest)>0)
 				{
 					for (i=0; i<length; i++)
@@ -1043,18 +1043,18 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				} ;
 				
 				INT *shift = new INT[length] ;
-				for (INT i=center; i<length; i++)
-					shift[i] = (int)floor(((DREAL)(i-center))/step) ;
+				for (INT ii=center; ii<length; ii++)
+					shift[ii] = (int)floor(((DREAL)(ii-center))/step) ;
 
-				for (INT i=center; i>=0; i--)
-					shift[i] = (int)floor(((DREAL)(center-i))/step) ;
+				for (INT ii=center; ii>=0; ii--)
+					shift[ii] = (int)floor(((DREAL)(center-ii))/step) ;
 
-				for (INT i=0; i<length; i++)
-					if (shift[i]>length)
-						shift[i]=length ;
+				for (INT ii=0; ii<length; ii++)
+					if (shift[ii]>length)
+						shift[ii]=length ;
 
-				for (INT i=0; i<length; i++)
-				  CIO::message(M_INFO, "shift[%i]=%i\n", i, shift[i]) ;
+				for (INT ii=0; ii<length; ii++)
+				  CIO::message(M_INFO, "shift[%i]=%i\n", ii, shift[ii]) ;
 				
 				delete k;
 

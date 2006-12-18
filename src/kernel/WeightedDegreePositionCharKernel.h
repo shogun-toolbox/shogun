@@ -38,9 +38,9 @@ public:
 	// return the name of a kernel
 	virtual const CHAR* get_name() { return "WeightedDegreePos" ; } ;
 	
-	inline virtual bool init_optimization(INT count, INT *IDX, DREAL * alphas)
+	inline virtual bool init_optimization(INT p_count, INT *IDX, DREAL * alphas)
 		{ 
-			return init_optimization(count, IDX, alphas, -1);
+			return init_optimization(p_count, IDX, alphas, -1);
 		}
 	
 	/// do initialization for tree_num up to upto_tree, use tree_num=-1 to construct all trees

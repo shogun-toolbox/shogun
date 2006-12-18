@@ -14,7 +14,7 @@
 
 #include "lib/common.h"
 #include "lib/Mathematics.h"
-#include "lib/Array.h"
+#include "lib/DynamicArray.h"
 #include "structure/PlifBase.h"
 
 class CPlifArray: public CPlifBase
@@ -23,16 +23,8 @@ public:
 	CPlifArray()  ;
 	virtual ~CPlifArray()  ;
 	
-	void add_plif(CPlifBase* new_plif) 
-		{
-			INT prev_num = m_array.get_array_size() ;
-			m_array.resize_array(prev_num+1) ;
-			m_array[prev_num] = new_plif ;
-		}
-	void clear() 
-		{
-			m_array.resize_array(0) ;
-		}
+	void add_plif(CPlifBase* new_plif) ;
+	void clear() ;
 	INT get_num_plifs()
 		{
 			return m_array.get_array_size() ;
@@ -45,13 +37,22 @@ public:
 	virtual void penalty_clear_derivative() ;
 	virtual void penalty_add_derivative(DREAL p_value, DREAL* svm_values) ;
 	
-	virtual DREAL get_max_value() const ;
-	virtual DREAL get_min_value() const ;
+	virtual DREAL get_max_value() const 
+	{
+		return max_value ;
+	}
+
+	virtual DREAL get_min_value() const 
+	{
+		return min_value ;
+	}
 
 	virtual bool uses_svm_values() const ;
 	virtual INT get_max_id() const ;
+
 protected:
-	CArray<CPlifBase*> m_array ;
+	CDynamicArray<CPlifBase*> m_array ;
+	DREAL max_value, min_value ;
 } ;
 
 #endif

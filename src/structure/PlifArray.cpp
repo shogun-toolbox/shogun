@@ -20,14 +20,48 @@
 CPlifArray::CPlifArray()
 	: m_array(5)
 {
+	min_value = -1e6 ;
+	max_value = 1e6 ;
 }
 
 CPlifArray::~CPlifArray()
 {
+	m_array.zero() ;
+}
+
+void CPlifArray::add_plif(CPlifBase* new_plif) 
+{
+	ASSERT(new_plif!=NULL) ;
+	m_array.append_element(new_plif) ;
+	fprintf(stderr, "m_array.get_array_size()=%i\n", m_array.get_array_size()) ;
+	
+	min_value = -1e6 ;
+	for (INT i=0; i<m_array.get_array_size(); i++)
+	{
+		ASSERT(m_array[i]!=NULL)
+		if (!m_array[i]->uses_svm_values())
+			min_value = CMath::max(min_value, m_array[i]->get_min_value()) ;
+	}
+	
+	max_value = 1e6 ;
+	for (INT i=0; i<m_array.get_array_size(); i++)
+		if (!m_array[i]->uses_svm_values())
+			max_value = CMath::min(max_value, m_array[i]->get_max_value()) ;
+}
+
+void CPlifArray::clear() 
+{
+	m_array.resize_array(0) ;
+	min_value = -1e6 ;
+	max_value = 1e6 ;
+	fprintf(stderr, "m_array.get_array_size()=%i\n", m_array.get_array_size()) ;
 }
 
 DREAL CPlifArray::lookup_penalty(DREAL p_value, DREAL* svm_values) const 
 {
+	if (p_value<min_value || p_value>max_value)
+		return -CMath::INFTY ;
+
 	DREAL ret = 0.0 ;
 	for (INT i=0; i<m_array.get_array_size(); i++)
 		ret += m_array[i]->lookup_penalty(p_value, svm_values) ;
@@ -36,6 +70,9 @@ DREAL CPlifArray::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 
 DREAL CPlifArray::lookup_penalty(INT p_value, DREAL* svm_values) const 
 {
+	if (p_value<min_value || p_value>max_value)
+		return -CMath::INFTY ;
+	
 	DREAL ret = 0.0 ;
 	for (INT i=0; i<m_array.get_array_size(); i++)
 		ret += m_array[i]->lookup_penalty(p_value, svm_values) ;
@@ -52,22 +89,6 @@ void CPlifArray::penalty_add_derivative(DREAL p_value, DREAL* svm_values)
 {
 	for (INT i=0; i<m_array.get_array_size(); i++)
 		m_array[i]->penalty_add_derivative(p_value, svm_values) ;
-}
-
-DREAL CPlifArray::get_max_value() const 
-{
-	DREAL min_max_value = 0 ;
-	for (INT i=0; i<m_array.get_array_size(); i++)
-		min_max_value = CMath::min(min_max_value, m_array[i]->get_max_value()) ;
-	return min_max_value ;
-}
-
-DREAL CPlifArray::get_min_value() const 
-{
-	DREAL max_min_value = 0 ;
-	for (INT i=0; i<m_array.get_array_size(); i++)
-		max_min_value = CMath::max(max_min_value, m_array[i]->get_min_value()) ;
-	return max_min_value ;
 }
 
 bool CPlifArray::uses_svm_values() const 

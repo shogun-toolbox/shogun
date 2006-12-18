@@ -1484,10 +1484,10 @@ protected:
 	bool comma_or_space(FILE* file);
 
 	/// parse error messages
-	inline void error(INT line, CHAR* str)
+	inline void error(INT p_line, CHAR* str)
 	{
-	    if (line)
-			CIO::message(M_ERROR, "error in line %d %s\n", line, str);
+	    if (p_line)
+			CIO::message(M_ERROR, "error in line %d %s\n", p_line, str);
 	    else
 			CIO::message(M_ERROR, "error %s\n", str);
 	}

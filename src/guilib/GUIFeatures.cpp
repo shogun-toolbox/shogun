@@ -424,7 +424,7 @@ CFKFeatures* CGUIFeatures::convert_string_word_to_simple_fk(CStringFeatures<WORD
 		gui->guihmm.get_pos()->set_observations(string_feat);
 		gui->guihmm.get_neg()->set_observations(string_feat);
 
-		CFKFeatures* fkf = new CFKFeatures(0, gui->guihmm.get_pos(), gui->guihmm.get_neg());//, neglinear, poslinear);		     
+		fkf = new CFKFeatures(0, gui->guihmm.get_pos(), gui->guihmm.get_neg());//, neglinear, poslinear);		     
 		if (train_features)
 			fkf->set_opt_a(((CFKFeatures*) train_features)->get_weight_a());
 		else

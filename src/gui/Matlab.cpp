@@ -41,6 +41,7 @@ static const CHAR* N_HMM_LIKELIHOOD=	        "hmm_likelihood";
 static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
 static const CHAR* N_COMPUTE_BY_SUBKERNELS=	        "compute_by_subkernels";
 static const CHAR* N_SET_SUBKERNEL_WEIGHTS=	        "set_subkernel_weights";
+static const CHAR* N_SET_SUBKERNEL_WEIGHTS_COMBINED =	        "set_subkernel_weights_combined";
 static const CHAR* N_SET_LAST_SUBKERNEL_WEIGHTS=	        "set_last_subkernel_weights";
 static const CHAR* N_SET_WD_POS_WEIGHTS=	        "set_WD_position_weights";
 static const CHAR* N_GET_SUBKERNEL_WEIGHTS=	        "get_subkernel_weights";
@@ -412,6 +413,17 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				CIO::message(M_ERROR, "usage is sg('set_last_subkernel_weights', W)");
 		}
+		else if (strmatch(action, len, N_SET_SUBKERNEL_WEIGHTS_COMBINED))
+		{
+			fprintf(stderr, "hello\n") ;
+			if ((nlhs==0) && (nrhs==3))
+			{
+				if (!sg_matlab.set_subkernel_weights_combined(prhs))
+					CIO::message(M_ERROR, "error executing command");
+			}
+			else
+				CIO::message(M_ERROR, "usage is sg('set_subkernel_weights_combined', W, idx)");
+		}
 		else if (strmatch(action, len, N_SET_SUBKERNEL_WEIGHTS))
 		{
 			if ((nlhs==0) && (nrhs==2))
@@ -713,7 +725,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			if ((nrhs==4) && (nlhs==1))
 			{
 				DREAL* string=mxGetPr(prhs[1]);
-				int len = mxGetN(prhs[1]) ;
+				int len2 = mxGetN(prhs[1]) ;
 				if (mxGetM(prhs[1])!=1 || mxGetN(prhs[2])!=1 || mxGetM(prhs[2])!=1 ||
 					mxGetN(prhs[3])!=1 || mxGetM(prhs[3])!=1)
 					CIO::message(M_ERROR, "usage2 is translation=sg('translate_string', string, order, start)");
@@ -723,13 +735,13 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				INT start = (INT)p_start[0] ;
 				const INT max_val = 2 ; /* DNA->2bits */
 				
-				plhs[0] = mxCreateDoubleMatrix(1, len, mxREAL);
+				plhs[0] = mxCreateDoubleMatrix(1, len2, mxREAL);
 				DREAL* real_obs = mxGetPr(plhs[0]) ;
 				
-				WORD* obs=new WORD[len] ;
+				WORD* obs=new WORD[len2] ;
 				
 				INT i,j;
-				for (i=0; i<len; i++)
+				for (i=0; i<len2; i++)
 					switch ((char)string[i])
 					{
 					case 'A': obs[i]=0 ; break ;
@@ -744,7 +756,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 					}
 				//mxFree(string) ;
 				
-				for (i=len-1; i>= ((int) order)-1; i--)	//convert interval of size T
+				for (i=len2-1; i>= ((int) order)-1; i--)	//convert interval of size T
 				{
 					WORD value=0;
 					for (j=i; j>=i-((int) order)+1; j--)
@@ -764,7 +776,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 					}
 					obs[i]=value;
 				}
-				for (i=start; i<len; i++)	
+				for (i=start; i<len2; i++)	
 					real_obs[i-start]=(DREAL)obs[i];
 
 				delete[] obs ;

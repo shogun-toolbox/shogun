@@ -338,7 +338,7 @@ bool CWeightedDegreePositionCharKernel::save_init(FILE* dest)
     return false;
 }
 
-bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, DREAL * alphas, INT tree_num, INT upto_tree)
+bool CWeightedDegreePositionCharKernel::init_optimization(INT p_count, INT * IDX, DREAL * alphas, INT tree_num, INT upto_tree)
 {
     if (upto_tree<0)
 		upto_tree=tree_num;
@@ -361,12 +361,12 @@ bool CWeightedDegreePositionCharKernel::init_optimization(INT count, INT * IDX, 
 		CIO::message(M_DEBUG, "initializing CWeightedDegreePositionCharKernel optimization\n") ;
 
 	int i=0;
-	for (i=0; i<count; i++)
+	for (i=0; i<p_count; i++)
 	{
 		if (tree_num<0)
 		{
-			if ( (i % (count/10+1)) == 0)
-				CIO::progress(i,0,count);
+			if ( (i % (p_count/10+1)) == 0)
+				CIO::progress(i,0,p_count);
 			add_example_to_tree(IDX[i], alphas[i]);
 		}
 		else

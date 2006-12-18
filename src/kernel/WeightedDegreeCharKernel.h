@@ -216,9 +216,9 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
 
   bool set_wd_weights_by_type(EWDKernType type);
 
-  void set_wd_weights(DREAL* weights, INT d)
+  void set_wd_weights(DREAL* p_weights, INT d)
   {
-      set_weights(weights,d,0);
+      set_weights(p_weights,d,0);
   }
 
   bool set_weights(DREAL* weights, INT d, INT len);

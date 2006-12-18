@@ -655,10 +655,10 @@ DREAL *CWeightedDegreeCharKernel::compute_abs_weights(int &len)
 	return tries.compute_abs_weights(len) ;
 }
 
-bool CWeightedDegreeCharKernel::set_wd_weights_by_type(EWDKernType type)
+bool CWeightedDegreeCharKernel::set_wd_weights_by_type(EWDKernType p_type)
 {
 	ASSERT(degree>0);
-	ASSERT(type==E_WD); /// if we know a better weighting later on do a switch
+	ASSERT(p_type==E_WD); /// if we know a better weighting later on do a switch
 
 	delete[] weights;
 	weights=new DREAL[degree];

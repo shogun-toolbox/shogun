@@ -215,7 +215,7 @@ class CKernel
 			properties &= (properties | p) ^ p;
 		}
 
-		inline void set_is_initialized(bool init) { optimization_initialized=init; }
+		inline void set_is_initialized(bool p_init) { optimization_initialized=p_init; }
 
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors

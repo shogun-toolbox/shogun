@@ -30,11 +30,11 @@ CWordFeatures::~CWordFeatures()
 	delete[] symbol_mask_table;
 }
 
-bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT order, INT gap)
+bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT p_order, INT gap)
 {
 	ASSERT(cf);
 
-	this->order=order;
+	this->order=p_order;
 	delete[] symbol_mask_table;
 	symbol_mask_table=new WORD[256];
 
@@ -83,9 +83,9 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 
 	//number of bits the maximum value in feature matrix requires to get stored
 	max_val= (int) ceil(log((double) max_val+1)/log((double) 2));
-	num_symbols=1<<(max_val*order);
+	num_symbols=1<<(max_val*p_order);
 
-	CIO::message(M_INFO, "max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, order, num_symbols);
+	CIO::message(M_INFO, "max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, p_order, num_symbols);
 
 	if (num_symbols>(1<<(sizeof(WORD)*8)))
 	{
@@ -98,7 +98,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 	}
 
 	for (INT line=0; line<num_vectors; line++)
-		translate_from_single_order(&feature_matrix[line*num_features], num_features, start+gap, order+gap, max_val, gap);
+		translate_from_single_order(&feature_matrix[line*num_features], num_features, start+gap, p_order+gap, max_val, gap);
 
 	if (start+gap!=0)
 	{
@@ -133,51 +133,51 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 	return true;
 }
 
-void CWordFeatures::translate_from_single_order(WORD* obs, INT sequence_length, INT start, INT order, INT max_val, INT gap)
+void CWordFeatures::translate_from_single_order(WORD* obs, INT sequence_length, INT start, INT p_order, INT max_val, INT gap)
 {
 	ASSERT(gap>=0) ;
 	
-	const INT start_gap = (order - gap)/2 ;
+	const INT start_gap = (p_order - gap)/2 ;
 	const INT end_gap = start_gap + gap ;
 	
 	INT i,j;
 	WORD value=0;
 
 	// almost all positions
-	for (i=sequence_length-1; i>= ((int) order)-1; i--)	//convert interval of size T
+	for (i=sequence_length-1; i>= ((int) p_order)-1; i--)	//convert interval of size T
 	{
 		value=0;
-		for (j=i; j>=i-((int) order)+1; j--)
+		for (j=i; j>=i-((int) p_order)+1; j--)
 		{
 			if (i-j<start_gap)
 			{
-				value= (value >> max_val) | (obs[j] << (max_val * (order-1-gap)));
+				value= (value >> max_val) | (obs[j] << (max_val * (p_order-1-gap)));
 			}
 			else if (i-j>=end_gap)
 			{
-				value= (value >> max_val) | (obs[j] << (max_val * (order-1-gap)));
+				value= (value >> max_val) | (obs[j] << (max_val * (p_order-1-gap)));
 			}
 		}
 		obs[i]= (WORD) value;
 	}
 
 	// the remaining `order` positions
-	for (i=order-2;i>=0;i--)
+	for (i=p_order-2;i>=0;i--)
 	{
 		value=0;
-		for (j=i; j>=i-order+1; j--)
+		for (j=i; j>=i-p_order+1; j--)
 		{
 			if (i-j<start_gap)
 			{
 				value= (value >> max_val);
 				if (j>=0)
-					value|=obs[j] << (max_val * (order-1-gap));
+					value|=obs[j] << (max_val * (p_order-1-gap));
 			}
 			else if (i-j>=end_gap)
 			{
 				value= (value >> max_val);
 				if (j>=0)
-					value|=obs[j] << (max_val * (order-1-gap));
+					value|=obs[j] << (max_val * (p_order-1-gap));
 			}			
 		}
 		obs[i]=value;

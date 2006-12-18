@@ -63,8 +63,8 @@ bool CGUIMatlab::relative_entropy(mxArray* retvals[])
 		{
 			mxArray* mx_entropy=mxCreateDoubleMatrix(1, pos->get_N(), mxREAL);
 			ASSERT(mx_entropy);
-			double* entropy=mxGetPr(mx_entropy);
-			ASSERT(entropy);
+			double* _entropy=mxGetPr(mx_entropy);
+			ASSERT(_entropy);
 			double* p=new double[pos->get_M()];
 			double* q=new double[neg->get_M()];
 
@@ -76,7 +76,7 @@ bool CGUIMatlab::relative_entropy(mxArray* retvals[])
 					q[j]=neg->get_b(i,j);
 				}
 
-				entropy[i]=CMath::relative_entropy(p, q, pos->get_M());
+				_entropy[i]=CMath::relative_entropy(p, q, pos->get_M());
 			}
 			delete[] p;
 			delete[] q;
@@ -101,9 +101,9 @@ bool CGUIMatlab::entropy(mxArray* retvals[])
 	{
 		mxArray* mx_entropy=mxCreateDoubleMatrix(1, current->get_N(), mxREAL);
 		ASSERT(mx_entropy);
-		double* entropy=mxGetPr(mx_entropy);
+		double* _entropy=mxGetPr(mx_entropy);
 		double* p=new double[current->get_M()];
-		ASSERT(entropy);
+		ASSERT(_entropy);
 
 		for (INT i=0; i<current->get_N(); i++)
 		{
@@ -112,7 +112,7 @@ bool CGUIMatlab::entropy(mxArray* retvals[])
 				p[j]=current->get_b(i,j);
 			}
 
-			entropy[i]=CMath::entropy(p, current->get_M());
+			_entropy[i]=CMath::entropy(p, current->get_M());
 		}
 
 		retvals[0]=mx_entropy;
@@ -538,7 +538,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			CIO::message(M_ERROR, "sequence and position matrices sizes wrong\n");
 		
 		INT penalty_num_dimensions = mxGetNumberOfDimensions(mx_penalties) ;
-		if ((penalty_num_dimensions==2) || (penalty_num_dimensions==3))
+		if (!((penalty_num_dimensions==2) || (penalty_num_dimensions==3)))
 			CIO::message(M_ERROR, "penalties should have 2 or three dimensions (has %i)", penalty_num_dimensions);
 
 		const int *penalty_dimensions = mxGetDimensions(mx_penalties) ;		
@@ -549,7 +549,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 		INT penalties_dim3 = 1 ;
 		if (penalty_num_dimensions==3)
 			penalties_dim3 = penalty_dimensions[2] ;
-		CIO::message(M_DEBUG, "considering up to %i Plifs in a PlifArray\n", penalties_dim3) ;
+		fprintf(stderr,"considering up to %i Plifs in a PlifArray\n", penalties_dim3) ;
 		ASSERT(penalties_dim3>0) ;
 
 		if (!(mxGetM(mx_state_signals)==N && 
@@ -594,7 +594,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			for (INT i=0; i<2*N; i++)
 				orf_info[i]=(INT)orf_info_[i] ;
 
-			CPlif * PEN = 
+			CPlif ** PEN = 
 				read_penalty_struct_from_cell(mx_penalty_info, P) ;
 			if (PEN==NULL && P!=0)
 				return false ;
@@ -617,10 +617,10 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 						if ((id<0 || id>=P) && (id!=-1))
 						{
 							CIO::message(M_ERROR, "id out of range\n") ;
-							delete[] PEN ;
+							delete_penalty_struct(PEN, P) ;
 							return false ;
 						}
-						plif = &PEN[id] ;
+						plif = PEN[id] ;
 						plif_array->add_plif(plif) ;
 					}
 					if (plif_array->get_num_plifs()==0)
@@ -646,13 +646,13 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 				if ((id<0 || id>=P) && (id!=-1))
 				{
 					CIO::message(M_ERROR, "id out of range\n") ;
-					delete[] PEN ;
+					delete_penalty_struct(PEN, P) ;
 					return false ;
 				}
 				if (id==-1)
 					PEN_state_signal[i]=NULL ;
 				else
-					PEN_state_signal[i]=&PEN[id] ;
+					PEN_state_signal[i]=PEN[id] ;
 			} ;
 
 			char * genestr = mxArrayToString(mx_genestr) ;				
@@ -715,7 +715,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 				p_PEN_input_values[s]=PEN_input_values[s] ;
 			
 			// clean up 
-			delete[] PEN ;
+			delete_penalty_struct(PEN, P) ;
 			delete[] PEN_matrix ;
 			delete[] pos ;
 			delete[] orf_info ;
@@ -802,10 +802,22 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			  mxGetM(mx_genestr)==1))
 			CIO::message(M_ERROR, "sequence and position matrices sizes wrong\n");
 		
-		if (!(mxGetM(mx_penalties)==N && 
-			  mxGetN(mx_penalties)==N))
-			CIO::message(M_ERROR, "size of penalties wrong\n");
+		INT penalty_num_dimensions = mxGetNumberOfDimensions(mx_penalties) ;
+		if (!((penalty_num_dimensions==2) || (penalty_num_dimensions==3)))
+			CIO::message(M_ERROR, "penalties should have 2 or 3 dimensions (has %i)", penalty_num_dimensions);
 
+		const int *penalty_dimensions = mxGetDimensions(mx_penalties) ;		
+		if (!(penalty_dimensions[0]==N && 
+			  penalty_dimensions[1]==N))
+			CIO::message(M_ERROR, "size of penalties wrong (%i!=%i or %i!=%i)\n", penalty_dimensions[0], N, penalty_dimensions[1], N);
+
+		INT penalties_dim3 = 1 ;
+		if (penalty_num_dimensions==3)
+			penalties_dim3 = penalty_dimensions[2] ;
+		fprintf(stderr,"considering up to %i Plifs in a PlifArray\n", penalties_dim3) ;
+		ASSERT(penalties_dim3>0) ;
+
+		fprintf(stderr, "ping 0\n") ;
 		if (!(mxGetM(mx_state_signals)==N && 
 			  mxGetN(mx_state_signals)==2))
 			CIO::message(M_ERROR, "size of state_signals wrong (%i!=%i or %i!=2)\n", mxGetM(mx_state_signals), N, mxGetN(mx_state_signals));
@@ -823,6 +835,8 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 		if (mx_segment_loss!=NULL && (mxGetN(mx_segment_loss)!=2*mxGetM(mx_segment_loss)))
 			CIO::message(M_ERROR, "size of segment_loss wrong\n");
 
+		fprintf(stderr, "ping 1\n") ;
+
 		if (mx_segment_ids_mask!=NULL && ((mxGetM(mx_segment_ids_mask)!=2) ||
 										  (mxGetN(mx_segment_ids_mask)!=M)))
 			CIO::message(M_ERROR, "size of segment_ids_mask wrong\n");
@@ -838,39 +852,77 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			for (INT i=0; i<M; i++)
 				pos[i]=(INT)pos_[i] ;
 			
-			CPlif * PEN = 
+			fprintf(stderr, "ping 2\n") ;
+
+			CPlif ** PEN = 
 				read_penalty_struct_from_cell(mx_penalty_info, P) ;
 			if (PEN==NULL && P!=0)
 				return false ;
+			fprintf(stderr, "ping 3\n") ;
 
 			INT max_plif_id = 0 ;
 			INT max_plif_len = 1 ;
 			for (INT i=0; i<P; i++)
 			{
-				ASSERT(PEN[i].get_id()==i) ;
+				ASSERT(PEN[i]->get_id()==i) ;
 				if (i>max_plif_id)
 					max_plif_id=i ;
-				if (PEN[i].get_plif_len()>max_plif_len)
-					max_plif_len=PEN[i].get_plif_len() ;
+				if (PEN[i]->get_plif_len()>max_plif_len)
+					max_plif_len=PEN[i]->get_plif_len() ;
 			} ;
 
-
+			fprintf(stderr, "ping\n") ;
+			
 			CPlifBase **PEN_matrix = new CPlifBase*[N*N] ;
-			double* penalties=mxGetPr(mx_penalties) ;
-			for (INT i=0; i<N*N; i++)
-			{
-				INT id = (INT) penalties[i]-1 ;
-				if ((id<0 || id>=P) && (id!=-1))
+			double* penalties_array=mxGetPr(mx_penalties) ;
+			fprintf(stderr, "N=%i penalties_dim3=%i\n", N, penalties_dim3) ;
+			CArray3<double> penalties(penalties_array, N, N, penalties_dim3, false, false) ;
+
+			INT num_empty=0, num_single=0, num_array=0 ;
+		 
+			for (INT i=0; i<N; i++)
+				for (INT j=0; j<N; j++)
 				{
-					CIO::message(M_ERROR, "id out of range\n") ;
-					delete[] PEN ;
-					return false ;
+					CPlifArray * plif_array = new CPlifArray() ;
+					CPlif * plif = NULL ;
+					plif_array->clear() ;
+					for (INT k=0; k<penalties_dim3; k++)
+					{
+						fprintf(stderr, "i=%i, j=%i, k=%i\n", i, j, k) ;
+						if (penalties.element(i,j,k)==0)
+							continue ;
+						INT id = (INT) penalties.element(i,j,k)-1 ;
+						fprintf(stderr, "i=%i, j=%i, k=%i, id=%i\n", i, j, k, id) ;
+
+						if ((id<0 || id>=P) && (id!=-1))
+						{
+							CIO::message(M_ERROR, "id out of range\n") ;
+							delete_penalty_struct(PEN, P) ;
+							return false ;
+						}
+						plif = PEN[id] ;
+						plif_array->add_plif(plif) ;
+					}
+					if (plif_array->get_num_plifs()==0)
+					{
+						delete plif_array ;
+						PEN_matrix[i+j*N] = NULL ;
+						num_empty++ ;
+					}
+					else if (plif_array->get_num_plifs()==1)
+					{
+						delete plif_array ;
+						ASSERT(plif!=NULL) ;
+						PEN_matrix[i+j*N] = plif ;
+						num_single++ ;
+					}
+					else
+					{
+						PEN_matrix[i+j*N] = plif_array ;
+						num_array++ ;
+					}
 				}
-				if (id==-1)
-					PEN_matrix[i]=NULL ;
-				else
-					PEN_matrix[i]=&PEN[id] ;
-			} ;
+			fprintf(stderr, "num_empty=%i, num_single=%i, num_array=%i\n", num_empty, num_single, num_array) ;
 
 			CPlifBase **PEN_state_signal = new CPlifBase*[2*N] ;
 			double* state_signals=mxGetPr(mx_state_signals) ;
@@ -880,13 +932,13 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 				if ((id<0 || id>=P) && (id!=-1))
 				{
 					CIO::message(M_ERROR, "id out of range\n") ;
-					delete[] PEN ;
+					delete_penalty_struct(PEN, P) ;
 					return false ;
 				}
 				if (id==-1)
 					PEN_state_signal[i]=NULL ;
 				else
-					PEN_state_signal[i]=&PEN[id] ;
+					PEN_state_signal[i]=PEN[id] ;
 			} ;
 
 			char * genestr = mxArrayToString(mx_genestr) ;				
@@ -975,7 +1027,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			for (INT id=0; id<=max_plif_id; id++)
 			{
 				INT len=0 ;
-				const DREAL * deriv = PEN[id].get_cum_derivative(len) ;
+				const DREAL * deriv = PEN[id]->get_cum_derivative(len) ;
 				//fprintf(stderr, "len=%i, max_plif_len=%i\n", len, max_plif_len) ;
 				ASSERT(len<=max_plif_len) ;
 				for (INT j=0; j<max_plif_len; j++)
@@ -983,7 +1035,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			}
 
 			// clean up 
-			delete[] PEN ;
+			delete_penalty_struct(PEN, P) ;
 			delete[] PEN_matrix ;
 			delete[] PEN_state_signal ;
 			delete[] pos ;
@@ -1080,7 +1132,7 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 			for (INT i=0; i<M; i++)
 				pos[i]=(INT)pos_[i] ;
 
-			CPlif * PEN = 
+			CPlif ** PEN = 
 				read_penalty_struct_from_cell(mx_penalty_info, P) ;
 			if (PEN==NULL && P!=0)
 				return false ;
@@ -1093,13 +1145,13 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 				if ((id<0 || id>=P) && (id!=-1))
 				{
 					CIO::message(M_ERROR, "id out of range\n") ;
-					delete[] PEN ;
+					delete_penalty_struct(PEN, P) ;
 					return false ;
 				}
 				if (id==-1)
 					PEN_matrix[i]=NULL ;
 				else
-					PEN_matrix[i]=&PEN[id] ;
+					PEN_matrix[i]=PEN[id] ;
 			} ;
 			char * genestr = mxArrayToString(mx_genestr) ;				
 			DREAL * dict_weights = mxGetPr(mx_dict_weights) ;
@@ -1124,7 +1176,7 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 								 D, segment_sum_weights) ;
 
 			// clean up 
-			delete[] PEN ;
+			delete_penalty_struct(PEN, P) ;
 			delete[] PEN_matrix ;
 			delete[] pos ;
 			delete h ;
@@ -1889,11 +1941,11 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 						{
 							mxArray* e=mxGetCell(mx_feat, i);
 							ASSERT(e && mxIsChar(e));
-							INT len=0;
-							sc[i].string=get_mxString(e, len);
+							INT _len=0;
+							sc[i].string=get_mxString(e, _len);
 							if (sc[i].string)
 							{
-								sc[i].length=len;
+								sc[i].length=_len;
 								maxlen=CMath::max(maxlen, sc[i].length);
 								alpha->add_string_to_histogram(sc[i].string, sc[i].length);
 							}
@@ -1938,11 +1990,11 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 						{
 							mxArray* e=mxGetCell(mx_feat, i);
 							ASSERT(e && (mxIsClass(e, "uint8") || mxIsClass(e, "int8")));
-							INT len=0;
-							sc[i].string=get_mxBytes(e, len);
+							INT _len=0;
+							sc[i].string=get_mxBytes(e, _len);
 							if (sc[i].string)
 							{
-								sc[i].length=len;
+								sc[i].length=_len;
 								maxlen=CMath::max(maxlen, sc[i].length);
 								alpha->add_string_to_histogram(sc[i].string, sc[i].length);
 							}
@@ -2582,6 +2634,79 @@ bool CGUIMatlab::set_subkernel_weights(const mxArray* mx_arg)
 		
 	kernel->set_subkernel_weights(mxGetPr(mx_arg), mxGetN(mx_arg));
 	return true ;
+}
+
+bool CGUIMatlab::set_subkernel_weights_combined(const mxArray** mx_arg)
+{
+	CKernel *ckernel = gui->guikernel.get_kernel() ;
+
+	if ((mxGetM(mx_arg[2])!=1) || (mxGetN(mx_arg[2])!=1))
+		return false ;
+	
+	INT kernel_idx = (INT) mxGetScalar(mx_arg[2]) ;
+	CIO::message(M_DEBUG, "using kernel_idx=%i\n", kernel_idx) ;
+	
+	if (ckernel && (ckernel->get_kernel_type() == K_COMBINED))
+	{
+		CKernel *kernel_ = ((CCombinedKernel*)ckernel)->get_kernel(kernel_idx) ;
+		ASSERT(kernel_!=NULL) ;
+		
+		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
+		{
+			CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+			INT degree = kernel->get_degree() ;
+			if (mxGetM(mx_arg[1])!=degree || mxGetN(mx_arg[1])<1)
+			{
+				CIO::message(M_ERROR, "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
+				return false ;
+			}
+			
+			INT len = mxGetN(mx_arg[1]);
+			
+			if (len ==  1)
+				len = 0;
+			
+			return kernel->set_weights(mxGetPr(mx_arg[1]), mxGetM(mx_arg[1]), len);
+			
+		}
+		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+		{
+			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+			INT degree = kernel->get_degree() ;
+			if (mxGetM(mx_arg[1])!=degree || mxGetN(mx_arg[1])<1)
+			{
+				CIO::message(M_ERROR, "dimension mismatch (should be (seq_length | 1) x degree)\n") ;
+				return false ;
+			}
+			INT len = mxGetN(mx_arg[1]);
+			
+			if (len ==  1)
+				len = 0;
+			
+			return kernel->set_weights(mxGetPr(mx_arg[1]), mxGetM(mx_arg[1]), len);
+		}
+		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOSPHYL))
+		{
+			CIO::message(M_DEBUG, "setting CWeightedDegreePositionPhylCharKernel subkernel weights %i x %i\n", mxGetM(mx_arg[1]), mxGetN(mx_arg[1]));
+			CWeightedDegreePositionPhylCharKernel *kernel = (CWeightedDegreePositionPhylCharKernel *) kernel_ ;
+			return kernel->set_weights(mxGetPr(mx_arg[1]), mxGetM(mx_arg[1]), mxGetN(mx_arg[1]));
+		}
+		
+		// all other kernels
+		CKernel *kernel = kernel_ ;
+		INT num_subkernels = kernel->get_num_subkernels() ;
+		if (mxGetM(mx_arg[1])!=1 || mxGetN(mx_arg[1])!=num_subkernels)
+		{
+			CIO::message(M_ERROR, "dimension mismatch (should be 1 x num_subkernels)\n") ;
+			return false ;
+		}
+		
+		kernel->set_subkernel_weights(mxGetPr(mx_arg[1]), mxGetN(mx_arg[1]));
+		return true ;
+	}
+
+	CIO::message(M_ERROR, "set_last_subkernel_weights only works for combined kernels") ;
+	return false ;
 }
 
 bool CGUIMatlab::set_last_subkernel_weights(const mxArray* mx_arg)

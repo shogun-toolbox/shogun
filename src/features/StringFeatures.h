@@ -238,20 +238,20 @@ template <class ST> class CStringFeatures: public CFeatures
 		return false;
 	}
 
-	void set_features(T_STRING<ST>* features, INT num_vectors, INT max_string_length)
+	void set_features(T_STRING<ST>* p_features, INT p_num_vectors, INT p_max_string_length)
 	{
 		cleanup();
-		this->features=features;
-		this->num_vectors=num_vectors;
-		this->max_string_length=max_string_length;
+		this->features=p_features;
+		this->num_vectors=p_num_vectors;
+		this->max_string_length=p_max_string_length;
 	}
 
-	void copy_features(T_STRING<ST>* features, INT num_vectors, INT max_string_length)
+	void copy_features(T_STRING<ST>* p_features, INT p_num_vectors, INT p_max_string_length)
 	{
 		cleanup();
-		this->features=features;
-		this->num_vectors=num_vectors;
-		this->max_string_length=max_string_length;
+		this->features=p_features;
+		this->num_vectors=p_num_vectors;
+		this->max_string_length=p_max_string_length;
 	}
 
 	virtual bool save(CHAR* dest)
@@ -278,7 +278,8 @@ template <class ST> class CStringFeatures: public CFeatures
 	}
 
         template <class CT>
-	bool obtain_from_char_features(CStringFeatures<CT>* sf, INT start, INT order, INT gap)
+
+	bool obtain_from_char_features(CStringFeatures<CT>* sf, INT start, INT p_order, INT gap)
 	{
 		ASSERT(sf);
 		this->order=order;
@@ -314,11 +315,11 @@ template <class ST> class CStringFeatures: public CFeatures
 		original_num_symbols=alpha->get_num_symbols();
 		INT max_val=alpha->get_num_bits();
 
-		if (order>1)
-			num_symbols=CMath::powl((long double) 2, (long double) max_val*order);
+		if (p_order>1)
+			num_symbols=CMath::powl((long double) 2, (long double) max_val*p_order);
 		else
 			num_symbols=original_num_symbols;
-		CIO::message(M_INFO, "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, order, num_symbols);
+		CIO::message(M_INFO, "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, p_order, num_symbols);
 
 		if ( ((long double) num_symbols) > CMath::powl(((long double) 2),((long double) sizeof(ST)*8)) )
 		{
@@ -330,12 +331,12 @@ template <class ST> class CStringFeatures: public CFeatures
 			return false;
 		}
 
-		CIO::message(M_DEBUG, "translate: start=%i order=%i gap=%i(size:%i)\n", start, order, gap, sizeof(ST)) ;
+		CIO::message(M_DEBUG, "translate: start=%i order=%i gap=%i(size:%i)\n", start, p_order, gap, sizeof(ST)) ;
 		for (INT line=0; line<num_vectors; line++)
 		{
 			INT len=0;
 			ST* fv=get_feature_vector(line, len);
-			translate_from_single_order(fv, len, start+gap, order+gap, max_val, gap);
+			translate_from_single_order(fv, len, start+gap, p_order+gap, max_val, gap);
 
 			/* fix the length of the string -- hacky */
 			features[line].length-=start+gap ;
@@ -365,28 +366,28 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	protected:
 
-	void translate_from_single_order(ST* obs, INT sequence_length, INT start, INT order, INT max_val)
+	void translate_from_single_order(ST* obs, INT sequence_length, INT start, INT p_order, INT max_val)
 	{
 		INT i,j;
 		ST value=0;
 
-		for (i=sequence_length-1; i>= ((int) order)-1; i--)	//convert interval of size T
+		for (i=sequence_length-1; i>= ((int) p_order)-1; i--)	//convert interval of size T
 		{
 			value=0;
-			for (j=i; j>=i-((int) order)+1; j--)
-				value= (value >> max_val) | (obs[j] << (max_val * (order-1)));
+			for (j=i; j>=i-((int) p_order)+1; j--)
+				value= (value >> max_val) | (obs[j] << (max_val * (p_order-1)));
 
 			obs[i]= (ST) value;
 		}
 
-		for (i=order-2;i>=0;i--)
+		for (i=p_order-2;i>=0;i--)
 		{
 			value=0;
-			for (j=i; j>=i-order+1; j--)
+			for (j=i; j>=i-p_order+1; j--)
 			{
 				value= (value >> max_val);
 				if (j>=0)
-					value|=obs[j] << (max_val * (order-1));
+					value|=obs[j] << (max_val * (p_order-1));
 			}
 			obs[i]=value;
 		}
@@ -395,51 +396,51 @@ template <class ST> class CStringFeatures: public CFeatures
 			obs[i-start]=obs[i];
 	}
 
-	void translate_from_single_order(ST* obs, INT sequence_length, INT start, INT order, INT max_val, INT gap)
+	void translate_from_single_order(ST* obs, INT sequence_length, INT start, INT p_order, INT max_val, INT gap)
 	{
 		ASSERT(gap>=0) ;
 		
-		const INT start_gap = (order - gap)/2 ;
+		const INT start_gap = (p_order - gap)/2 ;
 		const INT end_gap = start_gap + gap ;
 		
 		INT i,j;
 		ST value=0;
 
 		// almost all positions
-		for (i=sequence_length-1; i>= ((int) order)-1; i--)	//convert interval of size T
+		for (i=sequence_length-1; i>= ((int) p_order)-1; i--)	//convert interval of size T
 		{
 			value=0;
-			for (j=i; j>=i-((int) order)+1; j--)
+			for (j=i; j>=i-((int) p_order)+1; j--)
 			{
 				if (i-j<start_gap)
 				{
-					value= (value >> max_val) | (obs[j] << (max_val * (order-1-gap)));
+					value= (value >> max_val) | (obs[j] << (max_val * (p_order-1-gap)));
 				}
 				else if (i-j>=end_gap)
 				{
-					value= (value >> max_val) | (obs[j] << (max_val * (order-1-gap)));
+					value= (value >> max_val) | (obs[j] << (max_val * (p_order-1-gap)));
 				}
 			}
 			obs[i]= (ST) value;
 		}
 
 		// the remaining `order` positions
-		for (i=order-2;i>=0;i--)
+		for (i=p_order-2;i>=0;i--)
 		{
 			value=0;
-			for (j=i; j>=i-order+1; j--)
+			for (j=i; j>=i-p_order+1; j--)
 			{
 				if (i-j<start_gap)
 				{
 					value= (value >> max_val);
 					if (j>=0)
-						value|=obs[j] << (max_val * (order-1-gap));
+						value|=obs[j] << (max_val * (p_order-1-gap));
 				}
 				else if (i-j>=end_gap)
 				{
 					value= (value >> max_val);
 					if (j>=0)
-						value|=obs[j] << (max_val * (order-1-gap));
+						value|=obs[j] << (max_val * (p_order-1-gap));
 				}			
 			}
 			obs[i]=value;

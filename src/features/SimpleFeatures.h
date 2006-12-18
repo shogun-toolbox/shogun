@@ -263,12 +263,12 @@ template <class ST> class CSimpleFeatures: public CFeatures
   /// return feature type
   inline virtual EFeatureType get_feature_type();
   
-  virtual bool reshape(INT num_features, INT num_vectors)
+  virtual bool reshape(INT p_num_features, INT p_num_vectors)
   {
-	  if (num_features*num_vectors == this->num_features * this->num_vectors)
+	  if (p_num_features*p_num_vectors == this->num_features * this->num_vectors)
 	  {
-		  this->num_features=num_features;
-		  this->num_vectors=num_vectors;
+		  this->num_features=p_num_features;
+		  this->num_vectors=p_num_vectors;
 		  return true;
 	  }
 	  else

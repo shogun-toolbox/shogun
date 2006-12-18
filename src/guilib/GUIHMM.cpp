@@ -1261,7 +1261,7 @@ bool CGUIHMM::relative_entropy(CHAR* param)
 	{
 		if ( (pos->get_M() == neg->get_M()) && (pos->get_N() == neg->get_N()) )
 		{
-			double* entropy=new double[pos->get_N()];
+			double* _entropy=new double[pos->get_N()];
 			double* p=new double[pos->get_M()];
 			double* q=new double[pos->get_M()];
 
@@ -1273,13 +1273,13 @@ bool CGUIHMM::relative_entropy(CHAR* param)
 					q[j]=neg->get_b(i,j);
 				}
 
-				entropy[i]=CMath::relative_entropy(p, q, pos->get_M());
-				CIO::message(M_MESSAGEONLY, "%f ", entropy[i]);
+				_entropy[i]=CMath::relative_entropy(p, q, pos->get_M());
+				CIO::message(M_MESSAGEONLY, "%f ", _entropy[i]);
 			}
 			CIO::message(M_MESSAGEONLY, "\n");
 			delete[] p;
 			delete[] q;
-			delete[] entropy;
+			delete[] _entropy;
 		}
 		else
 			CIO::message(M_ERROR, "pos and neg hmm's differ in number of emissions or states\n");
@@ -1293,7 +1293,7 @@ bool CGUIHMM::entropy(CHAR* param)
 {
 	if (pos) 
 	{
-		double* entropy=new double[pos->get_N()];
+		double* _entropy=new double[pos->get_N()];
 		double* p=new double[pos->get_M()];
 
 		for (INT i=0; i<pos->get_N(); i++)
@@ -1303,13 +1303,13 @@ bool CGUIHMM::entropy(CHAR* param)
 				p[j]=pos->get_b(i,j);
 			}
 
-			entropy[i]=CMath::entropy(p, pos->get_M());
-			CIO::message(M_MESSAGEONLY, "%f ", entropy[i]);
+			_entropy[i]=CMath::entropy(p, pos->get_M());
+			CIO::message(M_MESSAGEONLY, "%f ", _entropy[i]);
 		}
 		CIO::message(M_MESSAGEONLY, "\n");
 
 		delete[] p;
-		delete[] entropy;
+		delete[] _entropy;
 	}
 	else
 		CIO::message(M_ERROR, "set pos hmm first\n");

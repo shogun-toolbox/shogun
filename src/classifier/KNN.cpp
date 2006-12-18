@@ -61,7 +61,7 @@ CLabels* CKNN::classify(CLabels* output)
 
 	int num_lab=CDistanceMachine::get_labels()->get_num_labels();
 	
-	CDistance* distance=CDistanceMachine::get_distance();
+	CDistance* _distance=CDistanceMachine::get_distance();
 
 	//distances to train data and working buffer of train_labels
 	DREAL* dists=new DREAL[num_train_labels];
@@ -89,7 +89,7 @@ CLabels* CKNN::classify(CLabels* output)
 			//copy back train labels and compute distance
 			train_lab[j]=train_labels[j];
 			
-			dists[j]=distance->distance(j,i);
+			dists[j]=_distance->distance(j,i);
 		}
 
 		//sort the distance vector for test example j to all train examples

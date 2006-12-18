@@ -79,6 +79,15 @@ class CCombinedKernel : public CKernel
 			return kernel_list->get_first_element(current);
 		}
 
+		inline CKernel* get_kernel(INT idx)
+		{
+			CKernel * k = get_first_kernel() ;
+			for (INT i=1; i<idx; i++)
+				k = get_next_kernel(k) ;
+			return k ;
+		}
+		
+
 		inline CKernel* get_last_kernel()
 		{
 			return kernel_list->get_last_element();

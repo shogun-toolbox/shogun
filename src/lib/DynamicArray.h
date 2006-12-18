@@ -26,19 +26,19 @@ template <class T> class CDynamicArray: public CArray<T>
 public:
 
 CDynamicArray(INT p_resize_granularity = 128, INT p_last_element_idx=-1)
-	: CArray<T>(resize_granularity), resize_granularity(p_resize_granularity)
+	: CArray<T>(p_resize_granularity), resize_granularity(p_resize_granularity)
 	{
 		last_element_idx = p_last_element_idx;
 	}
 	
 CDynamicArray(T* p_array, INT p_num_elements, INT p_array_size, bool p_free_array=true, bool p_copy_array=false)
-	: CArray<T>(p_array, p_array_size, p_free_array, p_copy_array)
+	: CArray<T>(p_array, p_array_size, p_free_array, p_copy_array), resize_granularity(128)
 	{
 		last_element_idx = p_num_elements ;
 	}
 	
 CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
-	: CArray<T>(p_array, p_array_size)
+	: CArray<T>(p_array, p_array_size), resize_granularity(128)
 	{
 		last_element_idx = p_num_elements ;
 	}
@@ -70,24 +70,24 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	}
 	
 	///set array element at index 'index' return false in case of trouble
-	inline bool set_element(const T& element, INT index)
+	inline bool set_element(const T& p_element, INT index)
 	{
 		ARRAY_ASSERT((CArray<T>::array != NULL) && (index >= 0));
 		if (index <= last_element_idx)
 		{
-			CArray<T>::set_element(element, index) ;
+			CArray<T>::set_element(p_element, index) ;
 			return true;
 		}
 		else if (index < CArray<T>::num_elements)
 		{
-			CArray<T>::set_element(element, index) ;
+			CArray<T>::set_element(p_element, index) ;
 			last_element_idx=index;
 			return true;
 		}
 		else
 		{
 			if (resize_array(index))
-				return CArray<T>::set_element(element, index);
+				return CArray<T>::set_element(p_element, index);
 			else
 				return false;
 		}
@@ -146,7 +146,7 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	}
 
 	///set array element at index 'index' return false in case of trouble
-	inline bool insert_element(const T& element, INT index)
+	inline bool insert_element(const T& p_element, INT index)
 	{
 		if (append_element(get_element(last_element_idx)))
 		{
@@ -154,7 +154,7 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 			{
 				CArray<T>::element(i) = CArray<T>::element(i-1) ;
 			}
-			CArray<T>::element(index)=element ;
+			CArray<T>::element(index)=p_element ;
 		}
 		else
 			return false;
@@ -192,7 +192,7 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 		
 		// one cannot shrink below resize_granularity
 		if (n<resize_granularity)
-			n=resize_granularity;
+			n = resize_granularity;
 
 		if (!CArray<T>::resize_array(n))
 			return false ;
@@ -205,9 +205,9 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	}
 	
 	/// set the array pointer and free previously allocated memory
-	inline void set_array(T* array, INT num_elements, INT p_array_size, bool free_array=true, bool copy_array=false)
+	inline void set_array(T* p_array, INT num_elements, INT p_array_size, bool p_free_array=true, bool copy_array=false)
 	{
-		CArray<T>::set_array(array, p_array_size, free_array, copy_array) ;
+		CArray<T>::set_array(p_array, p_array_size, p_free_array, copy_array) ;
 		this->last_element_idx=num_elements-1;
 	}
 

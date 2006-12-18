@@ -174,7 +174,7 @@ public:
 		max_value=p_max_value ;
 	}
 
-	inline DREAL get_max_value() const 
+	virtual DREAL get_max_value() const 
 	{
 		return max_value ;
 	}
@@ -186,7 +186,7 @@ public:
 		min_value=p_min_value ;
 	}
 
-	inline DREAL get_min_value() const 
+	virtual DREAL get_min_value() const 
 	{
 		return min_value ;
 	}
@@ -219,7 +219,8 @@ protected:
 } ;
 
 #ifdef HAVE_MATLAB
-CPlif* read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P) ;
+CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P) ;
+void delete_penalty_struct(CPlif** PEN, INT P) ;
 #endif
 
 #endif

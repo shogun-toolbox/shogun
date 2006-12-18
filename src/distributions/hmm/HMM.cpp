@@ -172,25 +172,25 @@ CHMM::CHMM(CHMM* h, INT number_of_hmm_tables)
 	set_observations(h->get_observations());
 }
 
-CHMM::CHMM(INT N, INT M, CModel* model, DREAL PSEUDO, INT number_of_hmm_tables)
+CHMM::CHMM(INT p_N, INT p_M, CModel* p_model, DREAL p_PSEUDO, INT number_of_hmm_tables)
 {
 	NUM_PARALLEL= number_of_hmm_tables ;
 	this->N=N;
 	this->M=M;
-	model=NULL ;
+	p_model=NULL ;
 
 	if (NUM_PARALLEL<=0)
 		CIO::message(M_ERROR, "NUM_PARALLEL has illegal value") ;
 
 	CIO::message(M_INFO, "hmm is using %i separate tables\n",  NUM_PARALLEL) ;
 
-	status=initialize(model, PSEUDO);
+	status=initialize(p_model, p_PSEUDO);
 }
 
-CHMM::CHMM(INT N, double* p, double* q, double* a)
+CHMM::CHMM(INT p_N, double* p, double* q, double* a)
 {
 	NUM_PARALLEL= 1 ;
-	this->N=N;
+	this->N=p_N;
 	this->M=0;
 	model=NULL ;
 	
@@ -235,12 +235,12 @@ CHMM::CHMM(INT N, double* p, double* q, double* a)
 //	this->invalidate_model();
 }
 
-CHMM::CHMM(INT N, double* p, double* q, int num_trans, double* a_trans)
+CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
 {
 	NUM_PARALLEL= 1 ;
 	model=NULL ;
 	
-	this->N=N;
+	this->N=p_N;
 	this->M=0;
 	
 	trans_list_forward = NULL ;
@@ -339,7 +339,7 @@ CHMM::CHMM(INT N, double* p, double* q, int num_trans, double* a_trans)
 }
 
 
-CHMM::CHMM(FILE* model_file, DREAL PSEUDO, INT number_of_hmm_tables)
+CHMM::CHMM(FILE* model_file, DREAL p_PSEUDO, INT number_of_hmm_tables)
 {
 	NUM_PARALLEL= number_of_hmm_tables ;
 
@@ -348,7 +348,7 @@ CHMM::CHMM(FILE* model_file, DREAL PSEUDO, INT number_of_hmm_tables)
 
 	CIO::message(M_INFO, "hmm is using %i separate tables\n",  NUM_PARALLEL) ;
 
-	status=initialize(NULL, PSEUDO, model_file);
+	status=initialize(NULL, p_PSEUDO, model_file);
 }
 
 CHMM::~CHMM()

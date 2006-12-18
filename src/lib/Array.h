@@ -99,13 +99,13 @@ CArray(const T* p_array, INT p_array_size)
 	}
 	
 	///set array element at index 'index' return false in case of trouble
-	inline bool set_element(const T& element, INT index)
+	inline bool set_element(const T& p_element, INT index)
 	{
 		ARRAY_ASSERT((array != NULL) && (index >= 0) && (index < array_size));
 #ifdef ARRAY_STATISTICS
 		((CArray<T>*)this)->stat_set_element++ ;
 #endif
-		array[index]=element;
+		array[index]=p_element;
 		return true;
 	}
 	
@@ -169,7 +169,7 @@ CArray(const T* p_array, INT p_array_size)
 	}
 
 	/// set the array pointer and free previously allocated memory
-	inline void set_array(T* array, INT array_size, bool free_array=true, bool copy_array=false)
+	inline void set_array(T* p_array, INT p_array_size, bool p_free_array=true, bool copy_array=false)
 	{
 #ifdef ARRAY_STATISTICS
 		((CArray<T>*)this)->stat_set_array++ ;
@@ -178,26 +178,26 @@ CArray(const T* p_array, INT p_array_size)
 			free(this->array);
 		if (copy_array)
 		{
-			this->array=(T*)malloc(array_size*sizeof(T)) ;
-			memcpy(this->array, array, array_size*sizeof(T)) ;
+			this->array=(T*)malloc(p_array_size*sizeof(T)) ;
+			memcpy(this->array, p_array, p_array_size*sizeof(T)) ;
 		}
 		else
-			this->array=array;
-		this->array_size=array_size;
-		this->free_array=free_array ;
+			this->array=p_array;
+		this->array_size=p_array_size;
+		this->free_array=p_free_array ;
 	}
 
 	/// set the array pointer and free previously allocated memory
-	inline void set_array(const T* array, INT array_size)
+	inline void set_array(const T* p_array, INT p_array_size)
 	{
 #ifdef ARRAY_STATISTICS
 		((CArray<T>*)this)->stat_set_array++ ;
 #endif
 		if (this->free_array)
 			free(this->array);
-		this->array=(T*)malloc(array_size*sizeof(T)) ;
-		memcpy(this->array, array, array_size*sizeof(T)) ;
-		this->array_size=array_size;
+		this->array=(T*)malloc(p_array_size*sizeof(T)) ;
+		memcpy(this->array, p_array, p_array_size*sizeof(T)) ;
+		this->array_size=p_array_size;
 		this->free_array=true ;
 	}
 

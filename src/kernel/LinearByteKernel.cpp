@@ -113,7 +113,6 @@ bool CLinearByteKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* a
 	CIO::message(M_DEBUG,"drin gelandet yeah\n");
 	INT alen;
 	bool afree;
-	int i;
 
 	int num_feat=((CByteFeatures*) lhs)->get_num_features();
 	ASSERT(num_feat);
@@ -121,7 +120,7 @@ bool CLinearByteKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* a
 	normal=new DREAL[num_feat];
 	ASSERT(normal);
 
-	for (i=0; i<num_feat; i++)
+	for (INT i=0; i<num_feat; i++)
 		normal[i]=0;
 
 	for (int i=0; i<num_suppvec; i++)

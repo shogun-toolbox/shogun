@@ -52,8 +52,8 @@ CKernel::CKernel(INT size)
 }
 
 		
-CKernel::CKernel(CFeatures* lhs, CFeatures* rhs, INT size)
-: kernel_matrix(NULL), precomputed_matrix(NULL),
+CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, INT size)
+  : kernel_matrix(NULL), precomputed_matrix(NULL),
 	precompute_subkernel_matrix(false), precompute_matrix(false), 
 	lhs(NULL), rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
 	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE)
@@ -72,7 +72,7 @@ CKernel::CKernel(CFeatures* lhs, CFeatures* rhs, INT size)
 		CIO::message(M_ERROR, "COptimizableKernel still initialized on destruction") ;
 #endif
 
-	init(lhs, rhs, true);
+	init(p_lhs, p_rhs, true);
 }
 
 CKernel::~CKernel()

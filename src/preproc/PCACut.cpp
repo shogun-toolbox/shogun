@@ -99,8 +99,8 @@ bool CPCACut::init(CFeatures* f)
 
 			DREAL* vec=((CRealFeatures*) f)->get_feature_vector(i, len, free) ;
 
-			for (INT j=0; j<num_features; j++)
-				vec[j]-=mean[j] ;
+			for (INT jj=0; jj<num_features; jj++)
+				vec[jj]-=mean[jj] ;
 
 			/// A = 1.0*xy^T+A blas
 			cblas_dger(CblasColMajor, num_features,num_features, 1.0, vec, 1, 
@@ -170,8 +170,8 @@ bool CPCACut::init(CFeatures* f)
 			{
 				if (eigenvalues[i]>1e-6)
 				{
-					for (INT j=0; j<num_features; j++)
-						T[offs+j*num_dim]=cov[num_features*i+j]/sqrt(eigenvalues[i]) ;
+					for (INT jj=0; jj<num_features; jj++)
+						T[offs+jj*num_dim]=cov[num_features*i+jj]/sqrt(eigenvalues[i]) ;
 					offs++ ;
 				} ;
 			}

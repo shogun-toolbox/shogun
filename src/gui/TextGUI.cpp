@@ -147,8 +147,8 @@ static const CHAR* N_SET_REF_FEAT=              "set_ref_features" ;
 static const CHAR* N_TIC=              "tic" ;
 static const CHAR* N_TOC=              "toc" ;
 
-CTextGUI::CTextGUI(INT argc, char** argv)
-: CGUI(argc, argv), out_file(NULL), echo(true)
+CTextGUI::CTextGUI(INT p_argc, char** p_argv)
+: CGUI(p_argc, p_argv), out_file(NULL), echo(true)
 {
 #ifdef WITHMATLAB
 	libmmfileInitialize() ;
@@ -296,226 +296,226 @@ CHAR* CTextGUI::get_line(FILE* infile, bool interactive_mode)
 		return input;
 }
 
-bool CTextGUI::parse_line(CHAR* input)
+bool CTextGUI::parse_line(CHAR* p_input)
 {
 	INT i;
-	if (!input)
+	if (!p_input)
 		return false;
 
-	if ((input[0]==N_COMMENT1) || (input[0]==N_COMMENT2) || (input[0]=='\0') || (input[0]=='\n'))
+	if ((p_input[0]==N_COMMENT1) || (p_input[0]==N_COMMENT2) || (p_input[0]=='\0') || (p_input[0]=='\n'))
 		return true;
 
 	//remove linebreaks if there are any
-	if (strlen(input)>=1 && input[strlen(input)-1]=='\n')
-		input[strlen(input)-1]='\0';
+	if (strlen(p_input)>=1 && p_input[strlen(p_input)-1]=='\n')
+		p_input[strlen(p_input)-1]='\0';
 #ifndef HAVE_PYTHON
 	if (echo)
-		CIO::message(M_MESSAGEONLY, "%s\n",input) ;
+		CIO::message(M_MESSAGEONLY, "%s\n",p_input) ;
 #endif
 
-	if (!strncmp(input, N_NEW_HMM, strlen(N_NEW_HMM)))
+	if (!strncmp(p_input, N_NEW_HMM, strlen(N_NEW_HMM)))
 	{
-		guihmm.new_hmm(input+strlen(N_NEW_HMM));
+		guihmm.new_hmm(p_input+strlen(N_NEW_HMM));
 	} 
-	else if (!strncmp(input, N_SET_NUM_TABLES, strlen(N_SET_NUM_TABLES)))
+	else if (!strncmp(p_input, N_SET_NUM_TABLES, strlen(N_SET_NUM_TABLES)))
 	{
-		guihmm.set_num_hmm_tables(input+strlen(N_SET_NUM_TABLES));
+		guihmm.set_num_hmm_tables(p_input+strlen(N_SET_NUM_TABLES));
 	} 
-	else if (!strncmp(input, N_NEW_SVM, strlen(N_NEW_SVM)))
+	else if (!strncmp(p_input, N_NEW_SVM, strlen(N_NEW_SVM)))
 	{
-		guisvm.new_svm(input+strlen(N_NEW_SVM));
+		guisvm.new_svm(p_input+strlen(N_NEW_SVM));
 	} 
-	else if (!strncmp(input, N_NEW_CLASSIFIER, strlen(N_NEW_CLASSIFIER)))
+	else if (!strncmp(p_input, N_NEW_CLASSIFIER, strlen(N_NEW_CLASSIFIER)))
 	{
-		guiclassifier.new_classifier(input+strlen(N_NEW_CLASSIFIER));
+		guiclassifier.new_classifier(p_input+strlen(N_NEW_CLASSIFIER));
 	} 
-	else if (!strncmp(input, N_NEW_KNN, strlen(N_NEW_KNN)))
+	else if (!strncmp(p_input, N_NEW_KNN, strlen(N_NEW_KNN)))
 	{
-		guiknn.new_knn(input+strlen(N_NEW_KNN));
+		guiknn.new_knn(p_input+strlen(N_NEW_KNN));
 	} 
-	else if (!strncmp(input, N_NEW_PLUGIN_ESTIMATOR, strlen(N_NEW_PLUGIN_ESTIMATOR)))
+	else if (!strncmp(p_input, N_NEW_PLUGIN_ESTIMATOR, strlen(N_NEW_PLUGIN_ESTIMATOR)))
 	{
-		guipluginestimate.new_estimator(input+strlen(N_NEW_PLUGIN_ESTIMATOR));
+		guipluginestimate.new_estimator(p_input+strlen(N_NEW_PLUGIN_ESTIMATOR));
 	} 
-	else if (!strncmp(input, N_TRAIN_KNN, strlen(N_TRAIN_KNN)))
+	else if (!strncmp(p_input, N_TRAIN_KNN, strlen(N_TRAIN_KNN)))
 	{
-		guiknn.train(input+strlen(N_TRAIN_KNN));
+		guiknn.train(p_input+strlen(N_TRAIN_KNN));
 	} 
-	else if (!strncmp(input, N_TEST_KNN, strlen(N_TEST_KNN)))
+	else if (!strncmp(p_input, N_TEST_KNN, strlen(N_TEST_KNN)))
 	{
-		guiknn.test(input+strlen(N_TEST_KNN));
+		guiknn.test(p_input+strlen(N_TEST_KNN));
 	} 
-	else if (!strncmp(input, N_TRAIN_ESTIMATOR, strlen(N_TRAIN_ESTIMATOR)))
+	else if (!strncmp(p_input, N_TRAIN_ESTIMATOR, strlen(N_TRAIN_ESTIMATOR)))
 	{
-		guipluginestimate.train(input+strlen(N_TRAIN_ESTIMATOR));
+		guipluginestimate.train(p_input+strlen(N_TRAIN_ESTIMATOR));
 	} 
-	else if (!strncmp(input, N_TEST_ESTIMATOR, strlen(N_TEST_ESTIMATOR)))
+	else if (!strncmp(p_input, N_TEST_ESTIMATOR, strlen(N_TEST_ESTIMATOR)))
 	{
-		guipluginestimate.test(input+strlen(N_TEST_ESTIMATOR));
+		guipluginestimate.test(p_input+strlen(N_TEST_ESTIMATOR));
 	} 
-	else if (!strncmp(input, N_LOAD_HMM, strlen(N_LOAD_HMM)))
+	else if (!strncmp(p_input, N_LOAD_HMM, strlen(N_LOAD_HMM)))
 	{
-		guihmm.load(input+strlen(N_LOAD_HMM));
+		guihmm.load(p_input+strlen(N_LOAD_HMM));
 	} 
-	else if (!strncmp(input, N_LOAD_PREPROC, strlen(N_LOAD_PREPROC)))
+	else if (!strncmp(p_input, N_LOAD_PREPROC, strlen(N_LOAD_PREPROC)))
 	{
-		guipreproc.load(input+strlen(N_LOAD_PREPROC)) ;
+		guipreproc.load(p_input+strlen(N_LOAD_PREPROC)) ;
 	} 
-	else if (!strncmp(input, N_LOAD_LABELS, strlen(N_LOAD_LABELS)))
+	else if (!strncmp(p_input, N_LOAD_LABELS, strlen(N_LOAD_LABELS)))
 	{
-		guilabels.load(input+strlen(N_LOAD_LABELS));
+		guilabels.load(p_input+strlen(N_LOAD_LABELS));
 	} 
-	else if (!strncmp(input, N_LOAD_FEATURES, strlen(N_LOAD_FEATURES)))
+	else if (!strncmp(p_input, N_LOAD_FEATURES, strlen(N_LOAD_FEATURES)))
 	{
-		guifeatures.load(input+strlen(N_LOAD_FEATURES));
+		guifeatures.load(p_input+strlen(N_LOAD_FEATURES));
 	} 
-	else if (!strncmp(input, N_SAVE_FEATURES, strlen(N_SAVE_FEATURES)))
+	else if (!strncmp(p_input, N_SAVE_FEATURES, strlen(N_SAVE_FEATURES)))
 	{
-		guifeatures.save(input+strlen(N_SAVE_FEATURES));
+		guifeatures.save(p_input+strlen(N_SAVE_FEATURES));
 	} 
-	else if (!strncmp(input, N_CLEAN_FEATURES, strlen(N_CLEAN_FEATURES)))
+	else if (!strncmp(p_input, N_CLEAN_FEATURES, strlen(N_CLEAN_FEATURES)))
 	{
-		guifeatures.clean(input+strlen(N_CLEAN_FEATURES));
+		guifeatures.clean(p_input+strlen(N_CLEAN_FEATURES));
 	} 
-	else if (!strncmp(input, N_RESHAPE, strlen(N_RESHAPE)))
+	else if (!strncmp(p_input, N_RESHAPE, strlen(N_RESHAPE)))
 	{
-		guifeatures.reshape(input+strlen(N_RESHAPE));
+		guifeatures.reshape(p_input+strlen(N_RESHAPE));
 	} 
-	else if (!strncmp(input, N_SET_REF_FEAT, strlen(N_SET_REF_FEAT)))
+	else if (!strncmp(p_input, N_SET_REF_FEAT, strlen(N_SET_REF_FEAT)))
 	{
-		guifeatures.set_ref_features(input+strlen(N_SET_REF_FEAT));
+		guifeatures.set_ref_features(p_input+strlen(N_SET_REF_FEAT));
 	} 
-	else if (!strncmp(input, N_CONVERT, strlen(N_CONVERT)))
+	else if (!strncmp(p_input, N_CONVERT, strlen(N_CONVERT)))
 	{
-		guifeatures.convert(input+strlen(N_CONVERT));
+		guifeatures.convert(p_input+strlen(N_CONVERT));
 	} 
-	else if (!strncmp(input, N_LOAD_SVM, strlen(N_LOAD_SVM)))
+	else if (!strncmp(p_input, N_LOAD_SVM, strlen(N_LOAD_SVM)))
 	{
-		guisvm.load(input+strlen(N_LOAD_SVM));
+		guisvm.load(p_input+strlen(N_LOAD_SVM));
 	} 
-	else if (!strncmp(input, N_DELETE_KERNEL_OPTIMIZATION, strlen(N_DELETE_KERNEL_OPTIMIZATION)))
+	else if (!strncmp(p_input, N_DELETE_KERNEL_OPTIMIZATION, strlen(N_DELETE_KERNEL_OPTIMIZATION)))
 	{
-		guikernel.delete_kernel_optimization(input+strlen(N_DELETE_KERNEL_OPTIMIZATION));
+		guikernel.delete_kernel_optimization(p_input+strlen(N_DELETE_KERNEL_OPTIMIZATION));
 	} 
-	else if (!strncmp(input, N_INIT_KERNEL_OPTIMIZATION, strlen(N_INIT_KERNEL_OPTIMIZATION)))
+	else if (!strncmp(p_input, N_INIT_KERNEL_OPTIMIZATION, strlen(N_INIT_KERNEL_OPTIMIZATION)))
 	{
-		guikernel.init_kernel_optimization(input+strlen(N_INIT_KERNEL_OPTIMIZATION));
+		guikernel.init_kernel_optimization(p_input+strlen(N_INIT_KERNEL_OPTIMIZATION));
 	} 
-	else if (!strncmp(input, N_INIT_KERNEL, strlen(N_INIT_KERNEL)))
+	else if (!strncmp(p_input, N_INIT_KERNEL, strlen(N_INIT_KERNEL)))
 	{
-		guikernel.init_kernel(input+strlen(N_INIT_KERNEL));
+		guikernel.init_kernel(p_input+strlen(N_INIT_KERNEL));
 	}
-	else if (!strncmp(input, N_INIT_DISTANCE, strlen(N_INIT_DISTANCE)))
+	else if (!strncmp(p_input, N_INIT_DISTANCE, strlen(N_INIT_DISTANCE)))
 	{
-		guidistance.init_distance(input+strlen(N_INIT_DISTANCE));
+		guidistance.init_distance(p_input+strlen(N_INIT_DISTANCE));
 	} 
-	else if (!strncmp(input, N_LOAD_KERNEL_INIT, strlen(N_LOAD_KERNEL_INIT)))
+	else if (!strncmp(p_input, N_LOAD_KERNEL_INIT, strlen(N_LOAD_KERNEL_INIT)))
 	{
-		guikernel.load_kernel_init(input+strlen(N_LOAD_KERNEL_INIT));
+		guikernel.load_kernel_init(p_input+strlen(N_LOAD_KERNEL_INIT));
 	} 
-	else if (!strncmp(input, N_SET_HMM_AS, strlen(N_SET_HMM_AS)))
+	else if (!strncmp(p_input, N_SET_HMM_AS, strlen(N_SET_HMM_AS)))
 	{
-		guihmm.set_hmm_as(input+strlen(N_SET_HMM_AS));
+		guihmm.set_hmm_as(p_input+strlen(N_SET_HMM_AS));
 	}
-	else if (!strncmp(input, N_CHOP, strlen(N_CHOP)))
+	else if (!strncmp(p_input, N_CHOP, strlen(N_CHOP)))
 	{
-		guihmm.chop(input+strlen(N_CHOP));
+		guihmm.chop(p_input+strlen(N_CHOP));
 	} 
-	else if (!strncmp(input, N_SAVE_LIKELIHOOD, strlen(N_SAVE_LIKELIHOOD)))
+	else if (!strncmp(p_input, N_SAVE_LIKELIHOOD, strlen(N_SAVE_LIKELIHOOD)))
 	{
-		guihmm.save_likelihood(input+strlen(N_SAVE_LIKELIHOOD));
+		guihmm.save_likelihood(p_input+strlen(N_SAVE_LIKELIHOOD));
 	}
-	else if (!strncmp(input, N_SAVE_PATH, strlen(N_SAVE_PATH)))
+	else if (!strncmp(p_input, N_SAVE_PATH, strlen(N_SAVE_PATH)))
 	{
-		guihmm.save_path(input+strlen(N_SAVE_PATH));
+		guihmm.save_path(p_input+strlen(N_SAVE_PATH));
 	}
-	else if (!strncmp(input, N_SAVE_HMM, strlen(N_SAVE_HMM)))
+	else if (!strncmp(p_input, N_SAVE_HMM, strlen(N_SAVE_HMM)))
 	{
-		guihmm.save(input+strlen(N_SAVE_HMM)) ;
+		guihmm.save(p_input+strlen(N_SAVE_HMM)) ;
 	} 
-	else if (!strncmp(input, N_SAVE_PREPROC, strlen(N_SAVE_PREPROC)))
+	else if (!strncmp(p_input, N_SAVE_PREPROC, strlen(N_SAVE_PREPROC)))
 	{
-		guipreproc.save(input+strlen(N_SAVE_PREPROC)) ;
+		guipreproc.save(p_input+strlen(N_SAVE_PREPROC)) ;
 	} 
-	else if (!strncmp(input, N_SAVE_SVM, strlen(N_SAVE_SVM)))
+	else if (!strncmp(p_input, N_SAVE_SVM, strlen(N_SAVE_SVM)))
 	{
-		guisvm.save(input+strlen(N_SAVE_SVM)) ;
+		guisvm.save(p_input+strlen(N_SAVE_SVM)) ;
 	} 
-	else if (!strncmp(input, N_SAVE_KERNEL_INIT, strlen(N_SAVE_KERNEL_INIT)))
+	else if (!strncmp(p_input, N_SAVE_KERNEL_INIT, strlen(N_SAVE_KERNEL_INIT)))
 	{
-		guikernel.save_kernel_init(input+strlen(N_SAVE_KERNEL_INIT)) ;
+		guikernel.save_kernel_init(p_input+strlen(N_SAVE_KERNEL_INIT)) ;
 	} 
-	else if (!strncmp(input, N_LOAD_DEFINITIONS, strlen(N_LOAD_DEFINITIONS)))
+	else if (!strncmp(p_input, N_LOAD_DEFINITIONS, strlen(N_LOAD_DEFINITIONS)))
 	{
-		guihmm.load_defs(input+strlen(N_LOAD_DEFINITIONS));
+		guihmm.load_defs(p_input+strlen(N_LOAD_DEFINITIONS));
 	} 
-	else if (!strncmp(input, N_SAVE_KERNEL, strlen(N_SAVE_KERNEL)))
+	else if (!strncmp(p_input, N_SAVE_KERNEL, strlen(N_SAVE_KERNEL)))
 	{
-		guikernel.save_kernel(input+strlen(N_SAVE_KERNEL));
+		guikernel.save_kernel(p_input+strlen(N_SAVE_KERNEL));
 	} 
-	else if (!strncmp(input, N_CLEAR, strlen(N_CLEAR)))
+	else if (!strncmp(p_input, N_CLEAR, strlen(N_CLEAR)))
 	{
-		char ** argv=gui->argv;
-		INT argc=gui->argc;
+		char ** _argv=gui->argv;
+		INT _argc=gui->argc;
 		delete gui;
-		gui=new CTextGUI(argc, argv);
+		gui=new CTextGUI(_argc, _argv);
 	} 
-	else if (!strncmp(input, N_PSEUDO, strlen(N_PSEUDO)))
+	else if (!strncmp(p_input, N_PSEUDO, strlen(N_PSEUDO)))
 	{
-		guihmm.set_pseudo(input+strlen(N_PSEUDO));
+		guihmm.set_pseudo(p_input+strlen(N_PSEUDO));
 	} 
-	else if (!strncmp(input, N_SET_THRESHOLD, strlen(N_SET_THRESHOLD)))
+	else if (!strncmp(p_input, N_SET_THRESHOLD, strlen(N_SET_THRESHOLD)))
 	{
-		guimath.set_threshold(input+strlen(N_SET_THRESHOLD));
+		guimath.set_threshold(p_input+strlen(N_SET_THRESHOLD));
 	} 
-	//else if (!strncmp(input, N_ALPHABET, strlen(N_ALPHABET)))
+	//else if (!strncmp(p_input, N_ALPHABET, strlen(N_ALPHABET)))
 	//{
-		//guiobs.set_alphabet(input+strlen(N_ALPHABET)) ;
+		//guiobs.set_alphabet(p_input+strlen(N_ALPHABET)) ;
 	//} 
-	else if (!strncmp(input, N_CONVERGENCE_CRITERIA, strlen(N_CONVERGENCE_CRITERIA)))
+	else if (!strncmp(p_input, N_CONVERGENCE_CRITERIA, strlen(N_CONVERGENCE_CRITERIA)))
 	{
-		guihmm.convergence_criteria(input+strlen(N_CONVERGENCE_CRITERIA)) ;
+		guihmm.convergence_criteria(p_input+strlen(N_CONVERGENCE_CRITERIA)) ;
 	} 
-	else if (!strncmp(input, N_VITERBI_TRAIN_DEFINED, strlen(N_VITERBI_TRAIN_DEFINED)))
+	else if (!strncmp(p_input, N_VITERBI_TRAIN_DEFINED, strlen(N_VITERBI_TRAIN_DEFINED)))
 	{
-		guihmm.viterbi_train_defined(input+strlen(N_VITERBI_TRAIN_DEFINED));
+		guihmm.viterbi_train_defined(p_input+strlen(N_VITERBI_TRAIN_DEFINED));
 	} 
-	else if (!strncmp(input, N_VITERBI_TRAIN, strlen(N_VITERBI_TRAIN)))
+	else if (!strncmp(p_input, N_VITERBI_TRAIN, strlen(N_VITERBI_TRAIN)))
 	{
-		guihmm.viterbi_train(input+strlen(N_VITERBI_TRAIN));
+		guihmm.viterbi_train(p_input+strlen(N_VITERBI_TRAIN));
 	}
-	else if (!strncmp(input, N_BAUM_WELCH_TRAIN_DEFINED, strlen(N_BAUM_WELCH_TRAIN_DEFINED)))
+	else if (!strncmp(p_input, N_BAUM_WELCH_TRAIN_DEFINED, strlen(N_BAUM_WELCH_TRAIN_DEFINED)))
 	{
 		CIO::not_implemented() ;
 	} 
-	else if (!strncmp(input, N_BAUM_WELCH_TRANS_TRAIN, strlen(N_BAUM_WELCH_TRANS_TRAIN)))
+	else if (!strncmp(p_input, N_BAUM_WELCH_TRANS_TRAIN, strlen(N_BAUM_WELCH_TRANS_TRAIN)))
 	{
-		guihmm.baum_welch_trans_train(input+strlen(N_BAUM_WELCH_TRANS_TRAIN));
+		guihmm.baum_welch_trans_train(p_input+strlen(N_BAUM_WELCH_TRANS_TRAIN));
 	} 
-	else if (!strncmp(input, N_BAUM_WELCH_TRAIN, strlen(N_BAUM_WELCH_TRAIN)))
+	else if (!strncmp(p_input, N_BAUM_WELCH_TRAIN, strlen(N_BAUM_WELCH_TRAIN)))
 	{
-		guihmm.baum_welch_train(input+strlen(N_BAUM_WELCH_TRAIN));
+		guihmm.baum_welch_train(p_input+strlen(N_BAUM_WELCH_TRAIN));
 	} 
-	else if (!strncmp(input, N_BEST_PATH, strlen(N_BEST_PATH)))
+	else if (!strncmp(p_input, N_BEST_PATH, strlen(N_BEST_PATH)))
 	{
-		guihmm.best_path(input+strlen(N_BEST_PATH));
+		guihmm.best_path(p_input+strlen(N_BEST_PATH));
 	} 
-	else if (!strncmp(input, N_LIKELIHOOD, strlen(N_LIKELIHOOD)))
+	else if (!strncmp(p_input, N_LIKELIHOOD, strlen(N_LIKELIHOOD)))
 	{
-		guihmm.likelihood(input+strlen(N_LIKELIHOOD));
+		guihmm.likelihood(p_input+strlen(N_LIKELIHOOD));
 	} 
-	else if (!strncmp(input, N_OUTPUT_HMM_DEFINED, strlen(N_OUTPUT_HMM_DEFINED)))
+	else if (!strncmp(p_input, N_OUTPUT_HMM_DEFINED, strlen(N_OUTPUT_HMM_DEFINED)))
 	{
-		guihmm.output_hmm_defined(input+strlen(N_OUTPUT_HMM_DEFINED));
+		guihmm.output_hmm_defined(p_input+strlen(N_OUTPUT_HMM_DEFINED));
 	} 
-	else if (!strncmp(input, N_OUTPUT_HMM, strlen(N_OUTPUT_HMM)))
+	else if (!strncmp(p_input, N_OUTPUT_HMM, strlen(N_OUTPUT_HMM)))
 	{
-		guihmm.output_hmm(input+strlen(N_OUTPUT_HMM));
+		guihmm.output_hmm(p_input+strlen(N_OUTPUT_HMM));
 	} 
-	else if (!strncmp(input, N_SET_OUTPUT, strlen(N_SET_OUTPUT)))
+	else if (!strncmp(p_input, N_SET_OUTPUT, strlen(N_SET_OUTPUT)))
 	{
-		for (i=strlen(N_SET_OUTPUT); isspace(input[i]); i++);
-		CHAR* param=&input[i];
+		for (i=strlen(N_SET_OUTPUT); isspace(p_input[i]); i++);
+		CHAR* param=&p_input[i];
 
 		if (out_file)
 			fclose(out_file);
@@ -536,11 +536,11 @@ bool CTextGUI::parse_line(CHAR* input)
 			CIO::set_target(out_file);
 		}
 	}
-	else if (!strncmp(input, N_EXEC, strlen(N_EXEC)))
+	else if (!strncmp(p_input, N_EXEC, strlen(N_EXEC)))
 	{
-		for (i=strlen(N_EXEC); isspace(input[i]); i++);
+		for (i=strlen(N_EXEC); isspace(p_input[i]); i++);
 
-		FILE* file=fopen(&input[i], "r");
+		FILE* file=fopen(&p_input[i], "r");
 
 		if (file)
 		{
@@ -550,136 +550,136 @@ bool CTextGUI::parse_line(CHAR* input)
 		else
 			CIO::message(M_ERROR, "error opening/reading file: \"%s\"",argv[1]);
 	} 
-	else if (!strncmp(input, N_EXIT, strlen(N_EXIT)))
+	else if (!strncmp(p_input, N_EXIT, strlen(N_EXIT)))
 	{
 		exit(0);
 	} 
-	else if (!strncmp(input, N_QUIT, strlen(N_QUIT)))
+	else if (!strncmp(p_input, N_QUIT, strlen(N_QUIT)))
 	{
 		return false;
 	} 
-	else if (!strncmp(input, N_HELP, strlen(N_HELP)))
+	else if (!strncmp(p_input, N_HELP, strlen(N_HELP)))
 	{
 		print_help();
 	}
-	else if (!strncmp(input, N_SYSTEM, strlen(N_SYSTEM)))
+	else if (!strncmp(p_input, N_SYSTEM, strlen(N_SYSTEM)))
 	{
-		for (i=strlen(N_SYSTEM); isspace(input[i]); i++);
-		system(&input[i]);
+		for (i=strlen(N_SYSTEM); isspace(p_input[i]); i++);
+		system(&p_input[i]);
 	} 
-	else if (!strncmp(input, N_LINEAR_TRAIN, strlen(N_LINEAR_TRAIN)))
+	else if (!strncmp(p_input, N_LINEAR_TRAIN, strlen(N_LINEAR_TRAIN)))
 	{
-		guihmm.linear_train(input+strlen(N_LINEAR_TRAIN));
+		guihmm.linear_train(p_input+strlen(N_LINEAR_TRAIN));
 	} 
-	else if (!strncmp(input, N_SVM_TRAIN_AUC_MAXIMIZATION, strlen(N_SVM_TRAIN_AUC_MAXIMIZATION)))
+	else if (!strncmp(p_input, N_SVM_TRAIN_AUC_MAXIMIZATION, strlen(N_SVM_TRAIN_AUC_MAXIMIZATION)))
 	{
-		guisvm.train(input+strlen(N_SVM_TRAIN_AUC_MAXIMIZATION), true);
+		guisvm.train(p_input+strlen(N_SVM_TRAIN_AUC_MAXIMIZATION), true);
 	} 
-	else if (!strncmp(input, N_TRAIN_CLASSIFIER, strlen(N_TRAIN_CLASSIFIER)))
+	else if (!strncmp(p_input, N_TRAIN_CLASSIFIER, strlen(N_TRAIN_CLASSIFIER)))
 	{
-		guiclassifier.train(input+strlen(N_TRAIN_CLASSIFIER));
+		guiclassifier.train(p_input+strlen(N_TRAIN_CLASSIFIER));
 	} 
-	else if (!strncmp(input, N_SET_PERCEPTRON_PARAMETERS, strlen(N_SET_PERCEPTRON_PARAMETERS)))
+	else if (!strncmp(p_input, N_SET_PERCEPTRON_PARAMETERS, strlen(N_SET_PERCEPTRON_PARAMETERS)))
 	{
-		guiclassifier.set_perceptron_parameters(input+strlen(N_SET_PERCEPTRON_PARAMETERS));
+		guiclassifier.set_perceptron_parameters(p_input+strlen(N_SET_PERCEPTRON_PARAMETERS));
 	} 
-	else if (!strncmp(input, N_SVM_TRAIN, strlen(N_SVM_TRAIN)))
+	else if (!strncmp(p_input, N_SVM_TRAIN, strlen(N_SVM_TRAIN)))
 	{
-		guisvm.train(input+strlen(N_SVM_TRAIN), false);
+		guisvm.train(p_input+strlen(N_SVM_TRAIN), false);
 	} 
-	else if (!strncmp(input, N_SET_KERNEL_OPTIMIZATION_TYPE, strlen(N_SET_KERNEL_OPTIMIZATION_TYPE)))
+	else if (!strncmp(p_input, N_SET_KERNEL_OPTIMIZATION_TYPE, strlen(N_SET_KERNEL_OPTIMIZATION_TYPE)))
 	{
-		guikernel.set_optimization_type(input+strlen(N_SET_KERNEL_OPTIMIZATION_TYPE));
+		guikernel.set_optimization_type(p_input+strlen(N_SET_KERNEL_OPTIMIZATION_TYPE));
 	} 
-	else if (!strncmp(input, N_SET_KERNEL, strlen(N_SET_KERNEL)))
+	else if (!strncmp(p_input, N_SET_KERNEL, strlen(N_SET_KERNEL)))
 	{
-		guikernel.set_kernel(input+strlen(N_SET_KERNEL));
+		guikernel.set_kernel(p_input+strlen(N_SET_KERNEL));
 	} 
-	else if (!strncmp(input, N_SET_DISTANCE, strlen(N_SET_DISTANCE)))
+	else if (!strncmp(p_input, N_SET_DISTANCE, strlen(N_SET_DISTANCE)))
 	{
-		guidistance.set_distance(input+strlen(N_SET_DISTANCE));
+		guidistance.set_distance(p_input+strlen(N_SET_DISTANCE));
 	}
-	else if (!strncmp(input, N_ADD_KERNEL, strlen(N_ADD_KERNEL)))
+	else if (!strncmp(p_input, N_ADD_KERNEL, strlen(N_ADD_KERNEL)))
 	{
-		guikernel.add_kernel(input+strlen(N_ADD_KERNEL));
+		guikernel.add_kernel(p_input+strlen(N_ADD_KERNEL));
 	} 
-	else if (!strncmp(input, N_CLEAN_KERNEL, strlen(N_CLEAN_KERNEL)))
+	else if (!strncmp(p_input, N_CLEAN_KERNEL, strlen(N_CLEAN_KERNEL)))
 	{
-		guikernel.clean_kernel(input+strlen(N_CLEAN_KERNEL));
+		guikernel.clean_kernel(p_input+strlen(N_CLEAN_KERNEL));
 	} 
 #ifdef USE_SVMLIGHT
-	else if (!strncmp(input, N_RESIZE_KERNEL_CACHE, strlen(N_RESIZE_KERNEL_CACHE)))
+	else if (!strncmp(p_input, N_RESIZE_KERNEL_CACHE, strlen(N_RESIZE_KERNEL_CACHE)))
 	{
-		guikernel.resize_kernel_cache(input+strlen(N_RESIZE_KERNEL_CACHE));
+		guikernel.resize_kernel_cache(p_input+strlen(N_RESIZE_KERNEL_CACHE));
 	} 
 #endif
-	else if (!strncmp(input, N_DEL_PREPROC, strlen(N_DEL_PREPROC)))
+	else if (!strncmp(p_input, N_DEL_PREPROC, strlen(N_DEL_PREPROC)))
 	{
-		guipreproc.del_preproc(input+strlen(N_DEL_PREPROC));
+		guipreproc.del_preproc(p_input+strlen(N_DEL_PREPROC));
 	} 
-	else if (!strncmp(input, N_ADD_PREPROC, strlen(N_ADD_PREPROC)))
+	else if (!strncmp(p_input, N_ADD_PREPROC, strlen(N_ADD_PREPROC)))
 	{
-		guipreproc.add_preproc(input+strlen(N_ADD_PREPROC));
+		guipreproc.add_preproc(p_input+strlen(N_ADD_PREPROC));
 	} 
-	else if (!strncmp(input, N_ATTACH_PREPROC, strlen(N_ATTACH_PREPROC)))
+	else if (!strncmp(p_input, N_ATTACH_PREPROC, strlen(N_ATTACH_PREPROC)))
 	{
-		guipreproc.attach_preproc(input+strlen(N_ATTACH_PREPROC));
+		guipreproc.attach_preproc(p_input+strlen(N_ATTACH_PREPROC));
 	} 
-	else if (!strncmp(input, N_CLEAN_PREPROC, strlen(N_CLEAN_PREPROC)))
+	else if (!strncmp(p_input, N_CLEAN_PREPROC, strlen(N_CLEAN_PREPROC)))
 	{
-		guipreproc.clean_preproc(input+strlen(N_CLEAN_PREPROC));
+		guipreproc.clean_preproc(p_input+strlen(N_CLEAN_PREPROC));
 	} 
-	else if (!strncmp(input, N_SVM_TEST, strlen(N_SVM_TEST)))
+	else if (!strncmp(p_input, N_SVM_TEST, strlen(N_SVM_TEST)))
 	{
-		guisvm.test(input+strlen(N_SVM_TEST));
+		guisvm.test(p_input+strlen(N_SVM_TEST));
 	} 
-	else if (!strncmp(input, N_ONE_CLASS_HMM_TEST, strlen(N_ONE_CLASS_HMM_TEST)))
+	else if (!strncmp(p_input, N_ONE_CLASS_HMM_TEST, strlen(N_ONE_CLASS_HMM_TEST)))
 	{
-		guihmm.one_class_test(input+strlen(N_ONE_CLASS_HMM_TEST));
+		guihmm.one_class_test(p_input+strlen(N_ONE_CLASS_HMM_TEST));
 	} 
-	else if (!strncmp(input, N_HMM_CLASSIFY, strlen(N_HMM_CLASSIFY)))
+	else if (!strncmp(p_input, N_HMM_CLASSIFY, strlen(N_HMM_CLASSIFY)))
 	{
-		guihmm.hmm_classify(input+strlen(N_HMM_CLASSIFY));
+		guihmm.hmm_classify(p_input+strlen(N_HMM_CLASSIFY));
 	}
-	else if (!strncmp(input, N_HMM_TEST, strlen(N_HMM_TEST)))
+	else if (!strncmp(p_input, N_HMM_TEST, strlen(N_HMM_TEST)))
 	{
-		guihmm.hmm_test(input+strlen(N_HMM_TEST));
+		guihmm.hmm_test(p_input+strlen(N_HMM_TEST));
 	}
-	else if (!strncmp(input, N_NORMALIZE, strlen(N_NORMALIZE)))
+	else if (!strncmp(p_input, N_NORMALIZE, strlen(N_NORMALIZE)))
 	{
-		guihmm.normalize(input+strlen(N_NORMALIZE));
+		guihmm.normalize(p_input+strlen(N_NORMALIZE));
 	} 
-	else if (!strncmp(input, N_RELATIVE_ENTROPY, strlen(N_RELATIVE_ENTROPY)))
+	else if (!strncmp(p_input, N_RELATIVE_ENTROPY, strlen(N_RELATIVE_ENTROPY)))
 	{
-		guihmm.relative_entropy(input+strlen(N_RELATIVE_ENTROPY));
+		guihmm.relative_entropy(p_input+strlen(N_RELATIVE_ENTROPY));
 	} 
-	else if (!strncmp(input, N_ENTROPY, strlen(N_ENTROPY)))
+	else if (!strncmp(p_input, N_ENTROPY, strlen(N_ENTROPY)))
 	{
-		guihmm.entropy(input+strlen(N_ENTROPY));
+		guihmm.entropy(p_input+strlen(N_ENTROPY));
 	} 
-	else if (!strncmp(input, N_PERMUTATION_ENTROPY, strlen(N_PERMUTATION_ENTROPY)))
+	else if (!strncmp(p_input, N_PERMUTATION_ENTROPY, strlen(N_PERMUTATION_ENTROPY)))
 	{
-		guihmm.permutation_entropy(input+strlen(N_PERMUTATION_ENTROPY));
+		guihmm.permutation_entropy(p_input+strlen(N_PERMUTATION_ENTROPY));
 	} 
-	else if (!strncmp(input, N_APPEND_HMM, strlen(N_APPEND_HMM)))
+	else if (!strncmp(p_input, N_APPEND_HMM, strlen(N_APPEND_HMM)))
 	{
-		guihmm.append_model(input+strlen(N_APPEND_HMM));
+		guihmm.append_model(p_input+strlen(N_APPEND_HMM));
 	} 
-	else if (!strncmp(input, N_ADD_STATES, strlen(N_ADD_STATES)))
+	else if (!strncmp(p_input, N_ADD_STATES, strlen(N_ADD_STATES)))
 	{
-		guihmm.add_states(input+strlen(N_ADD_STATES));
+		guihmm.add_states(p_input+strlen(N_ADD_STATES));
 	} 
-	else if (!strncmp(input, N_C, strlen(N_C)))
+	else if (!strncmp(p_input, N_C, strlen(N_C)))
 	{
-		guisvm.set_C(input+strlen(N_C));
+		guisvm.set_C(p_input+strlen(N_C));
 	} 
-	else if (!strncmp(input, N_SVMQPSIZE, strlen(N_SVMQPSIZE)))
+	else if (!strncmp(p_input, N_SVMQPSIZE, strlen(N_SVMQPSIZE)))
 	{
-		guisvm.set_qpsize(input+strlen(N_SVMQPSIZE));
+		guisvm.set_qpsize(p_input+strlen(N_SVMQPSIZE));
 	} 
-	else if (!strncmp(input, N_THREADS, strlen(N_THREADS)))
+	else if (!strncmp(p_input, N_THREADS, strlen(N_THREADS)))
 	{
-		char* param=input+strlen(N_THREADS);
+		char* param=p_input+strlen(N_THREADS);
 		param=CIO::skip_spaces(param);
 
 		INT threads=1;
@@ -691,53 +691,53 @@ bool CTextGUI::parse_line(CHAR* input)
 		CIO::message(M_INFO, "Set number of threads to %d\n", threads);
 		return true ;  
 	} 
-	else if (!strncmp(input, N_USE_PRECOMPUTE, strlen(N_USE_PRECOMPUTE)))
+	else if (!strncmp(p_input, N_USE_PRECOMPUTE, strlen(N_USE_PRECOMPUTE)))
 	{
-		guisvm.set_precompute_enabled(input+strlen(N_USE_PRECOMPUTE));
+		guisvm.set_precompute_enabled(p_input+strlen(N_USE_PRECOMPUTE));
 	} 
-	else if (!strncmp(input, N_USE_MKL, strlen(N_USE_MKL)))
+	else if (!strncmp(p_input, N_USE_MKL, strlen(N_USE_MKL)))
 	{
-		guisvm.set_mkl_enabled(input+strlen(N_USE_MKL));
+		guisvm.set_mkl_enabled(p_input+strlen(N_USE_MKL));
 	} 
-	else if (!strncmp(input, N_USE_SHRINKING, strlen(N_USE_SHRINKING)))
+	else if (!strncmp(p_input, N_USE_SHRINKING, strlen(N_USE_SHRINKING)))
 	{
-		guisvm.set_shrinking_enabled(input+strlen(N_USE_SHRINKING));
+		guisvm.set_shrinking_enabled(p_input+strlen(N_USE_SHRINKING));
 	} 
-	else if (!strncmp(input, N_USE_BATCH_COMPUTATION, strlen(N_USE_BATCH_COMPUTATION)))
+	else if (!strncmp(p_input, N_USE_BATCH_COMPUTATION, strlen(N_USE_BATCH_COMPUTATION)))
 	{
-		guisvm.set_batch_computation_enabled(input+strlen(N_USE_BATCH_COMPUTATION));
+		guisvm.set_batch_computation_enabled(p_input+strlen(N_USE_BATCH_COMPUTATION));
 	} 
-	else if (!strncmp(input, N_USE_LINADD, strlen(N_USE_LINADD)))
+	else if (!strncmp(p_input, N_USE_LINADD, strlen(N_USE_LINADD)))
 	{
-		guisvm.set_linadd_enabled(input+strlen(N_USE_LINADD));
+		guisvm.set_linadd_enabled(p_input+strlen(N_USE_LINADD));
 	} 
-	else if (!strncmp(input, N_SVM_EPSILON, strlen(N_SVM_EPSILON)))
+	else if (!strncmp(p_input, N_SVM_EPSILON, strlen(N_SVM_EPSILON)))
 	{
-		guisvm.set_svm_epsilon(input+strlen(N_SVM_EPSILON));
+		guisvm.set_svm_epsilon(p_input+strlen(N_SVM_EPSILON));
 	} 
-	else if (!strncmp(input, N_SVR_TUBE_EPSILON, strlen(N_SVR_TUBE_EPSILON)))
+	else if (!strncmp(p_input, N_SVR_TUBE_EPSILON, strlen(N_SVR_TUBE_EPSILON)))
 	{
-		guisvm.set_svr_tube_epsilon(input+strlen(N_SVR_TUBE_EPSILON));
+		guisvm.set_svr_tube_epsilon(p_input+strlen(N_SVR_TUBE_EPSILON));
 	} 
-	else if (!strncmp(input, N_SVM_ONE_CLASS_NU, strlen(N_SVM_ONE_CLASS_NU)))
+	else if (!strncmp(p_input, N_SVM_ONE_CLASS_NU, strlen(N_SVM_ONE_CLASS_NU)))
 	{
-		guisvm.set_svm_one_class_nu(input+strlen(N_SVM_ONE_CLASS_NU));
+		guisvm.set_svm_one_class_nu(p_input+strlen(N_SVM_ONE_CLASS_NU));
 	} 
-	else if (!strncmp(input, N_MKL_PARAMETERS, strlen(N_MKL_PARAMETERS)))
+	else if (!strncmp(p_input, N_MKL_PARAMETERS, strlen(N_MKL_PARAMETERS)))
 	{
-		guisvm.set_mkl_parameters(input+strlen(N_MKL_PARAMETERS));
+		guisvm.set_mkl_parameters(p_input+strlen(N_MKL_PARAMETERS));
 	} 
-	else if (!strncmp(input, N_TIC, strlen(N_TIC)))
+	else if (!strncmp(p_input, N_TIC, strlen(N_TIC)))
 	{
 		guitime.start();
 	} 
-	else if (!strncmp(input, N_TOC, strlen(N_TOC)))
+	else if (!strncmp(p_input, N_TOC, strlen(N_TOC)))
 	{
 		guitime.stop();
 	} 
-	else if (!strncmp(input, N_ECHO, strlen(N_ECHO)))
+	else if (!strncmp(p_input, N_ECHO, strlen(N_ECHO)))
 	{
-		char* param=input+strlen(N_ECHO);
+		char* param=p_input+strlen(N_ECHO);
 		param=CIO::skip_spaces(param);
 
 		char level[1024];
@@ -754,9 +754,9 @@ bool CTextGUI::parse_line(CHAR* input)
 		else
 			CIO::message(M_INFO, "echo off\n");
 	} 
-	else if (!strncmp(input, N_LOGLEVEL, strlen(N_LOGLEVEL)))
+	else if (!strncmp(p_input, N_LOGLEVEL, strlen(N_LOGLEVEL)))
 	{
-		char* param=input+strlen(N_LOGLEVEL);
+		char* param=p_input+strlen(N_LOGLEVEL);
 		param=CIO::skip_spaces(param);
 
 		char level[1024];

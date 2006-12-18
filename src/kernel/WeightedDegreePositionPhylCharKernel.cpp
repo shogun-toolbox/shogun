@@ -449,10 +449,10 @@ void CWeightedDegreePositionPhylCharKernel::compute_by_tree(INT idx, DREAL* Leve
 	CIO::message(M_ERROR, "compute_by_tree: not implemented") ;
 }
 
-bool CWeightedDegreePositionPhylCharKernel::set_weights(DREAL* ws, INT length, INT num_examples)
+bool CWeightedDegreePositionPhylCharKernel::set_weights(DREAL* ws, INT p_length, INT num_examples)
 {
-	if (seq_length!=length)
-		CIO::message(M_ERROR, "lengths do not match: seq_length=%i length=%i\n", seq_length, length) ;
+	if (seq_length!=p_length)
+		CIO::message(M_ERROR, "lengths do not match: seq_length=%i length=%i\n", seq_length, p_length) ;
 	if ((lhs->get_num_vectors()!=num_examples) && (rhs->get_num_vectors()!=num_examples))
 		CIO::message(M_ERROR, "num_examples do not match: lhs->get_num_vectors()=%i rhs->get_num_vectors()=%i num_examples=%i\n", lhs->get_num_vectors(), rhs->get_num_vectors(), num_examples) ;
 	
@@ -460,9 +460,9 @@ bool CWeightedDegreePositionPhylCharKernel::set_weights(DREAL* ws, INT length, I
 	{
 		CIO::message(M_DEBUG, "setting lhs_phyl_weights\n") ;
 		delete[] lhs_phyl_weights;
-		lhs_phyl_weights=new DREAL[length*num_examples];
+		lhs_phyl_weights=new DREAL[p_length*num_examples];
 		ASSERT(lhs_phyl_weights) ;
-		for (int i=0; i<length*num_examples; i++)
+		for (int i=0; i<p_length*num_examples; i++)
 			lhs_phyl_weights[i]=ws[i];
 		lhs_phyl_weights_len = seq_length * lhs->get_num_vectors() ;
 	} ;
@@ -471,9 +471,9 @@ bool CWeightedDegreePositionPhylCharKernel::set_weights(DREAL* ws, INT length, I
 	{
 		CIO::message(M_DEBUG, "setting rhs_phyl_weights\n") ;
 		delete[] rhs_phyl_weights;
-		rhs_phyl_weights=new DREAL[length*num_examples];
+		rhs_phyl_weights=new DREAL[p_length*num_examples];
 		ASSERT(rhs_phyl_weights) ;
-		for (int i=0; i<length*num_examples; i++)
+		for (int i=0; i<p_length*num_examples; i++)
 			rhs_phyl_weights[i]=ws[i];
 		rhs_phyl_weights_len = seq_length * rhs->get_num_vectors() ;
 	} ;

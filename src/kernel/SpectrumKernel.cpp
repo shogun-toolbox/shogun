@@ -1,3 +1,4 @@
+
 #include "kernel/SpectrumKernel.h"
 #include <queue>
 #include <vector>
@@ -20,22 +21,24 @@ CSpectrumKernel::CSpectrumKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>
 	init(l,r,true);
 }
 
-bool CSpectrumKernel::init(CFeatures* lhs, CFeatures* rhs, bool force)
+bool CSpectrumKernel::init(CFeatures* p_lhs, CFeatures* p_rhs, bool force)
 {
+	// don't forget to set lhs and rhs member variables!!!
+	
 	INT verb=0;
 	LONG len=0;
-	for (int i=0; i<lhs->get_num_vectors(); i++)
-		len += ((CStringFeatures<CHAR>*) lhs)->get_vector_length(i)+1;
+	for (int i=0; i<p_lhs->get_num_vectors(); i++)
+		len += ((CStringFeatures<CHAR>*) p_lhs)->get_vector_length(i)+1;
 
 	ASSERT(len>0);
 
 	SYMBOL* text=new SYMBOL[len];
 
 	LONG offs=0;
-	for (int i=0; i<((CStringFeatures<CHAR>*) lhs)->get_num_vectors(); i++)
+	for (int i=0; i<((CStringFeatures<CHAR>*) p_lhs)->get_num_vectors(); i++)
 	{
 		INT len=0;
-		CHAR* str=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(i,len);
+		CHAR* str=((CStringFeatures<CHAR>*) p_lhs)->get_feature_vector(i,len);
 
 		ASSERT(len>0);
 		memcpy(text+offs, str, len);

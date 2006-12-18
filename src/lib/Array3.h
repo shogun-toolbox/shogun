@@ -89,12 +89,12 @@ CArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
 	}
 
 	/// set the array pointer and free previously allocated memory
-	inline void set_array(T* array, INT dim1, INT dim2, INT dim3, bool free_array, bool copy_array=false)
+	inline void set_array(T* p_array, INT dim1, INT dim2, INT dim3, bool p_free_array, bool copy_array=false)
 	{
 		dim1_size=dim1 ;
 		dim2_size=dim2 ;
 		dim3_size=dim3 ;
-		CArray<T>::set_array(array, dim1*dim2*dim3, free_array, copy_array) ;
+		CArray<T>::set_array(p_array, dim1*dim2*dim3, p_free_array, copy_array) ;
 	}
 
 	inline bool resize_array(INT dim1, INT dim2, INT dim3)
@@ -115,12 +115,12 @@ CArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
 	}
 
 	///set array element at index 'index' return false in case of trouble
-	inline bool set_element(T element, INT idx1, INT idx2, INT idx3)
+	inline bool set_element(T p_element, INT idx1, INT idx2, INT idx3)
 	{
 		ARRAY_ASSERT(idx1>=0 && idx1<dim1_size) ;		
 		ARRAY_ASSERT(idx2>=0 && idx2<dim2_size) ;		
 		ARRAY_ASSERT(idx3>=0 && idx3<dim3_size) ;		
-		return CArray<T>::set_element(element, idx1+dim1_size*(idx2+dim2_size*idx3)) ;
+		return CArray<T>::set_element(p_element, idx1+dim1_size*(idx2+dim2_size*idx3)) ;
 	}
 
 	inline const T& element(INT idx1, INT idx2, INT idx3) const
