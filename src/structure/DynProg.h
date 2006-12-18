@@ -69,6 +69,7 @@ public:
 	void init_word_degree_array(INT * p_word_degree_array, INT num_elem) ;
 	void init_cum_num_words_array(INT * p_cum_num_words_array, INT num_elem) ;
 	void init_num_words_array(INT * p_num_words_array, INT num_elem) ;
+	void init_mod_words_array(INT * p_mod_words_array, INT num_elem, INT num_columns) ;
 	bool check_svm_arrays() ; // call this function to check consistency
 
 	// best_path preparation functions
@@ -215,15 +216,16 @@ protected:
 	{
 		INT maxlookback ;
 		INT seqlen;
-		INT *num_unique_words ;
 		
+		INT* start_pos ;
 		DREAL ** svm_values_unnormalized ;
 		DREAL * svm_values ;
 		bool ** word_used ;
+		INT **num_unique_words ;
 	} ;
 
-	void reset_svm_values(INT pos, INT * last_svm_pos, DREAL * svm_value) ;
-	void extend_svm_values(WORD** wordstr, INT pos, INT *last_svm_pos, DREAL* svm_value) ;
+	//void reset_svm_values(INT pos, INT * last_svm_pos, DREAL * svm_value) ;
+	//void extend_svm_values(WORD** wordstr, INT pos, INT *last_svm_pos, DREAL* svm_value) ;
 	void init_svm_values(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT howmuchlookback) ;
 	void clear_svm_values(struct svm_values_struct & svs) ;
 	void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs) ;
@@ -238,7 +240,7 @@ protected:
 		INT *length_segment_id ;
 	} ;
 
-	void init_segment_loss(struct segment_loss_struct & loss, INT start_pos, INT seqlen, INT howmuchlookback);
+	void init_segment_loss(struct segment_loss_struct & loss, INT seqlen, INT howmuchlookback);
 	void clear_segment_loss(struct segment_loss_struct & loss) ;
 	DREAL extend_segment_loss(struct segment_loss_struct & loss, const INT * pos_array, INT segment_id, INT pos, INT& last_pos, DREAL &last_value) ;
 	void find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<INT>& segment_ids, struct segment_loss_struct & loss) ;
@@ -276,6 +278,8 @@ protected:
 	INT * cum_num_words_array ;
 	CArray<INT> num_words ;
 	INT * num_words_array ;
+	CArray2<INT> mod_words ;
+	INT * mod_words_array ;
 
 	CArray2<bool> word_used ;
 	bool *word_used_array ;

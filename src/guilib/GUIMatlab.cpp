@@ -501,15 +501,16 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 	const mxArray* mx_nbest=vals[11];
 	const mxArray* mx_dict_weights=vals[12];
 	const mxArray* mx_use_orf=vals[13];
+	const mxArray* mx_mod_words=vals[14] ;
 	const mxArray* mx_segment_loss=NULL ;
 	const mxArray* mx_segment_ids_mask=NULL ;
 
-	ASSERT(nrhs==16 || nrhs==14) ;
+	ASSERT(nrhs==17 || nrhs==15) ;
 
-	if (nrhs==16)
+	if (nrhs==17)
 	{
-		mx_segment_loss=vals[14];
-		mx_segment_ids_mask=vals[15];
+		mx_segment_loss=vals[15];
+		mx_segment_ids_mask=vals[16];
 	} ;
 
 	INT nbest    = (INT)mxGetScalar(mx_nbest) ;
@@ -560,6 +561,9 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			  ((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			   || mxIsEmpty(mx_penalty_info))))
 			CIO::message(M_ERROR, "size dict_weights wrong\n");
+
+		if (!(mxGetM(mx_mod_words)==8 && mxGetN(mx_mod_words)==2))
+			CIO::message(M_ERROR, "size mod_words wrong (should be 8x2)\n");
 
 		if (mx_segment_loss!=NULL && (mxGetN(mx_segment_loss)!=2*mxGetM(mx_segment_loss)))
 			CIO::message(M_ERROR, "size of segment_loss wrong\n");
@@ -667,6 +671,19 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			else
 				h->set_a_trans_matrix(a, mxGetM(mx_a_trans), 3) ; // segment_id = 0 
 
+			INT* mod_words_array=new INT[mxGetM(mx_mod_words)*mxGetN(mx_mod_words)] ;
+			double* mod_words_array_real = mxGetPr(mx_mod_words) ;
+			for (INT i=0; i<mxGetM(mx_mod_words)*mxGetN(mx_mod_words); i++)
+				mod_words_array[i] = (INT) mod_words_array_real[i] ;
+			h->init_mod_words_array(mod_words_array, mxGetM(mx_mod_words), mxGetN(mx_mod_words)) ;
+
+			if (!h->check_svm_arrays())
+			{
+				CIO::message(M_ERROR, "svm arrays inconsistent\n") ;
+				delete_penalty_struct(PEN, P) ;
+				return false ;
+			}
+			
 			INT *my_path = new INT[M*nbest] ;
 			memset(my_path, -1, M*nbest*sizeof(INT)) ;
 			INT *my_pos = new INT[M*nbest] ;
@@ -674,8 +691,6 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			
 			mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxREAL);
 			double* p_prob = mxGetPr(mx_prob);
-			DREAL* PEN_values=NULL, *PEN_input_values=NULL ;
-			INT num_PEN_id = 0 ;
 
 			if (mx_segment_ids_mask!=NULL)
 			{
@@ -698,22 +713,11 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 				h->best_path_set_segment_ids_mask(zeros, 2, M) ;
 				delete[] zeros ;
 			} ;
-
+			
 			h->best_path_trans(seq, M, pos, orf_info,
 							   PEN_matrix, PEN_state_signal, genestr, L,
 							   nbest, p_prob, my_path, my_pos, dict_weights, 8*D, use_orf) ;
 
-			int dims[3]={num_PEN_id,M,nbest};
-			mxArray* mx_PEN_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
-			double* p_PEN_values = mxGetPr(mx_PEN_values);
-			for (INT s=0; s<num_PEN_id*M*nbest; s++)
-				p_PEN_values[s]=PEN_values[s] ;
-
-			mxArray* mx_PEN_input_values = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxREAL);
-			double* p_PEN_input_values = mxGetPr(mx_PEN_input_values);
-			for (INT s=0; s<num_PEN_id*M*nbest; s++)
-				p_PEN_input_values[s]=PEN_input_values[s] ;
-			
 			// clean up 
 			delete_penalty_struct(PEN, P) ;
 			delete[] PEN_matrix ;
@@ -738,13 +742,9 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			retvals[0]=mx_prob ;
 			retvals[1]=mx_my_path ;
 			retvals[2]=mx_my_pos ;
-			retvals[3]=mx_PEN_values ;
-			retvals[4]=mx_PEN_input_values ;
 
 			delete[] my_path ;
 			delete[] my_pos ;
-			delete[] PEN_values ;
-			delete[] PEN_input_values ;
 
 			return true;
 		}
@@ -769,16 +769,17 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 	const mxArray* mx_state_signals=vals[10];
 	const mxArray* mx_penalty_info=vals[11];
 	const mxArray* mx_dict_weights=vals[12];
+	const mxArray* mx_mod_words=vals[13];
 	const mxArray* mx_segment_loss=NULL ;
 	const mxArray* mx_segment_ids_mask=NULL ;
 	
-	ASSERT(nrhs==15 || nrhs==13) ;
+	ASSERT(nrhs==16 || nrhs==14) ;
 	ASSERT(nlhs==5 || nlhs==6) ;
 
-	if (nrhs==15)
+	if (nrhs==16)
 	{
-		mx_segment_loss=vals[13];
-		mx_segment_ids_mask=vals[14];
+		mx_segment_loss=vals[14];
+		mx_segment_ids_mask=vals[15];
 	} ;
 
 	if ( mx_my_path && mx_my_pos && mx_p && mx_q && mx_a_trans && mx_seq && mx_pos && 
@@ -830,6 +831,9 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			  ((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			   || mxIsEmpty(mx_penalty_info))))
 			CIO::message(M_ERROR, "dict_weights of penalty_info wrong\n");
+
+		if (!(mxGetM(mx_mod_words)==8 && mxGetN(mx_mod_words)==2))
+			CIO::message(M_ERROR, "size mod_words wrong (should be 8x2)\n");
 
 		if (mx_segment_loss!=NULL && (mxGetN(mx_segment_loss)!=2*mxGetM(mx_segment_loss)))
 			CIO::message(M_ERROR, "size of segment_loss wrong\n");
@@ -944,6 +948,19 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 				h->set_a_trans_matrix(a, mxGetM(mx_a_trans), mxGetN(mx_a_trans)) ;
 			else
 				h->set_a_trans_matrix(a, mxGetM(mx_a_trans), 3) ; // segment_id = 0 
+
+			INT* mod_words_array=new INT[mxGetM(mx_mod_words)*mxGetN(mx_mod_words)] ;
+			double* mod_words_array_real = mxGetPr(mx_mod_words) ;
+			for (INT i=0; i<mxGetM(mx_mod_words)*mxGetN(mx_mod_words); i++)
+				mod_words_array[i] = (INT) mod_words_array_real[i] ;
+			h->init_mod_words_array(mod_words_array, mxGetM(mx_mod_words), mxGetN(mx_mod_words)) ;
+
+			if (!h->check_svm_arrays())
+			{
+				CIO::message(M_ERROR, "svm arrays inconsistent\n") ;
+				delete_penalty_struct(PEN, P) ;
+				return false ;
+			}
 
 			INT *my_path = new INT[my_seqlen+1] ;
 			memset(my_path, -1, my_seqlen*sizeof(INT)) ;

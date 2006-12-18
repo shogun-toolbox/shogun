@@ -144,6 +144,7 @@ CArray(const T* p_array, INT p_array_size)
 		((CArray<T>*)this)->stat_resize_array++ ;
 #endif
 		ASSERT(free_array) ;
+		
 		T* p= (T*) realloc(array, sizeof(T)*n);
 		if (p)
 		{
