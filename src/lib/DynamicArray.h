@@ -105,7 +105,7 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 		{
 			return CArray<T>::element(index) ;
 		}
-		else if (index < CArray<T>::num_elements)
+		else if (index < CArray<T>::array_size)
 		{
 			last_element_idx=index;
 			return CArray<T>::element(index) ;
@@ -117,7 +117,7 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 		}
 	}
 	
-	inline T& element(T* p_array, INT index) 
+	/*inline T& element(T* p_array, INT index) 
 	{
 		ARRAY_ASSERT((CArray<T>::array != NULL) && (index >= 0));
 		ARRAY_ASSERT(CArray<T>::array == p_array) ;
@@ -136,7 +136,7 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 			resize_array(index) ;
 			return element(index);
 		}
-	}
+		}*/
 
 	/// clear the array (with zeros)
 	inline void clear_array()
@@ -161,9 +161,10 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	}
 
 	///set array element at index 'index' return false in case of trouble
-	inline bool append_element(const T& element)
+	inline bool append_element(const T& new_element)
 	{
-		return append_element(element, last_element_idx+1);
+		element(last_element_idx+1) = new_element ;
+		return true ;
 	}
 
 	///delete array element at idx (does not call delete[] or the like)
@@ -187,6 +188,8 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	///resize the array 
 	bool resize_array(INT n)
 	{
+		INT n_orig = n ;
+		
 		// one cannot shrink below resize_granularity
 		if (n<resize_granularity)
 			n=resize_granularity;
@@ -195,8 +198,8 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 			return false ;
 		
 		//in case of shrinking we must adjust last element idx
-		if (n-1<last_element_idx)
-			last_element_idx=n-1;
+		if (n_orig-1<last_element_idx)
+			last_element_idx=n_orig-1;
 		
 		return true;
 	}
