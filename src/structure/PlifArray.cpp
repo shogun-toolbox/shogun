@@ -18,7 +18,7 @@
 #include "structure/PlifArray.h"
 
 CPlifArray::CPlifArray()
-	: m_array(0)
+	: m_array(5)
 {
 }
 
