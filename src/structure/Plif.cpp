@@ -118,7 +118,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 	
 	for (INT i=0; i<P; i++)
 	{
-		fprintf(stderr, "i=%i/%i\n", i, P) ;
+		//fprintf(stderr, "i=%i/%i\n", i, P) ;
 		
 		const mxArray* mx_elem = mxGetCell(mx_penalty_info, i) ;
 		if (mx_elem==NULL || !mxIsStruct(mx_elem))
