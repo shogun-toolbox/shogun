@@ -57,7 +57,7 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	}
 
 	/// return index of element which is at the end of the array
-	inline INT get_num_elements()
+	inline INT get_num_elements() const
 	{
 		return last_element_idx+1;
 	}
@@ -189,6 +189,7 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	bool resize_array(INT n)
 	{
 		INT n_orig = n ;
+		//fprintf(stderr, "resize(%i)\n", n) ;
 		
 		// one cannot shrink below resize_granularity
 		if (n<resize_granularity)
@@ -196,11 +197,14 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 
 		if (!CArray<T>::resize_array(n))
 			return false ;
+
+		//fprintf(stderr, "+ resize(%i)\n", n) ;
 		
 		//in case of shrinking we must adjust last element idx
 		if (n_orig-1<last_element_idx)
 			last_element_idx=n_orig-1;
 		
+		//fprintf(stderr, "+ resize(%i) -> %i\n", n, last_element_idx) ;
 		return true;
 	}
 	

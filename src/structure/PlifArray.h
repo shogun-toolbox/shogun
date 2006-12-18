@@ -27,7 +27,7 @@ public:
 	void clear() ;
 	INT get_num_plifs()
 		{
-			return m_array.get_array_size() ;
+			return m_array.get_num_elements() ;
 		}
 	
 

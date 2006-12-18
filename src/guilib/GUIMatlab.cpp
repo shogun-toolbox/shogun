@@ -549,7 +549,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 		INT penalties_dim3 = 1 ;
 		if (penalty_num_dimensions==3)
 			penalties_dim3 = penalty_dimensions[2] ;
-		fprintf(stderr,"considering up to %i Plifs in a PlifArray\n", penalties_dim3) ;
+		//fprintf(stderr,"considering up to %i Plifs in a PlifArray\n", penalties_dim3) ;
 		ASSERT(penalties_dim3>0) ;
 
 		if (!(mxGetM(mx_state_signals)==N && 
@@ -814,10 +814,9 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 		INT penalties_dim3 = 1 ;
 		if (penalty_num_dimensions==3)
 			penalties_dim3 = penalty_dimensions[2] ;
-		fprintf(stderr,"considering up to %i Plifs in a PlifArray\n", penalties_dim3) ;
+		//fprintf(stderr,"considering up to %i Plifs in a PlifArray\n", penalties_dim3) ;
 		ASSERT(penalties_dim3>0) ;
 
-		fprintf(stderr, "ping 0\n") ;
 		if (!(mxGetM(mx_state_signals)==N && 
 			  mxGetN(mx_state_signals)==2))
 			CIO::message(M_ERROR, "size of state_signals wrong (%i!=%i or %i!=2)\n", mxGetM(mx_state_signals), N, mxGetN(mx_state_signals));
@@ -835,8 +834,6 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 		if (mx_segment_loss!=NULL && (mxGetN(mx_segment_loss)!=2*mxGetM(mx_segment_loss)))
 			CIO::message(M_ERROR, "size of segment_loss wrong\n");
 
-		fprintf(stderr, "ping 1\n") ;
-
 		if (mx_segment_ids_mask!=NULL && ((mxGetM(mx_segment_ids_mask)!=2) ||
 										  (mxGetN(mx_segment_ids_mask)!=M)))
 			CIO::message(M_ERROR, "size of segment_ids_mask wrong\n");
@@ -852,13 +849,10 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			for (INT i=0; i<M; i++)
 				pos[i]=(INT)pos_[i] ;
 			
-			fprintf(stderr, "ping 2\n") ;
-
 			CPlif ** PEN = 
 				read_penalty_struct_from_cell(mx_penalty_info, P) ;
 			if (PEN==NULL && P!=0)
 				return false ;
-			fprintf(stderr, "ping 3\n") ;
 
 			INT max_plif_id = 0 ;
 			INT max_plif_len = 1 ;
@@ -871,14 +865,12 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 					max_plif_len=PEN[i]->get_plif_len() ;
 			} ;
 
-			fprintf(stderr, "ping\n") ;
-			
 			CPlifBase **PEN_matrix = new CPlifBase*[N*N] ;
 			double* penalties_array=mxGetPr(mx_penalties) ;
-			fprintf(stderr, "N=%i penalties_dim3=%i\n", N, penalties_dim3) ;
+			//fprintf(stderr, "N=%i penalties_dim3=%i\n", N, penalties_dim3) ;
 			CArray3<double> penalties(penalties_array, N, N, penalties_dim3, false, false) ;
 
-			INT num_empty=0, num_single=0, num_array=0 ;
+			//INT num_empty=0, num_single=0, num_array=0 ;
 		 
 			for (INT i=0; i<N; i++)
 				for (INT j=0; j<N; j++)
@@ -888,11 +880,10 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 					plif_array->clear() ;
 					for (INT k=0; k<penalties_dim3; k++)
 					{
-						fprintf(stderr, "i=%i, j=%i, k=%i\n", i, j, k) ;
 						if (penalties.element(i,j,k)==0)
 							continue ;
 						INT id = (INT) penalties.element(i,j,k)-1 ;
-						fprintf(stderr, "i=%i, j=%i, k=%i, id=%i\n", i, j, k, id) ;
+						//fprintf(stderr, "i=%i, j=%i, k=%i, id=%i\n", i, j, k, id) ;
 
 						if ((id<0 || id>=P) && (id!=-1))
 						{
@@ -903,26 +894,27 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 						plif = PEN[id] ;
 						plif_array->add_plif(plif) ;
 					}
+					//fprintf(stderr, "numplifs=%i\n", plif_array->get_num_plifs()) ;
 					if (plif_array->get_num_plifs()==0)
 					{
 						delete plif_array ;
 						PEN_matrix[i+j*N] = NULL ;
-						num_empty++ ;
+						//num_empty++ ;
 					}
 					else if (plif_array->get_num_plifs()==1)
 					{
 						delete plif_array ;
 						ASSERT(plif!=NULL) ;
 						PEN_matrix[i+j*N] = plif ;
-						num_single++ ;
+						//num_single++ ;
 					}
 					else
 					{
 						PEN_matrix[i+j*N] = plif_array ;
-						num_array++ ;
+						//num_array++ ;
 					}
 				}
-			fprintf(stderr, "num_empty=%i, num_single=%i, num_array=%i\n", num_empty, num_single, num_array) ;
+			//fprintf(stderr, "num_empty=%i, num_single=%i, num_array=%i\n", num_empty, num_single, num_array) ;
 
 			CPlifBase **PEN_state_signal = new CPlifBase*[2*N] ;
 			double* state_signals=mxGetPr(mx_state_signals) ;

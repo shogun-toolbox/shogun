@@ -33,10 +33,10 @@ void CPlifArray::add_plif(CPlifBase* new_plif)
 {
 	ASSERT(new_plif!=NULL) ;
 	m_array.append_element(new_plif) ;
-	fprintf(stderr, "m_array.get_array_size()=%i\n", m_array.get_array_size()) ;
+	//fprintf(stderr, "m_array.get_num_elements()=%i\n", m_array.get_num_elements()) ;
 	
 	min_value = -1e6 ;
-	for (INT i=0; i<m_array.get_array_size(); i++)
+	for (INT i=0; i<m_array.get_num_elements(); i++)
 	{
 		ASSERT(m_array[i]!=NULL)
 		if (!m_array[i]->uses_svm_values())
@@ -44,7 +44,7 @@ void CPlifArray::add_plif(CPlifBase* new_plif)
 	}
 	
 	max_value = 1e6 ;
-	for (INT i=0; i<m_array.get_array_size(); i++)
+	for (INT i=0; i<m_array.get_num_elements(); i++)
 		if (!m_array[i]->uses_svm_values())
 			max_value = CMath::min(max_value, m_array[i]->get_max_value()) ;
 }
@@ -54,7 +54,7 @@ void CPlifArray::clear()
 	m_array.resize_array(0) ;
 	min_value = -1e6 ;
 	max_value = 1e6 ;
-	fprintf(stderr, "m_array.get_array_size()=%i\n", m_array.get_array_size()) ;
+	//fprintf(stderr, "clear: m_array.get_num_elements()=%i\n", m_array.get_num_elements()) ;
 }
 
 DREAL CPlifArray::lookup_penalty(DREAL p_value, DREAL* svm_values) const 
@@ -63,7 +63,7 @@ DREAL CPlifArray::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 		return -CMath::INFTY ;
 
 	DREAL ret = 0.0 ;
-	for (INT i=0; i<m_array.get_array_size(); i++)
+	for (INT i=0; i<m_array.get_num_elements(); i++)
 		ret += m_array[i]->lookup_penalty(p_value, svm_values) ;
 	return ret ;
 } 
@@ -74,26 +74,26 @@ DREAL CPlifArray::lookup_penalty(INT p_value, DREAL* svm_values) const
 		return -CMath::INFTY ;
 	
 	DREAL ret = 0.0 ;
-	for (INT i=0; i<m_array.get_array_size(); i++)
+	for (INT i=0; i<m_array.get_num_elements(); i++)
 		ret += m_array[i]->lookup_penalty(p_value, svm_values) ;
 	return ret ;
 } 
 
 void CPlifArray::penalty_clear_derivative() 
 {
-	for (INT i=0; i<m_array.get_array_size(); i++)
+	for (INT i=0; i<m_array.get_num_elements(); i++)
 		m_array[i]->penalty_clear_derivative() ;
 } 
 
 void CPlifArray::penalty_add_derivative(DREAL p_value, DREAL* svm_values)
 {
-	for (INT i=0; i<m_array.get_array_size(); i++)
+	for (INT i=0; i<m_array.get_num_elements(); i++)
 		m_array[i]->penalty_add_derivative(p_value, svm_values) ;
 }
 
 bool CPlifArray::uses_svm_values() const 
 {
-	for (INT i=0; i<m_array.get_array_size(); i++)
+	for (INT i=0; i<m_array.get_num_elements(); i++)
 		if (m_array[i]->uses_svm_values())
 			return true ;
 	return false ;
@@ -102,7 +102,7 @@ bool CPlifArray::uses_svm_values() const
 INT CPlifArray::get_max_id() const 
 {
 	INT max_id = 0 ;
-	for (INT i=0; i<m_array.get_array_size(); i++)
+	for (INT i=0; i<m_array.get_num_elements(); i++)
 		max_id = CMath::max(max_id, m_array[i]->get_max_id()) ;
 	return max_id ;
 }
