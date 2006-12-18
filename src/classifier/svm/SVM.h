@@ -114,7 +114,7 @@ class CSVM : public CKernelMachine
             for(int i=0; i<d; i++)
 			{
 				if (i<10)
-					CIO::message(M_MESSAGEONLY, "svs[%d]=%f\n", i, svs[i]);
+					CIO::message(M_MESSAGEONLY, "svs[%d]=%i\n", i, svs[i]);
                 set_support_vector(i, svs[i]);
 			}
         }
