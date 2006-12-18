@@ -34,7 +34,6 @@
 extern "C" int	finite(double);
 #endif
 
-#define USEHEAP 0
 #define USEORIGINALLIST 0
 #define USEFIXEDLENLIST 2
 //#define USE_TMP_ARRAYCLASS
@@ -1039,9 +1038,13 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 		for (INT i=0; i<genestr_len; i++)
 			switch (genestr[i])
 			{
+			case 'A':
 			case 'a': wordstr[i]=0 ; break ;
+			case 'C':
 			case 'c': wordstr[i]=1 ; break ;
+			case 'G':
 			case 'g': wordstr[i]=2 ; break ;
+			case 'T':
 			case 't': wordstr[i]=3 ; break ;
 			default: ASSERT(0) ;
 			}
@@ -1777,10 +1780,10 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 	{ // precompute stop codons
 		for (INT i=0; i<genestr_len-2; i++)
-			if (genestr[i]=='t' && 
-				((genestr[i+1]=='a' && 
-				  (genestr[i+2]=='a' || genestr[i+2]=='g')) ||
-				 (genestr[i+1]=='g' && genestr[i+2]=='a')))
+			if ((genestr[i]=='t' || genestr[i]=='T') && 
+				(((genestr[i+1]=='a' || genestr[i+1]=='A') && 
+				  (genestr[i+2]=='a' || genestr[i+2]=='g' || genestr[i+2]=='A' || genestr[i+2]=='G')) ||
+				 ((genestr[i+1]=='g'||genestr[i+1]=='G') && (genestr[i+2]=='a' || genestr[i+2]=='A') )))
 				genestr_stop[i]=true ;
 			else
 				genestr_stop[i]=false ;
@@ -1886,10 +1889,6 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				INT old_list_len = 0 ;
 #endif
 				
-#if USEHEAP > 0
-				Heap* tempheap = new Heap;
-#endif
-				
 				for (INT i=0; i<num_elem; i++)
 				{
 					T_STATES ii = elem_list[i] ;
@@ -1964,10 +1963,6 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 								
 								DREAL mval = -val;
 								
-#if USEHEAP > 0
-								tempheap->Insert(mval, ii + diff*N + ts*N*nbest);
-#endif
-								
 #if USEORIGINALLIST > 0
 								oldtempvv[old_list_len] = mval ;
 								oldtempii[old_list_len] = ii + diff*N + ts*N*nbest;
@@ -2024,13 +2019,11 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				}
 				
 #if USEORIGINALLIST > 0
-				CMath::nmin<INT>(oldtempvv, oldtempii, old_list_len, nbest) ;
+				CMath::nmin<INT>(oldtempvv.get_array(), oldtempii.get_array(), old_list_len, nbest) ;
 #endif
 				
 				int numEnt = 0;
-#if USEHEAP == 2
-				numEnt = tempheap->GetNumNodes();
-#elif USEORIGINALLIST == 2
+#if USEORIGINALLIST == 2
 				numEnt = old_list_len;
 #elif USEFIXEDLENLIST == 2
 				numEnt = fixed_list_len;
@@ -2043,9 +2036,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				{
 					if (k<numEnt)
 					{
-#if (USEHEAP == 2)
-					    tempheap->ExtractMin(minusscore,fromtjk);
-#elif (USEORIGINALLIST == 2)
+#if (USEORIGINALLIST == 2)
 					    minusscore = oldtempvv[k];
 					    fromtjk = oldtempii[k];
 #elif (USEFIXEDLENLIST == 2)
@@ -2065,10 +2056,6 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 						ptable.element(t,j,k)     = 0 ;
 					}
 				}
-				
-#if USEHEAP > 0
-				delete tempheap;
-#endif
 			}
 		}
 	}
@@ -2190,9 +2177,13 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				for (INT i=0; i<genestr_len; i++)
 					switch (genestr[i])
 					{
+					case 'A':
 					case 'a': wordstr[j][i]=0 ; break ;
+					case 'C':
 					case 'c': wordstr[j][i]=1 ; break ;
+					case 'G':
 					case 'g': wordstr[j][i]=2 ; break ;
+					case 'T':
 					case 't': wordstr[j][i]=3 ; break ;
 					default: ASSERT(0) ;
 					}
