@@ -149,14 +149,7 @@ public:
 	/// x^n
 	static inline long double powl(long double x, long double n)
 	{
-		///workaround for broken powl
-		long double res=1;
-
-		for (INT i=0; i<n; i++)
-			res*=x;
-		return res;
-
-		//return powl(x, n);
+		return ::powl(x, n);
 	}
 
 	static inline DREAL log10(DREAL v)
