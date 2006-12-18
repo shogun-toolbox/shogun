@@ -45,7 +45,7 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	
 	~CDynamicArray()
 	{
-		CIO::message(M_DEBUG, "destroying CDynamicArray array (last_element_idx=%i)\n", last_element_idx) ;
+		//CIO::message(M_DEBUG, "destroying CDynamicArray array (last_element_idx=%i)\n", last_element_idx) ;
 	}
 	
 	/// set the resize granularity and return what has been set (minimum is 128) 

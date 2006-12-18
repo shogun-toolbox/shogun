@@ -13,6 +13,7 @@
 // $Id$
 //////////////////////////////////////////////////////////////////////
 
+
 #include "structure/DynProg.h"
 #include "lib/Mathematics.h"
 #include "lib/io.h"
@@ -37,6 +38,8 @@ extern "C" int	finite(double);
 #define USEORIGINALLIST 0
 #define USEFIXEDLENLIST 2
 //#define USE_TMP_ARRAYCLASS
+
+#define DYNPROG_DEBUG
 
 static INT word_degree_default[4]={3,4,5,6} ;
 static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -2312,12 +2315,16 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			//INT elem_id = transition_matrix_a_id.element(to_state, from_state) ;
 			INT elem_id = transition_matrix_a_id.element(from_state, to_state) ;
 			my_losses[i] = extend_segment_loss(loss, pos, elem_id, from_pos, loss_last_pos, last_loss) ;
+#ifdef DYNPROG_DEBUG
 			CIO::message(M_DEBUG, "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;
-
+#endif
 			// increase usage of this transition
 			transition_matrix_a_deriv.element(from_state, to_state)++ ;
 			my_scores[i] += transition_matrix_a.element(from_state, to_state) ;
-
+#ifdef DYNPROG_DEBUG
+			CIO::message(M_DEBUG, "%i. scores[i]=%f\n", i, my_scores[i]) ;
+#endif
+			
 			/*INT last_svm_pos[num_degrees] ;
 			for (INT qq=0; qq<num_degrees; qq++)
 			last_svm_pos[qq]=-1 ;*/
@@ -2343,9 +2350,14 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			{
 				DREAL nscore = PEN.element(to_state, from_state)->lookup_penalty(pos[to_pos]-pos[from_pos], svm_value) ;
 				my_scores[i] += nscore ;
+#ifdef DYNPROG_DEBUG
 				CIO::message(M_DEBUG, "%i. transition penalty: from_state=%i to_state=%i from_pos=%i to_pos=%i value=%i\n", i, from_state, to_state, from_pos, to_pos, pos[to_pos]-pos[from_pos]) ;
+#endif
 				PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value) ;
 			}
+#ifdef DYNPROG_DEBUG
+			CIO::message(M_DEBUG, "%i. scores[i]=%f\n", i, my_scores[i]) ;
+#endif
 
 			//fprintf(stderr, "emmission penalty skipped: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", to_state, to_pos, seq_input.element(to_state, to_pos), 0.0) ;
 			if (PEN_state_signals.element(to_state,0)!=NULL)
@@ -2363,8 +2375,9 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 					DREAL nscore1 = PEN_state_signals.element(to_state,0)->lookup_penalty(input1, svm_value) ;
 					DREAL nscore2 = PEN_state_signals.element(to_state,1)->lookup_penalty(input2, svm_value) ;
 					my_scores[i] += nscore1 + nscore2 ;
+#ifdef DYNPROG_DEBUG
 					CIO::message(M_DEBUG, "%i. emmission penalty: to_state=%i to_pos=%i value1=%1.2f value2=%1.2f score1=%1.2f score2=%1.2f\n", i, to_state, to_pos, input1, input2, nscore1, nscore2) ;
-
+#endif
 					PEN_state_signals.element(to_state,0)->penalty_add_derivative(input1, svm_value) ;
 					PEN_state_signals.element(to_state,1)->penalty_add_derivative(input2, svm_value) ;
 				}
@@ -2372,15 +2385,22 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				{
 					DREAL nscore = PEN_state_signals.element(to_state,0)->lookup_penalty(seq_input.element(to_state, to_pos), svm_value) ;
 					my_scores[i] += nscore ;
+#ifdef DYNPROG_DEBUG
 					CIO::message(M_DEBUG, "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos), nscore) ;
-
+#endif
 					PEN_state_signals.element(to_state,0)->penalty_add_derivative(seq_input.element(to_state, to_pos), svm_value) ;
 				}
 			} else
 			{
+#ifdef DYNPROG_DEBUG
 				CIO::message(M_DEBUG, "%i. emmission penalty: to_state=%i to_pos=%i score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos)) ;
+#endif
 				my_scores[i] += seq_input.element(to_state, to_pos) ;
 			}
+
+#ifdef DYNPROG_DEBUG
+			CIO::message(M_DEBUG, "%i. scores[i]=%f (final) \n", i, my_scores[i]) ;
+#endif
 		}
 		clear_svm_values(svs);
 		clear_segment_loss(loss);
