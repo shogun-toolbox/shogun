@@ -119,7 +119,7 @@ public:
 
 	static inline DREAL ceil(DREAL d)
 	{
-		return ceil(d);
+		return ceil(d); // hangs on amd64
 	}
 
 	/// signum of type T variable a 
