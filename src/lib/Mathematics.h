@@ -109,17 +109,17 @@ public:
 
 	static inline DREAL round(DREAL d)
 	{
-		return floor(d+0.5);
+		return ::floor(d+0.5);
 	}
 
 	static inline DREAL floor(DREAL d)
 	{
-		return floor(d);
+		return ::floor(d);
 	}
 
 	static inline DREAL ceil(DREAL d)
 	{
-		return ceil(d); // hangs on amd64
+		return ::ceil(d);
 	}
 
 	/// signum of type T variable a 
