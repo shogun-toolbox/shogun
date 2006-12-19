@@ -9,6 +9,9 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#ifndef __GUI_R_H
+#define __GUI_R_H
+
 #include "lib/config.h"
 
 #if defined(HAVE_R) && !defined(HAVE_SWIG)

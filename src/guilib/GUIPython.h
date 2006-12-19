@@ -8,12 +8,12 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#ifndef __GUIPYTHON_H_
+#define __GUIPYTHON_H_
+
 #include "lib/config.h"
 
 #if defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
-
-#ifndef __GUIPYTHON_H_
-#define __GUIPYTHON_H_
 
 extern "C" {
 #include <Python.h>
@@ -80,5 +80,5 @@ public:
     static CFeatures* set_features(PyObject* arg, char* args);
     static CLabels* set_labels(PyObject* arg);
 };
-#endif
+#endif //HAVE_SWIG
 #endif

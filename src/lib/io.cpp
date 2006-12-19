@@ -156,18 +156,8 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			case M_NOTICE:
 			case M_MESSAGEONLY:
 			case M_WARN:
-				{
-					int p=get_prio_string(prio);
-
-					if (p>=0)
-					{
-						Rprintf("%s",message_strings[p]);
-						va_list list;
-						va_start(list,fmt);
-						Rvprintf(fmt,list);
-						va_end(list);
-					}
-				}
+				Rprintf("%s",message_strings[p]);
+				Rprintf("%s",str);
 				break;
 			case M_ERROR:
 			case M_CRITICAL:
@@ -184,7 +174,6 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 	}
 #else
 	check_target();
-	int p=get_prio_string(prio);
 	if (p>=0)
 	{
 		fprintf(target, message_strings[p]);

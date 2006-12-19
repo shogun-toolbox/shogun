@@ -8,10 +8,10 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
-
 #ifndef __OCTAVE_H_
 #define __OCTAVE_H_
+
+#include "lib/config.h"
 
 #if defined(HAVE_OCTAVE) && !defined(HAVE_SWIG)
 #include "features/Labels.h"

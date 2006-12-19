@@ -10,7 +10,6 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-
 #ifndef __MATLAB_H_
 #define __MATLAB_H_
 

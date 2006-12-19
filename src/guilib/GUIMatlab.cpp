@@ -1950,11 +1950,11 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 						{
 							mxArray* e=mxGetCell(mx_feat, i);
 							ASSERT(e && mxIsChar(e));
-							INT _len=0;
-							sc[i].string=get_mxString(e, _len);
+
+							sc[i].string=get_mxString(e, len);
 							if (sc[i].string)
 							{
-								sc[i].length=_len;
+								sc[i].length=len;
 								maxlen=CMath::max(maxlen, sc[i].length);
 								alpha->add_string_to_histogram(sc[i].string, sc[i].length);
 							}
