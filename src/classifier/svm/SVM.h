@@ -99,11 +99,7 @@ class CSVM : public CKernelMachine
             ASSERT(d>0 && d<=svm_model.num_svs);
 
             for(int i=0; i<d; i++)
-			{
-				if (i<10)
-					CIO::message(M_MESSAGEONLY, "alpha[%d]=%f\n", i, alphas[i]);
                 set_alpha(i, alphas[i]);
-			}
         }
 
         void set_support_vectors(INT* svs, INT d)
@@ -112,11 +108,7 @@ class CSVM : public CKernelMachine
             ASSERT(d>0 && d<=svm_model.num_svs);
 
             for(int i=0; i<d; i++)
-			{
-				if (i<10)
-					CIO::message(M_MESSAGEONLY, "svs[%d]=%i\n", i, svs[i]);
                 set_support_vector(i, svs[i]);
-			}
         }
 
         void get_alphas(DREAL** alphas, INT* d1)

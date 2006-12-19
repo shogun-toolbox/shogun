@@ -304,7 +304,6 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
   int size[2] = {-1,-1};
 
   array = make_contiguous($input, &is_new_object, 0, 0);
-  CIO::message(M_MESSAGEONLY, "typecode: %d array_type:%d ", typecode, PyArray_TYPE(array));
   if (!array || !require_dimensions(array,2) || !require_size(array,size,1) 
           || PyArray_TYPE(array) != PyArray_TYPE($input) || PyArray_TYPE(array) != typecode)
   {
@@ -528,10 +527,17 @@ TYPEMAP_ARRAYOUT2(PyObject,      NPY_OBJECT)
 }
 
 %typemap(argout) (type** ARGOUT1, INT* DIM1) {
-	npy_intp* dims=(npy_intp*) malloc(sizeof(npy_int));
-	dims[0]=*$2;
-	PyObject* outArray = PyArray_SimpleNewFromData(1, dims, typecode, (void*)*$1);
-	free(dims); free($2);
+	npy_intp dims= (npy_intp) *$2;
+
+    PyObject* outArray = NULL;
+    PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+    if (descr && $1)
+        outArray=PyArray_NewFromDescr(&PyArray_Type, descr, 1, &dims, 
+                NULL, (void*)*$1, NPY_FARRAY, NULL);
+    else
+        SWIG_fail;
+
+	free($2);
 	$result=outArray;
 }
 %enddef
@@ -559,10 +565,16 @@ TYPEMAP_ARGOUT1(PyObject,      NPY_OBJECT)
 }
 
 %typemap(argout) (type** ARGOUT2, INT* DIM1, INT* DIM2) {
-	npy_intp* dims=(npy_intp*) malloc(2*sizeof(npy_int));
-	dims[0]=*($2); dims[1]=*($3);
-    PyObject* outArray = PyArray_SimpleNewFromData(2, dims, typecode, (void*)*$1);
-	free(dims); free($2); free($3);
+	npy_intp dims[2]= {(npy_intp) *$2, (npy_intp) *$3};
+    PyObject* outArray = NULL;
+    PyArray_Descr* descr=PyArray_DescrFromType(typecode);
+    if (descr && $1)
+        outArray=PyArray_NewFromDescr(&PyArray_Type, descr, 2, dims, 
+                NULL, (void*)*$1, NPY_FARRAY, NULL);
+    else
+        SWIG_fail;
+
+	free($2); free($3);
 	$result=outArray;
 }
 %enddef
