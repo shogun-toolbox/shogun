@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef __PLIFBASE_H__
-#define __PLIFBASE_H__
+#ifndef __PLIF_BASE_H__
+#define __PLIF_BASE_H__
 
 #include "lib/common.h"
 #include "lib/Mathematics.h"
@@ -32,6 +32,5 @@ public:
 
 	virtual bool uses_svm_values() const = 0 ;
 	virtual INT get_max_id() const = 0 ;
-} ;
-
+};
 #endif
