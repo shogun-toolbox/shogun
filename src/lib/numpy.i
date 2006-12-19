@@ -1,4 +1,5 @@
 /* -*- C -*-  (not really, but good for syntax highlighting) */
+#ifdef HAVE_PYTHON
 %{
 #ifndef SWIG_FILE_WITH_INIT
 #  define NO_IMPORT_ARRAY
@@ -593,3 +594,4 @@ TYPEMAP_ARGOUT2(LONGREAL,      NPY_FLOAT128)
 TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_ARGOUT2
+#endif

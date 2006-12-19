@@ -82,7 +82,7 @@ public:
 	void best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m, INT n) ;
 	void best_path_set_genestr(CHAR* genestr, INT genestr_len) ;
 	void best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len, INT n) ;
-	void best_path_set_segment_loss(DREAL * segment_loss, INT num_segment_id, INT num_segment_id) ;
+	void best_path_set_segment_loss(DREAL * segment_loss, INT num_segment_id1, INT num_segment_id2) ;
 	void best_path_set_segment_ids_mask(INT* segment_ids_mask, INT m, INT n) ;
 	
 	// best_path functions

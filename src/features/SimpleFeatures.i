@@ -2,6 +2,7 @@
     #include "features/SimpleFeatures.h" 
 %}
 
+#ifdef HAVE_PYTHON
 %include "lib/numpy.i"
 
 %apply (ST* IN_ARRAY2, INT DIM1, INT DIM2) {(ST* src, INT num_feat, INT num_vec)};
@@ -12,6 +13,7 @@
 %apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT* src, INT num_feat, INT num_vec)};
 %apply (DREAL* IN_ARRAY2, INT DIM1, INT DIM2) {(DREAL* src, INT num_feat, INT num_vec)};
 %apply (ULONG* IN_ARRAY2, INT DIM1, INT DIM2) {(ULONG* src, INT num_feat, INT num_vec)};
+#endif
 
 %include "features/SimpleFeatures.h" 
 
@@ -21,4 +23,3 @@
 %template(SimpleShortFeatures) CSimpleFeatures<SHORT>;
 %template(SimpleCharFeatures) CSimpleFeatures<CHAR>;
 %template(SimpleIntFeatures)  CSimpleFeatures<INT>;
-

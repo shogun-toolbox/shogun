@@ -25,11 +25,11 @@
 #define true 1
 #endif
 
-#ifndef LINUX
-#define RANDOM_MAX 2147483647
-#else
+//#ifndef LINUX
+//#define RANDOM_MAX 2147483647
+//#else
 #define RANDOM_MAX RAND_MAX
-#endif
+//#endif
 
 /**@name Standard Types 
  * Definition of Platform independent Types
@@ -271,6 +271,6 @@ enum E_ALPHABET
 
 //@}
 
-#define TMP_DIR "/tmp/"
+//#define TMP_DIR "/tmp/"
 
 #endif

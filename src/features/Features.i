@@ -8,9 +8,11 @@
 
 %include "lib/common.i"
 
+#ifdef HAVE_PYTHON
 %init %{
 	  import_array();
 %}
+#endif
 
 %feature("director") CFeatures;
 %rename(Features) CFeatures;

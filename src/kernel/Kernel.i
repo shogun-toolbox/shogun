@@ -10,12 +10,14 @@
 
 %include "lib/common.i"
 
+#ifdef HAVE_PYTHON
 %init %{
 	  import_array();
 %}
 
 %include "lib/numpy.i"
 %apply (DREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** dst, INT* m, INT* n)};
+#endif
 
 %feature("director") CKernel;
 %feature("autodoc","0");

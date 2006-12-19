@@ -5,11 +5,13 @@
 
 %include "lib/common.i"
 
+#ifdef HAVE_PYTHON
 %init %{
 	  import_array();
 %}
 
 %include "lib/numpy.i"
+#endif
 
 %include "structure/Plif.i"
 %include "structure/DynProg.i"

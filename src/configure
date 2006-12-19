@@ -399,6 +399,7 @@ Optional features:
   --enable-python               enable python (shogun can be called from within python) support [disabled]
   --enable-matlab               enable matlab (shogun can be called from within matlab) support [disabled]
   --enable-octave               enable octave (shogun can be called from within octave) support [disabled]
+  --enable-swig-R               enable R swig objects [disabled]
   --enable-R                    enable R      (shogun can be called from within R)      support [disabled]
   --enable-mindy                enable mindy library support (for more efficient n-gram, word-in-a-bag kernel implementations)
   --enable-readline    	        enable readline in stand-a-lone interface [auto]
@@ -491,6 +492,8 @@ for ac_option do
   --enable-octave)		_octave=yes	;;
   --disable-R)			_R=no	;;
   --enable-R)			_R=yes	;;
+  --disable-swig-R)		_swig=no; _R=no	;;
+  --enable-swig-R)		_swig=yes; _R=yes	;;
   --disable-mindy)		_mindy=no	;;
   --enable-mindy)		_mindy=yes	;;
   --disable-svm-light)	_svm_light=no	;;
@@ -2060,6 +2063,7 @@ EOF
 		if cc_check
 		then
 			echores "yes"
+			SWIGFLAGS="-w473 -w403 -c++ -python"
 		else
 			echores "no"
 			die "python/numpy developer files missing"
@@ -2115,6 +2119,7 @@ EOF
 		if cc_check
 		then
 			echores "yes"
+			SWIGFLAGS="-w473 -w403 -c++ -r"
 		else
 			echores "no"
 			die "cannot find R developer files"

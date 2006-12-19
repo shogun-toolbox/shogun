@@ -4,6 +4,8 @@
 
 %rename(DynProg) CDynProg;
 
+#ifdef HAVE_PYTHON
+
 /* model related functions */
 %apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* p, INT N)};
 %apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* q, INT N)};
@@ -28,5 +30,6 @@
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** scores, INT* n)};
 %apply (INT** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** states, INT* m, INT* n)};
 %apply (INT** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** positions, INT* m, INT* n)};
+#endif
 
 %include "structure/DynProg.h" 
