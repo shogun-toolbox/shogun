@@ -591,18 +591,16 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 			int num_vec=c.cols();
 			ASSERT(num_vec>=1);
 
-			T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
 
 			if (c(0,0).char_matrix_value()(0,0))
 			{
 				if (vals.length()==4)
 				{
 					CHAR* al = CGUIOctave::get_octaveString(vals(3).string_value());
-
 					CAlphabet* alpha = new CAlphabet(al, strlen(al));
+					T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
 					ASSERT(alpha);
-					f= new CStringFeatures<CHAR>(alpha);
-					ASSERT(f);
+					ASSERT(sc);
 
 					int maxlen=0;
 					alpha->clear_histogram();
@@ -632,10 +630,17 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 
                     CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
                     CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
-					alpha->check_alphabet_size();
-					alpha->check_alphabet();
+					f= new CStringFeatures<CHAR>(alpha);
+					ASSERT(f);
 
-					((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
+					if (alpha->check_alphabet_size() && alpha->check_alphabet())
+						((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
+					else
+					{
+						((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
+						delete f;
+						f=NULL;
+					}
 				}
 				else
 					CIO::message(M_ERROR, "please specify alphabet!\n");
@@ -650,12 +655,11 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 				if (vals.length()==4)
 				{
 					CHAR* al=CGUIOctave::get_octaveString(vals(3).string_value());
-
 					CAlphabet* alpha= new CAlphabet(al, strlen(al));
-					f= new CCharFeatures(alpha, 0);
+					
 					INT num_vec = cm.cols();
 					INT num_feat = cm.rows();
-					CIO::message(M_DEBUG, "char matrix, cols:%d rows:%d\n", num_vec, num_feat);
+					
 					CHAR* fm=new CHAR[num_vec*num_feat];
 					ASSERT(fm);
 
@@ -666,6 +670,9 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 					alpha->add_string_to_histogram(fm, ((LONG) num_vec)* ((LONG) num_feat));
                     CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
                     CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+
+					f= new CCharFeatures(alpha, 0);
+					ASSERT(f);
 
 					if (alpha->check_alphabet_size() && alpha->check_alphabet())
 						((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);

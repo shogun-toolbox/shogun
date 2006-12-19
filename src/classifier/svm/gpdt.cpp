@@ -466,52 +466,6 @@ void sKernel::SetSubproblem(sKernel* ker, int len, int *perm)
 }
 
 /******************************************************************************/
-/*** Set the selected kernel                                                ***/
-/******************************************************************************/
-void sKernel::SetKernel(int type, double sigma_, double degree_,
-                        double normalisation, double cp)
-{
-  /*** kernel type:                                           *
-   *      0 = linear          (Xi*Xj)                         *
-   *      1 = polynomial      (c_poly+(Xi*Xj)*norm)^degree    *
-   *      2 = gaussian (RBF)   exp{-sigma*|Xi-Xj|^2}        ***/
-  ker_type = type;
-  sigma    = sigma_;
-  norm     = normalisation;
-  c_poly   = cp;
-  degree   = degree_;
-
-  if (ker_type == 0 || (ker_type == 1 && degree == 1.0))
-  {
-      kernel_fun = &sKernel::dot;
-  }
-  else if (ker_type == 1)
-  {
-      if (degree != (double)(int)degree)
-          kernel_fun = &sKernel::k_pow;
-      else
-      {
-          switch((int)degree)
-          {
-                case 2:  kernel_fun = &sKernel::k_pow2; break;
-                case 3:  kernel_fun = &sKernel::k_pow3; break;
-                case 4:  kernel_fun = &sKernel::k_pow4; break;
-                case 5:  kernel_fun = &sKernel::k_pow5; break;
-                case 6:  kernel_fun = &sKernel::k_pow6; break;
-                case 7:  kernel_fun = &sKernel::k_pow7; break;
-                case 8:  kernel_fun = &sKernel::k_pow8; break;
-                case 9:  kernel_fun = &sKernel::k_pow9; break;
-                default: kernel_fun = &sKernel::k_pow;  break;
-          }
-      }
-  }
-  else
-  {
-      kernel_fun = &sKernel::k_gauss;
-  }
-}
-
-/******************************************************************************/
 /*** Kernel class destructor                                                ***/
 /******************************************************************************/
 sKernel::~sKernel()

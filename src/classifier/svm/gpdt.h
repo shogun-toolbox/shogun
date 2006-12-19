@@ -112,8 +112,6 @@ public:
 
   void   SetData       (float **x_, int **ix_, int *lx_, int ell, int dim);
   void   SetSubproblem (sKernel* ker, int len, int *perm);
-  void   SetKernel     (int type, double sigma_, double degree_, 
-                        double normalisation, double cp);
   double Get(int i, int j)
   {
     KernelEvaluations += 1.0F;
@@ -130,18 +128,6 @@ private:
   float  *vaux;
 
   double dot     (int i, int j);
-
-  double k_lin   (int i, int j);
-  double k_gauss (int i, int j);
-  double k_pow   (int i, int j);
-  double k_pow2  (int i, int j);
-  double k_pow3  (int i, int j);
-  double k_pow4  (int i, int j);
-  double k_pow5  (int i, int j);
-  double k_pow6  (int i, int j);
-  double k_pow7  (int i, int j);
-  double k_pow8  (int i, int j);
-  double k_pow9  (int i, int j);
 };
 
 void SplitParts (int n, int part, int parts, int *dim, int *off);
