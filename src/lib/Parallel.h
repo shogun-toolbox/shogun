@@ -14,11 +14,18 @@
 #include "lib/common.h"
 #include "lib/io.h"
 
+#include <unistd.h>
+
 class CParallel
 {
 public:
 	CParallel();
 	~CParallel();
+
+	static inline INT get_num_cpus()
+	{
+		return sysconf( _SC_NPROCESSORS_ONLN );
+	}
 
 	static inline void set_num_threads(INT n)
 	{

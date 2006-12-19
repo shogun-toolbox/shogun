@@ -1192,7 +1192,7 @@ DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& n
     }
     substrs[degree] = -1;
     // - fill struct
-    struct CTrie::TreeParseInfo info;
+    struct TreeParseInfo info;
     info.num_sym = num_sym;
     info.num_feat = num_feat;
     info.p = -1;

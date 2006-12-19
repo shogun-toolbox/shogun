@@ -15,3 +15,7 @@ INT CParallel::num_threads=1;
 CParallel::CParallel()
 {
 }
+
+CParallel::~CParallel()
+{
+}

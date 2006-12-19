@@ -34,39 +34,38 @@
 
 #define TRIE_TERMINAL_CHARACTER  7
 
+struct Trie
+{
+    DREAL weight;
+#ifdef TRIE_CHECK_EVERYTHING
+    bool has_seq ;
+    bool has_floats ;
+#endif		
+    union 
+    {
+        SHORTREAL child_weights[4];
+        INT children[4];
+        BYTE seq[16] ;
+    }; 
+};
+
+struct TreeParseInfo {
+    INT num_sym;
+    INT num_feat;
+    INT p;
+    INT k;
+    INT* nofsKmers;
+    DREAL* margFactors;
+    INT* x;
+    INT* substrs;
+    INT y0;
+    DREAL* C_k;
+    DREAL* L_k;
+    DREAL* R_k;
+};
+
 class CTrie
 {
-public:
-	struct Trie
-	{
-		DREAL weight;
-#ifdef TRIE_CHECK_EVERYTHING
-		bool has_seq ;
-		bool has_floats ;
-#endif		
-		union 
-		{
-			SHORTREAL child_weights[4];
-			INT children[4];
-			BYTE seq[16] ;
-		}; 
-	};
-	
-	struct TreeParseInfo {
-		INT num_sym;
-		INT num_feat;
-		INT p;
-		INT k;
-		INT* nofsKmers;
-		DREAL* margFactors;
-		INT* x;
-		INT* substrs;
-		INT y0;
-		DREAL* C_k;
-		DREAL* L_k;
-		DREAL* R_k;
-	};
-	
 public:
 	CTrie(INT d, INT p_use_compact_terminal_nodes=true) ;
 	CTrie(const CTrie & to_copy) ;

@@ -17,6 +17,7 @@
 #include "lib/Mathematics.h"
 #include "lib/io.h"
 #include "lib/config.h"
+#include "lib/Parallel.h"
 #include "features/StringFeatures.h"
 #include "features/CharFeatures.h"
 #include "features/Alphabet.h"
@@ -32,17 +33,7 @@
 extern "C" int	finite(double);
 #endif
 
-#ifdef USE_HMMPARALLEL 
-#include <unistd.h>
-#include <pthread.h>
-#ifdef SUNOS
-#include <thread.h>
-#endif
-INT NUM_PARALLEL= sysconf( _SC_NPROCESSORS_ONLN );
-#else
-INT NUM_PARALLEL=1 ;
-#endif
-
+INT NUM_PARALLEL= CParallel::get_num_threads();
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
