@@ -1874,27 +1874,27 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 			
 			// add constraint sum(w)=1 ;
 			CIO::message(M_INFO, "adding the first row\n") ;
-			int rmatbeg[1] ;
-			int rmatind[num_kernels+1] ;
-			double rmatval[num_kernels+1] ;
-			double rhs[1] ;
-			char sense[1] ;
+			int initial_rmatbeg[1] ;
+			int initial_rmatind[num_kernels+1] ;
+			double initial_rmatval[num_kernels+1] ;
+			double initial_rhs[1] ;
+			char initial_sense[1] ;
 			
-			rmatbeg[0] = 0;
-			rhs[0]=1 ;     // rhs=1 ;
-			sense[0]='E' ; // equality
+			initial_rmatbeg[0] = 0;
+			initial_rhs[0]=1 ;     // rhs=1 ;
+			initial_sense[0]='E' ; // equality
 			
 			for (INT i=0; i<num_kernels; i++)
 			{
-				rmatind[i]=i ;
-				rmatval[i]=1 ;
+				initial_rmatind[i]=i ;
+				initial_rmatval[i]=1 ;
 			}
-			rmatind[num_kernels]=2*num_kernels ;
-			rmatval[num_kernels]=0 ;
+			initial_rmatind[num_kernels]=2*num_kernels ;
+			initial_rmatval[num_kernels]=0 ;
 			
 			status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
-								 rhs, sense, rmatbeg,
-								 rmatind, rmatval, NULL, NULL);
+								 initial_rhs, initial_sense, initial_rmatbeg,
+								 initial_rmatind, initial_rmatval, NULL, NULL);
 			if ( status ) {
 #ifdef HAVE_PYTHON
             throw SVMException("Failed to add the first row.\n");
@@ -1908,9 +1908,6 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 			{
 				for (INT q=0; q<num_kernels-1; q++)
 				{
-					//fprintf(stderr,"q=%i\n", q) ;
-					// add constraint w[i]-w[i+1]<s[i] ;
-					// add constraint w[i+1]-w[i]<s[i] ;
 					int rmatbeg[1] ;
 					int rmatind[3] ;
 					double rmatval[3] ;
@@ -2062,7 +2059,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 				if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 				{
 					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_row,num_rows) ;
-					INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
+					status = CPXdelrows (env, lp, max_idx, max_idx) ;
 					if ( status ) 
 #ifdef HAVE_PYTHON
                   throw SVMException("Failed to remove an old row.\n");
@@ -2072,7 +2069,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 				}
 
 				// set weights, store new rho and compute new w gap
-				k->set_subkernel_weights(x, num_kernels) ;
+				get_kernel()->set_subkernel_weights(x, num_kernels) ;
 				rho = -x[2*num_kernels] ;
 				w_gap = CMath::abs(1-rho/mkl_objective) ;
 				
@@ -2257,28 +2254,27 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 			}
 			
 			// add constraint sum(w)=1 ;
-			CIO::message(M_INFO, "add the first row\n") ;
-			int rmatbeg[1] ;
-			int rmatind[num_kernels+1] ;
-			double rmatval[num_kernels+1] ;
-			double rhs[1] ;
-			char sense[1] ;
+			int initial_rmatbeg[1] ;
+			int initial_rmatind[num_kernels+1] ;
+			double initial_rmatval[num_kernels+1] ;
+			double initial_rhs[1] ;
+			char initial_sense[1] ;
 			
-			rmatbeg[0] = 0;
-			rhs[0]=1 ;     // rhs=1 ;
-			sense[0]='E' ; // equality
+			initial_rmatbeg[0] = 0;
+			initial_rhs[0]=1 ;     // rhs=1 ;
+			initial_sense[0]='E' ; // equality
 			
 			for (INT i=0; i<num_kernels; i++)
 			{
-				rmatind[i]=i ;
-				rmatval[i]=1 ;
+				initial_rmatind[i]=i ;
+				initial_rmatval[i]=1 ;
 			}
-			rmatind[num_kernels]=2*num_kernels ;
-			rmatval[num_kernels]=0 ;
+			initial_rmatind[num_kernels]=2*num_kernels ;
+			initial_rmatval[num_kernels]=0 ;
 			
 			status = CPXaddrows (env, lp, 0, 1, num_kernels+1, 
-								 rhs, sense, rmatbeg,
-								 rmatind, rmatval, NULL, NULL);
+								 initial_rhs, initial_sense, initial_rmatbeg,
+								 initial_rmatind, initial_rmatval, NULL, NULL);
 			if ( status ) {
 #ifdef HAVE_PYTHON
             throw SVMException("Failed to add the first row.\n");
@@ -2442,7 +2438,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 				if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 				{
 					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_row,num_rows) ;
-					INT status = CPXdelrows (env, lp, max_idx, max_idx) ;
+					status = CPXdelrows (env, lp, max_idx, max_idx) ;
 					if ( status ) 
 #ifdef HAVE_PYTHON
                   throw SVMException("Failed to remove an old row.\n");
