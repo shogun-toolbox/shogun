@@ -271,7 +271,10 @@ int require_size(PyObject* ary, int* size, int n) {
   if (!array || !require_dimensions(array,1) || !require_size(array,size,1)
           || PyArray_TYPE(array) != PyArray_TYPE($input) || PyArray_TYPE(array) != typecode)
   {
-      CIO::message(M_ERROR, "Expected TypeCode: typecode (%d) received array_type (%d)\n", typecode, PyArray_TYPE(array));
+      /*CIO::message(M_ERROR, "Expected TypeCode: typecode (%d) received array_type (%d)\n", typecode, PyArray_TYPE(array));*/
+      char *type_error_message = new char[256];
+      sprintf(type_error_message,"Expected TypeCode: typecode (%d) received array_type (%d)\n", typecode, PyArray_TYPE(array)); 
+      PyErr_SetString(PyExc_TypeError,type_error_message);
       SWIG_fail;
   }
   $1 = (type*) PyArray_BYTES(array);
@@ -308,7 +311,10 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
   if (!array || !require_dimensions(array,2) || !require_size(array,size,1) 
           || PyArray_TYPE(array) != PyArray_TYPE($input) || PyArray_TYPE(array) != typecode)
   {
-      CIO::message(M_ERROR, "Expected TypeCode: typecode (%d) received array_type (%d)\n", typecode, PyArray_TYPE(array));
+      /*CIO::message(M_ERROR, "Expected TypeCode: typecode (%d) received array_type (%d)\n", typecode, PyArray_TYPE(array));*/
+      char *type_error_message = new char[256];
+      sprintf(type_error_message,"Expected TypeCode: typecode (%d) received array_type (%d)\n", typecode, PyArray_TYPE(array));
+      PyErr_SetString(PyExc_TypeError,type_error_message);
       SWIG_fail;
   }
   $1 = (type*) PyArray_BYTES(array);
