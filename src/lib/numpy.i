@@ -268,7 +268,8 @@ int require_size(PyObject* ary, int* size, int n) {
   int size[1] = {-1};
   array = make_contiguous($input, &is_new_object, 0, 0);
   //ASSERT(size(type) == size(typecode));
-  if (!array || !require_dimensions(array,1) || !require_size(array,size,1) || PyArray_TYPE(array) != PyArray_TYPE($input)) SWIG_fail;
+  if (!array || !require_dimensions(array,1) || !require_size(array,size,1)
+          || PyArray_TYPE(array) != PyArray_TYPE($input) || PyArray_TYPE(array) != typecode) SWIG_fail;
   $1 = (type*) PyArray_BYTES(array);
   $2 = PyArray_DIM(array,0);
 }
@@ -278,7 +279,7 @@ int require_size(PyObject* ary, int* size, int n) {
 %enddef
 
 /* Define concrete examples of the TYPEMAP_IN1 macros */
-TYPEMAP_IN1(CHAR,          NPY_INT8 )
+TYPEMAP_IN1(CHAR,          NPY_CHAR )
 TYPEMAP_IN1(BYTE,          NPY_UINT8 )
 TYPEMAP_IN1(SHORT,         NPY_SHORT16)
 TYPEMAP_IN1(WORD,          NPY_USHORT16 )
@@ -300,7 +301,8 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
   int size[2] = {-1,-1};
 
   array = make_contiguous($input, &is_new_object, 0, 0);
-  if (!array || !require_dimensions(array,2) || !require_size(array,size,1) || PyArray_TYPE(array) != PyArray_TYPE($input)) SWIG_fail;
+  if (!array || !require_dimensions(array,2) || !require_size(array,size,1) 
+          || PyArray_TYPE(array) != PyArray_TYPE($input) || PyArray_TYPE(array) != typecode) SWIG_fail;
   $1 = (type*) PyArray_BYTES(array);
   $2 = PyArray_DIM(array,0);
   $3 = PyArray_DIM(array,1);
@@ -311,7 +313,7 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_IN2 macros */
-TYPEMAP_IN2(CHAR,          NPY_INT8 )
+TYPEMAP_IN2(CHAR,          NPY_CHAR )
 TYPEMAP_IN2(BYTE,          NPY_UINT8 )
 TYPEMAP_IN2(SHORT,         NPY_SHORT16)
 TYPEMAP_IN2(WORD,          NPY_USHORT16 )
@@ -364,7 +366,7 @@ TYPEMAP_IN2(PyObject,      NPY_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_INPLACE1 macro */
-TYPEMAP_INPLACE1(CHAR,          NPY_INT8 )
+TYPEMAP_INPLACE1(CHAR,          NPY_CHAR )
 TYPEMAP_INPLACE1(BYTE,          NPY_UINT8 )
 TYPEMAP_INPLACE1(SHORT,         NPY_SHORT16)
 TYPEMAP_INPLACE1(WORD,          NPY_USHORT16 )
@@ -391,7 +393,7 @@ TYPEMAP_INPLACE1(PyObject,      NPY_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_INPLACE2 macro */
-TYPEMAP_INPLACE2(CHAR,          NPY_INT8 )
+TYPEMAP_INPLACE2(CHAR,          NPY_CHAR )
 TYPEMAP_INPLACE2(BYTE,          NPY_UINT8 )
 TYPEMAP_INPLACE2(SHORT,         NPY_SHORT16)
 TYPEMAP_INPLACE2(WORD,          NPY_USHORT16 )
@@ -446,7 +448,7 @@ TYPEMAP_INPLACE2(PyObject,      NPY_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_ARRAYOUT1 macro */
-TYPEMAP_ARRAYOUT1(CHAR,          NPY_INT8 )
+TYPEMAP_ARRAYOUT1(CHAR,          NPY_CHAR )
 TYPEMAP_ARRAYOUT1(BYTE,          NPY_UINT8 )
 TYPEMAP_ARRAYOUT1(SHORT,         NPY_SHORT16)
 TYPEMAP_ARRAYOUT1(WORD,          NPY_USHORT16 )
@@ -473,7 +475,7 @@ TYPEMAP_ARRAYOUT1(PyObject,      NPY_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_ARRAYOUT2 macro */
-TYPEMAP_ARRAYOUT2(CHAR,          NPY_INT8 )
+TYPEMAP_ARRAYOUT2(CHAR,          NPY_CHAR )
 TYPEMAP_ARRAYOUT2(BYTE,          NPY_UINT8 )
 TYPEMAP_ARRAYOUT2(SHORT,         NPY_SHORT16)
 TYPEMAP_ARRAYOUT2(WORD,          NPY_USHORT16 )
@@ -526,7 +528,7 @@ TYPEMAP_ARRAYOUT2(PyObject,      NPY_OBJECT)
 }
 %enddef
 
-TYPEMAP_ARGOUT1(CHAR,          NPY_INT8 )
+TYPEMAP_ARGOUT1(CHAR,          NPY_CHAR )
 TYPEMAP_ARGOUT1(BYTE,          NPY_UINT8 )
 TYPEMAP_ARGOUT1(SHORT,         NPY_SHORT16)
 TYPEMAP_ARGOUT1(WORD,          NPY_USHORT16 )
@@ -557,7 +559,7 @@ TYPEMAP_ARGOUT1(PyObject,      NPY_OBJECT)
 }
 %enddef
 
-TYPEMAP_ARGOUT2(CHAR,          NPY_INT8 )
+TYPEMAP_ARGOUT2(CHAR,          NPY_CHAR )
 TYPEMAP_ARGOUT2(BYTE,          NPY_UINT8 )
 TYPEMAP_ARGOUT2(SHORT,         NPY_SHORT16)
 TYPEMAP_ARGOUT2(WORD,          NPY_USHORT16 )

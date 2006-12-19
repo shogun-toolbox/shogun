@@ -63,7 +63,7 @@ class ChildTable : public std::vector<UInt32>
  public:
 	
 	// Constructors
-	ChildTable(const UInt32 &size, LCP& lcptab): std::vector<UInt32>(size), 
+	ChildTable(const UInt32 &sz, LCP& lcptab): std::vector<UInt32>(sz), 
     _lcptab(lcptab){ }
   
 	// Destructor

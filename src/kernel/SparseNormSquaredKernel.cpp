@@ -55,7 +55,8 @@ DREAL CSparseNormSquaredKernel::compute(INT idx_a, INT idx_b)
   
   DREAL result=0;
 
-  INT i;
+  INT i,j;
+
   for (i=0; i<alen; i++)
 	  result+= avec[i].entry * avec[i].entry;
 
@@ -65,8 +66,8 @@ DREAL CSparseNormSquaredKernel::compute(INT idx_a, INT idx_b)
 
   if (alen<=blen)
   {
-	  INT j=0;
-	  for (INT i=0; i<alen; i++)
+	  j=0;
+	  for (i=0; i<alen; i++)
 	  {
 		  INT a_feat_idx=avec[i].feat_index;
 
@@ -82,8 +83,8 @@ DREAL CSparseNormSquaredKernel::compute(INT idx_a, INT idx_b)
   }
   else
   {
-	  INT j=0;
-	  for (INT i=0; i<blen; i++)
+	  j=0;
+	  for (i=0; i<blen; i++)
 	  {
 		  INT b_feat_idx=bvec[i].feat_index;
 

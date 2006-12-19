@@ -26,9 +26,6 @@ bool CLibSVMOneclass::train()
 {
 	free(model);
 
-	struct svm_problem problem;
-	struct svm_parameter param;
-	
 	problem.l = get_kernel()->get_lhs()->get_num_vectors();
 	
 	struct svm_node* x_space;

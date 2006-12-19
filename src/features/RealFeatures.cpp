@@ -116,7 +116,7 @@ DREAL CRealFeatures::Align(CHAR * seq1, CHAR* seq2, INT l1, INT l2, DREAL gapCos
   
   // return the final cost
   return actCost;
-} ;
+}
 
 
 bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, DREAL gapCost)

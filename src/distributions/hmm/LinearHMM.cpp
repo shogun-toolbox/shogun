@@ -88,7 +88,7 @@ bool CLinearHMM::train()
 	return true;
 }
 
-bool CLinearHMM::train(const INT* indizes, INT num_indizes, DREAL pseudo_count)
+bool CLinearHMM::train(const INT* indizes, INT num_indizes, DREAL pseudo)
 {
 	delete[] hist;
 	delete[] log_hist;
@@ -134,7 +134,7 @@ bool CLinearHMM::train(const INT* indizes, INT num_indizes, DREAL pseudo_count)
 				sum+=int_hist[i*num_symbols+features->get_masked_symbols((WORD)j,(BYTE) 254)+k];
 			}
 
-			hist[i*num_symbols+j]=(int_hist[i*num_symbols+j]+pseudo_count)/(sum+features->get_original_num_symbols()*pseudo_count);
+			hist[i*num_symbols+j]=(int_hist[i*num_symbols+j]+pseudo)/(sum+features->get_original_num_symbols()*pseudo);
 			log_hist[i*num_symbols+j]=log(hist[i*num_symbols+j]);
 		}
 	}

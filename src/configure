@@ -67,15 +67,15 @@ GDB=gdb
 MAKE=make
 test "$CC" && COMP_C="$CC"
 test "$CXX" && COMP_CPP="$CXX"
-COMPFLAGS_C=
-COMPFLAGS_CPP=
+COMPFLAGS_C=-std=c99
+COMPFLAGS_CPP=-std=c++98
 INCLUDES=-I${SRCDIR}
 LINK=c++
 LINKFLAGS=
 POSTLINKFLAGS=
 DEFINES=
 TARGET="shogun"
-COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
+COMP_OPTS="-g -Wall -Wformat -Wshadow -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
 
 # stuff needed for autodetections (definitely needs cleanup)
 TMPLOG="configure.log"

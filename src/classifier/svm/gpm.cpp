@@ -114,7 +114,7 @@ int InnerProjector(int method, int n, int *iy, double e, double *qk,
 int gvpm(int Projector, int n, float *vecA, double *b, double c, double e, 
          int *iy, double *x, double tol, int *ls, int *proj)
 {
-  int     i, j, iter, it, luv, info;
+  int     i, j, iter, it, it2, luv, info;
   double  gd, max, normd, dAd, lam, lamnew, alpha, kktlam, ak, bk;
 
   int     lscount = 0, projcount = 0;
@@ -166,7 +166,6 @@ int gvpm(int Projector, int n, float *vecA, double *b, double c, double e,
   /* compute g = A*x + b in sparse form          *
    * (inline computation for better perfomrance) */
   {
-    int   it;
     float *tempA;
 
     it = 0;
@@ -225,7 +224,6 @@ int gvpm(int Projector, int n, float *vecA, double *b, double c, double e,
       /* compute Ad = A*d  or  Ad = Ay-t depending on their sparsity  *
        * (inline computation for better perfomrance)                  */
       {
-         int   i, it, it2;
          float *tempA;
 
          it = it2 = 0;
@@ -452,7 +450,7 @@ Clean:
 int FletcherAlg2A(int Projector, int n, float *vecA, double *b, double c, 
                   double e, int *iy, double *x, double tol, int *ls, int *proj)
 {
-  int    i, j, iter, it, luv, info, lscount = 0, projcount = 0;
+  int    i, j, iter, it, it2, luv, info, lscount = 0, projcount = 0;
   double gd, max, ak, bk, akold, bkold, lamnew, alpha, kktlam, lam_ext;
   double eps     = 1.0e-16;
   double DELTAsv, ProdDELTAsv;
@@ -505,7 +503,6 @@ int FletcherAlg2A(int Projector, int n, float *vecA, double *b, double c,
   // g = A*x + b;
   // SparseProd(n, t, A, x, ipt);
   {
-    int   it;
     float *tempA;
 
     it = 0;
@@ -575,7 +572,6 @@ int FletcherAlg2A(int Projector, int n, float *vecA, double *b, double c,
 
       /* compute Ad = A*d  or  Ad = A*y - t depending on their sparsity */
       {
-         int   i, it, it2;
          float *tempA;
 
          it = it2 = 0;

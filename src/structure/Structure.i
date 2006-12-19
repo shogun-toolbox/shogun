@@ -11,5 +11,5 @@
 
 %include "lib/numpy.i"
 
-%include "structure/DynProg.i"
 %include "structure/Plif.i"
+%include "structure/DynProg.i"

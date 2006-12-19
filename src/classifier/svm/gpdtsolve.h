@@ -59,7 +59,6 @@ public:
 
   double  gpdtsolve      (double *solution);
   double  pgpdtsolve     (double *solution);
-  void write_solution (FILE *fp, double *sol);
 
 // ----------------- Private Data  ---------------
 private:

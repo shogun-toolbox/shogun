@@ -34,8 +34,6 @@ bool CLibSVM::train()
 {
 	free(model);
 
-	struct svm_problem problem;
-	struct svm_parameter param;
 	struct svm_node* x_space;
 
 	ASSERT(get_labels() && get_labels()->get_num_labels());

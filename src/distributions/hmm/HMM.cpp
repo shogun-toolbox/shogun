@@ -528,7 +528,7 @@ void CHMM::free_state_dependend_arrays()
 	end_state_distribution_q=NULL;
 }
 
-bool CHMM::initialize(CModel* model, DREAL PSEUDO, FILE* modelfile)
+bool CHMM::initialize(CModel* m, DREAL pseudo, FILE* modelfile)
 {
 	//yes optimistic
 	bool files_ok=true;
@@ -545,8 +545,8 @@ bool CHMM::initialize(CModel* model, DREAL PSEUDO, FILE* modelfile)
 	this->observation_matrix_b=NULL;
 	this->initial_state_distribution_p=NULL;
 	this->end_state_distribution_q=NULL;
-	this->PSEUDO= PSEUDO;
-	this->model= model;
+	this->PSEUDO= pseudo;
+	this->model= m;
 	this->p_observations=NULL;
 	this->reused_caches=false;
 
@@ -1489,8 +1489,8 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 
 #if !defined(NEGATIVE_MODEL_HACK) && !defined(NEGATIVE_MODEL_HACK_DON)
 
-//estimates new model lambda out of lambda_train using baum welch algorithm
-void CHMM::estimate_model_baum_welch(CHMM* train)
+//estimates new model lambda out of lambda_estimate using baum welch algorithm
+void CHMM::estimate_model_baum_welch(CHMM* estimate)
 {
 	INT i,j,t,dim;
 	DREAL a_sum, b_sum;	//numerator
@@ -1500,39 +1500,39 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
 	{
-		if (train->get_p(i)>CMath::ALMOST_NEG_INFTY)
+		if (estimate->get_p(i)>CMath::ALMOST_NEG_INFTY)
 			set_p(i,log(PSEUDO));
 		else
-			set_p(i,train->get_p(i));
-		if (train->get_q(i)>CMath::ALMOST_NEG_INFTY)
+			set_p(i,estimate->get_p(i));
+		if (estimate->get_q(i)>CMath::ALMOST_NEG_INFTY)
 			set_q(i,log(PSEUDO));
 		else
-			set_q(i,train->get_q(i));
+			set_q(i,estimate->get_q(i));
 
 		for (j=0; j<N; j++)
-			if (train->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
+			if (estimate->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
 				set_a(i,j, log(PSEUDO));
 			else
-				set_a(i,j,train->get_a(i,j));
+				set_a(i,j,estimate->get_a(i,j));
 		for (j=0; j<M; j++)
-			if (train->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
+			if (estimate->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
 				set_b(i,j, log(PSEUDO));
 			else
-				set_b(i,j,train->get_b(i,j));
+				set_b(i,j,estimate->get_b(i,j));
 	}
 	invalidate_model();
 
 	//change summation order to make use of alpha/beta caches
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{
-		dimmodprob=train->model_probability(dim);
+		dimmodprob=estimate->model_probability(dim);
 		fullmodprob+=dimmodprob ;
 
 		for (i=0; i<N; i++)
 		{
 			//estimate initial+end state distribution numerator
-			set_p(i, CMath::logarithmic_sum(get_p(i), train->get_p(i)+train->get_b(i,p_observations->get_feature(dim,0))+train->backward(0,i,dim) - dimmodprob));
-			set_q(i, CMath::logarithmic_sum(get_q(i), train->forward(p_observations->get_vector_length(dim)-1, i, dim)+train->get_q(i) - dimmodprob ));
+			set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
+			set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
 
 			INT num = trans_list_backward_cnt[i] ;
 
@@ -1544,8 +1544,8 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 
 				for (t=0; t<p_observations->get_vector_length(dim)-1; t++) 
 				{
-					a_sum= CMath::logarithmic_sum(a_sum, train->forward(t,i,dim)+
-							train->get_a(i,jj)+train->get_b(jj,p_observations->get_feature(dim,t+1))+train->backward(t+1,jj,dim));
+					a_sum= CMath::logarithmic_sum(a_sum, estimate->forward(t,i,dim)+
+							estimate->get_a(i,jj)+estimate->get_b(jj,p_observations->get_feature(dim,t+1))+estimate->backward(t+1,jj,dim));
 				}
 				set_a(i,jj, CMath::logarithmic_sum(get_a(i,jj), a_sum-dimmodprob));
 			}
@@ -1558,7 +1558,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 				for (t=0; t<p_observations->get_vector_length(dim); t++) 
 				{
 					if (p_observations->get_feature(dim,t)==j)
-						b_sum=CMath::logarithmic_sum(b_sum, train->forward(t,i,dim)+train->backward(t, i, dim));
+						b_sum=CMath::logarithmic_sum(b_sum, estimate->forward(t,i,dim)+estimate->backward(t, i, dim));
 				}
 
 				set_b(i,j, CMath::logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
@@ -1566,18 +1566,18 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 		} 
 	}
 
-	//cache train model probability
-	train->mod_prob=fullmodprob;
-	train->mod_prob_updated=true ;
+	//cache estimate model probability
+	estimate->mod_prob=fullmodprob;
+	estimate->mod_prob_updated=true ;
 
 	//new model probability is unknown
 	normalize();
 	invalidate_model();
 }
 
-//estimates new model lambda out of lambda_train using baum welch algorithm
+//estimates new model lambda out of lambda_estimate using baum welch algorithm
 // optimize only p, q, a but not b
-void CHMM::estimate_model_baum_welch_trans(CHMM* train)
+void CHMM::estimate_model_baum_welch_trans(CHMM* estimate)
 {
 	INT i,j,t,dim;
 	DREAL a_sum;	//numerator
@@ -1587,36 +1587,36 @@ void CHMM::estimate_model_baum_welch_trans(CHMM* train)
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
 	  {
-	    if (train->get_p(i)>CMath::ALMOST_NEG_INFTY)
+	    if (estimate->get_p(i)>CMath::ALMOST_NEG_INFTY)
 	      set_p(i,log(PSEUDO));
 	    else
-	      set_p(i,train->get_p(i));
-	    if (train->get_q(i)>CMath::ALMOST_NEG_INFTY)
+	      set_p(i,estimate->get_p(i));
+	    if (estimate->get_q(i)>CMath::ALMOST_NEG_INFTY)
 	      set_q(i,log(PSEUDO));
 	    else
-	      set_q(i,train->get_q(i));
+	      set_q(i,estimate->get_q(i));
 	    
 	    for (j=0; j<N; j++)
-	      if (train->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
+	      if (estimate->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
 		set_a(i,j, log(PSEUDO));
 	      else
-		set_a(i,j,train->get_a(i,j));
+		set_a(i,j,estimate->get_a(i,j));
 	    for (j=0; j<M; j++)
-	      set_b(i,j,train->get_b(i,j));
+	      set_b(i,j,estimate->get_b(i,j));
 	  }
 	invalidate_model();
 	
 	//change summation order to make use of alpha/beta caches
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 	  {
-	    dimmodprob=train->model_probability(dim);
+	    dimmodprob=estimate->model_probability(dim);
 	    fullmodprob+=dimmodprob ;
 	    
 	    for (i=0; i<N; i++)
 	      {
 		//estimate initial+end state distribution numerator
-		set_p(i, CMath::logarithmic_sum(get_p(i), train->get_p(i)+train->get_b(i,p_observations->get_feature(dim,0))+train->backward(0,i,dim) - dimmodprob));
-		set_q(i, CMath::logarithmic_sum(get_q(i), train->forward(p_observations->get_vector_length(dim)-1, i, dim)+train->get_q(i) - dimmodprob ));
+		set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
+		set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
 		
 		INT num = trans_list_backward_cnt[i] ;
 		//estimate a
@@ -1627,17 +1627,17 @@ void CHMM::estimate_model_baum_welch_trans(CHMM* train)
 		    
 		    for (t=0; t<p_observations->get_vector_length(dim)-1; t++) 
 		      {
-			a_sum= CMath::logarithmic_sum(a_sum, train->forward(t,i,dim)+
-						    train->get_a(i,jj)+train->get_b(jj,p_observations->get_feature(dim,t+1))+train->backward(t+1,jj,dim));
+			a_sum= CMath::logarithmic_sum(a_sum, estimate->forward(t,i,dim)+
+						    estimate->get_a(i,jj)+estimate->get_b(jj,p_observations->get_feature(dim,t+1))+estimate->backward(t+1,jj,dim));
 		      }
 		    set_a(i,jj, CMath::logarithmic_sum(get_a(i,jj), a_sum-dimmodprob));
 		  }
 	      } 
 	  }
 	
-	//cache train model probability
-	train->mod_prob=fullmodprob;
-	train->mod_prob_updated=true ;
+	//cache estimate model probability
+	estimate->mod_prob=fullmodprob;
+	estimate->mod_prob_updated=true ;
 	
 	//new model probability is unknown
 	normalize();
@@ -1645,8 +1645,8 @@ void CHMM::estimate_model_baum_welch_trans(CHMM* train)
 }
 
 
-//estimates new model lambda out of lambda_train using baum welch algorithm
-void CHMM::estimate_model_baum_welch_old(CHMM* train)
+//estimates new model lambda out of lambda_estimate using baum welch algorithm
+void CHMM::estimate_model_baum_welch_old(CHMM* estimate)
 {
 	INT i,j,t,dim;
 	DREAL a_sum, b_sum;	//numerator
@@ -1656,39 +1656,39 @@ void CHMM::estimate_model_baum_welch_old(CHMM* train)
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
 	  {
-	    if (train->get_p(i)>CMath::ALMOST_NEG_INFTY)
+	    if (estimate->get_p(i)>CMath::ALMOST_NEG_INFTY)
 	      set_p(i,log(PSEUDO));
 	    else
-	      set_p(i,train->get_p(i));
-	    if (train->get_q(i)>CMath::ALMOST_NEG_INFTY)
+	      set_p(i,estimate->get_p(i));
+	    if (estimate->get_q(i)>CMath::ALMOST_NEG_INFTY)
 	      set_q(i,log(PSEUDO));
 	    else
-	      set_q(i,train->get_q(i));
+	      set_q(i,estimate->get_q(i));
 	    
 	    for (j=0; j<N; j++)
-	      if (train->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
+	      if (estimate->get_a(i,j)>CMath::ALMOST_NEG_INFTY)
 		set_a(i,j, log(PSEUDO));
 	      else
-		set_a(i,j,train->get_a(i,j));
+		set_a(i,j,estimate->get_a(i,j));
 	    for (j=0; j<M; j++)
-	      if (train->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
+	      if (estimate->get_b(i,j)>CMath::ALMOST_NEG_INFTY)
 		set_b(i,j, log(PSEUDO));
 	      else
-		set_b(i,j,train->get_b(i,j));
+		set_b(i,j,estimate->get_b(i,j));
 	  }
 	invalidate_model();
 	
 	//change summation order to make use of alpha/beta caches
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 	  {
-	    dimmodprob=train->model_probability(dim);
+	    dimmodprob=estimate->model_probability(dim);
 	    fullmodprob+=dimmodprob ;
 	    
 	    for (i=0; i<N; i++)
 	      {
 		//estimate initial+end state distribution numerator
-		set_p(i, CMath::logarithmic_sum(get_p(i), train->get_p(i)+train->get_b(i,p_observations->get_feature(dim,0))+train->backward(0,i,dim) - dimmodprob));
-		set_q(i, CMath::logarithmic_sum(get_q(i), train->forward(p_observations->get_vector_length(dim)-1, i, dim)+train->get_q(i) - dimmodprob ));
+		set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
+		set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
 		
 		//estimate a
 		for (j=0; j<N; j++)
@@ -1697,8 +1697,8 @@ void CHMM::estimate_model_baum_welch_old(CHMM* train)
 		    
 		    for (t=0; t<p_observations->get_vector_length(dim)-1; t++) 
 		      {
-			a_sum= CMath::logarithmic_sum(a_sum, train->forward(t,i,dim)+
-						    train->get_a(i,j)+train->get_b(j,p_observations->get_feature(dim,t+1))+train->backward(t+1,j,dim));
+			a_sum= CMath::logarithmic_sum(a_sum, estimate->forward(t,i,dim)+
+						    estimate->get_a(i,j)+estimate->get_b(j,p_observations->get_feature(dim,t+1))+estimate->backward(t+1,j,dim));
 		      }
 		    set_a(i,j, CMath::logarithmic_sum(get_a(i,j), a_sum-dimmodprob));
 		  }
@@ -1711,7 +1711,7 @@ void CHMM::estimate_model_baum_welch_old(CHMM* train)
 		    for (t=0; t<p_observations->get_vector_length(dim); t++) 
 		      {
 			if (p_observations->get_feature(dim,t)==j)
-			  b_sum=CMath::logarithmic_sum(b_sum, train->forward(t,i,dim)+train->backward(t, i, dim));
+			  b_sum=CMath::logarithmic_sum(b_sum, estimate->forward(t,i,dim)+estimate->backward(t, i, dim));
 		      }
 		    
 		    set_b(i,j, CMath::logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
@@ -1719,9 +1719,9 @@ void CHMM::estimate_model_baum_welch_old(CHMM* train)
 	      } 
 	  }
 	
-	//cache train model probability
-	train->mod_prob=fullmodprob;
-	train->mod_prob_updated=true ;
+	//cache estimate model probability
+	estimate->mod_prob=fullmodprob;
+	estimate->mod_prob_updated=true ;
 	
 	//new model probability is unknown
 	normalize();
@@ -1730,8 +1730,8 @@ void CHMM::estimate_model_baum_welch_old(CHMM* train)
 
 
 #elif defined(NEGATIVE_MODEL_HACK)
-//estimates new model lambda out of lambda_train using baum welch algorithm
-void CHMM::estimate_model_baum_welch(CHMM* train)
+//estimates new model lambda out of lambda_estimate using baum welch algorithm
+void CHMM::estimate_model_baum_welch(CHMM* estimate)
 {
 	INT i,j,t,dim;
 	DREAL a_sum, b_sum;	//numerator
@@ -1742,24 +1742,24 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 
 	CIO::message(M_DEBUG, "M:%d\n",M);
 
-	if (train->get_p(0)>-0.00001)
+	if (estimate->get_p(0)>-0.00001)
 	{
 		for (i=0; i<N; i++)
 		{
 			if (i==25)
-				train->set_p(i,-CMath::INFTY);
+				estimate->set_p(i,-CMath::INFTY);
 			else
-				train->set_p(i, log(MIN_RAND+((DREAL)CMath::random()))/DREAL(RANDOM_MAX));
+				estimate->set_p(i, log(MIN_RAND+((DREAL)CMath::random()))/DREAL(RANDOM_MAX));
 
 			if (i<49)
-				train->set_q(i, -CMath::INFTY);
+				estimate->set_q(i, -CMath::INFTY);
 			else 
-				train->set_q(i, log(MIN_RAND+((DREAL)CMath::random()))/DREAL(RANDOM_MAX));
+				estimate->set_q(i, log(MIN_RAND+((DREAL)CMath::random()))/DREAL(RANDOM_MAX));
 
 			if (i<25)
 			{
 				for (j=0; j<M; j++)
-					train->set_b(i,j, log(MIN_RAND+((DREAL)CMath::random()))/DREAL(RANDOM_MAX));
+					estimate->set_b(i,j, log(MIN_RAND+((DREAL)CMath::random()))/DREAL(RANDOM_MAX));
 			}
 		}
 	}
@@ -1767,14 +1767,14 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	for (i=0; i<N; i++)
 	{
 		if (i==25)
-			train->set_p(i,-CMath::INFTY);
+			estimate->set_p(i,-CMath::INFTY);
 
 		if (i<49)
-			train->set_q(i, -CMath::INFTY);
+			estimate->set_q(i, -CMath::INFTY);
 
 	}
-	train->invalidate_model();
-	train->normalize();
+	estimate->invalidate_model();
+	estimate->normalize();
 
 	//clear actual model a,b,p,q are used as numerator
 	for (i=0; i<N; i++)
@@ -1782,12 +1782,12 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 		//if (i!=25)
 		set_p(i,log(PSEUDO));
 		//else
-		//	set_p(i,train->get_p(i));
+		//	set_p(i,estimate->get_p(i));
 
 		set_q(i,log(PSEUDO));
 
 		for (j=0; j<N; j++)
-			set_a(i,j, train->get_a(i,j));	//a is const
+			set_a(i,j, estimate->get_a(i,j));	//a is const
 
 		if (i<25)
 		{
@@ -1797,21 +1797,21 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 		else
 		{
 			for (j=0; j<M; j++)
-				set_b(i,j, train->get_b(i,j));	//b is const for state
+				set_b(i,j, estimate->get_b(i,j));	//b is const for state
 		}
 	}
 
 	//change summation order to make use of alpha/beta caches
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{
-		dimmodprob=train->model_probability(dim);
+		dimmodprob=estimate->model_probability(dim);
 		fullmodprob+=dimmodprob ;
 
 		for (i=0; i<N; i++)
 		{
 			//estimate initial+end state distribution numerator
-			set_p(i, CMath::logarithmic_sum(get_p(i), train->get_p(i)+train->get_b(i,p_observations->get_feature(dim,0))+train->backward(0,i,dim) - dimmodprob));
-			set_q(i, CMath::logarithmic_sum(get_q(i), train->forward(p_observations->get_vector_length(dim)-1, i, dim)+train->get_q(i) - dimmodprob ));
+			set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
+			set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
 		}
 
 		for (i=0; i<25; i++)
@@ -1824,7 +1824,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 				for (t=0; t<p_observations->get_vector_length(dim); t++) 
 				{
 					if (p_observations->get_feature(dim,t)==j) 
-						b_sum=CMath::logarithmic_sum(b_sum, train->forward(t,i,dim)+train->backward(t, i, dim));
+						b_sum=CMath::logarithmic_sum(b_sum, estimate->forward(t,i,dim)+estimate->backward(t, i, dim));
 				}
 
 				set_b(i,j, CMath::logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
@@ -1832,17 +1832,17 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 		} 
 	}
 
-	//cache train model probability
-	train->mod_prob=fullmodprob;
-	train->mod_prob_updated=true ;
+	//cache estimate model probability
+	estimate->mod_prob=fullmodprob;
+	estimate->mod_prob_updated=true ;
 
 	//new model probability is unknown
 	normalize();
 	invalidate_model();
 }
 #else
-//estimates new model lambda out of lambda_train using baum welch algorithm
-void CHMM::estimate_model_baum_welch(CHMM* train)
+//estimates new model lambda out of lambda_estimate using baum welch algorithm
+void CHMM::estimate_model_baum_welch(CHMM* estimate)
 {
 	INT i,j,t,dim;
 	DREAL a_sum, b_sum;	//numerator
@@ -1852,30 +1852,30 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	const DREAL MIN_RAND=23e-3;
 	static bool bla=true;
 
-	if ((bla) && train->get_q(N-1)>-0.00001)
+	if ((bla) && estimate->get_q(N-1)>-0.00001)
 	{
 		bla=false;
 		for (i=0; i<N; i++)
 		{
 			if (i<=N-50)
-				train->set_p(i, log(MIN_RAND+(CMath::random()%RANDOM_MAX)));
+				estimate->set_p(i, log(MIN_RAND+(CMath::random()%RANDOM_MAX)));
 			else
-				train->set_p(i, -1000);
+				estimate->set_p(i, -1000);
 
 			if ( i==N-25-1)
-				train->set_q(i,-10000);
+				estimate->set_q(i,-10000);
 			else
-				train->set_q(i, log(MIN_RAND+(CMath::random()%RANDOM_MAX)));
-			CIO::message(M_DEBUG, "q[%d]=%lf\n", i, train->get_q(i));
+				estimate->set_q(i, log(MIN_RAND+(CMath::random()%RANDOM_MAX)));
+			CIO::message(M_DEBUG, "q[%d]=%lf\n", i, estimate->get_q(i));
 
 			if (i>=N-25)
 			{
 				for (j=0; j<M; j++)
-					train->set_b(i,j, log(MIN_RAND+(CMath::random()%RANDOM_MAX)));
+					estimate->set_b(i,j, log(MIN_RAND+(CMath::random()%RANDOM_MAX)));
 			}
 		}
-		train->invalidate_model();
-		train->normalize(true);
+		estimate->invalidate_model();
+		estimate->normalize(true);
 	}
 
 	//clear actual model a,b,p,q are used as numerator
@@ -1885,9 +1885,9 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 		set_q(i,log(PSEUDO));
 
 		for (j=0; j<N; j++)
-			set_a(i,j, train->get_a(i,j));	//a is const
+			set_a(i,j, estimate->get_a(i,j));	//a is const
 
-		if (i>=N-25) //train last 25 emissions
+		if (i>=N-25) //estimate last 25 emissions
 		{
 			for (j=0; j<M; j++)
 				set_b(i,j, log(PSEUDO));	
@@ -1895,13 +1895,13 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 		else
 		{
 			for (j=0; j<M; j++)
-				set_b(i,j, train->get_b(i,j));	//b is const for state
+				set_b(i,j, estimate->get_b(i,j));	//b is const for state
 
 			if (i==N-25-1-24 || i==N-25-1-23)
 			{
 				for (j=0; j<M; j++)
 				{
-					if (train->get_b(i,j)<-10)
+					if (estimate->get_b(i,j)<-10)
 						set_b(i,j, -CMath::INFTY);
 				}
 			}
@@ -1911,21 +1911,21 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 	//change summation order to make use of alpha/beta caches
 	for (dim=0; dim<p_observations->get_num_vectors(); dim++)
 	{
-		dimmodprob=train->model_probability(dim);
+		dimmodprob=estimate->model_probability(dim);
 		fullmodprob+=dimmodprob ;
 
 		for (i=0; i<N; i++)
 		{
 			//estimate initial+end state distribution numerator
 			if (i<=N-50)
-				set_p(i, CMath::logarithmic_sum(get_p(i), train->get_p(i)+train->get_b(i,p_observations->get_feature(dim,0))+train->backward(0,i,dim) - dimmodprob));
+				set_p(i, CMath::logarithmic_sum(get_p(i), estimate->get_p(i)+estimate->get_b(i,p_observations->get_feature(dim,0))+estimate->backward(0,i,dim) - dimmodprob));
 			else
 				set_p(i, -1000);
 
 			if (i==N-25-1)
 				set_q(i,-10000);
 			else
-				set_q(i, CMath::logarithmic_sum(get_q(i), train->forward(p_observations->get_vector_length(dim)-1, i, dim)+train->get_q(i) - dimmodprob ));
+				set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+estimate->get_q(i) - dimmodprob ));
 		}
 
 		for (i=N-25; i<N; i++)
@@ -1938,7 +1938,7 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 				for (t=0; t<p_observations->get_vector_length(dim); t++) 
 				{
 					if (p_observations->get_feature(dim,t)==j) 
-						b_sum=CMath::logarithmic_sum(b_sum, train->forward(t,i,dim)+train->backward(t, i, dim));
+						b_sum=CMath::logarithmic_sum(b_sum, estimate->forward(t,i,dim)+estimate->backward(t, i, dim));
 				}
 
 				set_b(i,j, CMath::logarithmic_sum(get_b(i,j), b_sum-dimmodprob));
@@ -1946,9 +1946,9 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 		} 
 	}
 
-	//cache train model probability
-	train->mod_prob=fullmodprob;
-	train->mod_prob_updated=true ;
+	//cache estimate model probability
+	estimate->mod_prob=fullmodprob;
+	estimate->mod_prob_updated=true ;
 
 	//new model probability is unknown
 	normalize(true);
@@ -1958,8 +1958,8 @@ void CHMM::estimate_model_baum_welch(CHMM* train)
 #endif // USE_HMMPARALLEL
 
 
-//estimates new model lambda out of lambda_train using baum welch algorithm
-void CHMM::estimate_model_baum_welch_defined(CHMM* train)
+//estimates new model lambda out of lambda_estimate using baum welch algorithm
+void CHMM::estimate_model_baum_welch_defined(CHMM* estimate)
 {
 	INT i,j,old_i,k,t,dim;
 	DREAL a_sum_num, b_sum_num;		//numerator
@@ -2010,7 +2010,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 			for (i=0; i<NUM_PARALLEL; i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
-					params[i].hmm=train ;
+					params[i].hmm=estimate ;
 					params[i].dim=dim+i ;
 #ifdef SUNOS
 					thr_create(NULL,0, bw_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
@@ -2027,7 +2027,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 				} ;
 		}
 #else
-		dimmodprob=train->model_probability(dim);
+		dimmodprob=estimate->model_probability(dim);
 #endif // USE_HMMPARALLEL
 
 		//and denominator
@@ -2035,11 +2035,11 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 
 		//estimate initial+end state distribution numerator
 		for (k=0; (i=model->get_learn_p(k))!=-1; k++)	
-			set_p(i, CMath::logarithmic_sum(get_p(i), train->forward(0,i,dim)+train->backward(0,i,dim) - dimmodprob ) );
+			set_p(i, CMath::logarithmic_sum(get_p(i), estimate->forward(0,i,dim)+estimate->backward(0,i,dim) - dimmodprob ) );
 
 		for (k=0; (i=model->get_learn_q(k))!=-1; k++)	
-			set_q(i, CMath::logarithmic_sum(get_q(i), train->forward(p_observations->get_vector_length(dim)-1, i, dim)+
-						train->backward(p_observations->get_vector_length(dim)-1, i, dim)  - dimmodprob ) );
+			set_q(i, CMath::logarithmic_sum(get_q(i), estimate->forward(p_observations->get_vector_length(dim)-1, i, dim)+
+						estimate->backward(p_observations->get_vector_length(dim)-1, i, dim)  - dimmodprob ) );
 
 		//estimate a
 		old_i=-1;
@@ -2053,7 +2053,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 				a_sum_denom=-CMath::INFTY;
 
 				for (t=0; t<p_observations->get_vector_length(dim)-1; t++) 
-					a_sum_denom= CMath::logarithmic_sum(a_sum_denom, train->forward(t,i,dim)+train->backward(t,i,dim));
+					a_sum_denom= CMath::logarithmic_sum(a_sum_denom, estimate->forward(t,i,dim)+estimate->backward(t,i,dim));
 
 				A[i]= CMath::logarithmic_sum(A[i], a_sum_denom-dimmodprob);
 			}
@@ -2062,8 +2062,8 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 			a_sum_num=-CMath::INFTY;
 			for (t=0; t<p_observations->get_vector_length(dim)-1; t++) 
 			{
-				a_sum_num= CMath::logarithmic_sum(a_sum_num, train->forward(t,i,dim)+
-						train->get_a(i,j)+train->get_b(j,p_observations->get_feature(dim,t+1))+train->backward(t+1,j,dim));
+				a_sum_num= CMath::logarithmic_sum(a_sum_num, estimate->forward(t,i,dim)+
+						estimate->get_a(i,j)+estimate->get_b(j,p_observations->get_feature(dim,t+1))+estimate->backward(t+1,j,dim));
 			}
 
 			set_a(i,j, CMath::logarithmic_sum(get_a(i,j), a_sum_num-dimmodprob));
@@ -2082,7 +2082,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 				b_sum_denom=-CMath::INFTY;
 
 				for (t=0; t<p_observations->get_vector_length(dim); t++) 
-					b_sum_denom= CMath::logarithmic_sum(b_sum_denom, train->forward(t,i,dim)+train->backward(t,i,dim));
+					b_sum_denom= CMath::logarithmic_sum(b_sum_denom, estimate->forward(t,i,dim)+estimate->backward(t,i,dim));
 
 				B[i]= CMath::logarithmic_sum(B[i], b_sum_denom-dimmodprob);
 			}
@@ -2092,7 +2092,7 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 			for (t=0; t<p_observations->get_vector_length(dim); t++) 
 			{
 				if (p_observations->get_feature(dim,t)==j) 
-					b_sum_num=CMath::logarithmic_sum(b_sum_num, train->forward(t,i,dim)+train->backward(t, i, dim));
+					b_sum_num=CMath::logarithmic_sum(b_sum_num, estimate->forward(t,i,dim)+estimate->backward(t, i, dim));
 			}
 
 			set_b(i,j, CMath::logarithmic_sum(get_b(i,j), b_sum_num-dimmodprob));
@@ -2123,9 +2123,9 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 		set_b(i,j, get_b(i,j) - B[i]);
 	}
 
-	//cache train model probability
-	train->mod_prob=fullmodprob;
-	train->mod_prob_updated=true ;
+	//cache estimate model probability
+	estimate->mod_prob=fullmodprob;
+	estimate->mod_prob_updated=true ;
 
 	//new model probability is unknown
 	normalize();
@@ -2133,8 +2133,8 @@ void CHMM::estimate_model_baum_welch_defined(CHMM* train)
 }
 
 #ifndef NOVIT
-//estimates new model lambda out of lambda_train using viterbi algorithm
-void CHMM::estimate_model_viterbi(CHMM* train)
+//estimates new model lambda out of lambda_estimate using viterbi algorithm
+void CHMM::estimate_model_viterbi(CHMM* estimate)
 {
 	INT i,j,t;
 	DREAL sum;
@@ -2173,7 +2173,7 @@ void CHMM::estimate_model_viterbi(CHMM* train)
 			for (i=0; i<NUM_PARALLEL; i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
-					params[i].hmm=train ;
+					params[i].hmm=estimate ;
 					params[i].dim=dim+i ;
 #ifdef SUNOS
 					thr_create(NULL,0, vit_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
@@ -2191,20 +2191,20 @@ void CHMM::estimate_model_viterbi(CHMM* train)
 		} ;
 #else
 		//using viterbi to find best path
-		allpatprob += train->best_path(dim);
+		allpatprob += estimate->best_path(dim);
 #endif // USE_HMMPARALLEL
 
 		//counting occurences for A and B
 		for (t=0; t<p_observations->get_vector_length(dim)-1; t++)
 		{
-			set_A(train->PATH(dim)[t], train->PATH(dim)[t+1], get_A(train->PATH(dim)[t], train->PATH(dim)[t+1])+1);
-			set_B(train->PATH(dim)[t], p_observations->get_feature(dim,t),  get_B(train->PATH(dim)[t], p_observations->get_feature(dim,t))+1);
+			set_A(estimate->PATH(dim)[t], estimate->PATH(dim)[t+1], get_A(estimate->PATH(dim)[t], estimate->PATH(dim)[t+1])+1);
+			set_B(estimate->PATH(dim)[t], p_observations->get_feature(dim,t),  get_B(estimate->PATH(dim)[t], p_observations->get_feature(dim,t))+1);
 		}
 
-		set_B(train->PATH(dim)[p_observations->get_vector_length(dim)-1], p_observations->get_feature(dim,p_observations->get_vector_length(dim)-1),  get_B(train->PATH(dim)[p_observations->get_vector_length(dim)-1], p_observations->get_feature(dim,p_observations->get_vector_length(dim)-1)) + 1 );
+		set_B(estimate->PATH(dim)[p_observations->get_vector_length(dim)-1], p_observations->get_feature(dim,p_observations->get_vector_length(dim)-1),  get_B(estimate->PATH(dim)[p_observations->get_vector_length(dim)-1], p_observations->get_feature(dim,p_observations->get_vector_length(dim)-1)) + 1 );
 
-		P[train->PATH(dim)[0]]++;
-		Q[train->PATH(dim)[p_observations->get_vector_length(dim)-1]]++;
+		P[estimate->PATH(dim)[0]]++;
+		Q[estimate->PATH(dim)[p_observations->get_vector_length(dim)-1]]++;
 	}
 
 #ifdef USE_HMMPARALLEL
@@ -2213,8 +2213,8 @@ void CHMM::estimate_model_viterbi(CHMM* train)
 #endif 
 
 	allpatprob/=p_observations->get_num_vectors() ;
-	train->all_pat_prob=allpatprob ;
-	train->all_path_prob_updated=true ;
+	estimate->all_pat_prob=allpatprob ;
+	estimate->all_path_prob_updated=true ;
 
 	//converting A to probability measure a
 	for (i=0; i<N; i++)
@@ -2259,7 +2259,7 @@ void CHMM::estimate_model_viterbi(CHMM* train)
 }
 
 // estimate parameters listed in learn_x
-void CHMM::estimate_model_viterbi_defined(CHMM* train)
+void CHMM::estimate_model_viterbi_defined(CHMM* estimate)
 {
 	INT i,j,k,t;
 	DREAL sum;
@@ -2297,7 +2297,7 @@ void CHMM::estimate_model_viterbi_defined(CHMM* train)
 			for (i=0; i<NUM_PARALLEL; i++)
 				if (dim+i<p_observations->get_num_vectors())
 				{
-					params[i].hmm=train ;
+					params[i].hmm=estimate ;
 					params[i].dim=dim+i ;
 #ifdef SUNOS
 					thr_create(NULL,0,vit_dim_prefetch, (void*)&params[i], PTHREAD_SCOPE_SYSTEM, &threads[i]) ;
@@ -2315,21 +2315,21 @@ void CHMM::estimate_model_viterbi_defined(CHMM* train)
 		} ;
 #else // USE_HMMPARALLEL
 		//using viterbi to find best path
-		allpatprob += train->best_path(dim);
+		allpatprob += estimate->best_path(dim);
 #endif // USE_HMMPARALLEL
 
 
 		//counting occurences for A and B
 		for (t=0; t<p_observations->get_vector_length(dim)-1; t++)
 		{
-			set_A(train->PATH(dim)[t], train->PATH(dim)[t+1], get_A(train->PATH(dim)[t], train->PATH(dim)[t+1])+1);
-			set_B(train->PATH(dim)[t], p_observations->get_feature(dim,t),  get_B(train->PATH(dim)[t], p_observations->get_feature(dim,t))+1);
+			set_A(estimate->PATH(dim)[t], estimate->PATH(dim)[t+1], get_A(estimate->PATH(dim)[t], estimate->PATH(dim)[t+1])+1);
+			set_B(estimate->PATH(dim)[t], p_observations->get_feature(dim,t),  get_B(estimate->PATH(dim)[t], p_observations->get_feature(dim,t))+1);
 		}
 
-		set_B(train->PATH(dim)[p_observations->get_vector_length(dim)-1], p_observations->get_feature(dim,p_observations->get_vector_length(dim)-1),  get_B(train->PATH(dim)[p_observations->get_vector_length(dim)-1], p_observations->get_feature(dim,p_observations->get_vector_length(dim)-1)) + 1 );
+		set_B(estimate->PATH(dim)[p_observations->get_vector_length(dim)-1], p_observations->get_feature(dim,p_observations->get_vector_length(dim)-1),  get_B(estimate->PATH(dim)[p_observations->get_vector_length(dim)-1], p_observations->get_feature(dim,p_observations->get_vector_length(dim)-1)) + 1 );
 
-		P[train->PATH(dim)[0]]++;
-		Q[train->PATH(dim)[p_observations->get_vector_length(dim)-1]]++;
+		P[estimate->PATH(dim)[0]]++;
+		Q[estimate->PATH(dim)[p_observations->get_vector_length(dim)-1]]++;
 	}
 
 #ifdef USE_HMMPARALLEL
@@ -2337,22 +2337,22 @@ void CHMM::estimate_model_viterbi_defined(CHMM* train)
 	delete[] params ;
 #endif
 
-	//train->invalidate_model() ;
-	//DREAL q=train->best_path(-1) ;
+	//estimate->invalidate_model() ;
+	//DREAL q=estimate->best_path(-1) ;
 
 	allpatprob/=p_observations->get_num_vectors() ;
-	train->all_pat_prob=allpatprob ;
-	train->all_path_prob_updated=true ;
+	estimate->all_pat_prob=allpatprob ;
+	estimate->all_path_prob_updated=true ;
 
 
 	//copy old model
 	for (i=0; i<N; i++)
 	{
 		for (j=0; j<N; j++)
-			set_a(i,j, train->get_a(i,j));
+			set_a(i,j, estimate->get_a(i,j));
 
 		for (j=0; j<M; j++)
-			set_b(i,j, train->get_b(i,j));
+			set_b(i,j, estimate->get_b(i,j));
 	}
 
 	//converting A to probability measure a
@@ -2743,7 +2743,7 @@ void CHMM::init_model_defined()
 			j=model->get_learn_a(i,0);
 			k=i;
 			sum=0;
-			for (INT r=0; r<N; r++) R[r]=(23e-3+((DREAL)CMath::random()))/DREAL(RANDOM_MAX) ;
+			for (r=0; r<N; r++) R[r]=(23e-3+((DREAL)CMath::random()))/DREAL(RANDOM_MAX) ;
 		}
 	}
 	delete[] R ; R=NULL ;
@@ -2772,7 +2772,7 @@ void CHMM::init_model_defined()
 			j=model->get_learn_b(i,0);
 			k=i;
 			sum=0;
-			for (INT r=0; r<M; r++) R[r]=(23e-3+((DREAL)CMath::random()))/DREAL(RANDOM_MAX) ;
+			for (r=0; r<M; r++) R[r]=(23e-3+((DREAL)CMath::random()))/DREAL(RANDOM_MAX) ;
 		}
 	}
 	delete[] R ; R=NULL ;
@@ -3465,7 +3465,7 @@ bool CHMM::load_model(FILE* file)
 	const_p[]=[ [<INT>, <DOUBLE>], ... , [<INT>,<DOUBLE>], [-1,-1] ];
 	const_q[]=[ [<INT>, <DOUBLE>], ... , [<INT>,<DOUBLE>], [-1,-1] ];
 	*/
-bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
+bool CHMM::load_definitions(FILE* file, bool verbose, bool init)
 {
 	if (model)
 		delete model ;
@@ -4125,7 +4125,7 @@ bool CHMM::load_definitions(FILE* file, bool verbose, bool initialize)
 	{
 		model->sort_learn_a() ;
 		model->sort_learn_b() ;
-		if (initialize)
+		if (init)
 		{
 			init_model_defined(); ;
 			convert_to_log();
@@ -5059,15 +5059,15 @@ void CHMM::normalize(bool keep_dead_states)
 	invalidate_model();
 }
 
-bool CHMM::append_model(CHMM* append_model)
+bool CHMM::append_model(CHMM* app_model)
 {
 	bool result=false;
-	const INT num_states=append_model->get_N();
+	const INT num_states=app_model->get_N();
 	INT i,j;
 
 	CIO::message(M_DEBUG, "cur N:%d M:%d\n", N, M);
-	CIO::message(M_DEBUG, "old N:%d M:%d\n", append_model->get_N(), append_model->get_M());
-	if (append_model->get_M() == get_M())
+	CIO::message(M_DEBUG, "old N:%d M:%d\n", app_model->get_N(), app_model->get_M());
+	if (app_model->get_M() == get_M())
 	{
 		DREAL* n_p=new DREAL[N+num_states];
 		DREAL* n_q=new DREAL[N+num_states];
@@ -5106,14 +5106,14 @@ bool CHMM::append_model(CHMM* append_model)
 		}
 
 		// append_model
-		for (i=0; i<append_model->get_N(); i++)
+		for (i=0; i<app_model->get_N(); i++)
 		{
-			n_q[i+N]=append_model->get_q(i);
+			n_q[i+N]=app_model->get_q(i);
 
-			for (j=0; j<append_model->get_N(); j++)
-				n_a[(N+num_states)*(j+N)+(i+N)]=append_model->get_a(i,j);
-			for (j=0; j<append_model->get_M(); j++)
-				n_b[M*(i+N)+j]=append_model->get_b(i,j);
+			for (j=0; j<app_model->get_N(); j++)
+				n_a[(N+num_states)*(j+N)+(i+N)]=app_model->get_a(i,j);
+			for (j=0; j<app_model->get_M(); j++)
+				n_b[M*(i+N)+j]=app_model->get_b(i,j);
 		}
 
 
@@ -5121,7 +5121,7 @@ bool CHMM::append_model(CHMM* append_model)
 		for (i=0; i<N; i++)
 		{
 			for (j=N; j<N+num_states; j++)
-				n_a[(N+num_states)*j + i]=CMath::logarithmic_sum(get_q(i)+append_model->get_p(j-N), n_a[(N+num_states)*j + i]);
+				n_a[(N+num_states)*j + i]=CMath::logarithmic_sum(get_q(i)+app_model->get_p(j-N), n_a[(N+num_states)*j + i]);
 		}
 
 		free_state_dependend_arrays();
@@ -5150,13 +5150,13 @@ bool CHMM::append_model(CHMM* append_model)
 	return result;
 }
 
-bool CHMM::append_model(CHMM* append_model, DREAL* cur_out, DREAL* app_out)
+bool CHMM::append_model(CHMM* app_model, DREAL* cur_out, DREAL* app_out)
 {
 	bool result=false;
-	const INT num_states=append_model->get_N()+2;
+	const INT num_states=app_model->get_N()+2;
 	INT i,j;
 
-	if (append_model->get_M() == get_M())
+	if (app_model->get_M() == get_M())
 	{
 		DREAL* n_p=new DREAL[N+num_states];
 		DREAL* n_q=new DREAL[N+num_states];
@@ -5195,14 +5195,14 @@ bool CHMM::append_model(CHMM* append_model, DREAL* cur_out, DREAL* app_out)
 		}
 
 		// append_model
-		for (i=0; i<append_model->get_N(); i++)
+		for (i=0; i<app_model->get_N(); i++)
 		{
-			n_q[i+N+2]=append_model->get_q(i);
+			n_q[i+N+2]=app_model->get_q(i);
 
-			for (j=0; j<append_model->get_N(); j++)
-				n_a[(N+num_states)*(j+N+2)+(i+N+2)]=append_model->get_a(i,j);
-			for (j=0; j<append_model->get_M(); j++)
-				n_b[M*(i+N+2)+j]=append_model->get_b(i,j);
+			for (j=0; j<app_model->get_N(); j++)
+				n_a[(N+num_states)*(j+N+2)+(i+N+2)]=app_model->get_a(i,j);
+			for (j=0; j<app_model->get_M(); j++)
+				n_b[M*(i+N+2)+j]=app_model->get_b(i,j);
 		}
 
 		//initialize the two special states
@@ -5229,7 +5229,7 @@ bool CHMM::append_model(CHMM* append_model, DREAL* cur_out, DREAL* app_out)
 			// the second state is only connected to states of
 			// the append_model (with probab app->p(i))
 			if (i>=N+2)
-				n_a[(N+num_states)*i+(N+1)]=append_model->get_p(i-(N+2));
+				n_a[(N+num_states)*i+(N+1)]=app_model->get_p(i-(N+2));
 		}
 
 		free_state_dependend_arrays();
@@ -5662,10 +5662,10 @@ bool CHMM::permutation_entropy(INT window_width, INT sequence_number)
 				for (j=0; j<histsize; j++)
 					hist[j]=0;
 
-				WORD* p=&obs[i];
+				WORD* ptr=&obs[i];
 				for (j=0; j<window_width; j++)
 				{
-					hist[*p++]++;
+					hist[*ptr++]++;
 				}
 
 				double perm_entropy=0;

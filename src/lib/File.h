@@ -68,7 +68,7 @@ protected:
 	FILE* file;
 	bool status;
 	CHAR task;
-	CHAR* fname;
+	CHAR* filename;
 	EFeatureType expected_type;
 	INT num_header;
 	CHAR fourcc[4];

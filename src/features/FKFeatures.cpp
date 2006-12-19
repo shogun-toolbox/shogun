@@ -75,7 +75,7 @@ double CFKFeatures::deriv_a(double a, INT dimension)
 	} ;
 
 	return deriv ;
-} ;
+}
 
 
 double CFKFeatures::set_opt_a(double a)

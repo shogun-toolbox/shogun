@@ -40,19 +40,16 @@ CHistogramWordKernel::~CHistogramWordKernel()
   delete[] plo_lhs ;
 }
 
-bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CHistogramWordKernel::init(CFeatures* p_l, CFeatures* p_r, bool do_init)
 {
-	bool result=CSimpleKernel<WORD>::init(l,r,do_init);
+	bool status=CSimpleKernel<WORD>::init(p_l,p_r,do_init);
 	initialized = false ;
-	ASSERT(l!=NULL) ;
-	ASSERT(r!=NULL) ;
-
-	CWordFeatures* _lhs=(CWordFeatures*) l;
-	CWordFeatures* _rhs=(CWordFeatures*) r;
-	ASSERT(_lhs) ;
-	ASSERT(_rhs) ;
+	CWordFeatures* l=(CWordFeatures*) p_l;
+	CWordFeatures* r=(CWordFeatures*) p_r;
+	ASSERT(l) ;
+	ASSERT(r) ;
 	
-	CIO::message(M_DEBUG, "init: lhs: %ld   rhs: %ld\n", _lhs, _rhs) ;
+	CIO::message(M_DEBUG, "init: lhs: %ld   rhs: %ld\n", l, r) ;
 	INT i;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
@@ -71,11 +68,11 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	delete[] plo_lhs ;
 	plo_lhs=NULL ;
 	
-	sqrtdiag_lhs= new DREAL[_lhs->get_num_vectors()];
-	ld_mean_lhs = new DREAL[_lhs->get_num_vectors()];
-	plo_lhs     = new DREAL[_lhs->get_num_vectors()];
+	sqrtdiag_lhs= new DREAL[l->get_num_vectors()];
+	ld_mean_lhs = new DREAL[l->get_num_vectors()];
+	plo_lhs     = new DREAL[l->get_num_vectors()];
 	
-	for (i=0; i<_lhs->get_num_vectors(); i++)
+	for (i=0; i<l->get_num_vectors(); i++)
 		sqrtdiag_lhs[i]=1;
 	
 	if (l==r)
@@ -86,12 +83,12 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	}
 	else
 	{
-		sqrtdiag_rhs= new DREAL[_rhs->get_num_vectors()];
-		for (i=0; i<_rhs->get_num_vectors(); i++)
+		sqrtdiag_rhs= new DREAL[r->get_num_vectors()];
+		for (i=0; i<r->get_num_vectors(); i++)
 			sqrtdiag_rhs[i]=1;
 		
-		ld_mean_rhs = new DREAL[_rhs->get_num_vectors()];
-		plo_rhs = new DREAL[_rhs->get_num_vectors()];
+		ld_mean_rhs = new DREAL[r->get_num_vectors()];
+		plo_rhs = new DREAL[r->get_num_vectors()];
 	}
 	
 	DREAL *l_plo_lhs = plo_lhs ;
@@ -105,11 +102,11 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
 	if (do_init)
 	{
-	    INT num_vectors=_lhs->get_num_vectors();
-	    num_symbols=_lhs->get_num_symbols();
-	    num_params1 = _lhs->get_num_features() * _lhs->get_num_symbols() ;
-	    num_params=_lhs->get_num_features() * _lhs->get_num_symbols() +
-			_rhs->get_num_features() * _rhs->get_num_symbols();
+	    INT num_vectors=l->get_num_vectors();
+	    num_symbols=l->get_num_symbols();
+	    num_params1 = l->get_num_features() * l->get_num_symbols() ;
+	    num_params=l->get_num_features() * l->get_num_symbols() +
+			r->get_num_features() * r->get_num_symbols();
 	    if ((!estimate) || (!estimate->check_models()))
 		{
 #ifdef HAVE_PYTHON
@@ -156,11 +153,11 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			INT len;
 			bool freevec;
 			
-			WORD* vec=_lhs->get_feature_vector(i, len, freevec);
+			WORD* vec=l->get_feature_vector(i, len, freevec);
 			
 			mean[0]+=estimate->posterior_log_odds_obsolete(vec, len)/num_vectors;
 			
-			ASSERT(len==_lhs->get_num_features());
+			ASSERT(len==l->get_num_features());
 			
 			for (INT j=0; j<len; j++)
 			{
@@ -169,7 +166,7 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 				mean[idx+num_params1] += estimate->log_derivative_neg_obsolete(vec[j], j)/num_vectors;
 			}
 			
-			((CWordFeatures*) _lhs)->free_feature_vector(vec, i, freevec);
+			l->free_feature_vector(vec, i, freevec);
 		}
 	    
 	    // compute variance
@@ -178,11 +175,11 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			INT len;
 			bool freevec;
 			
-			WORD* vec=_lhs->get_feature_vector(i, len, freevec);
+			WORD* vec=l->get_feature_vector(i, len, freevec);
 			
 			variance[0] += CMath::sq(estimate->posterior_log_odds_obsolete(vec, len)-mean[0])/num_vectors;
 			
-			ASSERT(len==_lhs->get_num_features());
+			ASSERT(len==l->get_num_features());
 			
 			for (INT j=0; j<len; j++)
 			{
@@ -203,7 +200,7 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 					}
 				}
 				
-				((CWordFeatures*) _lhs)->free_feature_vector(vec, i, freevec);
+				l->free_feature_vector(vec, i, freevec);
 			}
 		}
 		
@@ -223,11 +220,11 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	// compute sum of 
 	//result -= estimate->log_derivative_pos(avec[i], i)*mean[a_idx]/variance[a_idx] ;
 	//result -= estimate->log_derivative_neg(avec[i], i)*mean[a_idx+num_params1]/variance[a_idx+num_params1] ;
-	for (i=0; i<_lhs->get_num_vectors(); i++)
+	for (i=0; i<l->get_num_vectors(); i++)
 	{
 	    INT alen ;
 	    bool afree ;
-	    WORD* avec = ((CWordFeatures*) _lhs) -> get_feature_vector(i, alen, afree);
+	    WORD* avec = l->get_feature_vector(i, alen, afree);
 	    DREAL  result=0 ;
 	    for (INT j=0; j<alen; j++)
 	      {
@@ -240,7 +237,7 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	    // precompute posterior-log-odds
 	    plo_lhs[i] = estimate->posterior_log_odds_obsolete(avec, alen)-mean[0] ;
 	    
-	    ((CWordFeatures*) _lhs)->free_feature_vector(avec, i, afree);
+	    l->free_feature_vector(avec, i, afree);
 	  } ;
 	
 	if (ld_mean_lhs!=ld_mean_rhs)
@@ -248,11 +245,11 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	    // compute sum of 
 	    //result -= estimate->log_derivative_pos(bvec[i], i)*mean[b_idx]/variance[b_idx] ;
 	    //result -= estimate->log_derivative_neg(bvec[i], i)*mean[b_idx+num_params1]/variance[b_idx+num_params1] ;	
-	    for (i=0; i < _rhs->get_num_vectors(); i++)
+	    for (i=0; i < r->get_num_vectors(); i++)
 	      {
 		INT alen ;
 		bool afree ;
-		WORD* avec = ((CWordFeatures*) _rhs) -> get_feature_vector(i, alen, afree);
+		WORD* avec = r -> get_feature_vector(i, alen, afree);
 		DREAL  result=0 ;
 		for (INT j=0; j<alen; j++)
 		  {
@@ -265,21 +262,21 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		// precompute posterior-log-odds
 		plo_rhs[i] = estimate->posterior_log_odds_obsolete(avec, alen)-mean[0] ;
 		
-		((CWordFeatures*) _rhs)->free_feature_vector(avec, i, afree);
+		r->free_feature_vector(avec, i, afree);
 	      } ;
 	  } ;
 	
 	//warning hacky
 	//
-	this->lhs=_lhs;
-	this->rhs=_lhs;
+	this->lhs=l;
+	this->rhs=r;
 	plo_lhs = l_plo_lhs ;
 	plo_rhs = l_plo_lhs ;
 	ld_mean_lhs = l_ld_mean_lhs ;
 	ld_mean_rhs = l_ld_mean_lhs ;
 	
 	//compute normalize to 1 values
-	for (i=0; i<_lhs->get_num_vectors(); i++)
+	for (i=0; i<l->get_num_vectors(); i++)
 	{
 		sqrtdiag_lhs[i]=sqrt(compute(i,i));
 		
@@ -292,15 +289,15 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	// compute also the normalization for rhs
 	if (sqrtdiag_lhs!=sqrtdiag_rhs)
 	{
-		this->lhs=_rhs;
-		this->rhs=_rhs;
+		this->lhs=r;
+		this->rhs=r;
 		plo_lhs = l_plo_rhs ;
 		plo_rhs = l_plo_rhs ;
 		ld_mean_lhs = l_ld_mean_rhs ;
 		ld_mean_rhs = l_ld_mean_rhs ;
 
 		//compute normalize to 1 values
-		for (i=0; i<_rhs->get_num_vectors(); i++)
+		for (i=0; i<r->get_num_vectors(); i++)
 		{
 		  sqrtdiag_rhs[i]=sqrt(compute(i,i));
 
@@ -310,15 +307,15 @@ bool CHistogramWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		}
 	}
 
-	this->lhs=_lhs;
-	this->rhs=_rhs;
+	this->lhs=l;
+	this->rhs=r;
 	plo_lhs = l_plo_lhs ;
 	plo_rhs = l_plo_rhs ;
 	ld_mean_lhs = l_ld_mean_lhs ;
 	ld_mean_rhs = l_ld_mean_rhs ;
 
 	initialized = true ;
-	return result;
+	return status;
 }
   
 void CHistogramWordKernel::cleanup()

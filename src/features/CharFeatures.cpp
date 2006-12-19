@@ -27,7 +27,7 @@ CCharFeatures::CCharFeatures(const CCharFeatures & orig) : CSimpleFeatures<CHAR>
 	alphabet=orig.alphabet;
 }
 
-CCharFeatures::CCharFeatures(E_ALPHABET a, CHAR* feature_matrix, INT num_feat, INT num_vec) : CSimpleFeatures<CHAR>(feature_matrix, num_feat, num_vec)
+CCharFeatures::CCharFeatures(E_ALPHABET a, CHAR* fm, INT num_feat, INT num_vec) : CSimpleFeatures<CHAR>(fm, num_feat, num_vec)
 {
 	alphabet=new CAlphabet(a);
 }

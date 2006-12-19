@@ -168,7 +168,7 @@ class CSVMLight:public CSVM
   void   svm_learn();
   
   INT optimize_to_convergence(INT* docs, INT* label, INT totdoc, 
-					   SHRINK_STATE *shrink_state, MODEL *model, INT *inconsistent, 
+					   SHRINK_STATE *shrink_state, INT *inconsistent, 
 					   double *a, double *lin, double *c, TIMING *timing_profile, 
 					   double *maxdiff, INT heldout, INT retrain);
   
@@ -180,7 +180,7 @@ class CSVMLight:public CSVM
 
   void optimize_svm(INT* docs, INT* label,
 		  INT *exclude_from_eq_const, double eq_target,
-		  INT *chosen, INT *active2dnum, MODEL *model, 
+		  INT *chosen, INT *active2dnum,
 		  INT totdoc, INT *working2dnum, INT varnum, 
 		  double *a, double *lin, double *c, DREAL *aicache, QP *qp, 
 		  double *epsilon_crit_target);
@@ -188,16 +188,16 @@ class CSVMLight:public CSVM
   void compute_matrices_for_optimization(INT* docs, INT* label, 
 										 INT *exclude_from_eq_const, double eq_target,
 										 INT *chosen, INT *active2dnum, 
-										 INT *key, MODEL *model, double *a, double *lin, double *c, 
+										 INT *key, double *a, double *lin, double *c, 
 										 INT varnum, INT totdoc, DREAL *aicache, QP *qp);
   void compute_matrices_for_optimization_parallel(INT* docs, INT* label, 
 												  INT *exclude_from_eq_const, double eq_target,
 												  INT *chosen, INT *active2dnum, 
-												  INT *key, MODEL *model, double *a, double *lin, double *c, 
+												  INT *key, double *a, double *lin, double *c, 
 												  INT varnum, INT totdoc, DREAL *aicache, QP *qp);
   
-  INT   calculate_svm_model(INT* docs, INT *label,double *lin, double *a, double* a_old, double *c, INT *working2dnum, INT *active2dnum, MODEL *model);
-  INT   check_optimality(MODEL *model, INT *label, double *a, double* lin, double *c,
+  INT   calculate_svm_model(INT* docs, INT *label,double *lin, double *a, double* a_old, double *c, INT *working2dnum, INT *active2dnum);
+  INT   check_optimality(INT *label, double *a, double* lin, double *c,
 			  INT totdoc, double *maxdiff, double epsilon_crit_org,
 			  INT *misclassified, INT *inconsistent,INT* active2dnum, 
 			  INT *last_suboptimal_at, INT iteration) ;
@@ -236,7 +236,7 @@ class CSVMLight:public CSVM
   virtual void   reactivate_inactive_examples(INT *label,double *a,SHRINK_STATE *shrink_state,
 				      double *lin, double *c, INT totdoc,INT iteration,
 				      INT *inconsistent,
-				      INT *docs,MODEL *model,DREAL *aicache,
+				      INT *docs,DREAL *aicache,
 				      double* maxdiff) ;
 protected:
    inline virtual DREAL compute_kernel(INT i, INT j)

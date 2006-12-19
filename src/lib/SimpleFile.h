@@ -23,13 +23,13 @@ public:
 	CSimpleFile(CHAR* fname, FILE* f)
 	{
 		file=f;
-		this->fname=strdup(fname);
-		status = (file!=NULL && fname!=NULL);
+		filename=strdup(fname);
+		status = (file!=NULL && filename!=NULL);
 	}
 
 	~CSimpleFile()
 	{
-		free(fname);
+		free(filename);
 	}
 
 	//num is the number of read elements
@@ -85,7 +85,7 @@ public:
 						CIO::message(M_ERROR, "only %ld of %ld entries read. io error\n", (LONG) num_read, num);
 				}
 				else
-					CIO::message(M_ERROR, "failed to allocate memory while trying to read %ld entries from file \"s\"\n", (LONG) num, fname);
+					CIO::message(M_ERROR, "failed to allocate memory while trying to read %ld entries from file \"s\"\n", (LONG) num, filename);
 			}
 			return target;
 		}
@@ -124,6 +124,6 @@ protected:
 	FILE* file;
 	bool status;
 	CHAR task;
-	CHAR* fname;
+	CHAR* filename;
 };
 #endif

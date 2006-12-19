@@ -716,7 +716,7 @@ int QPproblem::Preprocess0(int *aux, int *sv)
 /******************************************************************************/
 /*** Optional preprocessing: block parallel distribution                    ***/
 /******************************************************************************/
-int QPproblem::Preprocess1(sKernel* KER, int *aux, int *sv)
+int QPproblem::Preprocess1(sKernel* kernel, int *aux, int *sv)
 {
   int    s;    // elements owned by the processor
   int    sl;   // elements of the n-1 subproblems
@@ -779,7 +779,7 @@ int QPproblem::Preprocess1(sKernel* KER, int *aux, int *sv)
               for (k = j; k < ll; k++)
                   sp_D[k*sl + j] = sp_D[j*sl + k]
                                  = y[aux[j+off]] * y[aux[k+off]]
-                                   * (float)KER->Get(aux[j+off], aux[k+off]);
+                                   * (float)kernel->Get(aux[j+off], aux[k+off]);
           }
 
           memset(sp_alpha, 0, sl*sizeof(double));
@@ -800,7 +800,7 @@ int QPproblem::Preprocess1(sKernel* KER, int *aux, int *sv)
           p2.verbosity      = 0;
           p2.delta          = delta * 10.0;
           p2.PreprocessMode = 0;
-          KER->KernelEvaluations += p2.gpdtsolve(sp_alpha);
+          kernel->KernelEvaluations += p2.gpdtsolve(sp_alpha);
       }
 
       for (j = 0; j < ll; j++)
@@ -1399,53 +1399,6 @@ double QPproblem::gpdtsolve(double *solution)
   objective_value=fval;
   return aux;
 }
-
-/******************************************************************************/
-/*** Write out the computed solution                                        ***/
-/******************************************************************************/
-void QPproblem::write_solution(FILE *fp, double *sol)
-{
-  register int i, j;
-  int      sv_number, bsv;
-
-  bsv = sv_number = 0;
-  for (i = 0; i < ell; i++)
-      if (sol[i] > DELTAsv)
-      {
-          sv_number++;
-          if (sol[i] > (c_const - DELTAsv)) bsv++;
-      }
-
-  /*** write out to model file the same information as SVMlight ***
-   *   This is intended to give the user the chance to use the    *
-   *   SVMlight classification module 'svm_classify' to make      *
-   *   predictions.                                               */
-  fprintf(fp, "SVM-light Version V6.01\n");
-  fprintf(fp, "%d # kernel type\n", ker_type);
-  fprintf(fp, "%d # kernel parameter -d\n", (int)KER->degree);
-  fprintf(fp, "%.8g # kernel parameter -g\n", KER->sigma);
-  fprintf(fp, "%.8g # kernel parameter -s\n", KER->norm);
-  fprintf(fp, "%.8g # kernel parameter -r\n", KER->c_poly);
-  fprintf(fp, "empty# kernel parameter -u\n");
-  fprintf(fp, "%d # highest feature index\n", dim-1);
-  fprintf(fp, "%d # number of training documents\n", ell);
-  fprintf(fp, "%d # number of support vectors plus 1\n", sv_number + 1);
-  fprintf(fp, "%.8g # threshold b, each following line is a SV", -bee);
-  fprintf(fp, " (starting with alpha*y)\n");
-
-  for (i = 0; i < ell; i++)
-      if (sol[i] > DELTAsv)
-      {
-          fprintf(fp, "%.32g", (double)(sol[i]*y[i]));
-          for (j = 0; j < KER->lx[i]; j++)
-              fprintf(fp, " %d:%.8g", KER->ix[i][j], (double)KER->x[i][j]);
-          fprintf(fp, "\n");
-      }
-  output_message( "- SV  = %d\n", sv_number);
-  output_message( "- BSV = %d\n", bsv);
-  output_message( "- Threshold b = %.8g\n", -bee);
-}
-
 
 /******************************************************************************/
 /*** Quick sort for integer vectors                                         ***/

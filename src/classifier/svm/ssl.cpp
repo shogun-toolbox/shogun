@@ -145,28 +145,28 @@ int CGLS(const struct data *Data,
 		}       
 		gamma = omega1/(lambda*omega_p + omega_q);    
 		inv_omega2 = 1/omega1;     
-		for(int i = n ; i-- ;)
+		for(i = n ; i-- ;)
 		{
 			r[i] = 0.0;
 			beta[i] += gamma*p[i];
 		} 
 		omega_z=0.0;
-		for(int i = active ; i-- ;)
+		for(i = active ; i-- ;)
 		{
 			ii=J[i];
 			o[ii] += gamma*q[i];
 			z[i] -= gamma*C[ii]*q[i];
 			omega_z+=z[i]*z[i];
 		} 
-		for(register int j=0; j < active; j++)
+		for(j=0; j < active; j++)
 		{
 			ii=J[j];
 			t=z[j];
-			for(register int i=row[ii]; i < row[ii+1]; i++)
+			for(i=row[ii]; i < row[ii+1]; i++)
 				r[col[i]]+=val[i]*t;
 		}
 		omega1 = 0.0;
-		for(int i = n ; i-- ;)
+		for(i = n ; i-- ;)
 		{
 			r[i] -= lambda*beta[i];
 			omega1 += r[i]*r[i];
@@ -179,7 +179,7 @@ int CGLS(const struct data *Data,
 		}
 		omega_p=0.0;
 		scale=omega1*inv_omega2;
-		for(int i = n ; i-- ;)
+		for(i = n ; i-- ;)
 		{
 			p[i] = r[i] + p[i]*scale;
 			omega_p += p[i]*p[i]; 
@@ -658,6 +658,7 @@ int optimize_w(const struct data *Data,
 		struct vector_double *Outputs,
 		int ini)
 { 
+	int i,j;
 	double *val = Data->val;
 	int *row = Data->rowptr;
 	int *col = Data->colind;
@@ -686,14 +687,15 @@ int optimize_w(const struct data *Data,
 		Options->epsilon=BIG_EPSILON;}
 	else {epsilon = Options->epsilon;}  
 
-	for(int i=0;i<n;i++) F+=w[i]*w[i];
+	for(i=0;i<n;i++) F+=w[i]*w[i];
 	F=lambda*F;        
 	int active=0;
 	int inactive=m-1; // l-1      
-	int j = 0;
 	double temp1;
 	double temp2;
-	for(int i=0; i<m ; i++)
+
+	j = 0;
+	for(i=0; i<m ; i++)
 	{ 
 		o[i]=Outputs->vec[i];
 		if(Data->Y[i]==0.0)
@@ -768,34 +770,35 @@ int optimize_w(const struct data *Data,
 	double delta=0.0;
 	double t=0.0;
 	int ii = 0;
+
 	while(iter<MFNITERMAX)
 	{
 		iter++;
 		CIO::message(M_DEBUG, "L2_SVM_MFN Iteration# %d (%d active examples,  objective_value = %f)", iter, active, F);
-		for(int i=n; i-- ;) 
+		for(i=n; i-- ;) 
 			w_bar[i]=w[i];
 
-		for(int i=m+u; i-- ;)  
+		for(i=m+u; i-- ;)  
 			o_bar[i]=o[i];     
 		opt=CGLS(Data,Options,ActiveSubset,Weights_bar,Outputs_bar);
-		for(register int i=active; i < m; i++) 
+		for(i=active; i < m; i++) 
 		{
 			ii=ActiveSubset->vec[i];   
 			t=0.0;
-			for(register int j=row[ii]; j < row[ii+1]; j++)
+			for(j=row[ii]; j < row[ii+1]; j++)
 				t+=val[j]*w_bar[col[j]];
 			o_bar[ii]=t;
 		}
 		// make o_bar consistent in the bottom half      
-		int j=0;
-		for(int i=0; i<m;i++)
+		j=0;
+		for(i=0; i<m;i++)
 		{
 			if(labeled_indices[i]==0)
 			{o_bar[m+j]=o_bar[i]; j++;};
 		}
 		if(ini==0) {Options->cgitermax=CGITERMAX; ini=1;};
 		opt2=1;
-		for(int i=0; i < m ;i++)
+		for(i=0; i < m ;i++)
 		{ 
 			ii=ActiveSubset->vec[i];
 			if(i<active)
@@ -825,11 +828,11 @@ int optimize_w(const struct data *Data,
 			}
 			else
 			{
-				for(int i=n; i-- ;) 
+				for(i=n; i-- ;) 
 					w[i]=w_bar[i];      
-				for(int i=m; i-- ;)
+				for(i=m; i-- ;)
 					Outputs->vec[i]=o_bar[i]; 
-				for(int i=m; i-- ;)
+				for(i=m; i-- ;)
 				{
 					if(labeled_indices[i]==0)
 						Data->Y[i]=0.0;
@@ -853,12 +856,12 @@ int optimize_w(const struct data *Data,
 		CIO::message(M_DEBUG, "LINE_SEARCH delta = %f", delta);
 		F_old=F;
 		F=0.0;
-		for(int i=0;i<n;i++) {w[i]+=delta*(w_bar[i]-w[i]);  F+=w[i]*w[i];}
+		for(i=0;i<n;i++) {w[i]+=delta*(w_bar[i]-w[i]);  F+=w[i]*w[i];}
 		F=lambda*F;
 		j=0;
 		active=0;
 		inactive=m-1;
-		for(int i=0; i<m ; i++)
+		for(i=0; i<m ; i++)
 		{ 
 			o[i]+=delta*(o_bar[i]-o[i]);
 			if(labeled_indices[i]==0)
@@ -913,7 +916,7 @@ int optimize_w(const struct data *Data,
 		if(CMath::abs(F-F_old)<EPSILON)
 			break;
 	}
-	for(int i=m; i-- ;)
+	for(i=m; i-- ;)
 	{
 		Outputs->vec[i]=o[i];
 		if(labeled_indices[i]==0)

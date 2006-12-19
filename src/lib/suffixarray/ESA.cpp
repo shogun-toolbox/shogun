@@ -257,27 +257,27 @@ ESA::ConstructChildTable(){
       UInt32 child_count = 0;
       
       while(ptr < j){
-        UInt32 first = j;
-        UInt32 last = j;
+        UInt32 n_first = j;
+        UInt32 n_last = j;
         
         // Get next child to process
         if(n_child - child_count){
-          first = lastInterval->child[child_count]->lb;
-          last = lastInterval->child[child_count]->rb;
+          n_first = lastInterval->child[child_count]->lb;
+          n_last = lastInterval->child[child_count]->rb;
           child_count++;
         }
         
         // Eat away singleton intervals
-        while(ptr < first){
+        while(ptr < n_first){
 					childtab[ptr] = ptr + 1;
           ptr++;
         }
       
         // Handle an child interval and make appropriate entries in
         // child table
-        ptr = last + 1;
-				if(last < j){
-					childtab[first] = ptr;
+        ptr = n_last + 1;
+				if(n_last < j){
+					childtab[n_first] = ptr;
         }
 				
       }
@@ -862,7 +862,7 @@ ESA::ConstructSuflink()
 				ASSERT(!(sl_i == i && sl_j == j));
 
 				//' Store suflink of [i..j]
-				UInt32 idx=0;
+				idx=0;
 				ec = childtab.l_idx(i, j, idx); CHECKERROR(ec);
 				
 				suflink[idx+idx] = sl_i;

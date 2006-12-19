@@ -329,19 +329,19 @@ void Solver::reconstruct_gradient()
 		}
 }
 
-void Solver::Solve(int l, const QMatrix& Q, const double *b_, const schar *y_,
-		   double *alpha_, double Cp, double Cn, double eps,
-		   SolutionInfo* si, int shrinking)
+void Solver::Solve(int p_l, const QMatrix& p_Q, const double *p_b, const schar *p_y,
+		   double *p_alpha, double p_Cp, double p_Cn, double p_eps,
+		   SolutionInfo* p_si, int shrinking)
 {
-	this->l = l;
-	this->Q = &Q;
-	QD=Q.get_QD();
-	clone(b, b_,l);
-	clone(y, y_,l);
-	clone(alpha,alpha_,l);
-	this->Cp = Cp;
-	this->Cn = Cn;
-	this->eps = eps;
+	this->l = p_l;
+	this->Q = &p_Q;
+	QD=Q->get_QD();
+	clone(b, p_b,l);
+	clone(y, p_y,l);
+	clone(alpha,p_alpha,l);
+	this->Cp = p_Cp;
+	this->Cn = p_Cn;
+	this->eps = p_eps;
 	unshrinked = false;
 
 	// initialize alpha_status
@@ -372,7 +372,7 @@ void Solver::Solve(int l, const QMatrix& Q, const double *b_, const schar *y_,
 		for(i=0;i<l;i++)
 			if(!is_lower_bound(i))
 			{
-				const Qfloat *Q_i = Q.get_Q(i,l);
+				const Qfloat *Q_i = Q->get_Q(i,l);
 				double alpha_i = alpha[i];
 				int j;
 				for(j=0;j<l;j++)
@@ -417,8 +417,8 @@ void Solver::Solve(int l, const QMatrix& Q, const double *b_, const schar *y_,
 
 		// update alpha[i] and alpha[j], handle bounds carefully
 		
-		const Qfloat *Q_i = Q.get_Q(i,active_size);
-		const Qfloat *Q_j = Q.get_Q(j,active_size);
+		const Qfloat *Q_i = Q->get_Q(i,active_size);
+		const Qfloat *Q_j = Q->get_Q(j,active_size);
 
 		double C_i = get_C(i);
 		double C_j = get_C(j);
@@ -533,7 +533,7 @@ void Solver::Solve(int l, const QMatrix& Q, const double *b_, const schar *y_,
 			int k;
 			if(ui != is_upper_bound(i))
 			{
-				Q_i = Q.get_Q(i,l);
+				Q_i = Q->get_Q(i,l);
 				if(ui)
 					for(k=0;k<l;k++)
 						G_bar[k] -= C_i * Q_i[k];
@@ -544,7 +544,7 @@ void Solver::Solve(int l, const QMatrix& Q, const double *b_, const schar *y_,
 
 			if(uj != is_upper_bound(j))
 			{
-				Q_j = Q.get_Q(j,l);
+				Q_j = Q->get_Q(j,l);
 				if(uj)
 					for(k=0;k<l;k++)
 						G_bar[k] -= C_j * Q_j[k];
@@ -557,7 +557,7 @@ void Solver::Solve(int l, const QMatrix& Q, const double *b_, const schar *y_,
 
 	// calculate rho
 
-	si->rho = calculate_rho();
+	p_si->rho = calculate_rho();
 
 	// calculate objective value
 	{
@@ -566,25 +566,17 @@ void Solver::Solve(int l, const QMatrix& Q, const double *b_, const schar *y_,
 		for(i=0;i<l;i++)
 			v += alpha[i] * (G[i] + b[i]);
 
-		si->obj = v/2;
+		p_si->obj = v/2;
 	}
 
 	// put back the solution
 	{
 		for(int i=0;i<l;i++)
-			alpha_[active_set[i]] = alpha[i];
+			p_alpha[active_set[i]] = alpha[i];
 	}
 
-	// juggle everything back
-	/*{
-		for(int i=0;i<l;i++)
-			while(active_set[i] != i)
-				swap_index(i,active_set[i]);
-				// or Q.swap_index(i,active_set[i]);
-	}*/
-
-	si->upper_bound_p = Cp;
-	si->upper_bound_n = Cn;
+	p_si->upper_bound_p = Cp;
+	p_si->upper_bound_n = Cn;
 
 	CIO::message(M_INFO, "\noptimization finished, #iter = %d\n",iter);
 
@@ -872,12 +864,12 @@ class Solver_NU : public Solver
 {
 public:
 	Solver_NU() {}
-	void Solve(int l, const QMatrix& Q, const double *b, const schar *y,
-		   double *alpha, double Cp, double Cn, double eps,
-		   SolutionInfo* si, int shrinking)
+	void Solve(int p_l, const QMatrix& p_Q, const double *p_b, const schar *p_y,
+		   double* p_alpha, double p_Cp, double p_Cn, double p_eps,
+		   SolutionInfo* p_si, int shrinking)
 	{
-		this->si = si;
-		Solver::Solve(l,Q,b,y,alpha,Cp,Cn,eps,si,shrinking);
+		this->si = p_si;
+		Solver::Solve(p_l,p_Q,p_b,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
 	}
 private:
 	SolutionInfo *si;

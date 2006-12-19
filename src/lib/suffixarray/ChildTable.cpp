@@ -107,10 +107,10 @@ ChildTable::down(const UInt32 &idx, UInt32 &val){
 ErrorCode 
 ChildTable::l_idx(const UInt32 &i, const UInt32 &j, UInt32 &idx){
   
-	UInt32 up = (*this)[j]; 
+	UInt32 u = (*this)[j]; 
   
-	if(i < up && up <= j){
-		idx = up;
+	if(i < u && u <= j){
+		idx = u;
   }else {
 		idx = (*this)[i]; 
 	}									

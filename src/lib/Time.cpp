@@ -36,10 +36,10 @@ clock_t CTime::cur_runtime(bool verbose)
 
 clock_t CTime::cur_runtime_diff(bool verbose)
 {
-	clock_t cur_time_diff=clock()-start_runtime;
+	clock_t diff=clock()-start_runtime;
 	if (verbose)
-		CIO::message(M_INFO, "current diff %ld\n", (LONG) cur_time_diff);
-	return cur_time_diff;
+		CIO::message(M_INFO, "current diff %ld\n", (LONG) diff);
+	return diff;
 }
 
 double CTime::cur_runtime_diff_sec(bool verbose)

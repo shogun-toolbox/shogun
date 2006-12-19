@@ -30,23 +30,16 @@ CSalzbergWordKernel::~CSalzbergWordKernel()
 	cleanup();
 }
 
-bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r, bool do_init)
 {
-	bool result=CSimpleKernel<WORD>::init(l,r,do_init);
+	bool status=CSimpleKernel<WORD>::init(p_l,p_r,do_init);
 	initialized = false ;
-	ASSERT(l!=NULL) ;
-	ASSERT(r!=NULL) ;
+	CWordFeatures* l=(CWordFeatures*) p_l;
+	CWordFeatures* r=(CWordFeatures*) p_r;
+	ASSERT(l);
+	ASSERT(r);
 	
-	//  fprintf(stderr, "start\n") ;
-
-	CWordFeatures* lhs=(CWordFeatures*) l;
-	CWordFeatures* rhs=(CWordFeatures*) r;
-	ASSERT(lhs) ;
-	ASSERT(rhs) ;
-	
-	CIO::message(M_INFO, "init: lhs: %ld   rhs: %ld\n", lhs, rhs) ;
 	INT i;
-	
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
 	sqrtdiag_rhs=NULL ;
@@ -58,10 +51,10 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	delete[] ld_mean_lhs ;
 	ld_mean_lhs=NULL ;
 	
-	sqrtdiag_lhs= new DREAL[lhs->get_num_vectors()];
-	ld_mean_lhs = new DREAL[lhs->get_num_vectors()];
+	sqrtdiag_lhs= new DREAL[l->get_num_vectors()];
+	ld_mean_lhs = new DREAL[l->get_num_vectors()];
 	
-	for (i=0; i<lhs->get_num_vectors(); i++)
+	for (i=0; i<l->get_num_vectors(); i++)
 		sqrtdiag_lhs[i]=1;
 	
 	if (l==r)
@@ -87,11 +80,11 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
 	if (do_init)
 	{
-	    INT num_vectors=lhs->get_num_vectors();
-	    num_symbols=lhs->get_num_symbols();
-	    num_params = lhs->get_num_features() * lhs->get_num_symbols() ;
-	    int num_params2=lhs->get_num_features() * lhs->get_num_symbols() +
-			rhs->get_num_features() * rhs->get_num_symbols();
+	    INT num_vectors=l->get_num_vectors();
+	    num_symbols=l->get_num_symbols();
+	    num_params = l->get_num_features() * l->get_num_symbols() ;
+	    int num_params2=l->get_num_features() * l->get_num_symbols() +
+			r->get_num_features() * r->get_num_symbols();
 	    if ((!estimate) || (!estimate->check_models()))
 		{
 #ifdef HAVE_PYTHON
@@ -135,9 +128,9 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			INT len;
 			bool freevec;
 			
-			WORD* vec=lhs->get_feature_vector(i, len, freevec);
+			WORD* vec=l->get_feature_vector(i, len, freevec);
 			
-			ASSERT(len==lhs->get_num_features());
+			ASSERT(len==l->get_num_features());
 			
 			for (INT j=0; j<len; j++)
 			{
@@ -149,7 +142,7 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 				mean[idx]   += value/num_vectors ;
 			}
 			
-			((CWordFeatures*) lhs)->free_feature_vector(vec, i, freevec);
+			l->free_feature_vector(vec, i, freevec);
 		}
 	    
 	    // compute variance
@@ -158,9 +151,9 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			INT len;
 			bool freevec;
 			
-			WORD* vec=lhs->get_feature_vector(i, len, freevec);
+			WORD* vec=l->get_feature_vector(i, len, freevec);
 			
-			ASSERT(len==lhs->get_num_features());
+			ASSERT(len==l->get_num_features());
 			
 			for (INT j=0; j<len; j++)
 			{
@@ -179,7 +172,7 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 					}
 				}
 				
-				((CWordFeatures*) lhs)->free_feature_vector(vec, i, freevec);
+				l->free_feature_vector(vec, i, freevec);
 			}
 		}
 		
@@ -199,11 +192,11 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	// compute sum of 
 	//result -= feature*mean[a_idx]/variance[a_idx] ;
 
-	for (i=0; i<lhs->get_num_vectors(); i++)
+	for (i=0; i<l->get_num_vectors(); i++)
 	{
 	    INT alen ;
 	    bool afree ;
-	    WORD* avec = ((CWordFeatures*) lhs) -> get_feature_vector(i, alen, afree);
+	    WORD* avec = l -> get_feature_vector(i, alen, afree);
 	    DREAL  result=0 ;
 	    for (INT j=0; j<alen; j++)
 		{
@@ -217,18 +210,18 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		}
 	    ld_mean_lhs[i]=result ;
 		
-	    ((CWordFeatures*) lhs)->free_feature_vector(avec, i, afree);
-	} ;
+	    l->free_feature_vector(avec, i, afree);
+	}
 	
 	if (ld_mean_lhs!=ld_mean_rhs)
 	  {
 	    // compute sum of 
 	    //result -= feature*mean[b_idx]/variance[b_idx] ;
-	    for (i=0; i<rhs->get_num_vectors(); i++)
+	    for (i=0; i<r->get_num_vectors(); i++)
 	      {
 			  INT alen ;
 			  bool afree ;
-			  WORD* avec = ((CWordFeatures*) rhs) -> get_feature_vector(i, alen, afree);
+			  WORD* avec = r -> get_feature_vector(i, alen, afree);
 			  DREAL  result=0 ;
 			  for (INT j=0; j<alen; j++)
 			  {
@@ -243,14 +236,14 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			  ld_mean_rhs[i]=result ;
 			  
 			  // precompute posterior-log-odds
-			  ((CWordFeatures*) rhs)->free_feature_vector(avec, i, afree);
+			  r->free_feature_vector(avec, i, afree);
 	      } ;
 	  } ;
 	
 	//warning hacky
 	//
-	this->lhs=lhs;
-	this->rhs=lhs;
+	this->lhs=l;
+	this->rhs=l;
 	ld_mean_lhs = l_ld_mean_lhs ;
 	ld_mean_rhs = l_ld_mean_lhs ;
 	
@@ -268,8 +261,8 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	// compute also the normalization for rhs
 	if (sqrtdiag_lhs!=sqrtdiag_rhs)
 	{
-		this->lhs=rhs;
-		this->rhs=rhs;
+		this->lhs=r;
+		this->rhs=r;
 		ld_mean_lhs = l_ld_mean_rhs ;
 		ld_mean_rhs = l_ld_mean_rhs ;
 
@@ -284,13 +277,13 @@ bool CSalzbergWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		}
 	}
 
-	this->lhs=lhs;
-	this->rhs=rhs;
+	this->lhs=l;
+	this->rhs=r;
 	ld_mean_lhs = l_ld_mean_lhs ;
 	ld_mean_rhs = l_ld_mean_rhs ;
 
 	initialized = true ;
-	return result;
+	return status;
 }
   
 void CSalzbergWordKernel::cleanup()

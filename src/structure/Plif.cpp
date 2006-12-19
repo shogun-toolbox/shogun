@@ -83,19 +83,19 @@ void CPlif::init_penalty_struct_cache()
 	if (max_value<=0)
 		return ;
 
-	DREAL* cache=new DREAL[ ((INT) max_value) + 2] ;
+	DREAL* local_cache=new DREAL[ ((INT) max_value) + 2] ;
 	
-	if (cache)
+	if (local_cache)
 	{
 		for (INT i=0; i<=max_value; i++)
 		{
 			if (i<min_value)
-				cache[i] = -CMath::INFTY ;
+				local_cache[i] = -CMath::INFTY ;
 			else
-				cache[i] = lookup_penalty(i, NULL) ;
+				local_cache[i] = lookup_penalty(i, NULL) ;
 		}
 	}
-	this->cache=cache ;
+	this->cache=local_cache ;
 }
 
 	

@@ -37,13 +37,13 @@ bool CSpectrumKernel::init(CFeatures* p_lhs, CFeatures* p_rhs, bool force)
 	LONG offs=0;
 	for (int i=0; i<((CStringFeatures<CHAR>*) p_lhs)->get_num_vectors(); i++)
 	{
-		INT len=0;
-		CHAR* str=((CStringFeatures<CHAR>*) p_lhs)->get_feature_vector(i,len);
+		INT vlen=0;
+		CHAR* str=((CStringFeatures<CHAR>*) p_lhs)->get_feature_vector(i,vlen);
 
-		ASSERT(len>0);
-		memcpy(text+offs, str, len);
-		text[len]='\n';
-		offs+=len+1;
+		ASSERT(vlen>0);
+		memcpy(text+offs, str, vlen);
+		text[vlen]='\n';
+		offs+=vlen+1;
 	}
 
 	//' Build ESA. 

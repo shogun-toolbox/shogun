@@ -405,7 +405,7 @@ void CSVRLight::svr_learn()
 	/* train the svm */
 		CIO::message(M_DEBUG, "num_train: %d\n", totdoc);
   iterations=optimize_to_convergence(docs,label,totdoc,
-                     &shrink_state,model,inconsistent,a,lin,
+                     &shrink_state,inconsistent,a,lin,
                      c,&timing_profile,
                      &maxdiff,(INT)-1,
                      (INT)1);
@@ -487,11 +487,10 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 											INT totdoc,
 											double *lin, DREAL *aicache, double* c)
 {
-	CKernel* k      = get_kernel();
 	INT num         = totdoc;
 	INT num_weights = -1;
-	INT num_kernels = k->get_num_subkernels() ;
-	const DREAL* w   = k->get_subkernel_weights(num_weights);
+	INT num_kernels = get_kernel()->get_num_subkernels() ;
+	const DREAL* w  = get_kernel()->get_subkernel_weights(num_weights);
 
 	ASSERT(num_weights==num_kernels) ;
 	DREAL* sumw = new DREAL[num_kernels];
@@ -546,6 +545,8 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 	}
 	else // hope the kernel is fast ...
 	{
+		CKernel* k= get_kernel();
+
 		DREAL* w_backup = new DREAL[num_kernels] ;
 		DREAL* w1 = new DREAL[num_kernels] ;
 		
@@ -578,7 +579,7 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 		delete[] w1 ;
 	}
 	
-	DREAL objective=0;
+	DREAL mkl_objective=0;
 #ifdef HAVE_LAPACK
 	DREAL *alphay  = buffer_num ;
 	DREAL sumalpha = 0 ;
@@ -596,20 +597,20 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 				0.5, W, num_kernels, alphay, 1, 1.0, sumw, 1) ;
 	
 	for (int i=0; i<num_kernels; i++)
-		objective+=w[i]*sumw[i] ;
+		mkl_objective+=w[i]*sumw[i] ;
 #else
 	for (int d=0; d<num_kernels; d++)
 	{
 		sumw[d]=0;
 		for(int i=0; i<num; i++)
 			sumw[d] += a[i]*(learn_parm->eps + label[i]*(0.5*W[i*num_kernels+d]-c[i]));
-		objective   += w[d]*sumw[d];
+		mkl_objective   += w[d]*sumw[d];
 	}
 #endif
 	
 	count++ ;
 #ifdef USE_CPLEX			
-	w_gap = CMath::abs(1-rho/objective) ;
+	w_gap = CMath::abs(1-rho/mkl_objective) ;
 	
 	if ((w_gap >= 0.9999*get_weight_epsilon()))
 	{
@@ -812,7 +813,7 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 				// set weights, store new rho and compute new w gap
 				k->set_subkernel_weights(x, num_kernels) ;
 				rho = -x[2*num_kernels] ;
-				w_gap = CMath::abs(1-rho/objective) ;
+				w_gap = CMath::abs(1-rho/mkl_objective) ;
 				
 				delete[] pi ;
 				delete[] slack ;
@@ -823,7 +824,7 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 	}
 #endif
 	
-	const DREAL* w_new   = k->get_subkernel_weights(num_weights);
+	const DREAL* w_new   = get_kernel()->get_subkernel_weights(num_weights);
 	// update lin
 #ifdef HAVE_LAPACK
 	cblas_dgemv(CblasColMajor,
@@ -847,7 +848,7 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 		INT start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
 	}
 	
 	delete[] sumw;
@@ -901,7 +902,7 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 		delete[] w_backup ;
 		delete[] w1 ;
 	}
-	DREAL objective=0;
+	DREAL mkl_objective=0;
 #ifdef HAVE_LAPACK
 	DREAL sumalpha = 0 ;
 	
@@ -915,20 +916,20 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 				0.5, W, num_kernels, a, 1, 1.0, sumw, 1) ;
 	
 	for (int i=0; i<num_kernels; i++)
-		objective+=w[i]*sumw[i] ;
+		mkl_objective+=w[i]*sumw[i] ;
 #else
 	for (int d=0; d<num_kernels; d++)
 	{
 		sumw[d]=0;
 		for(int i=0; i<num; i++)
 			sumw[d] += a[i]*(learn_parm->eps + label[i]*(0.5*W[i*num_kernels+d]-c[i]));
-		objective   += w[d]*sumw[d];
+		mkl_objective   += w[d]*sumw[d];
 	}
 #endif
 	
 	count++ ;
 #ifdef USE_CPLEX			
-	w_gap = CMath::abs(1-rho/objective) ;
+	w_gap = CMath::abs(1-rho/mkl_objective) ;
 
 	if ((w_gap >= 0.9999*get_weight_epsilon()))// && (mymaxdiff < prev_mymaxdiff/2.0))
 	{
@@ -1128,7 +1129,7 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 				// set weights, store new rho and compute new w gap
 				k->set_subkernel_weights(x, num_kernels) ;
 				rho = -x[2*num_kernels] ;
-				w_gap = CMath::abs(1-rho/objective) ;
+				w_gap = CMath::abs(1-rho/mkl_objective) ;
 				
 				delete[] pi ;
 				delete[] slack ;
@@ -1162,7 +1163,7 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 		INT start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
 	}
 	
 	delete[] sumw;
@@ -1289,7 +1290,6 @@ void CSVRLight::reactivate_inactive_examples(INT* label,
 				  INT iteration, 
 				  INT *inconsistent, 
 				  INT* docs, 
-				  MODEL *model, 
 				  DREAL *aicache, 
 				  double *maxdiff)
      /* Make all variables active again which had been removed by

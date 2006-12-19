@@ -61,7 +61,7 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 			INT len ; bool free ;
 			DREAL* feature=f->get_feature_vector(i, len, free) ;
 
-			for (INT j=0; j<len; j++)
+			for (j=0; j<len; j++)
 				mean[j]+=feature[j];
 
 			f->free_feature_vector(feature, i, free) ;
@@ -76,7 +76,7 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 			INT len ; bool free ;
 			DREAL* feature=f->get_feature_vector(i, len, free) ;
 
-			for (INT j=0; j<num_features; j++)
+			for (j=0; j<num_features; j++)
 				var[j]+=(mean[j]-feature[j])*(mean[j]-feature[j]) ;
 
 			f->free_feature_vector(feature, i, free) ;

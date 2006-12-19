@@ -45,7 +45,7 @@ class CSVRLight:public CSVMLight
   virtual void   reactivate_inactive_examples(INT *label,double *a,SHRINK_STATE *shrink_state,
 				      double *lin, double *c, INT totdoc,INT iteration,
 				      INT *inconsistent,
-				      INT *docs,MODEL *model,DREAL *aicache,
+				      INT *docs,DREAL *aicache,
 				      double* maxdiff) ;
 protected:
 static void* update_linear_component_linadd_helper(void *params);
