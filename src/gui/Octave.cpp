@@ -10,7 +10,7 @@
 
 #include "lib/config.h"
 
-#ifdef HAVE_OCTAVE
+#if defined(HAVE_OCTAVE) && !defined(HAVE_SWIG)
 #include <stdio.h>
 #include <string.h>
 
@@ -604,4 +604,4 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 
 	return plhs;
 }
-#endif
+#endif //HAVE_SWIG

@@ -8,7 +8,10 @@
  * Written (W) 1999-2006 Gunnar Raetsch
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
+ 
+#include "lib/config.h"
 
+#ifndef HAVE_SWIG
 #include "guilib/GUISVM.h"
 #include "gui/GUI.h"
 #include "lib/io.h"
@@ -607,3 +610,4 @@ bool CGUISVM::classify_example(INT idx, DREAL &result)
 	result=svm->classify_example(idx);
 	return true ;
 }
+#endif

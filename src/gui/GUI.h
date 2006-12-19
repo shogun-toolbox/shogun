@@ -12,6 +12,9 @@
 #ifndef __GUI__H
 #define __GUI__H
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "guilib/GUIHMM.h"
 #include "guilib/GUISVM.h"
 #include "guilib/GUIClassifier.h"
@@ -50,4 +53,5 @@ class CGUI
   INT argc ;
   char** argv ;
 } ;
+#endif //HAVE_SWIG
 #endif

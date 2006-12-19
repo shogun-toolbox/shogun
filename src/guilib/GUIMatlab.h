@@ -10,11 +10,12 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
 
-#ifdef HAVE_MATLAB
 #ifndef __MATLAB_H_
 #define __MATLAB_H_
+
+#include "lib/config.h"
+#if defined(HAVE_MATLAB) && !defined(HAVE_SWIG)
 
 #include "features/Labels.h"
 #include "features/Features.h"
@@ -119,5 +120,5 @@ public:
 	static BYTE* get_mxBytes(const mxArray* s, INT& len);
 	static CHAR* get_mxString(const mxArray* s, INT& len, bool zero_terminate=false);
 };
-#endif
+#endif //HAVE_SWIG
 #endif

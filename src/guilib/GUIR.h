@@ -11,10 +11,9 @@
 
 #include "lib/config.h"
 
-#ifdef HAVE_R
+#if defined(HAVE_R) && !defined(HAVE_SWIG)
 #include "features/Labels.h"
 #include "features/Features.h"
-
 
 extern "C" {
 
@@ -79,4 +78,5 @@ public:
 };
 
 }
+#endif //HAVE_SWIG
 #endif

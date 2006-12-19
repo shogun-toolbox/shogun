@@ -8,6 +8,9 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "guilib/GUITime.h"
 
 CGUITime::CGUITime(CGUI* g) : gui(g)
@@ -31,3 +34,4 @@ void CGUITime::stop()
 	time->stop();
 	time->time_diff_sec(true);
 }
+#endif

@@ -8,6 +8,9 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "guilib/GUIKNN.h"
 #include "lib/io.h"
 #include "gui/GUI.h"
@@ -148,3 +151,4 @@ bool CGUIKNN::save(CHAR* param)
   bool result=false;
   return result;
 }
+#endif

@@ -11,6 +11,9 @@
 #ifndef __GUIMATH__H__ 
 #define __GUIMATH__H__ 
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 class CGUI;
 
 class CGUIMath
@@ -25,4 +28,5 @@ protected:
 	CGUI* gui;
 	DREAL threshold;
 };
+#endif //HAVE_SWIG
 #endif

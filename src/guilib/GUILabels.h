@@ -12,6 +12,10 @@
 #ifndef __GUILABELS__H_
 #define __GUILABELS__H_
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
+
 #include "features/Labels.h"
 
 class CGUI;
@@ -36,4 +40,5 @@ class CGUILabels
 		CLabels *train_labels;
 		CLabels *test_labels;
 };
+#endif //HAVE_SWIG
 #endif

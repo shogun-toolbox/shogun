@@ -10,7 +10,7 @@
 
 #include "lib/config.h"
 
-#ifdef HAVE_PYTHON
+#if defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
 #include "guilib/GUIPython.h"
 #include "gui/Python.h"
 #include "gui/TextGUI.h"
@@ -96,4 +96,4 @@ void exitsg(void)
 	CIO::message(M_INFO, "quitting...\n");
 	delete gui;
 }
-#endif
+#endif //HAVE_SWIG

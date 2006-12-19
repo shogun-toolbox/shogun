@@ -11,7 +11,7 @@
 
 #include "lib/config.h"
 
-#ifdef HAVE_R
+#if defined(HAVE_R) && !defined(HAVE_SWIG)
 #include <stdio.h>
 #include <string.h>
 #include <Rdefines.h>
@@ -497,4 +497,4 @@ void R_init_sg(DllInfo *info) {
 
 void R_unload_sg(DllInfo *info) { }
 
-#endif
+#endif //HAVE_SWIG

@@ -10,10 +10,10 @@
 
 #include "lib/config.h"
 
-#ifdef HAVE_OCTAVE
 #ifndef __OCTAVE_H_
 #define __OCTAVE_H_
 
+#if defined(HAVE_OCTAVE) && !defined(HAVE_SWIG)
 #include "features/Labels.h"
 #include "features/Features.h"
 
@@ -102,5 +102,5 @@ public:
 	
 	static CHAR* get_octaveString(std::string);
 };
-#endif
+#endif //HAVE_SWIG
 #endif

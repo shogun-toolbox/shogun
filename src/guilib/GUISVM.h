@@ -12,6 +12,10 @@
 #ifndef _GUISVM_H__
 #define _GUISVM_H__ 
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
+
 #include "classifier/svm/SVM.h"
 
 class CGUI ;
@@ -60,4 +64,5 @@ public:
 		use_precompute_subkernel_light ;
 	bool use_shrinking;
 };
+#endif //HAVE_SWIG
 #endif

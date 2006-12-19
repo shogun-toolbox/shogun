@@ -9,6 +9,10 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
+
 #include "guilib/GUIFeatures.h"
 #include "gui/GUI.h"
 #include "lib/io.h"
@@ -833,3 +837,4 @@ void CGUIFeatures::add_test_features(CFeatures* f)
 	else
 		CIO::message(M_ERROR, "combined feature object could not be created\n");
 }
+#endif

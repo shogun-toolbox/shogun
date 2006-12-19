@@ -8,6 +8,9 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "lib/Mathematics.h"
 #include "guilib/GUIMath.h"
 #include "lib/io.h"
@@ -103,3 +106,4 @@ void CGUIMath::current_results(DREAL* output, INT* label, INT total, FILE* outpu
 				((double) fp)/((double) neg), (double) (pos-fn)/((double)pos), ((double) threshold));
 	}
 }
+#endif

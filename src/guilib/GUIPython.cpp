@@ -10,7 +10,7 @@
 
 #include "lib/config.h"
 
-#ifdef HAVE_PYTHON
+#if defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
 #include "guilib/GUIPython.h"
 #include "gui/TextGUI.h"
 #include "lib/Version.h"
@@ -35,7 +35,6 @@ extern CTextGUI* gui;
 CGUIPython::CGUIPython()
 {
 	import_libnumarray();
-	//ASSERT(libnumeric_API);
 }
 
 CGUIPython::~CGUIPython()

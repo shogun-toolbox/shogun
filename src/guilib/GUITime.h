@@ -11,6 +11,10 @@
 #ifndef __GUITIME__H_
 #define __GUITIME__H_
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
+
 #include "lib/Time.h"
 
 class CGUI;
@@ -28,4 +32,5 @@ class CGUITime
 		CGUI* gui;
 		CTime* time;
 };
+#endif //HAVE_SWIG
 #endif

@@ -12,6 +12,9 @@
 #ifndef __TEXT_GUI__H
 #define __TEXT_GUI__H
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include <stdio.h>
 #include "guilib/GUIHMM.h"
 #include "guilib/GUISVM.h"
@@ -51,4 +54,5 @@ protected:
 	CHAR input[10000];
 	bool echo;
 };
+#endif //HAVE_SWIG
 #endif

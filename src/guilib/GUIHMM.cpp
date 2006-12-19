@@ -9,6 +9,9 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include <unistd.h>
 #include "lib/common.h"
 #include "guilib/GUIHMM.h"
@@ -1342,3 +1345,4 @@ bool CGUIHMM::permutation_entropy(CHAR* param)
 
 	return false;
 }
+#endif

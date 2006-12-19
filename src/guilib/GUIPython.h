@@ -10,10 +10,10 @@
 
 #include "lib/config.h"
 
-#ifdef HAVE_PYTHON
+#if defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
+
 #ifndef __GUIPYTHON_H_
 #define __GUIPYTHON_H_
-
 
 extern "C" {
 #include <Python.h>

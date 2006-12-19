@@ -9,6 +9,9 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "guilib/GUIPreProc.h"
 #include "gui/GUI.h"
 #include "preproc/LogPlusOne.h"
@@ -411,3 +414,4 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 
 	return false;
 }
+#endif

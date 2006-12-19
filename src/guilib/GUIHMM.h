@@ -12,6 +12,9 @@
 #ifndef __GUIHMM__H
 #define __GUIHMM__H
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "distributions/hmm/HMM.h"
 #include "features/Labels.h"
 
@@ -92,4 +95,5 @@ protected:
  protected:
 	CGUI* gui ;
 };
+#endif //HAVE_SWIG
 #endif

@@ -9,6 +9,9 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "guilib/GUIPluginEstimate.h"
 #include "features/WordFeatures.h"
 #include "lib/io.h"
@@ -198,3 +201,4 @@ DREAL CGUIPluginEstimate::classify_example(INT idx)
 
 	return estimator->classify_example(idx);
 }
+#endif

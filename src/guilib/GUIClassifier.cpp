@@ -9,6 +9,9 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "guilib/GUIClassifier.h"
 #include "gui/GUI.h"
 #include "lib/io.h"
@@ -745,3 +748,4 @@ bool CGUIClassifier::classify_example(INT idx, DREAL &result)
 	result=classifier->classify_example(idx);
 	return true ;
 }
+#endif

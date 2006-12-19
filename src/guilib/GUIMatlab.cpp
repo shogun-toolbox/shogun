@@ -11,7 +11,7 @@
 
 #include "lib/config.h"
 
-#ifdef HAVE_MATLAB
+#if defined(HAVE_MATLAB) && !defined(HAVE_SWIG)
 #include <stdio.h>
 #include <string.h>
 

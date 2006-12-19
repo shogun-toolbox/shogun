@@ -11,7 +11,7 @@
 
 #include "lib/config.h"
 
-#ifdef HAVE_R
+#if defined(HAVE_R) && !defined(HAVE_SWIG)
 #include <stdio.h>
 #include <string.h>
 

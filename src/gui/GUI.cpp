@@ -13,6 +13,9 @@
 //
 #include "lib/config.h"
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include <string.h>
 
 #ifndef CYGWIN
@@ -104,3 +107,4 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
+#endif

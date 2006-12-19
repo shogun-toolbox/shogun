@@ -12,6 +12,9 @@
 #ifndef __GUIKERNEL__H
 #define __GUIKERNEL__H
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "kernel/Kernel.h"
 
 class CGUI ;
@@ -46,4 +49,5 @@ class CGUIKernel
 	CGUI* gui ;
 	bool initialized;
 };
+#endif //HAVE_SWIG
 #endif

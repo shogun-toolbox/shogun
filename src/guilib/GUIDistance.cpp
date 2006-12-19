@@ -9,6 +9,10 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
+
 #include "gui/GUI.h"
 #include "guilib/GUIDistance.h"
 
@@ -370,3 +374,4 @@ bool CGUIDistance::clean_distance(CHAR* param)
 	distance = NULL;
 	return true;
 }
+#endif

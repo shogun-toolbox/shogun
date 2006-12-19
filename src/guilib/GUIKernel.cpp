@@ -9,6 +9,9 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "gui/GUI.h"
 #include "guilib/GUIKernel.h"
 #include "guilib/GUISVM.h"
@@ -1520,3 +1523,4 @@ bool CGUIKernel::del_kernel(CHAR* param)
 {
 	return false;
 }
+#endif

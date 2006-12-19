@@ -12,6 +12,9 @@
 #ifndef _GUIPLUGINESTIMATE_H__
 #define _GUIPLUGINESTIMATE_H__ 
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "classifier/PluginEstimate.h"
 #include "features/Labels.h"
 
@@ -43,4 +46,5 @@ public:
 	DREAL pos_pseudo;
 	DREAL neg_pseudo;
 };
+#endif //HAVE_SWIG
 #endif

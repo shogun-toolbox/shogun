@@ -10,7 +10,7 @@
 
 #include "lib/config.h"
 
-#ifdef HAVE_OCTAVE
+#if defined(HAVE_OCTAVE) && !defined(HAVE_SWIG)
 #include <stdio.h>
 #include <string.h>
 

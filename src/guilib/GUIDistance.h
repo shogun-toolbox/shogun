@@ -12,6 +12,9 @@
 #ifndef __GUIDISTANCE_H__
 #define __GUIDISTANCE_H__
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "distance/Distance.h"
 #include "features/Features.h"
 
@@ -40,4 +43,5 @@ class CGUIDistance
 	CGUI* gui ;
 	bool initialized;
 };
+#endif //HAVE_SWIG
 #endif

@@ -11,6 +11,9 @@
 #ifndef _GUICLASSIFIER_H__
 #define _GUICLASSIFIER_H__ 
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "classifier/Classifier.h"
 
 class CGUI ;
@@ -71,4 +74,5 @@ public:
 	bool svm_use_precompute_subkernel;
 	bool svm_use_precompute_subkernel_light;
 };
+#endif //HAVE_SWIG
 #endif

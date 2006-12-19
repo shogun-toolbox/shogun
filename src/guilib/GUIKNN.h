@@ -11,6 +11,10 @@
 #ifndef _GUIKNN_H__
 #define _GUIKNN_H__ 
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
+
 #include "classifier/KNN.h"
 #include "features/Labels.h"
 
@@ -34,4 +38,5 @@ public:
 	CKNN* knn;
 	int k;
 };
+#endif //HAVE_SWIG
 #endif

@@ -12,6 +12,9 @@
 #ifndef __GUIFEATURES__H
 #define __GUIFEATURES__H
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "features/Labels.h"
 #include "features/Features.h"
 #include "features/RealFileFeatures.h"
@@ -187,4 +190,5 @@ class CGUIFeatures
 		CFeatures *test_features;
 		CFeatures *ref_features;
 };
+#endif
 #endif

@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifdef HAVE_PYTHON
+#if defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
 
 #ifndef __SHOGUN_PYTHON__
 #define __SHOGUN_PYTHON__
@@ -19,5 +19,5 @@ extern "C" {
 	PyMODINIT_FUNC initsg(void);
 	void exitsg(void);
 }
-#endif
+#endif //HAVE_SWIG
 #endif

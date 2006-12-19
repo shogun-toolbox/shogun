@@ -9,6 +9,9 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
 #include "gui/TextGUI.h"
 
 #include <ctype.h>
@@ -779,3 +782,4 @@ bool CTextGUI::parse_line(CHAR* p_input)
 
 	return true;
 }
+#endif //HAVE_SWIG

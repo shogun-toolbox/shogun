@@ -12,6 +12,10 @@
 #ifndef __GUIPREPROC_H__
 #define __GUIPREPROC_H__
 
+#include "lib/config.h"
+
+#ifndef HAVE_SWIG
+
 #include "preproc/PreProc.h"
 #include "lib/List.h"
 
@@ -44,4 +48,5 @@ class CGUIPreProc
 		CList<CPreProc*>* preprocs;
 		CGUI* gui ;
 };
+#endif //HAVE_SWIG
 #endif
