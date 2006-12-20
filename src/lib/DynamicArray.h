@@ -163,6 +163,9 @@ CDynamicArray(const T* p_array, INT p_num_elements, INT p_array_size)
 	///set array element at index 'index' return false in case of trouble
 	inline bool append_element(const T& new_element)
 	{
+		if (last_element_idx+1>=array_size)
+			resize_array(last_element_idx+2) ;
+		
 		element(last_element_idx+1) = new_element ;
 		return true ;
 	}
