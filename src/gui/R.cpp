@@ -157,7 +157,7 @@ static SEXP sg_helper(SEXP args)
 				if (cmd_len==2)
 				{
 					if (TYPEOF(args) == REALSXP)
-						return sg_R.svm_classify_example((INT) REAL(args));
+						return sg_R.svm_classify_example((INT) REAL(args)[0]);
 					else
 						CIO::message(M_ERROR, "usage is [result]=sg('svm_classify_example', feature_vector_index)");
 				}
@@ -215,7 +215,7 @@ static SEXP sg_helper(SEXP args)
 			if (cmd_len==1)
 			{
 				if (TYPEOF(args) == REALSXP)
-					sg_R.hmm_classify_example((INT) REAL(args) );
+					sg_R.hmm_classify_example((INT) REAL(args)[0] );
 				else
 					CIO::message(M_ERROR, "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
 			}
