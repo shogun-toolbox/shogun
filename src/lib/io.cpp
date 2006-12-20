@@ -174,6 +174,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 	}
 #else
 	check_target();
+	int p=get_prio_string(prio);
 	if (p>=0)
 	{
 		fprintf(target, message_strings[p]);
