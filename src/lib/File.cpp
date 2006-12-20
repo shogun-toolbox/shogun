@@ -158,12 +158,12 @@ bool CFile::save_short_data(SHORT* src, LONG num)
 	return status;
 }
 
-INT parse_first_header(EFeatureType &type)
+INT CFile::parse_first_header(EFeatureType &type)
 {
 	return -1;
 }
 
-INT parse_next_header(EFeatureType &type)
+INT CFile::parse_next_header(EFeatureType &type)
 {
 	return -1;
 }

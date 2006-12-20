@@ -2,6 +2,6 @@
  #include "lib/Version.h" 
 %}
 
-%rename(CVersion) Version;
+%rename(Version) CVersion;
 
 %include "lib/Version.h" 

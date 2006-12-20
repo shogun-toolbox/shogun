@@ -578,35 +578,5 @@ void SplitParts(int n, int part, int parts, int *dim, int *off)
 }
 
 /******************************************************************************/
-/*** Utility method for fatal error messages and halt                       ***/
-/******************************************************************************/
-void fatalError(const char* msg1, const char* msg2)
-{
-  fprintf(stderr, ">>> FATAL ERROR: %s\n\t\t%s\n", msg1, msg2);
-  exit(-1);
-}
-
-void output_message(const char* msg1)
-{
-  printf(msg1);
-}
-
-void output_message(const char* msg1, int v)
-{
-char str[256];
-
-  sprintf(str, msg1, v);
-  output_message(str);
-}
-
-void output_message(const char* msg1, double v)
-{
-char str[256];
-
-  sprintf(str, msg1, v);
-  output_message(str);
-}
-
-/******************************************************************************/
 /*** End of gpdt.cpp file                                                   ***/
 /******************************************************************************/

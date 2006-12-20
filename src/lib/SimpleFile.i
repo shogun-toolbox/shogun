@@ -2,6 +2,6 @@
  #include "lib/SimpleFile.h" 
 %}
 
-%rename(CSimpleFile) SimpleFile;
+%rename(SimpleFile) CSimpleFile;
 
 %include "lib/SimpleFile.h" 

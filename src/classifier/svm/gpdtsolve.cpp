@@ -443,9 +443,9 @@ int QPproblem::optimal()
   else
   {
       if (verbosity > 1)
-          output_message("  Max KKT violation: %lf\n", aux);
+          CIO::message(M_INFO,"  Max KKT violation: %lf\n", aux);
       else if (verbosity > 0)
-          output_message("  %lf\n", aux);
+          CIO::message(M_INFO,"  %lf\n", aux);
 
       if (fabs(kktold-aux) < delta*0.01 &&  aux < delta*2.0)
       {
@@ -453,7 +453,7 @@ int QPproblem::optimal()
           {
               DELTAvpm = (DELTAvpm*0.5 > InitialDELTAvpm*0.1 ?
                                             DELTAvpm*0.5 : InitialDELTAvpm*0.1);
-              output_message("Inner tolerance changed to: %lf\n", DELTAvpm);
+              CIO::message(M_INFO,"Inner tolerance changed to: %lf\n", DELTAvpm);
           }
       }
 
@@ -511,7 +511,7 @@ int QPproblem::optimal()
       if (k < q)
       {
           if (verbosity > 1)
-              output_message("  New q: %i\n", k);
+              CIO::message(M_INFO,"  New q: %i\n", k);
           q = k;
       }
 
@@ -669,15 +669,15 @@ int QPproblem::optimal()
           DELTAkin *= 0.1;
           if (DELTAkin < 1.0e-6)
           {
-              output_message("\n***ERROR***: GPDT stops with tolerance"); 
-              output_message( 
+              CIO::message(M_INFO,"\n***ERROR***: GPDT stops with tolerance"); 
+              CIO::message(M_INFO, 
               " %lf because it is unable to change the working set.\n", kktold);
               return 1;
           }
           else
           {
-              output_message("Inner tolerance temporary changed to:");
-              output_message(" %e\n", DELTAvpm*DELTAkin);
+              CIO::message(M_INFO,"Inner tolerance temporary changed to:");
+              CIO::message(M_INFO," %e\n", DELTAvpm*DELTAkin);
           }
       }
       else
@@ -685,8 +685,8 @@ int QPproblem::optimal()
 
       if (verbosity > 1)
       {
-          output_message("  Working set: new components: %i", kin);
-          output_message(",  new parameter n: %i\n", q);
+          CIO::message(M_INFO,"  Working set: new components: %i", kin);
+          CIO::message(M_INFO,",  new parameter n: %i\n", q);
       }
 
       return 0;
@@ -733,9 +733,9 @@ int QPproblem::Preprocess1(sKernel* kernel, int *aux, int *sv)
 
   if (verbosity > 0)
   {
-      output_message("  Preprocessing: examples = %d", s);
-      output_message(", subp. = %d", n);
-      output_message(", size = %d\n",sl);
+      CIO::message(M_INFO,"  Preprocessing: examples = %d", s);
+      CIO::message(M_INFO,", subp. = %d", n);
+      CIO::message(M_INFO,", size = %d\n",sl);
   }
 
   sv_loc   = (int    *)malloc(s*sizeof(int    ));
@@ -768,7 +768,7 @@ int QPproblem::Preprocess1(sKernel* kernel, int *aux, int *sv)
   for (i = 0; i < n; i++)
   {
       if (verbosity > 0)
-          output_message("%d...", i);
+          CIO::message(M_INFO,"%d...", i);
       SplitParts(s, i, n, &ll, &off);
 
       if (sl < 500)
@@ -865,8 +865,8 @@ int QPproblem::Preprocess1(sKernel* kernel, int *aux, int *sv)
 
   if (verbosity > 0)
   {
-      output_message("\n  Preprocessing: SV = %d", nsv);
-      output_message(", BSV = %d\n", nbsv);
+      CIO::message(M_INFO,"\n  Preprocessing: SV = %d", nsv);
+      CIO::message(M_INFO,", BSV = %d\n", nbsv);
   }
 
   return(nsv);
@@ -948,7 +948,7 @@ double QPproblem::gpdtsolve(double *solution)
   memset(ing,   0, ell*sizeof(int));
 
   if (verbosity > 0 && PreprocessMode != 0)
-      output_message("\n*********** Begin setup step...\n");
+      CIO::message(M_INFO,"\n*********** Begin setup step...\n");
   t = clock();
 
   switch(PreprocessMode)
@@ -968,8 +968,8 @@ double QPproblem::gpdtsolve(double *solution)
   t = clock() - t;
   if (verbosity > 0 && PreprocessMode != 0)
   {
-      output_message( "  Time for setup: %.2lf\n", (double)t/CLOCKS_PER_SEC);
-      output_message(
+      CIO::message(M_INFO, "  Time for setup: %.2lf\n", (double)t/CLOCKS_PER_SEC);
+      CIO::message(M_INFO,
               "\n\n*********** Begin decomposition technique...\n");
   }
 
@@ -1012,10 +1012,10 @@ double QPproblem::gpdtsolve(double *solution)
 
   if (verbosity == 1)
   {
-      output_message( "  IT  | Prep Time | Solver IT | Solver Time |");
-      output_message( " Grad Time | KKT violation\n");
-      output_message( "------+-----------+-----------+-------------+");
-      output_message( "-----------+--------------\n");
+      CIO::message(M_INFO, "  IT  | Prep Time | Solver IT | Solver Time |");
+      CIO::message(M_INFO, " Grad Time | KKT violation\n");
+      CIO::message(M_INFO, "------+-----------+-----------+-------------+");
+      CIO::message(M_INFO, "-----------+--------------\n");
   }
 
   /***************************************************************************/
@@ -1034,11 +1034,11 @@ double QPproblem::gpdtsolve(double *solution)
       }
 
       if (verbosity > 1)
-          output_message("\n*********** ITERATION: %d\n", nit + 1);
+          CIO::message(M_INFO,"\n*********** ITERATION: %d\n", nit + 1);
       else if (verbosity > 0)
-          output_message( "%5d |", nit + 1);
+          CIO::message(M_INFO, "%5d |", nit + 1);
       else
-          output_message( ".");
+          CIO::message(M_INFO, ".");
       fflush(stdout);
 
       nzout = 0;
@@ -1057,7 +1057,7 @@ double QPproblem::gpdtsolve(double *solution)
       }
 
       if (verbosity > 1)
-          output_message( "  spe: %e ", sp_e);
+          CIO::message(M_INFO, "  spe: %e ", sp_e);
 
       for (i = 0; i < chunk_size; i++)
           sp_y[i] = y_in(i);
@@ -1126,10 +1126,10 @@ double QPproblem::gpdtsolve(double *solution)
 
     t = clock() - t;
     if (verbosity > 1)
-        output_message(
+        CIO::message(M_INFO,
                 "  Preparation Time: %.2lf\n", (double)t/CLOCKS_PER_SEC);
     else if (verbosity > 0)
-        output_message( "  %8.2lf |", (double)t/CLOCKS_PER_SEC);
+        CIO::message(M_INFO, "  %8.2lf |", (double)t/CLOCKS_PER_SEC);
     tot_prep_time += (double)t/CLOCKS_PER_SEC;
 
     /*** Proximal point modification: first type ***/
@@ -1164,15 +1164,15 @@ double QPproblem::gpdtsolve(double *solution)
       {
         if (ker_type == 2)
         {
-            output_message( "\n WARNING: inner subproblem hard to solve;");
-            output_message( " setting a smaller -q or");
-            output_message( " tuning -c and -g options might help.\n");
+            CIO::message(M_INFO, "\n WARNING: inner subproblem hard to solve;");
+            CIO::message(M_INFO, " setting a smaller -q or");
+            CIO::message(M_INFO, " tuning -c and -g options might help.\n");
         }
         else
         {
-            output_message( "\n WARNING: inner subproblem hard to solve;");
-            output_message( " set a smaller -q or");
-            output_message( " try a better data scaling.\n");
+            CIO::message(M_INFO, "\n WARNING: inner subproblem hard to solve;");
+            CIO::message(M_INFO, " set a smaller -q or");
+            CIO::message(M_INFO, " try a better data scaling.\n");
         }
       }
 
@@ -1182,14 +1182,14 @@ double QPproblem::gpdtsolve(double *solution)
       tot_vpm_time   += (double)t/CLOCKS_PER_SEC;
       if (verbosity > 1)
       {
-          output_message("  Solver it: %d", i);
-          output_message(", ls: %d", lsCount);
-          output_message(", time: %.2lf\n", (double)t/CLOCKS_PER_SEC);
+          CIO::message(M_INFO,"  Solver it: %d", i);
+          CIO::message(M_INFO,", ls: %d", lsCount);
+          CIO::message(M_INFO,", time: %.2lf\n", (double)t/CLOCKS_PER_SEC);
       }
       else if (verbosity > 0)
       {
-          output_message("    %6d", i);
-          output_message(" |    %8.2lf |", (double)t/CLOCKS_PER_SEC);
+          CIO::message(M_INFO,"    %6d", i);
+          CIO::message(M_INFO," |    %8.2lf |", (double)t/CLOCKS_PER_SEC);
       }
 
       /*** Proximal point modification: second type ***/
@@ -1262,7 +1262,7 @@ double QPproblem::gpdtsolve(double *solution)
                     st[i] += alpha[jin] * y[jin] * ptmw[i];
             }
             if (verbosity > 1)
-                output_message(
+                CIO::message(M_INFO,
                  "  G*x0 time: %.2lf\n", (double)(clock()-ti2)/CLOCKS_PER_SEC);
         }
     }
@@ -1287,10 +1287,10 @@ double QPproblem::gpdtsolve(double *solution)
 
     t = clock() - t;
     if (verbosity > 1)
-        output_message(
+        CIO::message(M_INFO,
                 "  Gradient updating time: %.2lf\n", (double)t/CLOCKS_PER_SEC);
     else if (verbosity > 0)
-        output_message( "  %8.2lf |", (double)t/CLOCKS_PER_SEC);
+        CIO::message(M_INFO, "  %8.2lf |", (double)t/CLOCKS_PER_SEC);
     tot_st_time += (double)t/CLOCKS_PER_SEC;
 
     /*** global updating of the solution vector ***/
@@ -1305,8 +1305,8 @@ double QPproblem::gpdtsolve(double *solution)
             if (is_free(i))  j++;
             if (is_bound(i)) k++;
         }
-        output_message("  SV: %d", j+k);
-        output_message(",  BSV: %d\n", k);
+        CIO::message(M_INFO,"  SV: %d", j+k);
+        CIO::message(M_INFO,",  BSV: %d\n", k);
     }
     Cache->Iteration();
     nit = nit+1;
@@ -1328,9 +1328,9 @@ double QPproblem::gpdtsolve(double *solution)
   for (i = 0; i < ell; i++)
       fval += alpha[i]*(y[i]*st[i]*0.5 - 1.0);
 
-  output_message("\n------+-----------+-----------+-------------+");
-  output_message("-----------+--------------\n");
-  output_message(
+  CIO::message(M_INFO,"\n------+-----------+-----------+-------------+");
+  CIO::message(M_INFO,"-----------+--------------\n");
+  CIO::message(M_INFO,
       "\n- TOTAL ITERATIONS: %i\n", nit);
 
   if (verbosity > 1)
@@ -1344,11 +1344,11 @@ double QPproblem::gpdtsolve(double *solution)
            if (cec[i] > 1) k++;
            if (cec[i] > 2) z++;
       }
-      output_message(
+      CIO::message(M_INFO,
         "- Variables entering the working set at least one time:  %i\n", j);
-      output_message(
+      CIO::message(M_INFO,
         "- Variables entering the working set at least two times:  %i\n", k);
-      output_message(
+      CIO::message(M_INFO,
         "- Variables entering the working set at least three times:  %i\n", z);
   }
 
@@ -1378,24 +1378,24 @@ double QPproblem::gpdtsolve(double *solution)
   delete Cache;
 
   aux = KER->KernelEvaluations;
-  output_message( "- Total CPU time: %lf\n", total_time);
+  CIO::message(M_INFO, "- Total CPU time: %lf\n", total_time);
   if (verbosity > 0)
   {
-      output_message( 
+      CIO::message(M_INFO, 
               "- Total kernel evaluations: %.0lf\n", aux);
-      output_message( 
+      CIO::message(M_INFO, 
               "- Total inner solver iterations: %i\n", tot_vpm_iter);
       if (projection_projector == 1) 
-          output_message( 
+          CIO::message(M_INFO, 
               "- Total projector iterations: %i\n", tot_vpm_secant);
-      output_message( 
+      CIO::message(M_INFO, 
               "- Total preparation time: %lf\n", tot_prep_time);
-      output_message( 
+      CIO::message(M_INFO, 
               "- Total inner solver time: %lf\n", tot_vpm_time);
-      output_message( 
+      CIO::message(M_INFO, 
               "- Total gradient updating time: %lf\n", tot_st_time);
   }
-  output_message( "- Objective function value: %lf\n", fval);
+  CIO::message(M_INFO, "- Objective function value: %lf\n", fval);
   objective_value=fval;
   return aux;
 }

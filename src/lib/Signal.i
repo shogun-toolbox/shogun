@@ -2,6 +2,6 @@
  #include "lib/Signal.h" 
 %}
 
-%rename(CSignal) Signal;
+%rename(Signal) CSignal;
 
 %include "lib/Signal.h" 

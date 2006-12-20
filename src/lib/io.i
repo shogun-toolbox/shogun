@@ -3,7 +3,7 @@
  #include "lib/io.h" 
 %}
 
-%rename(CIO) IO;
+%rename(IO) CIO;
 
 %include "lib/common.h" 
 %include "lib/io.h" 

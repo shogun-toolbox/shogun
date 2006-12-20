@@ -2,6 +2,6 @@
  #include "lib/Time.h" 
 %}
 
-%rename(CTime) Time;
+%rename(Time) CTime;
 
 %include "lib/Time.i"

@@ -30,8 +30,8 @@ class CClassifier
 
 		virtual DREAL classify_example(INT num) { return CMath::INFTY; }
 
-		virtual bool load(FILE* srcfile) { return false; }
-		virtual bool save(FILE* dstfile) { return false; }
+		virtual bool load(FILE* srcfile) { ASSERT(srcfile); return false; }
+		virtual bool save(FILE* dstfile) { ASSERT(dstfile); return false; }
 
 		virtual inline void set_labels(CLabels* lab) { labels=lab; }
 		virtual inline CLabels* get_labels() { return labels; }

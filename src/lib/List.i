@@ -2,7 +2,7 @@
  #include "lib/List.h" 
 %}
 
-%rename(CListElement) ListElement;
-%rename(CList) List;
+%rename(ListElement) CListElement;
+%rename(List) CList;
 
 %include "lib/List.h" 

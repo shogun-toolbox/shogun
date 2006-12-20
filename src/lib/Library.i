@@ -2,7 +2,7 @@
 
 %include "lib/Cache.i"
 %include "lib/common.i"
-/*%include "lib/File.i"*/
+%include "lib/File.i"
 %include "lib/io.i"
 %include "lib/lapack.i"
 %include "lib/List.i"

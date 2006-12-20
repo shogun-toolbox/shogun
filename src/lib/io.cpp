@@ -73,7 +73,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			case M_INFO:
 			case M_NOTICE:
 			case M_MESSAGEONLY:
-				fprintf(target, message_strings[p]);
+				fprintf(target, "%s", message_strings[p]);
 #ifdef WIN32
 				mexPrintf("%s", str);
 #else
@@ -104,7 +104,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			case M_INFO:
 			case M_NOTICE:
 			case M_MESSAGEONLY:
-				fprintf(target, message_strings[p]);
+				fprintf(target, "%s", message_strings[p]);
 				fprintf(target, "%s", str);
 				break;
 
@@ -129,7 +129,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			case M_INFO:
 			case M_NOTICE:
 			case M_MESSAGEONLY:
-				fprintf(target, message_strings[p]);
+				fprintf(target, "%s", message_strings[p]);
 				fprintf(target, "%s", str);
 				break;
 
@@ -142,7 +142,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			case M_ALERT:
 			case M_EMERGENCY:
 				PyErr_SetString(PyExc_RuntimeError,str);
-				fprintf(target, message_strings[p]);
+				fprintf(target, "%s", message_strings[p]);
 				fprintf(target, "%s", str);
 				break;
 			default:
@@ -192,7 +192,7 @@ void CIO::buffered_message(EMessageType prio, const CHAR *fmt, ... )
 	int p=get_prio_string(prio);
 	if (p>=0)
 	{
-		fprintf(target, message_strings[p]);
+		fprintf(target, "%s", message_strings[p]);
 		va_list list;
 		va_start(list,fmt);
 		vfprintf(target,fmt,list);

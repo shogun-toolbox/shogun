@@ -2,6 +2,6 @@
  #include "lib/Mathematics.h" 
 %}
 
-%rename(CMath) Math;
+%rename(Math) CMath;
 
 %include "lib/Mathematics.h" 

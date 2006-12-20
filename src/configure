@@ -67,15 +67,17 @@ GDB=gdb
 MAKE=make
 test "$CC" && COMP_C="$CC"
 test "$CXX" && COMP_CPP="$CXX"
-COMPFLAGS_C=-std=c99
-COMPFLAGS_CPP=-std=c++98
+COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
+COMPFLAGS_C="$COMP_OPTS"
+COMPFLAGS_CPP="$COMP_OPTS"
+test "$CFLAGS" && COMPFLAGS_C="$COMPFLAGS_C $CFLAGS"
+test "$CXXFLAGS" && COMPFLAGS_CPP="$COMPFLAGS_CPP $CXXFLAGS"
 INCLUDES=-I${SRCDIR}
 LINK=c++
 LINKFLAGS=
 POSTLINKFLAGS=
 DEFINES=
 TARGET="shogun"
-COMP_OPTS="-g -Wall -Wformat -Wshadow -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
 
 # stuff needed for autodetections (definitely needs cleanup)
 TMPLOG="configure.log"
@@ -426,6 +428,8 @@ Miscellaneous options:
   --python=python               use this python executable [python]
   --cc=COMPILER                 use this C compiler to build shogun [gcc]
   --cxx=COMPILER                use this C++ compiler to build shogun [g++]
+  --cflags=OPTIONS              use these C compiler options
+  --cxxflags=OPTIONS            use these C++ compiler options
   --target=PLATFORM             target platform (i386-linux, arm-linux, etc)
   --install-path=PATH           the path to a custom install program (useful if
                                 your OS uses a GNU-incompatible install utility by
@@ -443,7 +447,7 @@ _ranlib=ranlib
 test "$CC" && COMP_C="$CC"
 test "$CXX" && COMP_CPP="$CXX"
 _as=auto
-_runtime_cpudetection=no
+_disable_cpudetection=no
 
 for ac_option do
   case "$ac_option" in
@@ -458,6 +462,12 @@ for ac_option do
     ;;
   --cxx=*)
     COMP_CPP=`echo $ac_option | cut -d '=' -f 2`
+    ;;
+  --cflags=*)
+    COMPFLAGS_C=`echo $ac_option | cut -d '=' -f 2` ; _disable_cpudetection=yes ;
+    ;;
+  --cxxflags=*)
+    COMPFLAGS_CPP=`echo $ac_option | cut -d '=' -f 2` ; _disable_cpudetection=yes ;
     ;;
   --as=*)
     _as=`echo $ac_option | cut -d '=' -f 2`
@@ -1173,7 +1183,7 @@ case "$host_arch" in
 cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
-  if test "$_runtime_cpudetection" = no ; then
+  if test "$_disable_cpudetection" = no ; then
     if test "$proc" = "k8" -o "$proc" = "opteron" -o "$proc" = "athlon64" -o "$proc" = "athlon-fx" ; then
       cc_check -march=$proc $cpuopt=$proc || proc=athlon-xp
     fi
@@ -1218,7 +1228,7 @@ EOF
       _march="-march=$proc"
       _mcpu="$cpuopt=$proc"
     fi
-  else # if test "$_runtime_cpudetection" = no
+  else # if test "$_disable_cpudetection" = no
     # i686 is probably the most common CPU - optimize for it
     _mcpu="$cpuopt=i686"
     # at least i486 required, for bswap instruction
@@ -1289,7 +1299,7 @@ cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
     # This is a stripped-down version of the i386 fallback.
-    if test "$_runtime_cpudetection" = no ; then
+    if test "$_disable_cpudetection" = no ; then
       # --- AMD processors ---
       if test "$proc" = "k8" -o "$proc" = "opteron" -o "$proc" = "athlon64" -o "$proc" = "athlon-fx" ; then
         cc_check -march=$proc $cpuopt=$proc || proc=athlon-xp
@@ -1580,7 +1590,7 @@ EOF
     ;;
 esac # case "$host_arch" in
 
-if test "$_runtime_cpudetection" = yes ; then
+if test "$_disable_cpudetection" = yes ; then
   if x86; then
     _mmx=yes
     _3dnow=yes
@@ -1596,7 +1606,7 @@ if test "$_runtime_cpudetection" = yes ; then
   fi
 fi
 
-if x86 || x86_64 && test "$_runtime_cpudetection" = no ; then
+if x86 || x86_64 && test "$_disable_cpudetection" = no ; then
   extcheck() {
     if test "$1" = yes ; then
       echocheck "compiler and kernel support of $2"
@@ -1673,32 +1683,16 @@ EOF
   echores "$_mm3dnow"
 fi
 
-  COMPFLAGS_C="-W -Wall -O2 $_march $_mcpu"
-  COMPFLAGS_CPP="-W -Wall -O2 $_march $_mcpu"
-
-  if test "$_cc_major" -ge "3" ; then
-    COMPFLAGS_C=`echo "$CFLAGS" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter/'`
-    COMPFLAGS_CPP=`echo "$CFLAGS" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter/'`
-  fi
+  COMPFLAGS_C="$COMPFLAGS_C $OS $_march $_mcpu"
+  COMPFLAGS_CPP="$COMPFLAGS_CPP $OS $_march $_mcpu"
 
   if test "$_profile" = yes
   then
-	  COMPFLAGS_CPP="$COMPFLAGS_CPP -g -pg"
-	  COMPFLAGS_C="$COMPFLAGS_CPP -g -pg"
-	  LINKFLAGS="$LINKFLAGS -g -pg"
+	  COMPFLAGS_CPP="$COMPFLAGS_CPP -pg"
+	  COMPFLAGS_C="$COMPFLAGS_CPP -pg"
+	  LINKFLAGS="$LINKFLAGS -pg"
   fi
 
-  if sunos
-  then
-	  COMP_OPTS="-fast -xchip=native -xarch=v9 -xO5 -g +w2"
-	  LINKFLAGS="-fast -xchip=native -xarch=v9 -xO5 -g +w2 $LINKFLAGS"
-  elif osf1
-  then
-	  COMP_OPTS="-O5 -inline speed -om"
-#  elif darwin
-#  then
-#	  COMP_OPTS="-Wno-long-double $COMP_OPTS"
-  fi
 }
 
 set_opts()
@@ -2027,8 +2021,8 @@ EOF
 		test -n "$_pylibpath" || _pylibpath=`$PYTHON -c "import sys; print '-L'+sys.exec_prefix+'/lib/python'+sys.version[0:3]+'/config'"`
 		test -n "$_pylibs" || _pylibs=`$PYTHON -c "import sys; print 'python'+sys.version[0:3]"`
 		INCLUDES="$_pyinclude $INCLUDES"
-		COMPFLAGS_CPP="-fno-strict-aliasing -Wall -fPIC $COMPFLAGS_CPP"
-		COMPFLAGS_C="-fno-strict-aliasing -Wall -fPIC $COMPFLAGS_C"
+		COMPFLAGS_CPP="-fno-strict-aliasing -fPIC $COMPFLAGS_CPP"
+		COMPFLAGS_C="-fno-strict-aliasing -fPIC $COMPFLAGS_C"
 		if darwin
 		then
 			LINKFLAGS="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $LINKFLAGS"
@@ -2303,9 +2297,12 @@ EOF
 write_dot_config()
 {
 
-#set autodetected options
-COMPFLAGS_CPP="$COMPFLAGS_CPP $OS $_march $_mtune $_optimizing $COMP_OPTS"
-COMPFLAGS_C="$COMPFLAGS_CPP"
+#enable additional warnings / -Wfloat-equal -W
+if test "$_cc_major" -ge "3" ; then
+	COMPFLAGS_C=`echo "$COMPFLAGS_C" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wimplicit -Wparentheses -Wshadow/'`
+	COMPFLAGS_SWIG_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/-Wall//'`
+	COMPFLAGS_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wimplicit -Wparentheses -Wshadow/'`
+fi
 
 cat > "$SRCDIR/.config" <<EOF
 MAKE 			= ${MAKE}
@@ -2335,10 +2332,11 @@ COMP_CPP		= ${COMP_CPP}
 DEFINES			=${DEFINES}
 COMPFLAGS_C		= ${COMPFLAGS_C}
 COMPFLAGS_CPP	= ${COMPFLAGS_CPP}
+COMPFLAGS_SWIG_CPP	= ${COMPFLAGS_SWIG_CPP}
 INCLUDES		= ${INCLUDES}
 LINK			= ${LINK}
 LINKFLAGS 		= ${LINKFLAGS}
-POSTLINKFLAGS 	= ${POSTLINKFLAGS}
+POSTLINKFLAGS	= ${POSTLINKFLAGS}
 PREFIX			= ${_prefix}
 DESTDIR			= ${_destdir}
 BINDIR			= ${_bindir}

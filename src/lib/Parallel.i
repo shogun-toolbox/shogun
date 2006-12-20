@@ -2,6 +2,6 @@
  #include "lib/Parallel.h" 
 %}
 
-%rename(CParallel) Parallel;
+%rename(Parallel) CParallel;
 
 %include "lib/Parallel.h" 

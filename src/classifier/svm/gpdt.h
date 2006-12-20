@@ -87,10 +87,6 @@ enum {
   SOLVER_FLETCHER = 1
 };
 
-void output_message(const char *msg);
-void output_message(const char *msg, int v);
-void output_message(const char *msg, double v);
-
 class sKernel
 {
 public:

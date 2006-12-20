@@ -269,7 +269,6 @@ protected:
 #endif
    
  protected:
-  bool svm_loaded;
   MODEL* model;
   LEARN_PARM* learn_parm;
   INT   verbosity;              /* verbosity level (0-4) */
