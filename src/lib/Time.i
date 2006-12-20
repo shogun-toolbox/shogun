@@ -4,4 +4,4 @@
 
 %rename(Time) CTime;
 
-%include "lib/Time.i"
+%include "lib/Time.h"
