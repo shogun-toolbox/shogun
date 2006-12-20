@@ -176,6 +176,24 @@ public:
 #endif
 	}
 
+	static INT random(INT min_value, INT max_value)
+	{
+		DREAL ret = min_value + (max_value+1-min_value)*(1.*rand())/(RAND_MAX*1.) ;
+		INT iret = (INT) ::floor(ret - 1e-10) ;
+		ASSERT(iret >= min_value && iret<=max_value) ;
+		return iret ;
+	}
+
+	static DREAL random(DREAL min_value, DREAL max_value)
+	{
+		DREAL ret = min_value + (max_value-min_value)*(1.*rand())/(RAND_MAX*1.) ;
+		if (!(ret >= min_value-1e-6 && ret<=max_value+1e-6))
+			fprintf(stderr, "%f %f %f\n", ret, min_value, max_value) ;
+		
+		ASSERT(ret >= min_value-1e-6 && ret<=max_value+1e-6) ;
+		return ret ;
+	}
+
 	static inline INT* randperm(INT n)
 	{
 		INT* perm = new INT[n];

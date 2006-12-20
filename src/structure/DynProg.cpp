@@ -2099,6 +2099,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					INT kk = 0 ;
 					if (num_finite>1)
 						kk = (INT) CMath::floor(exp(CMath::random(log(1), log(num_finite-1)))-1e-10) ;
+					//kk = CMath::random(0, num_finite-1) ;
 
 					if (kk<numEnt)
 					{

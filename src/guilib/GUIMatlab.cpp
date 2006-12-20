@@ -513,9 +513,17 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 		mx_segment_ids_mask=vals[16];
 	} ;
 
+	if ((mxGetM(mx_nbest)!=1) || ((mxGetN(mx_nbest)!=1) && mxGetN(mx_nbest)!=2))
+		CIO::message(M_ERROR, "nbest should be 1x1 or 1x2 \n");
+	
 	INT nbest    = (INT)mxGetScalar(mx_nbest) ;
 	if (nbest<1)
 		return false ;
+	double *p_n    = mxGetPr(mx_nbest) ;
+	INT nother    = 0 ;
+	if (mxGetN(mx_nbest)==2)
+		nother = (INT) p_n[1] ;
+	ASSERT(p_n[0]==nbest) ;
 	
 	if ( mx_p && mx_q && mx_a_trans && mx_seq && mx_pos && 
 		 mx_penalties && mx_state_signals && mx_penalty_info && 
@@ -684,12 +692,12 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 				return false ;
 			}
 			
-			INT *my_path = new INT[M*nbest] ;
-			memset(my_path, -1, M*nbest*sizeof(INT)) ;
-			INT *my_pos = new INT[M*nbest] ;
-			memset(my_pos, -1, M*nbest*sizeof(INT)) ;
+			INT *my_path = new INT[M*(nbest+nother)] ;
+			memset(my_path, -1, M*(nother+nbest)*sizeof(INT)) ;
+			INT *my_pos = new INT[M*(nbest+nother)] ;
+			memset(my_pos, -1, M*(nbest+nother)*sizeof(INT)) ;
 			
-			mxArray* mx_prob = mxCreateDoubleMatrix(1, nbest, mxREAL);
+			mxArray* mx_prob = mxCreateDoubleMatrix(1, (nbest+nother), mxREAL);
 			double* p_prob = mxGetPr(mx_prob);
 
 			if (mx_segment_ids_mask!=NULL)
@@ -716,7 +724,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			
 			h->best_path_trans(seq, M, pos, orf_info,
 							   PEN_matrix, PEN_state_signal, genestr, L,
-							   nbest, p_prob, my_path, my_pos, dict_weights, 8*D, use_orf) ;
+							   nbest, nother, p_prob, my_path, my_pos, dict_weights, 8*D, use_orf) ;
 
 			// clean up 
 			delete_penalty_struct(PEN, P) ;
@@ -727,16 +735,16 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			mxFree(genestr) ;
 
 			// transcribe result
-			mxArray* mx_my_path=mxCreateDoubleMatrix(nbest, M, mxREAL);
+			mxArray* mx_my_path=mxCreateDoubleMatrix((nbest+nother), M, mxREAL);
 			double* d_my_path=mxGetPr(mx_my_path);
-			mxArray* mx_my_pos=mxCreateDoubleMatrix(nbest, M, mxREAL);
+			mxArray* mx_my_pos=mxCreateDoubleMatrix((nbest+nother), M, mxREAL);
 			double* d_my_pos=mxGetPr(mx_my_pos);
 			
-			for (INT k=0; k<nbest; k++)
+			for (INT k=0; k<(nbest+nother); k++)
 				for (INT i=0; i<M; i++)
 				{
-					d_my_path[i*nbest+k] = my_path[i+k*M] ;
-					d_my_pos[i*nbest+k] = my_pos[i+k*M] ;
+					d_my_path[i*(nbest+nother)+k] = my_path[i+k*M] ;
+					d_my_pos[i*(nbest+nother)+k] = my_pos[i+k*M] ;
 				}
 			
 			retvals[0]=mx_prob ;

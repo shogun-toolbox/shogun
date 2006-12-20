@@ -100,7 +100,7 @@ public:
 	void best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const INT *orf_info,
 						 CPlifBase **PLif_matrix, CPlifBase **Plif_state_signals,
 						 const char *genestr, INT genestr_len,
-						 short int nbest, 
+						 short int nbest, short int ngood,
 						 DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 						 DREAL *dictionary_weights, INT dict_len, bool use_orf) ;
 

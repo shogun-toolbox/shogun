@@ -11,8 +11,10 @@
 #ifndef _ARRAY_H_
 #define _ARRAY_H_
 
+#include <assert.h>
+
 //#define ARRAY_STATISTICS
-#define ARRAY_ASSERT(x) ASSERT(x)
+#define ARRAY_ASSERT(x) assert(x)
 //#define ARRAY_ASSERT(x) 
 
 #include "lib/common.h"
