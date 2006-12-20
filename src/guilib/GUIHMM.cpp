@@ -19,6 +19,8 @@
 #include "features/StringFeatures.h"
 #include "features/Labels.h"
 
+#define TMP_DIR "/tmp/" 
+
 CGUIHMM::CGUIHMM(CGUI * gui_): gui(gui_)
 {
 #ifdef PARALLEL
