@@ -191,7 +191,7 @@ static SEXP sg_helper(SEXP args)
 				if (cmd_len == 2)
 				{
 					if (TYPEOF(args) == REALSXP)
-						sg_R.one_class_hmm_classify_example((INT) REAL(args) );
+						sg_R.one_class_hmm_classify_example((INT) REAL(args)[0] );
 					else
 						CIO::message(M_ERROR, "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
 				}
