@@ -40,7 +40,7 @@ CSignal::~CSignal()
 
 void CSignal::handler(int signal)
 {
-#ifndef HAVE_MATLAB
+#ifdef HAVE_MATLAB
 	if (signal == SIGINT)
 	{
 		CIO::message(M_MESSAGEONLY, "\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
@@ -131,4 +131,4 @@ void CSignal::clear()
 	active=false;
 	memset(&CSignal::oldsigaction, 0, sizeof(CSignal::oldsigaction));
 }
-#endif //CYGWIN
+#endif //WIN32

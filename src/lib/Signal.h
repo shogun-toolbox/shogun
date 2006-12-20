@@ -35,5 +35,5 @@ protected:
 	static bool active;
 	static bool cancel_computation;
 };
+#endif //WIN32
 #endif
-#endif //CYGWIN
