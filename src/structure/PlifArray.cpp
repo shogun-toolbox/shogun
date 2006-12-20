@@ -18,7 +18,6 @@
 #include "structure/PlifArray.h"
 
 CPlifArray::CPlifArray()
-	: m_array(5)
 {
 	min_value = -1e6 ;
 	max_value = 1e6 ;
@@ -26,14 +25,12 @@ CPlifArray::CPlifArray()
 
 CPlifArray::~CPlifArray()
 {
-	m_array.zero() ;
 }
 
 void CPlifArray::add_plif(CPlifBase* new_plif) 
 {
 	ASSERT(new_plif!=NULL) ;
 	m_array.append_element(new_plif) ;
-	//fprintf(stderr, "m_array.get_num_elements()=%i\n", m_array.get_num_elements()) ;
 	
 	min_value = -1e6 ;
 	for (INT i=0; i<m_array.get_num_elements(); i++)
@@ -51,10 +48,9 @@ void CPlifArray::add_plif(CPlifBase* new_plif)
 
 void CPlifArray::clear() 
 {
-	m_array.resize_array(0) ;
+	m_array.clear_array();
 	min_value = -1e6 ;
 	max_value = 1e6 ;
-	//fprintf(stderr, "clear: m_array.get_num_elements()=%i\n", m_array.get_num_elements()) ;
 }
 
 DREAL CPlifArray::lookup_penalty(DREAL p_value, DREAL* svm_values) const 

@@ -13,5 +13,7 @@
 %include "lib/numpy.i"
 #endif
 
+%include "structure/PlifBase.i"
 %include "structure/Plif.i"
+%include "structure/PlifArray.i"
 %include "structure/DynProg.i"

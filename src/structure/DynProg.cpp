@@ -379,7 +379,6 @@ void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len)
 		return ;
 	} ;
 
-    CIO::message(M_MESSAGEONLY, "p len: %d N:%d seq len:%d\n", p_N, N, seq_len);
 	ASSERT(p_N==N) ;
 	ASSERT(initial_state_distribution_p.get_dim1()==N) ;
 	ASSERT(end_state_distribution_q.get_dim1()==N) ;	
