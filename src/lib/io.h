@@ -58,6 +58,6 @@ protected:
 	static const char* message_strings[NUM_LOG_LEVELS];
 };
 
-#define ASSERT(x) { if (!(x)) CIO::message(M_ERROR, "assertion %s failed in file %s line %d",#x, __FILE__, __LINE__);}
+#define ASSERT(x) { if (!(x)) CIO::message(M_ERROR, "assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
 
 #endif
