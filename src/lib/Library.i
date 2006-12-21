@@ -13,3 +13,7 @@
 %include "lib/Time.i"
 %include "lib/Trie.i"
 %include "lib/Version.i"
+%include "lib/DynamicArray.i"
+%include "lib/Array.i"
+%include "lib/Array2.i"
+%include "lib/Array3.i"

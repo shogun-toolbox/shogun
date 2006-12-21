@@ -24,12 +24,13 @@ CArray3(INT dim1, INT dim2, INT dim3)
 	: CArray<T>(dim1*dim2*dim3), dim1_size(dim1), dim2_size(dim2), dim3_size(dim3)
 	{
 	}
-	
+
 CArray3(T* p_array, INT dim1, INT dim2, INT dim3, bool p_free_array=true, bool p_copy_array=false)
 	: CArray<T>(p_array, dim1*dim2*dim3, p_free_array, p_copy_array),
 		dim1_size(dim1), dim2_size(dim2), dim3_size(dim3)
 	{
 	}
+
 	
 CArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
 	: CArray<T>(p_array, dim1*dim2*dim3),
@@ -39,17 +40,7 @@ CArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
 	
 	~CArray3()
 	{
-#ifdef ARRAY_STATISTICS
-		CIO::message(M_DEBUG, "destroying CArray3 array of size %i x %i x %i\n", dim1_size, dim2_size, dim3_size) ;
-#endif
 	}
-	
-#ifdef ARRAY_STATISTICS
-	inline void set_name(const char * p_name) 
-	{
-		CArray<T>::set_name(p_name) ;
-	}
-#endif
 	
 	/// return total array size (including granularity buffer)
 	inline void get_array_size(INT & dim1, INT & dim2, INT & dim3)
@@ -108,60 +99,54 @@ CArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
 	///return array element at index
 	inline T get_element(INT idx1, INT idx2, INT idx3) const
 	{
-		ARRAY_ASSERT(idx1>=0 && idx1<dim1_size) ;		
-		ARRAY_ASSERT(idx2>=0 && idx2<dim2_size) ;		
-		ARRAY_ASSERT(idx3>=0 && idx3<dim3_size) ;		
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(idx3>=0 && idx3<dim3_size) ;		
 		return CArray<T>::get_element(idx1+dim1_size*(idx2+dim2_size*idx3)) ;
 	}
 
 	///set array element at index 'index' return false in case of trouble
 	inline bool set_element(T p_element, INT idx1, INT idx2, INT idx3)
 	{
-		ARRAY_ASSERT(idx1>=0 && idx1<dim1_size) ;		
-		ARRAY_ASSERT(idx2>=0 && idx2<dim2_size) ;		
-		ARRAY_ASSERT(idx3>=0 && idx3<dim3_size) ;		
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(idx3>=0 && idx3<dim3_size) ;		
 		return CArray<T>::set_element(p_element, idx1+dim1_size*(idx2+dim2_size*idx3)) ;
 	}
 
 	inline const T& element(INT idx1, INT idx2, INT idx3) const
 	{
-		ARRAY_ASSERT(idx1>=0 && idx1<dim1_size) ;		
-		ARRAY_ASSERT(idx2>=0 && idx2<dim2_size) ;		
-		ARRAY_ASSERT(idx3>=0 && idx3<dim3_size) ;		
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(idx3>=0 && idx3<dim3_size) ;		
 		return CArray<T>::element(idx1+dim1_size*(idx2+dim2_size*idx3)) ;
 	}
 
 	inline T& element(INT idx1, INT idx2, INT idx3) 
 	{
-		ARRAY_ASSERT(idx1>=0 && idx1<dim1_size) ;		
-		ARRAY_ASSERT(idx2>=0 && idx2<dim2_size) ;		
-		ARRAY_ASSERT(idx3>=0 && idx3<dim3_size) ;		
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(idx3>=0 && idx3<dim3_size) ;		
 		return CArray<T>::element(idx1+dim1_size*(idx2+dim2_size*idx3)) ;
 	}
 
 	inline T& element(T* p_array, INT idx1, INT idx2, INT idx3) 
 	{
-		ARRAY_ASSERT(p_array==CArray<T>::array) ;		
-		ARRAY_ASSERT(idx1>=0 && idx1<dim1_size) ;		
-		ARRAY_ASSERT(idx2>=0 && idx2<dim2_size) ;		
-		ARRAY_ASSERT(idx3>=0 && idx3<dim3_size) ;		
-#ifdef ARRAY_STATISTICS
-		CArray<T>::stat_array_element++ ;
-#endif
+		ASSERT(p_array==CArray<T>::array) ;		
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(idx3>=0 && idx3<dim3_size) ;		
 		return p_array[idx1+dim1_size*(idx2+dim2_size*idx3)] ;
 	}
 	
 	inline T& element(T* p_array, INT idx1, INT idx2, INT idx3, INT p_dim1_size, INT p_dim2_size) 
 	{
-		ARRAY_ASSERT(p_array==CArray<T>::array) ;		
-		ARRAY_ASSERT(p_dim1_size==dim1_size) ;		
-		ARRAY_ASSERT(p_dim2_size==dim2_size) ;		
-		ARRAY_ASSERT(idx1>=0 && idx1<p_dim1_size) ;		
-		ARRAY_ASSERT(idx2>=0 && idx2<p_dim2_size) ;		
-		ARRAY_ASSERT(idx3>=0 && idx3<dim3_size) ;		
-#ifdef ARRAY_STATISTICS
-		CArray<T>::stat_array_element++ ;
-#endif
+		ASSERT(p_array==CArray<T>::array) ;		
+		ASSERT(p_dim1_size==dim1_size) ;		
+		ASSERT(p_dim2_size==dim2_size) ;		
+		ASSERT(idx1>=0 && idx1<p_dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<p_dim2_size) ;		
+		ASSERT(idx3>=0 && idx3<dim3_size) ;		
 		return p_array[idx1+p_dim1_size*(idx2+p_dim2_size*idx3)] ;
 	}
 	

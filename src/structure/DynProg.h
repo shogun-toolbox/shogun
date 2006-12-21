@@ -19,6 +19,7 @@
 #include "structure/PlifBase.h"
 #include "features/StringFeatures.h"
 #include "distributions/Distribution.h"
+#include "lib/DynamicArray.h"
 #include "lib/Array.h"
 #include "lib/Array2.h"
 #include "lib/Array3.h"
@@ -77,7 +78,7 @@ public:
 	void best_path_set_pos(INT *pos, INT seq_len)  ;
 	void best_path_set_orf_info(INT *orf_info, INT m, INT n) ;            // only for best_path_trans
 	void best_path_set_segment_sum_weights(DREAL *segment_sum_weights, INT num_states, INT seq_len) ; // only for best_path_2struct
-	void best_path_set_plif_list(CPlifBase **plif_list, INT num_plif) ;
+	void best_path_set_plif_list(CDynamicArray<CPlifBase*>* plifs);
 	void best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n) ;
 	void best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m, INT n) ;
 	void best_path_set_genestr(CHAR* genestr, INT genestr_len) ;

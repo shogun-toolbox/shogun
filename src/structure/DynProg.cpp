@@ -9,11 +9,6 @@
  * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-// HMM.cpp: implementation of the CDynProg class.
-// $Id$
-//////////////////////////////////////////////////////////////////////
-
-
 #include "structure/DynProg.h"
 #include "lib/Mathematics.h"
 #include "lib/io.h"
@@ -434,8 +429,12 @@ void CDynProg::best_path_set_segment_sum_weights(DREAL *segment_sum_weights, INT
 	m_step=4 ;
 }
 
-void CDynProg::best_path_set_plif_list(CPlifBase **plif_list, INT num_plif) 
+void CDynProg::best_path_set_plif_list(CDynamicArray<CPlifBase*>* plifs)
 {
+	ASSERT(plifs);
+	CPlifBase** plif_list=plifs->get_array();
+	INT num_plif=plifs->get_num_elements();
+
 	if (m_step!=4)
 		CIO::message(M_ERROR, "please call best_path_set_orf_info or best_path_segment_sum_weights first\n") ;
 
@@ -2186,7 +2185,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 	if (0) 
 	{ // suboptimal state sequence backtracking		
-		assert(nother==0) ;
+		ASSERT(nother==0) ;
 		
 		for (short int k=0; k<nother; k++)
 		{
