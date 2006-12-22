@@ -113,11 +113,7 @@ bool CMPDSVM::train()
 		}
 
 		if (maxpidx<0 || maxdviol<0)
-#ifdef HAVE_PYTHON
-         throw SVMException("no violation no convergence, should not happen!\n");
-#else
-			CIO::message(M_ERROR, "no violation no convergence, should not happen!\n");
-#endif
+         sg_error(sg_err_fun,"no violation no convergence, should not happen!\n");
 
 		// ... and evaluate stopping conditions
 		//if (nustop)

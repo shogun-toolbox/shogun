@@ -1,22 +1,22 @@
-#ifndef _SHOGUN_EXCEPTION_H_
-#define _SHOGUN_EXCEPTION_H_
+#ifndef _S_EXCEPTION_H_
+#define _S_EXCEPTION_H_
 
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
       
-//class Exception {
+//class ShogunException {
 //      private:
 //         char* val;
 //      public:
-//         Exception(const char *fmt, ... );
+//         ShogunException(const char *fmt, ... );
 //   
 //         char* get_debug_string() {
 //            return val;
 //         }
 //};
 //
-//Exception::Exception(const char *fmt, ... )
+//ShogunException::ShogunException(const char *fmt, ... )
 //{
 //   val = new char[4096];
 //   char str[4096];
@@ -27,4 +27,4 @@
 //   strcpy(val,str);
 //}
 
-#endif // _SHOGUN_EXCEPTION_H_
+#endif // _S_EXCEPTION_H_

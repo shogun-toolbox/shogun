@@ -197,11 +197,7 @@ double *optimize_qp(QP *qp,double *epsilon_crit, INT nx,double *threshold, INT& 
   (*threshold)=model_b;
 
   if(result!=OPTIMAL_SOLUTION) {
-#ifdef HAVE_PYTHON
-     throw SVMException("PR_LOQO did not converge.\n");
-#else
-	  CIO::message(M_ERROR, "PR_LOQO did not converge.\n");
-#endif
+      sg_error(sg_err_fun,"PR_LOQO did not converge.\n");
     return(qp->opt_xinit);
   }
   else {

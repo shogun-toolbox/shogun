@@ -352,3 +352,4 @@ int CIO::get_prio_string(EMessageType prio)
 
 	return idx;
 }
+

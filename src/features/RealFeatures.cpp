@@ -24,11 +24,7 @@ bool CRealFeatures::load(CHAR* fname)
 
 
     if (!f.is_ok()) {
-#ifdef HAVE_PYTHON
-      throw FeatureException("loading file \"%s\" failed", fname);
-#else
-		CIO::message(M_ERROR, "loading file \"%s\" failed", fname);
-#endif
+      sg_error(sg_err_fun,"loading file \"%s\" failed", fname);
     }
 	else
 		status=true;

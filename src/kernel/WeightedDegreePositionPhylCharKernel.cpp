@@ -92,11 +92,7 @@ bool CWeightedDegreePositionPhylCharKernel::init(CFeatures* l, CFeatures* r, boo
 		else if (opt_type==FASTBUTMEMHUNGRY)
 			tries.create(alen, false);  // still buggy
 		else {
-#ifdef HAVE_PYTHON
-			throw KernelException("unknown optimization type\n");
-#else
-			CIO::message(M_ERROR, "unknown optimization type\n");
-#endif
+			sg_error(sg_err_fun,"unknown optimization type\n");
 		}
 
 		if ((!lhs_phyl_weights) || (lhs_phyl_weights_len != seq_length * l->get_num_vectors()))
@@ -360,11 +356,7 @@ void CWeightedDegreePositionPhylCharKernel::add_example_to_tree(INT idx, DREAL a
 		else if (opt_type==FASTBUTMEMHUNGRY)
 			max_s=shift[i];
 		else {
-#ifdef HAVE_PYTHON
-			throw KernelException("unknown optimization type\n");
-#else
-			CIO::message(M_ERROR, "unknown optimization type\n");
-#endif
+			sg_error(sg_err_fun,"unknown optimization type\n");
 		}
 		
 		for (INT s=max_s; s>=0; s--)

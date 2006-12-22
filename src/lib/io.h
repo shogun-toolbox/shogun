@@ -18,7 +18,10 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#include "exceptions/ShogunException.h"
+
 #define NUM_LOG_LEVELS 9
+
 
 class CIO
 {
@@ -59,5 +62,28 @@ protected:
 };
 
 #define ASSERT(x) { if (!(x)) CIO::message(M_ERROR, "assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
+
+#ifdef HAVE_PYTHON
+  #define sg_err_fun &throwException
+#else
+  #define sg_err_fun &cio
+#endif
+
+static void sg_error(void (*funcPtr)(char*), char *fmt, ... ) {
+   char *val = new char[256];
+   va_list list;
+   va_start(list,fmt);
+   vsprintf(val,fmt, list);
+   va_end(list);
+   (*funcPtr)(val);
+}
+
+static void throwException(char *val) {
+   throw ShogunException(val);
+}
+  
+static void cio(char *val) {
+   CIO::message(M_ERROR,val);
+}
 
 #endif

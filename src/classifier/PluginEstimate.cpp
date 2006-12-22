@@ -67,11 +67,7 @@ DREAL* CPluginEstimate::test()
 
 	if ((!pos_model) || (!neg_model))
 	  {
-#ifdef HAVE_PYTHON
-       throw PluginException("model(s) not assigned\n");
-#else
-	    CIO::message(M_ERROR, "model(s) not assigned\n") ;
-#endif
+       sg_error(sg_err_fun,"model(s) not assigned\n");
 	    return NULL ;
 	  } ;
 
@@ -110,11 +106,7 @@ DREAL CPluginEstimate::classify_example(INT idx)
 
 	if ((!pos_model) || (!neg_model))
 	  {
-#ifdef HAVE_PYTHON
-       throw PluginException("model(s) not assigned\n");
-#else
-	    CIO::message(M_ERROR, "model(s) not assigned\n");
-#endif
+       sg_error(sg_err_fun,"model(s) not assigned\n");
 	    return NAN;
 	  } ;
 	  

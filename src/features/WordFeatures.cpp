@@ -89,11 +89,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 
 	if (num_symbols>(1<<(sizeof(WORD)*8)))
 	{
-#ifdef HAVE_PYTHON
-      throw FeatureException("symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
-#else
-		CIO::message(M_ERROR, "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
-#endif
+      sg_error(sg_err_fun,"symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
 		return false;
 	}
 

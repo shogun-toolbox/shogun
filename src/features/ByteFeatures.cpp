@@ -78,11 +78,7 @@ bool CByteFeatures::load(CHAR* fname)
 
 				if (feature_matrix[lines*linelen+num_features]!='\n')
 				{
-#ifdef HAVE_PYTHON
-               throw FeatureException("line %d in file \"%s\" is corrupt\n", lines, fname);
-#else
-					CIO::message(M_ERROR, "line %d in file \"%s\" is corrupt\n", lines, fname);
-#endif
+               sg_error(sg_err_fun,"line %d in file \"%s\" is corrupt\n", lines, fname);
 					return false;
 				}
 			}
@@ -90,18 +86,10 @@ bool CByteFeatures::load(CHAR* fname)
 			return true;
 		}
 		else
-#ifdef HAVE_PYTHON
-         throw FeatureException("file is of zero size or no rectangular featurematrix of type BYTE\n");
-#else
-			CIO::message(M_ERROR, "file is of zero size or no rectangular featurematrix of type BYTE\n");
-#endif
+         sg_error(sg_err_fun,"file is of zero size or no rectangular featurematrix of type BYTE\n");
 	}
 	else
-#ifdef HAVE_PYTHON
-      throw FeatureException("reading file failed\n");
-#else
-		CIO::message(M_ERROR, "reading file failed\n");
-#endif
+      sg_error(sg_err_fun,"reading file failed\n");
 
 	return false;
 }

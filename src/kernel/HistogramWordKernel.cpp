@@ -109,20 +109,12 @@ bool CHistogramWordKernel::init(CFeatures* p_l, CFeatures* p_r, bool do_init)
 			r->get_num_features() * r->get_num_symbols();
 	    if ((!estimate) || (!estimate->check_models()))
 		{
-#ifdef HAVE_PYTHON
-         throw KernelException("no estimate available\n");
-#else
-			CIO::message(M_ERROR, "no estimate available\n") ;
-#endif
+         sg_error(sg_err_fun,"no estimate available\n");
 			return false ;
 		} ;
 	    if (num_params!=estimate->get_num_params())
 		{
-#ifdef HAVE_PYTHON
-         throw KernelException("number of parameters of estimate and feature representation do not match\n");
-#else
-			CIO::message(M_ERROR, "number of parameters of estimate and feature representation do not match\n") ;
-#endif
+         sg_error(sg_err_fun,"number of parameters of estimate and feature representation do not match\n");
 			return false ;
 		} ;
 	    

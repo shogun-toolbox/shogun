@@ -44,11 +44,7 @@ void CLinearByteKernel::init_rescale()
 			sum+=compute(i, i);
 
 	if ( sum > (pow((double) 2, (double) 8*sizeof(LONG))) ) {
-#ifdef HAVE_PYTHON
-      throw KernelException("the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
-#else
-		CIO::message(M_ERROR, "the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
-#endif
+      sg_error(sg_err_fun,"the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
    }
 	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
 }
