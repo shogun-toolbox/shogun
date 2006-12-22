@@ -218,11 +218,7 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r, bool do
 		else if (opt_type==FASTBUTMEMHUNGRY)
 			tries.create(alen, false);  // still buggy
 		else {
-#ifdef HAVE_PYTHON
-         throw KernelException("unknown optimization type\n");
-#else
-			CIO::message(M_ERROR, "unknown optimization type\n");
-#endif
+         sg_error(sg_err_fun,"unknown optimization type\n");
       }
     } 
 	
@@ -345,11 +341,7 @@ bool CWeightedDegreePositionCharKernel::init_optimization(INT p_count, INT * IDX
 	
     if (max_mismatch!=0)
     {
-#ifdef HAVE_PYTHON
-      throw KernelException("CWeightedDegreePositionCharKernel optimization not implemented for mismatch!=0\n");
-#else
-		CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not implemented for mismatch!=0\n") ;
-#endif
+      sg_error(sg_err_fun,"CWeightedDegreePositionCharKernel optimization not implemented for mismatch!=0\n");
 		return false ;
     }
 
@@ -398,11 +390,7 @@ bool CWeightedDegreePositionCharKernel::delete_optimization()
 		else if (opt_type==FASTBUTMEMHUNGRY)
 			tries.delete_trees(false);  // still buggy
 		else {
-#ifdef HAVE_PYTHON
-         throw KernelException("unknown optimization type\n");
-#else
-			CIO::message(M_ERROR, "unknown optimization type\n");
-#endif
+         sg_error(sg_err_fun,"unknown optimization type\n");
       }
 		set_is_initialized(false);
 		
@@ -772,11 +760,7 @@ void CWeightedDegreePositionCharKernel::add_example_to_tree(INT idx, DREAL alpha
 		else if (opt_type==FASTBUTMEMHUNGRY)
 			max_s=shift[i];
 		else {
-#ifdef HAVE_PYTHON
-         throw KernelException("unknown optimization type\n");
-#else
-			CIO::message(M_ERROR, "unknown optimization type\n");
-#endif
+         sg_error(sg_err_fun,"unknown optimization type\n");
       }
 		
 		for (INT s=max_s; s>=0; s--)
@@ -819,11 +803,7 @@ void CWeightedDegreePositionCharKernel::add_example_to_single_tree(INT idx, DREA
 		max_s=shift[tree_num];
 	}
     else {
-#ifdef HAVE_PYTHON
-       throw KernelException("unknown optimization type\n");
-#else
-		CIO::message(M_ERROR, "unknown optimization type\n");
-#endif
+       sg_error(sg_err_fun,"unknown optimization type\n");
     }
     for (INT i=CMath::max(0,tree_num-max_shift); i<CMath::min(len,tree_num+degree+max_shift); i++)
 		vec[i]=((CCharFeatures*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
@@ -969,11 +949,7 @@ bool CWeightedDegreePositionCharKernel::set_position_weights(DREAL* pws, INT len
 	
     if (seq_length!=len) 
     {
-#ifdef HAVE_PYTHON
-		throw KernelException("seq_length = %i, position_weights_length=%i\n", seq_length, len) ;
-#else
-		CIO::message(M_ERROR, "seq_length = %i, position_weights_length=%i\n", seq_length, len) ;
-#endif
+		sg_error(sg_err_fun,"seq_length = %i, position_weights_length=%i\n", seq_length, len) ;
 		return false ;
     }
     delete[] position_weights;

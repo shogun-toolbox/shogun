@@ -220,35 +220,21 @@ bool CSVMLight::init_cplex()
 			status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2);
 			if ( status )
 			{
-#ifdef HAVE_PYTHON
-            throw SVMException("Failure to select dual lp optimization, error %d.\n", status);
-#else
-				CIO::message(M_ERROR, 
-            "Failure to select dual lp optimization, error %d.\n", status);
-#endif
+            sg_error(sg_err_fun,"Failure to select dual lp optimization, error %d.\n", status);
 			}
 			else
 			{
 				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
 				if ( status )
 				{
-#ifdef HAVE_PYTHON
-               throw SVMException("Failure to turn on data checking, error %d.\n", status);
-#else
-					CIO::message(M_ERROR,
-							"Failure to turn on data checking, error %d.\n", status);
-#endif
+               sg_error(sg_err_fun,"Failure to turn on data checking, error %d.\n", status);
 				}	
 				else
 				{
 					lp = CPXcreateprob (env, &status, "light");
 
 					if ( lp == NULL )
-#ifdef HAVE_PYTHON
-                  throw SVMException("Failed to create LP.\n");
-#else
-						CIO::message(M_ERROR, "Failed to create LP.\n");
-#endif
+                  sg_error(sg_err_fun,"Failed to create LP.\n");
 					else
 						CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
 				}
@@ -420,11 +406,7 @@ bool CSVMLight::train()
 
 	if (!CKernelMachine::get_kernel())
 	{
-#ifdef HAVE_PYTHON
-      throw SVMException("SVM_light can not proceed without kernel!\n");
-#else
-		CIO::message(M_ERROR, "SVM_light can not proceed without kernel!\n");
-#endif
+      sg_error(sg_err_fun,"SVM_light can not proceed without kernel!\n");
 		return false ;
 	}
 
@@ -472,11 +454,7 @@ bool CSVMLight::train()
 		init_cplex();
 #else
 	if (get_mkl_enabled())
-#ifdef HAVE_PYTHON
-      throw SVMException("CPLEX was disabled at compile-time\n");
-#else
-		CIO::message(M_ERROR, "CPLEX was disabled at compile-time\n");
-#endif
+      sg_error(sg_err_fun,"CPLEX was disabled at compile-time\n");
 #endif
 	
 	if (precomputed_subkernels != NULL)
@@ -1865,11 +1843,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 			if ( status ) {
 				char  errmsg[1024];
 				CPXgeterrorstring (env, status, errmsg);
-#ifdef HAVE_PYTHON
-            throw SVMException("%s", errmsg);
-#else
-				CIO::message(M_ERROR, "%s", errmsg);
-#endif
+            sg_error(sg_err_fun,"%s", errmsg);
 			}
 			
 			// add constraint sum(w)=1 ;
@@ -1896,11 +1870,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 								 initial_rhs, initial_sense, initial_rmatbeg,
 								 initial_rmatind, initial_rmatval, NULL, NULL);
 			if ( status ) {
-#ifdef HAVE_PYTHON
-            throw SVMException("Failed to add the first row.\n");
-#else
-				CIO::message(M_ERROR, "Failed to add the first row.\n");
-#endif
+            sg_error(sg_err_fun,"Failed to add the first row.\n");
 			}
 			lp_initialized = true ;
 			
@@ -1927,11 +1897,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-#ifdef HAVE_PYTHON
-                  throw SVMException("Failed to add a smothness row (1).\n");
-#else
-						CIO::message(M_ERROR, "Failed to add a smothness row (1).\n");
-#endif
+                  sg_error(sg_err_fun,"Failed to add a smothness row (1).\n");
 					}
 					
 					rmatbeg[0] = 0;
@@ -1947,11 +1913,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-#ifdef HAVE_PYTHON
-                  throw SVMException("Failed to add a smothness row (2).\n");
-#else
-						CIO::message(M_ERROR, "Failed to add a smothness row (2).\n");
-#endif
+                  sg_error(sg_err_fun,"Failed to add a smothness row (2).\n");
 					}
 				}
 			}
@@ -1984,21 +1946,13 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 									 rhs, sense, rmatbeg,
 									 rmatind, rmatval, NULL, NULL);
 			if ( status ) 
-#ifdef HAVE_PYTHON
-            throw SVMException("Failed to add the new row.\n");
-#else
-				CIO::message(M_ERROR, "Failed to add the new row.\n");
-#endif
+            sg_error(sg_err_fun,"Failed to add the new row.\n");
 		}
 		
 		{ // optimize
 			INT status = CPXlpopt (env, lp);
 			if ( status ) 
-#ifdef HAVE_PYTHON
-            throw SVMException("Failed to optimize LP.\n");
-#else
-				CIO::message(M_ERROR, "Failed to optimize LP.\n");
-#endif
+            sg_error(sg_err_fun,"Failed to optimize LP.\n");
 			
 			// obtain solution
 			INT cur_numrows = CPXgetnumrows (env, lp);
@@ -2016,22 +1970,14 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 				 slack == NULL ||
 				 pi    == NULL   ) {
 				status = CPXERR_NO_MEMORY;
-#ifdef HAVE_PYTHON
-            throw SVMException("Could not allocate memory for solution.\n");
-#else
-				CIO::message(M_ERROR, "Could not allocate memory for solution.\n") ;
-#endif
+            sg_error(sg_err_fun,"Could not allocate memory for solution.\n");
 			}
 			INT solstat = 0 ;
 			DREAL objval = 0 ;
 			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
 			INT solution_ok = (!status) ;
 			if ( status ) {
-#ifdef HAVE_PYTHON
-            throw SVMException("Failed to obtain solution.\n");
-#else
-				CIO::message(M_ERROR, "Failed to obtain solution.\n");
-#endif
+            sg_error(sg_err_fun,"Failed to obtain solution.\n");
 			}
 			
 			num_active_rows=0 ;
@@ -2061,11 +2007,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_row,num_rows) ;
 					status = CPXdelrows (env, lp, max_idx, max_idx) ;
 					if ( status ) 
-#ifdef HAVE_PYTHON
-                  throw SVMException("Failed to remove an old row.\n");
-#else
-						CIO::message(M_ERROR, "Failed to remove an old row.\n");
-#endif
+                  sg_error(sg_err_fun,"Failed to remove an old row.\n");
 				}
 
 				// set weights, store new rho and compute new w gap
@@ -2246,11 +2188,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 			if ( status ) {
 				char  errmsg[1024];
 				CPXgeterrorstring (env, status, errmsg);
-#ifdef HAVE_PYTHON
-            throw SVMException("%s", errmsg);
-#else
-				CIO::message(M_ERROR, "%s", errmsg);
-#endif
+            sg_error(sg_err_fun,"%s", errmsg);
 			}
 			
 			// add constraint sum(w)=1 ;
@@ -2276,11 +2214,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 								 initial_rhs, initial_sense, initial_rmatbeg,
 								 initial_rmatind, initial_rmatval, NULL, NULL);
 			if ( status ) {
-#ifdef HAVE_PYTHON
-            throw SVMException("Failed to add the first row.\n");
-#else
-				CIO::message(M_ERROR, "Failed to add the first row.\n");
-#endif
+            sg_error(sg_err_fun,"Failed to add the first row.\n");
 			}
 			lp_initialized=true ;
 			if (C_mkl!=0.0)
@@ -2308,11 +2242,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-#ifdef HAVE_PYTHON
-                  throw SVMException("Failed to add a smothness row (1).\n");
-#else
-						CIO::message(M_ERROR, "Failed to add a smothness row (1).\n");
-#endif
+                  sg_error(sg_err_fun,"Failed to add a smothness row (1).\n");
 					}
 					
 					rmatbeg[0] = 0;
@@ -2328,11 +2258,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-#ifdef HAVE_PYTHON
-                  throw SVMException("Failed to add a smothness row (2).\n");
-#else
-						CIO::message(M_ERROR, "Failed to add a smothness row (2).\n");
-#endif
+                  sg_error(sg_err_fun,"Failed to add a smothness row (2).\n");
 					}
 				}
 			}
@@ -2363,21 +2289,13 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 									 rhs, sense, rmatbeg,
 									 rmatind, rmatval, NULL, NULL);
 			if ( status ) 
-#ifdef HAVE_PYTHON
-            throw SVMException("Failed to add the new row.\n");
-#else
-				CIO::message(M_ERROR, "Failed to add the new row.\n");
-#endif
+            sg_error(sg_err_fun,"Failed to add the new row.\n");
 		}
 		
 		{ // optimize
 			INT status = CPXlpopt (env, lp);
 			if ( status ) 
-#ifdef HAVE_PYTHON
-            throw SVMException("Failed to optimize LP.\n");
-#else
-				CIO::message(M_ERROR, "Failed to optimize LP.\n");
-#endif
+            sg_error(sg_err_fun,"Failed to optimize LP.\n");
 			
 			// obtain solution
 			INT cur_numrows = CPXgetnumrows (env, lp);
@@ -2395,22 +2313,14 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 				 slack == NULL ||
 				 pi    == NULL   ) {
 				status = CPXERR_NO_MEMORY;
-#ifdef HAVE_PYTHON
-            throw SVMException("Could not allocate memory for solution.\n");
-#else
-				CIO::message(M_ERROR, "Could not allocate memory for solution.\n") ;
-#endif
+            sg_error(sg_err_fun,"Could not allocate memory for solution.\n");
 			}
 			INT solstat = 0 ;
 			DREAL objval = 0 ;
 			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
 			INT solution_ok = (!status) ;
 			if ( status ) {
-#ifdef HAVE_PYTHON
-            throw SVMException("Failed to obtain solution.\n");
-#else
-				CIO::message(M_ERROR, "Failed to obtain solution.\n");
-#endif
+            sg_error(sg_err_fun,"Failed to obtain solution.\n");
 			}
 			
 			num_active_rows=0 ;
@@ -2440,11 +2350,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_row,num_rows) ;
 					status = CPXdelrows (env, lp, max_idx, max_idx) ;
 					if ( status ) 
-#ifdef HAVE_PYTHON
-                  throw SVMException("Failed to remove an old row.\n");
-#else
-						CIO::message(M_ERROR, "Failed to remove an old row.\n");
-#endif
+                  sg_error(sg_err_fun,"Failed to remove an old row.\n");
 				}
 
 				// set weights, store new rho and compute new w gap
