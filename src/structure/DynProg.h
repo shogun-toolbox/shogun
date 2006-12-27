@@ -221,7 +221,7 @@ protected:
 		INT* start_pos ;
 		DREAL ** svm_values_unnormalized ;
 		DREAL * svm_values ;
-		bool ** word_used ;
+		INT ** word_used ;
 		INT **num_unique_words ;
 	} ;
 
@@ -282,8 +282,8 @@ protected:
 	CArray2<INT> mod_words ;
 	INT * mod_words_array ;
 
-	CArray2<bool> word_used ;
-	bool *word_used_array ;
+	CArray2<INT> word_used ;
+	INT *word_used_array ;
 	CArray2<DREAL> svm_values_unnormalized ;
 	CArray<INT> svm_pos_start ;
 	CArray<INT> num_unique_words ;

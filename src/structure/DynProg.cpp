@@ -1442,7 +1442,7 @@ void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, IN
 		svs.svm_values              = new DREAL[seqlen*num_svms] ;
 		svs.num_unique_words        = new INT*[num_degrees] ;
 		svs.svm_values_unnormalized = new DREAL*[num_degrees] ;
-		svs.word_used               = new bool*[num_degrees] ;
+		svs.word_used               = new INT*[num_degrees] ;
 		for (INT j=0; j<num_degrees; j++)
 		{
 			svs.svm_values_unnormalized[j] = new DREAL[num_svms] ;
