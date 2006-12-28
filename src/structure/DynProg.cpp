@@ -474,11 +474,15 @@ void CDynProg::best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m
 	CArray2<INT> id_matrix(plif_id_matrix, N, 2, false, false) ;
 	m_PEN_state_signals.resize_array(N,2) ;
 	for (INT i=0; i<N; i++)
+	{
 		for (INT j=0; j<2; j++)
+		{
 			if (id_matrix.element(i,j)>=0)
 				m_PEN_state_signals.element(i,j)=m_plif_list[id_matrix.element(i,j)] ;
 			else
 				m_PEN_state_signals.element(i,j)=NULL ;
+		}
+	}
 
 	m_step=6 ;
 }
@@ -1446,7 +1450,7 @@ void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, IN
 		for (INT j=0; j<num_degrees; j++)
 		{
 			svs.svm_values_unnormalized[j] = new DREAL[num_svms] ;
-			svs.word_used[j]               = new bool[num_words_array[j]] ;
+			svs.word_used[j]               = new INT[num_words_array[j]] ;
 			svs.num_unique_words[j]        = new INT[num_svms] ;
 		}
 		svs.start_pos               = new INT[num_svms] ;
