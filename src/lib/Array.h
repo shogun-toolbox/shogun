@@ -113,7 +113,7 @@ CArray(const T* p_array, INT p_array_size)
 	
 	inline const T& element(INT idx1) const
 	{
-#ifndef ARRAY_STATISTICS
+#ifdef ARRAY_STATISTICS
 		// hack to get rid of the const
 		((CArray<T>*)this)->stat_const_element++ ;
 #endif
