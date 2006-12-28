@@ -177,7 +177,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 	int p=get_prio_string(prio);
 	if (p>=0)
 	{
-		fprintf(target, message_strings[p]);
+		fprintf(target, "%s", message_strings[p]);
 		va_list list;
 		va_start(list,fmt);
 		vfprintf(target,fmt,list);
@@ -351,5 +351,22 @@ int CIO::get_prio_string(EMessageType prio)
 	}
 
 	return idx;
+}
+
+void sg_error(void (*funcPtr)(char*), char *fmt, ... ) {
+   char *val = new char[256];
+   va_list list;
+   va_start(list,fmt);
+   vsprintf(val,fmt, list);
+   va_end(list);
+   (*funcPtr)(val);
+}
+
+void throwException(char *val) {
+   throw ShogunException(val);
+}
+  
+void cio(char *val) {
+   CIO::message(M_ERROR,val);
 }
 

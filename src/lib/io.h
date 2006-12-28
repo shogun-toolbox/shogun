@@ -69,21 +69,8 @@ protected:
   #define sg_err_fun &cio
 #endif
 
-static void sg_error(void (*funcPtr)(char*), char *fmt, ... ) {
-   char *val = new char[256];
-   va_list list;
-   va_start(list,fmt);
-   vsprintf(val,fmt, list);
-   va_end(list);
-   (*funcPtr)(val);
-}
-
-static void throwException(char *val) {
-   throw ShogunException(val);
-}
-  
-static void cio(char *val) {
-   CIO::message(M_ERROR,val);
-}
+void sg_error(void (*funcPtr)(char*), char *fmt, ... );
+void throwException(char *val);
+void cio(char *val);
 
 #endif
