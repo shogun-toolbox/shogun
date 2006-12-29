@@ -23,7 +23,12 @@
 #include "lib/Mathematics.h"
 
 #include <math.h>
-
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 template <class T> struct T_STRING
 {
@@ -236,6 +241,44 @@ template <class ST> class CStringFeatures: public CFeatures
 #endif
 
 		return false;
+	}
+
+	bool load_from_directory(CHAR* dirname)
+	{
+		struct dirent **namelist;
+		int n;
+
+		CIO::set_dirname(dirname);
+
+		n = scandir(dirname, &namelist, CIO::filter, alphasort);
+		if (n < 0)
+			perror("scandir");
+		else
+		{
+			for (int i=0; i<n; i++)
+			{
+				CHAR* fname=CIO::concat_filename(namelist[i]->d_name);
+
+				struct stat s;
+				off_t filesize=0;
+				if (!stat(fname, &s) && s.st_size>0)
+				{
+					filesize=s.st_size/sizeof(ST);
+
+					FILE* f=fopen(fname, "ro");
+					if (f)
+					{
+						ST* str=new ST[filesize];
+						CIO::message(M_DEBUG,"%s:%ld\n", fname, (long int) filesize);
+						fread(str, filesize, 1, f);
+						fclose(f);
+					}
+				}
+				free(namelist[i]);
+			}
+			free(namelist);
+		}
+		return 0;
 	}
 
 	void set_features(T_STRING<ST>* p_features, INT p_num_vectors, INT p_max_string_length)

@@ -141,16 +141,16 @@ CArray2(const T* p_array, INT dim1, INT dim2)
 	}
 
 	void display() const
+	{
+		CIO::message(M_MESSAGEONLY, "2d-Array of size: %dx%d\n",dim1_size,dim2_size);
+		for (INT i=0; i<dim1_size; i++)
 		{
-			cout << "2d-Array of size: " << dim1_size << " x " << dim2_size << endl ;
-			for (INT i=0; i<dim1_size; i++)
-			{
-				cout << "element(" << i << ",:) = [ " ;
-				for (INT j=0; j<dim2_size; j++)
-					cout << element(i,j) << ", " ;
-				cout << " ]" << endl ;
-			}
+			CIO::message(M_MESSAGEONLY, "element(%d,:) = [ ",i);
+			for (INT j=0; j<dim2_size; j++)
+				CIO::message(M_MESSAGEONLY, "%d,", element(i,j));
+			CIO::message(M_MESSAGEONLY, " ]\n");
 		}
+	}
 
 protected:
 	/// the number of potentially used elements in array

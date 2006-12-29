@@ -37,9 +37,15 @@
 #include "lib/Time.h"
 #include "lib/Mathematics.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <ctype.h>
+#include <dirent.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 FILE* CIO::target=stdout;
 LONG CIO::last_progress_time=0 ;
@@ -48,6 +54,13 @@ DREAL CIO::last_progress=1 ;
 EMessageType CIO::loglevel = M_WARN;
 const EMessageType CIO::levels[NUM_LOG_LEVELS]={M_DEBUG, M_INFO, M_NOTICE, M_WARN, M_ERROR, M_CRITICAL, M_ALERT, M_EMERGENCY,M_MESSAGEONLY};
 const char* CIO::message_strings[NUM_LOG_LEVELS]={"[DEBUG] ", "[INFO] ", "[NOTICE] ", "\033[1;34m[WARN]\033[0m ", "\033[1;31m[ERROR]\033[0m ", "[CRITICAL] ", "[ALERT] ", "[EMERGENCY] ", ""};
+
+/// file name buffer
+CHAR file_buffer[FBUFSIZE];
+
+/// directory name buffer
+CHAR directory_name[FBUFSIZE];
+
 
 CIO::CIO()
 {
@@ -351,6 +364,31 @@ int CIO::get_prio_string(EMessageType prio)
 	}
 
 	return idx;
+}
+
+CHAR* CIO::concat_filename(const CHAR* filename)
+{
+	if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
+		CIO::message(M_ERROR, "filename too long");
+	
+	return file_buffer;
+}
+
+INT CIO::filter(const struct dirent* d)
+{
+	if (d)
+	{
+		CHAR* fname=CIO::concat_filename(d->d_name);
+
+		if (!access(fname, R_OK))
+		{
+			struct stat s;
+			if (!stat(fname, &s) && S_ISREG(s.st_mode))
+				return 1;
+		}
+	}
+
+	return 0;
 }
 
 void sg_error(void (*funcPtr)(char*), char *fmt, ... ) {

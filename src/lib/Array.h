@@ -18,7 +18,6 @@
 #define ARRAY_ASSERT(x) 
 
 #include "lib/common.h"
-#include <iostream.h>
 
 template <class T> class CArray;
 
@@ -242,12 +241,12 @@ CArray(const T* p_array, INT p_array_size)
 	}
 
 	void display() const
-		{
-			cout << "Array of size: " << array_size << endl ;
-			for (INT i=0; i<array_size; i++)
-				cout << array[i] << ", " ;
-			cout << endl ;
-		}
+	{
+		CIO::message(M_MESSAGEONLY, "Array of size: %d\n", array_size);
+		for (INT i=0; i<array_size; i++)
+			CIO::message(M_MESSAGEONLY, "%d,", array[i]);
+		CIO::message(M_MESSAGEONLY, "\n");
+	}
 	
 protected:
 

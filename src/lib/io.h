@@ -21,6 +21,9 @@
 #include "exceptions/ShogunException.h"
 
 #define NUM_LOG_LEVELS 9
+#define FBUFSIZE 4096
+extern CHAR file_buffer[FBUFSIZE];
+extern CHAR directory_name[FBUFSIZE];
 
 
 class CIO
@@ -42,8 +45,19 @@ public:
 	static void buffered_message(EMessageType prio, const CHAR *fmt, ... );
 	static CHAR* skip_spaces(CHAR* str);
 
-	static EMessageType loglevel;
-	static const EMessageType levels[NUM_LOG_LEVELS];
+	///set directory-name
+	static inline void set_dirname(const CHAR* dirname)
+	{
+		strncpy(directory_name, dirname, FBUFSIZE);
+	}
+
+	///concatenate directory and filename
+	/// ( non thread safe )
+	static CHAR* concat_filename(const CHAR* filename);
+
+	///concatenate directory and filename
+	/// ( non thread safe )
+	static INT filter(const struct dirent* d);
 
 protected:
 	static void check_target();
@@ -59,6 +73,11 @@ protected:
 	//const static char* message_strings[NUM_LOG_LEVELS];
 	//const static EMessageType levels[NUM_LOG_LEVELS];
 	static const char* message_strings[NUM_LOG_LEVELS];
+
+	static EMessageType loglevel;
+	static const EMessageType levels[NUM_LOG_LEVELS];
+
+
 };
 
 #define ASSERT(x) { if (!(x)) CIO::message(M_ERROR, "assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
