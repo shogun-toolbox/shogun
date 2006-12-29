@@ -796,7 +796,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 		INT N=mxGetN(mx_p);
 		INT M=mxGetN(mx_pos);
 		INT P=mxGetN(mx_penalty_info) ;
-		INT L=mxGetM(mx_genestr) ;
+		INT genestr_len=mxGetM(mx_genestr) ;
 		INT genestr_num=mxGetN(mx_genestr) ;
 		INT D=mxGetM(mx_dict_weights) ;
 		INT my_seqlen = mxGetN(mx_my_path) ;
@@ -834,10 +834,10 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			  mxGetM(mx_my_pos)==1))
 			CIO::message(M_ERROR, "size of position and path don't match\n");
 
-		if (!(mxGetN(mx_dict_weights)==8 && 
+		if (!(((mxGetN(mx_dict_weights)==8)||(mxGetN(mx_dict_weights)==16)) && 
 			  ((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			   || mxIsEmpty(mx_penalty_info))))
-			CIO::message(M_ERROR, "dict_weights of penalty_info wrong\n");
+			CIO::message(M_ERROR, "dict_weights or penalty_info wrong\n");
 
 		if (!(mxGetM(mx_mod_words)==8 && mxGetN(mx_mod_words)==2))
 			CIO::message(M_ERROR, "size mod_words wrong (should be 8x2)\n");
@@ -1029,7 +1029,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			
 			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, p_my_losses, 
 									 my_seqlen, seq, M, pos, 
-									 PEN_matrix, PEN_state_signal, genestr, L, genestr_num, 
+									 PEN_matrix, PEN_state_signal, genestr, genestr_len, genestr_num, 
 									 dict_weights, 8*D) ;
 			
 			for (INT i=0; i<N; i++)

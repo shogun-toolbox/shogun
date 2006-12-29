@@ -1412,7 +1412,7 @@ void CDynProg::find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<IN
 {
 	CArray2<INT> num_segment_id(loss.num_segment_id, loss.seqlen, max_a_id+1, false, false) ;
 	CArray2<INT> length_segment_id(loss.length_segment_id, loss.seqlen, max_a_id+1, false, false) ;
-
+	
 	for (INT i=0; i<max_a_id+1; i++)
 	{
 		num_segment_id.element(t_end, i) = 0 ;
@@ -2337,6 +2337,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 		CIO::message(M_ERROR, "SVM arrays not clean") ;
 		return ;
 	} ;
+	//fprintf(stderr, "genestr_len=%i, genestr_num=%i\n", genestr_len, genestr_num) ;
 
 	bool use_svm = false ;
 	ASSERT(dict_len==num_svms*cum_num_words_array[num_degrees]) ;
