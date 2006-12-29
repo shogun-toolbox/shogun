@@ -71,6 +71,8 @@ public:
 	void init_cum_num_words_array(INT * p_cum_num_words_array, INT num_elem) ;
 	void init_num_words_array(INT * p_num_words_array, INT num_elem) ;
 	void init_mod_words_array(INT * p_mod_words_array, INT num_elem, INT num_columns) ;
+	void init_sign_words_array(bool * p_sign_words_array, INT num_elem) ;
+	void init_string_words_array(INT * p_string_words_array, INT num_elem) ;
 	bool check_svm_arrays() ; // call this function to check consistency
 
 	// best_path preparation functions
@@ -81,7 +83,7 @@ public:
 	void best_path_set_plif_list(CDynamicArray<CPlifBase*>* plifs);
 	void best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n) ;
 	void best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m, INT n) ;
-	void best_path_set_genestr(CHAR* genestr, INT genestr_len) ;
+	void best_path_set_genestr(CHAR* genestr, INT genestr_len, INT genestr_num) ; // genestr_num is typically 1
 	void best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len, INT n) ;
 	void best_path_set_segment_loss(DREAL * segment_loss, INT num_segment_id1, INT num_segment_id2) ;
 	void best_path_set_segment_ids_mask(INT* segment_ids_mask, INT m, INT n) ;
@@ -100,18 +102,18 @@ public:
 
 	void best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, const INT *orf_info,
 						 CPlifBase **PLif_matrix, CPlifBase **Plif_state_signals,
-						 const char *genestr, INT genestr_len,
+						 const char *genestr, INT genestr_len, INT genestr_num, 
 						 short int nbest, short int ngood,
 						 DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 						 DREAL *dictionary_weights, INT dict_len, bool use_orf) ;
 
 	void best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, DREAL* my_losses,
-								INT my_seq_len, 
-								const DREAL *seq_array, INT seq_len, const INT *pos,
-								CPlifBase **Plif_matrix, CPlifBase **Plif_state_signals,
-								const char *genestr, INT genestr_len,
-								DREAL *dictionary_weights, INT dict_len) ;
-
+							   INT my_seq_len, 
+							   const DREAL *seq_array, INT seq_len, const INT *pos,
+							   CPlifBase **Plif_matrix, CPlifBase **Plif_state_signals,
+							   const char *genestr, INT genestr_len, INT genestr_num,
+							   DREAL *dictionary_weights, INT dict_len) ;
+	
 	void best_path_2struct(const DREAL *seq, INT seq_len, const INT *pos, 
 						   CPlifBase **Plif_matrix, 
 						   const char *genestr, INT genestr_len,
@@ -221,7 +223,7 @@ protected:
 		INT* start_pos ;
 		DREAL ** svm_values_unnormalized ;
 		DREAL * svm_values ;
-		INT ** word_used ;
+		bool *** word_used ;
 		INT **num_unique_words ;
 	} ;
 
@@ -229,7 +231,7 @@ protected:
 	//void extend_svm_values(WORD** wordstr, INT pos, INT *last_svm_pos, DREAL* svm_value) ;
 	void init_svm_values(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT howmuchlookback) ;
 	void clear_svm_values(struct svm_values_struct & svs) ;
-	void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs) ;
+	void find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs) ;
 	bool extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to) ;
 
 	struct segment_loss_struct
@@ -273,6 +275,7 @@ protected:
 
 	INT num_degrees ;
 	INT num_svms  ;
+	INT num_strings ;
 	
 	CArray<INT> word_degree ;
 	CArray<INT> cum_num_words ;
@@ -281,10 +284,14 @@ protected:
 	INT * num_words_array ;
 	CArray2<INT> mod_words ;
 	INT * mod_words_array ;
+	CArray<bool> sign_words ;
+	bool * sign_words_array ;
+	CArray<INT> string_words ;
+	INT * string_words_array ;
 
-	CArray2<INT> word_used ;
-	INT *word_used_array ;
-	CArray2<DREAL> svm_values_unnormalized ;
+//	CArray3<INT> word_used ;
+//	INT *word_used_array ;
+//	CArray2<DREAL> svm_values_unnormalized ;
 	CArray<INT> svm_pos_start ;
 	CArray<INT> num_unique_words ;
 	bool svm_arrays_clean ;
@@ -311,7 +318,7 @@ protected:
 	CArray<CPlifBase*> m_plif_list ;
 	CArray2<CPlifBase*> m_PEN ;
 	CArray2<CPlifBase*> m_PEN_state_signals ;
-	CArray<CHAR> m_genestr ;
+	CArray2<CHAR> m_genestr ;
 	CArray2<DREAL> m_dict_weights ;
 	CArray3<DREAL> m_segment_loss ;
 	CArray2<INT> m_segment_ids_mask ;

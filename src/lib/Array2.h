@@ -140,6 +140,18 @@ CArray2(const T* p_array, INT dim1, INT dim2)
 		return *this;
 	}
 
+	void display() const
+		{
+			cout << "2d-Array of size: " << dim1_size << " x " << dim2_size << endl ;
+			for (INT i=0; i<dim1_size; i++)
+			{
+				cout << "element(" << i << ",:) = [ " ;
+				for (INT j=0; j<dim2_size; j++)
+					cout << element(i,j) << ", " ;
+				cout << " ]" << endl ;
+			}
+		}
+
 protected:
 	/// the number of potentially used elements in array
 	INT dim1_size;

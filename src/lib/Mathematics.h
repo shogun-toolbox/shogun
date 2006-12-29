@@ -154,7 +154,12 @@ public:
 
 	static inline DREAL log10(DREAL v)
 	{
-		return log(v)/log(10.0);
+		return ::log(v)/::log(10.0);
+	}
+
+	static inline DREAL log(DREAL v)
+	{
+		return ::log(v);
 	}
 
 	static DREAL* pinv(DREAL* matrix, INT rows, INT cols, DREAL* target=NULL);
@@ -650,7 +655,7 @@ void CMath::qsort_backward(T1* output, T2* index, INT size)
 template <class T> 
 void CMath::nmin(DREAL* output, T* index, INT size, INT n)
 {
-	if (6*n*size<13*size*log(size))
+	if (6*n*size<13*size*CMath::log(size))
 		for (INT i=0; i<n; i++)
 			min(&output[i], &index[i], size-i) ;
 	else

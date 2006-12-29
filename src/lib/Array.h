@@ -14,10 +14,11 @@
 #include <assert.h>
 
 //#define ARRAY_STATISTICS
-#define ARRAY_ASSERT(x) assert(x)
-//#define ARRAY_ASSERT(x) 
+//#define ARRAY_ASSERT(x) assert(x)
+#define ARRAY_ASSERT(x) 
 
 #include "lib/common.h"
+#include <iostream.h>
 
 template <class T> class CArray;
 
@@ -240,6 +241,14 @@ CArray(const T* p_array, INT p_array_size)
 		return *this;
 	}
 
+	void display() const
+		{
+			cout << "Array of size: " << array_size << endl ;
+			for (INT i=0; i<array_size; i++)
+				cout << array[i] << ", " ;
+			cout << endl ;
+		}
+	
 protected:
 
 	/// memory for dynamic array

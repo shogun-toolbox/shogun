@@ -723,7 +723,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			} ;
 			
 			h->best_path_trans(seq, M, pos, orf_info,
-							   PEN_matrix, PEN_state_signal, genestr, L,
+							   PEN_matrix, PEN_state_signal, genestr, L, 1,
 							   nbest, nother, p_prob, my_path, my_pos, dict_weights, 8*D, use_orf) ;
 
 			// clean up 
@@ -1030,7 +1030,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			
 			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, p_my_losses, 
 									 my_seqlen, seq, M, pos, 
-									 PEN_matrix, PEN_state_signal, genestr, L,
+									 PEN_matrix, PEN_state_signal, genestr, L, 1, 
 									 dict_weights, 8*D) ;
 			
 			for (INT i=0; i<N; i++)

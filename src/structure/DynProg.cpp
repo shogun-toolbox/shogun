@@ -39,7 +39,10 @@ extern "C" int	finite(double);
 static INT word_degree_default[4]={3,4,5,6} ;
 static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
 static INT num_words_default[4]={64,256,1024,4096} ;
-static INT mod_words_default[16] = {1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0} ; 
+static INT mod_words_default[16] = {1,1,1,1,1,1,1,1,
+									0,0,0,0,0,0,0,0} ;  
+static bool sign_words_default[8] = {true,true,true,true,true,true,true,true} ; // whether to use counts or signum of counts
+static INT string_words_default[8] = {0,0,0,0,0,0,0,0} ; // which string should be used
 
 CDynProg::CDynProg()
 	: transition_matrix_a_id(1,1), transition_matrix_a(1,1), transition_matrix_a_deriv(1,1), 
@@ -50,6 +53,7 @@ CDynProg::CDynProg()
 	  // multi svm
 	  num_degrees(4), 
 	  num_svms(8), 
+	  num_strings(1),
 	  word_degree(word_degree_default, num_degrees, true, true),
 	  cum_num_words(cum_num_words_default, num_degrees+1, true, true),
 	  cum_num_words_array(cum_num_words.get_array()),
@@ -57,9 +61,13 @@ CDynProg::CDynProg()
 	  num_words_array(num_words.get_array()),
 	  mod_words(mod_words_default, num_svms, 2, true, true),
 	  mod_words_array(mod_words.get_array()),
-	  word_used(num_degrees, num_words[num_degrees-1]),
-	  word_used_array(word_used.get_array()),
-	  svm_values_unnormalized(num_degrees, num_svms),
+	  sign_words(sign_words_default, num_svms, true, true),
+	  sign_words_array(sign_words.get_array()),
+	  string_words(string_words_default, num_svms, true, true),
+	  string_words_array(string_words.get_array()),
+//	  word_used(num_degrees, num_words[num_degrees-1], num_strings),
+//	  word_used_array(word_used.get_array()),
+//	  svm_values_unnormalized(num_degrees, num_svms),
 	  svm_pos_start(num_degrees),
 	  num_unique_words(num_degrees),
 	  svm_arrays_clean(true),
@@ -75,7 +83,7 @@ CDynProg::CDynProg()
 	  max_a_id(0), m_seq(1,1), m_pos(1), m_orf_info(1,2), 
       m_segment_sum_weights(1,1), m_plif_list(1), 
 	  m_PEN(1,1), m_PEN_state_signals(1,2), 
-	  m_genestr(1), m_dict_weights(1,1), m_segment_loss(1,1,2), 
+	  m_genestr(1,1), m_dict_weights(1,1), m_segment_loss(1,1,2), 
       m_segment_ids_mask(1,1),
 	  m_scores(1), m_states(1,1), m_positions(1,1)
 {
@@ -281,7 +289,7 @@ void CDynProg::init_svm_arrays(INT p_num_degrees, INT p_num_svms)
 	num_words.resize_array(num_degrees) ;
 	num_words_array=num_words.get_array() ;
 	
-	svm_values_unnormalized.resize_array(num_degrees, num_svms) ;
+	//svm_values_unnormalized.resize_array(num_degrees, num_svms) ;
 	svm_pos_start.resize_array(num_degrees) ;
 	num_unique_words.resize_array(num_degrees) ;
 } 
@@ -322,8 +330,8 @@ void CDynProg::init_num_words_array(INT * p_num_words_array, INT num_elem)
 	for (INT i=0; i<num_degrees; i++)
 		num_words[i]=p_num_words_array[i] ;
 
-	word_used.resize_array(num_degrees, num_words[num_degrees-1]) ;
-	word_used_array=word_used.get_array() ;
+	//word_used.resize_array(num_degrees, num_words[num_degrees-1], num_strings) ;
+	//word_used_array=word_used.get_array() ;
 } 
 
 void CDynProg::init_mod_words_array(INT * p_mod_words_array, INT num_elem, INT num_columns)
@@ -342,19 +350,42 @@ void CDynProg::init_mod_words_array(INT * p_mod_words_array, INT num_elem, INT n
 		fprintf(stderr, "]\n") ;*/
 } 
 
+void CDynProg::init_sign_words_array(bool* p_sign_words_array, INT num_elem)
+{
+	svm_arrays_clean=false ;
+
+	ASSERT(num_svms==num_elem) ;
+
+	sign_words.set_array(p_sign_words_array, num_elem, true, true) ;
+	sign_words_array = sign_words.get_array() ;
+} 
+
+void CDynProg::init_string_words_array(INT* p_string_words_array, INT num_elem)
+{
+	svm_arrays_clean=false ;
+
+	ASSERT(num_svms==num_elem) ;
+
+	string_words.set_array(p_string_words_array, num_elem, true, true) ;
+	string_words_array = string_words.get_array() ;
+} 
+
 bool CDynProg::check_svm_arrays()
 {
 	if ((word_degree.get_dim1()==num_degrees) &&
 		(cum_num_words.get_dim1()==num_degrees+1) &&
 		(num_words.get_dim1()==num_degrees) &&
-		(word_used.get_dim1()==num_degrees) &&
-		(word_used.get_dim2()==num_words[num_degrees-1]) &&
-		(svm_values_unnormalized.get_dim1()==num_degrees) &&
-		(svm_values_unnormalized.get_dim2()==num_svms) &&
+		//(word_used.get_dim1()==num_degrees) &&
+		//(word_used.get_dim2()==num_words[num_degrees-1]) &&
+		//(word_used.get_dim3()==num_strings) &&
+//		(svm_values_unnormalized.get_dim1()==num_degrees) &&
+//		(svm_values_unnormalized.get_dim2()==num_svms) &&
 		(svm_pos_start.get_dim1()==num_degrees) &&
 		(num_unique_words.get_dim1()==num_degrees) &&
 		(mod_words.get_dim1()==num_svms) &&
-		(mod_words.get_dim2()==2))
+		(mod_words.get_dim2()==2) && 
+		(sign_words.get_dim1()==num_svms) &&
+		(string_words.get_dim1()==num_svms))
 	{
 		svm_arrays_clean=true ;
 		return true ;
@@ -487,12 +518,12 @@ void CDynProg::best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m
 	m_step=6 ;
 }
 
-void CDynProg::best_path_set_genestr(CHAR* genestr, INT genestr_len)
+void CDynProg::best_path_set_genestr(CHAR* genestr, INT genestr_len, INT genestr_num)
 {
 	if (m_step!=6)
 		CIO::message(M_ERROR, "please call best_path_set_plif_id_matrix first\n") ;
 
-	m_genestr.set_array(genestr, genestr_len, true, true) ;
+	m_genestr.set_array(genestr, genestr_len, genestr_num, true, true) ;
 
 	m_step=7 ;
 }
@@ -557,7 +588,7 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 
 	best_path_trans(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), m_orf_info.get_array(),
 					m_PEN.get_array(), m_PEN_state_signals.get_array(), 
-					m_genestr.get_array(), m_genestr.get_dim1(),
+					m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
 					nbest, 0, 
 					m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
 					m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2(),
@@ -1446,11 +1477,16 @@ void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, IN
 		svs.svm_values              = new DREAL[seqlen*num_svms] ;
 		svs.num_unique_words        = new INT*[num_degrees] ;
 		svs.svm_values_unnormalized = new DREAL*[num_degrees] ;
-		svs.word_used               = new INT*[num_degrees] ;
+		svs.word_used               = new bool**[num_degrees] ;
+		for (INT j=0; j<num_degrees; j++)
+		{
+			svs.word_used[j]               = new bool*[num_svms] ;
+			for (INT s=0; s<num_svms; s++)
+				svs.word_used[j][s]               = new bool[num_words_array[j]] ;
+		}
 		for (INT j=0; j<num_degrees; j++)
 		{
 			svs.svm_values_unnormalized[j] = new DREAL[num_svms] ;
-			svs.word_used[j]               = new INT[num_words_array[j]] ;
 			svs.num_unique_words[j]        = new INT[num_svms] ;
 		}
 		svs.start_pos               = new INT[num_svms] ;
@@ -1466,10 +1502,12 @@ void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, IN
 
 		for (INT s=0; s<num_svms; s++)
 			svs.num_unique_words[j][s] = 0 ;
-		
-		for (INT i=0; i<num_words_array[j]; i++)
-			svs.word_used[j][i] = false ;
 	}
+	
+	for (INT j=0; j<num_degrees; j++)
+		for (INT s=0; s<num_svms; s++)
+			for (INT i=0; i<num_words_array[j]; i++)
+				svs.word_used[j][s][i] = false ;
 
 	for (INT s=0; s<num_svms; s++)
 		svs.start_pos[s] = start_pos - mod_words.element(s,1) ;
@@ -1483,7 +1521,13 @@ void CDynProg::clear_svm_values(struct svm_values_struct & svs)
 	if (NULL != svs.svm_values)
 	{
 		for (INT j=0; j<num_degrees; j++)
-			delete[] svs.word_used[j] ;
+		{
+			for (INT s=0; s<num_svms; s++)
+				delete[] svs.word_used[j][s] ;
+			delete[] svs.word_used[j];
+		}
+		delete[] svs.word_used;
+		
 		for (INT j=0; j<num_degrees; j++)
 			delete[] svs.svm_values_unnormalized[j] ;
 		for (INT j=0; j<num_degrees; j++)
@@ -1491,7 +1535,6 @@ void CDynProg::clear_svm_values(struct svm_values_struct & svs)
 		
 		delete[] svs.svm_values_unnormalized;
 		delete[] svs.svm_values;
-		delete[] svs.word_used;
 		delete[] svs.num_unique_words ;
 		
 		svs.word_used=NULL ;
@@ -1501,7 +1544,7 @@ void CDynProg::clear_svm_values(struct svm_values_struct & svs)
 }
 
 
-void CDynProg::find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs)
+void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs)
 {
 	/*
 	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 
@@ -1523,55 +1566,56 @@ void CDynProg::find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_
 		INT ts = t_end-1;        // index in pos; pos(ts) and pos(t) are indices of wordstr
 		INT offset;
 		
-		/*
-		  for (INT s=0; s<num_svms; s++)
-		  {
-		  offset = s*svs.seqlen;
-		  for (INT i=0;i<word_degree; i++)
-		  svs.svm_values[i+offset] = 0;
-		  }
-		*/
-		
 		INT posprev = pos[t_end]-word_degree[j]+1;
 		INT poscurrent = pos[ts];
 		
 		if (poscurrent<0)
 			poscurrent = 0;
+		DREAL * my_svm_values_unnormalized = svs.svm_values_unnormalized[j] ;
+		INT * my_num_unique_words = svs.num_unique_words[j] ;
+		bool ** my_word_used = svs.word_used[j] ;
 		
 		INT len = pos[t_end] - poscurrent;
-		
 		while ((ts>=0) && (len <= svs.maxlookback))
 		{
 			for (int i=posprev-1 ; (i>=poscurrent) && (i>=0) ; i--)
 			{
-				//if (wordstr[j][i]>=num_words_array[j])
-				// fprintf(stderr, "wordstr[%i][%i]=%i\n", j, i, wordstr[j][i]) ;
-				ASSERT(wordstr[j][i]<num_words_array[j]) ;
-				if (!svs.word_used[j][wordstr[j][i]])
+				WORD word = wordstr[string_words_array[0]][j][i] ;
+				INT last_string = string_words_array[0] ;
+				for (INT s=0; s<num_svms; s++)
 				{
-					for (INT s=0; s<num_svms; s++)
-						if ((svs.start_pos[s]-i>0) && ((svs.start_pos[s]-i)%mod_words_array[s]==0))
-						{
-							//fprintf(stderr, "i=%i s=%i svs.start_pos[s]=%i\n", i, s, svs.start_pos[s]) ;
-							
-							svs.svm_values_unnormalized[j][s]+=dict_weights_array[wordstr[j][i]+cum_num_words_array[j]+s*cum_num_words_array[num_degrees]] ;
-							//svs.svm_values_unnormalized[j][s]+=dict_weights.element(wordstr[j][i]+cum_num_words_array[j], s) ;
-							svs.num_unique_words[j][s]++ ;
-						}
+					// try to avoid memory accesses
+					if (last_string != string_words_array[s])
+					{
+						last_string = string_words_array[s] ;
+						word = wordstr[last_string][j][i] ;
+					}
+
+					// do not consider k-mer, if seen before and in signum mode
+					if (sign_words_array[s] && my_word_used[s][word])
+						continue ;
 					
-					svs.word_used[j][wordstr[j][i]]=true ;
+					// only count k-mer if in frame (if applicable)
+					if ((svs.start_pos[s]-i>0) && ((svs.start_pos[s]-i)%mod_words_array[s]==0))
+					{
+						my_svm_values_unnormalized[s] += dict_weights_array[(word+cum_num_words_array[j])+s*cum_num_words_array[num_degrees]] ;
+						//svs.svm_values_unnormalized[j][s]+=dict_weights.element(word+cum_num_words_array[j], s) ;
+						my_num_unique_words[s]++ ;
+						if (sign_words_array[s])
+							my_word_used[s][word]=true ;
+					}
 				}
 			}
 			for (INT s=0; s<num_svms; s++)
 			{
 				double normalization_factor = 1.0;
-				if (svs.num_unique_words[j][s] > 0)
-					normalization_factor = sqrt((double)svs.num_unique_words[j][s]);
+				if (my_num_unique_words[s] > 0)
+					normalization_factor = sqrt((double)my_num_unique_words[s]);
 
 				offset = s*svs.seqlen;
 				if (j==0)
 					svs.svm_values[offset+plen]=0 ;
-				svs.svm_values[offset+plen] += svs.svm_values_unnormalized[j][s] / normalization_factor;
+				svs.svm_values[offset+plen] += my_svm_values_unnormalized[s] / normalization_factor;
 			}
 			
 			if (posprev > poscurrent)         // remember posprev initially set to pos[t_end]-word_degree+1... pos[ts] could be e.g. pos[t_end]-2
@@ -1623,7 +1667,7 @@ bool CDynProg::extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT or
 
 void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *pos, const INT *orf_info_array,
 							   CPlifBase **Plif_matrix, CPlifBase **Plif_state_signals,
-							   const char *genestr, INT genestr_len,
+							   const char *genestr, INT genestr_len, INT genestr_num, 
 							   short int nbest, short int nother,
 							   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 							   DREAL *dictionary_weights, INT dict_len, bool use_orf)
@@ -1633,7 +1677,11 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		CIO::message(M_ERROR, "SVM arrays not clean") ;
 		return ;
 	} ;
-
+	
+	mod_words.display() ;
+	sign_words.display() ;
+	string_words.display() ;
+	
 	const INT default_look_back = 30000 ;
 	INT max_look_back = default_look_back ;
 	bool use_svm = false ;
@@ -1838,31 +1886,41 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		genestr_stop[genestr_len-1]=false ;
 	}
 
-	// translate to words, if svm is used
-	WORD* wordstr[num_degrees] ;
 	{
+		for (INT s=0; s<num_svms; s++)
+			ASSERT(string_words_array[s]<genestr_num)  ;
+	}
+
+	// translate to words, if svm is used
+	WORD** wordstr[genestr_num] ;
+	for (INT k=0; k<genestr_num; k++)
+	{
+		wordstr[k]=new WORD*[num_degrees] ;
 		for (INT j=0; j<num_degrees; j++)
 		{
-			wordstr[j]=NULL ;
+			wordstr[k][j]=NULL ;
 			if (use_svm)
 			{
 				ASSERT(dictionary_weights!=NULL) ;
-				wordstr[j]=new WORD[genestr_len] ;
+				wordstr[k][j]=new WORD[genestr_len] ;
 				for (INT i=0; i<genestr_len; i++)
 					switch (genestr[i])
 					{
-					case 'a': wordstr[j][i]=0 ; break ;
-					case 'c': wordstr[j][i]=1 ; break ;
-					case 'g': wordstr[j][i]=2 ; break ;
-					case 't': wordstr[j][i]=3 ; break ;
+					case 'A':
+					case 'a': wordstr[k][j][i]=0 ; break ;
+					case 'C':
+					case 'c': wordstr[k][j][i]=1 ; break ;
+					case 'G':
+					case 'g': wordstr[k][j][i]=2 ; break ;
+					case 'T':
+					case 't': wordstr[k][j][i]=3 ; break ;
 					default: ASSERT(0) ;
 					}
-				translate_from_single_order(wordstr[j], genestr_len,
+				translate_from_single_order(wordstr[k][j], genestr_len,
 											word_degree[j]-1, word_degree[j]) ;
 			}
 		}
 	}
-	
   	
 	{ // initialization
 
@@ -2101,7 +2159,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				{
 					INT kk = 0 ;
 					if (num_finite>1)
-						kk = (INT) CMath::floor(exp(CMath::random(log(1), log(num_finite-1)))-1e-10) ;
+						kk = (INT) CMath::floor(exp(CMath::random(CMath::log(1), CMath::log(num_finite-1)))-1e-10) ;
 					//kk = CMath::random(0, num_finite-1) ;
 
 					if (kk<numEnt)
@@ -2249,8 +2307,12 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	if (is_big)
 		CIO::message(M_MESSAGEONLY, "DONE.     \n") ;
 
-	for (INT j=0; j<num_degrees; j++)
-		delete[] wordstr[j] ;
+	for (INT k=0; k<genestr_num; k++)
+	{
+		for (INT j=0; j<num_degrees; j++)
+			delete[] wordstr[k][j] ;
+		delete[] wordstr[k] ;
+	}
 
 #if USEFIXEDLENLIST > 0
 #ifndef USE_TMP_ARRAYCLASS
@@ -2264,7 +2326,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 									 INT my_seq_len, 
 									 const DREAL *seq_array, INT seq_len, const INT *pos,
 									 CPlifBase **Plif_matrix, CPlifBase **Plif_state_signals,
-									 const char *genestr, INT genestr_len,
+									 const char *genestr, INT genestr_len, INT genestr_num,
 									 DREAL *dictionary_weights, INT dict_len)
 {	
 	if (!svm_arrays_clean)
@@ -2307,29 +2369,31 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 	}
 
 	// translate to words, if svm is used
-	WORD* wordstr[num_degrees] ;
+	WORD** wordstr[genestr_num] ;
+	for (INT k=0; k<genestr_num; k++)
 	{
+		wordstr[k]=new WORD*[num_degrees] ;
 		for (INT j=0; j<num_degrees; j++)
 		{
-			wordstr[j]=NULL ;
+			wordstr[k][j]=NULL ;
 			if (use_svm)
 			{
 				ASSERT(dictionary_weights!=NULL) ;
-				wordstr[j]=new WORD[genestr_len] ;
+				wordstr[k][j]=new WORD[genestr_len] ;
 				for (INT i=0; i<genestr_len; i++)
 					switch (genestr[i])
 					{
 					case 'A':
-					case 'a': wordstr[j][i]=0 ; break ;
+					case 'a': wordstr[k][j][i]=0 ; break ;
 					case 'C':
-					case 'c': wordstr[j][i]=1 ; break ;
+					case 'c': wordstr[k][j][i]=1 ; break ;
 					case 'G':
-					case 'g': wordstr[j][i]=2 ; break ;
+					case 'g': wordstr[k][j][i]=2 ; break ;
 					case 'T':
-					case 't': wordstr[j][i]=3 ; break ;
+					case 't': wordstr[k][j][i]=3 ; break ;
 					default: ASSERT(0) ;
 					}
-				translate_from_single_order(wordstr[j], genestr_len,
+				translate_from_single_order(wordstr[k][j], genestr_len,
 											word_degree[j]-1, word_degree[j]) ;
 			}
 		}
@@ -2492,8 +2556,12 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 		clear_segment_loss(loss);
 	}
 
-	for (INT j=0; j<num_degrees; j++)
-		delete[] wordstr[j] ;
+	for (INT k=0; k<genestr_num; k++)
+	{
+		for (INT j=0; j<num_degrees; j++)
+			delete[] wordstr[k][j] ;
+		delete[] wordstr[k] ;
+	}
 }
 
 
