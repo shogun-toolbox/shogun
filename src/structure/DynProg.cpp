@@ -34,7 +34,7 @@ extern "C" int	finite(double);
 #define USEFIXEDLENLIST 0
 //#define USE_TMP_ARRAYCLASS
 
-#define DYNPROG_DEBUG
+//#define DYNPROG_DEBUG
 
 static INT word_degree_default[4]={3,4,5,6} ;
 static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -1610,7 +1610,10 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 			{
 				double normalization_factor = 1.0;
 				if (my_num_unique_words[s] > 0)
-					normalization_factor = sqrt((double)my_num_unique_words[s]);
+					if (sign_words_array[s])
+						normalization_factor = sqrt((double)my_num_unique_words[s]);
+					else
+						normalization_factor = (double)my_num_unique_words[s];
 
 				offset = s*svs.seqlen;
 				if (j==0)
@@ -2487,12 +2490,14 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				init_svm_values(svs, pos[to_pos], seq_len, pos[to_pos]-pos[from_pos]+100);
 				find_svm_values_till_pos(wordstr, pos, to_pos, svs);  
 				INT plen = to_pos - from_pos ;
-
+				
 				for (INT ss=0; ss<num_svms; ss++)
 				{
 					INT offset = ss*svs.seqlen;
 					svm_value[ss]=svs.svm_values[offset+plen];
-					//fprintf(stderr, "svm[%i]: %f %f  (%i,%i)\n", ss, svm_value[ss], svm_value2[ss], plen, pos[to_pos]-pos[from_pos]+100) ;
+#ifdef DYNPROG_DEBUG
+					CIO::message(M_DEBUG, "svm[%i]: %f\n", ss, svm_value[ss]) ;
+#endif
 				}
 			}
 			

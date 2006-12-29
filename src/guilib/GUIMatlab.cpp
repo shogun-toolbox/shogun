@@ -532,7 +532,8 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 		INT N=mxGetN(mx_p);
 		INT M=mxGetN(mx_pos);
 		INT P=mxGetN(mx_penalty_info) ;
-		INT L=mxGetN(mx_genestr) ;
+		INT L=mxGetM(mx_genestr) ;
+		INT genestr_num=mxGetN(mx_genestr) ;
 		INT D=mxGetM(mx_dict_weights) ;
 		
 
@@ -542,9 +543,8 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			CIO::message(M_ERROR, "model matricies not matching in size \n");
 
 		if (!(mxGetM(mx_seq) == N &&
-			  mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 &&
-			  mxGetM(mx_genestr)==1))
-			CIO::message(M_ERROR, "sequence and position matrices sizes wrong\n");
+			  mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1))
+			CIO::message(M_ERROR, "seq and position matrices sizes wrong\n");
 		
 		INT penalty_num_dimensions = mxGetNumberOfDimensions(mx_penalties) ;
 		if (!((penalty_num_dimensions==2) || (penalty_num_dimensions==3)))
@@ -581,7 +581,6 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			CIO::message(M_ERROR, "size of segment_ids_mask wrong\n");
 
 		if (
-			mxGetM(mx_genestr)==1 &&
 			mxGetM(mx_use_orf)==1 &&
 			mxGetN(mx_use_orf)==1 &&
 			mxGetN(mx_dict_weights)==8 && 
@@ -723,7 +722,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			} ;
 			
 			h->best_path_trans(seq, M, pos, orf_info,
-							   PEN_matrix, PEN_state_signal, genestr, L, 1,
+							   PEN_matrix, PEN_state_signal, genestr, L, genestr_num,
 							   nbest, nother, p_prob, my_path, my_pos, dict_weights, 8*D, use_orf) ;
 
 			// clean up 
@@ -797,7 +796,8 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 		INT N=mxGetN(mx_p);
 		INT M=mxGetN(mx_pos);
 		INT P=mxGetN(mx_penalty_info) ;
-		INT L=mxGetN(mx_genestr) ;
+		INT L=mxGetM(mx_genestr) ;
+		INT genestr_num=mxGetN(mx_genestr) ;
 		INT D=mxGetM(mx_dict_weights) ;
 		INT my_seqlen = mxGetN(mx_my_path) ;
 				
@@ -807,8 +807,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			CIO::message(M_ERROR, "model matricies not matching in size \n");
 
 		if (!(mxGetM(mx_seq) == N &&
-			  mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 &&
-			  mxGetM(mx_genestr)==1))
+			  mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1))
 			CIO::message(M_ERROR, "sequence and position matrices sizes wrong\n");
 		
 		INT penalty_num_dimensions = mxGetNumberOfDimensions(mx_penalties) ;
@@ -1030,7 +1029,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			
 			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, p_my_losses, 
 									 my_seqlen, seq, M, pos, 
-									 PEN_matrix, PEN_state_signal, genestr, L, 1, 
+									 PEN_matrix, PEN_state_signal, genestr, L, genestr_num, 
 									 dict_weights, 8*D) ;
 			
 			for (INT i=0; i<N; i++)

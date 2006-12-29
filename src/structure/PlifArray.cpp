@@ -16,6 +16,9 @@
 #include "lib/io.h"
 
 #include "structure/PlifArray.h"
+#include "structure/Plif.h"
+
+//#define PLIFARRAY_DEBUG
 
 CPlifArray::CPlifArray()
 {
@@ -71,7 +74,17 @@ DREAL CPlifArray::lookup_penalty(INT p_value, DREAL* svm_values) const
 	
 	DREAL ret = 0.0 ;
 	for (INT i=0; i<m_array.get_num_elements(); i++)
-		ret += m_array[i]->lookup_penalty(p_value, svm_values) ;
+	{
+		DREAL val = m_array[i]->lookup_penalty(p_value, svm_values) ;
+		ret += val ;
+#ifdef PLIFARRAY_DEBUG
+		CPlif * plif = (CPlif*)m_array[i] ;
+		if (plif->get_use_svm())
+			CIO::message(M_DEBUG, "penalty[%i]=%1.2f (use_svm=%i -> %1.2f)\n", i, val, plif->get_use_svm(), svm_values[plif->get_use_svm()-1]) ;
+		else
+		CIO::message(M_DEBUG, "penalty[%i]=%1.2f\n", i, val) ;
+#endif
+	}
 	return ret ;
 } 
 
