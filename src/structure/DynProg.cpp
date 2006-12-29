@@ -38,11 +38,15 @@ extern "C" int	finite(double);
 
 static INT word_degree_default[4]={3,4,5,6} ;
 static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
-static INT num_words_default[4]={64,256,1024,4096} ;
-static INT mod_words_default[16] = {1,1,1,1,1,1,1,1,
+static INT num_words_default[4]=   {64,256,1024,4096} ;
+static INT mod_words_default[32] = {1,1,1,1,1,1,1,1,
+									1,1,1,1,1,1,1,1,
+									0,0,0,0,0,0,0,0,
 									0,0,0,0,0,0,0,0} ;  
-static bool sign_words_default[8] = {true,true,true,true,true,true,true,true} ; // whether to use counts or signum of counts
-static INT string_words_default[8] = {0,0,0,0,0,0,0,0} ; // which string should be used
+static bool sign_words_default[16] = {true,true,true,true,true,true,true,true,
+									  false,false,false,false,false,false,false,false} ; // whether to use counts or signum of counts
+static INT string_words_default[16] = {0,0,0,0,0,0,0,0,
+									   1,1,1,1,1,1,1,1} ; // which string should be used
 
 CDynProg::CDynProg()
 	: transition_matrix_a_id(1,1), transition_matrix_a(1,1), transition_matrix_a_deriv(1,1), 
@@ -52,7 +56,7 @@ CDynProg::CDynProg()
 
 	  // multi svm
 	  num_degrees(4), 
-	  num_svms(8), 
+	  num_svms(16), 
 	  num_strings(1),
 	  word_degree(word_degree_default, num_degrees, true, true),
 	  cum_num_words(cum_num_words_default, num_degrees+1, true, true),
@@ -2338,6 +2342,9 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 		return ;
 	} ;
 	//fprintf(stderr, "genestr_len=%i, genestr_num=%i\n", genestr_len, genestr_num) ;
+	//mod_words.display() ;
+	//sign_words.display() ;
+	//string_words.display() ;
 
 	bool use_svm = false ;
 	ASSERT(dict_len==num_svms*cum_num_words_array[num_degrees]) ;

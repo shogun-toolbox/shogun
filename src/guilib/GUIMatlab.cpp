@@ -535,6 +535,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 		INT L=mxGetM(mx_genestr) ;
 		INT genestr_num=mxGetN(mx_genestr) ;
 		INT D=mxGetM(mx_dict_weights) ;
+		INT dict_weigths_num=mxGetN(mx_dict_weights) ;
 		
 
 		if (!(mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
@@ -565,13 +566,13 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			  mxGetN(mx_state_signals)==2))
 			CIO::message(M_ERROR, "size of state_signals wrong (%i!=%i or %i!=2)\n", mxGetM(mx_state_signals), N, mxGetN(mx_state_signals));
 			
-		if (!(mxGetN(mx_dict_weights)==8 && 
+		if (!(((mxGetN(mx_dict_weights)==8) || (mxGetN(mx_dict_weights)==16)) && 
 			  ((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			   || mxIsEmpty(mx_penalty_info))))
-			CIO::message(M_ERROR, "size dict_weights wrong\n");
+			CIO::message(M_ERROR, "size of dict_weights wrong\n");
 
-		if (!(mxGetM(mx_mod_words)==8 && mxGetN(mx_mod_words)==2))
-			CIO::message(M_ERROR, "size mod_words wrong (should be 8x2)\n");
+		if (!(((mxGetM(mx_mod_words)==8) || (mxGetM(mx_mod_words)==16)) && mxGetN(mx_mod_words)==2))
+			CIO::message(M_ERROR, "size of mod_words wrong (should be 8x2 or 16x2)\n");
 
 		if (mx_segment_loss!=NULL && (mxGetN(mx_segment_loss)!=2*mxGetM(mx_segment_loss)))
 			CIO::message(M_ERROR, "size of segment_loss wrong\n");
@@ -583,7 +584,6 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 		if (
 			mxGetM(mx_use_orf)==1 &&
 			mxGetN(mx_use_orf)==1 &&
-			mxGetN(mx_dict_weights)==8 && 
 			((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			 || mxIsEmpty(mx_penalty_info))
 			)
@@ -723,7 +723,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			
 			h->best_path_trans(seq, M, pos, orf_info,
 							   PEN_matrix, PEN_state_signal, genestr, L, genestr_num,
-							   nbest, nother, p_prob, my_path, my_pos, dict_weights, 8*D, use_orf) ;
+							   nbest, nother, p_prob, my_path, my_pos, dict_weights, dict_weigths_num*D, use_orf) ;
 
 			// clean up 
 			delete_penalty_struct(PEN, P) ;
@@ -799,6 +799,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 		INT genestr_len=mxGetM(mx_genestr) ;
 		INT genestr_num=mxGetN(mx_genestr) ;
 		INT D=mxGetM(mx_dict_weights) ;
+		INT dict_weigths_num = mxGetN(mx_dict_weights) ;
 		INT my_seqlen = mxGetN(mx_my_path) ;
 				
 		if (!(mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
@@ -839,8 +840,8 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			   || mxIsEmpty(mx_penalty_info))))
 			CIO::message(M_ERROR, "dict_weights or penalty_info wrong\n");
 
-		if (!(mxGetM(mx_mod_words)==8 && mxGetN(mx_mod_words)==2))
-			CIO::message(M_ERROR, "size mod_words wrong (should be 8x2)\n");
+		if (!(((mxGetM(mx_mod_words)==8) || (mxGetM(mx_mod_words)==16)) && mxGetN(mx_mod_words)==2))
+			CIO::message(M_ERROR, "size mod_words wrong (should be 8x2 or 16x2)\n");
 
 		if (mx_segment_loss!=NULL && (mxGetN(mx_segment_loss)!=2*mxGetM(mx_segment_loss)))
 			CIO::message(M_ERROR, "size of segment_loss wrong\n");
@@ -1030,7 +1031,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, p_my_losses, 
 									 my_seqlen, seq, M, pos, 
 									 PEN_matrix, PEN_state_signal, genestr, genestr_len, genestr_num, 
-									 dict_weights, 8*D) ;
+									 dict_weights, dict_weigths_num*D) ;
 			
 			for (INT i=0; i<N; i++)
 			{
