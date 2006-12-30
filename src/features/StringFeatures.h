@@ -255,12 +255,22 @@ template <class ST> class CStringFeatures: public CFeatures
 			perror("scandir");
 		else
 		{
+			T_STRING<ST>* strings=NULL;
+			INT num=0;
+			INT max_len=-1;
+
 			for (int i=0; i<n; i++)
 			{
 				CHAR* fname=CIO::concat_filename(namelist[i]->d_name);
 
+				//usually n==num_vec, but it might not in race conditions 
+				//(file perms modified, file erased)
+				strings=new T_STRING<ST>[n];
+				num=n;
+
 				struct stat s;
 				off_t filesize=0;
+
 				if (!stat(fname, &s) && s.st_size>0)
 				{
 					filesize=s.st_size/sizeof(ST);
@@ -269,14 +279,22 @@ template <class ST> class CStringFeatures: public CFeatures
 					if (f)
 					{
 						ST* str=new ST[filesize];
+						ASSERT(str);
 						CIO::message(M_DEBUG,"%s:%ld\n", fname, (long int) filesize);
-						fread(str, filesize, 1, f);
+						fread(str, sizeof(ST), filesize, f);
+						strings[num].string=str;
+						strings[num].length=filesize;
+						if (strings[i].length> max_len)
+							max_len=strings[num].length;
 						fclose(f);
 					}
 				}
 				free(namelist[i]);
 			}
 			free(namelist);
+
+			if (num>0 && strings)
+				set_features(strings, num, max_len);
 		}
 		return 0;
 	}
