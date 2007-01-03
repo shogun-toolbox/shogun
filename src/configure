@@ -193,6 +193,9 @@ EOF
 	if test -z "$COMP_CPP" ; then
 		die "no C++ compiler detected - cannot do anything"
 	fi
+
+	#use CPP compiler for linking
+	LINK=$COMP_CPP
 }
 
 check_python()

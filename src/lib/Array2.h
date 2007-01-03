@@ -89,16 +89,16 @@ CArray2(const T* p_array, INT dim1, INT dim2)
 	///return array element at index
 	inline const T& get_element(INT idx1, INT idx2) const
 	{
-		ARRAY_ASSERT(idx1>=0 && idx1<dim1_size) ;		
-		ARRAY_ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
 		return CArray<T>::get_element(idx1+dim1_size*idx2) ;
 	}
 
 	///set array element at index 'index' return false in case of trouble
 	inline bool set_element(const T& p_element, INT idx1, INT idx2)
 	{
-		ARRAY_ASSERT(idx1>=0 && idx1<dim1_size) ;		
-		ARRAY_ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
 		return CArray<T>::set_element(p_element, idx1+dim1_size*idx2) ;
 	}
 	
@@ -109,25 +109,25 @@ CArray2(const T* p_array, INT dim1, INT dim2)
 	
 	inline T& element(INT idx1, INT idx2) 
 	{
-		ARRAY_ASSERT(idx1>=0 && idx1<dim1_size) ;		
-		ARRAY_ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
 		return CArray<T>::element(idx1+dim1_size*idx2) ;
 	}
 
 	inline T& element(T* p_array, INT idx1, INT idx2) 
 	{
-		ARRAY_ASSERT(CArray<T>::array==p_array) ;
-		ARRAY_ASSERT(idx1>=0 && idx1<dim1_size) ;		
-		ARRAY_ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(CArray<T>::array==p_array) ;
+		ASSERT(idx1>=0 && idx1<dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
 		return p_array[idx1+dim1_size*idx2] ;
 	}
 
 	inline T& element(T* p_array, INT idx1, INT idx2, INT p_dim1_size) 
 	{
-		ARRAY_ASSERT(CArray<T>::array==p_array) ;
-		ARRAY_ASSERT(p_dim1_size==dim1_size) ;
-		ARRAY_ASSERT(idx1>=0 && idx1<p_dim1_size) ;		
-		ARRAY_ASSERT(idx2>=0 && idx2<dim2_size) ;		
+		ASSERT(CArray<T>::array==p_array) ;
+		ASSERT(p_dim1_size==dim1_size) ;
+		ASSERT(idx1>=0 && idx1<p_dim1_size) ;		
+		ASSERT(idx2>=0 && idx2<dim2_size) ;		
 		return p_array[idx1+p_dim1_size*idx2] ;
 	}
 

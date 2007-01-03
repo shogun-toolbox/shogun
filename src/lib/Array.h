@@ -1,128 +1,132 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * Written (W) 1999-2006 Soeren Sonnenburg, Gunnar Raetsch
- * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
- */
+	/*
+	 * This program is free software; you can redistribute it and/or modify
+	 * it under the terms of the GNU General Public License as published by
+	 * the Free Software Foundation; either version 2 of the License, or
+	 * (at your option) any later version.
+	 *
+	 * Written (W) 1999-2006 Soeren Sonnenburg, Gunnar Raetsch
+	 * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+	 */
 
-#ifndef _ARRAY_H_
-#define _ARRAY_H_
+	#ifndef _ARRAY_H_
+	#define _ARRAY_H_
 
-#include <assert.h>
+	#include <assert.h>
 
-//#define ARRAY_STATISTICS
-//#define ARRAY_ASSERT(x) assert(x)
-#define ARRAY_ASSERT(x) 
+	//#define ARRAY_STATISTICS
+	#ifdef ASSERT
+	#undef ASSERT
+	#endif
+	#define ASSERT(x)
 
-#include "lib/common.h"
+	#include "lib/common.h"
 
-template <class T> class CArray;
+	template <class T> class CArray;
 
-template <class T> class CArray
-{
-public:
-CArray(INT initial_size = 1)
-	: free_array(true) 
-#ifdef ARRAY_STATISTICS
-		, name(NULL), stat_const_element(0), stat_element(0), stat_set_element(0), stat_get_element(0), stat_operator(0), stat_const_operator(0), stat_set_array(0), stat_get_array(0), stat_resize_array(0), stat_array_element(0)
-#endif
+	template <class T> class CArray
 	{
-		array_size = initial_size;
-		array = (T*) calloc(array_size, sizeof(T));
-		ARRAY_ASSERT(array);
-	}
-	
-CArray(T* p_array, INT p_array_size, bool p_free_array=true, bool p_copy_array=false)
-	: array(NULL), free_array(false)
-#ifdef ARRAY_STATISTICS
-		, name(NULL), stat_const_element(0), stat_element(0), stat_set_element(0), stat_get_element(0), stat_operator(0), stat_const_operator(0), stat_set_array(0), stat_get_array(0), stat_resize_array(0), stat_array_element(0)
-#endif
-	{
-		set_array(p_array, p_array_size, p_free_array, p_copy_array) ;
-	}
-	
-CArray(const T* p_array, INT p_array_size)
-	: array(NULL), free_array(false)
-#ifdef ARRAY_STATISTICS
-		, name(NULL), stat_const_element(0), stat_element(0), stat_set_element(0), stat_get_element(0), stat_operator(0), stat_const_operator(0), stat_set_array(0), stat_get_array(0), stat_resize_array(0), stat_array_element(0)
-#endif
-	{
-		set_array(p_array, p_array_size) ;
-	}
-	
-	~CArray()
-	{
-#ifdef ARRAY_STATISTICS
-		if (!name)
-			name="unnamed" ;
-		CIO::message(M_DEBUG, "destroying CArray array '%s' of size %i\n", name, array_size) ;
-		CIO::message(M_DEBUG, "access statistics:\nconst element    %i\nelement    %i\nset_element    %i\nget_element    %i\nstat_operator[]    %i\nconst_operator[]    %i\nset_array    %i\nget_array    %i\nresize_array    %i\narray_element    %i\n", stat_const_element, stat_element, stat_set_element, stat_get_element, stat_operator, stat_const_operator, stat_set_array, stat_get_array, stat_resize_array, stat_array_element) ;
-#endif
-		if (free_array)
-			free(array);
-	}
+	public:
+	CArray(INT initial_size = 1)
+		: free_array(true) 
+	#ifdef ARRAY_STATISTICS
+			, name(NULL), stat_const_element(0), stat_element(0), stat_set_element(0), stat_get_element(0), stat_operator(0), stat_const_operator(0), stat_set_array(0), stat_get_array(0), stat_resize_array(0), stat_array_element(0)
+	#endif
+		{
+			array_size = initial_size;
+			array = (T*) calloc(array_size, sizeof(T));
+			ASSERT(array);
+		}
+		
+	CArray(T* p_array, INT p_array_size, bool p_free_array=true, bool p_copy_array=false)
+		: array(NULL), free_array(false)
+	#ifdef ARRAY_STATISTICS
+			, name(NULL), stat_const_element(0), stat_element(0), stat_set_element(0), stat_get_element(0), stat_operator(0), stat_const_operator(0), stat_set_array(0), stat_get_array(0), stat_resize_array(0), stat_array_element(0)
+	#endif
+		{
+			set_array(p_array, p_array_size, p_free_array, p_copy_array) ;
+		}
+		
+	CArray(const T* p_array, INT p_array_size)
+		: array(NULL), free_array(false)
+	#ifdef ARRAY_STATISTICS
+			, name(NULL), stat_const_element(0), stat_element(0), stat_set_element(0), stat_get_element(0), stat_operator(0), stat_const_operator(0), stat_set_array(0), stat_get_array(0), stat_resize_array(0), stat_array_element(0)
+	#endif
+		{
+			set_array(p_array, p_array_size) ;
+		}
+		
+		~CArray()
+		{
+	#ifdef ARRAY_STATISTICS
+			if (!name)
+				name="unnamed" ;
+			CIO::message(M_DEBUG, "destroying CArray array '%s' of size %i\n", name, array_size) ;
+			CIO::message(M_DEBUG, "access statistics:\nconst element    %i\nelement    %i\nset_element    %i\nget_element    %i\nstat_operator[]    %i\nconst_operator[]    %i\nset_array    %i\nget_array    %i\nresize_array    %i\narray_element    %i\n", stat_const_element, stat_element, stat_set_element, stat_get_element, stat_operator, stat_const_operator, stat_set_array, stat_get_array, stat_resize_array, stat_array_element) ;
+	#endif
+			if (free_array)
+				free(array);
+		}
 
-#ifdef ARRAY_STATISTICS
-	inline void set_name(const char * p_name) 
-	{
-		name = p_name ;
-	}
-#endif
+	#ifdef ARRAY_STATISTICS
+		inline void set_name(const char * p_name) 
+		{
+			name = p_name ;
+		}
+	#endif
 
-	/// return total array size (including granularity buffer)
-	inline INT get_array_size() const
-	{
-		return array_size;
-	}
+		/// return total array size (including granularity buffer)
+		inline INT get_array_size() const
+		{
+			return array_size;
+		}
 
-	/// return total array size (including granularity buffer)
-	inline INT get_dim1()
-	{
-		return array_size;
-	}
+		/// return total array size (including granularity buffer)
+		inline INT get_dim1()
+		{
+			return array_size;
+		}
 
-	inline void zero()
-	{
-		for (INT i=0; i< array_size; i++)
-			array[i]=0 ;
-	}
-	
-	///return array element at index
-	inline const T& get_element(INT index) const
-	{
-		ARRAY_ASSERT((array != NULL) && (index >= 0) && (index < array_size));
-#ifdef ARRAY_STATISTICS
-		((CArray<T>*)this)->stat_get_element++ ;
-#endif
-		return array[index];
-	}
-	
-	///set array element at index 'index' return false in case of trouble
-	inline bool set_element(const T& p_element, INT index)
-	{
-		ARRAY_ASSERT((array != NULL) && (index >= 0) && (index < array_size));
-#ifdef ARRAY_STATISTICS
-		((CArray<T>*)this)->stat_set_element++ ;
-#endif
-		array[index]=p_element;
-		return true;
-	}
-	
-	inline const T& element(INT idx1) const
-	{
-#ifdef ARRAY_STATISTICS
-		// hack to get rid of the const
-		((CArray<T>*)this)->stat_const_element++ ;
-#endif
-		return get_element(idx1) ;
-	}
+		inline void zero()
+		{
+			for (INT i=0; i< array_size; i++)
+				array[i]=0 ;
+		}
+		
+		///return array element at index
+		inline const T& get_element(INT index) const
+		{
+			ASSERT((array != NULL) && (index >= 0) && (index < array_size));
+	#ifdef ARRAY_STATISTICS
+			((CArray<T>*)this)->stat_get_element++ ;
+	#endif
+			return array[index];
+		}
+		
+		///set array element at index 'index' return false in case of trouble
+		inline bool set_element(const T& p_element, INT index)
+		{
+			ASSERT((array != NULL) && (index >= 0) && (index < array_size));
+	#ifdef ARRAY_STATISTICS
+			((CArray<T>*)this)->stat_set_element++ ;
+	#endif
+			array[index]=p_element;
+			return true;
+		}
+		
+		inline const T& element(INT idx1) const
+		{
+	#ifdef ARRAY_STATISTICS
+			// hack to get rid of the const
+			((CArray<T>*)this)->stat_const_element++ ;
+	#endif
+			return get_element(idx1) ;
+		}
 
-	inline T& element(INT index) 
-	{
-		ARRAY_ASSERT((array != NULL) && (index >= 0) && (index < array_size));
+		inline T& element(INT index) 
+		{
+		ASSERT(array != NULL);
+		ASSERT(index >= 0);
+		ASSERT(index < array_size);
 #ifdef ARRAY_STATISTICS
 		((CArray<T>*)this)->stat_element++ ;
 #endif
@@ -131,8 +135,8 @@ CArray(const T* p_array, INT p_array_size)
 
 	inline T& element(T* p_array, INT index) 
 	{
-		ARRAY_ASSERT((array != NULL) && (index >= 0) && (index < array_size));
-		ARRAY_ASSERT(array == p_array) ;
+		ASSERT((array != NULL) && (index >= 0) && (index < array_size));
+		ASSERT(array == p_array) ;
 #ifdef ARRAY_STATISTICS
 		((CArray<T>*)this)->stat_array_element++ ;
 #endif
