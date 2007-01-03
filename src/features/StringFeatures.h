@@ -114,6 +114,26 @@ template <class ST> class CStringFeatures: public CFeatures
 		return new CStringFeatures<ST>(*this);
 	}
 
+	void select_feature_vector(INT num)
+	{
+		ASSERT(features!=NULL);
+		ASSERT(num<num_vectors);
+
+		selected_vector=num;
+	}
+	
+	/** get feature vector for selected example
+	  */
+	void get_string(ST** dst, INT* len)
+	{
+		ASSERT(features!=NULL);
+		ASSERT(selected_vector<num_vectors);
+
+		*len=features[selected_vector].length;
+		*dst=new ST[*len];
+		memcpy(*dst, features[selected_vector].string, *len * sizeof(ST));
+	}
+
 	/** get feature vector for sample num
 	  @param num index of feature vector
 	  @param len length is returned by reference
@@ -251,7 +271,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		CIO::set_dirname(dirname);
 
 		n = scandir(dirname, &namelist, CIO::filter, alphasort);
-		if (n < 0)
+		if (n <= 0)
 			perror("scandir");
 		else
 		{
@@ -259,14 +279,13 @@ template <class ST> class CStringFeatures: public CFeatures
 			INT num=0;
 			INT max_len=-1;
 
+			//usually n==num_vec, but it might not in race conditions 
+			//(file perms modified, file erased)
+			strings=new T_STRING<ST>[n];
+
 			for (int i=0; i<n; i++)
 			{
 				CHAR* fname=CIO::concat_filename(namelist[i]->d_name);
-
-				//usually n==num_vec, but it might not in race conditions 
-				//(file perms modified, file erased)
-				strings=new T_STRING<ST>[n];
-				num=n;
 
 				struct stat s;
 				off_t filesize=0;
@@ -284,8 +303,9 @@ template <class ST> class CStringFeatures: public CFeatures
 						fread(str, sizeof(ST), filesize, f);
 						strings[num].string=str;
 						strings[num].length=filesize;
-						if (strings[i].length> max_len)
+						if (strings[num].length> max_len)
 							max_len=strings[num].length;
+						num++;
 						fclose(f);
 					}
 				}
@@ -534,6 +554,9 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	/// order used in higher order mapping
 	INT order;
+
+	/// vector to be obtained via get_string
+	INT selected_vector;
 
 	/// order used in higher order mapping
 	ST* symbol_mask_table;
