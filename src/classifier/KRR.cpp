@@ -112,6 +112,7 @@ DREAL CKRR::classify_example(INT num)
   // Get kernel matrix
   INT m = 0;
   INT n = 0;
+  // TODO: use get_kernel_column instead of computing the whole matrix!
   DREAL *K = get_kernel()->get_kernel_matrix_real(m, n, NULL);
   ASSERT(K && m > 0 && n > 0);
   DREAL Yh;
