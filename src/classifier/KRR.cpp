@@ -1,0 +1,117 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Written (W) 2006 Mikio L. Braun
+ * Written (W) 1999-2006 Soeren Sonnenburg
+ * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ */
+
+#include "lib/config.h"
+
+#ifdef HAVE_LAPACK
+#include "classifier/KRR.h"
+#include "lib/lapack.h"
+
+CKRR::CKRR()
+{
+  alpha = NULL;
+}
+
+
+CKRR::~CKRR()
+{
+  delete[] alpha;
+}
+
+bool CKRR::train()
+{
+  delete[] alpha;
+  
+  ASSERT(CKernelMachine::get_labels());
+  
+  // Get kernel matrix
+  INT m = 0;
+  INT n = 0;
+  DREAL *K = get_kernel()->get_kernel_matrix_real(m, n, NULL);
+  ASSERT(K && m > 0 && n > 0);
+  
+  for(int i = 0; i < n; i++)
+	K[i + i*n] += tau;
+
+  // Get labels
+  INT numlabels = 0;
+  alpha = get_labels()->get_labels(numlabels);
+  ASSERT(alpha && numlabels == n);
+  
+  dposv('U', n, 1, K, n, alpha, n);
+  
+  delete[] K;
+
+  return false;
+}
+
+bool CKRR::load(FILE* srcfile)
+{
+	return false;
+}
+
+bool CKRR::save(FILE* dstfile)
+{
+	return false;
+}
+
+CLabels* CKRR::classify(CLabels* output)
+{
+  if (labels)
+	{
+	  INT num=labels->get_num_labels();
+	  ASSERT(num>0);
+	  
+	  if (!output)
+		output=new CLabels(num);
+	  
+	  ASSERT(output);
+
+	  // Get kernel matrix
+	  INT m = 0;
+	  INT n = 0;
+	  DREAL *K = get_kernel()->get_kernel_matrix_real(m, n, NULL);
+	  ASSERT(K && m > 0 && n > 0);
+	  DREAL *Yh = new DREAL[m];
+
+	  // predict
+	  dgemv('N', m, n, 1.0, K, m, alpha, 1, 0.0, Yh, 1);
+	  
+	  delete[] K;
+
+	  output->set_labels(Yh, m);
+
+	  delete[] Yh;
+	  
+	  return output;
+	}
+  
+  return NULL;
+}
+
+DREAL CKRR::classify_example(INT num)
+{
+  // Get kernel matrix
+  INT m = 0;
+  INT n = 0;
+  DREAL *K = get_kernel()->get_kernel_matrix_real(m, n, NULL);
+  ASSERT(K && m > 0 && n > 0);
+  DREAL Yh;
+  
+  // predict
+  dgemv('N', 1, n, 1.0, K + num, m, alpha, 1, 0.0, &Yh, 1);
+  
+  delete[] K;
+
+  return Yh;
+}
+
+#endif
