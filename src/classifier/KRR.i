@@ -4,5 +4,5 @@
 
 %rename(KRR) CKRR;
 
-%include "classifier/KernelMachine.i"
+%include "kernel/KernelMachine.i"
 %include "classifier/KRR.h" 

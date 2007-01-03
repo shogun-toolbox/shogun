@@ -22,6 +22,7 @@ class CKRR : public CKernelMachine
 {
 	public:
 		CKRR();
+		CKRR(DREAL tau, CKernel* k, CLabels* lab);
 		virtual ~CKRR();
 
 		/// set regularization constant

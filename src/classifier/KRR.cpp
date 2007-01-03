@@ -14,9 +14,19 @@
 #ifdef HAVE_LAPACK
 #include "classifier/KRR.h"
 #include "lib/lapack.h"
+#include "lib/Mathematics.h"
 
 CKRR::CKRR()
 {
+  alpha = NULL;
+  tau = 1e-6;
+}
+
+CKRR::CKRR(DREAL t, CKernel* k, CLabels* lab)
+{
+  tau = t;
+  set_labels(lab);
+  set_kernel(k);
   alpha = NULL;
 }
 
@@ -31,7 +41,8 @@ bool CKRR::train()
   delete[] alpha;
   
   ASSERT(CKernelMachine::get_labels());
-  
+  ASSERT(CKernelMachine::get_kernel());
+
   // Get kernel matrix
   INT m = 0;
   INT n = 0;
@@ -67,27 +78,24 @@ CLabels* CKRR::classify(CLabels* output)
 {
   if (labels)
 	{
-	  INT num=labels->get_num_labels();
-	  ASSERT(num>0);
-	  
-	  if (!output)
-		output=new CLabels(num);
-	  
-	  ASSERT(output);
+	  ASSERT(output == NULL);
+	  ASSERT(CKernelMachine::get_kernel());
 
 	  // Get kernel matrix
 	  INT m = 0;
 	  INT n = 0;
 	  DREAL *K = get_kernel()->get_kernel_matrix_real(m, n, NULL);
 	  ASSERT(K && m > 0 && n > 0);
-	  DREAL *Yh = new DREAL[m];
+	  DREAL *Yh = new DREAL[n];
 
 	  // predict
-	  dgemv('N', m, n, 1.0, K, m, alpha, 1, 0.0, Yh, 1);
+	  dgemv('T', m, n, 1.0, K, m, alpha, 1, 0.0, Yh, 1);
 	  
 	  delete[] K;
 
-	  output->set_labels(Yh, m);
+	  output=new CLabels(n);
+
+	  output->set_labels(Yh, n);
 
 	  delete[] Yh;
 	  
@@ -99,6 +107,8 @@ CLabels* CKRR::classify(CLabels* output)
 
 DREAL CKRR::classify_example(INT num)
 {
+  ASSERT(CKernelMachine::get_kernel());
+
   // Get kernel matrix
   INT m = 0;
   INT n = 0;
@@ -107,7 +117,7 @@ DREAL CKRR::classify_example(INT num)
   DREAL Yh;
   
   // predict
-  dgemv('N', 1, n, 1.0, K + num, m, alpha, 1, 0.0, &Yh, 1);
+  Yh = CMath::dot(K + m*num, alpha, m);
   
   delete[] K;
 
