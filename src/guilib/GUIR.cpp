@@ -670,22 +670,6 @@ extern "C"
 	}
 
 #if 0
-	bool CGUI_R::set_kernel_parameters(const mxArray* mx_arg)
-	{
-		if (mx_arg && mxGetM(mx_arg)==1 )
-		{
-			const double* arg=mxGetPr(mx_arg);
-
-			CKernel* k=gui->guikernel.get_kernel();
-
-			if (k)
-			{
-				return (k->set_kernel_parameters(mxGetN(mx_arg), arg));
-			}
-		}
-
-		return false;
-	}
    
 //bool CGUI_R::set_custom_kernel(const mxArray* vals[], bool source_is_diag, bool dest_is_diag) {
 bool CGUI_R::set_custom_kernel(SEXP args) {

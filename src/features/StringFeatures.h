@@ -272,10 +272,15 @@ template <class ST> class CStringFeatures: public CFeatures
 
 		n = scandir(dirname, &namelist, CIO::filter, alphasort);
 		if (n <= 0)
-			perror("scandir");
+		{
+			CIO::message(M_ERROR, "error calling scandir\n");
+			return false;
+		}
 		else
 		{
 			T_STRING<ST>* strings=NULL;
+			alphabet->clear_histogram();
+
 			INT num=0;
 			INT max_len=-1;
 
@@ -303,8 +308,11 @@ template <class ST> class CStringFeatures: public CFeatures
 						fread(str, sizeof(ST), filesize, f);
 						strings[num].string=str;
 						strings[num].length=filesize;
-						if (strings[num].length> max_len)
-							max_len=strings[num].length;
+						max_len=CMath::max(max_len, strings[num].length);
+
+						//compute histogram for char/byte
+						alphabet->add_string_to_histogram((BYTE*) strings[num].string, (LONG) strings[num].length);
+						
 						num++;
 						fclose(f);
 					}
@@ -314,9 +322,12 @@ template <class ST> class CStringFeatures: public CFeatures
 			free(namelist);
 
 			if (num>0 && strings)
+			{
 				set_features(strings, num, max_len);
+				return true;
+			}
 		}
-		return 0;
+		return false;
 	}
 
 	void set_features(T_STRING<ST>* p_features, INT p_num_vectors, INT p_max_string_length)
@@ -358,8 +369,12 @@ template <class ST> class CStringFeatures: public CFeatures
 		return true;
 	}
 
-        template <class CT>
+	inline bool obtain_from_char(CStringFeatures<CHAR>* sf, INT start, INT p_order, INT gap)
+	{
+		return obtain_from_char_features(sf, start, p_order, gap);
+	}
 
+    template <class CT>
 	bool obtain_from_char_features(CStringFeatures<CT>* sf, INT start, INT p_order, INT gap)
 	{
 		ASSERT(sf);
@@ -369,11 +384,20 @@ template <class ST> class CStringFeatures: public CFeatures
 		symbol_mask_table=new ST[256];
 
 		num_vectors=sf->get_num_vectors();
+		ASSERT(num_vectors>0);
 		max_string_length=sf->get_max_vector_length()-start;
 		features=new T_STRING<ST>[num_vectors];
 		ASSERT(features);
 
 		CAlphabet* alpha=sf->get_alphabet();
+		//alpha->clear_histogram();
+		//for (INT i=0; i<num_vectors; i++)
+		//{
+		//	INT len=-1;
+		//	CT* c=sf->get_feature_vector(i, len);
+		//	alpha->add_string_to_histogram(c, len);
+		//}
+
 		ASSERT(alpha->get_num_symbols_in_histogram() > 0);
 
 		CIO::message(M_DEBUG, "%1.0llf symbols in StringFeatures<*>\n", sf->get_num_symbols());
@@ -562,16 +586,6 @@ template <class ST> class CStringFeatures: public CFeatures
 	ST* symbol_mask_table;
 };
 
-template<> inline EFeatureType CStringFeatures<DREAL>::get_feature_type()
-{
-	return F_DREAL;
-}
-
-template<> inline EFeatureType CStringFeatures<SHORT>::get_feature_type()
-{
-	return F_SHORT;
-}
-
 template<> inline EFeatureType CStringFeatures<CHAR>::get_feature_type()
 {
 	return F_CHAR;
@@ -582,9 +596,9 @@ template<> inline EFeatureType CStringFeatures<BYTE>::get_feature_type()
 	return F_BYTE;
 }
 
-template<> inline EFeatureType CStringFeatures<INT>::get_feature_type()
+template<> inline EFeatureType CStringFeatures<SHORT>::get_feature_type()
 {
-	return F_INT;
+	return F_SHORT;
 }
 
 template<> inline EFeatureType CStringFeatures<WORD>::get_feature_type()
@@ -592,8 +606,28 @@ template<> inline EFeatureType CStringFeatures<WORD>::get_feature_type()
 	return F_WORD;
 }
 
+template<> inline EFeatureType CStringFeatures<INT>::get_feature_type()
+{
+	return F_INT;
+}
+
+template<> inline EFeatureType CStringFeatures<UINT>::get_feature_type()
+{
+	return F_UINT;
+}
+
+template<> inline EFeatureType CStringFeatures<LONG>::get_feature_type()
+{
+	return F_LONG;
+}
+
 template<> inline EFeatureType CStringFeatures<ULONG>::get_feature_type()
 {
 	return F_ULONG;
+}
+
+template<> inline EFeatureType CStringFeatures<DREAL>::get_feature_type()
+{
+	return F_DREAL;
 }
 #endif

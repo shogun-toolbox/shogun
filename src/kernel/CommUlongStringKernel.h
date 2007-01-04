@@ -21,6 +21,7 @@ class CCommUlongStringKernel: public CStringKernel<ULONG>
 {
 	public:
 		CCommUlongStringKernel(INT size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION );
+		CCommUlongStringKernel(CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r, bool use_sign=false, ENormalizationType normalization_=FULL_NORMALIZATION, INT size=10);
 		~CCommUlongStringKernel();
 
 		virtual bool init(CFeatures* l, CFeatures* r, bool do_init);

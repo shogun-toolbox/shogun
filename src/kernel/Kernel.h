@@ -179,8 +179,6 @@ class CKernel
 		 */
 		virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
 		
-		virtual bool set_kernel_parameters(INT num, const double* param) { return false; }
-		
 		inline double get_combined_kernel_weight() { return combined_kernel_weight; }
 		inline void set_combined_kernel_weight(double nw) { combined_kernel_weight=nw; }
 		virtual INT get_num_subkernels();

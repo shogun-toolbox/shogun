@@ -63,7 +63,6 @@ static const CHAR* N_BEST_PATH_TRANS_SIMPLE=			"best_path_trans_simple";
 static const CHAR* N_BEST_PATH_NO_B=			"best_path_no_b";
 static const CHAR* N_APPEND_HMM=			"append_hmm";
 static const CHAR* N_SET_SVM=			"set_svm";
-static const CHAR* N_SET_KERNEL_PARAMETERS=	        "set_kernel_parameters";
 static const CHAR* N_SET_CUSTOM_KERNEL=	        "set_custom_kernel";
 static const CHAR* N_SET_KERNEL_INIT=	        "set_kernel_init";
 static const CHAR* N_SET_FEATURES=		"set_features";
@@ -610,11 +609,6 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				CIO::message(M_ERROR, "usage is sg('set_svm',[b,alphas])");
-		}
-		else if (strmatch(action, len, N_SET_KERNEL_PARAMETERS))
-		{
-			if (nlhs!=0 || nrhs!=2 || !sg_matlab.set_kernel_parameters(prhs[1]))
-				CIO::message(M_ERROR, "usage is sg('set_kernel_parameters',[parm])");
 		}
 		else if (strmatch(action, len, N_SET_CUSTOM_KERNEL))
 		{

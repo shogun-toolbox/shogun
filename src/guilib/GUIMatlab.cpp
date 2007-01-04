@@ -1781,23 +1781,6 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 	return false;
 }
 
-bool CGUIMatlab::set_kernel_parameters(const mxArray* mx_arg)
-{
-	if (mx_arg && mxGetM(mx_arg)==1 )
-	{
-		const double* arg=mxGetPr(mx_arg);
-
-		CKernel* k=gui->guikernel.get_kernel();
-
-		if (k)
-		{
-			return (k->set_kernel_parameters(mxGetN(mx_arg), arg));
-		}
-	}
-
-	return false;
-}
-
 bool CGUIMatlab::set_custom_kernel(const mxArray* vals[], bool source_is_diag, bool dest_is_diag)
 {
 	const mxArray* mx_kernel=vals[1];
@@ -1957,9 +1940,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 						for (int i=0; i<num_vec; i++)
 						{
 							mxArray* e=mxGetCell(mx_feat, i);
-							ASSERT(e && mxIsChar(e));
-
-							sc[i].string=get_mxString(e, len);
+							ASSERT(e && mxIsChar(e)); sc[i].string=get_mxString(e, len);
 							if (sc[i].string)
 							{
 								sc[i].length=len;

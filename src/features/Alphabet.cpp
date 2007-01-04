@@ -188,7 +188,7 @@ void CAlphabet::init_map_table()
 				for (i=0; i<256; i++)
 				{
 					valid_chars[i]=1;
-					maptable_to_char[i]=i;
+					maptable_to_bin[i]=i;
 					maptable_to_char[i]=i;
 				}
 			}

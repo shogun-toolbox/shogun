@@ -10,6 +10,7 @@
 %apply (INT** ARGOUT1, INT* DIM1) {(INT** dst, INT* len)};
 %apply (UINT** ARGOUT1, INT* DIM1) {(UINT** dst, INT* len)};
 %apply (LONG** ARGOUT1, INT* DIM1) {(LONG** dst, INT* len)};
+%apply (ULONG** ARGOUT1, INT* DIM1) {(ULONG** dst, INT* len)};
 %apply (SHORTREAL** ARGOUT1, INT* DIM1) {(SHORTREAL** dst, INT* len)};
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst, INT* len)};
 %apply (LONGREAL** ARGOUT1, INT* DIM1) {(LONGREAL** dst, INT* len)};
@@ -18,5 +19,9 @@
 
 %template(StringCharFeatures) CStringFeatures<CHAR>;
 %template(StringByteFeatures) CStringFeatures<BYTE>;
+%template(StringShortFeatures) CStringFeatures<SHORT>;
 %template(StringWordFeatures) CStringFeatures<WORD>;
+%template(StringIntFeatures) CStringFeatures<INT>;
+%template(StringUIntFeatures) CStringFeatures<UINT>;
+%template(StringLongFeatures) CStringFeatures<LONG>;
 %template(StringUlongFeatures) CStringFeatures<ULONG>;

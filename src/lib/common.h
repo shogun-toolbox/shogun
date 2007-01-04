@@ -217,15 +217,18 @@ enum EKernelProperty
 enum EFeatureType
 {
 	F_UNKNOWN = 0,
-	F_DREAL = 10,
-	F_SHORT = 20,
-	F_CHAR = 30,
-	F_INT = 40,
-	F_BYTE = 50,
-	F_WORD = 60,
+	F_CHAR = 10,
+	F_BYTE = 20,
+	F_SHORT = 30,
+	F_WORD = 40,
+	F_INT = 50,
+	F_UINT = 60,
 	F_LONG = 70,
 	F_ULONG = 80,
-	F_ANY = 90
+	F_SREAL = 90,
+	F_DREAL = 100,
+	F_LREAL = 110,
+	F_ANY = 1000
 };
 
 enum EFeatureClass

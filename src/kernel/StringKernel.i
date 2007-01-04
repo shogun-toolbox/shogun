@@ -8,3 +8,4 @@
 %template(StringWordKernel) CStringKernel<WORD>;
 %template(StringCharKernel) CStringKernel<CHAR>;
 %template(StringIntKernel) CStringKernel<INT>;
+%template(StringUlongKernel) CStringKernel<ULONG>;

@@ -22,6 +22,13 @@ CCommUlongStringKernel::CCommUlongStringKernel(INT size, bool use_sign_,
 	clear_normal();
 }
 
+CCommUlongStringKernel::CCommUlongStringKernel(CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r, bool use_sign_, ENormalizationType normalization_, INT size)
+  : CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
+	use_sign(use_sign_), normalization(normalization_)
+{
+	init(l,r,true);
+}
+
 CCommUlongStringKernel::~CCommUlongStringKernel() 
 {
 	cleanup();

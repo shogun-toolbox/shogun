@@ -59,7 +59,6 @@ static const CHAR* N_SET_HMM=			"set_hmm";
 //static const CHAR* N_BEST_PATH_NO_B=			"best_path_no_b";
 static const CHAR* N_APPEND_HMM=			"append_hmm";
 static const CHAR* N_SET_SVM=			"set_svm";
-//static const CHAR* N_SET_KERNEL_PARAMETERS=	        "set_kernel_parameters";
 static const CHAR* N_SET_CUSTOM_KERNEL=	        "set_custom_kernel";
 //static const CHAR* N_SET_KERNEL_INIT=	        "set_kernel_init";
 static const CHAR* N_SET_FEATURES=		"set_features";

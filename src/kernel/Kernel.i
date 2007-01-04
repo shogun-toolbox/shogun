@@ -36,4 +36,5 @@
 %include "kernel/WeightedDegreeCharKernel.i" 
 %include "kernel/ConstKernel.i" 
 %include "kernel/StringKernel.i" 
-/* %include "kernel/SpectrumKernel.i" */
+%include "kernel/CommUlongStringKernel.i" 
+%include "kernel/CommWordStringKernel.i" 
