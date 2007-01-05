@@ -17,9 +17,10 @@ all: doc release matlab python octave R
 
 RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
 DESTDIR := ../$(RELEASENAME)
-REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/classifier/svm/{SVM_light,Optimizer}* $(DESTDIR)/src/regression/svr/SVR_light.* ; \
+REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/classifier/svm/{SVM_light,Optimizer}* $(DESTDIR)/src/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
 grep -rl USE_SVMLIGHT $(DESTDIR)| xargs --no-run-if-empty sed -i '/\#ifdef USE_SVMLIGHT/,/\#endif \/\/USE_SVMLIGHT/c \\' ; \
-sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOACHIMS/,/ \* this program is free software/c\ * This program is free software; you can redistribute it and/or modify' $(DESTDIR)/src/kernel/Kernel.{cpp,h}
+sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOACHIMS/,/ \* this program is free software/c\ * This program is free software; you can redistribute it and/or modify' $(DESTDIR)/src/kernel/Kernel.{cpp,h} ; \
+sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 
 src/lib/versionstring.h:
 	make -C src lib/versionstring.h

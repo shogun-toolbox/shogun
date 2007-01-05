@@ -65,11 +65,13 @@ test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
 CONFIGURE_OPTIONS="configure options $@"
 GDB=gdb
 MAKE=make
+COMP_C=cc
+COMP_CPP=c++
 test "$CC" && COMP_C="$CC"
 test "$CXX" && COMP_CPP="$CXX"
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
-COMPFLAGS_C="$COMP_OPTS"
-COMPFLAGS_CPP="$COMP_OPTS"
+COMPFLAGS_C=
+COMPFLAGS_CPP=
 test "$CFLAGS" && COMPFLAGS_C="$COMPFLAGS_C $CFLAGS"
 test "$CXXFLAGS" && COMPFLAGS_CPP="$COMPFLAGS_CPP $CXXFLAGS"
 INCLUDES=-I${SRCDIR}
@@ -115,7 +117,7 @@ detect_cc()
 cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
-	for COMP_C in "$COMP_C" cc gcc gcc-4.1 gcc-4.0 gcc-3.4 gcc-3.3 gcc-3.2 gcc-3.1 gcc3 gcc-3.0
+	for COMP_C in "$COMP_C" gcc gcc-4.1 gcc-4.0 gcc-3.4 gcc-3.3 gcc-3.2 gcc-3.1 gcc3 gcc-3.0
 	do
 		if cc_check
 		then
@@ -128,30 +130,41 @@ EOF
 			case $cc_version in
 				'')
 				cc_version="v. ?.??, bad"
-				cc_verc_fail=yes
 				;;
 				2.95.[2-9]|2.95.[2-9][-.]*|[3-4].*)
 				_cc_major=`echo $cc_version | cut -d '.' -f 1`
 				_cc_minor=`echo $cc_version | cut -d '.' -f 2`
 				_cc_mini=`echo $cc_version | cut -d '.' -f 3`
 				cc_version="$cc_version, ok"
-				cc_verc_fail=no
+				cc_found=yes
+				break
 				;;
 				'not found')
-				cc_verc_fail=yes
+				cc_found=no
 				;;
 				*)
 				cc_version="$cc_version, bad"
-				cc_verc_fail=yes
 				;;
 			esac
-			break
 		fi
 	done
-	echores "$cc_version"
+
+	if test "$cc_found" = yes
+	then
+		echores "$cc_version"
+	else
+		die "no C compiler detected - cannot do anything"
+	fi
+
+	echocheck "C Compiler flags"
+	for opt in `echo $COMP_OPTS`
+	do
+		cc_check $opt && COMPFLAGS_C="$COMPFLAGS_C $opt"
+	done
+	echores "$COMPFLAGS_C"
 
 	echocheck "C++ Compiler"
-	for COMP_CPP in "$COMP_CPP" cxx c++ CC g++ g++-4.1 g++-4.0 g++-3.4 g++-3.3 g++-3.2 g++-3.1 g++3 g++-3.0
+	for COMP_CPP in "$COMP_CPP" cxx CC g++ g++-4.1 g++-4.0 g++-3.4 g++-3.3 g++-3.2 g++-3.1 g++3 g++-3.0
 	do
 		if cxx_check
 		then
@@ -164,37 +177,40 @@ EOF
 			case $cxx_version in
 				'')
 				cxx_version="v. ?.??, bad"
-				cxx_verc_fail=yes
 				;;
 				2.95.[2-9]|2.95.[2-9][-.]*|[3-4].*)
 				_cxx_major=`echo $cxx_version | cut -d '.' -f 1`
 				_cxx_minor=`echo $cxx_version | cut -d '.' -f 2`
 				_cxx_mini=`echo $cxx_version | cut -d '.' -f 3`
 				cxx_version="$cxx_version, ok"
-				cxx_verc_fail=no
+				cxx_found=yes
+				break
 				;;
 				'not found')
-				cxx_verc_fail=yes
+				cxx_found=no
 				;;
 				*)
 				cxx_version="$cxx_version, bad"
-				cxx_verc_fail=yes
 				;;
 			esac
-			break
 		fi
 	done
-	echores "$cxx_version"
 
-	if test -z "$COMP_C" ; then
-		die "no C compiler detected - cannot do anything"
-	fi
-
-	if test -z "$COMP_CPP" ; then
+	if test "$cxx_found" = yes
+	then
+		echores "$cxx_version"
+	else
 		die "no C++ compiler detected - cannot do anything"
 	fi
 
-	#use CPP compiler for linking
+	echocheck "C++ Compiler flags"
+	for opt in `echo $COMP_OPTS`
+	do
+		cxx_check $opt && COMPFLAGS_CPP="$COMPFLAGS_CPP $opt"
+	done
+	echores "$COMPFLAGS_CPP"
+
+	#as our code is C++ use CPP compiler for linking
 	LINK=$COMP_CPP
 }
 
