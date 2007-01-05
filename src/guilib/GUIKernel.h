@@ -38,7 +38,7 @@ class CGUIKernel
 	bool clean_kernel(CHAR* param);
 #ifdef USE_SVMLIGHT
 	bool resize_kernel_cache(CHAR* param);
-#endif
+#endif //USE_SVMLIGHT
 	bool set_optimization_type(CHAR* param);
 	bool add_kernel(CHAR* param);
 	bool del_kernel(CHAR* param);

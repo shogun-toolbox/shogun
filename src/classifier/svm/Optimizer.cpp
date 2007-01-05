@@ -22,7 +22,7 @@
 
 #ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM_light.h"
-#endif
+#endif //USE_SVMLIGHT
 
 #include "lib/common.h"
 #include "lib/io.h"

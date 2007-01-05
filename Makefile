@@ -17,7 +17,9 @@ all: doc release matlab python octave R
 
 RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
 DESTDIR := ../$(RELEASENAME)
-REMOVE_SVMLIGHT := find $(DESTDIR) -iname '*svm*light*' | xargs rm -f
+REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/classifier/svm/{SVM_light,Optimizer}* $(DESTDIR)/src/regression/svr/SVR_light.* ; \
+grep -rl USE_SVMLIGHT $(DESTDIR)| xargs --no-run-if-empty sed -i '/\#ifdef USE_SVMLIGHT/,/\#endif \/\/USE_SVMLIGHT/c \\' ; \
+sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOACHIMS/,/ \* this program is free software/c\ * This program is free software; you can redistribute it and/or modify' $(DESTDIR)/src/kernel/Kernel.{cpp,h}
 
 src/lib/versionstring.h:
 	make -C src lib/versionstring.h
@@ -25,26 +27,28 @@ src/lib/versionstring.h:
 # We assume that a release is always created from a SVN working copy.
 
 release: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h vanilla-package r-package
+	rm -rf $(DESTDIR)
 
 vanilla-package: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
 	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
+	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
 	$(COMPRESS) -9 $(DESTDIR).tar
 
+# build R-package
 r-package:	src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
-	#build R package
 	cd $(DESTDIR)/R && make package && cp *.tar.gz ../../
-	rm -rf $(DESTDIR)
 
-$(DESTDIR)/src/lib/versionstring.h:
-	rm -rf $(DESTDIR) $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
+$(DESTDIR)/src/lib/versionstring.h: src/lib/versionstring.h
+	rm -rf $(DESTDIR)
 	svn export . $(DESTDIR)
 	if [ ! $(SVMLIGHT) = yes ]; then $(REMOVE_SVMLIGHT); fi
 
 	# remove top level makefile from distribution
 	rm -f $(DESTDIR)/Makefile
-
-	# FIXME: This is a hack because .generate_link_dependencies.py is buggy
-	# and should better be replaced by 'swig -MM':
-	touch $(DESTDIR)/src/classifier/svm/SVM_light.i
-	
 	mv -f src/lib/versionstring.h $(DESTDIR)/src/lib/
+
+clean:
+	rm -rf $(DESTDIR)
+
+mrproper:
+	rm -rf $(DESTDIR) $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz

@@ -150,7 +150,7 @@ class CKernel
 		{
 			return(kernel_cache.elems < kernel_cache.max_elems);
 		}
-#endif
+#endif //USE_SVMLIGHT
 
 		void list_kernel();
 
@@ -263,7 +263,7 @@ class CKernel
 		INT   kernel_cache_malloc();
 		INT   kernel_cache_free_lru();
 		KERNELCACHE_ELEM *kernel_cache_clean_and_malloc(INT cacheidx);
-#endif
+#endif //USE_SVMLIGHT
 		//@}
 
 
@@ -274,7 +274,8 @@ class CKernel
 #ifdef USE_SVMLIGHT
 		/// kernel cache
 		KERNEL_CACHE kernel_cache;
-#endif
+#endif //USE_SVMLIGHT
+
 		/// this *COULD* store the whole kernel matrix
 		/// usually not applicable / faster
 		KERNELCACHE_ELEM* kernel_matrix;

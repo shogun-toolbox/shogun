@@ -28,13 +28,13 @@
 
 #ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM_light.h"
-#endif
+#include "regression/svr/SVR_light.h"
+#endif //USE_SVMLIGHT
 
 #include "classifier/svm/LibSVM.h"
 #include "classifier/svm/GPBTSVM.h"
 #include "classifier/svm/MPD.h"
 
-#include "regression/svr/SVR_light.h"
 #include "regression/svr/LibSVR.h"
 
 CGUIClassifier::CGUIClassifier(CGUI* g) : gui(g)
@@ -76,7 +76,7 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		classifier= new CLibSVM();
 		CIO::message(M_INFO, "created SVMlibsvm object\n") ;
 	}
-#ifdef SVM_LIGHT
+#ifdef USE_SVMLIGHT
 	else if (strcmp(param,"SVMLIGHT")==0)
 	{
 		delete classifier;
@@ -89,7 +89,7 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		classifier= new CSVRLight();
 		CIO::message(M_INFO, "created SVRLight object\n") ;
 	}
-#endif
+#endif //USE_SVMLIGHT
 	else if (strcmp(param,"GPBTSVM")==0)
 	{
 		delete classifier;
@@ -245,7 +245,7 @@ bool CGUIClassifier::train_svm(CHAR* param, bool auc_maximization)
 #ifdef USE_SVMLIGHT
 	if (auc_maximization)
 		((CSVMLight*)svm)->setup_auc_maximization() ;
-#endif
+#endif //USE_SVMLIGHT
 
 	bool result = svm->train();
 

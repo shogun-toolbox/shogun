@@ -86,7 +86,7 @@ static const CHAR* N_ADD_KERNEL=		"add_kernel";
 static const CHAR* N_CLEAN_KERNEL=		"clean_kernel";
 #ifdef USE_SVMLIGHT
 static const CHAR* N_RESIZE_KERNEL_CACHE=		"resize_kernel_cache";
-#endif
+#endif //USE_SVMLIGHT
 static const CHAR* N_SET_KERNEL_OPTIMIZATION_TYPE=		"set_kernel_optimization_type";
 static const CHAR* N_ATTACH_PREPROC=	"attach_preproc";
 static const CHAR* N_ADD_PREPROC=		"add_preproc";
@@ -615,7 +615,7 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	{
 		guikernel.resize_kernel_cache(p_input+strlen(N_RESIZE_KERNEL_CACHE));
 	} 
-#endif
+#endif //USE_SVMLIGHT
 	else if (!strncmp(p_input, N_DEL_PREPROC, strlen(N_DEL_PREPROC)))
 	{
 		guipreproc.del_preproc(p_input+strlen(N_DEL_PREPROC));

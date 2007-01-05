@@ -1485,7 +1485,7 @@ bool CGUIKernel::resize_kernel_cache(CHAR* param)
 	CIO::message(M_ERROR, "no kernel available\n") ;
 	return false;
 }
-#endif
+#endif //USE_SVMLIGHT
 
 bool CGUIKernel::set_optimization_type(CHAR* param)
 {

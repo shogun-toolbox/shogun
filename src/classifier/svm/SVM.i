@@ -10,14 +10,14 @@
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** alphas, INT* d1)};
 %apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* alphas, INT d)};
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* svs, INT d)};
-#endif
+#endif //HAVE_PYTHON
 
 %include "kernel/KernelMachine.i"
 %include "classifier/svm/SVM.h"
 
 #ifdef USE_SVMLIGHT
 %include "classifier/svm/SVM_light.i"
-#endif
+#endif //USE_SVMLIGHT
 
 %include "classifier/svm/LibSVM.i"
 
@@ -33,4 +33,4 @@
           self.set_kernel(kernel)
           self.set_bias(b)
 %}
-#endif
+#endif //HAVE_PYTHON

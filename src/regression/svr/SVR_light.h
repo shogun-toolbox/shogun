@@ -15,7 +15,7 @@
 
 #ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM_light.h"
-#endif
+#endif //USE_SVMLIGHT
 
 #ifdef USE_SVMLIGHT
 class CSVRLight:public CSVMLight

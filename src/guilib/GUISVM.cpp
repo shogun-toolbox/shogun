@@ -20,13 +20,13 @@
 
 #ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM_light.h"
-#endif
+#include "regression/svr/SVR_light.h"
+#endif //USE_SVMLIGHT
 
 #include "classifier/svm/LibSVM.h"
 #include "classifier/svm/GPBTSVM.h"
 #include "classifier/svm/LibSVM_oneclass.h"
 
-#include "regression/svr/SVR_light.h"
 #include "regression/svr/LibSVR.h"
 
 #include "classifier/svm/MPD.h"
@@ -88,7 +88,7 @@ bool CGUISVM::new_svm(CHAR* param)
 		svm= new CSVRLight();
 		CIO::message(M_INFO, "created SVRLight object\n") ;
 	}
-#endif
+#endif //USE_SVMLIGHT
 	else if (strcmp(param,"GPBT")==0)
 	{
 		delete svm;
@@ -177,7 +177,7 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 #ifdef USE_SVMLIGHT
 	if (auc_maximization)
 		((CSVMLight*)svm)->setup_auc_maximization() ;
-#endif
+#endif //USE_SVMLIGHT
 
 	bool result = svm->train();
 

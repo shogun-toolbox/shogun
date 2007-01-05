@@ -159,7 +159,7 @@ void CWeightedDegreePositionCharKernel::remove_lhs()
 #ifdef USE_SVMLIGHT
     if (lhs)
 	cache_reset() ;
-#endif
+#endif //USE_SVMLIGHT
 
     if (sqrtdiag_lhs != sqrtdiag_rhs)
 	delete[] sqrtdiag_rhs;
@@ -179,7 +179,7 @@ void CWeightedDegreePositionCharKernel::remove_rhs()
 #ifdef USE_SVMLIGHT
     if (rhs)
 	cache_reset() ;
-#endif
+#endif //USE_SVMLIGHT
 
     if (sqrtdiag_lhs != sqrtdiag_rhs)
 	delete[] sqrtdiag_rhs;

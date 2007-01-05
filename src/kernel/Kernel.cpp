@@ -42,7 +42,7 @@ CKernel::CKernel(INT size)
 	cache_size=size;
 #ifdef USE_SVMLIGHT
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
-#endif
+#endif //USE_SVMLIGHT
 	if (get_is_initialized()) 
       sg_error(sg_err_fun,"COptimizableKernel still initialized on destruction");
 }
@@ -60,7 +60,7 @@ CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, INT size)
 	cache_size=size;
 #ifdef USE_SVMLIGHT
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
-#endif
+#endif //USE_SVMLIGHT
 	if (get_is_initialized()) 
       sg_error(sg_err_fun,"COptimizableKernel still initialized on destruction");
 
@@ -75,7 +75,7 @@ CKernel::~CKernel()
 
 #ifdef USE_SVMLIGHT
 	kernel_cache_cleanup();
-#endif
+#endif //USE_SVMLIGHT
 
 	delete[] precomputed_matrix ;
 	precomputed_matrix=NULL ;
@@ -305,7 +305,7 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 	if (lhs!=NULL && rhs!=NULL)
 		kernel_cache_init(cache_size, regression_hack);
 }
-#endif
+#endif //USE_SVMLIGHT
 
 bool CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
@@ -324,7 +324,7 @@ bool CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	// allocate kernel cache but clean up beforehand
 	kernel_cache_cleanup();
 	kernel_cache_init(cache_size);
-#endif
+#endif //USE_SVMLIGHT
 
 	delete[] precomputed_matrix ;
 	precomputed_matrix=NULL ;
@@ -751,7 +751,7 @@ KERNELCACHE_ELEM* CKernel::kernel_cache_clean_and_malloc(INT cacheidx)
 	kernel_cache.lru[kernel_cache.index[cacheidx]]=kernel_cache.time; // lru
 	return &kernel_cache.buffer[((KERNELCACHE_IDX) kernel_cache.activenum)*kernel_cache.index[cacheidx]];
 }
-#endif
+#endif //USE_SVMLIGHT
 
 bool CKernel::load(CHAR* fname)
 {
@@ -794,7 +794,7 @@ void CKernel::remove_lhs()
 #ifdef USE_SVMLIGHT
 	if (lhs)
 		cache_reset();
-#endif
+#endif //USE_SVMLIGHT
 
 	lhs = NULL;
 }
@@ -805,7 +805,7 @@ void CKernel::remove_rhs()
 #ifdef USE_SVMLIGHT
 	if (rhs)
 		cache_reset();
-#endif
+#endif //USE_SVMLIGHT
 	rhs = NULL;
 }
 
