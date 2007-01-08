@@ -8,9 +8,9 @@
  *              for support vectors
  *
  * Written (W) 1997-1998 Alex J. Smola
- * Written (W) 1999-2006 Soeren Sonnenburg
- * Written (W) 1999-2006 Gunnar Raetsch
- * Copyright (C) 1997-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2007 Soeren Sonnenburg
+ * Written (W) 1999-2007 Gunnar Raetsch
+ * Copyright (C) 1997-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 

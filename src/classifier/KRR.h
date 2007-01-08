@@ -5,8 +5,8 @@
  * (at your option) any later version.
  *
  * Written (W) 2006 Mikio L. Braun
- * Written (W) 1999-2006 Soeren Sonnenburg
- * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2007 Soeren Sonnenburg
+ * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _KRR_H__

@@ -7,7 +7,7 @@
  * 
  * Written (W) 2006 Soeren Sonnenburg
  * Written (W) 2006 Christian Gehl
- * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "classifier/KNN.h"

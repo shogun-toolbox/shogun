@@ -4,9 +4,9 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2006 Soeren Sonnenburg
- * Written (W) 1999-2006 Gunnar Raetsch
- * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 1999-2007 Soeren Sonnenburg
+ * Written (W) 1999-2007 Gunnar Raetsch
+ * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef _GUIPLUGINESTIMATE_H__

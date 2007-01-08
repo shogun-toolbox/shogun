@@ -6,7 +6,7 @@
  *
  * Written (W) 2006 Christian Gehl
  * Written (W) 2006 Soeren Sonnenburg
- * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/config.h"

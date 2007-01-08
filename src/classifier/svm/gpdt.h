@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2006 Soeren Sonnenburg
+ * Written (W) 1999-2007 Soeren Sonnenburg
  */
 
 /******************************************************************************

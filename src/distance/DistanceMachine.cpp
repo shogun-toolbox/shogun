@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2006 Christian Gehl
- * Copyright (C) 1999-2006 Fraunhofer Institute FIRST
+ * Written (W) 1999-2007 Christian Gehl
+ * Copyright (C) 1999-2007 Fraunhofer Institute FIRST
  */
 
 #include "distance/DistanceMachine.h"

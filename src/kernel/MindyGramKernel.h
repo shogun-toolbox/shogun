@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 2006 Konrad Rieck
- * Copyright (C) 1999-2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/config.h"
