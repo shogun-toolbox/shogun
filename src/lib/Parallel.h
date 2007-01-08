@@ -12,6 +12,7 @@
 #define PARALLEL_H__
 
 #include "lib/common.h"
+#include "lib/config.h"
 #include "lib/io.h"
 
 #include <unistd.h>
@@ -22,7 +23,7 @@ public:
 	CParallel();
 	~CParallel();
 
-#ifdef _SC_NPROCESSORS_ONLN
+#ifdef HAVE_NPROCESSORS_ONLN
 	static inline INT get_num_cpus()
 	{
 		return sysconf( _SC_NPROCESSORS_ONLN );

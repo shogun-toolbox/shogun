@@ -25,6 +25,7 @@
 %apply (DREAL* IN_ARRAY2, INT DIM1, INT DIM2) {(DREAL* segment_sum_weights, INT num_states, INT seq_len)};
 %apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT *plif_id_matrix, INT m, INT n)}
 %apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT *plif_id_matrix, INT m, INT n)}
+%apply (CHAR* IN_ARRAY2, INT DIM1, INT DIM2) {(CHAR* genestr, INT genestr_len, INT genestr_num)};
 %apply (CHAR* IN_ARRAY1, INT DIM1) {(CHAR* genestr, INT genestr_len)};
 %apply (DREAL* IN_ARRAY2, INT DIM1, INT DIM2) {(DREAL* dictionary_weights, INT dict_len, INT n)};
 %apply (DREAL* IN_ARRAY2, INT DIM1, INT DIM2) {(DREAL * segment_loss, INT num_segment_id1, INT num_segment_id2)}
