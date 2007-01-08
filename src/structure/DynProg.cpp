@@ -56,7 +56,7 @@ CDynProg::CDynProg()
 
 	  // multi svm
 	  num_degrees(4), 
-	  num_svms(16), 
+	  num_svms(8), 
 	  num_strings(1),
 	  word_degree(word_degree_default, num_degrees, true, true),
 	  cum_num_words(cum_num_words_default, num_degrees+1, true, true),
@@ -2504,7 +2504,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 					INT offset = ss*svs.seqlen;
 					svm_value[ss]=svs.svm_values[offset+plen];
 #ifdef DYNPROG_DEBUG
-					CIO::message(M_DEBUG, "svm[%i]: %f\n", ss, svm_value[ss]) ;
+					//CIO::message(M_DEBUG, "svm[%i]: %f\n", ss, svm_value[ss]) ;
 #endif
 				}
 			}
