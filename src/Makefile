@@ -131,6 +131,10 @@ dist:	distclean
 	rm -f $(TAR).gz
 	tar -cvf $(TAR) -C ../../ shogun/src && gzip -9 $(TAR)
 
+# installer for swig-python, python, standalone(readline), octave
+# matlab and R packages are installed using a different mechanism
+#  ( R CMD INSTALl sg and cp :-) 
+#
 # Python + Swig
 ifeq (yes,$(USE_SWIG))
 install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
@@ -139,23 +143,23 @@ install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
 	echo -n '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
 	for i in $(SWIGPYFILES) ; do echo -n $$i | sed -e 's=.*/="=' -e 's/\.py/", /' >>$(DESTDIR)$(PYDIR)/shogun/__init__.py; done
 	echo ']' >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
-# Python without Swig
+# Standalone
 else
-ifneq (,$(PYDIR))
+ifeq (shogun,$(TARGET))
 install: $(TARGET)
-	install -d -m755 $(DESTDIR)$(PYDIR)
-	install -D -m755 $(TARGET) $(DESTDIR)$(PYDIR)
+	install -d -m755 $(DESTDIR)$(BINDIR)
+	install -D -m755 $(TARGET) $(DESTDIR)$(BINDIR)
 # Octave
 else
 ifeq (sg.oct,$(TARGET))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(OCTDIR)
 	install -D -m755 $(TARGET) $(DESTDIR)$(OCTDIR)
-# R, Readline, or Matlab
+# Python without Swig
 else
 install: $(TARGET)
-	install -d -m755 $(DESTDIR)$(BINDIR)
-	install -D -m755 $(TARGET) $(DESTDIR)$(BINDIR)
+	install -d -m755 $(DESTDIR)$(PYDIR)
+	install -D -m755 $(TARGET) $(DESTDIR)$(PYDIR)
 endif
 endif
 endif
