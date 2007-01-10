@@ -33,6 +33,7 @@ RELEASENAME := $(RELEASENAME)+svn$(SVNVERSION)
 endif
 RELEASENAME := $(RELEASENAME).orig
 COMPRESS := gzip
+SVMLIGHT := no
 TARGET := vanilla-package
 else
 all: doc release matlab python octave R
