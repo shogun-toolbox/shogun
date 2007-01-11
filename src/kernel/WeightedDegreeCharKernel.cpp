@@ -138,6 +138,9 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	CIO::message(M_DEBUG, "lhs_changed: %i\n", lhs_changed);
 	CIO::message(M_DEBUG, "rhs_changed: %i\n", rhs_changed);
 
+	ASSERT(l && (l->get_feature_type() == F_CHAR) && (l->get_feature_class() == C_SIMPLE)) ;
+	ASSERT(r && (r->get_feature_type() == F_CHAR) && (r->get_feature_class() == C_SIMPLE)) ;
+	
 	ASSERT(l && ((((CCharFeatures*) l)->get_alphabet()->get_alphabet()==DNA) || 
 				 (((CCharFeatures*) l)->get_alphabet()->get_alphabet()==RNA)));
 	ASSERT(r && ((((CCharFeatures*) r)->get_alphabet()->get_alphabet()==DNA) || 
