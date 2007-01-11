@@ -3026,7 +3026,8 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 	  changed2dnum=new INT[totdoc+11];
 	  inactive=new INT[totdoc];
 	  inactive2dnum=new INT[totdoc+11];
-	  for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) {
+	  for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) // Conditional jump or move depends on uninitialised value(s)
+	  {
 		  if(verbosity>=2) {
 			  CIO::message(M_INFO, "%ld..",t);
 		  }
