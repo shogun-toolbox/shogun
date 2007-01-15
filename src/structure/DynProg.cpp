@@ -1773,7 +1773,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	max_look_back = CMath::min(genestr_len, max_look_back) ;
 	//fprintf(stderr,"use_svm=%i\n", use_svm) ;
 	
-	const INT look_back_buflen = max_look_back*nbest*N ;
+	const INT look_back_buflen = (max_look_back*N+1)*(nbest+nother) ;
 	const DREAL mem_use = (DREAL)(seq_len*N*(nbest+nother)*(sizeof(T_STATES)+sizeof(short int)+sizeof(INT))+
 								  look_back_buflen*(2*sizeof(DREAL)+sizeof(INT))+
 								  seq_len*(sizeof(T_STATES)+sizeof(INT))+
@@ -2074,6 +2074,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 #if USEORIGINALLIST > 0
 								oldtempvv[old_list_len] = mval ;
 								oldtempii[old_list_len] = ii + diff*N + ts*N*(nbest+nother);
+								ASSERT(old_list_len<look_back_buflen) ;
 								old_list_len++ ;
 #endif
 								
@@ -2119,6 +2120,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				}
 				
 #if USEORIGINALLIST > 0
+				ASSERT(oldtempvv.get_dim1() > old_list_len) ;
 				CMath::qsort<DREAL,INT>(oldtempvv.get_array(), oldtempii.get_array(), old_list_len) ;
 				//CMath::nmin<INT>(oldtempvv.get_array(), oldtempii.get_array(), old_list_len, nbest) ;
 				INT num_finite = 0 ;
