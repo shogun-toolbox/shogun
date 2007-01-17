@@ -27,9 +27,9 @@
 	{
 	public:
 	CArray(INT initial_size = 1)
-		: free_array(true) 
+		: free_array(true), name(NULL)
 	#ifdef ARRAY_STATISTICS
-			, name(NULL), stat_const_element(0), stat_element(0), stat_set_element(0), stat_get_element(0), stat_operator(0), stat_const_operator(0), stat_set_array(0), stat_get_array(0), stat_resize_array(0), stat_array_element(0)
+			, stat_const_element(0), stat_element(0), stat_set_element(0), stat_get_element(0), stat_operator(0), stat_const_operator(0), stat_set_array(0), stat_get_array(0), stat_resize_array(0), stat_array_element(0)
 	#endif
 		{
 			array_size = initial_size;
@@ -38,18 +38,18 @@
 		}
 		
 	CArray(T* p_array, INT p_array_size, bool p_free_array=true, bool p_copy_array=false)
-		: array(NULL), free_array(false)
+		: array(NULL), free_array(false), name(NULL)
 	#ifdef ARRAY_STATISTICS
-			, name(NULL), stat_const_element(0), stat_element(0), stat_set_element(0), stat_get_element(0), stat_operator(0), stat_const_operator(0), stat_set_array(0), stat_get_array(0), stat_resize_array(0), stat_array_element(0)
+			, stat_const_element(0), stat_element(0), stat_set_element(0), stat_get_element(0), stat_operator(0), stat_const_operator(0), stat_set_array(0), stat_get_array(0), stat_resize_array(0), stat_array_element(0)
 	#endif
 		{
 			set_array(p_array, p_array_size, p_free_array, p_copy_array) ;
 		}
 		
 	CArray(const T* p_array, INT p_array_size)
-		: array(NULL), free_array(false)
+		: array(NULL), free_array(false), name(NULL)
 	#ifdef ARRAY_STATISTICS
-			, name(NULL), stat_const_element(0), stat_element(0), stat_set_element(0), stat_get_element(0), stat_operator(0), stat_const_operator(0), stat_set_array(0), stat_get_array(0), stat_resize_array(0), stat_array_element(0)
+			, stat_const_element(0), stat_element(0), stat_set_element(0), stat_get_element(0), stat_operator(0), stat_const_operator(0), stat_set_array(0), stat_get_array(0), stat_resize_array(0), stat_array_element(0)
 	#endif
 		{
 			set_array(p_array, p_array_size) ;
@@ -67,12 +67,10 @@
 				free(array);
 		}
 
-	#ifdef ARRAY_STATISTICS
 		inline void set_name(const char * p_name) 
 		{
 			name = p_name ;
 		}
-	#endif
 
 		/// return total array size (including granularity buffer)
 		inline INT get_array_size() const
@@ -244,12 +242,24 @@
 		return *this;
 	}
 
-	void display() const
+	void display_array() const
 	{
-		CIO::message(M_MESSAGEONLY, "Array of size: %d\n", array_size);
+		if (!name)
+			CIO::message(M_MESSAGEONLY, "Array of size: %d\n", array_size);
+		else
+			CIO::message(M_MESSAGEONLY, "Array '%s' of size: %d\n", name, array_size);
+
 		for (INT i=0; i<array_size; i++)
 			CIO::message(M_MESSAGEONLY, "%d,", array[i]);
 		CIO::message(M_MESSAGEONLY, "\n");
+	}
+
+	void display_size() const
+	{
+		if (!name)
+			CIO::message(M_MESSAGEONLY, "Array of size: %d\n", array_size);
+		else
+			CIO::message(M_MESSAGEONLY, "Array '%s' of size: %d\n", name, array_size);
 	}
 	
 protected:
@@ -263,8 +273,8 @@ protected:
 	/// 
 	bool free_array ;
 
-#ifdef ARRAY_STATISTICS
 	const char * name ;
+#ifdef ARRAY_STATISTICS
 	INT stat_const_element, stat_element, stat_set_element, stat_get_element, stat_operator, stat_const_operator, stat_set_array, stat_get_array, stat_resize_array, stat_array_element;
 #endif
 };

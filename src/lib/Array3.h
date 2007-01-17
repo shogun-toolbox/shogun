@@ -47,6 +47,11 @@ CArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
 	{
 	}
 	
+	inline void set_name(const char * p_name) 
+	{
+		CArray<T>::set_name(p_name) ;
+	}
+
 	/// return total array size (including granularity buffer)
 	inline void get_array_size(INT & dim1, INT & dim2, INT & dim3)
 	{
@@ -163,6 +168,11 @@ CArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
 		dim2_size=orig.dim2_size ;
 		dim3_size=orig.dim3_size ;
 		return *this;
+	}
+
+	void display_size() const
+	{
+		CIO::message(M_MESSAGEONLY, "3d-Array of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size);
 	}
 
 protected:

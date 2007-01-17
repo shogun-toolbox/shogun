@@ -1685,9 +1685,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		return ;
 	} ;
 	
-	mod_words.display() ;
-	sign_words.display() ;
-	string_words.display() ;
+	mod_words.display_array() ;
+	sign_words.display_array() ;
+	string_words.display_array() ;
 	
 	const INT default_look_back = 30000 ;
 	INT max_look_back = default_look_back ;
@@ -1703,6 +1703,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	//seq.zero() ;
 	CArray2<INT> orf_info(orf_info_array, N, 2) ;
 	
+
 	DREAL svm_value[num_svms] ;
 	{ // initialize svm_svalue
 		for (INT s=0; s<num_svms; s++)
@@ -1774,6 +1775,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	//fprintf(stderr,"use_svm=%i\n", use_svm) ;
 	
 	const INT look_back_buflen = (max_look_back*N+1)*(nbest+nother) ;
+	fprintf(stderr,"look_back_buflen=%i\n", look_back_buflen) ;
 	const DREAL mem_use = (DREAL)(seq_len*N*(nbest+nother)*(sizeof(T_STATES)+sizeof(short int)+sizeof(INT))+
 								  look_back_buflen*(2*sizeof(DREAL)+sizeof(INT))+
 								  seq_len*(sizeof(T_STATES)+sizeof(INT))+
@@ -1834,6 +1836,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	
 	CArray<DREAL> oldtempvv(look_back_buflen) ;
 	//oldtempvv.zero() ;
+	oldtempvv.display_size() ;
 	
 	CArray<INT> oldtempii(look_back_buflen) ;
 	//oldtempii.zero() ;
@@ -1845,13 +1848,12 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	//pos_seq.zero() ;
 
 	
-#ifdef ARRAY_STATISTICS
 	dict_weights.set_name("dict_weights") ;
 	word_degree.set_name("word_degree") ;
 	cum_num_words.set_name("cum_num_words") ;
 	num_words.set_name("num_words") ;
-	word_used.set_name("word_used") ;
-	svm_values_unnormalized.set_name("svm_values_unnormalized") ;
+	//word_used.set_name("word_used") ;
+	//svm_values_unnormalized.set_name("svm_values_unnormalized") ;
 	svm_pos_start.set_name("svm_pos_start") ;
 	num_unique_words.set_name("num_unique_words") ;
 
@@ -1876,9 +1878,47 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	oldtempvv.set_name("oldtempvv") ;
 	oldtempii.set_name("oldtempii") ;
 
-	state_seq.set_name("state_seq") ;
-	pos_seq.set_name("pos_seq") ;
+
+	//////////////////////////////////////////////////////////////////////////////// 
+
+	state_seq.display_size() ;
+	pos_seq.display_size() ;
+
+	dict_weights.display_size() ;
+	word_degree.display_size() ;
+	cum_num_words.display_size() ;
+	num_words.display_size() ;
+	//word_used.display_size() ;
+	//svm_values_unnormalized.display_size() ;
+	svm_pos_start.display_size() ;
+	num_unique_words.display_size() ;
+
+	PEN.display_size() ;
+	PEN_state_signals.display_size() ;
+	seq.display_size() ;
+	orf_info.display_size() ;
+	
+	genestr_stop.display_size() ;
+	delta.display_size() ;
+	psi.display_size() ;
+	ktable.display_size() ;
+	ptable.display_size() ;
+	delta_end.display_size() ;
+	path_ends.display_size() ;
+	ktable_end.display_size() ;
+
+#ifdef USE_TMP_ARRAYCLASS
+	fixedtempvv.display_size() ;
+	fixedtempii.display_size() ;
 #endif
+
+	oldtempvv.display_size() ;
+	oldtempii.display_size() ;
+
+	state_seq.display_size() ;
+	pos_seq.display_size() ;
+
+////////////////////////////////////////////////////////////////////////////////
 
 	{ // precompute stop codons
 		for (INT i=0; i<genestr_len-2; i++)
