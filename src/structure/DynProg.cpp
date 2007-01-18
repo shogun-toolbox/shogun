@@ -415,6 +415,7 @@ void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len)
 	ASSERT(end_state_distribution_q.get_dim1()==N) ;	
 	
 	m_seq.set_array(seq, N, seq_len, true, true) ;
+	CIO::message(M_MESSAGEONLY, "seq: %x, (%d,%d)\n", seq, N, seq_len);
 	this->N=N ;
 
 	m_call=3 ;
@@ -597,6 +598,7 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 
 	m_call=1 ;
 
+	CIO::message(M_MESSAGEONLY, "m_seq.get_array(): %x", m_seq.get_array());
 	best_path_trans(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), m_orf_info.get_array(),
 					m_PEN.get_array(), m_PEN_state_signals.get_array(), 
 					m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
@@ -1686,6 +1688,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 							   DREAL *dictionary_weights, INT dict_len, bool use_orf)
 {
+	CIO::message(M_MESSAGEONLY, "best_path_trans:%x", seq_array);
 	if (!svm_arrays_clean)
 	{
 		CIO::message(M_ERROR, "SVM arrays not clean") ;

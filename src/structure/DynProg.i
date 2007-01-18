@@ -35,8 +35,8 @@
 
 /* best_path result retrieval functions */
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** scores, INT* n)};
-%apply (INT** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** states, INT* m, INT* n)};
-%apply (INT** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** positions, INT* m, INT* n)};
+%apply (INT** ARGOUT2, INT* DIM1, INT* DIM2) {(INT** states, INT* m, INT* n)};
+%apply (INT** ARGOUT2, INT* DIM1, INT* DIM2) {(INT** positions, INT* m, INT* n)};
 #endif
 
 %include "structure/DynProg.h" 
