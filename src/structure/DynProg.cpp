@@ -376,20 +376,21 @@ void CDynProg::init_string_words_array(INT* p_string_words_array, INT num_elem)
 
 bool CDynProg::check_svm_arrays()
 {
+	//fprintf(stderr, "wd_dim1=%d, cum_num_words=%d, num_words=%d, svm_pos_start=%d, num_uniq_w=%d, mod_words_dims=(%d,%d), sign_w=%d,string_w=%d\n num_degrees=%d, num_svms=%d, num_strings=%d", word_degree.get_dim1(), cum_num_words.get_dim1(), num_words.get_dim1(), svm_pos_start.get_dim1(), num_unique_words.get_dim1(), mod_words.get_dim1(), mod_words.get_dim2(), sign_words.get_dim1(), string_words.get_dim1(), num_degrees, num_svms, num_strings);
 	if ((word_degree.get_dim1()==num_degrees) &&
-		(cum_num_words.get_dim1()==num_degrees+1) &&
-		(num_words.get_dim1()==num_degrees) &&
-		//(word_used.get_dim1()==num_degrees) &&
-		//(word_used.get_dim2()==num_words[num_degrees-1]) &&
-		//(word_used.get_dim3()==num_strings) &&
-//		(svm_values_unnormalized.get_dim1()==num_degrees) &&
-//		(svm_values_unnormalized.get_dim2()==num_svms) &&
-		(svm_pos_start.get_dim1()==num_degrees) &&
-		(num_unique_words.get_dim1()==num_degrees) &&
-		(mod_words.get_dim1()==num_svms) &&
-		(mod_words.get_dim2()==2) && 
-		(sign_words.get_dim1()==num_svms) &&
-		(string_words.get_dim1()==num_svms))
+			(cum_num_words.get_dim1()==num_degrees+1) &&
+			(num_words.get_dim1()==num_degrees) &&
+			//(word_used.get_dim1()==num_degrees) &&
+			//(word_used.get_dim2()==num_words[num_degrees-1]) &&
+			//(word_used.get_dim3()==num_strings) &&
+			//		(svm_values_unnormalized.get_dim1()==num_degrees) &&
+			//		(svm_values_unnormalized.get_dim2()==num_svms) &&
+			(svm_pos_start.get_dim1()==num_degrees) &&
+			(num_unique_words.get_dim1()==num_degrees) &&
+			(mod_words.get_dim1()==num_svms) &&
+			(mod_words.get_dim2()==2) && 
+			(sign_words.get_dim1()==num_svms) &&
+			(string_words.get_dim1()==num_svms))
 	{
 		svm_arrays_clean=true ;
 		return true ;
@@ -487,6 +488,8 @@ void CDynProg::best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n)
 		CIO::message(M_ERROR, "plif_id_matrix size does not match previous info %i!=%i or %i!=%i\n", m, N, n, N) ;
 
 	CArray2<INT> id_matrix(plif_id_matrix, N, N, false, false) ;
+	id_matrix.set_name("id_matrix");
+	id_matrix.display_array();
 	m_PEN.resize_array(N, N) ;
 	for (INT i=0; i<N; i++)
 		for (INT j=0; j<N; j++)
@@ -526,6 +529,10 @@ void CDynProg::best_path_set_genestr(CHAR* genestr, INT genestr_len, INT genestr
 {
 	if (m_step!=6)
 		CIO::message(M_ERROR, "please call best_path_set_plif_id_matrix first\n") ;
+
+	ASSERT(genestr);
+	ASSERT(genestr_len>0);
+	ASSERT(genestr_num>0);
 
 	m_genestr.set_array(genestr, genestr_len, genestr_num, true, true) ;
 
@@ -1685,6 +1692,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		return ;
 	} ;
 	
+	transition_matrix_a.set_name("transition_matrix");
+	transition_matrix_a.display_array();
 	mod_words.display_array() ;
 	sign_words.display_array() ;
 	string_words.display_array() ;
@@ -1765,7 +1774,10 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				if (penij==NULL)
 					continue ;
 				if (penij->get_max_value()>max_look_back)
+				{
+					fprintf(stderr, "%d %d -> value: %f\n", i,j,penij->get_max_value());
 					max_look_back=(INT) (CMath::ceil(penij->get_max_value()));
+				}
 				if (penij->uses_svm_values())
 					use_svm=true ;
 			}
@@ -1774,6 +1786,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	max_look_back = CMath::min(genestr_len, max_look_back) ;
 	//fprintf(stderr,"use_svm=%i\n", use_svm) ;
 	
+	fprintf(stderr,"maxlook: %d N: %d nbest: %d nother %d genestrlen:%d\n", max_look_back, N, nbest, nother, genestr_len);
 	const INT look_back_buflen = (max_look_back*N+1)*(nbest+nother) ;
 	fprintf(stderr,"look_back_buflen=%i\n", look_back_buflen) ;
 	const DREAL mem_use = (DREAL)(seq_len*N*(nbest+nother)*(sizeof(T_STATES)+sizeof(short int)+sizeof(INT))+
