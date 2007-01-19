@@ -16,7 +16,7 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include "lib/SGObject.h"
+#include "base/SGObject.h"
 
 class CTime : public CSGObject
 {

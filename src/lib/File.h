@@ -16,7 +16,7 @@
 #include <stdarg.h>
 
 #include "lib/common.h"
-#include "lib/SGObject.h"
+#include "base/SGObject.h"
 
 /// A file consists of a header
 /// then an alternation of a type header and data

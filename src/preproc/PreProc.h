@@ -14,7 +14,7 @@
 
 #include "features/Features.h"
 #include "lib/common.h"
-#include "lib/SGObject.h"
+#include "base/SGObject.h"
 
 #include <stdio.h>
 

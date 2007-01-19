@@ -13,7 +13,7 @@
 
 #include "features/Features.h"
 #include "lib/Mathematics.h"
-#include "lib/SGObject.h"
+#include "base/SGObject.h"
 
 class CDistribution : public CSGObject
 {

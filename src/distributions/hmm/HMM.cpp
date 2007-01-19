@@ -17,7 +17,7 @@
 #include "lib/Mathematics.h"
 #include "lib/io.h"
 #include "lib/config.h"
-#include "lib/Parallel.h"
+#include "base/Parallel.h"
 #include "features/StringFeatures.h"
 #include "features/CharFeatures.h"
 #include "features/Alphabet.h"

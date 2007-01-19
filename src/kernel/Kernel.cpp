@@ -18,7 +18,7 @@
 #include "lib/io.h"
 #include "lib/File.h"
 #include "lib/Time.h"
-#include "lib/Parallel.h"
+#include "base/Parallel.h"
 
 #include "kernel/Kernel.h"
 #include "features/Features.h"

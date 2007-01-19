@@ -12,7 +12,7 @@
 #define __SIMPLEFILE_H__
 
 #include "lib/io.h"
-#include "lib/SGObject.h"
+#include "base/SGObject.h"
 
 #include <stdio.h>
 #include <string.h>

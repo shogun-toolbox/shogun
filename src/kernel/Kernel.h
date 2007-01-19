@@ -16,7 +16,7 @@
 #define _KERNEL_H___
 
 #include "lib/common.h"
-#include "lib/SGObject.h"
+#include "base/SGObject.h"
 #include "features/Features.h"
 
 #include <stdio.h>

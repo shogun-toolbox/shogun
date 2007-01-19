@@ -12,7 +12,7 @@
 #define _CLASSIFIER_H__
 
 #include "lib/common.h"
-#include "lib/SGObject.h"
+#include "base/SGObject.h"
 #include "lib/Mathematics.h"
 #include "features/Labels.h"
 

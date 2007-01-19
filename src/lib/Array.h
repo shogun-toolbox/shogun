@@ -20,7 +20,7 @@
 	#define ASSERT(x)
 
 	#include "lib/common.h"
-	#include "lib/SGObject.h"
+	#include "base/SGObject.h"
 
 	template <class T> class CArray;
 

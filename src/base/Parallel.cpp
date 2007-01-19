@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/Parallel.h"
+#include "base/Parallel.h"
 
 INT CParallel::num_threads=1;
 

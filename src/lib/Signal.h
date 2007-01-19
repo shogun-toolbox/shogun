@@ -12,7 +12,7 @@
 #define __SIGNAL__H_
 
 #include "lib/config.h"
-#include "lib/SGObject.h"
+#include "base/SGObject.h"
 
 #ifndef WIN32
 #include <signal.h>

@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/Version.h"
+#include "base/Version.h"
 #include "lib/io.h"
 #include "lib/versionstring.h"
 

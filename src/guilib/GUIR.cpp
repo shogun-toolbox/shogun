@@ -23,7 +23,7 @@
 #include "gui/GUI.h"
 
 #include "lib/io.h"
-#include "lib/Version.h"
+#include "base/Version.h"
 #include "distributions/hmm/HMM.h"
 #include "features/Labels.h"
 #include "features/RealFeatures.h"

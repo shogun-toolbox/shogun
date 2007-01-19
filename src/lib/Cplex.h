@@ -19,7 +19,7 @@ extern "C" {
 }
 
 #include "lib/common.h"
-#include "lib/SGObject.h"
+#include "base/SGObject.h"
 
 class CCplex : public CSGObject
 {

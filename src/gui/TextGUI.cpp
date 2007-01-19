@@ -32,7 +32,7 @@
 #include "lib/config.h"
 #include "lib/io.h"
 #include "lib/common.h"
-#include "lib/Parallel.h"
+#include "base/Parallel.h"
 #include "distributions/histogram/Histogram.h"
 
 #ifdef HAVE_READLINE

@@ -38,7 +38,7 @@ extern "C" {
 }
 #endif
 
-#include "lib/Parallel.h"
+#include "base/Parallel.h"
 
 #include <unistd.h>
 

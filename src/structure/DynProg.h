@@ -14,7 +14,7 @@
 
 #include "lib/Mathematics.h"
 #include "lib/common.h"
-#include "lib/SGObject.h"
+#include "base/SGObject.h"
 #include "lib/io.h"
 #include "lib/config.h"
 #include "structure/PlifBase.h"

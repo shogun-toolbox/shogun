@@ -20,7 +20,7 @@
 #include "gui/GUI.h"
 
 #include "lib/io.h"
-#include "lib/Version.h"
+#include "base/Version.h"
 #include "structure/PlifBase.h"
 #include "structure/Plif.h"
 #include "structure/PlifArray.h"

@@ -13,7 +13,7 @@
 #if defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
 #include "guilib/GUIPython.h"
 #include "gui/TextGUI.h"
-#include "lib/Version.h"
+#include "base/Version.h"
 #include "lib/common.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"

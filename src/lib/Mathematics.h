@@ -14,7 +14,7 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include "lib/SGObject.h"
+#include "base/SGObject.h"
 
 #include <math.h>
 #include <stdio.h>

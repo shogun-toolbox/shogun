@@ -11,7 +11,7 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/Signal.h"
-#include "lib/Parallel.h"
+#include "base/Parallel.h"
 
 #include "classifier/svm/SVM.h"
 

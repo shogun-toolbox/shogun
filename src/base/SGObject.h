@@ -12,8 +12,8 @@
 #define __SGOBJECT_H__
 
 #include "lib/io.h"
-#include "lib/Parallel.h"
-#include "lib/Version.h"
+#include "base/Parallel.h"
+#include "base/Version.h"
 
 class CSGObject;
 

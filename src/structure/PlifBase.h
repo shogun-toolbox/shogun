@@ -13,7 +13,7 @@
 #define __PLIF_BASE_H__
 
 #include "lib/common.h"
-#include "lib/SGObject.h"
+#include "base/SGObject.h"
 #include "lib/Mathematics.h"
 
 class CPlifBase : public CSGObject

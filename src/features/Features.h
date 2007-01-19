@@ -14,7 +14,7 @@
 #define _CFEATURES__H__
 
 #include "lib/common.h"
-#include "lib/SGObject.h"
+#include "base/SGObject.h"
 
 #include "preproc/PreProc.h"
 #include "exceptions/FeatureException.h"

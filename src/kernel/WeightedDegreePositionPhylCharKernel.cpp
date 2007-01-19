@@ -13,7 +13,7 @@
 #include "lib/io.h"
 #include "lib/Signal.h"
 #include "lib/Trie.h"
-#include "lib/Parallel.h"
+#include "base/Parallel.h"
 
 #include "kernel/WeightedDegreePositionPhylCharKernel.h"
 #include "features/Features.h"
