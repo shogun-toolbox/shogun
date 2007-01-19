@@ -23,7 +23,9 @@
 %feature("autodoc","0");
 
 
+%include "base/SGObject.i"
 %include "kernel/Kernel.h"
+
 %include "kernel/SimpleKernel.i"
 %include "kernel/AUCKernel.i"
 %include "kernel/PolyKernel.i"

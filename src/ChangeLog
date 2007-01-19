@@ -1,5 +1,12 @@
+2007-01-19  Fabio De Bona <Fabio.De.Bona@tuebingen.mpg.de>
+
+	* kernel/Kernel.i, preproc/PreProc.i, preproc/SortUlongString.i,
+	  preproc/StringPreProc.i: + added first preprocessing interfaces
+
 2007-01-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* .authors, ChangeLog, Makefile, NEWS: automagic ChangeLog
+	  generation using svn2cl (debian package subversion-tools)
 	* base, base/Parallel.cpp, base/Parallel.h, base/Parallel.i,
 	  base/SGObject.h, base/SGObject.i, base/Version.cpp,
 	  base/Version.h, base/Version.i, classifier/Classifier.h,

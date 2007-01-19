@@ -14,5 +14,7 @@
 %rename(PreProc) CPreProc;
 %feature("autodoc","0");
 
+%include "base/SGObject.i"
 %include "preproc/PreProc.h" 
+
 %include "preproc/StringPreProc.i" 

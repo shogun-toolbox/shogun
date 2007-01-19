@@ -16,6 +16,7 @@
 
 %rename(Classifer) CClassifier;
 
+%include "base/SGObject.i"
 %include "classifier/Classifier.h" 
 
 %include "classifier/KernelPerceptron.i"

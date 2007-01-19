@@ -1,6 +1,7 @@
 %module Library
 
 %include "base/SGObject.i"
+
 %include "lib/Cache.i"
 %include "lib/common.i"
 %include "lib/File.i"

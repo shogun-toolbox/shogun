@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+template <class ST> class CStringPreProc;
+
 template <class T> struct T_STRING
 {
 	T* string;

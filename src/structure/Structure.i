@@ -13,6 +13,8 @@
 %include "lib/numpy.i"
 #endif
 
+%include "base/SGObject.i"
+
 %include "structure/PlifBase.i"
 %include "structure/Plif.i"
 %include "structure/PlifArray.i"

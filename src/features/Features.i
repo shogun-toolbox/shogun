@@ -17,6 +17,7 @@
 %feature("director") CFeatures;
 %rename(Features) CFeatures;
 
+%include "base/SGObject.i"
 %include "features/Features.h" 
 
 %include "features/Alphabet.i"

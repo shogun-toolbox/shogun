@@ -17,4 +17,5 @@
 
 %feature("director") CDistance;
 
+%include "base/SGObject.i"
 %include "distance/Distance.h"
