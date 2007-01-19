@@ -18,3 +18,4 @@
 %include "preproc/PreProc.h" 
 
 %include "preproc/StringPreProc.i" 
+%include "preproc/SortUlongString.i"
