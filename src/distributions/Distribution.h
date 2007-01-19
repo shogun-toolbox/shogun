@@ -13,8 +13,9 @@
 
 #include "features/Features.h"
 #include "lib/Mathematics.h"
+#include "lib/SGObject.h"
 
-class CDistribution
+class CDistribution : public CSGObject
 {
 	public:
 		CDistribution();

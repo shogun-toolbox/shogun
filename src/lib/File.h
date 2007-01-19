@@ -16,6 +16,7 @@
 #include <stdarg.h>
 
 #include "lib/common.h"
+#include "lib/SGObject.h"
 
 /// A file consists of a header
 /// then an alternation of a type header and data
@@ -24,7 +25,7 @@
 ///
 /// the more complex stuff is currently not implemented
 ///
-class CFile
+class CFile : public CSGObject
 {
 public:
 	///Open a file of name fname with mode rw (r or w)

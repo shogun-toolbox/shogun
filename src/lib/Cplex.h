@@ -11,14 +11,17 @@
 #ifndef CCPLEX_H__
 #define CCPLEX_H__
 
-#include "lib/common.h"
+#include "lib/config.h"
 
 #ifdef USE_CPLEX
 extern "C" {
 #include <ilcplex/cplex.h>
 }
 
-class CCplex
+#include "lib/common.h"
+#include "lib/SGObject.h"
+
+class CCplex : public CSGObject
 {
 public:
 	enum E_PROB_TYPE

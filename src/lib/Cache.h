@@ -14,10 +14,11 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/Mathematics.h"
+#include "lib/SGObject.h"
 
 #include <stdlib.h>
 
-template<class T> class CCache
+template<class T> class CCache : public CSGObject
 {
 	struct TEntry
 	{

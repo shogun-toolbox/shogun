@@ -14,13 +14,14 @@
 
 #include "features/Features.h"
 #include "lib/common.h"
+#include "lib/SGObject.h"
 
 #include <stdio.h>
 
 class FeatureException;
 class CFeatures;
 
-class CPreProc
+class CPreProc : public CSGObject
 {
 public:
 	CPreProc(const CHAR* name, const CHAR* id);

@@ -14,6 +14,7 @@
 
 #include "lib/Mathematics.h"
 #include "lib/common.h"
+#include "lib/SGObject.h"
 #include "lib/io.h"
 #include "lib/config.h"
 #include "structure/PlifBase.h"
@@ -38,7 +39,7 @@ typedef T_STATES* P_STATES ;
  * Structure and Function collection.
  * This Class implements a Dynamic Programming functions.
  */
-class CDynProg 
+class CDynProg : public CSGObject
 {
 private:
 	

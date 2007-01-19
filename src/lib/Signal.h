@@ -12,12 +12,13 @@
 #define __SIGNAL__H_
 
 #include "lib/config.h"
+#include "lib/SGObject.h"
 
 #ifndef WIN32
 #include <signal.h>
 #define NUMTRAPPEDSIGS 2
 
-class CSignal
+class CSignal : public CSGObject
 {
 public:
 	CSignal();

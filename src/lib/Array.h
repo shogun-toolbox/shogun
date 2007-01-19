@@ -20,10 +20,11 @@
 	#define ASSERT(x)
 
 	#include "lib/common.h"
+	#include "lib/SGObject.h"
 
 	template <class T> class CArray;
 
-	template <class T> class CArray
+	template <class T> class CArray : public CSGObject
 	{
 	public:
 	CArray(INT initial_size = 1)

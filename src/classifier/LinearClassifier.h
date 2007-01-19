@@ -36,6 +36,21 @@ class CLinearClassifier : public CClassifier
 			return result+bias;
 		}
 
+        inline void get_w(DREAL** dst_w, INT* dst_dims)
+        {
+            ASSERT(dst_w && dst_dims);
+            ASSERT(w && features);
+            *dst_dims=features->get_num_features();
+            *dst_w=new DREAL[*dst_dims];
+            ASSERT(*dst_w);
+            memcpy(*dst_w, w, sizeof(DREAL) * (*dst_dims));
+        }
+
+        inline DREAL get_bias()
+        {
+            return bias;
+        }
+
 		virtual bool load(FILE* srcfile);
 		virtual bool save(FILE* dstfile);
 

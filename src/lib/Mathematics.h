@@ -14,6 +14,7 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/SGObject.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -61,7 +62,7 @@ extern "C" int	finite(double);
 /** Mathematical Functions.
  * Class which collects generic mathematical functions
  */
-class CMath  
+class CMath : public CSGObject
 {
 public:
 	/**@name Constructor/Destructor.

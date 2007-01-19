@@ -13,6 +13,7 @@
 
 #include "lib/common.h"
 #include "lib/Mathematics.h"
+#include "lib/SGObject.h"
 
 /** dynamic array, i.e. array that can be used like a list or an array.
 it grows and shrinks dynamically, while elements can be accessed via index
@@ -21,7 +22,7 @@ for hi-level objects only store pointers
 */
 template <class T> class CDynamicArray;
 
-template <class T> class CDynamicArray
+template <class T> class CDynamicArray : public CSGObject
 {
 public:
 	CDynamicArray(INT p_resize_granularity = 128)

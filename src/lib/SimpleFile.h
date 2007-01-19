@@ -12,11 +12,12 @@
 #define __SIMPLEFILE_H__
 
 #include "lib/io.h"
+#include "lib/SGObject.h"
 
 #include <stdio.h>
 #include <string.h>
 
-template <class T> class CSimpleFile
+template <class T> class CSimpleFile : public CSGObject
 {
 public:
 	/// rw is either r for read and w for write

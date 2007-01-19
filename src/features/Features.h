@@ -14,16 +14,19 @@
 #define _CFEATURES__H__
 
 #include "lib/common.h"
+#include "lib/SGObject.h"
+
 #include "preproc/PreProc.h"
-#include <stdio.h>
 #include "exceptions/FeatureException.h"
+
+#include <stdio.h>
 
 class FeatureException;
 class CPreProc;
 class CFeatures;
 
 
-class CFeatures
+class CFeatures : public CSGObject
 {
 public:
 	/** Features can 

@@ -12,6 +12,7 @@
 #define _CLASSIFIER_H__
 
 #include "lib/common.h"
+#include "lib/SGObject.h"
 #include "lib/Mathematics.h"
 #include "features/Labels.h"
 
@@ -19,7 +20,7 @@
 
 #include "exceptions/ClassifierException.h"
 
-class CClassifier
+class CClassifier : public CSGObject
 {
 	public:
 		CClassifier();

@@ -16,6 +16,7 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/Mathematics.h"
+#include "lib/SGObject.h"
 
 //#define NO_CHILD ((INT)-2147483648)
 #define NO_CHILD ((INT)-1073741824) 
@@ -64,7 +65,7 @@ struct TreeParseInfo {
     DREAL* R_k;
 };
 
-class CTrie
+class CTrie : public CSGObject
 {
 public:
 	CTrie(INT d, INT p_use_compact_terminal_nodes=true) ;

@@ -31,5 +31,3 @@ CVersion::CVersion()
 CVersion::~CVersion()
 {
 }
-
-CVersion version;

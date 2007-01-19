@@ -15,7 +15,7 @@
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 
-CLDA::CLDA(DREAL p) : CLinearClassifier(), prior(p), learn_rate(0.1), max_iter(10000000)
+CLDA::CLDA(DREAL p) : CLinearClassifier(), prior(p)
 {
 }
 
@@ -26,7 +26,6 @@ CLDA::~CLDA()
 
 bool CLDA::train()
 {
-	//DREAL prior=1.0;
 	DREAL gamma=0;
 
 	ASSERT(get_labels());
@@ -86,7 +85,6 @@ bool CLDA::train()
 	memset(scatter,0,num_feat*num_feat*sizeof(DREAL));
 
 	DREAL* buffer=new DREAL[num_feat*CMath::max(num_neg, num_pos)];
-	//DREAL* buffer=new DREAL[num_feat*num_vec];
 	ASSERT(buffer);
 
 	//mean neg

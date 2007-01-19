@@ -16,12 +16,13 @@
 #define _KERNEL_H___
 
 #include "lib/common.h"
+#include "lib/SGObject.h"
 #include "features/Features.h"
 
 #include <stdio.h>
 #include "exceptions/KernelException.h"
 
-class CKernel
+class CKernel : public CSGObject
 {
 	public:
 		CKernel(INT size);

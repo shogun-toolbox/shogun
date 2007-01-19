@@ -14,11 +14,12 @@
 
 #include "lib/common.h"
 #include "lib/Mathematics.h"
+#include "lib/SGObject.h"
 #include "features/Features.h"
 
 #include <stdio.h>
 
-class CDistance
+class CDistance : public CSGObject
 {
 	public:
 		CDistance();
