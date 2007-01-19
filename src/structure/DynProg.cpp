@@ -540,6 +540,38 @@ void CDynProg::best_path_set_genestr(CHAR* genestr, INT genestr_len, INT genestr
 	m_step=7 ;
 }
 
+void CDynProg::best_path_set_my_state_seq(INT* my_state_seq, INT seq_len)
+{
+	ASSERT(my_state_seq && seq_len>0);
+	m_my_state_seq.resize_array(seq_len);
+	for (INT i=0; i<N; i++)
+		m_my_state_seq[i]=my_state_seq[i];
+}
+
+void CDynProg::best_path_set_my_pos_seq(INT* my_pos_seq, INT seq_len)
+{
+	ASSERT(my_pos_seq && seq_len>0);
+	m_my_pos_seq.resize_array(seq_len);
+	for (INT i=0; i<N; i++)
+		m_my_pos_seq[i]=my_pos_seq[i];
+}
+
+void CDynProg::best_path_set_my_scores(DREAL* my_scores, INT seq_len)
+{
+	ASSERT(my_scores && seq_len>0);
+	m_my_scores.resize_array(seq_len);
+	for (INT i=0; i<N; i++)
+		m_my_scores[i]=my_scores[i];
+}
+
+void CDynProg::best_path_set_my_losses(DREAL* my_losses, INT seq_len)
+{
+	ASSERT(my_losses && seq_len>0);
+	m_my_losses.resize_array(seq_len);
+	for (INT i=0; i<N; i++)
+		m_my_losses[i]=my_losses[i];
+}
+
 void CDynProg::best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len, INT n) 
 {
 	if (m_step!=7)
@@ -654,6 +686,17 @@ void CDynProg::best_path_simple_call(INT nbest)
 						   m_scores.get_array(), m_states.get_array()) ;
 	
 	m_step=9 ;
+}
+
+void CDynProg::best_path_deriv_call(INT nbest)
+{
+	if (!svm_arrays_clean)
+	{
+		CIO::message(M_ERROR, "SVM arrays not clean") ;
+		return ;
+	} ;
+
+	//FIXME
 }
 
 

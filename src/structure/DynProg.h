@@ -76,7 +76,7 @@ public:
 	void init_string_words_array(INT * p_string_words_array, INT num_elem) ;
 	bool check_svm_arrays() ; // call this function to check consistency
 
-	// best_path preparation functions
+	// best_path_trans preparation functions
 	void best_path_set_seq(DREAL *seq, INT N, INT seq_len) ;
 	void best_path_set_pos(INT *pos, INT seq_len)  ;
 	void best_path_set_orf_info(INT *orf_info, INT m, INT n) ;            // only for best_path_trans
@@ -85,6 +85,13 @@ public:
 	void best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n) ;
 	void best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m, INT n) ;
 	void best_path_set_genestr(CHAR* genestr, INT genestr_len, INT genestr_num) ; // genestr_num is typically 1
+
+	// additional best_path_trans_deriv functions
+	void best_path_set_my_state_seq(INT* my_state_seq, INT seq_len);
+	void best_path_set_my_pos_seq(INT* my_pos_seq, INT seq_len);
+	void best_path_set_my_scores(DREAL* my_scores, INT seq_len);
+	void best_path_set_my_losses(DREAL* my_losses, INT seq_len);
+
 	inline void best_path_set_single_genestr(CHAR* genestr, INT genestr_len)
 	{
 		fprintf(stderr,"genestrpy: %d", genestr_len);
@@ -98,6 +105,7 @@ public:
 	void best_path_call(INT nbest, bool use_orf) ;
 	void best_path_2struct_call(INT nbest) ;
 	void best_path_simple_call(INT nbest) ;
+	void best_path_deriv_call(INT nbest) ;
 	
 	// best_path result retrieval functions
 	void best_path_get_scores(DREAL **scores, INT *n) ;
@@ -328,6 +336,10 @@ protected:
 	CArray2<DREAL> m_dict_weights ;
 	CArray3<DREAL> m_segment_loss ;
 	CArray2<INT> m_segment_ids_mask ;
+	CArray<INT> m_my_state_seq;
+	CArray<INT> m_my_pos_seq;
+	CArray<DREAL> m_my_scores;
+	CArray<DREAL> m_my_losses;
 
 	// output arguments
 	CArray<DREAL> m_scores ;

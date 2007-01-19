@@ -20,7 +20,7 @@
 %apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT* p_mod_words_array, INT num_elem, INT num_columns)};
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* p_string_words_array, INT num_elem)};
 
-/* best_path preparation functions */
+/* best_path_trans preparation functions */
 %apply (DREAL* IN_ARRAY2, INT DIM1, INT DIM2) {(DREAL* seq, INT N, INT seq_len)};
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* pos, INT seq_len)};
 %apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT* orf_info, INT m, INT n)};
@@ -29,6 +29,14 @@
 %apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT *plif_id_matrix, INT m, INT n)}
 %apply (CHAR* IN_ARRAY2, INT DIM1, INT DIM2) {(CHAR* genestr, INT genestr_len, INT genestr_num)};
 %apply (CHAR* IN_ARRAY1, INT DIM1) {(CHAR* genestr, INT genestr_len)};
+
+/* best_path_trans_deriv preparation functions */
+%apply (INT* IN_ARRAY1, INT DIM1) {(INT* my_state_seq, INT seq_len)}
+%apply (INT* IN_ARRAY1, INT DIM1) {(INT* my_pos_seq, INT seq_len)}
+%apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* my_scores, INT seq_len)}
+%apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* my_losses, INT seq_len)}
+
+
 %apply (DREAL* IN_ARRAY2, INT DIM1, INT DIM2) {(DREAL* dictionary_weights, INT dict_len, INT n)};
 %apply (DREAL* IN_ARRAY2, INT DIM1, INT DIM2) {(DREAL * segment_loss, INT num_segment_id1, INT num_segment_id2)}
 %apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT* segment_ids_mask, INT m, INT n)}
