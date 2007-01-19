@@ -38,3 +38,4 @@
 %include "kernel/StringKernel.i" 
 %include "kernel/CommUlongStringKernel.i" 
 %include "kernel/CommWordStringKernel.i" 
+%include "kernel/SpectrumKernel.i" 
