@@ -174,10 +174,13 @@ depend:		.config lib/versionstring.h
 	makedepend $(DEFINES) $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' | grep -v 'configure-' ) -o.$(EXT_OBJ_C) -f - >>.depend || true
 	find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -o -name "*.h" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" | grep -v 'configure-' |  cut -c 3- | $(PYTHON) .generate_link_dependencies.py $(EXT_LIB_SWIG) >>.depend
 
-lib/versionstring.h:	$(SVNEntries)
+lib/versionstring.h:	
 		sh .version.sh > $@
 
-$(OBJFILES): .config .depend lib/versionstring.h 
+ChangeLog:	$(SVNEntries)
+		svn2cl --group-by-day --reparagraph --authors=.authors || true
+
+$(OBJFILES): .config .depend lib/versionstring.h ChangeLog
 
 ifeq (yes,$(USE_SWIG))
 $(TARGET): $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
