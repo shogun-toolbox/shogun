@@ -21,9 +21,9 @@ CConstKernel::~CConstKernel()
 {
 }
 
-bool CConstKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CConstKernel::init(CFeatures* l, CFeatures* r)
 {
-	CKernel::init(l, r, do_init); 
+	CKernel::init(l, r);
 	return true;
 }
 

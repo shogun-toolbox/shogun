@@ -26,7 +26,7 @@ CCommUlongStringKernel::CCommUlongStringKernel(CStringFeatures<ULONG>* l, CStrin
   : CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
 	use_sign(use_sign_), normalization(normalization_)
 {
-	init(l,r,true);
+	init(l,r);
 }
 
 CCommUlongStringKernel::~CCommUlongStringKernel() 
@@ -67,10 +67,9 @@ void CCommUlongStringKernel::remove_rhs()
 	rhs = lhs;
 }
 
-bool CCommUlongStringKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CCommUlongStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CStringKernel<ULONG>::init(l,r,do_init);
-	initialized = false;
+	bool result=CStringKernel<ULONG>::init(l,r);
 	INT i;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
@@ -236,7 +235,7 @@ DREAL CCommUlongStringKernel::compute(INT idx_a, INT idx_b)
 			case SQLEN_NORMALIZATION:
 				return result/(alen*blen);
 			default:
-            sg_error(sg_err_fun,"Unknown Normalization in use!\n");
+            SG_ERROR( "Unknown Normalization in use!\n");
 				return -CMath::INFTY;
 		}
 	}
@@ -322,21 +321,21 @@ bool CCommUlongStringKernel::init_optimization(INT count, INT *IDX, DREAL * weig
 	if (count<=0)
 	{
 		set_is_initialized(true);
-		CIO::message(M_DEBUG, "empty set of SVs\n");
+		SG_DEBUG( "empty set of SVs\n");
 		return true;
 	}
 
-	CIO::message(M_DEBUG, "initializing CCommUlongStringKernel optimization\n");
+	SG_DEBUG( "initializing CCommUlongStringKernel optimization\n");
 
 	for (int i=0; i<count; i++)
 	{
 		if ( (i % (count/10+1)) == 0)
-			CIO::progress(i, 0, count);
+			io.progress(i, 0, count);
 
 		add_to_normal(IDX[i], weights[i]);
 	}
 
-	CIO::message(M_MESSAGEONLY, "Done.         \n");
+	SG_PRINT( "Done.         \n");
 	
 	set_is_initialized(true);
 	return true;
@@ -344,7 +343,7 @@ bool CCommUlongStringKernel::init_optimization(INT count, INT *IDX, DREAL * weig
 
 bool CCommUlongStringKernel::delete_optimization() 
 {
-	CIO::message(M_DEBUG, "deleting CCommUlongStringKernel optimization\n");
+	SG_DEBUG( "deleting CCommUlongStringKernel optimization\n");
 	clear_normal();
 	return true;
 }
@@ -359,7 +358,7 @@ DREAL CCommUlongStringKernel::compute_optimized(INT i)
 
 	if (!get_is_initialized())
 	{
-      sg_error(sg_err_fun,"CCommUlongStringKernel optimization not initialized\n");
+      SG_ERROR( "CCommUlongStringKernel optimization not initialized\n");
 		return 0 ; 
 	}
 
@@ -432,7 +431,7 @@ DREAL CCommUlongStringKernel::compute_optimized(INT i)
 			case SQLEN_NORMALIZATION:
 				return result/alen;
 			default:
-            sg_error(sg_err_fun,"Unknown Normalization in use!\n");
+            SG_ERROR( "Unknown Normalization in use!\n");
 				return -CMath::INFTY;
 		}
 	}

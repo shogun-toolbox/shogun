@@ -204,7 +204,7 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	virtual bool load(CHAR* fname)
 	{
-		CIO::message(M_INFO, "loading...\n");
+		SG_INFO( "loading...\n");
 		LONG length=0;
 		max_string_length=0;
 
@@ -221,7 +221,7 @@ template <class ST> class CStringFeatures: public CFeatures
 					num_vectors++;
 			}
 
-			CIO::message(M_INFO, "file contains %ld vectors\n", num_vectors);
+			SG_INFO( "file contains %ld vectors\n", num_vectors);
 			features= new T_STRING<ST>[num_vectors];
 
 			long index=0;
@@ -233,11 +233,7 @@ template <class ST> class CStringFeatures: public CFeatures
 				for (columns=0; index+columns<length && p[columns]!='\n'; columns++);
 
 				if (index+columns>=length && p[columns]!='\n') {
-#ifdef HAVE_PYTHON
-               throw FeatureException("error in \"%s\":%d\n", fname, lines);
-#else
-					CIO::message(M_ERROR, "error in \"%s\":%d\n", fname, lines);
-#endif
+					SG_ERROR( "error in \"%s\":%d\n", fname, lines);
             }
 
 				features[lines].length=columns;
@@ -256,11 +252,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			return true;
 		}
 		else
-#ifdef HAVE_PYTHON
-         throw FeatureException("reading file failed\n");
-#else
-			CIO::message(M_ERROR, "reading file failed\n");
-#endif
+			SG_ERROR( "reading file failed\n");
 
 		return false;
 	}
@@ -270,12 +262,12 @@ template <class ST> class CStringFeatures: public CFeatures
 		struct dirent **namelist;
 		int n;
 
-		CIO::set_dirname(dirname);
+		io.set_dirname(dirname);
 
-		n = scandir(dirname, &namelist, CIO::filter, alphasort);
+		n = scandir(dirname, &namelist, io.filter, alphasort);
 		if (n <= 0)
 		{
-			CIO::message(M_ERROR, "error calling scandir\n");
+			SG_ERROR( "error calling scandir\n");
 			return false;
 		}
 		else
@@ -292,7 +284,7 @@ template <class ST> class CStringFeatures: public CFeatures
 
 			for (int i=0; i<n; i++)
 			{
-				CHAR* fname=CIO::concat_filename(namelist[i]->d_name);
+				CHAR* fname=io.concat_filename(namelist[i]->d_name);
 
 				struct stat s;
 				off_t filesize=0;
@@ -306,7 +298,7 @@ template <class ST> class CStringFeatures: public CFeatures
 					{
 						ST* str=new ST[filesize];
 						ASSERT(str);
-						CIO::message(M_DEBUG,"%s:%ld\n", fname, (long int) filesize);
+						SG_DEBUG("%s:%ld\n", fname, (long int) filesize);
 						fread(str, sizeof(ST), filesize, f);
 						strings[num].string=str;
 						strings[num].length=filesize;
@@ -356,14 +348,14 @@ template <class ST> class CStringFeatures: public CFeatures
 	virtual INT get_size() { return sizeof(ST); }
 
 	/// preprocess the feature_matrix
-	virtual bool preproc_feature_strings(bool force_preprocessing=false)
+	virtual bool apply_preproc(bool force_preprocessing=false)
 	{
-		CIO::message(M_DEBUG, "force: %d\n", force_preprocessing);
+		SG_DEBUG( "force: %d\n", force_preprocessing);
 
 		for (INT i=0; i<get_num_preproc(); i++)
 		{ 
-			CIO::message(M_INFO, "preprocessing using preproc %s\n", get_preproc(i)->get_name());
-			bool ok=((CStringPreProc<ST>*) get_preproc(i))->apply_to_feature_strings(this) ;
+			SG_INFO( "preprocessing using preproc %s\n", get_preproc(i)->get_name());
+			bool ok=((CStringPreProc<ST>*) get_preproc(i))->apply_to_string_features(this) ;
 
 			if (!ok)
 				return false;
@@ -402,7 +394,7 @@ template <class ST> class CStringFeatures: public CFeatures
 
 		ASSERT(alpha->get_num_symbols_in_histogram() > 0);
 
-		CIO::message(M_DEBUG, "%1.0llf symbols in StringFeatures<*>\n", sf->get_num_symbols());
+		SG_DEBUG( "%1.0llf symbols in StringFeatures<*>\n", sf->get_num_symbols());
 
 		for (INT i=0; i<num_vectors; i++)
 		{
@@ -426,19 +418,15 @@ template <class ST> class CStringFeatures: public CFeatures
 			num_symbols=CMath::powl((long double) 2, (long double) max_val*p_order);
 		else
 			num_symbols=original_num_symbols;
-		CIO::message(M_INFO, "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, p_order, num_symbols);
+		SG_INFO( "max_val (bit): %d order: %d -> results in num_symbols: %.0Lf\n", max_val, p_order, num_symbols);
 
 		if ( ((long double) num_symbols) > CMath::powl(((long double) 2),((long double) sizeof(ST)*8)) )
 		{
-#ifdef HAVE_PYTHON
-         throw FeatureException("symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
-#else
-			CIO::message(M_ERROR, "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
-#endif
+			SG_ERROR( "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
 			return false;
 		}
 
-		CIO::message(M_DEBUG, "translate: start=%i order=%i gap=%i(size:%i)\n", start, p_order, gap, sizeof(ST)) ;
+		SG_DEBUG( "translate: start=%i order=%i gap=%i(size:%i)\n", start, p_order, gap, sizeof(ST)) ;
 		for (INT line=0; line<num_vectors; line++)
 		{
 			INT len=0;

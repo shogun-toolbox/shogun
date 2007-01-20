@@ -56,14 +56,14 @@ bool CGUIPreProc::add_preproc(CHAR* param)
 {
 	CPreProc* preproc=NULL;
 
-	param=CIO::skip_spaces(param);
+	param=io.skip_spaces(param);
 #ifdef HAVE_LAPACK
 	if (strncmp(param,"PCACUT",6)==0)
 	{
 		INT do_whitening=0; 
 		double thresh=1e-6 ;
 		sscanf(param+6, "%i %le", &do_whitening, &thresh) ;
-		CIO::message(M_INFO, "PCACUT parameters: do_whitening=%i thresh=%e", do_whitening, thresh) ;
+		SG_INFO( "PCACUT parameters: do_whitening=%i thresh=%e", do_whitening, thresh) ;
 		preproc=new CPCACut(do_whitening, thresh);
 	}
 	else 
@@ -94,15 +94,15 @@ bool CGUIPreProc::add_preproc(CHAR* param)
 		sscanf(param+15, "%i", &divide_by_std);
 
 		if (divide_by_std)
-			CIO::message(M_INFO, "normalizing VARIANCE\n");
+			SG_INFO( "normalizing VARIANCE\n");
 		else
-			CIO::message(M_WARN, "NOT normalizing VARIANCE\n");
+			SG_WARNING( "NOT normalizing VARIANCE\n");
 
 		preproc=new CPruneVarSubMean(divide_by_std==1);
 	}
 	else 
 	{
-		CIO::not_implemented();
+		io.not_implemented();
 		return false;
 	}
 
@@ -119,7 +119,7 @@ bool CGUIPreProc::clean_preproc(CHAR* param)
 
 bool CGUIPreProc::del_preproc(CHAR* param)
 {
-	CIO::message(M_INFO, "deleting preproc %i/(%i)\n", preprocs->get_num_elements()-1, preprocs->get_num_elements());
+	SG_INFO( "deleting preproc %i/(%i)\n", preprocs->get_num_elements()-1, preprocs->get_num_elements());
 
 
 	CPreProc* p=preprocs->delete_element();
@@ -132,7 +132,7 @@ bool CGUIPreProc::load(CHAR* param)
 {
 	bool result=false;
 
-	param=CIO::skip_spaces(param);
+	param=io.skip_spaces(param);
 
 	CPreProc* preproc=NULL;
 
@@ -159,7 +159,7 @@ bool CGUIPreProc::load(CHAR* param)
 			preproc=new CPruneVarSubMean();
 		}
 		else
-			CIO::message(M_ERROR, "unrecognized file\n");
+			SG_ERROR( "unrecognized file\n");
 
 		if (preproc && preproc->load_init_data(file))
 		{
@@ -170,7 +170,7 @@ bool CGUIPreProc::load(CHAR* param)
 		fclose(file);
 	}
 	else
-		CIO::message(M_ERROR, "opening file %s failed\n", param);
+		SG_ERROR( "opening file %s failed\n", param);
 
 	if (result)
 	{
@@ -185,7 +185,7 @@ bool CGUIPreProc::save(CHAR* param)
 {
 	CHAR fname[1024];
 	INT num=preprocs->get_num_elements()-1;
-	bool result=false; param=CIO::skip_spaces(param);
+	bool result=false; param=io.skip_spaces(param);
 	sscanf(param, "%s %i", fname, &num);
 	CPreProc* preproc= preprocs->get_last_element();
 
@@ -206,7 +206,7 @@ bool CGUIPreProc::save(CHAR* param)
 			fclose(file);
 	}
 	else
-		CIO::message(M_ERROR, "create preproc first\n");
+		SG_ERROR( "create preproc first\n");
 
 	return result;
 }
@@ -214,7 +214,7 @@ bool CGUIPreProc::save(CHAR* param)
 bool CGUIPreProc::attach_preproc(CHAR* param)
 {
 	bool result=false;
-	param=CIO::skip_spaces(param);
+	param=io.skip_spaces(param);
 	CHAR target[1024]="";
 	INT force=0;
 
@@ -251,17 +251,17 @@ bool CGUIPreProc::attach_preproc(CHAR* param)
 							ASSERT(((CCombinedFeatures*) f_train)->get_num_feature_obj() == num_combined);
 
 							if (!(num_combined && tr_feat && te_feat))
-								CIO::message(M_ERROR, "one of the combined features has no sub-features ?!\n");
+								SG_ERROR( "one of the combined features has no sub-features ?!\n");
 
-							CIO::message(M_INFO, "BEGIN PREPROCESSING COMBINED FEATURES (%d sub-featureobjects)\n", num_combined);
+							SG_INFO( "BEGIN PREPROCESSING COMBINED FEATURES (%d sub-featureobjects)\n", num_combined);
 							
 							int n=0;
 							while (n<num_combined && tr_feat && te_feat)
 							{
 								// and preprocess using that one 
-								CIO::message(M_INFO, "TRAIN ");
+								SG_INFO( "TRAIN ");
 								tr_feat->list_feature_obj();
-								CIO::message(M_INFO, "TEST ");
+								SG_INFO( "TEST ");
 								te_feat->list_feature_obj();
 								preprocess_features(tr_feat, te_feat, force);
 
@@ -271,10 +271,10 @@ bool CGUIPreProc::attach_preproc(CHAR* param)
 							}
 							ASSERT(n==num_combined);
 							result=true;
-							CIO::message(M_INFO, "END PREPROCESSING COMBINED FEATURES\n");
+							SG_INFO( "END PREPROCESSING COMBINED FEATURES\n");
 						}
 						else
-							CIO::message(M_ERROR, "combined features not compatible\n");
+							SG_ERROR( "combined features not compatible\n");
 					}
 					else
 					{
@@ -284,16 +284,16 @@ bool CGUIPreProc::attach_preproc(CHAR* param)
 					}
 				}
 				else
-					CIO::message(M_ERROR, "features not compatible\n");
+					SG_ERROR( "features not compatible\n");
 			}
 			else
-				CIO::message(M_ERROR, "see help for parameters\n");
+				SG_ERROR( "see help for parameters\n");
 		}
 		else
-			CIO::message(M_ERROR, "features not correctly assigned!\n");
+			SG_ERROR( "features not correctly assigned!\n");
 	}
 	else
-		CIO::message(M_ERROR, "see help for parameters\n");
+		SG_ERROR( "see help for parameters\n");
 
 	/// when successful add preprocs to attached_preprocs list (for removal later)
 	/// and clean the current preproc list
@@ -315,11 +315,11 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 		{
 			// if we don't have a preproc for trainfeatures we 
 			// don't need a preproc for test features
-			CIO::message(M_DEBUG, "%d preprocessors attached to train features %d to test features\n", trainfeat->get_num_preproc(), testfeat->get_num_preproc());
+			SG_DEBUG( "%d preprocessors attached to train features %d to test features\n", trainfeat->get_num_preproc(), testfeat->get_num_preproc());
 
 			if (trainfeat->get_num_preproc() < testfeat->get_num_preproc())
 			{
-				CIO::message(M_ERROR, "more preprocessors attached to test features than to train features\n");
+				SG_ERROR( "more preprocessors attached to test features than to train features\n");
 				return false;
 			}
 
@@ -359,7 +359,7 @@ bool CGUIPreProc::preprocess_features(CFeatures* trainfeat, CFeatures* testfeat,
 		return true;
 	}
 	else
-		CIO::message(M_ERROR, "no features for preprocessing available!\n");
+		SG_ERROR( "no features for preprocessing available!\n");
 
 	return false;
 }
@@ -372,44 +372,44 @@ bool CGUIPreProc::preproc_all_features(CFeatures* f, bool force)
 			switch (f->get_feature_type())
 			{
 				case F_DREAL:
-					return ((CRealFeatures*) f)->preproc_feature_matrix(force);
+					return ((CRealFeatures*) f)->apply_preproc(force);
 				case F_SHORT:
-					return ((CShortFeatures*) f)->preproc_feature_matrix(force);
+					return ((CShortFeatures*) f)->apply_preproc(force);
 				case F_WORD:
-					return ((CShortFeatures*) f)->preproc_feature_matrix(force);
+					return ((CShortFeatures*) f)->apply_preproc(force);
 				case F_CHAR:
-					return ((CCharFeatures*) f)->preproc_feature_matrix(force);
+					return ((CCharFeatures*) f)->apply_preproc(force);
 				case F_BYTE:
-					return ((CByteFeatures*) f)->preproc_feature_matrix(force);
+					return ((CByteFeatures*) f)->apply_preproc(force);
 				default:
-					CIO::not_implemented();
+					io.not_implemented();
 			}
 			break;
 		case C_STRING:
 			switch (f->get_feature_type())
 			{
 				case F_WORD:
-					return ((CStringFeatures<WORD>*) f)->preproc_feature_strings(force);
+					return ((CStringFeatures<WORD>*) f)->apply_preproc(force);
 				case F_ULONG:
-					return ((CStringFeatures<ULONG>*) f)->preproc_feature_strings(force);
+					return ((CStringFeatures<ULONG>*) f)->apply_preproc(force);
 				default:
-					CIO::not_implemented();
+					io.not_implemented();
 			}
 			break;
 		case C_SPARSE:
 			switch (f->get_feature_type())
 			{
 				case F_DREAL:
-					return ((CSparseFeatures<DREAL>*) f)->preproc_feature_matrix(force);
+					return ((CSparseFeatures<DREAL>*) f)->apply_preproc(force);
 				default:
-					CIO::not_implemented();
+					io.not_implemented();
 			};
 			break;
 		case C_COMBINED:
-			CIO::message(M_ERROR, "Combined feature objects cannot be preprocessed. Only its sub-feature objects!\n");
+			SG_ERROR( "Combined feature objects cannot be preprocessed. Only its sub-feature objects!\n");
 			break;
 		default:
-			CIO::not_implemented();
+			io.not_implemented();
 	}
 
 	return false;

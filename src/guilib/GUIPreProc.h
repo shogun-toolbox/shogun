@@ -15,13 +15,14 @@
 #include "lib/config.h"
 
 #ifndef HAVE_SWIG
+#include "base/SGObject.h"
 
 #include "preproc/PreProc.h"
 #include "lib/List.h"
 
 class CGUI;
 
-class CGUIPreProc
+class CGUIPreProc : public CSGObject
 {
 	public:
 		CGUIPreProc(CGUI*);

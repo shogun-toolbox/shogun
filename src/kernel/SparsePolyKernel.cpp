@@ -26,9 +26,9 @@ CSparsePolyKernel::~CSparsePolyKernel()
 	cleanup();
 }
 
-bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSparseKernel<DREAL>::init(l,r,do_init);
+	bool result=CSparseKernel<DREAL>::init(l,r);
 
 	initialized = false ;
 	INT i;
@@ -94,7 +94,7 @@ bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	this->rhs=(CSparseFeatures<DREAL>*) r;
 
 	initialized = true;
-	CIO::message(M_INFO, "SparsePolyKernel initialized\n");
+	SG_INFO( "SparsePolyKernel initialized\n");
 	return result;
 }
   

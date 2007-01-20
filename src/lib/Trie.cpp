@@ -124,14 +124,14 @@ INT CTrie::find_deepest_node(INT start_node, INT& deepest_node) const
 	}
 	return ret ;
 #else
-	CIO::message(M_ERROR, "not implemented\n") ;
+	SG_ERROR( "not implemented\n") ;
 	return 0 ;
 #endif
 }
 
 INT CTrie::compact_nodes(INT start_node, INT depth, DREAL * weights) 
 {
-	CIO::message(M_ERROR, "code buggy\n") ;
+	SG_ERROR( "code buggy\n") ;
 	
 	INT ret=0 ;
 	//fprintf(stderr, "start_node=%i\n", start_node) ;
@@ -244,29 +244,29 @@ bool CTrie::compare_traverse(INT node, const CTrie & other, INT other_node)
 	fprintf(stderr, "checking nodes %i and %i\n", node, other_node) ;
 	if (fabs(TreeMem[node].weight-other.TreeMem[other_node].weight)>=1e-5)
 	{
-		CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].weight=%f!=other.TreeMem[%i].weight=%f\n", node, TreeMem[node].weight, other_node,other.TreeMem[other_node].weight) ;
-		CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+		SG_DEBUG( "CTrie::compare: TreeMem[%i].weight=%f!=other.TreeMem[%i].weight=%f\n", node, TreeMem[node].weight, other_node,other.TreeMem[other_node].weight) ;
+		SG_DEBUG( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
 		display_node(node) ;
-		CIO::message(M_DEBUG, "============================================================\n") ;			
+		SG_DEBUG( "============================================================\n") ;			
 		other.display_node(other_node) ;
-		CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
+		SG_DEBUG( "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
 		return false ;
 	}
 	
 #ifdef TRIE_CHECK_EVERYTHING
 	if (TreeMem[node].has_seq!=other.TreeMem[other_node].has_seq)
 	{
-		CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].has_seq=%i!=other.TreeMem[%i].has_seq=%i\n", node, TreeMem[node].has_seq, other_node,other.TreeMem[other_node].has_seq) ;
-		CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+		SG_DEBUG( "CTrie::compare: TreeMem[%i].has_seq=%i!=other.TreeMem[%i].has_seq=%i\n", node, TreeMem[node].has_seq, other_node,other.TreeMem[other_node].has_seq) ;
+		SG_DEBUG( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
 		display_node(node) ;
-		CIO::message(M_DEBUG, "============================================================\n") ;			
+		SG_DEBUG( "============================================================\n") ;			
 		other.display_node(other_node) ;
-		CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;
+		SG_DEBUG( "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;
 		return false ;
 	}
 	if (TreeMem[node].has_floats!=other.TreeMem[other_node].has_floats)
 	{
-		CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].has_floats=%i!=other.TreeMem[%i].has_floats=%i\n", node, TreeMem[node].has_floats, other_node, other.TreeMem[other_node].has_floats) ;
+		SG_DEBUG( "CTrie::compare: TreeMem[%i].has_floats=%i!=other.TreeMem[%i].has_floats=%i\n", node, TreeMem[node].has_floats, other_node, other.TreeMem[other_node].has_floats) ;
 		return false ;
 	}
 	if (other.TreeMem[other_node].has_floats)
@@ -274,12 +274,12 @@ bool CTrie::compare_traverse(INT node, const CTrie & other, INT other_node)
 		for (INT q=0; q<4; q++)
 			if (fabs(TreeMem[node].child_weights[q]-other.TreeMem[other_node].child_weights[q])>1e-5)
 			{
-				CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].child_weights[%i]=%e!=other.TreeMem[%i].child_weights[%i]=%e\n", node, q,TreeMem[node].child_weights[q], other_node,q,other.TreeMem[other_node].child_weights[q]) ;
-				CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+				SG_DEBUG( "CTrie::compare: TreeMem[%i].child_weights[%i]=%e!=other.TreeMem[%i].child_weights[%i]=%e\n", node, q,TreeMem[node].child_weights[q], other_node,q,other.TreeMem[other_node].child_weights[q]) ;
+				SG_DEBUG( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
 				display_node(node) ;
-				CIO::message(M_DEBUG, "============================================================\n") ;			
+				SG_DEBUG( "============================================================\n") ;			
 				other.display_node(other_node) ;
-				CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
+				SG_DEBUG( "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
 				return false ;
 			}
 	}
@@ -288,12 +288,12 @@ bool CTrie::compare_traverse(INT node, const CTrie & other, INT other_node)
 		for (INT q=0; q<16; q++)
 			if ((TreeMem[node].seq[q]!=other.TreeMem[other_node].seq[q]) && ((TreeMem[node].seq[q]<4)||(other.TreeMem[other_node].seq[q]<4)))
 			{
-				CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].seq[%i]=%i!=other.TreeMem[%i].seq[%i]=%i\n", node,q,TreeMem[node].seq[q], other_node,q,other.TreeMem[other_node].seq[q]) ;
-				CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+				SG_DEBUG( "CTrie::compare: TreeMem[%i].seq[%i]=%i!=other.TreeMem[%i].seq[%i]=%i\n", node,q,TreeMem[node].seq[q], other_node,q,other.TreeMem[other_node].seq[q]) ;
+				SG_DEBUG( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
 				display_node(node) ;
-				CIO::message(M_DEBUG, "============================================================\n") ;			
+				SG_DEBUG( "============================================================\n") ;			
 				other.display_node(other_node) ;
-				CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
+				SG_DEBUG( "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;			
 				return false ;
 			}
 	}
@@ -305,12 +305,12 @@ bool CTrie::compare_traverse(INT node, const CTrie & other, INT other_node)
 				continue ;
 			if ((TreeMem[node].children[q]==NO_CHILD)!=(other.TreeMem[other_node].children[q]==NO_CHILD))
 			{
-				CIO::message(M_DEBUG, "CTrie::compare: TreeMem[%i].children[%i]=%i!=other.TreeMem[%i].children[%i]=%i\n", node,q,TreeMem[node].children[q], other_node,q,other.TreeMem[other_node].children[q]) ;
-				CIO::message(M_DEBUG, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
+				SG_DEBUG( "CTrie::compare: TreeMem[%i].children[%i]=%i!=other.TreeMem[%i].children[%i]=%i\n", node,q,TreeMem[node].children[q], other_node,q,other.TreeMem[other_node].children[q]) ;
+				SG_DEBUG( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n") ;			
 				display_node(node) ;
-				CIO::message(M_DEBUG, "============================================================\n") ;			
+				SG_DEBUG( "============================================================\n") ;			
 				other.display_node(other_node) ;
-				CIO::message(M_DEBUG, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;
+				SG_DEBUG( "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n") ;
 				return false ;
 			}
 			if (!compare_traverse(abs(TreeMem[node].children[q]), other, abs(other.TreeMem[other_node].children[q])))
@@ -318,7 +318,7 @@ bool CTrie::compare_traverse(INT node, const CTrie & other, INT other_node)
 		}
 	}
 #else
-	CIO::message(M_ERROR, "not implemented\n") ;
+	SG_ERROR( "not implemented\n") ;
 #endif
 	
 	return true ;
@@ -328,17 +328,17 @@ bool CTrie::compare(const CTrie & other)
 {
 	/*if (TreeMemPtr!=other.TreeMemPtr)
 	{
-		CIO::message(M_DEBUG, "CTrie::compare: TreeMemPtr=%i!=other.TreeMemPtr=%i\n", TreeMemPtr, other.TreeMemPtr) ;
+		SG_DEBUG( "CTrie::compare: TreeMemPtr=%i!=other.TreeMemPtr=%i\n", TreeMemPtr, other.TreeMemPtr) ;
 		return false ;
 	}
 	if (length!=other.length)
 	{
-		CIO::message(M_DEBUG, "CTrie::compare: unequal number of trees\n") ;
+		SG_DEBUG( "CTrie::compare: unequal number of trees\n") ;
 		return false ;
 	}
 	if (tree_initialized!=other.tree_initialized)
 	{
-		CIO::message(M_DEBUG, "CTrie::compare: unequal initialized status\n") ;
+		SG_DEBUG( "CTrie::compare: unequal initialized status\n") ;
 		return false ;
 		}*/
 	
@@ -387,7 +387,7 @@ bool CTrie::find_node(INT node, INT * trace, INT& trace_len) const
 	trace_len=0 ;
 	return false ;
 #else
-	CIO::message(M_ERROR, "not implemented\n") ;
+	SG_ERROR( "not implemented\n") ;
 	return false ;
 #endif
 }
@@ -408,7 +408,7 @@ void CTrie::display_node(INT node) const
 			break ;
 	}
 	ASSERT(found) ;
-	CIO::message(M_MESSAGEONLY, "position %i  trace: ", tree) ;
+	SG_PRINT( "position %i  trace: ", tree) ;
 	
 	for (INT i=0; i<trace_len-1; i++)
 	{
@@ -421,18 +421,18 @@ void CTrie::display_node(INT node) const
 			}
 		ASSERT(branch!=-1) ;
 		char acgt[5]="ACGT" ;
-		CIO::message(M_MESSAGEONLY, "%c", acgt[branch]) ;
+		SG_PRINT( "%c", acgt[branch]) ;
 	}
-	CIO::message(M_MESSAGEONLY, "\nnode=%i\nweight=%f\nhas_seq=%i\nhas_floats=%i\n", node, TreeMem[node].weight, TreeMem[node].has_seq, TreeMem[node].has_floats) ;
+	SG_PRINT( "\nnode=%i\nweight=%f\nhas_seq=%i\nhas_floats=%i\n", node, TreeMem[node].weight, TreeMem[node].has_seq, TreeMem[node].has_floats) ;
 	if (TreeMem[node].has_floats)
 	{
 		for (INT q=0; q<4; q++)
-			CIO::message(M_MESSAGEONLY, "child_weighs[%i] = %f\n", q, TreeMem[node].child_weights[q]) ;
+			SG_PRINT( "child_weighs[%i] = %f\n", q, TreeMem[node].child_weights[q]) ;
 	}
 	if (TreeMem[node].has_seq)
 	{
 		for (INT q=0; q<16; q++)
-			CIO::message(M_MESSAGEONLY, "seq[%i] = %i\n", q, TreeMem[node].seq[q]) ;
+			SG_PRINT( "seq[%i] = %i\n", q, TreeMem[node].seq[q]) ;
 	}
 	if (!TreeMem[node].has_seq && !TreeMem[node].has_floats)
 	{
@@ -440,18 +440,18 @@ void CTrie::display_node(INT node) const
 		{
 			if (TreeMem[node].children[q]!=NO_CHILD)
 			{
-				CIO::message(M_MESSAGEONLY, "children[%i] = %i -> \n", q, TreeMem[node].children[q]) ;
+				SG_PRINT( "children[%i] = %i -> \n", q, TreeMem[node].children[q]) ;
 				display_node(abs(TreeMem[node].children[q])) ;
 			}
 			else
-				CIO::message(M_MESSAGEONLY, "children[%i] = NO_CHILD -| \n", q, TreeMem[node].children[q]) ;
+				SG_PRINT( "children[%i] = NO_CHILD -| \n", q, TreeMem[node].children[q]) ;
 		}
 		
 	}
 	
 	delete[] trace ;
 #else
-	CIO::message(M_ERROR, "not implemented\n") ;
+	SG_ERROR( "not implemented\n") ;
 #endif
 }
 

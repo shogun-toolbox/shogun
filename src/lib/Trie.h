@@ -132,12 +132,12 @@ public:
 	{
 		if (TreeMemPtr+10>=TreeMemPtrMax) 
 		{
-			CIO::message(M_DEBUG, "Extending TreeMem from %i to %i elements\n", TreeMemPtrMax, (INT) ((double)TreeMemPtrMax*1.2)) ;
+			SG_DEBUG( "Extending TreeMem from %i to %i elements\n", TreeMemPtrMax, (INT) ((double)TreeMemPtrMax*1.2)) ;
 			TreeMemPtrMax = (INT) ((double)TreeMemPtrMax*1.2) ;
 			TreeMem = (struct Trie *)realloc(TreeMem,TreeMemPtrMax*sizeof(struct Trie)) ;
 			
 			if (!TreeMem)
-				CIO::message(M_ERROR, "out of memory\n");
+				SG_ERROR( "out of memory\n");
 		}
 	}
 

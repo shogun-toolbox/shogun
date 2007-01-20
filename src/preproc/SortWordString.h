@@ -42,10 +42,10 @@ public:
 	/// apply preproc on feature matrix
 	/// result in feature matrix
 	/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-	virtual bool apply_to_feature_strings(CFeatures* f);
+	virtual bool apply_to_string_features(CFeatures* f);
 
 	/// apply preproc on single feature vector
 	/// result in feature matrix
-	virtual WORD* apply_to_feature_string(WORD* f, INT &len);
+	virtual WORD* apply_to_string(WORD* f, INT &len);
 };
 #endif

@@ -88,7 +88,7 @@ bool CGUIKernel::set_kernel(CHAR* param)
 	}
 	else
 	{
-		CIO::message(M_ERROR, "kernel creation failed.\n");
+		SG_ERROR( "kernel creation failed.\n");
 		return false;
 	}
 }
@@ -104,10 +104,10 @@ bool CGUIKernel::load_kernel_init(CHAR* param)
 		{
 			FILE* file=fopen(filename, "r");
 			if ((!file) || (!kernel->load_init(file)))
-				CIO::message(M_ERROR, "reading from file %s failed!\n", filename);
+				SG_ERROR( "reading from file %s failed!\n", filename);
 			else
 			{
-				CIO::message(M_INFO, "successfully read kernel init data from \"%s\" !\n", filename);
+				SG_INFO( "successfully read kernel init data from \"%s\" !\n", filename);
 				initialized=true;
 				result=true;
 			}
@@ -116,10 +116,10 @@ bool CGUIKernel::load_kernel_init(CHAR* param)
 				fclose(file);
 		}
 		else
-			CIO::message(M_ERROR, "see help for params\n");
+			SG_ERROR( "see help for params\n");
 	}
 	else
-		CIO::message(M_ERROR, "no kernel set!\n");
+		SG_ERROR( "no kernel set!\n");
 	return result;
 }
 
@@ -134,12 +134,12 @@ bool CGUIKernel::save_kernel_init(CHAR* param)
 		{
 			FILE* file=fopen(filename, "w");
 			if (!file)
-				CIO::message(M_ERROR, "fname: %s\n", filename);
+				SG_ERROR( "fname: %s\n", filename);
 			if ((!file) || (!kernel->save_init(file)))
-				CIO::message(M_ERROR, "writing to file %s failed!\n", filename);
+				SG_ERROR( "writing to file %s failed!\n", filename);
 			else
 			{
-				CIO::message(M_INFO, "successfully written kernel init data into \"%s\" !\n", filename);
+				SG_INFO( "successfully written kernel init data into \"%s\" !\n", filename);
 				result=true;
 			}
 
@@ -147,10 +147,10 @@ bool CGUIKernel::save_kernel_init(CHAR* param)
 				fclose(file);
 		}
 		else
-			CIO::message(M_ERROR, "see help for params\n");
+			SG_ERROR( "see help for params\n");
 	}
 	else
-		CIO::message(M_ERROR, "no kernel set!\n");
+		SG_ERROR( "no kernel set!\n");
 	return result;
 }
 
@@ -178,14 +178,14 @@ bool CGUIKernel::init_kernel_optimization(CHAR* param)
 			delete[] sv_weight ;
 
 			if (!ret)
-				CIO::message(M_ERROR, "initialization of kernel optimization failed\n") ;
+				SG_ERROR( "initialization of kernel optimization failed\n") ;
 			return ret ;
 		}
 
 	}
 	else
 	{
-		CIO::message(M_ERROR, "create SVM first\n");
+		SG_ERROR( "create SVM first\n");
 		return false ;
 	}
 	return true ;
@@ -203,11 +203,10 @@ bool CGUIKernel::delete_kernel_optimization(CHAR* param)
 bool CGUIKernel::init_kernel(CHAR* param)
 {
 	CHAR target[1024]="";
-	bool do_init=false;
 
 	if (!kernel)
 	{
-		CIO::message(M_ERROR, "no kernel available\n") ;
+		SG_ERROR( "no kernel available\n") ;
 		return false ;
 	} ;
 
@@ -217,7 +216,6 @@ bool CGUIKernel::init_kernel(CHAR* param)
 	{
 		if (!strncmp(target, "TRAIN", 5))
 		{
-			do_init=true;
 			if (gui->guifeatures.get_train_features())
 			{
 				if ( (kernel->get_feature_class() == gui->guifeatures.get_train_features()->get_feature_class() 
@@ -227,17 +225,17 @@ bool CGUIKernel::init_kernel(CHAR* param)
 						 || gui->guifeatures.get_train_features()->get_feature_type() == F_ANY 
 						 || kernel->get_feature_type() == F_ANY) )
 				{
-					kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_train_features(), do_init);
+					kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_train_features());
 					initialized=true;
 				}
 				else
 				{
-					CIO::message(M_ERROR, "kernel can not process this feature type\n");
+					SG_ERROR( "kernel can not process this feature type\n");
 					return false ;
 				}
 			}
 			else
-				CIO::message(M_ERROR, "assign train features first\n");
+				SG_ERROR( "assign train features first\n");
 		}
 		else if (!strncmp(target, "TEST", 5))
 		{
@@ -258,32 +256,32 @@ bool CGUIKernel::init_kernel(CHAR* param)
 				{
 					if (!initialized)
 					{
-						CIO::message(M_ERROR, "kernel not initialized for training examples\n") ;
+						SG_ERROR( "kernel not initialized for training examples\n") ;
 						return false ;
 					}
 					else
 					{
-						CIO::message(M_INFO, "initialising kernel with TEST DATA, train: %d test %d\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
+						SG_INFO( "initialising kernel with TEST DATA, train: %d test %d\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
 						// lhs -> always train_features; rhs -> always test_features
-						kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features(), do_init);						
+						kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features());
 					} ;
 				}
 				else
 				{
-					CIO::message(M_ERROR, "kernel can not process this feature type\n");
+					SG_ERROR( "kernel can not process this feature type\n");
 					return false ;
 				}
 			}
 			else
-				CIO::message(M_ERROR, "assign train and test features first\n");
+				SG_ERROR( "assign train and test features first\n");
 
 		}
 		else
-			CIO::not_implemented();
+			io.not_implemented();
 	}
 	else 
 	{
-		CIO::message(M_ERROR, "see help for params\n");
+		SG_ERROR( "see help for params\n");
 		return false;
 	}
 
@@ -300,18 +298,18 @@ bool CGUIKernel::save_kernel(CHAR* param)
 		if ((sscanf(param, "%s", filename))==1)
 		{
 			if (!kernel->save(filename))
-				CIO::message(M_ERROR, "writing to file %s failed!\n", filename);
+				SG_ERROR( "writing to file %s failed!\n", filename);
 			else
 			{
-				CIO::message(M_INFO, "successfully written kernel to \"%s\" !\n", filename);
+				SG_INFO( "successfully written kernel to \"%s\" !\n", filename);
 				result=true;
 			}
 		}
 		else
-			CIO::message(M_ERROR, "see help for params\n");
+			SG_ERROR( "see help for params\n");
 	}
 	else
-		CIO::message(M_ERROR, "no kernel set / kernel not initialized!\n");
+		SG_ERROR( "no kernel set / kernel not initialized!\n");
 	return result;
 }
 
@@ -332,10 +330,10 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			delete k;
 			k= new CCombinedKernel(size, append_subkernel_weights!=0);
 			if (kernel)
-				CIO::message(M_INFO, "CombinedKernel created\n");
+				SG_INFO( "CombinedKernel created\n");
 			return k;
 		} else
-			CIO::message(M_ERROR, "in this format I only expect Combined kernels\n") ;
+			SG_ERROR( "in this format I only expect Combined kernels\n") ;
 	} 
 	else if (sscanf(param, "%s %d", kern_type, &size) == 2)
 	{
@@ -344,10 +342,10 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			delete k;
 			k= new CCombinedKernel(size,false);
 			if (kernel)
-				CIO::message(M_INFO, "CombinedKernel created\n");
+				SG_INFO( "CombinedKernel created\n");
 			return k;
 		} else
-			CIO::message(M_ERROR, "in this format I only expect Combined kernels\n") ;
+			SG_ERROR( "in this format I only expect Combined kernels\n") ;
 	} 
 	//compared with <KERNTYPE> <DATATYPE> <CACHESIZE>
 	else if (sscanf(param, "%s %s %d", kern_type, data_type, &size) >= 2)
@@ -356,36 +354,36 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 		{
 			if (strcmp(data_type,"BYTE")==0)
 			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				double scale = -1 ;
+				sscanf(param, "%s %s %d %le", kern_type, data_type, &size, &scale);
 				delete k;
-				k=new CLinearByteKernel(size);
-				if (k)
-				{
-					CIO::message(M_INFO, "LinearByteKernel created\n");
-					return k;
-				}
+				if (scale==-1)
+					k=new CLinearWordKernel(size, true);
+				else
+					k=new CLinearWordKernel(size, false, scale);
+				return k;
 			}
 			else if (strcmp(data_type,"WORD")==0)
 			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				double scale = -1 ;
+				sscanf(param, "%s %s %d %le", kern_type, data_type, &size, &scale);
 				delete k;
-				k=new CLinearWordKernel(size);
-				if (k)
-				{
-					CIO::message(M_INFO, "LinearWordKernel created\n");
-					return k;
-				}
+				if (scale==-1)
+					k=new CLinearWordKernel(size, true);
+				else
+					k=new CLinearWordKernel(size, false, scale);
+				return k;
 			}
 			else if (strcmp(data_type,"CHAR")==0)
 			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				double scale = -1 ;
+				sscanf(param, "%s %s %d %le", kern_type, data_type, &size, &scale);
 				delete k;
-				k=new CLinearCharKernel(size);
-				if (k)
-				{
-					CIO::message(M_INFO, "LinearCharKernel created\n");
-					return k;
-				}
+				if (scale==-1)
+					k=new CLinearCharKernel(size, true);
+				else
+					k=new CLinearCharKernel(size, false, scale);
+				return k;
 			}
 			else if (strcmp(data_type,"REAL")==0)
 			{
@@ -417,21 +415,21 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				sscanf(param, "%s %s %d", kern_type, data_type, &size);
 				if (k)
 				  {
-				    CIO::message(M_INFO, "destroying old k\n") ;
+				    SG_INFO( "destroying old k\n") ;
 				    delete k;
 				  } ;
 
-				CIO::message(M_INFO, "getting estimator\n") ;
+				SG_INFO( "getting estimator\n") ;
 				CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
 
 				if (estimator)
 					k=new CHistogramWordKernel(size, estimator);
 				else
-					CIO::message(M_ERROR, "no estimator set\n");
+					SG_ERROR( "no estimator set\n");
 
 				if (k)
 				{
-					CIO::message(M_INFO, "HistogramKernel created\n");
+					SG_INFO( "HistogramKernel created\n");
 					return k;
 				}
 			}
@@ -443,18 +441,18 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				sscanf(param, "%s %s %d", kern_type, data_type, &size);
 				if (k)
 				{
-				    CIO::message(M_INFO, "destroying old k\n") ;
+				    SG_INFO( "destroying old k\n") ;
 				    delete k;
 				  } ;
 
-				CIO::message(M_INFO, "getting estimator\n") ;
+				SG_INFO( "getting estimator\n") ;
 				CPluginEstimate* estimator=gui->guipluginestimate.get_estimator();
 
-				CIO::message(M_INFO, "getting labels\n") ;
+				SG_INFO( "getting labels\n") ;
 				CLabels * train_labels = gui->guilabels.get_train_labels() ;
 				if (!train_labels)
 				{
-					CIO::message(M_INFO, "assign train labels first!\n") ;
+					SG_INFO( "assign train labels first!\n") ;
 					return NULL ;
 				} ;
 				
@@ -465,21 +463,21 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 					if (train_labels->get_int_label(i)==1) num_pos++ ;
 					if (train_labels->get_int_label(i)==-1) num_neg++ ;
 				}				
-				CIO::message(M_INFO, "priors: pos=%1.3f (%i)  neg=%1.3f (%i)\n", 
+				SG_INFO( "priors: pos=%1.3f (%i)  neg=%1.3f (%i)\n", 
 							 (DREAL) num_pos/(num_pos+num_neg), num_pos,
 							 (DREAL) num_neg/(num_pos+num_neg), num_neg) ;
 				
 				if (estimator)
 					k=new CSalzbergWordKernel(size, estimator);
 				else
-					CIO::message(M_ERROR, "no estimator set\n");
+					SG_ERROR( "no estimator set\n");
 				
 				((CSalzbergWordKernel*)k)->set_prior_probs((DREAL)num_pos/(num_pos+num_neg), 
 																(DREAL)num_neg/(num_pos+num_neg)) ;
 				
 				if (k)
 				{
-					CIO::message(M_INFO, "SalzbergKernel created\n");
+					SG_INFO( "SalzbergKernel created\n");
 					return k;
 				}
 			}
@@ -498,7 +496,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (k)
 				{
-					CIO::message(M_INFO, "PolyMatchWordKernel created\n");
+					SG_INFO( "PolyMatchWordKernel created\n");
 					return k;
 				}
 			}
@@ -514,7 +512,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (k)
 				{
-					CIO::message(M_INFO, "PolyMatchCharKernel created\n");
+					SG_INFO( "PolyMatchCharKernel created\n");
 					return k;
 				}
 			}
@@ -530,7 +528,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (k)
 				{
-					CIO::message(M_INFO, "MatchKernel created\n");
+					SG_INFO( "MatchKernel created\n");
 					return k;
 				}
 			}
@@ -548,41 +546,41 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (strlen(normalization_str)==0)
 				{
 					normalization = FULL_NORMALIZATION ;
-					CIO::message(M_INFO, "using full normalization\n") ;
+					SG_INFO( "using full normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "NO")==0)
 				{
 					normalization = NO_NORMALIZATION ;
-					CIO::message(M_INFO, "using no normalization\n") ;
+					SG_INFO( "using no normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQRT")==0)
 				{
 					normalization = SQRT_NORMALIZATION ;
-					CIO::message(M_INFO, "using sqrt normalization\n") ;
+					SG_INFO( "using sqrt normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQRTLEN")==0)
 				{
 					normalization = SQRTLEN_NORMALIZATION ;
-					CIO::message(M_INFO, "using sqrt-len normalization\n") ;
+					SG_INFO( "using sqrt-len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "LEN")==0)
 				{
 					normalization = LEN_NORMALIZATION ;
-					CIO::message(M_INFO, "using len normalization\n") ;
+					SG_INFO( "using len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQLEN")==0)
 				{
 					normalization = SQLEN_NORMALIZATION ;
-					CIO::message(M_INFO, "using squared len normalization\n") ;
+					SG_INFO( "using squared len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "FULL")==0)
 				{
 					normalization = FULL_NORMALIZATION ;
-					CIO::message(M_INFO, "using full normalization\n") ;
+					SG_INFO( "using full normalization\n") ;
 				}
 				else 
 				{
-					CIO::message(M_ERROR, "unknow normalization: %s\n", normalization_str) ;
+					SG_ERROR( "unknow normalization: %s\n", normalization_str) ;
 					return NULL ;
 				}
 
@@ -591,9 +589,9 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (k)
 				{
 					if (use_sign)
-						CIO::message(M_INFO, "CommWordStringKernel with sign(count) created\n");
+						SG_INFO( "CommWordStringKernel with sign(count) created\n");
 					else
-						CIO::message(M_INFO, "CommWordStringKernel with count created\n");
+						SG_INFO( "CommWordStringKernel with count created\n");
 					return k;
 				}
 			}
@@ -608,41 +606,41 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (strlen(normalization_str)==0)
 				{
 					normalization = FULL_NORMALIZATION ;
-					CIO::message(M_INFO, "using full normalization\n") ;
+					SG_INFO( "using full normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "NO")==0)
 				{
 					normalization = NO_NORMALIZATION ;
-					CIO::message(M_INFO, "using no normalization\n") ;
+					SG_INFO( "using no normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQRT")==0)
 				{
 					normalization = SQRT_NORMALIZATION ;
-					CIO::message(M_INFO, "using sqrt normalization\n") ;
+					SG_INFO( "using sqrt normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQRTLEN")==0)
 				{
 					normalization = SQRTLEN_NORMALIZATION ;
-					CIO::message(M_INFO, "using sqrt-len normalization\n") ;
+					SG_INFO( "using sqrt-len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "LEN")==0)
 				{
 					normalization = LEN_NORMALIZATION ;
-					CIO::message(M_INFO, "using len normalization\n") ;
+					SG_INFO( "using len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQLEN")==0)
 				{
 					normalization = SQLEN_NORMALIZATION ;
-					CIO::message(M_INFO, "using squared len normalization\n") ;
+					SG_INFO( "using squared len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "FULL")==0)
 				{
 					normalization = FULL_NORMALIZATION ;
-					CIO::message(M_INFO, "using full normalization\n") ;
+					SG_INFO( "using full normalization\n") ;
 				}
 				else 
 				{
-					CIO::message(M_ERROR, "unknow normalization: %s\n", normalization_str) ;
+					SG_ERROR( "unknow normalization: %s\n", normalization_str) ;
 					return NULL ;
 				}
 
@@ -651,9 +649,9 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (k)
 				{
 					if (use_sign)
-						CIO::message(M_INFO, "CommUlongStringKernel with sign(count) created\n");
+						SG_INFO( "CommUlongStringKernel with sign(count) created\n");
 					else
-						CIO::message(M_INFO, "CommUlongStringKernel with count created\n");
+						SG_INFO( "CommUlongStringKernel with count created\n");
 					return k;
 				}
 			}
@@ -670,41 +668,41 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (strlen(normalization_str)==0)
 				{
 					normalization = FULL_NORMALIZATION ;
-					CIO::message(M_INFO, "using full normalization\n") ;
+					SG_INFO( "using full normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "NO")==0)
 				{
 					normalization = NO_NORMALIZATION ;
-					CIO::message(M_INFO, "using no normalization\n") ;
+					SG_INFO( "using no normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQRT")==0)
 				{
 					normalization = SQRT_NORMALIZATION ;
-					CIO::message(M_INFO, "using sqrt normalization\n") ;
+					SG_INFO( "using sqrt normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQRTLEN")==0)
 				{
 					normalization = SQRTLEN_NORMALIZATION ;
-					CIO::message(M_INFO, "using sqrt-len normalization\n") ;
+					SG_INFO( "using sqrt-len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "LEN")==0)
 				{
 					normalization = LEN_NORMALIZATION ;
-					CIO::message(M_INFO, "using len normalization\n") ;
+					SG_INFO( "using len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "SQLEN")==0)
 				{
 					normalization = SQLEN_NORMALIZATION ;
-					CIO::message(M_INFO, "using squared len normalization\n") ;
+					SG_INFO( "using squared len normalization\n") ;
 				}
 				else if (strcmp(normalization_str, "FULL")==0)
 				{
 					normalization = FULL_NORMALIZATION ;
-					CIO::message(M_INFO, "using full normalization\n") ;
+					SG_INFO( "using full normalization\n") ;
 				}
 				else 
 				{
-					CIO::message(M_ERROR, "unknow normalization: %s\n", normalization_str) ;
+					SG_ERROR( "unknow normalization: %s\n", normalization_str) ;
 					return NULL ;
 				}
 
@@ -714,9 +712,9 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (k)
 				{
 					if (use_sign)
-						CIO::message(M_INFO, "CommWordKernel with sign(count) created\n");
+						SG_INFO( "CommWordKernel with sign(count) created\n");
 					else
-						CIO::message(M_INFO, "CommWordKernel with count created\n");
+						SG_INFO( "CommWordKernel with count created\n");
 					return k;
 				}
 			}
@@ -735,9 +733,9 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (k)
 				{
 					if (use_sign)
-						CIO::message(M_INFO, "HammingWordKernel with sign(count) created\n");
+						SG_INFO( "HammingWordKernel with sign(count) created\n");
 					else
-						CIO::message(M_INFO, "HammingWordKernel with count created\n");
+						SG_INFO( "HammingWordKernel with count created\n");
 					return k;
 				}
 			}
@@ -754,7 +752,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (k)
 				{
-					CIO::message(M_INFO, "ManhattenWordKernel created\n");
+					SG_INFO( "ManhattenWordKernel created\n");
 					return k;
 				}
 			}
@@ -771,7 +769,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (k)
 				{
-					CIO::message(M_INFO, "CanberraWordKernel created\n");
+					SG_INFO( "CanberraWordKernel created\n");
 					return k;
 				}
 			}
@@ -786,7 +784,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (k)
 				{
-					CIO::message(M_INFO, "Chi2Kernel created\n");
+					SG_INFO( "Chi2Kernel created\n");
 					return k;
 				}
 			}
@@ -803,7 +801,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (k)
 				{
-					CIO::message(M_INFO, "FixedDegreeCharKernel created\n");
+					SG_INFO( "FixedDegreeCharKernel created\n");
 					return k;
 				}
 			}
@@ -829,18 +827,18 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 					int args = sscanf(rest, "%i %[0-9 .+-]", &shift[i], rest2) ;
 					if (((args!=2) && (i<length-1)) || (args<1))
 					{
-						CIO::message(M_ERROR, "failed to read list at position %i\n", i) ;
+						SG_ERROR( "failed to read list at position %i\n", i) ;
 						return false ;
 					} ;
 					if (shift[i]>length)
 					{
-						CIO::message(M_ERROR, "shift longer than sequence: %i \n", shift[i]) ;
+						SG_ERROR( "shift longer than sequence: %i \n", shift[i]) ;
 						return false ;
 					} ;
 					strcpy(rest,rest2) ;
 				}
 				//for (INT i=0; i<length; i++)
-				//  CIO::message(M_INFO, "shift[%i]=%i\n", i, shift[i]) ;
+				//  SG_INFO( "shift[%i]=%i\n", i, shift[i]) ;
 				
 				DREAL* weights=new DREAL[d*(1+max_mismatch)];
 				DREAL sum=0;
@@ -884,7 +882,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				if (k)
 				{
-					CIO::message(M_INFO, "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
+					SG_INFO( "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
 					return k;
 				}
 			}
@@ -913,12 +911,12 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 					int args = sscanf(rest, "%i %[0-9 .+-]", &shift[i], rest2) ;
 					if (((args!=2) && (i<length-1)) || (args<1))
 					{
-						CIO::message(M_ERROR, "failed to read shift list at position %i\n", i) ;
+						SG_ERROR( "failed to read shift list at position %i\n", i) ;
 						return false ;
 					} ;
 					if (shift[i]>length)
 					{
-						CIO::message(M_ERROR, "shift longer than sequence: %i \n", shift[i]) ;
+						SG_ERROR( "shift longer than sequence: %i \n", shift[i]) ;
 						return false ;
 					} ;
 					strcpy(rest,rest2) ;
@@ -938,14 +936,14 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 						{
 							if (i>0)
 							{
-								CIO::message(M_ERROR, "failed to read weight list at position %i\n", i) ;
+								SG_ERROR( "failed to read weight list at position %i\n", i) ;
 								return false ;
 							}
 							else break ;
 						} ;
 						if (position_weights[i]<0)
 						{
-							CIO::message(M_ERROR, "no negative weights allowed: %1.1le \n", position_weights[i]) ;
+							SG_ERROR( "no negative weights allowed: %1.1le \n", position_weights[i]) ;
 							return false ;
 						} ;
 						strcpy(rest,rest2) ;
@@ -999,7 +997,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				if (k)
 				{
-					CIO::message(M_INFO, "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d,%d) created\n",size, d, max_mismatch, length,mkl_stepsize);
+					SG_INFO( "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d,%d) created\n",size, d, max_mismatch, length,mkl_stepsize);
 					return k;
 				}
 			}
@@ -1018,7 +1016,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				sscanf(param, "%s %s %d %d %d %d %d %le", 
 					   kern_type, data_type, &size, &d, &max_mismatch, 
 					   &length, &center, &step);
-				CIO::message(M_INFO, "step = %le\n") ;
+				SG_INFO( "step = %le\n") ;
 				
 				DREAL* weights=new DREAL[d*(1+max_mismatch)];
 				DREAL sum=0;
@@ -1057,7 +1055,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 						shift[ii]=length ;
 
 				for (INT ii=0; ii<length; ii++)
-				  CIO::message(M_INFO, "shift[%i]=%i\n", ii, shift[ii]) ;
+				  SG_INFO( "shift[%i]=%i\n", ii, shift[ii]) ;
 				
 				delete k;
 
@@ -1074,7 +1072,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				if (k)
 				{
-					CIO::message(M_INFO, "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
+					SG_INFO( "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
 					return k;
 				}
 			}
@@ -1136,7 +1134,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				if (k)
 				{
-					CIO::message(M_INFO, "WeightedDegreeCharKernel created\n");
+					SG_INFO( "WeightedDegreeCharKernel created\n");
 					return k;
 				}
 			}
@@ -1182,7 +1180,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				if (k)
 				{
-					CIO::message(M_INFO, "WeightedDegreeCharKernelPolyA created\n");
+					SG_INFO( "WeightedDegreeCharKernelPolyA created\n");
 					return k;
 				}
 			}
@@ -1199,7 +1197,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				k=new CSimpleLocalityImprovedCharKernel(size, l, d1, d2);
 				if (k)
 				{
-					CIO::message(M_INFO, "SimpleLocalityImprovedCharKernel created\n");
+					SG_INFO( "SimpleLocalityImprovedCharKernel created\n");
 					return k;
 				}
 			}
@@ -1216,7 +1214,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				k=new CLocalityImprovedCharKernel(size, l, d1, d2);
 				if (k)
 				{
-					CIO::message(M_INFO, "LocalityImprovedCharKernel created\n");
+					SG_INFO( "LocalityImprovedCharKernel created\n");
 					return k;
 				}
 			}
@@ -1235,7 +1233,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (k)
 				{
-					CIO::message(M_INFO, "Polynomial Kernel created\n");
+					SG_INFO( "Polynomial Kernel created\n");
 					return k;
 				}
 			}
@@ -1251,7 +1249,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (k)
 				{
-					CIO::message(M_INFO, "CharPolynomial Kernel created\n");
+					SG_INFO( "CharPolynomial Kernel created\n");
 					return k;
 				}
 			}
@@ -1267,7 +1265,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (k)
 				{
-					CIO::message(M_INFO, "Sparse Polynomial Kernel created\n");
+					SG_INFO( "Sparse Polynomial Kernel created\n");
 					return k;
 				}
 			}
@@ -1284,7 +1282,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				k=new CSigmoidKernel(size, gamma, coef0);
 				if (k)
 				{
-					CIO::message(M_INFO, "Sigmoid Kernel created\n");
+					SG_INFO( "Sigmoid Kernel created\n");
 					return k;
 				}
 			}
@@ -1300,7 +1298,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				k=new CGaussianKernel(size, width);
 				if (k)
 				{
-					CIO::message(M_INFO, "Gaussian Kernel created\n");
+					SG_INFO( "Gaussian Kernel created\n");
 					return k;
 				}
 			}
@@ -1313,7 +1311,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				k=new CSparseGaussianKernel(size, width);
 				if (k)
 				{
-					CIO::message(M_INFO, "Sparse Gaussian Kernel created\n");
+					SG_INFO( "Sparse Gaussian Kernel created\n");
 					return k;
 				}
 			}
@@ -1327,7 +1325,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				k=new CSparseNormSquaredKernel(size);
 				if (k)
 				{
-					CIO::message(M_INFO, "Sparse NormSquared Kernel created\n");
+					SG_INFO( "Sparse NormSquared Kernel created\n");
 					return k;
 				}
 			}
@@ -1338,7 +1336,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			k = new CCustomKernel();
 			if (k)
 			{
-				CIO::message(M_INFO, "Custom Kernel created\n");
+				SG_INFO( "Custom Kernel created\n");
 				return k;
 			}
 		}
@@ -1350,7 +1348,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			k = new CConstKernel(val);
 			if (k)
 			{
-				CIO::message(M_INFO, "Const Kernel created\n");
+				SG_INFO( "Const Kernel created\n");
 				return k;
 			}
 		}
@@ -1363,7 +1361,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			k = new CDiagKernel(size, diag);
 			if (k)
 			{
-				CIO::message(M_INFO, "Diag Kernel created\n");
+				SG_INFO( "Diag Kernel created\n");
 				return k;
 			}
 		}
@@ -1381,44 +1379,44 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			if (strlen(norm_str)==0)
 			{
 				normalization = FULL_NORMALIZATION ;
-				CIO::message(M_INFO, "using full normalization (default)\n") ;
+				SG_INFO( "using full normalization (default)\n") ;
 			}
 			else if (strcmp(norm_str, "NO")==0)
 			{
 				normalization = NO_NORMALIZATION ;
-				CIO::message(M_INFO, "using no normalization\n") ;
+				SG_INFO( "using no normalization\n") ;
 			}
 			else if (strcmp(norm_str, "SQRT")==0)
 			{
 				normalization = SQRT_NORMALIZATION ;
-				CIO::message(M_INFO, "using sqrt normalization\n") ;
+				SG_INFO( "using sqrt normalization\n") ;
 			}
 			else if (strcmp(norm_str, "FULL")==0)
 			{
 				normalization = FULL_NORMALIZATION ;
-				CIO::message(M_INFO, "using full normalization\n") ;
+				SG_INFO( "using full normalization\n") ;
 			}
 			else 
 			{
-				CIO::message(M_ERROR, "unknow normalization: %s\n", norm_str) ;
+				SG_ERROR( "unknow normalization: %s\n", norm_str) ;
 				return NULL ;
 			}
 
 			k = new CMindyGramKernel(size, meas_str, param_str, normalization);
 			if (k)
 			{
-			    CIO::message(M_INFO, "MindyGramKernel with %s (%s) created\n", meas_str, param_str);
+			    SG_INFO( "MindyGramKernel with %s (%s) created\n", meas_str, param_str);
 			    return k;
 			}
 		}
 #endif
 		else
-			CIO::not_implemented();
+			io.not_implemented();
 	}
 	else 
-		CIO::message(M_ERROR, "see help for params!\n");
+		SG_ERROR( "see help for params!\n");
 
-	CIO::not_implemented();
+	io.not_implemented();
 	return NULL;
 }
 
@@ -1441,7 +1439,7 @@ bool CGUIKernel::add_kernel(CHAR* param)
 		
 		if (ret!=2)
 		{
-			CIO::message(M_ERROR, "add_kernel <weight> <kernel-parameters>\n");
+			SG_ERROR( "add_kernel <weight> <kernel-parameters>\n");
 			delete[] newparam ;
 			return false ;
 		}
@@ -1454,13 +1452,13 @@ bool CGUIKernel::add_kernel(CHAR* param)
 		if (bret)
 			((CCombinedKernel*) kernel)->list_kernels();
 		else
-			CIO::message(M_ERROR, "appending kernel failed\n");
+			SG_ERROR( "appending kernel failed\n");
 
 		delete[] newparam ;
 		return bret;
 	}
 	else
-		CIO::message(M_ERROR, "combined kernel object could not be created\n");
+		SG_ERROR( "combined kernel object could not be created\n");
 
 	return false;
 }
@@ -1482,7 +1480,7 @@ bool CGUIKernel::resize_kernel_cache(CHAR* param)
 		kernel->resize_kernel_cache(size) ;
 		return true ;
 	}
-	CIO::message(M_ERROR, "no kernel available\n") ;
+	SG_ERROR( "no kernel available\n") ;
 	return false;
 }
 #endif //USE_SVMLIGHT
@@ -1499,23 +1497,23 @@ bool CGUIKernel::set_optimization_type(CHAR* param)
 		{
 			if (strcmp(opt_type,"FASTBUTMEMHUNGRY")==0)
 			{
-				CIO::message(M_INFO,"FAST METHOD selected\n");
+				SG_INFO("FAST METHOD selected\n");
 				opt=FASTBUTMEMHUNGRY;
 				kernel->set_optimization_type(opt);
 				return true;
 			}
 			else if (strcmp(opt_type,"SLOWBUTMEMEFFICIENT")==0)
 			{
-				CIO::message(M_INFO,"MEMORY EFFICIENT METHOD selected\n");
+				SG_INFO("MEMORY EFFICIENT METHOD selected\n");
 				opt=SLOWBUTMEMEFFICIENT;
 				kernel->set_optimization_type(opt);
 				return true;
 			}
 			else
-				CIO::message(M_ERROR, "option missing\n");
+				SG_ERROR( "option missing\n");
 		}
 	}
-	CIO::message(M_ERROR, "no kernel available\n") ;
+	SG_ERROR( "no kernel available\n") ;
 	return false;
 }
 

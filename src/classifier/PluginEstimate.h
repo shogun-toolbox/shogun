@@ -11,17 +11,12 @@
 #ifndef _PLUGINESTIMATE_H___
 #define _PLUGINESTIMATE_H___
 
+#include "base/SGObject.h"
 #include "features/WordFeatures.h"
 #include "features/Labels.h"
 #include "distributions/hmm/LinearHMM.h"
 
-#include <cstring>
-using namespace std;
-
-#include "exceptions/PluginException.h"
-
-
-class CPluginEstimate
+class CPluginEstimate: public CSGObject
 {
 	public:
 		CPluginEstimate();
@@ -61,11 +56,7 @@ class CPluginEstimate
 		{
 			if ((!pos_model) || (!neg_model))
 			{
-#ifdef HAVE_PYTHON
-            throw PluginException("no model available\n");
-#else
-				CIO::message(M_ERROR, "no model available\n");
-#endif
+				SG_ERROR( "no model available\n");
 				return false;
 			}
 

@@ -20,7 +20,7 @@ class CSimpleLocalityImprovedCharKernel: public CSimpleKernel<CHAR>
   CSimpleLocalityImprovedCharKernel(LONG size, INT length, INT inner_degree, INT outer_degree) ;
   ~CSimpleLocalityImprovedCharKernel() ;
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -32,6 +32,10 @@ class CSimpleLocalityImprovedCharKernel: public CSimpleKernel<CHAR>
 
   // return the name of a kernel
   virtual const CHAR* get_name() { return "SimpleLocalityImproved" ; } ;
+ private:
+  DREAL dot_pyr (const CHAR* const x1, const CHAR* const x2, const INT NOF_NTS,
+		  const INT NTWIDTH, const INT DEGREE1, const INT DEGREE2, 
+		  CHAR *stage1, DREAL *pyra);
 
  protected:
   /// compute kernel function for features a and b

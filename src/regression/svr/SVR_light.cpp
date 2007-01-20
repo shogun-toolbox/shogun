@@ -127,7 +127,7 @@ bool CSVRLight::train()
 
 	if (!CKernelMachine::get_kernel())
 	{
-		CIO::message(M_ERROR, "SVM_light can not proceed without kernel!\n");
+		SG_ERROR( "SVM_light can not proceed without kernel!\n");
 		return false ;
 	}
 
@@ -137,25 +137,25 @@ bool CSVRLight::train()
 		get_kernel()->clear_normal();
 
 	// output some info
-	CIO::message(M_DEBUG, "qpsize = %i\n", learn_parm->svm_maxqpsize) ;
-	CIO::message(M_DEBUG, "epsilon = %1.1e\n", learn_parm->epsilon_crit) ;
-	CIO::message(M_DEBUG, "weight_epsilon = %1.1e\n", weight_epsilon) ;
-	CIO::message(M_DEBUG, "C_mkl = %1.1e\n", C_mkl) ;
-	CIO::message(M_DEBUG, "get_kernel()->has_property(KP_LINADD) = %i\n", get_kernel()->has_property(KP_LINADD)) ;
-	CIO::message(M_DEBUG, "get_kernel()->has_property(KP_KERNCOMBINATION) = %i\n", get_kernel()->has_property(KP_KERNCOMBINATION)) ;
-	CIO::message(M_DEBUG, "get_mkl_enabled() = %i\n", get_mkl_enabled()) ;
-	CIO::message(M_DEBUG, "get_linadd_enabled() = %i\n", get_linadd_enabled()) ;
-	CIO::message(M_DEBUG, "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
-	CIO::message(M_DEBUG, "estimated time: %1.1f minutes\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/60) ;
+	SG_DEBUG( "qpsize = %i\n", learn_parm->svm_maxqpsize) ;
+	SG_DEBUG( "epsilon = %1.1e\n", learn_parm->epsilon_crit) ;
+	SG_DEBUG( "weight_epsilon = %1.1e\n", weight_epsilon) ;
+	SG_DEBUG( "C_mkl = %1.1e\n", C_mkl) ;
+	SG_DEBUG( "get_kernel()->has_property(KP_LINADD) = %i\n", get_kernel()->has_property(KP_LINADD)) ;
+	SG_DEBUG( "get_kernel()->has_property(KP_KERNCOMBINATION) = %i\n", get_kernel()->has_property(KP_KERNCOMBINATION)) ;
+	SG_DEBUG( "get_mkl_enabled() = %i\n", get_mkl_enabled()) ;
+	SG_DEBUG( "get_linadd_enabled() = %i\n", get_linadd_enabled()) ;
+	SG_DEBUG( "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
+	SG_DEBUG( "estimated time: %1.1f minutes\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/60) ;
 
 	use_kernel_cache = !(use_precomputed_subkernels || (get_kernel()->get_kernel_type() == K_CUSTOM) ||
 						 (get_linadd_enabled() && get_kernel()->has_property(KP_LINADD)) ||
 						 get_kernel()->get_precompute_matrix() || 
 						 get_kernel()->get_precompute_subkernel_matrix()) ;
 
-	CIO::message(M_DEBUG, "get_kernel()->get_precompute_matrix() = %i\n", get_kernel()->get_precompute_matrix()) ;
-	CIO::message(M_DEBUG, "get_kernel()->get_precompute_subkernel_matrix() = %i\n", get_kernel()->get_precompute_subkernel_matrix()) ;
-	CIO::message(M_DEBUG, "use_kernel_cache = %i\n", use_kernel_cache) ;
+	SG_DEBUG( "get_kernel()->get_precompute_matrix() = %i\n", get_kernel()->get_precompute_matrix()) ;
+	SG_DEBUG( "get_kernel()->get_precompute_subkernel_matrix() = %i\n", get_kernel()->get_precompute_subkernel_matrix()) ;
+	SG_DEBUG( "use_kernel_cache = %i\n", use_kernel_cache) ;
 
 #ifdef USE_CPLEX
 	cleanup_cplex();
@@ -164,7 +164,7 @@ bool CSVRLight::train()
 		init_cplex();
 #else
 	if (get_mkl_enabled())
-		CIO::message(M_ERROR, "CPLEX was disabled at compile-time\n");
+		SG_ERROR( "CPLEX was disabled at compile-time\n");
 #endif
 	
 	if (precomputed_subkernels != NULL)
@@ -210,17 +210,17 @@ bool CSVRLight::train()
 
 			SHORTREAL * matrix = precomputed_subkernels[n] ;
 			
-			CIO::message(M_INFO, "precomputing kernel matrix %i (%ix%i)\n", n, num, num) ;
+			SG_INFO( "precomputing kernel matrix %i (%ix%i)\n", n, num, num) ;
 			for (INT i=0; i<num; i++)
 			{
-				CIO::progress(i*i,0,num*num);
+				io.progress(i*i,0,num*num);
 				
 				for (INT j=0; j<=i; j++)
 					matrix[i*(i+1)/2+j] = k->kernel(i,j) ;
 
 			}
-			CIO::progress(num*num,0,num*num);
-			CIO::message(M_INFO, "\ndone.\n") ;
+			io.progress(num*num,0,num*num);
+			SG_INFO( "\ndone.\n") ;
 			w1[n]=0.0 ;
 		}
 
@@ -399,11 +399,11 @@ void CSVRLight::svr_learn()
 	}
 
 	if(verbosity==1) {
-		CIO::message(M_DEBUG, "Optimizing...\n");
+		SG_DEBUG( "Optimizing...\n");
 	}
 
 	/* train the svm */
-		CIO::message(M_DEBUG, "num_train: %d\n", totdoc);
+		SG_DEBUG( "num_train: %d\n", totdoc);
   iterations=optimize_to_convergence(docs,label,totdoc,
                      &shrink_state,inconsistent,a,lin,
                      c,&timing_profile,
@@ -412,14 +412,14 @@ void CSVRLight::svr_learn()
 
 
 	if(verbosity>=1) {
-		CIO::message(M_INFO, "done. (%ld iterations)\n",iterations);
-		CIO::message(M_INFO, "Optimization finished (maxdiff=%.8f).\n",maxdiff);
-		CIO::message(M_INFO, "obj = %.16f, rho = %.16f\n",get_objective(),model->b);
+		SG_INFO( "done. (%ld iterations)\n",iterations);
+		SG_INFO( "Optimization finished (maxdiff=%.8f).\n",maxdiff);
+		SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),model->b);
 
 		runtime_end=get_runtime();
 		upsupvecnum=0;
 
-		CIO::message(M_DEBUG, "num sv: %d\n", model->sv_num);
+		SG_DEBUG( "num sv: %d\n", model->sv_num);
 		for(i=1;i<model->sv_num;i++)
 		{
 			if(fabs(model->alpha[i]) >= 
@@ -427,7 +427,7 @@ void CSVRLight::svr_learn()
 					 learn_parm->epsilon_a)) 
 				upsupvecnum++;
 		}
-		CIO::message(M_INFO, "Number of SV: %ld (including %ld at upper bound)\n",
+		SG_INFO( "Number of SV: %ld (including %ld at upper bound)\n",
 				model->sv_num-1,upsupvecnum);
 	}
 
@@ -475,7 +475,7 @@ double CSVRLight::compute_objective_function(double *a, double *lin, double *c,
 
   }
 
-  CIO::message(M_INFO,"REGRESSION OBJECTIVE %f vs. CHECK %f (diff %f)\n", criterion, check, criterion-check); */
+  SG_INFO("REGRESSION OBJECTIVE %f vs. CHECK %f (diff %f)\n", criterion, check, criterion-check); */
 
   return(criterion);
 }
@@ -616,7 +616,7 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 	{
 		if (!lp_initialized)
 		{
-			CIO::message(M_INFO, "creating LP\n") ;
+			SG_INFO( "creating LP\n") ;
 			
 			INT NUMCOLS = 2*num_kernels + 1 ;
 			double   obj[NUMCOLS];
@@ -640,7 +640,7 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 			if ( status ) {
 				char  errmsg[1024];
 				CPXgeterrorstring (env, status, errmsg);
-				CIO::message(M_ERROR, "%s", errmsg);
+				SG_ERROR( "%s", errmsg);
 			}
 			
 			// add constraint sum(w)=1 ;
@@ -666,7 +666,7 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 								 initial_rhs, initial_sense, initial_rmatbeg,
 								 initial_rmatind, initial_rmatval, NULL, NULL);
 			if ( status ) {
-				CIO::message(M_ERROR, "Failed to add the first row.\n");
+				SG_ERROR( "Failed to add the first row.\n");
 			}
 			lp_initialized = true ;
 			
@@ -696,7 +696,7 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-						CIO::message(M_ERROR, "Failed to add a smothness row (1).\n");
+						SG_ERROR( "Failed to add a smothness row (1).\n");
 					}
 					
 					rmatbeg[0] = 0;
@@ -712,16 +712,16 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-						CIO::message(M_ERROR, "Failed to add a smothness row (2).\n");
+						SG_ERROR( "Failed to add a smothness row (2).\n");
 					}
 				}
 			}
 		}
 
-		CIO::message(M_DEBUG, "*") ;
+		SG_DEBUG( "*") ;
 		
 		{ // add the new row
-			//CIO::message(M_INFO, "add the new row\n") ;
+			//SG_INFO( "add the new row\n") ;
 			
 			int rmatbeg[1] ;
 			int rmatind[num_kernels+1] ;
@@ -745,13 +745,13 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 									 rhs, sense, rmatbeg,
 									 rmatind, rmatval, NULL, NULL);
 			if ( status ) 
-				CIO::message(M_ERROR, "Failed to add the new row.\n");
+				SG_ERROR( "Failed to add the new row.\n");
 		}
 		
 		{ // optimize
 			INT status = CPXlpopt (env, lp);
 			if ( status ) 
-				CIO::message(M_ERROR, "Failed to optimize LP.\n");
+				SG_ERROR( "Failed to optimize LP.\n");
 			
 			// obtain solution
 			INT cur_numrows = CPXgetnumrows (env, lp);
@@ -769,14 +769,14 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 				 slack == NULL ||
 				 pi    == NULL   ) {
 				status = CPXERR_NO_MEMORY;
-				CIO::message(M_ERROR, "Could not allocate memory for solution.\n") ;
+				SG_ERROR( "Could not allocate memory for solution.\n") ;
 			}
 			INT solstat = 0 ;
 			DREAL objval = 0 ;
 			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
 			INT solution_ok = (!status) ;
 			if ( status ) {
-				CIO::message(M_ERROR, "Failed to obtain solution.\n");
+				SG_ERROR( "Failed to obtain solution.\n");
 			}
 			
 			num_active_rows=0 ;
@@ -803,10 +803,10 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 				// have at most max(100,num_active_rows*2) rows, if not, remove one
 				if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 				{
-					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_row,num_rows) ;
+					//SG_INFO( "-%i(%i,%i)",max_idx,start_row,num_rows) ;
 					status = CPXdelrows (env, lp, max_idx, max_idx) ;
 					if ( status ) 
-						CIO::message(M_ERROR, "Failed to remove an old row.\n");
+						SG_ERROR( "Failed to remove an old row.\n");
 				}
 
 				// set weights, store new rho and compute new w gap
@@ -847,7 +847,7 @@ void CSVRLight::update_linear_component_mkl(INT* docs, INT* label,
 		INT start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		SG_DEBUG("\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
 	}
 	
 	delete[] sumw;
@@ -932,10 +932,10 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 
 	if ((w_gap >= 0.9999*get_weight_epsilon()))// && (mymaxdiff < prev_mymaxdiff/2.0))
 	{
-		CIO::message(M_DEBUG, "*") ;
+		SG_DEBUG( "*") ;
 		if (!lp_initialized)
 		{
-			CIO::message(M_INFO, "creating LP\n") ;
+			SG_INFO( "creating LP\n") ;
 			
 			INT NUMCOLS = 2*num_kernels + 1 ;
 			double   obj[NUMCOLS];
@@ -959,11 +959,11 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 			if ( status ) {
 				char  errmsg[1024];
 				CPXgeterrorstring (env, status, errmsg);
-				CIO::message(M_ERROR, "%s", errmsg);
+				SG_ERROR( "%s", errmsg);
 			}
 			
 			// add constraint sum(w)=1 ;
-			CIO::message(M_INFO, "add the first row\n") ;
+			SG_INFO( "add the first row\n") ;
 			int initial_rmatbeg[1] ;
 			int initial_rmatind[num_kernels+1] ;
 			double initial_rmatval[num_kernels+1] ;
@@ -986,7 +986,7 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 								 initial_rhs, initial_sense, initial_rmatbeg,
 								 initial_rmatind, initial_rmatval, NULL, NULL);
 			if ( status ) {
-				CIO::message(M_ERROR, "Failed to add the first row.\n");
+				SG_ERROR( "Failed to add the first row.\n");
 			}
 			lp_initialized=true ;
 			if (C_mkl!=0.0)
@@ -1014,7 +1014,7 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-						CIO::message(M_ERROR, "Failed to add a smothness row (1).\n");
+						SG_ERROR( "Failed to add a smothness row (1).\n");
 					}
 					
 					rmatbeg[0] = 0;
@@ -1030,7 +1030,7 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-						CIO::message(M_ERROR, "Failed to add a smothness row (2).\n");
+						SG_ERROR( "Failed to add a smothness row (2).\n");
 					}
 				}
 			}
@@ -1060,13 +1060,13 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 									 rhs, sense, rmatbeg,
 									 rmatind, rmatval, NULL, NULL);
 			if ( status ) 
-				CIO::message(M_ERROR, "Failed to add the new row.\n");
+				SG_ERROR( "Failed to add the new row.\n");
 		}
 		
 		{ // optimize
 			INT status = CPXlpopt (env, lp);
 			if ( status ) 
-				CIO::message(M_ERROR, "Failed to optimize LP.\n");
+				SG_ERROR( "Failed to optimize LP.\n");
 			
 			// obtain solution
 			INT cur_numrows = CPXgetnumrows (env, lp);
@@ -1084,14 +1084,14 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 				 slack == NULL ||
 				 pi    == NULL   ) {
 				status = CPXERR_NO_MEMORY;
-				CIO::message(M_ERROR, "Could not allocate memory for solution.\n") ;
+				SG_ERROR( "Could not allocate memory for solution.\n") ;
 			}
 			INT solstat = 0 ;
 			DREAL objval = 0 ;
 			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
 			INT solution_ok = (!status) ;
 			if ( status ) {
-				CIO::message(M_ERROR, "Failed to obtain solution.\n");
+				SG_ERROR( "Failed to obtain solution.\n");
 			}
 			
 			num_active_rows=0 ;
@@ -1118,10 +1118,10 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 				// have at most max(100,num_active_rows*2) rows, if not, remove one
 				if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 				{
-					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_row,num_rows) ;
+					//SG_INFO( "-%i(%i,%i)",max_idx,start_row,num_rows) ;
 					status = CPXdelrows (env, lp, max_idx, max_idx) ;
 					if ( status ) 
-						CIO::message(M_ERROR, "Failed to remove an old row.\n");
+						SG_ERROR( "Failed to remove an old row.\n");
 				}
 
 				// set weights, store new rho and compute new w gap
@@ -1161,7 +1161,7 @@ void CSVRLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 		INT start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		SG_DEBUG("\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
 	}
 	
 	delete[] sumw;
@@ -1330,7 +1330,7 @@ void CSVRLight::reactivate_inactive_examples(INT* label,
 	  inactive2dnum=new INT[totdoc+11];
 	  for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) {
 		  if(verbosity>=2) {
-			  CIO::message(M_INFO, "%ld..",t);
+			  SG_INFO( "%ld..",t);
 		  }
 		  a_old=shrink_state->a_history[t];    
 		  for(i=0;i<totdoc;i++) {

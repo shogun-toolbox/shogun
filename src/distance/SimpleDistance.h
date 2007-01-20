@@ -35,7 +35,7 @@ template <class ST> class CSimpleDistance : public CDistance
 					(r->get_feature_class() != C_SIMPLE) ||
 					((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
 			{
-				CIO::message(M_ERROR, "train or test features not of type SIMPLE, or #features mismatch (l:%d vs. r:%d)\n",
+				SG_ERROR( "train or test features not of type SIMPLE, or #features mismatch (l:%d vs. r:%d)\n",
 						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) l)->get_num_features());
 			}
 			return true;

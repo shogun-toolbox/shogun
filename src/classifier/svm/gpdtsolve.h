@@ -24,8 +24,9 @@
  *** Copyright (C) 2004 by T. Serafini, G. Zanghirati, L. Zanni.            ***
  */
 
+#include "base/SGObject.h"
 
-class QPproblem
+class QPproblem : public CSGObject
 {
 // ----------------- Public Data ---------------
 public:

@@ -24,7 +24,7 @@ CSparseGaussianKernel::~CSparseGaussianKernel()
 	cleanup();
 }
   
-bool CSparseGaussianKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CSparseGaussianKernel::init(CFeatures* l, CFeatures* r)
 {
 	INT len=0;;
 	bool do_free=false;
@@ -32,7 +32,7 @@ bool CSparseGaussianKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 	///free sq_{r,l}hs first
 	cleanup();
 
-	CSparseKernel<DREAL>::init(l, r, do_init); 
+	CSparseKernel<DREAL>::init(l, r);
 
 	sq_lhs= new DREAL[lhs->get_num_vectors()];
 	ASSERT(sq_lhs);

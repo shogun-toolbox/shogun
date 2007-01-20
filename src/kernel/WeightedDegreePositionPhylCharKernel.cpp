@@ -67,8 +67,8 @@ bool CWeightedDegreePositionPhylCharKernel::init(CFeatures* l, CFeatures* r, boo
     INT lhs_changed = (lhs!=l) ;
     INT rhs_changed = (rhs!=r) ;
 	
-    CIO::message(M_DEBUG, "lhs_changed: %i\n", lhs_changed) ;
-    CIO::message(M_DEBUG, "rhs_changed: %i\n", rhs_changed) ;
+    SG_DEBUG( "lhs_changed: %i\n", lhs_changed) ;
+    SG_DEBUG( "rhs_changed: %i\n", rhs_changed) ;
 	
 	ASSERT(l && ((((CCharFeatures*) l)->get_alphabet()->get_alphabet()==DNA) || 
 				 (((CCharFeatures*) l)->get_alphabet()->get_alphabet()==RNA)));
@@ -92,12 +92,12 @@ bool CWeightedDegreePositionPhylCharKernel::init(CFeatures* l, CFeatures* r, boo
 		else if (opt_type==FASTBUTMEMHUNGRY)
 			tries.create(alen, false);  // still buggy
 		else {
-			sg_error(sg_err_fun,"unknown optimization type\n");
+			SG_ERROR( "unknown optimization type\n");
 		}
 
 		if ((!lhs_phyl_weights) || (lhs_phyl_weights_len != seq_length * l->get_num_vectors()))
 		{
-			CIO::message(M_DEBUG, "initializing lhs_phyl_weights\n") ;
+			SG_DEBUG( "initializing lhs_phyl_weights\n") ;
 			delete[] lhs_phyl_weights ;
 			lhs_phyl_weights = new DREAL[seq_length * l->get_num_vectors()] ;
 			for (INT i=0; i<alen*l->get_num_vectors(); i++)
@@ -109,7 +109,7 @@ bool CWeightedDegreePositionPhylCharKernel::init(CFeatures* l, CFeatures* r, boo
 	{
 		if ((!rhs_phyl_weights) || (rhs_phyl_weights_len != seq_length * r->get_num_vectors()))
 		{
-			CIO::message(M_DEBUG, "initializing rhs_phyl_weights\n") ;
+			SG_DEBUG( "initializing rhs_phyl_weights\n") ;
 			delete[] rhs_phyl_weights ;
 			rhs_phyl_weights = new DREAL[seq_length * r->get_num_vectors()] ;
 			for (INT i=0; i<seq_length * r->get_num_vectors(); i++)
@@ -118,11 +118,11 @@ bool CWeightedDegreePositionPhylCharKernel::init(CFeatures* l, CFeatures* r, boo
 		}
 	}	
 	
-    bool result=CSimpleKernel<CHAR>::init(l,r,do_init);
+    bool result=CSimpleKernel<CHAR>::init(l,r);
     initialized = false ;
     INT i;
 	
-    CIO::message(M_DEBUG, "use normalization:%d\n", (use_normalization) ? 1 : 0);
+    SG_DEBUG( "use normalization:%d\n", (use_normalization) ? 1 : 0);
 	
     if (use_normalization)
     {
@@ -356,7 +356,7 @@ void CWeightedDegreePositionPhylCharKernel::add_example_to_tree(INT idx, DREAL a
 		else if (opt_type==FASTBUTMEMHUNGRY)
 			max_s=shift[i];
 		else {
-			sg_error(sg_err_fun,"unknown optimization type\n");
+			SG_ERROR( "unknown optimization type\n");
 		}
 		
 		for (INT s=max_s; s>=0; s--)
@@ -378,7 +378,7 @@ void CWeightedDegreePositionPhylCharKernel::add_example_to_tree(INT idx, DREAL a
 
 void CWeightedDegreePositionPhylCharKernel::add_example_to_single_tree(INT idx, DREAL alpha, INT tree_num) 
 {
-	CIO::message(M_ERROR, "add_example_to_single_tree: sorry not implemented") ;
+	SG_ERROR( "add_example_to_single_tree: sorry not implemented") ;
 }
 
 DREAL CWeightedDegreePositionPhylCharKernel::compute_by_tree(INT idx)
@@ -438,19 +438,19 @@ DREAL CWeightedDegreePositionPhylCharKernel::compute_by_tree(INT idx)
 
 void CWeightedDegreePositionPhylCharKernel::compute_by_tree(INT idx, DREAL* LevelContrib)
 {
-	CIO::message(M_ERROR, "compute_by_tree: not implemented") ;
+	SG_ERROR( "compute_by_tree: not implemented") ;
 }
 
 bool CWeightedDegreePositionPhylCharKernel::set_weights(DREAL* ws, INT p_length, INT num_examples)
 {
 	if (seq_length!=p_length)
-		CIO::message(M_ERROR, "lengths do not match: seq_length=%i length=%i\n", seq_length, p_length) ;
+		SG_ERROR( "lengths do not match: seq_length=%i length=%i\n", seq_length, p_length) ;
 	if ((lhs->get_num_vectors()!=num_examples) && (rhs->get_num_vectors()!=num_examples))
-		CIO::message(M_ERROR, "num_examples do not match: lhs->get_num_vectors()=%i rhs->get_num_vectors()=%i num_examples=%i\n", lhs->get_num_vectors(), rhs->get_num_vectors(), num_examples) ;
+		SG_ERROR( "num_examples do not match: lhs->get_num_vectors()=%i rhs->get_num_vectors()=%i num_examples=%i\n", lhs->get_num_vectors(), rhs->get_num_vectors(), num_examples) ;
 	
 	if (lhs->get_num_vectors()==num_examples)
 	{
-		CIO::message(M_DEBUG, "setting lhs_phyl_weights\n") ;
+		SG_DEBUG( "setting lhs_phyl_weights\n") ;
 		delete[] lhs_phyl_weights;
 		lhs_phyl_weights=new DREAL[p_length*num_examples];
 		ASSERT(lhs_phyl_weights) ;
@@ -461,7 +461,7 @@ bool CWeightedDegreePositionPhylCharKernel::set_weights(DREAL* ws, INT p_length,
 
 	if (rhs->get_num_vectors()==num_examples)
 	{
-		CIO::message(M_DEBUG, "setting rhs_phyl_weights\n") ;
+		SG_DEBUG( "setting rhs_phyl_weights\n") ;
 		delete[] rhs_phyl_weights;
 		rhs_phyl_weights=new DREAL[p_length*num_examples];
 		ASSERT(rhs_phyl_weights) ;
@@ -478,12 +478,12 @@ bool CWeightedDegreePositionPhylCharKernel::set_weights(DREAL* ws, INT p_length,
 
 void CWeightedDegreePositionPhylCharKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor)
 {
-	CIO::message(M_ERROR, "compute_batch: not implemented") ;
+	SG_ERROR( "compute_batch: not implemented") ;
 }
 
 DREAL* CWeightedDegreePositionPhylCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas)
 {
-	CIO::message(M_ERROR, "compute_scoring: not implemented") ;
+	SG_ERROR( "compute_scoring: not implemented") ;
 	return NULL ;
 }
 

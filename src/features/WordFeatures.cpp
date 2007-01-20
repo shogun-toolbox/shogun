@@ -77,7 +77,7 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 	}
 	for (INT i=0; i<=max_val; i++)
 	  if (hist[i]>0)
-	    CIO::message(M_DEBUG, "symbol: %i  number of occurence: %i\n", i, hist[i]) ;
+	    SG_DEBUG( "symbol: %i  number of occurence: %i\n", i, hist[i]) ;
 
 	delete[] hist;
 
@@ -85,11 +85,11 @@ bool CWordFeatures::obtain_from_char_features(CCharFeatures* cf, INT start, INT 
 	max_val= (int) ceil(log((double) max_val+1)/log((double) 2));
 	num_symbols=1<<(max_val*p_order);
 
-	CIO::message(M_INFO, "max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, p_order, num_symbols);
+	SG_INFO( "max_val (bit): %d order: %d -> results in num_symbols: %d\n", max_val, p_order, num_symbols);
 
 	if (num_symbols>(1<<(sizeof(WORD)*8)))
 	{
-      sg_error(sg_err_fun,"symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
+      SG_ERROR( "symbol does not fit into datatype \"%c\" (%d)\n", (char) max_val, (int) max_val);
 		return false;
 	}
 
@@ -200,9 +200,9 @@ bool CWordFeatures::save(CHAR* fname)
     for (INT i=0; i< (INT) num_vectors && f.is_ok(); i++)
 	{
 		if (!(i % (num_vectors/10+1)))
-			CIO::message(M_MESSAGEONLY, "%02d%%.", (int) (100.0*i/num_vectors));
+			SG_PRINT( "%02d%%.", (int) (100.0*i/num_vectors));
 		else if (!(i % (num_vectors/200+1)))
-			CIO::message(M_MESSAGEONLY, ".");
+			SG_PRINT( ".");
 
 		fv=get_feature_vector(i, len, free);
 		f.save_word_data(fv, len);
@@ -210,7 +210,7 @@ bool CWordFeatures::save(CHAR* fname)
 	}
 
 	if (f.is_ok())
-		CIO::message(M_INFO, "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(WORD));
+		SG_INFO( "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(WORD));
 
     return true;
 }

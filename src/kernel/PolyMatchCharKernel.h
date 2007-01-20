@@ -20,7 +20,7 @@ class CPolyMatchCharKernel: public CSimpleKernel<CHAR>
   CPolyMatchCharKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);
   ~CPolyMatchCharKernel() ;
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data

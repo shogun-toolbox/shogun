@@ -24,9 +24,9 @@ CSparseNormSquaredKernel::~CSparseNormSquaredKernel()
 	cleanup();
 }
   
-bool CSparseNormSquaredKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CSparseNormSquaredKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSparseKernel<DREAL>::init(l, r, do_init); 
+	CSparseKernel<DREAL>::init(l, r);
 
 	return true;
 }

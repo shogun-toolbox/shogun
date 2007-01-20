@@ -25,7 +25,7 @@ class CPolyKernel: public CSimpleKernel<DREAL>
 
   ~CPolyKernel();
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data

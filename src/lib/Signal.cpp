@@ -35,7 +35,7 @@ CSignal::CSignal()
 CSignal::~CSignal()
 {
 	if (!unset_handler())
-		CIO::message(M_ERROR, "error uninitalizing signal handler\n");
+		SG_SERROR("error uninitalizing signal handler\n");
 }
 
 void CSignal::handler(int signal)
@@ -43,26 +43,26 @@ void CSignal::handler(int signal)
 #ifdef HAVE_MATLAB
 	if (signal == SIGINT)
 	{
-		CIO::message(M_MESSAGEONLY, "\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
+		SG_SPRINT("\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
 		char answer=fgetc(stdin);
 
 		if (answer == 'I')
 		{
 			unset_handler();
-			CIO::message(M_ERROR, "sg stopped by SIGINT\n");
+			SG_SERROR("sg stopped by SIGINT\n");
 		}
 		else if (answer == 'P')
 			cancel_computation=true;
 		else
-			CIO::message(M_MESSAGEONLY, "\n");
+			SG_SPRINT("\n");
 	}
 	else if (signal == SIGURG)
 		cancel_computation=true;
 	else
-		CIO::message(M_ERROR, "unknown signal %d received\n", signal);
+		SG_SERROR("unknown signal %d received\n", signal);
 #else
-	CIO::message(M_MESSAGEONLY, "\n");
-	CIO::message(M_ERROR, "sg stopped by SIGINT\n");
+	SG_SPRINT("\n");
+	SG_SERROR("sg stopped by SIGINT\n");
 	unset_handler();
 	exit(0);
 #endif
@@ -111,7 +111,7 @@ bool CSignal::unset_handler()
 		{
 			if (sigaction(signals[i], &oldsigaction[i], NULL))
 			{
-				CIO::message(M_ERROR, "error uninitalizing signal handler for signal %d\n", signals[i]);
+				SG_SERROR("error uninitalizing signal handler for signal %d\n", signals[i]);
 				result=false;
 			}
 		}

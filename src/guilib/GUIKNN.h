@@ -15,12 +15,13 @@
 
 #ifndef HAVE_SWIG
 
+#include "base/SGObject.h"
 #include "classifier/KNN.h"
 #include "features/Labels.h"
 
 class CGUI;
 
-class CGUIKNN
+class CGUIKNN : public CSGObject
 {
 
 public:

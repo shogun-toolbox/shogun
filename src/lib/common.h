@@ -98,7 +98,7 @@ typedef LONGREAL* P_LONGREAL;
 
 typedef LONG KERNELCACHE_IDX;
 
-/// The io libs output [DEBUG] etc in front of every CIO::message
+/// The io libs output [DEBUG] etc in front of every message
 /// 'higher' messages filter output depending on the loglevel, i.e. CRITICAL messages
 /// will print all M_CRITICAL TO M_EMERGENCY messages to
 enum EMessageType

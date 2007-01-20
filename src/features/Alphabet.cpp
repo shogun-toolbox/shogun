@@ -44,7 +44,7 @@ CAlphabet::CAlphabet(CHAR* al, INT len)
 	else if (len>=(INT) strlen("IUPAC_AMINO_ACID") && !strncmp(al, "IUPAC_AMINO_ACID", strlen("IUPAC_AMINO_ACID")))
 		alpha = IUPAC_AMINO_ACID;
 	else {
-      sg_error(sg_err_fun,"unknown alphabet %s\n", al);
+      SG_ERROR( "unknown alphabet %s\n", al);
    }
 	
 	set_alphabet(alpha);
@@ -109,7 +109,7 @@ bool CAlphabet::set_alphabet(E_ALPHABET alpha)
 	init_map_table();
     clear_histogram();
 
-	CIO::message(M_DEBUG, "initialised alphabet %s\n", get_alphabet_name(alphabet));
+	SG_DEBUG( "initialised alphabet %s\n", get_alphabet_name(alphabet));
 
 	return result;
 }
@@ -417,7 +417,7 @@ void CAlphabet::print_histogram()
 	for (INT i=0; i<(INT) (1 <<(sizeof(BYTE)*8)); i++)
 	{
 		if (histogram[i])
-			CIO::message(M_MESSAGEONLY, "hist[%d]=%lld\n", i, histogram[i]);
+			SG_PRINT( "hist[%d]=%lld\n", i, histogram[i]);
 	}
 }
 
@@ -437,7 +437,7 @@ bool CAlphabet::check_alphabet(bool print_error)
 	if (!result && print_error)
 	{
 		print_histogram();
-      sg_error(sg_err_fun,"ALPHABET does not contain all symbols in histogram\n");
+      SG_ERROR( "ALPHABET does not contain all symbols in histogram\n");
 	}
 
 	return result;
@@ -451,7 +451,7 @@ bool CAlphabet::check_alphabet_size(bool print_error)
 		{
 			print_histogram();
 			fprintf(stderr, "get_num_bits_in_histogram()=%i > get_num_bits()=%i\n", get_num_bits_in_histogram(), get_num_bits()) ;
-         sg_error(sg_err_fun,"ALPHABET too small to contain all symbols in histogram\n");
+         SG_ERROR( "ALPHABET too small to contain all symbols in histogram\n");
 		}
 		return false;
 	}

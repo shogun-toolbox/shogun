@@ -17,10 +17,10 @@
 CHammingWordKernel::CHammingWordKernel(LONG size, DREAL w, bool sign)
 	: CSimpleKernel<WORD>(size), width(w), use_sign(sign)
 {
-	CIO::message(M_DEBUG, "CHammingWordKernel with cache size: %d width: %f sign: %d created\n", size, width, (sign) ? 1 : 0);
+	SG_DEBUG( "CHammingWordKernel with cache size: %d width: %f sign: %d created\n", size, width, (sign) ? 1 : 0);
 	dictionary_size= 1<<(sizeof(WORD)*8);
 	dictionary_weights = new DREAL[dictionary_size];
-	CIO::message(M_DEBUG, "using dictionary of %d bytes\n", dictionary_size);
+	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 }
 
 CHammingWordKernel::~CHammingWordKernel() 
@@ -30,9 +30,9 @@ CHammingWordKernel::~CHammingWordKernel()
 	delete[] dictionary_weights;
 }
   
-bool CHammingWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CHammingWordKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<WORD>::init(l,r,do_init);
+	bool result=CSimpleKernel<WORD>::init(l,r);
 	return result;
 }
 

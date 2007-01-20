@@ -11,13 +11,10 @@
 #ifndef _CALPHABET__H__
 #define _CALPHABET__H__
 
+#include "base/SGObject.h"
 #include "lib/common.h"
-#include <cstring>
-using namespace std;
 
-#include "exceptions/AlphabetException.h"
-
-class CAlphabet
+class CAlphabet : public CSGObject
 {
 	public:
 		CAlphabet(CHAR* alpha, INT len);

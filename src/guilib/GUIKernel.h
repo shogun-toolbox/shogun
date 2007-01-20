@@ -15,11 +15,12 @@
 #include "lib/config.h"
 
 #ifndef HAVE_SWIG
+#include "base/SGObject.h"
 #include "kernel/Kernel.h"
 
 class CGUI ;
 
-class CGUIKernel
+class CGUIKernel : public CSGObject
 {
  public:
 	CGUIKernel(CGUI*);

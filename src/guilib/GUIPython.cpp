@@ -104,7 +104,7 @@ PyObject* CGUIPython::py_get_svm(PyObject* self, PyObject* args)
 		PyArrayObject* py_sv_idx=NA_NewArray(NULL, tInt32, 1, svm->get_num_support_vectors());
 		Float64 b=svm->get_bias();
 
-		CIO::message(M_DEBUG,"num_sv: %d\n", svm->get_num_support_vectors());
+		SG_DEBUG("num_sv: %d\n", svm->get_num_support_vectors());
 
 		if (py_alphas && py_sv_idx)
 		{
@@ -135,7 +135,7 @@ PyObject* CGUIPython::py_get_kernel_matrix(PyObject* self, PyObject* args)
 	CKernel* k = gui->guikernel.get_kernel();
 
 	if (!k)
-		CIO::message(M_ERROR, "no kernel set\n");
+		SG_ERROR( "no kernel set\n");
 	else
 		result=k->get_kernel_matrix_real(m,n,NULL);
 
@@ -186,7 +186,7 @@ PyObject* CGUIPython::py_set_subkernels_weights(PyObject* self, PyObject* args)
 					return Py_None;
 				}
 				else
-					CIO::message(M_ERROR, "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
+					SG_ERROR( "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
 
 			}
 			else if (k->get_kernel_type() == K_WEIGHTEDDEGREEPOS)
@@ -206,7 +206,7 @@ PyObject* CGUIPython::py_set_subkernels_weights(PyObject* self, PyObject* args)
 					return Py_None;
 				}
 				else
-					CIO::message(M_ERROR, "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
+					SG_ERROR( "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
 			}
 			else
 			{
@@ -218,13 +218,13 @@ PyObject* CGUIPython::py_set_subkernels_weights(PyObject* self, PyObject* args)
 					return Py_None;
 				}
 				else
-					CIO::message(M_ERROR, "dimension mismatch (should be 1 x num_subkernels)\n") ;
+					SG_ERROR( "dimension mismatch (should be 1 x num_subkernels)\n") ;
 			}
 
 		}
 	}
 	else
-		CIO::message(M_ERROR, "expected double array");
+		SG_ERROR( "expected double array");
 
 	return NULL;
 }
@@ -293,10 +293,10 @@ PyObject* CGUIPython::py_get_subkernel_weights(PyObject* self, PyObject* args)
 			return (PyObject*) py_weights;
 		}
 		else
-			CIO::message(M_ERROR, "kernel does not have any subkernel weights\n");
+			SG_ERROR( "kernel does not have any subkernel weights\n");
 	}
 	else
-		CIO::message(M_ERROR, "no kernel set\n");
+		SG_ERROR( "no kernel set\n");
 
 	return NULL;
 }
@@ -323,7 +323,7 @@ PyObject* CGUIPython::py_get_features(PyObject* self, PyObject* args)
 			f=gui->guifeatures.get_test_features();
 		}
 		else
-			CIO::message(M_ERROR, "target is TRAIN|TEST");
+			SG_ERROR( "target is TRAIN|TEST");
 
 		if (f)
 		{
@@ -359,13 +359,13 @@ PyObject* CGUIPython::py_get_features(PyObject* self, PyObject* args)
 						case F_CHAR:
 						case F_BYTE:
 						default:
-							CIO::message(M_ERROR, "not implemented\n");
+							SG_ERROR( "not implemented\n");
 					}
 					break;
 				case C_SPARSE:
 				case C_STRING:
 				default:
-					CIO::message(M_ERROR, "not implemented\n");
+					SG_ERROR( "not implemented\n");
 			}
 		}
 
@@ -390,7 +390,7 @@ PyObject* CGUIPython::py_get_labels(PyObject* self, PyObject* args)
 			labels=gui->guilabels.get_test_labels();
 		}
 		else
-			CIO::message(M_ERROR, "target is TRAIN|TEST");
+			SG_ERROR( "target is TRAIN|TEST");
 
 		Float64 *result=NULL;
 		int len=0;
@@ -489,7 +489,7 @@ PyObject* CGUIPython::py_set_svm(PyObject* self, PyObject* args)
 				}
 			}
 			else
-				CIO::message(M_ERROR, "no svm object available\n") ;
+				SG_ERROR( "no svm object available\n") ;
 
 			Py_XDECREF(py_alphas);
 			Py_XDECREF(py_sv_idx);
@@ -544,7 +544,7 @@ PyObject* CGUIPython::py_set_custom_kernel(PyObject* self, PyObject* args)
 				CCustomKernel* k=(CCustomKernel*)gui->guikernel.get_kernel();
 				if  (k && k->get_kernel_type() == K_COMBINED)
 				{
-					CIO::message(M_DEBUG, "identified combined kernel\n") ;
+					SG_DEBUG( "identified combined kernel\n") ;
 					k = (CCustomKernel*)((CCombinedKernel*)k)->get_last_kernel() ;
 				}
 
@@ -575,16 +575,16 @@ PyObject* CGUIPython::py_set_custom_kernel(PyObject* self, PyObject* args)
 						}
 					}
 					else
-						CIO::message(M_ERROR,"not defined / general error\n");
+						SG_ERROR("not defined / general error\n");
 				}
 				else
-					CIO::message(M_ERROR, "not a custom kernel\n") ;
+					SG_ERROR( "not a custom kernel\n") ;
 			}
 			else
-				CIO::message(M_ERROR,"kernel matrix must by given as double matrix\n");
+				SG_ERROR("kernel matrix must by given as double matrix\n");
 		}
 		else
-			CIO::message(M_ERROR, "usage is sg('set_custom_kernel',[kernelmatrix, is_upperdiag])");
+			SG_ERROR( "usage is sg('set_custom_kernel',[kernelmatrix, is_upperdiag])");
 	}
 	return NULL;
 }
@@ -620,13 +620,13 @@ PyObject* CGUIPython::py_set_features(PyObject* self, PyObject* args)
 				}
 			}
 			else
-				CIO::message(M_ERROR, "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
+				SG_ERROR( "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
 		}
 		else
-			CIO::message(M_ERROR, "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
+			SG_ERROR( "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
 	}
 	else
-		CIO::message(M_ERROR, "set_features: Invalid parameters.\n");
+		SG_ERROR( "set_features: Invalid parameters.\n");
 
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -659,10 +659,10 @@ PyObject* CGUIPython::py_add_features(PyObject* self, PyObject* args)
 				}
 			}
 			else
-				CIO::message(M_ERROR, "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
+				SG_ERROR( "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
 		}
 		else
-			CIO::message(M_ERROR, "set_features: Invalid parameters.\n");
+			SG_ERROR( "set_features: Invalid parameters.\n");
 
 	}
 
@@ -690,13 +690,13 @@ PyObject* CGUIPython::py_set_labels(PyObject* self, PyObject* args)
 					gui->guilabels.set_test_labels(labels);
 			}
 			else
-				CIO::message(M_ERROR, "usage is sg('set_labels', 'TRAIN|TEST', labels)");
+				SG_ERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
 		}
 		else
-			CIO::message(M_ERROR, "usage is sg('set_labels', 'TRAIN|TEST', labels)");
+			SG_ERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
 	}
 	else
-		CIO::message(M_ERROR, "set_labels: Invalid parameters.\n");
+		SG_ERROR( "set_labels: Invalid parameters.\n");
 
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -769,7 +769,7 @@ PyObject* CGUIPython::py_svm_classify_example(PyObject* self, PyObject* args)
 	{
 		DREAL result;
 		if (!gui->guisvm.classify_example(idx, result))
-			CIO::message(M_ERROR, "svm_classify_example failed\n") ;
+			SG_ERROR( "svm_classify_example failed\n") ;
 		else
 			return PyFloat_FromDouble(result);
 	}
@@ -816,19 +816,19 @@ PyObject* CGUIPython::py_test(PyObject* self, PyObject* args)
 				if (feat)
 				{
 					for (int i=0; i<num; i++)
-						CIO::message(M_MESSAGEONLY, "%f\n", feat[i]);
+						SG_PRINT( "%f\n", feat[i]);
 				}
 				else
-					CIO::message(M_ERROR,"empty feats ??\n");
+					SG_ERROR("empty feats ??\n");
 			}
 			else
-				CIO::message(M_ERROR, "py_test: arrays must have 1 dimension.\n");
+				SG_ERROR( "py_test: arrays must have 1 dimension.\n");
 		}
 		else
-			CIO::message(M_ERROR, "py_test: error converting array inputs.\n");
+			SG_ERROR( "py_test: error converting array inputs.\n");
 	}
 	else
-		CIO::message(M_ERROR, "py_test: Invalid parameters.\n");
+		SG_ERROR( "py_test: Invalid parameters.\n");
 
 	Py_XDECREF(py_afeat);
 	Py_INCREF(Py_None);
@@ -858,7 +858,7 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 
 	if (!NA_NumArrayCheck(arg) && !NA_NDArrayCheck(arg))
 	{
-		CIO::message(M_ERROR, "no numpy type\n");
+		SG_ERROR( "no numpy type\n");
 		return NULL;
 	}
 
@@ -868,7 +868,7 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 	if (NA_NDArrayCheck(arg) && PyArray(arg)->descr->type_num == PyArray_NOTYPE)
 		typeno=tUInt8;
 
-	CIO::message(M_DEBUG,"%d (%d) vs. %d : tInt8(%d),tUInt8(%d),tUInt32(%d),tInt32(%d)\n", typeno, PyArray_NOTYPE, NA_NumarrayType(arg), tInt8, tUInt8,tUInt32,tInt32);
+	SG_DEBUG("%d (%d) vs. %d : tInt8(%d),tUInt8(%d),tUInt32(%d),tInt32(%d)\n", typeno, PyArray_NOTYPE, NA_NumarrayType(arg), tInt8, tUInt8,tUInt32,tInt32);
 	switch (typeno)
 	{
 		case tInt8:
@@ -882,7 +882,7 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 					int num_vec=py_afeat->dimensions[0];
 					int num_feat=0;
 					//int num_feat=PyArray(py_afeat)->itemsize;
-					CIO::message(M_DEBUG, "vec: %d dim:%d\n", num_vec, num_feat);
+					SG_DEBUG( "vec: %d dim:%d\n", num_vec, num_feat);
 
 					if (feat)
 					{
@@ -900,10 +900,10 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 							((CCharFeatures*) features)->set_feature_matrix(fm, num_feat, num_vec);
 						}
 						else
-							CIO::message(M_ERROR, "please specify alphabet!\n");
+							SG_ERROR( "please specify alphabet!\n");
 					}
                     else
-                        CIO::message(M_ERROR,"empty feats ??\n");
+                        SG_ERROR("empty feats ??\n");
                 }
             }
 			else
@@ -928,10 +928,10 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
                         ((CCharFeatures*) features)->set_feature_matrix(fm, num_feat, num_vec);
                     }
                     else
-                        CIO::message(M_ERROR,"empty feats ??\n");
+                        SG_ERROR("empty feats ??\n");
                 }
                 else
-                    CIO::message(M_ERROR, "set_features: arrays must have 2 dimension.\n");
+                    SG_ERROR( "set_features: arrays must have 2 dimension.\n");
             }
 			break;
 		case tFloat64:
@@ -955,13 +955,13 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 					((CRealFeatures*) features)->set_feature_matrix(fm, num_feat, num_vec);
 				}
 				else
-					CIO::message(M_ERROR,"empty feats ??\n");
+					SG_ERROR("empty feats ??\n");
 			}
 			else
-				CIO::message(M_ERROR, "set_features: arrays must have 2 dimension.\n");
+				SG_ERROR( "set_features: arrays must have 2 dimension.\n");
 			break;
 		default:
-			CIO::message(M_ERROR, "Unknown numpy type\n");
+			SG_ERROR( "Unknown numpy type\n");
 	};
 
 	Py_XDECREF(py_afeat);
@@ -980,7 +980,7 @@ CLabels* CGUIPython::set_labels(PyObject* arg)
 
 		for (int i=0; i<labels->get_num_labels(); i++)
 			if (!labels->set_label(i, lab[i]))
-				CIO::message(M_ERROR, "weirdo ! %d %d\n", labels->get_num_labels(), i);
+				SG_ERROR( "weirdo ! %d %d\n", labels->get_num_labels(), i);
 	}
 	Py_XDECREF(py_labels);
 	return labels;

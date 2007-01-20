@@ -50,7 +50,7 @@ bool CPluginEstimate::train(CWordFeatures* features, CLabels* labels, DREAL pos_
 			neg_indizes[neg_idx++]=i;
 	}
 
-	CIO::message(M_INFO, "training using pseudos %f and %f\n", pos_pseudo_count, neg_pseudo_count);
+	SG_INFO( "training using pseudos %f and %f\n", pos_pseudo_count, neg_pseudo_count);
 	pos_model->train(pos_indizes, pos_idx, pos_pseudo_count);
 	neg_model->train(neg_indizes, neg_idx, neg_pseudo_count);
 
@@ -67,7 +67,7 @@ DREAL* CPluginEstimate::test()
 
 	if ((!pos_model) || (!neg_model))
 	  {
-       sg_error(sg_err_fun,"model(s) not assigned\n");
+       SG_ERROR( "model(s) not assigned\n");
 	    return NULL ;
 	  } ;
 
@@ -106,7 +106,7 @@ DREAL CPluginEstimate::classify_example(INT idx)
 
 	if ((!pos_model) || (!neg_model))
 	  {
-       sg_error(sg_err_fun,"model(s) not assigned\n");
+       SG_ERROR( "model(s) not assigned\n");
 	    return NAN;
 	  } ;
 	  

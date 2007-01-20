@@ -12,11 +12,12 @@
 #define _ARRAY3_H_
 
 #include "lib/common.h"
+#include "base/SGObject.h"
 #include "lib/Array.h"
 
 template <class T> class CArray3;
 
-template <class T> class CArray3: CArray<T>
+template <class T> class CArray3: public CArray<T>
 {
 public:
 
@@ -172,7 +173,7 @@ CArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
 
 	void display_size() const
 	{
-		CIO::message(M_MESSAGEONLY, "3d-Array of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size);
+		CArray<T>::SG_PRINT( "3d-Array of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size);
 	}
 
 protected:

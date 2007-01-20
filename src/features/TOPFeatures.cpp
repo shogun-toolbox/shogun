@@ -62,7 +62,7 @@ void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 	compute_relevant_indizes(n, &neg_relevant_indizes);
 	num_features=compute_num_features();
 
-	CIO::message(M_DEBUG, "pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i] -> %i features\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features) ;
+	SG_DEBUG( "pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i] -> %i features\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M(),num_features) ;
 }
 
 DREAL* CTOPFeatures::compute_feature_vector(INT num, INT &len, DREAL* target)
@@ -173,28 +173,28 @@ DREAL* CTOPFeatures::set_feature_matrix()
 	num_features=get_num_features();
 
 	num_vectors=pos->get_observations()->get_num_vectors();
-	CIO::message(M_INFO, "allocating top feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
+	SG_INFO( "allocating top feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	delete[] feature_matrix;
 	feature_matrix=new DREAL[num_features*num_vectors];
 	if (!feature_matrix)
 	{
-      sg_error(sg_err_fun,"allocation not successful!");
+      SG_ERROR( "allocation not successful!");
 		return NULL ;
 	} ;
 
-	CIO::message(M_INFO, "calculating top feature matrix\n");
+	SG_INFO( "calculating top feature matrix\n");
 
 	for (INT x=0; x<num_vectors; x++)
 	{
 		if (!(x % (num_vectors/10+1)))
-			CIO::message(M_MESSAGEONLY, "%02d%%.", (int) (100.0*x/num_vectors));
+			SG_PRINT( "%02d%%.", (int) (100.0*x/num_vectors));
 		else if (!(x % (num_vectors/200+1)))
-			CIO::message(M_MESSAGEONLY, ".");
+			SG_PRINT( ".");
 
 		compute_feature_vector(&feature_matrix[x*num_features], x, len);
 	}
 
-	CIO::message(M_MESSAGEONLY, ".done.\n");
+	SG_PRINT( ".done.\n");
 
 	num_vectors=get_num_vectors() ;
 	num_features=get_num_features() ;

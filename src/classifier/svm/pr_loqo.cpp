@@ -41,7 +41,7 @@ extern "C" {
 
 void nrerror(CHAR error_text[])
 {
- CIO::message(M_WARN, "terminating optimizer - %s\n", error_text);
+	SG_SWARNING("terminating optimizer - %s\n", error_text);
  // exit(1); 
 }
 
@@ -79,7 +79,7 @@ bool choldc(double* a, int n, double* p)
 	}
 
 	if (result>0)
-		CIO::message(M_WARN, "Choldc failed, matrix not positive definite\n");
+		SG_SWARNING("Choldc failed, matrix not positive definite\n");
 
 	delete[] a2;
 	
@@ -451,10 +451,10 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
 
   /* the main loop */
   if (verb >= STATUS) {
-   CIO::message(M_DEBUG, "counter | pri_inf  | dual_inf  | pri_obj   | dual_obj  | ");
-   CIO::message(M_DEBUG, "sigfig | alpha  | nu \n");
-   CIO::message(M_DEBUG, "-------------------------------------------------------");
-   CIO::message(M_DEBUG, "---------------------------\n");
+	  SG_SDEBUG("counter | pri_inf  | dual_inf  | pri_obj   | dual_obj  | ");
+	  SG_SDEBUG("sigfig | alpha  | nu \n");
+	  SG_SDEBUG("-------------------------------------------------------");
+	  SG_SDEBUG("---------------------------\n");
   }
   
   while (status == STILL_RUNNING) {
@@ -532,7 +532,7 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
 
     /* generate report */
     if ((verb >= FLOOD) | ((verb == STATUS) & (status != 0)))
-     CIO::message(M_DEBUG, "%7i | %.2e | %.2e | % .2e | % .2e | %6.3f | %.4f | %.2e\n",
+     SG_SDEBUG("%7i | %.2e | %.2e | % .2e | % .2e | %6.3f | %.4f | %.2e\n",
 	     counter, primal_inf, dual_inf, primal_obj, dual_obj,
 	     sigfig, alfa, mu);
 
@@ -632,8 +632,8 @@ int pr_loqo(int n, int m, double c[], double h_x[], double a[], double b[],
     }
   }
   if ((status == 1) && (verb >= STATUS)) {
-   CIO::message(M_DEBUG, "----------------------------------------------------------------------------------\n");
-   CIO::message(M_DEBUG, "optimization converged\n");
+	  SG_SDEBUG("----------------------------------------------------------------------------------\n");
+	  SG_SDEBUG("optimization converged\n");
   }
   
   /* free memory */

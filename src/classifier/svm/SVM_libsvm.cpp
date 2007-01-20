@@ -396,7 +396,7 @@ void Solver::Solve(int p_l, const QMatrix& p_Q, const double *p_b, const schar *
 		{
 			counter = min(l,1000);
 			if(shrinking) do_shrinking();
-			CIO::message(M_INFO, ".");
+			SG_SINFO(".");
 		}
 
 		int i,j;
@@ -406,7 +406,7 @@ void Solver::Solve(int p_l, const QMatrix& p_Q, const double *p_b, const schar *
 			reconstruct_gradient();
 			// reset active set size and check
 			active_size = l;
-			CIO::message(M_INFO, "*");
+			SG_SINFO("*");
 			if(select_working_set(i,j)!=0)
 				break;
 			else
@@ -578,7 +578,7 @@ void Solver::Solve(int p_l, const QMatrix& p_Q, const double *p_b, const schar *
 	p_si->upper_bound_p = Cp;
 	p_si->upper_bound_n = Cn;
 
-	CIO::message(M_INFO, "\noptimization finished, #iter = %d\n",iter);
+	SG_SINFO("\noptimization finished, #iter = %d\n",iter);
 
 	delete[] b;
 	delete[] y;
@@ -1338,7 +1338,7 @@ static void solve_c_svc(
 		sum_alpha += alpha[i];
 
 	if (Cp==Cn)
-		CIO::message(M_INFO, "nu = %f\n", sum_alpha/(param->C*prob->l));
+		SG_SINFO("nu = %f\n", sum_alpha/(param->C*prob->l));
 
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i];
@@ -1388,7 +1388,7 @@ static void solve_nu_svc(
 		alpha, 1.0, 1.0, param->eps, si,  param->shrinking);
 	double r = si->r;
 
-	CIO::message(M_INFO, "C = %f\n",1/r);
+	SG_SINFO("C = %f\n",1/r);
 
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i]/r;
@@ -1465,7 +1465,7 @@ static void solve_epsilon_svr(
 		alpha[i] = alpha2[i] - alpha2[i+l];
 		sum_alpha += fabs(alpha[i]);
 	}
-	CIO::message(M_INFO, "nu = %f\n",sum_alpha/(param->C*l));
+	SG_SINFO("nu = %f\n",sum_alpha/(param->C*l));
 
 	delete[] alpha2;
 	delete[] linear_term;
@@ -1500,7 +1500,7 @@ static void solve_nu_svr(
 	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
 		alpha2, C, C, param->eps, si, param->shrinking);
 
-	CIO::message(M_INFO, "epsilon = %f\n",-si->r);
+	SG_SINFO("epsilon = %f\n",-si->r);
 
 	for(i=0;i<l;i++)
 		alpha[i] = alpha2[i] - alpha2[i+l];
@@ -1545,7 +1545,7 @@ decision_function svm_train_one(
 			break;
 	}
 
-	CIO::message(M_INFO, "obj = %.16f, rho = %.16f\n",si.obj,si.rho);
+	SG_SINFO("obj = %.16f, rho = %.16f\n",si.obj,si.rho);
 
 	// output SVs
 
@@ -1574,7 +1574,7 @@ decision_function svm_train_one(
 		}
 	}
 
-	CIO::message(M_INFO, "nSV = %d, nBSV = %d\n",nSV,nBSV);
+	SG_SINFO("nSV = %d, nBSV = %d\n",nSV,nBSV);
 
 	decision_function f;
 	f.alpha = alpha;
@@ -1656,7 +1656,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 	   param->svm_type == EPSILON_SVR ||
 	   param->svm_type == NU_SVR)
 	{
-		CIO::message(M_INFO,"training one class svm\n");
+		SG_SINFO("training one class svm\n");
 
 		// regression or one-class-svm
 		model->nr_class = 2;
@@ -1792,7 +1792,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 			nz_count[i] = nSV;
 		}
 		
-		CIO::message(M_INFO, "Total nSV = %d\n",total_sv);
+		SG_SINFO("Total nSV = %d\n",total_sv);
 
 		model->l = total_sv;
 		model->SV = Malloc(svm_node *,total_sv);

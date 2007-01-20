@@ -1,6 +1,6 @@
-#include "exceptions/ClassifierException.h"
+#include "lib/ShogunException.h"
 
-ClassifierException::ClassifierException(const char *fmt, ... )
+ShogunException::ShogunException(const char *fmt, ... )
 {
    val = new char[4096];
    char str[4096];

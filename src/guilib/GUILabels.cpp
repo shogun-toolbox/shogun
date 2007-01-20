@@ -48,7 +48,7 @@ bool CGUILabels::load(CHAR* param)
 		}
 		else
 		{
-			CIO::message(M_ERROR, "see help for parameters\n");
+			SG_ERROR( "see help for parameters\n");
 			return false;
 		}
 
@@ -62,11 +62,11 @@ bool CGUILabels::load(CHAR* param)
 			if (label)
 				return true;
 			else
-				CIO::message(M_ERROR, "loading labels failed\n");
+				SG_ERROR( "loading labels failed\n");
 		}
 	}
 	else
-		CIO::message(M_ERROR, "see help for params\n");
+		SG_ERROR( "see help for params\n");
 
 	return false;
 }

@@ -15,6 +15,8 @@
 
 #if defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
 
+#include "base/SGObject.h"
+
 extern "C" {
 #include <Python.h>
 }
@@ -22,7 +24,7 @@ extern "C" {
 #include "features/Features.h"
 #include "features/Labels.h"
 
-class CGUIPython
+class CGUIPython : public CSGObject
 {
 public:
 	CGUIPython();

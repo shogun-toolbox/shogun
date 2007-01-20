@@ -17,10 +17,10 @@
 class CWordMatchKernel: public CSimpleKernel<WORD>
 {
  public:
-  CWordMatchKernel(LONG size, INT degree);
+  CWordMatchKernel(LONG size, INT d, bool do_rescale=true, DREAL scale=1.0);
   ~CWordMatchKernel() ;
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -44,6 +44,9 @@ class CWordMatchKernel: public CSimpleKernel<WORD>
   
  protected:
   double scale ;
+  bool do_rescale ;
+  bool initialized;
+
   INT degree;
 };
 

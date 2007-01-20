@@ -38,7 +38,7 @@ bool CLibSVM::train()
 
 	ASSERT(get_labels() && get_labels()->get_num_labels());
 	problem.l=get_labels()->get_num_labels();
-	CIO::message(M_INFO, "%d trainlabels\n", problem.l);
+	SG_INFO( "%d trainlabels\n", problem.l);
 
 	problem.y=new double[problem.l];
 	problem.x=new struct svm_node*[problem.l];
@@ -103,7 +103,7 @@ bool CLibSVM::train()
 
 		if (problem.y[0]>=0)
 		{
-			CIO::message(M_WARN, "inverting libsvm's decision function as first label is >= 0\n");
+			SG_WARNING( "inverting libsvm's decision function as first label is >= 0\n");
 			set_bias(-model->rho[0]);
 
 			for (int i=0; i<num_sv; i++)

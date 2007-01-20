@@ -67,8 +67,8 @@ bool CCPLEXSVM::train()
 			}
 		}
 		compute_objective();
-		CIO::message(M_INFO, "obj = %.16f, rho = %.16f\n",get_objective(),get_bias());
-		CIO::message(M_INFO, "Number of SV: %ld\n", get_num_support_vectors());
+		SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),get_bias());
+		SG_INFO( "Number of SV: %ld\n", get_num_support_vectors());
 
 		delete[] alphas;
 		delete[] lb;
@@ -80,7 +80,7 @@ bool CCPLEXSVM::train()
 	}
 
 	if (!result)
-		CIO::message(M_ERROR, "cplex svm failed");
+		SG_ERROR( "cplex svm failed");
 
 	return result;
 }

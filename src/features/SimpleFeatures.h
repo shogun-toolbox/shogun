@@ -90,7 +90,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	  } 
 	  else
 	  {
-		  CIO::message(M_DEBUG, "compute feature!!!\n") ;
+		  SG_DEBUG( "compute feature!!!\n") ;
 		  
 		  ST* feat=NULL;
 		  free=false;
@@ -131,7 +131,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 			  delete[] tmp_feat_after;
 
 			  len=tmp_len ;
-			  CIO::message(M_DEBUG, "len: %d len2: %d\n", len, num_features);
+			  SG_DEBUG( "len: %d len2: %d\n", len, num_features);
 		  }
 		  return feat ;
 	  }
@@ -194,9 +194,9 @@ template <class ST> class CSimpleFeatures: public CFeatures
   }
 
   /// preprocess the feature_matrix
-  virtual bool preproc_feature_matrix(bool force_preprocessing=false)
+  virtual bool apply_preproc(bool force_preprocessing=false)
   {
-	CIO::message(M_DEBUG, "force: %d\n", force_preprocessing);
+	SG_DEBUG( "force: %d\n", force_preprocessing);
 
 	if ( feature_matrix && get_num_preproc())
 	{
@@ -207,7 +207,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 			{
 				set_preprocessed(i);
 
-				CIO::message(M_INFO, "preprocessing using preproc %s\n", get_preproc(i)->get_name());
+				SG_INFO( "preprocessing using preproc %s\n", get_preproc(i)->get_name());
 				if (((CSimplePreProc<ST>*) get_preproc(i))->apply_to_feature_matrix(this) == NULL)
 					return false;
 			}
@@ -217,18 +217,11 @@ template <class ST> class CSimpleFeatures: public CFeatures
 	else
 	{
 		if (!feature_matrix)
-#ifdef HAVE_PYTHON
-         throw FeatureException("no feature matrix\n");
-#else
-			CIO::message(M_ERROR, "no feature matrix\n");
-#endif
+			SG_ERROR( "no feature matrix\n");
 
 		if (!get_num_preproc())
-#ifdef HAVE_PYTHON
-         throw FeatureException("no preprocessors available\n");
-#else
-			CIO::message(M_ERROR, "no preprocessors available\n");
-#endif
+			SG_ERROR( "no preprocessors available\n");
+
 		return false;
 	}
   }

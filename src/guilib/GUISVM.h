@@ -16,11 +16,12 @@
 
 #ifndef HAVE_SWIG
 
+#include "base/SGObject.h"
 #include "classifier/svm/SVM.h"
 
 class CGUI ;
 
-class CGUISVM
+class CGUISVM : public CSGObject
 {
 
 public:

@@ -62,8 +62,9 @@ class CTime : public CSGObject
 		{
 			timeval tv;
 			if (gettimeofday(&tv, NULL)!=0)
-				CIO::message(M_ERROR,"gettimeofday failed\n");
-			return tv.tv_sec+((double)(tv.tv_usec))/1e6;
+				return tv.tv_sec+((double)(tv.tv_usec))/1e6;
+			else
+				return 0.0;
 		}
 
 	protected:

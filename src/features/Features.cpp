@@ -17,7 +17,7 @@
 
 CFeatures::CFeatures(INT size) : cache_size(size), preproc(NULL), num_preproc(0), preprocessed(NULL) 
 {
-	CIO::message(M_INFO, "Feature object created (%ld)\n",this);
+	SG_INFO( "Feature object created (%ld)\n",this);
 }
 
 CFeatures::CFeatures(const CFeatures& orig) : preproc(orig.preproc), num_preproc(orig.num_preproc), preprocessed(orig.preprocessed)
@@ -30,18 +30,18 @@ CFeatures::CFeatures(const CFeatures& orig) : preproc(orig.preproc), num_preproc
 CFeatures::CFeatures(CHAR* fname) : cache_size(0), preproc(NULL), num_preproc(0), preprocessed(false)
 {
 	load(fname);
-	CIO::message(M_INFO, "Feature object loaded (%ld)\n",this) ;
+	SG_INFO( "Feature object loaded (%ld)\n",this) ;
 }
 
 CFeatures::~CFeatures()
 {
-	CIO::message(M_INFO, "Feature object destroyed (%ld)\n",this) ;
+	SG_INFO( "Feature object destroyed (%ld)\n",this) ;
 }
 
 /// set preprocessor
 INT CFeatures::add_preproc(CPreProc* p)
 { 
-	CIO::message(M_INFO, "%d preprocs currently, new preproc list is\n", num_preproc);
+	SG_INFO( "%d preprocs currently, new preproc list is\n", num_preproc);
 	INT i;
 
 	bool* preprocd=new bool[num_preproc+1];
@@ -61,7 +61,7 @@ INT CFeatures::add_preproc(CPreProc* p)
 	num_preproc++;
 
 	for (i=0; i<num_preproc; i++)
-		CIO::message(M_INFO, "preproc[%d]=%s %ld\n",i, preproc[i]->get_name(), preproc[i]) ;
+		SG_INFO( "preproc[%d]=%s %ld\n",i, preproc[i]->get_name(), preproc[i]) ;
 	return num_preproc;
 }
 
@@ -133,7 +133,7 @@ CPreProc* CFeatures::del_preproc(INT num)
 		num_preproc--;
 
 		for (INT i=0; i<num_preproc; i++)
-			CIO::message(M_INFO, "preproc[%d]=%s\n",i, preproc[i]->get_name()) ;
+			SG_INFO( "preproc[%d]=%s\n",i, preproc[i]->get_name()) ;
 	}
 
 	return removed_preproc;
@@ -141,62 +141,62 @@ CPreProc* CFeatures::del_preproc(INT num)
 
 void CFeatures::list_feature_obj()
 {
-	CIO::message(M_INFO, "0x%X - ", this);
+	SG_INFO( "0x%X - ", this);
 	switch (get_feature_class())
 	{
 		case C_UNKNOWN:
-			CIO::message(M_INFO, "C_UNKNOWN ");
+			SG_INFO( "C_UNKNOWN ");
 			break;
 		case C_SIMPLE:
-			CIO::message(M_INFO, "C_SIMPLE ");
+			SG_INFO( "C_SIMPLE ");
 			break;
 		case C_SPARSE:
-			CIO::message(M_INFO, "C_SPARSE ");
+			SG_INFO( "C_SPARSE ");
 			break;
 		case C_STRING:
-			CIO::message(M_INFO, "C_STRING ");
+			SG_INFO( "C_STRING ");
 			break;
 		case C_COMBINED:
-			CIO::message(M_INFO, "C_COMBINED ");
+			SG_INFO( "C_COMBINED ");
 			break;
 		case C_ANY:
-			CIO::message(M_INFO, "C_ANY ");
+			SG_INFO( "C_ANY ");
 			break;
 		default:
-         sg_error(sg_err_fun,"ERROR UNKNOWN FEATURE CLASS");
+         SG_ERROR( "ERROR UNKNOWN FEATURE CLASS");
 	}
 
 	switch (get_feature_type())
 	{
 		case F_UNKNOWN:
-			CIO::message(M_INFO, "F_UNKNOWN \n");
+			SG_INFO( "F_UNKNOWN \n");
 			break;
 		case F_DREAL:
-			CIO::message(M_INFO, "F_REAL \n");
+			SG_INFO( "F_REAL \n");
 			break;
 		case F_SHORT:
-			CIO::message(M_INFO, "F_SHORT \n");
+			SG_INFO( "F_SHORT \n");
 			break;
 		case F_CHAR:
-			CIO::message(M_INFO, "F_CHAR \n");
+			SG_INFO( "F_CHAR \n");
 			break;
 		case F_INT:
-			CIO::message(M_INFO, "F_INT \n");
+			SG_INFO( "F_INT \n");
 			break;
 		case F_BYTE:
-			CIO::message(M_INFO, "F_BYTE \n");
+			SG_INFO( "F_BYTE \n");
 			break;
 		case F_WORD:
-			CIO::message(M_INFO, "F_WORD \n");
+			SG_INFO( "F_WORD \n");
 			break;
 		case F_ULONG:
-			CIO::message(M_INFO, "F_ULONG ");
+			SG_INFO( "F_ULONG ");
 			break;
 		case F_ANY:
-			CIO::message(M_INFO, "F_ANY \n");
+			SG_INFO( "F_ANY \n");
 			break;
 		default:
-         sg_error(sg_err_fun,"ERROR UNKNOWN FEATURE TYPE\n");
+         SG_ERROR( "ERROR UNKNOWN FEATURE TYPE\n");
 	}
 }
 

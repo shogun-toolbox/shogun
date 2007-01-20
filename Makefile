@@ -73,6 +73,7 @@ $(DESTDIR)/src/lib/versionstring.h: src/lib/versionstring.h
 
 	# remove top level makefile from distribution
 	rm -f $(DESTDIR)/Makefile
+	rm -f $(DESTDIR)/src/.authors
 	mv -f src/lib/versionstring.h $(DESTDIR)/src/lib/
 
 clean:

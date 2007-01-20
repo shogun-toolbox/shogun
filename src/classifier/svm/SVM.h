@@ -16,11 +16,6 @@
 #include "kernel/Kernel.h"
 #include "kernel/KernelMachine.h"
 
-#include <stdio.h>
-
-#include "exceptions/SVMException.h"
-
-
 class CSVM : public CKernelMachine
 {
 	public:

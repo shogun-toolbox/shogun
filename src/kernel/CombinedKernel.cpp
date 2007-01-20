@@ -43,9 +43,9 @@ CCombinedKernel::CCombinedKernel(LONG size, bool append_subkernel_weights_)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	kernel_list=new CList<CKernel*>(true);
-	CIO::message(M_INFO, "combined kernel created\n") ;
+	SG_INFO( "combined kernel created\n") ;
 	if (append_subkernel_weights)
-		CIO::message(M_INFO, "(subkernel weights are appended)\n") ;
+		SG_INFO( "(subkernel weights are appended)\n") ;
 }
 
 CCombinedKernel::~CCombinedKernel() 
@@ -53,14 +53,14 @@ CCombinedKernel::~CCombinedKernel()
 	delete[] subkernel_weights_buffer ;
 	subkernel_weights_buffer=NULL ;
 	
-	CIO::message(M_INFO, "combined kernel deleted\n");
+	SG_INFO( "combined kernel deleted\n");
 	cleanup();
 	delete kernel_list;
 }
 
-bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 {
-	CKernel::init(l,r, do_init);
+	CKernel::init(l,r);
 	ASSERT(l->get_feature_class() == C_COMBINED);
 	ASSERT(r->get_feature_class() == C_COMBINED);
 	ASSERT(l->get_feature_type() == F_UNKNOWN);
@@ -87,7 +87,7 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 			while ( result && lf && rf && k )
 			{
 				//fprintf(stderr,"init kernel 0x%X (0x%X, 0x%X)\n", k, lf, rf) ;
-				result=k->init(lf,rf, do_init);
+				result=k->init(lf,rf);
 
 				lf=((CCombinedFeatures*) l)->get_next_feature_obj(lfc) ;
 				rf=((CCombinedFeatures*) r)->get_next_feature_obj(rfc) ;
@@ -98,7 +98,7 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		{
 			while ( result && lf && k )
 			{
-				result=k->init(lf,rf, do_init);
+				result=k->init(lf,rf);
 
 				//fprintf(stderr,"init kernel 0x%X (0x%X, 0x%X): %i\n", k, lf, rf, result) ;
 
@@ -112,17 +112,17 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 	if (!result)
 	{
-		CIO::message(M_INFO, "CombinedKernel: Initialising the following kernel failed\n");
+		SG_INFO( "CombinedKernel: Initialising the following kernel failed\n");
 		if (k)
 			k->list_kernel();
 		else
-			CIO::message(M_INFO, "<NULL>\n");
+			SG_INFO( "<NULL>\n");
 		return false;
 	}
 
 	if ((lf!=NULL) || (rf!=NULL) || (k!=NULL))
 	{
-		CIO::message(M_INFO, "CombinedKernel: Number of features/kernels does not match - bailing out\n");
+		SG_INFO( "CombinedKernel: Number of features/kernels does not match - bailing out\n");
 		return false;
 	}
 	
@@ -185,7 +185,7 @@ void CCombinedKernel::list_kernels()
 {
 	CKernel* k;
 
-	CIO::message(M_INFO, "BEGIN COMBINED KERNEL LIST - ");
+	SG_INFO( "BEGIN COMBINED KERNEL LIST - ");
 	this->list_kernel();
 
 	CListElement<CKernel*> * current = NULL ;	
@@ -195,7 +195,7 @@ void CCombinedKernel::list_kernels()
 		k->list_kernel();
 		k=get_next_kernel(current);
 	}
-	CIO::message(M_INFO, "END COMBINED KERNEL LIST - ");
+	SG_INFO( "END COMBINED KERNEL LIST - ");
 }
 
 DREAL CCombinedKernel::compute(INT x, INT y)
@@ -215,7 +215,7 @@ DREAL CCombinedKernel::compute(INT x, INT y)
 
 bool CCombinedKernel::init_optimization(INT count, INT *IDX, DREAL * weights) 
 {
-	CIO::message(M_DEBUG, "initializing CCombinedKernel optimization\n") ;
+	SG_DEBUG( "initializing CCombinedKernel optimization\n") ;
 
 	delete_optimization();
 	
@@ -231,14 +231,14 @@ bool CCombinedKernel::init_optimization(INT count, INT *IDX, DREAL * weights)
 			ret = k->init_optimization(count, IDX, weights) ;
 		else
 		{
-			CIO::message(M_WARN, "non-optimizable kernel 0x%X in kernel-list\n",k) ;
+			SG_WARNING( "non-optimizable kernel 0x%X in kernel-list\n",k) ;
 			have_non_optimizable = true ;
 		}
 		
 		if (!ret)
 		{
 			have_non_optimizable = true ;
-			CIO::message(M_WARN, "init_optimization of kernel 0x%X failed\n",k) ;
+			SG_WARNING( "init_optimization of kernel 0x%X failed\n",k) ;
 		} ;
 		
 		k = get_next_kernel(current) ;
@@ -246,7 +246,7 @@ bool CCombinedKernel::init_optimization(INT count, INT *IDX, DREAL * weights)
 	
 	if (have_non_optimizable)
 	{
-		CIO::message(M_WARN, "some kernels in the kernel-list are not optimized\n") ;
+		SG_WARNING( "some kernels in the kernel-list are not optimized\n") ;
 
 		sv_idx = new INT[count] ;
 		sv_weight = new DREAL[count] ;
@@ -483,7 +483,7 @@ DREAL CCombinedKernel::compute_optimized(INT idx)
 { 		  
 	if (!get_is_initialized())
 	{
-		sg_error(sg_err_fun,"CCombinedKernel optimization not initialized\n") ;
+		SG_ERROR( "CCombinedKernel optimization not initialized\n") ;
 		return 0 ;
 	}
 	

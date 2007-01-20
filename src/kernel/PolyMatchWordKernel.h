@@ -20,7 +20,7 @@ class CPolyMatchWordKernel: public CSimpleKernel<WORD>
   CPolyMatchWordKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);
   ~CPolyMatchWordKernel() ;
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data

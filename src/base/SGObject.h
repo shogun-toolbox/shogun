@@ -20,8 +20,14 @@ class CSGObject;
 class CSGObject
 {
 public:
+#ifdef SWIG
 	CParallel parallel;
 	CIO io;
 	CVersion version;
+#else
+	static CParallel parallel;
+	static CIO io;
+	static CVersion version;
+#endif
 };
 #endif

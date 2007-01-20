@@ -17,14 +17,9 @@
 #include "base/SGObject.h"
 
 #include "preproc/PreProc.h"
-#include "exceptions/FeatureException.h"
 
-#include <stdio.h>
-
-class FeatureException;
 class CPreProc;
 class CFeatures;
-
 
 class CFeatures : public CSGObject
 {

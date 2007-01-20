@@ -15,12 +15,13 @@
 #include "lib/config.h"
 
 #ifndef HAVE_SWIG
+#include "base/SGObject.h"
 #include "distance/Distance.h"
 #include "features/Features.h"
 
 class CGUI ;
 
-class CGUIDistance
+class CGUIDistance : public CSGObject
 {
  public:
 	CGUIDistance(CGUI*);

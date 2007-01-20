@@ -52,7 +52,7 @@ LONG CIO::last_progress_time=0 ;
 LONG CIO::progress_start_time=0 ;
 DREAL CIO::last_progress=1 ;
 EMessageType CIO::loglevel = M_WARN;
-const EMessageType CIO::levels[NUM_LOG_LEVELS]={M_DEBUG, M_INFO, M_NOTICE, M_WARN, M_ERROR, M_CRITICAL, M_ALERT, M_EMERGENCY,M_MESSAGEONLY};
+const EMessageType CIO::levels[NUM_LOG_LEVELS]={M_DEBUG, M_INFO, M_NOTICE, M_WARN, M_ERROR, M_CRITICAL, M_ALERT, M_EMERGENCY, M_MESSAGEONLY};
 const char* CIO::message_strings[NUM_LOG_LEVELS]={"[DEBUG] ", "[INFO] ", "[NOTICE] ", "\033[1;34m[WARN]\033[0m ", "\033[1;31m[ERROR]\033[0m ", "[CRITICAL] ", "[ALERT] ", "[EMERGENCY] ", ""};
 
 /// file name buffer
@@ -155,8 +155,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 			case M_ALERT:
 			case M_EMERGENCY:
 				PyErr_SetString(PyExc_RuntimeError,str);
-				fprintf(target, "%s", message_strings[p]);
-				fprintf(target, "%s", str);
+				throw ShogunException(str);
 				break;
 			default:
 				break;
@@ -390,21 +389,3 @@ INT CIO::filter(const struct dirent* d)
 
 	return 0;
 }
-
-void sg_error(void (*funcPtr)(char*), char *fmt, ... ) {
-   char *val = new char[256];
-   va_list list;
-   va_start(list,fmt);
-   vsprintf(val,fmt, list);
-   va_end(list);
-   (*funcPtr)(val);
-}
-
-void throwException(char *val) {
-   throw ShogunException(val);
-}
-  
-void cio(char *val) {
-   CIO::message(M_ERROR,val);
-}
-

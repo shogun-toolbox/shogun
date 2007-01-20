@@ -80,21 +80,21 @@ CMath::CMath()
 #ifndef CYGWIN
 	initstate(seed, CMath::rand_state, sizeof(CMath::rand_state));
 #endif
-	CIO::message(M_INFO, "seeding random number generator with %u\n", seed);
+	SG_INFO( "seeding random number generator with %u\n", seed);
 
 #ifdef USE_LOGCACHE
     LOGRANGE=CMath::determine_logrange();
     LOGACCURACY=CMath::determine_logaccuracy(LOGRANGE);
-    CIO::message(M_INFO, "Initializing log-table (size=%i*%i*%i=%2.1fMB) ...",LOGRANGE,LOGACCURACY,sizeof(DREAL),LOGRANGE*LOGACCURACY*sizeof(DREAL)/(1024.0*1024.0)) ;
+    SG_INFO( "Initializing log-table (size=%i*%i*%i=%2.1fMB) ...",LOGRANGE,LOGACCURACY,sizeof(DREAL),LOGRANGE*LOGACCURACY*sizeof(DREAL)/(1024.0*1024.0)) ;
    
     CMath::logtable=new DREAL[LOGRANGE*LOGACCURACY];
     init_log_table();
-    CIO::message(M_INFO, "Done.\n") ;
+    SG_INFO( "Done.\n") ;
 #else
 	INT i=0;
 	while ((DREAL)log(1+((DREAL)exp(-DREAL(i)))))
 		i++;
-    CIO::message(M_INFO, "determined range for x in log(1+exp(-x)) is:%d\n", i);
+    SG_INFO( "determined range for x in log(1+exp(-x)) is:%d\n", i);
 	LOGRANGE=i;
 #endif 
 }
@@ -118,14 +118,14 @@ INT CMath::determine_logrange()
 	    break;
     }
 
-    CIO::message(M_INFO, "determined range for x in table log(1+exp(-x)) is:%d (error:%G)\n",i,acc);
+    SG_INFO( "determined range for x in table log(1+exp(-x)) is:%d (error:%G)\n",i,acc);
     return i;
 }
 
 INT CMath::determine_logaccuracy(INT range)
 {
     range=MAX_LOG_TABLE_SIZE/range/((int)sizeof(DREAL));
-    CIO::message(M_INFO, "determined accuracy for x in table log(1+exp(-x)) is:%d (error:%G)\n",range,1.0/(double) range);
+    SG_INFO( "determined accuracy for x in table log(1+exp(-x)) is:%d (error:%G)\n",range,1.0/(double) range);
     return range;
 }
 

@@ -49,7 +49,7 @@ bool CKNN::train()
 	min_label=min_class;
 	num_classes=max_class-min_class+1;
 
-	CIO::message(M_INFO, "num_classes: %d (%+d to %+d) num_train: %d\n", num_classes, min_class, max_class, num_train_labels);
+	SG_INFO( "num_classes: %d (%+d to %+d) num_train: %d\n", num_classes, min_class, max_class, num_train_labels);
 	return true;
 }
 
@@ -77,11 +77,11 @@ CLabels* CKNN::classify(CLabels* output)
 	ASSERT(output);
 	ASSERT(classes);
 
-	CIO::message(M_INFO, "%d test examples\n", num_lab);
+	SG_INFO( "%d test examples\n", num_lab);
 	for (int i=0; i<num_lab; i++)
 	{
 		if ( (i% (num_lab/10+1))== 0)
-			CIO::message(M_MESSAGEONLY, "%i%%..",100*i/(num_lab+1));
+			SG_PRINT( "%i%%..",100*i/(num_lab+1));
 
 		int j;
 		for (j=0; j<num_train_labels; j++)

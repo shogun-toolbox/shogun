@@ -74,75 +74,75 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 	{
 		delete classifier;
 		classifier= new CLibSVM();
-		CIO::message(M_INFO, "created SVMlibsvm object\n") ;
+		SG_INFO( "created SVMlibsvm object\n") ;
 	}
 #ifdef USE_SVMLIGHT
 	else if (strcmp(param,"SVMLIGHT")==0)
 	{
 		delete classifier;
 		classifier= new CSVMLight();
-		CIO::message(M_INFO, "created SVMLight object\n") ;
+		SG_INFO( "created SVMLight object\n") ;
 	}
 	else if (strcmp(param,"SVRLIGHT")==0)
 	{
 		delete classifier;
 		classifier= new CSVRLight();
-		CIO::message(M_INFO, "created SVRLight object\n") ;
+		SG_INFO( "created SVRLight object\n") ;
 	}
 #endif //USE_SVMLIGHT
 	else if (strcmp(param,"GPBTSVM")==0)
 	{
 		delete classifier;
 		classifier= new CGPBTSVM();
-		CIO::message(M_INFO, "created GPBT-SVM object\n") ;
+		SG_INFO( "created GPBT-SVM object\n") ;
 	}
 	else if (strcmp(param,"MPDSVM")==0)
 	{
 		delete classifier;
 		classifier= new CMPDSVM();
-		CIO::message(M_INFO, "created MPD-SVM object\n") ;
+		SG_INFO( "created MPD-SVM object\n") ;
 	}
 	else if (strcmp(param,"LIBSVR")==0)
 	{
 		delete classifier;
 		classifier= new CLibSVR();
-		CIO::message(M_INFO, "created SVRlibsvm object\n") ;
+		SG_INFO( "created SVRlibsvm object\n") ;
 	}
 	else if (strcmp(param,"KERNELPERCEPTRON")==0)
 	{
 		delete classifier;
 		classifier= new CKernelPerceptron();
-		CIO::message(M_INFO, "created Kernel Perceptron object\n") ;
+		SG_INFO( "created Kernel Perceptron object\n") ;
 	}
 	else if (strcmp(param,"PERCEPTRON")==0)
 	{
 		delete classifier;
 		classifier= new CPerceptron();
-		CIO::message(M_INFO, "created Perceptron object\n") ;
+		SG_INFO( "created Perceptron object\n") ;
 	}
 #ifdef HAVE_LAPACK
 	else if (strcmp(param,"LDA")==0)
 	{
 		delete classifier;
 		classifier= new CLDA();
-		CIO::message(M_INFO, "created LDA object\n") ;
+		SG_INFO( "created LDA object\n") ;
 	}
 #endif
 	else if (strcmp(param,"LPM")==0)
 	{
 		delete classifier;
 		classifier= new CLPM();
-		CIO::message(M_INFO, "created LPM object\n") ;
+		SG_INFO( "created LPM object\n") ;
 	}
 	else if (strcmp(param,"KNN")==0)
 	{
 		delete classifier;
 		classifier= new CKNN();
-		CIO::message(M_INFO, "created KNN object\n") ;
+		SG_INFO( "created KNN object\n") ;
 	}
 	else
 	{
-		CIO::message(M_ERROR, "unknown classifier \"%s\"\n", param);
+		SG_ERROR( "unknown classifier \"%s\"\n", param);
 		return false;
 	}
 
@@ -176,7 +176,7 @@ bool CGUIClassifier::train(CHAR* param)
 			return train_knn(param);
 			break;
 		default:
-			CIO::message(M_ERROR, "unknown classifier type\n");
+			SG_ERROR( "unknown classifier type\n");
 			break;
 	};
 	return false;
@@ -190,42 +190,42 @@ bool CGUIClassifier::train_svm(CHAR* param, bool auc_maximization)
 
 	if (!trainfeatures)
 	{
-		CIO::message(M_ERROR, "no trainfeatures available\n") ;
+		SG_ERROR( "no trainfeatures available\n") ;
 		return false ;
 	}
 
 	if (!classifier)
 	{
-		CIO::message(M_ERROR, "no classifier available\n") ;
+		SG_ERROR( "no classifier available\n") ;
 		return false ;
 	}
 
 	if (!kernel)
 	{
-		CIO::message(M_ERROR, "no kernel available\n");
+		SG_ERROR( "no kernel available\n");
 		return false ;
 	}
 
 	if (!trainlabels)
 	{
-		CIO::message(M_ERROR, "no trainlabels available\n");
+		SG_ERROR( "no trainlabels available\n");
 		return false ;
 	}
 
 	if ( !gui->guikernel.is_initialized() || !kernel->get_lhs() )
 	{
-		CIO::message(M_ERROR, "kernel not initialized\n") ;
+		SG_ERROR( "kernel not initialized\n") ;
 		return 0;
 	}
 
 	if (trainlabels->get_num_labels() != kernel->get_lhs()->get_num_vectors())
 	{
-		CIO::message(M_ERROR, "number of train labels (%d) and training vectors (%d) differs!\n", 
+		SG_ERROR( "number of train labels (%d) and training vectors (%d) differs!\n", 
 				trainlabels->get_num_labels(), kernel->get_lhs()->get_num_vectors()) ;
 		return 0;
 	}
 
-	CIO::message(M_INFO, "starting svm training on %ld vectors using C1=%lf C2=%lf\n", trainlabels->get_num_labels(), svm_C1, svm_C2) ;
+	SG_INFO( "starting svm training on %ld vectors using C1=%lf C2=%lf\n", trainlabels->get_num_labels(), svm_C1, svm_C2) ;
 
 	CSVM* svm= (CSVM*) classifier;
 
@@ -274,10 +274,10 @@ bool CGUIClassifier::train_knn(CHAR* param)
 			result=((CKNN*) classifier)->train();
 		}
 		else
-			CIO::message(M_ERROR, "no distance available\n") ;
+			SG_ERROR( "no distance available\n") ;
 	}
 	else
-		CIO::message(M_ERROR, "no labels available\n") ;
+		SG_ERROR( "no labels available\n") ;
 
 	return result;
 }
@@ -291,13 +291,13 @@ bool CGUIClassifier::train_linear(CHAR* param)
 
 	if (!trainfeatures)
 	{
-		CIO::message(M_ERROR, "no trainfeatures available\n") ;
+		SG_ERROR( "no trainfeatures available\n") ;
 		return false ;
 	}
 
 	if (!trainlabels)
 	{
-		CIO::message(M_ERROR, "no labels available\n") ;
+		SG_ERROR( "no labels available\n") ;
 		return false;
 	}
 
@@ -326,7 +326,7 @@ bool CGUIClassifier::test(CHAR* param)
 
 		if (!outputfile)
 		{
-			CIO::message(M_ERROR, "could not open %s\n",outputname);
+			SG_ERROR( "could not open %s\n",outputname);
 			return false;
 		}
 
@@ -336,7 +336,7 @@ bool CGUIClassifier::test(CHAR* param)
 
 			if (!rocfile)
 			{
-				CIO::message(M_ERROR, "could not open %s\n",rocfname);
+				SG_ERROR( "could not open %s\n",rocfname);
 				return false;
 			}
 		}
@@ -345,45 +345,45 @@ bool CGUIClassifier::test(CHAR* param)
 	CLabels* testlabels=gui->guilabels.get_test_labels();
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
-	CIO::message(M_DEBUG, "I:training: %ld examples each %ld features\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
-	CIO::message(M_DEBUG, "I:testing: %ld examples each %ld features\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
+	SG_DEBUG( "I:training: %ld examples each %ld features\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
+	SG_DEBUG( "I:testing: %ld examples each %ld features\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
 
 	if (!classifier)
 	{
-		CIO::message(M_ERROR, "no svm available") ;
+		SG_ERROR( "no svm available") ;
 		return false ;
 	}
 	if (!trainfeatures)
 	{
-		CIO::message(M_ERROR, "no training features available") ;
+		SG_ERROR( "no training features available") ;
 		return false ;
 	}
 
 	if (!testfeatures)
 	{
-		CIO::message(M_ERROR, "no test features available") ;
+		SG_ERROR( "no test features available") ;
 		return false ;
 	}
 
 	if (!testlabels)
 	{
-		CIO::message(M_ERROR, "no test labels available") ;
+		SG_ERROR( "no test labels available") ;
 		return false ;
 	}
 
 	if (!gui->guikernel.is_initialized())
 	{
-		CIO::message(M_ERROR, "kernel not initialized\n") ;
+		SG_ERROR( "kernel not initialized\n") ;
 		return 0;
 	}
 
-	CIO::message(M_INFO, "starting svm testing\n") ;
+	SG_INFO( "starting svm testing\n") ;
 	((CKernelMachine*) classifier)->set_labels(testlabels);
 	((CKernelMachine*) classifier)->set_kernel(gui->guikernel.get_kernel()) ;
 	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
 
 	if ( (gui->guikernel.get_kernel()->has_property(KP_LINADD)) && (gui->guikernel.get_kernel()->get_is_initialized()))
-		CIO::message(M_DEBUG, "using kernel optimization\n");
+		SG_DEBUG( "using kernel optimization\n");
 
 	INT len=0;
 	CLabels* predictions= classifier->classify();
@@ -392,7 +392,7 @@ bool CGUIClassifier::test(CHAR* param)
 	INT* label= testlabels->get_int_labels(len);
 
 	ASSERT(label);
-	CIO::message(M_DEBUG, "len:%d total:%d\n", len, total);
+	SG_DEBUG( "len:%d total:%d\n", len, total);
 	ASSERT(len==total);
 
 	gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);
@@ -428,7 +428,7 @@ bool CGUIClassifier::set_perceptron_parameters(CHAR* param)
 	if (perceptron_maxiter<=0)
 		perceptron_maxiter=1000;
 
-	CIO::message(M_INFO, "Setting to perceptron parameters (learnrate %f and maxiter: %d\n", perceptron_learnrate, perceptron_maxiter);
+	SG_INFO( "Setting to perceptron parameters (learnrate %f and maxiter: %d\n", perceptron_learnrate, perceptron_maxiter);
 	return true ;  
 }
 
@@ -441,7 +441,7 @@ bool CGUIClassifier::set_svm_epsilon(CHAR* param)
 	if (svm_epsilon<0)
 		svm_epsilon=1e-4;
 
-	CIO::message(M_INFO, "Set to svm_epsilon=%f\n", svm_epsilon);
+	SG_INFO( "Set to svm_epsilon=%f\n", svm_epsilon);
 	return true ;  
 }
 
@@ -454,7 +454,7 @@ bool CGUIClassifier::set_svr_tube_epsilon(CHAR* param)
 	if (svm_tube_epsilon<0)
 		svm_tube_epsilon=1e-2;
 
-	CIO::message(M_INFO, "Set to svr_tube_epsilon=%f\n", svm_tube_epsilon);
+	SG_INFO( "Set to svr_tube_epsilon=%f\n", svm_tube_epsilon);
 	return true ;  
 }
 
@@ -469,8 +469,8 @@ bool CGUIClassifier::set_svm_mkl_parameters(CHAR* param)
 	if (svm_C_mkl<0)
 		svm_C_mkl=1e-4 ;
 
-	CIO::message(M_INFO, "Set to weight_epsilon=%f\n", svm_weight_epsilon);
-	CIO::message(M_INFO, "Set to C_mkl=%f\n", svm_C_mkl);
+	SG_INFO( "Set to weight_epsilon=%f\n", svm_weight_epsilon);
+	SG_INFO( "Set to C_mkl=%f\n", svm_C_mkl);
 	return true ;  
 }
 
@@ -488,7 +488,7 @@ bool CGUIClassifier::set_svm_C(CHAR* param)
 	if (svm_C2<0)
 		svm_C2=svm_C1;
 
-	CIO::message(M_INFO, "Set to C1=%f C2=%f\n", svm_C1, svm_C2) ;
+	SG_INFO( "Set to C1=%f C2=%f\n", svm_C1, svm_C2) ;
 	return true ;  
 }
 
@@ -503,7 +503,7 @@ bool CGUIClassifier::set_svm_qpsize(CHAR* param)
 	if (svm_qpsize<2)
 		svm_qpsize=41;
 
-	CIO::message(M_INFO, "Set qpsize to svm_qpsize=%d\n", svm_qpsize);
+	SG_INFO( "Set qpsize to svm_qpsize=%d\n", svm_qpsize);
 	return true ;  
 }
 
@@ -517,9 +517,9 @@ bool CGUIClassifier::set_svm_mkl_enabled(CHAR* param)
 	svm_use_mkl = (mkl==1);
 
 	if (svm_use_mkl)
-		CIO::message(M_INFO, "Enabling MKL optimization\n") ;
+		SG_INFO( "Enabling MKL optimization\n") ;
 	else
-		CIO::message(M_INFO, "Disabling MKL optimization\n") ;
+		SG_INFO( "Disabling MKL optimization\n") ;
 
 	return true ;  
 }
@@ -536,19 +536,19 @@ bool CGUIClassifier::set_svm_precompute_enabled(CHAR* param)
 	svm_use_precompute_subkernel_light = (precompute==3);
 
 	if (svm_use_precompute)
-		CIO::message(M_INFO, "Enabling Kernel Matrix Precomputation\n") ;
+		SG_INFO( "Enabling Kernel Matrix Precomputation\n") ;
 	else
-		CIO::message(M_INFO, "Disabling Kernel Matrix Precomputation\n") ;
+		SG_INFO( "Disabling Kernel Matrix Precomputation\n") ;
 
 	if (svm_use_precompute_subkernel)
-		CIO::message(M_INFO, "Enabling Subkernel Matrix Precomputation\n") ;
+		SG_INFO( "Enabling Subkernel Matrix Precomputation\n") ;
 	else
-		CIO::message(M_INFO, "Disabling Subkernel Matrix Precomputation\n") ;
+		SG_INFO( "Disabling Subkernel Matrix Precomputation\n") ;
 
 	if (svm_use_precompute_subkernel_light)
-		CIO::message(M_INFO, "Enabling Subkernel Matrix Precomputation by SVM Light\n") ;
+		SG_INFO( "Enabling Subkernel Matrix Precomputation by SVM Light\n") ;
 	else
-		CIO::message(M_INFO, "Disabling Subkernel Matrix Precomputation by SVM Light\n") ;
+		SG_INFO( "Disabling Subkernel Matrix Precomputation by SVM Light\n") ;
 
 	return true ;  
 }
@@ -563,9 +563,9 @@ bool CGUIClassifier::set_svm_linadd_enabled(CHAR* param)
 	svm_use_linadd = (linadd==1);
 	
 	if (svm_use_linadd)
-		CIO::message(M_INFO, "Enabling LINADD optimization\n") ;
+		SG_INFO( "Enabling LINADD optimization\n") ;
 	else
-		CIO::message(M_INFO, "Disabling LINADD optimization\n") ;
+		SG_INFO( "Disabling LINADD optimization\n") ;
 
 	return true ;  
 }
@@ -592,7 +592,7 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 			return classify_linear(output);
 			break;
 		default:
-			CIO::message(M_ERROR, "unknown classifier type\n");
+			SG_ERROR( "unknown classifier type\n");
 			break;
 	};
 
@@ -608,37 +608,37 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 
 	if (!classifier)
 	{
-		CIO::message(M_ERROR, "no kernelmachine available\n") ;
+		SG_ERROR( "no kernelmachine available\n") ;
 		return NULL;
 	}
 	if (!trainfeatures)
 	{
-		CIO::message(M_ERROR, "no training features available\n") ;
+		SG_ERROR( "no training features available\n") ;
 		return NULL;
 	}
 
 	if (!testfeatures)
 	{
-		CIO::message(M_ERROR, "no test features available\n") ;
+		SG_ERROR( "no test features available\n") ;
 		return NULL;
 	}
 
 	if (!testlabels)
 	{
-		CIO::message(M_ERROR, "no test labels available\n") ;
+		SG_ERROR( "no test labels available\n") ;
 		return NULL;
 	}
 
 	if (!gui->guikernel.is_initialized())
 	{
-		CIO::message(M_ERROR, "kernel not initialized\n") ;
+		SG_ERROR( "kernel not initialized\n") ;
 		return NULL;
 	}
 	  
 	((CKernelMachine*) classifier)->set_labels(testlabels);
 	((CKernelMachine*) classifier)->set_kernel(gui->guikernel.get_kernel()) ;
 	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
-	CIO::message(M_INFO, "starting kernel machine testing\n") ;
+	SG_INFO( "starting kernel machine testing\n") ;
 	return classifier->classify(output);
 }
 
@@ -651,37 +651,37 @@ CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
 
 	if (!classifier)
 	{
-		CIO::message(M_ERROR, "no kernelmachine available\n") ;
+		SG_ERROR( "no kernelmachine available\n") ;
 		return NULL;
 	}
 	if (!trainfeatures)
 	{
-		CIO::message(M_ERROR, "no training features available\n") ;
+		SG_ERROR( "no training features available\n") ;
 		return NULL;
 	}
 
 	if (!testfeatures)
 	{
-		CIO::message(M_ERROR, "no test features available\n") ;
+		SG_ERROR( "no test features available\n") ;
 		return NULL;
 	}
 
 	if (!testlabels)
 	{
-		CIO::message(M_ERROR, "no test labels available\n") ;
+		SG_ERROR( "no test labels available\n") ;
 		return NULL;
 	}
 
 	if (!gui->guidistance.is_initialized())
 	{
-		CIO::message(M_ERROR, "distance not initialized\n") ;
+		SG_ERROR( "distance not initialized\n") ;
 		return NULL;
 	}
 	  
 	((CDistanceMachine*) classifier)->set_labels(testlabels);
 	((CDistanceMachine*) classifier)->set_distance(gui->guidistance.get_distance()) ;
 	gui->guidistance.get_distance()->set_precompute_matrix(false);
-	CIO::message(M_INFO, "starting distance machine testing\n") ;
+	SG_INFO( "starting distance machine testing\n") ;
 	return classifier->classify(output);
 }
 
@@ -693,24 +693,24 @@ CLabels* CGUIClassifier::classify_linear(CLabels* output)
 
 	if (!classifier)
 	{
-		CIO::message(M_ERROR, "no svm available\n") ;
+		SG_ERROR( "no svm available\n") ;
 		return NULL;
 	}
 	if (!testfeatures)
 	{
-		CIO::message(M_ERROR, "no test features available\n") ;
+		SG_ERROR( "no test features available\n") ;
 		return NULL;
 	}
 
 	if (!testlabels)
 	{
-		CIO::message(M_ERROR, "no test labels available\n") ;
+		SG_ERROR( "no test labels available\n") ;
 		return NULL;
 	}
 
 	((CLinearClassifier*) classifier)->set_features((CRealFeatures*) testfeatures);
 	((CLinearClassifier*) classifier)->set_labels(testlabels);
-	CIO::message(M_INFO, "starting linear classifier testing\n") ;
+	SG_INFO( "starting linear classifier testing\n") ;
 	return classifier->classify(output);
 }
 
@@ -722,24 +722,24 @@ bool CGUIClassifier::classify_example(INT idx, DREAL &result)
 
 	if (!classifier)
 	{
-		CIO::message(M_ERROR, "no svm available\n") ;
+		SG_ERROR( "no svm available\n") ;
 		return false;
 	}
 	if (!trainfeatures)
 	{
-		CIO::message(M_ERROR, "no training features available\n") ;
+		SG_ERROR( "no training features available\n") ;
 		return false;
 	}
 
 	if (!testfeatures)
 	{
-		CIO::message(M_ERROR, "no test features available\n") ;
+		SG_ERROR( "no test features available\n") ;
 		return false;
 	}
 
 	if (!gui->guikernel.is_initialized())
 	{
-		CIO::message(M_ERROR, "kernel not initialized\n") ;
+		SG_ERROR( "kernel not initialized\n") ;
 		return false;
 	}
 

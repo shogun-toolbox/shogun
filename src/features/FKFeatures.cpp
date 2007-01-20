@@ -82,7 +82,7 @@ double CFKFeatures::set_opt_a(double a)
 {
 	if (a==-1)
 	{
-		CIO::message(M_INFO, "estimating a.\n");
+		SG_INFO( "estimating a.\n");
 		pos_prob=new double[pos->get_observations()->get_num_vectors()];
 		neg_prob=new double[pos->get_observations()->get_num_vectors()];
 		ASSERT(pos_prob!=NULL);
@@ -104,7 +104,7 @@ double CFKFeatures::set_opt_a(double a)
 			if (da<=0)
 				ua=a;
 			a=(la+ua)/2;
-			CIO::message(M_INFO, "opt_a: a=%1.3e  deriv=%1.3e  la=%1.3e  ua=%1.3e\n", a, da, la ,ua);
+			SG_INFO( "opt_a: a=%1.3e  deriv=%1.3e  la=%1.3e  ua=%1.3e\n", a, da, la ,ua);
 		}
 		delete[] pos_prob;
 		delete[] neg_prob;
@@ -113,7 +113,7 @@ double CFKFeatures::set_opt_a(double a)
 	}
 
 	weight_a=a;
-	CIO::message(M_INFO, "setting opt_a: %g\n", a);
+	SG_INFO( "setting opt_a: %g\n", a);
 	return a;
 }
 
@@ -128,7 +128,7 @@ void CFKFeatures::set_models(CHMM* p, CHMM* n)
 	delete[] feature_matrix  ;
 	feature_matrix=NULL ;
 
-	CIO::message(M_INFO, "pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
+	SG_INFO( "pos_feat=[%i,%i,%i,%i],neg_feat=[%i,%i,%i,%i]\n", pos->get_N(), pos->get_N(), pos->get_N()*pos->get_N(), pos->get_N()*pos->get_M(), neg->get_N(), neg->get_N(), neg->get_N()*neg->get_N(), neg->get_N()*neg->get_M()) ;
 
 	if (pos && pos->get_observations())
 		set_num_vectors(pos->get_observations()->get_num_vectors());
@@ -202,11 +202,11 @@ DREAL* CFKFeatures::set_feature_matrix()
 	num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 
 	num_vectors=pos->get_observations()->get_num_vectors();
-	CIO::message(M_INFO, "allocating FK feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
+	SG_INFO( "allocating FK feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	delete[] feature_matrix;
 	feature_matrix=new DREAL[num_features*num_vectors];
 
-	CIO::message(M_INFO, "calculating FK feature matrix\n");
+	SG_INFO( "calculating FK feature matrix\n");
 
 	for (INT x=0; x<num_vectors; x++)
 	{

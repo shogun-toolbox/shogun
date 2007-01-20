@@ -55,16 +55,16 @@ bool CLDA::train()
 			classidx_pos[num_pos++]=i;
 		else
 		{
-			sg_error(sg_err_fun,"found label != +/- 1 bailing...");
+			SG_ERROR( "found label != +/- 1 bailing...");
 			return false;
 		}
 	}
 
-	CIO::message(M_DEBUG,"num_neg: %d num_pos: %d\n", num_neg, num_pos);
+	SG_DEBUG("num_neg: %d num_pos: %d\n", num_neg, num_pos);
 
 	if (num_neg<=0 && num_pos<=0)
 	{
-      sg_error(sg_err_fun,"whooooo ? only a single class found\n");
+      SG_ERROR( "whooooo ? only a single class found\n");
 		return false;
 	}
 

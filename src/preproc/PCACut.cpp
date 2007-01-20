@@ -48,10 +48,10 @@ bool CPCACut::init(CFeatures* f)
 		ASSERT(f->get_feature_class() == C_SIMPLE);
 		ASSERT(f->get_feature_type() == F_DREAL);
 
-		CIO::message(M_INFO,"calling CPCACut::init\n") ;
+		SG_INFO("calling CPCACut::init\n") ;
 		INT num_vectors=((CRealFeatures*)f)->get_num_vectors() ;
 		INT num_features=((CRealFeatures*)f)->get_num_features() ;
-		CIO::message(M_INFO,"num_examples: %ld num_features: %ld \n", num_vectors, num_features);
+		SG_INFO("num_examples: %ld num_features: %ld \n", num_vectors, num_features);
 		delete[] mean ;
 		mean=new double[num_features+1] ;
 
@@ -82,7 +82,7 @@ bool CPCACut::init(CFeatures* f)
 		for (j=0; j<num_features; j++)
 			mean[j]/=num_vectors;
 
-		CIO::message(M_INFO,"done.\nComputing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0) ;
+		SG_INFO("done.\nComputing covariance matrix... of size %.2f M\n", num_features*num_features/1024.0/1024.0) ;
 		double *cov=new double[num_features*num_features] ;
 		ASSERT(cov!=NULL) ;
 
@@ -92,7 +92,7 @@ bool CPCACut::init(CFeatures* f)
 		for (i=0; i<num_vectors; i++)
 		{
 			if (!(i % (num_vectors/10+1)))
-				CIO::progress(i, 0, num_vectors);
+				io.progress(i, 0, num_vectors);
 
 			INT len;
 			bool free;
@@ -113,15 +113,15 @@ bool CPCACut::init(CFeatures* f)
 			((CRealFeatures*) f)->free_feature_vector(vec, i, free) ;
 		}
 
-		CIO::message(M_MESSAGEONLY, "done.           \n");
+		SG_PRINT( "done.           \n");
 
 		for (i=0; i<num_features; i++)
 			for (j=0; j<num_features; j++)
 				cov[i*num_features+j]/=num_vectors ;
 
-		CIO::message(M_INFO,"done\n") ;
+		SG_INFO("done\n") ;
 
-		CIO::message(M_INFO,"Computing Eigenvalues ... ") ;
+		SG_INFO("Computing Eigenvalues ... ") ;
 		char V='V';
 		char U='U';
 //#ifdef DARWIN
@@ -151,12 +151,12 @@ bool CPCACut::init(CFeatures* f)
 		num_dim=0;
 		for (i=0; i<num_features; i++)
 		{
-			//	  CIO::message("EV[%i]=%e\n", i, values[i]) ;
+			//	  SG_DEBUG( "EV[%i]=%e\n", i, values[i]) ;
 			if (eigenvalues[i]>thresh)
 				num_dim++ ;
 		} ;
 
-		CIO::message(M_INFO,"Done\nReducing from %i to %i features..", num_features, num_dim) ;
+		SG_INFO("Done\nReducing from %i to %i features..", num_features, num_dim) ;
 
 		delete[] T;
 		T=new DREAL[num_dim*num_features] ;
@@ -180,7 +180,7 @@ bool CPCACut::init(CFeatures* f)
 		delete[] eigenvalues;
 		delete[] cov;
 		initialized=true;
-		CIO::message(M_INFO,"Done\n") ;
+		SG_INFO("Done\n") ;
 		return true ;
 	}
 	return 
@@ -203,11 +203,11 @@ DREAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 	INT num_features=0;
 
 	DREAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
-	CIO::message(M_INFO,"get Feature matrix: %ix%i\n", num_vectors, num_features) ;
+	SG_INFO("get Feature matrix: %ix%i\n", num_vectors, num_features) ;
 
 	if (m)
 	{
-		CIO::message(M_INFO,"Preprocessing feature matrix\n");
+		SG_INFO("Preprocessing feature matrix\n");
 		DREAL* res= new DREAL[num_dim];
 		double* sub_mean= new double[num_features];
 
@@ -230,7 +230,7 @@ DREAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 
 		((CRealFeatures*) f)->set_num_features(num_dim);
 		((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
-		CIO::message(M_INFO,"new Feature matrix: %ix%i\n", num_vectors, num_features);
+		SG_INFO("new Feature matrix: %ix%i\n", num_vectors, num_features);
 	}
 
 	return m;
@@ -255,7 +255,7 @@ DREAL* CPCACut::apply_to_feature_vector(DREAL* f, INT &len)
 
 	delete[] sub_mean ;
 	len=num_dim ;
-	//	  CIO::message("num_dim: %d\n", num_dim);
+	//	  SG_DEBUG( "num_dim: %d\n", num_dim);
 	return ret;
 }
 

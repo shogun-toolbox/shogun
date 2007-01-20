@@ -70,7 +70,7 @@ bool CGUIDistance::set_distance(CHAR* param)
 	}
 	else
 	{
-		CIO::message(M_ERROR, "distance creation failed.\n");
+		SG_ERROR( "distance creation failed.\n");
 		return false;
 	}
 }
@@ -86,10 +86,10 @@ bool CGUIDistance::load_distance_init(CHAR* param)
 		{
 			FILE* file=fopen(filename, "r");
 			if ((!file) || (!distance->load_init(file)))
-				CIO::message(M_ERROR, "reading from file %s failed!\n", filename);
+				SG_ERROR( "reading from file %s failed!\n", filename);
 			else
 			{
-				CIO::message(M_INFO, "successfully read distance init data from \"%s\" !\n", filename);
+				SG_INFO( "successfully read distance init data from \"%s\" !\n", filename);
 				initialized=true;
 				result=true;
 			}
@@ -98,10 +98,10 @@ bool CGUIDistance::load_distance_init(CHAR* param)
 				fclose(file);
 		}
 		else
-			CIO::message(M_ERROR, "see help for params\n");
+			SG_ERROR( "see help for params\n");
 	}
 	else
-		CIO::message(M_ERROR, "no kernel set!\n");
+		SG_ERROR( "no kernel set!\n");
 	return result;
 }
 
@@ -116,12 +116,12 @@ bool CGUIDistance::save_distance_init(CHAR* param)
 		{
 			FILE* file=fopen(filename, "w");
 			if (!file)
-				CIO::message(M_ERROR, "fname: %s\n", filename);
+				SG_ERROR( "fname: %s\n", filename);
 			if ((!file) || (!distance->save_init(file)))
-				CIO::message(M_ERROR, "writing to file %s failed!\n", filename);
+				SG_ERROR( "writing to file %s failed!\n", filename);
 			else
 			{
-				CIO::message(M_INFO, "successfully written distance init data into \"%s\" !\n", filename);
+				SG_INFO( "successfully written distance init data into \"%s\" !\n", filename);
 				result=true;
 			}
 
@@ -129,10 +129,10 @@ bool CGUIDistance::save_distance_init(CHAR* param)
 				fclose(file);
 		}
 		else
-			CIO::message(M_ERROR, "see help for params\n");
+			SG_ERROR( "see help for params\n");
 	}
 	else
-		CIO::message(M_ERROR, "no kernel set!\n");
+		SG_ERROR( "no kernel set!\n");
 	return result;
 }
 
@@ -142,24 +142,24 @@ bool CGUIDistance::init_distance(CHAR* param)
 	CHAR target[1024]="";
 	bool do_init=false;
 
-CIO::message(M_INFO, "CGUIDistance::init_distance start");
+SG_INFO( "CGUIDistance::init_distance start");
 	
 	if (!distance)
 	{
-		CIO::message(M_ERROR, "no distance available\n") ;
+		SG_ERROR( "no distance available\n") ;
 		return false ;
 	} ;
 
-CIO::message(M_INFO, "CGUIDistance::init_distance before set_precompute");
+SG_INFO( "CGUIDistance::init_distance before set_precompute");
 	distance->set_precompute_matrix(false);
-CIO::message(M_INFO, "CGUIDistance::init_distance after set_precompute");
+SG_INFO( "CGUIDistance::init_distance after set_precompute");
 
 	if ((sscanf(param, "%s", target))==1)
 	{
-CIO::message(M_INFO, "CGUIDistance::init_distance 1 if");
+SG_INFO( "CGUIDistance::init_distance 1 if");
 		if (!strncmp(target, "TRAIN", 5))
 		{
-CIO::message(M_INFO, "CGUIDistance::init_distance 2 if");
+SG_INFO( "CGUIDistance::init_distance 2 if");
 			do_init=true;
 			if (gui->guifeatures.get_train_features())
 			{
@@ -175,12 +175,12 @@ CIO::message(M_INFO, "CGUIDistance::init_distance 2 if");
 				}
 				else
 				{
-					CIO::message(M_ERROR, "distance can not process this feature type\n");
+					SG_ERROR( "distance can not process this feature type\n");
 					return false ;
 				}
 			}
 			else
-				CIO::message(M_ERROR, "assign train features first\n");
+				SG_ERROR( "assign train features first\n");
 		}
 		else if (!strncmp(target, "TEST", 5))
 		{
@@ -201,32 +201,32 @@ CIO::message(M_INFO, "CGUIDistance::init_distance 2 if");
 				{
 					if (!initialized)
 					{
-						CIO::message(M_ERROR, "distance not initialized for training examples\n") ;
+						SG_ERROR( "distance not initialized for training examples\n") ;
 						return false ;
 					}
 					else
 					{
-						CIO::message(M_INFO, "initialising distance with TEST DATA, train: %d test %d\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
+						SG_INFO( "initialising distance with TEST DATA, train: %d test %d\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
 						// lhs -> always train_features; rhs -> always test_features
 						distance->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features(), do_init);						
 					} ;
 				}
 				else
 				{
-					CIO::message(M_ERROR, "distance can not process this feature type\n");
+					SG_ERROR( "distance can not process this feature type\n");
 					return false ;
 				}
 			}
 			else
-				CIO::message(M_ERROR, "assign train and test features first\n");
+				SG_ERROR( "assign train and test features first\n");
 
 		}
 		else
-			CIO::not_implemented();
+			io.not_implemented();
 	}
 	else 
 	{
-		CIO::message(M_ERROR, "see help for params\n");
+		SG_ERROR( "see help for params\n");
 		return false;
 	}
 
@@ -243,18 +243,18 @@ bool CGUIDistance::save_distance(CHAR* param)
 		if ((sscanf(param, "%s", filename))==1)
 		{
 			if (!distance->save(filename))
-				CIO::message(M_ERROR, "writing to file %s failed!\n", filename);
+				SG_ERROR( "writing to file %s failed!\n", filename);
 			else
 			{
-				CIO::message(M_INFO, "successfully written distance to \"%s\" !\n", filename);
+				SG_INFO( "successfully written distance to \"%s\" !\n", filename);
 				result=true;
 			}
 		}
 		else
-			CIO::message(M_ERROR, "see help for params\n");
+			SG_ERROR( "see help for params\n");
 	}
 	else
-		CIO::message(M_ERROR, "no distance set / distance not initialized!\n");
+		SG_ERROR( "no distance set / distance not initialized!\n");
 	return result;
 }
 
@@ -279,15 +279,15 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 					delete d;
 					d= new CMinkowskiMetric(p);
 					if (d)
-						CIO::message(M_INFO, "Minkowski-Distance created\n");
+						SG_INFO( "Minkowski-Distance created\n");
 					return d;
 				}
 				else
-					CIO::message(M_ERROR, "processing expects 'string string floating-point number' for Minkowski-Distance \n") ;
+					SG_ERROR( "processing expects 'string string floating-point number' for Minkowski-Distance \n") ;
 
 			}
 			else
-				CIO::message(M_ERROR, "Minkowski-Distance expects REAL as data type \n") ;
+				SG_ERROR( "Minkowski-Distance expects REAL as data type \n") ;
 		}
 		else if (strcmp(dist_type,"MANHATTEN")==0)
 		{
@@ -296,11 +296,11 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 				delete d;
 				d= new CManhattanMetric();
 				if (d)
-					CIO::message(M_INFO, "Manhattan-Distance created\n");
+					SG_INFO( "Manhattan-Distance created\n");
 				return d;
 			}
 			else
-				CIO::message(M_ERROR, "Manhattan-Distance expects REAL as data type \n") ;
+				SG_ERROR( "Manhattan-Distance expects REAL as data type \n") ;
 		}
 		else if (strcmp(dist_type,"CANBERRA")==0)
 		{
@@ -309,11 +309,11 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 				delete d;
 				d= new CCanberraMetric();
 				if (d)
-					CIO::message(M_INFO, "CANBERRA-Distance created\n");
+					SG_INFO( "CANBERRA-Distance created\n");
 				return d;
 			}
 			else
-				CIO::message(M_ERROR, "Canberra-Distance expects REAL as data type \n") ;
+				SG_ERROR( "Canberra-Distance expects REAL as data type \n") ;
 
 		}
 		else if (strcmp(dist_type,"CHEBYSHEW")==0)
@@ -323,11 +323,11 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 				delete d;
 				d= new CChebyshewMetric();
 				if (d)
-					CIO::message(M_INFO, "Chebyshew-Distance created\n");
+					SG_INFO( "Chebyshew-Distance created\n");
 				return d;
 			}
 			else
-				CIO::message(M_ERROR, "Chebyshew-Distance expects REAL as data type \n") ;
+				SG_ERROR( "Chebyshew-Distance expects REAL as data type \n") ;
 
 		} 
 		else if (strcmp(dist_type,"GEODESIC")==0)
@@ -337,11 +337,11 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 				delete d;
 				d= new CGeodesicMetric();
 				if (d)
-					CIO::message(M_INFO, "Geodesic-Distance created\n");
+					SG_INFO( "Geodesic-Distance created\n");
 				return d;
 			}
 			else
-				CIO::message(M_ERROR, "Geodesic-Distance expects REAL as data type \n") ;
+				SG_ERROR( "Geodesic-Distance expects REAL as data type \n") ;
 
 		}
 		else if (strcmp(dist_type,"JENSEN")==0)
@@ -351,20 +351,20 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 				delete d;
 				d= new CJensenMetric();
 				if (d)
-					CIO::message(M_INFO, "Jensen-Distance created\n");
+					SG_INFO( "Jensen-Distance created\n");
 				return d;
 			}
 			else
-				CIO::message(M_ERROR, "Jense-Distance expects REAL as data type \n") ;
+				SG_ERROR( "Jense-Distance expects REAL as data type \n") ;
 
 		}   
 		else
-			CIO::message(M_ERROR, "in this format only CANBERRA, CHEBYSHEW, GEODESIC, JENSEN, MANHATTEN, MINKOWSKI is accepted \n") ;
+			SG_ERROR( "in this format only CANBERRA, CHEBYSHEW, GEODESIC, JENSEN, MANHATTEN, MINKOWSKI is accepted \n") ;
 	} 
 	else 
-		CIO::message(M_ERROR, "see help for params!\n");
+		SG_ERROR( "see help for params!\n");
 
-	CIO::not_implemented();
+	io.not_implemented();
 	return NULL;
 }
 

@@ -81,9 +81,9 @@ bool CDistance::save(CHAR* fname)
 		for (INT r=0; r< (INT) num_right && f.is_ok(); r++)
 		{
 			if (!(i % (num_total/10+1)))
-				CIO::message(M_MESSAGEONLY, "%02d%%.", (int) (100.0*i/num_total));
+				SG_PRINT( "%02d%%.", (int) (100.0*i/num_total));
 			else if (!(i % (num_total/200+1)))
-				CIO::message(M_MESSAGEONLY, ".");
+				SG_PRINT( ".");
 
 			double k=distance(l,r);
 			f.save_real_data(&k, 1);
@@ -93,7 +93,7 @@ bool CDistance::save(CHAR* fname)
 	}
 
 	if (f.is_ok())
-		CIO::message(M_INFO, "distance matrix of size %ld x %ld written \n", num_left, num_right);
+		SG_INFO( "distance matrix of size %ld x %ld written \n", num_left, num_right);
 
     return (f.is_ok());
 }
@@ -115,7 +115,7 @@ void CDistance::do_precompute_matrix()
 	INT num_left=get_lhs()->get_num_vectors();
 	INT num_right=get_rhs()->get_num_vectors();
 
-	CIO::message(M_INFO, "precomputing distance matrix (%ix%i)\n", num_left, num_right) ;
+	SG_INFO( "precomputing distance matrix (%ix%i)\n", num_left, num_right) ;
 
 	ASSERT(num_left == num_right) ;
 	ASSERT(get_lhs()==get_rhs()) ;
@@ -128,11 +128,11 @@ void CDistance::do_precompute_matrix()
 
 	for (INT i=0; i<num; i++)
 	{
-		CIO::progress(i*i,0,num*num);
+		io.progress(i*i,0,num*num);
 		for (INT j=0; j<=i; j++)
 			precomputed_matrix[i*(i+1)/2+j] = compute(i,j) ;
 	}
 
-	CIO::progress(num*num,0,num*num);
-	CIO::message(M_INFO, "\ndone.\n") ;
+	io.progress(num*num,0,num*num);
+	SG_INFO( "\ndone.\n") ;
 }

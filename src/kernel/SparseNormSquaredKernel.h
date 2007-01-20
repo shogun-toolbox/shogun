@@ -21,7 +21,7 @@ class CSparseNormSquaredKernel: public CSparseKernel<DREAL>
   CSparseNormSquaredKernel(INT size);
   ~CSparseNormSquaredKernel();
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data

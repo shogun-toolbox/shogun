@@ -24,16 +24,16 @@ CSimpleLocalityImprovedCharKernel::~CSimpleLocalityImprovedCharKernel()
 	cleanup();
 }
 
-bool CSimpleLocalityImprovedCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CSimpleLocalityImprovedCharKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<CHAR>::init(l,r,do_init);
+	bool result=CSimpleKernel<CHAR>::init(l,r);
 
 	if (result)
 	  {
 	    INT num_features = ((CCharFeatures*) l)->get_num_features() ;
 	    match=new CHAR[num_features];
 	    pyramid_weights = new DREAL[num_features] ;
-	    CIO::message(M_INFO, "initializing pyramid weights: size=%ld length=%i\n", num_features, length) ;
+	    SG_INFO( "initializing pyramid weights: size=%ld length=%i\n", num_features, length) ;
 
 	    const INT PYRAL = 2 * length - 1; // total window length
 	    DREAL PYRAL_pot;
@@ -89,18 +89,7 @@ bool CSimpleLocalityImprovedCharKernel::save_init(FILE* dest)
 	return false;
 }
   
-static void ASSERT2 (const INT ok, const CHAR* const msg)
-{
-   if (! ok) {
-#ifdef HAVE_PYTHON
-      throw KernelException(msg);
-#else
-      CIO::message(M_ERROR, msg );
-#endif
-   }
-}
-
-static DREAL dot_pyr (const CHAR* const x1,
+DREAL CSimpleLocalityImprovedCharKernel::dot_pyr (const CHAR* const x1,
 		     const CHAR* const x2,
 		     const INT NOF_NTS,
 		     const INT NTWIDTH,
@@ -131,8 +120,8 @@ static DREAL dot_pyr (const CHAR* const x1,
     }
   } 
   
-  ASSERT2 ((DEGREE1 & ~0x7) == 0, "DEGREE1");
-  ASSERT2 ((DEGREE2 & ~0x7) == 0, "DEGREE2");
+  ASSERT ((DEGREE1 & ~0x7) == 0);
+  ASSERT ((DEGREE2 & ~0x7) == 0);
   
   pyra_len  = NOF_NTS - PYRAL + 1 ;
   pyra_len2 = (int) pyra_len / 2 ;
@@ -196,7 +185,7 @@ DREAL CSimpleLocalityImprovedCharKernel::compute(INT idx_a, INT idx_b)
   // can only deal with strings of same length
   ASSERT(alen==blen);
 
-  //  CIO::message("start: %ld %ld", avec, bvec) ;
+  //  SG_DEBUG( "start: %ld %ld", avec, bvec) ;
   DREAL dpt ; 
   //fprintf(stderr, "length=%i, alen=%ld, id=%i, od=%i\n", length, alen, inner_degree, outer_degree) ;
   
@@ -207,7 +196,7 @@ DREAL CSimpleLocalityImprovedCharKernel::compute(INT idx_a, INT idx_b)
 		 outer_degree, 
 		 match, pyramid_weights) ;
   dpt = dpt / pow((double)alen, (double)outer_degree) ;
-  //CIO::message("end") ;
+  //SG_DEBUG( "end") ;
   //fprintf(stderr, "dpt=%f\n", dpt) ;
 
   ((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);

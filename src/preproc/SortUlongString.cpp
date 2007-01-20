@@ -50,7 +50,7 @@ bool CSortUlongString::save(FILE* f)
 /// apply preproc on feature matrix
 /// result in feature matrix
 /// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-bool CSortUlongString::apply_to_feature_strings(CFeatures* f)
+bool CSortUlongString::apply_to_string_features(CFeatures* f)
 {
 	INT i;
 	INT num_vec=((CStringFeatures<ULONG>*)f)->get_num_vectors() ;
@@ -59,7 +59,7 @@ bool CSortUlongString::apply_to_feature_strings(CFeatures* f)
 	{
 		INT len = 0 ;
 		ULONG* vec = ((CStringFeatures<ULONG>*)f)->get_feature_vector(i, len) ;
-		//CIO::message(M_DEBUG, "sorting string of length %i\n", len) ;
+		//SG_DEBUG( "sorting string of length %i\n", len) ;
 		
 		CMath::qsort(vec, len);
 	}
@@ -67,7 +67,7 @@ bool CSortUlongString::apply_to_feature_strings(CFeatures* f)
 }
 
 /// apply preproc on single feature vector
-ULONG* CSortUlongString::apply_to_feature_string(ULONG* f, INT& len)
+ULONG* CSortUlongString::apply_to_string(ULONG* f, INT& len)
 {
 	ULONG* vec=new ULONG[len];
 	INT i=0;

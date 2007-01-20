@@ -25,9 +25,9 @@ CPolyMatchCharKernel::~CPolyMatchCharKernel()
 	cleanup();
 }
   
-bool CPolyMatchCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CPolyMatchCharKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<CHAR>::init(l,r,do_init);
+	bool result=CSimpleKernel<CHAR>::init(l,r);
 
 	initialized = false ;
 	INT i;

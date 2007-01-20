@@ -23,8 +23,10 @@ CVersion::CVersion()
 	version_hour = VERSION_HOUR;
 	version_minute = VERSION_MINUTE;
 
-	CIO::message(M_MESSAGEONLY, "shogun (%s/%s/%s-%d)\n\n (W) 2000-2006 Soeren Sonnenburg, Gunnar Raetsch\n\n", TARGET, MACHINE, VERSION_RELEASE, version_revision);
-	CIO::message(M_MESSAGEONLY, "( configure options: \"%s\" compile flags: \"%s\" link flags: \"%s\" )\n", CONFIGURE_OPTIONS, COMPFLAGS_CPP, LINKFLAGS);
+#ifndef HAVE_SWIG
+	SG_SPRINT( "shogun (%s/%s/%s-%d)\n\n (W) 2000-2006 Soeren Sonnenburg, Gunnar Raetsch\n\n", TARGET, MACHINE, VERSION_RELEASE, version_revision);
+	SG_SPRINT( "( configure options: \"%s\" compile flags: \"%s\" link flags: \"%s\" )\n", CONFIGURE_OPTIONS, COMPFLAGS_CPP, LINKFLAGS);
+#endif
 }
 
 

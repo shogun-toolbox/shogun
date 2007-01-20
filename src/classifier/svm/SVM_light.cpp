@@ -201,7 +201,7 @@ bool CSVMLight::init_cplex()
 {
 	while (env==NULL)
 	{
-		CIO::message(M_INFO, "trying to initialize CPLEX\n") ;
+		SG_INFO( "trying to initialize CPLEX\n") ;
 
 		int status = 0;
 		env = CPXopenCPLEX (&status);
@@ -209,10 +209,10 @@ bool CSVMLight::init_cplex()
 		if ( env == NULL )
 		{
 			char  errmsg[1024];
-			CIO::message(M_WARN, "Could not open CPLEX environment.\n");
+			SG_WARNING( "Could not open CPLEX environment.\n");
 			CPXgeterrorstring (env, status, errmsg);
-			CIO::message(M_WARN, "%s", errmsg);
-			CIO::message(M_WARN, "retrying in 60 seconds\n");
+			SG_WARNING( "%s", errmsg);
+			SG_WARNING( "retrying in 60 seconds\n");
 			sleep(60);
 		}
 		else
@@ -220,21 +220,21 @@ bool CSVMLight::init_cplex()
 			status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2);
 			if ( status )
 			{
-            sg_error(sg_err_fun,"Failure to select dual lp optimization, error %d.\n", status);
+            SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status);
 			}
 			else
 			{
 				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
 				if ( status )
 				{
-               sg_error(sg_err_fun,"Failure to turn on data checking, error %d.\n", status);
+               SG_ERROR( "Failure to turn on data checking, error %d.\n", status);
 				}	
 				else
 				{
 					lp = CPXcreateprob (env, &status, "light");
 
 					if ( lp == NULL )
-                  sg_error(sg_err_fun,"Failed to create LP.\n");
+                  SG_ERROR( "Failed to create LP.\n");
 					else
 						CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
 				}
@@ -256,7 +256,7 @@ bool CSVMLight::cleanup_cplex()
 		lp_initialized = false;
 
 		if (status)
-			CIO::message(M_WARN, "CPXfreeprob failed, error code %d.\n", status);
+			SG_WARNING( "CPXfreeprob failed, error code %d.\n", status);
 		else
 			result = true;
 	}
@@ -269,9 +269,9 @@ bool CSVMLight::cleanup_cplex()
 		if (status)
 		{
 			char  errmsg[1024];
-			CIO::message(M_WARN, "Could not close CPLEX environment.\n");
+			SG_WARNING( "Could not close CPLEX environment.\n");
 			CPXgeterrorstring (env, status, errmsg);
-			CIO::message(M_WARN, "%s", errmsg);
+			SG_WARNING( "%s", errmsg);
 		}
 		else
 			result = true;
@@ -307,7 +307,7 @@ CSVMLight::~CSVMLight()
 
 bool CSVMLight::setup_auc_maximization()
 {
-	CIO::message(M_INFO, "setting up AUC maximization\n") ;
+	SG_INFO( "setting up AUC maximization\n") ;
 	
 	// get the original labels
 	INT num=0;
@@ -327,7 +327,7 @@ bool CSVMLight::setup_auc_maximization()
 	
 	// create AUC features and labels (alternate labels)
 	INT num_auc = num_pos*num_neg ;
-	CIO::message(M_INFO, "num_pos: %i  num_neg: %i  num_auc: %i\n", num_pos, num_neg, num_auc) ;
+	SG_INFO( "num_pos: %i  num_neg: %i  num_auc: %i\n", num_pos, num_neg, num_auc) ;
 
 	WORD* features_auc = new WORD[num_auc*2] ;
 	INT* labels_auc = new INT[num_auc] ;
@@ -364,7 +364,7 @@ bool CSVMLight::setup_auc_maximization()
 
 	// create AUC kernel and attach the features
 	CAUCKernel* k= new CAUCKernel(10, get_kernel()) ;
-	kernel->init(f,f,1) ;
+	kernel->init(f,f);
 
 	set_kernel(k) ;
 
@@ -406,7 +406,7 @@ bool CSVMLight::train()
 
 	if (!CKernelMachine::get_kernel())
 	{
-      sg_error(sg_err_fun,"SVM_light can not proceed without kernel!\n");
+      SG_ERROR( "SVM_light can not proceed without kernel!\n");
 		return false ;
 	}
 
@@ -423,29 +423,29 @@ bool CSVMLight::train()
 		get_kernel()->clear_normal() ;
 
 	// output some info
-	CIO::message(M_DEBUG, "threads = %i\n", CParallel::get_num_threads()) ;
-	CIO::message(M_DEBUG, "qpsize = %i\n", learn_parm->svm_maxqpsize) ;
-	CIO::message(M_DEBUG, "epsilon = %1.1e\n", learn_parm->epsilon_crit) ;
-	CIO::message(M_DEBUG, "weight_epsilon = %1.1e\n", weight_epsilon) ;
-	CIO::message(M_DEBUG, "C_mkl = %1.1e\n", C_mkl) ;
-	CIO::message(M_DEBUG, "get_kernel()->has_property(KP_LINADD) = %i\n", get_kernel()->has_property(KP_LINADD)) ;
-	CIO::message(M_DEBUG, "get_kernel()->has_property(KP_KERNCOMBINATION) = %i\n", get_kernel()->has_property(KP_KERNCOMBINATION)) ;
-	CIO::message(M_DEBUG, "get_kernel()->has_property(KP_BATCHEVALUATION) = %i\n", get_kernel()->has_property(KP_BATCHEVALUATION)) ;
-	CIO::message(M_DEBUG, "get_kernel()->get_optimization_type() = %s\n", get_kernel()->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" ) ;
-	CIO::message(M_DEBUG, "get_mkl_enabled() = %i\n", get_mkl_enabled()) ;
-	CIO::message(M_DEBUG, "get_linadd_enabled() = %i\n", get_linadd_enabled()) ;
-	CIO::message(M_DEBUG, "get_batch_computation_enabled() = %i\n", get_batch_computation_enabled()) ;
-	CIO::message(M_DEBUG, "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
-	CIO::message(M_DEBUG, "estimated time: %1.1f minutes\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/60) ;
+	SG_DEBUG( "threads = %i\n", CParallel::get_num_threads()) ;
+	SG_DEBUG( "qpsize = %i\n", learn_parm->svm_maxqpsize) ;
+	SG_DEBUG( "epsilon = %1.1e\n", learn_parm->epsilon_crit) ;
+	SG_DEBUG( "weight_epsilon = %1.1e\n", weight_epsilon) ;
+	SG_DEBUG( "C_mkl = %1.1e\n", C_mkl) ;
+	SG_DEBUG( "get_kernel()->has_property(KP_LINADD) = %i\n", get_kernel()->has_property(KP_LINADD)) ;
+	SG_DEBUG( "get_kernel()->has_property(KP_KERNCOMBINATION) = %i\n", get_kernel()->has_property(KP_KERNCOMBINATION)) ;
+	SG_DEBUG( "get_kernel()->has_property(KP_BATCHEVALUATION) = %i\n", get_kernel()->has_property(KP_BATCHEVALUATION)) ;
+	SG_DEBUG( "get_kernel()->get_optimization_type() = %s\n", get_kernel()->get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT" ) ;
+	SG_DEBUG( "get_mkl_enabled() = %i\n", get_mkl_enabled()) ;
+	SG_DEBUG( "get_linadd_enabled() = %i\n", get_linadd_enabled()) ;
+	SG_DEBUG( "get_batch_computation_enabled() = %i\n", get_batch_computation_enabled()) ;
+	SG_DEBUG( "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
+	SG_DEBUG( "estimated time: %1.1f minutes\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/60) ;
 
 	use_kernel_cache = !(use_precomputed_subkernels || (get_kernel()->get_kernel_type() == K_CUSTOM) ||
 						 (get_linadd_enabled() && get_kernel()->has_property(KP_LINADD)) ||
 						 get_kernel()->get_precompute_matrix() || 
 						 get_kernel()->get_precompute_subkernel_matrix()) ;
 
-	CIO::message(M_DEBUG, "get_kernel()->get_precompute_matrix() = %i\n", get_kernel()->get_precompute_matrix()) ;
-	CIO::message(M_DEBUG, "get_kernel()->get_precompute_subkernel_matrix() = %i\n", get_kernel()->get_precompute_subkernel_matrix()) ;
-	CIO::message(M_DEBUG, "use_kernel_cache = %i\n", use_kernel_cache) ;
+	SG_DEBUG( "get_kernel()->get_precompute_matrix() = %i\n", get_kernel()->get_precompute_matrix()) ;
+	SG_DEBUG( "get_kernel()->get_precompute_subkernel_matrix() = %i\n", get_kernel()->get_precompute_subkernel_matrix()) ;
+	SG_DEBUG( "use_kernel_cache = %i\n", use_kernel_cache) ;
 
 #ifdef USE_CPLEX
 	cleanup_cplex();
@@ -454,7 +454,7 @@ bool CSVMLight::train()
 		init_cplex();
 #else
 	if (get_mkl_enabled())
-      sg_error(sg_err_fun,"CPLEX was disabled at compile-time\n");
+      SG_ERROR( "CPLEX was disabled at compile-time\n");
 #endif
 	
 	if (precomputed_subkernels != NULL)
@@ -500,17 +500,17 @@ bool CSVMLight::train()
 
 			SHORTREAL * matrix = precomputed_subkernels[n] ;
 			
-			CIO::message(M_INFO, "precomputing kernel matrix %i (%ix%i)\n", n, num, num) ;
+			SG_INFO( "precomputing kernel matrix %i (%ix%i)\n", n, num, num) ;
 			for (INT i=0; i<num; i++)
 			{
-				CIO::progress(i*i,0,num*num);
+				io.progress(i*i,0,num*num);
 				
 				for (INT j=0; j<=i; j++)
 					matrix[i*(i+1)/2+j] = k->kernel(i,j) ;
 
 			}
-			CIO::progress(num*num,0,num*num);
-			CIO::message(M_INFO, "\ndone.\n") ;
+			io.progress(num*num,0,num*num);
+			SG_INFO( "\ndone.\n") ;
 			w1[n]=0.0 ;
 		}
 
@@ -674,10 +674,10 @@ void CSVMLight::svm_learn()
 	}
 
   /* compute starting state for initial alpha values */
-	CIO::message(M_DEBUG, "alpha:%d num_sv:%d\n", svm_model.alpha, get_num_support_vectors());
+	SG_DEBUG( "alpha:%d num_sv:%d\n", svm_model.alpha, get_num_support_vectors());
   if(svm_model.alpha && get_num_support_vectors()) {
     if(verbosity>=1) {
-		CIO::message(M_INFO, "Computing starting state...");
+		SG_INFO( "Computing starting state...");
     }
 
 	DREAL* alpha = new DREAL[totdoc];
@@ -750,11 +750,11 @@ void CSVMLight::svm_learn()
     delete[] alpha;
 
     if(verbosity>=1) {
-		CIO::message(M_INFO,"done.\n");
+		SG_INFO("done.\n");
     }   
   } 
-		CIO::message(M_DEBUG, "%d totdoc %d pos %d neg\n", totdoc, trainpos, trainneg);
-		CIO::message(M_DEBUG, "Optimizing...\n");
+		SG_DEBUG( "%d totdoc %d pos %d neg\n", totdoc, trainpos, trainneg);
+		SG_DEBUG( "Optimizing...\n");
 
 	/* train the svm */
   iterations=optimize_to_convergence(docs,label,totdoc,
@@ -766,7 +766,7 @@ void CSVMLight::svm_learn()
 
 	if(verbosity>=1) {
 		if(verbosity==1)
-			CIO::message(M_INFO, "done. (%ld iterations)\n",iterations);
+			SG_INFO( "done. (%ld iterations)\n",iterations);
 
 		misclassified=0;
 		for(i=0;(i<totdoc);i++) { /* get final statistic */
@@ -774,12 +774,12 @@ void CSVMLight::svm_learn()
 				misclassified++;
 		}
 
-		CIO::message(M_INFO, "Optimization finished (%ld misclassified, maxdiff=%.8f).\n",
+		SG_INFO( "Optimization finished (%ld misclassified, maxdiff=%.8f).\n",
 				misclassified,maxdiff); 
 
-		CIO::message(M_INFO, "obj = %.16f, rho = %.16f\n",get_objective(),model->b);
+		SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),model->b);
 		if (maxdiff>epsilon)
-			CIO::message(M_WARN, "maximum violation (%f) exceeds svm_epsilon (%f) due to numerical difficulties\n", maxdiff, epsilon); 
+			SG_WARNING( "maximum violation (%f) exceeds svm_epsilon (%f) due to numerical difficulties\n", maxdiff, epsilon); 
 
 		runtime_end=get_runtime();
 		upsupvecnum=0;
@@ -790,7 +790,7 @@ void CSVMLight::svm_learn()
 					 learn_parm->epsilon_a)) 
 				upsupvecnum++;
 		}
-		CIO::message(M_INFO, "Number of SV: %ld (including %ld at upper bound)\n",
+		SG_INFO( "Number of SV: %ld (including %ld at upper bound)\n",
 				model->sv_num-1,upsupvecnum);
 	}
 
@@ -857,7 +857,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
   learn_parm->epsilon_shrink=2;
   (*maxdiff)=1;
 
-  CIO::message(M_DEBUG,"totdoc:%d\n",totdoc);
+  SG_DEBUG("totdoc:%d\n",totdoc);
   chosen = new INT[totdoc];
   last_suboptimal_at =new INT[totdoc];
   key =new INT[totdoc+11];
@@ -920,7 +920,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 	  
 	  if(verbosity>=2) t0=get_runtime();
 	  if(verbosity>=3) {
-		  CIO::message(M_DEBUG, "\nSelecting working set... "); 
+		  SG_DEBUG( "\nSelecting working set... "); 
 	  }
 	  
 	  if(learn_parm->svm_newvarsinqp>learn_parm->svm_maxqpsize) 
@@ -1017,7 +1017,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 	  }
 
 	  if(verbosity>=2) {
-		  CIO::message(M_INFO, " %ld vectors chosen\n",choosenum); 
+		  SG_INFO( " %ld vectors chosen\n",choosenum); 
 	  }
 	  
 	  if(verbosity>=2) t1=get_runtime();
@@ -1087,20 +1087,20 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 		  /* INT time no progress? */
 		  terminate=1;
 		  retrain=0;
-		  CIO::message(M_WARN, "Relaxing KT-Conditions due to slow progress! Terminating!\n");
+		  SG_WARNING( "Relaxing KT-Conditions due to slow progress! Terminating!\n");
 	  }
 	  
 	  noshrink= (get_shrinking_enabled()) ? 0 : 1;
 	  if ((!get_mkl_enabled()) && (!retrain) && (inactivenum>0) && ((!learn_parm->skip_final_opt_check) || (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled()))) { 
 		  t1=get_runtime();
-		  CIO::message(M_DEBUG, "reactivating inactive examples\n");
+		  SG_DEBUG( "reactivating inactive examples\n");
 
 		  reactivate_inactive_examples(label,a,shrink_state,lin,c,totdoc,
 									   iteration,inconsistent,
 									   docs,aicache,
 									   maxdiff);
 		  reactivated=true;
-		  CIO::message(M_DEBUG, "done reactivating inactive examples (maxdiff:%8f eps_crit:%8f orig_eps:%8f)\n", *maxdiff, learn_parm->epsilon_crit, epsilon_crit_org);
+		  SG_DEBUG( "done reactivating inactive examples (maxdiff:%8f eps_crit:%8f orig_eps:%8f)\n", *maxdiff, learn_parm->epsilon_crit, epsilon_crit_org);
 		  /* Update to new active variables. */
 		  activenum=compute_index(shrink_state->active,totdoc,active2dnum);
 		  inactivenum=totdoc-activenum;
@@ -1113,14 +1113,14 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 		  retrain=0;
 		  if((*maxdiff) > learn_parm->epsilon_crit) 
 		  {
-			  CIO::message(M_INFO, "restarting optimization as we are - due to shrinking - deviating too much (maxdiff(%f) > eps(%f))\n", *maxdiff, learn_parm->epsilon_crit);
+			  SG_INFO( "restarting optimization as we are - due to shrinking - deviating too much (maxdiff(%f) > eps(%f))\n", *maxdiff, learn_parm->epsilon_crit);
 		      retrain=1;
 		  }
 		  timing_profile->time_shrink+=get_runtime()-t1;
 		  if (((verbosity>=1) && (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())))
 		     || (verbosity>=2)) {
-		      CIO::message(M_INFO, "done.\n");
-		      CIO::message(M_INFO, "Number of inactive variables = %ld\n",inactivenum);
+		      SG_INFO( "done.\n");
+		      SG_INFO( "Number of inactive variables = %ld\n",inactivenum);
 		  }		  
 	  }
 	  
@@ -1135,7 +1135,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 		  learn_parm->epsilon_crit=epsilon_crit_org;
 	  
 	  if(verbosity>=2) {
-		  CIO::message(M_INFO, " => (%ld SV (incl. %ld SV at u-bound), max violation=%.5f)\n",
+		  SG_INFO( " => (%ld SV (incl. %ld SV at u-bound), max violation=%.5f)\n",
 					   supvecnum,model->at_upper_bound,(*maxdiff)); 
 		  
 	  }
@@ -1163,18 +1163,18 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 	  if (bestmaxdiff>worstmaxdiff)
 		  worstmaxdiff=bestmaxdiff;
 
-	  CIO::absolute_progress(bestmaxdiff, -CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon), 6);
+	  io.absolute_progress(bestmaxdiff, -CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon), 6);
   } /* end of loop */
 
-  CIO::message(M_DEBUG, "inactive:%d\n", inactivenum);
+  SG_DEBUG( "inactive:%d\n", inactivenum);
   if ((!get_mkl_enabled()) && inactivenum && !reactivated)
   {
-      CIO::message(M_DEBUG, "reactivating inactive examples\n");
+      SG_DEBUG( "reactivating inactive examples\n");
       reactivate_inactive_examples(label,a,shrink_state,lin,c,totdoc,
     		  iteration,inconsistent,
     		  docs,aicache,
     		  maxdiff);
-      CIO::message(M_DEBUG, "done reactivating inactive examples\n");
+      SG_DEBUG( "done reactivating inactive examples\n");
       /* Update to new active variables. */
       activenum=compute_index(shrink_state->active,totdoc,active2dnum);
       inactivenum=totdoc-activenum;
@@ -1227,7 +1227,7 @@ double CSVMLight::compute_objective_function(double *a, double *lin, double *c, 
 		  check+= 0.5*a[i]*label[i]*a[j]*label[j]*get_kernel()->kernel(i,j);
   }
 
-  CIO::message(M_INFO,"CLASSIFICATION OBJECTIVE %f vs. CHECK %f (diff %f)\n", criterion, check, criterion-check);
+  SG_INFO("CLASSIFICATION OBJECTIVE %f vs. CHECK %f (diff %f)\n", criterion, check, criterion-check);
   */
 
   return(criterion);
@@ -1291,7 +1291,7 @@ void CSVMLight::optimize_svm(INT* docs, INT* label,
 									  varnum,totdoc,aicache,qp);
 
     if(verbosity>=3) {
-     CIO::message(M_DEBUG, "Running optimizer...");
+     SG_DEBUG( "Running optimizer...");
     }
     /* call the qp-subsolver */
     a_v=optimize_qp(qp,epsilon_crit_target,
@@ -1300,7 +1300,7 @@ void CSVMLight::optimize_svm(INT* docs, INT* label,
             learn_parm->svm_maxqpsize); /* the threshold for free. otherwise */
                                    		/* b is calculated in calculate_model. */
     if(verbosity>=3) {         
-     CIO::message(M_DEBUG, "done\n");
+     SG_DEBUG( "done\n");
     }
 
     for(i=0;i<varnum;i++)
@@ -1367,7 +1367,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(INT* docs, INT* label
 		pthread_t threads[CParallel::get_num_threads()-1];
 		S_THREAD_PARAM_KERNEL params[CParallel::get_num_threads()-1];
 		INT step= Knum/CParallel::get_num_threads();
-		//CIO::message(M_DEBUG, "\nkernel-step size: %i\n", step) ;
+		//SG_DEBUG( "\nkernel-step size: %i\n", step) ;
 		for (INT t=0; t<CParallel::get_num_threads()-1; t++)
 		{
 			params[t].kernel = CKernelMachine::get_kernel() ;
@@ -1414,7 +1414,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(INT* docs, INT* label
 
 			if(verbosity>=3) {
 				if(i % 20 == 0) {
-					CIO::message(M_DEBUG, "%ld..",i);
+					SG_DEBUG( "%ld..",i);
 				}
 			}
 		}
@@ -1431,7 +1431,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(INT* docs, INT* label
 		}
 
 		if(verbosity>=3) {
-			CIO::message(M_DEBUG, "done\n");
+			SG_DEBUG( "done\n");
 		}
 	}
 #endif
@@ -1493,7 +1493,7 @@ void CSVMLight::compute_matrices_for_optimization(INT* docs, INT* label,
 	  
 	  if(verbosity>=3) {
 		  if(i % 20 == 0) {
-			  CIO::message(M_DEBUG, "%ld..",i);
+			  SG_DEBUG( "%ld..",i);
 		  }
 	  }
   }
@@ -1506,7 +1506,7 @@ void CSVMLight::compute_matrices_for_optimization(INT* docs, INT* label,
   }
   
   if(verbosity>=3) {
-	  CIO::message(M_DEBUG, "done\n");
+	  SG_DEBUG( "done\n");
   }
 }
 
@@ -1521,7 +1521,7 @@ INT CSVMLight::calculate_svm_model(INT* docs, INT *label,
   double ex_c,b_temp,b_low,b_high;
 
   if(verbosity>=3) {
-   CIO::message(M_DEBUG, "Calculating model...");
+   SG_DEBUG( "Calculating model...");
   }
 
   if(!learn_parm->biased_hyperplane) {
@@ -1623,7 +1623,7 @@ INT CSVMLight::calculate_svm_model(INT* docs, INT *label,
   }
 
   if(verbosity>=3) {
-   CIO::message(M_DEBUG, "done\n");
+   SG_DEBUG( "done\n");
   }
 
   return(model->sv_num-1); /* have to substract one, since element 0 is empty*/
@@ -1819,7 +1819,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 	{
 		if (!lp_initialized)
 		{
-			CIO::message(M_INFO, "creating LP\n") ;
+			SG_INFO( "creating LP\n") ;
 			
 			INT NUMCOLS = 2*num_kernels + 1 ;
 			double   obj[NUMCOLS];
@@ -1843,11 +1843,11 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 			if ( status ) {
 				char  errmsg[1024];
 				CPXgeterrorstring (env, status, errmsg);
-            sg_error(sg_err_fun,"%s", errmsg);
+            SG_ERROR( "%s", errmsg);
 			}
 			
 			// add constraint sum(w)=1 ;
-			CIO::message(M_INFO, "adding the first row\n") ;
+			SG_INFO( "adding the first row\n") ;
 			int initial_rmatbeg[1] ;
 			int initial_rmatind[num_kernels+1] ;
 			double initial_rmatval[num_kernels+1] ;
@@ -1870,7 +1870,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 								 initial_rhs, initial_sense, initial_rmatbeg,
 								 initial_rmatind, initial_rmatval, NULL, NULL);
 			if ( status ) {
-            sg_error(sg_err_fun,"Failed to add the first row.\n");
+            SG_ERROR( "Failed to add the first row.\n");
 			}
 			lp_initialized = true ;
 			
@@ -1897,7 +1897,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-                  sg_error(sg_err_fun,"Failed to add a smothness row (1).\n");
+                  SG_ERROR( "Failed to add a smothness row (1).\n");
 					}
 					
 					rmatbeg[0] = 0;
@@ -1913,16 +1913,16 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-                  sg_error(sg_err_fun,"Failed to add a smothness row (2).\n");
+                  SG_ERROR( "Failed to add a smothness row (2).\n");
 					}
 				}
 			}
 		}
 
-		CIO::message(M_DEBUG, "*") ;
+		SG_DEBUG( "*") ;
 		
 		{ // add the new row
-			//CIO::message(M_INFO, "add the new row\n") ;
+			//SG_INFO( "add the new row\n") ;
 			
 			int rmatbeg[1] ;
 			int rmatind[num_kernels+1] ;
@@ -1946,13 +1946,13 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 									 rhs, sense, rmatbeg,
 									 rmatind, rmatval, NULL, NULL);
 			if ( status ) 
-            sg_error(sg_err_fun,"Failed to add the new row.\n");
+            SG_ERROR( "Failed to add the new row.\n");
 		}
 		
 		{ // optimize
 			INT status = CPXlpopt (env, lp);
 			if ( status ) 
-            sg_error(sg_err_fun,"Failed to optimize LP.\n");
+            SG_ERROR( "Failed to optimize LP.\n");
 			
 			// obtain solution
 			INT cur_numrows = CPXgetnumrows (env, lp);
@@ -1970,14 +1970,14 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 				 slack == NULL ||
 				 pi    == NULL   ) {
 				status = CPXERR_NO_MEMORY;
-            sg_error(sg_err_fun,"Could not allocate memory for solution.\n");
+            SG_ERROR( "Could not allocate memory for solution.\n");
 			}
 			INT solstat = 0 ;
 			DREAL objval = 0 ;
 			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
 			INT solution_ok = (!status) ;
 			if ( status ) {
-            sg_error(sg_err_fun,"Failed to obtain solution.\n");
+            SG_ERROR( "Failed to obtain solution.\n");
 			}
 			
 			num_active_rows=0 ;
@@ -2004,10 +2004,10 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 				// have at most max(100,num_active_rows*2) rows, if not, remove one
 				if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 				{
-					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_row,num_rows) ;
+					//SG_INFO( "-%i(%i,%i)",max_idx,start_row,num_rows) ;
 					status = CPXdelrows (env, lp, max_idx, max_idx) ;
 					if ( status ) 
-                  sg_error(sg_err_fun,"Failed to remove an old row.\n");
+                  SG_ERROR( "Failed to remove an old row.\n");
 				}
 
 				// set weights, store new rho and compute new w gap
@@ -2047,7 +2047,7 @@ void CSVMLight::update_linear_component_mkl(INT* docs, INT* label,
 		INT start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		SG_DEBUG("\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
 	}
 	
 	delete[] sumw;
@@ -2161,10 +2161,10 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 
 	if ((w_gap >= 0.9999*get_weight_epsilon()))// && (mymaxdiff < prev_mymaxdiff/2.0))
 	{
-		CIO::message(M_DEBUG, "*") ;
+		SG_DEBUG( "*") ;
 		if (!lp_initialized)
 		{
-			CIO::message(M_INFO, "creating LP\n") ;
+			SG_INFO( "creating LP\n") ;
 			
 			INT NUMCOLS = 2*num_kernels + 1 ;
 			double   obj[NUMCOLS];
@@ -2188,7 +2188,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 			if ( status ) {
 				char  errmsg[1024];
 				CPXgeterrorstring (env, status, errmsg);
-            sg_error(sg_err_fun,"%s", errmsg);
+            SG_ERROR( "%s", errmsg);
 			}
 			
 			// add constraint sum(w)=1 ;
@@ -2214,7 +2214,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 								 initial_rhs, initial_sense, initial_rmatbeg,
 								 initial_rmatind, initial_rmatval, NULL, NULL);
 			if ( status ) {
-            sg_error(sg_err_fun,"Failed to add the first row.\n");
+            SG_ERROR( "Failed to add the first row.\n");
 			}
 			lp_initialized=true ;
 			if (C_mkl!=0.0)
@@ -2242,7 +2242,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-                  sg_error(sg_err_fun,"Failed to add a smothness row (1).\n");
+                  SG_ERROR( "Failed to add a smothness row (1).\n");
 					}
 					
 					rmatbeg[0] = 0;
@@ -2258,14 +2258,14 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 										 rhs, sense, rmatbeg,
 										 rmatind, rmatval, NULL, NULL);
 					if ( status ) {
-                  sg_error(sg_err_fun,"Failed to add a smothness row (2).\n");
+                  SG_ERROR( "Failed to add a smothness row (2).\n");
 					}
 				}
 			}
 		}
 		
 		{ // add the new row
-			//CIO::message(M_INFO, "add the new row\n") ;
+			//SG_INFO( "add the new row\n") ;
 			
 			int rmatbeg[1] ;
 			int rmatind[num_kernels+1] ;
@@ -2289,13 +2289,13 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 									 rhs, sense, rmatbeg,
 									 rmatind, rmatval, NULL, NULL);
 			if ( status ) 
-            sg_error(sg_err_fun,"Failed to add the new row.\n");
+            SG_ERROR( "Failed to add the new row.\n");
 		}
 		
 		{ // optimize
 			INT status = CPXlpopt (env, lp);
 			if ( status ) 
-            sg_error(sg_err_fun,"Failed to optimize LP.\n");
+            SG_ERROR( "Failed to optimize LP.\n");
 			
 			// obtain solution
 			INT cur_numrows = CPXgetnumrows (env, lp);
@@ -2313,14 +2313,14 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 				 slack == NULL ||
 				 pi    == NULL   ) {
 				status = CPXERR_NO_MEMORY;
-            sg_error(sg_err_fun,"Could not allocate memory for solution.\n");
+            SG_ERROR( "Could not allocate memory for solution.\n");
 			}
 			INT solstat = 0 ;
 			DREAL objval = 0 ;
 			status = CPXsolution (env, lp, &solstat, &objval, x, pi, slack, NULL);
 			INT solution_ok = (!status) ;
 			if ( status ) {
-            sg_error(sg_err_fun,"Failed to obtain solution.\n");
+            SG_ERROR( "Failed to obtain solution.\n");
 			}
 			
 			num_active_rows=0 ;
@@ -2347,10 +2347,10 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 				// have at most max(100,num_active_rows*2) rows, if not, remove one
 				if ( (num_rows-start_row>CMath::max(100,2*num_active_rows)) && (max_idx!=-1))
 				{
-					//CIO::message(M_INFO, "-%i(%i,%i)",max_idx,start_row,num_rows) ;
+					//SG_INFO( "-%i(%i,%i)",max_idx,start_row,num_rows) ;
 					status = CPXdelrows (env, lp, max_idx, max_idx) ;
 					if ( status ) 
-                  sg_error(sg_err_fun,"Failed to remove an old row.\n");
+                  SG_ERROR( "Failed to remove an old row.\n");
 				}
 
 				// set weights, store new rho and compute new w gap
@@ -2390,7 +2390,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 		INT start_row = 1 ;
 		if (C_mkl!=0.0)
 			start_row+=2*(num_kernels-1);
-		CIO::message(M_DEBUG,"\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
+		SG_DEBUG("\n%i. OBJ: %f  RHO: %f  wgap=%f agap=%f (activeset=%i; active rows=%i/%i)\n", count, mkl_objective,rho,w_gap,mymaxdiff,jj,num_active_rows,num_rows-start_row);
 	}
 	
 	delete[] sumw;
@@ -2771,7 +2771,7 @@ INT CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 	  /* Shrink problem by removing those variables which are */
 	  /* optimal at a bound for a minimum number of iterations */
 	  if(verbosity>=2) {
-		  CIO::message(M_INFO, " Shrinking...");
+		  SG_INFO( " Shrinking...");
 	  }
 
 	  if (!(get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())) { /*  non-linear case save alphas */
@@ -2797,8 +2797,8 @@ INT CSVMLight::shrink_problem(SHRINK_STATE *shrink_state,
 		  shrink_state->deactnum=0;
 
 	  if(verbosity>=2) {
-		  CIO::message(M_INFO, "done.\n");
-		  CIO::message(M_INFO, " Number of inactive variables = %ld\n",totdoc-activenum);
+		  SG_INFO( "done.\n");
+		  SG_INFO( " Number of inactive variables = %ld\n",totdoc-activenum);
 	  }
   }
   return(activenum);
@@ -2889,7 +2889,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 
 	  if (!use_batch_computation || !get_kernel()->has_property(KP_BATCHEVALUATION))
 	  {
-		  CIO::message(M_DEBUG, " clear normal - linadd\n");
+		  SG_DEBUG( " clear normal - linadd\n");
 		  get_kernel()->clear_normal();
 
 		  INT num_modified=0;
@@ -3029,7 +3029,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 	  for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) // Conditional jump or move depends on uninitialised value(s)
 	  {
 		  if(verbosity>=2) {
-			  CIO::message(M_INFO, "%ld..",t);
+			  SG_INFO( "%ld..",t);
 		  }
 		  a_old=shrink_state->a_history[t];    
 		  for(i=0;i<totdoc;i++) {

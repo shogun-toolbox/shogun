@@ -15,6 +15,8 @@
 #include "lib/config.h"
 
 #ifndef HAVE_SWIG
+#include "base/SGObject.h"
+
 #include "guilib/GUIHMM.h"
 #include "guilib/GUISVM.h"
 #include "guilib/GUIClassifier.h"
@@ -29,7 +31,7 @@
 
 #include "guilib/GUIDistance.h"
 
-class CGUI
+class CGUI : public CSGObject
 {
  public:
 

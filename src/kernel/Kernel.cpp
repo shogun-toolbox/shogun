@@ -44,7 +44,7 @@ CKernel::CKernel(INT size)
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 #endif //USE_SVMLIGHT
 	if (get_is_initialized()) 
-      sg_error(sg_err_fun,"COptimizableKernel still initialized on destruction");
+      SG_ERROR( "COptimizableKernel still initialized on destruction");
 }
 
 		
@@ -62,15 +62,15 @@ CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, INT size)
 	memset(&kernel_cache, 0x0, sizeof(KERNEL_CACHE));
 #endif //USE_SVMLIGHT
 	if (get_is_initialized()) 
-      sg_error(sg_err_fun,"COptimizableKernel still initialized on destruction");
+      SG_ERROR( "COptimizableKernel still initialized on destruction");
 
-	init(p_lhs, p_rhs, true);
+	init(p_lhs, p_rhs);
 }
 
 CKernel::~CKernel()
 {
 	if (get_is_initialized()) 
-      sg_error(sg_err_fun,"COptimizableKernel still initialized on destruction");
+      SG_ERROR( "COptimizableKernel still initialized on destruction");
 
 
 #ifdef USE_SVMLIGHT
@@ -98,9 +98,9 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 
 		LONG total_num = num_vec1 * num_vec2;
 		INT num_done = 0;
-		CIO::message(M_MESSAGEONLY, "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
+		SG_PRINT( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 
-		CIO::message(M_DEBUG, "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
+		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 
 		result=new DREAL[total_num];
 		ASSERT(result);
@@ -117,7 +117,7 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 					result[j+i*num_vec1]=v;
 
 					if (num_done%100000)
-						CIO::progress(num_done, 0, total_num-1);
+						io.progress(num_done, 0, total_num-1);
 
 					if (i!=j)
 						num_done+=2;
@@ -135,17 +135,17 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 					result[i+j*num_vec1]=kernel(i,j) ;
 
 					if (num_done%100000)
-						CIO::progress(num_done, 0, total_num-1);
+						io.progress(num_done, 0, total_num-1);
 
 					num_done++;
 				}
 			}
 		}
 
-		CIO::message(M_MESSAGEONLY, "done.           \n");
+		SG_PRINT( "done.           \n");
 	}
 	else
-      sg_error(sg_err_fun,"no features assigned to kernel\n");
+      SG_ERROR( "no features assigned to kernel\n");
 
 	*dst=result;
 }
@@ -159,14 +159,14 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2, SH
 	if (f1 && f2)
 	{
 		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
-         sg_error(sg_err_fun,"kernel matrix does not fit into target\n");
+         SG_ERROR( "kernel matrix does not fit into target\n");
 
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
 		LONG total_num = num_vec1 * num_vec2;
 		int num_done = 0;
 
-		CIO::message(M_DEBUG, "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
+		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 
 		if (target)
 			result=target;
@@ -187,7 +187,7 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2, SH
 					result[j+i*num_vec1]=v;
 
 					if (num_done%100000)
-						CIO::progress(num_done, 0, total_num-1);
+						io.progress(num_done, 0, total_num-1);
 
 					if (i!=j)
 						num_done+=2;
@@ -205,17 +205,17 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2, SH
 					result[i+j*num_vec1]=kernel(i,j) ;
 
 					if (num_done%100000)
-						CIO::progress(num_done, 0, total_num-1);
+						io.progress(num_done, 0, total_num-1);
 
 					num_done++;
 				}
 			}
 		}
 
-		CIO::message(M_MESSAGEONLY, "done.           \n");
+		SG_PRINT( "done.           \n");
 	}
 	else
-      sg_error(sg_err_fun,"no features assigned to kernel\n");
+      SG_ERROR( "no features assigned to kernel\n");
 
 	return result;
 }
@@ -229,14 +229,14 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 	if (f1 && f2)
 	{
 		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
-         sg_error(sg_err_fun,"kernel matrix does not fit into target\n");
+         SG_ERROR( "kernel matrix does not fit into target\n");
 
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
 		LONG total_num = num_vec1 * num_vec2;
 		int num_done = 0;
 
-		CIO::message(M_DEBUG, "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
+		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 
 		if (target)
 			result=target;
@@ -257,7 +257,7 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 					result[j+i*num_vec1]=v;
 
 					if (num_done%100000)
-						CIO::progress(num_done, 0, total_num-1);
+						io.progress(num_done, 0, total_num-1);
 
 					if (i!=j)
 						num_done+=2;
@@ -275,17 +275,17 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 					result[i+j*num_vec1]=kernel(i,j) ;
 
 					if (num_done%100000)
-						CIO::progress(num_done, 0, total_num-1);
+						io.progress(num_done, 0, total_num-1);
 
 					num_done++;
 				}
 			}
 		}
 
-		CIO::message(M_MESSAGEONLY, "done.           \n");
+		SG_PRINT( "done.           \n");
 	}
 	else
-      sg_error(sg_err_fun,"no features assigned to kernel\n");
+      SG_ERROR( "no features assigned to kernel\n");
 
 	return result;
 }
@@ -307,7 +307,7 @@ void CKernel::resize_kernel_cache(KERNELCACHE_IDX size, bool regression_hack)
 }
 #endif //USE_SVMLIGHT
 
-bool CKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CKernel::init(CFeatures* l, CFeatures* r)
 {
 	//make sure features were indeed supplied
 	ASSERT(l);
@@ -349,7 +349,7 @@ void CKernel::kernel_cache_init(INT buffsize, bool regression_hack)
 	if (buffer_size>((ULONG) totdoc)*totdoc)
 		buffer_size=((ULONG) totdoc)*totdoc;
 
-	CIO::message(M_INFO, "using a kernel cache of size %lld MB (%lld bytes) for %s Kernel\n", buffer_size*sizeof(KERNELCACHE_ELEM)/1024/1024, buffer_size*sizeof(KERNELCACHE_ELEM), get_name());
+	SG_INFO( "using a kernel cache of size %lld MB (%lld bytes) for %s Kernel\n", buffer_size*sizeof(KERNELCACHE_ELEM)/1024/1024, buffer_size*sizeof(KERNELCACHE_ELEM), get_name());
 
 	//make sure it fits in the *signed* KERNELCACHE_IDX type
 	ASSERT(buffer_size < (((ULONG) 1) << (sizeof(KERNELCACHE_IDX)*8-1)));
@@ -540,7 +540,7 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 				cache[num]= kernel_cache_clean_and_malloc(rows[i]);
 
 				if (!cache[num] )
-               sg_error(sg_err_fun,"Kernel cache full! => increase cache size");
+               SG_ERROR( "Kernel cache full! => increase cache size");
 
 				num++;
 			}
@@ -572,7 +572,7 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 				{
 					num_threads=t;
 					end=t*step;
-					CIO::message(M_WARN,"thread creation failed\n");
+					SG_WARNING("thread creation failed\n");
 					break;
 				}
 			}
@@ -597,7 +597,7 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 		for (INT t=0; t<num_threads; t++)
 		{
 			if (pthread_join(threads[t], NULL) != 0)
-				CIO::message(M_WARN, "pthread_join failed\n");
+				SG_WARNING( "pthread_join failed\n");
 		}
 
 		delete[] needs_computation;
@@ -772,9 +772,9 @@ bool CKernel::save(CHAR* fname)
 		for (INT r=0; r< (INT) num_right && f.is_ok(); r++)
 		{
 			if (!(i % (num_total/10+1)))
-				CIO::message(M_MESSAGEONLY, "%02d%%.", (int) (100.0*i/num_total));
+				SG_PRINT("%02d%%.", (int) (100.0*i/num_total));
 			else if (!(i % (num_total/200+1)))
-				CIO::message(M_MESSAGEONLY, ".");
+				SG_PRINT(".");
 
 			double k=kernel(l,r);
 			f.save_real_data(&k, 1);
@@ -784,7 +784,7 @@ bool CKernel::save(CHAR* fname)
 	}
 
 	if (f.is_ok())
-		CIO::message(M_INFO, "kernel matrix of size %ld x %ld written (filesize: %ld)\n", num_left, num_right, num_total*sizeof(KERNELCACHE_ELEM));
+		SG_INFO( "kernel matrix of size %ld x %ld written (filesize: %ld)\n", num_left, num_right, num_total*sizeof(KERNELCACHE_ELEM));
 
     return (f.is_ok());
 }
@@ -812,168 +812,168 @@ void CKernel::remove_rhs()
 
 void CKernel::list_kernel()
 {
-	CIO::message(M_INFO, "0x%X - \"%s\" weight=%1.2f OPT:%s", this, get_name(), get_combined_kernel_weight(), get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT");
+	SG_INFO( "0x%X - \"%s\" weight=%1.2f OPT:%s", this, get_name(), get_combined_kernel_weight(), get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT");
 	switch (get_kernel_type())
 	{
 		case K_UNKNOWN:
-			CIO::message(M_INFO, "K_UNKNOWN ");
+			SG_INFO( "K_UNKNOWN ");
 			break;
 		case K_LINEAR:
-			CIO::message(M_INFO, "K_LINEAR ");
+			SG_INFO( "K_LINEAR ");
 			break;
 		case K_POLY:
-			CIO::message(M_INFO, "K_POLY ");
+			SG_INFO( "K_POLY ");
 			break;
 		case K_GAUSSIAN:
-			CIO::message(M_INFO, "K_GAUSSIAN ");
+			SG_INFO( "K_GAUSSIAN ");
 			break;
 		case K_HISTOGRAM:
-			CIO::message(M_INFO, "K_HISTOGRAM ");
+			SG_INFO( "K_HISTOGRAM ");
 			break;
 		case K_SALZBERG:
-			CIO::message(M_INFO, "K_SALZBERG ");
+			SG_INFO( "K_SALZBERG ");
 			break;
 		case K_LOCALITYIMPROVED:
-			CIO::message(M_INFO, "K_LOCALITYIMPROVED ");
+			SG_INFO( "K_LOCALITYIMPROVED ");
 			break;
 		case K_SIMPLELOCALITYIMPROVED:
-			CIO::message(M_INFO, "K_SIMPLELOCALITYIMPROVED ");
+			SG_INFO( "K_SIMPLELOCALITYIMPROVED ");
 			break;
 		case K_FIXEDDEGREE:
-			CIO::message(M_INFO, "K_FIXEDDEGREE ");
+			SG_INFO( "K_FIXEDDEGREE ");
 			break;
 		case K_WEIGHTEDDEGREE:
-			CIO::message(M_INFO, "K_WEIGHTEDDEGREE ");
+			SG_INFO( "K_WEIGHTEDDEGREE ");
 			break;
 		case K_WEIGHTEDDEGREEPOS:
-			CIO::message(M_INFO, "K_WEIGHTEDDEGREEPOS ");
+			SG_INFO( "K_WEIGHTEDDEGREEPOS ");
 			break;
 		case K_WEIGHTEDDEGREEPOSPHYL:
-			CIO::message(M_INFO, "K_WEIGHTEDDEGREEPOSPHYL ");
+			SG_INFO( "K_WEIGHTEDDEGREEPOSPHYL ");
 			break;
 		case K_COMMWORD:
-			CIO::message(M_INFO, "K_COMMWORD ");
+			SG_INFO( "K_COMMWORD ");
 			break;
 		case K_POLYMATCH:
-			CIO::message(M_INFO, "K_POLYMATCH ");
+			SG_INFO( "K_POLYMATCH ");
 			break;
 		case K_ALIGNMENT:
-			CIO::message(M_INFO, "K_ALIGNMENT ");
+			SG_INFO( "K_ALIGNMENT ");
 			break;
 		case K_COMMWORDSTRING:
-			CIO::message(M_INFO, "K_COMMWORDSTRING ");
+			SG_INFO( "K_COMMWORDSTRING ");
 			break;
 		case K_COMMULONGSTRING:
-			CIO::message(M_INFO, "K_COMMULONGSTRING ");
+			SG_INFO( "K_COMMULONGSTRING ");
 			break;
 		case K_SPARSENORMSQUARED:
-			CIO::message(M_INFO, "K_SPARSENORMSQUARED ");
+			SG_INFO( "K_SPARSENORMSQUARED ");
 			break;
 		case K_COMBINED:
-			CIO::message(M_INFO, "K_COMBINED ");
+			SG_INFO( "K_COMBINED ");
 			break;
 		case K_CUSTOM:
-			CIO::message(M_INFO, "K_CUSTOM ");
+			SG_INFO( "K_CUSTOM ");
 			break;
 		case K_DIAG:
-			CIO::message(M_INFO, "K_DIAG ");
+			SG_INFO( "K_DIAG ");
 			break;
 		default:
-         sg_error(sg_err_fun,"ERROR UNKNOWN KERNEL TYPE");
+         SG_ERROR( "ERROR UNKNOWN KERNEL TYPE");
 			break;
 	}
 
 	switch (get_feature_class())
 	{
 		case C_UNKNOWN:
-			CIO::message(M_INFO, "C_UNKNOWN ");
+			SG_INFO( "C_UNKNOWN ");
 			break;
 		case C_SIMPLE:
-			CIO::message(M_INFO, "C_SIMPLE ");
+			SG_INFO( "C_SIMPLE ");
 			break;
 		case C_SPARSE:
-			CIO::message(M_INFO, "C_SPARSE ");
+			SG_INFO( "C_SPARSE ");
 			break;
 		case C_STRING:
-			CIO::message(M_INFO, "C_STRING ");
+			SG_INFO( "C_STRING ");
 			break;
 		case C_COMBINED:
-			CIO::message(M_INFO, "C_COMBINED ");
+			SG_INFO( "C_COMBINED ");
 			break;
 		case C_ANY:
-			CIO::message(M_INFO, "C_ANY ");
+			SG_INFO( "C_ANY ");
 			break;
 		default:
-         sg_error(sg_err_fun,"ERROR UNKNOWN FEATURE CLASS");
+         SG_ERROR( "ERROR UNKNOWN FEATURE CLASS");
 	}
 
 	switch (get_feature_type())
 	{
 		case F_UNKNOWN:
-			CIO::message(M_INFO, "F_UNKNOWN ");
+			SG_INFO( "F_UNKNOWN ");
 			break;
 		case F_DREAL:
-			CIO::message(M_INFO, "F_REAL ");
+			SG_INFO( "F_REAL ");
 			break;
 		case F_SHORT:
-			CIO::message(M_INFO, "F_SHORT ");
+			SG_INFO( "F_SHORT ");
 			break;
 		case F_CHAR:
-			CIO::message(M_INFO, "F_CHAR ");
+			SG_INFO( "F_CHAR ");
 			break;
 		case F_INT:
-			CIO::message(M_INFO, "F_INT ");
+			SG_INFO( "F_INT ");
 			break;
 		case F_BYTE:
-			CIO::message(M_INFO, "F_BYTE ");
+			SG_INFO( "F_BYTE ");
 			break;
 		case F_WORD:
-			CIO::message(M_INFO, "F_WORD ");
+			SG_INFO( "F_WORD ");
 			break;
 		case F_ULONG:
-			CIO::message(M_INFO, "F_ULONG ");
+			SG_INFO( "F_ULONG ");
 			break;
 		case F_ANY:
-			CIO::message(M_INFO, "F_ANY ");
+			SG_INFO( "F_ANY ");
 			break;
 		default:
-         sg_error(sg_err_fun,"ERROR UNKNOWN FEATURE TYPE");
+         SG_ERROR( "ERROR UNKNOWN FEATURE TYPE");
 			break;
 	}
-	CIO::message(M_INFO, "\n");
+	SG_INFO( "\n");
 }
 
 bool CKernel::init_optimization(INT count, INT *IDX, DREAL * weights)
 {
-   sg_error(sg_err_fun,"kernel does not support linadd optimization\n");
+   SG_ERROR( "kernel does not support linadd optimization\n");
 	return false ;
 }
 
 bool CKernel::delete_optimization() 
 {
-   sg_error(sg_err_fun,"kernel does not support linadd optimization\n");
+   SG_ERROR( "kernel does not support linadd optimization\n");
 	return false;
 }
 
 DREAL CKernel::compute_optimized(INT idx)
 {
-   sg_error(sg_err_fun,"kernel does not support linadd optimization\n");
+   SG_ERROR( "kernel does not support linadd optimization\n");
 	return 0;
 }
 
 void CKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights, DREAL factor)
 {
-   sg_error(sg_err_fun,"kernel does not support batch computation\n");
+   SG_ERROR( "kernel does not support batch computation\n");
 }
 
 void CKernel::add_to_normal(INT idx, DREAL weight)
 {
-   sg_error(sg_err_fun,"kernel does not support linadd optimization, add_to_normal not implemented\n");
+   SG_ERROR( "kernel does not support linadd optimization, add_to_normal not implemented\n");
 }
 
 void CKernel::clear_normal()
 {
-   sg_error(sg_err_fun,"kernel does not support linadd optimization, clear_normal not implemented\n");
+   SG_ERROR( "kernel does not support linadd optimization, clear_normal not implemented\n");
 }
 
 INT CKernel::get_num_subkernels()
@@ -983,7 +983,7 @@ INT CKernel::get_num_subkernels()
 
 void CKernel::compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
 {
-   sg_error(sg_err_fun,"kernel compute_by_subkernel not implemented\n");
+   SG_ERROR( "kernel compute_by_subkernel not implemented\n");
 }
 
 const DREAL* CKernel::get_subkernel_weights(INT &num_weights)
@@ -996,14 +996,14 @@ void CKernel::set_subkernel_weights(DREAL* weights, INT num_weights)
 {
 	combined_kernel_weight = weights[0] ;
 	if (num_weights!=1)
-      sg_error(sg_err_fun,"number of subkernel weights should be one ...\n");
+      SG_ERROR( "number of subkernel weights should be one ...\n");
 }
 
 void CKernel::do_precompute_matrix()
 {
 	INT num_left=get_lhs()->get_num_vectors();
 	INT num_right=get_rhs()->get_num_vectors();
-	CIO::message(M_INFO, "precomputing kernel matrix (%ix%i)\n", num_left, num_right) ;
+	SG_INFO( "precomputing kernel matrix (%ix%i)\n", num_left, num_right) ;
 
 	ASSERT(num_left == num_right) ;
 	ASSERT(get_lhs()==get_rhs()) ;
@@ -1015,11 +1015,11 @@ void CKernel::do_precompute_matrix()
 
 	for (INT i=0; i<num; i++)
 	{
-		CIO::progress(i*i,0,num*num);
+		io.progress(i*i,0,num*num);
 		for (INT j=0; j<=i; j++)
 			precomputed_matrix[i*(i+1)/2+j] = compute(i,j) ;
 	}
 
-	CIO::progress(num*num,0,num*num);
-	CIO::message(M_INFO, "\ndone.\n") ;
+	io.progress(num*num,0,num*num);
+	SG_INFO( "\ndone.\n") ;
 }

@@ -38,7 +38,7 @@ template<class T> class CCache : public CSGObject
 	{
 		if (cache_size==0 || obj_size==0 || num_entries==0)
 		{
-			CIO::message(M_WARN, "doing without cache.\n");
+			SG_WARNING("doing without cache.\n");
 			cache_block=NULL;
 			lookup_table=NULL;
 			cache_table=NULL;
@@ -51,7 +51,7 @@ template<class T> class CCache : public CSGObject
 		entry_size=obj_size;
 		nr_cache_lines=CMath::min((LONG) (cache_size*1024*1024/obj_size/sizeof(T)), num_entries+1);
 
-		CIO::message(M_INFO, "creating %d cache lines (total size: %ld byte)\n", nr_cache_lines, nr_cache_lines*obj_size*sizeof(T));
+		SG_INFO("creating %d cache lines (total size: %ld byte)\n", nr_cache_lines, nr_cache_lines*obj_size*sizeof(T));
 		cache_block=new T[obj_size*nr_cache_lines];
 		lookup_table=new TEntry[num_entries];
 		cache_table=new TEntry*[nr_cache_lines];

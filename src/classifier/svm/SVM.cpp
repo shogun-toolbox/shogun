@@ -65,7 +65,7 @@ CSVM::~CSVM()
   delete[] svm_model.alpha ;
   delete[] svm_model.svs ;
 
-  CIO::message(M_DEBUG, "SVM object destroyed\n") ;
+  SG_DEBUG( "SVM object destroyed\n") ;
 }
 
 bool CSVM::load(FILE* modelfl)
@@ -79,7 +79,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%4s\n", char_buffer)==EOF)
 	{
 		result=false;
-      sg_error(sg_err_fun,"error in svm file, line nr:%d\n", line_number);
+      SG_ERROR( "error in svm file, line nr:%d\n", line_number);
 	}
 	else
 	{
@@ -87,7 +87,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("%SVM", char_buffer)!=0)
 		{
 			result=false;
-         sg_error(sg_err_fun,"error in svm file, line nr:%d\n", line_number);
+         SG_ERROR( "error in svm file, line nr:%d\n", line_number);
 		}
 		line_number++;
 	}
@@ -96,19 +96,19 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl," numsv=%d; \n", &int_buffer) != 1)
 	{
 		result=false;
-      sg_error(sg_err_fun,"error in svm file, line nr:%d\n", line_number);
+      SG_ERROR( "error in svm file, line nr:%d\n", line_number);
 	}
 
 	if (!feof(modelfl))
 		line_number++;
 
-	CIO::message(M_INFO, "loading %ld support vectors\n",int_buffer);
+	SG_INFO( "loading %ld support vectors\n",int_buffer);
 	create_new_model(int_buffer);
 
 	if (fscanf(modelfl," kernel='%s'; \n", char_buffer) != 1)
 	{
 		result=false;
-      sg_error(sg_err_fun,"error in svm file, line nr:%d\n", line_number);
+      SG_ERROR( "error in svm file, line nr:%d\n", line_number);
 	}
 
 	if (!feof(modelfl))
@@ -119,7 +119,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl," b=%lf; \n", &double_buffer) != 1)
 	{
 		result=false;
-      sg_error(sg_err_fun,"error in svm file, line nr:%d\n", line_number);
+      SG_ERROR( "error in svm file, line nr:%d\n", line_number);
 	}
 	
 	if (!feof(modelfl))
@@ -130,7 +130,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%8s\n", char_buffer) == EOF)
 	{
 		result=false;
-      sg_error(sg_err_fun,"error in svm file, line nr:%d\n", line_number);
+      SG_ERROR( "error in svm file, line nr:%d\n", line_number);
 	}
 	else
 	{
@@ -138,7 +138,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("alphas=[", char_buffer)!=0)
 		{
 			result=false;
-         sg_error(sg_err_fun,"error in svm file, line nr:%d\n", line_number);
+         SG_ERROR( "error in svm file, line nr:%d\n", line_number);
 		}
 		line_number++;
 	}
@@ -151,7 +151,7 @@ bool CSVM::load(FILE* modelfl)
 		if (fscanf(modelfl," \[%lf,%d]; \n", &double_buffer, &int_buffer) != 2)
 		{
 			result=false;
-         sg_error(sg_err_fun,"error in svm file, line nr:%d\n", line_number);
+         SG_ERROR( "error in svm file, line nr:%d\n", line_number);
 		}
 
 		if (!feof(modelfl))
@@ -164,7 +164,7 @@ bool CSVM::load(FILE* modelfl)
 	if (fscanf(modelfl,"%2s", char_buffer) == EOF)
 	{
 		result=false;
-      sg_error(sg_err_fun,"error in svm file, line nr:%d\n", line_number);
+      SG_ERROR( "error in svm file, line nr:%d\n", line_number);
 	}
 	else
 	{
@@ -172,7 +172,7 @@ bool CSVM::load(FILE* modelfl)
 		if (strcmp("];", char_buffer)!=0)
 		{
 			result=false;
-         sg_error(sg_err_fun,"error in svm file, line nr:%d\n", line_number);
+         SG_ERROR( "error in svm file, line nr:%d\n", line_number);
 		}
 		line_number++;
 	}
@@ -183,7 +183,7 @@ bool CSVM::load(FILE* modelfl)
 
 bool CSVM::save(FILE* modelfl)
 {
-  CIO::message(M_INFO, "Writing model file...");
+  SG_INFO( "Writing model file...");
   fprintf(modelfl,"%%SVM\n");
   fprintf(modelfl,"numsv=%d;\n", get_num_support_vectors());
   fprintf(modelfl,"kernel='%s';\n", CKernelMachine::get_kernel()->get_name());
@@ -196,7 +196,7 @@ bool CSVM::save(FILE* modelfl)
 
   fprintf(modelfl, "];\n");
   
-  CIO::message(M_INFO, "done\n");
+  SG_INFO( "done\n");
   return true ;
 } 
 
@@ -221,13 +221,13 @@ bool CSVM::init_kernel_optimization()
 		delete[] sv_weight ;
 
 		if (!ret) {
-         sg_error(sg_err_fun,"initialization of kernel optimization failed\n");
+         SG_ERROR( "initialization of kernel optimization failed\n");
       }
 
 		return ret;
 	}
 	else {
-      sg_error(sg_err_fun,"initialization of kernel optimization failed\n");
+      SG_ERROR( "initialization of kernel optimization failed\n");
    }
 
 	return false;
@@ -250,7 +250,7 @@ void* CSVM::classify_example_helper(void* p)
 			INT num_vectors=params->end - params->start;
 			INT v=vec-params->start;
 			if ( (v% (num_vectors/100+1))== 0)
-				CIO::progress(v, 0.0, num_vectors-1);
+				SG_SPROGRESS(v, 0.0, num_vectors-1);
 		}
 
 		result->set_label(vec, svm->classify_example(vec));
@@ -263,7 +263,7 @@ CLabels* CSVM::classify(CLabels* result)
 {
 	if (!CKernelMachine::get_kernel())
 	{
-      sg_error(sg_err_fun,"SVM can not proceed without kernel!\n");
+      SG_ERROR( "SVM can not proceed without kernel!\n");
 		return false ;
 	}
 
@@ -277,7 +277,7 @@ CLabels* CSVM::classify(CLabels* result)
 			result=new CLabels(num_vectors);
 
 		ASSERT(result);
-		CIO::message(M_DEBUG, "computing output on %d test examples\n", num_vectors);
+		SG_DEBUG( "computing output on %d test examples\n", num_vectors);
 
 		if (CKernelMachine::get_kernel()->has_property(KP_BATCHEVALUATION) && get_batch_computation_enabled())
 		{
@@ -363,10 +363,10 @@ CLabels* CSVM::classify(CLabels* result)
 
 #ifndef CYGWIN
 		if ( CSignal::cancel_computations() )
-			CIO::message(M_INFO, "prematurely stopped.           \n");
+			SG_INFO( "prematurely stopped.           \n");
 		else
 #endif
-			CIO::message(M_INFO, "done.           \n");
+			SG_INFO( "done.           \n");
 	}
 	else 
 		return NULL;
@@ -414,7 +414,7 @@ DREAL CSVM::compute_objective()
 		}
 	}
 	else {
-      sg_error(sg_err_fun,"cannot compute objective, labels or kernel not set\n");
+      SG_ERROR( "cannot compute objective, labels or kernel not set\n");
    }
 
 	return objective;

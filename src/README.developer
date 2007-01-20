@@ -1,37 +1,44 @@
-- coding conventions:
+CODING CONVENTIONS:
 
-functions look like
+FORMATTING:
 
-INT* fun(INT* foo)
-{
-	return foo;
-}
+- indenting uses stroustrup style with tabsize 4, i.e. for emacs use in your
+	~/.emacs
 
-
-indenting uses stroustrup style with tabsize 4, i.e. for emacs use in your
-~/.emacs
-
-(add-hook 'c-mode-common-hook
- (lambda ()
-  (show-paren-mode 1)
-  (setq indent-tabs-mode t)
-  (c-set-style "stroustrup")
-  (setq tab-width 4)))
+	(add-hook 'c-mode-common-hook
+	 (lambda ()
+	  (show-paren-mode 1)
+	  (setq indent-tabs-mode t)
+	  (c-set-style "stroustrup")
+	  (setq tab-width 4)))
 
 
-for vim in ~/.vimrc
+	for vim in ~/.vimrc
 
-set cindent         " C style indenting
-set ts=4            " tabstop 
-set sw=4            " shiftwidth
+	set cindent         " C style indenting
+	set ts=4            " tabstop 
+	set sw=4            " shiftwidth
 
-- versioning scheme
+- functions look like
 
-an automagic version will be created from the date of the last svn update.
-if that is not enough make releases:
+	INT* fun(INT* foo)
+	{
+		return foo;
+	}
 
-e.g.: svn cp trunk releases/shogun_0_1_0
+  and are separated by a newline, e.g:
 
+	INT* fun1(INT* foo1)
+	{
+		return foo;
+	}
+
+	INT* fun2(INT* foo2)
+	{
+		return foo2;
+	}
+
+TYPES:
 - types (use only these!):
 	CHAR	(8bit char(maybe signed or unsigned))
 	BYTE	(8bit unsigned char)
@@ -44,9 +51,26 @@ e.g.: svn cp trunk releases/shogun_0_1_0
 
 	exceptions: file IO / matlab interface
 
-naming conventions:
-	-objects which can deal with features of type DREAL and class SIMPLE don't need to contain Real/Simple in class name
-	-others are required to clarify class/type they can handle, e.g. CSparseByteLinearKernel, CSparseGaussianKernel
+- classes must be (directly or indirectly) derived from CSGObject
+
+- don't use fprintf/printf, but SG_DEBUG/SG_INFO/SG_WARNING/SG_ERROR/SG_PRINT (if in a from
+		CSGObject derived object) or the static SG_SDEBUG/... functions elsewise
+
+NAMING CONVENTIONS:
+
+-objects which can deal with features of type DREAL and class SIMPLE don't need
+to contain Real/Simple in class name
+
+-others are required to clarify class/type they can handle, e.g.
+CSparseByteLinearKernel, CSparseGaussianKernel
+
+-class names start with 'C', each syllable/subword starts with a capital letter,
+ e.g. CMyCoolClass
+
+-variable and function names are all lowercase (except for class Con/Destructors)
+syllables/subwords are separated by '_', e.g. compute_kernel_value(), my_local_variable
+
+-class member variables all start with m_, e.g. m_member (this is to avoid shadowing)
 
 - features
 	-featureclass Simple/Sparse
@@ -58,3 +82,10 @@ naming conventions:
 	-featureclass Simple/Sparse
 		-featuretype Real/Byte/...
 			-kerneltype Linear/Gaussian/...
+
+VERSIONING SCHEME:
+
+- an automagic version will be created from the date of the last svn update.
+if that is not enough make releases:
+
+e.g.: svn cp trunk releases/shogun_0_1_0

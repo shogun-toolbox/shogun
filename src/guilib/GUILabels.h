@@ -16,11 +16,12 @@
 
 #ifndef HAVE_SWIG
 
+#include "base/SGObject.h"
 #include "features/Labels.h"
 
 class CGUI;
 
-class CGUILabels
+class CGUILabels : public CSGObject
 {
 	public:
 		CGUILabels(CGUI *);

@@ -16,12 +16,13 @@
 #include "lib/config.h"
 #if defined(HAVE_MATLAB) && !defined(HAVE_SWIG)
 
+#include "base/SGObject.h"
 #include "features/Labels.h"
 #include "features/Features.h"
 
 #include <mex.h>
 
-class CGUIMatlab
+class CGUIMatlab : public CSGObject
 {
 public:
 	CGUIMatlab();

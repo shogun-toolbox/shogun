@@ -12,13 +12,14 @@
 #define _GUICLASSIFIER_H__ 
 
 #include "lib/config.h"
+#include "base/SGObject.h"
 
 #ifndef HAVE_SWIG
 #include "classifier/Classifier.h"
 
 class CGUI ;
 
-class CGUIClassifier
+class CGUIClassifier : public CSGObject
 {
 
 public:

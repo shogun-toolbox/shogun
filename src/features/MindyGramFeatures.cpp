@@ -30,7 +30,7 @@
  */
 CMindyGramFeatures::~CMindyGramFeatures()
 {
-    CIO::message(M_DEBUG, "Destroying Mindy gram features\n");
+    SG_DEBUG( "Destroying Mindy gram features\n");
     /* Destroy gram vectors */
     for (INT i = 0; i < num_vectors; i++)
         gram_destroy(vectors[i]);
@@ -87,7 +87,7 @@ void CMindyGramFeatures::set_embedding(gram_cfg_t *cfg, CHAR *embed)
     else if (!strcasecmp(embed, "bin")) 
         gram_cfg_set_embed(cfg, GE_BIN);
     else {
-         sg_error(sg_err_fun,"Unknown embedding '%s'\n", embed);
+         SG_ERROR( "Unknown embedding '%s'\n", embed);
     }
 }
 
@@ -124,7 +124,7 @@ inline INT CMindyGramFeatures::get_vector_length(INT i)
  */
 bool CMindyGramFeatures::load(CHAR * fname)
 {
-    CIO::message(M_INFO, "Loading strings from %s\n", fname);
+    SG_INFO( "Loading strings from %s\n", fname);
     LONG len = 0;
     CHAR *s, *t;
 
@@ -132,7 +132,7 @@ bool CMindyGramFeatures::load(CHAR * fname)
     CHAR *data = f.load_char_data(NULL, len);
 
     if (!f.is_ok()) {
-        sg_error(sg_err_fun,"Reading file failed\n");
+        SG_ERROR( "Reading file failed\n");
         return false;
     }
 
@@ -140,12 +140,12 @@ bool CMindyGramFeatures::load(CHAR * fname)
     num_vectors = 0;
     for (LONG i = 0; i < len; i++)
         if (data[i] == '\n')
-            CIO::message(M_INFO, "File contains %ld string vectors\n",
+            SG_INFO( "File contains %ld string vectors\n",
                 num_vectors);
 
     vectors = (gram_t **) calloc(num_vectors, sizeof(gram_t *));
     if (!vectors) {
-        sg_error(sg_err_fun,"Could not allocate memory\n");
+        SG_ERROR( "Could not allocate memory\n");
         return false;
     }
 

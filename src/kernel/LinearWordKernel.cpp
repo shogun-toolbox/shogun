@@ -14,8 +14,9 @@
 #include "kernel/LinearWordKernel.h"
 #include "features/WordFeatures.h"
 
-CLinearWordKernel::CLinearWordKernel(LONG size)
-  : CSimpleKernel<WORD>(size),scale(1.0),normal(NULL)
+CLinearWordKernel::CLinearWordKernel(LONG size, bool do_rescale_, DREAL scale_)
+  : CSimpleKernel<WORD>(size),scale(scale_),do_rescale(do_rescale_),initialized(false),
+	normal(NULL)
 {
 }
 
@@ -24,29 +25,32 @@ CLinearWordKernel::~CLinearWordKernel()
 	cleanup();
 }
 
-bool CLinearWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CLinearWordKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<WORD>::init(l, r, do_init); 
+	CSimpleKernel<WORD>::init(l, r);
 
-	if (do_init)
+	if (!initialized)
 		init_rescale() ;
 
-	CIO::message(M_INFO, "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
+	SG_INFO( "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
 
 	return true;
 }
 
 void CLinearWordKernel::init_rescale()
 {
+	if (!do_rescale)
+		return ;
 	LONGREAL sum=0;
 	scale=1.0;
 	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
 		sum+=compute(i, i);
 
 	if ( sum > (pow((double) 2, (double) 8*sizeof(LONG))) ) {
-      sg_error(sg_err_fun,"the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
+      SG_ERROR( "the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
    }
 	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
+	initialized=true;
 }
 
 void CLinearWordKernel::cleanup()
@@ -106,7 +110,7 @@ DREAL CLinearWordKernel::compute(INT idx_a, INT idx_b)
 
 bool CLinearWordKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas) 
 {
-	CIO::message(M_DEBUG,"drin gelandet yeah\n");
+	SG_DEBUG("drin gelandet yeah\n");
 	INT alen;
 	bool afree;
 

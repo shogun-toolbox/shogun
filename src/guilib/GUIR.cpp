@@ -124,7 +124,7 @@ extern "C"
 	SEXP CGUI_R::best_path(int dim)
 	{
 		CHMM* h=gui->guihmm.get_current();
-		CIO::message(M_DEBUG, "dim: %d\n", dim);
+		SG_DEBUG( "dim: %d\n", dim);
 
 		if (h)
 		{
@@ -139,7 +139,7 @@ extern "C"
 
 				WORD* fv = ((CStringFeatures<WORD>*) f)->get_feature_vector(dim, num_feat);
 
-				CIO::message(M_DEBUG, "computing viterbi path for vector %d (length %d)\n", dim, num_feat);
+				SG_DEBUG( "computing viterbi path for vector %d (length %d)\n", dim, num_feat);
 
 				if (fv && num_feat>0)
 				{
@@ -189,7 +189,7 @@ extern "C"
 					gui->guihmm.get_pseudo(), gui->guihmm.get_number_of_tables());
 			if (h)
 			{
-				CIO::message(M_INFO, "N:%d M:%d p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
+				SG_INFO( "N:%d M:%d p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
 						N, M,
 						mxGetN(mx_p), mxGetM(mx_p), 
 						mxGetN(mx_q), mxGetM(mx_q), 
@@ -222,7 +222,7 @@ extern "C"
 						for (j=0; j< h->get_M(); j++)
 							h->set_b(i,j, b[i+j*h->get_N()]);
 
-					CIO::message(M_INFO, "h %d , M: %d\n", h, h->get_M());
+					SG_INFO( "h %d , M: %d\n", h, h->get_M());
 
 					old_h->append_model(h);
 
@@ -231,7 +231,7 @@ extern "C"
 					return true;
 				}
 				else
-					CIO::message(M_ERROR, "model matricies not matching in size\n");
+					SG_ERROR( "model matricies not matching in size\n");
 			}
 		}
 		*/
@@ -241,7 +241,7 @@ extern "C"
 	bool CGUI_R::set_hmm(SEXP arg_list)
 	{
 		if( TYPEOF(arg_list) != LISTSXP ) {
-			CIO::message(M_ERROR, "You have to supply an argument pairlist of length four.\n");
+			SG_ERROR( "You have to supply an argument pairlist of length four.\n");
 			return false;
 		}
 
@@ -291,8 +291,8 @@ extern "C"
 			}
 			else
 			{
-				CIO::message(M_ERROR, "model matricies not matching in size\n");
-				CIO::message(M_ERROR, "N:%d M:%d p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
+				SG_ERROR( "model matricies not matching in size\n");
+				SG_ERROR( "N:%d M:%d p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
 						N, M,
 						Rf_nrows(p), Rf_ncols(p), 
 						Rf_nrows(q), Rf_ncols(q), 
@@ -386,7 +386,7 @@ extern "C"
 
 		if (svm)
 		{
-			CIO::message(M_DEBUG,"Acquired svm.");
+			SG_DEBUG("Acquired svm.");
 			SEXP ans, alphas, b, SV;
 			int numSV = svm->get_num_support_vectors();
 
@@ -436,7 +436,7 @@ extern "C"
 
 			if (!l)
 			{
-				CIO::message(M_ERROR, "svm_classify failed\n") ;
+				SG_ERROR( "svm_classify failed\n") ;
 				return false ;
 			} ;
 
@@ -455,7 +455,7 @@ extern "C"
 	bool CGUI_R::set_svm(SEXP arg_list)
 	{
 		if( TYPEOF(arg_list) != LISTSXP ) {
-			CIO::message(M_ERROR, "You have to supply an argument list of length four.\n");
+			SG_ERROR( "You have to supply an argument list of length four.\n");
 			return false;
 		}
 
@@ -487,7 +487,7 @@ extern "C"
 			}
 		}
 		else
-			CIO::message(M_ERROR, "no svm object available\n") ;
+			SG_ERROR( "no svm object available\n") ;
 
 		return false;
 	}
@@ -501,7 +501,7 @@ extern "C"
 
 		if (!gui->guisvm.classify_example(idx, result[0]))
 		{
-			CIO::message(M_ERROR, "svm_classify_example failed\n") ;
+			SG_ERROR( "svm_classify_example failed\n") ;
 			return false ;
 		} ;
 */
@@ -616,7 +616,7 @@ extern "C"
 							break;
 							*/
 						default:
-							CIO::not_implemented();
+							io.not_implemented();
 					}
 					break;
 				case C_SPARSE:
@@ -624,7 +624,7 @@ extern "C"
 					{
 						case F_DREAL:
 						default:
-							CIO::not_implemented();
+							io.not_implemented();
 					};
 					break;
 				case C_STRING:
@@ -644,7 +644,7 @@ extern "C"
 										char* str=new char[len+1];
 										strncpy(str, fv, len);
 										str[len]='\0';
-										CIO::message(M_DEBUG,"str[%d]=%s\n", i, str);
+										SG_DEBUG("str[%d]=%s\n", i, str);
 										SET_STRING_ELT(feat, i, mkChar(str));
 										delete[] str;
 									}
@@ -655,12 +655,12 @@ extern "C"
 							}
 							break;
 						default:
-							CIO::not_implemented();
+							io.not_implemented();
 					};
 
 					break;
 				default:
-					CIO::not_implemented();
+					io.not_implemented();
 			}
 
 			return feat;
@@ -686,7 +686,7 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 			CCustomKernel* k=(CCustomKernel*)gui->guikernel.get_kernel();
 			if  (k && k->get_kernel_type() == K_COMBINED)
 			{
-				CIO::message(M_DEBUG, "identified combined kernel\n") ;
+				SG_DEBUG( "identified combined kernel\n") ;
 				k = (CCustomKernel*)((CCombinedKernel*)k)->get_last_kernel() ;
 			}
 
@@ -699,12 +699,12 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 				else if (!source_is_diag && !dest_is_diag)
 					return k->set_full_kernel_matrix_from_full(km, mxGetM(mx_kernel), mxGetN(mx_kernel));
 				else
-					CIO::message(M_ERROR,"not defined / general error\n");
+					SG_ERROR("not defined / general error\n");
 			}  else
-				CIO::message(M_ERROR, "not a custom kernel\n") ;
+				SG_ERROR( "not a custom kernel\n") ;
 		}
 		else
-			CIO::message(M_ERROR,"kernel matrix must by given as double matrix\n");
+			SG_ERROR("kernel matrix must by given as double matrix\n");
 
 		return R_NilValue;
 	}
@@ -714,12 +714,12 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 	CFeatures* CGUI_R::set_features(SEXP feat, SEXP alphabet)
 	{
 		CFeatures* f=NULL;
-		CIO::message(M_INFO, "start CGUI_R::set_features\n") ;
+		SG_INFO( "start CGUI_R::set_features\n") ;
 
 		if (feat)
 		{
 			if (false)
-				CIO::not_implemented();
+				io.not_implemented();
 			else
 			{
 				if( TYPEOF(feat) == REALSXP || TYPEOF(feat) == INTSXP )
@@ -770,15 +770,15 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 							}
 							else
 							{
-								CIO::message(M_WARN, "string with index %d has zero length\n", i+1);
+								SG_WARNING( "string with index %d has zero length\n", i+1);
 								sc[i].string=0;
 								sc[i].length=0;
 							}
 
 						}
 
-						CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
-						CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+						SG_INFO("max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+						SG_INFO("num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
 
 						f= new CStringFeatures<CHAR>(alpha);
 						ASSERT(f);
@@ -825,7 +825,7 @@ SEXP CGUI_R::get_svm_objective() {
 	   return ans;
 	}
 	else
-	   CIO::message(M_ERROR, "no svm set\n");
+	   SG_ERROR( "no svm set\n");
 
 	return R_NilValue;
 	}
@@ -852,16 +852,16 @@ SEXP CGUI_R::get_svm_objective() {
 	{
 		if(labelsR && TYPEOF(labelsR)==REALSXP)
 		{
-			CIO::message(M_DEBUG,"lenght of labels is %d", length(labelsR));
+			SG_DEBUG("lenght of labels is %d", length(labelsR));
 			CLabels* label=new CLabels(length(labelsR));
 
 			double* lab= REAL(labelsR);
 
-			CIO::message(M_INFO, "%d\n", label->get_num_labels());
+			SG_INFO( "%d\n", label->get_num_labels());
 
 			for (int i=0; i<label->get_num_labels(); i++)
 				if (!label->set_label(i, lab[i]))
-					CIO::message(M_ERROR, "weirdo ! %d %d\n", label->get_num_labels(), i);
+					SG_ERROR( "weirdo ! %d %d\n", label->get_num_labels(), i);
 
 			return label;
 		}
@@ -884,14 +884,14 @@ SEXP CGUI_R::get_svm_objective() {
 		{
 			int num_vec1=k->get_lhs()->get_num_vectors();
 			int num_vec2=k->get_rhs()->get_num_vectors();
-			CIO::message(M_DEBUG,"Kernel matrix has size %d / %d\n", num_vec1, num_vec2);
+			SG_DEBUG("Kernel matrix has size %d / %d\n", num_vec1, num_vec2);
 			SEXP ans,dim;
 			PROTECT( ans = allocMatrix(REALSXP, num_vec1, num_vec2) );
 
 			DREAL* blub = k->get_kernel_matrix_real(num_vec1, num_vec2,NULL);
 
 			if( blub == NULL )
-				CIO::message(M_DEBUG,"error return value is NULL!");
+				SG_DEBUG("error return value is NULL!");
 
 			for( int i=0; i<num_vec1; i++) 
 			{
@@ -907,11 +907,11 @@ SEXP CGUI_R::get_svm_objective() {
 			setAttrib(ans, R_DimSymbol, dim);
 
 			UNPROTECT(2);
-			CIO::message(M_DEBUG,"matrix created!");
+			SG_DEBUG("matrix created!");
 			return ans;
 		}
 		else
-			CIO::message(M_ERROR, "no kernel defined");
+			SG_ERROR( "no kernel defined");
 
 		return(R_NilValue);
 	}
@@ -1011,12 +1011,12 @@ SEXP CGUI_R::get_svm_objective() {
 
 			if (!kernel->is_tree_initialized())
 			{
-				CIO::message(M_ERROR, "optimization not initialized\n") ;
+				SG_ERROR( "optimization not initialized\n") ;
 				return false ;
 			}
 			if (!kernel->get_rhs())
 			{
-				CIO::message(M_ERROR, "no rhs\n") ;
+				SG_ERROR( "no rhs\n") ;
 				return false ;
 			}
 			INT num    = kernel->get_rhs()->get_num_vectors() ;
@@ -1046,12 +1046,12 @@ SEXP CGUI_R::get_svm_objective() {
 
 			if (!kernel->is_tree_initialized())
 			{
-				CIO::message(M_ERROR, "optimization not initialized\n") ;
+				SG_ERROR( "optimization not initialized\n") ;
 				return false ;
 			}
 			if (!kernel->get_rhs())
 			{
-				CIO::message(M_ERROR, "no rhs\n") ;
+				SG_ERROR( "no rhs\n") ;
 				return false ;
 			}
 			INT num    = kernel->get_rhs()->get_num_vectors() ;
@@ -1100,7 +1100,7 @@ SEXP CGUI_R::get_svm_objective() {
 		{
 			CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
 
-			//CIO::message(M_DEBUG,"getting degree weights...");
+			//SG_DEBUG("getting degree weights...");
 			const DREAL* weights = kernel->get_degree_weights(degree, length) ;
 			if (length == 0)
 				length = 1;
@@ -1135,7 +1135,7 @@ SEXP CGUI_R::get_svm_objective() {
 
 		if (kernel_ && (kernel_->get_kernel_type() == K_COMBINED))
 		{
-			//CIO::message(M_DEBUG,"getting combined weights...");
+			//SG_DEBUG("getting combined weights...");
 			CCombinedKernel *kernel = (CCombinedKernel *) kernel_ ;
 			INT num_weights = -1 ;
 			const DREAL* weights = kernel->get_subkernel_weights(num_weights) ;
@@ -1150,7 +1150,7 @@ SEXP CGUI_R::get_svm_objective() {
 			return result;
 		}
 
-		//CIO::message(M_DEBUG,"getting no weights...");
+		//SG_DEBUG("getting no weights...");
 		return (R_NilValue);
 	}
 
@@ -1217,7 +1217,7 @@ SEXP CGUI_R::get_svm_objective() {
 			}
 		}
 
-		CIO::message(M_ERROR, "get_last_subkernel_weights only works for combined kernels") ;
+		SG_ERROR( "get_last_subkernel_weights only works for combined kernels") ;
 		return false;
 	}
 
@@ -1280,7 +1280,7 @@ SEXP CGUI_R::get_svm_objective() {
 			INT degree = kernel->get_degree() ;
 			if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
 			{
-				CIO::message(M_ERROR, "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
+				SG_ERROR( "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
 				return false ;
 			}
 
@@ -1299,7 +1299,7 @@ SEXP CGUI_R::get_svm_objective() {
 			INT degree = kernel->get_degree() ;
 			if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
 			{
-				CIO::message(M_ERROR, "dimension mismatch (should be (seq_length | 1) x degree)\n") ;
+				SG_ERROR( "dimension mismatch (should be (seq_length | 1) x degree)\n") ;
 				return false ;
 			}
 
@@ -1316,7 +1316,7 @@ SEXP CGUI_R::get_svm_objective() {
 		INT num_subkernels = kernel->get_num_subkernels() ;
 		if (mxGetM(mx_arg)!=1 || mxGetN(mx_arg)!=num_subkernels)
 		{
-			CIO::message(M_ERROR, "dimension mismatch (should be 1 x num_subkernels)\n") ;
+			SG_ERROR( "dimension mismatch (should be 1 x num_subkernels)\n") ;
 			return false ;
 		}
 
@@ -1337,7 +1337,7 @@ SEXP CGUI_R::get_svm_objective() {
 				INT degree = kernel->get_degree() ;
 				if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
 				{
-					CIO::message(M_ERROR, "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
+					SG_ERROR( "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
 					return false ;
 				}
 
@@ -1355,7 +1355,7 @@ SEXP CGUI_R::get_svm_objective() {
 				INT degree = kernel->get_degree() ;
 				if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
 				{
-					CIO::message(M_ERROR, "dimension mismatch (should be (seq_length | 1) x degree)\n") ;
+					SG_ERROR( "dimension mismatch (should be (seq_length | 1) x degree)\n") ;
 					return false ;
 				}
 
@@ -1373,7 +1373,7 @@ SEXP CGUI_R::get_svm_objective() {
 			INT num_subkernels = kernel->get_num_subkernels() ;
 			if (mxGetM(mx_arg)!=1 || mxGetN(mx_arg)!=num_subkernels)
 			{
-				CIO::message(M_ERROR, "dimension mismatch (should be 1 x num_subkernels)\n") ;
+				SG_ERROR( "dimension mismatch (should be 1 x num_subkernels)\n") ;
 				return false ;
 			}
 
@@ -1381,7 +1381,7 @@ SEXP CGUI_R::get_svm_objective() {
 			return true ;
 		}
 
-		CIO::message(M_ERROR, "set_last_subkernel_weights only works for combined kernels") ;
+		SG_ERROR( "set_last_subkernel_weights only works for combined kernels") ;
 		return false ;
 	}
 
@@ -1397,7 +1397,7 @@ SEXP CGUI_R::get_svm_objective() {
 			CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
 			if (mxGetM(mx_arg)!=1 & mxGetN(mx_arg)>0)
 			{
-				CIO::message(M_ERROR, "dimension mismatch (should be 1xseq_length or 0x0)\n") ;
+				SG_ERROR( "dimension mismatch (should be 1xseq_length or 0x0)\n") ;
 				return false ;
 			}
 			INT len = mxGetN(mx_arg);
@@ -1409,7 +1409,7 @@ SEXP CGUI_R::get_svm_objective() {
 			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
 			if (mxGetM(mx_arg)!=1 & mxGetN(mx_arg)>0)
 			{
-				CIO::message(M_ERROR, "dimension mismatch (should be 1xseq_length or 0x0)\n") ;
+				SG_ERROR( "dimension mismatch (should be 1xseq_length or 0x0)\n") ;
 				return false ;
 			}
 			if (mxGetM(mx_arg)==0 & mxGetN(mx_arg)==0)

@@ -19,9 +19,6 @@
 #include "base/SGObject.h"
 #include "features/Features.h"
 
-#include <stdio.h>
-#include "exceptions/KernelException.h"
-
 class CKernel : public CSGObject
 {
 	public:
@@ -66,12 +63,12 @@ class CKernel : public CSGObject
 		virtual DREAL* get_kernel_matrix_real(int &m, int &n, DREAL* target);
 		virtual SHORTREAL* get_kernel_matrix_shortreal(int &m, int &n, SHORTREAL* target);
 
-		/** initialize kernel cache
+		/** initialize kernel
+		 *  e.g. setup lhs/rhs of kernel, precompute normalization constants etc.
 		 *  make sure to check that your kernel can deal with the
 		 *  supplied features (!)
-		 *  set do_init to true if you want the kernel to call its setup function (like getting scaling parameters,...)
 		 */
-		virtual bool init(CFeatures* lhs, CFeatures* rhs, bool do_init);
+		virtual bool init(CFeatures* lhs, CFeatures* rhs);
 
 		/// clean up your kernel
 		virtual void cleanup()=0;
@@ -297,6 +294,5 @@ class CKernel : public CSGObject
 		EOptimizationType opt_type;
 
 		ULONG  properties;
-
 };
 #endif

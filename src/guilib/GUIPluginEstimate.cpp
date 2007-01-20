@@ -52,13 +52,13 @@ bool CGUIPluginEstimate::train(CHAR* param)
 			if (estimator)
 				result=estimator->train(trainfeatures, trainlabels, pos_pseudo, neg_pseudo);
 			else
-				CIO::message(M_ERROR, "no estimator available\n");
+				SG_ERROR( "no estimator available\n");
 		}
 		else
-			CIO::message(M_ERROR, "no features available\n") ;
+			SG_ERROR( "no features available\n") ;
 	}
 	else
-		CIO::message(M_ERROR, "no labels available\n") ;
+		SG_ERROR( "no labels available\n") ;
 
 	return result;
 }
@@ -81,7 +81,7 @@ bool CGUIPluginEstimate::test(CHAR* param)
 
 		if (!outputfile)
 		{
-			CIO::message(M_ERROR, "could not open %s\n",outputname);
+			SG_ERROR( "could not open %s\n",outputname);
 			return false;
 		}
 
@@ -91,7 +91,7 @@ bool CGUIPluginEstimate::test(CHAR* param)
 
 			if (!rocfile)
 			{
-				CIO::message(M_ERROR, "could not open %s\n",rocfname);
+				SG_ERROR( "could not open %s\n",rocfname);
 				return false;
 			}
 		}
@@ -102,29 +102,29 @@ bool CGUIPluginEstimate::test(CHAR* param)
 
 	if (!estimator)
 	{
-		CIO::message(M_ERROR, "no estimator available\n") ;
+		SG_ERROR( "no estimator available\n") ;
 		return false ;
 	}
 
 	if (!estimator->check_models())
 	{
-		CIO::message(M_ERROR, "no models assigned\n") ;
+		SG_ERROR( "no models assigned\n") ;
 		return false ;
 	}
 
 	if (!testfeatures || testfeatures->get_feature_class()!=C_SIMPLE || testfeatures->get_feature_type()!=F_WORD)
 	{
-		CIO::message(M_ERROR, "no test features of type WORD available\n") ;
+		SG_ERROR( "no test features of type WORD available\n") ;
 		return false ;
 	}
 
 	if (!testlabels)
 	{
-		CIO::message(M_ERROR, "no test labels available\n") ;
+		SG_ERROR( "no test labels available\n") ;
 		return false ;
 	}
 
-	CIO::message(M_INFO, "starting estimator testing\n") ;
+	SG_INFO( "starting estimator testing\n") ;
 	estimator->set_testfeatures((CWordFeatures*) testfeatures);
 	DREAL* output=estimator->test();
 
@@ -132,7 +132,7 @@ bool CGUIPluginEstimate::test(CHAR* param)
 	INT total=	testfeatures->get_num_vectors();
 	INT* label= testlabels->get_int_labels(len);
 
-	CIO::message(M_DEBUG, "out !!! %ld %ld\n", total, len);
+	SG_DEBUG( "out !!! %ld %ld\n", total, len);
 	ASSERT(label);
 	ASSERT(len==total);
 
@@ -166,13 +166,13 @@ CLabels* CGUIPluginEstimate::classify(CLabels* output)
 
 	if (!estimator)
 	{
-		CIO::message(M_ERROR, "no estimator available") ;
+		SG_ERROR( "no estimator available") ;
 		return 0;
 	}
 
 	if (!testfeatures)
 	{
-		CIO::message(M_ERROR, "no test features available") ;
+		SG_ERROR( "no test features available") ;
 		return 0;
 	}
 
@@ -187,13 +187,13 @@ DREAL CGUIPluginEstimate::classify_example(INT idx)
 
 	if (!estimator)
 	{
-		CIO::message(M_ERROR, "no estimator available") ;
+		SG_ERROR( "no estimator available") ;
 		return 0;
 	}
 
 	if (!testfeatures)
 	{
-		CIO::message(M_ERROR, "no test features available") ;
+		SG_ERROR( "no test features available") ;
 		return 0;
 	}
 

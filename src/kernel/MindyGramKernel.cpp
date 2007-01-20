@@ -48,10 +48,10 @@ CMindyGramKernel::CMindyGramKernel(LONG cache, CHAR *measure, CHAR *param, ENorm
     norm = n;
 
     /* Create similarity measure */
-    CIO::message(M_INFO, "Initializing Mindy kernel\n");
+    SG_INFO( "Initializing Mindy kernel\n");
     kernel = sm_create(sm_get_type(measure));
    
-    CIO::message(M_INFO, "Mindy similarity measure: %s\n", 
+    SG_INFO( "Mindy similarity measure: %s\n", 
 	         sm_get_descr(kernel->type));
 
     /* Parse and set parameters */
@@ -60,17 +60,17 @@ CMindyGramKernel::CMindyGramKernel(LONG cache, CHAR *measure, CHAR *param, ENorm
     /* Display paramater list */
     for (INT i = 0; p_map[i].name; i++) {
         if (p_map[i].idx != SP_DIST)
-            CIO::message(M_INFO, "Param %8s=%8.6f\t %s\n", 
+            SG_INFO( "Param %8s=%8.6f\t %s\n", 
 			p_map[i].name, p_map[i].val, p_map[i].descr);
         else
-            CIO::message(M_INFO, "Param %8s=%s\t %s\n", p_map[i].name, 
+            SG_INFO( "Param %8s=%s\t %s\n", p_map[i].name, 
                         sm_get_name((sm_type_t) p_map[i].val), 
                         p_map[i].descr);
     }
 
     /* Initialize optimization */
     if (kernel->type == ST_LINEAR) {
-	CIO::message(M_INFO, "Optimization supported\n");
+	SG_INFO( "Optimization supported\n");
         properties |= KP_LINADD;
     }
     
@@ -114,7 +114,7 @@ void CMindyGramKernel::parse_params(CHAR *pa)
             }
         }
      	if (!p_map[i].name)
-            CIO::message(M_WARN, "Unknown parameter '%s'. Skipping", t);
+            SG_WARNING( "Unknown parameter '%s'. Skipping", t);
      }   
 
      /* Set parameters */	
@@ -184,7 +184,7 @@ void CMindyGramKernel::remove_rhs()
 bool CMindyGramKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 {
 
-    CIO::message(M_DEBUG, "Initializing MindyGramKernel %p %p\n", l, r);
+    SG_DEBUG( "Initializing MindyGramKernel %p %p\n", l, r);
     /* Call constructor of super class */
     bool result = CKernel::init(l,r,do_init);
 
@@ -291,7 +291,7 @@ DREAL CMindyGramKernel::compute(INT i, INT j)
         case FULL_NORMALIZATION:
             return result/(sdiag_lhs[i]*sdiag_rhs[j]);
         default:
-            sg_error(sg_err_fun,"Unknown Normalization in use!\n");
+            SG_ERROR( "Unknown Normalization in use!\n");
             return -CMath::INFTY;
     }
 }
@@ -344,19 +344,19 @@ bool CMindyGramKernel::init_optimization(INT n, INT *is, DREAL * ws)
     /* Return empty optimization if no vectors are given */
     if (n <= 0) {
         set_is_initialized(true);
-        CIO::message(M_DEBUG, "empty set of SVs\n");
+        SG_DEBUG( "empty set of SVs\n");
         return true;
     }
 
-    CIO::message(M_DEBUG, "initializing MindyGramKernel optimization\n");
+    SG_DEBUG( "initializing MindyGramKernel optimization\n");
     for (int i = 0; i < n; i++) {
         if ( (i % (n / 10 + 1)) == 0)
-            CIO::progress(i, 0, n);
+            io.progress(i, 0, n);
 
         /* Call add to normal */
         add_to_normal(is[i], ws[i]);
     }
-    CIO::message(M_MESSAGEONLY, "Done.         \n");
+    SG_PRINT( "Done.         \n");
 
     set_is_initialized(true);
     return true;
@@ -367,7 +367,7 @@ bool CMindyGramKernel::init_optimization(INT n, INT *is, DREAL * ws)
  */
 bool CMindyGramKernel::delete_optimization()
 {
-    CIO::message(M_DEBUG, "deleting MindyGramKernel optimization\n");
+    SG_DEBUG( "deleting MindyGramKernel optimization\n");
     clear_normal();
     return true;
 }
@@ -380,7 +380,7 @@ bool CMindyGramKernel::delete_optimization()
 DREAL CMindyGramKernel::compute_optimized(INT i)
 {
     if (!get_is_initialized()) {
-        sg_error(sg_err_fun,"MindyGramKernel optimization not initialized\n");
+        SG_ERROR( "MindyGramKernel optimization not initialized\n");
         return -CMath::INFTY;
     }
 
@@ -395,7 +395,7 @@ DREAL CMindyGramKernel::compute_optimized(INT i)
         case FULL_NORMALIZATION:
             return result/sdiag_rhs[i];
         default:
-            sg_error(sg_err_fun,"Unknown Normalization in use!\n");
+            SG_ERROR( "Unknown Normalization in use!\n");
             return -CMath::INFTY;
     }
 }

@@ -94,7 +94,7 @@ INT* CWeightedDegreeCharKernelPolyA::find_site(char* seq, INT len, INT & num)
 	INT * ret = new INT[num] ;
 	for (INT i=0; i<num; i++)
 		ret[i]=buffer[i] ;
-	//CIO::message(M_DEBUG, "found %i sites\n", num) ;
+	//SG_DEBUG( "found %i sites\n", num) ;
 	return ret ;
 }
 
@@ -104,8 +104,8 @@ bool CWeightedDegreeCharKernelPolyA::init(CFeatures* l, CFeatures* r, bool do_in
 	INT lhs_changed = (lhs!=l) ;
 	INT rhs_changed = (rhs!=r) ;
 
-	CIO::message(M_DEBUG, "lhs_changed: %i\n", lhs_changed) ;
-	CIO::message(M_DEBUG, "rhs_changed: %i\n", rhs_changed) ;
+	SG_DEBUG( "lhs_changed: %i\n", lhs_changed) ;
+	SG_DEBUG( "rhs_changed: %i\n", rhs_changed) ;
 	
 	if (lhs_changed) 
 	{
@@ -151,7 +151,7 @@ bool CWeightedDegreeCharKernelPolyA::init(CFeatures* l, CFeatures* r, bool do_in
 		((CCharFeatures*) r)->free_feature_vector(bvec, i, bfree);		
 	}
 
-	bool result=CSimpleKernel<CHAR>::init(l,r,do_init);
+	bool result=CSimpleKernel<CHAR>::init(l,r);
 	initialized = false ;
 	INT i;
 

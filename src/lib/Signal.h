@@ -36,5 +36,5 @@ protected:
 	static bool active;
 	static bool cancel_computation;
 };
-#endif //WIN32
-#endif
+#endif // WIN32
+#endif // __SIGNAL__H_

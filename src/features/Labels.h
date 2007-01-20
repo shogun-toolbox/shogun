@@ -14,12 +14,9 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include <stdio.h>
+#include "base/SGObject.h"
 
-#include "exceptions/LabelException.h"
-
-
-class CLabels
+class CLabels : public CSGObject
 {
 	public:
 		CLabels();

@@ -46,7 +46,7 @@ CCharFeatures::~CCharFeatures()
 
 bool CCharFeatures::load(CHAR* fname)
 {
-	CIO::message(M_INFO, "loading...\n");
+	SG_INFO( "loading...\n");
     LONG length=0;
 	LONG linelen=0;
 
@@ -67,7 +67,7 @@ bool CCharFeatures::load(CHAR* fname)
 
 		num_vectors=length/linelen;
 
-		CIO::message(M_INFO, "file contains %ldx%ld vectors x features\n", num_vectors, num_features);
+		SG_INFO( "file contains %ldx%ld vectors x features\n", num_vectors, num_features);
 
 		if (length && (num_vectors*linelen==length))
 		{
@@ -78,7 +78,7 @@ bool CCharFeatures::load(CHAR* fname)
 
 				if (feature_matrix[lines*linelen+num_features]!='\n')
 				{
-               sg_error(sg_err_fun,"line %d in file \"%s\" is corrupt\n", lines, fname);
+               SG_ERROR( "line %d in file \"%s\" is corrupt\n", lines, fname);
 					return false;
 				}
 			}
@@ -86,10 +86,10 @@ bool CCharFeatures::load(CHAR* fname)
 			return true;
 		}
 		else
-         sg_error(sg_err_fun,"file is of zero size or no rectangular featurematrix of type CHAR\n");
+         SG_ERROR( "file is of zero size or no rectangular featurematrix of type CHAR\n");
 	}
 	else
-      sg_error(sg_err_fun,"reading file failed\n");
+      SG_ERROR( "reading file failed\n");
 
 	return false;
 }

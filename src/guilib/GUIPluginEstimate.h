@@ -15,12 +15,14 @@
 #include "lib/config.h"
 
 #ifndef HAVE_SWIG
+#include "base/SGObject.h"
+
 #include "classifier/PluginEstimate.h"
 #include "features/Labels.h"
 
 class CGUI;
 
-class CGUIPluginEstimate
+class CGUIPluginEstimate : public CSGObject
 {
 
 public:

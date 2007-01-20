@@ -22,11 +22,11 @@ class CCombinedKernel : public CKernel
 		CCombinedKernel(LONG size, bool append_subkernel_weights);
 		virtual ~CCombinedKernel();
 
-		/** initialize kernel cache
+		/** initialize kernel lhs/rhs caches etc.
 		 *  make sure to check that your kernel can deal with the
 		 *  supplied features (!)
-		 *  set do_init to true if you want the kernel to call its setup function (like getting scaling parameters,...) */
-		virtual bool init(CFeatures* lhs, CFeatures* rhs, bool do_init);
+		 */
+		virtual bool init(CFeatures* lhs, CFeatures* rhs);
 
 		/// clean up your kernel
 		virtual void cleanup();

@@ -68,7 +68,7 @@ bool CPlif::set_transform_type(const char *type_str)
 		transform = T_LINEAR_PLUS3 ;
 	else
 	{
-		CIO::message(M_ERROR, "unknown transform type (%s)\n", type_str) ;
+		SG_ERROR( "unknown transform type (%s)\n", type_str) ;
 		return false ;
 	}
 	return true ;
@@ -123,7 +123,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		const mxArray* mx_elem = mxGetCell(mx_penalty_info, i) ;
 		if (mx_elem==NULL || !mxIsStruct(mx_elem))
 		{
-			CIO::message(M_ERROR, "empty cell element\n") ;
+			SG_ERROR( "empty cell element\n") ;
 			delete[] PEN ;
 			return NULL ;
 		}
@@ -131,7 +131,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		if (mx_id_field==NULL || !mxIsNumeric(mx_id_field) || 
 			mxGetN(mx_id_field)!=1 || mxGetM(mx_id_field)!=1)
 		{
-			CIO::message(M_ERROR, "missing id field\n") ;
+			SG_ERROR( "missing id field\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
@@ -139,7 +139,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		if (mx_limits_field==NULL || !mxIsNumeric(mx_limits_field) ||
 			mxGetM(mx_limits_field)!=1)
 		{
-			CIO::message(M_ERROR, "missing limits field\n") ;
+			SG_ERROR( "missing limits field\n") ;
 			delete[] PEN ;
 			return NULL ;
 		}
@@ -149,21 +149,21 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		if (mx_penalties_field==NULL || !mxIsNumeric(mx_penalties_field) ||
 			mxGetM(mx_penalties_field)!=1 || mxGetN(mx_penalties_field)!=len)
 		{
-			CIO::message(M_ERROR, "missing penalties field (%i)\n", i) ;
+			SG_ERROR( "missing penalties field (%i)\n", i) ;
 			delete[] PEN ;
 			return NULL ;
 		}
 		const mxArray* mx_transform_field = mxGetField(mx_elem, 0, "transform") ;
 		if (mx_transform_field==NULL || !mxIsChar(mx_transform_field))
 		{
-			CIO::message(M_ERROR, "missing transform field\n") ;
+			SG_ERROR( "missing transform field\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
 		const mxArray* mx_name_field = mxGetField(mx_elem, 0, "name") ;
 		if (mx_name_field==NULL || !mxIsChar(mx_name_field))
 		{
-			CIO::message(M_ERROR, "missing name field\n") ;
+			SG_ERROR( "missing name field\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
@@ -171,7 +171,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		if (mx_max_value_field==NULL || !mxIsNumeric(mx_max_value_field) ||
 			mxGetM(mx_max_value_field)!=1 || mxGetN(mx_max_value_field)!=1)
 		{
-			CIO::message(M_ERROR, "missing max_value field\n") ;
+			SG_ERROR( "missing max_value field\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
@@ -179,7 +179,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		if (mx_min_value_field==NULL || !mxIsNumeric(mx_min_value_field) ||
 			mxGetM(mx_min_value_field)!=1 || mxGetN(mx_min_value_field)!=1)
 		{
-			CIO::message(M_ERROR, "missing min_value field\n") ;
+			SG_ERROR( "missing min_value field\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
@@ -187,7 +187,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		if (mx_use_svm_field==NULL || !mxIsNumeric(mx_use_svm_field) ||
 			mxGetM(mx_use_svm_field)!=1 || mxGetN(mx_use_svm_field)!=1)
 		{
-			CIO::message(M_ERROR, "missing use_svm field\n") ;
+			SG_ERROR( "missing use_svm field\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
@@ -197,7 +197,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		if (mx_use_cache_field==NULL || !mxIsNumeric(mx_use_cache_field) ||
 			mxGetM(mx_use_cache_field)!=1 || mxGetN(mx_use_cache_field)!=1)
 		{
-			CIO::message(M_ERROR, "missing use_cache field\n") ;
+			SG_ERROR( "missing use_cache field\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
@@ -206,14 +206,14 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		INT id = (INT) mxGetScalar(mx_id_field)-1 ;
 		if (i<0 || i>P-1)
 		{
-			CIO::message(M_ERROR, "id out of range\n") ;
+			SG_ERROR( "id out of range\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
 		INT max_value = (INT) mxGetScalar(mx_max_value_field) ;
 		if (max_value<-1024*1024*100 || max_value>1024*1024*100)
 		{
-			CIO::message(M_ERROR, "max_value out of range\n") ;
+			SG_ERROR( "max_value out of range\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
@@ -222,7 +222,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		INT min_value = (INT) mxGetScalar(mx_min_value_field) ;
 		if (min_value<-1024*1024*100 || min_value>1024*1024*100)
 		{
-			CIO::message(M_ERROR, "min_value out of range\n") ;
+			SG_ERROR( "min_value out of range\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
@@ -230,7 +230,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		
 		if (PEN[id]->get_id()!=-1)
 		{
-			CIO::message(M_ERROR, "penalty id already used\n") ;
+			SG_ERROR( "penalty id already used\n") ;
 			delete[] PEN;
 			return NULL ;
 		}
@@ -248,7 +248,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 
 		if (!PEN[id]->set_transform_type(transform_str))
 		{
-			CIO::message(M_ERROR, "transform type not recognized ('%s')\n", transform_str) ;
+			SG_ERROR( "transform type not recognized ('%s')\n", transform_str) ;
 			delete[] PEN;
 			mxFree(transform_str) ;
 			return NULL ;
@@ -258,10 +258,10 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		PEN[id]->init_penalty_struct_cache() ;
 
 /*		if (PEN->cache)
-/			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_value=%i max_value=%i transform='%s' (cache initialized)\n", PEN[id]->name,
+/			SG_DEBUG( "penalty_info: name=%s id=%i points=%i min_value=%i max_value=%i transform='%s' (cache initialized)\n", PEN[id]->name,
 					PEN[id]->id, PEN[id]->len, PEN[id]->min_value, PEN[id]->max_value, transform_str) ;
 		else
-			CIO::message(M_DEBUG, "penalty_info: name=%s id=%i points=%i min_value=%i max_value=%i transform='%s'\n", PEN[id]->name,
+			SG_DEBUG( "penalty_info: name=%s id=%i points=%i min_value=%i max_value=%i transform='%s'\n", PEN[id]->name,
 					PEN[id]->id, PEN[id]->len, PEN[id]->min_value, PEN[id]->max_value, transform_str) ;
 */
 		
@@ -302,7 +302,7 @@ DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
 		d_value = d_value+3 ;
 		break ;
 	default:
-		CIO::message(M_ERROR, "unknown transform\n") ;
+		SG_ERROR( "unknown transform\n") ;
 		break ;
 	}
 	
@@ -367,7 +367,7 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 		d_value = d_value+3 ;
 		break ;
 	default:
-		CIO::message(M_ERROR, "unknown transform\n") ;
+		SG_ERROR( "unknown transform\n") ;
 		break ;
 	}
 
@@ -427,7 +427,7 @@ void CPlif::penalty_add_derivative(DREAL p_value, DREAL* svm_values)
 		d_value = d_value+3 ;
 		break ;
 	default:
-		CIO::message(M_ERROR, "unknown transform\n") ;
+		SG_ERROR( "unknown transform\n") ;
 		break ;
 	}
 
@@ -469,7 +469,7 @@ void CPlif::penalty_add_derivative_svm(DREAL p_value, DREAL *d_values)
 		d_value = d_value+3 ;
 		break ;
 	default:
-		CIO::message(M_ERROR, "unknown transform\n") ;
+		SG_ERROR( "unknown transform\n") ;
 		break ;
 	}
 	

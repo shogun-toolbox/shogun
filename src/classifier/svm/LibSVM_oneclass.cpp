@@ -29,7 +29,7 @@ bool CLibSVMOneclass::train()
 	problem.l = get_kernel()->get_lhs()->get_num_vectors();
 	
 	struct svm_node* x_space;
-	CIO::message(M_INFO, "%d train data points\n", problem.l);
+	SG_INFO( "%d train data points\n", problem.l);
 
 	problem.y=NULL;
 	problem.x=new struct svm_node*[problem.l];

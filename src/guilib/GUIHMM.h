@@ -15,12 +15,13 @@
 #include "lib/config.h"
 
 #ifndef HAVE_SWIG
+#include "base/SGObject.h"
 #include "distributions/hmm/HMM.h"
 #include "features/Labels.h"
 
 class CGUI ;
 
-class CGUIHMM 
+class CGUIHMM : public CSGObject
 {
 public:
 	CGUIHMM(CGUI *);

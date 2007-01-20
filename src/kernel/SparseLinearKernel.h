@@ -21,7 +21,7 @@ class CSparseLinearKernel: public CSparseKernel<DREAL>
   CSparseLinearKernel(INT size, bool do_rescale=true, DREAL scale=1.0);
   ~CSparseLinearKernel();
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -59,6 +59,7 @@ class CSparseLinearKernel: public CSparseKernel<DREAL>
  protected:
   double scale ;
   bool do_rescale ;
+  bool initialized;
 
   /// normal vector (used in case of optimized kernel)
   long normal_length;

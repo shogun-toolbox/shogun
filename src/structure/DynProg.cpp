@@ -406,7 +406,7 @@ void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len)
 {
 	if (!svm_arrays_clean)
 	{
-		CIO::message(M_ERROR, "SVM arrays not clean") ;
+		SG_ERROR( "SVM arrays not clean") ;
 		return ;
 	} ;
 
@@ -415,7 +415,7 @@ void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len)
 	ASSERT(end_state_distribution_q.get_dim1()==N) ;	
 	
 	m_seq.set_array(seq, N, seq_len, true, true) ;
-	CIO::message(M_MESSAGEONLY, "seq: %x, (%d,%d)\n", seq, N, seq_len);
+	SG_PRINT( "seq: %x, (%d,%d)\n", seq, N, seq_len);
 	this->N=N ;
 
 	m_call=3 ;
@@ -425,10 +425,10 @@ void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len)
 void CDynProg::best_path_set_pos(INT *pos, INT seq_len)  
 {
 	if (m_step!=2)
-		CIO::message(M_ERROR, "please call best_path_set_seq first\n") ;
+		SG_ERROR( "please call best_path_set_seq first\n") ;
 	
 	if (seq_len!=m_seq.get_dim2())
-		CIO::message(M_ERROR, "pos size does not match previous info %i!=%i\n", seq_len, m_seq.get_dim2()) ;
+		SG_ERROR( "pos size does not match previous info %i!=%i\n", seq_len, m_seq.get_dim2()) ;
 
 	m_pos.set_array(pos, seq_len, true, true) ;
 
@@ -438,12 +438,12 @@ void CDynProg::best_path_set_pos(INT *pos, INT seq_len)
 void CDynProg::best_path_set_orf_info(INT *orf_info, INT m, INT n) 
 {
 	if (m_step!=3)
-		CIO::message(M_ERROR, "please call best_path_set_pos first\n") ;
+		SG_ERROR( "please call best_path_set_pos first\n") ;
 		
 	if (m!=N)
-		CIO::message(M_ERROR, "orf_info size does not match previous info %i!=%i\n", m, N) ;
+		SG_ERROR( "orf_info size does not match previous info %i!=%i\n", m, N) ;
 	if (n!=2)
-		CIO::message(M_ERROR, "orf_info size incorrect %i!=2\n", n) ;
+		SG_ERROR( "orf_info size incorrect %i!=2\n", n) ;
 	m_orf_info.set_array(orf_info, m, n, true, true) ;
 	
 	m_call=1 ;
@@ -453,12 +453,12 @@ void CDynProg::best_path_set_orf_info(INT *orf_info, INT m, INT n)
 void CDynProg::best_path_set_segment_sum_weights(DREAL *segment_sum_weights, INT num_states, INT seq_len) 
 {
 	if (m_step!=3)
-		CIO::message(M_ERROR, "please call best_path_set_pos first\n") ;
+		SG_ERROR( "please call best_path_set_pos first\n") ;
 		
 	if (num_states!=N)
-		CIO::message(M_ERROR, "segment_sum_weights size does not match previous info %i!=%i\n", num_states, N) ;
+		SG_ERROR( "segment_sum_weights size does not match previous info %i!=%i\n", num_states, N) ;
 	if (seq_len!=m_pos.get_dim1())
-		CIO::message(M_ERROR, "segment_sum_weights size incorrect %i!=%i\n", seq_len, m_pos.get_dim1()) ;
+		SG_ERROR( "segment_sum_weights size incorrect %i!=%i\n", seq_len, m_pos.get_dim1()) ;
 
 	m_segment_sum_weights.set_array(segment_sum_weights, num_states, seq_len, true, true) ;
 	
@@ -473,7 +473,7 @@ void CDynProg::best_path_set_plif_list(CDynamicArray<CPlifBase*>* plifs)
 	INT num_plif=plifs->get_num_elements();
 
 	if (m_step!=4)
-		CIO::message(M_ERROR, "please call best_path_set_orf_info or best_path_segment_sum_weights first\n") ;
+		SG_ERROR( "please call best_path_set_orf_info or best_path_segment_sum_weights first\n") ;
 
 	m_plif_list.set_array(plif_list, num_plif, true, true) ;
 
@@ -483,10 +483,10 @@ void CDynProg::best_path_set_plif_list(CDynamicArray<CPlifBase*>* plifs)
 void CDynProg::best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n) 
 {
 	if (m_step!=5)
-		CIO::message(M_ERROR, "please call best_path_set_plif_list first\n") ;
+		SG_ERROR( "please call best_path_set_plif_list first\n") ;
 
 	if ((m!=N) || (n!=N))
-		CIO::message(M_ERROR, "plif_id_matrix size does not match previous info %i!=%i or %i!=%i\n", m, N, n, N) ;
+		SG_ERROR( "plif_id_matrix size does not match previous info %i!=%i or %i!=%i\n", m, N, n, N) ;
 
 	CArray2<INT> id_matrix(plif_id_matrix, N, N, false, false) ;
 	id_matrix.set_name("id_matrix");
@@ -505,10 +505,10 @@ void CDynProg::best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n)
 void CDynProg::best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m, INT n) 
 {
 	if (m_step!=6)
-		CIO::message(M_ERROR, "please call best_path_set_plif_id_matrix first\n") ;
+		SG_ERROR( "please call best_path_set_plif_id_matrix first\n") ;
 	
 	if ((m!=N) || (n!=2))
-		CIO::message(M_ERROR, "plif_state_signal_matrix size does not match previous info %i!=%i or %i!=%i\n", m, N, n, 2) ;
+		SG_ERROR( "plif_state_signal_matrix size does not match previous info %i!=%i or %i!=%i\n", m, N, n, 2) ;
 
 	CArray2<INT> id_matrix(plif_id_matrix, N, 2, false, false) ;
 	m_PEN_state_signals.resize_array(N,2) ;
@@ -529,7 +529,7 @@ void CDynProg::best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m
 void CDynProg::best_path_set_genestr(CHAR* genestr, INT genestr_len, INT genestr_num)
 {
 	if (m_step!=6)
-		CIO::message(M_ERROR, "please call best_path_set_plif_id_matrix first\n") ;
+		SG_ERROR( "please call best_path_set_plif_id_matrix first\n") ;
 
 	ASSERT(genestr);
 	ASSERT(genestr_len>0);
@@ -575,10 +575,10 @@ void CDynProg::best_path_set_my_losses(DREAL* my_losses, INT seq_len)
 void CDynProg::best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len, INT n) 
 {
 	if (m_step!=7)
-		CIO::message(M_ERROR, "please call best_path_set_genestr first\n") ;
+		SG_ERROR( "please call best_path_set_genestr first\n") ;
 
 	if (num_svms!=n)
-		CIO::message(M_ERROR, "dict_weights array does not match num_svms=%i!=%i\n", num_svms, n) ;
+		SG_ERROR( "dict_weights array does not match num_svms=%i!=%i\n", num_svms, n) ;
 
 	m_dict_weights.set_array(dictionary_weights, dict_len, num_svms, true, true) ;
 
@@ -595,10 +595,10 @@ void CDynProg::best_path_set_segment_loss(DREAL* segment_loss, INT m, INT n)
 {
 	// here we need two matrices. Store it in one: 2N x N
 	if (2*m!=n)
-		CIO::message(M_ERROR, "segment_loss should be 2 x quadratic matrix: %i!=%i\n", m, 2*n) ;
+		SG_ERROR( "segment_loss should be 2 x quadratic matrix: %i!=%i\n", m, 2*n) ;
 
 	if (m!=max_a_id+1)
-		CIO::message(M_ERROR, "segment_loss size should match max_a_id: %i!=%i\n", m, max_a_id+1) ;
+		SG_ERROR( "segment_loss size should match max_a_id: %i!=%i\n", m, max_a_id+1) ;
 
 	m_segment_loss.set_array(segment_loss, m, n/2, 2, true, true) ;
 	/*for (INT i=0; i<n; i++)
@@ -609,7 +609,7 @@ void CDynProg::best_path_set_segment_loss(DREAL* segment_loss, INT m, INT n)
 void CDynProg::best_path_set_segment_ids_mask(INT* segment_ids_mask, INT m, INT n) 
 {
 	if (m!=2)// || n!=m_seq.get_dim2())
-		CIO::message(M_ERROR, "segment_ids_mask should be a 2 x seq_len matrix: %i!=2 and %i!=%i\n", m, m_seq.get_dim2(), n) ;
+		SG_ERROR( "segment_ids_mask should be a 2 x seq_len matrix: %i!=2 and %i!=%i\n", m, m_seq.get_dim2(), n) ;
 
 	m_segment_ids_mask.set_array(segment_ids_mask, m, n, true, true) ;
 }
@@ -618,9 +618,9 @@ void CDynProg::best_path_set_segment_ids_mask(INT* segment_ids_mask, INT m, INT 
 void CDynProg::best_path_call(INT nbest, bool use_orf) 
 {
 	if (m_step!=8)
-		CIO::message(M_ERROR, "please call best_path_set_dict_weights first\n") ;
+		SG_ERROR( "please call best_path_set_dict_weights first\n") ;
 	if (m_call!=1)
-		CIO::message(M_ERROR, "please call best_path_set_orf_info first\n") ;
+		SG_ERROR( "please call best_path_set_orf_info first\n") ;
 	ASSERT(N==m_seq.get_dim1()) ;
 	ASSERT(m_seq.get_dim2()==m_pos.get_dim1()) ;
 
@@ -630,7 +630,7 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 
 	m_call=1 ;
 
-	CIO::message(M_MESSAGEONLY, "m_seq.get_array(): %x", m_seq.get_array());
+	SG_PRINT( "m_seq.get_array(): %x", m_seq.get_array());
 	best_path_trans(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), m_orf_info.get_array(),
 					m_PEN.get_array(), m_PEN_state_signals.get_array(), 
 					m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
@@ -645,9 +645,9 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 void CDynProg::best_path_2struct_call(INT nbest) 
 {
 	if (m_step!=8)
-		CIO::message(M_ERROR, "please call best_path_set_orf_dict_weights first\n") ;
+		SG_ERROR( "please call best_path_set_orf_dict_weights first\n") ;
 	if (m_call!=2)
-		CIO::message(M_ERROR, "please call best_path_set_segment_sum_weights first\n") ;
+		SG_ERROR( "please call best_path_set_segment_sum_weights first\n") ;
 	ASSERT(N==m_seq.get_dim1()) ;
 	ASSERT(m_seq.get_dim2()==m_pos.get_dim1()) ;
 	
@@ -671,9 +671,9 @@ void CDynProg::best_path_2struct_call(INT nbest)
 void CDynProg::best_path_simple_call(INT nbest) 
 {
 	if (m_step!=2)
-		CIO::message(M_ERROR, "please call best_path_set_seq first\n") ;
+		SG_ERROR( "please call best_path_set_seq first\n") ;
 	if (m_call!=3)
-		CIO::message(M_ERROR, "please call best_path_set_seq first\n") ;
+		SG_ERROR( "please call best_path_set_seq first\n") ;
 	ASSERT(N==m_seq.get_dim1()) ;
 
 	m_scores.resize_array(nbest) ;
@@ -692,7 +692,7 @@ void CDynProg::best_path_deriv_call(INT nbest)
 {
 	if (!svm_arrays_clean)
 	{
-		CIO::message(M_ERROR, "SVM arrays not clean") ;
+		SG_ERROR( "SVM arrays not clean") ;
 		return ;
 	} ;
 
@@ -703,7 +703,7 @@ void CDynProg::best_path_deriv_call(INT nbest)
 void CDynProg::best_path_get_scores(DREAL **scores, INT *m) 
 {
 	if (m_step!=9)
-		CIO::message(M_ERROR, "please call best_path*_call first\n") ;
+		SG_ERROR( "please call best_path*_call first\n") ;
 
 	*scores=m_scores.get_array() ;
 	*m=m_scores.get_dim1() ;
@@ -714,7 +714,7 @@ void CDynProg::best_path_get_scores(DREAL **scores, INT *m)
 void CDynProg::best_path_get_states(INT **states, INT *m, INT *n) 
 {
 	if (m_step!=10)
-		CIO::message(M_ERROR, "please call best_path_get_score first\n") ;
+		SG_ERROR( "please call best_path_get_score first\n") ;
 	
 	*states=m_states.get_array() ;
 	*m=m_states.get_dim1() ;
@@ -726,9 +726,9 @@ void CDynProg::best_path_get_states(INT **states, INT *m, INT *n)
 void CDynProg::best_path_get_positions(INT **positions, INT *m, INT *n) 
 {
 	if (m_step!=11)
-		CIO::message(M_ERROR, "please call best_path_get_positions first\n") ;
+		SG_ERROR( "please call best_path_get_positions first\n") ;
 	if (m_call==3)
-		CIO::message(M_ERROR, "no position information for best_path_simple\n") ;
+		SG_ERROR( "no position information for best_path_simple\n") ;
 	
 	*positions=m_positions.get_array() ;
 	*m=m_positions.get_dim1() ;
@@ -1019,7 +1019,7 @@ void CDynProg::extend_svm_value(WORD* wordstr, INT pos, INT &last_svm_pos, DREAL
 	for (int i=last_svm_pos-1; (i>=pos) && (i>=0); i--)
 	{
 		if (wordstr[i]>=num_words_single)
-			CIO::message(M_DEBUG, "wordstr[%i]=%i\n", i, wordstr[i]) ;
+			SG_DEBUG( "wordstr[%i]=%i\n", i, wordstr[i]) ;
 		
 		if (!word_used_single[wordstr[i]])
 		{
@@ -1122,9 +1122,9 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 
 	if (is_big)
 	{
-		CIO::message(M_DEBUG,"calling best_path_2struct: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
+		SG_DEBUG("calling best_path_2struct: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
 					 seq_len, N, max_look_back, nbest) ;
-		CIO::message(M_DEBUG,"allocating %1.2fMB of memory\n", 
+		SG_DEBUG("allocating %1.2fMB of memory\n", 
 					 mem_use) ;
 	}
 	ASSERT(nbest<32000) ;
@@ -1188,7 +1188,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 	for (INT t=1; t<seq_len; t++)
 	{
 		if (is_big && t%(seq_len/1000)==1)
-			CIO::progress(t, 0, seq_len);
+			io.progress(t, 0, seq_len);
 		
 		for (T_STATES j=0; j<N; j++)
 		{
@@ -1323,7 +1323,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 		}
 	}
 	if (is_big)
-		CIO::message(M_MESSAGEONLY, "DONE.     \n") ;
+		SG_PRINT( "DONE.     \n") ;
 }
 
 /*void CDynProg::reset_svm_values(INT pos, INT * last_svm_pos, DREAL * svm_value) 
@@ -1350,7 +1350,7 @@ void CDynProg::extend_svm_values(WORD** wordstr, INT pos, INT *last_svm_pos, DRE
 		for (int i=last_svm_pos[j]-1; (i>=pos) && (i>=0); i--)
 		{
 			if (wordstr[j][i]>=num_words_array[j])
-				CIO::message(M_DEBUG, "wordstr[%i]=%i\n", i, wordstr[j][i]) ;
+				SG_DEBUG( "wordstr[%i]=%i\n", i, wordstr[j][i]) ;
 
 			ASSERT(wordstr[j][i]<num_words_array[j]) ;
 			if (!word_used.element(word_used_array, j, wordstr[j][i], num_degrees))
@@ -1731,10 +1731,10 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 							   DREAL *dictionary_weights, INT dict_len, bool use_orf)
 {
-	CIO::message(M_MESSAGEONLY, "best_path_trans:%x", seq_array);
+	SG_PRINT( "best_path_trans:%x", seq_array);
 	if (!svm_arrays_clean)
 	{
-		CIO::message(M_ERROR, "SVM arrays not clean") ;
+		SG_ERROR( "SVM arrays not clean") ;
 		return ;
 	} ;
 	
@@ -1844,9 +1844,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 	if (is_big)
 	{
-		CIO::message(M_DEBUG,"calling best_path_trans: seq_len=%i, N=%i, lookback=%i nbest=%i nother=%i\n", 
+		SG_DEBUG("calling best_path_trans: seq_len=%i, N=%i, lookback=%i nbest=%i nother=%i\n", 
 					 seq_len, N, max_look_back, nbest, nother) ;
-		CIO::message(M_DEBUG,"allocating %1.2fMB of memory\n", 
+		SG_DEBUG("allocating %1.2fMB of memory\n", 
 					 mem_use) ;
 	}
 	ASSERT(nbest<32000) ;
@@ -2065,7 +2065,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	for (INT t=1; t<seq_len; t++)
 	{
 		if (is_big && t%(seq_len/1000)==1)
-			CIO::progress(t, 0, seq_len);
+			io.progress(t, 0, seq_len);
 		
 		init_svm_values(svs, pos[t], seq_len, max_look_back);
 		find_svm_values_till_pos(wordstr, pos, t, svs);  
@@ -2141,7 +2141,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							ok=(!use_orf) || extend_orf(genestr_stop, orf_from, orf_to, pos[ts], orf_last_pos, pos[t]) ;
 							if (!ok) 
 							{
-								//CIO::message(M_DEBUG, "no orf from %i[%i] to %i[%i]\n", pos[ts], orf_from, pos[t], orf_to) ;
+								//SG_DEBUG( "no orf from %i[%i] to %i[%i]\n", pos[ts], orf_from, pos[t], orf_to) ;
 								break ;
 							}
 						} else
@@ -2413,7 +2413,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	}
 	
 	if (is_big)
-		CIO::message(M_MESSAGEONLY, "DONE.     \n") ;
+		SG_PRINT( "DONE.     \n") ;
 
 	for (INT k=0; k<genestr_num; k++)
 	{
@@ -2439,7 +2439,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 {	
 	if (!svm_arrays_clean)
 	{
-		CIO::message(M_ERROR, "SVM arrays not clean") ;
+		SG_ERROR( "SVM arrays not clean") ;
 		return ;
 	} ;
 	//fprintf(stderr, "genestr_len=%i, genestr_num=%i\n", genestr_len, genestr_num) ;
@@ -2578,13 +2578,13 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			INT elem_id = transition_matrix_a_id.element(from_state, to_state) ;
 			my_losses[i] = extend_segment_loss(loss, pos, elem_id, from_pos, loss_last_pos, last_loss) ;
 #ifdef DYNPROG_DEBUG
-			CIO::message(M_DEBUG, "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;
+			SG_DEBUG( "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;
 #endif
 			// increase usage of this transition
 			transition_matrix_a_deriv.element(from_state, to_state)++ ;
 			my_scores[i] += transition_matrix_a.element(from_state, to_state) ;
 #ifdef DYNPROG_DEBUG
-			CIO::message(M_DEBUG, "%i. scores[i]=%f\n", i, my_scores[i]) ;
+			SG_DEBUG( "%i. scores[i]=%f\n", i, my_scores[i]) ;
 #endif
 			
 			/*INT last_svm_pos[num_degrees] ;
@@ -2605,7 +2605,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 					INT offset = ss*svs.seqlen;
 					svm_value[ss]=svs.svm_values[offset+plen];
 #ifdef DYNPROG_DEBUG
-					//CIO::message(M_DEBUG, "svm[%i]: %f\n", ss, svm_value[ss]) ;
+					//SG_DEBUG( "svm[%i]: %f\n", ss, svm_value[ss]) ;
 #endif
 				}
 			}
@@ -2615,12 +2615,12 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				DREAL nscore = PEN.element(to_state, from_state)->lookup_penalty(pos[to_pos]-pos[from_pos], svm_value) ;
 				my_scores[i] += nscore ;
 #ifdef DYNPROG_DEBUG
-				CIO::message(M_DEBUG, "%i. transition penalty: from_state=%i to_state=%i from_pos=%i to_pos=%i value=%i\n", i, from_state, to_state, from_pos, to_pos, pos[to_pos]-pos[from_pos]) ;
+				SG_DEBUG( "%i. transition penalty: from_state=%i to_state=%i from_pos=%i to_pos=%i value=%i\n", i, from_state, to_state, from_pos, to_pos, pos[to_pos]-pos[from_pos]) ;
 #endif
 				PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value) ;
 			}
 #ifdef DYNPROG_DEBUG
-			CIO::message(M_DEBUG, "%i. scores[i]=%f\n", i, my_scores[i]) ;
+			SG_DEBUG( "%i. scores[i]=%f\n", i, my_scores[i]) ;
 #endif
 
 			//fprintf(stderr, "emmission penalty skipped: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", to_state, to_pos, seq_input.element(to_state, to_pos), 0.0) ;
@@ -2640,7 +2640,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 					DREAL nscore2 = PEN_state_signals.element(to_state,1)->lookup_penalty(input2, svm_value) ;
 					my_scores[i] += nscore1 + nscore2 ;
 #ifdef DYNPROG_DEBUG
-					CIO::message(M_DEBUG, "%i. emmission penalty: to_state=%i to_pos=%i value1=%1.2f value2=%1.2f score1=%1.2f score2=%1.2f\n", i, to_state, to_pos, input1, input2, nscore1, nscore2) ;
+					SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i value1=%1.2f value2=%1.2f score1=%1.2f score2=%1.2f\n", i, to_state, to_pos, input1, input2, nscore1, nscore2) ;
 #endif
 					PEN_state_signals.element(to_state,0)->penalty_add_derivative(input1, svm_value) ;
 					PEN_state_signals.element(to_state,1)->penalty_add_derivative(input2, svm_value) ;
@@ -2650,20 +2650,20 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 					DREAL nscore = PEN_state_signals.element(to_state,0)->lookup_penalty(seq_input.element(to_state, to_pos), svm_value) ;
 					my_scores[i] += nscore ;
 #ifdef DYNPROG_DEBUG
-					CIO::message(M_DEBUG, "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos), nscore) ;
+					SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos), nscore) ;
 #endif
 					PEN_state_signals.element(to_state,0)->penalty_add_derivative(seq_input.element(to_state, to_pos), svm_value) ;
 				}
 			} else
 			{
 #ifdef DYNPROG_DEBUG
-				CIO::message(M_DEBUG, "%i. emmission penalty: to_state=%i to_pos=%i score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos)) ;
+				SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos)) ;
 #endif
 				my_scores[i] += seq_input.element(to_state, to_pos) ;
 			}
 
 #ifdef DYNPROG_DEBUG
-			CIO::message(M_DEBUG, "%i. scores[i]=%f (final) \n", i, my_scores[i]) ;
+			SG_DEBUG( "%i. scores[i]=%f (final) \n", i, my_scores[i]) ;
 #endif
 		}
 		clear_svm_values(svs);
@@ -2684,7 +2684,7 @@ void CDynProg::best_path_trans_simple(const DREAL *seq_array, INT seq_len, short
 {
 	if (!svm_arrays_clean)
 	{
-		CIO::message(M_ERROR, "SVM arrays not clean") ;
+		SG_ERROR( "SVM arrays not clean") ;
 		return ;
 	} ;
 

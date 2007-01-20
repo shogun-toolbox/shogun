@@ -14,6 +14,8 @@
 #include "lib/config.h"
 
 #if defined(HAVE_OCTAVE) && !defined(HAVE_SWIG)
+#include "base/SGObject.h"
+
 #include "features/Labels.h"
 #include "features/Features.h"
 
@@ -27,7 +29,7 @@
 #include <octave/variables.h>
 #include <octave/ov-cell.h>
 
-class CGUIOctave
+class CGUIOctave : public CSGObject
 {
 public:
 	CGUIOctave();

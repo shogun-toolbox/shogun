@@ -17,10 +17,10 @@
 class CLinearWordKernel: public CSimpleKernel<WORD>
 {
  public:
-  CLinearWordKernel(LONG size);
+  CLinearWordKernel(LONG size, bool do_rescale=true, DREAL scale=1.0);
   ~CLinearWordKernel() ;
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -53,6 +53,8 @@ class CLinearWordKernel: public CSimpleKernel<WORD>
   
  protected:
   double scale ;
+  bool do_rescale ;
+  bool initialized;
 
   /// normal vector (used in case of optimized kernel)
   double* normal;

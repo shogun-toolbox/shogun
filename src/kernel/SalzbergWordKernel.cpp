@@ -30,10 +30,9 @@ CSalzbergWordKernel::~CSalzbergWordKernel()
 	cleanup();
 }
 
-bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r, bool do_init)
+bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 {
-	bool status=CSimpleKernel<WORD>::init(p_l,p_r,do_init);
-	initialized = false ;
+	bool status=CSimpleKernel<WORD>::init(p_l,p_r);
 	CWordFeatures* l=(CWordFeatures*) p_l;
 	CWordFeatures* r=(CWordFeatures*) p_r;
 	ASSERT(l);
@@ -78,7 +77,7 @@ bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r, bool do_init)
 	ASSERT(sqrtdiag_rhs);
 	
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
-	if (do_init)
+	if (!initialized)
 	{
 	    INT num_vectors=l->get_num_vectors();
 	    num_symbols=l->get_num_symbols();
@@ -87,12 +86,12 @@ bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r, bool do_init)
 			r->get_num_features() * r->get_num_symbols();
 	    if ((!estimate) || (!estimate->check_models()))
 		{
-         sg_error(sg_err_fun,"no estimate available\n");
+         SG_ERROR( "no estimate available\n");
 			return false ;
 		} ;
 	    if (num_params2!=estimate->get_num_params())
 		{
-         sg_error(sg_err_fun,"number of parameters of estimate and feature representation do not match\n");
+         SG_ERROR( "number of parameters of estimate and feature representation do not match\n");
 			return false ;
 		} ;
 	    

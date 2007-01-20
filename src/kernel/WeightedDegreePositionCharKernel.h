@@ -25,7 +25,7 @@ public:
 									  INT mkl_stepsize=1) ;
 	~CWeightedDegreePositionCharKernel() ;
 	
-	virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+	virtual bool init(CFeatures* l, CFeatures* r);
 	virtual void cleanup();
 	
 	/// load and save kernel init_data
@@ -61,7 +61,7 @@ public:
 			if ((opt_type==FASTBUTMEMHUNGRY) && (tries.get_use_compact_terminal_nodes())) 
 			{
 				tries.set_use_compact_terminal_nodes(false) ;
-				CIO::message(M_DEBUG, "disabling compact trie nodes with FASTBUTMEMHUNGRY\n") ;
+				SG_DEBUG( "disabling compact trie nodes with FASTBUTMEMHUNGRY\n") ;
 			}
 			if (get_is_initialized())
 			{
@@ -70,11 +70,7 @@ public:
 				else if (opt_type==FASTBUTMEMHUNGRY)
 					tries.delete_trees(false);  // still buggy
 				else {
-#ifdef HAVE_PYTHON
-               throw KernelException("unknown optimization type\n");
-#else
-					CIO::message(M_ERROR, "unknown optimization type\n");
-#endif
+					SG_ERROR( "unknown optimization type\n");
             }
 				set_is_initialized(false);
 			}
@@ -105,11 +101,7 @@ public:
 				return ;
 			}
 
-#ifdef HAVE_PYTHON
-         throw KernelException("CWeightedDegreePositionCharKernel optimization not initialized\n");
-#else
-			CIO::message(M_ERROR, "CWeightedDegreePositionCharKernel optimization not initialized\n") ;
-#endif
+			SG_ERROR( "CWeightedDegreePositionCharKernel optimization not initialized\n") ;
 		}
 	
 	inline const DREAL* get_subkernel_weights(INT& num_weights)
@@ -132,13 +124,8 @@ public:
 	inline void set_subkernel_weights(DREAL* weights2, INT num_weights2)
 		{
 			INT num_weights = get_num_subkernels() ;
-			if (num_weights!=num_weights2) {
-#ifdef HAVE_PYTHON
-            throw KernelException("number of weights do not match\n");
-#else
-				CIO::message(M_ERROR, "number of weights do not match\n") ;
-#endif
-            }
+			if (num_weights!=num_weights2)
+				SG_ERROR( "number of weights do not match\n") ;
 			
 			if (position_weights!=NULL)
 				for (INT i=0; i<num_weights; i++)

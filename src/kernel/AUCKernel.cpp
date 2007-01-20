@@ -24,9 +24,9 @@ CAUCKernel::~CAUCKernel()
 	cleanup();
 }
   
-bool CAUCKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CAUCKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<WORD>::init(l, r, do_init); 
+	CSimpleKernel<WORD>::init(l, r);
 	return true;
 }
 
@@ -67,7 +67,7 @@ DREAL CAUCKernel::compute(INT idx_a, INT idx_b)
 
   DREAL result = k11+k22-k21-k12 ;
 
-  //CIO::message(M_DEBUG, "k(%i,%i)=%1.2f = k(%i,%i)+k(%i,%i)-k(%i,%i)-k(%i,%i)=%1.2f+%1.2f-%1.2f-%1.2f\n", idx_a, idx_b, result,idx_a1, idx_b1, idx_a1, idx_b2, idx_a2, idx_b1, idx_a2, idx_b2, k11, k22, k21, k12) ;
+  //SG_DEBUG( "k(%i,%i)=%1.2f = k(%i,%i)+k(%i,%i)-k(%i,%i)-k(%i,%i)=%1.2f+%1.2f-%1.2f-%1.2f\n", idx_a, idx_b, result,idx_a1, idx_b1, idx_a1, idx_b2, idx_a2, idx_b1, idx_a2, idx_b2, k11, k22, k21, k12) ;
   
   ((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);

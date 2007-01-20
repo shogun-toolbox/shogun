@@ -24,7 +24,7 @@ class CConstKernel: public CKernel
 
   inline virtual void cleanup() { }
 
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
 
   /// load and save kernel init_data
   virtual bool load_init(FILE* src);

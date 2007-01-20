@@ -461,7 +461,7 @@ public:
 						return  q + logtable[(int)(-diff*LOGACCURACY)];
 				}
 			}
-			CIO::message("INVALID second operand to logsum(%f,%f) expect undefined results\n", p, q);
+			SG_WARNING(("INVALID second operand to logsum(%f,%f) expect undefined results\n", p, q);
 			return NAN;
 		}
 		else 

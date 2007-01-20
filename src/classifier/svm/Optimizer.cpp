@@ -16,6 +16,8 @@
 /*                                                                     */
 /***********************************************************************/
 
+#include "base/SGObject.h"
+
 #include "classifier/svm/pr_loqo.h"
 #include "classifier/svm/Optimizer.h"
 #include "classifier/svm/SVM.h"
@@ -25,7 +27,6 @@
 #endif //USE_SVMLIGHT
 
 #include "lib/common.h"
-#include "lib/io.h"
 #include "lib/Mathematics.h"
 
 INT verbosity=1;
@@ -103,7 +104,7 @@ double *optimize_qp(QP *qp,double *epsilon_crit, INT nx,double *threshold, INT& 
 
     if(isnan(dual[0])) {     /* check for choldc problem */
       if(verbosity>=2) {
-		  CIO::message(M_DEBUG, "Restarting PR_LOQO with more conservative parameters.\n");
+		  SG_SDEBUG("Restarting PR_LOQO with more conservative parameters.\n");
       }
       if(init_margin<0.80) { /* become more conservative in general */
 	init_margin=(4.0*margin+1.0)/5.0;
@@ -111,7 +112,7 @@ double *optimize_qp(QP *qp,double *epsilon_crit, INT nx,double *threshold, INT& 
       margin=(margin+1.0)/2.0;
       (opt_precision)*=10.0;   /* reduce precision */
       if(verbosity>=2) {
-		  CIO::message(M_DEBUG, "Reducing precision of PR_LOQO.\n");
+		  SG_SDEBUG("Reducing precision of PR_LOQO.\n");
       }
     }
     else if(result!=OPTIMAL_SOLUTION) {
@@ -119,7 +120,7 @@ double *optimize_qp(QP *qp,double *epsilon_crit, INT nx,double *threshold, INT& 
       init_iter+=10;
       (opt_precision)*=10.0;   /* reduce precision */
       if(verbosity>=2) {
-		  CIO::message(M_DEBUG, "Reducing precision of PR_LOQO due to (%ld).\n",result);
+		  SG_SDEBUG("Reducing precision of PR_LOQO due to (%ld).\n",result);
       }      
     }
   }
@@ -184,20 +185,20 @@ double *optimize_qp(QP *qp,double *epsilon_crit, INT nx,double *threshold, INT& 
     (opt_precision)/=100.0;
     precision_violations++;
     if(verbosity>=2) {
-		CIO::message(M_DEBUG, "Increasing Precision of PR_LOQO.\n");
+		SG_SDEBUG("Increasing Precision of PR_LOQO.\n");
     }
   }
 
   if(precision_violations > 500) { 
     (*epsilon_crit)*=10.0;
     precision_violations=0;
-	CIO::message(M_INFO, "Relaxing epsilon on KT-Conditions.\n");
+	SG_SINFO("Relaxing epsilon on KT-Conditions.\n");
   }	  
 
   (*threshold)=model_b;
 
   if(result!=OPTIMAL_SOLUTION) {
-      sg_error(sg_err_fun,"PR_LOQO did not converge.\n");
+	  SG_SERROR("PR_LOQO did not converge.\n");
     return(qp->opt_xinit);
   }
   else {

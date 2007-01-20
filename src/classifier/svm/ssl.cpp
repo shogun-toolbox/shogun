@@ -46,23 +46,23 @@ void ssl_train(struct data *Data,
 	switch(Options->algo)
 	{
 		case -1:
-			CIO::message(M_INFO, "Regularized Least Squares Regression (CGLS)\n");
+			SG_SINFO("Regularized Least Squares Regression (CGLS)\n");
 			optimality=CGLS(Data,Options,Subset,Weights,Outputs);
 			break;
 		case RLS:
-			CIO::message(M_INFO, "Regularized Least Squares Classification (CGLS)\n");
+			SG_SINFO("Regularized Least Squares Classification (CGLS)\n");
 			optimality=CGLS(Data,Options,Subset,Weights,Outputs);
 			break;
 		case SVM:
-			CIO::message(M_INFO, "Modified Finite Newton L2-SVM (L2-SVM-MFN)\n");
+			SG_SINFO("Modified Finite Newton L2-SVM (L2-SVM-MFN)\n");
 			optimality=L2_SVM_MFN(Data,Options,Weights,Outputs,0);
 			break;
 		case TSVM:
-			CIO::message(M_INFO, "Transductive L2-SVM (TSVM)\n");
+			SG_SINFO("Transductive L2-SVM (TSVM)\n");
 			optimality=TSVM_MFN(Data,Options,Weights,Outputs);
 			break;
 		case DA_SVM:
-			CIO::message(M_INFO, "Deterministic Annealing Semi-supervised L2-SVM (DAS3VM)\n");
+			SG_SINFO("Deterministic Annealing Semi-supervised L2-SVM (DAS3VM)\n");
 			optimality=DA_S3VM(Data,Options,Weights,Outputs);
 			break;
 		default:
@@ -76,7 +76,7 @@ int CGLS(const struct data *Data,
 		struct vector_double *Weights,
 		struct vector_double *Outputs)
 {
-	CIO::message(M_DEBUG, "CGLS starting...");
+	SG_SDEBUG("CGLS starting...");
 
 	/* Disassemble the structures */
 	int active = Subset->d;
@@ -171,7 +171,7 @@ int CGLS(const struct data *Data,
 			r[i] -= lambda*beta[i];
 			omega1 += r[i]*r[i];
 		}
-		CIO::message(M_DEBUG, "...%d(%f)", cgiter,omega1);
+		SG_SDEBUG("...%d(%f)", cgiter,omega1);
 		if(omega1 < epsilon2*omega_z)
 		{
 			optimality=1;
@@ -185,8 +185,8 @@ int CGLS(const struct data *Data,
 			omega_p += p[i]*p[i]; 
 		} 
 	}            
-	CIO::message(M_DEBUG, "...Done.");
-	CIO::message(M_INFO, "CGLS converged in %d iteration(s)", cgiter);
+	SG_SDEBUG("...Done.");
+	SG_SINFO("CGLS converged in %d iteration(s)", cgiter);
 
 	delete[] z;
 	delete[] q;
@@ -262,7 +262,7 @@ int L2_SVM_MFN(const struct data *Data,
 	while(iter<MFNITERMAX)
 	{
 		iter++;
-		CIO::message(M_DEBUG, "L2_SVM_MFN Iteration# %d (%d active examples, objective_value = %f)\n", iter, active, F);
+		SG_SDEBUG("L2_SVM_MFN Iteration# %d (%d active examples, objective_value = %f)\n", iter, active, F);
 		for(int i=n; i-- ;) 
 			w_bar[i]=w[i];
 		for(int i=m; i-- ;)  
@@ -294,7 +294,7 @@ int L2_SVM_MFN(const struct data *Data,
 			{
 				epsilon=EPSILON;
 				Options->epsilon=EPSILON;
-				CIO::message(M_DEBUG, "epsilon = %f case converged (speedup heuristic 2). Continuing with epsilon=%f",  BIG_EPSILON , EPSILON);
+				SG_SDEBUG("epsilon = %f case converged (speedup heuristic 2). Continuing with epsilon=%f",  BIG_EPSILON , EPSILON);
 				continue;
 			}
 			else
@@ -309,12 +309,12 @@ int L2_SVM_MFN(const struct data *Data,
 				delete[] w_bar;
 				delete[] Weights_bar;
 				delete[] Outputs_bar;
-				CIO::message(M_INFO, "L2_SVM_MFN converged (optimality) in %d", iter);
+				SG_SINFO("L2_SVM_MFN converged (optimality) in %d", iter);
 				return 1;      
 			}
 		}
 		delta=line_search(w,w_bar,lambda,o,o_bar,Y,C,n,m); 
-		CIO::message(M_DEBUG, "LINE_SEARCH delta = %f\n", delta);
+		SG_SDEBUG("LINE_SEARCH delta = %f\n", delta);
 		F_old=F;
 		F=0.0;
 		for(int i=n; i-- ;){ 
@@ -343,7 +343,7 @@ int L2_SVM_MFN(const struct data *Data,
 		ActiveSubset->d=active;      
 		if(CMath::abs(F-F_old)<RELATIVE_STOP_EPS*CMath::abs(F_old))
 		{
-			CIO::message(M_INFO, "L2_SVM_MFN converged (rel. criterion) in %d iterations", iter);
+			SG_SINFO("L2_SVM_MFN converged (rel. criterion) in %d iterations", iter);
 			return 2;
 		}
 	}
@@ -353,7 +353,7 @@ int L2_SVM_MFN(const struct data *Data,
 	delete[] w_bar;
 	delete[] Weights_bar;
 	delete[] Outputs_bar;
-	CIO::message(M_INFO, "L2_SVM_MFN converged (max iter exceeded) in %d iterations", iter);
+	SG_SINFO("L2_SVM_MFN converged (max iter exceeded) in %d iterations", iter);
 	return 0;
 }
 
@@ -444,7 +444,7 @@ int TSVM_MFN(const struct data *Data,
 	struct data *Data_Labeled = new data[1];
 	struct vector_double *Outputs_Labeled = new vector_double[1];
 	initialize(Outputs_Labeled,Data->l,0.0);
-	CIO::message(M_DEBUG, "Initializing weights, unknown labels");
+	SG_SDEBUG("Initializing weights, unknown labels");
 	GetLabeledData(Data_Labeled,Data); /* gets labeled data and sets C=1/l */
 	L2_SVM_MFN(Data_Labeled, Options, Weights,Outputs_Labeled,0);
 	Clear(Data_Labeled);
@@ -500,10 +500,10 @@ int TSVM_MFN(const struct data *Data,
 			s=switch_labels(Data->Y,Outputs->vec,JU,Data->u,Options->S);
 			if(s==0) break;
 			iter2++;
-			CIO::message(M_DEBUG, "****** lambda_0 = %f iteration = %d ************************************\n", lambda_0, iter2);
-			CIO::message(M_DEBUG, "Optimizing unknown labels. switched %d labels.\n");
+			SG_SDEBUG("****** lambda_0 = %f iteration = %d ************************************\n", lambda_0, iter2);
+			SG_SDEBUG("Optimizing unknown labels. switched %d labels.\n");
 			num_switches+=s;
-			CIO::message(M_DEBUG, "Optimizing weights\n");
+			SG_SDEBUG("Optimizing weights\n");
 			L2_SVM_MFN(Data,Options,Weights,Outputs,1); 
 		}
 		if(last_round==1) break;
@@ -511,15 +511,15 @@ int TSVM_MFN(const struct data *Data,
 		if(lambda_0 >= Options->lambda_u) {lambda_0 = Options->lambda_u; last_round=1;} 
 		for(int i=0;i<Data->u;i++)
 			Data->C[JU[i]]=lambda_0*1.0/Data->u;       
-		CIO::message(M_DEBUG, "****** lambda0 increased to %f%% of lambda_u = %f ************************\n", lambda_0*100/Options->lambda_u, Options->lambda_u);
-		CIO::message(M_DEBUG, "Optimizing weights\n");
+		SG_SDEBUG("****** lambda0 increased to %f%% of lambda_u = %f ************************\n", lambda_0*100/Options->lambda_u, Options->lambda_u);
+		SG_SDEBUG("Optimizing weights\n");
 		L2_SVM_MFN(Data,Options,Weights,Outputs,1); 
 	}
-	CIO::message(M_DEBUG, "Total Number of Switches = %d\n", num_switches);
+	SG_SDEBUG("Total Number of Switches = %d\n", num_switches);
 	/* reset labels */
 	for(int i=0;i<Data->u;i++) Data->Y[JU[i]] = 0.0;
 	double F = transductive_cost(norm_square(Weights),Data->Y,Outputs->vec,Outputs->d,Options->lambda,Options->lambda_u);
-	CIO::message(M_DEBUG, "Objective Value = %f\n",F);
+	SG_SDEBUG("Objective Value = %f\n",F);
 	delete [] JU;
 	return num_switches;
 }
@@ -585,7 +585,7 @@ int DA_S3VM(struct data *Data,
 	double *o = Outputs->vec;
 	double kl_divergence = 1.0;
 	/*initialize */
-	CIO::message(M_DEBUG, "Initializing weights, p");
+	SG_SDEBUG("Initializing weights, p");
 	for(int i=0;i<Data->u; i++)
 		p[i] = Options->R;
 	/* record which examples are unlabeled */
@@ -617,10 +617,10 @@ int DA_S3VM(struct data *Data,
 				q[i]=p[i];
 				g[i] = Options->lambda_u*((o[JU[i]] > 1 ? 0 : (1 - o[JU[i]])*(1 - o[JU[i]])) - (o[JU[i]]< -1 ? 0 : (1 + o[JU[i]])*(1 + o[JU[i]]))); 
 			}
-			CIO::message(M_DEBUG, "Optimizing p.\n");
+			SG_SDEBUG("Optimizing p.\n");
 			optimize_p(g,Data->u,T,Options->R,p);
 			kl_divergence=KL(p,q,Data->u);
-			CIO::message(M_DEBUG, "Optimizing weights\n");
+			SG_SDEBUG("Optimizing weights\n");
 			optimize_w(Data,p,Options,Weights,Outputs,1);
 			F = transductive_cost(norm_square(Weights),Data->Y,Outputs->vec,Outputs->d,Options->lambda,Options->lambda_u);
 			if(F < F_min)
@@ -631,10 +631,10 @@ int DA_S3VM(struct data *Data,
 				for(int i=0;i<Outputs->d;i++)
 					o_min[i]=o[i];
 			}
-			CIO::message(M_DEBUG, "***** outer_iter = %d  T = %g  inner_iter = %d  kl = %g  cost = %g *****\n",iter1,T,iter2,kl_divergence,F); 
+			SG_SDEBUG("***** outer_iter = %d  T = %g  inner_iter = %d  kl = %g  cost = %g *****\n",iter1,T,iter2,kl_divergence,F); 
 		}
 		H = entropy(p,Data->u); 
-		CIO::message(M_DEBUG, "***** Finished outer_iter = %d T = %g  Entropy = %g ***\n", iter1,T,H);
+		SG_SDEBUG("***** Finished outer_iter = %d T = %g  Entropy = %g ***\n", iter1,T,H);
 		T = T/DA_ANNEALING_RATE;
 	}
 	for(int i=0;i<Weights->d;i++)
@@ -648,7 +648,7 @@ int DA_S3VM(struct data *Data,
 	delete [] JU;
 	delete [] w_min;
 	delete [] o_min;
-	CIO::message(M_INFO, "(min) Objective Value = %f", F_min);
+	SG_SINFO("(min) Objective Value = %f", F_min);
 	return 1;
 }
 int optimize_w(const struct data *Data, 
@@ -774,7 +774,7 @@ int optimize_w(const struct data *Data,
 	while(iter<MFNITERMAX)
 	{
 		iter++;
-		CIO::message(M_DEBUG, "L2_SVM_MFN Iteration# %d (%d active examples,  objective_value = %f)", iter, active, F);
+		SG_SDEBUG("L2_SVM_MFN Iteration# %d (%d active examples,  objective_value = %f)", iter, active, F);
 		for(i=n; i-- ;) 
 			w_bar[i]=w[i];
 
@@ -823,7 +823,7 @@ int optimize_w(const struct data *Data,
 			{
 				epsilon=EPSILON;
 				Options->epsilon=EPSILON;
-				CIO::message(M_DEBUG,  "epsilon = %f case converged (speedup heuristic 2). Continuing with epsilon=%f\n", BIG_EPSILON, EPSILON);
+				SG_SDEBUG( "epsilon = %f case converged (speedup heuristic 2). Continuing with epsilon=%f\n", BIG_EPSILON, EPSILON);
 				continue;
 			}
 			else
@@ -847,13 +847,13 @@ int optimize_w(const struct data *Data,
 				delete[] Y;
 				delete[] C;
 				delete[] labeled_indices;
-				CIO::message(M_INFO, "L2_SVM_MFN converged in %d iteration(s)", iter);
+				SG_SINFO("L2_SVM_MFN converged in %d iteration(s)", iter);
 				return 1;      
 			}
 		}  
 
 		delta=line_search(w,w_bar,lambda,o,o_bar,Y,C,n,m+u); 
-		CIO::message(M_DEBUG, "LINE_SEARCH delta = %f", delta);
+		SG_SDEBUG("LINE_SEARCH delta = %f", delta);
 		F_old=F;
 		F=0.0;
 		for(i=0;i<n;i++) {w[i]+=delta*(w_bar[i]-w[i]);  F+=w[i]*w[i];}
@@ -932,7 +932,7 @@ int optimize_w(const struct data *Data,
 	delete[] Outputs_bar;
 	delete[] Y;
 	delete[] C;
-	CIO::message(M_INFO, "L2_SVM_MFN converged in %d iterations", iter);
+	SG_SINFO("L2_SVM_MFN converged in %d iterations", iter);
 	return 0;
 }
 void optimize_p(const double* g, int u, double T, double r, double* p)
@@ -1002,7 +1002,7 @@ void optimize_p(const double* g, int u, double T, double r, double* p)
 			break;   
 	}
 	if(CMath::abs(Bnu)>epsilon)
-		CIO::message(M_WARN, "Warning (Root): root not found to required precision\n");
+		SG_SWARNING("Warning (Root): root not found to required precision\n");
 
 	for(int i=0;i<u;i++)
 	{
@@ -1010,7 +1010,7 @@ void optimize_p(const double* g, int u, double T, double r, double* p)
 		if(isinf(s)) p[i]=0.0;
 		else p[i]=1.0/(1.0+s);  
 	}
-	CIO::message(M_INFO, " root (nu) = %f B(nu) = %f", nu, Bnu);
+	SG_SINFO(" root (nu) = %f B(nu) = %f", nu, Bnu);
 }
 double transductive_cost(double normWeights,double *Y, double *Outputs, int m, double lambda,double lambda_u)
 {

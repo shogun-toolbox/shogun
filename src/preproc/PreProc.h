@@ -12,13 +12,11 @@
 #ifndef _CPREPROC__H__
 #define _CPREPROC__H__
 
-#include "features/Features.h"
 #include "lib/common.h"
 #include "base/SGObject.h"
+#include "features/Features.h"
 
-#include <stdio.h>
-
-class FeatureException;
+class CPreProc;
 class CFeatures;
 
 class CPreProc : public CSGObject

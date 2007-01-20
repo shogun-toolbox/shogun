@@ -61,8 +61,8 @@
 	#ifdef ARRAY_STATISTICS
 			if (!name)
 				name="unnamed" ;
-			CIO::message(M_DEBUG, "destroying CArray array '%s' of size %i\n", name, array_size) ;
-			CIO::message(M_DEBUG, "access statistics:\nconst element    %i\nelement    %i\nset_element    %i\nget_element    %i\nstat_operator[]    %i\nconst_operator[]    %i\nset_array    %i\nget_array    %i\nresize_array    %i\narray_element    %i\n", stat_const_element, stat_element, stat_set_element, stat_get_element, stat_operator, stat_const_operator, stat_set_array, stat_get_array, stat_resize_array, stat_array_element) ;
+			SG_DEBUG( "destroying CArray array '%s' of size %i\n", name, array_size) ;
+			SG_DEBUG( "access statistics:\nconst element    %i\nelement    %i\nset_element    %i\nget_element    %i\nstat_operator[]    %i\nconst_operator[]    %i\nset_array    %i\nget_array    %i\nresize_array    %i\narray_element    %i\n", stat_const_element, stat_element, stat_set_element, stat_get_element, stat_operator, stat_const_operator, stat_set_array, stat_get_array, stat_resize_array, stat_array_element) ;
 	#endif
 			if (free_array)
 				free(array);
@@ -246,21 +246,21 @@
 	void display_array() const
 	{
 		if (!name)
-			CIO::message(M_MESSAGEONLY, "Array of size: %d\n", array_size);
+			SG_PRINT( "Array of size: %d\n", array_size);
 		else
-			CIO::message(M_MESSAGEONLY, "Array '%s' of size: %d\n", name, array_size);
+			SG_PRINT( "Array '%s' of size: %d\n", name, array_size);
 
 		for (INT i=0; i<array_size; i++)
-			CIO::message(M_MESSAGEONLY, "%d,", array[i]);
-		CIO::message(M_MESSAGEONLY, "\n");
+			SG_PRINT( "%d,", array[i]);
+		SG_PRINT( "\n");
 	}
 
 	void display_size() const
 	{
 		if (!name)
-			CIO::message(M_MESSAGEONLY, "Array of size: %d\n", array_size);
+			SG_PRINT( "Array of size: %d\n", array_size);
 		else
-			CIO::message(M_MESSAGEONLY, "Array '%s' of size: %d\n", name, array_size);
+			SG_PRINT( "Array '%s' of size: %d\n", name, array_size);
 	}
 	
 protected:

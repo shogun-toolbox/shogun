@@ -126,11 +126,11 @@ bool CLabels::load(CHAR* fname)
 	num_labels=num_lab;
 
     if (!f.is_ok()) {
-      sg_error(sg_err_fun,"loading file \"%s\" failed", fname);
+      SG_ERROR( "loading file \"%s\" failed", fname);
     }
 	else
 	{
-		CIO::message(M_INFO, "%ld labels successfully read\n", num_labels);
+		SG_INFO( "%ld labels successfully read\n", num_labels);
 		status=true;
 	}
 

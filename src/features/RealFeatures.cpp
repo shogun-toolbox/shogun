@@ -24,7 +24,7 @@ bool CRealFeatures::load(CHAR* fname)
 
 
     if (!f.is_ok()) {
-      sg_error(sg_err_fun,"loading file \"%s\" failed", fname);
+      SG_ERROR( "loading file \"%s\" failed", fname);
     }
 	else
 		status=true;
@@ -43,9 +43,9 @@ bool CRealFeatures::save(CHAR* fname)
     for (INT i=0; i< (INT) num_vectors && f.is_ok(); i++)
 	{
 		if (!(i % (num_vectors/10+1)))
-			CIO::message(M_MESSAGEONLY, "%02d%%.", (int) (100.0*i/num_vectors));
+			SG_PRINT( "%02d%%.", (int) (100.0*i/num_vectors));
 		else if (!(i % (num_vectors/200+1)))
-			CIO::message(M_MESSAGEONLY, ".");
+			SG_PRINT( ".");
 
 		fv=get_feature_vector(i, len, free);
 		f.save_real_data(fv, len);
@@ -53,7 +53,7 @@ bool CRealFeatures::save(CHAR* fname)
 	}
 
 	if (f.is_ok())
-		CIO::message(M_INFO, "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(DREAL));
+		SG_INFO( "%d vectors with %d features each successfully written (filesize: %ld)\n", num_vectors, num_features, num_vectors*num_features*sizeof(DREAL));
 
     return true;
 }
@@ -138,15 +138,15 @@ bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, D
 	ASSERT(num_cf_vec==num_vectors);
 	ASSERT(num_ref_vec==num_features);
 
-	CIO::message(M_INFO, "computing aligments of %i vectors to %i reference vectors: ", num_cf_vec, num_ref_vec) ;
+	SG_INFO( "computing aligments of %i vectors to %i reference vectors: ", num_cf_vec, num_ref_vec) ;
 	for (INT i=0; i< num_ref_vec; i++)
 	  {
 	    if (i%10==0)
-	      CIO::message(M_MESSAGEONLY, "%i..", i) ;
+	      SG_PRINT( "%i..", i) ;
 	    for (INT j=0; j<num_cf_vec; j++)
 	      feature_matrix[i+j*num_features] = Align(&fm_cf[j*num_cf_feat], &fm_ref[i*num_ref_feat], num_cf_feat, num_ref_feat, gapCost);
 	  } ;
 
-	CIO::message(M_INFO, "created %i x %i matrix (%ld)\n", num_features, num_vectors, feature_matrix) ;
+	SG_INFO( "created %i x %i matrix (%ld)\n", num_features, num_vectors, feature_matrix) ;
 	return true;
 }

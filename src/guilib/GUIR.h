@@ -15,6 +15,8 @@
 #include "lib/config.h"
 
 #if defined(HAVE_R) && !defined(HAVE_SWIG)
+#include "base/SGObject.h"
+
 #include "features/Labels.h"
 #include "features/Features.h"
 
@@ -24,7 +26,7 @@ extern "C" {
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
    
-class CGUI_R
+class CGUI_R : public CSGObject
 {
 public:
 	CGUI_R();

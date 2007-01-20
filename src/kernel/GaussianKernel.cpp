@@ -22,16 +22,16 @@ CGaussianKernel::CGaussianKernel(INT size, double w)
 CGaussianKernel::CGaussianKernel(CRealFeatures* l, CRealFeatures* r, double w, INT size)
   : CSimpleKernel<DREAL>(size),width(w)
 {
-	init(l,r, true);
+	init(l,r);
 }
 
 CGaussianKernel::~CGaussianKernel() 
 {
 }
   
-bool CGaussianKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<DREAL>::init(l, r, do_init); 
+	CSimpleKernel<DREAL>::init(l, r);
 	return true;
 }
 

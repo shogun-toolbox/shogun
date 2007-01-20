@@ -84,7 +84,7 @@ bool CGUIOctave::get_hmm(octave_value_list& retvals)
 			return true;
 		}
 		else
-			CIO::message(M_ERROR, "creating vectors/matrices failed\n");
+			SG_ERROR( "creating vectors/matrices failed\n");
 	}
 
 	return false;
@@ -108,7 +108,7 @@ bool CGUIOctave::hmm_likelihood(octave_value_list& retvals)
 bool CGUIOctave::best_path(octave_value_list& retvals, int dim)
 {
 	CHMM* h=gui->guihmm.get_current();
-	CIO::message(M_DEBUG, "dim: %d\n", dim);
+	SG_DEBUG( "dim: %d\n", dim);
 
 	if (h)
 	{
@@ -123,7 +123,7 @@ bool CGUIOctave::best_path(octave_value_list& retvals, int dim)
 
 			WORD* fv = ((CStringFeatures<WORD>*) f)->get_feature_vector(dim, num_feat);
 
-			CIO::message(M_DEBUG, "computing viterbi path for vector %d (length %d)\n", dim, num_feat);
+			SG_DEBUG( "computing viterbi path for vector %d (length %d)\n", dim, num_feat);
 
 			if (fv && num_feat>0)
 			{
@@ -173,7 +173,7 @@ bool CGUIOctave::append_hmm(const octave_value_list& vals)
 				gui->guihmm.get_pseudo(), gui->guihmm.get_number_of_tables());
 		if (h)
 		{
-			CIO::message(M_DEBUG, "N:%d M:%d p:(%d) q:(%d) a:(%d,%d) b(%d,%d)\n",
+			SG_DEBUG( "N:%d M:%d p:(%d) q:(%d) a:(%d,%d) b(%d,%d)\n",
 					N, M,
 					vec_p.length(),
 					vec_q.length(),
@@ -195,7 +195,7 @@ bool CGUIOctave::append_hmm(const octave_value_list& vals)
 				for (j=0; j< h->get_M(); j++)
 					h->set_b(i,j, mat_b(i,j));
 
-			CIO::message(M_INFO, "h %d , M: %d\n", h, h->get_M());
+			SG_INFO( "h %d , M: %d\n", h, h->get_M());
 
 			old_h->append_model(h);
 
@@ -204,10 +204,10 @@ bool CGUIOctave::append_hmm(const octave_value_list& vals)
 			return true;
 		}
 		else
-			CIO::message(M_ERROR, "creating vectors/matrices failed\n");
+			SG_ERROR( "creating vectors/matrices failed\n");
 	}
 	else
-		CIO::message(M_ERROR, "model matricies not matching in size\n");
+		SG_ERROR( "model matricies not matching in size\n");
 	return false;
 }
 
@@ -234,7 +234,7 @@ bool CGUIOctave::set_hmm(const octave_value_list& vals)
 	{
 		if (h)
 		{
-			CIO::message(M_DEBUG, "N:%d M:%d p:(%d) q:(%d) a:(%d,%d) b(%d,%d)\n",
+			SG_DEBUG( "N:%d M:%d p:(%d) q:(%d) a:(%d,%d) b(%d,%d)\n",
 					N, M,
 					vec_p.length(),
 					vec_q.length(),
@@ -261,7 +261,7 @@ bool CGUIOctave::set_hmm(const octave_value_list& vals)
 		}
 	}
 	else
-		CIO::message(M_ERROR, "model matricies not matching in size\n");
+		SG_ERROR( "model matricies not matching in size\n");
 
 	return false;
 }
@@ -399,7 +399,7 @@ bool CGUIOctave::svm_classify(octave_value_list& retvals)
 
 		if (!l)
 		{
-			CIO::message(M_ERROR, "svm_classify failed\n") ;
+			SG_ERROR( "svm_classify failed\n") ;
 			return false ;
 		} ;
 
@@ -420,7 +420,7 @@ bool CGUIOctave::svm_classify_example(octave_value_list& retvals, int idx)
 
 	if (!gui->guisvm.classify_example(idx, result))
 	{
-		CIO::message(M_ERROR, "svm_classify_example failed\n") ;
+		SG_ERROR( "svm_classify_example failed\n") ;
 		return false ;
 	}
 
@@ -524,12 +524,12 @@ bool CGUIOctave::get_features(octave_value_list& retvals, CFeatures* f)
 							{
 								Matrix mat_feat=Matrix(((CRealFeatures*) f)->get_num_features(), ((CRealFeatures*) f)->get_num_vectors());
 
-								CIO::message(M_DEBUG, "cols:%d rows:%d\n", mat_feat.cols(), mat_feat.rows());
+								SG_DEBUG( "cols:%d rows:%d\n", mat_feat.cols(), mat_feat.rows());
 								if ( (mat_feat.cols() == ((CRealFeatures*) f)->get_num_vectors()) &&
 										(mat_feat.rows() == ((CRealFeatures*) f)->get_num_features()) 
 								   )
 								{
-									CIO::message(M_DEBUG, "conversion\n");
+									SG_DEBUG( "conversion\n");
 									for (INT i=0; i<((CRealFeatures*) f)->get_num_vectors(); i++)
 									{
 										INT num_feat;
@@ -548,7 +548,7 @@ bool CGUIOctave::get_features(octave_value_list& retvals, CFeatures* f)
 						case F_CHAR:
 						case F_BYTE:
 						default:
-							CIO::not_implemented();
+							io.not_implemented();
 					}
 					break;
 				case C_SPARSE:
@@ -556,11 +556,11 @@ bool CGUIOctave::get_features(octave_value_list& retvals, CFeatures* f)
 					{
 						case F_DREAL:
 						default:
-							CIO::not_implemented();
+							io.not_implemented();
 					};
 					break;
 				default:
-					CIO::not_implemented();
+					io.not_implemented();
 			}
 			if (!value.is_empty())
 				retvals(0)=value;
@@ -568,7 +568,7 @@ bool CGUIOctave::get_features(octave_value_list& retvals, CFeatures* f)
 			return (!value.is_empty());
 		}
 		else
-			CIO::message(M_ERROR, "matlab does not support that feature type\n");
+			SG_ERROR( "matlab does not support that feature type\n");
 
 	}
 
@@ -585,7 +585,7 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 		if (mat_feat.is_cell())
 		{
 			Cell c=mat_feat.cell_value();
-			CIO::message(M_DEBUG, "cell has %d cols, %d rows\n", c.cols(), c.rows());
+			SG_DEBUG( "cell has %d cols, %d rows\n", c.cols(), c.rows());
 			ASSERT(c.rows() == 1 && c(0,0).is_char_matrix());
 
 			int num_vec=c.cols();
@@ -623,13 +623,13 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 						}
 						else
 						{
-							CIO::message(M_WARN, "string with index %d has zero length\n", i+1);
+							SG_WARNING( "string with index %d has zero length\n", i+1);
 							sc[i].length=0;
 						}
 					}
 
-                    CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
-                    CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+                    SG_INFO("max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+                    SG_INFO("num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
 					f= new CStringFeatures<CHAR>(alpha);
 					ASSERT(f);
 
@@ -643,7 +643,7 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 					}
 				}
 				else
-					CIO::message(M_ERROR, "please specify alphabet!\n");
+					SG_ERROR( "please specify alphabet!\n");
 			}
 		}
 		else
@@ -668,8 +668,8 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 							fm[i*num_feat+j]= (CHAR) cm(j,i);
 
 					alpha->add_string_to_histogram(fm, ((LONG) num_vec)* ((LONG) num_feat));
-                    CIO::message(M_INFO,"max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
-                    CIO::message(M_INFO,"num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+                    SG_INFO("max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+                    SG_INFO("num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
 
 					f= new CCharFeatures(alpha, 0);
 					ASSERT(f);
@@ -684,7 +684,7 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 					}
 				}
 				else
-					CIO::message(M_ERROR, "please specify alphabet!\n");
+					SG_ERROR( "please specify alphabet!\n");
 
 			}
 			else if (mat_feat.is_real_matrix())
@@ -694,7 +694,7 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 				f = new CRealFeatures(0);
 				INT num_vec = m.cols();
 				INT num_feat = m.rows();
-				CIO::message(M_DEBUG, "vec: %d feat:%d\n", num_vec, num_feat);
+				SG_DEBUG( "vec: %d feat:%d\n", num_vec, num_feat);
 				DREAL* fm = new DREAL[num_vec*num_feat];
 				ASSERT(fm);
 
@@ -706,7 +706,7 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 			}
 			///and so on
 			else
-				CIO::message(M_ERROR, "not implemented\n");
+				SG_ERROR( "not implemented\n");
 		}
 	}
 	return f;
@@ -736,11 +736,11 @@ CLabels* CGUIOctave::set_labels(const octave_value_list& vals)
 	octave_value mat_feat = vals(2);
 	Matrix m = mat_feat.matrix_value();
 	INT num= m.cols();
-	CIO::message(M_DEBUG, "num: %d\n",num);
+	SG_DEBUG( "num: %d\n",num);
 
 	CLabels* label=new CLabels(num);
 
-	CIO::message(M_INFO, "%d\n", label->get_num_labels());
+	SG_INFO( "%d\n", label->get_num_labels());
 
 	for (int i=0; i<label->get_num_labels(); i++)
 		label->set_label(i, m(0,i));

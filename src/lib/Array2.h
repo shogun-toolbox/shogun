@@ -12,11 +12,12 @@
 #define _ARRAY2_H_
 
 #include "lib/common.h"
+#include "base/SGObject.h"
 #include "lib/Array.h"
 
 template <class T> class CArray2;
 
-template <class T> class CArray2: CArray<T>
+template <class T> class CArray2: public CArray<T>
 {
 public:
 CArray2(INT dim1, INT dim2)
@@ -147,19 +148,19 @@ CArray2(const T* p_array, INT dim1, INT dim2)
 
 	void display_array() const
 	{
-		CIO::message(M_MESSAGEONLY, "2d-Array of size: %dx%d\n",dim1_size,dim2_size);
+		CArray<T>::SG_PRINT( "2d-Array of size: %dx%d\n",dim1_size,dim2_size);
 		for (INT i=0; i<dim1_size; i++)
 		{
-			CIO::message(M_MESSAGEONLY, "element(%d,:) = [ ",i);
+			CArray<T>::SG_PRINT( "element(%d,:) = [ ",i);
 			for (INT j=0; j<dim2_size; j++)
-				CIO::message(M_MESSAGEONLY, "%d,", element(i,j));
-			CIO::message(M_MESSAGEONLY, " ]\n");
+				CArray<T>::SG_PRINT( "%d,", element(i,j));
+			CArray<T>::SG_PRINT( " ]\n");
 		}
 	}
 
 	void display_size() const
 	{
-		CIO::message(M_MESSAGEONLY, "2d-Array of size: %dx%d\n",dim1_size,dim2_size);
+		CArray<T>::SG_PRINT( "2d-Array of size: %dx%d\n",dim1_size,dim2_size);
 	}
 
 protected:

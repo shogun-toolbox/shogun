@@ -24,7 +24,7 @@ class CCustomKernel: public CKernel
 
   virtual SHORTREAL* get_kernel_matrix(int &m, int &n, SHORTREAL* target=NULL);
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data

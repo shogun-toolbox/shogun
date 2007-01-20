@@ -31,11 +31,11 @@ public:
 	/// apply preproc on feature matrix
 	/// result in feature matrix
 	/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-	virtual bool apply_to_feature_strings(CFeatures* f)=0;
+	virtual bool apply_to_string_features(CFeatures* f)=0;
 
 	/// apply preproc on single feature vector
 
-	virtual ST* apply_to_feature_string(ST* f, INT &len)=0;
+	virtual ST* apply_to_string(ST* f, INT &len)=0;
 
   /// return that we are simple minded features (just fixed size matrices)
   inline virtual EFeatureClass get_feature_class() { return C_STRING; }

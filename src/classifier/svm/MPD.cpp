@@ -113,7 +113,7 @@ bool CMPDSVM::train()
 		}
 
 		if (maxpidx<0 || maxdviol<0)
-         sg_error(sg_err_fun,"no violation no convergence, should not happen!\n");
+         SG_ERROR( "no violation no convergence, should not happen!\n");
 
 		// ... and evaluate stopping conditions
 		//if (nustop)
@@ -132,11 +132,11 @@ bool CMPDSVM::train()
 					obj+=0.5*lab->get_label(i)*lab->get_label(j)*alphas[i]*alphas[j]*kernel->kernel(i,j);
 			}
 
-			CIO::message(M_DEBUG, "obj:%f pviol:%f dviol:%f maxpidx:%d iter:%d\n", obj, maxpviol, maxdviol, maxpidx, niter);
+			SG_DEBUG( "obj:%f pviol:%f dviol:%f maxpidx:%d iter:%d\n", obj, maxpviol, maxdviol, maxpidx, niter);
 		}
 
 		//for (int i=0; i<n; i++)
-		//	CIO::message(M_DEBUG, "alphas:%f dalphas:%f\n", alphas[i], dalphas[i]);
+		//	SG_DEBUG( "alphas:%f dalphas:%f\n", alphas[i], dalphas[i]);
 
 		primalcool = (maxpviol < primaleps*stopfac);
 		dualcool = (maxdviol < dualeps*stopfac) || (!free_alpha);
@@ -145,9 +145,9 @@ bool CMPDSVM::train()
 		if (primalcool && dualcool)
 		{
 			if (!free_alpha)
-				CIO::message(M_INFO, " no free alpha, stopping! #iter=%d\n", niter);
+				SG_INFO( " no free alpha, stopping! #iter=%d\n", niter);
 			else
-				CIO::message(M_INFO, " done! #iter=%d\n", niter);
+				SG_INFO( " done! #iter=%d\n", niter);
 			break;
 		}
 
@@ -206,7 +206,7 @@ bool CMPDSVM::train()
 	}
 
 	if (niter >= maxiter)
-		CIO::message(M_WARN, "increase maxiter ... \n");
+		SG_WARNING( "increase maxiter ... \n");
 
 
 	int nsv=0;
@@ -233,8 +233,8 @@ bool CMPDSVM::train()
 		}
 	}
 	compute_objective();
-	CIO::message(M_INFO, "obj = %.16f, rho = %.16f\n",get_objective(),get_bias());
-	CIO::message(M_INFO, "Number of SV: %ld\n", get_num_support_vectors());
+	SG_INFO( "obj = %.16f, rho = %.16f\n",get_objective(),get_bias());
+	SG_INFO( "Number of SV: %ld\n", get_num_support_vectors());
 
 	delete[] alphas;
 	delete[] dalphas;

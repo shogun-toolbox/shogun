@@ -30,7 +30,7 @@ CSigmoidKernel::CSigmoidKernel(CRealFeatures* l, CRealFeatures* r, INT size, DRE
   : CSimpleKernel<DREAL>(size),gamma(g), coef0(c)
 
 {
-	init(l,r, true);
+	init(l,r);
 }
 
 CSigmoidKernel::~CSigmoidKernel() 
@@ -38,9 +38,9 @@ CSigmoidKernel::~CSigmoidKernel()
 	cleanup();
 }
   
-bool CSigmoidKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CSigmoidKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<DREAL>::init(l, r, do_init); 
+	CSimpleKernel<DREAL>::init(l, r);
 	return true;
 }
 

@@ -14,9 +14,10 @@
 #include "lib/config.h"
 
 #ifndef HAVE_SWIG
+#include "base/SGObject.h"
 class CGUI;
 
-class CGUIMath
+class CGUIMath : public CSGObject
 {
 public:
 	CGUIMath(CGUI *);

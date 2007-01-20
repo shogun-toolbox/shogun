@@ -14,8 +14,9 @@
 #include "kernel/WordMatchKernel.h"
 #include "features/WordFeatures.h"
 
-CWordMatchKernel::CWordMatchKernel(LONG size, INT d)
-  : CSimpleKernel<WORD>(size),scale(1.0),degree(d)
+CWordMatchKernel::CWordMatchKernel(LONG size, INT d, bool do_rescale_, DREAL scale_)
+  : CSimpleKernel<WORD>(size),scale(scale_),do_rescale(do_rescale_), initialized(false),
+	degree(d)
 {
 }
 
@@ -24,29 +25,32 @@ CWordMatchKernel::~CWordMatchKernel()
 	cleanup();
 }
   
-bool CWordMatchKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CWordMatchKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<WORD>::init(l, r, do_init); 
+	CSimpleKernel<WORD>::init(l, r);
 
-	if (do_init)
+	if (!initialized)
 		init_rescale() ;
 
-	CIO::message(M_INFO, "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
+	SG_INFO( "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
 
 	return true;
 }
 
 void CWordMatchKernel::init_rescale()
 {
+	if (!do_rescale)
+		return ;
 	LONGREAL sum=0;
 	scale=1.0;
 	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
 			sum+=compute(i, i);
 
 	if ( sum > (pow((double) 2, (double) 8*sizeof(LONG))) ) {
-      sg_error(sg_err_fun,"the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
+      SG_ERROR( "the sum %lf does not fit into integer of %d bits expect bogus results.\n", sum, 8*sizeof(LONG));
    }
 	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
+	initialized=true;
 }
 
 void CWordMatchKernel::cleanup()

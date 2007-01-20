@@ -23,15 +23,18 @@ extern "C" {
 #include "features/RealFeatures.h"
 
 CLinearKernel::CLinearKernel(LONG size, bool do_rescale_, DREAL scale_)
-  : CSimpleKernel<DREAL>(size),scale(scale_),do_rescale(do_rescale_), normal(NULL)
+  : CSimpleKernel<DREAL>(size),scale(scale_),do_rescale(do_rescale_), initialized(false),
+	normal(NULL)
 {
 	properties |= KP_LINADD;
 }
 
-CLinearKernel::CLinearKernel(CRealFeatures* l, CRealFeatures* r, INT size, bool do_rescale_, DREAL scale_)
-  : CSimpleKernel<DREAL>(size),scale(scale_),do_rescale(do_rescale_), normal(NULL)
+CLinearKernel::CLinearKernel(CRealFeatures* l, CRealFeatures* r, INT size, bool do_rescale_,
+		DREAL scale_)
+  : CSimpleKernel<DREAL>(size),scale(scale_),do_rescale(do_rescale_), initialized(false),
+	normal(NULL)
 {
-	init(l,r, true);
+	init(l,r);
 }
 
 CLinearKernel::~CLinearKernel() 
@@ -39,14 +42,14 @@ CLinearKernel::~CLinearKernel()
 	cleanup();
 }
   
-bool CLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CLinearKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<DREAL>::init(l, r, do_init); 
+	CSimpleKernel<DREAL>::init(l, r);
 
-	if (do_init)
+	if (!initialized)
 		init_rescale() ;
 
-	CIO::message(M_INFO, "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
+	SG_INFO( "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
 
 	return true;
 }
@@ -61,6 +64,7 @@ void CLinearKernel::init_rescale()
 			sum+=compute(i, i);
 
 	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
+	initialized=true;
 }
 
 void CLinearKernel::cleanup()

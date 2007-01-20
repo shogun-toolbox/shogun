@@ -25,9 +25,9 @@ CPolyMatchWordKernel::~CPolyMatchWordKernel()
 	cleanup();
 }
   
-bool CPolyMatchWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CPolyMatchWordKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<WORD>::init(l,r,do_init);
+	bool result=CSimpleKernel<WORD>::init(l,r);
 
 	initialized = false ;
 	INT i;

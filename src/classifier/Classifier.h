@@ -16,10 +16,6 @@
 #include "lib/Mathematics.h"
 #include "features/Labels.h"
 
-#include <stdio.h>
-
-#include "exceptions/ClassifierException.h"
-
 class CClassifier : public CSGObject
 {
 	public:

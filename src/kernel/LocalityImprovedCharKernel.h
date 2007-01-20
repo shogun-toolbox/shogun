@@ -21,7 +21,7 @@ class CLocalityImprovedCharKernel: public CSimpleKernel<CHAR>
   CLocalityImprovedCharKernel(LONG size, INT length, INT inner_degree, INT outer_degree) ;
   ~CLocalityImprovedCharKernel() ;
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data

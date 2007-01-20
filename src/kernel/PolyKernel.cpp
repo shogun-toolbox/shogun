@@ -31,7 +31,7 @@ CPolyKernel::CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT size, INT d, bo
   : CSimpleKernel<DREAL>(size),degree(d),inhomogene(inhom),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
 {
-	init(l,r, true);
+	init(l,r);
 }
 
 
@@ -40,9 +40,9 @@ CPolyKernel::~CPolyKernel()
 	cleanup();
 }
   
-bool CPolyKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CPolyKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<DREAL>::init(l,r,do_init);
+	bool result=CSimpleKernel<DREAL>::init(l,r);
 
 	initialized = false ;
 	INT i;

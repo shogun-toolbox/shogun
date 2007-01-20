@@ -67,45 +67,45 @@ bool CGUISVM::new_svm(CHAR* param)
 	{
 		delete svm;
 		svm= new CLibSVM();
-		CIO::message(M_INFO, "created SVMlibsvm object\n") ;
+		SG_INFO( "created SVMlibsvm object\n") ;
 	}
 	else if (strcmp(param,"LIBSVM_ONECLASS")==0)
 	{
 		delete svm;
 		svm = new CLibSVMOneclass();
-		CIO::message(M_INFO, "created SVMlibsvm object for oneclass\n");
+		SG_INFO( "created SVMlibsvm object for oneclass\n");
 	}
 #ifdef USE_SVMLIGHT
 	else if (strcmp(param,"LIGHT")==0)
 	{
 		delete svm;
 		svm= new CSVMLight();
-		CIO::message(M_INFO, "created SVMLight object\n") ;
+		SG_INFO( "created SVMLight object\n") ;
 	}
 	else if (strcmp(param,"SVRLIGHT")==0)
 	{
 		delete svm;
 		svm= new CSVRLight();
-		CIO::message(M_INFO, "created SVRLight object\n") ;
+		SG_INFO( "created SVRLight object\n") ;
 	}
 #endif //USE_SVMLIGHT
 	else if (strcmp(param,"GPBT")==0)
 	{
 		delete svm;
 		svm= new CGPBTSVM();
-		CIO::message(M_INFO, "created GPBT-SVM object\n") ;
+		SG_INFO( "created GPBT-SVM object\n") ;
 	}
 	else if (strcmp(param,"MPD")==0)
 	{
 		delete svm;
 		svm= new CMPDSVM();
-		CIO::message(M_INFO, "created MPD-SVM object\n") ;
+		SG_INFO( "created MPD-SVM object\n") ;
 	}
 	else if (strcmp(param,"LIBSVR")==0)
 	{
 		delete svm;
 		svm= new CLibSVR();
-		CIO::message(M_INFO, "created SVRlibsvm object\n") ;
+		SG_INFO( "created SVRlibsvm object\n") ;
 	}
 	else
 		return false;
@@ -126,36 +126,36 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 
 	if (!svm)
 	{
-		CIO::message(M_ERROR, "no svm available\n") ;
+		SG_ERROR( "no svm available\n") ;
 		return false ;
 	}
 
 	if (!kernel)
 	{
-		CIO::message(M_ERROR, "no kernel available\n");
+		SG_ERROR( "no kernel available\n");
 		return false ;
 	}
 
 	if (!trainlabels && !oneclass)
 	{
-		CIO::message(M_ERROR, "no trainlabels available\n");
+		SG_ERROR( "no trainlabels available\n");
 		return false ;
 	}
 
 	if ( !gui->guikernel.is_initialized() || !kernel->get_lhs() )
 	{
-		CIO::message(M_ERROR, "kernel not initialized\n") ;
+		SG_ERROR( "kernel not initialized\n") ;
 		return 0;
 	}
 
 	if (!oneclass && trainlabels->get_num_labels() != kernel->get_lhs()->get_num_vectors())
 	{
-		CIO::message(M_ERROR, "number of train labels (%d) and training vectors (%d) differs!\n", 
+		SG_ERROR( "number of train labels (%d) and training vectors (%d) differs!\n", 
 				trainlabels->get_num_labels(), kernel->get_lhs()->get_num_vectors()) ;
 		return 0;
 	}
 
-	CIO::message(M_INFO, "starting svm training on %ld vectors using C1=%lf C2=%lf\n", kernel->get_lhs()->get_num_vectors(), C1, C2) ;
+	SG_INFO( "starting svm training on %ld vectors using C1=%lf C2=%lf\n", kernel->get_lhs()->get_num_vectors(), C1, C2) ;
 
 	svm->set_weight_epsilon(weight_epsilon);
 	svm->set_epsilon(epsilon);
@@ -182,7 +182,7 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 	bool result = svm->train();
 
 	//DREAL x=svm->compute_objective();
-	//CIO::message(M_INFO,"REFERENCE objective:%f\n", x);
+	//SG_INFO("REFERENCE objective:%f\n", x);
 
 	kernel->set_precompute_matrix(false,false);
 	return result ;	
@@ -206,7 +206,7 @@ bool CGUISVM::test(CHAR* param)
 
 		if (!outputfile)
 		{
-			CIO::message(M_ERROR, "could not open %s\n",outputname);
+			SG_ERROR( "could not open %s\n",outputname);
 			return false;
 		}
 
@@ -216,7 +216,7 @@ bool CGUISVM::test(CHAR* param)
 
 			if (!rocfile)
 			{
-				CIO::message(M_ERROR, "could not open %s\n",rocfname);
+				SG_ERROR( "could not open %s\n",rocfname);
 				return false;
 			}
 		}
@@ -225,39 +225,39 @@ bool CGUISVM::test(CHAR* param)
 	CLabels* testlabels=gui->guilabels.get_test_labels();
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
-	CIO::message(M_DEBUG, "I:training: %ld examples each %ld features\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
-	CIO::message(M_DEBUG, "I:testing: %ld examples each %ld features\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
+	SG_DEBUG( "I:training: %ld examples each %ld features\n", ((CRealFeatures*) trainfeatures)->get_num_vectors(), ((CRealFeatures*) trainfeatures)->get_num_features());
+	SG_DEBUG( "I:testing: %ld examples each %ld features\n", ((CRealFeatures*) testfeatures)->get_num_vectors(), ((CRealFeatures*) testfeatures)->get_num_features());
 
 	if (!svm)
 	{
-		CIO::message(M_ERROR, "no svm available") ;
+		SG_ERROR( "no svm available") ;
 		return false ;
 	}
 	if (!trainfeatures)
 	{
-		CIO::message(M_ERROR, "no training features available") ;
+		SG_ERROR( "no training features available") ;
 		return false ;
 	}
 
 	if (!testfeatures)
 	{
-		CIO::message(M_ERROR, "no test features available") ;
+		SG_ERROR( "no test features available") ;
 		return false ;
 	}
 
 	if (!testlabels)
 	{
-		CIO::message(M_ERROR, "no test labels available") ;
+		SG_ERROR( "no test labels available") ;
 		return false ;
 	}
 
 	if (!gui->guikernel.is_initialized())
 	{
-		CIO::message(M_ERROR, "kernel not initialized\n") ;
+		SG_ERROR( "kernel not initialized\n") ;
 		return 0;
 	}
 
-	CIO::message(M_INFO, "starting svm testing\n") ;
+	SG_INFO( "starting svm testing\n") ;
 	((CKernelMachine*) svm)->set_labels(testlabels);
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
 	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
@@ -274,7 +274,7 @@ bool CGUISVM::test(CHAR* param)
 	INT* label= testlabels->get_int_labels(len);
 
 	ASSERT(label);
-	CIO::message(M_DEBUG, "len:%d total:%d\n", len, total);
+	SG_DEBUG( "len:%d total:%d\n", len, total);
 	ASSERT(len==total);
 
 	gui->guimath.evaluate_results(output, label, total, outputfile, rocfile);
@@ -311,20 +311,20 @@ bool CGUISVM::load(CHAR* param)
 		    result=true;
 		}
 		else
-		    CIO::message(M_ERROR, "svm creation/loading failed\n");
+		    SG_ERROR( "svm creation/loading failed\n");
 
 		fclose(model_file);
 	    }
 	    else
-		CIO::message(M_ERROR, "opening file %s failed\n", filename);
+		SG_ERROR( "opening file %s failed\n", filename);
 
 	    return result;
 	}
 	else
-	    CIO::message(M_ERROR, "type of svm unknown\n");
+	    SG_ERROR( "type of svm unknown\n");
     }
     else
-	CIO::message(M_ERROR, "see help for parameters\n");
+	SG_ERROR( "see help for parameters\n");
 	return false;
 }
 
@@ -349,7 +349,7 @@ bool CGUISVM::save(CHAR* param)
 	    fclose(file);
     }
     else
-	CIO::message(M_ERROR, "create svm first\n");
+	SG_ERROR( "create svm first\n");
 
     return result;
 }
@@ -363,7 +363,7 @@ bool CGUISVM::set_svm_epsilon(CHAR* param)
 	if (epsilon<0)
 		epsilon=1e-4;
 
-	CIO::message(M_INFO, "Set to svm_epsilon=%f\n", epsilon);
+	SG_INFO( "Set to svm_epsilon=%f\n", epsilon);
 	return true ;  
 }
 
@@ -376,7 +376,7 @@ bool CGUISVM::set_svr_tube_epsilon(CHAR* param)
 	if (tube_epsilon<0)
 		tube_epsilon=1e-2;
 
-	CIO::message(M_INFO, "Set to svr_tube_epsilon=%f\n", tube_epsilon);
+	SG_INFO( "Set to svr_tube_epsilon=%f\n", tube_epsilon);
 	return true ;  
 }
 
@@ -389,7 +389,7 @@ bool CGUISVM::set_svm_one_class_nu(CHAR* param)
 	if (nu<0 || nu>1)
 		nu=0.5;
 
-	CIO::message(M_INFO, "Set to nu=%f\n", nu);
+	SG_INFO( "Set to nu=%f\n", nu);
 	return true ;  
 }
 
@@ -404,8 +404,8 @@ bool CGUISVM::set_mkl_parameters(CHAR* param)
 	if (C_mkl<0)
 		C_mkl=1e-4 ;
 
-	CIO::message(M_INFO, "Set to weight_epsilon=%f\n", weight_epsilon);
-	CIO::message(M_INFO, "Set to C_mkl=%f\n", C_mkl);
+	SG_INFO( "Set to weight_epsilon=%f\n", weight_epsilon);
+	SG_INFO( "Set to C_mkl=%f\n", C_mkl);
 	return true ;  
 }
 
@@ -423,7 +423,7 @@ bool CGUISVM::set_C(CHAR* param)
 	if (C2<0)
 		C2=C1;
 
-	CIO::message(M_INFO, "Set to C1=%f C2=%f\n", C1, C2) ;
+	SG_INFO( "Set to C1=%f C2=%f\n", C1, C2) ;
 	return true ;  
 }
 
@@ -438,7 +438,7 @@ bool CGUISVM::set_qpsize(CHAR* param)
 	if (qpsize<2)
 		qpsize=41;
 
-	CIO::message(M_INFO, "Set qpsize to qpsize=%d\n", qpsize);
+	SG_INFO( "Set qpsize to qpsize=%d\n", qpsize);
 	return true ;  
 }
 
@@ -452,9 +452,9 @@ bool CGUISVM::set_mkl_enabled(CHAR* param)
 	use_mkl = (mkl==1);
 
 	if (use_mkl)
-		CIO::message(M_INFO, "Enabling MKL optimization\n") ;
+		SG_INFO( "Enabling MKL optimization\n") ;
 	else
-		CIO::message(M_INFO, "Disabling MKL optimization\n") ;
+		SG_INFO( "Disabling MKL optimization\n") ;
 
 	return true ;  
 }
@@ -469,9 +469,9 @@ bool CGUISVM::set_shrinking_enabled(CHAR* param)
 	use_shrinking = (shrinking==1);
 
 	if (use_shrinking)
-		CIO::message(M_INFO, "Enabling shrinking optimization\n") ;
+		SG_INFO( "Enabling shrinking optimization\n") ;
 	else
-		CIO::message(M_INFO, "Disabling shrinking optimization\n") ;
+		SG_INFO( "Disabling shrinking optimization\n") ;
 
 	return true ;  
 }
@@ -486,9 +486,9 @@ bool CGUISVM::set_batch_computation_enabled(CHAR* param)
 	use_batch_computation = (batch_computation==1);
 
 	if (use_batch_computation)
-		CIO::message(M_INFO, "Enabling batch computation\n") ;
+		SG_INFO( "Enabling batch computation\n") ;
 	else
-		CIO::message(M_INFO, "Disabling batch computation\n") ;
+		SG_INFO( "Disabling batch computation\n") ;
 
 	return true ;  
 }
@@ -505,19 +505,19 @@ bool CGUISVM::set_precompute_enabled(CHAR* param)
 	use_precompute_subkernel_light = (precompute==3);
 
 	if (use_precompute)
-		CIO::message(M_INFO, "Enabling Kernel Matrix Precomputation\n") ;
+		SG_INFO( "Enabling Kernel Matrix Precomputation\n") ;
 	else
-		CIO::message(M_INFO, "Disabling Kernel Matrix Precomputation\n") ;
+		SG_INFO( "Disabling Kernel Matrix Precomputation\n") ;
 
 	if (use_precompute_subkernel)
-		CIO::message(M_INFO, "Enabling Subkernel Matrix Precomputation\n") ;
+		SG_INFO( "Enabling Subkernel Matrix Precomputation\n") ;
 	else
-		CIO::message(M_INFO, "Disabling Subkernel Matrix Precomputation\n") ;
+		SG_INFO( "Disabling Subkernel Matrix Precomputation\n") ;
 
 	if (use_precompute_subkernel_light)
-		CIO::message(M_INFO, "Enabling Subkernel Matrix Precomputation by SVM Light\n") ;
+		SG_INFO( "Enabling Subkernel Matrix Precomputation by SVM Light\n") ;
 	else
-		CIO::message(M_INFO, "Disabling Subkernel Matrix Precomputation by SVM Light\n") ;
+		SG_INFO( "Disabling Subkernel Matrix Precomputation by SVM Light\n") ;
 
 	return true ;  
 }
@@ -532,9 +532,9 @@ bool CGUISVM::set_linadd_enabled(CHAR* param)
 	use_linadd = (linadd==1);
 	
 	if (use_linadd)
-		CIO::message(M_INFO, "Enabling LINADD optimization\n") ;
+		SG_INFO( "Enabling LINADD optimization\n") ;
 	else
-		CIO::message(M_INFO, "Disabling LINADD optimization\n") ;
+		SG_INFO( "Disabling LINADD optimization\n") ;
 
 	return true ;  
 }
@@ -548,31 +548,31 @@ CLabels* CGUISVM::classify(CLabels* output)
 
 	if (!svm)
 	{
-		CIO::message(M_ERROR, "no svm available\n") ;
+		SG_ERROR( "no svm available\n") ;
 		return NULL;
 	}
 	if (!trainfeatures)
 	{
-		CIO::message(M_ERROR, "no training features available\n") ;
+		SG_ERROR( "no training features available\n") ;
 		return NULL;
 	}
 
 	if (!testfeatures)
 	{
-		CIO::message(M_ERROR, "no test features available\n") ;
+		SG_ERROR( "no test features available\n") ;
 		return NULL;
 	}
 
 	if (!gui->guikernel.is_initialized())
 	{
-		CIO::message(M_ERROR, "kernel not initialized\n") ;
+		SG_ERROR( "kernel not initialized\n") ;
 		return NULL;
 	}
 	  
 	((CKernelMachine*) svm)->set_labels(testlabels);
 	((CKernelMachine*) svm)->set_kernel(gui->guikernel.get_kernel()) ;
 	svm->set_batch_computation_enabled(use_batch_computation);
-	CIO::message(M_INFO, "starting svm testing\n") ;
+	SG_INFO( "starting svm testing\n") ;
 	return svm->classify(output);
 }
 
@@ -584,24 +584,24 @@ bool CGUISVM::classify_example(INT idx, DREAL &result)
 
 	if (!svm)
 	{
-		CIO::message(M_ERROR, "no svm available\n") ;
+		SG_ERROR( "no svm available\n") ;
 		return false;
 	}
 	if (!trainfeatures)
 	{
-		CIO::message(M_ERROR, "no training features available\n") ;
+		SG_ERROR( "no training features available\n") ;
 		return false;
 	}
 
 	if (!testfeatures)
 	{
-		CIO::message(M_ERROR, "no test features available\n") ;
+		SG_ERROR( "no test features available\n") ;
 		return false;
 	}
 
 	if (!gui->guikernel.is_initialized())
 	{
-		CIO::message(M_ERROR, "kernel not initialized\n") ;
+		SG_ERROR( "kernel not initialized\n") ;
 		return false;
 	}
 

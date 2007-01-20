@@ -23,7 +23,7 @@ class CLinearKernel: public CSimpleKernel<DREAL>
 
   virtual ~CLinearKernel();
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -71,6 +71,7 @@ class CLinearKernel: public CSimpleKernel<DREAL>
  protected:
   double scale ;
   bool do_rescale ;
+  bool initialized;
 
   /// normal vector (used in case of optimized kernel)
   double* normal;

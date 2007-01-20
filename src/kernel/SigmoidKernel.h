@@ -22,7 +22,7 @@ class CSigmoidKernel: public CSimpleKernel<DREAL>
   CSigmoidKernel(CRealFeatures* l, CRealFeatures* r, INT size, DREAL g, DREAL c);
   virtual ~CSigmoidKernel();
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data

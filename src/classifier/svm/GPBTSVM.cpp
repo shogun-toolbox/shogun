@@ -36,7 +36,7 @@ bool CGPBTSVM::train()
 	prob.y=lab;
 	ASSERT(prob.KER);
 	prob.ell=get_labels()->get_num_labels();
-	CIO::message(M_INFO, "%d trainlabels\n", prob.ell);
+	SG_INFO( "%d trainlabels\n", prob.ell);
 
 	//  /*** set options defaults ***/
 	prob.delta = epsilon;
@@ -56,14 +56,14 @@ bool CGPBTSVM::train()
 		prob.maxmw = 5;
 
 	/*** set the problem description for final report ***/
-	CIO::message(M_INFO, "\nTRAINING PARAMETERS:\n");
-	CIO::message(M_INFO, "\tNumber of training documents: %d\n", prob.ell);
-	CIO::message(M_INFO, "\tq: %d\n", prob.chunk_size);
-	CIO::message(M_INFO, "\tn: %d\n", prob.q);
-	CIO::message(M_INFO, "\tC: %lf\n", prob.c_const);
-	CIO::message(M_INFO, "\tkernel type: %d\n", prob.ker_type);
-	CIO::message(M_INFO, "\tcache size: %dMb\n", prob.maxmw);
-	CIO::message(M_INFO, "\tStopping tolerance: %lf\n", prob.delta);
+	SG_INFO( "\nTRAINING PARAMETERS:\n");
+	SG_INFO( "\tNumber of training documents: %d\n", prob.ell);
+	SG_INFO( "\tq: %d\n", prob.chunk_size);
+	SG_INFO( "\tn: %d\n", prob.q);
+	SG_INFO( "\tC: %lf\n", prob.c_const);
+	SG_INFO( "\tkernel type: %d\n", prob.ker_type);
+	SG_INFO( "\tcache size: %dMb\n", prob.maxmw);
+	SG_INFO( "\tStopping tolerance: %lf\n", prob.delta);
 
 	//  /*** compute the number of cache rows up to maxmw Mb. ***/
 	if (prob.preprocess_size == -1)
@@ -99,7 +99,7 @@ bool CGPBTSVM::train()
 	create_new_model(num_sv);
 	set_bias(prob.bee);
 
-	CIO::message(M_INFO,"SV: %d BSV = %d\n", num_sv, bsv);
+	SG_INFO("SV: %d BSV = %d\n", num_sv, bsv);
 
 	for (i = 0; i < prob.ell; i++)
 	{

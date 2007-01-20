@@ -14,17 +14,53 @@
 
 #include <time.h>
 #include "lib/common.h"
+#include "lib/ShogunException.h"
 
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "exceptions/ShogunException.h"
+
+#define ASSERT(x) { if (!(x)) CIO::message(M_ERROR, "assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
+
+// printf like funktions (with additional severity level)
+// for object derived from CSGObject
+#define SG_DEBUG(x...) io.message(M_DEBUG,x)
+#define SG_INFO(x...) io.message(M_INFO,x)
+#define SG_WARNING(x...) io.message(M_WARN,x)
+#define SG_ERROR(x...) io.message(M_ERROR,x)
+#define SG_PRINT(x...) io.message(M_MESSAGEONLY,x)
+#define SG_PRINT(x...) io.message(M_MESSAGEONLY,x)
+
+#define SG_PROGRESS(x...) io.progress(x)
+#define SG_ABS_PROGRESS(x...) io.absolute_progress(x)
+
+// printf like funktions (with additional severity level)
+// static versions
+#define SG_SDEBUG(x...) CIO::message(M_DEBUG,x)
+#define SG_SINFO(x...) CIO::message(M_INFO,x)
+#define SG_SWARNING(x...) CIO::message(M_WARN,x)
+#define SG_SERROR(x...) CIO::message(M_ERROR,x)
+#define SG_SPRINT(x...) CIO::message(M_MESSAGEONLY,x)
+
+#define SG_SPROGRESS(x...) CIO::progress(x)
+#define SG_SABS_PROGRESS(x...) CIO::absolute_progress(x)
+
+// printf like funktions (with additional severity level)
+// when global gui object is available
+#define SG_GDEBUG(x...) gui->io.message(M_DEBUG,x)
+#define SG_GINFO(x...) gui->io.message(M_INFO,x)
+#define SG_GWARNING(x...) gui->io.message(M_WARN,x)
+#define SG_GERROR(x...) gui->io.message(M_ERROR,x)
+#define SG_GPRINT(x...) gui->io.message(M_MESSAGEONLY,x)
+
+#define SG_SPROGRESS(x...) CIO::progress(x)
+#define SG_SABS_PROGRESS(x...) CIO::absolute_progress(x)
 
 #define NUM_LOG_LEVELS 9
 #define FBUFSIZE 4096
+
 extern CHAR file_buffer[FBUFSIZE];
 extern CHAR directory_name[FBUFSIZE];
-
 
 class CIO
 {
@@ -76,20 +112,6 @@ protected:
 
 	static EMessageType loglevel;
 	static const EMessageType levels[NUM_LOG_LEVELS];
-
-
 };
 
-#define ASSERT(x) { if (!(x)) CIO::message(M_ERROR, "assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
-
-#ifdef HAVE_PYTHON
-  #define sg_err_fun &throwException
-#else
-  #define sg_err_fun &cio
-#endif
-
-void sg_error(void (*funcPtr)(char*), char *fmt, ... );
-void throwException(char *val);
-void cio(char *val);
-
-#endif
+#endif // __CIO_H__

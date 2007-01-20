@@ -52,13 +52,13 @@ bool CGUIKNN::train(CHAR* param)
 				result=knn->train();
 			}
 			else
-				CIO::message(M_ERROR, "no knn classifier available\n");
+				SG_ERROR( "no knn classifier available\n");
 		}
 		else
-			CIO::message(M_ERROR, "no distance available\n") ;
+			SG_ERROR( "no distance available\n") ;
 	}
 	else
-		CIO::message(M_ERROR, "no labels available\n") ;
+		SG_ERROR( "no labels available\n") ;
 
 	return result;
 }
@@ -81,7 +81,7 @@ bool CGUIKNN::test(CHAR* param)
 
 		if (!outputfile)
 		{
-			CIO::message(M_ERROR, "could not open %s\n",outputname);
+			SG_ERROR( "could not open %s\n",outputname);
 			return false;
 		}
 
@@ -91,7 +91,7 @@ bool CGUIKNN::test(CHAR* param)
 
 			if (!rocfile)
 			{
-				CIO::message(M_ERROR, "could not open %s\n",rocfname);
+				SG_ERROR( "could not open %s\n",rocfname);
 				return false;
 			}
 		}
@@ -102,26 +102,26 @@ bool CGUIKNN::test(CHAR* param)
 
 	if (!knn)
 	{
-		CIO::message(M_ERROR, "no knn classifier available\n") ;
+		SG_ERROR( "no knn classifier available\n") ;
 		return false ;
 	}
 
 	if (!distance)
 	{
-		CIO::message(M_ERROR, "no distance available\n") ;
+		SG_ERROR( "no distance available\n") ;
 		return false ;
 	}
 
 	if (!testlabels)
 	{
-		CIO::message(M_ERROR, "no test labels available\n") ;
+		SG_ERROR( "no test labels available\n") ;
 		return false ;
 	}
 
 	knn->set_labels(testlabels);
 	knn->set_distance(distance);
 
-	CIO::message(M_INFO, "starting knn classifier testing\n") ;
+	SG_INFO( "starting knn classifier testing\n") ;
 	INT len=0;
 	CLabels* outlab=knn->classify(NULL);
 	DREAL* output=outlab->get_labels(len);

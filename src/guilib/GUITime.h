@@ -15,11 +15,12 @@
 
 #ifndef HAVE_SWIG
 
+#include "base/SGObject.h"
 #include "lib/Time.h"
 
 class CGUI;
 
-class CGUITime
+class CGUITime : public CSGObject
 {
 	public:
 		CGUITime(CGUI *);

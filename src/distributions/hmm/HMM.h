@@ -169,7 +169,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if ((pos<0)||(pos*num_states+state>65336))
-		CIO::message(stderr,"index out of range in get_fix_pos_state(%i,%i,%i) \n", pos,state,num_states) ;
+		SG_DEBUG("index out of range in get_fix_pos_state(%i,%i,%i) \n", pos,state,num_states) ;
 #endif
 	  return fix_pos_state[pos*num_states+state] ;
 	}
@@ -257,7 +257,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 		  if ((pos<0)||(pos*num_states+state>65336))
-		CIO::message(stderr,"index out of range in set_fix_pos_state(%i,%i,%i,%i) [%i]\n", pos,state,num_states,(int)value, pos*num_states+state) ;
+		SG_DEBUG("index out of range in set_fix_pos_state(%i,%i,%i,%i) [%i]\n", pos,state,num_states,(int)value, pos*num_states+state) ;
 #endif
 	  fix_pos_state[pos*num_states+state]=value;
 	  if (value==FIX_ALLOWED)
@@ -997,7 +997,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if (offset>=N)
-	    CIO::message(stderr,"index out of range in set_q(%i,%e) [%i]\n", offset,value,N) ;
+	    SG_DEBUG("index out of range in set_q(%i,%e) [%i]\n", offset,value,N) ;
 #endif
 		end_state_distribution_q[offset]=value;
 	}
@@ -1010,7 +1010,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if (offset>=N)
-	    CIO::message(stderr,"index out of range in set_p(%i,.) [%i]\n", offset,N) ;
+	    SG_DEBUG("index out of range in set_p(%i,.) [%i]\n", offset,N) ;
 #endif
 		initial_state_distribution_p[offset]=value;
 	}
@@ -1024,7 +1024,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if ((line_>N)||(column>N))
-	    CIO::message(stderr,"index out of range in set_A(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
+	    SG_DEBUG("index out of range in set_A(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
 #endif
 		transition_matrix_A[line_+column*N]=value;
 	}
@@ -1038,7 +1038,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if ((line_>N)||(column>N))
-	    CIO::message(stderr,"index out of range in set_a(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
+	    SG_DEBUG("index out of range in set_a(%i,%i,.) [%i,%i]\n",line_,column,N,N) ;
 #endif
 	  transition_matrix_a[line_+column*N]=value; // look also best_path!
 	}
@@ -1052,7 +1052,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if ((line_>=N)||(column>=M))
-	    CIO::message(stderr,"index out of range in set_B(%i,%i) [%i,%i]\n", line_, column,N,M) ;
+	    SG_DEBUG("index out of range in set_B(%i,%i) [%i,%i]\n", line_, column,N,M) ;
 #endif
 	  observation_matrix_B[line_*M+column]=value;
 	}
@@ -1066,7 +1066,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if ((line_>=N)||(column>=M))
-	    CIO::message(stderr,"index out of range in set_b(%i,%i) [%i,%i]\n", line_, column,N,M) ;
+	    SG_DEBUG("index out of range in set_b(%i,%i) [%i,%i]\n", line_, column,N,M) ;
 #endif
 		observation_matrix_b[line_*M+column]=value;
 	}
@@ -1082,7 +1082,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if ((time>=p_observations->get_max_vector_length())||(state>N))
-	    CIO::message(stderr,"index out of range in set_psi(%i,%i,.) [%i,%i]\n",time,state,p_observations->get_max_vector_length(),N) ;
+	    SG_DEBUG("index out of range in set_psi(%i,%i,.) [%i,%i]\n",time,state,p_observations->get_max_vector_length(),N) ;
 #endif
 	  STATES_PER_OBSERVATION_PSI(dimension)[time*N+state]=value;
 	}
@@ -1096,7 +1096,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if (offset>=N)
-	    CIO::message(stderr,"index out of range in %e=get_q(%i) [%i]\n", end_state_distribution_q[offset],offset,N) ;
+	    SG_DEBUG("index out of range in %e=get_q(%i) [%i]\n", end_state_distribution_q[offset],offset,N) ;
 #endif
 		return end_state_distribution_q[offset];
 	}
@@ -1109,7 +1109,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if (offset>=N)
-	    CIO::message(stderr,"index out of range in get_p(%i,.) [%i]\n", offset,N) ;
+	    SG_DEBUG("index out of range in get_p(%i,.) [%i]\n", offset,N) ;
 #endif
 		return initial_state_distribution_p[offset];
 	}
@@ -1123,7 +1123,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if ((line_>N)||(column>N))
-	    CIO::message(stderr,"index out of range in get_A(%i,%i) [%i,%i]\n",line_,column,N,N) ;
+	    SG_DEBUG("index out of range in get_A(%i,%i) [%i,%i]\n",line_,column,N,N) ;
 #endif
 		return transition_matrix_A[line_+column*N];
 	}
@@ -1137,7 +1137,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if ((line_>N)||(column>N))
-	    CIO::message(stderr,"index out of range in get_a(%i,%i) [%i,%i]\n",line_,column,N,N) ;
+	    SG_DEBUG("index out of range in get_a(%i,%i) [%i,%i]\n",line_,column,N,N) ;
 #endif
 	  return transition_matrix_a[line_+column*N]; // look also best_path()!
 	}
@@ -1151,7 +1151,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if ((line_>=N)||(column>=M))
-	    CIO::message(stderr,"index out of range in get_B(%i,%i) [%i,%i]\n", line_, column,N,M) ;
+	    SG_DEBUG("index out of range in get_B(%i,%i) [%i,%i]\n", line_, column,N,M) ;
 #endif
 		return observation_matrix_B[line_*M+column];
 	}
@@ -1165,7 +1165,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if ((line_>=N)||(column>=M))
-	    CIO::message(stderr,"index out of range in get_b(%i,%i) [%i,%i]\n", line_, column,N,M) ;
+	    SG_DEBUG("index out of range in get_b(%i,%i) [%i,%i]\n", line_, column,N,M) ;
 #endif
 	  return observation_matrix_b[line_*M+column];
 	}
@@ -1181,7 +1181,7 @@ public:
 	{
 #ifdef HMM_DEBUG
 	  if ((time>=p_observations->get_max_vector_length())||(state>N))
-	    CIO::message(stderr,"index out of range in get_psi(%i,%i) [%i,%i]\n",time,state,p_observations->get_max_vector_length(),N) ;
+	    SG_DEBUG("index out of range in get_psi(%i,%i) [%i,%i]\n",time,state,p_observations->get_max_vector_length(),N) ;
 #endif
 	  return STATES_PER_OBSERVATION_PSI(dimension)[time*N+state];
 	}
@@ -1422,7 +1422,7 @@ inline DREAL model_derivative_b(T_STATES i, WORD j, INT dimension)
 			sum= CMath::logarithmic_sum(sum, forward(t,i,dimension)+backward(t,i,dimension)-get_b(i,p_observations->get_feature(dimension,t)));
 	}
 	//if (sum==-CMath::INFTY)
-	// CIO::message("log derivative is -inf: dim=%i, state=%i, obs=%i\n",dimension, i, j) ;
+	// SG_DEBUG( "log derivative is -inf: dim=%i, state=%i, obs=%i\n",dimension, i, j) ;
 	return sum;
 } 
 //@}
@@ -1487,9 +1487,9 @@ protected:
 	inline void error(INT p_line, CHAR* str)
 	{
 	    if (p_line)
-			CIO::message(M_ERROR, "error in line %d %s\n", p_line, str);
+			SG_ERROR( "error in line %d %s\n", p_line, str);
 	    else
-			CIO::message(M_ERROR, "error %s\n", str);
+			SG_ERROR( "error %s\n", str);
 	}
 	//@}
 

@@ -16,7 +16,8 @@
 #include "kernel/SparseKernel.h"
 
 CSparseLinearKernel::CSparseLinearKernel(INT size, bool do_rescale_, DREAL scale_)
-  : CSparseKernel<DREAL>(size),scale(scale_),do_rescale(do_rescale_), normal_length(0), normal(NULL)
+  : CSparseKernel<DREAL>(size),scale(scale_),do_rescale(do_rescale_), initialized(false),
+	normal_length(0), normal(NULL)
 {
 	properties |= KP_LINADD;
 }
@@ -26,14 +27,14 @@ CSparseLinearKernel::~CSparseLinearKernel()
 	cleanup();
 }
   
-bool CSparseLinearKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CSparseLinearKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSparseKernel<DREAL>::init(l, r, do_init); 
+	CSparseKernel<DREAL>::init(l, r);
 
-	if (do_init)
-		init_rescale() ;
+	if (!initialized)
+		init_rescale();
 
-	CIO::message(M_INFO, "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
+	SG_INFO( "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
 
 	return true;
 }
@@ -48,6 +49,7 @@ void CSparseLinearKernel::init_rescale()
 			sum+=compute(i, i);
 
 	scale=sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
+	initialized=true;
 }
 
 void CSparseLinearKernel::cleanup()

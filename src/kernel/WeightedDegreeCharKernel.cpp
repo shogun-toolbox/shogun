@@ -95,7 +95,7 @@ CWeightedDegreeCharKernel::~CWeightedDegreeCharKernel()
 
 void CWeightedDegreeCharKernel::remove_lhs() 
 { 
-	CIO::message(M_DEBUG, "deleting CWeightedDegreeCharKernel optimization\n");
+	SG_DEBUG( "deleting CWeightedDegreeCharKernel optimization\n");
 	delete_optimization();
 
 #ifdef SVMLIGHT
@@ -130,13 +130,13 @@ void CWeightedDegreeCharKernel::remove_rhs()
 }
 
   
-bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r)
 {
 	INT lhs_changed = (lhs!=l) ;
 	INT rhs_changed = (rhs!=r) ;
 
-	CIO::message(M_DEBUG, "lhs_changed: %i\n", lhs_changed);
-	CIO::message(M_DEBUG, "rhs_changed: %i\n", rhs_changed);
+	SG_DEBUG( "lhs_changed: %i\n", lhs_changed);
+	SG_DEBUG( "rhs_changed: %i\n", rhs_changed);
 
 	ASSERT(l && (l->get_feature_type() == F_CHAR) && (l->get_feature_class() == C_SIMPLE)) ;
 	ASSERT(r && (r->get_feature_type() == F_CHAR) && (r->get_feature_class() == C_SIMPLE)) ;
@@ -158,8 +158,7 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 		tries.create(alen, max_mismatch==0) ;
 	} 
 
-	bool result=CSimpleKernel<CHAR>::init(l,r,do_init);
-	initialized = false ;
+	bool result=CSimpleKernel<CHAR>::init(l,r);
 	INT i;
 
 	init_block_weights();
@@ -240,7 +239,7 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r, bool do_init)
 
 void CWeightedDegreeCharKernel::cleanup()
 {
-	CIO::message(M_DEBUG, "deleting CWeightedDegreeCharKernel optimization\n");
+	SG_DEBUG( "deleting CWeightedDegreeCharKernel optimization\n");
 	delete_optimization();
 
 	delete[] block_weights;
@@ -277,11 +276,11 @@ bool CWeightedDegreeCharKernel::save_init(FILE* dest)
 bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* alphas, INT tree_num)
 {
 	if (tree_num<0)
-		CIO::message(M_DEBUG, "deleting CWeightedDegreeCharKernel optimization\n");
+		SG_DEBUG( "deleting CWeightedDegreeCharKernel optimization\n");
 	delete_optimization();
 
 	if (tree_num<0)
-		CIO::message(M_DEBUG, "initializing CWeightedDegreeCharKernel optimization\n") ;
+		SG_DEBUG( "initializing CWeightedDegreeCharKernel optimization\n") ;
 
 	int i=0;
 	for (i=0; i<count; i++)
@@ -289,14 +288,14 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* al
 		if (tree_num<0)
 		{
 			if ( (i % (count/10+1)) == 0)
-				CIO::progress(i, 0, count);
+				io.progress(i, 0, count);
 			
 			if (max_mismatch==0)
 				add_example_to_tree(IDX[i], alphas[i]) ;
 			else
 				add_example_to_tree_mismatch(IDX[i], alphas[i]) ;
 
-			//CIO::message(M_DEBUG, "number of used trie nodes: %i\n", tries.get_num_used_nodes()) ;
+			//SG_DEBUG( "number of used trie nodes: %i\n", tries.get_num_used_nodes()) ;
 		}
 		else
 		{
@@ -308,7 +307,7 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* al
 	}
 	
 	if (tree_num<0)
-		CIO::message(M_MESSAGEONLY, "done.           \n");
+		SG_PRINT( "done.           \n");
 
 	//tries.compact_nodes(NO_CHILD, 0, weights) ;
 
@@ -710,7 +709,7 @@ bool CWeightedDegreeCharKernel::set_wd_weights_by_type(EWDKernType p_type)
 
 bool CWeightedDegreeCharKernel::set_weights(DREAL* ws, INT d, INT len)
 {
-	CIO::message(M_DEBUG, "degree = %i  d=%i\n", degree, d) ;
+	SG_DEBUG( "degree = %i  d=%i\n", degree, d) ;
 	degree = d ;
 	tries.set_degree(d);
 	length=len;
@@ -742,7 +741,7 @@ bool CWeightedDegreeCharKernel::set_position_weights(DREAL* pws, INT len)
 	
     if (seq_length!=len) 
 	{
-      sg_error(sg_err_fun,"seq_length = %i, position_weights_length=%i\n", seq_length, len) ;
+      SG_ERROR( "seq_length = %i, position_weights_length=%i\n", seq_length, len) ;
 		return false ;
 	}
 	delete[] position_weights;
@@ -915,7 +914,7 @@ bool CWeightedDegreeCharKernel::init_block_weights_external()
 		}
 	}
 	else {
-      sg_error(sg_err_fun,"sequence longer then weights (seqlen:%d, wlen:%d)\n", seq_length, block_weights_external);
+      SG_ERROR( "sequence longer then weights (seqlen:%d, wlen:%d)\n", seq_length, block_weights_external);
    }
 	return (block_weights!=NULL);
 }
@@ -1020,7 +1019,7 @@ void CWeightedDegreeCharKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* 
 			params.vec_idx=vec_idx;
 			compute_batch_helper((void*) &params);
 
-			CIO::progress(j,0,num_feat);
+			io.progress(j,0,num_feat);
 		}
 	}
 #ifndef WIN32
@@ -1066,7 +1065,7 @@ void CWeightedDegreeCharKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* 
 
 			for (t=0; t<num_threads-1; t++)
 				pthread_join(threads[t], NULL);
-			CIO::progress(j,0,num_feat);
+			io.progress(j,0,num_feat);
 		}
 	}
 #endif
@@ -1165,7 +1164,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 				x[j] = -1;
 			}
 			tries.traverse( tree, p, info, 0, x, k );
-			CIO::progress(i++,0,num_feat*max_degree);
+			io.progress(i++,0,num_feat*max_degree);
 	}
 		
 		// add partial overlap scores
@@ -1251,7 +1250,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 		init_optimization(num_suppvec, IDX, alphas, i);
 
 		tries.compute_scoring_helper(NO_CHILD, i, 0, 0.0, 0, max_degree, num_feat, num_sym, sym_offset, 0, result);
-		CIO::progress(i,0,num_feat);
+		io.progress(i,0,num_feat);
 	}
 	num_sym=sym_offset;
 

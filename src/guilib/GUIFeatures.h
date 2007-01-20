@@ -13,6 +13,7 @@
 #define __GUIFEATURES__H
 
 #include "lib/config.h"
+#include "base/SGObject.h"
 
 #ifndef HAVE_SWIG
 #include "features/Labels.h"
@@ -32,7 +33,7 @@
 
 class CGUI;
 
-class CGUIFeatures
+class CGUIFeatures : public CSGObject
 {
 	enum EFeatureType
 	{
@@ -107,30 +108,30 @@ class CGUIFeatures
 			INT start=0;
 			INT gap = 0 ;
 
-			param=CIO::skip_spaces(param);
+			param=io.skip_spaces(param);
 
 			if ((sscanf(param, "%s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, &order, &start, &gap))<6)
 			{
-				CIO::message(M_ERROR, "see help for params (target, from_class, from_type, to_class, to_type, order, start, gap)\n");
+				SG_ERROR( "see help for params (target, from_class, from_type, to_class, to_type, order, start, gap)\n");
 				return NULL;
 			}
 
 			if ( (src) && ( (src->get_feature_class()) == C_STRING) )
 			{
 				//create dense features with 0 cache
-				CIO::message(M_INFO, "converting CT STRING features to ST STRING ones (order=%i)\n",order);
+				SG_INFO( "converting CT STRING features to ST STRING ones (order=%i)\n",order);
 
 				CStringFeatures<ST>* sf=new CStringFeatures<ST>(new CAlphabet(src->get_alphabet()));
 				if (sf && sf->obtain_from_char_features(src, start, order, gap))
 				{
-					CIO::message(M_INFO, "conversion successful\n");
+					SG_INFO( "conversion successful\n");
 					return sf;
 				}
 
 				delete sf;
 			}
 			else
-				CIO::message(M_ERROR, "no features of class/type STRING/CT available\n");
+				SG_ERROR( "no features of class/type STRING/CT available\n");
 
 			return NULL;
 		}
@@ -144,35 +145,35 @@ class CGUIFeatures
 			INT nlen=-1;
 
 			if (!src || !param) {
-				CIO::message(M_ERROR, "invalid arguments: \"%s\"\n",param);
+				SG_ERROR( "invalid arguments: \"%s\"\n",param);
 				return NULL;
 			}
 
 			if (sscanf(param, "%*s %*s %*s %*s %*s %255s %255s %255s", 
 						mode, alph, embed) < 3) {
-				CIO::message(M_ERROR, "too few arguments\n");
+				SG_ERROR( "too few arguments\n");
 				return NULL;
 			}
 
 			if (!strcasecmp(mode, "words")) {
 				if (sscanf(param, "%*s %*s %*s %*s %*s %*s %*s %*s %255s", 
 							delim) < 1) {
-					CIO::message(M_ERROR, "too few arguments\n");
+					SG_ERROR( "too few arguments\n");
 					return NULL;
 				}
 
-				CIO::message(M_INFO, "Converting strings to Mindy words "
+				SG_INFO( "Converting strings to Mindy words "
 						"(a: %s, e: %s, d: '%s')\n", alph, embed, delim);                
 
 				return new CMindyGramFeatures(src, alph, embed, delim);
 			} else {
 				if (sscanf(param, "%*s %*s %*s %*s %*s %*s %*s %*s %d", 
 							&nlen) < 1) {
-					CIO::message(M_ERROR, "too few arguments\n");
+					SG_ERROR( "too few arguments\n");
 					return NULL;
 				}
 
-				CIO::message(M_INFO, "Converting strings to Mindy n-grams "
+				SG_INFO( "Converting strings to Mindy n-grams "
 						"(a: %s, e: %s, n: %d)\n", alph, embed, nlen);                
 
 				return new CMindyGramFeatures(src, alph, embed, nlen);

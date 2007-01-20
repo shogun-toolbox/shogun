@@ -22,7 +22,7 @@ CChi2Kernel::CChi2Kernel(LONG size)
 CChi2Kernel::CChi2Kernel(CRealFeatures* l, CRealFeatures* r, INT size)
   : CSimpleKernel<DREAL>(size)
 {
-	init(l,r, true);
+	init(l,r);
 }
 
 CChi2Kernel::~CChi2Kernel() 
@@ -30,9 +30,9 @@ CChi2Kernel::~CChi2Kernel()
 	cleanup();
 }
   
-bool CChi2Kernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CChi2Kernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<DREAL>::init(l,r,do_init);
+	bool result=CSimpleKernel<DREAL>::init(l,r);
 	initialized = true ;
 	return result;
 }

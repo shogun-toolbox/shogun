@@ -81,21 +81,21 @@ DREAL* CRealFileFeatures::load_feature_matrix()
     fseek(working_file, filepos, SEEK_SET);
     delete[] feature_matrix;
 
-    CIO::message(M_INFO, "allocating feature matrix of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
+    SG_INFO( "allocating feature matrix of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
     feature_matrix=new DREAL[num_features*num_vectors];
 
-    CIO::message(M_INFO, "loading... be patient.\n");
+    SG_INFO( "loading... be patient.\n");
 
     for (INT i=0; i<(INT) num_vectors; i++)
     {
 	if (!(i % (num_vectors/10+1)))
-	    CIO::message(M_MESSAGEONLY, "%02d%%.", (int) (100.0*i/num_vectors));
+	    SG_PRINT( "%02d%%.", (int) (100.0*i/num_vectors));
 	else if (!(i % (num_vectors/200+1)))
-	    CIO::message(M_MESSAGEONLY, ".");
+	    SG_PRINT( ".");
 
 	ASSERT(fread(&feature_matrix[num_features*i], doublelen, num_features, working_file)== (size_t) num_features) ;
     }
-	    CIO::message(M_INFO, "done.\n");
+	    SG_INFO( "done.\n");
 
     return feature_matrix;
 }
@@ -121,7 +121,7 @@ bool CRealFileFeatures::load_base_data()
     ASSERT(fread(&num_vec, (UINT) intlen, 1, working_file)==1);
     ASSERT(fread(&num_feat, (UINT) intlen, 1, working_file)==1);
     ASSERT(fread(&preprocd, (UINT) intlen, 1, working_file)==1);
-    CIO::message(M_INFO, "detected: intsize=%d, doublesize=%d, num_vec=%d, num_feat=%d, preprocd=%d\n", intlen, doublelen, num_vec, num_feat, preprocd);
+    SG_INFO( "detected: intsize=%d, doublesize=%d, num_vec=%d, num_feat=%d, preprocd=%d\n", intlen, doublelen, num_vec, num_feat, preprocd);
     filepos=ftell(working_file);
     set_num_vectors(num_vec);
     set_num_features(num_feat);

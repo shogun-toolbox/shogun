@@ -18,10 +18,10 @@
 class CLinearByteKernel: public CSimpleKernel<BYTE>
 {
  public:
-  CLinearByteKernel(LONG size);
+  CLinearByteKernel(LONG size, bool do_rescale=true, DREAL scale=1.0);
   ~CLinearByteKernel() ;
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -54,6 +54,8 @@ class CLinearByteKernel: public CSimpleKernel<BYTE>
   
  protected:
   double scale ;
+  bool do_rescale ;
+  bool initialized;
 
   /// normal vector (used in case of optimized kernel)
   double* normal;

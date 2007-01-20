@@ -96,7 +96,7 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 			}
 		}
 
-		CIO::message(M_INFO, "Reducing number of features from %i to %i\n", num_features, num_ok) ;
+		SG_INFO( "Reducing number of features from %i to %i\n", num_features, num_ok) ;
 
 		delete[] idx ;
 		idx=new int[num_ok];
@@ -144,8 +144,8 @@ DREAL* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
     INT num_features=0;
     DREAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
 
-    CIO::message(M_INFO, "get Feature matrix: %ix%i\n", num_vectors, num_features) ;
-	CIO::message(M_INFO, "Preprocessing feature matrix\n");
+    SG_INFO( "get Feature matrix: %ix%i\n", num_vectors, num_features) ;
+	SG_INFO( "Preprocessing feature matrix\n");
     for (INT vec=0; vec<num_vectors; vec++)
 	{
 		DREAL* v_src=&m[num_features*vec];
@@ -165,7 +165,7 @@ DREAL* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
 	
 	((CRealFeatures*) f)->set_num_features(num_idx);
 	((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
-	CIO::message(M_INFO, "new Feature matrix: %ix%i\n", num_vectors, num_features);
+	SG_INFO( "new Feature matrix: %ix%i\n", num_vectors, num_features);
     
     return m;
 }
@@ -211,7 +211,7 @@ bool CPruneVarSubMean::load_init_data(FILE* src)
 
     ASSERT(fread(&divide, sizeof(int), 1, src)==1) ;
     ASSERT(fread(&num_idx, sizeof(int), 1, src)==1) ;
-	CIO::message(M_INFO, "divide:%d num_idx:%d\n", divide, num_idx);
+	SG_INFO( "divide:%d num_idx:%d\n", divide, num_idx);
 	delete[] mean;
 	delete[] idx;
 	delete[] std;

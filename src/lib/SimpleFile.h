@@ -51,7 +51,7 @@ public:
 					{
 						if ((num=(int)ftell(file)) != -1)
 						{
-							CIO::message(M_INFO, "file of size %ld bytes == %ld entries detected\n", num,num/sizeof(T));
+							SG_INFO( "file of size %ld bytes == %ld entries detected\n", num,num/sizeof(T));
 							num/=sizeof(T);
 						}
 						else
@@ -66,7 +66,7 @@ public:
 
 				if (!seek_status)
 				{
-					CIO::message(M_ERROR, "filesize autodetection failed\n");
+					SG_ERROR( "filesize autodetection failed\n");
 					num=0;
 					return NULL;
 				}
@@ -83,10 +83,10 @@ public:
 					status=((LONG) num_read == num);
 
 					if (!status)
-						CIO::message(M_ERROR, "only %ld of %ld entries read. io error\n", (LONG) num_read, num);
+						SG_ERROR( "only %ld of %ld entries read. io error\n", (LONG) num_read, num);
 				}
 				else
-					CIO::message(M_ERROR, "failed to allocate memory while trying to read %ld entries from file \"s\"\n", (LONG) num, filename);
+					SG_ERROR( "failed to allocate memory while trying to read %ld entries from file \"s\"\n", (LONG) num, filename);
 			}
 			return target;
 		}

@@ -20,7 +20,7 @@ CCommWordKernel::CCommWordKernel(LONG size, bool sign, ENormalizationType n)
 	properties |= KP_LINADD;
 	dictionary_size= 1<<(sizeof(WORD)*8);
 	dictionary_weights = new DREAL[dictionary_size];
-	CIO::message(M_DEBUG, "using dictionary of %d bytes\n", dictionary_size);
+	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 	clear_normal();
 }
 
@@ -64,9 +64,9 @@ void CCommWordKernel::remove_rhs()
 	rhs = lhs;
 }
 
-bool CCommWordKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CCommWordKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<WORD>::init(l,r,do_init);
+	bool result=CSimpleKernel<WORD>::init(l,r);
 	initialized = false;
 	INT i;
 
@@ -241,7 +241,7 @@ DREAL CCommWordKernel::compute(INT idx_a, INT idx_b)
 			case SQLEN_NORMALIZATION:
 				return result/(alen*blen);
 			default:
-            sg_error(sg_err_fun,"Unknown Normalization in use!\n");
+            SG_ERROR( "Unknown Normalization in use!\n");
 				return -CMath::INFTY;
 		}
 	}
@@ -301,21 +301,21 @@ bool CCommWordKernel::init_optimization(INT count, INT *IDX, DREAL * weights)
 	if (count<=0)
 	{
 		set_is_initialized(true);
-		CIO::message(M_DEBUG, "empty set of SVs\n");
+		SG_DEBUG( "empty set of SVs\n");
 		return true;
 	}
 
-	CIO::message(M_DEBUG, "initializing CCommWordKernel optimization\n");
+	SG_DEBUG( "initializing CCommWordKernel optimization\n");
 
 	for (int i=0; i<count; i++)
 	{
 		if ( (i % (count/10+1)) == 0)
-			CIO::progress(i, 0, count);
+			io.progress(i, 0, count);
 
 		add_to_normal(IDX[i], weights[i]);
 	}
 
-	CIO::message(M_MESSAGEONLY, "Done.         \n");
+	SG_PRINT( "Done.         \n");
 	
 	set_is_initialized(true);
 	return true;
@@ -323,7 +323,7 @@ bool CCommWordKernel::init_optimization(INT count, INT *IDX, DREAL * weights)
 
 bool CCommWordKernel::delete_optimization() 
 {
-	CIO::message(M_DEBUG, "deleting CCommWordKernel optimization\n");
+	SG_DEBUG( "deleting CCommWordKernel optimization\n");
 
 	clear_normal();
 	return true;
@@ -333,7 +333,7 @@ DREAL CCommWordKernel::compute_optimized(INT i)
 { 
 	if (!get_is_initialized())
 	{
-      sg_error(sg_err_fun,"CCommWordKernel optimization not initialized\n");
+      SG_ERROR( "CCommWordKernel optimization not initialized\n");
 		return 0 ; 
 	}
 
@@ -388,7 +388,7 @@ DREAL CCommWordKernel::compute_optimized(INT i)
 			case SQLEN_NORMALIZATION:
 				return result/len;
 			default:
-            sg_error(sg_err_fun,"Unknown Normalization in use!\n");
+            SG_ERROR( "Unknown Normalization in use!\n");
 				return -CMath::INFTY;
 		}
 	}

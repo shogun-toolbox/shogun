@@ -40,7 +40,7 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
 		  bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
   ~CWeightedDegreeCharKernel() ;
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data
@@ -66,11 +66,7 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
     if (get_is_initialized())
       return compute_by_tree(idx); 
     
-#ifdef HAVE_PYTHON
-    throw KernelException("CWeightedDegreeCharKernel optimization not initialized\n");
-#else
-    CIO::message(M_ERROR, "CWeightedDegreeCharKernel optimization not initialized\n") ;
-#endif
+    SG_ERROR( "CWeightedDegreeCharKernel optimization not initialized\n") ;
     return 0 ;
   } ;
 
@@ -95,6 +91,7 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
 
 	  set_is_initialized(true);
   }
+
   inline virtual INT get_num_subkernels()
   {
 	  if (position_weights!=NULL)
@@ -103,6 +100,7 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
 		  return (INT) ceil(1.0*get_degree()/mkl_stepsize);
 	  return (INT) ceil(1.0*get_degree()*length/mkl_stepsize) ;
   }
+
   inline void compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
   { 
 	  if (get_is_initialized())
@@ -111,12 +109,9 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
 		  return ;
 	  }
      
-#ifdef HAVE_PYTHON
-     throw KernelException("CWeightedDegreeCharKernel optimization not initialized\n");
-#else
-	  CIO::message(M_ERROR, "CWeightedDegreeCharKernel optimization not initialized\n") ;
-#endif
-  } ;
+	  SG_ERROR( "CWeightedDegreeCharKernel optimization not initialized\n") ;
+  }
+
   inline const DREAL* get_subkernel_weights(INT& num_weights)
   {
 	  num_weights = get_num_subkernels() ;
@@ -133,15 +128,12 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
 
 	  return weights_buffer ;
   }
+  
   inline void set_subkernel_weights(DREAL* weights2, INT num_weights2)
   {
 	  INT num_weights = get_num_subkernels() ;
 	  if (num_weights!=num_weights2)
-#ifdef HAVE_PYTHON
-        throw KernelException("number of weights do not match\n");
-#else
-		  CIO::message(M_ERROR, "number of weights do not match\n") ;
-#endif
+		  SG_ERROR( "number of weights do not match\n") ;
 
 	  if (position_weights!=NULL)
 	  {

@@ -41,12 +41,12 @@ class CMindyGramFeatures:public CFeatures
 			ASSERT(sf && aname && embed && delim);
 
 			/* Allocate and generate gram configuration (words) */
-			CIO::message(M_DEBUG, "Initializing Mindy gram features\n");    
+			SG_DEBUG( "Initializing Mindy gram features\n");    
 			alph_type_t at = alph_get_type(aname);
 			cfg = gram_cfg_words(alph_create(at), delim);
 			set_embedding(cfg, embed);
 
-			CIO::message(M_INFO, "Mindy in word mode (d: '%s', a: %s, e: %s)\n", 
+			SG_INFO( "Mindy in word mode (d: '%s', a: %s, e: %s)\n", 
 					delim, alph_get_name(at), gram_cfg_get_embed(cfg->embed));
 
 			import<T>(sf);
@@ -64,12 +64,12 @@ class CMindyGramFeatures:public CFeatures
 			ASSERT(sf && aname && embed && nlen > 0);
 
 			/* Allocate and generate gram configuration (n-grams) */
-			CIO::message(M_DEBUG, "Initializing Mindy gram features\n");
+			SG_DEBUG( "Initializing Mindy gram features\n");
 			alph_type_t at = alph_get_type(aname);
 			cfg = gram_cfg_ngrams(alph_create(at), (byte_t) nlen);
 			set_embedding(cfg, embed);    
 
-			CIO::message(M_INFO, "Mindy in n-gram mode (n: %d, a: %s, e: %s)\n", 
+			SG_INFO( "Mindy in n-gram mode (n: %d, a: %s, e: %s)\n", 
 					nlen, alph_get_name(at), gram_cfg_get_embed(cfg->embed));
 
 			import<T>(sf);
@@ -83,7 +83,7 @@ class CMindyGramFeatures:public CFeatures
 		 template <class T>
 		 CMindyGramFeatures(const CMindyGramFeatures & orig) : CFeatures(orig)
 		 {
-		         CIO::message(M_DEBUG, "Duplicating Mindy gram features\n");
+		         SG_DEBUG( "Duplicating Mindy gram features\n");
 		         num_vectors = orig.num_vectors;
 
 		         /* Clone configuration */
@@ -105,15 +105,11 @@ class CMindyGramFeatures:public CFeatures
 		{
 			INT i;
 			num_vectors = sf->get_num_vectors();
-			CIO::message(M_INFO, "Importing %ld string features\n", num_vectors);
+			SG_INFO( "Importing %ld string features\n", num_vectors);
 
 			vectors = (gram_t **) calloc(num_vectors, sizeof(gram_t *));
 			if (!vectors) {
-#ifdef HAVE_PYTHON
-            throw FeatureException("Could not allocate memory\n");
-#else
-				CIO::message(M_ERROR, "Could not allocate memory\n");
-#endif
+				SG_ERROR( "Could not allocate memory\n");
 				return false;
 			}
 
@@ -122,7 +118,7 @@ class CMindyGramFeatures:public CFeatures
 				T *s = sf->get_feature_vector(i, len);
 				vectors[i] = gram_extract(cfg, (byte_t *) s, (size_t) len);
 
-				CIO::message(M_DEBUG, "Extracted gram vector %d: %d grams\n", i, 
+				SG_DEBUG( "Extracted gram vector %d: %d grams\n", i, 
 						vectors[i]->num);
 			}
 
