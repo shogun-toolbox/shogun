@@ -2037,7 +2037,8 @@ bool CGUIMatlab::get_version(mxArray* retvals[])
 	{
 		double* ver=mxGetPr(mx_ver);
 
-		*ver = version.get_version_revision();
+		*ver=0; //FIXME
+		//*ver = gui->version.get_version_revision();
 
 		retvals[0]=mx_ver;
 		return true;
