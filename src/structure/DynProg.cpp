@@ -651,7 +651,7 @@ void CDynProg::best_path_deriv_call()
 	ASSERT(N==m_seq.get_dim1()) ;
 	ASSERT(m_seq.get_dim2()==m_pos.get_dim1()) ;
 
-	m_call=5 ;
+	m_call=5 ; // or so ...
 
 	m_my_scores.resize_array(m_my_state_seq.get_array_size()) ;
 	m_my_losses.resize_array(m_my_state_seq.get_array_size()) ;
