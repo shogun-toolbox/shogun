@@ -103,6 +103,7 @@ public:
 	
 	// best_path functions
 	void best_path_call(INT nbest, bool use_orf) ;
+	void best_path_deriv_call() ;
 	void best_path_2struct_call(INT nbest) ;
 	void best_path_simple_call(INT nbest) ;
 	void best_path_deriv_call(INT nbest) ;

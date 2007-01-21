@@ -642,6 +642,32 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 	m_step=9 ;
 }
 
+void CDynProg::best_path_deriv_call() 
+{
+	if (m_step!=8)
+		SG_ERROR( "please call best_path_set_dict_weights first\n") ;
+	if (m_call!=1)
+		SG_ERROR( "please call best_path_set_orf_info first\n") ;
+	ASSERT(N==m_seq.get_dim1()) ;
+	ASSERT(m_seq.get_dim2()==m_pos.get_dim1()) ;
+
+	m_call=5 ;
+
+	m_my_scores.resize_array(m_my_state_seq.get_array_size()) ;
+	m_my_losses.resize_array(m_my_state_seq.get_array_size()) ;
+
+	SG_PRINT( "m_seq.get_array(): %x", m_seq.get_array());
+	best_path_trans_deriv(m_my_state_seq.get_array(), m_my_pos_seq.get_array(), 
+						  m_my_scores.get_array(), m_my_losses.get_array(), m_my_state_seq.get_array_size(),
+						  m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
+						  m_PEN.get_array(), m_PEN_state_signals.get_array(), 
+						  m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
+						  m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2()) ;
+
+	m_step=9 ;
+}
+
+
 void CDynProg::best_path_2struct_call(INT nbest) 
 {
 	if (m_step!=8)
