@@ -12,7 +12,7 @@
 #include "lib/config.h"
 
 #ifdef HAVE_LAPACK
-#include "classifier/KRR.h"
+#include "regression/KRR.h"
 #include "lib/lapack.h"
 #include "lib/Mathematics.h"
 

@@ -117,7 +117,7 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 					result[j+i*num_vec1]=v;
 
 					if (num_done%100000)
-						io.progress(num_done, 0, total_num-1);
+						SG_PROGRESS(num_done, 0, total_num-1);
 
 					if (i!=j)
 						num_done+=2;
@@ -135,7 +135,7 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 					result[i+j*num_vec1]=kernel(i,j) ;
 
 					if (num_done%100000)
-						io.progress(num_done, 0, total_num-1);
+						SG_PROGRESS(num_done, 0, total_num-1);
 
 					num_done++;
 				}
@@ -187,7 +187,7 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2, SH
 					result[j+i*num_vec1]=v;
 
 					if (num_done%100000)
-						io.progress(num_done, 0, total_num-1);
+						SG_PROGRESS(num_done, 0, total_num-1);
 
 					if (i!=j)
 						num_done+=2;
@@ -205,7 +205,7 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2, SH
 					result[i+j*num_vec1]=kernel(i,j) ;
 
 					if (num_done%100000)
-						io.progress(num_done, 0, total_num-1);
+						SG_PROGRESS(num_done, 0, total_num-1);
 
 					num_done++;
 				}
@@ -257,7 +257,7 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 					result[j+i*num_vec1]=v;
 
 					if (num_done%100000)
-						io.progress(num_done, 0, total_num-1);
+						SG_PROGRESS(num_done, 0, total_num-1);
 
 					if (i!=j)
 						num_done+=2;
@@ -275,7 +275,7 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 					result[i+j*num_vec1]=kernel(i,j) ;
 
 					if (num_done%100000)
-						io.progress(num_done, 0, total_num-1);
+						SG_PROGRESS(num_done, 0, total_num-1);
 
 					num_done++;
 				}
@@ -506,7 +506,7 @@ void* CKernel::cache_multiple_kernel_row_helper(void* p)
 void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 {
 #ifndef WIN32
-	if (CParallel::get_num_threads()<2)
+	if (parallel.get_num_threads()<2)
 	{
 #endif
 		for(INT i=0;i<num_rows;i++) 
@@ -518,9 +518,9 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 		// fill up kernel cache 
 		INT uncached_rows[num_rows];
 		KERNELCACHE_ELEM* cache[num_rows];
-		pthread_t threads[CParallel::get_num_threads()-1];
-		S_KTHREAD_PARAM params[CParallel::get_num_threads()-1];
-		INT num_threads=CParallel::get_num_threads()-1;
+		pthread_t threads[parallel.get_num_threads()-1];
+		S_KTHREAD_PARAM params[parallel.get_num_threads()-1];
+		INT num_threads=parallel.get_num_threads()-1;
 		INT num_vec=get_lhs()->get_num_vectors();
 		ASSERT(num_vec>0);
 		BYTE* needs_computation=new BYTE[num_vec];
@@ -548,7 +548,7 @@ void CKernel::cache_multiple_kernel_rows(INT* rows, INT num_rows)
 
 		if (num>0)
 		{
-			step= num/CParallel::get_num_threads();
+			step= num/parallel.get_num_threads();
 
 			if (step<1)
 			{
@@ -1015,11 +1015,11 @@ void CKernel::do_precompute_matrix()
 
 	for (INT i=0; i<num; i++)
 	{
-		io.progress(i*i,0,num*num);
+		SG_PROGRESS(i*i,0,num*num);
 		for (INT j=0; j<=i; j++)
 			precomputed_matrix[i*(i+1)/2+j] = compute(i,j) ;
 	}
 
-	io.progress(num*num,0,num*num);
+	SG_PROGRESS(num*num,0,num*num);
 	SG_INFO( "\ndone.\n") ;
 }

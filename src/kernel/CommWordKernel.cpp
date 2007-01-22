@@ -310,7 +310,7 @@ bool CCommWordKernel::init_optimization(INT count, INT *IDX, DREAL * weights)
 	for (int i=0; i<count; i++)
 	{
 		if ( (i % (count/10+1)) == 0)
-			io.progress(i, 0, count);
+			SG_PROGRESS(i, 0, count);
 
 		add_to_normal(IDX[i], weights[i]);
 	}

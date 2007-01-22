@@ -16,6 +16,16 @@ CLibSVR::CLibSVR()
 	model=NULL;
 }
 
+CLibSVR::CLibSVR(DREAL C, DREAL eps, CKernel* k, CLabels* lab)
+{
+	model=NULL;
+
+	set_C(C,C);
+	set_tube_epsilon(eps);
+	set_labels(lab);
+	set_kernel(k);
+}
+
 CLibSVR::~CLibSVR()
 {
 	free(model);

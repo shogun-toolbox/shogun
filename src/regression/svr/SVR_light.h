@@ -22,6 +22,7 @@ class CSVRLight:public CSVMLight
 {
  public:
   CSVRLight();
+  CSVRLight(DREAL C, DREAL epsilon, CKernel* k, CLabels* lab);
   virtual ~CSVRLight() {};
   
   virtual bool	train();

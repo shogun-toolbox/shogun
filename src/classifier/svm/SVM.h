@@ -16,6 +16,8 @@
 #include "kernel/Kernel.h"
 #include "kernel/KernelMachine.h"
 
+class CKernelMachine;
+
 class CSVM : public CKernelMachine
 {
 	public:

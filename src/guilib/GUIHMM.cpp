@@ -23,11 +23,6 @@
 
 CGUIHMM::CGUIHMM(CGUI * gui_): gui(gui_)
 {
-#ifdef PARALLEL
-	number_of_hmm_tables = sysconf( _SC_NPROCESSORS_ONLN );
-#else
-	number_of_hmm_tables=1 ;
-#endif
 	working=NULL;
 
 	pos=NULL;
@@ -46,24 +41,6 @@ CGUIHMM::~CGUIHMM()
 
 }
 
-bool CGUIHMM::set_num_hmm_tables(CHAR* param)
-{
-	param=CIO::skip_spaces(param);
-
-	INT tmp;
-	if (sscanf(param, "%d", &tmp) == 1)
-	{
-		if (tmp>0)
-		{
-			number_of_hmm_tables=tmp ;
-			SG_INFO( "using %i separate tables\n",number_of_hmm_tables) ;
-			return true ;
-		} ;
-	} ;
-
-	return false;
-}
-
 bool CGUIHMM::new_hmm(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
@@ -74,7 +51,7 @@ bool CGUIHMM::new_hmm(CHAR* param)
 		if (working)
 			delete working;
 
-		working=new CHMM(n,m,NULL,PSEUDO, number_of_hmm_tables);
+		working=new CHMM(n,m,NULL,PSEUDO);
 		M=m;
 		return true;
 	}
@@ -110,7 +87,7 @@ bool CGUIHMM::baum_welch_train(CHAR* param)
 	if (working) 
 	{
 		working->set_observations(sf);
-		CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
+		CHMM* working_estimate=new CHMM(working);
 
 		double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
 
@@ -171,7 +148,7 @@ bool CGUIHMM::baum_welch_trans_train(CHAR* param)
       if (gui->guifeatures.get_train_features())
 	{
 	  working->set_observations((CStringFeatures<WORD>*) gui->guifeatures.get_train_features());
-	  CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
+	  CHMM* working_estimate=new CHMM(working);
 	  
 	  double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
 	  
@@ -215,7 +192,7 @@ bool CGUIHMM::baum_welch_train_defined(CHAR* param)
 	{
 		if (working->get_observations())
 		{
-			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
+			CHMM* working_estimate=new CHMM(working);
 
 			double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
 
@@ -275,7 +252,7 @@ bool CGUIHMM::viterbi_train(CHAR* param)
 	{
 		if (working->get_observations())
 		{
-			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
+			CHMM* working_estimate=new CHMM(working);
 
 			double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
 
@@ -336,7 +313,7 @@ bool CGUIHMM::viterbi_train_defined(CHAR* param)
 	{
 		if (working->get_observations())
 		{
-			CHMM* working_estimate=new CHMM(working,number_of_hmm_tables);
+			CHMM* working_estimate=new CHMM(working);
 
 			double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
 
@@ -803,7 +780,7 @@ bool CGUIHMM::append_model(CHAR* param)
 			if (model_file)
 			{
 
-				CHMM* h=new CHMM(model_file,PSEUDO,number_of_hmm_tables);
+				CHMM* h=new CHMM(model_file,PSEUDO);
 				if (h && h->get_status())
 				{
 					printf("file successfully read\n");
@@ -997,7 +974,7 @@ bool CGUIHMM::load(CHAR* param)
 
 	if (model_file)
 	{
-		working=new CHMM(model_file,PSEUDO,number_of_hmm_tables);
+		working=new CHMM(model_file,PSEUDO);
 		fclose(model_file);
 
 		if (working && working->get_status())

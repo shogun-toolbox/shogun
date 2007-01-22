@@ -59,7 +59,6 @@ static const CHAR* N_SET_PERCEPTRON_PARAMETERS=	"set_perceptron_parameters";
 static const CHAR* N_TEST_ESTIMATOR=	"test_estimator";
 static const CHAR* N_TRAIN_KNN=	"train_knn";
 static const CHAR* N_TEST_KNN=	"test_knn";
-static const CHAR* N_SET_NUM_TABLES=	"set_num_tables";
 static const CHAR* N_LOAD_PREPROC=		"load_preproc";
 static const CHAR* N_SAVE_PREPROC=		"save_preproc";
 static const CHAR* N_LOAD_HMM=			"load_hmm";
@@ -156,8 +155,7 @@ CTextGUI::CTextGUI(INT p_argc, char** p_argv)
 #ifdef WITHMATLAB
 	libmmfileInitialize() ;
 #endif
-
-	SG_DEBUG( "HMM uses %i separate tables\n", guihmm.get_number_of_tables()) ;
+	version.print_version();
 }
 
 CTextGUI::~CTextGUI()
@@ -202,7 +200,6 @@ void CTextGUI::print_help()
 	SG_PRINT( "\033[1;31m%s\033[0m <PROTEIN|DNA|ALPHANUM|BYTE|CUBE>\t\t\t- changes alphabet type\n", N_ALPHABET);
 	SG_PRINT( "\033[1;31m%s\033[0m [maxiterations] [maxallowedchange]\t- defines the convergence criteria for all train algorithms\n",N_CONVERGENCE_CRITERIA);
 	SG_PRINT( "\033[1;31m%s\033[0m <max_dim>\t - set maximum number of patterns\n",N_SET_MAX_DIM);
-	SG_PRINT( "\033[1;31m%s\033[0m <num>\t - set number of forw/backw.-tables\n",N_SET_NUM_TABLES);
 	SG_PRINT( "\n[TRAIN]\n");
 	SG_PRINT( "\033[1;31m%s\033[0m [<width> <upto>]\t\t- obtains new linear HMM\n",N_LINEAR_TRAIN);
 	SG_PRINT( "\033[1;31m%s\033[0m\t\t- does viterbi training on the current HMM\n",N_VITERBI_TRAIN);
@@ -319,10 +316,6 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	if (!strncmp(p_input, N_NEW_HMM, strlen(N_NEW_HMM)))
 	{
 		guihmm.new_hmm(p_input+strlen(N_NEW_HMM));
-	} 
-	else if (!strncmp(p_input, N_SET_NUM_TABLES, strlen(N_SET_NUM_TABLES)))
-	{
-		guihmm.set_num_hmm_tables(p_input+strlen(N_SET_NUM_TABLES));
 	} 
 	else if (!strncmp(p_input, N_NEW_SVM, strlen(N_NEW_SVM)))
 	{
@@ -471,10 +464,6 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	{
 		guimath.set_threshold(p_input+strlen(N_SET_THRESHOLD));
 	} 
-	//else if (!strncmp(p_input, N_ALPHABET, strlen(N_ALPHABET)))
-	//{
-		//guiobs.set_alphabet(p_input+strlen(N_ALPHABET)) ;
-	//} 
 	else if (!strncmp(p_input, N_CONVERGENCE_CRITERIA, strlen(N_CONVERGENCE_CRITERIA)))
 	{
 		guihmm.convergence_criteria(p_input+strlen(N_CONVERGENCE_CRITERIA)) ;

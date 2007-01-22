@@ -92,7 +92,7 @@ bool CPCACut::init(CFeatures* f)
 		for (i=0; i<num_vectors; i++)
 		{
 			if (!(i % (num_vectors/10+1)))
-				io.progress(i, 0, num_vectors);
+				SG_PROGRESS(i, 0, num_vectors);
 
 			INT len;
 			bool free;

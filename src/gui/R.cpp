@@ -484,7 +484,6 @@ void R_init_sg(DllInfo *info) {
       {"sg", (void*(*)()) &sg, 1},
       {NULL, NULL, 0} };
 
-   
    /* Register the routines saved in the callMethods structure so that they are available under R. */
    R_registerRoutines(info, cMethods, callMethods, (R_FortranMethodDef*) fortranMethods, (R_ExternalMethodDef*) externalMethods);
 

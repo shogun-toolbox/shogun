@@ -360,8 +360,6 @@ class CHMM : private CDistribution
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
 
-  INT NUM_PARALLEL ;
-
 	/// Datatype that is used in parrallel computation of model probability
 	struct S_MODEL_PROB_THREAD_PARAM
 	{
@@ -390,27 +388,27 @@ class CHMM : private CDistribution
 	};
 
 	inline T_ALPHA_BETA & ALPHA_CACHE(INT dim) {
-	    return alpha_cache[dim%NUM_PARALLEL] ; } ;
+	    return alpha_cache[dim%parallel.get_num_threads()] ; } ;
 	inline T_ALPHA_BETA & BETA_CACHE(INT dim) {
-	    return beta_cache[dim%NUM_PARALLEL] ; } ;
+	    return beta_cache[dim%parallel.get_num_threads()] ; } ;
 #ifdef USE_LOGSUMARRAY 
 	inline DREAL* ARRAYS(INT dim) {
-	    return arrayS[dim%NUM_PARALLEL] ; } ;
+	    return arrayS[dim%parallel.get_num_threads()] ; } ;
 #endif
 	inline DREAL* ARRAYN1(INT dim) {
-	    return arrayN1[dim%NUM_PARALLEL] ; } ;
+	    return arrayN1[dim%parallel.get_num_threads()] ; } ;
 	inline DREAL* ARRAYN2(INT dim) {
-	    return arrayN2[dim%NUM_PARALLEL] ; } ;
+	    return arrayN2[dim%parallel.get_num_threads()] ; } ;
 	inline T_STATES* STATES_PER_OBSERVATION_PSI(INT dim) {
-	    return states_per_observation_psi[dim%NUM_PARALLEL] ; } ;
+	    return states_per_observation_psi[dim%parallel.get_num_threads()] ; } ;
 	inline const T_STATES* STATES_PER_OBSERVATION_PSI(INT dim) const {
-	    return states_per_observation_psi[dim%NUM_PARALLEL] ; } ;
+	    return states_per_observation_psi[dim%parallel.get_num_threads()] ; } ;
 	inline T_STATES* PATH(INT dim) {
-	    return path[dim%NUM_PARALLEL] ; } ;
+	    return path[dim%parallel.get_num_threads()] ; } ;
 	inline bool & PATH_PROB_UPDATED(INT dim) {
-	    return path_prob_updated[dim%NUM_PARALLEL] ; } ;
+	    return path_prob_updated[dim%parallel.get_num_threads()] ; } ;
 	inline INT & PATH_PROB_DIMENSION(INT dim) {
-	    return path_prob_dimension[dim%NUM_PARALLEL] ; } ;
+	    return path_prob_dimension[dim%parallel.get_num_threads()] ; } ;
 #else
 	inline T_ALPHA_BETA & ALPHA_CACHE(INT /*dim*/) {
 	    return alpha_cache ; } ;
@@ -452,7 +450,8 @@ public:
 	 * @param model model which holds definitions of states to be learned + consts
 	 * @param PSEUDO Pseudo Value
 	 */
-	CHMM(INT N, INT M,	CModel* model, DREAL PSEUDO, INT num_parallel);
+
+	CHMM(INT N, INT M,	CModel* model, DREAL PSEUDO);
 	CHMM(INT N, double* p, double* q, double* a) ;
 	CHMM(INT N, double* p, double* q, int num_trans, double* a_trans) ;
 
@@ -460,10 +459,10 @@ public:
 	 * @param model_file Filehandle to a hmm model file (*.mod)
 	 * @param PSEUDO Pseudo Value
 	 */
-	CHMM(FILE* model_file, DREAL PSEUDO, INT num_parallel);
+	CHMM(FILE* model_file, DREAL PSEUDO);
 
 	/// Constructor - Clone model h
-	CHMM(CHMM* h, INT num_parallel);
+	CHMM(CHMM* h);
 
 	/// Destructor - Cleanup
 	virtual ~CHMM();
@@ -1262,10 +1261,10 @@ protected:
 	//@}
 	
 #ifdef USE_HMMPARALLEL_STRUCTURES
-	// array of size N*NUM_PARALLEL for temporary calculations
-	DREAL** arrayN1 /*[NUM_PARALLEL]*/ ;
-	// array of size N*NUM_PARRALEL for temporary calculations
-	DREAL** arrayN2 /*[NUM_PARALLEL]*/ ;
+	// array of size N*parallel.get_num_threads() for temporary calculations
+	DREAL** arrayN1 /*[parallel.get_num_threads()]*/ ;
+	// array of size N*parallel.get_num_threads() for temporary calculations
+	DREAL** arrayN2 /*[parallel.get_num_threads()]*/ ;
 #else //USE_HMMPARALLEL_STRUCTURES
 	// array of size N for temporary calculations
 	DREAL* arrayN1;
@@ -1276,7 +1275,7 @@ protected:
 #ifdef USE_LOGSUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
 	// array for for temporary calculations of log_sum
-	DREAL** arrayS /*[NUM_PARALLEL]*/;
+	DREAL** arrayS /*[parallel.get_num_threads()]*/;
 #else
 	// array for for temporary calculations of log_sum
 	DREAL* arrayS;
@@ -1286,22 +1285,22 @@ protected:
 #ifdef USE_HMMPARALLEL_STRUCTURES
 
 	/// cache for forward variables can be terrible HUGE O(T*N)
-	T_ALPHA_BETA* alpha_cache /*[NUM_PARALLEL]*/ ;
+	T_ALPHA_BETA* alpha_cache /*[parallel.get_num_threads()]*/ ;
 	/// cache for backward variables can be terrible HUGE O(T*N)
-	T_ALPHA_BETA* beta_cache /*[NUM_PARALLEL]*/ ;
+	T_ALPHA_BETA* beta_cache /*[parallel.get_num_threads()]*/ ;
 
 #ifndef NOVIT
 	/// backtracking table for viterbi can be terrible HUGE O(T*N)
-	T_STATES** states_per_observation_psi /*[NUM_PARALLEL]*/ ;
+	T_STATES** states_per_observation_psi /*[parallel.get_num_threads()]*/ ;
 
 	/// best path (=state sequence) through model
-	T_STATES** path /*[NUM_PARALLEL]*/ ;
+	T_STATES** path /*[parallel.get_num_threads()]*/ ;
 	
 	/// true if path probability is up to date
-	bool* path_prob_updated /*[NUM_PARALLEL]*/;
+	bool* path_prob_updated /*[parallel.get_num_threads()]*/;
 	
 	/// dimension for which path_prob was calculated
-	INT* path_prob_dimension /*[NUM_PARALLEL]*/ ;	
+	INT* path_prob_dimension /*[parallel.get_num_threads()]*/ ;	
 #endif //NOVIT
 
 #else //USE_HMMPARALLEL_STRUCTURES

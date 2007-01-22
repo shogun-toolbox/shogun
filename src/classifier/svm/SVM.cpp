@@ -316,7 +316,7 @@ CLabels* CSVM::classify(CLabels* result)
 		}
 		else
 		{
-			INT num_threads=CParallel::get_num_threads();
+			INT num_threads=parallel.get_num_threads();
 			ASSERT(num_threads>0);
 
 			if (num_threads < 2)

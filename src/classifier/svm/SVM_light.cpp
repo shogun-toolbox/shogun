@@ -423,7 +423,7 @@ bool CSVMLight::train()
 		get_kernel()->clear_normal() ;
 
 	// output some info
-	SG_DEBUG( "threads = %i\n", CParallel::get_num_threads()) ;
+	SG_DEBUG( "threads = %i\n", parallel.get_num_threads()) ;
 	SG_DEBUG( "qpsize = %i\n", learn_parm->svm_maxqpsize) ;
 	SG_DEBUG( "epsilon = %1.1e\n", learn_parm->epsilon_crit) ;
 	SG_DEBUG( "weight_epsilon = %1.1e\n", weight_epsilon) ;
@@ -503,13 +503,13 @@ bool CSVMLight::train()
 			SG_INFO( "precomputing kernel matrix %i (%ix%i)\n", n, num, num) ;
 			for (INT i=0; i<num; i++)
 			{
-				io.progress(i*i,0,num*num);
+				SG_PROGRESS(i*i,0,num*num);
 				
 				for (INT j=0; j<=i; j++)
 					matrix[i*(i+1)/2+j] = k->kernel(i,j) ;
 
 			}
-			io.progress(num*num,0,num*num);
+			SG_PROGRESS(num*num,0,num*num);
 			SG_INFO( "\ndone.\n") ;
 			w1[n]=0.0 ;
 		}
@@ -1163,7 +1163,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 	  if (bestmaxdiff>worstmaxdiff)
 		  worstmaxdiff=bestmaxdiff;
 
-	  io.absolute_progress(bestmaxdiff, -CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon), 6);
+	  SG_ABS_PROGRESS(bestmaxdiff, -CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon), 6);
   } /* end of loop */
 
   SG_DEBUG( "inactive:%d\n", inactivenum);

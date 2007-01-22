@@ -258,8 +258,7 @@ extern "C"
 		INT N=Rf_nrows(a);
 		INT M=Rf_ncols(b);
 
-		CHMM* h=new CHMM(N, M, NULL,
-				gui->guihmm.get_pseudo(), gui->guihmm.get_number_of_tables());
+		CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
 
 		if (h)
 		{

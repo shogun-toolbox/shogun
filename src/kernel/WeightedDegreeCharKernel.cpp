@@ -288,7 +288,7 @@ bool CWeightedDegreeCharKernel::init_optimization(INT count, INT* IDX, DREAL* al
 		if (tree_num<0)
 		{
 			if ( (i % (count/10+1)) == 0)
-				io.progress(i, 0, count);
+				SG_PROGRESS(i, 0, count);
 			
 			if (max_mismatch==0)
 				add_example_to_tree(IDX[i], alphas[i]) ;
@@ -990,7 +990,7 @@ void CWeightedDegreeCharKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* 
 
 	INT num_feat=((CCharFeatures*) get_rhs())->get_num_features();
 	ASSERT(num_feat>0);
-	INT num_threads=CParallel::get_num_threads();
+	INT num_threads=parallel.get_num_threads();
 	ASSERT(num_threads>0);
 	INT* vec= new INT[num_threads*num_feat];
 	ASSERT(vec);
@@ -1019,7 +1019,7 @@ void CWeightedDegreeCharKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* 
 			params.vec_idx=vec_idx;
 			compute_batch_helper((void*) &params);
 
-			io.progress(j,0,num_feat);
+			SG_PROGRESS(j,0,num_feat);
 		}
 	}
 #ifndef WIN32
@@ -1065,7 +1065,7 @@ void CWeightedDegreeCharKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL* 
 
 			for (t=0; t<num_threads-1; t++)
 				pthread_join(threads[t], NULL);
-			io.progress(j,0,num_feat);
+			SG_PROGRESS(j,0,num_feat);
 		}
 	}
 #endif
@@ -1164,7 +1164,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 				x[j] = -1;
 			}
 			tries.traverse( tree, p, info, 0, x, k );
-			io.progress(i++,0,num_feat*max_degree);
+			SG_PROGRESS(i++,0,num_feat*max_degree);
 	}
 		
 		// add partial overlap scores
@@ -1250,7 +1250,7 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
 		init_optimization(num_suppvec, IDX, alphas, i);
 
 		tries.compute_scoring_helper(NO_CHILD, i, 0, 0.0, 0, max_degree, num_feat, num_sym, sym_offset, 0, result);
-		io.progress(i,0,num_feat);
+		SG_PROGRESS(i,0,num_feat);
 	}
 	num_sym=sym_offset;
 

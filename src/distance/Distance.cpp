@@ -128,11 +128,11 @@ void CDistance::do_precompute_matrix()
 
 	for (INT i=0; i<num; i++)
 	{
-		io.progress(i*i,0,num*num);
+		SG_PROGRESS(i*i,0,num*num);
 		for (INT j=0; j<=i; j++)
 			precomputed_matrix[i*(i+1)/2+j] = compute(i,j) ;
 	}
 
-	io.progress(num*num,0,num*num);
+	SG_PROGRESS(num*num,0,num*num);
 	SG_INFO( "\ndone.\n") ;
 }

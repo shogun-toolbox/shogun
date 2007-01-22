@@ -12,21 +12,21 @@
 #ifndef _SPARSEFEATURES__H__
 #define _SPARSEFEATURES__H__
 
+#include <string.h>
+
 #include "lib/common.h"
 #include "lib/Mathematics.h"
 #include "lib/Cache.h"
-#include "preproc/SparsePreProc.h"
 #include "lib/io.h"
 #include "lib/Cache.h"
 
-#include <string.h>
-
 #include "features/Features.h"
+#include "preproc/SparsePreProc.h"
 
 //features are an array of TSparse, sorted w.r.t. vec_index (increasing) and
 //withing same vec_index w.r.t. feat_index (increasing);
 
-template <class ST> class CSparsePreproc;
+template <class ST> class CSparsePreProc;
 
 template <class ST> struct TSparseEntry
 {

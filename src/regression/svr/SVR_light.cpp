@@ -56,43 +56,18 @@ struct S_THREAD_PARAM
     INT num_vectors ;
 }  ;
 
+CSVRLight::CSVRLight(DREAL C, DREAL eps, CKernel* k, CLabels* lab)
+{
+	init();
+	set_C(C,C);
+	set_tube_epsilon(eps);
+	set_labels(lab);
+	set_kernel(k);
+}
+
 CSVRLight::CSVRLight()
 {
-	W=NULL;
-	model=new MODEL[1];
-	learn_parm=new LEARN_PARM[1];
-	model->supvec=NULL;
-	model->alpha=NULL;
-	model->index=NULL;
-	set_kernel(NULL);
-
-	//certain setup params
-	verbosity=1;
-	init_margin=0.15;
-	init_iter=500;
-	precision_violations=0;
-	opt_precision=DEF_PRECISION;
-
-	// MKL stuff
-	rho=0 ;
-	mymaxdiff=1 ;
-	num_rows=0 ;
-	num_active_rows=0 ;
-	weight_epsilon=0 ;
-	lp_C = 0 ;
-	buffer_num      = NULL ;
-	buffer_numcols  = NULL ;
-	
-	precomputed_subkernels = NULL ;
-	num_precomputed_subkernels = 0 ;
-	use_kernel_cache = true ;
-
-#ifdef USE_CPLEX
-	lp = NULL ;
-	env = NULL ;
-	lp_initialized = false ;
-#endif
-	
+    init();
 }
 
 bool CSVRLight::train()
@@ -213,13 +188,13 @@ bool CSVRLight::train()
 			SG_INFO( "precomputing kernel matrix %i (%ix%i)\n", n, num, num) ;
 			for (INT i=0; i<num; i++)
 			{
-				io.progress(i*i,0,num*num);
+				SG_PROGRESS(i*i,0,num*num);
 				
 				for (INT j=0; j<=i; j++)
 					matrix[i*(i+1)/2+j] = k->kernel(i,j) ;
 
 			}
-			io.progress(num*num,0,num*num);
+			SG_PROGRESS(num*num,0,num*num);
 			SG_INFO( "\ndone.\n") ;
 			w1[n]=0.0 ;
 		}
@@ -1215,7 +1190,7 @@ void CSVRLight::update_linear_component(INT* docs, INT* label,
 
 			if (num_working>0)
 			{
-				if (CParallel::get_num_threads() < 2)
+				if (parallel.get_num_threads() < 2)
 				{
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=get_kernel()->compute_optimized(regression_fix_index(docs[j]));
@@ -1227,13 +1202,13 @@ void CSVRLight::update_linear_component(INT* docs, INT* label,
 					INT num_elem = 0 ;
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-					pthread_t threads[CParallel::get_num_threads()-1] ;
-					S_THREAD_PARAM params[CParallel::get_num_threads()-1] ;
+					pthread_t threads[parallel.get_num_threads()-1] ;
+					S_THREAD_PARAM params[parallel.get_num_threads()-1] ;
 					INT start = 0 ;
-					INT step = num_elem/CParallel::get_num_threads() ;
+					INT step = num_elem/parallel.get_num_threads() ;
 					INT end = step ;
 
-					for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+					for (INT t=0; t<parallel.get_num_threads()-1; t++)
 					{
 						params[t].kernel = get_kernel() ;
 						params[t].lin = lin ;
@@ -1248,11 +1223,11 @@ void CSVRLight::update_linear_component(INT* docs, INT* label,
 						pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
 					}
 
-					for(jj=params[CParallel::get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
+					for(jj=params[parallel.get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=get_kernel()->compute_optimized(regression_fix_index(docs[j]));
 					}
 					void* ret;
-					for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+					for (INT t=0; t<parallel.get_num_threads()-1; t++)
 						pthread_join(threads[t], &ret) ;
 				}
 #endif

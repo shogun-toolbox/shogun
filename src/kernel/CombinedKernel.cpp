@@ -367,7 +367,7 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 		{
 			k->init_optimization(num_suppvec, IDX, weights);
 
-			INT num_threads=CParallel::get_num_threads();
+			INT num_threads=parallel.get_num_threads();
 			ASSERT(num_threads>0);
 
 			if (num_threads < 2)
@@ -422,7 +422,7 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 
 		if (k->get_combined_kernel_weight()!=0)
 		{ // compute the usual way for any non-optimized kernel
-			INT num_threads=CParallel::get_num_threads();
+			INT num_threads=parallel.get_num_threads();
 			ASSERT(num_threads>0);
 
 			if (num_threads < 2)

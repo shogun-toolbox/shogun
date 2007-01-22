@@ -10,6 +10,14 @@
 
 #include "distributions/hmm/GHMM.h"
 
+CGHMM::CGHMM()
+{
+}
+
+CGHMM::~CGHMM()
+{
+}
+
 bool CGHMM::train()
 {
 	return false;

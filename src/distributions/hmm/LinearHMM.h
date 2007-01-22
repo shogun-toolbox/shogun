@@ -16,7 +16,7 @@
 #include "features/Labels.h"
 #include "distributions/Distribution.h"
 
-class CLinearHMM : private CDistribution
+class CLinearHMM : public CDistribution
 {
 	public:
 		CLinearHMM(CWordFeatures* f);
@@ -25,7 +25,6 @@ class CLinearHMM : private CDistribution
 
 		bool train();
 		bool train(const INT* indizes, INT num_indizes, DREAL pseudo_count);
-		bool marginalized_train(const INT* indizes, INT num_indizes, DREAL pseudo_count, INT order);
 
 		DREAL get_log_likelihood_example(WORD* vector, INT len);
 		DREAL get_likelihood_example(WORD* vector, INT len);

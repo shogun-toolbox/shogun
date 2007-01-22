@@ -66,7 +66,6 @@ public:
 	inline void set_current(CHMM* h) { working=h; }
 	inline CHMM* get_current() { return working; }
 	inline DREAL get_pseudo() { return PSEUDO; }
-	inline INT get_number_of_tables() { return number_of_hmm_tables; }
 
 	CLabels* classify(CLabels* output=NULL);
 	DREAL classify_example(INT idx);
@@ -75,7 +74,6 @@ public:
 	DREAL one_class_classify_example(INT idx);
 protected:
 
-	INT number_of_hmm_tables ;
 	bool converge(double x, double y);
 	void switch_model(CHMM** m1, CHMM** m2);
 

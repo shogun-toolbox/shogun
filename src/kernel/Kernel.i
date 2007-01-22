@@ -8,21 +8,22 @@
 #include "kernel/Kernel.h" 
 %}
 
-%include "lib/common.i"
-
 #ifdef HAVE_PYTHON
 %init %{
 	  import_array();
 %}
 
+%include "lib/common.i"
 %include "lib/numpy.i"
 %apply (DREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** dst, INT* m, INT* n)};
 #endif
 
 %feature("director") CKernel;
-%feature("autodoc","0");
+%feature("autodoc","1");
 
-
+%include "lib/io.i"
+%include "base/Version.i"
+%include "base/Parallel.i"
 %include "base/SGObject.i"
 %include "kernel/Kernel.h"
 

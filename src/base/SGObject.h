@@ -20,7 +20,7 @@ class CSGObject;
 class CSGObject
 {
 public:
-#ifdef SWIG
+#ifdef HAVE_SWIG
 	CParallel parallel;
 	CIO io;
 	CVersion version;
@@ -30,4 +30,4 @@ public:
 	static CVersion version;
 #endif
 };
-#endif
+#endif // __SGOBJECT_H__

@@ -1214,7 +1214,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 	for (INT t=1; t<seq_len; t++)
 	{
 		if (is_big && t%(seq_len/1000)==1)
-			io.progress(t, 0, seq_len);
+			SG_PROGRESS(t, 0, seq_len);
 		
 		for (T_STATES j=0; j<N; j++)
 		{
@@ -2091,7 +2091,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	for (INT t=1; t<seq_len; t++)
 	{
 		if (is_big && t%(seq_len/1000)==1)
-			io.progress(t, 0, seq_len);
+			SG_PROGRESS(t, 0, seq_len);
 		
 		init_svm_values(svs, pos[t], seq_len, max_look_back);
 		find_svm_values_till_pos(wordstr, pos, t, svs);  

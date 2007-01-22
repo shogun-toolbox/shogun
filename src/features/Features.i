@@ -1,12 +1,14 @@
-%module(directors="1") Features
+%define DOCSTR
+"The `Features` module gathers all Feature objects available in the SHOGUN toolkit."
+%enddef
+
+%module(docstring=DOCSTR,directors="1") Features
 
 %{
 #define SWIG_FILE_WITH_INIT
 #include "features/Features.h" 
 #include "features/StringFeatures.h" 
 %}
-
-%include "lib/common.i"
 
 #ifdef HAVE_PYTHON
 %init %{
@@ -16,7 +18,12 @@
 
 %feature("director") CFeatures;
 %rename(Features) CFeatures;
+%feature("autodoc","1");
 
+%include "lib/common.i"
+%include "lib/io.i" 
+%include "base/Version.i"
+%include "base/Parallel.i"
 %include "base/SGObject.i"
 %include "features/Features.h" 
 

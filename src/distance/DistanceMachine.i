@@ -1,12 +1,9 @@
- %module(directors="1") CDistanceMachine
 %{
+ #include "classifier/Classifier.h"
  #include "distance/DistanceMachine.h"
 %}
 
 %include "lib/common.i"
 
-%feature("director") CDistanceMachine;
-
+%include "classifier/Classifier.h"
 %include "distance/DistanceMachine.h"
-%include "distance/DistanceMachine.h"
-

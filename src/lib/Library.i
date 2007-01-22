@@ -1,20 +1,22 @@
-%module Library
+%define DOCSTR
+"The `Library` module gathers all miscellaneous Objects in the SHOGUN toolkit."
+%enddef
 
+%module(docstring=DOCSTR,directors="1") Library
+%feature("autodoc","1");
+
+%include "lib/common.i"
+%include "lib/io.i"
 %include "base/SGObject.i"
 
 %include "lib/Cache.i"
-%include "lib/common.i"
 %include "lib/File.i"
-%include "lib/io.i"
-%include "lib/lapack.i"
 %include "lib/List.i"
 %include "lib/Mathematics.i"
-%include "base/Parallel.i"
 %include "lib/Signal.i"
 %include "lib/SimpleFile.i"
 %include "lib/Time.i"
 %include "lib/Trie.i"
-%include "base/Version.i"
 %include "lib/DynamicArray.i"
 %include "lib/Array.i"
 %include "lib/Array2.i"

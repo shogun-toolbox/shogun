@@ -1,8 +1,8 @@
 %{
- #include "classifier/KRR.h" 
+ #include "regression/KRR.h" 
 %}
 
 %rename(KRR) CKRR;
 
 %include "kernel/KernelMachine.i"
-%include "classifier/KRR.h" 
+%include "regression/KRR.h" 

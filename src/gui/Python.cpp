@@ -93,7 +93,7 @@ PyMODINIT_FUNC initsg(void)
 
 void exitsg(void)
 {
-	SG_INFO( "quitting...\n");
+	SG_SINFO( "quitting...\n");
 	delete gui;
 }
 #endif //HAVE_SWIG

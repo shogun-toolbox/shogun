@@ -21,6 +21,6 @@
               self.set_wd_weights(weights)
           else:
               CWeightedDegreeCharKernel.__init__(self, cache_size, E_WD, degree, max_mismatch, use_normalization, block_computation, mkl_stepsize, which_degree)
-          self.init(features1, features2, True)
+          self.init(features1, features2)
 %}
 #endif

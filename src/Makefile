@@ -25,17 +25,19 @@ just-do-it:
 	@echo
 	@echo
 	@echo for standalone interface:
-	@echo "              ./configure"
-	@echo for python object oriented interface: 
-	@echo "              ./configure --enable-swig-python"
+	@echo "              ./configure --interface=readline"
+	@echo for object oriented python interface: 
+	@echo "              ./configure --interface=python-modular"
 	@echo for python interface: 
-	@echo "              ./configure --enable-python"
+	@echo "              ./configure --interface=python"
 	@echo for R interface: 
-	@echo "              ./configure --enable-R"
+	@echo "              ./configure --interface=R"
+	@echo for object oriented R interface: 
+	@echo "              ./configure --interface=R-modular"
 	@echo for octave interface: 
-	@echo "              ./configure --enable-octave"
+	@echo "              ./configure --interface=octave"
 	@echo for matlab interface: 
-	@echo "              ./configure --enable-matlab"
+	@echo "              ./configure --interface=matlab"
 	@echo
 	@echo For additional options see
 	@echo "              ./configure --help"

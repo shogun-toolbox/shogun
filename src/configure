@@ -10,7 +10,7 @@ EXT_SRC_SWIG=_wrap.cxx
 EXT_INP_SWIG=i
 EXT_OBJ_SWIG=_wrap.cxx.o
 EXT_LIB_SWIG=so
-SWIGFLAGS="-w473 -w403 -c++ -python"
+SWIGFLAGS=""
 SWIG=swig
 PYTHON=python
 KERNELNAME=`uname`
@@ -27,8 +27,10 @@ _python=no
 _octave=no
 if [ -e classifier/svm/SVM_light.cpp ]; then
   _svm_light=yes
+  _gpl=no
 else
   _svm_light=no
+  _gpl=yes
 fi
 _cplex=auto
 _wtiming=no
@@ -58,6 +60,7 @@ _octdir=""
 _inc_extra=""
 _ld_extra=""
 _optimizing=""
+_interface=""
 test -z "$INCLUDES" || _inc_extra="-L`echo $INCLUDES | sed 's,:, -I,g'`"
 test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
 
@@ -401,7 +404,10 @@ for parm in "$@" ; do
 Usage: $0 [OPTIONS]...
 
 Configuration:
-  -h, --help                    display this help and exit
+  --interface=INTERFACE         configure shogun for interface
+                                cmdline, python-modular, python, R, R-modular
+								octave or matlab
+  -h, -help, --help             display this help and exit
 
 Installation directories:
   --destdir=DIR                 use this as the root dir to install shogun to [/]
@@ -416,14 +422,8 @@ Installation directories:
   --libdir=DIR                  use this prefix for object code libraries [PREFIX/lib]
 
 Optional features:
-  --enable-swig-python          enable python swig objects [disabled]
-  --enable-python               enable python (shogun can be called from within python) support [disabled]
-  --enable-matlab               enable matlab (shogun can be called from within matlab) support [disabled]
-  --enable-octave               enable octave (shogun can be called from within octave) support [disabled]
-  --enable-swig-R               enable R swig objects [disabled]
-  --enable-R                    enable R      (shogun can be called from within R)      support [disabled]
-  --enable-mindy                enable mindy library support (for more efficient n-gram, word-in-a-bag kernel implementations)
-  --enable-readline    	        enable readline in stand-a-lone interface [auto]
+  --enable-mindy                enable mindy library support (for more efficient n-gram, word-in-a-bag kernel implementations) [auto]
+  --enable-readline    	        enable readline in cmdline interface [auto]
   --enable-w-timing    	        enable code using W timing  [disabled]
   --enable-logcache             enable log (1+exp(x)) log cache (is much faster but less accurate) [disabled]
   --enable-shortrealkernelcache enable kernelcache to use 4-byte-floating-point values instead of 8-byte-doubles [enabled]
@@ -470,9 +470,12 @@ _disable_cpudetection=no
 
 for ac_option do
   case "$ac_option" in
+  --interface=*)
+	_interface=`echo $ac_option | cut -d '=' -f 2`
+	;;
   --target=*)
     _target=`echo $ac_option | cut -d '=' -f 2`
-    ;;
+	;;
   --python=*)
     PYTHON=`echo $ac_option | cut -d '=' -f 2`
     ;;
@@ -511,22 +514,10 @@ for ac_option do
   --install-path=*)
     _install=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2 | sed 's/\/$//'`/install")
     ;;
-  --disable-python)		_python=no	;;
-  --enable-python)
-    _python=yes
-    ;;
-  --disable-matlab)		_matlab=no	;;
-  --enable-matlab)		_matlab=yes	;;
-  --disable-octave)		_octave=no	;;
-  --enable-octave)		_octave=yes	;;
-  --disable-R)			_R=no	;;
-  --enable-R)			_R=yes	;;
-  --disable-swig-R)		_swig=no; _R=no	;;
-  --enable-swig-R)		_swig=yes; _R=yes	;;
   --disable-mindy)		_mindy=no	;;
   --enable-mindy)		_mindy=yes	;;
-  --disable-svm-light)	_svm_light=no	;;
-  --enable-svm-light)	_svm_light=yes	;;
+  --disable-svm-light)	_svm_light=no;	_gpl=yes;;
+  --enable-svm-light)	_svm_light=yes; _gpl=no;;
   --disable-readline)	_readline=no	;;
   --enable-readline)	_readline=yes	;;
   --disable-w-timing)	_wtiming=no	;;
@@ -595,14 +586,46 @@ for ac_option do
   esac
 done
 
+if test -z "$_interface"; then
+	cat <<EOF
+Please specify interface using
 
-#gui interfaces are exclusive or
-test "$_R" = yes -a "$_python" = yes && die "only one of --enable-R or --enable-python can be used"
-test "$_R" = yes -a "$_matlab" = yes && die "only one of --enable-R or --enable-matlab can be used"
-test "$_R" = yes -a "$_octave" = yes && die "only one of --enable-R or --enable-octave can be used"
-test "$_python" = yes -a "$_matlab" = yes && die "only one of --enable-python or --enable-matlab can be used"
-test "$_python" = yes -a "$_octave" = yes && die "only one of --enable-python or --enable-octave can be used"
-test "$_matlab" = yes -a "$_octave" = yes && die "only one of --enable-matlab or --enable-octave can be used"
+    ./configure --interface=INTERFACE,
+see ./configure --help for supported interfaces
+EOF
+	die "no interface specified"
+fi
+
+if test "$_interface" = "cmdline"; then
+	echo "Enabling cmdline interface"
+	_swig=no
+elif test "$_interface" = "python-modular"; then
+	echo "Enabling modular python interface"
+	_python=yes
+	_swig=yes
+elif test "$_interface" = "python"; then
+	echo "Enabling python interface"
+	_python=yes
+	_swig=no
+elif test "$_interface" = "R"; then
+	echo "Enabling R interface"
+	_R=yes
+	_swig=no
+elif test "$_interface" = "R-modular"; then
+	echo "Enabling modular R interface"
+	_R=yes
+	_swig=yes
+elif test "$_interface" = "octave"; then
+	echo "Enabling Octave interface"
+	_octave=yes
+	_swig=no
+elif test "$_interface" = "matlab"; then
+	_matlab=yes
+	echo "Enabling Matlab(tm) interface"
+	_swig=no
+else
+	die "unknown interface, see ./configure --help for supported interfaces"
+fi
 
 #set install dirs
 test -z "$_bindir" && _bindir="$_prefix/bin"
@@ -2090,7 +2113,7 @@ EOF
 		if cc_check
 		then
 			echores "yes"
-			SWIGFLAGS="-w473 -w403 -c++ -python"
+			SWIGFLAGS="-w473 -c++ -python"
 		else
 			echores "no"
 			die "python/numpy developer files missing"
@@ -2146,7 +2169,7 @@ EOF
 		if cc_check
 		then
 			echores "yes"
-			SWIGFLAGS="-w473 -w403 -c++ -r"
+			SWIGFLAGS="-w473 -c++ -r"
 		else
 			echores "no"
 			die "cannot find R developer files"
@@ -2322,6 +2345,10 @@ EOF
 	then
 		USE_SVMLIGHT='#define USE_SVMLIGHT 1'
 		DEFINES="$DEFINES -DUSE_SVMLIGHT"
+		GPL=""
+	else
+		GPL='#define GPL 1'
+		DEFINES="$DEFINES -DGPL"
 	fi
 }
 
@@ -2432,6 +2459,7 @@ $USE_DEBUG
 $USE_HMMDEBUG
 $USE_PATHDEBUG
 $USE_SVMLIGHT
+$GPL
 $USE_CPLEX
 $USE_W_TIMING
 #define CONFIGURE_OPTIONS "$CONFIGURE_OPTIONS"
@@ -2445,24 +2473,9 @@ EOF
 
 type_buildinfo()
 {
-	if test -n "$HAVE_MATLAB";
-	then
-		INTERFACE="matlab"
-	elif test -n "$HAVE_OCTAVE";
-	then
-		INTERFACE="octave"
-	elif test -n "$HAVE_PYTHON";
-	then
-		INTERFACE="python"
-	elif test -n "$HAVE_R";
-	then
-		INTERFACE="R"
-	else 
-		INTERFACE="stand-a-lone"
-	fi
 	cat <<EOF
 
-SHOGUN was configured for $INTERFACE interface with the following 
+SHOGUN was configured for $_interface interface with the following 
 $CONFIGURE_OPTIONS
 
 type "make" now to compile

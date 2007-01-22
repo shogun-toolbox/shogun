@@ -13,8 +13,6 @@
 //
 #include "lib/config.h"
 
-#include "lib/config.h"
-
 #ifndef HAVE_SWIG
 #include <string.h>
 

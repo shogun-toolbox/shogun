@@ -16,8 +16,11 @@
 #include "distributions/Distribution.h"
 
 
-class CGHMM : CDistribution
+class CGHMM : public CDistribution
 {
+	CGHMM();
+	~CGHMM();
+
 	public:
 		virtual bool train();
 		virtual INT get_num_model_parameters();

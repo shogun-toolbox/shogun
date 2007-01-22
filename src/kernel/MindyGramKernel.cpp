@@ -351,7 +351,7 @@ bool CMindyGramKernel::init_optimization(INT n, INT *is, DREAL * ws)
     SG_DEBUG( "initializing MindyGramKernel optimization\n");
     for (int i = 0; i < n; i++) {
         if ( (i % (n / 10 + 1)) == 0)
-            io.progress(i, 0, n);
+            SG_PROGRESS(i, 0, n);
 
         /* Call add to normal */
         add_to_normal(is[i], ws[i]);

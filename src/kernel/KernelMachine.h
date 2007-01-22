@@ -18,6 +18,8 @@
 
 #include <stdio.h>
 
+class CClassifier;
+
 class CKernelMachine : public CClassifier
 {
 	public:

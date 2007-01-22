@@ -169,8 +169,7 @@ bool CGUIOctave::append_hmm(const octave_value_list& vals)
 			mat_b.rows() == N
 	   )
 	{
-		CHMM* h=new CHMM(N, M, NULL,
-				gui->guihmm.get_pseudo(), gui->guihmm.get_number_of_tables());
+		CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
 		if (h)
 		{
 			SG_DEBUG( "N:%d M:%d p:(%d) q:(%d) a:(%d,%d) b(%d,%d)\n",
@@ -221,8 +220,7 @@ bool CGUIOctave::set_hmm(const octave_value_list& vals)
 	INT N=mat_a.cols();
 	INT M=mat_b.cols();
 
-	CHMM* h=new CHMM(N, M, NULL,
-			gui->guihmm.get_pseudo(), gui->guihmm.get_number_of_tables());
+	CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
 
 	if ( N > 0 && 
 			M > 0 &&

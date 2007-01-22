@@ -13,6 +13,9 @@
 %include "lib/numpy.i"
 #endif
 
+%include "lib/io.i" 
+%include "base/Version.i"
+%include "base/Parallel.i"
 %include "base/SGObject.i"
 
 %include "structure/PlifBase.i"
