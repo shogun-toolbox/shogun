@@ -246,8 +246,7 @@ bool CGUIMatlab::append_hmm(const mxArray* vals[])
 
 	if (mx_p && mx_q && mx_a && mx_b)
 	{
-		CHMM* h=new CHMM(N, M, NULL,
-				gui->guihmm.get_pseudo(), gui->guihmm.get_number_of_tables());
+		CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
 		if (h)
 		{
 			SG_INFO( "N:%d M:%d p:(%d,%d) q:(%d,%d) a:(%d,%d) b(%d,%d)\n",
@@ -308,8 +307,7 @@ bool CGUIMatlab::set_hmm(const mxArray* vals[])
 	INT N=mxGetN(mx_a);
 	INT M=mxGetN(mx_b);
 
-	CHMM* h=new CHMM(N, M, NULL,
-			gui->guihmm.get_pseudo(), gui->guihmm.get_number_of_tables());
+	CHMM* h=new CHMM(N, M, NULL, gui->guihmm.get_pseudo());
 
 	if ( mx_p && mx_q && mx_a && mx_b)
 	{
