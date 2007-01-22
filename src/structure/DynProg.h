@@ -89,8 +89,8 @@ public:
 	// additional best_path_trans_deriv functions
 	void best_path_set_my_state_seq(INT* my_state_seq, INT seq_len);
 	void best_path_set_my_pos_seq(INT* my_pos_seq, INT seq_len);
-	void best_path_set_my_scores(DREAL* my_scores, INT seq_len);
-	void best_path_set_my_losses(DREAL* my_losses, INT seq_len);
+	void best_path_set_my_scores(DREAL** my_scores, INT *seq_len);
+	void best_path_set_my_losses(DREAL** my_losses, INT *seq_len);
 
 	inline void best_path_set_single_genestr(CHAR* genestr, INT genestr_len)
 	{
