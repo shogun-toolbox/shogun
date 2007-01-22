@@ -180,7 +180,7 @@ lib/versionstring.h:
 		sh .version.sh > $@
 
 ChangeLog:	$(SVNEntries)
-		svn2cl --group-by-day --reparagraph --authors=.authors || true
+		svn2cl --group-by-day --authors=.authors || true
 
 $(OBJFILES): .config .depend lib/versionstring.h ChangeLog
 
