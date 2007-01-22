@@ -3,7 +3,7 @@ from numpy import array,meshgrid,reshape,linspace,ones,min,max
 from numpy import concatenate,transpose,ravel,double
 from numpy.random import randn
 from shogun.Features import *
-from shogun.Classifier import *
+from shogun.Regression import *
 from shogun.Kernel import *
 
 num_dat=200
@@ -35,7 +35,7 @@ x1=linspace(-5,5, 100)
 x2=linspace(-5,5, 100)
 x,y=meshgrid(x1,x2);
 feat_test=RealFeatures(array((ravel(x), ravel(y))))
-gk.init(feat, feat_test, True)
+gk.init(feat, feat_test)
 z = krr.classify().get_labels().reshape((100,100))
 
 pcolor(x, y, z, shading='interp')

@@ -40,7 +40,7 @@ for i in range(num_svms):
 	x2=linspace(1.2*min(traindatList[i][1]),1.2*max(traindatList[i][1]), 50)
 	x,y=meshgrid(x1,x2);
 	testdat=RealFeatures(array((ravel(x), ravel(y))))
-	kernelList[i].init(trainfeatList[i], testdat, True)
+	kernelList[i].init(trainfeatList[i], testdat);
 	l = currentSVM.classify()
 	z = currentSVM.classify().get_labels().reshape((50,50))
 	subplot(num_svms/2,2,i+1)

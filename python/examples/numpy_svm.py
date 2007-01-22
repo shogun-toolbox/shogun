@@ -13,5 +13,5 @@ print svm.classify().get_labels()
 print lab.get_labels()
 
 feat_test = RealFeatures(rand(5,10))
-gk.init(feat,feat_test,True)
+gk.init(feat,feat_test)
 output_test = svm.classify().get_labels() 

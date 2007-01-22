@@ -8,5 +8,5 @@ km=gk.get_kernel_matrix()
 
 
 test_feat = RealFeatures(rand(5,100))
-gk.init(feat, test_feat, True)
+gk.init(feat, test_feat)
 test_km=gk.get_kernel_matrix()

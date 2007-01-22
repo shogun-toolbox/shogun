@@ -9,29 +9,26 @@ from shogun.Kernel import *
 X = 4*rand(1, 100) - 2; X.sort()
 Y = sinc(pi*X) + 0.1*randn(1, 100)
 
-width=1
+C=10
+width=0.5
+epsilon=0.01
 
 feat = RealFeatures(X)
 lab = Labels(Y.flatten())
 gk=GaussianKernel(feat,feat, width)
-krr = KRR()
-krr.set_labels(lab)
-krr.set_kernel(gk)
-krr.set_tau(1e-6)
-krr.train()
+#svr = SVRLight(C, epsilon, gk, lab)
+svr = LibSVR(C, epsilon, gk, lab)
+svr.train()
 
 plot(X, Y, '.', label='train data')
-plot(X, krr.classify().get_labels(), hold=True, label='train output')
+plot(X, svr.classify().get_labels(), hold=True, label='train output')
 
 # compute output plot iso-lines
 XE = 4*rand(1, 500) - 2; XE.sort();
 feat_test=RealFeatures(XE)
 gk.init(feat, feat_test)
-YE = krr.classify().get_labels()
-YE200 = krr.classify_example(200)
+YE = svr.classify().get_labels()
 
 plot(XE, YE, hold=True, label='test output')
-plot([XE[0,200]], [YE200], '+', hold=True)
-print YE[200], YE200
 legend()
 show()

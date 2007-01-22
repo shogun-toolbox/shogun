@@ -1,7 +1,7 @@
 from numpy import array,double
 from numpy.random import rand
 from shogun.Features import *
-from shogun.Classifier import *
+from shogun.Regression import *
 from shogun.Kernel import *
 
 feat = RealFeatures(rand(5,10))
@@ -16,6 +16,6 @@ print krr.classify().get_labels()
 print lab.get_labels()
 
 feat_test = RealFeatures(rand(5,10))
-gk.init(feat,feat_test,True)
+gk.init(feat,feat_test)
 output_test = krr.classify().get_labels() 
 print output_test
