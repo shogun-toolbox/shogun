@@ -19,71 +19,72 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-
-#define ASSERT(x) { if (!(x)) CIO::message(M_ERROR, "assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
-
-// printf like funktions (with additional severity level)
-// for object derived from CSGObject
-#define SG_DEBUG(x...) io.message(M_DEBUG,x)
-#define SG_INFO(x...) io.message(M_INFO,x)
-#define SG_WARNING(x...) io.message(M_WARN,x)
-#define SG_ERROR(x...) io.message(M_ERROR,x)
-#define SG_PRINT(x...) io.message(M_MESSAGEONLY,x)
-#define SG_PRINT(x...) io.message(M_MESSAGEONLY,x)
-
-#define SG_PROGRESS(x...) io.progress(x)
-#define SG_ABS_PROGRESS(x...) io.absolute_progress(x)
-
-// printf like funktions (with additional severity level)
-// static versions
-#define SG_SDEBUG(x...) CIO::message(M_DEBUG,x)
-#define SG_SINFO(x...) CIO::message(M_INFO,x)
-#define SG_SWARNING(x...) CIO::message(M_WARN,x)
-#define SG_SERROR(x...) CIO::message(M_ERROR,x)
-#define SG_SPRINT(x...) CIO::message(M_MESSAGEONLY,x)
-
-#define SG_SPROGRESS(x...) CIO::progress(x)
-#define SG_SABS_PROGRESS(x...) CIO::absolute_progress(x)
-
-// printf like funktions (with additional severity level)
-// when global gui object is available
-#define SG_GDEBUG(x...) gui->io.message(M_DEBUG,x)
-#define SG_GINFO(x...) gui->io.message(M_INFO,x)
-#define SG_GWARNING(x...) gui->io.message(M_WARN,x)
-#define SG_GERROR(x...) gui->io.message(M_ERROR,x)
-#define SG_GPRINT(x...) gui->io.message(M_MESSAGEONLY,x)
-
-#define SG_SPROGRESS(x...) CIO::progress(x)
-#define SG_SABS_PROGRESS(x...) CIO::absolute_progress(x)
-
 #define NUM_LOG_LEVELS 9
 #define FBUFSIZE 4096
 
 extern CHAR file_buffer[FBUFSIZE];
 extern CHAR directory_name[FBUFSIZE];
 
+class CIO;
+
+// printf like funktions (with additional severity level)
+// for object derived from CSGObject
+#define SG_DEBUG(x...) CSGObject::io.message(M_DEBUG,x)
+#define SG_INFO(x...) CSGObject::io.message(M_INFO,x)
+#define SG_WARNING(x...) CSGObject::io.message(M_WARN,x)
+#define SG_ERROR(x...) CSGObject::io.message(M_ERROR,x)
+#define SG_PRINT(x...) CSGObject::io.message(M_MESSAGEONLY,x)
+
+#define SG_PROGRESS(x...) CSGObject::io.progress(x)
+#define SG_ABS_PROGRESS(x...) CSGObject::io.absolute_progress(x)
+
+#ifndef HAVE_SWIG
+extern CIO* sg_io;
+// printf like function using the global sg_io object
+#define SG_SDEBUG(x...) sg_io->message(M_DEBUG,x)
+#define SG_SINFO(x...) sg_io->message(M_INFO,x)
+#define SG_SWARNING(x...) sg_io->message(M_WARN,x)
+#define SG_SERROR(x...) sg_io->message(M_ERROR,x)
+#define SG_SPRINT(x...) sg_io->message(M_MESSAGEONLY,x)
+#define SG_SPROGRESS(x...) sg_io->progress(x)
+#define SG_SABS_PROGRESS(x...) sg_io->absolute_progress(x)
+#else
+extern CIO sg_io;
+// printf like function using the global sg_io object
+#define SG_SDEBUG(x...) sg_io.message(M_DEBUG,x)
+#define SG_SINFO(x...) sg_io.message(M_INFO,x)
+#define SG_SWARNING(x...) sg_io.message(M_WARN,x)
+#define SG_SERROR(x...) sg_io.message(M_ERROR,x)
+#define SG_SPRINT(x...) sg_io.message(M_MESSAGEONLY,x)
+#define SG_SPROGRESS(x...) sg_io.progress(x)
+#define SG_SABS_PROGRESS(x...) sg_io.absolute_progress(x)
+#endif
+
+
+#define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
+
 class CIO
 {
 public:
 	CIO();
 
-	static void set_target(FILE* target);
-	static void set_loglevel(EMessageType level);
-	static EMessageType get_loglevel();
-	static void message(EMessageType prio, const char *fmt, ... );
-	static void progress(DREAL current_val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
-	static void absolute_progress(DREAL current_val, DREAL val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
+	void set_target(FILE* target);
+	void set_loglevel(EMessageType level);
+	EMessageType get_loglevel() const;
+	void message(EMessageType prio, const char *fmt, ... ) const;
+	void progress(DREAL current_val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
+	void absolute_progress(DREAL current_val, DREAL val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
 
-	inline static void not_implemented() 
+	inline void not_implemented() const
 	{
 		message(M_ERROR, "Sorry, not yet implemented\n");
 	}
 
-	static void buffered_message(EMessageType prio, const CHAR *fmt, ... );
+	void buffered_message(EMessageType prio, const CHAR *fmt, ... ) const;
 	static CHAR* skip_spaces(CHAR* str);
 
 	///set directory-name
-	static inline void set_dirname(const CHAR* dirname)
+	inline void set_dirname(const CHAR* dirname)
 	{
 		strncpy(directory_name, dirname, FBUFSIZE);
 	}
@@ -97,22 +98,17 @@ public:
 	static INT filter(const struct dirent* d);
 
 protected:
-	static void check_target();
-
 	//return index into levels array or -1 if message not to be printed
-	static int get_prio_string(EMessageType prio);
+	int get_prio_string(EMessageType prio) const;
 
 protected:
-	static FILE* target;
-	static LONG last_progress_time, progress_start_time ;
-	static DREAL last_progress ;
+	FILE* target;
+	LONG last_progress_time, progress_start_time ;
+	DREAL last_progress ;
 
-	//const static char* message_strings[NUM_LOG_LEVELS];
-	//const static EMessageType levels[NUM_LOG_LEVELS];
-	static const char* message_strings[NUM_LOG_LEVELS];
-
-	static EMessageType loglevel;
+	EMessageType loglevel;
 	static const EMessageType levels[NUM_LOG_LEVELS];
+	static const char* message_strings[NUM_LOG_LEVELS];
 };
 
 #endif // __CIO_H__

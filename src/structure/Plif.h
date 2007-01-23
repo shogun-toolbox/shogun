@@ -36,7 +36,7 @@ public:
 	~CPlif() ;
 	void init_penalty_struct_cache() ;
 	
-	DREAL lookup_penalty_svm(DREAL p_value, DREAL *d_values) const ;
+	DREAL lookup_penalty_svm(DREAL p_value, DREAL *d_values) const;
 	DREAL lookup_penalty(DREAL p_value, DREAL* svm_values) const ;
 	DREAL lookup_penalty(INT p_value, DREAL* svm_values) const ;
 	

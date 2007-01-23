@@ -90,7 +90,7 @@ static void successful(SEXP& result, bool v)
    
 static SEXP sg_helper(SEXP args)
 {
-	SG_GDEBUG("length of args %d\n", length(args));
+	SG_SDEBUG("length of args %d\n", length(args));
 
 
 	SEXP result=NEW_LOGICAL(1);
@@ -107,7 +107,7 @@ static SEXP sg_helper(SEXP args)
 		if (TYPEOF(CAR(args)) == STRSXP)
 		{
 			action=CHAR(VECTOR_ELT(CAR(args), 0));
-			SG_GDEBUG("action is %s\n", action);
+			SG_SDEBUG("action is %s\n", action);
 		}
 
 		args = CDR(args); /* pop action out of list */
@@ -119,11 +119,11 @@ static SEXP sg_helper(SEXP args)
 				if (cmd_len==2)
 				{
 					CHAR* cmd=CHAR(STRING_ELT(CAR(args),0));
-					SG_GDEBUG("command is %s\n", cmd);
+					SG_SDEBUG("command is %s\n", cmd);
 					sg_R.send_command(cmd);
 				}
 				else
-					SG_GERROR( "usage is sg('send_command', 'cmdline')");
+					SG_SERROR( "usage is sg('send_command', 'cmdline')");
 			}
 			else if (!strncmp(action, N_HELP, strlen(N_HELP)))
 			{
@@ -132,7 +132,7 @@ static SEXP sg_helper(SEXP args)
 					sg_R.send_command("help");
 				}
 				else
-					SG_GERROR( "usage is sg('help')");
+					SG_SERROR( "usage is sg('help')");
 			}
 			else if (!strncmp(action, N_GET_VERSION, strlen(N_GET_VERSION)))
 			{
@@ -148,7 +148,7 @@ static SEXP sg_helper(SEXP args)
 			}
 			else if (!strncmp(action, N_SET_CUSTOM_KERNEL, strlen(N_SET_CUSTOM_KERNEL)))
 			{
-				SG_GERROR( "Not implemented yet");
+				SG_SERROR( "Not implemented yet");
 				return R_NilValue;
 			}
 			else if (!strncmp(action, N_SVM_CLASSIFY_EXAMPLE, strlen(N_SVM_CLASSIFY_EXAMPLE)))
@@ -158,10 +158,10 @@ static SEXP sg_helper(SEXP args)
 					if (TYPEOF(args) == REALSXP)
 						return sg_R.svm_classify_example((INT) REAL(args)[0]);
 					else
-						SG_GERROR( "usage is [result]=sg('svm_classify_example', feature_vector_index)");
+						SG_SERROR( "usage is [result]=sg('svm_classify_example', feature_vector_index)");
 				}
 				else
-					SG_GERROR( "usage is [result]=sg('svm_classify_example', feature_vector_index)");
+					SG_SERROR( "usage is [result]=sg('svm_classify_example', feature_vector_index)");
 			}
 			else if (!strncmp(action, N_GET_HMM, strlen(N_GET_HMM)))
 			{
@@ -176,10 +176,10 @@ static SEXP sg_helper(SEXP args)
 					if (TYPEOF(args) == REALSXP)
 						return sg_R.best_path((INT) REAL(args)[0]);
 					else
-						SG_GERROR( "usage is [path, lik]=sg('get_viterbi_path',dim)");
+						SG_SERROR( "usage is [path, lik]=sg('get_viterbi_path',dim)");
 				}
 				else
-					SG_GERROR( "usage is [path, lik]=sg('get_viterbi_path',dim)");
+					SG_SERROR( "usage is [path, lik]=sg('get_viterbi_path',dim)");
 			}
 			else if (!strncmp(action, N_HMM_LIKELIHOOD, strlen(N_HMM_LIKELIHOOD)))
 			{
@@ -192,10 +192,10 @@ static SEXP sg_helper(SEXP args)
 					if (TYPEOF(args) == REALSXP)
 						sg_R.one_class_hmm_classify_example((INT) REAL(args)[0] );
 					else
-						SG_GERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
+						SG_SERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
 				}
 				else
-					SG_GERROR( "usage is [result]=sg('one_class_hmm_classify_example', feature_vector_index)");
+					SG_SERROR( "usage is [result]=sg('one_class_hmm_classify_example', feature_vector_index)");
 			}
 			else if (!strncmp(action, N_ONE_CLASS_HMM_CLASSIFY, strlen(N_ONE_CLASS_HMM_CLASSIFY)))
 			{
@@ -216,10 +216,10 @@ static SEXP sg_helper(SEXP args)
 				if (TYPEOF(args) == REALSXP)
 					sg_R.hmm_classify_example((INT) REAL(args)[0] );
 				else
-					SG_GERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
+					SG_SERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
 			}
 			else
-				SG_GERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
+				SG_SERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
 		}
 			else if (!strncmp(action, N_CRC, strlen(N_CRC)))
 			{
@@ -240,7 +240,7 @@ static SEXP sg_helper(SEXP args)
 				//    mxFree(string) ;
 				//}
 				//else
-				//	   SG_GERROR( "usage is crc32=sg('crc', string)");
+				//	   SG_SERROR( "usage is crc32=sg('crc', string)");
 
 			}
 			else if (!strncmp(action, N_ADD_FEATURES, strlen(N_ADD_FEATURES)))
@@ -265,7 +265,7 @@ static SEXP sg_helper(SEXP args)
 					{
 						if (!strncmp(target, "TRAIN", strlen("TRAIN")))
 						{
-							SG_GDEBUG("Adding features.\n");
+							SG_SDEBUG("Adding features.\n");
 							gui->guifeatures.add_train_features(features);
 						}
 						else if (!strncmp(target, "TEST", strlen("TEST")))
@@ -274,10 +274,10 @@ static SEXP sg_helper(SEXP args)
 						}
 					}
 					else
-						SG_GERROR( "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
+						SG_SERROR( "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
 				}
 				else
-					SG_GERROR( "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
+					SG_SERROR( "usage is sg('add_features', 'TRAIN|TEST', features, ...)");
 			}
 			else if (!strncmp(action, N_SET_FEATURES, strlen(N_SET_FEATURES)))
 			{
@@ -304,35 +304,35 @@ static SEXP sg_helper(SEXP args)
 								successful(result, gui->guifeatures.set_test_features(features));
 						}
 						else
-							SG_GERROR( "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
+							SG_SERROR( "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
 					}
 					else
-						SG_GERROR( "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
+						SG_SERROR( "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
 				}
 				else
-					SG_GERROR( "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
-				SG_GINFO( "done\n");
+					SG_SERROR( "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
+				SG_SINFO( "done\n");
 			}
 			else if (!strncmp(action, N_SET_HMM, strlen(N_SET_HMM)))
 			{
 				if (cmd_len==2)
 					successful(result, sg_R.set_hmm(CAR(args)));
 				else
-					SG_GERROR( "usage is sg('set_hmm',hmm$[p,q,a,b])");
+					SG_SERROR( "usage is sg('set_hmm',hmm$[p,q,a,b])");
 			}
 		else if (!strncmp(action, N_APPEND_HMM, strlen(N_APPEND_HMM)))
 		{
 			if (cmd_len==1+4)
 				sg_R.append_hmm(args);
 			else
-				SG_GERROR( "usage is sg('append_hmm',[p,q,a,b])");
+				SG_SERROR( "usage is sg('append_hmm',[p,q,a,b])");
 		}
 			else if (!strncmp(action, N_SET_SVM, strlen(N_SET_SVM)))
 			{
 				if (cmd_len==3)
 					successful(result, sg_R.set_svm(args));
 				else
-					SG_GERROR( "usage is sg('set_svm', [ b, alphas])");
+					SG_SERROR( "usage is sg('set_svm', [ b, alphas])");
 			}
 			else if (!strncmp(action, N_GET_FEATURES, strlen(N_GET_FEATURES)))
 			{
@@ -349,12 +349,12 @@ static SEXP sg_helper(SEXP args)
 					features=gui->guifeatures.get_test_features();
 				}
 				else
-					SG_GERROR( "usage is [features]=sg('get_features', 'TRAIN|TEST')");
+					SG_SERROR( "usage is [features]=sg('get_features', 'TRAIN|TEST')");
 
 				if (features)
 					return sg_R.get_features(features);
 				else
-					SG_GERROR( "no features set\n");
+					SG_SERROR( "no features set\n");
 			}
 			/*
 			 * This action returns the either the TEST or TRAIN labels 
@@ -378,7 +378,7 @@ static SEXP sg_helper(SEXP args)
 				if (labels)
 					return sg_R.get_labels(labels);
 				else
-					SG_GERROR( "usage is [lab]=sg('get_labels', 'TRAIN|TEST')");
+					SG_SERROR( "usage is [lab]=sg('get_labels', 'TRAIN|TEST')");
 			}
 			else if (!strncmp(action, N_SET_LABELS, strlen(N_SET_LABELS)))
 			{
@@ -404,13 +404,13 @@ static SEXP sg_helper(SEXP args)
 								successful(result, gui->guilabels.set_test_labels(labels));
 						}
 						else
-							SG_GERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
+							SG_SERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
 					}
 					else
-						SG_GERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
+						SG_SERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
 				}
 				else
-					SG_GERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
+					SG_SERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
 			}
 			else if (!strncmp(action, N_GET_SUBKERNEL_WEIGHTS, strlen(N_GET_SUBKERNEL_WEIGHTS)))
 			{
@@ -421,14 +421,14 @@ static SEXP sg_helper(SEXP args)
 				return sg_R.get_kernel_matrix();
 			}
 			else
-				SG_GERROR( "unrecognized command. type help for options\n");
+				SG_SERROR( "unrecognized command. type help for options\n");
 		}
 		else
-			SG_GERROR("No input arguments supplied.");
+			SG_SERROR("No input arguments supplied.");
 
 	} // function sg
 	else
-		SG_GERROR("No input arguments supplied.");
+		SG_SERROR("No input arguments supplied.");
 	return result;
 }
 
@@ -451,7 +451,7 @@ SEXP sg(SEXP args)
 		gui=new CTextGUI(0, NULL);
 
 	if (!gui)
-		SG_GERROR("gui could not be initialized.");
+		SG_SERROR("gui could not be initialized.");
 
 	SEXP result=sg_helper(args);
 #ifndef WIN32

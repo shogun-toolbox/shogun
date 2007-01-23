@@ -302,7 +302,7 @@ DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
 		d_value = d_value+3 ;
 		break ;
 	default:
-		SG_SERROR( "unknown transform\n") ;
+		SG_ERROR("unknown transform\n");
 		break ;
 	}
 	

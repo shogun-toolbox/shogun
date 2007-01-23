@@ -83,9 +83,9 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 
 	ASSERT(gui);
 	if (!nrhs)
-		SG_GERROR( "No input arguments supplied.");
+		SG_SERROR( "No input arguments supplied.");
 	else if (!prhs(0).is_string())
-		SG_GERROR( "input should be string.");
+		SG_SERROR( "input should be string.");
 	else
 		action= CGUIOctave::get_octaveString(prhs(0).string_value());
 
@@ -100,7 +100,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				free(cmd);
 			}
 			else
-				SG_GERROR( "usage is sg('send_command', 'cmdline')");
+				SG_SERROR( "usage is sg('send_command', 'cmdline')");
 		}
 		else if (!strncmp(action, N_HELP, strlen(N_HELP)))
 		{
@@ -109,7 +109,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				sg_octave.send_command("help");
 			}
 			else
-				SG_GERROR( "usage is sg('help')");
+				SG_SERROR( "usage is sg('help')");
 		}
 		else if (!strncmp(action, N_GET_HMM, strlen(N_GET_HMM)))
 		{
@@ -118,7 +118,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				sg_octave.get_hmm(plhs);
 			}
 			else
-				SG_GERROR( "usage is [p,q,a,b]=sg('get_hmm')");
+				SG_SERROR( "usage is [p,q,a,b]=sg('get_hmm')");
 		}
 		else if (!strncmp(action, N_GET_VITERBI_PATH, strlen(N_GET_VITERBI_PATH)))
 		{
@@ -130,15 +130,15 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 					sg_octave.best_path(plhs, dim);
 				}
 				else
-					SG_GERROR( "usage is [path, lik]=sg('get_viterbi_path',dim)");
+					SG_SERROR( "usage is [path, lik]=sg('get_viterbi_path',dim)");
 			}
 			else
-				SG_GERROR( "usage is [path, lik]=sg('get_viterbi_path',dim)");
+				SG_SERROR( "usage is [path, lik]=sg('get_viterbi_path',dim)");
 		}
 		else if (!strncmp(action, N_HMM_LIKELIHOOD, strlen(N_HMM_LIKELIHOOD)))
 		{
 			if ( !((nlhs==1) && (nrhs == 1) && sg_octave.hmm_likelihood(plhs)) )
-				SG_GERROR( "usage is [lik]=sg('hmm_likelihood')");
+				SG_SERROR( "usage is [lik]=sg('hmm_likelihood')");
 		}
 		else if (!strncmp(action, N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE, strlen(N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE)))
 		{
@@ -150,24 +150,24 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 					sg_octave.one_class_hmm_classify_example(plhs, idx);
 				}
 				else
-					SG_GERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
+					SG_SERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
 			}
 			else
-				SG_GERROR( "usage is [result]=sg('one_class_hmm_classify_example', feature_vector_index)");
+				SG_SERROR( "usage is [result]=sg('one_class_hmm_classify_example', feature_vector_index)");
 		}
 		else if (!strncmp(action, N_ONE_CLASS_HMM_CLASSIFY, strlen(N_ONE_CLASS_HMM_CLASSIFY)))
 		{
 			if (nlhs==1)
 				sg_octave.one_class_hmm_classify(plhs, false);
 			else
-				SG_GERROR( "usage is [result]=sg('hmm_classify')");
+				SG_SERROR( "usage is [result]=sg('hmm_classify')");
 		}
 		else if (!strncmp(action, N_ONE_CLASS_LINEAR_HMM_CLASSIFY, strlen(N_ONE_CLASS_HMM_CLASSIFY)))
 		{
 			if (nlhs==1)
 				sg_octave.one_class_hmm_classify(plhs, true);
 			else
-				SG_GERROR( "usage is [result]=sg('hmm_classify')");
+				SG_SERROR( "usage is [result]=sg('hmm_classify')");
 		}
 		else if (!strncmp(action, N_HMM_CLASSIFY_EXAMPLE, strlen(N_HMM_CLASSIFY_EXAMPLE)))
 		{
@@ -179,17 +179,17 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 					sg_octave.hmm_classify_example(plhs, idx );
 				}
 				else
-					SG_GERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
+					SG_SERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
 			}
 			else
-				SG_GERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
+				SG_SERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
 		}
 		else if (!strncmp(action, N_HMM_CLASSIFY, strlen(N_HMM_CLASSIFY)))
 		{
 			if (nlhs==1)
 				sg_octave.hmm_classify(plhs);
 			else
-				SG_GERROR( "usage is [result]=sg('hmm_classify')");
+				SG_SERROR( "usage is [result]=sg('hmm_classify')");
 		}
 		else if (!strncmp(action, N_GET_SVM, strlen(N_GET_SVM)))
 		{
@@ -198,7 +198,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				sg_octave.get_svm(plhs);
 			}
 			else
-				SG_GERROR( "usage is [b,alphas]=sg('get_svm')");
+				SG_SERROR( "usage is [b,alphas]=sg('get_svm')");
 		}
 		else if (!strncmp(action, N_SET_SVM, strlen(N_SET_SVM)))
 		{
@@ -207,7 +207,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				sg_octave.set_svm(prhs);
 			}
 			else
-				SG_GERROR( "usage is sg('set_svm', [ b, alphas])");
+				SG_SERROR( "usage is sg('set_svm', [ b, alphas])");
 		}
 		else if (!strncmp(action, N_SVM_CLASSIFY_EXAMPLE, strlen(N_SVM_CLASSIFY_EXAMPLE)))
 		{
@@ -217,23 +217,23 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				{
 					int idx = prhs(1).int_value();
 					if (!sg_octave.svm_classify_example(plhs, idx ))
-						SG_GERROR( "svm_classify_example failed");
+						SG_SERROR( "svm_classify_example failed");
 				}
 				else
-					SG_GERROR( "usage is [result]=sg('svm_classify_example', feature_vector_index)");
+					SG_SERROR( "usage is [result]=sg('svm_classify_example', feature_vector_index)");
 			}
 			else
-				SG_GERROR( "usage is [result]=sg('svm_classify_example', feature_vector_index)");
+				SG_SERROR( "usage is [result]=sg('svm_classify_example', feature_vector_index)");
 		}
 		else if (!strncmp(action, N_SVM_CLASSIFY, strlen(N_SVM_CLASSIFY)))
 		{
 			if (nlhs==1)
 			{
 				if (!sg_octave.svm_classify(plhs))
-					SG_GERROR( "svm_classify failed");
+					SG_SERROR( "svm_classify failed");
 			}
 			else
-				SG_GERROR( "usage is [result]=sg('svm_classify')");
+				SG_SERROR( "usage is [result]=sg('svm_classify')");
 		}
 		else if (!strncmp(action, N_GET_PLUGIN_ESTIMATE, strlen(N_GET_PLUGIN_ESTIMATE)))
 		{
@@ -242,7 +242,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				sg_octave.get_plugin_estimate(plhs);
 			}
 			else
-				SG_GERROR( "usage is [emission_probs, model_sizes]=sg('get_plugin_estimate')");
+				SG_SERROR( "usage is [emission_probs, model_sizes]=sg('get_plugin_estimate')");
 		}
 		else if (!strncmp(action, N_SET_PLUGIN_ESTIMATE, strlen(N_SET_PLUGIN_ESTIMATE)))
 		{
@@ -251,7 +251,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				sg_octave.set_plugin_estimate(prhs);
 			}
 			else
-				SG_GERROR( "usage is sg('set_plugin_estimate', emission_probs, model_sizes)");
+				SG_SERROR( "usage is sg('set_plugin_estimate', emission_probs, model_sizes)");
 		}
 		else if (!strncmp(action, N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE, strlen(N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE)))
 		{
@@ -263,31 +263,31 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 					sg_octave.plugin_estimate_classify_example(plhs, idx);
 				}
 				else
-					SG_GERROR( "usage is [result]=sg('plugin_estimate_classify_example', feature_vector_index)");
+					SG_SERROR( "usage is [result]=sg('plugin_estimate_classify_example', feature_vector_index)");
 			}
 			else
-				SG_GERROR( "usage is [result]=sg('plugin_estimate_classify_example', feature_vector_index)");
+				SG_SERROR( "usage is [result]=sg('plugin_estimate_classify_example', feature_vector_index)");
 		}
 		else if (!strncmp(action, N_PLUGIN_ESTIMATE_CLASSIFY, strlen(N_PLUGIN_ESTIMATE_CLASSIFY)))
 		{
 			if (nlhs==1)
 				sg_octave.plugin_estimate_classify(plhs);
 			else
-				SG_GERROR( "usage is [result]=sg('plugin_estimate_classify')");
+				SG_SERROR( "usage is [result]=sg('plugin_estimate_classify')");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_OPTIMIZATION, strlen(N_GET_KERNEL_OPTIMIZATION)))
 		{
 			if ((nlhs==1) && (nrhs==1))
 				sg_octave.get_kernel_optimization(plhs);
 			else
-				SG_GERROR( "usage is W=sg('get_kernel_optimization')");
+				SG_SERROR( "usage is W=sg('get_kernel_optimization')");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_MATRIX, strlen(N_GET_KERNEL_MATRIX)))
 		{
 			if ((nlhs==1) && (nrhs==1))
 				sg_octave.get_kernel_matrix(plhs);
 			else
-				SG_GERROR( "usage is K=sg('get_kernel_matrix')");
+				SG_SERROR( "usage is K=sg('get_kernel_matrix')");
 		}
 		else if (!strncmp(action, N_GET_KERNEL_INIT, strlen(N_GET_KERNEL_INIT)))
 		{
@@ -312,10 +312,10 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				if (features)
 					sg_octave.get_features(plhs, features);
 				else
-					SG_GERROR( "usage is [features]=sg('get_features', 'TRAIN|TEST')");
+					SG_SERROR( "usage is [features]=sg('get_features', 'TRAIN|TEST')");
 			}
 			else
-				SG_GERROR( "usage is [features]=sg('get_features', 'TRAIN|TEST')");
+				SG_SERROR( "usage is [features]=sg('get_features', 'TRAIN|TEST')");
 		}
 		else if (!strncmp(action, N_GET_LABELS, strlen(N_GET_LABELS)))
 		{
@@ -337,10 +337,10 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				if (labels)
 					sg_octave.get_labels(plhs,labels);
 				else
-					SG_GERROR( "usage is [lab]=sg('get_labels', 'TRAIN|TEST')");
+					SG_SERROR( "usage is [lab]=sg('get_labels', 'TRAIN|TEST')");
 			}
 			else
-				SG_GERROR( "usage is [lab]=sg('get_labels', 'TRAIN|TEST')");
+				SG_SERROR( "usage is [lab]=sg('get_labels', 'TRAIN|TEST')");
 		}
 		else if (!strncmp(action, N_GET_PREPROC_INIT, strlen(N_GET_PREPROC_INIT)))
 		{
@@ -355,7 +355,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				sg_octave.set_hmm(prhs);
 			}
 			else
-				SG_GERROR( "usage is sg('set_hmm',[p,q,a,b])");
+				SG_SERROR( "usage is sg('set_hmm',[p,q,a,b])");
 		}
 		else if (!strncmp(action, N_APPEND_HMM, strlen(N_APPEND_HMM)))
 		{
@@ -364,7 +364,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				sg_octave.append_hmm(prhs);
 			}
 			else
-				SG_GERROR( "usage is sg('append_hmm',[p,q,a,b])");
+				SG_SERROR( "usage is sg('append_hmm',[p,q,a,b])");
 		}
 		else if (!strncmp(action, N_SET_SVM, strlen(N_SET_SVM)))
 		{
@@ -373,7 +373,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				sg_octave.set_svm(prhs);
 			}
 			else
-				SG_GERROR( "usage is sg('set_svm',[b,alphas])");
+				SG_SERROR( "usage is sg('set_svm',[b,alphas])");
 		}
 		else if (!strncmp(action, N_SET_KERNEL_INIT, strlen(N_SET_KERNEL_INIT)))
 		{
@@ -402,14 +402,14 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 						delete[] target;
 					}
 					else
-						SG_GERROR( "usage is sg('set_features', 'TRAIN|TEST', features)");
+						SG_SERROR( "usage is sg('set_features', 'TRAIN|TEST', features)");
 				}
 				else
-					SG_GERROR( "usage is sg('set_features', 'TRAIN|TEST', features)");
+					SG_SERROR( "usage is sg('set_features', 'TRAIN|TEST', features)");
 			}
 			else
-				SG_GERROR( "usage is sg('set_features', 'TRAIN|TEST', features)");
-			SG_GINFO( "done\n");
+				SG_SERROR( "usage is sg('set_features', 'TRAIN|TEST', features)");
+			SG_SINFO( "done\n");
 		}
 		else if (!strncmp(action, N_ADD_FEATURES, strlen(N_ADD_FEATURES)))
 		{
@@ -435,14 +435,14 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 						delete[] target;
 					}
 					else
-						SG_GERROR( "usage is sg('add_features', 'TRAIN|TEST', features)");
+						SG_SERROR( "usage is sg('add_features', 'TRAIN|TEST', features)");
 				}
 				else
-					SG_GERROR( "usage is sg('add_features', 'TRAIN|TEST', features)");
+					SG_SERROR( "usage is sg('add_features', 'TRAIN|TEST', features)");
 			}
 			else
-				SG_GERROR( "usage is sg('set_features', 'TRAIN|TEST', features)");
-			SG_GINFO( "done\n");
+				SG_SERROR( "usage is sg('set_features', 'TRAIN|TEST', features)");
+			SG_SINFO( "done\n");
 		}
 		else if (!strncmp(action, N_CLEAN_FEATURES, strlen(N_CLEAN_FEATURES)))
 		{
@@ -462,14 +462,14 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 						free(target);
 					}
 					else
-						SG_GERROR( "usage is sg('clean_features', 'TRAIN|TEST')");
+						SG_SERROR( "usage is sg('clean_features', 'TRAIN|TEST')");
 				}
 				else
-					SG_GERROR( "usage is sg('clean_features', 'TRAIN|TEST')");
+					SG_SERROR( "usage is sg('clean_features', 'TRAIN|TEST')");
 			}
 			else
-				SG_GERROR( "usage is sg('clean_features', 'TRAIN|TEST')");
-			SG_GINFO( "done\n");
+				SG_SERROR( "usage is sg('clean_features', 'TRAIN|TEST')");
+			SG_SINFO( "done\n");
 		}
 		else if (!strncmp(action, N_TRANSLATE_STRING, strlen(N_TRANSLATE_STRING)))
 		{
@@ -481,7 +481,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				int start = prhs(3).int_value();
 
 				if (order==0 || start<0 || len <=0)
-					SG_GERROR( "usage2 is translation=sg('translate_string', string, order, start)");
+					SG_SERROR( "usage2 is translation=sg('translate_string', string, order, start)");
 				const INT max_val = 2 ; // DNA->2bits
 
 				RowVector real_obs = RowVector(len);
@@ -500,7 +500,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 						case 'c': obs[i]=1 ; break ;
 						case 'g': obs[i]=2 ; break ;
 						case 't': obs[i]=3 ; break ;
-						default: SG_GERROR( "wrong letter") ;
+						default: SG_SERROR( "wrong letter") ;
 					}
 
 				for (i=len-1; i>= ((int) order)-1; i--)	//convert interval of size T
@@ -530,7 +530,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				plhs(0) = real_obs;
 			}
 			else
-				SG_GERROR( "usage is translation=sg('translate_string', string, order, start)");
+				SG_SERROR( "usage is translation=sg('translate_string', string, order, start)");
 
 		}
 		else if (!strncmp(action, N_CRC, strlen(N_CRC)))
@@ -552,7 +552,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				free(string);
 			}
 			else
-				SG_GERROR( "usage is crc32=sg('crc', string)");
+				SG_SERROR( "usage is crc32=sg('crc', string)");
 
 		}
 		else if (!strncmp(action, N_SET_LABELS, strlen(N_SET_LABELS)))
@@ -578,13 +578,13 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 						delete[] target;
 					}
 					else
-						SG_GERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
+						SG_SERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
 				}
 				else
-					SG_GERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
+					SG_SERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
 			}
 			else
-				SG_GERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
+				SG_SERROR( "usage is sg('set_labels', 'TRAIN|TEST', labels)");
 		}
 		else if (!strncmp(action, N_SET_PREPROC_INIT, strlen(N_SET_PREPROC_INIT)))
 		{
@@ -594,13 +594,13 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 		}
 		else
 		{
-			SG_GERROR( "action not defined");
+			SG_SERROR( "action not defined");
 		}
 
 		free(action);
 	}
 	else
-		SG_GERROR( "string expected as first argument");
+		SG_SERROR( "string expected as first argument");
 
 	return plhs;
 }

@@ -632,6 +632,7 @@ void CDynProg::best_path_deriv_call()
 	SG_PRINT("test2...\n");
 	SG_DEBUG("hey...\n");
 	SG_PRINT("loglevel: %d\n", (INT) io.get_loglevel());
+	SG_PRINT("io: %x\n", (INT) &io);
 	//if (m_step!=8)
 		//SG_ERROR( "please call best_path_set_dict_weights first\n") ;
 	//if (m_call!=1)

@@ -7,4 +7,8 @@
 CParallel CSGObject::parallel;
 CIO CSGObject::io;
 CVersion CSGObjectversion;
+CIO* sg_io=&CSGObject::io;
+#else
+CIO sg_io;
 #endif
+

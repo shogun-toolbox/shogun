@@ -44,10 +44,10 @@ int main(int argc, char* argv[])
 		{
 			if ( argc>2 || !strcmp(argv[1], "-h") || !strcmp(argv[1], "/?") || !strcmp(argv[1], "--help"))
 			{
-				SG_GERROR( "usage: shogun [ <-h|--help|/?|-i|<script> ]\n\n");
-				SG_GINFO( "if no options are given genfinder enters interactive mode\n");
-				SG_GINFO( "if <script> is specified the commands will be executed");
-				SG_GINFO( "if -i is specified shogun will listen on port 7367 (==hex(sg), *dangerous* as commands from any source are accepted");
+				SG_SPRINT( "usage: shogun [ <-h|--help|/?|-i|<script> ]\n\n");
+				SG_SPRINT( "if no options are given genfinder enters interactive mode\n");
+				SG_SPRINT( "if <script> is specified the commands will be executed");
+				SG_SPRINT( "if -i is specified shogun will listen on port 7367 (==hex(sg), *dangerous* as commands from any source are accepted");
 				return 1;
 			}
 #ifndef CYGWIN
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 				bind(s, (sockaddr*) (&sa), sizeof(sockaddr_in));
 				listen(s, 1);
 				int s2=accept(s, NULL, NULL);
-				SG_GINFO( "accepting connection\n");
+				SG_SINFO( "accepting connection\n");
 
 				CHAR input[READLINE_BUFFER_SIZE];
 				do
@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
 						input[length]='\0';
 					else
 					{
-						SG_GERROR( "error reading cmdline\n");
+						SG_SERROR( "error reading cmdline\n");
 						return 1;
 					}
 				}
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 
 				if (!file)
 				{
-					SG_GERROR( "error opening/reading file: \"%s\"",argv[1]);
+					SG_SERROR( "error opening/reading file: \"%s\"",argv[1]);
 					return 1;
 				}
 				else
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	SG_GINFO( "quitting...\n");
+	SG_SINFO( "quitting...\n");
 	delete gui ;
 
 	return 0;

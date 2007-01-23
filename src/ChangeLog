@@ -1,3 +1,16 @@
+2007-01-23  Christian Gehl <Christian.Gehl@first.fraunhofer.de>
+
+	* lib/common.h: new distance types
+
+2007-01-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog, base/Version.cpp, base/Version.h,
+	  kernel/CommUlongStringKernel.cpp,
+	  kernel/CommWordStringKernel.cpp, kernel/CommWordStringKernel.h,
+	  lib/io.cpp, lib/io.h, preproc/SortUlongString.cpp,
+	  structure/DynProg.cpp, structure/DynProg.h, structure/DynProg.i:
+	  +get_loglevel()
+
 2007-01-22  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
 
 	* structure/DynProg.h: scores & losses should be return

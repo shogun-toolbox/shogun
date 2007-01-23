@@ -16,6 +16,7 @@
 #include "base/Version.h"
 
 class CSGObject;
+class CIO;
 
 class CSGObject
 {

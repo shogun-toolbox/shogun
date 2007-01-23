@@ -47,11 +47,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-FILE* CIO::target=stdout;
-LONG CIO::last_progress_time=0 ;
-LONG CIO::progress_start_time=0 ;
-DREAL CIO::last_progress=1 ;
-EMessageType CIO::loglevel = M_WARN;
 const EMessageType CIO::levels[NUM_LOG_LEVELS]={M_DEBUG, M_INFO, M_NOTICE, M_WARN, M_ERROR, M_CRITICAL, M_ALERT, M_EMERGENCY, M_MESSAGEONLY};
 const char* CIO::message_strings[NUM_LOG_LEVELS]={"[DEBUG] ", "[INFO] ", "[NOTICE] ", "\033[1;34m[WARN]\033[0m ", "\033[1;31m[ERROR]\033[0m ", "[CRITICAL] ", "[ALERT] ", "[EMERGENCY] ", ""};
 
@@ -61,12 +56,11 @@ CHAR file_buffer[FBUFSIZE];
 /// directory name buffer
 CHAR directory_name[FBUFSIZE];
 
-
-CIO::CIO()
+CIO::CIO() : target(stdout), last_progress_time(0), progress_start_time(0), last_progress(1), loglevel(M_WARN)
 {
 }
 
-void CIO::message(EMessageType prio, const CHAR *fmt, ... )
+void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 {
 #if defined(HAVE_MATLAB) || defined(HAVE_PYTHON) || defined(HAVE_OCTAVE) || defined(HAVE_R)
 	char str[4096];
@@ -75,7 +69,6 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 	vsnprintf(str, sizeof(str), fmt, list);
     va_end(list);
 
-	check_target();
 	int p=get_prio_string(prio);
 	if (p>=0)
 	{
@@ -185,7 +178,6 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 		fflush(target);
 	}
 #else
-	check_target();
 	int p=get_prio_string(prio);
 	if (p>=0)
 	{
@@ -199,9 +191,8 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... )
 #endif
 }
 
-void CIO::buffered_message(EMessageType prio, const CHAR *fmt, ... )
+void CIO::buffered_message(EMessageType prio, const CHAR *fmt, ... ) const
 {
-	check_target();
 	int p=get_prio_string(prio);
 	if (p>=0)
 	{
@@ -219,7 +210,6 @@ void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, INT decimals
 	
 	char str[1000];
 	DREAL v=-1, estimate=0, total_estimate=0 ;
-	check_target();
 	
 	if (max_val-min_val>0.0)
 		v=100*(current_val-min_val+1)/(max_val-min_val+1);
@@ -267,7 +257,6 @@ void CIO::absolute_progress(DREAL current_val, DREAL val, DREAL min_val, DREAL m
 	
 	char str[1000];
 	DREAL v=-1, estimate=0, total_estimate=0 ;
-	check_target();
 
 	if (max_val-min_val>0)
 		v=100*(val-min_val+1)/(max_val-min_val+1);
@@ -323,7 +312,7 @@ CHAR* CIO::skip_spaces(CHAR* str)
 		return str;
 }
 
-EMessageType CIO::get_loglevel()
+EMessageType CIO::get_loglevel() const
 {
 	return loglevel;
 }
@@ -338,13 +327,7 @@ void CIO::set_target(FILE* t)
 	target=t;
 }
 
-void CIO::check_target()
-{
-	if (!target)
-		target=stdout;
-}
-
-int CIO::get_prio_string(EMessageType prio)
+int CIO::get_prio_string(EMessageType prio) const
 {
 	int i=0;
 	int idx=-1;
@@ -373,7 +356,7 @@ int CIO::get_prio_string(EMessageType prio)
 CHAR* CIO::concat_filename(const CHAR* filename)
 {
 	if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
-		CIO::message(M_ERROR, "filename too long");
+		SG_SERROR("filename too long");
 	
 	return file_buffer;
 }
@@ -382,7 +365,7 @@ INT CIO::filter(const struct dirent* d)
 {
 	if (d)
 	{
-		CHAR* fname=CIO::concat_filename(d->d_name);
+		CHAR* fname=concat_filename(d->d_name);
 
 		if (!access(fname, R_OK))
 		{
