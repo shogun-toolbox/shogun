@@ -323,6 +323,11 @@ CHAR* CIO::skip_spaces(CHAR* str)
 		return str;
 }
 
+EMessageType CIO::get_loglevel()
+{
+	return loglevel;
+}
+
 void CIO::set_loglevel(EMessageType level)
 {
 	loglevel=level;

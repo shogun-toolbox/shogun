@@ -26,6 +26,8 @@ CCommUlongStringKernel::CCommUlongStringKernel(CStringFeatures<ULONG>* l, CStrin
   : CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
 	use_sign(use_sign_), normalization(normalization_)
 {
+	properties |= KP_LINADD;
+	clear_normal();
 	init(l,r);
 }
 

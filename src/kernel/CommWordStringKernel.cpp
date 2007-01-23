@@ -23,6 +23,18 @@ CCommWordStringKernel::CCommWordStringKernel(LONG size, bool sign, ENormalizatio
 	clear_normal();
 }
 
+CCommWordStringKernel::CCommWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool sign, ENormalizationType n, INT size)
+  : CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_sign(sign), normalization(n)
+{
+	properties |= KP_LINADD;
+	dictionary_size= 1<<(sizeof(WORD)*8);
+	dictionary_weights = new DREAL[dictionary_size];
+	SG_DEBUG( "using dictionary of %d words\n", dictionary_size);
+	clear_normal();
+
+	init(l,r);
+}
+
 CCommWordStringKernel::~CCommWordStringKernel() 
 {
 	cleanup();

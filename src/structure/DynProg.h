@@ -89,8 +89,6 @@ public:
 	// additional best_path_trans_deriv functions
 	void best_path_set_my_state_seq(INT* my_state_seq, INT seq_len);
 	void best_path_set_my_pos_seq(INT* my_pos_seq, INT seq_len);
-	void best_path_set_my_scores(DREAL** my_scores, INT *seq_len);
-	void best_path_set_my_losses(DREAL** my_losses, INT *seq_len);
 
 	inline void best_path_set_single_genestr(CHAR* genestr, INT genestr_len)
 	{
@@ -100,7 +98,7 @@ public:
 	void best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len, INT n) ;
 	void best_path_set_segment_loss(DREAL * segment_loss, INT num_segment_id1, INT num_segment_id2) ;
 	void best_path_set_segment_ids_mask(INT* segment_ids_mask, INT m, INT n) ;
-	
+
 	// best_path functions
 	void best_path_call(INT nbest, bool use_orf) ;
 	void best_path_deriv_call() ;
@@ -112,6 +110,9 @@ public:
 	void best_path_get_scores(DREAL **scores, INT *n) ;
 	void best_path_get_states(INT **states, INT *m, INT *n) ;
 	void best_path_get_positions(INT **positions, INT *m, INT *n) ;
+
+	//best_path_trans_deriv result retrieval functions
+	void best_path_get_losses(DREAL** my_losses, INT* seq_len);
 
 ////////////////////////////////////////////////////////////////////////////////
 

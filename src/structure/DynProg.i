@@ -33,8 +33,6 @@
 /* best_path_trans_deriv preparation functions */
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* my_state_seq, INT seq_len)}
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* my_pos_seq, INT seq_len)}
-%apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* my_scores, INT seq_len)}
-%apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* my_losses, INT seq_len)}
 
 
 %apply (DREAL* IN_ARRAY2, INT DIM1, INT DIM2) {(DREAL* dictionary_weights, INT dict_len, INT n)};
@@ -45,6 +43,10 @@
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** scores, INT* n)};
 %apply (INT** ARGOUT2, INT* DIM1, INT* DIM2) {(INT** states, INT* m, INT* n)};
 %apply (INT** ARGOUT2, INT* DIM1, INT* DIM2) {(INT** positions, INT* m, INT* n)};
+
+/* best_path_trans_deriv result retrieval functions */
+%apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** my_scores, INT* seq_len)}
+%apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** my_losses, INT* seq_len)}
 #endif
 
 %include "structure/DynProg.h" 

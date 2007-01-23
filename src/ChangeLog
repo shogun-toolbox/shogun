@@ -1,5 +1,13 @@
+2007-01-22  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* structure/DynProg.h: scores & losses should be return
+	  arguments...
+	  
+	  G
+
 2007-01-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* ChangeLog, Makefile: - don't regroup changelog
 	* guilib/GUIMatlab.cpp: + matlab build fix
 	* Makefile, base/SGObject.cpp, base/SGObject.h, base/SGObject.i,
 	  base/Version.cpp, base/Version.h, classifier/Classifier.i,

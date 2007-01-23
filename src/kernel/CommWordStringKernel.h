@@ -20,6 +20,7 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 {
  public:
   CCommWordStringKernel(LONG size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION );
+  CCommWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool use_sign=false, ENormalizationType normalization_=FULL_NORMALIZATION, INT size=10);
   ~CCommWordStringKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r);

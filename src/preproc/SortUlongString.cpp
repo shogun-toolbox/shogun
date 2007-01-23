@@ -59,7 +59,7 @@ bool CSortUlongString::apply_to_string_features(CFeatures* f)
 	{
 		INT len = 0 ;
 		ULONG* vec = ((CStringFeatures<ULONG>*)f)->get_feature_vector(i, len) ;
-		//SG_DEBUG( "sorting string of length %i\n", len) ;
+		SG_DEBUG( "sorting string of length %i\n", len) ;
 		
 		CMath::qsort(vec, len);
 	}

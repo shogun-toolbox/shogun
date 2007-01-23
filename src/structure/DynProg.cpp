@@ -34,7 +34,7 @@ extern "C" int	finite(double);
 #define USEFIXEDLENLIST 0
 //#define USE_TMP_ARRAYCLASS
 
-//#define DYNPROG_DEBUG
+#define DYNPROG_DEBUG
 
 static INT word_degree_default[4]={3,4,5,6} ;
 static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -544,7 +544,7 @@ void CDynProg::best_path_set_my_state_seq(INT* my_state_seq, INT seq_len)
 {
 	ASSERT(my_state_seq && seq_len>0);
 	m_my_state_seq.resize_array(seq_len);
-	for (INT i=0; i<N; i++)
+	for (INT i=0; i<seq_len; i++)
 		m_my_state_seq[i]=my_state_seq[i];
 }
 
@@ -552,24 +552,8 @@ void CDynProg::best_path_set_my_pos_seq(INT* my_pos_seq, INT seq_len)
 {
 	ASSERT(my_pos_seq && seq_len>0);
 	m_my_pos_seq.resize_array(seq_len);
-	for (INT i=0; i<N; i++)
+	for (INT i=0; i<seq_len; i++)
 		m_my_pos_seq[i]=my_pos_seq[i];
-}
-
-void CDynProg::best_path_set_my_scores(DREAL* my_scores, INT seq_len)
-{
-	ASSERT(my_scores && seq_len>0);
-	m_my_scores.resize_array(seq_len);
-	for (INT i=0; i<N; i++)
-		m_my_scores[i]=my_scores[i];
-}
-
-void CDynProg::best_path_set_my_losses(DREAL* my_losses, INT seq_len)
-{
-	ASSERT(my_losses && seq_len>0);
-	m_my_losses.resize_array(seq_len);
-	for (INT i=0; i<N; i++)
-		m_my_losses[i]=my_losses[i];
 }
 
 void CDynProg::best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len, INT n) 
@@ -644,10 +628,14 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 
 void CDynProg::best_path_deriv_call() 
 {
-	if (m_step!=8)
-		SG_ERROR( "please call best_path_set_dict_weights first\n") ;
-	if (m_call!=1)
-		SG_ERROR( "please call best_path_set_orf_info first\n") ;
+	fprintf(stderr, "test\n");
+	SG_PRINT("test2...\n");
+	SG_DEBUG("hey...\n");
+	SG_PRINT("loglevel: %d\n", (INT) io.get_loglevel());
+	//if (m_step!=8)
+		//SG_ERROR( "please call best_path_set_dict_weights first\n") ;
+	//if (m_call!=1)
+		//SG_ERROR( "please call best_path_set_orf_info first\n") ;
 	ASSERT(N==m_seq.get_dim1()) ;
 	ASSERT(m_seq.get_dim2()==m_pos.get_dim1()) ;
 
@@ -656,7 +644,7 @@ void CDynProg::best_path_deriv_call()
 	m_my_scores.resize_array(m_my_state_seq.get_array_size()) ;
 	m_my_losses.resize_array(m_my_state_seq.get_array_size()) ;
 
-	SG_PRINT( "m_seq.get_array(): %x", m_seq.get_array());
+	SG_PRINT( "m_seq.get_array(): %x\n", m_seq.get_array());
 	best_path_trans_deriv(m_my_state_seq.get_array(), m_my_pos_seq.get_array(), 
 						  m_my_scores.get_array(), m_my_losses.get_array(), m_my_state_seq.get_array_size(),
 						  m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
@@ -760,6 +748,14 @@ void CDynProg::best_path_get_positions(INT **positions, INT *m, INT *n)
 	*m=m_positions.get_dim1() ;
 	*n=m_positions.get_dim2() ;
 }
+
+void CDynProg::best_path_get_losses(DREAL** losses, INT* seq_len)
+{
+	ASSERT(my_losses && seq_len);
+	*losses=m_my_losses.get_array();
+	*seq_len=m_my_losses.get_dim1();
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
