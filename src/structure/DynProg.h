@@ -34,7 +34,6 @@ typedef BYTE T_STATES ;
 #endif
 typedef T_STATES* P_STATES ;
 
-
 /** Dynamic Programming Class.
  * Structure and Function collection.
  * This Class implements a Dynamic Programming functions.
@@ -248,6 +247,8 @@ protected:
 	void init_svm_values(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT howmuchlookback) ;
 	void clear_svm_values(struct svm_values_struct & svs) ;
 	void find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs) ;
+	void find_svm_values_till_pos_new(WORD*** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs, INT max_num_positions) ;
+	void update_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t_end, INT prev_t_end, struct svm_values_struct &svs) ;
 	bool extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to) ;
 
 	struct segment_loss_struct

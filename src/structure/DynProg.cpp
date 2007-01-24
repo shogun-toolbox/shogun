@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <ctype.h>
+#include <values.h>
 
 #ifdef SUNOS
 extern "C" int	finite(double);
@@ -1717,6 +1718,125 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 	}
 }
 
+void CDynProg::find_svm_values_till_pos_new(WORD*** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs, INT max_num_positions)
+{
+	/*
+	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 
+	  corresponding to the 6-mer in genestr(i-5:i) 
+	  pos is a vector of candidate transition positions (it is input to best_path_trans)
+	  t_end is some index in pos
+	  
+	  svs has been initialized by init_svm_values
+	  
+	  At the end of this procedure, 
+	  svs.svm_values[i+s*svs.seqlen] has the value of the s-th SVM on genestr(pos(t_end-i):pos(t_end)) 
+	  for every i satisfying pos(t_end)-pos(t_end-i) <= svs.maxlookback
+	  
+	  The SVM weights are precomputed in dict_weights
+	*/
+	for (INT s=0; s<num_svms; s++)
+	{
+		ASSERT(sign_words_array[s]==false) ;
+		ASSERT(mod_words_array[s]==1) ;
+		ASSERT(string_words_array[s]==0) ;
+	}
+	const INT max_cum_num_words = cum_num_words_array[num_degrees] ;
+	const WORD ** my_wordstr = (const WORD **) wordstr[0] ;
+
+
+	for (INT j=0; j<num_degrees; j++)
+	{
+		INT plen = 1;
+		INT ts = t_end-1;        // index in pos; pos(ts) and pos(t) are indices of wordstr
+		INT offset;
+		
+		INT posprev = pos[t_end]-word_degree[j]+1;
+		INT poscurrent = pos[ts];
+		
+		if (poscurrent<0)
+			poscurrent = 0;
+		DREAL * my_svm_values_unnormalized = svs.svm_values_unnormalized[j] ;
+		INT * my_num_unique_words = svs.num_unique_words[j] ; // this array can be avoided...
+		const INT my_cum_num_words = cum_num_words_array[j] ;
+
+		INT len = pos[t_end] - poscurrent;
+		while ((ts>=0) && (len <= svs.maxlookback))
+		{
+			for (int i=posprev-1 ; (i>=poscurrent) && (i>=0) ; i--)
+			{
+				WORD word = my_wordstr[j][i] ;
+				for (INT s=0; s<num_svms; s++)
+				{
+					if (svs.start_pos[s]-i>0)
+					{
+						my_svm_values_unnormalized[s] += dict_weights_array[(word+my_cum_num_words)+s*max_cum_num_words] ;
+						//svs.svm_values_unnormalized[j][s]+=dict_weights.element(word+cum_num_words_array[j], s) ;
+						my_num_unique_words[s]++ ;
+					}
+				}
+			}
+			for (INT s=0; s<num_svms; s++)
+			{
+				double normalization_factor = 1.0;
+				if (my_num_unique_words[s] > 0)
+					normalization_factor = (double)my_num_unique_words[s];
+
+				offset = s*svs.seqlen;
+				if (j==0)
+					svs.svm_values[offset+plen]=0 ;
+				svs.svm_values[offset+plen] += my_svm_values_unnormalized[s] / normalization_factor;
+			}
+			
+			if (posprev > poscurrent)         // remember posprev initially set to pos[t_end]-word_degree+1... pos[ts] could be e.g. pos[t_end]-2
+				posprev = poscurrent;           
+			
+			ts--;
+			plen++;
+			if (plen>max_num_positions)
+				break ;
+			
+			if (ts>=0)
+			{
+				poscurrent=pos[ts];
+				if (poscurrent<0)
+					poscurrent = 0;
+				len = pos[t_end] - poscurrent;
+			}
+		}
+	}
+}
+
+void CDynProg::update_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t_end, INT prev_t_end, struct svm_values_struct &svs)
+{
+	for (INT s=0; s<num_svms; s++)
+	{
+		ASSERT(sign_words_array[s]==false) ;
+		ASSERT(mod_words_array[s]==1) ;
+		ASSERT(string_words_array[s]==0) ;
+	}
+
+	const INT num_new_positions = t_end-prev_t_end ;
+	
+	// move the previous svm outputs ...
+	for (INT s=0; s<num_svms; s++)
+	{
+		DREAL * block = &svs.svm_values[s*svs.seqlen];
+		memmove(&block[num_new_positions], block, sizeof(DREAL)*(svs.seqlen-num_new_positions)) ;
+		memset(block, 0, sizeof(DREAL)*num_new_positions) ;
+	}
+
+	// compute the new ones ...
+	find_svm_values_till_pos_new(wordstr, pos, t_end, svs, num_new_positions);
+	
+	// update the old ones ...
+	for (INT s=0; s<num_svms; s++)
+	{
+		DREAL * block = &svs.svm_values[s*svs.seqlen];
+		for (INT i=0; i<svs.seqlen-num_new_positions; i++)
+			block[i+num_new_positions] += block[num_new_positions - 1] ;
+	}
+	
+}
 
 bool CDynProg::extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to)
 {
@@ -2080,9 +2200,22 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	svs.svm_values_unnormalized = NULL;
 	svs.word_used = NULL;
 
+	struct svm_values_struct svs2;
+	svs2.num_unique_words = NULL;
+	svs2.svm_values = NULL;
+	svs2.svm_values_unnormalized = NULL;
+	svs2.word_used = NULL;
+
+	struct svm_values_struct svs3;
+	svs3.num_unique_words = NULL;
+	svs3.svm_values = NULL;
+	svs3.svm_values_unnormalized = NULL;
+	svs3.word_used = NULL;
+
 	struct segment_loss_struct loss;
 	loss.segments_changed = NULL;
 	loss.num_segment_id = NULL;
+
 
 	// recursion
 	for (INT t=1; t<seq_len; t++)
@@ -2092,6 +2225,18 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		
 		init_svm_values(svs, pos[t], seq_len, max_look_back);
 		find_svm_values_till_pos(wordstr, pos, t, svs);  
+
+		/*init_svm_values(svs2, pos[t], seq_len, max_look_back);
+		find_svm_values_till_pos_new(wordstr, pos, t, svs2, MAXINT);  
+
+		if (t==1)
+		{
+			init_svm_values(svs3, pos[t], seq_len, max_look_back);
+			find_svm_values_till_pos(wordstr, pos, t, svs3);  
+		}
+		else
+			update_svm_values_till_pos(wordstr, pos, t, t-1, svs3);  
+		*/
 
 		init_segment_loss(loss, seq_len, max_look_back);
 		find_segment_loss_till_pos(pos, t, m_segment_ids_mask, loss);  
@@ -2156,6 +2301,13 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					{
 						bool ok ;
 						int plen=t-ts;
+
+						/*for (INT s=0; s<num_svms; s++)
+							if ((fabs(svs.svm_values[s*svs.seqlen+plen]-svs2.svm_values[s*svs.seqlen+plen])>1e-6) ||
+								(fabs(svs.svm_values[s*svs.seqlen+plen]-svs3.svm_values[s*svs.seqlen+plen])>1e-6))
+							{
+								fprintf(stderr, "s=%i, t=%i, ts=%i, %1.5e, %1.5e, %1.5e\n", s, t, ts, svs.svm_values[s*svs.seqlen+plen], svs2.svm_values[s*svs.seqlen+plen], svs3.svm_values[s*svs.seqlen+plen]);
+								}*/
 						
 						if (orf_target==-1)
 							ok=true ;
