@@ -35,7 +35,7 @@ debian:
 	cp -a ../src sg/src
 	find ./sg -iname *.i -o -iname *.o -exec rm {} \; 2>/dev/null || true
 	find ./sg/src -type d -name .svn -exec rm -rf {} \; 2>/dev/null || true
-	cd sg/src && ( $(RM) .config .depend ; ./configure --enable-R )
+	cd sg/src && ( $(RM) .config .depend ; ./configure --interface=R )
 	-cd ../src && cp -a $(DOCFILES) ../R/sg/inst/doc/
 
 clean: 

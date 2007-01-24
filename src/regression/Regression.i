@@ -24,5 +24,7 @@
 %include "kernel/KernelMachine.i" 
 
 %include "regression/svr/LibSVR.i"
+#ifdef USE_SVMLIGHT
 %include "regression/svr/SVR_light.i"
+#endif //USE_SVMLIGHT
 %include "regression/KRR.i"

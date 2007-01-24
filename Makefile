@@ -27,14 +27,14 @@ RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
 SVNVERSION = $(shell svn info | grep Revision: | cut -d ' ' -f 2)
 
 ifeq ($(DEBIAN),yes)
+COMPRESS := gzip
+SVMLIGHT := no
+TARGET := vanilla-package
 RELEASENAME := shogun_$(MAINVERSION)
 ifeq ($(SNAPSHOT),yes)
 RELEASENAME := $(RELEASENAME)+svn$(SVNVERSION)
 endif
 RELEASENAME := $(RELEASENAME).orig
-COMPRESS := gzip
-SVMLIGHT := no
-TARGET := vanilla-package
 else
 all: doc release matlab python octave R
 endif
@@ -42,9 +42,9 @@ endif
 .PHONY: doc release matlab python octave R vanilla-package r-package
 
 DESTDIR := ../$(RELEASENAME)
-REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/classifier/svm/{SVM_light,Optimizer}* $(DESTDIR)/src/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
+REMOVE_SVMLIGHT := rm -f $(DESTDIR)/src/classifier/svm/SVM_light.* $(DESTDIR)/src/classifier/svm/Optimizer.* $(DESTDIR)/src/regression/svr/SVR_light.* $(DESTDIR)/src/LICENSE.SVMlight; \
 grep -rl USE_SVMLIGHT $(DESTDIR)| xargs --no-run-if-empty sed -i '/\#ifdef USE_SVMLIGHT/,/\#endif \/\/USE_SVMLIGHT/c \\' ; \
-sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOACHIMS/,/ \* this program is free software/c\ * This program is free software; you can redistribute it and/or modify' $(DESTDIR)/src/kernel/Kernel.{cpp,h} ; \
+sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOACHIMS/,/ \* this program is free software/c\ * This program is free software; you can redistribute it and/or modify' $(DESTDIR)/src/kernel/Kernel.cpp $(DESTDIR)/src/kernel/Kernel.h ; \
 sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 
 all: $(TARGET)
@@ -69,7 +69,7 @@ r-package:	src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
 $(DESTDIR)/src/lib/versionstring.h: src/lib/versionstring.h
 	rm -rf $(DESTDIR)
 	svn export . $(DESTDIR)
-	if [ ! $(SVMLIGHT) = yes ]; then $(REMOVE_SVMLIGHT); fi
+	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
 
 	# remove top level makefile from distribution
 	rm -f $(DESTDIR)/Makefile
