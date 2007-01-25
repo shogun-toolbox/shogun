@@ -166,7 +166,8 @@ enum EKernelType
 	K_HAMMINGWORD = 210,
 	K_MANHATTENWORD = 220,
 	K_CANBERRAWORD = 230,
-	K_MINDYGRAM = 240
+	K_MINDYGRAM = 240,
+	K_DISTANCE = 250
 };
 
 enum EClassifierType
@@ -198,7 +199,8 @@ enum EDistanceType
 	D_GEODESIC = 50,
 	D_JENSEN = 60,
 	D_MANHATTANWORD = 70,
-	D_HAMMINGWORD = 80
+	D_HAMMINGWORD = 80 ,
+	D_CANBERRAWORD = 90
 };
 
 enum ERegressionType
