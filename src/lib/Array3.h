@@ -162,7 +162,7 @@ CArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
 	}
 	
 	///// operator overload for array assignment
-	CArray<T>& operator=(CArray<T>& orig)
+	CArray3<T>& operator=(const CArray3<T>& orig)
 	{
 		CArray<T>::operator=(orig) ;
 		dim1_size=orig.dim1_size ;

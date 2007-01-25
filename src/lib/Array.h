@@ -240,7 +240,7 @@
 	}
 	
 	///// operator overload for array assignment
-	CArray<T>& operator=(CArray<T>& orig)
+	CArray<T>& operator=(const CArray<T>& orig)
 	{
 		memcpy(array, orig.array, sizeof(T)*orig.array_size);
 		array_size=orig.array_size;
