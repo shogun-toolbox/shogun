@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 CJensenMetric::CJensenMetric()
-  : CRealDistance()
+  : CSimpleDistance<DREAL>()
 {
 }
 
@@ -31,9 +31,9 @@ CJensenMetric::~CJensenMetric()
 	cleanup();
 }
   
-bool CJensenMetric::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CJensenMetric::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CRealDistance::init(l,r,do_init);
+	bool result=CSimpleDistance<DREAL>::init(l,r);
 
 	return result;
 }

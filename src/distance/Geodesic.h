@@ -12,16 +12,16 @@
 #define _GEODESIC_H___
 
 #include "lib/common.h"
-#include "distance/RealDistance.h"
+#include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
-class CGeodesicMetric: public CRealDistance
+class CGeodesicMetric: public CSimpleDistance<DREAL>
 {
  public:
   CGeodesicMetric();
   virtual ~CGeodesicMetric();
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save distance init_data

@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 CMinkowskiMetric::CMinkowskiMetric(DREAL p)
-  : CRealDistance(),k(p)
+  : CSimpleDistance<DREAL>(),k(p)
 {
 }
 
@@ -31,9 +31,9 @@ CMinkowskiMetric::~CMinkowskiMetric()
 	cleanup();
 }
   
-bool CMinkowskiMetric::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CMinkowskiMetric::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CRealDistance::init(l,r,do_init);
+	bool result=CSimpleDistance<DREAL>::init(l,r);
 
 	return result;
 }

@@ -12,16 +12,16 @@
 #define _CANBERRA_H___
 
 #include "lib/common.h"
-#include "distance/RealDistance.h"
+#include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
-class CCanberraMetric: public CRealDistance
+class CCanberraMetric: public CSimpleDistance<DREAL>
 {
  public:
   CCanberraMetric();
   virtual ~CCanberraMetric();
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save distance init_data

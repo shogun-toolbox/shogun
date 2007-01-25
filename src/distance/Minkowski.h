@@ -12,16 +12,16 @@
 #define _MINKOWSKI_H___
 
 #include "lib/common.h"
-#include "distance/RealDistance.h"
+#include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
-class CMinkowskiMetric: public CRealDistance
+class CMinkowskiMetric: public CSimpleDistance<DREAL>
 {
  public:
   CMinkowskiMetric(DREAL k);
   virtual ~CMinkowskiMetric();
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save kernel init_data

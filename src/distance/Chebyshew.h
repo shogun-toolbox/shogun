@@ -12,16 +12,16 @@
 #define _CHEBYSHEW_H___
 
 #include "lib/common.h"
-#include "distance/RealDistance.h"
+#include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
-class CChebyshewMetric: public CRealDistance
+class CChebyshewMetric: public CSimpleDistance<DREAL>
 {
  public:
   CChebyshewMetric();
   virtual ~CChebyshewMetric();
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save distance init_data

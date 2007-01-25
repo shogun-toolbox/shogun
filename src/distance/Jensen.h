@@ -12,16 +12,16 @@
 #define _JENSEN_H___
 
 #include "lib/common.h"
-#include "distance/RealDistance.h"
+#include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
-class CJensenMetric: public CRealDistance
+class CJensenMetric: public CSimpleDistance<DREAL>
 {
  public:
   CJensenMetric();
   virtual ~CJensenMetric();
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save distance init_data

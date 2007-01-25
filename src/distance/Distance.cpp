@@ -23,6 +23,10 @@
 #include <string.h>
 #include <unistd.h>
 
+#ifndef WIN32
+#include <pthread.h>
+#endif
+
 CDistance::CDistance() 
 : precomputed_matrix(NULL), precompute_matrix(false), 
 	lhs(NULL), rhs(NULL)
@@ -34,7 +38,7 @@ CDistance::CDistance(CFeatures* p_lhs, CFeatures* p_rhs)
 :  precomputed_matrix(NULL), precompute_matrix(false), 
 	lhs(NULL), rhs(NULL)
 {
-	init(p_lhs, p_rhs, true);
+	init(p_lhs, p_rhs);
 }
 
 CDistance::~CDistance()
@@ -43,7 +47,7 @@ CDistance::~CDistance()
 	precomputed_matrix=NULL ;
 }
 
-bool CDistance::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CDistance::init(CFeatures* l, CFeatures* r)
 {
 	//make sure features were indeed supplied
 	ASSERT(l);
@@ -135,4 +139,213 @@ void CDistance::do_precompute_matrix()
 
 	SG_PROGRESS(num*num,0,num*num);
 	SG_INFO( "\ndone.\n") ;
+}
+
+void CDistance::get_distance_matrix(DREAL** dst, INT* m, INT* n)
+{
+	ASSERT(dst && m && n);
+
+	DREAL* result = NULL;
+	CFeatures* f1 = get_lhs();
+	CFeatures* f2 = get_rhs();
+
+	if (f1 && f2)
+	{
+		INT num_vec1=f1->get_num_vectors();
+		INT num_vec2=f2->get_num_vectors();
+		*m=num_vec1;
+		*n=num_vec2;
+
+		LONG total_num = num_vec1 * num_vec2;
+		INT num_done = 0;
+		SG_PRINT( "returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
+
+		SG_DEBUG( "returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
+
+		result=new DREAL[total_num];
+		ASSERT(result);
+
+		if ( (f1 == f2) && (num_vec1 == num_vec2) )
+		{
+			for (INT i=0; i<num_vec1; i++)
+			{
+				for (INT j=i; j<num_vec1; j++)
+				{
+					double v=distance(i,j);
+
+					result[i+j*num_vec1]=v;
+					result[j+i*num_vec1]=v;
+
+					if (num_done%100000)
+						SG_PROGRESS(num_done, 0, total_num-1);
+
+					if (i!=j)
+						num_done+=2;
+					else
+						num_done+=1;
+				}
+			}
+		}
+		else
+		{
+			for (INT i=0; i<num_vec1; i++)
+			{
+				for (INT j=0; j<num_vec2; j++)
+				{
+					result[i+j*num_vec1]=distance(i,j) ;
+
+					if (num_done%100000)
+						SG_PROGRESS(num_done, 0, total_num-1);
+
+					num_done++;
+				}
+			}
+		}
+
+		SG_PRINT( "done.           \n");
+	}
+	else
+      SG_ERROR( "no features assigned to distance\n");
+
+	*dst=result;
+}
+
+SHORTREAL* CDistance::get_distance_matrix_shortreal(int &num_vec1, int &num_vec2, SHORTREAL* target)
+{
+	SHORTREAL* result = NULL;
+	CFeatures* f1 = get_lhs();
+	CFeatures* f2 = get_rhs();
+
+	if (f1 && f2)
+	{
+		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
+         SG_ERROR( "distance matrix does not fit into target\n");
+
+		num_vec1=f1->get_num_vectors();
+		num_vec2=f2->get_num_vectors();
+		LONG total_num = num_vec1 * num_vec2;
+		int num_done = 0;
+
+		SG_DEBUG( "returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
+
+		if (target)
+			result=target;
+		else
+			result=new SHORTREAL[total_num];
+
+		ASSERT(result);
+
+		if ( (f1 == f2) && (num_vec1 == num_vec2) )
+		{
+			for (int i=0; i<num_vec1; i++)
+			{
+				for (int j=i; j<num_vec1; j++)
+				{
+					double v=distance(i,j);
+
+					result[i+j*num_vec1]=v;
+					result[j+i*num_vec1]=v;
+
+					if (num_done%100000)
+						SG_PROGRESS(num_done, 0, total_num-1);
+
+					if (i!=j)
+						num_done+=2;
+					else
+						num_done+=1;
+				}
+			}
+		}
+		else
+		{
+			for (int i=0; i<num_vec1; i++)
+			{
+				for (int j=0; j<num_vec2; j++)
+				{
+					result[i+j*num_vec1]=distance(i,j) ;
+
+					if (num_done%100000)
+						SG_PROGRESS(num_done, 0, total_num-1);
+
+					num_done++;
+				}
+			}
+		}
+
+		SG_PRINT( "done.           \n");
+	}
+	else
+      SG_ERROR( "no features assigned to distance\n");
+
+	return result;
+}
+
+DREAL* CDistance::get_distance_matrix_real(int &num_vec1, int &num_vec2, DREAL* target)
+{
+	DREAL* result = NULL;
+	CFeatures* f1 = get_lhs();
+	CFeatures* f2 = get_rhs();
+
+	if (f1 && f2)
+	{
+		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
+         SG_ERROR( "distance matrix does not fit into target\n");
+
+		num_vec1=f1->get_num_vectors();
+		num_vec2=f2->get_num_vectors();
+		LONG total_num = num_vec1 * num_vec2;
+		int num_done = 0;
+
+		SG_DEBUG( "returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
+
+		if (target)
+			result=target;
+		else
+			result=new DREAL[total_num];
+
+		ASSERT(result);
+
+		if ( (f1 == f2) && (num_vec1 == num_vec2) )
+		{
+			for (int i=0; i<num_vec1; i++)
+			{
+				for (int j=i; j<num_vec1; j++)
+				{
+					double v=distance(i,j);
+
+					result[i+j*num_vec1]=v;
+					result[j+i*num_vec1]=v;
+
+					if (num_done%100000)
+						SG_PROGRESS(num_done, 0, total_num-1);
+
+					if (i!=j)
+						num_done+=2;
+					else
+						num_done+=1;
+				}
+			}
+		}
+		else
+		{
+			for (int i=0; i<num_vec1; i++)
+			{
+				for (int j=0; j<num_vec2; j++)
+				{
+					result[i+j*num_vec1]=distance(i,j) ;
+
+					if (num_done%100000)
+						SG_PROGRESS(num_done, 0, total_num-1);
+
+					num_done++;
+				}
+			}
+		}
+
+		SG_PRINT( "done.           \n");
+	}
+	else
+      SG_ERROR( "no features assigned to distance\n");
+
+	return result;
 }

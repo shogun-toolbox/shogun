@@ -12,16 +12,16 @@
 #define _MANHATTAN_H___
 
 #include "lib/common.h"
-#include "distance/RealDistance.h"
+#include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
-class CManhattanMetric: public CRealDistance
+class CManhattanMetric: public CSimpleDistance<DREAL>
 {
  public:
   CManhattanMetric();
   virtual ~CManhattanMetric();
   
-  virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+  virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 
   /// load and save distance init_data

@@ -58,12 +58,18 @@ class CDistance : public CSGObject
 
 			return compute(idx_a, idx_b);
 		}
+		
+		void get_distance_matrix(DREAL** dst,INT* m, INT* n);
+
+		virtual DREAL* get_distance_matrix_real(int &m,int &n, DREAL* target);
+
+		virtual SHORTREAL* get_distance_matrix_shortreal(int &m,int &n,SHORTREAL* target);
 
 		/** initialize distance cache
 		 *  make sure to check that your distance can deal with the
 		 *  supplied features (!)
 		*/
-		virtual bool init(CFeatures* lhs, CFeatures* rhs, bool do_init);
+		virtual bool init(CFeatures* lhs, CFeatures* rhs);
 
 		/// clean up your kernel
 		virtual void cleanup()=0;
@@ -121,9 +127,8 @@ class CDistance : public CSGObject
 			 return a;
 			return b;
 		}
+
 	protected:
-
-
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
 		/// in the corresponding feature object
