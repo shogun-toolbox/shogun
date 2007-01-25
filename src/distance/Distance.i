@@ -1,4 +1,8 @@
-%module(directors="1") Distance
+%define DOCSTR
+"The `Disance` module gathers all distances available in the SHOGUN toolkit."
+%enddef
+
+%module(docstring=DOCSTR,directors="1") Distance
 %{
 #define SWIG_FILE_WITH_INIT
 #include "distance/Distance.h" 
@@ -34,3 +38,6 @@
 %include "distance/Jensen.i"
 %include "distance/Manhattan.i"
 %include "distance/Minkowski.i"
+%include "distance/HammingWordDistance.i"
+%include "distance/ManhattanWordDistance.i"
+%include "distance/CanberraWordDistance.i"

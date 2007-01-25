@@ -3,6 +3,7 @@
 %}
 
 %include "lib/common.i"
+%include "distance/Distance.h"
 %include "distance/SimpleDistance.h"
 
 %template(SimpleRealDistance) CSimpleDistance<DREAL>;
