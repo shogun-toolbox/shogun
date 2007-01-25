@@ -1,3 +1,23 @@
+2007-01-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/Makefile, trunk/R/Makefile, trunk/R/Makefile.sed, README,
+	  regression/Regression.i: -updates for the debian package
+	  * compile fix for don't use svmlight
+	  * updated project URL
+
+2007-01-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* .authors, ChangeLog, base/SGObject.cpp, base/SGObject.h,
+	  gui/GUI.cpp, gui/Matlab.cpp, gui/Octave.cpp, gui/R.cpp,
+	  lib/io.cpp, lib/io.h, structure/DynProg.cpp, structure/Plif.cpp,
+	  structure/Plif.h: + add c.gehl to authors
+	  + create a global cio variable for static interfaces that points
+	  to the static io variable in CSGObject to get a global loglevel
+	  option;
+	  for modular interfaces this is tweakably per class (except for
+	  static
+	  functions/ C-files where a global sg_io variable is used)
+
 2007-01-23  Christian Gehl <Christian.Gehl@first.fraunhofer.de>
 
 	* lib/common.h: new distance types

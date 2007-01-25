@@ -148,7 +148,10 @@ CArray2(const T* p_array, INT dim1, INT dim2)
 
 	void display_array() const
 	{
-		CArray<T>::SG_PRINT( "2d-Array of size: %dx%d\n",dim1_size,dim2_size);
+		if (CArray<T>::get_name())
+			CArray<T>::SG_PRINT( "2d-Array '%s' of size: %dx%d\n", CArray<T>::get_name(), dim1_size,dim2_size);
+		else
+			CArray<T>::SG_PRINT( "2d-Array of size: %dx%d\n",dim1_size,dim2_size);
 		for (INT i=0; i<dim1_size; i++)
 		{
 			CArray<T>::SG_PRINT( "element(%d,:) = [ ",i);

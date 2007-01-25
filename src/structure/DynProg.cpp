@@ -416,7 +416,6 @@ void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len)
 	ASSERT(end_state_distribution_q.get_dim1()==N) ;	
 	
 	m_seq.set_array(seq, N, seq_len, true, true) ;
-	SG_PRINT( "seq: %x, (%d,%d)\n", seq, N, seq_len);
 	this->N=N ;
 
 	m_call=3 ;
@@ -615,7 +614,6 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 
 	m_call=1 ;
 
-	SG_PRINT( "m_seq.get_array(): %x", m_seq.get_array());
 	best_path_trans(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), m_orf_info.get_array(),
 					m_PEN.get_array(), m_PEN_state_signals.get_array(), 
 					m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
@@ -629,11 +627,6 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 
 void CDynProg::best_path_deriv_call() 
 {
-	fprintf(stderr, "test\n");
-	SG_PRINT("test2...\n");
-	SG_DEBUG("hey...\n");
-	SG_PRINT("loglevel: %d\n", (INT) io.get_loglevel());
-	SG_PRINT("io: %x\n", (INT) &io);
 	//if (m_step!=8)
 		//SG_ERROR( "please call best_path_set_dict_weights first\n") ;
 	//if (m_call!=1)
@@ -646,7 +639,6 @@ void CDynProg::best_path_deriv_call()
 	m_my_scores.resize_array(m_my_state_seq.get_array_size()) ;
 	m_my_losses.resize_array(m_my_state_seq.get_array_size()) ;
 
-	SG_PRINT( "m_seq.get_array(): %x\n", m_seq.get_array());
 	best_path_trans_deriv(m_my_state_seq.get_array(), m_my_pos_seq.get_array(), 
 						  m_my_scores.get_array(), m_my_losses.get_array(), m_my_state_seq.get_array_size(),
 						  m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
@@ -1874,7 +1866,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 							   DREAL *dictionary_weights, INT dict_len, bool use_orf)
 {
-	SG_PRINT( "best_path_trans:%x", seq_array);
+	SG_PRINT( "best_path_trans:%x\n", seq_array);
 	if (!svm_arrays_clean)
 	{
 		SG_ERROR( "SVM arrays not clean") ;

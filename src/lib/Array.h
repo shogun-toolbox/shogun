@@ -68,6 +68,11 @@
 				free(array);
 		}
 
+		inline const char* get_name() const
+		{
+			return name;
+		}
+
 		inline void set_name(const char * p_name) 
 		{
 			name = p_name ;
