@@ -17,7 +17,7 @@
 #include "guilib/GUIDistance.h"
 
 #include "distance/Distance.h"
-#include "distance/RealDistance.h"
+#include "distance/SimpleDistance.h"
 
 #include "distance/Canberra.h"
 #include "distance/Chebyshew.h"
@@ -25,6 +25,9 @@
 #include "distance/Jensen.h"
 #include "distance/Manhattan.h"
 #include "distance/Minkowski.h"
+
+#include "distance/ManhattanWordDistance.h"
+#include "distance/HammingWordDistance.h"
 
 #include "features/RealFileFeatures.h"
 #include "features/TOPFeatures.h"
@@ -170,7 +173,7 @@ SG_INFO( "CGUIDistance::init_distance 2 if");
 						 || gui->guifeatures.get_train_features()->get_feature_type() == F_ANY 
 						 || distance->get_feature_type() == F_ANY) )
 				{
-					distance->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_train_features(), do_init);
+					distance->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_train_features());
 					initialized=true;
 				}
 				else
@@ -208,7 +211,8 @@ SG_INFO( "CGUIDistance::init_distance 2 if");
 					{
 						SG_INFO( "initialising distance with TEST DATA, train: %d test %d\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
 						// lhs -> always train_features; rhs -> always test_features
-						distance->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features(), do_init);						
+						distance->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features());
+
 					} ;
 				}
 				else
@@ -290,7 +294,7 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 				SG_ERROR( "Minkowski-Distance expects REAL as data type \n") ;
 		}
 		else if (strcmp(dist_type,"MANHATTEN")==0)
-		{
+		{	
 			if (strcmp(data_type,"REAL")==0)
 			{
 				delete d;
@@ -299,8 +303,41 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 					SG_INFO( "Manhattan-Distance created\n");
 				return d;
 			}
+			else if (strcmp(data_type,"WORD")==0)
+			{
+				
+				delete d;
+				d=new CManhattanWordDistance();
+
+				if (d)
+				{
+					SG_INFO( "ManhattenWordDistance created\n");
+					return d;
+				}
+			}
 			else
-				SG_ERROR( "Manhattan-Distance expects REAL as data type \n") ;
+				SG_ERROR( "Manhattan-Distance expects REAL or WORD as data type \n") ;
+		}
+		else if (strcmp(dist_type,"HAMMING")==0)
+		{
+			if (strcmp(data_type,"WORD")==0)
+			{
+				INT use_sign = 0 ;
+				
+				
+				sscanf(param, "%s %s %d", dist_type, data_type, &use_sign);
+				delete d;
+				d=new CHammingWordDistance(use_sign==1);
+
+				if (d)
+				{
+					if (use_sign)
+						SG_INFO( "HammingWordDistance with sign(count) created\n");
+					else
+						SG_INFO( "HammingWordDistance with count created\n");
+					return d;
+				}
+			}
 		}
 		else if (strcmp(dist_type,"CANBERRA")==0)
 		{
@@ -357,7 +394,7 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 			else
 				SG_ERROR( "Jense-Distance expects REAL as data type \n") ;
 
-		}   
+		}
 		else
 			SG_ERROR( "in this format only CANBERRA, CHEBYSHEW, GEODESIC, JENSEN, MANHATTEN, MINKOWSKI is accepted \n") ;
 	} 
