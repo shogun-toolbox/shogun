@@ -17,7 +17,7 @@
 template <class ST> class CStringDistance : public CDistance
 {
 	public:
-		CStringDistance(LONG cachesize) : CDistance(cachesize)
+		CStringDistance() : CDistance()
 		{
 		}
 
@@ -29,19 +29,38 @@ template <class ST> class CStringDistance : public CDistance
 		 * be true
 		 */
 		
-		virtual bool init(CFeatures* l, CFeatures* r, bool do_init)
+		virtual bool init(CFeatures* l, CFeatures* r)
 		{
 			CDistance::init(l,r,do_init);
 
 			ASSERT(l->get_feature_class() == C_STRING);
 			ASSERT(r->get_feature_class() == C_STRING);
-
+			ASSERT(l->get_feature_type()==this->get_feature_type());
+			ASSERT(r->get_feature_type()==this->get_feature_type());
 			return true;
 		}
 
 		/** return feature class the distance can deal with
 		  */
 		inline virtual EFeatureClass get_feature_class() { return C_STRING; }
+		/** return feature type the distance can deal with
+		  */
+		virtual EFeatureType get_feature_type();
 };
+
+template<> inline EFeatureType CStringDistance<DREAL>::get_feature_type() { return F_DREAL; }
+
+template<> inline EFeatureType CStringDistance<ULONG>::get_feature_type() { return F_ULONG; }
+
+template<> inline EFeatureType CStringDistance<INT>::get_feature_type() { return F_INT; }
+
+template<> inline EFeatureType CStringDistance<WORD>::get_feature_type() { return F_WORD; }
+
+template<> inline EFeatureType CStringDistance<SHORT>::get_feature_type() { return F_SHORT; }
+
+template<> inline EFeatureType CStringDistance<BYTE>::get_feature_type() { return F_BYTE; }
+
+template<> inline EFeatureType CStringDistance<CHAR>::get_feature_type() { return F_CHAR; }
+
 #endif
 
