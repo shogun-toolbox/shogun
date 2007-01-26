@@ -430,6 +430,13 @@ public:
 	/// returns entropy of p which is given in logspace
 	static double entropy(DREAL* p, INT len);
 
+	/// returns number generator seed
+	inline static UINT get_seed()
+	{
+		return CMath::seed;
+	}
+
+
 	/**@name summing functions */
 	//@{ 
 	/** sum logarithmic probabilities.
@@ -477,15 +484,6 @@ public:
 	/// determine accuracy, such that the thing fits into MAX_LOG_TABLE_SIZE, needs logrange as argument
 	static INT determine_logaccuracy(INT range);
 #else
-	/*
-	inline DREAL logarithmic_sum(DREAL p, DREAL q)
-	{
-	    double result=comp_logarithmic_sum(p,q);
-
-	    printf("diff:%f <-> %f\n",p-q, result);
-	    return result;
-	}*/
-
 	static inline DREAL logarithmic_sum(DREAL p, DREAL q)
 	{
 		if (finite(p))
@@ -553,8 +551,12 @@ public:
 
 	/// range for logtable: log(1+exp(x))  -LOGRANGE <= x <= 0
 	static INT LOGRANGE;
+
+	/// random generator seed
+	static UINT seed;
 	
 #ifdef USE_LOGCACHE	
+
 	/// number of steps per integer
 	static INT LOGACCURACY;
 	//@}

@@ -70,6 +70,7 @@ const DREAL CMath::INFTY            =  -log(0.0);	// infinity
 const DREAL CMath::ALMOST_NEG_INFTY =  -1000;	
 
 CHAR CMath::rand_state[256];
+UINT CMath::seed = 0;
 
 
 CMath::CMath()
@@ -79,16 +80,21 @@ CMath::CMath()
 #endif
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
-	UINT seed=(UINT) (4223517*getpid()*tv.tv_sec*tv.tv_usec);
+	seed=(UINT) (4223517*getpid()*tv.tv_sec*tv.tv_usec);
 #ifndef CYGWIN
 	initstate(seed, CMath::rand_state, sizeof(CMath::rand_state));
 #endif
+
+#ifndef HAVE_SWIG
 	SG_PRINT( "( seeding random number generator with %u, ", seed);
+#endif
 
 #ifdef USE_LOGCACHE
     LOGRANGE=CMath::determine_logrange();
     LOGACCURACY=CMath::determine_logaccuracy(LOGRANGE);
+#ifndef HAVE_SWIG
     SG_PRINT( "initializing log-table (size=%i*%i*%i=%2.1fMB) ... ) ",LOGRANGE,LOGACCURACY,sizeof(DREAL),LOGRANGE*LOGACCURACY*sizeof(DREAL)/(1024.0*1024.0)) ;
+#endif 
    
     CMath::logtable=new DREAL[LOGRANGE*LOGACCURACY];
     init_log_table();
@@ -96,7 +102,9 @@ CMath::CMath()
 	INT i=0;
 	while ((DREAL)log(1+((DREAL)exp(-DREAL(i)))))
 		i++;
+#ifndef HAVE_SWIG
     SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", i);
+#endif 
 	LOGRANGE=i;
 #endif 
 }
