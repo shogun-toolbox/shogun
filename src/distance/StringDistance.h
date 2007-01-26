@@ -31,7 +31,7 @@ template <class ST> class CStringDistance : public CDistance
 		
 		virtual bool init(CFeatures* l, CFeatures* r)
 		{
-			CDistance::init(l,r,do_init);
+			CDistance::init(l,r);
 
 			ASSERT(l->get_feature_class() == C_STRING);
 			ASSERT(r->get_feature_class() == C_STRING);

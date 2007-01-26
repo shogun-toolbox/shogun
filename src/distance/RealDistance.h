@@ -21,9 +21,9 @@ class CRealDistance : public CSimpleDistance<DREAL>
 		{
 		}
 
-		virtual bool init(CFeatures* l, CFeatures* r, bool do_init)
+		virtual bool init(CFeatures* l, CFeatures* r)
 		{
-			CSimpleDistance<DREAL>::init(l,r, do_init);
+			CSimpleDistance<DREAL>::init(l,r);
 
 			ASSERT(l->get_feature_type()==F_DREAL);
 			ASSERT(r->get_feature_type()==F_DREAL);

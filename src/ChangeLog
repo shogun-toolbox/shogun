@@ -1,3 +1,10 @@
+2007-01-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog, base/SGObject.cpp, distance/CanberraWordDistance.cpp,
+	  gui/TextGUI.cpp, lib/Mathematics.cpp, lib/Mathematics.h: * move
+	  CMath math declaration into base/SGObject.cpp
+	  * move version printout into CMath ...
+
 2007-01-25  Christian Gehl <Christian.Gehl@first.fraunhofer.de>
 
 	* distance/Distance.i, distance/SimpleDistance.i: change some
