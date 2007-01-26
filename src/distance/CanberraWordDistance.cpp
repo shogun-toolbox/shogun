@@ -123,5 +123,5 @@ DREAL CCanberraWordDistance::compute(INT idx_a, INT idx_b)
 	((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-	result;
+	return result;
 }

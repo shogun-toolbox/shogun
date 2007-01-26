@@ -74,27 +74,29 @@ CHAR CMath::rand_state[256];
 
 CMath::CMath()
 {
+#ifndef HAVE_SWIG
+	CSGObject::version.print_version();
+#endif
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	UINT seed=(UINT) (4223517*getpid()*tv.tv_sec*tv.tv_usec);
 #ifndef CYGWIN
 	initstate(seed, CMath::rand_state, sizeof(CMath::rand_state));
 #endif
-	SG_INFO( "seeding random number generator with %u\n", seed);
+	SG_PRINT( "( seeding random number generator with %u, ", seed);
 
 #ifdef USE_LOGCACHE
     LOGRANGE=CMath::determine_logrange();
     LOGACCURACY=CMath::determine_logaccuracy(LOGRANGE);
-    SG_INFO( "Initializing log-table (size=%i*%i*%i=%2.1fMB) ...",LOGRANGE,LOGACCURACY,sizeof(DREAL),LOGRANGE*LOGACCURACY*sizeof(DREAL)/(1024.0*1024.0)) ;
+    SG_PRINT( "initializing log-table (size=%i*%i*%i=%2.1fMB) ... ) ",LOGRANGE,LOGACCURACY,sizeof(DREAL),LOGRANGE*LOGACCURACY*sizeof(DREAL)/(1024.0*1024.0)) ;
    
     CMath::logtable=new DREAL[LOGRANGE*LOGACCURACY];
     init_log_table();
-    SG_INFO( "Done.\n") ;
 #else
 	INT i=0;
 	while ((DREAL)log(1+((DREAL)exp(-DREAL(i)))))
 		i++;
-    SG_INFO( "determined range for x in log(1+exp(-x)) is:%d\n", i);
+    SG_PRINT("determined range for x in log(1+exp(-x)) is:%d )\n", i);
 	LOGRANGE=i;
 #endif 
 }
@@ -400,6 +402,3 @@ DREAL* CMath::pinv(DREAL* matrix, INT rows, INT cols, DREAL* target)
 	//svd
 	return target;
 }
-
-//this creates a math object for the purpose of the constructor to be called at least once
-volatile CMath math;

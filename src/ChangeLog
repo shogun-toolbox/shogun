@@ -1,3 +1,49 @@
+2007-01-25  Christian Gehl <Christian.Gehl@first.fraunhofer.de>
+
+	* distance/Distance.i, distance/SimpleDistance.i: change some
+	  lines; add new distance interfaces
+	* distance/CanberraWordDistance.i, distance/HammingWordDistance.i,
+	  distance/ManhattanWordDistance.i: swig interface files
+	* kernel/DistanceKernel.i: swig interface: DistanceKernel
+	* kernel/DistanceKernel.cpp, kernel/DistanceKernel.h: new kernel;
+	  uses distance objects
+	* guilib/GUIDistance.cpp: distance adjustment
+	  Diese und die folgenden Zeilen werden ignoriert --
+	  
+	  M GUIDistance.cpp
+	* distance/StringDistance.h: renewed
+	* distance/CanberraWordDistance.cpp,
+	  distance/CanberraWordDistance.h,
+	  distance/HammingWordDistance.cpp, distance/HammingWordDistance.h,
+	  distance/ManhattanWordDistance.cpp,
+	  distance/ManhattanWordDistance.h: new distances
+	* distance/Canberra.cpp, distance/Canberra.h,
+	  distance/Chebyshew.cpp, distance/Chebyshew.h,
+	  distance/Distance.cpp, distance/Distance.h,
+	  distance/Geodesic.cpp, distance/Geodesic.h, distance/Jensen.cpp,
+	  distance/Jensen.h, distance/Manhattan.cpp, distance/Manhattan.h,
+	  distance/Minkowski.cpp, distance/Minkowski.h,
+	  distance/SimpleDistance.h: renewed distance
+	* lib/common.h: added K_DISTANCE and D_CANBERRA
+
+2007-01-25  Fabio De Bona <Fabio.De.Bona@tuebingen.mpg.de>
+
+	* lib/Array.h, lib/Array3.h: + added 'const' in overloaded
+	  operator=
+
+2007-01-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* Makefile: * quieten svn2cl error (if svn2cl does not exist)
+	* ChangeLog, lib/Array.h, lib/Array2.h, structure/DynProg.cpp: *
+	  remove some debug output
+	  * array display functions use name now
+
+2007-01-24  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* structure/DynProg.cpp, structure/DynProg.h: preparation for
+	  changes ... should work as before...
+	  G
+
 2007-01-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
 	* trunk/Makefile, trunk/R/Makefile, trunk/R/Makefile.sed, README,

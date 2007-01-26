@@ -155,7 +155,6 @@ CTextGUI::CTextGUI(INT p_argc, char** p_argv)
 #ifdef WITHMATLAB
 	libmmfileInitialize() ;
 #endif
-	version.print_version();
 }
 
 CTextGUI::~CTextGUI()
