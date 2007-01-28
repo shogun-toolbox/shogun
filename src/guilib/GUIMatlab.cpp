@@ -541,10 +541,15 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			  ((mxGetN(mx_a_trans) == 3)||(mxGetN(mx_a_trans) == 4)) ))
 			SG_ERROR( "model matricies not matching in size \n");
 
+		INT seq_num_dimensions = mxGetNumberOfDimensions(mx_seq) ;
 		if (!(mxGetM(mx_seq) == N &&
-			  mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1))
+			  mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 && 
+			  ((seq_num_dimensions==2) || (seq_num_dimensions==3))))
 			SG_ERROR( "seq and position matrices sizes wrong\n");
-		
+		INT seq_third_dimension = 1 ;
+		if (seq_num_dimensions==3)
+			seq_third_dimension = mxGetDimensions(mx_seq)[2] ;
+
 		INT penalty_num_dimensions = mxGetNumberOfDimensions(mx_penalties) ;
 		if (!((penalty_num_dimensions==2) || (penalty_num_dimensions==3)))
 			SG_ERROR( "penalties should have 2 or three dimensions (has %i)", penalty_num_dimensions);
@@ -561,9 +566,9 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 		ASSERT(penalties_dim3>0) ;
 
 		if (!(mxGetM(mx_state_signals)==N && 
-			  mxGetN(mx_state_signals)==2))
-			SG_ERROR( "size of state_signals wrong (%i!=%i or %i!=2)\n", mxGetM(mx_state_signals), N, mxGetN(mx_state_signals));
-			
+			  mxGetN(mx_state_signals)==seq_third_dimension))
+			SG_ERROR( "size of state_signals wrong (%i!=%i or %i!=%i)\n", mxGetM(mx_state_signals), N, mxGetN(mx_state_signals), seq_third_dimension);
+
 		if (!(((mxGetN(mx_dict_weights)==8) || (mxGetN(mx_dict_weights)==16)) && 
 			  ((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			   || mxIsEmpty(mx_penalty_info))))
@@ -647,9 +652,9 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 						PEN_matrix[i+j*N] = plif_array ;
 				}
 
-			CPlifBase **PEN_state_signal = new CPlifBase*[2*N] ;
+			CPlifBase **PEN_state_signal = new CPlifBase*[seq_third_dimension*N] ;
 			double* state_signals=mxGetPr(mx_state_signals) ;
-			for (INT i=0; i<2*N; i++)
+			for (INT i=0; i<N*seq_third_dimension; i++)
 			{
 				INT id = (INT) state_signals[i]-1 ;
 				if ((id<0 || id>=P) && (id!=-1))
@@ -720,8 +725,10 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			} ;
 			
 			h->best_path_trans(seq, M, pos, orf_info,
-							   PEN_matrix, PEN_state_signal, genestr, L, genestr_num,
-							   nbest, nother, p_prob, my_path, my_pos, dict_weights, dict_weigths_num*D, use_orf) ;
+							   PEN_matrix, PEN_state_signal, seq_third_dimension, 
+							   genestr, L, genestr_num,
+							   nbest, nother, p_prob, my_path, my_pos, 
+							   dict_weights, dict_weigths_num*D, use_orf) ;
 
 			// clean up 
 			delete_penalty_struct(PEN, P) ;
@@ -805,9 +812,14 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			  ((mxGetN(mx_a_trans) == 3) || (mxGetN(mx_a_trans) == 4))))
 			SG_ERROR( "model matricies not matching in size \n");
 
+		INT seq_num_dimensions = mxGetNumberOfDimensions(mx_seq) ;
 		if (!(mxGetM(mx_seq) == N &&
-			  mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1))
-			SG_ERROR( "sequence and position matrices sizes wrong\n");
+			  mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 && 
+			  ((seq_num_dimensions==2) || (seq_num_dimensions==3))))
+			SG_ERROR( "seq and position matrices sizes wrong\n");
+		INT seq_third_dimension = 1 ;
+		if (seq_num_dimensions==3)
+			seq_third_dimension = mxGetDimensions(mx_seq)[2] ;
 		
 		INT penalty_num_dimensions = mxGetNumberOfDimensions(mx_penalties) ;
 		if (!((penalty_num_dimensions==2) || (penalty_num_dimensions==3)))
@@ -825,8 +837,8 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 		ASSERT(penalties_dim3>0) ;
 
 		if (!(mxGetM(mx_state_signals)==N && 
-			  mxGetN(mx_state_signals)==2))
-			SG_ERROR( "size of state_signals wrong (%i!=%i or %i!=2)\n", mxGetM(mx_state_signals), N, mxGetN(mx_state_signals));
+			  mxGetN(mx_state_signals)==seq_third_dimension))
+			SG_ERROR( "size of state_signals wrong (%i!=%i or %i!=%i)\n", mxGetM(mx_state_signals), N, mxGetN(mx_state_signals), seq_third_dimension);
 			
 		if (!(mxGetN(mx_my_pos)==mxGetN(mx_my_path) &&
 			  mxGetM(mx_my_path)==1 &&
@@ -926,9 +938,9 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 				}
 			//fprintf(stderr, "num_empty=%i, num_single=%i, num_array=%i\n", num_empty, num_single, num_array) ;
 
-			CPlifBase **PEN_state_signal = new CPlifBase*[2*N] ;
+			CPlifBase **PEN_state_signal = new CPlifBase*[seq_third_dimension*N] ;
 			double* state_signals=mxGetPr(mx_state_signals) ;
-			for (INT i=0; i<2*N; i++)
+			for (INT i=0; i<seq_third_dimension*N; i++)
 			{
 				INT id = (INT) state_signals[i]-1 ;
 				if ((id<0 || id>=P) && (id!=-1))
@@ -1028,7 +1040,8 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			
 			h->best_path_trans_deriv(my_path, my_pos, p_my_scores, p_my_losses, 
 									 my_seqlen, seq, M, pos, 
-									 PEN_matrix, PEN_state_signal, genestr, genestr_len, genestr_num, 
+									 PEN_matrix, PEN_state_signal, seq_third_dimension, 
+									 genestr, genestr_len, genestr_num, 
 									 dict_weights, dict_weigths_num*D) ;
 			
 			for (INT i=0; i<N; i++)

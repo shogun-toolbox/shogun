@@ -35,7 +35,7 @@ extern "C" int	finite(double);
 #define USEFIXEDLENLIST 0
 //#define USE_TMP_ARRAYCLASS
 
-#define DYNPROG_DEBUG
+//#define DYNPROG_DEBUG
 
 static INT word_degree_default[4]={3,4,5,6} ;
 static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -85,9 +85,9 @@ CDynProg::CDynProg()
 	  svm_value_unnormalized_single(num_svms_single),
 	  num_unique_words_single(0),
 
-	  max_a_id(0), m_seq(1,1), m_pos(1), m_orf_info(1,2), 
+	  max_a_id(0), m_seq(1,1,1), m_pos(1), m_orf_info(1,2), 
       m_segment_sum_weights(1,1), m_plif_list(1), 
-	  m_PEN(1,1), m_PEN_state_signals(1,2), 
+	  m_PEN(1,1), m_PEN_state_signals(1,1), 
 	  m_genestr(1,1), m_dict_weights(1,1), m_segment_loss(1,1,2), 
       m_segment_ids_mask(1,1),
 	  m_scores(1), m_states(1,1), m_positions(1,1)
@@ -152,7 +152,7 @@ void CDynProg::set_N(INT p_N)
 
 	m_orf_info.resize_array(N,2) ;
 	m_PEN.resize_array(N,N) ;
-	m_PEN_state_signals.resize_array(N,2) ;
+	m_PEN_state_signals.resize_array(N,1) ;
 }
 
 void CDynProg::set_p_vector(DREAL *p, INT p_N) 
@@ -415,7 +415,26 @@ void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len)
 	ASSERT(initial_state_distribution_p.get_dim1()==N) ;
 	ASSERT(end_state_distribution_q.get_dim1()==N) ;	
 	
-	m_seq.set_array(seq, N, seq_len, true, true) ;
+	m_seq.set_array(seq, N, seq_len, 1, true, true) ;
+	this->N=N ;
+
+	m_call=3 ;
+	m_step=2 ;
+}
+
+void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len, INT max_num_signals) 
+{
+	if (!svm_arrays_clean)
+	{
+		SG_ERROR( "SVM arrays not clean") ;
+		return ;
+	} ;
+
+	ASSERT(p_N==N) ;
+	ASSERT(initial_state_distribution_p.get_dim1()==N) ;
+	ASSERT(end_state_distribution_q.get_dim1()==N) ;	
+	
+	m_seq.set_array(seq, N, seq_len, max_num_signals, true, true) ;
 	this->N=N ;
 
 	m_call=3 ;
@@ -502,19 +521,22 @@ void CDynProg::best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n)
 	m_step=6 ;
 }
 
-void CDynProg::best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m, INT n) 
+void CDynProg::best_path_set_plif_state_signal_matrix(INT *plif_id_matrix, INT m, INT max_num_signals) 
 {
 	if (m_step!=6)
 		SG_ERROR( "please call best_path_set_plif_id_matrix first\n") ;
 	
-	if ((m!=N) || (n!=2))
-		SG_ERROR( "plif_state_signal_matrix size does not match previous info %i!=%i or %i!=%i\n", m, N, n, 2) ;
+	if (m!=N)
+		SG_ERROR( "plif_state_signal_matrix size does not match previous info %i!=%i\n", m, N) ;
 
-	CArray2<INT> id_matrix(plif_id_matrix, N, 2, false, false) ;
-	m_PEN_state_signals.resize_array(N,2) ;
+	if (m_seq.get_dim3() != max_num_signals)
+		SG_ERROR( "size(plif_state_signal_matrix,2) does not match with size(m_seq,3): %i!=%i\nSorry, Soeren... interface changed\n", m_seq.get_dim3(), max_num_signals) ;
+
+	CArray2<INT> id_matrix(plif_id_matrix, N, max_num_signals, false, false) ;
+	m_PEN_state_signals.resize_array(N, max_num_signals) ;
 	for (INT i=0; i<N; i++)
 	{
-		for (INT j=0; j<2; j++)
+		for (INT j=0; j<max_num_signals; j++)
 		{
 			if (id_matrix.element(i,j)>=0)
 				m_PEN_state_signals.element(i,j)=m_plif_list[id_matrix.element(i,j)] ;
@@ -614,8 +636,9 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 
 	m_call=1 ;
 
-	best_path_trans(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), m_orf_info.get_array(),
-					m_PEN.get_array(), m_PEN_state_signals.get_array(), 
+	best_path_trans(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
+					m_orf_info.get_array(), m_PEN.get_array(),
+					m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
 					m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
 					nbest, 0, 
 					m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
@@ -642,7 +665,8 @@ void CDynProg::best_path_deriv_call()
 	best_path_trans_deriv(m_my_state_seq.get_array(), m_my_pos_seq.get_array(), 
 						  m_my_scores.get_array(), m_my_losses.get_array(), m_my_state_seq.get_array_size(),
 						  m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
-						  m_PEN.get_array(), m_PEN_state_signals.get_array(), 
+						  m_PEN.get_array(), 
+						  m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(), 
 						  m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
 						  m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2()) ;
 
@@ -1859,14 +1883,15 @@ bool CDynProg::extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT or
 }
 
 
-void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *pos, const INT *orf_info_array,
-							   CPlifBase **Plif_matrix, CPlifBase **Plif_state_signals,
+void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *pos, 
+							   const INT *orf_info_array, CPlifBase **Plif_matrix, 
+							   CPlifBase **Plif_state_signals, INT max_num_signals,
 							   const char *genestr, INT genestr_len, INT genestr_num, 
 							   short int nbest, short int nother,
 							   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 							   DREAL *dictionary_weights, INT dict_len, bool use_orf)
 {
-	SG_PRINT( "best_path_trans:%x\n", seq_array);
+	//SG_PRINT( "best_path_trans:%x\n", seq_array);
 	if (!svm_arrays_clean)
 	{
 		SG_ERROR( "SVM arrays not clean") ;
@@ -1887,8 +1912,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	dict_weights_array=dict_weights.get_array() ;
 	
 	CArray2<CPlifBase*> PEN(Plif_matrix, N, N, false, false) ;
-	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, 2, false, false) ;
-	CArray2<DREAL> seq_input(seq_array, N, seq_len) ;
+	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, false) ;
+	CArray3<DREAL> seq_input(seq_array, N, seq_len, max_num_signals) ;
 	CArray2<DREAL> seq(N, seq_len) ;
 	//seq.zero() ;
 	CArray2<INT> orf_info(orf_info_array, N, 2) ;
@@ -1908,43 +1933,26 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 		for (INT i=0; i<N; i++)
 			for (INT j=0; j<seq_len; j++)
-			{
-				if (PEN_state_signals.element(i,0)==NULL)
-					// no plif
-					seq.element(i,j) = seq_input.element(i,j) ;
-				else
+				for (INT k=0; k<max_num_signals; k++)
 				{
-					if (PEN_state_signals.element(i,1)==NULL)
+					if ((PEN_state_signals.element(i,k)==NULL) && (k==0))
+					{
+						// no plif
+						seq.element(i,j) = seq_input.element(i,j,k) ;
+						break ;
+					}
+					if (PEN_state_signals.element(i,k)!=NULL)
 					{
 						// just one plif
-						if (finite(seq_input.element(i,j)))
-							seq.element(i,j) = PEN_state_signals.element(i,0)->lookup_penalty(seq_input.element(i,j), svm_value) ;
+						if (finite(seq_input.element(i,j,k)))
+							seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_input.element(i,j,k), svm_value) ;
 						else
-							seq.element(i,j) = seq_input.element(i,j) ;
-					}
+							// keep infinity values
+							seq.element(i,j) = seq_input.element(i, j, k) ;
+					} 
 					else
-					{
-						// decode the two parts and use them with the two plifs
-						if (finite(seq_input.element(i,j)))
-						{
-							INT part1 = (INT) seq_input.element(i,j) ;
-							INT part2 = (INT) ((seq_input.element(i,j)-(DREAL)part1)*100.) ;
-							DREAL input1 = part1/1000000. - 50. ;
-							DREAL input2 = part2 - 50. ;
-							if (!((input1>-50) && (input1<50)) || !((input2>-50) && (input2<50)))
-								fprintf(stderr, "(%i, %i), (%f, %f), %e", part1, part2, input1, input2, seq_input.element(i,j)) ;
-							
-							ASSERT((input1>-50) && (input1<50)) ;
-							ASSERT((input2>-50) && (input2<50)) ;
-							
-							seq.element(i,j) = PEN_state_signals.element(i,0)->lookup_penalty(input1, svm_value) ;
-							seq.element(i,j) += PEN_state_signals.element(i,1)->lookup_penalty(input2, svm_value) ;
-						}
-						else
-							seq.element(i,j) = seq_input.element(i,j) ;
-				    }
+						break ;
 				}
-			}
 	}
 	
 	{ // determine maximal length of look-back
@@ -2600,7 +2608,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, DREAL* my_losses,
 									 INT my_seq_len, 
 									 const DREAL *seq_array, INT seq_len, const INT *pos,
-									 CPlifBase **Plif_matrix, CPlifBase **Plif_state_signals,
+									 CPlifBase **Plif_matrix, 
+									 CPlifBase **Plif_state_signals, INT max_num_signals,
 									 const char *genestr, INT genestr_len, INT genestr_num,
 									 DREAL *dictionary_weights, INT dict_len)
 {	
@@ -2620,8 +2629,8 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 	dict_weights_array=dict_weights.get_array() ;
 	
 	CArray2<CPlifBase*> PEN(Plif_matrix, N, N, false, false) ;
-	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, 2, false, false) ;
-	CArray2<DREAL> seq_input(seq_array, N, seq_len) ;
+	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, false) ;
+	CArray3<DREAL> seq_input(seq_array, N, seq_len, max_num_signals) ;
 	
 	{ // determine whether to use svm outputs and clear derivatives
 		for (INT i=0; i<N; i++)
@@ -2636,7 +2645,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				penij->penalty_clear_derivative() ;
 			}
 		for (INT i=0; i<N; i++)
-			for (INT j=0; j<2; j++)
+			for (INT j=0; j<max_num_signals; j++)
 			{
 				CPlifBase *penij=PEN_state_signals.element(i,j) ;
 				if (penij==NULL)
@@ -2791,44 +2800,28 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 #endif
 
 			//fprintf(stderr, "emmission penalty skipped: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", to_state, to_pos, seq_input.element(to_state, to_pos), 0.0) ;
-			if (PEN_state_signals.element(to_state,0)!=NULL)
+			for (INT k=0; k<max_num_signals; k++)
 			{
-				if (PEN_state_signals.element(to_state,1)!=NULL)
+				if ((PEN_state_signals.element(to_state,k)==NULL)&&(k==0))
 				{
-					// decode the two parts and use them with the two plifs
-					INT part1 = (INT) seq_input.element(to_state,to_pos) ;
-					INT part2 = (INT) ((seq_input.element(to_state,to_pos)-(DREAL)part1)*100.) ;
-					DREAL input1 = part1/1000000. - 50. ;
-					DREAL input2 = part2 - 50. ;
-					ASSERT((input1>-50) && (input1<50)) ;
-					ASSERT((input2>-50) && (input2<50)) ;
-
-					DREAL nscore1 = PEN_state_signals.element(to_state,0)->lookup_penalty(input1, svm_value) ;
-					DREAL nscore2 = PEN_state_signals.element(to_state,1)->lookup_penalty(input2, svm_value) ;
-					my_scores[i] += nscore1 + nscore2 ;
 #ifdef DYNPROG_DEBUG
-					SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i value1=%1.2f value2=%1.2f score1=%1.2f score2=%1.2f\n", i, to_state, to_pos, input1, input2, nscore1, nscore2) ;
+					SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i score=%1.2f (no state penalty)\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k)) ;
 #endif
-					PEN_state_signals.element(to_state,0)->penalty_add_derivative(input1, svm_value) ;
-					PEN_state_signals.element(to_state,1)->penalty_add_derivative(input2, svm_value) ;
+					my_scores[i] += seq_input.element(to_state, to_pos, k) ;
+					break ;
 				}
-				else
+				if (PEN_state_signals.element(to_state, k)!=NULL)
 				{
-					DREAL nscore = PEN_state_signals.element(to_state,0)->lookup_penalty(seq_input.element(to_state, to_pos), svm_value) ;
+					DREAL nscore = PEN_state_signals.element(to_state,k)->lookup_penalty(seq_input.element(to_state, to_pos, k), svm_value) ;
 					my_scores[i] += nscore ;
 #ifdef DYNPROG_DEBUG
-					SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos), nscore) ;
+					SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i value=%1.2f score=%1.2f k=%i\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k), nscore, k) ;
 #endif
-					PEN_state_signals.element(to_state,0)->penalty_add_derivative(seq_input.element(to_state, to_pos), svm_value) ;
-				}
-			} else
-			{
-#ifdef DYNPROG_DEBUG
-				SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i score=%1.2f\n", i, to_state, to_pos, seq_input.element(to_state, to_pos)) ;
-#endif
-				my_scores[i] += seq_input.element(to_state, to_pos) ;
+					PEN_state_signals.element(to_state,k)->penalty_add_derivative(seq_input.element(to_state, to_pos, k), svm_value) ;
+				} else
+					break ;
 			}
-
+			
 #ifdef DYNPROG_DEBUG
 			SG_DEBUG( "%i. scores[i]=%f (final) \n", i, my_scores[i]) ;
 #endif
