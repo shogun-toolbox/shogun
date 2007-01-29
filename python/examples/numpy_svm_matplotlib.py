@@ -12,11 +12,11 @@ dist = 2 ;
 
 # positive examples
 feat_pos=randn(2,num_dat)+dist ;
-plot(feat_pos[0,:], feat_pos[1,:], ".") ;
+plot(feat_pos[0,:], feat_pos[1,:], "r.") ;
 
 # negative examples
 feat_neg=randn(2,num_dat)-dist ;
-plot(feat_neg[0,:], feat_neg[1,:], "r.") ;
+plot(feat_neg[0,:], feat_neg[1,:], "b.") ;
 
 # train svm
 features = array((feat_neg, feat_pos)) ;

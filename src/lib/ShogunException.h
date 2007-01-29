@@ -1,19 +1,15 @@
 #ifndef _SHOGUN_EXCEPTION_H_
 #define _SHOGUN_EXCEPTION_H_
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
-      
 class ShogunException {
-      private:
-         char* val;
-      public:
-         ShogunException(const char *fmt, ... );
-   
-         char* get_debug_string() {
+    public:
+        ShogunException(const char* str);
+
+        inline const char* get_exception_string() {
             return val;
-         }
+        }
+    private:
+        char* val;
 };
 
 #endif // _SHOGUN_EXCEPTION_H_

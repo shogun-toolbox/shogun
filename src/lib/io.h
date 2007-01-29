@@ -75,10 +75,6 @@ public:
 	void progress(DREAL current_val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
 	void absolute_progress(DREAL current_val, DREAL val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
 
-#ifdef USE_SWIG
-    void exception(const char* str);
-#endif
-
 	inline void not_implemented() const
 	{
 		message(M_ERROR, "Sorry, not yet implemented\n");

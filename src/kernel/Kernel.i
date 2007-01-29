@@ -21,6 +21,7 @@
 %feature("director") CKernel;
 %feature("autodoc","1");
 
+%include "lib/ShogunException.i"
 %include "lib/io.i"
 %include "base/Version.i"
 %include "base/Parallel.i"

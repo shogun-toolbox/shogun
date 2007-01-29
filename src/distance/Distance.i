@@ -8,8 +8,6 @@
 #include "distance/Distance.h" 
 %}
 
-%include "lib/common.i"
-
 #ifdef HAVE_PYTHON
 %init %{
 	  import_array();
@@ -23,6 +21,7 @@
 %feature("director") CDistance;
 %feature("autodoc","1");
 
+%include "lib/ShogunException.i"
 %include "lib/io.i" 
 %include "base/Version.i"
 %include "base/Parallel.i"

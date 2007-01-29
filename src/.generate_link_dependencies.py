@@ -9,6 +9,7 @@ incexpr=re.compile('^\s*[%#]include "(\S+)"',re.MULTILINE)
 deps=dict();
 deps['carrays.i']=[]
 deps['cpointer.i']=[]
+deps['exception.i']=[]
 
 initial_deps=deps.copy()
 

@@ -19,6 +19,7 @@
 %rename(Classifer) CClassifier;
 
 %include "lib/common.i"
+%include "lib/ShogunException.i"
 %include "lib/io.i"
 %include "base/Version.i"
 %include "base/Parallel.i"

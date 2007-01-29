@@ -32,6 +32,7 @@
 #endif
 
 #include "lib/io.h"
+#include "lib/ShogunException.h"
 #include "lib/Signal.h"
 #include "lib/common.h"
 #include "lib/Time.h"
@@ -147,10 +148,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			case M_CRITICAL:
 			case M_ALERT:
 			case M_EMERGENCY:
-				PyErr_SetString(PyExc_RuntimeError,str);
-#ifdef USE_SWIG
-				exception(str);
-#endif
+				throw ShogunException(str);
 				break;
 			default:
 				break;
