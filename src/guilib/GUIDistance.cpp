@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
+ * Written (W) 2006-2007 Christian Gehl
  * Written (W) 1999-2007 Soeren Sonnenburg
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
@@ -26,6 +26,7 @@
 #include "distance/Manhattan.h"
 #include "distance/Minkowski.h"
 
+#include "distance/CanberraWordDistance.h"
 #include "distance/ManhattanWordDistance.h"
 #include "distance/HammingWordDistance.h"
 
@@ -348,6 +349,16 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 				if (d)
 					SG_INFO( "CANBERRA-Distance created\n");
 				return d;
+			}
+			else if (strcmp(data_type,"WORD")==0)
+			{
+				delete d;
+				d=new CCanberraWordDistance();
+				if(d)
+				{
+					SG_INFO("CanberraWordDistance created");
+					return d;
+				}
 			}
 			else
 				SG_ERROR( "Canberra-Distance expects REAL as data type \n") ;
