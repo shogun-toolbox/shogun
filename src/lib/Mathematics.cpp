@@ -16,6 +16,7 @@
 
 #include "lib/common.h"
 #include "lib/Mathematics.h"
+#include "lib/lapack.h"
 #include "lib/io.h"
 
 #include <sys/time.h>
@@ -84,7 +85,6 @@ CMath::CMath()
 #ifndef CYGWIN
 	initstate(seed, CMath::rand_state, sizeof(CMath::rand_state));
 #endif
-
 #ifndef HAVE_SWIG
 	SG_PRINT( "( seeding random number generator with %u, ", seed);
 #endif
@@ -399,6 +399,7 @@ double CMath::entropy(DREAL* p, INT len)
 //The pseudo inverse A+ can be constructed from the singular value
 //decomposition A = UDV^T , by  A^+ = V(D+)U^T.
 
+#ifdef HAVE_LAPACK
 DREAL* CMath::pinv(DREAL* matrix, INT rows, INT cols, DREAL* target)
 {
 	if (!target)
@@ -406,7 +407,46 @@ DREAL* CMath::pinv(DREAL* matrix, INT rows, INT cols, DREAL* target)
 
 	ASSERT(target);
 
+	char jobu='A';
+	char jobvt='A';
+	int m=rows;
+	int n=cols;
+	int lda=m;
+	int ldu=m;
+	int ldvt=n;
+	int info=-1;
+	int lsize=CMath::min(m,n);
+	double* s=new double[lsize];
+	ASSERT(s);
+	double* u=new double[m*m];
+	ASSERT(u);
+	double* vt=new double[n*n];
+	ASSERT(vt);
+	int lwork=-1;
+	double work1;
 
-	//svd
+	dgesvd_(&jobu, &jobvt, &m, &n, matrix, &lda, s, u, &ldu, vt, &ldvt, &work1, &lwork, &info);
+	ASSERT(info == 0);
+	ASSERT(work1>0);
+	lwork=(int) work1;
+	double* work=new double[lwork];
+	ASSERT(work);
+	dgesvd_(&jobu, &jobvt, &m, &n, matrix, &lda, s, u, &ldu, vt, &ldvt, work, &lwork, &info);
+	ASSERT(info == 0);
+
+	for (INT i=0; i<n; i++)
+	{
+		for (INT j=0; j<lsize; j++)
+			vt[i*n+j]=vt[i*n+j]/s[j];
+	}
+
+	cblas_dgemm(CblasColMajor, CblasTrans, CblasTrans, m, n, m, 1.0, vt, ldvt, u, ldu, 0, target, m);
+
+	delete[] u;
+	delete[] vt;
+	delete[] work;
+	delete[] s;
+
 	return target;
 }
+#endif

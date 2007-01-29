@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2007 Soeren Sonnenburg
  * Written (W) 1999-2007 Gunnar Raetsch
+ * Written (W) 2006-2007 Mikio L. Braun
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -23,10 +24,11 @@ int clapack_dpotrf(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
 			                   const int N, double *A, const int lda);
 #endif //DARWIN
 
-
 extern "C" {
 int dsyev_(char*, char*, int*, double*, int*, double*, double*, int*, int*);
-int dpotrf_ (char *uplo, int *n, double *a, int *lda, int *info);
+int dpotrf_(char* uplo, int* n, double* a, int* lda, int* info);
+int dgesvd_(char* jobu, char* jobvt, int* m, int* n, double* a, int* lda, double* s, double* u, int* ldu, double* vt, int* ldvt, double* work, int* lwork, int* info);
+int dtrmv_(char* uplo, char* trans, char* diag, int* n, double* a, int* lda, double* x, int* incx );
 }
 
 /*

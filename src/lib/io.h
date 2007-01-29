@@ -14,10 +14,10 @@
 
 #include <time.h>
 #include "lib/common.h"
-#include "lib/ShogunException.h"
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 #define NUM_LOG_LEVELS 9
 #define FBUFSIZE 4096
@@ -74,6 +74,10 @@ public:
 	void message(EMessageType prio, const char *fmt, ... ) const;
 	void progress(DREAL current_val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
 	void absolute_progress(DREAL current_val, DREAL val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
+
+#ifdef USE_SWIG
+    void exception(const char* str);
+#endif
 
 	inline void not_implemented() const
 	{

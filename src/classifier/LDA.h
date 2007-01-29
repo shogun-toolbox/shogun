@@ -20,8 +20,14 @@
 class CLDA : public CLinearClassifier
 {
 	public:
-		CLDA(DREAL prior=1);
+		CLDA(DREAL gamma=0);
+		CLDA(DREAL gamma, CRealFeatures* traindat, CLabels* trainlab);
 		virtual ~CLDA();
+
+		inline void set_gamma(DREAL gamma)
+		{
+			m_gamma=gamma;
+		}
 
 		virtual bool train();
 
@@ -30,7 +36,7 @@ class CLDA : public CLinearClassifier
 			return CT_LDA;
 		}
 	protected:
-		DREAL prior;
+		DREAL m_gamma;
 };
 #endif
 #endif

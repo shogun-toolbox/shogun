@@ -39,4 +39,3 @@ class CClassifier : public CSGObject
 		CLabels* labels;
 };
 #endif
-

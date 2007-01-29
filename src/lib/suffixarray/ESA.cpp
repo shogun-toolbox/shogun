@@ -59,7 +59,7 @@
                         std::cout << "'" << std::endl;         
 
 
-ESA::ESA(const UInt32 & size_, SYMBOL *text_, int verb): 
+ESA::ESA(const UInt32 & size_, SYMBOL *text_, SA_VERB verb): 
   _verb(verb),
   size(size_), 
   text(text_), 
@@ -95,7 +95,7 @@ ESA::ESA(const UInt32 & size_, SYMBOL *text_, int verb):
 	ec = sa_fac->ConstructSA(text, size, suftab); CHECKERROR(ec);
 	if(sa_fac) { delete sa_fac; sa_fac = NULL; }
 
-  if(_verb == DEBUG){
+  if(_verb == SA_DEBUG){
     for(UInt32 kk=0; kk<size; kk++)
       std::cout << "SA:["<<kk<<"]:"<< &text[suftab[kk]]<<std::endl;
   }
@@ -111,13 +111,13 @@ ESA::ESA(const UInt32 & size_, SYMBOL *text_, int verb):
 	ec = lcptab.compact(); CHECKERROR(ec);
 
 
-  if(_verb == DEBUG)
+  if(_verb == SA_DEBUG)
     std::cout<< "LCP Table : " << std::endl << lcptab << std::endl;
 
 	//' Construct Child Table
 	ec = ConstructChildTable(); CHECKERROR(ec);
 
-	if(_verb == DEBUG)
+	if(_verb == SA_DEBUG)
     std::cout<< "Child Table : " << std::endl << childtab << std::endl;
 
 
@@ -131,7 +131,7 @@ ESA::ESA(const UInt32 & size_, SYMBOL *text_, int verb):
 	memset(suflink,0,sizeof(UInt32)*(2 * size +2));
 	ec = ConstructSuflink(); CHECKERROR(ec);
 	
-  if(_verb == DEBUG){
+  if(_verb == SA_DEBUG){
     for(UInt32 kk=0; kk< size; kk++)
       std::cout << "SL["<<kk<<"]: ("<<suflink[2*kk]<<","<<suflink[2*kk+1]<<")"<<std::endl;
     std::cout << std::endl;

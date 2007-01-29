@@ -18,6 +18,26 @@ CLinearClassifier::~CLinearClassifier()
 {
 }
 
+CLabels* CLinearClassifier::classify(CLabels* output)
+{
+	if (features)
+	{
+		INT num=features->get_num_vectors();
+		ASSERT(num>0);
+
+		if (!output)
+			output=new CLabels(num);
+
+		ASSERT(output);
+		for (INT i=0; i<num; i++)
+			output->set_label(i, classify_example(i));
+
+		return output;
+	}
+
+	return NULL;
+}
+
 
 bool CLinearClassifier::load(FILE* srcfile)
 {

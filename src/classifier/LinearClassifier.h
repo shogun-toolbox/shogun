@@ -51,6 +51,8 @@ class CLinearClassifier : public CClassifier
             return bias;
         }
 
+		virtual CLabels* classify(CLabels* output=NULL);
+
 		virtual bool load(FILE* srcfile);
 		virtual bool save(FILE* dstfile);
 

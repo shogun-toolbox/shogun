@@ -49,6 +49,13 @@
 #include <algorithm>
 
 
+enum SA_VERB
+{
+	SA_DEBUG,
+	SA_INFO,
+	SA_ERROR
+};
+
 //#define SLINK
 
 
@@ -57,7 +64,7 @@ class ESA
   
  private:
  
-  int _verb;
+  SA_VERB _verb;
   
  public:
 
@@ -85,7 +92,7 @@ class ESA
   
 
 	/// Constructors
-	ESA(const UInt32 & size_, SYMBOL *text_, int verb=INFO);
+	ESA(const UInt32 & size_, SYMBOL *text_, SA_VERB verb=SA_INFO);
 
 	/// Destructor
 	virtual ~ESA();

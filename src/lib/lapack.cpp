@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2007 Soeren Sonnenburg
  * Written (W) 1999-2007 Gunnar Raetsch
+ * Written (W) 2006-2007 Mikio L. Braun
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 

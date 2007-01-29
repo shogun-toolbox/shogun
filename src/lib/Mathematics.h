@@ -163,7 +163,11 @@ public:
 		return ::log(v);
 	}
 
+#ifdef HAVE_LAPACK
+	/// return the pseudo inverse for matrix
+	/// when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)
 	static DREAL* pinv(DREAL* matrix, INT rows, INT cols, DREAL* target=NULL);
+#endif
 
 	static inline LONG factorial(INT n)
 	{
@@ -309,6 +313,11 @@ public:
 		}
 	}
 
+	/// display vector (useful for debugging)
+	template <class T> static void display_vector(T* vector, INT n, const char* name="vector");
+
+	/// display matrix (useful for debugging)
+	template <class T> static void display_matrix(T* matrix, INT rows, INT cols, const char* name="matrix");
 
 	/** performs a quicksort on an array output of length size
 	 * it is sorted from in ascending order 
@@ -680,5 +689,37 @@ void CMath::min(DREAL* output, T* index, INT size)
 		}
 	swap(output[0], output[min_index]) ;
 	swap(index[0], index[min_index]) ;
+}
+
+template <class T>
+void CMath::display_vector(T* vector, INT n, const char* name)
+{
+	SG_SPRINT("%s=[", name);
+	for (INT i=0; i<n-1; i++)
+		SG_SPRINT("%f,", (double) vector[i]);
+	for (INT i=n-1; i<n; i++)
+		SG_SPRINT("%f]\n", (double) vector[i]);
+}
+
+template <class T>
+void CMath::display_matrix(T* matrix, INT rows, INT cols, const char* name)
+{
+	SG_SPRINT("%s=[\n", name);
+	for (INT j=0; j<rows-1; j++)
+	{
+		SG_SPRINT("[");
+		for (INT i=0; i<cols-1; i++)
+			SG_SPRINT("\t%f,", (double) matrix[j+i*rows]);
+		for (INT i=cols-1; i<cols; i++)
+			SG_SPRINT("\t%f],\n", (double) matrix[j+i*rows]);
+	}
+	for (INT j=rows-1; j<rows; j++)
+	{
+		SG_SPRINT("[");
+		for (INT i=0; i<cols-1; i++)
+			SG_SPRINT("\t%f,", (double) matrix[j+i*rows]);
+		for (INT i=cols-1; i<cols; i++)
+			SG_SPRINT("\t%f]\n]\n", (double) matrix[j+i*rows]);
+	}
 }
 #endif

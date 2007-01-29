@@ -40,11 +40,6 @@
 #define _ERRORCODE_H_
 
 #include "lib/suffixarray/DataType.h"
-//#define DEBUG
-
-// Levels of output info dumping
-enum {QUIET, INFO, DEBUG};
-
 
 #define ErrorCode           UInt32
 
@@ -86,8 +81,4 @@ enum {QUIET, INFO, DEBUG};
 		exit(EXIT_FAILURE);										                            \
 	}															                                      \
 }
-
-
-#define MESSAGE(msg) { std::cout<<(msg)<<std::endl; }
-
 #endif

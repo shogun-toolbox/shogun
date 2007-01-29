@@ -2365,6 +2365,7 @@ if test "$_cc_major" -ge "3" ; then
 fi
 
 cat > "$SRCDIR/.config" <<EOF
+INTERFACE		= ${_interface}
 MAKE 			= ${MAKE}
 SWIG 			= ${SWIG}
 PYTHON 			= ${PYTHON}

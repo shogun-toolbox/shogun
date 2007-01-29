@@ -148,7 +148,9 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			case M_ALERT:
 			case M_EMERGENCY:
 				PyErr_SetString(PyExc_RuntimeError,str);
-				throw ShogunException(str);
+#ifdef USE_SWIG
+				exception(str);
+#endif
 				break;
 			default:
 				break;

@@ -138,7 +138,7 @@ dist:	distclean
 #  ( R CMD INSTALl sg and cp :-) 
 #
 # Python + Swig
-ifeq (yes,$(USE_SWIG))
+ifeq (python-modular,$(INTERFACE))
 install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
 	install -d -m755 "$(DESTDIR)$(PYDIR)/shogun"
 	install -m644 $(SWIGLIBFILES) $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)/shogun"
@@ -147,21 +147,35 @@ install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
 	echo ']' >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
 # Standalone
 else
-ifeq (shogun,$(TARGET))
+ifeq (cmdline,$(INTERFACE))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(BINDIR)
 	install -D -m755 $(TARGET) $(DESTDIR)$(BINDIR)
 # Octave
 else
-ifeq (sg.oct,$(TARGET))
+ifeq (octave,$(INTERFACE))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(OCTDIR)
 	install -D -m755 $(TARGET) $(DESTDIR)$(OCTDIR)
-# Python without Swig
+# Python
 else
+ifeq (python,$(INTERFACE))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(PYDIR)
 	install -D -m755 $(TARGET) $(DESTDIR)$(PYDIR)
+# R, R-modular and matlab are done separately
+else
+install: 
+	@echo "The R, R-modular and matlab interface need to be installed"
+	@echo "using a different mechanism:"
+	@echo
+	@echo "R - dyn.load('sg.so')"
+	@echo "  - do make -C ../R install"
+	@echo
+	@echo "matlab - just copy the sg.mex* to a <dir> of your choice"
+	@echo "         and addpath <dir>"
+	@echo
+endif
 endif
 endif
 endif

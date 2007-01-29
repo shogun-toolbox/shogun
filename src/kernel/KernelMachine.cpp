@@ -17,3 +17,23 @@ CKernelMachine::CKernelMachine():CClassifier(),kernel(NULL)
 CKernelMachine::~CKernelMachine()
 {
 }
+
+CLabels* CKernelMachine::classify(CLabels* output)
+{
+	if (kernel && kernel->get_rhs())
+	{
+		INT num= kernel->get_rhs()->get_num_vectors();
+		ASSERT(num>0);
+
+		if (!output)
+			output=new CLabels(num);
+
+		ASSERT(output);
+		for (INT i=0; i<num; i++)
+			output->set_label(i, classify_example(i));
+
+		return output;
+	}
+
+	return NULL;
+}

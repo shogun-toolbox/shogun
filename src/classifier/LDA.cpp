@@ -11,12 +11,21 @@
 #include "lib/common.h"
 
 #ifdef HAVE_LAPACK
+#include "classifier/Classifier.h"
+#include "classifier/LinearClassifier.h"
 #include "classifier/LDA.h"
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
+#include "lib/lapack.h"
 
-CLDA::CLDA(DREAL p) : CLinearClassifier(), prior(p)
+CLDA::CLDA(DREAL gamma) : CLinearClassifier(), m_gamma(gamma)
 {
+}
+
+CLDA::CLDA(DREAL gamma, CRealFeatures* traindat, CLabels* trainlab) : CLinearClassifier(), m_gamma(gamma)
+{
+	CLinearClassifier::features=traindat;
+	CClassifier::labels=trainlab;
 }
 
 
@@ -26,8 +35,6 @@ CLDA::~CLDA()
 
 bool CLDA::train()
 {
-	DREAL gamma=0;
-
 	ASSERT(get_labels());
 	ASSERT(get_features());
 	INT num_train_labels=0;
@@ -60,8 +67,6 @@ bool CLDA::train()
 		}
 	}
 
-	SG_DEBUG("num_neg: %d num_pos: %d\n", num_neg, num_pos);
-
 	if (num_neg<=0 && num_pos<=0)
 	{
       SG_ERROR( "whooooo ? only a single class found\n");
@@ -82,7 +87,6 @@ bool CLDA::train()
 
 	DREAL* scatter=new DREAL[num_feat*num_feat];
 	ASSERT(scatter);
-	memset(scatter,0,num_feat*num_feat*sizeof(DREAL));
 
 	DREAL* buffer=new DREAL[num_feat*CMath::max(num_neg, num_pos)];
 	ASSERT(buffer);
@@ -112,7 +116,7 @@ bool CLDA::train()
 		for (j=0; j<num_feat; j++)
 			buffer[num_feat*i+j]-=mean_neg[j];
 	}
-	cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, num_feat, num_feat, num_feat, 1.0, buffer, num_feat, buffer, num_feat, 1.0, scatter, num_feat);
+	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, num_feat, num_feat, num_neg, 1.0, buffer, num_feat, buffer, num_feat, 0, scatter, num_feat);
 	
 	//mean pos
 	for (i=0; i<num_pos; i++)
@@ -139,26 +143,29 @@ bool CLDA::train()
 		for (j=0; j<num_feat; j++)
 			buffer[num_feat*i+j]-=mean_pos[j];
 	}
-	cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasTrans, num_feat, num_feat, num_feat, 1.0, buffer, num_feat, buffer, num_feat, 1.0, scatter, num_feat);
+	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, num_feat, num_feat, num_pos, 1.0/(num_train_labels-1), buffer, num_feat, buffer, num_feat, 1.0/(num_train_labels-1), scatter, num_feat);
 
-	DREAL trace=CMath::trace(scatter, num_feat, num_feat)/num_train_labels;
+	DREAL trace=CMath::trace(scatter, num_feat, num_feat);
+
+	double s=1.0-m_gamma;
 
 	for (i=0; i<num_feat*num_feat; i++)
-		scatter[i]=(1-gamma)*scatter[i]/num_train_labels;
+		scatter[i]*=s;
 
 	for (i=0; i<num_feat; i++)
-		scatter[i*num_feat+i]+= trace*gamma/num_feat;
-	
+		scatter[i*num_feat+i]+= trace*m_gamma/num_feat;
+
 	DREAL* inv_scatter= CMath::pinv(scatter, num_feat, num_feat, NULL);
-	bias=log(prior);
-	memcpy(buffer,mean_neg,sizeof(DREAL)*num_feat);
-	cblas_dtrmv(CblasRowMajor, CblasUpper, CblasNoTrans, CblasUnit, num_feat, inv_scatter, num_feat, mean_neg, 1);
-	bias-=0.5*CMath::dot(mean_neg, buffer, num_feat);
-	cblas_dtrmv(CblasRowMajor, CblasUpper, CblasNoTrans, CblasUnit, num_feat, inv_scatter, num_feat, mean_pos, 1);
-	bias+=0.5*CMath::dot(mean_pos, buffer, num_feat);
 
+	DREAL* w_pos=buffer;
+	DREAL* w_neg=&buffer[num_feat];
+
+	cblas_dsymv(CblasColMajor, CblasUpper, num_feat, 1.0, inv_scatter, num_feat, mean_pos, 1, 0, w_pos, 1);
+	cblas_dsymv(CblasColMajor, CblasUpper, num_feat, 1.0, inv_scatter, num_feat, mean_neg, 1, 0, w_neg, 1);
+	
+	bias=0.5*(CMath::dot(w_pos, mean_pos, num_feat)-CMath::dot(w_neg, mean_neg, num_feat));
 	for (i=0; i<num_feat; i++)
-		w[i]=mean_pos[i]-mean_neg[i];
+		w[i]=w_pos[i]-w_neg[i];
 
 	delete[] train_labels;
 	delete[] mean_neg;
@@ -168,29 +175,6 @@ bool CLDA::train()
 	delete[] classidx_neg;
 	delete[] classidx_pos;
 	delete[] buffer;
-	return false;
+	return true;
 }
-
-//priorP = ones(nClasses,1)/nClasses;
-//
-//d= size(xTr,1);
-//m= zeros(d, nClasses);
-//Sq= zeros(d, d);
-//for ci= 1:nClasses,
-//  cli= clInd{ci};
-//  m(:,ci)= mean(xTr(:,cli),2);
-//  yc= xTr(:,cli) - m(:,ci)*ones(1,N(ci));
-//  Sq= Sq + yc*yc';
-//end
-//Sq= Sq/(sum(N)-1);
-//Sq = (1-gamma)*Sq + gamma/d*trace(Sq)*eye(d);
-//Sq = pinv(Sq);
-//
-//C.w = Sq*m;
-//C.b = -0.5*sum(m.*C.w,1)' + log(priorP);
-//
-//if nClasses==2
-//  C.w = C.w(:,2) - C.w(:,1);
-//  C.b = C.b(2)-C.b(1);
-//end
 #endif
