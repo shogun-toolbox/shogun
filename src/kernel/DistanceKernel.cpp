@@ -21,14 +21,15 @@ CDistanceKernel::CDistanceKernel(LONG cache,DREAL w ,CDistance* dist)
 
 CDistanceKernel::~CDistanceKernel()
 {
-  cleanup();
-	delete distance;
+    cleanup();
+    distance=NULL;
 }
 
 bool CDistanceKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=distance->init(l,r);
-	return result;
+    bool result0=CKernel::init(l,r);
+    bool result1=distance->init(l,r);
+    return result0&&result1;
 }
 
 void CDistanceKernel::cleanup()
