@@ -53,6 +53,7 @@
 #include "kernel/SparseNormSquaredKernel.h"
 #include "kernel/DiagKernel.h"
 #include "kernel/MindyGramKernel.h"
+#include "kernel/DistanceKernel.h"
 #include "lib/io.h"
 #include "gui/GUI.h"
 
@@ -332,7 +333,28 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			if (kernel)
 				SG_INFO( "CombinedKernel created\n");
 			return k;
-		} else
+		}
+		else if(strcmp(kern_type,"DISTANCE")==0)
+                {
+			double width = 1.0;
+                        delete k;
+			
+			CDistance* dist = gui->guidistance.get_distance();
+			
+			if(dist)
+			{
+				sscanf(param,"%s %d %lf",kern_type,&size,&width);
+				k = new CDistanceKernel(size,width,dist);
+				SG_INFO("DistanceKernel created");				
+				return k;
+			}
+			else
+			{
+				SG_ERROR("no distance set for DistanceKernel");
+			}
+
+		} 
+		else
 			SG_ERROR( "in this format I only expect Combined kernels\n") ;
 	} 
 	else if (sscanf(param, "%s %d", kern_type, &size) == 2)
