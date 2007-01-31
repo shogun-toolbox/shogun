@@ -1,4 +1,4 @@
-from numpy import mat, repmat, transpose, zeros, ones
+from numpy import mat, transpose, zeros, ones
 from numpy import array,concatenate,arange,double
 
 from shogun.Features import *

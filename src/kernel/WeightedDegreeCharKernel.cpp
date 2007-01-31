@@ -159,6 +159,7 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r)
 	} 
 
 	bool result=CSimpleKernel<CHAR>::init(l,r);
+	initialized = false;
 	INT i;
 
 	init_block_weights();

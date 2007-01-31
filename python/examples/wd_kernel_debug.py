@@ -29,11 +29,11 @@ testlab = Labels(telab)
 
 #train svm
 weights2=array([1,2,3,4,5],dtype=double)/15
-wdk2=WeightedDegreeCharKernel(trainfeat,trainfeat, 10, weights2)
+wdk2=WeightedDegreeCharKernel(trainfeat,trainfeat, 10, weights=weights2)
 k2=wdk2.get_kernel_matrix()
 
 weights=array([5,4,3,3,1],dtype=double)/15
-wdk=WeightedDegreeCharKernel(trainfeat,trainfeat, 10, weights)
+wdk=WeightedDegreeCharKernel(trainfeat,trainfeat, 10, weights=weights)
 k=wdk.get_kernel_matrix()
 
 print k-k2

@@ -29,7 +29,6 @@ for i in range(len):
 
 tedat[10:12,telab==1]='A'
 testfeat = CharFeatures(tedat,DNA)
-testlab = Labels(telab)
 
 #train svm
 wdk = WeightedDegreeCharKernel(trainfeat,trainfeat, degree)

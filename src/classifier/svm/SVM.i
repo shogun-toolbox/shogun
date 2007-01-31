@@ -7,6 +7,7 @@
 #ifdef HAVE_PYTHON
 %include "lib/numpy.i"
 
+%apply (INT** ARGOUT1, INT* DIM1) {(INT** svs, INT* num)};
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** alphas, INT* d1)};
 %apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* alphas, INT d)};
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* svs, INT d)};

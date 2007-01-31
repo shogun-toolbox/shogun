@@ -30,31 +30,31 @@ struct S_THREAD_PARAM
 	bool verbose;
 };
 
-CSVM::CSVM(INT num_sv)
+CSVM::CSVM(INT num_sv) : CKernelMachine()
 {
-	CKernelMachine::kernel=NULL;
-
 	svm_model.b=0.0;
 	svm_model.alpha=NULL;
 	svm_model.svs=NULL;
 	svm_model.num_svs=0;
-
 	svm_loaded=false;
 
-	qpsize=41;
 	weight_epsilon=1e-5;
+	epsilon=1e-5;
+	tube_epsilon=1e-2;
+
 	nu=0.5;
 	C1=1;
 	C2=1;
 	C_mkl=0;
-	weight_epsilon=1e-5;
-	epsilon=1e-5;
+
+	objective=0;
+
+	qpsize=41;
+	use_shrinking= true;
 	use_mkl = false;
 	use_batch_computation = true;
-	use_shrinking= true;
 	use_linadd = true;
 	use_precomputed_subkernels = false ;
-	objective=0;
 
     if (num_sv>0)
         create_new_model(num_sv);

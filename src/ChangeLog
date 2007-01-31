@@ -1,3 +1,42 @@
+2007-01-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/python/examples/lda.py,
+	  trunk/python/examples/numpy_krr_matplotlib.py,
+	  trunk/python/examples/numpy_lda_matplotlib.py,
+	  trunk/python/examples/numpy_svm_matplotlib.py,
+	  .generate_link_dependencies.py, ChangeLog,
+	  classifier/Classifier.i, distance/Distance.i,
+	  distributions/Distribution.i, features/Features.i,
+	  kernel/Kernel.i, lib/Library.i, lib/ShogunException.cpp,
+	  lib/ShogunException.h, lib/io.cpp, lib/io.h, lib/io.i,
+	  preproc/PreProc.i, regression/Regression.i,
+	  structure/Structure.i: * swig exception handling
+	  * LDA examples
+	  * updated krr/svm examples
+
+2007-01-29  Christian Gehl <Christian.Gehl@first.fraunhofer.de>
+
+	* guilib/GUIKernel.cpp: added DistanceKernel creation to
+	  create_kernel method
+	* guilib/GUIDistance.cpp: added CanberraWordDistance
+	* kernel/DistanceKernel.cpp: change init (init call for CKernel)
+	  and delete (Distance=NULL)
+
+2007-01-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog, Makefile, classifier/Classifier.h, classifier/LDA.cpp,
+	  classifier/LDA.h, classifier/LinearClassifier.cpp,
+	  classifier/LinearClassifier.h, configure,
+	  features/StringFeatures.i, kernel/KernelMachine.cpp,
+	  kernel/KernelMachine.h, kernel/SpectrumKernel.cpp, lib/Array2.h,
+	  lib/Mathematics.cpp, lib/Mathematics.h, lib/io.cpp, lib/io.h,
+	  lib/io.i, lib/lapack.cpp, lib/lapack.h, lib/suffixarray/ESA.cpp,
+	  lib/suffixarray/ESA.h, lib/suffixarray/ErrorCode.h: * finally a
+	  working pinv and LDA :-)
+	  * overload classify() for linear / kernel methods
+	  * compile fixes for suffixarray/Spec kernel
+	  * trying to get exceptions working
+
 2007-01-28  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
 
 	* guilib/GUIMatlab.cpp, structure/DynProg.cpp, structure/DynProg.h:

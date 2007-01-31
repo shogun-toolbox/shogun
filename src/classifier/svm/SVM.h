@@ -93,19 +93,35 @@ class CSVM : public CKernelMachine
         void set_alphas(DREAL* alphas, INT d)
         {
             ASSERT(alphas);
-            ASSERT(d>0 && d<=svm_model.num_svs);
+            ASSERT(d==svm_model.num_svs);
 
             for(int i=0; i<d; i++)
-                set_alpha(i, alphas[i]);
+				svm_model.alpha[i]=alphas[i];
         }
 
         void set_support_vectors(INT* svs, INT d)
         {
             ASSERT(svs);
-            ASSERT(d>0 && d<=svm_model.num_svs);
+            ASSERT(d==svm_model.num_svs);
 
             for(int i=0; i<d; i++)
-                set_support_vector(i, svs[i]);
+				svm_model.svs[i]=svs[i];
+        }
+
+        void get_support_vectors(INT** svs, INT* num)
+        {
+            int nsv = get_num_support_vectors();
+
+            ASSERT(svs && num);
+            *svs=NULL;
+            *num=nsv;
+
+            if (nsv>0)
+            {
+                *svs = new INT[nsv];
+                for(int i=0; i<nsv; i++)
+                    (*svs)[i] = get_support_vector(i);
+            } 
         }
 
         void get_alphas(DREAL** alphas, INT* d1)
