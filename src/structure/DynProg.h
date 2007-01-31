@@ -77,7 +77,7 @@ public:
 
 	// best_path_trans preparation functions
 	void best_path_set_seq(DREAL *seq, INT N, INT seq_len) ;
-	void best_path_set_seq(DREAL *seq, INT p_N, INT seq_len, INT max_num_signals) ;
+	void best_path_set_seq3d(DREAL *seq, INT p_N, INT seq_len, INT max_num_signals) ;
 	void best_path_set_pos(INT *pos, INT seq_len)  ;
 	void best_path_set_orf_info(INT *orf_info, INT m, INT n) ;            // only for best_path_trans
 	void best_path_set_segment_sum_weights(DREAL *segment_sum_weights, INT num_states, INT seq_len) ; // only for best_path_2struct

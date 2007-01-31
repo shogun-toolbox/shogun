@@ -1,3 +1,20 @@
+2007-01-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* lib/ShogunException.i: * the forgotten file...
+	* classifier/svm/GPBTSVM.cpp, classifier/svm/LibSVM.cpp,
+	  classifier/svm/LibSVM_oneclass.cpp, classifier/svm/MPD.cpp,
+	  regression/KRR.cpp, regression/svr/LibSVR.cpp,
+	  regression/svr/SVR_light.cpp: * also call base constructors here
+	* trunk/python/examples/test_wdk.py,
+	  trunk/python/examples/wd_kernel.py,
+	  trunk/python/examples/wd_kernel2.py,
+	  trunk/python/examples/wd_kernel_debug.py, ChangeLog,
+	  classifier/svm/SVM.cpp, classifier/svm/SVM.h,
+	  classifier/svm/SVM.i, kernel/WeightedDegreeCharKernel.cpp,
+	  kernel/WeightedDegreeCharKernel.i: * updated wd examples
+	  * fix init for wd kernel
+	  * call KernelMachine Constructor in SVM constructor
+
 2007-01-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
 	* trunk/python/examples/lda.py,

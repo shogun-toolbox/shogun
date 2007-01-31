@@ -422,7 +422,7 @@ void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len)
 	m_step=2 ;
 }
 
-void CDynProg::best_path_set_seq(DREAL *seq, INT p_N, INT seq_len, INT max_num_signals) 
+void CDynProg::best_path_set_seq3d(DREAL *seq, INT p_N, INT seq_len, INT max_num_signals) 
 {
 	if (!svm_arrays_clean)
 	{
