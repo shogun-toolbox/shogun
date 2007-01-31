@@ -11,7 +11,7 @@
 #include "classifier/svm/LibSVM.h"
 #include "lib/io.h"
 
-CLibSVM::CLibSVM()
+CLibSVM::CLibSVM() : CSVM()
 {
 	model=NULL;
 }

@@ -12,7 +12,7 @@
 #include "classifier/svm/LibSVM_oneclass.h"
 #include "lib/io.h"
 
-CLibSVMOneclass::CLibSVMOneclass()
+CLibSVMOneclass::CLibSVMOneclass() : CSVM()
 {
 	model=NULL;
 }

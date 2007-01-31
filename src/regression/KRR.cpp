@@ -16,7 +16,7 @@
 #include "lib/lapack.h"
 #include "lib/Mathematics.h"
 
-CKRR::CKRR()
+CKRR::CKRR() : CKernelMachine()
 {
   alpha = NULL;
   tau = 1e-6;

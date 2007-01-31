@@ -56,16 +56,13 @@ struct S_THREAD_PARAM
     INT num_vectors ;
 }  ;
 
-CSVRLight::CSVRLight(DREAL C, DREAL eps, CKernel* k, CLabels* lab)
+CSVRLight::CSVRLight(DREAL C, DREAL eps, CKernel* k, CLabels* lab) : CSVMLight(C, k, lab)
 {
-	init();
-	set_C(C,C);
 	set_tube_epsilon(eps);
-	set_labels(lab);
-	set_kernel(k);
+	init();
 }
 
-CSVRLight::CSVRLight()
+CSVRLight::CSVRLight() : CSVMLight()
 {
     init();
 }

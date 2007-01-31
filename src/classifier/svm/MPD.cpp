@@ -13,7 +13,7 @@
 #include "lib/common.h"
 #include "lib/Mathematics.h"
 
-CMPDSVM::CMPDSVM()
+CMPDSVM::CMPDSVM() : CSVM()
 {
 }
 

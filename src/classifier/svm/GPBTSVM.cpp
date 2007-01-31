@@ -13,7 +13,7 @@
 #include "classifier/svm/gpdtsolve.h"
 #include "lib/io.h"
 
-CGPBTSVM::CGPBTSVM()
+CGPBTSVM::CGPBTSVM() : CSVM()
 {
 	model=NULL;
 }

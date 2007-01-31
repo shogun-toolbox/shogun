@@ -11,7 +11,7 @@
 #include "regression/svr/LibSVR.h"
 #include "lib/io.h"
 
-CLibSVR::CLibSVR()
+CLibSVR::CLibSVR() : CSVM()
 {
 	model=NULL;
 }
