@@ -2,7 +2,7 @@
 
 # some hopefully reasonable defaults
 SRCDIR="`dirname $0`"
-EXT_SRC_HEADER=c
+EXT_SRC_HEADER=h
 EXT_SRC_C=c
 EXT_SRC_CPP=cpp
 EXT_SRC_SWIG=i

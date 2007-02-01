@@ -65,6 +65,7 @@ OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR)
 else
 OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' | grep -v 'configure-')) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)"| grep -v '.cpuinfo.c' | grep -v 'configure-'))
 endif
+SWIGIFILES   	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)")
 SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
 SWIGLIBFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/_\1$(EXT_LIB_SWIG)=')
 SWIGPYFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1py=')
@@ -111,8 +112,15 @@ ctags: tags
 tags:	$(SRCFILES)
 	ctags */*.$(EXT_SRC_CPP) */*.h */*.$(EXT_SRC_C)
 
-linecount:	$(SRCFILES)
-	wc -l */*.$(EXT_SRC_CPP) */*.h */*.$(EXT_SRC_C) */*.$(EXT_SRC_SWIG) | grep total
+linecount:
+	@echo -n "C/C++ source code files (.cpp,.c):"
+	@wc -l $(SRCFILES) | grep total
+	@echo -n "C/C++ header files (.h):"
+	@wc -l $(HEADERFILES) | grep total
+	@echo -n "SWIG header files (.i):"
+	@wc -l $(SWIGIFILES) | grep total
+	@echo -n "Total:"
+	@wc -l $(SRCFILES) $(HEADERFILES) $(SWIGIFILES) | grep total
 
 targets:
 	@echo "=========="
