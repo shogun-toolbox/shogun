@@ -35,7 +35,7 @@ extern "C" int	finite(double);
 #define USEFIXEDLENLIST 0
 //#define USE_TMP_ARRAYCLASS
 
-//#define DYNPROG_DEBUG
+#define DYNPROG_DEBUG
 
 static INT word_degree_default[4]={3,4,5,6} ;
 static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -57,7 +57,7 @@ CDynProg::CDynProg()
 
 	  // multi svm
 	  num_degrees(4), 
-	  num_svms(8), 
+	  num_svms(6), 
 	  num_strings(1),
 	  word_degree(word_degree_default, num_degrees, true, true),
 	  cum_num_words(cum_num_words_default, num_degrees+1, true, true),
@@ -2220,7 +2220,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	// recursion
 	for (INT t=1; t<seq_len; t++)
 	{
-		if (is_big && t%(seq_len/1000)==1)
+		if (is_big && t%(1+(seq_len/1000))==1)
 			SG_PROGRESS(t, 0, seq_len);
 		
 		init_svm_values(svs, pos[t], seq_len, max_look_back);
@@ -2704,6 +2704,9 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			my_losses[i]=0.0 ;
 		}
 	}
+
+	//transition_matrix_a.display_array() ;
+	//transition_matrix_a_id.display_array() ;
 	
 	{ // compute derivatives for given path
 		DREAL svm_value[num_svms] ;

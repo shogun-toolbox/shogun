@@ -542,8 +542,11 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			SG_ERROR( "model matricies not matching in size \n");
 
 		INT seq_num_dimensions = mxGetNumberOfDimensions(mx_seq) ;
+		INT seq_second_dimension = 1 ;
+		if (seq_num_dimensions>=2)
+			seq_second_dimension = mxGetDimensions(mx_seq)[1] ;
 		if (!(mxGetM(mx_seq) == N &&
-			  mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 && 
+			  seq_second_dimension == mxGetN(mx_pos) && mxGetM(mx_pos)==1 && 
 			  ((seq_num_dimensions==2) || (seq_num_dimensions==3))))
 			SG_ERROR( "seq and position matrices sizes wrong\n");
 		INT seq_third_dimension = 1 ;
@@ -574,8 +577,8 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			   || mxIsEmpty(mx_penalty_info))))
 			SG_ERROR( "size of dict_weights wrong\n");
 
-		if (!(((mxGetM(mx_mod_words)==8) || (mxGetM(mx_mod_words)==16)) && mxGetN(mx_mod_words)==2))
-			SG_ERROR( "size of mod_words wrong (should be 8x2 or 16x2)\n");
+		if (!(((mxGetM(mx_mod_words)==6) || (mxGetM(mx_mod_words)==8) || (mxGetM(mx_mod_words)==16)) && mxGetN(mx_mod_words)==2))
+			SG_ERROR( "size of mod_words wrong (should be 6x2 or 8x2 or 16x2)\n");
 
 		if (mx_segment_loss!=NULL && (mxGetN(mx_segment_loss)!=2*mxGetM(mx_segment_loss)))
 			SG_ERROR( "size of segment_loss wrong\n");
@@ -813,10 +816,14 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			SG_ERROR( "model matricies not matching in size \n");
 
 		INT seq_num_dimensions = mxGetNumberOfDimensions(mx_seq) ;
+		INT seq_second_dimension = 1 ;
+		if (seq_num_dimensions>=2)
+			seq_second_dimension = mxGetDimensions(mx_seq)[1] ;
 		if (!(mxGetM(mx_seq) == N &&
-			  mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 && 
+			  seq_second_dimension == mxGetN(mx_pos) && mxGetM(mx_pos)==1 && 
 			  ((seq_num_dimensions==2) || (seq_num_dimensions==3))))
-			SG_ERROR( "seq and position matrices sizes wrong\n");
+			SG_ERROR( "seq and position matrices sizes wrong (%i, %i, %i, %i, %i)\n", 
+					  seq_num_dimensions, seq_second_dimension, mxGetN(mx_seq), mxGetM(mx_pos), mxGetN(mx_pos));
 		INT seq_third_dimension = 1 ;
 		if (seq_num_dimensions==3)
 			seq_third_dimension = mxGetDimensions(mx_seq)[2] ;
@@ -850,8 +857,8 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			   || mxIsEmpty(mx_penalty_info))))
 			SG_ERROR( "dict_weights or penalty_info wrong\n");
 
-		if (!(((mxGetM(mx_mod_words)==8) || (mxGetM(mx_mod_words)==16)) && mxGetN(mx_mod_words)==2))
-			SG_ERROR( "size mod_words wrong (should be 8x2 or 16x2)\n");
+		if (!(((mxGetM(mx_mod_words)==6) || (mxGetM(mx_mod_words)==8) || (mxGetM(mx_mod_words)==16)) && mxGetN(mx_mod_words)==2))
+			SG_ERROR( "size mod_words wrong (should be 6x2 or 8x2 or 16x2)\n");
 
 		if (mx_segment_loss!=NULL && (mxGetN(mx_segment_loss)!=2*mxGetM(mx_segment_loss)))
 			SG_ERROR( "size of segment_loss wrong\n");
