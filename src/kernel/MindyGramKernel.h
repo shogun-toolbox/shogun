@@ -31,7 +31,7 @@ class CMindyGramKernel: public CKernel
 
     public:
         /* Constructors */
-        CMindyGramKernel(LONG cache, CHAR *measure, CHAR *param, ENormalizationType n);
+        CMindyGramKernel(LONG ch, CHAR *measure, CHAR *param, ENormalizationType n, LONG c);
         ~CMindyGramKernel();
 
         /* Init and cleanup functions */
@@ -92,6 +92,8 @@ class CMindyGramKernel: public CKernel
         sm_t *kernel;
         /* Normal vector for optimization */
         gram_t *normal;
+        /* MD5 cache size */
+        size_t cache;
 
 };
 #endif

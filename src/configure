@@ -1845,7 +1845,7 @@ cat > $TMPC << EOF
 int main(void)
 { 
 	int skip=1;
-	int n=10; double* a=NULL; double* v1=NULL; double* v2=NULL;
+	int n=10; double* a=0; double* v1=0; double* v2=0;
 	int result=clapack_dpotrf(CblasRowMajor, CblasUpper, n, a, n);
 	int r = cblas_ddot(n, v1, skip, v2, skip);
 	return 0;

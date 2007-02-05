@@ -39,7 +39,7 @@ param_spec_t p_map[] = {
  * @param param String of mindy parameters
  * @param n Normalization type
  */
-CMindyGramKernel::CMindyGramKernel(LONG cache, CHAR *measure, CHAR *param, ENormalizationType n) : CKernel(cache)
+CMindyGramKernel::CMindyGramKernel(LONG ch, CHAR *measure, CHAR *param, ENormalizationType n, LONG c) : CKernel(ch)
 {
     /* Init attributes */
     sdiag_lhs = NULL;
@@ -68,6 +68,10 @@ CMindyGramKernel::CMindyGramKernel(LONG cache, CHAR *measure, CHAR *param, ENorm
                         p_map[i].descr);
     }
 
+    cache = c;
+    if (cache > 0)
+        md5_cache_create(cache);
+
     /* Initialize optimization */
     if (kernel->type == ST_LINEAR) {
 	SG_INFO( "Optimization supported\n");
@@ -85,6 +89,10 @@ CMindyGramKernel::CMindyGramKernel(LONG cache, CHAR *measure, CHAR *param, ENorm
 CMindyGramKernel::~CMindyGramKernel()
 {
     cleanup();
+    
+    if (cache > 0)
+        md5_cache_destroy();
+    
     sm_destroy(kernel);
 }
 
