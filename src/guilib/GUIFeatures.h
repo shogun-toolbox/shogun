@@ -165,7 +165,7 @@ class CGUIFeatures : public CSGObject
 				SG_INFO( "Converting strings to Mindy words "
 						"(a: %s, e: %s, d: '%s')\n", alph, embed, delim);                
 
-				return new CMindyGramFeatures(src, alph, embed, delim);
+				return new CMindyGramFeatures(src, alph, embed, delim, 0);
 			} else {
 				if (sscanf(param, "%*s %*s %*s %*s %*s %*s %*s %*s %d", 
 							&nlen) < 1) {
@@ -176,7 +176,7 @@ class CGUIFeatures : public CSGObject
 				SG_INFO( "Converting strings to Mindy n-grams "
 						"(a: %s, e: %s, n: %d)\n", alph, embed, nlen);                
 
-				return new CMindyGramFeatures(src, alph, embed, nlen);
+				return new CMindyGramFeatures(src, alph, embed, "", nlen);
 			} 
 			
 			return NULL;

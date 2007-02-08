@@ -35,4 +35,7 @@
 %include "features/WordFeatures.i"
 %include "features/RealFeatures.i"
 %include "features/StringFeatures.i"
+%include "features/MindyGramFeatures.i"
 %include "features/Labels.i"
+
+

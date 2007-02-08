@@ -2082,8 +2082,10 @@ EOF
 		if darwin
 		then
 			LINKFLAGS="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $LINKFLAGS"
+			POSTLINKFLAGS="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $POSTLINKFLAGS"
 		else
 			LINKFLAGS="-shared $_pylibpath -l$_pylibs -ldl -lutil $LINKFLAGS"
+			POSTLINKFLAGS="-shared $_pylibpath -l$_pylibs -ldl -lutil $POSTLINKFLAGS"
 		fi
 
 		if win32

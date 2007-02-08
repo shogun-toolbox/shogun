@@ -27,81 +27,74 @@ class CMindyGramFeatures:public CFeatures
 {
 
     public:
-
 		/**
 		 * Constructor for word features extracted from string features
-		 * @param sf String features to use
 		 * @param aname Alphabet name, e.g. bytes, ascii, text, dna
+		 * @param embed Embedding mode, freq, count, bin
 		 * @param delim Escaped string of delimiters, e.g. '%20.,'
-		 * @param len   Length of byte array
+		 * @param nlen  K-gram length, 0 = word mode
 		 */
-		template <class T>
-		CMindyGramFeatures(CStringFeatures<T> *sf, CHAR *aname, CHAR *embed, CHAR *delim) : CFeatures(0)
+		CMindyGramFeatures(CHAR *aname, CHAR *embed, CHAR *delim, BYTE nlen) : CFeatures(0)
 		{
-			ASSERT(sf && aname && embed && delim);
+			ASSERT(aname && embed && delim);
 
 			/* Allocate and generate gram configuration (words) */
 			SG_DEBUG( "Initializing Mindy gram features\n");    
 			alph_type_t at = alph_get_type(aname);
-			cfg = gram_cfg_words(alph_create(at), delim);
-			set_embedding(cfg, embed);
+			if (nlen <= 0)
+			   cfg = mindy_cfg_words(alph_create(at), delim);
+			else 
+			   cfg = mindy_cfg_ngrams(alph_create(at), (byte_t) nlen);
 
-			SG_INFO( "Mindy in word mode (d: '%s', a: %s, e: %s)\n", 
-					delim, alph_get_name(at), gram_cfg_get_embed(cfg->embed));
+                        /* Set delimiters */                        
+                        if (strlen(delim) > 0) 
+                            mindy_cfg_set_delim(cfg, delim);
+                        
+                        /* Set embedding */
+                        if (!strcasecmp(embed, "freq"))
+                            mindy_cfg_set_embed(cfg, ME_FREQ);			
+                        else if (!strcasecmp(embed, "count"))
+                            mindy_cfg_set_embed(cfg, ME_COUNT);			
+                        else if (!strcasecmp(embed, "bin"))
+                             mindy_cfg_set_embed(cfg, ME_BIN);			
+                        else
+                            SG_ERROR("Unknown embedding mode '%s'", embed);
 
-			import<T>(sf);
+                        if (nlen <= 0) 
+                           SG_INFO("Mindy in word mode (d: '%s', a: %s, e: %s)\n", 
+                                   delim, alph_get_name(at), mindy_cfg_get_embed(cfg->embed));
+                        else  
+                           SG_INFO("Mindy in n-gram mode (n: '%d', a: %s, e: %s)\n", 
+                                   nlen, alph_get_name(at), mindy_cfg_get_embed(cfg->embed));
 		}
-
-		/**
-		 * Constructor for n-gram features extracted from string features
-		 * @param sf String feature objects
-		 * @param aname Alphabet name, e.g. bytes, ascii, text, dna
-		 * @param nlen N-gram length
-		 */
-		template<class T>
-		CMindyGramFeatures(CStringFeatures<T> *sf, CHAR * aname, CHAR * embed, BYTE nlen) : CFeatures(0)
-		{
-			ASSERT(sf && aname && embed && nlen > 0);
-
-			/* Allocate and generate gram configuration (n-grams) */
-			SG_DEBUG( "Initializing Mindy gram features\n");
-			alph_type_t at = alph_get_type(aname);
-			cfg = gram_cfg_ngrams(alph_create(at), (byte_t) nlen);
-			set_embedding(cfg, embed);    
-
-			SG_INFO( "Mindy in n-gram mode (n: %d, a: %s, e: %s)\n", 
-					nlen, alph_get_name(at), gram_cfg_get_embed(cfg->embed));
-
-			import<T>(sf);
-		}
-
 
 		/**
 		 * Copy constructor for gram features
 		 * @param orig Gram feature object to copy
 		 */
-		 template <class T>
+#if 0
 		 CMindyGramFeatures(const CMindyGramFeatures & orig) : CFeatures(orig)
 		 {
 		         SG_DEBUG( "Duplicating Mindy gram features\n");
 		         num_vectors = orig.num_vectors;
 
 		         /* Clone configuration */
-		         cfg = gram_cfg_clone(orig.cfg);
+		         cfg = mindy_cfg_clone(orig.cfg);
 
 		         /* Clone gram vectors */
 		         vectors = (gram_t **) calloc(num_vectors, sizeof(gram_t *));
 		         for (INT i = 0; i < num_vectors; i++)
 		                 vectors[i] = gram_clone(orig.vectors[i]);
                 }
+#endif
 
 		/**
 		 * Imports gram features from a string feature object
 		 * @param sf String feature object
 		 * @return true on success, false otherwise
 		 */
-		template <class T>
-		bool import(CStringFeatures<T> *sf)
+		template <class T> 
+		bool import_features(CStringFeatures<T> *sf)
 		{
 			INT i;
 			num_vectors = sf->get_num_vectors();
@@ -131,31 +124,28 @@ class CMindyGramFeatures:public CFeatures
         CFeatures *duplicate() const;
 
         /* Feature and vector functions */
-        void set_embedding(gram_cfg_t *, CHAR *);
         gram_t *get_feature_vector(INT i);
         void set_feature_vector(INT i, gram_t * g);
-        inline ULONG get_feature(INT i, INT j);
-        inline INT get_vector_length(INT i);
+        ULONG get_feature(INT i, INT j);
+        INT get_vector_length(INT i);
 
         /* Simple functions */
-        virtual inline INT get_num_vectors() { return num_vectors; }
-        virtual inline INT get_size() { return sizeof(gram_t *); }
+        virtual INT get_num_vectors() { return num_vectors; }
+        virtual INT get_size() { return sizeof(gram_t *); }
         EFeatureClass get_feature_class() { return C_MINDYGRAM; }
         EFeatureType get_feature_type() { return F_ULONG; }
 
     protected:
-
         /* Import and load functions */
         virtual bool load(CHAR * fname);
 
     private:
-
         /**< number of gram vectors */
         INT num_vectors;
         /**< Array of gram features */
         gram_t **vectors;
         /**< Gram configuration used */
-        gram_cfg_t *cfg;
+        mindy_cfg_t *cfg;
 };
 #endif
 #endif

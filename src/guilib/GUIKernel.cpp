@@ -1389,47 +1389,50 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 		}
 #ifdef HAVE_MINDY
 		else if (strcmp(kern_type,"MINDYGRAM")==0)
-		{
-			delete k;
-			char norm_str[256]="";
-			char param_str[256]="";
-			char meas_str[256]="";
-			
-			ENormalizationType normalization = FULL_NORMALIZATION ;
-				
-			sscanf(param, "%s %s %d %255s %255s %255s", kern_type, data_type, &size, meas_str, norm_str, param_str);
-			if (strlen(norm_str)==0)
-			{
-				normalization = FULL_NORMALIZATION ;
-				SG_INFO( "using full normalization (default)\n") ;
-			}
-			else if (strcmp(norm_str, "NO")==0)
-			{
-				normalization = NO_NORMALIZATION ;
-				SG_INFO( "using no normalization\n") ;
-			}
-			else if (strcmp(norm_str, "SQRT")==0)
-			{
-				normalization = SQRT_NORMALIZATION ;
-				SG_INFO( "using sqrt normalization\n") ;
-			}
-			else if (strcmp(norm_str, "FULL")==0)
-			{
-				normalization = FULL_NORMALIZATION ;
-				SG_INFO( "using full normalization\n") ;
-			}
-			else 
-			{
-				SG_ERROR( "unknow normalization: %s\n", norm_str) ;
-				return NULL ;
-			}
+                {
+                        delete k;
+                        char norm_str[256]="";
+                        char param_str[256]="";
+                        char meas_str[256]="";
+                        double width;
 
-			k = new CMindyGramKernel(size, meas_str, param_str, normalization);
-			if (k)
-			{
-			    SG_INFO( "MindyGramKernel with %s (%s) created\n", meas_str, param_str);
-			    return k;
-			}
+                        ENormalizationType normalization = FULL_NORMALIZATION ;
+
+                        sscanf(param, "%s %s %d %255s %255s %f %255s", kern_type, data_type, &size, meas_str, norm_str, &width, param_str);
+                        if (strlen(norm_str)==0)
+                        {
+                                normalization = FULL_NORMALIZATION ;
+                                SG_INFO( "using full normalization (default)\n") ;
+                        }
+                        else if (strcmp(norm_str, "NO")==0)
+                        {
+                                normalization = NO_NORMALIZATION ;
+                                SG_INFO( "using no normalization\n") ;
+                        }
+                        else if (strcmp(norm_str, "SQRT")==0)
+                        {
+                                normalization = SQRT_NORMALIZATION ;
+                                SG_INFO( "using sqrt normalization\n") ;
+                        }
+                        else if (strcmp(norm_str, "FULL")==0)
+                        {
+                                normalization = FULL_NORMALIZATION ;
+                                SG_INFO( "using full normalization\n") ;
+                        }
+                        else
+                        {
+                                SG_ERROR( "unknow normalization: %s\n", norm_str) ;
+                                return NULL ;
+                        }
+
+                        k = new CMindyGramKernel(size, meas_str, width);
+                        if (k)
+                        {
+                            SG_INFO( "MindyGramKernel with %s (%s) created\n", meas_str, param_str);
+                            return k;
+                        }
+                        k.set_norm(normalization);
+                        k.set_param(param_str);
 		}
 #endif
 		else

@@ -12,6 +12,8 @@
 
 #ifdef HAVE_MINDY
 
+#include <mindy.h>
+
 #ifndef _MINDYGRAMKERNEL_H___
 #define _MINDYGRAMKERNEL_H___
 
@@ -31,12 +33,19 @@ class CMindyGramKernel: public CKernel
 
     public:
         /* Constructors */
-        CMindyGramKernel(LONG ch, CHAR *measure, CHAR *param, ENormalizationType n, LONG c);
+        CMindyGramKernel(INT ch, CHAR *measure, DREAL w);
         ~CMindyGramKernel();
+        
+        /* Set options */
+        void set_param(CHAR *param);
+        /* Set MD5 cache size */
+        void set_md5cache(LONG c);
+        /* Set normalization */
+        void set_norm(ENormalizationType e);
 
         /* Init and cleanup functions */
         void parse_params(CHAR *);
-        virtual bool init(CFeatures* l, CFeatures* r, bool do_init);
+        virtual bool init(CFeatures* l, CFeatures* r);
         virtual void cleanup();
         virtual void remove_lhs();
         virtual void remove_rhs();
@@ -94,6 +103,8 @@ class CMindyGramKernel: public CKernel
         gram_t *normal;
         /* MD5 cache size */
         size_t cache;
+        /* Kernel width */
+        DREAL width;
 
 };
 #endif

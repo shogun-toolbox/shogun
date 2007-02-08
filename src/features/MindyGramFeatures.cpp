@@ -38,7 +38,7 @@ CMindyGramFeatures::~CMindyGramFeatures()
 
     /* Destroy configuration */
     alph_destroy(cfg->alph);
-    gram_cfg_destroy(cfg);
+    mindy_cfg_destroy(cfg);
 }
 
 /**
@@ -78,19 +78,6 @@ void CMindyGramFeatures::set_feature_vector(INT i, gram_t * g)
     vectors[i] = g;
 }
 
-void CMindyGramFeatures::set_embedding(gram_cfg_t *cfg, CHAR *embed)
-{
-    if (!strcasecmp(embed, "count"))
-        gram_cfg_set_embed(cfg, GE_COUNT);
-    else if (!strcasecmp(embed, "freq"))
-        gram_cfg_set_embed(cfg, GE_FREQ);
-    else if (!strcasecmp(embed, "bin")) 
-        gram_cfg_set_embed(cfg, GE_BIN);
-    else {
-         SG_ERROR( "Unknown embedding '%s'\n", embed);
-    }
-}
-
 /**
  * Get a feature (gram) from a gram vector
  * @param i Index of gram vector
@@ -98,7 +85,7 @@ void CMindyGramFeatures::set_embedding(gram_cfg_t *cfg, CHAR *embed)
  * @param b Buffer to hold gram of at least 65 bytes
  * @return gram (e.g. an n-gram or word)
  */
-inline ULONG CMindyGramFeatures::get_feature(INT i, INT j)
+ULONG CMindyGramFeatures::get_feature(INT i, INT j)
 {
     ASSERT(vectors && i < num_vectors);
     ASSERT(j < (signed) vectors[i]->num);
@@ -111,7 +98,7 @@ inline ULONG CMindyGramFeatures::get_feature(INT i, INT j)
  * @param i Index of gram vector
  * @return length of gram vector
  */
-inline INT CMindyGramFeatures::get_vector_length(INT i)
+INT CMindyGramFeatures::get_vector_length(INT i)
 {
     ASSERT(vectors && i < num_vectors);
     return vectors[i]->num;

@@ -36,16 +36,17 @@ param_spec_t p_map[] = {
  * Mindy kernel constructor
  * @param cache Cache size to use (?)
  * @param measure Similarity measure to use
- * @param param String of mindy parameters
- * @param n Normalization type
+ * @param w Kernel width
  */
-CMindyGramKernel::CMindyGramKernel(LONG ch, CHAR *measure, CHAR *param, ENormalizationType n, LONG c) : CKernel(ch)
+CMindyGramKernel::CMindyGramKernel(INT ch, CHAR *measure, DREAL w) : CKernel(ch)
 {
     /* Init attributes */
     sdiag_lhs = NULL;
     sdiag_rhs = NULL;
     initialized = false;
-    norm = n;
+    norm = NO_NORMALIZATION;
+    width = w;
+    cache = 0;
 
     /* Create similarity measure */
     SG_INFO( "Initializing Mindy kernel\n");
@@ -54,6 +55,45 @@ CMindyGramKernel::CMindyGramKernel(LONG ch, CHAR *measure, CHAR *param, ENormali
     SG_INFO( "Mindy similarity measure: %s\n", 
 	         sm_get_descr(kernel->type));
 
+    /* Initialize optimization */
+    if (kernel->type == ST_LINEAR) {
+	SG_INFO( "Optimization supported\n");
+        properties |= KP_LINADD;
+    }
+
+    /* Display paramater list */
+    for (INT i = 0; p_map[i].name; i++) {
+        if (p_map[i].idx != SP_DIST)
+            SG_INFO( "Param %8s=%8.6f\t %s\n", 
+			p_map[i].name, p_map[i].val, p_map[i].descr);
+        else
+            SG_INFO( "Param %8s=%s\t %s\n", p_map[i].name, 
+                        sm_get_name((sm_type_t) p_map[i].val), 
+                        p_map[i].descr);
+    }
+    
+    normal = NULL;
+    clear_normal();
+}
+
+/*
+ * Set MD5 cache
+ */
+void CMindyGramKernel::set_md5cache(LONG c)
+{
+    cache = c;
+    if (cache <= 0) 
+        return;
+        
+    SG_INFO("Creating MD5 cache of %d kb", cache);
+    md5_cache_create(cache);
+} 
+
+/*
+ * Set parameters 
+ */
+void CMindyGramKernel::set_param(CHAR *param) 
+{
     /* Parse and set parameters */
     parse_params(param);
 
@@ -67,21 +107,15 @@ CMindyGramKernel::CMindyGramKernel(LONG ch, CHAR *measure, CHAR *param, ENormali
                         sm_get_name((sm_type_t) p_map[i].val), 
                         p_map[i].descr);
     }
+} 
 
-    cache = c;
-    if (cache > 0)
-        md5_cache_create(cache);
-
-    /* Initialize optimization */
-    if (kernel->type == ST_LINEAR) {
-	SG_INFO( "Optimization supported\n");
-        properties |= KP_LINADD;
-    }
-    
-    normal = NULL;
-    clear_normal();
+/*
+ * Set normalization
+ */
+void CMindyGramKernel::set_norm(ENormalizationType n)
+{
+    norm = n;
 }
-
 
 /**
  * Mindy kernel destructor
@@ -189,12 +223,12 @@ void CMindyGramKernel::remove_rhs()
  * @param do_init Flag to force initialization
  * @return true on success, false otherwise
  */
-bool CMindyGramKernel::init(CFeatures* l, CFeatures* r, bool do_init)
+bool CMindyGramKernel::init(CFeatures* l, CFeatures* r)
 {
 
     SG_DEBUG( "Initializing MindyGramKernel %p %p\n", l, r);
     /* Call constructor of super class */
-    bool result = CKernel::init(l,r,do_init);
+    bool result = CKernel::init(l,r);
 
     initialized = false;
     INT i;
@@ -283,9 +317,9 @@ DREAL CMindyGramKernel::compute(INT i, INT j)
     DREAL result = gram_cmp(kernel, lm->get_feature_vector(i),
         rm->get_feature_vector(j));
 
-    /* Sloppy and incorrect distance to kernel conversion ;) */    
+    /* RBF distance to kernel conversion */
     if (sm_get_class(kernel->type) == SC_DIST)
-        result = 1 / (result + 1);
+        result = exp(-result / width);
 
     if (!initialized)
         return result;

@@ -43,3 +43,5 @@
 %include "kernel/CommUlongStringKernel.i" 
 %include "kernel/CommWordStringKernel.i" 
 %include "kernel/SpectrumKernel.i" 
+%include "kernel/MindyGramKernel.i"
+
