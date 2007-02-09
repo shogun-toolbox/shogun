@@ -277,22 +277,20 @@ bool CMindyGramKernel::init(CFeatures* l, CFeatures* r)
     }
 
     /*  Skip if rhs computation if necessary */
-    if (sdiag_lhs == sdiag_rhs)
-        goto skip_rhs;
+    if (sdiag_lhs != sdiag_rhs) {
+        this->lhs=(CMindyGramFeatures *) r;
+        this->rhs=(CMindyGramFeatures *) r;
 
-    this->lhs=(CMindyGramFeatures *) r;
-    this->rhs=(CMindyGramFeatures *) r;
+        /* Compute right normalization diagonal */
+        for (i=0; i<rhs->get_num_vectors(); i++) {
+            sdiag_rhs[i] = sqrt(compute(i,i));
 
-    /* Compute right normalization diagonal */
-    for (i=0; i<rhs->get_num_vectors(); i++) {
-        sdiag_rhs[i] = sqrt(compute(i,i));
-
-        /* trap divide by zero exception */
-        if (sdiag_rhs[i]==0)
-            sdiag_rhs[i]=1e-16;
+            /* trap divide by zero exception */
+            if (sdiag_rhs[i]==0)
+                sdiag_rhs[i]=1e-16;
+        }
     }
-
-    skip_rhs:
+    
     /* Reset feature pointers */
     this->lhs=(CStringFeatures<WORD>*) l;
     this->rhs=(CStringFeatures<WORD>*) r;
