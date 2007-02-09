@@ -1394,7 +1394,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
                         char norm_str[256]="";
                         char param_str[256]="";
                         char meas_str[256]="";
-                        double width;
+                        float width;
 
                         ENormalizationType normalization = FULL_NORMALIZATION ;
 
@@ -1425,14 +1425,14 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
                                 return NULL ;
                         }
 
-                        k = new CMindyGramKernel(size, meas_str, width);
-                        if (k)
-                        {
-                            SG_INFO( "MindyGramKernel with %s (%s) created\n", meas_str, param_str);
-                            return k;
+                        CMindyGramKernel* mk = new CMindyGramKernel(size, meas_str, width);
+                        if (!mk) {
+                        	SG_ERROR("could not allocate kernel object");
                         }
-                        k.set_norm(normalization);
-                        k.set_param(param_str);
+                        mk->set_norm(normalization);
+                        mk->set_param(param_str);
+                        
+                        return mk;
 		}
 #endif
 		else

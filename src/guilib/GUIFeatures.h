@@ -141,51 +141,26 @@ class CGUIFeatures : public CSGObject
 		template <class CT>
 		CMindyGramFeatures* convert_string_char_to_mindy_grams(CStringFeatures<CT> *src, CHAR* param)
 		{
-			CHAR mode[256]="", alph[256]="", embed[256]="",delim[256]="";
-			INT nlen=-1;
-			CMindyGramFeatures mgf;
+			CHAR alph[256]="", embed[256]="", delim[256]="%20";
+			INT nlen = 0;
 
 			if (!src || !param) {
 				SG_ERROR( "invalid arguments: \"%s\"\n",param);
 				return NULL;
 			}
 
-			if (sscanf(param, "%*s %*s %*s %*s %*s %255s %255s %255s", 
-						mode, alph, embed) < 3) {
+			if (sscanf(param, "%*s %*s %*s %*s %*s %255s %255s %d %255s", 
+						alph, embed, nlen, delim) < 4) {
 				SG_ERROR( "too few arguments\n");
 				return NULL;
 			}
 
-			if (!strcasecmp(mode, "words")) {
-				if (sscanf(param, "%*s %*s %*s %*s %*s %*s %*s %*s %255s", 
-							delim) < 1) {
-					SG_ERROR( "too few arguments\n");
-					return NULL;
-				}
+			SG_INFO( "Converting string to Mindy features "
+					"(a: %s, e: %s, n: %d, d: '%s')\n", alph, embed, nlen, delim);                
 
-				SG_INFO( "Converting strings to Mindy words "
-						"(a: %s, e: %s, d: '%s')\n", alph, embed, delim);                
-
-				mgf = CMindyGramFeatures(alph, embed, delim, 0);
-				mgf.import_features(src);
-				return mgf;
-			} else {
-				if (sscanf(param, "%*s %*s %*s %*s %*s %*s %*s %*s %d", 
-							&nlen) < 1) {
-					SG_ERROR( "too few arguments\n");
-					return NULL;
-				}
-
-				SG_INFO( "Converting strings to Mindy n-grams "
-						"(a: %s, e: %s, n: %d)\n", alph, embed, nlen);                
-
-				mgf = CMindyGramFeatures(alph, embed, "", nlen);
-				mgf.import_features(src);
-				return mgf;
-
-			} 
-			
-			return NULL;
+			CMindyGramFeatures* mgf = new CMindyGramFeatures(alph, embed, delim, nlen);
+			mgf->import_features(src);
+			return mgf;
 		}
 #endif
 
