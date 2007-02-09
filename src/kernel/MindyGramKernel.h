@@ -39,7 +39,7 @@ class CMindyGramKernel: public CKernel
         /* Set options */
         void set_param(CHAR *param);
         /* Set MD5 cache size */
-        void set_md5cache(LONG c);
+        void set_md5cache(INT c);
         /* Set normalization */
         void set_norm(ENormalizationType e);
 

@@ -79,7 +79,7 @@ CMindyGramKernel::CMindyGramKernel(INT ch, CHAR *measure, DREAL w) : CKernel(ch)
 /*
  * Set MD5 cache
  */
-void CMindyGramKernel::set_md5cache(LONG c)
+void CMindyGramKernel::set_md5cache(INT c)
 {
     cache = c;
     if (cache <= 0) 
