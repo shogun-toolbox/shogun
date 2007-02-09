@@ -74,6 +74,7 @@ bool CCommUlongStringKernel::init(CFeatures* l, CFeatures* r)
 	bool result=CStringKernel<ULONG>::init(l,r);
 	INT i;
 
+	initialized=false;
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 	  delete[] sqrtdiag_rhs;
 	sqrtdiag_rhs=NULL;
