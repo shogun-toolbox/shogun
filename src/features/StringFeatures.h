@@ -311,6 +311,9 @@ template <class ST> class CStringFeatures: public CFeatures
 						fclose(f);
 					}
 				}
+				else
+					SG_ERROR("empty or non readable file \'%s\'\n", fname);
+
 				free(namelist[i]);
 			}
 			free(namelist);
