@@ -254,8 +254,7 @@ bool CMindyGramKernel::init(CFeatures* l, CFeatures* r)
     /* Initialize (or copy) right normalization diagonal */
     if (l == r) {
         sdiag_rhs=sdiag_lhs;
-    }
-    else {
+    } else {
         sdiag_rhs= new DREAL[rhs->get_num_vectors()];
         for (i = 0; i<rhs->get_num_vectors(); i++)
             sdiag_rhs[i]=1;

@@ -40,6 +40,7 @@ public:
 	bool set_batch_computation_enabled(CHAR* param);
 	bool set_linadd_enabled(CHAR* param);
 	bool set_svm_epsilon(CHAR* param);
+	bool set_svm_max_train_time(CHAR* param);
 	bool set_svr_tube_epsilon(CHAR* param);
 	bool set_svm_one_class_nu(CHAR* param);
 	bool set_mkl_parameters(CHAR* param) ;
@@ -56,6 +57,7 @@ public:
 	int qpsize;
 	double weight_epsilon;
 	double epsilon;
+	double max_train_time;
 	double tube_epsilon;
 	double nu;
 	double C1;

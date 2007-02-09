@@ -61,7 +61,7 @@ class CTime : public CSGObject
 		static double get_curtime() 
 		{
 			timeval tv;
-			if (gettimeofday(&tv, NULL)!=0)
+			if (gettimeofday(&tv, NULL)==0)
 				return tv.tv_sec+((double)(tv.tv_usec))/1e6;
 			else
 				return 0.0;

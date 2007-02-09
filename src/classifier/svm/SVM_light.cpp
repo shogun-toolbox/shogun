@@ -903,6 +903,7 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
   clear_index(working2dnum);
 
                             /* repeat this loop until we have convergence */
+  CTime start_time; 
 
 #ifdef CYGWIN
   for(;((iteration<3) || (retrain && (!terminate))||((w_gap>get_weight_epsilon()) && get_mkl_enabled())); iteration++){
@@ -1164,6 +1165,12 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
 		  worstmaxdiff=bestmaxdiff;
 
 	  SG_ABS_PROGRESS(bestmaxdiff, -CMath::log10(bestmaxdiff), -CMath::log10(worstmaxdiff), -CMath::log10(epsilon), 6);
+	  
+	  /* Terminate loop */
+	  if (max_train_time > 0 && start_time.cur_time_diff() > max_train_time) {
+	      terminate = 1;
+	      retrain = 0;
+	  }
   } /* end of loop */
 
   SG_DEBUG( "inactive:%d\n", inactivenum);

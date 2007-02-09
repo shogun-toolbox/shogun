@@ -113,6 +113,7 @@ static const CHAR* N_SVMQPSIZE=			     	"svm_qpsize";
 static const CHAR* N_THREADS=			     	"threads";
 static const CHAR* N_MKL_PARAMETERS=			"mkl_parameters";
 static const CHAR* N_SVM_EPSILON=			"svm_epsilon";
+static const CHAR* N_SVM_MAX_TRAIN_TIME=		"svm_max_train_time";
 static const CHAR* N_SVR_TUBE_EPSILON=			"svr_tube_epsilon";
 static const CHAR* N_SVM_ONE_CLASS_NU=			"svm_one_class_nu";
 static const CHAR* N_SVM_TRAIN_AUC_MAXIMIZATION=			"svm_train_auc_maximization";
@@ -223,6 +224,7 @@ void CTextGUI::print_help()
 	SG_PRINT( "\033[1;31m%s\033[0m [qpsize]\t\t\t- changes svm_qpsize value\n", N_SVMQPSIZE);
 	SG_PRINT( "\033[1;31m%s\033[0m [threads]\t\t\t- changes svm_threads value\n", N_SVMQPSIZE);
 	SG_PRINT( "\033[1;31m%s\033[0m [epsilon-value]\t\t\t- changes svm-epsilon value\n", N_SVM_EPSILON);
+	SG_PRINT( "\033[1;31m%s\033[0m [seconds]\t\t\t- changes svm max training time\n", N_SVM_MAX_TRAIN_TIME);
 	SG_PRINT( "\033[1;31m%s\033[0m [epsilon-value]\t\t\t- changes svr-tube-epsilon value\n", N_SVR_TUBE_EPSILON);
 	SG_PRINT( "\033[1;31m%s\033[0m [nu-value]\t\t\t- changes svm-one-class nu value\n", N_SVM_ONE_CLASS_NU);
 	SG_PRINT( "\033[1;31m%s\033[0m [epsilon-value C-lp]\t\t\t- changes mkl parameters\n", N_MKL_PARAMETERS);
@@ -705,6 +707,10 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	else if (!strncmp(p_input, N_SVM_EPSILON, strlen(N_SVM_EPSILON)))
 	{
 		guisvm.set_svm_epsilon(p_input+strlen(N_SVM_EPSILON));
+	} 
+	else if (!strncmp(p_input, N_SVM_MAX_TRAIN_TIME, strlen(N_SVM_MAX_TRAIN_TIME)))
+	{
+		guisvm.set_svm_max_train_time(p_input+strlen(N_SVM_MAX_TRAIN_TIME));
 	} 
 	else if (!strncmp(p_input, N_SVR_TUBE_EPSILON, strlen(N_SVR_TUBE_EPSILON)))
 	{

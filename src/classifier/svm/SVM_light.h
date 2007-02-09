@@ -238,6 +238,7 @@ class CSVMLight:public CSVM
 				      INT *inconsistent,
 				      INT *docs,DREAL *aicache,
 				      double* maxdiff) ;
+				      
 protected:
    inline virtual DREAL compute_kernel(INT i, INT j)
 	   {

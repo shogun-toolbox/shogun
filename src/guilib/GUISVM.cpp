@@ -41,6 +41,7 @@ CGUISVM::CGUISVM(CGUI * gui_)
 	C_mkl=0;
 	weight_epsilon=1e-5;
 	epsilon=1e-5;
+	max_train_time=0;
 	tube_epsilon=1e-2;
 	nu=1e-2;
 	use_shrinking = true ;
@@ -159,6 +160,7 @@ bool CGUISVM::train(CHAR* param, bool auc_maximization)
 
 	svm->set_weight_epsilon(weight_epsilon);
 	svm->set_epsilon(epsilon);
+	svm->set_max_train_time(max_train_time);
 	svm->set_tube_epsilon(tube_epsilon);
 	svm->set_nu(nu);
 	svm->set_C_mkl(C_mkl);
@@ -366,6 +368,20 @@ bool CGUISVM::set_svm_epsilon(CHAR* param)
 	SG_INFO( "Set to svm_epsilon=%f\n", epsilon);
 	return true ;  
 }
+
+bool CGUISVM::set_svm_max_train_time(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	sscanf(param, "%lf", &max_train_time) ;
+
+        if (max_train_time > 0) 
+		SG_INFO( "Set to svm_max_train_time=%f\n", max_train_time);
+	else
+		SG_INFO( "Disabling svm_max_train_time\n");
+	return true ;  
+}
+
 
 bool CGUISVM::set_svr_tube_epsilon(CHAR* param)
 {

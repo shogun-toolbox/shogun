@@ -34,6 +34,7 @@ class CSVM : public CKernelMachine
 		inline void set_tube_epsilon(DREAL eps) { tube_epsilon=eps; }
 		inline void set_C_mkl(DREAL C) { C_mkl = C; }
 		inline void set_qpsize(int qps) { qpsize=qps; }
+		inline void set_max_train_time(DREAL s) { max_train_time=s; }
 
 		inline DREAL get_weight_epsilon() { return weight_epsilon; }
 		inline DREAL get_epsilon() { return epsilon; }
@@ -235,6 +236,7 @@ class CSVM : public CKernelMachine
 		DREAL weight_epsilon;
 		DREAL epsilon;
 		DREAL tube_epsilon;
+		DREAL max_train_time;
 
 		DREAL nu;
 		DREAL C1;

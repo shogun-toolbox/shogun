@@ -150,7 +150,7 @@ class CGUIFeatures : public CSGObject
 			}
 
 			if (sscanf(param, "%*s %*s %*s %*s %*s %255s %255s %d %255s", 
-						alph, embed, nlen, delim) < 4) {
+						alph, embed, &nlen, delim) < 4) {
 				SG_ERROR( "too few arguments\n");
 				return NULL;
 			}
