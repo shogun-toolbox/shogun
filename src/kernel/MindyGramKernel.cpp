@@ -35,25 +35,40 @@ param_spec_t p_map[] = {
 /**
  * Mindy kernel constructor
  * @param cache Cache size to use (?)
- * @param measure Similarity measure to use
+ * @param meas Similarity measure to use
  * @param w Kernel width
  */
-CMindyGramKernel::CMindyGramKernel(INT ch, CHAR *measure, DREAL w) : CKernel(ch)
+CMindyGramKernel::CMindyGramKernel(INT ch, CHAR *meas, DREAL w) : CKernel(ch)
 {
     /* Init attributes */
     sdiag_lhs = NULL;
     sdiag_rhs = NULL;
     initialized = false;
+    measure = meas;
     norm = NO_NORMALIZATION;
     width = w;
     cache = 0;
+    sico = NO_SICO;
+
+    /* Check for similarity coefficients */
+    if (strcasecmp(measure, "kulczynski"))
+        sico = SICO_KULCZYNSKI;
+    if (strcasecmp(measure, "czekanowski"))
+        sico = SICO_CZEKANOWSKI;
+    if (strcasecmp(measure, "jaccard"))
+        sico = SICO_JACCARD;    
+    if (strcasecmp(measure, "sokalsneath")) 
+        sico = SICO_SOKALSNEATH;    
 
     /* Create similarity measure */
     SG_INFO( "Initializing Mindy kernel\n");
-    kernel = sm_create(sm_get_type(measure));
+    if (sico)
+        kernel = sm_create(ST_MINKERN);
+    else
+        kernel = sm_create(sm_get_type(measure));
    
-    SG_INFO( "Mindy similarity measure: %s\n", 
-	         sm_get_descr(kernel->type));
+    SG_INFO( "Mindy similarity measure: %s (using %s)\n", 
+	     measure, sm_get_descr(kernel->type));
 
     /* Initialize optimization */
     if (kernel->type == ST_LINEAR) {
@@ -314,8 +329,34 @@ DREAL CMindyGramKernel::compute(INT i, INT j)
     DREAL result = gram_cmp(kernel, lm->get_feature_vector(i),
         rm->get_feature_vector(j));
 
+    
+    /* 
+     * Compute similartiy coefficients and convert to distances.
+     */
+    switch (sico) {
+        case SICO_JACCARD:
+            result = result / (sdiag_lhs[i] + sdiag_rhs[j] - result);
+            result = 1 - result;
+            break;
+        case SICO_CZEKANOWSKI:
+            result = 2 * result / (sdiag_lhs[i] + sdiag_rhs[j]);
+            result = 1 - result;
+            break;
+        case SICO_SOKALSNEATH:
+            result = result / (2 * (sdiag_lhs[i] + sdiag_rhs[j]) - 3 * result);
+            result = 1 - result;
+            break;
+        case SICO_KULCZYNSKI:
+            result = 0.5 * (result / sdiag_lhs[i] + result / sdiag_rhs[j]);
+            result = 1 - result;
+            break;
+        default: 
+           /* Nothing */
+           break;
+    }
+
     /* RBF distance to kernel conversion */
-    if (sm_get_class(kernel->type) == SC_DIST)
+    if (sm_get_class(kernel->type) == SC_DIST || sico)
         result = exp(-result / width);
 
     if (!initialized)

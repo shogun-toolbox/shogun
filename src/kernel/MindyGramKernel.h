@@ -20,6 +20,13 @@
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
+/* Similarity coefficients */
+#define NO_SICO			0
+#define SICO_JACCARD		1
+#define SICO_CZEKANOWSKI	2
+#define SICO_KULCZYNSKI		3
+#define SICO_SOKALSNEATH	4
+
 /* Parameter specifications */
 typedef struct {
     char *name;                 /* Name of parameter */
@@ -92,9 +99,13 @@ class CMindyGramKernel: public CKernel
         /* Arrays of kernel matrix diagonals */
         DREAL* sdiag_lhs;
         DREAL* sdiag_rhs;
-
+     
+        /* Name of similartiy measure */
+        CHAR *measure;
         /* Initialization flag */
         bool initialized;
+        /* Similarity coefficient or 0 */
+        INT sico;
         /* Normalization mode */
         ENormalizationType norm;
         /* Kernel function (=> Mindy similarity measure) */
