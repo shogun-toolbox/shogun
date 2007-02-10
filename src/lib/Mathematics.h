@@ -49,6 +49,11 @@ extern "C" {
 #endif
 #endif
 
+//fall back to double precision pow if powl is not
+//available
+#ifndef powl
+#define powl(x,y) pow((double) (x),(double) (y))
+#endif
 
 #ifndef NAN
 #include <stdlib.h>
@@ -150,6 +155,7 @@ public:
 	/// x^n
 	static inline long double powl(long double x, long double n)
 	{
+#ifdef
 		return ::powl(x, n);
 	}
 

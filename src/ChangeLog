@@ -1,3 +1,32 @@
+2007-02-09  Konrad Rieck <Konrad.Rieck@first.fraunhofer.de>
+
+	* classifier/svm/SVM.cpp, classifier/svm/SVM.h,
+	  classifier/svm/SVM_light.cpp, classifier/svm/SVM_light.h,
+	  gui/TextGUI.cpp, guilib/GUIFeatures.h, guilib/GUISVM.cpp,
+	  guilib/GUISVM.h, kernel/MindyGramKernel.cpp, lib/Time.h: improved
+	  mindy features and kernel
+	  cur_time fix in time class
+	  support for max_train_time in svm light
+	* guilib/GUIFeatures.h, guilib/GUIKernel.cpp: fixed incorrect
+	  matlab interface to changed Mindy functions
+
+2007-02-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/StringFeatures.h: * make empty files (strings) a fatal
+	  error
+
+2007-02-09  Konrad Rieck <Konrad.Rieck@first.fraunhofer.de>
+
+	* kernel/MindyGramKernel.cpp: removed annoying goto statement
+	* kernel/MindyGramKernel.cpp, kernel/MindyGramKernel.h: more mindy
+	  changes
+
+2007-02-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog, features/MindyGramFeatures.i,
+	  kernel/CommUlongStringKernel.cpp, kernel/MindyGramKernel.i: fix
+	  for spectrum kernel (yet another init problem)
+
 2007-02-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
 	* ChangeLog, features/Alphabet.h, features/Alphabet.i: * add
