@@ -1,4 +1,4 @@
-/*
+,,,/*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -155,7 +155,7 @@ public:
 	/// x^n
 	static inline long double powl(long double x, long double n)
 	{
-#ifdef
+//#ifdef
 		return ::powl(x, n);
 	}
 
@@ -728,4 +728,5 @@ void CMath::display_matrix(T* matrix, INT rows, INT cols, const char* name)
 			SG_SPRINT("\t%f]\n]\n", (double) matrix[j+i*rows]);
 	}
 }
+
 #endif
