@@ -153,11 +153,10 @@ public:
 	}
 
 	/// x^n
-	static inline long double powl(long double x, long double n)
+	/*static inline long double powl(long double x, long double n)
 	{
-//#ifdef
 		return ::powl(x, n);
-	}
+		}*/
 
 	static inline DREAL log10(DREAL v)
 	{
