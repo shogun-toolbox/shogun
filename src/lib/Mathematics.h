@@ -158,6 +158,11 @@ public:
 		return ::powl(x, n);
 		}*/
 
+	static inline DREAL pow(DREAL x, DREAL n)
+		{
+			return ::pow(x, n);
+		}
+	
 	static inline DREAL log10(DREAL v)
 	{
 		return ::log(v)/::log(10.0);

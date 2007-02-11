@@ -2037,10 +2037,12 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	// as i didnt change the backtracking stuff
 	
 	CArray<DREAL> oldtempvv(look_back_buflen) ;
+	CArray<DREAL> oldtempvv2(look_back_buflen) ;
 	//oldtempvv.zero() ;
-	oldtempvv.display_size() ;
+	//oldtempvv.display_size() ;
 	
 	CArray<INT> oldtempii(look_back_buflen) ;
+	CArray<INT> oldtempii2(look_back_buflen) ;
 	//oldtempii.zero() ;
 
 	CArray<T_STATES> state_seq(seq_len) ;
@@ -2078,7 +2080,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 #endif
 
 	oldtempvv.set_name("oldtempvv") ;
+	oldtempvv2.set_name("oldtempvv2") ;
 	oldtempii.set_name("oldtempii") ;
+	oldtempii2.set_name("oldtempii2") ;
 
 
 	//////////////////////////////////////////////////////////////////////////////// 
@@ -2114,8 +2118,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	fixedtempii.display_size() ;
 #endif
 
-	oldtempvv.display_size() ;
-	oldtempii.display_size() ;
+	//oldtempvv.display_size() ;
+    //oldtempii.display_size() ;
 
 	state_seq.display_size() ;
 	pos_seq.display_size() ;
@@ -2338,16 +2342,21 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 							for (short int diff=0; diff<nbest; diff++)
 						    {
-								DREAL  val        = delta.element(delta_array, ts, ii, diff, seq_len, N) + elem_val[i] ;
-								//DREAL  val        = delta.element(ts%max_look_back, ii, diff) + elem_val[i] ;
+								DREAL  val        = elem_val[i]  ;
 								val              += pen_val ;
 								val              += segment_loss ;
 								
-								DREAL mval = -val;
+								DREAL mval = -(val + delta.element(delta_array, ts, ii, diff, seq_len, N)) ;
+								DREAL mval2 = -val ;
+								// handle -inf -> don't allow transition
+								if (delta.element(delta_array, ts, ii, diff, seq_len, N)<-1e20)
+									mval2 = mval ;
 								
 #if USEORIGINALLIST > 0
 								oldtempvv[old_list_len] = mval ;
+								oldtempvv2[old_list_len] = mval2 ;
 								oldtempii[old_list_len] = ii + diff*N + ts*N*(nbest+nother);
+								oldtempii2[old_list_len] = oldtempii[old_list_len] ;					
 								ASSERT(old_list_len<look_back_buflen) ;
 								old_list_len++ ;
 #endif
@@ -2426,8 +2435,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 #endif
 					    delta.element(delta_array, t, j, k, seq_len, N)    = -minusscore + seq.element(j,t);
 					    psi.element(t,j,k)      = (fromtjk%N) ;
-					    ktable.element(t,j,k)     = (fromtjk%(N*(nbest+nother))-psi.element(t,j,k))/N ;
-					    ptable.element(t,j,k)     = (fromtjk-(fromtjk%(N*(nbest+nother))))/(N*(nbest+nother)) ;
+					    ktable.element(t,j,k)   = (fromtjk%(N*(nbest+nother))-psi.element(t,j,k))/N ;
+					    ptable.element(t,j,k)   = (fromtjk-(fromtjk%(N*(nbest+nother))))/(N*(nbest+nother)) ;
 					}
 					else
 					{
@@ -2438,33 +2447,61 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					}
 				}
 
+				ASSERT(oldtempvv2.get_dim1() > old_list_len) ;
+				CMath::qsort<DREAL,INT>(oldtempvv2.get_array(), oldtempii2.get_array(), old_list_len) ;
+				num_finite = 0 ;
+				for (INT i=0; i<old_list_len; i++)
+					if (oldtempvv2[i]<1e10)
+						num_finite++ ;
+
 				for (short int k=0; k<nother; k++)
 				{
 					INT kk = 0 ;
 					if (num_finite>1)
-						kk = (INT) CMath::floor(exp(CMath::random(CMath::log(1), CMath::log(num_finite-1)))-1e-10) ;
-					//kk = CMath::random(0, num_finite-1) ;
+					{
+						DREAL s = 0 ;
+						for (INT x=0; x<num_finite; x++)
+							s+=exp(-(x+1)) ;
+						
+						DREAL r = CMath::random(0., s) ;
 
+						s=0 ;
+						for (INT x=0; x<num_finite; x++)
+						{
+							s+=exp(-(x+1)) ;
+							if (r<s)
+							{
+								kk=x;
+								break ;
+							}
+						}
+						//kk = (INT) CMath::floor(exp(CMath::random(CMath::log(1), CMath::log(num_finite-1)))-1e-10) ;
+					}
+					
 					if (kk<numEnt)
 					{
 #if (USEORIGINALLIST == 2)
-					    minusscore = oldtempvv[kk];
-					    fromtjk = oldtempii[kk];
+					    minusscore = oldtempvv2[kk];
+					    fromtjk = oldtempii2[kk];
 #elif (USEFIXEDLENLIST == 2)
 					    minusscore = fixedtempvv[kk];
 					    fromtjk = fixedtempii[kk];
 #endif
-					    delta.element(delta_array, t, j, nbest+k, seq_len, N)    = -minusscore + seq.element(j,t);
-					    psi.element(t,j,k+nbest)      = (fromtjk%N) ;
-					    ktable.element(t,j,k+nbest)     = (fromtjk%(N*(nbest+nother))-psi.element(t,j,k+nbest))/N ;
-					    ptable.element(t,j,k+nbest)     = (fromtjk-(fromtjk%(N*(nbest+nother))))/(N*(nbest+nother)) ;
+						INT s_ = (fromtjk%N) ;
+						INT n_ = (fromtjk%(N*(nbest+nother))-s_)/N ;
+						INT t_ = (fromtjk-(fromtjk%(N*(nbest+nother))))/(N*(nbest+nother)) ;
+						
+					    delta.element(delta_array, t, j, nbest+k, seq_len, N)    = -minusscore + seq.element(j,t) + delta.element(delta_array, t_, s_, n_, seq_len, N) ;
+					    psi.element(t,j,k+nbest)      = s_ ;
+					    ktable.element(t,j,k+nbest)   = n_ ;
+					    ptable.element(t,j,k+nbest)   = t_ ;
 					}
 					else
 					{
 						delta.element(delta_array, t, j, k+nbest, seq_len, N)    = -CMath::INFTY ;
 						psi.element(t,j,k+nbest)      = 0 ;
-						ktable.element(t,j,k+nbest)     = 0 ;
-						ptable.element(t,j,k+nbest)     = 0 ;
+						ktable.element(t,j,k+nbest)   = 0 ;
+						ptable.element(t,j,k+nbest)   = 0 ;
 					}
 				}
 
