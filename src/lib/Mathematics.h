@@ -49,13 +49,6 @@ extern "C" {
 #endif
 #endif
 
-//fall back to double precision pow if powl is not
-//available
-#ifndef powl
-#warning powl() not defined, resorting to pow()
-#define powl(x,y) pow((double) (x),(double) (y))
-#endif
-
 #ifndef NAN
 #include <stdlib.h>
 #define NAN (strtod("NAN",NULL))
@@ -156,7 +149,13 @@ public:
 	/// x^n
 	static inline long double powl(long double x, long double n)
 	{
+//fall back to double precision pow if powl is not
+//available
+#ifdef HAVE_POWL
 		return ::powl(x, n);
+#else
+		return ::pow(x, n);
+#endif
 	}
 
 	static inline DREAL pow(DREAL x, DREAL n)

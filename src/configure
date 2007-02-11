@@ -1769,6 +1769,24 @@ EOF
 	fi
 
 cat > $TMPC << EOF
+#include <math.h>
+int main(void)
+{
+	long double a=powl((long double) 1.0, (long double) 1.0);
+	return 0;
+}
+EOF
+	echocheck "Math powl() support"
+	if cc_check -lm
+	then
+		HAVE_POWL='#define HAVE_POWL 1'
+		DEFINES="$DEFINES -DHAVE_POWL"
+		echores "yes"
+	else
+		echores "no - resorting to pow()"
+	fi
+
+cat > $TMPC << EOF
 #include <pthread.h>
 int main(void) { return 0; }
 EOF
@@ -2446,6 +2464,7 @@ $HAVE_OCTAVE
 $HAVE_LARGEFILE
 $HAVE_SWIG
 $HAVE_LAPACK
+$HAVE_POWL
 $HAVE_NPROCESSORS_ONLN
 $USE_LOGCACHE
 $USE_SHORTREAL_KERNELCACHE

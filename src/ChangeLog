@@ -1,3 +1,30 @@
+2007-02-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* lib/Mathematics.h: * add powl function again (actually only the
+	  ifdef needed removal)
+
+2007-02-11  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* lib/Mathematics.h, structure/DynProg.cpp: finally... the pow
+	  problem is gone.
+	  G
+	* lib/Mathematics.h: more problems with the pow function
+	* lib/Mathematics.h: *** empty log message ***
+	* lib/Mathematics.h: somebody did not complete code here ...
+	  G
+
+2007-02-10  Konrad Rieck <Konrad.Rieck@first.fraunhofer.de>
+
+	* kernel/MindyGramKernel.cpp, kernel/MindyGramKernel.h: added
+	  support for similarity coefficients (which boils down to some
+	  strange normalization of the histogram intersection kernel. this
+	  is unpublished, btw.)
+
+2007-02-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog, lib/Mathematics.h: + fall back to double precision pow
+	  if powl is not available
+
 2007-02-09  Konrad Rieck <Konrad.Rieck@first.fraunhofer.de>
 
 	* classifier/svm/SVM.cpp, classifier/svm/SVM.h,
