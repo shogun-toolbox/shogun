@@ -57,7 +57,7 @@ CDynProg::CDynProg()
 
 	  // multi svm
 	  num_degrees(4), 
-	  num_svms(6), 
+	  num_svms(8), 
 	  num_strings(1),
 	  word_degree(word_degree_default, num_degrees, true, true),
 	  cum_num_words(cum_num_words_default, num_degrees+1, true, true),
@@ -398,6 +398,25 @@ bool CDynProg::check_svm_arrays()
 	}
 	else
 	{
+		if (!(word_degree.get_dim1()==num_degrees))
+			SG_WARNING("SVM array: word_degree.get_dim1()!=num_degrees") ;
+		if (!(cum_num_words.get_dim1()==num_degrees+1))
+			SG_WARNING("SVM array: cum_num_words.get_dim1()!=num_degrees+1") ;
+		if (!(num_words.get_dim1()==num_degrees))
+			SG_WARNING("SVM array: num_words.get_dim1()==num_degrees") ;
+		if (!(svm_pos_start.get_dim1()==num_degrees))
+			SG_WARNING("SVM array: svm_pos_start.get_dim1()!=num_degrees") ;
+		if (!(num_unique_words.get_dim1()==num_degrees))
+			SG_WARNING("SVM array: num_unique_words.get_dim1()!=num_degrees") ;
+		if (!(mod_words.get_dim1()==num_svms))
+			SG_WARNING("SVM array: mod_words.get_dim1()!=num_svms") ;
+		if (!(mod_words.get_dim2()==2))
+			SG_WARNING("SVM array: mod_words.get_dim2()!=2") ;
+		if (!(sign_words.get_dim1()==num_svms))
+			SG_WARNING("SVM array: sign_words.get_dim1()!=num_svms") ;
+		if (!(string_words.get_dim1()==num_svms))
+			SG_WARNING("SVM array: string_words.get_dim1()!=num_svms") ;
+
 		svm_arrays_clean=false ;
 		return false ;	
 	}
@@ -670,7 +689,7 @@ void CDynProg::best_path_deriv_call()
 						  m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
 						  m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2()) ;
 
-	m_step=9 ;
+	m_step=12 ;
 }
 
 
@@ -734,11 +753,18 @@ void CDynProg::best_path_deriv_call(INT nbest)
 
 void CDynProg::best_path_get_scores(DREAL **scores, INT *m) 
 {
-	if (m_step!=9)
+	if (m_step!=9 && m_step!=12)
 		SG_ERROR( "please call best_path*_call first\n") ;
 
-	*scores=m_scores.get_array() ;
-	*m=m_scores.get_dim1() ;
+	if (m_step==9)
+	{
+		*scores=m_scores.get_array() ;
+		*m=m_scores.get_dim1() ;
+	} else
+	{
+		*scores=m_my_scores.get_array() ;
+		*m=m_my_scores.get_dim1() ;
+	}
 
 	m_step=10 ;
 }
@@ -1656,6 +1682,7 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 	  
 	  The SVM weights are precomputed in dict_weights
 	*/
+	
 	for (INT j=0; j<num_degrees; j++)
 	{
 		INT plen = 1;
@@ -1665,6 +1692,8 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 		INT posprev = pos[t_end]-word_degree[j]+1;
 		INT poscurrent = pos[ts];
 		
+		//fprintf(stderr, "j=%i seqlen=%i posprev = %i, poscurrent = %i", j, svs.seqlen, posprev, poscurrent) ;
+
 		if (poscurrent<0)
 			poscurrent = 0;
 		DREAL * my_svm_values_unnormalized = svs.svm_values_unnormalized[j] ;
@@ -1676,6 +1705,8 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 		{
 			for (int i=posprev-1 ; (i>=poscurrent) && (i>=0) ; i--)
 			{
+//				fprintf(stderr, "string_words_array[0]=%i, j=%i, i=%i\n", string_words_array[0], j, i) ;
+				
 				WORD word = wordstr[string_words_array[0]][j][i] ;
 				INT last_string = string_words_array[0] ;
 				for (INT s=0; s<num_svms; s++)
@@ -1732,126 +1763,6 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 			}
 		}
 	}
-}
-
-void CDynProg::find_svm_values_till_pos_new(WORD*** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs, INT max_num_positions)
-{
-	/*
-	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 
-	  corresponding to the 6-mer in genestr(i-5:i) 
-	  pos is a vector of candidate transition positions (it is input to best_path_trans)
-	  t_end is some index in pos
-	  
-	  svs has been initialized by init_svm_values
-	  
-	  At the end of this procedure, 
-	  svs.svm_values[i+s*svs.seqlen] has the value of the s-th SVM on genestr(pos(t_end-i):pos(t_end)) 
-	  for every i satisfying pos(t_end)-pos(t_end-i) <= svs.maxlookback
-	  
-	  The SVM weights are precomputed in dict_weights
-	*/
-	for (INT s=0; s<num_svms; s++)
-	{
-		ASSERT(sign_words_array[s]==false) ;
-		ASSERT(mod_words_array[s]==1) ;
-		ASSERT(string_words_array[s]==0) ;
-	}
-	const INT max_cum_num_words = cum_num_words_array[num_degrees] ;
-	const WORD ** my_wordstr = (const WORD **) wordstr[0] ;
-
-
-	for (INT j=0; j<num_degrees; j++)
-	{
-		INT plen = 1;
-		INT ts = t_end-1;        // index in pos; pos(ts) and pos(t) are indices of wordstr
-		INT offset;
-		
-		INT posprev = pos[t_end]-word_degree[j]+1;
-		INT poscurrent = pos[ts];
-		
-		if (poscurrent<0)
-			poscurrent = 0;
-		DREAL * my_svm_values_unnormalized = svs.svm_values_unnormalized[j] ;
-		INT * my_num_unique_words = svs.num_unique_words[j] ; // this array can be avoided...
-		const INT my_cum_num_words = cum_num_words_array[j] ;
-
-		INT len = pos[t_end] - poscurrent;
-		while ((ts>=0) && (len <= svs.maxlookback))
-		{
-			for (int i=posprev-1 ; (i>=poscurrent) && (i>=0) ; i--)
-			{
-				WORD word = my_wordstr[j][i] ;
-				for (INT s=0; s<num_svms; s++)
-				{
-					if (svs.start_pos[s]-i>0)
-					{
-						my_svm_values_unnormalized[s] += dict_weights_array[(word+my_cum_num_words)+s*max_cum_num_words] ;
-						//svs.svm_values_unnormalized[j][s]+=dict_weights.element(word+cum_num_words_array[j], s) ;
-						my_num_unique_words[s]++ ;
-					}
-				}
-			}
-			for (INT s=0; s<num_svms; s++)
-			{
-				double normalization_factor = 1.0;
-				if (my_num_unique_words[s] > 0)
-					normalization_factor = (double)my_num_unique_words[s];
-
-				offset = s*svs.seqlen;
-				if (j==0)
-					svs.svm_values[offset+plen]=0 ;
-				svs.svm_values[offset+plen] += my_svm_values_unnormalized[s] / normalization_factor;
-			}
-			
-			if (posprev > poscurrent)         // remember posprev initially set to pos[t_end]-word_degree+1... pos[ts] could be e.g. pos[t_end]-2
-				posprev = poscurrent;           
-			
-			ts--;
-			plen++;
-			if (plen>max_num_positions)
-				break ;
-			
-			if (ts>=0)
-			{
-				poscurrent=pos[ts];
-				if (poscurrent<0)
-					poscurrent = 0;
-				len = pos[t_end] - poscurrent;
-			}
-		}
-	}
-}
-
-void CDynProg::update_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t_end, INT prev_t_end, struct svm_values_struct &svs)
-{
-	for (INT s=0; s<num_svms; s++)
-	{
-		ASSERT(sign_words_array[s]==false) ;
-		ASSERT(mod_words_array[s]==1) ;
-		ASSERT(string_words_array[s]==0) ;
-	}
-
-	const INT num_new_positions = t_end-prev_t_end ;
-	
-	// move the previous svm outputs ...
-	for (INT s=0; s<num_svms; s++)
-	{
-		DREAL * block = &svs.svm_values[s*svs.seqlen];
-		memmove(&block[num_new_positions], block, sizeof(DREAL)*(svs.seqlen-num_new_positions)) ;
-		memset(block, 0, sizeof(DREAL)*num_new_positions) ;
-	}
-
-	// compute the new ones ...
-	find_svm_values_till_pos_new(wordstr, pos, t_end, svs, num_new_positions);
-	
-	// update the old ones ...
-	for (INT s=0; s<num_svms; s++)
-	{
-		DREAL * block = &svs.svm_values[s*svs.seqlen];
-		for (INT i=0; i<svs.seqlen-num_new_positions; i++)
-			block[i+num_new_positions] += block[num_new_positions - 1] ;
-	}
-	
 }
 
 bool CDynProg::extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to)
@@ -2145,6 +2056,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	}
 
 	// translate to words, if svm is used
+	fprintf(stderr, "genestr_num = %i, genestr_len = %i\n", genestr_num, genestr_len) ;
+	
 	WORD** wordstr[genestr_num] ;
 	for (INT k=0; k<genestr_num; k++)
 	{
@@ -2220,7 +2133,6 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	loss.segments_changed = NULL;
 	loss.num_segment_id = NULL;
 
-
 	// recursion
 	for (INT t=1; t<seq_len; t++)
 	{
@@ -2229,18 +2141,6 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		
 		init_svm_values(svs, pos[t], seq_len, max_look_back);
 		find_svm_values_till_pos(wordstr, pos, t, svs);  
-
-		/*init_svm_values(svs2, pos[t], seq_len, max_look_back);
-		find_svm_values_till_pos_new(wordstr, pos, t, svs2, MAXINT);  
-
-		if (t==1)
-		{
-			init_svm_values(svs3, pos[t], seq_len, max_look_back);
-			find_svm_values_till_pos(wordstr, pos, t, svs3);  
-		}
-		else
-			update_svm_values_till_pos(wordstr, pos, t, t-1, svs3);  
-		*/
 
 		init_segment_loss(loss, seq_len, max_look_back);
 		find_segment_loss_till_pos(pos, t, m_segment_ids_mask, loss);  
@@ -2756,6 +2656,11 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			my_losses[i]=0.0 ;
 		}
 		
+#ifdef DYNPROG_DEBUG
+		DREAL total_score = 0.0 ;
+		DREAL total_loss = 0.0 ;
+#endif		
+
 		ASSERT(my_state_seq[0]>=0) ;
 		initial_state_distribution_p_deriv.element(my_state_seq[0])++ ;
 		my_scores[0] += initial_state_distribution_p.element(my_state_seq[0]) ;
@@ -2763,7 +2668,10 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 		ASSERT(my_state_seq[my_seq_len-1]>=0) ;
 		end_state_distribution_q_deriv.element(my_state_seq[my_seq_len-1])++ ;
 		my_scores[my_seq_len-1] += end_state_distribution_q.element(my_state_seq[my_seq_len-1]);
-		
+
+#ifdef DYNPROG_DEBUG
+		total_score += my_scores[0] + my_scores[my_seq_len-1] ;
+#endif 		
 		struct svm_values_struct svs;
 		svs.num_unique_words = NULL;
 		svs.svm_values = NULL;
@@ -2773,7 +2681,6 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 		struct segment_loss_struct loss;
 		loss.segments_changed = NULL;
 		loss.num_segment_id = NULL;
-		
 		//fprintf(stderr, "seq_len=%i\n", my_seq_len) ;
 		for (INT i=0; i<my_seq_len-1; i++)
 		{
@@ -2794,6 +2701,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			INT elem_id = transition_matrix_a_id.element(from_state, to_state) ;
 			my_losses[i] = extend_segment_loss(loss, pos, elem_id, from_pos, loss_last_pos, last_loss) ;
 #ifdef DYNPROG_DEBUG
+			io.set_loglevel(M_DEBUG) ;
 			SG_DEBUG( "%i. segment loss %f (id=%i): from=%i(%i), to=%i(%i)\n", i, my_losses[i], elem_id, from_pos, from_state, to_pos, to_state) ;
 #endif
 			// increase usage of this transition
@@ -2864,8 +2772,14 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			
 #ifdef DYNPROG_DEBUG
 			SG_DEBUG( "%i. scores[i]=%f (final) \n", i, my_scores[i]) ;
+			total_score += my_scores[i] ;
+			total_loss += my_losses[i] ;
 #endif
 		}
+#ifdef DYNPROG_DEBUG
+		SG_DEBUG( "total score = %f \n", total_score) ;
+		SG_DEBUG( "total loss = %f \n", total_loss) ;
+#endif
 		clear_svm_values(svs);
 		clear_segment_loss(loss);
 	}
