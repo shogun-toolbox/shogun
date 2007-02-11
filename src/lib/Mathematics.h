@@ -52,6 +52,7 @@ extern "C" {
 //fall back to double precision pow if powl is not
 //available
 #ifndef powl
+#warning powl() not defined, resorting to pow()
 #define powl(x,y) pow((double) (x),(double) (y))
 #endif
 
@@ -153,15 +154,15 @@ public:
 	}
 
 	/// x^n
-	/*static inline long double powl(long double x, long double n)
+	static inline long double powl(long double x, long double n)
 	{
 		return ::powl(x, n);
-		}*/
+	}
 
 	static inline DREAL pow(DREAL x, DREAL n)
-		{
-			return ::pow(x, n);
-		}
+	{
+		return ::pow(x, n);
+	}
 	
 	static inline DREAL log10(DREAL v)
 	{
