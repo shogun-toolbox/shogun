@@ -19,7 +19,7 @@
 class CCombinedKernel : public CKernel
 {
 	public:
-		CCombinedKernel(LONG size, bool append_subkernel_weights);
+		CCombinedKernel(INT size, bool append_subkernel_weights=false);
 		virtual ~CCombinedKernel();
 
 		/** initialize kernel lhs/rhs caches etc.

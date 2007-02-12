@@ -37,7 +37,7 @@ struct S_THREAD_PARAM
 	INT num_suppvec;
 };
 
-CCombinedKernel::CCombinedKernel(LONG size, bool append_subkernel_weights_)
+CCombinedKernel::CCombinedKernel(INT size, bool append_subkernel_weights_)
 	: CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL), 
 	  subkernel_weights_buffer(NULL), append_subkernel_weights(append_subkernel_weights_)
 {

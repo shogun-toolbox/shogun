@@ -929,7 +929,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				INT *shift = new INT[length] ;
 				for (i=0; i<length; i++)
 				{
-					strcpy(rest2, "") ;
+					*rest2 = '\0';
 					int args = sscanf(rest, "%i %[0-9 .+-]", &shift[i], rest2) ;
 					if (((args!=2) && (i<length-1)) || (args<1))
 					{

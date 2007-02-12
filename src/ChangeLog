@@ -1,5 +1,67 @@
+2007-02-12  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* structure/Plif.cpp, structure/PlifArray.cpp:
+	* structure/Plif.cpp, structure/PlifArray.cpp: some more fixes...
+	* structure/Plif.cpp: *** empty log message ***
+	* structure/PlifArray.cpp: more debug stuff ... (sorry for the
+	  spam).
+	* structure/PlifArray.cpp: *** empty log message ***
+	* structure/DynProg.cpp:
+
+2007-02-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/python-modular, trunk/python-modular/examples,
+	  trunk/python-modular/examples/krr.py,
+	  trunk/python-modular/examples/lda.py,
+	  trunk/python-modular/examples/multiple_svms.py,
+	  trunk/python-modular/examples/multiple_svms_matplotlib.py,
+	  trunk/python-modular/examples/numpy_commands.py,
+	  trunk/python-modular/examples/numpy_krr_matplotlib.py,
+	  trunk/python-modular/examples/numpy_krr_sinc.py,
+	  trunk/python-modular/examples/numpy_lda_matplotlib.py,
+	  trunk/python-modular/examples/numpy_svm.py,
+	  trunk/python-modular/examples/numpy_svm_matplotlib.py,
+	  trunk/python-modular/examples/numpy_svr_sinc.py,
+	  trunk/python-modular/examples/rbf_kernel.py,
+	  trunk/python-modular/examples/spec_kernel.py,
+	  trunk/python-modular/examples/stringfeatures.py,
+	  trunk/python-modular/examples/test_wdk.py,
+	  trunk/python-modular/examples/wd_kernel2.py,
+	  trunk/python-modular/examples/wd_kernel_debug.py,
+	  trunk/python-modular/examples/wd_kernel_svm.py,
+	  trunk/python/examples/krr.py, trunk/python/examples/lda.py,
+	  trunk/python/examples/multiple_svms.py,
+	  trunk/python/examples/multiple_svms_matplotlib.py,
+	  trunk/python/examples/numpy_commands.py,
+	  trunk/python/examples/numpy_krr_matplotlib.py,
+	  trunk/python/examples/numpy_krr_sinc.py,
+	  trunk/python/examples/numpy_lda_matplotlib.py,
+	  trunk/python/examples/numpy_svm.py,
+	  trunk/python/examples/numpy_svm_matplotlib.py,
+	  trunk/python/examples/numpy_svr_sinc.py,
+	  trunk/python/examples/rbf_kernel.py,
+	  trunk/python/examples/spec_kernel.py,
+	  trunk/python/examples/stringfeatures.py,
+	  trunk/python/examples/test_mkl.py,
+	  trunk/python/examples/test_wdk.py,
+	  trunk/python/examples/testsuite.py, trunk/python/examples/ut.py,
+	  trunk/python/examples/wd_kernel.py,
+	  trunk/python/examples/wd_kernel2.py,
+	  trunk/python/examples/wd_kernel_debug.py, features/Alphabet.i: *
+	  put python-modular examples in separate directory
+	  * fix get_hist()
+
+2007-02-11  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* structure/DynProg.cpp: minor debug changes.
+	  G
+
 2007-02-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* ChangeLog, configure, lib/Mathematics.h: * add a configure test
+	  for powl(), as the ifdef construct in
+	  lib/Mathmatics.h was flawed (damn!). now HAVE_POWL is set if
+	  powl() exists
 	* lib/Mathematics.h: * add powl function again (actually only the
 	  ifdef needed removal)
 

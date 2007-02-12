@@ -45,3 +45,5 @@
 %include "kernel/SpectrumKernel.i" 
 %include "kernel/MindyGramKernel.i"
 
+%include "kernel/CombinedKernel.i"
+
