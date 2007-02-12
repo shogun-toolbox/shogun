@@ -21,7 +21,7 @@
 
 #include "structure/Plif.h"
 
-#define PLIF_DEBUG
+//#define PLIF_DEBUG
 
 CPlif::CPlif(INT l)
 {
