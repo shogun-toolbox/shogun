@@ -80,9 +80,9 @@ DREAL CPlifArray::lookup_penalty(INT p_value, DREAL* svm_values) const
 #ifdef PLIFARRAY_DEBUG
 		CPlif * plif = (CPlif*)m_array[i] ;
 		if (plif->get_use_svm())
-			SG_DEBUG("penalty[%i]=%1.5f (use_svm=%i -> %1.5f)\n", i, val, plif->get_use_svm(), svm_values[plif->get_use_svm()-1]) ;
+			SG_PRINT("penalty[%i]=%1.5f (use_svm=%i -> %1.5f)\n", i, val, plif->get_use_svm(), svm_values[plif->get_use_svm()-1]) ;
 		else
-			SG_DEBUG("penalty[%i]=%1.5f\n", i, val) ;
+			SG_PRINT("penalty[%i]=%1.5f\n", i, val) ;
 #endif
 	}
 	return ret ;
