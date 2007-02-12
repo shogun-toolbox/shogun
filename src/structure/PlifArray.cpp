@@ -18,7 +18,7 @@
 #include "structure/PlifArray.h"
 #include "structure/Plif.h"
 
-//#define PLIFARRAY_DEBUG
+#define PLIFARRAY_DEBUG
 
 CPlifArray::CPlifArray()
 {
