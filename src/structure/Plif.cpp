@@ -390,7 +390,7 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 	}
 
 #ifdef PLIF_DEBUG
-	SG_PRINT("  -> value = %i ", d_value) ;
+	SG_PRINT("  -> value = %1.4f ", d_value) ;
 #endif
 
 	INT idx = 0 ;
