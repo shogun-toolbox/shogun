@@ -4,7 +4,7 @@
 
 #ifdef HAVE_PYTHON
 %include "lib/numpy.i"
-%apply (LONG** ARGOUT1, INT* DIM1) {(LONG** dst, INT* d1)};
+%apply (LONG** ARGOUT1, INT* DIM1) {(LONG** h, INT* len)};
 #endif
 
 %rename(Alphabet) CAlphabet;
