@@ -329,7 +329,7 @@ DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
 		ret = (penalties[idx]*(d_value-limits[idx-1]) + penalties[idx-1]*
 			   (limits[idx]-d_value)) / (limits[idx]-limits[idx-1]) ;  
 #ifdef PLIF_DEBUG
-		SG_PRINT("  -> (%1.3f,%1.3f)", (d_value-limits[idx-1])/(limits[idx]-limits[idx-1]), (limits[idx]-d_value)/(limits[idx]-limits[idx-1])) ;
+		SG_PRINT("  -> (%1.3f*%1.3f, %1.3f*%1.3f)", (d_value-limits[idx-1])/(limits[idx]-limits[idx-1]), penalties[idx], (limits[idx]-d_value)/(limits[idx]-limits[idx-1]), penalties[idx-1]) ;
 #endif
 	}
 #ifdef PLIF_DEBUG
@@ -388,6 +388,10 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 		SG_ERROR( "unknown transform\n") ;
 		break ;
 	}
+
+#ifdef PLIF_DEBUG
+	SG_PRINT("  -> value = %i ", d_value) ;
+#endif
 
 	INT idx = 0 ;
 	DREAL ret ;
