@@ -192,9 +192,17 @@ public:
 	}
 
 	void set_name(char *p_name) ;
-	inline char * get_name() 
+	inline char * get_name() const
 	{
-		return name ;
+		if (name)
+			return name ;
+		else
+		{
+			char buf[20] ;
+			sprintf(buf, "plif%i", id) ;
+			//name = strdup(buf) ;
+			return strdup(buf) ;
+		}
 	}
 
 	inline INT get_plif_len()
