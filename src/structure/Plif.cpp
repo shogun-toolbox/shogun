@@ -286,8 +286,8 @@ DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
 {	
 	ASSERT(use_svm>0) ;
 	DREAL d_value=d_values[use_svm-1] ;
-#ifdef PLIF_PRINT
-	SG_DEBUG("lookup_penalty_svm(%f)\n", d_value) ;
+#ifdef PLIF_DEBUG
+	SG_PRINT("lookup_penalty_svm(%f)\n", d_value) ;
 #endif
 
 	switch (transform)
@@ -360,6 +360,10 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 	if (use_svm)
 		return lookup_penalty_svm(p_value, svm_values) ;
 
+#ifdef PLIF_DEBUG
+	SG_PRINT("lookup_penalty(%f)\n", p_value) ;
+#endif
+
 	if ((p_value<min_value) || (p_value>max_value))
 		return -CMath::INFTY ;
 	
@@ -390,6 +394,9 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 	for (INT i=0; i<len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
+#ifdef PLIF_DEBUG
+	SG_PRINT("  -> idx = %i ", idx) ;
+#endif
 	
 	if (idx==0)
 		ret=penalties[0] ;
@@ -399,9 +406,15 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 	{
 		ret = (penalties[idx]*(d_value-limits[idx-1]) + penalties[idx-1]*
 			   (limits[idx]-d_value)) / (limits[idx]-limits[idx-1]) ;  
+#ifdef PLIF_DEBUG
+		SG_PRINT("  -> (%1.3f,%1.3f)", (d_value-limits[idx-1])/(limits[idx]-limits[idx-1]), (limits[idx]-d_value)/(limits[idx]-limits[idx-1])) ;
+#endif
 	}
 	//if (p_value>=30 && p_value<150)
 	//fprintf(stderr, "%s %i(%i) -> %1.2f\n", PEN->name, p_value, idx, ret) ;
+#ifdef PLIF_DEBUG
+	SG_PRINT("  -> ret=%1.3f\n", ret) ;
+#endif
 	
 	return ret ;
 }
