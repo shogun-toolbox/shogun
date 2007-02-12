@@ -2739,7 +2739,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				DREAL nscore = PEN.element(to_state, from_state)->lookup_penalty(pos[to_pos]-pos[from_pos], svm_value) ;
 				my_scores[i] += nscore ;
 #ifdef DYNPROG_DEBUG
-				SG_DEBUG( "%i. transition penalty: from_state=%i to_state=%i from_pos=%i to_pos=%i value=%i\n", i, from_state, to_state, from_pos, to_pos, pos[to_pos]-pos[from_pos]) ;
+				SG_DEBUG( "%i. transition penalty: from_state=%i to_state=%i from_pos=%i [%i] to_pos=%i [%i] value=%i\n", i, from_state, to_state, from_pos, pos[from_pos], to_pos, pos[to_pos], pos[to_pos]-pos[from_pos]) ;
 #endif
 				PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value) ;
 			}
@@ -2753,7 +2753,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				if ((PEN_state_signals.element(to_state,k)==NULL)&&(k==0))
 				{
 #ifdef DYNPROG_DEBUG
-					SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i score=%1.2f (no state penalty)\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k)) ;
+					SG_DEBUG( "%i. emmission penalty: to_state=%i to_pos=%i score=%1.2f (no signal plif)\n", i, to_state, to_pos, seq_input.element(to_state, to_pos, k)) ;
 #endif
 					my_scores[i] += seq_input.element(to_state, to_pos, k) ;
 					break ;
