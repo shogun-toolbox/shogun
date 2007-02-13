@@ -130,6 +130,16 @@ Make sure you installed the XCode tools including X11 (such that makedepend
 
 Note: On powerpc archs don't use gcc-4.0 / gcc-4.1 as it will fail with an internal compiler
 error. Try gcc-4.2 instead or disable optimization (using -O0).
+Furthermore there it *may* happen that compiling hangs with an error in
+ /usr/include/architecture/ppc/math.h:513.
+ 
+A workaround is to uncomment this in math.h:
+
+ typedef struct __complex_s {
+        double Real;
+        double Imag;
+ } __complex_t;
+ 
 Also make sure you don't mix python versions (i.e. python2.4 and python2.5) on build/runtime.
 You can specify the python version as a argument to configure, e.g.: --python=python2.4
 

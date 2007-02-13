@@ -1,5 +1,26 @@
 2007-02-12  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
 
+	* structure/Plif.cpp, structure/PlifArray.cpp: works.
+	  cleanup.
+	* structure/Plif.cpp:
+	* structure/Plif.cpp:
+	* structure/Plif.cpp, structure/Plif.h:
+	* structure/Plif.cpp:
+	* structure/Plif.cpp: more debug output...
+	  
+	  PS: need this many checkins since I'm comparing matlab and python
+	  to give same results and need two svn checkouts in sync.
+
+2007-02-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog, features/CombinedFeatures.i, features/Features.i,
+	  guilib/GUIKernel.cpp, kernel/CombinedKernel.cpp,
+	  kernel/CombinedKernel.h, kernel/CombinedKernel.i,
+	  kernel/Kernel.i: * add combined kernel / combined features to
+	  python interf.
+
+2007-02-12  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
 	* structure/Plif.cpp, structure/PlifArray.cpp:
 	* structure/Plif.cpp, structure/PlifArray.cpp: some more fixes...
 	* structure/Plif.cpp: *** empty log message ***

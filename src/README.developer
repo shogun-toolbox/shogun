@@ -19,6 +19,44 @@ FORMATTING:
 	set ts=4            " tabstop 
 	set sw=4            " shiftwidth
 
+- avoid whitespaces at end of lines and use only tabs for indenting
+
+- semicolons and commas ;, should be placed directly after a variable/statement
+
+  x+=1;
+  set_cache_size(0);
+
+  for (int i=0; i<10; i++)
+      ...
+
+- brackets () and (greater/lower) equal sign ><= should should not contain
+  unecessary spaces, e.g:
+
+  int a=1;
+  int b=kernel->compute();
+
+  if (a==1)
+  {
+  }
+
+  exceptions are logical subunits
+
+  if ( (a==1) && (b==1) )
+  {
+  }
+
+
+- breaking long lines and strings
+	limit yourselves to 80 columns
+
+	for (INT vec=params->start; vec<params->end &&
+			!CSignal::cancel_computations(); vec++)
+	{
+		//foo
+	}
+
+	however exceptions are OK if readability is increased (as in function definitions)
+
 - functions look like
 
 	INT* fun(INT* foo)
@@ -36,6 +74,17 @@ FORMATTING:
 	INT* fun2(INT* foo2)
 	{
 		return foo2;
+	}
+
+- same for if () else clauses, while/for loops
+
+	if (foo)
+		do_stuff();
+
+	if (foo)
+	{
+		do_stuff();
+		do_more();
 	}
 
 TYPES:
@@ -58,14 +107,26 @@ TYPES:
 
 NAMING CONVENTIONS:
 
--objects which can deal with features of type DREAL and class SIMPLE don't need
+- naming variables:
+	- in classes are member variables are named like m_feature_vector (to avoid
+			shadowing and the often hard to find bugs shadowing causes)
+	- parameters (in functions) shall be named e.g. feature_vector
+	- don't use meaningless variable names, it is however fine to use short names 
+	like i,j,k etc in loops
+	- class names start with 'C', each syllable/subword starts with a capital letter,
+	 e.g. CStringFeatures
+
+- constants/defined objects are UPPERCASE, i.e. REALVALUED
+
+- function are named like get_feature_vector() and should be limited to as few arguments as
+possible (no monster functions with > 5 arguments please)
+
+- objects which can deal with features of type DREAL and class SIMPLE don't need
 to contain Real/Simple in class name
 
 -others are required to clarify class/type they can handle, e.g.
 CSparseByteLinearKernel, CSparseGaussianKernel
 
--class names start with 'C', each syllable/subword starts with a capital letter,
- e.g. CMyCoolClass
 
 -variable and function names are all lowercase (except for class Con/Destructors)
 syllables/subwords are separated by '_', e.g. compute_kernel_value(), my_local_variable

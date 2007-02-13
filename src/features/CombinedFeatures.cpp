@@ -35,13 +35,11 @@ CCombinedFeatures::~CCombinedFeatures()
 
 void CCombinedFeatures::list_feature_objs()
 {
-	CFeatures* f;
-
 	SG_INFO( "BEGIN COMBINED FEATURES LIST - ");
 	this->list_feature_obj();
 
 	CListElement<CFeatures*> * current = NULL ;
-	f=get_first_feature_obj(current);
+	CFeatures* f=get_first_feature_obj(current);
 
 	while (f)
 	{
