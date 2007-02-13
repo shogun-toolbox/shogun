@@ -81,84 +81,93 @@ bool CGNPPSVM::train()
 
 
 	for (int i=0; i<num_data; i++)
-		vector_y[i]=get_labels()->get_label(i);
+	{
+		if (get_labels()->get_label(i) == +1)
+			vector_y[i]= 1;
+		else if (get_labels()->get_label(i) == -1)
+			vector_y[i]= 2;
+		else
+			SG_ERROR("label unknown (%f)\n", get_labels()->get_label(i));
+	}
 
 	ASSERT(get_kernel());
 
-    DREAL C = get_C1();
-    INT tmax = 1000000000;
-    DREAL tolabs = 0;
-    DREAL tolrel = epsilon;
+	DREAL C = get_C1();
+	INT tmax = 1000000000;
+	DREAL tolabs = 0;
+	DREAL tolrel = epsilon;
 
-    DREAL reg_const=0;
-    if( C!=0 )
-      reg_const = 1/C; 
-   
+	DREAL reg_const=0;
+	if( C!=0 )
+		reg_const = 1/C; 
 
-    DREAL* diagK = new DREAL[num_data];
-    ASSERT(diagK);
+	DREAL* diagK = new DREAL[num_data];
+	ASSERT(diagK);
 
-    for(INT i = 0; i < num_data; i++ ) {
-      diagK[i] = 2*get_kernel()->kernel(i,i) + reg_const;
-    }
+	for(INT i = 0; i < num_data; i++ ) {
+		diagK[i] = 2*get_kernel()->kernel(i,i) + reg_const;
+	}
 
-    DREAL* alpha = new DREAL[num_data];
-    ASSERT(alpha);
-    DREAL* vector_c = new DREAL[num_data];
-    ASSERT(vector_c);
+	DREAL* alpha = new DREAL[num_data];
+	ASSERT(alpha);
+	DREAL* vector_c = new DREAL[num_data];
+	ASSERT(vector_c);
 
-    memset(vector_c,0,num_data*sizeof(DREAL));
+	memset(vector_c,0,num_data*sizeof(DREAL));
 
-    DREAL thlb = 0;
-    INT t = 0;
-    DREAL* History = NULL;
-    INT verb = 0;
-    DREAL aHa11, aHa22;
+	DREAL thlb = 0;
+	INT t = 0;
+	DREAL* History = NULL;
+	INT verb = 0;
+	DREAL aHa11, aHa22;
 
-    CGNPPLib npp(vector_y,get_kernel(),num_data, reg_const);
+	CGNPPLib npp(vector_y,get_kernel(),num_data, reg_const);
 
-    npp.gnpp_imdm(diagK, vector_c, vector_y, num_data, 
-         tmax, tolabs, tolrel, thlb, alpha, &t, &aHa11, &aHa22, 
-         &History, verb ); 
+	npp.gnpp_imdm(diagK, vector_c, vector_y, num_data, 
+			tmax, tolabs, tolrel, thlb, alpha, &t, &aHa11, &aHa22, 
+			&History, verb ); 
 
-    INT num_sv = 0;
-    DREAL nconst = History[INDEX(1,t,2)];
-    DREAL trnerr = 0; /* counter of training error */
+	INT num_sv = 0;
+	DREAL nconst = History[INDEX(1,t,2)];
+	DREAL trnerr = 0; /* counter of training error */
 
-    for(INT i = 0; i < num_data; i++ )
-    {
-      if( alpha[i] != 0 ) num_sv++;
-      if(vector_y[i] == 1) 
-      {
-        alpha[i] = alpha[i]*2/nconst;
-        if( alpha[i]/(2*C) >= 1 ) trnerr++;
-      }
-      else
-      {
-        alpha[i] = -alpha[i]*2/nconst;
-        if( alpha[i]/(2*C) <= -1 ) trnerr++;
-      }
-    }
-  
-    DREAL b = 0.5*(aHa22 - aHa11)/nconst;;
+	for(INT i = 0; i < num_data; i++ )
+	{
+		if( alpha[i] != 0 ) num_sv++;
+		if(vector_y[i] == 1) 
+		{
+			alpha[i] = alpha[i]*2/nconst;
+			if( alpha[i]/(2*C) >= 1 ) trnerr++;
+		}
+		else
+		{
+			alpha[i] = -alpha[i]*2/nconst;
+			if( alpha[i]/(2*C) <= -1 ) trnerr++;
+		}
+	}
+
+	DREAL b = 0.5*(aHa22 - aHa11)/nconst;;
 
 	create_new_model(num_sv);
 	CSVM::set_objective(nconst);
 
-    set_bias(b);
-    INT j = 0;
+	set_bias(b);
+	INT j = 0;
 	for (int i=0; i<num_data; i++)
-    {
-      if( alpha[i] !=0)
-      {
-        set_support_vector(j, i);
-		set_alpha(j, alpha[i]);
-      j++;
-    }
-    }
+	{
+		if( alpha[i] !=0)
+		{
+			set_support_vector(j, i);
+			set_alpha(j, alpha[i]);
+			j++;
+		}
+	}
 
-return true;
+	delete[] vector_c;
+	delete[] alpha;
+	delete[] diagK;
+	delete[] vector_y;
 
-
+	return true;
 }
 

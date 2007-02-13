@@ -32,8 +32,8 @@
 
 CKernel::CKernel(INT size) 
 : kernel_matrix(NULL), precomputed_matrix(NULL),
-	precompute_subkernel_matrix(false), precompute_matrix(false), 
-	lhs(NULL), rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
+	precompute_subkernel_matrix(false), precompute_matrix(false), lhs(NULL),
+	rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
 	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE)
 {
 	if (size<10)
@@ -150,7 +150,8 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 	*dst=result;
 }
 
-SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2, SHORTREAL* target)
+SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2,
+		SHORTREAL* target)
 {
 	SHORTREAL* result = NULL;
 	CFeatures* f1 = get_lhs();
@@ -158,8 +159,9 @@ SHORTREAL* CKernel::get_kernel_matrix_shortreal(int &num_vec1, int &num_vec2, SH
 
 	if (f1 && f2)
 	{
-		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
-         SG_ERROR( "kernel matrix does not fit into target\n");
+		if (target && (num_vec1!=f1->get_num_vectors() ||
+					num_vec2!=f2->get_num_vectors()) )
+			SG_ERROR( "kernel matrix does not fit into target\n");
 
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
@@ -228,8 +230,9 @@ DREAL* CKernel::get_kernel_matrix_real(int &num_vec1, int &num_vec2, DREAL* targ
 
 	if (f1 && f2)
 	{
-		if (target && (num_vec1!=f1->get_num_vectors() || num_vec2!=f2->get_num_vectors()) )
-         SG_ERROR( "kernel matrix does not fit into target\n");
+		if (target && (num_vec1!=f1->get_num_vectors() ||
+					num_vec2!=f2->get_num_vectors()) )
+			SG_ERROR( "kernel matrix does not fit into target\n");
 
 		num_vec1=f1->get_num_vectors();
 		num_vec2=f2->get_num_vectors();
@@ -812,7 +815,11 @@ void CKernel::remove_rhs()
 
 void CKernel::list_kernel()
 {
-	SG_INFO( "0x%X - \"%s\" weight=%1.2f OPT:%s", this, get_name(), get_combined_kernel_weight(), get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" : "SLOWBUTMEMEFFICIENT");
+	SG_INFO( "0x%X - \"%s\" weight=%1.2f OPT:%s", this, get_name(),
+			get_combined_kernel_weight(),
+			get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" :
+			"SLOWBUTMEMEFFICIENT");
+
 	switch (get_kernel_type())
 	{
 		case K_UNKNOWN:

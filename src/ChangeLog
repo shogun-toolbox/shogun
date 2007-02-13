@@ -1,3 +1,21 @@
+2007-02-13  vojtech
+
+	* classifier/svm/GNPPSVM.i: swig interface
+	* classifier/svm/GNPPSVM.cpp, classifier/svm/GNPPSVM.h,
+	  classifier/svm/SVM.i, classifier/svm/gnpplib.cpp,
+	  classifier/svm/gnpplib.h, guilib/GUISVM.cpp, lib/common.h: added
+	  GNPP (Generalized Nearest Point Problem) SVM
+
+2007-02-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* README.developer: updated sections about macros
+	* README.developer:
+	* README.developer: + update coding conventions (limit #ifdef
+	  usage)
+	* .authors, ChangeLog, INSTALL, README.developer,
+	  classifier/svm/SVM.cpp, features/CombinedFeatures.cpp: updated
+	  authors and coding conventions
+
 2007-02-12  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
 
 	* structure/Plif.cpp, structure/PlifArray.cpp: works.

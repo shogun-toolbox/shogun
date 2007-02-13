@@ -53,6 +53,8 @@ gnpplib.c: Library of solvers for Generalized Nearest Point Problem (GNPP).
 #include <limits.h>
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/Mathematics.h"
+
 #include "classifier/svm/gnpplib.h"
 #include "kernel/Kernel.h"
 
@@ -61,8 +63,6 @@ gnpplib.c: Library of solvers for Generalized Nearest Point Problem (GNPP).
 #define MINUS_INF INT_MIN
 #define PLUS_INF  INT_MAX
 
-#define ABS(A) ((A >= 0) ? A : -A)
-#define MIN(A,B) ((A < B) ? A : B)
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
 
 
@@ -74,6 +74,9 @@ CGNPPLib::CGNPPLib(DREAL* vector_y, CKernel* kernel, INT num_data, DREAL reg_con
   m_kernel = kernel;
 
     Cache_Size = ((LONG) kernel->get_cache_size())*1024*1024/(sizeof(DREAL)*num_data);
+	Cache_Size = CMath::min(Cache_Size, (LONG) num_data);
+
+	SG_INFO("using %d kernel cache lines\n", Cache_Size);
     ASSERT(Cache_Size > 2);
 
     /* allocates memory for kernel cache */
@@ -148,13 +151,13 @@ int CGNPPLib::gnpp_mdm(double *diag_H,
   /* ------------------------------------------------------------ */
 
   Ha1 = new DREAL[dim];
-  if( Ha1 == NULL ) SG_SERROR("Not enough memory.\n");
+  if( Ha1 == NULL ) SG_ERROR("Not enough memory.\n");
   Ha2 = new DREAL[dim];
-  if( Ha2 == NULL ) SG_SERROR("Not enough memory.\n");
+  if( Ha2 == NULL ) SG_ERROR("Not enough memory.\n");
 
   History_size = (tmax < HISTORY_BUF ) ? tmax+1 : HISTORY_BUF;
   History = new DREAL[History_size*2];
-  if( History == NULL ) SG_SERROR("Not enough memory.\n");
+  if( History == NULL ) SG_ERROR("Not enough memory.\n");
 
   /* inx1 = firts of find( y ==1 ), inx2 = firts of find( y ==2 ) */
   v1 = -1; v2 = -1; i = 0;
@@ -207,13 +210,13 @@ int CGNPPLib::gnpp_mdm(double *diag_H,
   History[INDEX(1,0,2)] = UB;
 
   if( verb ) {
-    SG_SPRINT("Init: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
+    SG_PRINT("Init: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
       UB, LB, UB-LB,(UB-LB)/UB);
   }  
 
   /* Stopping conditions */
   if( UB-LB <= tolabs ) exitflag = 1;
-  else if(UB-LB <= ABS(UB)*tolrel ) exitflag = 2;
+  else if(UB-LB <= CMath::abs(UB)*tolrel ) exitflag = 2;
   else if(LB > th) exitflag = 3;
   else exitflag = -1;
 
@@ -235,7 +238,7 @@ int CGNPPLib::gnpp_mdm(double *diag_H,
       Huv = col_u[v1];
 
       lambda = delta1/(alpha[v1]*(Huu - 2*Huv + Hvv ));
-      lambda = MIN(1,lambda);
+      lambda = CMath::min(1.0,lambda);
 
       tmp = lambda*alpha[v1];
 
@@ -275,7 +278,7 @@ int CGNPPLib::gnpp_mdm(double *diag_H,
       Huv = col_u[v2];
   
       lambda = delta2/(alpha[v2]*( Huu - 2*Huv + Hvv ));
-      lambda = MIN(1,lambda);
+      lambda = CMath::min(1.0,lambda);
 
       tmp = lambda*alpha[v2];
       aHa22 = aHa22 + 2*tmp*( Ha2[u2]-Ha2[v2]) + tmp*tmp*( Huu - 2*Huv + Hvv);
@@ -314,12 +317,12 @@ int CGNPPLib::gnpp_mdm(double *diag_H,
 
     /* Stopping conditions */
     if( UB-LB <= tolabs ) exitflag = 1; 
-    else if( UB-LB <= ABS(UB)*tolrel ) exitflag = 2;
+    else if( UB-LB <= CMath::abs(UB)*tolrel ) exitflag = 2;
     else if(LB > th) exitflag = 3;
     else if(t >= tmax) exitflag = 0; 
 
     if( verb && (t % verb) == 0) {
-     SG_SPRINT("%d: UB=%f,LB=%f,UB-LB=%f,(UB-LB)/|UB|=%f\n",
+     SG_PRINT("%d: UB=%f,LB=%f,UB-LB=%f,(UB-LB)/|UB|=%f\n",
         t, UB, LB, UB-LB,(UB-LB)/UB); 
     }  
 
@@ -330,7 +333,7 @@ int CGNPPLib::gnpp_mdm(double *diag_H,
     }
     else {
       tmp_ptr = new DREAL[(History_size+HISTORY_BUF)*2];
-      if( tmp_ptr == NULL ) SG_SERROR("Not enough memory.\n");
+      if( tmp_ptr == NULL ) SG_ERROR("Not enough memory.\n");
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
         tmp_ptr[INDEX(1,i,2)] = History[INDEX(1,i,2)];
@@ -346,7 +349,7 @@ int CGNPPLib::gnpp_mdm(double *diag_H,
 
   /* print info about last iteration*/
   if(verb && (t % verb) ) {
-    SG_SPRINT("Exit: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
+    SG_PRINT("Exit: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
       UB, LB, UB-LB,(UB-LB)/UB);
   }  
 
@@ -415,13 +418,13 @@ int CGNPPLib::gnpp_imdm(double *diag_H,
   /* ------------------------------------------------------------ */
 
   Ha1 = new DREAL[dim];
-  if( Ha1 == NULL ) SG_SERROR("Not enough memory.\n");
+  if( Ha1 == NULL ) SG_ERROR("Not enough memory.\n");
   Ha2 = new DREAL[dim];
-  if( Ha2 == NULL ) SG_SERROR("Not enough memory.\n");
+  if( Ha2 == NULL ) SG_ERROR("Not enough memory.\n");
 
   History_size = (tmax < HISTORY_BUF ) ? tmax+1 : HISTORY_BUF;
   History = new DREAL[History_size*2];
-  if( History == NULL ) SG_SERROR("Not enough memory.\n");
+  if( History == NULL ) SG_ERROR("Not enough memory.\n");
 
   /* inx1 = firts of find( y ==1 ), inx2 = firts of find( y ==2 ) */
   v1 = -1; v2 = -1; i = 0;
@@ -474,7 +477,7 @@ int CGNPPLib::gnpp_imdm(double *diag_H,
   History[INDEX(1,0,2)] = UB;
 
   if( verb ) {
-    SG_SPRINT("Init: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
+    SG_PRINT("Init: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
       UB, LB, UB-LB,(UB-LB)/UB);
   }  
 
@@ -493,7 +496,7 @@ int CGNPPLib::gnpp_imdm(double *diag_H,
 
   /* Stopping conditions */
   if( UB-LB <= tolabs ) exitflag = 1;
-  else if(UB-LB <= ABS(UB)*tolrel ) exitflag = 2;
+  else if(UB-LB <= CMath::abs(UB)*tolrel ) exitflag = 2;
   else if(LB > th) exitflag = 3;
   else exitflag = -1;
 
@@ -512,7 +515,7 @@ int CGNPPLib::gnpp_imdm(double *diag_H,
       Huv = col_u[v1];
 
       lambda = delta1/(alpha[v1]*(Huu - 2*Huv + Hvv ));
-      lambda = MIN(1,lambda);
+      lambda = CMath::min(1.0,lambda);
 
       tmp = lambda*alpha[v1];
 
@@ -549,7 +552,7 @@ int CGNPPLib::gnpp_imdm(double *diag_H,
       Huv = col_u[v2];
   
       lambda = delta2/(alpha[v2]*( Huu - 2*Huv + Hvv ));
-      lambda = MIN(1,lambda);
+      lambda = CMath::min(1.0,lambda);
 
       tmp = lambda*alpha[v2];
       aHa22 = aHa22 + 2*tmp*( Ha2[u2]-Ha2[v2]) + tmp*tmp*( Huu - 2*Huv + Hvv);
@@ -650,12 +653,12 @@ int CGNPPLib::gnpp_imdm(double *diag_H,
 
     /* Stopping conditions */
     if( UB-LB <= tolabs ) exitflag = 1; 
-    else if( UB-LB <= ABS(UB)*tolrel ) exitflag = 2;
+    else if( UB-LB <= CMath::abs(UB)*tolrel ) exitflag = 2;
     else if(LB > th) exitflag = 3;
     else if(t >= tmax) exitflag = 0; 
 
     if( verb && (t % verb) == 0) {
-     SG_SPRINT("%d: UB=%f,LB=%f,UB-LB=%f,(UB-LB)/|UB|=%f\n",
+     SG_PRINT("%d: UB=%f,LB=%f,UB-LB=%f,(UB-LB)/|UB|=%f\n",
         t, UB, LB, UB-LB,(UB-LB)/UB); 
     }  
 
@@ -666,7 +669,7 @@ int CGNPPLib::gnpp_imdm(double *diag_H,
     }
     else {
       tmp_ptr = new DREAL[(History_size+HISTORY_BUF)*2];
-      if( tmp_ptr == NULL ) SG_SERROR("Not enough memory.\n");
+      if( tmp_ptr == NULL ) SG_ERROR("Not enough memory.\n");
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
         tmp_ptr[INDEX(1,i,2)] = History[INDEX(1,i,2)];
@@ -682,7 +685,7 @@ int CGNPPLib::gnpp_imdm(double *diag_H,
 
   /* print info about last iteration*/
   if(verb && (t % verb) ) {
-    SG_SPRINT("Exit: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
+    SG_PRINT("Exit: UB=%f, LB=%f, UB-LB=%f, (UB-LB)/|UB|=%f \n",
       UB, LB, UB-LB,(UB-LB)/UB);
   }  
 
