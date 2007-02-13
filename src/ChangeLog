@@ -1,4 +1,10 @@
-2007-02-13  vojtech
+2007-02-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog, classifier/svm/GNPPSVM.cpp,
+	  classifier/svm/gnpplib.cpp, kernel/Kernel.cpp: + fixed some (?)
+	  npp svm bugs
+
+2007-02-13  Vojtech Franc <fravoj@first.fraunhofer.de>
 
 	* classifier/svm/GNPPSVM.i: swig interface
 	* classifier/svm/GNPPSVM.cpp, classifier/svm/GNPPSVM.h,

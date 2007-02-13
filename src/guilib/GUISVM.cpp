@@ -103,7 +103,7 @@ bool CGUISVM::new_svm(CHAR* param)
 		svm= new CMPDSVM();
 		SG_INFO( "created MPD-SVM object\n") ;
 	}
-	else if (strcmp(param,"NPP")==0)
+	else if (strcmp(param,"GNPP")==0)
 	{
 		delete svm;
 		svm= new CGNPPSVM();
