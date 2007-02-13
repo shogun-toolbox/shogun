@@ -19,7 +19,8 @@ FORMATTING:
 	set ts=4            " tabstop 
 	set sw=4            " shiftwidth
 
-- avoid whitespaces at end of lines and use only tabs for indenting
+- avoid whitespaces at end of lines and never use them for indentation; only
+ever use tabs for indentations
 
 - semicolons and commas ;, should be placed directly after a variable/statement
 
@@ -57,6 +58,8 @@ FORMATTING:
 
 	however exceptions are OK if readability is increased (as in function definitions)
 
+- don't put multiple assignments on a single line
+
 - functions look like
 
 	INT* fun(INT* foo)
@@ -87,10 +90,22 @@ FORMATTING:
 		do_more();
 	}
 
-IFDEFS:
+MACROS & IFDEFS:
+
+- use macros sparingly
+- avoid defining constants using macros (bye bye typechecking), use
+
+const int FOO=5; 
+
+or enums (when defining several realted constants)
+
+instead
 
 - use ifdefs sparingly (really limit yourself to the ones necessary)
-  as their extreme usage makes the code completely unreadable.
+  as their extreme usage makes the code completely unreadable. to achieve
+  that it may be necessary to wrap a function of (e.g. for
+		  pthread_create()/CreateThread()/thread_create() a wrapper function to create a
+		  thread and inside of it the ifdefs to do it the solaris/win32/posix way)
 - if you need to use ifdefs always comment the corresponding #else / #endif
   in the following way:
 
@@ -118,6 +133,18 @@ TYPES:
 - don't use fprintf/printf, but SG_DEBUG/SG_INFO/SG_WARNING/SG_ERROR/SG_PRINT (if in a from
 		CSGObject derived object) or the static SG_SDEBUG/... functions elsewise
 
+FUNCTIONS:
+
+- Functions should be short and sweet, and do just one thing.  They should fit
+  on one or two screenfuls of text (the ISO/ANSI screen size is 80x24, as we all
+  know), and do one thing and do that well.
+- Another measure of the function is the number of local variables.  They
+  shouldn't exceed 5-10, or you're doing something wrong.  Re-think the
+  function, and split it into smaller pieces.  A human brain can
+  generally easily keep track of about 7 different things, anything more
+  and it gets confused.  You know you're brilliant, but maybe you'd like
+  to understand what you did 2 weeks from now.
+ 
 NAMING CONVENTIONS:
 
 - naming variables:
