@@ -21,6 +21,7 @@
 #endif //USE_SVMLIGHT
 
 %include "classifier/svm/LibSVM.i"
+%include "classifier/svm/GNPPSVM.i"
 
 #ifdef HAVE_PYTHON
 %pythoncode %{

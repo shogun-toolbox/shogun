@@ -186,7 +186,8 @@ enum EClassifierType
 	CT_KNN = 110,
 	CT_LIBSVMONECLASS=120,
 	CT_SVMLIN=130,
-	CT_KRR = 140
+	CT_KRR = 140,
+    CT_GNPPSVM = 150
 };
 
 enum EDistanceType

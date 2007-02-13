@@ -30,6 +30,7 @@
 #include "regression/svr/LibSVR.h"
 
 #include "classifier/svm/MPD.h"
+#include "classifier/svm/GNPPSVM.h"
 
 CGUISVM::CGUISVM(CGUI * gui_)
   : gui(gui_)
@@ -101,6 +102,12 @@ bool CGUISVM::new_svm(CHAR* param)
 		delete svm;
 		svm= new CMPDSVM();
 		SG_INFO( "created MPD-SVM object\n") ;
+	}
+	else if (strcmp(param,"NPP")==0)
+	{
+		delete svm;
+		svm= new CGNPPSVM();
+		SG_INFO( "created GNPP-SVM object\n") ;
 	}
 	else if (strcmp(param,"LIBSVR")==0)
 	{
