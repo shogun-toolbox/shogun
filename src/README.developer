@@ -87,6 +87,17 @@ FORMATTING:
 		do_more();
 	}
 
+IFDEFS:
+
+- use ifdefs sparingly (really limit yourself to the ones
+		necessary) as their extreme usage makes the code completely
+		unreadable.
+- if you need to use ifdefs always comment the corresponding #else / #endif:
+
+#ifdef HAVE_PYTHON
+#else //HAVE_PYTHON
+#endif //HAVE_PYTHON
+
 TYPES:
 - types (use only these!):
 	CHAR	(8bit char(maybe signed or unsigned))
