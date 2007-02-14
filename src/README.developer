@@ -189,4 +189,4 @@ VERSIONING SCHEME:
 - an automagic version will be created from the date of the last svn update.
 if that is not enough make releases:
 
-e.g.: svn cp trunk releases/shogun_0_1_0
+e.g.: svn cp trunk releases/shogun_0.1.0
