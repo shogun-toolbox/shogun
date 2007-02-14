@@ -114,13 +114,13 @@ tags:	$(SRCFILES)
 
 linecount:
 	@echo -n "C/C++ source code files (.cpp,.c):"
-	@cat $(SRCFILES) | wc -l
+	@cat $(SRCFILES) | grep -vc '^ *$$'
 	@echo -n "C/C++ header files (.h):"
-	@cat $(HEADERFILES) | wc -l
+	@cat $(HEADERFILES) | grep -vc '^ *$$'
 	@echo -n "SWIG header files (.i):"
-	@cat $(SWIGIFILES) | wc -l
+	@cat $(SWIGIFILES) | grep -vc '^ *$$'
 	@echo -n "Total:"
-	@cat $(SRCFILES) $(HEADERFILES) $(SWIGIFILES) | wc -l
+	@cat $(SRCFILES) $(HEADERFILES) $(SWIGIFILES) | grep -vc '^ *$$'
 
 targets:
 	@echo "=========="
