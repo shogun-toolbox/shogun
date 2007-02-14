@@ -34,8 +34,7 @@ extern "C" int	finite(double);
 #define USEORIGINALLIST 2
 #define USEFIXEDLENLIST 0
 //#define USE_TMP_ARRAYCLASS
-
-#define DYNPROG_DEBUG
+//#define DYNPROG_DEBUG
 
 static INT word_degree_default[4]={3,4,5,6} ;
 static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -258,7 +257,7 @@ void CDynProg::set_a_trans_matrix(DREAL *a_trans, INT num_trans, INT p_N)
 		INT id = 0 ;
 		if (p_N==4)
 			id = (INT)a_trans[i+num_trans*3] ;
-		//fprintf(stderr, "id=%i\n", id) ;
+		//SG_DEBUG( "id=%i\n", id) ;
 			
 		ASSERT(to_state>=0 && to_state<N) ;
 		ASSERT(from_state>=0 && from_state<N) ;
@@ -276,10 +275,10 @@ void CDynProg::set_a_trans_matrix(DREAL *a_trans, INT num_trans, INT p_N)
 		for (INT j=0; j<N; j++)
 		{
 			//if (transition_matrix_a_id.element(i,j))
-			//fprintf(stderr, "(%i,%i)=%i\n", i,j, transition_matrix_a_id.element(i,j)) ;
+			//SG_DEBUG( "(%i,%i)=%i\n", i,j, transition_matrix_a_id.element(i,j)) ;
 			max_a_id = CMath::max(max_a_id, transition_matrix_a_id.element(i,j)) ;
 		}
-	//fprintf(stderr, "max_a_id=%i\n", max_a_id) ;
+	//SG_DEBUG( "max_a_id=%i\n", max_a_id) ;
 }
 
 void CDynProg::init_svm_arrays(INT p_num_degrees, INT p_num_svms)
@@ -349,10 +348,10 @@ void CDynProg::init_mod_words_array(INT * p_mod_words_array, INT num_elem, INT n
 	mod_words.set_array(p_mod_words_array, num_elem, 2, true, true) ;
 	mod_words_array = mod_words.get_array() ;
 	
-	/*fprintf(stderr, "mod_words=[") ;
+	/*SG_DEBUG( "mod_words=[") ;
 	for (INT i=0; i<num_elem; i++)
-		fprintf(stderr, "%i, ", p_mod_words_array[i]) ;
-		fprintf(stderr, "]\n") ;*/
+		SG_DEBUG( "%i, ", p_mod_words_array[i]) ;
+		SG_DEBUG( "]\n") ;*/
 } 
 
 void CDynProg::init_sign_words_array(bool* p_sign_words_array, INT num_elem)
@@ -377,7 +376,7 @@ void CDynProg::init_string_words_array(INT* p_string_words_array, INT num_elem)
 
 bool CDynProg::check_svm_arrays()
 {
-	//fprintf(stderr, "wd_dim1=%d, cum_num_words=%d, num_words=%d, svm_pos_start=%d, num_uniq_w=%d, mod_words_dims=(%d,%d), sign_w=%d,string_w=%d\n num_degrees=%d, num_svms=%d, num_strings=%d", word_degree.get_dim1(), cum_num_words.get_dim1(), num_words.get_dim1(), svm_pos_start.get_dim1(), num_unique_words.get_dim1(), mod_words.get_dim1(), mod_words.get_dim2(), sign_words.get_dim1(), string_words.get_dim1(), num_degrees, num_svms, num_strings);
+	//SG_DEBUG( "wd_dim1=%d, cum_num_words=%d, num_words=%d, svm_pos_start=%d, num_uniq_w=%d, mod_words_dims=(%d,%d), sign_w=%d,string_w=%d\n num_degrees=%d, num_svms=%d, num_strings=%d", word_degree.get_dim1(), cum_num_words.get_dim1(), num_words.get_dim1(), svm_pos_start.get_dim1(), num_unique_words.get_dim1(), mod_words.get_dim1(), mod_words.get_dim2(), sign_words.get_dim1(), string_words.get_dim1(), num_degrees, num_svms, num_strings);
 	if ((word_degree.get_dim1()==num_degrees) &&
 			(cum_num_words.get_dim1()==num_degrees+1) &&
 			(num_words.get_dim1()==num_degrees) &&
@@ -527,8 +526,10 @@ void CDynProg::best_path_set_plif_id_matrix(INT *plif_id_matrix, INT m, INT n)
 		SG_ERROR( "plif_id_matrix size does not match previous info %i!=%i or %i!=%i\n", m, N, n, N) ;
 
 	CArray2<INT> id_matrix(plif_id_matrix, N, N, false, false) ;
+#ifdef DYNPROG_DEBUG
 	id_matrix.set_name("id_matrix");
 	id_matrix.display_array();
+#endif //DYNPROG_DEBUG
 	m_PEN.resize_array(N, N) ;
 	for (INT i=0; i<N; i++)
 		for (INT j=0; j<N; j++)
@@ -628,7 +629,7 @@ void CDynProg::best_path_set_segment_loss(DREAL* segment_loss, INT m, INT n)
 	m_segment_loss.set_array(segment_loss, m, n/2, 2, true, true) ;
 	/*for (INT i=0; i<n; i++)
 		for (INT j=0; j<n; j++)
-		fprintf(stderr, "loss(%i,%i)=%f\n", i,j, m_segment_loss.element(0,i,j)) ;*/
+		SG_DEBUG( "loss(%i,%i)=%f\n", i,j, m_segment_loss.element(0,i,j)) ;*/
 }
 
 void CDynProg::best_path_set_segment_ids_mask(INT* segment_ids_mask, INT m, INT n) 
@@ -1119,7 +1120,7 @@ void CDynProg::reset_segment_sum_value(INT num_states, INT pos, INT & last_segme
 	for (INT s=0; s<num_states; s++)
 		segment_sum_value[s] = 0 ;
 	last_segment_sum_pos = pos ;
-	//fprintf(stderr, "start: %i\n", pos) ;
+	//SG_DEBUG( "start: %i\n", pos) ;
 }
 
 void CDynProg::extend_segment_sum_value(DREAL *segment_sum_weights, INT seqlen, INT num_states,
@@ -1130,7 +1131,7 @@ void CDynProg::extend_segment_sum_value(DREAL *segment_sum_weights, INT seqlen, 
 		for (INT s=0; s<num_states; s++)
 			segment_sum_value[s] += segment_sum_weights[i*num_states+s] ;
 	} ;
-	//fprintf(stderr, "extend %i: %f\n", pos, segment_sum_value[0]) ;
+	//SG_DEBUG( "extend %i: %f\n", pos, segment_sum_value[0]) ;
 	last_segment_sum_pos = pos ;
 }
 
@@ -1174,11 +1175,11 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 			}
 	}
 	max_look_back = CMath::min(genestr_len, max_look_back) ;
-	//fprintf(stderr,"use_svm=%i\n", use_svm) ;
-	fprintf(stderr,"max_look_back=%i\n", max_look_back) ;
+	//SG_DEBUG("use_svm=%i\n", use_svm) ;
+	//SG_DEBUG("max_look_back=%i\n", max_look_back) ;
 	
 	const INT look_back_buflen = (max_look_back+1)*nbest*N ;
-	//fprintf(stderr,"look_back_buflen=%i\n", look_back_buflen) ;
+	//SG_DEBUG("look_back_buflen=%i\n", look_back_buflen) ;
 	const DREAL mem_use = (DREAL)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(short int)+sizeof(INT))+
 								look_back_buflen*(2*sizeof(DREAL)+sizeof(INT))+
 								seq_len*(sizeof(T_STATES)+sizeof(INT))+
@@ -1278,7 +1279,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 				for (INT i=0; i<num_elem; i++)
 				{
 					T_STATES ii = elem_list[i] ;
-					//fprintf(stderr, "i=%i  ii=%i  num_elem=%i  PEN=%ld\n", i, ii, num_elem, PEN(j,ii)) ;
+					//SG_DEBUG( "i=%i  ii=%i  num_elem=%i  PEN=%ld\n", i, ii, num_elem, PEN(j,ii)) ;
 					
 					const CPlifBase * penalty = PEN.element(j,ii) ;
 					INT look_back = default_look_back ;
@@ -1309,7 +1310,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 							
 							tempvv[list_len] = -val ;
 							tempii[list_len] =  ii + diff*N + ts*N*nbest;
-							//fprintf(stderr, "%i (%i,%i,%i, %i, %i) ", list_len, diff, ts, i, pos[t]-pos[ts], look_back) ;
+							//SG_DEBUG( "%i (%i,%i,%i, %i, %i) ", list_len, diff, ts, i, pos[t]-pos[ts], look_back) ;
 							list_len++ ;
 						}
 					}
@@ -1371,13 +1372,13 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 
 			while (pos_seq[i]>0)
 			{
-				//fprintf(stderr,"s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
+				//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
 				state_seq[i+1] = psi.element(pos_seq[i], state_seq[i], q);
 				pos_seq[i+1]   = ptable.element(pos_seq[i], state_seq[i], q) ;
 				q              = ktable.element(pos_seq[i], state_seq[i], q) ;
 				i++ ;
 			}
-			//fprintf(stderr,"s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
+			//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
 			INT num_states = i+1 ;
 			for (i=0; i<num_states;i++)
 			{
@@ -1517,7 +1518,7 @@ DREAL CDynProg::extend_segment_loss(struct segment_loss_struct & loss, const INT
 	DREAL ret = 0.0 ;
 	for (INT i=0; i<max_a_id+1; i++)
 	{
-		//fprintf(stderr, "%i: %i, %i, %f (%f), %f (%f)\n", pos, num_segment_id.element(pos, i), length_segment_id.element(pos, i), num_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id,0), m_segment_loss.element(i, segment_id, 0), length_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 1), m_segment_loss.element(i, segment_id,1)) ;
+		//SG_DEBUG( "%i: %i, %i, %f (%f), %f (%f)\n", pos, num_segment_id.element(pos, i), length_segment_id.element(pos, i), num_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id,0), m_segment_loss.element(i, segment_id, 0), length_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 1), m_segment_loss.element(i, segment_id,1)) ;
 
 		if (num_segment_id.element(pos, i)!=0)
 			ret += num_segment_id.element(pos, i)*m_segment_loss.element(i, segment_id, 0) ;
@@ -1561,13 +1562,13 @@ void CDynProg::find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<IN
 		{
 			if (wobble_pos)
 			{
-				//fprintf(stderr, "no change at %i: %i, %i\n", ts, last_segment_id, cur_segment_id) ;
+				//SG_DEBUG( "no change at %i: %i, %i\n", ts, last_segment_id, cur_segment_id) ;
 				wobble_pos_segment_id_switch++ ;
 				//ASSERT(wobble_pos_segment_id_switch<=1) ;
 			}
 			else
 			{
-				//fprintf(stderr, "change at %i: %i, %i\n", ts, last_segment_id, cur_segment_id) ;
+				//SG_DEBUG( "change at %i: %i, %i\n", ts, last_segment_id, cur_segment_id) ;
 				loss.segments_changed[ts] = true ;
 				num_segment_id.element(ts, cur_segment_id) += segment_ids_mask.element(1, ts) ;
 				length_segment_id.element(ts, cur_segment_id) += (pos[ts+1]-pos[ts])*segment_ids_mask.element(1, ts) ;
@@ -1692,7 +1693,7 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 		INT posprev = pos[t_end]-word_degree[j]+1;
 		INT poscurrent = pos[ts];
 		
-		//fprintf(stderr, "j=%i seqlen=%i posprev = %i, poscurrent = %i", j, svs.seqlen, posprev, poscurrent) ;
+		//SG_DEBUG( "j=%i seqlen=%i posprev = %i, poscurrent = %i", j, svs.seqlen, posprev, poscurrent) ;
 
 		if (poscurrent<0)
 			poscurrent = 0;
@@ -1705,7 +1706,7 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 		{
 			for (int i=posprev-1 ; (i>=poscurrent) && (i>=0) ; i--)
 			{
-//				fprintf(stderr, "string_words_array[0]=%i, j=%i, i=%i\n", string_words_array[0], j, i) ;
+//				SG_DEBUG( "string_words_array[0]=%i, j=%i, i=%i\n", string_words_array[0], j, i) ;
 				
 				WORD word = wordstr[string_words_array[0]][j][i] ;
 				INT last_string = string_words_array[0] ;
@@ -1807,13 +1808,15 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	{
 		SG_ERROR( "SVM arrays not clean") ;
 		return ;
-	} ;
+	}
 	
+#ifdef DYNPROG_DEBUG
 	transition_matrix_a.set_name("transition_matrix");
 	transition_matrix_a.display_array();
 	mod_words.display_array() ;
 	sign_words.display_array() ;
 	string_words.display_array() ;
+#endif
 	
 	const INT default_look_back = 30000 ;
 	INT max_look_back = default_look_back ;
@@ -1875,7 +1878,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					continue ;
 				if (penij->get_max_value()>max_look_back)
 				{
-					fprintf(stderr, "%d %d -> value: %f\n", i,j,penij->get_max_value());
+					SG_DEBUG( "%d %d -> value: %f\n", i,j,penij->get_max_value());
 					max_look_back=(INT) (CMath::ceil(penij->get_max_value()));
 				}
 				if (penij->uses_svm_values())
@@ -1884,16 +1887,16 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	}
 
 	max_look_back = CMath::min(genestr_len, max_look_back) ;
-	//fprintf(stderr,"use_svm=%i\n", use_svm) ;
+	SG_DEBUG("use_svm=%i\n", use_svm) ;
 	
-	fprintf(stderr,"maxlook: %d N: %d nbest: %d nother %d genestrlen:%d\n", max_look_back, N, nbest, nother, genestr_len);
+	SG_DEBUG("maxlook: %d N: %d nbest: %d nother %d genestrlen:%d\n", max_look_back, N, nbest, nother, genestr_len);
 	const INT look_back_buflen = (max_look_back*N+1)*(nbest+nother) ;
-	fprintf(stderr,"look_back_buflen=%i\n", look_back_buflen) ;
+	SG_DEBUG("look_back_buflen=%i\n", look_back_buflen) ;
 	const DREAL mem_use = (DREAL)(seq_len*N*(nbest+nother)*(sizeof(T_STATES)+sizeof(short int)+sizeof(INT))+
 								  look_back_buflen*(2*sizeof(DREAL)+sizeof(INT))+
 								  seq_len*(sizeof(T_STATES)+sizeof(INT))+
-								  genestr_len*sizeof(bool))/(1024*1024)
-		 ;
+								  genestr_len*sizeof(bool))/(1024*1024);
+
     bool is_big = (mem_use>200) || (seq_len>5000) ;
 
 	if (is_big)
@@ -1998,6 +2001,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 	//////////////////////////////////////////////////////////////////////////////// 
 
+#ifdef DYNPROG_DEBUG
 	state_seq.display_size() ;
 	pos_seq.display_size() ;
 
@@ -2034,6 +2038,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 	state_seq.display_size() ;
 	pos_seq.display_size() ;
+#endif //DYNPROG_DEBUG
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -2056,7 +2061,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	}
 
 	// translate to words, if svm is used
-	fprintf(stderr, "genestr_num = %i, genestr_len = %i\n", genestr_num, genestr_len) ;
+	SG_DEBUG("genestr_num = %i, genestr_len = %i\n", genestr_num, genestr_len) ;
 	
 	WORD** wordstr[genestr_num] ;
 	for (INT k=0; k<genestr_num; k++)
@@ -2101,7 +2106,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 			{
 				INT dim1, dim2, dim3 ;
 				delta.get_array_size(dim1, dim2, dim3) ;
-				//fprintf(stderr, "i=%i, k=%i -- %i, %i, %i\n", i, k, dim1, dim2, dim3) ;
+				//SG_DEBUG("i=%i, k=%i -- %i, %i, %i\n", i, k, dim1, dim2, dim3) ;
 				//delta.element(0, i, k)    = -CMath::INFTY ;
 				delta.element(delta_array, 0, i, k, seq_len, N)    = -CMath::INFTY ;
 				psi.element(0,i,0)      = 0 ;                  // <--- what's this for?
@@ -2187,7 +2192,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					INT orf_from = orf_info.element(ii,0) ;
 					INT orf_to   = orf_info.element(j,1) ;
 					if((orf_from!=-1)!=(orf_to!=-1))
-						fprintf(stderr,"j=%i  ii=%i  orf_from=%i orf_to=%i p=%1.2f\n", j, ii, orf_from, orf_to, elem_val[i]) ;
+						SG_DEBUG("j=%i  ii=%i  orf_from=%i orf_to=%i p=%1.2f\n", j, ii, orf_from, orf_to, elem_val[i]) ;
 					ASSERT((orf_from!=-1)==(orf_to!=-1)) ;
 					
 					INT orf_target = -1 ;
@@ -2210,7 +2215,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							if ((fabs(svs.svm_values[s*svs.seqlen+plen]-svs2.svm_values[s*svs.seqlen+plen])>1e-6) ||
 								(fabs(svs.svm_values[s*svs.seqlen+plen]-svs3.svm_values[s*svs.seqlen+plen])>1e-6))
 							{
-								fprintf(stderr, "s=%i, t=%i, ts=%i, %1.5e, %1.5e, %1.5e\n", s, t, ts, svs.svm_values[s*svs.seqlen+plen], svs2.svm_values[s*svs.seqlen+plen], svs3.svm_values[s*svs.seqlen+plen]);
+								SG_DEBUG( "s=%i, t=%i, ts=%i, %1.5e, %1.5e, %1.5e\n", s, t, ts, svs.svm_values[s*svs.seqlen+plen], svs2.svm_values[s*svs.seqlen+plen], svs3.svm_values[s*svs.seqlen+plen]);
 								}*/
 						
 						if (orf_target==-1)
@@ -2447,13 +2452,13 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 			while (pos_seq[i]>0)
 			{
-				//fprintf(stderr,"s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
+				//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
 				state_seq[i+1] = psi.element(pos_seq[i], state_seq[i], q);
 				pos_seq[i+1]   = ptable.element(pos_seq[i], state_seq[i], q) ;
 				q              = ktable.element(pos_seq[i], state_seq[i], q) ;
 				i++ ;
 			}
-			//fprintf(stderr,"s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
+			//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
 			INT num_states = i+1 ;
 			for (i=0; i<num_states;i++)
 			{
@@ -2472,7 +2477,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		for (short int k=0; k<nother; k++)
 		{
 			prob_nbest[nbest + k]= delta_end.element(nbest-1) - k ;
-			fprintf(stderr, "path %i\n", k) ;
+			SG_DEBUG( "path %i\n", k) ;
 			INT i         = 0 ;
 			INT kk        = CMath::random(0, nbest-1) ;
 			state_seq[i]  = path_ends.element(kk) ;
@@ -2482,7 +2487,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 			while (pos_seq[i]>0)
 			{
-				//fprintf(stderr,"s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
+				//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
 
 				// avoid impossible transitions
 				INT qq=q ;
@@ -2504,7 +2509,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 				pos_seq[i+1]   = ptable.element(pos_seq[i], state_seq[i], q) ;
 
-				fprintf(stderr, "using suboptimal transition %i %f %f (qq=%i %f %f)\n", q, trans_score, score, qq, trans_score2, score2) ;
+				SG_DEBUG( "using suboptimal transition %i %f %f (qq=%i %f %f)\n", q, trans_score, score, qq, trans_score2, score2) ;
 
 				state_seq[i+1] = psi.element(pos_seq[i], state_seq[i], q);
 				pos_seq[i+1]   = ptable.element(pos_seq[i], state_seq[i], q) ;
@@ -2512,7 +2517,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				//q              = CMath::random(0, nbest-1) ;
 				i++ ;
 			}
-			//fprintf(stderr,"s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
+			//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
 			INT num_states = i+1 ;
 			for (i=0; i<num_states;i++)
 			{
@@ -2555,7 +2560,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 		SG_ERROR( "SVM arrays not clean") ;
 		return ;
 	} ;
-	//fprintf(stderr, "genestr_len=%i, genestr_num=%i\n", genestr_len, genestr_num) ;
+	//SG_DEBUG( "genestr_len=%i, genestr_num=%i\n", genestr_len, genestr_num) ;
 	//mod_words.display() ;
 	//sign_words.display() ;
 	//string_words.display() ;
@@ -2681,7 +2686,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 		struct segment_loss_struct loss;
 		loss.segments_changed = NULL;
 		loss.num_segment_id = NULL;
-		//fprintf(stderr, "seq_len=%i\n", my_seq_len) ;
+		//SG_DEBUG( "seq_len=%i\n", my_seq_len) ;
 		for (INT i=0; i<my_seq_len-1; i++)
 		{
 			if (my_state_seq[i+1]==-1)
@@ -2729,7 +2734,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 					INT offset = ss*svs.seqlen;
 					svm_value[ss]=svs.svm_values[offset+plen];
 #ifdef DYNPROG_DEBUG
-					//SG_DEBUG( "svm[%i]: %f\n", ss, svm_value[ss]) ;
+					SG_DEBUG( "svm[%i]: %f\n", ss, svm_value[ss]) ;
 #endif
 				}
 			}
@@ -2747,7 +2752,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 			SG_DEBUG( "%i. scores[i]=%f\n", i, my_scores[i]) ;
 #endif
 
-			//fprintf(stderr, "emmission penalty skipped: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", to_state, to_pos, seq_input.element(to_state, to_pos), 0.0) ;
+			//SG_DEBUG( "emmission penalty skipped: to_state=%i to_pos=%i value=%1.2f score=%1.2f\n", to_state, to_pos, seq_input.element(to_state, to_pos), 0.0) ;
 			for (INT k=0; k<max_num_signals; k++)
 			{
 				if ((PEN_state_signals.element(to_state,k)==NULL)&&(k==0))
@@ -2958,13 +2963,13 @@ void CDynProg::best_path_trans_simple(const DREAL *seq_array, INT seq_len, short
 
 			while (pos_seq[i]>0)
 			{
-				//fprintf(stderr,"s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
+				//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
 				state_seq[i+1] = psi.element(pos_seq[i], state_seq[i], q);
 				pos_seq[i+1]   = ptable.element(pos_seq[i], state_seq[i], q) ;
 				q              = ktable.element(pos_seq[i], state_seq[i], q) ;
 				i++ ;
 			}
-			//fprintf(stderr,"s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
+			//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
 			INT num_states = i+1 ;
 			for (i=0; i<num_states;i++)
 			{

@@ -92,7 +92,7 @@ public:
 
 	inline void best_path_set_single_genestr(CHAR* genestr, INT genestr_len)
 	{
-		fprintf(stderr,"genestrpy: %d", genestr_len);
+		SG_DEBUG("genestrpy: %d", genestr_len);
 		best_path_set_genestr(genestr, genestr_len, 1);
 	}
 	void best_path_set_dict_weights(DREAL* dictionary_weights, INT dict_len, INT n) ;
