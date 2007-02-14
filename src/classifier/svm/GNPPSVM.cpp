@@ -1,50 +1,11 @@
-/*
- svm2_mex.c: MEX-file for binary SVM with L2-soft margin solver.
-
- Compile: 
-  mex svm2_mex.c gnppsolver.c kernel_fun.c
-
- Synopsis:
-  [Alpha,bias,exitflag,kercnt,access,trnerr,t,UB,LB,History] = 
-     svm2_mex(data,labels,ker,arg,C,solver,tmax,tolabs,tolrel,thlb,cache,verb)
-
- Input:
-  data [dim x num_data] Training vectors.
-  labels [1 x num_data] Labels.
-  ker [string] Kernel identifier.
-  arg [1 x nargs] Kernel argument.
-  C [1x1] Regularization constant.
-  solver [string] Solver; options are 'mdm'.
-  tmax [1x1] Maximal number of iterations.
-  tolabs [1x1] Absolute tolerance stopping condition.
-  tolrel [1x1] Relaitve tolerance stopping condition.
-  thlb [1x1] Threshold on lower bound.
-  cache [1x1] Number of columns of kernel matrix to be cached.
-    It takes cache*num_data*size(double) bytes of memory.
-  verb [1x1] If 1 then some info about the training is printed.
-
- Output:
-  Alpha [nclass x num_data] Weights.
-  bias [1x1] Bias.
-  exitflag [1x1] Indicates which stopping condition was used:
-    UB-LB <= tolabs           ->  exit_flag = 1   Abs. tolerance.
-    (UB-LB)/(LB+1) <= tolrel  ->  exit_flag = 2   Relative tolerance.
-    t >= tmax                 ->  exit_flag = 0   Number of iterations.
-  kercnt [1x1] Number of kernel evaluations.
-  access [1x1] Number or requested columns of the kernel matrix.
-  trnerr [1x1] Training error.
-  t [1x1] Number of iterations.
-  UB [1x1] Upper bound on the optimal solution.
-  LB [1x1] Lower bound on the optimal solution.
-  History [2x(t+1)] UB and LB with respect to number of iterations.
-
-
+/* 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2007 Vojtech Franc
+ * Written (W) 1999-2007 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
+ * Copyright (C) 1999-2007 Center for Machine Perception, CTU FEL Prague 
  */
 
 #include "lib/io.h"
@@ -115,7 +76,7 @@ bool CGNPPSVM::train()
 
 	memset(vector_c,0,num_data*sizeof(DREAL));
 
-	DREAL thlb = 0;
+	DREAL thlb = 10000000000.0;
 	INT t = 0;
 	DREAL* History = NULL;
 	INT verb = 0;

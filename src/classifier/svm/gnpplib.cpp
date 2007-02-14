@@ -1,52 +1,15 @@
 /*-----------------------------------------------------------------------
-gnpplib.c: Library of solvers for Generalized Nearest Point Problem (GNPP).
-
-  Generalized Nearest Point Problem (GNPP) to solve is
- 
-   min 0.5*alpha'*H*alpha + c'*alpha
-
-   subject to  sum(alpha(find(y==1))) = 1,  
-               sum(alpha(find(y==2))) = 1,
-               alpha(i) >= 0
- 
- H [dim x dim] is symmetric positive definite matrix.
- c [dim x 1] is an arbitrary vector.
- y [dim x 1] is an vector its entries aqual to 1 and/or 2.
-
- The precision of the found solution is given by
- the parameters tmax, tolabs and tolrel which
- define the stopping conditions:
- 
- UB-LB <= tolabs      ->  exit_flag = 1   Abs. tolerance.
- UB-LB <= UB*tolrel   ->  exit_flag = 2   Relative tolerance.
- LB > th              ->  exit_flag = 3   Threshoold on lower bound.
- t >= tmax            ->  exit_flag = 0   Number of iterations.
-
- UB ... Upper bound on the optimal solution.
- LB ... Lower bound on the optimal solution.
- t  ... Number of iterations.
- History ... Value of LB and UB wrt. number of iterations.
-
-
- The following algorithms are implemented:
- ..............................................
-
- - GNPP solver based on MDM algorithm.
-   exitflag = gnpp_mdm( &get_col, diag_H, vector_c, vector_y,
-       dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
-
- - GNPP solver based on improved MDM algorithm (u fixed v optimized).
-   exitflag = gnpp_mdm( &get_col, diag_H, vector_c, vector_y,
-       dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
-
-  For more info refer to V.Franc: Optimization Algorithms for Kernel 
-  Methods. Research report. CTU-CMP-2005-22. CTU FEL Prague. 2005.
-  ftp://cmp.felk.cvut.cz/pub/cmp/articles/franc/Franc-PhD.pdf .
-
- Modifications:
- 09-sep-2005, VF
- 27-nov-2004, VF, addopted from qpcsolver.c
-
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Library of solvers for Generalized Nearest Point Problem (GNPP).
+ *
+ * Written (W) 1999-2007 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
+ * Copyright (C) 1999-2007 Center for Machine Perception, CTU FEL Prague 
+ *
 -------------------------------------------------------------------- */
 
 #include <math.h>
@@ -73,25 +36,25 @@ CGNPPLib::CGNPPLib(DREAL* vector_y, CKernel* kernel, INT num_data, DREAL reg_con
   m_vector_y = vector_y;
   m_kernel = kernel;
 
-    Cache_Size = ((LONG) kernel->get_cache_size())*1024*1024/(sizeof(DREAL)*num_data);
-	Cache_Size = CMath::min(Cache_Size, (LONG) num_data);
+  Cache_Size = ((LONG) kernel->get_cache_size())*1024*1024/(sizeof(DREAL)*num_data);
+  Cache_Size = CMath::min(Cache_Size, (LONG) num_data);
 
-	SG_INFO("using %d kernel cache lines\n", Cache_Size);
-    ASSERT(Cache_Size > 2);
+  SG_INFO("using %d kernel cache lines\n", Cache_Size);
+  ASSERT(Cache_Size > 2);
 
-    /* allocates memory for kernel cache */
-    kernel_columns = new DREAL*[Cache_Size];
-    ASSERT(kernel_columns);
-    cache_index = new DREAL[Cache_Size];
-    ASSERT(cache_index);
+  /* allocates memory for kernel cache */
+  kernel_columns = new DREAL*[Cache_Size];
+  ASSERT(kernel_columns);
+  cache_index = new DREAL[Cache_Size];
+  ASSERT(cache_index);
 
-    for(INT i = 0; i < Cache_Size; i++ ) 
-    {
-      kernel_columns[i] = new DREAL[num_data];
-      ASSERT(kernel_columns[i]);
-      cache_index[i] = -2;
-    }
-    first_kernel_inx = 0;
+  for(INT i = 0; i < Cache_Size; i++ ) 
+  {
+    kernel_columns[i] = new DREAL[num_data];
+    ASSERT(kernel_columns[i]);
+    cache_index[i] = -2;
+  }
+  first_kernel_inx = 0;
 
 }
 
@@ -105,25 +68,25 @@ CGNPPLib::~CGNPPLib()
 }
 
 /* --------------------------------------------------------------
- QPC solver based on MDM algorithm.
+ QP solver based on Mitchell-Demyanov-Malozemov  algorithm.
 
- Usage: exitflag = gnpp_mdm( &get_col, diag_H, vector_c, vector_y,
+ Usage: exitflag = gnpp_mdm( diag_H, vector_c, vector_y,
        dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
 -------------------------------------------------------------- */
 int CGNPPLib::gnpp_mdm(double *diag_H,
-            double *vector_c,
-            double *vector_y,
-            INT dim, 
-            INT tmax,
-            double tolabs,
-            double tolrel,
-            double th,
-            double *alpha,
-            INT  *ptr_t, 
-            double *ptr_aHa11,
-            double *ptr_aHa22,
-            double **ptr_History,
-            INT verb)
+                       double *vector_c,
+                       double *vector_y,
+                       INT dim, 
+                       INT tmax,
+                       double tolabs,
+                       double tolrel,
+                       double th,
+                       double *alpha,
+                       INT  *ptr_t, 
+                       double *ptr_aHa11,
+                       double *ptr_aHa22,
+                       double **ptr_History,
+                       INT verb)
 {
   double LB;
   double UB;
@@ -370,9 +333,9 @@ int CGNPPLib::gnpp_mdm(double *diag_H,
 
 
 /* --------------------------------------------------------------
- QPC solver based on improved MDM algorithm (u fixed v optimized)
+ QP solver based on Improved MDM algorithm (u fixed v optimized)
 
- Usage: exitflag = gnpp_imdm( &get_col, diag_H, vector_c, vector_y,
+ Usage: exitflag = gnpp_imdm( diag_H, vector_c, vector_y,
        dim, tmax, tolabs, tolrel, th, &alpha, &t, &aHa11, &aHa22, &History );
 -------------------------------------------------------------- */
 int CGNPPLib::gnpp_imdm(double *diag_H,

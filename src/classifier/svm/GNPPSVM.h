@@ -4,7 +4,8 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2007 Vojtech Franc
+ * Written (W) 1999-2007 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
+ * Copyright (C) 1999-2007 Center for Machine Perception, CTU FEL Prague 
  */
 
 #ifndef _GNPPSVM_H___

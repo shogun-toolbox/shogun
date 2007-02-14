@@ -7,7 +7,8 @@ sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('send_command', 'set_kernel GAUSSIAN REAL 100 0.5');
 sg('send_command', 'init_kernel TRAIN');
-sg('send_command', 'new_svm LIGHT');
+%sg('send_command', 'new_svm LIGHT');
+sg('send_command', 'new_svm NPP');
 sg('send_command','svm_epsilon 1e-5')
 sg('send_command', 'c 2');
 sg('send_command', 'svm_train');
