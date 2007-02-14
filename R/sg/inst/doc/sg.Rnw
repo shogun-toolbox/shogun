@@ -7,7 +7,7 @@
 \usepackage{longtable}
 \usepackage{tabularx}
 \usepackage{amsmath}
-\usepackage[utf-8]{inputenc}
+\usepackage[utf8]{inputenc}
 
 \newenvironment{deflist}[1]{%
 \begin{list}{}
