@@ -69,6 +69,14 @@ public:
 	CIO();
 
 	void set_target(FILE* target);
+	void set_target_to_stderr()
+	{
+		set_target(stderr);
+	}
+	void set_target_to_stdout()
+	{
+		set_target(stdout);
+	}
 	void set_loglevel(EMessageType level);
 	EMessageType get_loglevel() const;
 	void message(EMessageType prio, const char *fmt, ... ) const;

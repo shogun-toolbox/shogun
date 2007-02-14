@@ -327,6 +327,7 @@ void CIO::set_target(FILE* t)
 	target=t;
 }
 
+
 int CIO::get_prio_string(EMessageType prio) const
 {
 	int i=0;
