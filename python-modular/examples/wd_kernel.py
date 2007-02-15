@@ -1,8 +1,8 @@
-from numpy import mat, transpose, zeros, ones
-from numpy import array,concatenate,arange,double
+from numpy import mat, transpose
+from numpy import array,arange,double
 
-from shogun.Features import *
-from shogun.Kernel import *
+from shogun.Features import CharFeatures,DNA
+from shogun.Kernel import WeightedDegreeCharKernel
 
 # create toy data
 
