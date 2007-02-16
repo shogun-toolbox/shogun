@@ -18,10 +18,10 @@
 
 class CGHMM : public CDistribution
 {
-	CGHMM();
-	~CGHMM();
-
 	public:
+		CGHMM();
+		~CGHMM();
+
 		virtual bool train();
 		virtual INT get_num_model_parameters();
 		virtual DREAL get_log_model_parameter(INT param_num);
