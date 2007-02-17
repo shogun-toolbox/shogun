@@ -1,3 +1,24 @@
+2007-02-17  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* lib/io.cpp, lib/io.h, structure/DynProg.cpp: had to fix a few
+	  thinks to get it to compile on intel macs.
+
+2007-02-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* distributions/hmm/GHMM.h: make con/destructor public
+
+2007-02-14  Torsten Werner <mail.twerner@googlemail.com>
+
+	* Makefile: Don't count empty lines.
+
+2007-02-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* releases/shogun_0.3.0, releases/shogun_0.3.0/src,
+	  README.developer: * Release 0.3.0
+	  * update developer README
+	* ChangeLog, NEWS, lib/io.cpp, lib/io.h: this will be version
+	  0.3.0, add io set_target_to_stderr/stdout functions
+
 2007-02-14  Vojtech Franc <fravoj@first.fraunhofer.de>
 
 	* trunk/matlab/examples/svm_classification.m,
