@@ -103,7 +103,7 @@ public:
 
 	///concatenate directory and filename
 	/// ( non thread safe )
-	static INT filter(const struct dirent* d);
+	static int filter(struct dirent* d); 
 
 protected:
 	//return index into levels array or -1 if message not to be printed

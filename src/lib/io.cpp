@@ -362,7 +362,7 @@ CHAR* CIO::concat_filename(const CHAR* filename)
 	return file_buffer;
 }
 
-INT CIO::filter(const struct dirent* d)
+int CIO::filter(struct dirent* d)
 {
 	if (d)
 	{

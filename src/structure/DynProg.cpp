@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <ctype.h>
-#include <values.h>
+//#include <values.h>
 
 #ifdef SUNOS
 extern "C" int	finite(double);
