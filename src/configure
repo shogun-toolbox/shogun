@@ -716,7 +716,7 @@ determine_march_mtune()
 	  host_arch=`echo $_target | cut -d '-' -f 1 | tr '_' '-'`
 	fi
 
-	OS="-D`echo $system_name | tr 'a-z-' 'A-Z_'`"
+	OS="`echo $system_name | tr 'a-z-' 'A-Z_'`"
 	echo "Detected Operating System: $system_name"
 	echo "Detected Host Architecture: $host_arch"
 
@@ -1725,8 +1725,9 @@ EOF
   echores "$_mm3dnow"
 fi
 
-  COMPFLAGS_C="$COMPFLAGS_C $OS $_march $_mcpu"
-  COMPFLAGS_CPP="$COMPFLAGS_CPP $OS $_march $_mcpu"
+  DEFINES="$DEFINES -D$OS"
+  COMPFLAGS_C="$COMPFLAGS_C $_march $_mcpu"
+  COMPFLAGS_CPP="$COMPFLAGS_CPP $_march $_mcpu"
 
   if test "$_profile" = yes
   then
@@ -2484,6 +2485,7 @@ $USE_SVMLIGHT
 $GPL
 $USE_CPLEX
 $USE_W_TIMING
+#define $OS 1
 #define CONFIGURE_OPTIONS "$CONFIGURE_OPTIONS"
 #define MACHINE "$MACHINE"
 #define TARGET "$TARGET"

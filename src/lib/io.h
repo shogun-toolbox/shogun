@@ -24,9 +24,9 @@
 
 #ifdef DARWIN
 #define CONST_DIRENT_T struct dirent
-#else //MACOSX
+#else //DARWIN
 #define CONST_DIRENT_T const struct dirent
-#endif //MACOSX
+#endif //DARWIN
 
 extern CHAR file_buffer[FBUFSIZE];
 extern CHAR directory_name[FBUFSIZE];
