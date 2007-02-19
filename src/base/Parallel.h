@@ -23,12 +23,14 @@ public:
 	CParallel();
 	~CParallel();
 
-#ifdef HAVE_NPROCESSORS_ONLN
 	static inline INT get_num_cpus()
 	{
+#ifdef HAVE_NPROCESSORS_ONLN
 		return sysconf( _SC_NPROCESSORS_ONLN );
-	}
+#else
+		return 1;
 #endif
+	}
 
 	static inline void set_num_threads(INT n)
 	{

@@ -223,7 +223,7 @@ public:
 		for (INT i = 0; i < n; i++)
 			perm[i] = i;
 		for (INT i = 0; i < n; i++)
-			swap(perm[(n * rand()) / (RAND_MAX + 1)], perm[i]);
+			swap(perm[random(0, n - 1)], perm[i]);
 		return perm;
 	}
 

@@ -1778,7 +1778,7 @@ int main(void)
 }
 EOF
 	echocheck "Math powl() support"
-	if cc_check -lm
+	if cxx_check -lm
 	then
 		HAVE_POWL='#define HAVE_POWL 1'
 		DEFINES="$DEFINES -DHAVE_POWL"
@@ -1847,7 +1847,7 @@ cat > $TMPC << EOF
 int main(void) { return sysconf( _SC_NPROCESSORS_ONLN ); }
 EOF
 	echocheck "_SC_NPROCESSORS_ONLN"
-	if cc_check -lreadline >/dev/null 2>&1
+	if cc_check >/dev/null 2>&1
 	then
 		HAVE_NPROCESSORS_ONLN='#define HAVE_NPROCESSORS_ONLN 1'
 		DEFINES="$DEFINES -DHAVE_NPROCESSORS_ONLN"
