@@ -15,8 +15,9 @@
 #include "lib/common.h"
 #include "features/Features.h"
 #include "classifier/LinearClassifier.h"
+#include "classifier/svm/SVM.h"
 
-class CSVMLin : public CLinearClassifier
+class CSVMLin : public CLinearClassifier, public CSVM
 {
 	public:
 		CSVMLin();

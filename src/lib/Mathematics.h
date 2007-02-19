@@ -218,17 +218,12 @@ public:
 	{
 		INT* perm = new INT[n];
 
-		if (perm)
-		{
-			for (INT i=0; i<n; i++)
-				perm[i]=i;
-
-			for (INT i=0; i<n; i++)
-			{
-				swap( perm[(n*rand())/(RAND_MAX+1)], perm[i]);
-			}
-		}
-
+		if (!perm)
+			return NULL;
+		for (INT i = 0; i < n; i++)
+			perm[i] = i;
+		for (INT i = 0; i < n; i++)
+			swap(perm[(n * rand()) / (RAND_MAX + 1)], perm[i]);
 		return perm;
 	}
 
@@ -291,36 +286,33 @@ public:
 		{
 			if (output[0] > output [1])
 				swap(output[0],output[1]);
+			return;
 		}
-		else
+		T split=output[(size*rand())/(RAND_MAX+1)];
+
+		INT left=0;
+		INT right=size-1;
+
+		while (left<=right)
 		{
-			T split=output[(size*rand())/(RAND_MAX+1)];
-			//T split=output[size/2];
+			while (output[left] < split)
+				left++;
+			while (output[right] > split)
+				right--;
 
-			INT left=0;
-			INT right=size-1;
-
-			while (left<=right)
+			if (left<=right)
 			{
-				while (output[left] < split)
-					left++;
-				while (output[right] > split)
-					right--;
-
-				if (left<=right)
-				{
-					swap(output[left],output[right]);
-					left++;
-					right--;
-				}
+				swap(output[left],output[right]);
+				left++;
+				right--;
 			}
-
-			if (right+1> 1)
-				qsort(output,right+1);
-
-			if (size-left> 1)
-				qsort(&output[left],size-left);
 		}
+
+		if (right+1> 1)
+			qsort(output,right+1);
+
+		if (size-left> 1)
+			qsort(&output[left],size-left);
 	}
 
 	/// display vector (useful for debugging)
@@ -360,18 +352,18 @@ public:
 	template <class T>
 	static INT unique(T* output, INT size) 
 	{
-		qsort(output, size) ;
+		qsort(output, size);
 		INT i,j=0 ;
 		for (i=0; i<size; i++)
 			if (i==0 || output[i]!=output[i-1])
-				output[j++]=output[i] ;
+				output[j++]=output[i];
 		return j ;
 	}
 
 	/* finds an element in a sorted array via binary search
      * returns -1 if not found */
 	template <class T>
-	static inline INT binary_search(T* output, INT size, T elem)
+	static INT binary_search(T* output, INT size, T elem)
 	{
 		INT start=0;
 		INT end=size-1;
@@ -381,7 +373,7 @@ public:
 
 		while (start<end)
 		{
-			INT middle=start+(end-start)/2; 
+			INT middle=(start+end)/2; 
 
 			if (output[middle]>elem)
 				end=middle-1;
@@ -391,7 +383,7 @@ public:
 				return middle;
 		}
 
-		if (start<size && output[start]==elem)
+		if (output[start]==elem)
 			return start;
 		else
 			return -1;
@@ -402,7 +394,7 @@ public:
 	 * is returned
 	 * note: a successor is not mandatory */
 	template <class T>
-	static inline INT binary_search_max_lower_equal(T* output, INT size, T elem)
+	static INT binary_search_max_lower_equal(T* output, INT size, T elem)
 	{
 		INT start=0;
 		INT end=size-1;
@@ -412,7 +404,7 @@ public:
 
 		while (start<end)
 		{
-			INT middle=start+(end-start)/2; 
+			INT middle=(start+end)/2; 
 
 			if (output[middle]>elem)
 				end=middle-1;
@@ -422,7 +414,7 @@ public:
 				return middle;
 		}
 
-		if (start<size && output[start]<=elem)
+		if (output[start]<=elem)
 			return start;
 
 		if (start>0 && output[start-1]<=elem)
@@ -539,24 +531,24 @@ public:
 	 * Whilst the number of additions remains the same, the error is only in the order of log(N) instead N.
 	 */
 	static inline DREAL logarithmic_sum_array(DREAL *p, INT len)
-	  {
-	    if (len<=2)
-	      {
-		if (len==2)
-		  return logarithmic_sum(p[0],p[1]) ;
-		if (len==1)
-		  return p[0];
-		return -INFTY ;
-	      }
-	    else
-	      {
-		register DREAL *pp=p ;
-		if (len%2==1) pp++ ;
-		for (register INT j=0; j < len>>1; j++)
-		  pp[j]=logarithmic_sum(pp[j<<1], pp[1+(j<<1)]) ;
-	      }
-	    return logarithmic_sum_array(p,len%2+len>>1) ;
-	  } 
+	{
+		if (len<=2)
+		{
+			if (len==2)
+				return logarithmic_sum(p[0],p[1]) ;
+			if (len==1)
+				return p[0];
+			return -INFTY ;
+		}
+		else
+		{
+			register DREAL *pp=p ;
+			if (len%2==1) pp++ ;
+			for (register INT j=0; j < len>>1; j++)
+				pp[j]=logarithmic_sum(pp[j<<1], pp[1+(j<<1)]) ;
+		}
+		return logarithmic_sum_array(p,len%2+len>>1) ;
+	} 
 #endif
 	//@}
 public:
@@ -593,42 +585,39 @@ void CMath::qsort(T1* output, T2* index, INT size)
 {
 	if (size==2)
 	{
-		if (output[0] > output [1]){
+		if (output[0] > output [1])
+		{
 			swap(output[0],output[1]);
 			swap(index[0],index[1]);
 		}
-		
+		return;
 	}
-	else
+	T1 split=output[(size*rand())/(RAND_MAX+1)];
+
+	INT left=0;
+	INT right=size-1;
+
+	while (left<=right)
 	{
-		DREAL split=output[(size*rand())/(RAND_MAX+1)];
-		//DREAL split=output[size/2];
-		
-		INT left=0;
-		INT right=size-1;
-		
-		while (left<=right)
+		while (output[left] < split)
+			left++;
+		while (output[right] > split)
+			right--;
+
+		if (left<=right)
 		{
-			while (output[left] < split)
-				left++;
-			while (output[right] > split)
-				right--;
-			
-			if (left<=right)
-			{
-				swap(output[left],output[right]);
-				swap(index[left],index[right]);
-				left++;
-				right--;
-			}
+			swap(output[left],output[right]);
+			swap(index[left],index[right]);
+			left++;
+			right--;
 		}
-		
-		if (right+1> 1)
-			qsort(output,index,right+1);
-		
-		if (size-left> 1)
-			qsort(&output[left],&index[left], size-left);
 	}
+
+	if (right+1> 1)
+		qsort(output,index,right+1);
+
+	if (size-left> 1)
+		qsort(&output[left],&index[left], size-left);
 }
 
 template <class T1,class T2>
@@ -636,42 +625,40 @@ void CMath::qsort_backward(T1* output, T2* index, INT size)
 {
 	if (size==2)
 	{
-		if (output[0] < output [1]){
+		if (output[0] < output [1])
+		{
 			swap(output[0],output[1]);
 			swap(index[0],index[1]);
 		}
-		
+		return;
 	}
-	else
+
+	T1 split=output[(size*rand())/(RAND_MAX+1)];
+	
+	INT left=0;
+	INT right=size-1;
+	
+	while (left<=right)
 	{
-		DREAL split=output[(size*rand())/(RAND_MAX+1)];
-		//DREAL split=output[size/2];
+		while (output[left] > split)
+			left++;
+		while (output[right] < split)
+			right--;
 		
-		INT left=0;
-		INT right=size-1;
-		
-		while (left<=right)
+		if (left<=right)
 		{
-			while (output[left] > split)
-				left++;
-			while (output[right] < split)
-				right--;
-			
-			if (left<=right)
-			{
-				swap(output[left],output[right]);
-				swap(index[left],index[right]);
-				left++;
-				right--;
-			}
+			swap(output[left],output[right]);
+			swap(index[left],index[right]);
+			left++;
+			right--;
 		}
-		
-		if (right+1> 1)
-			qsort(output,index,right+1);
-		
-		if (size-left> 1)
-			qsort(&output[left],&index[left], size-left);
 	}
+	
+	if (right+1> 1)
+		qsort(output,index,right+1);
+	
+	if (size-left> 1)
+		qsort(&output[left],&index[left], size-left);
 }
 
 template <class T> 
@@ -692,11 +679,13 @@ void CMath::min(DREAL* output, T* index, INT size)
 	DREAL min_elem = output[0] ;
 	INT min_index = 0 ;
 	for (INT i=1; i<size; i++)
+	{
 		if (output[i]<min_elem)
 		{
 			min_index=i ;
 			min_elem=output[i] ;
 		}
+	}
 	swap(output[0], output[min_index]) ;
 	swap(index[0], index[min_index]) ;
 }

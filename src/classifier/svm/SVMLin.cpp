@@ -24,11 +24,11 @@ CSVMLin::~CSVMLin()
 
 bool CSVMLin::train()
 {
-	ASSERT(get_labels());
-	ASSERT(get_features());
+	ASSERT(CLinearClassifier::get_labels());
+	ASSERT(CLinearClassifier::get_features());
 
 	INT num_train_labels=0;
-	DREAL* train_labels=get_labels()->get_labels(num_train_labels);
+	DREAL* train_labels=CLinearClassifier::get_labels()->get_labels(num_train_labels);
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 
@@ -41,28 +41,28 @@ bool CSVMLin::train()
 	struct data Data;
 	struct vector_double Weights;
 	struct vector_double Outputs;
-	ssl_train(&Data, &Options, &Weights, &Outputs);
 
 	Data.m=num_vec;
 	Data.l=num_vec;
 	Data.u=0; 
 	Data.n=num_feat;
+	Data.nz=num_feat;
 	Data.Y=train_labels;
-//	Data->C = new double[Data->l];
-//	int t=0;
-//	for(int i=0;i<Labels->d;i++)
-//	{
-//		if(Labels->vec[i]!=0.0 || Options->algo==-1) 
-//		{
-//			Subset->vec[t]=i; 
-//			Data->Y[t]=Labels->vec[i];
-//			if(Labels->vec[i]>0) 
-//				Data->C[t]=Options->Cp; 
-//			else 
-//				Data->C[t]=Options->Cn;
-//			t++;
-//		}
-//	}
-//
+
+	Data.val=0; //FIXME 
+	Data.rowptr=0; //FIXME 
+	Data.colind=0; //FIXME 
+	
+	Data.C = new double[Data.l];
+
+	for(int i=0;i<num_vec;i++)
+	{
+		if(train_labels[i]>0) 
+			Data.C[i]=CSVM::get_C1(); 
+		else 
+			Data.C[i]=CSVM::get_C2();
+	}
+	ssl_train(&Data, &Options, &Weights, &Outputs);
+
 	return false;
 }
