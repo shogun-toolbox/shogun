@@ -1842,20 +1842,6 @@ EOF
 		fi
 	fi
 
-cat > $TMPC << EOF
-#include <unistd.h>
-int main(void) { return sysconf( _SC_NPROCESSORS_ONLN ); }
-EOF
-	echocheck "_SC_NPROCESSORS_ONLN"
-	if cc_check >/dev/null 2>&1
-	then
-		HAVE_NPROCESSORS_ONLN='#define HAVE_NPROCESSORS_ONLN 1'
-		DEFINES="$DEFINES -DHAVE_NPROCESSORS_ONLN"
-		echores "yes"
-	else
-		echores "no"
-	fi
-
 	if test "$_lapack" = yes || test "$_lapack" = auto
 	then
 cat > $TMPC << EOF
@@ -2466,7 +2452,6 @@ $HAVE_LARGEFILE
 $HAVE_SWIG
 $HAVE_LAPACK
 $HAVE_POWL
-$HAVE_NPROCESSORS_ONLN
 $USE_LOGCACHE
 $USE_SHORTREAL_KERNELCACHE
 $USE_TREEMEM

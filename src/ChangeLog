@@ -1,3 +1,41 @@
+2007-02-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog, lib/Mathematics.h: define a binary search helper
+	  function as suggested by andre
+	* lib/Mathematics.h: (more of andre's cleanups)
+	  
+	  More or less a trivial cleanup that reduces lines of code quite a
+	  bit
+	  while improving readability.
+	  
+	  The only nontrivial change is the skip of the register keyword
+	  for
+	  the diff variable. Nowadays, register should not be used anymore
+	  as
+	  it does more harm than good. We're using -O anyway.
+
+2007-02-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* base/Parallel.h, configure, lib/Mathematics.h: * fix configure
+	  check for sysconf _SC_NPROCESSORS_ONLN (should work now on macs)
+	  * use cxx_check to test for powl()
+	  * use random() in randperm()
+	* ChangeLog, classifier/svm/SVMLin.cpp, classifier/svm/SVMLin.h,
+	  lib/Mathematics.h: * applied andre's cleanup patches
+	  * some more SVMLin fixes
+
+2007-02-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure, lib/io.h: rework configure to put -D$OS also into
+	  DEFINES
+
+2007-02-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog, INSTALL, lib/io.cpp, lib/io.h, structure/DynProg.cpp:
+	  * update install instructions ( --enable-<interface> ->
+	  --interface=<interface> )
+	  * select functions seems to require a non const dirent* on DARWIN
+
 2007-02-17  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
 
 	* lib/io.cpp, lib/io.h, structure/DynProg.cpp: had to fix a few

@@ -25,11 +25,15 @@ public:
 
 	static inline INT get_num_cpus()
 	{
-#ifdef HAVE_NPROCESSORS_ONLN
+#if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
 		return sysconf( _SC_NPROCESSORS_ONLN );
-#else
-		return 1;
+#elif defined(DARWIN)
+		int num;
+		size_t size=sizeof(num);
+		if (!sysctlbyname("hw.ncpu", &count, &size, NULL, 0))
+			return count;
 #endif
+		return 1;
 	}
 
 	static inline void set_num_threads(INT n)
