@@ -1,0 +1,48 @@
+INPUT:
+  T: forest representing feature space and weights
+  K: maximum length of substrings for which to compute contributions
+
+OUTPUT:
+  C_k: contributions for all k-mers
+
+ALGORITHM:
+
+for k = 1 to K
+
+  # initialize all contributions to 0
+  C_k = zeros( {all positions}, {all k-mers} )
+  L_k = zeros( {all positions}, {all k-mers} )  # left overlap
+  R_k = zeros( {all positions}, {all k-mers} )  # right overlap
+
+  # add weights from all features partially overlapping any k-mer
+  if( k > 1 )
+    j = k-1
+    for all positions p
+      for all j-mers y
+         for n in {A,C,G,T}
+           C_k[ p, [y,n] ] += L_j[ p, y ]
+           C_k[ p, [n,y] ] += R_j[ p+1, y ]
+         end;
+      end;
+    end;
+  end;
+
+  # add weights from all features completely overlapping any k-mer
+  for each node N in T
+    # N.x = substring represented by N
+    # N.d = length of N.x
+    # N.s = starting position of N.x
+    # N.w = weight for feature represented by N
+    margContrib = w / 4^(N.d-k)
+    for i = 1 to (N.d-k+1)
+      y = N.x[i:(i+k-1)]  # overlapped k-mer
+      C_k[ N.s+i-1, y ] += margContrib
+    end;
+    if( N.d > k )
+      L_k[ N.s+N.d-k, N.x[N.d-k+(1:k)] ] += margContrib  # j-suffix of N.x
+      R_k[ N.s, N.x[1:k] ] += margContrib                # j-prefix of N.x
+    end;
+  end;
+
+end;
+

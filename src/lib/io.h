@@ -22,6 +22,12 @@
 #define NUM_LOG_LEVELS 9
 #define FBUFSIZE 4096
 
+#ifdef DARWIN
+#define CONST_DIRENT_T struct dirent
+#else //DARWIN
+#define CONST_DIRENT_T const struct dirent
+#endif //DARWIN
+
 extern CHAR file_buffer[FBUFSIZE];
 extern CHAR directory_name[FBUFSIZE];
 
@@ -103,7 +109,7 @@ public:
 
 	///concatenate directory and filename
 	/// ( non thread safe )
-	static INT filter(const struct dirent* d);
+	static int filter(CONST_DIRENT_T* d); 
 
 protected:
 	//return index into levels array or -1 if message not to be printed

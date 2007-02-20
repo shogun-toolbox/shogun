@@ -2,7 +2,7 @@ GENERAL
 
 On most platforms (Linux,MacOSX,cygwin) it is sufficient to issue
 
-./configure --enable-<interface>
+./configure --interface=<interface>
 make
 
 where <interface> is one of the following R, matlab, python, octave.
@@ -16,7 +16,7 @@ If this does not work for you, see the SPECIFIC BUILD INSTRUCTIONS below
 SPECIAL FEATURES
 
 To enable Multiple Kernel Learning CPLEX(tm) is needed and one needs
-to issue configure with ./configure --enable-<interface> --enable-cplex
+to issue configure with ./configure --interface=<interface> --enable-cplex
 
 
 REQUIREMENTS
@@ -68,7 +68,7 @@ To compile the octave interface you need to have the octave developer files
 
 then do a
 
-./configure --enable-octave
+./configure --interface=octave
 make
 
 a sg.oct file should be created. as a test start octave in the src/ directory
@@ -99,7 +99,7 @@ in your /etc/matplotlibrc
 
 
 then do a
-./configure --enable-python
+./configure --interface=python
 make
 
 A sg.so file should be created in the src/ directory:
@@ -112,7 +112,7 @@ object oriented python/swig interface:
 proceed as for the python interface but now in addition install the swig package and
 configure+compile shogun with:
 
-  ./configure --enable-python --enable-siwg
+  ./configure --interface=python-modular
   make
   sudo make install
 
@@ -143,7 +143,7 @@ A workaround is to uncomment this in math.h:
 Also make sure you don't mix python versions (i.e. python2.4 and python2.5) on build/runtime.
 You can specify the python version as a argument to configure, e.g.: --python=python2.4
 
-./configure --enable-python
+./configure --interface=python
 make
 
 to test if it is working try:
@@ -154,7 +154,7 @@ object oriented python/swig interface:
 ======================================
 Follow the above instructions for python. Then use fink/darwinports to install swig.
 
-./configure --enable-python
+./configure --interface=python-modular
 make
 sudo make install
 
@@ -169,7 +169,7 @@ unstable repository + it has to be compiled from source. Also note that g77
 
 then do:
 
-./configure --enable-octave
+./configure --interface=octave
 make
 
 a sg.oct file should be created. as a test start octave in the src/ directory
@@ -200,7 +200,7 @@ If that does not work out (send us a bug report) and also please try the followi
 
 Enter the src/ directory and do:
 
-./configure --enable-R
+./configure --interface=R
 (if that fails attach the configure.log in the bug report)
 make
 
@@ -236,7 +236,7 @@ Instead install the R package from cran (i.e. using the R-2.4.0-win32.exe
 
 Enter the src/ directory and do:
 
-./configure --enable-R
+./configure --interface=R
 (if that fails attach the configure.log in the bug report)
 make
 
@@ -260,7 +260,7 @@ shogun/R/examples/svr_regression.R  (as this example has no other package depend
 matlab:
 =======
 	cd src
-	./configure --enable-matlab
+	./configure --interface=matlab
 	make
 
 	a sg.dll can be found in src/
@@ -282,7 +282,7 @@ octave:
 
 	install octave and octave-headers
 	cd src
-	./configure --enable-octave
+	./configure --interface=octave
 	make
 
 	a sg.oct file can be found in src/
@@ -333,7 +333,7 @@ python:
 
 
   now compile shogun:
-	./configure --enable-python
+	./configure --interface=python
 	make
 
   this will create a sg.dll in the src/ dir
@@ -348,7 +348,7 @@ object oriented python/swig interface:
 do all of the above but now in addition install the swig package and
 configure+compile shogun with:
 
-  ./configure --enable-python --enable-siwg
+  ./configure --interface=python-modular
   make install
 
 to test if it is working try python ../python/examples/numpy_svm_matplotlib.py

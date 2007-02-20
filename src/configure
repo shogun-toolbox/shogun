@@ -716,7 +716,7 @@ determine_march_mtune()
 	  host_arch=`echo $_target | cut -d '-' -f 1 | tr '_' '-'`
 	fi
 
-	OS="-D`echo $system_name | tr 'a-z-' 'A-Z_'`"
+	OS="`echo $system_name | tr 'a-z-' 'A-Z_'`"
 	echo "Detected Operating System: $system_name"
 	echo "Detected Host Architecture: $host_arch"
 
@@ -1725,8 +1725,9 @@ EOF
   echores "$_mm3dnow"
 fi
 
-  COMPFLAGS_C="$COMPFLAGS_C $OS $_march $_mcpu"
-  COMPFLAGS_CPP="$COMPFLAGS_CPP $OS $_march $_mcpu"
+  DEFINES="$DEFINES -D$OS"
+  COMPFLAGS_C="$COMPFLAGS_C $_march $_mcpu"
+  COMPFLAGS_CPP="$COMPFLAGS_CPP $_march $_mcpu"
 
   if test "$_profile" = yes
   then
@@ -1770,14 +1771,14 @@ EOF
 
 cat > $TMPC << EOF
 #include <math.h>
-int main(void)
+int main(int argc, char** argv)
 {
-	long double a=powl((long double) 1.0, (long double) 1.0);
-	return 0;
+	long double a=::powl((long double) argc, (long double) argc);
+	return (int) a;
 }
 EOF
 	echocheck "Math powl() support"
-	if cc_check -lm
+	if cxx_check -lm
 	then
 		HAVE_POWL='#define HAVE_POWL 1'
 		DEFINES="$DEFINES -DHAVE_POWL"
@@ -1841,29 +1842,15 @@ EOF
 		fi
 	fi
 
-cat > $TMPC << EOF
-#include <unistd.h>
-int main(void) { return sysconf( _SC_NPROCESSORS_ONLN ); }
-EOF
-	echocheck "_SC_NPROCESSORS_ONLN"
-	if cc_check -lreadline >/dev/null 2>&1
-	then
-		HAVE_NPROCESSORS_ONLN='#define HAVE_NPROCESSORS_ONLN 1'
-		DEFINES="$DEFINES -DHAVE_NPROCESSORS_ONLN"
-		echores "yes"
-	else
-		echores "no"
-	fi
-
 	if test "$_lapack" = yes || test "$_lapack" = auto
 	then
 cat > $TMPC << EOF
 #include <cblas.h>
 #include <clapack.h>
-int main(void)
+int main(int argc, char** argv)
 { 
-	int skip=1;
-	int n=10; double* a=0; double* v1=0; double* v2=0;
+	int skip=argc;
+	int n=arg; double* a=0; double* v1=0; double* v2=0;
 	int result=clapack_dpotrf(CblasRowMajor, CblasUpper, n, a, n);
 	int r = cblas_ddot(n, v1, skip, v2, skip);
 	return 0;
@@ -2181,7 +2168,7 @@ cat > $TMPC << EOF
 
 static SEXP sg_helper(SEXP args)
 {
-	SEXP result=NEW_LOGICAL(1);
+	SEXP result=NEW_LOGICAL(args);
 	return result;
 }
 EOF
@@ -2200,14 +2187,14 @@ EOF
 	then
 cat > $TMPC << EOF
 #include <ilcplex/cplex.h>
-int
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
-	int status = 0;
+	int status = argc;
 	CPXENVptr     env = NULL;
 	CPXLPptr      lp = NULL;
 	env = CPXopenCPLEX (&status);
-  status = CPXcloseCPLEX (&env);
+	status = CPXcloseCPLEX (&env);
+	return status;
 }
 EOF
 		echocheck "CPLEX support"
@@ -2465,7 +2452,6 @@ $HAVE_LARGEFILE
 $HAVE_SWIG
 $HAVE_LAPACK
 $HAVE_POWL
-$HAVE_NPROCESSORS_ONLN
 $USE_LOGCACHE
 $USE_SHORTREAL_KERNELCACHE
 $USE_TREEMEM
@@ -2484,6 +2470,7 @@ $USE_SVMLIGHT
 $GPL
 $USE_CPLEX
 $USE_W_TIMING
+#define $OS 1
 #define CONFIGURE_OPTIONS "$CONFIGURE_OPTIONS"
 #define MACHINE "$MACHINE"
 #define TARGET "$TARGET"

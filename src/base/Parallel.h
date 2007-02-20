@@ -15,7 +15,12 @@
 #include "lib/config.h"
 #include "lib/io.h"
 
+#if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
 #include <unistd.h>
+#elif defined(DARWIN)
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#endif
 
 class CParallel
 {
@@ -23,12 +28,18 @@ public:
 	CParallel();
 	~CParallel();
 
-#ifdef HAVE_NPROCESSORS_ONLN
 	static inline INT get_num_cpus()
 	{
+#if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
 		return sysconf( _SC_NPROCESSORS_ONLN );
-	}
+#elif defined(DARWIN)
+		int num;
+		size_t size=sizeof(num);
+		if (!sysctlbyname("hw.ncpu", &num, &size, NULL, 0))
+			return num;
 #endif
+		return 1;
+	}
 
 	static inline void set_num_threads(INT n)
 	{
