@@ -17,7 +17,7 @@
 #include "classifier/LinearClassifier.h"
 #include "classifier/svm/SVM.h"
 
-class CSVMLin : public CLinearClassifier, public CSVM
+class CSVMLin : public CLinearClassifier
 {
 	public:
 		CSVMLin();
@@ -25,5 +25,14 @@ class CSVMLin : public CLinearClassifier, public CSVM
 
 		inline EClassifierType get_classifier_type() { return CT_SVMLIN; }
 		virtual bool train();
+
+		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
+
+		inline DREAL get_C1() { return C1; }
+		inline DREAL get_C2() { return C2; }
+
+	protected:
+		DREAL C1;
+		DREAL C2;
 };
 #endif

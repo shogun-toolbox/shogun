@@ -24,11 +24,11 @@ CSVMLin::~CSVMLin()
 
 bool CSVMLin::train()
 {
-	ASSERT(CLinearClassifier::get_labels());
-	ASSERT(CLinearClassifier::get_features());
+	ASSERT(get_labels());
+	ASSERT(get_features());
 
 	INT num_train_labels=0;
-	DREAL* train_labels=CLinearClassifier::get_labels()->get_labels(num_train_labels);
+	DREAL* train_labels=get_labels()->get_labels(num_train_labels);
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 
@@ -58,9 +58,9 @@ bool CSVMLin::train()
 	for(int i=0;i<num_vec;i++)
 	{
 		if(train_labels[i]>0) 
-			Data.C[i]=CSVM::get_C1(); 
+			Data.C[i]=get_C1(); 
 		else 
-			Data.C[i]=CSVM::get_C2();
+			Data.C[i]=get_C2();
 	}
 	ssl_train(&Data, &Options, &Weights, &Outputs);
 

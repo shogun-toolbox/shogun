@@ -15,7 +15,12 @@
 #include "lib/config.h"
 #include "lib/io.h"
 
+#if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
 #include <unistd.h>
+#elif defined(DARWIN)
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#endif
 
 class CParallel
 {
@@ -30,8 +35,8 @@ public:
 #elif defined(DARWIN)
 		int num;
 		size_t size=sizeof(num);
-		if (!sysctlbyname("hw.ncpu", &count, &size, NULL, 0))
-			return count;
+		if (!sysctlbyname("hw.ncpu", &num, &size, NULL, 0))
+			return num;
 #endif
 		return 1;
 	}
