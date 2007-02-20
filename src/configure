@@ -1771,10 +1771,10 @@ EOF
 
 cat > $TMPC << EOF
 #include <math.h>
-int main(void)
+int main(int argc, char** argv)
 {
-	long double a=powl((long double) 1.0, (long double) 1.0);
-	return 0;
+	long double a=::powl((long double) argc, (long double) argc);
+	return (int) a;
 }
 EOF
 	echocheck "Math powl() support"
@@ -1861,10 +1861,10 @@ EOF
 cat > $TMPC << EOF
 #include <cblas.h>
 #include <clapack.h>
-int main(void)
+int main(int argc, char** argv)
 { 
-	int skip=1;
-	int n=10; double* a=0; double* v1=0; double* v2=0;
+	int skip=argc;
+	int n=arg; double* a=0; double* v1=0; double* v2=0;
 	int result=clapack_dpotrf(CblasRowMajor, CblasUpper, n, a, n);
 	int r = cblas_ddot(n, v1, skip, v2, skip);
 	return 0;
@@ -2182,7 +2182,7 @@ cat > $TMPC << EOF
 
 static SEXP sg_helper(SEXP args)
 {
-	SEXP result=NEW_LOGICAL(1);
+	SEXP result=NEW_LOGICAL(argc);
 	return result;
 }
 EOF
@@ -2201,14 +2201,14 @@ EOF
 	then
 cat > $TMPC << EOF
 #include <ilcplex/cplex.h>
-int
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
-	int status = 0;
+	int status = argc;
 	CPXENVptr     env = NULL;
 	CPXLPptr      lp = NULL;
 	env = CPXopenCPLEX (&status);
-  status = CPXcloseCPLEX (&env);
+	status = CPXcloseCPLEX (&env);
+	return status;
 }
 EOF
 		echocheck "CPLEX support"
