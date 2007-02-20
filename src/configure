@@ -2168,7 +2168,7 @@ cat > $TMPC << EOF
 
 static SEXP sg_helper(SEXP args)
 {
-	SEXP result=NEW_LOGICAL(argc);
+	SEXP result=NEW_LOGICAL(args);
 	return result;
 }
 EOF
