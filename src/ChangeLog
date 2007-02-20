@@ -1,5 +1,11 @@
 2007-02-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* base/Parallel.h, classifier/svm/SVMLin.cpp,
+	  classifier/svm/SVMLin.h: build fix on osx
+	* ChangeLog, base/Parallel.h, configure: * number of processors
+	  autodetection for LINUX/DARWIN
+	  removed that part from configure
+	* NEWS, configure: bugfix release 0.3.1
 	* ChangeLog, lib/Mathematics.h: define a binary search helper
 	  function as suggested by andre
 	* lib/Mathematics.h: (more of andre's cleanups)
