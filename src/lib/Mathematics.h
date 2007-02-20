@@ -363,7 +363,7 @@ public:
 	/* finds an element in a sorted array via binary search
      * returns -1 if not found */
 	template <class T>
-	static INT binary_search(T* output, INT size, T elem)
+	static INT binary_search_helper(T* output, INT size, T elem)
 	{
 		INT start=0;
 		INT end=size-1;
@@ -389,6 +389,17 @@ public:
 			return -1;
 	}
 
+	/* finds an element in a sorted array via binary search
+	 *     * returns -1 if not found */
+	template <class T>
+	static inline INT binary_search(T* output, INT size, T elem)
+	{
+		INT ind = binary_search_helper(output, size, elem);
+		if (ind >= 0 && output[ind] == elem)
+			return ind;
+		return -1;
+	}
+
 	/* finds an element in a sorted array via binary search 
 	 * if it exists, else the index the largest smaller element
 	 * is returned
@@ -396,30 +407,12 @@ public:
 	template <class T>
 	static INT binary_search_max_lower_equal(T* output, INT size, T elem)
 	{
-		INT start=0;
-		INT end=size-1;
+		INT ind = binary_search_helper(output, size, elem);
 
-		if (size<1)
-			return -1;
-
-		while (start<end)
-		{
-			INT middle=(start+end)/2; 
-
-			if (output[middle]>elem)
-				end=middle-1;
-			else if (output[middle]<elem)
-				start=middle+1;
-			else
-				return middle;
-		}
-
-		if (output[start]<=elem)
-			return start;
-
-		if (start>0 && output[start-1]<=elem)
-			return start-1;
-
+		if (output[ind]<=elem)
+			return ind;
+		if (ind>0 && output[ind-1] <= elem)
+			return ind-1;
 		return -1;
 	}
 
