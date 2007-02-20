@@ -450,45 +450,35 @@ public:
 
 	/**@name summing functions */
 	//@{ 
-	/** sum logarithmic probabilities.
-	 * Probability measures are summed up but are now given in logspace where
-	 * direct summation of exp(operand) is not possible due to numerical problems, i.e. eg. exp(-1000)=0. Therefore
-	 * we do log( exp(a) + exp(b)) = a + log (1 + exp (b-a)) where a is max(p,q) and b min(p,q). */
+	/**
+	 * sum logarithmic probabilities.
+	 * Probability measures are summed up but are now given in logspace
+	 * where direct summation of exp(operand) is not possible due to
+	 * numerical problems, i.e. eg. exp(-1000)=0. Therefore we do
+	 * log( exp(a) + exp(b)) = a + log (1 + exp (b-a)) where a = max(p,q)
+	 * and b min(p,q).
+	 */
 #ifdef USE_LOGCACHE
 	static inline DREAL logarithmic_sum(DREAL p, DREAL q)
 	{
-		if (finite(p))
+		DREAL diff;
+
+		if (!finite(p))
+			return q;
+		if (!finite(q))
 		{
-			if (finite(q))
-			{
-
-				register DREAL diff=p-q;
-
-				if (diff>0)		//p>q
-				{
-					if (diff > LOGRANGE)
-						return p;
-					else
-						return  p + logtable[(int)(diff*LOGACCURACY)];
-				}
-				else			//p<=q
-				{
-					if (-diff > LOGRANGE)
-						return  q;
-					else
-						return  q + logtable[(int)(-diff*LOGACCURACY)];
-				}
-			}
 			SG_SWARNING(("INVALID second operand to logsum(%f,%f) expect undefined results\n", p, q);
 			return NAN;
 		}
-		else 
-			return q;
+		diff = p - q;
+		if (diff > 0)
+			return diff > LOGRANGE? p : p + logtable[(int)(diff * LOGACCURACY)];
+		return -diff > LOGRANGE? q : q + logtable[(int)(-diff * LOGACCURACY)];
 	}
 
 	///init log table of form log(1+exp(x))
 	static void init_log_table();
-	
+
 	/// determine INT x for that log(1+exp(-x)) == 0
 	static INT determine_logrange();
 
@@ -497,31 +487,16 @@ public:
 #else
 	static inline DREAL logarithmic_sum(DREAL p, DREAL q)
 	{
-		if (finite(p))
-		{
-			if (finite(q))
-			{
+		DREAL diff;
 
-				register DREAL diff=p-q;
-				if (diff>0)		//p>q
-				{
-					if (diff > LOGRANGE)
-						return p;
-					else
-						return  p + log(1+exp(-diff));
-				}
-				else			//p<=q
-				{
-					if (-diff > LOGRANGE)
-						return  q;
-					else
-						return  q + log(1+exp(diff));
-				}
-			}
-			return p;
-		}
-		else 
+		if (!finite(p))
 			return q;
+		if (!finite(q))
+			return p;
+		diff = p - q;
+		if (diff > 0)
+			return diff > LOGRANGE? p : p + log(1 + exp(-diff));
+		return -diff > LOGRANGE? q : q + log(1 + exp(diff));
 	}
 #endif
 #ifdef LOG_SUM_ARRAY
