@@ -38,12 +38,12 @@ function y = test_poly_kernel(filename)
   
   
 
-  orgkm = km_test
-  newkm = testkm
+  orgkm = km_test;
+  newkm = testkm;
   
 
-  a = max(max(abs(km_test-testkm)))
-  b = max(max(abs(km_train-trainkm)))
+  a = max(max(abs(km_test-testkm)));
+  b = max(max(abs(km_train-trainkm)));
   if(a+b<1e-7)
     y = 0;
   else
