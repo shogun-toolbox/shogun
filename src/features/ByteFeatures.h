@@ -19,8 +19,8 @@
 class CByteFeatures: public CSimpleFeatures<BYTE>
 {
 	public:
-		CByteFeatures(E_ALPHABET, INT size);
-		CByteFeatures(CAlphabet* alpha, INT size);
+		CByteFeatures(E_ALPHABET, INT size=0);
+		CByteFeatures(CAlphabet* alpha, INT size=0);
 		CByteFeatures(const CByteFeatures & orig);
         CByteFeatures(E_ALPHABET alphabet, BYTE* feature_matrix, INT num_feat, INT num_vec);
 		CByteFeatures(E_ALPHABET alphabet, CHAR* fname);

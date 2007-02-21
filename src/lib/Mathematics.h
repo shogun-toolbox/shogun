@@ -639,55 +639,50 @@ void CMath::nmin(DREAL* output, T* index, INT size, INT n)
 		qsort(output, index, size) ;
 }
 
+/* move the smallest entry in the array to the beginning */
 template <class T>
 void CMath::min(DREAL* output, T* index, INT size)
 {
-	if (size<=0)
-		return ;
-	DREAL min_elem = output[0] ;
-	INT min_index = 0 ;
+	if (size<=1)
+		return;
+	DREAL min_elem=output[0];
+	INT min_index=0;
 	for (INT i=1; i<size; i++)
 	{
 		if (output[i]<min_elem)
 		{
-			min_index=i ;
-			min_elem=output[i] ;
+			min_index=i;
+			min_elem=output[i];
 		}
 	}
-	swap(output[0], output[min_index]) ;
-	swap(index[0], index[min_index]) ;
+	swap(output[0], output[min_index]);
+	swap(index[0], index[min_index]);
 }
 
 template <class T>
 void CMath::display_vector(T* vector, INT n, const char* name)
 {
+	ASSERT(n>=0);
 	SG_SPRINT("%s=[", name);
-	for (INT i=0; i<n-1; i++)
-		SG_SPRINT("%f,", (double) vector[i]);
-	for (INT i=n-1; i<n; i++)
-		SG_SPRINT("%f]\n", (double) vector[i]);
+	for (INT i=0; i<n; i++)
+		SG_SPRINT("%f%s", (double) vector[i], i==n-1? "" : ",");
+	SG_SPRINT("]\n");
 }
 
 template <class T>
 void CMath::display_matrix(T* matrix, INT rows, INT cols, const char* name)
 {
+	ASSERT(rows>=0 && cols>=0);
 	SG_SPRINT("%s=[\n", name);
-	for (INT j=0; j<rows-1; j++)
+	for (INT j=0; j<rows; j++)
 	{
 		SG_SPRINT("[");
-		for (INT i=0; i<cols-1; i++)
-			SG_SPRINT("\t%f,", (double) matrix[j+i*rows]);
-		for (INT i=cols-1; i<cols; i++)
-			SG_SPRINT("\t%f],\n", (double) matrix[j+i*rows]);
+		for (INT i=0; i<cols; i++)
+			SG_SPRINT("\t%lf%s", (double) matrix[j+i*rows],
+				i==cols-1? "" : ",");
+		SG_SPRINT("]%s\n", j==rows-1? "" : ",");
 	}
-	for (INT j=rows-1; j<rows; j++)
-	{
-		SG_SPRINT("[");
-		for (INT i=0; i<cols-1; i++)
-			SG_SPRINT("\t%f,", (double) matrix[j+i*rows]);
-		for (INT i=cols-1; i<cols; i++)
-			SG_SPRINT("\t%f]\n]\n", (double) matrix[j+i*rows]);
-	}
+	SG_SPRINT("]\n");
 }
 
 #endif

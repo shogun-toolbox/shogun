@@ -17,8 +17,8 @@
 class CRealFileFeatures: public CRealFeatures
 {
  public:
-  CRealFileFeatures(LONG size, FILE* file);
-  CRealFileFeatures(LONG size, CHAR* filename);
+  CRealFileFeatures(INT size, FILE* file);
+  CRealFileFeatures(INT size, CHAR* filename);
 
   CRealFileFeatures(const CRealFileFeatures& orig);
 

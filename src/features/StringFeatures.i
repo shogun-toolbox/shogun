@@ -2,7 +2,7 @@
  #include "features/StringFeatures.h" 
 %}
 
-#ifdef HAVE_PYTHON
+/*#ifdef HAVE_PYTHON
 %apply (ST** ARGOUT1, INT* DIM1) {(ST** dst, INT* len)};
 %apply (CHAR** ARGOUT1, INT* DIM1) {(CHAR** dst, INT* len)};
 %apply (BYTE** ARGOUT1, INT* DIM1) {(BYTE** dst, INT* len)};
@@ -15,7 +15,7 @@
 %apply (SHORTREAL** ARGOUT1, INT* DIM1) {(SHORTREAL** dst, INT* len)};
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst, INT* len)};
 %apply (LONGREAL** ARGOUT1, INT* DIM1) {(LONGREAL** dst, INT* len)};
-#endif
+#endif*/
 
 %include "features/StringFeatures.h" 
 

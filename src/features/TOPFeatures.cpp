@@ -13,7 +13,7 @@
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
-CTOPFeatures::CTOPFeatures(LONG size, CHMM* p, CHMM* n, bool neglin, bool poslin) : CRealFeatures(size), neglinear(neglin), poslinear(poslin)
+CTOPFeatures::CTOPFeatures(INT size, CHMM* p, CHMM* n, bool neglin, bool poslin) : CRealFeatures(size), neglinear(neglin), poslinear(poslin)
 {
 	memset(&pos_relevant_indizes, 0, sizeof(pos_relevant_indizes));
 	memset(&neg_relevant_indizes, 0, sizeof(neg_relevant_indizes));

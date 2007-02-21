@@ -18,8 +18,8 @@
 class CCharFeatures: public CSimpleFeatures<CHAR>
 {
 	public:
-		CCharFeatures(E_ALPHABET, INT size);
-		CCharFeatures(CAlphabet* alpha, INT size);
+		CCharFeatures(E_ALPHABET, INT size=0);
+		CCharFeatures(CAlphabet* alpha, INT size=0);
 		CCharFeatures(const CCharFeatures & orig);
         CCharFeatures(E_ALPHABET alphabet, CHAR* feature_matrix, INT num_feat, INT num_vec);
 		CCharFeatures(E_ALPHABET alphabet, CHAR* fname);

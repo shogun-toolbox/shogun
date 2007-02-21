@@ -29,7 +29,7 @@ template <class ST> class CSimplePreProc;
 template <class ST> class CSimpleFeatures: public CFeatures
 {
  public:
-	 CSimpleFeatures(INT size) : CFeatures(size), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
+	 CSimpleFeatures(INT size=0) : CFeatures(size), num_vectors(0), num_features(0), feature_matrix(NULL), feature_cache(NULL)
 	 {
 	 }
 

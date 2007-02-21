@@ -27,6 +27,9 @@
 %include "base/Parallel.i"
 %include "base/SGObject.i"
 %include "features/Features.h" 
+%include "features/SimpleFeatures.h" 
+%include "features/SparseFeatures.i"
+%include "features/StringFeatures.i"
 
 %include "features/Alphabet.i"
 %include "features/CharFeatures.i"
@@ -34,7 +37,6 @@
 %include "features/ShortFeatures.i"
 %include "features/WordFeatures.i"
 %include "features/RealFeatures.i"
-%include "features/StringFeatures.i"
 %include "features/CombinedFeatures.i"
 %include "features/MindyGramFeatures.i"
 %include "features/Labels.i"

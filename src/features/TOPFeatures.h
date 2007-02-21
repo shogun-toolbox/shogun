@@ -34,7 +34,7 @@ class CTOPFeatures: public CRealFeatures
 	};
 
 	public:
-	CTOPFeatures(LONG size, CHMM* p, CHMM* n, bool neglin, bool poslin);
+	CTOPFeatures(INT size, CHMM* p, CHMM* n, bool neglin, bool poslin);
 	CTOPFeatures(const CTOPFeatures &orig);
 
 	virtual ~CTOPFeatures();

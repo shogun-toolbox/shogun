@@ -19,7 +19,7 @@
 class CWordFeatures: public CSimpleFeatures<WORD>
 {
 	public:
-		CWordFeatures(INT size, INT num_symbols=1<<16);
+		CWordFeatures(INT size=0, INT num_symbols=1<<16);
 		CWordFeatures(const CWordFeatures & orig);
 
 		/** load features from file

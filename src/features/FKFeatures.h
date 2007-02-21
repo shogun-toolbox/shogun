@@ -18,7 +18,7 @@
 class CFKFeatures: public CRealFeatures
 {
  public:
-  CFKFeatures(LONG size, CHMM* p, CHMM* n);
+  CFKFeatures(INT size, CHMM* p, CHMM* n);
   CFKFeatures(const CFKFeatures &orig);
   
   virtual ~CFKFeatures();

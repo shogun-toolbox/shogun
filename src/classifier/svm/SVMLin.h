@@ -11,16 +11,16 @@
 #ifndef _SVMLIN_H___
 #define _SVMLIN_H___
 
-#include <stdio.h>
 #include "lib/common.h"
-#include "features/Features.h"
-#include "classifier/LinearClassifier.h"
-#include "classifier/svm/SVM.h"
+#include "classifier/SparseLinearClassifier.h"
+#include "features/SparseFeatures.h"
+#include "features/Labels.h"
 
-class CSVMLin : public CLinearClassifier
+class CSVMLin : public CSparseLinearClassifier
 {
 	public:
 		CSVMLin();
+		CSVMLin(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
 		virtual ~CSVMLin();
 
 		inline EClassifierType get_classifier_type() { return CT_SVMLIN; }

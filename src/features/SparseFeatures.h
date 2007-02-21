@@ -21,6 +21,8 @@
 #include "lib/Cache.h"
 
 #include "features/Features.h"
+#include "features/SimpleFeatures.h"
+#include "features/RealFeatures.h"
 #include "preproc/SparsePreProc.h"
 
 //features are an array of TSparse, sorted w.r.t. vec_index (increasing) and
@@ -45,7 +47,7 @@ public:
 template <class ST> class CSparseFeatures: public CFeatures
 {
 	public:
-		CSparseFeatures(INT size) : CFeatures(size), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL)
+		CSparseFeatures(INT size=0) : CFeatures(size), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL)
 		{
 		}
 
@@ -54,7 +56,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 		{
 			if (orig.sparse_feature_matrix)
 			{
-				sparse_feature_matrix=new TSparse<DREAL>[num_vectors];
+				sparse_feature_matrix=new TSparse<ST>[num_vectors];
 				memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(TSparse<ST>)*num_vectors); 
 				for (INT i=0; i< num_vectors; i++)
 				{
@@ -96,11 +98,13 @@ template <class ST> class CSparseFeatures: public CFeatures
 			INT i;
 			len=0;
 			TSparseEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, free);
+			ST* fv=NULL;
 
 			if (sv)
 			{
 				len=num_features;
-				ST* fv=new ST[num_features];
+				fv=new ST[num_features];
+				ASSERT(fv);
 
 				for (i=0; i<num_features; i++)
 					fv[i]=0;
@@ -111,7 +115,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 			free_sparse_feature_vector(sv, num, free);
 
-			return sv;
+			return fv;
 		}
 
 		/** get feature vector for sample num
@@ -358,6 +362,16 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 		virtual INT get_size() { return sizeof(ST); }
 
+		bool obtain_from_simple(CSimpleFeatures<ST>* sf)
+		{
+			INT num_feat=0;
+			INT num_vec=0;
+			ST* fm=sf->get_feature_matrix(num_feat, num_vec);
+			ASSERT(fm && num_feat>0 && num_vec>0);
+
+			return set_full_feature_matrix(fm, num_feat, num_vec);
+		}
+
 		virtual inline INT  get_num_vectors() { return num_vectors; }
 		inline INT  get_num_features() { return num_features; }
 
@@ -407,15 +421,6 @@ template <class ST> class CSparseFeatures: public CFeatures
 		CCache< TSparseEntry<ST> >* feature_cache;
 };
 
-template<> inline EFeatureType CSparseFeatures<DREAL>::get_feature_type()
-{
-	return F_DREAL;
-}
-
-template<> inline EFeatureType CSparseFeatures<SHORT>::get_feature_type()
-{
-	return F_SHORT;
-}
 
 template<> inline EFeatureType CSparseFeatures<CHAR>::get_feature_type()
 {
@@ -427,9 +432,9 @@ template<> inline EFeatureType CSparseFeatures<BYTE>::get_feature_type()
 	return F_BYTE;
 }
 
-template<> inline EFeatureType CSparseFeatures<INT>::get_feature_type()
+template<> inline EFeatureType CSparseFeatures<SHORT>::get_feature_type()
 {
-	return F_INT;
+	return F_SHORT;
 }
 
 template<> inline EFeatureType CSparseFeatures<WORD>::get_feature_type()
@@ -437,8 +442,38 @@ template<> inline EFeatureType CSparseFeatures<WORD>::get_feature_type()
 	return F_WORD;
 }
 
+template<> inline EFeatureType CSparseFeatures<INT>::get_feature_type()
+{
+	return F_INT;
+}
+
+template<> inline EFeatureType CSparseFeatures<UINT>::get_feature_type()
+{
+	return F_UINT;
+}
+
+template<> inline EFeatureType CSparseFeatures<LONG>::get_feature_type()
+{
+	return F_LONG;
+}
+
 template<> inline EFeatureType CSparseFeatures<ULONG>::get_feature_type()
 {
 	return F_ULONG;
+}
+
+template<> inline EFeatureType CSparseFeatures<DREAL>::get_feature_type()
+{
+	return F_DREAL;
+}
+
+template<> inline EFeatureType CSparseFeatures<SHORTREAL>::get_feature_type()
+{
+	return F_SREAL;
+}
+
+template<> inline EFeatureType CSparseFeatures<LONGREAL>::get_feature_type()
+{
+	return F_LREAL;
 }
 #endif

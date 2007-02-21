@@ -15,3 +15,5 @@ We integrated the work of the following people:
  Vikas Sindhwani
     - SVM-lin: Fast SVM Solvers for Supervised and Semi-supervised Learning
 
+ Vojtech Franc
+ 	- Generalized Nearest Point Problem Solver based L2 (slacks) SVM

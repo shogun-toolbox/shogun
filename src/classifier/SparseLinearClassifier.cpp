@@ -8,21 +8,12 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _KERTHIPRIMALSVM_H___
-#define _KERTHIPRIMALSVM_H___
-#include "lib/common.h"
-#include "classifier/Classifier.h"
-#include "classifier/LinearClassifier.h"
-#include "classifier/svm/SVM.h"
-#include "lib/Cache.h"
+#include "classifier/SparseLinearClassifier.h"
 
-class CKerthiPrimalSVM : public CLinearClassifier, public CSVM
+CSparseLinearClassifier::CSparseLinearClassifier() : CClassifier(), w(NULL), bias(0), features(NULL)
 {
-	public:
-		CKerthiPrimalSVM();
-		virtual ~CKerthiPrimalSVM();
-		virtual bool train();
-};
+}
 
-#endif
-
+CSparseLinearClassifier::~CSparseLinearClassifier()
+{
+}

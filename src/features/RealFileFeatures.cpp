@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <string.h>
 
-CRealFileFeatures::CRealFileFeatures(LONG size, CHAR* fname) : CRealFeatures(size)
+CRealFileFeatures::CRealFileFeatures(INT size, CHAR* fname) : CRealFeatures(size)
 {
     working_file=fopen(fname, "r");
     working_filename=strdup(fname);
@@ -30,7 +30,7 @@ CRealFileFeatures::CRealFileFeatures(LONG size, CHAR* fname) : CRealFeatures(siz
     status=load_base_data();
 }
 
-CRealFileFeatures::CRealFileFeatures(LONG size, FILE* file) : CRealFeatures(size), working_file(file), working_filename(NULL)
+CRealFileFeatures::CRealFileFeatures(INT size, FILE* file) : CRealFeatures(size), working_file(file), working_filename(NULL)
 {
     ASSERT(working_file!=NULL);
     intlen=0;

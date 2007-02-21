@@ -8,13 +8,23 @@
  * Copyright (C) 2006 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "classifier/svm/ssl.h"
 #include "classifier/svm/SVMLin.h"
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
+#include "classifier/svm/ssl.h"
+#include "classifier/SparseLinearClassifier.h"
+#include "features/SparseFeatures.h"
+#include "features/Labels.h"
 
-CSVMLin::CSVMLin() : CLinearClassifier()
+CSVMLin::CSVMLin() : CSparseLinearClassifier(), C1(1), C2(1)
 {
+}
+
+CSVMLin::CSVMLin(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
+	: CSparseLinearClassifier(), C1(C), C2(C)
+{
+	CSparseLinearClassifier::features=traindat;
+	CClassifier::labels=trainlab;
 }
 
 
@@ -48,12 +58,21 @@ bool CSVMLin::train()
 	Data.n=num_feat;
 	Data.nz=num_feat;
 	Data.Y=train_labels;
-
-	Data.val=0; //FIXME 
-	Data.rowptr=0; //FIXME 
-	Data.colind=0; //FIXME 
-	
+	Data.features=get_features();
 	Data.C = new double[Data.l];
+
+	Options.algo = SVM;
+	Options.algo = 1;
+	Options.lambda=1.0;
+	Options.lambda_u=1.0;
+	Options.S=10000;
+	Options.R=0.5;
+	Options.epsilon = 1e-5; //FIXME
+	Options.cgitermax=10000;
+	Options.mfnitermax=50;
+	Options.Cp = get_C1();
+	Options.Cn = get_C2();
+
 
 	for(int i=0;i<num_vec;i++)
 	{
@@ -64,5 +83,7 @@ bool CSVMLin::train()
 	}
 	ssl_train(&Data, &Options, &Weights, &Outputs);
 
+	CMath::display_vector(Weights.vec, Weights.d, "weights");
+	CMath::display_vector(Outputs.vec, Outputs.d, "outputs");
 	return false;
 }

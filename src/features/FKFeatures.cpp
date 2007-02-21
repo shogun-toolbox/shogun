@@ -13,7 +13,7 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CFKFeatures::CFKFeatures(LONG size, CHMM* p, CHMM* n) : CRealFeatures(size)
+CFKFeatures::CFKFeatures(INT size, CHMM* p, CHMM* n) : CRealFeatures(size)
 {
 	pos_prob=NULL;
 	neg_prob=NULL;

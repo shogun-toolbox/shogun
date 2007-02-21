@@ -34,6 +34,9 @@
 #define DA_INNER_ITERMAX 100 /* maximum fixed temperature iterations for DA */
 #define DA_OUTER_ITERMAX 30 /* maximum number of outer loops for DA */
 
+#include "lib/common.h"
+#include "features/SparseFeatures.h"
+
 /* Data: Input examples are stored in sparse (Compressed Row Storage) format */
 struct data 
 {
@@ -42,9 +45,11 @@ struct data
 	int u; /* number of unlabeled examples l+u = m */
 	int n; /* number of features */ 
 	int nz; /* number of non-zeros */
-	double *val; /* data values (nz elements) [CRS format] */
-	int *rowptr; /* n+1 vector [CRS format] */
-	int *colind; /* nz elements [CRS format] */ 
+
+	CSparseFeatures<DREAL>* features;
+	//double *val; /* data values (nz elements) [CRS format] */
+	//int *rowptr; /* n+1 vector [CRS format] */
+	//int *colind; /* nz elements [CRS format] */ 
 	double *Y;   /* labels */
 	double *C;   /* cost associated with each example */
 };
@@ -93,9 +98,7 @@ void initialize(struct vector_double *A, int k, double a);
 /* initializes a vector_double to be of length k, all elements set to a */
 void initialize(struct vector_int *A, int k); 
 /* initializes a vector_int to be of length k, elements set to 1,2..k. */
-void SetData(struct data *Data, int m,int n, int l,int u, int nz, 
-		double *VAL, int *R, int *C, double *Y, double *COSTS); /* sets data fields */
-void GetLabeledData(struct data *Data_Labeled, const struct data *Data); 
+//void GetLabeledData(struct data *Data_Labeled, const struct data *Data); 
 /* extracts labeled data from Data and copies it into Data_Labeled */
 void Write(const char *file_name, const struct vector_double *somevector);
 /* writes a vector into filename, one element per line */
@@ -143,10 +146,10 @@ double line_search(double *w,
 /* Transductive L2-SVM */
 /* Solves : min_(w, Y[i],i in UNlabeled) 0.5*Options->lamda*w'*w + 0.5*(1/Data->l)*sum_{i in labeled} max(0,1 - Y[i] w' x_i)^2 + 0.5*(Options->lambda_u/Data->u)*sum_{i in UNlabeled} max(0,1 - Y[i] w' x_i)^2 
    subject to: (1/Data->u)*sum_{i in UNlabeled} max(0,Y[i]) = Options->R */
-int   TSVM_MFN(const struct data *Data, 
-		struct options *Options, 
-		struct vector_double *Weights,
-		struct vector_double *Outputs);
+//int   TSVM_MFN(const struct data *Data, 
+//		struct options *Options, 
+//		struct vector_double *Weights,
+//		struct vector_double *Outputs);
 int switch_labels(double* Y, double* o, int* JU, int u, int S);
 
 /* Deterministic Annealing*/
