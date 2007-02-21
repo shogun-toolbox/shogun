@@ -1,6 +1,8 @@
 from numpy.random import rand
 from numpy import floor
 from shogun.Features import RealFeatures
+from shogun.Features import CharFeatures
+from shogun.Features import Alphabet,DNA
 from shogun.Kernel import *
 import m_print
 
@@ -157,6 +159,8 @@ for x in range(50):
 	clist.append(acgt[int(floor(rand()*4))])
 
 str_test_data = ''.join(clist)
+alph = Alphabet(DNA)
+strfeat = CharFeatures(alph, str_test_data, 10, 5)
 	
 
 k=PolyKernel(train_feat,train_feat, 10, 3, True, True)
