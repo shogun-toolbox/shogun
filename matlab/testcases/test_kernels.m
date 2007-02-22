@@ -1,7 +1,7 @@
 
 function y = test_kernels(filename)
-  addpath ../../src;
-  addpath ../../python-modular/testcases/mfiles;
+  addpath ('../../src');
+  addpath ('../../python-modular/testcases/mfiles');
   
   if (filename(end-1:end)=='.m')
      filename = filename(1:end-2)
