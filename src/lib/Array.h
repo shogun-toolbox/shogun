@@ -4,7 +4,7 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2007 Soeren Sonnenburg, Gunnar Raetsch
+ * Written (W) 1999-2007 Soeren Sonnenburg, Gunnar Raetsch, Andre Noll
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -71,8 +71,6 @@ struct array_statistics {
 #define PRINT_ARRAY_STATISTICS
 #define INCREMENT_ARRAY_STATISTICS_VALUE(_val_)
 #endif /* ARRAY_STATISTICS */
-
-template <class T> class CArray;
 
 template <class T> class CArray : public CSGObject
 {
@@ -183,17 +181,13 @@ public:
 		ASSERT(free_array);
 
 		T* p= (T*) realloc(array, sizeof(T)*n);
-		if (p)
-		{
-			array=p;
-			if (n > array_size)
-				memset(&array[array_size], 0, (n-array_size)*sizeof(T));
-
-			array_size=n;
-			return true;
-		}
-		else
+		if (!p)
 			return false;
+		array=p;
+		if (n > array_size)
+			memset(&array[array_size], 0, (n-array_size)*sizeof(T));
+		array_size=n;
+		return true;
 	}
 
 	/// call get_array just before messing with it DO NOT call any
@@ -206,7 +200,8 @@ public:
 	}
 
 	/// set the array pointer and free previously allocated memory
-	inline void set_array(T* p_array, INT p_array_size, bool p_free_array=true, bool copy_array=false)
+	inline void set_array(T* p_array, INT p_array_size, bool p_free_array=true,
+			bool copy_array=false)
 	{
 		INCREMENT_ARRAY_STATISTICS_VALUE(set_array);
 		free(this->array);
@@ -264,24 +259,18 @@ public:
 		return *this;
 	}
 
+	void display_size() const
+	{
+		SG_PRINT( "Array '%s' of size: %d\n", name? name : "unnamed",
+			array_size);
+	}
+
 	void display_array() const
 	{
-		if (!name)
-			SG_PRINT( "Array of size: %d\n", array_size);
-		else
-			SG_PRINT( "Array '%s' of size: %d\n", name, array_size);
-
+		display_size();
 		for (INT i=0; i<array_size; i++)
 			SG_PRINT("%d,", array[i]);
 		SG_PRINT("\n");
-	}
-
-	void display_size() const
-	{
-		if (!name)
-			SG_PRINT( "Array of size: %d\n", array_size);
-		else
-			SG_PRINT( "Array '%s' of size: %d\n", name, array_size);
 	}
 
 protected:
