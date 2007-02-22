@@ -24,26 +24,43 @@ class CSparseLinearClassifier : public CClassifier
 		/// get output for example "idx"
 		virtual inline DREAL classify_example(INT idx)
 		{
-			//INT vlen;
-			//bool vfree;
-			//double* vec=features->get_feature_vector(idx, vlen, vfree);
-			//DREAL result=CMath::dot(w,vec,vlen);
-			//features->free_feature_vector(vec, idx, vfree);
+			INT vlen;
+			bool vfree;
+			DREAL result=0.0;
 
-			//return result+bias;
-			return idx;
+			ASSERT(features);
+			ASSERT(w && features->get_num_features()<=w_dim);
+
+			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(idx, vlen, vfree);
+
+			for (INT i=0; i<vlen; i++)
+				result+=w[vec[i].feat_index]*vec[i].entry;
+
+			features->free_sparse_feature_vector(vec, idx, vfree);
+
+			return result+get_bias();
 		}
 
-        //inline void get_w(DREAL** dst_w, INT* dst_dims)
-        //{
-        //    ASSERT(dst_w && dst_dims);
-        //    ASSERT(w && features);
-        //    *dst_dims=features->get_num_features();
-        //    *dst_w=new DREAL[*dst_dims];
-        //    ASSERT(*dst_w);
-        //    memcpy(*dst_w, w, sizeof(DREAL) * (*dst_dims));
-        //}
+        inline void get_w(DREAL** dst_w, INT* dst_dims)
+        {
+            ASSERT(dst_w && dst_dims);
+            ASSERT(w && w_dim>0);
+            *dst_dims=w_dim;
+            *dst_w=new DREAL[*dst_dims];
+            ASSERT(*dst_w);
+            memcpy(*dst_w, w, sizeof(DREAL) * (*dst_dims));
+        }
 
+		inline void set_w(DREAL* src_w, INT src_w_dim)
+		{
+			w=src_w;
+			w_dim=src_w_dim;
+		}
+
+        inline void set_bias(DREAL b)
+        {
+            bias=b;
+        }
         inline DREAL get_bias()
         {
             return bias;
@@ -53,6 +70,7 @@ class CSparseLinearClassifier : public CClassifier
 		inline CSparseFeatures<DREAL>* get_features() { return features; }
 
 	protected:
+		INT w_dim;
 		DREAL* w;
 		DREAL bias;
 		CSparseFeatures<DREAL>* features;

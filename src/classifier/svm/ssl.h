@@ -98,13 +98,8 @@ void initialize(struct vector_double *A, int k, double a);
 /* initializes a vector_double to be of length k, all elements set to a */
 void initialize(struct vector_int *A, int k); 
 /* initializes a vector_int to be of length k, elements set to 1,2..k. */
-//void GetLabeledData(struct data *Data_Labeled, const struct data *Data); 
+void GetLabeledData(struct data *Data_Labeled, const struct data *Data); 
 /* extracts labeled data from Data and copies it into Data_Labeled */
-void Write(const char *file_name, const struct vector_double *somevector);
-/* writes a vector into filename, one element per line */
-void Clear(struct data *a); /* deletes a */
-void Clear(struct vector_double *a); /* deletes a */
-void Clear(struct vector_int *a); /* deletes a */
 double norm_square(const vector_double *A); /* returns squared length of A */
 
 /* ssl_train: takes data, options, uninitialized weight and output
@@ -146,10 +141,10 @@ double line_search(double *w,
 /* Transductive L2-SVM */
 /* Solves : min_(w, Y[i],i in UNlabeled) 0.5*Options->lamda*w'*w + 0.5*(1/Data->l)*sum_{i in labeled} max(0,1 - Y[i] w' x_i)^2 + 0.5*(Options->lambda_u/Data->u)*sum_{i in UNlabeled} max(0,1 - Y[i] w' x_i)^2 
    subject to: (1/Data->u)*sum_{i in UNlabeled} max(0,Y[i]) = Options->R */
-//int   TSVM_MFN(const struct data *Data, 
-//		struct options *Options, 
-//		struct vector_double *Weights,
-//		struct vector_double *Outputs);
+int   TSVM_MFN(const struct data *Data, 
+		struct options *Options, 
+		struct vector_double *Weights,
+		struct vector_double *Outputs);
 int switch_labels(double* Y, double* o, int* JU, int u, int S);
 
 /* Deterministic Annealing*/

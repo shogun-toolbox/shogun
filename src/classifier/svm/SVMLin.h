@@ -31,8 +31,16 @@ class CSVMLin : public CSparseLinearClassifier
 		inline DREAL get_C1() { return C1; }
 		inline DREAL get_C2() { return C2; }
 
+		inline void set_epsilon(DREAL eps) { epsilon=eps; }
+		inline DREAL get_epsilon() { return epsilon; }
+
+		inline void set_lambda(DREAL lam) { lambda=lam; }
+		inline DREAL get_lambda() { return lambda; }
+
 	protected:
 		DREAL C1;
 		DREAL C2;
+		DREAL epsilon;
+		DREAL lambda;
 };
 #endif

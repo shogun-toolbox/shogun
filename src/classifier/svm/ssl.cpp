@@ -58,10 +58,10 @@ void ssl_train(struct data *Data,
 			SG_SINFO("Modified Finite Newton L2-SVM (L2-SVM-MFN)\n");
 			optimality=L2_SVM_MFN(Data,Options,Weights,Outputs,0);
 			break;
-		//case TSVM:
-		//	SG_SINFO("Transductive L2-SVM (TSVM)\n");
-		//	optimality=TSVM_MFN(Data,Options,Weights,Outputs);
-		//	break;
+		case TSVM:
+			SG_SINFO("Transductive L2-SVM (TSVM)\n");
+			optimality=TSVM_MFN(Data,Options,Weights,Outputs);
+			break;
 		case DA_SVM:
 			SG_SINFO("Deterministic Annealing Semi-supervised L2-SVM (DAS3VM)\n");
 			optimality=DA_S3VM(Data,Options,Weights,Outputs);
@@ -82,9 +82,6 @@ int CGLS(const struct data *Data,
 	/* Disassemble the structures */
 	int active = Subset->d;
 	int *J = Subset->vec;
-	//double *val = Data->val;
-	//int *row = Data->rowptr;
-	//int *col = Data->colind;
 	CSparseFeatures<DREAL>* features=Data->features;
 	double *Y = Data->Y;
 	double *C = Data->C;
@@ -457,94 +454,100 @@ double line_search(double *w,
 	return (-L/(R-L));
 } 
 
-//int TSVM_MFN(const struct data *Data, 
-//		struct options *Options, 
-//		struct vector_double *Weights,
-//		struct vector_double *Outputs)
-//{
-//	/* Setup labeled-only examples and train L2_SVM_MFN */
-//	struct data *Data_Labeled = new data[1];
-//	struct vector_double *Outputs_Labeled = new vector_double[1];
-//	initialize(Outputs_Labeled,Data->l,0.0);
-//	SG_SDEBUG("Initializing weights, unknown labels");
-//	GetLabeledData(Data_Labeled,Data); /* gets labeled data and sets C=1/l */
-//	L2_SVM_MFN(Data_Labeled, Options, Weights,Outputs_Labeled,0);
-//	Clear(Data_Labeled);
-//	/* Use this weight vector to classify R*u unlabeled examples as
-//	   positive*/   
-//	int p=0,q=0; 
-//	double t=0.0;
-//	int *JU = new int[Data->u];
-//	double *ou = new double[Data->u];
-//	double lambda_0 = TSVM_LAMBDA_SMALL;
-//	for(int i=0;i<Data->m;i++)
-//	{
-//		if(Data->Y[i]==0.0)
-//		{
-//			t=0.0;
-//			for(int j=Data->rowptr[i]; j < Data->rowptr[i+1]; j++)
-//				t+=Data->val[j]*Weights->vec[Data->colind[j]];
-//			Outputs->vec[i]=t;
-//			Data->C[i]=lambda_0*1.0/Data->u;
-//			JU[q]=i;
-//			ou[q]=t;
-//			q++;
-//		}
-//		else
-//		{                
-//			Outputs->vec[i]=Outputs_Labeled->vec[p];
-//			Data->C[i]=1.0/Data->l;
-//			p++;   
-//		}
-//	}
-//	std::nth_element(ou,ou+int((1-Options->R)*Data->u-1),ou+Data->u);
-//	double thresh=*(ou+int((1-Options->R)*Data->u)-1);
-//	delete [] ou;
-//	for(int i=0;i<Data->u;i++)
-//	{  
-//		if(Outputs->vec[JU[i]]>thresh)
-//			Data->Y[JU[i]]=1.0;
-//		else
-//			Data->Y[JU[i]]=-1.0;
-//	}
-//	for(int i=0;i<Data->n;i++)
-//		Weights->vec[i]=0.0;
-//	for(int i=0;i<Data->m;i++)
-//		Outputs->vec[i]=0.0;
-//	L2_SVM_MFN(Data,Options,Weights,Outputs,0); 
-//	int num_switches=0;
-//	int s=0;
-//	int last_round=0;
-//	while(lambda_0 <= Options->lambda_u)
-//	{   
-//		int iter2=0;
-//		while(1){
-//			s=switch_labels(Data->Y,Outputs->vec,JU,Data->u,Options->S);
-//			if(s==0) break;
-//			iter2++;
-//			SG_SDEBUG("****** lambda_0 = %f iteration = %d ************************************\n", lambda_0, iter2);
-//			SG_SDEBUG("Optimizing unknown labels. switched %d labels.\n");
-//			num_switches+=s;
-//			SG_SDEBUG("Optimizing weights\n");
-//			L2_SVM_MFN(Data,Options,Weights,Outputs,1); 
-//		}
-//		if(last_round==1) break;
-//		lambda_0=TSVM_ANNEALING_RATE*lambda_0;
-//		if(lambda_0 >= Options->lambda_u) {lambda_0 = Options->lambda_u; last_round=1;} 
-//		for(int i=0;i<Data->u;i++)
-//			Data->C[JU[i]]=lambda_0*1.0/Data->u;       
-//		SG_SDEBUG("****** lambda0 increased to %f%% of lambda_u = %f ************************\n", lambda_0*100/Options->lambda_u, Options->lambda_u);
-//		SG_SDEBUG("Optimizing weights\n");
-//		L2_SVM_MFN(Data,Options,Weights,Outputs,1); 
-//	}
-//	SG_SDEBUG("Total Number of Switches = %d\n", num_switches);
-//	/* reset labels */
-//	for(int i=0;i<Data->u;i++) Data->Y[JU[i]] = 0.0;
-//	double F = transductive_cost(norm_square(Weights),Data->Y,Outputs->vec,Outputs->d,Options->lambda,Options->lambda_u);
-//	SG_SDEBUG("Objective Value = %f\n",F);
-//	delete [] JU;
-//	return num_switches;
-//}
+int TSVM_MFN(const struct data *Data, 
+		struct options *Options, 
+		struct vector_double *Weights,
+		struct vector_double *Outputs)
+{
+	/* Setup labeled-only examples and train L2_SVM_MFN */
+	struct data *Data_Labeled = new data[1];
+	struct vector_double *Outputs_Labeled = new vector_double[1];
+	initialize(Outputs_Labeled,Data->l,0.0);
+	SG_SDEBUG("Initializing weights, unknown labels");
+	GetLabeledData(Data_Labeled,Data); /* gets labeled data and sets C=1/l */
+	L2_SVM_MFN(Data_Labeled, Options, Weights,Outputs_Labeled,0);
+	///FIXME Clear(Data_Labeled);
+	/* Use this weight vector to classify R*u unlabeled examples as
+	   positive*/   
+	int p=0,q=0; 
+	double t=0.0;
+	int *JU = new int[Data->u];
+	double *ou = new double[Data->u];
+	double lambda_0 = TSVM_LAMBDA_SMALL;
+	for(int i=0;i<Data->m;i++)
+	{
+		if(Data->Y[i]==0.0)
+		{
+			t=0.0;
+			INT num_entries=0;
+			bool free_vec=false;
+
+			TSparseEntry<DREAL>* vec=Data->features->get_sparse_feature_vector(i, num_entries, free_vec);
+			for (int j=0; j<num_entries; j++)
+				t+=vec[j].entry*Weights->vec[vec[j].feat_index];
+			Data->features->free_sparse_feature_vector(vec, num_entries, free_vec);
+
+			Outputs->vec[i]=t;
+			Data->C[i]=lambda_0*1.0/Data->u;
+			JU[q]=i;
+			ou[q]=t;
+			q++;
+		}
+		else
+		{                
+			Outputs->vec[i]=Outputs_Labeled->vec[p];
+			Data->C[i]=1.0/Data->l;
+			p++;   
+		}
+	}
+	std::nth_element(ou,ou+int((1-Options->R)*Data->u-1),ou+Data->u);
+	double thresh=*(ou+int((1-Options->R)*Data->u)-1);
+	delete [] ou;
+	for(int i=0;i<Data->u;i++)
+	{  
+		if(Outputs->vec[JU[i]]>thresh)
+			Data->Y[JU[i]]=1.0;
+		else
+			Data->Y[JU[i]]=-1.0;
+	}
+	for(int i=0;i<Data->n;i++)
+		Weights->vec[i]=0.0;
+	for(int i=0;i<Data->m;i++)
+		Outputs->vec[i]=0.0;
+	L2_SVM_MFN(Data,Options,Weights,Outputs,0); 
+	int num_switches=0;
+	int s=0;
+	int last_round=0;
+	while(lambda_0 <= Options->lambda_u)
+	{   
+		int iter2=0;
+		while(1){
+			s=switch_labels(Data->Y,Outputs->vec,JU,Data->u,Options->S);
+			if(s==0) break;
+			iter2++;
+			SG_SDEBUG("****** lambda_0 = %f iteration = %d ************************************\n", lambda_0, iter2);
+			SG_SDEBUG("Optimizing unknown labels. switched %d labels.\n");
+			num_switches+=s;
+			SG_SDEBUG("Optimizing weights\n");
+			L2_SVM_MFN(Data,Options,Weights,Outputs,1); 
+		}
+		if(last_round==1) break;
+		lambda_0=TSVM_ANNEALING_RATE*lambda_0;
+		if(lambda_0 >= Options->lambda_u) {lambda_0 = Options->lambda_u; last_round=1;} 
+		for(int i=0;i<Data->u;i++)
+			Data->C[JU[i]]=lambda_0*1.0/Data->u;       
+		SG_SDEBUG("****** lambda0 increased to %f%% of lambda_u = %f ************************\n", lambda_0*100/Options->lambda_u, Options->lambda_u);
+		SG_SDEBUG("Optimizing weights\n");
+		L2_SVM_MFN(Data,Options,Weights,Outputs,1); 
+	}
+	SG_SDEBUG("Total Number of Switches = %d\n", num_switches);
+	/* reset labels */
+	for(int i=0;i<Data->u;i++) Data->Y[JU[i]] = 0.0;
+	double F = transductive_cost(norm_square(Weights),Data->Y,Outputs->vec,Outputs->d,Options->lambda,Options->lambda_u);
+	SG_SDEBUG("Objective Value = %f\n",F);
+	delete [] JU;
+	return num_switches;
+}
 int switch_labels(double* Y, double* o, int* JU, int u, int S)
 {     
 	int npos=0;
@@ -681,9 +684,6 @@ int optimize_w(const struct data *Data,
 		int ini)
 { 
 	int i,j;
-	//double *val = Data->val;
-	//int *row = Data->rowptr;
-	//int *col = Data->colind;
 	CSparseFeatures<DREAL>* features=Data->features;
 	int n  = Data->n;
 	int m  = Data->m;
@@ -1120,52 +1120,45 @@ void initialize(struct vector_int *A, int k)
 	A->d   = k;
 	return;
 }
-void Write(const char *file_name, 
-		const struct vector_double *somevector)
+void GetLabeledData(struct data *D, const struct data *Data)
 {
-	FILE* fp = fopen(file_name,"w");
-	for(int i=0;i<somevector->d;i++)
-		fprintf(fp,"%g\n",somevector->vec[i]);
-	return;
-} 
-//void GetLabeledData(struct data *D, const struct data *Data)
-//{
-//	int *J = new int[Data->l];
-//	D->C   = new double[Data->l];
-//	D->Y   = new double[Data->l];
-//	int nz=0;
-//	int k=0;
-//	int rowptrs_=Data->l;
-//	for(int i=0;i<Data->m;i++)
-//	{
-//		if(Data->Y[i]!=0.0)
-//		{
-//			J[k]=i;
-//			D->Y[k]=Data->Y[i];
-//			D->C[k]=1.0/Data->l;
-//			nz+=(Data->rowptr[i+1] - Data->rowptr[i]);
-//			k++;
-//		}
-//	}  
-//	D->val    = new double[nz];
-//	D->colind = new int[nz]; 
-//	D->rowptr = new int[rowptrs_+1];
-//	nz=0;
-//	for(int i=0;i<Data->l;i++)
-//	{
-//		D->rowptr[i]=nz;
-//		for(int j=Data->rowptr[J[i]];j<Data->rowptr[J[i]+1];j++)
-//		{
-//			D->val[nz] = Data->val[j];
-//			D->colind[nz] = Data->colind[j];
-//			nz++;	
-//		}
-//	}
-//	D->rowptr[rowptrs_]=nz;
-//	D->nz=nz;
-//	D->l=Data->l;
-//	D->m=Data->l;
-//	D->n=Data->n;
-//	D->u=0;
-//	delete [] J;
-//}
+	/*FIXME
+	int *J = new int[Data->l];
+	D->C   = new double[Data->l];
+	D->Y   = new double[Data->l];
+	int nz=0;
+	int k=0;
+	int rowptrs_=Data->l;
+	for(int i=0;i<Data->m;i++)
+	{
+		if(Data->Y[i]!=0.0)
+		{
+			J[k]=i;
+			D->Y[k]=Data->Y[i];
+			D->C[k]=1.0/Data->l;
+			nz+=(Data->rowptr[i+1] - Data->rowptr[i]);
+			k++;
+		}
+	}  
+	D->val    = new double[nz];
+	D->colind = new int[nz]; 
+	D->rowptr = new int[rowptrs_+1];
+	nz=0;
+	for(int i=0;i<Data->l;i++)
+	{
+		D->rowptr[i]=nz;
+		for(int j=Data->rowptr[J[i]];j<Data->rowptr[J[i]+1];j++)
+		{
+			D->val[nz] = Data->val[j];
+			D->colind[nz] = Data->colind[j];
+			nz++;	
+		}
+	}
+	D->rowptr[rowptrs_]=nz;
+	D->nz=nz;
+	D->l=Data->l;
+	D->m=Data->l;
+	D->n=Data->n;
+	D->u=0;
+	delete [] J;*/
+}

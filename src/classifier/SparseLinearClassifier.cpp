@@ -10,7 +10,7 @@
 
 #include "classifier/SparseLinearClassifier.h"
 
-CSparseLinearClassifier::CSparseLinearClassifier() : CClassifier(), w(NULL), bias(0), features(NULL)
+CSparseLinearClassifier::CSparseLinearClassifier() : CClassifier(), w_dim(0), w(NULL), bias(0), features(NULL)
 {
 }
 

@@ -16,12 +16,12 @@
 #include "features/SparseFeatures.h"
 #include "features/Labels.h"
 
-CSVMLin::CSVMLin() : CSparseLinearClassifier(), C1(1), C2(1)
+CSVMLin::CSVMLin() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), lambda(1.0)
 {
 }
 
 CSVMLin::CSVMLin(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
-	: CSparseLinearClassifier(), C1(C), C2(C)
+	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), lambda(1.0)
 {
 	CSparseLinearClassifier::features=traindat;
 	CClassifier::labels=trainlab;
@@ -62,12 +62,11 @@ bool CSVMLin::train()
 	Data.C = new double[Data.l];
 
 	Options.algo = SVM;
-	Options.algo = 1;
-	Options.lambda=1.0;
-	Options.lambda_u=1.0;
+	Options.lambda=get_lambda();
+	Options.lambda_u=get_lambda();
 	Options.S=10000;
 	Options.R=0.5;
-	Options.epsilon = 1e-5; //FIXME
+	Options.epsilon = get_epsilon();
 	Options.cgitermax=10000;
 	Options.mfnitermax=50;
 	Options.Cp = get_C1();
@@ -82,8 +81,9 @@ bool CSVMLin::train()
 			Data.C[i]=get_C2();
 	}
 	ssl_train(&Data, &Options, &Weights, &Outputs);
-
-	CMath::display_vector(Weights.vec, Weights.d, "weights");
-	CMath::display_vector(Outputs.vec, Outputs.d, "outputs");
-	return false;
+	CSparseLinearClassifier::set_bias(0);
+	CSparseLinearClassifier::set_w(Weights.vec, Weights.d);
+	//CSparseLinearClassifier::set_w(Weights.vec, Weights.d-1);
+	//CSparseLinearClassifier::set_bias(Weights.vec[Weights.d-1]);
+	return true;
 }
