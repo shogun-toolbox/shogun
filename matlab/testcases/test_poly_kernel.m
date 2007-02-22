@@ -44,7 +44,7 @@ function y = test_poly_kernel(filename)
 
   a = max(max(abs(km_test-testkm)));
   b = max(max(abs(km_train-trainkm)));
-  if(a+b<1e-7)
+  if(a+b<1e-6)
     y = 0;
   else
     y = 1;
