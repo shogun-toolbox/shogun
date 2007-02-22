@@ -1,9 +1,24 @@
-2007-02-22  jonas
+2007-02-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/python-modular/examples/svm_lin.py, ChangeLog,
+	  classifier/SparseLinearClassifier.cpp,
+	  classifier/SparseLinearClassifier.h, classifier/svm/SVMLin.cpp,
+	  classifier/svm/ssl.cpp, classifier/svm/ssl.h,
+	  guilib/GUIKernel.cpp, kernel/LinearKernel.cpp,
+	  kernel/LinearKernel.h: +impl. bias in svmlin
+	* classifier/SparseLinearClassifier.cpp,
+	  classifier/SparseLinearClassifier.h,
+	  classifier/SparseLinearClassifier.i, classifier/svm/SVMLin.cpp,
+	  classifier/svm/SVMLin.h, classifier/svm/ssl.cpp,
+	  classifier/svm/ssl.h: make SVMLin work in practice (works only
+	  w/o bias sofa)
+
+2007-02-22  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
 
 	* Makefile, guilib/GUIKernel.cpp: * removed CharPolyKernel
 	  * add make test
 
-2007-02-21  jonas
+2007-02-21  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
 
 	* trunk/python/test_case_generator/generate_testcases.py,
 	  trunk/python/testcases/mfiles/Chi2Kernel_10.m,
