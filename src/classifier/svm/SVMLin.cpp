@@ -44,8 +44,6 @@ bool CSVMLin::train()
 
 	ASSERT(num_vec==num_train_labels);
 	delete[] w;
-	w=new DREAL[num_feat];
-	ASSERT(w);
 
 	struct options Options;
 	struct data Data;
@@ -55,8 +53,8 @@ bool CSVMLin::train()
 	Data.m=num_vec;
 	Data.l=num_vec;
 	Data.u=0; 
-	Data.n=num_feat;
-	Data.nz=num_feat;
+	Data.n=num_feat+1;
+	Data.nz=num_feat+1;
 	Data.Y=train_labels;
 	Data.features=get_features();
 	Data.C = new double[Data.l];
@@ -72,7 +70,6 @@ bool CSVMLin::train()
 	Options.Cp = get_C1();
 	Options.Cn = get_C2();
 
-
 	for(int i=0;i<num_vec;i++)
 	{
 		if(train_labels[i]>0) 
@@ -81,9 +78,8 @@ bool CSVMLin::train()
 			Data.C[i]=get_C2();
 	}
 	ssl_train(&Data, &Options, &Weights, &Outputs);
-	CSparseLinearClassifier::set_bias(0);
-	CSparseLinearClassifier::set_w(Weights.vec, Weights.d);
-	//CSparseLinearClassifier::set_w(Weights.vec, Weights.d-1);
-	//CSparseLinearClassifier::set_bias(Weights.vec[Weights.d-1]);
+	ASSERT(Weights.vec && Weights.d == num_feat+1);
+	CSparseLinearClassifier::set_w(Weights.vec, num_feat);
+	CSparseLinearClassifier::set_bias(Weights.vec[num_feat]);
 	return true;
 }

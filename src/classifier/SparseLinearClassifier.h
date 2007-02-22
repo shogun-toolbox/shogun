@@ -66,6 +66,8 @@ class CSparseLinearClassifier : public CClassifier
             return bias;
         }
 
+		virtual CLabels* classify(CLabels* output=NULL);
+
 		inline void set_features(CSparseFeatures<DREAL>* feat) { features=feat; }
 		inline CSparseFeatures<DREAL>* get_features() { return features; }
 

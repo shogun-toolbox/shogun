@@ -22,16 +22,15 @@ extern "C" {
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
-CLinearKernel::CLinearKernel(LONG size, bool do_rescale_, DREAL scale_)
-  : CSimpleKernel<DREAL>(size),scale(scale_),do_rescale(do_rescale_), initialized(false),
+CLinearKernel::CLinearKernel(INT size, DREAL scale_)
+  : CSimpleKernel<DREAL>(size),scale(scale_), initialized(false),
 	normal(NULL)
 {
 	properties |= KP_LINADD;
 }
 
-CLinearKernel::CLinearKernel(CRealFeatures* l, CRealFeatures* r, INT size, bool do_rescale_,
-		DREAL scale_)
-  : CSimpleKernel<DREAL>(size),scale(scale_),do_rescale(do_rescale_), initialized(false),
+CLinearKernel::CLinearKernel(CRealFeatures* l, CRealFeatures* r, DREAL scale_, INT size)
+  : CSimpleKernel<DREAL>(size),scale(scale_), initialized(false),
 	normal(NULL)
 {
 	init(l,r);
@@ -56,8 +55,8 @@ bool CLinearKernel::init(CFeatures* l, CFeatures* r)
 
 void CLinearKernel::init_rescale()
 {
-	if (!do_rescale)
-		return ;
+	if (scale!=0.0)
+		return;
 	double sum=0;
 	scale=1.0;
 	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)

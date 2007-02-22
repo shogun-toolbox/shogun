@@ -17,3 +17,24 @@ CSparseLinearClassifier::CSparseLinearClassifier() : CClassifier(), w_dim(0), w(
 CSparseLinearClassifier::~CSparseLinearClassifier()
 {
 }
+
+CLabels* CSparseLinearClassifier::classify(CLabels* output)
+{
+	if (features)
+	{
+		INT num=features->get_num_vectors();
+		ASSERT(num>0);
+		ASSERT(w_dim == features->get_num_features());
+
+		if (!output)
+			output=new CLabels(num);
+
+		ASSERT(output);
+		for (INT i=0; i<num; i++)
+			output->set_label(i, classify_example(i));
+
+		return output;
+	}
+
+	return NULL;
+}

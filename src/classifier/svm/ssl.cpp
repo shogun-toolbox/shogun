@@ -111,6 +111,7 @@ int CGLS(const struct data *Data,
 		for (int i=0; i<num_entries; i++)
 			r[vec[i].feat_index]= vec[i].entry*z[j];
 		features->free_sparse_feature_vector(vec, num_entries, free_vec);
+		//r[n-1]=z[j]; //bias (modelled as last dim)
 	}
 	double *p = new double[n];   
 	double omega1 = 0.0;
@@ -147,6 +148,7 @@ int CGLS(const struct data *Data,
 			for (j=0; j<num_entries; j++)
 				t+=vec[j].entry*p[vec[j].feat_index];
 			features->free_sparse_feature_vector(vec, num_entries, free_vec);
+			//t+=p[n-1]; //bias (modelled as last dim)
 			q[i]=t;
 			omega_q += C[J[ii]]*t*t;
 		}       
@@ -174,7 +176,7 @@ int CGLS(const struct data *Data,
 			for (i=0; i<num_entries; i++)
 				r[vec[i].feat_index]= vec[i].entry*z[j];
 			features->free_sparse_feature_vector(vec, num_entries, free_vec);
-
+			//r[n-1]=z[n-1]; //bias (modelled as last dim)
 		}
 		omega1 = 0.0;
 		for(i = n ; i-- ;)
@@ -212,9 +214,6 @@ int L2_SVM_MFN(const struct data *Data,
 		int ini)
 { 
 	/* Disassemble the structures */  
-	//double *val = Data->val;
-	//int *row = Data->rowptr;
-	//int *col = Data->colind;
 	CSparseFeatures<DREAL>* features=Data->features;
 	double *Y = Data->Y;
 	double *C = Data->C;
@@ -293,6 +292,7 @@ int L2_SVM_MFN(const struct data *Data,
 			for (int j=0; j<num_entries; j++)
 				t+=vec[j].entry*w_bar[vec[j].feat_index];
 			features->free_sparse_feature_vector(vec, num_entries, free_vec);
+			//t+=w_bar[n-1]; //bias (modelled as last dim)
 
 			o_bar[ii]=t;
 		}
@@ -486,6 +486,7 @@ int TSVM_MFN(const struct data *Data,
 			for (int j=0; j<num_entries; j++)
 				t+=vec[j].entry*Weights->vec[vec[j].feat_index];
 			Data->features->free_sparse_feature_vector(vec, num_entries, free_vec);
+			t+=Weights->vec[Data->n-1]; //bias (modelled as last dim)
 
 			Outputs->vec[i]=t;
 			Data->C[i]=lambda_0*1.0/Data->u;
@@ -815,6 +816,7 @@ int optimize_w(const struct data *Data,
 			for (j=0; j<num_entries; j++)
 				t+=vec[j].entry*w_bar[vec[j].feat_index];
 			features->free_sparse_feature_vector(vec, num_entries, free_vec);
+			t+=w_bar[n-1]; //bias (modelled as last dim)
 
 			o_bar[ii]=t;
 		}

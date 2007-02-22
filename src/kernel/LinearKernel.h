@@ -18,8 +18,8 @@
 class CLinearKernel: public CSimpleKernel<DREAL>
 {
  public:
-  CLinearKernel(LONG size, bool do_rescale=true, DREAL scale=1.0);
-  CLinearKernel(CRealFeatures* l, CRealFeatures* r, INT size, bool do_rescale=true, DREAL scale=1.0);
+  CLinearKernel(INT size, DREAL scale=1.0);
+  CLinearKernel(CRealFeatures* l, CRealFeatures* r, DREAL scale=1.0, INT size=10);
 
   virtual ~CLinearKernel();
   
@@ -70,7 +70,6 @@ class CLinearKernel: public CSimpleKernel<DREAL>
   
  protected:
   double scale ;
-  bool do_rescale ;
   bool initialized;
 
   /// normal vector (used in case of optimized kernel)

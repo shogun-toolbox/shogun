@@ -408,13 +408,10 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 			}
 			else if (strcmp(data_type,"REAL")==0)
 			{
-				double scale = -1 ;
+				double scale = 0;
 				sscanf(param, "%s %s %d %le", kern_type, data_type, &size, &scale);
 				delete k;
-				if (scale==-1)
-					k=new CLinearKernel(size, true);
-				else
-					k=new CLinearKernel(size, false, scale);
+				k=new CLinearKernel(size, scale);
 				return k;
 			}
 			else if (strcmp(data_type,"SPARSEREAL")==0)

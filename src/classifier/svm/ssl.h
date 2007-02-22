@@ -47,9 +47,6 @@ struct data
 	int nz; /* number of non-zeros */
 
 	CSparseFeatures<DREAL>* features;
-	//double *val; /* data values (nz elements) [CRS format] */
-	//int *rowptr; /* n+1 vector [CRS format] */
-	//int *colind; /* nz elements [CRS format] */ 
 	double *Y;   /* labels */
 	double *C;   /* cost associated with each example */
 };
