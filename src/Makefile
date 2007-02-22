@@ -200,6 +200,8 @@ depend:		.config lib/versionstring.h
 
 lib/versionstring.h:	
 		sh .version.sh > $@
+tests:
+		cd ../$(INTERFACE)/testcases && sh ./run.sh	
 
 ChangeLog:	$(SVNEntries)
 		@svn2cl --group-by-day --authors=.authors 2>/dev/null || true

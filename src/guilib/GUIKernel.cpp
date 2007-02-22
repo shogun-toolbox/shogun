@@ -31,7 +31,6 @@
 #include "kernel/LocalityImprovedCharKernel.h"
 #include "kernel/SimpleLocalityImprovedCharKernel.h"
 #include "kernel/PolyKernel.h"
-#include "kernel/CharPolyKernel.h"
 #include "kernel/CustomKernel.h"
 #include "kernel/ConstKernel.h"
 #include "kernel/PolyMatchWordKernel.h"
@@ -1256,22 +1255,6 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (k)
 				{
 					SG_INFO( "Polynomial Kernel created\n");
-					return k;
-				}
-			}
-			else if (strcmp(data_type,"CHAR")==0)
-			{
-				INT inhomogene=0;
-				INT degree=2;
-				INT normalize=1;
-
-				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
-				delete k;
-				k=new CCharPolyKernel(size, degree, inhomogene==1, normalize==1);
-
-				if (k)
-				{
-					SG_INFO( "CharPolynomial Kernel created\n");
 					return k;
 				}
 			}
