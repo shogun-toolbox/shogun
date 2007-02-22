@@ -1,7 +1,8 @@
-from shogun.Features import RealFeatures
+from shogun.Features import RealFeatures, CharFeatures
 from shogun.Kernel import *
-
-acc = 1e-7
+from shogun.Features import Alphabet,DNA
+from numpy import array
+acc = 1e-6
 
 def test_gaussian_kernel(dict):
 	try:	
@@ -71,8 +72,8 @@ def test_chi2_kernel(dict):
 		print 'error in m-file'
 		return False
 
-	#maximal pairwise difference must be smaler than 1e-7
-	if max1<1e-7 and max2<1e-7:
+	#maximal pairwise difference must be smaler than acc
+	if max1<acc and max2<acc:
 		return True
 
 	return False
@@ -98,8 +99,8 @@ def test_sigmoid_kernel(dict):
 		print 'error in m-file'
 		return False
 
-	#maximal pairwise difference must be smaler than 1e-7
-	if max1<1e-7 and max2<1e-7:
+	#maximal pairwise difference must be smaler than acc
+	if max1<acc and max2<acc:
 		return True
 
 	return False
@@ -116,7 +117,6 @@ def test_poly_kernel(dict):
 
 		test_feat = RealFeatures(dict['testdat'])
 		gk.init(feat, test_feat)
-		test_km=gk.get_kernel_matrix()
 	
 		max2 =  max(abs(dict['km_test']-gk.get_kernel_matrix()).flat)
 	
@@ -124,8 +124,33 @@ def test_poly_kernel(dict):
 		print 'error in m-file'
 		return False	
 
-	#maximal pairwise difference must be smaler than 1e-7
-	if max1<1e-7 and max2<1e-7:
+	print('%.9f , %.9f'%(max1,max2))
+	#maximal pairwise difference must be smaler than acc
+	if max1<acc and max2<acc:
+		return True
+
+	return False
+
+
+def test_wdchar_kernel(dict):
+	
+	try:
+		feat = CharFeatures(array(dict['traindat']),eval(dict['alphabet']))
+		kernel_fun = eval(dict['kernelname'])
+		k=kernel_fun(feat, feat,dict['degree'] )
+		max1 = max(abs(dict['km_train']-k.get_kernel_matrix()).flat)
+
+		test_feat = CharFeatures(array(dict['testdat']), eval(dict['alphabet']))
+		k.init(feat, test_feat)
+	
+		max2 =  max(abs(dict['km_test']-k.get_kernel_matrix()).flat)
+	
+	except KeyError:
+		print 'error in m-file'
+		return False	
+
+	#maximal pairwise difference must be smaler than acc
+	if max1<acc and max2<acc:
 		return True
 
 	return False

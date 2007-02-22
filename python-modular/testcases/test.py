@@ -1,5 +1,5 @@
 import test_kernels
-import m_print
+import read_mfile
 import sys
 from os import listdir
 
@@ -17,16 +17,16 @@ def test_mfile(file):
 			functionname = 'test_kernels.'+name
 
 		elif parname=='km_train':
-			param_dict['km_train'] = m_print.read_mat(line)
+			param_dict['km_train'] = read_mfile.read_mat(line)
 
 		elif parname=='km_test':
-			param_dict['km_test'] = m_print.read_mat(line)	
+			param_dict['km_test'] = read_mfile.read_mat(line)	
 
 		elif parname=='traindat':
-			param_dict['traindat'] = m_print.read_mat(line)
+			param_dict['traindat'] = read_mfile.read_mat(line)
 
 		elif parname=='testdat':
-			param_dict['testdat'] =  m_print.read_mat(line)
+			param_dict['testdat'] =  read_mfile.read_mat(line)
 		else :
 			if(line.find("'")==-1):
 				param_dict[parname]= eval(line.split('=')[1])
@@ -51,4 +51,4 @@ for file in mfiles:
 			sys.exit(1)
 
 
-sys.exit(0)
+sys.exit(1)
