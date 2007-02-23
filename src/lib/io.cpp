@@ -207,10 +207,10 @@ void CIO::buffered_message(EMessageType prio, const CHAR *fmt, ... ) const
 void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, INT decimals, const char* prefix)
 {
 	LONG runtime = CTime::get_runtime() ;
-	
+
 	char str[1000];
 	DREAL v=-1, estimate=0, total_estimate=0 ;
-	
+
 	if (max_val-min_val>0.0)
 		v=100*(current_val-min_val+1)/(max_val-min_val+1);
 
@@ -228,15 +228,15 @@ void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, INT decimals
 		if (v>100) v=100.0 ;
 		if (v<=0) v=1e-6 ;
 		last_progress = v-1e-5 ; ;
-		
+
 		if ((v!=100.0) && (runtime - last_progress_time<100))
 			return ;
-		
+
 		last_progress_time = runtime ;
 		estimate = (1-v/100)*(last_progress_time-progress_start_time)/(v/100) ;
 		total_estimate = (last_progress_time-progress_start_time)/(v/100) ;
 	}
-	
+
 	if (estimate/100>120)
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
@@ -247,14 +247,14 @@ void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, INT decimals
 		snprintf(str, sizeof(str), "%%s %%%d.%df%%%%    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
 		message(M_MESSAGEONLY, str, prefix, v, (float)estimate/100, (float)total_estimate/100);
 	}
-	
+
     fflush(target);
 }
 
 void CIO::absolute_progress(DREAL current_val, DREAL val, DREAL min_val, DREAL max_val, INT decimals, const char* prefix)
 {
 	LONG runtime = CTime::get_runtime() ;
-	
+
 	char str[1000];
 	DREAL v=-1, estimate=0, total_estimate=0 ;
 
@@ -275,15 +275,15 @@ void CIO::absolute_progress(DREAL current_val, DREAL val, DREAL min_val, DREAL m
 		if (v>100) v=100.0 ;
 		if (v<=0) v=1e-6 ;
 		last_progress = v-1e-5 ; ;
-		
+
 		if ((v!=100.0) && (runtime - last_progress_time<100))
 			return ;
-		
+
 		last_progress_time = runtime ;
 		estimate = (1-v/100)*(last_progress_time-progress_start_time)/(v/100) ;
 		total_estimate = (last_progress_time-progress_start_time)/(v/100) ;
 	}
-	
+
 	if (estimate/100>120)
 	{
 		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f minutes remaining    %%1.1f minutes total    \r",decimals+3, decimals);
@@ -294,7 +294,7 @@ void CIO::absolute_progress(DREAL current_val, DREAL val, DREAL min_val, DREAL m
 		snprintf(str, sizeof(str), "%%s %%%d.%df    %%1.1f seconds remaining    %%1.1f seconds total    \r",decimals+3, decimals);
 		message(M_MESSAGEONLY, str, prefix, current_val, (float)estimate/100, (float)total_estimate/100);
 	}
-	
+
     fflush(target);
 }
 
@@ -308,7 +308,7 @@ CHAR* CIO::skip_spaces(CHAR* str)
 
 		return &str[i];
 	}
-	else 
+	else
 		return str;
 }
 
@@ -358,7 +358,6 @@ CHAR* CIO::concat_filename(const CHAR* filename)
 {
 	if (snprintf(file_buffer, FBUFSIZE, "%s/%s", directory_name, filename) > FBUFSIZE)
 		SG_SERROR("filename too long");
-	
 	return file_buffer;
 }
 
