@@ -61,40 +61,66 @@ public:
 
 	inline CFeatures* get_first_feature_obj()
 	{
-		return feature_list->get_first_element();
+        CFeatures* f=feature_list->get_first_element();
+        if (f)
+            f->ref();
+		return f;
 	}
 	inline CFeatures* get_first_feature_obj(CListElement<CFeatures*>*&current)
 	{
-		return feature_list->get_first_element(current);
+		CFeatures* f=feature_list->get_first_element(current);
+        if (f)
+            f->ref();
+		return f;
 	}
 
 	inline CFeatures* get_next_feature_obj()
 	{
-		return feature_list->get_next_element();
+		CFeatures* f=feature_list->get_next_element();
+        if (f)
+            f->ref();
+		return f;
 	}
 	inline CFeatures* get_next_feature_obj(CListElement<CFeatures*>*&current)
 	{
-		return feature_list->get_next_element(current);
+		CFeatures* f=feature_list->get_next_element(current);
+        if (f)
+            f->ref();
+		return f;
 	}
 
 	inline CFeatures* get_last_feature_obj()
 	{
-		return feature_list->get_last_element();
+		CFeatures* f=feature_list->get_last_element();
+        if (f)
+            f->ref();
+		return f;
 	}
 
 	inline bool insert_feature_obj(CFeatures* obj)
 	{
+        ASSERT(obj);
+        obj->ref();
 		return feature_list->insert_element(obj);
 	}
 
 	inline bool append_feature_obj(CFeatures* obj)
 	{
+        ASSERT(obj);
+        obj->ref();
 		return feature_list->append_element(obj);
 	}
 
 	inline bool delete_feature_obj()
 	{
-		return feature_list->delete_element();
+        CFeatures* f=feature_list->delete_element();
+        if (f)
+        {
+            f->unref();
+            return true;
+        }
+        else
+            return false;
 	}
 
 	inline int get_num_feature_obj()

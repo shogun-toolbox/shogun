@@ -81,6 +81,10 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 	if (!gui)
 		gui=new CTextGUI(0, NULL);
 
+#ifndef WIN32
+    CSignal::set_handler();
+#endif
+
 	ASSERT(gui);
 	if (!nrhs)
 		SG_SERROR( "No input arguments supplied.");
@@ -601,6 +605,10 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 	}
 	else
 		SG_SERROR( "string expected as first argument");
+
+#ifndef WIN32
+    CSignal::unset_handler();
+#endif
 
 	return plhs;
 }

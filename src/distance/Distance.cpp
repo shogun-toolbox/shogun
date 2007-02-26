@@ -28,7 +28,7 @@
 #endif
 
 CDistance::CDistance() 
-: precomputed_matrix(NULL), precompute_matrix(false), 
+: CSGObject(), precomputed_matrix(NULL), precompute_matrix(false), 
 	lhs(NULL), rhs(NULL)
 {
 }

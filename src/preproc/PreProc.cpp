@@ -13,7 +13,7 @@
 #include "lib/io.h"
 
 CPreProc::CPreProc(const CHAR* name, const CHAR* id)
-  : preproc_name(name), preproc_id(id)
+  : CSGObject(), preproc_name(name), preproc_id(id)
 {
 	SG_INFO( "creating PreProc \"%s\"\n", preproc_name);
 }

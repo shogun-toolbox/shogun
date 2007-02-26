@@ -20,6 +20,7 @@ class CGPBTSVM : public CSVM
 {
 	public:
 		CGPBTSVM();
+		CGPBTSVM(DREAL C, CKernel* k, CLabels* lab);
 		virtual ~CGPBTSVM();
 		virtual bool train();
 		inline EClassifierType get_classifier_type() { return CT_GPBT; }

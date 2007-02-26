@@ -40,7 +40,7 @@ CSignal::~CSignal()
 
 void CSignal::handler(int signal)
 {
-#ifdef HAVE_MATLAB
+#if defined(HAVE_MATLAB) || defined(HAVE_OCTAVE) || defined(HAVE_R)
 	if (signal == SIGINT)
 	{
 		SG_SPRINT("\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");

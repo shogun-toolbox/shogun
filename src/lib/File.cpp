@@ -13,7 +13,7 @@
 #include "lib/File.h"
 #include "lib/SimpleFile.h"
 
-CFile::CFile(CHAR* fname, CHAR rw, EFeatureType typ, CHAR file_fourcc[4])
+CFile::CFile(CHAR* fname, CHAR rw, EFeatureType typ, CHAR file_fourcc[4]) : CSGObject()
 {
 	status=false;
 	task=rw;

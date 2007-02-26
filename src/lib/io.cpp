@@ -61,6 +61,10 @@ CIO::CIO() : target(stdout), last_progress_time(0), progress_start_time(0), last
 {
 }
 
+CIO::CIO(const CIO& orig) : target(orig.get_target()), last_progress_time(0), progress_start_time(0), last_progress(1), loglevel(orig.get_loglevel())
+{
+}
+
 void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 {
 #if defined(HAVE_MATLAB) || defined(HAVE_PYTHON) || defined(HAVE_OCTAVE) || defined(HAVE_R)

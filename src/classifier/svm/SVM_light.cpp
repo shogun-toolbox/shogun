@@ -23,10 +23,6 @@
 
 #ifdef USE_SVMLIGHT
 
-#ifdef HAVE_PYTHON
-#include <Python.h>
-#endif
-
 #include "lib/io.h"
 #include "lib/Signal.h"
 #include "lib/Mathematics.h"
@@ -148,14 +144,12 @@ void* CSVMLight::update_linear_component_mkl_linadd_helper(void* p)
 CSVMLight::CSVMLight() : CSVM()
 {
 	init();
+	set_kernel(NULL);
 }
 
-CSVMLight::CSVMLight(DREAL C, CKernel* k, CLabels* lab) : CSVM()
+CSVMLight::CSVMLight(DREAL C, CKernel* k, CLabels* lab) : CSVM(C, k, lab)
 {
 	init();
-	set_C(C,C);
-	set_labels(lab);
-	set_kernel(k);
 }
 
 void CSVMLight::init()
@@ -166,7 +160,6 @@ void CSVMLight::init()
 	model->supvec=NULL;
 	model->alpha=NULL;
 	model->index=NULL;
-	set_kernel(NULL);
 
 	//certain setup params
 	verbosity=1;
@@ -911,10 +904,6 @@ INT CSVMLight::optimize_to_convergence(INT* docs, INT* label, INT totdoc,
   for(;((!CSignal::cancel_computations()) && ((iteration<3) || (retrain && (!terminate))||((w_gap>get_weight_epsilon()) && get_mkl_enabled()))); iteration++){
 #endif
 
-#ifdef HAVE_PYTHON
-	  if (PyErr_CheckSignals())
-		  break;
-#endif
 	  	  
 	  if(use_kernel_cache) 
 		  CKernelMachine::get_kernel()->set_time(iteration);  /* for lru cache */
@@ -1321,7 +1310,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(INT* docs, INT* label
 														   INT varnum, INT totdoc,
 														   DREAL *aicache, QP *qp)
 {
-	if (CParallel::get_num_threads()<=1)
+	if (parallel.get_num_threads()<=1)
 	{
 		compute_matrices_for_optimization(docs, label, exclude_from_eq_const, eq_target,
 												   chosen, active2dnum, key, a, lin, c, 
@@ -1351,7 +1340,7 @@ void CSVMLight::compute_matrices_for_optimization_parallel(INT* docs, INT* label
 			qp->opt_g0[i]=lin[key[i]];
 		}
 
-		ASSERT(CParallel::get_num_threads()>1) ;
+		ASSERT(parallel.get_num_threads()>1) ;
 		INT *KI=new INT[varnum*varnum] ;
 		INT *KJ=new INT[varnum*varnum] ;
 		INT Knum=0 ;
@@ -1371,11 +1360,11 @@ void CSVMLight::compute_matrices_for_optimization_parallel(INT* docs, INT* label
 		}
 		ASSERT(Knum<=varnum*(varnum+1)/2) ;
 
-		pthread_t threads[CParallel::get_num_threads()-1];
-		S_THREAD_PARAM_KERNEL params[CParallel::get_num_threads()-1];
-		INT step= Knum/CParallel::get_num_threads();
+		pthread_t threads[parallel.get_num_threads()-1];
+		S_THREAD_PARAM_KERNEL params[parallel.get_num_threads()-1];
+		INT step= Knum/parallel.get_num_threads();
 		//SG_DEBUG( "\nkernel-step size: %i\n", step) ;
-		for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+		for (INT t=0; t<parallel.get_num_threads()-1; t++)
 		{
 			params[t].kernel = CKernelMachine::get_kernel() ;
 			params[t].start = t*step;
@@ -1385,10 +1374,10 @@ void CSVMLight::compute_matrices_for_optimization_parallel(INT* docs, INT* label
 			params[t].Kval=Kval ;
 			pthread_create(&threads[t], NULL, CSVMLight::compute_kernel_helper, (void*)&params[t]);
 		}
-		for (i=params[CParallel::get_num_threads()-2].end; i<Knum; i++)
+		for (i=params[parallel.get_num_threads()-2].end; i<Knum; i++)
 			Kval[i]=CKernelMachine::get_kernel()->kernel(KI[i],KJ[i]) ;
 
-		for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+		for (INT t=0; t<parallel.get_num_threads()-1; t++)
 			pthread_join(threads[t], NULL);
 
 		Knum=0 ;
@@ -2098,7 +2087,7 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 			}
 		}
 
-		if (CParallel::get_num_threads() < 2)
+		if (parallel.get_num_threads() < 2)
 		{
 			// determine contributions of different kernels
 			for (int i=0; i<num; i++)
@@ -2107,11 +2096,11 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 #ifndef WIN32
 		else
 		{
-			pthread_t threads[CParallel::get_num_threads()-1];
-			S_THREAD_PARAM params[CParallel::get_num_threads()-1];
-			INT step= num/CParallel::get_num_threads();
+			pthread_t threads[parallel.get_num_threads()-1];
+			S_THREAD_PARAM params[parallel.get_num_threads()-1];
+			INT step= num/parallel.get_num_threads();
 
-			for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+			for (INT t=0; t<parallel.get_num_threads()-1; t++)
 			{
 				params[t].kernel = k;
 				params[t].W = W;
@@ -2120,10 +2109,10 @@ void CSVMLight::update_linear_component_mkl_linadd(INT* docs, INT* label,
 				pthread_create(&threads[t], NULL, CSVMLight::update_linear_component_mkl_linadd_helper, (void*)&params[t]);
 			}
 
-			for (int i=params[CParallel::get_num_threads()-2].end; i<num; i++)
+			for (int i=params[parallel.get_num_threads()-2].end; i<num; i++)
 				k->compute_by_subkernel(i,&W[i*num_kernels]);
 
-			for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+			for (INT t=0; t<parallel.get_num_threads()-1; t++)
 				pthread_join(threads[t], NULL);
 		}
 #endif
@@ -2437,7 +2426,7 @@ void CSVMLight::update_linear_component(INT* docs, INT* label,
 
 			if (num_working>0)
 			{
-				if (CParallel::get_num_threads() < 2)
+				if (parallel.get_num_threads() < 2)
 				{
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=get_kernel()->compute_optimized(docs[j]);
@@ -2449,13 +2438,13 @@ void CSVMLight::update_linear_component(INT* docs, INT* label,
 					INT num_elem = 0 ;
 					for(jj=0;(j=active2dnum[jj])>=0;jj++) num_elem++ ;
 
-					pthread_t threads[CParallel::get_num_threads()-1] ;
-					S_THREAD_PARAM params[CParallel::get_num_threads()-1] ;
+					pthread_t threads[parallel.get_num_threads()-1] ;
+					S_THREAD_PARAM params[parallel.get_num_threads()-1] ;
 					INT start = 0 ;
-					INT step = num_elem/CParallel::get_num_threads();
+					INT step = num_elem/parallel.get_num_threads();
 					INT end = step ;
 
-					for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+					for (INT t=0; t<parallel.get_num_threads()-1; t++)
 					{
 						params[t].kernel = get_kernel() ;
 						params[t].lin = lin ;
@@ -2468,11 +2457,11 @@ void CSVMLight::update_linear_component(INT* docs, INT* label,
 						pthread_create(&threads[t], NULL, update_linear_component_linadd_helper, (void*)&params[t]) ;
 					}
 
-					for(jj=params[CParallel::get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
+					for(jj=params[parallel.get_num_threads()-2].end;(j=active2dnum[jj])>=0;jj++) {
 						lin[j]+=get_kernel()->compute_optimized(docs[j]);
 					}
 					void* ret;
-					for (INT t=0; t<CParallel::get_num_threads()-1; t++)
+					for (INT t=0; t<parallel.get_num_threads()-1; t++)
 						pthread_join(threads[t], &ret) ;
 				}
 #endif
@@ -2910,7 +2899,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 		  
 		  if (num_modified>0)
 		  {
-			  INT num_threads=CParallel::get_num_threads();
+			  INT num_threads=parallel.get_num_threads();
 			  ASSERT(num_threads>0);
 			  if (num_threads < 2)
 			  {
@@ -3048,7 +3037,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 		  compute_index(changed,totdoc,changed2dnum);
 
 
-		  INT num_threads=CParallel::get_num_threads();
+		  INT num_threads=parallel.get_num_threads();
 		  ASSERT(num_threads>0);
 
 		  if (num_threads < 2)

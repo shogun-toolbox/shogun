@@ -32,6 +32,27 @@ struct S_THREAD_PARAM
 
 CSVM::CSVM(INT num_sv) : CKernelMachine()
 {
+	set_defaults(num_sv);
+}
+
+CSVM::CSVM(DREAL C, CKernel* k, CLabels* lab)
+{
+	set_defaults();
+	set_C(C,C);
+	set_labels(lab);
+	set_kernel(k);
+}
+
+CSVM::~CSVM()
+{
+  delete[] svm_model.alpha ;
+  delete[] svm_model.svs ;
+
+  SG_DEBUG( "SVM object destroyed\n") ;
+}
+
+void CSVM::set_defaults(INT num_sv)
+{
 	svm_model.b=0.0;
 	svm_model.alpha=NULL;
 	svm_model.svs=NULL;
@@ -59,14 +80,6 @@ CSVM::CSVM(INT num_sv) : CKernelMachine()
 
     if (num_sv>0)
         create_new_model(num_sv);
-}
-
-CSVM::~CSVM()
-{
-  delete[] svm_model.alpha ;
-  delete[] svm_model.svs ;
-
-  SG_DEBUG( "SVM object destroyed\n") ;
 }
 
 bool CSVM::load(FILE* modelfl)
@@ -239,7 +252,7 @@ void* CSVM::classify_example_helper(void* p)
 	CLabels* result=params->result;
 	CSVM* svm=params->svm;
 
-#ifdef CYGWIN
+#ifdef WIN32
 	for (INT vec=params->start; vec<params->end; vec++)
 #else
 	for (INT vec=params->start; vec<params->end && 
@@ -365,7 +378,7 @@ CLabels* CSVM::classify(CLabels* result)
 #endif
 		}
 
-#ifndef CYGWIN
+#ifndef WIN32
 		if ( CSignal::cancel_computations() )
 			SG_INFO( "prematurely stopped.           \n");
 		else

@@ -31,7 +31,7 @@
 #endif
 
 CKernel::CKernel(INT size) 
-: kernel_matrix(NULL), precomputed_matrix(NULL),
+: CSGObject(), kernel_matrix(NULL), precomputed_matrix(NULL),
 	precompute_subkernel_matrix(false), precompute_matrix(false), lhs(NULL),
 	rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
 	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE)
@@ -49,7 +49,7 @@ CKernel::CKernel(INT size)
 
 		
 CKernel::CKernel(CFeatures* p_lhs, CFeatures* p_rhs, INT size)
-  : kernel_matrix(NULL), precomputed_matrix(NULL),
+  : CSGObject(), kernel_matrix(NULL), precomputed_matrix(NULL),
 	precompute_subkernel_matrix(false), precompute_matrix(false), 
 	lhs(NULL), rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
 	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE)
@@ -319,6 +319,11 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	//make sure features are compatible
 	ASSERT(l->get_feature_class() == r->get_feature_class());
 	ASSERT(l->get_feature_type() == r->get_feature_type());
+
+    //increase reference counts
+    l->ref();
+    if (l!=r)
+        r->ref();
 
 	lhs=l;
 	rhs=r;

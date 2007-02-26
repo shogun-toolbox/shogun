@@ -26,9 +26,10 @@ class CParallel
 {
 public:
 	CParallel();
+	CParallel(const CParallel& orig);
 	~CParallel();
 
-	static inline INT get_num_cpus()
+	inline INT get_num_cpus() const
 	{
 #if defined(LINUX) && defined(_SC_NPROCESSORS_ONLN)
 		return sysconf( _SC_NPROCESSORS_ONLN );
@@ -41,7 +42,7 @@ public:
 		return 1;
 	}
 
-	static inline void set_num_threads(INT n)
+	inline void set_num_threads(INT n)
 	{
 #ifdef WIN32
 		ASSERT(n==1);
@@ -49,12 +50,12 @@ public:
 		num_threads=n;
 	}
 
-	static inline INT get_num_threads()
+	inline INT get_num_threads() const
 	{
 		return num_threads;
 	}
 
 protected:
-	static INT num_threads;
+	INT num_threads;
 };
 #endif

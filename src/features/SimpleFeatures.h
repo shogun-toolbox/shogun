@@ -59,6 +59,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 
 	 virtual ~CSimpleFeatures()
 	 {
+        SG_SPRINT("deleting simplefeatures (%lx)\n", this);
 #ifndef HAVE_SWIG
 		 delete[] feature_matrix;
 #endif
@@ -75,13 +76,6 @@ template <class ST> class CSimpleFeatures: public CFeatures
   ST* get_feature_vector(INT num, INT& len, bool& free)
   {
 	  len=num_features; 
-//	  if (num>=num_vectors)
-//	    {
-//	      fprintf(stderr,"feature: %d  num=%d  num_vectors=%d  num_features=%d\n", (INT)this, num, num_vectors, num_features) ;
-//	      free=false ;
-//	      return NULL ;
-//	    }
-//	  ASSERT(num<num_vectors);
 
 	  if (feature_matrix)
 	  {

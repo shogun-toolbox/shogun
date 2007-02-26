@@ -76,7 +76,7 @@ template <class T> class CArray : public CSGObject
 {
 public:
 	CArray(INT initial_size = 1)
-	: free_array(true), name(NULL)
+	: CSGObject(), free_array(true), name(NULL)
 	{
 		INIT_ARRAY_STATISTICS;
 		array_size = initial_size;
@@ -86,14 +86,14 @@ public:
 
 	CArray(T* p_array, INT p_array_size, bool p_free_array=true,
 			bool p_copy_array=false)
-	: array(NULL), free_array(false), name(NULL)
+	: CSGObject(), array(NULL), free_array(false), name(NULL)
 	{
 		INIT_ARRAY_STATISTICS;
 		set_array(p_array, p_array_size, p_free_array, p_copy_array);
 	}
 
 	CArray(const T* p_array, INT p_array_size)
-	: array(NULL), free_array(false), name(NULL)
+	: CSGObject(), array(NULL), free_array(false), name(NULL)
 	{
 		INIT_ARRAY_STATISTICS;
 		set_array(p_array, p_array_size);
@@ -104,7 +104,8 @@ public:
 		SG_DEBUG( "destroying CArray array '%s' of size %i\n",
 			name? name : "unnamed", array_size);
 		PRINT_ARRAY_STATISTICS;
-		free(array);
+		if (free_array)
+			free(array);
 	}
 
 	inline const char* get_name() const

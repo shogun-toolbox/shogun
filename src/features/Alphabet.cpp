@@ -22,7 +22,7 @@ const BYTE CAlphabet::B_T=3;
 const BYTE CAlphabet::MAPTABLE_UNDEF=0xff;
 const CHAR* CAlphabet::alphabet_names[10]={"DNA", "RNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
 
-CAlphabet::CAlphabet(CHAR* al, INT len)
+CAlphabet::CAlphabet(CHAR* al, INT len) : CSGObject()
 {
 	E_ALPHABET alpha=NONE;
 
@@ -50,12 +50,12 @@ CAlphabet::CAlphabet(CHAR* al, INT len)
 	set_alphabet(alpha);
 }
 
-CAlphabet::CAlphabet(E_ALPHABET alpha)
+CAlphabet::CAlphabet(E_ALPHABET alpha) : CSGObject()
 {
 	set_alphabet(alpha);
 }
 
-CAlphabet::CAlphabet(CAlphabet* a)
+CAlphabet::CAlphabet(CAlphabet* a) : CSGObject()
 {
 	set_alphabet(a->get_alphabet());
     copy_histogram(a);

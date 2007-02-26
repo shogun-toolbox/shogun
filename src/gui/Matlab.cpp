@@ -99,8 +99,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 	if (!gui)
 		gui=new CTextGUI(0, NULL);
 
-#ifndef CYGWIN
-	CSignal::set_handler();
+#ifndef WIN32
+    CSignal::set_handler();
 #endif
 
 	if (!gui)
@@ -848,8 +848,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 	else
 		SG_SERROR( "string expected as first argument");
 
-#ifndef CYGWIN
-	CSignal::unset_handler();
+#ifndef WIN32
+    CSignal::unset_handler();
 #endif
 }
 #endif //HAVE_SWIG

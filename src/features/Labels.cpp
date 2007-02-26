@@ -14,13 +14,13 @@
 #include "lib/File.h"
 #include "lib/io.h"
 
-CLabels::CLabels()
+CLabels::CLabels() : CSGObject()
 {
 	labels = NULL;
 	num_labels = 0;
 }
 
-CLabels::CLabels(INT num_lab) : num_labels(num_lab)
+CLabels::CLabels(INT num_lab) : CSGObject(), num_labels(num_lab)
 {
 	labels=new DREAL[num_lab];
 	ASSERT(labels);
@@ -29,7 +29,7 @@ CLabels::CLabels(INT num_lab) : num_labels(num_lab)
 		labels[i]=0;
 }
 
-CLabels::CLabels(CHAR* fname)
+CLabels::CLabels(CHAR* fname) : CSGObject()
 {
 	num_labels=0;
 	labels=NULL;

@@ -21,7 +21,7 @@ template <class T> class CSimpleFile : public CSGObject
 {
 public:
 	/// rw is either r for read and w for write
-	CSimpleFile(CHAR* fname, FILE* f)
+	CSimpleFile(CHAR* fname, FILE* f) : CSGObject()
 	{
 		file=f;
 		filename=strdup(fname);

@@ -18,7 +18,7 @@
 #include <string.h>
 
 CGUILabels::CGUILabels(CGUI * gui_)
-: gui(gui_), train_labels(NULL), test_labels(NULL)
+: CSGObject(), gui(gui_), train_labels(NULL), test_labels(NULL)
 {
 }
 

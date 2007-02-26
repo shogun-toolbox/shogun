@@ -44,7 +44,7 @@
 
 #include <string.h>
 
-CGUIDistance::CGUIDistance(CGUI * gui_): gui(gui_)
+CGUIDistance::CGUIDistance(CGUI * gui_): CSGObject(), gui(gui_)
 {
 	distance=NULL;
 	initialized=false;

@@ -17,7 +17,7 @@
 #include "lib/io.h"
 #include "gui/GUI.h"
 
-CGUIPluginEstimate::CGUIPluginEstimate(CGUI* g) : gui(g), estimator(NULL),pos_pseudo(1e-10), neg_pseudo(1e-10)
+CGUIPluginEstimate::CGUIPluginEstimate(CGUI* g) : CSGObject(), gui(g), estimator(NULL),pos_pseudo(1e-10), neg_pseudo(1e-10)
 {
 }
 

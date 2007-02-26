@@ -12,7 +12,7 @@
 #include "lib/io.h"
 #include "lib/common.h"
 
-CTime::CTime(bool st)
+CTime::CTime(bool st) : CSGObject()
 {
 	start_time=0;
 	stop_time=0;

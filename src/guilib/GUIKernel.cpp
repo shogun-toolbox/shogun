@@ -58,7 +58,7 @@
 
 #include <string.h>
 
-CGUIKernel::CGUIKernel(CGUI * gui_): gui(gui_)
+CGUIKernel::CGUIKernel(CGUI * gui_): CSGObject(), gui(gui_)
 {
 	kernel=NULL;
 	initialized=false;

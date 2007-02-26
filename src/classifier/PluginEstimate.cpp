@@ -16,7 +16,7 @@
 #include "classifier/PluginEstimate.h"
 
 
-CPluginEstimate::CPluginEstimate() : pos_model(NULL), neg_model(NULL), test_features(NULL)
+CPluginEstimate::CPluginEstimate() : CSGObject(), pos_model(NULL), neg_model(NULL), test_features(NULL)
 {
 }
 

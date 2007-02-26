@@ -18,7 +18,7 @@
 #include "lib/io.h"
 
 	CGUIFeatures::CGUIFeatures(CGUI * gui_)
-: gui(gui_), train_features(NULL), test_features(NULL), ref_features(NULL)
+: CSGObject(), gui(gui_), train_features(NULL), test_features(NULL), ref_features(NULL)
 {
 }
 

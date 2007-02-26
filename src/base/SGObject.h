@@ -21,6 +21,54 @@ class CIO;
 class CSGObject
 {
 public:
+	inline CSGObject() : refcount(0) {}
+
+#ifdef HAVE_SWIG
+	inline CSGObject(const CSGObject& orig) 
+		: refcount(0) , parallel(orig.parallel), io(orig.io) {}
+#else
+	inline CSGObject(const CSGObject& orig) 
+		: refcount(0) {}
+#endif
+
+    virtual ~CSGObject()
+    {
+    }
+
+	inline INT ref()
+	{
+		return ++refcount;
+	}
+
+	inline INT ref_count() const
+	{
+		SG_DEBUG("ref_count(): refcount is: %d\n", refcount);
+		return refcount;
+	}
+
+	inline INT unref()
+	{
+		if (refcount == 0 || --refcount == 0 )
+        {
+            SG_DEBUG("unref():%d obj:%x destroying\n", refcount, (UINT) this);
+#ifdef HAVE_SWIG 
+			//don't do this yet for static interfaces (as none is
+			//calling ref/unref properly)
+			delete this;
+#endif
+            return 0;
+        }
+        else
+        {
+            SG_DEBUG("unref():%d obj:%x decreased\n", refcount, (UINT) this);
+            return refcount;
+        }
+	}
+
+private:
+	INT refcount;
+
+public:
 #ifdef HAVE_SWIG
 	CParallel parallel;
 	CIO io;

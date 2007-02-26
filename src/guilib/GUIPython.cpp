@@ -32,7 +32,7 @@ extern "C" {
 
 extern CTextGUI* gui;
 
-CGUIPython::CGUIPython()
+CGUIPython::CGUIPython() : CSGObject()
 {
 	import_libnumarray();
 }

@@ -26,8 +26,8 @@ class CKernelMachine : public CClassifier
 		CKernelMachine();
 		virtual ~CKernelMachine();
 
-		inline void set_kernel(CKernel* k) { kernel=k; }
-		inline CKernel* get_kernel() { return kernel; }
+		inline void set_kernel(CKernel* k) {  k->ref(); kernel=k; }
+		inline CKernel* get_kernel() { kernel->ref(); return kernel; }
 
 		virtual CLabels* classify(CLabels* output=NULL);
 

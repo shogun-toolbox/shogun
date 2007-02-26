@@ -679,7 +679,7 @@ bool CTextGUI::parse_line(CHAR* p_input)
 
 		sscanf(param, "%d", &threads) ;
 
-		CParallel::set_num_threads(threads);
+		parallel.set_num_threads(threads);
 
 		SG_INFO( "Set number of threads to %d\n", threads);
 		return true ;  

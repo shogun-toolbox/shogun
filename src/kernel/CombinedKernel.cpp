@@ -86,13 +86,12 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 		{
 			while ( result && lf && rf && k )
 			{
-				//fprintf(stderr,"init kernel 0x%X (0x%X, 0x%X)\n", k, lf, rf) ;
 				result=k->init(lf,rf);
 
 				lf=((CCombinedFeatures*) l)->get_next_feature_obj(lfc) ;
 				rf=((CCombinedFeatures*) r)->get_next_feature_obj(rfc) ;
 				k=get_next_kernel(current) ;
-			} ;
+			}
 		}
 		else
 		{
@@ -100,15 +99,13 @@ bool CCombinedKernel::init(CFeatures* l, CFeatures* r)
 			{
 				result=k->init(lf,rf);
 
-				//fprintf(stderr,"init kernel 0x%X (0x%X, 0x%X): %i\n", k, lf, rf, result) ;
 
 				lf=((CCombinedFeatures*) l)->get_next_feature_obj(lfc) ;
 				k=get_next_kernel(current) ;
 				rf=lf ;
-			} ;
+			}
 		}
 	}
-	//fprintf(stderr,"k=0x%X  lf=0x%X  rf=0x%X  result=%i\n", k, lf, rf, result) ;
 
 	if (!result)
 	{

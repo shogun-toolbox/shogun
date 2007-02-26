@@ -15,7 +15,7 @@
 #include "lib/io.h"
 #include <unistd.h>
 
-CCplex::CCplex() : env(NULL), lp(NULL), lp_initialized(false)
+CCplex::CCplex() : CSGObject(), env(NULL), lp(NULL), lp_initialized(false)
 {
 }
 

@@ -19,7 +19,7 @@
 class CCombinedKernel : public CKernel
 {
 	public:
-		CCombinedKernel(INT size, bool append_subkernel_weights=false);
+		CCombinedKernel(INT size=10, bool append_subkernel_weights=false);
 		virtual ~CCombinedKernel();
 
 		/** initialize kernel lhs/rhs caches etc.
@@ -107,6 +107,9 @@ class CCombinedKernel : public CKernel
 
 		inline bool insert_kernel(CKernel* k)
 		{
+            ASSERT(k);
+            k->ref();
+
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
 
@@ -115,6 +118,9 @@ class CCombinedKernel : public CKernel
 
 		inline bool append_kernel(CKernel* k)
 		{
+            ASSERT(k);
+            k->ref();
+
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
 

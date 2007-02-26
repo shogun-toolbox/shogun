@@ -43,7 +43,7 @@
 
 extern CTextGUI* gui;
 
-CGUIMatlab::CGUIMatlab()
+CGUIMatlab::CGUIMatlab() : CSGObject()
 {
 }
 

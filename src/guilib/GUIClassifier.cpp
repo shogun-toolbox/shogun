@@ -37,7 +37,7 @@
 
 #include "regression/svr/LibSVR.h"
 
-CGUIClassifier::CGUIClassifier(CGUI* g) : gui(g)
+CGUIClassifier::CGUIClassifier(CGUI* g) : CSGObject(), gui(g)
 {
 	classifier=NULL;
 

@@ -10,12 +10,14 @@
 
 #include "kernel/KernelMachine.h"
 
-CKernelMachine::CKernelMachine():CClassifier(),kernel(NULL)
+CKernelMachine::CKernelMachine():CClassifier(), kernel(NULL)
 {
 }
 
 CKernelMachine::~CKernelMachine()
 {
+    if (kernel)
+        kernel->unref();
 }
 
 CLabels* CKernelMachine::classify(CLabels* output)

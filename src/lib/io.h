@@ -73,16 +73,8 @@ class CIO
 {
 public:
 	CIO();
+	CIO(const CIO& orig);
 
-	void set_target(FILE* target);
-	void set_target_to_stderr()
-	{
-		set_target(stderr);
-	}
-	void set_target_to_stdout()
-	{
-		set_target(stdout);
-	}
 	void set_loglevel(EMessageType level);
 	EMessageType get_loglevel() const;
 	void message(EMessageType prio, const char *fmt, ... ) const;
@@ -96,6 +88,23 @@ public:
 
 	void buffered_message(EMessageType prio, const CHAR *fmt, ... ) const;
 	static CHAR* skip_spaces(CHAR* str);
+
+	inline FILE* get_target() const
+	{
+		return target;
+	}
+
+	void set_target(FILE* target);
+
+	inline void set_target_to_stderr()
+	{
+		set_target(stderr);
+	}
+
+	inline void set_target_to_stdout()
+	{
+		set_target(stdout);
+	}
 
 	///set directory-name
 	inline void set_dirname(const CHAR* dirname)

@@ -36,7 +36,7 @@ using namespace std;
 
 extern CTextGUI* gui;
 
-CGUIOctave::CGUIOctave()
+CGUIOctave::CGUIOctave() : CSGObject()
 {
 }
 

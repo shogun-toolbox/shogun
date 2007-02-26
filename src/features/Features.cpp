@@ -15,12 +15,12 @@
 
 #include <string.h>
 
-CFeatures::CFeatures(INT size) : cache_size(size), preproc(NULL), num_preproc(0), preprocessed(NULL) 
+CFeatures::CFeatures(INT size) : CSGObject(), cache_size(size), preproc(NULL), num_preproc(0), preprocessed(NULL) 
 {
 	SG_INFO( "Feature object created (%ld)\n",this);
 }
 
-CFeatures::CFeatures(const CFeatures& orig) : preproc(orig.preproc), num_preproc(orig.num_preproc), preprocessed(orig.preprocessed)
+CFeatures::CFeatures(const CFeatures& orig) : CSGObject(orig), preproc(orig.preproc), num_preproc(orig.num_preproc), preprocessed(orig.preprocessed)
 {
 	preprocessed=new bool[orig.num_preproc];
 	ASSERT(preprocessed);
@@ -35,7 +35,7 @@ CFeatures::CFeatures(CHAR* fname) : cache_size(0), preproc(NULL), num_preproc(0)
 
 CFeatures::~CFeatures()
 {
-	SG_INFO( "Feature object destroyed (%ld)\n",this) ;
+	SG_INFO( "Feature object destroyed (%lx)\n", this);
 }
 
 /// set preprocessor

@@ -34,7 +34,7 @@ template<class T> class CCache : public CSGObject
 	/// size: sizeof(LONG)*num_entries
 	/// must fit into memory
 	/// a chunk of size cache_size will be allocated
-	CCache(LONG cache_size, LONG obj_size, LONG num_entries)
+	CCache(LONG cache_size, LONG obj_size, LONG num_entries) : CSGObject()
 	{
 		if (cache_size==0 || obj_size==0 || num_entries==0)
 		{

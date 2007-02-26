@@ -48,10 +48,11 @@ static INT string_words_default[16] = {0,0,0,0,0,0,0,0,
 									   1,1,1,1,1,1,1,1} ; // which string should be used
 
 CDynProg::CDynProg()
-	: transition_matrix_a_id(1,1), transition_matrix_a(1,1), transition_matrix_a_deriv(1,1), 
-	  initial_state_distribution_p(1), initial_state_distribution_p_deriv(1), 
-	  end_state_distribution_q(1), end_state_distribution_q_deriv(1), 
-	  dict_weights(1,1), dict_weights_array(dict_weights.get_array()),
+	: CSGObject(),transition_matrix_a_id(1,1), transition_matrix_a(1,1),
+	transition_matrix_a_deriv(1,1), initial_state_distribution_p(1),
+	initial_state_distribution_p_deriv(1), end_state_distribution_q(1),
+	end_state_distribution_q_deriv(1), dict_weights(1,1),
+	dict_weights_array(dict_weights.get_array()),
 
 	  // multi svm
 	  num_degrees(4), 

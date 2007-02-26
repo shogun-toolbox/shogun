@@ -25,7 +25,7 @@ template <class T> class CDynamicArray;
 template <class T> class CDynamicArray : public CSGObject
 {
 public:
-	CDynamicArray(INT p_resize_granularity = 128)
+	CDynamicArray(INT p_resize_granularity = 128) : CSGObject()
 	{
 		this->resize_granularity = p_resize_granularity;
 

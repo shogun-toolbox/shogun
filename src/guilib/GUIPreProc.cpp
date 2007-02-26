@@ -39,7 +39,7 @@
 #include <stdio.h>
 
 CGUIPreProc::CGUIPreProc(CGUI * gui_)
-  : gui(gui_)
+  : CSGObject(), gui(gui_)
 {
 	preprocs=new CList<CPreProc*>(true);
 	attached_preprocs_lists=new CList<CList<CPreProc*>*>(true);

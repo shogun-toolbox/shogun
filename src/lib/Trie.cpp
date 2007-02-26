@@ -4,7 +4,7 @@
 #include "lib/Mathematics.h"
 
 CTrie::CTrie(INT d, INT p_use_compact_terminal_nodes)
-	: degree(d), position_weights(NULL), use_compact_terminal_nodes(p_use_compact_terminal_nodes), weights_in_tree(true) 
+	: CSGObject(), degree(d), position_weights(NULL), use_compact_terminal_nodes(p_use_compact_terminal_nodes), weights_in_tree(true) 
 {
 	TreeMemPtrMax=1024*1024/sizeof(struct Trie) ;
 	TreeMemPtr=0 ;
@@ -16,7 +16,7 @@ CTrie::CTrie(INT d, INT p_use_compact_terminal_nodes)
 } ;
 
 CTrie::CTrie(const CTrie & to_copy)
-	: degree(to_copy.degree), position_weights(NULL), use_compact_terminal_nodes(to_copy.use_compact_terminal_nodes)
+	: CSGObject(to_copy), degree(to_copy.degree), position_weights(NULL), use_compact_terminal_nodes(to_copy.use_compact_terminal_nodes)
 {
 	if (to_copy.position_weights!=NULL)
 	{

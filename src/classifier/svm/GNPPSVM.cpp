@@ -18,16 +18,12 @@ CGNPPSVM::CGNPPSVM() : CSVM()
 {
 }
 
-CGNPPSVM::CGNPPSVM(DREAL C, CKernel* k, CLabels* lab)
+CGNPPSVM::CGNPPSVM(DREAL C, CKernel* k, CLabels* lab) : CSVM(C, k, lab)
 {
-	set_C(C,C);
-	set_labels(lab);
-	set_kernel(k);
 }
 
 CGNPPSVM::~CGNPPSVM()
 {
-
 }
 
 bool CGNPPSVM::train()

@@ -22,7 +22,10 @@ class CSVM : public CKernelMachine
 {
 	public:
 		CSVM(INT num_sv=0);
+		CSVM(DREAL C, CKernel* k, CLabels* lab);
 		virtual ~CSVM();
+
+		void set_defaults(INT num_sv=0);
 
 		bool load(FILE* svm_file);
 		bool save(FILE* svm_file);
@@ -212,10 +215,11 @@ class CSVM : public CKernelMachine
 		CLabels* classify(CLabels* labels=NULL);
 		static void* classify_example_helper(void* p);
 		DREAL classify_example(INT num);
+
 		void set_precomputed_subkernels_enabled(bool flag)
-			{
-				use_precomputed_subkernels = flag ;
-			}
+		{
+			use_precomputed_subkernels = flag;
+		}
 	protected:
 
 		/// an SVM is defined by support vectors, their coefficients alpha
@@ -250,6 +254,6 @@ class CSVM : public CKernelMachine
 		bool use_mkl;
 		bool use_batch_computation;
 		bool use_linadd;
-		bool use_precomputed_subkernels ;
+		bool use_precomputed_subkernels;
 };
 #endif

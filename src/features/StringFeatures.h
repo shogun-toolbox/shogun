@@ -108,6 +108,7 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	inline CAlphabet* get_alphabet()
 	{
+		alphabet->ref();
 		return alphabet;
 	}
 
@@ -387,14 +388,6 @@ template <class ST> class CStringFeatures: public CFeatures
 		ASSERT(features);
 
 		CAlphabet* alpha=sf->get_alphabet();
-		//alpha->clear_histogram();
-		//for (INT i=0; i<num_vectors; i++)
-		//{
-		//	INT len=-1;
-		//	CT* c=sf->get_feature_vector(i, len);
-		//	alpha->add_string_to_histogram(c, len);
-		//}
-
 		ASSERT(alpha->get_num_symbols_in_histogram() > 0);
 
 		SG_DEBUG( "%1.0llf symbols in StringFeatures<*>\n", sf->get_num_symbols());
@@ -435,6 +428,7 @@ template <class ST> class CStringFeatures: public CFeatures
 			INT len=0;
 			ST* fv=get_feature_vector(line, len);
 			translate_from_single_order(fv, len, start+gap, p_order+gap, max_val, gap);
+			//translate_from_single_order(fv, len, start, p_order, max_val);
 
 			/* fix the length of the string -- hacky */
 			features[line].length-=start+gap ;
@@ -469,10 +463,10 @@ template <class ST> class CStringFeatures: public CFeatures
 		INT i,j;
 		ST value=0;
 
-		for (i=sequence_length-1; i>= ((int) p_order)-1; i--)	//convert interval of size T
+		for (i=sequence_length-1; i>= p_order-1; i--)	//convert interval of size T
 		{
 			value=0;
-			for (j=i; j>=i-((int) p_order)+1; j--)
+			for (j=i; j>=i-p_order+1; j--)
 				value= (value >> max_val) | (obs[j] << (max_val * (p_order-1)));
 
 			obs[i]= (ST) value;
@@ -480,11 +474,14 @@ template <class ST> class CStringFeatures: public CFeatures
 
 		for (i=p_order-2;i>=0;i--)
 		{
+			if (i>=sequence_length)
+				continue;
+
 			value=0;
 			for (j=i; j>=i-p_order+1; j--)
 			{
 				value= (value >> max_val);
-				if (j>=0)
+				if (j>=0 && j<sequence_length)
 					value|=obs[j] << (max_val * (p_order-1));
 			}
 			obs[i]=value;
@@ -505,10 +502,10 @@ template <class ST> class CStringFeatures: public CFeatures
 		ST value=0;
 
 		// almost all positions
-		for (i=sequence_length-1; i>= ((int) p_order)-1; i--)	//convert interval of size T
+		for (i=sequence_length-1; i>=p_order-1; i--)	//convert interval of size T
 		{
 			value=0;
-			for (j=i; j>=i-((int) p_order)+1; j--)
+			for (j=i; j>=i-p_order+1; j--)
 			{
 				if (i-j<start_gap)
 				{
@@ -525,19 +522,22 @@ template <class ST> class CStringFeatures: public CFeatures
 		// the remaining `order` positions
 		for (i=p_order-2;i>=0;i--)
 		{
+			if (i>=sequence_length)
+				continue;
+
 			value=0;
 			for (j=i; j>=i-p_order+1; j--)
 			{
 				if (i-j<start_gap)
 				{
 					value= (value >> max_val);
-					if (j>=0)
+					if (j>=0 && j<sequence_length)
 						value|=obs[j] << (max_val * (p_order-1-gap));
 				}
 				else if (i-j>=end_gap)
 				{
 					value= (value >> max_val);
-					if (j>=0)
+					if (j>=0 && j<sequence_length)
 						value|=obs[j] << (max_val * (p_order-1-gap));
 				}			
 			}

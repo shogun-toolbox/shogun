@@ -5,6 +5,7 @@
 %module(docstring=DOCSTR, directors="1") Classifier
 %{
  #define SWIG_FILE_WITH_INIT
+ #include "features/Labels.h" 
  #include "classifier/Classifier.h" 
 %}
 
@@ -14,6 +15,7 @@
 %}
 #endif
 
+%newobject CClassifier::classify(CLabels* output);
 %feature("director");
 %feature("autodoc","1");
 %rename(Classifer) CClassifier;

@@ -15,7 +15,7 @@
 #include "guilib/GUIMath.h"
 #include "lib/io.h"
 
-CGUIMath::CGUIMath(CGUI* g) : gui(g), threshold(0.0)
+CGUIMath::CGUIMath(CGUI* g) : CSGObject(), gui(g), threshold(0.0)
 {
 }
 

@@ -20,7 +20,7 @@ class CGaussianKernel: public CSimpleKernel<DREAL>
  public:
   CGaussianKernel(INT size, double width);
   CGaussianKernel(CRealFeatures* l, CRealFeatures* r, double width, INT size=10);
-  ~CGaussianKernel() ;
+  virtual ~CGaussianKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();

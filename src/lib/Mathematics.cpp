@@ -74,7 +74,7 @@ CHAR CMath::rand_state[256];
 UINT CMath::seed = 0;
 
 
-CMath::CMath()
+CMath::CMath() : CSGObject()
 {
 #ifndef HAVE_SWIG
 	CSGObject::version.print_version();

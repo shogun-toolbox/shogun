@@ -33,7 +33,7 @@
 #include "classifier/svm/GNPPSVM.h"
 
 CGUISVM::CGUISVM(CGUI * gui_)
-  : gui(gui_)
+  : CSGObject(), gui(gui_)
 {
 	svm=NULL;
 	qpsize=41;

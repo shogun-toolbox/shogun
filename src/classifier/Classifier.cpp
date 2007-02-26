@@ -10,12 +10,14 @@
 
 #include "classifier/Classifier.h"
 
-CClassifier::CClassifier() : labels(NULL)
+CClassifier::CClassifier() : CSGObject(), labels(NULL)
 {
 }
 
 CClassifier::~CClassifier()
 {
+    if (labels)
+        labels->unref();
 }
 
 CLabels* CClassifier::classify(CLabels* output)

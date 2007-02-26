@@ -11,23 +11,17 @@
 #include "classifier/svm/LibSVM.h"
 #include "lib/io.h"
 
-CLibSVM::CLibSVM() : CSVM()
+CLibSVM::CLibSVM() : CSVM(), model(NULL)
 {
-	model=NULL;
 }
 
-CLibSVM::CLibSVM(DREAL C, CKernel* k, CLabels* lab)
+CLibSVM::CLibSVM(DREAL C, CKernel* k, CLabels* lab) : CSVM(C, k, lab), model(NULL)
 {
-	model=NULL;
-
-	set_C(C,C);
-	set_labels(lab);
-	set_kernel(k);
 }
 
 CLibSVM::~CLibSVM()
 {
-	free(model);
+	//SG_PRINT("deleting LibSVM\n");
 }
 
 bool CLibSVM::train()

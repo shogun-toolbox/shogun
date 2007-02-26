@@ -443,8 +443,9 @@ SEXP sg(SEXP args)
 	 * it consists of "sg", "func" and additional arguments.
 	 * */
 
+
 #ifndef WIN32
-	CSignal::set_handler();
+    CSignal::set_handler();
 #endif
 
 	if (!gui)
@@ -455,7 +456,7 @@ SEXP sg(SEXP args)
 
 	SEXP result=sg_helper(args);
 #ifndef WIN32
-	CSignal::unset_handler();
+    CSignal::unset_handler();
 #endif
 	return result;
 }

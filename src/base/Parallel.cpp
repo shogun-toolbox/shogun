@@ -10,10 +10,13 @@
 
 #include "base/Parallel.h"
 
-INT CParallel::num_threads=1;
-
-CParallel::CParallel()
+CParallel::CParallel() : num_threads(1)
 {
+}
+
+CParallel::CParallel(const CParallel& orig)
+{
+	num_threads=orig.get_num_threads();
 }
 
 CParallel::~CParallel()
