@@ -286,6 +286,7 @@ int require_size(PyObject* ary, int* size, int n) {
 %enddef
 
 /* Define concrete examples of the TYPEMAP_IN1 macros */
+TYPEMAP_IN1(bool,          NPY_BOOL )
 TYPEMAP_IN1(CHAR,          NPY_STRING )
 TYPEMAP_IN1(BYTE,          NPY_UINT8 )
 TYPEMAP_IN1(SHORT,         NPY_INT16)
@@ -327,6 +328,7 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_IN2 macros */
+TYPEMAP_IN2(bool,          NPY_BOOL )
 TYPEMAP_IN2(CHAR,          NPY_STRING )
 TYPEMAP_IN2(BYTE,          NPY_UINT8 )
 TYPEMAP_IN2(SHORT,         NPY_INT16)
@@ -380,6 +382,7 @@ TYPEMAP_IN2(PyObject,      NPY_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_INPLACE1 macro */
+TYPEMAP_INPLACE1(bool,          NPY_BOOL )
 TYPEMAP_INPLACE1(CHAR,          NPY_STRING )
 TYPEMAP_INPLACE1(BYTE,          NPY_UINT8 )
 TYPEMAP_INPLACE1(SHORT,         NPY_INT16)
@@ -407,6 +410,7 @@ TYPEMAP_INPLACE1(PyObject,      NPY_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_INPLACE2 macro */
+TYPEMAP_INPLACE2(bool,          NPY_BOOL )
 TYPEMAP_INPLACE2(CHAR,          NPY_STRING )
 TYPEMAP_INPLACE2(BYTE,          NPY_UINT8 )
 TYPEMAP_INPLACE2(SHORT,         NPY_INT16)
@@ -462,6 +466,7 @@ TYPEMAP_INPLACE2(PyObject,      NPY_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_ARRAYOUT1 macro */
+TYPEMAP_ARRAYOUT1(bool,          NPY_BOOL )
 TYPEMAP_ARRAYOUT1(CHAR,          NPY_STRING )
 TYPEMAP_ARRAYOUT1(BYTE,          NPY_UINT8 )
 TYPEMAP_ARRAYOUT1(SHORT,         NPY_INT16)
@@ -489,6 +494,7 @@ TYPEMAP_ARRAYOUT1(PyObject,      NPY_OBJECT)
 %enddef
 
 /* Define concrete examples of the TYPEMAP_ARRAYOUT2 macro */
+TYPEMAP_ARRAYOUT2(bool,          NPY_BOOL )
 TYPEMAP_ARRAYOUT2(CHAR,          NPY_STRING )
 TYPEMAP_ARRAYOUT2(BYTE,          NPY_UINT8 )
 TYPEMAP_ARRAYOUT2(SHORT,         NPY_INT16)
@@ -549,6 +555,7 @@ TYPEMAP_ARRAYOUT2(PyObject,      NPY_OBJECT)
 }
 %enddef
 
+TYPEMAP_ARGOUT1(bool,          NPY_BOOL )
 TYPEMAP_ARGOUT1(CHAR,          NPY_STRING )
 TYPEMAP_ARGOUT1(BYTE,          NPY_UINT8 )
 TYPEMAP_ARGOUT1(SHORT,         NPY_INT16)
@@ -586,6 +593,7 @@ TYPEMAP_ARGOUT1(PyObject,      NPY_OBJECT)
 }
 %enddef
 
+TYPEMAP_ARGOUT2(bool,          NPY_BOOL )
 TYPEMAP_ARGOUT2(CHAR,          NPY_STRING )
 TYPEMAP_ARGOUT2(BYTE,          NPY_UINT8 )
 TYPEMAP_ARGOUT2(SHORT,         NPY_INT16)
