@@ -24,56 +24,56 @@
 {
     void get_str(CHAR** dst, INT* len)
     {
-        $self->CStringFeatures<CHAR>::get_string(dst,len);
+        self->CStringFeatures<CHAR>::get_string(dst,len);
     }
 };
 %extend CStringFeatures<BYTE>
 {
     void get_str(BYTE** dst, INT* len)
     {
-        $self->CStringFeatures<BYTE>::get_string(dst,len);
+        self->CStringFeatures<BYTE>::get_string(dst,len);
     }
 };
 %extend CStringFeatures<SHORT>
 {
     void get_str(SHORT** dst, INT* len)
     {
-        $self->CStringFeatures<SHORT>::get_string(dst,len);
+        self->CStringFeatures<SHORT>::get_string(dst,len);
     }
 };
 %extend CStringFeatures<WORD>
 {
     void get_str(WORD** dst, INT* len)
     {
-        $self->CStringFeatures<WORD>::get_string(dst,len);
+        self->CStringFeatures<WORD>::get_string(dst,len);
     }
 };
 %extend CStringFeatures<INT>
 {
     void get_str(INT** dst, INT* len)
     {
-        $self->CStringFeatures<INT>::get_string(dst,len);
+        self->CStringFeatures<INT>::get_string(dst,len);
     }
 };
 %extend CStringFeatures<UINT>
 {
     void get_str(UINT** dst, INT* len)
     {
-        $self->CStringFeatures<UINT>::get_string(dst,len);
+        self->CStringFeatures<UINT>::get_string(dst,len);
     }
 };
 %extend CStringFeatures<LONG>
 {
     void get_str(LONG** dst, INT* len)
     {
-        $self->CStringFeatures<LONG>::get_string(dst,len);
+        self->CStringFeatures<LONG>::get_string(dst,len);
     }
 };
 %extend CStringFeatures<ULONG>
 {
     void get_str(ULONG** dst, INT* len)
     {
-        $self->CStringFeatures<ULONG>::get_string(dst,len);
+        self->CStringFeatures<ULONG>::get_string(dst,len);
     }
 };
 
