@@ -50,7 +50,7 @@ public:
 	{
 		if (refcount == 0 || --refcount == 0 )
         {
-            SG_DEBUG("unref():%d obj:%x destroying\n", refcount, (UINT) this);
+            SG_DEBUG("unref():%ld obj:%x destroying\n", refcount, (ULONG) this);
 #ifdef HAVE_SWIG 
 			//don't do this yet for static interfaces (as none is
 			//calling ref/unref properly)
@@ -60,7 +60,7 @@ public:
         }
         else
         {
-            SG_DEBUG("unref():%d obj:%x decreased\n", refcount, (UINT) this);
+            SG_DEBUG("unref():%ld obj:%x decreased\n", refcount, (ULONG) this);
             return refcount;
         }
 	}

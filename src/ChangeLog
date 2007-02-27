@@ -1,5 +1,71 @@
+2007-02-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* README.developer, base/Parallel.cpp, base/Parallel.h,
+	  base/SGObject.h, base/SGObject.i, classifier/Classifier.cpp,
+	  classifier/Classifier.h, classifier/Classifier.i,
+	  classifier/PluginEstimate.cpp, classifier/svm/GNPPSVM.cpp,
+	  classifier/svm/GPBTSVM.cpp, classifier/svm/GPBTSVM.h,
+	  classifier/svm/LibSVM.cpp, classifier/svm/SVM.cpp,
+	  classifier/svm/SVM.h, classifier/svm/SVM_light.cpp,
+	  classifier/svm/gnpplib.cpp, distance/Distance.cpp,
+	  distributions/Distribution.cpp, features/Alphabet.cpp,
+	  features/CombinedFeatures.h, features/Features.cpp,
+	  features/Labels.cpp, features/SimpleFeatures.h,
+	  features/StringFeatures.h, gui/Matlab.cpp, gui/Octave.cpp,
+	  gui/R.cpp, gui/TextGUI.cpp, guilib/GUIClassifier.cpp,
+	  guilib/GUIDistance.cpp, guilib/GUIFeatures.cpp,
+	  guilib/GUIHMM.cpp, guilib/GUIKernel.cpp, guilib/GUILabels.cpp,
+	  guilib/GUIMath.cpp, guilib/GUIMatlab.cpp, guilib/GUIOctave.cpp,
+	  guilib/GUIPluginEstimate.cpp, guilib/GUIPreProc.cpp,
+	  guilib/GUIPython.cpp, guilib/GUISVM.cpp, guilib/GUITime.cpp,
+	  kernel/CombinedKernel.cpp, kernel/CombinedKernel.h,
+	  kernel/GaussianKernel.cpp, kernel/GaussianKernel.h,
+	  kernel/Kernel.cpp, kernel/KernelMachine.cpp,
+	  kernel/KernelMachine.h, lib/Array.h, lib/Cache.h, lib/Cplex.cpp,
+	  lib/DynamicArray.h, lib/File.cpp, lib/Mathematics.cpp,
+	  lib/Signal.cpp, lib/Signal.h, lib/SimpleFile.h, lib/Time.cpp,
+	  lib/Trie.cpp, lib/io.cpp, lib/io.h, preproc/PreProc.cpp,
+	  structure/DynProg.cpp: * introduced reference counted objects for
+	  automagic swig object deallocation
+	  * fixed a crasher bug in Array destructor
+	  * updated developer readme
+	  * added python signal handling: ctrl+c now raises a keyboard
+	  exception if not
+	  in a big loop. in big loops it asks whether to immediately
+	  stop/prematurely stop
+	  * fix crasher bugs (array out of bounds read/write) in
+	  translate_from_single_order
+	  
+	  using the reference counts from above we may now think of taking
+	  references
+	  to numpy objects instead of copying them :-)
+
+2007-02-23  Andre Noll <Andre.Noll@tuebingen.mpg.de>
+
+	* lib/io.cpp: io.cpp: trivial whitespace cleanup
+
+2007-02-22  Andre Noll <Andre.Noll@tuebingen.mpg.de>
+
+	* .authors: add myself to authors
+	* lib/Array.h: further Array.h cleanups
+	  
+	  - remove unneccessary template
+	  - simplify resize_array()
+	  - reduce line width
+	  - get rid of some duplicate SG_PRINT()s
+	  - add myself to authors
+
 2007-02-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* .authors, ChangeLog, lib/Array.h: * added jonas to authors
+	  * added andre's array cleanup patches - now it is readable
+	  again!!
+	  
+	  - The whole file was indented by one tab. Why?
+	  - This patch replaces the #ifdef ARRAY_STATISTICS mess we've had
+	  before
+	  by a set of macros which expand to nothing if ARRAY_STATISTICS is
+	  not defined.
 	* trunk/python-modular/examples/svm_lin.py, ChangeLog,
 	  classifier/SparseLinearClassifier.cpp,
 	  classifier/SparseLinearClassifier.h, classifier/svm/SVMLin.cpp,
