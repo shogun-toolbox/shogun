@@ -32,6 +32,11 @@ class CShortFeatures: public CSimpleFeatures<SHORT>
 
 		virtual EFeatureType get_feature_type() { return F_SHORT; }
 
+        inline virtual void copy_feature_matrix(SHORT* src, INT num_feat, INT num_vec)
+        {
+            CSimpleFeatures<SHORT>::copy_feature_matrix(src, num_feat, num_vec);
+        }
+
 		virtual bool load(CHAR* fname);
 		virtual bool save(CHAR* fname);
 	protected:

@@ -32,6 +32,11 @@ class CWordFeatures: public CSimpleFeatures<WORD>
 
 		bool obtain_from_char_features(CCharFeatures* cf, INT start, INT order, INT gap=0);
 
+        inline virtual void copy_feature_matrix(WORD* src, INT num_feat, INT num_vec)
+        {
+            CSimpleFeatures<WORD>::copy_feature_matrix(src, num_feat, num_vec);
+        }
+
 		virtual bool load(CHAR* fname);
 		virtual bool save(CHAR* fname);
 

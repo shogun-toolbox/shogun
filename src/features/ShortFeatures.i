@@ -2,7 +2,12 @@
  #include "features/ShortFeatures.h" 
 %}
 
-%include "features/SimpleFeatures.i"
+#ifdef HAVE_PYTHON
+%include "lib/numpy.i"
+%apply (SHORT* IN_ARRAY2, INT DIM1, INT DIM2) {(SHORT* src, INT num_feat, INT num_vec)};
+%apply (SHORT** ARGOUT2, INT* DIM1, INT* DIM2) {(SHORT** dst, INT* d1, INT* d2)};
+#endif
+
 %include "features/ShortFeatures.h" 
 
 #ifdef HAVE_PYTHON

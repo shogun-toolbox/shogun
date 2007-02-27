@@ -59,7 +59,7 @@ template <class ST> class CSimpleFeatures: public CFeatures
 
 	 virtual ~CSimpleFeatures()
 	 {
-        SG_SPRINT("deleting simplefeatures (%lx)\n", this);
+        SG_DEBUG("deleting simplefeatures (%lx)\n", this);
 #ifndef HAVE_SWIG
 		 delete[] feature_matrix;
 #endif

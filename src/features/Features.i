@@ -7,7 +7,6 @@
 %{
 #define SWIG_FILE_WITH_INIT
 #include "features/Features.h" 
-#include "features/StringFeatures.h" 
 %}
 
 #ifdef HAVE_PYTHON
@@ -27,9 +26,9 @@
 %include "base/Parallel.i"
 %include "base/SGObject.i"
 %include "features/Features.h" 
-%include "features/SimpleFeatures.h" 
-%include "features/SparseFeatures.i"
 %include "features/StringFeatures.i"
+%include "features/SparseFeatures.i"
+%include "features/SimpleFeatures.i" 
 
 %include "features/Alphabet.i"
 %include "features/CharFeatures.i"

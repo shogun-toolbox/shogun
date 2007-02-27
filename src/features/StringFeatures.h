@@ -623,4 +623,5 @@ template<> inline EFeatureType CStringFeatures<DREAL>::get_feature_type()
 {
 	return F_DREAL;
 }
+
 #endif

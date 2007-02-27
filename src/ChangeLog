@@ -1,3 +1,13 @@
+2007-02-27  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* lib/numpy.i, structure/DynProg.i:
+
+2007-02-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog, base/SGObject.h, configure: * this fixes the many
+	  pointer related warnings
+	  * also fixes configure for atlas/lapack
+
 2007-02-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
 	* README.developer, base/Parallel.cpp, base/Parallel.h,
