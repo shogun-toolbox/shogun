@@ -205,7 +205,8 @@ public:
 			bool copy_array=false)
 	{
 		INCREMENT_ARRAY_STATISTICS_VALUE(set_array);
-		free(this->array);
+		if (this->free_array)
+			free(this->array);
 		if (copy_array)
 		{
 			this->array=(T*)malloc(p_array_size*sizeof(T));
