@@ -152,19 +152,12 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 
 		// other kernel tree operations  
 		DREAL *compute_abs_weights(INT & len);
-		/// absolute sum of weights, depth level has to be specified
-		DREAL compute_abs_weights_tree(struct Trie * p_tree, INT depth);
 
 		bool is_tree_initialized() { return tree_initialized; }
 
 		inline INT get_max_mismatch() { return max_mismatch; }
 		inline INT get_degree() { return degree; }
 
-		Trie* get_tree_at_position(INT i);
-		void count( const DREAL w, const INT depth, const struct TreeParseInfo info, const INT p, INT* x, const INT k );
-		void traverse( const struct Trie* tree, const INT p, struct TreeParseInfo info, const INT depth, INT* const x, const INT k );
-		//void count( const DREAL w, const INT p, const INT depth, INT* x, const INT k, DREAL* C_k, DREAL* L_k, DREAL* R_k );
-		//void traverse( const struct Trie* tree, INT p, const INT depth, INT* x, const INT k, DREAL* C_k, DREAL* L_k, DREAL* R_k );
 
 		// weight setting/getting operations
 		inline DREAL *get_degree_weights(INT& d, INT& len)

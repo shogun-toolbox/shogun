@@ -1,3 +1,34 @@
+2007-03-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/Kernel.i, kernel/WeightedDegreePositionCharKernel.i,
+	  kernel/WeightedDegreePositionStringKernel.i, lib/python.h: add
+	  missing files and include WDS kernel in Kernel.i
+	* ChangeLog, classifier/LinearClassifier.i,
+	  classifier/SparseLinearClassifier.i, classifier/svm/SVM.i,
+	  distance/Distance.i, features/Alphabet.i,
+	  features/ByteFeatures.i, features/CharFeatures.i,
+	  features/Labels.i, features/RealFeatures.i,
+	  features/ShortFeatures.i, features/SimpleFeatures.i,
+	  features/StringFeatures.h, features/StringFeatures.i,
+	  features/WordFeatures.i, guilib/GUIPython.cpp, kernel/Kernel.i,
+	  kernel/WeightedDegreeCharKernel.i,
+	  kernel/WeightedDegreePositionCharKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h, lib/Signal.cpp,
+	  lib/Signal.h, lib/io.cpp, lib/numpy.i, lib/python_typemaps.i,
+	  regression/svr/SVR_light.cpp, structure/Structure.i: * this adds
+	  a obtain_by_sliding_window function to StringFeatures
+	  * for that to work we need the WD kernel to work on string
+	  features
+	  which is what WeightedDegreePositionStringKernel introduces. as
+	  this is
+	  yet another code duplication we should get rid of (or creat a
+	  generic
+	  WD kernel object every WD kernel derives from).
+	  * numpy.i is renamed to python_typemaps.i (as we need lists of
+	  strings to be mapped to string features - not exactly a numeric
+	  problem)
+
 2007-02-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
 	* features/StringFeatures.i: replace $self -> self as this seems to

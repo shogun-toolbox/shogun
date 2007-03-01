@@ -348,6 +348,82 @@ bool CWeightedDegreePositionStringKernel::delete_optimization()
 	return false;
 }
 
+DREAL CWeightedDegreePositionStringKernel::compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
+{
+    DREAL sum0=0 ;
+    for (INT i=0; i<max_shift; i++)
+		max_shift_vec[i]=0 ;
+	
+    // no shift
+    for (INT i=0; i<alen; i++)
+    {
+		if ((position_weights!=NULL) && (position_weights[i]==0.0))
+			continue ;
+		
+		INT mismatches=0;
+		DREAL sumi = 0.0 ;
+		for (INT j=0; (j<degree) && (i+j<alen); j++)
+		{
+			if (avec[i+j]!=bvec[i+j])
+			{
+				mismatches++ ;
+				if (mismatches>max_mismatch)
+					break ;
+			} ;
+			sumi += weights[j+degree*mismatches];
+		}
+		if (position_weights!=NULL)
+			sum0 += position_weights[i]*sumi ;
+		else
+			sum0 += sumi ;
+    } ;
+	
+    for (INT i=0; i<alen; i++)
+    {
+		for (INT k=1; (k<=shift[i]) && (i+k<alen); k++)
+		{
+			if ((position_weights!=NULL) && (position_weights[i]==0.0) && (position_weights[i+k]==0.0))
+				continue ;
+			
+			DREAL sumi1 = 0.0 ;
+			// shift in sequence a
+			INT mismatches=0;
+			for (INT j=0; (j<degree) && (i+j+k<alen); j++)
+			{
+				if (avec[i+j+k]!=bvec[i+j])
+				{
+					mismatches++ ;
+					if (mismatches>max_mismatch)
+						break ;
+				} ;
+				sumi1 += weights[j+degree*mismatches];
+			}
+			DREAL sumi2 = 0.0 ;
+			// shift in sequence b
+			mismatches=0;
+			for (INT j=0; (j<degree) && (i+j+k<alen); j++)
+			{
+				if (avec[i+j]!=bvec[i+j+k])
+				{
+					mismatches++ ;
+					if (mismatches>max_mismatch)
+						break ;
+				} ;
+				sumi2 += weights[j+degree*mismatches];
+			}
+			if (position_weights!=NULL)
+				max_shift_vec[k-1] += position_weights[i]*sumi1 + position_weights[i+k]*sumi2 ;
+			else
+				max_shift_vec[k-1] += sumi1 + sumi2 ;
+		} ;
+    }
+	
+    DREAL result = sum0 ;
+    for (INT i=0; i<max_shift; i++)
+		result += max_shift_vec[i]/(2*(i+1)) ;
+	
+    return result ;
+}
 
 DREAL CWeightedDegreePositionStringKernel::compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) 
 {

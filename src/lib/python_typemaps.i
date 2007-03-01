@@ -122,6 +122,62 @@ int require_contiguous(PyObject* ary) {
   return contiguous;
 }
 
+/* Require the given PyObject to have a specified number of
+ * dimensions.  If the array has the specified number of dimensions,
+ * return 1.  Otherwise, set the python error string and return 0.
+ */
+int require_dimensions(PyObject* ary, int exact_dimensions) {
+  int success = 1;
+  if (array_dimensions(ary) != exact_dimensions) {
+    PyErr_Format(PyExc_TypeError, 
+		 "Array must have %d dimensions.  Given array has %d dimensions", 
+		 exact_dimensions, array_dimensions(ary));
+    success = 0;
+  }
+  return success;
+}
+
+/* Require the given PyObject to have a specified shape.  If the
+ * array has the specified shape, return 1.  Otherwise, set the python
+ * error string and return 0.
+ */
+int require_size(PyObject* ary, int* size, int n) {
+  int i;
+  int success = 1;
+  int len;
+  char desired_dims[255] = "[";
+  char s[255];
+  char actual_dims[255] = "[";
+  for(i=0; i < n;i++) {
+    if (size[i] != -1 &&  size[i] != array_size(ary,i)) {
+      success = 0;    
+    }
+  }
+  if (!success) {
+    for (i = 0; i < n; i++) {
+      if (size[i] == -1) {
+	sprintf(s, "*,");                
+      }
+      else
+      {
+	sprintf(s, "%d,", size[i]);                
+      }    
+      strcat(desired_dims,s);
+    }
+    len = strlen(desired_dims);
+    desired_dims[len-1] = ']';
+    for (i = 0; i < n; i++) {
+      sprintf(s, "%lld,", (LONG) array_size(ary,i));                            
+      strcat(actual_dims,s);
+    }
+    len = strlen(actual_dims);
+    actual_dims[len-1] = ']';
+    PyErr_Format(PyExc_TypeError, 
+		 "Array must have shape of %s.  Given array has shape of %s",
+		 desired_dims, actual_dims);
+  }
+  return success;
+}
 /* End John Hunter translation (with modifications by Bill Spotz) */
 
 %}
