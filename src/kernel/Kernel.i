@@ -38,6 +38,8 @@
 
 %include "kernel/GaussianKernel.i"
 %include "kernel/WeightedDegreeCharKernel.i" 
+%include "kernel/WeightedDegreePositionCharKernel.i" 
+%include "kernel/WeightedDegreePositionStringKernel.i" 
 %include "kernel/ConstKernel.i" 
 %include "kernel/StringKernel.i" 
 %include "kernel/CommUlongStringKernel.i" 

@@ -1,5 +1,5 @@
 %{
-#include "kernel/WeightedDegreeCharKernel.h" 
+#include "kernel/WeightedDegreePositionCharKernel.h" 
 %}
 
-%include "kernel/WeightedDegreeCharKernel.h" 
+%include "kernel/WeightedDegreePositionCharKernel.h" 
