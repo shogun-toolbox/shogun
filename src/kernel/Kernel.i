@@ -14,7 +14,7 @@
 %}
 
 %include "lib/common.i"
-%include "lib/numpy.i"
+%include "lib/python_typemaps.i"
 %apply (DREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** dst, INT* m, INT* n)};
 #endif
 

@@ -23,8 +23,9 @@
 #include "kernel/CombinedKernel.h"
 #include "kernel/CustomKernel.h"
 
+#include "lib/python.h"
+
 extern "C" {
-#include <Python.h>
 #include <object.h>
 #include <../../numarray/numpy/libnumarray.h>
 #include <numpy/ndarrayobject.h>

@@ -206,17 +206,13 @@ bool CWeightedDegreePositionCharKernel::init(CFeatures* l, CFeatures* r)
 	
     if (lhs_changed) 
     {
-		INT alen ;
-		bool afree ;
-		CHAR* avec=((CCharFeatures*) l)->get_feature_vector(0, alen, afree);		
-		seq_length = alen ;
-		((CCharFeatures*) l)->free_feature_vector(avec, 0, afree);
+		seq_length = ((CCharFeatures*) l)->get_num_features();
 		
 		tries.destroy() ;
 		if (opt_type==SLOWBUTMEMEFFICIENT)
-			tries.create(alen, true); 
+			tries.create(seq_length, true); 
 		else if (opt_type==FASTBUTMEMHUNGRY)
-			tries.create(alen, false);  // still buggy
+			tries.create(seq_length, false);  // still buggy
 		else {
          SG_ERROR( "unknown optimization type\n");
       }

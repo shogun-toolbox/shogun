@@ -3,7 +3,7 @@
 %}
 
 #ifdef HAVE_PYTHON
-%include "lib/numpy.i"
+%include "lib/python_typemaps.i"
 %apply (WORD* IN_ARRAY2, INT DIM1, INT DIM2) {(WORD* src, INT num_feat, INT num_vec)};
 %apply (WORD** ARGOUT2, INT* DIM1, INT* DIM2) {(WORD** dst, INT* d1, INT* d2)};
 #endif

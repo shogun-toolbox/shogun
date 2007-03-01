@@ -4,7 +4,7 @@
 %}
 
 #ifdef HAVE_PYTHON
-%include "lib/numpy.i"
+%include "lib/python_typemaps.i"
 %apply (BYTE* IN_ARRAY2, INT DIM1, INT DIM2) {(BYTE* src, INT num_feat, INT num_vec)};
 #endif
 

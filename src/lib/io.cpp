@@ -21,16 +21,13 @@
 #include <mex.h>
 #endif
 
-#ifdef HAVE_PYTHON
-#include <Python.h>
-#endif
-
 #ifdef HAVE_R
 #include <R.h>
 #include <Rinternals.h>
 #include <R_ext/RS.h>
 #endif
 
+#include "lib/python.h"
 #include "lib/io.h"
 #include "lib/ShogunException.h"
 #include "lib/Signal.h"

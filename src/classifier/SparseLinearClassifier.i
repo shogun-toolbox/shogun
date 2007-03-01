@@ -4,7 +4,7 @@
 %rename(SparseLinearClassifier) CSparseLinearClassifier;
 
 #ifdef HAVE_PYTHON
-%include "lib/numpy.i"
+%include "lib/python_typemaps.i"
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst_w, INT* dst_dims)};
 #endif
 

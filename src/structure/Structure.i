@@ -9,7 +9,7 @@
 	  import_array();
 %}
 
-%include "lib/numpy.i"
+%include "lib/python_typemaps.i"
 #endif
 
 %include "lib/common.i"

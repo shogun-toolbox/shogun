@@ -1,3 +1,26 @@
+2007-02-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/StringFeatures.i: replace $self -> self as this seems to
+	  be troublesome on
+	  older swig versions
+
+2007-02-27  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* lib/Array.h: fixed another wrong free...
+
+2007-02-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/python-modular/examples/stringfeatures.py, ChangeLog,
+	  features/Features.i, features/ShortFeatures.h,
+	  features/ShortFeatures.i, features/SimpleFeatures.h,
+	  features/SimpleFeatures.i, features/StringFeatures.h,
+	  features/StringFeatures.i, features/WordFeatures.h,
+	  features/WordFeatures.i: workaround some broken swig oddities
+	  (which were working using
+	  swig 1.3.2x): swig does not apply typemaps to templated classes
+	  anymore... use %extend and define wrapper functions to call
+	  the real functions...
+
 2007-02-27  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
 
 	* lib/numpy.i, structure/DynProg.i:

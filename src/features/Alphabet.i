@@ -3,7 +3,7 @@
 %}
 
 #ifdef HAVE_PYTHON
-%include "lib/numpy.i"
+%include "lib/python_typemaps.i"
 %apply (LONG** ARGOUT1, INT* DIM1) {(LONG** h, INT* len)};
 #endif
 

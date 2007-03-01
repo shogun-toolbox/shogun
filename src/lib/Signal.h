@@ -18,9 +18,7 @@
 #include <signal.h>
 #define NUMTRAPPEDSIGS 2
 
-#ifdef HAVE_PYTHON
-#include <Python.h>
-#endif
+#include "lib/python.h"
 
 class CSignal : public CSGObject
 {

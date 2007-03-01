@@ -42,7 +42,8 @@ template <class T> struct T_STRING
 template <class ST> class CStringFeatures: public CFeatures
 {
 	public:
-	CStringFeatures(CAlphabet* alpha) : CFeatures(0), num_vectors(0), features(NULL), max_string_length(0), order(0), symbol_mask_table(NULL)
+	CStringFeatures(CAlphabet* alpha) : CFeatures(0), num_vectors(0), features(NULL), 
+		single_string(false),max_string_length(0), order(0), symbol_mask_table(NULL)
 	{
 		alphabet=new CAlphabet(alpha);
 		ASSERT(alpha);
@@ -50,8 +51,13 @@ template <class ST> class CStringFeatures: public CFeatures
 		original_num_symbols=num_symbols;
 	}
 
-	CStringFeatures(const CStringFeatures & orig) : CFeatures(orig), num_vectors(orig.num_vectors), max_string_length(orig.max_string_length), num_symbols(orig.num_symbols), original_num_symbols(orig.original_num_symbols), order(orig.order)
+	CStringFeatures(const CStringFeatures & orig) : CFeatures(orig), num_vectors(orig.num_vectors),
+		single_string(orig.single_string),max_string_length(orig.max_string_length),
+		num_symbols(orig.num_symbols), original_num_symbols(orig.original_num_symbols),
+		order(orig.order)
 	{
+		ASSERT(orig.single_string == false); //not implemented
+
 		alphabet=new CAlphabet(orig.alphabet);
 
 		if (orig.features)
@@ -76,7 +82,8 @@ template <class ST> class CStringFeatures: public CFeatures
 		}
 	}
 
-	CStringFeatures(char* fname, E_ALPHABET alpha=DNA) : CFeatures(fname), num_vectors(0), features(NULL), max_string_length(0), order(0), symbol_mask_table(NULL)
+	CStringFeatures(char* fname, E_ALPHABET alpha=DNA) : CFeatures(fname), num_vectors(0), 
+		features(NULL), single_string(false), max_string_length(0), order(0), symbol_mask_table(NULL)
 	{
 		alphabet=new CAlphabet(alpha);
 		num_symbols=alphabet->get_num_symbols();
@@ -93,10 +100,20 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	void cleanup()
 	{
-		for (int i=0; i<num_vectors; i++)
+		if (single_string)
 		{
-			delete[] features[i].string;
-			features[i].length=0;
+			if (num_vectors>0)
+				delete[] features[0].string;
+				features[0].length=0;
+			num_vectors=0;
+		}
+		else
+		{
+			for (int i=0; i<num_vectors; i++)
+			{
+				delete[] features[i].string;
+				features[i].length=0;
+			}
 		}
 		delete[] features;
 
@@ -150,9 +167,9 @@ template <class ST> class CStringFeatures: public CFeatures
 		return features[num].string;
 	}
 
-	/** get feature vector for sample num
+	/** set feature vector for sample num
 	  @param num index of feature vector
-	  @param len length is returned by reference
+	  @param len length of the string
 	  */
 	virtual void set_feature_vector(INT num, ST* string, INT len)
 	{
@@ -366,6 +383,34 @@ template <class ST> class CStringFeatures: public CFeatures
 		}
 		return true;
 	}
+	
+	///slides a window of size window_size over the current single string
+	///step_size is the amount by which the window is shifted.
+	///creates (string_len-window_size)/step_size many feature obj
+	inline INT obtain_by_sliding_window(INT window_size, INT step_size)
+	{
+		ASSERT(step_size>0);
+		ASSERT(window_size>0 && max_string_length>=window_size);
+		ASSERT(num_vectors=1 || single_string);
+
+		num_vectors= (max_string_length-window_size)/step_size + 1;
+		
+		T_STRING<ST>* f=new T_STRING<ST>[num_vectors];
+		INT offs=0;
+		for (INT i=0; i<num_vectors; i++)
+		{
+			f[i].string=&features[i].string[offs];
+			f[i].length=window_size;
+			offs+=window_size;
+		}
+		delete[] features;
+		features=f;
+		single_string=true;
+		selected_vector=0;
+		max_string_length=window_size;
+
+		return num_vectors;
+	}
 
 	inline bool obtain_from_char(CStringFeatures<CHAR>* sf, INT start, INT p_order, INT gap)
 	{
@@ -559,6 +604,9 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	/// this contains the array of features.
 	T_STRING<ST>* features;
+
+	/// true when single string / created by sliding window
+	bool single_string;
 
 	/// length of longest string
 	INT max_string_length;

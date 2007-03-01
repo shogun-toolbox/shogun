@@ -1,4 +1,3 @@
-/* -*- C -*-  (not really, but good for syntax highlighting) */
 #ifdef HAVE_PYTHON
 %{
 #ifndef SWIG_FILE_WITH_INIT
@@ -89,29 +88,6 @@ PyArrayObject* obj_to_array_no_conversion(PyObject* input, int typecode) {
   return ary;
 }
 
-/* Convert the given PyObject to a Numeric array with the given
- * typecode.  On Success, return a valid PyArrayObject* with the
- * correct type.  On failure, the python error string will be set and
- * the routine returns NULL.
- */
-PyObject* obj_to_array_allow_conversion(PyObject* input, int typecode,
-                                             int* is_new_object)
-{
-  PyObject* ary = NULL;
-  PyObject* py_obj;
-  if (is_array(input) && (typecode == PyArray_NOTYPE || type_match(array_type(input),typecode))) {
-    ary = (PyObject*) input;
-    *is_new_object = 0;
-  }
-  else {
-    py_obj = PyArray_FromObject(input, typecode, 0, 0);
-    /* If NULL, PyArray_FromObject will have set python error value.*/
-    ary = (PyObject*) py_obj;
-    *is_new_object = 1;
-  }
-  return ary;
-}
-
 /* Given a PyArrayObject, check to see if it is contiguous.  If so,
  * return the input pointer and flag it as not a new object.  If it is
  * not contiguous, create a new PyArrayObject using the original data,
@@ -133,7 +109,6 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
   return result;
 }
 
-
 /* Test whether a python object is contiguous.  If array is
  * contiguous, return 1.  Otherwise, set the python error string and
  * return 0.
@@ -147,91 +122,6 @@ int require_contiguous(PyObject* ary) {
   return contiguous;
 }
 
-/* Require the given PyObject to have a specified number of
- * dimensions.  If the array has the specified number of dimensions,
- * return 1.  Otherwise, set the python error string and return 0.
- */
-int require_dimensions(PyObject* ary, int exact_dimensions) {
-  int success = 1;
-  if (array_dimensions(ary) != exact_dimensions) {
-    PyErr_Format(PyExc_TypeError, 
-		 "Array must have %d dimensions.  Given array has %d dimensions", 
-		 exact_dimensions, array_dimensions(ary));
-    success = 0;
-  }
-  return success;
-}
-
-/* Require the given PyObject to have one of a list of specified
- * number of dimensions.  If the array has one of the specified number
- * of dimensions, return 1.  Otherwise, set the python error string
- * and return 0.
- */
-int require_dimensions_n(PyObject* ary, int* exact_dimensions, int n) {
-  int success = 0;
-  int i;
-  char dims_str[255] = "";
-  char s[255];
-  for (i = 0; i < n && !success; i++) {
-    if (array_dimensions(ary) == exact_dimensions[i]) {
-      success = 1;
-    }
-  }
-  if (!success) {
-    for (i = 0; i < n-1; i++) {
-      sprintf(s, "%d, ", exact_dimensions[i]);                
-      strcat(dims_str,s);
-    }
-    sprintf(s, " or %d", exact_dimensions[n-1]);            
-    strcat(dims_str,s);
-    PyErr_Format(PyExc_TypeError, 
-		 "Array must have %s dimensions.  Given array has %d dimensions",
-		 dims_str, array_dimensions(ary));
-  }
-  return success;
-}    
-
-/* Require the given PyObject to have a specified shape.  If the
- * array has the specified shape, return 1.  Otherwise, set the python
- * error string and return 0.
- */
-int require_size(PyObject* ary, int* size, int n) {
-  int i;
-  int success = 1;
-  int len;
-  char desired_dims[255] = "[";
-  char s[255];
-  char actual_dims[255] = "[";
-  for(i=0; i < n;i++) {
-    if (size[i] != -1 &&  size[i] != array_size(ary,i)) {
-      success = 0;    
-    }
-  }
-  if (!success) {
-    for (i = 0; i < n; i++) {
-      if (size[i] == -1) {
-	sprintf(s, "*,");                
-      }
-      else
-      {
-	sprintf(s, "%d,", size[i]);                
-      }    
-      strcat(desired_dims,s);
-    }
-    len = strlen(desired_dims);
-    desired_dims[len-1] = ']';
-    for (i = 0; i < n; i++) {
-      sprintf(s, "%lld,", (LONG) array_size(ary,i));                            
-      strcat(actual_dims,s);
-    }
-    len = strlen(actual_dims);
-    actual_dims[len-1] = ']';
-    PyErr_Format(PyExc_TypeError, 
-		 "Array must have shape of %s.  Given array has shape of %s",
-		 desired_dims, actual_dims);
-  }
-  return success;
-}
 /* End John Hunter translation (with modifications by Bill Spotz) */
 
 %}

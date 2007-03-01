@@ -11,9 +11,7 @@
 #include "lib/config.h"
 
 #ifndef WIN32
-#ifdef HAVE_PYTHON
-#include <Python.h>
-#endif
+#include "lib/python.h"
 
 #include <stdlib.h>
 #include <signal.h>

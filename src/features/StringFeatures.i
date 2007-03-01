@@ -4,7 +4,7 @@
 %}
 
 #ifdef HAVE_PYTHON
-%include "lib/numpy.i"
+%include "lib/python_typemaps.i"
 
 %apply (ST** ARGOUT1, INT* DIM1) {(ST** dst, INT* len)};
 %apply (CHAR** ARGOUT1, INT* DIM1) {(CHAR** dst, INT* len)};
