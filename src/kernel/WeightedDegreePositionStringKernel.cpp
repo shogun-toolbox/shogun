@@ -41,7 +41,7 @@ struct S_THREAD_PARAM
 	DREAL* sqrtdiag_rhs;
 };
 
-CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(LONG size, DREAL* w, INT d, 
+CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(INT size, DREAL* w, INT d, 
 		INT max_mismatch_, INT * shift_, 
 		INT shift_len_, bool use_norm,
 		INT mkl_stepsize_)

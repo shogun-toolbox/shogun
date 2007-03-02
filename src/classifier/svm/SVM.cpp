@@ -35,7 +35,7 @@ CSVM::CSVM(INT num_sv) : CKernelMachine()
 	set_defaults(num_sv);
 }
 
-CSVM::CSVM(DREAL C, CKernel* k, CLabels* lab)
+CSVM::CSVM(DREAL C, CKernel* k, CLabels* lab) : CKernelMachine()
 {
 	set_defaults();
 	set_C(C,C);

@@ -41,7 +41,7 @@ char* pytype_string(PyObject* py_obj) {
   return "unkown type";
 }
 
-/* Given a Numeric typecode, return a string describing the type.
+/* Given a numpy typecode, return a string describing the type.
  */
 char* typecode_string(int typecode) {
   char* type_names[20] = {"char","unsigned byte","byte","short",
@@ -191,9 +191,9 @@ int require_size(PyObject* ary, int* size, int n) {
  *     (type* IN_ARRAY1, int DIM1)
  *     (type* IN_ARRAY2, int DIM1, int DIM2)
  *
- * where "type" is any type supported by the Numeric module, to be
+ * where "type" is any type supported by the numpy module, to be
  * called in python with an argument list of a single array (or any
- * python object that can be passed to the Numeric.array constructor
+ * python object that can be passed to the numpy.array constructor
  * to produce an arrayof te specified shape).  This can be applied to
  * a existing functions using the %apply directive:
  *
@@ -298,9 +298,9 @@ TYPEMAP_IN2(PyObject,      NPY_OBJECT)
  *     (type* INPLACE_ARRAY1, int DIM1)
  *     (type* INPLACE_ARRAY2, int DIM1, int DIM2)
  *
- * where "type" is any type supported by the Numeric module, to be
+ * where "type" is any type supported by the numpy module, to be
  * called in python with an argument list of a single contiguous
- * Numeric array.  This can be applied to an existing function using
+ * numpy array.  This can be applied to an existing function using
  * the %apply directive:
  *
  *     %apply (double* INPLACE_ARRAY1, int DIM1) {double* series, int length}
@@ -379,9 +379,9 @@ TYPEMAP_INPLACE2(PyObject,      NPY_OBJECT)
  *     (type* ARRAYOUT_ARRAY[ANY])
  *     (type* ARRAYOUT_ARRAY[ANY][ANY])
  *
- * where "type" is any type supported by the Numeric module, to be
+ * where "type" is any type supported by the numpy module, to be
  * called in python with an argument list of a single contiguous
- * Numeric array.  This can be applied to an existing function using
+ * numpy array.  This can be applied to an existing function using
  * the %apply directive:
  *
  *     %apply (double* ARRAYOUT_ARRAY[ANY] {double series, int length}
@@ -462,9 +462,9 @@ TYPEMAP_ARRAYOUT2(PyObject,      NPY_OBJECT)
  *
  *     (type** ARGOUT_ARRAY)
  *
- * where "type" is any type supported by the Numeric module, to be
+ * where "type" is any type supported by the numpy module, to be
  * called in python with an argument list of a single contiguous
- * Numeric array.  This can be applied to an existing function using
+ * numpy array.  This can be applied to an existing function using
  * the %apply directive:
  *
  *     %apply (DREAL** ARGOUT_ARRAY1, {(DREAL** series, INT* len)}
@@ -554,4 +554,56 @@ TYPEMAP_ARGOUT2(LONGREAL,      NPY_FLOAT128)
 TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
 
 #undef TYPEMAP_ARGOUT2
+
+/* input typemap for CStringFeatures<CHAR> */
+%typemap(in) (T_STRING<CHAR>* strings, INT num_strings, INT max_len)
+{
+    PyObject* list=(PyObject*) $input;
+    /* Check if is a list */
+    if (!list || PyList_Check(list) || PyList_Size(list)==0)
+    {
+        INT size=PyList_Size(list);
+        T_STRING<CHAR>* strings=new T_STRING<CHAR>[size];
+
+        int max_len=0;
+
+        for (int i=0; i<size; i++)
+        {
+            PyObject *o = PyList_GetItem(list,i);
+            if (PyString_Check(o))
+            {
+                INT len=PyString_Size(o);
+                max_len=CMath::max(len,max_len);
+                const CHAR* str=PyString_AsString(o);
+
+                strings[i].length=len;
+                strings[i].string=NULL;
+
+                if (len>0)
+                {
+                    strings[i].string=new CHAR[len];
+                    memcpy(strings[i].string, str, len);
+                }
+            }
+            else
+            {
+                PyErr_SetString(PyExc_TypeError,"all elements in list must be strings");
+
+                for (INT j=0; j<i; j++)
+                    delete[] strings[i].string;
+                delete[] strings;
+                SWIG_fail;
+            }
+        }
+        $1=strings;
+        $2=size;
+        $3=max_len;
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError,"not a/empty list");
+        return NULL;
+    }
+
+}
 #endif

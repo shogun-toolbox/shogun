@@ -1224,37 +1224,3 @@ DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat,
     delete[] R;
     return result;
 }
-
-
-/*
-
-
-DREAL* CWeightedDegreeCharKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas)
-{
-	num_feat=((CCharFeatures*) get_rhs())->get_num_features();
-	ASSERT(num_feat>0);
-	ASSERT(((CCharFeatures*) get_rhs())->get_alphabet()->get_alphabet() == DNA);
-	num_sym=4; //for now works only w/ DNA
-	INT sym_offset=(INT) pow(num_sym,max_degree);
-
-	if (!result)
-	{
-		INT buflen=(INT) num_feat*sym_offset;
-		result= new DREAL[buflen];
-		ASSERT(result);
-		memset(result, 0, sizeof(DREAL)*buflen);
-	}
-
-	for (INT i=0; i<num_feat; i++)
-	{
-		//init_optimization(num_suppvec, IDX, alphas, i, CMath::min(num_feat-1,i+1));
-		init_optimization(num_suppvec, IDX, alphas, i);
-
-		tries.compute_scoring_helper(NO_CHILD, i, 0, 0.0, 0, max_degree, num_feat, num_sym, sym_offset, 0, result);
-		SG_PROGRESS(i,0,num_feat);
-	}
-	num_sym=sym_offset;
-
-	return result;
-}
-*/

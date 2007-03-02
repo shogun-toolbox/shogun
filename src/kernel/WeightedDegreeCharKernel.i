@@ -7,7 +7,6 @@
 %apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* p_weights, INT d)};
 #endif
 
-%include "kernel/SimpleKernel.i"
 %include "kernel/WeightedDegreeCharKernel.h" 
 
 #ifdef HAVE_PYTHON

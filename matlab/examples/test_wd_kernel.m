@@ -29,10 +29,10 @@ sg('send_command','clean_kernels');
 sg('send_command', 'use_linadd 1' );
 sg('send_command', 'use_batch_computation 1');
 
-sg('set_features', 'TRAIN', traindat);
+sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 
-sg('set_features', 'TEST', testdat);
+sg('set_features', 'TEST', testdat, 'DNA');
 sg('set_labels', 'TEST', testlab);
 %
 sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
@@ -60,10 +60,10 @@ sg('send_command','clean_kernels');
 sg('send_command', 'use_linadd 1' );
 sg('send_command', 'use_batch_computation 1');
 
-sg('set_features', 'TRAIN', traindat);
+sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 %
-sg('set_features', 'TEST', testdat);
+sg('set_features', 'TEST', testdat, 'DNA');
 sg('set_labels', 'TEST', testlab);
 %
 sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS2 CHAR 10 %i %i %i %s', order, max_mismatch, len, shifts ) );

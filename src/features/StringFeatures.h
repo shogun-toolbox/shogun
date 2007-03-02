@@ -22,7 +22,6 @@
 #include "lib/File.h"
 #include "lib/Mathematics.h"
 
-#include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>

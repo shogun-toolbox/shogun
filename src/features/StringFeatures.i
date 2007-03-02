@@ -26,6 +26,11 @@
     {
         self->CStringFeatures<CHAR>::get_string(dst,len);
     }
+
+    void set_string_features(T_STRING<CHAR>* strings, INT num_strings, INT max_len)
+    {
+        self->CStringFeatures<CHAR>::set_features(strings, num_strings, max_len);
+    }
 };
 %extend CStringFeatures<BYTE>
 {

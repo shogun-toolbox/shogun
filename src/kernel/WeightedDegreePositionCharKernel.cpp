@@ -1253,7 +1253,3 @@ DREAL* CWeightedDegreePositionCharKernel::compute_scoring(INT max_degree, INT& n
     delete[] R;
     return result;
 }
-
-
-
-

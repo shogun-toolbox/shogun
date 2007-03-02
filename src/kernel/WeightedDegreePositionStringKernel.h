@@ -20,9 +20,11 @@
 class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 {
 	public:
-		CWeightedDegreePositionStringKernel(LONG size, DREAL* weights, INT degree, INT max_mismatch, 
-				INT * shift, INT shift_len, bool use_norm=false,
+		CWeightedDegreePositionStringKernel(INT size, DREAL* weights, INT degree, INT max_mismatch, 
+				INT * shift, INT shift_len, bool use_norm=true,
 				INT mkl_stepsize=1) ;
+		//CWeightedDegreePositionStringKernel(INT size, INT degree, INT max_shift, INT max_mismatch=0,
+		//		bool use_norm=true, INT mkl_stepsize=1);
 		~CWeightedDegreePositionStringKernel() ;
 
 		virtual bool init(CFeatures* l, CFeatures* r);
