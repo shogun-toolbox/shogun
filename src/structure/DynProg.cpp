@@ -34,9 +34,9 @@ extern "C" int	finite(double);
 #define USEORIGINALLIST 2
 #define USEFIXEDLENLIST 0
 //#define USE_TMP_ARRAYCLASS
-#define DYNPROG_DEBUG
+//#define DYNPROG_DEBUG
 
-CArray2<INT> g_orf_info(1,1) ;
+//CArray2<INT> g_orf_info(1,1) ;
 
 static INT word_degree_default[4]={3,4,5,6} ;
 static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -1842,15 +1842,15 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, false) ;
 	CArray3<DREAL> seq_input(seq_array, N, seq_len, max_num_signals) ;
 	seq_input.set_name("seq_input") ;
-	seq_input.display_array() ;
+	//seq_input.display_array() ;
 	CArray2<DREAL> seq(N, seq_len) ;
 	seq.set_name("seq") ;
 	seq.zero() ;
 
 	CArray2<INT> orf_info(orf_info_array, N, 2) ;
 	orf_info.set_name("orf_info") ;
-	g_orf_info = orf_info ;
-	orf_info.display_array() ;
+	//g_orf_info = orf_info ;
+	//orf_info.display_array() ;
 
 	DREAL svm_value[num_svms] ;
 	{ // initialize svm_svalue
@@ -1927,8 +1927,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	}
 	ASSERT(nbest<32000) ;
 	
-	char* xx=strndup(genestr, genestr_len) ;
-	fprintf(stderr, "genestr='%s'\n", xx) ;
+	//char* xx=strndup(genestr, genestr_len) ;
+	//fprintf(stderr, "genestr='%s'\n", xx) ;
 
 	CArray<bool> genestr_stop(genestr_len) ;
 	//genestr_stop.zero() ;
@@ -2065,7 +2065,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	pp.display_array() ;
 	
 	//seq.zero() ;
-	seq_input.display_array() ;
+	//seq_input.display_array() ;
 
 #endif //DYNPROG_DEBUG
 
@@ -2676,7 +2676,7 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 		}
 	}
 
-	INT total_len = 0 ;
+	//INT total_len = 0 ;
 	
 	//transition_matrix_a.display_array() ;
 	//transition_matrix_a_id.display_array() ;
@@ -2777,14 +2777,17 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 #ifdef DYNPROG_DEBUG
 				SG_DEBUG( "%i. transition penalty: from_state=%i to_state=%i from_pos=%i [%i] to_pos=%i [%i] value=%i\n", i, from_state, to_state, from_pos, pos[from_pos], to_pos, pos[to_pos], pos[to_pos]-pos[from_pos]) ;
 
-				INT orf_from = g_orf_info.element(from_state,0) ;
-				INT orf_to   = g_orf_info.element(to_state,1) ;
-				ASSERT((orf_from!=-1)==(orf_to!=-1)) ;
-				if (orf_from != -1)
-					total_len = total_len + pos[to_pos]-pos[from_pos] ;
-
-				SG_DEBUG( "%i. orf_info: from_orf=%i to_orf=%i orf_diff=%i, len=%i, lenmod3=%i, total_len=%i, total_lenmod3=%i\n", i, orf_from, orf_to, (orf_to-orf_from)%3, pos[to_pos]-pos[from_pos], (pos[to_pos]-pos[from_pos])%3, total_len, total_len%3) ;
+				/*
+				  INT orf_from = g_orf_info.element(from_state,0) ;
+				  INT orf_to   = g_orf_info.element(to_state,1) ;
+				  ASSERT((orf_from!=-1)==(orf_to!=-1)) ;
+				  if (orf_from != -1)
+				  total_len = total_len + pos[to_pos]-pos[from_pos] ;
+				  
+				  SG_DEBUG( "%i. orf_info: from_orf=%i to_orf=%i orf_diff=%i, len=%i, lenmod3=%i, total_len=%i, total_lenmod3=%i\n", i, orf_from, orf_to, (orf_to-orf_from)%3, pos[to_pos]-pos[from_pos], (pos[to_pos]-pos[from_pos])%3, total_len, total_len%3) ;
+				*/
 #endif
+
 				PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value) ;
 			}
 #ifdef DYNPROG_DEBUG
