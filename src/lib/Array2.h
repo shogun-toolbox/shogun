@@ -156,7 +156,7 @@ CArray2(const T* p_array, INT dim1, INT dim2)
 		{
 			CArray<T>::SG_PRINT( "element(%d,:) = [ ",i);
 			for (INT j=0; j<dim2_size; j++)
-				CArray<T>::SG_PRINT( "%d,", element(i,j));
+				CArray<T>::SG_PRINT( "%1.1f,", (float) element(i,j));
 			CArray<T>::SG_PRINT( " ]\n");
 		}
 	}

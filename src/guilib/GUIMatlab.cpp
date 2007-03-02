@@ -536,6 +536,11 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 		INT dict_weigths_num=mxGetN(mx_dict_weights) ;
 		
 
+		fprintf(stderr, "genestr_num = %i, L=%i\n", genestr_num, L) ;
+		
+		if (genestr_num>L)
+			SG_ERROR( "more strings than the length of the strings ... it seems likely to be wrongly transposed \n");
+
 		if (!(mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
 			  mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
 			  ((mxGetN(mx_a_trans) == 3)||(mxGetN(mx_a_trans) == 4)) ))

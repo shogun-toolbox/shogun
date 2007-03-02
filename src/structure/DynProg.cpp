@@ -1,3 +1,4 @@
+
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +34,9 @@ extern "C" int	finite(double);
 #define USEORIGINALLIST 2
 #define USEFIXEDLENLIST 0
 //#define USE_TMP_ARRAYCLASS
-//#define DYNPROG_DEBUG
+#define DYNPROG_DEBUG
+
+CArray2<INT> g_orf_info(1,1) ;
 
 static INT word_degree_default[4]={3,4,5,6} ;
 static INT cum_num_words_default[5]={0,64,320,1344,5440} ;
@@ -397,6 +400,15 @@ bool CDynProg::check_svm_arrays()
 	}
 	else
 	{
+		if ((num_unique_words.get_dim1()==num_degrees) &&
+            (mod_words.get_dim1()==num_svms) &&
+			(mod_words.get_dim2()==2) &&
+			(sign_words.get_dim1()==num_svms) &&
+            (string_words.get_dim1()==num_svms))
+			fprintf(stderr, "OK\n") ;
+		else
+			fprintf(stderr, "not OK\n") ;
+
 		if (!(word_degree.get_dim1()==num_degrees))
 			SG_WARNING("SVM array: word_degree.get_dim1()!=num_degrees") ;
 		if (!(cum_num_words.get_dim1()==num_degrees+1))
@@ -1706,7 +1718,7 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 		{
 			for (int i=posprev-1 ; (i>=poscurrent) && (i>=0) ; i--)
 			{
-//				SG_DEBUG( "string_words_array[0]=%i, j=%i, i=%i\n", string_words_array[0], j, i) ;
+				//fprintf(stderr, "string_words_array[0]=%i (%ld), j=%i (%ld)  i=%i\n", string_words_array[0], wordstr[string_words_array[0]], j, wordstr[string_words_array[0]][j], i) ;
 				
 				WORD word = wordstr[string_words_array[0]][j][i] ;
 				INT last_string = string_words_array[0] ;
@@ -1816,6 +1828,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	mod_words.display_array() ;
 	sign_words.display_array() ;
 	string_words.display_array() ;
+	fprintf(stderr, "use_orf = %i\n", use_orf) ;
 #endif
 	
 	const INT default_look_back = 30000 ;
@@ -1828,10 +1841,16 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	CArray2<CPlifBase*> PEN(Plif_matrix, N, N, false, false) ;
 	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, false) ;
 	CArray3<DREAL> seq_input(seq_array, N, seq_len, max_num_signals) ;
+	seq_input.set_name("seq_input") ;
+	seq_input.display_array() ;
 	CArray2<DREAL> seq(N, seq_len) ;
-	//seq.zero() ;
+	seq.set_name("seq") ;
+	seq.zero() ;
+
 	CArray2<INT> orf_info(orf_info_array, N, 2) ;
-	
+	orf_info.set_name("orf_info") ;
+	g_orf_info = orf_info ;
+	orf_info.display_array() ;
 
 	DREAL svm_value[num_svms] ;
 	{ // initialize svm_svalue
@@ -1868,7 +1887,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 						break ;
 				}
 	}
-	
+
 	{ // determine maximal length of look-back
 		for (INT i=0; i<N; i++)
 			for (INT j=0; j<N; j++)
@@ -1907,7 +1926,10 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					 mem_use) ;
 	}
 	ASSERT(nbest<32000) ;
-		
+	
+	char* xx=strndup(genestr, genestr_len) ;
+	fprintf(stderr, "genestr='%s'\n", xx) ;
+
 	CArray<bool> genestr_stop(genestr_len) ;
 	//genestr_stop.zero() ;
 	
@@ -2006,13 +2028,13 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	pos_seq.display_size() ;
 
 	dict_weights.display_size() ;
-	word_degree.display_size() ;
-	cum_num_words.display_size() ;
-	num_words.display_size() ;
+	word_degree.display_array() ;
+	cum_num_words.display_array() ;
+	num_words.display_array() ;
 	//word_used.display_size() ;
 	//svm_values_unnormalized.display_size() ;
-	svm_pos_start.display_size() ;
-	num_unique_words.display_size() ;
+	svm_pos_start.display_array() ;
+	num_unique_words.display_array() ;
 
 	PEN.display_size() ;
 	PEN_state_signals.display_size() ;
@@ -2038,6 +2060,13 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 
 	state_seq.display_size() ;
 	pos_seq.display_size() ;
+
+	CArray<INT>pp = CArray<INT>(pos, seq_len) ;
+	pp.display_array() ;
+	
+	//seq.zero() ;
+	seq_input.display_array() ;
+
 #endif //DYNPROG_DEBUG
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2061,7 +2090,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	}
 
 	// translate to words, if svm is used
-	SG_DEBUG("genestr_num = %i, genestr_len = %i\n", genestr_num, genestr_len) ;
+	SG_DEBUG("genestr_num = %i, genestr_len = %i, num_degree=%i, use_svm=%i\n", genestr_num, genestr_len, num_degrees, use_svm) ;
 	
 	WORD** wordstr[genestr_num] ;
 	for (INT k=0; k<genestr_num; k++)
@@ -2647,6 +2676,8 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 		}
 	}
 
+	INT total_len = 0 ;
+	
 	//transition_matrix_a.display_array() ;
 	//transition_matrix_a_id.display_array() ;
 	
@@ -2745,6 +2776,14 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				my_scores[i] += nscore ;
 #ifdef DYNPROG_DEBUG
 				SG_DEBUG( "%i. transition penalty: from_state=%i to_state=%i from_pos=%i [%i] to_pos=%i [%i] value=%i\n", i, from_state, to_state, from_pos, pos[from_pos], to_pos, pos[to_pos], pos[to_pos]-pos[from_pos]) ;
+
+				INT orf_from = g_orf_info.element(from_state,0) ;
+				INT orf_to   = g_orf_info.element(to_state,1) ;
+				ASSERT((orf_from!=-1)==(orf_to!=-1)) ;
+				if (orf_from != -1)
+					total_len = total_len + pos[to_pos]-pos[from_pos] ;
+
+				SG_DEBUG( "%i. orf_info: from_orf=%i to_orf=%i orf_diff=%i, len=%i, lenmod3=%i, total_len=%i, total_lenmod3=%i\n", i, orf_from, orf_to, (orf_to-orf_from)%3, pos[to_pos]-pos[from_pos], (pos[to_pos]-pos[from_pos])%3, total_len, total_len%3) ;
 #endif
 				PEN.element(to_state, from_state)->penalty_add_derivative(pos[to_pos]-pos[from_pos], svm_value) ;
 			}

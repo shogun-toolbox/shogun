@@ -271,7 +271,7 @@ public:
 	{
 		display_size();
 		for (INT i=0; i<array_size; i++)
-			SG_PRINT("%d,", array[i]);
+			SG_PRINT("%1.1f,", (float)array[i]);
 		SG_PRINT("\n");
 	}
 

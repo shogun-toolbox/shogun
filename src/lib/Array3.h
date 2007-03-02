@@ -176,6 +176,22 @@ CArray3(const T* p_array, INT dim1, INT dim2, INT dim3)
 		CArray<T>::SG_PRINT( "3d-Array of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size);
 	}
 
+	void display_array() const
+	{
+		if (CArray<T>::get_name())
+			CArray<T>::SG_PRINT( "3d-Array '%s' of size: %dx%dx%d\n", CArray<T>::get_name(), dim1_size, dim2_size, dim3_size);
+		else
+			CArray<T>::SG_PRINT( "2d-Array of size: %dx%dx%d\n",dim1_size, dim2_size, dim3_size);
+		for (INT k=0; k<dim3_size; k++)
+			for (INT i=0; i<dim1_size; i++)
+			{
+				CArray<T>::SG_PRINT( "element(%d,:,%d) = [ ",i, k);
+				for (INT j=0; j<dim2_size; j++)
+					CArray<T>::SG_PRINT( "%1.1f,", (float)element(i,j,k));
+				CArray<T>::SG_PRINT( " ]\n");
+			}
+	}
+
 protected:
 	/// the number of potentially used elements in array
 	INT dim1_size;
