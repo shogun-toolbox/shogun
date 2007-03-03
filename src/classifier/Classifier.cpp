@@ -16,8 +16,7 @@ CClassifier::CClassifier() : CSGObject(), labels(NULL)
 
 CClassifier::~CClassifier()
 {
-    if (labels)
-        labels->unref();
+    SG_UNREF(labels);
 }
 
 CLabels* CClassifier::classify(CLabels* output)

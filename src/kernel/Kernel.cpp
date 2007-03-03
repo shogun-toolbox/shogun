@@ -321,9 +321,9 @@ bool CKernel::init(CFeatures* l, CFeatures* r)
 	ASSERT(l->get_feature_type() == r->get_feature_type());
 
     //increase reference counts
-    l->ref();
+    SG_REF(l);
     if (l!=r)
-        r->ref();
+        SG_REF(r);
 
 	lhs=l;
 	rhs=r;

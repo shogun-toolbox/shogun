@@ -108,7 +108,7 @@ class CCombinedKernel : public CKernel
 		inline bool insert_kernel(CKernel* k)
 		{
             ASSERT(k);
-            k->ref();
+            SG_REF(k);
 
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);
@@ -119,7 +119,7 @@ class CCombinedKernel : public CKernel
 		inline bool append_kernel(CKernel* k)
 		{
             ASSERT(k);
-            k->ref();
+            SG_REF(k);
 
 			if (!(k->has_property(KP_LINADD)))
 				unset_property(KP_LINADD);

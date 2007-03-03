@@ -30,8 +30,8 @@ class CClassifier : public CSGObject
 		virtual bool load(FILE* srcfile) { ASSERT(srcfile); return false; }
 		virtual bool save(FILE* dstfile) { ASSERT(dstfile); return false; }
 
-		virtual inline void set_labels(CLabels* lab) { lab->ref(); labels=lab; }
-		virtual inline CLabels* get_labels() { labels->ref(); return labels; }
+		virtual inline void set_labels(CLabels* lab) { SG_REF(lab);; labels=lab; }
+		virtual inline CLabels* get_labels() { SG_REF(labels); return labels; }
 
 		virtual EClassifierType get_classifier_type() { return CT_NONE; }
 

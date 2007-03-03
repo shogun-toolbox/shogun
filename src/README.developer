@@ -147,11 +147,11 @@ FUNCTIONS:
  
 GETTING / SETTING OBJECTS
 
-If a class stores a pointer to an object it should call obj->ref() (if obj != NULL) to
-increase the objects reference count and obj->unref() und class desctruction (which will
+If a class stores a pointer to an object it should call SG_REF(obj) to
+increase the objects reference count and SG_UNREF(obj) on class desctruction (which will
 decrease the objects reference count and call the objects destructor if ref_count()==0.
 Note that the caller (from within C++) of any get_* function returning an object should
-also call unref() when done with the object. This makes the swig wrapped interfaces
+also call SG_UNREF(obj) when done with the object. This makes the swig wrapped interfaces
 automagically take care of object destruction.
 
 If a class function returns a new object this has to be stated in the corresponding swig

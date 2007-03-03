@@ -18,22 +18,30 @@
 class CSGObject;
 class CIO;
 
+// define reference counter macros
+#ifdef HAVE_SWIG
+#define SG_REF(x) { if (x) x->ref(); }
+#define SG_UNREF(x) { if (x) x->unref(); } 
+#else
+#define SG_REF(x)
+#define SG_UNREF(x)
+#endif // HAVE_SWIG
 class CSGObject
 {
 public:
-	inline CSGObject() : refcount(0) {}
-
-#ifdef HAVE_SWIG
-	inline CSGObject(const CSGObject& orig) 
-		: refcount(0) , parallel(orig.parallel), io(orig.io) {}
-#else
-	inline CSGObject(const CSGObject& orig) 
-		: refcount(0) {}
-#endif
-
     virtual ~CSGObject()
     {
     }
+
+#ifdef HAVE_SWIG 
+	inline CSGObject() : refcount(0)
+	{
+	}
+
+	inline CSGObject(const CSGObject& orig)
+		: refcount(0) , parallel(orig.parallel), io(orig.io)
+	{
+	}
 
 	inline INT ref()
 	{
@@ -42,15 +50,12 @@ public:
 
 	inline INT ref_count() const
 	{
-#ifdef HAVE_SWIG 
 		SG_DEBUG("ref_count(): refcount is: %d\n", refcount);
-#endif
 		return refcount;
 	}
 
 	inline INT unref()
 	{
-#ifdef HAVE_SWIG 
 		if (refcount == 0 || --refcount == 0 )
         {
             SG_DEBUG("unref():%ld obj:%x destroying\n", refcount, (ULONG) this);
@@ -64,26 +69,29 @@ public:
             SG_DEBUG("unref():%ld obj:%x decreased\n", refcount, (ULONG) this);
             return refcount;
         }
-#else
-		if (refcount>0)
-			return --refcount;
-		else
-			return 0;
-#endif
 	}
 
 private:
 	INT refcount;
 
 public:
-#ifdef HAVE_SWIG
 	CParallel parallel;
 	CIO io;
 	CVersion version;
 #else
+public:
+	inline CSGObject()
+	{
+	}
+
+	inline CSGObject(const CSGObject& orig)
+	{
+	}
+
+public:
 	static CParallel parallel;
 	static CIO io;
 	static CVersion version;
-#endif
+#endif // HAVE_SWIG
 };
 #endif // __SGOBJECT_H__

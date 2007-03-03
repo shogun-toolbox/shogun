@@ -16,8 +16,7 @@ CKernelMachine::CKernelMachine():CClassifier(), kernel(NULL)
 
 CKernelMachine::~CKernelMachine()
 {
-    if (kernel)
-        kernel->unref();
+    SG_REF(kernel);
 }
 
 CLabels* CKernelMachine::classify(CLabels* output)

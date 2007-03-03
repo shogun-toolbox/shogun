@@ -1470,9 +1470,6 @@ bool CGUIKernel::add_kernel(CHAR* param)
 
 bool CGUIKernel::clean_kernel(CHAR* param)
 {
-	CKernelMachine* svm=(CKernelMachine*) gui->guisvm.get_svm();
-	if (svm)
-		svm->set_kernel(NULL);
 	delete kernel;
 	kernel = NULL;
 	return true;

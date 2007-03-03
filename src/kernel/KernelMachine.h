@@ -28,15 +28,13 @@ class CKernelMachine : public CClassifier
 
 		inline void set_kernel(CKernel* k)
 		{
-			if (k)
-				k->ref();
+            SG_REF(k);
 			kernel=k;
 		}
 
 		inline CKernel* get_kernel()
 		{
-			if (kernel)
-				kernel->ref();
+            SG_REF(kernel);
 			return kernel;
 		}
 

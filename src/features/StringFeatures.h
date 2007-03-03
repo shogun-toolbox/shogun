@@ -124,7 +124,7 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	inline CAlphabet* get_alphabet()
 	{
-		alphabet->ref();
+		SG_REF(alphabet);
 		return alphabet;
 	}
 

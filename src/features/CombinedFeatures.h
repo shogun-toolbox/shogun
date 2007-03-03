@@ -62,52 +62,47 @@ public:
 	inline CFeatures* get_first_feature_obj()
 	{
         CFeatures* f=feature_list->get_first_element();
-        if (f)
-            f->ref();
+        SG_REF(f);
 		return f;
 	}
 	inline CFeatures* get_first_feature_obj(CListElement<CFeatures*>*&current)
 	{
 		CFeatures* f=feature_list->get_first_element(current);
-        if (f)
-            f->ref();
+        SG_REF(f);
 		return f;
 	}
 
 	inline CFeatures* get_next_feature_obj()
 	{
 		CFeatures* f=feature_list->get_next_element();
-        if (f)
-            f->ref();
+        SG_REF(f);
 		return f;
 	}
 	inline CFeatures* get_next_feature_obj(CListElement<CFeatures*>*&current)
 	{
 		CFeatures* f=feature_list->get_next_element(current);
-        if (f)
-            f->ref();
+        SG_REF(f);
 		return f;
 	}
 
 	inline CFeatures* get_last_feature_obj()
 	{
 		CFeatures* f=feature_list->get_last_element();
-        if (f)
-            f->ref();
+        SG_REF(f);
 		return f;
 	}
 
 	inline bool insert_feature_obj(CFeatures* obj)
 	{
         ASSERT(obj);
-        obj->ref();
+        SG_REF(obj);
 		return feature_list->insert_element(obj);
 	}
 
 	inline bool append_feature_obj(CFeatures* obj)
 	{
         ASSERT(obj);
-        obj->ref();
+        SG_REF(obj);
 		return feature_list->append_element(obj);
 	}
 
@@ -116,7 +111,7 @@ public:
         CFeatures* f=feature_list->delete_element();
         if (f)
         {
-            f->unref();
+            SG_UNREF(f);
             return true;
         }
         else
