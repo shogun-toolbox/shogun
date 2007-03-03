@@ -42,20 +42,21 @@ public:
 
 	inline INT ref_count() const
 	{
+#ifdef HAVE_SWIG 
 		SG_DEBUG("ref_count(): refcount is: %d\n", refcount);
+#endif
 		return refcount;
 	}
 
 	inline INT unref()
 	{
+#ifdef HAVE_SWIG 
 		if (refcount == 0 || --refcount == 0 )
         {
             SG_DEBUG("unref():%ld obj:%x destroying\n", refcount, (ULONG) this);
-#ifdef HAVE_SWIG 
 			//don't do this yet for static interfaces (as none is
 			//calling ref/unref properly)
 			delete this;
-#endif
             return 0;
         }
         else
@@ -63,6 +64,12 @@ public:
             SG_DEBUG("unref():%ld obj:%x decreased\n", refcount, (ULONG) this);
             return refcount;
         }
+#else
+		if (refcount>0)
+			return --refcount;
+		else
+			return 0;
+#endif
 	}
 
 private:

@@ -9,6 +9,7 @@
 %apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* p_weights, INT d)};
 #endif
 
+/*
 #ifdef HAVE_PYTHON
 %pythoncode %{
   import numpy
@@ -30,3 +31,4 @@
 				INT mkl_stepsize=1) ;
 %}
 #endif
+*/
