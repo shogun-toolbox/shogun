@@ -25,7 +25,7 @@
 
 /* Given a PyObject, return a string describing its type.
  */
-char* pytype_string(PyObject* py_obj) {
+char* typecode_string(PyObject* py_obj) {
   if (py_obj == NULL          ) return "C NULL value";
   if (PyCallable_Check(py_obj)) return "callable"    ;
   if (PyString_Check(  py_obj)) return "string"      ;
@@ -41,14 +41,39 @@ char* pytype_string(PyObject* py_obj) {
   return "unkown type";
 }
 
-/* Given a numpy typecode, return a string describing the type.
+/* Given a numpy typecode, return a string describing the type, assuming
+the following numpy type codes:
+
+enum NPY_TYPES {    NPY_BOOL=0,
+                    NPY_BYTE, NPY_UBYTE,
+                    NPY_SHORT, NPY_USHORT,
+                    NPY_INT, NPY_UINT,
+                    NPY_LONG, NPY_ULONG,
+                    NPY_LONGLONG, NPY_ULONGLONG,
+                    NPY_FLOAT, NPY_DOUBLE, NPY_LONGDOUBLE,
+                    NPY_CFLOAT, NPY_CDOUBLE, NPY_CLONGDOUBLE,
+                    NPY_OBJECT=17,
+                    NPY_STRING, NPY_UNICODE,
+                    NPY_VOID,
+                    NPY_NTYPES,
+                    NPY_NOTYPE,
+                    NPY_CHAR, 
+                    NPY_USERDEF=256 
  */
+
 char* typecode_string(int typecode) {
-  char* type_names[20] = {"char","unsigned byte","byte","short",
+  char* type_names[24] = {"bool","byte","unsigned byte","short",
 			  "unsigned short","int","unsigned int","long",
-			  "float","double","complex float","complex double",
-			  "object","ntype","unkown"};
-  return type_names[typecode];
+              "unsigned long","long long", "unsigned long long",
+			  "float","double","long double",
+              "complex float","complex double","complex long double",
+			  "object","string","unicode","void","ntype","notype","char"};
+  char* user_def="user defined";
+
+  if (typecode>24)
+      return user_def;
+  else
+      return type_names[typecode];
 }
 
 /* Make sure input has correct numeric type.  Allow character and byte
@@ -62,7 +87,8 @@ int type_match(int actual_type, int desired_type) {
  * legal.  If not, set the python error string appropriately and
  * return NULL./
  */
-PyArrayObject* obj_to_array_no_conversion(PyObject* input, int typecode) {
+PyArrayObject* obj_to_array_no_conversion(PyObject* input, int typecode)
+{
   PyArrayObject* ary = NULL;
   if (is_array(input) && (typecode == PyArray_NOTYPE || 
 			  PyArray_EquivTypenums(array_type(input), 
@@ -79,9 +105,9 @@ PyArrayObject* obj_to_array_no_conversion(PyObject* input, int typecode) {
     }
     else {
       char * desired_type = typecode_string(typecode);
-      char * actual_type = pytype_string(input);
+      char * actual_type = typecode_string(input);
       PyErr_Format(PyExc_TypeError, 
-		   "Array of type '%s' required.  A %s was given", 
+		   "Array of type '%s' required.  Array of type '%s' given", 
 		   desired_type, actual_type);
       ary = NULL;
     }
@@ -92,21 +118,62 @@ PyArrayObject* obj_to_array_no_conversion(PyObject* input, int typecode) {
  * return the input pointer and flag it as not a new object.  If it is
  * not contiguous, create a new PyArrayObject using the original data,
  * flag it as a new object and return the pointer.
+ * 
+ * If array is NULL or dimensionality or typecode does not match
+ * return NULL
  */
 PyObject* make_contiguous(PyObject* ary, int* is_new_object,
-                               int min_dims, int max_dims)
+                               int dims, int typecode)
 {
-  PyObject* result;
-  if (PyArray_ISFARRAY(ary)) {
-    result = ary;
-    *is_new_object = 0;
-  }
-  else {
-      result=PyArray_FromAny((PyObject*)ary, NULL, min_dims, max_dims,
-              NPY_FARRAY | NPY_ENSURECOPY, NULL);
-      *is_new_object = 1;
-  }
-  return result;
+    PyObject* array;
+    if (PyArray_ISFARRAY(ary))
+    {
+        array = ary;
+        *is_new_object = 0;
+    }
+    else
+    {
+        array=PyArray_FromAny((PyObject*)ary, NULL,0,0, NPY_FARRAY|NPY_ENSURECOPY, NULL);
+        *is_new_object = 1;
+    }
+
+    if (!array)
+    {
+        PyErr_SetString(PyExc_TypeError, "Object did convert to Empty object - not an Array ?");
+        return NULL;
+    }
+
+    if (!is_array(array))
+    {
+        PyErr_SetString(PyExc_TypeError, "Object not an Array");
+        return NULL;
+    }
+
+    if (array_dimensions(array)!=dims)
+    {
+        PyErr_Format(PyExc_TypeError, "Array has wrong dimensionality," 
+                "expected a %dd-array, received a %dd-array", dims, array_dimensions(array));
+        if (*is_new_object)
+            Py_DECREF(array);
+        return NULL;
+    }
+
+    /*this works around a numpy oddity when LONG==INT32*/
+    if ((array_type(array) != typecode) &&
+        !(typecode==NPY_LONG && NPY_BITSOF_INT == NPY_BITSOF_LONG 
+            && NPY_BITSOF_INT==32 && array_type(array)==NPY_INT))
+    {
+        char* desired_type = typecode_string(typecode);
+        char* actual_type = typecode_string(array_type(array));
+        PyErr_Format(PyExc_TypeError, 
+                "Array of type '%s' required.  Array of type '%s' given", 
+                desired_type, actual_type);
+        if (*is_new_object)
+            Py_DECREF(array);
+        return NULL;
+    }
+
+    return array;
 }
 
 /* Test whether a python object is contiguous.  If array is
@@ -137,49 +204,7 @@ int require_dimensions(PyObject* ary, int exact_dimensions) {
   return success;
 }
 
-/* Require the given PyObject to have a specified shape.  If the
- * array has the specified shape, return 1.  Otherwise, set the python
- * error string and return 0.
- */
-int require_size(PyObject* ary, int* size, int n) {
-  int i;
-  int success = 1;
-  int len;
-  char desired_dims[255] = "[";
-  char s[255];
-  char actual_dims[255] = "[";
-  for(i=0; i < n;i++) {
-    if (size[i] != -1 &&  size[i] != array_size(ary,i)) {
-      success = 0;    
-    }
-  }
-  if (!success) {
-    for (i = 0; i < n; i++) {
-      if (size[i] == -1) {
-	sprintf(s, "*,");                
-      }
-      else
-      {
-	sprintf(s, "%d,", size[i]);                
-      }    
-      strcat(desired_dims,s);
-    }
-    len = strlen(desired_dims);
-    desired_dims[len-1] = ']';
-    for (i = 0; i < n; i++) {
-      sprintf(s, "%lld,", (LONG) array_size(ary,i));                            
-      strcat(actual_dims,s);
-    }
-    len = strlen(actual_dims);
-    actual_dims[len-1] = ']';
-    PyErr_Format(PyExc_TypeError, 
-		 "Array must have shape of %s.  Given array has shape of %s",
-		 desired_dims, actual_dims);
-  }
-  return success;
-}
 /* End John Hunter translation (with modifications by Bill Spotz) */
-
 %}
 
 %include "lib/common.i"
@@ -211,20 +236,14 @@ int require_size(PyObject* ary, int* size, int n) {
 /* One dimensional input arrays */
 %define TYPEMAP_IN1(type,typecode)
 %typemap(in) (type* IN_ARRAY1, INT DIM1)
-             (PyObject* array=NULL, int is_new_object) {
-  int size[1] = {-1};
-  array = make_contiguous($input, &is_new_object, 0, 0);
-  if (!array || !require_dimensions(array,1) || !require_size(array,size,1)
-          || PyArray_TYPE(array) != PyArray_TYPE($input) || PyArray_TYPE(array) != typecode)
-  {
-      /*SG_ERROR( "Expected TypeCode: typecode (%d) received array_type (%d)\n", typecode, PyArray_TYPE(array));*/
-      char *type_error_message = new char[256];
-      sprintf(type_error_message,"Expected TypeCode: typecode (%d) received array_type (%d)\n", typecode, PyArray_TYPE(array)); 
-      PyErr_SetString(PyExc_TypeError,type_error_message);
-      SWIG_fail;
-  }
-  $1 = (type*) PyArray_BYTES(array);
-  $2 = PyArray_DIM(array,0);
+             (PyObject* array=NULL, int is_new_object)
+{
+    array = make_contiguous($input, &is_new_object, 1,typecode);
+    if (!array)
+        SWIG_fail;
+
+    $1 = (type*) PyArray_BYTES(array);
+    $2 = PyArray_DIM(array,0);
 }
 %typemap(freearg) (type* IN_ARRAY1, INT DIM1) {
   if (is_new_object$argnum && array$argnum) Py_DECREF(array$argnum);
@@ -251,22 +270,15 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
  /* Two dimensional input arrays */
 %define TYPEMAP_IN2(type,typecode)
   %typemap(in) (type* IN_ARRAY2, INT DIM1, INT DIM2)
-               (PyObject* array=NULL, int is_new_object) {
-  int size[2] = {-1,-1};
+               (PyObject* array=NULL, int is_new_object)
+{
+    array = make_contiguous($input, &is_new_object, 2,typecode);
+    if (!array)
+        SWIG_fail;
 
-  array = make_contiguous($input, &is_new_object, 0, 0);
-  if (!array || !require_dimensions(array,2) || !require_size(array,size,1) 
-          || PyArray_TYPE(array) != PyArray_TYPE($input) || PyArray_TYPE(array) != typecode)
-  {
-      /*SG_ERROR( "Expected TypeCode: typecode (%d) received array_type (%d)\n", typecode, PyArray_TYPE(array));*/
-      char *type_error_message = new char[256];
-      sprintf(type_error_message,"Expected TypeCode: typecode (%d) received array_type (%d)\n", typecode, PyArray_TYPE(array));
-      PyErr_SetString(PyExc_TypeError,type_error_message);
-      SWIG_fail;
-  }
-  $1 = (type*) PyArray_BYTES(array);
-  $2 = PyArray_DIM(array,0);
-  $3 = PyArray_DIM(array,1);
+    $1 = (type*) PyArray_BYTES(array);
+    $2 = PyArray_DIM(array,0);
+    $3 = PyArray_DIM(array,1);
 }
 %typemap(freearg) (type* IN_ARRAY2, INT DIM1, INT DIM2) {
   if (is_new_object$argnum && array$argnum) Py_DECREF(array$argnum);
