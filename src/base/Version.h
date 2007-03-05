@@ -25,7 +25,7 @@ public:
 	{
 		SG_SPRINT("shogun (%s/%s/%s%d)\n\n", TARGET, MACHINE, VERSION_RELEASE, version_revision);
 		SG_SPRINT("Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society\n");
-		SG_SPRINT("Written   (W) 2000-2007 Soeren Sonnenburg, Gunnar Raetsch et.al.)\n\n");
+		SG_SPRINT("Written   (W) 2000-2007 Soeren Sonnenburg, Gunnar Raetsch et al.\n\n");
 #ifdef GPL
 		SG_SPRINT("This is free software; see the source for copying conditions.  There is NO\n");
 		SG_SPRINT("warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n");
