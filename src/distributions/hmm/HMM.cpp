@@ -158,9 +158,9 @@ CHMM::CHMM(CHMM* h)
 
 CHMM::CHMM(INT p_N, INT p_M, CModel* p_model, DREAL p_PSEUDO)
 {
-	this->N=N;
-	this->M=M;
-	p_model=NULL ;
+	this->N=p_N;
+	this->M=p_M;
+	model=NULL ;
 
 	SG_INFO( "hmm is using %i separate tables\n",  parallel.get_num_threads()) ;
 

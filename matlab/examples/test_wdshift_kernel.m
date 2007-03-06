@@ -31,8 +31,8 @@ sg('send_command','clean_kernels');
 sg('send_command', 'use_linadd 1' );
 sg('send_command', 'use_batch_computation 1');
 
-sg('add_features', 'TRAIN', traindat1);
-sg('add_features', 'TRAIN', traindat2);
+sg('add_features', 'TRAIN', traindat1, 'DNA');
+sg('add_features', 'TRAIN', traindat2, 'DNA');
 sg('send_command', sprintf('convert TRAIN SIMPLE CHAR SIMPLE WORD DNA %i %i', order_com, order_com-1 ) );
 sg('send_command', 'clean_preproc' );
 sg('send_command', 'add_preproc SORTWORD');
@@ -45,8 +45,8 @@ sg('send_command', 'attach_preproc TRAIN');
 sg('add_features', 'TRAIN', traindat4);
 sg('set_labels', 'TRAIN', trainlab);
 
-sg('add_features', 'TEST', testdat1);
-sg('add_features', 'TEST', testdat2);
+sg('add_features', 'TEST', testdat1, 'DNA');
+sg('add_features', 'TEST', testdat2, 'DNA');
 sg('send_command', sprintf('convert TEST SIMPLE CHAR SIMPLE WORD DNA %i %i', order_com, order_com-1 ) );
 sg('add_features', 'TEST', testdat3);
 sg('add_features', 'TEST', testdat4);
@@ -84,8 +84,8 @@ sg('send_command','clean_kernels');
 sg('send_command', 'use_linadd 1' );
 sg('send_command', 'use_batch_computation 0');
 
-sg('add_features', 'TRAIN', traindat1);
-sg('add_features', 'TRAIN', traindat2);
+sg('add_features', 'TRAIN', traindat1, 'DNA');
+sg('add_features', 'TRAIN', traindat2, 'DNA');
 sg('send_command', sprintf('convert TRAIN SIMPLE CHAR SIMPLE WORD DNA %i %i', order_com, order_com-1 ) );
 sg('send_command', 'clean_preproc' );
 sg('send_command', 'add_preproc SORTWORD');
@@ -98,8 +98,8 @@ sg('send_command', 'attach_preproc TRAIN');
 sg('add_features', 'TRAIN', traindat4);
 sg('set_labels', 'TRAIN', trainlab);
 %
-sg('add_features', 'TEST', testdat1);
-sg('add_features', 'TEST', testdat2);
+sg('add_features', 'TEST', testdat1, 'DNA');
+sg('add_features', 'TEST', testdat2, 'DNA');
 sg('send_command', sprintf('convert TEST SIMPLE CHAR SIMPLE WORD DNA %i %i', order_com, order_com-1 ) );
 sg('add_features', 'TEST', testdat3);
 sg('add_features', 'TEST', testdat4);
