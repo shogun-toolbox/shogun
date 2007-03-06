@@ -76,7 +76,7 @@ bool CGUIHMM::baum_welch_train(CHAR* param)
 	    return false ;
 	  } ;
 	CStringFeatures<WORD>* sf = ((CStringFeatures<WORD>*) (gui->guifeatures.get_train_features()));
-	SG_DEBUG( "Stringfeatures have %d orig_symbols %d symbols %d order %d max_symbols\n",  sf->get_original_num_symbols(), sf->get_num_symbols(), sf->get_order(), sf->get_max_num_symbols());
+	SG_DEBUG( "Stringfeatures have %ld orig_symbols %ld symbols %d order %ld max_symbols\n",  (LONG) sf->get_original_num_symbols(), (LONG) sf->get_num_symbols(), sf->get_order(), (LONG) sf->get_max_num_symbols());
 
 	mkstemp(templname);
 	CHAR templname_best[40] ;

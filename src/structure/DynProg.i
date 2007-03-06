@@ -21,8 +21,6 @@
 %apply (bool* IN_ARRAY1, INT DIM1) {(bool * p_sign_words_array, INT num_elem)};
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* p_string_words_array, INT num_elem)};
 
-
-
 /* best_path_trans preparation functions */
 %apply (DREAL* IN_ARRAY2, INT DIM1, INT DIM2) {(DREAL* seq, INT N, INT seq_len)};
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* pos, INT seq_len)};
