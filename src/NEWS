@@ -1,3 +1,10 @@
+2007-03-06  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.3.2
+	* workaround for python-numpy, when long==int==int32, add bool support
+	* fix autodetection of atlas/lapack
+	* fix uninitialized variables in (GUI)HMM, valgrind errors
+
 2007-02-20  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.3.1

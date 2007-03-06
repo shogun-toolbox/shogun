@@ -11,7 +11,7 @@
 #include "distributions/Distribution.h"
 #include "lib/Mathematics.h"
 
-CDistribution::CDistribution() : features(NULL), pseudo_count(0)
+CDistribution::CDistribution() : CSGObject(), features(NULL), pseudo_count(0)
 {
 }
 

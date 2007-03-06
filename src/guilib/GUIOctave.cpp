@@ -749,7 +749,14 @@ CLabels* CGUIOctave::set_labels(const octave_value_list& vals)
 
 CHAR* CGUIOctave::get_octaveString(std::string s)
 {
-	CHAR* cstr = strdup(s.c_str());
+	const CHAR* str= s.c_str();
+	ASSERT(str && s.length()>0);
+
+	CHAR* cstr = new CHAR[s.length()+1];
+	ASSERT(cstr);
+
+	memcpy(cstr, str, s.length()+1);
+	cstr[s.length()]='\0';
 	return cstr;
 }
 
