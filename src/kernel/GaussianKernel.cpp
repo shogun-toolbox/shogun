@@ -23,12 +23,10 @@ CGaussianKernel::CGaussianKernel(CRealFeatures* l, CRealFeatures* r, double w, I
   : CSimpleKernel<DREAL>(size),width(w)
 {
 	init(l,r);
-	SG_SPRINT("creating gaussian kernel %x\n", (UINT) this);
 }
 
 CGaussianKernel::~CGaussianKernel()
 {
-	SG_SPRINT("deleting gaussian kernel %x\n", (UINT) this);
 }
   
 bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
