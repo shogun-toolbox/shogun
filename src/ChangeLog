@@ -1,5 +1,317 @@
+2007-03-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_wdshift_kernel.m, base/Version.h,
+	  distributions/hmm/HMM.cpp, gui/Octave.cpp: merge changes back to
+	  trunk
+	* releases/shogun_0.3.2,
+	  releases/shogun_0.3.2/matlab/examples/test_wd_kernel.m,
+	  releases/shogun_0.3.2/matlab/examples/test_wdshift_kernel.m,
+	  releases/shogun_0.3.2/src/NEWS,
+	  releases/shogun_0.3.2/src/base/Version.h,
+	  releases/shogun_0.3.2/src/configure,
+	  releases/shogun_0.3.2/src/distributions/Distribution.cpp,
+	  releases/shogun_0.3.2/src/distributions/hmm/HMM.cpp,
+	  releases/shogun_0.3.2/src/gui/Octave.cpp,
+	  releases/shogun_0.3.2/src/guilib/GUIHMM.cpp,
+	  releases/shogun_0.3.2/src/guilib/GUIOctave.cpp,
+	  releases/shogun_0.3.2/src/lib/numpy.i,
+	  releases/shogun_0.3.2/src/structure/DynProg.i, NEWS,
+	  guilib/GUIHMM.cpp, guilib/GUIOctave.cpp, structure/DynProg.i:
+	  release shogun 0.3.2 fixing a number of bugs in the examples
+	  and several valgrind hits in octave/hmm adding support for
+	  numpy boolean -> for msplicer v0.2
+
+2007-03-05  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* base/Version.h: fixed version string.
+	  G
+
+2007-03-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* lib/python_typemaps.i: * much more detailed error outputs when
+	  types/dims don't match
+	  * workaround a numpy issue when long == int (long and int are
+	  different
+	  types inside of numpy, but both are 32bit on 32bit machines)
+	  if they are 32bit and same size then treat long as int
+
+2007-03-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* README.developer, base/SGObject.h, classifier/Classifier.cpp,
+	  classifier/Classifier.h, features/CombinedFeatures.h,
+	  features/StringFeatures.h, guilib/GUIKernel.cpp,
+	  kernel/CombinedKernel.h, kernel/Kernel.cpp,
+	  kernel/KernelMachine.cpp, kernel/KernelMachine.h: make obj->ref()
+	  / obj->unref() a macro
+	  SG_REF(obj)
+	  SG_UNREF(obj)
+	  which is empty for the static interfaces
+	* base/SGObject.h, guilib/GUIKernel.cpp, kernel/KernelMachine.h,
+	  kernel/WeightedDegreePositionCharKernel.i: as we now unref()
+	  objects on destruction we have to
+	  make sure no one else killed the object before we unref() it
+	  this however may happen in all the static guis (matlab,...) so
+	  all interfaces except the python-modular one are broken if
+	  commands
+	  like clean_features/clean_kernels are called in wrong order
+	  
+	  this fixes just enough to make the test_wd_kernel script run
+
+2007-03-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_wd_kernel.m,
+	  trunk/python-modular/examples/stringfeatures.py,
+	  trunk/python-modular/examples/wds_kernel.py,
+	  classifier/svm/SVM.cpp, features/StringFeatures.h,
+	  features/StringFeatures.i, kernel/WeightedDegreeCharKernel.cpp,
+	  kernel/WeightedDegreeCharKernel.i,
+	  kernel/WeightedDegreePositionCharKernel.cpp,
+	  kernel/WeightedDegreePositionCharKernel.i,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h,
+	  lib/python_typemaps.i: this adds support for string featuers in
+	  python as follows:
+	  
+	  >>> from shogun.Features import *
+	  >>> x=StringCharFeatures(Alphabet(DNA))
+	  >>> x.set_string_features(['blafoo','hallo','dummdidumm'])
+	  >>> x.select_feature_vector(1)
+	  >>> x.get_str()
+	  array(['h', 'a', 'l', 'l', 'o'],
+	  dtype='|S1')
+	  
+	  there is a certain overhaul in the WD* kernels necessary -
+	  as the shift kernel is not yet really supported (and we are
+	  losing
+	  control if we go on duplicating the code like this...)
+
+2007-03-02  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* structure/DynProg.cpp: cleaned up a bit. still works.
+	* guilib/GUIMatlab.cpp, lib/Array.h, lib/Array2.h, lib/Array3.h,
+	  structure/DynProg.cpp: Mainly debug changes... cleanup soon.
+	  G
+
+2007-03-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog, kernel/WeightedDegreePositionCharKernel.h,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h,
+	  lib/python_typemaps.i: get rid of unused function definitions
+	  causing compile
+	  problems
+	* kernel/Kernel.i, kernel/WeightedDegreePositionCharKernel.i,
+	  kernel/WeightedDegreePositionStringKernel.i, lib/python.h: add
+	  missing files and include WDS kernel in Kernel.i
+	* ChangeLog, classifier/LinearClassifier.i,
+	  classifier/SparseLinearClassifier.i, classifier/svm/SVM.i,
+	  distance/Distance.i, features/Alphabet.i,
+	  features/ByteFeatures.i, features/CharFeatures.i,
+	  features/Labels.i, features/RealFeatures.i,
+	  features/ShortFeatures.i, features/SimpleFeatures.i,
+	  features/StringFeatures.h, features/StringFeatures.i,
+	  features/WordFeatures.i, guilib/GUIPython.cpp, kernel/Kernel.i,
+	  kernel/WeightedDegreeCharKernel.i,
+	  kernel/WeightedDegreePositionCharKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h, lib/Signal.cpp,
+	  lib/Signal.h, lib/io.cpp, lib/numpy.i, lib/python_typemaps.i,
+	  regression/svr/SVR_light.cpp, structure/Structure.i: * this adds
+	  a obtain_by_sliding_window function to StringFeatures
+	  * for that to work we need the WD kernel to work on string
+	  features
+	  which is what WeightedDegreePositionStringKernel introduces. as
+	  this is
+	  yet another code duplication we should get rid of (or creat a
+	  generic
+	  WD kernel object every WD kernel derives from).
+	  * numpy.i is renamed to python_typemaps.i (as we need lists of
+	  strings to be mapped to string features - not exactly a numeric
+	  problem)
+
+2007-02-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/StringFeatures.i: replace $self -> self as this seems to
+	  be troublesome on
+	  older swig versions
+
+2007-02-27  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* lib/Array.h: fixed another wrong free...
+
+2007-02-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/python-modular/examples/stringfeatures.py, ChangeLog,
+	  features/Features.i, features/ShortFeatures.h,
+	  features/ShortFeatures.i, features/SimpleFeatures.h,
+	  features/SimpleFeatures.i, features/StringFeatures.h,
+	  features/StringFeatures.i, features/WordFeatures.h,
+	  features/WordFeatures.i: workaround some broken swig oddities
+	  (which were working using
+	  swig 1.3.2x): swig does not apply typemaps to templated classes
+	  anymore... use %extend and define wrapper functions to call
+	  the real functions...
+
+2007-02-27  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* lib/numpy.i, structure/DynProg.i:
+
+2007-02-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* ChangeLog, base/SGObject.h, configure: * this fixes the many
+	  pointer related warnings
+	  * also fixes configure for atlas/lapack
+
+2007-02-26  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* README.developer, base/Parallel.cpp, base/Parallel.h,
+	  base/SGObject.h, base/SGObject.i, classifier/Classifier.cpp,
+	  classifier/Classifier.h, classifier/Classifier.i,
+	  classifier/PluginEstimate.cpp, classifier/svm/GNPPSVM.cpp,
+	  classifier/svm/GPBTSVM.cpp, classifier/svm/GPBTSVM.h,
+	  classifier/svm/LibSVM.cpp, classifier/svm/SVM.cpp,
+	  classifier/svm/SVM.h, classifier/svm/SVM_light.cpp,
+	  classifier/svm/gnpplib.cpp, distance/Distance.cpp,
+	  distributions/Distribution.cpp, features/Alphabet.cpp,
+	  features/CombinedFeatures.h, features/Features.cpp,
+	  features/Labels.cpp, features/SimpleFeatures.h,
+	  features/StringFeatures.h, gui/Matlab.cpp, gui/Octave.cpp,
+	  gui/R.cpp, gui/TextGUI.cpp, guilib/GUIClassifier.cpp,
+	  guilib/GUIDistance.cpp, guilib/GUIFeatures.cpp,
+	  guilib/GUIHMM.cpp, guilib/GUIKernel.cpp, guilib/GUILabels.cpp,
+	  guilib/GUIMath.cpp, guilib/GUIMatlab.cpp, guilib/GUIOctave.cpp,
+	  guilib/GUIPluginEstimate.cpp, guilib/GUIPreProc.cpp,
+	  guilib/GUIPython.cpp, guilib/GUISVM.cpp, guilib/GUITime.cpp,
+	  kernel/CombinedKernel.cpp, kernel/CombinedKernel.h,
+	  kernel/GaussianKernel.cpp, kernel/GaussianKernel.h,
+	  kernel/Kernel.cpp, kernel/KernelMachine.cpp,
+	  kernel/KernelMachine.h, lib/Array.h, lib/Cache.h, lib/Cplex.cpp,
+	  lib/DynamicArray.h, lib/File.cpp, lib/Mathematics.cpp,
+	  lib/Signal.cpp, lib/Signal.h, lib/SimpleFile.h, lib/Time.cpp,
+	  lib/Trie.cpp, lib/io.cpp, lib/io.h, preproc/PreProc.cpp,
+	  structure/DynProg.cpp: * introduced reference counted objects for
+	  automagic swig object deallocation
+	  * fixed a crasher bug in Array destructor
+	  * updated developer readme
+	  * added python signal handling: ctrl+c now raises a keyboard
+	  exception if not
+	  in a big loop. in big loops it asks whether to immediately
+	  stop/prematurely stop
+	  * fix crasher bugs (array out of bounds read/write) in
+	  translate_from_single_order
+	  
+	  using the reference counts from above we may now think of taking
+	  references
+	  to numpy objects instead of copying them :-)
+
+2007-02-23  Andre Noll <Andre.Noll@tuebingen.mpg.de>
+
+	* lib/io.cpp: io.cpp: trivial whitespace cleanup
+
+2007-02-22  Andre Noll <Andre.Noll@tuebingen.mpg.de>
+
+	* .authors: add myself to authors
+	* lib/Array.h: further Array.h cleanups
+	  
+	  - remove unneccessary template
+	  - simplify resize_array()
+	  - reduce line width
+	  - get rid of some duplicate SG_PRINT()s
+	  - add myself to authors
+
+2007-02-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* .authors, ChangeLog, lib/Array.h: * added jonas to authors
+	  * added andre's array cleanup patches - now it is readable
+	  again!!
+	  
+	  - The whole file was indented by one tab. Why?
+	  - This patch replaces the #ifdef ARRAY_STATISTICS mess we've had
+	  before
+	  by a set of macros which expand to nothing if ARRAY_STATISTICS is
+	  not defined.
+	* trunk/python-modular/examples/svm_lin.py, ChangeLog,
+	  classifier/SparseLinearClassifier.cpp,
+	  classifier/SparseLinearClassifier.h, classifier/svm/SVMLin.cpp,
+	  classifier/svm/ssl.cpp, classifier/svm/ssl.h,
+	  guilib/GUIKernel.cpp, kernel/LinearKernel.cpp,
+	  kernel/LinearKernel.h: +impl. bias in svmlin
+	* classifier/SparseLinearClassifier.cpp,
+	  classifier/SparseLinearClassifier.h,
+	  classifier/SparseLinearClassifier.i, classifier/svm/SVMLin.cpp,
+	  classifier/svm/SVMLin.h, classifier/svm/ssl.cpp,
+	  classifier/svm/ssl.h: make SVMLin work in practice (works only
+	  w/o bias sofa)
+
+2007-02-22  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* Makefile, guilib/GUIKernel.cpp: * removed CharPolyKernel
+	  * add make test
+
+2007-02-21  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* trunk/python/test_case_generator/generate_testcases.py,
+	  trunk/python/testcases/mfiles/Chi2Kernel_10.m,
+	  trunk/python/testcases/mfiles/GaussianKernel_10_13.m,
+	  trunk/python/testcases/mfiles/LinearKernel_False.m,
+	  trunk/python/testcases/mfiles/LinearKernel_True.m,
+	  trunk/python/testcases/mfiles/PolyKernel_False_10_False_3.m,
+	  trunk/python/testcases/mfiles/PolyKernel_False_10_True_3.m,
+	  trunk/python/testcases/mfiles/PolyKernel_True_10_False_3.m,
+	  trunk/python/testcases/mfiles/PolyKernel_True_10_True_3.m,
+	  trunk/python/testcases/mfiles/SigmoidKernel_05_10_07.m,
+	  trunk/python/testcases/mfiles/SigmoidKernel_11_10_13.m,
+	  kernel/CharPolyKernel.cpp, kernel/CharPolyKernel.h,
+	  kernel/CharPolyKernel.i: removed unused CharPolyKernel
+	  updated test scripts
+
+2007-02-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/python-modular/examples/svm_lin.py, CONTRIBUTIONS,
+	  ChangeLog, classifier/Classifier.i,
+	  classifier/SparseLinearClassifier.cpp,
+	  classifier/SparseLinearClassifier.h,
+	  classifier/SparseLinearClassifier.i,
+	  classifier/svm/KerthiPrimalSVM.cpp,
+	  classifier/svm/KerthiPrimalSVM.h, classifier/svm/SVMLin.cpp,
+	  classifier/svm/SVMLin.h, classifier/svm/ssl.cpp,
+	  classifier/svm/ssl.h, features/ByteFeatures.h,
+	  features/CharFeatures.h, features/FKFeatures.cpp,
+	  features/FKFeatures.h, features/Features.i,
+	  features/RealFeatures.h, features/RealFileFeatures.cpp,
+	  features/RealFileFeatures.h, features/ShortFeatures.h,
+	  features/SimpleFeatures.h, features/SparseFeatures.h,
+	  features/SparseFeatures.i, features/StringFeatures.i,
+	  features/TOPFeatures.cpp, features/TOPFeatures.h,
+	  features/WordFeatures.h, lib/Mathematics.h: * further cleanup
+	  patches from andre (Mathematics.h):
+	  - The code fails badly in case size==1.
+	  -Also, clean up the placement of spaces of that function
+	  according
+	  to README.developers.
+	  The code was broken for n<=0: For n==0 it would print only
+	  "name=[", and it would segfault for n<0. Fix that up as well.
+	  We're compiling with -O, so gcc will unroll the last iteration of
+	  the loop, i.e. the new code should not be slower than the old
+	  code.
+	  - Kill four pointless loops and don't segfault for rows<=0 or
+	  cols<=0.
+	  * remove broken KerthiPrimalSVM
+	  * implement CSparseLinearClassifier
+	  * derive CSVMLin from CSparseLinearClassifier
+	  * add example on how to use SVMLin from python
+	  * update AUTHORS, CONTRIBUTIONS
+	  * make all the cache sizes in all the feature objects
+	  Constructors
+	  INT (as they are in MB anyway)
+	  
+	  Yes. We now have Sindhwani/Keerthis primal svm in shogun.
+
 2007-02-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* releases/shogun_0.3.1/R/Makefile, trunk/Makefile,
+	  trunk/R/Makefile, trunk/R/sg/DESCRIPTION, configure: 3.1 merging
+	* ChangeLog: releasing
 	* base/Parallel.h, classifier/svm/SVMLin.cpp,
 	  classifier/svm/SVMLin.h: build fix on osx
 	* ChangeLog, base/Parallel.h, configure: * number of processors
