@@ -1,19 +1,15 @@
 from numpy import mat, transpose
 from numpy import array,arange,double
 
-from shogun.Features import CharFeatures,DNA
-from shogun.Kernel import WeightedDegreeCharKernel
+from shogun.Features import StringCharFeatures,DNA
+from shogun.Kernel import WeightedPositionStringKernel
 
 # create toy data
 
 degree=20;
 seqlen=60;
 
-ex1 = array(seqlen*['A'])
-ex2 = array(seqlen*['C'])
-ex3 = []
-ex3 += 'ACTGAAGAAGATCTGAATAAATTTGAGTCTCTTACCATGGGGGCAAAGAAGAAGCTCAAG'
-XT = transpose([ex1,ex2,ex3])
+XT=['ACTGAAGAAGATCTGAATAAATTTGAGTCTCTTACCATGGGGGCAAAGAAGAAGCTCAAG', seqlen*'A', seqlen*'C', seqlen*'T']
 
 trainfeat = CharFeatures(XT,DNA)
 

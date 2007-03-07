@@ -1,5 +1,105 @@
+2007-03-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_wdshift_kernel.m, base/Version.h,
+	  distributions/hmm/HMM.cpp, gui/Octave.cpp: merge changes back to
+	  trunk
+	* releases/shogun_0.3.2,
+	  releases/shogun_0.3.2/matlab/examples/test_wd_kernel.m,
+	  releases/shogun_0.3.2/matlab/examples/test_wdshift_kernel.m,
+	  releases/shogun_0.3.2/src/NEWS,
+	  releases/shogun_0.3.2/src/base/Version.h,
+	  releases/shogun_0.3.2/src/configure,
+	  releases/shogun_0.3.2/src/distributions/Distribution.cpp,
+	  releases/shogun_0.3.2/src/distributions/hmm/HMM.cpp,
+	  releases/shogun_0.3.2/src/gui/Octave.cpp,
+	  releases/shogun_0.3.2/src/guilib/GUIHMM.cpp,
+	  releases/shogun_0.3.2/src/guilib/GUIOctave.cpp,
+	  releases/shogun_0.3.2/src/lib/numpy.i,
+	  releases/shogun_0.3.2/src/structure/DynProg.i, NEWS,
+	  guilib/GUIHMM.cpp, guilib/GUIOctave.cpp, structure/DynProg.i:
+	  release shogun 0.3.2 fixing a number of bugs in the examples
+	  and several valgrind hits in octave/hmm adding support for
+	  numpy boolean -> for msplicer v0.2
+
+2007-03-05  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* base/Version.h: fixed version string.
+	  G
+
+2007-03-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* lib/python_typemaps.i: * much more detailed error outputs when
+	  types/dims don't match
+	  * workaround a numpy issue when long == int (long and int are
+	  different
+	  types inside of numpy, but both are 32bit on 32bit machines)
+	  if they are 32bit and same size then treat long as int
+
+2007-03-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* README.developer, base/SGObject.h, classifier/Classifier.cpp,
+	  classifier/Classifier.h, features/CombinedFeatures.h,
+	  features/StringFeatures.h, guilib/GUIKernel.cpp,
+	  kernel/CombinedKernel.h, kernel/Kernel.cpp,
+	  kernel/KernelMachine.cpp, kernel/KernelMachine.h: make obj->ref()
+	  / obj->unref() a macro
+	  SG_REF(obj)
+	  SG_UNREF(obj)
+	  which is empty for the static interfaces
+	* base/SGObject.h, guilib/GUIKernel.cpp, kernel/KernelMachine.h,
+	  kernel/WeightedDegreePositionCharKernel.i: as we now unref()
+	  objects on destruction we have to
+	  make sure no one else killed the object before we unref() it
+	  this however may happen in all the static guis (matlab,...) so
+	  all interfaces except the python-modular one are broken if
+	  commands
+	  like clean_features/clean_kernels are called in wrong order
+	  
+	  this fixes just enough to make the test_wd_kernel script run
+
+2007-03-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_wd_kernel.m,
+	  trunk/python-modular/examples/stringfeatures.py,
+	  trunk/python-modular/examples/wds_kernel.py,
+	  classifier/svm/SVM.cpp, features/StringFeatures.h,
+	  features/StringFeatures.i, kernel/WeightedDegreeCharKernel.cpp,
+	  kernel/WeightedDegreeCharKernel.i,
+	  kernel/WeightedDegreePositionCharKernel.cpp,
+	  kernel/WeightedDegreePositionCharKernel.i,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h,
+	  lib/python_typemaps.i: this adds support for string featuers in
+	  python as follows:
+	  
+	  >>> from shogun.Features import *
+	  >>> x=StringCharFeatures(Alphabet(DNA))
+	  >>> x.set_string_features(['blafoo','hallo','dummdidumm'])
+	  >>> x.select_feature_vector(1)
+	  >>> x.get_str()
+	  array(['h', 'a', 'l', 'l', 'o'],
+	  dtype='|S1')
+	  
+	  there is a certain overhaul in the WD* kernels necessary -
+	  as the shift kernel is not yet really supported (and we are
+	  losing
+	  control if we go on duplicating the code like this...)
+
+2007-03-02  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* structure/DynProg.cpp: cleaned up a bit. still works.
+	* guilib/GUIMatlab.cpp, lib/Array.h, lib/Array2.h, lib/Array3.h,
+	  structure/DynProg.cpp: Mainly debug changes... cleanup soon.
+	  G
+
 2007-03-01  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* ChangeLog, kernel/WeightedDegreePositionCharKernel.h,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h,
+	  lib/python_typemaps.i: get rid of unused function definitions
+	  causing compile
+	  problems
 	* kernel/Kernel.i, kernel/WeightedDegreePositionCharKernel.i,
 	  kernel/WeightedDegreePositionStringKernel.i, lib/python.h: add
 	  missing files and include WDS kernel in Kernel.i

@@ -1,5 +1,7 @@
 TODO
 
+- merge all the WeightedDegree* kernel core routines into a single class, which
+ the current WD/WDS char/string impl. can make use of
 - move translate* functions from stringfeatures/charfeatures/dynprog/matlab.cpp into alphabet!
 - R wrapper
 - error checks/exception modell w/ python-swig-objects (fabio example)
