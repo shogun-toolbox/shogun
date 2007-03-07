@@ -1,5 +1,5 @@
-from numpy.random import rand
-from numpy import floor
+from numpy.random import *
+from numpy import *
 from shogun.Features import RealFeatures
 from shogun.Features import CharFeatures
 from shogun.Features import Alphabet,DNA
@@ -7,8 +7,8 @@ from shogun.Kernel import *
 import m_print
 
 
-traindat = rand(2,3)
-testdat = rand(2,10)
+traindat = rand(11,13)
+testdat = rand(11,17)
 train_feat = RealFeatures(traindat)
 test_feat  = RealFeatures(testdat)
 
@@ -152,20 +152,27 @@ write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_
 
 
 
-#write mfile for PolyKernel datatype CHAR
-acgt = ['A', 'C', 'G','T']
-clist = list()
-for x in range(50):
-	clist.append(acgt[int(floor(rand()*4))])
+#write mfile for WDKernel datatype CHAR
+acgt  = array(['A', 'C', 'G','T'])
+num_dat = 19
+len = 11  
+traindat = chararray((len,2*num_dat),1,order='FORTRAN')
+for i in range(len):
+        traindat[i,:]=acgt[array(floor(4*random_sample(2*num_dat)), dtype=int)]
 
-str_test_data = ''.join(clist)
-alph = Alphabet(DNA)
-strfeat = CharFeatures(alph, str_test_data, 10, 5)
-	
+testdat = chararray((len,2*num_dat),1,order='FORTRAN')
+for i in range(len):
+        testdat[i,:]=acgt[array(floor(4*random_sample(2*num_dat)),dtype=int)]
 
-k=PolyKernel(train_feat,train_feat, 10, 3, True, True)
+
+ctrain_feat = CharFeatures(traindat, DNA)
+ctest_feat  = CharFeatures(testdat,  DNA)
+
+
+k=WeightedDegreeCharKernel(ctrain_feat, ctrain_feat, 3)
+#k.init(ctrain_feat, ctrain_feat)
 km_train=k.get_kernel_matrix()
-k.init(train_feat, test_feat)
+k.init(ctrain_feat, ctest_feat)
 km_test=k.get_kernel_matrix()
 
-write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10,'degree':3, 'inhom':'False', 'use_norm':'False'})
+write_testcase(kernelname='WeightedDegreeCharKernel',fun_name='test_wdchar_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'size_':20,'degree':3, 'inhom':'True', 'use_norm':'True'})
