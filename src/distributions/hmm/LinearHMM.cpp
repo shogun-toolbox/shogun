@@ -74,10 +74,10 @@ bool CLinearHMM::train()
 		for (INT j=0; j<num_symbols; j++)
 		{
 			DREAL sum=0;
+			INT offs=i*num_symbols+features->get_masked_symbols((WORD)j,(BYTE) 254);
+
 			for (INT k=0; k<features->get_original_num_symbols(); k++)
-			{
-				sum+=int_hist[i*num_symbols+features->get_masked_symbols((WORD)j,(BYTE) 254)+k];
-			}
+				sum+=int_hist[offs+k];
 
 			hist[i*num_symbols+j]=(int_hist[i*num_symbols+j]+pseudo_count)/(sum+features->get_original_num_symbols()*pseudo_count);
 			log_hist[i*num_symbols+j]=log(hist[i*num_symbols+j]);

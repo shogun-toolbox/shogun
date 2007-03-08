@@ -1,6 +1,6 @@
 %{
  #include "features/StringFeatures.h" 
- #undef _CSTRINGFEATURES__H__
+ /*#undef _CSTRINGFEATURES__H__*/
 %}
 
 #ifdef HAVE_PYTHON

@@ -40,4 +40,6 @@
 %include "features/MindyGramFeatures.i"
 %include "features/Labels.i"
 
-
+%include "features/RealFileFeatures.i"
+%include "features/FKFeatures.i"
+%include "features/TOPFeatures.i"

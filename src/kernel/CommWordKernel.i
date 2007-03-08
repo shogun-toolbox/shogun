@@ -2,5 +2,6 @@
  #include "kernel/CommWordKernel.h" 
 %}
 
-%include "kernel/SimpleKernel.i" 
+%rename(CommWordKernel) CCommWordKernel;
+
 %include "kernel/CommWordKernel.h" 

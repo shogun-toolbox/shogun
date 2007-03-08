@@ -1,6 +1,6 @@
 %{
  #include "kernel/HistogramWordKernel.h" 
 %}
+%rename(HistogramWordKernel) CHistogramWordKernel;
 
-%include "kernel/SimpleKernel.i"
 %include "kernel/HistogramWordKernel.h" 

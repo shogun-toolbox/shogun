@@ -2,5 +2,6 @@
  #include "kernel/PolyMatchCharKernel.h" 
 %}
 
-%include "kernel/SimpleKernel.h"
+%rename(PolyMatchCharKernel) CPolyMatchCharKernel;
+
 %include "kernel/PolyMatchCharKernel.h" 

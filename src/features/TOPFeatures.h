@@ -16,22 +16,23 @@
 #include "features/RealFeatures.h"
 #include "distributions/hmm/HMM.h"
 
+struct T_HMM_INDIZES
+{
+    INT* idx_p;
+    INT* idx_q;
+    INT* idx_a_rows;
+    INT* idx_a_cols;
+    INT* idx_b_rows;
+    INT* idx_b_cols;
+
+    INT num_p;
+    INT num_q;
+    INT num_a;
+    INT num_b;
+};
+
 class CTOPFeatures: public CRealFeatures
 {
-	struct T_HMM_INDIZES
-	{
-		INT* idx_p;
-		INT* idx_q;
-		INT* idx_a_rows;
-		INT* idx_a_cols;
-		INT* idx_b_rows;
-		INT* idx_b_cols;
-
-		INT num_p;
-		INT num_q;
-		INT num_a;
-		INT num_b;
-	};
 
 	public:
 	CTOPFeatures(INT size, CHMM* p, CHMM* n, bool neglin, bool poslin);

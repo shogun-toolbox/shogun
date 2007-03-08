@@ -2,5 +2,6 @@
  #include "kernel/PolyMatchWordKernel.h" 
 %}
 
-%include "kernel/SimpleKernel.i"
+%rename(PolyMatchWordKernel) CPolyMatchWordKernel;
+
 %include "kernel/PolyMatchWordKernel.h" 

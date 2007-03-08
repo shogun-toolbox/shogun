@@ -5411,10 +5411,10 @@ bool CHMM::linear_train(bool right_align)
 			for (INT j=0; j<get_M(); j++)
 			{
 				DREAL sum=0;
+				INT offs=i*get_M()+ p_observations->get_masked_symbols((WORD) j, (BYTE) 254);
+
 				for (INT k=0; k<p_observations->get_original_num_symbols(); k++)
-				{
-					sum+=hist[i*get_M()+p_observations->get_masked_symbols((WORD)j,(BYTE) 254)+k];
-				}
+					sum+=hist[offs+k];
 
 				set_b(i,j, (PSEUDO+hist[i*get_M()+j])/(sum+PSEUDO*p_observations->get_original_num_symbols()));
 			}

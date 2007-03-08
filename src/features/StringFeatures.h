@@ -211,7 +211,7 @@ template <class ST> class CStringFeatures: public CFeatures
 	// order used for higher order mapping
 	inline INT get_order() { return order; }
 
-	// a higher order mapped symbol will be shaped such that the symbols in
+	// a higher order mapped symbol will be shaped such that the symbols
 	// specified by bits in the mask will be returned.
 	inline ST get_masked_symbols(ST symbol, BYTE mask)
 	{
@@ -487,6 +487,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		for (INT i=0; i<256; i++)
 		{
 			BYTE bits=(BYTE) i;
+			symbol_mask_table[i]=0;
 
 			for (INT j=0; j<8; j++)
 			{

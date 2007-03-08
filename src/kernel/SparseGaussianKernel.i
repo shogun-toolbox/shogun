@@ -1,7 +1,7 @@
 %{
  #include "kernel/SparseGaussianKernel.h" 
 %}
-%feature("notabstract") CSparseRealKernel;
 
-%include "kernel/SparseRealKernel.i"
+%rename(SparseGaussianKernel) CSparseGaussianKernel;
+
 %include "kernel/SparseGaussianKernel.h" 
