@@ -17,7 +17,8 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include <mex.h>
+#include "lib/matlab.h"
+
 #include <mexversion.c>
 
 #include "guilib/GUIMatlab.h"

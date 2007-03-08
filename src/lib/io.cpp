@@ -17,9 +17,7 @@
 #include <octave/lo-error.h>
 #endif
 
-#ifdef HAVE_MATLAB
-#include <mex.h>
-#endif
+#include "lib/matlab.h"
 
 #ifdef HAVE_R
 #include <R.h>

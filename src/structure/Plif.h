@@ -16,9 +16,7 @@
 #include "lib/Mathematics.h"
 #include "structure/PlifBase.h"
 
-#ifdef HAVE_MATLAB
-#include <mex.h>
-#endif
+#include "lib/matlab.h"
 
 enum ETransformType
 {

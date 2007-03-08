@@ -15,9 +15,7 @@
 
 #include "lib/io.h"
 
-#ifdef HAVE_MATLAB
-#include <mex.h>
-#endif
+#include "lib/matlab.h"
 
 #include "structure/Plif.h"
 
