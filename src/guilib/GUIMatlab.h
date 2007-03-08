@@ -20,6 +20,7 @@
 #include "features/Labels.h"
 #include "features/Features.h"
 
+#define MX_COMPAT_32 //use compatibility mode w/ matlab 7.4 (size_t is int)
 #include <mex.h>
 
 class CGUIMatlab : public CSGObject
