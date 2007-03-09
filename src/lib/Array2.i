@@ -1,3 +1,4 @@
+%warnfilter(509) CArray2;
 %{
  #include "lib/Array2.h" 
 %}
