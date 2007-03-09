@@ -9,22 +9,25 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _WEIGHTEDDEGREEPOSITIONCHARKERNEL_H___
-#define _WEIGHTEDDEGREEPOSITIONCHARKERNEL_H___
+#ifndef _WEIGHTEDDEGREEPOSITIONSTRINGKERNEL_H___
+#define _WEIGHTEDDEGREEPOSITIONSTRINGKERNEL_H___
 
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
 #include "lib/Trie.h"
 
+class CWeightedDegreePositionStringKernel;
+
 class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 {
 	public:
+		CWeightedDegreePositionStringKernel(INT size, INT degree,
+                INT max_mismatch=0, bool use_norm=true, INT mkl_stepsize=1);
+
 		CWeightedDegreePositionStringKernel(INT size, DREAL* weights, INT degree, INT max_mismatch, 
 				INT * shift, INT shift_len, bool use_norm=true,
 				INT mkl_stepsize=1) ;
-		//CWeightedDegreePositionStringKernel(INT size, INT degree, INT max_shift, INT max_mismatch=0,
-		//		bool use_norm=true, INT mkl_stepsize=1);
 		~CWeightedDegreePositionStringKernel() ;
 
 		virtual bool init(CFeatures* l, CFeatures* r);
@@ -65,15 +68,16 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 				tries.set_use_compact_terminal_nodes(false) ;
 				SG_DEBUG( "disabling compact trie nodes with FASTBUTMEMHUNGRY\n") ;
 			}
+
 			if (get_is_initialized())
 			{
 				if (opt_type==SLOWBUTMEMEFFICIENT)
 					tries.delete_trees(true); 
 				else if (opt_type==FASTBUTMEMHUNGRY)
 					tries.delete_trees(false);  // still buggy
-				else {
+				else
 					SG_ERROR( "unknown optimization type\n");
-				}
+
 				set_is_initialized(false);
 			}
 		}
@@ -86,8 +90,6 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 
 		inline virtual INT get_num_subkernels()
 		{
-			//fprintf(stderr, "mkl_stepsize=%i\n", mkl_stepsize) ;
-			//exit(-1) ;
 			if (position_weights!=NULL)
 				return (INT) ceil(1.0*seq_length/mkl_stepsize) ;
 			if (length==0)
@@ -186,7 +188,10 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 			len=seq_length;
 			return position_weights;
 		}
+
+		bool set_shifts(INT* shifts, INT len);
 		virtual bool set_weights(DREAL* weights, INT d, INT len=0);
+		virtual bool set_wd_weights();
 		virtual bool set_position_weights(DREAL* position_weights, INT len=0); 
 		bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
@@ -196,7 +201,6 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 
 		/// compute positional scoring function, which assigns a weight per position, per symbol in the sequence
 		DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
-		//void compute_scoring_helper(struct Trie* tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result);
 
 	protected:
 
@@ -215,14 +219,11 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		virtual void remove_lhs() ;
 		virtual void remove_rhs() ;
 
-		//DREAL compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos) ;
-
 	protected:
 		DREAL* weights;
 		DREAL* position_weights ;
 		bool* position_mask ;
 
-		INT* counts ;
 		DREAL* weights_buffer ;
 		INT mkl_stepsize ;
 

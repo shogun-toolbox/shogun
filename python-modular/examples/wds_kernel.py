@@ -1,8 +1,9 @@
 from numpy import mat, transpose
-from numpy import array,arange,double
+from numpy import array,arange,ones,zeros
+from numpy import double,int32
 
-from shogun.Features import StringCharFeatures,DNA
-from shogun.Kernel import WeightedPositionStringKernel
+from shogun.Features import CharFeatures,StringCharFeatures,DNA,Alphabet
+from shogun.Kernel import WeightedDegreePositionStringKernel, WeightedDegreeCharKernel
 
 # create toy data
 
@@ -11,38 +12,21 @@ seqlen=60;
 
 XT=['ACTGAAGAAGATCTGAATAAATTTGAGTCTCTTACCATGGGGGCAAAGAAGAAGCTCAAG', seqlen*'A', seqlen*'C', seqlen*'T']
 
-trainfeat = CharFeatures(XT,DNA)
+charXT=array([list(XT[0]), list(XT[1]), list(XT[2]), list(XT[3])]).T
 
-wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree)
+stringfeat = StringCharFeatures(Alphabet(DNA))
+stringfeat.set_string_features(XT)
+
+charfeat = CharFeatures(charXT, DNA)
+
+wdk = WeightedDegreePositionStringKernel(stringfeat, stringfeat, degree, zeros(seqlen, dtype=int32))
 K = mat(wdk.get_kernel_matrix())
 print K
 
-weights = arange(1,degree+1,dtype=double)[::-1]/sum(arange(1,degree+1,dtype=double))
-wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree, weights=weights)
+wdk = WeightedDegreePositionStringKernel(stringfeat, stringfeat, degree, 20*ones(seqlen, dtype=int32))
 K = mat(wdk.get_kernel_matrix())
 print K
 
-wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree, block_computation=False, use_normalization=False)
+wdk = WeightedDegreeCharKernel(charfeat, charfeat, degree)
 K = mat(wdk.get_kernel_matrix())
 print K
-
-weights = arange(1,degree+1,dtype=double)[::-1]/sum(arange(1,degree+1,dtype=double))
-wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree, block_computation=False, use_normalization=False, weights=weights)
-K = mat(wdk.get_kernel_matrix())
-print K
-
-weights = arange(1,degree+1,dtype=double)[::-1]/sum(arange(1,degree+1,dtype=double))
-wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree, block_computation=True, use_normalization=False, weights=weights)
-K = mat(wdk.get_kernel_matrix())
-print K
-
-weights = arange(1,degree+1,dtype=double)
-wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree, block_computation=False, use_normalization=False, weights=weights)
-K = mat(wdk.get_kernel_matrix())
-print K
-
-weights = arange(1,degree+1,dtype=double)
-wdk = WeightedDegreeCharKernel(trainfeat, trainfeat, degree, block_computation=True, use_normalization=False, weights=weights)
-K = mat(wdk.get_kernel_matrix())
-print K
-

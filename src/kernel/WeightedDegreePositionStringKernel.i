@@ -3,6 +3,12 @@
 #include "kernel/WeightedDegreePositionStringKernel.h" 
 %}
 
+#ifdef HAVE_PYTHON
+%include "lib/python_typemaps.i"
+%apply (DREAL* IN_ARRAY2, INT DIM1, INT DIM2) {(DREAL* weights, INT d, INT len)};
+%apply (INT* IN_ARRAY1, INT DIM1) {(INT* shifts, INT len)};
+#endif
+
 %include "kernel/WeightedDegreePositionStringKernel.h" 
 
 #ifdef HAVE_PYTHON
@@ -10,13 +16,10 @@
   import numpy
   class WeightedDegreePositionStringKernel(CWeightedDegreePositionStringKernel):
       def __init__(self, features1, features2, degree, shifts,
-              use_normalization=True, max_mismatch=0, mkl_stepsize=1, weights=None, cache_size=10): 
-          if weights is not None:
-              assert(len(weights) == degree)
-          else:
-              weights = numpy.arange(1,degree+1,dtype=numpy.double)[::-1]/numpy.sum(numpy.arange(1,degree+1,dtype=numpy.double))
+              use_normalization=True, max_mismatch=0, mkl_stepsize=1, cache_size=10): 
 
-          CWeightedDegreePositionStringKernel.__init__(self, cache_size, weights, degree, max_mismatch, shifts, len(shifts), use_normalization, mkl_stepsize)
+          CWeightedDegreePositionStringKernel.__init__(self, cache_size, degree, max_mismatch, use_normalization, mkl_stepsize)
+          self.set_shifts(shifts)
           self.init(features1, features2)
 %}
 #endif
