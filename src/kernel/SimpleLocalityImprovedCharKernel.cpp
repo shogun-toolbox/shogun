@@ -185,9 +185,7 @@ DREAL CSimpleLocalityImprovedCharKernel::compute(INT idx_a, INT idx_b)
   // can only deal with strings of same length
   ASSERT(alen==blen);
 
-  //  SG_DEBUG( "start: %ld %ld", avec, bvec) ;
   DREAL dpt ; 
-  //fprintf(stderr, "length=%i, alen=%ld, id=%i, od=%i\n", length, alen, inner_degree, outer_degree) ;
   
   dpt = dot_pyr (avec, bvec,
 		 alen,
@@ -196,8 +194,6 @@ DREAL CSimpleLocalityImprovedCharKernel::compute(INT idx_a, INT idx_b)
 		 outer_degree, 
 		 match, pyramid_weights) ;
   dpt = dpt / pow((double)alen, (double)outer_degree) ;
-  //SG_DEBUG( "end") ;
-  //fprintf(stderr, "dpt=%f\n", dpt) ;
 
   ((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
