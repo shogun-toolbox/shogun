@@ -19,7 +19,7 @@ CCharFeatures::CCharFeatures(E_ALPHABET a, INT size) : CSimpleFeatures<CHAR>(siz
 
 CCharFeatures::CCharFeatures(CAlphabet* a, INT size) : CSimpleFeatures<CHAR>(size)
 {
-	alphabet=a;
+	alphabet= new CAlphabet(a);
 }
 
 CCharFeatures::CCharFeatures(const CCharFeatures & orig) : CSimpleFeatures<CHAR>(orig)

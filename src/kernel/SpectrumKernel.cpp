@@ -23,8 +23,8 @@ CSpectrumKernel::CSpectrumKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>
 
 bool CSpectrumKernel::init(CFeatures* p_lhs, CFeatures* p_rhs, bool force)
 {
-	// don't forget to set lhs and rhs member variables!!!
-	
+	CStringKernel<CHAR>::init(p_lhs, p_rhs);
+
 	SA_VERB verb=SA_INFO;
 	LONG len=0;
 	for (int i=0; i<p_lhs->get_num_vectors(); i++)

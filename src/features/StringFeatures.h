@@ -41,11 +41,20 @@ template <class T> struct T_STRING
 template <class ST> class CStringFeatures: public CFeatures
 {
 	public:
-	CStringFeatures(CAlphabet* alpha) : CFeatures(0), num_vectors(0), features(NULL), 
+	CStringFeatures(E_ALPHABET alpha) : CFeatures(0), num_vectors(0), features(NULL), 
 		single_string(false),max_string_length(0), order(0), symbol_mask_table(NULL)
 	{
 		alphabet=new CAlphabet(alpha);
-		ASSERT(alpha);
+		ASSERT(alphabet);
+		num_symbols=alphabet->get_num_symbols();
+		original_num_symbols=num_symbols;
+	}
+	CStringFeatures(CAlphabet* alpha) : CFeatures(0), num_vectors(0), features(NULL), 
+		single_string(false),max_string_length(0), order(0), symbol_mask_table(NULL)
+	{
+        ASSERT(alpha);
+		alphabet=new CAlphabet(alpha);
+		ASSERT(alphabet);
 		num_symbols=alphabet->get_num_symbols();
 		original_num_symbols=num_symbols;
 	}

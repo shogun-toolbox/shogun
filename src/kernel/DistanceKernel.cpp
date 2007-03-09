@@ -27,9 +27,7 @@ CDistanceKernel::~CDistanceKernel()
 
 bool CDistanceKernel::init(CFeatures* l, CFeatures* r)
 {
-    bool result0=CKernel::init(l,r);
-    bool result1=distance->init(l,r);
-    return result0&&result1;
+    return CKernel::init(l,r) && distance->init(l,r);
 }
 
 void CDistanceKernel::cleanup()

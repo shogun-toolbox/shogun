@@ -67,12 +67,15 @@ bool CWeightedDegreePositionPhylCharKernel::init(CFeatures* l, CFeatures* r, boo
     INT lhs_changed = (lhs!=l) ;
     INT rhs_changed = (rhs!=r) ;
 	
+    bool result=CSimpleKernel<CHAR>::init(l,r);
+    initialized = false ;
+
     SG_DEBUG( "lhs_changed: %i\n", lhs_changed) ;
     SG_DEBUG( "rhs_changed: %i\n", rhs_changed) ;
 	
-	ASSERT(l && ((((CCharFeatures*) l)->get_alphabet()->get_alphabet()==DNA) || 
+	ASSERT(((((CCharFeatures*) l)->get_alphabet()->get_alphabet()==DNA) || 
 				 (((CCharFeatures*) l)->get_alphabet()->get_alphabet()==RNA)));
-	ASSERT(r && ((((CCharFeatures*) r)->get_alphabet()->get_alphabet()==DNA) || 
+	ASSERT(((((CCharFeatures*) r)->get_alphabet()->get_alphabet()==DNA) || 
 				 (((CCharFeatures*) r)->get_alphabet()->get_alphabet()==RNA)));
 	
     delete[] position_mask ;
@@ -118,8 +121,6 @@ bool CWeightedDegreePositionPhylCharKernel::init(CFeatures* l, CFeatures* r, boo
 		}
 	}	
 	
-    bool result=CSimpleKernel<CHAR>::init(l,r);
-    initialized = false ;
     INT i;
 	
     SG_DEBUG( "use normalization:%d\n", (use_normalization) ? 1 : 0);

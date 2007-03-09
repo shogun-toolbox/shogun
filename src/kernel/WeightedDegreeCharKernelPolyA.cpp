@@ -104,6 +104,9 @@ bool CWeightedDegreeCharKernelPolyA::init(CFeatures* l, CFeatures* r, bool do_in
 	INT lhs_changed = (lhs!=l) ;
 	INT rhs_changed = (rhs!=r) ;
 
+	bool result=CSimpleKernel<CHAR>::init(l,r);
+	initialized = false ;
+
 	SG_DEBUG( "lhs_changed: %i\n", lhs_changed) ;
 	SG_DEBUG( "rhs_changed: %i\n", rhs_changed) ;
 	
@@ -151,8 +154,6 @@ bool CWeightedDegreeCharKernelPolyA::init(CFeatures* l, CFeatures* r, bool do_in
 		((CCharFeatures*) r)->free_feature_vector(bvec, i, bfree);		
 	}
 
-	bool result=CSimpleKernel<CHAR>::init(l,r);
-	initialized = false ;
 	INT i;
 
 	if (rhs_changed)

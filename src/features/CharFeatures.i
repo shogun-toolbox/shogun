@@ -17,8 +17,8 @@
 #ifdef HAVE_PYTHON
 %pythoncode %{
   class CharFeatures(CCharFeatures):
-     def __init__(self,p1,p2): 
-        CCharFeatures.__init__(self,p2,0)
-        self.copy_feature_matrix(p1)
+     def __init__(self,features,alphabet): 
+        CCharFeatures.__init__(self,alphabet)
+        self.copy_feature_matrix(features)
 %}
 #endif

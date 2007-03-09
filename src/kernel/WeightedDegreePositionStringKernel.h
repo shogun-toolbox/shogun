@@ -17,8 +17,6 @@
 
 #include "lib/Trie.h"
 
-class CWeightedDegreePositionStringKernel;
-
 class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 {
 	public:
@@ -26,8 +24,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
                 INT max_mismatch=0, bool use_norm=true, INT mkl_stepsize=1);
 
 		CWeightedDegreePositionStringKernel(INT size, DREAL* weights, INT degree, INT max_mismatch, 
-				INT * shift, INT shift_len, bool use_norm=true,
-				INT mkl_stepsize=1) ;
+				INT * shift, INT shift_len, bool use_norm=true, INT mkl_stepsize=1);
 		~CWeightedDegreePositionStringKernel() ;
 
 		virtual bool init(CFeatures* l, CFeatures* r);
@@ -161,7 +158,6 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 
 		inline INT get_max_mismatch() { return max_mismatch; }
 		inline INT get_degree() { return degree; }
-
 
 		// weight setting/getting operations
 		inline DREAL *get_degree_weights(INT& d, INT& len)

@@ -135,15 +135,15 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r)
 	INT lhs_changed = (lhs!=l) ;
 	INT rhs_changed = (rhs!=r) ;
 
+	bool result=CSimpleKernel<CHAR>::init(l,r);
+	initialized = false;
+
 	SG_DEBUG( "lhs_changed: %i\n", lhs_changed);
 	SG_DEBUG( "rhs_changed: %i\n", rhs_changed);
 
-	ASSERT(l && (l->get_feature_type() == F_CHAR) && (l->get_feature_class() == C_SIMPLE)) ;
-	ASSERT(r && (r->get_feature_type() == F_CHAR) && (r->get_feature_class() == C_SIMPLE)) ;
-	
-	ASSERT(l && ((((CCharFeatures*) l)->get_alphabet()->get_alphabet()==DNA) || 
+	ASSERT(((((CCharFeatures*) l)->get_alphabet()->get_alphabet()==DNA) || 
 				 (((CCharFeatures*) l)->get_alphabet()->get_alphabet()==RNA)));
-	ASSERT(r && ((((CCharFeatures*) r)->get_alphabet()->get_alphabet()==DNA) || 
+	ASSERT(((((CCharFeatures*) r)->get_alphabet()->get_alphabet()==DNA) || 
 				 (((CCharFeatures*) r)->get_alphabet()->get_alphabet()==RNA)));
 	
 	if (lhs_changed) 
@@ -158,8 +158,6 @@ bool CWeightedDegreeCharKernel::init(CFeatures* l, CFeatures* r)
 		tries.create(alen, max_mismatch==0) ;
 	} 
 
-	bool result=CSimpleKernel<CHAR>::init(l,r);
-	initialized = false;
 	INT i;
 
 	init_block_weights();

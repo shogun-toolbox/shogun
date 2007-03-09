@@ -72,6 +72,8 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(INT siz
 	ASSERT(weights);
 	for (INT i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
+
+	set_shifts(shift_, shift_len_);
 }
 
 CWeightedDegreePositionStringKernel::~CWeightedDegreePositionStringKernel() 
@@ -139,12 +141,15 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 	INT lhs_changed = (lhs!=l) ;
 	INT rhs_changed = (rhs!=r) ;
 
+	bool result=CStringKernel<CHAR>::init(l,r);
+	initialized = false ;
+
 	SG_DEBUG( "lhs_changed: %i\n", lhs_changed) ;
 	SG_DEBUG( "rhs_changed: %i\n", rhs_changed) ;
 
-	ASSERT(l && ((((CStringFeatures<CHAR>*) l)->get_alphabet()->get_alphabet()==DNA) || 
+	ASSERT(((((CStringFeatures<CHAR>*) l)->get_alphabet()->get_alphabet()==DNA) || 
 				(((CStringFeatures<CHAR>*) l)->get_alphabet()->get_alphabet()==RNA)));
-	ASSERT(r && ((((CStringFeatures<CHAR>*) r)->get_alphabet()->get_alphabet()==DNA) || 
+	ASSERT(((((CStringFeatures<CHAR>*) r)->get_alphabet()->get_alphabet()==DNA) || 
 				(((CStringFeatures<CHAR>*) r)->get_alphabet()->get_alphabet()==RNA)));
 
 	delete[] position_mask ;
@@ -164,8 +169,6 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 		}
 	} 
 
-	bool result=CStringKernel<CHAR>::init(l,r);
-	initialized = false ;
 	INT i;
 
 	SG_DEBUG( "use normalization:%d\n", (use_normalization) ? 1 : 0);
