@@ -20,6 +20,7 @@
 
           CWeightedDegreePositionStringKernel.__init__(self, cache_size, degree, max_mismatch, use_normalization, mkl_stepsize)
           self.set_shifts(shifts)
-          self.init(features1, features2)
+          if features1 is not None and features2 is not None:
+              self.init(features1, features2)
 %}
 #endif

@@ -20,7 +20,7 @@
 class CCommUlongStringKernel: public CStringKernel<ULONG>
 {
 	public:
-		CCommUlongStringKernel(INT size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION );
+		CCommUlongStringKernel(INT size=10, bool use_sign=false, ENormalizationType normalization_=FULL_NORMALIZATION );
 		CCommUlongStringKernel(CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r, bool use_sign=false, ENormalizationType normalization_=FULL_NORMALIZATION, INT size=10);
 		~CCommUlongStringKernel();
 

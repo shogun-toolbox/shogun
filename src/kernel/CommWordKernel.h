@@ -18,7 +18,7 @@
 class CCommWordKernel: public CSimpleKernel<WORD>
 {
  public:
-  CCommWordKernel(LONG size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION);
+  CCommWordKernel(INT size=10, bool use_sign=false, ENormalizationType normalization_=FULL_NORMALIZATION);
   ~CCommWordKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r);

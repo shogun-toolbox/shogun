@@ -14,7 +14,7 @@
 #include "features/WordFeatures.h"
 #include "lib/io.h"
 
-CCommWordKernel::CCommWordKernel(LONG size, bool sign, ENormalizationType n) 
+CCommWordKernel::CCommWordKernel(INT size, bool sign, ENormalizationType n) 
 	: CSimpleKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_sign(sign), normalization(n)
 {
 	properties |= KP_LINADD;

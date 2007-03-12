@@ -17,3 +17,26 @@ f2.set_string_features(['hey','guys','i','am','a','string'])
 f2.select_feature_vector(1)
 v=f2.get_str()
 print v
+
+s=10*'a' + 10*'b' + 10*'c'
+f3=sf.StringCharFeatures(sf.Alphabet(sf.RAWBYTE))
+f3.set_string_features([s])
+f3.obtain_by_sliding_window(5,1)
+print f3.get_num_vectors()
+print f3.get_vector_length(0)
+print f3.get_vector_length(1)
+
+f3.select_feature_vector(0)
+v=f3.get_str()
+print v
+
+f3.select_feature_vector(1)
+v=f3.get_str()
+print v
+
+f3.select_feature_vector(6)
+v=f3.get_str()
+
+f3.select_feature_vector(15)
+v=f3.get_str()
+print v

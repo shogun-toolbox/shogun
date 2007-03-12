@@ -399,7 +399,7 @@ template <class ST> class CStringFeatures: public CFeatures
 	{
 		ASSERT(step_size>0);
 		ASSERT(window_size>0 && max_string_length>=window_size);
-		ASSERT(num_vectors=1 || single_string);
+		ASSERT(num_vectors==1 || single_string);
 
 		num_vectors= (max_string_length-window_size)/step_size + 1;
 		
@@ -407,7 +407,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		INT offs=0;
 		for (INT i=0; i<num_vectors; i++)
 		{
-			f[i].string=&features[i].string[offs];
+			f[i].string=&features[0].string[offs];
 			f[i].length=window_size;
 			offs+=window_size;
 		}
