@@ -36,6 +36,9 @@ RELEASENAME := $(RELEASENAME)+svn$(SVNVERSION)
 endif
 RELEASENAME := $(RELEASENAME).orig
 else
+ifeq ($(SNAPSHOT),yes)
+RELEASENAME := $(RELEASENAME)+svn$(SVNVERSION)
+endif
 all: doc release matlab python octave R
 endif
 
