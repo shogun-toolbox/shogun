@@ -61,7 +61,7 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(INT siz
 		INT mkl_stepsize_)
 : CStringKernel<CHAR>(size), weights(NULL), position_weights(NULL), position_mask(NULL),
 	weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0),
-	max_mismatch(max_mismatch_), seq_length(0), max_shift_vec(NULL), 
+	max_mismatch(max_mismatch_), seq_length(0), shift(NULL), max_shift_vec(NULL), 
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
 	use_normalization(use_norm), tries(d), tree_initialized(false)
 {
