@@ -50,7 +50,7 @@ CGUISVM::CGUISVM(CGUI * gui_)
     // MKL stuff
 	use_mkl = false ;
 	use_batch_computation = true ;
-	use_linadd = false ;
+	use_linadd = true ;
 	use_precompute = false ;
 	use_precompute_subkernel = false ;
 	use_precompute_subkernel_light = false ;
