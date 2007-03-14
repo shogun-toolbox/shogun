@@ -85,7 +85,7 @@ public:
 	void add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights, bool degree_times_position_weights) ;
 	DREAL compute_abs_weights_tree(INT tree, INT depth) ;
 	DREAL *compute_abs_weights(int &len) ;
-	
+
 	DREAL compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos, DREAL * weights, bool degree_times_position_weights) ;
 	void compute_by_tree_helper(INT* vec, INT len, INT seq_pos, INT tree_pos, INT weight_pos, DREAL* LevelContrib, DREAL factor, INT mkl_stepsize, DREAL * weights, bool degree_times_position_weights) ;
 	void compute_scoring_helper(INT tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result) ;
@@ -93,7 +93,7 @@ public:
 	void traverse( INT tree, const INT p, struct TreeParseInfo info, const INT depth, INT* const x, const INT k ) ;
 	void count( const DREAL w, const INT depth, const struct TreeParseInfo info, const INT p, INT* x, const INT k ) ;
 	INT compact_nodes(INT start_node, INT depth, DREAL * weights) ;
-	
+
 	bool get_use_compact_terminal_nodes()
 		{
 			return use_compact_terminal_nodes ;
@@ -102,19 +102,19 @@ public:
 		{
 			use_compact_terminal_nodes=p_use_compact_terminal_nodes ;
 		}
-	
+
 	inline INT get_num_used_nodes()
 		{
 			return TreeMemPtr ;
 		}
-	
+
 	inline void set_position_weights(const DREAL * p_position_weights)
 		{
 			position_weights=p_position_weights ;
 		}
-	
 
-	inline INT get_node() 
+
+	inline INT get_node()
 	{
 		INT ret = TreeMemPtr++;
 		check_treemem() ;
@@ -124,18 +124,18 @@ public:
 		TreeMem[ret].has_seq=false ;
 		TreeMem[ret].has_floats=false ;
 #endif
-		TreeMem[ret].weight=0.0; 
+		TreeMem[ret].weight=0.0;
 		return ret ;
 	} ;
-	
+
 	inline void check_treemem()
 	{
-		if (TreeMemPtr+10>=TreeMemPtrMax) 
+		if (TreeMemPtr+10>=TreeMemPtrMax)
 		{
 			SG_DEBUG( "Extending TreeMem from %i to %i elements\n", TreeMemPtrMax, (INT) ((double)TreeMemPtrMax*1.2)) ;
 			TreeMemPtrMax = (INT) ((double)TreeMemPtrMax*1.2) ;
 			TreeMem = (struct Trie *)realloc(TreeMem,TreeMemPtrMax*sizeof(struct Trie)) ;
-			
+
 			if (!TreeMem)
 				SG_ERROR( "out of memory\n");
 		}
@@ -150,22 +150,22 @@ public:
 	{
 		return weights_in_tree ;
 	}
-	
+
 protected:
 	INT length ;
 	INT * trees ;
 	bool tree_initialized ;
-	
+
 	INT degree ;
 	DREAL const *  position_weights ;
-	
+
 	struct Trie* TreeMem ;
 	INT TreeMemPtr ;
 	INT TreeMemPtrMax ;
 	bool use_compact_terminal_nodes ;
 
 	bool weights_in_tree ;
-} ;
+};
 
 inline void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights, bool degree_times_position_weights)
 {
