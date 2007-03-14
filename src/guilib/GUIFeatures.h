@@ -74,6 +74,7 @@ class CGUIFeatures : public CSGObject
 		bool load(CHAR* param);
 		bool save(CHAR* param);
 		bool clean(CHAR* param);
+		bool slide_window(CHAR* param);
 
 		bool reshape(CHAR* param);
 

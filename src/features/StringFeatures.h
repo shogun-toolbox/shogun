@@ -19,6 +19,7 @@
 #include "features/Alphabet.h"
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/DynamicArray.h"
 #include "lib/File.h"
 #include "lib/Mathematics.h"
 
@@ -401,7 +402,12 @@ template <class ST> class CStringFeatures: public CFeatures
 		ASSERT(window_size>0 && max_string_length>=window_size);
 		ASSERT(num_vectors==1 || single_string);
 
-		num_vectors= (max_string_length-window_size)/step_size + 1;
+		//in case we are dealing with a single remapped string
+		//allow remapping
+		if (single_string)
+			num_vectors= (num_vectors*max_string_length-window_size)/step_size + 1;
+		else if (num_vectors==1)
+			num_vectors= (max_string_length-window_size)/step_size + 1;
 		
 		T_STRING<ST>* f=new T_STRING<ST>[num_vectors];
 		INT offs=0;
@@ -409,7 +415,55 @@ template <class ST> class CStringFeatures: public CFeatures
 		{
 			f[i].string=&features[0].string[offs];
 			f[i].length=window_size;
-			offs+=window_size;
+			offs+=step_size;
+		}
+		delete[] features;
+		features=f;
+		single_string=true;
+		selected_vector=0;
+		max_string_length=window_size;
+
+		return num_vectors;
+	}
+
+	///extracts windows of size window_size from first string
+	///using the positions in list
+	inline INT obtain_by_position_list(INT window_size, CDynamicArray<INT>* positions)
+	{
+		ASSERT(positions);
+		ASSERT(window_size>0 && max_string_length>=window_size);
+		ASSERT(num_vectors==1 || single_string);
+
+		num_vectors= positions->get_num_elements();
+		ASSERT(num_vectors>0);
+
+		INT len=max_string_length;
+
+		//in case we are dealing with a single remapped string
+		//allow remapping
+		if (single_string)
+			len= num_vectors*max_string_length;
+		
+		T_STRING<ST>* f=new T_STRING<ST>[num_vectors];
+		for (INT i=0; i<num_vectors; i++)
+		{
+			INT p=positions->get_element(i);
+
+			if (p>=0 && p<=len-window_size)
+			{
+				f[i].string=&features[0].string[p];
+				f[i].length=window_size;
+			}
+			else
+			{
+				num_vectors=1;
+				max_string_length=len;
+				features[0].length=len;
+				delete[] features;
+				SG_ERROR("window (size:%d) starting at position[%d]=%d does not fit in sequence(len:%d)\n",
+						window_size, i, p, len);
+				return -1;
+			}
 		}
 		delete[] features;
 		features=f;

@@ -9,22 +9,22 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _WEIGHTEDDEGREECHARKERNEL_H___
-#define _WEIGHTEDDEGREECHARKERNEL_H___
+#ifndef _WEIGHTEDDEGREESTRINGKERNEL_H___
+#define _WEIGHTEDDEGREESTRINGKERNEL_H___
 
 #include "lib/common.h"
 #include "lib/Trie.h"
-#include "kernel/SimpleKernel.h"
-#include "features/CharFeatures.h"
+#include "kernel/StringKernel.h"
+#include "features/StringFeatures.h"
 
-class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
+class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 {
  public:
-  CWeightedDegreeCharKernel(INT size, EWDKernType type, INT degree, INT max_mismatch, 
+  CWeightedDegreeStringKernel(INT size, EWDKernType type, INT degree, INT max_mismatch, 
 		  bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
-  CWeightedDegreeCharKernel(INT size, DREAL* weights, INT degree, INT max_mismatch, 
+  CWeightedDegreeStringKernel(INT size, DREAL* weights, INT degree, INT max_mismatch, 
 		  bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
-  ~CWeightedDegreeCharKernel() ;
+  ~CWeightedDegreeStringKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
@@ -52,7 +52,7 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
     if (get_is_initialized())
       return compute_by_tree(idx); 
     
-    SG_ERROR( "CWeightedDegreeCharKernel optimization not initialized\n") ;
+    SG_ERROR( "CWeightedDegreeStringKernel optimization not initialized\n") ;
     return 0 ;
   } ;
 
@@ -95,7 +95,7 @@ class CWeightedDegreeCharKernel: public CSimpleKernel<CHAR>
 		  return ;
 	  }
      
-	  SG_ERROR( "CWeightedDegreeCharKernel optimization not initialized\n") ;
+	  SG_ERROR( "CWeightedDegreeStringKernel optimization not initialized\n") ;
   }
 
   inline const DREAL* get_subkernel_weights(INT& num_weights)

@@ -130,6 +130,19 @@ enum ENormalizationType
 	SQLEN_NORMALIZATION 
 };
 
+enum EWDKernType
+{
+	E_WD=0,
+	E_EXTERNAL=1,
+
+	E_BLOCK_CONST=2,
+	E_BLOCK_LINEAR=3,
+	E_BLOCK_SQPOLY=4,
+	E_BLOCK_CUBICPOLY=5,
+	E_BLOCK_EXP=6,
+	E_BLOCK_LOG=7,
+	E_BLOCK_EXTERNAL=8
+};
 
 enum EKernelType
 {

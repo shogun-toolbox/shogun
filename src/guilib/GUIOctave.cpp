@@ -566,7 +566,7 @@ bool CGUIOctave::get_features(octave_value_list& retvals, CFeatures* f)
 			return (!value.is_empty());
 		}
 		else
-			SG_ERROR( "matlab does not support that feature type\n");
+			SG_ERROR( "octave does not support that feature type\n");
 
 	}
 

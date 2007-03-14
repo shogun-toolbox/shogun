@@ -2052,6 +2052,74 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 	return f;
 }
 
+bool CGUIMatlab::from_position_list(const mxArray* vals[], int nrhs)
+{
+	if (nrhs!=3)
+		return false;
+
+	INT slen=0;
+	CHAR* target=CGUIMatlab::get_mxString(prhs[1], slen);
+	const mxArray* mx_winsz=vals[2];
+	const mxArray* mx_shift=vals[3];
+	ASSERT(mx_winsz && mxIsDouble(mx_winsz) && 
+			mxGetN(mx_winsz) == 1 && mxGetM(mx_winsz) == 1);
+	ASSERT(mx_shift && mxIsDouble(mx_feat) && mxGetM(mx_shift) == 1);
+	INT winsize= (INT) (*mxGetPr(mx_feat));
+	double* shifts= mxGetPr(mx_shifts);
+	ASSERT(shifts);
+	CDynamicArray<INT> positions(mxGetN(mx_shift)+1);
+
+	for (INT i=0; i<mxGetN(mx_shift); i++)
+	{
+		INT s= (INT) floor(shifts[i]);
+		if (floor(shifts[i]) - shifts[i] != 0.0)
+		{
+			SG_ERROR("error in shifts array[%d]=%f - input should be integer\n", i, shifts[i]);
+			return false;
+		}
+		positions.set_element(s, i);
+	}
+
+	if ( (strmatch(target, slen, "TRAIN")) || 
+			(strmatch(target, slen, "TEST")) ) 
+	{
+		CStringFeatures<CHAR>* features=NULL;
+
+		if (target)
+		{
+			if (strmatch(target, slen, "TRAIN"))
+			{
+				gui->guifeatures.invalidate_train();
+				features=gui->guifeatures.get_train_features();
+			}
+			else if (strmatch(target, slen, "TEST"))
+			{
+				gui->guifeatures.invalidate_train();
+				features=gui->guifeatures.get_test_features();
+			}
+			delete[] target;
+
+			if (((CFeatures*) features)->get_feature_class() == C_COMBINED)
+			{
+				features=((CCombinedFeatures*) features)->get_last_feature_obj();
+				ASSERT(features);
+			}
+
+			ASSERT(features);
+			ASSERT(((CFeatures*) features)->get_feature_class() == C_STRING);
+			ASSERT(((CFeatures*) features)->get_feature_type() == F_CHAR);
+
+			return features->obtain_by_position_list(winsize, positions);
+		}
+		else
+			SG_SERROR( "usage is sg('from_position_list', 'TRAIN|TEST', [list])");
+	}
+	else
+		SG_SERROR( "usage is sg('from_position_list', 'TRAIN|TEST', [list])");
+
+	return false;
+}
+
 bool CGUIMatlab::get_version(mxArray* retvals[])
 {
 	mxArray* mx_ver=mxCreateDoubleMatrix(1, 1, mxREAL);

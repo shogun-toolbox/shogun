@@ -67,6 +67,8 @@ static const CHAR* N_SET_SVM=			"set_svm";
 static const CHAR* N_SET_CUSTOM_KERNEL=	        "set_custom_kernel";
 static const CHAR* N_SET_KERNEL_INIT=	        "set_kernel_init";
 static const CHAR* N_SET_FEATURES=		"set_features";
+static const CHAR* N_SET_FEATURES=		"set_features";
+static const CHAR* N_FROM_POSITION_LIST=		"from_position_list";
 static const CHAR* N_ADD_FEATURES=		"add_features";
 static const CHAR* N_SET_LABELS=		"set_labels";
 static const CHAR* N_SET_PREPROC_INIT=	        "set_preproc_init";
@@ -677,6 +679,16 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				SG_SERROR( "usage is sg('set_features', 'TRAIN|TEST', features, ...)");
 			SG_SINFO( "done\n");
+		}
+		else if (strmatch(action, len, N_FROM_POSITION_LIST))
+		{
+			if ((nlhs==0) && (nrhs==3))
+			{
+				if (!sg_matlab.from_position_list(prhs, nrhs))
+					SG_SERROR( "error occured in obtain_from_position_list command");
+			}
+			else
+				SG_SERROR( "usage is sg('from_position_list', 'TRAIN|TEST', [list])");
 		}
 		else if (strmatch(action, len, N_ADD_FEATURES))
 		{

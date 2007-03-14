@@ -71,6 +71,7 @@ static const CHAR* N_LOAD_LABELS=		"load_labels";
 static const CHAR* N_LOAD_FEATURES=		"load_features";
 static const CHAR* N_SAVE_FEATURES=		"save_features";
 static const CHAR* N_CLEAN_FEATURES=	"clean_features";
+static const CHAR* N_SLIDE_WINDOW=	"slide_window";
 static const CHAR* N_RESHAPE=			"reshape";
 static const CHAR* N_LOAD_DEFINITIONS=	"load_defs";
 static const CHAR* N_SAVE_KERNEL=		"save_kernel";
@@ -373,6 +374,10 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	else if (!strncmp(p_input, N_CLEAN_FEATURES, strlen(N_CLEAN_FEATURES)))
 	{
 		guifeatures.clean(p_input+strlen(N_CLEAN_FEATURES));
+	} 
+	else if (!strncmp(p_input, N_SLIDE_WINDOW, strlen(N_SLIDE_WINDOW)))
+	{
+		guifeatures.slide_window(p_input+strlen(N_SLIDE_WINDOW));
 	} 
 	else if (!strncmp(p_input, N_RESHAPE, strlen(N_RESHAPE)))
 	{

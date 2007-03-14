@@ -1,4 +1,6 @@
 import shogun.Features as sf
+import shogun.Library as sl
+
 f=sf.StringCharFeatures(sf.Alphabet(sf.RAWBYTE))
 print f.load_from_directory(".")
 print f.get_max_vector_length()
@@ -26,17 +28,26 @@ print f3.get_num_vectors()
 print f3.get_vector_length(0)
 print f3.get_vector_length(1)
 
-f3.select_feature_vector(0)
-v=f3.get_str()
-print v
+print s
+for i in xrange(f3.get_num_vectors()):
+	f3.select_feature_vector(i)
+	v=f3.get_str()
+	print `i`+ ':',
+	print v
 
-f3.select_feature_vector(1)
-v=f3.get_str()
-print v
+f4=sf.StringCharFeatures(sf.Alphabet(sf.RAWBYTE))
+f4.set_string_features([s])
+positions=sl.DynamicIntArray()
+positions.append_element(0)
+positions.append_element(6)
+positions.append_element(16)
+positions.append_element(25)
+#positions.append_element(28)
+f4.obtain_by_position_list(5,positions)
 
-f3.select_feature_vector(6)
-v=f3.get_str()
-
-f3.select_feature_vector(15)
-v=f3.get_str()
-print v
+print s
+for i in xrange(f4.get_num_vectors()):
+	f4.select_feature_vector(i)
+	v=f4.get_str()
+	print `i`+ ':',
+	print v

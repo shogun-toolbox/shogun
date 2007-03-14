@@ -47,6 +47,7 @@
 %include "kernel/AUCKernel.i"
 
 %include "kernel/WeightedDegreeCharKernel.i" 
+%include "kernel/WeightedDegreeStringKernel.i" 
 %include "kernel/WeightedDegreePositionCharKernel.i" 
 %include "kernel/WeightedDegreePositionStringKernel.i" 
 %include "kernel/WeightedDegreeCharKernelPolyA.i"

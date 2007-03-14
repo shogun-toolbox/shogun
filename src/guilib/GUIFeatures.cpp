@@ -252,6 +252,54 @@ bool CGUIFeatures::clean(CHAR* param)
 	return false ;
 }
 
+bool CGUIFeatures::slide_window(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+	INT shift=-1;
+	INT winsize=-1;
+	CHAR target[1024]="";
+
+	if ((sscanf(param, "%s %d %d", target, &winsize, &shift))==3)
+	{
+		ASSERT(winsize>0);
+		ASSERT(shift>0);
+
+		CStringFeatures<CHAR>* features=NULL;
+
+		if (strcmp(target,"TRAIN")==0)
+		{
+			invalidate_train();
+			features=(CStringFeatures<CHAR>*) train_features;
+		}
+		else if (strcmp(target,"TEST")==0)
+		{
+			invalidate_test();
+			features=(CStringFeatures<CHAR>*) train_features;
+		}
+		else
+		{
+			SG_ERROR( "see help for parameters\n");
+			return false;
+		}
+
+		if (((CFeatures*) features)->get_feature_class() == C_COMBINED)
+		{
+			features=(CStringFeatures<CHAR>*) ((CCombinedFeatures*) features)->get_last_feature_obj();
+			ASSERT(features);
+		}
+
+		ASSERT(features);
+		ASSERT(((CFeatures*) features)->get_feature_class() == C_STRING);
+		ASSERT(((CFeatures*) features)->get_feature_type() == F_CHAR);
+		return (features->obtain_by_sliding_window(winsize, shift) > 0);
+
+	}
+	else
+		SG_ERROR( "see help for params\n");
+
+	return false;
+}
+
 bool CGUIFeatures::reshape(CHAR* param)
 {
 	bool result=false;
