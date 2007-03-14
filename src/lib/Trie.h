@@ -130,15 +130,15 @@ public:
 
 	inline void check_treemem()
 	{
-		if (TreeMemPtr+10>=TreeMemPtrMax)
-		{
-			SG_DEBUG( "Extending TreeMem from %i to %i elements\n", TreeMemPtrMax, (INT) ((double)TreeMemPtrMax*1.2)) ;
-			TreeMemPtrMax = (INT) ((double)TreeMemPtrMax*1.2) ;
-			TreeMem = (struct Trie *)realloc(TreeMem,TreeMemPtrMax*sizeof(struct Trie)) ;
-
-			if (!TreeMem)
-				SG_ERROR( "out of memory\n");
-		}
+		if (TreeMemPtr+10 < TreeMemPtrMax)
+			return;
+		SG_DEBUG( "Extending TreeMem from %i to %i elements\n",
+			 TreeMemPtrMax, (INT) ((double)TreeMemPtrMax*1.2));
+		TreeMemPtrMax = (INT) ((double)TreeMemPtrMax*1.2);
+		TreeMem = (struct Trie *)realloc(TreeMem,
+			TreeMemPtrMax*sizeof(struct Trie));
+		if (!TreeMem)
+			SG_ERROR( "out of memory\n");
 	}
 
 	inline void set_weights_in_tree(bool weights_in_tree_)
