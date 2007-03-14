@@ -2058,14 +2058,14 @@ bool CGUIMatlab::from_position_list(const mxArray* vals[], int nrhs)
 		return false;
 
 	INT slen=0;
-	CHAR* target=CGUIMatlab::get_mxString(prhs[1], slen);
+	CHAR* target=CGUIMatlab::get_mxString(vals[1], slen);
 	const mxArray* mx_winsz=vals[2];
 	const mxArray* mx_shift=vals[3];
 	ASSERT(mx_winsz && mxIsDouble(mx_winsz) && 
 			mxGetN(mx_winsz) == 1 && mxGetM(mx_winsz) == 1);
 	ASSERT(mx_shift && mxIsDouble(mx_feat) && mxGetM(mx_shift) == 1);
-	INT winsize= (INT) (*mxGetPr(mx_feat));
-	double* shifts= mxGetPr(mx_shifts);
+	INT winsize= (INT) (*mxGetPr(mx_winsz));
+	double* shifts= mxGetPr(mx_shift);
 	ASSERT(shifts);
 	CDynamicArray<INT> positions(mxGetN(mx_shift)+1);
 
@@ -2080,28 +2080,28 @@ bool CGUIMatlab::from_position_list(const mxArray* vals[], int nrhs)
 		positions.set_element(s, i);
 	}
 
-	if ( (strmatch(target, slen, "TRAIN")) || 
-			(strmatch(target, slen, "TEST")) ) 
+	if ( (strncmp(target, "TRAIN", 5)) || 
+			(strncmp(target, "TEST", 5)) ) 
 	{
 		CStringFeatures<CHAR>* features=NULL;
 
 		if (target)
 		{
-			if (strmatch(target, slen, "TRAIN"))
+			if (strncmp(target, "TRAIN", 5))
 			{
 				gui->guifeatures.invalidate_train();
-				features=gui->guifeatures.get_train_features();
+				features= (CStringFeatures<CHAR>*) gui->guifeatures.get_train_features();
 			}
-			else if (strmatch(target, slen, "TEST"))
+			else if (strncmp(target, "TEST", 5))
 			{
 				gui->guifeatures.invalidate_train();
-				features=gui->guifeatures.get_test_features();
+				features=(CStringFeatures<CHAR>*) gui->guifeatures.get_test_features();
 			}
 			delete[] target;
 
 			if (((CFeatures*) features)->get_feature_class() == C_COMBINED)
 			{
-				features=((CCombinedFeatures*) features)->get_last_feature_obj();
+				features=(CStringFeatures<CHAR>*) ((CCombinedFeatures*) features)->get_last_feature_obj();
 				ASSERT(features);
 			}
 
@@ -2109,7 +2109,7 @@ bool CGUIMatlab::from_position_list(const mxArray* vals[], int nrhs)
 			ASSERT(((CFeatures*) features)->get_feature_class() == C_STRING);
 			ASSERT(((CFeatures*) features)->get_feature_type() == F_CHAR);
 
-			return features->obtain_by_position_list(winsize, positions);
+			return features->obtain_by_position_list(winsize, &positions);
 		}
 		else
 			SG_SERROR( "usage is sg('from_position_list', 'TRAIN|TEST', [list])");

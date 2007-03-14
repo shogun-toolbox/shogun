@@ -67,7 +67,6 @@ static const CHAR* N_SET_SVM=			"set_svm";
 static const CHAR* N_SET_CUSTOM_KERNEL=	        "set_custom_kernel";
 static const CHAR* N_SET_KERNEL_INIT=	        "set_kernel_init";
 static const CHAR* N_SET_FEATURES=		"set_features";
-static const CHAR* N_SET_FEATURES=		"set_features";
 static const CHAR* N_FROM_POSITION_LIST=		"from_position_list";
 static const CHAR* N_ADD_FEATURES=		"add_features";
 static const CHAR* N_SET_LABELS=		"set_labels";
