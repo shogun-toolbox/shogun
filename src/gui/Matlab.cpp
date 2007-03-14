@@ -681,7 +681,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (strmatch(action, len, N_FROM_POSITION_LIST))
 		{
-			if ((nlhs==0) && (nrhs==3))
+			if ((nlhs==0) && (nrhs==4))
 			{
 				if (!sg_matlab.from_position_list(prhs, nrhs))
 					SG_SERROR( "error occured in obtain_from_position_list command");

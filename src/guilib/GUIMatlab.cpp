@@ -2054,7 +2054,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 
 bool CGUIMatlab::from_position_list(const mxArray* vals[], int nrhs)
 {
-	if (nrhs!=3)
+	if (nrhs!=4)
 		return false;
 
 	INT slen=0;
@@ -2065,11 +2065,13 @@ bool CGUIMatlab::from_position_list(const mxArray* vals[], int nrhs)
 			mxGetN(mx_winsz) == 1 && mxGetM(mx_winsz) == 1);
 	ASSERT(mx_shift && mxIsDouble(mx_feat) && mxGetM(mx_shift) == 1);
 	INT winsize= (INT) (*mxGetPr(mx_winsz));
+	INT num_shift=mxGetN(mx_shift);
+	SG_DEBUG("winsize: %d num_shifts:%d \n", winsize, num_shift);
 	double* shifts= mxGetPr(mx_shift);
 	ASSERT(shifts);
 	CDynamicArray<INT> positions(mxGetN(mx_shift)+1);
 
-	for (INT i=0; i<mxGetN(mx_shift); i++)
+	for (INT i=0; i<num_shift; i++)
 	{
 		INT s= (INT) floor(shifts[i]);
 		if (floor(shifts[i]) - shifts[i] != 0.0)
@@ -2080,39 +2082,32 @@ bool CGUIMatlab::from_position_list(const mxArray* vals[], int nrhs)
 		positions.set_element(s, i);
 	}
 
-	if ( (strncmp(target, "TRAIN", 5)) || 
-			(strncmp(target, "TEST", 5)) ) 
+	if ( target && (!strncmp(target, "TRAIN", 5) || 
+				!strncmp(target, "TEST", 5) ))
 	{
 		CStringFeatures<CHAR>* features=NULL;
 
-		if (target)
+		if (!strncmp(target, "TRAIN", 5))
 		{
-			if (strncmp(target, "TRAIN", 5))
-			{
-				gui->guifeatures.invalidate_train();
-				features= (CStringFeatures<CHAR>*) gui->guifeatures.get_train_features();
-			}
-			else if (strncmp(target, "TEST", 5))
-			{
-				gui->guifeatures.invalidate_train();
-				features=(CStringFeatures<CHAR>*) gui->guifeatures.get_test_features();
-			}
-			delete[] target;
-
-			if (((CFeatures*) features)->get_feature_class() == C_COMBINED)
-			{
-				features=(CStringFeatures<CHAR>*) ((CCombinedFeatures*) features)->get_last_feature_obj();
-				ASSERT(features);
-			}
-
-			ASSERT(features);
-			ASSERT(((CFeatures*) features)->get_feature_class() == C_STRING);
-			ASSERT(((CFeatures*) features)->get_feature_type() == F_CHAR);
-
-			return features->obtain_by_position_list(winsize, &positions);
+			gui->guifeatures.invalidate_train();
+			features= (CStringFeatures<CHAR>*) gui->guifeatures.get_train_features();
 		}
-		else
-			SG_SERROR( "usage is sg('from_position_list', 'TRAIN|TEST', [list])");
+		else if (!strncmp(target, "TEST", 5))
+		{
+			gui->guifeatures.invalidate_train();
+			features=(CStringFeatures<CHAR>*) gui->guifeatures.get_test_features();
+		}
+		delete[] target;
+
+		ASSERT(features);
+		if (((CFeatures*) features)->get_feature_class() == C_COMBINED)
+			features=(CStringFeatures<CHAR>*) ((CCombinedFeatures*) features)->get_last_feature_obj();
+
+		ASSERT(features);
+		ASSERT(((CFeatures*) features)->get_feature_class() == C_STRING);
+		ASSERT(((CFeatures*) features)->get_feature_type() == F_CHAR);
+
+		return ( features->obtain_by_position_list(winsize, &positions) > 0);
 	}
 	else
 		SG_SERROR( "usage is sg('from_position_list', 'TRAIN|TEST', [list])");
