@@ -1744,7 +1744,7 @@ set_opts()
 	then
 		if test "$_matlab" = yes
 		then
-			LINKFLAGS="$LINKFLAGS -undefined suppress"
+			LINKFLAGS="$LINKFLAGS"
 		elif test "$_R" = yes
 		then
 			true #nop	
@@ -1924,7 +1924,7 @@ EOF
 			TARGET="sg.mexaxp"
 		elif darwin
 		then
-		    INCLUDES="$INCLUDES -I$MATLAB_INCDIR $MATLAB_SRCDIR"
+		    INCLUDES="$INCLUDES -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
 			if ppc
 			then
 				LINKFLAGS="$LINKFLAGS -bundle -Wl,-flat_namespace -undefined suppress -Wl,-exported_symbols_list,$MATLAB_LIBDIR/mac/mexFunction.map -L$MATLAB_BINDIR/mac -lmx -lmex -lmat"
