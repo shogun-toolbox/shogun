@@ -158,19 +158,19 @@ else
 ifeq (cmdline,$(INTERFACE))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(BINDIR)
-	install -D -m755 $(TARGET) $(DESTDIR)$(BINDIR)
+	install -m755 $(TARGET) $(DESTDIR)$(BINDIR)
 # Octave
 else
 ifeq (octave,$(INTERFACE))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(OCTDIR)
-	install -D -m755 $(TARGET) $(DESTDIR)$(OCTDIR)
+	install -m755 $(TARGET) $(DESTDIR)$(OCTDIR)
 # Python
 else
 ifeq (python,$(INTERFACE))
 install: $(TARGET)
 	install -d -m755 $(DESTDIR)$(PYDIR)
-	install -D -m755 $(TARGET) $(DESTDIR)$(PYDIR)
+	install -m755 $(TARGET) $(DESTDIR)$(PYDIR)
 # R, R-modular and matlab are done separately
 else
 install: 
