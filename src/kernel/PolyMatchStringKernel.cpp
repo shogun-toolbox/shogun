@@ -57,15 +57,7 @@ bool CPolyMatchStringKernel::init(CFeatures* l, CFeatures* r)
 		this->lhs = (CStringFeatures<CHAR>*) l;
 		this->rhs = (CStringFeatures<CHAR>*) l;
 
-		//compute normalize to 1 values
-		for (i = 0; i<lhs->get_num_vectors(); i++)
-		{
-			sqrtdiag_lhs[i] = sqrt(compute(i,i));
-
-			//trap divide by zero exception
-			if (sqrtdiag_lhs[i]==0)
-				sqrtdiag_lhs[i] = 1e-16;
-		}
+		CKernel::init_sqrt_diag(sqrtdiag_lhs, lhs->get_num_vectors());
 
 		// if lhs is different from rhs (train/test data)
 		// compute also the normalization for rhs
@@ -74,15 +66,7 @@ bool CPolyMatchStringKernel::init(CFeatures* l, CFeatures* r)
 			this->lhs = (CStringFeatures<CHAR>*) r;
 			this->rhs = (CStringFeatures<CHAR>*) r;
 
-			//compute normalize to 1 values
-			for (i = 0; i<rhs->get_num_vectors(); i++)
-			{
-				sqrtdiag_rhs[i] = sqrt(compute(i,i));
-
-				//trap divide by zero exception
-				if (sqrtdiag_rhs[i]==0)
-					sqrtdiag_rhs[i] = 1e-16;
-			}
+			CKernel::init_sqrt_diag(sqrtdiag_rhs, rhs->get_num_vectors());
 		}
 	}
 
