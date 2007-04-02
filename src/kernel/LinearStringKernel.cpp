@@ -99,17 +99,14 @@ bool CLinearStringKernel::init_optimization(INT num_suppvec, INT *sv_idx,
 		DREAL *alphas)
 {
 	SG_DEBUG("drin gelandet yeah\n");
-	INT alen;
-	INT i;
+	INT i, alen;
 
 	int num_feat = ((CStringFeatures<CHAR>*) lhs)->get_max_vector_length();
 	ASSERT(num_feat);
 
 	normal = new DREAL[num_feat];
 	ASSERT(normal);
-
-	for (i = 0; i<num_feat; i++)
-		normal[i] = 0;
+	clear_normal();
 
 	for (i = 0; i<num_suppvec; i++)
 	{
