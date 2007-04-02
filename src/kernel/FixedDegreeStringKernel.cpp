@@ -37,19 +37,13 @@ bool CFixedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 	sqrtdiag_lhs = new DREAL[lhs->get_num_vectors()];
 	ASSERT(sqrtdiag_lhs);
 
-	for (i = 0; i<lhs->get_num_vectors(); i++)
-		sqrtdiag_lhs[i] = 1;
-
 	if (l==r)
 		sqrtdiag_rhs = sqrtdiag_lhs;
 	else
 	{
 		sqrtdiag_rhs = new DREAL[rhs->get_num_vectors()];
 		ASSERT(sqrtdiag_rhs);
-		for (i = 0; i<rhs->get_num_vectors(); i++)
-			sqrtdiag_rhs[i] = 1;
 	}
-
 
 	this->lhs = (CStringFeatures<CHAR>*) l;
 	this->rhs = (CStringFeatures<CHAR>*) l;
