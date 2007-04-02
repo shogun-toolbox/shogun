@@ -34,8 +34,6 @@ bool CFixedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 		delete[] sqrtdiag_rhs;
 	sqrtdiag_rhs = NULL;
 	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs = NULL;
-
 	sqrtdiag_lhs = new DREAL[lhs->get_num_vectors()];
 
 	for (i = 0; i<lhs->get_num_vectors(); i++)
