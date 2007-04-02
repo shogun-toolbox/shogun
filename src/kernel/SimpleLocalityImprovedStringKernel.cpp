@@ -14,7 +14,7 @@
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 
-CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(LONG size,
+CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(INT size,
 		INT l, INT d1, INT d2)
 : CStringKernel<CHAR>(size), length(l), inner_degree(d1), outer_degree(d2),
 	match(NULL), pyramid_weights(NULL)
