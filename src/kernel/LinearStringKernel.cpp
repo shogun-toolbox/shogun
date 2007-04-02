@@ -90,11 +90,9 @@ DREAL CLinearStringKernel::compute(INT idx_a, INT idx_b)
 
 	ASSERT(alen==blen);
 	double sum = 0;
-	for (INT i = 0; i<alen; i++)
+	for (INT i = 0; i<alen; i++) /* FIXME: use dot from Mathematics.h */
 		sum += ((LONG) avec[i])*((LONG) bvec[i]);
-
-	DREAL result = sum/scale;
-	return result;
+	return sum/scale;
 }
 
 bool CLinearStringKernel::init_optimization(INT num_suppvec, INT *sv_idx,
