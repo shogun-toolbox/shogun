@@ -17,7 +17,7 @@
 class CLinearStringKernel: public CStringKernel<CHAR>
 {
 public:
-	CLinearStringKernel(LONG size, bool do_rescale = true, DREAL scale = 1.0);
+	CLinearStringKernel(INT size, bool do_rescale = true, DREAL scale = 1.0);
 	~CLinearStringKernel();
 
 	virtual bool init(CFeatures* l, CFeatures* r);

@@ -14,7 +14,7 @@
 #include "kernel/LinearStringKernel.h"
 #include "features/StringFeatures.h"
 
-CLinearStringKernel::CLinearStringKernel(LONG size, bool do_rescale_, DREAL scale_)
+CLinearStringKernel::CLinearStringKernel(INT size, bool do_rescale_, DREAL scale_)
 : CStringKernel<CHAR>(size), scale(scale_), do_rescale(do_rescale_),
 	initialized(false), normal(NULL)
 {
