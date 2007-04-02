@@ -66,13 +66,7 @@ DREAL CLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 
 	// initialize match table 1 -> match;  0 -> no match
 	for (i=0; i<alen; i++)
-	{
-	  if (avec[i]==bvec[i])
-		  match[i]=1;
-	  else
-		  match[i]=0;
-	}
-
+		match[i] = (avec[i] == bvec[i])? 1 : 0;
 
 	DREAL outer_sum=0;
 
