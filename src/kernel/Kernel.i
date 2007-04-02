@@ -64,7 +64,7 @@
 %include "kernel/PolyMatchStringKernel.i"
 %include "kernel/PolyMatchWordKernel.i"
 %include "kernel/SalzbergWordKernel.i"
-%include "kernel/SimpleLocalityImprovedCharKernel.i"
+%include "kernel/SimpleLocalityImprovedStringKernel.i"
 %include "kernel/WordMatchKernel.i"
 
 %include "kernel/CombinedKernel.i"

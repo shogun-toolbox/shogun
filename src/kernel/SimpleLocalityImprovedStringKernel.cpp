@@ -10,27 +10,27 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include "kernel/SimpleLocalityImprovedCharKernel.h"
+#include "kernel/SimpleLocalityImprovedStringKernel.h"
 #include "features/Features.h"
-#include "features/CharFeatures.h"
+#include "features/StringFeatures.h"
 
-CSimpleLocalityImprovedCharKernel::CSimpleLocalityImprovedCharKernel(LONG size, INT l, INT d1, INT d2)
-  : CSimpleKernel<CHAR>(size),length(l),inner_degree(d1),outer_degree(d2),match(NULL), pyramid_weights(NULL)
+CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(LONG size, INT l, INT d1, INT d2)
+  : CStringKernel<CHAR>(size),length(l),inner_degree(d1),outer_degree(d2),match(NULL), pyramid_weights(NULL)
 {
 }
 
-CSimpleLocalityImprovedCharKernel::~CSimpleLocalityImprovedCharKernel() 
+CSimpleLocalityImprovedStringKernel::~CSimpleLocalityImprovedStringKernel()
 {
 	cleanup();
 }
 
-bool CSimpleLocalityImprovedCharKernel::init(CFeatures* l, CFeatures* r)
+bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<CHAR>::init(l,r);
+	bool result=CStringKernel<CHAR>::init(l,r);
 
 	if (result)
 	  {
-	    INT num_features = ((CCharFeatures*) l)->get_num_features() ;
+	    INT num_features = ((CStringFeatures<CHAR>*) l)->get_max_vector_length();
 	    match=new CHAR[num_features];
 	    pyramid_weights = new DREAL[num_features] ;
 	    SG_INFO( "initializing pyramid weights: size=%ld length=%i\n", num_features, length) ;
@@ -70,7 +70,7 @@ bool CSimpleLocalityImprovedCharKernel::init(CFeatures* l, CFeatures* r)
 	return (match!=NULL && result==true);
 }
   
-void CSimpleLocalityImprovedCharKernel::cleanup()
+void CSimpleLocalityImprovedStringKernel::cleanup()
 {
 	delete[] match;
 	match=NULL;
@@ -79,17 +79,17 @@ void CSimpleLocalityImprovedCharKernel::cleanup()
 	pyramid_weights=NULL;
 }
 
-bool CSimpleLocalityImprovedCharKernel::load_init(FILE* src)
+bool CSimpleLocalityImprovedStringKernel::load_init(FILE* src)
 {
 	return false;
 }
 
-bool CSimpleLocalityImprovedCharKernel::save_init(FILE* dest)
+bool CSimpleLocalityImprovedStringKernel::save_init(FILE* dest)
 {
 	return false;
 }
   
-DREAL CSimpleLocalityImprovedCharKernel::dot_pyr (const CHAR* const x1,
+DREAL CSimpleLocalityImprovedStringKernel::dot_pyr (const CHAR* const x1,
 		     const CHAR* const x2,
 		     const INT NOF_NTS,
 		     const INT NTWIDTH,
@@ -174,13 +174,12 @@ DREAL CSimpleLocalityImprovedCharKernel::dot_pyr (const CHAR* const x1,
   return pot ;
 }
 
-DREAL CSimpleLocalityImprovedCharKernel::compute(INT idx_a, INT idx_b)
+DREAL CSimpleLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 {
   INT alen, blen;
-  bool afree, bfree;
 
-  CHAR* avec=((CCharFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+  CHAR* avec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
+  CHAR* bvec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
 
   // can only deal with strings of same length
   ASSERT(alen==blen);
@@ -194,9 +193,6 @@ DREAL CSimpleLocalityImprovedCharKernel::compute(INT idx_a, INT idx_b)
 		 outer_degree, 
 		 match, pyramid_weights) ;
   dpt = dpt / pow((double)alen, (double)outer_degree) ;
-
-  ((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return (DREAL) dpt;
 }

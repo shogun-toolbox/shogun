@@ -27,7 +27,7 @@
 #include "kernel/WeightedDegreePositionStringKernel.h"
 #include "kernel/FixedDegreeStringKernel.h"
 #include "kernel/LocalityImprovedStringKernel.h"
-#include "kernel/SimpleLocalityImprovedCharKernel.h"
+#include "kernel/SimpleLocalityImprovedStringKernel.h"
 #include "kernel/PolyKernel.h"
 #include "kernel/CustomKernel.h"
 #include "kernel/ConstKernel.h"
@@ -1143,10 +1143,10 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				INT d2=1;
 				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &l, &d1, &d2);
 				delete k;
-				k=new CSimpleLocalityImprovedCharKernel(size, l, d1, d2);
+				k=new CSimpleLocalityImprovedStringKernel(size, l, d1, d2);
 				if (k)
 				{
-					SG_INFO( "SimpleLocalityImprovedCharKernel created\n");
+					SG_INFO( "SimpleLocalityImprovedStringKernel created\n");
 					return k;
 				}
 			}
