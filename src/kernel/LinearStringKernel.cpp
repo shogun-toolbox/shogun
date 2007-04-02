@@ -69,10 +69,7 @@ bool CLinearStringKernel::save_init(FILE *dest)
 
 void CLinearStringKernel::clear_normal()
 {
-	int num = lhs->get_num_vectors();
-
-	for (int i = 0; i<num; i++)
-		normal[i] = 0;
+	memset(normal, 0, lhs->get_num_vectors()*sizeof(DREAL));
 }
 
 void CLinearStringKernel::add_to_normal(INT idx, DREAL weight)
