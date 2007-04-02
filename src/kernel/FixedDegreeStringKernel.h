@@ -49,8 +49,5 @@ protected:
 	DREAL *sqrtdiag_lhs;
 	DREAL *sqrtdiag_rhs;
 	bool initialized;
-
-private:
-	void init_sqrt_diag(DREAL *v, INT num);
 };
 #endif /* _FIXEDDEGREESTRINGKERNEL_H___ */

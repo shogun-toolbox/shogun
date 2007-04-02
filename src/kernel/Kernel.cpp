@@ -25,6 +25,7 @@
 
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
 
 #ifndef WIN32
 #include <pthread.h>
@@ -1034,4 +1035,18 @@ void CKernel::do_precompute_matrix()
 
 	SG_PROGRESS(num*num,0,num*num);
 	SG_INFO( "\ndone.\n") ;
+}
+
+/*
+ * compute the vector containing the square root of the diagonal elements
+ * of this kernel.
+ */
+void CKernel::init_sqrt_diag(DREAL *v, INT num)
+{
+	for (INT i = 0; i<num; i++)
+	{
+		v[i] = sqrt(this->compute(i,i));
+		if (!v[i])
+			v[i] = 1e-16; /* avoid divide by zero exception */
+	}
 }

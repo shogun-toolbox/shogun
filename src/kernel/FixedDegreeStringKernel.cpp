@@ -24,26 +24,10 @@ CFixedDegreeStringKernel::~CFixedDegreeStringKernel()
 	cleanup();
 }
 
-/*
- * compute the vector containing the square root of the diagonal elements
- * of this kernel.
- */
-void CFixedDegreeStringKernel::init_sqrt_diag(DREAL *v, INT num)
-{
-	for (INT i = 0; i<num; i++)
-	{
-		v[i] = sqrt(this->compute(i,i));
-		if (!v[i])
-			v[i] = 1e-16; /* avoid divide by zero exception */
-	}
-
-}
-
 bool CFixedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 {
 	bool result = CStringKernel<CHAR>::init(l, r);
 	initialized = false;
-	INT i;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
@@ -63,14 +47,14 @@ bool CFixedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 	this->lhs = (CStringFeatures<CHAR>*) l;
 	this->rhs = (CStringFeatures<CHAR>*) l;
 
-	init_sqrt_diag(sqrtdiag_lhs, lhs->get_num_vectors());
+	CKernel::init_sqrt_diag(sqrtdiag_lhs, lhs->get_num_vectors());
 	// if lhs is different from rhs (train/test data)
 	// compute also the normalization for rhs
 	if (sqrtdiag_lhs!=sqrtdiag_rhs)
 	{
 		this->lhs = (CStringFeatures<CHAR>*) r;
 		this->rhs = (CStringFeatures<CHAR>*) r;
-		init_sqrt_diag(sqrtdiag_rhs, rhs->get_num_vectors());
+		CKernel::init_sqrt_diag(sqrtdiag_rhs, rhs->get_num_vectors());
 	}
 
 	this->lhs = (CStringFeatures<CHAR>*) l;
