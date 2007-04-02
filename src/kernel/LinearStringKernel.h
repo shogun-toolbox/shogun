@@ -8,17 +8,17 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _LINEARCHARKERNEL_H___
-#define _LINEARCHARKERNEL_H___
+#ifndef _LINEARSTRINGKERNEL_H___
+#define _LINEARSTRINGKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
+#include "kernel/StringKernel.h"
 
-class CLinearCharKernel: public CSimpleKernel<CHAR>
+class CLinearStringKernel: public CStringKernel<CHAR>
 {
  public:
-  CLinearCharKernel(LONG size, bool do_rescale=true, DREAL scale=1.0);
-  ~CLinearCharKernel() ;
+  CLinearStringKernel(LONG size, bool do_rescale=true, DREAL scale=1.0);
+  ~CLinearStringKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();

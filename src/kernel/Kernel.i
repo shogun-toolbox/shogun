@@ -50,7 +50,6 @@
 %include "kernel/WeightedDegreeStringKernel.i" 
 %include "kernel/WeightedDegreePositionCharKernel.i" 
 %include "kernel/WeightedDegreePositionStringKernel.i" 
-%include "kernel/WeightedDegreeCharKernelPolyA.i"
 %include "kernel/CommUlongStringKernel.i" 
 %include "kernel/CommWordKernel.i"
 %include "kernel/CommWordStringKernel.i" 
@@ -59,7 +58,7 @@
 %include "kernel/FixedDegreeStringKernel.i"
 %include "kernel/HistogramWordKernel.i"
 %include "kernel/LinearByteKernel.i"
-%include "kernel/LinearCharKernel.i"
+%include "kernel/LinearStringKernel.i"
 %include "kernel/LinearWordKernel.i"
 
 %include "kernel/LocalityImprovedStringKernel.i"

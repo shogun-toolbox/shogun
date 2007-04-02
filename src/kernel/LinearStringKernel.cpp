@@ -11,23 +11,23 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "lib/Mathematics.h"
-#include "kernel/LinearCharKernel.h"
-#include "features/CharFeatures.h"
+#include "kernel/LinearStringKernel.h"
+#include "features/StringFeatures.h"
 
-CLinearCharKernel::CLinearCharKernel(LONG size, bool do_rescale_, DREAL scale_)
-  : CSimpleKernel<CHAR>(size),scale(scale_),do_rescale(do_rescale_),initialized(false),
+CLinearStringKernel::CLinearStringKernel(LONG size, bool do_rescale_, DREAL scale_)
+  : CStringKernel<CHAR>(size),scale(scale_),do_rescale(do_rescale_),initialized(false),
 	normal(NULL)
 {
 }
 
-CLinearCharKernel::~CLinearCharKernel() 
+CLinearStringKernel::~CLinearStringKernel()
 {
 	cleanup();
 }
   
-bool CLinearCharKernel::init(CFeatures* l, CFeatures* r)
+bool CLinearStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	CSimpleKernel<CHAR>::init(l, r);
+	CStringKernel<CHAR>::init(l, r);
 
 	if (!initialized)
 		init_rescale() ;
@@ -37,7 +37,7 @@ bool CLinearCharKernel::init(CFeatures* l, CFeatures* r)
 	return true;
 }
 
-void CLinearCharKernel::init_rescale()
+void CLinearStringKernel::init_rescale()
 {
 	if (!do_rescale)
 		return ;
@@ -53,22 +53,22 @@ void CLinearCharKernel::init_rescale()
 	initialized=true;
 }
 
-void CLinearCharKernel::cleanup()
+void CLinearStringKernel::cleanup()
 {
 	delete_optimization();
 }
 
-bool CLinearCharKernel::load_init(FILE* src)
+bool CLinearStringKernel::load_init(FILE* src)
 {
 	return false;
 }
 
-bool CLinearCharKernel::save_init(FILE* dest)
+bool CLinearStringKernel::save_init(FILE* dest)
 {
 	return false;
 }
 
-void CLinearCharKernel::clear_normal()
+void CLinearStringKernel::clear_normal()
 {
 	int num = lhs->get_num_vectors();
 
@@ -76,25 +76,21 @@ void CLinearCharKernel::clear_normal()
 		normal[i]=0;
 }
 
-void CLinearCharKernel::add_to_normal(INT idx, DREAL weight) 
+void CLinearStringKernel::add_to_normal(INT idx, DREAL weight)
 {
 	INT vlen;
-	bool vfree;
-	CHAR* vec=((CCharFeatures*) lhs)->get_feature_vector(idx, vlen, vfree);
+	CHAR* vec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, vlen);
 
 	for (int i=0; i<vlen; i++)
 		normal[i]+= weight*vec[i];
-
-	((CCharFeatures*) lhs)->free_feature_vector(vec, idx, vfree);
 }
   
-DREAL CLinearCharKernel::compute(INT idx_a, INT idx_b)
+DREAL CLinearStringKernel::compute(INT idx_a, INT idx_b)
 {
   INT alen, blen;
-  bool afree, bfree;
 
-  CHAR* avec=((CCharFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+  CHAR* avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
+  CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
 
   ASSERT(alen==blen);
   double sum=0;
@@ -102,20 +98,16 @@ DREAL CLinearCharKernel::compute(INT idx_a, INT idx_b)
 	  sum+=((LONG) avec[i])*((LONG) bvec[i]);
 
   DREAL result=sum/scale;
-  ((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
-
   return result;
 }
 
-bool CLinearCharKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas) 
+bool CLinearStringKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas)
 {
 	SG_DEBUG("drin gelandet yeah\n");
 	INT alen;
-	bool afree;
 	INT i;
 
-	int num_feat=((CCharFeatures*) lhs)->get_num_features();
+	int num_feat = ((CStringFeatures<CHAR>*) lhs)->get_max_vector_length();
 	ASSERT(num_feat);
 
 	normal=new DREAL[num_feat];
@@ -126,20 +118,18 @@ bool CLinearCharKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* a
 
 	for (i=0; i<num_suppvec; i++)
 	{
-		CHAR* avec=((CCharFeatures*) lhs)->get_feature_vector(sv_idx[i], alen, afree);
+		CHAR* avec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(sv_idx[i], alen);
 		ASSERT(avec);
 
 		for (int j=0; j<num_feat; j++)
 			normal[j]+= alphas[i] * ((double) avec[j]);
-
-		((CCharFeatures*) lhs)->free_feature_vector(avec, 0, afree);
 	}
 
 	set_is_initialized(true);
 	return true;
 }
 
-bool CLinearCharKernel::delete_optimization()
+bool CLinearStringKernel::delete_optimization()
 {
 	delete[] normal;
 	normal=NULL;
@@ -147,12 +137,11 @@ bool CLinearCharKernel::delete_optimization()
 	return true;
 }
 
-DREAL CLinearCharKernel::compute_optimized(INT idx_b) 
+DREAL CLinearStringKernel::compute_optimized(INT idx_b)
 {
 	INT blen;
-	bool bfree;
 
-	CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
 
 	double result=0;
 	{
@@ -160,8 +149,6 @@ DREAL CLinearCharKernel::compute_optimized(INT idx_b)
 			result+= normal[i] * ((double) bvec[i]);
 	}
 	result/=scale;
-
-	((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }
