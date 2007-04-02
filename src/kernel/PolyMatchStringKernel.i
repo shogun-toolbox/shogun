@@ -1,7 +1,7 @@
 %{
- #include "kernel/PolyMatchCharKernel.h" 
+ #include "kernel/PolyMatchStringKernel.h"
 %}
 
 %rename(PolyMatchCharKernel) CPolyMatchCharKernel;
 
-%include "kernel/PolyMatchCharKernel.h" 
+%include "kernel/PolyMatchStringKernel.h"

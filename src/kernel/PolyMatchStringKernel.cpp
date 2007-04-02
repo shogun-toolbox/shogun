@@ -10,24 +10,24 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include "kernel/PolyMatchCharKernel.h"
+#include "kernel/PolyMatchStringKernel.h"
 #include "features/Features.h"
-#include "features/CharFeatures.h"
+#include "features/StringFeatures.h"
 
-CPolyMatchCharKernel::CPolyMatchCharKernel(LONG size, INT d, bool inhom, bool use_norm)
-  : CSimpleKernel<CHAR>(size),degree(d),inhomogene(inhom),
+CPolyMatchStringKernel::CPolyMatchStringKernel(LONG size, INT d, bool inhom, bool use_norm)
+  : CStringKernel<CHAR>(size),degree(d),inhomogene(inhom),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
 {
 }
 
-CPolyMatchCharKernel::~CPolyMatchCharKernel() 
+CPolyMatchStringKernel::~CPolyMatchStringKernel()
 {
 	cleanup();
 }
   
-bool CPolyMatchCharKernel::init(CFeatures* l, CFeatures* r)
+bool CPolyMatchStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<CHAR>::init(l,r);
+	bool result=CStringKernel<CHAR>::init(l,r);
 
 	initialized = false ;
 	INT i;
@@ -57,8 +57,8 @@ bool CPolyMatchCharKernel::init(CFeatures* l, CFeatures* r)
 		ASSERT(sqrtdiag_lhs);
 		ASSERT(sqrtdiag_rhs);
 
-		this->lhs=(CCharFeatures*) l;
-		this->rhs=(CCharFeatures*) l;
+		this->lhs=(CStringFeatures<CHAR>*) l;
+		this->rhs=(CStringFeatures<CHAR>*) l;
 
 		//compute normalize to 1 values
 		for (i=0; i<lhs->get_num_vectors(); i++)
@@ -74,8 +74,8 @@ bool CPolyMatchCharKernel::init(CFeatures* l, CFeatures* r)
 		// compute also the normalization for rhs
 		if (sqrtdiag_lhs!=sqrtdiag_rhs)
 		{
-			this->lhs=(CCharFeatures*) r;
-			this->rhs=(CCharFeatures*) r;
+			this->lhs=(CStringFeatures<CHAR>*) r;
+			this->rhs=(CStringFeatures<CHAR>*) r;
 
 			//compute normalize to 1 values
 			for (i=0; i<rhs->get_num_vectors(); i++)
@@ -89,14 +89,14 @@ bool CPolyMatchCharKernel::init(CFeatures* l, CFeatures* r)
 		}
 	}
 
-	this->lhs=(CCharFeatures*) l;
-	this->rhs=(CCharFeatures*) r;
+	this->lhs=(CStringFeatures<CHAR>*) l;
+	this->rhs=(CStringFeatures<CHAR>*) r;
 
 	initialized = true ;
 	return result;
 }
 
-void CPolyMatchCharKernel::cleanup()
+void CPolyMatchStringKernel::cleanup()
 {
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
@@ -108,24 +108,23 @@ void CPolyMatchCharKernel::cleanup()
 	initialized=false;
 }
 
-bool CPolyMatchCharKernel::load_init(FILE* src)
+bool CPolyMatchStringKernel::load_init(FILE *src)
 {
 	return false;
 }
 
-bool CPolyMatchCharKernel::save_init(FILE* dest)
+bool CPolyMatchStringKernel::save_init(FILE *dest)
 {
 	return false;
 }
   
-DREAL CPolyMatchCharKernel::compute(INT idx_a, INT idx_b)
+DREAL CPolyMatchStringKernel::compute(INT idx_a, INT idx_b)
 {
   INT alen, blen;
-  bool afree, bfree;
 
   //fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
-  CHAR* avec=((CCharFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+  CHAR* avec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
+  CHAR* bvec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
   
   ASSERT(alen==blen);
 
@@ -160,9 +159,6 @@ DREAL CPolyMatchCharKernel::compute(INT idx_a, INT idx_b)
 	  result*=sum;
 
   result/=sqrt_both;
-
-  ((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return result;
 }

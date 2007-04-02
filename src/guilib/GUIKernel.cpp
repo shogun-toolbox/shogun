@@ -528,7 +528,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &degree, &inhomogene, &normalize);
 				delete k;
-				k=new CPolyMatchCharKernel(size, degree, inhomogene==1, normalize==1);
+				k=new CPolyMatchStringKernel(size, degree, inhomogene==1, normalize==1);
 
 				if (k)
 				{

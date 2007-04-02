@@ -8,17 +8,17 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _POLYMATCHCHARKERNEL_H___
-#define _POLYMATCHCHARKERNEL_H___
+#ifndef _POLYMATCHSTRINGKERNEL_H___
+#define _POLYMATCHSTRINGKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
+#include "kernel/StringKernel.h"
 
-class CPolyMatchCharKernel: public CSimpleKernel<CHAR>
+class CPolyMatchStringKernel: public CStringKernel<CHAR>
 {
  public:
-  CPolyMatchCharKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);
-  ~CPolyMatchCharKernel() ;
+  CPolyMatchStringKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);
+  ~CPolyMatchStringKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
@@ -31,7 +31,7 @@ class CPolyMatchCharKernel: public CSimpleKernel<CHAR>
   virtual EKernelType get_kernel_type() { return K_POLYMATCH; }
 
   // return the name of a kernel
-  virtual const CHAR* get_name() { return "PolyMatchChar"; };
+  virtual const CHAR* get_name() { return "PolyMatchString"; };
 
  protected:
   /// compute kernel function for features a and b
