@@ -123,18 +123,8 @@ DREAL CFixedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
 
-	DREAL sqrt_a = 1;
-	DREAL sqrt_b = 1;
-	if (initialized)
-	{
-		sqrt_a = sqrtdiag_lhs[idx_a];
-		sqrt_b = sqrtdiag_rhs[idx_b];
-	}
-
-	DREAL sqrt_both = sqrt_a*sqrt_b;
-
+	DREAL sqrt = initialized? sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b] : 1;
 	LONG sum = 0;
-
 	for (INT i = 0; i<alen-degree; i++)
 	{
 		bool match = true;
@@ -144,5 +134,5 @@ DREAL CFixedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 		if (match)
 			sum++;
 	}
-	return (double) sum/sqrt_both;
+	return (double) sum/sqrt;
 }
