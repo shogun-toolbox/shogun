@@ -134,5 +134,5 @@ DREAL CFixedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 		if (match)
 			sum++;
 	}
-	return (double) sum/sqrt;
+	return (DREAL) sum/sqrt;
 }
