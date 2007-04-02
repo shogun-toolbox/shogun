@@ -14,7 +14,7 @@
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 
-CPolyMatchStringKernel::CPolyMatchStringKernel(LONG size, INT d, bool inhom,
+CPolyMatchStringKernel::CPolyMatchStringKernel(INT size, INT d, bool inhom,
 		bool use_norm)
 : CStringKernel<CHAR>(size),degree(d),inhomogene(inhom),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
@@ -32,7 +32,6 @@ bool CPolyMatchStringKernel::init(CFeatures* l, CFeatures* r)
 	bool result = CStringKernel<CHAR>::init(l, r);
 
 	initialized = false;
-	INT i;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
@@ -101,33 +100,17 @@ bool CPolyMatchStringKernel::save_init(FILE *dest)
 
 DREAL CPolyMatchStringKernel::compute(INT idx_a, INT idx_b)
 {
-	INT alen, blen;
+	INT i, alen, blen, sum;
 
 	//fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b);
 	CHAR* avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
 	CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
 
 	ASSERT(alen==blen);
-
-	DREAL sqrt_a = 1;
-	DREAL sqrt_b = 1;
-
-	if (initialized && use_normalization)
-	{
-		sqrt_a = sqrtdiag_lhs[idx_a];
-		sqrt_b = sqrtdiag_rhs[idx_b];
-	}
-
-	DREAL sqrt_both = sqrt_a*sqrt_b;
-	INT ialen = (int) alen;
-	INT sum = 0;
-	for (INT i = 0; i<ialen; i++)
-		sum += (avec[i]==bvec[i])? 1 : 0;
-	if (inhomogene)
-		sum += 1;
-	DREAL result = sum;
-	for (INT j = 1; j<degree; j++)
-		result *= sum;
-	result /= sqrt_both;
-	return result;
+	DREAL sqrt = (initialized && use_normalization)?
+		sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b] : 1;
+	for (i = 0, sum = inhomogene; i<alen; i++)
+		if (avec[i]==bvec[i])
+			sum++;
+	return pow(sum, degree) / sqrt;
 }

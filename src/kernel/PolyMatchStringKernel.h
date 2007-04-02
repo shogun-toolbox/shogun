@@ -17,7 +17,7 @@
 class CPolyMatchStringKernel: public CStringKernel<CHAR>
 {
 public:
-	CPolyMatchStringKernel(LONG size, INT degree, bool inhomogene,
+	CPolyMatchStringKernel(INT size, INT degree, bool inhomogene,
 		bool use_normalization = true);
 	~CPolyMatchStringKernel();
 
