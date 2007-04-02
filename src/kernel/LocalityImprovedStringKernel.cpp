@@ -56,11 +56,11 @@ DREAL CLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 
-	CHAR* avec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
-	CHAR* bvec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
+	CHAR* avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
+	CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
 
 	// can only deal with strings of same length
-	ASSERT(alen==blen);
+	ASSERT(alen == blen);
 
 	INT i,j,t;
 
@@ -72,24 +72,24 @@ DREAL CLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 
 	for (t=0; t<alen-length; t++)
 	{
-	  INT sum=0;
-	  for (i=0; i<length; i++)
-		  sum+=(i+1)*match[t+i]+(length-i)*match[t+i+length+1];
+		INT sum = 0;
+		for (i=0; i<length; i++)
+			sum += (i+1)*match[t+i]+(length-i)*match[t+i+length+1];
 
-	  //add middle element + normalize with sum_i=0^2l+1 i = (2l+1)(l+1)
-	  DREAL inner_sum= ((DREAL) sum + (length+1)*match[t+length]) / ((2*length+1)*(length+1));
-	  DREAL s=inner_sum;
+		//add middle element + normalize with sum_i=0^2l+1 i = (2l+1)(l+1)
+		DREAL inner_sum = ((DREAL) sum + (length+1)*match[t+length]) / ((2*length+1)*(length+1));
+		DREAL s = inner_sum;
 
-	  for (j=1; j<inner_degree; j++)
-		  inner_sum*=s;
+		for (j = 1; j<inner_degree; j++)
+			inner_sum *= s;
 
-	  outer_sum+=inner_sum;
+		outer_sum += inner_sum;
 	}
 
-	double result=outer_sum;
+	double result = outer_sum;
 
 	for (i=1; i<outer_degree; i++)
-	  result*=outer_sum;
+		result *= outer_sum;
 
 	return (double) result;
 }
