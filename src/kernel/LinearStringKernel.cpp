@@ -45,7 +45,7 @@ void CLinearStringKernel::init_rescale()
 	for (LONG i = 0; i<lhs->get_num_vectors() && i<rhs->get_num_vectors(); i++)
 		sum += compute(i, i);
 
-	if (sum > pow((double) 2, (double) 8*sizeof(LONG)))
+	if (sum > pow(2, 8*sizeof(LONG)))
 		SG_ERROR("the sum %lf does not fit into integer of %d bits "
 			"expect bogus results.\n", sum, 8*sizeof(LONG));
 	scale = sum/CMath::min(lhs->get_num_vectors(), rhs->get_num_vectors());
