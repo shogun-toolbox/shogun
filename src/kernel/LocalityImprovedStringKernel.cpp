@@ -65,15 +65,15 @@ DREAL CLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 	INT i,j,t;
 
 	// initialize match table 1 -> match;  0 -> no match
-	for (i=0; i<alen; i++)
+	for (i = 0; i<alen; i++)
 		match[i] = (avec[i] == bvec[i])? 1 : 0;
 
-	DREAL outer_sum=0;
+	DREAL outer_sum = 0;
 
-	for (t=0; t<alen-length; t++)
+	for (t = 0; t<alen-length; t++)
 	{
 		INT sum = 0;
-		for (i=0; i<length; i++)
+		for (i = 0; i<length; i++)
 			sum += (i+1)*match[t+i]+(length-i)*match[t+i+length+1];
 
 		//add middle element + normalize with sum_i=0^2l+1 i = (2l+1)(l+1)
