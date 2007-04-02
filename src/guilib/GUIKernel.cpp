@@ -36,7 +36,7 @@
 #include "kernel/CustomKernel.h"
 #include "kernel/ConstKernel.h"
 #include "kernel/PolyMatchWordKernel.h"
-#include "kernel/PolyMatchCharKernel.h"
+#include "kernel/PolyMatchStringKernel.h"
 #include "kernel/WordMatchKernel.h"
 #include "kernel/CommWordKernel.h"
 #include "kernel/HammingWordKernel.h"
@@ -532,7 +532,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (k)
 				{
-					SG_INFO( "PolyMatchCharKernel created\n");
+					SG_INFO( "PolyMatchStringKernel created\n");
 					return k;
 				}
 			}
