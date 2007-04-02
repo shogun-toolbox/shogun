@@ -135,8 +135,7 @@ DREAL CLinearStringKernel::compute_optimized(INT idx_b)
 	CHAR *bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
 
 	double result = 0;
-	for (INT i = 0; i<blen; i++)
+	for (INT i = 0; i<blen; i++) /* FIXME: Use dot() from Mathematics.h */
 		result += normal[i]*((double) bvec[i]);
-	result /= scale;
-	return result;
+	return result/scale;
 }
