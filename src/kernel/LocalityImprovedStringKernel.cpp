@@ -85,11 +85,5 @@ DREAL CLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 
 		outer_sum += inner_sum;
 	}
-
-	double result = outer_sum;
-
-	for (i=1; i<outer_degree; i++)
-		result *= outer_sum;
-
-	return (double) result;
+	return pow(outer_sum, outer_degree + 1);
 }
