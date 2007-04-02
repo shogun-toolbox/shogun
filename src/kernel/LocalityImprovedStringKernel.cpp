@@ -28,12 +28,12 @@ CLocalityImprovedStringKernel::~CLocalityImprovedStringKernel()
 
 bool CLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CStringKernel<CHAR>::init(l,r);
+	bool result = CStringKernel<CHAR>::init(l,r);
 
-	if (result)
-		match=new CHAR[((CStringFeatures<CHAR>*) l)->get_max_vector_length()];
-
-	return (match!=NULL && result==true);
+	if (!result)
+		return false;
+	match = new CHAR[((CStringFeatures<CHAR>*) l)->get_max_vector_length()];
+	return match? true : false;
 }
 
 void CLocalityImprovedStringKernel::cleanup()
