@@ -30,37 +30,37 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 {
 	bool result = CStringKernel<CHAR>::init(l,r);
 
-	if (result)
-	{
-		INT num_features = ((CStringFeatures<CHAR>*) l)->get_max_vector_length();
-		match = new CHAR[num_features];
-		pyramid_weights = new DREAL[num_features];
-		SG_INFO("initializing pyramid weights: size=%ld length=%i\n",
-			num_features, length);
+	if (!result)
+		return false;
+	INT num_features = ((CStringFeatures<CHAR>*) l)->get_max_vector_length();
+	match = new CHAR[num_features];
+	pyramid_weights = new DREAL[num_features];
+	SG_INFO("initializing pyramid weights: size=%ld length=%i\n",
+		num_features, length);
 
-		const INT PYRAL = 2 * length - 1; // total window length
-		DREAL PYRAL_pot;
-		INT DEGREE1_1  = (inner_degree & 0x1)==0;
-		INT DEGREE1_1n = (inner_degree & ~0x1)!=0;
-		INT DEGREE1_2  = (inner_degree & 0x2)!=0;
-		INT DEGREE1_3  = (inner_degree & ~0x3)!=0;
-		INT DEGREE1_4  = (inner_degree & 0x4)!=0;
-		{
-		DREAL PYRAL_ = PYRAL;
-		PYRAL_pot = DEGREE1_1 ? 1.0 : PYRAL_;
-		if (DEGREE1_1n)
+	const INT PYRAL = 2 * length - 1; // total window length
+	DREAL PYRAL_pot;
+	INT DEGREE1_1  = (inner_degree & 0x1)==0;
+	INT DEGREE1_1n = (inner_degree & ~0x1)!=0;
+	INT DEGREE1_2  = (inner_degree & 0x2)!=0;
+	INT DEGREE1_3  = (inner_degree & ~0x3)!=0;
+	INT DEGREE1_4  = (inner_degree & 0x4)!=0;
+	{
+	DREAL PYRAL_ = PYRAL;
+	PYRAL_pot = DEGREE1_1 ? 1.0 : PYRAL_;
+	if (DEGREE1_1n)
+	{
+		PYRAL_ *= PYRAL_;
+		if (DEGREE1_2)
+			PYRAL_pot *= PYRAL_;
+		if (DEGREE1_3)
 		{
 			PYRAL_ *= PYRAL_;
-			if (DEGREE1_2)
+			if (DEGREE1_4)
 				PYRAL_pot *= PYRAL_;
-			if (DEGREE1_3)
-			{
-				PYRAL_ *= PYRAL_;
-				if (DEGREE1_4)
-					PYRAL_pot *= PYRAL_;
-			}
 		}
-		}
+	}
+	}
 
 	INT pyra_len  = num_features-PYRAL+1;
 	INT pyra_len2 = (int) pyra_len/2;
@@ -71,8 +71,7 @@ bool CSimpleLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 	for (j = 0; j < pyra_len; j++)
 		pyramid_weights[j] /= PYRAL_pot;
 	}
-	};
-	return (match!=NULL && result==true);
+	return match;
 }
 
 void CSimpleLocalityImprovedStringKernel::cleanup()
