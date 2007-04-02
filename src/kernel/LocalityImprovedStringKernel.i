@@ -1,7 +1,7 @@
 %{
- #include "kernel/LocalityImprovedCharKernel.h" 
+ #include "kernel/LocalityImprovedStringKernel.h"
 %}
 
 %rename(LocalityImprovedCharKernel) CLocalityImprovedCharKernel;
 
-%include "kernel/LocalityImprovedCharKernel.h" 
+%include "kernel/LocalityImprovedStringKernel.h"

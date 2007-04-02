@@ -1295,10 +1295,10 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				INT d2=1;
 				sscanf(param, "%s %s %d %d %d %d", kern_type, data_type, &size, &l, &d1, &d2);
 				delete k;
-				k=new CLocalityImprovedCharKernel(size, l, d1, d2);
+				k=new CLocalityImprovedStringKernel(size, l, d1, d2);
 				if (k)
 				{
-					SG_INFO( "LocalityImprovedCharKernel created\n");
+					SG_INFO( "LocalityImprovedStringKernel created\n");
 					return k;
 				}
 			}

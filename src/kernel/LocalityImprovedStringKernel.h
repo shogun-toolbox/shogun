@@ -9,18 +9,19 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _LOCALITYIMPROVEDCHARKERNEL_H___
-#define _LOCALITYIMPROVEDCHARKERNEL_H___
+#ifndef _LOCALITYIMPROVEDSTRINGKERNEL_H___
+#define _LOCALITYIMPROVEDSTRINGKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
+#include "kernel/StringKernel.h"
 
-class CLocalityImprovedCharKernel: public CSimpleKernel<CHAR>
+class CLocalityImprovedStringKernel: public CStringKernel<CHAR>
 {
- public:
-  CLocalityImprovedCharKernel(LONG size, INT length, INT inner_degree, INT outer_degree) ;
-  ~CLocalityImprovedCharKernel() ;
-  
+public:
+	CLocalityImprovedStringKernel(LONG size, INT length, INT inner_degree,
+		INT outer_degree);
+	~CLocalityImprovedStringKernel();
+
   virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 

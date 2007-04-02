@@ -13,52 +13,51 @@
 #include "lib/io.h"
 #include "kernel/LocalityImprovedStringKernel.h"
 #include "features/Features.h"
-#include "features/CharFeatures.h"
+#include "features/StringFeatures.h"
 
-CLocalityImprovedCharKernel::CLocalityImprovedCharKernel(LONG size, INT l, INT d1, INT d2)
-  : CSimpleKernel<CHAR>(size),length(l),inner_degree(d1),outer_degree(d2),match(NULL)
+CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(LONG size, INT l, INT d1, INT d2)
+  : CStringKernel<CHAR>(size),length(l),inner_degree(d1),outer_degree(d2),match(NULL)
 {
 	SG_INFO( "LIK with parms: l=%d, d1=%d, d2=%d created!\n", l, d1, d2);
 }
 
-CLocalityImprovedCharKernel::~CLocalityImprovedCharKernel() 
+CLocalityImprovedStringKernel::~CLocalityImprovedStringKernel()
 {
 	cleanup();
 }
 
-bool CLocalityImprovedCharKernel::init(CFeatures* l, CFeatures* r)
+bool CLocalityImprovedStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<CHAR>::init(l,r);
+	bool result=CStringKernel<CHAR>::init(l,r);
 
 	if (result)
-		match=new CHAR[((CCharFeatures*) l)->get_num_features()];
+		match=new CHAR[((CStringFeatures<CHAR>*) l)->get_max_vector_length()];
 
 	return (match!=NULL && result==true);
 }
-  
-void CLocalityImprovedCharKernel::cleanup()
+
+void CLocalityImprovedStringKernel::cleanup()
 {
 	delete[] match;
 	match = NULL;
 }
 
-bool CLocalityImprovedCharKernel::load_init(FILE* src)
+bool CLocalityImprovedStringKernel::load_init(FILE* src)
 {
 	return false;
 }
 
-bool CLocalityImprovedCharKernel::save_init(FILE* dest)
+bool CLocalityImprovedStringKernel::save_init(FILE* dest)
 {
 	return false;
 }
-  
-DREAL CLocalityImprovedCharKernel::compute(INT idx_a, INT idx_b)
+
+DREAL CLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 {
   INT alen, blen;
-  bool afree, bfree;
 
-  CHAR* avec=((CCharFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+  CHAR* avec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
+  CHAR* bvec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
 
   // can only deal with strings of same length
   ASSERT(alen==blen);
@@ -97,9 +96,6 @@ DREAL CLocalityImprovedCharKernel::compute(INT idx_a, INT idx_b)
 
   for (i=1; i<outer_degree; i++)
 	  result*=outer_sum;
-
-  ((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return (double) result;
 }
