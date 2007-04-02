@@ -11,7 +11,7 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include "kernel/LocalityImprovedCharKernel.h"
+#include "kernel/LocalityImprovedStringKernel.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
 
