@@ -18,8 +18,8 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "features/CharFeatures.h"
-#include "kernel/WeightedDegreeCharKernel.h"
-#include "kernel/WeightedDegreePositionCharKernel.h"
+#include "kernel/WeightedDegreeStringKernel.h"
+#include "kernel/WeightedDegreePositionStringKernel.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/CustomKernel.h"
 
@@ -172,7 +172,7 @@ PyObject* CGUIPython::py_set_subkernels_weights(PyObject* self, PyObject* args)
 
 			if (k->get_kernel_type() == K_WEIGHTEDDEGREE)
 			{
-				CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) k;
+				CWeightedDegreeStringKernel *kernel = (CWeightedDegreeStringKernel *) k;
 				INT degree = kernel->get_degree() ;
 
 				if ((py_weights->nd == 1 && py_weights->dimensions[0] == degree) ||
@@ -192,7 +192,7 @@ PyObject* CGUIPython::py_set_subkernels_weights(PyObject* self, PyObject* args)
 			}
 			else if (k->get_kernel_type() == K_WEIGHTEDDEGREEPOS)
 			{
-				CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) k;
+				CWeightedDegreePositionStringKernel *kernel = (CWeightedDegreePositionStringKernel *) k;
 				INT degree = kernel->get_degree() ;
 
 				if ((py_weights->nd == 1 && py_weights->dimensions[0] == degree) ||
@@ -250,7 +250,7 @@ PyObject* CGUIPython::py_get_subkernel_weights(PyObject* self, PyObject* args)
 	{
 		if (k->get_kernel_type() == K_WEIGHTEDDEGREE)
 		{
-			CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) k;
+			CWeightedDegreeStringKernel *kernel = (CWeightedDegreeStringKernel *) k;
 
 			const DREAL* weights = kernel->get_degree_weights(degree, length) ;
 			if (length == 0)
@@ -266,7 +266,7 @@ PyObject* CGUIPython::py_get_subkernel_weights(PyObject* self, PyObject* args)
 		}
 		else if (k->get_kernel_type() == K_WEIGHTEDDEGREEPOS)
 		{
-			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) k;
+			CWeightedDegreePositionStringKernel *kernel = (CWeightedDegreePositionStringKernel *) k;
 
 			const DREAL* weights = kernel->get_degree_weights(degree, length) ;
 			if (length == 0)

@@ -62,7 +62,7 @@ DREAL CLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 	// can only deal with strings of same length
 	ASSERT(alen == blen);
 
-	INT i,j,t;
+	INT i,t;
 
 	// initialize match table 1 -> match;  0 -> no match
 	for (i = 0; i<alen; i++)

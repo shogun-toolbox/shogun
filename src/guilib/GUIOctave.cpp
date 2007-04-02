@@ -30,7 +30,7 @@ using namespace std;
 #include "features/Labels.h"
 #include "features/RealFeatures.h"
 #include "features/CharFeatures.h"
-#include "kernel/WeightedDegreeCharKernel.h"
+#include "kernel/WeightedDegreeStringKernel.h"
 #include "kernel/CommWordStringKernel.h"
 #include "classifier/svm/SVM.h"
 
@@ -787,7 +787,7 @@ bool CGUIOctave::get_kernel_optimization(octave_value_list& retvals)
 
 	if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 	{
-		CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+		CWeightedDegreeStringKernel *kernel = (CWeightedDegreeStringKernel *) kernel_ ;
 
 		if (kernel->get_max_mismatch()!=0)
 			return false;

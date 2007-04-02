@@ -27,8 +27,8 @@
 #include "distributions/hmm/HMM.h"
 #include "features/Labels.h"
 #include "features/RealFeatures.h"
-#include "kernel/WeightedDegreeCharKernel.h"
-#include "kernel/WeightedDegreePositionCharKernel.h"
+#include "kernel/WeightedDegreeStringKernel.h"
+#include "kernel/WeightedDegreePositionStringKernel.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/CommWordStringKernel.h"
 #include "kernel/CustomKernel.h"
@@ -926,7 +926,7 @@ SEXP CGUI_R::get_svm_objective() {
 			{
 				case K_WEIGHTEDDEGREE:
 					{
-						CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+						CWeightedDegreeStringKernel *kernel = (CWeightedDegreeStringKernel *) kernel_ ;
 
 						if (kernel->get_max_mismatch()!=0)
 							return false ;
@@ -945,7 +945,7 @@ SEXP CGUI_R::get_svm_objective() {
 					}
 				case K_WEIGHTEDDEGREEPOS:
 					{
-						CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+						CWeightedDegreePositionStringKernel *kernel = (CWeightedDegreePositionStringKernel *) kernel_ ;
 
 						if (kernel->get_max_mismatch()!=0)
 							return false ;
@@ -1006,7 +1006,7 @@ SEXP CGUI_R::get_svm_objective() {
 
 		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 		{
-			CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+			CWeightedDegreeStringKernel *kernel = (CWeightedDegreeStringKernel *) kernel_ ;
 
 			if (!kernel->is_tree_initialized())
 			{
@@ -1041,7 +1041,7 @@ SEXP CGUI_R::get_svm_objective() {
 		}
 		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
 		{
-			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+			CWeightedDegreePositionStringKernel *kernel = (CWeightedDegreePositionStringKernel *) kernel_ ;
 
 			if (!kernel->is_tree_initialized())
 			{
@@ -1097,7 +1097,7 @@ SEXP CGUI_R::get_svm_objective() {
 
 		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 		{
-			CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+			CWeightedDegreeStringKernel *kernel = (CWeightedDegreeStringKernel *) kernel_ ;
 
 			//SG_DEBUG("getting degree weights...");
 			const DREAL* weights = kernel->get_degree_weights(degree, length) ;
@@ -1116,7 +1116,7 @@ SEXP CGUI_R::get_svm_objective() {
 
 		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
 		{
-			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+			CWeightedDegreePositionStringKernel *kernel = (CWeightedDegreePositionStringKernel *) kernel_ ;
 
 			const DREAL* weights = kernel->get_degree_weights(degree, length) ;
 			if (length == 0)
@@ -1166,7 +1166,7 @@ SEXP CGUI_R::get_svm_objective() {
 
 			if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 			{
-				CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+				CWeightedDegreeStringKernel *kernel = (CWeightedDegreeStringKernel *) kernel_ ;
 
 				const DREAL* weights = kernel->get_degree_weights(degree, length) ;
 				if (length == 0)
@@ -1184,7 +1184,7 @@ SEXP CGUI_R::get_svm_objective() {
 
 			if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
 			{
-				CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+				CWeightedDegreePositionStringKernel *kernel = (CWeightedDegreePositionStringKernel *) kernel_ ;
 
 				const DREAL* weights = kernel->get_degree_weights(degree, length) ;
 				if (length == 0)
@@ -1230,7 +1230,7 @@ SEXP CGUI_R::get_svm_objective() {
 
 		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 		{
-			CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+			CWeightedDegreeStringKernel *kernel = (CWeightedDegreeStringKernel *) kernel_ ;
 
 			const DREAL* position_weights = kernel->get_position_weights(length) ;
 			mxArray* mx_result ;
@@ -1249,7 +1249,7 @@ SEXP CGUI_R::get_svm_objective() {
 		}
 		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
 		{
-			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+			CWeightedDegreePositionStringKernel *kernel = (CWeightedDegreePositionStringKernel *) kernel_ ;
 
 			const DREAL* position_weights = kernel->get_position_weights(length) ;
 			mxArray* mx_result ;
@@ -1275,7 +1275,7 @@ SEXP CGUI_R::get_svm_objective() {
 
 		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 		{
-			CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+			CWeightedDegreeStringKernel *kernel = (CWeightedDegreeStringKernel *) kernel_ ;
 			INT degree = kernel->get_degree() ;
 			if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
 			{
@@ -1294,7 +1294,7 @@ SEXP CGUI_R::get_svm_objective() {
 
 		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
 		{
-			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+			CWeightedDegreePositionStringKernel *kernel = (CWeightedDegreePositionStringKernel *) kernel_ ;
 			INT degree = kernel->get_degree() ;
 			if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
 			{
@@ -1332,7 +1332,7 @@ SEXP CGUI_R::get_svm_objective() {
 
 			if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 			{
-				CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+				CWeightedDegreeStringKernel *kernel = (CWeightedDegreeStringKernel *) kernel_ ;
 				INT degree = kernel->get_degree() ;
 				if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
 				{
@@ -1350,7 +1350,7 @@ SEXP CGUI_R::get_svm_objective() {
 			}
 			if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
 			{
-				CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+				CWeightedDegreePositionStringKernel *kernel = (CWeightedDegreePositionStringKernel *) kernel_ ;
 				INT degree = kernel->get_degree() ;
 				if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
 				{
@@ -1393,7 +1393,7 @@ SEXP CGUI_R::get_svm_objective() {
 
 		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREE))
 		{
-			CWeightedDegreeCharKernel *kernel = (CWeightedDegreeCharKernel *) kernel_ ;
+			CWeightedDegreeStringKernel *kernel = (CWeightedDegreeStringKernel *) kernel_ ;
 			if (mxGetM(mx_arg)!=1 & mxGetN(mx_arg)>0)
 			{
 				SG_ERROR( "dimension mismatch (should be 1xseq_length or 0x0)\n") ;
@@ -1405,7 +1405,7 @@ SEXP CGUI_R::get_svm_objective() {
 		}
 		if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
 		{
-			CWeightedDegreePositionCharKernel *kernel = (CWeightedDegreePositionCharKernel *) kernel_ ;
+			CWeightedDegreePositionStringKernel *kernel = (CWeightedDegreePositionStringKernel *) kernel_ ;
 			if (mxGetM(mx_arg)!=1 & mxGetN(mx_arg)>0)
 			{
 				SG_ERROR( "dimension mismatch (should be 1xseq_length or 0x0)\n") ;
