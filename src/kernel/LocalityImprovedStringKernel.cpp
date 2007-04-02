@@ -54,30 +54,30 @@ bool CLocalityImprovedStringKernel::save_init(FILE* dest)
 
 DREAL CLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 {
-  INT alen, blen;
+	INT alen, blen;
 
-  CHAR* avec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
-  CHAR* bvec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
+	CHAR* avec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
+	CHAR* bvec=((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
 
-  // can only deal with strings of same length
-  ASSERT(alen==blen);
+	// can only deal with strings of same length
+	ASSERT(alen==blen);
 
-  INT i,j,t;
+	INT i,j,t;
 
-  // initialize match table 1 -> match;  0 -> no match
-  for (i=0; i<alen; i++)
-  {
+	// initialize match table 1 -> match;  0 -> no match
+	for (i=0; i<alen; i++)
+	{
 	  if (avec[i]==bvec[i])
 		  match[i]=1;
 	  else
 		  match[i]=0;
-  }
+	}
 
 
-  DREAL outer_sum=0;
+	DREAL outer_sum=0;
 
-  for (t=0; t<alen-length; t++)
-  {
+	for (t=0; t<alen-length; t++)
+	{
 	  INT sum=0;
 	  for (i=0; i<length; i++)
 		  sum+=(i+1)*match[t+i]+(length-i)*match[t+i+length+1];
@@ -90,12 +90,12 @@ DREAL CLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 		  inner_sum*=s;
 
 	  outer_sum+=inner_sum;
-  }
+	}
 
-  double result=outer_sum;
+	double result=outer_sum;
 
-  for (i=1; i<outer_degree; i++)
+	for (i=1; i<outer_degree; i++)
 	  result*=outer_sum;
 
-  return (double) result;
+	return (double) result;
 }
