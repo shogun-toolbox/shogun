@@ -16,41 +16,47 @@
 
 class CSimpleLocalityImprovedStringKernel: public CStringKernel<CHAR>
 {
- public:
-  CSimpleLocalityImprovedStringKernel(LONG size, INT length, INT inner_degree, INT outer_degree);
-  ~CSimpleLocalityImprovedStringKernel();
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+public:
+	CSimpleLocalityImprovedStringKernel(LONG size, INT length,
+		INT inner_degree, INT outer_degree);
+	~CSimpleLocalityImprovedStringKernel();
 
-  /// load and save kernel init_data
-  bool load_init(FILE* src);
-  bool save_init(FILE* dest);
+	virtual bool init(CFeatures *l, CFeatures *r);
+	virtual void cleanup();
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_SIMPLELOCALITYIMPROVED; }
+	/// load and save kernel init_data
+	bool load_init(FILE *src);
+	bool save_init(FILE *dest);
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "SimpleLocalityImproved" ; } ;
- private:
-  DREAL dot_pyr (const CHAR* const x1, const CHAR* const x2, const INT NOF_NTS,
-		  const INT NTWIDTH, const INT DEGREE1, const INT DEGREE2, 
-		  CHAR *stage1, DREAL *pyra);
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type()
+	{
+		return K_SIMPLELOCALITYIMPROVED;
+	}
 
- protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  DREAL compute(INT idx_a, INT idx_b);
-  /*    compute_kernel*/
+	// return the name of a kernel
+	virtual const CHAR *get_name()
+	{
+		return "SimpleLocalityImproved";
+	}
 
- protected:
-  INT length;
-  INT inner_degree;
-  INT outer_degree;
-  CHAR* match;
-  DREAL* pyramid_weights ;
+private:
+	DREAL dot_pyr (const CHAR* const x1, const CHAR* const x2,
+		const INT NOF_NTS,
+	const INT NTWIDTH, const INT DEGREE1, const INT DEGREE2, CHAR *stage1,
+		DREAL *pyra);
+
+protected:
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	DREAL compute(INT idx_a, INT idx_b); /* compute_kernel*/
+
+protected:
+	INT length;
+	INT inner_degree;
+	INT outer_degree;
+	CHAR *match;
+	DREAL *pyramid_weights;
 };
-
-#endif
-
+#endif /* _SIMPLELOCALITYIMPROVEDSTRINGKERNEL_H___ */
