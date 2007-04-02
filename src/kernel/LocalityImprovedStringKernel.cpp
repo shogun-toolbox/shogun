@@ -75,14 +75,9 @@ DREAL CLocalityImprovedStringKernel::compute(INT idx_a, INT idx_b)
 		INT sum = 0;
 		for (i = 0; i<length; i++)
 			sum += (i+1)*match[t+i]+(length-i)*match[t+i+length+1];
-
 		//add middle element + normalize with sum_i=0^2l+1 i = (2l+1)(l+1)
 		DREAL inner_sum = ((DREAL) sum + (length+1)*match[t+length]) / ((2*length+1)*(length+1));
-		DREAL s = inner_sum;
-
-		for (j = 1; j<inner_degree; j++)
-			inner_sum *= s;
-
+		inner_sum = pow(inner_sum, inner_degree + 1);
 		outer_sum += inner_sum;
 	}
 	return pow(outer_sum, outer_degree + 1);
