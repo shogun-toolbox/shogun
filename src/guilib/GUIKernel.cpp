@@ -29,7 +29,7 @@
 #include "kernel/WeightedDegreePositionCharKernel.h"
 #include "kernel/WeightedDegreePositionStringKernel.h"
 #include "kernel/WeightedDegreePositionPhylCharKernel.h"
-#include "kernel/FixedDegreeCharKernel.h"
+#include "kernel/FixedDegreeStringKernel.h"
 #include "kernel/LocalityImprovedStringKernel.h"
 #include "kernel/SimpleLocalityImprovedCharKernel.h"
 #include "kernel/PolyKernel.h"

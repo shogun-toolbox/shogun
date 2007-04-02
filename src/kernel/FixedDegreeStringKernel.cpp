@@ -9,7 +9,7 @@
  */
 
 #include "lib/common.h"
-#include "kernel/FixedDegreeCharKernel.h"
+#include "kernel/FixedDegreeStringKernel.h"
 #include "features/Features.h"
 #include "features/CharFeatures.h"
 #include "lib/io.h"
