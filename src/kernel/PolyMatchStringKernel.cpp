@@ -29,16 +29,16 @@ CPolyMatchStringKernel::~CPolyMatchStringKernel()
 
 bool CPolyMatchStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CStringKernel<CHAR>::init(l, r);
+	bool result = CStringKernel<CHAR>::init(l, r);
 
 	initialized = false;
 	INT i;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs=NULL;
+	sqrtdiag_rhs = NULL;
 	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs=NULL;
+	sqrtdiag_lhs = NULL;
 
 	if (use_normalization)
 	{
@@ -52,7 +52,7 @@ bool CPolyMatchStringKernel::init(CFeatures* l, CFeatures* r)
 		else
 		{
 			sqrtdiag_rhs = new DREAL[rhs->get_num_vectors()];
-			for (i=0; i<rhs->get_num_vectors(); i++)
+			for (i = 0; i<rhs->get_num_vectors(); i++)
 				sqrtdiag_rhs[i] = 1;
 		}
 
@@ -141,14 +141,14 @@ DREAL CPolyMatchStringKernel::compute(INT idx_a, INT idx_b)
 
 	DREAL sqrt_both = sqrt_a*sqrt_b;
 	INT ialen = (int) alen;
-	INT sum=0;
-	for (INT i=0; i<ialen; i++)
+	INT sum = 0;
+	for (INT i = 0; i<ialen; i++)
 		sum += (avec[i]==bvec[i])? 1 : 0;
 	if (inhomogene)
 		sum += 1;
 	DREAL result = sum;
 	for (INT j = 1; j<degree; j++)
-		result*=sum;
+		result *= sum;
 	result /= sqrt_both;
 	return result;
 }
