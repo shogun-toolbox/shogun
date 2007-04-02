@@ -16,38 +16,44 @@
 
 class CPolyMatchStringKernel: public CStringKernel<CHAR>
 {
- public:
-  CPolyMatchStringKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);
-  ~CPolyMatchStringKernel() ;
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+public:
+	CPolyMatchStringKernel(LONG size, INT degree, bool inhomogene,
+		bool use_normalization = true);
+	~CPolyMatchStringKernel();
 
-  /// load and save kernel init_data
-  virtual bool load_init(FILE* src);
-  virtual bool save_init(FILE* dest);
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_POLYMATCH; }
+	/// load and save kernel init_data
+	virtual bool load_init(FILE* src);
+	virtual bool save_init(FILE* dest);
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "PolyMatchString"; };
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type()
+	{
+		return K_POLYMATCH;
+	}
 
- protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  virtual DREAL compute(INT idx_a, INT idx_b);
+	// return the name of a kernel
+	virtual const CHAR* get_name()
+	{
+		return "PolyMatchString";
+	}
 
- protected:
-  INT degree;
-  bool inhomogene;
+protected:
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	virtual DREAL compute(INT idx_a, INT idx_b);
 
-  double* sqrtdiag_lhs;
-  double* sqrtdiag_rhs;
+protected:
+	INT degree;
+	bool inhomogene;
 
-  bool initialized;
-  bool use_normalization;
+	double* sqrtdiag_lhs;
+	double* sqrtdiag_rhs;
+
+	bool initialized;
+	bool use_normalization;
 };
-
-#endif
+#endif /* _POLYMATCHSTRINGKERNEL_H___ */
