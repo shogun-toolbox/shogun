@@ -817,7 +817,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				sscanf(param, "%s %s %d %d", kern_type, data_type, &size, &d);
 				delete k;
-				k=new CFixedDegreeCharKernel(size, d);
+				k=new CFixedDegreeStringKernel(size, d);
 
 				if (k)
 				{

@@ -8,18 +8,18 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _FIXEDDEGREECHARKERNEL_H___
-#define _FIXEDDEGREECHARKERNEL_H___
+#ifndef _FIXEDDEGREESTRINGKERNEL_H___
+#define _FIXEDDEGREESTRINGKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
+#include "kernel/StringKernel.h"
 
-class CFixedDegreeCharKernel: public CSimpleKernel<CHAR>
+class CFixedDegreeStringKernel: public CStringKernel<CHAR>
 {
- public:
-  CFixedDegreeCharKernel(LONG size, INT degree) ;
-  ~CFixedDegreeCharKernel() ;
-  
+public:
+	CFixedDegreeStringKernel(LONG size, INT degree);
+	~CFixedDegreeStringKernel();
+
   virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
 

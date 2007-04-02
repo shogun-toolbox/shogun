@@ -11,22 +11,22 @@
 #include "lib/common.h"
 #include "kernel/FixedDegreeStringKernel.h"
 #include "features/Features.h"
-#include "features/CharFeatures.h"
+#include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CFixedDegreeCharKernel::CFixedDegreeCharKernel(LONG size, INT d)
-  : CSimpleKernel<CHAR>(size),degree(d), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
+CFixedDegreeStringKernel::CFixedDegreeStringKernel(LONG size, INT d)
+  : CStringKernel<CHAR>(size),degree(d), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
 }
 
-CFixedDegreeCharKernel::~CFixedDegreeCharKernel() 
+CFixedDegreeStringKernel::~CFixedDegreeStringKernel()
 {
 	cleanup();
 }
 
-bool CFixedDegreeCharKernel::init(CFeatures* l, CFeatures* r)
+bool CFixedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<CHAR>::init(l,r);
+	bool result=CStringKernel<CHAR>::init(l,r);
 	initialized = false ;
 	INT i;
 
@@ -53,8 +53,8 @@ bool CFixedDegreeCharKernel::init(CFeatures* l, CFeatures* r)
 	ASSERT(sqrtdiag_lhs);
 	ASSERT(sqrtdiag_rhs);
 
-	this->lhs=(CCharFeatures*) l;
-	this->rhs=(CCharFeatures*) l;
+	this->lhs = (CStringFeatures<CHAR>*) l;
+	this->rhs = (CStringFeatures<CHAR>*) l;
 
 	//compute normalize to 1 values
 	for (i=0; i<lhs->get_num_vectors(); i++)
@@ -70,8 +70,8 @@ bool CFixedDegreeCharKernel::init(CFeatures* l, CFeatures* r)
 	// compute also the normalization for rhs
 	if (sqrtdiag_lhs!=sqrtdiag_rhs)
 	{
-		this->lhs=(CCharFeatures*) r;
-		this->rhs=(CCharFeatures*) r;
+		this->lhs=(CStringFeatures<CHAR>*) r;
+		this->rhs=(CStringFeatures<CHAR>*) r;
 
 		//compute normalize to 1 values
 		for (i=0; i<rhs->get_num_vectors(); i++)
@@ -84,14 +84,14 @@ bool CFixedDegreeCharKernel::init(CFeatures* l, CFeatures* r)
 		}
 	}
 
-	this->lhs=(CCharFeatures*) l;
-	this->rhs=(CCharFeatures*) r;
+	this->lhs = (CStringFeatures<CHAR>*) l;
+	this->rhs = (CStringFeatures<CHAR>*) r;
 
 	initialized = true ;
 	return result;
 }
   
-void CFixedDegreeCharKernel::cleanup()
+void CFixedDegreeStringKernel::cleanup()
 {
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
@@ -103,23 +103,22 @@ void CFixedDegreeCharKernel::cleanup()
 	initialized=false;
 }
 
-bool CFixedDegreeCharKernel::load_init(FILE* src)
+bool CFixedDegreeStringKernel::load_init(FILE* src)
 {
 	return false;
 }
 
-bool CFixedDegreeCharKernel::save_init(FILE* dest)
+bool CFixedDegreeStringKernel::save_init(FILE* dest)
 {
 	return false;
 }
   
-DREAL CFixedDegreeCharKernel::compute(INT idx_a, INT idx_b)
+DREAL CFixedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 {
   INT alen, blen;
-  bool afree, bfree;
 
-  CHAR* avec=((CCharFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  CHAR* bvec=((CCharFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+  CHAR* avec = ((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx_a, alen);
+  CHAR* bvec = ((CStringFeatures<CHAR>*) rhs)->get_feature_vector(idx_b, blen);
 
   // can only deal with strings of same length
   ASSERT(alen==blen);
@@ -148,9 +147,6 @@ DREAL CFixedDegreeCharKernel::compute(INT idx_a, INT idx_b)
 	  if (match)
 		  sum++;
   }
-
-  ((CCharFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CCharFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
   return (double) sum/sqrt_both;
 }
