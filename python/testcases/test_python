@@ -1,0 +1,13 @@
+# !/bin/bash
+
+for file in mfiles/*; do
+	python test.py $file > /dev/null
+	ret=$? 
+	echo -n $file
+	echo -n -e "\t\t"
+	if [ $ret -eq 0 ] ; then
+		echo 'OK'
+	else
+		echo 'ERROR'
+	fi
+done
