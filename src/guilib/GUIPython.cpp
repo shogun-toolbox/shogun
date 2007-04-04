@@ -892,7 +892,6 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 		    		if ((py_afeat->nd == 1))
 				{
 					CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
-					printf("punkt 5 \n");
 					int num_vec=py_afeat->dimensions[0];
 					int num_feat=0;
 					//int num_feat=PyArray(py_afeat)->itemsize;
@@ -926,12 +925,9 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
             		{
 			    	if ((py_afeat->nd == 2))
 		            	{
-        				 printf("punkt 7\n");
-		    
 		   			 CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
 			                 int num_vec=py_afeat->dimensions[0];
 			                 int num_feat=py_afeat->dimensions[1];
-		    			 printf("numfeat: %d numvec: %d ", num_feat, num_vec);
                     			if (feat)
                     			{
 						CAlphabet* alpha = new CAlphabet(args, strlen(args));
@@ -962,7 +958,6 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 				double* feat= (double*) NA_OFFSETDATA(py_afeat);
 				int num_vec=py_afeat->dimensions[0];
 				int num_feat=py_afeat->dimensions[1];
-				printf("real: num_feat: %d num_vec: %d ", num_feat, num_vec);
 				if (feat)
 				{
 					features= new CRealFeatures(0);
