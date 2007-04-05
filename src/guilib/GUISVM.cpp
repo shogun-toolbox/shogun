@@ -31,6 +31,7 @@
 
 #include "classifier/svm/MPD.h"
 #include "classifier/svm/GNPPSVM.h"
+#include "classifier/svm/GMNPSVM.h"
 
 CGUISVM::CGUISVM(CGUI * gui_)
   : CSGObject(), gui(gui_)
@@ -108,6 +109,12 @@ bool CGUISVM::new_svm(CHAR* param)
 		delete svm;
 		svm= new CGNPPSVM();
 		SG_INFO( "created GNPP-SVM object\n") ;
+	}
+	else if (strcmp(param,"GMNP")==0)
+	{
+		delete svm;
+		svm= new CGMNPSVM();
+		SG_INFO( "created GMNP-SVM object\n") ;
 	}
 	else if (strcmp(param,"LIBSVR")==0)
 	{

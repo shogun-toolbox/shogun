@@ -13,6 +13,7 @@
 #include "lib/common.h"
 #include "lib/File.h"
 #include "lib/io.h"
+#include "lib/Mathematics.h"
 
 CLabels::CLabels() : CSGObject()
 {
@@ -54,6 +55,18 @@ void CLabels::set_labels(DREAL* p_labels, INT len)
 
 	for (INT i=0; i<len; i++)
 		this->labels[i] = p_labels[i];
+}
+
+INT CLabels::get_num_classes()
+{
+	INT n=-1;
+	INT* lab=get_int_labels(n);
+
+	INT num_classes=0;
+	for (INT i=0; i<n; i++)
+		num_classes=CMath::max(num_classes,lab[i]);
+
+	return num_classes+1;
 }
 
 DREAL* CLabels::get_labels(INT &len)

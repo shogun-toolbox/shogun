@@ -1,5 +1,3 @@
-#ifndef GNPPLIB_H__ 
-#define GNPPLIB_H__ 
 /*-----------------------------------------------------------------------
  *
  * This program is free software; you can redistribute it and/or modify
@@ -13,6 +11,9 @@
  * Copyright (C) 1999-2007 Center for Machine Perception, CTU FEL Prague 
  *
 -------------------------------------------------------------------- */
+
+#ifndef GNPPLIB_H__ 
+#define GNPPLIB_H__ 
 
 #include <math.h>
 #include <limits.h>

@@ -70,6 +70,11 @@ class CLabels : public CSGObject
 				return -1;
 		}
 
+		/// return number of classes (for multiclass)
+		/// labels have to be zero based 0,1,...C missing
+		/// labels are illegal
+		INT get_num_classes();
+
 		/// get label vector
 		/// caller has to clean up
 		DREAL* get_labels(INT &len) ;
