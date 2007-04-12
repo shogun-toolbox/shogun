@@ -115,11 +115,11 @@ CGMNPLib::CGMNPLib(DREAL* vector_y, CKernel* kernel, INT num_data, INT num_virt_
   }
   first_virt_inx = 0;
 
-  DREAL* diagH = new DREAL[num_virt_data];
-  ASSERT(diagH);
+  diag_H = new DREAL[num_virt_data];
+  ASSERT(diag_H);
 
   for(INT i = 0; i < num_virt_data; i++ )
-	  diagH[i] = kernel_fce(i,i);
+	  diag_H[i] = kernel_fce(i,i);
 }
 
 CGMNPLib::~CGMNPLib()

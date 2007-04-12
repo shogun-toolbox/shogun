@@ -12,9 +12,9 @@
 #define _GMNPSVM_H___
 
 #include "lib/common.h"
-#include "classifier/svm/SVM.h"
+#include "classifier/svm/MultiClassSVM.h"
 
-class CGMNPSVM : public CSVM
+class CGMNPSVM : public CMultiClassSVM
 {
 	public:
 		CGMNPSVM();

@@ -888,8 +888,8 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 			py_afeat  = NA_InputArray(arg, tUInt8, NUM_C_ARRAY);
 			if (NA_NDArrayCheck(arg))
 
-            		{
-		    		if ((py_afeat->nd == 1))
+			{
+				if ((py_afeat->nd == 1))
 				{
 					CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
 					int num_vec=py_afeat->dimensions[0];
@@ -908,48 +908,48 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 							{
 								for(int j=0; j<num_feat; j++)
 								{
-									 fm[j*num_vec+i]=feat[i*num_feat+j];
+									fm[j*num_vec+i]=feat[i*num_feat+j];
 								}
-									
+
 							}
 							((CCharFeatures*) features)->set_feature_matrix(fm, num_vec, num_feat);
 						}
 						else
 							SG_ERROR( "please specify alphabet!\n");
 					}
-                    			else
-                        		SG_ERROR("empty feats ??\n");
-                		}
-            		}
+					else
+						SG_ERROR("empty feats ??\n");
+				}
+			}
 			else
-            		{
-			    	if ((py_afeat->nd == 2))
-		            	{
-		   			 CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
-			                 int num_vec=py_afeat->dimensions[0];
-			                 int num_feat=py_afeat->dimensions[1];
-                    			if (feat)
-                    			{
+			{
+				if ((py_afeat->nd == 2))
+				{
+					CHAR* feat= (CHAR*) NA_OFFSETDATA(py_afeat);
+					int num_vec=py_afeat->dimensions[0];
+					int num_feat=py_afeat->dimensions[1];
+					if (feat)
+					{
 						CAlphabet* alpha = new CAlphabet(args, strlen(args));
-		                        	features= new CCharFeatures(alpha, 0);
-		                        	CHAR* fm=new CHAR[num_vec*num_feat];
-		                        	ASSERT(fm);
-	                        		for(int i=0; i<num_vec; i++)
-   		                		{
-                            				for(int j=0; j<num_feat; j++)
-			    				{
-				 				fm[j*num_vec+i]=feat[i*num_feat+j];
-			    				}
+						features= new CCharFeatures(alpha, 0);
+						CHAR* fm=new CHAR[num_vec*num_feat];
+						ASSERT(fm);
+						for(int i=0; i<num_vec; i++)
+						{
+							for(int j=0; j<num_feat; j++)
+							{
+								fm[j*num_vec+i]=feat[i*num_feat+j];
+							}
 						}
-			 			((CCharFeatures*) features)->set_feature_matrix(fm, num_vec, num_feat);
-			 
-                    			}
-                    			else
-                        		SG_ERROR("empty feats ??\n");
-                		}
-                		else
-                    		SG_ERROR( "set_features: arrays must have 2 dimension.\n");
-            		}
+						((CCharFeatures*) features)->set_feature_matrix(fm, num_vec, num_feat);
+
+					}
+					else
+						SG_ERROR("empty feats ??\n");
+				}
+				else
+					SG_ERROR( "set_features: arrays must have 2 dimension.\n");
+			}
 			break;
 		case tFloat64:
 			py_afeat  = NA_InputArray(arg, tFloat64, NUM_C_ARRAY);
@@ -963,17 +963,17 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 					features= new CRealFeatures(0);
 					DREAL* fm=new DREAL[num_vec*num_feat];
 					ASSERT(fm);
-							 
+
 					for(int i=0; i<num_vec; i++)
 					{
 						for(int j=0; j<num_feat; j++)
 						{
 							fm[j*num_vec+i]=feat[i*num_feat+j];
 						}
-							
+
 					}
 					((CRealFeatures*) features)->set_feature_matrix(fm, num_vec, num_feat);
-						
+
 				}
 				else
 					SG_ERROR("empty feats ??\n");
@@ -983,7 +983,7 @@ CFeatures* CGUIPython::set_features(PyObject* arg, char* args)
 			break;
 		default:
 			SG_ERROR( "Unknown numpy type\n");
-	};
+	}
 
 	Py_XDECREF(py_afeat);
 	return features;

@@ -18,11 +18,11 @@
 #define KDELTA(A,B) (A==B)
 #define KDELTA4(A1,A2,A3,A4) ((A1==A2)||(A1==A3)||(A1==A4)||(A2==A3)||(A2==A4)||(A3==A4))
 
-CGMNPSVM::CGMNPSVM() : CSVM()
+CGMNPSVM::CGMNPSVM() : CMultiClassSVM()
 {
 }
 
-CGMNPSVM::CGMNPSVM(DREAL C, CKernel* k, CLabels* lab) : CSVM(C, k, lab)
+CGMNPSVM::CGMNPSVM(DREAL C, CKernel* k, CLabels* lab) : CMultiClassSVM(C, k, lab)
 {
 }
 
@@ -74,9 +74,70 @@ bool CGMNPSVM::train()
 	mnp.gmnp_imdm(vector_c, num_virtual_data, tmax,
 			tolabs, tolrel, thlb, alpha, &t, &History, verb );
 
+	/* matrix alpha [num_classes x num_data] */
+	DREAL* all_alphas= new DREAL[num_classes*num_data];
+	memset(all_alphas,0,num_classes*num_data*sizeof(DREAL));
+
+	/* bias vector b [num_classes x 1] */
+	DREAL* all_bs=new DREAL[num_classes];
+	memset(all_bs,0,num_classes*sizeof(DREAL));
+
+	/* compute alpha/b from virt_data */
+	for(INT i=0; i < num_classes; i++ )
+	{
+		for(INT j=0; j < num_virtual_data; j++ )
+		{
+			INT inx1=0;
+			INT inx2=0;
+
+			mnp.get_indices2( &inx1, &inx2, j );
+
+			all_alphas[(inx1*num_classes)+i] += 
+				alpha[j]*(KDELTA(vector_y[inx1],i+1)+KDELTA(i+1,inx2));
+			all_bs[i] += alpha[j]*(KDELTA(vector_y[inx1],i+1)-KDELTA(i+1,inx2));
+		}
+	}
+
+	create_multiclass_svm(num_classes);
+
+	for (INT i=0; i<num_classes; i++)
+	{
+		INT num_sv=0;
+		for (INT j=0; j<num_data; j++)
+		{
+			if (all_alphas[j*num_classes+i] != 0)
+				num_sv++;
+		}
+		ASSERT(num_sv>0);
+		SG_DEBUG("svm[%d] has %d sv, b=%f\n", i, num_sv, all_bs[i]);
+
+		CSVM* svm=new CSVM(num_sv);
+
+		INT k=0;
+		for (INT j=0; j<num_data; j++)
+		{
+			if (all_alphas[j*num_classes+i] != 0)
+			{
+				if (i==vector_y[j]-1)
+					svm->set_alpha(k, all_alphas[j*num_classes+i]);
+				else
+					svm->set_alpha(k, -all_alphas[j*num_classes+i]);
+
+				svm->set_support_vector(k, j);
+				k++;
+			}
+		}
+
+		svm->set_bias(all_bs[i]);
+		set_svm(i, svm);
+	}
+
 	delete[] vector_c;
 	delete[] alpha;
+	delete[] all_alphas;
+	delete[] all_bs;
 	delete[] vector_y;
+	delete[] History;
 
 	return true;
 }

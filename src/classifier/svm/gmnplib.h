@@ -51,8 +51,9 @@ int gmnp_imdm(double *vector_c,
             double **ptr_History,
             INT verb);
 
- protected:
 	void get_indices2( INT *index, INT *c, INT i );
+
+ protected:
 	DREAL *get_kernel_col( INT a );
 	DREAL* get_col( INT a, INT b ); 
 	double kernel_fce( INT a, INT b );

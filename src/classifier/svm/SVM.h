@@ -212,9 +212,9 @@ class CSVM : public CKernelMachine
 
 		bool init_kernel_optimization();
 
-		CLabels* classify(CLabels* labels=NULL);
+		virtual CLabels* classify(CLabels* labels=NULL);
+		virtual DREAL classify_example(INT num);
 		static void* classify_example_helper(void* p);
-		DREAL classify_example(INT num);
 
 		void set_precomputed_subkernels_enabled(bool flag)
 		{
