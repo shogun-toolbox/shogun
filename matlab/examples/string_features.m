@@ -13,6 +13,11 @@ sg('from_position_list','TRAIN', 5,[0,1,2,5,15,25,30,36]);
 
 f=sg('get_features', 'TRAIN')
 
+sg('set_features', 'TEST', dat, 'DNA');
+sg('from_position_list','TEST', 5,[0,1,2,5,15,25,30,36]);
+
+ft=sg('get_features', 'TEST')
+
 C=1;
 order=20;
 order_com=5;
