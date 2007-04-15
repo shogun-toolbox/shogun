@@ -2085,7 +2085,7 @@ bool CGUIMatlab::from_position_list(const mxArray* vals[], int nrhs)
 	}
 
 	if ( target && (!strncmp(target, "TRAIN", 5) || 
-				!strncmp(target, "TEST", 5) ))
+				!strncmp(target, "TEST", 4) ))
 	{
 		CStringFeatures<CHAR>* features=NULL;
 
@@ -2094,9 +2094,9 @@ bool CGUIMatlab::from_position_list(const mxArray* vals[], int nrhs)
 			gui->guifeatures.invalidate_train();
 			features= (CStringFeatures<CHAR>*) gui->guifeatures.get_train_features();
 		}
-		else if (!strncmp(target, "TEST", 5))
+		else if (!strncmp(target, "TEST", 4))
 		{
-			gui->guifeatures.invalidate_train();
+			gui->guifeatures.invalidate_test();
 			features=(CStringFeatures<CHAR>*) gui->guifeatures.get_test_features();
 		}
 		delete[] target;

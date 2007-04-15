@@ -1183,3 +1183,61 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(INT max_degree, INT&
 	delete[] R;
 	return result;
 }
+
+CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas)
+{
+
+	num_feat=((CStringFeatures<CHAR>*) get_rhs())->get_max_vector_length();
+	ASSERT(num_feat>0);
+	ASSERT(((CStringFeatures<CHAR>*) get_rhs())->get_alphabet()->get_alphabet() == DNA);
+
+	//consensus
+	CHAR* result= new CHAR[num_feat];
+	ASSERT(result);
+
+	//backtracking and scoring table
+	BYTE* bt=new BYTE[4*num_feat];
+	ASSERT(bt);
+	memset(bt, 0, sizeof(BYTE)*4*num_feat);
+	DREAL* score=new DREAL[4*num_feat];
+	ASSERT(score);
+	memset(bt, 0, sizeof(DREAL)*4*num_feat);
+
+	//compute consensus via dynamic programming
+	for (INT i=0; i<num_feat; i++)
+	{
+		if (i+degree<num_feat)
+			init_optimization(num_suppvec, IDX, alphas, i, i+degree);
+
+		for (INT j=0; j<degree && j+i<num_feat; j++)
+		{
+			//j+1 sequences end here
+			//sum score for all corresponding tries for all sequences ending
+			//on symbols t,s
+			for (INT s=0; s<4; s++)
+			{
+				//treefunction depends on trie number i+j-degree ... i+j
+				//the end symbol s
+				//returns the sum of it all
+				DREAL sumscore=0;  //FIXME call treefunction
+
+				BYTE max_idx=0;
+				DREAL max_score=score[4*(i+j)+0]+sumscore;
+				for (INT t=1; t<4; t++)
+				{
+					DREAL sc=score[4*(i+j)+t]+sumscore;
+					if (sc>max_score)
+					{
+						max_score=sc;
+						max_idx=t;
+					}
+				}
+				score[4*(i+j)+s]=max_score;
+				bt[4*(i+j)+s]=max_idx;
+			}
+		}
+
+		SG_PROGRESS(i,0,num_feat);
+	}
+	return result;
+}

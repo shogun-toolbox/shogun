@@ -198,6 +198,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		/// compute positional scoring function, which assigns a weight per position, per symbol in the sequence
 		DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
 
+		/// compute consensus string
+		CHAR* compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas);
+
 	protected:
 
 		virtual void add_example_to_tree(INT idx, DREAL weight);

@@ -78,7 +78,7 @@ INT CTrie::find_deepest_node(INT start_node, INT& deepest_node) const
 {
 #ifdef TRIE_CHECK_EVERYTHING
 	INT ret=0 ;
-	fprintf(stderr, "start_node=%i\n", start_node) ;
+	SG_DEBUG("start_node=%i\n", start_node) ;
 	
 	if (start_node==NO_CHILD) 
 	{
@@ -86,7 +86,7 @@ INT CTrie::find_deepest_node(INT start_node, INT& deepest_node) const
 		{
 			INT my_deepest_node ;
 			INT depth=find_deepest_node(i, my_deepest_node) ;
-			fprintf(stderr, "start_node %i depth=%i\n", i, depth) ;
+			SG_DEBUG("start_node %i depth=%i\n", i, depth) ;
 			if (depth>ret)
 			{
 				deepest_node=my_deepest_node ;
@@ -134,8 +134,7 @@ INT CTrie::compact_nodes(INT start_node, INT depth, DREAL * weights)
 	SG_ERROR( "code buggy\n") ;
 	
 	INT ret=0 ;
-	//fprintf(stderr, "start_node=%i\n", start_node) ;
-	
+
 	if (start_node==NO_CHILD) 
 	{
 		for (INT i=0; i<length; i++)
@@ -180,7 +179,7 @@ INT CTrie::compact_nodes(INT start_node, INT depth, DREAL * weights)
 			if (num<=2)
 				continue ;
 			INT node=get_node() ;
-			//fprintf(stderr, "creating node:\n ") ;
+
 			INT last_node=TreeMem[start_node].children[q] ;
 			if (weights_in_tree)
 			{
@@ -208,7 +207,6 @@ INT CTrie::compact_nodes(INT start_node, INT depth, DREAL * weights)
 					if (k==4)
 						break ;
 					TreeMem[node].seq[n]=k ;
-					//fprintf(stderr, "seq[%i]=%i\n", n, k) ;
 					break ;
 				}
 				else
@@ -221,7 +219,6 @@ INT CTrie::compact_nodes(INT start_node, INT depth, DREAL * weights)
 					if (k==4)
 						break ;
 					TreeMem[node].seq[n]=k ;
-					//fprintf(stderr, "seq[%i]=%i\n", n, k) ;
 					last_node=TreeMem[last_node].children[k] ;
 				}
 			}
@@ -241,7 +238,7 @@ INT CTrie::compact_nodes(INT start_node, INT depth, DREAL * weights)
 
 bool CTrie::compare_traverse(INT node, const CTrie & other, INT other_node) 
 {
-	fprintf(stderr, "checking nodes %i and %i\n", node, other_node) ;
+	SG_DEBUG("checking nodes %i and %i\n", node, other_node) ;
 	if (fabs(TreeMem[node].weight-other.TreeMem[other_node].weight)>=1e-5)
 	{
 		SG_DEBUG( "CTrie::compare: TreeMem[%i].weight=%f!=other.TreeMem[%i].weight=%f\n", node, TreeMem[node].weight, other_node,other.TreeMem[other_node].weight) ;
@@ -347,7 +344,7 @@ bool CTrie::compare(const CTrie & other)
 		if (!compare_traverse(trees[i], other, other.trees[i]))
 			return false ;
 		else
-			fprintf(stderr, "two tries at %i identical\n", i) ;
+			SG_DEBUG("two tries at %i identical\n", i) ;
 
 	return ret ;
 }
@@ -356,7 +353,6 @@ bool CTrie::find_node(INT node, INT * trace, INT& trace_len) const
 {
 #ifdef TRIE_CHECK_EVERYTHING
 	ASSERT(trace_len-1>=0) ;
-	//fprintf(stderr, "node=%i, trace_len=%i, trace=%i\n", node, trace_len, trace[trace_len-1]) ;
 	ASSERT((trace[trace_len-1]>=0) && (trace[trace_len-1]<TreeMemPtrMax))
 	if (TreeMem[trace[trace_len-1]].has_seq)
 		return false ;
@@ -823,3 +819,574 @@ void CTrie::count( const DREAL w, const INT depth, const struct TreeParseInfo in
     //    end;
 }
 
+void CTrie::add_to_trie(int i, INT seq_offset, INT * vec, float alpha, DREAL *weights, bool degree_times_position_weights)
+{
+	INT tree = trees[i] ;
+	//ASSERT(seq_offset==0) ;
+	
+	INT max_depth = 0 ;
+	DREAL* weights_column ;
+	if (degree_times_position_weights)
+		weights_column = &weights[(i+seq_offset)*degree] ;
+	else
+		weights_column = weights ;
+	
+	if (weights_in_tree)
+	{
+		for (INT j=0; (j<degree) && (i+j<length); j++)
+			if (CMath::abs(weights_column[j]*alpha)>0)
+				max_depth = j+1 ;
+	}
+	else
+		// don't use the weights
+		max_depth=degree ;
+
+	for (INT j=0; (j<max_depth) && (i+j+seq_offset<length); j++)
+    {
+		TRIE_ASSERT((vec[i+j+seq_offset]>=0) && (vec[i+j+seq_offset]<4)) ;
+		if ((j<degree-1) && (TreeMem[tree].children[vec[i+j+seq_offset]]!=NO_CHILD))
+		{
+			if (TreeMem[tree].children[vec[i+j+seq_offset]]<0)
+			{
+				// special treatment of the next nodes
+				TRIE_ASSERT(j >= degree-16) ;
+				// get the right element
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
+				INT node = - TreeMem[tree].children[vec[i+j+seq_offset]] ;
+
+				TRIE_ASSERT((node>=0) && (node<=TreeMemPtrMax)) ;
+				TRIE_ASSERT_EVERYTHING(TreeMem[node].has_seq) ;
+				TRIE_ASSERT_EVERYTHING(!TreeMem[node].has_floats) ;
+				
+                // check whether the same string is stored
+				INT mismatch_pos = -1 ;
+				{
+					INT k ;
+					for (k=0; (j+k<max_depth) && (i+j+seq_offset+k<length); k++)
+					{
+						TRIE_ASSERT((vec[i+j+seq_offset+k]>=0) && (vec[i+j+seq_offset+k]<4)) ;
+						// ###
+						if ((TreeMem[node].seq[k]>=4) && (TreeMem[node].seq[k]!=TRIE_TERMINAL_CHARACTER))
+							fprintf(stderr, "+++i=%i j=%i seq[%i]=%i\n", i, j, k, TreeMem[node].seq[k]) ;
+						TRIE_ASSERT((TreeMem[node].seq[k]<4) || (TreeMem[node].seq[k]==TRIE_TERMINAL_CHARACTER)) ;
+						TRIE_ASSERT(k<16) ;
+						if (TreeMem[node].seq[k]!=vec[i+j+seq_offset+k])
+						{
+							mismatch_pos=k ;
+							break ;
+						}
+					}
+				}
+				
+				// what happens when the .seq sequence is longer than vec? should we branch???
+
+				if (mismatch_pos==-1)
+					// if so, then just increase the weight by alpha and stop
+					TreeMem[node].weight+=alpha ;
+				else
+					// otherwise
+					// 1. replace current node with new node
+					// 2. create new nodes until mismatching positon
+					// 2. add a branch with old string (old node) and the new string (new node)
+				{
+					// replace old node
+					INT last_node=tree ;
+					
+					// create new nodes until mismatch
+					INT k ;
+					for (k=0; k<mismatch_pos; k++)
+					{
+						TRIE_ASSERT((vec[i+j+seq_offset+k]>=0) && (vec[i+j+seq_offset+k]<4)) ;
+						TRIE_ASSERT(vec[i+j+seq_offset+k]==TreeMem[node].seq[k]) ;
+						
+						INT tmp=get_node() ;
+						TreeMem[last_node].children[vec[i+j+seq_offset+k]]=tmp ;
+						last_node=tmp ;
+						if (weights_in_tree)
+							TreeMem[last_node].weight = (TreeMem[node].weight+alpha)*weights_column[j+k] ;
+						else
+							TreeMem[last_node].weight = (TreeMem[node].weight+alpha) ;
+						TRIE_ASSERT(j+k!=degree-1) ;
+					}
+					if ((TreeMem[node].seq[mismatch_pos]>=4) && (TreeMem[node].seq[mismatch_pos]!=TRIE_TERMINAL_CHARACTER))
+						fprintf(stderr, "**i=%i j=%i seq[%i]=%i\n", i, j, k, TreeMem[node].seq[mismatch_pos]) ;
+					ASSERT((TreeMem[node].seq[mismatch_pos]<4) || (TreeMem[node].seq[mismatch_pos]==TRIE_TERMINAL_CHARACTER)) ;
+					TRIE_ASSERT(vec[i+j+seq_offset+mismatch_pos]!=TreeMem[node].seq[mismatch_pos]) ;
+					
+					if (j+k==degree-1)
+					{
+						for (INT q=0; q<4; q++)
+							TreeMem[last_node].child_weights[q]=0.0 ;
+						if (weights_in_tree)
+						{
+							if (TreeMem[node].seq[mismatch_pos]<4) // i.e. !=TRIE_TERMINAL_CHARACTER
+								TreeMem[last_node].child_weights[TreeMem[node].seq[mismatch_pos]]+=TreeMem[node].weight*weights_column[degree-1] ;
+							TreeMem[last_node].child_weights[vec[i+j+seq_offset+k]] += alpha*weights_column[degree-1] ;
+						}
+						else
+						{
+							if (TreeMem[node].seq[mismatch_pos]<4) // i.e. !=TRIE_TERMINAL_CHARACTER
+								TreeMem[last_node].child_weights[TreeMem[node].seq[mismatch_pos]]=TreeMem[node].weight ;
+							TreeMem[last_node].child_weights[vec[i+j+seq_offset+k]] = alpha ;
+						}
+						
+#ifdef TRIE_CHECK_EVERYTHING
+						TreeMem[last_node].has_floats=true ;
+#endif
+					}
+					else
+					{
+						// the branch for the existing string
+						if (TreeMem[node].seq[mismatch_pos]<4) // i.e. !=TRIE_TERMINAL_CHARACTER
+						{
+							TreeMem[last_node].children[TreeMem[node].seq[mismatch_pos]] = -node ;
+
+							// move string by mismatch_pos positions
+							for (INT q=0; q<16; q++)
+							{
+								if ((j+q+mismatch_pos<degree) && (i+j+seq_offset+q+mismatch_pos<length))
+									TreeMem[node].seq[q] = TreeMem[node].seq[q+mismatch_pos] ;
+								else
+									TreeMem[node].seq[q] = TRIE_TERMINAL_CHARACTER ;
+							}
+#ifdef TRIE_CHECK_EVERYTHING
+							TreeMem[node].has_seq=true ;
+#endif
+						}
+						
+						// the new branch
+						TRIE_ASSERT((vec[i+j+seq_offset+mismatch_pos]>=0) && (vec[i+j+seq_offset+mismatch_pos]<4)) ;
+						{
+							INT tmp = get_node() ;
+							TreeMem[last_node].children[vec[i+j+seq_offset+mismatch_pos]] = -tmp ;
+							last_node=tmp ;
+						}
+						TreeMem[last_node].weight = alpha ;
+#ifdef TRIE_CHECK_EVERYTHING
+						TreeMem[last_node].has_seq = true ;
+#endif
+						memset(TreeMem[last_node].seq, TRIE_TERMINAL_CHARACTER, 16) ;
+						for (INT q=0; (j+q+mismatch_pos<degree) && (i+j+seq_offset+q+mismatch_pos<length); q++)
+							TreeMem[last_node].seq[q] = vec[i+j+seq_offset+mismatch_pos+q] ;
+					}
+				}
+				break ;
+			} 
+			else
+			{
+				tree=TreeMem[tree].children[vec[i+j+seq_offset]] ;
+				TRIE_ASSERT((tree>=0) && (tree<TreeMemPtrMax)) ;
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+				if (weights_in_tree)
+					TreeMem[tree].weight += alpha*weights_column[j];
+				else
+					TreeMem[tree].weight += alpha ;
+			}
+		}
+		else if (j==degree-1)
+		{
+			// special treatment of the last node
+			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+			/*if (!TreeMem[tree].has_floats)
+			{
+				fprintf(stderr, "%i\n", TreeMem[tree].children[vec[i+j+seq_offset]]) ;
+				if (TreeMem[tree].children[vec[i+j+seq_offset]]>=0)
+				{
+#ifdef WEIGHTS_IN_TRIE
+					TreeMem[TreeMem[tree].children[vec[i+j+seq_offset]]].weight += alpha*weights[j] ;
+#else
+					TreeMem[TreeMem[tree].children[vec[i+j+seq_offset]]].weight += alpha;
+#endif
+				}
+				else
+				{
+#ifdef WEIGHTS_IN_TRIE
+					TreeMem[-TreeMem[tree].children[vec[i+j+seq_offset]]].weight += alpha*weights[j] ;
+#else
+					TreeMem[-TreeMem[tree].children[vec[i+j+seq_offset]]].weight += alpha;
+#endif
+				}
+				
+			}
+			else
+			{*/
+				TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) ;
+				if (weights_in_tree)
+					TreeMem[tree].child_weights[vec[i+j+seq_offset]] += alpha*weights_column[j] ;
+				else
+					TreeMem[tree].child_weights[vec[i+j+seq_offset]] += alpha;
+				//}
+			break ;
+		}
+		else
+		{
+			bool use_seq = use_compact_terminal_nodes && (j>degree-16) ;
+			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
+
+			INT tmp = get_node() ;
+			if (use_seq)
+				TreeMem[tree].children[vec[i+j+seq_offset]] = -tmp ;
+			else
+				TreeMem[tree].children[vec[i+j+seq_offset]] = tmp ;
+			tree=tmp ;
+			
+			TRIE_ASSERT((tree>=0) && (tree<TreeMemPtrMax)) ;
+#ifdef TRIE_CHECK_EVERYTHING
+			TreeMem[tree].has_seq = use_seq ;
+#endif
+			if (use_seq)
+			{
+				TreeMem[tree].weight = alpha ;
+				// important to have the terminal characters (see ###)
+				memset(TreeMem[tree].seq, TRIE_TERMINAL_CHARACTER, 16) ;
+				for (INT q=0; (j+q<degree) && (i+j+seq_offset+q<length); q++)
+				{
+					TRIE_ASSERT(q<16) ;
+					TreeMem[tree].seq[q]=vec[i+j+seq_offset+q] ;
+				}
+				break ;
+			}
+			else
+			{
+				if (weights_in_tree)
+					TreeMem[tree].weight = alpha*weights_column[j] ;
+				else
+					TreeMem[tree].weight = alpha ;
+				if (j==degree-2)
+				{
+#ifdef TRIE_CHECK_EVERYTHING
+					TreeMem[tree].has_floats = true ;
+#endif
+					for (INT k=0; k<4; k++)
+						TreeMem[tree].child_weights[k]=0;
+				}
+				else
+				{
+					for (INT k=0; k<4; k++)
+						TreeMem[tree].children[k]=NO_CHILD;
+				}
+			}
+		}
+    }
+}
+
+DREAL CTrie::compute_by_tree_helper(INT* vec, INT len, INT seq_pos, 
+										   INT tree_pos,
+										   INT weight_pos, DREAL* weights, 
+										   bool degree_times_position_weights)
+{
+	INT tree = trees[tree_pos] ;
+	
+	if ((position_weights!=NULL) && (position_weights[weight_pos]==0))
+		return 0.0;
+	
+	DREAL *weights_column=NULL ;
+	if (degree_times_position_weights)
+		weights_column=&weights[weight_pos*degree] ;
+	else // weights is a vector (1 x degree)
+		weights_column=weights ;
+	
+	DREAL sum=0 ;
+	for (INT j=0; seq_pos+j < len; j++)
+    {
+		TRIE_ASSERT((vec[seq_pos+j]<4) && (vec[seq_pos+j]>=0)) ;
+		
+		if ((j<degree-1) && (TreeMem[tree].children[vec[seq_pos+j]]!=NO_CHILD))
+		{
+			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
+			if (TreeMem[tree].children[vec[seq_pos+j]]<0)
+			{
+				tree = - TreeMem[tree].children[vec[seq_pos+j]];
+				TRIE_ASSERT(tree>=0) ;
+				TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) ;
+				DREAL this_weight=0.0 ;
+				for (INT k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
+				{
+					TRIE_ASSERT((vec[seq_pos+j+k]<4) && (vec[seq_pos+j+k]>=0)) ;
+					if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
+						break ;
+					this_weight += weights_column[j+k] ;
+				}
+				sum += TreeMem[tree].weight * this_weight ;
+				break ;
+			}
+			else
+			{
+				tree=TreeMem[tree].children[vec[seq_pos+j]];
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+				if (weights_in_tree)
+					sum += TreeMem[tree].weight ;
+				else
+					sum += TreeMem[tree].weight * weights_column[j] ;
+			} ;
+		}
+		else
+		{
+			TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+			if (j==degree-1)
+			{
+/*				if (TreeMem[tree].has_floats)
+				{*/
+					TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_floats) ;
+					if (weights_in_tree)
+						sum += TreeMem[tree].child_weights[vec[seq_pos+j]] ;
+					else
+						sum += TreeMem[tree].child_weights[vec[seq_pos+j]] * weights_column[j] ;
+/*				}
+				else
+				{
+					if (TreeMem[tree].children[vec[seq_pos+j]]!=NO_CHILD)
+					{
+						if (TreeMem[tree].children[vec[seq_pos+j]]<0)
+						{
+							fprintf(stderr, "node=%i\n", TreeMem[tree].children[vec[seq_pos+j]]) ;
+#ifdef WEIGHTS_IN_TRIE
+							sum += TreeMem[-TreeMem[tree].children[vec[seq_pos+j]]].weight ;
+#else
+							sum += TreeMem[-TreeMem[tree].children[vec[seq_pos+j]]].weight * weights_column[j] ;
+#endif
+						}
+						else
+						{
+							fprintf(stderr, "node=%i\n", TreeMem[tree].children[vec[seq_pos+j]]) ;
+#ifdef WEIGHTS_IN_TRIE
+							sum += TreeMem[TreeMem[tree].children[vec[seq_pos+j]]].weight ;
+#else
+							sum += TreeMem[TreeMem[tree].children[vec[seq_pos+j]]].weight * weights_column[j] ;
+#endif
+						}
+					}
+				}
+*/
+			}
+			else
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_floats) ;
+			
+			break;
+		}
+    } 
+	
+	if (position_weights!=NULL)
+		return sum*position_weights[weight_pos] ;
+	else
+		return sum ;
+}
+
+void CTrie::compute_by_tree_helper(INT* vec, INT len,
+										  INT seq_pos, INT tree_pos, 
+										  INT weight_pos, 
+										  DREAL* LevelContrib, DREAL factor, 
+										  INT mkl_stepsize, 
+										  DREAL * weights, 
+										  bool degree_times_position_weights) 
+{
+	INT tree = trees[tree_pos] ;
+	if (factor==0)
+		return ;
+	
+	if (position_weights!=NULL)
+    {
+		factor *= position_weights[weight_pos] ;
+		if (factor==0)
+			return ;
+		if (!degree_times_position_weights) // with position_weigths, weights is a vector (1 x degree)
+		{
+			for (INT j=0; seq_pos+j<len; j++)
+			{
+				if ((j<degree-1) && (TreeMem[tree].children[vec[seq_pos+j]]!=NO_CHILD))
+				{
+					if (TreeMem[tree].children[vec[seq_pos+j]]<0)
+					{
+						tree = -TreeMem[tree].children[vec[seq_pos+j]];
+						TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) ;
+						for (INT k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
+						{
+							if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
+								break ;
+							if (weights_in_tree)
+								LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
+							else
+								LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+k] ;
+						}
+						break ;
+					}
+					else
+					{
+						tree=TreeMem[tree].children[vec[seq_pos+j]];
+						TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+						if (weights_in_tree)
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
+						else
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j] ;
+					}
+				} 
+				else
+				{
+					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+					if (j==degree-1)
+					{
+						if (weights_in_tree)
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]] ;
+						else
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]]*weights[j] ;
+					}
+				}
+			}
+		} 
+		else // with position_weigths, weights is a matrix (len x degree)
+		{
+			for (INT j=0; seq_pos+j<len; j++)
+			{
+				if ((j<degree-1) && (TreeMem[tree].children[vec[seq_pos+j]]!=NO_CHILD))
+				{
+					if (TreeMem[tree].children[vec[seq_pos+j]]<0)
+					{
+						tree = -TreeMem[tree].children[vec[seq_pos+j]];
+						TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) ;
+						for (INT k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
+						{
+							if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
+								break ;
+							if (weights_in_tree)
+								LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
+							else
+								LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+k+weight_pos*degree] ;
+						}
+						break ;
+					}
+					else
+					{
+						tree=TreeMem[tree].children[vec[seq_pos+j]];
+						TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+						if (weights_in_tree)
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight ;
+						else
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+weight_pos*degree] ;
+					}
+				} 
+				else
+				{
+					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+					if (j==degree-1)
+					{
+						if (weights_in_tree)
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]] ;
+						else
+							LevelContrib[weight_pos/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]]*weights[j+weight_pos*degree] ;
+					}		  
+					break ;
+				}
+			}
+		} 
+    }
+	else if (!degree_times_position_weights) // no position_weigths, weights is a vector (1 x degree)
+    {
+		for (INT j=0; seq_pos+j<len; j++)
+		{
+			if ((j<degree-1) && (TreeMem[tree].children[vec[seq_pos+j]]!=NO_CHILD))
+			{
+				if (TreeMem[tree].children[vec[seq_pos+j]]<0)
+				{
+					tree = -TreeMem[tree].children[vec[seq_pos+j]];
+					TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) ;
+					for (INT k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
+					{
+						if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
+							break ;
+						if (weights_in_tree)
+							LevelContrib[(j+k)/mkl_stepsize] += factor*TreeMem[tree].weight ;
+						else
+							LevelContrib[(j+k)/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+k] ;
+					}
+					break ;
+				}
+				else
+				{
+					tree=TreeMem[tree].children[vec[seq_pos+j]];
+					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+					if (weights_in_tree)
+						LevelContrib[j/mkl_stepsize] += factor*TreeMem[tree].weight ;
+					else
+						LevelContrib[j/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j] ;
+				}
+			}
+			else
+			{
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+				if (j==degree-1)
+				{
+					if (weights_in_tree)
+						LevelContrib[j/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]] ;
+					else
+						LevelContrib[j/mkl_stepsize] += factor*TreeMem[tree].child_weights[vec[seq_pos+j]]*weights[j] ;
+				}
+				break ;
+			}
+		} 
+    } 
+	else // no position_weigths, weights is a matrix (len x degree)
+    {
+		/*if (!position_mask)
+		  {		
+		  position_mask = new bool[len] ;
+		  for (INT i=0; i<len; i++)
+		  {
+		  position_mask[i]=false ;
+		  
+		  for (INT j=0; j<degree; j++)
+		  if (weights[i*degree+j]!=0.0)
+		  {
+		  position_mask[i]=true ;
+		  break ;
+		  }
+		  }
+		  }
+		  if (position_mask[weight_pos]==0)
+		  return ;*/
+		
+		for (INT j=0; seq_pos+j<len; j++)
+		{
+			if ((j<degree-1) && (TreeMem[tree].children[vec[seq_pos+j]]!=NO_CHILD))
+			{
+				if (TreeMem[tree].children[vec[seq_pos+j]]<0)
+				{
+					tree = -TreeMem[tree].children[vec[seq_pos+j]];
+					TRIE_ASSERT_EVERYTHING(TreeMem[tree].has_seq) ;
+					for (INT k=0; (j+k<degree) && (seq_pos+j+k<length); k++)
+					{
+						if (TreeMem[tree].seq[k]!=vec[seq_pos+j+k])
+							break ;
+						if (weights_in_tree)
+							LevelContrib[(j+k+degree*weight_pos)/mkl_stepsize] += factor*TreeMem[tree].weight ;
+						else
+							LevelContrib[(j+k+degree*weight_pos)/mkl_stepsize] += factor*TreeMem[tree].weight*weights[j+k+weight_pos*degree] ;
+					}
+					break ;
+				}
+				else
+				{
+					tree=TreeMem[tree].children[vec[seq_pos+j]];
+					TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+					if (weights_in_tree)
+						LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * TreeMem[tree].weight ;
+					else
+						LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * TreeMem[tree].weight * weights[j+weight_pos*degree] ;
+				} 
+			}
+			else
+			{
+				TRIE_ASSERT_EVERYTHING(!TreeMem[tree].has_seq) ;
+				if (j==degree-1)
+				{
+					if (weights_in_tree)
+						LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * TreeMem[tree].child_weights[vec[seq_pos+j]] ;
+					else
+						LevelContrib[(j+degree*weight_pos)/mkl_stepsize] += factor * TreeMem[tree].child_weights[vec[seq_pos+j]] * weights[j+weight_pos*degree] ;
+				}
+				break ;
+			}
+		} 
+    }
+}
