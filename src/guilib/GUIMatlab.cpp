@@ -1873,36 +1873,45 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					INT len=0;
 					CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
 					CAlphabet* alpha = new CAlphabet(al, len);
-					alpha->clear_histogram();
+					ASSERT(alpha);
 
 					INT num_vec=mxGetN(mx_feat);
 					INT num_feat=mxGetM(mx_feat);
-					CHAR* fm=new CHAR[num_vec*num_feat];
-					ASSERT(fm);
+					T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
+					ASSERT(sc);
 					mxChar* c=mxGetChars(mx_feat);
+					ASSERT(c);
 
-					for (LONG l=0; l<((LONG) num_vec)* ((LONG) num_feat); l++)
-						fm[l]=c[l];
+					int maxlen=num_feat;
+					alpha->clear_histogram();
 
-					alpha->add_string_to_histogram(fm, ((LONG) num_vec)* ((LONG) num_feat));
+					for (int i=0; i<num_vec; i++)
+					{
+						sc[i].length=num_feat;
+						sc[i].string=new CHAR[num_feat];
+						ASSERT(sc[i].string)
+
+						for (INT j=0; j<num_feat; j++)
+							sc[i].string[j]=(CHAR) c[((LONG) num_feat)*i+j];
+
+						alpha->add_string_to_histogram(sc[i].string, sc[i].length);
+					}
 					SG_INFO("max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
 					SG_INFO("num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
-
-					f= new CCharFeatures(alpha, 0);
+					f= new CStringFeatures<CHAR>(alpha);
 					ASSERT(f);
 
 					if (alpha->check_alphabet_size() && alpha->check_alphabet())
-						((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+						((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
 					else
 					{
-						((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+						((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
 						delete f;
 						f=NULL;
 					}
 				}
 				else
 					SG_ERROR( "please specify alphabet!\n");
-
 			}
 			else if (mxIsClass(mx_feat,"uint8") || mxIsClass(mx_feat, "int8"))
 			{
@@ -1911,27 +1920,38 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					INT len=0;
 					CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
 					CAlphabet* alpha = new CAlphabet(al, len);
-					alpha->clear_histogram();
+					ASSERT(alpha);
 
 					INT num_vec=mxGetN(mx_feat);
 					INT num_feat=mxGetM(mx_feat);
-					BYTE* fm=new BYTE[num_vec*num_feat];
-					ASSERT(fm);
-					BYTE* c=(BYTE*) mxGetData(mx_feat);
+					T_STRING<BYTE>* sc=new T_STRING<BYTE>[num_vec];
+					ASSERT(sc);
+					BYTE* c= (BYTE*) mxGetData(mx_feat);
 
-					alpha->add_string_to_histogram(fm, ((LONG) num_vec)* ((LONG) num_feat));
-					for (LONG l=0; l<((LONG) num_vec)* ((LONG) num_feat); l++)
-						fm[l]=c[l];
+					int maxlen=num_feat;
+					alpha->clear_histogram();
 
+					for (int i=0; i<num_vec; i++)
+					{
+						sc[i].length=num_feat;
+						sc[i].string=new BYTE[num_feat];
+						ASSERT(sc[i].string)
 
-					f= new CByteFeatures(alpha, 0);
+						for (INT j=0; j<num_feat; j++)
+							sc[i].string[j]=(BYTE) c[((LONG) num_feat)*i+j];
+
+						alpha->add_string_to_histogram(sc[i].string, sc[i].length);
+					}
+					SG_INFO("max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+					SG_INFO("num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+					f= new CStringFeatures<BYTE>(alpha);
 					ASSERT(f);
 
 					if (alpha->check_alphabet_size() && alpha->check_alphabet())
-						((CByteFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+						((CStringFeatures<BYTE>*) f)->set_features(sc, num_vec, maxlen);
 					else
 					{
-						((CByteFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+						((CStringFeatures<BYTE>*) f)->set_features(sc, num_vec, maxlen);
 						delete f;
 						f=NULL;
 					}
@@ -2660,6 +2680,44 @@ bool CGUIMatlab::get_WD_scoring(mxArray* retvals[], INT max_order)
 			for (int j=0; j<num_sym; j++)
 				result[i*num_sym+j] = position_weights[i*num_sym+j] ;
 		}
+		retvals[0]=mx_result;
+		return true;
+	}
+	else
+		SG_ERROR( "one cannot compute a scoring using this kernel function\n");
+	return false;
+}
+
+bool CGUIMatlab::get_WD_consensus(mxArray* retvals[])
+{
+	CKernel *k= gui->guikernel.get_kernel() ;
+
+	if (k && k->get_kernel_type() == K_WEIGHTEDDEGREEPOS)
+	{
+		CSVM* svm=gui->guisvm.get_svm();
+		ASSERT(svm);
+		INT num_suppvec = svm->get_num_support_vectors();
+		INT* sv_idx    = new INT[num_suppvec];
+		DREAL* sv_weight = new DREAL[num_suppvec];
+		INT num_feat=-1;
+
+		for (INT i=0; i<num_suppvec; i++)
+		{
+			sv_idx[i]    = svm->get_support_vector(i);
+			sv_weight[i] = svm->get_alpha(i);
+		}
+
+		CHAR* consensus = ((CWeightedDegreePositionStringKernel*) k)->compute_consensus(
+				num_feat, num_suppvec, sv_idx, sv_weight);
+		mxArray* mx_result ;
+		mx_result=mxCreateCharArray(1, &num_feat);
+		mxChar* result= (mxChar*) mxGetPr(mx_result);
+
+		for (INT i=0; i<num_feat; i++)
+			result[i]=(mxChar) consensus[i];
+
+		delete[] consensus;
+
 		retvals[0]=mx_result;
 		return true;
 	}

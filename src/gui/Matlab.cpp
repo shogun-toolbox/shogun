@@ -49,6 +49,7 @@ static const CHAR* N_GET_SUBKERNEL_WEIGHTS=	        "get_subkernel_weights";
 static const CHAR* N_GET_LAST_SUBKERNEL_WEIGHTS=	        "get_last_subkernel_weights";
 static const CHAR* N_GET_WD_POS_WEIGHTS=	        "get_WD_position_weights";
 static const CHAR* N_GET_WD_SCORING=	        "get_WD_scoring";
+static const CHAR* N_GET_WD_CONSENSUS=	        "get_WD_consensus";
 static const CHAR* N_GET_FEATURES=		"get_features";
 static const CHAR* N_GET_LABELS=		"get_labels";
 static const CHAR* N_GET_VERSION=		"get_version";
@@ -403,6 +404,16 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				SG_SERROR( "usage is W=sg('get_WD_scoring', max_order)");
+		}
+		else if (strmatch(action, len, N_GET_WD_CONSENSUS))
+		{
+		    if (nlhs==1 && nrhs==1)
+			{
+				if (!sg_matlab.get_WD_consensus(plhs))
+					SG_SERROR( "error executing command");
+			}
+			else
+				SG_SERROR( "usage is W=sg('get_WD_consensus')");
 		}
 		else if (strmatch(action, len, N_SET_LAST_SUBKERNEL_WEIGHTS))
 		{

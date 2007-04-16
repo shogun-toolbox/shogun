@@ -817,7 +817,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (k)
 				{
-					SG_INFO( "FixedDegreeCharKernel created\n");
+					SG_INFO( "FixedDegreeStringKernel created\n");
 					return k;
 				}
 			}
@@ -889,7 +889,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 
 				if (k)
 				{
-					SG_INFO( "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
+					SG_INFO( "WeightedDegreePositionStringKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
 					return k;
 				}
 			}
@@ -996,7 +996,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				if (k)
 				{
-					SG_INFO( "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d,%d) created\n",size, d, max_mismatch, length,mkl_stepsize);
+					SG_INFO( "WeightedDegreePositionStringKernel(%d,.,%d,%d,.,%d,%d) created\n",size, d, max_mismatch, length,mkl_stepsize);
 					return k;
 				}
 			}
@@ -1065,7 +1065,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				if (k)
 				{
-					SG_INFO( "WeightedDegreePositionCharKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
+					SG_INFO( "WeightedDegreePositionStringKernel(%d,.,%d,%d,.,%d) created\n",size, d, max_mismatch, length);
 					return k;
 				}
 			}
@@ -1129,7 +1129,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				if (k)
 				{
-					SG_INFO( "WeightedDegreeCharKernel created\n");
+					SG_INFO( "WeightedDegreeStringKernel created\n");
 					return k;
 				}
 			}

@@ -1201,7 +1201,9 @@ CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT 
 	memset(bt, 0, sizeof(BYTE)*4*num_feat);
 	DREAL* score=new DREAL[4*num_feat];
 	ASSERT(score);
-	memset(bt, 0, sizeof(DREAL)*4*num_feat);
+	memset(score, 0, sizeof(DREAL)*4*num_feat);
+
+	INT* sequence=new INT[degree];
 
 	//compute consensus via dynamic programming
 	for (INT i=0; i<num_feat; i++)
@@ -1209,35 +1211,83 @@ CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT 
 		if (i+degree<num_feat)
 			init_optimization(num_suppvec, IDX, alphas, i, i+degree);
 
-		for (INT j=0; j<degree && j+i<num_feat; j++)
+		//degree sequences end here
+		//sum score for all corresponding tries for all sequences ending
+		//on symbols s,t
+		for (INT s=0; s<4; s++)
 		{
-			//j+1 sequences end here
-			//sum score for all corresponding tries for all sequences ending
-			//on symbols t,s
-			for (INT s=0; s<4; s++)
+			//compute max scoring sequence that ends in s
+			INT sym=s;
+			for (INT j=degree-2; j>=0; j--)
 			{
-				//treefunction depends on trie number i+j-degree ... i+j
-				//the end symbol s
-				//returns the sum of it all
-				DREAL sumscore=0;  //FIXME call treefunction
-
-				BYTE max_idx=0;
-				DREAL max_score=score[4*(i+j)+0]+sumscore;
-				for (INT t=1; t<4; t++)
+				if (i-j-1 >= 0)
 				{
-					DREAL sc=score[4*(i+j)+t]+sumscore;
-					if (sc>max_score)
-					{
-						max_score=sc;
-						max_idx=t;
-					}
+					sequence[j]=bt[4*(i-j-1)+sym];
+					sym=bt[4*(i-j-1)+sym];
 				}
-				score[4*(i+j)+s]=max_score;
-				bt[4*(i+j)+s]=max_idx;
+				else
+					sequence[j]=-1;
 			}
-		}
+			
+			//compute score for sequence ending in 'A' and use that as current
+			//maximum
+			sequence[degree-1]=0;
+			DREAL sumscore=tries.score_sequence(i, sequence);
 
+			BYTE max_idx=0;
+			DREAL max_score= (i>0) ? (score[4*(i-1)+0]+sumscore) : sumscore;
+
+			//do the same with C,G,T and store max in bt table
+			for (INT t=1; t<4; t++)
+			{
+				sequence[degree-1]=t;
+
+				//treefunction depends on sequence, degree and position
+				//returns the score for the sequence ending in s,t sum of it all
+				sumscore=tries.score_sequence(i, sequence);
+
+				DREAL sc= (i>0) ? (score[4*(i-1)+t]+sumscore) : sumscore;
+
+				if (sc>max_score)
+				{
+					max_score=sc;
+					max_idx=t;
+				}
+			}
+			score[4*i+s]=max_score;
+			bt[4*i+s]=max_idx;
+		}
 		SG_PROGRESS(i,0,num_feat);
 	}
+
+	//do the bt to find the highest scoring seq
+	const CHAR* acgt="ACGT";
+	INT max_idx=0;
+	DREAL max_score=bt[4*(num_feat-1)+0];
+	for (INT i=1; i<4; i++)
+	{
+		if (score[4*(num_feat-1)+i]>max_score)
+		{
+			max_score=score[4*(num_feat-1)+i];
+			max_idx=i;
+		}
+	}
+
+	result[num_feat-1]=acgt[max_idx];
+
+	for (INT i=num_feat-2; i>=0; i--)
+	{
+		result[i]=acgt[bt[4*i+max_idx]];
+		max_idx=bt[4*i+max_idx];
+	}
+
+	SG_PRINT("seq:\n");
+	for (INT i=0; i<num_feat; i++)
+		SG_PRINT("%c",result[i]);
+	SG_PRINT("\n");
+
+	delete[] sequence;
+	delete[] score;
+	delete[] bt;
 	return result;
 }

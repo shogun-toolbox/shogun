@@ -1390,3 +1390,41 @@ void CTrie::compute_by_tree_helper(INT* vec, INT len,
 		} 
     }
 }
+
+DREAL CTrie::score_sequence(INT endpos, INT* sequence)
+{
+	if (endpos<0 || endpos>=length)
+		return 0.0;
+
+	SG_PRINT("endpos: %d degree: %d tr\n", endpos, degree);
+
+	SG_PRINT("seq:");
+	for (INT k=0; k<degree; k++)
+		SG_PRINT("%i,", sequence[k]);
+	SG_PRINT("\n");
+
+	//parse degree many trees and compute contributions
+	//ending on sequence at endpos
+	DREAL result=0.0;
+
+	for (INT d=0; d<degree && endpos-d >= 0; d++)
+	{
+		INT t = trees[endpos-d];
+		for (INT i=0; i<d && t != NO_CHILD && sequence[degree-d-1+i]>=0; i++)
+			t = TreeMem[t].children[sequence[degree-d-1+i]];
+
+		if (t != NO_CHILD && sequence[degree-1]>=0)
+		{
+			Trie* tree=&TreeMem[t];
+			if (degree-1==d)
+				result+=tree->child_weights[sequence[degree-1]];
+			else
+			{
+				if (tree->children[sequence[degree-1]] != NO_CHILD)
+					result+=TreeMem[tree->children[sequence[degree-1]]].weight;
+			}
+		}
+	}
+
+	return result;
+}
