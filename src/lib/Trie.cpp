@@ -1391,40 +1391,50 @@ void CTrie::compute_by_tree_helper(INT* vec, INT len,
     }
 }
 
-DREAL CTrie::score_sequence(INT endpos, INT* sequence)
+DREAL CTrie::score_sequence(INT endpos, INT* sequence, DREAL* weights)
 {
 	if (endpos<0 || endpos>=length)
+	{
+		SG_PRINT("out of bounds\n");
 		return 0.0;
+	}
 
-	SG_PRINT("endpos: %d degree: %d tr\n", endpos, degree);
-
-	SG_PRINT("seq:");
-	for (INT k=0; k<degree; k++)
-		SG_PRINT("%i,", sequence[k]);
-	SG_PRINT("\n");
+	INT sym=sequence[degree-1];
+	ASSERT(!use_compact_terminal_nodes);
 
 	//parse degree many trees and compute contributions
 	//ending on sequence at endpos
 	DREAL result=0.0;
+	INT t=-1;
 
 	for (INT d=0; d<degree && endpos-d >= 0; d++)
 	{
-		INT t = trees[endpos-d];
+		t = trees[endpos-d];
+
 		for (INT i=0; i<d && t != NO_CHILD && sequence[degree-d-1+i]>=0; i++)
 			t = TreeMem[t].children[sequence[degree-d-1+i]];
 
-		if (t != NO_CHILD && sequence[degree-1]>=0)
+		if (t != NO_CHILD && sym>=0)
 		{
+			DREAL w=1.0;
+			if (!weights_in_tree)
+				w=weights[d];
+
 			Trie* tree=&TreeMem[t];
 			if (degree-1==d)
-				result+=tree->child_weights[sequence[degree-1]];
+				result+=w*tree->child_weights[sym];
 			else
 			{
-				if (tree->children[sequence[degree-1]] != NO_CHILD)
-					result+=TreeMem[tree->children[sequence[degree-1]]].weight;
+				if (tree->children[sym] != NO_CHILD)
+					result+=w*TreeMem[tree->children[sym]].weight;
 			}
 		}
 	}
+
+	SG_PRINT("seq:");
+	for (INT k=0; k<degree; k++)
+		SG_PRINT("%+i,", sequence[k]);
+	SG_PRINT(" endpos: %d degree: %d result:%f tree:%d\n", endpos, degree, result, t);
 
 	return result;
 }

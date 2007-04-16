@@ -94,7 +94,7 @@ public:
 	void count( const DREAL w, const INT depth, const struct TreeParseInfo info, const INT p, INT* x, const INT k ) ;
 	INT compact_nodes(INT start_node, INT depth, DREAL * weights) ;
 
-	DREAL score_sequence(INT endpos, INT* sequence);
+	DREAL score_sequence(INT endpos, INT* sequence, DREAL* weights);
 
 	inline bool get_use_compact_terminal_nodes()
 	{

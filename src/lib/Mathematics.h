@@ -674,13 +674,13 @@ void CMath::display_matrix(T* matrix, INT rows, INT cols, const char* name)
 {
 	ASSERT(rows>=0 && cols>=0);
 	SG_SPRINT("%s=[\n", name);
-	for (INT j=0; j<rows; j++)
+	for (INT i=0; i<rows; i++)
 	{
 		SG_SPRINT("[");
-		for (INT i=0; i<cols; i++)
-			SG_SPRINT("\t%lf%s", (double) matrix[j+i*rows],
-				i==cols-1? "" : ",");
-		SG_SPRINT("]%s\n", j==rows-1? "" : ",");
+		for (INT j=0; j<cols; j++)
+			SG_SPRINT("\t%lf%s", (double) matrix[j+i*cols],
+				j==cols-1? "" : ",");
+		SG_SPRINT("]%s\n", i==rows-1? "" : ",");
 	}
 	SG_SPRINT("]\n");
 }
