@@ -1399,13 +1399,13 @@ DREAL CTrie::score_sequence(INT endpos, INT* sequence, DREAL* weights)
 		return 0.0;
 	}
 
-	INT sym=sequence[degree-1];
 	ASSERT(!use_compact_terminal_nodes);
 
 	//parse degree many trees and compute contributions
 	//ending on sequence at endpos
 	DREAL result=0.0;
 	INT t=-1;
+	INT sym=sequence[degree-1];
 
 	for (INT d=0; d<degree && endpos-d >= 0; d++)
 	{
@@ -1431,10 +1431,10 @@ DREAL CTrie::score_sequence(INT endpos, INT* sequence, DREAL* weights)
 		}
 	}
 
-	SG_PRINT("seq:");
-	for (INT k=0; k<degree; k++)
-		SG_PRINT("%+i,", sequence[k]);
-	SG_PRINT(" endpos: %d degree: %d result:%f tree:%d\n", endpos, degree, result, t);
+	//SG_PRINT("seq:");
+	//for (INT k=0; k<degree; k++)
+	//	SG_PRINT("%+i,", sequence[k]);
+	//SG_PRINT(" endpos: %d degree: %d result:%f tree:%d sym:%d\n", endpos, degree, result, t, sym);
 
 	return result;
 }

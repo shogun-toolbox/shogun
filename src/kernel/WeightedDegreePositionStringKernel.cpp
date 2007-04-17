@@ -1204,86 +1204,100 @@ CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT 
 	memset(score, 0, sizeof(DREAL)*4*num_feat);
 
 	INT* sequence=new INT[degree];
+	for (INT i=0; i<degree; i++)
+		sequence[i]=-1;
 
 	INT max_idx=0;
 	DREAL max_score=0;
 
-	//compute consensus via dynamic programming
-	for (INT i=0; i<num_feat; i++)
+	init_optimization(num_suppvec, IDX, alphas, 0);
+
+	//initialization
+	for (INT t=0; t<4; t++)
+	{
+		sequence[degree-1]=t;
+		max_score=tries.score_sequence(0, sequence, weights);
+
+		score[t]=max_score;
+		bt[t]=0;
+	}
+
+	//induction - compute consensus via dynamic programming
+	for (INT i=1; i<num_feat; i++)
 	{
 		if (i+degree<num_feat)
-			init_optimization(num_suppvec, IDX, alphas, CMath::max(0,i-degree), i+degree);
+			init_optimization(num_suppvec, IDX, alphas, CMath::max(0,i-degree), CMath::min(num_feat-1, i+degree));
 
 		//degree sequences end here
 		//sum score for all corresponding tries for all sequences ending
 		//on symbols s,t
-		for (INT s=0; s<4; s++)
+		max_idx=-1;
+		for (INT t=0; t<4; t++)
 		{
-			//SG_PRINT("SSS: %d\n", s);
-			//compute max scoring sequence that ends in s
-			INT sym=s;
-			for (INT j=0; j<degree-1; j++)
-			{
-				if (i-j >= 0)
-				{
-					sequence[degree-2-j]=sym;
-					sym=bt[4*(i-j)+sym];
-				}
-				else
-					sequence[degree-2-j]=-1;
-			}
-			
 			//compute score for sequence ending in 'A' and use that as current
 			//maximum
-			sequence[degree-1]=0;
-			DREAL sumscore=tries.score_sequence(i, sequence, weights);
-
-			max_idx=0;
-			max_score= (i>0) ? (score[4*(i-1)+s]+sumscore) : sumscore;
-
-			//SG_PRINT("score[0]=%f (trie:%f bt_sc:%f)\n", max_score, sumscore, score[4*(i-1)+s]);
-
-			//do the same with C,G,T and store max in bt table
-			for (INT t=1; t<4; t++)
+			sequence[degree-1]=t;
+			for (INT s=0; s<4; s++)
 			{
-				sequence[degree-1]=t;
+				//determine max scoring sequence that ends in s
+				INT sym=s;
+				for (INT j=0; j<degree-1; j++)
+				{
+					if (i-j-1 >= 0)
+					{
+						sequence[degree-2-j]=sym;
+						sym=bt[4*(i-j-1)+sym];
+					}
+					else
+						sequence[degree-2-j]=-1;
+				}
 
 				//treefunction depends on sequence, degree and position
 				//returns the score for the sequence ending in s,t sum of it all
-				sumscore=tries.score_sequence(i, sequence, weights);
-				//SG_PRINT("sum_score[%d]=%f\n", t, sumscore);
+				DREAL sc= score[4*(i-1)+s] + tries.score_sequence(i, sequence, weights);
 
-				DREAL sc= (i>0) ? (score[4*(i-1)+s]+sumscore) : sumscore;
-
-				if (sc>max_score)
+				if (sc>max_score || max_idx==-1)
 				{
 					max_score=sc;
-					max_idx=t;
+					max_idx=s;
 				}
-				//SG_PRINT("score[%d]=%f (trie:%f bt_sc:%f)\n", t, sc, sumscore, score[4*(i-1)+s]);
 			}
-			score[4*i+s]=max_score;
-			bt[4*i+s]=max_idx;
+
+			score[4*i+t]=max_score;
+			bt[4*i+t]=max_idx;
 		}
 		SG_PROGRESS(i,0,num_feat);
 	}
 
 	CHAR* acgt="ACGT";
+
+	//backtracking start
+	max_idx=0;
+	max_score=score[4*(num_feat-1)+0];
+	for (INT i=1; i<4; i++)
+	{
+		DREAL sc=score[4*(num_feat-1)+i];
+		if (sc>max_score)
+		{
+			max_idx=i;
+			max_score=sc;
+		}
+	}
 	result[num_feat-1]=acgt[max_idx];
 
 	for (INT i=num_feat-2; i>=0; i--)
 	{
-		result[i]=acgt[bt[4*i+max_idx]];
-		max_idx=bt[4*i+max_idx];
+		result[i]=acgt[bt[4*(i+1)+max_idx]];
+		max_idx=bt[4*(i+1)+max_idx];
 	}
 
-	SG_PRINT("seq (score:%f):\n", max_score);
-	for (INT i=0; i<num_feat; i++)
-		SG_PRINT("%c",result[i]);
-	SG_PRINT("\n");
+	SG_INFO("seq (score:%f):\n", max_score);
+	//for (INT i=0; i<num_feat; i++)
+	//	SG_PRINT("%c",result[i]);
+	//SG_PRINT("\n");
 
-	CMath::display_matrix(bt, num_feat, 4, "bt");
-	CMath::display_matrix(score, num_feat, 4, "scores");
+	//CMath::display_matrix(bt, num_feat, 4, "bt");
+	//CMath::display_matrix(score, num_feat, 4, "scores");
 
 	delete[] sequence;
 	delete[] score;
