@@ -1,13 +1,13 @@
 rand('seed',17);
 %sequence lengths, number of sequences
-len=100;
+len=8;
 num_train=1000;
 
 %SVM regularization factor C
 C=1;
 
 %Weighted Degree kernel parameters
-order=20;
+order=3;
 shift=15;
 max_mismatch=0;
 cache=10;
@@ -19,13 +19,8 @@ shifts = sprintf( '%i ', x(end:-1:1) );
 
 %generate some toy data
 acgt='ACGT';
-traindat=[acgt(ceil(4*rand(len,num_train)))];
+traindat=[acgt(ceil(4*rand(len,num_train/2))) acgt(ceil(4*rand(len,num_train/2)))];
 trainlab=[-ones(1,num_train/2),ones(1,num_train/2)];
-
-traindat(10,trainlab==+1)='A';
-traindat(11,trainlab==+1)='C';
-traindat(12,trainlab==+1)='G';
-traindat(13,trainlab==+1)='T';
 traindat'
 input('key to continue')
 
@@ -41,15 +36,40 @@ sg('send_command', 'svm_train');
 consensus=sg('get_WD_consensus');
 consensus'
 
-x=traindat(:,trainlab==1);
-x(x=='A')=1;
-x(x=='C')=2;
-x(x=='G')=3;
-x(x=='T')=4;
-acgt(floor(median(x')))
+c=traindat(:,trainlab==1);
+c(c=='A')=1;
+c(c=='C')=2;
+c(c=='G')=3;
+c(c=='T')=4;
+simpleconsensus=acgt(floor(median(c')))';
+simpleconsensus'
 
-sg('set_features', 'TEST', [ consensus  traindat(:,end)], 'DNA');
+sg('set_features', 'TEST', [ consensus simpleconsensus traindat(:,end-20) traindat(:,end)], 'DNA');
 sg('send_command', 'init_kernel TEST');
+out=sg('svm_classify');
 [b,alphas]=sg('get_svm');
-out=sg('svm_classify')-b;
-out'
+sprintf('%5f\n', out'-b)
+
+kmers=ones(len, 4^len);
+for i=2:(4^len),
+	idx=len;
+	kmers(:,i)=kmers(:,i-1);
+	kmers(idx,i)=kmers(idx,i)+1;
+	for j=1:len,
+		if kmers(idx,i)>4,
+			kmers(idx,i)=1;
+			idx=idx-1;
+			kmers(idx,i)=kmers(idx,i)+1;
+		end
+	end
+end
+kmers=acgt(kmers);
+
+sg('set_features', 'TEST', kmers, 'DNA');
+sg('send_command', 'init_kernel TEST');
+out=sg('svm_classify');
+[b,alphas]=sg('get_svm');
+out=out-b;
+[v,i]=max(out);
+v
+i
