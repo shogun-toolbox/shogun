@@ -1434,16 +1434,16 @@ DREAL CTrie::get_cumulative_score(INT pos, ULONG seq, INT deg, DREAL* weights)
 {
 	DREAL result=0.0;
 
-	SG_PRINT("pos:%i length:%i deg:%i seq:0x%0llx...\n", pos, length, deg, seq);
+	//SG_PRINT("pos:%i length:%i deg:%i seq:0x%0llx...\n", pos, length, deg, seq);
 
 	for (INT i=pos; i<pos+deg && i<length; i++)
 	{
-		SG_PRINT("loop %d\n", i);
+		//SG_PRINT("loop %d\n", i);
 		Trie* tree = &TreeMem[trees[i]];
 
 		for (INT d=0; d<deg-i+pos; d++)
 		{
-			SG_PRINT("loop degree %d shit: %d\n", d, (2*(deg-1-d-i+pos)));
+			//SG_PRINT("loop degree %d shit: %d\n", d, (2*(deg-1-d-i+pos)));
 			ASSERT(d-1<degree);
 			INT sym = (INT) (seq >> (2*(deg-1-d-i+pos)) & 3);
 
@@ -1458,7 +1458,7 @@ DREAL CTrie::get_cumulative_score(INT pos, ULONG seq, INT deg, DREAL* weights)
 			result+=w*tree->weight;
 		}
 	}
-	SG_PRINT("cum: %f\n", result);
+	//SG_PRINT("cum: %f\n", result);
 	return result;
 }
 
@@ -1480,7 +1480,7 @@ void CTrie::fill_backtracking_table(INT pos, CDynamicArray<ConsensusEntry>* prev
 			ConsensusEntry entry=cur->get_element(i);
 			entry.score+=get_cumulative_score(pos+1, entry.string, degree-1, weights);
 			cur->set_element(entry,i);
-			SG_PRINT("cum: str:0%0llx sc:%f bt:%d\n",entry.string,entry.score,entry.bt);
+			//SG_PRINT("cum: str:0%0llx sc:%f bt:%d\n",entry.string,entry.score,entry.bt);
 		}
 	}
 

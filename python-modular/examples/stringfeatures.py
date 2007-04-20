@@ -24,6 +24,20 @@ s=10*'a' + 10*'b' + 10*'c'
 f3=sf.StringCharFeatures(sf.Alphabet(sf.RAWBYTE))
 f3.set_string_features([s])
 f3.obtain_by_sliding_window(5,1)
+print "Take #1"
+print f3.get_num_vectors()
+print f3.get_vector_length(0)
+print f3.get_vector_length(1)
+
+print s
+for i in xrange(f3.get_num_vectors()):
+	f3.select_feature_vector(i)
+	v=f3.get_str()
+	print `i`+ ':',
+	print v
+
+print "Take #2"
+f3.obtain_by_sliding_window(5,1)
 print f3.get_num_vectors()
 print f3.get_vector_length(0)
 print f3.get_vector_length(1)
@@ -42,6 +56,20 @@ positions.append_element(0)
 positions.append_element(6)
 positions.append_element(16)
 positions.append_element(25)
+#positions.append_element(28)
+
+print "Take #1"
+f4.obtain_by_position_list(5,positions)
+
+print s
+for i in xrange(f4.get_num_vectors()):
+	f4.select_feature_vector(i)
+	v=f4.get_str()
+	print `i`+ ':',
+	print v
+
+f4.set_string_features([s])
+print "Take #2"
 #positions.append_element(28)
 f4.obtain_by_position_list(5,positions)
 

@@ -1186,6 +1186,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(INT max_degree, INT&
 
 CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas)
 {
+	//only works for order <= 32
 	ASSERT(degree<=32);
 	ASSERT(!tries.get_use_compact_terminal_nodes());
 	num_feat=((CStringFeatures<CHAR>*) get_rhs())->get_max_vector_length();
@@ -1229,28 +1230,26 @@ CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT 
 	}
 
 
-	INT n=table[0]->get_num_elements();
+	//INT n=table[0]->get_num_elements();
 
-	for (INT i=0; i<n; i++)
-	{
-		ConsensusEntry e= table[0]->get_element(i);
-		SG_PRINT("first: str:0%0llx sc:%f bt:%d\n",e.string,e.score,e.bt);
-	}
+	//for (INT i=0; i<n; i++)
+	//{
+	//	ConsensusEntry e= table[0]->get_element(i);
+	//	SG_PRINT("first: str:0%0llx sc:%f bt:%d\n",e.string,e.score,e.bt);
+	//}
 
-	n=table[num_tables-1]->get_num_elements();
-	for (INT i=0; i<n; i++)
-	{
-		ConsensusEntry e= table[num_tables-1]->get_element(i);
-		SG_PRINT("last: str:0%0llx sc:%f bt:%d\n",e.string,e.score,e.bt);
-	}
-	n=table[num_tables-2]->get_num_elements();
-	for (INT i=0; i<n; i++)
-	{
-		ConsensusEntry e= table[num_tables-2]->get_element(i);
-		SG_PRINT("second last: str:0%0llx sc:%f bt:%d\n",e.string,e.score,e.bt);
-	}
-
-
+	//n=table[num_tables-1]->get_num_elements();
+	//for (INT i=0; i<n; i++)
+	//{
+	//	ConsensusEntry e= table[num_tables-1]->get_element(i);
+	//	SG_PRINT("last: str:0%0llx sc:%f bt:%d\n",e.string,e.score,e.bt);
+	//}
+	//n=table[num_tables-2]->get_num_elements();
+	//for (INT i=0; i<n; i++)
+	//{
+	//	ConsensusEntry e= table[num_tables-2]->get_element(i);
+	//	SG_PRINT("second last: str:0%0llx sc:%f bt:%d\n",e.string,e.score,e.bt);
+	//}
 
 	CHAR* acgt="ACGT";
 
@@ -1270,7 +1269,7 @@ CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT 
 	}
 	ULONG endstr=table[num_tables-1]->get_element(max_idx).string;
 
-	SG_PRINT("max_idx:%d num_el:%d num_feat:%d num_tables:%d max_score:%f\n", max_idx, num_elements, num_feat, num_tables, max_score);
+	SG_INFO("max_idx:%d num_el:%d num_feat:%d num_tables:%d max_score:%f\n", max_idx, num_elements, num_feat, num_tables, max_score);
 
 	for (INT i=0; i<degree; i++)
 		result[num_feat-1-i]=acgt[(endstr >> (2*i)) & 3];

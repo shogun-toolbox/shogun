@@ -43,7 +43,8 @@ template <class ST> class CStringFeatures: public CFeatures
 {
 	public:
 	CStringFeatures(E_ALPHABET alpha) : CFeatures(0), num_vectors(0), features(NULL), 
-		single_string(false),max_string_length(0), order(0), symbol_mask_table(NULL)
+		single_string(false),length_of_single_string(0),
+		max_string_length(0), order(0), symbol_mask_table(NULL)
 	{
 		alphabet=new CAlphabet(alpha);
 		ASSERT(alphabet);
@@ -51,7 +52,8 @@ template <class ST> class CStringFeatures: public CFeatures
 		original_num_symbols=num_symbols;
 	}
 	CStringFeatures(CAlphabet* alpha) : CFeatures(0), num_vectors(0), features(NULL), 
-		single_string(false),max_string_length(0), order(0), symbol_mask_table(NULL)
+		single_string(false),length_of_single_string(0),
+		max_string_length(0), order(0), symbol_mask_table(NULL)
 	{
         ASSERT(alpha);
 		alphabet=new CAlphabet(alpha);
@@ -61,7 +63,9 @@ template <class ST> class CStringFeatures: public CFeatures
 	}
 
 	CStringFeatures(const CStringFeatures & orig) : CFeatures(orig), num_vectors(orig.num_vectors),
-		single_string(orig.single_string),max_string_length(orig.max_string_length),
+		single_string(orig.single_string),
+		length_of_single_string(orig.length_of_single_string),
+		max_string_length(orig.max_string_length),
 		num_symbols(orig.num_symbols), original_num_symbols(orig.original_num_symbols),
 		order(orig.order)
 	{
@@ -92,7 +96,8 @@ template <class ST> class CStringFeatures: public CFeatures
 	}
 
 	CStringFeatures(char* fname, E_ALPHABET alpha=DNA) : CFeatures(fname), num_vectors(0), 
-		features(NULL), single_string(false), max_string_length(0), order(0), symbol_mask_table(NULL)
+		features(NULL), single_string(false), length_of_single_string(0),
+		max_string_length(0), order(0), symbol_mask_table(NULL)
 	{
 		alphabet=new CAlphabet(alpha);
 		num_symbols=alphabet->get_num_symbols();
@@ -405,9 +410,12 @@ template <class ST> class CStringFeatures: public CFeatures
 		//in case we are dealing with a single remapped string
 		//allow remapping
 		if (single_string)
-			num_vectors= (num_vectors*max_string_length-window_size)/step_size + 1;
+			num_vectors= (length_of_single_string-window_size)/step_size + 1;
 		else if (num_vectors==1)
+		{
 			num_vectors= (max_string_length-window_size)/step_size + 1;
+			length_of_single_string=max_string_length;
+		}
 		
 		T_STRING<ST>* f=new T_STRING<ST>[num_vectors];
 		INT offs=0;
@@ -437,12 +445,18 @@ template <class ST> class CStringFeatures: public CFeatures
 		num_vectors= positions->get_num_elements();
 		ASSERT(num_vectors>0);
 
-		INT len=max_string_length;
+		INT len;
 
 		//in case we are dealing with a single remapped string
 		//allow remapping
 		if (single_string)
-			len= num_vectors*max_string_length;
+			len=length_of_single_string;
+		else
+		{
+			single_string=true;
+			len=max_string_length;
+			length_of_single_string=max_string_length;
+		}
 		
 		T_STRING<ST>* f=new T_STRING<ST>[num_vectors];
 		for (INT i=0; i<num_vectors; i++)
@@ -459,7 +473,8 @@ template <class ST> class CStringFeatures: public CFeatures
 				num_vectors=1;
 				max_string_length=len;
 				features[0].length=len;
-				delete[] features;
+				single_string=false;
+				delete[] f;
 				SG_ERROR("window (size:%d) starting at position[%d]=%d does not fit in sequence(len:%d)\n",
 						window_size, i, p, len);
 				return -1;
@@ -467,7 +482,6 @@ template <class ST> class CStringFeatures: public CFeatures
 		}
 		delete[] features;
 		features=f;
-		single_string=true;
 		selected_vector=0;
 		max_string_length=window_size;
 
@@ -670,6 +684,9 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	/// true when single string / created by sliding window
 	bool single_string;
+
+	/// length of prior single string
+	INT length_of_single_string;
 
 	/// length of longest string
 	INT max_string_length;
