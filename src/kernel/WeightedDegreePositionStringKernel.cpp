@@ -1186,6 +1186,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(INT max_degree, INT&
 
 CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas)
 {
+	ASSERT(degree<=32);
 	ASSERT(!tries.get_use_compact_terminal_nodes());
 	num_feat=((CStringFeatures<CHAR>*) get_rhs())->get_max_vector_length();
 	ASSERT(num_feat>0);
@@ -1196,111 +1197,107 @@ CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT 
 	ASSERT(result);
 
 	//backtracking and scoring table
-	INT* bt=new INT[4*num_feat];
-	ASSERT(bt);
-	memset(bt, 0, sizeof(INT)*4*num_feat);
-	DREAL* score=new DREAL[4*num_feat];
-	ASSERT(score);
-	memset(score, 0, sizeof(DREAL)*4*num_feat);
-
-	INT* sequence=new INT[degree];
-	for (INT i=0; i<degree; i++)
-		sequence[i]=-1;
-
-	INT max_idx=0;
-	DREAL max_score=0;
-
-	init_optimization(num_suppvec, IDX, alphas, 0);
-
-	//initialization
-	for (INT t=0; t<4; t++)
+	INT num_tables=CMath::max(1,num_feat-degree+1);
+	CDynamicArray<ConsensusEntry>** table = new CDynamicArray<ConsensusEntry>*[num_tables];
+	ASSERT(table);
+	
+	for (INT i=0; i<num_tables; i++)
 	{
-		sequence[degree-1]=t;
-		max_score=tries.score_sequence(0, sequence, weights);
-
-		score[t]=max_score;
-		bt[t]=0;
+		table[i] = new CDynamicArray<ConsensusEntry>(num_suppvec/10);
+		ASSERT(table[i]);
 	}
 
-	//induction - compute consensus via dynamic programming
-	for (INT i=1; i<num_feat; i++)
+	//compute consensus via dynamic programming
+	for (INT i=0; i<num_tables; i++)
 	{
-		if (i+degree<num_feat)
-			init_optimization(num_suppvec, IDX, alphas, CMath::max(0,i-degree), CMath::min(num_feat-1, i+degree));
+		bool cumulative=false;
 
-		//degree sequences end here
-		//sum score for all corresponding tries for all sequences ending
-		//on symbols s,t
-		max_idx=-1;
-		for (INT t=0; t<4; t++)
+		if (i<num_tables-1)
+			init_optimization(num_suppvec, IDX, alphas, i);
+		else
 		{
-			//compute score for sequence ending in 'A' and use that as current
-			//maximum
-			sequence[degree-1]=t;
-			for (INT s=0; s<4; s++)
-			{
-				//determine max scoring sequence that ends in s
-				INT sym=s;
-				for (INT j=0; j<degree-1; j++)
-				{
-					if (i-j-1 >= 0)
-					{
-						sequence[degree-2-j]=sym;
-						sym=bt[4*(i-j-1)+sym];
-					}
-					else
-						sequence[degree-2-j]=-1;
-				}
-
-				//treefunction depends on sequence, degree and position
-				//returns the score for the sequence ending in s,t sum of it all
-				DREAL sc= score[4*(i-1)+s] + tries.score_sequence(i, sequence, weights);
-
-				if (sc>max_score || max_idx==-1)
-				{
-					max_score=sc;
-					max_idx=s;
-				}
-			}
-
-			score[4*i+t]=max_score;
-			bt[4*i+t]=max_idx;
+			init_optimization(num_suppvec, IDX, alphas, i, num_feat-1);
+			cumulative=true;
 		}
+
+		if (i==0)
+			tries.fill_backtracking_table(i, NULL, table[i], cumulative, weights);
+		else
+			tries.fill_backtracking_table(i, table[i-1], table[i], cumulative, weights);
+
 		SG_PROGRESS(i,0,num_feat);
 	}
+
+
+	INT n=table[0]->get_num_elements();
+
+	for (INT i=0; i<n; i++)
+	{
+		ConsensusEntry e= table[0]->get_element(i);
+		SG_PRINT("first: str:0%0llx sc:%f bt:%d\n",e.string,e.score,e.bt);
+	}
+
+	n=table[num_tables-1]->get_num_elements();
+	for (INT i=0; i<n; i++)
+	{
+		ConsensusEntry e= table[num_tables-1]->get_element(i);
+		SG_PRINT("last: str:0%0llx sc:%f bt:%d\n",e.string,e.score,e.bt);
+	}
+	n=table[num_tables-2]->get_num_elements();
+	for (INT i=0; i<n; i++)
+	{
+		ConsensusEntry e= table[num_tables-2]->get_element(i);
+		SG_PRINT("second last: str:0%0llx sc:%f bt:%d\n",e.string,e.score,e.bt);
+	}
+
+
 
 	CHAR* acgt="ACGT";
 
 	//backtracking start
-	max_idx=0;
-	max_score=score[4*(num_feat-1)+0];
-	for (INT i=1; i<4; i++)
+	INT max_idx=-1;
+	SHORTREAL max_score=0;
+	INT num_elements=table[num_tables-1]->get_num_elements();
+
+	for (INT i=0; i<num_elements; i++)
 	{
-		DREAL sc=score[4*(num_feat-1)+i];
-		if (sc>max_score)
+		DREAL sc=table[num_tables-1]->get_element(i).score;
+		if (sc>max_score || max_idx==-1)
 		{
 			max_idx=i;
 			max_score=sc;
 		}
 	}
-	result[num_feat-1]=acgt[max_idx];
+	ULONG endstr=table[num_tables-1]->get_element(max_idx).string;
 
-	for (INT i=num_feat-2; i>=0; i--)
+	SG_PRINT("max_idx:%d num_el:%d num_feat:%d num_tables:%d max_score:%f\n", max_idx, num_elements, num_feat, num_tables, max_score);
+
+	for (INT i=0; i<degree; i++)
+		result[num_feat-1-i]=acgt[(endstr >> (2*i)) & 3];
+
+	if (num_tables>1)
 	{
-		result[i]=acgt[bt[4*(i+1)+max_idx]];
-		max_idx=bt[4*(i+1)+max_idx];
+		for (INT i=num_tables-1; i>=0; i--)
+		{
+			//SG_PRINT("max_idx: %d, i:%d\n", max_idx, i);
+			result[i]=acgt[table[i]->get_element(max_idx).string >> (2*(degree-1)) & 3];
+			max_idx=table[i]->get_element(max_idx).bt;
+		}
 	}
 
-	SG_INFO("seq (score:%f):\n", max_score);
-	//for (INT i=0; i<num_feat; i++)
-	//	SG_PRINT("%c",result[i]);
-	//SG_PRINT("\n");
+	//for (INT t=0; t<num_tables; t++)
+	//{
+	//	n=table[t]->get_num_elements();
+	//	for (INT i=0; i<n; i++)
+	//	{
+	//		ConsensusEntry e= table[t]->get_element(i);
+	//		SG_PRINT("table[%d,%d]: str:0%0llx sc:%+f bt:%d\n",t,i, e.string,e.score,e.bt);
+	//	}
+	//}
 
-	//CMath::display_matrix(bt, num_feat, 4, "bt");
-	//CMath::display_matrix(score, num_feat, 4, "scores");
+	for (INT i=0; i<num_tables; i++)
+		delete table[i];
 
-	delete[] sequence;
-	delete[] score;
-	delete[] bt;
+	delete[] table;
 	return result;
 }

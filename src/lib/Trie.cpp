@@ -1391,50 +1391,142 @@ void CTrie::compute_by_tree_helper(INT* vec, INT len,
     }
 }
 
-DREAL CTrie::score_sequence(INT endpos, INT* sequence, DREAL* weights)
+void CTrie::fill_backtracking_table_recursion(Trie* tree, INT depth, ULONG seq, DREAL value, CDynamicArray<ConsensusEntry>* table, DREAL* weights)
 {
-	if (endpos<0 || endpos>=length)
+	DREAL w=1.0;
+
+	if (weights_in_tree || depth==0)
+		value+=tree->weight;
+	else
 	{
-		SG_PRINT("out of bounds\n");
-		return 0.0;
+		w=weights[degree-1];
+		value+=weights[depth-1]*tree->weight;
 	}
 
-	ASSERT(!use_compact_terminal_nodes);
-
-	//parse degree many trees and compute contributions
-	//ending on sequence at endpos
-	DREAL result=0.0;
-	INT t=-1;
-	INT sym=sequence[degree-1];
-
-	for (INT d=0; d<degree && endpos-d >= 0; d++)
+	if (degree-1==depth)
 	{
-		t = trees[endpos-d];
-
-		for (INT i=0; i<d && t != NO_CHILD && sequence[degree-d-1+i]>=0; i++)
-			t = TreeMem[t].children[sequence[degree-d-1+i]];
-
-		if (t != NO_CHILD && sym>=0)
+		for (INT sym=0; sym<4; sym++)
 		{
+			DREAL v=w*tree->child_weights[sym];
+			if (v!=0.0)
+			{
+				ConsensusEntry entry;
+				entry.bt=-1;
+				entry.score=value+v;
+				entry.string=seq | ((ULONG) sym) << (2*(degree-depth-1));
+
+				table->append_element(entry);
+			}
+		}
+	}
+	else
+	{
+		for (INT sym=0; sym<4; sym++)
+		{
+			ULONG str=seq | ((ULONG) sym) << (2*(degree-depth-1));
+			if (tree->children[sym] != NO_CHILD)
+				fill_backtracking_table_recursion(&TreeMem[tree->children[sym]], depth+1, str, value, table, weights);
+		}
+	}
+}
+
+DREAL CTrie::get_cumulative_score(INT pos, ULONG seq, INT deg, DREAL* weights)
+{
+	DREAL result=0.0;
+
+	SG_PRINT("pos:%i length:%i deg:%i seq:0x%0llx...\n", pos, length, deg, seq);
+
+	for (INT i=pos; i<pos+deg && i<length; i++)
+	{
+		SG_PRINT("loop %d\n", i);
+		Trie* tree = &TreeMem[trees[i]];
+
+		for (INT d=0; d<deg-i+pos; d++)
+		{
+			SG_PRINT("loop degree %d shit: %d\n", d, (2*(deg-1-d-i+pos)));
+			ASSERT(d-1<degree);
+			INT sym = (INT) (seq >> (2*(deg-1-d-i+pos)) & 3);
+
+			SG_PRINT("sym:%d\n", sym);
+
 			DREAL w=1.0;
 			if (!weights_in_tree)
 				w=weights[d];
 
-			Trie* tree=&TreeMem[t];
-			if (degree-1==d)
-				result+=w*tree->child_weights[sym];
-			else
-			{
-				if (tree->children[sym] != NO_CHILD)
-					result+=w*TreeMem[tree->children[sym]].weight;
-			}
+			ASSERT(tree->children[sym] != NO_CHILD);
+			tree=&TreeMem[tree->children[sym]];
+			result+=w*tree->weight;
+		}
+	}
+	SG_PRINT("cum: %f\n", result);
+	return result;
+}
+
+void CTrie::fill_backtracking_table(INT pos, CDynamicArray<ConsensusEntry>* prev, CDynamicArray<ConsensusEntry>* cur, bool cumulative, DREAL* weights)
+{
+	ASSERT(pos>=0 && pos<length);
+	ASSERT(!use_compact_terminal_nodes);
+
+	Trie* t = &TreeMem[trees[pos]];
+
+	fill_backtracking_table_recursion(t, 0, (ULONG) 0, 0.0, cur, weights);
+
+
+	if (cumulative)
+	{
+		INT num_cur=cur->get_num_elements();
+		for (INT i=0; i<num_cur; i++)
+		{
+			ConsensusEntry entry=cur->get_element(i);
+			entry.score+=get_cumulative_score(pos+1, entry.string, degree-1, weights);
+			cur->set_element(entry,i);
+			SG_PRINT("cum: str:0%0llx sc:%f bt:%d\n",entry.string,entry.score,entry.bt);
 		}
 	}
 
-	//SG_PRINT("seq:");
-	//for (INT k=0; k<degree; k++)
-	//	SG_PRINT("%+i,", sequence[k]);
-	//SG_PRINT(" endpos: %d degree: %d result:%f tree:%d sym:%d\n", endpos, degree, result, t, sym);
+	//if previous tree exists find maximum scoring path
+	//for each element in cur and update bt table
+	if (prev)
+	{
+		INT num_cur=cur->get_num_elements();
+		INT num_prev=prev->get_num_elements();
 
-	return result;
+		for (INT i=0; i<num_cur; i++)
+		{
+			//ULONG str_cur_old= cur->get_element(i).string;
+			ULONG str_cur= cur->get_element(i).string >> 2;
+			//SG_PRINT("...cur:0x%0llx cur_noprfx:0x%0llx...\n", str_cur_old, str_cur);
+
+			INT bt=-1;
+			DREAL max_score=0.0;
+
+			for (INT j=0; j<num_prev; j++)
+			{
+				//ULONG str_prev_old= prev->get_element(j).string;
+				ULONG mask=((((ULONG)0)-1) ^ (((ULONG) 3) << (2*(degree-1))));
+				ULONG str_prev=  mask & prev->get_element(j).string;
+				//SG_PRINT("...prev:0x%0llx prev_nosfx:0x%0llx mask:%0llx...\n", str_prev_old, str_prev,mask);
+
+				if (str_cur == str_prev)
+				{
+					DREAL sc=prev->get_element(j).score+cur->get_element(i).score;
+					if (bt==-1 || sc>max_score)
+					{
+						bt=j;
+						max_score=sc;
+
+						//SG_PRINT("new max[%i,%i] = %f\n", j,i, max_score);
+					}
+				}
+			}
+
+			ASSERT(bt!=-1);
+			ConsensusEntry entry;
+			entry.bt=bt;
+			entry.score=max_score;
+			entry.string=cur->get_element(i).string;
+			cur->set_element(entry, i);
+			//SG_PRINT("entry[%d]: str:0%0llx sc:%f bt:%d\n",i, entry.string,entry.score,entry.bt);
+		}
+	}
 }

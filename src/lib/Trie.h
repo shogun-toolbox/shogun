@@ -15,6 +15,7 @@
 #include <string.h>
 #include "lib/common.h"
 #include "lib/io.h"
+#include "lib/DynamicArray.h"
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 
@@ -34,6 +35,13 @@
 #define TRIE_ASSERT(x) 
 
 #define TRIE_TERMINAL_CHARACTER  7
+
+struct ConsensusEntry
+{
+	ULONG string;
+	SHORTREAL score;
+	INT bt;
+};
 
 struct Trie
 {
@@ -94,7 +102,9 @@ public:
 	void count( const DREAL w, const INT depth, const struct TreeParseInfo info, const INT p, INT* x, const INT k ) ;
 	INT compact_nodes(INT start_node, INT depth, DREAL * weights) ;
 
-	DREAL score_sequence(INT endpos, INT* sequence, DREAL* weights);
+	DREAL get_cumulative_score(INT pos, ULONG seq, INT deg, DREAL* weights);
+	void fill_backtracking_table_recursion(Trie* tree, INT depth, ULONG seq, DREAL value, CDynamicArray<ConsensusEntry>* table, DREAL* weights);
+	void fill_backtracking_table(INT pos, CDynamicArray<ConsensusEntry>* prev, CDynamicArray<ConsensusEntry>* cur, bool cumulative, DREAL* weights);
 
 	inline bool get_use_compact_terminal_nodes()
 	{
