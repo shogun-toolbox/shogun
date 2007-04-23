@@ -393,3 +393,125 @@ DREAL CCommWordStringKernel::compute_optimized(INT i)
 	}
 	return result;
 }
+
+
+CHAR* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec, INT* IDX, DREAL* alphas)
+{
+
+	ASSERT(lhs);
+	ASSERT(IDX);
+	ASSERT(alphas);
+
+	CStringFeatures<WORD>* str=((CStringFeatures<WORD>*) lhs);
+	INT num_words=(INT) str->get_num_symbols();
+	INT num_feat=str->get_max_vector_length();
+	LONG total_len=((LONG) num_feat) * num_words;
+	CAlphabet* alpha=((CStringFeatures<WORD>*) lhs)->get_alphabet();
+	ASSERT(alpha);
+	INT num_bits=alpha->get_num_bits();
+	INT order=str->get_order();
+	INT max_idx=-1;
+	DREAL max_score=0; 
+	result_len=num_feat+order-1;
+
+	//init
+	init_optimization(num_suppvec, IDX, alphas);
+
+	CHAR* result=new CHAR[result_len];
+	ASSERT(result);
+	INT* bt=new INT[total_len];
+	ASSERT(bt);
+	DREAL* score=new DREAL[total_len];
+	ASSERT(score);
+
+	for (LONG i=0; i<total_len; i++)
+	{
+		bt[i]=-1;
+		score[i]=0;
+	}
+
+	for (INT t=0; t<num_words; t++)
+		score[t]=dictionary_weights[t];
+
+	//dynamic program
+	for (INT i=1; i<num_feat; i++)
+	{
+		for (INT t1=0; t1<num_words; t1++)
+		{
+			max_idx=-1;
+			max_score=0; 
+
+			/* ignore weights the svm does not care about 
+			 * (has not seen in training). note that this assumes that zero 
+			 * weights are very unlikely to appear elsewise */
+
+			//if (dictionary_weights[t1]==0.0)
+				//continue;
+
+			/* iterate over words t ending on t1 and find the highest scoring
+			 * pair */
+			WORD suffix=(WORD) t1 >> num_bits;
+
+			for (INT sym=0; sym<str->get_original_num_symbols(); sym++)
+			{
+				WORD t=suffix | sym << (num_bits*(order-1));
+
+				//SG_PRINT("word:%x sym:%d, num_bits:%d, order:%d, suffix:%x t1:%x\n", t, sym, num_bits, order, suffix, t1);
+
+				//if (dictionary_weights[t]==0.0)
+				//	continue;
+
+				DREAL sc=score[num_words*(i-1) + t] + dictionary_weights[t1];
+				if (sc > max_score || max_idx==-1)
+				{
+					max_idx=t;
+					max_score=sc;
+				}
+			}
+//			if (max_idx == -1)
+//			{
+//				max_idx=0;
+//
+			ASSERT(max_idx!=-1);
+
+			//SG_PRINT("score(%d,%d):%f ", i, t1, max_score);
+			//SG_PRINT("bt(%d,%d):%d\n", i, t1, max_idx);
+			score[num_words*i + t1]=max_score;
+			bt[num_words*i + t1]=max_idx;
+		}
+	}
+
+	//backtracking
+	max_idx=0;
+	max_score=score[num_words*(num_feat-1) + 0];
+	for (INT t=1; t<num_words; t++)
+	{
+		DREAL sc=score[num_words*(num_feat-1) + t];
+		if (sc>max_score)
+		{
+			max_idx=t;
+			max_score=sc;
+		}
+	}
+
+	SG_PRINT("max_idx:%i, max_score:%f\n", max_idx, max_score);
+	
+	for (INT i=result_len-1; i>=num_feat; i--)
+	{
+		result[i]=alpha->remap_to_char( (BYTE) str->get_masked_symbols( (WORD) max_idx >> (num_bits*(result_len-1-i)), 1) );
+		/* SG_PRINT("value:%x mask:%x shift:%d result:%x,%c\n", max_idx, str->get_masked_symbols(0xffff, 1), (num_bits*(result_len-1-i)),
+				str->get_masked_symbols( (WORD) max_idx >> (num_bits*(result_len-1-i)), 1), result[i]);*/
+	}
+
+	for (INT i=num_feat-1; i>=0; i--)
+	{
+		//SG_PRINT("score(%d,%d)=%f\n", i, max_idx, score[num_words*i+max_idx]);
+		result[i]=alpha->remap_to_char( (BYTE) str->get_masked_symbols( (WORD) max_idx >> (num_bits*(order-1)), 1) );
+		max_idx=bt[num_words*i + max_idx];
+	}
+
+	SG_UNREF(alpha);
+	delete[] bt;
+	delete[] score;
+	return result;
+}

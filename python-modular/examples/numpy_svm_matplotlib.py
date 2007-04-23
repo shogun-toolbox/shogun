@@ -24,7 +24,8 @@ labels = array((-ones(num_dat,dtype=double), ones(num_dat,dtype=double)))
 feat = RealFeatures(concatenate(features,axis=1))
 lab = Labels(concatenate(labels))
 gk=GaussianKernel(feat,feat, width)
-svm = SVMLight(10.0, gk, lab)
+#svm = SVMLight(10.0, gk, lab)
+svm = LibSVM(10.0, gk, lab)
 svm.train()
 
 # compute output plot iso-lines

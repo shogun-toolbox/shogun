@@ -167,6 +167,7 @@ void Cache::swap_index(int i, int j)
 //
 // Kernel evaluation
 //
+// the static method k_function is for doing single kernel evaluation
 // the constructor of Kernel prepares to calculate the l*l kernel matrix
 // the member function get_Q is for getting one column from the Q Matrix
 //
@@ -175,7 +176,7 @@ public:
 	virtual Qfloat *get_Q(int column, int len) const = 0;
 	virtual Qfloat *get_QD() const = 0;
 	virtual void swap_index(int i, int j) const = 0;
-	virtual ~QMatrix() {};
+	virtual ~QMatrix() {}
 };
 
 class Kernel: public QMatrix {
@@ -203,7 +204,7 @@ private:
 
 	// svm_parameter
 	const int kernel_type;
-	const double degree;
+	const int degree;
 	const double gamma;
 	const double coef0;
 };
@@ -235,9 +236,9 @@ Kernel::~Kernel()
 //
 // Given:
 //
-//	Q, b, y, Cp, Cn, and an initial feasible point \alpha
+//	Q, p, y, Cp, Cn, and an initial feasible point \alpha
 //	l is the size of vectors and matrices
-//	eps is the stopping criterion
+//	eps is the stopping tolerance
 //
 // solution will be put in \alpha, objective value will be put in obj
 //
@@ -254,7 +255,7 @@ public:
 		double r;	// for Solver_NU
 	};
 
-	void Solve(int l, const QMatrix& Q, const double *b_, const schar *y_,
+	void Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 		   double *alpha_, double Cp, double Cn, double eps,
 		   SolutionInfo* si, int shrinking);
 protected:
@@ -268,7 +269,7 @@ protected:
 	const Qfloat *QD;
 	double eps;
 	double Cp,Cn;
-	double *b;
+	double *p;
 	int *active_set;
 	double *G_bar;		// gradient, if we treat free variables as 0
 	int l;
@@ -292,9 +293,10 @@ protected:
 	void swap_index(int i, int j);
 	void reconstruct_gradient();
 	virtual int select_working_set(int &i, int &j);
-	virtual int max_violating_pair(int &i, int &j);
 	virtual double calculate_rho();
 	virtual void do_shrinking();
+private:
+	bool be_shrunken(int i, double Gmax1, double Gmax2);	
 };
 
 void Solver::swap_index(int i, int j)
@@ -304,7 +306,7 @@ void Solver::swap_index(int i, int j)
 	swap(G[i],G[j]);
 	swap(alpha_status[i],alpha_status[j]);
 	swap(alpha[i],alpha[j]);
-	swap(b[i],b[j]);
+	swap(p[i],p[j]);
 	swap(active_set[i],active_set[j]);
 	swap(G_bar[i],G_bar[j]);
 }
@@ -317,7 +319,7 @@ void Solver::reconstruct_gradient()
 
 	int i;
 	for(i=active_size;i<l;i++)
-		G[i] = G_bar[i] + b[i];
+		G[i] = G_bar[i] + p[i];
 	
 	for(i=0;i<active_size;i++)
 		if(is_free(i))
@@ -329,14 +331,14 @@ void Solver::reconstruct_gradient()
 		}
 }
 
-void Solver::Solve(int p_l, const QMatrix& p_Q, const double *p_b, const schar *p_y,
+void Solver::Solve(int p_l, const QMatrix& p_Q, const double *p_p, const schar *p_y,
 		   double *p_alpha, double p_Cp, double p_Cn, double p_eps,
 		   SolutionInfo* p_si, int shrinking)
 {
 	this->l = p_l;
 	this->Q = &p_Q;
 	QD=Q->get_QD();
-	clone(b, p_b,l);
+	clone(p, p_p,l);
 	clone(y, p_y,l);
 	clone(alpha,p_alpha,l);
 	this->Cp = p_Cp;
@@ -366,7 +368,7 @@ void Solver::Solve(int p_l, const QMatrix& p_Q, const double *p_b, const schar *
 		int i;
 		for(i=0;i<l;i++)
 		{
-			G[i] = b[i];
+			G[i] = p_p[i];
 			G_bar[i] = 0;
 		}
 		for(i=0;i<l;i++)
@@ -564,7 +566,7 @@ void Solver::Solve(int p_l, const QMatrix& p_Q, const double *p_b, const schar *
 		double v = 0;
 		int i;
 		for(i=0;i<l;i++)
-			v += alpha[i] * (G[i] + b[i]);
+			v += alpha[i] * (G[i] + p[i]);
 
 		p_si->obj = v/2;
 	}
@@ -580,7 +582,7 @@ void Solver::Solve(int p_l, const QMatrix& p_Q, const double *p_b, const schar *
 
 	SG_SINFO("\noptimization finished, #iter = %d\n",iter);
 
-	delete[] b;
+	delete[] p;
 	delete[] y;
 	delete[] alpha;
 	delete[] alpha_status;
@@ -689,132 +691,101 @@ int Solver::select_working_set(int &out_i, int &out_j)
 	return 0;
 }
 
-// return 1 if already optimal, return 0 otherwise
-int Solver::max_violating_pair(int &out_i, int &out_j)
+bool Solver::be_shrunken(int i, double Gmax1, double Gmax2)
 {
-	// return i,j: maximal violating pair
-
-	double Gmax1 = -INF;		// max { -y_i * grad(f)_i | i in I_up(\alpha) }
-	int Gmax1_idx = -1;
-
-	double Gmax2 = -INF;		// max { y_i * grad(f)_i | i in I_low(\alpha) }
-	int Gmax2_idx = -1;
-
-	for(int i=0;i<active_size;i++)
+	if(is_upper_bound(i))
 	{
-		if(y[i]==+1)	// y = +1
-		{
-			if(!is_upper_bound(i))	// d = +1
-			{
-				if(-G[i] >= Gmax1)
-				{
-					Gmax1 = -G[i];
-					Gmax1_idx = i;
-				}
-			}
-			if(!is_lower_bound(i))	// d = -1
-			{
-				if(G[i] >= Gmax2)
-				{
-					Gmax2 = G[i];
-					Gmax2_idx = i;
-				}
-			}
-		}
-		else		// y = -1
-		{
-			if(!is_upper_bound(i))	// d = +1
-			{
-				if(-G[i] >= Gmax2)
-				{
-					Gmax2 = -G[i];
-					Gmax2_idx = i;
-				}
-			}
-			if(!is_lower_bound(i))	// d = -1
-			{
-				if(G[i] >= Gmax1)
-				{
-					Gmax1 = G[i];
-					Gmax1_idx = i;
-				}
-			}
-		}
+		if(y[i]==+1)
+			return(-G[i] > Gmax1);
+		else
+			return(-G[i] > Gmax2);
 	}
-
-	if(Gmax1+Gmax2 < eps)
- 		return 1;
-
-	out_i = Gmax1_idx;
-	out_j = Gmax2_idx;
-	return 0;
+	else if(is_lower_bound(i))
+	{
+		if(y[i]==+1)
+			return(G[i] > Gmax2);
+		else	
+			return(G[i] > Gmax1);
+	}
+	else
+		return(false);
 }
 
 void Solver::do_shrinking()
 {
-	int i,j,k;
-	if(max_violating_pair(i,j)!=0) return;
-	double Gm1 = -y[j]*G[j];
-	double Gm2 = y[i]*G[i];
+	int i;
+	double Gmax1 = -INF;		// max { -y_i * grad(f)_i | i in I_up(\alpha) }
+	double Gmax2 = -INF;		// max { y_i * grad(f)_i | i in I_low(\alpha) }
+
+	// find maximal violating pair first
+	for(i=0;i<active_size;i++)
+	{
+		if(y[i]==+1)	
+		{
+			if(!is_upper_bound(i))	
+			{
+				if(-G[i] >= Gmax1)
+					Gmax1 = -G[i];
+			}
+			if(!is_lower_bound(i))	
+			{
+				if(G[i] >= Gmax2)
+					Gmax2 = G[i];
+			}
+		}
+		else	
+		{
+			if(!is_upper_bound(i))	
+			{
+				if(-G[i] >= Gmax2)
+					Gmax2 = -G[i];
+			}
+			if(!is_lower_bound(i))	
+			{
+				if(G[i] >= Gmax1)
+					Gmax1 = G[i];
+			}
+		}
+	}
 
 	// shrink
-	
-	for(k=0;k<active_size;k++)
-	{
-		if(is_lower_bound(k))
-		{
-			if(y[k]==+1)
-			{
-				if(-G[k] >= Gm1) continue;
-			}
-			else	if(-G[k] >= Gm2) continue;
-		}
-		else if(is_upper_bound(k))
-		{
-			if(y[k]==+1)
-			{
-				if(G[k] >= Gm2) continue;
-			}
-			else	if(G[k] >= Gm1) continue;
-		}
-		else continue;
 
-		--active_size;
-		swap_index(k,active_size);
-		--k;	// look at the newcomer
-	}
+	for(i=0;i<active_size;i++)
+		if (be_shrunken(i, Gmax1, Gmax2))
+		{
+			active_size--;
+			while (active_size > i)
+			{
+				if (!be_shrunken(active_size, Gmax1, Gmax2))
+				{
+					swap_index(i,active_size);
+					break;
+				}
+				active_size--;
+			}
+		}
 
 	// unshrink, check all variables again before final iterations
 
-	if(unshrinked || -(Gm1 + Gm2) > eps*10) return;
+	if(unshrinked || Gmax1 + Gmax2 > eps*10) return;
 	
 	unshrinked = true;
 	reconstruct_gradient();
 
-	for(k=l-1;k>=active_size;k--)
-	{
-		if(is_lower_bound(k))
+	for(i=l-1;i>=active_size;i--)
+		if (!be_shrunken(i, Gmax1, Gmax2))
 		{
-			if(y[k]==+1)
+			while (active_size < i)
 			{
-				if(-G[k] < Gm1) continue;
+				if (be_shrunken(active_size, Gmax1, Gmax2))
+				{
+					swap_index(i,active_size);
+					break;
+				}
+				active_size++;
 			}
-			else	if(-G[k] < Gm2) continue;
+			active_size++;
 		}
-		else if(is_upper_bound(k))
-		{
-			if(y[k]==+1)
-			{
-				if(G[k] < Gm2) continue;
-			}
-			else	if(G[k] < Gm1) continue;
-		}
-		else continue;
-
-		swap_index(k,active_size);
-		active_size++;
-		++k;	// look at the newcomer
-	}
 }
 
 double Solver::calculate_rho()
@@ -826,16 +797,16 @@ double Solver::calculate_rho()
 	{
 		double yG = y[i]*G[i];
 
-		if(is_lower_bound(i))
+		if(is_upper_bound(i))
 		{
-			if(y[i] > 0)
+			if(y[i]==-1)
 				ub = min(ub,yG);
 			else
 				lb = max(lb,yG);
 		}
-		else if(is_upper_bound(i))
+		else if(is_lower_bound(i))
 		{
-			if(y[i] < 0)
+			if(y[i]==+1)
 				ub = min(ub,yG);
 			else
 				lb = max(lb,yG);
@@ -864,17 +835,18 @@ class Solver_NU : public Solver
 {
 public:
 	Solver_NU() {}
-	void Solve(int p_l, const QMatrix& p_Q, const double *p_b, const schar *p_y,
+	void Solve(int p_l, const QMatrix& p_Q, const double *p_p, const schar *p_y,
 		   double* p_alpha, double p_Cp, double p_Cn, double p_eps,
 		   SolutionInfo* p_si, int shrinking)
 	{
 		this->si = p_si;
-		Solver::Solve(p_l,p_Q,p_b,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
+		Solver::Solve(p_l,p_Q,p,p_y,p_alpha,p_Cp,p_Cn,p_eps,p_si,shrinking);
 	}
 private:
 	SolutionInfo *si;
 	int select_working_set(int &i, int &j);
 	double calculate_rho();
+	bool be_shrunken(int i, double Gmax1, double Gmax2, double Gmax3, double Gmax4);
 	void do_shrinking();
 };
 
@@ -991,6 +963,26 @@ int Solver_NU::select_working_set(int &out_i, int &out_j)
 	return 0;
 }
 
+bool Solver_NU::be_shrunken(int i, double Gmax1, double Gmax2, double Gmax3, double Gmax4)
+{
+	if(is_upper_bound(i))
+	{
+		if(y[i]==+1)
+			return(-G[i] > Gmax1);
+		else	
+			return(-G[i] > Gmax4);
+	}
+	else if(is_lower_bound(i))
+	{
+		if(y[i]==+1)
+			return(G[i] > Gmax2);
+		else	
+			return(G[i] > Gmax3);
+	}
+	else
+		return(false);
+}
+
 void Solver_NU::do_shrinking()
 {
 	double Gmax1 = -INF;	// max { -y_i * grad(f)_i | y_i = +1, i in I_up(\alpha) }
@@ -999,90 +991,65 @@ void Solver_NU::do_shrinking()
 	double Gmax4 = -INF;	// max { y_i * grad(f)_i | y_i = -1, i in I_low(\alpha) }
 
 	// find maximal violating pair first
-	int k;
-	for(k=0;k<active_size;k++)
+	int i;
+	for(i=0;i<active_size;i++)
 	{
-		if(!is_upper_bound(k))
+		if(!is_upper_bound(i))
 		{
-			if(y[k]==+1)
+			if(y[i]==+1)
 			{
-				if(-G[k] > Gmax1) Gmax1 = -G[k];
+				if(-G[i] > Gmax1) Gmax1 = -G[i];
 			}
-			else	if(-G[k] > Gmax3) Gmax3 = -G[k];
+			else	if(-G[i] > Gmax4) Gmax4 = -G[i];
 		}
-		if(!is_lower_bound(k))
+		if(!is_lower_bound(i))
 		{
-			if(y[k]==+1)
+			if(y[i]==+1)
 			{	
-				if(G[k] > Gmax2) Gmax2 = G[k];
+				if(G[i] > Gmax2) Gmax2 = G[i];
 			}
-			else	if(G[k] > Gmax4) Gmax4 = G[k];
+			else	if(G[i] > Gmax3) Gmax3 = G[i];
 		}
 	}
 
 	// shrinking
 
-	double Gm1 = -Gmax2;
-	double Gm2 = -Gmax1;
-	double Gm3 = -Gmax4;
-	double Gm4 = -Gmax3;
-
-	for(k=0;k<active_size;k++)
-	{
-		if(is_lower_bound(k))
+	for(i=0;i<active_size;i++)
+		if (be_shrunken(i, Gmax1, Gmax2, Gmax3, Gmax4))
 		{
-			if(y[k]==+1)
+			active_size--;
+			while (active_size > i)
 			{
-				if(-G[k] >= Gm1) continue;
+				if (!be_shrunken(active_size, Gmax1, Gmax2, Gmax3, Gmax4))
+				{
+					swap_index(i,active_size);
+					break;
+				}
+				active_size--;
 			}
-			else	if(-G[k] >= Gm3) continue;
 		}
-		else if(is_upper_bound(k))
-		{
-			if(y[k]==+1)
-			{
-				if(G[k] >= Gm2) continue;
-			}
-			else	if(G[k] >= Gm4) continue;
-		}
-		else continue;
-
-		--active_size;
-		swap_index(k,active_size);
-		--k;	// look at the newcomer
-	}
 
 	// unshrink, check all variables again before final iterations
 
-	if(unshrinked || max(-(Gm1+Gm2),-(Gm3+Gm4)) > eps*10) return;
+	if(unshrinked || max(Gmax1+Gmax2,Gmax3+Gmax4) > eps*10) return;
 	
 	unshrinked = true;
 	reconstruct_gradient();
 
-	for(k=l-1;k>=active_size;k--)
-	{
-		if(is_lower_bound(k))
+	for(i=l-1;i>=active_size;i--)
+		if (!be_shrunken(i, Gmax1, Gmax2, Gmax3, Gmax4))
 		{
-			if(y[k]==+1)
+			while (active_size < i)
 			{
-				if(-G[k] < Gm1) continue;
+				if (be_shrunken(active_size, Gmax1, Gmax2, Gmax3, Gmax4))
+				{
+					swap_index(i,active_size);
+					break;
+				}
+				active_size++;
 			}
-			else	if(-G[k] < Gm3) continue;
+			active_size++;
 		}
-		else if(is_upper_bound(k))
-		{
-			if(y[k]==+1)
-			{
-				if(G[k] < Gm2) continue;
-			}
-			else	if(G[k] < Gm4) continue;
-		}
-		else continue;
-
-		swap_index(k,active_size);
-		active_size++;
-		++k;	// look at the newcomer
-	}
 }
 
 double Solver_NU::calculate_rho()
@@ -1096,10 +1063,10 @@ double Solver_NU::calculate_rho()
 	{
 		if(y[i]==+1)
 		{
-			if(is_lower_bound(i))
-				ub1 = min(ub1,G[i]);
-			else if(is_upper_bound(i))
+			if(is_upper_bound(i))
 				lb1 = max(lb1,G[i]);
+			else if(is_lower_bound(i))
+				ub1 = min(ub1,G[i]);
 			else
 			{
 				++nr_free1;
@@ -1108,10 +1075,10 @@ double Solver_NU::calculate_rho()
 		}
 		else
 		{
-			if(is_lower_bound(i))
-				ub2 = min(ub2,G[i]);
-			else if(is_upper_bound(i))
+			if(is_upper_bound(i))
 				lb2 = max(lb2,G[i]);
+			else if(is_lower_bound(i))
+				ub2 = min(ub2,G[i]);
 			else
 			{
 				++nr_free2;
@@ -1145,7 +1112,7 @@ public:
 	:Kernel(prob.l, prob.x, param)
 	{
 		clone(y,y_,prob.l);
-		cache = new Cache(prob.l,(int)(param.cache_size*(1<<20)));
+		cache = new Cache(prob.l,(long int)(param.cache_size*(1l<<20)));
 		QD = new Qfloat[prob.l];
 		for(int i=0;i<prob.l;i++)
 			QD[i]= (Qfloat)kernel_function(i,i);
@@ -1194,7 +1161,7 @@ public:
 	ONE_CLASS_Q(const svm_problem& prob, const svm_parameter& param)
 	:Kernel(prob.l, prob.x, param)
 	{
-		cache = new Cache(prob.l,(int)(param.cache_size*(1<<20)));
+		cache = new Cache(prob.l,(long int)(param.cache_size*(1l<<20)));
 		QD = new Qfloat[prob.l];
 		for(int i=0;i<prob.l;i++)
 			QD[i]= (Qfloat)kernel_function(i,i);
@@ -1241,7 +1208,7 @@ public:
 	:Kernel(prob.l, prob.x, param)
 	{
 		l = prob.l;
-		cache = new Cache(l,(int)(param.cache_size*(1<<20)));
+		cache = new Cache(l,(long int)(param.cache_size*(1l<<20)));
 		QD = new Qfloat[2*l];
 		sign = new schar[2*l];
 		index = new int[2*l];
@@ -1556,12 +1523,7 @@ decision_function svm_train_one(
 		if(fabs(alpha[i]) > 0)
 		{
 			++nSV;
-			if(!prob->y)
-			{
-				if(fabs(alpha[i]) >= si.upper_bound_n)
-					++nBSV;
-			}
-			else if(prob->y[i] > 0)
+			if(prob->y[i] > 0)
 			{
 				if(fabs(alpha[i]) >= si.upper_bound_p)
 					++nBSV;
@@ -1871,7 +1833,7 @@ int svm_save_model(const char *model_file_name, const svm_model *model)
 	fprintf(fp,"kernel_type %s\n", kernel_type_table[param.kernel_type]);
 
 	if(param.kernel_type == POLY)
-		fprintf(fp,"degree %g\n", param.degree);
+		fprintf(fp,"degree %d\n", param.degree);
 
 	if(param.kernel_type == POLY || param.kernel_type == RBF || param.kernel_type == SIGMOID)
 		fprintf(fp,"gamma %g\n", param.gamma);
@@ -1992,7 +1954,7 @@ svm_model *svm_load_model(const char *model_file_name)
 			}
 		}
 		else if(strcmp(cmd,"degree")==0)
-			fscanf(fp,"%lf",&param.degree);
+			fscanf(fp,"%d",&param.degree);
 		else if(strcmp(cmd,"gamma")==0)
 			fscanf(fp,"%lf",&param.gamma);
 		else if(strcmp(cmd,"coef0")==0)
@@ -2135,14 +2097,18 @@ const char *svm_check_parameter(const svm_problem *prob, const svm_parameter *pa
 	   svm_type != NU_SVR)
 		return "unknown svm type";
 	
-	// kernel_type
+	// kernel_type, degree
 	
 	int kernel_type = param->kernel_type;
 	if(kernel_type != LINEAR &&
 	   kernel_type != POLY &&
 	   kernel_type != RBF &&
-	   kernel_type != SIGMOID)
+	   kernel_type != SIGMOID &&
+	   kernel_type != PRECOMPUTED)
 		return "unknown kernel type";
+
+	if(param->degree < 0)
+		return "degree of polynomial kernel < 0";
 
 	// cache_size,eps,C,nu,p,shrinking
 
@@ -2161,8 +2127,8 @@ const char *svm_check_parameter(const svm_problem *prob, const svm_parameter *pa
 	if(svm_type == NU_SVC ||
 	   svm_type == ONE_CLASS ||
 	   svm_type == NU_SVR)
-		if(param->nu < 0 || param->nu > 1)
-			return "nu < 0 or nu > 1";
+		if(param->nu <= 0 || param->nu > 1)
+			return "nu <= 0 or nu > 1";
 
 	if(svm_type == EPSILON_SVR)
 		if(param->p < 0)

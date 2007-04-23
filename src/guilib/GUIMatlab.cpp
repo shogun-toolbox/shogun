@@ -2726,6 +2726,44 @@ bool CGUIMatlab::get_WD_consensus(mxArray* retvals[])
 	return false;
 }
 
+bool CGUIMatlab::get_SPEC_consensus(mxArray* retvals[])
+{
+	CKernel *k= gui->guikernel.get_kernel() ;
+
+	if (k && k->get_kernel_type() == K_COMMWORDSTRING)
+	{
+		CSVM* svm=gui->guisvm.get_svm();
+		ASSERT(svm);
+		INT num_suppvec = svm->get_num_support_vectors();
+		INT* sv_idx    = new INT[num_suppvec];
+		DREAL* sv_weight = new DREAL[num_suppvec];
+		INT num_feat=-1;
+
+		for (INT i=0; i<num_suppvec; i++)
+		{
+			sv_idx[i]    = svm->get_support_vector(i);
+			sv_weight[i] = svm->get_alpha(i);
+		}
+
+		CHAR* consensus = ((CCommWordStringKernel*) k)->compute_consensus(
+				num_feat, num_suppvec, sv_idx, sv_weight);
+		mxArray* mx_result ;
+		mx_result=mxCreateCharArray(1, &num_feat);
+		mxChar* result= (mxChar*) mxGetPr(mx_result);
+
+		for (INT i=0; i<num_feat; i++)
+			result[i]=(mxChar) consensus[i];
+
+		delete[] consensus;
+
+		retvals[0]=mx_result;
+		return true;
+	}
+	else
+		SG_ERROR( "one cannot compute a scoring using this kernel function\n");
+	return false;
+}
+
 bool CGUIMatlab::set_subkernel_weights(const mxArray* mx_arg)
 {
 	CKernel *kernel_ = gui->guikernel.get_kernel() ;

@@ -54,6 +54,8 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 	  dweights = dictionary_weights;
   }
 
+  CHAR* compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas);
+
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors

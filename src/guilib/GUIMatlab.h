@@ -104,6 +104,7 @@ public:
 	bool get_WD_position_weights(mxArray* retvals[]);
 	bool get_WD_scoring(mxArray* retvals[], INT max_order);
 	bool get_WD_consensus(mxArray* retvals[]);
+	bool get_SPEC_consensus(mxArray* retvals[]);
 	bool set_WD_position_weights(const mxArray *mx_arg);
 
 	bool get_version(mxArray* retvals[]);

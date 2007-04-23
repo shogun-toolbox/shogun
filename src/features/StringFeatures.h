@@ -497,7 +497,7 @@ template <class ST> class CStringFeatures: public CFeatures
 	bool obtain_from_char_features(CStringFeatures<CT>* sf, INT start, INT p_order, INT gap)
 	{
 		ASSERT(sf);
-		this->order=order;
+		this->order=p_order;
 		cleanup();
 		delete[] symbol_mask_table;
 		symbol_mask_table=new ST[256];
