@@ -151,10 +151,19 @@ class CSVM : public CKernelMachine
 
 			svm_model.b=0;
 			svm_model.num_svs=num;
-			svm_model.alpha= new double[num];
-			svm_model.svs= new int[num];
 
-			return (svm_model.alpha!=NULL && svm_model.svs!=NULL);
+			if (num>0)
+			{
+				svm_model.alpha= new double[num];
+				svm_model.svs= new int[num];
+				return (svm_model.alpha!=NULL && svm_model.svs!=NULL);
+			}
+			else
+			{
+				svm_model.alpha= NULL;
+				svm_model.svs=NULL;
+				return true;
+			}
 		}
 
 		inline void set_shrinking_enabled(bool enable)

@@ -1,11 +1,36 @@
 /*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * Copyright (c) 2000-2007 Chih-Chung Chang and Chih-Jen Lin
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * 
+ * 3. Neither name of copyright holders nor the names of its contributors
+ * may be used to endorse or promote products derived from this software
+ * without specific prior written permission.
+ * 
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * Written (W) 1999-2007 Soeren Sonnenburg
- * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Shogun specific adjustments (w) 2006-2007 Soeren Sonnenburg
  */
 
 #include "classifier/svm/SVM_libsvm.h"
@@ -47,7 +72,7 @@ template <class S, class T> inline void clone(T*& dst, S* src, int n)
 class Cache
 {
 public:
-	Cache(int l,int size);
+	Cache(int l,long int size);
 	~Cache();
 
 	// request data [0,len)
@@ -57,7 +82,7 @@ public:
 	void swap_index(int i, int j);	// future_option
 private:
 	int l;
-	int size;
+	long int size;
 	struct head_t
 	{
 		head_t *prev, *next;	// a cicular list
@@ -71,12 +96,12 @@ private:
 	void lru_insert(head_t *h);
 };
 
-Cache::Cache(int l_,int size_):l(l_),size(size_)
+Cache::Cache(int l_,long int size_):l(l_),size(size_)
 {
 	head = (head_t *)calloc(l,sizeof(head_t));	// initialized to 0
 	size /= sizeof(Qfloat);
 	size -= l * sizeof(head_t) / sizeof(Qfloat);
-	size = max(size, 2*l);	// cache must be large enough for two columns
+	size = max(size, (long int) 2*l);	// cache must be large enough for two columns
 	lru_head.next = lru_head.prev = &lru_head;
 }
 
@@ -1819,251 +1844,8 @@ const char *svm_type_table[] =
 
 const char *kernel_type_table[]=
 {
-	"linear","polynomial","rbf","sigmoid",NULL
+	"linear","polynomial","rbf","sigmoid","precomputed",NULL
 };
-
-int svm_save_model(const char *model_file_name, const svm_model *model)
-{
-	FILE *fp = fopen(model_file_name,"w");
-	if(fp==NULL) return -1;
-
-	const svm_parameter& param = model->param;
-
-	fprintf(fp,"svm_type %s\n", svm_type_table[param.svm_type]);
-	fprintf(fp,"kernel_type %s\n", kernel_type_table[param.kernel_type]);
-
-	if(param.kernel_type == POLY)
-		fprintf(fp,"degree %d\n", param.degree);
-
-	if(param.kernel_type == POLY || param.kernel_type == RBF || param.kernel_type == SIGMOID)
-		fprintf(fp,"gamma %g\n", param.gamma);
-
-	if(param.kernel_type == POLY || param.kernel_type == SIGMOID)
-		fprintf(fp,"coef0 %g\n", param.coef0);
-
-	int nr_class = model->nr_class;
-	int l = model->l;
-	fprintf(fp, "nr_class %d\n", nr_class);
-	fprintf(fp, "total_sv %d\n",l);
-	
-	{
-		fprintf(fp, "rho");
-		for(int i=0;i<nr_class*(nr_class-1)/2;i++)
-			fprintf(fp," %g",model->rho[i]);
-		fprintf(fp, "\n");
-	}
-	
-	if(model->label)
-	{
-		fprintf(fp, "label");
-		for(int i=0;i<nr_class;i++)
-			fprintf(fp," %d",model->label[i]);
-		fprintf(fp, "\n");
-	}
-
-	if(model->nSV)
-	{
-		fprintf(fp, "nr_sv");
-		for(int i=0;i<nr_class;i++)
-			fprintf(fp," %d",model->nSV[i]);
-		fprintf(fp, "\n");
-	}
-
-	fprintf(fp, "SV\n");
-	const double * const *sv_coef = model->sv_coef;
-	const svm_node * const *SV = model->SV;
-
-	for(int i=0;i<l;i++)
-	{
-		for(int j=0;j<nr_class-1;j++)
-			fprintf(fp, "%.16g ",sv_coef[j][i]);
-
-		const svm_node *p = SV[i];
-		while(p->index != -1)
-		{
-			fprintf(fp,"%d",p->index);
-			p++;
-		}
-		fprintf(fp, "\n");
-	}
-
-	fclose(fp);
-	return 0;
-}
-
-svm_model *svm_load_model(const char *model_file_name)
-{
-	FILE *fp = fopen(model_file_name,"rb");
-	if(fp==NULL) return NULL;
-	
-	// read parameters
-
-	svm_model *model = Malloc(svm_model,1);
-	svm_parameter& param = model->param;
-	model->rho = NULL;
-	model->label = NULL;
-	model->nSV = NULL;
-
-	char cmd[81];
-	while(1)
-	{
-		fscanf(fp,"%80s",cmd);
-
-		if(strcmp(cmd,"svm_type")==0)
-		{
-			fscanf(fp,"%80s",cmd);
-			int i;
-			for(i=0;svm_type_table[i];i++)
-			{
-				if(strcmp(svm_type_table[i],cmd)==0)
-				{
-					param.svm_type=i;
-					break;
-				}
-			}
-			if(svm_type_table[i] == NULL)
-			{
-				fprintf(stderr,"unknown svm type.\n");
-				free(model->rho);
-				free(model->label);
-				free(model->nSV);
-				free(model);
-				return NULL;
-			}
-		}
-		else if(strcmp(cmd,"kernel_type")==0)
-		{		
-			fscanf(fp,"%80s",cmd);
-			int i;
-			for(i=0;kernel_type_table[i];i++)
-			{
-				if(strcmp(kernel_type_table[i],cmd)==0)
-				{
-					param.kernel_type=i;
-					break;
-				}
-			}
-			if(kernel_type_table[i] == NULL)
-			{
-				fprintf(stderr,"unknown kernel function.\n");
-				free(model->rho);
-				free(model->label);
-				free(model->nSV);
-				free(model);
-				return NULL;
-			}
-		}
-		else if(strcmp(cmd,"degree")==0)
-			fscanf(fp,"%d",&param.degree);
-		else if(strcmp(cmd,"gamma")==0)
-			fscanf(fp,"%lf",&param.gamma);
-		else if(strcmp(cmd,"coef0")==0)
-			fscanf(fp,"%lf",&param.coef0);
-		else if(strcmp(cmd,"nr_class")==0)
-			fscanf(fp,"%d",&model->nr_class);
-		else if(strcmp(cmd,"total_sv")==0)
-			fscanf(fp,"%d",&model->l);
-		else if(strcmp(cmd,"rho")==0)
-		{
-			int n = model->nr_class * (model->nr_class-1)/2;
-			model->rho = Malloc(double,n);
-			for(int i=0;i<n;i++)
-				fscanf(fp,"%lf",&model->rho[i]);
-		}
-		else if(strcmp(cmd,"label")==0)
-		{
-			int n = model->nr_class;
-			model->label = Malloc(int,n);
-			for(int i=0;i<n;i++)
-				fscanf(fp,"%d",&model->label[i]);
-		}
-		else if(strcmp(cmd,"nr_sv")==0)
-		{
-			int n = model->nr_class;
-			model->nSV = Malloc(int,n);
-			for(int i=0;i<n;i++)
-				fscanf(fp,"%d",&model->nSV[i]);
-		}
-		else if(strcmp(cmd,"SV")==0)
-		{
-			while(1)
-			{
-				int c = getc(fp);
-				if(c==EOF || c=='\n') break;	
-			}
-			break;
-		}
-		else
-		{
-			fprintf(stderr,"unknown text in model file\n");
-			free(model->rho);
-			free(model->label);
-			free(model->nSV);
-			free(model);
-			return NULL;
-		}
-	}
-
-	// read sv_coef and SV
-
-	int elements = 0;
-	long pos = ftell(fp);
-
-	while(1)
-	{
-		int c = fgetc(fp);
-		switch(c)
-		{
-			case '\n':
-				// count the '-1' element
-			case ':':
-				++elements;
-				break;
-			case EOF:
-				goto out;
-			default:
-				;
-		}
-	}
-out:
-	fseek(fp,pos,SEEK_SET);
-
-	int m = model->nr_class - 1;
-	int l = model->l;
-	model->sv_coef = Malloc(double *,m);
-	int i;
-	for(i=0;i<m;i++)
-		model->sv_coef[i] = Malloc(double,l);
-	model->SV = Malloc(svm_node*,l);
-	svm_node *x_space=NULL;
-	if(l>0) x_space = Malloc(svm_node,elements);
-
-	int j=0;
-	for(i=0;i<l;i++)
-	{
-		model->SV[i] = &x_space[j];
-		for(int k=0;k<m;k++)
-			fscanf(fp,"%lf",&model->sv_coef[k][i]);
-		while(1)
-		{
-			int c;
-			do {
-				c = getc(fp);
-				if(c=='\n') goto out2;
-			} while(isspace(c));
-			ungetc(c,fp);
-			fscanf(fp,"%d:",&(x_space[j].index));
-			++j;
-		}	
-out2:
-		x_space[j++].index = -1;
-	}
-
-	fclose(fp);
-
-	model->free_sv = 1;	// XXX
-	return model;
-}
 
 void svm_destroy_model(svm_model* model)
 {

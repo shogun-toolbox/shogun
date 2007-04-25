@@ -12,17 +12,17 @@
 #include "classifier/svm/LibSVM_oneclass.h"
 #include "lib/io.h"
 
-CLibSVMOneclass::CLibSVMOneclass() : CSVM()
+CLibSVMOneClass::CLibSVMOneClass() : CSVM()
 {
 	model=NULL;
 }
 
-CLibSVMOneclass::~CLibSVMOneclass()
+CLibSVMOneClass::~CLibSVMOneClass()
 {
 	free(model);
 }
 
-bool CLibSVMOneclass::train()
+bool CLibSVMOneClass::train()
 {
 	free(model);
 

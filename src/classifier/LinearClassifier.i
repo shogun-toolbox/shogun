@@ -8,5 +8,7 @@
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst_w, INT* dst_dims)};
 #endif
 
-%include "classifier/Classifier.i" 
 %include "classifier/LinearClassifier.h" 
+%include "classifier/Perceptron.i"
+%include "classifier/LDA.i"
+%include "classifier/LPM.i"

@@ -4,26 +4,27 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
- * Written (W) 2006 Soeren Sonnenburg
+ * Written (W) 1999-2007 Soeren Sonnenburg
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _LIBSVM_ONECLASS_H___
-#define _LIBSVM_ONECLASS_H___
+#ifndef _LIBSVM_MULTICLASS_H___
+#define _LIBSVM_MULTICLASS_H___
+
 #include "lib/common.h"
-#include "classifier/svm/SVM.h"
+#include "classifier/svm/MultiClassSVM.h"
 #include "classifier/svm/SVM_libsvm.h"
 
 #include <stdio.h>
 
-class CLibSVMOneClass : public CSVM
+class CLibSVMMultiClass : public CMultiClassSVM
 {
 	public:
-		CLibSVMOneClass();
-		virtual ~CLibSVMOneClass();
+		CLibSVMMultiClass();
+		CLibSVMMultiClass(DREAL C, CKernel* k, CLabels* lab);
+		virtual ~CLibSVMMultiClass();
 		virtual bool train();
-		inline EClassifierType get_classifier_type() { return CT_LIBSVMONECLASS; }
+		inline EClassifierType get_classifier_type() { return CT_LIBSVMMULTICLASS; }
 
 	protected:
 		svm_problem problem;
@@ -32,3 +33,4 @@ class CLibSVMOneClass : public CSVM
 		struct svm_model* model;
 };
 #endif
+

@@ -1,5 +1,4 @@
 %{
- #include "kernel/KernelMachine.h" 
  #include "classifier/KernelPerceptron.h" 
 %}
 

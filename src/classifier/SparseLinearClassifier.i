@@ -9,3 +9,4 @@
 #endif
 
 %include "classifier/SparseLinearClassifier.h" 
+%include "classifier/svm/SVMLin.i"

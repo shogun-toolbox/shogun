@@ -17,11 +17,17 @@
 
 class CSVM;
 
+enum EMultiClassSVM
+{
+	ONE_VS_REST,
+	ONE_VS_ONE
+};
+
 class CMultiClassSVM : public CSVM
 {
 	public:
-		CMultiClassSVM();
-		CMultiClassSVM(DREAL C, CKernel* k, CLabels* lab);
+		CMultiClassSVM(EMultiClassSVM type);
+		CMultiClassSVM(EMultiClassSVM type, DREAL C, CKernel* k, CLabels* lab);
 
 		virtual ~CMultiClassSVM();
 
@@ -32,8 +38,17 @@ class CMultiClassSVM : public CSVM
 		virtual CLabels* classify(CLabels* labels=NULL);
 		virtual DREAL classify_example(INT num);
 
+		CLabels* classify_one_vs_rest(CLabels* labels=NULL);
+		DREAL classify_example_one_vs_rest(INT num);
+
+		CLabels* classify_one_vs_one(CLabels* labels=NULL);
+		DREAL classify_example_one_vs_one(INT num);
+
 	protected:
-		INT num_svms;
-		CSVM** svms;
+		EMultiClassSVM multiclass_type;
+
+		INT m_num_classes;
+		INT m_num_svms;
+		CSVM** m_svms;
 };
 #endif

@@ -116,4 +116,3 @@ bool CLibSVR::train()
 	else
 		return false;
 }
-

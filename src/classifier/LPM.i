@@ -4,5 +4,4 @@
 
 %rename(LPM) CLPM;
 
-%include "classifier/LinearClassifier.i" 
 %include "classifier/LPM.h" 

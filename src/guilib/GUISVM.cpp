@@ -26,6 +26,7 @@
 #include "classifier/svm/LibSVM.h"
 #include "classifier/svm/GPBTSVM.h"
 #include "classifier/svm/LibSVM_oneclass.h"
+#include "classifier/svm/LibSVM_multiclass.h"
 
 #include "regression/svr/LibSVR.h"
 
@@ -66,17 +67,23 @@ bool CGUISVM::new_svm(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
-	if (strcmp(param,"LIBSVM")==0)
+	if (strcmp(param,"LIBSVM_ONECLASS")==0)
+	{
+		delete svm;
+		svm = new CLibSVMOneClass();
+		SG_INFO( "created SVMlibsvm object for oneclass\n");
+	}
+	else if (strcmp(param,"LIBSVM_MULTICLASS")==0)
+	{
+		delete svm;
+		svm = new CLibSVMMultiClass();
+		SG_INFO( "created SVMlibsvm object for multiclass\n");
+	}
+	else if (strcmp(param,"LIBSVM")==0)
 	{
 		delete svm;
 		svm= new CLibSVM();
 		SG_INFO( "created SVMlibsvm object\n") ;
-	}
-	else if (strcmp(param,"LIBSVM_ONECLASS")==0)
-	{
-		delete svm;
-		svm = new CLibSVMOneclass();
-		SG_INFO( "created SVMlibsvm object for oneclass\n");
 	}
 #ifdef USE_SVMLIGHT
 	else if (strcmp(param,"LIGHT")==0)

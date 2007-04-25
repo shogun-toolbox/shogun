@@ -13,15 +13,12 @@
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* svs, INT d)};
 #endif //HAVE_PYTHON
 
-%include "kernel/KernelMachine.i"
 %include "classifier/svm/SVM.h"
 
 #ifdef USE_SVMLIGHT
 %include "classifier/svm/SVM_light.i"
 #endif //USE_SVMLIGHT
 
-%include "classifier/svm/LibSVM.i"
-%include "classifier/svm/GNPPSVM.i"
 
 #ifdef HAVE_PYTHON
 %pythoncode %{

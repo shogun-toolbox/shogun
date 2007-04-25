@@ -9,7 +9,8 @@ sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('send_command', 'set_kernel GAUSSIAN REAL 100 2');
 sg('send_command', 'init_kernel TRAIN');
-sg('send_command', 'new_svm GMNP');
+sg('send_command', 'new_svm LIBSVM_MULTICLASS');
+%sg('send_command', 'new_svm GMNP');
 sg('send_command','svm_epsilon 1e-5')
 sg('send_command', 'c 10');
 sg('send_command', 'svm_train');
