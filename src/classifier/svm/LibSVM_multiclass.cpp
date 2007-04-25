@@ -98,12 +98,11 @@ bool CLibSVMMultiClass::train()
 			for (INT j=i+1; j<num_classes; j++)
 			{
 				DREAL sgn=1;
-				//if (i%2 && j%2)
-				//	sgn=-1;
+				if (model->label[i]>model->label[j])
+					sgn=-1;
 
 				int num_sv=model->nSV[i]+model->nSV[j];
 				DREAL bias=-model->rho[s];
-				SG_DEBUG("svm[%d] has %d sv (total: %d), b=%f\n", s, num_sv, model->l, bias);
 
 				ASSERT(num_sv>0);
 				ASSERT(model->sv_coef[i] && model->sv_coef[j-1]);
@@ -127,7 +126,34 @@ bool CLibSVMMultiClass::train()
 					sv_idx++;
 				}
 
-				set_svm(s, svm);
+				INT idx=0;
+
+				if (sgn>0)
+				{
+					for (INT k=0; k<model->label[i]; k++)
+						idx+=num_classes-k-1;
+
+					for (INT l=model->label[i]+1; l<model->label[j]; l++)
+						idx++;
+				}
+				else
+				{
+					for (INT k=0; k<model->label[j]; k++)
+						idx+=num_classes-k-1;
+
+					for (INT l=model->label[j]+1; l<model->label[i]; l++)
+						idx++;
+				}
+
+
+//				if (sgn>0)
+//					idx=((num_classes-1)*model->label[i]+model->label[j])/2;
+//				else
+//					idx=((num_classes-1)*model->label[j]+model->label[i])/2;
+//
+				SG_DEBUG("svm[%d] has %d sv (total: %d), b=%f label:(%d,%d) -> svm[%d]\n", s, num_sv, model->l, bias, model->label[i], model->label[j], idx);
+
+				set_svm(idx, svm);
 				s++;
 			}
 		}
