@@ -91,30 +91,14 @@ bool CLibSVM::train()
 		create_new_model(num_sv);
 		CSVM::set_objective(model->objective);
 
-		//workaround for libsvm bug (?)
-		//if the first example has a positive label the whole decision function
-		//is inverted, i.e. f(x) becomes -f(x)
+		DREAL sgn=model->label[0];
 
-		if (problem.y[0]>=0)
+		set_bias(-sgn*model->rho[0]);
+
+		for (int i=0; i<num_sv; i++)
 		{
-			SG_WARNING( "inverting libsvm's decision function as first label is >= 0\n");
-			set_bias(-model->rho[0]);
-
-			for (int i=0; i<num_sv; i++)
-			{
-				set_support_vector(i, (model->SV[i])->index);
-				set_alpha(i, model->sv_coef[0][i]);
-			}
-		}
-		else
-		{
-			set_bias(model->rho[0]);
-
-			for (int i=0; i<num_sv; i++)
-			{
-				set_support_vector(i, (model->SV[i])->index);
-				set_alpha(i, -model->sv_coef[0][i]);
-			}
+			set_support_vector(i, (model->SV[i])->index);
+			set_alpha(i, sgn*model->sv_coef[0][i]);
 		}
 
 		delete[] problem.x;
