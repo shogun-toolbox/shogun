@@ -2,8 +2,8 @@ clear sg
 rand('seed',17);
 %sequence lengths, number of sequences
 len=100;
-num_train=5000;
-num_test=5000;
+num_train=15000;
+num_test=15000;
 num_a=3;
 aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
 

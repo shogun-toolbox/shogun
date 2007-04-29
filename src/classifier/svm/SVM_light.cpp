@@ -2851,7 +2851,7 @@ void* CSVMLight::reactivate_inactive_examples_vanilla_helper(void* p)
 	{
 		INT i=changed2dnum[ii];
 		INT j=0;
-		ASSERT(i>=0); //this gets triggered w multiple threads
+		ASSERT(i>=0);
 
 		k->get_kernel_row(i,inactive2dnum,aicache);
 		for(INT jj=0;(j=inactive2dnum[jj])>=0;jj++)
@@ -3022,7 +3022,7 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 	  changed2dnum=new INT[totdoc+11];
 	  inactive=new INT[totdoc];
 	  inactive2dnum=new INT[totdoc+11];
-	  for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) // Conditional jump or move depends on uninitialised value(s)
+	  for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--)
 	  {
 		  if(verbosity>=2) {
 			  SG_INFO( "%ld..",t);
@@ -3070,43 +3070,41 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 				  memset(tmp_lin, 0, sizeof(DREAL)*((size_t) totdoc)*num_threads);
 				  memset(tmp_aicache, 0, sizeof(DREAL)*((size_t) totdoc)*num_threads);
 
-				  for (t=0; t<num_threads-1; t++)
+				  INT thr;
+				  for (thr=0; thr<num_threads-1; thr++)
 				  {
-					  params[t].kernel=get_kernel();
-					  params[t].lin=&tmp_lin[t*totdoc];
-					  params[t].aicache=&tmp_aicache[t*totdoc];
-					  params[t].a=a;
-					  params[t].a_old=a_old;
-					  params[t].changed2dnum=changed2dnum;
-					  params[t].inactive2dnum=inactive2dnum;
-					  params[t].label=label;
-					  params[t].start = t*step;
-					  params[t].end = (t+1)*step;
-					  pthread_create(&threads[t], NULL, CSVMLight::reactivate_inactive_examples_vanilla_helper, (void*)&params[t]);
+					  params[thr].kernel=get_kernel();
+					  params[thr].lin=&tmp_lin[thr*totdoc];
+					  params[thr].aicache=&tmp_aicache[thr*totdoc];
+					  params[thr].a=a;
+					  params[thr].a_old=a_old;
+					  params[thr].changed2dnum=changed2dnum;
+					  params[thr].inactive2dnum=inactive2dnum;
+					  params[thr].label=label;
+					  params[thr].start = thr*step;
+					  params[thr].end = (thr+1)*step;
+					  pthread_create(&threads[thr], NULL, CSVMLight::reactivate_inactive_examples_vanilla_helper, (void*)&params[thr]);
 				  }
 
-				  params[t].kernel=get_kernel();
-				  params[t].lin=&tmp_lin[t*totdoc];
-				  params[t].aicache=&tmp_aicache[t*totdoc];
-				  params[t].a=a;
-				  params[t].a_old=a_old;
-				  params[t].changed2dnum=changed2dnum;
-				  params[t].inactive2dnum=inactive2dnum;
-				  params[t].label=label;
-				  params[t].start = t*step;
-				  params[t].end = num_changed;
-				  reactivate_inactive_examples_vanilla_helper((void*) &params[t]);
+				  params[thr].kernel=get_kernel();
+				  params[thr].lin=&tmp_lin[thr*totdoc];
+				  params[thr].aicache=&tmp_aicache[thr*totdoc];
+				  params[thr].a=a;
+				  params[thr].a_old=a_old;
+				  params[thr].changed2dnum=changed2dnum;
+				  params[thr].inactive2dnum=inactive2dnum;
+				  params[thr].label=label;
+				  params[thr].start = thr*step;
+				  params[thr].end = num_changed;
+				  reactivate_inactive_examples_vanilla_helper((void*) &params[thr]);
 
-				  for(jj=0;(j=inactive2dnum[jj])>=0;jj++)
-					  lin[j]+=tmp_lin[totdoc*t+j];
-
-				  for (t=0; t<num_threads-1; t++)
+				  for (thr=0; thr<num_threads-1; thr++)
 				  {
-					  pthread_join(threads[t], NULL);
+					  pthread_join(threads[thr], NULL);
 
 					  //add up results
 					  for(jj=0;(j=inactive2dnum[jj])>=0;jj++)
-						  lin[j]+=tmp_lin[totdoc*t+j];
+						  lin[j]+=tmp_lin[totdoc*thr+j];
 				  }
 
 				  delete[] tmp_lin;
