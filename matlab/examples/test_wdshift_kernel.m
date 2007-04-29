@@ -3,9 +3,9 @@ order=20;
 order_com=5;
 mismatch=0;
 len=200;
-shift=100;
-num=100;
-num_test=5000;
+shift=10;
+num=1000;
+num_test=4000;
 cache=10;
 
 acgt='ACGT';

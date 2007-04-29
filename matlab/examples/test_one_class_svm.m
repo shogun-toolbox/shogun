@@ -30,6 +30,6 @@ sg('send_command', 'init_kernel TEST');
 out=sg('svm_classify');
 err=mean(sign(thresh-out)==testlab)
 
-	mean(out(testlab>0))
-	mean(train_out)
+mean(out(testlab>0))
+mean(train_out)
 

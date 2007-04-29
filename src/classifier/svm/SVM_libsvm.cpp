@@ -1540,28 +1540,29 @@ decision_function svm_train_one(
 	SG_SINFO("obj = %.16f, rho = %.16f\n",si.obj,si.rho);
 
 	// output SVs
-
-	int nSV = 0;
-	int nBSV = 0;
-	for(int i=0;i<prob->l;i++)
+	if (param->svm_type != ONE_CLASS)
 	{
-		if(fabs(alpha[i]) > 0)
+		int nSV = 0;
+		int nBSV = 0;
+		for(int i=0;i<prob->l;i++)
 		{
-			++nSV;
-			if(prob->y[i] > 0)
+			if(fabs(alpha[i]) > 0)
 			{
-				if(fabs(alpha[i]) >= si.upper_bound_p)
-					++nBSV;
-			}
-			else
-			{
-				if(fabs(alpha[i]) >= si.upper_bound_n)
-					++nBSV;
+				++nSV;
+				if(prob->y[i] > 0)
+				{
+					if(fabs(alpha[i]) >= si.upper_bound_p)
+						++nBSV;
+				}
+				else
+				{
+					if(fabs(alpha[i]) >= si.upper_bound_n)
+						++nBSV;
+				}
 			}
 		}
+		SG_SINFO("nSV = %d, nBSV = %d\n",nSV,nBSV);
 	}
-
-	SG_SINFO("nSV = %d, nBSV = %d\n",nSV,nBSV);
 
 	decision_function f;
 	f.alpha = alpha;
@@ -1643,7 +1644,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 	   param->svm_type == EPSILON_SVR ||
 	   param->svm_type == NU_SVR)
 	{
-		SG_SINFO("training one class svm\n");
+		SG_SINFO("training one class svm or doing epsilon sv regression\n");
 
 		// regression or one-class-svm
 		model->nr_class = 2;

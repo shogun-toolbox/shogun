@@ -4,7 +4,7 @@ function y = test_wdchar_kernel(filename)
 
   sg('set_features', 'TRAIN', traindat, 'DNA');
 
-  sg('send_command',sprintf('set_kernel WEIGHTEDDEGREE CHAR %i',degree));
+  sg('send_command',sprintf('set_kernel WEIGHTEDDEGREE STRING %i',degree));
   sg('send_command', 'init_kernel TRAIN');
   trainkm = sg('get_kernel_matrix');
 

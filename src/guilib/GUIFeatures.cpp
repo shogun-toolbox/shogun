@@ -365,37 +365,44 @@ CSparseFeatures<DREAL>* CGUIFeatures::convert_simple_real_to_sparse_real(CRealFe
 
 CStringFeatures<CHAR>* CGUIFeatures::convert_simple_char_to_string_char(CCharFeatures* src, CHAR* param)
 {
-	INT num_vec=src->get_num_vectors();
-	T_STRING<CHAR>* strings=new T_STRING<CHAR>[num_vec];
-	INT max_len=-1;
-
-	for (INT i=0; i<num_vec; i++)
+	if ( (src) && ( (src->get_feature_class()) == C_SIMPLE) )
 	{
-		bool to_free=false;
-		INT len=0;
-		CHAR* str= src->get_feature_vector(i, len, to_free);
-		strings[i].length=len ;
-		for (int j=0; j<len; j++)
-			if (str[j]==0)
-			{
-				strings[i].length=j ;
-				break ;
-			} ;
-		strings[i].string=new CHAR[strings[i].length];
+		INT num_vec=src->get_num_vectors();
+		T_STRING<CHAR>* strings=new T_STRING<CHAR>[num_vec];
+		INT max_len=-1;
 
-		for (int j=0; j<strings[i].length; j++)
-			strings[i].string[j]=str[j];
+		for (INT i=0; i<num_vec; i++)
+		{
+			bool to_free=false;
+			INT len=0;
+			CHAR* str= src->get_feature_vector(i, len, to_free);
+			strings[i].length=len ;
+			for (int j=0; j<len; j++)
+				if (str[j]==0)
+				{
+					strings[i].length=j ;
+					break ;
+				} ;
+			strings[i].string=new CHAR[strings[i].length];
 
-		if (strings[i].length> max_len)
-			max_len=strings[i].length;
+			for (int j=0; j<strings[i].length; j++)
+				strings[i].string[j]=str[j];
 
-		src->free_feature_vector(str, i, to_free);
+			if (strings[i].length> max_len)
+				max_len=strings[i].length;
+
+			src->free_feature_vector(str, i, to_free);
+		}
+
+		CStringFeatures<CHAR>* target= new CStringFeatures<CHAR>(new CAlphabet(src->get_alphabet()));
+		ASSERT(target);
+		target->set_features(strings, num_vec, max_len);
+		return target;
 	}
+	else
+		SG_ERROR( "no features of class/type SIMPLE/CHAR available\n");
 
-	CStringFeatures<CHAR>* target= new CStringFeatures<CHAR>(new CAlphabet(src->get_alphabet()));
-	target->set_features(strings, num_vec, max_len);
-
-	return target;
+	return NULL;
 }
 
 CRealFeatures* CGUIFeatures::convert_simple_word_to_simple_salzberg(CWordFeatures* src, CHAR* param)

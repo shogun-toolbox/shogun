@@ -35,7 +35,10 @@ sg('set_custom_kernel',kt,'FULL2DIAG');
 sg('send_command', 'init_kernel TRAIN');
 kt2=sg('get_kernel_matrix');
 abs(kt-kt2)<1e-6
+max(abs(kt(:)-kt2(:)))
+
 sg('set_custom_kernel',kte,'FULL');
 sg('send_command', 'init_kernel TEST');
 kte2=sg('get_kernel_matrix');
 abs(kte-kte2)<1e-6
+max(abs(kte(:)-kte2(:)))
