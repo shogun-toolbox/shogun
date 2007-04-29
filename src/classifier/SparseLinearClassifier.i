@@ -10,3 +10,5 @@
 
 %include "classifier/SparseLinearClassifier.h" 
 %include "classifier/svm/SVMLin.i"
+%include "classifier/svm/SubGradientSVM.i"
+%include "classifier/svm/SVMPerf.i"

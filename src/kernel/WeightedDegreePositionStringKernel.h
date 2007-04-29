@@ -158,6 +158,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 
 		inline INT get_max_mismatch() { return max_mismatch; }
 		inline INT get_degree() { return degree; }
+		inline DREAL get_normalization_const() { return normalization_const; }
 
 		// weight setting/getting operations
 		inline DREAL *get_degree_weights(INT& d, INT& len)
@@ -189,6 +190,18 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		virtual bool set_weights(DREAL* weights, INT d, INT len=0);
 		virtual bool set_wd_weights();
 		virtual bool set_position_weights(DREAL* position_weights, INT len=0); 
+
+		bool init_block_weights();
+		bool init_block_weights_from_wd();
+		bool init_block_weights_from_wd_external();
+		bool init_block_weights_const();
+		bool init_block_weights_linear();
+		bool init_block_weights_sqpoly();
+		bool init_block_weights_cubicpoly();
+		bool init_block_weights_exp();
+		bool init_block_weights_log();
+		bool init_block_weights_external();
+
 		bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
 		inline bool get_use_normalization() { return use_normalization; }
@@ -237,15 +250,20 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		INT max_shift ;
 		DREAL* max_shift_vec ;
 
-		double* sqrtdiag_lhs;
-		double* sqrtdiag_rhs;
-
 		bool initialized ;
 		bool use_normalization ;
+		bool block_computation;
+
+		DREAL normalization_const;
+
+		INT num_block_weights_external;
+		DREAL* block_weights_external;
+
+		DREAL* block_weights;
+		EWDKernType type;
+		INT which_degree;
 
 		CTrie tries ;
 		bool tree_initialized ;
-
 };
-
 #endif

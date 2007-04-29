@@ -822,7 +822,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 			}
 		}
-		else if ((strcmp(kern_type,"WEIGHTEDDEGREEPOS2")==0) || (strcmp(kern_type,"WEIGHTEDDEGREEPOSPHYL2")==0))
+		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS2")==0)
 		{
 			if ((strcmp(data_type,"CHAR")==0) || (strcmp(data_type,"STRING")==0))
 			{
@@ -894,7 +894,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 			}
 		}
-		else if ((strcmp(kern_type,"WEIGHTEDDEGREEPOS3")==0) || (strcmp(kern_type,"WEIGHTEDDEGREEPOSPHYL3")==0))
+		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS3")==0)
 		{
 			if ((strcmp(data_type,"CHAR")==0) || (strcmp(data_type,"STRING")==0))
 			{
@@ -1001,7 +1001,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 			}
 		}
-		else if ((strcmp(kern_type,"WEIGHTEDDEGREEPOS")==0) || (strcmp(kern_type,"WEIGHTEDDEGREEPOSPHYL")==0))
+		else if (strcmp(kern_type,"WEIGHTEDDEGREEPOS")==0)
 		{
 			if ((strcmp(data_type,"CHAR")==0) || (strcmp(data_type,"STRING")==0))
 			{

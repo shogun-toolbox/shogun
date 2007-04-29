@@ -35,19 +35,20 @@ struct S_THREAD_PARAM
 	INT start;
 	INT end;
 	INT length;
-	DREAL* sqrtdiag_rhs;
 	INT* vec_idx;
 };
 
-CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(INT size, EWDKernType typ, INT deg, INT max_mismatch_,
-		bool use_norm, bool block, INT mkl_stepsize_, INT which_deg)
+CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(INT size, EWDKernType
+		typ, INT deg, INT max_mismatch_, bool use_norm, bool block, INT
+		mkl_stepsize_, INT which_deg)
 	: CStringKernel<CHAR>(size),weights(NULL),position_weights(NULL),
-	  weights_buffer(NULL), mkl_stepsize(mkl_stepsize_),degree(deg), length(0), 
-	  max_mismatch(max_mismatch_), seq_length(0), 
-	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), 
-	  block_computation(block), use_normalization(use_norm), 
-	  num_block_weights_external(0), block_weights_external(NULL), block_weights(NULL),
-	  type(typ), which_degree(which_deg), tries(deg,max_mismatch_==0), tree_initialized(false)
+	weights_buffer(NULL), mkl_stepsize(mkl_stepsize_),degree(deg), length(0),
+	max_mismatch(max_mismatch_), seq_length(0), initialized(false),
+	block_computation(block), use_normalization(use_norm),
+	normalization_const(1.0), num_block_weights_external(0),
+	block_weights_external(NULL), block_weights(NULL), type(typ),
+	which_degree(which_deg), tries(deg,max_mismatch_==0),
+	tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
@@ -58,14 +59,16 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(INT size, EWDKernType t
 		set_wd_weights_by_type(type);
 }
 
-CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(INT size, double* w, INT d, INT max_mismatch_, 
-		bool use_norm, bool block, INT mkl_stepsize_, INT which_deg)
-	: CStringKernel<CHAR>(size),weights(NULL),position_weights(NULL),weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0), 
-	  max_mismatch(max_mismatch_), seq_length(0), 
-	  sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), 
-	  block_computation(block), use_normalization(use_norm),
-	  num_block_weights_external(0), block_weights_external(NULL), block_weights(NULL),
-	  type(E_EXTERNAL), which_degree(which_deg), tries(d,max_mismatch_==0), tree_initialized(false)
+CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(INT size, double* w,
+		INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_,
+		INT which_deg) 
+	: CStringKernel<CHAR>(size),weights(NULL),position_weights(NULL),weights_buffer(NULL),
+	mkl_stepsize(mkl_stepsize_), degree(d), length(0),
+	max_mismatch(max_mismatch_), seq_length(0), initialized(false),
+	block_computation(block), use_normalization(use_norm),
+	normalization_const(1.0), num_block_weights_external(0),
+	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
+	which_degree(which_deg), tries(d,max_mismatch_==0), tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
@@ -103,16 +106,6 @@ void CWeightedDegreeStringKernel::remove_lhs()
 		cache_reset();
 #endif
 
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
-
-	lhs = NULL; 
-	rhs = NULL; 
-	initialized = false;
-	sqrtdiag_lhs = NULL;
-	sqrtdiag_rhs = NULL;
-
 	tries.destroy() ;
 }
 
@@ -122,10 +115,6 @@ void CWeightedDegreeStringKernel::remove_rhs()
 	if (rhs)
 		cache_reset() ;
 #endif
-
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs = sqrtdiag_lhs ;
 	rhs = lhs ;
 }
 
@@ -154,76 +143,12 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 		tries.create(seq_length, max_mismatch==0) ;
 	} 
 
-	INT i;
-
 	init_block_weights();
 
 	if (use_normalization)
-	{
-		if (rhs_changed)
-		{
-			if (sqrtdiag_lhs != sqrtdiag_rhs)
-				delete[] sqrtdiag_rhs;
-			sqrtdiag_rhs=NULL ;
-		}
-		if (lhs_changed)
-		{
-			delete[] sqrtdiag_lhs;
-			sqrtdiag_lhs=NULL ;
-			sqrtdiag_lhs= new DREAL[lhs->get_num_vectors()];
-			ASSERT(sqrtdiag_lhs) ;
-			for (i=0; i<lhs->get_num_vectors(); i++)
-				sqrtdiag_lhs[i]=1;
-		}
-
-		if (l==r)
-			sqrtdiag_rhs=sqrtdiag_lhs;
-		else if (rhs_changed)
-		{
-			sqrtdiag_rhs= new DREAL[rhs->get_num_vectors()];
-			ASSERT(sqrtdiag_rhs) ;
-
-			for (i=0; i<rhs->get_num_vectors(); i++)
-				sqrtdiag_rhs[i]=1;
-		}
-
-		ASSERT(sqrtdiag_lhs);
-		ASSERT(sqrtdiag_rhs);
-
-		if (lhs_changed)
-		{
-			this->lhs=(CStringFeatures<CHAR>*) l;
-			this->rhs=(CStringFeatures<CHAR>*) l;
-
-			//compute normalize to 1 values
-			for (i=0; i<lhs->get_num_vectors(); i++)
-			{
-				sqrtdiag_lhs[i]=sqrt(compute(i,i));
-
-				//trap divide by zero exception
-				if (sqrtdiag_lhs[i]==0)
-					sqrtdiag_lhs[i]=1e-16;
-			}
-		}
-
-		// if lhs is different from rhs (train/test data)
-		// compute also the normalization for rhs
-		if ((sqrtdiag_lhs!=sqrtdiag_rhs) & rhs_changed)
-		{
-			this->lhs=(CStringFeatures<CHAR>*) r;
-			this->rhs=(CStringFeatures<CHAR>*) r;
-
-			//compute normalize to 1 values
-			for (i=0; i<rhs->get_num_vectors(); i++)
-			{
-				sqrtdiag_rhs[i]=sqrt(compute(i,i));
-
-				//trap divide by zero exception
-				if (sqrtdiag_rhs[i]==0)
-					sqrtdiag_rhs[i]=1e-16;
-			}
-		}
-	}
+		normalization_const=block_weights[seq_length-1];
+	else
+		normalization_const=1.0;
 	
 	this->lhs=(CStringFeatures<CHAR>*) l;
 	this->rhs=(CStringFeatures<CHAR>*) r;
@@ -239,13 +164,6 @@ void CWeightedDegreeStringKernel::cleanup()
 
 	delete[] block_weights;
 	block_weights=NULL;
-
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs = NULL;
-
-	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs = NULL;
 
 	tries.destroy() ;
 
@@ -431,18 +349,7 @@ DREAL CWeightedDegreeStringKernel::compute(INT idx_a, INT idx_b)
   // can only deal with strings of same length
   ASSERT(alen==blen);
 
-  DREAL sqrt_a=1;
-  DREAL sqrt_b=1;
-
-  if (initialized && use_normalization)
-  {
-	  sqrt_a=sqrtdiag_lhs[idx_a];
-	  sqrt_b=sqrtdiag_rhs[idx_b];
-  }
-
-  DREAL sqrt_both=sqrt_a*sqrt_b;
-
-  double result=0;
+  DREAL result=0;
 
   if (max_mismatch == 0 && length == 0 && block_computation)
 	  result = compute_using_block(avec, alen, bvec, blen) ;
@@ -456,7 +363,7 @@ DREAL CWeightedDegreeStringKernel::compute(INT idx_a, INT idx_b)
 		  result = compute_without_mismatch_matrix(avec, alen, bvec, blen) ;
   }
   
-  return (double) result/sqrt_both;
+  return result/normalization_const;
 }
 
 
@@ -466,9 +373,6 @@ void CWeightedDegreeStringKernel::add_example_to_tree(INT idx, DREAL alpha)
 	CHAR* char_vec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, len);
 	ASSERT(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
-
-	if (use_normalization)
-		alpha /=  sqrtdiag_lhs[idx] ;
 
 	for (INT i=0; i<len; i++)
 		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
@@ -508,9 +412,6 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree(INT idx, DREAL alph
 	ASSERT(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
 
-	if (use_normalization)
-		alpha /=  sqrtdiag_lhs[idx] ;
-	
 	for (INT i=tree_num; i<tree_num+degree && i<len; i++)
 		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 	
@@ -541,9 +442,6 @@ void CWeightedDegreeStringKernel::add_example_to_tree_mismatch(INT idx, DREAL al
 	
 	INT *vec = new INT[len] ;
 	
-	if (use_normalization)
-		alpha /=  sqrtdiag_lhs[idx] ;
-	
 	for (INT i=0; i<len; i++)
 		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 	
@@ -570,9 +468,6 @@ void CWeightedDegreeStringKernel::add_example_to_single_tree_mismatch(INT idx, D
 	CHAR* char_vec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, len);
 
 	INT *vec = new INT[len] ;
-
-	if (use_normalization)
-		alpha /=  sqrtdiag_lhs[idx] ;
 
 	for (INT i=tree_num; i<len && i<tree_num+degree; i++)
 		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
@@ -604,10 +499,7 @@ DREAL CWeightedDegreeStringKernel::compute_by_tree(INT idx)
 	
 	delete[] vec ;
 	
-	if (use_normalization)
-		return sum/sqrtdiag_rhs[idx];
-	else
-		return sum;
+	return sum/normalization_const;
 }
 
 void CWeightedDegreeStringKernel::compute_by_tree(INT idx, DREAL* LevelContrib) 
@@ -620,12 +512,8 @@ void CWeightedDegreeStringKernel::compute_by_tree(INT idx, DREAL* LevelContrib)
 	for (INT i=0; i<len; i++)
 		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 
-	DREAL factor = 1.0 ;
-	if (use_normalization)
-		factor = 1.0/sqrtdiag_rhs[idx] ;
-
 	for (INT i=0; i<len; i++)
-	  tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor, mkl_stepsize, weights, (length!=0));
+	  tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib, 1.0/normalization_const, mkl_stepsize, weights, (length!=0));
 
 	delete[] vec ;
 }
@@ -933,7 +821,6 @@ void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 	CTrie* tries=params->tries;
 	DREAL* weights=params->weights;
 	INT length=params->length;
-	DREAL* sqrtdiag_rhs=params->sqrtdiag_rhs;
 	INT* vec=params->vec;
 	DREAL* result=params->result;
 	DREAL factor=params->factor;
@@ -946,10 +833,7 @@ void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 		for (INT k=j; k<CMath::min(len,j+wd->get_degree()); k++)
 			vec[k]=((CStringFeatures<CHAR>*) wd->get_lhs())->get_alphabet()->remap_to_bin(char_vec[k]);
 
-		if (wd->get_use_normalization())
-			result[i] += factor*tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/sqrtdiag_rhs[vec_idx[i]];
-		else
-			result[i] += factor*tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0));
+		result[i] += factor*tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/wd->get_normalization_const();
 	}
 
 	return NULL;
@@ -990,7 +874,6 @@ void CWeightedDegreeStringKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL
 			params.start=0;
 			params.end=num_vec;
 			params.length=length;
-			params.sqrtdiag_rhs=sqrtdiag_rhs;
 			params.vec_idx=vec_idx;
 			compute_batch_helper((void*) &params);
 
@@ -1021,7 +904,6 @@ void CWeightedDegreeStringKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL
 				params[t].end = (t+1)*step;
 				params[t].length=length;
 				params[t].vec_idx=vec_idx;
-				params[t].sqrtdiag_rhs=sqrtdiag_rhs;
 				pthread_create(&threads[t], NULL, CWeightedDegreeStringKernel::compute_batch_helper, (void*)&params[t]);
 			}
 			params[t].vec=&vec[num_feat*t];
@@ -1035,7 +917,6 @@ void CWeightedDegreeStringKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL
 			params[t].end=num_vec;
 			params[t].length=length;
 			params[t].vec_idx=vec_idx;
-			params[t].sqrtdiag_rhs=sqrtdiag_rhs;
 			compute_batch_helper((void*) &params[t]);
 
 			for (t=0; t<num_threads-1; t++)
@@ -1046,155 +927,4 @@ void CWeightedDegreeStringKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL
 #endif
 
 	delete[] vec;
-}
-
-
-
-DREAL* CWeightedDegreeStringKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas)
-{
-    num_feat=((CStringFeatures<CHAR>*) get_rhs())->get_max_vector_length();
-    ASSERT(num_feat>0);
-    ASSERT(((CStringFeatures<CHAR>*) get_rhs())->get_alphabet()->get_alphabet() == DNA);
-    num_sym=4; //for now works only w/ DNA
-
-    // variables
-    INT* nofsKmers = new INT[ max_degree ];
-    DREAL** C = new DREAL*[ max_degree ];
-    DREAL** L = new DREAL*[ max_degree ];
-    DREAL** R = new DREAL*[ max_degree ];
-    INT i;
-    INT k;
-
-    // return table
-    INT bigtabSize = 0;
-    for( k = 0; k < max_degree; ++k ) {
-		nofsKmers[k] = (INT) pow( num_sym, k+1 );
-        const INT tabSize = nofsKmers[k] * num_feat;
-        bigtabSize += tabSize;
-    }
-    result= new DREAL[ bigtabSize ];
-	
-    // auxilliary tables
-    INT tabOffs=0;
-    for( k = 0; k < max_degree; ++k )
-    {
-		const INT tabSize = nofsKmers[k] * num_feat;
-		C[k] = &result[tabOffs];
-		L[k] = new DREAL[ tabSize ];
-		R[k] = new DREAL[ tabSize ];
-		tabOffs+=tabSize;
-		for(i = 0; i < tabSize; i++ )
-		{
-			C[k][i] = 0.0;
-			L[k][i] = 0.0;
-			R[k][i] = 0.0;
-		}
-    }
-	
-    // tree parsing info
-    DREAL* margFactors = new DREAL[ degree ];
-    INT* x = new INT[ degree+1 ];
-    INT* substrs = new INT[ degree+1 ];
-    // - fill arrays
-    margFactors[0] = 1.0;
-    substrs[0] = 0;
-    for( k=1; k < degree; ++k ) {
-		margFactors[k] = 0.25 * margFactors[k-1];
-		substrs[k] = -1;
-    }
-    substrs[degree] = -1;
-    // - fill struct
-    struct TreeParseInfo info;
-    info.num_sym = num_sym;
-    info.num_feat = num_feat;
-    info.p = -1;
-    info.k = -1;
-    info.nofsKmers = nofsKmers;
-    info.margFactors = margFactors;
-    info.x = x;
-    info.substrs = substrs;
-    info.y0 = 0;
-    info.C_k = NULL;
-    info.L_k = NULL;
-    info.R_k = NULL;
-	
-	bool orig_use_compact_terminal_nodes = tries.get_use_compact_terminal_nodes() ;
-	tries.set_use_compact_terminal_nodes(false) ;
-	
-    // main loop
-    i = 0; // total progress
-    for( k = 0; k < max_degree; ++k )
-    {
-		const INT nofKmers = nofsKmers[ k ];
-		info.C_k = C[k];
-		info.L_k = L[k];
-		info.R_k = R[k];
-		
-		// run over all trees
-		for(INT p = 0; p < num_feat; ++p )
-		{
-			init_optimization( num_suppvec, IDX, alphas, p );
-			INT tree = p ;
-			for(INT j = 0; j < degree+1; j++ ) {
-				x[j] = -1;
-			}
-			tries.traverse( tree, p, info, 0, x, k );
-			SG_PROGRESS(i++,0,num_feat*max_degree);
-	}
-		
-		// add partial overlap scores
-		if( k > 0 ) {
-			const INT j = k - 1;
-			const INT nofJmers = (INT) pow( num_sym, j+1 );
-			for(INT p = 0; p < num_feat; ++p ) {
-				const INT offsetJ = nofJmers * p;
-				const INT offsetJ1 = nofJmers * (p+1);
-				const INT offsetK = nofKmers * p;
-				INT y;
-				INT sym;
-				for( y = 0; y < nofJmers; ++y ) {
-					for( sym = 0; sym < num_sym; ++sym ) {
-						const INT y_sym = num_sym*y + sym;
-						const INT sym_y = nofJmers*sym + y;
-						ASSERT( 0 <= y_sym && y_sym < nofKmers );
-						ASSERT( 0 <= sym_y && sym_y < nofKmers );
-						C[k][ y_sym + offsetK ] += L[j][ y + offsetJ ];
-						if( p < num_feat-1 ) {
-							C[k][ sym_y + offsetK ] += R[j][ y + offsetJ1 ];
-						}
-					}
-				}
-			}
-		}
-        //   if( k > 1 )
-        //     j = k-1
-        //     for all positions p
-        //       for all j-mers y
-        //          for n in {A,C,G,T}
-        //            C_k[ p, [y,n] ] += L_j[ p, y ]
-        //            C_k[ p, [n,y] ] += R_j[ p+1, y ]
-        //          end;
-        //       end;
-        //     end;
-        //   end;
-    }
-
-	tries.set_use_compact_terminal_nodes(orig_use_compact_terminal_nodes) ;
-	
-    // return a vector
-    num_feat=1;
-    num_sym = bigtabSize;
-    // clean up
-    delete[] nofsKmers;
-    delete[] margFactors;
-    delete[] substrs;
-    delete[] x;
-    delete[] C;
-    for( k = 0; k < max_degree; ++k ) {
-		delete L[k];
-		delete R[k];
-    }
-    delete[] L;
-    delete[] R;
-    return result;
 }

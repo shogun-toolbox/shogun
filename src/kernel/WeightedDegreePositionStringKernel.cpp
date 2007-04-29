@@ -38,7 +38,6 @@ struct S_THREAD_PARAM
 	INT max_shift;
 	INT* shift;
 	INT* vec_idx;
-	DREAL* sqrtdiag_rhs;
 };
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(INT size, INT d, 
@@ -46,8 +45,10 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(INT siz
 : CStringKernel<CHAR>(size), weights(NULL), position_weights(NULL), position_mask(NULL),
 	weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0),
 	max_mismatch(max_mismatch_), seq_length(0), shift(NULL), shift_len(0),
-	max_shift_vec(NULL), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
-	use_normalization(use_norm), tries(d), tree_initialized(false)
+	max_shift_vec(NULL), initialized(false), use_normalization(use_norm),
+	normalization_const(1.0), num_block_weights_external(0),
+	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
+	tries(d), tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	set_wd_weights();
@@ -61,9 +62,11 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(INT siz
 		INT mkl_stepsize_)
 : CStringKernel<CHAR>(size), weights(NULL), position_weights(NULL), position_mask(NULL),
 	weights_buffer(NULL), mkl_stepsize(mkl_stepsize_), degree(d), length(0),
-	max_mismatch(max_mismatch_), seq_length(0), shift(NULL), max_shift_vec(NULL), 
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
-	use_normalization(use_norm), tries(d), tree_initialized(false)
+	max_mismatch(max_mismatch_), seq_length(0), shift(NULL),
+	max_shift_vec(NULL), initialized(false), use_normalization(use_norm),
+	normalization_const(1.0), num_block_weights_external(0),
+	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
+	tries(d), tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 
@@ -109,15 +112,9 @@ void CWeightedDegreePositionStringKernel::remove_lhs()
 		cache_reset() ;
 #endif //USE_SVMLIGHT
 
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	delete[] sqrtdiag_lhs;
-
 	lhs = NULL ; 
 	rhs = NULL ; 
 	initialized = false ;
-	sqrtdiag_lhs = NULL ;
-	sqrtdiag_rhs = NULL ;
 
 	tries.destroy() ;
 } ;
@@ -129,9 +126,6 @@ void CWeightedDegreePositionStringKernel::remove_rhs()
 		cache_reset() ;
 #endif //USE_SVMLIGHT
 
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs = sqrtdiag_lhs ;
 	rhs = lhs ;
 }
 
@@ -169,76 +163,13 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 		}
 	} 
 
-	INT i;
-
 	SG_DEBUG( "use normalization:%d\n", (use_normalization) ? 1 : 0);
 
+	init_block_weights();
 	if (use_normalization)
-	{
-		if (rhs_changed)
-		{
-			if (sqrtdiag_lhs != sqrtdiag_rhs)
-				delete[] sqrtdiag_rhs;
-			sqrtdiag_rhs=NULL ;
-		}
-		if (lhs_changed)
-		{
-			delete[] sqrtdiag_lhs;
-			sqrtdiag_lhs=NULL ;
-			sqrtdiag_lhs= new DREAL[lhs->get_num_vectors()];
-			ASSERT(sqrtdiag_lhs) ;
-			for (i=0; i<lhs->get_num_vectors(); i++)
-				sqrtdiag_lhs[i]=1;
-		}
-
-		if (l==r)
-			sqrtdiag_rhs=sqrtdiag_lhs;
-		else if (rhs_changed)
-		{
-			sqrtdiag_rhs= new DREAL[rhs->get_num_vectors()];
-			ASSERT(sqrtdiag_rhs) ;
-
-			for (i=0; i<rhs->get_num_vectors(); i++)
-				sqrtdiag_rhs[i]=1;
-		}
-
-		ASSERT(sqrtdiag_lhs);
-		ASSERT(sqrtdiag_rhs);
-
-		if (lhs_changed)
-		{
-			this->lhs=(CStringFeatures<CHAR>*) l;
-			this->rhs=(CStringFeatures<CHAR>*) l;
-
-			//compute normalize to 1 values
-			for (i=0; i<lhs->get_num_vectors(); i++)
-			{
-				sqrtdiag_lhs[i]=sqrt(compute(i,i));
-
-				//trap divide by zero exception
-				if (sqrtdiag_lhs[i]==0)
-					sqrtdiag_lhs[i]=1e-16;
-			}
-		}
-
-		// if lhs is different from rhs (train/test data)
-		// compute also the normalization for rhs
-		if ((sqrtdiag_lhs!=sqrtdiag_rhs) & rhs_changed)
-		{
-			this->lhs=(CStringFeatures<CHAR>*) r;
-			this->rhs=(CStringFeatures<CHAR>*) r;
-
-			//compute normalize to 1 values
-			for (i=0; i<rhs->get_num_vectors(); i++)
-			{
-				sqrtdiag_rhs[i]=sqrt(compute(i,i));
-
-				//trap divide by zero exception
-				if (sqrtdiag_rhs[i]==0)
-					sqrtdiag_rhs[i]=1e-16;
-			}
-		}
-	}
+		normalization_const=block_weights[seq_length-1];
+	else
+		normalization_const=1.0;
 
 	this->lhs=(CStringFeatures<CHAR>*) l;
 	this->rhs=(CStringFeatures<CHAR>*) r;
@@ -251,13 +182,6 @@ void CWeightedDegreePositionStringKernel::cleanup()
 {
 	SG_DEBUG( "deleting CWeightedDegreePositionStringKernel optimization\n");
 	delete_optimization();
-
-	if (sqrtdiag_lhs != sqrtdiag_rhs)
-		delete[] sqrtdiag_rhs;
-	sqrtdiag_rhs = NULL;
-
-	delete[] sqrtdiag_lhs;
-	sqrtdiag_lhs = NULL;
 
 	tries.destroy() ;
 
@@ -578,17 +502,6 @@ DREAL CWeightedDegreePositionStringKernel::compute(INT idx_a, INT idx_b)
 	ASSERT(alen == blen);
 	ASSERT(shift_len == alen) ;
 
-	DREAL sqrt_a=1;
-	DREAL sqrt_b=1;
-
-	if (initialized && use_normalization)
-	{
-		sqrt_a=sqrtdiag_lhs[idx_a];
-		sqrt_b=sqrtdiag_rhs[idx_b];
-	}
-
-	DREAL sqrt_both=sqrt_a*sqrt_b;
-
 	DREAL result = 0 ;
 	if (max_mismatch > 0)
 		result = compute_with_mismatch(avec, alen, bvec, blen) ;
@@ -597,7 +510,7 @@ DREAL CWeightedDegreePositionStringKernel::compute(INT idx_a, INT idx_b)
 	else
 		result = compute_without_mismatch_matrix(avec, alen, bvec, blen) ;
 
-	result/=sqrt_both;
+	result/=normalization_const;
 
 	return result ;
 }
@@ -608,9 +521,6 @@ void CWeightedDegreePositionStringKernel::add_example_to_tree(INT idx, DREAL alp
 	CHAR* char_vec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, len);
 	ASSERT(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
-
-	if (use_normalization)
-		alpha /=  sqrtdiag_lhs[idx] ;
 
 	for (INT i=0; i<len; i++)
 		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
@@ -657,9 +567,6 @@ void CWeightedDegreePositionStringKernel::add_example_to_single_tree(INT idx, DR
 	CHAR* char_vec=((CStringFeatures<CHAR>*) lhs)->get_feature_vector(idx, len);
 	ASSERT(max_mismatch==0) ;
 	INT *vec = new INT[len] ;
-
-	if (use_normalization)
-		alpha /=  sqrtdiag_lhs[idx] ;
 
 	INT max_s=-1;
 
@@ -728,10 +635,7 @@ DREAL CWeightedDegreePositionStringKernel::compute_by_tree(INT idx)
 
 	delete[] vec ;
 
-	if (use_normalization)
-		return sum/sqrtdiag_rhs[idx];
-	else
-		return sum;
+	return sum/normalization_const;
 }
 
 void CWeightedDegreePositionStringKernel::compute_by_tree(INT idx, DREAL* LevelContrib)
@@ -744,21 +648,16 @@ void CWeightedDegreePositionStringKernel::compute_by_tree(INT idx, DREAL* LevelC
 	for (INT i=0; i<len; i++)
 		vec[i]=((CStringFeatures<CHAR>*) lhs)->get_alphabet()->remap_to_bin(char_vec[i]);
 
-	DREAL factor = 1.0 ;
-
-	if (use_normalization)
-		factor = 1.0/sqrtdiag_rhs[idx] ;
-
 	for (INT i=0; i<len; i++)
-		tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib, factor, mkl_stepsize, weights, (length!=0)) ;
+		tries.compute_by_tree_helper(vec, len, i, i, i, LevelContrib, 1.0/normalization_const, mkl_stepsize, weights, (length!=0)) ;
 
 	if (opt_type==SLOWBUTMEMEFFICIENT)
 	{
 		for (INT i=0; i<len; i++)
 			for (INT k=1; (k<=shift[i]) && (i+k<len); k++)
 			{
-				tries.compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, factor/(2*k), mkl_stepsize, weights, (length!=0)) ;
-				tries.compute_by_tree_helper(vec, len, i+k, i, i+k, LevelContrib, factor/(2*k), mkl_stepsize, weights, (length!=0)) ;
+				tries.compute_by_tree_helper(vec, len, i, i+k, i, LevelContrib, 1.0/(2*k*normalization_const), mkl_stepsize, weights, (length!=0)) ;
+				tries.compute_by_tree_helper(vec, len, i+k, i, i+k, LevelContrib, 1.0/(2*k*normalization_const), mkl_stepsize, weights, (length!=0)) ;
 			}
 	}
 
@@ -895,6 +794,196 @@ bool CWeightedDegreePositionStringKernel::set_position_weights(DREAL* pws, INT l
 		return false;
 }
 
+bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd()
+{
+	delete[] block_weights;
+	block_weights=new DREAL[CMath::max(seq_length,degree)];
+
+	if (block_weights)
+	{
+		double deg=degree;
+		INT k;
+		for (k=0; k<degree ; k++)
+			block_weights[k]=(-pow(k,3) + (3*deg-3)*pow(k,2) + (9*deg-2)*k + 6*deg) / (3*deg*(deg+1));
+		for (k=degree; k<seq_length ; k++)
+			block_weights[k]=(-deg+3*k+4)/3;
+	}
+
+	return (block_weights!=NULL);
+}
+
+bool CWeightedDegreePositionStringKernel::init_block_weights_from_wd_external()
+{
+	ASSERT(weights);
+	delete[] block_weights;
+	block_weights=new DREAL[CMath::max(seq_length,degree)];
+
+	if (block_weights)
+	{
+		INT i=0;
+		block_weights[0]=weights[0];
+		for (i=1; i<CMath::max(seq_length,degree); i++)
+			block_weights[i]=0;
+
+		for (i=1; i<CMath::max(seq_length,degree); i++)
+		{
+			block_weights[i]=block_weights[i-1];
+
+			DREAL contrib=0;
+			for (INT j=0; j<CMath::min(degree,i+1); j++)
+				contrib+=weights[j];
+
+			block_weights[i]+=contrib;
+		}
+	}
+
+	return (block_weights!=NULL);
+}
+
+bool CWeightedDegreePositionStringKernel::init_block_weights_const()
+{
+	delete[] block_weights;
+	block_weights=new DREAL[seq_length];
+
+	if (block_weights)
+	{
+		for (int i=1; i<seq_length+1 ; i++)
+			block_weights[i-1]=1.0/seq_length;
+	}
+
+	return (block_weights!=NULL);
+}
+
+bool CWeightedDegreePositionStringKernel::init_block_weights_linear()
+{
+	delete[] block_weights;
+	block_weights=new DREAL[seq_length];
+
+	if (block_weights)
+	{
+		for (int i=1; i<seq_length+1 ; i++)
+			block_weights[i-1]=degree*i;
+	}
+
+	return (block_weights!=NULL);
+}
+
+bool CWeightedDegreePositionStringKernel::init_block_weights_sqpoly()
+{
+	delete[] block_weights;
+	block_weights=new DREAL[seq_length];
+
+	if (block_weights)
+	{
+		for (int i=1; i<degree+1 ; i++)
+			block_weights[i-1]=((double) i)*i;
+
+		for (int i=degree+1; i<seq_length+1 ; i++)
+			block_weights[i-1]=i;
+	}
+
+	return (block_weights!=NULL);
+}
+
+bool CWeightedDegreePositionStringKernel::init_block_weights_cubicpoly()
+{
+	delete[] block_weights;
+	block_weights=new DREAL[seq_length];
+
+	if (block_weights)
+	{
+		for (int i=1; i<degree+1 ; i++)
+			block_weights[i-1]=((double) i)*i*i;
+
+		for (int i=degree+1; i<seq_length+1 ; i++)
+			block_weights[i-1]=i;
+	}
+
+	return (block_weights!=NULL);
+}
+
+bool CWeightedDegreePositionStringKernel::init_block_weights_exp()
+{
+	delete[] block_weights;
+	block_weights=new DREAL[seq_length];
+
+	if (block_weights)
+	{
+		for (int i=1; i<degree+1 ; i++)
+			block_weights[i-1]=exp(((double) i/10.0));
+
+		for (int i=degree+1; i<seq_length+1 ; i++)
+			block_weights[i-1]=i;
+	}
+
+	return (block_weights!=NULL);
+}
+
+bool CWeightedDegreePositionStringKernel::init_block_weights_log()
+{
+	delete[] block_weights;
+	block_weights=new DREAL[seq_length];
+
+	if (block_weights)
+	{
+		for (int i=1; i<degree+1 ; i++)
+			block_weights[i-1]=pow(log(i),2);
+
+		for (int i=degree+1; i<seq_length+1 ; i++)
+			block_weights[i-1]=i-degree+1+pow(log(degree+1),2);
+	}
+
+	return (block_weights!=NULL);
+}
+
+bool CWeightedDegreePositionStringKernel::init_block_weights_external()
+{
+	if (block_weights_external && (seq_length == num_block_weights_external) )
+	{
+		delete[] block_weights;
+		block_weights=new DREAL[seq_length];
+
+		if (block_weights)
+		{
+			for (int i=0; i<seq_length; i++)
+				block_weights[i]=block_weights_external[i];
+		}
+	}
+	else {
+      SG_ERROR( "sequence longer then weights (seqlen:%d, wlen:%d)\n", seq_length, block_weights_external);
+   }
+	return (block_weights!=NULL);
+}
+
+bool CWeightedDegreePositionStringKernel::init_block_weights()
+{
+	switch (type)
+	{
+		case E_WD:
+			return init_block_weights_from_wd();
+		case E_EXTERNAL:
+			return init_block_weights_from_wd_external();
+		case E_BLOCK_CONST:
+			return init_block_weights_const();
+		case E_BLOCK_LINEAR:
+			return init_block_weights_linear();
+		case E_BLOCK_SQPOLY:
+			return init_block_weights_sqpoly();
+		case E_BLOCK_CUBICPOLY:
+			return init_block_weights_cubicpoly();
+		case E_BLOCK_EXP:
+			return init_block_weights_exp();
+		case E_BLOCK_LOG:
+			return init_block_weights_log();
+		case E_BLOCK_EXTERNAL:
+			return init_block_weights_external();
+		default:
+			return false;
+	};
+}
+
+
+
 void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 {
 	S_THREAD_PARAM* params = (S_THREAD_PARAM*) p;
@@ -904,7 +993,6 @@ void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 	DREAL* weights=params->weights;
 	INT length=params->length;
 	INT max_shift=params->max_shift;
-	DREAL* sqrtdiag_rhs=params->sqrtdiag_rhs;
 	INT* vec=params->vec;
 	DREAL* result=params->result;
 	DREAL factor=params->factor;
@@ -918,11 +1006,7 @@ void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 		for (INT k=CMath::max(0,j-max_shift); k<CMath::min(len,j+wd->get_degree()+max_shift); k++)
 			vec[k]=((CStringFeatures<CHAR>*) wd->get_lhs())->get_alphabet()->remap_to_bin(char_vec[k]);
 
-		DREAL norm_fac = 1.0 ;
-		if (wd->get_use_normalization())
-			norm_fac=1.0/sqrtdiag_rhs[vec_idx[i]] ;
-
-		result[i] += factor*tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))*norm_fac ;
+		result[i] += factor*tries->compute_by_tree_helper(vec, len, j, j, j, weights, (length!=0))/wd->normalization_const ;
 
 		if (wd->get_optimization_type()==SLOWBUTMEMEFFICIENT)
 		{
@@ -930,10 +1014,10 @@ void* CWeightedDegreePositionStringKernel::compute_batch_helper(void* p)
 			{
 				INT s=j-q ;
 				if ((s>=1) && (s<=shift[q]) && (q+s<len))
-					result[i] += tries->compute_by_tree_helper(vec, len, q, q+s, q, weights, (length!=0))*norm_fac/(2.0*s) ;
+					result[i] += tries->compute_by_tree_helper(vec, len, q, q+s, q, weights, (length!=0))/(2.0*s*wd->normalization_const) ;
 			}
 			for (INT s=1; (s<=shift[j]) && (j+s<len); s++)
-				result[i] += tries->compute_by_tree_helper(vec, len, j+s, j, j+s, weights, (length!=0))*norm_fac/(2.0*s) ;
+				result[i] += tries->compute_by_tree_helper(vec, len, j+s, j, j+s, weights, (length!=0))/(2.0*s*wd->normalization_const) ;
 		}
 	}
 
@@ -978,7 +1062,6 @@ void CWeightedDegreePositionStringKernel::compute_batch(INT num_vec, INT* vec_id
 				params.max_shift=max_shift;
 				params.shift=shift;
 				params.vec_idx=vec_idx;
-				params.sqrtdiag_rhs=sqrtdiag_rhs;
 				compute_batch_helper((void*) &params);
 
 				SG_PROGRESS(j,0,num_feat);
@@ -1010,7 +1093,6 @@ void CWeightedDegreePositionStringKernel::compute_batch(INT num_vec, INT* vec_id
 				params[t].max_shift=max_shift;
 				params[t].shift=shift;
 				params[t].vec_idx=vec_idx;
-				params[t].sqrtdiag_rhs=sqrtdiag_rhs;
 				pthread_create(&threads[t], NULL, CWeightedDegreePositionStringKernel::compute_batch_helper, (void*)&params[t]);
 			}
 
@@ -1027,7 +1109,6 @@ void CWeightedDegreePositionStringKernel::compute_batch(INT num_vec, INT* vec_id
 			params[t].max_shift=max_shift;
 			params[t].shift=shift;
 			params[t].vec_idx=vec_idx;
-			params[t].sqrtdiag_rhs=sqrtdiag_rhs;
 			compute_batch_helper((void*) &params[t]);
 
 			for (t=0; t<num_threads-1; t++)

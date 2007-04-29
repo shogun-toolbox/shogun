@@ -861,9 +861,6 @@ void CKernel::list_kernel()
 		case K_WEIGHTEDDEGREEPOS:
 			SG_INFO( "K_WEIGHTEDDEGREEPOS ");
 			break;
-		case K_WEIGHTEDDEGREEPOSPHYL:
-			SG_INFO( "K_WEIGHTEDDEGREEPOSPHYL ");
-			break;
 		case K_COMMWORD:
 			SG_INFO( "K_COMMWORD ");
 			break;

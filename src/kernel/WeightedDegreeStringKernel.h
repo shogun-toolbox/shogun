@@ -164,6 +164,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 
   inline INT get_max_mismatch() { return max_mismatch; }
   inline INT get_degree() { return degree; }
+  inline DREAL get_normalization_const() { return normalization_const; }
   inline DREAL *get_degree_weights(INT& d, INT& len)
   {
 	  d=degree;
@@ -188,9 +189,6 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 	  len=seq_length;
 	  return position_weights;
   }
-  /// compute positional scoring function, which assigns a weight per position, per symbol in the sequence
-  DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
-  //void compute_scoring_helper(struct Trie* tree, INT i, INT j, DREAL weight, INT d, INT max_degree, INT num_feat, INT num_sym, INT sym_offset, INT offs, DREAL* result);
 
   bool set_wd_weights_by_type(EWDKernType type);
 
@@ -256,13 +254,12 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
   INT max_mismatch ;
   INT seq_length ;
 
-  double* sqrtdiag_lhs;
-  double* sqrtdiag_rhs;
-
   bool initialized ;
   bool block_computation;
   bool use_normalization ;
   
+  DREAL normalization_const;
+
   INT num_block_weights_external;
   DREAL* block_weights_external;
 
