@@ -110,9 +110,7 @@ void* CSVMLight::update_linear_component_linadd_helper(void* p)
 	INT jj=0, j=0 ;
 
 	for(jj=params->start;(jj<params->end) && (j=params->active2dnum[jj])>=0;jj++) 
-	{
 		params->lin[j]+=params->kernel->compute_optimized(params->docs[j]);
-	}
 
 	return NULL ;
 }
@@ -3097,6 +3095,9 @@ void CSVMLight::reactivate_inactive_examples(INT* label,
 				  params[thr].start = thr*step;
 				  params[thr].end = num_changed;
 				  reactivate_inactive_examples_vanilla_helper((void*) &params[thr]);
+
+				  for(jj=0;(j=inactive2dnum[jj])>=0;jj++)
+					  lin[j]+=tmp_lin[totdoc*thr+j];
 
 				  for (thr=0; thr<num_threads-1; thr++)
 				  {
