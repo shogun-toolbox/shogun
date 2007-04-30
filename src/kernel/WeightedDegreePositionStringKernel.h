@@ -248,7 +248,6 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		INT *shift ;
 		INT shift_len ;
 		INT max_shift ;
-		DREAL* max_shift_vec ;
 
 		bool initialized ;
 		bool use_normalization ;

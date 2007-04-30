@@ -3,10 +3,15 @@ order=20;
 order_com=5;
 mismatch=0;
 len=200;
-shift=10;
+shift=0;
 num=1000;
-num_test=4000;
+num_test=2000;
 cache=10;
+max_mismatch=0;
+normalize=1;
+mkl_stepsize=1;
+block=0;
+single_degree=-1;
 
 acgt='ACGT';
 rand('state',1);
@@ -27,6 +32,7 @@ shifts = sprintf( '%i ', x(end:-1:1) );
 sg('send_command', 'loglevel ALL');
 sg('send_command','clean_features TRAIN');
 sg('send_command','clean_features TEST');
+sg('send_command', 'threads 4');
 sg('send_command','clean_kernels');
 sg('send_command', 'use_linadd 1' );
 sg('send_command', 'use_batch_computation 1');
@@ -54,14 +60,15 @@ sg('set_labels', 'TEST', testlab);
 sg('send_command', 'attach_preproc TEST');
 %
 sg('send_command', sprintf( 'set_kernel COMBINED %i', cache) );
-sg('send_command', sprintf( 'add_kernel 1.0 WEIGHTEDDEGREEPOS3 CHAR 10 %i %i %i 1 %s', order, mismatch, len, shifts ) );
+%sg('send_command', sprintf( 'add_kernel 1.0 WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
+sg('send_command', sprintf( 'add_kernel 1.0 WEIGHTEDDEGREEPOS2 CHAR 10 %i %i %i %s', order, mismatch, len, shifts ) );
 sg('send_command', sprintf( 'add_kernel 1.0 COMMSTRING WORD 10 0' ) );
 sg('send_command', sprintf( 'add_kernel 1.0 LINEAR REAL 10 1.0' ) );
 sg('send_command', sprintf( 'add_kernel 4.0 GAUSSIAN REAL 10 1.0' ) );
 sg('send_command', 'set_kernel_optimization_type FASTBUTMEMHUNGRY' );
 %sg('send_command', 'set_kernel_optimization_type SLOWBUTMEMEFFICIENT' );
 sg('send_command', 'init_kernel TRAIN');
-%kt=sg('get_kernel_matrix');
+kt=sg('get_kernel_matrix');
 sg('send_command', 'new_svm LIGHT');
 sg('send_command', sprintf('c %f',C));
 tic; sg('send_command', 'svm_train'); t=toc
@@ -69,6 +76,7 @@ tic; sg('send_command', 'svm_train'); t=toc
 
 tic;
 sg('send_command', 'init_kernel TEST');
+kte=sg('get_kernel_matrix');
 outopt=sg('svm_classify');
 tout=toc
 
@@ -80,8 +88,9 @@ tout=toc
 sg('send_command', 'loglevel ALL');
 sg('send_command','clean_features TRAIN');
 sg('send_command','clean_features TEST');
+sg('send_command', 'threads 4');
 sg('send_command','clean_kernels');
-sg('send_command', 'use_linadd 1' );
+sg('send_command', 'use_linadd 0' );
 sg('send_command', 'use_batch_computation 0');
 
 sg('add_features', 'TRAIN', traindat1, 'DNA');
@@ -107,14 +116,15 @@ sg('set_labels', 'TEST', testlab);
 sg('send_command', 'attach_preproc TEST');
 %
 sg('send_command', sprintf( 'set_kernel COMBINED %i', cache) );
-sg('send_command', sprintf( 'add_kernel 1.0 WEIGHTEDDEGREEPOS3 CHAR 10 %i %i %i 1 %s', order, mismatch, len, shifts ) );
+%sg('send_command', sprintf( 'add_kernel 1.0 WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
+sg('send_command', sprintf( 'add_kernel 1.0 WEIGHTEDDEGREEPOS2 CHAR 10 %i %i %i %s', order, mismatch, len, shifts ) );
 sg('send_command', sprintf( 'add_kernel 1.0 COMMSTRING WORD 10 0' ) );
 sg('send_command', sprintf( 'add_kernel 1.0 LINEAR REAL 10 1.0' ) );
 sg('send_command', sprintf( 'add_kernel 4.0 GAUSSIAN REAL 10 1.0' ) );
 %sg('send_command', 'set_kernel_optimization_type FASTBUTMEMHUNGRY' );
 sg('send_command', 'set_kernel_optimization_type SLOWBUTMEMEFFICIENT' );
 sg('send_command', 'init_kernel TRAIN');
-%ktref=sg('get_kernel_matrix');
+ktref=sg('get_kernel_matrix');
 sg('send_command', 'new_svm LIGHT');
 sg('send_command', sprintf('c %f',C));
 tic; sg('send_command', 'svm_train'); tref=toc
@@ -122,6 +132,7 @@ tic; sg('send_command', 'svm_train'); tref=toc
 tic;
 sg('send_command', 'init_kernel_optimization');
 sg('send_command', 'init_kernel TEST');
+kteref=sg('get_kernel_matrix');
 outoptref=sg('svm_classify');
 toutref=toc
 
