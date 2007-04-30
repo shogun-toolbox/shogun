@@ -163,13 +163,15 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 		}
 	} 
 
-	SG_DEBUG( "use normalization:%d\n", (use_normalization) ? 1 : 0);
 
 	init_block_weights();
 	if (use_normalization)
 		normalization_const=block_weights[seq_length-1];
 	else
 		normalization_const=1.0;
+
+	SG_DEBUG( "use normalization:%d (const:%f)\n", (use_normalization) ? 1 : 0,
+			normalization_const);
 
 	this->lhs=(CStringFeatures<CHAR>*) l;
 	this->rhs=(CStringFeatures<CHAR>*) r;
