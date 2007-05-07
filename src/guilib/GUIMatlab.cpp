@@ -2984,4 +2984,57 @@ bool CGUIMatlab::set_WD_position_weights(const mxArray* mx_arg)
 	}
 	return false;
 }
+
+bool CGUIMatlab::set_WD_position_weights_per_example(const mxArray* mx_arg, const mxArray* mx_target)
+{
+	CKernel *kernel_ = gui->guikernel.get_kernel() ;
+
+	if (kernel_ && (kernel_->get_kernel_type() == K_COMBINED))
+		kernel_=((CCombinedKernel*)kernel_)->get_last_kernel() ;
+
+	INT slen=0;
+	CHAR* target=CGUIMatlab::get_mxString(mx_target, slen);
+	if ( target && (!strncmp(target, "TRAIN", 5) || 
+					!strncmp(target, "TEST", 4) ))
+	{
+		if (!strncmp(target, "TRAIN", 5))
+		{
+			if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+			{
+				CWeightedDegreePositionStringKernel *kernel
+					= (CWeightedDegreePositionStringKernel *) kernel_;
+				if (mxGetM(mx_arg)==0 & mxGetN(mx_arg)==0)
+					return kernel->delete_position_weights_lhs() ;
+				else
+				{
+					INT len = mxGetM(mx_arg);
+					INT num = mxGetN(mx_arg);
+					return kernel->set_position_weights_lhs(mxGetPr(mx_arg), len, num);
+				}
+			}
+		}
+		else if (!strncmp(target, "TEST", 4))
+		{
+			if (kernel_ && (kernel_->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+			{
+				CWeightedDegreePositionStringKernel *kernel
+					= (CWeightedDegreePositionStringKernel *) kernel_;
+				if (mxGetM(mx_arg)==0 & mxGetN(mx_arg)==0)
+					return kernel->delete_position_weights_rhs() ;
+				else
+				{
+					INT len = mxGetM(mx_arg);
+					INT num = mxGetN(mx_arg);
+					return kernel->set_position_weights_rhs(mxGetPr(mx_arg), len, num);
+				}
+			}
+		}
+		delete[] target;
+		return true ;
+	} else
+		return false ;
+	
+	
+	return false;
+}
 #endif

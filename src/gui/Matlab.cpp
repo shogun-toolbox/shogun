@@ -464,8 +464,13 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				if (!sg_matlab.set_WD_position_weights(prhs[1]))
 					SG_SERROR( "error executing command");
 			}
+			else if ((nlhs==0) && (nrhs==3))
+			{
+				if (!sg_matlab.set_WD_position_weights_per_example(prhs[1], prhs[2]))
+					SG_SERROR( "error executing command");
+			}
 			else
-				SG_SERROR( "usage is sg('set_WD_position_weights', W)");
+				SG_SERROR( "usage is sg('set_WD_position_weights', W[, 'TRAIN'|'TEST'])");
 		}
 		else if (strmatch(action, len, N_GET_KERNEL_MATRIX))
 		{

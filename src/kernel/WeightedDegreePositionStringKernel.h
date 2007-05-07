@@ -190,6 +190,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		virtual bool set_weights(DREAL* weights, INT d, INT len=0);
 		virtual bool set_wd_weights();
 		virtual bool set_position_weights(DREAL* position_weights, INT len=0); 
+		bool set_position_weights_lhs(DREAL* pws, INT len, INT num);
+		bool set_position_weights_rhs(DREAL* pws, INT len, INT num);
 
 		bool init_block_weights();
 		bool init_block_weights_from_wd();
@@ -203,6 +205,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		bool init_block_weights_external();
 
 		bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
+		bool delete_position_weights_lhs() { delete[] position_weights_lhs ; position_weights_lhs=NULL ; return true ; } ;
+		bool delete_position_weights_rhs() { delete[] position_weights_rhs ; position_weights_rhs=NULL ; return true ; } ;
 
 		inline bool get_use_normalization() { return use_normalization; }
 		virtual DREAL compute_by_tree(INT idx);
@@ -227,6 +231,7 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		DREAL compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
 		DREAL compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
 		DREAL compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
+		DREAL compute_without_mismatch_position_weights(CHAR* avec, DREAL *posweights_lhs, INT alen, CHAR* bvec, DREAL *posweights_lhs, INT blen) ;
 
 		virtual void remove_lhs() ;
 		virtual void remove_rhs() ;
@@ -234,6 +239,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 	protected:
 		DREAL* weights;
 		DREAL* position_weights ;
+		DREAL* position_weights_lhs ;
+		DREAL* position_weights_rhs ;
 		bool* position_mask ;
 
 		DREAL* weights_buffer ;
