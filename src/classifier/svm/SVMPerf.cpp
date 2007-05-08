@@ -38,8 +38,7 @@ bool CSVMPerf::train()
 	ASSERT(get_labels());
 	ASSERT(get_features());
 
-	INT num_train_labels=0;
-	DREAL* train_labels=get_labels()->get_labels(num_train_labels);
+	INT num_train_labels=get_labels()->get_num_labels();
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 

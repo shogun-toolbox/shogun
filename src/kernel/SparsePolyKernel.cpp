@@ -141,46 +141,11 @@ DREAL CSparsePolyKernel::compute(INT idx_a, INT idx_b)
 
   DREAL sqrt_both=sqrt_a*sqrt_b;
   
-  DREAL result=0;
+  DREAL result=((CSparseFeatures<DREAL>*) lhs)->sparse_dot(1.0,avec, alen, bvec, blen);
 
   //result remains zero when one of the vectors is non existent
   if (avec && bvec)
   {
-	  if (alen<=blen)
-	  {
-	      INT j=0;
-	      for (INT i=0; i<alen; i++)
-	      {
-	    	  INT a_feat_idx=avec[i].feat_index;
-
-	    	  while ( (j<blen) && (bvec[j].feat_index < a_feat_idx) )
-	    		  j++;
-
-	    	  if ( (j<blen) && (bvec[j].feat_index == a_feat_idx) )
-	    	  {
-	    		  result+= avec[i].entry * bvec[j].entry;
-	    		  j++;
-	    	  }
-	      }
-	  }
-	  else
-	  {
-	      INT j=0;
-	      for (INT i=0; i<blen; i++)
-	      {
-	    	  INT b_feat_idx=bvec[i].feat_index;
-
-	    	  while ( (j<alen) && (avec[j].feat_index < b_feat_idx) )
-	    		  j++;
-
-	    	  if ( (j<alen) && (avec[j].feat_index == b_feat_idx) )
-	    	  {
-	    		  result+= bvec[i].entry * avec[j].entry;
-	    		  j++;
-	    	  }
-	      }
-	  }
-
 	  if (inhomogene)
 		  result+=1;
 

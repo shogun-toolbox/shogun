@@ -36,9 +36,49 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		inline DREAL get_epsilon() { return epsilon; }
 
 	protected:
+		/// updates the active / old_active as well as the idx_active, idx_bound
+		/// and sum_CXy_active arrays and the sum_Cy_active variable
+		/// returns number of changed constraints
+		INT find_active(INT num_feat, INT num_vec, INT& num_active, INT& num_bound);
+
+		/// compute svm objective
+		DREAL compute_objective();
+
+		///compute minimum norm subgradient
+		void compute_min_subgradient();
+
+		///performs a line search to determine step size
+		DREAL line_search();
+
+		/// update projection
+		void update_projection(INT num_feat, INT num_vec);
+
+		/// alloc helper arrays
+		void init(INT num_vec, INT num_feat);
+		
+		/// de-alloc helper arrays
+		void cleanup();
+
+	protected:
 		DREAL C1;
 		DREAL C2;
 		DREAL epsilon;
+
+		//idx vectors of length num_vec
+		BYTE* active; // 0=not active, 1=active, 2=on boundary
+		BYTE* old_active;
+		INT* idx_active;
+		INT* idx_bound;
+		DREAL* proj;
+		
+		//vector of length num_feat
+		DREAL* sum_CXy_active;
+		DREAL sum_Cy_active;
+
+		//vector of length num_feat
+		DREAL* grad_w;
+		DREAL grad_b;
+
 };
 #endif
 

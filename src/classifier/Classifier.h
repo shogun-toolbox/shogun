@@ -32,6 +32,7 @@ class CClassifier : public CSGObject
 
 		virtual inline void set_labels(CLabels* lab) { SG_REF(lab);; labels=lab; }
 		virtual inline CLabels* get_labels() { SG_REF(labels); return labels; }
+		virtual inline DREAL get_label(INT i) { return labels->get_label(i); }
 
 		virtual EClassifierType get_classifier_type() { return CT_NONE; }
 

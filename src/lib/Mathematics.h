@@ -131,7 +131,7 @@ public:
 		else return (a<0) ? (-1) : (+1);
 	}
 
-	/// swap floats a and b
+	/// swap e.g. floats a and b
 	template <class T>
 	static inline void swap(T & a,T &b)
 	{
@@ -235,6 +235,19 @@ public:
 			res*=i ;
 
 		return res/factorial(k) ;
+	}
+
+	static inline void scalar_times_vec(DREAL scalar, DREAL* vec, INT n)
+	{
+		for (INT i=0; i<n; i++)
+			vec[i]*=scalar;
+	}
+
+	static inline void vec1_plus_scalar_times_vec2(DREAL scalar, DREAL* vec1,
+			const DREAL* vec2, INT n)
+	{
+		for (INT i=0; i<n; i++)
+			vec1[i]+=scalar*vec2[i];
 	}
 
 	static inline DREAL dot(DREAL* v1, DREAL* v2, INT n)

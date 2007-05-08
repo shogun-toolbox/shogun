@@ -182,6 +182,113 @@ template <class ST> class CSparseFeatures: public CFeatures
 			}
 		}
 
+
+		/** compute the dot product between two sparse feature vectors
+		 *	alpha * vec^T * vec
+		 */
+		ST sparse_dot(ST alpha, TSparseEntry<ST>* avec, INT alen, TSparseEntry<ST>* bvec, INT blen)
+		{
+			ST result=0;
+
+			//result remains zero when one of the vectors is non existent
+			if (avec && bvec)
+			{
+				if (alen<=blen)
+				{
+					INT j=0;
+					for (INT i=0; i<alen; i++)
+					{
+						INT a_feat_idx=avec[i].feat_index;
+
+						while ( (j<blen) && (bvec[j].feat_index < a_feat_idx) )
+							j++;
+
+						if ( (j<blen) && (bvec[j].feat_index == a_feat_idx) )
+						{
+							result+= avec[i].entry * bvec[j].entry;
+							j++;
+						}
+					}
+				}
+				else
+				{
+					INT j=0;
+					for (INT i=0; i<blen; i++)
+					{
+						INT b_feat_idx=bvec[i].feat_index;
+
+						while ( (j<alen) && (avec[j].feat_index < b_feat_idx) )
+							j++;
+
+						if ( (j<alen) && (avec[j].feat_index == b_feat_idx) )
+						{
+							result+= bvec[i].entry * avec[j].entry;
+							j++;
+						}
+					}
+				}
+
+				result*=alpha;
+			}
+
+			return result;
+		}
+
+		/** compute the dot product between dense weights and a sparse feature vector
+		 *	alpha * sparse^T * w + b
+		 *
+		 @param alpha scalar to multiply with
+		 @param num index of feature vector
+		 @param vec dense vector to compute dot product with
+		 @param dim length of the dense vector
+		 @param b bias
+		 */
+		ST dense_dot(ST alpha, INT num, ST* vec, INT dim, ST b)
+		{
+			ASSERT(vec);
+			ASSERT(dim==num_features);
+			ST result=b;
+
+			bool free;
+			INT num_feat;
+			TSparseEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, free);
+
+			if (sv)
+			{
+				for (INT i=0; i<num_feat; i++)
+					result+=alpha*vec[sv[i].feat_index]*sv[i].entry;
+			}
+
+			free_sparse_feature_vector(sv, num, free);
+			return result;
+		}
+
+		/** add a sparse feature vector onto a dense one
+		 *	dense+=alpha*sparse
+		 *
+		 @param alpha scalar to multiply with
+		 @param num index of feature vector
+		 @param vec dense vector
+		 @param dim length of the dense vector
+		 */
+		void add_to_dense_vec(ST alpha, INT num, ST* vec, INT dim)
+		{
+			ASSERT(vec);
+			ASSERT(dim==num_features);
+
+			bool free;
+			INT num_feat;
+			TSparseEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, free);
+
+			if (sv)
+			{
+				for (INT i=0; i<num_feat; i++)
+					vec[sv[i].feat_index]+= alpha*sv[i].entry;
+			}
+
+			free_sparse_feature_vector(sv, num, free);
+		}
+
 		void free_sparse_feature_vector(TSparseEntry<ST>* feat_vec, INT num, bool free)
 		{
 			if (feature_cache)
