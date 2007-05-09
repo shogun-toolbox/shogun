@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007 Vojtech Franc 
  * Written (W) 2007 Soeren Sonnenburg
+ * Written (W) 2007 Vojtech Franc 
  * Copyright (C) 2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -122,41 +122,55 @@ DREAL CSubGradientSVM::line_search()
 	return 0;
 }
 
-
-void CSubGradientSVM::compute_min_subgradient()
+DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT num_active, INT num_bound)
 {
-	/*
-   if num_bound > 0,
-     %     v = [W - reg_C*data.X(:,idx_active)*data.y(idx_active); -reg_C*sum(data.y(idx_active))];
-     v = [W - sum_CXy_active; -sum_Cy_active];
-     
-     Z = -reg_C*[data.X(:,idx_bound);ones(1,num_bound)].*repmat(data.y(idx_bound)',nDim+1,1);
-   
-     %    [beta,fval] = quadprog(2*Z'*Z,2*Z'*v,[],[],[],[],zeros(num_bound,1),ones(num_bound,1));
-     [beta,fval] = qpbsvm(2*Z'*Z,2*Z'*v,1);
-   
-     %     grad_W = W - reg_C*(data.X(:,idx_active)*data.y(idx_active) ...
-     %                       + data.X(:,idx_bound)*(data.y(idx_bound).*beta(:))); 
-     %     grad_b = - reg_C*(sum(data.y(idx_active)) + data.y(idx_bound)'*beta(:));
-     grad_W = W - sum_CXy_active - reg_C*data.X(:,idx_bound)*(data.y(idx_bound).*beta(:));
-     grad_b = -sum_Cy_active - reg_C*data.y(idx_bound)'*beta(:);
+	DREAL dir_deriv=0;
+	if (num_bound > 0)
+	{
+		//     v = [W - reg_C*data.X(:,idx_active)*data.y(idx_active); -reg_C*sum(data.y(idx_active))];
+		CMath::add(tmp_v, 1.0, w, -1.0, sum_CXy_active, num_feat);
+		tmp_v[num_feat]=-sum_Cy_active;
 
-     dir_deriv = [grad_W;grad_b]'*v + sum(max(zeros(num_bound,1),Z'*[grad_W;grad_b]));
-   else
-     %     grad_W = W - reg_C*data.X(:,idx_active)*data.y(idx_active);
-     %     grad_b = - reg_C*sum(data.y(idx_active));
+		//FIXME Z = -reg_C*[data.X(:,idx_bound);ones(1,num_bound)].*repmat(data.y(idx_bound)',nDim+1,1);
 
-     grad_W = W - sum_CXy_active;
-     grad_b = -sum_Cy_active;
-     
-     dir_deriv = norm([grad_W;grad_b])^2;
-   end      
-   */
+		//    [beta,fval] = quadprog(2*Z'*Z,2*Z'*v,[],[],[],[],zeros(num_bound,1),ones(num_bound,1));
+		//FIXME [beta,fval] = qpbsvm(2*Z'*Z,2*Z'*v,1);
+
+		//     grad_W = W - reg_C*(data.X(:,idx_active)*data.y(idx_active) ...
+		//                       + data.X(:,idx_bound)*(data.y(idx_bound).*beta(:))); 
+		//     grad_b = - reg_C*(sum(data.y(idx_active)) + data.y(idx_bound)'*beta(:));
+		//FIXME grad_W = W - sum_CXy_active - reg_C*data.X(:,idx_bound)*(data.y(idx_bound).*beta(:));
+		//FIXME grad_b = -sum_Cy_active - reg_C*data.y(idx_bound)'*beta(:);
+
+		//FIXME dir_deriv = [grad_W;grad_b]'*v + sum(max(zeros(num_bound,1),Z'*[grad_W;grad_b]));
+
+		//FIXME dir_deriv = CMath::dot(grad_w, grad_v, num_feat) + grad_b*v[num_feat];
+	}
+	else
+	{
+		//     grad_W = W - reg_C*data.X(:,idx_active)*data.y(idx_active);
+		//     grad_b = - reg_C*sum(data.y(idx_active));
+
+		CMath::add(grad_w, 1.0, w, -1.0, sum_CXy_active, num_feat);
+		grad_b = -sum_Cy_active;
+
+		dir_deriv = CMath::dot(grad_w, grad_w, num_feat)+ grad_b*grad_b;
+	}
+
+	return dir_deriv;
 }
 
-DREAL CSubGradientSVM::compute_objective()
+DREAL CSubGradientSVM::compute_objective(INT num_feat, INT num_vec)
 {
-	return 0;
+	DREAL result= 0.5 * CMath::dot(w,w, num_feat);
+	
+	for (INT i=0; i<num_vec; i++)
+	{
+		if (1 > proj[i])
+			result += C1 * (1-proj[i]);
+	}
+
+	return result;
 }
 
 void CSubGradientSVM::update_projection(INT num_feat, INT num_vec)
@@ -173,6 +187,10 @@ void CSubGradientSVM::init(INT num_vec, INT num_feat)
 	ASSERT(w);
 	memset(w,0,sizeof(DREAL)*num_feat);
 	bias=0;
+
+	tmp_v=new DREAL[num_feat+1];
+	ASSERT(tmp_v);
+	memset(tmp_v,0,sizeof(DREAL)*(num_feat+1));
 
 	proj= new DREAL[num_vec];
 	ASSERT(proj);
@@ -207,6 +225,7 @@ void CSubGradientSVM::cleanup()
 	delete[] idx_bound;
 	delete[] idx_active;
 	delete[] sum_CXy_active;
+	delete[] tmp_v;
 
 	proj=NULL;
 	active=NULL;
@@ -214,6 +233,7 @@ void CSubGradientSVM::cleanup()
 	idx_bound=NULL;
 	idx_active=NULL;
 	sum_CXy_active=NULL;
+	tmp_v=NULL;
 }
 
 bool CSubGradientSVM::train()
@@ -237,14 +257,14 @@ bool CSubGradientSVM::train()
 
 	while (find_active(num_feat, num_vec, num_active, num_bound) > 0)
 	{
-		compute_min_subgradient();
+		DREAL dir_deriv=compute_min_subgradient(num_feat, num_vec, num_active, num_bound);
 		alpha=line_search();
 
 		CMath::vec1_plus_scalar_times_vec2(-alpha, w, grad_w, num_feat);
 		bias-=alpha*grad_b;
 
 		update_projection(num_feat, num_vec);
-		//compute_objective();
+		SG_PRINT("objective: %f dir_deriv: %f\n", compute_objective(num_feat, num_vec), dir_deriv);
 	}
 
 	cleanup();

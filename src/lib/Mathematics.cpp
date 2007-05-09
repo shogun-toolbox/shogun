@@ -63,11 +63,7 @@ INT CMath::LOGACCURACY         = 0; // 100000 steps per integer
 
 INT CMath::LOGRANGE            = 0; // range for logtable: log(1+exp(x))  -25 <= x <= 0
 
-#ifdef USE_PATHDEBUG
-const DREAL CMath::INFTY            =  1e11;	        // infinity
-#else
 const DREAL CMath::INFTY            =  -log(0.0);	// infinity
-#endif
 const DREAL CMath::ALMOST_NEG_INFTY =  -1000;	
 
 CHAR CMath::rand_state[256];

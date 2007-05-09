@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2007 Vojtech Franc 
  * Written (W) 2007 Soeren Sonnenburg
+ * Written (W) 2007 Vojtech Franc 
  * Copyright (C) 2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -42,10 +42,11 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		INT find_active(INT num_feat, INT num_vec, INT& num_active, INT& num_bound);
 
 		/// compute svm objective
-		DREAL compute_objective();
+		DREAL compute_objective(INT num_feat, INT num_vec);
 
-		///compute minimum norm subgradient
-		void compute_min_subgradient();
+		/// compute minimum norm subgradient
+		/// return norm of minimum norm subgradient
+		DREAL compute_min_subgradient(INT num_feat, INT num_vec, INT num_active, INT num_bound);
 
 		///performs a line search to determine step size
 		DREAL line_search();
@@ -78,6 +79,9 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		//vector of length num_feat
 		DREAL* grad_w;
 		DREAL grad_b;
+
+		//vector of length num_feat+1
+		DREAL* tmp_v;
 
 };
 #endif

@@ -250,7 +250,7 @@ public:
 			vec1[i]+=scalar*vec2[i];
 	}
 
-	static inline DREAL dot(DREAL* v1, DREAL* v2, INT n)
+	static inline DREAL dot(const DREAL* v1, const DREAL* v2, INT n)
 	{
 		DREAL r=0;
 #ifdef HAVE_LAPACK
@@ -261,6 +261,23 @@ public:
 			r+=v1[i]*v2[i];
 #endif
 		return r;
+	}
+
+	/// target=alpha*vec1 + beta*vec2
+	static inline void add(DREAL* target, DREAL alpha, const DREAL* v1, DREAL beta, const DREAL* v2, INT len)
+	{
+		for (INT i=0; i<len; i++)
+			target[i]=alpha*v1[i]+beta*v2[i];
+	}
+
+	/// return sum(vec)
+	static inline DREAL sum(DREAL* vec, INT len)
+	{
+		DREAL result=0;
+		for (INT i=0; i<len; i++)
+			result+=vec[i];
+
+		return result;
 	}
 
 	static inline DREAL mean(DREAL* vec, INT len)
