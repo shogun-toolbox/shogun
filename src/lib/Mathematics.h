@@ -177,6 +177,20 @@ public:
 	/// return the pseudo inverse for matrix
 	/// when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)
 	static DREAL* pinv(DREAL* matrix, INT rows, INT cols, DREAL* target=NULL);
+
+	static void matrix_multiply(const DREAL* matrix1, const DREAL* matrix2, DREAL* target)
+	{
+
+//void cblas_dgemm(CblasColMajor, CblasNoTrans, CblasColMajor, CblasNoTrans,
+//                 const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
+//                 const int K, const double alpha, const double *A,
+//                 const int lda, const double *B, const int ldb,
+//                 const double beta, double *C, const int ldc);
+	}
+
+	static inline void matrix_vector_multiply(DREAL* src, DREAL* dst)
+	{
+	}
 #endif
 
 	static inline LONG factorial(INT n)

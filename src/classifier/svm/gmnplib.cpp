@@ -71,8 +71,6 @@ gmnplib.c: Library of solvers for Generalized Minimal Norm Problem (GMNP).
 #define MINUS_INF INT_MIN
 #define PLUS_INF  INT_MAX
 
-#define ABS(A) ((A >= 0) ? A : -A)
-#define MIN(A,B) ((A < B) ? A : B)
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
 #define KDELTA(A,B) (A==B)
 #define KDELTA4(A1,A2,A3,A4) ((A1==A2)||(A1==A3)||(A1==A4)||(A2==A3)||(A2==A4)||(A3==A4))
@@ -322,7 +320,7 @@ int CGMNPLib::gmnp_imdm(double *vector_c,
 
   /* Stopping conditions */
   if( UB-LB <= tolabs ) exitflag = 1;
-  else if(UB-LB <= ABS(UB)*tolrel ) exitflag = 2;
+  else if(UB-LB <= CMath::abs(UB)*tolrel ) exitflag = 2;
   else if(LB > th ) exitflag = 3;
   else exitflag = -1;
 
@@ -397,7 +395,7 @@ int CGMNPLib::gmnp_imdm(double *vector_c,
 
     /* Stopping conditions */
     if( UB-LB <= tolabs ) exitflag = 1; 
-    else if( UB-LB <= ABS(UB)*tolrel ) exitflag = 2;
+    else if( UB-LB <= CMath::abs(UB)*tolrel ) exitflag = 2;
     else if(LB > th ) exitflag = 3;
     else if(t >= tmax) exitflag = 0; 
 

@@ -119,7 +119,7 @@ DREAL CSubGradientSVM::line_search()
      end
    end
    */
-	return 0;
+	return 0.001;
 }
 
 DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT num_active, INT num_bound)

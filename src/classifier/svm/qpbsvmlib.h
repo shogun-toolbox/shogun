@@ -23,75 +23,85 @@
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
+enum E_QPB_SOLVER
+{
+  QPB_SOLVER_SCA,	// sequential coordinate wise (gaussian seidel based)
+  QPB_SOLVER_SCAS,	// sequential coordinate wise selecting the variable
+  					// gaining 'best' improved
+  QPB_SOLVER_SCAMV  // sequential coordinate wise selecting variable most violating kkt's
+};
+
 class CQPBSVMLib: public CSGObject
 {
  public:
-  CQPBSVMLib(DREAL* vector_y, CKernel* kernel, INT num_data, INT num_virtual_data, INT num_classes, DREAL reg_const);
+ /// H is a symmetric matrix of size n x n
+ /// f is vector of size m
+  CQPBSVMLib(DREAL* H, INT n, DREAL* f, INT m, DREAL UB=1.0);
+
+  /// result has to be allocated 
+  INT solve_qp(DREAL* result, INT len);
+
+  inline void set_solver(E_QPB_SOLVER solver)
+  {
+	  m_solver=solver;
+  }
 
   ~CQPBSVMLib();
 
+ protected:
+  inline DREAL* get_col(INT col)
+  {
+	  return &m_H[m_dim*col];
+  }
 /* --------------------------------------------------------------
 
-Usage: exitflag = qpbsvm_sca( &get_col, diag_H, f, UB, dim, tmax, 
+Usage: exitflag = qpbsvm_sca(UB, dim, tmax, 
                tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
-int qpbsvm_sca(const void* (*get_col)(long,long),
-            double *diag_H,
-            double *f,
-            double UB,
-            long   dim,
-            long   tmax,
-            double tolabs,
-            double tolrel,
-            double tolKKT,
-            double *x,
-	        double *Nabla,
-            long   *ptr_t,
-            double **ptr_History,
-            long   verb);
+INT qpbsvm_sca(DREAL *x,
+	        DREAL *Nabla,
+            INT   *ptr_t,
+            DREAL **ptr_History,
+            INT   verb);
 /* --------------------------------------------------------------
 
-Usage: exitflag = qpbsvm_scas( &get_col, diag_H, f, UB, dim, tmax, 
+Usage: exitflag = qpbsvm_scas(UB, dim, tmax, 
                tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
-int qpbsvm_scas(const void* (*get_col)(long,long),
-            double *diag_H,
-            double *f,
-            double UB,
-            long   dim,
-            long   tmax,
-            double tolabs,
-            double tolrel,
-            double tolKKT,
-            double *x,
-	        double *Nabla,
-            long   *ptr_t,
-            double **ptr_History,
-            long   verb);
+INT qpbsvm_scas(DREAL *x,
+	        DREAL *Nabla,
+            INT   *ptr_t,
+            DREAL **ptr_History,
+            INT   verb);
 
 /* --------------------------------------------------------------
 
-Usage: exitflag = qpbsvm_scamv( &get_col, diag_H, f, UB, dim, tmax, 
+Usage: exitflag = qpbsvm_scamv(UB, dim, tmax, 
                tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
-int qpbsvm_scamv(const void* (*get_col)(long,long),
-            double *diag_H,
-            double *f,
-            double UB,
-            long   dim,
-            long   tmax,
-            double tolabs,
-            double tolrel,
-            double tolKKT,
-            double *x,
-	        double *Nabla,
-            long   *ptr_t,
-            double **ptr_History,
-            long   verb);
+INT qpbsvm_scamv(DREAL *x,
+	        DREAL *Nabla,
+            INT   *ptr_t,
+            DREAL **ptr_History,
+            INT   verb);
+
+protected:
+	DREAL* m_H;
+	DREAL* m_diag_H;
+	INT m_dim;
+
+	DREAL* m_f;
+	INT m_dimf;
+
+	DREAL m_UB;
+
+	INT m_tmax;
+	DREAL m_tolabs;
+	DREAL m_tolrel;
+	DREAL m_tolKKT;
+	E_QPB_SOLVER m_solver;
 };
-
-
 #endif //QPBSVMLIB_H__

@@ -54,47 +54,83 @@
 
 #define HISTORY_BUF 1000000
 
-#define ABS(A) ((A >= 0) ? A : -(A))
-#define MIN(A,B) ((A < B) ? (A) : (B))
-#define MAX(A,B) ((A >= B) ? (A) : (B))
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
+
+CQPBSVMLib::CQPBSVMLib(DREAL* H, INT n, DREAL* f, INT m, DREAL UB)
+{
+	ASSERT(H && n>0);
+	m_H=H;
+	m_dim = n;
+
+	m_diag_H=new DREAL[n];
+	ASSERT(m_diag_H);
+
+	for (INT i=0; i<n; i++)
+		m_diag_H[i]=m_H[i*n+i];
+
+	m_f=f;
+	m_UB=UB;
+	m_tmax = INT_MAX;
+	m_tolabs = 0;
+	m_tolrel = 1e-6;
+	m_tolKKT = 0;
+	m_solver = QPB_SOLVER_SCA;
+}
+
+CQPBSVMLib::~CQPBSVMLib()
+{
+	delete[] m_diag_H;
+}
+
+INT CQPBSVMLib::solve_qp(DREAL* result, INT len)
+{
+	ASSERT(len==m_dim);
+	DREAL* Nabla=NULL;
+	DREAL* History;
+	INT t;
+	INT verb=0;
+
+	switch (m_solver)
+	{
+		case QPB_SOLVER_SCA:
+			return qpbsvm_sca(result, Nabla, &t, &History, verb );
+		case QPB_SOLVER_SCAS:
+			return qpbsvm_scas(result, Nabla, &t, &History, verb );
+		case QPB_SOLVER_SCAMV:
+			return qpbsvm_scamv(result, Nabla, &t, &History, verb );
+		default:
+			SG_ERROR("unknown solver\n");
+			return -1;
+	}
+}
 
 /* --------------------------------------------------------------
 
-Usage: exitflag = qpbsvm_sca( &get_col, diag_H, f, UB, dim, tmax, 
-               tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb )
+Usage: exitflag = qpbsvm_sca(m_UB, m_dim, m_tmax, 
+               m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
-int qpbsvm_sca(const void* (*get_col)(long,long),
-            double *diag_H,
-            double *f,
-            double UB,
-            long   dim,
-            long   tmax,
-            double tolabs,
-            double tolrel,
-            double tolKKT,
-            double *x,
-	        double *Nabla,
-            long   *ptr_t,
-            double **ptr_History,
-            long   verb)
+INT CQPBSVMLib::qpbsvm_sca(DREAL *x,
+	        DREAL *Nabla,
+            INT   *ptr_t,
+            DREAL **ptr_History,
+            INT   verb)
 {
-  double *History;
-  double *col_H;
-  double *tmp_ptr;
-  double x_old;
-  double delta_x;
-  double xHx;
-  double Q_P;
-  double Q_D;
-  double xf;
-  double xi_sum;
-  long History_size;
-  long t;
-  long i, j;
-  int exitflag;
-  int KKTsatisf;
+  DREAL *History;
+  DREAL *col_H;
+  DREAL *tmp_ptr;
+  DREAL x_old;
+  DREAL delta_x;
+  DREAL xHx;
+  DREAL Q_P;
+  DREAL Q_D;
+  DREAL xf;
+  DREAL xi_sum;
+  INT History_size;
+  INT t;
+  INT i, j;
+  INT exitflag;
+  INT KKTsatisf;
 
   /* ------------------------------------------------------------ */
   /* Initialization                                               */
@@ -102,29 +138,29 @@ int qpbsvm_sca(const void* (*get_col)(long,long),
 
   t = 0;
 
-  History_size = (tmax < HISTORY_BUF ) ? tmax+1 : HISTORY_BUF;
-  History = new double[History_size*2];
+  History_size = (m_tmax < HISTORY_BUF ) ? m_tmax+1 : HISTORY_BUF;
+  History = new DREAL[History_size*2];
   ASSERT(History);
-  memset(History, 0, sizeof(double)*History_size*2);
+  memset(History, 0, sizeof(DREAL)*History_size*2);
 
   /* compute Q_P and Q_D */
   xHx = 0;
   xf = 0;
   xi_sum = 0;
-  for(i = 0; i < dim; i++ ) {
-    xHx += x[i]*(Nabla[i] - f[i]);
-    xf += x[i]*f[i];
-    xi_sum += MAX(0,-Nabla[i]);
+  for(i = 0; i < m_dim; i++ ) {
+    xHx += x[i]*(Nabla[i] - m_f[i]);
+    xf += x[i]*m_f[i];
+    xi_sum += CMath::max(0.0,-Nabla[i]);
   }
 
   Q_P = 0.5*xHx + xf;
-  Q_D = -0.5*xHx - UB*xi_sum;
+  Q_D = -0.5*xHx - m_UB*xi_sum;
   History[INDEX(0,t,2)] = Q_P;
   History[INDEX(1,t,2)] = Q_D;
 
   if( verb > 0 ) {
-    SG_PRINT("%d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, (Q_P-Q_D)/|Q_P|=%f \n",
-     t, Q_P, Q_D, Q_P-Q_D,(Q_P-Q_D)/ABS(Q_P));
+    SG_PRINT("%d: Q_P=%m_f, Q_D=%m_f, Q_P-Q_D=%m_f, (Q_P-Q_D)/|Q_P|=%m_f \n",
+     t, Q_P, Q_D, Q_P-Q_D,(Q_P-Q_D)/CMath::abs(Q_P));
   }
 
   exitflag = -1;
@@ -132,17 +168,17 @@ int qpbsvm_sca(const void* (*get_col)(long,long),
   {
     t++;     
  
-    for(i = 0; i < dim; i++ ) {
-      if( diag_H[i] > 0 ) {
+    for(i = 0; i < m_dim; i++ ) {
+      if( m_diag_H[i] > 0 ) {
         /* variable update */
         x_old = x[i];
-        x[i] = MIN(UB,MAX(0, x[i] - Nabla[i]/diag_H[i]));
+        x[i] = CMath::min(m_UB,CMath::max(0.0, x[i] - Nabla[i]/m_diag_H[i]));
         
         /* update Nabla */
         delta_x = x[i] - x_old;
         if( delta_x != 0 ) {
-          col_H = (double*)get_col(i,-1);
-          for(j = 0; j < dim; j++ ) {
+          col_H = (DREAL*)get_col(i);
+          for(j = 0; j < m_dim; j++ ) {
             Nabla[j] += col_H[j]*delta_x;
           }
         }   
@@ -155,39 +191,39 @@ int qpbsvm_sca(const void* (*get_col)(long,long),
     xf = 0;
     xi_sum = 0;
     KKTsatisf = 1;
-    for(i = 0; i < dim; i++ ) {
-      xHx += x[i]*(Nabla[i] - f[i]);
-      xf += x[i]*f[i];
-      xi_sum += MAX(0,-Nabla[i]);
+    for(i = 0; i < m_dim; i++ ) {
+      xHx += x[i]*(Nabla[i] - m_f[i]);
+      xf += x[i]*m_f[i];
+      xi_sum += CMath::max(0.0,-Nabla[i]);
 
-      if((x[i] > 0 && x[i] < UB && ABS(Nabla[i]) > tolKKT) || 
-         (x[i] == 0 && Nabla[i] < -tolKKT) ||
-         (x[i] == UB && Nabla[i] > tolKKT)) KKTsatisf = 0;
+      if((x[i] > 0 && x[i] < m_UB && CMath::abs(Nabla[i]) > m_tolKKT) || 
+         (x[i] == 0 && Nabla[i] < -m_tolKKT) ||
+         (x[i] == m_UB && Nabla[i] > m_tolKKT)) KKTsatisf = 0;
     }
 
     Q_P = 0.5*xHx + xf;
-    Q_D = -0.5*xHx - UB*xi_sum;
+    Q_D = -0.5*xHx - m_UB*xi_sum;
 
     /* stopping conditions */
-    if(t >= tmax) exitflag = 0;
-    else if(Q_P-Q_D <= tolabs) exitflag = 1;
-    else if(Q_P-Q_D <= ABS(Q_P)*tolrel) exitflag = 2;
+    if(t >= m_tmax) exitflag = 0;
+    else if(Q_P-Q_D <= m_tolabs) exitflag = 1;
+    else if(Q_P-Q_D <= CMath::abs(Q_P)*m_tolrel) exitflag = 2;
     else if(KKTsatisf == 1) exitflag = 3;
 
     if( verb > 0 && (t % verb == 0 || t==1)) {
-      SG_PRINT("%d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, (Q_P-Q_D)/|Q_P|=%f \n",
-        t, Q_P, Q_D, Q_P-Q_D,(Q_P-Q_D)/ABS(Q_P));
+      SG_PRINT("%d: Q_P=%m_f, Q_D=%m_f, Q_P-Q_D=%m_f, (Q_P-Q_D)/|Q_P|=%m_f \n",
+        t, Q_P, Q_D, Q_P-Q_D,(Q_P-Q_D)/CMath::abs(Q_P));
     }
 
-    /* Store UB LB to History buffer */
+    /* Store m_UB LB to History buffer */
     if( t < History_size ) {
       History[INDEX(0,t,2)] = Q_P;
       History[INDEX(1,t,2)] = Q_D;
     }
     else {
-      tmp_ptr = new double[(History_size+HISTORY_BUF)*2];
+      tmp_ptr = new DREAL[(History_size+HISTORY_BUF)*2];
       ASSERT(tmp_ptr);
-	  memset(tmp_ptr, 0, sizeof(double)*(History_size+HISTORY_BUF)*2);
+	  memset(tmp_ptr, 0, sizeof(DREAL)*(History_size+HISTORY_BUF)*2);
 
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
@@ -211,45 +247,36 @@ int qpbsvm_sca(const void* (*get_col)(long,long),
 
 /* --------------------------------------------------------------
 
-Usage: exitflag = qpbsvm_scas( &get_col, diag_H, f, UB, dim, tmax, 
-               tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb )
+Usage: exitflag = qpbsvm_scas(m_UB, m_dim, m_tmax, 
+               m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
-int qpbsvm_scas(const void* (*get_col)(long,long),
-            double *diag_H,
-            double *f,
-            double UB,
-            long   dim,
-            long   tmax,
-            double tolabs,
-            double tolrel,
-            double tolKKT,
-            double *x,
-	        double *Nabla,
-            long   *ptr_t,
-            double **ptr_History,
-            long   verb)
+INT CQPBSVMLib::qpbsvm_scas(DREAL *x,
+	        DREAL *Nabla,
+            INT   *ptr_t,
+            DREAL **ptr_History,
+            INT   verb)
 {
-  double *History;
-  double *col_H;
-  double *tmp_ptr;
-  double x_old;
-  double x_new;
-  double delta_x;
-  double max_x=CMath::INFTY;
-  double xHx;
-  double Q_P;
-  double Q_D;
-  double xf;
-  double xi_sum;
-  double max_update;
-  double curr_update;
-  long History_size;
-  long t;
-  long i, j;
-  long max_i=-1;
-  int exitflag;
-  int KKTsatisf;
+  DREAL *History;
+  DREAL *col_H;
+  DREAL *tmp_ptr;
+  DREAL x_old;
+  DREAL x_new;
+  DREAL delta_x;
+  DREAL max_x=CMath::INFTY;
+  DREAL xHx;
+  DREAL Q_P;
+  DREAL Q_D;
+  DREAL xf;
+  DREAL xi_sum;
+  DREAL max_update;
+  DREAL curr_update;
+  INT History_size;
+  INT t;
+  INT i, j;
+  INT max_i=-1;
+  INT exitflag;
+  INT KKTsatisf;
 
   /* ------------------------------------------------------------ */
   /* Initialization                                               */
@@ -257,29 +284,29 @@ int qpbsvm_scas(const void* (*get_col)(long,long),
 
   t = 0;
 
-  History_size = (tmax < HISTORY_BUF ) ? tmax+1 : HISTORY_BUF;
-  History = new double[History_size*2];
+  History_size = (m_tmax < HISTORY_BUF ) ? m_tmax+1 : HISTORY_BUF;
+  History = new DREAL[History_size*2];
   ASSERT(History);
-  memset(History, 0, sizeof(double)*History_size*2);
+  memset(History, 0, sizeof(DREAL)*History_size*2);
 
   /* compute Q_P and Q_D */
   xHx = 0;
   xf = 0;
   xi_sum = 0;
-  for(i = 0; i < dim; i++ ) {
-    xHx += x[i]*(Nabla[i] - f[i]);
-    xf += x[i]*f[i];
-    xi_sum += MAX(0,-Nabla[i]);
+  for(i = 0; i < m_dim; i++ ) {
+    xHx += x[i]*(Nabla[i] - m_f[i]);
+    xf += x[i]*m_f[i];
+    xi_sum += CMath::max(0.0,-Nabla[i]);
   }
 
   Q_P = 0.5*xHx + xf;
-  Q_D = -0.5*xHx - UB*xi_sum;
+  Q_D = -0.5*xHx - m_UB*xi_sum;
   History[INDEX(0,t,2)] = Q_P;
   History[INDEX(1,t,2)] = Q_D;
 
   if( verb > 0 ) {
-    SG_PRINT("%d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, (Q_P-Q_D)/|Q_P|=%f \n",
-     t, Q_P, Q_D, Q_P-Q_D,(Q_P-Q_D)/ABS(Q_P));
+    SG_PRINT("%d: Q_P=%m_f, Q_D=%m_f, Q_P-Q_D=%m_f, (Q_P-Q_D)/|Q_P|=%m_f \n",
+     t, Q_P, Q_D, Q_P-Q_D,(Q_P-Q_D)/CMath::abs(Q_P));
   }
 
   exitflag = -1;
@@ -288,14 +315,14 @@ int qpbsvm_scas(const void* (*get_col)(long,long),
     t++;     
 
     max_update = -CMath::INFTY;
-    for(i = 0; i < dim; i++ ) {
-      if( diag_H[i] > 0 ) { 
+    for(i = 0; i < m_dim; i++ ) {
+      if( m_diag_H[i] > 0 ) { 
         /* variable update */
         x_old = x[i];
-        x_new = MIN(UB,MAX(0, x[i] - Nabla[i]/diag_H[i]));
+        x_new = CMath::min(m_UB,CMath::max(0.0, x[i] - Nabla[i]/m_diag_H[i]));
   
-        curr_update = -0.5*diag_H[i]*(x_new*x_new-x_old*x_old) - 
-          (Nabla[i] - diag_H[i]*x_old)*(x_new - x_old);
+        curr_update = -0.5*m_diag_H[i]*(x_new*x_new-x_old*x_old) - 
+          (Nabla[i] - m_diag_H[i]*x_old)*(x_new - x_old);
 
         if( curr_update > max_update ) {
           max_i = i;
@@ -311,8 +338,8 @@ int qpbsvm_scas(const void* (*get_col)(long,long),
     /* update Nabla */
     delta_x = max_x - x_old;
     if( delta_x != 0 ) {
-      col_H = (double*)get_col(max_i,-1);
-      for(j = 0; j < dim; j++ ) {
+      col_H = (DREAL*)get_col(max_i);
+      for(j = 0; j < m_dim; j++ ) {
         Nabla[j] += col_H[j]*delta_x;
       }
     }   
@@ -322,39 +349,39 @@ int qpbsvm_scas(const void* (*get_col)(long,long),
     xf = 0;
     xi_sum = 0;
     KKTsatisf = 1;
-    for(i = 0; i < dim; i++ ) {
-      xHx += x[i]*(Nabla[i] - f[i]);
-      xf += x[i]*f[i];
-      xi_sum += MAX(0,-Nabla[i]);
+    for(i = 0; i < m_dim; i++ ) {
+      xHx += x[i]*(Nabla[i] - m_f[i]);
+      xf += x[i]*m_f[i];
+      xi_sum += CMath::max(0.0,-Nabla[i]);
 
-      if((x[i] > 0 && x[i] < UB && ABS(Nabla[i]) > tolKKT) || 
-         (x[i] == 0 && Nabla[i] < -tolKKT) ||
-         (x[i] == UB && Nabla[i] > tolKKT)) KKTsatisf = 0;
+      if((x[i] > 0 && x[i] < m_UB && CMath::abs(Nabla[i]) > m_tolKKT) || 
+         (x[i] == 0 && Nabla[i] < -m_tolKKT) ||
+         (x[i] == m_UB && Nabla[i] > m_tolKKT)) KKTsatisf = 0;
     }
 
     Q_P = 0.5*xHx + xf;
-    Q_D = -0.5*xHx - UB*xi_sum;
+    Q_D = -0.5*xHx - m_UB*xi_sum;
 
     /* stopping conditions */
-    if(t >= tmax) exitflag = 0;
-    else if(Q_P-Q_D <= tolabs) exitflag = 1;
-    else if(Q_P-Q_D <= ABS(Q_P)*tolrel) exitflag = 2;
+    if(t >= m_tmax) exitflag = 0;
+    else if(Q_P-Q_D <= m_tolabs) exitflag = 1;
+    else if(Q_P-Q_D <= CMath::abs(Q_P)*m_tolrel) exitflag = 2;
     else if(KKTsatisf == 1) exitflag = 3;
 
     if( verb > 0 && (t % verb == 0 || t==1)) {
-      SG_PRINT("%d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, (Q_P-Q_D)/|Q_P|=%f \n",
-        t, Q_P, Q_D, Q_P-Q_D,(Q_P-Q_D)/ABS(Q_P));
+      SG_PRINT("%d: Q_P=%m_f, Q_D=%m_f, Q_P-Q_D=%m_f, (Q_P-Q_D)/|Q_P|=%m_f \n",
+        t, Q_P, Q_D, Q_P-Q_D,(Q_P-Q_D)/CMath::abs(Q_P));
     }
 
-    /* Store UB LB to History buffer */
+    /* Store m_UB LB to History buffer */
     if( t < History_size ) {
       History[INDEX(0,t,2)] = Q_P;
       History[INDEX(1,t,2)] = Q_D;
     }
     else {
-      tmp_ptr = new double[(History_size+HISTORY_BUF)*2];
+      tmp_ptr = new DREAL[(History_size+HISTORY_BUF)*2];
       ASSERT(tmp_ptr);
-	  memset(tmp_ptr, 0, (History_size+HISTORY_BUF)*2*sizeof(double));
+	  memset(tmp_ptr, 0, (History_size+HISTORY_BUF)*2*sizeof(DREAL));
       for( i = 0; i < History_size; i++ ) {
         tmp_ptr[INDEX(0,i,2)] = History[INDEX(0,i,2)];
         tmp_ptr[INDEX(1,i,2)] = History[INDEX(1,i,2)];
@@ -376,35 +403,26 @@ int qpbsvm_scas(const void* (*get_col)(long,long),
 
 /* --------------------------------------------------------------
 
-Usage: exitflag = qpbsvm_scamv( &get_col, diag_H, f, UB, dim, tmax, 
-               tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb )
+Usage: exitflag = qpbsvm_scamv(m_UB, m_dim, m_tmax, 
+               m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
 
 -------------------------------------------------------------- */
-int qpbsvm_scamv(const void* (*get_col)(long,long),
-            double *diag_H,
-            double *f,
-            double UB,
-            long   dim,
-            long   tmax,
-            double tolabs,
-            double tolrel,
-            double tolKKT,
-            double *x,
-	        double *Nabla,
-            long   *ptr_t,
-            double **ptr_History,
-            long   verb)
+INT CQPBSVMLib::qpbsvm_scamv(DREAL *x,
+	        DREAL *Nabla,
+            INT   *ptr_t,
+            DREAL **ptr_History,
+            INT   verb)
 {
-  double *History;
-  double *col_H;
-  double delta_x;
-  double x_new;
-  double max_viol;
-  double fval;
-  long t;
-  long i;
-  long u=-1;
-  int exitflag;
+  DREAL *History;
+  DREAL *col_H;
+  DREAL delta_x;
+  DREAL x_new;
+  DREAL max_viol;
+  DREAL fval;
+  INT t;
+  INT i;
+  INT u=-1;
+  INT exitflag;
 
   /* ------------------------------------------------------------ */
   /* Initialization                                               */
@@ -412,52 +430,52 @@ int qpbsvm_scamv(const void* (*get_col)(long,long),
 
   t = 0;
   exitflag = -1;
-  while( exitflag == -1 && t <= tmax) 
+  while( exitflag == -1 && t <= m_tmax) 
   {
     t++;     
 
     max_viol = 0;
-    for(i = 0; i < dim; i++ ) 
+    for(i = 0; i < m_dim; i++ ) 
     {      
       if( x[i] == 0 )
       {
         if( max_viol < -Nabla[i]) { u = i; max_viol = -Nabla[i]; }
       }
-      else if( x[i] > 0 && x[i] < UB )
+      else if( x[i] > 0 && x[i] < m_UB )
       {
-        if( max_viol < ABS(Nabla[i]) ) { u = i; max_viol = ABS(Nabla[i]); } 
+        if( max_viol < CMath::abs(Nabla[i]) ) { u = i; max_viol = CMath::abs(Nabla[i]); } 
       }
       else if( max_viol < Nabla[i]) { u = i; max_viol = Nabla[i]; }
     }
 
-/*    SG_PRINT("%d: max_viol=%f, u=%d\n", t, max_viol, u);*/
+/*    SG_PRINT("%d: max_viol=%m_f, u=%d\n", t, max_viol, u);*/
 
-    if( max_viol <= tolKKT ) 
+    if( max_viol <= m_tolKKT ) 
     {
       exitflag = 1;
     } 
     else
     {
       /* update */
-      x_new = MIN(UB,MAX(0, x[u] - Nabla[u]/diag_H[u]));
+      x_new = CMath::min(m_UB,CMath::max(0.0, x[u] - Nabla[u]/m_diag_H[u]));
 
       delta_x = x_new - x[u];
       x[u] = x_new;
 
-      col_H = (double*)get_col(u,-1);
-      for(i = 0; i < dim; i++ ) {
+      col_H = (DREAL*)get_col(u);
+      for(i = 0; i < m_dim; i++ ) {
         Nabla[i] += col_H[i]*delta_x;
       }
     }
   }
 
-  History = new double[(t+1)*2];
+  History = new DREAL[(t+1)*2];
   ASSERT(History);
-  memset(History, 0, sizeof(double)*(t+1)*2);
+  memset(History, 0, sizeof(DREAL)*(t+1)*2);
 
   fval = 0;
-  for(fval = 0, i = 0; i < dim; i++ ) {
-    fval += 0.5*x[i]*(Nabla[i]+f[i]);
+  for(fval = 0, i = 0; i < m_dim; i++ ) {
+    fval += 0.5*x[i]*(Nabla[i]+m_f[i]);
   }
 
   History[INDEX(0,t,2)] = fval;
