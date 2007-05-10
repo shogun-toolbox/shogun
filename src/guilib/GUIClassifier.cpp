@@ -677,19 +677,12 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 		return NULL;
 	}
 
-	if (!testlabels)
-	{
-		SG_ERROR( "no test labels available\n") ;
-		return NULL;
-	}
-
 	if (!gui->guikernel.is_initialized())
 	{
 		SG_ERROR( "kernel not initialized\n") ;
 		return NULL;
 	}
 	  
-	((CKernelMachine*) classifier)->set_labels(testlabels);
 	((CKernelMachine*) classifier)->set_kernel(gui->guikernel.get_kernel()) ;
 	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
 	SG_INFO( "starting kernel machine testing\n") ;
@@ -698,7 +691,6 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 
 CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
 {
-	CLabels* testlabels=gui->guilabels.get_test_labels();
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
 	gui->guidistance.get_distance()->set_precompute_matrix(false);
@@ -720,19 +712,12 @@ CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
 		return NULL;
 	}
 
-	if (!testlabels)
-	{
-		SG_ERROR( "no test labels available\n") ;
-		return NULL;
-	}
-
 	if (!gui->guidistance.is_initialized())
 	{
 		SG_ERROR( "distance not initialized\n") ;
 		return NULL;
 	}
 	  
-	((CDistanceMachine*) classifier)->set_labels(testlabels);
 	((CDistanceMachine*) classifier)->set_distance(gui->guidistance.get_distance()) ;
 	gui->guidistance.get_distance()->set_precompute_matrix(false);
 	SG_INFO( "starting distance machine testing\n") ;
@@ -742,7 +727,6 @@ CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
 
 CLabels* CGUIClassifier::classify_linear(CLabels* output)
 {
-	CLabels* testlabels=gui->guilabels.get_test_labels();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
 
 	if (!classifier)
@@ -756,21 +740,14 @@ CLabels* CGUIClassifier::classify_linear(CLabels* output)
 		return NULL;
 	}
 
-	if (!testlabels)
-	{
-		SG_ERROR( "no test labels available\n") ;
-		return NULL;
-	}
 
 	((CLinearClassifier*) classifier)->set_features((CRealFeatures*) testfeatures);
-	((CLinearClassifier*) classifier)->set_labels(testlabels);
 	SG_INFO( "starting linear classifier testing\n") ;
 	return classifier->classify(output);
 }
 
 CLabels* CGUIClassifier::classify_sparse_linear(CLabels* output)
 {
-	CLabels* testlabels=gui->guilabels.get_test_labels();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
 
 	if (!classifier)
@@ -784,14 +761,7 @@ CLabels* CGUIClassifier::classify_sparse_linear(CLabels* output)
 		return NULL;
 	}
 
-	if (!testlabels)
-	{
-		SG_ERROR( "no test labels available\n") ;
-		return NULL;
-	}
-
 	((CSparseLinearClassifier*) classifier)->set_features((CSparseFeatures<DREAL>*) testfeatures);
-	((CSparseLinearClassifier*) classifier)->set_labels(testlabels);
 	SG_INFO( "starting linear classifier testing\n") ;
 	return classifier->classify(output);
 }

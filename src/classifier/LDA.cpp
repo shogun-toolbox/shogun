@@ -163,15 +163,18 @@ bool CLDA::train()
 	cblas_dsymv(CblasColMajor, CblasUpper, num_feat, 1.0, inv_scatter, num_feat, mean_pos, 1, 0, w_pos, 1);
 	cblas_dsymv(CblasColMajor, CblasUpper, num_feat, 1.0, inv_scatter, num_feat, mean_neg, 1, 0, w_neg, 1);
 	
-	bias=0.5*(CMath::dot(w_pos, mean_pos, num_feat)-CMath::dot(w_neg, mean_neg, num_feat));
+	bias=0.5*(CMath::dot(w_neg, mean_neg, num_feat)-CMath::dot(w_pos, mean_pos, num_feat));
 	for (i=0; i<num_feat; i++)
 		w[i]=w_pos[i]-w_neg[i];
 
+#ifdef DEBUG_LDA
+	SG_PRINT("bias: %f\n", bias);
     CMath::display_vector(w, num_feat, "w");
     CMath::display_vector(w_pos, num_feat, "w_pos");
     CMath::display_vector(w_neg, num_feat, "w_neg");
     CMath::display_vector(mean_pos, num_feat, "mean_pos");
     CMath::display_vector(mean_neg, num_feat, "mean_neg");
+#endif
 
 	delete[] train_labels;
 	delete[] mean_neg;

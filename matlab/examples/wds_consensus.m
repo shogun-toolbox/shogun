@@ -39,6 +39,8 @@ sg('send_command', 'new_svm LIGHT');
 sg('send_command', sprintf('c %f',C));
 sg('send_command', 'svm_train');
 consensus=sg('get_WD_consensus');
+scores=sg('get_WD_scoring',1);
+imagesc(reshape(scores,[4,length(scores)/4]))
 consensus'
 
 x=traindat(:,trainlab==1);
