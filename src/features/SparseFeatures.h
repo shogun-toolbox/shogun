@@ -249,9 +249,9 @@ template <class ST> class CSparseFeatures: public CFeatures
 			ASSERT(dim==num_features);
 			ST result=b;
 
-			bool free;
+			bool vfree;
 			INT num_feat;
-			TSparseEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, free);
+			TSparseEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
 
 			if (sv)
 			{
@@ -259,7 +259,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 					result+=alpha*vec[sv[i].feat_index]*sv[i].entry;
 			}
 
-			free_sparse_feature_vector(sv, num, free);
+			free_sparse_feature_vector(sv, num, vfree);
 			return result;
 		}
 

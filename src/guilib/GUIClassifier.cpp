@@ -154,10 +154,20 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		classifier= new CKNN();
 		SG_INFO( "created KNN object\n") ;
 	}
-	else if (strcmp(param,"SUBGRADIENT_SVM")==0)
+	else if (strcmp(param,"SVMLIN")==0)
+	{
+		delete classifier;
+		classifier= new CSVMLin();
+		((CSVMLin*) classifier)->set_C(svm_C1, svm_C2);
+		((CSVMLin*) classifier)->set_epsilon(svm_epsilon);
+		SG_INFO( "created SVMLin object\n") ;
+	}
+	else if (strcmp(param,"SUBGRADIENTSVM")==0)
 	{
 		delete classifier;
 		classifier= new CSubGradientSVM();
+		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
+		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
 		SG_INFO( "created Subgradient SVM object\n") ;
 	}
 	else
@@ -321,6 +331,13 @@ bool CGUIClassifier::train_linear(CHAR* param)
 		return false ;
 	}
 
+	if (trainfeatures->get_feature_class() != C_SIMPLE ||
+			trainfeatures->get_feature_type() != F_DREAL )
+	{
+		SG_ERROR( "trainfeatures not of class SIMPLE type REAL\n") ;
+		return false ;
+	}
+
 	if (!trainlabels)
 	{
 		SG_ERROR( "no labels available\n") ;
@@ -344,6 +361,13 @@ bool CGUIClassifier::train_sparse_linear(CHAR* param)
 	if (!trainfeatures)
 	{
 		SG_ERROR( "no trainfeatures available\n") ;
+		return false ;
+	}
+
+	if (trainfeatures->get_feature_class() != C_SPARSE ||
+			trainfeatures->get_feature_type() != F_DREAL )
+	{
+		SG_ERROR( "trainfeatures not of class SPARSE type REAL\n") ;
 		return false ;
 	}
 
@@ -738,7 +762,12 @@ CLabels* CGUIClassifier::classify_linear(CLabels* output)
 		SG_ERROR( "no test features available\n") ;
 		return NULL;
 	}
-
+	if (testfeatures->get_feature_class() != C_SIMPLE ||
+			testfeatures->get_feature_type() != F_DREAL )
+	{
+		SG_ERROR( "testfeatures not of class SIMPLE type REAL\n") ;
+		return false ;
+	}
 
 	((CLinearClassifier*) classifier)->set_features((CRealFeatures*) testfeatures);
 	SG_INFO( "starting linear classifier testing\n") ;
@@ -758,6 +787,12 @@ CLabels* CGUIClassifier::classify_sparse_linear(CLabels* output)
 	{
 		SG_ERROR( "no test features available\n") ;
 		return NULL;
+	}
+	if (testfeatures->get_feature_class() != C_SPARSE ||
+			testfeatures->get_feature_type() != F_DREAL )
+	{
+		SG_ERROR( "testfeatures not of class SPARSE type REAL\n") ;
+		return false ;
 	}
 
 	((CSparseLinearClassifier*) classifier)->set_features((CSparseFeatures<DREAL>*) testfeatures);

@@ -29,7 +29,7 @@ class CSparseLinearClassifier : public CClassifier
 			DREAL result=0.0;
 
 			ASSERT(features);
-			ASSERT(w && features->get_num_features()<=w_dim);
+			ASSERT(w && features->get_num_features()==w_dim);
 
 			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(idx, vlen, vfree);
 
