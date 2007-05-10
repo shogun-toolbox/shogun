@@ -64,6 +64,7 @@ static const CHAR* N_HMM_CLASSIFY=		"hmm_classify";
 static const CHAR* N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE=		"one_class_hmm_classify_example";
 static const CHAR* N_HMM_CLASSIFY_EXAMPLE=	"hmm_classify_example";
 static const CHAR* N_SVM_CLASSIFY=		"svm_classify";
+static const CHAR* N_CLASSIFY=		"classify";
 static const CHAR* N_SVM_CLASSIFY_EXAMPLE=	"svm_classify_example";
 static const CHAR* N_GET_PLUGIN_ESTIMATE=	"get_plugin_estimate";
 static const CHAR* N_SET_PLUGIN_ESTIMATE=	"set_plugin_estimate";
@@ -238,6 +239,16 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 			}
 			else
 				SG_SERROR( "usage is [result]=sg('svm_classify')");
+		}
+		else if (!strncmp(action, N_CLASSIFY, strlen(N_CLASSIFY)))
+		{
+			if (nlhs==1)
+			{
+				if (!sg_octave.classify(plhs))
+					SG_SERROR( "classify failed");
+			}
+			else
+				SG_SERROR( "usage is [result]=sg('classify')");
 		}
 		else if (!strncmp(action, N_GET_PLUGIN_ESTIMATE, strlen(N_GET_PLUGIN_ESTIMATE)))
 		{

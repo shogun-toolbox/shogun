@@ -1,5 +1,5 @@
 rand('state',17);
-num=20;
+num=200;
 dim=10;
 dist=0.3;
 C=10;

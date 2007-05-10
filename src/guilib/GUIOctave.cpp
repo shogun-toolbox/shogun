@@ -412,6 +412,32 @@ bool CGUIOctave::svm_classify(octave_value_list& retvals)
 	return false;
 }
 
+bool CGUIOctave::classify(octave_value_list& retvals)
+{
+	CFeatures* f=gui->guifeatures.get_test_features();
+	if (f)
+	{
+		int num_vec=f->get_num_vectors();
+
+		CLabels* l=gui->guiclassifier.classify();
+
+		if (!l)
+		{
+			SG_ERROR( "classify failed\n") ;
+			return false ;
+		} ;
+
+		RowVector result=RowVector(num_vec);
+		for (int i=0; i<num_vec; i++)
+			result(i)=l->get_label(i);
+		delete l;
+
+		retvals(0)=result;
+		return true;
+	}
+	return false;
+}
+
 bool CGUIOctave::svm_classify_example(octave_value_list& retvals, int idx)
 {
 	double result=0;

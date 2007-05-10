@@ -77,6 +77,7 @@ public:
 	bool set_svm(const octave_value_list& vals);
 	bool svm_classify_example(octave_value_list& retvals, int idx);
 	bool svm_classify(octave_value_list& retvals);
+	bool classify(octave_value_list& retvals);
 
 	bool set_plugin_estimate(const octave_value_list& vals);
 	bool get_plugin_estimate(octave_value_list& retvals);
