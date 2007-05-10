@@ -38,7 +38,7 @@ class CQPBSVMLib: public CSGObject
  /// f is vector of size m
   CQPBSVMLib(DREAL* H, INT n, DREAL* f, INT m, DREAL UB=1.0);
 
-  /// result has to be allocated 
+  /// result has to be allocated & zeroed
   INT solve_qp(DREAL* result, INT len);
 
   inline void set_solver(E_QPB_SOLVER solver)

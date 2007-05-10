@@ -13,6 +13,7 @@
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 #include "classifier/SparseLinearClassifier.h"
+#include "classifier/svm/qpbsvmlib.h"
 #include "features/SparseFeatures.h"
 #include "features/Labels.h"
 
@@ -127,30 +128,70 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 	DREAL dir_deriv=0;
 	if (num_bound > 0)
 	{
-		//     v = [W - reg_C*data.X(:,idx_active)*data.y(idx_active); -reg_C*sum(data.y(idx_active))];
-		CMath::add(tmp_v, 1.0, w, -1.0, sum_CXy_active, num_feat);
-		tmp_v[num_feat]=-sum_Cy_active;
 
-		//FIXME Z = -reg_C*[data.X(:,idx_bound);ones(1,num_bound)].*repmat(data.y(idx_bound)',nDim+1,1);
+		DREAL* v=new DREAL[num_feat];
+		DREAL* Z=new DREAL[num_bound*num_bound];
+		DREAL* Zv=new DREAL[num_bound];
+		DREAL* beta=new DREAL[num_bound];
 
-		//    [beta,fval] = quadprog(2*Z'*Z,2*Z'*v,[],[],[],[],zeros(num_bound,1),ones(num_bound,1));
-		//FIXME [beta,fval] = qpbsvm(2*Z'*Z,2*Z'*v,1);
+		ASSERT(v);
+		ASSERT(Z);
+		ASSERT(Zv);
+		ASSERT(beta);
 
-		//     grad_W = W - reg_C*(data.X(:,idx_active)*data.y(idx_active) ...
-		//                       + data.X(:,idx_bound)*(data.y(idx_bound).*beta(:))); 
-		//     grad_b = - reg_C*(sum(data.y(idx_active)) + data.y(idx_bound)'*beta(:));
-		//FIXME grad_W = W - sum_CXy_active - reg_C*data.X(:,idx_bound)*(data.y(idx_bound).*beta(:));
-		//FIXME grad_b = -sum_Cy_active - reg_C*data.y(idx_bound)'*beta(:);
+		memset(beta, 0, sizeof(DREAL)*num_bound);
 
-		//FIXME dir_deriv = [grad_W;grad_b]'*v + sum(max(zeros(num_bound,1),Z'*[grad_W;grad_b]));
+		CMath::add(v, 1.0, w, -1.0, sum_CXy_active, num_feat);
 
-		//FIXME dir_deriv = CMath::dot(grad_w, grad_v, num_feat) + grad_b*v[num_feat];
+		for (INT i=0; i<num_bound; i++)
+		{
+			for (INT j=0; j<num_bound; j++)
+			{
+				INT alen=0;
+				INT blen=0;
+				bool afree=false;
+				bool bfree=false;
+
+				TSparseEntry<DREAL>* avec=features->get_sparse_feature_vector(idx_bound[i], alen, afree);
+				TSparseEntry<DREAL>* bvec=features->get_sparse_feature_vector(idx_bound[j], blen, bfree);
+
+				Z[i+num_bound+j]= 2.0*C1*C1*get_label(idx_bound[i])*get_label(idx_bound[j])* 
+					(features->sparse_dot(1.0, avec,alen, bvec,blen) + 1);
+
+				features->free_feature_vector(avec, idx_bound[i], afree);
+				features->free_feature_vector(bvec, idx_bound[j], bfree);
+			}
+
+			Zv[i]=2.0*get_label(idx_bound[i])* 
+				features->dense_dot(1.0, idx_bound[i], v, num_feat, -sum_Cy_active);
+		}
+
+		CQPBSVMLib solver(Z,num_bound, Zv,num_bound, 1.0);
+		solver.solve_qp(beta, num_bound);
+		
+		CMath::add(grad_w, 1.0, w, -1.0, sum_CXy_active, num_feat);
+		grad_b = -sum_Cy_active;
+
+		for (INT i=0; i<num_bound; i++)
+		{
+			features->add_to_dense_vec(-C1*beta[i]*get_label(idx_bound[i]), idx_bound[i], grad_w, num_feat);
+			grad_b +=  C1 * get_label(idx_bound[i])*beta[i];
+		}
+
+		dir_deriv = CMath::dot(grad_w, v, num_feat) - grad_b*sum_Cy_active;
+		for (INT i=0; i<num_bound; i++)
+		{
+			DREAL val= features->dense_dot(get_label(idx_bound[i]), idx_bound[i], grad_w, num_feat, grad_b);
+			dir_deriv += CMath::max(0.0, val);
+		}
+
+		delete[] v;
+		delete[] Z;
+		delete[] Zv;
+		delete[] beta;
 	}
 	else
 	{
-		//     grad_W = W - reg_C*data.X(:,idx_active)*data.y(idx_active);
-		//     grad_b = - reg_C*sum(data.y(idx_active));
-
 		CMath::add(grad_w, 1.0, w, -1.0, sum_CXy_active, num_feat);
 		grad_b = -sum_Cy_active;
 
@@ -188,10 +229,6 @@ void CSubGradientSVM::init(INT num_vec, INT num_feat)
 	memset(w,0,sizeof(DREAL)*num_feat);
 	bias=0;
 
-	tmp_v=new DREAL[num_feat+1];
-	ASSERT(tmp_v);
-	memset(tmp_v,0,sizeof(DREAL)*(num_feat+1));
-
 	proj= new DREAL[num_vec];
 	ASSERT(proj);
 	memset(proj,0,sizeof(DREAL)*num_vec);
@@ -225,7 +262,6 @@ void CSubGradientSVM::cleanup()
 	delete[] idx_bound;
 	delete[] idx_active;
 	delete[] sum_CXy_active;
-	delete[] tmp_v;
 
 	proj=NULL;
 	active=NULL;
@@ -233,7 +269,6 @@ void CSubGradientSVM::cleanup()
 	idx_bound=NULL;
 	idx_active=NULL;
 	sum_CXy_active=NULL;
-	tmp_v=NULL;
 }
 
 bool CSubGradientSVM::train()

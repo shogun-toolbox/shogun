@@ -167,6 +167,12 @@ bool CLDA::train()
 	for (i=0; i<num_feat; i++)
 		w[i]=w_pos[i]-w_neg[i];
 
+    CMath::display_vector(w, num_feat, "w");
+    CMath::display_vector(w_pos, num_feat, "w_pos");
+    CMath::display_vector(w_neg, num_feat, "w_neg");
+    CMath::display_vector(mean_pos, num_feat, "mean_pos");
+    CMath::display_vector(mean_neg, num_feat, "mean_neg");
+
 	delete[] train_labels;
 	delete[] mean_neg;
 	delete[] mean_pos;

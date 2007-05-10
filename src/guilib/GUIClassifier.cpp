@@ -15,16 +15,20 @@
 #include "guilib/GUIClassifier.h"
 #include "gui/GUI.h"
 #include "lib/io.h"
+#include "features/SparseFeatures.h"
 #include "features/RealFileFeatures.h"
 #include "features/Labels.h"
 
-#include "classifier/LDA.h"
-#include "classifier/LPM.h"
 #include "classifier/KNN.h"
 #include "classifier/PluginEstimate.h"
 
+#include "classifier/LDA.h"
+#include "classifier/LPM.h"
 #include "classifier/Perceptron.h"
 #include "classifier/KernelPerceptron.h"
+
+#include "classifier/LinearClassifier.h"
+#include "classifier/SparseLinearClassifier.h"
 
 #ifdef USE_SVMLIGHT
 #include "classifier/svm/SVM_light.h"
@@ -33,9 +37,19 @@
 
 #include "classifier/svm/LibSVM.h"
 #include "classifier/svm/GPBTSVM.h"
-#include "classifier/svm/MPD.h"
+#include "classifier/svm/LibSVM_oneclass.h"
+#include "classifier/svm/LibSVM_multiclass.h"
 
 #include "regression/svr/LibSVR.h"
+
+#include "classifier/svm/MPD.h"
+#include "classifier/svm/GNPPSVM.h"
+#include "classifier/svm/GMNPSVM.h"
+
+#include "classifier/svm/SVMLin.h"
+#include "classifier/svm/SubGradientSVM.h"
+#include "classifier/svm/SVMPerf.h"
+
 
 CGUIClassifier::CGUIClassifier(CGUI* g) : CSGObject(), gui(g)
 {
@@ -140,6 +154,12 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		classifier= new CKNN();
 		SG_INFO( "created KNN object\n") ;
 	}
+	else if (strcmp(param,"SUBGRADIENT_SVM")==0)
+	{
+		delete classifier;
+		classifier= new CSubGradientSVM();
+		SG_INFO( "created Subgradient SVM object\n") ;
+	}
 	else
 	{
 		SG_ERROR( "unknown classifier \"%s\"\n", param);
@@ -161,7 +181,9 @@ bool CGUIClassifier::train(CHAR* param)
 		case CT_MPD:
 		case CT_GPBT:
 		case CT_CPLEXSVM:
-		case CT_KERTHIPRIMAL:
+		case CT_GMNPSVM:
+		case CT_GNPPSVM:
+		case CT_KRR:
 			return train_svm(param, false);
 			break;
 		case CT_PERCEPTRON:
@@ -175,6 +197,10 @@ bool CGUIClassifier::train(CHAR* param)
 		case CT_KNN:
 			return train_knn(param);
 			break;
+		case CT_SVMLIN:
+		case CT_SVMPERF:
+		case CT_SUBGRADIENTSVM:
+			return train_sparse_linear(param);
 		default:
 			SG_ERROR( "unknown classifier type\n");
 			break;
@@ -303,6 +329,32 @@ bool CGUIClassifier::train_linear(CHAR* param)
 
 	((CLinearClassifier*) classifier)->set_labels(trainlabels);
 	((CLinearClassifier*) classifier)->set_features((CRealFeatures*) trainfeatures);
+	result=((CLinearClassifier*) classifier)->train();
+
+	return result;
+}
+
+bool CGUIClassifier::train_sparse_linear(CHAR* param)
+{
+	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
+	CLabels* trainlabels=gui->guilabels.get_train_labels();
+
+	bool result=false;
+
+	if (!trainfeatures)
+	{
+		SG_ERROR( "no trainfeatures available\n") ;
+		return false ;
+	}
+
+	if (!trainlabels)
+	{
+		SG_ERROR( "no labels available\n") ;
+		return false;
+	}
+
+	((CSparseLinearClassifier*) classifier)->set_labels(trainlabels);
+	((CSparseLinearClassifier*) classifier)->set_features((CSparseFeatures<DREAL>*) trainfeatures);
 	result=((CLinearClassifier*) classifier)->train();
 
 	return result;
@@ -581,16 +633,18 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_MPD:
 		case CT_GPBT:
 		case CT_CPLEXSVM:
-		case CT_KERTHIPRIMAL:
 		case CT_KERNELPERCEPTRON:
+			return classify_kernelmachine(output);
 		case CT_KNN:
 			return classify_distancemachine(output);
-			break;
 		case CT_PERCEPTRON:
 		case CT_LDA:
 		case CT_LPM:
 			return classify_linear(output);
-			break;
+		case CT_SVMLIN:
+		case CT_SVMPERF:
+		case CT_SUBGRADIENTSVM:
+			return classify_sparse_linear(output);
 		default:
 			SG_ERROR( "unknown classifier type\n");
 			break;
@@ -693,7 +747,7 @@ CLabels* CGUIClassifier::classify_linear(CLabels* output)
 
 	if (!classifier)
 	{
-		SG_ERROR( "no svm available\n") ;
+		SG_ERROR( "no classifier available\n") ;
 		return NULL;
 	}
 	if (!testfeatures)
@@ -710,6 +764,34 @@ CLabels* CGUIClassifier::classify_linear(CLabels* output)
 
 	((CLinearClassifier*) classifier)->set_features((CRealFeatures*) testfeatures);
 	((CLinearClassifier*) classifier)->set_labels(testlabels);
+	SG_INFO( "starting linear classifier testing\n") ;
+	return classifier->classify(output);
+}
+
+CLabels* CGUIClassifier::classify_sparse_linear(CLabels* output)
+{
+	CLabels* testlabels=gui->guilabels.get_test_labels();
+	CFeatures* testfeatures=gui->guifeatures.get_test_features();
+
+	if (!classifier)
+	{
+		SG_ERROR( "no svm available\n") ;
+		return NULL;
+	}
+	if (!testfeatures)
+	{
+		SG_ERROR( "no test features available\n") ;
+		return NULL;
+	}
+
+	if (!testlabels)
+	{
+		SG_ERROR( "no test labels available\n") ;
+		return NULL;
+	}
+
+	((CSparseLinearClassifier*) classifier)->set_features((CSparseFeatures<DREAL>*) testfeatures);
+	((CSparseLinearClassifier*) classifier)->set_labels(testlabels);
 	SG_INFO( "starting linear classifier testing\n") ;
 	return classifier->classify(output);
 }

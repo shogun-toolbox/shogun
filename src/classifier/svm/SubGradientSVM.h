@@ -79,10 +79,6 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		//vector of length num_feat
 		DREAL* grad_w;
 		DREAL grad_b;
-
-		//vector of length num_feat+1
-		DREAL* tmp_v;
-
 };
 #endif
 

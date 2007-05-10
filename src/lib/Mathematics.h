@@ -178,18 +178,24 @@ public:
 	/// when matrix has shape (rows, cols) the pseudo inverse has (cols, rows)
 	static DREAL* pinv(DREAL* matrix, INT rows, INT cols, DREAL* target=NULL);
 
-	static void matrix_multiply(const DREAL* matrix1, const DREAL* matrix2, DREAL* target)
-	{
 
-//void cblas_dgemm(CblasColMajor, CblasNoTrans, CblasColMajor, CblasNoTrans,
-//                 const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
-//                 const int K, const double alpha, const double *A,
-//                 const int lda, const double *B, const int ldb,
-//                 const double beta, double *C, const int ldc);
+	//C := alpha*op( A )*op( B ) + beta*C
+	//op( X ) = X   or   op( X ) = X',
+	static inline void dgemm(double alpha, const double* A, int rows, int cols, CBLAS_TRANSPOSE transposeA,
+			double *B, int cols_B, CBLAS_TRANSPOSE transposeB,
+			double beta, double *C)
+	{
+		cblas_dgemm(CblasColMajor, transposeA, transposeB, rows, cols, cols_B,
+				alpha, A, cols, B, cols_B, beta, C, cols);
 	}
 
-	static inline void matrix_vector_multiply(DREAL* src, DREAL* dst)
+	//y := alpha*A*x + beta*y,   or   y := alpha*A'*x + beta*y,
+	static inline void dgemv(double alpha, const double *A, int rows, int cols, const enum CBLAS_TRANSPOSE transposeA,
+                 const double* X, double beta, double* Y)
 	{
+		cblas_dgemv(CblasColMajor, transposeA,
+				rows, cols, alpha, A, cols,
+				X, 1, beta, Y, 1);
 	}
 #endif
 
