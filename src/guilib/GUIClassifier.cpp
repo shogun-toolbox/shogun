@@ -655,7 +655,6 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 
 CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 {
-	CLabels* testlabels=gui->guilabels.get_test_labels();
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CFeatures* testfeatures=gui->guifeatures.get_test_features();
 	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
