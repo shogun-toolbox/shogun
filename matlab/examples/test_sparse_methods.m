@@ -1,9 +1,9 @@
 rand('state',17);
-num=200000;
+num=20;
 dim=1000;
 dist=0.01;
-C=10;
-epsilon=1e-5;
+C=1000;
+epsilon=1e-3;
 
 sg('send_command', 'loglevel ALL');
 traindat=[rand(dim,num/2)-dist, rand(dim,num/2)+dist];

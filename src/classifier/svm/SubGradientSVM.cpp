@@ -342,12 +342,13 @@ bool CSubGradientSVM::train()
 	INT num_bound=0;
 	DREAL alpha=0;
 	DREAL dir_deriv=0;
+	DREAL obj=0;
 
 	update_projection(num_feat, num_vec);
 
 	while (find_active(num_feat, num_vec, num_active, num_bound) > 0)
 	{
-		SG_PRINT("==================================================\niteration: %d \n", num_iterations);
+		SG_PRINT("==================================================\niteration: %d ", num_iterations);
 		//CMath::display_vector(w, w_dim, "w");
 		//SG_PRINT("bias: %f\n", bias);
 		//CMath::display_vector(proj, num_vec, "proj");
@@ -357,8 +358,8 @@ bool CSubGradientSVM::train()
 		//SG_PRINT("num_bound: %d\n", num_bound);
 		//CMath::display_vector(sum_CXy_active, num_feat, "sum_CXy_active");
 		//SG_PRINT("sum_Cy_active: %f\n", sum_Cy_active);
-		DREAL obj=compute_objective(num_feat, num_vec);
-		SG_INFO("objective: %f alpha: %f dir_deriv: %f num_bound: %d num_active: %d\n",
+		obj=compute_objective(num_feat, num_vec);
+		SG_PRINT("objective: %f alpha: %f dir_deriv: %f num_bound: %d num_active: %d\n",
 				obj, alpha, dir_deriv, num_bound, num_active);
 		//CMath::display_vector(grad_w, num_feat, "grad_w");
 		//SG_PRINT("grad_b:%f\n", grad_b);
@@ -378,6 +379,11 @@ bool CSubGradientSVM::train()
 	}
 
 	SG_INFO("converged after %d iterations\n", num_iterations);
+	obj=compute_objective(num_feat, num_vec);
+	SG_INFO("objective: %f alpha: %f dir_deriv: %f num_bound: %d num_active: %d\n",
+			obj, alpha, dir_deriv, num_bound, num_active);
+
+#define DEBUG_SUBGRADIENTSVM
 #ifdef DEBUG_SUBGRADIENTSVM
 	CMath::display_vector(w, w_dim, "w");
 	SG_PRINT("bias: %f\n", bias);
