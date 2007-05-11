@@ -221,7 +221,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 				if (prhs(1).is_real_scalar())
 				{
 					int idx = prhs(1).int_value();
-					if (!sg_octave.svm_classify_example(plhs, idx ))
+					if (!sg_octave.classify_example(plhs, idx ))
 						SG_SERROR( "svm_classify_example failed");
 				}
 				else

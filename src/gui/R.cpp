@@ -71,9 +71,10 @@ static const CHAR* N_ONE_CLASS_HMM_CLASSIFY=		"one_class_hmm_classify";
 static const CHAR* N_HMM_CLASSIFY=		"hmm_classify";
 static const CHAR* N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE=		"one_class_hmm_classify_example";
 static const CHAR* N_HMM_CLASSIFY_EXAMPLE=	"hmm_classify_example";
-/static const CHAR* N_CLASSIFY=		"classify";
 static const CHAR* N_SVM_CLASSIFY=		"svm_classify";
+static const CHAR* N_CLASSIFY=		"classify";
 static const CHAR* N_SVM_CLASSIFY_EXAMPLE=	"svm_classify_example";
+static const CHAR* N_CLASSIFY_EXAMPLE=	"classify_example";
 //static const CHAR* N_GET_PLUGIN_ESTIMATE=	"get_plugin_estimate";
 //static const CHAR* N_SET_PLUGIN_ESTIMATE=	"set_plugin_estimate";
 //static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY=	"plugin_estimate_classify";
@@ -151,17 +152,18 @@ static SEXP sg_helper(SEXP args)
 				SG_SERROR( "Not implemented yet");
 				return R_NilValue;
 			}
-			else if (!strncmp(action, N_SVM_CLASSIFY_EXAMPLE, strlen(N_SVM_CLASSIFY_EXAMPLE)))
+			else if (!strncmp(action, N_SVM_CLASSIFY_EXAMPLE, strlen(N_SVM_CLASSIFY_EXAMPLE)) ||
+					!strncmp(action, N_CLASSIFY_EXAMPLE, strlen(N_CLASSIFY_EXAMPLE)))
 			{
 				if (cmd_len==2)
 				{
 					if (TYPEOF(args) == REALSXP)
-						return sg_R.svm_classify_example((INT) REAL(args)[0]);
+						return sg_R.classify_example((INT) REAL(args)[0]);
 					else
-						SG_SERROR( "usage is [result]=sg('svm_classify_example', feature_vector_index)");
+						SG_SERROR( "usage is [result]=sg('classify_example', feature_vector_index)");
 				}
 				else
-					SG_SERROR( "usage is [result]=sg('svm_classify_example', feature_vector_index)");
+					SG_SERROR( "usage is [result]=sg('classify_example', feature_vector_index)");
 			}
 			else if (!strncmp(action, N_GET_HMM, strlen(N_GET_HMM)))
 			{
@@ -201,11 +203,8 @@ static SEXP sg_helper(SEXP args)
 			{
 				return sg_R.one_class_hmm_classify();
 			}
-			else if (!strncmp(action, N_SVM_CLASSIFY, strlen(N_SVM_CLASSIFY)))
-			{
-				return sg_R.svm_classify();
-			}
-			else if (!strncmp(action, N_CLASSIFY, strlen(N_CLASSIFY)))
+			else if (!strncmp(action, N_SVM_CLASSIFY, strlen(N_SVM_CLASSIFY)) ||
+					!strncmp(action, N_CLASSIFY, strlen(N_CLASSIFY)))
 			{
 				return sg_R.classify();
 			}
@@ -213,18 +212,18 @@ static SEXP sg_helper(SEXP args)
 			{
 				return sg_R.hmm_classify();
 			}
-		else if (!strncmp(action, N_HMM_CLASSIFY_EXAMPLE, strlen(N_HMM_CLASSIFY_EXAMPLE)))
-		{
-			if (cmd_len==1)
+			else if (!strncmp(action, N_HMM_CLASSIFY_EXAMPLE, strlen(N_HMM_CLASSIFY_EXAMPLE)))
 			{
-				if (TYPEOF(args) == REALSXP)
-					sg_R.hmm_classify_example((INT) REAL(args)[0] );
+				if (cmd_len==1)
+				{
+					if (TYPEOF(args) == REALSXP)
+						sg_R.hmm_classify_example((INT) REAL(args)[0] );
+					else
+						SG_SERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
+				}
 				else
 					SG_SERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
 			}
-			else
-				SG_SERROR( "usage is [result]=sg('hmm_classify_example', feature_vector_index)");
-		}
 			else if (!strncmp(action, N_CRC, strlen(N_CRC)))
 			{
 				//if ((nrhs==2) && (nlhs==1))

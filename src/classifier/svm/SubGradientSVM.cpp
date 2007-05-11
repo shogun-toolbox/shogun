@@ -184,7 +184,7 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		//CMath::display_vector(Zv, num_bound, "Zv");
 
 		CQPBSVMLib solver(Z,num_bound, Zv,num_bound, 1.0);
-		//solver.set_solver(QPB_SOLVER_SCAS);
+		solver.set_solver(QPB_SOLVER_SCAS);
 		solver.solve_qp(beta, num_bound);
 		//SG_PRINT("after solveer foo\n");
 		
@@ -345,9 +345,14 @@ bool CSubGradientSVM::train()
 	DREAL obj=0;
 
 	update_projection(num_feat, num_vec);
+	INT converged=0;
 
-	while (find_active(num_feat, num_vec, num_active, num_bound) > 0)
+	while (converged < 10)
 	{
+		if (find_active(num_feat, num_vec, num_active, num_bound) == 0)
+			converged++;
+		else
+			converged=0;
 		SG_PRINT("==================================================\niteration: %d ", num_iterations);
 		//CMath::display_vector(w, w_dim, "w");
 		//SG_PRINT("bias: %f\n", bias);

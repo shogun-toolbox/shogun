@@ -381,7 +381,7 @@ extern "C"
 
 	SEXP CGUI_R::get_svm()
 	{
-		CSVM* svm=gui->guisvm.get_svm();
+		CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 
 		if (svm)
 		{
@@ -449,35 +449,6 @@ extern "C"
 		return R_NilValue;
 	}
 
-	SEXP CGUI_R::svm_classify()
-	{
-		CFeatures* f=gui->guifeatures.get_test_features();
-		if (f)
-		{
-			SEXP output;
-			int num_vec=f->get_num_vectors();
-			PROTECT( output = allocMatrix(REALSXP, 1, num_vec) );
-
-			CLabels* l=gui->guisvm.classify();
-
-			if (!l)
-			{
-				SG_ERROR( "svm_classify failed\n") ;
-				return false ;
-			} ;
-
-			for (int i=0; i<num_vec; i++)
-				REAL(output)[i]=l->get_label(i);
-			delete l;
-
-			UNPROTECT(1) ;
-
-			return output;
-		}
-		return R_NilValue;
-	}
-
-
 	bool CGUI_R::set_svm(SEXP arg_list)
 	{
 		if( TYPEOF(arg_list) != LISTSXP ) {
@@ -485,7 +456,7 @@ extern "C"
 			return false;
 		}
 
-		CSVM* svm=gui->guisvm.get_svm();
+		CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 
 		if (svm)
 		{
@@ -518,20 +489,19 @@ extern "C"
 		return false;
 	}
 
-	SEXP CGUI_R::svm_classify_example(int idx)
+	SEXP CGUI_R::classify_example(int idx)
 	{
-		/*
-		mxArray* mx_result=mxCreateDoubleMatrix(1, 1, mxDREAL);
-		retvals[0]=mx_result;
-		double* result=mxGetPr(mx_result);
-
-		if (!gui->guisvm.classify_example(idx, result[0]))
+		SEXP ans;
+		PROTECT( ans = allocVector(REALSXP, 1));
+ 
+		if (!gui->guiclassifier.classify_example(idx, REAL(ans)[0]))
 		{
+			REAL(ans)[0]=0;
 			SG_ERROR( "svm_classify_example failed\n") ;
-			return false ;
-		} ;
-*/
-		return R_NilValue;
+		}
+
+		UNPROTECT(1);
+		return ans;
 	}
 
 	SEXP CGUI_R::get_features(CFeatures* f)
@@ -838,7 +808,7 @@ SEXP CGUI_R::get_svm_objective() {
    SEXP ans;
 	//mxArray* mx_v=mxCreateDoubleMatrix(1, 1, mxDREAL);
 	PROTECT( ans = allocVector(REALSXP, 1));
-	CSVM* svm=gui->guisvm.get_svm();
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 
 	if (svm)
 	{
