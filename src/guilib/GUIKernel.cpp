@@ -14,7 +14,6 @@
 #ifndef HAVE_SWIG
 #include "gui/GUI.h"
 #include "guilib/GUIKernel.h"
-#include "guilib/GUISVM.h"
 #include "guilib/GUIPluginEstimate.h"
 #include "kernel/Kernel.h"
 #include "kernel/CombinedKernel.h"
@@ -51,6 +50,7 @@
 #include "kernel/DiagKernel.h"
 #include "kernel/MindyGramKernel.h"
 #include "kernel/DistanceKernel.h"
+#include "classifier/svm/SVM.h"
 #include "lib/io.h"
 #include "gui/GUI.h"
 
@@ -157,20 +157,21 @@ bool CGUIKernel::init_kernel_optimization(CHAR* param)
 
 	kernel->set_precompute_matrix(false, false);
 
-	if (gui->guisvm.get_svm()!=NULL)
+	if (gui->guiclassifier.get_classifier()!=NULL)
 	{
+		CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 		if (kernel->has_property(KP_LINADD))
 		{
-			INT * sv_idx    = new INT[gui->guisvm.get_svm()->get_num_support_vectors()] ;
-			DREAL* sv_weight = new DREAL[gui->guisvm.get_svm()->get_num_support_vectors()] ;
+			INT * sv_idx    = new INT[svm->get_num_support_vectors()] ;
+			DREAL* sv_weight = new DREAL[svm->get_num_support_vectors()] ;
 			
-			for(INT i=0; i<gui->guisvm.get_svm()->get_num_support_vectors(); i++)
+			for(INT i=0; i<svm->get_num_support_vectors(); i++)
 			{
-				sv_idx[i]    = gui->guisvm.get_svm()->get_support_vector(i) ;
-				sv_weight[i] = gui->guisvm.get_svm()->get_alpha(i) ;
+				sv_idx[i]    = svm->get_support_vector(i) ;
+				sv_weight[i] = svm->get_alpha(i) ;
 			}
 
-			bool ret = kernel->init_optimization(gui->guisvm.get_svm()->get_num_support_vectors(), sv_idx, sv_weight) ;
+			bool ret = kernel->init_optimization(svm->get_num_support_vectors(), sv_idx, sv_weight) ;
 			
 			delete[] sv_idx ;
 			delete[] sv_weight ;

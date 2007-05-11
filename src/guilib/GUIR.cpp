@@ -421,6 +421,33 @@ extern "C"
 		return(R_NilValue);
 	}
 
+	SEXP CGUI_R::classify()
+	{
+		CFeatures* f=gui->guifeatures.get_test_features();
+		if (f)
+		{
+			SEXP output;
+			int num_vec=f->get_num_vectors();
+			PROTECT( output = allocMatrix(REALSXP, 1, num_vec) );
+
+			CLabels* l=gui->guiclassifier.classify();
+
+			if (!l)
+			{
+				SG_ERROR( "classify failed\n") ;
+				return false ;
+			} ;
+
+			for (int i=0; i<num_vec; i++)
+				REAL(output)[i]=l->get_label(i);
+			delete l;
+
+			UNPROTECT(1) ;
+
+			return output;
+		}
+		return R_NilValue;
+	}
 
 	SEXP CGUI_R::svm_classify()
 	{

@@ -186,26 +186,6 @@ class CSVM : public CKernelMachine
 			return use_mkl;
 		}
 
-		inline void set_batch_computation_enabled(bool enable)
-		{
-			use_batch_computation=enable;
-		}
-
-		inline bool get_batch_computation_enabled()
-		{
-			return use_batch_computation;
-		}
-
-		inline void set_linadd_enabled(bool enable)
-		{
-			use_linadd=enable;
-		}
-
-		inline bool get_linadd_enabled()
-		{
-			return use_linadd ;
-		}
-
 		///compute and set objective
 		DREAL compute_objective();
 
@@ -261,8 +241,6 @@ class CSVM : public CKernelMachine
 		int qpsize;
 		bool use_shrinking;
 		bool use_mkl;
-		bool use_batch_computation;
-		bool use_linadd;
 		bool use_precomputed_subkernels;
 };
 #endif

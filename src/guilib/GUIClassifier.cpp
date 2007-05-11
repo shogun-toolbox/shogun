@@ -54,6 +54,7 @@
 CGUIClassifier::CGUIClassifier(CGUI* g) : CSGObject(), gui(g)
 {
 	classifier=NULL;
+	max_train_time=0;
 
     // Perceptron parameters
 	perceptron_learnrate=0.1;
@@ -67,12 +68,16 @@ CGUIClassifier::CGUIClassifier(CGUI* g) : CSGObject(), gui(g)
 	svm_weight_epsilon=1e-5;
 	svm_epsilon=1e-5;
 	svm_tube_epsilon=1e-2;
+	svm_nu=1e-2;
+	svm_use_shrinking = true ;
 
 	svm_use_mkl = false ;
-	svm_use_linadd = false ;
+	svm_use_batch_computation = true ;
+	svm_use_linadd = true ;
 	svm_use_precompute = false ;
 	svm_use_precompute_subkernel = false ;
 	svm_use_precompute_subkernel_light = false ;
+	svm_do_auc_maximization = false ;
 }
 
 CGUIClassifier::~CGUIClassifier()
@@ -84,7 +89,19 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
 
-	if (strcmp(param,"LIBSVM")==0)
+	if (strcmp(param,"LIBSVM_ONECLASS")==0)
+	{
+		delete classifier;
+		classifier = new CLibSVMOneClass();
+		SG_INFO( "created SVMlibsvm object for oneclass\n");
+	}
+	else if (strcmp(param,"LIBSVM_MULTICLASS")==0)
+	{
+		delete classifier;
+		classifier = new CLibSVMMultiClass();
+		SG_INFO( "created SVMlibsvm object for multiclass\n");
+	}
+	else if (strcmp(param,"LIBSVM")==0)
 	{
 		delete classifier;
 		classifier= new CLibSVM();
@@ -115,6 +132,18 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		delete classifier;
 		classifier= new CMPDSVM();
 		SG_INFO( "created MPD-SVM object\n") ;
+	}
+	else if (strcmp(param,"GNPP")==0)
+	{
+		delete classifier;
+		classifier= new CGNPPSVM();
+		SG_INFO( "created GNPP-SVM object\n") ;
+	}
+	else if (strcmp(param,"GMNP")==0)
+	{
+		delete classifier;
+		classifier= new CGMNPSVM();
+		SG_INFO( "created GMNP-SVM object\n") ;
 	}
 	else if (strcmp(param,"LIBSVR")==0)
 	{
@@ -194,7 +223,7 @@ bool CGUIClassifier::train(CHAR* param)
 		case CT_GMNPSVM:
 		case CT_GNPPSVM:
 		case CT_KRR:
-			return train_svm(param, false);
+			return train_svm(param);
 			break;
 		case CT_PERCEPTRON:
 			((CPerceptron*) classifier)->set_learn_rate(perceptron_learnrate);
@@ -218,21 +247,22 @@ bool CGUIClassifier::train(CHAR* param)
 	return false;
 }
 
-bool CGUIClassifier::train_svm(CHAR* param, bool auc_maximization)
+bool CGUIClassifier::train_svm(CHAR* param)
 {
-	CLabels* trainlabels=gui->guilabels.get_train_labels();
-	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
+	param=CIO::skip_spaces(param);
+	CSVM* svm= (CSVM*) classifier;
+
+	bool oneclass = (svm->get_classifier_type()==CT_LIBSVMONECLASS);
+	
+	CLabels* trainlabels=NULL;
+	if(!oneclass)
+		trainlabels=gui->guilabels.get_train_labels();
+
 	CKernel* kernel=gui->guikernel.get_kernel();
 
-	if (!trainfeatures)
+	if (!svm)
 	{
-		SG_ERROR( "no trainfeatures available\n") ;
-		return false ;
-	}
-
-	if (!classifier)
-	{
-		SG_ERROR( "no classifier available\n") ;
+		SG_ERROR( "no svm available\n") ;
 		return false ;
 	}
 
@@ -242,7 +272,7 @@ bool CGUIClassifier::train_svm(CHAR* param, bool auc_maximization)
 		return false ;
 	}
 
-	if (!trainlabels)
+	if (!trainlabels && !oneclass)
 	{
 		SG_ERROR( "no trainlabels available\n");
 		return false ;
@@ -254,32 +284,37 @@ bool CGUIClassifier::train_svm(CHAR* param, bool auc_maximization)
 		return 0;
 	}
 
-	if (trainlabels->get_num_labels() != kernel->get_lhs()->get_num_vectors())
+	if (!oneclass && trainlabels->get_num_labels() != kernel->get_lhs()->get_num_vectors())
 	{
 		SG_ERROR( "number of train labels (%d) and training vectors (%d) differs!\n", 
 				trainlabels->get_num_labels(), kernel->get_lhs()->get_num_vectors()) ;
 		return 0;
 	}
 
-	SG_INFO( "starting svm training on %ld vectors using C1=%lf C2=%lf\n", trainlabels->get_num_labels(), svm_C1, svm_C2) ;
+	SG_INFO( "starting svm training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", 
+			trainlabels->get_num_labels(), svm_C1, svm_C2, svm_epsilon) ;
 
-	CSVM* svm= (CSVM*) classifier;
 
 	svm->set_weight_epsilon(svm_weight_epsilon);
 	svm->set_epsilon(svm_epsilon);
+	svm->set_max_train_time(max_train_time);
 	svm->set_tube_epsilon(svm_tube_epsilon);
+	svm->set_nu(svm_nu);
 	svm->set_C_mkl(svm_C_mkl);
 	svm->set_C(svm_C1, svm_C2);
 	svm->set_qpsize(svm_qpsize);
 	svm->set_mkl_enabled(svm_use_mkl);
+	svm->set_shrinking_enabled(svm_use_shrinking);
 	svm->set_linadd_enabled(svm_use_linadd);
-	((CKernelMachine*) svm)->set_labels(trainlabels);
+	svm->set_batch_computation_enabled(svm_use_batch_computation);
+	if(!oneclass)
+		((CKernelMachine*) svm)->set_labels(trainlabels);
 	((CKernelMachine*) svm)->set_kernel(kernel);
 	((CSVM*) svm)->set_precomputed_subkernels_enabled(svm_use_precompute_subkernel_light) ;
 	kernel->set_precompute_matrix(svm_use_precompute, svm_use_precompute_subkernel);
 	
 #ifdef USE_SVMLIGHT
-	if (auc_maximization)
+	if (svm_do_auc_maximization)
 		((CSVMLight*)svm)->setup_auc_maximization() ;
 #endif //USE_SVMLIGHT
 
@@ -457,12 +492,11 @@ bool CGUIClassifier::test(CHAR* param)
 	((CKernelMachine*) classifier)->set_labels(testlabels);
 	((CKernelMachine*) classifier)->set_kernel(gui->guikernel.get_kernel()) ;
 	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
+	//svm->set_batch_computation_enabled(use_batch_computation);
 
-	if ( (gui->guikernel.get_kernel()->has_property(KP_LINADD)) && (gui->guikernel.get_kernel()->get_is_initialized()))
-		SG_DEBUG( "using kernel optimization\n");
+	CLabels* predictions= classifier->classify();
 
 	INT len=0;
-	CLabels* predictions= classifier->classify();
 	DREAL* output= predictions->get_labels(len);
 	INT total=	testfeatures->get_num_vectors();
 	INT* label= testlabels->get_int_labels(len);
@@ -485,12 +519,67 @@ bool CGUIClassifier::test(CHAR* param)
 
 bool CGUIClassifier::load(CHAR* param)
 {
+	bool result=false;
+	param=CIO::skip_spaces(param);
+	CHAR filename[1024];
+	CHAR type[1024];
+
+	if ((sscanf(param, "%s %s", filename, type))==2)
+	{
+
+		if (new_classifier(type))
+		{
+			FILE* model_file=fopen(filename, "r");
+
+			if (model_file)
+			{
+				if (classifier && classifier->load(model_file))
+				{
+					printf("file successfully read\n");
+					result=true;
+				}
+				else
+					SG_ERROR( "svm creation/loading failed\n");
+
+				fclose(model_file);
+			}
+			else
+				SG_ERROR( "opening file %s failed\n", filename);
+
+			return result;
+		}
+		else
+			SG_ERROR( "type of svm unknown\n");
+	}
+	else
+		SG_ERROR( "see help for parameters\n");
 	return false;
 }
 
 bool CGUIClassifier::save(CHAR* param)
 {
-	return false;
+	bool result=false;
+	param=CIO::skip_spaces(param);
+
+	if (classifier)
+	{
+		FILE* file=fopen(param, "w");
+
+		if ((!file) ||	(!classifier->save(file)))
+			printf("writing to file %s failed!\n", param);
+		else
+		{
+			printf("successfully written classifier into \"%s\" !\n", param);
+			result=true;
+		}
+
+		if (file)
+			fclose(file);
+	}
+	else
+		SG_ERROR( "create classifier first\n");
+
+	return result;
 }
 
 bool CGUIClassifier::set_perceptron_parameters(CHAR* param)
@@ -521,6 +610,19 @@ bool CGUIClassifier::set_svm_epsilon(CHAR* param)
 	return true ;  
 }
 
+bool CGUIClassifier::set_max_train_time(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	sscanf(param, "%lf", &max_train_time) ;
+
+        if (max_train_time > 0) 
+		SG_INFO( "Set to max_train_time=%f\n", max_train_time);
+	else
+		SG_INFO( "Disabling max_train_time\n");
+	return true ;  
+}
+
 bool CGUIClassifier::set_svr_tube_epsilon(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
@@ -531,6 +633,19 @@ bool CGUIClassifier::set_svr_tube_epsilon(CHAR* param)
 		svm_tube_epsilon=1e-2;
 
 	SG_INFO( "Set to svr_tube_epsilon=%f\n", svm_tube_epsilon);
+	return true ;  
+}
+
+bool CGUIClassifier::set_svm_one_class_nu(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	sscanf(param, "%le", &svm_nu) ;
+
+	if (svm_nu<0 || svm_nu>1)
+		svm_nu=0.5;
+
+	SG_INFO( "Set to nu=%f\n", svm_nu);
 	return true ;  
 }
 
@@ -600,6 +715,40 @@ bool CGUIClassifier::set_svm_mkl_enabled(CHAR* param)
 	return true ;  
 }
 
+bool CGUIClassifier::set_svm_shrinking_enabled(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	int shrinking=1;
+	sscanf(param, "%d", &shrinking) ;
+
+	svm_use_shrinking = (shrinking==1);
+
+	if (svm_use_shrinking)
+		SG_INFO( "Enabling shrinking optimization\n") ;
+	else
+		SG_INFO( "Disabling shrinking optimization\n") ;
+
+	return true ;  
+}
+
+bool CGUIClassifier::set_svm_batch_computation_enabled(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	int batch_computation=1;
+	sscanf(param, "%d", &batch_computation) ;
+
+	svm_use_batch_computation = (batch_computation==1);
+
+	if (svm_use_batch_computation)
+		SG_INFO( "Enabling batch computation\n") ;
+	else
+		SG_INFO( "Disabling batch computation\n") ;
+
+	return true ;  
+}
+
 bool CGUIClassifier::set_svm_precompute_enabled(CHAR* param)
 {
 	param=CIO::skip_spaces(param);
@@ -642,6 +791,23 @@ bool CGUIClassifier::set_svm_linadd_enabled(CHAR* param)
 		SG_INFO( "Enabling LINADD optimization\n") ;
 	else
 		SG_INFO( "Disabling LINADD optimization\n") ;
+
+	return true ;  
+}
+
+bool CGUIClassifier::set_do_auc_maximization(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	int auc=1;
+	sscanf(param, "%d", &auc) ;
+
+	svm_do_auc_maximization = (auc==1);
+	
+	if (svm_do_auc_maximization)
+		SG_INFO( "Enabling AUC maximization\n") ;
+	else
+		SG_INFO( "Disabling AUC maximization\n") ;
 
 	return true ;  
 }
@@ -708,6 +874,7 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 	  
 	((CKernelMachine*) classifier)->set_kernel(gui->guikernel.get_kernel()) ;
 	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
+	((CKernelMachine*) classifier)->set_batch_computation_enabled(svm_use_batch_computation);
 	SG_INFO( "starting kernel machine testing\n") ;
 	return classifier->classify(output);
 }

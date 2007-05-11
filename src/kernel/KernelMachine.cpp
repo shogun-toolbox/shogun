@@ -29,7 +29,7 @@ CLabels* CKernelMachine::classify(CLabels* output)
 		if (!output)
 			output=new CLabels(num);
 
-		ASSERT(output);
+		ASSERT(output && output->get_num_labels() == num);
 		for (INT i=0; i<num; i++)
 			output->set_label(i, classify_example(i));
 

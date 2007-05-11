@@ -18,7 +18,6 @@
 #include "base/SGObject.h"
 
 #include "guilib/GUIHMM.h"
-#include "guilib/GUISVM.h"
 #include "guilib/GUIClassifier.h"
 #include "guilib/GUIPluginEstimate.h"
 #include "guilib/GUIKNN.h"
@@ -35,10 +34,9 @@ class CGUI : public CSGObject
 {
  public:
 
-  CGUI(INT ac, char** av): guisvm(this), guiclassifier(this), guihmm(this), guipluginestimate(this), guiknn(this), guikernel(this), 
+  CGUI(INT ac, char** av): guiclassifier(this), guihmm(this), guipluginestimate(this), guiknn(this), guikernel(this), 
     guipreproc(this), guifeatures(this), guilabels(this), guimath(this), guitime(this), guidistance(this) ,argc(ac), argv(av) {} ;
 
-  CGUISVM guisvm;
   CGUIClassifier guiclassifier;
   CGUIHMM guihmm;
   CGUIPluginEstimate guipluginestimate;

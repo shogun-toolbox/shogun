@@ -76,6 +76,7 @@ bool CLDA::train()
 	delete[] w;
 	w=new DREAL[num_feat];
 	ASSERT(w);
+	w_dim=num_feat;
 
 	DREAL* mean_neg=new DREAL[num_feat];
 	ASSERT(mean_neg);

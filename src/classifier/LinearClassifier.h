@@ -51,15 +51,16 @@ class CLinearClassifier : public CClassifier
             return bias;
         }
 
-		virtual CLabels* classify(CLabels* output=NULL);
-
 		virtual bool load(FILE* srcfile);
 		virtual bool save(FILE* dstfile);
+
+		virtual CLabels* classify(CLabels* output=NULL);
 
 		virtual inline void set_features(CRealFeatures* feat) { features=feat; }
 		virtual CRealFeatures* get_features() { return features; }
 
 	protected:
+		INT w_dim;
 		DREAL* w;
 		DREAL bias;
 		CRealFeatures* features;

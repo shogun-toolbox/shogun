@@ -71,7 +71,7 @@ static const CHAR* N_ONE_CLASS_HMM_CLASSIFY=		"one_class_hmm_classify";
 static const CHAR* N_HMM_CLASSIFY=		"hmm_classify";
 static const CHAR* N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE=		"one_class_hmm_classify_example";
 static const CHAR* N_HMM_CLASSIFY_EXAMPLE=	"hmm_classify_example";
-//static const CHAR* N_CLASSIFY=		"classify";
+/static const CHAR* N_CLASSIFY=		"classify";
 static const CHAR* N_SVM_CLASSIFY=		"svm_classify";
 static const CHAR* N_SVM_CLASSIFY_EXAMPLE=	"svm_classify_example";
 //static const CHAR* N_GET_PLUGIN_ESTIMATE=	"get_plugin_estimate";
@@ -204,6 +204,10 @@ static SEXP sg_helper(SEXP args)
 			else if (!strncmp(action, N_SVM_CLASSIFY, strlen(N_SVM_CLASSIFY)))
 			{
 				return sg_R.svm_classify();
+			}
+			else if (!strncmp(action, N_CLASSIFY, strlen(N_CLASSIFY)))
+			{
+				return sg_R.classify();
 			}
 			else if (!strncmp(action, N_HMM_CLASSIFY, strlen(N_HMM_CLASSIFY)))
 			{

@@ -320,7 +320,7 @@ public:
 	}
 
 	/** performs a bubblesort on a given matrix a.
-	 * it is sorted from in ascending order from top to bottom
+	 * it is sorted in ascending order from top to bottom
 	 * and left to right */
 	static void sort(INT *a, INT cols, INT sort_col=0) ;
 	static void sort(DREAL *a, INT*idx, INT N) ;
@@ -372,7 +372,7 @@ public:
 	template <class T> static void display_matrix(T* matrix, INT rows, INT cols, const char* name="matrix");
 
 	/** performs a quicksort on an array output of length size
-	 * it is sorted from in ascending order 
+	 * it is sorted in ascending order 
 	 * (for type T1) and returns the index (type T2)
 	 * matlab alike [sorted,index]=sort(output) 
 	 */
@@ -380,7 +380,7 @@ public:
 	static void qsort(T1* output, T2* index, INT size);
 
 	/** performs a quicksort on an array output of length size
-	 * it is sorted from in ascending order
+	 * it is sorted in ascending order
 	 * (for type T1) and returns the index (type T2)
 	 * matlab alike [sorted,index]=sort(output) 
 	 */

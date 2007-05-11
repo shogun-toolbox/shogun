@@ -76,8 +76,7 @@ public:
 
 	bool get_svm(mxArray* retvals[]);
 	bool set_svm(const mxArray* vals[]);
-	bool svm_classify_example(mxArray* retvals[], int idx);
-	bool svm_classify(mxArray* retvals[]);
+	bool classify_example(mxArray* retvals[], int idx);
 	bool classify(mxArray* retvals[]);
 
 	bool set_plugin_estimate(const mxArray* vals[]);

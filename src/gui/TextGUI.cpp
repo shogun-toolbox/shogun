@@ -117,7 +117,7 @@ static const CHAR* N_SVM_EPSILON=			"svm_epsilon";
 static const CHAR* N_SVM_MAX_TRAIN_TIME=		"svm_max_train_time";
 static const CHAR* N_SVR_TUBE_EPSILON=			"svr_tube_epsilon";
 static const CHAR* N_SVM_ONE_CLASS_NU=			"svm_one_class_nu";
-static const CHAR* N_SVM_TRAIN_AUC_MAXIMIZATION=			"svm_train_auc_maximization";
+static const CHAR* N_DO_AUC_MAXIMIZATION=			"do_auc_maximization";
 static const CHAR* N_ADD_STATES=	        "add_states";
 static const CHAR* N_APPEND_HMM=		"append_hmm";
 static const CHAR* N_BAUM_WELCH_TRAIN=	        "bw";
@@ -321,7 +321,7 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_NEW_SVM, strlen(N_NEW_SVM)))
 	{
-		guisvm.new_svm(p_input+strlen(N_NEW_SVM));
+		guiclassifier.new_classifier(p_input+strlen(N_NEW_SVM));
 	} 
 	else if (!strncmp(p_input, N_NEW_CLASSIFIER, strlen(N_NEW_CLASSIFIER)))
 	{
@@ -393,7 +393,7 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_LOAD_SVM, strlen(N_LOAD_SVM)))
 	{
-		guisvm.load(p_input+strlen(N_LOAD_SVM));
+		guiclassifier.load(p_input+strlen(N_LOAD_SVM));
 	} 
 	else if (!strncmp(p_input, N_DELETE_KERNEL_OPTIMIZATION, strlen(N_DELETE_KERNEL_OPTIMIZATION)))
 	{
@@ -441,7 +441,7 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_SAVE_SVM, strlen(N_SAVE_SVM)))
 	{
-		guisvm.save(p_input+strlen(N_SAVE_SVM)) ;
+		guiclassifier.save(p_input+strlen(N_SAVE_SVM)) ;
 	} 
 	else if (!strncmp(p_input, N_SAVE_KERNEL_INIT, strlen(N_SAVE_KERNEL_INIT)))
 	{
@@ -569,9 +569,9 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	{
 		guihmm.linear_train(p_input+strlen(N_LINEAR_TRAIN));
 	} 
-	else if (!strncmp(p_input, N_SVM_TRAIN_AUC_MAXIMIZATION, strlen(N_SVM_TRAIN_AUC_MAXIMIZATION)))
+	else if (!strncmp(p_input, N_DO_AUC_MAXIMIZATION, strlen(N_DO_AUC_MAXIMIZATION)))
 	{
-		guisvm.train(p_input+strlen(N_SVM_TRAIN_AUC_MAXIMIZATION), true);
+		guiclassifier.set_do_auc_maximization(p_input+strlen(N_DO_AUC_MAXIMIZATION));
 	} 
 	else if (!strncmp(p_input, N_TRAIN_CLASSIFIER, strlen(N_TRAIN_CLASSIFIER)))
 	{
@@ -583,7 +583,7 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_SVM_TRAIN, strlen(N_SVM_TRAIN)))
 	{
-		guisvm.train(p_input+strlen(N_SVM_TRAIN), false);
+		guiclassifier.train(p_input+strlen(N_SVM_TRAIN));
 	} 
 	else if (!strncmp(p_input, N_SET_KERNEL_OPTIMIZATION_TYPE, strlen(N_SET_KERNEL_OPTIMIZATION_TYPE)))
 	{
@@ -629,7 +629,7 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_SVM_TEST, strlen(N_SVM_TEST)))
 	{
-		guisvm.test(p_input+strlen(N_SVM_TEST));
+		guiclassifier.test(p_input+strlen(N_SVM_TEST));
 	} 
 	else if (!strncmp(p_input, N_ONE_CLASS_HMM_TEST, strlen(N_ONE_CLASS_HMM_TEST)))
 	{
@@ -669,11 +669,11 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_C, strlen(N_C)))
 	{
-		guisvm.set_C(p_input+strlen(N_C));
+		guiclassifier.set_svm_C(p_input+strlen(N_C));
 	} 
 	else if (!strncmp(p_input, N_SVMQPSIZE, strlen(N_SVMQPSIZE)))
 	{
-		guisvm.set_qpsize(p_input+strlen(N_SVMQPSIZE));
+		guiclassifier.set_svm_qpsize(p_input+strlen(N_SVMQPSIZE));
 	} 
 	else if (!strncmp(p_input, N_THREADS, strlen(N_THREADS)))
 	{
@@ -691,43 +691,43 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	} 
 	else if (!strncmp(p_input, N_USE_PRECOMPUTE, strlen(N_USE_PRECOMPUTE)))
 	{
-		guisvm.set_precompute_enabled(p_input+strlen(N_USE_PRECOMPUTE));
+		guiclassifier.set_svm_precompute_enabled(p_input+strlen(N_USE_PRECOMPUTE));
 	} 
 	else if (!strncmp(p_input, N_USE_MKL, strlen(N_USE_MKL)))
 	{
-		guisvm.set_mkl_enabled(p_input+strlen(N_USE_MKL));
+		guiclassifier.set_svm_mkl_enabled(p_input+strlen(N_USE_MKL));
 	} 
 	else if (!strncmp(p_input, N_USE_SHRINKING, strlen(N_USE_SHRINKING)))
 	{
-		guisvm.set_shrinking_enabled(p_input+strlen(N_USE_SHRINKING));
+		guiclassifier.set_svm_shrinking_enabled(p_input+strlen(N_USE_SHRINKING));
 	} 
 	else if (!strncmp(p_input, N_USE_BATCH_COMPUTATION, strlen(N_USE_BATCH_COMPUTATION)))
 	{
-		guisvm.set_batch_computation_enabled(p_input+strlen(N_USE_BATCH_COMPUTATION));
+		guiclassifier.set_svm_batch_computation_enabled(p_input+strlen(N_USE_BATCH_COMPUTATION));
 	} 
 	else if (!strncmp(p_input, N_USE_LINADD, strlen(N_USE_LINADD)))
 	{
-		guisvm.set_linadd_enabled(p_input+strlen(N_USE_LINADD));
+		guiclassifier.set_svm_linadd_enabled(p_input+strlen(N_USE_LINADD));
 	} 
 	else if (!strncmp(p_input, N_SVM_EPSILON, strlen(N_SVM_EPSILON)))
 	{
-		guisvm.set_svm_epsilon(p_input+strlen(N_SVM_EPSILON));
+		guiclassifier.set_svm_epsilon(p_input+strlen(N_SVM_EPSILON));
 	} 
 	else if (!strncmp(p_input, N_SVM_MAX_TRAIN_TIME, strlen(N_SVM_MAX_TRAIN_TIME)))
 	{
-		guisvm.set_svm_max_train_time(p_input+strlen(N_SVM_MAX_TRAIN_TIME));
+		guiclassifier.set_max_train_time(p_input+strlen(N_SVM_MAX_TRAIN_TIME));
 	} 
 	else if (!strncmp(p_input, N_SVR_TUBE_EPSILON, strlen(N_SVR_TUBE_EPSILON)))
 	{
-		guisvm.set_svr_tube_epsilon(p_input+strlen(N_SVR_TUBE_EPSILON));
+		guiclassifier.set_svr_tube_epsilon(p_input+strlen(N_SVR_TUBE_EPSILON));
 	} 
 	else if (!strncmp(p_input, N_SVM_ONE_CLASS_NU, strlen(N_SVM_ONE_CLASS_NU)))
 	{
-		guisvm.set_svm_one_class_nu(p_input+strlen(N_SVM_ONE_CLASS_NU));
+		guiclassifier.set_svm_one_class_nu(p_input+strlen(N_SVM_ONE_CLASS_NU));
 	} 
 	else if (!strncmp(p_input, N_MKL_PARAMETERS, strlen(N_MKL_PARAMETERS)))
 	{
-		guisvm.set_mkl_parameters(p_input+strlen(N_MKL_PARAMETERS));
+		guiclassifier.set_svm_mkl_parameters(p_input+strlen(N_MKL_PARAMETERS));
 	} 
 	else if (!strncmp(p_input, N_TIC, strlen(N_TIC)))
 	{

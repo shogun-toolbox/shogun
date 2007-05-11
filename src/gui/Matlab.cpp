@@ -270,7 +270,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 				if (mxIsDouble(prhs[1]))
 				{
 				  double* idx=mxGetPr(prhs[1]);
-				  if (!sg_matlab.svm_classify_example(plhs, (int) (*idx) ))
+				  if (!sg_matlab.classify_example(plhs, (int) (*idx) ))
 				    SG_SERROR( "svm_classify_example failed");
 				}
 				else
@@ -279,21 +279,11 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				SG_SERROR( "usage is [result]=sg('svm_classify_example', feature_vector_index)");
 		}
-		else if (strmatch(action, len, N_CLASSIFY))
+		else if (strmatch(action, len, N_CLASSIFY) || strmatch(action, len, N_SVM_CLASSIFY))
 		{
 			if (nlhs==1)
 			  {
 			    if (!sg_matlab.classify(plhs))
-			      SG_SERROR( "classify failed");
-			  }
-			else
-				SG_SERROR( "usage is [result]=sg('classify')");
-		}
-		else if (strmatch(action, len, N_SVM_CLASSIFY))
-		{
-			if (nlhs==1)
-			  {
-			    if (!sg_matlab.svm_classify(plhs))
 			      SG_SERROR( "svm_classify failed");
 			  }
 			else

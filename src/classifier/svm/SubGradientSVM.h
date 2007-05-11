@@ -49,7 +49,7 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		DREAL compute_min_subgradient(INT num_feat, INT num_vec, INT num_active, INT num_bound);
 
 		///performs a line search to determine step size
-		DREAL line_search();
+		DREAL line_search(INT num_feat, INT num_vec);
 
 		/// update projection
 		void update_projection(INT num_feat, INT num_vec);
@@ -65,6 +65,8 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		DREAL C2;
 		DREAL epsilon;
 
+		DREAL work_epsilon;
+
 		//idx vectors of length num_vec
 		BYTE* active; // 0=not active, 1=active, 2=on boundary
 		BYTE* old_active;
@@ -79,8 +81,9 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		//vector of length num_feat
 		DREAL* grad_w;
 		DREAL grad_b;
-
-		DREAL bias;
+		DREAL* grad_proj;
+		DREAL* hinge_point;
+		INT* hinge_idx;
 };
 #endif
 

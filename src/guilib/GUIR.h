@@ -70,6 +70,7 @@ public:
    
 	CLabels* set_labels(SEXP labelsR);
 	SEXP get_labels(CLabels* label);
+	SEXP classify();
 	SEXP svm_classify();
 	SEXP svm_classify_example(INT idx);
    

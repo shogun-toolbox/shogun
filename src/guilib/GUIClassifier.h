@@ -27,6 +27,7 @@ public:
 	~CGUIClassifier();
 
 	bool new_classifier(CHAR* param);
+	bool set_max_train_time(CHAR* param);
 	bool train(CHAR* param);
 	bool test(CHAR* param);
 	bool load(CHAR* param);
@@ -46,12 +47,16 @@ public:
 	bool set_svm_C(CHAR* param);
 	bool set_svm_qpsize(CHAR* param);
 	bool set_svm_mkl_enabled(CHAR* param);
+	bool set_svm_shrinking_enabled(CHAR* param);
+	bool set_svm_one_class_nu(CHAR* param);
+	bool set_svm_batch_computation_enabled(CHAR* param);
+	bool set_do_auc_maximization(CHAR* param);
 	bool set_svm_linadd_enabled(CHAR* param);
 	bool set_svm_epsilon(CHAR* param);
 	bool set_svr_tube_epsilon(CHAR* param);
 	bool set_svm_mkl_parameters(CHAR* param) ;
 	bool set_svm_precompute_enabled(CHAR* param) ;
-	bool train_svm(CHAR* param, bool auc_maximization);
+	bool train_svm(CHAR* param);
 	bool train_knn(CHAR* param);
 	bool train_linear(CHAR* param);
 	bool train_sparse_linear(CHAR* param);
@@ -60,6 +65,7 @@ public:
  protected:
 	CGUI* gui;
 	CClassifier* classifier;
+	double max_train_time;
 
 	double perceptron_learnrate;
 	int perceptron_maxiter;
@@ -68,14 +74,18 @@ public:
 	double svm_weight_epsilon;
 	double svm_epsilon;
 	double svm_tube_epsilon;
+	double svm_nu;
 	double svm_C1;
 	double svm_C2;
 	double svm_C_mkl;
 	bool svm_use_mkl;
+	bool svm_use_batch_computation;
 	bool svm_use_linadd;
 	bool svm_use_precompute;
 	bool svm_use_precompute_subkernel;
 	bool svm_use_precompute_subkernel_light;
+	bool svm_use_shrinking;
+	bool svm_do_auc_maximization;
 };
 #endif //HAVE_SWIG
 #endif

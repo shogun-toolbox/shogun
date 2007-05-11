@@ -21,24 +21,12 @@ class CSparseLinearClassifier : public CClassifier
 		CSparseLinearClassifier();
 		virtual ~CSparseLinearClassifier();
 
+		virtual CLabels* classify(CLabels* output=NULL);
+
 		/// get output for example "idx"
 		virtual inline DREAL classify_example(INT idx)
 		{
-			INT vlen;
-			bool vfree;
-			DREAL result=0.0;
-
-			ASSERT(features);
-			ASSERT(w && features->get_num_features()==w_dim);
-
-			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(idx, vlen, vfree);
-
-			for (INT i=0; i<vlen; i++)
-				result+=w[vec[i].feat_index]*vec[i].entry;
-
-			features->free_sparse_feature_vector(vec, idx, vfree);
-
-			return result+get_bias();
+			return features->dense_dot(1.0, idx, w, w_dim, bias);
 		}
 
         inline void get_w(DREAL** dst_w, INT* dst_dims)
@@ -65,8 +53,6 @@ class CSparseLinearClassifier : public CClassifier
         {
             return bias;
         }
-
-		virtual CLabels* classify(CLabels* output=NULL);
 
 		inline void set_features(CSparseFeatures<DREAL>* feat) { features=feat; }
 		inline CSparseFeatures<DREAL>* get_features() { return features; }

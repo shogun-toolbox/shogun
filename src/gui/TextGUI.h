@@ -17,7 +17,6 @@
 #ifndef HAVE_SWIG
 #include <stdio.h>
 #include "guilib/GUIHMM.h"
-#include "guilib/GUISVM.h"
 #include "guilib/GUIKernel.h"
 #include "guilib/GUIPreProc.h"
 #include "guilib/GUIFeatures.h"

@@ -10,34 +10,13 @@
 
 #include "classifier/LinearClassifier.h"
 
-CLinearClassifier::CLinearClassifier() : CClassifier(), w(NULL), bias(0), features(NULL)
+CLinearClassifier::CLinearClassifier() : CClassifier(), w_dim(0), w(NULL), bias(0), features(NULL)
 {
 }
 
 CLinearClassifier::~CLinearClassifier()
 {
 }
-
-CLabels* CLinearClassifier::classify(CLabels* output)
-{
-	if (features)
-	{
-		INT num=features->get_num_vectors();
-		ASSERT(num>0);
-
-		if (!output)
-			output=new CLabels(num);
-
-		ASSERT(output);
-		for (INT i=0; i<num; i++)
-			output->set_label(i, classify_example(i));
-
-		return output;
-	}
-
-	return NULL;
-}
-
 
 bool CLinearClassifier::load(FILE* srcfile)
 {
@@ -47,4 +26,25 @@ bool CLinearClassifier::load(FILE* srcfile)
 bool CLinearClassifier::save(FILE* dstfile)
 {
 	return false;
+}
+
+CLabels* CLinearClassifier::classify(CLabels* output)
+{
+	if (features)
+	{
+		INT num=features->get_num_vectors();
+		ASSERT(num>0);
+		ASSERT(w_dim == features->get_num_features());
+
+		if (!output)
+			output=new CLabels(num);
+
+		ASSERT(output && output->get_num_labels() == num);
+		for (INT i=0; i<num; i++)
+			output->set_label(i, classify_example(i));
+
+		return output;
+	}
+
+	return NULL;
 }

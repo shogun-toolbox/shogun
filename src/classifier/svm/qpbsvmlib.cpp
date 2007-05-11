@@ -84,24 +84,36 @@ CQPBSVMLib::~CQPBSVMLib()
 
 INT CQPBSVMLib::solve_qp(DREAL* result, INT len)
 {
+	INT status = -1;
 	ASSERT(len==m_dim);
-	DREAL* Nabla=NULL;
-	DREAL* History;
+	DREAL* Nabla=new DREAL[m_dim];
+	ASSERT(Nabla);
+	for (INT i=0; i<m_dim; i++)
+		Nabla[i]=m_f[i];
+
+	DREAL* History=NULL;
 	INT t;
 	INT verb=0;
 
 	switch (m_solver)
 	{
 		case QPB_SOLVER_SCA:
-			return qpbsvm_sca(result, Nabla, &t, &History, verb );
+			status = qpbsvm_sca(result, Nabla, &t, &History, verb );
+			break;
 		case QPB_SOLVER_SCAS:
-			return qpbsvm_scas(result, Nabla, &t, &History, verb );
+			status = qpbsvm_scas(result, Nabla, &t, &History, verb );
+			break;
 		case QPB_SOLVER_SCAMV:
-			return qpbsvm_scamv(result, Nabla, &t, &History, verb );
+			status = qpbsvm_scamv(result, Nabla, &t, &History, verb );
+			break;
 		default:
 			SG_ERROR("unknown solver\n");
-			return -1;
+			break;
 	}
+	delete[] History;
+	delete[] Nabla;
+
+	return status;
 }
 
 /* --------------------------------------------------------------

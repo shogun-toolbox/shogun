@@ -331,7 +331,7 @@ bool CGUIOctave::one_class_hmm_classify_example(octave_value_list& retvals, int 
 
 bool CGUIOctave::get_svm(octave_value_list& retvals)
 {
-	CSVM* svm=gui->guisvm.get_svm();
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 
 	if (svm)
 	{
@@ -361,7 +361,7 @@ bool CGUIOctave::get_svm(octave_value_list& retvals)
 
 bool CGUIOctave::set_svm(const octave_value_list& vals)
 {
-	CSVM* svm=gui->guisvm.get_svm();
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 
 	if (svm)
 	{
@@ -393,7 +393,7 @@ bool CGUIOctave::svm_classify(octave_value_list& retvals)
 	{
 		int num_vec=f->get_num_vectors();
 
-		CLabels* l=gui->guisvm.classify();
+		CLabels* l=gui->guiclassifier.classify();
 
 		if (!l)
 		{
@@ -438,11 +438,11 @@ bool CGUIOctave::classify(octave_value_list& retvals)
 	return false;
 }
 
-bool CGUIOctave::svm_classify_example(octave_value_list& retvals, int idx)
+bool CGUIOctave::classify_example(octave_value_list& retvals, int idx)
 {
 	double result=0;
 
-	if (!gui->guisvm.classify_example(idx, result))
+	if (!gui->guiclassifier.classify_example(idx, result))
 	{
 		SG_ERROR( "svm_classify_example failed\n") ;
 		return false ;

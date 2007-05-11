@@ -1437,7 +1437,7 @@ bool CGUIMatlab::one_class_hmm_classify_example(mxArray* retvals[], int idx)
 
 bool CGUIMatlab::get_svm(mxArray* retvals[])
 {
-	CSVM* svm=gui->guisvm.get_svm();
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 
 	if (svm)
 	{
@@ -1469,7 +1469,7 @@ bool CGUIMatlab::get_svm(mxArray* retvals[])
 
 bool CGUIMatlab::set_svm(const mxArray* vals[])
 {
-	CSVM* svm=gui->guisvm.get_svm();
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 
 	if (svm)
 	{
@@ -1530,42 +1530,16 @@ bool CGUIMatlab::classify(mxArray* retvals[])
 	return false;
 }
 
-bool CGUIMatlab::svm_classify(mxArray* retvals[])
-{
-	CFeatures* f=gui->guifeatures.get_test_features();
-	if (f)
-	{
-		int num_vec=f->get_num_vectors();
 
-		CLabels* l=gui->guisvm.classify();
-
-		if (!l)
-		  {
-		    SG_ERROR( "svm_classify failed\n") ;
-		    return false ;
-		  } ;
-
-		mxArray* mx_result=mxCreateDoubleMatrix(1, num_vec, mxREAL);
-		double* result=mxGetPr(mx_result);
-		for (int i=0; i<num_vec; i++)
-		  result[i]=l->get_label(i);
-		delete l;
-		
-		retvals[0]=mx_result;
-		return true;
-	}
-	return false;
-}
-
-bool CGUIMatlab::svm_classify_example(mxArray* retvals[], int idx)
+bool CGUIMatlab::classify_example(mxArray* retvals[], int idx)
 {
 	mxArray* mx_result=mxCreateDoubleMatrix(1, 1, mxREAL);
 	retvals[0]=mx_result;
 	double* result=mxGetPr(mx_result);
 	
-	if (!gui->guisvm.classify_example(idx, result[0]))
+	if (!gui->guiclassifier.classify_example(idx, result[0]))
 	  {
-	    SG_ERROR( "svm_classify_example failed\n") ;
+	    SG_ERROR( "classify_example failed\n") ;
 	    return false ;
 	  } ;
 	
@@ -2158,7 +2132,7 @@ bool CGUIMatlab::get_version(mxArray* retvals[])
 bool CGUIMatlab::get_svm_objective(mxArray* retvals[])
 {
 	mxArray* mx_v=mxCreateDoubleMatrix(1, 1, mxREAL);
-	CSVM* svm=gui->guisvm.get_svm();
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 
 	if (mx_v && svm)
 	{
@@ -2642,7 +2616,7 @@ bool CGUIMatlab::get_WD_scoring(mxArray* retvals[], INT max_order)
 
 	if (k && (k->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
 	{
-		CSVM* svm=gui->guisvm.get_svm();
+		CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 		ASSERT(svm);
 		INT num_suppvec = svm->get_num_support_vectors();
 		INT* sv_idx    = new INT[num_suppvec];
@@ -2688,7 +2662,7 @@ bool CGUIMatlab::get_WD_consensus(mxArray* retvals[])
 
 	if (k && k->get_kernel_type() == K_WEIGHTEDDEGREEPOS)
 	{
-		CSVM* svm=gui->guisvm.get_svm();
+		CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 		ASSERT(svm);
 		INT num_suppvec = svm->get_num_support_vectors();
 		INT* sv_idx    = new INT[num_suppvec];
@@ -2726,7 +2700,7 @@ bool CGUIMatlab::get_SPEC_consensus(mxArray* retvals[])
 
 	if (k && k->get_kernel_type() == K_COMMWORDSTRING)
 	{
-		CSVM* svm=gui->guisvm.get_svm();
+		CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 		ASSERT(svm);
 		INT num_suppvec = svm->get_num_support_vectors();
 		INT* sv_idx    = new INT[num_suppvec];
