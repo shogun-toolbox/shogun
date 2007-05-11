@@ -1,5 +1,6 @@
 
 read_mfile <- function(filename){
+	res <- c();
 	f <- file(filename)
 	lines <- readLines(f)
 	for (line in lines){
@@ -14,14 +15,17 @@ read_mfile <- function(filename){
 			line <- gsub("[]]",paste("),nrow=",rows, ")"),line)
 			line <- gsub(";",",",line)
 			#return(line)
+			res <- cbind(res, line)
 			tcon <- textConnection(line)
 			source(tcon)
 			close(tcon)
 		}else {
 			line <- gsub("=","<- ",line)
+			res <- cbind(res, line)
 			tcon <- textConnection(line)
 			source(tcon)
 			close(tcon)
 		}
 	}
+	return (res)
 }
