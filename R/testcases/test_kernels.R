@@ -3,21 +3,7 @@ dyn.load('../sg/src/sg.so')
 eps <- 1e-7
 source("../sg/R/shogun.R")
 test_kernels <- function(filename){
-
-	source("read_mfile.R")
- 	code_lines <- read_mfile(filename)
-	tcon <- textConnection(paste('res <- ',functionname,"(code_lines)"))
-	source(tcon)
-	close(tcon)
-	return(res)
-}
-
-
-test_gaussian_kernel <- function(code_lines){
-
-  tcon <- textConnection(code_lines)
-  source(tcon)
-  close(tcon)
+test_gaussian_kernel <- function(){
 
   send_command('clean_features TRAIN');
   set_features( 'TRAIN', traindat);
@@ -31,6 +17,8 @@ test_gaussian_kernel <- function(code_lines){
   set_features( 'TEST', testdat);
   send_command('init_kernel TEST');
   testkm <- get_kernel_matrix();
+  print(traindat)
+  print(testkm)
   print(paste('max testkm: ',max(max(testkm))))
   print(paste('max km_test: ',max(max(km_test))))
   print(paste('dim(testkm): ',dim(testkm)))
@@ -47,7 +35,17 @@ test_gaussian_kernel <- function(code_lines){
   }
  return(result) 
 }
-
+	source("read_mfile.R")
+ 	code_lines <- read_mfile(filename)
+	print(ls())
+	test_gaussian_kernel()
+	#tcon <- textConnection(paste('res <- ',gsub(functionname),"();"))
+	#lines<-readLines(tcon)
+	#print(lines(1))
+	#source(tcon)
+	#close(tcon)
+	return(res)
+}
 test_chi2_kernel <- function(){return(1)}
 test_linear_kernel<- function(){return(1)} 
 test_poly_kernel<- function(){return(1)} 
