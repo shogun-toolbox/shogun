@@ -1,22 +1,24 @@
 #library(sg)
-dyn.load('../sg/src/sg.so')
+dyn.load('../../src/sg.so')
+sg <- function(...) .External("sg",...,PACKAGE="sg")
+
 eps <- 1e-7
-source("../sg/R/shogun.R")
 test_kernels <- function(filename){
 test_gaussian_kernel <- function(){
 
-  send_command('clean_features TRAIN');
-  set_features( 'TRAIN', traindat);
+  sg('send_command', 'clean_features TRAIN');
+  sg('set_features', 'TRAIN', traindat);
 
   kname <- paste("set_kernel GAUSSIAN REAL ", size_,width_)
-  send_command(kname);
+  print(kname)
+  sg('send_command', kname);
 
-  send_command('init_kernel TRAIN');
-  trainkm <- get_kernel_matrix();
+  sg('send_command', 'init_kernel TRAIN');
+  trainkm <- sg('get_kernel_matrix');
 
-  set_features( 'TEST', testdat);
-  send_command('init_kernel TEST');
-  testkm <- get_kernel_matrix();
+  sg('set_features', 'TEST', testdat);
+  sg('send_command', 'init_kernel TEST');
+  testkm <- sg('get_kernel_matrix');
   print(traindat)
   print(testkm)
   print(paste('max testkm: ',max(max(testkm))))
@@ -35,15 +37,17 @@ test_gaussian_kernel <- function(){
   }
  return(result) 
 }
+
+print("test")
 	source("read_mfile.R")
  	code_lines <- read_mfile(filename)
 	print(ls())
-	test_gaussian_kernel()
-	#tcon <- textConnection(paste('res <- ',gsub(functionname),"();"))
-	#lines<-readLines(tcon)
-	#print(lines(1))
-	#source(tcon)
-	#close(tcon)
+#res <- test_gaussian_kernel()
+	eval(parse(text=paste("res <- ",functionname,"()")))
+#tcon <- textConnection(paste('res <- ',functionname,"();"))
+#lines<-readLines(tcon)
+#source(tcon)
+#close(tcon)
 	return(res)
 }
 test_chi2_kernel <- function(){return(1)}

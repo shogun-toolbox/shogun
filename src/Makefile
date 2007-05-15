@@ -201,7 +201,7 @@ depend:		.config lib/versionstring.h
 lib/versionstring.h:	$(SVNEntries)
 		sh .version.sh > $@
 tests:
-		cd ../$(INTERFACE)/testcases && sh ./run.sh	
+		cd ../$(INTERFACE)/testcases && ./run.sh	
 
 ChangeLog:
 		@svn2cl --group-by-day --authors=.authors 2>/dev/null || true

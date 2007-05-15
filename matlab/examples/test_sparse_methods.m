@@ -56,30 +56,30 @@ sg('send_command', 'init_kernel TEST');
 trainout_reflight=sg('classify');
 trainerr_reflight=mean(trainlab~=sign(trainout_reflight))
 
-%%%LIBSVM%%%
-sg('set_features', 'TRAIN', traindat);
-sg('send_command', 'convert TRAIN SIMPLE REAL SPARSE REAL') ;
-sg('set_labels', 'TRAIN', trainlab);
-sg('send_command', sprintf('c %f', C));
-sg('send_command', 'set_kernel LINEAR SPARSEREAL 500 1.0');
-sg('send_command', 'init_kernel TRAIN');
-sg('send_command', 'new_classifier LIBSVM');
-tic;
-sg('send_command', 'train_classifier');
-timelibsvm=toc
-
-sg('send_command', 'init_kernel_optimization');
-sg('set_features', 'TEST', traindat);
-sg('send_command', 'convert TEST SIMPLE REAL SPARSE REAL') ;
-sg('send_command', 'init_kernel TEST');
-trainout_reflibsvm=sg('classify');
-trainerr_reflibsvm=mean(trainlab~=sign(trainout_reflibsvm))
-
-max(abs(trainout-trainout_reflight)) 
-max(abs(trainout-trainout_reflibsvm))
-max(abs(trainout_reflibsvm-trainout_reflight))
-
-timesubgradsvm
-timelight
-timelibsvm
-
+%%%%LIBSVM%%%
+%sg('set_features', 'TRAIN', traindat);
+%sg('send_command', 'convert TRAIN SIMPLE REAL SPARSE REAL') ;
+%sg('set_labels', 'TRAIN', trainlab);
+%sg('send_command', sprintf('c %f', C));
+%sg('send_command', 'set_kernel LINEAR SPARSEREAL 500 1.0');
+%sg('send_command', 'init_kernel TRAIN');
+%sg('send_command', 'new_classifier LIBSVM');
+%tic;
+%sg('send_command', 'train_classifier');
+%timelibsvm=toc
+%
+%sg('send_command', 'init_kernel_optimization');
+%sg('set_features', 'TEST', traindat);
+%sg('send_command', 'convert TEST SIMPLE REAL SPARSE REAL') ;
+%sg('send_command', 'init_kernel TEST');
+%trainout_reflibsvm=sg('classify');
+%trainerr_reflibsvm=mean(trainlab~=sign(trainout_reflibsvm))
+%
+%max(abs(trainout-trainout_reflight)) 
+%max(abs(trainout-trainout_reflibsvm))
+%max(abs(trainout_reflibsvm-trainout_reflight))
+%
+%timesubgradsvm
+%timelight
+%timelibsvm
+%
