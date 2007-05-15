@@ -3,7 +3,18 @@ dyn.load('../../src/sg.so')
 sg <- function(...) .External("sg",...,PACKAGE="sg")
 
 eps <- 1e-7
+
 test_kernels <- function(filename){
+	source("read_mfile.R")
+ 	code_lines <- read_mfile(filename)
+	print(ls())
+	#res <- test_gaussian_kernel()
+	eval(parse(text=paste('res <- ',functionname,"();")))
+	return(res)
+}
+
+
+
 test_gaussian_kernel <- function(){
 
   sg('send_command', 'clean_features TRAIN');
@@ -29,26 +40,13 @@ test_gaussian_kernel <- function(){
   a <- max(max(abs(km_test-testkm)))
   b <- max(max(abs(km_train-trainkm)))
   print(paste('a: ', a,' b: ', b)) 
-  if(a+b<1){
+  if(a+b<eps){
     result <- 0
   }
   else{
     result <- 1
   }
- return(result) 
-}
-
-print("test")
-	source("read_mfile.R")
- 	code_lines <- read_mfile(filename)
-	print(ls())
-#res <- test_gaussian_kernel()
-	eval(parse(text=paste("res <- ",functionname,"()")))
-#tcon <- textConnection(paste('res <- ',functionname,"();"))
-#lines<-readLines(tcon)
-#source(tcon)
-#close(tcon)
-	return(res)
+  return(result) 
 }
 test_chi2_kernel <- function(){return(1)}
 test_linear_kernel<- function(){return(1)} 
