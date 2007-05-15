@@ -1,6 +1,9 @@
-#library(sg)
-dyn.load('../../src/sg.so')
-sg <- function(...) .External("sg",...,PACKAGE="sg")
+if (library(sg,logical.return=TRUE) == FALSE)
+{
+	dyn.load('../../src/sg.so')
+	sg <- function(...) .External("sg",...,PACKAGE="sg")
+}
+	
 
 eps <- 1e-7
 
@@ -8,7 +11,6 @@ test_kernels <- function(filename){
 	source("read_mfile.R")
  	code_lines <- read_mfile(filename)
 	print(ls())
-	#res <- test_gaussian_kernel()
 	eval(parse(text=paste('res <- ',functionname,"();")))
 	return(res)
 }
@@ -30,8 +32,7 @@ test_gaussian_kernel <- function(){
   sg('set_features', 'TEST', testdat);
   sg('send_command', 'init_kernel TEST');
   testkm <- sg('get_kernel_matrix');
-  print(traindat)
-  print(testkm)
+
   print(paste('max testkm: ',max(max(testkm))))
   print(paste('max km_test: ',max(max(km_test))))
   print(paste('dim(testkm): ',dim(testkm)))

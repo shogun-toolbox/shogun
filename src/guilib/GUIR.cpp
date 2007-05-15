@@ -881,28 +881,15 @@ SEXP CGUI_R::get_svm_objective() {
 			int num_vec1=k->get_lhs()->get_num_vectors();
 			int num_vec2=k->get_rhs()->get_num_vectors();
 			SG_DEBUG("Kernel matrix has size %d / %d\n", num_vec1, num_vec2);
-			SEXP ans,dim;
+			SEXP ans;
 			PROTECT( ans = allocMatrix(REALSXP, num_vec1, num_vec2) );
 
-			DREAL* blub = k->get_kernel_matrix_real(num_vec1, num_vec2,NULL);
-
-			if( blub == NULL )
-				SG_DEBUG("error return value is NULL!");
-
-			for( int i=0; i<num_vec1; i++) 
+			for (INT i=0; i<num_vec2; i++)
 			{
-				for( int j=0; j<num_vec2; j++) 
-				{
-					REAL(ans)[i+num_vec2*j] = blub[i+num_vec2*j];
-				}
+				for (INT j=0; j<num_vec1; j++)
+					REAL(ans)[i*num_vec1+j]=k->kernel(j,i);
 			}
-
-			PROTECT( dim = allocVector(INTSXP, 2) );
-			INTEGER(dim)[0] = num_vec1;
-			INTEGER(dim)[1] = num_vec2;
-			setAttrib(ans, R_DimSymbol, dim);
-
-			UNPROTECT(2);
+			UNPROTECT(1);
 			SG_DEBUG("matrix created!");
 			return ans;
 		}

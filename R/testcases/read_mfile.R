@@ -12,7 +12,7 @@ read_mfile <- function(filename){
 			line <- gsub("::",",",line)
 			line <- gsub("=", "<-",line)
 			line <- gsub("[[]","matrix(c(",line)
-			line <- gsub("[]]",paste("),nrow=",rows, ")"),line)
+			line <- gsub("[]]",paste("),nrow=",rows, ",byrow=TRUE)"),line)
 			line <- gsub(";",",",line)
 			#return(line)
 			res <- cbind(res, line)
