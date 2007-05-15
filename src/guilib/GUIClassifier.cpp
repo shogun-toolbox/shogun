@@ -108,7 +108,7 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		SG_INFO( "created SVMlibsvm object\n") ;
 	}
 #ifdef USE_SVMLIGHT
-	else if (strcmp(param,"SVMLIGHT")==0)
+	else if ((strcmp(param,"LIGHT")==0) || (strcmp(param,"SVMLIGHT")==0))
 	{
 		delete classifier;
 		classifier= new CSVMLight();
