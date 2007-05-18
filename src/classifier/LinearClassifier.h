@@ -46,6 +46,12 @@ class CLinearClassifier : public CClassifier
             memcpy(*dst_w, w, sizeof(DREAL) * (*dst_dims));
         }
 
+		inline void set_w(DREAL* src_w, INT src_w_dim)
+		{
+			w=src_w;
+			w_dim=src_w_dim;
+		}
+
         inline DREAL get_bias()
         {
             return bias;

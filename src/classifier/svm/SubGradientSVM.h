@@ -36,10 +36,13 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		inline DREAL get_epsilon() { return epsilon; }
 
 	protected:
-		/// updates the active / old_active as well as the idx_active, idx_bound
-		/// and sum_CXy_active arrays and the sum_Cy_active variable
-		/// returns number of changed constraints
+		/// returns number of changed constraints for precision work_epsilon
+		/// and fills active array
 		INT find_active(INT num_feat, INT num_vec, INT& num_active, INT& num_bound);
+
+		/// swaps the active / old_active and computes idx_active, idx_bound
+		/// and sum_CXy_active arrays and the sum_Cy_active variable
+		void update_active(INT num_feat, INT num_vec);
 
 		/// compute svm objective
 		DREAL compute_objective(INT num_feat, INT num_vec);
@@ -51,8 +54,11 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		///performs a line search to determine step size
 		DREAL line_search(INT num_feat, INT num_vec);
 
-		/// update projection
-		void update_projection(INT num_feat, INT num_vec);
+		/// compute projection
+		void compute_projection(INT num_feat, INT num_vec);
+
+		/// only computes updates on the projection
+		void update_projection(DREAL alpha, INT num_vec);
 
 		/// alloc helper arrays
 		void init(INT num_vec, INT num_feat);
@@ -64,8 +70,8 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		DREAL C1;
 		DREAL C2;
 		DREAL epsilon;
-
 		DREAL work_epsilon;
+		DREAL autoselected_epsilon;
 
 		//idx vectors of length num_vec
 		BYTE* active; // 0=not active, 1=active, 2=on boundary
@@ -73,6 +79,8 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		INT* idx_active;
 		INT* idx_bound;
 		DREAL* proj;
+		DREAL* tmp_proj;
+		INT* tmp_proj_idx;
 		
 		//vector of length num_feat
 		DREAL* sum_CXy_active;

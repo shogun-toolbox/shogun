@@ -263,8 +263,9 @@ public:
 			vec[i]*=scalar;
 	}
 
-	static inline void vec1_plus_scalar_times_vec2(DREAL scalar, DREAL* vec1,
-			const DREAL* vec2, INT n)
+	/// x=x+alpha*y
+	static inline void vec1_plus_scalar_times_vec2(DREAL* vec1,
+			DREAL scalar, const DREAL* vec2, INT n)
 	{
 		for (INT i=0; i<n; i++)
 			vec1[i]+=scalar*vec2[i];

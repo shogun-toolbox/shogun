@@ -423,7 +423,7 @@ void Solver::Solve(int p_l, const QMatrix& p_Q, const double *p_p, const schar *
 		{
 			counter = min(l,1000);
 			if(shrinking) do_shrinking();
-			SG_SINFO(".");
+			//SG_SINFO(".");
 		}
 
 		int i,j;
@@ -433,7 +433,7 @@ void Solver::Solve(int p_l, const QMatrix& p_Q, const double *p_p, const schar *
 			reconstruct_gradient();
 			// reset active set size and check
 			active_size = l;
-			SG_SINFO("*");
+			//SG_SINFO("*");
 			if(select_working_set(i,j)!=0)
 				break;
 			else

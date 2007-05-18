@@ -258,7 +258,7 @@ bool CGUIMatlab::append_hmm(const mxArray* vals[])
 					mxGetN(mx_p) == h->get_N() && mxGetM(mx_p) == 1 &&
 					mxGetN(mx_q) == h->get_N() && mxGetM(mx_q) == 1 &&
 					mxGetN(mx_a) == h->get_N() && mxGetM(mx_a) == h->get_N() &&
-					mxGetN(mx_b) == h->get_M() && mxGetM(mx_b) == h->get_N()
+					((INT) mxGetN(mx_b)) == h->get_M() && mxGetM(mx_b) == h->get_N()
 			   )
 			{
 				double* p=mxGetPr(mx_p);
@@ -324,7 +324,7 @@ bool CGUIMatlab::set_hmm(const mxArray* vals[])
 					mxGetN(mx_p) == h->get_N() && mxGetM(mx_p) == 1 &&
 					mxGetN(mx_q) == h->get_N() && mxGetM(mx_q) == 1 &&
 					mxGetN(mx_a) == h->get_N() && mxGetM(mx_a) == h->get_N() &&
-					mxGetN(mx_b) == h->get_M() && mxGetM(mx_b) == h->get_N()
+					((INT) mxGetN(mx_b)) == h->get_M() && mxGetM(mx_b) == h->get_N()
 			   )
 			{
 				double* p=mxGetPr(mx_p);
@@ -373,9 +373,9 @@ bool CGUIMatlab::best_path_no_b(const mxArray* vals[], mxArray* retvals[])
 	if ( mx_p && mx_q && mx_a)
 	{
 		if (
-			mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-			mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
-			mxGetN(mx_a) == N && mxGetM(mx_a) == N
+			((INT) mxGetN(mx_p)) == N && mxGetM(mx_p) == 1 &&
+			((INT) mxGetN(mx_q)) == N && mxGetM(mx_q) == 1 &&
+			((INT) mxGetN(mx_a)) == N && ((INT) mxGetM(mx_a)) == N
 			)
 		{
 			double* p=mxGetPr(mx_p);
@@ -434,8 +434,8 @@ bool CGUIMatlab::best_path_no_b_trans(const mxArray* vals[], mxArray* retvals[])
 	if ( mx_p && mx_q && mx_a_trans)
 	{
 		if (
-			mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-			mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
+			((INT) mxGetN(mx_p) == N) && mxGetM(mx_p) == 1 &&
+			((INT) mxGetN(mx_q) == N) && mxGetM(mx_q) == 1 &&
 			mxGetN(mx_a_trans) == 3
 			)
 		{
@@ -540,8 +540,8 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 		if (genestr_num>L)
 			SG_ERROR( "more strings than the length of the strings ... it seems likely to be wrongly transposed \n");
 
-		if (!(mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-			  mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
+		if (!(((INT) mxGetN(mx_p)) == N && mxGetM(mx_p) == 1 &&
+			 ((INT) mxGetN(mx_q)) == N && mxGetM(mx_q) == 1 &&
 			  ((mxGetN(mx_a_trans) == 3)||(mxGetN(mx_a_trans) == 4)) ))
 			SG_ERROR( "model matricies not matching in size \n");
 
@@ -549,8 +549,8 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 		INT seq_second_dimension = 1 ;
 		if (seq_num_dimensions>=2)
 			seq_second_dimension = mxGetDimensions(mx_seq)[1] ;
-		if (!(mxGetM(mx_seq) == N &&
-			  seq_second_dimension == mxGetN(mx_pos) && mxGetM(mx_pos)==1 && 
+		if (!(((INT) mxGetM(mx_seq)) == N &&
+			  seq_second_dimension == ((INT) mxGetN(mx_pos)) && mxGetM(mx_pos)==1 && 
 			  ((seq_num_dimensions==2) || (seq_num_dimensions==3))))
 			SG_ERROR( "seq and position matrices sizes wrong\n");
 		INT seq_third_dimension = 1 ;
@@ -572,8 +572,8 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 		//fprintf(stderr,"considering up to %i Plifs in a PlifArray\n", penalties_dim3) ;
 		ASSERT(penalties_dim3>0) ;
 
-		if (!(mxGetM(mx_state_signals)==N && 
-			  mxGetN(mx_state_signals)==seq_third_dimension))
+		if (!(((INT) mxGetM(mx_state_signals))==N && 
+			  ((INT) mxGetN(mx_state_signals))==seq_third_dimension))
 			SG_ERROR( "size of state_signals wrong (%i!=%i or %i!=%i)\n", mxGetM(mx_state_signals), N, mxGetN(mx_state_signals), seq_third_dimension);
 
 		if (!(((mxGetN(mx_dict_weights)==8) || (mxGetN(mx_dict_weights)==16)) && 
@@ -588,7 +588,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			SG_ERROR( "size of segment_loss wrong\n");
 
 		if (mx_segment_ids_mask!=NULL && ((mxGetM(mx_segment_ids_mask)!=2) ||
-										  (mxGetN(mx_segment_ids_mask)!=M)))
+										  (((INT) mxGetN(mx_segment_ids_mask))!=M)))
 			SG_ERROR( "size of segment_ids_mask wrong\n");
 
 		if (
@@ -690,7 +690,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 
 			INT* mod_words_array=new INT[mxGetM(mx_mod_words)*mxGetN(mx_mod_words)] ;
 			double* mod_words_array_real = mxGetPr(mx_mod_words) ;
-			for (INT i=0; i<mxGetM(mx_mod_words)*mxGetN(mx_mod_words); i++)
+			for (INT i=0; i<(INT) (mxGetM(mx_mod_words)*mxGetN(mx_mod_words)); i++)
 				mod_words_array[i] = (INT) mod_words_array_real[i] ;
 			h->init_mod_words_array(mod_words_array, mxGetM(mx_mod_words), mxGetN(mx_mod_words)) ;
 
@@ -814,8 +814,8 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 		INT dict_weigths_num = mxGetN(mx_dict_weights) ;
 		INT my_seqlen = mxGetN(mx_my_path) ;
 				
-		if (!(mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-			  mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
+		if (!(((INT) mxGetN(mx_p)) == N && mxGetM(mx_p) == 1 &&
+			  ((INT) mxGetN(mx_q)) == N && mxGetM(mx_q) == 1 &&
 			  ((mxGetN(mx_a_trans) == 3) || (mxGetN(mx_a_trans) == 4))))
 			SG_ERROR( "model matricies not matching in size \n");
 
@@ -823,8 +823,8 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 		INT seq_second_dimension = 1 ;
 		if (seq_num_dimensions>=2)
 			seq_second_dimension = mxGetDimensions(mx_seq)[1] ;
-		if (!(mxGetM(mx_seq) == N &&
-			  seq_second_dimension == mxGetN(mx_pos) && mxGetM(mx_pos)==1 && 
+		if (!(((INT) mxGetM(mx_seq)) == N &&
+			  seq_second_dimension == ((INT) mxGetN(mx_pos)) && mxGetM(mx_pos)==1 && 
 			  ((seq_num_dimensions==2) || (seq_num_dimensions==3))))
 			SG_ERROR( "seq and position matrices sizes wrong (%i, %i, %i, %i, %i)\n", 
 					  seq_num_dimensions, seq_second_dimension, mxGetN(mx_seq), mxGetM(mx_pos), mxGetN(mx_pos));
@@ -847,8 +847,8 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 		//fprintf(stderr,"considering up to %i Plifs in a PlifArray\n", penalties_dim3) ;
 		ASSERT(penalties_dim3>0) ;
 
-		if (!(mxGetM(mx_state_signals)==N && 
-			  mxGetN(mx_state_signals)==seq_third_dimension))
+		if (!(((INT) mxGetM(mx_state_signals))==N && 
+			  ((INT) mxGetN(mx_state_signals))==seq_third_dimension))
 			SG_ERROR( "size of state_signals wrong (%i!=%i or %i!=%i)\n", mxGetM(mx_state_signals), N, mxGetN(mx_state_signals), seq_third_dimension);
 			
 		if (!(mxGetN(mx_my_pos)==mxGetN(mx_my_path) &&
@@ -868,7 +868,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			SG_ERROR( "size of segment_loss wrong\n");
 
 		if (mx_segment_ids_mask!=NULL && ((mxGetM(mx_segment_ids_mask)!=2) ||
-										  (mxGetN(mx_segment_ids_mask)!=M)))
+										  (((INT) mxGetN(mx_segment_ids_mask))!=M)))
 			SG_ERROR( "size of segment_ids_mask wrong\n");
 
 		{
@@ -980,7 +980,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 
 			INT* mod_words_array=new INT[mxGetM(mx_mod_words)*mxGetN(mx_mod_words)] ;
 			double* mod_words_array_real = mxGetPr(mx_mod_words) ;
-			for (INT i=0; i<mxGetM(mx_mod_words)*mxGetN(mx_mod_words); i++)
+			for (INT i=0; i<(INT) (mxGetM(mx_mod_words)*mxGetN(mx_mod_words)); i++)
 				mod_words_array[i] = (INT) mod_words_array_real[i] ;
 			h->init_mod_words_array(mod_words_array, mxGetM(mx_mod_words), mxGetN(mx_mod_words)) ;
 
@@ -1145,15 +1145,15 @@ bool CGUIMatlab::best_path_2struct(const mxArray* vals[], mxArray* retvals[])
 		mxGetN(mx_segment_sum_weights)==N ) ;*/
 		
 		if (
-			mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-			mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
+			((INT) mxGetN(mx_p)) == N && mxGetM(mx_p) == 1 &&
+			((INT) mxGetN(mx_q)) == N && mxGetM(mx_q) == 1 &&
 			mxGetN(mx_a_trans) == 3 &&
-			mxGetM(mx_seq) == N &&
+			((INT) mxGetM(mx_seq)) == N &&
 			mxGetN(mx_seq) == mxGetN(mx_pos) && mxGetM(mx_pos)==1 &&
-			mxGetM(mx_penalties)==N && 
-			mxGetN(mx_penalties)==N &&
-			mxGetM(mx_segment_sum_weights)==N &&
-			mxGetN(mx_segment_sum_weights)==M &&
+			((INT) mxGetM(mx_penalties))==N && 
+			((INT) mxGetN(mx_penalties))==N &&
+			((INT) mxGetM(mx_segment_sum_weights))==N &&
+			((INT) mxGetN(mx_segment_sum_weights))==M &&
 			mxGetM(mx_genestr)==1 &&
 			mxGetN(mx_dict_weights)==1 && 
 			((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
@@ -1269,10 +1269,10 @@ bool CGUIMatlab::best_path_trans_simple(const mxArray* vals[], mxArray* retvals[
 		INT M=mxGetN(mx_seq);
 		
 		if (
-			mxGetN(mx_p) == N && mxGetM(mx_p) == 1 &&
-			mxGetN(mx_q) == N && mxGetM(mx_q) == 1 &&
+			((INT) mxGetN(mx_p)) == N && mxGetM(mx_p) == 1 &&
+			((INT) mxGetN(mx_q)) == N && mxGetM(mx_q) == 1 &&
 			mxGetN(mx_a_trans) == 3 &&
-			mxGetM(mx_seq) == N)
+			((INT) mxGetM(mx_seq)) == N)
 		{
 			double* p=mxGetPr(mx_p);
 			double* q=mxGetPr(mx_q);
@@ -1435,31 +1435,61 @@ bool CGUIMatlab::one_class_hmm_classify_example(mxArray* retvals[], int idx)
 	return true;
 }
 
-bool CGUIMatlab::get_svm(mxArray* retvals[])
-{
-	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
+//bool CGUIMatlab::get_svm(mxArray* retvals[])
+//{
+//	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
+//
+//	if (svm)
+//	{
+//		mxArray* mx_alphas=mxCreateDoubleMatrix(svm->get_num_support_vectors(), 2, mxREAL);
+//		mxArray* mx_b=mxCreateDoubleMatrix(1, 1, mxREAL);
+//
+//		if (mx_alphas && mx_b)
+//		{
+//			double* b=mxGetPr(mx_b);
+//			double* alphas=mxGetPr(mx_alphas);
+//
+//			*b=svm->get_bias();
+//
+//			for (int i=0; i< svm->get_num_support_vectors(); i++)
+//			{
+//				alphas[i]=svm->get_alpha(i);
+//				alphas[i+svm->get_num_support_vectors()]=svm->get_support_vector(i);
+//			}
+//
+//			retvals[0]=mx_b;
+//			retvals[1]=mx_alphas;
+//
+//			return true;
+//		}
+//	}
+//
+//	return false;
+//}
 
-	if (svm)
+bool CGUIMatlab::get_classifier(mxArray* retvals[])
+{
+	DREAL* weights=NULL;
+	INT rows=0;
+	INT cols=0;
+	DREAL bias=0;
+
+	if (gui->guiclassifier.get_trained_classifier(weights, rows, cols, bias))
 	{
-		mxArray* mx_alphas=mxCreateDoubleMatrix(svm->get_num_support_vectors(), 2, mxREAL);
+		mxArray* mx_w=mxCreateDoubleMatrix(rows, cols, mxREAL);
 		mxArray* mx_b=mxCreateDoubleMatrix(1, 1, mxREAL);
 
-		if (mx_alphas && mx_b)
+		if (mx_w && mx_b)
 		{
 			double* b=mxGetPr(mx_b);
-			double* alphas=mxGetPr(mx_alphas);
+			double* w=mxGetPr(mx_w);
 
-			*b=svm->get_bias();
-
-			for (int i=0; i< svm->get_num_support_vectors(); i++)
-			{
-				alphas[i]=svm->get_alpha(i);
-				alphas[i+svm->get_num_support_vectors()]=svm->get_support_vector(i);
-			}
+			*b=bias;
+			memcpy(w, weights, cols*rows*sizeof(DREAL));
+			delete[] weights;
 
 			retvals[0]=mx_b;
-			retvals[1]=mx_alphas;
-
+			retvals[1]=mx_w;
 			return true;
 		}
 	}
@@ -2741,7 +2771,7 @@ bool CGUIMatlab::set_subkernel_weights(const mxArray* mx_arg)
 		CWeightedDegreeStringKernel *kernel
 			= (CWeightedDegreeStringKernel *) kernel_;
 		INT degree = kernel->get_degree() ;
-		if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
+		if (((INT) mxGetM(mx_arg))!=degree || mxGetN(mx_arg)<1)
 		{
 			SG_ERROR( "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
 			return false ;
@@ -2761,7 +2791,7 @@ bool CGUIMatlab::set_subkernel_weights(const mxArray* mx_arg)
 		CWeightedDegreePositionStringKernel *kernel
 			= (CWeightedDegreePositionStringKernel *) kernel_;
 		INT degree = kernel->get_degree() ;
-		if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
+		if (((INT) mxGetM(mx_arg))!=degree || mxGetN(mx_arg)<1)
 		{
 			SG_ERROR( "dimension mismatch (should be (seq_length | 1) x degree)\n") ;
 			return false ;
@@ -2778,7 +2808,7 @@ bool CGUIMatlab::set_subkernel_weights(const mxArray* mx_arg)
 	// all other kernels
 	CKernel *kernel = kernel_ ;
 	INT num_subkernels = kernel->get_num_subkernels() ;
-	if (mxGetM(mx_arg)!=1 || mxGetN(mx_arg)!=num_subkernels)
+	if (mxGetM(mx_arg)!=1 || ((INT) mxGetN(mx_arg))!=num_subkernels)
 	{
 		SG_ERROR( "dimension mismatch (should be 1 x num_subkernels)\n") ;
 		return false ;
@@ -2808,7 +2838,7 @@ bool CGUIMatlab::set_subkernel_weights_combined(const mxArray** mx_arg)
 			CWeightedDegreeStringKernel *kernel
 				= (CWeightedDegreeStringKernel *) kernel_;
 			INT degree = kernel->get_degree() ;
-			if (mxGetM(mx_arg[1])!=degree || mxGetN(mx_arg[1])<1)
+			if (((INT) mxGetM(mx_arg[1]))!=degree || mxGetN(mx_arg[1])<1)
 			{
 				SG_ERROR( "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
 				return false ;
@@ -2826,7 +2856,7 @@ bool CGUIMatlab::set_subkernel_weights_combined(const mxArray** mx_arg)
 		{
 			CWeightedDegreePositionStringKernel *kernel = (CWeightedDegreePositionStringKernel *) kernel_;
 			INT degree = kernel->get_degree() ;
-			if (mxGetM(mx_arg[1])!=degree || mxGetN(mx_arg[1])<1)
+			if (((INT) mxGetM(mx_arg[1]))!=degree || mxGetN(mx_arg[1])<1)
 			{
 				SG_ERROR( "dimension mismatch (should be (seq_length | 1) x degree)\n") ;
 				return false ;
@@ -2841,7 +2871,7 @@ bool CGUIMatlab::set_subkernel_weights_combined(const mxArray** mx_arg)
 		// all other kernels
 		CKernel *kernel = kernel_ ;
 		INT num_subkernels = kernel->get_num_subkernels() ;
-		if (mxGetM(mx_arg[1])!=1 || mxGetN(mx_arg[1])!=num_subkernels)
+		if (mxGetM(mx_arg[1])!=1 || ((INT) mxGetN(mx_arg[1]))!=num_subkernels)
 		{
 			SG_ERROR( "dimension mismatch (should be 1 x num_subkernels)\n") ;
 			return false ;
@@ -2867,7 +2897,7 @@ bool CGUIMatlab::set_last_subkernel_weights(const mxArray* mx_arg)
 			CWeightedDegreeStringKernel *kernel
 				= (CWeightedDegreeStringKernel *) kernel_;
 			INT degree = kernel->get_degree() ;
-			if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
+			if (((INT) mxGetM(mx_arg))!=degree || mxGetN(mx_arg)<1)
 			{
 				SG_ERROR( "dimension mismatch (should be de(seq_length | 1) x degree)\n") ;
 				return false ;
@@ -2886,7 +2916,7 @@ bool CGUIMatlab::set_last_subkernel_weights(const mxArray* mx_arg)
 			CWeightedDegreePositionStringKernel *kernel
 				= (CWeightedDegreePositionStringKernel *) kernel_;
 			INT degree = kernel->get_degree() ;
-			if (mxGetM(mx_arg)!=degree || mxGetN(mx_arg)<1)
+			if (((INT) mxGetM(mx_arg))!=degree || mxGetN(mx_arg)<1)
 			{
 				SG_ERROR( "dimension mismatch (should be (seq_length | 1) x degree)\n") ;
 				return false ;
@@ -2904,7 +2934,7 @@ bool CGUIMatlab::set_last_subkernel_weights(const mxArray* mx_arg)
 		// all other kernels
 		CKernel *kernel = kernel_ ;
 		INT num_subkernels = kernel->get_num_subkernels() ;
-		if (mxGetM(mx_arg)!=1 || mxGetN(mx_arg)!=num_subkernels)
+		if (mxGetM(mx_arg)!=1 || ((INT) mxGetN(mx_arg))!=num_subkernels)
 		{
 			SG_ERROR( "dimension mismatch (should be 1 x num_subkernels)\n") ;
 			return false ;

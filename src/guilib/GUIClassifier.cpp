@@ -879,6 +879,93 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 	return classifier->classify(output);
 }
 
+bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &cols, DREAL& bias)
+{
+	ASSERT(classifier);
+
+	switch (classifier->get_classifier_type())
+	{
+		case CT_LIGHT:
+		case CT_LIBSVM:
+		case CT_MPD:
+		case CT_GPBT:
+		case CT_CPLEXSVM:
+		case CT_GMNPSVM:
+		case CT_GNPPSVM:
+		case CT_KRR:
+			return get_svm(weights, rows, cols, bias);
+			break;
+		case CT_PERCEPTRON:
+		case CT_KERNELPERCEPTRON:
+		case CT_LDA:
+		case CT_LPM:
+			return get_linear(weights, rows, cols, bias);
+			break;
+		case CT_KNN:
+			SG_ERROR("not implemented");
+			break;
+		case CT_SVMLIN:
+		case CT_SVMPERF:
+		case CT_SUBGRADIENTSVM:
+			return get_sparse_linear(weights, rows, cols, bias);
+			break;
+		default:
+			SG_ERROR( "unknown classifier type\n");
+			break;
+	};
+	return false;
+}
+
+bool CGUIClassifier::get_svm(DREAL* &weights, INT& rows, INT& cols, DREAL& bias)
+{
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
+
+	if (svm)
+	{
+		bias=svm->get_bias();
+		rows=svm->get_num_support_vectors();
+		cols=2;
+		weights=new DREAL[rows*cols];
+
+		for (int i=0; i<rows; i++)
+		{
+			weights[i]=svm->get_alpha(i);
+			weights[i+rows]=svm->get_support_vector(i);
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+bool CGUIClassifier::get_linear(DREAL* &weights, INT& rows, INT& cols, DREAL& bias)
+{
+	CLinearClassifier* linear=(CLinearClassifier*) gui->guiclassifier.get_classifier();
+
+	if (!linear)
+		return false;
+
+	bias=linear->get_bias();
+	cols=1;
+	linear->get_w(&weights, &rows);
+	return true;
+}
+
+bool CGUIClassifier::get_sparse_linear(DREAL* &weights, INT& rows, INT& cols, DREAL& bias)
+{
+	CSparseLinearClassifier* linear=(CSparseLinearClassifier*) gui->guiclassifier.get_classifier();
+
+	if (!linear)
+		return false;
+
+	bias=linear->get_bias();
+	cols=1;
+	linear->get_w(&weights, &rows);
+	return true;
+}
+
+
 CLabels* CGUIClassifier::classify_distancemachine(CLabels* output)
 {
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();

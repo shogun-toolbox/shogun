@@ -40,6 +40,11 @@ public:
 	bool classify_example(INT idx, DREAL& result);
 	inline CClassifier* get_classifier() { return classifier; }
 
+	bool get_trained_classifier(DREAL* &weights, INT& rows, INT& cols, DREAL& bias);
+	bool get_svm(DREAL* &weights, INT& rows, INT& cols, DREAL& bias);
+	bool get_linear(DREAL* &weights, INT& rows, INT& cols, DREAL& bias);
+	bool get_sparse_linear(DREAL* &weights, INT& rows, INT& cols, DREAL& bias);
+
 	/// perceptron learnrate maxiter
 	bool set_perceptron_parameters(CHAR* param);
 

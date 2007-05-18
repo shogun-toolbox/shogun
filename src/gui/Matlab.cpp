@@ -35,6 +35,7 @@ static const CHAR* N_TRANSLATE_STRING=			"translate_string";
 static const CHAR* N_GET_HMM=			"get_hmm";
 static const CHAR* N_GET_VITERBI_PATH=			"get_viterbi_path";
 static const CHAR* N_GET_SVM=			"get_svm";
+static const CHAR* N_GET_CLASSIFIER=			"get_classifier";
 static const CHAR* N_GET_SVM_OBJECTIVE=		"get_svm_objective";
 static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
 static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
@@ -132,18 +133,14 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		else if (strmatch(action, len, N_HELP))
 		{
 			if (nrhs==1)
-			{
 				sg_matlab.send_command("help");
-			}
 			else
 				SG_SERROR( "usage is sg('help')");
 		}
 		else if (strmatch(action, len, N_GET_HMM))
 		{
 			if (nlhs==4)
-			{
 				sg_matlab.get_hmm(plhs);
-			}
 			else
 				SG_SERROR( "usage is [p,q,a,b]=sg('get_hmm')");
 		}
@@ -214,18 +211,14 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		else if (strmatch(action, len, N_RELATIVE_ENTROPY))
 		{
 			if (nlhs==1 && nrhs==1)
-			{
-					sg_matlab.relative_entropy(plhs);
-			}
+				sg_matlab.relative_entropy(plhs);
 			else
 				SG_SERROR( "usage is [result]=sg('relative_entropy')");
 		}
 		else if (strmatch(action, len, N_ENTROPY))
 		{
 			if (nlhs==1 && nrhs==1)
-			{
-					sg_matlab.entropy(plhs);
-			}
+				sg_matlab.entropy(plhs);
 			else
 				SG_SERROR( "usage is [result]=sg('permuation_entropy')");
 		}
@@ -239,27 +232,28 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		else if (strmatch(action, len, N_GET_SVM_OBJECTIVE))
 		{
 			if (nlhs==1)
-			{
 				sg_matlab.get_svm_objective(plhs);
-			}
 			else
 				SG_SERROR( "usage is [obj]=sg('get_svm_objective')");
+		}
+		else if (strmatch(action, len, N_GET_CLASSIFIER))
+		{
+			if (nlhs==2)
+				sg_matlab.get_classifier(plhs);
+			else
+				SG_SERROR( "usage is [bias,weights]=sg('get_classifier')");
 		}
 		else if (strmatch(action, len, N_GET_SVM))
 		{
 			if (nlhs==2)
-			{
-				sg_matlab.get_svm(plhs);
-			}
+				sg_matlab.get_classifier(plhs);
 			else
 				SG_SERROR( "usage is [b,alphas]=sg('get_svm')");
 		}
 		else if (strmatch(action, len, N_SET_SVM))
 		{
 			if (nrhs==3)
-			{
 				sg_matlab.set_svm(prhs);
-			}
 			else
 				SG_SERROR( "usage is sg('set_svm', [ b, alphas])");
 		}
@@ -292,18 +286,14 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		else if (strmatch(action, len, N_GET_PLUGIN_ESTIMATE))
 		{
 			if (nlhs==2)
-			{
 				sg_matlab.get_plugin_estimate(plhs);
-			}
 			else
 				SG_SERROR( "usage is [emission_probs, model_sizes]=sg('get_plugin_estimate')");
 		}
 		else if (strmatch(action, len, N_SET_PLUGIN_ESTIMATE))
 		{
 			if (nrhs==3)
-			{
 				sg_matlab.set_plugin_estimate(prhs);
-			}
 			else
 				SG_SERROR( "usage is sg('set_plugin_estimate', emission_probs, model_sizes)");
 		}
@@ -551,36 +541,28 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		else if (strmatch(action, len, N_BEST_PATH_TRANS_SIMPLE))
 		{
 			if ((nrhs==1+5) & (nlhs==2))
-			{
 				sg_matlab.best_path_trans_simple(prhs,plhs);
-			}
 			else
 				SG_SERROR( "usage is [prob,path]=sg('best_path_trans_simple', p, q, a_trans, seq, nbest)");
 		}
 		else if (strmatch(action, len, N_BEST_PATH_TRANS_DERIV))
 		{
 			if (((nrhs==1+13) || (nrhs==1+15)) & ((nlhs==5)||(nlhs==6)))
-			{
 				sg_matlab.best_path_trans_deriv(prhs, nrhs, plhs, nlhs);
-			}
 			else
 				SG_SERROR( "usage is [p_deriv, q_deriv, a_deriv, penalties_deriv, my_scores, my_loss]=sg('best_path_trans_deriv', my_path, my_pos, p,q,a_trans,seq, pos, genestr, penalties, state_signals, penalty_info, dict_weights, mod_words [, segment_loss, segment_ids_mask]) [%i,%i]", nrhs, nlhs);
 		}
 		else if (strmatch(action, len, N_BEST_PATH_TRANS))
 		{
 			if ( ((nrhs==1+14) || (nrhs==1+16)) && (nlhs==3) )
-			{
 				sg_matlab.best_path_trans(prhs, nrhs, plhs);
-			}
 			else
 				SG_SERROR( "usage is [prob,path,pos]=sg('best_path_trans',p,q,a_trans,seq,pos,orf_info, genestr, penalties, state_signals, penalty_info, nbest, dict_weights, use_orf, mod_words [, segment_loss, segment_ids_mask])");
 		}
 		else if (strmatch(action, len, N_BEST_PATH_2STRUCT))
 		{
 			if ((nrhs==1+11) & (nlhs==3))
-			{
 				sg_matlab.best_path_2struct(prhs,plhs);
-			}
 			else
 				SG_SERROR( "usage is [prob,path,pos]=sg('best_path_2struct',p,q,a_trans,seq,pos, genestr, penalties, penalty_info, nbest, dict_weights, segment_sum_weights)");
 		}
@@ -596,36 +578,28 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		else if (strmatch(action, len, N_BEST_PATH_NO_B))
 		{
 			if ((nrhs==1+4) & (nlhs==2))
-			{
 				sg_matlab.best_path_no_b(prhs,plhs);
-			}
 			else
 				SG_SERROR( "usage is [prob,path]=sg('best_path_no_b',p,q,a,max_iter)");
 		}
 		else if (strmatch(action, len, N_SET_HMM))
 		{
 			if (nrhs==1+4)
-			{
 				sg_matlab.set_hmm(prhs);
-			}
 			else
 				SG_SERROR( "usage is sg('set_hmm',[p,q,a,b])");
 		}
 		else if (strmatch(action, len, N_APPEND_HMM))
 		{
 			if (nrhs==1+4)
-			{
 				sg_matlab.append_hmm(prhs);
-			}
 			else
 				SG_SERROR( "usage is sg('append_hmm',[p,q,a,b])");
 		}
 		else if (strmatch(action, len, N_SET_SVM))
 		{
 			if (nrhs==1+2)
-			{
 				sg_matlab.set_svm(prhs);
-			}
 			else
 				SG_SERROR( "usage is sg('set_svm',[b,alphas])");
 		}

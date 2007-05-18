@@ -41,7 +41,7 @@ extern "C" {
 
 void nrerror(CHAR error_text[])
 {
-	SG_SWARNING("terminating optimizer - %s\n", error_text);
+	SG_SDEBUG("terminating optimizer - %s\n", error_text);
  // exit(1); 
 }
 
@@ -79,7 +79,7 @@ bool choldc(double* a, int n, double* p)
 	}
 
 	if (result>0)
-		SG_SWARNING("Choldc failed, matrix not positive definite\n");
+		SG_SDEBUG("Choldc failed, matrix not positive definite\n");
 
 	delete[] a2;
 	

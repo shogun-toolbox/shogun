@@ -74,7 +74,7 @@ public:
 	bool one_class_hmm_classify_example(mxArray* retvals[], int idx);
 	bool one_class_hmm_classify(mxArray* retvals[], bool linear);
 
-	bool get_svm(mxArray* retvals[]);
+	bool get_classifier(mxArray* retvals[]);
 	bool set_svm(const mxArray* vals[]);
 	bool classify_example(mxArray* retvals[], int idx);
 	bool classify(mxArray* retvals[]);
