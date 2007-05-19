@@ -28,7 +28,8 @@ enum E_QPB_SOLVER
   QPB_SOLVER_SCA,	// sequential coordinate wise (gaussian seidel based)
   QPB_SOLVER_SCAS,	// sequential coordinate wise selecting the variable
   					// gaining 'best' improved
-  QPB_SOLVER_SCAMV  // sequential coordinate wise selecting variable most violating kkt's
+  QPB_SOLVER_SCAMV, // sequential coordinate wise selecting variable most violating kkt's
+  QPB_SOLVER_PRLOQO // pr_loqo
 };
 
 class CQPBSVMLib: public CSGObject
@@ -88,13 +89,24 @@ INT qpbsvm_scamv(DREAL *x,
             DREAL **ptr_History,
             INT   verb);
 
+/* --------------------------------------------------------------
+
+Usage: exitflag = qpbsvm_prloqo(UB, dim, tmax, 
+               tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb )
+
+-------------------------------------------------------------- */
+INT qpbsvm_prloqo(DREAL *x,
+	        DREAL *Nabla,
+            INT   *ptr_t,
+            DREAL **ptr_History,
+            INT   verb);
+
 protected:
 	DREAL* m_H;
 	DREAL* m_diag_H;
 	INT m_dim;
 
 	DREAL* m_f;
-	INT m_dimf;
 
 	DREAL m_UB;
 

@@ -1,28 +1,28 @@
 C=10;
 epsilon=1e-5;
 
-load /home/sonne/vojtech/subgradsvm/uci_spambase.mat
-data=[];
-traindat=x';
-trainlab=t';
-testdat=x';
-testlab=t';
+%load /home/sonne/vojtech/subgradsvm/uci_spambase.mat
+%data=[];
+%traindat=x';
+%trainlab=t';
+%testdat=x';
+%testlab=t';
 
-%rand('state',17);
-%num=20000;
-%dim=10;
-%dist=0.03;
-%%num=20;
-%%dim=1000;
-%%dist=0.01;
-%
-%traindat=[rand(dim,num/2)-dist, rand(dim,num/2)+dist];
-%traindat=traindat/(dim*mean(traindat(:)));
-%trainlab=[-ones(1,num/2), ones(1,num/2) ];
-%
-%testdat=[rand(dim,num/2)-dist, rand(dim,num/2)+dist];
-%testdat=testdat/(dim*mean(testdat(:)));;
-%testlab=[-ones(1,num/2), ones(1,num/2) ];
+rand('state',17);
+num=20000;
+dim=200;
+dist=0.03;
+%num=20;
+%dim=1000;
+%dist=0.01;
+
+traindat=[rand(dim,num/2)-dist, rand(dim,num/2)+dist];
+traindat=traindat/(dim*mean(traindat(:)));
+trainlab=[-ones(1,num/2), ones(1,num/2) ];
+
+testdat=[rand(dim,num/2)-dist, rand(dim,num/2)+dist];
+testdat=testdat/(dim*mean(testdat(:)));;
+testlab=[-ones(1,num/2), ones(1,num/2) ];
 
 sg('send_command', 'loglevel ALL');
 sg('set_features', 'TRAIN', traindat);
@@ -117,6 +117,11 @@ alpha=zeros(size(traindat,2),1);
 alpha(a(:,2)+1)=a(:,1);
 
 %F_libsvm_alpha=0.5*alpha'*(traindat'*traindat)*alpha + C*sum(max(zeros(size(trainout_reflibsvm)),1 - trainout_reflibsvm))
+
+disp('training times')
+fprintf('light:%f\n',timelight)
+fprintf('libsvm:%f\n',timelibsvm)
+fprintf('subgrad:%f\n',timesubgradsvm)
 disp('objectives')
 fprintf('light:%f\n',F_light)
 fprintf('libsvm:%f\n',F_libsvm)

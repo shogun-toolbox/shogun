@@ -147,7 +147,7 @@ CPlif** read_penalty_struct_from_cell(const mxArray * mx_penalty_info, INT P)
 		
 		const mxArray* mx_penalties_field = mxGetField(mx_elem, 0, "penalties") ;
 		if (mx_penalties_field==NULL || !mxIsNumeric(mx_penalties_field) ||
-			mxGetM(mx_penalties_field)!=1 || mxGetN(mx_penalties_field)!=len)
+			mxGetM(mx_penalties_field)!=1 || ((INT) mxGetN(mx_penalties_field))!=len)
 		{
 			SG_SERROR( "missing penalties field (%i)\n", i) ;
 			delete[] PEN ;

@@ -11,6 +11,7 @@
 
 #include "lib/Mathematics.h"
 #include "lib/Signal.h"
+#include "lib/Time.h"
 #include "classifier/SparseLinearClassifier.h"
 #include "classifier/svm/SubGradientSVM.h"
 #include "classifier/svm/qpbsvmlib.h"
@@ -18,6 +19,8 @@
 #include "features/Labels.h"
 
 #define DEBUG_SUBGRADIENTSVM
+
+double tim;
 
 CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5)
 {
@@ -274,9 +277,16 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		//CMath::display_matrix(Z, num_bound, num_bound, "Z");
 		//CMath::display_vector(Zv, num_bound, "Zv");
 
+		SG_PRINT("solver start\n");
+		CTime t;
 		CQPBSVMLib solver(Z,num_bound, Zv,num_bound, 1.0);
-		solver.set_solver(QPB_SOLVER_SCA);
+		//solver.set_solver(QPB_SOLVER_SCA);
+		solver.set_solver(QPB_SOLVER_PRLOQO);
 		solver.solve_qp(beta, num_bound);
+		t.stop();
+		tim+=t.time_diff_sec(true);
+		SG_PRINT("solver stop\n");
+
 		//SG_PRINT("after solveer foo\n");
 		
 		//CMath::display_vector(beta, num_bound, "beta");
@@ -435,6 +445,7 @@ void CSubGradientSVM::cleanup()
 
 bool CSubGradientSVM::train()
 {
+	tim=0;
 	SG_INFO("C=%f epsilon=%f\n", C1, epsilon);
 	ASSERT(get_labels());
 	ASSERT(get_features());
@@ -536,6 +547,7 @@ bool CSubGradientSVM::train()
 	CMath::display_vector(w, w_dim, "w");
 	SG_PRINT("bias: %f\n", bias);
 #endif
+	SG_PRINT("solver time:%f s\n", tim);
 
 	cleanup();
 

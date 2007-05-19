@@ -8,7 +8,9 @@
  * Library for solving QP task required for learning SVM without bias term. 
  *
  * Written (W) 2006-2007 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
+ * Written (W) 2007 Soeren Sonnenburg
  * Copyright (C) 2006-2007 Center for Machine Perception, CTU FEL Prague 
+ * Copyright (C) 2007 Fraunhofer Institute FIRST
  *
  *   
  *  min 0.5*x'*H*x + f'*x
@@ -49,6 +51,7 @@
 #include <limits.h>
 
 #include "classifier/svm/qpbsvmlib.h"
+#include "classifier/svm/pr_loqo.h"
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
@@ -106,6 +109,8 @@ INT CQPBSVMLib::solve_qp(DREAL* result, INT len)
 		case QPB_SOLVER_SCAMV:
 			status = qpbsvm_scamv(result, Nabla, &t, &History, verb );
 			break;
+		case QPB_SOLVER_PRLOQO:
+			status = qpbsvm_prloqo(result, Nabla, &t, &History, verb );
 		default:
 			SG_ERROR("unknown solver\n");
 			break;
@@ -499,4 +504,47 @@ INT CQPBSVMLib::qpbsvm_scamv(DREAL *x,
 
 
   return( exitflag ); 
+}
+
+/* --------------------------------------------------------------
+
+Usage: exitflag = qpbsvm_prloqo(m_UB, m_dim, m_tmax, 
+               m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
+
+-------------------------------------------------------------- */
+INT CQPBSVMLib::qpbsvm_prloqo(DREAL *x,
+	        DREAL *Nabla,
+            INT   *ptr_t,
+            DREAL **ptr_History,
+            INT   verb)
+{
+	DREAL* lb=new DREAL[m_dim];
+	DREAL* ub=new DREAL[m_dim];
+	DREAL* primal=new DREAL[3*m_dim];
+	DREAL* dual=new DREAL[1+2*m_dim];
+	DREAL* a=new DREAL[m_dim];
+	ASSERT(lb);
+	ASSERT(ub);
+	ASSERT(primal);
+	ASSERT(dual);
+
+	for (INT i=0; i<m_dim; i++)
+	{
+		a[i]=0.0;
+		lb[i]=0;
+		ub[i]=m_UB;
+	}
+
+	INT result=pr_loqo(m_dim, 1, m_f, m_H, a, 0, lb, ub, primal, dual,
+			2, 5, 1, 0,0,0);
+
+	delete[] a;
+	delete[] lb;
+	delete[] ub;
+	delete[] primal;
+	delete[] dual;
+
+	*ptr_t=0;
+	*ptr_History=NULL;
+	return result;
 }
