@@ -111,6 +111,7 @@ INT CQPBSVMLib::solve_qp(DREAL* result, INT len)
 			break;
 		case QPB_SOLVER_PRLOQO:
 			status = qpbsvm_prloqo(result, Nabla, &t, &History, verb );
+			break;
 		default:
 			SG_ERROR("unknown solver\n");
 			break;
@@ -535,8 +536,11 @@ INT CQPBSVMLib::qpbsvm_prloqo(DREAL *x,
 		ub[i]=m_UB;
 	}
 
-	INT result=pr_loqo(m_dim, 1, m_f, m_H, a, 0, lb, ub, primal, dual,
-			2, 5, 1, 0,0,0);
+	DREAL b=0;
+
+	CMath::display_vector(m_f, m_dim, "m_f");
+	INT result=pr_loqo(m_dim, 1, m_f, m_H, a, &b, lb, ub, primal, dual,
+			2, 5, 1, -0.95, 10,0);
 
 	delete[] a;
 	delete[] lb;

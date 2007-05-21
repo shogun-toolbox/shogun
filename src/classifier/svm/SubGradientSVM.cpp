@@ -280,8 +280,10 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		SG_PRINT("solver start\n");
 		CTime t;
 		CQPBSVMLib solver(Z,num_bound, Zv,num_bound, 1.0);
-		//solver.set_solver(QPB_SOLVER_SCA);
-		solver.set_solver(QPB_SOLVER_PRLOQO);
+		//solver.set_solver(QPB_SOLVER_SCAMV);
+		solver.set_solver(QPB_SOLVER_SCA);
+		//solver.set_solver(QPB_SOLVER_SCAS);
+		//solver.set_solver(QPB_SOLVER_PRLOQO);
 		solver.solve_qp(beta, num_bound);
 		t.stop();
 		tim+=t.time_diff_sec(true);
@@ -467,6 +469,7 @@ bool CSubGradientSVM::train()
 	INT delta_active=num_vec;
 
 	work_epsilon=0.999;
+	autoselected_epsilon=work_epsilon;
 
 	compute_projection(num_feat, num_vec);
 
