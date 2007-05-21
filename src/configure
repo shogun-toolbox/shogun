@@ -2191,7 +2191,6 @@ int main (int argc, char **argv)
 {
 	int status = argc;
 	CPXENVptr     env = NULL;
-	CPXLPptr      lp = NULL;
 	env = CPXopenCPLEX (&status);
 	status = CPXcloseCPLEX (&env);
 	return status;
