@@ -50,10 +50,13 @@
 #include <string.h>
 #include <limits.h>
 
+#include "lib/config.h"
+#include "lib/io.h"
+#include "lib/Cplex.h"
+#include "lib/Mathematics.h"
+
 #include "classifier/svm/qpbsvmlib.h"
 #include "classifier/svm/pr_loqo.h"
-#include "lib/io.h"
-#include "lib/Mathematics.h"
 
 #define HISTORY_BUF 1000000
 
@@ -112,6 +115,11 @@ INT CQPBSVMLib::solve_qp(DREAL* result, INT len)
 		case QPB_SOLVER_PRLOQO:
 			status = qpbsvm_prloqo(result, Nabla, &t, &History, verb );
 			break;
+#ifdef USE_CPLEX
+		case QPB_SOLVER_CPLEX:
+			status = qpbsvm_cplex(result, Nabla, &t, &History, verb );
+			break;
+#endif
 		default:
 			SG_ERROR("unknown solver\n");
 			break;
@@ -552,3 +560,46 @@ INT CQPBSVMLib::qpbsvm_prloqo(DREAL *x,
 	*ptr_History=NULL;
 	return result;
 }
+
+#ifdef USE_CPLEX
+/* --------------------------------------------------------------
+
+Usage: exitflag = qpbsvm_prloqo(m_UB, m_dim, m_tmax, 
+               m_tolabs, m_tolrel, m_tolKKT, x, Nabla, &t, &History, verb )
+
+-------------------------------------------------------------- */
+INT CQPBSVMLib::qpbsvm_cplex(DREAL *x,
+	        DREAL *Nabla,
+            INT   *ptr_t,
+            DREAL **ptr_History,
+            INT   verb)
+{
+	DREAL* lb=new DREAL[m_dim];
+	DREAL* ub=new DREAL[m_dim];
+	ASSERT(lb);
+	ASSERT(ub);
+
+	for (INT i=0; i<m_dim; i++)
+	{
+		lb[i]=0;
+		ub[i]=m_UB;
+	}
+
+	CCplex cplex;
+	cplex.init(QP);
+	cplex.setup_lp(m_f, NULL, 0, m_dim, NULL, lb, ub);
+	SG_PRINT("linear\n");
+	cplex.optimize(x, m_dim);
+	cplex.setup_qp(m_H, m_dim);
+	SG_PRINT("quad\n");
+	cplex.optimize(x, m_dim);
+	cplex.cleanup();
+
+	delete[] lb;
+	delete[] ub;
+
+	*ptr_t=0;
+	*ptr_History=NULL;
+	return 0;
+}
+#endif

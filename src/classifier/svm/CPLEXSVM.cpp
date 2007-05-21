@@ -30,7 +30,7 @@ bool CCPLEXSVM::train()
 	CLabels* lab = CKernelMachine::get_labels();
 	CCplex cplex;
 
-	if (cplex.init_cplex(CCplex::QP))
+	if (cplex.init(QP))
 	{
 		INT n,m;
 		INT num_label=0;

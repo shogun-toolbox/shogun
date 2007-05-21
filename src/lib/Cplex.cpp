@@ -21,15 +21,15 @@ CCplex::CCplex() : CSGObject(), env(NULL), lp(NULL), lp_initialized(false)
 
 CCplex::~CCplex()
 {
-	cleanup_cplex();
+	cleanup();
 }
 
-bool CCplex::init_cplex(E_PROB_TYPE typ)
+bool CCplex::init(E_PROB_TYPE typ)
 {
+	problem_type=typ;
+
 	while (env==NULL)
 	{
-		SG_INFO( "trying to initialize CPLEX\n") ;
-
 		int status = 1;
 		env = CPXopenCPLEX (&status);
 
@@ -50,14 +50,6 @@ bool CCplex::init_cplex(E_PROB_TYPE typ)
 			if (status)
 				SG_ERROR( "Failure to turn on screen indicator, error %d.\n", status);
 
-			if (typ==QP)
-				status = CPXsetintparam (env, CPX_PARAM_QPMETHOD, 2);
-			else if (typ == LINEAR)
-				status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2);
-
-			if (status)
-				SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status);
-			else
 			{
 				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
 				if (status)
@@ -78,7 +70,7 @@ bool CCplex::init_cplex(E_PROB_TYPE typ)
 	return (lp != NULL) && (env != NULL);
 }
 
-bool CCplex::cleanup_cplex()
+bool CCplex::cleanup()
 {
 	bool result=false;
 
@@ -112,68 +104,129 @@ bool CCplex::cleanup_cplex()
 	return result;
 }
 
-bool CCplex::optimize(DREAL& sol)
+bool CCplex::dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, int* &qmatcnt, int* &qmatind, double* &qmatval)
 {
+	qmatbeg=new int[cols];
+	qmatcnt=new int[cols];
+	if (rows)
+		qmatind=new int[cols*rows];
+	else
+	{
+		qmatind=new int[1];
+		qmatind[0]=0;
+	}
+	qmatval = H;
 
-	return false;
+	if (!(qmatbeg && qmatcnt && qmatind))
+		return false;
 
-//   status = CPXcopylp (env, lp, COLSORIG, ROWSSUB, CPX_MIN, Hcost, Hrhs, 
- //                      Hsense, Hmatbeg, Hmatcnt, Hmatind, Hmatval, 
-  //                     Hlb, Hub, NULL);
+	for (INT i=0; i<cols; i++)
+	{
+		qmatcnt[i]=rows;
+		qmatbeg[i]=i*rows;
+		for (INT j=0; j<rows; j++)
+			qmatind[i*rows+j]=i*rows+j;
+	}
 
-//	int      solnstat, solnmethod, solntype;
-//	double   objval, maxviol;
-//
-//	int status = CPXqpopt (env, lp);
-//	if (status)
-//		SG_ERROR( "Failed to optimize QP.\n");
-//
-//	solnstat = CPXgetstat (env, lp);
-//
-//	if ( solnstat == CPX_STAT_UNBOUNDED )
-//		SG_INFO( "Model is unbounded\n");
-//	else if ( solnstat == CPX_STAT_INFEASIBLE )
-//		SG_INFO( "Model is infeasible\n");
-//	else if ( solnstat == CPX_STAT_INForUNBD )
-//		SG_INFO( "Model is infeasible or unbounded\n");
-//
-//	status = CPXsolninfo (env, lp, &solnmethod, &solntype, NULL, NULL);
-//	if ( status )
-//		SG_ERROR( "Failed to obtain solution info.\n");
-//
-//	SG_INFO( "Solution status %d, solution method %d\n", solnstat, solnmethod);
-//
-//	if ( solntype == CPX_NO_SOLN )
-//		SG_ERROR( "Solution not available.\n");
-//
-//	status = CPXgetobjval (env, lp, &objval);
-//	if ( status )
-//		SG_ERROR( "Failed to obtain objective value.\n");
-//	SG_INFO( "Objective value %.10g.\n", objval);
-//
-	///* The size of the problem should be obtained by asking CPLEX what
-	//   the actual size is.  cur_numrows and cur_numcols store the 
-	//   current number of rows and columns, respectively.  */
+	return true;
+}
 
-	//cur_numcols = CPXgetnumcols (env, lp);
-	//cur_numrows = CPXgetnumrows (env, lp);
+bool CCplex::setup_lp(DREAL* objective, DREAL* constraints_mat, INT rows, INT cols, DREAL* rhs, DREAL* lb, DREAL* ub)
+{
+	char* sense = new char[cols];
+	ASSERT(sense);
+	memset(sense,'L',sizeof(char)*cols);
 
-	///* Retrieve basis, if one is available */
+	int* qmatbeg=NULL;
+	int* qmatcnt=NULL;
+	int* qmatind=NULL;
+	double* qmatval=NULL;
+	bool result=dense_to_cplex_sparse(constraints_mat, rows, cols, qmatbeg, qmatcnt, qmatind, qmatval);
 
-	//if ( solntype == CPX_BASIC_SOLN ) {
-	//	cstat = (int *) malloc (cur_numcols*sizeof(int));
-	//	rstat = (int *) malloc (cur_numrows*sizeof(int));
-	//	if ( cstat == NULL || rstat == NULL ) {
-	//		fprintf (stderr, "No memory for basis statuses.\n");
-	//		goto TERMINATE;
-	//	}
+	delete[] qmatbeg;
+	delete[] qmatcnt;
+	delete[] qmatind;
 
-	//	status = CPXgetbase (env, lp, cstat, rstat);
-	//	if ( status ) {
-	//		fprintf (stderr, "Failed to get basis; error %d.\n", status);
-	//		goto TERMINATE;
-	//	}
-	//}
-	//return (status==0);
+	if (!result)
+
+	{
+		SG_DEBUG("calling CPXcopylp (rows=%i, cols=%i) \n", rows, cols);
+		int status = CPXcopylp(env, lp, cols, rows, CPX_MIN, 
+				objective, rhs, sense, qmatbeg, qmatcnt, qmatind, qmatval, lb, ub, NULL);
+		result=status==0;
+	}
+	delete[] sense;
+
+	if (!result)
+		SG_WARNING("CPXcopylp failed.\n");
+
+	return result;
+}
+
+bool CCplex::setup_qp(DREAL* H, INT dim)
+{
+	int* qmatbeg=NULL;
+	int* qmatcnt=NULL;
+	int* qmatind=NULL;
+	double* qmatval=NULL;
+	bool result=dense_to_cplex_sparse(H, dim, dim, qmatbeg, qmatcnt, qmatind, qmatval);
+	if (result)
+		result = CPXcopyquad(env, lp, qmatbeg, qmatcnt, qmatind, qmatval) == 0;
+
+	delete[] qmatbeg;
+	delete[] qmatcnt;
+	delete[] qmatind;
+
+	if (!result)
+		SG_WARNING("CPXcopyquad failed.\n");
+
+	return result;
+}
+
+bool CCplex::optimize(DREAL* sol, INT dim)
+{
+	int      solnstat, solnmethod, solntype;
+	double   objval;
+	int status=1;
+
+	if (problem_type==QP)
+		status = CPXsetintparam (env, CPX_PARAM_QPMETHOD, 0);
+	else if (problem_type == LINEAR)
+		status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 0);
+
+	if (status)
+		SG_ERROR( "Failure to select dual lp/qp optimization, error %d.\n", status);
+
+	if (problem_type==QP)
+		status = CPXqpopt (env, lp);
+	else if (problem_type == LINEAR)
+		status = CPXlpopt (env, lp);
+
+	if (status)
+		SG_ERROR( "Failed to optimize QP.\n");
+
+	status = CPXsolution (env, lp, &solnstat, &objval, sol, NULL, NULL, NULL);
+
+	if ( status )
+		SG_ERROR("CPXsolution failed.\n");
+
+	solnstat = CPXgetstat (env, lp);
+
+	if ( solnstat == CPX_STAT_UNBOUNDED )
+		SG_INFO( "Model is unbounded\n");
+	else if ( solnstat == CPX_STAT_INFEASIBLE )
+		SG_INFO( "Model is infeasible\n");
+	else if ( solnstat == CPX_STAT_INForUNBD )
+		SG_INFO( "Model is infeasible or unbounded\n");
+
+	status = CPXsolninfo (env, lp, &solnmethod, &solntype, NULL, NULL);
+	if ( status )
+		SG_ERROR( "Failed to obtain solution info.\n");
+
+	SG_INFO( "Solution status %d, solution method %d\n", solnstat, solnmethod);
+
+	SG_INFO( "Objective value %.10g.\n", objval);
+
+	return (status==0);
 }
 #endif

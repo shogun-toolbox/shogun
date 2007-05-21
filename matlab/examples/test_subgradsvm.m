@@ -10,7 +10,7 @@ epsilon=1e-5;
 
 rand('state',17);
 num=20000;
-dim=200;
+dim=50;
 dist=0.03;
 %num=20;
 %dim=1000;

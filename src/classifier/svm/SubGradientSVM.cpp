@@ -9,6 +9,7 @@
  * Copyright (C) 2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
+#include "lib/config.h"
 #include "lib/Mathematics.h"
 #include "lib/Signal.h"
 #include "lib/Time.h"
@@ -22,12 +23,12 @@
 
 double tim;
 
-CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5)
+CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(100)
 {
 }
 
 CSubGradientSVM::CSubGradientSVM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
-	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5)
+	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(100)
 {
 	CSparseLinearClassifier::features=traindat;
 	CClassifier::labels=trainlab;
@@ -99,7 +100,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 			delta_active++;
 	}
 
-	if (delta_active!=0 && num_bound>50)
+	if (delta_active!=0 && num_bound>qpsize)
 	{
 		delta_active=0;
 		num_active=0;
@@ -113,8 +114,8 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 
 		CMath::qsort(tmp_proj, tmp_proj_idx, num_vec);
 
-		autoselected_epsilon=tmp_proj[CMath::min(50,num_vec)];
-		SG_PRINT("autoseleps: %10.10f\n", autoselected_epsilon);
+		autoselected_epsilon=tmp_proj[CMath::min(qpsize,num_vec)];
+		//SG_PRINT("autoseleps: %10.10f\n", autoselected_epsilon);
 
 		if (autoselected_epsilon>work_epsilon)
 			autoselected_epsilon=work_epsilon;
@@ -277,17 +278,32 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		//CMath::display_matrix(Z, num_bound, num_bound, "Z");
 		//CMath::display_vector(Zv, num_bound, "Zv");
 
-		SG_PRINT("solver start\n");
+		//SG_PRINT("solver start\n");
 		CTime t;
 		CQPBSVMLib solver(Z,num_bound, Zv,num_bound, 1.0);
 		//solver.set_solver(QPB_SOLVER_SCAMV);
-		solver.set_solver(QPB_SOLVER_SCA);
+//#ifdef USE_CPLEX
+		//solver.set_solver(QPB_SOLVER_CPLEX);
+//#else
+		//solver.set_solver(QPB_SOLVER_SCA);
+//#endif
 		//solver.set_solver(QPB_SOLVER_SCAS);
 		//solver.set_solver(QPB_SOLVER_PRLOQO);
+		//
+		SG_PRINT("CPLEX\n");
+		solver.set_solver(QPB_SOLVER_CPLEX);
 		solver.solve_qp(beta, num_bound);
+		CMath::display_vector(beta, num_bound);
+
+		SG_PRINT("SCA\n");
+		solver.set_solver(QPB_SOLVER_SCA);
+		solver.solve_qp(beta, num_bound);
+		CMath::display_vector(beta, num_bound);
+
+
 		t.stop();
 		tim+=t.time_diff_sec(true);
-		SG_PRINT("solver stop\n");
+		//SG_PRINT("solver stop\n");
 
 		//SG_PRINT("after solveer foo\n");
 		

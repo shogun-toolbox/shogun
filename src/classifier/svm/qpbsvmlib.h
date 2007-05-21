@@ -10,7 +10,7 @@
  * Written (W) 1999-2007 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
  * Copyright (C) 1999-2007 Center for Machine Perception, CTU FEL Prague 
  *
--------------------------------------------------------------------- */
+ -------------------------------------------------------------------- */
 
 #ifndef QPBSVMLIB_H__ 
 #define QPBSVMLIB_H__ 
@@ -20,100 +20,66 @@
 
 #include "base/SGObject.h"
 #include "lib/io.h"
+#include "lib/config.h"
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
 enum E_QPB_SOLVER
 {
-  QPB_SOLVER_SCA,	// sequential coordinate wise (gaussian seidel based)
-  QPB_SOLVER_SCAS,	// sequential coordinate wise selecting the variable
-  					// gaining 'best' improved
-  QPB_SOLVER_SCAMV, // sequential coordinate wise selecting variable most violating kkt's
-  QPB_SOLVER_PRLOQO // pr_loqo
+	QPB_SOLVER_SCA,	// sequential coordinate wise (gaussian seidel based)
+	QPB_SOLVER_SCAS,	// sequential coordinate wise selecting the variable
+	// gaining 'best' improved
+	QPB_SOLVER_SCAMV, // sequential coordinate wise selecting variable most violating kkt's
+	QPB_SOLVER_PRLOQO,// via pr_loqo
+	QPB_SOLVER_CPLEX  // via cplex
 };
 
 class CQPBSVMLib: public CSGObject
 {
- public:
- /// H is a symmetric matrix of size n x n
- /// f is vector of size m
-  CQPBSVMLib(DREAL* H, INT n, DREAL* f, INT m, DREAL UB=1.0);
+	public:
+		/// H is a symmetric matrix of size n x n
+		/// f is vector of size m
+		CQPBSVMLib(DREAL* H, INT n, DREAL* f, INT m, DREAL UB=1.0);
 
-  /// result has to be allocated & zeroed
-  INT solve_qp(DREAL* result, INT len);
+		/// result has to be allocated & zeroed
+		INT solve_qp(DREAL* result, INT len);
 
-  inline void set_solver(E_QPB_SOLVER solver)
-  {
-	  m_solver=solver;
-  }
+		inline void set_solver(E_QPB_SOLVER solver)
+		{
+			m_solver=solver;
+		}
 
-  ~CQPBSVMLib();
+		~CQPBSVMLib();
 
- protected:
-  inline DREAL* get_col(INT col)
-  {
-	  return &m_H[m_dim*col];
-  }
-/* --------------------------------------------------------------
+	protected:
+		inline DREAL* get_col(INT col)
+		{
+			return &m_H[m_dim*col];
+		}
 
-Usage: exitflag = qpbsvm_sca(UB, dim, tmax, 
-               tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb )
+		/** Usage: exitflag = qpbsvm_sca(UB, dim, tmax, 
+		tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb ) */
+		INT qpbsvm_sca(DREAL *x, DREAL *Nabla, INT *ptr_t, DREAL **ptr_History, INT verb);
+		INT qpbsvm_scas(DREAL *x, DREAL *Nabla, INT *ptr_t, DREAL **ptr_History, INT verb);
+		INT qpbsvm_scamv(DREAL *x, DREAL *Nabla, INT *ptr_t, DREAL **ptr_History, INT verb);
+		INT qpbsvm_prloqo(DREAL *x, DREAL *Nabla, INT *ptr_t, DREAL **ptr_History, INT verb);
+#ifdef USE_CPLEX
+		INT qpbsvm_cplex(DREAL *x, DREAL *Nabla, INT *ptr_t, DREAL **ptr_History, INT verb);
+#endif
 
--------------------------------------------------------------- */
-INT qpbsvm_sca(DREAL *x,
-	        DREAL *Nabla,
-            INT   *ptr_t,
-            DREAL **ptr_History,
-            INT   verb);
-/* --------------------------------------------------------------
+	protected:
+		DREAL* m_H;
+		DREAL* m_diag_H;
+		INT m_dim;
 
-Usage: exitflag = qpbsvm_scas(UB, dim, tmax, 
-               tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb )
+		DREAL* m_f;
 
--------------------------------------------------------------- */
-INT qpbsvm_scas(DREAL *x,
-	        DREAL *Nabla,
-            INT   *ptr_t,
-            DREAL **ptr_History,
-            INT   verb);
+		DREAL m_UB;
 
-/* --------------------------------------------------------------
-
-Usage: exitflag = qpbsvm_scamv(UB, dim, tmax, 
-               tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb )
-
--------------------------------------------------------------- */
-INT qpbsvm_scamv(DREAL *x,
-	        DREAL *Nabla,
-            INT   *ptr_t,
-            DREAL **ptr_History,
-            INT   verb);
-
-/* --------------------------------------------------------------
-
-Usage: exitflag = qpbsvm_prloqo(UB, dim, tmax, 
-               tolabs, tolrel, tolKKT, x, Nabla, &t, &History, verb )
-
--------------------------------------------------------------- */
-INT qpbsvm_prloqo(DREAL *x,
-	        DREAL *Nabla,
-            INT   *ptr_t,
-            DREAL **ptr_History,
-            INT   verb);
-
-protected:
-	DREAL* m_H;
-	DREAL* m_diag_H;
-	INT m_dim;
-
-	DREAL* m_f;
-
-	DREAL m_UB;
-
-	INT m_tmax;
-	DREAL m_tolabs;
-	DREAL m_tolrel;
-	DREAL m_tolKKT;
-	E_QPB_SOLVER m_solver;
+		INT m_tmax;
+		DREAL m_tolabs;
+		DREAL m_tolrel;
+		DREAL m_tolKKT;
+		E_QPB_SOLVER m_solver;
 };
 #endif //QPBSVMLIB_H__
