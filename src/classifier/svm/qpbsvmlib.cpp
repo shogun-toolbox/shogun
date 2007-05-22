@@ -124,6 +124,8 @@ INT CQPBSVMLib::solve_qp(DREAL* result, INT len)
 			SG_ERROR("unknown solver\n");
 			break;
 	}
+	if (History)
+		SG_INFO( "Objective value %.10g.\n", History[t]);
 	delete[] History;
 	delete[] Nabla;
 
@@ -574,10 +576,14 @@ INT CQPBSVMLib::qpbsvm_cplex(DREAL *x,
             DREAL **ptr_History,
             INT   verb)
 {
+	DREAL* H=new DREAL[m_dim*m_dim];
 	DREAL* lb=new DREAL[m_dim];
 	DREAL* ub=new DREAL[m_dim];
+	ASSERT(H);
 	ASSERT(lb);
 	ASSERT(ub);
+	for (INT i=0; i<m_dim*m_dim; i++)
+		H[i]=0.5*m_H[i];
 
 	for (INT i=0; i<m_dim; i++)
 	{
@@ -588,9 +594,7 @@ INT CQPBSVMLib::qpbsvm_cplex(DREAL *x,
 	CCplex cplex;
 	cplex.init(QP);
 	cplex.setup_lp(m_f, NULL, 0, m_dim, NULL, lb, ub);
-	//SG_PRINT("linear\n");
-	//cplex.optimize(x, m_dim);
-	cplex.setup_qp(m_H, m_dim);
+	cplex.setup_qp(H, m_dim);
 	SG_PRINT("quad\n");
 	cplex.optimize(x, m_dim);
 	cplex.cleanup();

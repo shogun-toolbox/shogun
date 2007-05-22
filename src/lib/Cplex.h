@@ -4,8 +4,8 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2007 Soeren Sonnenburg
- * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2007 Soeren Sonnenburg
+ * Copyright (C) 2006-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #ifndef CCPLEX_H__

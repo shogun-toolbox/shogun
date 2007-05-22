@@ -23,12 +23,12 @@
 
 double tim;
 
-CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(100)
+CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(5)
 {
 }
 
 CSubGradientSVM::CSubGradientSVM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
-	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(100)
+	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(5)
 {
 	CSparseLinearClassifier::features=traindat;
 	CClassifier::labels=trainlab;
@@ -290,15 +290,16 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		//solver.set_solver(QPB_SOLVER_SCAS);
 		//solver.set_solver(QPB_SOLVER_PRLOQO);
 		//
-		SG_PRINT("CPLEX\n");
+		//SG_PRINT("CPLEX\n");
 		solver.set_solver(QPB_SOLVER_CPLEX);
 		solver.solve_qp(beta, num_bound);
-		CMath::display_vector(beta, num_bound);
+		CMath::display_vector(beta, num_bound, "cplex_beta");
 
-		SG_PRINT("SCA\n");
+		CQPBSVMLib solver2(Z,num_bound, Zv,num_bound, 1.0);
+		//SG_PRINT("SCA\n");
 		solver.set_solver(QPB_SOLVER_SCA);
 		solver.solve_qp(beta, num_bound);
-		CMath::display_vector(beta, num_bound);
+		CMath::display_vector(beta, num_bound, "sca_beta");
 
 		SG_ERROR("stop");
 

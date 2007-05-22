@@ -710,30 +710,4 @@ void CMath::min(DREAL* output, T* index, INT size)
 	swap(index[0], index[min_index]);
 }
 
-template <class T>
-void CMath::display_vector(T* vector, INT n, const char* name)
-{
-	ASSERT(n>=0);
-	SG_SPRINT("%s=[", name);
-	for (INT i=0; i<n; i++)
-		SG_SPRINT("%f%s", (double) vector[i], i==n-1? "" : ",");
-	SG_SPRINT("]\n");
-}
-
-template <class T>
-void CMath::display_matrix(T* matrix, INT rows, INT cols, const char* name)
-{
-	ASSERT(rows>=0 && cols>=0);
-	SG_SPRINT("%s=[\n", name);
-	for (INT i=0; i<rows; i++)
-	{
-		SG_SPRINT("[");
-		for (INT j=0; j<cols; j++)
-			SG_SPRINT("\t%lf%s", (double) matrix[j+i*cols],
-				j==cols-1? "" : ",");
-		SG_SPRINT("]%s\n", i==rows-1? "" : ",");
-	}
-	SG_SPRINT("]\n");
-}
-
 #endif

@@ -11,9 +11,11 @@
 #include "lib/common.h"
 
 #ifdef USE_CPLEX
+#include <unistd.h>
+
 #include "lib/Cplex.h"
 #include "lib/io.h"
-#include <unistd.h>
+#include "lib/Mathematics.h"
 
 CCplex::CCplex() : CSGObject(), env(NULL), lp(NULL), lp_initialized(false)
 {
@@ -48,7 +50,7 @@ bool CCplex::init(E_PROB_TYPE typ)
 
 			status = CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_ON);
 			if (status)
-				SG_ERROR( "Failure to turn on screen indicator, error %d.\n", status);
+				SG_ERROR( "Failure to turn off screen indicator, error %d.\n", status);
 
 			{
 				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
@@ -108,13 +110,7 @@ bool CCplex::dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, 
 {
 	qmatbeg=new int[cols];
 	qmatcnt=new int[cols];
-	if (rows)
-		qmatind=new int[cols*rows];
-	else
-	{
-		qmatind=new int[1];
-		qmatind[0]=0;
-	}
+	qmatind=new int[cols*rows];
 	qmatval = H;
 
 	if (!(qmatbeg && qmatcnt && qmatind))
@@ -128,34 +124,63 @@ bool CCplex::dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, 
 			qmatind[i*rows+j]=j;
 	}
 
+	SG_PRINT("rows=%d cols=%d\n", rows, cols);
+	CMath::display_matrix(H, rows, cols, "H");
+	CMath::display_vector(qmatbeg, cols, "qmatbeg");
+	CMath::display_vector(qmatind, cols*rows, "qmatind");
+	CMath::display_vector(qmatval, cols*rows, "qmatval");
+
 	return true;
 }
 
 bool CCplex::setup_lp(DREAL* objective, DREAL* constraints_mat, INT rows, INT cols, DREAL* rhs, DREAL* lb, DREAL* ub)
 {
-	char* sense = new char[cols];
-	ASSERT(sense);
-	memset(sense,'L',sizeof(char)*cols);
+	bool result=false;
 
 	int* qmatbeg=NULL;
 	int* qmatcnt=NULL;
 	int* qmatind=NULL;
 	double* qmatval=NULL;
-	bool result=dense_to_cplex_sparse(constraints_mat, rows, cols, qmatbeg, qmatcnt, qmatind, qmatval);
 
+	char* sense = NULL;
+
+	if (constraints_mat==0)
+	{
+		ASSERT(rows==0);
+		rows=1;
+		DREAL dummy=0;
+		rhs=&dummy;
+		sense=new char[rows];
+		ASSERT(sense);
+		memset(sense,'L',sizeof(char)*rows);
+		constraints_mat=new DREAL[cols];
+		ASSERT(constraints_mat);
+		memset(constraints_mat, 0, sizeof(DREAL)*cols);
+		SG_DEBUG("rows=%d, cols=%d\n", rows,cols);
+		CMath::display_vector(objective, cols, "objective");
+		CMath::display_vector(lb, cols, "lb");
+		CMath::display_vector(ub, cols, "ub");
+		result=dense_to_cplex_sparse(constraints_mat, rows, cols, qmatbeg, qmatcnt, qmatind, qmatval);
+		ASSERT(result);
+		result = CPXcopylp(env, lp, cols, rows, CPX_MIN, 
+				objective, rhs, sense, qmatbeg, qmatcnt, qmatind, qmatval, lb, ub, NULL) == 0;
+		delete[] constraints_mat;
+	}
+	else
+	{
+		sense=new char[rows];
+		ASSERT(sense);
+		memset(sense,'L',sizeof(char)*rows);
+		result=dense_to_cplex_sparse(constraints_mat, rows, cols, qmatbeg, qmatcnt, qmatind, qmatval);
+		result = CPXcopylp(env, lp, cols, rows, CPX_MIN, 
+				objective, rhs, sense, qmatbeg, qmatcnt, qmatind, qmatval, lb, ub, NULL) == 0;
+	}
+
+
+	delete[] sense;
 	delete[] qmatbeg;
 	delete[] qmatcnt;
 	delete[] qmatind;
-
-	if (!result)
-
-	{
-		SG_DEBUG("calling CPXcopylp (rows=%i, cols=%i) \n", rows, cols);
-		int status = CPXcopylp(env, lp, cols, rows, CPX_MIN, 
-				objective, rhs, sense, qmatbeg, qmatcnt, qmatind, qmatval, lb, ub, NULL);
-		result=status==0;
-	}
-	delete[] sense;
 
 	if (!result)
 		SG_WARNING("CPXcopylp failed.\n");
