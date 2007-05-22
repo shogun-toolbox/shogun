@@ -34,7 +34,8 @@ public:
 	CCplex();
 	~CCplex();
 
-	bool init(E_PROB_TYPE t);
+	/// init cplex with problem type t and retry timeout 60 seconds
+	bool init(E_PROB_TYPE t, INT timeout=60);
 	bool cleanup();
 
 	/// call this to setup linear part

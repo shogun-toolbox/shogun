@@ -26,7 +26,7 @@ CCplex::~CCplex()
 	cleanup();
 }
 
-bool CCplex::init(E_PROB_TYPE typ)
+bool CCplex::init(E_PROB_TYPE typ, INT timeout)
 {
 	problem_type=typ;
 
@@ -38,11 +38,11 @@ bool CCplex::init(E_PROB_TYPE typ)
 		if ( env == NULL )
 		{
 			char  errmsg[1024];
-			SG_WARNING( "Could not open CPLEX environment.\n");
+			SG_WARNING("Could not open CPLEX environment.\n");
 			CPXgeterrorstring (env, status, errmsg);
-			SG_WARNING( "%s", errmsg);
-			SG_WARNING( "retrying in 60 seconds\n");
-			sleep(60);
+			SG_WARNING("%s", errmsg);
+			SG_WARNING("retrying in %d seconds\n", timeout);
+			sleep(timeout);
 		}
 		else
 		{
@@ -108,13 +108,18 @@ bool CCplex::cleanup()
 
 bool CCplex::dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, int* &qmatcnt, int* &qmatind, double* &qmatval)
 {
-	qmatbeg=new int[cols+1];
+	qmatbeg=new int[cols];
 	qmatcnt=new int[cols];
 	qmatind=new int[cols*rows];
 	qmatval = H;
 
 	if (!(qmatbeg && qmatcnt && qmatind))
+	{
+		delete[] qmatbeg;
+		delete[] qmatcnt;
+		delete[] qmatind;
 		return false;
+	}
 
 	for (INT i=0; i<cols; i++)
 	{
@@ -123,13 +128,6 @@ bool CCplex::dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, 
 		for (INT j=0; j<rows; j++)
 			qmatind[i*rows+j]=j;
 	}
-	qmatbeg[cols]=rows*cols;
-
-	//SG_PRINT("rows=%d cols=%d\n", rows, cols);
-	//CMath::display_matrix(H, rows, cols, "H");
-	//CMath::display_vector(qmatbeg, cols, "qmatbeg");
-	//CMath::display_vector(qmatind, cols*rows, "qmatind");
-	//CMath::display_vector(qmatval, cols*rows, "qmatval");
 
 	return true;
 }
@@ -157,10 +155,7 @@ bool CCplex::setup_lp(DREAL* objective, DREAL* constraints_mat, INT rows, INT co
 		constraints_mat=new DREAL[cols];
 		ASSERT(constraints_mat);
 		memset(constraints_mat, 0, sizeof(DREAL)*cols);
-		//SG_DEBUG("rows=%d, cols=%d\n", rows,cols);
-		//CMath::display_vector(objective, cols, "objective");
-		//CMath::display_vector(lb, cols, "lb");
-		//CMath::display_vector(ub, cols, "ub");
+
 		result=dense_to_cplex_sparse(constraints_mat, 0, cols, qmatbeg, qmatcnt, qmatind, qmatval);
 		ASSERT(result);
 		result = CPXcopylp(env, lp, cols, rows, CPX_MIN, 
@@ -176,8 +171,6 @@ bool CCplex::setup_lp(DREAL* objective, DREAL* constraints_mat, INT rows, INT co
 		result = CPXcopylp(env, lp, cols, rows, CPX_MIN, 
 				objective, rhs, sense, qmatbeg, qmatcnt, qmatind, qmatval, lb, ub, NULL) == 0;
 	}
-
-	CPXlpwrite(env,lp,"dumpfile.lp");
 
 	delete[] sense;
 	delete[] qmatbeg;
@@ -207,7 +200,6 @@ bool CCplex::setup_qp(DREAL* H, INT dim)
 	if (!result)
 		SG_WARNING("CPXcopyquad failed.\n");
 
-	CPXqpwrite(env,lp,"dumpfile.qp");
 	return result;
 }
 
@@ -250,10 +242,6 @@ bool CCplex::optimize(DREAL* sol, INT dim)
 	status = CPXsolninfo (env, lp, &solnmethod, &solntype, NULL, NULL);
 	if ( status )
 		SG_ERROR( "Failed to obtain solution info.\n");
-
-	//SG_INFO( "Solution status %d, solution method %d\n", solnstat, solnmethod);
-
-	//SG_INFO( "Objective value %.10g.\n", objval);
 
 	return (status==0);
 }

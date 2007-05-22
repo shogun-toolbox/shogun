@@ -67,12 +67,7 @@ CQPBSVMLib::CQPBSVMLib(DREAL* H, INT n, DREAL* f, INT m, DREAL UB)
 	ASSERT(H && n>0);
 	m_H=H;
 	m_dim = n;
-
-	m_diag_H=new DREAL[n];
-	ASSERT(m_diag_H);
-
-	for (INT i=0; i<n; i++)
-		m_diag_H[i]=m_H[i*n+i];
+	m_diag_H=NULL; 
 
 	m_f=f;
 	m_UB=UB;
@@ -97,6 +92,13 @@ INT CQPBSVMLib::solve_qp(DREAL* result, INT len)
 	for (INT i=0; i<m_dim; i++)
 		Nabla[i]=m_f[i];
 
+	delete[] m_diag_H;
+	m_diag_H= new DREAL[m_dim];
+	ASSERT(m_diag_H);
+
+	for (INT i=0; i<m_dim; i++)
+		m_diag_H[i]=m_H[i*m_dim+i];
+
 	DREAL* History=NULL;
 	INT t;
 	INT verb=0;
@@ -118,19 +120,19 @@ INT CQPBSVMLib::solve_qp(DREAL* result, INT len)
 #ifdef USE_CPLEX
 		case QPB_SOLVER_CPLEX:
 			status = qpbsvm_cplex(result, Nabla, &t, &History, verb );
-			break;
+#else
+			SG_ERROR("cplex not enabled at compile time - unknow solver\n");
 #endif
+			break;
 		default:
 			SG_ERROR("unknown solver\n");
 			break;
 	}
-	//if (History)
-	//{
-	//	//SG_INFO( "Objective value %.10g. iterations:%d\n", History[2*t], t);
-	//	//CMath::display_matrix(History, t, 2, "History");
-	//}
+
 	delete[] History;
 	delete[] Nabla;
+	delete[] m_diag_H;
+	m_diag_H=NULL;
 
 	return status;
 }
@@ -581,10 +583,9 @@ INT CQPBSVMLib::qpbsvm_cplex(DREAL *x,
             DREAL **ptr_History,
             INT   verb)
 {
-	DREAL* H=new DREAL[m_dim*m_dim];
 	DREAL* lb=new DREAL[m_dim];
 	DREAL* ub=new DREAL[m_dim];
-	ASSERT(H);
+
 	ASSERT(lb);
 	ASSERT(ub);
 
