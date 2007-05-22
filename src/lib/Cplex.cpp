@@ -48,7 +48,7 @@ bool CCplex::init(E_PROB_TYPE typ)
 		{
 			/* Turn on output to the screen */
 
-			status = CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_ON);
+			status = CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_OFF);
 			if (status)
 				SG_ERROR( "Failure to turn off screen indicator, error %d.\n", status);
 
@@ -125,11 +125,11 @@ bool CCplex::dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, 
 	}
 	qmatbeg[cols]=rows*cols;
 
-	SG_PRINT("rows=%d cols=%d\n", rows, cols);
-	CMath::display_matrix(H, rows, cols, "H");
-	CMath::display_vector(qmatbeg, cols, "qmatbeg");
-	CMath::display_vector(qmatind, cols*rows, "qmatind");
-	CMath::display_vector(qmatval, cols*rows, "qmatval");
+	//SG_PRINT("rows=%d cols=%d\n", rows, cols);
+	//CMath::display_matrix(H, rows, cols, "H");
+	//CMath::display_vector(qmatbeg, cols, "qmatbeg");
+	//CMath::display_vector(qmatind, cols*rows, "qmatind");
+	//CMath::display_vector(qmatval, cols*rows, "qmatval");
 
 	return true;
 }
@@ -157,10 +157,10 @@ bool CCplex::setup_lp(DREAL* objective, DREAL* constraints_mat, INT rows, INT co
 		constraints_mat=new DREAL[cols];
 		ASSERT(constraints_mat);
 		memset(constraints_mat, 0, sizeof(DREAL)*cols);
-		SG_DEBUG("rows=%d, cols=%d\n", rows,cols);
-		CMath::display_vector(objective, cols, "objective");
-		CMath::display_vector(lb, cols, "lb");
-		CMath::display_vector(ub, cols, "ub");
+		//SG_DEBUG("rows=%d, cols=%d\n", rows,cols);
+		//CMath::display_vector(objective, cols, "objective");
+		//CMath::display_vector(lb, cols, "lb");
+		//CMath::display_vector(ub, cols, "ub");
 		result=dense_to_cplex_sparse(constraints_mat, 0, cols, qmatbeg, qmatcnt, qmatind, qmatval);
 		ASSERT(result);
 		result = CPXcopylp(env, lp, cols, rows, CPX_MIN, 
@@ -251,9 +251,9 @@ bool CCplex::optimize(DREAL* sol, INT dim)
 	if ( status )
 		SG_ERROR( "Failed to obtain solution info.\n");
 
-	SG_INFO( "Solution status %d, solution method %d\n", solnstat, solnmethod);
+	//SG_INFO( "Solution status %d, solution method %d\n", solnstat, solnmethod);
 
-	SG_INFO( "Objective value %.10g.\n", objval);
+	//SG_INFO( "Objective value %.10g.\n", objval);
 
 	return (status==0);
 }

@@ -19,16 +19,16 @@
 #include "features/SparseFeatures.h"
 #include "features/Labels.h"
 
-#define DEBUG_SUBGRADIENTSVM
+//#define DEBUG_SUBGRADIENTSVM
 
 double tim;
 
-CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(5)
+CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(100)
 {
 }
 
 CSubGradientSVM::CSubGradientSVM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
-	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(5)
+	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(100)
 {
 	CSparseLinearClassifier::features=traindat;
 	CClassifier::labels=trainlab;
@@ -293,18 +293,17 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		//SG_PRINT("CPLEX\n");
 		solver.set_solver(QPB_SOLVER_CPLEX);
 		solver.solve_qp(beta, num_bound);
-		CMath::display_vector(beta, num_bound, "cplex_beta");
+		//CMath::display_vector(beta, num_bound, "cplex_beta");
 
-		CQPBSVMLib solver2(Z,num_bound, Zv,num_bound, 1.0);
 		//SG_PRINT("SCA\n");
-		solver.set_solver(QPB_SOLVER_SCAS);
-		solver.solve_qp(beta, num_bound);
-		CMath::display_vector(beta, num_bound, "sca_beta");
+		//solver.set_solver(QPB_SOLVER_SCA);
+		//solver.solve_qp(beta, num_bound);
+		//CMath::display_vector(beta, num_bound, "sca_beta");
 
-		SG_ERROR("stop");
+		//SG_ERROR("stop");
 
 		t.stop();
-		tim+=t.time_diff_sec(true);
+		tim+=t.time_diff_sec(false);
 		//SG_PRINT("solver stop\n");
 
 		//SG_PRINT("after solveer foo\n");
@@ -518,6 +517,8 @@ bool CSubGradientSVM::train()
 		SG_PRINT("==================================================\niteration: %d ", num_iterations);
 		SG_PRINT("alpha: %f dir_deriv: %f num_bound: %d num_active: %d work_eps: %10.10f eps: %10.10f auto_eps: %10.10f\n",
 				alpha, dir_deriv, num_bound, num_active, work_epsilon, epsilon, autoselected_epsilon);
+#else
+	  SG_ABS_PROGRESS(work_epsilon, -CMath::log10(work_epsilon), -CMath::log10(0.99999999), -CMath::log10(epsilon), 6);
 #endif
 		//CMath::display_vector(w, w_dim, "w");
 		//SG_PRINT("bias: %f\n", bias);
