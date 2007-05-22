@@ -588,8 +588,8 @@ INT CQPBSVMLib::qpbsvm_cplex(DREAL *x,
 	CCplex cplex;
 	cplex.init(QP);
 	cplex.setup_lp(m_f, NULL, 0, m_dim, NULL, lb, ub);
-	SG_PRINT("linear\n");
-	cplex.optimize(x, m_dim);
+	//SG_PRINT("linear\n");
+	//cplex.optimize(x, m_dim);
 	cplex.setup_qp(m_H, m_dim);
 	SG_PRINT("quad\n");
 	cplex.optimize(x, m_dim);

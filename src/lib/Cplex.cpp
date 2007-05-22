@@ -125,7 +125,7 @@ bool CCplex::dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, 
 		qmatcnt[i]=rows;
 		qmatbeg[i]=i*rows;
 		for (INT j=0; j<rows; j++)
-			qmatind[i*rows+j]=i*rows+j;
+			qmatind[i*rows+j]=j;
 	}
 
 	return true;

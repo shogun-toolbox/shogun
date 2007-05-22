@@ -300,6 +300,7 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		solver.solve_qp(beta, num_bound);
 		CMath::display_vector(beta, num_bound);
 
+		SG_ERROR("stop");
 
 		t.stop();
 		tim+=t.time_diff_sec(true);
