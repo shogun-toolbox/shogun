@@ -108,7 +108,7 @@ bool CCplex::cleanup()
 
 bool CCplex::dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, int* &qmatcnt, int* &qmatind, double* &qmatval)
 {
-	qmatbeg=new int[cols];
+	qmatbeg=new int[cols+1];
 	qmatcnt=new int[cols];
 	qmatind=new int[cols*rows];
 	qmatval = H;
@@ -123,6 +123,7 @@ bool CCplex::dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, 
 		for (INT j=0; j<rows; j++)
 			qmatind[i*rows+j]=j;
 	}
+	qmatbeg[cols]=rows*cols;
 
 	SG_PRINT("rows=%d cols=%d\n", rows, cols);
 	CMath::display_matrix(H, rows, cols, "H");
