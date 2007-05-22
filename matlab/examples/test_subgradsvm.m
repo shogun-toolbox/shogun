@@ -1,5 +1,5 @@
-C=10;
-epsilon=1e-5;
+C=1;
+epsilon=1e-3;
 
 %load /home/sonne/vojtech/subgradsvm/uci_spambase.mat
 %data=[];
@@ -8,21 +8,33 @@ epsilon=1e-5;
 %testdat=x';
 %testlab=t';
 
-rand('state',17);
-num=20000;
-dim=100;
-dist=0.03;
-%num=20;
+load ~/today/covertype.mat
+traindat=x;
+trainlab=y';
+testdat=x;
+testlab=y';
+
+%load ~/today/mnist.mat
+%traindat=full(x');
+%trainlab=full(y);
+%testdat=full(x');
+%testlab=full(y);
+
+%rand('state',17);
+%num=20000;
 %dim=1000;
-%dist=0.01;
-
-traindat=[rand(dim,num/2)-dist, rand(dim,num/2)+dist];
-traindat=traindat/(dim*mean(traindat(:)));
-trainlab=[-ones(1,num/2), ones(1,num/2) ];
-
-testdat=[rand(dim,num/2)-dist, rand(dim,num/2)+dist];
-testdat=testdat/(dim*mean(testdat(:)));;
-testlab=[-ones(1,num/2), ones(1,num/2) ];
+%dist=0.03;
+%%num=20;
+%%dim=1000;
+%%dist=0.01;
+%
+%traindat=[rand(dim,num/2)-dist, rand(dim,num/2)+dist];
+%traindat=traindat/(dim*mean(traindat(:)));
+%trainlab=[-ones(1,num/2), ones(1,num/2) ];
+%
+%testdat=[rand(dim,num/2)-dist, rand(dim,num/2)+dist];
+%testdat=testdat/(dim*mean(testdat(:)));;
+%testlab=[-ones(1,num/2), ones(1,num/2) ];
 
 sg('send_command', 'loglevel ALL');
 sg('set_features', 'TRAIN', traindat);
