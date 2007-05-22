@@ -297,7 +297,7 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 
 		CQPBSVMLib solver2(Z,num_bound, Zv,num_bound, 1.0);
 		//SG_PRINT("SCA\n");
-		solver.set_solver(QPB_SOLVER_SCA);
+		solver.set_solver(QPB_SOLVER_SCAS);
 		solver.solve_qp(beta, num_bound);
 		CMath::display_vector(beta, num_bound, "sca_beta");
 

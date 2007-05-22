@@ -161,7 +161,7 @@ bool CCplex::setup_lp(DREAL* objective, DREAL* constraints_mat, INT rows, INT co
 		CMath::display_vector(objective, cols, "objective");
 		CMath::display_vector(lb, cols, "lb");
 		CMath::display_vector(ub, cols, "ub");
-		result=dense_to_cplex_sparse(constraints_mat, rows, cols, qmatbeg, qmatcnt, qmatind, qmatval);
+		result=dense_to_cplex_sparse(constraints_mat, 0, cols, qmatbeg, qmatcnt, qmatind, qmatval);
 		ASSERT(result);
 		result = CPXcopylp(env, lp, cols, rows, CPX_MIN, 
 				objective, rhs, sense, qmatbeg, qmatcnt, qmatind, qmatval, lb, ub, NULL) == 0;
@@ -177,6 +177,7 @@ bool CCplex::setup_lp(DREAL* objective, DREAL* constraints_mat, INT rows, INT co
 				objective, rhs, sense, qmatbeg, qmatcnt, qmatind, qmatval, lb, ub, NULL) == 0;
 	}
 
+	CPXlpwrite(env,lp,"dumpfile.lp");
 
 	delete[] sense;
 	delete[] qmatbeg;
@@ -206,6 +207,7 @@ bool CCplex::setup_qp(DREAL* H, INT dim)
 	if (!result)
 		SG_WARNING("CPXcopyquad failed.\n");
 
+	CPXqpwrite(env,lp,"dumpfile.qp");
 	return result;
 }
 
