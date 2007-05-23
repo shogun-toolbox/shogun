@@ -1230,7 +1230,27 @@ double QPproblem::gpdtsolve(double *solution)
         }
     }
 
-    if (ker_type != 0)  // nonlinear kernel
+	// in case of LINADD enabled use faster linadd variant
+	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
+	{
+		get_kernel()->clear_normal() ;
+
+		for (j = 0; j < nzin; j++)
+			KER->get_kernel()->add_to_normal(indnzin[j], grad[j]);
+
+        if (nit == 0 && PreprocessMode > 0)
+		{
+			for (j = 0; j < nzout; j++)
+			{
+				jin = indnzout[j];
+				KER->get_kernel()->add_to_normal(jin, alpha[jin] * y[jin]);
+			}
+		}
+
+        for (i = 0; i < ell; i++)
+            st[i] += KER->get_kernel()->compute_optimized(i);
+	}
+	else  // nonlinear kernel
     {
         k = Cache->DivideMP(ing, indnzin, nzin);
         for (j = 0; j < k; j++)
@@ -1256,22 +1276,6 @@ double QPproblem::gpdtsolve(double *solution)
                 SG_INFO(
                  "  G*x0 time: %.2lf\n", (double)(clock()-ti2)/CLOCKS_PER_SEC);
         }
-    }
-    else                // linear kernel
-    {
-        for (i = 0; i < dim; i++) weight[i] = 0.0;
-
-        for (j = 0; j < nzin; j++)
-            KER->Add(weight, indnzin[j], grad[j]);
-        if (nit == 0 && PreprocessMode > 0)
-            for (j = 0; j < nzout; j++)
-            {
-                jin = indnzout[j];
-                KER->Add(weight, jin, alpha[jin] * y[jin]);
-            }
-
-        for (i = 0; i < ell; i++)
-            st[i] += KER->Prod(weight, i);
     }
 
     /*** sort the vectors for cache managing ***/

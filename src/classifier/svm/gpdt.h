@@ -116,6 +116,11 @@ public:
   void   Add           (double *v, int j, double mul);
   double Prod          (double *v, int j);
 
+  inline CKernel* get_kernel()
+  {
+	  return kernel;
+  }
+
 private:
   CKernel* kernel;
   int    vauxRow;
