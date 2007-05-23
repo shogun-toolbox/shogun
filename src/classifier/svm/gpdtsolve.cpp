@@ -1231,9 +1231,9 @@ double QPproblem::gpdtsolve(double *solution)
     }
 
 	// in case of LINADD enabled use faster linadd variant
-	if (get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
+	if (KER->get_kernel()->has_property(KP_LINADD) && get_linadd_enabled())
 	{
-		get_kernel()->clear_normal() ;
+		KER->get_kernel()->clear_normal() ;
 
 		for (j = 0; j < nzin; j++)
 			KER->get_kernel()->add_to_normal(indnzin[j], grad[j]);

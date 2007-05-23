@@ -39,6 +39,7 @@ public:
   double  c_const;
   double  bee;
   double  delta;
+  bool linadd;
 
   sKernel* KER;
   int     ker_type;
@@ -60,6 +61,10 @@ public:
 
   double  gpdtsolve      (double *solution);
   double  pgpdtsolve     (double *solution);
+  inline bool get_linadd_enabled()
+  {
+	  return linadd;
+  }
 
 // ----------------- Private Data  ---------------
 private:

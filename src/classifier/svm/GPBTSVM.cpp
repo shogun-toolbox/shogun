@@ -49,6 +49,7 @@ bool CGPBTSVM::train()
 	prob.projection_projector = -1;
 	prob.c_const = get_C1();
 	prob.chunk_size = get_qpsize();
+	prob.linadd = get_linadd_enabled();
 
 	if (prob.chunk_size < 2)      prob.chunk_size = 2;
 	if (prob.q <= 0)              prob.q = prob.chunk_size / 3;
