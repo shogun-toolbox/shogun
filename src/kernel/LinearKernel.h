@@ -73,6 +73,7 @@ class CLinearKernel: public CSimpleKernel<DREAL>
   bool initialized;
 
   /// normal vector (used in case of optimized kernel)
+  long normal_length;
   double* normal;
 };
 #endif

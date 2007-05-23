@@ -24,7 +24,7 @@ extern "C" {
 
 CLinearKernel::CLinearKernel(INT size, DREAL scale_)
   : CSimpleKernel<DREAL>(size),scale(scale_), initialized(false),
-	normal(NULL)
+	normal_length(0), normal(NULL)
 {
 	properties |= KP_LINADD;
 }
@@ -85,9 +85,12 @@ void CLinearKernel::clear_normal()
 {
 	int num = ((CRealFeatures*) lhs)->get_num_features();
 	if (normal==NULL)
+	{
 		normal = new DREAL[num] ;
-	for (int i=0; i<num; i++)
-		normal[i]=0;
+		normal_length=num;
+	}
+
+	memset(normal, 0, sizeof(DREAL)*normal_length);
 
 	set_is_initialized(true);
 }
@@ -149,36 +152,23 @@ bool CLinearKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alpha
 bool CLinearKernel::delete_optimization()
 {
 	delete[] normal;
+	normal_length=0;
 	normal=NULL;
 	set_is_initialized(false);
 
 	return true;
 }
 
-DREAL CLinearKernel::compute_optimized(INT idx_b) 
+DREAL CLinearKernel::compute_optimized(INT idx) 
 {
-	INT blen;
-	bool bfree;
-
-	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-
 	ASSERT(get_is_initialized());
 
-	int ialen=(int) blen;
-
-#ifndef HAVE_LAPACK
-	DREAL result=0;
-	{
-		for (INT i=0; i<ialen; i++)
-			result+=normal[i]*bvec[i];
-	}
-	result/=scale;
-#else
-	INT skip=1;
-	DREAL result = cblas_ddot(ialen, normal, skip, bvec, skip)/scale;
-#endif
-
-	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	INT vlen;
+	bool vfree;
+	double* vec=((CRealFeatures*) rhs)->get_feature_vector(idx, vlen, vfree);
+	ASSERT(vlen==normal_length);
+	DREAL result=CMath::dot(normal,vec, vlen)/scale;
+	((CRealFeatures*) rhs)->free_feature_vector(vec, idx, vfree);
 
 	return result;
 }

@@ -29,7 +29,7 @@ class CSparseGaussianKernel: public CSparseKernel<DREAL>
   virtual bool save_init(FILE* dest);
 
   // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_GAUSSIAN; }
+  virtual EKernelType get_kernel_type() { return K_SPARSEGAUSSIAN; }
 
   /** return feature type the kernel can deal with
   */

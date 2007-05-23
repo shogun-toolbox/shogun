@@ -29,7 +29,7 @@ class CSparseLinearKernel: public CSparseKernel<DREAL>
   virtual bool save_init(FILE* dest);
 
   // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_LINEAR; }
+  virtual EKernelType get_kernel_type() { return K_SPARSELINEAR; }
 
   /** return feature type the kernel can deal with
   */
@@ -47,6 +47,11 @@ class CSparseLinearKernel: public CSparseKernel<DREAL>
   virtual void clear_normal();
   virtual void add_to_normal(INT idx, DREAL weight);
 
+  inline const double* get_normal(INT& len)
+  {
+	  len=normal_length;
+	  return normal;
+  }
  protected:
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors

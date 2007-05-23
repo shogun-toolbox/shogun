@@ -36,6 +36,7 @@
 #include "kernel/CommWordKernel.h"
 #include "kernel/CustomKernel.h"
 #include "kernel/LinearKernel.h"
+#include "kernel/SparseLinearKernel.h"
 #include "classifier/svm/SVM.h"
 #include "lib/Array.h"
 #include "lib/Array3.h"
@@ -2368,6 +2369,21 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[])
 			case  K_LINEAR:
 				{
 					CLinearKernel *kernel = (CLinearKernel *) kernel_ ;
+
+					INT len=0 ;
+					const double* weights = kernel->get_normal(len);
+
+					mxArray* mx_result=mxCreateDoubleMatrix(len, 1, mxREAL);
+					double* result=mxGetPr(mx_result);
+					for (int i=0; i<len; i++)
+						result[i]=weights[i] ;
+
+					retvals[0]=mx_result;
+					return true;
+				}
+			case  K_SPARSELINEAR:
+				{
+					CSparseLinearKernel *kernel = (CSparseLinearKernel *) kernel_ ;
 
 					INT len=0 ;
 					const double* weights = kernel->get_normal(len);

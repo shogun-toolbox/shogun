@@ -116,8 +116,8 @@ bool CSparseLinearKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL*
 bool CSparseLinearKernel::delete_optimization()
 {
 	delete[] normal;
-	normal=NULL;
 	normal_length=0;
+	normal=NULL;
 	set_is_initialized(false);
 
 	return true;

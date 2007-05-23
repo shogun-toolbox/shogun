@@ -429,7 +429,8 @@ template <class ST> class CSparseFeatures: public CFeatures
 						result=false;
 					}
 
-					SG_INFO( "sparse feature matrix has %ld entries (full matrix had %ld)\n", num_total_entries, num_feat*num_vec);
+					SG_INFO( "sparse feature matrix has %ld entries (full matrix had %ld, sparsity %2.2f%%)\n",
+							num_total_entries, num_feat*num_vec, (100.0*num_total_entries)/(num_feat*num_vec));
 				}
 				else
 				{
