@@ -35,6 +35,9 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		inline void set_epsilon(DREAL eps) { epsilon=eps; }
 		inline DREAL get_epsilon() { return epsilon; }
 
+		inline void set_qpsize(INT q) { qpsize=q; }
+		inline INT get_qpsize() { return qpsize; }
+
 	protected:
 		/// returns number of changed constraints for precision work_epsilon
 		/// and fills active array

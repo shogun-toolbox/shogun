@@ -195,6 +195,8 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 	{
 		delete classifier;
 		classifier= new CSubGradientSVM();
+
+		((CSubGradientSVM*) classifier)->set_qpsize(svm_qpsize);
 		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
 		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
 		SG_INFO( "created Subgradient SVM object\n") ;
