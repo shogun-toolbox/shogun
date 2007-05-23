@@ -19,7 +19,7 @@
 #include "features/SparseFeatures.h"
 #include "features/Labels.h"
 
-//#define DEBUG_SUBGRADIENTSVM
+#define DEBUG_SUBGRADIENTSVM
 
 double tim;
 
@@ -115,13 +115,40 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 		CMath::qsort(tmp_proj, tmp_proj_idx, num_vec);
 
 		autoselected_epsilon=tmp_proj[CMath::min(qpsize,num_vec)];
-		//SG_PRINT("autoseleps: %10.10f\n", autoselected_epsilon);
+
+#ifdef DEBUG_SUBGRADIENTSVM
+		SG_PRINT("autoseleps: %15.15f\n", autoselected_epsilon);
+#endif
 
 		if (autoselected_epsilon>work_epsilon)
 			autoselected_epsilon=work_epsilon;
+
 		if (autoselected_epsilon<epsilon)
+		{
 			autoselected_epsilon=epsilon;
 
+			INT i=0;
+			while (i < num_vec && tmp_proj[i] <= autoselected_epsilon)
+				i++;
+
+			SG_PRINT("lower bound on epsilon requires %d variables in qp\n", i);
+
+			if (i>500) //qpsize limit
+			{
+				SG_PRINT("qpsize limit (500) reached\n");
+				INT num_in_qp=i;
+				while (--i>=0 && num_in_qp>=500)
+				{
+					if (tmp_proj[i] < autoselected_epsilon)
+					{
+						autoselected_epsilon=tmp_proj[i];
+						num_in_qp--;
+					}
+				}
+
+				SG_PRINT("new qpsize will be %d, autoeps:%15.15f\n", num_in_qp, autoselected_epsilon);
+			}
+		}
 
 		for (INT i=0; i<num_vec; i++)
 		{
@@ -251,67 +278,58 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 
 		CMath::add(v, 1.0, w, -1.0, sum_CXy_active, num_feat);
 
-		for (INT i=0; i<num_bound; i++)
+		if (num_bound>500) // if qp gets to large, lets just choose a random beta
 		{
-			for (INT j=0; j<num_bound; j++)
+			SG_PRINT("qpsize too large choosing random subgradient/beta\n");
+			for (INT i=0; i<num_bound; i++)
+				beta[i]=CMath::random(0.0,1.0);
+		}
+		else
+		{
+			for (INT i=0; i<num_bound; i++)
 			{
-				INT alen=0;
-				INT blen=0;
-				bool afree=false;
-				bool bfree=false;
+				for (INT j=0; j<num_bound; j++)
+				{
+					INT alen=0;
+					INT blen=0;
+					bool afree=false;
+					bool bfree=false;
 
-				TSparseEntry<DREAL>* avec=features->get_sparse_feature_vector(idx_bound[i], alen, afree);
-				TSparseEntry<DREAL>* bvec=features->get_sparse_feature_vector(idx_bound[j], blen, bfree);
+					TSparseEntry<DREAL>* avec=features->get_sparse_feature_vector(idx_bound[i], alen, afree);
+					TSparseEntry<DREAL>* bvec=features->get_sparse_feature_vector(idx_bound[j], blen, bfree);
 
-				Z[i*num_bound+j]= 2.0*C1*C1*get_label(idx_bound[i])*get_label(idx_bound[j])* 
-					(features->sparse_dot(1.0, avec,alen, bvec,blen) + 1);
+					Z[i*num_bound+j]= 2.0*C1*C1*get_label(idx_bound[i])*get_label(idx_bound[j])* 
+						(features->sparse_dot(1.0, avec,alen, bvec,blen) + 1);
 
-				features->free_feature_vector(avec, idx_bound[i], afree);
-				features->free_feature_vector(bvec, idx_bound[j], bfree);
+					features->free_feature_vector(avec, idx_bound[i], afree);
+					features->free_feature_vector(bvec, idx_bound[j], bfree);
+				}
+
+				Zv[i]=-2.0*C1*get_label(idx_bound[i])* 
+					features->dense_dot(1.0, idx_bound[i], v, num_feat, -sum_Cy_active);
 			}
 
-			Zv[i]=-2.0*C1*get_label(idx_bound[i])* 
-				features->dense_dot(1.0, idx_bound[i], v, num_feat, -sum_Cy_active);
+			//CMath::display_matrix(Z, num_bound, num_bound, "Z");
+			//CMath::display_vector(Zv, num_bound, "Zv");
+
+			CTime t;
+			CQPBSVMLib solver(Z,num_bound, Zv,num_bound, 1.0);
+#ifdef USE_CPLEX
+			solver.set_solver(QPB_SOLVER_CPLEX);
+#else
+			solver.set_solver(QPB_SOLVER_SCA);
+#endif
+
+			solver.solve_qp(beta, num_bound);
+
+			t.stop();
+			tim+=t.time_diff_sec(false);
+
+			//CMath::display_vector(beta, num_bound, "beta");
+
+			//CMath::display_vector(grad_w, num_feat, "grad_w");
+			//SG_PRINT("grad_b:%f\n", grad_b);
 		}
-
-		//SG_PRINT("num_bound:%d\n", num_bound);
-		//CMath::display_matrix(Z, num_bound, num_bound, "Z");
-		//CMath::display_vector(Zv, num_bound, "Zv");
-
-		//SG_PRINT("solver start\n");
-		CTime t;
-		CQPBSVMLib solver(Z,num_bound, Zv,num_bound, 1.0);
-		//solver.set_solver(QPB_SOLVER_SCAMV);
-//#ifdef USE_CPLEX
-		//solver.set_solver(QPB_SOLVER_CPLEX);
-//#else
-		//solver.set_solver(QPB_SOLVER_SCA);
-//#endif
-		//solver.set_solver(QPB_SOLVER_SCAS);
-		//solver.set_solver(QPB_SOLVER_PRLOQO);
-		//
-		//SG_PRINT("CPLEX\n");
-		solver.set_solver(QPB_SOLVER_CPLEX);
-		solver.solve_qp(beta, num_bound);
-		//CMath::display_vector(beta, num_bound, "cplex_beta");
-
-		//SG_PRINT("SCA\n");
-		//solver.set_solver(QPB_SOLVER_SCA);
-		//solver.solve_qp(beta, num_bound);
-		//CMath::display_vector(beta, num_bound, "sca_beta");
-
-		//SG_ERROR("stop");
-
-		t.stop();
-		tim+=t.time_diff_sec(false);
-		//SG_PRINT("solver stop\n");
-
-		//SG_PRINT("after solveer foo\n");
-		
-		//CMath::display_vector(beta, num_bound, "beta");
-
-		//CMath::display_vector(grad_w, num_feat, "grad_w");
-		//SG_PRINT("grad_b:%f\n", grad_b);
 
 		CMath::add(grad_w, 1.0, w, -1.0, sum_CXy_active, num_feat);
 		grad_b = -sum_Cy_active;
@@ -329,9 +347,6 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 			DREAL val= features->dense_dot(get_label(idx_bound[i]), idx_bound[i], grad_w, num_feat, grad_b);
 			dir_deriv += CMath::max(0.0, val);
 		}
-		//CMath::display_vector(grad_w, num_feat, "grad_w");
-		//SG_PRINT("grad_b:%f\n", grad_b);
-		//ASSERT(0);
 #endif
 
 		delete[] v;
@@ -515,8 +530,9 @@ bool CSubGradientSVM::train()
 
 #ifdef DEBUG_SUBGRADIENTSVM
 		SG_PRINT("==================================================\niteration: %d ", num_iterations);
-		SG_PRINT("alpha: %f dir_deriv: %f num_bound: %d num_active: %d work_eps: %10.10f eps: %10.10f auto_eps: %10.10f\n",
-				alpha, dir_deriv, num_bound, num_active, work_epsilon, epsilon, autoselected_epsilon);
+		obj=compute_objective(num_feat, num_vec);
+		SG_PRINT("objective:%f alpha: %f dir_deriv: %f num_bound: %d num_active: %d work_eps: %10.10f eps: %10.10f auto_eps: %10.10f\n",
+				obj, alpha, dir_deriv, num_bound, num_active, work_epsilon, epsilon, autoselected_epsilon);
 #else
 	  SG_ABS_PROGRESS(work_epsilon, -CMath::log10(work_epsilon), -CMath::log10(0.99999999), -CMath::log10(epsilon), 6);
 #endif
@@ -529,9 +545,6 @@ bool CSubGradientSVM::train()
 		//SG_PRINT("num_bound: %d\n", num_bound);
 		//CMath::display_vector(sum_CXy_active, num_feat, "sum_CXy_active");
 		//SG_PRINT("sum_Cy_active: %f\n", sum_Cy_active);
-		//obj=compute_objective(num_feat, num_vec);
-		//SG_PRINT("objective: %f alpha: %f dir_deriv: %f num_bound: %d num_active: %d\n",
-		//		obj, alpha, dir_deriv, num_bound, num_active);
 		//CMath::display_vector(grad_w, num_feat, "grad_w");
 		//SG_PRINT("grad_b:%f\n", grad_b);
 		
@@ -551,17 +564,8 @@ bool CSubGradientSVM::train()
 	}
 
 	SG_INFO("converged after %d iterations\n", num_iterations);
-	//obj=compute_objective(num_feat, num_vec);
 
-	obj= 0.5 * CMath::dot(w,w, num_feat);
-	
-	for (INT i=0; i<num_vec; i++)
-	{
-		DREAL v=classify_example(i);
-		if (v<1.0)
-			obj += C1 * (1.0-v);
-	}
-
+	obj=compute_objective(num_feat, num_vec);
 	SG_INFO("objective: %f alpha: %f dir_deriv: %f num_bound: %d num_active: %d\n",
 			obj, alpha, dir_deriv, num_bound, num_active);
 
