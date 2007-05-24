@@ -23,12 +23,12 @@
 
 double tim;
 
-CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(100)
+CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42), qpsize_limit(2000)
 {
 }
 
 CSubGradientSVM::CSubGradientSVM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
-	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(100)
+	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(42), qpsize_limit(2000)
 {
 	CSparseLinearClassifier::features=traindat;
 	CClassifier::labels=trainlab;
@@ -133,11 +133,11 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 
 			SG_PRINT("lower bound on epsilon requires %d variables in qp\n", i);
 
-			if (i>500) //qpsize limit
+			if (i>qpsize_limit) //qpsize limit
 			{
-				SG_PRINT("qpsize limit (500) reached\n");
+				SG_PRINT("qpsize limit (%d) reached\n", qpsize_limit);
 				INT num_in_qp=i;
-				while (--i>=0 && num_in_qp>=500)
+				while (--i>=0 && num_in_qp>=qpsize_limit)
 				{
 					if (tmp_proj[i] < autoselected_epsilon)
 					{
@@ -278,9 +278,9 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 
 		CMath::add(v, 1.0, w, -1.0, sum_CXy_active, num_feat);
 
-		if (num_bound>500) // if qp gets to large, lets just choose a random beta
+		if (num_bound>qpsize_limit) // if qp gets to large, lets just choose a random beta
 		{
-			SG_PRINT("qpsize too large choosing random subgradient/beta\n");
+			SG_PRINT("qpsize too (%d<%d) large choosing random subgradient/beta\n", num_bound, qpsize_limit);
 			for (INT i=0; i<num_bound; i++)
 				beta[i]=CMath::random(0.0,1.0);
 		}
@@ -323,7 +323,7 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 			solver.solve_qp(beta, num_bound);
 
 			t.stop();
-			tim+=t.time_diff_sec(false);
+			tim+=t.time_diff_sec(true);
 
 			//CMath::display_vector(beta, num_bound, "beta");
 

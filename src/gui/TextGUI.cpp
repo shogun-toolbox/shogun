@@ -111,6 +111,7 @@ static const CHAR* N_C=			     	"c";
 static const CHAR* N_LOGLEVEL=			     	"loglevel";
 static const CHAR* N_ECHO=			     	"echo";
 static const CHAR* N_SVMQPSIZE=			     	"svm_qpsize";
+static const CHAR* N_SVMMAXQPSIZE=			     	"svm_max_qpsize";
 static const CHAR* N_THREADS=			     	"threads";
 static const CHAR* N_MKL_PARAMETERS=			"mkl_parameters";
 static const CHAR* N_SVM_EPSILON=			"svm_epsilon";
@@ -674,6 +675,10 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	else if (!strncmp(p_input, N_SVMQPSIZE, strlen(N_SVMQPSIZE)))
 	{
 		guiclassifier.set_svm_qpsize(p_input+strlen(N_SVMQPSIZE));
+	} 
+	else if (!strncmp(p_input, N_SVMMAXQPSIZE, strlen(N_SVMMAXQPSIZE)))
+	{
+		guiclassifier.set_svm_max_qpsize(p_input+strlen(N_SVMMAXQPSIZE));
 	} 
 	else if (!strncmp(p_input, N_THREADS, strlen(N_THREADS)))
 	{

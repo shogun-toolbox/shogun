@@ -53,7 +53,7 @@ bool CCplex::init(E_PROB_TYPE typ, INT timeout)
 				SG_ERROR( "Failure to turn off screen indicator, error %d.\n", status);
 
 			{
-				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
+				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_OFF);
 				if (status)
 					SG_ERROR( "Failure to turn on data checking, error %d.\n", status);
 				else
@@ -209,6 +209,11 @@ bool CCplex::optimize(DREAL* sol, INT dim)
 	double   objval;
 	int status=1;
 
+	status = CPXsetdblparam (env, CPX_PARAM_TILIM, 0.5);
+
+	if (status)
+		SG_ERROR( "Failure to set time limit %d.\n", status);
+
 	if (problem_type==QP)
 		status = CPXsetintparam (env, CPX_PARAM_QPMETHOD, 0);
 	else if (problem_type == LINEAR)
@@ -221,6 +226,7 @@ bool CCplex::optimize(DREAL* sol, INT dim)
 		status = CPXqpopt (env, lp);
 	else if (problem_type == LINEAR)
 		status = CPXlpopt (env, lp);
+
 
 	if (status)
 		SG_ERROR( "Failed to optimize QP.\n");

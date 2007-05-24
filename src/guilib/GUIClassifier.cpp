@@ -62,6 +62,7 @@ CGUIClassifier::CGUIClassifier(CGUI* g) : CSGObject(), gui(g)
 
     // SVM parameters
 	svm_qpsize=41;
+	svm_max_qpsize=1000;
 	svm_C1=1;
 	svm_C2=1;
 	svm_C_mkl=0;
@@ -197,6 +198,7 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		classifier= new CSubGradientSVM();
 
 		((CSubGradientSVM*) classifier)->set_qpsize(svm_qpsize);
+		((CSubGradientSVM*) classifier)->set_qpsize_limit(svm_max_qpsize);
 		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
 		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
 		SG_INFO( "created Subgradient SVM object\n") ;
@@ -697,6 +699,21 @@ bool CGUIClassifier::set_svm_qpsize(CHAR* param)
 		svm_qpsize=41;
 
 	SG_INFO( "Set qpsize to svm_qpsize=%d\n", svm_qpsize);
+	return true ;  
+}
+
+bool CGUIClassifier::set_svm_max_qpsize(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	svm_max_qpsize=-1;
+
+	sscanf(param, "%d", &svm_max_qpsize) ;
+
+	if (svm_max_qpsize<50)
+		svm_max_qpsize=50;
+
+	SG_INFO( "Set max qpsize to svm_max_qpsize=%d\n", svm_max_qpsize);
 	return true ;  
 }
 
