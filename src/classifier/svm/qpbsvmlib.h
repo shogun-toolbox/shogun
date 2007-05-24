@@ -31,7 +31,8 @@ enum E_QPB_SOLVER
 	// gaining 'best' improved
 	QPB_SOLVER_SCAMV, // sequential coordinate wise selecting variable most violating kkt's
 	QPB_SOLVER_PRLOQO,// via pr_loqo
-	QPB_SOLVER_CPLEX  // via cplex
+	QPB_SOLVER_CPLEX,  // via cplex
+	QPB_SOLVER_GS  // gaussian seidel
 };
 
 class CQPBSVMLib: public CSGObject
@@ -63,6 +64,7 @@ class CQPBSVMLib: public CSGObject
 		INT qpbsvm_scas(DREAL *x, DREAL *Nabla, INT *ptr_t, DREAL **ptr_History, INT verb);
 		INT qpbsvm_scamv(DREAL *x, DREAL *Nabla, INT *ptr_t, DREAL **ptr_History, INT verb);
 		INT qpbsvm_prloqo(DREAL *x, DREAL *Nabla, INT *ptr_t, DREAL **ptr_History, INT verb);
+		INT qpbsvm_gauss_seidel(DREAL *x, DREAL *Nabla, INT *ptr_t, DREAL **ptr_History, INT verb);
 #ifdef USE_CPLEX
 		INT qpbsvm_cplex(DREAL *x, DREAL *Nabla, INT *ptr_t, DREAL **ptr_History, INT verb);
 #endif

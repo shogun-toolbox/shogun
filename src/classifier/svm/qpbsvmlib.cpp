@@ -570,6 +570,29 @@ INT CQPBSVMLib::qpbsvm_prloqo(DREAL *x,
 	return result;
 }
 
+INT CQPBSVMLib::qpbsvm_gauss_seidel(DREAL *x,
+	        DREAL *Nabla,
+            INT   *ptr_t,
+            DREAL **ptr_History,
+            INT   verb)
+{
+	for (INT i=0; i<m_dim; i++)
+		x[i]=CMath::random(0.0, 1.0);
+
+	for (INT t=0; t<100; t++)
+	{
+		for (INT i=0; i<m_dim; i++)
+		{
+			x[i]= (m_f[i]-(CMath::dot(x,&m_H[m_dim*i], m_dim) -
+						m_H[m_dim*i+i]*x[i]))/m_H[m_dim*i+i];
+		}
+	}
+
+	*ptr_t=0;
+	*ptr_History=NULL;
+	return 0;
+}
+
 #ifdef USE_CPLEX
 /* --------------------------------------------------------------
 
