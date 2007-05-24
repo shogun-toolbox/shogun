@@ -288,7 +288,7 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		{
 			for (INT i=0; i<num_bound; i++)
 			{
-				for (INT j=0; j<num_bound; j++)
+				for (INT j=i; j<num_bound; j++)
 				{
 					INT alen=0;
 					INT blen=0;
@@ -300,6 +300,7 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 
 					Z[i*num_bound+j]= 2.0*C1*C1*get_label(idx_bound[i])*get_label(idx_bound[j])* 
 						(features->sparse_dot(1.0, avec,alen, bvec,blen) + 1);
+					Z[j*num_bound+i]=Z[i*num_bound+j];
 
 					features->free_feature_vector(avec, idx_bound[i], afree);
 					features->free_feature_vector(bvec, idx_bound[j], bfree);
