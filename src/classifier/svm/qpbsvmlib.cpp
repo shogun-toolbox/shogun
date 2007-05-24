@@ -62,6 +62,8 @@
 
 #define INDEX(ROW,COL,DIM) ((COL*DIM)+ROW)
 
+double sparsity=0;
+
 CQPBSVMLib::CQPBSVMLib(DREAL* H, INT n, DREAL* f, INT m, DREAL UB)
 {
 	ASSERT(H && n>0);
@@ -105,6 +107,9 @@ INT CQPBSVMLib::solve_qp(DREAL* result, INT len)
 
 	switch (m_solver)
 	{
+		case QPB_SOLVER_GRADDESC:
+			status = qpbsvm_gradient_descent(result, Nabla, &t, &History, verb );
+			break;
 		case QPB_SOLVER_GS:
 			status = qpbsvm_gauss_seidel(result, Nabla, &t, &History, verb );
 			break;
@@ -582,7 +587,7 @@ INT CQPBSVMLib::qpbsvm_gauss_seidel(DREAL *x,
 	for (INT i=0; i<m_dim; i++)
 		x[i]=CMath::random(0.0, 1.0);
 
-	for (INT t=0; t<100; t++)
+	for (INT t=0; t<2000; t++)
 	{
 		for (INT i=0; i<m_dim; i++)
 		{
@@ -592,6 +597,45 @@ INT CQPBSVMLib::qpbsvm_gauss_seidel(DREAL *x,
 		}
 	}
 
+	INT atbound=0;
+	for (INT i=0; i<m_dim; i++)
+	{
+		if (x[i]==0.0 || x[i]==1.0)
+			atbound++;
+	}
+	SG_PRINT("atbound:%d of %d (%2.2f%%)\n", atbound, m_dim, ((double) 100.0*atbound)/m_dim);
+	sparsity+=((double) 100.0*atbound)/m_dim;
+	*ptr_t=0;
+	*ptr_History=NULL;
+	return 0;
+}
+
+INT CQPBSVMLib::qpbsvm_gradient_descent(DREAL *x,
+	        DREAL *Nabla,
+            INT   *ptr_t,
+            DREAL **ptr_History,
+            INT   verb)
+{
+	for (INT i=0; i<m_dim; i++)
+		x[i]=CMath::random(0.0, 1.0);
+
+	for (INT t=0; t<2000; t++)
+	{
+		for (INT i=0; i<m_dim; i++)
+		{
+			x[i]-=0.001*(CMath::dot(x,&m_H[m_dim*i], m_dim)+m_f[i]);
+			x[i]=CMath::clamp(x[i], 0.0, 1.0);
+		}
+	}
+
+	INT atbound=0;
+	for (INT i=0; i<m_dim; i++)
+	{
+		if (x[i]==0.0 || x[i]==1.0)
+			atbound++;
+	}
+	SG_PRINT("atbound:%d of %d (%2.2f%%)\n", atbound, m_dim, ((double) 100.0*atbound)/m_dim);
+	sparsity+=((double) 100.0*atbound)/m_dim;
 	*ptr_t=0;
 	*ptr_History=NULL;
 	return 0;

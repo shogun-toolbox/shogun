@@ -21,6 +21,7 @@
 
 #define DEBUG_SUBGRADIENTSVM
 
+extern double sparsity;
 double tim;
 
 CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42), qpsize_limit(2000)
@@ -315,12 +316,13 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 
 			CTime t;
 			CQPBSVMLib solver(Z,num_bound, Zv,num_bound, 1.0);
-			solver.set_solver(QPB_SOLVER_GS);
-//#ifdef USE_CPLEX
-//			solver.set_solver(QPB_SOLVER_CPLEX);
-//#else
-//			solver.set_solver(QPB_SOLVER_SCA);
-//#endif
+			//solver.set_solver(QPB_SOLVER_GRADDESC);
+			//solver.set_solver(QPB_SOLVER_GS);
+#ifdef USE_CPLEX
+			solver.set_solver(QPB_SOLVER_CPLEX);
+#else
+			solver.set_solver(QPB_SOLVER_SCA);
+#endif
 
 			solver.solve_qp(beta, num_bound);
 
@@ -571,8 +573,8 @@ bool CSubGradientSVM::train()
 	SG_INFO("converged after %d iterations\n", num_iterations);
 
 	obj=compute_objective(num_feat, num_vec);
-	SG_INFO("objective: %f alpha: %f dir_deriv: %f num_bound: %d num_active: %d\n",
-			obj, alpha, dir_deriv, num_bound, num_active);
+	SG_INFO("objective: %f alpha: %f dir_deriv: %f num_bound: %d num_active: %d sparsity: %f\n",
+			obj, alpha, dir_deriv, num_bound, num_active, sparsity/num_iterations);
 
 #ifdef DEBUG_SUBGRADIENTSVM
 	CMath::display_vector(w, w_dim, "w");
