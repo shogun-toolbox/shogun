@@ -93,6 +93,18 @@ public:
 		return ((a)>=(b))?(a):(b);
 	}
 
+	///return the value clamped to interval [lb,ub]
+	template <class T>
+	static inline T clamp(T value, T lb, T ub) 
+	{
+		if (value<=lb)
+			return lb;
+		else if (value>=ub)
+			return ub;
+		else
+			return value;
+	}
+
 	///return the maximum of two integers
 	template <class T>
 	static inline T abs(T a)

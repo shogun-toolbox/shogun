@@ -105,6 +105,9 @@ INT CQPBSVMLib::solve_qp(DREAL* result, INT len)
 
 	switch (m_solver)
 	{
+		case QPB_SOLVER_GS:
+			status = qpbsvm_gauss_seidel(result, Nabla, &t, &History, verb );
+			break;
 		case QPB_SOLVER_SCA:
 			status = qpbsvm_sca(result, Nabla, &t, &History, verb );
 			break;
@@ -583,8 +586,9 @@ INT CQPBSVMLib::qpbsvm_gauss_seidel(DREAL *x,
 	{
 		for (INT i=0; i<m_dim; i++)
 		{
-			x[i]= (m_f[i]-(CMath::dot(x,&m_H[m_dim*i], m_dim) -
+			x[i]= (-m_f[i]-(CMath::dot(x,&m_H[m_dim*i], m_dim) -
 						m_H[m_dim*i+i]*x[i]))/m_H[m_dim*i+i];
+			x[i]=CMath::clamp(x[i], 0.0, 1.0);
 		}
 	}
 

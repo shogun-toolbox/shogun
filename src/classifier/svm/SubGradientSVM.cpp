@@ -314,18 +314,22 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 
 			CTime t;
 			CQPBSVMLib solver(Z,num_bound, Zv,num_bound, 1.0);
-#ifdef USE_CPLEX
-			solver.set_solver(QPB_SOLVER_CPLEX);
-#else
-			solver.set_solver(QPB_SOLVER_SCA);
-#endif
+			solver.set_solver(QPB_SOLVER_GS);
+//#ifdef USE_CPLEX
+//			solver.set_solver(QPB_SOLVER_CPLEX);
+//#else
+//			solver.set_solver(QPB_SOLVER_SCA);
+//#endif
 
 			solver.solve_qp(beta, num_bound);
 
 			t.stop();
 			tim+=t.time_diff_sec(true);
 
-			//CMath::display_vector(beta, num_bound, "beta");
+			//CMath::display_vector(beta, num_bound, "beta gs");
+			//solver.set_solver(QPB_SOLVER_CPLEX);
+			//solver.solve_qp(beta, num_bound);
+			//CMath::display_vector(beta, num_bound, "beta cplex");
 
 			//CMath::display_vector(grad_w, num_feat, "grad_w");
 			//SG_PRINT("grad_b:%f\n", grad_b);
