@@ -63,8 +63,8 @@
  *** File:     gpdtsolve.cpp                                                ***
  *** Type:     scalar                                                       ***
  *** Version:  1.0                                                          ***
- *** Date:     October, 2005                                                ***
- *** Revision: 1                                                            ***
+ *** Date:     November, 2006                                                ***
+ *** Revision: 2                                                            ***
  ***                                                                        ***
  ******************************************************************************/
 #include <math.h>
@@ -737,8 +737,6 @@ int QPproblem::Preprocess1(sKernel* kernel, int *aux, int *sv)
 
   if (sl < 500)
       sp_D = (float *)malloc(sl*sl * sizeof(float));
-  else
-	  SG_ERROR("sl<500 expect me to die\n");
 
   for (i = 0; i < sl; i++)
        sp_h[i] = -1.0;

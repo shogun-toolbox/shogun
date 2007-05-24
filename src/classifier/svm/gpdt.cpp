@@ -1,12 +1,3 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * Written (W) 1999-2007 Soeren Sonnenburg
- */
-
 /******************************************************************************
  ***        GPDT - Gradient Projection Decomposition Technique              ***
  ******************************************************************************
@@ -75,6 +66,7 @@
  *** Date:     October, 2005                                                ***
  *** Revision: 1                                                            ***
  ***                                                                        ***
+ *** SHOGUN adaptions  Written (W) 2006-2007 Soeren Sonnenburg              ***
  ******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
@@ -142,7 +134,7 @@ QPproblem::QPproblem()
   q                    = -1;
   y                    = NULL;
   tau_proximal         = 0.0;
-  dim = 1; //FIXME make linadd kernels efficient
+  dim = 1; 
 }
 
 /******************************************************************************/
@@ -386,6 +378,26 @@ int QPproblem::Check2Class(void)
 }
 
 /******************************************************************************/
+/*** Compute the size of data splitting for preprocessing                   ***/
+/******************************************************************************/
+void SplitParts(int n, int part, int parts, int *dim, int *off)
+{
+  int  r;
+
+  r    = n % parts;
+  *dim = n / parts;
+
+  if (part < r)
+  {
+     (*dim)++;
+     *off = *dim * part;
+  }
+  else
+     *off = *dim * part + r;
+}
+
+
+/******************************************************************************/
 /*** Kernel class constructor                                               ***/
 /******************************************************************************/
 sKernel::sKernel (CKernel* k, int l)
@@ -492,90 +504,6 @@ sKernel::~sKernel()
   }
 }
 
-/******************************************************************************/
-/*** Custom implementation of sparse scalar product                         ***/
-/******************************************************************************/
-double sKernel::dot(int i, int j)
-{
-  /* store in registers for better performance */
-  register int    k;
-  register double acc;
-
-  int n     = lx[j];
-  int *ip   = ix[j];
-  float *xp = x[j];
-
-  if (i != vauxRow)
-  {
-      for (k = 0; k < lx[vauxRow]; k++)
-          vaux[ix[vauxRow][k]] = 0.0;
-      vauxRow = i;
-
-      for (k = 0; k < lx[i]; k++)
-          vaux[ix[i][k]] = x[i][k];
-  }
-
-  acc = 0.0;
-  for (k = 0; k < n; k++)
-      acc += (double)(xp[k] * vaux[ip[k]]);
-
-  return acc;
-}
-
-/******************************************************************************/
-/*** Custom implementation of a sparse SAXPY operation                      ***/
-/******************************************************************************/
-void sKernel::Add(double *v, int j, double mul)
-{
-  register int k;
-
-  int     n = lx[j];
-  int   *ip = ix[j];
-  float *xp = x[j];
-
-  for (k = 0; k < n; k++)
-      v[ip[k]] += mul*(double)xp[k];
-}
-
-/******************************************************************************/
-/*** Custom implementation of a sparse scalar product                       ***/
-/******************************************************************************/
-double sKernel::Prod(double *v, int j)
-{
-  /* store in registers for better performance */
-  register int    k;
-  register double acc;
-
-  int     n = lx[j];
-  int   *ip = ix[j];
-  float *xp = x[j];
-
-  acc = 0.0;
-  for (k = 0; k < n; k++)
-      acc += (double)xp[k] * v[ip[k]];
-  return acc;
-}
-
-
-
-/******************************************************************************/
-/*** Compute the size of data splitting for preprocessing                   ***/
-/******************************************************************************/
-void SplitParts(int n, int part, int parts, int *dim, int *off)
-{
-  int  r;
-
-  r    = n % parts;
-  *dim = n / parts;
-
-  if (part < r)
-  {
-     (*dim)++;
-     *off = *dim * part;
-  }
-  else
-     *off = *dim * part + r;
-}
 
 /******************************************************************************/
 /*** End of gpdt.cpp file                                                   ***/
