@@ -1665,92 +1665,117 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 				switch (f->get_feature_type())
 				{
 					case F_DREAL:
-						mx_feat=mxCreateDoubleMatrix(((CRealFeatures*) f)->get_num_vectors(), ((CRealFeatures*) f)->get_num_features(), mxREAL);
-
-						if (mx_feat)
 						{
-							double* feat=mxGetPr(mx_feat);
+							INT num_feat=((CRealFeatures*) f)->get_num_features();
+							INT num_vec=((CRealFeatures*) f)->get_num_vectors();
+							mx_feat=mxCreateDoubleMatrix(num_feat, num_vec, mxREAL);
 
-							for (INT i=0; i<((CRealFeatures*) f)->get_num_vectors(); i++)
+							if (mx_feat)
 							{
-								INT num_feat;
-								bool free_vec;
-								DREAL* vec=((CRealFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
-								for (INT j=0; j<num_feat; j++)
-									feat[((CRealFeatures*) f)->get_num_vectors()*j+i]= (double) vec[j];
-								((CRealFeatures*) f)->free_feature_vector(vec, i, free_vec);
+								double* feat=mxGetPr(mx_feat);
+
+								for (INT i=0; i<num_vec; i++)
+								{
+									INT num_vfeat;
+									bool free_vec;
+									DREAL* vec=((CRealFeatures*) f)->get_feature_vector(i, num_vfeat, free_vec);
+									ASSERT(num_vfeat==num_feat);
+
+									for (INT j=0; j<num_vfeat; j++)
+										feat[num_feat*i+j]= (double) vec[j];
+									((CRealFeatures*) f)->free_feature_vector(vec, i, free_vec);
+								}
 							}
 						}
 						break;
 					case F_WORD:
-						mx_feat=mxCreateNumericMatrix(((CWordFeatures*) f)->get_num_vectors(), ((CWordFeatures*) f)->get_num_features(), mxUINT16_CLASS, mxREAL);
-
-						if (mx_feat)
 						{
-							WORD* feat=(WORD*) mxGetData(mx_feat);
-
-							for (INT i=0; i<((CWordFeatures*) f)->get_num_vectors(); i++)
+							INT num_feat=((CWordFeatures*) f)->get_num_features();
+							INT num_vec=((CWordFeatures*) f)->get_num_vectors();
+							mx_feat=mxCreateNumericMatrix(num_feat, num_vec, mxUINT16_CLASS, mxREAL);
+							if (mx_feat)
 							{
-								INT num_feat;
-								bool free_vec;
-								WORD* vec=((CWordFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
-								for (INT j=0; j<num_feat; j++)
-									feat[((CWordFeatures*) f)->get_num_vectors()*j+i]= vec[j];
-								((CWordFeatures*) f)->free_feature_vector(vec, i, free_vec);
+								WORD* feat=(WORD*) mxGetData(mx_feat);
+
+								for (INT i=0; i<num_vec; i++)
+								{
+									INT num_vfeat;
+									bool free_vec;
+									WORD* vec=((CWordFeatures*) f)->get_feature_vector(i, num_vfeat, free_vec);
+									ASSERT(num_feat==num_vfeat);
+									for (INT j=0; j<num_vfeat; j++)
+										feat[((CWordFeatures*) f)->get_num_vectors()*j+i]= vec[j];
+									((CWordFeatures*) f)->free_feature_vector(vec, i, free_vec);
+								}
 							}
 						}
 						break;
 					case F_SHORT:
-						mx_feat=mxCreateNumericMatrix(((CShortFeatures*) f)->get_num_vectors(), ((CShortFeatures*) f)->get_num_features(), mxINT16_CLASS, mxREAL);
-
-						if (mx_feat)
 						{
-							SHORT* feat=(SHORT*) mxGetData(mx_feat);
+							INT num_feat=((CShortFeatures*) f)->get_num_features();
+							INT num_vec=((CShortFeatures*) f)->get_num_vectors();
+							mx_feat=mxCreateNumericMatrix(num_feat, num_vec, mxINT16_CLASS, mxREAL);
 
-							for (INT i=0; i<((CShortFeatures*) f)->get_num_vectors(); i++)
+							if (mx_feat)
 							{
-								INT num_feat;
-								bool free_vec;
-								SHORT* vec=((CShortFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
-								for (INT j=0; j<num_feat; j++)
-									feat[((CShortFeatures*) f)->get_num_vectors()*j+i]= vec[j];
-								((CShortFeatures*) f)->free_feature_vector(vec, i, free_vec);
+								SHORT* feat=(SHORT*) mxGetData(mx_feat);
+
+								for (INT i=0; i<num_vec; i++)
+								{
+									INT num_vfeat;
+									bool free_vec;
+									SHORT* vec=((CShortFeatures*) f)->get_feature_vector(i, num_vfeat, free_vec);
+									ASSERT(num_feat==num_vfeat);
+									for (INT j=0; j<num_vfeat; j++)
+										feat[num_vfeat*i+j]= vec[j];
+									((CShortFeatures*) f)->free_feature_vector(vec, i, free_vec);
+								}
 							}
 						}
 						break;
 					case F_CHAR:
-						mx_feat=mxCreateNumericMatrix(((CCharFeatures*) f)->get_num_vectors(), ((CCharFeatures*) f)->get_num_features(), mxCHAR_CLASS, mxREAL);
-
-						if (mx_feat)
 						{
-							CHAR* feat=(CHAR*) mxGetData(mx_feat);
+							INT num_feat=((CCharFeatures*) f)->get_num_features();
+							INT num_vec=((CCharFeatures*) f)->get_num_vectors();
+							mx_feat=mxCreateNumericMatrix(num_feat, num_vec, mxCHAR_CLASS, mxREAL);
 
-							for (INT i=0; i<((CCharFeatures*) f)->get_num_vectors(); i++)
+							if (mx_feat)
 							{
-								INT num_feat;
-								bool free_vec;
-								CHAR* vec=((CCharFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
-								for (INT j=0; j<num_feat; j++)
-									feat[((CCharFeatures*) f)->get_num_vectors()*j+i]= vec[j];
-								((CCharFeatures*) f)->free_feature_vector(vec, i, free_vec);
+								CHAR* feat=(CHAR*) mxGetData(mx_feat);
+
+								for (INT i=0; i<num_vec; i++)
+								{
+									INT num_vfeat;
+									bool free_vec;
+									CHAR* vec=((CCharFeatures*) f)->get_feature_vector(i, num_vfeat, free_vec);
+									ASSERT(num_feat==num_vfeat);
+									for (INT j=0; j<num_vfeat; j++)
+										feat[num_vfeat*i+j]= vec[j];
+									((CCharFeatures*) f)->free_feature_vector(vec, i, free_vec);
+								}
 							}
 						}
 						break;
 					case F_BYTE:
-						mx_feat=mxCreateNumericMatrix(((CByteFeatures*) f)->get_num_vectors(), ((CByteFeatures*) f)->get_num_features(), mxUINT8_CLASS, mxREAL);
-
-						if (mx_feat)
 						{
-							BYTE* feat=(BYTE*) mxGetData(mx_feat);
+							INT num_feat=((CByteFeatures*) f)->get_num_features();
+							INT num_vec=((CByteFeatures*) f)->get_num_vectors();
+							mx_feat=mxCreateNumericMatrix(num_feat, num_vec, mxUINT8_CLASS, mxREAL);
 
-							for (INT i=0; i<((CByteFeatures*) f)->get_num_vectors(); i++)
+							if (mx_feat)
 							{
-								INT num_feat;
-								bool free_vec;
-								BYTE* vec=((CByteFeatures*) f)->get_feature_vector(i, num_feat, free_vec);
-								for (INT j=0; j<num_feat; j++)
-									feat[((CByteFeatures*) f)->get_num_vectors()*j+i]= vec[j];
-								((CByteFeatures*) f)->free_feature_vector(vec, i, free_vec);
+								BYTE* feat=(BYTE*) mxGetData(mx_feat);
+
+								for (INT i=0; i<num_vec; i++)
+								{
+									INT num_vfeat;
+									bool free_vec;
+									BYTE* vec=((CByteFeatures*) f)->get_feature_vector(i, num_vfeat, free_vec);
+									ASSERT(num_feat==num_vfeat);
+									for (INT j=0; j<num_vfeat; j++)
+										feat[num_vfeat*i+j]= vec[j];
+									((CByteFeatures*) f)->free_feature_vector(vec, i, free_vec);
+								}
 							}
 						}
 						break;
@@ -1767,6 +1792,7 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 							int num_vec=f->get_num_vectors();
 							int num_feat=((CSparseFeatures<DREAL>*) f)->get_num_features();
 
+							SG_DEBUG("sparse matrix has %d rows, %d cols and %d nnz elemements\n", num_feat, num_vec, nnz);
 							mx_feat=mxCreateSparse(num_feat,num_vec, nnz, mxREAL);
 							double* A  = mxGetPr(mx_feat);
 							int* iA = mxGetIr(mx_feat);
@@ -1778,15 +1804,17 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 								INT len=0;
 								bool dofree=false;
 								TSparseEntry<DREAL>* fv=((CSparseFeatures<DREAL>*) f)->get_sparse_feature_vector(i, len, dofree);
-								iA[i]=offs;
+								kA[i]=offs;
 								for (INT j=0; j<len; j++)
 								{
 									A[offs]=fv[j].entry;
-									kA[offs]=fv[j].feat_index;
+									iA[offs]=fv[j].feat_index;
 									offs++;
 								}
 								((CSparseFeatures<DREAL>*) f)->free_feature_vector(fv, len, dofree);
 							}
+							ASSERT(offs==nnz);
+							kA[num_vec]=nnz;
 						}
 						break;
 					default:
@@ -1879,30 +1907,42 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 	{
 		if (mxIsSparse(mx_feat) && mxIsNumeric(mx_feat))
 		{
+			f= new CSparseFeatures<DREAL>(0);
 			INT num_feat = mxGetM(mx_feat);
 			INT num_vec = mxGetN(mx_feat);
 
+			long nnz=mxGetNzmax(mx_feat);
 			double* A = mxGetPr(mx_feat);
 			int* iA = mxGetIr(mx_feat);
 			int* kA = mxGetJc(mx_feat);
 
+			SG_DEBUG("sparse matrix has %d rows, %d cols and %d nnz elemements\n", num_feat, num_vec, nnz);
 			TSparse<DREAL>* sfm= new TSparse<DREAL>[num_vec];
 			ASSERT(sfm);
+
+			long offs=0;
 			for (INT i=0; i<num_vec; i++)
 			{
 				INT len=kA[i+1]-kA[i];
 				sfm[i].vec_index=i;
 				sfm[i].num_feat_entries=len;
-				SG_PRINT("len:%d\n", len);
-				sfm[i].features= new TSparseEntry<DREAL>[len];
-				ASSERT(sfm[i].features);
+				
+				if (len>0)
+				{
+					sfm[i].features= new TSparseEntry<DREAL>[len];
+					ASSERT(sfm[i].features);
+				}
+				else
+					sfm[i].features=0;
 
 				for (INT j=0; j<len; j++)
 				{
-					sfm[i].features[j].entry=A[iA[j]+kA[i]];
-					sfm[i].features[j].feat_index=iA[j];
+					sfm[i].features[j].entry=A[offs];
+					sfm[i].features[j].feat_index=iA[offs];
+					offs++;
 				}
 			}
+			ASSERT(offs==nnz);
 			((CSparseFeatures<DREAL>*) f)->set_sparse_feature_matrix(sfm, num_feat, num_vec);
 		}
 		else
@@ -1916,6 +1956,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 				ASSERT(fm);
 				double* feat=mxGetPr(mx_feat);
 
+				SG_DEBUG("dense matrix has %d rows, %d cols\n", num_feat, num_vec);
 				for (INT i=0; i<num_vec; i++)
 				  for (INT j=0; j<num_feat; j++)
 				    fm[i*num_feat+j]=feat[i*num_feat+j];

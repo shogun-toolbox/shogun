@@ -1,12 +1,12 @@
 C=1;
-epsilon=1e-3;
+epsilon=1e-4;
 
 run_subgradientsvm=1;
 run_libsvm=0;
 run_svmlight=1;
 run_gpbtsvm=1;
 
-dataset=2;
+dataset=6;
 
 switch dataset
 case 1,
@@ -54,7 +54,7 @@ case 5,
 case 6,
 	rand('state',17);
 	num=20000;
-	dim=1000;
+	dim=100;
 	dist=0.03;
 	%num=20;
 	%dim=1000;
@@ -83,6 +83,7 @@ if run_subgradientsvm,
 	sg('send_command', sprintf('svm_epsilon %10.10f', epsilon));
 	%sg('send_command', 'new_classifier SVMLIN');
 	sg('send_command', 'svm_qpsize 50');
+	sg('send_command', 'svm_max_qpsize 1000');
 	sg('send_command', 'new_classifier SUBGRADIENTSVM');
 	tic;
 	sg('send_command', 'train_classifier');

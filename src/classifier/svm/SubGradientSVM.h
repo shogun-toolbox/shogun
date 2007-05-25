@@ -86,6 +86,7 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		BYTE* old_active;
 		INT* idx_active;
 		INT* idx_bound;
+		INT delta_bound;
 		DREAL* proj;
 		DREAL* tmp_proj;
 		INT* tmp_proj_idx;

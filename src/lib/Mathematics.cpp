@@ -475,7 +475,7 @@ void CMath::display_matrix(INT* matrix, INT rows, INT cols, const char* name)
 	{
 		SG_SPRINT("[");
 		for (INT j=0; j<cols; j++)
-			SG_SPRINT("\t%d%s", matrix[j+i*cols],
+			SG_SPRINT("\t%d%s", matrix[j*rows+i],
 				j==cols-1? "" : ",");
 		SG_SPRINT("]%s\n", i==rows-1? "" : ",");
 	}
@@ -491,7 +491,7 @@ void CMath::display_matrix(DREAL* matrix, INT rows, INT cols, const char* name)
 	{
 		SG_SPRINT("[");
 		for (INT j=0; j<cols; j++)
-			SG_SPRINT("\t%lf%s", (double) matrix[j+i*cols],
+			SG_SPRINT("\t%lf%s", (double) matrix[j*rows+i],
 				j==cols-1? "" : ",");
 		SG_SPRINT("]%s\n", i==rows-1? "" : ",");
 	}

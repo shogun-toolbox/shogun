@@ -1,5 +1,13 @@
-A=rand(100);
+rand('state',0);
+A=rand(3,5);
 A(A<0.7)=0;
-A=sparse(A);
-sg('set_features', 'TRAIN', A);
+full(A)
+sg('send_command', 'loglevel ALL');
+sg('set_features', 'TRAIN', sparse(A));
 B=sg('get_features', 'TRAIN');
+full(B)
+
+sg('set_features', 'TRAIN', A);
+C=sg('get_features', 'TRAIN');
+
+C
