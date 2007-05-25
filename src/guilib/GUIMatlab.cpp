@@ -1893,13 +1893,14 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 				INT len=kA[i+1]-kA[i];
 				sfm[i].vec_index=i;
 				sfm[i].num_feat_entries=len;
+				SG_PRINT("len:%d\n", len);
 				sfm[i].features= new TSparseEntry<DREAL>[len];
 				ASSERT(sfm[i].features);
 
 				for (INT j=0; j<len; j++)
 				{
-					sfm[i].features[j].entry=A[iA[i]+kA[j]];
-					sfm[i].features[j].feat_index=kA[j];
+					sfm[i].features[j].entry=A[iA[j]+kA[i]];
+					sfm[i].features[j].feat_index=iA[j];
 				}
 			}
 			((CSparseFeatures<DREAL>*) f)->set_sparse_feature_matrix(sfm, num_feat, num_vec);
