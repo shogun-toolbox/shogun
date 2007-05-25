@@ -1762,8 +1762,35 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 				switch (f->get_feature_type())
 				{
 					case F_DREAL:
+						{
+							long nnz=((CSparseFeatures<DREAL>*) f)->get_num_nonzero_entries();
+							int num_vec=f->get_num_vectors();
+							int num_feat=((CSparseFeatures<DREAL>*) f)->get_num_features();
+
+							mx_feat=mxCreateSparse(num_feat,num_vec, nnz, mxREAL);
+							double* A  = mxGetPr(mx_feat);
+							int* iA = mxGetIr(mx_feat);
+							int* kA = mxGetJc(mx_feat);
+
+							INT offs=0;
+							for (INT i=0; i<num_vec; i++)
+							{
+								INT len=0;
+								bool dofree=false;
+								TSparseEntry<DREAL>* fv=((CSparseFeatures<DREAL>*) f)->get_sparse_feature_vector(i, len, dofree);
+								iA[i]=offs;
+								for (INT j=0; j<len; j++)
+								{
+									A[offs]=fv[j].entry;
+									kA[offs]=fv[j].feat_index;
+									offs++;
+								}
+								((CSparseFeatures<DREAL>*) f)->free_feature_vector(fv, len, dofree);
+							}
+						}
+						break;
 					default:
-						SG_ERROR( "not implemented\n");
+						SG_ERROR("not implemented\n");
 				};
 				break;
 			case C_STRING:
@@ -1793,7 +1820,7 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 						}
 						break;
 					default:
-						SG_ERROR( "not implemented\n");
+						SG_ERROR("not implemented\n");
 				};
 				break;
 			default:
@@ -1850,9 +1877,32 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 
 	if (mx_feat)
 	{
-		if (mxIsSparse(mx_feat))
+		if (mxIsSparse(mx_feat) && mxIsNumeric(mx_feat))
 		{
-			SG_ERROR( "no, no, no. this is not implemented yet\n");
+			INT num_feat = mxGetM(mx_feat);
+			INT num_vec = mxGetN(mx_feat);
+
+			double* A = mxGetPr(mx_feat);
+			int* iA = mxGetIr(mx_feat);
+			int* kA = mxGetJc(mx_feat);
+
+			TSparse<DREAL>* sfm= new TSparse<DREAL>[num_vec];
+			ASSERT(sfm);
+			for (INT i=0; i<num_vec; i++)
+			{
+				INT len=kA[i+1]-kA[i];
+				sfm[i].vec_index=i;
+				sfm[i].num_feat_entries=len;
+				sfm[i].features= new TSparseEntry<DREAL>[len];
+				ASSERT(sfm[i].features);
+
+				for (INT j=0; j<len; j++)
+				{
+					sfm[i].features[j].entry=A[iA[i]+kA[j]];
+					sfm[i].features[j].feat_index=kA[j];
+				}
+			}
+			((CSparseFeatures<DREAL>*) f)->set_sparse_feature_matrix(sfm, num_feat, num_vec);
 		}
 		else
 		{
