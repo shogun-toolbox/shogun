@@ -44,7 +44,7 @@ bool CGPBTSVM::train()
 	//  /*** set options defaults ***/
 	prob.delta = epsilon;
 	prob.maxmw = get_kernel()->get_cache_size();
-	prob.verbosity       = 1;
+	prob.verbosity       = 0;
 	prob.preprocess_size = -1;
 	prob.projection_projector = -1;
 	prob.c_const = get_C1();

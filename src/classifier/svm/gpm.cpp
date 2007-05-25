@@ -66,6 +66,7 @@
  *** Date:     October, 2005                                                ***
  *** Revision: 1                                                            ***
  ***                                                                        ***
+ *** SHOGUN adaptions  Written (W) 2006-2007 Soeren Sonnenburg              ***
  ******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>

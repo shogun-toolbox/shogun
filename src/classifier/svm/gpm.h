@@ -22,6 +22,8 @@
  ***      (grant RBAU01JYPN), http://dm.unife.it/pn2o                       ***
  ***                                                                        ***
  *** Copyright (C) 2004 by T. Serafini, G. Zanghirati, L. Zanni.            ***
+ ***                                                                        ***
+ *** SHOGUN adaptions  Written (W) 2006-2007 Soeren Sonnenburg              ***
  */
 int gpm_solver(int Solver, int Projector, int n, float *A, double *b, double c,
                double e, int *iy, double *x, double tol, 

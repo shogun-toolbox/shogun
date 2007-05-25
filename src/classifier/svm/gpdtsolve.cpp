@@ -66,6 +66,7 @@
  *** Date:     November, 2006                                                ***
  *** Revision: 2                                                            ***
  ***                                                                        ***
+ *** SHOGUN adaptions  Written (W) 2006-2007 Soeren Sonnenburg              ***
  ******************************************************************************/
 #include <math.h>
 #include <stdio.h>
@@ -76,6 +77,7 @@
 #include "classifier/svm/gpm.h"
 #include "classifier/svm/gpdt.h"
 #include "classifier/svm/gpdtsolve.h"
+#include "lib/Signal.h"
 #include "lib/io.h"
 
 #define y_in(i)      y[index_in[(i)]]
@@ -1153,15 +1155,15 @@ double QPproblem::gpdtsolve(double *solution)
       {
         if (ker_type == 2)
         {
-            SG_INFO( "\n WARNING: inner subproblem hard to solve;");
-            SG_INFO( " setting a smaller -q or");
-            SG_INFO( " tuning -c and -g options might help.\n");
+            SG_INFO("\n WARNING: inner subproblem hard to solve;");
+            SG_INFO(" setting a smaller -q or");
+            SG_INFO(" tuning -c and -g options might help.\n");
         }
         else
         {
-            SG_INFO( "\n WARNING: inner subproblem hard to solve;");
-            SG_INFO( " set a smaller -q or");
-            SG_INFO( " try a better data scaling.\n");
+            SG_INFO("\n WARNING: inner subproblem hard to solve;");
+            SG_INFO(" set a smaller -q or");
+            SG_INFO(" try a better data scaling.\n");
         }
       }
 
@@ -1303,7 +1305,7 @@ double QPproblem::gpdtsolve(double *solution)
     }
     Cache->Iteration();
     nit = nit+1;
-  } while (!optimal());
+  } while (!optimal() && !(CSignal::cancel_computations()));
   /* End of the problem resolution loop                                      */
   /***************************************************************************/
 

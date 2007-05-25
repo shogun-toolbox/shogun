@@ -22,6 +22,8 @@
  ***      (grant RBAU01JYPN), http://dm.unife.it/pn2o                       ***
  ***                                                                        ***
  *** Copyright (C) 2004 by T. Serafini, G. Zanghirati, L. Zanni.            ***
+ ***                                                                        ***
+ *** SHOGUN adaptions  Written (W) 2006-2007 Soeren Sonnenburg              ***
  */
 
 #include "base/SGObject.h"
