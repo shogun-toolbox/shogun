@@ -562,9 +562,9 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 		if (!((penalty_num_dimensions==2) || (penalty_num_dimensions==3)))
 			SG_ERROR( "penalties should have 2 or three dimensions (has %i)", penalty_num_dimensions);
 
-		const int *penalty_dimensions = mxGetDimensions(mx_penalties) ;		
-		if (!(penalty_dimensions[0]==N && 
-			  penalty_dimensions[1]==N))
+		const mwSize* penalty_dimensions = mxGetDimensions(mx_penalties) ;		
+		if (!(((INT) penalty_dimensions[0])==N && 
+			  ((INT) penalty_dimensions[1])==N))
 			SG_ERROR( "size of penalties wrong (%i!=%i or %i!=%i)\n", penalty_dimensions[0], N, penalty_dimensions[1], N);
 
 		INT penalties_dim3 = 1 ;
@@ -837,9 +837,9 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 		if (!((penalty_num_dimensions==2) || (penalty_num_dimensions==3)))
 			SG_ERROR( "penalties should have 2 or 3 dimensions (has %i)", penalty_num_dimensions);
 
-		const int *penalty_dimensions = mxGetDimensions(mx_penalties) ;		
-		if (!(penalty_dimensions[0]==N && 
-			  penalty_dimensions[1]==N))
+		const mwSize* penalty_dimensions = mxGetDimensions(mx_penalties) ;		
+		if (!(((INT) penalty_dimensions[0])==N && 
+			  ((INT) penalty_dimensions[1])==N))
 			SG_ERROR( "size of penalties wrong (%i!=%i or %i!=%i)\n", penalty_dimensions[0], N, penalty_dimensions[1], N);
 
 		INT penalties_dim3 = 1 ;
@@ -1028,22 +1028,22 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 				delete[] zeros ;
 			} ;
 						
-			int dims_plif[2]={max_plif_id+1, max_plif_len};
+			mwSize dims_plif[2]={max_plif_id+1, max_plif_len};
 			mxArray* Plif_deriv = mxCreateNumericArray(2, dims_plif, mxDOUBLE_CLASS, mxREAL);
 			double* p_Plif_deriv = mxGetPr(Plif_deriv);
 			CArray2<double> a_Plif_deriv(p_Plif_deriv, max_plif_id+1, max_plif_len, false, false) ;
 
-			int dims_A[2]={N,N};
+			mwSize dims_A[2]={N,N};
 			mxArray* A_deriv = mxCreateNumericArray(2, dims_A, mxDOUBLE_CLASS, mxREAL);
 			double* p_A_deriv = mxGetPr(A_deriv);
 
-			int dims_pq[1]={N};
+			mwSize dims_pq[1]={N};
 			mxArray* p_deriv = mxCreateNumericArray(1, dims_pq, mxDOUBLE_CLASS, mxREAL);
 			mxArray* q_deriv = mxCreateNumericArray(1, dims_pq, mxDOUBLE_CLASS, mxREAL);
 			double* p_p_deriv = mxGetPr(p_deriv);
 			double* p_q_deriv = mxGetPr(q_deriv);
 
-			int dims_score[1]={my_seqlen};
+			mwSize dims_score[1]={my_seqlen};
 			mxArray* my_scores = mxCreateNumericArray(1, dims_score, mxDOUBLE_CLASS, mxREAL);
 			double* p_my_scores = mxGetPr(my_scores);
 
@@ -1795,8 +1795,8 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 							SG_DEBUG("sparse matrix has %d rows, %d cols and %d nnz elemements\n", num_feat, num_vec, nnz);
 							mx_feat=mxCreateSparse(num_feat,num_vec, nnz, mxREAL);
 							double* A  = mxGetPr(mx_feat);
-							int* iA = mxGetIr(mx_feat);
-							int* kA = mxGetJc(mx_feat);
+							mwIndex* iA = mxGetIr(mx_feat);
+							mwIndex* kA = mxGetJc(mx_feat);
 
 							INT offs=0;
 							for (INT i=0; i<num_vec; i++)
@@ -1913,8 +1913,8 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 
 			long nnz=mxGetNzmax(mx_feat);
 			double* A = mxGetPr(mx_feat);
-			int* iA = mxGetIr(mx_feat);
-			int* kA = mxGetJc(mx_feat);
+			mwIndex* iA = mxGetIr(mx_feat);
+			mwIndex* kA = mxGetJc(mx_feat);
 
 			SG_DEBUG("sparse matrix has %d rows, %d cols and %d nnz elemements\n", num_feat, num_vec, nnz);
 			TSparse<DREAL>* sfm= new TSparse<DREAL>[num_vec];
@@ -2816,7 +2816,8 @@ bool CGUIMatlab::get_WD_consensus(mxArray* retvals[])
 		CHAR* consensus = ((CWeightedDegreePositionStringKernel*) k)->compute_consensus(
 				num_feat, num_suppvec, sv_idx, sv_weight);
 		mxArray* mx_result ;
-		mx_result=mxCreateCharArray(1, &num_feat);
+		mwSize mx_num_feat=(mwSize) num_feat;
+		mx_result=mxCreateCharArray(1, &mx_num_feat);
 		mxChar* result= (mxChar*) mxGetPr(mx_result);
 
 		for (INT i=0; i<num_feat; i++)
@@ -2854,7 +2855,8 @@ bool CGUIMatlab::get_SPEC_consensus(mxArray* retvals[])
 		CHAR* consensus = ((CCommWordStringKernel*) k)->compute_consensus(
 				num_feat, num_suppvec, sv_idx, sv_weight);
 		mxArray* mx_result ;
-		mx_result=mxCreateCharArray(1, &num_feat);
+		mwSize mx_num_feat=(mwSize) num_feat;
+		mx_result=mxCreateCharArray(1, &mx_num_feat);
 		mxChar* result= (mxChar*) mxGetPr(mx_result);
 
 		for (INT i=0; i<num_feat; i++)

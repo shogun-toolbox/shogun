@@ -229,25 +229,25 @@ bool CCplex::optimize(DREAL* sol, INT dim)
 
 
 	if (status)
-		SG_ERROR( "Failed to optimize QP.\n");
+		SG_WARNING( "Failed to optimize QP.\n");
 
 	status = CPXsolution (env, lp, &solnstat, &objval, sol, NULL, NULL, NULL);
 
-	if ( status )
-		SG_ERROR("CPXsolution failed.\n");
-
-	solnstat = CPXgetstat (env, lp);
-
-	if ( solnstat == CPX_STAT_UNBOUNDED )
-		SG_INFO( "Model is unbounded\n");
-	else if ( solnstat == CPX_STAT_INFEASIBLE )
-		SG_INFO( "Model is infeasible\n");
-	else if ( solnstat == CPX_STAT_INForUNBD )
-		SG_INFO( "Model is infeasible or unbounded\n");
-
-	status = CPXsolninfo (env, lp, &solnmethod, &solntype, NULL, NULL);
-	if ( status )
-		SG_ERROR( "Failed to obtain solution info.\n");
+//	if ( status )
+//		SG_ERROR("CPXsolution failed.\n");
+//
+//	solnstat = CPXgetstat (env, lp);
+//
+//	if ( solnstat == CPX_STAT_UNBOUNDED )
+//		SG_INFO( "Model is unbounded\n");
+//	else if ( solnstat == CPX_STAT_INFEASIBLE )
+//		SG_INFO( "Model is infeasible\n");
+//	else if ( solnstat == CPX_STAT_INForUNBD )
+//		SG_INFO( "Model is infeasible or unbounded\n");
+//
+//	status = CPXsolninfo (env, lp, &solnmethod, &solntype, NULL, NULL);
+//	if ( status )
+//		SG_ERROR( "Failed to obtain solution info.\n");
 
 	return (status==0);
 }

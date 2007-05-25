@@ -587,7 +587,7 @@ INT CQPBSVMLib::qpbsvm_gauss_seidel(DREAL *x,
 	for (INT i=0; i<m_dim; i++)
 		x[i]=CMath::random(0.0, 1.0);
 
-	for (INT t=0; t<2000; t++)
+	for (INT t=0; t<200; t++)
 	{
 		for (INT i=0; i<m_dim; i++)
 		{

@@ -93,6 +93,8 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		
 		//vector of length num_feat
 		DREAL* sum_CXy_active;
+		DREAL* v;
+		DREAL* old_v;
 		DREAL sum_Cy_active;
 
 		//vector of length num_feat
@@ -101,6 +103,16 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		DREAL* grad_proj;
 		DREAL* hinge_point;
 		INT* hinge_idx;
+
+		//vectors/sym matrix of size qpsize_limit
+		DREAL* beta;
+		DREAL* old_beta;
+		DREAL* Zv;
+		DREAL* old_Zv;
+		DREAL* Z;
+		DREAL* old_Z;
+
+
 };
 #endif
 

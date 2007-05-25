@@ -136,7 +136,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 
 			SG_PRINT("lower bound on epsilon requires %d variables in qp\n", i);
 
-			if (i>qpsize_limit) //qpsize limit
+			if (i>=qpsize_limit) //qpsize limit
 			{
 				SG_PRINT("qpsize limit (%d) reached\n", qpsize_limit);
 				INT num_in_qp=i;
@@ -249,8 +249,8 @@ DREAL CSubGradientSVM::line_search(INT num_feat, INT num_vec)
 	   if (grad_val > 0)
 	   {
 		   ASSERT(old_grad_val-grad_val != 0);
-		   DREAL beta = -grad_val/(old_grad_val-grad_val);
-		   alpha = old_alpha*beta + (1-beta)*alpha;
+		   DREAL gamma = -grad_val/(old_grad_val-grad_val);
+		   alpha = old_alpha*gamma + (1-gamma)*alpha;
 	   }
 	   else
 	   {
@@ -271,28 +271,19 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 
 	if (num_bound > 0)
 	{
-		DREAL* v=new DREAL[num_feat];
-		DREAL* Z=new DREAL[num_bound*num_bound];
-		DREAL* Zv=new DREAL[num_bound];
-		DREAL* beta=new DREAL[num_bound];
 
-		ASSERT(v);
-		ASSERT(Z);
-		ASSERT(Zv);
-		ASSERT(beta);
-
-		memset(beta, 0, sizeof(DREAL)*num_bound);
-
+			CTime t2;
 		CMath::add(v, 1.0, w, -1.0, sum_CXy_active, num_feat);
 
-		if (num_bound>qpsize_limit) // if qp gets to large, lets just choose a random beta
+		if (num_bound>=qpsize_limit) // if qp gets to large, lets just choose a random beta
 		{
-			SG_PRINT("qpsize too (%d<%d) large choosing random subgradient/beta\n", num_bound, qpsize_limit);
+			SG_PRINT("qpsize too large  (%d>=%d) choosing random subgradient/beta\n", num_bound, qpsize_limit);
 			for (INT i=0; i<num_bound; i++)
 				beta[i]=CMath::random(0.0,1.0);
 		}
 		else
 		{
+			memset(beta, 0, sizeof(DREAL)*num_bound);
 			for (INT i=0; i<num_bound; i++)
 			{
 				for (INT j=i; j<num_bound; j++)
@@ -319,16 +310,18 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 
 			//CMath::display_matrix(Z, num_bound, num_bound, "Z");
 			//CMath::display_vector(Zv, num_bound, "Zv");
+			t2.stop();
+			t2.time_diff_sec(true);
 
 			CTime t;
 			CQPBSVMLib solver(Z,num_bound, Zv,num_bound, 1.0);
 			//solver.set_solver(QPB_SOLVER_GRADDESC);
 			//solver.set_solver(QPB_SOLVER_GS);
-#ifdef USE_CPLEX
+//#ifdef USE_CPLEX
 			solver.set_solver(QPB_SOLVER_CPLEX);
-#else
-			solver.set_solver(QPB_SOLVER_SCA);
-#endif
+//#else
+//			solver.set_solver(QPB_SOLVER_SCA);
+//#endif
 
 			solver.solve_qp(beta, num_bound);
 
@@ -361,11 +354,6 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 			dir_deriv += CMath::max(0.0, val);
 		}
 #endif
-
-		delete[] v;
-		delete[] Z;
-		delete[] Zv;
-		delete[] beta;
 	}
 	else
 	{
@@ -422,6 +410,15 @@ void CSubGradientSVM::init(INT num_vec, INT num_feat)
 	sum_CXy_active=new DREAL[num_feat];
 	ASSERT(sum_CXy_active);
 	memset(sum_CXy_active,0,sizeof(DREAL)*num_feat);
+
+	v=new DREAL[num_feat];
+	ASSERT(v);
+	memset(v,0,sizeof(DREAL)*num_feat);
+
+	old_v=new DREAL[num_feat];
+	ASSERT(old_v);
+	memset(old_v,0,sizeof(DREAL)*num_feat);
+
 	sum_Cy_active=0;
 
 	proj= new DREAL[num_vec];
@@ -463,6 +460,31 @@ void CSubGradientSVM::init(INT num_vec, INT num_feat)
 	idx_active=new INT[num_vec];
 	ASSERT(idx_active);
 	memset(idx_active,0,sizeof(INT)*num_vec);
+
+	Z=new DREAL[qpsize_limit*qpsize_limit];
+	ASSERT(Z);
+	memset(Z,0,sizeof(DREAL)*qpsize_limit*qpsize_limit);
+
+	Zv=new DREAL[qpsize_limit];
+	ASSERT(Zv);
+	memset(Zv,0,sizeof(DREAL)*qpsize_limit);
+
+	beta=new DREAL[qpsize_limit];
+	ASSERT(beta);
+	memset(beta,0,sizeof(DREAL)*qpsize_limit);
+
+	old_Z=new DREAL[qpsize_limit*qpsize_limit];
+	ASSERT(old_Z);
+	memset(old_Z,0,sizeof(DREAL)*qpsize_limit*qpsize_limit);
+
+	old_Zv=new DREAL[qpsize_limit];
+	ASSERT(old_Zv);
+	memset(old_Zv,0,sizeof(DREAL)*qpsize_limit);
+
+	old_beta=new DREAL[qpsize_limit];
+	ASSERT(old_beta);
+	memset(old_beta,0,sizeof(DREAL)*qpsize_limit);
+
 }
 
 void CSubGradientSVM::cleanup()
@@ -479,6 +501,14 @@ void CSubGradientSVM::cleanup()
 	delete[] idx_active;
 	delete[] sum_CXy_active;
 	delete[] grad_w;
+	delete[] v;
+	delete[] Z;
+	delete[] Zv;
+	delete[] beta;
+	delete[] old_v;
+	delete[] old_Z;
+	delete[] old_Zv;
+	delete[] old_beta;
 
 	hinge_idx=NULL;
 	proj=NULL;
@@ -488,6 +518,10 @@ void CSubGradientSVM::cleanup()
 	idx_active=NULL;
 	sum_CXy_active=NULL;
 	grad_w=NULL;
+	v=NULL;
+	Z=NULL;
+	Zv=NULL;
+	beta=NULL;
 }
 
 bool CSubGradientSVM::train()
@@ -518,8 +552,10 @@ bool CSubGradientSVM::train()
 
 	compute_projection(num_feat, num_vec);
 
+	double loop_time=0;
 	while (delta_active>0 && !(CSignal::cancel_computations()))
 	{
+		CTime t;
 		while ((delta_active=find_active(num_feat, num_vec, num_active, num_bound))==0)
 		{
 			if (work_epsilon<=epsilon)
@@ -544,8 +580,8 @@ bool CSubGradientSVM::train()
 #ifdef DEBUG_SUBGRADIENTSVM
 		SG_PRINT("==================================================\niteration: %d ", num_iterations);
 		obj=compute_objective(num_feat, num_vec);
-		SG_PRINT("objective:%f alpha: %f dir_deriv: %f num_bound: %d num_active: %d work_eps: %10.10f eps: %10.10f auto_eps: %10.10f\n",
-				obj, alpha, dir_deriv, num_bound, num_active, work_epsilon, epsilon, autoselected_epsilon);
+		SG_PRINT("objective:%f alpha: %f dir_deriv: %f num_bound: %d num_active: %d work_eps: %10.10f eps: %10.10f auto_eps: %10.10f time:%f\n",
+				obj, alpha, dir_deriv, num_bound, num_active, work_epsilon, epsilon, autoselected_epsilon, loop_time);
 #else
 	  SG_ABS_PROGRESS(work_epsilon, -CMath::log10(work_epsilon), -CMath::log10(0.99999999), -CMath::log10(epsilon), 6);
 #endif
@@ -573,6 +609,8 @@ bool CSubGradientSVM::train()
 		//SG_PRINT("bias: %f\n", bias);
 		//CMath::display_vector(proj, num_vec, "proj");
 
+		t.stop();
+		loop_time=t.time_diff_sec();
 		num_iterations++;
 	}
 
