@@ -205,7 +205,7 @@ bool CCplex::setup_qp(DREAL* H, INT dim)
 
 bool CCplex::optimize(DREAL* sol, INT dim)
 {
-	int      solnstat, solnmethod, solntype;
+	int      solnstat;//, solnmethod, solntype;
 	double   objval;
 	int status=1;
 

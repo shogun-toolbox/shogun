@@ -1,14 +1,10 @@
 #ifdef HAVE_MATLAB
 
 #include <mex.h>
-#include "matrix.h"
 
 //use compatibility mode w/ matlab <7.x
-#ifndef mwSize
+#if !defined(MX_API_VER) || MX_API_VER<0x07040000
 #define mwSize INT
-#endif
-
-#ifndef mwIndex
 #define mwIndex INT
 #endif
 

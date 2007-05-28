@@ -86,14 +86,14 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 		active[i]=0;
 
 		//within margin/wrong side
-		if (proj[i] < 1-work_epsilon)
+		if (proj[i] < 1-autoselected_epsilon)
 		{
 			idx_active[num_active++]=i;
 			active[i]=1;
 		}
 
 		//on margin
-		if (CMath::abs(proj[i]-1) <= work_epsilon)
+		if (CMath::abs(proj[i]-1) <= autoselected_epsilon)
 		{
 			idx_bound[num_bound++]=i;
 			active[i]=2;
@@ -102,6 +102,9 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 		if (active[i]!=old_active[i])
 			delta_active++;
 	}
+
+	if (delta_active==0)
+		work_epsilon=autoselected_epsilon;
 
 	if (delta_active!=0 && num_bound>qpsize)
 	{
@@ -553,21 +556,10 @@ bool CSubGradientSVM::train()
 	compute_projection(num_feat, num_vec);
 
 	double loop_time=0;
-	while (delta_active>0 && !(CSignal::cancel_computations()))
+	while ((delta_active>0 || delta_bound>0) && !(CSignal::cancel_computations()))
 	{
 		CTime t;
-		while ((delta_active=find_active(num_feat, num_vec, num_active, num_bound))==0)
-		{
-			if (work_epsilon<=epsilon)
-				break;
-			else
-			{
-				work_epsilon/=2;
-
-				if (work_epsilon<epsilon)
-					work_epsilon=epsilon;
-			}
-		}
+		delta_active=find_active(num_feat, num_vec, num_active, num_bound);
 
 		if (work_epsilon<=epsilon && delta_active==0)
 			break;
