@@ -101,13 +101,26 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 
 		if (active[i]!=old_active[i])
 			delta_active++;
+
+		if (active[i]==2 && old_active[i]==2)
+			delta_bound++;
 	}
 
-	if (delta_active==0)
-		work_epsilon=autoselected_epsilon;
+	
+	if (delta_active==0 && work_epsilon<=epsilon) //we converged
+		return 0;
+	else if (delta_active==0) //lets decrease work_epsilon
+	{
+		work_epsilon=CMath::min(autoselected_epsilon, work_epsilon/2.0);
+		work_epsilon=CMath::max(work_epsilon, epsilon);
+		autoselected_epsilon=CMath::clamp(autoselected_epsilon, epsilon, work_epsilon);
+
+		return 1;
+	}
 
 	if (delta_active!=0 && num_bound>qpsize)
 	{
+		delta_bound=0;
 		delta_active=0;
 		num_active=0;
 		num_bound=0;
@@ -183,6 +196,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 	}
 
 	SG_PRINT("delta_bound: %d of %d (%02.2f)\n", delta_bound, num_bound, 100.0*delta_bound/num_bound);
+
 	return delta_active;
 }
 
@@ -209,63 +223,67 @@ void CSubGradientSVM::update_active(INT num_feat, INT num_vec)
 
 DREAL CSubGradientSVM::line_search(INT num_feat, INT num_vec)
 {
-   DREAL sum_B = 0;
-   DREAL A0 = 0.5*CMath::dot(grad_w, grad_w, num_feat);
-   DREAL B0 = -CMath::dot(w, grad_w, num_feat);
-   
+	DREAL sum_B = 0;
+	DREAL A0 = 0.5*CMath::dot(grad_w, grad_w, num_feat);
+	DREAL B0 = -CMath::dot(w, grad_w, num_feat);
+
+	INT num_hinge=0;
+
 	for (INT i=0; i<num_vec; i++)
 	{
 		DREAL p=get_label(i)*features->dense_dot(1.0, i, grad_w, num_feat, grad_b);
 		grad_proj[i]=p;
-		if (p==0)
-			p=1e-10;
-		hinge_point[i]=(proj[i]-1)/p;
-		hinge_idx[i]=i;
+		if (p!=0)
+		{
+			hinge_point[num_hinge]=(proj[i]-1)/p;
+			hinge_idx[num_hinge]=num_hinge;
+			num_hinge++;
+		}
 		if (p<0)
 			sum_B+=p;
 	}
 	sum_B*=C1;
-   
-   CMath::qsort(hinge_point, hinge_idx, num_vec);
+
+	CMath::qsort(hinge_point, hinge_idx, num_hinge);
 
 
-   DREAL alpha = hinge_point[0];
-   DREAL grad_val = 2*A0*alpha + B0 + sum_B;
+	DREAL alpha = hinge_point[0];
+	DREAL grad_val = 2*A0*alpha + B0 + sum_B;
 
-   //CMath::display_vector(grad_w, num_feat, "grad_w");
-   //CMath::display_vector(grad_proj, num_vec, "grad_proj");
-   //CMath::display_vector(hinge_point, num_vec, "hinge_point");
-   //SG_PRINT("A0=%f\n", A0);
-   //SG_PRINT("B0=%f\n", B0);
-   //SG_PRINT("sum_B=%f\n", sum_B);
-   //SG_PRINT("alpha=%f\n", alpha);
-   //SG_PRINT("grad_val=%f\n", grad_val);
+	//CMath::display_vector(grad_w, num_feat, "grad_w");
+	//CMath::display_vector(grad_proj, num_vec, "grad_proj");
+	//CMath::display_vector(hinge_point, num_vec, "hinge_point");
+	//SG_PRINT("A0=%f\n", A0);
+	//SG_PRINT("B0=%f\n", B0);
+	//SG_PRINT("sum_B=%f\n", sum_B);
+	//SG_PRINT("alpha=%f\n", alpha);
+	//SG_PRINT("grad_val=%f\n", grad_val);
 
-   for (INT i=0; i < num_vec && grad_val < 0; i++)
-   {
-	   DREAL old_grad_val = grad_val;
-	   DREAL old_alpha = alpha;
+	for (INT i=0; i < num_hinge && grad_val < 0; i++)
+	{
+		DREAL old_grad_val = grad_val;
+		DREAL old_alpha = alpha;
 
-	   alpha = hinge_point[i];
-	   grad_val = 2*A0*alpha + B0 + sum_B;
+		alpha = hinge_point[i];
+		grad_val = 2*A0*alpha + B0 + sum_B;
 
-	   if (grad_val > 0)
-	   {
-		   ASSERT(old_grad_val-grad_val != 0);
-		   DREAL gamma = -grad_val/(old_grad_val-grad_val);
-		   alpha = old_alpha*gamma + (1-gamma)*alpha;
-	   }
-	   else
-	   {
-		   old_grad_val = grad_val;
-		   old_alpha = alpha;
+		if (grad_val > 0)
+		{
+			ASSERT(old_grad_val-grad_val != 0);
+			DREAL gamma = -grad_val/(old_grad_val-grad_val);
+			alpha = old_alpha*gamma + (1-gamma)*alpha;
+		}
+		else
+		{
+			old_grad_val = grad_val;
+			old_alpha = alpha;
 
-		   sum_B = sum_B + CMath::abs(C1*grad_proj[hinge_idx[i]]);
-		   grad_val = 2*A0*alpha + B0 + sum_B;
-	   }
-   }
+			sum_B = sum_B + CMath::abs(C1*grad_proj[hinge_idx[i]]);
+			grad_val = 2*A0*alpha + B0 + sum_B;
+		}
+	}
 
-   return alpha;
+	return alpha;
 }
 
 DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT num_active, INT num_bound)
@@ -320,11 +338,11 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 			CQPBSVMLib solver(Z,num_bound, Zv,num_bound, 1.0);
 			//solver.set_solver(QPB_SOLVER_GRADDESC);
 			//solver.set_solver(QPB_SOLVER_GS);
-//#ifdef USE_CPLEX
+#ifdef USE_CPLEX
 			solver.set_solver(QPB_SOLVER_CPLEX);
-//#else
-//			solver.set_solver(QPB_SOLVER_SCA);
-//#endif
+#else
+			solver.set_solver(QPB_SOLVER_SCA);
+#endif
 
 			solver.solve_qp(beta, num_bound);
 
@@ -550,7 +568,7 @@ bool CSubGradientSVM::train()
 	DREAL obj=0;
 	INT delta_active=num_vec;
 
-	work_epsilon=0.999;
+	work_epsilon=0.99;
 	autoselected_epsilon=work_epsilon;
 
 	compute_projection(num_feat, num_vec);
@@ -572,7 +590,7 @@ bool CSubGradientSVM::train()
 #ifdef DEBUG_SUBGRADIENTSVM
 		SG_PRINT("==================================================\niteration: %d ", num_iterations);
 		obj=compute_objective(num_feat, num_vec);
-		SG_PRINT("objective:%f alpha: %f dir_deriv: %f num_bound: %d num_active: %d work_eps: %10.10f eps: %10.10f auto_eps: %10.10f time:%f\n",
+		SG_PRINT("objective:%.10f alpha: %.10f dir_deriv: %f num_bound: %d num_active: %d work_eps: %10.10f eps: %10.10f auto_eps: %10.10f time:%f\n",
 				obj, alpha, dir_deriv, num_bound, num_active, work_epsilon, epsilon, autoselected_epsilon, loop_time);
 #else
 	  SG_ABS_PROGRESS(work_epsilon, -CMath::log10(work_epsilon), -CMath::log10(0.99999999), -CMath::log10(epsilon), 6);

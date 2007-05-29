@@ -1,5 +1,5 @@
 C=1;
-epsilon=1e-4;
+epsilon=1e-8;
 
 run_subgradientsvm=1;
 run_libsvm=0;
@@ -82,7 +82,7 @@ if run_subgradientsvm,
 	sg('send_command', sprintf('c %f', C));
 	sg('send_command', sprintf('svm_epsilon %10.10f', epsilon));
 	%sg('send_command', 'new_classifier SVMLIN');
-	sg('send_command', 'svm_qpsize 50');
+	sg('send_command', 'svm_qpsize 100');
 	sg('send_command', 'svm_max_qpsize 1000');
 	sg('send_command', 'new_classifier SUBGRADIENTSVM');
 	tic;

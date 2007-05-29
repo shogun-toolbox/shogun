@@ -106,6 +106,10 @@ void CWeightedDegreeStringKernel::remove_lhs()
 		cache_reset();
 #endif
 
+	lhs = NULL ; 
+	rhs = NULL ; 
+	initialized = false ;
+
 	tries.destroy() ;
 }
 
