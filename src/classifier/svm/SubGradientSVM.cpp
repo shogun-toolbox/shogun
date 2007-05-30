@@ -106,93 +106,87 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 			delta_bound++;
 	}
 
-	
+
 	if (delta_active==0 && work_epsilon<=epsilon) //we converged
 		return 0;
 	else if (delta_active==0) //lets decrease work_epsilon
 	{
-		work_epsilon=CMath::min(autoselected_epsilon, work_epsilon/2.0);
-		work_epsilon=CMath::max(work_epsilon, epsilon);
-		autoselected_epsilon=CMath::clamp(autoselected_epsilon, epsilon, work_epsilon);
-
-		return 1;
+		work_epsilon=CMath::max(work_epsilon/2, epsilon);
+		num_bound=qpsize;
 	}
 
-	if (delta_active!=0 && num_bound>qpsize)
+	delta_bound=0;
+	delta_active=0;
+	num_active=0;
+	num_bound=0;
+
+	for (INT i=0; i<num_vec; i++)
 	{
-		delta_bound=0;
-		delta_active=0;
-		num_active=0;
-		num_bound=0;
+		tmp_proj[i]=CMath::abs(proj[i]-1);
+		tmp_proj_idx[i]=i;
+	}
 
-		for (INT i=0; i<num_vec; i++)
-		{
-			tmp_proj[i]=CMath::abs(proj[i]-1);
-			tmp_proj_idx[i]=i;
-		}
+	CMath::qsort(tmp_proj, tmp_proj_idx, num_vec);
 
-		CMath::qsort(tmp_proj, tmp_proj_idx, num_vec);
-
-		autoselected_epsilon=tmp_proj[CMath::min(qpsize,num_vec)];
+	autoselected_epsilon=tmp_proj[CMath::min(qpsize,num_vec)];
 
 #ifdef DEBUG_SUBGRADIENTSVM
-		SG_PRINT("autoseleps: %15.15f\n", autoselected_epsilon);
+	SG_PRINT("autoseleps: %15.15f\n", autoselected_epsilon);
 #endif
 
-		if (autoselected_epsilon>work_epsilon)
-			autoselected_epsilon=work_epsilon;
+	if (autoselected_epsilon>work_epsilon)
+		autoselected_epsilon=work_epsilon;
 
-		if (autoselected_epsilon<epsilon)
+	if (autoselected_epsilon<epsilon)
+	{
+		autoselected_epsilon=epsilon;
+
+		INT i=0;
+		while (i < num_vec && tmp_proj[i] <= autoselected_epsilon)
+			i++;
+
+		SG_PRINT("lower bound on epsilon requires %d variables in qp\n", i);
+
+		if (i>=qpsize_limit) //qpsize limit
 		{
-			autoselected_epsilon=epsilon;
-
-			INT i=0;
-			while (i < num_vec && tmp_proj[i] <= autoselected_epsilon)
-				i++;
-
-			SG_PRINT("lower bound on epsilon requires %d variables in qp\n", i);
-
-			if (i>=qpsize_limit) //qpsize limit
+			SG_PRINT("qpsize limit (%d) reached\n", qpsize_limit);
+			INT num_in_qp=i;
+			while (--i>=0 && num_in_qp>=qpsize_limit)
 			{
-				SG_PRINT("qpsize limit (%d) reached\n", qpsize_limit);
-				INT num_in_qp=i;
-				while (--i>=0 && num_in_qp>=qpsize_limit)
+				if (tmp_proj[i] < autoselected_epsilon)
 				{
-					if (tmp_proj[i] < autoselected_epsilon)
-					{
-						autoselected_epsilon=tmp_proj[i];
-						num_in_qp--;
-					}
+					autoselected_epsilon=tmp_proj[i];
+					num_in_qp--;
 				}
-
-				SG_PRINT("new qpsize will be %d, autoeps:%15.15f\n", num_in_qp, autoselected_epsilon);
 			}
-		}
 
-		for (INT i=0; i<num_vec; i++)
+			SG_PRINT("new qpsize will be %d, autoeps:%15.15f\n", num_in_qp, autoselected_epsilon);
+		}
+	}
+
+	for (INT i=0; i<num_vec; i++)
+	{
+		active[i]=0;
+
+		//within margin/wrong side
+		if (proj[i] < 1-autoselected_epsilon)
 		{
-			active[i]=0;
-
-			//within margin/wrong side
-			if (proj[i] < 1-autoselected_epsilon)
-			{
-				idx_active[num_active++]=i;
-				active[i]=1;
-			}
-
-			//on margin
-			if (CMath::abs(proj[i]-1) <= autoselected_epsilon)
-			{
-				idx_bound[num_bound++]=i;
-				active[i]=2;
-			}
-
-			if (active[i]!=old_active[i])
-				delta_active++;
-
-			if (active[i]==2 && old_active[i]==2)
-				delta_bound++;
+			idx_active[num_active++]=i;
+			active[i]=1;
 		}
+
+		//on margin
+		if (CMath::abs(proj[i]-1) <= autoselected_epsilon)
+		{
+			idx_bound[num_bound++]=i;
+			active[i]=2;
+		}
+
+		if (active[i]!=old_active[i])
+			delta_active++;
+
+		if (active[i]==2 && old_active[i]==2)
+			delta_bound++;
 	}
 
 	SG_PRINT("delta_bound: %d of %d (%02.2f)\n", delta_bound, num_bound, 100.0*delta_bound/num_bound);
