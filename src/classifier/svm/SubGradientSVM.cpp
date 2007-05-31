@@ -24,13 +24,13 @@
 extern double sparsity;
 double tim;
 
-CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42), qpsize_limit(2000), enable_bias(false), delta_bound(0)
+CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42), qpsize_limit(2000), use_bias(false), delta_bound(0)
 {
 }
 
 CSubGradientSVM::CSubGradientSVM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
 : CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(42), qpsize_limit(2000),
-	enable_bias(false), delta_bound(0)
+	use_bias(false), delta_bound(0)
 {
 	CSparseLinearClassifier::features=traindat;
 	CClassifier::labels=trainlab;
@@ -203,12 +203,14 @@ void CSubGradientSVM::update_active(INT num_feat, INT num_vec)
 		if (active[i]==1 && old_active[i]!=1)
 		{
 			features->add_to_dense_vec(C1*get_label(i), i, sum_CXy_active, num_feat);
-			sum_Cy_active+=C1*get_label(i);
+			if (use_bias)
+				sum_Cy_active+=C1*get_label(i);
 		}
 		else if (old_active[i]==1 && active[i]!=1)
 		{
 			features->add_to_dense_vec(-C1*get_label(i), i, sum_CXy_active, num_feat);
-			sum_Cy_active-=C1*get_label(i);
+			if (use_bias)
+				sum_Cy_active-=C1*get_label(i);
 		}
 	}
 
@@ -300,6 +302,12 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		else
 		{
 			memset(beta, 0, sizeof(DREAL)*num_bound);
+
+			DREAL bias_const=0;
+
+			if (use_bias)
+				bias_const=1;
+
 			for (INT i=0; i<num_bound; i++)
 			{
 				for (INT j=i; j<num_bound; j++)
@@ -313,7 +321,8 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 					TSparseEntry<DREAL>* bvec=features->get_sparse_feature_vector(idx_bound[j], blen, bfree);
 
 					Z[i*num_bound+j]= 2.0*C1*C1*get_label(idx_bound[i])*get_label(idx_bound[j])* 
-						(features->sparse_dot(1.0, avec,alen, bvec,blen) + 1);
+						(features->sparse_dot(1.0, avec,alen, bvec,blen) + bias_const);
+
 					Z[j*num_bound+i]=Z[i*num_bound+j];
 
 					features->free_feature_vector(avec, idx_bound[i], afree);
@@ -354,13 +363,12 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		}
 
 		CMath::add(grad_w, 1.0, w, -1.0, sum_CXy_active, num_feat);
-		if (enable_bias)
-			grad_b = -sum_Cy_active;
+		grad_b = -sum_Cy_active;
 
 		for (INT i=0; i<num_bound; i++)
 		{
 			features->add_to_dense_vec(-C1*beta[i]*get_label(idx_bound[i]), idx_bound[i], grad_w, num_feat);
-			if (enable_bias)
+			if (use_bias)
 				grad_b -=  C1 * get_label(idx_bound[i])*beta[i];
 		}
 
@@ -376,8 +384,7 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 	else
 	{
 		CMath::add(grad_w, 1.0, w, -1.0, sum_CXy_active, num_feat);
-		if (enable_bias)
-			grad_b = -sum_Cy_active;
+		grad_b = -sum_Cy_active;
 
 #ifdef DEBUG_SUBGRADIENTSVM
 		dir_deriv = CMath::dot(grad_w, grad_w, num_feat)+ grad_b*grad_b;

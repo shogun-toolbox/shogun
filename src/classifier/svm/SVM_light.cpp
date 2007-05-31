@@ -375,7 +375,7 @@ bool CSVMLight::train()
 	opt_precision=DEF_PRECISION;
 	
 	strcpy (learn_parm->predfile, "");
-	learn_parm->biased_hyperplane=1; 
+	learn_parm->biased_hyperplane= get_bias_enabled() ? 1 : 0; 
 	learn_parm->sharedslack=0;
 	learn_parm->remove_inconsistent=0;
 	learn_parm->skip_final_opt_check=0;

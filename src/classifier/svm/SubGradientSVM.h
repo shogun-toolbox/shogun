@@ -32,6 +32,9 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		inline DREAL get_C1() { return C1; }
 		inline DREAL get_C2() { return C2; }
 
+		inline void set_bias_enabled(bool enable_bias) { use_bias=enable_bias; }
+		inline bool get_bias_enabled() { return use_bias; }
+
 		inline void set_epsilon(DREAL eps) { epsilon=eps; }
 		inline DREAL get_epsilon() { return epsilon; }
 
@@ -80,7 +83,7 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		DREAL autoselected_epsilon;
 		INT qpsize;
 		INT qpsize_limit;
-		bool enable_bias;
+		bool use_bias;
 
 		//idx vectors of length num_vec
 		BYTE* active; // 0=not active, 1=active, 2=on boundary

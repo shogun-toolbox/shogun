@@ -38,7 +38,9 @@ class CSVM : public CKernelMachine
 		inline void set_C_mkl(DREAL C) { C_mkl = C; }
 		inline void set_qpsize(int qps) { qpsize=qps; }
 		inline void set_max_train_time(DREAL s) { max_train_time=s; }
+		inline void set_bias_enabled(bool enable_bias) { use_bias=enable_bias; }
 
+		inline bool get_bias_enabled() { return use_bias; }
 		inline DREAL get_weight_epsilon() { return weight_epsilon; }
 		inline DREAL get_epsilon() { return epsilon; }
 		inline DREAL get_nu() { return nu; }
@@ -239,6 +241,7 @@ class CSVM : public CKernelMachine
 		DREAL objective;
 
 		int qpsize;
+		bool use_bias;
 		bool use_shrinking;
 		bool use_mkl;
 		bool use_precomputed_subkernels;

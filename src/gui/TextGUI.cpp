@@ -118,6 +118,7 @@ static const CHAR* N_SVM_EPSILON=			"svm_epsilon";
 static const CHAR* N_SVM_MAX_TRAIN_TIME=		"svm_max_train_time";
 static const CHAR* N_SVR_TUBE_EPSILON=			"svr_tube_epsilon";
 static const CHAR* N_SVM_ONE_CLASS_NU=			"svm_one_class_nu";
+static const CHAR* N_SVM_USE_BIAS=			"svm_use_bias";
 static const CHAR* N_DO_AUC_MAXIMIZATION=			"do_auc_maximization";
 static const CHAR* N_ADD_STATES=	        "add_states";
 static const CHAR* N_APPEND_HMM=		"append_hmm";
@@ -725,6 +726,10 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	else if (!strncmp(p_input, N_SVR_TUBE_EPSILON, strlen(N_SVR_TUBE_EPSILON)))
 	{
 		guiclassifier.set_svr_tube_epsilon(p_input+strlen(N_SVR_TUBE_EPSILON));
+	} 
+	else if (!strncmp(p_input, N_SVM_USE_BIAS, strlen(N_SVM_USE_BIAS)))
+	{
+		guiclassifier.set_svm_bias_enabled(p_input+strlen(N_SVM_USE_BIAS));
 	} 
 	else if (!strncmp(p_input, N_SVM_ONE_CLASS_NU, strlen(N_SVM_ONE_CLASS_NU)))
 	{

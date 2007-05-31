@@ -72,6 +72,7 @@ CGUIClassifier::CGUIClassifier(CGUI* g) : CSGObject(), gui(g)
 	svm_nu=1e-2;
 	svm_use_shrinking = true ;
 
+	svm_use_bias = true;
 	svm_use_mkl = false ;
 	svm_use_batch_computation = true ;
 	svm_use_linadd = true ;
@@ -197,6 +198,7 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		delete classifier;
 		classifier= new CSubGradientSVM();
 
+		((CSubGradientSVM*) classifier)->set_bias_enabled(svm_use_bias);
 		((CSubGradientSVM*) classifier)->set_qpsize(svm_qpsize);
 		((CSubGradientSVM*) classifier)->set_qpsize_limit(svm_max_qpsize);
 		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
@@ -299,6 +301,7 @@ bool CGUIClassifier::train_svm(CHAR* param)
 			trainlabels->get_num_labels(), svm_C1, svm_C2, svm_epsilon) ;
 
 
+	svm->set_bias_enabled(svm_use_bias);
 	svm->set_weight_epsilon(svm_weight_epsilon);
 	svm->set_epsilon(svm_epsilon);
 	svm->set_max_train_time(max_train_time);
@@ -810,6 +813,23 @@ bool CGUIClassifier::set_svm_linadd_enabled(CHAR* param)
 		SG_INFO( "Enabling LINADD optimization\n") ;
 	else
 		SG_INFO( "Disabling LINADD optimization\n") ;
+
+	return true ;  
+}
+
+bool CGUIClassifier::set_svm_bias_enabled(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	int bias=1;
+	sscanf(param, "%d", &bias) ;
+
+	svm_use_bias = (bias==1);
+	
+	if (svm_use_bias)
+		SG_INFO( "Enabling svm bias\n") ;
+	else
+		SG_INFO( "Disabling svm bias\n") ;
 
 	return true ;  
 }

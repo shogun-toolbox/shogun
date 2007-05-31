@@ -58,6 +58,7 @@ public:
 	bool set_svm_batch_computation_enabled(CHAR* param);
 	bool set_do_auc_maximization(CHAR* param);
 	bool set_svm_linadd_enabled(CHAR* param);
+	bool set_svm_bias_enabled(CHAR* param);
 	bool set_svm_epsilon(CHAR* param);
 	bool set_svr_tube_epsilon(CHAR* param);
 	bool set_svm_mkl_parameters(CHAR* param) ;
@@ -85,6 +86,7 @@ public:
 	double svm_C1;
 	double svm_C2;
 	double svm_C_mkl;
+	bool svm_use_bias;
 	bool svm_use_mkl;
 	bool svm_use_batch_computation;
 	bool svm_use_linadd;

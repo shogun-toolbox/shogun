@@ -57,6 +57,9 @@ void nrerror(CHAR error_text[])
 #ifdef HAVE_LAPACK
 bool choldc(double* a, int n, double* p)
 {
+	if (n<=0)
+		return false;
+
 	double* a2=new double[n*n];
 
 	for (int i=0; i<n; i++)
