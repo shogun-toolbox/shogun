@@ -200,7 +200,7 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 
 		((CSubGradientSVM*) classifier)->set_bias_enabled(svm_use_bias);
 		((CSubGradientSVM*) classifier)->set_qpsize(svm_qpsize);
-		((CSubGradientSVM*) classifier)->set_qpsize_limit(svm_max_qpsize);
+		((CSubGradientSVM*) classifier)->set_qpsize_max(svm_max_qpsize);
 		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
 		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
 		SG_INFO( "created Subgradient SVM object\n") ;

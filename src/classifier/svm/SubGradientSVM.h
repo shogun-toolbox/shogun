@@ -41,8 +41,8 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		inline void set_qpsize(INT q) { qpsize=q; }
 		inline INT get_qpsize() { return qpsize; }
 
-		inline void set_qpsize_limit(INT q) { qpsize_limit=q; }
-		inline INT get_qpsize_limit() { return qpsize_limit; }
+		inline void set_qpsize_max(INT q) { qpsize_max=q; }
+		inline INT get_qpsize_max() { return qpsize_max; }
 
 	protected:
 		/// returns number of changed constraints for precision work_epsilon
@@ -82,14 +82,19 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		DREAL work_epsilon;
 		DREAL autoselected_epsilon;
 		INT qpsize;
+		INT qpsize_max;
 		INT qpsize_limit;
 		bool use_bias;
+
+		INT last_it_noimprovement;
+		INT num_it_noimprovement;
 
 		//idx vectors of length num_vec
 		BYTE* active; // 0=not active, 1=active, 2=on boundary
 		BYTE* old_active;
 		INT* idx_active;
 		INT* idx_bound;
+		INT delta_active;
 		INT delta_bound;
 		DREAL* proj;
 		DREAL* tmp_proj;

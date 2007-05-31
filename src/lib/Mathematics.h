@@ -246,6 +246,12 @@ public:
 		return ret ;
 	}
 
+	static void random_vector(DREAL* vec, INT len, DREAL min_value, DREAL max_value)
+	{
+		for (INT i=0; i<len; i++)
+			vec[i]=CMath::random(min_value, max_value);
+	}
+
 	static inline INT* randperm(INT n)
 	{
 		INT* perm = new INT[n];

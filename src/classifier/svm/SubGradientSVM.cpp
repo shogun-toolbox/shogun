@@ -24,13 +24,13 @@
 extern double sparsity;
 double tim;
 
-CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42), qpsize_limit(2000), use_bias(false), delta_bound(0)
+CSubGradientSVM::CSubGradientSVM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), qpsize(42), qpsize_max(2000), use_bias(false), delta_active(0), delta_bound(0)
 {
 }
 
 CSubGradientSVM::CSubGradientSVM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
-: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(42), qpsize_limit(2000),
-	use_bias(false), delta_bound(0)
+: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), qpsize(42), qpsize_max(2000),
+	use_bias(false), delta_active(0), delta_bound(0)
 {
 	CSparseLinearClassifier::features=traindat;
 	CClassifier::labels=trainlab;
@@ -77,7 +77,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT& num_bound)
 {
 	delta_bound=0;
-	INT delta_active=0;
+	delta_active=0;
 	num_active=0;
 	num_bound=0;
 
@@ -111,7 +111,8 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 		return 0;
 	else if (delta_active==0) //lets decrease work_epsilon
 	{
-		work_epsilon=CMath::max(work_epsilon/2, epsilon);
+		work_epsilon=CMath::min(work_epsilon/2, autoselected_epsilon);
+		work_epsilon=CMath::max(work_epsilon, epsilon);
 		num_bound=qpsize;
 	}
 
@@ -131,7 +132,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 	autoselected_epsilon=tmp_proj[CMath::min(qpsize,num_vec)];
 
 #ifdef DEBUG_SUBGRADIENTSVM
-	SG_PRINT("autoseleps: %15.15f\n", autoselected_epsilon);
+	//SG_PRINT("autoseleps: %15.15f\n", autoselected_epsilon);
 #endif
 
 	if (autoselected_epsilon>work_epsilon)
@@ -145,13 +146,13 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 		while (i < num_vec && tmp_proj[i] <= autoselected_epsilon)
 			i++;
 
-		SG_PRINT("lower bound on epsilon requires %d variables in qp\n", i);
+		//SG_PRINT("lower bound on epsilon requires %d variables in qp\n", i);
 
-		if (i>=qpsize_limit) //qpsize limit
+		if (i>=qpsize_max && autoselected_epsilon>epsilon) //qpsize limit
 		{
-			SG_PRINT("qpsize limit (%d) reached\n", qpsize_limit);
+			SG_PRINT("qpsize limit (%d) reached\n", qpsize_max);
 			INT num_in_qp=i;
-			while (--i>=0 && num_in_qp>=qpsize_limit)
+			while (--i>=0 && num_in_qp>=qpsize_max)
 			{
 				if (tmp_proj[i] < autoselected_epsilon)
 				{
@@ -160,7 +161,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 				}
 			}
 
-			SG_PRINT("new qpsize will be %d, autoeps:%15.15f\n", num_in_qp, autoselected_epsilon);
+			//SG_PRINT("new qpsize will be %d, autoeps:%15.15f\n", num_in_qp, autoselected_epsilon);
 		}
 	}
 
@@ -189,8 +190,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 			delta_bound++;
 	}
 
-	SG_PRINT("delta_bound: %d of %d (%02.2f)\n", delta_bound, num_bound, 100.0*delta_bound/num_bound);
-
+	//SG_PRINT("delta_bound: %d of %d (%02.2f)\n", delta_bound, num_bound, 100.0*delta_bound/num_bound);
 	return delta_active;
 }
 
@@ -256,11 +256,11 @@ DREAL CSubGradientSVM::line_search(INT num_feat, INT num_vec)
 	//SG_PRINT("alpha=%f\n", alpha);
 	//SG_PRINT("grad_val=%f\n", grad_val);
 
-	for (INT i=0; i < num_hinge && grad_val < 0; i++)
-	{
-		DREAL old_grad_val = grad_val;
-		DREAL old_alpha = alpha;
+	DREAL old_grad_val = grad_val;
+	DREAL old_alpha = alpha;
 
+	for (INT i=1; i < num_hinge && grad_val < 0; i++)
+	{
 		alpha = hinge_point[i];
 		grad_val = 2*A0*alpha + B0 + sum_B;
 
@@ -293,9 +293,9 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 			CTime t2;
 		CMath::add(v, 1.0, w, -1.0, sum_CXy_active, num_feat);
 
-		if (num_bound>=qpsize_limit) // if qp gets to large, lets just choose a random beta
+		if (num_bound>=qpsize_max && num_it_noimprovement!=10) // if qp gets to large, lets just choose a random beta
 		{
-			SG_PRINT("qpsize too large  (%d>=%d) choosing random subgradient/beta\n", num_bound, qpsize_limit);
+			//SG_PRINT("qpsize too large  (%d>=%d) choosing random subgradient/beta\n", num_bound, qpsize_max);
 			for (INT i=0; i<num_bound; i++)
 				beta[i]=CMath::random(0.0,1.0);
 		}
@@ -372,23 +372,19 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 				grad_b -=  C1 * get_label(idx_bound[i])*beta[i];
 		}
 
-#ifdef DEBUG_SUBGRADIENTSVM
 		dir_deriv = CMath::dot(grad_w, v, num_feat) - grad_b*sum_Cy_active;
 		for (INT i=0; i<num_bound; i++)
 		{
-			DREAL val= features->dense_dot(get_label(idx_bound[i]), idx_bound[i], grad_w, num_feat, grad_b);
+			DREAL val= C1*get_label(idx_bound[i])*features->dense_dot(1.0, idx_bound[i], grad_w, num_feat, grad_b);
 			dir_deriv += CMath::max(0.0, val);
 		}
-#endif
 	}
 	else
 	{
 		CMath::add(grad_w, 1.0, w, -1.0, sum_CXy_active, num_feat);
 		grad_b = -sum_Cy_active;
 
-#ifdef DEBUG_SUBGRADIENTSVM
 		dir_deriv = CMath::dot(grad_w, grad_w, num_feat)+ grad_b*grad_b;
-#endif
 	}
 
 	return dir_deriv;
@@ -425,9 +421,12 @@ void CSubGradientSVM::init(INT num_vec, INT num_feat)
 	w=new DREAL[num_feat];
 	ASSERT(w);
 	memset(w,0,sizeof(DREAL)*num_feat);
+	//CMath::random_vector(w, num_feat, -1.0, 1.0);
 	bias=0;
+	num_it_noimprovement=0;
 	grad_b=0;
 	set_w(w, num_feat);
+	qpsize_limit=5000;
 
 	grad_w=new DREAL[num_feat];
 	ASSERT(grad_w);
@@ -571,7 +570,8 @@ bool CSubGradientSVM::train()
 	DREAL alpha=0;
 	DREAL dir_deriv=0;
 	DREAL obj=0;
-	INT delta_active=num_vec;
+	delta_active=num_vec;
+	last_it_noimprovement=-1;
 
 	work_epsilon=0.99;
 	autoselected_epsilon=work_epsilon;
@@ -579,16 +579,10 @@ bool CSubGradientSVM::train()
 	compute_projection(num_feat, num_vec);
 
 	double loop_time=0;
-	while ((delta_active>0 || delta_bound>0) && !(CSignal::cancel_computations()))
+	while (!(CSignal::cancel_computations()))
 	{
 		CTime t;
 		delta_active=find_active(num_feat, num_vec, num_active, num_bound);
-
-		if (work_epsilon<=epsilon && delta_active==0)
-			break;
-
-		//if (num_bound>100)
-		//	SG_WARNING("number of variables at bound is > 100, convergence will be slow\n");
 
 		update_active(num_feat, num_vec);
 
@@ -613,7 +607,35 @@ bool CSubGradientSVM::train()
 		//SG_PRINT("grad_b:%f\n", grad_b);
 		
 		dir_deriv=compute_min_subgradient(num_feat, num_vec, num_active, num_bound);
+
 		alpha=line_search(num_feat, num_vec);
+
+		if (num_it_noimprovement==10 || num_bound<qpsize_max)
+		{
+			DREAL norm_grad=CMath::dot(grad_w, grad_w, num_feat) +
+				grad_b*grad_b;
+
+			SG_PRINT("CHECKING OPTIMALITY CONDITIONS: "
+					"work_epsilon: %10.10f delta_active:%d norm_grad: %10.10f\n", work_epsilon, delta_active, norm_grad);
+			if (work_epsilon<=epsilon && delta_active==0 && alpha*norm_grad<1e-6)
+				break;
+			else
+				num_it_noimprovement=0;
+		}
+
+		//if (work_epsilon<=epsilon && delta_active==0 && num_it_noimprovement)
+		if ((dir_deriv<0 || alpha==0) && (work_epsilon<=epsilon && delta_active==0))
+		{
+			if (last_it_noimprovement==num_iterations-1)
+			{
+				SG_PRINT("no improvement...\n");
+				num_it_noimprovement++;
+			}
+			else
+				num_it_noimprovement=0;
+
+			last_it_noimprovement=num_iterations;
+		}
 
 		CMath::vec1_plus_scalar_times_vec2(w, -alpha, grad_w, num_feat);
 		bias-=alpha*grad_b;
