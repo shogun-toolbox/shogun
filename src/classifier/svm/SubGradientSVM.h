@@ -80,6 +80,7 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		DREAL autoselected_epsilon;
 		INT qpsize;
 		INT qpsize_limit;
+		bool enable_bias;
 
 		//idx vectors of length num_vec
 		BYTE* active; // 0=not active, 1=active, 2=on boundary
@@ -111,8 +112,6 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		DREAL* old_Zv;
 		DREAL* Z;
 		DREAL* old_Z;
-
-
 };
 #endif
 
