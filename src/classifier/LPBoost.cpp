@@ -12,24 +12,25 @@
 
 #ifdef USE_CPLEX
 
-#include "classifier/LPM.h"
+#include "classifier/LPBoost.h"
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 #include "lib/Cplex.h"
 
-CLPM::CLPM() : CSparseLinearClassifier()
+CLPBoost::CLPBoost() : CSparseLinearClassifier()
 {
 }
 
 
-CLPM::~CLPM()
+CLPBoost::~CLPBoost()
 {
 }
 
-bool CLPM::train()
+bool CLPBoost::train()
 {
 	ASSERT(get_labels());
 	ASSERT(get_features());
+	INT num_train_labels=0;
 	INT num_train_labels=get_labels()->get_num_labels();
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
@@ -40,11 +41,17 @@ bool CLPM::train()
 	w_dim=num_feat;
 	ASSERT(w);
 
-	//CCplex solver;
-	//solver.init(LINEAR);
-	//solver.setup_lpm(get_features(), get_labels());
-	//solver.optimize(w, w_dim);
-	//solver.cleanup();
+	CCplex solver;
+	solver.init(LINEAR);
+	//solver.setup_lpboost(get_features(), get_labels());
+
+	while (true)
+	{
+		//add/remove constraints
+		//check optimality
+		solver.optimize(w, w_dim);
+	}
+	solver.cleanup();
 	
 
 	delete[] train_labels;

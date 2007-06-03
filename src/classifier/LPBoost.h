@@ -8,8 +8,8 @@
  * Copyright (C) 2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _LPM_H___
-#define _LPM_H___
+#ifndef _LPBOOST_H___
+#define _LPBOOST_H___
 
 #include "lib/config.h"
 #ifdef USE_CPLEX
@@ -19,18 +19,18 @@
 #include "features/Features.h"
 #include "classifier/SparseLinearClassifier.h"
 
-class CLPM : public CSparseLinearClassifier
+class CLPBoost : public CSparseLinearClassifier
 {
 	public:
-		CLPM();
-		virtual ~CLPM();
+		CLPBoost();
+		virtual ~CLPBoost();
 
 		virtual bool train();
 
 		inline virtual EClassifierType get_classifier_type()
 		{
-			return CT_LPM;
+			return CT_LPBOOST;
 		}
 };
 #endif //USE_CPLEX
-#endif //_LPM_H___
+#endif //_LPBOOST_H___

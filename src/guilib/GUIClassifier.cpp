@@ -24,6 +24,7 @@
 
 #include "classifier/LDA.h"
 #include "classifier/LPM.h"
+#include "classifier/LPBoost.h"
 #include "classifier/Perceptron.h"
 #include "classifier/KernelPerceptron.h"
 
@@ -172,13 +173,21 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		classifier= new CLDA();
 		SG_INFO( "created LDA object\n") ;
 	}
-#endif
+#endif //HAVE_LAPACK
+#ifdef USE_CPLEX
 	else if (strcmp(param,"LPM")==0)
 	{
 		delete classifier;
 		classifier= new CLPM();
 		SG_INFO( "created LPM object\n") ;
 	}
+	else if (strcmp(param,"LPBOOST")==0)
+	{
+		delete classifier;
+		classifier= new CLPBoost();
+		SG_INFO( "created LPBoost object\n") ;
+	}
+#endif //USE_CPLEX
 	else if (strcmp(param,"KNN")==0)
 	{
 		delete classifier;
@@ -237,6 +246,7 @@ bool CGUIClassifier::train(CHAR* param)
 		case CT_KERNELPERCEPTRON:
 		case CT_LDA:
 		case CT_LPM:
+		case CT_LPBOOST:
 			return train_linear(param);
 			break;
 		case CT_KNN:
@@ -869,6 +879,7 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_PERCEPTRON:
 		case CT_LDA:
 		case CT_LPM:
+		case CT_LPBOOST:
 			return classify_linear(output);
 		case CT_SVMLIN:
 		case CT_SVMPERF:
@@ -938,6 +949,7 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &col
 		case CT_KERNELPERCEPTRON:
 		case CT_LDA:
 		case CT_LPM:
+		case CT_LPBOOST:
 			return get_linear(weights, rows, cols, bias);
 			break;
 		case CT_KNN:

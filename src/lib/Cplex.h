@@ -38,6 +38,45 @@ public:
 	bool init(E_PROB_TYPE t, INT timeout=60);
 	bool cleanup();
 
+	/// given N sparse inputs x_i, and corresponding labels y_i i=0...N-1
+	/// create the following 1-norm SVM problem & transfer to cplex
+	/// 
+	////////////////////////////////////////////////////////////////// 
+	/// min_w 		sum_{i=0}^N ( w^+_i - w^-_i) C \sum_{i=0}^N \xi_i
+	/// w=[w^+ w^-]
+	/// b, xi
+	/// 
+	/// -y_i(w_+^T x_i + b)-xi_i <= -1
+	/// -y_i(w_-^T x_i + b)-xi_i <= -1
+	/// x_i >= 0 
+	/// w_i >= 0    forall i=1...N
+	////////////////////////////////////////////////////////////////// 
+	/// min f^x
+	/// Ax <= b
+	/// -x <= 0
+	/// 
+	/// lb= [ -inf, //b
+	/// 	  2*dims [0], //w
+	/// 	  num_train [0] //xi 
+	/// 	]
+	/// 
+	/// ub= [ inf, //b
+	/// 	  2*dims [inf], //w
+	/// 	  num_train [inf] //xi 
+	/// 	]
+	/// 
+	/// f= [0,2*dim[1], num_train*C]
+	/// A= [-y', // b
+	/// 	-y_ix_i // w_+
+	/// 	+y_ix_i // w_-
+	/// 	-1 //xi
+	/// 	]
+	/// 
+	/// 	dim(A)=(n,1+2*dim+n)
+	/// 
+	/// b =  -1 -1 -1 -1 ...
+	bool setup_lpm(CSparseFeatures* x, CLabels* y);
+
 	/// call this to setup linear part
 	///
 	/// setup lp, to minimize
@@ -46,6 +85,7 @@ public:
 	/// s.t. constraint_mat*x <= rhs
 	/// lb[i] <= x[i] <= ub[i] for all i
 	bool setup_lp(DREAL* objective, DREAL* constraints_mat, INT rows, INT cols, DREAL* rhs, DREAL* lb, DREAL* ub);
+
 
 	/// call this to setup quadratic part H
 	/// x'*H*x

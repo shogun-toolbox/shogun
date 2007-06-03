@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/common.h"
+#include "lib/config.h"
 
 #ifdef USE_CPLEX
 #include <unistd.h>
@@ -70,6 +70,40 @@ bool CCplex::init(E_PROB_TYPE typ, INT timeout)
 	}
 
 	return (lp != NULL) && (env != NULL);
+}
+
+bool CCplex::setup_lpm(CSparseFeatures* x, CLabels* y)
+{
+//tr_ell = size(XT,2) ;
+//Y_tr   = LT ;
+//X_tr   = sparse([XT;-XT]) ;
+//
+//A = [sparse(-Y_tr'.*ones(tr_ell,1)) -speye(tr_ell) sparse(-X_tr*sparse(spdiag(Y_tr)))'] ;
+//b = -ones(tr_ell,1) ;
+//INF=1e20 ; 
+//LB=[-INF;zeros(tr_ell,1); zeros(size(X_tr,1),1)] ;
+//UB=[ INF;INF*ones(tr_ell,1); INF*ones(size(X_tr,1),1)];
+//c=[0;PAR.C*ones(tr_ell,1)/tr_ell; ones(size(X_tr,1),1)] ;
+//clear X_tr 
+//
+//disp('setting up problem');
+//[p_lp,how]=lp_gen(lpenv,c,A,b,LB,UB,0,1) ;
+//clear A c b LB UB Y_tr 
+//tic
+//  disp('solving problem');
+//  [sol,lambda,how]=lp_resolve(lpenv,p_lp,1,'bar') ;
+//toc
+//if equal(how,'OK')
+//  lp_close(lpenv,p_lp) ;
+//else
+//  how
+//  keyboard
+//end ;
+//b     = sol(1) ;
+//xis   = sol(2:tr_ell+1) ;
+//alpha = sol(tr_ell+2:end);
+//alpha = alpha(1:end/2)-alpha(end/2+1:end) ;
+//sum(abs(alpha))
 }
 
 bool CCplex::cleanup()
