@@ -593,6 +593,7 @@ public:
 	//@{
 	/// infinity
 	static const DREAL INFTY;
+	static const DREAL ALMOST_INFTY;
 	
 	/// almost neg (log) infinity
 	static const DREAL ALMOST_NEG_INFTY;

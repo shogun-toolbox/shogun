@@ -109,20 +109,20 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y)
 	{
 		if (i==0) //b
 		{
-			lb[i]=-CMath::INFTY;
-			ub[i]=+CMath::INFTY;
+			lb[i]=-CMath::ALMOST_INFTY;
+			ub[i]=+CMath::ALMOST_INFTY;
 			f[i]=0;
 		}
-		else if (i<2*num_dims+1) //w+,w-
+		else if (i<2*num_feat+1) //w+,w-
 		{
 			lb[i]=0;
-			ub[i]=CMath::INFTY;
+			ub[i]=CMath::ALMOST_INFTY;
 			f[i]=1;
 		}
 		else //xi
 		{
 			lb[i]=0;
-			ub[i]=CMath::INFTY;
+			ub[i]=CMath::ALMOST_INFTY;
 			f[i]=C;
 		}
 	}
@@ -172,8 +172,8 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y)
 
 	for (INT i=0; i<num_svec; i++)
 	{
-		amatbeg[num_vec+i+1]=offs;
-		amatcnt[num_vec+i+1]=sfeat[i].num_feat_entries;
+		amatbeg[num_svec+i+1]=offs;
+		amatcnt[num_svec+i+1]=sfeat[i].num_feat_entries;
 
 		for (INT j=0; j<sfeat[i].num_feat_entries; j++)
 		{
@@ -181,7 +181,7 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y)
 			DREAL val=sfeat[i].features[j].entry;
 
 			amatind[offs]=row;
-			amatval[offs]=-y->get_label(row)*val;
+			amatval[offs]=y->get_label(row)*val;
 			offs++;
 		}
 	}
@@ -189,7 +189,6 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y)
 	x->clean_tsparse(sfeat, num_svec);
 
 	//xi part of A
-	offs=2*nnz+num_vec;
 	for (INT i=0; i<num_vec; i++)
 	{
 		amatbeg[1+2*num_feat+i]=offs;
@@ -199,6 +198,7 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y)
 		offs++;
 	}
 
+	CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_ON);
 
 	bool result = CPXcopylp(env, lp, num_dims, num_constraints, CPX_MIN, 
 			f, b, sense, amatbeg, amatcnt, amatind, amatval, lb, ub, NULL) == 0;
@@ -353,10 +353,9 @@ bool CCplex::optimize(DREAL* sol, INT dim)
 	double   objval;
 	int status=1;
 
-	status = CPXsetdblparam (env, CPX_PARAM_TILIM, 0.5);
-
-	if (status)
-		SG_ERROR( "Failure to set time limit %d.\n", status);
+	//status = CPXsetdblparam (env, CPX_PARAM_TILIM, 0.5);
+	//if (status)
+	//	SG_ERROR( "Failure to set time limit %d.\n", status);
 
 	if (problem_type==QP)
 		status = CPXsetintparam (env, CPX_PARAM_QPMETHOD, 0);

@@ -43,17 +43,27 @@ bool CLPM::train()
 	INT num_params=1+2*num_feat+num_vec; //b,w+,w-,xi
 	DREAL* params=new DREAL[num_params];
 	ASSERT(params);
+	memset(params,0,sizeof(DREAL)*num_params);
 
 	CCplex solver;
 	solver.init(LINEAR);
+	SG_INFO("C=%f\n", C1);
 	solver.setup_lpm(C1, get_features(), get_labels());
-	bool result=solver.optimize(params, w_dim);
+	bool result=solver.optimize(params, num_params);
 	solver.cleanup();
 
 	set_bias(params[0]);
 	for (INT i=0; i<num_feat; i++)
 		w[i]=params[1+i]-params[1+num_feat+i];
 
+//#define LPM_DEBUG
+#ifdef LPM_DEBUG
+	CMath::display_vector(params,num_params, "params");
+	SG_PRINT("bias=%f\n", bias);
+	CMath::display_vector(w,w_dim, "w");
+	CMath::display_vector(&params[1],w_dim, "w+");
+	CMath::display_vector(&params[1+w_dim],w_dim, "w-");
+#endif
 	delete[] params;
 	return result;
 }

@@ -249,8 +249,6 @@ bool CGUIClassifier::train(CHAR* param)
 			((CPerceptron*) classifier)->set_max_iter(perceptron_maxiter);
 		case CT_KERNELPERCEPTRON:
 		case CT_LDA:
-		case CT_LPM:
-		case CT_LPBOOST:
 			return train_linear(param);
 			break;
 		case CT_KNN:
@@ -258,6 +256,8 @@ bool CGUIClassifier::train(CHAR* param)
 			break;
 		case CT_SVMLIN:
 		case CT_SVMPERF:
+		case CT_LPM:
+		case CT_LPBOOST:
 		case CT_SUBGRADIENTSVM:
 			return train_sparse_linear(param);
 		default:
@@ -882,12 +882,12 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 			return classify_distancemachine(output);
 		case CT_PERCEPTRON:
 		case CT_LDA:
-		case CT_LPM:
-		case CT_LPBOOST:
 			return classify_linear(output);
 		case CT_SVMLIN:
 		case CT_SVMPERF:
 		case CT_SUBGRADIENTSVM:
+		case CT_LPM:
+		case CT_LPBOOST:
 			return classify_sparse_linear(output);
 		default:
 			SG_ERROR( "unknown classifier type\n");
