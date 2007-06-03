@@ -19,9 +19,10 @@ extern "C" {
 }
 
 #include "lib/common.h"
+#include "base/SGObject.h"
+
 #include "features/SparseFeatures.h"
 #include "features/Labels.h"
-#include "base/SGObject.h"
 
 enum E_PROB_TYPE
 {
@@ -39,6 +40,9 @@ public:
 	/// init cplex with problem type t and retry timeout 60 seconds
 	bool init(E_PROB_TYPE t, INT timeout=60);
 	bool cleanup();
+
+	bool setup_lpboost(DREAL C, INT num_cols);
+	bool add_lpboost_constraint(TSparseEntry<DREAL>* h, INT len, INT ulen, CLabels* label);
 
 	/// given N sparse inputs x_i, and corresponding labels y_i i=0...N-1
 	/// create the following 1-norm SVM problem & transfer to cplex
@@ -77,7 +81,7 @@ public:
 	/// 	dim(A)=(n,1+2*dim+n)
 	/// 
 	/// b =  -1 -1 -1 -1 ... 
-	bool setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y);
+	bool setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_bias);
 
 	/// call this to setup linear part
 	///
@@ -93,7 +97,7 @@ public:
 	/// x'*H*x
 	/// call setup_lp before (to setup the linear part / linear constraints)
 	bool setup_qp(DREAL* H, INT dim);
-	bool optimize(DREAL* sol, INT dim);
+	bool optimize(DREAL* sol, DREAL* lambda=NULL);
 
 	bool dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, int* &qmatcnt, int* &qmatind, double* &qmatval);
 protected:

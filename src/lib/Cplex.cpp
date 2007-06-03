@@ -15,6 +15,7 @@
 
 #include "lib/Cplex.h"
 #include "lib/io.h"
+#include "lib/Signal.h"
 #include "lib/Mathematics.h"
 
 CCplex::CCplex() : CSGObject(), env(NULL), lp(NULL), lp_initialized(false)
@@ -58,12 +59,23 @@ bool CCplex::init(E_PROB_TYPE typ, INT timeout)
 					SG_ERROR( "Failure to turn on data checking, error %d.\n", status);
 				else
 				{
-					lp = CPXcreateprob (env, &status, "light");
+					lp = CPXcreateprob (env, &status, "shogun");
 
 					if ( lp == NULL )
 						SG_ERROR( "Failed to create optimization problem.\n");
 					else
 						CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
+
+					if (problem_type==QP)
+						status = CPXsetintparam (env, CPX_PARAM_QPMETHOD, 0);
+					else if (problem_type == LINEAR)
+						status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 0);
+					if (status)
+						SG_ERROR( "Failure to select dual lp/qp optimization, error %d.\n", status);
+
+					//status = CPXsetdblparam (env, CPX_PARAM_TILIM, 0.5);
+					//if (status)
+					//	SG_ERROR( "Failure to set time limit %d.\n", status);
 				}
 			}
 		}
@@ -72,7 +84,71 @@ bool CCplex::init(E_PROB_TYPE typ, INT timeout)
 	return (lp != NULL) && (env != NULL);
 }
 
-bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y)
+bool CCplex::setup_lpboost(DREAL C, INT num_cols)
+{
+	init(LINEAR);
+	INT status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2); //dual simplex
+	if (status)
+		SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status);
+
+	double obj[num_cols];
+	double lb[num_cols];
+	double ub[num_cols];
+
+	for (INT i=0; i<num_cols; i++)
+	{
+		obj[i]=0;
+		lb[i]=0;
+		ub[i]=C;
+	}
+
+	//last column is beta / appears in objective
+	obj[num_cols-1]=1;
+	lb[num_cols-1]=-CPX_INFBOUND;
+	ub[num_cols-1]=CPX_INFBOUND;
+
+	status = CPXnewcols(env, lp, num_cols, obj, lb, ub, NULL, NULL);
+	if ( status )
+	{
+		char  errmsg[1024];
+		CPXgeterrorstring (env, status, errmsg);
+		SG_ERROR( "%s", errmsg);
+	}
+	return status==0;
+}
+
+bool CCplex::add_lpboost_constraint(TSparseEntry<DREAL>* h, INT len, INT ulen, CLabels* label)
+{
+	int amatbeg[1];
+	int amatind[len+1];
+	double amatval[len+1];
+	double rhs[1];
+	char sense[1];
+
+	amatbeg[0]=0;
+	rhs[0]=0;
+	sense[0]='L';
+
+	for (INT i=0; i<len; i++)
+	{
+		INT idx=h[i].feat_index;
+		DREAL val=h[i].entry;
+		amatind[i]=idx;
+		amatval[i]=label->get_label(idx)*val;
+	}
+
+	amatind[len]=ulen-1;
+	amatval[len]=-1 ;
+
+	INT status = CPXaddrows (env, lp, 0, 1, len+1, rhs, sense, amatbeg, amatind, amatval, NULL, NULL);
+
+	if ( status ) 
+		SG_ERROR( "Failed to add the new row.\n");
+
+	return status == 0;
+}
+
+bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_bias)
 {
 	ASSERT(x);
 	ASSERT(y);
@@ -109,20 +185,28 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y)
 	{
 		if (i==0) //b
 		{
-			lb[i]=-CMath::ALMOST_INFTY;
-			ub[i]=+CMath::ALMOST_INFTY;
+			if (use_bias)
+			{
+				lb[i]=-CPX_INFBOUND;
+				ub[i]=+CPX_INFBOUND;
+			}
+			else
+			{
+				lb[i]=0;
+				ub[i]=0;
+			}
 			f[i]=0;
 		}
 		else if (i<2*num_feat+1) //w+,w-
 		{
 			lb[i]=0;
-			ub[i]=CMath::ALMOST_INFTY;
+			ub[i]=CPX_INFBOUND;
 			f[i]=1;
 		}
 		else //xi
 		{
 			lb[i]=0;
-			ub[i]=CMath::ALMOST_INFTY;
+			ub[i]=CPX_INFBOUND;
 			f[i]=C;
 		}
 	}
@@ -347,50 +431,21 @@ bool CCplex::setup_qp(DREAL* H, INT dim)
 	return result;
 }
 
-bool CCplex::optimize(DREAL* sol, INT dim)
+bool CCplex::optimize(DREAL* sol, DREAL* lambda)
 {
-	int      solnstat;//, solnmethod, solntype;
+	int      solnstat;
 	double   objval;
 	int status=1;
-
-	//status = CPXsetdblparam (env, CPX_PARAM_TILIM, 0.5);
-	//if (status)
-	//	SG_ERROR( "Failure to set time limit %d.\n", status);
-
-	if (problem_type==QP)
-		status = CPXsetintparam (env, CPX_PARAM_QPMETHOD, 0);
-	else if (problem_type == LINEAR)
-		status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 0);
-
-	if (status)
-		SG_ERROR( "Failure to select dual lp/qp optimization, error %d.\n", status);
 
 	if (problem_type==QP)
 		status = CPXqpopt (env, lp);
 	else if (problem_type == LINEAR)
 		status = CPXlpopt (env, lp);
 
-
 	if (status)
 		SG_WARNING( "Failed to optimize QP.\n");
 
-	status = CPXsolution (env, lp, &solnstat, &objval, sol, NULL, NULL, NULL);
-
-//	if ( status )
-//		SG_ERROR("CPXsolution failed.\n");
-//
-//	solnstat = CPXgetstat (env, lp);
-//
-//	if ( solnstat == CPX_STAT_UNBOUNDED )
-//		SG_INFO( "Model is unbounded\n");
-//	else if ( solnstat == CPX_STAT_INFEASIBLE )
-//		SG_INFO( "Model is infeasible\n");
-//	else if ( solnstat == CPX_STAT_INForUNBD )
-//		SG_INFO( "Model is infeasible or unbounded\n");
-//
-//	status = CPXsolninfo (env, lp, &solnmethod, &solntype, NULL, NULL);
-//	if ( status )
-//		SG_ERROR( "Failed to obtain solution info.\n");
+	status = CPXsolution (env, lp, &solnstat, &objval, sol, lambda, NULL, NULL);
 
 	return (status==0);
 }

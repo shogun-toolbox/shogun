@@ -17,7 +17,7 @@
 #include "lib/Mathematics.h"
 #include "lib/Cplex.h"
 
-CLPM::CLPM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-3)
+CLPM::CLPM() : CSparseLinearClassifier(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
 {
 }
 
@@ -48,8 +48,8 @@ bool CLPM::train()
 	CCplex solver;
 	solver.init(LINEAR);
 	SG_INFO("C=%f\n", C1);
-	solver.setup_lpm(C1, get_features(), get_labels());
-	bool result=solver.optimize(params, num_params);
+	solver.setup_lpm(C1, get_features(), get_labels(), get_bias_enabled());
+	bool result=solver.optimize(params);
 	solver.cleanup();
 
 	set_bias(params[0]);

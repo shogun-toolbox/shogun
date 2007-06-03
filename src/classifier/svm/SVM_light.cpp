@@ -218,14 +218,14 @@ bool CSVMLight::init_cplex()
 				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
 				if ( status )
 				{
-               SG_ERROR( "Failure to turn on data checking, error %d.\n", status);
+					SG_ERROR( "Failure to turn on data checking, error %d.\n", status);
 				}	
 				else
 				{
 					lp = CPXcreateprob (env, &status, "light");
 
 					if ( lp == NULL )
-                  SG_ERROR( "Failed to create LP.\n");
+						SG_ERROR( "Failed to create LP.\n");
 					else
 						CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
 				}

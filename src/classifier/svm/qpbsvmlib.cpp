@@ -670,7 +670,7 @@ INT CQPBSVMLib::qpbsvm_cplex(DREAL *x,
 	cplex.init(QP);
 	cplex.setup_lp(m_f, NULL, 0, m_dim, NULL, lb, ub);
 	cplex.setup_qp(m_H, m_dim);
-	cplex.optimize(x, m_dim);
+	cplex.optimize(x);
 	cplex.cleanup();
 
 	delete[] lb;

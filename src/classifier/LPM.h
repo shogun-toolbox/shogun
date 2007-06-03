@@ -37,12 +37,16 @@ class CLPM : public CSparseLinearClassifier
 		inline DREAL get_C1() { return C1; }
 		inline DREAL get_C2() { return C2; }
 
+		inline void set_bias_enabled(bool enable_bias) { use_bias=enable_bias; }
+		inline bool get_bias_enabled() { return use_bias; }
+
 		inline void set_epsilon(DREAL eps) { epsilon=eps; }
 		inline DREAL get_epsilon() { return epsilon; }
 
 	protected:
 		DREAL C1;
 		DREAL C2;
+		bool use_bias;
 		DREAL epsilon;
 };
 #endif //USE_CPLEX

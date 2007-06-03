@@ -16,14 +16,80 @@
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
 #include "lib/Cplex.h"
+#include "lib/DynamicArray.h"
+#include "lib/Signal.h"
 
-CLPBoost::CLPBoost() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-3)
+CLPBoost::CLPBoost() : CSparseLinearClassifier(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
 {
+	u=NULL;
+	dim=NULL;
+	num_sfeat=0;
+	num_svec=0;
+	sfeat=NULL;
 }
 
 
 CLPBoost::~CLPBoost()
 {
+	cleanup();
+}
+
+bool CLPBoost::init(INT num_vec)
+{
+	u=new DREAL[num_vec+1]; // last dim is beta
+	ASSERT(u);
+	for (INT i=0; i<num_vec; i++)
+		u[i]=1.0/num_vec;
+
+	u[num_vec]=0;
+
+	dim=new CDynamicArray<INT>(100000);
+
+	sfeat= get_features()->get_transposed(num_sfeat, num_svec);
+
+	if (sfeat)
+		return true;
+	else
+		return false;
+}
+
+void CLPBoost::cleanup()
+{
+	delete[] u;
+	u=NULL;
+
+	get_features()->clean_tsparse(sfeat, num_svec);
+	sfeat=NULL;
+
+	delete dim;
+	dim=NULL;
+}
+
+DREAL CLPBoost::find_max_violator(INT& max_dim)
+{
+	DREAL max_val=0;
+	max_dim=-1;
+
+	for (INT i=0; i<num_svec; i++)
+	{
+		DREAL val=0;
+
+		for (INT j=0; j<sfeat[i].num_feat_entries; j++)
+		{
+			INT idx=sfeat[i].features[j].feat_index;
+			DREAL v=sfeat[i].features[j].entry;
+			val+=u[idx]*get_labels()->get_label(idx)*v;
+		}
+
+		if (val>max_val || max_dim==-1)
+		{
+			max_dim=i;
+			max_val=val;
+		}
+	}
+
+	dim->append_element(max_dim);
+	return max_val;
 }
 
 bool CLPBoost::train()
@@ -42,15 +108,45 @@ bool CLPBoost::train()
 
 	CCplex solver;
 	solver.init(LINEAR);
-	//solver.setup_lpboost(get_features(), get_labels());
+	solver.setup_lpboost(C1, num_vec+1);
 
-	while (true)
+	init(num_vec);
+
+	DREAL* beta=&u[num_vec];
+	INT num_hypothesis=0;
+
+	while (!(CSignal::cancel_computations()))
 	{
-		//add/remove constraints
-		//check optimality
-		solver.optimize(w, w_dim);
+		INT max_dim=0;
+		DREAL violator=find_max_violator(max_dim);
+		if (violator <= *beta+epsilon) //no constraint violated
+			break;
+
+		TSparseEntry<DREAL>* h=sfeat[max_dim].features;
+		INT len=sfeat[max_dim].num_feat_entries;
+		solver.add_lpboost_constraint(h, len, num_vec+1, get_labels());
+		solver.optimize(u);
+		num_hypothesis++;
+		SG_PRINT("iteration:%06d violator: %10.10f beta: %10.10f chosen: %d\n", num_hypothesis, violator, *beta, max_dim);
+	}
+	DREAL* lambda=new DREAL[num_hypothesis];
+	solver.optimize(u, lambda);
+
+	SG_PRINT("lambda1=%f d1=%d\n", lambda[0], dim->get_element(0));
+	for (INT i=0; i<num_hypothesis; i++)
+	{
+		INT d=dim->get_element(i);
+
+		DREAL val=0;
+
+		for (INT j=0; j<sfeat[i].num_feat_entries; j++)
+			val+=sfeat[d].features[j].entry;
+
+		w[d]=lambda[i]*val;
 	}
 	solver.cleanup();
+
+	cleanup();
 	
 	return true;
 }
