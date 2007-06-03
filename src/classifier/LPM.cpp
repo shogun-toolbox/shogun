@@ -17,7 +17,7 @@
 #include "lib/Mathematics.h"
 #include "lib/Cplex.h"
 
-CLPM::CLPM() : CSparseLinearClassifier()
+CLPM::CLPM() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-3)
 {
 }
 
@@ -40,15 +40,21 @@ bool CLPM::train()
 	w_dim=num_feat;
 	ASSERT(w);
 
-	//CCplex solver;
-	//solver.init(LINEAR);
-	//solver.setup_lpm(get_features(), get_labels());
-	//solver.optimize(w, w_dim);
-	//solver.cleanup();
-	
+	INT num_params=1+2*num_feat+num_vec; //b,w+,w-,xi
+	DREAL* params=new DREAL[num_params];
+	ASSERT(params);
 
-	delete[] train_labels;
+	CCplex solver;
+	solver.init(LINEAR);
+	solver.setup_lpm(C1, get_features(), get_labels());
+	bool result=solver.optimize(params, w_dim);
+	solver.cleanup();
 
-	return false;
+	set_bias(params[0]);
+	for (INT i=0; i<num_feat; i++)
+		w[i]=params[1+i]-params[1+num_feat+i];
+
+	delete[] params;
+	return result;
 }
 #endif

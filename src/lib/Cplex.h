@@ -19,6 +19,8 @@ extern "C" {
 }
 
 #include "lib/common.h"
+#include "features/SparseFeatures.h"
+#include "features/Labels.h"
 #include "base/SGObject.h"
 
 enum E_PROB_TYPE
@@ -42,12 +44,12 @@ public:
 	/// create the following 1-norm SVM problem & transfer to cplex
 	/// 
 	////////////////////////////////////////////////////////////////// 
-	/// min_w 		sum_{i=0}^N ( w^+_i - w^-_i) C \sum_{i=0}^N \xi_i
+	/// min_w 		sum_{i=0}^N ( w^+_i + w^-_i) C \sum_{i=0}^N \xi_i
 	/// w=[w^+ w^-]
 	/// b, xi
 	/// 
-	/// -y_i(w_+^T x_i + b)-xi_i <= -1
-	/// -y_i(w_-^T x_i + b)-xi_i <= -1
+	/// -y_i(+w_+^T x_i + b)-xi_i <= -1
+	/// -y_i(-w_-^T x_i + b)-xi_i <= -1
 	/// x_i >= 0 
 	/// w_i >= 0    forall i=1...N
 	////////////////////////////////////////////////////////////////// 
@@ -74,8 +76,8 @@ public:
 	/// 
 	/// 	dim(A)=(n,1+2*dim+n)
 	/// 
-	/// b =  -1 -1 -1 -1 ...
-	bool setup_lpm(CSparseFeatures* x, CLabels* y);
+	/// b =  -1 -1 -1 -1 ... 
+	bool setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y);
 
 	/// call this to setup linear part
 	///

@@ -73,10 +73,8 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 		virtual ~CSparseFeatures()
 		{
-			for (INT i=0; i< num_vectors; i++)
-				delete[] sparse_feature_matrix[i].features;
+			clean_tsparse(sparse_feature_matrix, num_vectors);
 
-			delete[] sparse_feature_matrix;
 			delete feature_cache;
 		}
 
@@ -306,6 +304,78 @@ template <class ST> class CSparseFeatures: public CFeatures
 			num_vec=num_vectors;
 
 			return sparse_feature_matrix;
+		}
+
+		void clean_tsparse(TSparse<ST>* sfm, INT num_vec)
+		{
+			if (sfm)
+			{
+				for (INT i=0; i<num_vec; i++)
+					delete[] sfm[i].features;
+
+				delete[] sfm;
+			}
+		}
+
+		/// compute and return the transpose of the sparse feature matrix
+		/// which will be prepocessed. 
+		/// num_feat, num_vectors are returned by reference
+		/// caller has to clean up
+		TSparse<ST>* get_transposed(INT &num_feat, INT &num_vec)
+		{
+			num_feat=num_vectors;
+			num_vec=num_features;
+
+			INT* hist=new INT[num_features];
+			ASSERT(hist);
+			memset(hist,0,sizeof(INT)*num_features);
+
+			// count how lengths of future feature vectors
+			for (INT v=0; v<num_vectors; v++)
+			{
+				INT vlen;
+				bool vfree;
+				TSparseEntry<ST>* sv=get_sparse_feature_vector(v, vlen, vfree);
+
+				for (INT i=0; i<vlen; i++)
+					hist[sv[i].feat_index]++;
+
+				free_sparse_feature_vector(sv, v, vfree);
+			}
+
+			// allocate room for future feature vectors
+			TSparse<ST>* sfm = new TSparse<ST>[num_vec];
+			ASSERT(sfm);
+
+			for (INT v=0; v<num_vec; v++)
+			{
+				sfm[v].features= new TSparseEntry<ST>[hist[v]];
+				sfm[v].num_feat_entries=hist[v];
+				sfm[v].vec_index=v;
+			}
+
+			// fill future feature vectors with content
+			memset(hist,0,sizeof(INT)*num_features);
+			for (INT v=0; v<num_vectors; v++)
+			{
+				INT vlen;
+				bool vfree;
+				TSparseEntry<ST>* sv=get_sparse_feature_vector(v, vlen, vfree);
+
+				for (INT i=0; i<vlen; i++)
+				{
+					INT vidx=sv[i].feat_index;
+					INT fidx=v;
+					sfm[vidx].features[hist[vidx]].feat_index=fidx;
+					sfm[vidx].features[hist[vidx]].entry=sv[i].entry;
+					hist[vidx]++;
+				}
+
+				free_sparse_feature_vector(sv, v, vfree);
+			}
+
+			delete[] hist;
+			return sfm;
 		}
 
 		/** set feature matrix

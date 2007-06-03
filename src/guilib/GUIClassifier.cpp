@@ -179,12 +179,16 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 	{
 		delete classifier;
 		classifier= new CLPM();
+		((CLPM*) classifier)->set_C(svm_C1, svm_C2);
+		((CLPM*) classifier)->set_epsilon(svm_epsilon);
 		SG_INFO( "created LPM object\n") ;
 	}
 	else if (strcmp(param,"LPBOOST")==0)
 	{
 		delete classifier;
 		classifier= new CLPBoost();
+		((CLPBoost*) classifier)->set_C(svm_C1, svm_C2);
+		((CLPBoost*) classifier)->set_epsilon(svm_epsilon);
 		SG_INFO( "created LPBoost object\n") ;
 	}
 #endif //USE_CPLEX

@@ -72,38 +72,148 @@ bool CCplex::init(E_PROB_TYPE typ, INT timeout)
 	return (lp != NULL) && (env != NULL);
 }
 
-bool CCplex::setup_lpm(CSparseFeatures* x, CLabels* y)
+bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y)
 {
-//tr_ell = size(XT,2) ;
-//Y_tr   = LT ;
-//X_tr   = sparse([XT;-XT]) ;
-//
-//A = [sparse(-Y_tr'.*ones(tr_ell,1)) -speye(tr_ell) sparse(-X_tr*sparse(spdiag(Y_tr)))'] ;
-//b = -ones(tr_ell,1) ;
-//INF=1e20 ; 
-//LB=[-INF;zeros(tr_ell,1); zeros(size(X_tr,1),1)] ;
-//UB=[ INF;INF*ones(tr_ell,1); INF*ones(size(X_tr,1),1)];
-//c=[0;PAR.C*ones(tr_ell,1)/tr_ell; ones(size(X_tr,1),1)] ;
-//clear X_tr 
-//
-//disp('setting up problem');
-//[p_lp,how]=lp_gen(lpenv,c,A,b,LB,UB,0,1) ;
-//clear A c b LB UB Y_tr 
-//tic
-//  disp('solving problem');
-//  [sol,lambda,how]=lp_resolve(lpenv,p_lp,1,'bar') ;
-//toc
-//if equal(how,'OK')
-//  lp_close(lpenv,p_lp) ;
-//else
-//  how
-//  keyboard
-//end ;
-//b     = sol(1) ;
-//xis   = sol(2:tr_ell+1) ;
-//alpha = sol(tr_ell+2:end);
-//alpha = alpha(1:end/2)-alpha(end/2+1:end) ;
-//sum(abs(alpha))
+	ASSERT(x);
+	ASSERT(y);
+	INT num_vec=y->get_num_labels();
+	INT num_feat=x->get_num_features();
+	LONG nnz=x->get_num_nonzero_entries();
+
+	//number of variables: b,w+,w-,xi concatenated
+	INT num_dims=1+2*num_feat+num_vec;
+	INT num_constraints=num_vec; 
+
+	DREAL* lb=new DREAL[num_dims];
+	ASSERT(lb);
+	DREAL* ub=new DREAL[num_dims];
+	ASSERT(ub);
+	DREAL* f=new DREAL[num_dims];
+	ASSERT(f);
+	DREAL* b=new DREAL[num_dims];
+	ASSERT(b);
+
+	//number of non zero entries in A (b,w+,w-,xi)
+	LONG amatsize=((LONG) num_vec)+nnz+nnz+num_vec; 
+
+	int* amatbeg=new int[num_dims];
+	ASSERT(amatbeg);
+	int* amatcnt=new int[num_dims];
+	ASSERT(amatcnt);
+	int* amatind=new int[amatsize];
+	ASSERT(amatind);
+	double* amatval= new double[amatsize];
+	ASSERT(amatval);
+
+	for (INT i=0; i<num_dims; i++)
+	{
+		if (i==0) //b
+		{
+			lb[i]=-CMath::INFTY;
+			ub[i]=+CMath::INFTY;
+			f[i]=0;
+		}
+		else if (i<2*num_dims+1) //w+,w-
+		{
+			lb[i]=0;
+			ub[i]=CMath::INFTY;
+			f[i]=1;
+		}
+		else //xi
+		{
+			lb[i]=0;
+			ub[i]=CMath::INFTY;
+			f[i]=C;
+		}
+	}
+
+	for (INT i=0; i<num_constraints; i++)
+		b[i]=-1;
+
+	char* sense = new char[num_constraints];
+	ASSERT(sense);
+	memset(sense,'L',sizeof(char)*num_constraints);
+
+	//construct A
+	LONG offs=0;
+
+	//b part of A
+	amatbeg[0]=offs;
+	amatcnt[0]=num_vec;
+
+	for (INT i=0; i<num_vec; i++)
+	{
+		amatind[offs]=i;
+		amatval[offs]=-y->get_label(i);
+		offs++;
+	}
+
+	//w+ and w- part of A
+	INT num_sfeat=0;
+	INT num_svec=0;
+	TSparse<DREAL>* sfeat= x->get_transposed(num_sfeat, num_svec);
+	ASSERT(sfeat);
+
+	for (INT i=0; i<num_svec; i++)
+	{
+		amatbeg[i+1]=offs;
+		amatcnt[i+1]=sfeat[i].num_feat_entries;
+
+		for (INT j=0; j<sfeat[i].num_feat_entries; j++)
+		{
+			INT row=sfeat[i].features[j].feat_index;
+			DREAL val=sfeat[i].features[j].entry;
+
+			amatind[offs]=row;
+			amatval[offs]=-y->get_label(row)*val;
+			offs++;
+		}
+	}
+
+	for (INT i=0; i<num_svec; i++)
+	{
+		amatbeg[num_vec+i+1]=offs;
+		amatcnt[num_vec+i+1]=sfeat[i].num_feat_entries;
+
+		for (INT j=0; j<sfeat[i].num_feat_entries; j++)
+		{
+			INT row=sfeat[i].features[j].feat_index;
+			DREAL val=sfeat[i].features[j].entry;
+
+			amatind[offs]=row;
+			amatval[offs]=-y->get_label(row)*val;
+			offs++;
+		}
+	}
+
+	x->clean_tsparse(sfeat, num_svec);
+
+	//xi part of A
+	offs=2*nnz+num_vec;
+	for (INT i=0; i<num_vec; i++)
+	{
+		amatbeg[1+2*num_feat+i]=offs;
+		amatcnt[1+2*num_feat+i]=1;
+		amatind[offs]=i;
+		amatval[offs]=-1;
+		offs++;
+	}
+
+
+	bool result = CPXcopylp(env, lp, num_dims, num_constraints, CPX_MIN, 
+			f, b, sense, amatbeg, amatcnt, amatind, amatval, lb, ub, NULL) == 0;
+	
+
+	delete[] amatval;
+	delete[] amatcnt;
+	delete[] amatind;
+	delete[] amatbeg;
+	delete[] b;
+	delete[] f;
+	delete[] ub;
+	delete[] lb;
+
+	return result;
 }
 
 bool CCplex::cleanup()

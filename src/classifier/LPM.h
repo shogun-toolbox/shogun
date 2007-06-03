@@ -31,6 +31,19 @@ class CLPM : public CSparseLinearClassifier
 		{
 			return CT_LPM;
 		}
+
+		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
+
+		inline DREAL get_C1() { return C1; }
+		inline DREAL get_C2() { return C2; }
+
+		inline void set_epsilon(DREAL eps) { epsilon=eps; }
+		inline DREAL get_epsilon() { return epsilon; }
+
+	protected:
+		DREAL C1;
+		DREAL C2;
+		DREAL epsilon;
 };
 #endif //USE_CPLEX
 #endif //_LPM_H___

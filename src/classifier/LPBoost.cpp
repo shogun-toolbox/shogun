@@ -17,7 +17,7 @@
 #include "lib/Mathematics.h"
 #include "lib/Cplex.h"
 
-CLPBoost::CLPBoost() : CSparseLinearClassifier()
+CLPBoost::CLPBoost() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-3)
 {
 }
 
@@ -30,7 +30,6 @@ bool CLPBoost::train()
 {
 	ASSERT(get_labels());
 	ASSERT(get_features());
-	INT num_train_labels=0;
 	INT num_train_labels=get_labels()->get_num_labels();
 	INT num_feat=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
@@ -53,9 +52,6 @@ bool CLPBoost::train()
 	}
 	solver.cleanup();
 	
-
-	delete[] train_labels;
-
-	return false;
+	return true;
 }
 #endif
