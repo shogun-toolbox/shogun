@@ -87,7 +87,7 @@ bool CCplex::init(E_PROB_TYPE typ, INT timeout)
 bool CCplex::setup_lpboost(DREAL C, INT num_cols)
 {
 	init(LINEAR);
-	INT status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 2); //dual simplex
+	INT status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 1); //primal simplex
 	if (status)
 		SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status);
 
@@ -97,15 +97,10 @@ bool CCplex::setup_lpboost(DREAL C, INT num_cols)
 
 	for (INT i=0; i<num_cols; i++)
 	{
-		obj[i]=0;
+		obj[i]=-1;
 		lb[i]=0;
 		ub[i]=C;
 	}
-
-	//last column is beta / appears in objective
-	obj[num_cols-1]=1;
-	lb[num_cols-1]=-CPX_INFBOUND;
-	ub[num_cols-1]=CPX_INFBOUND;
 
 	status = CPXnewcols(env, lp, num_cols, obj, lb, ub, NULL, NULL);
 	if ( status )
@@ -117,7 +112,7 @@ bool CCplex::setup_lpboost(DREAL C, INT num_cols)
 	return status==0;
 }
 
-bool CCplex::add_lpboost_constraint(TSparseEntry<DREAL>* h, INT len, INT ulen, CLabels* label)
+bool CCplex::add_lpboost_constraint(DREAL factor, TSparseEntry<DREAL>* h, INT len, INT ulen, CLabels* label)
 {
 	int amatbeg[1];
 	int amatind[len+1];
@@ -126,21 +121,18 @@ bool CCplex::add_lpboost_constraint(TSparseEntry<DREAL>* h, INT len, INT ulen, C
 	char sense[1];
 
 	amatbeg[0]=0;
-	rhs[0]=0;
+	rhs[0]=1;
 	sense[0]='L';
 
 	for (INT i=0; i<len; i++)
 	{
 		INT idx=h[i].feat_index;
-		DREAL val=h[i].entry;
+		DREAL val=factor*h[i].entry;
 		amatind[i]=idx;
 		amatval[i]=label->get_label(idx)*val;
 	}
 
-	amatind[len]=ulen-1;
-	amatval[len]=-1 ;
-
-	INT status = CPXaddrows (env, lp, 0, 1, len+1, rhs, sense, amatbeg, amatind, amatval, NULL, NULL);
+	INT status = CPXaddrows (env, lp, 0, 1, len, rhs, sense, amatbeg, amatind, amatval, NULL, NULL);
 
 	if ( status ) 
 		SG_ERROR( "Failed to add the new row.\n");

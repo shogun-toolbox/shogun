@@ -42,7 +42,7 @@ public:
 	bool cleanup();
 
 	bool setup_lpboost(DREAL C, INT num_cols);
-	bool add_lpboost_constraint(TSparseEntry<DREAL>* h, INT len, INT ulen, CLabels* label);
+	bool add_lpboost_constraint(DREAL factor, TSparseEntry<DREAL>* h, INT len, INT ulen, CLabels* label);
 
 	/// given N sparse inputs x_i, and corresponding labels y_i i=0...N-1
 	/// create the following 1-norm SVM problem & transfer to cplex
@@ -52,8 +52,7 @@ public:
 	/// w=[w^+ w^-]
 	/// b, xi
 	/// 
-	/// -y_i(+w_+^T x_i + b)-xi_i <= -1
-	/// -y_i(-w_-^T x_i + b)-xi_i <= -1
+	/// -y_i((w^+-w^-)^T x_i + b)-xi_i <= -1
 	/// x_i >= 0 
 	/// w_i >= 0    forall i=1...N
 	////////////////////////////////////////////////////////////////// 
@@ -100,6 +99,11 @@ public:
 	bool optimize(DREAL* sol, DREAL* lambda=NULL);
 
 	bool dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, int* &qmatcnt, int* &qmatind, double* &qmatval);
+
+	inline bool write_problem(char* filename)
+	{
+		return CPXwriteprob (env, lp, filename, NULL) == 0;
+	}
 protected:
   CPXENVptr     env;
   CPXLPptr      lp;

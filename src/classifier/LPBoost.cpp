@@ -36,12 +36,10 @@ CLPBoost::~CLPBoost()
 
 bool CLPBoost::init(INT num_vec)
 {
-	u=new DREAL[num_vec+1]; // last dim is beta
+	u=new DREAL[num_vec];
 	ASSERT(u);
 	for (INT i=0; i<num_vec; i++)
 		u[i]=1.0/num_vec;
-
-	u[num_vec]=0;
 
 	dim=new CDynamicArray<INT>(100000);
 
@@ -72,19 +70,27 @@ DREAL CLPBoost::find_max_violator(INT& max_dim)
 
 	for (INT i=0; i<num_svec; i++)
 	{
-		DREAL val=0;
+		DREAL valplus=0;
+		DREAL valminus=0;
 
 		for (INT j=0; j<sfeat[i].num_feat_entries; j++)
 		{
 			INT idx=sfeat[i].features[j].feat_index;
-			DREAL v=sfeat[i].features[j].entry;
-			val+=u[idx]*get_labels()->get_label(idx)*v;
+			DREAL v=u[idx]*get_labels()->get_label(idx)*sfeat[i].features[j].entry;
+			valplus+=v;
+			valminus-=v;
 		}
 
-		if (val>max_val || max_dim==-1)
+		if (valplus>max_val || max_dim==-1)
 		{
 			max_dim=i;
-			max_val=val;
+			max_val=valplus;
+		}
+
+		if (valminus>max_val)
+		{
+			max_dim=num_svec+i;
+			max_val=valminus;
 		}
 	}
 
@@ -109,30 +115,37 @@ bool CLPBoost::train()
 
 	CCplex solver;
 	solver.init(LINEAR);
-	solver.setup_lpboost(C1, num_vec+1);
+	solver.setup_lpboost(C1, num_vec);
 
 	init(num_vec);
 
-	DREAL* beta=&u[num_vec];
 	INT num_hypothesis=0;
 
 	while (!(CSignal::cancel_computations()))
 	{
 		INT max_dim=0;
 		DREAL violator=find_max_violator(max_dim);
-		SG_PRINT("iteration:%06d violator: %10.10f beta: %10.10f chosen: %d\n", num_hypothesis, violator, *beta, max_dim);
-		if (violator <= *beta+epsilon) //no constraint violated
+		SG_PRINT("iteration:%06d violator: %10.17f (>1.0) chosen: %d\n", num_hypothesis, violator, max_dim);
+		if (violator <= 1.0+epsilon && num_hypothesis>1) //no constraint violated
 		{
-			SG_PRINT("converged!\n");
+			SG_PRINT("converged after %d iterations!\n", num_hypothesis);
 			break;
+		}
+
+		DREAL factor=+1.0;
+		if (max_dim>=num_svec)
+		{
+			factor=-1.0;
+			max_dim-=num_svec;
 		}
 
 		TSparseEntry<DREAL>* h=sfeat[max_dim].features;
 		INT len=sfeat[max_dim].num_feat_entries;
-		solver.add_lpboost_constraint(h, len, num_vec+1, get_labels());
+		solver.add_lpboost_constraint(factor, h, len, num_vec, get_labels());
 		solver.optimize(u);
-		//CMath::display_vector(u, num_vec+1, "u");
+		//CMath::display_vector(u, num_vec, "u");
 		num_hypothesis++;
+
 	}
 	DREAL* lambda=new DREAL[num_hypothesis];
 	solver.optimize(u, lambda);
@@ -141,8 +154,13 @@ bool CLPBoost::train()
 	for (INT i=0; i<num_hypothesis; i++)
 	{
 		INT d=dim->get_element(i);
-		w[d]+=lambda[i];
+		if (d>=num_svec)
+			w[d-num_svec]+=lambda[i];
+		else
+			w[d]-=lambda[i];
+
 	}
+	solver.write_problem("problem.lp");
 	solver.cleanup();
 
 	cleanup();
