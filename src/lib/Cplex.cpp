@@ -447,6 +447,8 @@ bool CCplex::optimize(DREAL* sol, DREAL* lambda)
 
 	status = CPXsolution (env, lp, &solnstat, &objval, sol, lambda, NULL, NULL);
 
+	//SG_PRINT("obj:%f\n", objval);
+
 	return (status==0);
 }
 #endif

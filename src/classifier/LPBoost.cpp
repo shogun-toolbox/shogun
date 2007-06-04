@@ -103,6 +103,7 @@ bool CLPBoost::train()
 	ASSERT(num_vec==num_train_labels);
 	delete[] w;
 	w=new DREAL[num_feat];
+	memset(w,0,sizeof(DREAL)*num_feat);
 	w_dim=num_feat;
 	ASSERT(w);
 
@@ -119,30 +120,28 @@ bool CLPBoost::train()
 	{
 		INT max_dim=0;
 		DREAL violator=find_max_violator(max_dim);
+		SG_PRINT("iteration:%06d violator: %10.10f beta: %10.10f chosen: %d\n", num_hypothesis, violator, *beta, max_dim);
 		if (violator <= *beta+epsilon) //no constraint violated
+		{
+			SG_PRINT("converged!\n");
 			break;
+		}
 
 		TSparseEntry<DREAL>* h=sfeat[max_dim].features;
 		INT len=sfeat[max_dim].num_feat_entries;
 		solver.add_lpboost_constraint(h, len, num_vec+1, get_labels());
 		solver.optimize(u);
+		//CMath::display_vector(u, num_vec+1, "u");
 		num_hypothesis++;
-		SG_PRINT("iteration:%06d violator: %10.10f beta: %10.10f chosen: %d\n", num_hypothesis, violator, *beta, max_dim);
 	}
 	DREAL* lambda=new DREAL[num_hypothesis];
 	solver.optimize(u, lambda);
 
-	SG_PRINT("lambda1=%f d1=%d\n", lambda[0], dim->get_element(0));
+	//CMath::display_vector(lambda, num_hypothesis, "lambda");
 	for (INT i=0; i<num_hypothesis; i++)
 	{
 		INT d=dim->get_element(i);
-
-		DREAL val=0;
-
-		for (INT j=0; j<sfeat[i].num_feat_entries; j++)
-			val+=sfeat[d].features[j].entry;
-
-		w[d]=lambda[i]*val;
+		w[d]-=lambda[i];
 	}
 	solver.cleanup();
 
