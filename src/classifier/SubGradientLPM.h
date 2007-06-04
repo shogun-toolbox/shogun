@@ -13,6 +13,8 @@
 #define _SUBGRADIENTLPM_H___
 
 #include "lib/common.h"
+#include "lib/Cplex.h"
+
 #include "classifier/SparseLinearClassifier.h"
 #include "features/SparseFeatures.h"
 #include "features/Labels.h"
@@ -107,6 +109,12 @@ class CSubGradientLPM : public CSparseLinearClassifier
 		DREAL sum_Cy_active;
 
 		//vector of length num_feat
+		INT pos_idx;
+		INT neg_idx;
+		INT zero_idx;
+		INT* w_pos;
+		INT* w_zero;
+		INT* w_neg;
 		DREAL* grad_w;
 		DREAL grad_b;
 		DREAL* grad_proj;
@@ -120,6 +128,8 @@ class CSubGradientLPM : public CSparseLinearClassifier
 		DREAL* old_Zv;
 		DREAL* Z;
 		DREAL* old_Z;
+
+		CCplex* solver;
 };
 #endif
 

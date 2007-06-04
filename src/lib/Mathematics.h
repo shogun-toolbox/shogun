@@ -319,6 +319,16 @@ public:
 		return result;
 	}
 
+	/// return sum(abs(vec))
+	static inline DREAL sum_abs(DREAL* vec, INT len)
+	{
+		DREAL result=0;
+		for (INT i=0; i<len; i++)
+			result+=CMath::abs(vec[i]);
+
+		return result;
+	}
+
 	static inline DREAL mean(DREAL* vec, INT len)
 	{
 		ASSERT(vec);

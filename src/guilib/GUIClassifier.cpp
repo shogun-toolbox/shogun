@@ -274,6 +274,7 @@ bool CGUIClassifier::train(CHAR* param)
 		case CT_LPM:
 		case CT_LPBOOST:
 		case CT_SUBGRADIENTSVM:
+		case CT_SUBGRADIENTLPM:
 			return train_sparse_linear(param);
 		default:
 			SG_ERROR( "unknown classifier type\n");
@@ -903,6 +904,7 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_SUBGRADIENTSVM:
 		case CT_LPM:
 		case CT_LPBOOST:
+		case CT_SUBGRADIENTLPM:
 			return classify_sparse_linear(output);
 		default:
 			SG_ERROR( "unknown classifier type\n");
