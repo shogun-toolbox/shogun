@@ -205,7 +205,8 @@ enum EClassifierType
     CT_GNPPSVM = 160,
     CT_GMNPSVM = 170,
 	CT_SUBGRADIENTSVM = 180,
-	CT_SVMPERF = 190
+	CT_SUBGRADIENTLPM = 190,
+	CT_SVMPERF = 200
 };
 
 enum EDistanceType

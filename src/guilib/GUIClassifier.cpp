@@ -49,6 +49,7 @@
 
 #include "classifier/svm/SVMLin.h"
 #include "classifier/svm/SubGradientSVM.h"
+#include "classifier/SubGradientLPM.h"
 #include "classifier/svm/SVMPerf.h"
 
 
@@ -219,6 +220,18 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
 		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
 		SG_INFO( "created Subgradient SVM object\n") ;
+	}
+	else if (strcmp(param,"SUBGRADIENTLPM")==0)
+	{
+		delete classifier;
+		classifier= new CSubGradientLPM();
+
+		((CSubGradientLPM*) classifier)->set_bias_enabled(svm_use_bias);
+		((CSubGradientLPM*) classifier)->set_qpsize(svm_qpsize);
+		((CSubGradientLPM*) classifier)->set_qpsize_max(svm_max_qpsize);
+		((CSubGradientLPM*) classifier)->set_C(svm_C1, svm_C2);
+		((CSubGradientLPM*) classifier)->set_epsilon(svm_epsilon);
+		SG_INFO( "created Subgradient LPM object\n") ;
 	}
 	else
 	{

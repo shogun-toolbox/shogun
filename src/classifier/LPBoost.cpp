@@ -141,7 +141,7 @@ bool CLPBoost::train()
 	for (INT i=0; i<num_hypothesis; i++)
 	{
 		INT d=dim->get_element(i);
-		w[d]-=lambda[i];
+		w[d]+=lambda[i];
 	}
 	solver.cleanup();
 

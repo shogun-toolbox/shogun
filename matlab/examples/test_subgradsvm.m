@@ -1,12 +1,12 @@
 C=1;
-epsilon=1e-8;
+epsilon=1e-3;
 
 run_subgradientsvm=1;
 run_libsvm=0;
 run_svmlight=1;
 run_gpbtsvm=1;
 
-dataset=6;
+dataset=7;
 
 switch dataset
 case 1,
@@ -67,6 +67,17 @@ case 6,
 	testdat=[rand(dim,num/2)-dist, rand(dim,num/2)+dist];
 	testdat=testdat/(dim*mean(testdat(:)));;
 	testlab=[-ones(1,num/2), ones(1,num/2) ];
+case 7,
+	load ~/astro-ph_29882.mat
+	%for i=1:size(x,2)
+	%	x(i,:)=x(i,:)-mean(x(i,:));
+	%end
+	%for i=1:size(x,2)
+	%	x(i,:)=x(i,:)/std(x(i,:));
+	%end
+	%keyboard
+	traindat=x;
+	trainlab=y;
 otherwise
 	error('unknown dataset')
 end
@@ -76,7 +87,6 @@ sg('send_command', 'loglevel ALL');
 %%%%SUBGRADIENT%%%
 if run_subgradientsvm,
 	sg('set_features', 'TRAIN', traindat);
-	sg('send_command', 'convert TRAIN SIMPLE REAL SPARSE REAL') ;
 
 	sg('set_labels', 'TRAIN', trainlab);
 	sg('send_command', sprintf('c %f', C));
@@ -90,7 +100,6 @@ if run_subgradientsvm,
 	timesubgradsvm=toc
 
 	sg('set_features', 'TEST', traindat);
-	sg('send_command', 'convert TEST SIMPLE REAL SPARSE REAL') ;
 	trainout=sg('classify');
 	trainerr=mean(trainlab~=sign(trainout))
 	[b,W]=sg('get_classifier');
@@ -100,7 +109,6 @@ end
 %%%%LIGHT%%%
 if run_svmlight,
 	sg('set_features', 'TRAIN', traindat);
-	sg('send_command', 'convert TRAIN SIMPLE REAL SPARSE REAL') ;
 	sg('set_labels', 'TRAIN', trainlab);
 	sg('send_command', sprintf('c %f', C));
 	sg('send_command', 'set_kernel LINEAR SPARSEREAL 10 1.0');
@@ -114,7 +122,6 @@ if run_svmlight,
 
 	sg('send_command', 'init_kernel_optimization');
 	sg('set_features', 'TEST', traindat);
-	sg('send_command', 'convert TEST SIMPLE REAL SPARSE REAL') ;
 	sg('send_command', 'init_kernel TEST');
 	obj_light=sg('get_svm_objective')
 	trainout_reflight=sg('classify');
@@ -128,7 +135,6 @@ end
 %%%%%GPBT%%%
 if run_gpbtsvm,
 	sg('set_features', 'TRAIN', traindat);
-	sg('send_command', 'convert TRAIN SIMPLE REAL SPARSE REAL') ;
 	sg('set_labels', 'TRAIN', trainlab);
 	sg('send_command', sprintf('c %f', C));
 	sg('send_command', 'set_kernel LINEAR SPARSEREAL 10 1.0');
@@ -142,7 +148,6 @@ if run_gpbtsvm,
 
 	sg('send_command', 'init_kernel_optimization');
 	sg('set_features', 'TEST', traindat);
-	sg('send_command', 'convert TEST SIMPLE REAL SPARSE REAL') ;
 	sg('send_command', 'init_kernel TEST');
 	obj_gpbt=sg('get_svm_objective')
 	trainout_refgpbt=sg('classify');
@@ -157,7 +162,6 @@ end
 %%%%%LIBSVM%%%
 if run_libsvm,
 	sg('set_features', 'TRAIN', traindat);
-	sg('send_command', 'convert TRAIN SIMPLE REAL SPARSE REAL') ;
 	sg('set_labels', 'TRAIN', trainlab);
 	sg('send_command', sprintf('c %f', C));
 	sg('send_command', 'set_kernel LINEAR SPARSEREAL 1000 1.0');
@@ -170,7 +174,6 @@ if run_libsvm,
 
 	sg('send_command', 'init_kernel_optimization');
 	sg('set_features', 'TEST', traindat);
-	sg('send_command', 'convert TEST SIMPLE REAL SPARSE REAL') ;
 	sg('send_command', 'init_kernel TEST');
 	obj_libsvm=sg('get_svm_objective')
 	trainout_reflibsvm=sg('classify');
