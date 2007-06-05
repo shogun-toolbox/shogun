@@ -258,7 +258,8 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	delete[] w;
 	w=new DREAL[num_feat];
 	ASSERT(w);
-	memset(w,0,sizeof(DREAL)*num_feat);
+	for (INT i=0; i<num_feat; i++)
+		w[i]=1.0;
 	//CMath::random_vector(w, num_feat, -1.0, 1.0);
 	bias=0;
 	num_it_noimprovement=0;
