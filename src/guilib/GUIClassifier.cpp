@@ -971,6 +971,7 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &col
 		case CT_LDA:
 		case CT_LPM:
 		case CT_LPBOOST:
+		case CT_SUBGRADIENTLPM:
 			return get_linear(weights, rows, cols, bias);
 			break;
 		case CT_KNN:

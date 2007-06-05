@@ -80,7 +80,7 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 			w_pos[pos_idx++]=i;
 			grad_w[i]=1;
 		}
-		else if (-w[i]<work_epsilon)
+		else if (w[i]<-work_epsilon)
 		{
 			w_neg[neg_idx++]=i;
 			grad_w[i]=-1;
@@ -121,67 +121,84 @@ void CSubGradientLPM::update_active(INT num_feat, INT num_vec)
 
 DREAL CSubGradientLPM::line_search(INT num_feat, INT num_vec)
 {
-	DREAL sum_B = 0;
-	DREAL A0 = 0.5*CMath::dot(grad_w, grad_w, num_feat);
-	DREAL B0 = -CMath::dot(w, grad_w, num_feat);
-
 	INT num_hinge=0;
+	DREAL alpha=0;
+	DREAL sgrad=0;
 
-	for (INT i=0; i<num_vec; i++)
+	DREAL* A=new DREAL[num_feat+num_vec];
+	DREAL* B=new DREAL[num_feat+num_vec];
+	DREAL* C=new DREAL[num_feat+num_vec];
+	DREAL* D=new DREAL[num_feat+num_vec];
+
+	for (INT i=0; i<num_feat+num_vec; i++)
 	{
-		DREAL p=get_label(i)*features->dense_dot(1.0, i, grad_w, num_feat, grad_b);
-		grad_proj[i]=p;
-		if (p!=0)
+		if (i<num_feat)
 		{
-			hinge_point[num_hinge]=(proj[i]-1)/p;
-			hinge_idx[num_hinge]=num_hinge;
-			num_hinge++;
-
-			if (p<0)
-				sum_B+=p;
-		}
-	}
-	sum_B*=C1;
-
-	CMath::qsort(hinge_point, hinge_idx, num_hinge);
-
-
-	DREAL alpha = hinge_point[0];
-	DREAL grad_val = 2*A0*alpha + B0 + sum_B;
-
-	//CMath::display_vector(grad_w, num_feat, "grad_w");
-	//CMath::display_vector(grad_proj, num_vec, "grad_proj");
-	//CMath::display_vector(hinge_point, num_vec, "hinge_point");
-	//SG_PRINT("A0=%f\n", A0);
-	//SG_PRINT("B0=%f\n", B0);
-	//SG_PRINT("sum_B=%f\n", sum_B);
-	//SG_PRINT("alpha=%f\n", alpha);
-	//SG_PRINT("grad_val=%f\n", grad_val);
-
-	DREAL old_grad_val = grad_val;
-	DREAL old_alpha = alpha;
-
-	for (INT i=1; i < num_hinge && grad_val < 0; i++)
-	{
-		alpha = hinge_point[i];
-		grad_val = 2*A0*alpha + B0 + sum_B;
-
-		if (grad_val > 0)
-		{
-			ASSERT(old_grad_val-grad_val != 0);
-			DREAL gamma = -grad_val/(old_grad_val-grad_val);
-			alpha = old_alpha*gamma + (1-gamma)*alpha;
+			A[i]=-grad_w[i];
+			B[i]=w[i];
+			C[i]=+grad_w[i];
+			D[i]=-w[i];
 		}
 		else
 		{
-			old_grad_val = grad_val;
-			old_alpha = alpha;
+			DREAL p=get_label(i-num_feat)*features->dense_dot(1.0, i-num_feat, grad_w, num_feat, grad_b);
+			grad_proj[i-num_feat]=p;
+			
+			A[i]=0;
+			B[i]=0;
+			C[i]=C1*p;
+			D[i]=C1*(1-proj[i-num_feat]);
+		}
 
-			sum_B = sum_B + CMath::abs(C1*grad_proj[hinge_idx[i]]);
-			grad_val = 2*A0*alpha + B0 + sum_B;
+		if (A[i]==C[i] && B[i]>D[i])
+			sgrad+=A[i]+C[i];
+		else if (A[i]==C[i] && B[i]==D[i])
+			sgrad+=CMath::max(A[i],C[i]);
+		else if (A[i]!=C[i])
+		{
+			hinge_point[num_hinge]=(D[i]-B[i])/(A[i]-C[i]);
+			hinge_idx[num_hinge]=i; // index into A,B,C,D arrays
+			num_hinge++;
+
+			if (A[i]>C[i])
+				sgrad+=C[i];
+			if (A[i]<C[i])
+				sgrad+=A[i];
 		}
 	}
 
+	SG_PRINT("sgrad:%f\n", sgrad);
+	CMath::display_vector(A, num_feat+num_vec, "A");
+	CMath::display_vector(B, num_feat+num_vec, "B");
+	CMath::display_vector(C, num_feat+num_vec, "C");
+	CMath::display_vector(D, num_feat+num_vec, "D");
+	CMath::display_vector(hinge_point, num_feat+num_vec, "hinge_point");
+	CMath::display_vector(hinge_idx, num_feat+num_vec, "hinge_idx");
+	//ASSERT(0);
+
+	CMath::qsort(hinge_point, hinge_idx, num_hinge);
+	CMath::display_vector(hinge_point, num_feat+num_vec, "hinge_point_sorted");
+
+
+	INT i=-1;
+	while (i < num_hinge-1 && sgrad < 0)
+	{
+		i+=1;
+
+		if (A[hinge_idx[i]] > C[hinge_idx[i]])
+			sgrad += A[hinge_idx[i]] - C[hinge_idx[i]];
+		else
+			sgrad += C[hinge_idx[i]] - A[hinge_idx[i]];
+	}
+
+	alpha = hinge_point[i];
+
+	delete[] D;
+	delete[] C;
+	delete[] B;
+	delete[] A;
+
+	SG_PRINT("alpha=%f\n", alpha);
 	return alpha;
 }
 
@@ -193,6 +210,7 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 	if (zero_idx+num_bound > 0)
 	{
 		SG_PRINT("num_var:%d (zero:%d, bound:%d) num_feat:%d\n", zero_idx+num_bound, zero_idx,num_bound, num_feat);
+		CMath::display_vector(grad_w, num_feat+1, "grad_w");
 		CMath::add(grad_w, 1.0, grad_w, -1.0, sum_CXy_active, num_feat);
 		grad_w[num_feat]= -sum_Cy_active;
 		grad_b = -sum_Cy_active;
@@ -239,7 +257,7 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 
 
 	SG_PRINT("Gradient   : |subgrad_W|^2=%f, |subgrad_b|^2=%f\n",
-			CMath::dot(grad_w, grad_w, num_feat), bias*bias);
+			CMath::dot(grad_w, grad_w, num_feat), grad_b*grad_b);
 
 	return dir_deriv;
 }
@@ -321,13 +339,13 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	ASSERT(grad_proj);
 	memset(grad_proj,0,sizeof(DREAL)*num_vec);
 
-	hinge_point= new DREAL[num_vec];
+	hinge_point= new DREAL[num_vec+num_feat];
 	ASSERT(hinge_point);
-	memset(hinge_point,0,sizeof(DREAL)*num_vec);
+	memset(hinge_point,0,sizeof(DREAL)*(num_vec+num_feat));
 
-	hinge_idx= new INT[num_vec];
+	hinge_idx= new INT[num_vec+num_feat];
 	ASSERT(hinge_idx);
-	memset(hinge_idx,0,sizeof(INT)*num_vec);
+	memset(hinge_idx,0,sizeof(INT)*(num_vec+num_feat));
 
 	active=new BYTE[num_vec];
 	ASSERT(active);
@@ -443,7 +461,6 @@ bool CSubGradientLPM::train()
 		//SG_PRINT("grad_b:%f\n", grad_b);
 		
 		dir_deriv=compute_min_subgradient(num_feat, num_vec, num_active, num_bound);
-		ASSERT(0);
 
 		alpha=line_search(num_feat, num_vec);
 
@@ -454,7 +471,7 @@ bool CSubGradientLPM::train()
 
 			SG_PRINT("CHECKING OPTIMALITY CONDITIONS: "
 					"work_epsilon: %10.10f delta_active:%d norm_grad: %10.10f\n", work_epsilon, delta_active, norm_grad);
-			if (work_epsilon<=epsilon && delta_active==0 && alpha*norm_grad<1e-6)
+			if (work_epsilon<=epsilon && delta_active==0 && alpha*norm_grad<1e-12)
 				break;
 			else
 				num_it_noimprovement=0;
@@ -479,10 +496,12 @@ bool CSubGradientLPM::train()
 
 		update_projection(alpha, num_vec);
 		//compute_projection(num_feat, num_vec);
-		//CMath::display_vector(w, w_dim, "w");
-		//SG_PRINT("bias: %f\n", bias);
-		//CMath::display_vector(proj, num_vec, "proj");
+		CMath::display_vector(w, w_dim, "w");
+		SG_PRINT("bias: %f\n", bias);
+		CMath::display_vector(proj, num_vec, "proj");
 
+		//if (num_iterations==2)
+		//	ASSERT(0);
 		t.stop();
 		loop_time=t.time_diff_sec();
 		num_iterations++;

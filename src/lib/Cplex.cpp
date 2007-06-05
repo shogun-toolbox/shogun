@@ -49,7 +49,7 @@ bool CCplex::init(E_PROB_TYPE typ, INT timeout)
 		{
 			/* Turn on output to the screen */
 
-			status = CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_ON);
+			status = CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_OFF);
 			if (status)
 				SG_ERROR( "Failure to turn off screen indicator, error %d.\n", status);
 
@@ -160,13 +160,38 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 
 			cmatbeg[i]=offs;
 			cmatcnt[i]=vlen;
+			if (use_bias)
+				cmatcnt[i]++;
 
-			DREAL val= -C*labels->get_label(idx);
-
-			for (INT j=0; j<vlen; j++)
+			if (vlen>0)
 			{
-				cmatind[offs]=vec[j].feat_index;
-				cmatval[offs]=-val*vec[j].entry;
+				DREAL val= -C*labels->get_label(idx);
+
+				for (INT j=0; j<vlen; j++)
+				{
+					cmatind[offs]=vec[j].feat_index;
+					cmatval[offs]=-val*vec[j].entry;
+					offs++;
+					ASSERT(offs<cmatsize);
+				}
+
+				if (use_bias)
+				{
+					cmatind[offs]=num_dim-1;
+					cmatval[offs]=C;
+					offs++;
+					ASSERT(offs<cmatsize);
+				}
+			}
+			else
+			{
+				if (use_bias)
+				{
+					cmatind[offs]=num_dim-1;
+					cmatval[offs]=C;
+				}
+				else
+					cmatval[offs]=0.0;
 				offs++;
 				ASSERT(offs<cmatsize);
 			}
@@ -204,7 +229,8 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 
 	for (INT i=0; i<num_variables; i++)
 	{
-		if ((i<num_dim-1) || (!use_bias && i<num_dim)) //xi
+		if (i<num_dim) //|| (!use_bias && i<num_dim)) //xi
+		//if ((i<num_dim-1) || (!use_bias && i<num_dim)) //xi
 		{
 			qmatbeg[i]=i;
 			qmatcnt[i]=1;
@@ -213,7 +239,8 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 		}
 		else
 		{
-			qmatbeg[i]= (use_bias) ? (num_dim-1) : (num_dim);
+			//qmatbeg[i]= (use_bias) ? (num_dim-1) : (num_dim);
+			qmatbeg[i]= num_dim;
 			qmatcnt[i]=0;
 			qmatind[i]=0;
 			qmatval[i]=0;
