@@ -111,6 +111,11 @@ public:
 	{
 		return CPXwriteprob (env, lp, filename, NULL) == 0;
 	}
+
+	inline bool write_Q(char* filename)
+	{
+		return CPXqpwrite (env, lp, filename) == 0;
+	}
 protected:
   CPXENVptr     env;
   CPXLPptr      lp;

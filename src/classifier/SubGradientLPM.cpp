@@ -76,12 +76,21 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 	for (INT i=0; i<num_feat; i++)
 	{
 		if (w[i]>work_epsilon)
+		{
 			w_pos[pos_idx++]=i;
+			grad_w[i]=1;
+		}
 		else if (-w[i]<work_epsilon)
+		{
 			w_neg[neg_idx++]=i;
+			grad_w[i]=-1;
+		}
 
 		if (CMath::abs(w[i])<=work_epsilon)
+		{
 			w_zero[zero_idx++]=i;
+			grad_w[i]=-1;
+		}
 	}
 
 	return delta_active;
@@ -183,48 +192,55 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 
 	if (zero_idx+num_bound > 0)
 	{
-		CMath::add(v, 1.0, w, -1.0, sum_CXy_active, num_feat);
-
-		SG_PRINT("hi1\n");
-		solver->setup_subgradientlpm_QP(C1, get_labels(), get_features(), idx_bound, num_bound,
-				w_zero, zero_idx,
-				v, num_feat,
-				use_bias);
-
-		SG_PRINT("hi2\n");
-
-		solver->optimize(beta);
-
-		CMath::display_vector(beta, zero_idx+num_bound);
-		ASSERT(0);
-
-
-		CMath::add(grad_w, 1.0, w, -1.0, sum_CXy_active, num_feat);
+		SG_PRINT("num_var:%d (zero:%d, bound:%d) num_feat:%d\n", zero_idx+num_bound, zero_idx,num_bound, num_feat);
+		CMath::add(grad_w, 1.0, grad_w, -1.0, sum_CXy_active, num_feat);
+		grad_w[num_feat]= -sum_Cy_active;
 		grad_b = -sum_Cy_active;
 
-		for (INT i=0; i<num_bound; i++)
+		CMath::display_vector(grad_w, num_feat+1, "grad_w");
+
+		solver->setup_subgradientlpm_QP(C1, get_labels(), get_features(), idx_bound, num_bound,
+				w_zero, zero_idx,
+				grad_w, num_feat+1,
+				use_bias);
+
+		solver->optimize(beta);
+		CMath::display_vector(beta, 5, "beta");
+		for (INT i=0; i<zero_idx+num_bound; i++)
+			beta[i]=beta[i+num_feat+1];
+
+		CMath::display_vector(beta, zero_idx+num_bound, "beta");
+
+		for (INT i=0; i<zero_idx+num_bound; i++)
 		{
-			features->add_to_dense_vec(-C1*beta[i]*get_label(idx_bound[i]), idx_bound[i], grad_w, num_feat);
-			if (use_bias)
-				grad_b -=  C1 * get_label(idx_bound[i])*beta[i];
+			if (i<zero_idx)
+				grad_w[w_zero[i]]+=beta[w_zero[i]];
+			else
+			{
+				features->add_to_dense_vec(-C1*beta[i]*get_label(idx_bound[i-zero_idx]), idx_bound[i-zero_idx], grad_w, num_feat);
+				if (use_bias)
+					grad_b -=  C1 * get_label(idx_bound[i-zero_idx])*beta[i-zero_idx];
+			}
 		}
 
-		dir_deriv = CMath::dot(grad_w, v, num_feat) - grad_b*sum_Cy_active;
-		for (INT i=0; i<num_bound; i++)
-		{
-			DREAL val= C1*get_label(idx_bound[i])*features->dense_dot(1.0, idx_bound[i], grad_w, num_feat, grad_b);
-			dir_deriv += CMath::max(0.0, val);
-		}
+		CMath::display_vector(w_zero, zero_idx, "w_zero");
+		CMath::display_vector(grad_w, num_feat, "grad_w");
+		SG_PRINT("grad_b=%f\n", grad_b);
 	}
 	else
 	{
 		CMath::add(grad_w, 1.0, w, -1.0, sum_CXy_active, num_feat);
 		grad_b = -sum_Cy_active;
 
-		dir_deriv = CMath::dot(grad_w, grad_w, num_feat)+ grad_b*grad_b;
+		//dir_deriv = CMath::dot(grad_w, grad_w, num_feat)+ grad_b*grad_b;
 	}
 
 	solver->cleanup();
+
+
+	SG_PRINT("Gradient   : |subgrad_W|^2=%f, |subgrad_b|^2=%f\n",
+			CMath::dot(grad_w, grad_w, num_feat), bias*bias);
+
 	return dir_deriv;
 }
 
@@ -259,7 +275,7 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	w=new DREAL[num_feat];
 	ASSERT(w);
 	for (INT i=0; i<num_feat; i++)
-		w[i]=1.0;
+		w[i]=0.0;
 	//CMath::random_vector(w, num_feat, -1.0, 1.0);
 	bias=0;
 	num_it_noimprovement=0;
@@ -279,21 +295,13 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	ASSERT(w_neg);
 	memset(w_neg,0,sizeof(INT)*num_feat);
 
-	grad_w=new DREAL[num_feat];
+	grad_w=new DREAL[num_feat+1];
 	ASSERT(grad_w);
-	memset(grad_w,0,sizeof(DREAL)*num_feat);
+	memset(grad_w,0,sizeof(DREAL)*(num_feat+1));
 
 	sum_CXy_active=new DREAL[num_feat];
 	ASSERT(sum_CXy_active);
 	memset(sum_CXy_active,0,sizeof(DREAL)*num_feat);
-
-	v=new DREAL[num_feat];
-	ASSERT(v);
-	memset(v,0,sizeof(DREAL)*num_feat);
-
-	old_v=new DREAL[num_feat];
-	ASSERT(old_v);
-	memset(old_v,0,sizeof(DREAL)*num_feat);
 
 	sum_Cy_active=0;
 
@@ -337,29 +345,9 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	ASSERT(idx_active);
 	memset(idx_active,0,sizeof(INT)*num_vec);
 
-	Z=new DREAL[qpsize_limit*qpsize_limit];
-	ASSERT(Z);
-	memset(Z,0,sizeof(DREAL)*qpsize_limit*qpsize_limit);
-
-	Zv=new DREAL[qpsize_limit];
-	ASSERT(Zv);
-	memset(Zv,0,sizeof(DREAL)*qpsize_limit);
-
-	beta=new DREAL[qpsize_limit];
+	beta=new DREAL[num_feat+1+num_feat+num_vec];
 	ASSERT(beta);
-	memset(beta,0,sizeof(DREAL)*qpsize_limit);
-
-	old_Z=new DREAL[qpsize_limit*qpsize_limit];
-	ASSERT(old_Z);
-	memset(old_Z,0,sizeof(DREAL)*qpsize_limit*qpsize_limit);
-
-	old_Zv=new DREAL[qpsize_limit];
-	ASSERT(old_Zv);
-	memset(old_Zv,0,sizeof(DREAL)*qpsize_limit);
-
-	old_beta=new DREAL[qpsize_limit];
-	ASSERT(old_beta);
-	memset(old_beta,0,sizeof(DREAL)*qpsize_limit);
+	memset(beta,0,sizeof(DREAL)*num_feat+1+num_feat+num_vec);
 
 	solver=new CCplex();
 }
@@ -381,14 +369,7 @@ void CSubGradientLPM::cleanup()
 	delete[] w_zero;
 	delete[] w_neg;
 	delete[] grad_w;
-	delete[] v;
-	delete[] Z;
-	delete[] Zv;
 	delete[] beta;
-	delete[] old_v;
-	delete[] old_Z;
-	delete[] old_Zv;
-	delete[] old_beta;
 
 	hinge_idx=NULL;
 	proj=NULL;
@@ -398,9 +379,6 @@ void CSubGradientLPM::cleanup()
 	idx_active=NULL;
 	sum_CXy_active=NULL;
 	grad_w=NULL;
-	v=NULL;
-	Z=NULL;
-	Zv=NULL;
 	beta=NULL;
 
 	delete solver;

@@ -140,14 +140,16 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 			cmatind[offs]=offs;
 			cmatval[offs]=1.0;
 			offs++;
+			ASSERT(offs<cmatsize);
 		}
 		else if (i<num_dim+num_zero) // Z_w*beta_w
 		{
 			cmatbeg[i]=offs;
 			cmatcnt[i]=1;
 			cmatind[offs]=w_zero[i-num_dim];
-			cmatval[offs]=1.0;
+			cmatval[offs]=-1.0;
 			offs++;
+			ASSERT(offs<cmatsize);
 		}
 		else // Z_x*beta_x
 		{
@@ -164,15 +166,16 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 			for (INT j=0; j<vlen; j++)
 			{
 				cmatind[offs]=vec[j].feat_index;
-				cmatval[offs]=val*vec[j].entry;
+				cmatval[offs]=-val*vec[j].entry;
 				offs++;
+				ASSERT(offs<cmatsize);
 			}
 
 			features->free_feature_vector(vec, idx, vfree);
 		}
 	}
 
-	result = CPXcopylp(env, lp, num_variables, 0, CPX_MIN, 
+	result = CPXcopylp(env, lp, num_variables, num_dim, CPX_MIN, 
 			obj, vee, sense, cmatbeg, cmatcnt, cmatind, cmatval, lb, ub, NULL) == 0;
 
 	if (!result)
@@ -189,7 +192,7 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 	delete[] cmatind;
 	delete[] cmatval;
 
-	// setup QP part (diagonal matrix 1 for v, 0 for x...)
+	//// setup QP part (diagonal matrix 1 for v, 0 for x...)
 	int* qmatbeg=new int[num_variables];
 	ASSERT(qmatbeg);
 	int* qmatcnt=new int[num_variables];
@@ -228,7 +231,8 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 	if (!result)
 		SG_ERROR("CPXcopyquad failed.\n");
 
-	//write_problem("problem.lp");
+	write_problem("problem.lp");
+	write_Q("problem.qp");
 
 	return result;
 }

@@ -123,11 +123,6 @@ class CSubGradientLPM : public CSparseLinearClassifier
 
 		//vectors/sym matrix of size qpsize_limit
 		DREAL* beta;
-		DREAL* old_beta;
-		DREAL* Zv;
-		DREAL* old_Zv;
-		DREAL* Z;
-		DREAL* old_Z;
 
 		CCplex* solver;
 };
