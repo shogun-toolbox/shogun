@@ -179,84 +179,25 @@ DREAL CSubGradientLPM::line_search(INT num_feat, INT num_vec)
 DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT num_active, INT num_bound)
 {
 	DREAL dir_deriv=0;
-	solver->init(QP);
-	solver->cleanup();
-	/*
+	solver->init(E_QP);
 
-	if (num_bound > 0)
+	if (zero_idx+num_bound > 0)
 	{
-
-			CTime t2;
 		CMath::add(v, 1.0, w, -1.0, sum_CXy_active, num_feat);
 
-		if (num_bound>=qpsize_max && num_it_noimprovement!=10) // if qp gets to large, lets just choose a random beta
-		{
-			//SG_PRINT("qpsize too large  (%d>=%d) choosing random subgradient/beta\n", num_bound, qpsize_max);
-			for (INT i=0; i<num_bound; i++)
-				beta[i]=CMath::random(0.0,1.0);
-		}
-		else
-		{
-			memset(beta, 0, sizeof(DREAL)*num_bound);
+		SG_PRINT("hi1\n");
+		solver->setup_subgradientlpm_QP(C1, get_labels(), get_features(), idx_bound, num_bound,
+				w_zero, zero_idx,
+				v, num_feat,
+				use_bias);
 
-			DREAL bias_const=0;
+		SG_PRINT("hi2\n");
 
-			if (use_bias)
-				bias_const=1;
+		solver->optimize(beta);
 
-			for (INT i=0; i<num_bound; i++)
-			{
-				for (INT j=i; j<num_bound; j++)
-				{
-					INT alen=0;
-					INT blen=0;
-					bool afree=false;
-					bool bfree=false;
+		CMath::display_vector(beta, zero_idx+num_bound);
+		ASSERT(0);
 
-					TSparseEntry<DREAL>* avec=features->get_sparse_feature_vector(idx_bound[i], alen, afree);
-					TSparseEntry<DREAL>* bvec=features->get_sparse_feature_vector(idx_bound[j], blen, bfree);
-
-					Z[i*num_bound+j]= 2.0*C1*C1*get_label(idx_bound[i])*get_label(idx_bound[j])* 
-						(features->sparse_dot(1.0, avec,alen, bvec,blen) + bias_const);
-
-					Z[j*num_bound+i]=Z[i*num_bound+j];
-
-					features->free_feature_vector(avec, idx_bound[i], afree);
-					features->free_feature_vector(bvec, idx_bound[j], bfree);
-				}
-
-				Zv[i]=-2.0*C1*get_label(idx_bound[i])* 
-					features->dense_dot(1.0, idx_bound[i], v, num_feat, -sum_Cy_active);
-			}
-
-			//CMath::display_matrix(Z, num_bound, num_bound, "Z");
-			//CMath::display_vector(Zv, num_bound, "Zv");
-			t2.stop();
-			t2.time_diff_sec(true);
-
-			CTime t;
-			CQPBSVMLib solver(Z,num_bound, Zv,num_bound, 1.0);
-			//solver.set_solver(QPB_SOLVER_GRADDESC);
-			//solver.set_solver(QPB_SOLVER_GS);
-#ifdef USE_CPLEX
-			solver.set_solver(QPB_SOLVER_CPLEX);
-#else
-			solver.set_solver(QPB_SOLVER_SCA);
-#endif
-
-			solver.solve_qp(beta, num_bound);
-
-			t.stop();
-			lpmtim+=t.time_diff_sec(true);
-
-			//CMath::display_vector(beta, num_bound, "beta gs");
-			//solver.set_solver(QPB_SOLVER_CPLEX);
-			//solver.solve_qp(beta, num_bound);
-			//CMath::display_vector(beta, num_bound, "beta cplex");
-
-			//CMath::display_vector(grad_w, num_feat, "grad_w");
-			//SG_PRINT("grad_b:%f\n", grad_b);
-		}
 
 		CMath::add(grad_w, 1.0, w, -1.0, sum_CXy_active, num_feat);
 		grad_b = -sum_Cy_active;
@@ -283,7 +224,7 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		dir_deriv = CMath::dot(grad_w, grad_w, num_feat)+ grad_b*grad_b;
 	}
 
-	*/
+	solver->cleanup();
 	return dir_deriv;
 }
 
@@ -419,7 +360,7 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	ASSERT(old_beta);
 	memset(old_beta,0,sizeof(DREAL)*qpsize_limit);
 
-	solver=new Cplex();
+	solver=new CCplex();
 }
 
 void CSubGradientLPM::cleanup()
@@ -523,6 +464,7 @@ bool CSubGradientLPM::train()
 		//SG_PRINT("grad_b:%f\n", grad_b);
 		
 		dir_deriv=compute_min_subgradient(num_feat, num_vec, num_active, num_bound);
+		ASSERT(0);
 
 		alpha=line_search(num_feat, num_vec);
 

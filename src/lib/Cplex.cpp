@@ -49,12 +49,12 @@ bool CCplex::init(E_PROB_TYPE typ, INT timeout)
 		{
 			/* Turn on output to the screen */
 
-			status = CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_OFF);
+			status = CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_ON);
 			if (status)
 				SG_ERROR( "Failure to turn off screen indicator, error %d.\n", status);
 
 			{
-				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_OFF);
+				status = CPXsetintparam (env, CPX_PARAM_DATACHECK, CPX_ON);
 				if (status)
 					SG_ERROR( "Failure to turn on data checking, error %d.\n", status);
 				else
@@ -66,9 +66,9 @@ bool CCplex::init(E_PROB_TYPE typ, INT timeout)
 					else
 						CPXchgobjsen (env, lp, CPX_MIN);  /* Problem is minimization */
 
-					if (problem_type==QP)
+					if (problem_type==E_QP)
 						status = CPXsetintparam (env, CPX_PARAM_QPMETHOD, 0);
-					else if (problem_type == LINEAR)
+					else if (problem_type == E_LINEAR)
 						status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 0);
 					if (status)
 						SG_ERROR( "Failure to select dual lp/qp optimization, error %d.\n", status);
@@ -84,9 +84,158 @@ bool CCplex::init(E_PROB_TYPE typ, INT timeout)
 	return (lp != NULL) && (env != NULL);
 }
 
+bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<DREAL>* features, INT* idx_bound, INT num_bound,
+		INT* w_zero, INT num_zero,
+		DREAL* vee, INT num_dim,
+		bool use_bias)
+{
+	const int cmatsize=10*1024*1024; //no more than 10mil. elements
+	bool result=false;
+	INT num_variables=num_dim + num_bound+num_zero; // xi, beta
+
+	// setup LP part
+	DREAL* lb=new DREAL[num_variables];
+	ASSERT(lb);
+	DREAL* ub=new DREAL[num_variables];
+	ASSERT(ub);
+	DREAL* obj=new DREAL[num_variables];
+	ASSERT(obj);
+
+	char* sense = new char[num_dim];
+	ASSERT(sense);
+
+	int* cmatbeg=new int[num_variables];
+	ASSERT(cmatbeg);
+	int* cmatcnt=new int[num_variables];
+	ASSERT(cmatcnt);
+	int* cmatind=new int[cmatsize];
+	ASSERT(cmatind);
+	double* cmatval=new double[cmatsize];
+	ASSERT(cmatval);
+
+	for (INT i=0; i<num_variables; i++)
+	{
+		obj[i]=0;
+
+		if (i<num_dim) //xi part
+		{
+			lb[i]=-CPX_INFBOUND;
+			ub[i]=+CPX_INFBOUND;
+		}
+		else //beta part
+		{
+			lb[i]=0.0;
+			ub[i]=1.0;
+		}
+	}
+
+	INT offs=0;
+	for (INT i=0; i<num_variables; i++)
+	{
+		if (i<num_dim) //sum_xi
+		{
+			sense[i]='E';
+			cmatbeg[i]=offs;
+			cmatcnt[i]=1;
+			cmatind[offs]=offs;
+			cmatval[offs]=1.0;
+			offs++;
+		}
+		else if (i<num_dim+num_zero) // Z_w*beta_w
+		{
+			cmatbeg[i]=offs;
+			cmatcnt[i]=1;
+			cmatind[offs]=w_zero[i-num_dim];
+			cmatval[offs]=1.0;
+			offs++;
+		}
+		else // Z_x*beta_x
+		{
+			INT idx=i-num_dim-num_zero;
+			INT vlen=0;
+			bool vfree=false;
+			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(idx, vlen, vfree);
+
+			cmatbeg[i]=offs;
+			cmatcnt[i]=vlen;
+
+			DREAL val= -C*labels->get_label(idx);
+
+			for (INT j=0; j<vlen; j++)
+			{
+				cmatind[offs]=vec[j].feat_index;
+				cmatval[offs]=val*vec[j].entry;
+				offs++;
+			}
+
+			features->free_feature_vector(vec, idx, vfree);
+		}
+	}
+
+	result = CPXcopylp(env, lp, num_variables, 0, CPX_MIN, 
+			obj, vee, sense, cmatbeg, cmatcnt, cmatind, cmatval, lb, ub, NULL) == 0;
+
+	if (!result)
+		SG_ERROR("CPXcopylp failed.\n");
+
+	write_problem("problem.lp");
+
+	delete[] sense;
+	delete[] lb;
+	delete[] ub;
+	delete[] obj;
+	delete[] cmatbeg;
+	delete[] cmatcnt;
+	delete[] cmatind;
+	delete[] cmatval;
+
+	// setup QP part (diagonal matrix 1 for v, 0 for x...)
+	int* qmatbeg=new int[num_variables];
+	ASSERT(qmatbeg);
+	int* qmatcnt=new int[num_variables];
+	ASSERT(qmatcnt);
+	int* qmatind=new int[num_variables];
+	ASSERT(qmatind);
+	double* qmatval=new double[num_variables];
+	ASSERT(qmatval);
+
+	for (INT i=0; i<num_variables; i++)
+	{
+		if ((i<num_dim-1) || (!use_bias && i<num_dim)) //xi
+		{
+			qmatbeg[i]=i;
+			qmatcnt[i]=1;
+			qmatind[i]=i;
+			qmatval[i]=1.0;
+		}
+		else
+		{
+			qmatbeg[i]= (use_bias) ? (num_dim-1) : (num_dim);
+			qmatcnt[i]=0;
+			qmatind[i]=0;
+			qmatval[i]=0;
+		}
+	}
+
+	if (result)
+		result = CPXcopyquad(env, lp, qmatbeg, qmatcnt, qmatind, qmatval) == 0;
+
+	delete[] qmatbeg;
+	delete[] qmatcnt;
+	delete[] qmatind;
+	delete[] qmatval;
+
+	if (!result)
+		SG_ERROR("CPXcopyquad failed.\n");
+
+	//write_problem("problem.lp");
+
+	return result;
+}
+
 bool CCplex::setup_lpboost(DREAL C, INT num_cols)
 {
-	init(LINEAR);
+	init(E_LINEAR);
 	INT status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 1); //primal simplex
 	if (status)
 		SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status);
@@ -429,9 +578,9 @@ bool CCplex::optimize(DREAL* sol, DREAL* lambda)
 	double   objval;
 	int status=1;
 
-	if (problem_type==QP)
+	if (problem_type==E_QP)
 		status = CPXqpopt (env, lp);
-	else if (problem_type == LINEAR)
+	else if (problem_type == E_LINEAR)
 		status = CPXlpopt (env, lp);
 
 	if (status)

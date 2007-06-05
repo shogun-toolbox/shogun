@@ -114,7 +114,7 @@ bool CLPBoost::train()
 	ASSERT(w);
 
 	CCplex solver;
-	solver.init(LINEAR);
+	solver.init(E_LINEAR);
 	solver.setup_lpboost(C1, num_vec);
 
 	init(num_vec);
@@ -160,7 +160,7 @@ bool CLPBoost::train()
 			w[d]-=lambda[i];
 
 	}
-	solver.write_problem("problem.lp");
+	//solver.write_problem("problem.lp");
 	solver.cleanup();
 
 	cleanup();

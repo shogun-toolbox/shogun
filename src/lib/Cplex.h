@@ -26,8 +26,8 @@ extern "C" {
 
 enum E_PROB_TYPE
 {
-	LINEAR,
-	QP
+	E_LINEAR,
+	E_QP
 };
 
 class CCplex : public CSGObject
@@ -40,6 +40,13 @@ public:
 	/// init cplex with problem type t and retry timeout 60 seconds
 	bool init(E_PROB_TYPE t, INT timeout=60);
 	bool cleanup();
+
+	// A = [ E Z_w Z_x ] dim(A)=(num_dim+1, num_dim+1 + num_zero + num_bound)
+	// (+1 for bias!)
+	bool setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<DREAL>* features, INT* idx_bound, INT num_bound,
+			INT* w_zero, INT num_zero,
+			DREAL* vee, INT num_dim,
+			bool use_bias);
 
 	bool setup_lpboost(DREAL C, INT num_cols);
 	bool add_lpboost_constraint(DREAL factor, TSparseEntry<DREAL>* h, INT len, INT ulen, CLabels* label);

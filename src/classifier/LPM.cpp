@@ -46,7 +46,7 @@ bool CLPM::train()
 	memset(params,0,sizeof(DREAL)*num_params);
 
 	CCplex solver;
-	solver.init(LINEAR);
+	solver.init(E_LINEAR);
 	SG_INFO("C=%f\n", C1);
 	solver.setup_lpm(C1, get_features(), get_labels(), get_bias_enabled());
 	bool result=solver.optimize(params);
