@@ -156,32 +156,35 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 		}
 		else // Z_x*beta_x
 		{
-			INT idx=i-num_dim-num_zero;
+			INT idx=idx_bound[i-num_dim-num_zero];
 			INT vlen=0;
 			bool vfree=false;
+			//SG_PRINT("idx=%d\n", idx);
 			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(idx, vlen, vfree);
+			//SG_PRINT("vlen=%d\n", vlen);
 
 			cmatbeg[i]=offs;
 			cmatcnt[i]=vlen;
 			if (use_bias)
 				cmatcnt[i]++;
 
+			DREAL val= -C*labels->get_label(idx);
+
 			if (vlen>0)
 			{
-				DREAL val= -C*labels->get_label(idx);
-
 				for (INT j=0; j<vlen; j++)
 				{
 					cmatind[offs]=vec[j].feat_index;
 					cmatval[offs]=-val*vec[j].entry;
 					offs++;
 					ASSERT(offs<cmatsize);
+					//SG_PRINT("vec[%d]=%10.10f\n", j, vec[j].entry);
 				}
 
 				if (use_bias)
 				{
 					cmatind[offs]=num_dim-1;
-					cmatval[offs]=C;
+					cmatval[offs]=-val;
 					offs++;
 					ASSERT(offs<cmatsize);
 				}
@@ -191,7 +194,7 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 				if (use_bias)
 				{
 					cmatind[offs]=num_dim-1;
-					cmatval[offs]=C;
+					cmatval[offs]=-val;
 				}
 				else
 					cmatval[offs]=0.0;
@@ -209,7 +212,7 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 	if (!result)
 		SG_ERROR("CPXcopylp failed.\n");
 
-	write_problem("problem.lp");
+	//write_problem("problem.lp");
 
 	delete[] sense;
 	delete[] lb;
@@ -261,8 +264,8 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 	if (!result)
 		SG_ERROR("CPXcopyquad failed.\n");
 
-	write_problem("problem.lp");
-	write_Q("problem.qp");
+	//write_problem("problem.lp");
+	//write_Q("problem.qp");
 
 	return result;
 }

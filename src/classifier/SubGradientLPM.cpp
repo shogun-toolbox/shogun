@@ -98,22 +98,31 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 
 
 void CSubGradientLPM::update_active(INT num_feat, INT num_vec)
-
 {
+	memset(sum_CXy_active,0,sizeof(DREAL)*num_feat);
+	sum_Cy_active=0.0;
+
 	for (INT i=0; i<num_vec; i++)
 	{
-		if (active[i]==1 && old_active[i]!=1)
+		if (active[i]==1)
 		{
 			features->add_to_dense_vec(C1*get_label(i), i, sum_CXy_active, num_feat);
 			if (use_bias)
 				sum_Cy_active+=C1*get_label(i);
 		}
-		else if (old_active[i]==1 && active[i]!=1)
-		{
-			features->add_to_dense_vec(-C1*get_label(i), i, sum_CXy_active, num_feat);
-			if (use_bias)
-				sum_Cy_active-=C1*get_label(i);
-		}
+
+		//if (active[i]==1 && old_active[i]!=1)
+		//{
+		//	features->add_to_dense_vec(C1*get_label(i), i, sum_CXy_active, num_feat);
+		//	if (use_bias)
+		//		sum_Cy_active+=C1*get_label(i);
+		//}
+		//else if (old_active[i]==1 && active[i]!=1)
+		//{
+		//	features->add_to_dense_vec(-C1*get_label(i), i, sum_CXy_active, num_feat);
+		//	if (use_bias)
+		//		sum_Cy_active-=C1*get_label(i);
+		//}
 	}
 
 	CMath::swap(active,old_active);
@@ -167,17 +176,17 @@ DREAL CSubGradientLPM::line_search(INT num_feat, INT num_vec)
 		}
 	}
 
-	SG_PRINT("sgrad:%f\n", sgrad);
-	CMath::display_vector(A, num_feat+num_vec, "A");
-	CMath::display_vector(B, num_feat+num_vec, "B");
-	CMath::display_vector(C, num_feat+num_vec, "C");
-	CMath::display_vector(D, num_feat+num_vec, "D");
-	CMath::display_vector(hinge_point, num_feat+num_vec, "hinge_point");
-	CMath::display_vector(hinge_idx, num_feat+num_vec, "hinge_idx");
+	//SG_PRINT("sgrad:%f\n", sgrad);
+	//CMath::display_vector(A, num_feat+num_vec, "A");
+	//CMath::display_vector(B, num_feat+num_vec, "B");
+	//CMath::display_vector(C, num_feat+num_vec, "C");
+	//CMath::display_vector(D, num_feat+num_vec, "D");
+	//CMath::display_vector(hinge_point, num_feat+num_vec, "hinge_point");
+	//CMath::display_vector(hinge_idx, num_feat+num_vec, "hinge_idx");
 	//ASSERT(0);
 
 	CMath::qsort(hinge_point, hinge_idx, num_hinge);
-	CMath::display_vector(hinge_point, num_feat+num_vec, "hinge_point_sorted");
+	//CMath::display_vector(hinge_point, num_feat+num_vec, "hinge_point_sorted");
 
 
 	INT i=-1;
@@ -198,7 +207,7 @@ DREAL CSubGradientLPM::line_search(INT num_feat, INT num_vec)
 	delete[] B;
 	delete[] A;
 
-	SG_PRINT("alpha=%f\n", alpha);
+	//SG_PRINT("alpha=%f\n", alpha);
 	return alpha;
 }
 
@@ -209,13 +218,16 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 
 	if (zero_idx+num_bound > 0)
 	{
-		SG_PRINT("num_var:%d (zero:%d, bound:%d) num_feat:%d\n", zero_idx+num_bound, zero_idx,num_bound, num_feat);
-		CMath::display_vector(grad_w, num_feat+1, "grad_w");
+		//SG_PRINT("num_var:%d (zero:%d, bound:%d) num_feat:%d\n", zero_idx+num_bound, zero_idx,num_bound, num_feat);
+		//CMath::display_vector(grad_w, num_feat+1, "grad_w");
 		CMath::add(grad_w, 1.0, grad_w, -1.0, sum_CXy_active, num_feat);
 		grad_w[num_feat]= -sum_Cy_active;
 		grad_b = -sum_Cy_active;
 
-		CMath::display_vector(grad_w, num_feat+1, "grad_w");
+		//CMath::display_vector(sum_CXy_active, num_feat, "sum_CXy_active");
+		//SG_PRINT("sum_Cy_active=%10.10f\n", sum_Cy_active);
+
+		//CMath::display_vector(grad_w, num_feat+1, "grad_w");
 
 		solver->setup_subgradientlpm_QP(C1, get_labels(), get_features(), idx_bound, num_bound,
 				w_zero, zero_idx,
@@ -223,11 +235,13 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 				use_bias);
 
 		solver->optimize(beta);
-		CMath::display_vector(beta, 5, "beta");
+		//CMath::display_vector(beta, zero_idx+num_bound+num_feat+1, "beta");
 		for (INT i=0; i<zero_idx+num_bound; i++)
 			beta[i]=beta[i+num_feat+1];
 
-		CMath::display_vector(beta, zero_idx+num_bound, "beta");
+		//CMath::display_vector(beta, zero_idx+num_bound, "beta");
+		//SG_PRINT("beta[0]=%10.16f\n", beta[0]);
+		//ASSERT(0);
 
 		for (INT i=0; i<zero_idx+num_bound; i++)
 		{
@@ -241,9 +255,9 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 			}
 		}
 
-		CMath::display_vector(w_zero, zero_idx, "w_zero");
-		CMath::display_vector(grad_w, num_feat, "grad_w");
-		SG_PRINT("grad_b=%f\n", grad_b);
+		//CMath::display_vector(w_zero, zero_idx, "w_zero");
+		//CMath::display_vector(grad_w, num_feat, "grad_w");
+		//SG_PRINT("grad_b=%f\n", grad_b);
 	}
 	else
 	{
@@ -256,8 +270,8 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 	solver->cleanup();
 
 
-	SG_PRINT("Gradient   : |subgrad_W|^2=%f, |subgrad_b|^2=%f\n",
-			CMath::dot(grad_w, grad_w, num_feat), grad_b*grad_b);
+	//SG_PRINT("Gradient   : |subgrad_W|^2=%f, |subgrad_b|^2=%f\n",
+	//		CMath::dot(grad_w, grad_w, num_feat), grad_b*grad_b);
 
 	return dir_deriv;
 }
@@ -283,6 +297,7 @@ void CSubGradientLPM::compute_projection(INT num_feat, INT num_vec)
 
 void CSubGradientLPM::update_projection(DREAL alpha, INT num_vec)
 {
+	ASSERT(0);
 	CMath::vec1_plus_scalar_times_vec2(proj,-alpha, grad_proj, num_vec);
 }
 
@@ -293,7 +308,7 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	w=new DREAL[num_feat];
 	ASSERT(w);
 	for (INT i=0; i<num_feat; i++)
-		w[i]=0.0;
+		w[i]=1.0;
 	//CMath::random_vector(w, num_feat, -1.0, 1.0);
 	bias=0;
 	num_it_noimprovement=0;
@@ -494,11 +509,8 @@ bool CSubGradientLPM::train()
 		CMath::vec1_plus_scalar_times_vec2(w, -alpha, grad_w, num_feat);
 		bias-=alpha*grad_b;
 
-		update_projection(alpha, num_vec);
-		//compute_projection(num_feat, num_vec);
-		CMath::display_vector(w, w_dim, "w");
-		SG_PRINT("bias: %f\n", bias);
-		CMath::display_vector(proj, num_vec, "proj");
+		//update_projection(alpha, num_vec);
+		compute_projection(num_feat, num_vec);
 
 		//if (num_iterations==2)
 		//	ASSERT(0);
