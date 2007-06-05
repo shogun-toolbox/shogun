@@ -93,6 +93,9 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 	bool result=false;
 	INT num_variables=num_dim + num_bound+num_zero; // xi, beta
 
+	ASSERT(num_dim>0);
+	ASSERT(num_dim>0);
+
 	// setup LP part
 	DREAL* lb=new DREAL[num_variables];
 	ASSERT(lb);
