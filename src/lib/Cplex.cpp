@@ -266,8 +266,8 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 	if (!result)
 		SG_ERROR("CPXcopyquad failed.\n");
 
-	write_problem("problem.lp");
-	write_Q("problem.qp");
+	//write_problem("problem.lp");
+	//write_Q("problem.qp");
 
 	return result;
 }
