@@ -115,9 +115,13 @@ bool CLPBoost::train()
 
 	CCplex solver;
 	solver.init(E_LINEAR);
+	SG_PRINT("setting up lpboost\n");
 	solver.setup_lpboost(C1, num_vec);
+	SG_PRINT("finished setting up lpboost\n");
 
-	init(num_vec);
+	DREAL result = init(num_vec);
+
+	ASSERT(result);
 
 	INT num_hypothesis=0;
 

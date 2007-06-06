@@ -279,9 +279,12 @@ bool CCplex::setup_lpboost(DREAL C, INT num_cols)
 	if (status)
 		SG_ERROR( "Failure to select dual lp optimization, error %d.\n", status);
 
-	double obj[num_cols];
-	double lb[num_cols];
-	double ub[num_cols];
+	double* obj= new double[num_cols];
+	ASSERT(obj);
+	double* lb= new double[num_cols];
+	ASSERT(lb);
+	double* ub= new double[num_cols];
+	ASSERT(ub);
 
 	for (INT i=0; i<num_cols; i++)
 	{
@@ -297,6 +300,9 @@ bool CCplex::setup_lpboost(DREAL C, INT num_cols)
 		CPXgeterrorstring (env, status, errmsg);
 		SG_ERROR( "%s", errmsg);
 	}
+	delete[] obj;
+	delete[] lb;
+	delete[] ub;
 	return status==0;
 }
 
@@ -462,6 +468,9 @@ bool CCplex::setup_lpm(DREAL C, CSparseFeatures<DREAL>* x, CLabels* y, bool use_
 		offs++;
 	}
 
+	INT status = CPXsetintparam (env, CPX_PARAM_LPMETHOD, 1); //barrier
+	if (status)
+		SG_ERROR( "Failure to select barrier optimization, error %d.\n", status);
 	CPXsetintparam (env, CPX_PARAM_SCRIND, CPX_ON);
 
 	bool result = CPXcopylp(env, lp, num_dims, num_constraints, CPX_MIN, 
