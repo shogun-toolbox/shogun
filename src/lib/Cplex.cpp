@@ -165,8 +165,6 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 
 			cmatbeg[i]=offs;
 			cmatcnt[i]=vlen;
-			if (use_bias)
-				cmatcnt[i]++;
 
 			DREAL val= -C*labels->get_label(idx);
 
@@ -183,6 +181,7 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 
 				if (use_bias)
 				{
+					cmatcnt[i]++;
 					cmatind[offs]=num_dim-1;
 					cmatval[offs]=-val;
 					offs++;
@@ -193,6 +192,7 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 			{
 				if (use_bias)
 				{
+					cmatcnt[i]++;
 					cmatind[offs]=num_dim-1;
 					cmatval[offs]=-val;
 				}
@@ -232,6 +232,8 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 	ASSERT(qmatind);
 	double* qmatval=new double[num_variables];
 	ASSERT(qmatval);
+	
+	DREAL diag=2.0;
 
 	for (INT i=0; i<num_variables; i++)
 	{
@@ -241,7 +243,7 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 			qmatbeg[i]=i;
 			qmatcnt[i]=1;
 			qmatind[i]=i;
-			qmatval[i]=1.0;
+			qmatval[i]=diag;
 		}
 		else
 		{
@@ -264,8 +266,8 @@ bool CCplex::setup_subgradientlpm_QP(DREAL C, CLabels* labels, CSparseFeatures<D
 	if (!result)
 		SG_ERROR("CPXcopyquad failed.\n");
 
-	//write_problem("problem.lp");
-	//write_Q("problem.qp");
+	write_problem("problem.lp");
+	write_Q("problem.qp");
 
 	return result;
 }

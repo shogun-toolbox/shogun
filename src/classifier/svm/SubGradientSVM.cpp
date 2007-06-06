@@ -232,7 +232,7 @@ DREAL CSubGradientSVM::line_search(INT num_feat, INT num_vec)
 		if (p!=0)
 		{
 			hinge_point[num_hinge]=(proj[i]-1)/p;
-			hinge_idx[num_hinge]=num_hinge;
+			hinge_idx[num_hinge]=i;
 			num_hinge++;
 
 			if (p<0)

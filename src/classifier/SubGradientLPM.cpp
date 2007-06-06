@@ -39,6 +39,7 @@ CSubGradientLPM::CSubGradientLPM(DREAL C, CSparseFeatures<DREAL>* traindat, CLab
 
 CSubGradientLPM::~CSubGradientLPM()
 {
+	cleanup();
 }
 
 INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT& num_bound)
@@ -235,25 +236,32 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 				use_bias);
 
 		solver->optimize(beta);
-		//CMath::display_vector(beta, zero_idx+num_bound+num_feat+1, "beta");
-		for (INT i=0; i<zero_idx+num_bound; i++)
-			beta[i]=beta[i+num_feat+1];
+		//CMath::display_vector(beta, num_feat+1, "v");
+
+		for (INT i=0; i<num_feat; i++)
+			grad_w[i]=beta[i];
+
+		if (use_bias)
+			grad_b=beta[num_feat];
+
+		//for (INT i=0; i<zero_idx+num_bound; i++)
+		//	beta[i]=beta[i+num_feat+1];
 
 		//CMath::display_vector(beta, zero_idx+num_bound, "beta");
 		//SG_PRINT("beta[0]=%10.16f\n", beta[0]);
 		//ASSERT(0);
 
-		for (INT i=0; i<zero_idx+num_bound; i++)
-		{
-			if (i<zero_idx)
-				grad_w[w_zero[i]]+=beta[w_zero[i]];
-			else
-			{
-				features->add_to_dense_vec(-C1*beta[i]*get_label(idx_bound[i-zero_idx]), idx_bound[i-zero_idx], grad_w, num_feat);
-				if (use_bias)
-					grad_b -=  C1 * get_label(idx_bound[i-zero_idx])*beta[i-zero_idx];
-			}
-		}
+		//for (INT i=0; i<zero_idx+num_bound; i++)
+		//{
+		//	if (i<zero_idx)
+		//		grad_w[w_zero[i]]+=beta[w_zero[i]];
+		//	else
+		//	{
+		//		features->add_to_dense_vec(-C1*beta[i]*get_label(idx_bound[i-zero_idx]), idx_bound[i-zero_idx], grad_w, num_feat);
+		//		if (use_bias)
+		//			grad_b -=  C1 * get_label(idx_bound[i-zero_idx])*beta[i-zero_idx];
+		//	}
+		//}
 
 		//CMath::display_vector(w_zero, zero_idx, "w_zero");
 		//CMath::display_vector(grad_w, num_feat, "grad_w");
@@ -405,12 +413,19 @@ void CSubGradientLPM::cleanup()
 	delete[] beta;
 
 	hinge_idx=NULL;
+	hinge_point=NULL;
+	grad_proj=NULL;
 	proj=NULL;
+	tmp_proj=NULL;
+	tmp_proj_idx=NULL;
 	active=NULL;
 	old_active=NULL;
 	idx_bound=NULL;
 	idx_active=NULL;
 	sum_CXy_active=NULL;
+	w_pos=NULL;
+	w_zero=NULL;
+	w_neg=NULL;
 	grad_w=NULL;
 	beta=NULL;
 
@@ -487,7 +502,8 @@ bool CSubGradientLPM::train()
 			SG_PRINT("CHECKING OPTIMALITY CONDITIONS: "
 					"work_epsilon: %10.10f delta_active:%d norm_grad: %10.10f\n", work_epsilon, delta_active, norm_grad);
 			if (work_epsilon<=epsilon && delta_active==0 && alpha*norm_grad<1e-12)
-				break;
+				//nbreak;
+				num_it_noimprovement=0;
 			else
 				num_it_noimprovement=0;
 		}
