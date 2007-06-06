@@ -10,6 +10,9 @@
  */
 
 #include "lib/config.h"
+
+#ifdef USE_CPLEX
+
 #include "lib/Mathematics.h"
 #include "lib/Signal.h"
 #include "lib/Time.h"
@@ -44,6 +47,33 @@ CSubGradientLPM::~CSubGradientLPM()
 
 INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT& num_bound)
 {
+	//delta_active=0;
+	//num_active=0;
+	//num_bound=0;
+
+	//for (INT i=0; i<num_vec; i++)
+	//{
+	//	active[i]=0;
+
+	//	//within margin/wrong side
+	//	if (proj[i] < 1-work_epsilon)
+	//	{
+	//		idx_active[num_active++]=i;
+	//		active[i]=1;
+	//	}
+
+	//	//on margin
+	//	if (CMath::abs(proj[i]-1) <= work_epsilon)
+	//	{
+	//		idx_bound[num_bound++]=i;
+	//		active[i]=2;
+	//	}
+
+	//	if (active[i]!=old_active[i])
+	//		delta_active++;
+	//}
+
+	delta_bound=0;
 	delta_active=0;
 	num_active=0;
 	num_bound=0;
@@ -53,14 +83,14 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 		active[i]=0;
 
 		//within margin/wrong side
-		if (proj[i] < 1-work_epsilon)
+		if (proj[i] < 1-autoselected_epsilon)
 		{
 			idx_active[num_active++]=i;
 			active[i]=1;
 		}
 
 		//on margin
-		if (CMath::abs(proj[i]-1) <= work_epsilon)
+		if (CMath::abs(proj[i]-1) <= autoselected_epsilon)
 		{
 			idx_bound[num_bound++]=i;
 			active[i]=2;
@@ -68,6 +98,93 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 
 		if (active[i]!=old_active[i])
 			delta_active++;
+
+		if (active[i]==2 && old_active[i]==2)
+			delta_bound++;
+	}
+
+
+	if (delta_active==0 && work_epsilon<=epsilon) //we converged
+		return 0;
+	else if (delta_active==0) //lets decrease work_epsilon
+	{
+		work_epsilon=CMath::min(work_epsilon/2, autoselected_epsilon);
+		work_epsilon=CMath::max(work_epsilon, epsilon);
+		num_bound=qpsize;
+	}
+
+	delta_bound=0;
+	delta_active=0;
+	num_active=0;
+	num_bound=0;
+
+	for (INT i=0; i<num_vec; i++)
+	{
+		tmp_proj[i]=CMath::abs(proj[i]-1);
+		tmp_proj_idx[i]=i;
+	}
+
+	CMath::qsort(tmp_proj, tmp_proj_idx, num_vec);
+
+	autoselected_epsilon=tmp_proj[CMath::min(qpsize,num_vec)];
+
+#ifdef DEBUG_SUBGRADIENTSVM
+	//SG_PRINT("autoseleps: %15.15f\n", autoselected_epsilon);
+#endif
+
+	if (autoselected_epsilon>work_epsilon)
+		autoselected_epsilon=work_epsilon;
+
+	if (autoselected_epsilon<epsilon)
+	{
+		autoselected_epsilon=epsilon;
+
+		INT i=0;
+		while (i < num_vec && tmp_proj[i] <= autoselected_epsilon)
+			i++;
+
+		//SG_PRINT("lower bound on epsilon requires %d variables in qp\n", i);
+
+		if (i>=qpsize_max && autoselected_epsilon>epsilon) //qpsize limit
+		{
+			SG_PRINT("qpsize limit (%d) reached\n", qpsize_max);
+			INT num_in_qp=i;
+			while (--i>=0 && num_in_qp>=qpsize_max)
+			{
+				if (tmp_proj[i] < autoselected_epsilon)
+				{
+					autoselected_epsilon=tmp_proj[i];
+					num_in_qp--;
+				}
+			}
+
+			//SG_PRINT("new qpsize will be %d, autoeps:%15.15f\n", num_in_qp, autoselected_epsilon);
+		}
+	}
+
+	for (INT i=0; i<num_vec; i++)
+	{
+		active[i]=0;
+
+		//within margin/wrong side
+		if (proj[i] < 1-autoselected_epsilon)
+		{
+			idx_active[num_active++]=i;
+			active[i]=1;
+		}
+
+		//on margin
+		if (CMath::abs(proj[i]-1) <= autoselected_epsilon)
+		{
+			idx_bound[num_bound++]=i;
+			active[i]=2;
+		}
+
+		if (active[i]!=old_active[i])
+			delta_active++;
+
+		if (active[i]==2 && old_active[i]==2)
+			delta_bound++;
 	}
 
 	pos_idx=0;
@@ -100,30 +217,20 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 
 void CSubGradientLPM::update_active(INT num_feat, INT num_vec)
 {
-	memset(sum_CXy_active,0,sizeof(DREAL)*num_feat);
-	sum_Cy_active=0.0;
-
 	for (INT i=0; i<num_vec; i++)
 	{
-		if (active[i]==1)
+		if (active[i]==1 && old_active[i]!=1)
 		{
 			features->add_to_dense_vec(C1*get_label(i), i, sum_CXy_active, num_feat);
 			if (use_bias)
 				sum_Cy_active+=C1*get_label(i);
 		}
-
-		//if (active[i]==1 && old_active[i]!=1)
-		//{
-		//	features->add_to_dense_vec(C1*get_label(i), i, sum_CXy_active, num_feat);
-		//	if (use_bias)
-		//		sum_Cy_active+=C1*get_label(i);
-		//}
-		//else if (old_active[i]==1 && active[i]!=1)
-		//{
-		//	features->add_to_dense_vec(-C1*get_label(i), i, sum_CXy_active, num_feat);
-		//	if (use_bias)
-		//		sum_Cy_active-=C1*get_label(i);
-		//}
+		else if (old_active[i]==1 && active[i]!=1)
+		{
+			features->add_to_dense_vec(-C1*get_label(i), i, sum_CXy_active, num_feat);
+			if (use_bias)
+				sum_Cy_active-=C1*get_label(i);
+		}
 	}
 
 	CMath::swap(active,old_active);
@@ -223,6 +330,7 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		//CMath::display_vector(grad_w, num_feat+1, "grad_w");
 		CMath::add(grad_w, 1.0, grad_w, -1.0, sum_CXy_active, num_feat);
 		grad_w[num_feat]= -sum_Cy_active;
+
 		grad_b = -sum_Cy_active;
 
 		//CMath::display_vector(sum_CXy_active, num_feat, "sum_CXy_active");
@@ -237,6 +345,17 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 
 		solver->optimize(beta);
 		//CMath::display_vector(beta, num_feat+1, "v");
+
+		//compute dir_deriv here, variable grad_w constains still 'v' and beta
+		//contains the future gradient
+		dir_deriv = CMath::dot(beta, grad_w, num_feat);
+		dir_deriv-=beta[num_feat]*sum_Cy_active;
+
+		for (INT i=0; i<num_bound; i++)
+		{
+			DREAL val= C1*get_label(idx_bound[i])*features->dense_dot(1.0, idx_bound[i], beta, num_feat, beta[num_feat]);
+			dir_deriv += CMath::max(0.0, val);
+		}
 
 		for (INT i=0; i<num_feat; i++)
 			grad_w[i]=beta[i];
@@ -266,13 +385,14 @@ DREAL CSubGradientLPM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 		//CMath::display_vector(w_zero, zero_idx, "w_zero");
 		//CMath::display_vector(grad_w, num_feat, "grad_w");
 		//SG_PRINT("grad_b=%f\n", grad_b);
+		//
 	}
 	else
 	{
 		CMath::add(grad_w, 1.0, w, -1.0, sum_CXy_active, num_feat);
 		grad_b = -sum_Cy_active;
 
-		//dir_deriv = CMath::dot(grad_w, grad_w, num_feat)+ grad_b*grad_b;
+		dir_deriv = CMath::dot(grad_w, grad_w, num_feat)+ grad_b*grad_b;
 	}
 
 	solver->cleanup();
@@ -305,7 +425,6 @@ void CSubGradientLPM::compute_projection(INT num_feat, INT num_vec)
 
 void CSubGradientLPM::update_projection(DREAL alpha, INT num_vec)
 {
-	ASSERT(0);
 	CMath::vec1_plus_scalar_times_vec2(proj,-alpha, grad_proj, num_vec);
 }
 
@@ -322,7 +441,6 @@ void CSubGradientLPM::init(INT num_vec, INT num_feat)
 	num_it_noimprovement=0;
 	grad_b=0;
 	set_w(w, num_feat);
-	qpsize_limit=5000;
 
 	w_pos=new INT[num_feat];
 	ASSERT(w_pos);
@@ -457,7 +575,7 @@ bool CSubGradientLPM::train()
 	delta_active=num_vec;
 	last_it_noimprovement=-1;
 
-	work_epsilon=epsilon;
+	work_epsilon=0.99;
 	autoselected_epsilon=work_epsilon;
 
 	compute_projection(num_feat, num_vec);
@@ -501,9 +619,8 @@ bool CSubGradientLPM::train()
 
 			SG_PRINT("CHECKING OPTIMALITY CONDITIONS: "
 					"work_epsilon: %10.10f delta_active:%d norm_grad: %10.10f\n", work_epsilon, delta_active, norm_grad);
-			if (work_epsilon<=epsilon && delta_active==0 && alpha*norm_grad<1e-12)
-				//nbreak;
-				num_it_noimprovement=0;
+			if (work_epsilon<=epsilon && delta_active==0 && alpha*norm_grad<1e-6)
+				break;
 			else
 				num_it_noimprovement=0;
 		}
@@ -525,11 +642,8 @@ bool CSubGradientLPM::train()
 		CMath::vec1_plus_scalar_times_vec2(w, -alpha, grad_w, num_feat);
 		bias-=alpha*grad_b;
 
-		//update_projection(alpha, num_vec);
-		compute_projection(num_feat, num_vec);
+		update_projection(alpha, num_vec);
 
-		//if (num_iterations==2)
-		//	ASSERT(0);
 		t.stop();
 		loop_time=t.time_diff_sec();
 		num_iterations++;
@@ -551,3 +665,4 @@ bool CSubGradientLPM::train()
 
 	return true;
 }
+#endif //USE_CPLEX

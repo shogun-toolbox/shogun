@@ -623,7 +623,6 @@ bool CSubGradientSVM::train()
 				num_it_noimprovement=0;
 		}
 
-		//if (work_epsilon<=epsilon && delta_active==0 && num_it_noimprovement)
 		if ((dir_deriv<0 || alpha==0) && (work_epsilon<=epsilon && delta_active==0))
 		{
 			if (last_it_noimprovement==num_iterations-1)

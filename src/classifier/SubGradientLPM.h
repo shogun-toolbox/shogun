@@ -12,7 +12,11 @@
 #ifndef _SUBGRADIENTLPM_H___
 #define _SUBGRADIENTLPM_H___
 
+#include "lib/config.h"
+
+#ifdef USE_CPLEX
 #include "lib/common.h"
+
 #include "lib/Cplex.h"
 
 #include "classifier/SparseLinearClassifier.h"
@@ -126,5 +130,5 @@ class CSubGradientLPM : public CSparseLinearClassifier
 
 		CCplex* solver;
 };
-#endif
-
+#endif //USE_CPLEX
+#endif //_SUBGRADIENTLPM_H___
