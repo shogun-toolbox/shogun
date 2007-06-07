@@ -49,6 +49,8 @@ bool CLPM::train()
 	solver.init(E_LINEAR);
 	SG_INFO("C=%f\n", C1);
 	solver.setup_lpm(C1, get_features(), get_labels(), get_bias_enabled());
+	if (get_max_train_time()>0)
+		solver.set_time_limit(get_max_train_time());
 	bool result=solver.optimize(params);
 	solver.cleanup();
 

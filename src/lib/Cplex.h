@@ -107,6 +107,10 @@ public:
 
 	bool dense_to_cplex_sparse(DREAL* H, INT rows, INT cols, int* &qmatbeg, int* &qmatcnt, int* &qmatind, double* &qmatval);
 
+	inline bool set_time_limit(DREAL seconds)
+	{
+		return CPXsetdblparam (env, CPX_PARAM_TILIM, seconds) == 0;
+	}
 	inline bool write_problem(char* filename)
 	{
 		return CPXwriteprob (env, lp, filename, NULL) == 0;

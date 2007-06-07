@@ -18,6 +18,7 @@
 #include "lib/Cplex.h"
 #include "lib/DynamicArray.h"
 #include "lib/Signal.h"
+#include "lib/Time.h"
 
 CLPBoost::CLPBoost() : CSparseLinearClassifier(), C1(1), C2(1), use_bias(true), epsilon(1e-3)
 {
@@ -124,6 +125,7 @@ bool CLPBoost::train()
 	ASSERT(result);
 
 	INT num_hypothesis=0;
+	CTime time;
 
 	while (!(CSignal::cancel_computations()))
 	{
@@ -150,6 +152,8 @@ bool CLPBoost::train()
 		//CMath::display_vector(u, num_vec, "u");
 		num_hypothesis++;
 
+		if (get_max_train_time()>0 && time.cur_time_diff()>get_max_train_time())
+			break;
 	}
 	DREAL* lambda=new DREAL[num_hypothesis];
 	solver.optimize(u, lambda);

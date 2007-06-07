@@ -62,7 +62,6 @@ void CSVM::set_defaults(INT num_sv)
 	weight_epsilon=1e-5;
 	epsilon=1e-5;
 	tube_epsilon=1e-2;
-	max_train_time=0;
 
 	nu=0.5;
 	C1=1;

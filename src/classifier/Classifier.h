@@ -34,9 +34,14 @@ class CClassifier : public CSGObject
 		virtual inline CLabels* get_labels() { SG_REF(labels); return labels; }
 		virtual inline DREAL get_label(INT i) { return labels->get_label(i); }
 
+		inline void set_max_train_time(DREAL t) { max_train_time=t; }
+		inline DREAL get_max_train_time() { return max_train_time; }
+
 		virtual EClassifierType get_classifier_type() { return CT_NONE; }
 
 	protected:
+		DREAL max_train_time;
+
 		CLabels* labels;
 };
 #endif

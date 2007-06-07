@@ -183,6 +183,7 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		((CLPM*) classifier)->set_C(svm_C1, svm_C2);
 		((CLPM*) classifier)->set_epsilon(svm_epsilon);
 		((CLPM*) classifier)->set_bias_enabled(svm_use_bias);
+		((CLPM*) classifier)->set_max_train_time(max_train_time);
 		SG_INFO( "created LPM object\n") ;
 	}
 	else if (strcmp(param,"LPBOOST")==0)
@@ -192,6 +193,7 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		((CLPBoost*) classifier)->set_C(svm_C1, svm_C2);
 		((CLPBoost*) classifier)->set_epsilon(svm_epsilon);
 		((CLPBoost*) classifier)->set_bias_enabled(svm_use_bias);
+		((CLPBoost*) classifier)->set_max_train_time(max_train_time);
 		SG_INFO( "created LPBoost object\n") ;
 	}
 	else if (strcmp(param,"SUBGRADIENTLPM")==0)
@@ -204,6 +206,7 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		((CSubGradientLPM*) classifier)->set_qpsize_max(svm_max_qpsize);
 		((CSubGradientLPM*) classifier)->set_C(svm_C1, svm_C2);
 		((CSubGradientLPM*) classifier)->set_epsilon(svm_epsilon);
+		((CSubGradientLPM*) classifier)->set_max_train_time(max_train_time);
 		SG_INFO( "created Subgradient LPM object\n") ;
 	}
 #endif //USE_CPLEX
@@ -231,6 +234,7 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		((CSubGradientSVM*) classifier)->set_qpsize_max(svm_max_qpsize);
 		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
 		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
+		((CSubGradientSVM*) classifier)->set_max_train_time(max_train_time);
 		SG_INFO( "created Subgradient SVM object\n") ;
 	}
 	else

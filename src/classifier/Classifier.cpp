@@ -10,7 +10,7 @@
 
 #include "classifier/Classifier.h"
 
-CClassifier::CClassifier() : CSGObject(), labels(NULL)
+CClassifier::CClassifier() : CSGObject(), labels(NULL), max_train_time(0)
 {
 }
 

@@ -73,9 +73,6 @@ bool CCplex::init(E_PROB_TYPE typ, INT timeout)
 					if (status)
 						SG_ERROR( "Failure to select dual lp/qp optimization, error %d.\n", status);
 
-					//status = CPXsetdblparam (env, CPX_PARAM_TILIM, 0.5);
-					//if (status)
-					//	SG_ERROR( "Failure to set time limit %d.\n", status);
 				}
 			}
 		}
