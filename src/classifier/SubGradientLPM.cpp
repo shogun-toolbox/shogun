@@ -619,7 +619,7 @@ bool CSubGradientLPM::train()
 
 			SG_PRINT("CHECKING OPTIMALITY CONDITIONS: "
 					"work_epsilon: %10.10f delta_active:%d alpha: %10.10f norm_grad: %10.10f a*norm_grad:%10.16f\n",
-					work_epsilon, delta_active, alpha, norm_grad, CMath::abs(alpha)*norm_grad<1e-6);
+					work_epsilon, delta_active, alpha, norm_grad, CMath::abs(alpha)*norm_grad);
 
 			if (work_epsilon<=epsilon && delta_active==0 && CMath::abs(alpha)*norm_grad<1e-6)
 				break;
