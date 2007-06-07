@@ -580,6 +580,7 @@ bool CSubGradientLPM::train()
 
 	compute_projection(num_feat, num_vec);
 
+	CTime time;
 	double loop_time=0;
 	while (!(CSignal::cancel_computations()))
 	{
@@ -649,6 +650,9 @@ bool CSubGradientLPM::train()
 		t.stop();
 		loop_time=t.time_diff_sec();
 		num_iterations++;
+
+		if (get_max_train_time()>0 && time.cur_time_diff()>get_max_train_time())
+			break;
 	}
 
 	SG_INFO("converged after %d iterations\n", num_iterations);
