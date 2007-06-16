@@ -11,8 +11,8 @@
 #include "base/Version.h"
 #include "lib/versionstring.h"
 
-CHAR* CVersion::version_extra = VERSION_EXTRA;
-CHAR* CVersion::version_release = VERSION_RELEASE;
+const CHAR* CVersion::version_extra = VERSION_EXTRA;
+const CHAR* CVersion::version_release = VERSION_RELEASE;
 
 const INT CVersion::version_revision = VERSION_REVISION;
 const INT CVersion::version_year = VERSION_YEAR;

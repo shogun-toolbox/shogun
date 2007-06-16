@@ -132,8 +132,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (strmatch(action, len, N_HELP))
 		{
-			if (nrhs==1)
-				sg_matlab.send_command("help");
+			if (nrhs==1 && nlhs==0)
+				gui->print_help();
 			else
 				SG_SERROR( "usage is sg('help')");
 		}

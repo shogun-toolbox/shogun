@@ -182,33 +182,30 @@ bool CGUIFeatures::save(CHAR* param)
 
 		if (*f_ptr)
 		{
-			if (fname)
+			if (strcmp(type,"REAL")==0)
 			{
-				if (strcmp(type,"REAL")==0)
-				{
-					result= ((CRealFeatures*) (*f_ptr))->save(fname);
-				}
-				else if (strcmp(type, "BYTE")==0)
-				{
-					result= ((CByteFeatures*) (*f_ptr))->save(fname);
-				}
-				else if (strcmp(type, "CHAR")==0)
-				{
-					result= ((CCharFeatures*) (*f_ptr))->save(fname);
-				}
-				else if (strcmp(type, "SHORT")==0)
-				{
-					result= ((CShortFeatures*) (*f_ptr))->save(fname);
-				}
-				else if (strcmp(type, "WORD")==0)
-				{
-					result= ((CWordFeatures*) (*f_ptr))->save(fname);
-				}
-				else
-				{
-					SG_ERROR( "unknown type\n");
-					return false;
-				}
+				result= ((CRealFeatures*) (*f_ptr))->save(fname);
+			}
+			else if (strcmp(type, "BYTE")==0)
+			{
+				result= ((CByteFeatures*) (*f_ptr))->save(fname);
+			}
+			else if (strcmp(type, "CHAR")==0)
+			{
+				result= ((CCharFeatures*) (*f_ptr))->save(fname);
+			}
+			else if (strcmp(type, "SHORT")==0)
+			{
+				result= ((CShortFeatures*) (*f_ptr))->save(fname);
+			}
+			else if (strcmp(type, "WORD")==0)
+			{
+				result= ((CWordFeatures*) (*f_ptr))->save(fname);
+			}
+			else
+			{
+				SG_ERROR( "unknown type\n");
+				return false;
 			}
 
 			if (!result)

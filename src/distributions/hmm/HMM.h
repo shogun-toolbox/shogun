@@ -1483,7 +1483,7 @@ protected:
 	bool comma_or_space(FILE* file);
 
 	/// parse error messages
-	inline void error(INT p_line, CHAR* str)
+	inline void error(INT p_line, const CHAR* str)
 	{
 	    if (p_line)
 			SG_ERROR( "error in line %d %s\n", p_line, str);

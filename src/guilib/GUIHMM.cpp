@@ -63,10 +63,6 @@ bool CGUIHMM::new_hmm(CHAR* param)
 
 bool CGUIHMM::baum_welch_train(CHAR* param)
 {
-	CHAR templname[]=TMP_DIR "bw_model_XXXXXX" ;
-#if defined SUNOS || defined CYGWIN
-#define mkstemp(name) mktemp(name);
-#endif
 	if ((gui->guifeatures.get_train_features()->get_feature_type()
 	     !=F_WORD) ||
 	   (gui->guifeatures.get_train_features()->get_feature_class()
@@ -78,9 +74,6 @@ bool CGUIHMM::baum_welch_train(CHAR* param)
 	CStringFeatures<WORD>* sf = ((CStringFeatures<WORD>*) (gui->guifeatures.get_train_features()));
 	SG_DEBUG( "Stringfeatures have %ld orig_symbols %ld symbols %d order %ld max_symbols\n",  (LONG) sf->get_original_num_symbols(), (LONG) sf->get_num_symbols(), sf->get_order(), (LONG) sf->get_max_num_symbols());
 
-	mkstemp(templname);
-	CHAR templname_best[40] ;
-	sprintf(templname_best, "%s_best", templname) ;
 	double prob_max=-CMath::INFTY ;
 	iteration_count=ITERATIONS ;
 
@@ -98,26 +91,7 @@ bool CGUIHMM::baum_welch_train(CHAR* param)
 			working->estimate_model_baum_welch(working_estimate);
 			prob_train=working_estimate->model_probability();
 			if (prob_max<prob_train)
-			{
 				prob_max=prob_train ;
-#ifdef TMP_SAVE
-				FILE* file=fopen(templname_best, "w");
-				SG_INFO( "\nsaving best model with filename %s ... ", templname_best) ;
-				working->save_model(file) ;
-				fclose(file) ;
-				SG_INFO( "done.") ;
-#endif
-			} 
-			else
-			{
-#ifdef TMP_SAVE
-				FILE* file=fopen(templname, "w");
-				SG_INFO( "\nsaving model with filename %s ... ", templname) ;
-				working->save_model(file) ;
-				fclose(file) ;
-				SG_INFO( "done.") ;
-#endif
-			}
 		}
 		delete working_estimate;
 		working_estimate=NULL;
@@ -178,13 +152,6 @@ bool CGUIHMM::baum_welch_trans_train(CHAR* param)
 
 bool CGUIHMM::baum_welch_train_defined(CHAR* param)
 {
-	CHAR templname[]=TMP_DIR "bwdef_model_XXXXXX" ;
-#ifdef SUNOS
-#define mkstemp(name) mktemp(name);
-#endif
-	mkstemp(templname);
-	CHAR templname_best[40] ;
-	sprintf(templname_best, "%s_best", templname) ;
 	double prob_max=-CMath::INFTY ;
 	iteration_count=ITERATIONS ;
 
@@ -203,26 +170,7 @@ bool CGUIHMM::baum_welch_train_defined(CHAR* param)
 				working->estimate_model_baum_welch_defined(working_estimate);
 				prob_train=working_estimate->model_probability();
 				if (prob_max<prob_train)
-				{
 					prob_max=prob_train ;
-#ifdef TMP_SAVE
-					FILE* file=fopen(templname_best, "w");
-					SG_INFO( "\nsaving best model with filename %s ... ", templname_best) ;
-					working->save_model(file) ;
-					fclose(file) ;
-					SG_INFO( "done.") ;
-#endif
-				} 
-				else
-				{
-#ifdef TMP_SAVE
-					FILE* file=fopen(templname, "w");
-					SG_INFO( "\nsaving model with filename %s ... ", templname) ;
-					working->save_model(file) ;
-					fclose(file) ;
-					SG_INFO( "done.") ;
-#endif
-				}
 			}
 			delete working_estimate;
 			working_estimate=NULL;
@@ -238,13 +186,6 @@ bool CGUIHMM::baum_welch_train_defined(CHAR* param)
 
 bool CGUIHMM::viterbi_train(CHAR* param)
 {
-	CHAR* templname= TMP_DIR "vit_model_XXXXXX" ;
-#ifdef SUNOS
-#define mkstemp(name) mktemp(name);
-#endif
-	mkstemp(templname);
-	CHAR templname_best[40] ;
-	sprintf(templname_best, "%s_best", templname) ;
 	double prob_max=-CMath::INFTY ;
 	iteration_count=ITERATIONS ;
 
@@ -264,26 +205,7 @@ bool CGUIHMM::viterbi_train(CHAR* param)
 				prob_train=working_estimate->best_path(-1);
 
 				if (prob_max<prob_train)
-				{
 					prob_max=prob_train ;
-#ifdef TMP_SAVE
-					FILE* file=fopen(templname_best, "w");
-					SG_INFO( "\nsaving best model with filename %s ... ", templname_best) ;
-					working->save_model(file) ;
-					fclose(file) ;
-					SG_INFO( "done.") ;
-#endif
-				} 
-				else
-				{
-#ifdef TMP_SAVE
-					FILE* file=fopen(templname, "w");
-					SG_INFO( "\nsaving model with filename %s ... ", templname) ;
-					working->save_model(file) ;
-					fclose(file) ;
-					SG_INFO( "done.") ;
-#endif
-				}
 			}
 			delete working_estimate;
 			working_estimate=NULL;
@@ -299,13 +221,6 @@ bool CGUIHMM::viterbi_train(CHAR* param)
 
 bool CGUIHMM::viterbi_train_defined(CHAR* param)
 {
-	CHAR* templname= TMP_DIR "vitdef_model_XXXXXX" ;
-#ifdef SUNOS
-#define mkstemp(name) mktemp(name);
-#endif
-	mkstemp(templname);
-	CHAR templname_best[40] ;
-	sprintf(templname_best, "%s_best", templname) ;
 	double prob_max=-CMath::INFTY ;
 	iteration_count=ITERATIONS ;
 
@@ -325,26 +240,7 @@ bool CGUIHMM::viterbi_train_defined(CHAR* param)
 				prob_train=working_estimate->best_path(-1);
 
 				if (prob_max<prob_train)
-				{
 					prob_max=prob_train ;
-#ifdef TMP_SAVE
-					FILE* file=fopen(templname_best, "w");
-					SG_INFO( "\nsaving best model with filename %s ... ", templname_best) ;
-					working->save_model(file) ;
-					fclose(file) ;
-					SG_INFO( "done.") ;
-#endif
-				} 
-				else
-				{
-#ifdef TMP_SAVE
-					FILE* file=fopen(templname, "w");
-					SG_INFO( "\nsaving model with filename %s ... ", templname) ;
-					working->save_model(file) ;
-					fclose(file) ;
-					SG_INFO( "done.") ;
-#endif
-				}
 			}
 			delete working_estimate;
 			working_estimate=NULL;

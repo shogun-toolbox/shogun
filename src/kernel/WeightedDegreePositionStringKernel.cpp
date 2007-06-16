@@ -1500,7 +1500,7 @@ CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT 
 	//	SG_PRINT("second last: str:0%0llx sc:%f bt:%d\n",e.string,e.score,e.bt);
 	//}
 
-	CHAR* acgt="ACGT";
+	const CHAR* acgt="ACGT";
 
 	//backtracking start
 	INT max_idx=-1;

@@ -1,3 +1,16 @@
+2007-XX-XX  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.4.0
+	* new methods: 
+		- SubgradientSVM
+		- GMNPSVM (multiclass b-SVM)
+		- SubgradientLPM
+		- CplexLPM
+		- LPBoost (for LPM)
+		- SVMLin
+	* new commands new_classifier / train_classifier / get_classifier
+	* support for sparse features
+
 2007-03-06  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.3.2

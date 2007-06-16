@@ -1623,11 +1623,18 @@ EOF
     proc=''
     _march=''
     _mcpu=''
+  m68)
+    _def_arch='#define ARCH_M68K 1'
+    _target_arch='TARGET_ARCH_M68K = yes'
+    iproc='vax'
+    proc=''
+    _march=''
+    _mcpu=''
     ;;
 
   *)
     echo "The architecture of your CPU ($host_arch) is not supported by this configure script"
-    echo "It seems nobody has ported MPlayer to your OS or CPU type yet."
+    echo "It seems nobody has ported SHOGUN to your OS or CPU type yet."
     die "unsupported architecture $host_arch"
     ;;
 esac # case "$host_arch" in
