@@ -404,8 +404,10 @@ template <class ST> class CStringFeatures: public CFeatures
 	inline INT obtain_by_sliding_window(INT window_size, INT step_size)
 	{
 		ASSERT(step_size>0);
-		ASSERT(window_size>0 && max_string_length>=window_size);
+		ASSERT(window_size>0);
 		ASSERT(num_vectors==1 || single_string);
+		ASSERT(max_string_length>=window_size ||
+				( single_string && length_of_single_string>=window_size));
 
 		//in case we are dealing with a single remapped string
 		//allow remapping
@@ -439,8 +441,10 @@ template <class ST> class CStringFeatures: public CFeatures
 	inline INT obtain_by_position_list(INT window_size, CDynamicArray<INT>* positions)
 	{
 		ASSERT(positions);
-		ASSERT(window_size>0 && max_string_length>=window_size);
+		ASSERT(window_size>0);
 		ASSERT(num_vectors==1 || single_string);
+		ASSERT(max_string_length>=window_size ||
+				( single_string && length_of_single_string>=window_size));
 
 		num_vectors= positions->get_num_elements();
 		ASSERT(num_vectors>0);
