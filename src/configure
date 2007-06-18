@@ -1623,6 +1623,7 @@ EOF
     proc=''
     _march=''
     _mcpu=''
+	;;
   m68)
     _def_arch='#define ARCH_M68K 1'
     _target_arch='TARGET_ARCH_M68K = yes'
