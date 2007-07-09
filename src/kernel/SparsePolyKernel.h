@@ -18,7 +18,8 @@
 class CSparsePolyKernel: public CSparseKernel<DREAL>
 {
  public:
-  CSparsePolyKernel(INT size, INT degree, bool inhomogene, bool use_normalization=true);
+  CSparsePolyKernel(CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, INT size, INT d, bool inhom, bool use_norm);
+  CSparsePolyKernel(INT size, INT degree, bool inhomogene=true, bool use_normalization=true);
   ~CSparsePolyKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r);

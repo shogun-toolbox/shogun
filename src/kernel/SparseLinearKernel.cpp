@@ -15,11 +15,19 @@
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/SparseKernel.h"
 
-CSparseLinearKernel::CSparseLinearKernel(INT size, bool do_rescale_, DREAL scale_)
-  : CSparseKernel<DREAL>(size),scale(scale_),do_rescale(do_rescale_), initialized(false),
+CSparseLinearKernel::CSparseLinearKernel(INT size, DREAL scale_)
+  : CSparseKernel<DREAL>(size),scale(scale_),initialized(false),
 	normal_length(0), normal(NULL)
 {
 	properties |= KP_LINADD;
+}
+
+CSparseLinearKernel::CSparseLinearKernel(CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, DREAL scale_, INT size)
+  : CSparseKernel<DREAL>(size),scale(scale_),initialized(false),
+	normal_length(0), normal(NULL)
+{
+	properties |= KP_LINADD;
+	init(l,r);
 }
 
 CSparseLinearKernel::~CSparseLinearKernel() 
@@ -41,8 +49,8 @@ bool CSparseLinearKernel::init(CFeatures* l, CFeatures* r)
 
 void CSparseLinearKernel::init_rescale()
 {
-	if (!do_rescale)
-		return ;
+	if (scale!=0.0)
+		return;
 	double sum=0;
 	scale=1.0;
 	for (INT i=0; (i<lhs->get_num_vectors() && i<rhs->get_num_vectors()); i++)
@@ -77,11 +85,14 @@ void CSparseLinearKernel::clear_normal()
 	}
 
 	memset(normal, 0, sizeof(DREAL)*normal_length);
+
+	set_is_initialized(true);
 }
 
 void CSparseLinearKernel::add_to_normal(INT idx, DREAL weight) 
 {
 	((CSparseFeatures<DREAL>*) rhs)->add_to_dense_vec(weight, idx, normal, normal_length);
+	set_is_initialized(true);
 }
   
 DREAL CSparseLinearKernel::compute(INT idx_a, INT idx_b)
@@ -110,7 +121,7 @@ bool CSparseLinearKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL*
 		add_to_normal(sv_idx[i], alphas[i]);
 
 	set_is_initialized(true);
-	return true;;
+	return true;
 }
 
 bool CSparseLinearKernel::delete_optimization()
@@ -125,5 +136,6 @@ bool CSparseLinearKernel::delete_optimization()
 
 DREAL CSparseLinearKernel::compute_optimized(INT idx) 
 {
+	ASSERT(get_is_initialized());
 	return ((CSparseFeatures<DREAL>*) rhs)->dense_dot(1.0/scale, idx, normal, normal_length, 0.0);
 }

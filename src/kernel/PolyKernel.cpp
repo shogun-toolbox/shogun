@@ -12,20 +12,13 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "kernel/PolyKernel.h"
-#include "features/Features.h"
+#include "features/RealFeatures.h"
 
-#ifdef HAVE_LAPACK
-extern "C" {
-#include <cblas.h>
-}
-#endif
-
-CPolyKernel::CPolyKernel(LONG size, INT d, bool inhom, bool use_norm)
-  : CSimpleKernel<DREAL>(size),degree(d),inhomogene(inhom),
+CPolyKernel::CPolyKernel(INT size, INT d, bool inhom, bool use_norm)
+  : CSimpleKernel<DREAL>(size), degree(d), inhomogene(inhom),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
 {
 }
-
 
 CPolyKernel::CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT size, INT d, bool inhom, bool use_norm)
   : CSimpleKernel<DREAL>(size),degree(d),inhomogene(inhom),
@@ -33,7 +26,6 @@ CPolyKernel::CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT size, INT d, bo
 {
 	init(l,r);
 }
-
 
 CPolyKernel::~CPolyKernel() 
 {
@@ -107,7 +99,7 @@ bool CPolyKernel::init(CFeatures* l, CFeatures* r)
 	this->lhs=(CRealFeatures*) l;
 	this->rhs=(CRealFeatures*) r;
 
-	initialized = true ;
+	initialized = true;
 	return result;
 }
 
@@ -115,7 +107,6 @@ void CPolyKernel::cleanup()
 {
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
-
 	sqrtdiag_rhs=NULL;
 
 	delete[] sqrtdiag_lhs;
@@ -136,40 +127,27 @@ bool CPolyKernel::save_init(FILE* dest)
   
 DREAL CPolyKernel::compute(INT idx_a, INT idx_b)
 {
-  INT alen, blen;
-  bool afree, bfree;
+  INT alen=0;
+  INT blen=0;
+  bool afree=false;
+  bool bfree=false;
 
-  //fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
   double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
   double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   
   ASSERT(alen==blen);
 
-  DREAL sqrt_a= 1 ;
-  DREAL sqrt_b= 1 ;
+  DREAL sqrt_a= 1.0;
+  DREAL sqrt_b= 1.0;
   if (initialized && use_normalization)
-    {
-      sqrt_a=sqrtdiag_lhs[idx_a] ;
-      sqrt_b=sqrtdiag_rhs[idx_b] ;
-    } ;
+  {
+	  sqrt_a=sqrtdiag_lhs[idx_a] ;
+	  sqrt_b=sqrtdiag_rhs[idx_b] ;
+  }
 
   DREAL sqrt_both=sqrt_a*sqrt_b;
 
-  INT ialen=(int) alen;
-
-#ifndef HAVE_LAPACK
-  DREAL result=0;
-  {
-    for (INT i=0; i<ialen; i++)
-	{
-      result+=avec[i]*bvec[i];
-	}
-
-  }
-#else
-  INT skip=1;
-  DREAL result=cblas_ddot(ialen, avec, skip, bvec, skip);
-#endif
+  DREAL result=CMath::dot(avec, bvec, alen);
 
   if (inhomogene)
 	  result+=1;
@@ -179,10 +157,8 @@ DREAL CPolyKernel::compute(INT idx_a, INT idx_b)
   for (INT j=1; j<degree; j++)
 	  result*=re;
 
-  result/=sqrt_both;
-
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  return result;
+  return result/sqrt_both;
 }

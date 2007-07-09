@@ -8,19 +8,11 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "lib/config.h"
-
-#ifdef HAVE_LAPACK
-extern "C" {
-#include <cblas.h>
-}
-#endif
-
 #include "lib/common.h"
 #include "lib/io.h"
-#include "kernel/LinearKernel.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
+#include "kernel/LinearKernel.h"
 
 CLinearKernel::CLinearKernel(INT size, DREAL scale_)
   : CSimpleKernel<DREAL>(size),scale(scale_), initialized(false),
@@ -31,8 +23,9 @@ CLinearKernel::CLinearKernel(INT size, DREAL scale_)
 
 CLinearKernel::CLinearKernel(CRealFeatures* l, CRealFeatures* r, DREAL scale_, INT size)
   : CSimpleKernel<DREAL>(size),scale(scale_), initialized(false),
-	normal(NULL)
+	normal_length(0), normal(NULL)
 {
+	properties |= KP_LINADD;
 	init(l,r);
 }
 
@@ -46,7 +39,7 @@ bool CLinearKernel::init(CFeatures* l, CFeatures* r)
 	CSimpleKernel<DREAL>::init(l, r);
 
 	if (!initialized)
-		init_rescale() ;
+		init_rescale();
 
 	SG_INFO( "rescaling kernel by %g (num:%d)\n",scale, CMath::min(l->get_num_vectors(), r->get_num_vectors()));
 
@@ -86,7 +79,7 @@ void CLinearKernel::clear_normal()
 	int num = ((CRealFeatures*) lhs)->get_num_features();
 	if (normal==NULL)
 	{
-		normal = new DREAL[num] ;
+		normal = new DREAL[num];
 		normal_length=num;
 	}
 
@@ -119,19 +112,7 @@ DREAL CLinearKernel::compute(INT idx_a, INT idx_b)
   
   ASSERT(alen==blen);
 
-  INT ialen=(int) alen;
-
-#ifndef HAVE_LAPACK
-  DREAL result=0;
-  {
-    for (INT i=0; i<ialen; i++)
-      result+=avec[i]*bvec[i];
-  }
-  result/=scale;
-#else
-  INT skip=1;
-  DREAL result = cblas_ddot(ialen, avec, skip, bvec, skip)/scale;
-#endif
+  DREAL result=CMath::dot(avec, bvec, alen) / scale;
 
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
@@ -142,6 +123,7 @@ DREAL CLinearKernel::compute(INT idx_a, INT idx_b)
 bool CLinearKernel::init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas) 
 {
 	clear_normal();
+
 	for (int i=0; i<num_suppvec; i++)
 		add_to_normal(sv_idx[i], alphas[i]);
 

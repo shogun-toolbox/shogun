@@ -11,14 +11,19 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "kernel/SparsePolyKernel.h"
-#include "features/Features.h"
 #include "features/SparseFeatures.h"
-#include "kernel/SparseKernel.h"
 
 CSparsePolyKernel::CSparsePolyKernel(INT size, INT d, bool inhom, bool use_norm)
   : CSparseKernel<DREAL>(size), degree(d), inhomogene(inhom), 
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
 {
+}
+
+CSparsePolyKernel::CSparsePolyKernel(CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, INT size, INT d, bool inhom, bool use_norm)
+  : CSparseKernel<DREAL>(size),degree(d),inhomogene(inhom),
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
+{
+	init(l,r);
 }
 
 CSparsePolyKernel::~CSparsePolyKernel() 
@@ -68,7 +73,7 @@ bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r)
 
 			//trap divide by zero exception
 			if (sqrtdiag_lhs[i]==0)
-				sqrtdiag_lhs[i]=1-16;
+				sqrtdiag_lhs[i]=1e-16;
 		}
 
 		// if lhs is different from rhs (train/test data)
@@ -94,7 +99,6 @@ bool CSparsePolyKernel::init(CFeatures* l, CFeatures* r)
 	this->rhs=(CSparseFeatures<DREAL>*) r;
 
 	initialized = true;
-	SG_INFO( "SparsePolyKernel initialized\n");
 	return result;
 }
   
@@ -127,38 +131,28 @@ DREAL CSparsePolyKernel::compute(INT idx_a, INT idx_b)
   bool afree=false;
   bool bfree=false;
 
-  //fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
   TSparseEntry<DREAL>* avec=((CSparseFeatures<DREAL>*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
   TSparseEntry<DREAL>* bvec=((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
 
-  DREAL sqrt_a= 1 ;
-  DREAL sqrt_b= 1 ;
+  DREAL sqrt_a= 1.0;
+  DREAL sqrt_b= 1.0;
   if (initialized && use_normalization)
-    {
-      sqrt_a=sqrtdiag_lhs[idx_a] ;
-      sqrt_b=sqrtdiag_rhs[idx_b] ;
-    } ;
+  {
+	  sqrt_a=sqrtdiag_lhs[idx_a] ;
+	  sqrt_b=sqrtdiag_rhs[idx_b] ;
+  }
 
   DREAL sqrt_both=sqrt_a*sqrt_b;
   
   DREAL result=((CSparseFeatures<DREAL>*) lhs)->sparse_dot(1.0,avec, alen, bvec, blen);
 
-  //result remains zero when one of the vectors is non existent
-  if (avec && bvec)
-  {
-	  if (inhomogene)
-		  result+=1;
+  if (inhomogene)
+	  result+=1;
 
-	  DREAL re=result;
+  DREAL re=result;
 
-	  for (INT j=1; j<degree; j++)
-		  result*=re;
-  }
-  else
-  {
-	  if (inhomogene)
-		  result=1.0;
-  }
+  for (INT j=1; j<degree; j++)
+	  result*=re;
 
   ((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(bvec, idx_b, bfree);

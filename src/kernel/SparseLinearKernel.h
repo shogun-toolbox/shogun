@@ -18,7 +18,8 @@
 class CSparseLinearKernel: public CSparseKernel<DREAL>
 {
  public:
-  CSparseLinearKernel(INT size, bool do_rescale=true, DREAL scale=1.0);
+  CSparseLinearKernel(INT size, DREAL scale=1.0);
+  CSparseLinearKernel(CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, DREAL scale=1.0, INT size=10);
   ~CSparseLinearKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r);
@@ -30,10 +31,6 @@ class CSparseLinearKernel: public CSparseKernel<DREAL>
 
   // return what type of kernel we are Linear,Polynomial, Gaussian,...
   virtual EKernelType get_kernel_type() { return K_SPARSELINEAR; }
-
-  /** return feature type the kernel can deal with
-  */
-  inline virtual EFeatureType get_feature_type() { return F_DREAL; }
 
   // return the name of a kernel
   virtual const CHAR* get_name() { return "SparseLinear" ; } ;
@@ -63,12 +60,10 @@ class CSparseLinearKernel: public CSparseKernel<DREAL>
   
  protected:
   double scale ;
-  bool do_rescale ;
   bool initialized;
 
   /// normal vector (used in case of optimized kernel)
-  long normal_length;
+  INT normal_length;
   DREAL* normal;
 };
-
 #endif

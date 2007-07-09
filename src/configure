@@ -1,4 +1,4 @@
-#!/bin/bash
+	#!/bin/bash
 
 # some hopefully reasonable defaults
 SRCDIR="`dirname $0`"
@@ -1759,6 +1759,9 @@ set_opts()
 		else
 			LINKFLAGS="$LINKFLAGS -undefined error"
 		fi
+	elif sunos
+	then
+		true #nop
 	else
 		LINKFLAGS="$LINKFLAGS -Xlinker --no-undefined"
 	fi
@@ -1964,6 +1967,14 @@ EOF
 			else
 				die "matlab only supports x86_84 and x86 linux architectures"
 			fi
+		elif sunos
+		then
+				COMPFLAGS_C="$COMPFLAGS_C -KPIC -dalign -xlibmieee -D__EXTENSIONS__ -D_POSIX_C_SOURCE=199506L -mt -xs -g -xO3 -xlibmil"
+
+				COMPFLAGS_CPP="$COMPFLAGS_CPP -KPIC -dalign -xlibmieee -D__EXTENSIONS__ -D_POSIX_C_SOURCE=199506L -mt -library=stlport4,Crun -xs -g -xO3 -xlibmil"
+				LINKFLAGS="$LINKFLAGS -G -mt -M$MATLAB_LIBDIR/sol64/mexFunction.map -L$MATLAB_BINDIR/sol64 -lmx -lmex -lmat"
+				INCLUDES="$INCLUDES -I$MATLAB_INCDIR -I$MATLAB_SRCDIR"
+				TARGET="sg.mexs64"
 		elif cygwin
 		then
 cat >mexFunction.map <<EOF
