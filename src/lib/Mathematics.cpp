@@ -446,6 +446,7 @@ DREAL* CMath::pinv(DREAL* matrix, INT rows, INT cols, DREAL* target)
 
 	return target;
 }
+#endif
 
 template <>
 void CMath::display_vector(INT* vector, INT n, const char* name)
@@ -499,4 +500,3 @@ void CMath::display_matrix(DREAL* matrix, INT rows, INT cols, const char* name)
 	SG_SPRINT("]\n");
 }
 
-#endif
