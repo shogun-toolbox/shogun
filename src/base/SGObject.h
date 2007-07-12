@@ -58,7 +58,7 @@ public:
 	{
 		if (refcount == 0 || --refcount == 0 )
         {
-            SG_DEBUG("unref():%ld obj:%x destroying\n", refcount, (ULONG) this);
+            SG_DEBUG("unref():%ld obj:%p destroying\n", refcount, this);
 			//don't do this yet for static interfaces (as none is
 			//calling ref/unref properly)
 			delete this;
@@ -66,7 +66,7 @@ public:
         }
         else
         {
-            SG_DEBUG("unref():%ld obj:%x decreased\n", refcount, (ULONG) this);
+            SG_DEBUG("unref():%ld obj:%p decreased\n", refcount, this);
             return refcount;
         }
 	}
