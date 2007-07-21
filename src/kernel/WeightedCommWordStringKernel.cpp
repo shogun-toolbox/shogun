@@ -14,17 +14,56 @@
 #include "lib/io.h"
 
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(LONG size, bool sign, ENormalizationType n)
-  : CCommWordStringKernel(size, sign, n)
+  : CCommWordStringKernel(size, sign, n), weights(NULL)
 {
+	ASSERT(sign == false);
 }
 
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool sign, ENormalizationType n, INT size)
-  : CCommWordStringKernel(l,r, sign, n, size)
+  : CCommWordStringKernel(size, sign, n), weights(NULL)
 {
+	ASSERT(sign == false);
+	init(l,r);
 }
 
 CWeightedCommWordStringKernel::~CWeightedCommWordStringKernel() 
 {
+}
+
+bool CWeightedCommWordStringKernel::init(CFeatures* l, CFeatures* r)
+{
+	CCommWordStringKernel::init(l,r);
+
+	ASSERT(((CStringFeatures<WORD>*) l)->get_order() ==
+			((CStringFeatures<WORD>*) r)->get_order());
+	degree=((CStringFeatures<WORD>*) l)->get_order();
+	return set_wd_weights();
+}
+
+void CWeightedCommWordStringKernel::cleanup()
+{
+	delete[] weights;
+	weights=NULL;
+
+	CCommWordStringKernel::cleanup();
+}
+bool CWeightedCommWordStringKernel::set_wd_weights()
+{
+	delete[] weights;
+	weights=new DREAL[degree];
+	ASSERT(weights);
+
+	INT i;
+	DREAL sum=0;
+	for (i=0; i<degree; i++)
+	{
+		weights[i]=degree-i;
+		sum+=weights[i];
+	}
+	for (i=0; i<degree; i++)
+		weights[i]/=sum;
+
+	return weights!=NULL;
 }
   
 DREAL CWeightedCommWordStringKernel::compute(INT idx_a, INT idx_b)
@@ -39,48 +78,16 @@ DREAL CWeightedCommWordStringKernel::compute(INT idx_a, INT idx_b)
 	INT left_idx=0;
 	INT right_idx=0;
 
-	if (use_sign)
+	while (left_idx < alen && right_idx < blen)
 	{
-		while (left_idx < alen && right_idx < blen)
+		for (INT d=0; d<degree; d++)
 		{
-			if (avec[left_idx]==bvec[right_idx])
-			{
-				WORD sym=avec[left_idx];
+			WORD lsym=((CStringFeatures<WORD>*) lhs)->get_masked_symbols(avec[left_idx], d);
+			WORD rsym=((CStringFeatures<WORD>*) rhs)->get_masked_symbols(bvec[right_idx], d);
 
-				while (left_idx< alen && avec[left_idx]==sym)
-					left_idx++;
-
-				while (right_idx< blen && bvec[right_idx]==sym)
-					right_idx++;
-
-				result++;
-			}
-			else if (avec[left_idx]<bvec[right_idx])
-				left_idx++;
-			else
-				right_idx++;
-		}
-	}
-	else
-	{
-		while (left_idx < alen && right_idx < blen)
-		{
-			if (avec[left_idx]==bvec[right_idx])
-			{
-				INT old_left_idx=left_idx;
-				INT old_right_idx=right_idx;
-
-				WORD sym=avec[left_idx];
-
-				while (left_idx< alen && avec[left_idx]==sym)
-					left_idx++;
-
-				while (right_idx< blen && bvec[right_idx]==sym)
-					right_idx++;
-
-				result+=((DREAL) (left_idx-old_left_idx)) * ((DREAL) (right_idx-old_right_idx));
-			}
-			else if (avec[left_idx]<bvec[right_idx])
+			if (lsym == rsym)
+				result+=weights[d];
+			else if (lsym<bvec[rsym])
 				left_idx++;
 			else
 				right_idx++;

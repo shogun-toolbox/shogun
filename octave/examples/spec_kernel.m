@@ -43,10 +43,10 @@ sg('send_command', 'use_linadd 1' );
 sg('set_features', 'TRAIN', traindat, 'DNA');
 sg('set_labels', 'TRAIN', trainlab);
 
-sg('send_command', sprintf('convert TRAIN SIMPLE CHAR SIMPLE WORD %i %i', order, order-1));
-sg('send_command', 'add_preproc SORTWORD') ;
+sg('send_command', sprintf('convert TRAIN STRING CHAR STRING WORD %i %i', order, order-1));
+sg('send_command', 'add_preproc SORTWORDSTRING') ;
 sg('send_command', 'attach_preproc TRAIN') ;
-sg('send_command', sprintf('set_kernel COMM WORD %d %d %s',cache, use_sign, normalization));
+sg('send_command', sprintf('set_kernel COMMSTRING WORD %d %d %s',cache, use_sign, normalization));
 
 sg('send_command', 'init_kernel TRAIN');
 sg('send_command', 'new_svm LIGHT');
@@ -56,7 +56,7 @@ sg('send_command', 'init_kernel_optimization');
 
 %evaluate svm on train data
 sg('set_features', 'TEST', traindat, 'DNA');
-sg('send_command', sprintf('convert TEST SIMPLE CHAR SIMPLE WORD %i %i', order, order-1));
+sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
 sg('send_command', 'attach_preproc TEST') ;
 sg('set_labels', 'TEST', trainlab);
 sg('send_command', 'init_kernel TEST');
@@ -65,7 +65,7 @@ fprintf('accuracy: %f                                                           
 
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat, 'DNA');
-sg('send_command', sprintf('convert TEST SIMPLE CHAR SIMPLE WORD %i %i', order, order-1));
+sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
 sg('send_command', 'attach_preproc TEST') ;
 sg('set_labels', 'TEST', testlab);
 sg('send_command', 'init_kernel TEST');

@@ -24,7 +24,13 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
   CWeightedCommWordStringKernel(LONG size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION );
   CWeightedCommWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool use_sign=false, ENormalizationType normalization_=FULL_NORMALIZATION, INT size=10);
   ~CWeightedCommWordStringKernel();
+
+  virtual bool init(CFeatures* l, CFeatures* r);
+  virtual void cleanup();
   
+  // init WD weighting
+  bool set_wd_weights();
+
   // return what type of kernel we are Linear,Polynomial, Gaussian,...
   virtual EKernelType get_kernel_type() { return K_WEIGHTEDCOMMWORDSTRING; }
 
@@ -37,5 +43,10 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
   DREAL compute(INT idx_a, INT idx_b);
+
+  INT degree;
+
+  /// weights for each of the subkernels of degree 1...d
+  DREAL* weights;
 };
 #endif
