@@ -134,7 +134,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		delete[] symbol_mask_table;
 	}
 
-	inline virtual EFeatureClass get_feature_class() { return C_STRING ; } ;
+	inline virtual EFeatureClass get_feature_class() { return C_STRING; }
 	inline virtual EFeatureType get_feature_type();
 
 	inline CAlphabet* get_alphabet()

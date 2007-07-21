@@ -33,11 +33,11 @@
 #include "kernel/PolyMatchWordKernel.h"
 #include "kernel/PolyMatchStringKernel.h"
 #include "kernel/WordMatchKernel.h"
-#include "kernel/CommWordKernel.h"
 #include "kernel/HammingWordKernel.h"
 #include "kernel/ManhattenWordKernel.h"
 #include "kernel/CanberraWordKernel.h"
 #include "kernel/CommWordStringKernel.h"
+#include "kernel/WeightedCommWordStringKernel.h"
 #include "kernel/CommUlongStringKernel.h"
 #include "kernel/HistogramWordKernel.h"
 #include "kernel/SalzbergWordKernel.h"
@@ -547,7 +547,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 			}
 		}
-		else if (strcmp(kern_type,"COMMSTRING")==0)
+		else if (strcmp(kern_type,"WEIGHTEDCOMMSTRING")==0 || strcmp(kern_type,"COMMSTRING")==0)
 		{
 			if (strcmp(data_type,"WORD")==0)
 			{
@@ -598,15 +598,31 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 					return NULL ;
 				}
 
-				k=new CCommWordStringKernel(size, use_sign==1, normalization);
-				
-				if (k)
+				if (strcmp(kern_type,"WEIGHTEDCOMMSTRING")==0)
 				{
-					if (use_sign)
-						SG_INFO( "CommWordStringKernel with sign(count) created\n");
-					else
-						SG_INFO( "CommWordStringKernel with count created\n");
-					return k;
+					k=new CWeightedCommWordStringKernel(size, use_sign==1, normalization);
+
+					if (k)
+					{
+						if (use_sign)
+							SG_INFO( "WeightedCommWordStringKernel with sign(count) created\n");
+						else
+							SG_INFO( "WeightedCommWordStringKernel with count created\n");
+						return k;
+					}
+				}
+				else
+				{
+					k=new CCommWordStringKernel(size, use_sign==1, normalization);
+
+					if (k)
+					{
+						if (use_sign)
+							SG_INFO( "CommWordStringKernel with sign(count) created\n");
+						else
+							SG_INFO( "CommWordStringKernel with count created\n");
+						return k;
+					}
 				}
 			}
 			else if (strcmp(data_type,"ULONG")==0)
@@ -666,69 +682,6 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 						SG_INFO( "CommUlongStringKernel with sign(count) created\n");
 					else
 						SG_INFO( "CommUlongStringKernel with count created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"COMM")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				INT use_sign = 0 ;
-				char normalization_str[100]="" ;
-				ENormalizationType normalization = FULL_NORMALIZATION ;
-				
-				sscanf(param, "%s %s %d %d %s", kern_type, data_type, &size, &use_sign, normalization_str);
-				if (strlen(normalization_str)==0)
-				{
-					normalization = FULL_NORMALIZATION ;
-					SG_INFO( "using full normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "NO")==0)
-				{
-					normalization = NO_NORMALIZATION ;
-					SG_INFO( "using no normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "SQRT")==0)
-				{
-					normalization = SQRT_NORMALIZATION ;
-					SG_INFO( "using sqrt normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "SQRTLEN")==0)
-				{
-					normalization = SQRTLEN_NORMALIZATION ;
-					SG_INFO( "using sqrt-len normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "LEN")==0)
-				{
-					normalization = LEN_NORMALIZATION ;
-					SG_INFO( "using len normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "SQLEN")==0)
-				{
-					normalization = SQLEN_NORMALIZATION ;
-					SG_INFO( "using squared len normalization\n") ;
-				}
-				else if (strcmp(normalization_str, "FULL")==0)
-				{
-					normalization = FULL_NORMALIZATION ;
-					SG_INFO( "using full normalization\n") ;
-				}
-				else 
-				{
-					SG_ERROR( "unknow normalization: %s\n", normalization_str) ;
-					return NULL ;
-				}
-
-				delete k;
-				k=new CCommWordKernel(size, use_sign==1, normalization);
-
-				if (k)
-				{
-					if (use_sign)
-						SG_INFO( "CommWordKernel with sign(count) created\n");
-					else
-						SG_INFO( "CommWordKernel with count created\n");
 					return k;
 				}
 			}

@@ -861,8 +861,8 @@ void CKernel::list_kernel()
 		case K_WEIGHTEDDEGREEPOS:
 			SG_INFO( "K_WEIGHTEDDEGREEPOS ");
 			break;
-		case K_COMMWORD:
-			SG_INFO( "K_COMMWORD ");
+		case K_WEIGHTEDCOMMWORDSTRING:
+			SG_INFO( "K_WEIGHTEDCOMMWORDSTRING ");
 			break;
 		case K_POLYMATCH:
 			SG_INFO( "K_POLYMATCH ");

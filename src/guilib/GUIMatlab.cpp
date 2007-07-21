@@ -33,7 +33,6 @@
 #include "kernel/WeightedDegreePositionStringKernel.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/CommWordStringKernel.h"
-#include "kernel/CommWordKernel.h"
 #include "kernel/CustomKernel.h"
 #include "kernel/LinearKernel.h"
 #include "kernel/SparseLinearKernel.h"
@@ -2422,22 +2421,6 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[])
 					for (int i=0; i<4*len; i++)
 						result[i]=res[i] ;
 					delete[] res ;
-
-					retvals[0]=mx_result;
-					return true;
-				}
-			case  K_COMMWORD:
-				{
-					CCommWordKernel *kernel = (CCommWordKernel *) kernel_ ;
-
-					INT len=0 ;
-					DREAL* weights ;
-					kernel->get_dictionary(len, weights) ;
-
-					mxArray* mx_result=mxCreateDoubleMatrix(len, 1, mxREAL);
-					double* result=mxGetPr(mx_result);
-					for (int i=0; i<len; i++)
-						result[i]=weights[i] ;
 
 					retvals[0]=mx_result;
 					return true;
