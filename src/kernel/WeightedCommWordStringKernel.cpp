@@ -32,12 +32,12 @@ CWeightedCommWordStringKernel::~CWeightedCommWordStringKernel()
 
 bool CWeightedCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 {
-	CCommWordStringKernel::init(l,r);
-
 	ASSERT(((CStringFeatures<WORD>*) l)->get_order() ==
 			((CStringFeatures<WORD>*) r)->get_order());
 	degree=((CStringFeatures<WORD>*) l)->get_order();
-	return set_wd_weights();
+	set_wd_weights();
+
+	return CCommWordStringKernel::init(l,r);
 }
 
 void CWeightedCommWordStringKernel::cleanup()
@@ -49,6 +49,7 @@ void CWeightedCommWordStringKernel::cleanup()
 }
 bool CWeightedCommWordStringKernel::set_wd_weights()
 {
+	SG_DEBUG("WSPEC degree: %d\n", degree);
 	delete[] weights;
 	weights=new DREAL[degree];
 	ASSERT(weights);
@@ -75,19 +76,35 @@ DREAL CWeightedCommWordStringKernel::compute(INT idx_a, INT idx_b)
 
 	DREAL result=0;
 
-	INT left_idx=0;
-	INT right_idx=0;
+	BYTE mask=0;
 
-	while (left_idx < alen && right_idx < blen)
+	for (INT d=0; d<degree; d++)
 	{
-		for (INT d=0; d<degree; d++)
+		mask = mask | (1 << (degree-d-1));
+		WORD masked=((CStringFeatures<WORD>*) lhs)->get_masked_symbols(0xffff, mask);
+
+		INT left_idx=0;
+		INT right_idx=0;
+
+		while (left_idx < alen && right_idx < blen)
 		{
-			WORD lsym=((CStringFeatures<WORD>*) lhs)->get_masked_symbols(avec[left_idx], d);
-			WORD rsym=((CStringFeatures<WORD>*) rhs)->get_masked_symbols(bvec[right_idx], d);
+			WORD lsym=avec[left_idx] & masked;
+			WORD rsym=bvec[right_idx] & masked;
 
 			if (lsym == rsym)
-				result+=weights[d];
-			else if (lsym<bvec[rsym])
+			{
+				INT old_left_idx=left_idx;
+				INT old_right_idx=right_idx;
+
+				while (left_idx<alen && (avec[left_idx] & masked) ==lsym)
+					left_idx++;
+
+				while (right_idx<blen && (bvec[right_idx] & masked) ==lsym)
+					right_idx++;
+
+				result+=weights[d]*(left_idx-old_left_idx)*(right_idx-old_right_idx);
+			}
+			else if (lsym<rsym)
 				left_idx++;
 			else
 				right_idx++;

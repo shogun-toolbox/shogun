@@ -107,13 +107,14 @@ class CGUIFeatures : public CSGObject
 			CHAR to_type[1024]="";
 			INT order=1;
 			INT start=0;
+			CHAR rev='f';
 			INT gap = 0 ;
 
 			param=io.skip_spaces(param);
 
-			if ((sscanf(param, "%s %s %s %s %s %d %d %d", target, from_class, from_type, to_class, to_type, &order, &start, &gap))<6)
+			if ((sscanf(param, "%s %s %s %s %s %d %d %d %c", target, from_class, from_type, to_class, to_type, &order, &start, &gap, &rev))<6)
 			{
-				SG_ERROR( "see help for params (target, from_class, from_type, to_class, to_type, order, start, gap)\n");
+				SG_ERROR( "see help for params (target, from_class, from_type, to_class, to_type, order, start, gap, reversed)\n");
 				return NULL;
 			}
 
@@ -123,7 +124,7 @@ class CGUIFeatures : public CSGObject
 				SG_INFO( "converting CT STRING features to ST STRING ones (order=%i)\n",order);
 
 				CStringFeatures<ST>* sf=new CStringFeatures<ST>(new CAlphabet(src->get_alphabet()));
-				if (sf && sf->obtain_from_char_features(src, start, order, gap))
+				if (sf && sf->obtain_from_char_features(src, start, order, gap, rev=='r'))
 				{
 					SG_INFO( "conversion successful\n");
 					return sf;

@@ -492,13 +492,13 @@ template <class ST> class CStringFeatures: public CFeatures
 		return num_vectors;
 	}
 
-	inline bool obtain_from_char(CStringFeatures<CHAR>* sf, INT start, INT p_order, INT gap)
+	inline bool obtain_from_char(CStringFeatures<CHAR>* sf, INT start, INT p_order, INT gap, bool rev)
 	{
-		return obtain_from_char_features(sf, start, p_order, gap);
+		return obtain_from_char_features(sf, start, p_order, gap, rev);
 	}
 
     template <class CT>
-	bool obtain_from_char_features(CStringFeatures<CT>* sf, INT start, INT p_order, INT gap)
+	bool obtain_from_char_features(CStringFeatures<CT>* sf, INT start, INT p_order, INT gap, bool rev)
 	{
 		ASSERT(sf);
 		this->order=p_order;
@@ -552,8 +552,13 @@ template <class ST> class CStringFeatures: public CFeatures
 		{
 			INT len=0;
 			ST* fv=get_feature_vector(line, len);
-			translate_from_single_order(fv, len, start+gap, p_order+gap, max_val, gap);
+
+			if (rev)
+				translate_from_single_order_reversed(fv, len, start+gap, p_order+gap, max_val, gap);
+			else
+				translate_from_single_order(fv, len, start+gap, p_order+gap, max_val, gap);
 			//translate_from_single_order(fv, len, start, p_order, max_val);
+			//translate_from_single_order_reversed(fv, len, start, p_order, max_val);
 
 			/* fix the length of the string -- hacky */
 			features[line].length-=start+gap ;
@@ -617,6 +622,39 @@ template <class ST> class CStringFeatures: public CFeatures
 			obs[i-start]=obs[i];
 	}
 
+	void translate_from_single_order_reversed(ST* obs, INT sequence_length, INT start, INT p_order, INT max_val)
+	{
+		INT i,j;
+		ST value=0;
+
+		for (i=sequence_length-1; i>= p_order-1; i--)	//convert interval of size T
+		{
+			value=0;
+			for (j=i; j>=i-p_order+1; j--)
+				value= (value << max_val) | obs[j];
+
+			obs[i]= (ST) value;
+		}
+
+		for (i=p_order-2;i>=0;i--)
+		{
+			if (i>=sequence_length)
+				continue;
+
+			value=0;
+			for (j=i; j>=i-p_order+1; j--)
+			{
+				value= (value << max_val);
+				if (j>=0 && j<sequence_length)
+					value|=obs[j];
+			}
+			obs[i]=value;
+		}
+
+		for (i=start; i<sequence_length; i++)	
+			obs[i-start]=obs[i];
+	}
+
 	void translate_from_single_order(ST* obs, INT sequence_length, INT start, INT p_order, INT max_val, INT gap)
 	{
 		ASSERT(gap>=0) ;
@@ -665,6 +703,60 @@ template <class ST> class CStringFeatures: public CFeatures
 					value= (value >> max_val);
 					if (j>=0 && j<sequence_length)
 						value|=obs[j] << (max_val * (p_order-1-gap));
+				}			
+			}
+			obs[i]=value;
+		}
+
+		// shifting
+		for (i=start; i<sequence_length; i++)	
+			obs[i-start]=obs[i];
+	}
+	
+	void translate_from_single_order_reversed(ST* obs, INT sequence_length, INT start, INT p_order, INT max_val, INT gap)
+	{
+		ASSERT(gap>=0) ;
+		
+		const INT start_gap = (p_order - gap)/2 ;
+		const INT end_gap = start_gap + gap ;
+		
+		INT i,j;
+		ST value=0;
+
+		// almost all positions
+		for (i=sequence_length-1; i>=p_order-1; i--)	//convert interval of size T
+		{
+			value=0;
+			for (j=i; j>=i-p_order+1; j--)
+			{
+				if (i-j<start_gap)
+					value= (value << max_val) | obs[j];
+				else if (i-j>=end_gap)
+					value= (value << max_val) | obs[j];
+			}
+			obs[i]= (ST) value;
+		}
+
+		// the remaining `order` positions
+		for (i=p_order-2;i>=0;i--)
+		{
+			if (i>=sequence_length)
+				continue;
+
+			value=0;
+			for (j=i; j>=i-p_order+1; j--)
+			{
+				if (i-j<start_gap)
+				{
+					value= value << max_val;
+					if (j>=0 && j<sequence_length)
+						value|=obs[j];
+				}
+				else if (i-j>=end_gap)
+				{
+					value= value << max_val;
+					if (j>=0 && j<sequence_length)
+						value|=obs[j];
 				}			
 			}
 			obs[i]=value;
