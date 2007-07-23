@@ -27,6 +27,9 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 
   virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
+
+  virtual DREAL compute_optimized(INT idx);
+  virtual void add_to_normal(INT idx, DREAL weight);
   
   // init WD weighting
   bool set_wd_weights();

@@ -14,25 +14,32 @@
 #include "lib/io.h"
 
 CCommWordStringKernel::CCommWordStringKernel(LONG size, bool sign, ENormalizationType n)
-  : CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_sign(sign), normalization(n)
+  : CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), dictionary_size(0), dictionary_weights(NULL), use_sign(sign), normalization(n)
 {
 	properties |= KP_LINADD;
-	dictionary_size= 1<<(sizeof(WORD)*8);
-	dictionary_weights = new DREAL[dictionary_size];
-	SG_DEBUG( "using dictionary of %d words\n", dictionary_size);
-	clear_normal();
+	init_dictionary(1<<(sizeof(WORD)*8));
 }
 
 CCommWordStringKernel::CCommWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool sign, ENormalizationType n, INT size)
-  : CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_sign(sign), normalization(n)
+  : CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), dictionary_size(0), dictionary_weights(NULL), use_sign(sign), normalization(n)
 {
 	properties |= KP_LINADD;
-	dictionary_size= 1<<(sizeof(WORD)*8);
-	dictionary_weights = new DREAL[dictionary_size];
-	SG_DEBUG( "using dictionary of %d words\n", dictionary_size);
+
+	init_dictionary(1<<(sizeof(WORD)*8));
+	init(l,r);
+}
+
+
+bool CCommWordStringKernel::init_dictionary(INT size)
+{
+	dictionary_size= size;
+	delete[] dictionary_weights;
+	dictionary_weights = new DREAL[size];
+	ASSERT(dictionary_weights);
+	SG_DEBUG( "using dictionary of %d words\n", size);
 	clear_normal();
 
-	init(l,r);
+	return dictionary_weights!=NULL;
 }
 
 CCommWordStringKernel::~CCommWordStringKernel() 
@@ -78,6 +85,8 @@ void CCommWordStringKernel::remove_rhs()
 bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CStringKernel<WORD>::init(l,r);
+
+
 	initialized = false;
 	INT i;
 
@@ -372,24 +381,7 @@ DREAL CCommWordStringKernel::compute_optimized(INT i)
 			result += dictionary_weights[(int) vec[len-1]]*(len-last_j);
 		}
 
-		switch (normalization)
-		{
-			case NO_NORMALIZATION:
-				return result;
-			case SQRT_NORMALIZATION:
-				return result/sqrt(sqrtdiag_rhs[i]);
-			case FULL_NORMALIZATION:
-				return result/sqrtdiag_rhs[i];
-			case SQRTLEN_NORMALIZATION:
-				return result/sqrt(sqrt(len));
-			case LEN_NORMALIZATION:
-				return result/sqrt(len);
-			case SQLEN_NORMALIZATION:
-				return result/len;
-			default:
-            SG_ERROR( "Unknown Normalization in use!\n");
-				return -CMath::INFTY;
-		}
+		result=normalize_weight(result, i, len, normalization);
 	}
 	return result;
 }

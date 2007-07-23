@@ -234,6 +234,20 @@ template <class ST> class CStringFeatures: public CFeatures
 		return symbol_mask_table[mask] & symbol;
 	}
 
+	//shift offset to the left by amount
+	inline ST shift_offset(ST offset, INT amount)
+	{
+		ASSERT(alphabet);
+		return (offset << (amount*alphabet->get_num_bits()));
+	}
+
+	//shift symbol to the right by amount (taking care of custom symbol sizes)
+	inline ST shift_symbol(ST symbol, INT amount)
+	{
+		ASSERT(alphabet);
+		return (symbol >> (amount*alphabet->get_num_bits()));
+	}
+
 	virtual bool load(CHAR* fname)
 	{
 		SG_INFO( "loading...\n");

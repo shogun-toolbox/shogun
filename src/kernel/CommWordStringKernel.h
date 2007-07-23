@@ -36,6 +36,7 @@ class CCommWordStringKernel: public CStringKernel<WORD>
   // return the name of a kernel
   virtual const CHAR* get_name() { return "CommWordString"; }
 
+  virtual bool init_dictionary(INT size);
   virtual bool init_optimization(INT count, INT *IDX, DREAL * weights);
   virtual bool delete_optimization();
   virtual DREAL compute_optimized(INT idx);

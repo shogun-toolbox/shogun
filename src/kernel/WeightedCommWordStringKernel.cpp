@@ -16,12 +16,14 @@
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(LONG size, bool sign, ENormalizationType n)
   : CCommWordStringKernel(size, sign, n), weights(NULL)
 {
+	init_dictionary(1<<(sizeof(WORD)*9));
 	ASSERT(sign == false);
 }
 
 CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool sign, ENormalizationType n, INT size)
   : CCommWordStringKernel(size, sign, n), weights(NULL)
 {
+	init_dictionary(1<<(sizeof(WORD)*9));
 	ASSERT(sign == false);
 	init(l,r);
 }
@@ -134,4 +136,67 @@ DREAL CWeightedCommWordStringKernel::compute(INT idx_a, INT idx_b)
 	}
 	else
 		return result;
+}
+
+void CWeightedCommWordStringKernel::add_to_normal(INT vec_idx, DREAL weight)
+{
+	INT len=-1;
+	CStringFeatures<WORD>* s=(CStringFeatures<WORD>*) lhs;
+	WORD* vec=s->get_feature_vector(vec_idx, len);
+
+	if (len>0)
+	{
+		for (INT j=0; j<len; j++)
+		{
+			BYTE mask=0;
+			INT offs=0;
+			for (INT d=0; d<degree; d++)
+			{
+				mask = mask | (1 << (degree-d-1));
+				INT idx=s->get_masked_symbols(vec[j], mask);
+				idx=s->shift_symbol(idx, degree-d-1);
+				dictionary_weights[offs + idx] += normalize_weight(weight*weights[d], vec_idx, len, normalization);
+				offs+=s->shift_offset(1,d+1);
+			}
+		}
+
+		set_is_initialized(true);
+	}
+}
+
+DREAL CWeightedCommWordStringKernel::compute_optimized(INT i) 
+{ 
+	if (!get_is_initialized())
+	{
+		SG_ERROR( "CCommWordStringKernel optimization not initialized\n");
+		return 0 ; 
+	}
+
+	ASSERT(use_sign == false);
+
+	DREAL result = 0;
+	INT len = -1;
+
+	CStringFeatures<WORD>* s=(CStringFeatures<WORD>*) rhs;
+	WORD* vec=s->get_feature_vector(i, len);
+
+	if (vec && len>0)
+	{
+		for (INT j=0; j<len; j++)
+		{
+			BYTE mask=0;
+			INT offs=0;
+			for (INT d=0; d<degree; d++)
+			{
+				mask = mask | (1 << (degree-d-1));
+				INT idx=s->get_masked_symbols(vec[j], mask);
+				idx=s->shift_symbol(idx, degree-d-1);
+				result += dictionary_weights[offs + idx];
+				offs+=s->shift_offset(1,d+1);
+			}
+		}
+
+		result=normalize_weight(result, i, len, normalization);
+	}
+	return result;
 }
