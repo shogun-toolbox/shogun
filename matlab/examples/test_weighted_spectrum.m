@@ -77,7 +77,7 @@ sg('send_command', sprintf('c %f',C));
 sg('send_command', 'svm_train');
 
 sg('set_features', 'TEST', testdat, 'DNA');
-sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
+sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i 0 r', order, order-1));
 sg('send_command', 'attach_preproc TEST') ;
 sg('set_labels', 'TEST', testlab);
 sg('send_command', 'init_kernel TEST');
@@ -100,7 +100,7 @@ sg('send_command', 'svm_train');
 sg('send_command', 'init_kernel_optimization');
 
 sg('set_features', 'TEST', testdat, 'DNA');
-sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
+sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i 0 r', order, order-1));
 sg('send_command', 'attach_preproc TEST') ;
 sg('set_labels', 'TEST', testlab);
 sg('send_command', 'init_kernel TEST');
