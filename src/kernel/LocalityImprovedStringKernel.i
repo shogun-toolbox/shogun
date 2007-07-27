@@ -2,6 +2,6 @@
  #include "kernel/LocalityImprovedStringKernel.h"
 %}
 
-%rename(LocalityImprovedCharKernel) CLocalityImprovedCharKernel;
+%rename(LocalityImprovedStringKernel) CLocalityImprovedStringKernel;
 
 %include "kernel/LocalityImprovedStringKernel.h"

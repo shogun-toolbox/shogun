@@ -2,6 +2,6 @@
  #include "kernel/FixedDegreeStringKernel.h"
 %}
 
-%rename(FixedDegreeCharKernel) CFixedDegreeCharKernel;
+%rename(FixedDegreeStringKernel) CFixedDegreeStringKernel;
 
 %include "kernel/FixedDegreeStringKernel.h"

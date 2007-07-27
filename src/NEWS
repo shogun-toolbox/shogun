@@ -1,4 +1,4 @@
-2007-XX-XX  Soeren Sonnenburg <debian@nn7.de>
+2007-07-30  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.4.0
 	* new methods: 
@@ -8,8 +8,14 @@
 		- CplexLPM
 		- LPBoost (for LPM)
 		- SVMLin
+		- weighted spectrum kernel
+	* linadd support for GPDTSVM
 	* new commands new_classifier / train_classifier / get_classifier
-	* support for sparse features
+	* support for sparse features (from matlab)
+	* cleaned and added many more examples 
+	* removed suffixarray code due to license conflicts
+	* Matlab R2007a support
+	* all string kernels now work on strings (not charfeatures)
 
 2007-03-06  Soeren Sonnenburg <debian@nn7.de>
 
