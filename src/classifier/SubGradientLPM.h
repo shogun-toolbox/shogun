@@ -30,7 +30,7 @@ class CSubGradientLPM : public CSparseLinearClassifier
 		CSubGradientLPM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
 		virtual ~CSubGradientLPM();
 
-		inline EClassifierType get_classifier_type() { return CT_SUBGRADIENTLPM; }
+		virtual inline EClassifierType get_classifier_type() { return CT_SUBGRADIENTLPM; }
 		virtual bool train();
 
 		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }

@@ -24,7 +24,7 @@ class CSubGradientSVM : public CSparseLinearClassifier
 		CSubGradientSVM(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
 		virtual ~CSubGradientSVM();
 
-		inline EClassifierType get_classifier_type() { return CT_SUBGRADIENTSVM; }
+		virtual inline EClassifierType get_classifier_type() { return CT_SUBGRADIENTSVM; }
 		virtual bool train();
 
 		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }

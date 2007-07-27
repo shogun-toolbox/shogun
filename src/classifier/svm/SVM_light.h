@@ -162,7 +162,7 @@ class CSVMLight:public CSVM
   void init();
   virtual bool	train();
   bool setup_auc_maximization() ;
-  inline EClassifierType get_classifier_type() { return CT_LIGHT; }
+  virtual inline EClassifierType get_classifier_type() { return CT_LIGHT; }
 
   INT   get_runtime();
   void   svm_learn();

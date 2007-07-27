@@ -23,7 +23,7 @@ class CLibSVMOneClass : public CSVM
 		CLibSVMOneClass();
 		virtual ~CLibSVMOneClass();
 		virtual bool train();
-		inline EClassifierType get_classifier_type() { return CT_LIBSVMONECLASS; }
+		virtual inline EClassifierType get_classifier_type() { return CT_LIBSVMONECLASS; }
 
 	protected:
 		svm_problem problem;

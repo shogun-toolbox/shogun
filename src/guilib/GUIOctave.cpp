@@ -335,6 +335,7 @@ bool CGUIOctave::get_svm(octave_value_list& retvals)
 
 	if (svm)
 	{
+		SG_DEBUG("num alphas: %d\n", svm->get_num_support_vectors());
 		Matrix alphas=Matrix(svm->get_num_support_vectors(), 2);
 		double b=0;
 
@@ -345,8 +346,8 @@ bool CGUIOctave::get_svm(octave_value_list& retvals)
 
 			for (int i=0; i< svm->get_num_support_vectors(); i++)
 			{
-				alphas(1,i)=svm->get_alpha(i);
-				alphas(2,i)=svm->get_support_vector(i);
+				alphas(i,1)= (double) svm->get_alpha(i);
+				alphas(i,2)= (double) svm->get_support_vector(i);
 			}
 
 			retvals(0)=b;
@@ -680,29 +681,37 @@ CFeatures* CGUIOctave::set_features(const octave_value_list& vals)
 				{
 					CHAR* al=CGUIOctave::get_octaveString(vals(3).string_value());
 					CAlphabet* alpha= new CAlphabet(al, strlen(al));
+					ASSERT(alpha);
 					
 					INT num_vec = cm.cols();
 					INT num_feat = cm.rows();
+					T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
+					ASSERT(sc);
 					
-					CHAR* fm=new CHAR[num_vec*num_feat];
-					ASSERT(fm);
+					int maxlen=num_feat;
+					alpha->clear_histogram();
 
-					for (INT i=0; i<num_vec; i++)
+					for (int i=0; i<num_vec; i++)
+					{
+						sc[i].length=num_feat;
+						sc[i].string=new CHAR[num_feat];
+						ASSERT(sc[i].string)
+
 						for (INT j=0; j<num_feat; j++)
-							fm[i*num_feat+j]= (CHAR) cm(j,i);
+							sc[i].string[j]=(CHAR) cm(j,i);
 
-					alpha->add_string_to_histogram(fm, ((LONG) num_vec)* ((LONG) num_feat));
-                    SG_INFO("max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
-                    SG_INFO("num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
-
-					f= new CCharFeatures(alpha, 0);
+						alpha->add_string_to_histogram(sc[i].string, sc[i].length);
+					}
+					SG_INFO("max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+					SG_INFO("num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+					f= new CStringFeatures<CHAR>(alpha);
 					ASSERT(f);
 
 					if (alpha->check_alphabet_size() && alpha->check_alphabet())
-						((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+						((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
 					else
 					{
-						((CCharFeatures*) f)->set_feature_matrix(fm, num_feat, num_vec);
+						((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen);
 						delete f;
 						f=NULL;
 					}

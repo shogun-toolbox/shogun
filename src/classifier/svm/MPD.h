@@ -21,7 +21,7 @@ class CMPDSVM : public CSVM
 		virtual ~CMPDSVM();
 		virtual bool train();
 
-		inline EClassifierType get_classifier_type() { return CT_MPD; }
+		virtual inline EClassifierType get_classifier_type() { return CT_MPD; }
 	protected:
 		inline DREAL compute_H(int i, int j)
 		{

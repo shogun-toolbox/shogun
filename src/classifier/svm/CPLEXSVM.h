@@ -22,7 +22,7 @@ class CCPLEXSVM : public CSVM
 		virtual ~CCPLEXSVM();
 		virtual bool train();
 
-		inline EClassifierType get_classifier_type() { return CT_CPLEXSVM; }
+		virtual inline EClassifierType get_classifier_type() { return CT_CPLEXSVM; }
 };
 
 #endif

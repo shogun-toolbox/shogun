@@ -24,7 +24,7 @@ class CLibSVM : public CSVM
 		CLibSVM(DREAL C, CKernel* k, CLabels* lab);
 		virtual ~CLibSVM();
 		virtual bool train();
-		inline EClassifierType get_classifier_type() { return CT_LIBSVM; }
+		virtual inline EClassifierType get_classifier_type() { return CT_LIBSVM; }
 
 	protected:
 		svm_problem problem;

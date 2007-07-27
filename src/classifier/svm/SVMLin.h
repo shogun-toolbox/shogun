@@ -23,7 +23,7 @@ class CSVMLin : public CSparseLinearClassifier
 		CSVMLin(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
 		virtual ~CSVMLin();
 
-		inline EClassifierType get_classifier_type() { return CT_SVMLIN; }
+		virtual inline EClassifierType get_classifier_type() { return CT_SVMLIN; }
 		virtual bool train();
 
 		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }

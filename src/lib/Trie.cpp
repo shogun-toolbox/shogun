@@ -1447,8 +1447,6 @@ DREAL CTrie::get_cumulative_score(INT pos, ULONG seq, INT deg, DREAL* weights)
 			ASSERT(d-1<degree);
 			INT sym = (INT) (seq >> (2*(deg-1-d-i+pos)) & 3);
 
-			SG_PRINT("sym:%d\n", sym);
-
 			DREAL w=1.0;
 			if (!weights_in_tree)
 				w=weights[d];

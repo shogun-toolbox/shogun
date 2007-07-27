@@ -260,24 +260,26 @@ bool CGUIClassifier::train(CHAR* param)
 		case CT_CPLEXSVM:
 		case CT_GMNPSVM:
 		case CT_GNPPSVM:
+		case CT_KERNELPERCEPTRON:
+		case CT_LIBSVR:
+		case CT_LIBSVMMULTICLASS:
+		case CT_LIBSVMONECLASS:
+		case CT_SVRLIGHT:
 		case CT_KRR:
 			return train_svm(param);
-			break;
+		case CT_KNN:
+			return train_knn(param);
 		case CT_PERCEPTRON:
 			((CPerceptron*) classifier)->set_learn_rate(perceptron_learnrate);
 			((CPerceptron*) classifier)->set_max_iter(perceptron_maxiter);
-		case CT_KERNELPERCEPTRON:
 		case CT_LDA:
 			return train_linear(param);
 			break;
-		case CT_KNN:
-			return train_knn(param);
-			break;
 		case CT_SVMLIN:
 		case CT_SVMPERF:
+		case CT_SUBGRADIENTSVM:
 		case CT_LPM:
 		case CT_LPBOOST:
-		case CT_SUBGRADIENTSVM:
 		case CT_SUBGRADIENTLPM:
 			return train_sparse_linear(param);
 		default:
@@ -896,7 +898,14 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_MPD:
 		case CT_GPBT:
 		case CT_CPLEXSVM:
+		case CT_GMNPSVM:
+		case CT_GNPPSVM:
 		case CT_KERNELPERCEPTRON:
+		case CT_LIBSVR:
+		case CT_LIBSVMMULTICLASS:
+		case CT_LIBSVMONECLASS:
+		case CT_SVRLIGHT:
+		case CT_KRR:
 			return classify_kernelmachine(output);
 		case CT_KNN:
 			return classify_distancemachine(output);
@@ -967,6 +976,8 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &col
 		case CT_CPLEXSVM:
 		case CT_GMNPSVM:
 		case CT_GNPPSVM:
+		case CT_LIBSVR:
+		case CT_SVRLIGHT:
 		case CT_KRR:
 			return get_svm(weights, rows, cols, bias);
 			break;

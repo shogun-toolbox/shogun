@@ -24,7 +24,7 @@ class CLibSVMMultiClass : public CMultiClassSVM
 		CLibSVMMultiClass(DREAL C, CKernel* k, CLabels* lab);
 		virtual ~CLibSVMMultiClass();
 		virtual bool train();
-		inline EClassifierType get_classifier_type() { return CT_LIBSVMMULTICLASS; }
+		virtual inline EClassifierType get_classifier_type() { return CT_LIBSVMMULTICLASS; }
 
 	protected:
 		svm_problem problem;

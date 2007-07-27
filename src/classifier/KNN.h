@@ -27,7 +27,7 @@ class CKNN : public CDistanceMachine
 		CKNN();
 		virtual ~CKNN();
 
-		inline EClassifierType get_classifier_type() { return CT_KNN; }
+		virtual inline EClassifierType get_classifier_type() { return CT_KNN; }
 		//inline EDistanceType get_distance_type() { return DT_KNN;}
 		virtual bool train();
 		virtual CLabels* classify(CLabels* output=NULL);

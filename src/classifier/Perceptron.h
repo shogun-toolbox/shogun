@@ -22,7 +22,7 @@ class CPerceptron : public CLinearClassifier
 		CPerceptron();
 		virtual ~CPerceptron();
 
-		inline EClassifierType get_classifier_type() { return CT_PERCEPTRON; }
+		virtual inline EClassifierType get_classifier_type() { return CT_PERCEPTRON; }
 		virtual bool train();
 
 		/// set learn rate of gradient descent training algorithm

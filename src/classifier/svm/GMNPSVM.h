@@ -21,6 +21,6 @@ class CGMNPSVM : public CMultiClassSVM
 		CGMNPSVM(DREAL C, CKernel* k, CLabels* lab);
 		virtual ~CGMNPSVM();
 		virtual bool train();
-		inline EClassifierType get_classifier_type() { return CT_GMNPSVM; }
+		virtual inline EClassifierType get_classifier_type() { return CT_GMNPSVM; }
 };
 #endif

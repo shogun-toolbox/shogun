@@ -378,9 +378,9 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				sscanf(param, "%s %s %d %le", kern_type, data_type, &size, &scale);
 				delete k;
 				if (scale==-1)
-					k=new CLinearWordKernel(size, true);
+					k=new CLinearByteKernel(size, true);
 				else
-					k=new CLinearWordKernel(size, false, scale);
+					k=new CLinearByteKernel(size, false, scale);
 				return k;
 			}
 			else if (strcmp(data_type,"WORD")==0)

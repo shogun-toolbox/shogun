@@ -21,7 +21,7 @@ class CGNPPSVM : public CSVM
 		CGNPPSVM(DREAL C, CKernel* k, CLabels* lab);
 		virtual ~CGNPPSVM();
 		virtual bool train();
-		inline EClassifierType get_classifier_type() { return CT_GNPPSVM; }
+		virtual inline EClassifierType get_classifier_type() { return CT_GNPPSVM; }
 
 };
 #endif

@@ -23,7 +23,7 @@ class CLibSVR : public CSVM
 		CLibSVR(DREAL C, DREAL epsilon, CKernel* k, CLabels* lab);
 		virtual ~CLibSVR();
 		virtual bool train();
-		inline EClassifierType get_classifier_type() { return CT_NONE; }
+		virtual inline EClassifierType get_classifier_type() { return CT_LIBSVR; }
 
 	protected:
 		svm_problem problem;

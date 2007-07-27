@@ -26,6 +26,7 @@ class CSVRLight:public CSVMLight
   virtual ~CSVRLight() {};
   
   virtual bool	train();
+  virtual inline EClassifierType get_classifier_type() { return CT_SVRLIGHT; }
   void   svr_learn();
 
   virtual double compute_objective_function(double *a, double *lin, double *c, double eps, INT *label, INT totdoc);
