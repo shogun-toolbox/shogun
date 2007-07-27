@@ -22,6 +22,7 @@
 #include "kernel/WeightedDegreePositionStringKernel.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/CustomKernel.h"
+#include "classifier/svm/SVM.h"
 
 #include "lib/python.h"
 
@@ -97,7 +98,7 @@ PyObject* CGUIPython::py_get_viterbi(PyObject* self, PyObject* args)
 
 PyObject* CGUIPython::py_get_svm(PyObject* self, PyObject* args)
 {
-	CSVM* svm=gui->guisvm.get_svm();
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 
 	if (svm && svm->get_num_support_vectors()>0)
 	{
@@ -465,7 +466,7 @@ PyObject* CGUIPython::py_append_hmm(PyObject* self, PyObject* args)
 
 PyObject* CGUIPython::py_set_svm(PyObject* self, PyObject* args)
 {
-	CSVM* svm=gui->guisvm.get_svm();
+	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 
 	if (svm)
 	{
@@ -759,7 +760,7 @@ PyObject* CGUIPython::py_svm_classify(PyObject* self, PyObject* args)
 	{
 		int num_vec=f->get_num_vectors();
 
-		CLabels* l=gui->guisvm.classify();
+		CLabels* l=gui->guiclassifier.classify();
 
 		if (l)
 		{
@@ -781,7 +782,7 @@ PyObject* CGUIPython::py_svm_classify_example(PyObject* self, PyObject* args)
 	if (PyArg_ParseTuple(args, "i", &idx))
 	{
 		DREAL result;
-		if (!gui->guisvm.classify_example(idx, result))
+		if (!gui->guiclassifier.classify_example(idx, result))
 			SG_ERROR( "svm_classify_example failed\n") ;
 		else
 			return PyFloat_FromDouble(result);
