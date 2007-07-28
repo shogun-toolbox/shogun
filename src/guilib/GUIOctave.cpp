@@ -346,8 +346,8 @@ bool CGUIOctave::get_svm(octave_value_list& retvals)
 
 			for (int i=0; i< svm->get_num_support_vectors(); i++)
 			{
-				alphas(i,1)= (double) svm->get_alpha(i);
-				alphas(i,2)= (double) svm->get_support_vector(i);
+				alphas(i,0)= (double) svm->get_alpha(i);
+				alphas(i,1)= (double) svm->get_support_vector(i);
 			}
 
 			retvals(0)=b;
@@ -376,8 +376,8 @@ bool CGUIOctave::set_svm(const octave_value_list& vals)
 
 			for (int i=0; i< svm->get_num_support_vectors(); i++)
 			{
-				svm->set_alpha(i, alphas(1, i));
-				svm->set_support_vector(i, (int) alphas(2,i));
+				svm->set_alpha(i, alphas(i,0));
+				svm->set_support_vector(i, (int) alphas(i,1));
 			}
 
 			return true;
