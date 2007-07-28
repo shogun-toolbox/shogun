@@ -21,7 +21,7 @@ krr.set_tau(1e-6)
 krr.train()
 
 plot(X, Y, '.', label='train data')
-plot(X, krr.classify().get_labels(), hold=True, label='train output')
+plot(X[0], krr.classify().get_labels(), hold=True, label='train output')
 
 # compute output plot iso-lines
 XE = 4*rand(1, 500) - 2; XE.sort();
@@ -30,8 +30,7 @@ gk.init(feat, feat_test)
 YE = krr.classify().get_labels()
 YE200 = krr.classify_example(200)
 
-plot(XE, YE, hold=True, label='test output')
+plot(XE[0], YE, hold=True, label='test output')
 plot([XE[0,200]], [YE200], '+', hold=True)
 print YE[200], YE200
-legend()
 show()

@@ -21,7 +21,7 @@ svr = LibSVR(C, epsilon, gk, lab)
 svr.train()
 
 plot(X, Y, '.', label='train data')
-plot(X, svr.classify().get_labels(), hold=True, label='train output')
+plot(X[0], svr.classify().get_labels(), hold=True, label='train output')
 
 # compute output plot iso-lines
 XE = 4*rand(1, 500) - 2; XE.sort();
@@ -29,6 +29,5 @@ feat_test=RealFeatures(XE)
 gk.init(feat, feat_test)
 YE = svr.classify().get_labels()
 
-plot(XE, YE, hold=True, label='test output')
-legend()
+plot(XE[0], YE, hold=True, label='test output')
 show()

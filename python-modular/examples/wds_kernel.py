@@ -3,21 +3,17 @@ from numpy import array,arange,ones,zeros
 from numpy import double,int32
 
 from shogun.Features import CharFeatures,StringCharFeatures,DNA
-from shogun.Kernel import WeightedDegreePositionStringKernel, WeightedDegreePositionCharKernel, WeightedDegreeCharKernel
+from shogun.Kernel import WeightedDegreePositionStringKernel, WeightedDegreePositionStringKernel, WeightedDegreeStringKernel
 
 # create toy data
 
 degree=20;
 seqlen=60;
 
-XT=['ACTGAAGAAGATCTGAATAAATTTGAGTCTCTTACCATGGGGGCAAAGAAGAAGCTCAAG', seqlen*'A', seqlen*'C', seqlen*'T']
-
-charXT=array([list(XT[0]), list(XT[1]), list(XT[2]), list(XT[3])]).T
+strings=['ACTGAAGAAGATCTGAATAAATTTGAGTCTCTTACCATGGGGGCAAAGAAGAAGCTCAAG', seqlen*'A', seqlen*'C', seqlen*'T']
 
 stringfeat = StringCharFeatures(DNA)
-stringfeat.set_string_features(XT)
-
-charfeat = CharFeatures(charXT, DNA)
+stringfeat.set_string_features(strings)
 
 wdk = WeightedDegreePositionStringKernel(stringfeat, stringfeat, degree, zeros(seqlen, dtype=int32))
 K = mat(wdk.get_kernel_matrix())
@@ -27,14 +23,6 @@ wdk = WeightedDegreePositionStringKernel(stringfeat, stringfeat, degree, 20*ones
 K = mat(wdk.get_kernel_matrix())
 print K
 
-wdk = WeightedDegreePositionCharKernel(charfeat, charfeat, degree, zeros(seqlen, dtype=int32))
-K = mat(wdk.get_kernel_matrix())
-print K
-
-wdk = WeightedDegreePositionCharKernel(charfeat, charfeat, degree, 20*ones(seqlen, dtype=int32))
-K = mat(wdk.get_kernel_matrix())
-print K
-
-wdk = WeightedDegreeCharKernel(charfeat, charfeat, degree)
+wdk = WeightedDegreeStringKernel(stringfeat, stringfeat, degree)
 K = mat(wdk.get_kernel_matrix())
 print K

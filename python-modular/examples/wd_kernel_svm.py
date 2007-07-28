@@ -1,41 +1,44 @@
 from numpy import *
-from numpy.random import *
+from random import choice,seed
 from shogun.Features import *
 from shogun.Classifier import *
 from shogun.Kernel import *
 
 degree=20
-num_dat=500
+num_dat=40
 len=70
-acgt=array(['A','C','G','T'])
+acgt=['A','C','G','T']
 C=1
-
 seed(17)
-#generate train data
-trdat = chararray((len,2*num_dat),1,order='FORTRAN')
-trlab = concatenate((-ones(num_dat,dtype=double), ones(num_dat,dtype=double)))
-for i in range(len):
-	trdat[i,:]=acgt[array(floor(4*random_sample(2*num_dat)), dtype=int)]
 
-trdat[10:12,trlab==1]='A'
-trainfeat = CharFeatures(trdat,DNA)
-trainlab = Labels(trlab)
+def gen_random_string():
+	dat = num_dat*[[]]
+	lab = concatenate((-ones(num_dat,dtype=double), ones(num_dat,dtype=double)))
+	for i in range(num_dat):
+		dat[i]=[choice(acgt) for j in range(len)]
+		if lab[i]==1:
+			dat[i][10:12]='A'
+		dat[i]="".join(dat[i])
+	sdat = StringCharFeatures(DNA)
+	sdat.set_string_features(dat)
+	slab = Labels(lab)
+	return (sdat,slab)
 
-#generate test data
-tedat = chararray((len,2*num_dat),1,order='FORTRAN')
-telab = concatenate((-ones(num_dat,dtype=double), ones(num_dat,dtype=double)))
-for i in range(len):
-	tedat[i,:]=acgt[array(floor(4*random_sample(2*num_dat)), dtype=int)]
-
-tedat[10:12,telab==1]='A'
-testfeat = CharFeatures(tedat,DNA)
+#generate train and test data
+(trainfeat,trainlab)=gen_random_string()
+(testfeat,testlab)=gen_random_string()
 
 #train svm
-wdk = WeightedDegreeCharKernel(trainfeat,trainfeat, degree)
-svm = SVMLight(C, wdk, trainlab)
+wdk = WeightedDegreeStringKernel(trainfeat,trainfeat, degree)
+km=wdk.get_kernel_matrix()
+print km
+print trainlab.get_labels()
+svm = LibSVM(C, wdk, trainlab)
 svm.train()
+print 'hi'
 print svm.get_num_support_vectors()
 trainout=svm.classify().get_labels()
+print 'hi2'
 svs=[ (svm.get_alpha(i),svm.get_support_vector(i)) for i in range(svm.get_num_support_vectors())]
 
 #test

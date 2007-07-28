@@ -8,9 +8,7 @@ from numpy.random import randn
 from shogun.Features import *
 from shogun.Classifier import *
 from shogun.Kernel import *
-import gc
 
-gc.disable()
 num_svms=6
 num_dat=100
 width=0.5
