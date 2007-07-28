@@ -277,10 +277,10 @@ void CCommWordStringKernel::add_to_normal(INT vec_idx, DREAL weight)
 				if (vec[j]==vec[j-1])
 					continue;
 
-				dictionary_weights[(int) vec[j-1]] += normalize_weight(weight, vec_idx, len, normalization);
+				dictionary_weights[(int) vec[j-1]] += normalize_weight(sqrtdiag_lhs, weight, vec_idx, len, normalization);
 			}
 
-			dictionary_weights[(int) vec[len-1]] += normalize_weight(weight, vec_idx, len, normalization);
+			dictionary_weights[(int) vec[len-1]] += normalize_weight(sqrtdiag_lhs, weight, vec_idx, len, normalization);
 		}
 		else
 		{
@@ -289,11 +289,11 @@ void CCommWordStringKernel::add_to_normal(INT vec_idx, DREAL weight)
 				if (vec[j]==vec[j-1])
 					continue;
 
-				dictionary_weights[(int) vec[j-1]] += normalize_weight(weight*(j-last_j), vec_idx, len, normalization);
+				dictionary_weights[(int) vec[j-1]] += normalize_weight(sqrtdiag_lhs, weight*(j-last_j), vec_idx, len, normalization);
 				last_j = j;
 			}
 
-			dictionary_weights[(int) vec[len-1]] += normalize_weight(weight*(len-last_j), vec_idx, len, normalization);
+			dictionary_weights[(int) vec[len-1]] += normalize_weight(sqrtdiag_lhs, weight*(len-last_j), vec_idx, len, normalization);
 		}
 		set_is_initialized(true);
 	}
@@ -381,7 +381,7 @@ DREAL CCommWordStringKernel::compute_optimized(INT i)
 			result += dictionary_weights[(int) vec[len-1]]*(len-last_j);
 		}
 
-		result=normalize_weight(result, i, len, normalization);
+		result=normalize_weight(sqrtdiag_rhs, result, i, len, normalization);
 	}
 	return result;
 }

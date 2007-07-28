@@ -63,7 +63,7 @@ class CCommWordStringKernel: public CStringKernel<WORD>
   /// in the corresponding feature object
   DREAL compute(INT idx_a, INT idx_b);
 
-  inline DREAL normalize_weight(DREAL value, INT seq_num, INT seq_len, ENormalizationType p_normalization)
+  inline DREAL normalize_weight(DREAL* weights, DREAL value, INT seq_num, INT seq_len, ENormalizationType p_normalization)
   {
 	  switch (p_normalization)
 	  {
@@ -71,10 +71,10 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 			  return value;
 			  break;
 		  case SQRT_NORMALIZATION:
-			  return value/sqrt(sqrtdiag_lhs[seq_num]);
+			  return value/sqrt(weights[seq_num]);
 			  break;
 		  case FULL_NORMALIZATION:
-			  return value/sqrtdiag_lhs[seq_num];
+			  return value/weights[seq_num];
 			  break;
 		  case SQRTLEN_NORMALIZATION:
 			  return value/sqrt(sqrt((double) seq_len));

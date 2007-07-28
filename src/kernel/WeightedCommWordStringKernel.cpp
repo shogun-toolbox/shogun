@@ -155,7 +155,7 @@ void CWeightedCommWordStringKernel::add_to_normal(INT vec_idx, DREAL weight)
 				mask = mask | (1 << (degree-d-1));
 				INT idx=s->get_masked_symbols(vec[j], mask);
 				idx=s->shift_symbol(idx, degree-d-1);
-				dictionary_weights[offs + idx] += normalize_weight(weight*weights[d], vec_idx, len, normalization);
+				dictionary_weights[offs + idx] += normalize_weight(sqrtdiag_lhs, weight*weights[d], vec_idx, len, normalization);
 				offs+=s->shift_offset(1,d+1);
 			}
 		}
@@ -196,7 +196,7 @@ DREAL CWeightedCommWordStringKernel::compute_optimized(INT i)
 			}
 		}
 
-		result=normalize_weight(result, i, len, normalization);
+		result=normalize_weight(sqrtdiag_rhs, result, i, len, normalization);
 	}
 	return result;
 }
