@@ -299,6 +299,8 @@ bool CGUIClassifier::train_svm(CHAR* param)
 	CLabels* trainlabels=NULL;
 	if(!oneclass)
 		trainlabels=gui->guilabels.get_train_labels();
+	else
+		SG_INFO("training one class svm\n");
 
 	CKernel* kernel=gui->guikernel.get_kernel();
 
@@ -323,18 +325,20 @@ bool CGUIClassifier::train_svm(CHAR* param)
 	if ( !gui->guikernel.is_initialized() || !kernel->get_lhs() )
 	{
 		SG_ERROR( "kernel not initialized\n") ;
-		return 0;
+		return false;
 	}
+	
+	INT num_vec=kernel->get_lhs()->get_num_vectors();
 
-	if (!oneclass && trainlabels->get_num_labels() != kernel->get_lhs()->get_num_vectors())
+	if (!oneclass && trainlabels->get_num_labels() != num_vec)
 	{
 		SG_ERROR( "number of train labels (%d) and training vectors (%d) differs!\n", 
-				trainlabels->get_num_labels(), kernel->get_lhs()->get_num_vectors()) ;
+				trainlabels->get_num_labels(), num_vec) ;
 		return 0;
 	}
 
 	SG_INFO( "starting svm training on %ld vectors using C1=%lf C2=%lf epsilon=%lf\n", 
-			trainlabels->get_num_labels(), svm_C1, svm_C2, svm_epsilon) ;
+			num_vec, svm_C1, svm_C2, svm_epsilon) ;
 
 
 	svm->set_bias_enabled(svm_use_bias);
@@ -976,22 +980,24 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &col
 		case CT_CPLEXSVM:
 		case CT_GMNPSVM:
 		case CT_GNPPSVM:
+		case CT_KERNELPERCEPTRON:
 		case CT_LIBSVR:
+		case CT_LIBSVMMULTICLASS:
+		case CT_LIBSVMONECLASS:
 		case CT_SVRLIGHT:
 		case CT_KRR:
 			return get_svm(weights, rows, cols, bias);
 			break;
 		case CT_PERCEPTRON:
-		case CT_KERNELPERCEPTRON:
 		case CT_LDA:
-		case CT_LPM:
-		case CT_LPBOOST:
-		case CT_SUBGRADIENTLPM:
 			return get_linear(weights, rows, cols, bias);
 			break;
 		case CT_KNN:
 			SG_ERROR("not implemented");
 			break;
+		case CT_LPM:
+		case CT_LPBOOST:
+		case CT_SUBGRADIENTLPM:
 		case CT_SVMLIN:
 		case CT_SVMPERF:
 		case CT_SUBGRADIENTSVM:

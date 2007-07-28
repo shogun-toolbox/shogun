@@ -37,7 +37,7 @@ class CClassifier : public CSGObject
 		inline void set_max_train_time(DREAL t) { max_train_time=t; }
 		inline DREAL get_max_train_time() { return max_train_time; }
 
-		virtual EClassifierType get_classifier_type() { return CT_NONE; }
+		virtual inline EClassifierType get_classifier_type() { return CT_NONE; }
 
 	protected:
 		DREAL max_train_time;
