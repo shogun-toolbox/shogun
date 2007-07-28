@@ -114,33 +114,33 @@ sg('add_features', 'TEST', testdat3);
 sg('add_features', 'TEST', testdat4);
 sg('set_labels', 'TEST', testlab);
 sg('send_command', 'attach_preproc TEST');
-%%
-%sg('send_command', sprintf( 'set_kernel COMBINED %i', cache) );
-%%sg('send_command', sprintf( 'add_kernel 1.0 WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
-%sg('send_command', sprintf( 'add_kernel 1.0 WEIGHTEDDEGREEPOS2 CHAR 10 %i %i %i %s', order, mismatch, len, shifts ) );
-%sg('send_command', sprintf( 'add_kernel 1.0 COMMSTRING WORD 10 0' ) );
-%sg('send_command', sprintf( 'add_kernel 1.0 LINEAR REAL 10 1.0' ) );
-%sg('send_command', sprintf( 'add_kernel 4.0 GAUSSIAN REAL 10 1.0' ) );
-%%sg('send_command', 'set_kernel_optimization_type FASTBUTMEMHUNGRY' );
-%sg('send_command', 'set_kernel_optimization_type SLOWBUTMEMEFFICIENT' );
-%sg('send_command', 'init_kernel TRAIN');
-%ktref=sg('get_kernel_matrix');
-%sg('send_command', 'new_svm LIGHT');
-%sg('send_command', sprintf('c %f',C));
-%tic; sg('send_command', 'svm_train'); tref=toc
-%[bref, alphasref]=sg('get_svm');
-%tic;
-%sg('send_command', 'init_kernel_optimization');
-%sg('send_command', 'init_kernel TEST');
-%kteref=sg('get_kernel_matrix');
-%outoptref=sg('svm_classify');
-%toutref=toc
 %
-%outopt(1:10)
-%outoptref(1:10)
-%max(abs(outopt-outoptref))
-%
-%t
-%tref
-%tout
-%toutref
+sg('send_command', sprintf( 'set_kernel COMBINED %i', cache) );
+%sg('send_command', sprintf( 'add_kernel 1.0 WEIGHTEDDEGREE CHAR %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
+sg('send_command', sprintf( 'add_kernel 1.0 WEIGHTEDDEGREEPOS2 CHAR 10 %i %i %i %s', order, mismatch, len, shifts ) );
+sg('send_command', sprintf( 'add_kernel 1.0 COMMSTRING WORD 10 0' ) );
+sg('send_command', sprintf( 'add_kernel 1.0 LINEAR REAL 10 1.0' ) );
+sg('send_command', sprintf( 'add_kernel 4.0 GAUSSIAN REAL 10 1.0' ) );
+%sg('send_command', 'set_kernel_optimization_type FASTBUTMEMHUNGRY' );
+sg('send_command', 'set_kernel_optimization_type SLOWBUTMEMEFFICIENT' );
+sg('send_command', 'init_kernel TRAIN');
+ktref=sg('get_kernel_matrix');
+sg('send_command', 'new_svm LIGHT');
+sg('send_command', sprintf('c %f',C));
+tic; sg('send_command', 'svm_train'); tref=toc
+[bref, alphasref]=sg('get_svm');
+tic;
+sg('send_command', 'init_kernel_optimization');
+sg('send_command', 'init_kernel TEST');
+kteref=sg('get_kernel_matrix');
+outoptref=sg('svm_classify');
+toutref=toc
+
+outopt(1:10)
+outoptref(1:10)
+max(abs(outopt-outoptref))
+
+t
+tref
+tout
+toutref
