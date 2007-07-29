@@ -1,5 +1,5 @@
 if lpenv==0,
-  lpenv=cplex_init(1) ;
+  lpenv=cplex_license(1) ;
 end ;
 Cs = logspace(log10(0.0001),log10(100),10);
 val_trerr=[]; val_teerr=[] ;
