@@ -53,7 +53,8 @@ bool CLibSVM::train()
 	int weights_label[2]={-1,+1};
 	double weights[2]={1.0,get_C2()/get_C1()};
 
-	ASSERT(get_kernel());
+	ASSERT(get_kernel() && get_kernel()->get_lhs());
+    ASSERT(get_kernel()->get_lhs()->get_num_vectors() == problem.l);
 
 	param.svm_type=C_SVC; // C SVM
 	param.kernel_type = LINEAR;

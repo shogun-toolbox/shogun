@@ -395,11 +395,14 @@ bool CSVMLight::train()
 	learn_parm->rho=1.0;
 	learn_parm->xa_depth=0;
 
-	if (!CKernelMachine::get_kernel())
-	{
-      SG_ERROR( "SVM_light can not proceed without kernel!\n");
-		return false ;
-	}
+    if (!CKernelMachine::get_kernel() || !CKernelMachine::get_kernel()->get_lhs())
+    {
+        SG_ERROR( "SVM_light can not proceed without initialized kernel!\n");
+        return false ;
+    }
+	ASSERT(get_labels() && get_labels()->get_num_labels());
+    ASSERT(get_kernel()->get_lhs()->get_num_vectors()
+            == get_labels()->get_num_labels());
 
 	// MKL stuff
 	buffer_num = new DREAL[get_kernel()->get_rhs()->get_num_vectors()] ;
