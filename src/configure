@@ -1752,7 +1752,7 @@ set_opts()
 	then
 		if test "$_matlab" = yes
 		then
-			LINKFLAGS="$LINKFLAGS -undefined suppress"
+			true #nop	
 		elif test "$_R" = yes
 		then
 			true #nop	
