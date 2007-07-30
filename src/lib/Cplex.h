@@ -118,7 +118,11 @@ public:
 
 	inline bool write_Q(char* filename)
 	{
+#if CPX_VERSION >= 1000 //CPXqpwrite has been deprecated in CPLEX 10
+		return CPXwriteprob (env, lp, filename, NULL) == 0;
+#else
 		return CPXqpwrite (env, lp, filename) == 0;
+#endif
 	}
 protected:
   CPXENVptr     env;
