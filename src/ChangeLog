@@ -1,3 +1,1046 @@
+2007-07-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure: set default gcc first
+	* configure: forgotten break in pthread detection
+	* configure: some cygwin/solaris configure fixes
+	  
+	  (though it still won't compile using solaris' compiler as it does
+	  not support
+	  dynamic argument macros)
+
+2007-07-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure: remove undefined suppress from configure
+	* releases/genefinder_0_1/src/classifier/svm_cplex/train_lpm.m,
+	  trunk/python-modular/examples/wd_kernel_svm.py,
+	  trunk/python-modular/examples/wd_kernel_svm_linadd_batch.py,
+	  base/Version.cpp, base/Version.h, classifier/svm/LibSVM.cpp,
+	  classifier/svm/SVM_light.cpp: fix the remaining python-modular
+	  interface examples
+
+2007-07-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_complex_scenario.m,
+	  guilib/GUIOctave.cpp: fix get_svm for octave
+	* kernel/CommWordStringKernel.cpp, kernel/CommWordStringKernel.h,
+	  kernel/WeightedCommWordStringKernel.cpp: * argh, fix bug in spec
+	  kernels: normalize functions needs lhs on add_to_normal
+	  and rhs on compute optimized
+	* classifier/Classifier.h, guilib/GUIClassifier.cpp: fix oneclass
+	  svm bug
+
+2007-07-27  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/octave/examples/hmm.m,
+	  trunk/octave/examples/markov_chain.m,
+	  trunk/octave/examples/wds_kernel.m, classifier/KNN.h,
+	  classifier/Perceptron.h, classifier/SubGradientLPM.h,
+	  classifier/svm/CPLEXSVM.h, classifier/svm/GMNPSVM.h,
+	  classifier/svm/GNPPSVM.h, classifier/svm/GPBTSVM.h,
+	  classifier/svm/LibSVM.h, classifier/svm/LibSVM_multiclass.h,
+	  classifier/svm/LibSVM_oneclass.h, classifier/svm/MPD.h,
+	  classifier/svm/SVMLin.h, classifier/svm/SVMPerf.h,
+	  classifier/svm/SVM_light.h, classifier/svm/SubGradientSVM.h,
+	  guilib/GUIClassifier.cpp, guilib/GUIKernel.cpp,
+	  guilib/GUIOctave.cpp, lib/Trie.cpp, lib/common.h,
+	  regression/svr/LibSVR.h, regression/svr/SVR_light.h: * fix many
+	  of the script errors for matlab/octave,
+	  currently crashing: test_one_class_svm.m test_complex_scenario.m
+	* guilib/GUIPython.cpp, kernel/Kernel.i: * fix compilation error in
+	  old python interfacew
+	  * fix warning in new python interface
+	* NEWS, kernel/FixedDegreeStringKernel.i,
+	  kernel/LocalityImprovedStringKernel.i: * update NEWS
+	  * fix remaining CharKernel occurances
+
+2007-07-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_weighted_spectrum.m,
+	  trunk/matlab/examples/weighted_spec.m, features/StringFeatures.h,
+	  kernel/CommWordStringKernel.cpp, kernel/CommWordStringKernel.h,
+	  kernel/WeightedCommWordStringKernel.cpp,
+	  kernel/WeightedCommWordStringKernel.h: + add linadd functionality
+	  + svm test case/example
+
+2007-07-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/StringFeatures.h, guilib/GUIFeatures.h,
+	  kernel/WeightedCommWordStringKernel.cpp: an example on how to use
+	  the weighted spectrum kernel
+
+2007-07-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/octave/examples/spec_kernel.m,
+	  trunk/python-modular/examples/wd_kernel.py,
+	  kernel/WeightedCommWordStringKernel.cpp,
+	  kernel/WeightedCommWordStringKernel.h: - update octave example
+	  - approaching the WDCWS kernel :-)
+	* features/StringFeatures.h, guilib/GUIKernel.cpp,
+	  guilib/GUIMatlab.cpp, kernel/CommWordKernel.cpp,
+	  kernel/CommWordKernel.h, kernel/CommWordKernel.i,
+	  kernel/Kernel.cpp, kernel/Kernel.i, kernel/SpectrumKernel.cpp,
+	  kernel/SpectrumKernel.h, kernel/SpectrumKernel.i,
+	  kernel/WeightedCommWordStringKernel.cpp,
+	  kernel/WeightedCommWordStringKernel.h,
+	  kernel/WeightedCommWordStringKernel.i, lib/common.h,
+	  lib/suffixarray, preproc/SortWordString.cpp: - remove Spectrum
+	  Kernel / suffix arrays due to licensing conflict (MPL vs. GPL)
+	  - remove CommWord kernel
+	  - add WeightedCommWordString Kernel
+
+2007-07-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* base/SGObject.h: fix warning in base/SGObject
+
+2007-07-11  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* lib/Mathematics.cpp: fixed minor compilation problem
+
+2007-07-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure, guilib/GUIKernel.cpp, kernel/CommWordKernel.h,
+	  kernel/LinearKernel.cpp, kernel/LinearKernel.h,
+	  kernel/PolyKernel.cpp, kernel/PolyKernel.h,
+	  kernel/SparseLinearKernel.cpp, kernel/SparseLinearKernel.h,
+	  kernel/SparsePolyKernel.cpp, kernel/SparsePolyKernel.h: code
+	  cleanup for sparse/linear kernels
+
+2007-07-08  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* kernel/Kernel.cpp: added a missing case switch.
+
+2007-06-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure: fix syntax error in configure
+	* features/StringFeatures.h: split asserts and don't fail if string
+	  is already a sling window
+	  string and shorter than window len
+
+2007-06-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/doc/doxygen/Doxyfile, NEWS, base/Version.cpp,
+	  base/Version.h, classifier/Classifier.cpp, configure,
+	  distributions/hmm/HMM.h, gui/Matlab.cpp, guilib/GUIFeatures.cpp,
+	  guilib/GUIHMM.cpp, kernel/WeightedDegreePositionStringKernel.cpp:
+	  gcc-4.2 warning fixes
+
+2007-06-07  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/SubGradientLPM.cpp, classifier/svm/SubGradientSVM.cpp:
+	  implement time limit also for subgradientsvm/lpm
+	* classifier/Classifier.cpp, classifier/Classifier.h,
+	  classifier/LPBoost.cpp, classifier/LPM.cpp,
+	  classifier/svm/SVM.cpp, classifier/svm/SVM.h,
+	  guilib/GUIClassifier.cpp, lib/Cplex.cpp, lib/Cplex.h: allow
+	  setting training time limit for LPM/LPBoost
+	* classifier/SubGradientLPM.cpp, classifier/svm/SubGradientSVM.cpp:
+	  use abs(alpha*norm(w)^2) ... note that with floats abs may be
+	  negative
+	  for values very close to zero
+	* classifier/SubGradientLPM.cpp, classifier/svm/SubGradientSVM.cpp:
+	  remove <1e-6
+	* classifier/SubGradientLPM.cpp, classifier/svm/SubGradientSVM.cpp:
+	  argh, need to use abs(alpha) in convergence crit. of course
+
+2007-06-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/SubGradientLPM.cpp, classifier/SubGradientLPM.h,
+	  classifier/svm/SubGradientSVM.cpp, guilib/GUIClassifier.cpp: use
+	  speedups from subgradientsvm
+	* classifier/LPBoost.cpp, lib/Cplex.cpp: don't allocate columns on
+	  stack (fixes lpboost crash)
+	* lib/Cplex.cpp: uncomment debug code
+	* classifier/SubGradientLPM.cpp, classifier/svm/SubGradientSVM.cpp,
+	  lib/Cplex.cpp, lib/Mathematics.cpp: use cplex result directly
+
+2007-06-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/SubGradientLPM.cpp, lib/Cplex.cpp: still not 100% the
+	  same
+	* lib/Cplex.cpp: add further ASSERTS
+	* classifier/SubGradientLPM.cpp, guilib/GUIClassifier.cpp,
+	  lib/Cplex.cpp: subgradLPM works now on 2d toy data
+	* classifier/SubGradientLPM.cpp, classifier/SubGradientLPM.h,
+	  lib/Cplex.cpp, lib/Cplex.h: finding minimum subgradient seems to
+	  work now... now for the line search
+	* classifier/SubGradientLPM.cpp:
+	* classifier/LPBoost.cpp, classifier/LPM.cpp,
+	  classifier/SubGradientLPM.cpp, classifier/svm/CPLEXSVM.cpp,
+	  classifier/svm/qpbsvmlib.cpp, lib/Cplex.cpp, lib/Cplex.h:
+	  debuggin...
+
+2007-06-04  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/SubGradientLPM.cpp, classifier/SubGradientLPM.h,
+	  guilib/GUIClassifier.cpp, lib/Mathematics.h: still not even close
+	* trunk/matlab/examples/lpboost.m, classifier/LPBoost.cpp,
+	  lib/Cplex.cpp, lib/Cplex.h: - fix lpboost now for the
+	  subgradientlpm
+	* trunk/matlab/examples/test_subgradsvm.m, classifier/LPBoost.cpp,
+	  classifier/SubGradientLPM.cpp, classifier/SubGradientLPM.h,
+	  guilib/GUIClassifier.cpp, lib/common.h: add stubs for
+	  SubGradientLPM
+	* classifier/LPBoost.cpp, lib/Cplex.cpp: lpboost still not working
+	  correctly...
+
+2007-06-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/lpboost.m, trunk/matlab/examples/lpm.m,
+	  classifier/LPBoost.cpp, classifier/LPBoost.h, classifier/LPM.cpp,
+	  classifier/LPM.h, classifier/svm/SVM_light.cpp,
+	  classifier/svm/qpbsvmlib.cpp, guilib/GUIClassifier.cpp,
+	  lib/Cplex.cpp, lib/Cplex.h: add lpboost code, I've yet to
+	  understand how to obtain the result...
+	* trunk/matlab/examples/lpm.m, classifier/LPM.cpp,
+	  guilib/GUIClassifier.cpp, lib/Cplex.cpp, lib/Mathematics.cpp,
+	  lib/Mathematics.h: LPM works now, now for LPBoos
+	* classifier/LPBoost.cpp, classifier/LPBoost.h, classifier/LPM.cpp,
+	  classifier/LPM.h, features/SparseFeatures.h,
+	  guilib/GUIClassifier.cpp, lib/Cplex.cpp, lib/Cplex.h: +
+	  get_transpose() in sparse features
+	  + wrap LPM
+	* classifier/LPBoost.cpp, classifier/LPBoost.h, classifier/LPM.cpp,
+	  classifier/LPM.h, guilib/GUIClassifier.cpp, lib/Cplex.cpp,
+	  lib/Cplex.h, lib/common.h: +stubs for LPM/LPBoost, doing LPM now
+
+2007-05-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, guilib/GUIClassifier.cpp,
+	  lib/Mathematics.h: still playing with convergence criterion
+	* classifier/svm/SVM.cpp, classifier/svm/SVM.h,
+	  classifier/svm/SVM_light.cpp, classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, classifier/svm/pr_loqo.cpp,
+	  gui/TextGUI.cpp, guilib/GUIClassifier.cpp,
+	  guilib/GUIClassifier.h: add svm_use_bias option, and support in
+	  svm_light/subgradient svm
+	* classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h: option to disable bias
+
+2007-05-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SubGradientSVM.cpp: playing with convergence
+	  criterion
+
+2007-05-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_subgradsvm.m,
+	  classifier/svm/SubGradientSVM.cpp,
+	  kernel/WeightedDegreeStringKernel.cpp: - fix early convergence of
+	  subgradient svm
+	  - fix double free in wd kernel
+
+2007-05-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SubGradientSVM.cpp, lib/Cplex.cpp, lib/matlab.h:
+	  forgot to check in matlab build fix:
+	  
+	  #if !defined(MX_API_VER) || MX_API_VER<0x07040000
+	  
+	  then define mwSize to be INT etc...
+
+2007-05-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/GPBTSVM.cpp, classifier/svm/gpdt.h,
+	  classifier/svm/gpdtsolve.cpp, classifier/svm/gpdtsolve.h,
+	  classifier/svm/gpm.cpp, classifier/svm/gpm.h: -correct copyright
+	  -add ctrl+c etc support to GPBTSVM
+	* classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, classifier/svm/qpbsvmlib.cpp,
+	  guilib/GUIMatlab.cpp, lib/Cplex.cpp, lib/matlab.h: make sparse
+	  matrices work with matlab 7.4
+	* trunk/matlab/examples/test_sparse.m,
+	  trunk/matlab/examples/test_subgradsvm.m,
+	  classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, guilib/GUIMatlab.cpp,
+	  lib/Mathematics.cpp: - fix & test get/set features for sparse
+	  vectors
+	  - cleanup get/set features for dense vec's (lets hope no bugs)
+	  - subgradsvm: check for overlap between qp's
+	* guilib/GUIMatlab.cpp:
+	* trunk/matlab/examples/test_sparse.m, guilib/GUIMatlab.cpp: add
+	  sparse matrix matalb i/o support
+
+2007-05-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SubGradientSVM.cpp, classifier/svm/qpbsvmlib.cpp,
+	  classifier/svm/qpbsvmlib.h: add gradient descent
+	* classifier/svm/SubGradientSVM.cpp: compute only 1/2 of the Q
+	  matrix
+	* classifier/svm/SubGradientSVM.cpp, classifier/svm/qpbsvmlib.cpp,
+	  lib/Mathematics.h: use gauss seidel by default
+	* classifier/svm/qpbsvmlib.cpp, classifier/svm/qpbsvmlib.h:
+	  implement greedy gauss seidel
+	* classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, gui/TextGUI.cpp,
+	  guilib/GUIClassifier.cpp, guilib/GUIClassifier.h, lib/Cplex.cpp:
+	  - let cplex timeout after 0.5 seconds
+	  - option to set max qpsize in subgradientsvm
+	* classifier/svm/gpdt.cpp, classifier/svm/gpdtsolve.cpp: update
+	  gpbt svm to version nov 2006 (released in january 2007)
+
+2007-05-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_subgradsvm.m,
+	  classifier/svm/SubGradientSVM.cpp: - update subgradient svm
+	  example
+	  - fix objective comput. for subgradient svm
+	  - introduce limit to qpsize. if we cannot solve the problem with
+	  500 vectors at bound we choose a random but valid subgradient
+	* features/SparseFeatures.h, guilib/GUIMatlab.cpp,
+	  kernel/LinearKernel.cpp, kernel/LinearKernel.h,
+	  kernel/SparseGaussianKernel.h, kernel/SparseLinearKernel.cpp,
+	  kernel/SparseLinearKernel.h, lib/common.h: - assign seperate
+	  types for sparselinear and sparsegaussian kernel
+	  - support get_kernel_optimization for sparse linear kernel
+	  
+	  huh ?? gpbtsvm seems quite a bit faster than svmlight !!
+	* classifier/svm/GPBTSVM.cpp, classifier/svm/gpdtsolve.cpp,
+	  classifier/svm/gpdtsolve.h: linadd fix #1
+	* classifier/svm/gpdt.h, classifier/svm/gpdtsolve.cpp: * enable
+	  linadd for GPDT svm
+	* classifier/svm/SubGradientSVM.h, guilib/GUIClassifier.cpp: make
+	  qpsize configurable
+
+2007-05-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/qpbsvmlib.cpp, lib/Cplex.cpp, lib/Cplex.h: remove
+	  debug output & cleanups
+	* classifier/svm/SubGradientSVM.cpp, classifier/svm/qpbsvmlib.cpp,
+	  lib/Cplex.cpp: muten subgrad svm
+	* classifier/svm/SubGradientSVM.cpp, classifier/svm/qpbsvmlib.cpp,
+	  lib/Cplex.cpp: ...debugging...
+	* lib/Cplex.cpp: potential cplex fix
+	* trunk/matlab/examples/test_subgradsvm.m,
+	  classifier/svm/SubGradientSVM.cpp, classifier/svm/qpbsvmlib.cpp,
+	  lib/Cplex.cpp, lib/Cplex.h, lib/Mathematics.cpp,
+	  lib/Mathematics.h: debugging...
+	* classifier/svm/SubGradientSVM.cpp, classifier/svm/qpbsvmlib.cpp,
+	  lib/Cplex.cpp: cplex dense_to_cplex_sparse fix
+
+2007-05-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_subgradsvm.m,
+	  classifier/svm/CPLEXSVM.cpp, classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, classifier/svm/qpbsvmlib.cpp,
+	  classifier/svm/qpbsvmlib.h, lib/Cplex.cpp, lib/Cplex.h: - add lp
+	  and qp wrappers for cplex
+	  - add cplex as a method in qpbsvmlib
+	* configure: fix cplex autodetection
+	* classifier/svm/SubGradientSVM.cpp, classifier/svm/qpbsvmlib.cpp:
+	  fix uninitialised variables
+
+2007-05-19  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_subgradsvm.m,
+	  classifier/svm/SubGradientSVM.cpp, classifier/svm/gpdtsolve.cpp,
+	  classifier/svm/gpm.cpp, classifier/svm/qpbsvmlib.cpp,
+	  classifier/svm/qpbsvmlib.h, structure/Plif.cpp: * fix copyright
+	  in grad proj techn. svm
+	  * add pr_loqo to qpbsvmlib
+
+2007-05-18  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_subgradsvm.m,
+	  classifier/LinearClassifier.h, classifier/svm/SVM_libsvm.cpp,
+	  classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, classifier/svm/pr_loqo.cpp,
+	  gui/Matlab.cpp, guilib/GUIClassifier.cpp, guilib/GUIClassifier.h,
+	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h, lib/Mathematics.h: *
+	  fix matlab7.4 warnings (INT casts...)
+	  * change argument order of vec1_plus_scalar_times_vec2
+	  * turn pr_loqo warnings into debug messages
+	  * add generic [bias,weights]=sg('get_classifier') call
+	  * autoadjust epsilon for subgradient svm
+
+2007-05-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* guilib/GUIClassifier.cpp: synonymize SVMLIGHT with LIGHT for
+	  compatibility
+	* trunk/R/testcases/read_mfile.R, trunk/R/testcases/run.sh,
+	  trunk/R/testcases/test_kernels.R, guilib/GUIR.cpp: fix get_matrix
+	  stuff
+	* trunk/R/testcases/run.sh, trunk/R/testcases/test_kernels.R,
+	  trunk/matlab/examples/test_sparse_methods.m, Makefile,
+	  classifier/svm/SubGradientSVM.cpp: R test update
+
+2007-05-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SubGradientSVM.cpp, gui/Octave.cpp, gui/R.cpp,
+	  guilib/GUIOctave.h, guilib/GUIR.cpp, guilib/GUIR.h: classifier
+	  interface build fixes for R/Octave
+	* trunk/matlab/examples/test_sparse_methods.m,
+	  classifier/svm/SubGradientSVM.cpp: add problematic example
+	* trunk/matlab/examples/test_sparse_methods.m, classifier/LDA.cpp,
+	  classifier/LPM.cpp, classifier/LinearClassifier.cpp,
+	  classifier/LinearClassifier.h,
+	  classifier/SparseLinearClassifier.cpp,
+	  classifier/SparseLinearClassifier.h, classifier/svm/SVM.h,
+	  classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, classifier/svm/qpbsvmlib.cpp,
+	  features/SparseFeatures.h, gui/GUI.h, gui/Matlab.cpp, gui/R.cpp,
+	  gui/TextGUI.cpp, gui/TextGUI.h, guilib/GUIClassifier.cpp,
+	  guilib/GUIClassifier.h, guilib/GUIKernel.cpp,
+	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h, guilib/GUIOctave.cpp,
+	  guilib/GUIR.cpp, guilib/GUIR.h, guilib/GUISVM.cpp,
+	  guilib/GUISVM.h, kernel/KernelMachine.cpp,
+	  kernel/KernelMachine.h, lib/Mathematics.h: -remove guisvm
+	  -convert everything to work with guiclassifier
+	  -fix subgradientsvm
+
+2007-05-10  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_sparse_methods.m,
+	  classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, gui/Octave.cpp,
+	  guilib/GUIOctave.cpp, guilib/GUIOctave.h: - fix valgrind errors
+	  - add classifier interface to octave
+	* trunk/matlab/examples/test_linear_methods.m,
+	  trunk/matlab/examples/test_sparse_methods.m,
+	  classifier/SparseLinearClassifier.h,
+	  classifier/svm/SubGradientSVM.cpp, features/SparseFeatures.h,
+	  guilib/GUIClassifier.cpp: ...debugging
+	* guilib/GUIClassifier.cpp: remove unused variable
+	* trunk/matlab/examples/lda_classification.m,
+	  trunk/matlab/examples/wds_consensus.m, classifier/LDA.cpp,
+	  guilib/GUIClassifier.cpp: fix a LDA bias sign bug
+	* trunk/matlab/examples/test_sparse_methods.m, classifier/LDA.cpp,
+	  classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, classifier/svm/qpbsvmlib.h,
+	  guilib/GUIClassifier.cpp, guilib/GUIClassifier.h,
+	  lib/Mathematics.h, lib/common.h: generic sg('new_classifier FOO')
+	  / sg('classify')
+	  functionality for lots of FOO
+
+2007-05-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SubGradientSVM.cpp, classifier/svm/gmnplib.cpp,
+	  classifier/svm/qpbsvmlib.cpp, classifier/svm/qpbsvmlib.h,
+	  lib/Mathematics.h: make gbpsvmlib/gmnplib use CMath::max/min/abs
+	* classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, classifier/svm/qpbsvmlib.cpp,
+	  classifier/svm/qpbsvmlib.h, lib/Mathematics.cpp,
+	  lib/Mathematics.h: add vojtechs QP solver
+
+2007-05-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/Classifier.h, classifier/svm/SVMPerf.cpp,
+	  classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, features/SparseFeatures.h,
+	  kernel/SparseLinearKernel.cpp, kernel/SparsePolyKernel.cpp,
+	  lib/Mathematics.h: add helper functions for sparse feature
+	  vectors:
+	  
+	  to compute dot products:
+	  sparse x sparse
+	  sparse x dense
+	  to add sparse vectors to dense ones
+	  
+	  and let the sparse linear/poly kernel make use of them
+
+2007-05-07  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* gui/Matlab.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h: Implemented
+	  extensions in order to allow position weights per example.
+	  Unsolved issues:
+	  * normalization -> switch it off
+	  * linadd & batch_computation -> switch it off
+	  
+	  An example script is given in
+	  matlab/examples/test_wdshift_position_weights.m.
+
+2007-04-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_wds_kernel.m,
+	  trunk/matlab/examples/test_wdshift_kernel.m,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h: - fix threading bugs
+	  in WDS kernel (it was never working correctly with > 1
+	  thread), due to position_mask and max_shift vec being member
+	  variables.
+	  
+	  solution: make max_shift_vec a local variable and remove (the
+	  anyway unused)
+	  position_mask completely
+	* kernel/WeightedDegreePositionStringKernel.cpp: print
+	  normalization_cons
+	* classifier/svm/SVM_light.cpp, kernel/CombinedKernel.cpp: forgot
+	  adding lin contributions for last thread
+
+2007-04-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_wd_wds_parallel.m,
+	  classifier/svm/SVM_light.cpp: Fixed a stupid (variable name
+	  collision, t was used for time and threads in 2
+	  nested loops) SVM light training bug which occurred only with
+	  
+	  threads>=2,
+	  linadd=0,
+	  batch_computation=0
+	  svm -> reactivate_inactive examples
+	  
+	  (got triggered by the test_wd_wds_parallel.m example). Judging
+	  from (previous)
+	  comments in the code it looks like Gunnar has seen this at some
+	  point but
+	  forgot to tell me...
+	* trunk/matlab/examples/entropy.m,
+	  trunk/matlab/examples/svmlight_hang_test.m,
+	  trunk/matlab/examples/test_combined.m,
+	  trunk/matlab/examples/test_combined2.m,
+	  trunk/matlab/examples/test_custom_kernel.m,
+	  trunk/matlab/examples/test_hmm.m,
+	  trunk/matlab/examples/test_hmm_matlab.m,
+	  trunk/matlab/examples/test_kernel_optimization.m,
+	  trunk/matlab/examples/test_matlab_interface.m,
+	  trunk/matlab/examples/test_one_class_svm.m,
+	  trunk/matlab/examples/test_rbf_kernel.m,
+	  trunk/matlab/examples/test_regression_linadd.m,
+	  trunk/matlab/examples/test_svm.m,
+	  trunk/matlab/examples/test_wd_linadd.m,
+	  trunk/matlab/examples/test_wdshift_kernel.m,
+	  trunk/matlab/examples/test_wdshiftphyl_kernel.m,
+	  trunk/matlab/testcases/test_wdchar_kernel.m,
+	  classifier/svm/SVM_libsvm.cpp, guilib/GUIFeatures.cpp: * remove
+	  obsolete/nonworking examples
+	  * adjust examples to work with new stringfeatures
+	  * fix one class svm crasher
+	* trunk/matlab/examples/test_wdshift_kernel.m,
+	  classifier/SparseLinearClassifier.cpp,
+	  classifier/SparseLinearClassifier.i, classifier/svm/SVMPerf.cpp,
+	  classifier/svm/SVMPerf.h, classifier/svm/SVMPerf.i,
+	  classifier/svm/SubGradientSVM.cpp,
+	  classifier/svm/SubGradientSVM.h, classifier/svm/SubGradientSVM.i,
+	  guilib/GUIKernel.cpp, guilib/GUIMatlab.cpp, kernel/Kernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h,
+	  kernel/WeightedDegreeStringKernel.cpp,
+	  kernel/WeightedDegreeStringKernel.h, lib/common.h: * remove PHYL
+	  kernel completely
+	  * remove nonsense normalisation in WD*kernels (sqrtdiag lhs/rhs
+	  etc),
+	  the wd/wds kernel really need merging
+	  * fix test_wdshift_kernel script
+	  * add stubs for vojtechs subgradient svm and svmperf
+
+2007-04-25  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/LibSVM.cpp: fix the 2-class case by introducing
+	  sign=model->label[0]
+	* classifier/svm/LibSVM_multiclass.cpp: * multiclass libsvm fix for
+	  label permutations:
+	  libsvm internally relabels all examples and stores that label in
+	  model->label.
+	  thus the svm pair (i,j) translates to (model->label[i],
+	  model->label[j]), so
+	  the solution is to compute the svm index for the
+	  (model->label[i], model->label[j]) pair
+	  * note that if (model->label[i] > model->label[j]), signs have to
+	  be flipped, which
+	  also occured to us in the 2-class case, as libsvm internally uses
+	  +1 for the first
+	  occuring class and -1 for the other (which is why have to flip
+	  signs if the
+	  first label<0) for 2-class problems too.
+	  * apapart from that it delivers very similar results to vojtech's
+	  L2-multiclass b-svm
+	* trunk/matlab/examples/svm_multiclass.m, classifier/Classifier.i,
+	  classifier/KernelPerceptron.i, classifier/LDA.i,
+	  classifier/LPM.i, classifier/LinearClassifier.i,
+	  classifier/Perceptron.i, classifier/SparseLinearClassifier.i,
+	  classifier/svm/GMNPSVM.cpp, classifier/svm/GMNPSVM.i,
+	  classifier/svm/GNPPSVM.i, classifier/svm/GPBTSVM.i,
+	  classifier/svm/LibSVM.i, classifier/svm/LibSVM_multiclass.cpp,
+	  classifier/svm/LibSVM_multiclass.h,
+	  classifier/svm/LibSVM_multiclass.i,
+	  classifier/svm/LibSVM_oneclass.cpp,
+	  classifier/svm/LibSVM_oneclass.h,
+	  classifier/svm/LibSVM_oneclass.i,
+	  classifier/svm/MultiClassSVM.cpp, classifier/svm/MultiClassSVM.h,
+	  classifier/svm/MultiClassSVM.i, classifier/svm/SVM.h,
+	  classifier/svm/SVM.i, classifier/svm/SVMLin.i,
+	  classifier/svm/SVM_libsvm.cpp, classifier/svm/SVM_libsvm.h,
+	  classifier/svm/SVM_light.i, classifier/svm/gmnplib.cpp,
+	  distance/DistanceMachine.i, guilib/GUISVM.cpp,
+	  kernel/KernelMachine.i, lib/common.h, regression/Regression.i,
+	  regression/svr/LibSVR.cpp, regression/svr/LibSVR.i,
+	  regression/svr/SVR_light.i: * add LibSVM multiclass support +
+	  test script
+	  * currently labelings maybe shuffled similiar to what we had with
+	  2-class libsvm
+	  * reshuffle python classifiers/regressors, add the other missing
+	  svms to the python interface
+	  * apply dos2unix on gmnp svm
+
+2007-04-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_spec_consensus.m,
+	  trunk/python-modular/examples/numpy_svm_matplotlib.py,
+	  trunk/python-modular/examples/numpy_svmlin_matplotlib.py,
+	  classifier/svm/SVM_libsvm.cpp, classifier/svm/SVM_libsvm.h,
+	  features/StringFeatures.h, gui/Matlab.cpp, guilib/GUIMatlab.cpp,
+	  guilib/GUIMatlab.h, kernel/CommWordStringKernel.cpp,
+	  kernel/CommWordStringKernel.h: * add shrinking method of libsvm
+	  2.84
+	  * implement end test 'finding the most likely sequence'
+	  for spectrum kernel
+	  * add sg('get_SPEC_consensus') command + matlab example,
+	  * fix svm_lin/svm .py scripts (axis tight/dynamically adjust
+	  interval)
+
+2007-04-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/python-modular/examples/stringfeatures.py,
+	  features/StringFeatures.h,
+	  kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp: fix
+	  crashes when calling obtain_by_sliding_window
+	  or obtain_from_position_list - TWICE
+	* kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp,
+	  lib/Trie.h: get_WD_consensus is finally working correctly.
+
+2007-04-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp:
+	  b0rken: backtracking needs to go over full tree (max. all 4^d
+	  strings)
+
+2007-04-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/WeightedDegreePositionStringKernel.cpp, lib/Mathematics.h,
+	  lib/Trie.cpp, lib/Trie.h: display matrix column major + further
+	  consensus work
+	* trunk/matlab/examples/wds_consensus.m, gui/Matlab.cpp,
+	  guilib/GUIKernel.cpp, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
+	  kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp,
+	  lib/Trie.h: +fix string/char features, kernels before based on
+	  charfeatures should work
+	  again in matlab
+	  +add code + example for consensus computation for WDS kernel
+
+2007-04-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* guilib/GUIMatlab.cpp,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h, lib/Trie.cpp,
+	  lib/Trie.h: -fix from_position_list for TEST data (strlen(TEST)
+	  == 4 !!!)
+	  -start impl. of consensus
+	  -whitespace cleanups
+
+2007-04-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/svm_multiclass.m,
+	  classifier/svm/GMNPSVM.cpp, classifier/svm/GMNPSVM.h,
+	  classifier/svm/MultiClassSVM.cpp, classifier/svm/MultiClassSVM.h,
+	  classifier/svm/SVM.h, classifier/svm/gmnplib.cpp,
+	  classifier/svm/gmnplib.h, guilib/GUIPython.cpp: -add multiclass
+	  svm wrapper
+	  -add L2-b-svm multiclass matlab example
+	  -vojtechs multiclass svm is now working
+
+2007-04-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/GMNPSVM.cpp, classifier/svm/GMNPSVM.h,
+	  classifier/svm/GMNPSVM.i, classifier/svm/gmnplib.cpp,
+	  classifier/svm/gmnplib.h, classifier/svm/gnpplib.h,
+	  features/Labels.cpp, features/Labels.h, guilib/GUISVM.cpp,
+	  lib/common.h: + add vojtech's multiclass bsvm
+
+2007-04-04  Jonas Behr <Jonas.Behr@tuebingen.mpg.de>
+
+	* guilib/GUIPython.cpp:
+	* guilib/GUIPython.cpp: solved transpose-problem of old python
+	  interface
+
+2007-04-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* guilib/GUIOctave.cpp, guilib/GUIPython.cpp, guilib/GUIR.cpp,
+	  kernel/LocalityImprovedStringKernel.cpp: R/python/octave
+	  interface compile fixes + trivial warning in LIK
+
+2007-04-02  Andre Noll <Andre.Noll@tuebingen.mpg.de>
+
+	* kernel/SimpleLocalityImprovedStringKernel.cpp:
+	  CSimpleLocalityImprovedStringKernel: simplify init()
+	  
+	  This trivial patch gets rid of an identation by immediately
+	  returning
+	  false in case result==false.
+	* kernel/SimpleLocalityImprovedStringKernel.cpp,
+	  kernel/SimpleLocalityImprovedStringKernel.h:
+	  CSimpleLocalityImprovedStringKernel: change type of size
+	  parameter from LONG to INT
+	* kernel/SimpleLocalityImprovedStringKernel.cpp,
+	  kernel/SimpleLocalityImprovedStringKernel.h:
+	  SimpleLocalityImprovedStringKernel: trivial whitespace cleanups
+	* guilib/GUIKernel.cpp, kernel/Kernel.i,
+	  kernel/SimpleLocalityImprovedCharKernel.cpp,
+	  kernel/SimpleLocalityImprovedCharKernel.h,
+	  kernel/SimpleLocalityImprovedCharKernel.i,
+	  kernel/SimpleLocalityImprovedStringKernel.cpp,
+	  kernel/SimpleLocalityImprovedStringKernel.h,
+	  kernel/SimpleLocalityImprovedStringKernel.i:
+	  SimpleLocalityImprovedCharKernel ->
+	  SimpleLocalityImprovedStringKernel conversion
+	  
+	  This gets rid of the last remaining char kernel.
+	* guilib/GUIKernel.cpp, guilib/GUIMatlab.cpp: make the matlab
+	  interface work again
+	  
+	  In the beginning was the plan, and then the specification;
+	  And the plan was without form, and the specification was void.
+	  
+	  [...]
+	  
+	  And the President looked upon the product, and saw that it was
+	  very good.
+	* kernel/Kernel.i, kernel/WeightedDegreeCharKernel.cpp,
+	  kernel/WeightedDegreeCharKernel.h,
+	  kernel/WeightedDegreeCharKernel.i,
+	  kernel/WeightedDegreePositionCharKernel.cpp,
+	  kernel/WeightedDegreePositionCharKernel.h,
+	  kernel/WeightedDegreePositionCharKernel.i: remove
+	  WeightedDegreeCharKernel and WeightedDegreePositionCharKernel
+	  
+	  These have been replaced by the corresponding string kernel.
+	* kernel/LinearStringKernel.cpp: LinearStringKernel: simplify
+	  compute_optimized()
+	* kernel/LinearStringKernel.cpp: LinearStringKernel: Use
+	  clear_normal() to initialize the normal vector.
+	* kernel/LinearStringKernel.cpp: LinearStringKernel: Kill result
+	  variable
+	  
+	  Also, add a comment to don't open code the dot product but to use
+	  the corresponding function from Mathematics.h once this works
+	  with
+	  templates.
+	* kernel/LinearStringKernel.cpp: LinearStringKernel: Simplify
+	  clear_normal()
+	  
+	  Just use memset() to zero-out the array.
+	* kernel/LinearStringKernel.cpp: LinearStringKernel: Kill pointless
+	  cast
+	* kernel/LinearStringKernel.cpp, kernel/LinearStringKernel.h:
+	  CLinearStringKernel: Change type of size parameter from LONG to
+	  INT
+	* kernel/LinearStringKernel.cpp, kernel/LinearStringKernel.h:
+	  LinearStringKernel: Trivial whitespace cleanups
+	* kernel/Kernel.i, kernel/LinearCharKernel.cpp,
+	  kernel/LinearCharKernel.h, kernel/LinearCharKernel.i,
+	  kernel/LinearStringKernel.cpp, kernel/LinearStringKernel.h,
+	  kernel/LinearStringKernel.i: rename LinearCharKernel to
+	  LinearStringKernel
+	  
+	  and make it compile again.
+	* kernel/WeightedDegreeCharKernelPolyA.cpp,
+	  kernel/WeightedDegreeCharKernelPolyA.h,
+	  kernel/WeightedDegreeCharKernelPolyA.i,
+	  kernel/WeightedDegreePositionPhylCharKernel.cpp,
+	  kernel/WeightedDegreePositionPhylCharKernel.h: Remove
+	  WeightedDegreeCharKernelPolyA and
+	  WeightedDegreePositionPhylCharKernel
+	  
+	  They are unused according to Soeren, so changing them to become a
+	  String kernel is a waste of time.
+	  
+	  deleted: trunk/src/kernel/WeightedDegreeCharKernelPolyA.cpp
+	  deleted: trunk/src/kernel/WeightedDegreeCharKernelPolyA.h
+	  deleted: trunk/src/kernel/WeightedDegreeCharKernelPolyA.i
+	  deleted:
+	  trunk/src/kernel/WeightedDegreePositionPhylCharKernel.cpp
+	  deleted: trunk/src/kernel/WeightedDegreePositionPhylCharKernel.h
+	* kernel/PolyMatchStringKernel.i: PolyMatchStringKernel.i: Fix
+	  missing char->string replacement
+	* kernel/PolyMatchStringKernel.cpp, kernel/PolyMatchStringKernel.h:
+	  PolyMatchStringKernel: Simplify compute()
+	  
+	  Also, change the "size" parameter of the contructor from LONG to
+	  INT
+	* kernel/PolyMatchStringKernel.cpp: PolyMatchStringKernel: use
+	  init_sqrt_diag()
+	* kernel/PolyMatchStringKernel.cpp: PolyMatchStringKernel: Kill
+	  pointless initializations with 1
+	* kernel/FixedDegreeStringKernel.cpp,
+	  kernel/FixedDegreeStringKernel.h, kernel/Kernel.cpp,
+	  kernel/Kernel.h: move init_sqrt_diag() from
+	  CFixedDegreeStringKernel to CKernel
+	  
+	  It is needed for other kernels as well, so this will aid in
+	  removing duplicated code.
+	* kernel/Kernel.i: char -> string conversion for kernel/Kernel.i
+	* kernel/PolyMatchStringKernel.cpp: PolyMatchStringKernel: more
+	  trivial whitespace cleanups
+	* kernel/PolyMatchStringKernel.cpp, kernel/PolyMatchStringKernel.h:
+	  PolyMatchStringKernel: Trivial whitespace cleanup
+	* guilib/GUIKernel.cpp, kernel/PolyMatchStringKernel.cpp,
+	  kernel/PolyMatchStringKernel.h, kernel/PolyMatchStringKernel.i:
+	  PolyMatchStringKernel: replace char features by string features
+	* guilib/GUIKernel.cpp, kernel/PolyMatchCharKernel.cpp,
+	  kernel/PolyMatchCharKernel.h, kernel/PolyMatchCharKernel.i,
+	  kernel/PolyMatchStringKernel.cpp, kernel/PolyMatchStringKernel.h,
+	  kernel/PolyMatchStringKernel.i: rename PolyMatchCharKernel to
+	  PolyMatchStringKernel
+	  
+	  renamed: trunk/src/kernel/PolyMatchCharKernel.cpp ->
+	  trunk/src/kernel/PolyMatchStringKernel.cpp
+	  renamed: trunk/src/kernel/PolyMatchCharKernel.h ->
+	  trunk/src/kernel/PolyMatchStringKernel.h
+	  renamed: trunk/src/kernel/PolyMatchCharKernel.i ->
+	  trunk/src/kernel/PolyMatchStringKernel.i
+	* kernel/FixedDegreeStringKernel.cpp,
+	  kernel/FixedDegreeStringKernel.h: FixedDegreeStringKernel:
+	  Introduce init_sqrt_diag()
+	  
+	  This private method computes the vector containing the square
+	  root
+	  of the diagonal elements of the kernel. This computation is
+	  needed
+	  twice in the current code, so it makes sense to move that code
+	  into
+	  its own helper function.
+	* kernel/FixedDegreeStringKernel.cpp: FixedDegreeStringKernel: Kill
+	  pointless initialization
+	  
+	  The entries of sqrtdiag_lhs and sqrtdiag_rhs are all set to one,
+	  only
+	  to reset them to their proper value a few lines later (without
+	  using
+	  them in between of course). So kill that pointless
+	  initialization.
+	* kernel/FixedDegreeStringKernel.cpp: FixedDegreeStringKernel: Fix
+	  ASSERT() placement
+	  
+	  It's pointless to check for memory allocation failure _after_
+	  using
+	  the return value of new.
+	* kernel/FixedDegreeStringKernel.cpp: FixedDegreeStringKernel: Kill
+	  pointless NULL assignment
+	  
+	  A new value is assigned to sqrtdiag_lhs one line below.
+	* kernel/FixedDegreeStringKernel.cpp: FixedDegreeStringKernel: Use
+	  DREAL instead of double
+	  
+	  We're returning DREAL, so this makes more sense.
+	* kernel/FixedDegreeStringKernel.cpp: FixedDegreeStringKernel:
+	  Simplify compute()
+	  
+	  Only the product of the squareroots of lhs and rhs
+	  is used, so compute it in one go.
+	* kernel/FixedDegreeStringKernel.cpp,
+	  kernel/FixedDegreeStringKernel.h: FixedDegreeStringKernel:
+	  Trivial whitespace fixes
+	* guilib/GUIKernel.cpp, kernel/FixedDegreeStringKernel.cpp,
+	  kernel/FixedDegreeStringKernel.h,
+	  kernel/FixedDegreeStringKernel.i: FixedDegreeStringKernel:
+	  replace char features by string features
+	* guilib/GUIKernel.cpp, kernel/FixedDegreeCharKernel.cpp,
+	  kernel/FixedDegreeCharKernel.h, kernel/FixedDegreeCharKernel.i,
+	  kernel/FixedDegreeStringKernel.cpp,
+	  kernel/FixedDegreeStringKernel.h,
+	  kernel/FixedDegreeStringKernel.i: Rename FixedDegreeCharKernel to
+	  FixedDegreeStringKernel
+	  
+	  renamed: trunk/src/kernel/FixedDegreeCharKernel.cpp ->
+	  trunk/src/kernel/FixedDegreeStringKernel.cpp
+	  renamed: trunk/src/kernel/FixedDegreeCharKernel.h ->
+	  trunk/src/kernel/FixedDegreeStringKernel.h
+	  renamed: trunk/src/kernel/FixedDegreeCharKernel.i ->
+	  trunk/src/kernel/FixedDegreeStringKernel.i
+	* kernel/LocalityImprovedStringKernel.cpp:
+	  LocalityImprovedStringKernel: Kill another instance of open coded
+	  pow()
+	* kernel/LocalityImprovedStringKernel.cpp:
+	  LocalityImprovedStringKernel: Final whitespace cleanups
+	* kernel/LocalityImprovedStringKernel.cpp:
+	  LocalityImprovedStringKernel: Don't open code the pow() function.
+	* kernel/LocalityImprovedStringKernel.cpp:
+	  LocalityImprovedStringKernel: More trivial whitespace cleanups
+	  
+	  Replace spaces by tabs and add additional spaces according to
+	  Coding style.
+	* kernel/LocalityImprovedStringKernel.cpp:
+	  LocalityImprovedStringKernel: Simplify for loop
+	  
+	  One line of code is obviously equivalent to the six lines we've
+	  had before.
+	* kernel/LocalityImprovedStringKernel.cpp:
+	  LocalityImprovedStringKernel: Trivial whitespace cleanup
+	  
+	  Only replace leading spaces by tabs.
+	* kernel/LocalityImprovedStringKernel.cpp:
+	  LocalityImprovedStringKernel: minor cleanup in init()
+	* guilib/GUIKernel.cpp, kernel/LocalityImprovedStringKernel.cpp,
+	  kernel/LocalityImprovedStringKernel.h,
+	  kernel/LocalityImprovedStringKernel.i:
+	  LocalityImprovedStringKernel: replace char features by string
+	  features
+	* guilib/GUIKernel.cpp, kernel/LocalityImprovedCharKernel.cpp,
+	  kernel/LocalityImprovedCharKernel.h,
+	  kernel/LocalityImprovedCharKernel.i,
+	  kernel/LocalityImprovedStringKernel.cpp,
+	  kernel/LocalityImprovedStringKernel.h,
+	  kernel/LocalityImprovedStringKernel.i: rename
+	  LocalityImprovedCharKernel to LocalityImprovedStringKernel
+	  
+	  The change to GUIKernel.cpp was neccessary to make it compile
+	  again.
+	  
+	  modified: trunk/src/guilib/GUIKernel.cpp
+	  renamed: trunk/src/kernel/LocalityImprovedCharKernel.cpp ->
+	  trunk/src/kernel/LocalityImprovedStringKernel.cpp
+	  renamed: trunk/src/kernel/LocalityImprovedCharKernel.h ->
+	  trunk/src/kernel/LocalityImprovedStringKernel.h
+	  renamed: trunk/src/kernel/LocalityImprovedCharKernel.i ->
+	  trunk/src/kernel/LocalityImprovedStringKernel.i
+
+2007-03-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* configure: readd the undefined suppress to the configure options
+	  whether the rest works only time will tell :-)
+
+2007-03-25  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* Makefile: fixed some problems on intel macs... soeren, please
+	  check it.
+	  G
+
+2007-03-22  Gunnar Raetsch <Gunnar.Raetsch@tuebingen.mpg.de>
+
+	* configure: fixed some configure issues on imacs. seems to work.
+
+2007-03-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* gui/Matlab.cpp, guilib/GUIKernel.cpp, guilib/GUIMatlab.cpp: WD
+	  kernel string support
+
+2007-03-14  Andre Noll <Andre.Noll@tuebingen.mpg.de>
+
+	* lib/Trie.h: Trie.h: Simplify check_treemem()
+	  
+	  and reduce line length and white space usage according
+	  to the shogun coding style.
+	* lib/Trie.h: Trie.h: Trivial whitespace cleanups
+
+2007-03-14  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* gui/Matlab.cpp, guilib/GUIMatlab.cpp: matlab interface compile
+	  fix
+	* trunk/python-modular/examples/stringfeatures.py,
+	  features/StringFeatures.h, features/StringFeatures.i,
+	  gui/Matlab.cpp, gui/TextGUI.cpp, guilib/GUIFeatures.cpp,
+	  guilib/GUIFeatures.h, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
+	  guilib/GUIOctave.cpp, kernel/Kernel.i,
+	  kernel/WeightedDegreeCharKernel.h,
+	  kernel/WeightedDegreeStringKernel.cpp,
+	  kernel/WeightedDegreeStringKernel.h,
+	  kernel/WeightedDegreeStringKernel.i, lib/common.h: obtain by
+	  sliding window / by position list
+
+2007-03-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* guilib/GUISVM.cpp: by default use linadd
+
+2007-03-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/WeightedDegreePositionStringKernel.cpp: also add missing
+	  init to wds -string kernel
+	* kernel/WeightedDegreePositionCharKernel.cpp: fix WDS (missing
+	  NULL init of shifts)
+	* trunk/Makefile, trunk/R/Makefile, trunk/R/sg/DESCRIPTION,
+	  trunk/python-modular/examples/stringfeatures.py,
+	  features/StringFeatures.h, kernel/CommUlongStringKernel.h,
+	  kernel/CommWordKernel.cpp, kernel/CommWordKernel.h,
+	  kernel/WeightedDegreePositionStringKernel.i: * merge changes from
+	  0.3.2
+	  * add sliding window stringfeatures example
+	  * allow features to be None for WDS kernel
+
+2007-03-09  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* lib/Array.i, lib/Array2.i, lib/Array3.i: filter swig array
+	  Overloaded warnings
+	* trunk/octave/examples/lik_kernel.m,
+	  kernel/SimpleLocalityImprovedCharKernel.cpp: add locality
+	  improved kernel example
+	* trunk/python-modular/examples/wds_kernel.py,
+	  features/CharFeatures.cpp, features/CharFeatures.i,
+	  features/StringFeatures.h, kernel/DistanceKernel.cpp,
+	  kernel/SpectrumKernel.cpp, kernel/WeightedDegreeCharKernel.cpp,
+	  kernel/WeightedDegreeCharKernelPolyA.cpp,
+	  kernel/WeightedDegreePositionCharKernel.cpp,
+	  kernel/WeightedDegreePositionCharKernel.h,
+	  kernel/WeightedDegreePositionCharKernel.i,
+	  kernel/WeightedDegreePositionPhylCharKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h: * allow the alphabet
+	  type in the Stringfeatures constructor
+	  * add support for wds CHAR kernel / update example
+	  
+	  important issue valid for all kernels:
+	  in init(lhs, rhs), the first call should be
+	  SuperClass::init(lhs,rhs);
+	  as this will check for NULL ptr, valid feature class & type
+	  
+	  this was broken for the WD* kernels and lead to hard to track
+	  erros.
+	* trunk/python-modular/examples/wds_kernel.py,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h,
+	  kernel/WeightedDegreePositionStringKernel.i: wds STRING kernel
+	  now works from inside of python.
+	  
+	  although it means code duplication, I will merge changes to the
+	  wds CHAR kernel
+
+2007-03-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* gui/Matlab.cpp, guilib/GUIMatlab.h, lib/io.cpp, lib/matlab.h,
+	  structure/Plif.cpp, structure/Plif.h: introduce lib/matlab.h
+	  which encapsulates
+	  the compatibilty define (as we already have
+	  for python)
+	  
+	  note that the plif & best_path_trans functions
+	  spit out quite some warnings...breakage to be expected
+	* guilib/GUIMatlab.h: matlab 7.4 compile/compatibility fix
+	* trunk/octave/examples/markov_chain.m, Makefile, base/SGObject.i,
+	  distributions/hmm/HMM.cpp, distributions/hmm/LinearHMM.cpp,
+	  features/FKFeatures.i, features/Features.i,
+	  features/RealFileFeatures.i, features/StringFeatures.h,
+	  features/StringFeatures.i, features/TOPFeatures.h,
+	  features/TOPFeatures.i, features/WordFeatures.cpp,
+	  kernel/CommWordKernel.i, kernel/CustomKernel.i,
+	  kernel/DiagKernel.i, kernel/DistanceKernel.i,
+	  kernel/FixedDegreeCharKernel.i, kernel/GaussianKernel.i,
+	  kernel/HistogramWordKernel.i, kernel/Kernel.i,
+	  kernel/LinearByteKernel.i, kernel/LinearCharKernel.i,
+	  kernel/LinearKernel.i, kernel/LinearWordKernel.i,
+	  kernel/LocalityImprovedCharKernel.i, kernel/PolyKernel.i,
+	  kernel/PolyMatchCharKernel.i, kernel/PolyMatchWordKernel.i,
+	  kernel/SalzbergWordKernel.i, kernel/SimpleKernel.i,
+	  kernel/SimpleLocalityImprovedCharKernel.i,
+	  kernel/SparseGaussianKernel.i, kernel/SparseKernel.i,
+	  kernel/SparseLinearKernel.i, kernel/SparseNormSquaredKernel.i,
+	  kernel/SparsePolyKernel.i,
+	  kernel/WeightedDegreeCharKernelPolyA.i, kernel/WordMatchKernel.i,
+	  lib/io.i: include markov chain example and add missing
+	  features/kernels to
+	  the python interface (though I really only wanted to interface
+	  the WDS kernel ...)
+
+2007-03-07  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/GaussianKernel.cpp: remove debug output
+	* releases/shogun_0.3.2/Makefile, releases/shogun_0.3.2/R/Makefile,
+	  releases/shogun_0.3.2/R/sg/DESCRIPTION,
+	  releases/shogun_0.3.2/src/ChangeLog,
+	  trunk/python-modular/examples/wds_kernel.py, ChangeLog, TODO,
+	  kernel/WeightedDegreePositionCharKernel.i,
+	  kernel/WeightedDegreePositionStringKernel.i: * update to 0.3.2
+	  * start wds kernel python interf.
+
 2007-03-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
 	* trunk/matlab/examples/test_wdshift_kernel.m, base/Version.h,
