@@ -1889,6 +1889,7 @@ EOF
 			COMPFLAGS_CPP="$COMPFLAGS_CPP $pthr"
 			LINKFLAGS="$LINKFLAGS $pthr"
 			_pthread=yes
+			break
 		fi
 	done
 
