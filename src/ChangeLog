@@ -1,5 +1,6 @@
 2007-07-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* ChangeLog: update changelog
 	* configure: set default gcc first
 	* configure: forgotten break in pthread detection
 	* configure: some cygwin/solaris configure fixes
