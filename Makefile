@@ -21,7 +21,7 @@
 DEBIAN := no
 SVMLIGHT := yes
 COMPRESS := bzip2
-MAINVERSION := 0.3.2
+MAINVERSION := 0.4.0
 EXTRAVERSION := 
 RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
 SVNVERSION = $(shell svn info | grep Revision: | cut -d ' ' -f 2)
