@@ -26,3 +26,4 @@ trainerr=mean(trainlab~=sign(trainout))
 
 b
 W'
+obj=sum(abs(W))+C*sum(max(0,1-trainlab.*(W'*traindat+b)))
