@@ -1,4 +1,4 @@
-	#!/bin/bash
+#!/bin/bash
 
 # some hopefully reasonable defaults
 SRCDIR="`dirname $0`"
@@ -68,10 +68,6 @@ test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
 CONFIGURE_OPTIONS="configure options $@"
 GDB=gdb
 MAKE=make
-COMP_C=cc
-COMP_CPP=c++
-test "$CC" && COMP_C="$CC"
-test "$CXX" && COMP_CPP="$CXX"
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
 COMPFLAGS_C=
 COMPFLAGS_CPP=
@@ -114,12 +110,64 @@ else
   _tail() { tail -n $1 2>/dev/null ; }
 fi
 
+# OS name
+system_name=`( uname -s ) 2>&1`
+# OS test booleans functions
+issystem() {
+  echo $system_name | tr A-Z a-z | grep -q "`echo $1 | tr A-Z a-z`"
+}
+linux()   { issystem "Linux"   ; return "$?" ; }
+sunos()   { issystem "SunOS"   ; return "$?" ; }
+hpux()    { issystem "HP-UX"   ; return "$?" ; }
+irix()    { issystem "IRIX"    ; return "$?" ; }
+aix()     { issystem "AIX"     ; return "$?" ; }
+cygwin()  { issystem "CYGWIN" ; return "$?" ; }
+freebsd() { issystem "FreeBSD" ; return "$?" ; }
+netbsd()  { issystem "NetBSD"  ; return "$?" ; }
+bsdos()   { issystem "BSD/OS"  ; return "$?" ; }
+openbsd() { issystem "OpenBSD" ; return "$?" ; }
+bsd()     { freebsd || netbsd || bsdos || openbsd ; return "$?" ; }
+qnx()     { issystem "QNX"     ; return "$?" ; }
+darwin()  { issystem "Darwin"  ; return "$?" ; }
+gnu()     { issystem "GNU"     ; return "$?" ; }
+osf1()     { issystem "OSF1"    ; return "$?" ; }
+mingw32() { issystem "MINGW32" ; return "$?" ; }
+morphos() { issystem "MorphOS" ; return "$?" ; }
+win32()   { cygwin || mingw32  ; return "$?" ; }
+beos()    { issystem "BEOS"    ; return "$?" ; }
+
+set_default_cc()
+{
+	if sunos
+	then
+		COMP_C=cc
+		COMP_CPP=CC
+	else
+		COMP_C=cc
+		COMP_CPP=c++
+	fi
+	test "$CC" && COMP_C="$CC"
+	test "$CXX" && COMP_CPP="$CXX"
+}
+
 detect_cc()
 {
 	echocheck "C Compiler"
 cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
+	if sunos
+	then
+		for COMP_C in "$COMP_C"
+		do
+			if cc_check
+			then
+				cc_vendor=sun
+				cc_found=yes
+				cc_version=`cc -V 2>&1 | head -n 1 | cut -f 2 -d ':'`
+			fi
+		done
+	else
 	for COMP_C in "$COMP_C" gcc gcc-4.1 gcc-4.0 gcc-3.4 gcc-3.3 gcc-3.2 gcc-3.1 gcc3 gcc-3.0
 	do
 		if cc_check
@@ -151,12 +199,19 @@ EOF
 			esac
 		fi
 	done
+	fi
 
 	if test "$cc_found" = yes
 	then
 		echores "$cc_version"
 	else
 		die "no C compiler detected - cannot do anything"
+	fi
+
+
+	if cygwin #cygwins gcc is buggy - so disable optimizations
+	then
+		COMP_OPTS="-g -Wall -O2"
 	fi
 
 	echocheck "C Compiler flags"
@@ -167,6 +222,17 @@ EOF
 	echores "$COMPFLAGS_C"
 
 	echocheck "C++ Compiler"
+	if sunos
+	then
+		for COMP_CPP in "$COMP_CPP"
+		do
+			if cc_check
+			then
+				cxx_found=yes
+				cxx_version=`cc -V 2>&1 | head -n 1 | cut -f 2 -d ':'`
+			fi
+		done
+	else
 	for COMP_CPP in "$COMP_CPP" cxx CC g++ g++-4.1 g++-4.0 g++-3.4 g++-3.3 g++-3.2 g++-3.1 g++3 g++-3.0
 	do
 		if cxx_check
@@ -198,6 +264,7 @@ EOF
 			esac
 		fi
 	done
+	fi
 
 	if test "$cxx_found" = yes
 	then
@@ -246,13 +313,19 @@ check_makedepend()
 check_make()
 {
 	echocheck "GNU Make"
-	if make --version 2>&1 | grep -q GNU
+
+	if make --version 2>&1 | grep GNU >/dev/null 2>&1
 	then
 		echores "`make --version | grep GNU`"
 		MAKE=make
 	else
-		echores "non GNU Make detected expect trouble (try running GNU make manually in case of trouble)"
-		MAKE=gmake
+		if gmake --version 2>&1 | grep GNU >/dev/null 2>&1
+		then
+			echores "`gmake --version | grep GNU`"
+			MAKE=gmake
+		else
+			echores "non GNU Make detected expect trouble (try running GNU make manually in case of trouble)"
+		fi
 	fi
 }
 
@@ -635,7 +708,7 @@ test -z "$_confdir" && _confdir="$_prefix/etc/shogun"
 test -z "$_libdir" && _libdir="$_prefix/lib"
 test -z "$_pydir" && _pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
 
-determine_march_mtune()
+determine_system_name()
 {
 	# Determine our OS name and CPU architecture
 	if test -z "$_target" ; then
@@ -719,6 +792,10 @@ determine_march_mtune()
 	OS="`echo $system_name | tr 'a-z-' 'A-Z_'`"
 	echo "Detected Operating System: $system_name"
 	echo "Detected Host Architecture: $host_arch"
+}
+
+determine_march_mtune()
+{
 
 # XXX: this should be ok..
 _cpuinfo="echo"
@@ -1103,7 +1180,6 @@ case "$host_arch" in
   i[3-9]86|x86|x86pc|k5|k6|k6-2|k6-3|pentium*|athlon*|i586-i686)
   _def_arch="#define ARCH_X86 1"
   _target_arch="TARGET_ARCH_X86 = yes"
-
 
   case "$pvendor" in
   AuthenticAMD)
@@ -1803,11 +1879,21 @@ cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
 	echocheck "Posix threads support"
-	if cc_check -pthread -lpthread
+	_pthread=no
+
+	for pthr in -pthread -lpthread
+	do
+		if cc_check $pthr
+		then
+			COMPFLAGS_C="$COMPFLAGS_C $pthr"
+			COMPFLAGS_CPP="$COMPFLAGS_CPP $pthr"
+			LINKFLAGS="$LINKFLAGS $pthr"
+			_pthread=yes
+		fi
+	done
+
+	if test "$_pthread" = yes
 	then
-		COMPFLAGS_C="$COMPFLAGS_C -pthread"
-		COMPFLAGS_CPP="$COMPFLAGS_CPP -pthread"
-		LINKFLAGS="$LINKFLAGS -lpthread"
 		echores "yes"
 	else
 		echores "no"
@@ -2383,7 +2469,7 @@ write_dot_config()
 {
 
 #enable additional warnings / -Wfloat-equal -W
-if test "$_cc_major" -ge "3" ; then
+if test "$_cc_major" -ge "3" 2>/dev/null ; then
 	COMPFLAGS_C=`echo "$COMPFLAGS_C" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wimplicit -Wparentheses -Wshadow/'`
 	COMPFLAGS_SWIG_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/-Wall//'`
 	COMPFLAGS_CPP=`echo "$COMPFLAGS_CPP" | sed -e 's/\(-Wall\)/\1 -Wno-unused-parameter -Wformat -Wformat-security -Wimplicit -Wparentheses -Wshadow/'`
@@ -2515,6 +2601,8 @@ clean_up()
 	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS" "$TMPSS"
 }
 
+determine_system_name
+set_default_cc
 detect_cc
 check_makedepend
 check_python
