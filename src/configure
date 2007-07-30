@@ -2602,8 +2602,8 @@ clean_up()
 	rm -f "$TMPC" "$TMPCPP" "$TMPO" "$TMPS" "$TMPSS"
 }
 
-determine_system_name
 set_default_cc
+determine_system_name
 detect_cc
 check_makedepend
 check_python
