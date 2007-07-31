@@ -221,6 +221,8 @@ class CKernel : public CSGObject
 		/// matrix precomputation
 		void do_precompute_matrix() ;
 
+		void init_sqrt_diag(DREAL *v, INT num);
+
 #ifdef USE_SVMLIGHT
 		/**@ cache kernel evalutations to improve speed
 		 */
@@ -253,7 +255,6 @@ class CKernel : public CSGObject
 			INT end;
 		};
 		static void* cache_multiple_kernel_row_helper(void* p);
-		void init_sqrt_diag(DREAL *v, INT num);
 
 		/// init kernel cache of size megabytes
 		void   kernel_cache_init(INT size, bool regression_hack=false);
