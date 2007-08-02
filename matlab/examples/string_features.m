@@ -34,3 +34,11 @@ single_degree=-1;
 sg('send_command', sprintf( 'set_kernel WEIGHTEDDEGREE STRING %i %i %i %i %i %i %i', cache, order, max_mismatch, normalize, mkl_stepsize, block, single_degree) );
 sg('send_command','init_kernel TRAIN')
 km=sg('get_kernel_matrix')
+
+sg('send_command','clean_features TRAIN');
+sg('send_command','clean_features TEST');
+sg('set_features', 'TRAIN', dat, 'DNA');
+sg('from_position_list','TRAIN', 5, [0,1,2,5,15,25,30]+5);
+sg('set_features', 'TRAIN', dat, 'DNA');
+sg('from_position_list','TRAIN', 5, [0,1,2,5,15,25]+9);
+sg('send_command','clean_features TRAIN');
