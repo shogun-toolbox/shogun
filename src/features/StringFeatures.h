@@ -43,7 +43,7 @@ template <class ST> class CStringFeatures: public CFeatures
 {
 	public:
 	CStringFeatures(E_ALPHABET alpha) : CFeatures(0), num_vectors(0), features(NULL), 
-		single_string(false),length_of_single_string(0),
+		single_string(NULL),length_of_single_string(0),
 		max_string_length(0), order(0), symbol_mask_table(NULL)
 	{
 		alphabet=new CAlphabet(alpha);
@@ -52,7 +52,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		original_num_symbols=num_symbols;
 	}
 	CStringFeatures(CAlphabet* alpha) : CFeatures(0), num_vectors(0), features(NULL), 
-		single_string(false),length_of_single_string(0),
+		single_string(NULL),length_of_single_string(0),
 		max_string_length(0), order(0), symbol_mask_table(NULL)
 	{
         ASSERT(alpha);
@@ -69,7 +69,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		num_symbols(orig.num_symbols), original_num_symbols(orig.original_num_symbols),
 		order(orig.order)
 	{
-		ASSERT(orig.single_string == false); //not implemented
+		ASSERT(orig.single_string == NULL); //not implemented
 
 		alphabet=new CAlphabet(orig.alphabet);
 
@@ -96,7 +96,7 @@ template <class ST> class CStringFeatures: public CFeatures
 	}
 
 	CStringFeatures(char* fname, E_ALPHABET alpha=DNA) : CFeatures(fname), num_vectors(0), 
-		features(NULL), single_string(false), length_of_single_string(0),
+		features(NULL), single_string(NULL), length_of_single_string(0),
 		max_string_length(0), order(0), symbol_mask_table(NULL)
 	{
 		alphabet=new CAlphabet(alpha);
@@ -116,9 +116,9 @@ template <class ST> class CStringFeatures: public CFeatures
 	{
 		if (single_string)
 		{
-			if (num_vectors>0)
-				delete[] features[0].string;
-				features[0].length=0;
+			delete[] single_string;
+			single_string=NULL;
+
 			num_vectors=0;
 		}
 		else
@@ -441,9 +441,9 @@ template <class ST> class CStringFeatures: public CFeatures
 			f[i].length=window_size;
 			offs+=step_size;
 		}
+		single_string=features[0].string;
 		delete[] features;
 		features=f;
-		single_string=true;
 		selected_vector=0;
 		max_string_length=window_size;
 
@@ -471,12 +471,14 @@ template <class ST> class CStringFeatures: public CFeatures
 			len=length_of_single_string;
 		else
 		{
-			single_string=true;
+			single_string=features[0].string;
 			len=max_string_length;
 			length_of_single_string=max_string_length;
 		}
 		
 		T_STRING<ST>* f=new T_STRING<ST>[num_vectors];
+		ASSERT(f);
+
 		for (INT i=0; i<num_vectors; i++)
 		{
 			INT p=positions->get_element(i);
@@ -491,7 +493,7 @@ template <class ST> class CStringFeatures: public CFeatures
 				num_vectors=1;
 				max_string_length=len;
 				features[0].length=len;
-				single_string=false;
+				single_string=NULL;
 				delete[] f;
 				SG_ERROR("window (size:%d) starting at position[%d]=%d does not fit in sequence(len:%d)\n",
 						window_size, i, p, len);
@@ -793,7 +795,7 @@ template <class ST> class CStringFeatures: public CFeatures
 	T_STRING<ST>* features;
 
 	/// true when single string / created by sliding window
-	bool single_string;
+	ST* single_string;
 
 	/// length of prior single string
 	INT length_of_single_string;
