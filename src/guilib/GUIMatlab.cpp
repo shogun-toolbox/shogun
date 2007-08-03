@@ -2203,32 +2203,48 @@ bool CGUIMatlab::from_position_list(const mxArray* vals[], int nrhs)
 	if ( target && (!strncmp(target, "TRAIN", 5) || 
 				!strncmp(target, "TEST", 4) ))
 	{
-		CStringFeatures<CHAR>* features=NULL;
+		CFeatures* features=NULL;
 
 		if (!strncmp(target, "TRAIN", 5))
 		{
 			gui->guifeatures.invalidate_train();
-			features= (CStringFeatures<CHAR>*) gui->guifeatures.get_train_features();
+			features= gui->guifeatures.get_train_features();
 		}
 		else if (!strncmp(target, "TEST", 4))
 		{
 			gui->guifeatures.invalidate_test();
-			features=(CStringFeatures<CHAR>*) gui->guifeatures.get_test_features();
+			features= gui->guifeatures.get_test_features();
 		}
 		delete[] target;
 
 		ASSERT(features);
 		if (((CFeatures*) features)->get_feature_class() == C_COMBINED)
-			features=(CStringFeatures<CHAR>*) ((CCombinedFeatures*) features)->get_last_feature_obj();
+			features= ((CCombinedFeatures*) features)->get_last_feature_obj();
 
 		ASSERT(features);
 		ASSERT(((CFeatures*) features)->get_feature_class() == C_STRING);
-		ASSERT(((CFeatures*) features)->get_feature_type() == F_CHAR);
 
-		return ( features->obtain_by_position_list(winsize, &positions) > 0);
+		switch (features->get_feature_type())
+		{
+			case F_CHAR:
+				return ( ((CStringFeatures<CHAR>*) features)->obtain_by_position_list(winsize,
+							&positions) > 0);
+			case F_BYTE:
+				return ( ((CStringFeatures<BYTE>*) features)->obtain_by_position_list(winsize,
+							&positions) > 0);
+			case F_WORD:
+				return ( ((CStringFeatures<WORD>*) features)->obtain_by_position_list(winsize,
+							&positions) > 0);
+			case F_ULONG:
+				return ( ((CStringFeatures<ULONG>*) features)->obtain_by_position_list(winsize,
+							&positions) > 0);
+			default:
+				SG_SERROR("unsupported string features type\n");
+				return false;
+		}
 	}
 	else
-		SG_SERROR( "usage is sg('from_position_list', 'TRAIN|TEST', [list])");
+		SG_SERROR("usage is sg('from_position_list', 'TRAIN|TEST', [list])");
 
 	return false;
 }

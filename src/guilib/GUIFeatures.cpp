@@ -261,17 +261,17 @@ bool CGUIFeatures::slide_window(CHAR* param)
 		ASSERT(winsize>0);
 		ASSERT(shift>0);
 
-		CStringFeatures<CHAR>* features=NULL;
+		CFeatures* features=NULL;
 
 		if (strcmp(target,"TRAIN")==0)
 		{
 			invalidate_train();
-			features=(CStringFeatures<CHAR>*) train_features;
+			features=train_features;
 		}
 		else if (strcmp(target,"TEST")==0)
 		{
 			invalidate_test();
-			features=(CStringFeatures<CHAR>*) train_features;
+			features=train_features;
 		}
 		else
 		{
@@ -281,15 +281,27 @@ bool CGUIFeatures::slide_window(CHAR* param)
 
 		if (((CFeatures*) features)->get_feature_class() == C_COMBINED)
 		{
-			features=(CStringFeatures<CHAR>*) ((CCombinedFeatures*) features)->get_last_feature_obj();
+			features=((CCombinedFeatures*) features)->get_last_feature_obj();
 			ASSERT(features);
 		}
 
 		ASSERT(features);
 		ASSERT(((CFeatures*) features)->get_feature_class() == C_STRING);
-		ASSERT(((CFeatures*) features)->get_feature_type() == F_CHAR);
-		return (features->obtain_by_sliding_window(winsize, shift) > 0);
 
+		switch (features->get_feature_type())
+		{
+			case F_CHAR:
+				return ( ((CStringFeatures<CHAR>*) features)->obtain_by_sliding_window(winsize, shift) > 0);
+			case F_BYTE:
+				return ( ((CStringFeatures<BYTE>*) features)->obtain_by_sliding_window(winsize, shift) > 0);
+			case F_WORD:
+				return ( ((CStringFeatures<WORD>*) features)->obtain_by_sliding_window(winsize, shift) > 0);
+			case F_ULONG:
+				return ( ((CStringFeatures<ULONG>*) features)->obtain_by_sliding_window(winsize, shift) > 0);
+			default:
+				SG_SERROR("unsupported string features type\n");
+				return false;
+		}
 	}
 	else
 		SG_ERROR( "see help for params\n");
