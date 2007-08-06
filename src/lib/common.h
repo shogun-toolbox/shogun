@@ -208,7 +208,8 @@ enum EClassifierType
 	CT_SUBGRADIENTLPM = 190,
 	CT_SVMPERF = 200,
 	CT_LIBSVR = 210,
-	CT_SVRLIGHT = 220
+	CT_SVRLIGHT = 220,
+	CT_LIBLINEAR = 330
 };
 
 enum EDistanceType

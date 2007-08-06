@@ -9,6 +9,9 @@ We integrated the work of the following people:
  Chih-Chung Chang and and Chih-Jen Lin	
  	- LibSVM
 
+ Xiang-Rui Wang and Chih-Jen Lin
+	- LIBLINEAR
+
  Thomas Serafini, Luca Zanni, Gaetano Zanghirati
  	- the Gradient Projection Decomposition Technique (GPDT) - SVM
 

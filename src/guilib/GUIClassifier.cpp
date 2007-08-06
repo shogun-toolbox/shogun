@@ -43,6 +43,7 @@
 
 #include "regression/svr/LibSVR.h"
 
+#include "classifier/svm/LibLinear.h"
 #include "classifier/svm/MPD.h"
 #include "classifier/svm/GNPPSVM.h"
 #include "classifier/svm/GMNPSVM.h"
@@ -160,6 +161,18 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		delete classifier;
 		classifier= new CKernelPerceptron();
 		SG_INFO( "created Kernel Perceptron object\n") ;
+	}
+	else if (strcmp(param,"LIBLINEAR_LR")==0)
+	{
+		delete classifier;
+		classifier= new CLibLinear(LR);
+		SG_INFO( "created LibLinear logistic regression object\n") ;
+	}
+	else if (strcmp(param,"LIBLINEAR_L2")==0)
+	{
+		delete classifier;
+		classifier= new CLibLinear(L2);
+		SG_INFO( "created LibLinear l2 loss object\n") ;
 	}
 	else if (strcmp(param,"PERCEPTRON")==0)
 	{
