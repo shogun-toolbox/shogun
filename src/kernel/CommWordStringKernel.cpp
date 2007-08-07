@@ -391,7 +391,7 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 {
 	ASSERT(lhs);
 	CStringFeatures<WORD>* str=((CStringFeatures<WORD>*) lhs);
-	INT len=str->get_max_vector_length();
+	num_feat=1;//str->get_max_vector_length();
 	CAlphabet* alpha=str->get_alphabet();
 	ASSERT(alpha);
 	INT num_bits=alpha->get_num_bits();
@@ -400,14 +400,20 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 	INT num_words=(INT) str->get_original_num_symbols();
 	INT offset=0;
 
-	INT sz=CMath::pow((INT) num_words,(INT) order+1)-1;
+	num_sym=0;
+	
+	for (INT i=0; i<order; i++)
+		num_sym+=CMath::pow((INT) num_words,i+1);
 
 	SG_PRINT("num_words:%d, order:%d, len:%d sz:%d (len*sz:%d)\n", num_words, order,
-			len, sz, len*sz);
+			num_feat, num_sym, num_feat*num_sym);
 
 	if (!target)
-		target=new DREAL[len*sz];
+		target=new DREAL[num_feat*num_sym];
+
 	ASSERT(target);
+
+	memset(target, 0, num_feat*num_sym*sizeof(DREAL));
 
 	//init
 	init_optimization(num_suppvec, IDX, alphas);
@@ -416,28 +422,41 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 	{
 		UINT words=CMath::pow((INT) num_words,(INT) o+1);
 		DREAL* contrib=&target[offset];
+		//SG_PRINT("offs:%d words:%d\n", offset, words);
 		offset+=words;
+		DREAL marginalizer=CMath::pow(1.0/num_words, (DREAL) order-o-1);
+		//SG_PRINT("marginalizer=%g o=%d\n", marginalizer, o);
 
 		for (UINT i=0; i<words; i++)
 		{
-			UINT mask_suf=0xffffffff;
+			UINT mask_pre=str->get_masked_symbols(0xffff, 1) << (num_bits*(order-o-1));
+			UINT mask_suf=0xffff ^ mask_pre;
+			UINT w=i <<(num_bits*(order-o-1));
+			//SG_PRINT("mask_pre:%x mask_suf:%x w:%x\n", mask_pre, mask_suf, w);
+
 			for (INT p=0; p<order-o; p++)
 			{
-				mask_suf>>=num_bits;
-				UINT mask_pre=0xffffffff & mask_suf;
-
-				UINT all_words=(UINT) CMath::pow((INT) num_words,(INT) order-o+1);
+				UINT all_words=(UINT) CMath::pow((INT) num_words,(INT) order-o-1);
 				for (UINT j=0; j<all_words; j++)
 				{
-					contrib[i]+=dictionary_weights[(j & mask_pre) <<
-						(num_bits*p) | (j & mask_suf)];
+					UINT x1=(j & mask_pre) << num_bits;
+					UINT x2=(j & mask_suf);
+					UINT x3=w;
+					UINT x=x1|x2|x3;
+					//SG_PRINT("x:%x x1:%x x2:%x x3:%x mask_pre:%x mask_suf:%x all_words:%d position:%d order:%d\n", x, x1, x2, x3, mask_pre, mask_suf, all_words, p, o);
+					ASSERT(x<65536);
+					contrib[i]+=dictionary_weights[x]*marginalizer;
 				}
+
+				w>>=num_bits;
+				mask_pre=(mask_pre >> num_bits) | (str->get_masked_symbols(0xffff, 1) << (num_bits*(order-1)));
+				mask_suf=0xffff ^ mask_pre;
 			}
 		}
 	}
 
-	for (INT i=1; i<len; i++)
-		memcpy(&target[sz*i], target, sz);
+	for (INT i=1; i<num_feat; i++)
+		memcpy(&target[num_sym*i], target, num_sym*sizeof(DREAL));
 
 	return target;
 }
