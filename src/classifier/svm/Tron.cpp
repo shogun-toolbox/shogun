@@ -26,11 +26,11 @@ extern int dscal_(int *, double *, double *, int *);
 #endif
 
 
-CTron::CTron(const function *fun_obj, double eps, int max_iter)
+CTron::CTron(const function *f, double e, int it)
 {
-	this->fun_obj=const_cast<function *>(fun_obj);
-	this->eps=eps;
-	this->max_iter=max_iter;
+	this->fun_obj=const_cast<function *>(f);
+	this->eps=e;
+	this->max_iter=it;
 }
 
 CTron::~CTron()

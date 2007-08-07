@@ -169,6 +169,16 @@ public:
 		return ::pow(x, n);
 #endif
 	}
+	
+	static inline INT pow(INT x, INT n)
+	{
+		ASSERT(n>=0);
+		INT result=1;
+		while (n--)
+			result*=x;
+
+		return result;
+	}
 
 	static inline DREAL pow(DREAL x, DREAL n)
 	{

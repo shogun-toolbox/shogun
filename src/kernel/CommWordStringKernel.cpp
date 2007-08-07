@@ -386,6 +386,52 @@ DREAL CCommWordStringKernel::compute_optimized(INT i)
 	return result;
 }
 
+DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
+		INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas)
+{
+	ASSERT(lhs);
+	CStringFeatures<WORD>* str=((CStringFeatures<WORD>*) lhs);
+	CAlphabet* alpha=((CStringFeatures<WORD>*) lhs)->get_alphabet();
+	ASSERT(alpha);
+	INT num_bits=alpha->get_num_bits();
+	INT order=str->get_order();
+	INT num_words=(INT) str->get_num_symbols();
+	INT offset=0;
+
+	if (!target)
+		target=new DREAL(pow(num_words,order+1)-1);
+	ASSERT(target);
+
+	//init
+	init_optimization(num_suppvec, IDX, alphas);
+
+	for (INT o=0; o<order; o++)
+	{
+		UINT words=CMath::pow((INT) num_words,(INT) o+1);
+		DREAL* contrib=&target[offset];
+		offset+=words;
+
+		for (UINT i=0; i<words; i++)
+		{
+			UINT mask_suf=0xffffffff;
+			for (INT p=0; p<order-o; p++)
+			{
+				mask_suf>>=num_bits;
+				UINT mask_pre=0xffffffff & mask_suf;
+
+				UINT all_words=(UINT) CMath::pow((INT) num_words,(INT) order-o+1);
+				for (UINT j=0; j<all_words; j++)
+				{
+					contrib[i]+=dictionary_weights[(j & mask_pre) <<
+						(num_bits*p) | (j & mask_suf)];
+				}
+			}
+		}
+	}
+
+	return target;
+}
+
 
 CHAR* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec, INT* IDX, DREAL* alphas)
 {

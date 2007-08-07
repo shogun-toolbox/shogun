@@ -1293,11 +1293,19 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(INT max_degree, INT&
 	ASSERT(((CStringFeatures<CHAR>*) get_rhs())->get_alphabet()->get_alphabet() == DNA);
 	num_sym=4; //for now works only w/ DNA
 
+	ASSERT(max_degree>0);
+
 	// === variables
 	INT* nofsKmers = new INT[ max_degree ];
 	DREAL** C = new DREAL*[ max_degree ];
 	DREAL** L = new DREAL*[ max_degree ];
 	DREAL** R = new DREAL*[ max_degree ];
+
+	ASSERT(nofsKmers);
+	ASSERT(C);
+	ASSERT(L);
+	ASSERT(R);
+
 	INT i;
 	INT k;
 
@@ -1309,6 +1317,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(INT max_degree, INT&
 		bigtabSize += tabSize;
 	}
 	result= new DREAL[ bigtabSize ];
+	ASSERT(result);
 
 	// --- auxilliary tables
 	INT tabOffs=0;
@@ -1329,6 +1338,8 @@ DREAL* CWeightedDegreePositionStringKernel::compute_scoring(INT max_degree, INT&
 
 	// --- tree parsing info
 	DREAL* margFactors = new DREAL[ degree ];
+	ASSERT(margFactors);
+
 	INT* x = new INT[ degree+1 ];
 	INT* substrs = new INT[ degree+1 ];
 	// - fill arrays

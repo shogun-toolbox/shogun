@@ -55,6 +55,9 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 	  dweights = dictionary_weights;
   }
 
+  DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, 
+		  DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas);
+
   CHAR* compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas);
 
  protected:
