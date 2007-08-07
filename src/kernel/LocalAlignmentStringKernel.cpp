@@ -42,7 +42,7 @@ static char *aaList= "ARNDCQEGHILKMFPSTWYV";    /* The list of amino acids */
 #define EXTENSION 2                             /* Gap extension penalty */
 
 /* mutation matrix */
-static int blosum[] = {
+const int CLocalAlignmentStringKernel::blosum[] = {
   6,
  -2,   8,
  -2,  -1,   9,
@@ -95,6 +95,9 @@ int CLocalAlignmentStringKernel::logsum_lookup[LOGSUM_TBL];
 CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(INT size)
 	: CStringKernel<CHAR>(size), initialized(false)
 {
+	scaled_blosum=new int[sizeof(blosum)];
+	init_logsum();
+	initialize();
 }
 
 CLocalAlignmentStringKernel::~CLocalAlignmentStringKernel()
@@ -111,6 +114,8 @@ bool CLocalAlignmentStringKernel::init(CFeatures* l, CFeatures* r)
 
 void CLocalAlignmentStringKernel::cleanup()
 {
+	delete[] scaled_blosum;
+	scaled_blosum=NULL;
 }
 
 /* LogSum - default log funciotion. fast, but not exact */
@@ -163,7 +168,7 @@ void CLocalAlignmentStringKernel::initialize(void)
 
   /* Scale the blossum matrix */
   for (i=0 ; i<NAA*(NAA+1)/2; i++)
-	  blosum[i] = (int) floor(blosum[i]*SCALING*INTSCALE);
+	  scaled_blosum[i] = (int) floor(blosum[i]*SCALING*INTSCALE);
 
 
   /* Scale of gap penalties */
@@ -291,7 +296,7 @@ DREAL CLocalAlignmentStringKernel::LAkernelcompute(int* aaX, int* aaY, /* Implem
 
       aux = LOGP( logX[frompos] , logY[frompos] );
       aux2 = LOGP( 0 , logM[frompos] );
-      logM[curpos] = LOGP( aux , aux2 ) + blosum[ BINDEX( aaX[i-1] , aaY[j-1] ) ];
+      logM[curpos] = LOGP( aux , aux2 ) + scaled_blosum[ BINDEX( aaX[i-1] , aaY[j-1] ) ];
       
       /*      printf("i=%d , j=%d\nM=%.5f\nX=%.5f\nY=%.5f\nX2=%.5f\nY2=%.5f\n",i,j,logM[curpos],logX[curpos],logY[curpos],logX2[curpos],logY2[curpos]);
        */

@@ -64,6 +64,8 @@ protected:
 	int opening,extension; /* Gap penalties */
 
 	static int logsum_lookup[LOGSUM_TBL];
+	static const int blosum[];
+	int* scaled_blosum;
 };
 #endif // _LOCALALIGNMENTKERNEL
 

@@ -158,9 +158,9 @@ void CAlphabet::init_map_table()
 					if (i==8) skip++ ;
 					if (i==12) skip++ ;
 					if (i==17) skip++ ;
-					valid_chars['a'+i+skip]=1;
-					maptable_to_bin['a'+i+skip]=i ;
-					maptable_to_char[i]='a'+i+skip ;
+					valid_chars['A'+i+skip]=1;
+					maptable_to_bin['A'+i+skip]=i ;
+					maptable_to_char[i]='A'+i+skip ;
 				} ;                   //Translation 012345->acde...xy -- the protein code
 			} ;
 			break;
@@ -169,9 +169,9 @@ void CAlphabet::init_map_table()
 			{
 				for (i=0; i<26; i++)
 				{
-					valid_chars['a'+i]=1;
-					maptable_to_bin['a'+i]=i ;
-					maptable_to_char[i]='a'+i ;
+					valid_chars['A'+i]=1;
+					maptable_to_bin['A'+i]=i ;
+					maptable_to_char[i]='A'+i ;
 				} ;
 				for (i=0; i<10; i++)
 				{
