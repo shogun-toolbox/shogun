@@ -391,15 +391,22 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 {
 	ASSERT(lhs);
 	CStringFeatures<WORD>* str=((CStringFeatures<WORD>*) lhs);
-	CAlphabet* alpha=((CStringFeatures<WORD>*) lhs)->get_alphabet();
+	INT len=str->get_max_vector_length();
+	CAlphabet* alpha=str->get_alphabet();
 	ASSERT(alpha);
 	INT num_bits=alpha->get_num_bits();
 	INT order=str->get_order();
-	INT num_words=(INT) str->get_num_symbols();
+	//INT num_words=(INT) str->get_num_symbols();
+	INT num_words=(INT) str->get_original_num_symbols();
 	INT offset=0;
 
+	INT sz=CMath::pow((INT) num_words,(INT) order+1)-1;
+
+	SG_PRINT("num_words:%d, order:%d, len:%d sz:%d (len*sz:%d)\n", num_words, order,
+			len, sz, len*sz);
+
 	if (!target)
-		target=new DREAL(pow(num_words,order+1)-1);
+		target=new DREAL[len*sz];
 	ASSERT(target);
 
 	//init
@@ -428,6 +435,9 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 			}
 		}
 	}
+
+	for (INT i=1; i<len; i++)
+		memcpy(&target[sz*i], target, sz);
 
 	return target;
 }

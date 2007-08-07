@@ -56,6 +56,7 @@
 %include "kernel/HistogramWordKernel.i"
 %include "kernel/LinearByteKernel.i"
 %include "kernel/LinearStringKernel.i"
+%include "kernel/LocalAlignmentStringKernel.i"
 %include "kernel/LinearWordKernel.i"
 
 %include "kernel/LocalityImprovedStringKernel.i"

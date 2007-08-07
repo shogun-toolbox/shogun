@@ -32,6 +32,7 @@
 #include "kernel/ConstKernel.h"
 #include "kernel/PolyMatchWordKernel.h"
 #include "kernel/PolyMatchStringKernel.h"
+#include "kernel/LocalAlignmentStringKernel.h"
 #include "kernel/WordMatchKernel.h"
 #include "kernel/HammingWordKernel.h"
 #include "kernel/ManhattenWordKernel.h"
@@ -769,6 +770,21 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (k)
 				{
 					SG_INFO( "FixedDegreeStringKernel created\n");
+					return k;
+				}
+			}
+		}
+		else if (strcmp(kern_type,"LOCALALIGNMENT")==0)
+		{
+			if (strcmp(data_type,"CHAR")==0)
+			{
+				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				delete k;
+				k=new CLocalAlignmentStringKernel(size);
+
+				if (k)
+				{
+					SG_INFO( "LocalAlignmentStringKernel created\n");
 					return k;
 				}
 			}
