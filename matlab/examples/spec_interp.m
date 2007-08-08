@@ -2,16 +2,15 @@ rand('seed',17);
 %sequence lengths, number of sequences
 len=100;
 num_train=1000;
-num_test=5000;
-num_a=30;
+num_a=5;
 shift=20;
 cache=10;
 use_sign=0;
-normalization='NO'; %NO,SQRT,LEN,SQLEN,FULL
+normalization='FULL'; %NO,SQRT,LEN,SQLEN,FULL
 aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
 
 %SVM regularization factor C
-C=1;
+C=3;
 
 %Weighted Degree kernel parameters
 max_order=8;
@@ -35,7 +34,7 @@ for i=1:length(idx)/2,
 	end
 end
 for i=length(idx)/2+1:length(idx),
-	traindat(aa(1:2)+aas(i,1),idx(i))='AA';
+	traindat(aa(1:3)+aas(i,1),idx(i))='AAA';
 	traindat(aa(1)+1+aas(i,2),idx(i))='A';
 end
 

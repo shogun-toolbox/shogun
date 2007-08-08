@@ -396,6 +396,7 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 	ASSERT(alpha);
 	INT num_bits=alpha->get_num_bits();
 	INT order=str->get_order();
+	ASSERT(max_degree<=order);
 	//INT num_words=(INT) str->get_num_symbols();
 	INT num_words=(INT) str->get_original_num_symbols();
 	INT offset=0;
@@ -405,7 +406,7 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 	for (INT i=0; i<order; i++)
 		num_sym+=CMath::pow((INT) num_words,i+1);
 
-	SG_PRINT("num_words:%d, order:%d, len:%d sz:%d (len*sz:%d)\n", num_words, order,
+	SG_DEBUG("num_words:%d, order:%d, len:%d sz:%d (len*sz:%d)\n", num_words, order,
 			num_feat, num_sym, num_feat*num_sym);
 
 	if (!target)
