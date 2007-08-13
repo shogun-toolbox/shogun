@@ -37,8 +37,7 @@ CMindyGramFeatures::~CMindyGramFeatures()
     free(vectors);
 
     /* Destroy configuration */
-    alph_destroy(cfg->alph);
-    mindy_cfg_destroy(cfg);
+    micfg_destroy(cfg);
 }
 
 /**

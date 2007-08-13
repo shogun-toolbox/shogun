@@ -40,32 +40,31 @@ class CMindyGramFeatures:public CFeatures
 
 			/* Allocate and generate gram configuration (words) */
 			SG_DEBUG( "Initializing Mindy gram features\n");    
-			alph_type_t at = alph_get_type(aname);
 			if (nlen <= 0)
-			   cfg = mindy_cfg_words(alph_create(at), delim);
+			   cfg = micfg_words(alph_get_type(aname), delim);
 			else 
-			   cfg = mindy_cfg_ngrams(alph_create(at), (byte_t) nlen);
+			   cfg = micfg_ngrams(alph_get_type(aname), (byte_t) nlen);
 
                         /* Set delimiters */                        
                         if (strlen(delim) > 0) 
-                            mindy_cfg_set_delim(cfg, delim);
+                            micfg_set_delim(cfg, delim);
                         
                         /* Set embedding */
                         if (!strcasecmp(embed, "freq"))
-                            mindy_cfg_set_embed(cfg, ME_FREQ);			
+                            micfg_set_embed(cfg, ME_FREQ);			
                         else if (!strcasecmp(embed, "count"))
-                            mindy_cfg_set_embed(cfg, ME_COUNT);			
+                            micfg_set_embed(cfg, ME_COUNT);			
                         else if (!strcasecmp(embed, "bin"))
-                             mindy_cfg_set_embed(cfg, ME_BIN);			
+                            micfg_set_embed(cfg, ME_BIN);			
                         else
                             SG_ERROR("Unknown embedding mode '%s'", embed);
 
                         if (nlen <= 0) 
                            SG_INFO("Mindy in word mode (d: '%s', a: %s, e: %s)\n", 
-                                   delim, alph_get_name(at), mindy_cfg_get_embed(cfg->embed));
+                                   delim, aname, micfg_get_embed(cfg->embed));
                         else  
                            SG_INFO("Mindy in n-gram mode (n: '%d', a: %s, e: %s)\n", 
-                                   nlen, alph_get_name(at), mindy_cfg_get_embed(cfg->embed));
+                                   nlen, aname, micfg_get_embed(cfg->embed));
 		}
 
 		/**
@@ -79,7 +78,7 @@ class CMindyGramFeatures:public CFeatures
 		         num_vectors = orig.num_vectors;
 
 		         /* Clone configuration */
-		         cfg = mindy_cfg_clone(orig.cfg);
+		         cfg = micfg_clone(orig.cfg);
 
 		         /* Clone gram vectors */
 		         vectors = (gram_t **) calloc(num_vectors, sizeof(gram_t *));
@@ -145,7 +144,7 @@ class CMindyGramFeatures:public CFeatures
         /**< Array of gram features */
         gram_t **vectors;
         /**< Gram configuration used */
-        mindy_cfg_t *cfg;
+        micfg_t *cfg;
 };
 #endif
 #endif
