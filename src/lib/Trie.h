@@ -43,6 +43,21 @@ struct ConsensusEntry
 	INT bt;
 };
 
+//struct Trie
+//{
+//    DREAL weight;
+//#ifdef TRIE_CHECK_EVERYTHING
+//    bool has_seq ;
+//    bool has_floats ;
+//#endif		
+//    union 
+//    {
+//        SHORTREAL child_weights[4];
+//        INT children[4];
+//        BYTE seq[16] ;
+//    }; 
+//};
+
 struct Trie
 {
     DREAL weight;
@@ -56,6 +71,10 @@ struct Trie
         INT children[4];
         BYTE seq[16] ;
     }; 
+
+	DREAL super_string_score;
+	DREAL left_partial_overlap_score;
+	DREAL right_partial_overlap_score;
 };
 
 struct TreeParseInfo {
