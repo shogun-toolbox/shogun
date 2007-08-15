@@ -419,45 +419,70 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 	//init
 	init_optimization(num_suppvec, IDX, alphas);
 
-	for (INT o=0; o<order; o++)
+	UINT mask=0;
+	UINT words=CMath::pow((INT) num_words,(INT) order);
+
+	for (INT o=0; o<max_degree; o++)
 	{
-		UINT words=CMath::pow((INT) num_words,(INT) o+1);
 		DREAL* contrib=&target[offset];
-		//SG_PRINT("offs:%d words:%d\n", offset, words);
-		offset+=words;
-		DREAL marginalizer=CMath::pow(1.0/num_words, (DREAL) order-o-1);
-		//SG_PRINT("marginalizer=%g o=%d\n", marginalizer, o);
+		offset+=CMath::pow((INT) num_words,(INT) o+1);
 
-		for (UINT i=0; i<words; i++)
+		mask=(mask<<(num_bits)) | str->get_masked_symbols(0xffff, 1);
+
+		for (INT p=-o; p<order; p++)
 		{
-			UINT mask_pre=str->get_masked_symbols(0xffff, 1) << (num_bits*(order-o-1));
-			UINT mask_suf=0xffff ^ mask_pre;
-			UINT w=i <<(num_bits*(order-o-1));
-			//SG_PRINT("mask_pre:%x mask_suf:%x w:%x\n", mask_pre, mask_suf, w);
+			INT o_sym, m_sym, sl,sr;
+			UINT m=mask;
 
-			for (INT p=0; p<order-o; p++)
+			if (p<0)
 			{
-				UINT all_words=(UINT) CMath::pow((INT) num_words,(INT) order-o-1);
-				for (UINT j=0; j<all_words; j++)
-				{
-					UINT x1=(j & mask_pre) << num_bits;
-					UINT x2=(j & mask_suf);
-					UINT x3=w;
-					UINT x=x1|x2|x3;
-					//SG_PRINT("x:%x x1:%x x2:%x x3:%x mask_pre:%x mask_suf:%x all_words:%d position:%d order:%d\n", x, x1, x2, x3, mask_pre, mask_suf, all_words, p, o);
-					ASSERT(x<65536);
-					contrib[i]+=dictionary_weights[x]*marginalizer;
-				}
+				sl=o+p+1;
+				sr=0;
+				o_sym=-p;
+				m_sym=order-(o+p)-1;
+			}
+			else if (p<order-o)
+			{
+				sl=0;
+				sr=p;
+				o_sym=order-o-1;
+				m_sym=order-o-1;
+			}
+			else
+			{
+				sl=0;
+				sr=0;
+				o_sym=p-order+o+1;
+				m_sym=order-o-1 + p-order+o+1;
 
-				w>>=num_bits;
-				mask_pre=(mask_pre >> num_bits) | (str->get_masked_symbols(0xffff, 1) << (num_bits*(order-1)));
-				mask_suf=0xffff ^ mask_pre;
+				m=(mask>>(num_bits*o_sym)) << (num_bits*o_sym);
+			}
+
+			DREAL marginalizer=1.0/CMath::pow((INT) num_words,(INT) m_sym);
+			
+			for (UINT i=0; i<words; i++)
+			{
+				WORD x= (i >> (num_bits*sr)) & m;
+
+				if (m_sym==0 || o==0)
+				{
+					//SG_PRINT("o=%d/%d p=%d/%d w=0x%x x=%x mask=%x/%x sl=%d sr=%d marg=%g o_sym:%d m_sym:%d\n", o,order, p,order, i, x, m, mask, sl, sr, marginalizer, o_sym, m_sym);
+					contrib[x]+=dictionary_weights[i]*marginalizer;
+				}
+				else
+				{
+					for (UINT j=0; j< (UINT) CMath::pow((INT) num_words, (INT) o_sym); j++)
+					{
+						SG_PRINT("o=%d/%d p=%d/%d i=0x%x j=0x%x x=0x%x mask=%x/%x sl=%d sr=%d marg=%g o_sym:%d m_sym:%d\n", o,order, p,order, i, j, x | (j<<(num_bits*sl)), m, mask, sl, sr, marginalizer, o_sym, m_sym);
+						contrib[x | (j<<(num_bits*sl))]+=dictionary_weights[i]*marginalizer;
+					}
+				}
 			}
 		}
 	}
 
-	for (INT i=1; i<num_feat; i++)
-		memcpy(&target[num_sym*i], target, num_sym*sizeof(DREAL));
+	//for (INT i=1; i<num_feat; i++)
+	//	memcpy(&target[num_sym*i], target, num_sym*sizeof(DREAL));
 
 	return target;
 }

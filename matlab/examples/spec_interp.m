@@ -6,37 +6,46 @@ num_a=5;
 shift=20;
 cache=10;
 use_sign=0;
-normalization='FULL'; %NO,SQRT,LEN,SQLEN,FULL
+normalization='NO'; %NO,SQRT,LEN,SQLEN,FULL
 aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
 
 %SVM regularization factor C
-C=3;
+C=1;
 
 %Weighted Degree kernel parameters
-max_order=8;
-order=8;
+order=3;
+max_order=2;
 
-%generate some toy data
-acgt='CCGT';
 rand('state',1);
+acgt='AAAA';
 traindat=acgt(ceil(4*rand(len,num_train)));
 trainlab=[-ones(1,num_train/2),ones(1,num_train/2)];
-aas=floor((shift+1)*rand(num_train,1));
 idx=find(trainlab==1);
-for i=1:length(idx),
-	traindat(aa+aas(i),idx(i))='A';
+for i=1:length(idx)
+	traindat(21:27,idx(i))='CCCCCCC';
 end
-aas=floor((shift+1)*rand(num_train,num_a));
-idx=find(trainlab==-1);
-for i=1:length(idx)/2,
-	for j=1:num_a,
-		traindat(aa(1)+aas(i,j),idx(i))='A';
-	end
-end
-for i=length(idx)/2+1:length(idx),
-	traindat(aa(1:3)+aas(i,1),idx(i))='AAA';
-	traindat(aa(1)+1+aas(i,2),idx(i))='A';
-end
+
+%generate some toy data
+%acgt='CCGT';
+%rand('state',1);
+%traindat=acgt(ceil(4*rand(len,num_train)));
+%trainlab=[-ones(1,num_train/2),ones(1,num_train/2)];
+%aas=floor((shift+1)*rand(num_train,1));
+%idx=find(trainlab==1);
+%for i=1:length(idx),
+%	traindat(aa+aas(i),idx(i))='A';
+%end
+%aas=floor((shift+1)*rand(num_train,num_a));
+%idx=find(trainlab==-1);
+%for i=1:length(idx)/2,
+%	for j=1:num_a,
+%		traindat(aa(1)+aas(i,j),idx(i))='A';
+%	end
+%end
+%for i=length(idx)/2+1:length(idx),
+%	traindat(aa(1:3)+aas(i,1),idx(i))='AAA';
+%	traindat(aa(1)+1+aas(i,2),idx(i))='A';
+%end
 
 %train svm
 sg('send_command', 'use_linadd 1' );
@@ -52,7 +61,11 @@ sg('send_command', 'init_kernel TRAIN');
 sg('send_command', 'new_svm LIGHT');
 sg('send_command', sprintf('c %f',C));
 sg('send_command', 'svm_train');
+[b,alphas]=sg('get_svm');
+%b=0;
 sg('send_command', 'init_kernel_optimization');
+
+normal=sg('get_kernel_optimization');
 
 %evaluate svm on train data
 sg('set_features', 'TEST', traindat, 'DNA');
@@ -62,6 +75,86 @@ sg('set_labels', 'TEST', trainlab);
 sg('send_command', 'init_kernel TEST');
 out=sg('svm_classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==trainlab))
+
+%evaluate svm on train data
+sg('set_features', 'TEST', traindat, 'DNA');
+sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
+sg('send_command', 'attach_preproc TEST') ;
+sg('set_labels', 'TEST', trainlab);
+sg('send_command', 'init_kernel TEST');
+out=sg('svm_classify');
+fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==trainlab))
+
+acgt='ACGT';
+o=2*(order-1)+2;
+kmers=ones(o, 4^o);
+for i=2:(4^o),
+	idx=o;
+	kmers(:,i)=kmers(:,i-1);
+	kmers(idx,i)=kmers(idx,i)+1;
+	for j=1:o,
+		if kmers(idx,i)>4,
+			kmers(idx,i)=1;
+			idx=idx-1;
+			kmers(idx,i)=kmers(idx,i)+1;
+		end
+	end
+end
+kmers=acgt(kmers);
+testdat=kmers;%[repmat('A', [2, length(kmers)]); kmers];
+
+sg('set_features', 'TEST', testdat, 'DNA');
+sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
+sg('send_command', 'attach_preproc TEST') ;
+sg('send_command', 'init_kernel TEST');
+%sg('send_command', 'delete_kernel_optimization');
+out=sg('svm_classify');
+out=out-b;
+
+xx2=[];
+for s=['AA'; 'AC'; 'AG'; 'AT'; 'CA';'CC';'CG'; 'CT'; 'GA'; 'GC'; 'GG'; 'GT'; ...
+	'TA'; 'TC'; 'TG'; 'TT']',
+	i=strmatch(s,kmers(3:4,:)');
+	x=mean(out(i))-mean(out);
+	xx2=[xx2 x];
+	fprintf('%s:%g\n', s, x)
+end
+
+acgt='ACGT';
+o=2*(order-1)+1;
+kmers=ones(o, 4^o);
+for i=2:(4^o),
+	idx=o;
+	kmers(:,i)=kmers(:,i-1);
+	kmers(idx,i)=kmers(idx,i)+1;
+	for j=1:o,
+		if kmers(idx,i)>4,
+			kmers(idx,i)=1;
+			idx=idx-1;
+			kmers(idx,i)=kmers(idx,i)+1;
+		end
+	end
+end
+kmers=acgt(kmers);
+testdat=kmers;%[repmat('A', [2, length(kmers)]); kmers];
+
+sg('set_features', 'TEST', testdat, 'DNA');
+sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
+sg('send_command', 'attach_preproc TEST') ;
+sg('send_command', 'init_kernel TEST');
+%sg('send_command', 'delete_kernel_optimization');
+out=sg('svm_classify');
+out=out-b;
+
+xx1=[];
+for s=['A','C','G','T'],
+	i=strmatch(s,kmers(3,:)');
+	%keyboard
+	x=mean(out(i))-mean(out);
+	xx1=[xx1 x];
+	fprintf('%s:%g\n', s, x)
+end
+
 W=sg('get_SPEC_scoring', max_order);
 
 x={};
@@ -82,3 +175,9 @@ end
 
 figure(99)
 bar(X)
+
+x{2}
+figure(101)
+bar(xx1)
+figure(102)
+bar(xx2)
