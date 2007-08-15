@@ -220,8 +220,8 @@ void CSubGradientSVM::update_active(INT num_feat, INT num_vec)
 DREAL CSubGradientSVM::line_search(INT num_feat, INT num_vec)
 {
 	DREAL sum_B = 0;
-	DREAL A0 = 0.5*CMath::dot(grad_w, grad_w, num_feat);
-	DREAL B0 = -CMath::dot(w, grad_w, num_feat);
+	DREAL A_zero = 0.5*CMath::dot(grad_w, grad_w, num_feat);
+	DREAL B_zero = -CMath::dot(w, grad_w, num_feat);
 
 	INT num_hinge=0;
 
@@ -245,13 +245,13 @@ DREAL CSubGradientSVM::line_search(INT num_feat, INT num_vec)
 
 
 	DREAL alpha = hinge_point[0];
-	DREAL grad_val = 2*A0*alpha + B0 + sum_B;
+	DREAL grad_val = 2*A_zero*alpha + B_zero + sum_B;
 
 	//CMath::display_vector(grad_w, num_feat, "grad_w");
 	//CMath::display_vector(grad_proj, num_vec, "grad_proj");
 	//CMath::display_vector(hinge_point, num_vec, "hinge_point");
-	//SG_PRINT("A0=%f\n", A0);
-	//SG_PRINT("B0=%f\n", B0);
+	//SG_PRINT("A_zero=%f\n", A_zero);
+	//SG_PRINT("B_zero=%f\n", B_zero);
 	//SG_PRINT("sum_B=%f\n", sum_B);
 	//SG_PRINT("alpha=%f\n", alpha);
 	//SG_PRINT("grad_val=%f\n", grad_val);
@@ -262,7 +262,7 @@ DREAL CSubGradientSVM::line_search(INT num_feat, INT num_vec)
 	for (INT i=1; i < num_hinge && grad_val < 0; i++)
 	{
 		alpha = hinge_point[i];
-		grad_val = 2*A0*alpha + B0 + sum_B;
+		grad_val = 2*A_zero*alpha + B_zero + sum_B;
 
 		if (grad_val > 0)
 		{
@@ -276,7 +276,7 @@ DREAL CSubGradientSVM::line_search(INT num_feat, INT num_vec)
 			old_alpha = alpha;
 
 			sum_B = sum_B + CMath::abs(C1*grad_proj[hinge_idx[i]]);
-			grad_val = 2*A0*alpha + B0 + sum_B;
+			grad_val = 2*A_zero*alpha + B_zero + sum_B;
 		}
 	}
 
