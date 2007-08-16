@@ -464,7 +464,7 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 
 				if (p>=0 && p<order-o)
 				{
-#define DEBUG_COMMSCORING
+//#define DEBUG_COMMSCORING
 #ifdef DEBUG_COMMSCORING
 					SG_PRINT("o=%d/%d p=%d/%d i=0x%x x=0x%x imask=%x jmask=%x kmask=%x il=%d ir=%d marg=%g o_sym:%d m_sym:%d weight(",
 							o,order, p,order, i, x, imer_mask, jmer_mask, kmer_mask, il, ir, marginalizer, o_sym, m_sym);
