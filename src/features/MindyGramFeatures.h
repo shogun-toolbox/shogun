@@ -40,7 +40,7 @@ class CMindyGramFeatures:public CFeatures
 
 			/* Allocate and generate gram configuration (words) */
 			SG_DEBUG( "Initializing Mindy gram features\n");    
-			if (nlen <= 0)
+			if (nlen == 0)
 			   cfg = micfg_words(alph_get_type(aname), delim);
 			else 
 			   cfg = micfg_ngrams(alph_get_type(aname), (byte_t) nlen);
@@ -59,7 +59,7 @@ class CMindyGramFeatures:public CFeatures
                         else
                             SG_ERROR("Unknown embedding mode '%s'", embed);
 
-                        if (nlen <= 0) 
+                        if (nlen == 0) 
                            SG_INFO("Mindy in word mode (d: '%s', a: %s, e: %s)\n", 
                                    delim, aname, micfg_get_embed(cfg->embed));
                         else  

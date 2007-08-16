@@ -48,24 +48,16 @@ CMindyGramKernel::CMindyGramKernel(INT ch, CHAR *meas, DREAL w) : CKernel(ch)
     norm = NO_NORMALIZATION;
     width = w;
     cache = 0;
-    sico = NO_SICO;
-
+    
     /* Check for similarity coefficients */
-    if (strcasecmp(measure, "kulczynski"))
-        sico = SICO_KULCZYNSKI;
-    if (strcasecmp(measure, "czekanowski"))
-        sico = SICO_CZEKANOWSKI;
-    if (strcasecmp(measure, "jaccard"))
-        sico = SICO_JACCARD;    
-    if (strcasecmp(measure, "sokalsneath")) 
-        sico = SICO_SOKALSNEATH;    
+    simcof = sico_get_type(measure);
 
     /* Create similarity measure */
     SG_INFO( "Initializing Mindy kernel\n");
-    if (sico)
-        kernel = sm_create(ST_MINKERN);
-    else
+    if (simcof == SC_NONE)
         kernel = sm_create(sm_get_type(measure));
+    else
+        kernel = sm_create(ST_MINKERN);
    
     SG_INFO( "Mindy similarity measure: %s (using %s)\n", 
 	     measure, sm_get_descr(kernel->type));
@@ -76,17 +68,6 @@ CMindyGramKernel::CMindyGramKernel(INT ch, CHAR *meas, DREAL w) : CKernel(ch)
         properties |= KP_LINADD;
     }
 
-    /* Display paramater list */
-    for (INT i = 0; p_map[i].name; i++) {
-        if (p_map[i].idx != SP_DIST)
-            SG_INFO( "Param %8s=%8.6f\t %s\n", 
-			p_map[i].name, p_map[i].val, p_map[i].descr);
-        else
-            SG_INFO( "Param %8s=%s\t %s\n", p_map[i].name, 
-                        sm_get_name((sm_type_t) p_map[i].val), 
-                        p_map[i].descr);
-    }
-    
     normal = NULL;
     clear_normal();
 }
@@ -328,36 +309,28 @@ DREAL CMindyGramKernel::compute(INT i, INT j)
     /* Call (internal) mindy comparison function */
     DREAL result = gram_cmp(kernel, lm->get_feature_vector(i),
         rm->get_feature_vector(j));
-
     
-    /* 
-     * Compute similartiy coefficients and convert to distances.
-     */
-    switch (sico) {
-        case SICO_JACCARD:
-            result = result / (sdiag_lhs[i] + sdiag_rhs[j] - result);
-            result = 1 - result;
-            break;
-        case SICO_CZEKANOWSKI:
-            result = 2 * result / (sdiag_lhs[i] + sdiag_rhs[j]);
-            result = 1 - result;
-            break;
-        case SICO_SOKALSNEATH:
-            result = result / (2 * (sdiag_lhs[i] + sdiag_rhs[j]) - 3 * result);
-            result = 1 - result;
-            break;
-        case SICO_KULCZYNSKI:
-            result = 0.5 * (result / sdiag_lhs[i] + result / sdiag_rhs[j]);
-            result = 1 - result;
-            break;
-        default: 
-           /* Nothing */
-           break;
-    }
+    /* Compute similartiy coefficients and convert to distance */
+    if (simcof != SC_NONE)
+        result = 1 - sico(simcof, result, sdiag_lhs[i], sdiag_rhs[j]);
 
-    /* RBF distance to kernel conversion */
-    if (sm_get_class(kernel->type) == SC_DIST || sico)
-        result = exp(-result / width);
+    if (sm_get_class(kernel->type) == SC_DIST || simcof != SC_NONE) {
+        if (width > 1e-10) {
+              /* Distance to kernel using RBF */
+              result = exp(-result / width);
+        } else {
+            if (i != j) {
+                /* Distance to kernel, the Hilbertian way */
+                result = 0.5 * (sdiag_lhs[i] + sdiag_rhs[j] - result);    
+            } else {
+                /* Distance based norm  */
+                gram_t *zero = gram_extract(lm->get_feature_vector(i)->cfg, 
+                                            (byte_t *) "", 0);
+                result = gram_cmp(kernel, lm->get_feature_vector(i), zero);
+                gram_destroy(zero);
+            }  
+        }   
+    }    
 
     if (!initialized)
         return result;
@@ -383,14 +356,15 @@ DREAL CMindyGramKernel::compute(INT i, INT j)
  */
 void CMindyGramKernel::add_to_normal(INT i, DREAL w)
 {
-    /* Initialize normal vector if necessary */
-    if (!normal)
-        normal = gram_create();
-
     /* Add indexed vector to normal */
     CMindyGramFeatures *lm = (CMindyGramFeatures *) lhs;
+    
+    /* Initialize empty normal vector if necessary */
+    if (!normal) 
+        normal = gram_extract(lm->get_feature_vector(i)->cfg, (byte_t *) "", 0);
+
     gram_t *new_normal = gram_add(normal, lm->get_feature_vector(i),
-        normalize_weight(w, i, norm));
+                                  normalize_weight(w, i, norm));
 
     /* Destroy old normal and exchange pointers */
     gram_destroy(normal);

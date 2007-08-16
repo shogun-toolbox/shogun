@@ -21,11 +21,7 @@
 #include "kernel/Kernel.h"
 
 /* Similarity coefficients */
-#define NO_SICO			0
-#define SICO_JACCARD		1
-#define SICO_CZEKANOWSKI	2
-#define SICO_KULCZYNSKI		3
-#define SICO_SOKALSNEATH	4
+#define NO_SICO			-1
 
 /* Parameter specifications */
 typedef struct {
@@ -37,7 +33,6 @@ typedef struct {
 
 class CMindyGramKernel: public CKernel
 {
-
     public:
         /* Constructors */
         CMindyGramKernel(INT ch, CHAR *measure, DREAL w);
@@ -105,7 +100,7 @@ class CMindyGramKernel: public CKernel
         /* Initialization flag */
         bool initialized;
         /* Similarity coefficient or 0 */
-        INT sico;
+        sico_t simcof;
         /* Normalization mode */
         ENormalizationType norm;
         /* Kernel function (=> Mindy similarity measure) */
