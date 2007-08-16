@@ -13,19 +13,21 @@ aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
 C=1;
 
 %Weighted Degree kernel parameters
-order=3;
-max_order=2;
+order=5;
+max_order=5;
 
 rand('state',1);
-acgt='AAAA';
+acgt='ACGT';
 traindat=acgt(ceil(4*rand(len,num_train)));
 trainlab=[-ones(1,num_train/2),ones(1,num_train/2)];
 idx=find(trainlab==1);
 for i=1:length(idx)
-	traindat(21:27,idx(i))='CCCCCCC';
+	traindat(1:3,idx(i))='AAA';
+	%traindat(3:22,idx(i))='AAAAAAAAAAAAAAAAAAAA';
+	traindat(24:31,idx(i))='CCCCCCCC';
 end
 
-%generate some toy data
+%%generate some toy data
 %acgt='CCGT';
 %rand('state',1);
 %traindat=acgt(ceil(4*rand(len,num_train)));
@@ -85,74 +87,53 @@ sg('send_command', 'init_kernel TEST');
 out=sg('svm_classify');
 fprintf('accuracy: %f                                                                                         \n', mean(sign(out)==trainlab))
 
-acgt='ACGT';
-o=2*(order-1)+2;
-kmers=ones(o, 4^o);
-for i=2:(4^o),
-	idx=o;
-	kmers(:,i)=kmers(:,i-1);
-	kmers(idx,i)=kmers(idx,i)+1;
-	for j=1:o,
-		if kmers(idx,i)>4,
-			kmers(idx,i)=1;
-			idx=idx-1;
-			kmers(idx,i)=kmers(idx,i)+1;
+xx={};
+for o=1:max_order,
+	acgt='ACGT';
+	ord=2*(order-1)+o;
+	kmers=ones(ord, 4^ord);
+	for i=2:(4^ord),
+		idx=ord;
+		kmers(:,i)=kmers(:,i-1);
+		kmers(idx,i)=kmers(idx,i)+1;
+		for j=1:ord,
+			if kmers(idx,i)>4,
+				kmers(idx,i)=1;
+				idx=idx-1;
+				kmers(idx,i)=kmers(idx,i)+1;
+			end
 		end
 	end
-end
-kmers=acgt(kmers);
-testdat=kmers;%[repmat('A', [2, length(kmers)]); kmers];
+	kmers=acgt(kmers);
 
-sg('set_features', 'TEST', testdat, 'DNA');
-sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
-sg('send_command', 'attach_preproc TEST') ;
-sg('send_command', 'init_kernel TEST');
-%sg('send_command', 'delete_kernel_optimization');
-out=sg('svm_classify');
-out=out-b;
+	sg('set_features', 'TEST', kmers, 'DNA');
+	sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
+	sg('send_command', 'attach_preproc TEST') ;
+	sg('send_command', 'init_kernel TEST');
+	out=sg('svm_classify');
+	out=out-b;
 
-xx2=[];
-for s=['AA'; 'AC'; 'AG'; 'AT'; 'CA';'CC';'CG'; 'CT'; 'GA'; 'GC'; 'GG'; 'GT'; ...
-	'TA'; 'TC'; 'TG'; 'TT']',
-	i=strmatch(s,kmers(3:4,:)');
-	x=mean(out(i))-mean(out);
-	xx2=[xx2 x];
-	fprintf('%s:%g\n', s, x)
-end
-
-acgt='ACGT';
-o=2*(order-1)+1;
-kmers=ones(o, 4^o);
-for i=2:(4^o),
-	idx=o;
-	kmers(:,i)=kmers(:,i-1);
-	kmers(idx,i)=kmers(idx,i)+1;
-	for j=1:o,
-		if kmers(idx,i)>4,
-			kmers(idx,i)=1;
-			idx=idx-1;
-			kmers(idx,i)=kmers(idx,i)+1;
+	xx{o}=[];
+	omers=ones(o, 4^o);
+	for i=2:(4^o),
+		idx=o;
+		omers(:,i)=omers(:,i-1);
+		omers(idx,i)=omers(idx,i)+1;
+		for j=1:o,
+			if omers(idx,i)>4,
+				omers(idx,i)=1;
+				idx=idx-1;
+				omers(idx,i)=omers(idx,i)+1;
+			end
 		end
 	end
-end
-kmers=acgt(kmers);
-testdat=kmers;%[repmat('A', [2, length(kmers)]); kmers];
-
-sg('set_features', 'TEST', testdat, 'DNA');
-sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
-sg('send_command', 'attach_preproc TEST') ;
-sg('send_command', 'init_kernel TEST');
-%sg('send_command', 'delete_kernel_optimization');
-out=sg('svm_classify');
-out=out-b;
-
-xx1=[];
-for s=['A','C','G','T'],
-	i=strmatch(s,kmers(3,:)');
-	%keyboard
-	x=mean(out(i))-mean(out);
-	xx1=[xx1 x];
-	fprintf('%s:%g\n', s, x)
+	omers=acgt(omers);
+	for s=omers,
+		i=strmatch(s,kmers((order):(order+o-1),:)');
+		x=mean(out(i))-mean(out);
+		xx{o}=[xx{o} x];
+		%fprintf('%s:%g\n', s, x)
+	end
 end
 
 W=sg('get_SPEC_scoring', max_order);
@@ -161,23 +142,21 @@ x={};
 X=zeros(max_order);
 l=0;
 for i=1:max_order,
-	i
 	L=l+4^i;
 	x{i}=W((l+1):L);
 	l=L;
 	X(i)=max(abs(x{i}));
 end
 
+%for i=1:max_order,
+%	figure(i)
+%	bar(x{i})
+%end
+
 for i=1:max_order,
-	figure(i)
-	bar(x{i})
+	figure(100+i);
+	foo=[x{i}, xx{i}'];
+	bar(foo)
+	%foo
+	max(abs(foo(:,1)-foo(:,2)))
 end
-
-figure(99)
-bar(X)
-
-x{2}
-figure(101)
-bar(xx1)
-figure(102)
-bar(xx2)

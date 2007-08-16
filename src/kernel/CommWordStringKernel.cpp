@@ -419,7 +419,7 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 	//init
 	init_optimization(num_suppvec, IDX, alphas);
 
-	UINT mask=0;
+	UINT kmer_mask=0;
 	UINT words=CMath::pow((INT) num_words,(INT) order);
 
 	for (INT o=0; o<max_degree; o++)
@@ -427,62 +427,82 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 		DREAL* contrib=&target[offset];
 		offset+=CMath::pow((INT) num_words,(INT) o+1);
 
-		mask=(mask<<(num_bits)) | str->get_masked_symbols(0xffff, 1);
+		kmer_mask=(kmer_mask<<(num_bits)) | str->get_masked_symbols(0xffff, 1);
 
 		for (INT p=-o; p<order; p++)
 		{
-			INT o_sym, m_sym, sl,sr;
-			UINT m=mask;
+			INT o_sym=0, m_sym=0, il=0,ir=0, jl=0;
+			UINT imer_mask=kmer_mask;
+			UINT jmer_mask=kmer_mask;
 
 			if (p<0)
 			{
-				sl=o+p+1;
-				sr=0;
+				il=-p;
+				m_sym=order-o-p-1;
 				o_sym=-p;
-				m_sym=order-(o+p)-1;
 			}
 			else if (p<order-o)
 			{
-				sl=0;
-				sr=p;
-				o_sym=order-o-1;
+				ir=p;
 				m_sym=order-o-1;
 			}
 			else
 			{
-				sl=0;
-				sr=0;
+				ir=p;
+				m_sym=p;
 				o_sym=p-order+o+1;
-				m_sym=order-o-1 + p-order+o+1;
-
-				m=(mask>>(num_bits*o_sym)) << (num_bits*o_sym);
+				jl=order-ir;
+				imer_mask=(kmer_mask>>(num_bits*o_sym));
+				jmer_mask=(kmer_mask>>(num_bits*jl));
 			}
 
 			DREAL marginalizer=1.0/CMath::pow((INT) num_words,(INT) m_sym);
 			
 			for (UINT i=0; i<words; i++)
 			{
-				WORD x= (i >> (num_bits*sr)) & m;
+				WORD x= ((i << (num_bits*il)) >> (num_bits*ir)) & imer_mask;
 
-				if (m_sym==0 || o==0)
+				if (p>=0 && p<order-o)
 				{
-					//SG_PRINT("o=%d/%d p=%d/%d w=0x%x x=%x mask=%x/%x sl=%d sr=%d marg=%g o_sym:%d m_sym:%d\n", o,order, p,order, i, x, m, mask, sl, sr, marginalizer, o_sym, m_sym);
+#define DEBUG_COMMSCORING
+#ifdef DEBUG_COMMSCORING
+					SG_PRINT("o=%d/%d p=%d/%d i=0x%x x=0x%x imask=%x jmask=%x kmask=%x il=%d ir=%d marg=%g o_sym:%d m_sym:%d weight(",
+							o,order, p,order, i, x, imer_mask, jmer_mask, kmer_mask, il, ir, marginalizer, o_sym, m_sym);
+
+					SG_PRINT("%c%c%c%c/%c%c%c%c)+=%g/%g\n", 
+							alpha->remap_to_char((x>>(3*num_bits))&0x03), alpha->remap_to_char((x>>(2*num_bits))&0x03),
+							alpha->remap_to_char((x>>num_bits)&0x03), alpha->remap_to_char(x&0x03),
+							alpha->remap_to_char((i>>(3*num_bits))&0x03), alpha->remap_to_char((i>>(2*num_bits))&0x03),
+							alpha->remap_to_char((i>>(1*num_bits))&0x03), alpha->remap_to_char(i&0x03),
+							dictionary_weights[i]*marginalizer, dictionary_weights[i]);
+#endif
 					contrib[x]+=dictionary_weights[i]*marginalizer;
 				}
 				else
 				{
 					for (UINT j=0; j< (UINT) CMath::pow((INT) num_words, (INT) o_sym); j++)
 					{
-						SG_PRINT("o=%d/%d p=%d/%d i=0x%x j=0x%x x=0x%x mask=%x/%x sl=%d sr=%d marg=%g o_sym:%d m_sym:%d\n", o,order, p,order, i, j, x | (j<<(num_bits*sl)), m, mask, sl, sr, marginalizer, o_sym, m_sym);
-						contrib[x | (j<<(num_bits*sl))]+=dictionary_weights[i]*marginalizer;
+						UINT c=x | ((j & jmer_mask) << (num_bits*jl));
+#ifdef DEBUG_COMMSCORING
+
+						SG_PRINT("o=%d/%d p=%d/%d i=0x%x j=0x%x x=0x%x c=0x%x imask=%x jmask=%x kmask=%x il=%d ir=%d jl=%d marg=%g o_sym:%d m_sym:%d weight(",
+								o,order, p,order, i, j, x, c, imer_mask, jmer_mask, kmer_mask, il, ir, jl, marginalizer, o_sym, m_sym);
+						SG_PRINT("%c%c%c%c/%c%c%c%c)+=%g/%g\n", 
+								alpha->remap_to_char((c>>(3*num_bits))&0x03), alpha->remap_to_char((c>>(2*num_bits))&0x03),
+								alpha->remap_to_char((c>>num_bits)&0x03), alpha->remap_to_char(c&0x03),
+								alpha->remap_to_char((i>>(3*num_bits))&0x03), alpha->remap_to_char((i>>(2*num_bits))&0x03),
+								alpha->remap_to_char((i>>(1*num_bits))&0x03), alpha->remap_to_char(i&0x03),
+								dictionary_weights[i]*marginalizer, dictionary_weights[i]);
+#endif
+						contrib[c]+=dictionary_weights[i]*marginalizer;
 					}
 				}
 			}
 		}
 	}
 
-	//for (INT i=1; i<num_feat; i++)
-	//	memcpy(&target[num_sym*i], target, num_sym*sizeof(DREAL));
+	for (INT i=1; i<num_feat; i++)
+		memcpy(&target[num_sym*i], target, num_sym*sizeof(DREAL));
 
 	return target;
 }
