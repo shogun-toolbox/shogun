@@ -6,11 +6,11 @@ num_a=5;
 shift=20;
 cache=10;
 use_sign=0;
-normalization='FULL'; %NO,SQRT,LEN,SQLEN,FULL
+normalization='NO'; %NO,SQRT,LEN,SQLEN,FULL
 aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
 
 %SVM regularization factor C
-C=3;
+C=30;
 
 %Weighted Degree kernel parameters
 max_order=8;

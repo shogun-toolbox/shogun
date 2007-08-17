@@ -6,6 +6,7 @@
  *
  * Written (W) 1999-2007 Soeren Sonnenburg
  * Written (W) 1999-2007 Gunnar Raetsch
+ * Written (W) 2007 Konrad Rieck
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
@@ -57,6 +58,23 @@ extern "C" {
 #ifdef SUNOS
 extern "C" int	finite(double);
 #endif
+
+/* Maximum stack size */
+#define RADIX_STACK_SIZE	    512
+
+/* Stack macros */
+#define radix_push(a, n, i)	    sp->sa = a, sp->sn = n, (sp++)->si = i
+#define radix_pop(a, n, i)	    a = (--sp)->sa, n = sp->sn, i = sp->si
+
+/* Stack structure */
+template <class T> struct radix_stack_t
+{
+    T *sa;				/* Pointer to pile */
+    size_t sn;			/* Number of grams in pile */
+    unsigned short si;	/* Byte in current focus */
+};
+
+
 
 /** Mathematical Functions.
  * Class which collects generic mathematical functions
@@ -363,7 +381,125 @@ public:
 	 * and left to right */
 	static void sort(INT *a, INT cols, INT sort_col=0) ;
 	static void sort(DREAL *a, INT*idx, INT N) ;
-	
+
+	/*
+	 * Inline function to extract the byte at position p (from left)
+	 * of an 64 bit integer. The function is somewhat identical to 
+	 * accessing an array of characters via [].
+	 */
+
+	/** performs a in-place radix sort in ascending order */
+	template <class T>
+	inline static void radix_sort(T* array, size_t size)
+	{
+		radix_sort_helper(array,size,0);
+	}
+
+	template <class T>
+	static inline BYTE byte(T word, unsigned short p)
+	{
+		return (word >> (sizeof(T)-p-1) * 8) & 0xff;
+	}
+
+	template <class T>
+	static void radix_sort_helper(T* array, size_t size, unsigned short i)
+	{
+		static size_t count[256], nc, cmin;
+		T *ak;
+		BYTE c=0;
+		radix_stack_t<T> s[RADIX_STACK_SIZE], *sp, *olds, *bigs;
+		T *an, *aj, *pile[256];
+		size_t *cp, cmax;
+
+		/* Push initial array to stack */
+		sp = s;
+		radix_push(array, size, i);
+
+		/* Loop until all digits have been sorted */
+		while (sp>s) {
+			radix_pop(array, size, i);
+			an = array + size;
+
+			/* Make character histogram */
+			if (nc == 0) {
+				cmin = 0xff;
+				for (ak = array; ak < an; ak++) {
+					c = byte(*ak, i);
+					count[c]++;
+					if (count[c] == 1) {
+						/* Determine smallest character */
+						if (c < cmin)
+							cmin = c;
+						nc++;
+					}
+				}
+
+				/* Sort recursively if stack size too small */
+				if (sp + nc > s + RADIX_STACK_SIZE) {
+					radix_sort_helper(array, size, i);
+					continue;
+				}
+			}
+
+			/*
+			 * Set pile[]; push incompletely sorted bins onto stack.
+			 * pile[] = pointers to last out-of-place element in bins.
+			 * Before permuting: pile[c-1] + count[c] = pile[c];
+			 * during deal: pile[c] counts down to pile[c-1].
+			 */
+			olds = bigs = sp;
+			cmax = 2;
+			ak = array;
+			pile[0xff] = an;
+			for (cp = count + cmin; nc > 0; cp++) {
+				/* Find next non-empty pile */
+				while (*cp == 0)
+					cp++;
+				/* Pile with several entries */
+				if (*cp > 1) {
+					/* Determine biggest pile */
+					if (*cp > cmax) {
+						cmax = *cp;
+						bigs = sp;
+					}
+
+					if (i < sizeof(T)-1)
+						radix_push(ak, *cp, (unsigned short) (i + 1));
+				}
+				pile[cp - count] = ak += *cp;
+				nc--;
+			}
+
+			/* Play it safe -- biggest bin last. */
+			swap(*olds, *bigs);
+
+			/*
+			 * Permute misplacements home. Already home: everything
+			 * before aj, and in pile[c], items from pile[c] on.
+			 * Inner loop:
+			 *      r = next element to put in place;
+			 *      ak = pile[r[i]] = location to put the next element.
+			 *      aj = bottom of 1st disordered bin.
+			 * Outer loop:
+			 *      Once the 1st disordered bin is done, ie. aj >= ak,
+			 *      aj<-aj + count[c] connects the bins in array linked list;
+			 *      reset count[c].
+			 */
+			aj = array;
+			while (aj<an)
+			{
+				T r;
+
+				for (r = *aj; aj < (ak = --pile[c = byte(r, i)]);)
+					swap(*ak, r);
+
+				*aj = r;
+				aj += count[c];
+				count[c] = 0;
+			}
+		}
+	}
+
 	/** performs a quicksort on an array output of length size
 	 * it is sorted from in ascending (for type T) */
 	//template <class T>
@@ -748,5 +884,4 @@ void CMath::min(DREAL* output, T* index, INT size)
 	swap(output[0], output[min_index]);
 	swap(index[0], index[min_index]);
 }
-
 #endif

@@ -55,7 +55,7 @@ class CCommWordStringKernel: public CStringKernel<WORD>
 	  dweights = dictionary_weights;
   }
 
-  DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, 
+  virtual DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, 
 		  DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas);
 
   CHAR* compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas);
@@ -64,7 +64,12 @@ class CCommWordStringKernel: public CStringKernel<WORD>
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
-  DREAL compute(INT idx_a, INT idx_b);
+  inline DREAL compute(INT idx_a, INT idx_b)
+  {
+	  return compute_helper(idx_a, idx_b, false);
+  }
+
+  DREAL compute_helper(INT idx_a, INT idx_b, bool do_sort);
 
   inline DREAL normalize_weight(DREAL* weights, DREAL value, INT seq_num, INT seq_len, ENormalizationType p_normalization)
   {

@@ -184,8 +184,6 @@ void CMath::sort(DREAL *a, INT* idx, INT N)
 	 
 } 
 
-
-
 //plot x- axis false positives (fp) 1-Specificity
 //plot y- axis true positives (tp) Sensitivity
 INT CMath::calcroc(DREAL* fp, DREAL* tp, DREAL* output, INT* label, INT& size, INT& possize, INT& negsize, DREAL& tresh, FILE* rocfile)

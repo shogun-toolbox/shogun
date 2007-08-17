@@ -61,7 +61,8 @@ WORD* CSortWord::apply_to_feature_matrix(CFeatures* f)
 	for (i=0; i<num_vec; i++)
 	{
 		WORD* vec=&matrix[i*num_feat];
-		CMath::qsort(vec, num_feat);
+		//CMath::qsort(vec, num_feat);
+		CMath::radix_sort(vec, num_feat);
 	}
 	return matrix;
 }
@@ -76,7 +77,8 @@ WORD* CSortWord::apply_to_feature_vector(WORD* f, INT& len)
 	for (i=0; i<len; i++)
 		vec[i]=f[i];
 
-	CMath::qsort(vec, len);
+	//CMath::qsort(vec, len);
+	CMath::radix_sort(vec, len);
 
 	return vec;
 }

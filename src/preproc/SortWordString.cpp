@@ -60,7 +60,8 @@ bool CSortWordString::apply_to_string_features(CFeatures* f)
 		INT len = 0 ;
 		WORD* vec = ((CStringFeatures<WORD>*)f)->get_feature_vector(i, len) ;
 		
-		CMath::qsort(vec, len);
+		//CMath::qsort(vec, len);
+		CMath::radix_sort(vec, len);
 	}
 	return true ;
 }
@@ -74,7 +75,8 @@ WORD* CSortWordString::apply_to_string(WORD* f, INT& len)
 	for (i=0; i<len; i++)
 		vec[i]=f[i];
 
-	CMath::qsort(vec, len);
+	//CMath::qsort(vec, len);
+	CMath::radix_sort(vec, len);
 
 	return vec;
 }

@@ -61,7 +61,8 @@ bool CSortUlongString::apply_to_string_features(CFeatures* f)
 		ULONG* vec = ((CStringFeatures<ULONG>*)f)->get_feature_vector(i, len) ;
 		SG_DEBUG( "sorting string of length %i\n", len) ;
 		
-		CMath::qsort(vec, len);
+		//CMath::qsort(vec, len);
+		CMath::radix_sort(vec, len);
 	}
 	return true ;
 }
@@ -75,7 +76,8 @@ ULONG* CSortUlongString::apply_to_string(ULONG* f, INT& len)
 	for (i=0; i<len; i++)
 		vec[i]=f[i];
 
-	CMath::qsort(vec, len);
+	//CMath::qsort(vec, len);
+	CMath::radix_sort(vec, len);
 
 	return vec;
 }

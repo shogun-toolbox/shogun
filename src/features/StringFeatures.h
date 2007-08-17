@@ -403,11 +403,14 @@ template <class ST> class CStringFeatures: public CFeatures
 
 		for (INT i=0; i<get_num_preproc(); i++)
 		{ 
-			SG_INFO( "preprocessing using preproc %s\n", get_preproc(i)->get_name());
-			bool ok=((CStringPreProc<ST>*) get_preproc(i))->apply_to_string_features(this) ;
+			if ( (!is_preprocessed(i) || force_preprocessing) )
+			{
+				set_preprocessed(i);
 
-			if (!ok)
-				return false;
+				SG_INFO( "preprocessing using preproc %s\n", get_preproc(i)->get_name());
+				if (((CStringPreProc<ST>*) get_preproc(i))->apply_to_string_features(this))
+					return false;
+			}
 		}
 		return true;
 	}

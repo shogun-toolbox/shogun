@@ -30,6 +30,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
 
   virtual DREAL compute_optimized(INT idx);
   virtual void add_to_normal(INT idx, DREAL weight);
+  void merge_normal();
   
   // init WD weighting
   bool set_wd_weights();
@@ -40,6 +41,9 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
   // return the name of a kernel
   virtual const CHAR* get_name() { return "WeightedCommWordString"; }
   inline virtual EFeatureType get_feature_type() { return F_WORD; }
+
+  virtual DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, 
+		  DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas);
   
  protected:
   /// compute kernel function for features a and b

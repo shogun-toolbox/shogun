@@ -119,7 +119,7 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 	//compute normalize to 1 values
 	for (i=0; i<lhs->get_num_vectors(); i++)
 	{
-		sqrtdiag_lhs[i]=sqrt(compute(i,i));
+		sqrtdiag_lhs[i]=sqrt(compute_helper(i,i, true));
 
 		//trap divide by zero exception
 		if (sqrtdiag_lhs[i]==0)
@@ -136,7 +136,7 @@ bool CCommWordStringKernel::init(CFeatures* l, CFeatures* r)
 		//compute normalize to 1 values
 		for (i=0; i<rhs->get_num_vectors(); i++)
 		{
-			sqrtdiag_rhs[i]=sqrt(compute(i,i));
+			sqrtdiag_rhs[i]=sqrt(compute_helper(i,i, true));
 
 			//trap divide by zero exception
 			if (sqrtdiag_rhs[i]==0)
@@ -176,13 +176,47 @@ bool CCommWordStringKernel::save_init(FILE* dest)
 {
 	return false;
 }
-  
-DREAL CCommWordStringKernel::compute(INT idx_a, INT idx_b)
+
+DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
 {
 	INT alen, blen;
+	CStringFeatures<WORD>* l = (CStringFeatures<WORD>*) lhs;
+	CStringFeatures<WORD>* r = (CStringFeatures<WORD>*) rhs;
 
-	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
-	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
+	WORD* av=l->get_feature_vector(idx_a, alen);
+	WORD* bv=r->get_feature_vector(idx_b, blen);
+
+	WORD* avec=av;
+	WORD* bvec=bv;
+
+	if (do_sort)
+	{
+		if (alen>0)
+		{
+			avec= new WORD[alen];
+			ASSERT(avec);
+			memcpy(avec, av, sizeof(WORD)*alen);
+			CMath::radix_sort(avec, alen);
+		}
+
+		if (blen>0)
+		{
+			bvec= new WORD[blen];
+			ASSERT(bvec);
+			memcpy(bvec, bv, sizeof(WORD)*blen);
+			CMath::radix_sort(bvec, blen);
+		}
+	}
+	else
+	{
+		if ( (l->get_num_preproc() != l->get_num_preprocessed()) ||
+				(r->get_num_preproc() != r->get_num_preprocessed()))
+		{
+			SG_ERROR("not all preprocessors have been applied to training (%d/%d)"
+					" or test (%d/%d) data\n", l->get_num_preprocessed(), l->get_num_preproc(),
+					r->get_num_preprocessed(), r->get_num_preproc());
+		}
+	}
 
 	DREAL result=0;
 
@@ -235,6 +269,12 @@ DREAL CCommWordStringKernel::compute(INT idx_a, INT idx_b)
 			else
 				right_idx++;
 		}
+	}
+
+	if (do_sort)
+	{
+		delete[] avec;
+		delete[] bvec;
 	}
 
 	if (initialized)
