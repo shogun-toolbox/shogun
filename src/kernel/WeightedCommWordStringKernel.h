@@ -43,7 +43,7 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
   inline virtual EFeatureType get_feature_type() { return F_WORD; }
 
   virtual DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, 
-		  DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas);
+		  DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, bool do_init=true);
   
  protected:
   /// compute kernel function for features a and b

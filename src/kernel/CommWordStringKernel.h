@@ -56,7 +56,7 @@ class CCommWordStringKernel: public CStringKernel<WORD>
   }
 
   virtual DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, 
-		  DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas);
+		  DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, bool do_init=true);
 
   CHAR* compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas);
 

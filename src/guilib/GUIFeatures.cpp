@@ -271,7 +271,7 @@ bool CGUIFeatures::slide_window(CHAR* param)
 		else if (strcmp(target,"TEST")==0)
 		{
 			invalidate_test();
-			features=train_features;
+			features=test_features;
 		}
 		else
 		{

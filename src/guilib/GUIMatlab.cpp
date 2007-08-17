@@ -33,6 +33,7 @@
 #include "kernel/WeightedDegreePositionStringKernel.h"
 #include "kernel/CombinedKernel.h"
 #include "kernel/CommWordStringKernel.h"
+#include "kernel/WeightedCommWordStringKernel.h"
 #include "kernel/CustomKernel.h"
 #include "kernel/LinearKernel.h"
 #include "kernel/SparseLinearKernel.h"
@@ -1828,24 +1829,54 @@ bool CGUIMatlab::get_features(mxArray* retvals[], CFeatures* f)
 							int num_vec=f->get_num_vectors();
 							mx_feat=mxCreateCellMatrix(1,num_vec);
 
-							for (int i=0; i<num_vec; i++)
+							if (mx_feat)
 							{
-								INT len=0;
-								CHAR* fv=((CStringFeatures<CHAR>*) f)->get_feature_vector(i, len);
-
-								if (len>0)
+								for (int i=0; i<num_vec; i++)
 								{
-									char* str=new char[len+1];
-									strncpy(str, fv, len);
-									str[len]='\0';
+									INT len=0;
+									CHAR* fv=((CStringFeatures<CHAR>*) f)->get_feature_vector(i, len);
 
-									mxSetCell(mx_feat,i,mxCreateString(str));
+									if (len>0)
+									{
+										char* str=new char[len+1];
+										strncpy(str, fv, len);
+										str[len]='\0';
+
+										mxSetCell(mx_feat,i,mxCreateString(str));
+									}
+									else
+										mxSetCell(mx_feat,i,mxCreateString(""));
 								}
-								else
-									mxSetCell(mx_feat,i,mxCreateString(""));
 							}
 						}
 						break;
+					case F_WORD:
+						{
+							INT num_vec=((CRealFeatures*) f)->get_num_vectors();
+							mx_feat=mxCreateCellMatrix(1,num_vec);
+
+							if (mx_feat)
+							{
+
+								for (INT i=0; i<num_vec; i++)
+								{
+									INT len=0;
+									WORD* fv=((CStringFeatures<WORD>*) f)->get_feature_vector(i, len);
+
+									if (len>0)
+									{
+										mxArray* mx_element=mxCreateNumericMatrix(1, len, mxUINT16_CLASS, mxREAL);
+										ASSERT(mx_element);
+										WORD* element=(WORD*) mxGetData(mx_element);
+										ASSERT(element);
+										memcpy(element, fv, len*sizeof(WORD));
+										mxSetCell(mx_feat,i,mx_element);
+									}
+								}
+							}
+						}
+						break;
+
 					default:
 						SG_ERROR("not implemented\n");
 				};
@@ -2749,9 +2780,10 @@ bool CGUIMatlab::get_WD_position_weights(mxArray* retvals[])
 
 bool CGUIMatlab::get_SPEC_scoring(mxArray* retvals[], INT max_order)
 {
-	CKernel *k= gui->guikernel.get_kernel() ;
+	CKernel* k= gui->guikernel.get_kernel() ;
 
-	if (k && (k->get_kernel_type() == K_COMMWORDSTRING))
+	if (k && ((k->get_kernel_type() == K_COMMWORDSTRING) ||
+				(k->get_kernel_type() == K_WEIGHTEDCOMMWORDSTRING)) )
 	{
 		CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 		ASSERT(svm);
@@ -2772,10 +2804,24 @@ bool CGUIMatlab::get_SPEC_scoring(mxArray* retvals[], INT max_order)
 			SG_WARNING( "max_order out of range 1..8 (%d) setting to 1\n", max_order);
 			max_order=1;
 		}
-		DREAL* position_weights;
-		position_weights = ((CCommWordStringKernel*) k)->compute_scoring(
-				max_order, num_feat, num_sym, NULL,
-				num_suppvec, sv_idx, sv_weight);
+		DREAL* position_weights=NULL;
+
+		switch (k->get_kernel_type())
+		{
+			case K_COMMWORDSTRING:
+				position_weights = ((CCommWordStringKernel*) k)->compute_scoring(
+						max_order, num_feat, num_sym, NULL,
+						num_suppvec, sv_idx, sv_weight);
+				break;
+			case K_WEIGHTEDCOMMWORDSTRING:
+				position_weights = ((CWeightedCommWordStringKernel*) k)->compute_scoring(
+						max_order, num_feat, num_sym, NULL,
+						num_suppvec, sv_idx, sv_weight);
+				break;
+			default:
+				SG_ERROR("unsupported kernel\n");
+		}
+		
 		mxArray* mx_result ;
 		mx_result=mxCreateDoubleMatrix(num_sym, num_feat, mxREAL);
 		double* result=mxGetPr(mx_result);

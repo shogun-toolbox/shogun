@@ -234,11 +234,23 @@ DREAL CWeightedCommWordStringKernel::compute_optimized(INT i)
 }
 
 DREAL* CWeightedCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
-		INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas)
+		INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, bool do_init)
 {
+	if (do_init)
+		CCommWordStringKernel::init_optimization(num_suppvec, IDX, alphas);
+
+	INT dic_size=1<<(sizeof(WORD)*9);
+	DREAL* dic= new DREAL[dic_size];
+	ASSERT(dic);
+	memcpy(dic, dictionary_weights, sizeof(DREAL)*dic_size);
 
 	merge_normal();
-	
-	return CCommWordStringKernel::compute_scoring(max_degree, num_feat,
-		num_sym, target, num_suppvec, IDX, alphas);
+	DREAL* result=CCommWordStringKernel::compute_scoring(max_degree, num_feat,
+			num_sym, target, num_suppvec, IDX, alphas, false);
+
+	init_dictionary(1<<(sizeof(WORD)*9));
+	memcpy(dictionary_weights,dic,  sizeof(DREAL)*dic_size);
+	delete[] dic;
+
+	return result;
 }

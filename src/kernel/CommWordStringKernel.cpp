@@ -198,6 +198,8 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
 			memcpy(avec, av, sizeof(WORD)*alen);
 			CMath::radix_sort(avec, alen);
 		}
+		else
+			avec=NULL;
 
 		if (blen>0)
 		{
@@ -206,6 +208,8 @@ DREAL CCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
 			memcpy(bvec, bv, sizeof(WORD)*blen);
 			CMath::radix_sort(bvec, blen);
 		}
+		else
+			bvec=NULL;
 	}
 	else
 	{
@@ -427,7 +431,8 @@ DREAL CCommWordStringKernel::compute_optimized(INT i)
 }
 
 DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
-		INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas)
+		INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas,
+		bool do_init)
 {
 	ASSERT(lhs);
 	CStringFeatures<WORD>* str=((CStringFeatures<WORD>*) lhs);
@@ -456,8 +461,8 @@ DREAL* CCommWordStringKernel::compute_scoring(INT max_degree, INT& num_feat,
 
 	memset(target, 0, num_feat*num_sym*sizeof(DREAL));
 
-	//init
-	init_optimization(num_suppvec, IDX, alphas);
+	if (do_init)
+		init_optimization(num_suppvec, IDX, alphas);
 
 	UINT kmer_mask=0;
 	UINT words=CMath::pow((INT) num_words,(INT) order);
