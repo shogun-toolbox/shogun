@@ -254,9 +254,10 @@ bool CGUIFeatures::slide_window(CHAR* param)
 	param=CIO::skip_spaces(param);
 	INT shift=-1;
 	INT winsize=-1;
+	INT skip=0;
 	CHAR target[1024]="";
 
-	if ((sscanf(param, "%s %d %d", target, &winsize, &shift))==3)
+	if ((sscanf(param, "%s %d %d %d", target, &winsize, &shift, &skip))>=3)
 	{
 		ASSERT(winsize>0);
 		ASSERT(shift>0);
@@ -291,13 +292,13 @@ bool CGUIFeatures::slide_window(CHAR* param)
 		switch (features->get_feature_type())
 		{
 			case F_CHAR:
-				return ( ((CStringFeatures<CHAR>*) features)->obtain_by_sliding_window(winsize, shift) > 0);
+				return ( ((CStringFeatures<CHAR>*) features)->obtain_by_sliding_window(winsize, shift, skip) > 0);
 			case F_BYTE:
-				return ( ((CStringFeatures<BYTE>*) features)->obtain_by_sliding_window(winsize, shift) > 0);
+				return ( ((CStringFeatures<BYTE>*) features)->obtain_by_sliding_window(winsize, shift, skip) > 0);
 			case F_WORD:
-				return ( ((CStringFeatures<WORD>*) features)->obtain_by_sliding_window(winsize, shift) > 0);
+				return ( ((CStringFeatures<WORD>*) features)->obtain_by_sliding_window(winsize, shift, skip) > 0);
 			case F_ULONG:
-				return ( ((CStringFeatures<ULONG>*) features)->obtain_by_sliding_window(winsize, shift) > 0);
+				return ( ((CStringFeatures<ULONG>*) features)->obtain_by_sliding_window(winsize, shift, skip) > 0);
 			default:
 				SG_SERROR("unsupported string features type\n");
 				return false;

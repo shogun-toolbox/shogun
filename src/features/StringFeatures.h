@@ -418,7 +418,8 @@ template <class ST> class CStringFeatures: public CFeatures
 	///slides a window of size window_size over the current single string
 	///step_size is the amount by which the window is shifted.
 	///creates (string_len-window_size)/step_size many feature obj
-	inline INT obtain_by_sliding_window(INT window_size, INT step_size)
+	///if skip is nonzero, skip the first 'skip' characters of each string
+	INT obtain_by_sliding_window(INT window_size, INT step_size, INT skip=0)
 	{
 		ASSERT(step_size>0);
 		ASSERT(window_size>0);
@@ -440,22 +441,22 @@ template <class ST> class CStringFeatures: public CFeatures
 		INT offs=0;
 		for (INT i=0; i<num_vectors; i++)
 		{
-			f[i].string=&features[0].string[offs];
-			f[i].length=window_size;
+			f[i].string=&features[0].string[offs+skip];
+			f[i].length=window_size-skip;
 			offs+=step_size;
 		}
 		single_string=features[0].string;
 		delete[] features;
 		features=f;
 		selected_vector=0;
-		max_string_length=window_size;
+		max_string_length=window_size-skip;
 
 		return num_vectors;
 	}
 
 	///extracts windows of size window_size from first string
 	///using the positions in list
-	inline INT obtain_by_position_list(INT window_size, CDynamicArray<INT>* positions)
+	INT obtain_by_position_list(INT window_size, CDynamicArray<INT>* positions, INT skip=0)
 	{
 		ASSERT(positions);
 		ASSERT(window_size>0);
@@ -488,8 +489,8 @@ template <class ST> class CStringFeatures: public CFeatures
 
 			if (p>=0 && p<=len-window_size)
 			{
-				f[i].string=&features[0].string[p];
-				f[i].length=window_size;
+				f[i].string=&features[0].string[p+skip];
+				f[i].length=window_size-skip;
 			}
 			else
 			{
@@ -506,7 +507,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		delete[] features;
 		features=f;
 		selected_vector=0;
-		max_string_length=window_size;
+		max_string_length=window_size-skip;
 
 		return num_vectors;
 	}

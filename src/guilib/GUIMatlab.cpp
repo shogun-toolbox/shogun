@@ -2203,19 +2203,22 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 
 bool CGUIMatlab::from_position_list(const mxArray* vals[], int nrhs)
 {
-	if (nrhs!=4)
-		return false;
-
+	INT skip=0;
 	INT slen=0;
 	CHAR* target=CGUIMatlab::get_mxString(vals[1], slen);
 	const mxArray* mx_winsz=vals[2];
 	const mxArray* mx_shift=vals[3];
+	const mxArray* mx_skip=NULL;
+	if (nrhs==5)
+		mx_skip=vals[4];
 	ASSERT(mx_winsz && mxIsDouble(mx_winsz) && 
 			mxGetN(mx_winsz) == 1 && mxGetM(mx_winsz) == 1);
 	ASSERT(mx_shift && mxIsDouble(mx_feat) && mxGetM(mx_shift) == 1);
 	INT winsize= (INT) (*mxGetPr(mx_winsz));
 	INT num_shift=mxGetN(mx_shift);
-	SG_DEBUG("winsize: %d num_shifts:%d \n", winsize, num_shift);
+	if (mx_skip && mxIsDouble(mx_skip) && mxGetN(mx_skip) == 1 && mxGetM(mx_skip) == 1)
+		skip= (INT) (*mxGetPr(mx_skip));
+	SG_DEBUG("winsize: %d num_shifts:%d skip:%d\n", winsize, num_shift, skip);
 	double* shifts= mxGetPr(mx_shift);
 	ASSERT(shifts);
 	CDynamicArray<INT> positions(mxGetN(mx_shift)+1);
@@ -2259,23 +2262,23 @@ bool CGUIMatlab::from_position_list(const mxArray* vals[], int nrhs)
 		{
 			case F_CHAR:
 				return ( ((CStringFeatures<CHAR>*) features)->obtain_by_position_list(winsize,
-							&positions) > 0);
+							&positions, skip) > 0);
 			case F_BYTE:
 				return ( ((CStringFeatures<BYTE>*) features)->obtain_by_position_list(winsize,
-							&positions) > 0);
+							&positions, skip) > 0);
 			case F_WORD:
 				return ( ((CStringFeatures<WORD>*) features)->obtain_by_position_list(winsize,
-							&positions) > 0);
+							&positions, skip) > 0);
 			case F_ULONG:
 				return ( ((CStringFeatures<ULONG>*) features)->obtain_by_position_list(winsize,
-							&positions) > 0);
+							&positions, skip) > 0);
 			default:
 				SG_SERROR("unsupported string features type\n");
 				return false;
 		}
 	}
 	else
-		SG_SERROR("usage is sg('from_position_list', 'TRAIN|TEST', [list])");
+		SG_SERROR("usage is sg('from_position_list', 'TRAIN|TEST', [list], skip)");
 
 	return false;
 }

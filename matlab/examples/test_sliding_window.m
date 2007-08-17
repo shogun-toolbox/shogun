@@ -48,10 +48,10 @@ rand('seed',17);
 len=50;
 num_train=100;
 total_test_len=778;
-order=2;
-num_test=total_test_len-len-1;
+order=5;
+num_test=total_test_len-len-order+2;
 use_sign=0;
-normalization='NO';
+normalization='FULL';
 
 acgt='ACGT';
 traindat=acgt(ceil(4*rand(len,num_train)));
@@ -101,8 +101,8 @@ f1=sg('get_features','TEST');
 %evaluate svm on test data
 sg('set_features', 'TEST', testdat', 'DNA');
 sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD %i %i', order, order-1));
-sg('send_command', 'slide_window TEST 50 1');
-%sg('from_position_list','TEST', len, 0:(total_test_len-len-order+1));
+%sg('send_command', sprintf('slide_window TEST 50 1 %d', order-1));
+sg('from_position_list','TEST', len, 0:(total_test_len-len-order+1), order-1);
 sg('set_labels', 'TEST', testlab);
 sg('send_command', 'init_kernel TEST');
 out=sg('svm_classify');
