@@ -49,7 +49,7 @@ void CTron::tron(double *w)
 	int i, cg_iter;
 	double delta, snorm, one=1.0;
 	double alpha, f, fnew, prered, actred, gs;
-	int search = 1, iter = 1, inc = 1;
+	int inc = 1;
 	double *s = new double[n];
 	double *r = new double[n];
 	double *w_new = new double[n];
@@ -64,10 +64,11 @@ void CTron::tron(double *w)
 	double gnorm1 = delta;
 	double gnorm = gnorm1;
 
+	int search = 1;
 	if (gnorm1 < eps)
 		search = 0;
 
-	iter = 1;
+	int iter = 1;
 
 	while (iter <= max_iter && search)
 	{

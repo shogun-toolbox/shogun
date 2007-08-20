@@ -166,12 +166,18 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 	{
 		delete classifier;
 		classifier= new CLibLinear(LR);
+		((CLibLinear*) classifier)->set_C(svm_C1, svm_C2);
+		((CLibLinear*) classifier)->set_epsilon(svm_epsilon);
+		((CLibLinear*) classifier)->set_bias_enabled(svm_use_bias);
 		SG_INFO( "created LibLinear logistic regression object\n") ;
 	}
 	else if (strcmp(param,"LIBLINEAR_L2")==0)
 	{
 		delete classifier;
 		classifier= new CLibLinear(L2);
+		((CLibLinear*) classifier)->set_C(svm_C1, svm_C2);
+		((CLibLinear*) classifier)->set_epsilon(svm_epsilon);
+		((CLibLinear*) classifier)->set_bias_enabled(svm_use_bias);
 		SG_INFO( "created LibLinear l2 loss object\n") ;
 	}
 	else if (strcmp(param,"PERCEPTRON")==0)
@@ -294,6 +300,7 @@ bool CGUIClassifier::train(CHAR* param)
 		case CT_LPM:
 		case CT_LPBOOST:
 		case CT_SUBGRADIENTLPM:
+		case CT_LIBLINEAR:
 			return train_sparse_linear(param);
 		default:
 			SG_ERROR( "unknown classifier type\n");
@@ -935,6 +942,7 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_LPM:
 		case CT_LPBOOST:
 		case CT_SUBGRADIENTLPM:
+		case CT_LIBLINEAR:
 			return classify_sparse_linear(output);
 		default:
 			SG_ERROR( "unknown classifier type\n");
@@ -1014,6 +1022,7 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &col
 		case CT_SVMLIN:
 		case CT_SVMPERF:
 		case CT_SUBGRADIENTSVM:
+		case CT_LIBLINEAR:
 			return get_sparse_linear(weights, rows, cols, bias);
 			break;
 		default:

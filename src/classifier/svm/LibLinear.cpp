@@ -11,11 +11,15 @@
 #include "classifier/svm/LibLinear.h"
 #include "classifier/svm/SVM_linear.h"
 #include "classifier/svm/Tron.h"
+#include "features/SparseFeatures.h"
 #include "lib/io.h"
 
 CLibLinear::CLibLinear(LIBLINEAR_LOSS l) : CSparseLinearClassifier()
 {
 	loss=l;
+	use_bias=false;
+	C1=1;
+	C2=1;
 }
 
 CLibLinear::~CLibLinear()
@@ -26,6 +30,7 @@ bool CLibLinear::train()
 {
 	ASSERT(get_labels());
 	ASSERT(get_features());
+	CSparseFeatures<DREAL>* sfeat=(CSparseFeatures<DREAL>*) features;
 
 	INT num_train_labels=get_labels()->get_num_labels();
 	INT num_feat=features->get_num_features();
@@ -33,34 +38,75 @@ bool CLibLinear::train()
 
 	ASSERT(num_vec==num_train_labels);
 	delete[] w;
-	w=new DREAL[num_feat];
+	if (use_bias)
+		w=new DREAL[num_feat+1];
+	else
+		w=new DREAL[num_feat+0];
+
 	w_dim=num_feat;
 	ASSERT(w);
 
 	problem prob;
-	prob.n=w_dim;
+	if (use_bias)
+	{
+		prob.n=w_dim+1;
+		memset(w, 0, sizeof(DREAL)*(w_dim+1));
+	}
+	else
+	{
+		prob.n=w_dim;
+		memset(w, 0, sizeof(DREAL)*(w_dim+0));
+	}
 	prob.l=num_vec;
 	prob.x=new feature_node*[prob.l];
 	prob.y=new int[prob.l];
+	feature_node* x_space= new feature_node[sfeat->get_num_nonzero_entries() + 2*num_vec];
+
+	ASSERT(x_space);
 	ASSERT(prob.y);
 	ASSERT(prob.x);
 
+	INT j=0;
 	for (int i=0; i<prob.l; i++)
 	{
 		prob.y[i]=get_labels()->get_int_label(i);
-		prob.x[i]=NULL; //&x_space[2*i];
+		prob.x[i]=&x_space[j];
+
+		bool vfree;
+		INT dim;
+		TSparseEntry<DREAL>* sv=sfeat->get_sparse_feature_vector(i, dim, vfree);
+
+		for (INT k=0; k<dim; k++)
+		{
+			x_space[j].index = sv[k].feat_index+1;
+			x_space[j].value = sv[k].entry;
+			j++;
+		}
+
+		sfeat->free_sparse_feature_vector(sv, i, vfree);
+
+		if (use_bias)
+		{
+			x_space[j].index=num_feat+1;
+			x_space[j].value=1.0;
+			j++;
+		}
+
+		x_space[j].value=NAN;
+		x_space[j].index=-1;
+		j++;
 	}
 
-	SG_INFO( "%d trainlabels\n", prob.l);
+	SG_INFO( "%d training points %d dims\n", prob.l, prob.n);
 
 	function *fun_obj=NULL;
 
 	switch (loss)
 	{
-		case L2_LR:
+		case LR:
 			fun_obj=new l2_lr_fun(&prob, get_C1(), get_C2());
 			break;
-		case L2LOSS_SVM:
+		case L2:
 			fun_obj=new l2loss_svm_fun(&prob, get_C1(), get_C2());
 			break;
 		default:
@@ -68,49 +114,18 @@ bool CLibLinear::train()
 			break;
 	}
 
-	if(fun_obj)
+	if (fun_obj)
 	{
 		CTron tron_obj(fun_obj, epsilon);
 		tron_obj.tron(w);
+
+		if (use_bias)
+			set_bias(w[w_dim]);
+		else
+			set_bias(0);
+
 		delete fun_obj;
 	}
 
-//	const char* error_msg = svm_check_parameter(&problem,&param);
-//
-//	if(error_msg)
-//	{
-//		fprintf(stderr,"Error: %s\n",error_msg);
-//		exit(1);
-//	}
-//
-//	model = svm_train(&problem, &param);
-//
-//	if (model)
-//	{
-//		ASSERT(model->nr_class==2);
-//		ASSERT( (model->l==0) || (model->l > 0 && model->SV && model->sv_coef && model->sv_coef[0]) );
-//
-//		int num_sv=model->l;
-//
-//		create_new_model(num_sv);
-//		CSVM::set_objective(model->objective);
-//
-//		DREAL sgn=model->label[0];
-//
-//		set_bias(-sgn*model->rho[0]);
-//
-//		for (int i=0; i<num_sv; i++)
-//		{
-//			set_support_vector(i, (model->SV[i])->index);
-//			set_alpha(i, sgn*model->sv_coef[0][i]);
-//		}
-//
-//		delete[] problem.x;
-//		delete[] problem.y;
-//		delete[] x_space;
-//
-//		return true;
-//	}
-//	else
-		return false;
+	return true;
 }

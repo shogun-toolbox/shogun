@@ -1436,38 +1436,6 @@ bool CGUIMatlab::one_class_hmm_classify_example(mxArray* retvals[], int idx)
 	return true;
 }
 
-//bool CGUIMatlab::get_svm(mxArray* retvals[])
-//{
-//	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
-//
-//	if (svm)
-//	{
-//		mxArray* mx_alphas=mxCreateDoubleMatrix(svm->get_num_support_vectors(), 2, mxREAL);
-//		mxArray* mx_b=mxCreateDoubleMatrix(1, 1, mxREAL);
-//
-//		if (mx_alphas && mx_b)
-//		{
-//			double* b=mxGetPr(mx_b);
-//			double* alphas=mxGetPr(mx_alphas);
-//
-//			*b=svm->get_bias();
-//
-//			for (int i=0; i< svm->get_num_support_vectors(); i++)
-//			{
-//				alphas[i]=svm->get_alpha(i);
-//				alphas[i+svm->get_num_support_vectors()]=svm->get_support_vector(i);
-//			}
-//
-//			retvals[0]=mx_b;
-//			retvals[1]=mx_alphas;
-//
-//			return true;
-//		}
-//	}
-//
-//	return false;
-//}
-
 bool CGUIMatlab::get_classifier(mxArray* retvals[])
 {
 	DREAL* weights=NULL;

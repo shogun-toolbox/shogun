@@ -14,8 +14,6 @@
 #include "lib/common.h"
 #include "classifier/SparseLinearClassifier.h"
 
-#include <stdio.h>
-
 enum LIBLINEAR_LOSS
 {
 	LR = 0,
@@ -35,6 +33,9 @@ class CLibLinear : public CSparseLinearClassifier
 
 		inline void set_epsilon(DREAL eps) { epsilon=eps; }
 		inline DREAL get_epsilon() { return epsilon; }
+
+		inline void set_bias_enabled(bool enable_bias) { use_bias=enable_bias; }
+		inline bool get_bias_enabled() { return use_bias; }
 
 	protected:
 		DREAL C1;

@@ -91,11 +91,11 @@ template <class ST> class CSparseFeatures: public CFeatures
 		  */
 		ST* get_full_feature_vector(INT num, INT& len)
 		{
-			bool free;
+			bool vfree;
 			INT num_feat;
 			INT i;
 			len=0;
-			TSparseEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, free);
+			TSparseEntry<ST>* sv=get_sparse_feature_vector(num, num_feat, vfree);
 			ST* fv=NULL;
 
 			if (sv)
@@ -111,7 +111,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 					fv[sv[i].feat_index]= sv[i].entry;
 			}
 
-			free_sparse_feature_vector(sv, num, free);
+			free_sparse_feature_vector(sv, num, vfree);
 
 			return fv;
 		}
@@ -123,20 +123,20 @@ template <class ST> class CSparseFeatures: public CFeatures
 		  @param num index of feature vector
 		  @param len number of sparse entries is returned by reference
 		  */
-		TSparseEntry<ST>* get_sparse_feature_vector(INT num, INT& len, bool& free)
+		TSparseEntry<ST>* get_sparse_feature_vector(INT num, INT& len, bool& vfree)
 		{
 			ASSERT(num<num_vectors);
 			len= sparse_feature_matrix[num].num_feat_entries;
 
 			if (sparse_feature_matrix)
 			{
-				free=false ;
+				vfree=false ;
 				return sparse_feature_matrix[num].features;
 			} 
 			else
 			{
 				TSparseEntry<ST>* feat=NULL;
-				free=false;
+				vfree=false;
 
 				if (feature_cache)
 				{
@@ -151,7 +151,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 				}
 
 				if (!feat)
-					free=true;
+					vfree=true;
 
 				feat=compute_sparse_feature_vector(num, len, feat);
 
