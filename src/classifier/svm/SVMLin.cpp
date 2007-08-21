@@ -16,12 +16,12 @@
 #include "features/SparseFeatures.h"
 #include "features/Labels.h"
 
-CSVMLin::CSVMLin() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), lambda(1.0)
+CSVMLin::CSVMLin() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), lambda(1.0), use_bias(true)
 {
 }
 
 CSVMLin::CSVMLin(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
-	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), lambda(1.0)
+	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), lambda(1.0), use_bias(true)
 {
 	CSparseLinearClassifier::features=traindat;
 	CClassifier::labels=trainlab;
@@ -69,6 +69,11 @@ bool CSVMLin::train()
 	Options.mfnitermax=50;
 	Options.Cp = get_C1();
 	Options.Cn = get_C2();
+	
+	if (use_bias)
+		Options.bias=1.0;
+	else
+		Options.bias=0.0;
 
 	for(int i=0;i<num_vec;i++)
 	{

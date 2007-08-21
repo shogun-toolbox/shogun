@@ -80,6 +80,7 @@ struct options
 	int cgitermax;  /* max iterations for CGLS */
 	int mfnitermax; /* max iterations for L2_SVM_MFN */
 
+	double bias; /* 1.0 if bias is to be used, 0.0 otherwise */
 };
 
 class Delta { /* used in line search */

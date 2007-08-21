@@ -2535,7 +2535,7 @@ svmlight_warn_license()
 		cat <<EOF
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-WARNING: SHOGUN is build using SVMlight which was written
+WARNING: SHOGUN is built using SVMlight which was written
 by Thorsten Joachims and uses a different non GPL compatible license.
 To build a fully GPL'd SHOGUN use 
 

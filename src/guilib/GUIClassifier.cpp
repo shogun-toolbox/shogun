@@ -241,6 +241,7 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		classifier= new CSVMLin();
 		((CSVMLin*) classifier)->set_C(svm_C1, svm_C2);
 		((CSVMLin*) classifier)->set_epsilon(svm_epsilon);
+		((CSVMLin*) classifier)->set_bias_enabled(svm_use_bias);
 		SG_INFO( "created SVMLin object\n") ;
 	}
 	else if (strcmp(param,"SUBGRADIENTSVM")==0)
