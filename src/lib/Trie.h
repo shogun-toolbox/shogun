@@ -19,11 +19,14 @@
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 
+static const INT NUM_SYMS = 4;  // only DNA alphabet for now
+
 //#define NO_CHILD ((INT)-2147483648)
 #define NO_CHILD ((INT)-1073741824) 
 
 #define WEIGHTS_IN_TRIE 
 //#define TRIE_CHECK_EVERYTHING
+//#define TRIE_FOR_POIMS
 
 #ifdef TRIE_CHECK_EVERYTHING
 #define TRIE_ASSERT_EVERYTHING(x) ASSERT(x)
@@ -67,14 +70,16 @@ struct Trie
 #endif		
     union 
     {
-        SHORTREAL child_weights[4];
-        INT children[4];
+        SHORTREAL child_weights[ NUM_SYMS ];
+        INT children[ NUM_SYMS ];
         BYTE seq[16] ;
     }; 
 
-	DREAL super_string_score;
-	DREAL left_partial_overlap_score;
-	DREAL right_partial_overlap_score;
+#ifdef TRIE_FOR_POIMS
+	DREAL S;  // super_string_score;
+	DREAL L;  // left_partial_overlap_score;
+	DREAL R;  // right_partial_overlap_score;
+#endif
 };
 
 struct TreeParseInfo {

@@ -1528,3 +1528,177 @@ void CTrie::fill_backtracking_table(INT pos, CDynamicArray<ConsensusEntry>* prev
 		}
 	}
 }
+
+
+
+#ifdef TRIE_FOR_POIMS
+
+void CTrie::POIMs_calc_SLR()
+{
+  if( degree == 1 ) {
+    return;
+  }
+  ASSERT( degree >= 2 );
+  const INT N = length;
+  DREAL dummy;
+  INT* leftSubtreeIdcs = INT[ depth * NUM_SYMS ];
+  INT symLeft;
+  INT i;
+  for( symLeft = 0; symLeft < NUM_SYMS; ++symLeft ) {
+    leftSubtreeIdcs[ symLeft ] = NO_CHILD;
+  }
+  for( i = 0; i < N-1; ++i ) {
+    for( symLeft = NUM_SYMS; symLeft < depth*NUM_SYMS; ++symLeft ) {
+      leftSubtreeIdcs[ symLeft ] = NO_CHILD;  // AID DEBUGGING
+    }
+    POIMs_calc_SLR_helper2( trees[i], leftSubtreeIdcs, 0, &dummy, &dummy, &dummy );
+    const Trie* node = &TreeMem[ trees[i] ];
+    for( symLeft = 0; symLeft < NUM_SYMS; ++symLeft ) {
+      leftSubtreeIdcs[ symLeft ] = node->children[ symLeft ];
+    }
+  }
+}
+
+void CTrie::POIMs_calc_SLR_helper2( const INT nodeIdx, INT* const leftSubtreeIdcs, const int depth,
+				    DREAL* S, DREAL* L, DREAL* R )
+{
+  ASSERT( 0 <= depth && depth <= degree-2 );
+  ASSERT( node != NO_CHILD );
+
+  const Trie* const node = &TreeMem[ nodeIdx ];
+  DREAL dummy;
+  DREAL auxS;
+  DREAL auxL;
+  DREAL auxR;
+  INT symRight;
+  INT symLeft;
+
+  // --- init
+  node->S = 0;
+  node->L = 0;
+  node->R = 0;
+
+  // --- recurse thru direct children
+  for( symRight = 0; symRight < NUM_SYMS; ++symRight ) {
+    const INT childIdx = node->children[ symRight ];
+    if( childIdx != NO_CHILD ) {
+      if( depth < degree-2 ) {
+	for( symLeft = 0; symLeft < NUM_SYMS; ++symLeft ) {
+	  const INT leftSubtreeIdx = leftSubtreeIdcs[ symLeft ];
+	  if( leftSubtreeIdx != NO_CHILD ) {
+	    const Trie* const nodeLeft = &TreeMem[ leftSubtreeIdx ];
+	    leftSubtreeIdcs[ NUM_SYMS + symLeft ] = nodeLeft->children[ symRight ];
+	  }
+	}
+	POIMs_calc_SLR_helper2( childIdx, leftSubtreeIdcs+NUM_SYMS, depth+1, &auxS, &dummy, &auxR );
+      } else {
+	POIMs_calc_SLR_helper1( childIdx, leftSubtreeIdcs, depth+1, symRight, &auxS, &dummy, &auxR );
+      }
+      node->S += auxS;
+      node->R += auxR;
+    }
+  }
+
+  // --- collect precalced values from left neighbor tree
+  for( symLeft = 0; symLeft < NUM_SYMS; ++symLeft ) {
+    const INT leftSubtreeIdx = leftSubtreeIdcs[ symLeft ];
+    if( leftSubtreeIdx != NO_CHILD ) {
+      const Trie* const nodeLeft = &TreeMem[ leftSubtreeIdx ];
+      node->S += nodeLeft->S;
+      node->R += nodeLeft->R;
+      // - second order correction for S
+      auxS = 0;
+      if( depth < degree-2 ) {
+	for( symRight = 0; symRight < NUM_SYMS; ++symRight ) {
+	  const INT childIdxLeft = nodeLeft->children[ symRight ];
+	  if( childIdxLeft != NO_CHILD ) {
+	    const Trie* const childLeft = &TreeMem[ childIdxLeft ];
+	    auxS += childLeft->S;
+	  }
+	}
+      } else {
+	for( symRight = 0; symRight < NUM_SYMS; ++symRight ) {
+	  auxS += nodeLeft->child_weights[ symRight ];
+	}
+      }
+      node->S -= auxS / NUM_SYMS;
+    }
+  }
+
+  // --- marginalize, add w, and return results
+  const DREAL w0 = node->weight;
+  node->S = node->S / NUM_SYMS + w0;
+  node->L = node->L / NUM_SYMS + w0;
+  node->R = node->R / NUM_SYMS + w0;
+  *S = node->S;
+  *L = node->L;
+  *R = node->R;
+}
+
+void CTrie::POIMs_calc_SLR_helper1( const INT nodeIdx, INT* const leftSubtreeIdcs, const int depth, INT const lastSym,
+				    DREAL* S, DREAL* L, DREAL* R )
+{
+  ASSERT( depth == degree-1 );
+  ASSERT( node != NO_CHILD );
+
+  const Trie* const node = &TreeMem[ nodeIdx ];
+  INT symRight;
+  INT symLeft;
+
+  // --- init
+  node->S = 0;
+  node->L = 0;
+  node->R = 0;
+
+  // --- go thru direct children
+  for( symRight = 0; symRight < NUM_SYMS; ++symRight ) {
+    const DREAL w1 = node->child_weights[ symRight ];
+    node->S += w1;
+    node->R += w1;
+  }
+
+  // --- collect precalced values from left neighbor tree
+  for( symLeft = 0; symLeft < NUM_SYMS; ++symLeft ) {
+    const INT leftSubtreeIdx = leftSubtreeIdcs[ symLeft ];
+    if( leftSubtreeIdx != NO_CHILD ) {
+      const Trie* const nodeLeft = &TreeMem[ leftSubtreeIdx ];
+      const DREAL w2 = nodeLeft->child_weights[ lastSym ];
+      node->S += w2;
+      node->L += w2;
+    }
+  }
+
+  // --- marginalize, add w, and return results
+  const DREAL w0 = node->weight;
+  node->S = node->S / NUM_SYMS + w0;
+  node->L = node->L / NUM_SYMS + w0;
+  node->R = node->R / NUM_SYMS + w0;
+  *S = node->S;
+  *L = node->L;
+  *R = node->R;
+}
+
+void CTrie::POIMs_get_SLR( const INT parentIdx, const INT sym, const int depth,
+			   DREAL* S, DREAL* L, DREAL* R )
+{
+  ASSERT( parentIdx != NO_CHILD );
+  const Trie* const parent = &TreeMem[ parentIdx ];
+  if( depth < degree ) {
+    const INT nodeIdx = parent->children[ sym ];
+    const Trie* const node = &TreeMem[ nodeIdx ];
+    const DREAL w = node->weight;
+    *S = node->S;
+    *L = node->L;
+    *R = node->R;
+  } else {
+    ASSERT( depth == degree );
+    const DREAL w = parent->child_weights[ sym ];
+    *S = w;
+    *L = w;
+    *R = w;
+  }
+}
+
+#endif
+
+
