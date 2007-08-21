@@ -128,7 +128,33 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			default:
 				break;
 		}
-#elif defined(HAVE_PYTHON)
+#elif defined(HAVE_PYTHON) && !defined(HAVE_SWIG)
+		switch (prio)
+		{
+			case M_DEBUG:
+			case M_INFO:
+			case M_NOTICE:
+			case M_MESSAGEONLY:
+				fprintf(target, "%s", message_strings[p]);
+				fprintf(target, "%s", str);
+				break;
+
+			case M_WARN:
+				PyErr_Warn(NULL, str);
+				break;
+
+			case M_ERROR:
+			case M_CRITICAL:
+			case M_ALERT:
+			case M_EMERGENCY:
+				fprintf(target, "%s", message_strings[p]);
+				fprintf(target, "%s\n", str);
+				PyErr_SetString(PyExc_RuntimeError,str);
+				break;
+			default:
+				break;
+		}
+#elif defined(HAVE_PYTHON) && defined(HAVE_SWIG)
 		switch (prio)
 		{
 			case M_DEBUG:
@@ -152,6 +178,7 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			default:
 				break;
 		}
+
 #elif defined(HAVE_R)
 		switch (prio)
 		{

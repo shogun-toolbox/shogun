@@ -4,8 +4,8 @@ from numpy import array,transpose,sin,double
 
 sg.send_command('new_svm LIBSVR')
 features=array([range(0,100)],dtype=double)
-features.resize(100,1)
-labels=sin(features).flatten()
+features.resize(1,100)
+labels=sin(features)[0]
 sg.set_features("TRAIN", features)
 sg.set_labels("TRAIN", labels)
 sg.send_command('set_kernel GAUSSIAN REAL 20 10')
@@ -18,8 +18,8 @@ sg.send_command('init_kernel TEST')
 out=sg.svm_classify();
 
 figure()
-plot(features,labels,'b-')
-plot(features,labels,'bo')
-plot(features,out,'r-')
-plot(features,out,'ro')
+plot(features[0],labels,'b-')
+plot(features[0],labels,'bo')
+plot(features[0],out,'r-')
+plot(features[0],out,'ro')
 show()

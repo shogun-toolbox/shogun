@@ -1,10 +1,10 @@
 import sg
 from MLab import *
-from numarray import *
+from numpy import *
 num=100;
 sg.send_command('loglevel ALL')
 labels=concatenate((-ones([1,num]), ones([1,num])),1)[0]
-features=concatenate((randn(num,2)-1,randn(num,2)+1),0)
+features=concatenate((randn(2,num)-1,randn(2,num)+1),1)
 
 sg.send_command('c 10')
 sg.send_command('new_svm LIGHT')
@@ -15,7 +15,7 @@ sg.add_features("TRAIN", features)
 sg.add_features("TRAIN", features)
 sg.add_features("TRAIN", features)
 
-sg.send_command('set_kernel COMBINED ANY 100')
+sg.send_command('set_kernel COMBINED 100')
 sg.send_command('add_kernel 1 GAUSSIAN REAL 100 100')
 sg.send_command('add_kernel 1 GAUSSIAN REAL 100 10')
 sg.send_command('add_kernel 1 GAUSSIAN REAL 100 1')

@@ -138,13 +138,13 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		classifier= new CMPDSVM();
 		SG_INFO( "created MPD-SVM object\n") ;
 	}
-	else if (strcmp(param,"GNPP")==0)
+	else if (strcmp(param,"GNPPSVM")==0)
 	{
 		delete classifier;
 		classifier= new CGNPPSVM();
 		SG_INFO( "created GNPP-SVM object\n") ;
 	}
-	else if (strcmp(param,"GMNP")==0)
+	else if (strcmp(param,"GMNPSVM")==0)
 	{
 		delete classifier;
 		classifier= new CGMNPSVM();
@@ -352,7 +352,8 @@ bool CGUIClassifier::train_svm(CHAR* param)
 
 	if (!oneclass && trainlabels->get_num_labels() != num_vec)
 	{
-		SG_ERROR( "number of train labels (%d) and training vectors (%d) differs!\n", 
+
+		SG_PRINT( "number of train labels (%d) and training vectors (%d) differs!\n", 
 				trainlabels->get_num_labels(), num_vec) ;
 		return 0;
 	}
