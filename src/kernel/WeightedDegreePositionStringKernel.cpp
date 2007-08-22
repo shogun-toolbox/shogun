@@ -1560,3 +1560,80 @@ CHAR* CWeightedDegreePositionStringKernel::compute_consensus(INT &num_feat, INT 
 	delete[] table;
 	return result;
 }
+
+
+#ifdef TRIE_FOR_POIMS
+
+DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas )
+{
+  // === check
+  ASSERT( position_weights_lhs == NULL );
+  ASSERT( position_weights_rhs == NULL );
+  num_feat=((CStringFeatures<CHAR>*) get_rhs())->get_max_vector_length();
+  ASSERT( num_feat > 0 );
+  ASSERT( ((CStringFeatures<CHAR>*) get_rhs())->get_alphabet()->get_alphabet() == DNA );
+  ASSERT( max_degree > 0 );
+
+  // === general variables
+  static const INT NUM_SYM = Trie::NUM_SYMS;
+  const INT seqLen = num_feat;
+  DREAL** subs;
+  INT i;
+  INT k;
+  INT y;
+
+  // === init tables "subs" for substring scores / POIMs
+  // --- compute table sizes
+  INT* offsets;
+  INT offset;
+  offsets = new INT[ max_degree ];
+  offset = 0;
+  for( k = 0; k < max_degree; ++k ) {
+    offsets[k] = offset;
+    const INT nofsKmers = (INT) pow( NUM_SYM, k+1 );
+    const INT tabSize = nofsKmers * seqLen;
+    offset += tabSize;
+  }
+  // --- allocate memory
+  const INT bigTabSize = offset;
+  result = new DREAL[ bigTabSize ];
+  ASSERT( result != NULL );
+  for( i = 0; i < bigTabSize; ++i ) {
+    result[i] = 0;
+  }
+  // --- set pointers for tables
+  subs = new DREAL*[ max_degree ];
+  ASSERT( subs != NULL );
+  for( k = 0; k < max_degree; ++k ) {
+    subs[k] = &result[ offsets[k] ];
+  }
+  delete[] offsets;
+
+  // === init trees; precalc S, L and R
+  for( i = 0; i < seqLen; ++i ) {
+    init_optimization( num_suppvec, IDX, alphas, i );
+    //const INT treeIdx = i;
+  }
+  tries.POIMs_precalc_SLR();
+
+  // === compute substring scores / POIMs
+  tries.POIMs_extract_W( subs, max_degree );
+  //for( k = 0; k < max_degree-1; ++k ) {
+  //  const INT nofsKmers = (INT) pow( NUM_SYM, k+1 );
+  //  DREAL* const subs_kn = ( k > 0 ) ? subs[ k-1 ] : NULL;
+  //  DREAL* const subs_ko = subs[ k ];
+  //  DREAL* const subs_kp = subs[ k+1 ];
+  //  for( y = 0; y < nofsKmers; ++y ) {
+  //    
+  //  }
+  //}
+
+  // === clean; return "subs" as vector
+  delete[] subs;
+  num_feat = 1;
+  num_sym = bigTabSize;
+  return result;
+}
+
+#endif
+

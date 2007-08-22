@@ -217,6 +217,9 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 
 		/// compute consensus string
 		CHAR* compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas);
+#ifdef TRIE_FOR_POIMS
+		DREAL* compute_POIM( INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas );
+#endif
 
 	protected:
 

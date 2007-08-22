@@ -19,8 +19,6 @@
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 
-static const INT NUM_SYMS = 4;  // only DNA alphabet for now
-
 //#define NO_CHILD ((INT)-2147483648)
 #define NO_CHILD ((INT)-1073741824) 
 
@@ -61,8 +59,10 @@ struct ConsensusEntry
 //    }; 
 //};
 
+
 struct Trie
 {
+    static const INT NUM_SYMS = 4;  // only DNA alphabet for now
     DREAL weight;
 #ifdef TRIE_CHECK_EVERYTHING
     bool has_seq ;
@@ -104,6 +104,8 @@ public:
 	CTrie(const CTrie & to_copy) ;
 	~CTrie() ;
 
+	static const INT NUM_SYMS = Trie::NUM_SYMS;
+
 	const CTrie & operator=(const CTrie & to_copy) ;
 	bool compare_traverse(INT node, const CTrie & other, INT other_node) ;
 	bool compare(const CTrie & other) ;
@@ -129,6 +131,12 @@ public:
 	DREAL get_cumulative_score(INT pos, ULONG seq, INT deg, DREAL* weights);
 	void fill_backtracking_table_recursion(Trie* tree, INT depth, ULONG seq, DREAL value, CDynamicArray<ConsensusEntry>* table, DREAL* weights);
 	void fill_backtracking_table(INT pos, CDynamicArray<ConsensusEntry>* prev, CDynamicArray<ConsensusEntry>* cur, bool cumulative, DREAL* weights);
+
+#ifdef TRIE_FOR_POIMS
+	void POIMs_extract_W( DREAL* const* const W, const INT K );
+	void POIMs_precalc_SLR();
+	void POIMs_get_SLR( const INT parentIdx, const INT sym, const int depth, DREAL* S, DREAL* L, DREAL* R );
+#endif
 
 	inline bool get_use_compact_terminal_nodes()
 	{
@@ -201,6 +209,13 @@ protected:
 	bool use_compact_terminal_nodes ;
 
 	bool weights_in_tree ;
+
+#ifdef TRIE_FOR_POIMS
+	void POIMs_extract_W_helper( const INT nodeIdx, const int depth, const INT offset, const INT y0, DREAL* const* const W, const INT K );
+	void POIMs_calc_SLR_helper1( const INT nodeIdx, INT* const leftSubtreeIdcs, const int depth, INT const lastSym, DREAL* S, DREAL* L, DREAL* R );
+	void POIMs_calc_SLR_helper2( const INT nodeIdx, INT* const leftSubtreeIdcs, const int depth, DREAL* S, DREAL* L, DREAL* R );
+#endif
+
 };
 
 #endif
