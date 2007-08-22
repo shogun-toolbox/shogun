@@ -1580,7 +1580,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   DREAL** subs;
   INT i;
   INT k;
-  INT y;
+  //INT y;
 
   // === init tables "subs" for substring scores / POIMs
   // --- compute table sizes

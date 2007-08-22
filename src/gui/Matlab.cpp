@@ -49,6 +49,7 @@ static const CHAR* N_SET_WD_POS_WEIGHTS=	        "set_WD_position_weights";
 static const CHAR* N_GET_SUBKERNEL_WEIGHTS=	        "get_subkernel_weights";
 static const CHAR* N_GET_LAST_SUBKERNEL_WEIGHTS=	        "get_last_subkernel_weights";
 static const CHAR* N_GET_WD_POS_WEIGHTS=	        "get_WD_position_weights";
+static const CHAR* N_COMPUTE_POIM_WD=	        "compute_poim_wd";
 static const CHAR* N_GET_WD_SCORING=	        "get_WD_scoring";
 static const CHAR* N_GET_WD_CONSENSUS=	        "get_WD_consensus";
 static const CHAR* N_GET_SPEC_SCORING=	        "get_SPEC_scoring";
@@ -386,6 +387,20 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			}
 			else
 				SG_SERROR( "usage is W=sg('get_WD_scoring', max_order)");
+		}
+		else if (strmatch(action, len, N_COMPUTE_POIM_WD))
+		{
+		    if (nlhs==1 && nrhs==2)
+			{
+				if (mxIsDouble(prhs[1]))
+				{
+					double* idx=mxGetPr(prhs[1]);
+					if (!sg_matlab.compute_poim_wd(plhs, (INT) (*idx)))
+						SG_SERROR( "error executing command");
+				}
+			}
+			else
+				SG_SERROR( "usage is W=sg('compute_poim_wd', max_order)");
 		}
 		else if (strmatch(action, len, N_GET_WD_CONSENSUS))
 		{

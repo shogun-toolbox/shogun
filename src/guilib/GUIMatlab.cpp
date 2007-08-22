@@ -2810,6 +2810,52 @@ bool CGUIMatlab::get_SPEC_scoring(mxArray* retvals[], INT max_order)
 	return false;
 }
 
+bool CGUIMatlab::compute_poim_wd(mxArray* retvals[], INT max_order)
+{
+	CKernel *k= gui->guikernel.get_kernel() ;
+
+	if (k && (k->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
+	{
+		CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
+		ASSERT(svm);
+		INT num_suppvec = svm->get_num_support_vectors();
+		INT* sv_idx    = new INT[num_suppvec];
+		DREAL* sv_weight = new DREAL[num_suppvec];
+		INT num_feat=-1;
+		INT num_sym=-1;
+
+		for (INT i=0; i<num_suppvec; i++)
+		{
+			sv_idx[i]    = svm->get_support_vector(i);
+			sv_weight[i] = svm->get_alpha(i);
+		}
+
+		if ((max_order < 1) || (max_order > 12))
+		{
+			SG_WARNING( "max_order out of range 1..12 (%d) setting to 1\n", max_order);
+			max_order=1;
+		}
+		DREAL* position_weights;
+		position_weights = ((CWeightedDegreePositionStringKernel*) k)->compute_POIM(
+				max_order, num_feat, num_sym, NULL,
+				num_suppvec, sv_idx, sv_weight);
+		mxArray* mx_result ;
+		mx_result=mxCreateDoubleMatrix(num_sym, num_feat, mxREAL);
+		double* result=mxGetPr(mx_result);
+
+		for (int i=0; i<num_feat; i++)
+		{
+			for (int j=0; j<num_sym; j++)
+				result[i*num_sym+j] = position_weights[i*num_sym+j] ;
+		}
+		retvals[0]=mx_result;
+		return true;
+	}
+	else
+		SG_ERROR( "one cannot compute POIM using this kernel function\n");
+	return false;
+}
+
 bool CGUIMatlab::get_WD_scoring(mxArray* retvals[], INT max_order)
 {
 	CKernel *k= gui->guikernel.get_kernel() ;
