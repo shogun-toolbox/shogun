@@ -16,12 +16,12 @@
 #include "features/SparseFeatures.h"
 #include "features/Labels.h"
 
-CSVMLin::CSVMLin() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), lambda(1.0), use_bias(true)
+CSVMLin::CSVMLin() : CSparseLinearClassifier(), C1(1), C2(1), epsilon(1e-5), use_bias(true)
 {
 }
 
 CSVMLin::CSVMLin(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
-	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), lambda(1.0), use_bias(true)
+	: CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-5), use_bias(true)
 {
 	CSparseLinearClassifier::features=traindat;
 	CClassifier::labels=trainlab;
@@ -50,8 +50,8 @@ bool CSVMLin::train()
 	struct vector_double Weights;
 	struct vector_double Outputs;
 
-	Data.m=num_vec;
 	Data.l=num_vec;
+	Data.m=num_vec;
 	Data.u=0; 
 	Data.n=num_feat+1;
 	Data.nz=num_feat+1;
@@ -60,15 +60,15 @@ bool CSVMLin::train()
 	Data.C = new double[Data.l];
 
 	Options.algo = SVM;
-	Options.lambda=get_lambda();
-	Options.lambda_u=get_lambda();
+	Options.lambda=1/(2*get_C1());
+	Options.lambda_u=1/(2*get_C1());
 	Options.S=10000;
 	Options.R=0.5;
 	Options.epsilon = get_epsilon();
 	Options.cgitermax=10000;
 	Options.mfnitermax=50;
-	Options.Cp = get_C1();
-	Options.Cn = get_C2();
+	Options.Cp = get_C2()/get_C1();
+	Options.Cn = 1;
 	
 	if (use_bias)
 		Options.bias=1.0;
@@ -84,7 +84,15 @@ bool CSVMLin::train()
 	}
 	ssl_train(&Data, &Options, &Weights, &Outputs);
 	ASSERT(Weights.vec && Weights.d == num_feat+1);
+
+	DREAL sgn=train_labels[0];
+	for (INT i=0; i<num_feat+1; i++)
+		Weights.vec[i]*=sgn;
+
 	CSparseLinearClassifier::set_w(Weights.vec, num_feat);
 	CSparseLinearClassifier::set_bias(Weights.vec[num_feat]);
+
+	delete[] Data.C;
+	delete[] train_labels;
 	return true;
 }

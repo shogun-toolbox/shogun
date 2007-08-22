@@ -11,4 +11,3 @@
 %include "classifier/LinearClassifier.h" 
 %include "classifier/Perceptron.i"
 %include "classifier/LDA.i"
-%include "classifier/LPM.i"

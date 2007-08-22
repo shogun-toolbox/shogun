@@ -3,14 +3,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include "classifier/svm/Tron.h"
-
-#ifndef min
-template <class T> inline T min(T x,T y) { return (x<y)?x:y; }
-#endif
-
-#ifndef max
-template <class T> inline T max(T x,T y) { return (x>y)?x:y; }
-#endif
+#include "lib/Mathematics.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -87,25 +80,25 @@ void CTron::tron(double *w)
 		// On the first iteration, adjust the initial step bound.
 		snorm = dnrm2_(&n, s, &inc);
 		if (iter == 1)
-			delta = min(delta, snorm);
+			delta = CMath::min(delta, snorm);
 
 		// Compute prediction alpha*snorm of the step.
 		if (fnew - f - gs <= 0)
 			alpha = sigma3;
 		else
-			alpha = max(sigma1, -0.5*(gs/(fnew - f - gs)));
+			alpha = CMath::max(sigma1, -0.5*(gs/(fnew - f - gs)));
 
 		// Update the trust region bound according to the ratio of actual to predicted reduction.
 		if (actred < eta0*prered)
-			delta = min(max(alpha, sigma1)*snorm, sigma2*delta);
+			delta = CMath::min(CMath::max(alpha, sigma1)*snorm, sigma2*delta);
 		else if (actred < eta1*prered)
-			delta = max(sigma1*delta, min(alpha*snorm, sigma2*delta));
+			delta = CMath::max(sigma1*delta, CMath::min(alpha*snorm, sigma2*delta));
 		else if (actred < eta2*prered)
-			delta = max(sigma1*delta, min(alpha*snorm, sigma3*delta));
+			delta = CMath::max(sigma1*delta, CMath::min(alpha*snorm, sigma3*delta));
 		else
-			delta = max(delta, min(alpha*snorm, sigma3*delta));
+			delta = CMath::max(delta, CMath::min(alpha*snorm, sigma3*delta));
 
-		printf("iter %2d act %5.3e pre %5.3e delta %5.3e f %5.3e |g| %5.3e CG %3d\n", iter, actred, prered, delta, f, gnorm, cg_iter);
+		SG_INFO("iter %2d act %5.3e pre %5.3e delta %5.3e f %5.3e |g| %5.3e CG %3d\n", iter, actred, prered, delta, f, gnorm, cg_iter);
 
 		if (actred > eta0*prered)
 		{
@@ -120,18 +113,18 @@ void CTron::tron(double *w)
 		}
 		if (f < 1.0e-32)
 		{
-			printf("warning: f < 1.0e-32\n");
+			SG_WARNING("f < 1.0e-32\n");
 			break;
 		}
 		if (fabs(actred) <= 0 && fabs(prered) <= 0)
 		{
-			printf("warning: actred and prered <= 0\n");
+			SG_WARNING("actred and prered <= 0\n");
 			break;
 		}
 		if (fabs(actred) <= 1.0e-12*fabs(f) &&
 		    fabs(prered) <= 1.0e-12*fabs(f))
 		{
-			printf("warning: actred and prered too small\n");
+			SG_WARNING("actred and prered too small\n");
 			break;
 		}
 	}
@@ -172,7 +165,7 @@ int CTron::trcg(double delta, double *g, double *s, double *r)
 		daxpy_(&n, &alpha, d, &inc, s, &inc);
 		if (dnrm2_(&n, s, &inc) > delta)
 		{
-			printf("cg reaches trust region boundary\n");
+			SG_INFO("cg reaches trust region boundary\n");
 			alpha = -alpha;
 			daxpy_(&n, &alpha, d, &inc, s, &inc);
 

@@ -118,9 +118,13 @@ bool CLibLinear::train()
 	{
 		CTron tron_obj(fun_obj, epsilon);
 		tron_obj.tron(w);
+		DREAL sgn=prob.y[0];
+
+		for (INT i=0; i<w_dim; i++)
+			w[i]*=sgn;
 
 		if (use_bias)
-			set_bias(w[w_dim]);
+			set_bias(sgn*w[w_dim]);
 		else
 			set_bias(0);
 

@@ -125,7 +125,7 @@ bool CCustomKernel::set_diag_kernel_matrix_from_full(const DREAL* km, int cols)
 		return false;
 }
 
-bool CCustomKernel::set_full_kernel_matrix_from_full(const DREAL* km, int rows, int cols)
+bool CCustomKernel::set_full_kernel_matrix_from_full(const DREAL* km, INT rows, INT cols)
 {
 	cleanup();
 	SG_DEBUG( "using custom kernel of size %dx%d\n", rows,cols);

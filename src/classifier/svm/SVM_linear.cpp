@@ -6,27 +6,6 @@
 #include "classifier/svm/SVM_linear.h"
 #include "classifier/svm/Tron.h"
 
-template <class T> inline void swap(T& x, T& y) { T t=x; x=y; y=t; }
-
-#define Malloc(type,n) (type *)malloc((n)*sizeof(type))
-
-#if 1
-void info(char *fmt,...)
-{
-	va_list ap;
-	va_start(ap,fmt);
-	vprintf(fmt,ap);
-	va_end(ap);
-}
-void info_flush()
-{
-	fflush(stdout);
-}
-#else
-void info(char *fmt,...) {}
-void info_flush() {}
-#endif
-
 l2loss_svm_fun::l2loss_svm_fun(const problem *p, double Cp, double Cn)
 {
 	int i;

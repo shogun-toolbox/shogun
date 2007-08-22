@@ -104,14 +104,15 @@ int CGLS(const struct data *Data,
 		r[i] = 0.0;
 	for(register int j=0; j < active; j++)
 	{
+		ii=J[j];
 		INT num_entries=0;
 		bool free_vec=false;
 
-		TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(J[j], num_entries, free_vec);
+		TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
 		for (int i=0; i<num_entries; i++)
-			r[vec[i].feat_index]= vec[i].entry*z[j];
+			r[vec[i].feat_index]+= vec[i].entry*z[j];
 		features->free_sparse_feature_vector(vec, num_entries, free_vec);
-		r[n-1]=Options->bias*z[j]; //bias (modelled as last dim)
+		r[n-1]+=Options->bias*z[j]; //bias (modelled as last dim)
 	}
 	double *p = new double[n];   
 	double omega1 = 0.0;
@@ -140,17 +141,18 @@ int CGLS(const struct data *Data,
 		// #pragma omp parallel for private(i,j)
 		for(i=0; i < active; i++)
 		{
+			ii=J[i];
 			t=0.0;
 			INT num_entries=0;
 			bool free_vec=false;
-			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(J[i],
+			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(ii,
 					num_entries, free_vec);
 			for (j=0; j<num_entries; j++)
 				t+=vec[j].entry*p[vec[j].feat_index];
 			features->free_sparse_feature_vector(vec, num_entries, free_vec);
 			t+=Options->bias*p[n-1]; //bias (modelled as last dim)
 			q[i]=t;
-			omega_q += C[J[ii]]*t*t;
+			omega_q += C[ii]*t*t;
 		}       
 		gamma = omega1/(lambda*omega_p + omega_q);    
 		inv_omega2 = 1/omega1;     
@@ -169,14 +171,16 @@ int CGLS(const struct data *Data,
 		} 
 		for(j=0; j < active; j++)
 		{
+			ii=J[j];
+			t=z[j];
 			INT num_entries=0;
 			bool free_vec=false;
 
-			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(J[j], num_entries, free_vec);
+			TSparseEntry<DREAL>* vec=features->get_sparse_feature_vector(ii, num_entries, free_vec);
 			for (i=0; i<num_entries; i++)
-				r[vec[i].feat_index]= vec[i].entry*z[j];
+				r[vec[i].feat_index]+= vec[i].entry*t;
 			features->free_sparse_feature_vector(vec, num_entries, free_vec);
-			r[n-1]=Options->bias*z[n-1]; //bias (modelled as last dim)
+			r[n-1]+=Options->bias*t; //bias (modelled as last dim)
 		}
 		omega1 = 0.0;
 		for(i = n ; i-- ;)
@@ -184,7 +188,6 @@ int CGLS(const struct data *Data,
 			r[i] -= lambda*beta[i];
 			omega1 += r[i]*r[i];
 		}
-		SG_SDEBUG("...%d(%f)", cgiter,omega1);
 		if(omega1 < epsilon2*omega_z)
 		{
 			optimality=1;
@@ -453,7 +456,6 @@ double line_search(double *w,
 	delete [] deltas;
 	return (-L/(R-L));
 } 
-
 int TSVM_MFN(const struct data *Data, 
 		struct options *Options, 
 		struct vector_double *Weights,
@@ -794,7 +796,6 @@ int optimize_w(const struct data *Data,
 	double delta=0.0;
 	double t=0.0;
 	int ii = 0;
-
 	while(iter<MFNITERMAX)
 	{
 		iter++;

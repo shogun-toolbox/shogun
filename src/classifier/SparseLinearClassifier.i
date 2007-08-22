@@ -12,3 +12,4 @@
 %include "classifier/svm/SVMLin.i"
 %include "classifier/svm/SubGradientSVM.i"
 %include "classifier/svm/SVMPerf.i"
+%include "classifier/LPM.i"

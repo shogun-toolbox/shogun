@@ -54,14 +54,14 @@ class CCustomKernel: public CKernel
   // set kernel matrix (only elements from main diagonal and above)
   // from elements of maindiagonal and above (concat'd), while m is 
   // already given as diagonal
-  bool set_diag_kernel_matrix_from_diag(const DREAL* m, int cols);
+  bool set_diag_kernel_matrix_from_diag(const DREAL* km, INT cols);
 
   // set kernel matrix (only elements from main diagonal and above)
   // from squared matrix
-  bool set_diag_kernel_matrix_from_full(const DREAL* m, int cols);
+  bool set_diag_kernel_matrix_from_full(const DREAL* km, INT cols);
 
   // set full kernel matrix from full kernel matrix
-  bool set_full_kernel_matrix_from_full(const DREAL* m, int rows, int cols);
+  bool set_full_kernel_matrix_from_full(const DREAL* km, INT rows, INT cols);
 
  protected:
   /// compute kernel function for features a and b
