@@ -1554,15 +1554,39 @@ void CTrie::POIMs_extract_W_helper( const INT nodeIdx, const int depth, const IN
   INT sym;
   if( depth < degree-1 ) {
     const INT offset1 = offset * NUM_SYMS;
+    // the commented block is replaced by the following double-block for speed:
+    // the "if" clause is pulled out of the loop
+    /*
     for( sym = 0; sym < NUM_SYMS; ++sym ) {
       ASSERT( W_kiy[ sym ] == 0 );
       const INT childIdx = node->children[ sym ];
       if( childIdx != NO_CHILD ) {
-	const Trie* const child = &TreeMem[ childIdx ];
-	W_kiy[ sym ] = child->weight;
-	if( depth < K-1 ) {
+        const Trie* const child = &TreeMem[ childIdx ];
+        W_kiy[ sym ] = child->weight;
+        if( depth < K-1 ) {
+          const INT y1 = ( y0 + sym ) * NUM_SYMS;
+          POIMs_extract_W_helper( childIdx, depth+1, offset1, y1, W, K );
+        }
+      }
+    }
+    */
+    if( depth < K-1 ) {
+      for( sym = 0; sym < NUM_SYMS; ++sym ) {
+	ASSERT( W_kiy[ sym ] == 0 );
+	const INT childIdx = node->children[ sym ];
+	if( childIdx != NO_CHILD ) {
 	  const INT y1 = ( y0 + sym ) * NUM_SYMS;
+	  W_kiy[ sym ] = TreeMem[ childIdx ].weight;
 	  POIMs_extract_W_helper( childIdx, depth+1, offset1, y1, W, K );
+	}
+      }
+    } else {
+      ASSERT( depth == K-1 );
+      for( sym = 0; sym < NUM_SYMS; ++sym ) {
+	ASSERT( W_kiy[ sym ] == 0 );
+	const INT childIdx = node->children[ sym ];
+	if( childIdx != NO_CHILD ) {
+	  W_kiy[ sym ] = TreeMem[ childIdx ].weight;
 	}
       }
     }
