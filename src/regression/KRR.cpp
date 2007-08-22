@@ -40,8 +40,8 @@ bool CKRR::train()
 {
   delete[] alpha;
   
-  ASSERT(CKernelMachine::get_labels());
-  ASSERT(CKernelMachine::get_kernel());
+  ASSERT(get_labels());
+  ASSERT(get_kernel() && get_kernel()->get_lhs());
 
   // Get kernel matrix
   INT m = 0;
