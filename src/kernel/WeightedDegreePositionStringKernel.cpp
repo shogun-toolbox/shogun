@@ -1575,7 +1575,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   ASSERT( max_degree > 0 );
 
   // === general variables
-  static const INT NUM_SYM = Trie::NUM_SYMS;
+  static const INT NUM_SYMS = Trie::NUM_SYMS;
   const INT seqLen = num_feat;
   DREAL** subs;
   INT i;
@@ -1590,7 +1590,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   offset = 0;
   for( k = 0; k < max_degree; ++k ) {
     offsets[k] = offset;
-    const INT nofsKmers = (INT) pow( NUM_SYM, k+1 );
+    const INT nofsKmers = (INT) pow( NUM_SYMS, k+1 );
     const INT tabSize = nofsKmers * seqLen;
     offset += tabSize;
   }
@@ -1610,24 +1610,38 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   delete[] offsets;
 
   // === init trees; precalc S, L and R
-  //for( i = 0; i < seqLen; ++i ) {
-  //init_optimization( num_suppvec, IDX, alphas, i );
-  //const INT treeIdx = i;
-  //}
-  init_optimization(num_suppvec, IDX, alphas, 0, seqLen-1);
+  init_optimization( num_suppvec, IDX, alphas, 0, seqLen-1 );
   tries.POIMs_precalc_SLR();
 
-  // === compute substring scores / POIMs
+  // === compute substring scores
   tries.POIMs_extract_W( subs, max_degree );
-  //for( k = 0; k < max_degree-1; ++k ) {
-  //  const INT nofsKmers = (INT) pow( NUM_SYM, k+1 );
-  //  DREAL* const subs_kn = ( k > 0 ) ? subs[ k-1 ] : NULL;
-  //  DREAL* const subs_ko = subs[ k ];
-  //  DREAL* const subs_kp = subs[ k+1 ];
-  //  for( y = 0; y < nofsKmers; ++y ) {
-  //    
-  //  }
-  //}
+  for( k = 1; k < max_degree; ++k ) {
+    const INT nofKmers2 = ( k > 1 ) ? (INT) pow(NUM_SYMS,k-1) : 0;
+    const INT nofKmers1 = (INT) pow( NUM_SYMS, k );
+    const INT nofKmers0 = nofKmers1 * NUM_SYMS;
+    for( i = 0; i < seqLen; ++i ) {
+      DREAL* const subs_k2i1 = ( k>1 && i<seqLen-1 ) ? &subs[k-2][(i+1)*nofKmers2] : NULL;
+      DREAL* const subs_k1i1 = ( i < seqLen-1 ) ? &subs[k-1][(i+1)*nofKmers1] : NULL;
+      DREAL* const subs_k1i0 = & subs[ k-1 ][ i*nofKmers1 ];
+      DREAL* const subs_k0i  = & subs[ k-0 ][ i*nofKmers0 ];
+      INT y0;
+      for( y0 = 0; y0 < nofKmers0; ++y0 ) {
+	const INT y1l = y0 / NUM_SYMS;
+	const INT y1r = y0 % nofKmers1;
+	const INT y2 = y1r / NUM_SYMS;
+	subs_k0i[ y0 ] += subs_k1i0[ y1r ];
+	if( i < seqLen-1 ) {
+	  subs_k0i[ y0 ] += subs_k1i1[ y1l ];
+	  if( k > 1 ) {
+	    subs_k0i[ y0 ] -= subs_k2i1[ y2 ];
+	  }
+	}
+      }
+    }
+  }
+
+  // === compute POIMs
+  tries.POIMs_add_SLR( subs, max_degree );
 
   // === clean; return "subs" as vector
   delete[] subs;

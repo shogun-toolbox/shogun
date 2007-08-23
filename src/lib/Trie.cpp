@@ -1539,7 +1539,8 @@ void CTrie::POIMs_extract_W( DREAL* const* const W, const INT K )
   ASSERT( K >= 1 );
   const INT N = length;
   INT i;
-  for( i = 0; i < N-1; ++i ) {
+  for( i = 0; i < N; ++i ) {
+    //printf( "W_helper( %d )\n", i );
     POIMs_extract_W_helper( trees[i], 0, i*NUM_SYMS, 0*NUM_SYMS, W, K );
   }
 }
@@ -1577,7 +1578,9 @@ void CTrie::POIMs_extract_W_helper( const INT nodeIdx, const int depth, const IN
 	if( childIdx != NO_CHILD ) {
 	  const INT y1 = ( y0 + sym ) * NUM_SYMS;
 	  W_kiy[ sym ] = TreeMem[ childIdx ].weight;
+	  //W_kiy[ sym ] = TreeMem[ childIdx ].R;
 	  POIMs_extract_W_helper( childIdx, depth+1, offset1, y1, W, K );
+	  //printf( "depth %d, offset %d, y0 %d, sym %d, y1 %d\n", depth, offset, y0, sym, y1 );
 	}
       }
     } else {
@@ -1587,6 +1590,7 @@ void CTrie::POIMs_extract_W_helper( const INT nodeIdx, const int depth, const IN
 	const INT childIdx = node->children[ sym ];
 	if( childIdx != NO_CHILD ) {
 	  W_kiy[ sym ] = TreeMem[ childIdx ].weight;
+	  //W_kiy[ sym ] = TreeMem[ childIdx ].R;
 	}
       }
     }
@@ -1616,10 +1620,11 @@ void CTrie::POIMs_precalc_SLR()
   for( symLeft = 0; symLeft < NUM_SYMS; ++symLeft ) {
     leftSubtreeIdcs[ symLeft ] = NO_CHILD;
   }
-  for( i = 0; i < N-1; ++i ) {
+  for( i = 0; i < N; ++i ) {
     for( symLeft = NUM_SYMS; symLeft < degree*NUM_SYMS; ++symLeft ) {
       leftSubtreeIdcs[ symLeft ] = NO_CHILD;  // AID DEBUGGING
     }
+    //printf( "SLR -> %d\n", i );
     POIMs_calc_SLR_helper2( trees[i], leftSubtreeIdcs, 0, &dummy, &dummy, &dummy );
     const Trie* const node = &TreeMem[ trees[i] ];
     for( symLeft = 0; symLeft < NUM_SYMS; ++symLeft ) {
@@ -1674,7 +1679,7 @@ void CTrie::POIMs_calc_SLR_helper2( const INT nodeIdx, INT* const leftSubtreeIdc
     if( leftSubtreeIdx != NO_CHILD ) {
       const Trie* const nodeLeft = &TreeMem[ leftSubtreeIdx ];
       node->S += nodeLeft->S;
-      node->R += nodeLeft->R;
+      node->L += nodeLeft->L;
       // - second order correction for S
       auxS = 0;
       if( depth < degree-2 ) {
@@ -1690,12 +1695,13 @@ void CTrie::POIMs_calc_SLR_helper2( const INT nodeIdx, INT* const leftSubtreeIdc
 	  auxS += nodeLeft->child_weights[ symRight ];
 	}
       }
-      node->S -= auxS / NUM_SYMS;
+      node->S -= auxS; // / NUM_SYMS;
     }
   }
 
   // --- marginalize, add w, and return results
   const DREAL w0 = node->weight;
+  //printf( "  d=%d, node=%d, dS=%.3f, w=%.3f\n", depth, nodeIdx, node->S, w0 );
   node->S = node->S / NUM_SYMS + w0;
   node->L = node->L / NUM_SYMS + w0;
   node->R = node->R / NUM_SYMS + w0;
@@ -1764,6 +1770,117 @@ void CTrie::POIMs_get_SLR( const INT parentIdx, const INT sym, const int depth,
     *S = w;
     *L = w;
     *R = w;
+  }
+}
+
+
+
+static INT* nofsKmers;
+
+void CTrie::POIMs_add_SLR( DREAL* const* const poims, const INT K )
+{
+  ASSERT( degree >= 1 );
+  ASSERT( K >= 1 );
+  {
+    const int m = ( degree > K ) ? degree : K;
+    nofsKmers = new INT[ m+1 ];
+    INT n;
+    INT k;
+    n = 1;
+    for( k = 0; k < m+1; ++k ) {
+      nofsKmers[ k ] = n;
+      n *= NUM_SYMS;
+    }
+  }
+  const INT N = length;
+  INT i;
+  for( i = 0; i < N; ++i ) {
+    POIMs_add_SLR_helper1( trees[i], 0, i, 0*NUM_SYMS, poims, K );
+  }
+  delete[] nofsKmers;
+}
+
+void CTrie::POIMs_add_SLR_helper1( const INT nodeIdx, const int depth, const INT i, const INT y0,
+				   DREAL* const* const poims, const INT K )
+{
+  ASSERT( nodeIdx != NO_CHILD );
+  ASSERT( depth < K );
+  Trie* const node = &TreeMem[ nodeIdx ];
+  INT sym;
+  if( depth < degree-1 ) {
+    if( depth < K-1 ) {
+      for( sym = 0; sym < NUM_SYMS; ++sym ) {
+	const INT childIdx = node->children[ sym ];
+	if( childIdx != NO_CHILD ) {
+	  Trie* const child = &TreeMem[ childIdx ];
+	  const INT y = y0 + sym;
+	  const INT y1 = y * NUM_SYMS;
+	  const DREAL w = child->weight;
+	  POIMs_add_SLR_helper2( poims, K, depth+1, i, y, w, child->S, child->L, child->R );
+	  POIMs_add_SLR_helper1( childIdx, depth+1, i, y1, poims, K );
+	}
+      }
+    } else {
+      ASSERT( depth == K-1 );
+      for( sym = 0; sym < NUM_SYMS; ++sym ) {
+	const INT childIdx = node->children[ sym ];
+	if( childIdx != NO_CHILD ) {
+	  Trie* const child = &TreeMem[ childIdx ];
+	  const INT y = y0 + sym;
+	  const DREAL w = child->weight;
+	  POIMs_add_SLR_helper2( poims, K, depth+1, i, y, w, child->S, child->L, child->R );
+	}
+      }
+    }
+  } else {
+    ASSERT( depth == degree-1 );
+    for( sym = 0; sym < NUM_SYMS; ++sym ) {
+      const DREAL w = node->child_weights[ sym ];
+      const INT y = y0 + sym;
+      POIMs_add_SLR_helper2( poims, K, depth+1, i, y, w, w, w, w );
+    }
+  }
+}
+
+void CTrie::POIMs_add_SLR_helper2( DREAL* const* const poims, const int K, const int k, const INT i, const INT y,
+				   const DREAL valW, const DREAL valS, const DREAL valL, const DREAL valR )
+{
+  const INT nk = nofsKmers[ k ];
+  ASSERT( 1 <= k && k < K );
+  ASSERT( 0 <= y && y < nk );
+  INT z;
+  INT j;
+  // --- add superstring score; subtract "w", as it was counted twice
+  poims[ k-1 ][ i*nk + y ] += valS - valW - valW;
+  // --- left partial overlaps
+  INT r;
+  for( r = 1; k+r <= K; ++r ) {
+    const INT nr = nofsKmers[ r ];
+    const INT nz = nofsKmers[ k+r ];
+    DREAL* const poim = & poims[ k+r-1 ][ i*nz ];
+    z = y * nr;
+    for( j = 0; j < nr; ++j ) {
+      if( !( 0 <= z && z < nz ) ) {
+	printf( "k=%d, nk=%d,  r=%d, nr=%d,  nz=%d \n", k, nk, r, nr, nz );
+	printf( "  j=%d, y=%d, z=%d \n", j, y, z );
+      }
+      ASSERT( 0 <= z && z < nz );
+      poim[ z ] += valL - valW;
+      ++z;
+    }
+  }
+  // --- right partial overlaps
+  INT l;
+  for( l = 1; k+l <= K; ++l ) {
+    const INT nl = nofsKmers[ l ];
+    const INT nz = nofsKmers[ k+l ];
+    DREAL* const poim = & poims[ k+l-1 ][ i*nz ];
+    z = y;
+    for( j = 0; j < nl; ++j ) {
+      ASSERT( 0 <= z && z < nz );
+      poim[ z ] += valR - valW;
+      z += nk;
+    }
   }
 }
 
