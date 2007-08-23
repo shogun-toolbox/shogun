@@ -117,6 +117,7 @@ for( k = 1:3 )
     t = floor( t / 4 );
   end;
   poim = poim - meanOut;
+  poim( :, (len-k+2):len ) = 0;
   poims{k} = poim;
 end;
 
