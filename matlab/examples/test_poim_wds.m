@@ -101,7 +101,7 @@ sg( 'send_command', 'init_kernel TEST' );
 out = sg( 'svm_classify' );
 
 
-% === verify POIMs
+% === compute true POIMs
 poims = {};
 meanOut = mean( out );
 %for( k = 1:max_order )
@@ -122,11 +122,14 @@ for( k = 1:3 )
 end;
 
 
-% === plot
-figure;
-title( 'buggy shogun implementation' );
-imagesc( x{3} );
-figure;
-title( 'truth' );
-imagesc( poims{3} );
+% === compare
+poims{1} - x{1}
+for( k = 2 )
+  figure;
+  imagesc( x{k} );
+  title( 'buggy shogun implementation' );
+  figure;
+  imagesc( poims{k} );
+  title( 'truth' );
+end;
 
