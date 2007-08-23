@@ -116,13 +116,13 @@ void CTron::tron(double *w)
 			SG_WARNING("f < 1.0e-32\n");
 			break;
 		}
-		if (fabs(actred) <= 0 && fabs(prered) <= 0)
+		if (CMath::abs(actred) <= 0 && CMath::abs(prered) <= 0)
 		{
 			SG_WARNING("actred and prered <= 0\n");
 			break;
 		}
-		if (fabs(actred) <= 1.0e-12*fabs(f) &&
-		    fabs(prered) <= 1.0e-12*fabs(f))
+		if (CMath::abs(actred) <= 1.0e-12*CMath::abs(f) &&
+		    CMath::abs(prered) <= 1.0e-12*CMath::abs(f))
 		{
 			SG_WARNING("actred and prered too small\n");
 			break;
@@ -200,9 +200,9 @@ int CTron::trcg(double delta, double *g, double *s, double *r)
 
 double CTron::norm_inf(int n, double *x)
 {
-	double dmax = fabs(x[0]);
+	double dmax = CMath::abs(x[0]);
 	for (int i=1; i<n; i++)
-		if (fabs(x[i]) >= dmax)
-			dmax = fabs(x[i]);
+		if (CMath::abs(x[i]) >= dmax)
+			dmax = CMath::abs(x[i]);
 	return(dmax);
 }

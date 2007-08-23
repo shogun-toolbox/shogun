@@ -78,9 +78,9 @@ bool CSVMLin::train()
 	for(int i=0;i<num_vec;i++)
 	{
 		if(train_labels[i]>0) 
-			Data.C[i]=get_C1(); 
+			Data.C[i]=Options.Cp;
 		else 
-			Data.C[i]=get_C2();
+			Data.C[i]=Options.Cn;
 	}
 	ssl_train(&Data, &Options, &Weights, &Outputs);
 	ASSERT(Weights.vec && Weights.d == num_feat+1);
