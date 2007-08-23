@@ -1610,10 +1610,11 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   delete[] offsets;
 
   // === init trees; precalc S, L and R
-  for( i = 0; i < seqLen; ++i ) {
-    init_optimization( num_suppvec, IDX, alphas, i );
-    //const INT treeIdx = i;
-  }
+  //for( i = 0; i < seqLen; ++i ) {
+  //init_optimization( num_suppvec, IDX, alphas, i );
+  //const INT treeIdx = i;
+  //}
+  init_optimization(num_suppvec, IDX, alphas, 0, seqLen-1);
   tries.POIMs_precalc_SLR();
 
   // === compute substring scores / POIMs
