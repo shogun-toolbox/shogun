@@ -45,7 +45,7 @@ sg( 'send_command', 'use_linadd 1' );
 sg( 'send_command', 'use_batch_computation 1' );
 sg( 'set_features', 'TRAIN', traindat, 'DNA' );
 sg( 'set_labels', 'TRAIN', trainlab );
-sg( 'send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS3 CHAR 10 %i %i %i 1 %s', order, max_mismatch, len, shifts ) );
+sg( 'send_command', sprintf( 'set_kernel WEIGHTEDDEGREEPOS2_NONORM CHAR 10 %i %i %i %s', order, max_mismatch, len, shifts ) );
 sg( 'send_command', 'init_kernel TRAIN' );
 sg( 'send_command', 'new_svm LIGHT' );
 sg( 'send_command', sprintf('c %f',C) );
