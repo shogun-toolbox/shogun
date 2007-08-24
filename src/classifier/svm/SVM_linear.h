@@ -2,23 +2,18 @@
 #define _LIBLINEAR_H
 
 #include "classifier/svm/Tron.h"
+#include "features/SparseFeatures.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct feature_node
-{
-	int index;
-	double value;
-};
-
 struct problem
 {
 	int l, n;
 	int *y;
-	struct feature_node **x;
-	double bias;            /* < 0 if no bias term */  
+	CSparseFeatures<DREAL>* x;
+	bool use_bias;
 };
 
 struct parameter

@@ -105,55 +105,51 @@ void l2loss_svm_fun::Hv(double *s, double *Hs)
 
 void l2loss_svm_fun::Xv(double *v, double *res_Xv)
 {
-	int i;
 	int l=prob->l;
-	feature_node **x=prob->x;
+	int n=prob->n;
 
-	for(i=0;i<l;i++)
+	if (prob->use_bias)
+		n--;
+
+	for(int i=0;i<l;i++)
 	{
-		feature_node *s=x[i];
-		res_Xv[i]=0;
-		while(s->index!=-1)
-		{
-			res_Xv[i]+=v[s->index-1]*s->value;
-			s++;
-		}
+		res_Xv[i]=prob->x->dense_dot(1.0, i, v, n, 0);
+
+		if (prob->use_bias)
+			res_Xv[i]+=v[n];
 	}
 }
 
 void l2loss_svm_fun::subXv(double *v, double *res_Xv)
 {
-	int i;
-	feature_node **x=prob->x;
+	int n=prob->n;
 
-	for(i=0;i<sizeI;i++)
+	if (prob->use_bias)
+		n--;
+
+	for(int i=0;i<sizeI;i++)
 	{
-		feature_node *s=x[I[i]];
-		res_Xv[i]=0;
-		while(s->index!=-1)
-		{
-			res_Xv[i]+=v[s->index-1]*s->value;
-			s++;
-		}
+		res_Xv[i]=prob->x->dense_dot(1.0, I[i], v, n, 0);
+
+		if (prob->use_bias)
+			res_Xv[i]+=v[n];
 	}
 }
 
 void l2loss_svm_fun::subXTv(double *v, double *XTv)
 {
-	int i;
 	int n=prob->n;
-	feature_node **x=prob->x;
 
-	for(i=0;i<n;i++)
-		XTv[i]=0;
-	for(i=0;i<sizeI;i++)
+	if (prob->use_bias)
+		n--;
+
+	memset(XTv, 0, sizeof(double)*prob->n);
+	for(int i=0;i<sizeI;i++)
 	{
-		feature_node *s=x[I[i]];
-		while(s->index!=-1)
-		{
-			XTv[s->index-1]+=v[i]*s->value;
-			s++;
-		}
+		prob->x->add_to_dense_vec(v[i], I[i], XTv, n);
+		
+		if (prob->use_bias)
+			XTv[n]+=v[i];
 	}
 }
 
@@ -254,38 +250,36 @@ void l2_lr_fun::Hv(double *s, double *Hs)
 
 void l2_lr_fun::Xv(double *v, double *res_Xv)
 {
-	int i;
 	int l=prob->l;
-	feature_node **x=prob->x;
+	int n=prob->n;
 
-	for(i=0;i<l;i++)
+	if (prob->use_bias)
+		n--;
+
+	for (int i=0;i<l;i++)
 	{
-		feature_node *s=x[i];
-		res_Xv[i]=0;
-		while(s->index!=-1)
-		{
-			res_Xv[i]+=v[s->index-1]*s->value;
-			s++;
-		}
+		res_Xv[i]=prob->x->dense_dot(1.0, i, v, n, 0);
+
+		if (prob->use_bias)
+			res_Xv[i]+=v[n];
 	}
 }
 
 void l2_lr_fun::XTv(double *v, double *res_XTv)
 {
-	int i;
 	int l=prob->l;
 	int n=prob->n;
-	feature_node **x=prob->x;
 
-	for(i=0;i<n;i++)
-		res_XTv[i]=0;
-	for(i=0;i<l;i++)
+	if (prob->use_bias)
+		n--;
+
+	memset(res_XTv, 0, sizeof(double)*prob->n);
+
+	for (int i=0;i<l;i++)
 	{
-		feature_node *s=x[i];
-		while(s->index!=-1)
-		{
-			res_XTv[s->index-1]+=v[i]*s->value;
-			s++;
-		}
+		prob->x->add_to_dense_vec(v[i], i, res_XTv, n);
+
+		if (prob->use_bias)
+			res_XTv[n]+=v[i];
 	}
 }

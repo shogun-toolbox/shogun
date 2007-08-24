@@ -58,44 +58,14 @@ bool CLibLinear::train()
 		memset(w, 0, sizeof(DREAL)*(w_dim+0));
 	}
 	prob.l=num_vec;
-	prob.x=new feature_node*[prob.l];
+	prob.x=sfeat;
 	prob.y=new int[prob.l];
-	feature_node* x_space= new feature_node[sfeat->get_num_nonzero_entries() + 2*num_vec];
+	prob.use_bias=use_bias;
 
-	ASSERT(x_space);
 	ASSERT(prob.y);
-	ASSERT(prob.x);
 
-	INT j=0;
 	for (int i=0; i<prob.l; i++)
-	{
 		prob.y[i]=get_labels()->get_int_label(i);
-		prob.x[i]=&x_space[j];
-
-		bool vfree;
-		INT dim;
-		TSparseEntry<DREAL>* sv=sfeat->get_sparse_feature_vector(i, dim, vfree);
-
-		for (INT k=0; k<dim; k++)
-		{
-			x_space[j].index = sv[k].feat_index+1;
-			x_space[j].value = sv[k].entry;
-			j++;
-		}
-
-		sfeat->free_sparse_feature_vector(sv, i, vfree);
-
-		if (use_bias)
-		{
-			x_space[j].index=num_feat+1;
-			x_space[j].value=1.0;
-			j++;
-		}
-
-		x_space[j].value=NAN;
-		x_space[j].index=-1;
-		j++;
-	}
 
 	SG_INFO( "%d training points %d dims\n", prob.l, prob.n);
 
