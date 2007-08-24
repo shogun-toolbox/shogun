@@ -10,7 +10,7 @@ num_test  = 1000;
 % --- POIM
 max_order = 8;
 % --- kernel
-order = 4;
+order = 1;
 shift = 0;
 max_mismatch = 0;
 % --- SVM
@@ -52,6 +52,18 @@ sg( 'send_command', sprintf('c %f',C) );
 sg( 'send_command', 'svm_train' );
 
 
+% === test
+t1 = 'CCCCACCCCCC';
+t2 = 'CCCCCCCCCCC';  
+T = [ t1 ; t2 ]' 
+sg( 'set_features', 'TEST', T, 'DNA' );
+sg( 'set_labels', 'TEST', ones(1,size(T,2)) );
+sg( 'send_command', 'init_kernel TEST' );
+out = sg( 'svm_classify' )
+
+error( 'kann nicht sein, oder?' );
+
+
 % % === evaluate SVM on test data
 % sg( 'set_features', 'TEST', testdat, 'DNA' );
 % sg( 'set_labels', 'TEST', testlab );
@@ -77,7 +89,6 @@ end;
 
 
 % === output
-x{1}
 figure;
 for( i = 1:4 )
   subplot( 2, 2, i );
@@ -105,7 +116,7 @@ out = sg( 'svm_classify' );
 poims = {};
 meanOut = mean( out );
 %for( k = 1:max_order )
-for( k = 1:3 )
+for( k = 1:2 )
   m = 4^k;
   poim = zeros( m, len );
   t = (1:N) - 1;
@@ -124,7 +135,7 @@ end;
 
 % === compare
 poims{1} - x{1}
-for( k = 2 )
+for( k = 1:length(poims) )
   figure;
   imagesc( x{k} );
   title( 'buggy shogun implementation' );
