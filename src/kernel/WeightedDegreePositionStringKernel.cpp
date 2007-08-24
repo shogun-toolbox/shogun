@@ -1615,6 +1615,18 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
 
   // === compute substring scores
   tries.POIMs_extract_W( subs, max_degree );
+  if( 0 ) {  // DEBUG
+    const DREAL* const w1 = subs[ 0 ];
+    INT y;
+    printf( "W1:\n" );
+    for( y = 0; y < NUM_SYMS; ++y ) {
+      for( i = 0; i < seqLen; ++i ) {
+	printf( "%5.2f ", w1[y+i*NUM_SYMS] );
+      }
+      printf( "\n" );
+    }
+    printf( "\n" );
+  }
   for( k = 1; k < max_degree; ++k ) {
     const INT nofKmers2 = ( k > 1 ) ? (INT) pow(NUM_SYMS,k-1) : 0;
     const INT nofKmers1 = (INT) pow( NUM_SYMS, k );
@@ -1629,9 +1641,9 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
 	const INT y1l = y0 / NUM_SYMS;
 	const INT y1r = y0 % nofKmers1;
 	const INT y2 = y1r / NUM_SYMS;
-	subs_k0i[ y0 ] += subs_k1i0[ y1r ];
+	subs_k0i[ y0 ] += subs_k1i0[ y1l ];
 	if( i < seqLen-1 ) {
-	  subs_k0i[ y0 ] += subs_k1i1[ y1l ];
+	  subs_k0i[ y0 ] += subs_k1i1[ y1r ];
 	  if( k > 1 ) {
 	    subs_k0i[ y0 ] -= subs_k2i1[ y2 ];
 	  }

@@ -1845,13 +1845,14 @@ void CTrie::POIMs_add_SLR_helper1( const INT nodeIdx, const int depth, const INT
 void CTrie::POIMs_add_SLR_helper2( DREAL* const* const poims, const int K, const int k, const INT i, const INT y,
 				   const DREAL valW, const DREAL valS, const DREAL valL, const DREAL valR )
 {
+  //printf( "i=%d, d=%d, y=%d:  w=%.3f \n", i, k, y, valW );
   const INT nk = nofsKmers[ k ];
-  ASSERT( 1 <= k && k < K );
+  ASSERT( 1 <= k && k <= K );
   ASSERT( 0 <= y && y < nk );
   INT z;
   INT j;
   // --- add superstring score; subtract "w", as it was counted twice
-  poims[ k-1 ][ i*nk + y ] += valS - valW - valW;
+  poims[ k-1 ][ i*nk + y ] += valS - valW;
   // --- left partial overlaps
   INT r;
   for( r = 1; k+r <= K; ++r ) {
@@ -1871,10 +1872,10 @@ void CTrie::POIMs_add_SLR_helper2( DREAL* const* const poims, const int K, const
   }
   // --- right partial overlaps
   INT l;
-  for( l = 1; k+l <= K; ++l ) {
+  for( l = 1; k+l <= K && l <= i; ++l ) {
     const INT nl = nofsKmers[ l ];
     const INT nz = nofsKmers[ k+l ];
-    DREAL* const poim = & poims[ k+l-1 ][ i*nz ];
+    DREAL* const poim = & poims[ k+l-1 ][ (i-l)*nz ];
     z = y;
     for( j = 0; j < nl; ++j ) {
       ASSERT( 0 <= z && z < nz );

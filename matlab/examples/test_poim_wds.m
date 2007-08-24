@@ -10,11 +10,11 @@ num_test  = 1000;
 % --- POIM
 max_order = 8;
 % --- kernel
-order = 1;
+order = 6;
 shift = 0;
 max_mismatch = 0;
 % --- SVM
-C = 1;
+C = 1 / len^2;
 cache = 10;
 
 
@@ -53,15 +53,15 @@ sg( 'send_command', 'svm_train' );
 
 
 % === test
-t1 = 'CCCCACCCCCC';
-t2 = 'CCCCCCCCCCC';  
-T = [ t1 ; t2 ]' 
-sg( 'set_features', 'TEST', T, 'DNA' );
-sg( 'set_labels', 'TEST', ones(1,size(T,2)) );
-sg( 'send_command', 'init_kernel TEST' );
-out = sg( 'svm_classify' )
-
-error( 'kann nicht sein, oder?' );
+if( 0 )
+  t1 = 'CCCCACCCCCC';
+  t2 = 'CCCCCCCCCCC';  
+  T = [ t1 ; t2 ]' 
+  sg( 'set_features', 'TEST', T, 'DNA' );
+  sg( 'set_labels', 'TEST', ones(1,size(T,2)) );
+  sg( 'send_command', 'init_kernel TEST' );
+  out = sg( 'svm_classify' )
+end;
 
 
 % % === evaluate SVM on test data
@@ -79,11 +79,14 @@ X = zeros( max_order, len );
 l = 0;
 for( k = 1:max_order )
   L = l + 4^k*len;
-  x{k} = Q((l+1):L);
-  x{k} = reshape( x{k}, [4^k,len] );
+  q = Q((l+1):L);
+  q = reshape( q, [4^k,len] );
+  q = q - repmat( mean(q,1), 4^k, 1 );
+  q( :, (len-k+2):len ) = 0;
+  x{k} = q;
   l = L;
-  %X(k,:) = max( abs(x{k}), [], 1 );
-  X(k,:) = var( x{k} );
+  X(k,:) = max( abs(x{k}), [], 1 );
+  %X(k,:) = var( x{k} );
 end;
 %save( 'S.mat', 'x', 'X' );
 
@@ -116,7 +119,7 @@ out = sg( 'svm_classify' );
 poims = {};
 meanOut = mean( out );
 %for( k = 1:max_order )
-for( k = 1:2 )
+for( k = 1:3 )
   m = 4^k;
   poim = zeros( m, len );
   t = (1:N) - 1;
@@ -134,13 +137,15 @@ end;
 
 
 % === compare
-poims{1} - x{1}
 for( k = 1:length(poims) )
-  figure;
-  imagesc( x{k} );
-  title( 'buggy shogun implementation' );
-  figure;
-  imagesc( poims{k} );
-  title( 'truth' );
+  if( 0 )
+    figure;
+    imagesc( x{k} );
+    title( sprintf( '%d (shogun)', k ) );
+    figure;
+    imagesc( poims{k} );
+    title( sprintf( '%d (truth)', k ) );
+  end;
+  fprintf( 'order %d: norm diff = %.2e \n', k, norm(poims{k}-x{k}) );
 end;
 
