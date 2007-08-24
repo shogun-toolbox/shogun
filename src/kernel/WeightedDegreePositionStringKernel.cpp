@@ -1618,7 +1618,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   if( 0 ) {  // DEBUG
     const DREAL* const w1 = subs[ 0 ];
     INT y;
-    printf( "W1:\n" );
+    printf( "W_1:\n" );
     for( y = 0; y < NUM_SYMS; ++y ) {
       for( i = 0; i < seqLen; ++i ) {
 	printf( "%5.2f ", w1[y+i*NUM_SYMS] );

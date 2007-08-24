@@ -10,7 +10,7 @@ num_test  = 1000;
 % --- POIM
 max_order = 8;
 % --- kernel
-order = 6;
+order = 5;
 shift = 0;
 max_mismatch = 0;
 % --- SVM
@@ -30,7 +30,7 @@ rand( 'state', 1 );
 dat = acgt( floor( 4 * rand(len,num) ) + 1 );
 lab = ( (-1) .^ (1:num) );
 for( i = find(lab==+1) )
-  dat( 3:5, i ) = 'AAA';
+  dat( 5:7, i ) = 'AAA';
 end;
 % --- split to training and test
 traindat = dat( :, 1:num_train );
@@ -119,7 +119,7 @@ out = sg( 'svm_classify' );
 poims = {};
 meanOut = mean( out );
 %for( k = 1:max_order )
-for( k = 1:3 )
+for( k = 1:4 )
   m = 4^k;
   poim = zeros( m, len );
   t = (1:N) - 1;
