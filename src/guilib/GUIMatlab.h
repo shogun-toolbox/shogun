@@ -90,7 +90,7 @@ public:
 	bool from_position_list(const mxArray* vals[], int nrhs);
 
 	bool get_kernel_matrix(mxArray* retvals[]);
-	bool get_kernel_optimization(mxArray* retvals[]);
+	bool get_kernel_optimization(mxArray* retvals[], const mxArray* vals[], int nrhs);
 
 	bool set_custom_kernel(const mxArray* vals[], bool source_is_diag, bool dest_is_diag) ;
 

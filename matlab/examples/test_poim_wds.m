@@ -74,12 +74,16 @@ end;
 
 
 % === compute POIMs
-Q = sg( 'compute_poim_wd', max_order );
+n = sg( 'get_kernel_optimization', max_order );
+%Q = sg( 'compute_poim_wd', max_order );
+w = {};
+W = zeros( max_order, len );
 x = {};
 X = zeros( max_order, len );
 l = 0;
 for( k = 1:max_order )
   L = l + abcSize^k*len;
+  w{k}=reshape(n((l+1):L), [abcSize^k,len] );
   q = Q((l+1):L);
   q = reshape( q, [abcSize^k,len] );
   q = q - repmat( mean(q,1), abcSize^k, 1 );
@@ -87,6 +91,7 @@ for( k = 1:max_order )
   x{k} = q;
   l = L;
   X(k,:) = max( abs(x{k}), [], 1 );
+  W(k,:)=max(abs(w{k}), [], 1 );
   %X(k,:) = var( x{k} );
 end;
 %save( 'S.mat', 'x', 'X' );
@@ -129,7 +134,21 @@ title( 'master POIM (shogun)' );
 figure;
 imagesc( Y );
 title( 'master diff-POIM (shogun)' );
-
+figure;
+imagesc( W );
+title( 'max(normal)' );
+figure;
+imagesc( w{1} );
+title( 'normal 1' );
+figure;
+imagesc( w{2} );
+title( 'normal 2' );
+figure;
+imagesc( w{3} );
+title( 'normal 3' );
+figure;
+imagesc( W );
+title( 'POIM w' );
 
 % === predict all possible sequences
 N = abcSize^len;
@@ -145,38 +164,38 @@ sg( 'send_command', 'init_kernel TEST' );
 out = sg( 'svm_classify' );
 
 
-% === compute true POIMs
-poims = {};
-meanOut = mean( out );
-%for( k = 1:max_order )
-for( k = 1:4 )
-  m = abcSize^k;
-  poim = zeros( m, len );
-  t = (1:N) - 1;
-  for( i = (len-k+1):-1:1 )
-    y = mod( t, m ) + 1;
-    for( z = 1:m )
-      poim(z,i) = mean( out(y==z) );
-    end;
-    t = floor( t / abcSize );
-  end;
-  poim = poim - meanOut;
-  poim( :, (len-k+2):len ) = 0;
-  poims{k} = poim;
-end;
-
-
-% === compare
-for( k = 1:length(poims) )
-  if( 0 )
-    figure;
-    imagesc( x{k} );
-    title( sprintf( '%d (shogun)', k ) );
-    figure;
-    imagesc( poims{k} );
-    title( sprintf( '%d (truth)', k ) );
-  end;
-  fprintf( 'order %d: norm diff = %.2e \n', k, norm(poims{k}-x{k}) );
-end;
-
-
+%% === compute true POIMs
+%poims = {};
+%meanOut = mean( out );
+%%for( k = 1:max_order )
+%for( k = 1:4 )
+%  m = abcSize^k;
+%  poim = zeros( m, len );
+%  t = (1:N) - 1;
+%  for( i = (len-k+1):-1:1 )
+%    y = mod( t, m ) + 1;
+%    for( z = 1:m )
+%      poim(z,i) = mean( out(y==z) );
+%    end;
+%    t = floor( t / abcSize );
+%  end;
+%  poim = poim - meanOut;
+%  poim( :, (len-k+2):len ) = 0;
+%  poims{k} = poim;
+%end;
+%
+%
+%% === compare
+%for( k = 1:length(poims) )
+%  if( 0 )
+%    figure;
+%    imagesc( x{k} );
+%    title( sprintf( '%d (shogun)', k ) );
+%    figure;
+%    imagesc( poims{k} );
+%    title( sprintf( '%d (truth)', k ) );
+%  end;
+%  fprintf( 'order %d: norm diff = %.2e \n', k, norm(poims{k}-x{k}) );
+%end;
+%
+%

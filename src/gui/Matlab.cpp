@@ -326,9 +326,9 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (strmatch(action, len, N_GET_KERNEL_OPTIMIZATION))
 		{
-			if ((nlhs==1) && (nrhs==1))
+			if ((nlhs==1) && (nrhs>=1))
 			{
-				if (!sg_matlab.get_kernel_optimization(plhs))
+				if (!sg_matlab.get_kernel_optimization(plhs, prhs, nrhs))
 					SG_SERROR( "error executing command");
 			}
 			else

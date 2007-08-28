@@ -2397,59 +2397,67 @@ bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 	return false;
 }
 
-bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[])
+bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[], const mxArray* vals[], int nrhs)
 {
-	CKernel *kernel_ = gui->guikernel.get_kernel() ;
+	CKernel *kernel = gui->guikernel.get_kernel() ;
 	
-	if (kernel_)
+	if (kernel)
 	{
-		switch (kernel_->get_kernel_type())
+		switch (kernel->get_kernel_type())
 		{
-			case K_WEIGHTEDDEGREE:
-				{
-					CWeightedDegreeStringKernel *kernel = (CWeightedDegreeStringKernel *) kernel_;
-
-					if (kernel->get_max_mismatch()!=0)
-						return false ;
-
-					INT len=0 ;
-					DREAL* res=kernel->compute_abs_weights(len) ;
-
-					mxArray* mx_result=mxCreateDoubleMatrix(4, len, mxREAL);
-					double* result=mxGetPr(mx_result);
-					for (int i=0; i<4*len; i++)
-						result[i]=res[i] ;
-					delete[] res ;
-
-					retvals[0]=mx_result;
-					return true;
-				}
 			case K_WEIGHTEDDEGREEPOS:
 				{
-					CWeightedDegreePositionStringKernel *kernel = (CWeightedDegreePositionStringKernel *) kernel_;
+					INT max_order=0;
+					if ((nrhs==2) && (mxIsDouble(vals[1])))
+						max_order= (INT) *mxGetPr(vals[1]);
+					else
+						SG_ERROR("parameter missing\n");
 
-					if (kernel->get_max_mismatch()!=0)
-						return false ;
+					if ((max_order < 1) || (max_order > 12))
+					{
+						SG_WARNING( "max_order out of range 1..12 (%d) setting to 1\n", max_order);
+						max_order=1;
+					}
 
-					INT len=0 ;
-					DREAL* res=kernel->compute_abs_weights(len) ;
+					CWeightedDegreePositionStringKernel* k = (CWeightedDegreePositionStringKernel *) kernel;
 
-					mxArray* mx_result=mxCreateDoubleMatrix(4, len, mxREAL);
+					CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
+					ASSERT(svm);
+					INT num_suppvec = svm->get_num_support_vectors();
+					INT* sv_idx    = new INT[num_suppvec];
+					DREAL* sv_weight = new DREAL[num_suppvec];
+					INT num_feat=-1;
+					INT num_sym=-1;
+
+					for (INT i=0; i<num_suppvec; i++)
+					{
+						sv_idx[i]    = svm->get_support_vector(i);
+						sv_weight[i] = svm->get_alpha(i);
+					}
+
+					DREAL* position_weights;
+					position_weights = k->extract_w( max_order, num_feat, num_sym, NULL,
+							num_suppvec, sv_idx, sv_weight);
+					mxArray* mx_result ;
+					mx_result=mxCreateDoubleMatrix(num_sym, num_feat, mxREAL);
 					double* result=mxGetPr(mx_result);
-					for (int i=0; i<4*len; i++)
-						result[i]=res[i] ;
-					delete[] res ;
 
+					for (int i=0; i<num_feat; i++)
+					{
+						for (int j=0; j<num_sym; j++)
+							result[i*num_sym+j] = position_weights[i*num_sym+j] ;
+					}
 					retvals[0]=mx_result;
 					return true;
 				}
-			case  K_COMMWORDSTRING:
+			case K_COMMWORDSTRING:
+			case K_WEIGHTEDCOMMWORDSTRING:
 				{
-					CCommWordStringKernel *kernel = (CCommWordStringKernel *) kernel_ ;
+					CCommWordStringKernel *k = (CCommWordStringKernel *) kernel ;
 
 					INT len=0 ;
 					DREAL* weights ;
-					kernel->get_dictionary(len, weights) ;
+					k->get_dictionary(len, weights) ;
 
 					mxArray* mx_result=mxCreateDoubleMatrix(len, 1, mxREAL);
 					double* result=mxGetPr(mx_result);
@@ -2459,12 +2467,12 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[])
 					retvals[0]=mx_result;
 					return true;
 				}
-			case  K_LINEAR:
+			case K_LINEAR:
 				{
-					CLinearKernel *kernel = (CLinearKernel *) kernel_ ;
+					CLinearKernel *k = (CLinearKernel *) kernel ;
 
 					INT len=0 ;
-					const double* weights = kernel->get_normal(len);
+					const double* weights = k->get_normal(len);
 
 					mxArray* mx_result=mxCreateDoubleMatrix(len, 1, mxREAL);
 					double* result=mxGetPr(mx_result);
@@ -2474,12 +2482,12 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[])
 					retvals[0]=mx_result;
 					return true;
 				}
-			case  K_SPARSELINEAR:
+			case K_SPARSELINEAR:
 				{
-					CSparseLinearKernel *kernel = (CSparseLinearKernel *) kernel_ ;
+					CSparseLinearKernel *k = (CSparseLinearKernel *) kernel ;
 
 					INT len=0 ;
-					const double* weights = kernel->get_normal(len);
+					const double* weights = k->get_normal(len);
 
 					mxArray* mx_result=mxCreateDoubleMatrix(len, 1, mxREAL);
 					double* result=mxGetPr(mx_result);
