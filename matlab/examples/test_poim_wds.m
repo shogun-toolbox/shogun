@@ -75,7 +75,7 @@ end;
 
 % === compute POIMs
 n = sg( 'get_kernel_optimization', max_order );
-%Q = sg( 'compute_poim_wd', max_order );
+Q = sg( 'compute_poim_wd', max_order );
 w = {};
 W = zeros( max_order, len );
 x = {};

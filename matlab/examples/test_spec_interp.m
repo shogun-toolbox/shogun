@@ -13,8 +13,8 @@ aa=(round(len/2-num_a/2)):(round(len/2+num_a/2-1));
 C=1;
 
 %Weighted Degree kernel parameters
-order=4;
-max_order=4;
+order=5;
+max_order=5;
 
 rand('state',1);
 acgt='ACGT';
