@@ -19,6 +19,7 @@ cache = 10;
 
 
 % === init
+abcSize = length( acgt );
 shifts = sprintf( '%i ', shift*ones(1,len) );
 num = num_train + num_test;
 rand( 'seed', 17 );
@@ -27,7 +28,7 @@ rand( 'state', 1 );
 
 % === generate toy data
 % --- generate all data
-dat = acgt( floor( 4 * rand(len,num) ) + 1 );
+dat = acgt( floor( abcSize * rand(len,num) ) + 1 );
 lab = ( (-1) .^ (1:num) );
 for( i = find(lab==+1) )
   dat( 5:7, i ) = 'AAA';
@@ -78,10 +79,10 @@ x = {};
 X = zeros( max_order, len );
 l = 0;
 for( k = 1:max_order )
-  L = l + 4^k*len;
+  L = l + abcSize^k*len;
   q = Q((l+1):L);
-  q = reshape( q, [4^k,len] );
-  q = q - repmat( mean(q,1), 4^k, 1 );
+  q = reshape( q, [abcSize^k,len] );
+  q = q - repmat( mean(q,1), abcSize^k, 1 );
   q( :, (len-k+2):len ) = 0;
   x{k} = q;
   l = L;
@@ -91,23 +92,52 @@ end;
 %save( 'S.mat', 'x', 'X' );
 
 
+% === compute differential POIMs
+%%% y = {};
+%%% Y = zeros( max_order, len );
+%%% for( k = 1:max_order )
+%%%   if( k == 1 )
+%%%     y{k} = x{k};
+%%%   else
+%%%     s = x{ k-1 };
+%%%     i = (1:(abcSize^k)) - 1;
+%%%     iR = floor( i / abcSize );
+%%%     iL = mod( i, abcSize^(k-1) );
+%%%     t = s( iR+1, 1:(len-1) );
+%%%     t = max( t, s( iL+1, 2:len ) );
+%%%     t( :, (len-k+2):len ) = zeros( abcSize^k, k-1 );
+%%%     y{k} = x{k} - t;
+%%%   end;
+%%%   Y(k,:) = max( abs(y{k}), [], 1 );
+%%% end;
+Y = X;
+for( k = 2:max_order )
+  Y(k,1:(len-k+1)) = X(k,1:(len-k+1)) - max( X(k-1,1:(len-k+1)), X(k-1,2:(len-k+2)) );
+end;
+
+
 % === output
 figure;
 for( i = 1:4 )
   subplot( 2, 2, i );
   imagesc( x{i} );
 end;
+title( 'POIMs (shogun)' );
 figure;
 imagesc( X );
+title( 'master POIM (shogun)' );
+figure;
+imagesc( Y );
+title( 'master diff-POIM (shogun)' );
 
 
 % === predict all possible sequences
-N = 4^len;
+N = abcSize^len;
 T = repmat( ' ', len, N );
 t = (1:N) - 1;
 for( i = len:-1:1 )
-  T(i,:) = acgt( mod(t,4)+1 );
-  t = floor( t / 4 );
+  T(i,:) = acgt( mod(t,abcSize)+1 );
+  t = floor( t / abcSize );
 end;
 sg( 'set_features', 'TEST', T, 'DNA' );
 sg( 'set_labels', 'TEST', ones(1,N) );
@@ -120,7 +150,7 @@ poims = {};
 meanOut = mean( out );
 %for( k = 1:max_order )
 for( k = 1:4 )
-  m = 4^k;
+  m = abcSize^k;
   poim = zeros( m, len );
   t = (1:N) - 1;
   for( i = (len-k+1):-1:1 )
@@ -128,7 +158,7 @@ for( k = 1:4 )
     for( z = 1:m )
       poim(z,i) = mean( out(y==z) );
     end;
-    t = floor( t / 4 );
+    t = floor( t / abcSize );
   end;
   poim = poim - meanOut;
   poim( :, (len-k+2):len ) = 0;
@@ -148,4 +178,5 @@ for( k = 1:length(poims) )
   end;
   fprintf( 'order %d: norm diff = %.2e \n', k, norm(poims{k}-x{k}) );
 end;
+
 
