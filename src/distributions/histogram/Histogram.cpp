@@ -27,7 +27,6 @@ CHistogram::~CHistogram()
 	delete[] hist;
 }
 
-	//const INT* indizes, INT num_indizes)
 bool CHistogram::train()
 {
 	INT vec;

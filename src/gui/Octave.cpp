@@ -26,50 +26,13 @@
 #include <octave/symtab.h>
 #include <octave/variables.h>
 
+#include "guilib/GUICommands.h"
 #include "guilib/GUIOctave.h"
 #include "gui/TextGUI.h"
 #include "gui/GUI.h"
 
 static CGUIOctave sg_octave;
 extern CTextGUI* gui;
-
-static const CHAR* N_SEND_COMMAND=		"send_command";
-static const CHAR* N_HELP=		        "help";
-static const CHAR* N_CRC=			"crc";
-static const CHAR* N_TRANSLATE_STRING=			"translate_string";
-static const CHAR* N_GET_HMM=			"get_hmm";
-static const CHAR* N_GET_SVM=			"get_svm";
-static const CHAR* N_GET_VITERBI_PATH=			"get_viterbi_path";
-static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
-static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
-static const CHAR* N_HMM_LIKELIHOOD=	        "hmm_likelihood";
-static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
-static const CHAR* N_GET_FEATURES=		"get_features";
-static const CHAR* N_GET_LABELS=		"get_labels";
-static const CHAR* N_GET_PREPROC_INIT=	        "get_preproc_init";
-static const CHAR* N_GET_HMM_DEFS=		"get_hmm_defs";
-static const CHAR* N_SET_HMM=			"set_hmm";
-static const CHAR* N_APPEND_HMM=			"append_hmm";
-static const CHAR* N_SET_SVM=			"set_svm";
-static const CHAR* N_SET_KERNEL_INIT=	        "set_kernel_init";
-static const CHAR* N_SET_FEATURES=		"set_features";
-static const CHAR* N_ADD_FEATURES=		"add_features";
-static const CHAR* N_CLEAN_FEATURES=		"clean_features";
-static const CHAR* N_SET_LABELS=		"set_labels";
-static const CHAR* N_SET_PREPROC_INIT=	        "set_preproc_init";
-static const CHAR* N_SET_HMM_DEFS=		"set_hmm_defs";
-static const CHAR* N_ONE_CLASS_HMM_CLASSIFY=		"one_class_hmm_classify";
-static const CHAR* N_ONE_CLASS_LINEAR_HMM_CLASSIFY=		"one_class_linear_hmm_classify";
-static const CHAR* N_HMM_CLASSIFY=		"hmm_classify";
-static const CHAR* N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE=		"one_class_hmm_classify_example";
-static const CHAR* N_HMM_CLASSIFY_EXAMPLE=	"hmm_classify_example";
-static const CHAR* N_SVM_CLASSIFY=		"svm_classify";
-static const CHAR* N_CLASSIFY=		"classify";
-static const CHAR* N_SVM_CLASSIFY_EXAMPLE=	"svm_classify_example";
-static const CHAR* N_GET_PLUGIN_ESTIMATE=	"get_plugin_estimate";
-static const CHAR* N_SET_PLUGIN_ESTIMATE=	"set_plugin_estimate";
-static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY=	"plugin_estimate_classify";
-static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE=	"plugin_estimate_classify_example";
 
 DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 {
@@ -457,33 +420,6 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 			}
 			else
 				SG_SERROR( "usage is sg('set_features', 'TRAIN|TEST', features)");
-			SG_SINFO( "done\n");
-		}
-		else if (!strncmp(action, N_CLEAN_FEATURES, strlen(N_CLEAN_FEATURES)))
-		{
-			if (nrhs==2)
-			{
-				CHAR* target=CGUIOctave::get_octaveString(prhs(1).string_value());
-
-				if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
-						(!strncmp(target, "TEST", strlen("TEST"))) ) 
-				{
-					if (target)
-					{
-						if (!strncmp(target, "TRAIN", strlen("TRAIN")))
-							gui->guifeatures.set_train_features(NULL);
-						else if (!strncmp(target, "TEST", strlen("TEST")))
-							gui->guifeatures.set_test_features(NULL);
-						delete[] target;
-					}
-					else
-						SG_SERROR( "usage is sg('clean_features', 'TRAIN|TEST')");
-				}
-				else
-					SG_SERROR( "usage is sg('clean_features', 'TRAIN|TEST')");
-			}
-			else
-				SG_SERROR( "usage is sg('clean_features', 'TRAIN|TEST')");
 			SG_SINFO( "done\n");
 		}
 		else if (!strncmp(action, N_TRANSLATE_STRING, strlen(N_TRANSLATE_STRING)))

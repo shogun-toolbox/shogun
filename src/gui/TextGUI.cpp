@@ -13,6 +13,7 @@
 
 #ifndef HAVE_SWIG
 #include "gui/TextGUI.h"
+#include "guilib/GUICommands.h"
 
 #include <ctype.h>
 #include <sys/types.h>
@@ -46,112 +47,6 @@ CHistogram* h;
 #ifdef WITHMATLAB
 #include <libmmfile.h>
 #endif // WITHMATLAB
-
-//names of menu commands
-static const CHAR* N_NEW_HMM=			"new_hmm";
-static const CHAR* N_NEW_SVM=			"new_svm";
-static const CHAR* N_NEW_CLASSIFIER=	"new_classifier";
-static const CHAR* N_NEW_KNN=			"new_knn";
-static const CHAR* N_NEW_PLUGIN_ESTIMATOR="new_plugin_estimator";
-static const CHAR* N_TRAIN_ESTIMATOR=	"train_estimator";
-static const CHAR* N_TRAIN_CLASSIFIER=	"train_classifier";
-static const CHAR* N_SET_PERCEPTRON_PARAMETERS=	"set_perceptron_parameters";
-static const CHAR* N_TEST_ESTIMATOR=	"test_estimator";
-static const CHAR* N_TRAIN_KNN=	"train_knn";
-static const CHAR* N_TEST_KNN=	"test_knn";
-static const CHAR* N_LOAD_PREPROC=		"load_preproc";
-static const CHAR* N_SAVE_PREPROC=		"save_preproc";
-static const CHAR* N_LOAD_HMM=			"load_hmm";
-static const CHAR* N_SAVE_HMM=			"save_hmm";
-static const CHAR* N_LOAD_SVM=			"load_svm";
-static const CHAR* N_SAVE_SVM=			"save_svm";
-static const CHAR* N_LOAD_KERNEL_INIT=	"load_kernel_init";
-static const CHAR* N_SAVE_KERNEL_INIT=	"save_kernel_init";
-static const CHAR* N_LOAD_LABELS=		"load_labels";
-static const CHAR* N_LOAD_FEATURES=		"load_features";
-static const CHAR* N_SAVE_FEATURES=		"save_features";
-static const CHAR* N_CLEAN_FEATURES=	"clean_features";
-static const CHAR* N_SLIDE_WINDOW=	"slide_window";
-static const CHAR* N_RESHAPE=			"reshape";
-static const CHAR* N_LOAD_DEFINITIONS=	"load_defs";
-static const CHAR* N_SAVE_KERNEL=		"save_kernel";
-static const CHAR* N_SET_HMM_AS=		"set_hmm_as";
-static const CHAR* N_NORMALIZE=			"normalize_hmm";
-static const CHAR* N_RELATIVE_ENTROPY=	"relative_entropy";
-static const CHAR* N_ENTROPY=			"entropy";
-static const CHAR* N_PERMUTATION_ENTROPY="permutation_entropy";
-static const CHAR* N_SET_KERNEL=		"set_kernel";
-static const CHAR* N_SET_DISTANCE=		"set_distance";
-static const CHAR* N_ADD_KERNEL=		"add_kernel";
-static const CHAR* N_CLEAN_KERNEL=		"clean_kernel";
-#ifdef USE_SVMLIGHT
-static const CHAR* N_RESIZE_KERNEL_CACHE=		"resize_kernel_cache";
-#endif //USE_SVMLIGHT
-static const CHAR* N_SET_KERNEL_OPTIMIZATION_TYPE=		"set_kernel_optimization_type";
-static const CHAR* N_ATTACH_PREPROC=	"attach_preproc";
-static const CHAR* N_ADD_PREPROC=		"add_preproc";
-static const CHAR* N_DEL_PREPROC=		"del_preproc";
-static const CHAR* N_CLEAN_PREPROC=		"clean_preproc";
-static const CHAR* N_INIT_KERNEL=		"init_kernel";
-static const CHAR* N_INIT_DISTANCE=		"init_distance";
-static const CHAR* N_DELETE_KERNEL_OPTIMIZATION=		"delete_kernel_optimization";
-static const CHAR* N_INIT_KERNEL_OPTIMIZATION  =		"init_kernel_optimization";
-static const CHAR* N_SAVE_PATH=			"save_hmm_path";
-static const CHAR* N_SAVE_LIKELIHOOD=	"save_hmm_likelihood";
-static const CHAR* N_BEST_PATH=			"best_path";
-static const CHAR* N_VITERBI_TRAIN=	       	"vit";
-static const CHAR* N_VITERBI_TRAIN_DEFINED=     "vit_def";
-static const CHAR* N_LINEAR_TRAIN=       	"linear_train";
-static const CHAR* N_CLEAR=			"clear";
-static const CHAR* N_CHOP=			"chop";
-static const CHAR* N_CONVERGENCE_CRITERIA=	"convergence_criteria";
-static const CHAR* N_PSEUDO=			"pseudo";
-static const CHAR* N_CONVERT=	"convert";
-static const CHAR* N_C=			     	"c";
-static const CHAR* N_LOGLEVEL=			     	"loglevel";
-static const CHAR* N_ECHO=			     	"echo";
-static const CHAR* N_SVMQPSIZE=			     	"svm_qpsize";
-static const CHAR* N_SVMMAXQPSIZE=			     	"svm_max_qpsize";
-static const CHAR* N_THREADS=			     	"threads";
-static const CHAR* N_MKL_PARAMETERS=			"mkl_parameters";
-static const CHAR* N_SVM_EPSILON=			"svm_epsilon";
-static const CHAR* N_SVM_MAX_TRAIN_TIME=		"svm_max_train_time";
-static const CHAR* N_SVR_TUBE_EPSILON=			"svr_tube_epsilon";
-static const CHAR* N_SVM_ONE_CLASS_NU=			"svm_one_class_nu";
-static const CHAR* N_SVM_USE_BIAS=			"svm_use_bias";
-static const CHAR* N_DO_AUC_MAXIMIZATION=			"do_auc_maximization";
-static const CHAR* N_ADD_STATES=	        "add_states";
-static const CHAR* N_APPEND_HMM=		"append_hmm";
-static const CHAR* N_BAUM_WELCH_TRAIN=	        "bw";
-static const CHAR* N_BAUM_WELCH_TRANS_TRAIN=	"bw_trans";
-static const CHAR* N_BAUM_WELCH_TRAIN_DEFINED=	"bw_def";
-static const CHAR* N_LIKELIHOOD=	       	"likelihood";
-static const CHAR* N_ALPHABET=			"alphabet";
-static const CHAR* N_USE_BATCH_COMPUTATION =			"use_batch_computation";
-static const CHAR* N_USE_MKL =			"use_mkl";
-static const CHAR* N_USE_SHRINKING=			"use_shrinking";
-static const CHAR* N_USE_LINADD=			"use_linadd";
-static const CHAR* N_USE_PRECOMPUTE=			"use_precompute";
-static const CHAR* N_OUTPUT_HMM=		"output_hmm";
-static const CHAR* N_OUTPUT_HMM_DEFINED=        "output_hmm_defined";
-static const CHAR* N_QUIT=			"quit";
-static const CHAR* N_EXEC=			"exec";
-static const CHAR* N_EXIT=			"exit";
-static const CHAR* N_HELP=			"help";
-static const CHAR* N_SYSTEM=			"!";
-static const CHAR N_COMMENT1=			'#';
-static const CHAR N_COMMENT2=			'%';
-static const CHAR* N_SET_MAX_DIM=		"max_dim";
-static const CHAR* N_SET_THRESHOLD=			"set_threshold";
-static const CHAR* N_SVM_TRAIN=			"svm_train";
-static const CHAR* N_SVM_TEST=			"svm_test";
-static const CHAR* N_ONE_CLASS_HMM_TEST=	"one_class_hmm_test";
-static const CHAR* N_HMM_TEST=			"hmm_test";
-static const CHAR* N_HMM_CLASSIFY=		"hmm_classify";
-static const CHAR* N_SET_OUTPUT=		"set_output";
-static const CHAR* N_SET_REF_FEAT=              "set_ref_features" ;
-static const CHAR* N_TIC=              "tic" ;
-static const CHAR* N_TOC=              "toc" ;
 
 CTextGUI::CTextGUI(INT p_argc, char** p_argv)
 : CGUI(p_argc, p_argv), out_file(NULL), echo(true)

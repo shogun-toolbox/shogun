@@ -19,66 +19,13 @@
 #include "lib/common.h"
 #include "lib/io.h"
 
-#include "gui/TextGUI.h"
+#include "guilib/GUICommands.h"
 #include "guilib/GUIR.h"
+#include "gui/TextGUI.h"
 #include "gui/GUI.h"
 
 static CGUI_R sg_R;
 extern CTextGUI* gui;
-
-static const CHAR* N_SEND_COMMAND=		"send_command";
-static const CHAR* N_HELP=		        "help";
-static const CHAR* N_CRC=			"crc";
-//static const CHAR* N_TRANSLATE_STRING=			"translate_string";
-static const CHAR* N_GET_HMM=			"get_hmm";
-static const CHAR* N_GET_VITERBI_PATH=			"get_viterbi_path";
-static const CHAR* N_GET_SVM=			"get_svm";
-static const CHAR* N_GET_SVM_OBJECTIVE=		"get_svm_objective";
-//static const CHAR* N_GET_KERNEL_INIT=	        "get_kernel_init";
-static const CHAR* N_GET_KERNEL_MATRIX=	        "get_kernel_matrix";
-static const CHAR* N_HMM_LIKELIHOOD=	        "hmm_likelihood";
-//static const CHAR* N_GET_KERNEL_OPTIMIZATION=	        "get_kernel_optimization";
-//static const CHAR* N_COMPUTE_BY_SUBKERNELS=	        "compute_by_subkernels";
-//static const CHAR* N_SET_SUBKERNEL_WEIGHTS=	        "set_subkernel_weights";
-//static const CHAR* N_SET_LAST_SUBKERNEL_WEIGHTS=	        "set_last_subkernel_weights";
-//static const CHAR* N_SET_WD_POS_WEIGHTS=	        "set_WD_position_weights";
-static const CHAR* N_GET_SUBKERNEL_WEIGHTS=	        "get_subkernel_weights";
-//static const CHAR* N_GET_LAST_SUBKERNEL_WEIGHTS=	        "get_last_subkernel_weights";
-//static const CHAR* N_GET_WD_POS_WEIGHTS=	        "get_WD_position_weights";
-static const CHAR* N_GET_FEATURES=		"get_features";
-static const CHAR* N_GET_LABELS=		"get_labels";
-static const CHAR* N_GET_VERSION=		"get_version";
-//static const CHAR* N_GET_PREPROC_INIT=	        "get_preproc_init";
-//static const CHAR* N_GET_HMM_DEFS=		"get_hmm_defs";
-static const CHAR* N_SET_HMM=			"set_hmm";
-//static const CHAR* N_MODEL_PROB_NO_B_TRANS=			"model_prob_no_b_trans";
-//static const CHAR* N_BEST_PATH_NO_B_TRANS=			"best_path_no_b_trans";
-//static const CHAR* N_BEST_PATH_TRANS=			"best_path_trans";
-//static const CHAR* N_BEST_PATH_2STRUCT=			"best_path_2struct";
-//static const CHAR* N_BEST_PATH_TRANS_SIMPLE=			"best_path_trans_simple";
-//static const CHAR* N_BEST_PATH_NO_B=			"best_path_no_b";
-static const CHAR* N_APPEND_HMM=			"append_hmm";
-static const CHAR* N_SET_SVM=			"set_svm";
-static const CHAR* N_SET_CUSTOM_KERNEL=	        "set_custom_kernel";
-//static const CHAR* N_SET_KERNEL_INIT=	        "set_kernel_init";
-static const CHAR* N_SET_FEATURES=		"set_features";
-static const CHAR* N_ADD_FEATURES=		"add_features";
-static const CHAR* N_SET_LABELS=		"set_labels";
-//static const CHAR* N_SET_PREPROC_INIT=	        "set_preproc_init";
-//static const CHAR* N_SET_HMM_DEFS=		"set_hmm_defs";
-static const CHAR* N_ONE_CLASS_HMM_CLASSIFY=		"one_class_hmm_classify";
-//static const CHAR* N_ONE_CLASS_LINEAR_HMM_CLASSIFY=		"one_class_linear_hmm_classify";
-static const CHAR* N_HMM_CLASSIFY=		"hmm_classify";
-static const CHAR* N_ONE_CLASS_HMM_CLASSIFY_EXAMPLE=		"one_class_hmm_classify_example";
-static const CHAR* N_HMM_CLASSIFY_EXAMPLE=	"hmm_classify_example";
-static const CHAR* N_SVM_CLASSIFY=		"svm_classify";
-static const CHAR* N_CLASSIFY=		"classify";
-static const CHAR* N_SVM_CLASSIFY_EXAMPLE=	"svm_classify_example";
-static const CHAR* N_CLASSIFY_EXAMPLE=	"classify_example";
-//static const CHAR* N_GET_PLUGIN_ESTIMATE=	"get_plugin_estimate";
-//static const CHAR* N_SET_PLUGIN_ESTIMATE=	"set_plugin_estimate";
-//static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY=	"plugin_estimate_classify";
-//static const CHAR* N_PLUGIN_ESTIMATE_CLASSIFY_EXAMPLE=	"plugin_estimate_classify_example";
 
 extern "C" {
 
