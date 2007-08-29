@@ -1620,7 +1620,7 @@ DREAL* CWeightedDegreePositionStringKernel::extract_w( INT max_degree, INT& num_
   return result;
 }
 
-DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas )
+DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas,  DREAL* distrib)
 {
   // === check
   ASSERT( position_weights_lhs == NULL );
@@ -1629,23 +1629,15 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   ASSERT( num_feat > 0 );
   ASSERT( ((CStringFeatures<CHAR>*) get_rhs())->get_alphabet()->get_alphabet() == DNA );
   ASSERT( max_degree > 0 );
+  ASSERT(distrib);
 
   // === general variables
   static const INT NUM_SYMS = Trie::NUM_SYMS;
-  const DREAL pUnif = 1.0 / NUM_SYMS;
   const INT seqLen = num_feat;
-  DREAL* distrib;
   DREAL** subs;
   INT i;
   INT k;
 
-  // === init tables "subs" for substring scores / POIMs
-  // --- uniform distribution
-  distrib = new DREAL[ seqLen * NUM_SYMS ];
-  ASSERT( distrib != NULL );
-  for( i = 0; i < seqLen*NUM_SYMS; ++i ) {
-    distrib[i] = pUnif;
-  }
   // --- compute table sizes
   INT* offsets;
   INT offset;
@@ -1719,7 +1711,6 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   tries.POIMs_add_SLR( subs, max_degree );
 
   // === clean; return "subs" as vector
-  delete[] distrib;
   delete[] subs;
   num_feat = 1;
   num_sym = bigTabSize;

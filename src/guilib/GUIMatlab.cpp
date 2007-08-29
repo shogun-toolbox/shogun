@@ -2818,19 +2818,45 @@ bool CGUIMatlab::get_SPEC_scoring(mxArray* retvals[], INT max_order)
 	return false;
 }
 
-bool CGUIMatlab::compute_poim_wd(mxArray* retvals[], INT max_order)
+bool CGUIMatlab::compute_poim_wd(mxArray* retvals[], const mxArray* vals[], int nrhs)
 {
+	INT max_order=0;
+	DREAL* distribution = NULL;
+
+	if (mxIsDouble(vals[1]))
+		max_order=(INT) *mxGetPr(vals[1]);
+	else
+		return false;
+
+	if (mxIsDouble(vals[2]))
+		distribution = mxGetPr(vals[2]);
+	else
+		return false;
+
 	CKernel *k= gui->guikernel.get_kernel() ;
 
 	if (k && (k->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
 	{
+		INT num_feat=-1;
+		INT num_sym=-1;
+
+		CStringFeatures<CHAR>* sf= (CStringFeatures<CHAR>*) (((CWeightedDegreePositionStringKernel*) k)->get_lhs());
+		ASSERT(sf);
+		num_feat=sf->get_max_vector_length();
+		num_sym= (INT) sf->get_num_symbols();
+
+		if (((INT) mxGetN(vals[2]))!=num_feat || ((INT) mxGetM(vals[2])) != num_sym)
+			SG_ERROR("distribution should have (seqlen x num_sym) elements"
+					"(seqlen: %d vs. %d symbols: %d vs. %d)\n", num_feat,
+					mxGetN(vals[2]), num_sym, mxGetM(vals[2]));
+
 		CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 		ASSERT(svm);
 		INT num_suppvec = svm->get_num_support_vectors();
 		INT* sv_idx    = new INT[num_suppvec];
+		ASSERT(sv_idx);
 		DREAL* sv_weight = new DREAL[num_suppvec];
-		INT num_feat=-1;
-		INT num_sym=-1;
+		ASSERT(sv_weight);
 
 		for (INT i=0; i<num_suppvec; i++)
 		{
@@ -2846,7 +2872,7 @@ bool CGUIMatlab::compute_poim_wd(mxArray* retvals[], INT max_order)
 		DREAL* position_weights;
 		position_weights = ((CWeightedDegreePositionStringKernel*) k)->compute_POIM(
 				max_order, num_feat, num_sym, NULL,
-				num_suppvec, sv_idx, sv_weight);
+				num_suppvec, sv_idx, sv_weight, distribution);
 		mxArray* mx_result ;
 		mx_result=mxCreateDoubleMatrix(num_sym, num_feat, mxREAL);
 		double* result=mxGetPr(mx_result);
@@ -2857,6 +2883,9 @@ bool CGUIMatlab::compute_poim_wd(mxArray* retvals[], INT max_order)
 				result[i*num_sym+j] = position_weights[i*num_sym+j] ;
 		}
 		retvals[0]=mx_result;
+
+		delete[] sv_idx;
+		delete[] sv_weight;
 		return true;
 	}
 	else

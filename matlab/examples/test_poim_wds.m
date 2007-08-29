@@ -5,7 +5,7 @@ addpath( '../../src/' );
 acgt = 'ACGT';
 % --- data
 len = 11;
-num_train = 2000;
+num_train = 10;
 num_test  = 1000;
 % --- POIM
 max_order = 8;
@@ -72,10 +72,16 @@ end;
 % out = sg( 'svm_classify' );
 % fprintf( 'accuracy: %f\n', mean(sign(out)==testlab) );
 
+distribution=zeros(4,len);
+distribution(1,:)=mean(traindat=='A',2);
+distribution(2,:)=mean(traindat=='G',2);
+distribution(3,:)=mean(traindat=='C',2);
+distribution(4,:)=mean(traindat=='T',2);
+%distribution(:)=0.25;
 
 % === compute POIMs
 n = sg( 'get_kernel_optimization', max_order );
-Q = sg( 'compute_poim_wd', max_order );
+Q = sg( 'compute_poim_wd', max_order, distribution );
 w = {};
 W = zeros( max_order, len );
 x = {};
@@ -197,5 +203,3 @@ for( k = 1:length(poims) )
   end;
   fprintf( 'order %d: norm diff = %.2e \n', k, norm(poims{k}-x{k}) );
 end;
-
-

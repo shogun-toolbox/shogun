@@ -328,17 +328,13 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 		}
 		else if (strmatch(action, len, N_COMPUTE_POIM_WD))
 		{
-		    if (nlhs==1 && nrhs==2)
+		    if (nlhs==1 && nrhs==3)
 			{
-				if (mxIsDouble(prhs[1]))
-				{
-					double* idx=mxGetPr(prhs[1]);
-					if (!sg_matlab.compute_poim_wd(plhs, (INT) (*idx)))
-						SG_SERROR( "error executing command");
-				}
+				if (!sg_matlab.compute_poim_wd(plhs, prhs, nrhs))
+					SG_SERROR( "error executing command");
 			}
 			else
-				SG_SERROR( "usage is W=sg('compute_poim_wd', max_order)");
+				SG_SERROR( "usage is W=sg('compute_poim_wd', max_order, distribution)");
 		}
 		else if (strmatch(action, len, N_GET_WD_CONSENSUS))
 		{
