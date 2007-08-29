@@ -134,7 +134,7 @@ public:
 
 #ifdef TRIE_FOR_POIMS
 	void POIMs_extract_W( DREAL* const* const W, const INT K );
-	void POIMs_precalc_SLR();
+	void POIMs_precalc_SLR( const DREAL* const distrib );
 	void POIMs_get_SLR( const INT parentIdx, const INT sym, const int depth, DREAL* S, DREAL* L, DREAL* R );
 	void POIMs_add_SLR( DREAL* const* const poims, const INT K );
 #endif
@@ -213,8 +213,8 @@ protected:
 
 #ifdef TRIE_FOR_POIMS
 	void POIMs_extract_W_helper( const INT nodeIdx, const int depth, const INT offset, const INT y0, DREAL* const* const W, const INT K );
-	void POIMs_calc_SLR_helper1( const INT nodeIdx, INT* const leftSubtreeIdcs, const int depth, INT const lastSym, DREAL* S, DREAL* L, DREAL* R );
-	void POIMs_calc_SLR_helper2( const INT nodeIdx, INT* const leftSubtreeIdcs, const int depth, DREAL* S, DREAL* L, DREAL* R );
+	void POIMs_calc_SLR_helper1( const DREAL* const distrib, const INT i, const INT nodeIdx, INT* const leftSubtreeIdcs, const int depth, INT const lastSym, DREAL* S, DREAL* L, DREAL* R );
+	void POIMs_calc_SLR_helper2( const DREAL* const distrib, const INT i, const INT nodeIdx, INT* const leftSubtreeIdcs, const int depth, DREAL* S, DREAL* L, DREAL* R );
 	void POIMs_add_SLR_helper1( const INT nodeIdx, const int depth, const INT i, const INT y0, DREAL* const* const poims, const INT K );
 	void POIMs_add_SLR_helper2( DREAL* const* const poims, const int K, const int k, const INT i, const INT y, const DREAL valW, const DREAL valS, const DREAL valL, const DREAL valR );
 #endif

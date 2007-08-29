@@ -1632,13 +1632,20 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
 
   // === general variables
   static const INT NUM_SYMS = Trie::NUM_SYMS;
+  const DREAL pUnif = 1.0 / NUM_SYMS;
   const INT seqLen = num_feat;
+  DREAL* distrib;
   DREAL** subs;
   INT i;
   INT k;
-  //INT y;
 
   // === init tables "subs" for substring scores / POIMs
+  // --- uniform distribution
+  distrib = new DREAL[ seqLen * NUM_SYMS ];
+  ASSERT( distrib != NULL );
+  for( i = 0; i < seqLen*NUM_SYMS; ++i ) {
+    distrib[i] = pUnif;
+  }
   // --- compute table sizes
   INT* offsets;
   INT offset;
@@ -1667,7 +1674,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
 
   // === init trees; precalc S, L and R
   init_optimization( num_suppvec, IDX, alphas, 0, seqLen-1 );
-  tries.POIMs_precalc_SLR();
+  tries.POIMs_precalc_SLR( distrib );
 
   // === compute substring scores
   tries.POIMs_extract_W( subs, max_degree );
@@ -1712,6 +1719,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   tries.POIMs_add_SLR( subs, max_degree );
 
   // === clean; return "subs" as vector
+  delete[] distrib;
   delete[] subs;
   num_feat = 1;
   num_sym = bigTabSize;
