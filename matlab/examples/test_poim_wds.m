@@ -5,7 +5,7 @@ addpath( '../../src/' );
 acgt = 'ACGT';
 % --- data
 len = 11;
-num_train = 10;
+num_train = 2000;
 num_test  = 1000;
 % --- POIM
 max_order = 8;
@@ -16,7 +16,13 @@ max_mismatch = 0;
 % --- SVM
 C = 1 / len^2;
 cache = 10;
-
+% --- DEBUG
+% 0: POIM
+% 1: substring
+% 2: superstring
+% 3: left overlap
+% 4: right overlap
+subScore = 0;
 
 % === init
 abcSize = length( acgt );
@@ -24,6 +30,12 @@ shifts = sprintf( '%i ', shift*ones(1,len) );
 num = num_train + num_test;
 rand( 'seed', 17 );
 rand( 'state', 1 );
+if( 1 )
+  distrib = repmat( 1/abcSize, abcSize, len );
+else
+  distrib = rand( abcSize, len );
+  distrib = distrib ./ repmat( sum(distrib,1), abcSize, 1 );
+end;
 
 
 % === generate toy data
@@ -72,16 +84,16 @@ end;
 % out = sg( 'svm_classify' );
 % fprintf( 'accuracy: %f\n', mean(sign(out)==testlab) );
 
-distribution=zeros(4,len);
-distribution(1,:)=mean(traindat=='A',2);
-distribution(2,:)=mean(traindat=='G',2);
-distribution(3,:)=mean(traindat=='C',2);
-distribution(4,:)=mean(traindat=='T',2);
-%distribution(:)=0.25;
 
 % === compute POIMs
 n = sg( 'get_kernel_optimization', max_order );
-Q = sg( 'compute_poim_wd', max_order, distribution );
+if( subScore == 0 )
+  Q = sg( 'compute_poim_wd', max_order, distrib );
+else
+  assert( 0 < subScore & subScore <= 4 );
+  t = -( max_order*4 + subScore-1 );
+  Q = sg( 'compute_poim_wd', t, distrib );
+end;
 w = {};
 W = zeros( max_order, len );
 x = {};
@@ -121,7 +133,8 @@ end;
 %%%   end;
 %%%   Y(k,:) = max( abs(y{k}), [], 1 );
 %%% end;
-Y = X;
+Y = zeros( size(X) );
+Y(1,:) = X(1,:);
 for( k = 2:max_order )
   Y(k,1:(len-k+1)) = X(k,1:(len-k+1)) - max( X(k-1,1:(len-k+1)), X(k-1,2:(len-k+2)) );
 end;
@@ -129,11 +142,11 @@ end;
 
 % === output
 figure;
-for( i = 1:4 )
-  subplot( 2, 2, i );
-  imagesc( x{i} );
+for( k = 1:4 )
+  subplot( 2, 2, k );
+  imagesc( x{k} );
+  title( sprintf( 'POIM %d (shogun)', k ) );
 end;
-title( 'POIMs (shogun)' );
 figure;
 imagesc( X );
 title( 'master POIM (shogun)' );
@@ -159,11 +172,14 @@ end;
 % === predict all possible sequences
 N = abcSize^len;
 T = repmat( ' ', len, N );
+P = zeros( N, len );
 t = (1:N) - 1;
 for( i = len:-1:1 )
   T(i,:) = acgt( mod(t,abcSize)+1 );
+  P(:,i) = distrib( mod(t,abcSize)+1, i );
   t = floor( t / abcSize );
 end;
+P = prod( P, 2 );
 sg( 'set_features', 'TEST', T, 'DNA' );
 sg( 'set_labels', 'TEST', ones(1,N) );
 sg( 'send_command', 'init_kernel TEST' );
@@ -172,7 +188,7 @@ out = sg( 'svm_classify' );
 
 % === compute true POIMs
 poims = {};
-meanOut = mean( out );
+meanOut = out * P;
 %for( k = 1:max_order )
 for( k = 1:4 )
   m = abcSize^k;
@@ -181,7 +197,7 @@ for( k = 1:4 )
   for( i = (len-k+1):-1:1 )
     y = mod( t, m ) + 1;
     for( z = 1:m )
-      poim(z,i) = mean( out(y==z) );
+      poim(z,i) = out(y==z) * P(y==z) / sum(P(y==z));
     end;
     t = floor( t / abcSize );
   end;
@@ -203,3 +219,5 @@ for( k = 1:length(poims) )
   end;
   fprintf( 'order %d: norm diff = %.2e \n', k, norm(poims{k}-x{k}) );
 end;
+
+

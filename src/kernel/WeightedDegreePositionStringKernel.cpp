@@ -1620,7 +1620,7 @@ DREAL* CWeightedDegreePositionStringKernel::extract_w( INT max_degree, INT& num_
   return result;
 }
 
-DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas,  DREAL* distrib)
+DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL* distrib )
 {
   // === check
   ASSERT( position_weights_lhs == NULL );
@@ -1628,8 +1628,8 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   num_feat=((CStringFeatures<CHAR>*) get_rhs())->get_max_vector_length();
   ASSERT( num_feat > 0 );
   ASSERT( ((CStringFeatures<CHAR>*) get_rhs())->get_alphabet()->get_alphabet() == DNA );
-  ASSERT( max_degree > 0 );
-  ASSERT(distrib);
+  ASSERT( max_degree != 0 );
+  ASSERT( distrib != NULL );
 
   // === general variables
   static const INT NUM_SYMS = Trie::NUM_SYMS;
@@ -1637,6 +1637,45 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   DREAL** subs;
   INT i;
   INT k;
+
+  // === DEBUGGING mode
+  //
+  // Activated if "max_degree" < 0.
+  // Allows to output selected partial score.
+  //
+  // |max_degree| mod 4
+  //   0: substring
+  //   1: superstring
+  //   2: left overlap
+  //   3: right overlap
+  //
+  const INT debug = ( max_degree < 0 ) ? ( abs(max_degree) % 4 + 1 ) : 0;
+  if( debug ) {
+    max_degree = abs(max_degree) / 4;
+    switch( debug ) {
+    case 1: {
+      printf( "POIM DEBUGGING: substring only (max order=%d)\n", max_degree );
+      break;
+    }
+    case 2: {
+      printf( "POIM DEBUGGING: superstring only (max order=%d)\n", max_degree );
+      break;
+    }
+    case 3: {
+      printf( "POIM DEBUGGING: left overlap only (max order=%d)\n", max_degree );
+      break;
+    }
+    case 4: {
+      printf( "POIM DEBUGGING: right overlap only (max order=%d)\n", max_degree );
+      break;
+    }
+    default: {
+      printf( "POIM DEBUGGING: something is wrong (max order=%d)\n", max_degree );
+      ASSERT( 0 );
+      break;
+    }
+    }
+  }
 
   // --- compute table sizes
   INT* offsets;
@@ -1669,38 +1708,28 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   tries.POIMs_precalc_SLR( distrib );
 
   // === compute substring scores
-  tries.POIMs_extract_W( subs, max_degree );
-  if( 0 ) {  // DEBUG
-    const DREAL* const w1 = subs[ 0 ];
-    INT y;
-    printf( "W_1:\n" );
-    for( y = 0; y < NUM_SYMS; ++y ) {
+  if( debug==0 || debug==1 ) {
+    tries.POIMs_extract_W( subs, max_degree );
+    for( k = 1; k < max_degree; ++k ) {
+      const INT nofKmers2 = ( k > 1 ) ? (INT) pow(NUM_SYMS,k-1) : 0;
+      const INT nofKmers1 = (INT) pow( NUM_SYMS, k );
+      const INT nofKmers0 = nofKmers1 * NUM_SYMS;
       for( i = 0; i < seqLen; ++i ) {
-	printf( "%5.2f ", w1[y+i*NUM_SYMS] );
-      }
-      printf( "\n" );
-    }
-    printf( "\n" );
-  }
-  for( k = 1; k < max_degree; ++k ) {
-    const INT nofKmers2 = ( k > 1 ) ? (INT) pow(NUM_SYMS,k-1) : 0;
-    const INT nofKmers1 = (INT) pow( NUM_SYMS, k );
-    const INT nofKmers0 = nofKmers1 * NUM_SYMS;
-    for( i = 0; i < seqLen; ++i ) {
-      DREAL* const subs_k2i1 = ( k>1 && i<seqLen-1 ) ? &subs[k-2][(i+1)*nofKmers2] : NULL;
-      DREAL* const subs_k1i1 = ( i < seqLen-1 ) ? &subs[k-1][(i+1)*nofKmers1] : NULL;
-      DREAL* const subs_k1i0 = & subs[ k-1 ][ i*nofKmers1 ];
-      DREAL* const subs_k0i  = & subs[ k-0 ][ i*nofKmers0 ];
-      INT y0;
-      for( y0 = 0; y0 < nofKmers0; ++y0 ) {
-	const INT y1l = y0 / NUM_SYMS;
-	const INT y1r = y0 % nofKmers1;
-	const INT y2 = y1r / NUM_SYMS;
-	subs_k0i[ y0 ] += subs_k1i0[ y1l ];
-	if( i < seqLen-1 ) {
-	  subs_k0i[ y0 ] += subs_k1i1[ y1r ];
-	  if( k > 1 ) {
-	    subs_k0i[ y0 ] -= subs_k2i1[ y2 ];
+	DREAL* const subs_k2i1 = ( k>1 && i<seqLen-1 ) ? &subs[k-2][(i+1)*nofKmers2] : NULL;
+	DREAL* const subs_k1i1 = ( i < seqLen-1 ) ? &subs[k-1][(i+1)*nofKmers1] : NULL;
+	DREAL* const subs_k1i0 = & subs[ k-1 ][ i*nofKmers1 ];
+	DREAL* const subs_k0i  = & subs[ k-0 ][ i*nofKmers0 ];
+	INT y0;
+	for( y0 = 0; y0 < nofKmers0; ++y0 ) {
+	  const INT y1l = y0 / NUM_SYMS;
+	  const INT y1r = y0 % nofKmers1;
+	  const INT y2 = y1r / NUM_SYMS;
+	  subs_k0i[ y0 ] += subs_k1i0[ y1l ];
+	  if( i < seqLen-1 ) {
+	    subs_k0i[ y0 ] += subs_k1i1[ y1r ];
+	    if( k > 1 ) {
+	      subs_k0i[ y0 ] -= subs_k2i1[ y2 ];
+	    }
 	  }
 	}
       }
@@ -1708,7 +1737,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   }
 
   // === compute POIMs
-  tries.POIMs_add_SLR( subs, max_degree );
+  tries.POIMs_add_SLR( subs, max_degree, debug );
 
   // === clean; return "subs" as vector
   delete[] subs;

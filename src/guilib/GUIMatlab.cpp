@@ -2415,7 +2415,7 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[], const mxArray* vals
 
 					if ((max_order < 1) || (max_order > 12))
 					{
-						SG_WARNING( "max_order out of range 1..12 (%d) setting to 1\n", max_order);
+						SG_WARNING( "max_order out of range 1..12 (%d). setting to 1\n", max_order);
 						max_order=1;
 					}
 
@@ -2780,7 +2780,7 @@ bool CGUIMatlab::get_SPEC_scoring(mxArray* retvals[], INT max_order)
 
 		if ((max_order < 1) || (max_order > 8))
 		{
-			SG_WARNING( "max_order out of range 1..8 (%d) setting to 1\n", max_order);
+			SG_WARNING( "max_order out of range 1..8 (%d). setting to 1\n", max_order);
 			max_order=1;
 		}
 		DREAL* position_weights=NULL;
@@ -2866,8 +2866,9 @@ bool CGUIMatlab::compute_poim_wd(mxArray* retvals[], const mxArray* vals[], int 
 
 		if ((max_order < 1) || (max_order > 12))
 		{
-			SG_WARNING( "max_order out of range 1..12 (%d) setting to 1\n", max_order);
-			max_order=1;
+		  //SG_WARNING( "max_order out of range 1..12 (%d).\n", max_order);
+			//SG_WARNING( "max_order out of range 1..12 (%d). setting to 1.\n", max_order);
+			//max_order=1;
 		}
 		DREAL* position_weights;
 		position_weights = ((CWeightedDegreePositionStringKernel*) k)->compute_POIM(
@@ -2915,7 +2916,7 @@ bool CGUIMatlab::get_WD_scoring(mxArray* retvals[], INT max_order)
 
 		if ((max_order < 1) || (max_order > 12))
 		{
-			SG_WARNING( "max_order out of range 1..12 (%d) setting to 1\n", max_order);
+			SG_WARNING( "max_order out of range 1..12 (%d). setting to 1\n", max_order);
 			max_order=1;
 		}
 		DREAL* position_weights;

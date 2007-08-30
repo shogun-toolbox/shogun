@@ -1791,7 +1791,7 @@ void CTrie::POIMs_get_SLR( const INT parentIdx, const INT sym, const int depth,
 
 static INT* nofsKmers;
 
-void CTrie::POIMs_add_SLR( DREAL* const* const poims, const INT K )
+void CTrie::POIMs_add_SLR( DREAL* const* const poims, const INT K, const INT debug )
 {
   ASSERT( degree >= 1 );
   ASSERT( K >= 1 );
@@ -1809,13 +1809,13 @@ void CTrie::POIMs_add_SLR( DREAL* const* const poims, const INT K )
   const INT N = length;
   INT i;
   for( i = 0; i < N; ++i ) {
-    POIMs_add_SLR_helper1( trees[i], 0, i, 0*NUM_SYMS, poims, K );
+    POIMs_add_SLR_helper1( trees[i], 0, i, 0*NUM_SYMS, poims, K, debug );
   }
   delete[] nofsKmers;
 }
 
 void CTrie::POIMs_add_SLR_helper1( const INT nodeIdx, const int depth, const INT i, const INT y0,
-				   DREAL* const* const poims, const INT K )
+				   DREAL* const* const poims, const INT K, const INT debug )
 {
   ASSERT( nodeIdx != NO_CHILD );
   ASSERT( depth < K );
@@ -1830,8 +1830,8 @@ void CTrie::POIMs_add_SLR_helper1( const INT nodeIdx, const int depth, const INT
 	  const INT y = y0 + sym;
 	  const INT y1 = y * NUM_SYMS;
 	  const DREAL w = child->weight;
-	  POIMs_add_SLR_helper2( poims, K, depth+1, i, y, w, child->S, child->L, child->R );
-	  POIMs_add_SLR_helper1( childIdx, depth+1, i, y1, poims, K );
+	  POIMs_add_SLR_helper2( poims, K, depth+1, i, y, w, child->S, child->L, child->R, debug );
+	  POIMs_add_SLR_helper1( childIdx, depth+1, i, y1, poims, K, debug );
 	}
       }
     } else {
@@ -1842,7 +1842,7 @@ void CTrie::POIMs_add_SLR_helper1( const INT nodeIdx, const int depth, const INT
 	  Trie* const child = &TreeMem[ childIdx ];
 	  const INT y = y0 + sym;
 	  const DREAL w = child->weight;
-	  POIMs_add_SLR_helper2( poims, K, depth+1, i, y, w, child->S, child->L, child->R );
+	  POIMs_add_SLR_helper2( poims, K, depth+1, i, y, w, child->S, child->L, child->R, debug );
 	}
       }
     }
@@ -1851,13 +1851,13 @@ void CTrie::POIMs_add_SLR_helper1( const INT nodeIdx, const int depth, const INT
     for( sym = 0; sym < NUM_SYMS; ++sym ) {
       const DREAL w = node->child_weights[ sym ];
       const INT y = y0 + sym;
-      POIMs_add_SLR_helper2( poims, K, depth+1, i, y, w, w, w, w );
+      POIMs_add_SLR_helper2( poims, K, depth+1, i, y, w, w, w, w, debug );
     }
   }
 }
 
 void CTrie::POIMs_add_SLR_helper2( DREAL* const* const poims, const int K, const int k, const INT i, const INT y,
-				   const DREAL valW, const DREAL valS, const DREAL valL, const DREAL valR )
+				   const DREAL valW, const DREAL valS, const DREAL valL, const DREAL valR, const INT debug )
 {
   //printf( "i=%d, d=%d, y=%d:  w=%.3f \n", i, k, y, valW );
   const INT nk = nofsKmers[ k ];
@@ -1866,35 +1866,41 @@ void CTrie::POIMs_add_SLR_helper2( DREAL* const* const poims, const int K, const
   INT z;
   INT j;
   // --- add superstring score; subtract "w", as it was counted twice
-  poims[ k-1 ][ i*nk + y ] += valS - valW;
+  if( debug==0 || debug==2 ) {
+    poims[ k-1 ][ i*nk + y ] += valS - valW;
+  }
   // --- left partial overlaps
-  INT r;
-  for( r = 1; k+r <= K; ++r ) {
-    const INT nr = nofsKmers[ r ];
-    const INT nz = nofsKmers[ k+r ];
-    DREAL* const poim = & poims[ k+r-1 ][ i*nz ];
-    z = y * nr;
-    for( j = 0; j < nr; ++j ) {
-      if( !( 0 <= z && z < nz ) ) {
-	printf( "k=%d, nk=%d,  r=%d, nr=%d,  nz=%d \n", k, nk, r, nr, nz );
-	printf( "  j=%d, y=%d, z=%d \n", j, y, z );
+  if( debug==0 || debug==3 ) {
+    INT r;
+    for( r = 1; k+r <= K; ++r ) {
+      const INT nr = nofsKmers[ r ];
+      const INT nz = nofsKmers[ k+r ];
+      DREAL* const poim = & poims[ k+r-1 ][ i*nz ];
+      z = y * nr;
+      for( j = 0; j < nr; ++j ) {
+	if( !( 0 <= z && z < nz ) ) {
+	  printf( "k=%d, nk=%d,  r=%d, nr=%d,  nz=%d \n", k, nk, r, nr, nz );
+	  printf( "  j=%d, y=%d, z=%d \n", j, y, z );
+	}
+	ASSERT( 0 <= z && z < nz );
+	poim[ z ] += valL - valW;
+	++z;
       }
-      ASSERT( 0 <= z && z < nz );
-      poim[ z ] += valL - valW;
-      ++z;
     }
   }
   // --- right partial overlaps
-  INT l;
-  for( l = 1; k+l <= K && l <= i; ++l ) {
-    const INT nl = nofsKmers[ l ];
-    const INT nz = nofsKmers[ k+l ];
-    DREAL* const poim = & poims[ k+l-1 ][ (i-l)*nz ];
-    z = y;
-    for( j = 0; j < nl; ++j ) {
-      ASSERT( 0 <= z && z < nz );
-      poim[ z ] += valR - valW;
-      z += nk;
+  if( debug==0 || debug==4 ) {
+    INT l;
+    for( l = 1; k+l <= K && l <= i; ++l ) {
+      const INT nl = nofsKmers[ l ];
+      const INT nz = nofsKmers[ k+l ];
+      DREAL* const poim = & poims[ k+l-1 ][ (i-l)*nz ];
+      z = y;
+      for( j = 0; j < nl; ++j ) {
+	ASSERT( 0 <= z && z < nz );
+	poim[ z ] += valR - valW;
+	z += nk;
+      }
     }
   }
 }
