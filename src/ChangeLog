@@ -1,5 +1,276 @@
+2007-08-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/SubGradientLPM.i: subgradlpm interface file
+	* classifier/LPBoost.i, classifier/SparseLinearClassifier.i,
+	  classifier/svm/LibLinear.i, classifier/svm/MPD.i,
+	  kernel/CanberraWordKernel.i, kernel/HammingWordKernel.i,
+	  kernel/ManhattenWordKernel.i: add missing interface files
+
+2007-08-30  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* trunk/matlab/examples/test_poim_wds.m, guilib/GUIMatlab.cpp,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h, lib/Trie.cpp,
+	  lib/Trie.h: POIMS: Enabled to output partial scores, to aid
+	  debugging.
+
+2007-08-29  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_poim_wds.m, gui/Matlab.cpp,
+	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h: add support for
+	  POIMs and custom distributions
+	* distributions/histogram/Histogram.cpp, gui/Matlab.cpp,
+	  gui/Octave.cpp, gui/Python.cpp, gui/R.cpp, gui/TextGUI.cpp,
+	  guilib/GUICommands.h: move all the commands into a common header
+	  file GUICommands.h
+
+2007-08-29  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* trunk/matlab/examples/test_poim_wds.m,
+	  kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp,
+	  lib/Trie.h:
+
+2007-08-28  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_poim_wds.m, gui/Matlab.cpp,
+	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h: get normal support
+
+2007-08-28  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h:
+
+2007-08-24  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* trunk/matlab/examples/test_poim_wds.m,
+	  kernel/WeightedDegreePositionStringKernel.cpp:
+	* trunk/matlab/examples/test_poim_wds.m,
+	  kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp:
+
+2007-08-24  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_poim_wds.m, guilib/GUIKernel.cpp: add
+	  POS2_NONORM kernel
+	* classifier/svm/LibLinear.cpp, classifier/svm/SVM_linear.cpp,
+	  classifier/svm/SVM_linear.h: avoid copying and directly use
+	  SparseFeatures<DREAL> in liblinear
+
+2007-08-23  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* trunk/matlab/examples/test_poim_wds.m,
+	  kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp,
+	  lib/Trie.h:
+
+2007-08-23  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SVMLin.cpp, classifier/svm/Tron.cpp: finally fix
+	  SVMLin+liblinear
+	* kernel/WeightedDegreePositionStringKernel.cpp: build whole
+	  tree...
+
+2007-08-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* regression/KRR.cpp: test whether kernel is inited on train()
+	* trunk/matlab/examples/test_poim_wds.m, gui/Matlab.cpp,
+	  guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
+	  kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.h: add
+	  compute_poim_wd test script/matlab interface access function
+
+2007-08-22  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* lib/Trie.cpp:
+	* kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h, lib/Trie.cpp,
+	  lib/Trie.h:
+
+2007-08-22  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/python-modular/examples/custom_kernel.py,
+	  classifier/LinearClassifier.i,
+	  classifier/SparseLinearClassifier.i,
+	  classifier/svm/LibLinear.cpp, classifier/svm/SVMLin.cpp,
+	  classifier/svm/SVMLin.h, classifier/svm/SVM_linear.cpp,
+	  classifier/svm/Tron.cpp, classifier/svm/Tron.h,
+	  classifier/svm/ssl.cpp, kernel/CustomKernel.cpp,
+	  kernel/CustomKernel.h, kernel/CustomKernel.i: - add
+	  python-modular support for the custom kernel
+	  - lots of fixes for SVMLin / Liblinear
+
+2007-08-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/SVMLin.cpp, classifier/svm/SVMLin.h,
+	  classifier/svm/ssl.cpp, classifier/svm/ssl.h, configure,
+	  guilib/GUIClassifier.cpp: fix typo in configure
+	  add option to disable bias in svmlin bias
+
+2007-08-21  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* kernel/WeightedDegreePositionStringKernel.POIM.cpp,
+	  lib/Trie.POIM.cpp, lib/Trie.POIM.h, lib/Trie.cpp, lib/Trie.h:
+
+2007-08-21  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/python/examples/svm_classificaton.py,
+	  trunk/python/examples/svr_regression.py,
+	  trunk/python/examples/test_mkl.py, guilib/GUIClassifier.cpp,
+	  lib/io.cpp: fix the python examples/python io
+
+2007-08-20  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/liblinear.m, classifier/svm/LibLinear.cpp,
+	  classifier/svm/LibLinear.h, classifier/svm/SVM_linear.cpp,
+	  classifier/svm/SVM_linear.h, classifier/svm/Tron.cpp,
+	  features/SparseFeatures.h, guilib/GUIClassifier.cpp,
+	  guilib/GUIMatlab.cpp: add liblinear L2 / LR support including
+	  example. currently data is internally
+	  copied, more intrusive changes to liblinear are required to fix
+	  this:
+	  
+	  ( liblinear uses 1-based indices and terminates sparse vectors
+	  with -1,
+	  additionally a 'bias feature' may need to be added )
+
+2007-08-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/test_sliding_window.m,
+	  features/StringFeatures.h, gui/Matlab.cpp,
+	  guilib/GUIFeatures.cpp, guilib/GUIMatlab.cpp: add support for
+	  sliding window 'skip' option, which skips the first
+	  n characters of the generated string (same thing as when using
+	  convert
+	  to do higher oder conversions)
+	  
+	  e.g. if you use:
+	  sg('send_command', sprintf('convert TEST STRING CHAR STRING WORD
+	  %i %i', order, order-1));
+	  
+	  then for a window len of 50 the order-1 chars should be skipped:
+	  sg('send_command', sprintf('slide_window TEST 50 1 %d',
+	  order-1));
+	  
+	  sg('from_position_list','TEST', 50,
+	  0:(total_test_len-len-order+1), order-1);
+	* trunk/matlab/examples/spec_interp.m, guilib/GUIFeatures.cpp,
+	  guilib/GUIMatlab.cpp, kernel/CommWordStringKernel.cpp,
+	  kernel/CommWordStringKernel.h,
+	  kernel/WeightedCommWordStringKernel.cpp,
+	  kernel/WeightedCommWordStringKernel.h: - add matlab support for
+	  get features of type string/word
+	  - make POIMs work with weighted spec kernel
+	  - fix further issues with sliding window/spec (works for order=1
+	  now)
+
+2007-08-17  Alexander Zien <Alexander.Zien@tuebingen.mpg.de>
+
+	* kernel/WeightedDegreePositionStringKernel.POIM.cpp,
+	  lib/Trie.POIM.cpp, lib/Trie.POIM.h:
+
+2007-08-17  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/spec_interp.m, features/StringFeatures.h,
+	  kernel/CommWordStringKernel.cpp, kernel/CommWordStringKernel.h,
+	  kernel/WeightedCommWordStringKernel.cpp,
+	  kernel/WeightedCommWordStringKernel.h, lib/Mathematics.cpp,
+	  lib/Mathematics.h, preproc/SortUlongString.cpp,
+	  preproc/SortWord.cpp, preproc/SortWordString.cpp: add radix sort
+	  and make it the new default for spec* kernels, furthermore
+	  add checks for spec kernel compute (whether all preprocs attached
+	  to features
+	  are actually applied). then also sort the the features when doing
+	  init
+	  (potentially resolving the problem with sliding window/spec
+	  kernel)
+
+2007-08-16  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/CommWordStringKernel.cpp: remove debug code
+	* trunk/matlab/examples/spec_interp.m,
+	  kernel/CommWordStringKernel.cpp: POIM for spec bugfixes
+
+2007-08-16  Konrad Rieck <Konrad.Rieck@first.fraunhofer.de>
+
+	* features/MindyGramFeatures.h, kernel/MindyGramKernel.cpp,
+	  kernel/MindyGramKernel.h: removed several minor but fatal bugs in
+	  Mindy distance to kernel mapping. In essence either use RBF
+	  conversion or check that the distance is a negative CPD kernel.
+
+2007-08-15  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* lib/Trie.h: new trie fields
+	* classifier/svm/SubGradientSVM.cpp: rename A0 -> A_zero , B0 ->
+	  B_zero as there seems to be some
+	  naming collision with numpy
+	* trunk/R/examples/svm_classification.R,
+	  trunk/matlab/examples/spec_interp.m,
+	  trunk/matlab/examples/svm_classification.m,
+	  kernel/CommWordStringKernel.cpp: fix R svm example/enhance matlab
+	  veriant
+	  debugging spec poims
+
+2007-08-13  Konrad Rieck <Konrad.Rieck@first.fraunhofer.de>
+
+	* features/MindyGramFeatures.cpp, features/MindyGramFeatures.h,
+	  kernel/MindyGramKernel.h: added support for latest Mindy library
+
+2007-08-08  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/spec_interp.m,
+	  kernel/CommWordStringKernel.cpp: removed debug code/make toy
+	  example more convincing
+
+2007-08-07  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/CommWordStringKernel.cpp: spectrum poim seems to work...
+	* trunk/matlab/examples/local_alignment_kernel.m,
+	  features/Alphabet.cpp, kernel/LocalAlignmentStringKernel.cpp,
+	  kernel/LocalAlignmentStringKernel.h: - protein alphabet is now
+	  (as all the others) only UPPERCASE
+	  - add example for LA kernel
+	* guilib/GUIKernel.cpp, kernel/CommWordStringKernel.cpp,
+	  kernel/Kernel.i, kernel/LocalAlignmentStringKernel.cpp,
+	  kernel/LocalAlignmentStringKernel.h,
+	  kernel/LocalAlignmentStringKernel.i, lib/common.h: add support
+	  for JP's local alignment kernel
+	* classifier/svm/Tron.cpp, gui/Matlab.cpp, guilib/GUIMatlab.cpp,
+	  guilib/GUIMatlab.h, kernel/CommWordStringKernel.cpp,
+	  kernel/CommWordStringKernel.h,
+	  kernel/WeightedDegreePositionStringKernel.cpp, lib/Mathematics.h:
+	  add function to compute POIM from spectrum kernel
+
+2007-08-06  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* CONTRIBUTIONS, classifier/svm/LibLinear.cpp,
+	  classifier/svm/LibLinear.h, classifier/svm/SVM_linear.cpp,
+	  classifier/svm/SVM_linear.h, classifier/svm/Tron.cpp,
+	  classifier/svm/Tron.h, guilib/GUIClassifier.cpp, lib/common.h:
+	  add Xiang-Rui Wang and Chih-Jen Lin's
+	  liblinear (for LS-logistic regression / L2 svm)
+
+2007-08-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* guilib/GUIFeatures.cpp, guilib/GUIMatlab.cpp: add support for
+	  BYTE/WORD/ULONG based stringfeatures for sliding
+	  window/position list
+
+2007-08-02  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* features/StringFeatures.h: potentially fix the erraneous delete[]
+	  happening after calling from_window_list
+
+2007-07-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* kernel/Kernel.h: fix compilation with --disable-svm-light
+
 2007-07-30  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* configure, lib/Cplex.h: cplex 10 compat fixes as suggested by
+	  Gorden Jemwa
+	* trunk/Makefile, trunk/R/Makefile, trunk/R/sg/DESCRIPTION,
+	  Makefile: merge changes from 0.4.0
+	* releases/shogun_0.4.0, releases/shogun_0.4.0/src/Makefile,
+	  ChangeLog, Makefile: release 0.4.0
 	* ChangeLog: update changelog
 	* configure: set default gcc first
 	* configure: forgotten break in pthread detection
