@@ -2405,6 +2405,7 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[], const mxArray* vals
 	{
 		switch (kernel->get_kernel_type())
 		{
+#ifdef TRIE_FOR_POIMS
 			case K_WEIGHTEDDEGREEPOS:
 				{
 					INT max_order=0;
@@ -2450,6 +2451,7 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[], const mxArray* vals
 					retvals[0]=mx_result;
 					return true;
 				}
+#endif
 			case K_COMMWORDSTRING:
 			case K_WEIGHTEDCOMMWORDSTRING:
 				{
@@ -2820,6 +2822,7 @@ bool CGUIMatlab::get_SPEC_scoring(mxArray* retvals[], INT max_order)
 
 bool CGUIMatlab::compute_poim_wd(mxArray* retvals[], const mxArray* vals[], int nrhs)
 {
+#ifdef TRIE_FOR_POIMS
 	INT max_order=0;
 	DREAL* distribution = NULL;
 
@@ -2891,6 +2894,7 @@ bool CGUIMatlab::compute_poim_wd(mxArray* retvals[], const mxArray* vals[], int 
 	}
 	else
 		SG_ERROR( "one cannot compute POIM using this kernel function\n");
+#endif
 	return false;
 }
 

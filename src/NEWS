@@ -1,3 +1,20 @@
+2007-09-01  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.4.1
+	* This release contains minor bugfixes and improvements
+	* Fixes for:
+		- SVMLin
+		- python examples
+		- R examples
+		- cplex 10 compatibility fixes
+		- compilation fix when configured with --disable-svm-light
+		- sliding window/position list fixes
+	* New methods
+		- Liblinear
+		- Local Alignment Kernel
+		- support for transfering StringFeatures of type word to matlab
+		- python modular support for custom kernel
+
 2007-07-30  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.4.0

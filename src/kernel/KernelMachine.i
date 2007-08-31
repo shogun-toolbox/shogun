@@ -5,4 +5,3 @@
 
 %include "classifier/Classifier.h" 
 %include "kernel/KernelMachine.h"
-

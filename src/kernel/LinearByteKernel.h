@@ -62,4 +62,3 @@ class CLinearByteKernel: public CSimpleKernel<BYTE>
 };
 
 #endif
-

@@ -24,7 +24,7 @@
 
 #define WEIGHTS_IN_TRIE 
 //#define TRIE_CHECK_EVERYTHING
-#define TRIE_FOR_POIMS
+//#define TRIE_FOR_POIMS
 
 #ifdef TRIE_CHECK_EVERYTHING
 #define TRIE_ASSERT_EVERYTHING(x) ASSERT(x)
@@ -44,25 +44,8 @@ struct ConsensusEntry
 	INT bt;
 };
 
-//struct Trie
-//{
-//    DREAL weight;
-//#ifdef TRIE_CHECK_EVERYTHING
-//    bool has_seq ;
-//    bool has_floats ;
-//#endif		
-//    union 
-//    {
-//        SHORTREAL child_weights[4];
-//        INT children[4];
-//        BYTE seq[16] ;
-//    }; 
-//};
-
-
 struct Trie
 {
-    static const INT NUM_SYMS = 4;  // only DNA alphabet for now
     DREAL weight;
 #ifdef TRIE_CHECK_EVERYTHING
     bool has_seq ;
@@ -70,17 +53,33 @@ struct Trie
 #endif		
     union 
     {
-        SHORTREAL child_weights[ NUM_SYMS ];
-        INT children[ NUM_SYMS ];
+        SHORTREAL child_weights[4];
+        INT children[4];
+        BYTE seq[16] ;
+    }; 
+};
+
+
+#ifdef TRIE_FOR_POIMS
+struct POIMTrie
+{
+    DREAL weight;
+#ifdef TRIE_CHECK_EVERYTHING
+    bool has_seq ;
+    bool has_floats ;
+#endif		
+    union 
+    {
+        SHORTREAL child_weights[4];
+        INT children[4];
         BYTE seq[16] ;
     }; 
 
-#ifdef TRIE_FOR_POIMS
 	DREAL S;  // super_string_score;
 	DREAL L;  // left_partial_overlap_score;
 	DREAL R;  // right_partial_overlap_score;
-#endif
 };
+#endif
 
 struct TreeParseInfo {
     INT num_sym;
@@ -104,7 +103,7 @@ public:
 	CTrie(const CTrie & to_copy) ;
 	~CTrie() ;
 
-	static const INT NUM_SYMS = Trie::NUM_SYMS;
+	static const INT NUM_SYMS = 4;
 
 	const CTrie & operator=(const CTrie & to_copy) ;
 	bool compare_traverse(INT node, const CTrie & other, INT other_node) ;
