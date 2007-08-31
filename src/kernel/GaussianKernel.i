@@ -5,4 +5,3 @@
 %rename(GaussianKernel) CGaussianKernel;
 
 %include "kernel/GaussianKernel.h"
-

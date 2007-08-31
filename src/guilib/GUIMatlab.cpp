@@ -2405,6 +2405,7 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[], const mxArray* vals
 	{
 		switch (kernel->get_kernel_type())
 		{
+#ifdef TRIE_FOR_POIMS
 			case K_WEIGHTEDDEGREEPOS:
 				{
 					INT max_order=0;
@@ -2415,7 +2416,7 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[], const mxArray* vals
 
 					if ((max_order < 1) || (max_order > 12))
 					{
-						SG_WARNING( "max_order out of range 1..12 (%d) setting to 1\n", max_order);
+						SG_WARNING( "max_order out of range 1..12 (%d). setting to 1\n", max_order);
 						max_order=1;
 					}
 
@@ -2450,6 +2451,7 @@ bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[], const mxArray* vals
 					retvals[0]=mx_result;
 					return true;
 				}
+#endif
 			case K_COMMWORDSTRING:
 			case K_WEIGHTEDCOMMWORDSTRING:
 				{
@@ -2780,7 +2782,7 @@ bool CGUIMatlab::get_SPEC_scoring(mxArray* retvals[], INT max_order)
 
 		if ((max_order < 1) || (max_order > 8))
 		{
-			SG_WARNING( "max_order out of range 1..8 (%d) setting to 1\n", max_order);
+			SG_WARNING( "max_order out of range 1..8 (%d). setting to 1\n", max_order);
 			max_order=1;
 		}
 		DREAL* position_weights=NULL;
@@ -2818,19 +2820,46 @@ bool CGUIMatlab::get_SPEC_scoring(mxArray* retvals[], INT max_order)
 	return false;
 }
 
-bool CGUIMatlab::compute_poim_wd(mxArray* retvals[], INT max_order)
+bool CGUIMatlab::compute_poim_wd(mxArray* retvals[], const mxArray* vals[], int nrhs)
 {
+#ifdef TRIE_FOR_POIMS
+	INT max_order=0;
+	DREAL* distribution = NULL;
+
+	if (mxIsDouble(vals[1]))
+		max_order=(INT) *mxGetPr(vals[1]);
+	else
+		return false;
+
+	if (mxIsDouble(vals[2]))
+		distribution = mxGetPr(vals[2]);
+	else
+		return false;
+
 	CKernel *k= gui->guikernel.get_kernel() ;
 
 	if (k && (k->get_kernel_type() == K_WEIGHTEDDEGREEPOS))
 	{
+		INT num_feat=-1;
+		INT num_sym=-1;
+
+		CStringFeatures<CHAR>* sf= (CStringFeatures<CHAR>*) (((CWeightedDegreePositionStringKernel*) k)->get_lhs());
+		ASSERT(sf);
+		num_feat=sf->get_max_vector_length();
+		num_sym= (INT) sf->get_num_symbols();
+
+		if (((INT) mxGetN(vals[2]))!=num_feat || ((INT) mxGetM(vals[2])) != num_sym)
+			SG_ERROR("distribution should have (seqlen x num_sym) elements"
+					"(seqlen: %d vs. %d symbols: %d vs. %d)\n", num_feat,
+					mxGetN(vals[2]), num_sym, mxGetM(vals[2]));
+
 		CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 		ASSERT(svm);
 		INT num_suppvec = svm->get_num_support_vectors();
 		INT* sv_idx    = new INT[num_suppvec];
+		ASSERT(sv_idx);
 		DREAL* sv_weight = new DREAL[num_suppvec];
-		INT num_feat=-1;
-		INT num_sym=-1;
+		ASSERT(sv_weight);
 
 		for (INT i=0; i<num_suppvec; i++)
 		{
@@ -2840,13 +2869,14 @@ bool CGUIMatlab::compute_poim_wd(mxArray* retvals[], INT max_order)
 
 		if ((max_order < 1) || (max_order > 12))
 		{
-			SG_WARNING( "max_order out of range 1..12 (%d) setting to 1\n", max_order);
-			max_order=1;
+		  //SG_WARNING( "max_order out of range 1..12 (%d).\n", max_order);
+			//SG_WARNING( "max_order out of range 1..12 (%d). setting to 1.\n", max_order);
+			//max_order=1;
 		}
 		DREAL* position_weights;
 		position_weights = ((CWeightedDegreePositionStringKernel*) k)->compute_POIM(
 				max_order, num_feat, num_sym, NULL,
-				num_suppvec, sv_idx, sv_weight);
+				num_suppvec, sv_idx, sv_weight, distribution);
 		mxArray* mx_result ;
 		mx_result=mxCreateDoubleMatrix(num_sym, num_feat, mxREAL);
 		double* result=mxGetPr(mx_result);
@@ -2857,10 +2887,14 @@ bool CGUIMatlab::compute_poim_wd(mxArray* retvals[], INT max_order)
 				result[i*num_sym+j] = position_weights[i*num_sym+j] ;
 		}
 		retvals[0]=mx_result;
+
+		delete[] sv_idx;
+		delete[] sv_weight;
 		return true;
 	}
 	else
 		SG_ERROR( "one cannot compute POIM using this kernel function\n");
+#endif
 	return false;
 }
 
@@ -2886,7 +2920,7 @@ bool CGUIMatlab::get_WD_scoring(mxArray* retvals[], INT max_order)
 
 		if ((max_order < 1) || (max_order > 12))
 		{
-			SG_WARNING( "max_order out of range 1..12 (%d) setting to 1\n", max_order);
+			SG_WARNING( "max_order out of range 1..12 (%d). setting to 1\n", max_order);
 			max_order=1;
 		}
 		DREAL* position_weights;

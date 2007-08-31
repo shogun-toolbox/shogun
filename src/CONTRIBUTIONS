@@ -20,3 +20,6 @@ We integrated the work of the following people:
 
  Vojtech Franc
  	- Generalized Nearest Point Problem Solver based L2 (slacks) SVM
+ 
+ Jean-Philippe Vert
+ 	- Local Alignment Kernel

@@ -101,7 +101,7 @@ public:
 	bool set_subkernel_weights(const mxArray *mx_arg);
 	bool set_subkernel_weights_combined(const mxArray **mx_arg);
 	bool set_last_subkernel_weights(const mxArray *mx_arg);
-	bool compute_poim_wd(mxArray* retvals[], INT max_order);
+	bool compute_poim_wd(mxArray* retvals[], const mxArray* vals[], int nrhs);
 	bool get_WD_position_weights(mxArray* retvals[]);
 	bool get_WD_scoring(mxArray* retvals[], INT max_order);
 	bool get_WD_consensus(mxArray* retvals[]);
