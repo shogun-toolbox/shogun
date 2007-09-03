@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include "classifier/svm/Tron.h"
-#include "lib/Mathematics.h"
 
+#include "lib/config.h"
+#include "lib/Mathematics.h"
+#include "classifier/svm/Tron.h"
+
+#ifdef HAVE_LAPACK
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -206,3 +209,4 @@ double CTron::norm_inf(int n, double *x)
 			dmax = CMath::abs(x[i]);
 	return(dmax);
 }
+#endif //HAVE_LAPACK

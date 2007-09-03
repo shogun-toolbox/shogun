@@ -11,6 +11,9 @@
 #ifndef _LIBLINEAR_H___
 #define _LIBLINEAR_H___
 
+#include "lib/config.h"
+
+#ifdef HAVE_LAPACK
 #include "lib/common.h"
 #include "classifier/SparseLinearClassifier.h"
 
@@ -45,4 +48,5 @@ class CLibLinear : public CSparseLinearClassifier
 
 		LIBLINEAR_LOSS loss;
 };
-#endif
+#endif //HAVE_LAPACK
+#endif //_LIBLINEAR_H___

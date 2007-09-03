@@ -162,6 +162,13 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		classifier= new CKernelPerceptron();
 		SG_INFO( "created Kernel Perceptron object\n") ;
 	}
+	else if (strcmp(param,"PERCEPTRON")==0)
+	{
+		delete classifier;
+		classifier= new CPerceptron();
+		SG_INFO( "created Perceptron object\n") ;
+	}
+#ifdef HAVE_LAPACK
 	else if (strcmp(param,"LIBLINEAR_LR")==0)
 	{
 		delete classifier;
@@ -180,13 +187,6 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		((CLibLinear*) classifier)->set_bias_enabled(svm_use_bias);
 		SG_INFO( "created LibLinear l2 loss object\n") ;
 	}
-	else if (strcmp(param,"PERCEPTRON")==0)
-	{
-		delete classifier;
-		classifier= new CPerceptron();
-		SG_INFO( "created Perceptron object\n") ;
-	}
-#ifdef HAVE_LAPACK
 	else if (strcmp(param,"LDA")==0)
 	{
 		delete classifier;

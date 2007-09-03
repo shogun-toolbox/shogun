@@ -1,8 +1,12 @@
+#include "lib/config.h"
+
+#ifdef HAVE_LAPACK
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+
 #include "classifier/svm/SVM_linear.h"
 #include "classifier/svm/Tron.h"
 
@@ -283,3 +287,4 @@ void l2_lr_fun::XTv(double *v, double *res_XTv)
 			res_XTv[n]+=v[i];
 	}
 }
+#endif //HAVE_LAPACK

@@ -1,6 +1,9 @@
 #ifndef _CTron_H
 #define _CTron_H
 
+#include "lib/config.h"
+
+#ifdef HAVE_LAPACK
 #include "base/SGObject.h"
 
 class function
@@ -32,3 +35,4 @@ private:
 };
 
 #endif
+#endif //HAVE_LAPACK

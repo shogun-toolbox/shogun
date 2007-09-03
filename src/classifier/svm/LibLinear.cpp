@@ -7,12 +7,14 @@
  * Written (W) 1999-2007 Soeren Sonnenburg
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
+#include "lib/config.h"
 
+#ifdef HAVE_LAPACK
+#include "lib/io.h"
 #include "classifier/svm/LibLinear.h"
 #include "classifier/svm/SVM_linear.h"
 #include "classifier/svm/Tron.h"
 #include "features/SparseFeatures.h"
-#include "lib/io.h"
 
 CLibLinear::CLibLinear(LIBLINEAR_LOSS l) : CSparseLinearClassifier()
 {
@@ -103,3 +105,4 @@ bool CLibLinear::train()
 
 	return true;
 }
+#endif //HAVE_LAPACK

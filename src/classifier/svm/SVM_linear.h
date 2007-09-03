@@ -1,6 +1,9 @@
 #ifndef _LIBLINEAR_H
 #define _LIBLINEAR_H
 
+#include "lib/config.h"
+
+#ifdef HAVE_LAPACK
 #include "classifier/svm/Tron.h"
 #include "features/SparseFeatures.h"
 
@@ -106,8 +109,5 @@ private:
 	double *D;
 	const problem *prob;
 };
-
-
-
-#endif /* _LIBLINEAR_H */
-
+#endif //HAVE_LAPACK
+#endif //_LIBLINEAR_H
