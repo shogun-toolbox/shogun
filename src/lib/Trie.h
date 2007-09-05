@@ -24,7 +24,7 @@
 
 #define WEIGHTS_IN_TRIE 
 //#define TRIE_CHECK_EVERYTHING
-//#define TRIE_FOR_POIMS
+#define TRIE_FOR_POIMS
 
 #ifdef TRIE_CHECK_EVERYTHING
 #define TRIE_ASSERT_EVERYTHING(x) ASSERT(x)
@@ -44,24 +44,10 @@ struct ConsensusEntry
 	INT bt;
 };
 
-struct Trie
-{
-    DREAL weight;
-#ifdef TRIE_CHECK_EVERYTHING
-    bool has_seq ;
-    bool has_floats ;
-#endif		
-    union 
-    {
-        SHORTREAL child_weights[4];
-        INT children[4];
-        BYTE seq[16] ;
-    }; 
-};
 
 
 #ifdef TRIE_FOR_POIMS
-struct POIMTrie
+struct Trie
 {
     DREAL weight;
 #ifdef TRIE_CHECK_EVERYTHING
@@ -78,6 +64,21 @@ struct POIMTrie
 	DREAL S;  // super_string_score;
 	DREAL L;  // left_partial_overlap_score;
 	DREAL R;  // right_partial_overlap_score;
+};
+#else
+struct Trie
+{
+    DREAL weight;
+#ifdef TRIE_CHECK_EVERYTHING
+    bool has_seq ;
+    bool has_floats ;
+#endif		
+    union 
+    {
+        SHORTREAL child_weights[4];
+        INT children[4];
+        BYTE seq[16] ;
+    }; 
 };
 #endif
 
@@ -212,8 +213,8 @@ protected:
 
 #ifdef TRIE_FOR_POIMS
 	void POIMs_extract_W_helper( const INT nodeIdx, const int depth, const INT offset, const INT y0, DREAL* const* const W, const INT K );
-	void POIMs_calc_SLR_helper1( const DREAL* const distrib, const INT i, const INT nodeIdx, INT* const leftSubtreeIdcs, const int depth, INT const lastSym, DREAL* S, DREAL* L, DREAL* R );
-	void POIMs_calc_SLR_helper2( const DREAL* const distrib, const INT i, const INT nodeIdx, INT* const leftSubtreeIdcs, const int depth, DREAL* S, DREAL* L, DREAL* R );
+	void POIMs_calc_SLR_helper1( const DREAL* const distrib, const INT i, const INT nodeIdx, Trie* left_tries[4], const int depth, INT const lastSym, DREAL* S, DREAL* L, DREAL* R );
+	void POIMs_calc_SLR_helper2( const DREAL* const distrib, const INT i, const INT nodeIdx, Trie* left_tries[4], const int depth, DREAL* S, DREAL* L, DREAL* R );
 	void POIMs_add_SLR_helper1( const INT nodeIdx, const int depth, const INT i, const INT y0, DREAL* const* const poims, const INT K, const INT debug );
 	void POIMs_add_SLR_helper2( DREAL* const* const poims, const int K, const int k, const INT i, const INT y, const DREAL valW, const DREAL valS, const DREAL valL, const DREAL valR, const INT debug );
 #endif

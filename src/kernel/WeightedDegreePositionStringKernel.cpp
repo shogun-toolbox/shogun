@@ -1575,7 +1575,7 @@ DREAL* CWeightedDegreePositionStringKernel::extract_w( INT max_degree, INT& num_
   ASSERT( max_degree > 0 );
 
   // === general variables
-  static const INT NUM_SYMS = Trie::NUM_SYMS;
+  static const INT NUM_SYMS = CTrie::NUM_SYMS;
   const INT seqLen = num_feat;
   DREAL** subs;
   INT i;
@@ -1632,7 +1632,7 @@ DREAL* CWeightedDegreePositionStringKernel::compute_POIM( INT max_degree, INT& n
   ASSERT( distrib != NULL );
 
   // === general variables
-  static const INT NUM_SYMS = Trie::NUM_SYMS;
+  static const INT NUM_SYMS = CTrie::NUM_SYMS;
   const INT seqLen = num_feat;
   DREAL** subs;
   INT i;
