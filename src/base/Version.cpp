@@ -18,8 +18,8 @@ const INT CVersion::version_month = VERSION_MONTH;
 const INT CVersion::version_day = VERSION_DAY;
 const INT CVersion::version_hour = VERSION_HOUR;
 const INT CVersion::version_minute = VERSION_MINUTE;
-CHAR* CVersion::version_extra = VERSION_EXTRA;
-CHAR* CVersion::version_release = VERSION_RELEASE;
+const CHAR* CVersion::version_extra = VERSION_EXTRA;
+const CHAR* CVersion::version_release = VERSION_RELEASE;
 
 CVersion::CVersion()
 {

@@ -32,7 +32,7 @@
 
 #define NAA 20                                  /* Number of amino-acids */
 #define NLET 26                                 /* Number of letters in the alphabet */
-static char *aaList= "ARNDCQEGHILKMFPSTWYV";    /* The list of amino acids */
+static const char *aaList= "ARNDCQEGHILKMFPSTWYV";    /* The list of amino acids */
 
 /*****************/
 /* SW parameters */

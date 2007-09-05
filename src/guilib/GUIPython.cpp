@@ -36,7 +36,7 @@ extern CTextGUI* gui;
 
 CGUIPython::CGUIPython() : CSGObject()
 {
-	import_libnumarray();
+	//import_libnumarray();
 }
 
 CGUIPython::~CGUIPython()
@@ -47,7 +47,7 @@ PyObject* CGUIPython::py_send_command(PyObject* self, PyObject* args)
 {
 	char *cmd;
 
-	if (!PyArg_ParseTuple(args, "s", &cmd))
+	if (!PyArg_ParseTuple(args, (char*) "s", &cmd))
 		return NULL;
 
 	gui->parse_line(cmd);
@@ -60,7 +60,7 @@ PyObject* CGUIPython::py_system(PyObject* self, PyObject* args)
 {
 	char *cmd;
 
-	if (!PyArg_ParseTuple(args, "s", &cmd))
+	if (!PyArg_ParseTuple(args, (char*) "s", &cmd))
 		return NULL;
 	::system(cmd);
 
@@ -70,7 +70,7 @@ PyObject* CGUIPython::py_system(PyObject* self, PyObject* args)
 
 PyObject* CGUIPython::py_help(PyObject* self, PyObject* args)
 {
-	gui->parse_line("help");
+	gui->parse_line((char*) "help");
 
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -117,9 +117,9 @@ PyObject* CGUIPython::py_get_svm(PyObject* self, PyObject* args)
 			}
 
 			PyObject* ret=PyDict_New();
-			PyDict_SetItemString(ret, "b", Py_BuildValue("f",b));
-			PyDict_SetItemString(ret, "sv_idx", (PyObject*) py_sv_idx);
-			PyDict_SetItemString(ret, "alpha", (PyObject*) py_alphas);
+			PyDict_SetItemString(ret, (char*) "b", Py_BuildValue((char*) "f",b));
+			PyDict_SetItemString(ret, (char*) "sv_idx", (PyObject*) py_sv_idx);
+			PyDict_SetItemString(ret, (char*) "alpha", (PyObject*) py_alphas);
 
 			return ret;
 		}
@@ -174,7 +174,7 @@ PyObject* CGUIPython::py_set_subkernels_weights(PyObject* self, PyObject* args)
 {
 	PyObject* py_oweights = NULL;
 
-	if (PyArg_ParseTuple(args, "O", &py_oweights))
+	if (PyArg_ParseTuple(args, (char*) "O", &py_oweights))
 	{
 		PyArrayObject* py_weights = NA_InputArray(py_oweights, tFloat64, NUM_C_ARRAY);
 		CKernel* k= gui->guikernel.get_kernel();
@@ -324,7 +324,7 @@ PyObject* CGUIPython::py_get_features(PyObject* self, PyObject* args)
 {
 	char* target = NULL;
 
-	if (PyArg_ParseTuple(args, "s", &target))
+	if (PyArg_ParseTuple(args, (char*) "s", &target))
 	{
 		CFeatures* f = NULL;
 
@@ -391,7 +391,7 @@ PyObject* CGUIPython::py_get_labels(PyObject* self, PyObject* args)
 {
 	char* target = NULL;
 
-	if (PyArg_ParseTuple(args, "s", &target))
+	if (PyArg_ParseTuple(args, (char*) "s", &target))
 	{
 		CLabels* labels = NULL;
 
@@ -471,7 +471,7 @@ PyObject* CGUIPython::py_set_svm(PyObject* self, PyObject* args)
 	if (svm)
 	{
 		PyObject* py_dict = NULL;
-		if (!PyArg_ParseTuple(args, "O", &py_dict))
+		if (!PyArg_ParseTuple(args, (char*) "O", &py_dict))
 			return NULL;
 		if (!PyDict_Check(py_dict))
 			return NULL;
@@ -529,7 +529,7 @@ PyObject* CGUIPython::py_set_custom_kernel(PyObject* self, PyObject* args)
 	bool dest_is_diag = false;
 
 
-	if (PyArg_ParseTuple(args, "Os", &py_okernel, target))
+	if (PyArg_ParseTuple(args, (char*) "Os", &py_okernel, target))
 	{
 		if ( (!strncmp(target, "DIAG", strlen("DIAG"))) || 
 				(!strncmp(target, "FULL", strlen("FULL"))) ) 
@@ -614,8 +614,8 @@ PyObject* CGUIPython::py_set_features(PyObject* self, PyObject* args)
 	char* target = NULL;
 	char* cmdline = NULL;
 
-	if ( (PyArg_ParseTuple(args, "sO", &target, &py_ofeat)) ||
-			(PyArg_ParseTuple(args, "sOs", &target, &py_ofeat, &cmdline)) )
+	if ( (PyArg_ParseTuple(args, (char*) "sO", &target, &py_ofeat)) ||
+			(PyArg_ParseTuple(args, (char*) "sOs", &target, &py_ofeat, &cmdline)) )
 	{
 		if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
 				(!strncmp(target, "TEST", strlen("TEST"))) ) 
@@ -652,8 +652,8 @@ PyObject* CGUIPython::py_add_features(PyObject* self, PyObject* args)
 	char* target = NULL;
 	char* cmdline = NULL;
 
-	if (PyArg_ParseTuple(args, "sOs", &target, &py_ofeat, &cmdline) ||
-            PyArg_ParseTuple(args, "sO", &target, &py_ofeat))
+	if (PyArg_ParseTuple(args, (char*) "sOs", &target, &py_ofeat, &cmdline) ||
+            PyArg_ParseTuple(args, (char*) "sO", &target, &py_ofeat))
 	{
 		if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
 				(!strncmp(target, "TEST", strlen("TEST"))) ) 
@@ -689,7 +689,7 @@ PyObject* CGUIPython::py_set_labels(PyObject* self, PyObject* args)
 	PyObject *arg = NULL;
 	char* target = NULL;
 
-	if (PyArg_ParseTuple(args, "sO", &target, &arg))
+	if (PyArg_ParseTuple(args, (char*) "sO", &target, &arg))
 	{
 		if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
 				(!strncmp(target, "TEST", strlen("TEST"))) ) 
@@ -779,7 +779,7 @@ PyObject* CGUIPython::py_svm_classify_example(PyObject* self, PyObject* args)
 {
 	int idx = 0;
 
-	if (PyArg_ParseTuple(args, "i", &idx))
+	if (PyArg_ParseTuple(args, (char*) "i", &idx))
 	{
 		DREAL result;
 		if (!gui->guiclassifier.classify_example(idx, result))
@@ -816,7 +816,7 @@ PyObject* CGUIPython::py_test(PyObject* self, PyObject* args)
 	PyObject   *py_ofeat = NULL;
 	PyArrayObject *py_afeat = NULL;
 
-	if (PyArg_ParseTuple(args, "O", &py_ofeat))
+	if (PyArg_ParseTuple(args, (char*) "O", &py_ofeat))
 	{
 		/* Align, Byteswap, Contiguous, Typeconvert */
 		py_afeat  = NA_InputArray(py_ofeat, tFloat64, NUM_C_ARRAY);

@@ -1615,9 +1615,9 @@ void CTrie::POIMs_precalc_SLR( const DREAL* const distrib )
 	const INT N = length;
 	DREAL dummy;
 	INT symLeft;
-	Trie* leftSubtrees[4];
+	INT leftSubtrees[4];
 	for( symLeft = 0; symLeft < NUM_SYMS; ++symLeft )
-		leftSubtrees[ symLeft ] = NULL;
+		leftSubtrees[ symLeft ] = NO_CHILD;
 
 	for(INT i = 0; i < N; ++i )
 	{
@@ -1627,16 +1627,12 @@ void CTrie::POIMs_precalc_SLR( const DREAL* const distrib )
 		ASSERT(trees[i] != NO_CHILD);
 
 		for(symLeft = 0; symLeft < NUM_SYMS; ++symLeft )
-		{
-			INT idx=node->children[ symLeft ];
-			if (idx != NO_CHILD)
-				leftSubtrees[ symLeft ] = &TreeMem[idx];
-		}
+			leftSubtrees[ symLeft ] = node->children[ symLeft ];
 	}
 }
 
 void CTrie::POIMs_calc_SLR_helper2( const DREAL* const distrib, const INT i,
-				    const INT nodeIdx, Trie* left_tries[4], const int depth,
+				    const INT nodeIdx, INT left_tries_idx[4], const int depth,
 				    DREAL* S, DREAL* L, DREAL* R )
 {
   ASSERT( 0 <= depth && depth <= degree-2 );
@@ -1664,24 +1660,23 @@ void CTrie::POIMs_calc_SLR_helper2( const DREAL* const distrib, const INT i,
 	  {
 		  if( depth < degree-2 ) 
 		  {
-			  Trie* new_left_tries[4];
+			  INT new_left_tries_idx[4];
 
 			  for( symLeft = 0; symLeft < NUM_SYMS; ++symLeft )
 			  {
-				  new_left_tries[symLeft]=NULL;
+				  new_left_tries_idx[symLeft]=NO_CHILD;
 
-				  Trie* nodeLeft = left_tries[symLeft];
-				  if( nodeLeft )
+				  if (left_tries_idx[symLeft] != NO_CHILD)
 				  {
-					  INT idx=nodeLeft->children[ symRight ];
-					  if (idx != NO_CHILD)
-						  new_left_tries[ symLeft ] = &TreeMem[idx];
+					  Trie* nodeLeft = &TreeMem[left_tries_idx[symLeft]];
+					  ASSERT(nodeLeft);
+					  new_left_tries_idx[ symLeft ]=nodeLeft->children[ symRight ];
 				  }
 			  }
-			  POIMs_calc_SLR_helper2( distrib, i, childIdx, new_left_tries, depth+1, &auxS, &dummy, &auxR );
+			  POIMs_calc_SLR_helper2( distrib, i, childIdx, new_left_tries_idx, depth+1, &auxS, &dummy, &auxR );
 		  }
 		  else 
-			  POIMs_calc_SLR_helper1( distrib, i, childIdx, left_tries, depth+1, symRight, &auxS, &dummy, &auxR );
+			  POIMs_calc_SLR_helper1( distrib, i, childIdx, left_tries_idx, depth+1, symRight, &auxS, &dummy, &auxR );
 
 		  const DREAL pRight = distribRight[ symRight ];
 		  node->S += pRight * auxS;
@@ -1692,22 +1687,14 @@ void CTrie::POIMs_calc_SLR_helper2( const DREAL* const distrib, const INT i,
   // --- collect precalced values from left neighbor tree
   for( symLeft = 0; symLeft < NUM_SYMS; ++symLeft )
   {
-	  const Trie* nodeLeft = left_tries[ symLeft ];
-	  if( nodeLeft )
+	  if (left_tries_idx[symLeft] != NO_CHILD)
 	  {
+		  const Trie* nodeLeft = &TreeMem[left_tries_idx[symLeft]];
+		  ASSERT( nodeLeft);
 		  const DREAL pLeft = distribLeft[ symLeft ];
+
 		  node->S += pLeft * nodeLeft->S;
 		  node->L += pLeft * nodeLeft->L;
-	  }
-  }
-
-  for( symLeft = 0; symLeft < NUM_SYMS; ++symLeft )
-  {
-	  const Trie* nodeLeft = left_tries[ symLeft ];
-
-	  if( nodeLeft)
-	  {
-		  const DREAL pLeft = distribLeft[ symLeft ];
 
 		  // - second order correction for S
 		  auxS = 0;
@@ -1745,7 +1732,7 @@ void CTrie::POIMs_calc_SLR_helper2( const DREAL* const distrib, const INT i,
 }
 
 void CTrie::POIMs_calc_SLR_helper1( const DREAL* const distrib, const INT i,
-				    const INT nodeIdx, Trie* left_tries[4], const int depth, INT const lastSym,
+				    const INT nodeIdx, INT left_tries_idx[4], const int depth, INT const lastSym,
 				    DREAL* S, DREAL* L, DREAL* R )
 {
   ASSERT( depth == degree-1 );
@@ -1774,10 +1761,11 @@ void CTrie::POIMs_calc_SLR_helper1( const DREAL* const distrib, const INT i,
   // --- collect precalced values from left neighbor tree
   for( symLeft = 0; symLeft < NUM_SYMS; ++symLeft )
   {
-	  Trie* nodeLeft=left_tries[symLeft];
-
-	  if( nodeLeft )
+	  if (left_tries_idx[symLeft] != NO_CHILD)
 	  {
+		  Trie* nodeLeft = &TreeMem[left_tries_idx[symLeft]];
+
+		  ASSERT( nodeLeft );
 		  const DREAL w2 = nodeLeft->child_weights[ lastSym ];
 		  const DREAL pLeft = distribLeft[ symLeft ];
 		  const DREAL incr2 = pLeft * w2;
