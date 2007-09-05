@@ -217,10 +217,8 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 
 		/// compute consensus string
 		CHAR* compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas);
-#ifdef TRIE_FOR_POIMS
 		DREAL* extract_w( INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas);
 		DREAL* compute_POIM( INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL* distrib );
-#endif
 
 	protected:
 
@@ -273,7 +271,10 @@ class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 		EWDKernType type;
 		INT which_degree;
 
-		CTrie tries ;
-		bool tree_initialized ;
+		CTrie<DNATrie> tries;
+		CTrie<POIMTrie> poim_tries;
+
+		bool tree_initialized;
+		bool use_poim_tries; //makes add_example_to_tree (ONLY!) use POIMTrie
 };
 #endif

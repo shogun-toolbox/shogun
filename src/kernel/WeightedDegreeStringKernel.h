@@ -221,7 +221,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
   void add_example_to_single_tree(INT idx, DREAL weight, INT tree_num);
   void add_example_to_tree_mismatch(INT idx, DREAL weight);
   void add_example_to_single_tree_mismatch(INT idx, DREAL weight, INT tree_num);
-  void add_example_to_tree_mismatch_recursion(struct Trie *tree,  DREAL alpha,
+  void add_example_to_tree_mismatch_recursion(DNATrie *tree,  DREAL alpha,
 											  INT *vec, INT len_rem, 
 											  INT depth_rec, INT mismatch_rec) ;
   
@@ -267,7 +267,7 @@ class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
   EWDKernType type;
   INT which_degree;
   
-  CTrie tries ;
+  CTrie<DNATrie> tries ;
   bool tree_initialized ;
   
 };

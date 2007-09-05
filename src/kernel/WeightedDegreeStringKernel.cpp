@@ -23,13 +23,13 @@
 #include <pthread.h>
 #endif
 
-struct S_THREAD_PARAM 
+struct S_THREAD_PARAM
 {
 	INT* vec;
 	DREAL* result;
 	DREAL* weights;
 	CWeightedDegreeStringKernel* kernel;
-	CTrie* tries;
+	CTrie<DNATrie>* tries;
 	DREAL factor;
 	INT j;
 	INT start;
@@ -822,7 +822,7 @@ void* CWeightedDegreeStringKernel::compute_batch_helper(void* p)
 	S_THREAD_PARAM* params = (S_THREAD_PARAM*) p;
 	INT j=params->j;
 	CWeightedDegreeStringKernel* wd=params->kernel;
-	CTrie* tries=params->tries;
+	CTrie<DNATrie>* tries=params->tries;
 	DREAL* weights=params->weights;
 	INT length=params->length;
 	INT* vec=params->vec;
