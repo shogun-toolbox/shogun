@@ -19,6 +19,7 @@
 #endif
 
 %feature("director") CKernel;
+%rename(Kernel) CKernel;
 %feature("autodoc","1");
 
 %include "lib/ShogunException.i"
@@ -40,7 +41,6 @@
 %include "kernel/SigmoidKernel.i"
 %include "kernel/SparseGaussianKernel.i"
 %include "kernel/SparseLinearKernel.i"
-%include "kernel/SparseNormSquaredKernel.i"
 %include "kernel/SparsePolyKernel.i"
 
 %include "kernel/Chi2Kernel.i"

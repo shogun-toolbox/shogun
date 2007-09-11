@@ -4,48 +4,48 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2007 Soeren Sonnenburg
- * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007 Soeren Sonnenburg
+ * Copyright (C) 2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include "kernel/SparseNormSquaredKernel.h"
+#include "distance/SparseNormSquaredDistance.h"
 #include "features/Features.h"
 #include "features/SparseFeatures.h"
 
-CSparseNormSquaredKernel::CSparseNormSquaredKernel(INT size)
-  : CSparseKernel<DREAL>(size)
+CSparseNormSquaredDistance::CSparseNormSquaredDistance()
+  : CSparseDistance<DREAL>()
 {
 }
 
-CSparseNormSquaredKernel::~CSparseNormSquaredKernel() 
+CSparseNormSquaredDistance::~CSparseNormSquaredDistance() 
 {
 	cleanup();
 }
   
-bool CSparseNormSquaredKernel::init(CFeatures* l, CFeatures* r)
+bool CSparseNormSquaredDistance::init(CFeatures* l, CFeatures* r)
 {
-	CSparseKernel<DREAL>::init(l, r);
+	CSparseDistance<DREAL>::init(l, r);
 
 	return true;
 }
 
-void CSparseNormSquaredKernel::cleanup()
+void CSparseNormSquaredDistance::cleanup()
 {
 }
 
-bool CSparseNormSquaredKernel::load_init(FILE* src)
+bool CSparseNormSquaredDistance::load_init(FILE* src)
 {
 	return false;
 }
 
-bool CSparseNormSquaredKernel::save_init(FILE* dest)
+bool CSparseNormSquaredDistance::save_init(FILE* dest)
 {
 	return false;
 }
   
-DREAL CSparseNormSquaredKernel::compute(INT idx_a, INT idx_b)
+DREAL CSparseNormSquaredDistance::compute(INT idx_a, INT idx_b)
 {
   INT alen, blen;
   bool afree, bfree;

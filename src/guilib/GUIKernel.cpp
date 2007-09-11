@@ -47,7 +47,6 @@
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/SparsePolyKernel.h"
 #include "kernel/SparseGaussianKernel.h"
-#include "kernel/SparseNormSquaredKernel.h"
 #include "kernel/DiagKernel.h"
 #include "kernel/MindyGramKernel.h"
 #include "kernel/DistanceKernel.h"
@@ -1284,20 +1283,6 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				if (k)
 				{
 					SG_INFO( "Sparse Gaussian Kernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"NORMSQUARED")==0)
-		{
-			if (strcmp(data_type,"SPARSEREAL")==0)
-			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
-				delete k;
-				k=new CSparseNormSquaredKernel(size);
-				if (k)
-				{
-					SG_INFO( "Sparse NormSquared Kernel created\n");
 					return k;
 				}
 			}

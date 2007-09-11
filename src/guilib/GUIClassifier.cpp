@@ -20,6 +20,7 @@
 #include "features/Labels.h"
 
 #include "classifier/KNN.h"
+#include "clustering/KMeans.h"
 #include "classifier/PluginEstimate.h"
 
 #include "classifier/LDA.h"
@@ -235,6 +236,12 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		classifier= new CKNN();
 		SG_INFO( "created KNN object\n") ;
 	}
+	else if (strcmp(param,"KMEANS")==0)
+	{
+		delete classifier;
+		classifier= new CKMeans();
+		SG_INFO( "created KMeans object\n") ;
+	}
 	else if (strcmp(param,"SVMLIN")==0)
 	{
 		delete classifier;
@@ -289,6 +296,8 @@ bool CGUIClassifier::train(CHAR* param)
 			return train_svm(param);
 		case CT_KNN:
 			return train_knn(param);
+		case CT_KMEANS:
+			return train_clustering(param);
 		case CT_PERCEPTRON:
 			((CPerceptron*) classifier)->set_learn_rate(perceptron_learnrate);
 			((CPerceptron*) classifier)->set_max_iter(perceptron_maxiter);
@@ -391,6 +400,35 @@ bool CGUIClassifier::train_svm(CHAR* param)
 
 	kernel->set_precompute_matrix(false,false);
 	return result ;	
+}
+
+bool CGUIClassifier::train_clustering(CHAR* param)
+{
+	CLabels* trainlabels=gui->guilabels.get_train_labels();
+	CDistance* distance=gui->guidistance.get_distance();
+
+	bool result=false;
+
+	if (trainlabels)
+	{
+		if (distance)
+		{
+			param=CIO::skip_spaces(param);
+			INT k=3;
+			sscanf(param, "%d", &k);
+
+			((CDistanceMachine*) classifier)->set_labels(trainlabels);
+			((CDistanceMachine*) classifier)->set_distance(distance);
+			((CKMeans*) classifier)->set_k(k);
+			result=((CKMeans*) classifier)->train();
+		}
+		else
+			SG_ERROR( "no distance available\n") ;
+	}
+	else
+		SG_ERROR( "no labels available\n") ;
+
+	return result;
 }
 
 bool CGUIClassifier::train_knn(CHAR* param)

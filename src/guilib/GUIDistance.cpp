@@ -29,6 +29,8 @@
 #include "distance/CanberraWordDistance.h"
 #include "distance/ManhattanWordDistance.h"
 #include "distance/HammingWordDistance.h"
+#include "distance/NormSquaredDistance.h"
+#include "distance/SparseNormSquaredDistance.h"
 
 #include "features/RealFileFeatures.h"
 #include "features/TOPFeatures.h"
@@ -146,24 +148,24 @@ bool CGUIDistance::init_distance(CHAR* param)
 	CHAR target[1024]="";
 	bool do_init=false;
 
-SG_INFO( "CGUIDistance::init_distance start");
-	
+	SG_INFO( "CGUIDistance::init_distance start");
+
 	if (!distance)
 	{
 		SG_ERROR( "no distance available\n") ;
 		return false ;
 	} ;
 
-SG_INFO( "CGUIDistance::init_distance before set_precompute");
+	SG_INFO( "CGUIDistance::init_distance before set_precompute");
 	distance->set_precompute_matrix(false);
-SG_INFO( "CGUIDistance::init_distance after set_precompute");
+	SG_INFO( "CGUIDistance::init_distance after set_precompute");
 
 	if ((sscanf(param, "%s", target))==1)
 	{
-SG_INFO( "CGUIDistance::init_distance 1 if");
+		SG_INFO( "CGUIDistance::init_distance 1 if");
 		if (!strncmp(target, "TRAIN", 5))
 		{
-SG_INFO( "CGUIDistance::init_distance 2 if");
+			SG_INFO( "CGUIDistance::init_distance 2 if");
 			do_init=true;
 			if (gui->guifeatures.get_train_features())
 			{
@@ -194,8 +196,8 @@ SG_INFO( "CGUIDistance::init_distance 2 if");
 							|| gui->guifeatures.get_train_features()->get_feature_class() == C_ANY 
 							|| distance->get_feature_class() == C_ANY ) &&
 						(distance->get_feature_class() == gui->guifeatures.get_test_features()->get_feature_class() 
-							|| gui->guifeatures.get_test_features()->get_feature_class() == C_ANY 
-							|| distance->get_feature_class() == C_ANY ) &&
+						 || gui->guifeatures.get_test_features()->get_feature_class() == C_ANY 
+						 || distance->get_feature_class() == C_ANY ) &&
 						(distance->get_feature_type() == gui->guifeatures.get_train_features()->get_feature_type() 
 						 || gui->guifeatures.get_train_features()->get_feature_type() == F_ANY 
 						 || distance->get_feature_type() == F_ANY ) &&
@@ -269,9 +271,9 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 	CHAR data_type[1024]="";
 	param=CIO::skip_spaces(param);
 	CDistance* d=NULL;
-	
+
 	//note the different args COMBINED <cachesize>
-	 
+
 	if (sscanf(param, "%s %s", dist_type, data_type) == 2)
 	{
 		if (strcmp(dist_type,"MINKOWSKI")==0)
@@ -306,7 +308,7 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 			}
 			else if (strcmp(data_type,"WORD")==0)
 			{
-				
+
 				delete d;
 				d=new CManhattanWordDistance();
 
@@ -324,8 +326,8 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 			if (strcmp(data_type,"WORD")==0)
 			{
 				INT use_sign = 0 ;
-				
-				
+
+
 				sscanf(param, "%s %s %d", dist_type, data_type, &use_sign);
 				delete d;
 				d=new CHammingWordDistance(use_sign==1);
@@ -404,10 +406,31 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 			}
 			else
 				SG_ERROR( "Jense-Distance expects REAL as data type \n") ;
+		}
+		else if (strcmp(dist_type,"NORMSQUARED")==0)
+		{
+			if (strcmp(data_type,"REAL")==0)
+			{
+				delete d;
+				d= new CNormSquaredDistance();
+				if (d)
+					SG_INFO( "NormSquared-Distance created\n");
+				return d;
+			}
+			else if (strcmp(data_type,"SPARSEREAL")==0)
+			{
+				delete d;
+				d= new CSparseNormSquaredDistance();
+				if (d)
+					SG_INFO( "SparseNormSquared-Distance created\n");
+				return d;
+			}
+			else
+				SG_ERROR( "NormSquared-Distance expects REAL or SPARSEREAL as data type \n") ;
 
 		}
 		else
-			SG_ERROR( "in this format only CANBERRA, CHEBYSHEW, GEODESIC, JENSEN, MANHATTEN, MINKOWSKI is accepted \n") ;
+			SG_ERROR( "in this format only CANBERRA, CHEBYSHEW, GEODESIC, JENSEN, MANHATTEN, MINKOWSKI, NORMSQUARED, SPARSENORMSQUARED is accepted \n") ;
 	} 
 	else 
 		SG_ERROR( "see help for params!\n");

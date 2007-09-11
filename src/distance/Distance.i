@@ -40,3 +40,5 @@
 %include "distance/HammingWordDistance.i"
 %include "distance/ManhattanWordDistance.i"
 %include "distance/CanberraWordDistance.i"
+%include "distance/NormSquaredDistance.i"
+%include "distance/SparseNormSquaredDistance.i"

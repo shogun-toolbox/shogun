@@ -45,4 +45,4 @@ class CGUIDistance : public CSGObject
 	bool initialized;
 };
 #endif //HAVE_SWIG
-#endif
+#endif //__GUIDISTANCE_H__

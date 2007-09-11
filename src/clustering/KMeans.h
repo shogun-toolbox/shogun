@@ -4,31 +4,31 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 2006 Christian Gehl
+ * Written (W) 1999-2007 Gunnar Raetsch
  * Written (W) 1999-2007 Soeren Sonnenburg
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _KNN_H__
-#define _KNN_H__
+#ifndef _KMEANS_H__
+#define _KMEANS_H__
 
 #include <stdio.h>
 #include "lib/common.h"
 #include "lib/io.h"
-#include "features/Features.h"
+#include "features/RealFeatures.h"
 #include "distance/Distance.h"
 #include "distance/DistanceMachine.h"
 
 class CDistanceMachine;
 
-class CKNN : public CDistanceMachine
+class CKMeans : public CDistanceMachine
 {
 	public:
-		CKNN();
-		virtual ~CKNN();
+		CKMeans();
+		virtual ~CKMeans();
 
-		virtual inline EClassifierType get_classifier_type() { return CT_KNN; }
-		//inline EDistanceType get_distance_type() { return DT_KNN;}
+		virtual inline EClassifierType get_classifier_type() { return CT_KMEANS; }
+
 		virtual bool train();
 		virtual CLabels* classify(CLabels* output=NULL);
 		virtual DREAL classify_example(INT idx)
@@ -52,20 +52,23 @@ class CKNN : public CDistanceMachine
 		}
 
 	protected:
-		/// the k parameter in KNN
-		DREAL k;
+		void sqdist(double * x, CRealFeatures* y, double *z,
+				int n1, int offs, int n2, int m);
 
-		///	number of classes (i.e. number of values labels can take)
-		int num_classes;
+		void clustknb(bool use_old_mus, double *mus_start, bool disp);
 
-		///	smallest label, i.e. -1
-		int min_label;
+	protected:
+		/// the k parameter in KMeans
+		INT k;
 
-		/// number of train examples
-		int num_train_labels;
+		/// radi of the clusters
+		DREAL* R;
+		
+		/// centers of the clusters
+		DREAL* mus;
 
-		/// the actual trainlabels
-		INT* train_labels;
+		/// weighting over the train data
+		DREAL* Weights;
 };
 #endif
 

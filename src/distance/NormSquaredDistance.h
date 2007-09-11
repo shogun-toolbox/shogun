@@ -4,22 +4,22 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
- * Written (W) 1999-2007 Soeren Sonnenburg
- * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2007 Soeren Sonnenburg
+ * Copyright (C) 2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _SPARSENORMSQUARED_H__
-#define _SPARSENORMSQUARED_H__
+#ifndef _NORMSQUAREDDISTANCE_H__
+#define _NORMSQUAREDDISTANCE_H__
 
 #include "lib/common.h"
-#include "kernel/SparseKernel.h"
-#include "features/SparseFeatures.h"
+#include "distance/RealDistance.h"
+#include "features/RealFeatures.h"
 
-class CSparseNormSquaredKernel: public CSparseKernel<DREAL>
+class CNormSquaredDistance: public CRealDistance
 {
  public:
-  CSparseNormSquaredKernel(INT size);
-  ~CSparseNormSquaredKernel();
+  CNormSquaredDistance();
+  ~CNormSquaredDistance();
   
   virtual bool init(CFeatures* l, CFeatures* r);
   virtual void cleanup();
@@ -29,14 +29,14 @@ class CSparseNormSquaredKernel: public CSparseKernel<DREAL>
   virtual bool save_init(FILE* dest);
 
   // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_SPARSENORMSQUARED; }
+  virtual EDistanceType get_distance_type() { return D_NORMSQUARED; }
 
   /** return feature type the kernel can deal with
   */
   inline virtual EFeatureType get_feature_type() { return F_DREAL; }
 
   // return the name of a kernel
-  virtual const CHAR* get_name() { return "SparseNormSquared" ; } ;
+  virtual const CHAR* get_name() { return "NormSquared" ; } ;
 
  protected:
   /// compute kernel function for features a and b

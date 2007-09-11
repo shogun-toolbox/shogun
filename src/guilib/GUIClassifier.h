@@ -65,6 +65,7 @@ public:
 	bool set_svm_precompute_enabled(CHAR* param) ;
 	bool train_svm(CHAR* param);
 	bool train_knn(CHAR* param);
+	bool train_clustering(CHAR* param);
 	bool train_linear(CHAR* param);
 	bool train_sparse_linear(CHAR* param);
 
