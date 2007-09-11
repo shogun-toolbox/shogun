@@ -40,7 +40,7 @@ class CKMeans : public CDistanceMachine
 		virtual bool load(FILE* srcfile);
 		virtual bool save(FILE* dstfile);
 
-		inline void set_k(DREAL p_k) 
+		inline void set_k(INT p_k) 
 		{
 			ASSERT(k>0);
 			this->k=p_k;
@@ -49,6 +49,19 @@ class CKMeans : public CDistanceMachine
 		inline DREAL get_k()
 		{
 			return k;
+		}
+
+		inline void get_radi(DREAL*& radi, INT& num)
+		{
+			radi=R;
+			num=k;
+		}
+
+		inline void get_centers(DREAL*& centers, INT& dim, INT& num)
+		{
+			centers=mus;
+			dim=dimensions;
+			num=k;
 		}
 
 	protected:
@@ -61,10 +74,13 @@ class CKMeans : public CDistanceMachine
 		/// the k parameter in KMeans
 		INT k;
 
-		/// radi of the clusters
+		/// number of dimenensions
+		INT dimensions;
+
+		/// radi of the clusters (size k)
 		DREAL* R;
 		
-		/// centers of the clusters
+		/// centers of the clusters (size dimensions x k)
 		DREAL* mus;
 
 		/// weighting over the train data

@@ -230,13 +230,13 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		SG_INFO( "created Subgradient LPM object\n") ;
 	}
 #endif //USE_CPLEX
-	else if (strcmp(param,"KNN")==0)
+	else if (strncmp(param,"KNN", strlen("KNN"))==0)
 	{
 		delete classifier;
 		classifier= new CKNN();
 		SG_INFO( "created KNN object\n") ;
 	}
-	else if (strcmp(param,"KMEANS")==0)
+	else if (strncmp(param,"KMEANS", strlen("KMEANS"))==0)
 	{
 		delete classifier;
 		classifier= new CKMeans();
@@ -1028,7 +1028,8 @@ CLabels* CGUIClassifier::classify_kernelmachine(CLabels* output)
 	return classifier->classify(output);
 }
 
-bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &cols, DREAL& bias)
+bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &cols,
+		DREAL*& bias, INT& brows, INT& bcols)
 {
 	ASSERT(classifier);
 
@@ -1047,11 +1048,14 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &col
 		case CT_LIBSVMONECLASS:
 		case CT_SVRLIGHT:
 		case CT_KRR:
-			return get_svm(weights, rows, cols, bias);
+			return get_svm(weights, rows, cols, bias, brows, bcols);
 			break;
 		case CT_PERCEPTRON:
 		case CT_LDA:
-			return get_linear(weights, rows, cols, bias);
+			return get_linear(weights, rows, cols, bias, brows, bcols);
+			break;
+		case CT_KMEANS:
+			return get_clustering(weights, rows, cols, bias, brows, bcols);
 			break;
 		case CT_KNN:
 			SG_ERROR("not implemented");
@@ -1063,7 +1067,7 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &col
 		case CT_SVMPERF:
 		case CT_SUBGRADIENTSVM:
 		case CT_LIBLINEAR:
-			return get_sparse_linear(weights, rows, cols, bias);
+			return get_sparse_linear(weights, rows, cols, bias, brows, bcols);
 			break;
 		default:
 			SG_ERROR( "unknown classifier type\n");
@@ -1072,13 +1076,18 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &col
 	return false;
 }
 
-bool CGUIClassifier::get_svm(DREAL* &weights, INT& rows, INT& cols, DREAL& bias)
+bool CGUIClassifier::get_svm(DREAL* &weights, INT& rows, INT& cols,
+		DREAL*& bias, INT& brows, INT& bcols)
 {
 	CSVM* svm=(CSVM*) gui->guiclassifier.get_classifier();
 
 	if (svm)
 	{
-		bias=svm->get_bias();
+		brows=1;
+		bcols=1;
+		bias=new DREAL[1];
+		*bias=svm->get_bias();
+
 		rows=svm->get_num_support_vectors();
 		cols=2;
 		weights=new DREAL[rows*cols];
@@ -1095,27 +1104,53 @@ bool CGUIClassifier::get_svm(DREAL* &weights, INT& rows, INT& cols, DREAL& bias)
 	return false;
 }
 
-bool CGUIClassifier::get_linear(DREAL* &weights, INT& rows, INT& cols, DREAL& bias)
+bool CGUIClassifier::get_clustering(DREAL* &centers, INT& rows, INT& cols,
+		DREAL*& radi, INT& brows, INT& bcols)
+{
+	CKMeans* clustering=(CKMeans*) gui->guiclassifier.get_classifier();
+
+	if (!clustering)
+		return false;
+
+	bcols=1;
+	clustering->get_radi(radi, brows);
+
+	cols=1;
+	clustering->get_centers(centers, rows, cols);
+	return true;
+}
+
+bool CGUIClassifier::get_linear(DREAL* &weights, INT& rows, INT& cols,
+		DREAL*& bias, INT& brows, INT& bcols)
 {
 	CLinearClassifier* linear=(CLinearClassifier*) gui->guiclassifier.get_classifier();
 
 	if (!linear)
 		return false;
 
-	bias=linear->get_bias();
+	bias=new DREAL[1];
+	*bias=linear->get_bias();
+	brows=1;
+	bcols=1;
+
 	cols=1;
 	linear->get_w(&weights, &rows);
 	return true;
 }
 
-bool CGUIClassifier::get_sparse_linear(DREAL* &weights, INT& rows, INT& cols, DREAL& bias)
+bool CGUIClassifier::get_sparse_linear(DREAL* &weights, INT& rows, INT& cols,
+		DREAL*& bias, INT& brows, INT& bcols)
 {
 	CSparseLinearClassifier* linear=(CSparseLinearClassifier*) gui->guiclassifier.get_classifier();
 
 	if (!linear)
 		return false;
 
-	bias=linear->get_bias();
+	bias=new DREAL[1];
+	*bias=linear->get_bias();
+	brows=1;
+	bcols=1;
+
 	cols=1;
 	linear->get_w(&weights, &rows);
 	return true;

@@ -20,12 +20,11 @@
 #include <pthread.h>
 #endif
 
-#define BIG            1e+30
 #define MUSRECALC
 
 #define PAR_THRESH  10
 
-CKMeans::CKMeans(): k(3), R(NULL), mus(NULL), Weights(NULL)
+CKMeans::CKMeans(): k(3), dimensions(0), R(NULL), mus(NULL), Weights(NULL)
 {
 }
 
@@ -162,16 +161,16 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 	ASSERT(lhs && lhs->get_num_features()>0 && lhs->get_num_vectors()>0);
 	
 	int XSize=lhs->get_num_vectors();
-	int XDim=lhs->get_num_features();
+	dimensions=lhs->get_num_features();
 	int i, changed=1;
-	const int XDimk=XDim*k;
+	const int XDimk=dimensions*k;
 	int Iter=0;
 
 	delete[] R;
 	R=new DREAL[k];
 
 	delete[] mus;
-	mus=new DREAL[k];
+	mus=new DREAL[XDimk];
 
 	int *ClList = (int*) calloc(XSize, sizeof(int));
 	double *SetWeigths = (double*) calloc(k, sizeof(double));
@@ -187,7 +186,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 	/* SetWeigths=zeros(k,1) ; */
 	for (i=0; i<k; i++) SetWeigths[i]=0;
 
-	/* mus=zeros(XDim, k) ; */
+	/* mus=zeros(dimensions, k) ; */
 	for (i=0; i<XDimk; i++) mus[i]=0;
 
 	if (!use_old_mus)
@@ -221,8 +220,8 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 
 			vec=lhs->get_feature_vector(i, vlen, vfree);
 
-			for (j=0; j<XDim; j++)
-				mus[Cl*XDim+j] += weight*vec[j];
+			for (j=0; j<dimensions; j++)
+				mus[Cl*dimensions+j] += weight*vec[j];
 
 			lhs->free_feature_vector(vec, i, vfree);
 		}
@@ -231,15 +230,15 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 			int j;
 
 			if (SetWeigths[i]!=0.0)
-				for (j=0; j<XDim; j++)
-					mus[i*XDim+j] /= SetWeigths[i];
+				for (j=0; j<dimensions; j++)
+					mus[i*dimensions+j] /= SetWeigths[i];
 		}
 	}
 	else 
 	{
 		ASSERT(mus_start!=NULL);
 
-		sqdist(mus_start, lhs, dists, k, 0, XSize, XDim);
+		sqdist(mus_start, lhs, dists, k, 0, XSize, dimensions);
 
 		for (i=0; i<XSize; i++)
 		{
@@ -267,8 +266,8 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 #ifndef MUSRECALC
 			vec=lhs->get_feature_vector(i, vlen, vfree);
 
-			for (j=0; j<XDim; j++)
-				mus[Cl*XDim+j] += weight*vec[j];
+			for (j=0; j<dimensions; j++)
+				mus[Cl*dimensions+j] += weight*vec[j];
 
 			lhs->free_feature_vector(vec, i, vfree);
 #endif
@@ -280,8 +279,8 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 			if (SetWeigths[i]!=0.0)
 			{
 				int j;
-				for (j=0; j<XDim; j++)
-					mus[i*XDim+j] /= SetWeigths[i];
+				for (j=0; j<dimensions; j++)
+					mus[i*dimensions+j] /= SetWeigths[i];
 			}
 		}
 #endif
@@ -299,7 +298,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 		changed=0;
 
 #ifdef MUSRECALC
-		/* mus=zeros(XDim, k) ; */
+		/* mus=zeros(dimensions, k) ; */
 		for (i=0; i<XDimk; i++) mus[i]=0;
 
 		for (i=0; i<XSize; i++) 
@@ -310,8 +309,8 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 
 			vec=lhs->get_feature_vector(i, vlen, vfree);
 
-			for (j=0; j<XDim; j++)
-				mus[Cl*XDim+j] += weight*vec[j];
+			for (j=0; j<dimensions; j++)
+				mus[Cl*dimensions+j] += weight*vec[j];
 
 			lhs->free_feature_vector(vec, i, vfree);
 		}
@@ -320,8 +319,8 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 			int j;
 
 			if (SetWeigths[i]!=0.0)
-				for (j=0; j<XDim; j++)
-					mus[i*XDim+j] /= SetWeigths[i];
+				for (j=0; j<dimensions; j++)
+					mus[i*dimensions+j] /= SetWeigths[i];
 		}
 #endif
 
@@ -337,7 +336,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 
 			/* compute the distance of this point to all centers */
 			/* dists=sqdist(mus',XData) ; */
-			sqdist(mus, lhs, dists, k, Pat, 1, XDim);
+			sqdist(mus, lhs, dists, k, Pat, 1, dimensions);
 
 			/* [mini,imini]=min(dists(:,i)) ; */
 			imini=0 ; mini=dists[0];
@@ -361,8 +360,8 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 				/* mus(:,imini)=mus(:,imini) + (XData(:,i) - mus(:,imini)) * (weight / SetWeigths(imini)) ; */
 				vec=lhs->get_feature_vector(Pat, vlen, vfree);
 
-				for (j=0; j<XDim; j++)
-					mus[imini*XDim+j]-=(vec[j]-mus[imini*XDim+j])*(weight/SetWeigths[imini]);
+				for (j=0; j<dimensions; j++)
+					mus[imini*dimensions+j]-=(vec[j]-mus[imini*dimensions+j])*(weight/SetWeigths[imini]);
 
 				lhs->free_feature_vector(vec, Pat, vfree);
 
@@ -373,14 +372,14 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 					/* mus(:,j)=mus(:,j) - (XData(:,i) - mus(:,j)) * (weight/SetWeigths(j)) ; */
 					vec=lhs->get_feature_vector(Pat, vlen, vfree);
 
-					for (j=0; j<XDim; j++)
-						mus[ClList_Pat*XDim+j]-=(vec[j]-mus[ClList_Pat*XDim+j])*(weight/SetWeigths[ClList_Pat]);
+					for (j=0; j<dimensions; j++)
+						mus[ClList_Pat*dimensions+j]-=(vec[j]-mus[ClList_Pat*dimensions+j])*(weight/SetWeigths[ClList_Pat]);
 					lhs->free_feature_vector(vec, Pat, vfree);
 				}
 				else
-					/*  mus(:,j)=zeros(XDim,1) ; */
-					for (j=0; j<XDim; j++)
-						mus[ClList_Pat*XDim+j]=0;
+					/*  mus(:,j)=zeros(dimensions,1) ; */
+					for (j=0; j<dimensions; j++)
+						mus[ClList_Pat*dimensions+j]=0;
 
 				/* ClList(i)= imini ; */
 				ClList[Pat] = imini;
@@ -391,27 +390,39 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 	/* compute the ,,variances'' of the clusters */
 	for (i=0; i<k; i++)
 	{
-		double rmin1, rmin2;
-		int j;
-		rmin1=BIG;
-		rmin2=BIG;
+		double rmin1=0;
+		double rmin2=0;
 
-		for (j=0; j<k; j++) 
+		bool first_round=true;
+
+		for (INT j=0; j<k; j++) 
 		{
 			if (j!=i)
 			{
 				int l;
 				double dist = 0;
 
-				for (l=0; l<XDim; l++)
-					dist+=CMath::sq(mus[i*XDim+l]-mus[j*XDim+l]);
+				for (l=0; l<dimensions; l++)
+					dist+=CMath::sq(mus[i*dimensions+l]-mus[j*dimensions+l]);
 
-				if ((dist<rmin2) && (dist>=rmin1))
-					rmin2=dist;
-				if (dist<rmin1) 
+				SG_DEBUG("dist: %f\n", dist);
+
+				if (first_round)
 				{
-					rmin2=rmin1;
 					rmin1=dist;
+					rmin2=dist;
+					first_round=false;
+				}
+				else
+				{
+					if ((dist<rmin2) && (dist>=rmin1))
+						rmin2=dist;
+
+					if (dist<rmin1) 
+					{
+						rmin2=rmin1;
+						rmin1=dist;
+					}
 				}
 			}
 		}

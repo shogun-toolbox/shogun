@@ -1438,22 +1438,25 @@ bool CGUIMatlab::one_class_hmm_classify_example(mxArray* retvals[], int idx)
 
 bool CGUIMatlab::get_classifier(mxArray* retvals[])
 {
+	DREAL* bias=NULL;
 	DREAL* weights=NULL;
 	INT rows=0;
 	INT cols=0;
-	DREAL bias=0;
+	INT brows=0;
+	INT bcols=0;
 
-	if (gui->guiclassifier.get_trained_classifier(weights, rows, cols, bias))
+
+	if (gui->guiclassifier.get_trained_classifier(weights, rows, cols, bias, brows, bcols))
 	{
 		mxArray* mx_w=mxCreateDoubleMatrix(rows, cols, mxREAL);
-		mxArray* mx_b=mxCreateDoubleMatrix(1, 1, mxREAL);
+		mxArray* mx_b=mxCreateDoubleMatrix(brows, bcols, mxREAL);
 
 		if (mx_w && mx_b)
 		{
 			double* b=mxGetPr(mx_b);
 			double* w=mxGetPr(mx_w);
 
-			*b=bias;
+			memcpy(b, bias, bcols*brows*sizeof(DREAL));
 			memcpy(w, weights, cols*rows*sizeof(DREAL));
 			delete[] weights;
 
