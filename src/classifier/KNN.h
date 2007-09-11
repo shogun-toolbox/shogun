@@ -42,7 +42,7 @@ class CKNN : public CDistanceMachine
 
 		inline void set_k(DREAL p_k) 
 		{
-			ASSERT(k>0);
+			ASSERT(p_k>0);
 			this->k=p_k;
 		}
 

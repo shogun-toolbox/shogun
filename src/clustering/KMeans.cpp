@@ -24,7 +24,7 @@
 
 #define PAR_THRESH  10
 
-CKMeans::CKMeans(): k(3), dimensions(0), R(NULL), mus(NULL), Weights(NULL)
+CKMeans::CKMeans(): max_iter(10000), k(3), dimensions(0), R(NULL), mus(NULL), Weights(NULL)
 {
 }
 
@@ -44,12 +44,9 @@ bool CKMeans::train()
 	for (INT i=0; i<num; i++)
 		Weights[i]=1.0;
 
-	clustknb(false, NULL, true);
+	clustknb(false, NULL);
 	delete[] Weights;
 
-	//CMath::display_vector(R, k);
-	//CMath::display_vector(mus, k);
-	//CMath::display_vector(&mus[num], k);
 	return true;
 }
 
@@ -154,7 +151,7 @@ void CKMeans::sqdist(double * x, CRealFeatures* y, double *z,
 	}
 }
 
-void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp) 
+void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 {
 	ASSERT(get_distance() && get_distance()->get_feature_type() == F_DREAL);
 	CRealFeatures* lhs = (CRealFeatures*) get_distance()->get_lhs();
@@ -164,7 +161,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 	dimensions=lhs->get_num_features();
 	int i, changed=1;
 	const int XDimk=dimensions*k;
-	int Iter=0;
+	int iter=0;
 
 	delete[] R;
 	R=new DREAL[k];
@@ -288,13 +285,14 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 
 	for (i=0; i<XDimk; i++) oldmus[i]=-1;
 
-	while (changed && (Iter<10000))
+	while (changed && (iter<max_iter))
 	{
-		Iter++;
-		if (Iter==9999)
-			SG_WARNING("kmeans clustering changed throughout 9999 iterations stopping...\n");
-		if (disp)
-			SG_DEBUG("Assignment of %i patterns changed.\n", changed);
+		iter++;
+		if (iter==max_iter-1)
+			SG_WARNING("kmeans clustering changed throughout %d iterations stopping...\n", max_iter-1);
+
+		if (iter%1000 == 0)
+			SG_INFO("Iteration[%d/%d]: Assignment of %i patterns changed.\n", iter, max_iter, changed);
 		changed=0;
 
 #ifdef MUSRECALC
@@ -404,8 +402,6 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start, bool disp)
 
 				for (l=0; l<dimensions; l++)
 					dist+=CMath::sq(mus[i*dimensions+l]-mus[j*dimensions+l]);
-
-				SG_DEBUG("dist: %f\n", dist);
 
 				if (first_round)
 				{

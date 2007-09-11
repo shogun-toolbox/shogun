@@ -247,7 +247,7 @@ public:
 		return res ;
 	}
 	
-	static INT random()
+	static LONG random()
 	{
 #ifdef CYGWIN
 		return rand();
@@ -258,20 +258,19 @@ public:
 
 	static INT random(INT min_value, INT max_value)
 	{
-		DREAL ret = min_value + (max_value+1-min_value)*(1.*rand())/(RAND_MAX*1.) ;
-		INT iret = (INT) ::floor(ret - 1e-10) ;
-		ASSERT(iret >= min_value && iret<=max_value) ;
-		return iret ;
+		INT ret = min_value + (INT) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
+		ASSERT(ret >= min_value && ret<=max_value);
+		return ret ;
 	}
 
 	static DREAL random(DREAL min_value, DREAL max_value)
 	{
-		DREAL ret = min_value + (max_value-min_value)*(1.*rand())/(RAND_MAX*1.) ;
-		if (!(ret >= min_value-1e-6 && ret<=max_value+1e-6))
-			fprintf(stderr, "%f %f %f\n", ret, min_value, max_value) ;
-		
-		ASSERT(ret >= min_value-1e-6 && ret<=max_value+1e-6) ;
-		return ret ;
+		DREAL ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
+
+		if (ret<min_value || ret>max_value)
+			SG_PRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value);
+		ASSERT(ret >= min_value && ret<=max_value);
+		return ret;
 	}
 
 	static void random_vector(DREAL* vec, INT len, DREAL min_value, DREAL max_value)

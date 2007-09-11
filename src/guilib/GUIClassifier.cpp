@@ -404,29 +404,24 @@ bool CGUIClassifier::train_svm(CHAR* param)
 
 bool CGUIClassifier::train_clustering(CHAR* param)
 {
-	CLabels* trainlabels=gui->guilabels.get_train_labels();
 	CDistance* distance=gui->guidistance.get_distance();
 
 	bool result=false;
 
-	if (trainlabels)
+	if (distance)
 	{
-		if (distance)
-		{
-			param=CIO::skip_spaces(param);
-			INT k=3;
-			sscanf(param, "%d", &k);
+		param=CIO::skip_spaces(param);
+		INT k=3;
+		INT max_iter=10000;
+		sscanf(param, "%d %d", &k, &max_iter);
 
-			((CDistanceMachine*) classifier)->set_labels(trainlabels);
-			((CDistanceMachine*) classifier)->set_distance(distance);
-			((CKMeans*) classifier)->set_k(k);
-			result=((CKMeans*) classifier)->train();
-		}
-		else
-			SG_ERROR( "no distance available\n") ;
+		((CDistanceMachine*) classifier)->set_distance(distance);
+		((CKMeans*) classifier)->set_k(k);
+		((CKMeans*) classifier)->set_max_iter(max_iter);
+		result=((CKMeans*) classifier)->train();
 	}
 	else
-		SG_ERROR( "no labels available\n") ;
+		SG_ERROR( "no distance available\n") ;
 
 	return result;
 }

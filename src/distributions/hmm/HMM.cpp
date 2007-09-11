@@ -27,6 +27,7 @@
 #include <time.h>
 #include <ctype.h>
 
+#define VAL_MACRO log((default_value == 0) ? (CMath::random(MIN_RAND, MAX_RAND)) : default_value)
 #define ARRAY_SIZE 65336
 
 #ifdef SUNOS
@@ -1722,17 +1723,17 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 			if (i==25)
 				estimate->set_p(i,-CMath::INFTY);
 			else
-				estimate->set_p(i, log(MIN_RAND+((DREAL)CMath::random()))/DREAL(RANDOM_MAX));
+				estimate->set_p(i, log(CMath::random(MIN_RAND, 1.0)));
 
 			if (i<49)
 				estimate->set_q(i, -CMath::INFTY);
 			else 
-				estimate->set_q(i, log(MIN_RAND+((DREAL)CMath::random()))/DREAL(RANDOM_MAX));
+				estimate->set_q(i, log(CMath::random(MIN_RAND, 1.0)));
 
 			if (i<25)
 			{
 				for (j=0; j<M; j++)
-					estimate->set_b(i,j, log(MIN_RAND+((DREAL)CMath::random()))/DREAL(RANDOM_MAX));
+					estimate->set_b(i,j, log(CMath::random(MIN_RAND, 1.0)));
 			}
 		}
 	}
@@ -1831,20 +1832,20 @@ void CHMM::estimate_model_baum_welch(CHMM* estimate)
 		for (i=0; i<N; i++)
 		{
 			if (i<=N-50)
-				estimate->set_p(i, log(MIN_RAND+(CMath::random()%RANDOM_MAX)));
+				estimate->set_p(i, log(CMath::random(MIN_RAND, 1.0)));
 			else
 				estimate->set_p(i, -1000);
 
 			if ( i==N-25-1)
 				estimate->set_q(i,-10000);
 			else
-				estimate->set_q(i, log(MIN_RAND+(CMath::random()%RANDOM_MAX)));
+				estimate->set_q(i, log(CMath::random(MIN_RAND, 1.0)));
 			SG_DEBUG( "q[%d]=%lf\n", i, estimate->get_q(i));
 
 			if (i>=N-25)
 			{
 				for (j=0; j<M; j++)
-					estimate->set_b(i,j, log(MIN_RAND+(CMath::random()%RANDOM_MAX)));
+					estimate->set_b(i,j, log(CMath::random(MIN_RAND, 1.0)));
 			}
 		}
 		estimate->invalidate_model();
@@ -2616,7 +2617,7 @@ void CHMM::init_model_random()
 		sum=0;
 		for (j=0; j<N; j++)
 		{
-			set_a(i,j, (MIN_RAND+(CMath::random()%RANDOM_MAX)));
+			set_a(i,j, CMath::random(MIN_RAND, 1.0));
 
 			sum+=get_a(i,j);
 		}
@@ -2629,7 +2630,7 @@ void CHMM::init_model_random()
 	sum=0;
 	for (i=0; i<N; i++)
 	{
-		set_p(i, (MIN_RAND+(CMath::random()%RANDOM_MAX)));
+		set_p(i, CMath::random(MIN_RAND, 1.0));
 
 		sum+=get_p(i);
 	}
@@ -2641,7 +2642,7 @@ void CHMM::init_model_random()
 	sum=0;
 	for (i=0; i<N; i++)
 	{
-		set_q(i, (MIN_RAND+(CMath::random()%RANDOM_MAX)));
+		set_q(i, CMath::random(MIN_RAND, 1.0));
 
 		sum+=get_q(i);
 	}
@@ -2655,7 +2656,7 @@ void CHMM::init_model_random()
 		sum=0;
 		for (j=0; j<M; j++)
 		{
-			set_b(i,j, (MIN_RAND+(CMath::random()%RANDOM_MAX)));
+			set_b(i,j, CMath::random(MIN_RAND, 1.0));
 
 			sum+=get_b(i,j);
 		}
@@ -2673,6 +2674,7 @@ void CHMM::init_model_defined()
 {
 	INT i,j,k,r;
 	DREAL sum;
+	const DREAL MIN_RAND=23e-3;
 
 	//initialize a with zeros
 	for (i=0; i<N; i++)
@@ -2695,7 +2697,7 @@ void CHMM::init_model_defined()
 
 	//initialize a values that have to be learned
 	DREAL *R=new DREAL[N] ;
-	for (r=0; r<N; r++) R[r]=(23e-3+((DREAL)CMath::random()))/DREAL(RANDOM_MAX) ;
+	for (r=0; r<N; r++) R[r]=CMath::random(MIN_RAND,1.0);
 	i=0; sum=0; k=i; 
 	j=model->get_learn_a(i,0);
 	while (model->get_learn_a(i,0)!=-1 || k<i)
@@ -2716,14 +2718,14 @@ void CHMM::init_model_defined()
 			j=model->get_learn_a(i,0);
 			k=i;
 			sum=0;
-			for (r=0; r<N; r++) R[r]=(23e-3+((DREAL)CMath::random()))/DREAL(RANDOM_MAX) ;
+			for (r=0; r<N; r++) R[r]=CMath::random(MIN_RAND,1.0);
 		}
 	}
 	delete[] R ; R=NULL ;
 
 	//initialize b values that have to be learned
 	R=new DREAL[M] ;
-	for (r=0; r<M; r++) R[r]=(23e-3+((DREAL)CMath::random()))/DREAL(RANDOM_MAX) ;
+	for (r=0; r<M; r++) R[r]=CMath::random(MIN_RAND,1.0);
 	i=0; sum=0; k=0 ;
 	j=model->get_learn_b(i,0);
 	while (model->get_learn_b(i,0)!=-1 || k<i)
@@ -2745,7 +2747,7 @@ void CHMM::init_model_defined()
 			j=model->get_learn_b(i,0);
 			k=i;
 			sum=0;
-			for (r=0; r<M; r++) R[r]=(23e-3+((DREAL)CMath::random()))/DREAL(RANDOM_MAX) ;
+			for (r=0; r<M; r++) R[r]=CMath::random(MIN_RAND,1.0);
 		}
 	}
 	delete[] R ; R=NULL ;
@@ -2791,7 +2793,7 @@ void CHMM::init_model_defined()
 	sum=0;
 	while (model->get_learn_p(i)!=-1)
 	{
-		set_p(model->get_learn_p(i),(23e-3+((DREAL)CMath::random()))/((DREAL)RANDOM_MAX)) ;
+		set_p(model->get_learn_p(i),CMath::random(MIN_RAND,1.0)) ;
 		sum+=get_p(model->get_learn_p(i)) ;
 		i++ ;
 	} ;
@@ -2807,7 +2809,7 @@ void CHMM::init_model_defined()
 	sum=0;
 	while (model->get_learn_q(i)!=-1)
 	{
-		set_q(model->get_learn_q(i),(23e-3+((DREAL)CMath::random()))/((DREAL)RANDOM_MAX)) ;
+		set_q(model->get_learn_q(i),CMath::random(MIN_RAND,1.0)) ;
 		sum+=get_q(model->get_learn_q(i)) ;
 		i++ ;
 	} ;
@@ -5229,9 +5231,9 @@ bool CHMM::append_model(CHMM* app_model, DREAL* cur_out, DREAL* app_out)
 	return result;
 }
 
+
 void CHMM::add_states(INT num_states, DREAL default_value)
 {
-#define VAL_MACRO log((default_value == 0) ? ((MIN_RAND+((DREAL)CMath::random()))/(DREAL(RANDOM_MAX/MAX_RAND))) : default_value)
 	INT i,j;
 	const DREAL MIN_RAND=1e-2; //this is the range of the random values for the new variables
 	const DREAL MAX_RAND=2e-1;

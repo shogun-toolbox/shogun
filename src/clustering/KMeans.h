@@ -42,13 +42,24 @@ class CKMeans : public CDistanceMachine
 
 		inline void set_k(INT p_k) 
 		{
-			ASSERT(k>0);
+			ASSERT(p_k>0);
 			this->k=p_k;
 		}
 
 		inline DREAL get_k()
 		{
 			return k;
+		}
+
+		inline void set_max_iter(INT iter) 
+		{
+			ASSERT(iter>0);
+			max_iter=iter;
+		}
+
+		inline DREAL get_max_iter()
+		{
+			return max_iter;
 		}
 
 		inline void get_radi(DREAL*& radi, INT& num)
@@ -68,9 +79,12 @@ class CKMeans : public CDistanceMachine
 		void sqdist(double * x, CRealFeatures* y, double *z,
 				int n1, int offs, int n2, int m);
 
-		void clustknb(bool use_old_mus, double *mus_start, bool disp);
+		void clustknb(bool use_old_mus, double *mus_start);
 
 	protected:
+		/// maximum number of iterations
+		INT max_iter;
+
 		/// the k parameter in KMeans
 		INT k;
 
