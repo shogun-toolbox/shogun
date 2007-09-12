@@ -433,8 +433,9 @@ bool CGUIClassifier::train_clustering(CHAR* param)
                 result=((CKMeans*) classifier)->train();
                 break;
             case CT_HIERARCHICAL:
-                ((CHierarchical*) classifier)->set_k(k);
+                ((CHierarchical*) classifier)->set_merges(k);
                 result=((CHierarchical*) classifier)->train();
+				break;
             default:
                 SG_ERROR("internal error - unknown clustering type\n");
         }

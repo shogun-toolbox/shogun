@@ -40,41 +40,44 @@ class CHierarchical : public CDistanceMachine
 		virtual bool load(FILE* srcfile);
 		virtual bool save(FILE* dstfile);
 
-		inline void set_k(INT p_k) 
+		inline void set_merges(INT m) 
 		{
-			ASSERT(p_k>0);
-			this->k=p_k;
+			ASSERT(m>0);
+			merges=m;
 		}
 
-		inline DREAL get_k()
+		inline DREAL get_merges()
 		{
-			return k;
+			return merges;
 		}
 
 		inline void get_assignments(DREAL*& assign, INT& rows, INT& num)
 		{
 			assign=assignment;
 			rows=2;
-			num=k;
+			num=table_size;
 		}
 
 		inline void get_pairs(INT*& tuples, INT& rows, INT& num)
 		{
 			tuples=pairs;
 			rows=2;
-			num=k;
+			num=table_size;
 		}
 
 	protected:
-		/// the k parameter in Hierarchical
-		INT k;
+		/// the number of merges in hierarchical clustering
+		INT merges;
 
 		/// number of dimensions
 		INT dimensions;
 
+		/// size of the below tables
+		INT table_size;
+
 		/// radi of the clusters (size k)
 		DREAL* assignment;
-		
+
 		/// tuples of i/j
 		INT* pairs;
 };

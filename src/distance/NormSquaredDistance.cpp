@@ -58,7 +58,7 @@ DREAL CNormSquaredDistance::compute(INT idx_a, INT idx_b)
   ASSERT(alen==blen);
 
   for (INT i=0; i<alen; i++)
-	  result+=avec[i]*avec[i] - bvec[i]*bvec[i];
+	  result+=CMath::sq(avec[i] - bvec[i]);
 
   ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
   ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);

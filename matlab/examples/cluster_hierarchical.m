@@ -1,6 +1,6 @@
-merges=4;
+merges=40;
 num=10;
-dist=2.2;
+dist=100;
 traindat=[randn(2,num)-dist, randn(2,num)+dist, randn(2,num)+dist*[ones(1,num); zeros(1,num)], randn(2,num)+dist*[zeros(1,num); ones(1,num)]];
 %trainlab=[ones(1,num) 2*ones(1,num) 3*ones(1,num) 4*ones(1,num)];
 
@@ -11,7 +11,7 @@ sg('send_command', 'init_distance TRAIN');
 sg('send_command', 'new_classifier HIERARCHICAL');
 sg('send_command', sprintf('train_classifier %d',merges));
 
-[radi,centers]=sg('get_classifier');
+[assignments,pairs]=sg('get_classifier');
 
 %figure()
 %clf

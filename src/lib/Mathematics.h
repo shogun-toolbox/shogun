@@ -279,6 +279,12 @@ public:
 		for (INT i=0; i<len; i++)
 			vec[i]=value;
 	}
+    template <class T>
+	static void range_fill_vector(T* vec, INT len, T start=0)
+	{
+		for (INT i=0; i<len; i++)
+			vec[i]=i+start;
+	}
 
 	static void random_vector(DREAL* vec, INT len, DREAL min_value, DREAL max_value)
 	{
