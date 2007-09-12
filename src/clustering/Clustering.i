@@ -25,3 +25,4 @@
 %include "base/Parallel.i"
 %include "base/SGObject.i"
 %include "clustering/KMeans.i"
+%include "clustering/Hierarchical.i"

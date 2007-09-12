@@ -273,6 +273,13 @@ public:
 		return ret;
 	}
 
+    template <class T>
+	static void fill_vector(T* vec, INT len, T value)
+	{
+		for (INT i=0; i<len; i++)
+			vec[i]=value;
+	}
+
 	static void random_vector(DREAL* vec, INT len, DREAL min_value, DREAL max_value)
 	{
 		for (INT i=0; i<len; i++)

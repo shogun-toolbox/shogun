@@ -211,7 +211,8 @@ enum EClassifierType
 	CT_LIBSVR = 210,
 	CT_SVRLIGHT = 220,
 	CT_LIBLINEAR = 230,
-	CT_KMEANS = 240
+	CT_KMEANS = 240,
+	CT_HIERARCHICAL = 250
 };
 
 enum EDistanceType

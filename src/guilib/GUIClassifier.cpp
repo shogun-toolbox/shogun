@@ -21,6 +21,7 @@
 
 #include "classifier/KNN.h"
 #include "clustering/KMeans.h"
+#include "clustering/Hierarchical.h"
 #include "classifier/PluginEstimate.h"
 
 #include "classifier/LDA.h"
@@ -242,6 +243,12 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		classifier= new CKMeans();
 		SG_INFO( "created KMeans object\n") ;
 	}
+	else if (strncmp(param,"HIERARCHICAL", strlen("HIERARCHICAL"))==0)
+	{
+		delete classifier;
+		classifier= new CHierarchical();
+		SG_INFO( "created Hierarchical clustering object\n") ;
+	}
 	else if (strcmp(param,"SVMLIN")==0)
 	{
 		delete classifier;
@@ -297,6 +304,7 @@ bool CGUIClassifier::train(CHAR* param)
 		case CT_KNN:
 			return train_knn(param);
 		case CT_KMEANS:
+		case CT_HIERARCHICAL:
 			return train_clustering(param);
 		case CT_PERCEPTRON:
 			((CPerceptron*) classifier)->set_learn_rate(perceptron_learnrate);
@@ -404,26 +412,37 @@ bool CGUIClassifier::train_svm(CHAR* param)
 
 bool CGUIClassifier::train_clustering(CHAR* param)
 {
-	CDistance* distance=gui->guidistance.get_distance();
+    CDistance* distance=gui->guidistance.get_distance();
 
-	bool result=false;
+    bool result=false;
 
-	if (distance)
-	{
-		param=CIO::skip_spaces(param);
-		INT k=3;
-		INT max_iter=10000;
-		sscanf(param, "%d %d", &k, &max_iter);
+    if (distance)
+    {
+        param=CIO::skip_spaces(param);
+        INT k=3;
+        INT max_iter=10000;
+        sscanf(param, "%d %d", &k, &max_iter);
 
-		((CDistanceMachine*) classifier)->set_distance(distance);
-		((CKMeans*) classifier)->set_k(k);
-		((CKMeans*) classifier)->set_max_iter(max_iter);
-		result=((CKMeans*) classifier)->train();
-	}
-	else
-		SG_ERROR( "no distance available\n") ;
+        ((CDistanceMachine*) classifier)->set_distance(distance);
 
-	return result;
+        switch (classifier->get_classifier_type())
+        {
+            case CT_KMEANS:
+                ((CKMeans*) classifier)->set_k(k);
+                ((CKMeans*) classifier)->set_max_iter(max_iter);
+                result=((CKMeans*) classifier)->train();
+                break;
+            case CT_HIERARCHICAL:
+                ((CHierarchical*) classifier)->set_k(k);
+                result=((CHierarchical*) classifier)->train();
+            default:
+                SG_ERROR("internal error - unknown clustering type\n");
+        }
+    }
+    else
+        SG_ERROR( "no distance available\n") ;
+
+    return result;
 }
 
 bool CGUIClassifier::train_knn(CHAR* param)
@@ -1050,6 +1069,7 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &col
 			return get_linear(weights, rows, cols, bias, brows, bcols);
 			break;
 		case CT_KMEANS:
+		case CT_HIERARCHICAL:
 			return get_clustering(weights, rows, cols, bias, brows, bcols);
 			break;
 		case CT_KNN:
@@ -1102,17 +1122,42 @@ bool CGUIClassifier::get_svm(DREAL* &weights, INT& rows, INT& cols,
 bool CGUIClassifier::get_clustering(DREAL* &centers, INT& rows, INT& cols,
 		DREAL*& radi, INT& brows, INT& bcols)
 {
-	CKMeans* clustering=(CKMeans*) gui->guiclassifier.get_classifier();
+    if (!gui->guiclassifier.get_classifier())
+        return false;
 
-	if (!clustering)
-		return false;
+    switch (classifier->get_classifier_type())
+    {
+        case CT_KMEANS:
+            {
+                CKMeans* clustering=(CKMeans*) gui->guiclassifier.get_classifier();
 
-	bcols=1;
-	clustering->get_radi(radi, brows);
+                bcols=1;
+                clustering->get_radi(radi, brows);
 
-	cols=1;
-	clustering->get_centers(centers, rows, cols);
-	return true;
+                cols=1;
+                clustering->get_centers(centers, rows, cols);
+                break;
+            }
+        case CT_HIERARCHICAL:
+            {
+                CHierarchical* clustering=(CHierarchical*) gui->guiclassifier.get_classifier();
+
+                clustering->get_assignments(radi, brows, bcols);
+
+                cols=1;
+				INT* c=NULL;
+                clustering->get_pairs(c, rows, cols);
+				centers=new DREAL[rows*cols];
+				ASSERT(centers);
+				for (INT i=0; i<rows*cols; i++)
+					centers[i]=c[i]; //FIXME memleak
+                break;
+            }
+        default:
+            SG_ERROR("internal error - unknown clustering type\n");
+    }
+
+    return true;
 }
 
 bool CGUIClassifier::get_linear(DREAL* &weights, INT& rows, INT& cols,

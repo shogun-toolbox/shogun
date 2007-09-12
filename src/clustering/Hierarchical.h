@@ -9,8 +9,8 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _KMEANS_H__
-#define _KMEANS_H__
+#ifndef _HIERARCHICAL_H__
+#define _HIERARCHICAL_H__
 
 #include <stdio.h>
 #include "lib/common.h"
@@ -21,13 +21,13 @@
 
 class CDistanceMachine;
 
-class CKMeans : public CDistanceMachine
+class CHierarchical : public CDistanceMachine
 {
 	public:
-		CKMeans();
-		virtual ~CKMeans();
+		CHierarchical();
+		virtual ~CHierarchical();
 
-		virtual inline EClassifierType get_classifier_type() { return CT_KMEANS; }
+		virtual inline EClassifierType get_classifier_type() { return CT_HIERARCHICAL; }
 
 		virtual bool train();
 		virtual CLabels* classify(CLabels* output=NULL);
@@ -51,54 +51,31 @@ class CKMeans : public CDistanceMachine
 			return k;
 		}
 
-		inline void set_max_iter(INT iter) 
+		inline void get_assignments(DREAL*& assign, INT& rows, INT& num)
 		{
-			ASSERT(iter>0);
-			max_iter=iter;
-		}
-
-		inline DREAL get_max_iter()
-		{
-			return max_iter;
-		}
-
-		inline void get_radi(DREAL*& radi, INT& num)
-		{
-			radi=R;
+			assign=assignment;
+			rows=2;
 			num=k;
 		}
 
-		inline void get_centers(DREAL*& centers, INT& dim, INT& num)
+		inline void get_pairs(INT*& tuples, INT& rows, INT& num)
 		{
-			centers=mus;
-			dim=dimensions;
+			tuples=pairs;
+			rows=2;
 			num=k;
 		}
 
 	protected:
-		void sqdist(double * x, CRealFeatures* y, double *z,
-				int n1, int offs, int n2, int m);
-
-		void clustknb(bool use_old_mus, double *mus_start);
-
-	protected:
-		/// maximum number of iterations
-		INT max_iter;
-
-		/// the k parameter in KMeans
+		/// the k parameter in Hierarchical
 		INT k;
 
 		/// number of dimensions
 		INT dimensions;
 
 		/// radi of the clusters (size k)
-		DREAL* R;
+		DREAL* assignment;
 		
-		/// centers of the clusters (size dimensions x k)
-		DREAL* mus;
-
-		/// weighting over the train data
-		DREAL* Weights;
+		/// tuples of i/j
+		INT* pairs;
 };
 #endif
-
