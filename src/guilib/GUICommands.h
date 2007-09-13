@@ -25,6 +25,7 @@
 #define N_GET_SVM_OBJECTIVE					"get_svm_objective"
 #define N_GET_KERNEL_INIT					"get_kernel_init"
 #define N_GET_KERNEL_MATRIX					"get_kernel_matrix"
+#define N_GET_DISTANCE_MATRIX				"get_distance_matrix"
 #define N_HMM_LIKELIHOOD					"hmm_likelihood"
 #define N_GET_KERNEL_OPTIMIZATION			"get_kernel_optimization"
 #define N_COMPUTE_BY_SUBKERNELS				"compute_by_subkernels"

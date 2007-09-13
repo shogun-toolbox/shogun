@@ -953,7 +953,7 @@ void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int 
 					list_len++ ;
 				}
 			}
-			CMath::qsort(tempvv.get_array(), tempii.get_array(), list_len) ;
+			CMath::qsort_index(tempvv.get_array(), tempii.get_array(), list_len) ;
 			
 			for (short int k=0; k<nbest; k++)
 			{
@@ -987,7 +987,7 @@ void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int 
 					list_len++ ;
 				}
 			}
-			CMath::qsort(tempvv.get_array(), tempii.get_array(), list_len) ;
+			CMath::qsort_index(tempvv.get_array(), tempii.get_array(), list_len) ;
 			
 			for (short int k=0; k<nbest; k++)
 			{
@@ -1017,7 +1017,7 @@ void CDynProg::best_path_no_b_trans(INT max_iter, INT &max_best_iter, short int 
 				i++ ;
 			}
 		
-		CMath::qsort(sort_delta_end.get_array(), sort_idx.get_array(), (max_iter-1)*nbest) ;
+		CMath::qsort_index(sort_delta_end.get_array(), sort_idx.get_array(), (max_iter-1)*nbest) ;
 
 		for (short int n=0; n<nbest; n++)
 		{
@@ -2338,7 +2338,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				
 #if USEORIGINALLIST > 0
 				ASSERT(oldtempvv.get_dim1() > old_list_len) ;
-				CMath::qsort<DREAL,INT>(oldtempvv.get_array(), oldtempii.get_array(), old_list_len) ;
+				CMath::qsort_index<DREAL,INT>(oldtempvv.get_array(), oldtempii.get_array(), old_list_len) ;
 				//CMath::nmin<INT>(oldtempvv.get_array(), oldtempii.get_array(), old_list_len, nbest) ;
 				INT num_finite = 0 ;
 				for (INT i=0; i<old_list_len; i++)
@@ -2382,7 +2382,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				}
 
 				ASSERT(oldtempvv2.get_dim1() > old_list_len) ;
-				CMath::qsort<DREAL,INT>(oldtempvv2.get_array(), oldtempii2.get_array(), old_list_len) ;
+				CMath::qsort_index<DREAL,INT>(oldtempvv2.get_array(), oldtempii2.get_array(), old_list_len) ;
 				num_finite = 0 ;
 				for (INT i=0; i<old_list_len; i++)
 					if (oldtempvv2[i]<1e10)

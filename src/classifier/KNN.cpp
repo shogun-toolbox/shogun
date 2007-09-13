@@ -94,7 +94,7 @@ CLabels* CKNN::classify(CLabels* output)
 
 		//sort the distance vector for test example j to all train examples
 		//classes[1..k] then holds the classes for minimum distance
-		CMath::qsort(dists, train_lab, num_train_labels);
+		CMath::qsort_index(dists, train_lab, num_train_labels);
 
 		//compute histogram of class outputs of the first k nearest neighbours
 		for (j=0; j<num_classes; j++)

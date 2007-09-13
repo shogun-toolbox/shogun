@@ -51,10 +51,15 @@ class CHierarchical : public CDistanceMachine
 			return merges;
 		}
 
-		inline void get_assignments(DREAL*& assign, INT& rows, INT& num)
+		inline void get_assignment(INT*& assign, INT& num)
 		{
 			assign=assignment;
-			rows=2;
+			num=table_size;
+		}
+
+		inline void get_merge_distance(DREAL*& dist, INT& num)
+		{
+			dist=merge_distance;
 			num=table_size;
 		}
 
@@ -64,7 +69,6 @@ class CHierarchical : public CDistanceMachine
 			rows=2;
 			num=table_size;
 		}
-
 	protected:
 		/// the number of merges in hierarchical clustering
 		INT merges;
@@ -72,13 +76,19 @@ class CHierarchical : public CDistanceMachine
 		/// number of dimensions
 		INT dimensions;
 
+		/// size of assignment table
+		INT assignment_size;
+
+		/// cluster assignment for the num_points
+		INT* assignment;
+
 		/// size of the below tables
 		INT table_size;
 
-		/// radi of the clusters (size k)
-		DREAL* assignment;
-
 		/// tuples of i/j
 		INT* pairs;
+
+		/// distance at which pair i/j was added
+		DREAL* merge_distance;
 };
 #endif

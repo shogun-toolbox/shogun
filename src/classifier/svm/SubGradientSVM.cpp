@@ -127,7 +127,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 		tmp_proj_idx[i]=i;
 	}
 
-	CMath::qsort(tmp_proj, tmp_proj_idx, num_vec);
+	CMath::qsort_index(tmp_proj, tmp_proj_idx, num_vec);
 
 	autoselected_epsilon=tmp_proj[CMath::min(qpsize,num_vec)];
 
@@ -241,7 +241,7 @@ DREAL CSubGradientSVM::line_search(INT num_feat, INT num_vec)
 	}
 	sum_B*=C1;
 
-	CMath::qsort(hinge_point, hinge_idx, num_hinge);
+	CMath::qsort_index(hinge_point, hinge_idx, num_hinge);
 
 
 	DREAL alpha = hinge_point[0];

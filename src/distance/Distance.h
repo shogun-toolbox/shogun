@@ -121,13 +121,6 @@ class CDistance : public CSGObject
 			}
 		}
 
-		inline DREAL get_max(DREAL a,DREAL b)
-		{
-			if(a>b)
-			 return a;
-			return b;
-		}
-
 	protected:
 		/// compute distance function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors

@@ -423,6 +423,13 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 			else
 				SG_SERROR( "usage is K=sg('get_kernel_matrix')");
 		}
+		else if (strmatch(action, len, N_GET_DISTANCE_MATRIX))
+		{
+			if ((nlhs==1) && (nrhs==1))
+				sg_matlab.get_distance_matrix(plhs);
+			else
+				SG_SERROR( "usage is D=sg('get_distance_matrix')");
+		}
 		else if (strmatch(action, len, N_GET_KERNEL_INIT))
 		{
 		}

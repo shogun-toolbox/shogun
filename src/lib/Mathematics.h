@@ -74,6 +74,11 @@ template <class T> struct radix_stack_t
     unsigned short si;	/* Byte in current focus */
 };
 
+struct pair
+{
+	int idx1,idx2;
+};
+
 
 
 /** Mathematical Functions.
@@ -564,7 +569,7 @@ public:
 	 * matlab alike [sorted,index]=sort(output) 
 	 */
 	template <class T1,class T2>
-	static void qsort(T1* output, T2* index, INT size);
+	static void qsort_index(T1* output, T2* index, INT size);
 
 	/** performs a quicksort on an array output of length size
 	 * it is sorted in ascending order
@@ -572,7 +577,7 @@ public:
 	 * matlab alike [sorted,index]=sort(output) 
 	 */
 	template <class T1,class T2>
-	static void qsort_backward(T1* output, T2* index, INT size);
+	static void qsort_backward_index(T1* output, T2* index, INT size);
 
      /* finds the smallest element in output and puts that element as the 
 		first element  */
@@ -787,7 +792,7 @@ protected:
 
 //implementations of template functions
 template <class T1,class T2>
-void CMath::qsort(T1* output, T2* index, INT size)
+void CMath::qsort_index(T1* output, T2* index, INT size)
 {
 	if (size==2)
 	{
@@ -820,14 +825,14 @@ void CMath::qsort(T1* output, T2* index, INT size)
 	}
 
 	if (right+1> 1)
-		qsort(output,index,right+1);
+		qsort_index(output,index,right+1);
 
 	if (size-left> 1)
-		qsort(&output[left],&index[left], size-left);
+		qsort_index(&output[left],&index[left], size-left);
 }
 
 template <class T1,class T2>
-void CMath::qsort_backward(T1* output, T2* index, INT size)
+void CMath::qsort_backward_index(T1* output, T2* index, INT size)
 {
 	if (size==2)
 	{
@@ -861,10 +866,10 @@ void CMath::qsort_backward(T1* output, T2* index, INT size)
 	}
 	
 	if (right+1> 1)
-		qsort(output,index,right+1);
+		qsort_backward_index(output,index,right+1);
 	
 	if (size-left> 1)
-		qsort(&output[left],&index[left], size-left);
+		qsort_backward_index(&output[left],&index[left], size-left);
 }
 
 template <class T> 
@@ -874,7 +879,7 @@ void CMath::nmin(DREAL* output, T* index, INT size, INT n)
 		for (INT i=0; i<n; i++)
 			min(&output[i], &index[i], size-i) ;
 	else
-		qsort(output, index, size) ;
+		qsort_index(output, index, size) ;
 }
 
 /* move the smallest entry in the array to the beginning */

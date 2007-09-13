@@ -2400,6 +2400,27 @@ bool CGUIMatlab::get_kernel_matrix(mxArray* retvals[])
 	return false;
 }
 
+bool CGUIMatlab::get_distance_matrix(mxArray* retvals[])
+{
+	CDistance* k = gui->guidistance.get_distance();
+	if (k && k->get_rhs() && k->get_lhs())
+	{
+		int num_vec1=k->get_lhs()->get_num_vectors();
+		int num_vec2=k->get_rhs()->get_num_vectors();
+
+		mxArray* mx_result=mxCreateDoubleMatrix(num_vec1, num_vec2, mxREAL);
+		double* result=mxGetPr(mx_result);
+
+		k->get_distance_matrix_real(num_vec1, num_vec2, result);
+		retvals[0]=mx_result;
+		return true;
+	}
+	else
+		SG_ERROR( "no kernel defined");
+
+	return false;
+}
+
 bool CGUIMatlab::get_kernel_optimization(mxArray* retvals[], const mxArray* vals[], int nrhs)
 {
 	CKernel *kernel = gui->guikernel.get_kernel() ;

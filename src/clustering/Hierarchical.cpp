@@ -20,7 +20,8 @@
 #include <pthread.h>
 #endif
 
-CHierarchical::CHierarchical(): merges(3), dimensions(0), table_size(0), assignment(NULL), pairs(NULL)
+CHierarchical::CHierarchical(): merges(3), dimensions(0), assignment(NULL),
+	table_size(0), pairs(NULL), merge_distance(NULL)
 {
 }
 
@@ -39,113 +40,88 @@ bool CHierarchical::train()
 	INT num=lhs->get_num_vectors();
 	ASSERT(num>0);
 
-	DREAL old_dist=-1e+30;
+	const INT num_pairs=num*(num-1)/2;
 
-	assignment=new DREAL[2*num];
+	merge_distance=new DREAL[num];
+	ASSERT(merge_distance);
+	CMath::fill_vector(merge_distance, num, -1.0);
+
+	assignment=new INT[num];
 	ASSERT(assignment);
-	CMath::fill_vector(assignment, 2*num, -1.0);
+	CMath::range_fill_vector(assignment, num);
 
 	pairs=new INT[2*num];
 	ASSERT(pairs);
 	CMath::fill_vector(pairs, 2*num, -1);
 
-	INT clusters=-1;
-	INT k=0;
+	pair* index=new pair[num_pairs];
+	ASSERT(index);
+	DREAL* distances=new DREAL[num_pairs];
+	ASSERT(distances);
 
-	for (k=0; k<num && clusters<merges; k++)
+	INT offs=0;
+	for (INT i=0; i<num; i++)
 	{
-		INT m;
-		DREAL cur_dist=+1e+30;
-		INT best_i=-1;
-		INT best_j=-1;
-
-		for (INT i=0; i<num; i++)
+		for (INT j=i+1; j<num; j++)
 		{
-			for (INT j=i+1; j<num; j++)
-			{
-				DREAL dd=d->distance(i,j);
-				if (dd>old_dist && dd<cur_dist)
-				{
-					cur_dist=dd;
-					best_i=i;
-					best_j=j;
-				}
-			}
+			distances[offs]=d->distance(i,j);
+			index[offs].idx1=i;
+			index[offs].idx2=j;
+			offs++;					//offs=i*(i+1)/2+j
 		}
-
-		INT c1=-1;
-		bool found1=false;
-		bool found2=false;
-
-		for (m=0; m<k; m+=2)
-		{
-			if ((pairs[m]==best_i) || (pairs[m]==best_j) ||
-					(pairs[m+1]==best_i) || (pairs[m+1]==best_j))
-			{
-				c1=(INT) assignment[m+1];
-				found1=true;
-				break;
-			}
-		}
-
-		INT c2=-1;
-		for (; m<k; m+=2)
-		{
-			if ((pairs[m]==best_i) || (pairs[m]==best_j) ||
-					(pairs[m+1]==best_i) || (pairs[m+1]==best_j))
-			{
-				c2=(INT) assignment[m+1];
-				found2=true;
-				break;
-			}
-		}
-
-		INT c=-1;
-		if (!found1 && !found2)
-		{
-			clusters++;
-			c=clusters;
-		}
-		else if (found1 && found2)
-			c=CMath::min(c1,c2);
-		else if (found1)
-			c=c1;
-		else if (found2)
-			c=c2;
-		else
-			SG_ERROR("internal error");
-
-		pairs[2*k]=best_i;
-		pairs[2*k+1]=best_j;
-		assignment[2*k]=cur_dist;
-		assignment[2*k+1]=c;
-
-		for (m=best_j; m<num && k<num; m++)
-		{
-			DREAL dd=d->distance(best_i,m);
-			if (dd==cur_dist)
-			{
-				pairs[2*k]=best_i;
-				pairs[2*k+1]=m;
-				assignment[2*k]=cur_dist;
-				assignment[2*k+1]=c;
-			}
-		}
-
-		if (found1 && found2)
-		{
-			INT cmax=CMath::max(c1,c2);
-			for (m=0; m<k; m+=2)
-			{
-				if (assignment[m+1] == cmax)
-					assignment[m+1] = c;
-			}
-		}
-
-		old_dist=cur_dist;
+		SG_PROGRESS(i, 0, num-1);
 	}
 
-	table_size=k;
+	CMath::qsort_index<DREAL,pair>(distances, index, (num-1)*num/2);
+	//CMath::display_vector(distances, (num-1)*num/2, "dists");
+
+	INT k=-1;
+	INT l=0;
+	for (; l<num && (num-l)!=merges; l++)
+	{
+		while (k<num_pairs-1)
+		{
+			k++;
+
+			INT i=index[k].idx1;
+			INT j=index[k].idx2;
+			INT c1=assignment[i];
+			INT c2=assignment[j];
+
+			if (c1==c2)
+				continue;
+			
+			SG_PROGRESS(k, 0, num_pairs-1);
+
+			if (c1<c2)
+			{
+				pairs[2*l]=c1;
+				pairs[2*l+1]=c2;
+			}
+			else
+			{
+				pairs[2*l]=c2;
+				pairs[2*l+1]=c1;
+			}
+			merge_distance[l]=distances[k];
+
+			INT c=num+l;
+			for (INT m=0; m<num; m++)
+			{
+				if (assignment[m] == c1 || assignment[m] == c2)
+					assignment[m] = c;
+			}
+#ifdef DEBUG_HIERARCHICAL
+			SG_PRINT("l=%04i i=%04i j=%04i c1=%+04d c2=%+04d c=%+04d dist=%6.6f\n", l,i,j, c1,c2,c, merge_distance[l]);
+#endif
+			break;
+		}
+	}
+
+	assignment_size=num;
+	table_size=l-1;
+	delete[] distances;
+	delete[] index;
 
 	return true;
 }

@@ -1143,15 +1143,27 @@ bool CGUIClassifier::get_clustering(DREAL* &centers, INT& rows, INT& cols,
             {
                 CHierarchical* clustering=(CHierarchical*) gui->guiclassifier.get_classifier();
 
-                clustering->get_assignments(radi, brows, bcols);
+				INT* a=NULL;
+				bcols=1;
+                clustering->get_assignment(a, brows);
+				radi = new DREAL[brows*bcols];
+				for (INT i=0; i<brows*bcols; i++)
+					radi[i]=a[i];
 
-                cols=1;
+				DREAL* d=NULL;
+                clustering->get_merge_distance(d, cols);
+
 				INT* c=NULL;
                 clustering->get_pairs(c, rows, cols);
-				centers=new DREAL[rows*cols];
+				rows=rows+1;
+				centers=new DREAL[rows*cols];//FIXME memleak
 				ASSERT(centers);
-				for (INT i=0; i<rows*cols; i++)
-					centers[i]=c[i]; //FIXME memleak
+				for (INT i=0; i<cols; i++)
+				{
+					centers[3*i]=c[2*i]; 
+					centers[3*i+1]=c[2*i+1]; 
+					centers[3*i+2]=d[i]; 
+				}
                 break;
             }
         default:
