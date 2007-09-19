@@ -94,6 +94,7 @@ $(DESTDIR)/src/lib/versionstring.h: src/lib/versionstring.h
 svn-tag-release: src/lib/versionstring.h
 	sed -i "s/^Version.*$$/Version: $(MAINVERSION)/" R/sg/DESCRIPTION
 	sed -i "s/^Date:.*$$/Date: `date +%Y-%m-%d`/" R/sg/DESCRIPTION
+	sed -i "s/^SHOGUN:=.*$$/SHOGUN:=sg_$(MAINVERSION)-1.tar.gz/" R/Makefile
 	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/lib/versionstring.h
 	svn ci -m "Preparing for new Release shogun_$(MAINVERSION)"
 	-cd .. && svn --force rm releases/shogun_$(MAINVERSION) && svn commit releases -m "clean old tag"
