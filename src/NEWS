@@ -1,12 +1,11 @@
-2007-09-11  Soeren Sonnenburg <debian@nn7.de>
+2007-09-19  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.4.2
 	* This release contains minor bugfixes and improvements
-	* Fixes for:
-		- POIMs
+		- fix POIMs
 		- compile fix when atlas/lapack is not available
-	* New methods
-		- KMeans Clustering
+		- minor code cleanup (Tries now use templates)
+		- added KMeans and Hierarchical Clustering
 
 2007-09-01  Soeren Sonnenburg <debian@nn7.de>
 

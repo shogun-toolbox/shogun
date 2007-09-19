@@ -273,7 +273,7 @@ public:
 		DREAL ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
 
 		if (ret<min_value || ret>max_value)
-			SG_PRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value);
+			SG_SPRINT("min_value:%10.10f value: %10.10f max_value:%10.10f", min_value, ret, max_value);
 		ASSERT(ret >= min_value && ret<=max_value);
 		return ret;
 	}

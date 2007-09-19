@@ -1,5 +1,84 @@
+2007-09-13  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/cluster_hierarchical.m, classifier/KNN.cpp,
+	  classifier/svm/SubGradientSVM.cpp, clustering/Hierarchical.cpp,
+	  clustering/Hierarchical.h, distance/Chebyshew.cpp,
+	  distance/Distance.h, gui/Matlab.cpp, guilib/GUIClassifier.cpp,
+	  guilib/GUICommands.h, guilib/GUIMatlab.cpp, guilib/GUIMatlab.h,
+	  lib/Mathematics.h, structure/DynProg.cpp: hierarchical clustering
+	  works now
+
+2007-09-12  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/cluster_hierarchical.m,
+	  clustering/Hierarchical.cpp, clustering/Hierarchical.h,
+	  distance/NormSquaredDistance.cpp, guilib/GUIClassifier.cpp,
+	  lib/Mathematics.h: still debugging hierarchical clustering
+	* trunk/matlab/examples/cluster_hierarchical.m,
+	  clustering/Clustering.i, clustering/Hierarchical.cpp,
+	  clustering/Hierarchical.h, clustering/Hierarchical.i,
+	  clustering/KMeans.h, guilib/GUIClassifier.cpp, lib/Mathematics.h,
+	  lib/common.h: add aggregative single linkage hierarchical
+	  clustering (to be debugged)
+
+2007-09-11  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* trunk/matlab/examples/cluster_kmeans.m, classifier/KNN.h,
+	  clustering/KMeans.cpp, clustering/KMeans.h,
+	  distributions/hmm/HMM.cpp, guilib/GUIClassifier.cpp,
+	  lib/Mathematics.h: fix clustering and random number generation
+	  for INT/DREAL
+	* trunk/matlab/examples/cluster_kmeans.m, NEWS,
+	  clustering/KMeans.cpp, clustering/KMeans.h,
+	  guilib/GUIClassifier.cpp, guilib/GUIClassifier.h,
+	  guilib/GUIMatlab.cpp: add get_classifier support for KMeans and
+	  radius estimate fixes
+	* classifier/KNN.h, clustering, clustering/Clustering.i,
+	  clustering/KMeans.cpp, clustering/KMeans.h, clustering/KMeans.i,
+	  distance/Distance.i, distance/NormSquaredDistance.cpp,
+	  distance/NormSquaredDistance.h, distance/NormSquaredDistance.i,
+	  distance/SparseDistance.h,
+	  distance/SparseNormSquaredDistance.cpp,
+	  distance/SparseNormSquaredDistance.h,
+	  distance/SparseNormSquaredDistance.i, guilib/GUIClassifier.cpp,
+	  guilib/GUIClassifier.h, guilib/GUIDistance.cpp,
+	  guilib/GUIDistance.h, guilib/GUIKernel.cpp, kernel/Kernel.i,
+	  kernel/SparseNormSquaredKernel.cpp,
+	  kernel/SparseNormSquaredKernel.h,
+	  kernel/SparseNormSquaredKernel.i, lib/common.h: add clustering
+	  methods support
+
+2007-09-05  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* guilib/GUIMatlab.cpp,
+	  kernel/WeightedDegreePositionStringKernel.cpp,
+	  kernel/WeightedDegreePositionStringKernel.h,
+	  kernel/WeightedDegreeStringKernel.cpp,
+	  kernel/WeightedDegreeStringKernel.h, lib/Trie.cpp, lib/Trie.h:
+	  convert Trie to template and add DNATrie, POIMTrie as examples;
+	  this is to not require the WDS kernel to use 24 extra bytes per
+	  node
+	* base/Version.cpp, base/Version.h, gui/Python.cpp,
+	  guilib/GUIPython.cpp, kernel/LocalAlignmentStringKernel.cpp,
+	  lib/Trie.cpp, lib/Trie.h: use INT idx in Trie
+	  fix compile warnings (gcc4.2 warns about const char*)
+	* kernel/WeightedDegreePositionStringKernel.cpp, lib/Trie.cpp,
+	  lib/Trie.h: POIMs work...!
+
+2007-09-03  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
+
+	* classifier/svm/LibLinear.cpp, classifier/svm/LibLinear.h,
+	  classifier/svm/SVM_linear.cpp, classifier/svm/SVM_linear.h,
+	  classifier/svm/Tron.cpp, classifier/svm/Tron.h,
+	  guilib/GUIClassifier.cpp: fix compilation with --disable-lapack
+
 2007-08-31  Soeren Sonnenburg <Soeren.Sonnenburg@first.fraunhofer.de>
 
+	* ChangeLog: release 0.4.1
+	* CONTRIBUTIONS, NEWS, guilib/GUIMatlab.cpp, kernel/AUCKernel.cpp,
+	  kernel/GaussianKernel.i, kernel/KernelMachine.i,
+	  kernel/LinearByteKernel.h, kernel/SimpleKernel.i, lib/Trie.h:
+	  cleanups, prepare for release 0.4.1
 	* classifier/SubGradientLPM.i: subgradlpm interface file
 	* classifier/LPBoost.i, classifier/SparseLinearClassifier.i,
 	  classifier/svm/LibLinear.i, classifier/svm/MPD.i,

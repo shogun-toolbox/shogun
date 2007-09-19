@@ -17,19 +17,32 @@
 # for example make DEBIAN=yes SNAPSHOT=yes
 #
 
-
 DEBIAN := no
 SVMLIGHT := yes
 COMPRESS := bzip2
-MAINVERSION := 0.4.1
+MAINVERSION := $(shell awk '/Release/{print $$5;exit}' src/NEWS)
 EXTRAVERSION := 
 RELEASENAME := shogun-$(MAINVERSION)$(EXTRAVERSION)
 SVNVERSION = $(shell svn info | grep Revision: | cut -d ' ' -f 2)
 
+stop:
+	@echo
+	@echo "To install shogun, please go to the 'src' directory,"
+	@echo "most of the time"
+	@echo
+	@echo "cd src"
+	@echo "./configure --interface=<INTERFACE>"
+	@echo "make"
+	@echo
+	@echo "should be enough. For further information consult"
+	@echo "especially the INSTALL and README files and try"
+	@echo
+	@echo "./configure --help"
+	@echo
+
 ifeq ($(DEBIAN),yes)
 COMPRESS := gzip
 SVMLIGHT := no
-TARGET := vanilla-package
 RELEASENAME := shogun_$(MAINVERSION)
 ifeq ($(SNAPSHOT),yes)
 RELEASENAME := $(RELEASENAME)+svn$(SVNVERSION)
@@ -50,9 +63,9 @@ grep -rl USE_SVMLIGHT $(DESTDIR)| xargs --no-run-if-empty sed -i '/\#ifdef USE_S
 sed -i '/^ \* EXCEPT FOR THE KERNEL CACHING FUNCTIONS WHICH ARE (W) THORSTEN JOACHIMS/,/ \* this program is free software/c\ * This program is free software; you can redistribute it and/or modify' $(DESTDIR)/src/kernel/Kernel.cpp $(DESTDIR)/src/kernel/Kernel.h ; \
 sed -i '/^SVMlight:$$/,/^$$/c\\' $(DESTDIR)/src/LICENSE
 
-all: $(TARGET)
-
 src/lib/versionstring.h:
+	rm -f src/ChangeLog
+	make -C src ChangeLog
 	make -C src lib/versionstring.h
 
 # We assume that a release is always created from a SVN working copy.
@@ -75,12 +88,24 @@ $(DESTDIR)/src/lib/versionstring.h: src/lib/versionstring.h
 	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
 
 	# remove top level makefile from distribution
-	rm -f $(DESTDIR)/Makefile
 	rm -f $(DESTDIR)/src/.authors
 	cp -f src/lib/versionstring.h $(DESTDIR)/src/lib/
+
+svn-tag-release: src/lib/versionstring.h
+	sed -i "s/^Version.*$$/Version: $(MAINVERSION)/" R/sg/DESCRIPTION
+	sed -i "s/^Date:.*$$/Date: `date +%Y-%m-%d`/" R/sg/DESCRIPTION
+	sed -i "s/^SHOGUN:=.*$$/SHOGUN:=sg_$(MAINVERSION)-1.tar.gz/" R/Makefile
+	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/lib/versionstring.h
+	svn ci -m "Preparing for new Release shogun_$(MAINVERSION)"
+	-cd .. && svn --force rm releases/shogun_$(MAINVERSION) && svn commit releases -m "clean old tag"
+	cd .. && svn cp trunk releases/shogun_$(MAINVERSION)
+	cp src/lib/versionstring.h ../releases/shogun_$(MAINVERSION)/src/lib/versionstring.h
+	sed -i "s| lib/versionstring.h||" ../releases/shogun_$(MAINVERSION)/src/Makefile
+	cd ../releases && svn ci -m "Tagging shogun_$(MAINVERSION) release"
 
 clean:
 	rm -rf $(DESTDIR)
 
-mrproper:
+distclean:
+	make -C src distclean
 	rm -rf $(DESTDIR) $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz

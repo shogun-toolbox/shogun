@@ -54,7 +54,7 @@ static SEXP sg_helper(SEXP args)
 		
 		if (TYPEOF(CAR(args)) == STRSXP)
 		{
-			action=CHAR(VECTOR_ELT(CAR(args), 0));
+			action=(CHAR*) CHAR(VECTOR_ELT(CAR(args), 0));
 			SG_SDEBUG("action is %s\n", action);
 		}
 
@@ -66,7 +66,7 @@ static SEXP sg_helper(SEXP args)
 			{
 				if (cmd_len==2)
 				{
-					CHAR* cmd=CHAR(STRING_ELT(CAR(args),0));
+					CHAR* cmd=(CHAR*) CHAR(STRING_ELT(CAR(args),0));
 					SG_SDEBUG("command is %s\n", cmd);
 					sg_R.send_command(cmd);
 				}
@@ -77,7 +77,7 @@ static SEXP sg_helper(SEXP args)
 			{
 				if (cmd_len==1)
 				{
-					sg_R.send_command("help");
+					sg_R.send_command((char*) "help");
 				}
 				else
 					SG_SERROR( "usage is sg('help')");
@@ -197,7 +197,7 @@ static SEXP sg_helper(SEXP args)
 			{
 				//	if (cmd_len>=3) 
 				// {
-				CHAR* target=CHAR(STRING_ELT(CAR(args),0));
+				CHAR* target=(CHAR*) CHAR(STRING_ELT(CAR(args),0));
 				args = CDR(args); /* pop target out of list */
 
 				if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
@@ -233,7 +233,7 @@ static SEXP sg_helper(SEXP args)
 			{
 				if (cmd_len>=3)
 				{
-					CHAR* target=CHAR(STRING_ELT(CAR(args),0));
+					CHAR* target=(CHAR*) CHAR(STRING_ELT(CAR(args),0));
 					args = CDR(args); /* pop target out of list */
 
 					if ( (!strncmp(target, "TRAIN", strlen("TRAIN"))) || 
@@ -287,7 +287,7 @@ static SEXP sg_helper(SEXP args)
 			else if (!strncmp(action, N_GET_FEATURES, strlen(N_GET_FEATURES)))
 			{
 				CFeatures* features=NULL;
-				CHAR* target=CHAR(STRING_ELT(CAR(args),0));
+				CHAR* target=(CHAR*) CHAR(STRING_ELT(CAR(args),0));
 				args = CDR(args); /* pop target out of list */
 
 				if (!strncmp(target, "TRAIN", strlen("TRAIN")))
@@ -314,7 +314,7 @@ static SEXP sg_helper(SEXP args)
 			else if (!strncmp(action, N_GET_LABELS, strlen(N_GET_LABELS)))
 			{
 				CLabels* labels=NULL;
-				CHAR* target=CHAR(STRING_ELT(CAR(args),0));
+				CHAR* target=(CHAR*) CHAR(STRING_ELT(CAR(args),0));
 
 				if (!strncmp(target, "TRAIN", strlen("TRAIN")))
 				{
@@ -334,7 +334,7 @@ static SEXP sg_helper(SEXP args)
 			{
 				if (cmd_len==3)
 				{ 
-					CHAR* target=CHAR(STRING_ELT(CAR(args),0));
+					CHAR* target=(CHAR*) CHAR(STRING_ELT(CAR(args),0));
 					// pop target out of arglist
 					args = CDR(args);
 

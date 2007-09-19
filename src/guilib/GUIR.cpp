@@ -741,7 +741,7 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 					if (alphabet && TYPEOF(alphabet) == STRSXP)
 					{
 						int num_vec = length(feat);
-						CHAR* al=CHAR(VECTOR_ELT(alphabet, 0));
+						CHAR* al=(CHAR*) CHAR(VECTOR_ELT(alphabet, 0));
 						CAlphabet* alpha = new CAlphabet(al, strlen(al));
 						T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
 						ASSERT(alpha);
@@ -753,7 +753,7 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 						for (int i=0; i<num_vec; i++)
 						{
 							SEXPREC* s= STRING_ELT(feat,i);
-							CHAR* c= CHAR(s);
+							CHAR* c= (CHAR*) CHAR(s);
 							int len=LENGTH(s);
 
 							if (len && c)
