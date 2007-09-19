@@ -97,10 +97,12 @@ svn-tag-release: src/lib/versionstring.h
 	sed -i "s/^SHOGUN:=.*$$/SHOGUN:=sg_$(MAINVERSION)-1.tar.gz/" R/Makefile
 	sed -i 's/VERSION_RELEASE "svn/VERSION_RELEASE "v$(MAINVERSION)/' src/lib/versionstring.h
 	svn ci -m "Preparing for new Release shogun_$(MAINVERSION)"
-	-cd .. && svn --force rm releases/shogun_$(MAINVERSION) && svn commit releases -m "clean old tag"
+	-cd .. && svn --force rm releases/shogun_$(MAINVERSION)
+	-cd .. && svn commit releases -m "clean old tag"
 	cd .. && svn cp trunk releases/shogun_$(MAINVERSION)
 	cp src/lib/versionstring.h ../releases/shogun_$(MAINVERSION)/src/lib/versionstring.h
 	sed -i "s| lib/versionstring.h||" ../releases/shogun_$(MAINVERSION)/src/Makefile
+	cd ../releases && svn add shogun_$(MAINVERSION)/src/lib/versionstring.h
 	cd ../releases && svn ci -m "Tagging shogun_$(MAINVERSION) release"
 
 clean:
