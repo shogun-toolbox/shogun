@@ -187,8 +187,8 @@ void CIO::message(EMessageType prio, const CHAR *fmt, ... ) const
 			case M_NOTICE:
 			case M_MESSAGEONLY:
 			case M_WARN:
-				Rprintf("%s",message_strings[p]);
-				Rprintf("%s",str);
+				Rprintf((char*) "%s",message_strings[p]);
+				Rprintf((char*) "%s",str);
 				break;
 			case M_ERROR:
 			case M_CRITICAL:

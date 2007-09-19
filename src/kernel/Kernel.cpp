@@ -876,9 +876,6 @@ void CKernel::list_kernel()
 		case K_COMMULONGSTRING:
 			SG_INFO( "K_COMMULONGSTRING ");
 			break;
-		case K_SPARSENORMSQUARED:
-			SG_INFO( "K_SPARSENORMSQUARED ");
-			break;
 		case K_SPARSELINEAR:
 			SG_INFO( "K_SPARSELINEAR ");
 			break;
