@@ -88,7 +88,6 @@ $(DESTDIR)/src/lib/versionstring.h: src/lib/versionstring.h
 	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
 
 	# remove top level makefile from distribution
-	rm -f $(DESTDIR)/Makefile
 	rm -f $(DESTDIR)/src/.authors
 	cp -f src/lib/versionstring.h $(DESTDIR)/src/lib/
 
