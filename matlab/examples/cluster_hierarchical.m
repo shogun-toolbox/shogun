@@ -1,9 +1,11 @@
 randn('state',17')
-num=200;
-k=4;
-dist=8;
-traindat=[randn(2,num)-dist, randn(2,num)+dist, randn(2,num)+dist*[ones(1,num); zeros(1,num)], randn(2,num)+dist*[zeros(1,num); ones(1,num)]];
-%trainlab=[ones(1,num) 2*ones(1,num) 3*ones(1,num) 4*ones(1,num)];
+num=400;
+k=5;
+dist=10;
+dims=2;
+traindat=[randn(dims,num)-dist, randn(dims,num)+dist, randn(dims,num)+dist*[ones(dims/2,num); zeros(dims/2,num)], randn(dims,num)+dist*[zeros(dims/2,num); ones(dims/2,num)]];
+i=randperm(size(traindat,2));
+traindat=traindat(:,i);
 
 sg('send_command', 'loglevel ALL');
 sg('set_features', 'TRAIN', traindat);
@@ -29,12 +31,10 @@ for i=1:length(ii),
 	hold on
 end
 
-dist=sg('get_distance_matrix');
 figure
-imagesc(dist)
+imagesc(traindat')
 
-%figure
-%l=length(pairs,2);
-%sdist=zeros(l);
-%for i=1:l,
-%end
+figure
+[dummy,idx]=sort(assignments);
+sdat=traindat(:,idx);
+imagesc(sdat');

@@ -77,7 +77,7 @@ bool CHierarchical::train()
 
 	INT k=-1;
 	INT l=0;
-	for (; l<num && (num-l)!=merges; l++)
+	for (; l<num && (num-l)>=merges && k<num_pairs-1; l++)
 	{
 		while (k<num_pairs-1)
 		{
@@ -120,6 +120,7 @@ bool CHierarchical::train()
 
 	assignment_size=num;
 	table_size=l-1;
+	ASSERT(table_size>0);
 	delete[] distances;
 	delete[] index;
 
