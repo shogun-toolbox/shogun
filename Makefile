@@ -40,6 +40,7 @@ stop:
 	@echo "./configure --help"
 	@echo
 
+debian-package:	DEBIAN=yes
 ifeq ($(DEBIAN),yes)
 COMPRESS := gzip
 SVMLIGHT := no
@@ -54,6 +55,17 @@ RELEASENAME := $(RELEASENAME)+svn$(SVNVERSION)
 endif
 all: doc release matlab python octave R
 endif
+
+package-from-release:
+	rm -rf $(DESTDIR)
+	mkdir $(DESTDIR)
+	find ./ -regextype posix-egrep  ! -regex '(.*svn.*|.*\.o$$|.*wrap.*|.*\.so$$|.*\.mat$$|.*\.pyc$$|.*\.log$$)' \
+		| xargs tar --no-recursion -cf - | tar -C $(DESTDIR) -xf - 
+	if test ! $(SVMLIGHT) = yes; then $(REMOVE_SVMLIGHT); fi
+	tar -c -f $(DESTDIR).tar -C .. $(RELEASENAME)
+	rm -f $(DESTDIR).tar.bz2 $(DESTDIR).tar.gz
+	$(COMPRESS) -9 $(DESTDIR).tar
+
 
 .PHONY: doc release matlab python octave R vanilla-package r-package
 
@@ -80,7 +92,7 @@ vanilla-package: src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
 
 # build R-package
 r-package:	src/lib/versionstring.h $(DESTDIR)/src/lib/versionstring.h
-	cd $(DESTDIR)/R && make package && cp *.tar.gz ../../
+	cd $(DESTDIR)/R && ( make package || true ) && cp *.tar.gz ../../
 
 $(DESTDIR)/src/lib/versionstring.h: src/lib/versionstring.h
 	rm -rf $(DESTDIR)
