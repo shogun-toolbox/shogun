@@ -97,7 +97,7 @@ svn-tag-release: src/lib/versionstring.h
 	sed -i "s/^Date:.*$$/Date: `date +%Y-%m-%d`/" R/sg/DESCRIPTION
 	sed -i 's/VERSION_RELEASE "svn/"v$(MAINVERSION)/' src/lib/versionstring.h
 	svn ci -m "Preparing for new Release shogun_$(MAINVERSION)"
-	svn cp . ../releases/shogun_$(MAINVERSION)
+	cd .. && svn cp trunk releases/shogun_$(MAINVERSION)
 	cd ../releases && svn ci -m "Tagging shogun_$(MAINVERSION) release"
 
 clean:
