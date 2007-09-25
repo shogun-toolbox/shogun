@@ -124,7 +124,7 @@ INT CSubGradientLPM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 		tmp_proj_idx[i]=i;
 	}
 
-	CMath::qsort(tmp_proj, tmp_proj_idx, num_vec);
+	CMath::qsort_index(tmp_proj, tmp_proj_idx, num_vec);
 
 	autoselected_epsilon=tmp_proj[CMath::min(qpsize,num_vec)];
 
@@ -293,7 +293,7 @@ DREAL CSubGradientLPM::line_search(INT num_feat, INT num_vec)
 	//CMath::display_vector(hinge_idx, num_feat+num_vec, "hinge_idx");
 	//ASSERT(0);
 
-	CMath::qsort(hinge_point, hinge_idx, num_hinge);
+	CMath::qsort_index(hinge_point, hinge_idx, num_hinge);
 	//CMath::display_vector(hinge_point, num_feat+num_vec, "hinge_point_sorted");
 
 

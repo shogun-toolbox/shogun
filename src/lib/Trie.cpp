@@ -82,7 +82,6 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper1( const DREAL* const distrib, const 
   ASSERT( depth == degree-1 );
   ASSERT( nodeIdx != NO_CHILD );
 
-  const DREAL* const distribRight = & distrib[ (i+depth) * NUM_SYMS ];
   const DREAL* const distribLeft  = & distrib[ (i-1)     * NUM_SYMS ];
   POIMTrie* const node = &TreeMem[ nodeIdx ];
   INT symRight;
@@ -93,13 +92,18 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper1( const DREAL* const distrib, const 
   node->L = 0;
   node->R = 0;
 
-  // --- go thru direct children
-  for( symRight = 0; symRight < NUM_SYMS; ++symRight ) {
-    const DREAL w1 = node->child_weights[ symRight ];
-    const DREAL pRight = distribRight[ symRight ];
-    const DREAL incr1 = pRight * w1;
-    node->S += incr1;
-    node->R += incr1;
+  if (i+depth<length)
+  {
+	  const DREAL* const distribRight = & distrib[ (i+depth) * NUM_SYMS ];
+
+	  // --- go thru direct children
+	  for( symRight = 0; symRight < NUM_SYMS; ++symRight ) {
+		  const DREAL w1 = node->child_weights[ symRight ];
+		  const DREAL pRight = distribRight[ symRight ];
+		  const DREAL incr1 = pRight * w1;
+		  node->S += incr1;
+		  node->R += incr1;
+	  }
   }
 
   // --- collect precalced values from left neighbor tree
@@ -137,7 +141,6 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper2( const DREAL* const distrib, const 
   ASSERT( 0 <= depth && depth <= degree-2 );
   ASSERT( nodeIdx != NO_CHILD );
 
-  const DREAL* const distribRight = & distrib[ (i+depth) * NUM_SYMS ];
   const DREAL* const distribLeft  = & distrib[ (i-1)     * NUM_SYMS ];
   POIMTrie* const node = &TreeMem[ nodeIdx ];
   DREAL dummy;
@@ -177,9 +180,13 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper2( const DREAL* const distrib, const 
 		  else 
 			  POIMs_calc_SLR_helper1( distrib, i, childIdx, left_tries_idx, depth+1, symRight, &auxS, &dummy, &auxR );
 
-		  const DREAL pRight = distribRight[ symRight ];
-		  node->S += pRight * auxS;
-		  node->R += pRight * auxR;
+		  if (i+depth<length)
+		  {
+			  const DREAL* const distribRight = & distrib[ (i+depth) * NUM_SYMS ];
+			  const DREAL pRight = distribRight[ symRight ];
+			  node->S += pRight * auxS;
+			  node->R += pRight * auxR;
+		  }
 	  }
   }
 
@@ -195,27 +202,31 @@ void CTrie<POIMTrie>::POIMs_calc_SLR_helper2( const DREAL* const distrib, const 
 		  node->S += pLeft * nodeLeft->S;
 		  node->L += pLeft * nodeLeft->L;
 
-		  // - second order correction for S
-		  auxS = 0;
-		  if( depth < degree-2 )
+		  if (i+depth<length)
 		  {
-			  for( symRight = 0; symRight < NUM_SYMS; ++symRight )
+			  const DREAL* const distribRight = & distrib[ (i+depth) * NUM_SYMS ];
+			  // - second order correction for S
+			  auxS = 0;
+			  if( depth < degree-2 )
 			  {
-				  const INT childIdxLeft = nodeLeft->children[ symRight ];
-				  if( childIdxLeft != NO_CHILD )
+				  for( symRight = 0; symRight < NUM_SYMS; ++symRight )
 				  {
-					  const POIMTrie* const childLeft = &TreeMem[ childIdxLeft ];
-					  auxS += distribRight[symRight] * childLeft->S;
+					  const INT childIdxLeft = nodeLeft->children[ symRight ];
+					  if( childIdxLeft != NO_CHILD )
+					  {
+						  const POIMTrie* const childLeft = &TreeMem[ childIdxLeft ];
+						  auxS += distribRight[symRight] * childLeft->S;
+					  }
 				  }
 			  }
-		  }
-		  else
-		  {
-			  for( symRight = 0; symRight < NUM_SYMS; ++symRight ) {
-				  auxS += distribRight[symRight] * nodeLeft->child_weights[ symRight ];
+			  else
+			  {
+				  for( symRight = 0; symRight < NUM_SYMS; ++symRight ) {
+					  auxS += distribRight[symRight] * nodeLeft->child_weights[ symRight ];
+				  }
 			  }
+			  node->S -= pLeft* auxS;
 		  }
-		  node->S -= pLeft* auxS;
 	  }
   }
 
