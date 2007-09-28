@@ -21,14 +21,14 @@
 /* workaround broken typemap %apply on templated classes */
 %extend CStringFeatures<CHAR>
 {
-    void get_str(CHAR** dst, INT* len)
+    bool get_str(CHAR** dst, INT* len)
     {
         self->CStringFeatures<CHAR>::get_string(dst,len);
     }
 
-    void set_string_features(T_STRING<CHAR>* strings, INT num_strings, INT max_len)
+    bool set_string_features(T_STRING<CHAR>* strings, INT num_strings, INT max_len)
     {
-        self->CStringFeatures<CHAR>::set_features(strings, num_strings, max_len);
+        return self->CStringFeatures<CHAR>::set_features(strings, num_strings, max_len);
     }
 };
 %extend CStringFeatures<BYTE>

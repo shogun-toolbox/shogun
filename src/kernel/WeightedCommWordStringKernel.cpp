@@ -69,15 +69,53 @@ bool CWeightedCommWordStringKernel::set_wd_weights()
 	return weights!=NULL;
 }
   
-DREAL CWeightedCommWordStringKernel::compute(INT idx_a, INT idx_b)
+DREAL CWeightedCommWordStringKernel::compute_helper(INT idx_a, INT idx_b, bool do_sort)
 {
 	INT alen, blen;
 
-	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
-	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
+	CStringFeatures<WORD>* l = (CStringFeatures<WORD>*) lhs;
+	CStringFeatures<WORD>* r = (CStringFeatures<WORD>*) rhs;
+
+	WORD* av=l->get_feature_vector(idx_a, alen);
+	WORD* bv=r->get_feature_vector(idx_b, blen);
+
+	WORD* avec=av;
+	WORD* bvec=bv;
+
+	if (do_sort)
+	{
+		if (alen>0)
+		{
+			avec= new WORD[alen];
+			ASSERT(avec);
+			memcpy(avec, av, sizeof(WORD)*alen);
+			CMath::radix_sort(avec, alen);
+		}
+		else
+			avec=NULL;
+
+		if (blen>0)
+		{
+			bvec= new WORD[blen];
+			ASSERT(bvec);
+			memcpy(bvec, bv, sizeof(WORD)*blen);
+			CMath::radix_sort(bvec, blen);
+		}
+		else
+			bvec=NULL;
+	}
+	else
+	{
+		if ( (l->get_num_preproc() != l->get_num_preprocessed()) ||
+				(r->get_num_preproc() != r->get_num_preprocessed()))
+		{
+			SG_ERROR("not all preprocessors have been applied to training (%d/%d)"
+					" or test (%d/%d) data\n", l->get_num_preprocessed(), l->get_num_preproc(),
+					r->get_num_preprocessed(), r->get_num_preproc());
+		}
+	}
 
 	DREAL result=0;
-
 	BYTE mask=0;
 
 	for (INT d=0; d<degree; d++)
@@ -111,6 +149,12 @@ DREAL CWeightedCommWordStringKernel::compute(INT idx_a, INT idx_b)
 			else
 				right_idx++;
 		}
+	}
+
+	if (do_sort)
+	{
+		delete[] avec;
+		delete[] bvec;
 	}
 
 	if (initialized)

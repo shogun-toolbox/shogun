@@ -64,12 +64,12 @@ class CCommWordStringKernel: public CStringKernel<WORD>
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
-  inline DREAL compute(INT idx_a, INT idx_b)
+  inline virtual DREAL compute(INT idx_a, INT idx_b)
   {
 	  return compute_helper(idx_a, idx_b, false);
   }
 
-  DREAL compute_helper(INT idx_a, INT idx_b, bool do_sort);
+  virtual DREAL compute_helper(INT idx_a, INT idx_b, bool do_sort);
 
   inline DREAL normalize_weight(DREAL* weights, DREAL value, INT seq_num, INT seq_len, ENormalizationType p_normalization)
   {

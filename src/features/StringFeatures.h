@@ -107,9 +107,10 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	virtual ~CStringFeatures()
 	{
+		cleanup();
+
 		delete alphabet;
 		alphabet=NULL;
-		cleanup();
 	}
 
 	void cleanup()
@@ -118,8 +119,6 @@ template <class ST> class CStringFeatures: public CFeatures
 		{
 			delete[] single_string;
 			single_string=NULL;
-
-			num_vectors=0;
 		}
 		else
 		{
@@ -129,9 +128,11 @@ template <class ST> class CStringFeatures: public CFeatures
 				features[i].length=0;
 			}
 		}
+		num_vectors=0;
 		delete[] features;
 
 		delete[] symbol_mask_table;
+		alphabet->clear_histogram();
 	}
 
 	inline virtual EFeatureClass get_feature_class() { return C_STRING; }
@@ -350,9 +351,6 @@ template <class ST> class CStringFeatures: public CFeatures
 						strings[num].length=filesize;
 						max_len=CMath::max(max_len, strings[num].length);
 
-						//compute histogram for char/byte
-						alphabet->add_string_to_histogram((BYTE*) strings[num].string, (LONG) strings[num].length);
-						
 						num++;
 						fclose(f);
 					}
@@ -373,20 +371,38 @@ template <class ST> class CStringFeatures: public CFeatures
 		return false;
 	}
 
-	void set_features(T_STRING<ST>* p_features, INT p_num_vectors, INT p_max_string_length)
+	bool set_features(T_STRING<ST>* p_features, INT p_num_vectors, INT p_max_string_length)
 	{
-		cleanup();
-		this->features=p_features;
-		this->num_vectors=p_num_vectors;
-		this->max_string_length=p_max_string_length;
-	}
+		if (p_features)
+		{
+			CAlphabet* alpha=new CAlphabet(alphabet);
+			ASSERT(alpha);
 
-	void copy_features(T_STRING<ST>* p_features, INT p_num_vectors, INT p_max_string_length)
-	{
-		cleanup();
-		this->features=p_features;
-		this->num_vectors=p_num_vectors;
-		this->max_string_length=p_max_string_length;
+			//compute histogram for char/byte
+			for (INT i=0; i<p_num_vectors; i++)
+				alpha->add_string_to_histogram( p_features[i].string, p_features[i].length);
+
+			SG_INFO("max_value_in_histogram:%d\n", alpha->get_max_value_in_histogram());
+			SG_INFO("num_symbols_in_histogram:%d\n", alpha->get_num_symbols_in_histogram());
+
+			if (alpha->check_alphabet_size() && alpha->check_alphabet())
+			{
+				cleanup();
+
+				delete alphabet;
+				alphabet=alpha;
+
+				this->features=p_features;
+				this->num_vectors=p_num_vectors;
+				this->max_string_length=p_max_string_length;
+
+				return true;
+			}
+			else
+				delete alpha;
+		}
+
+		return false;
 	}
 
 	virtual bool save(CHAR* dest)
@@ -867,5 +883,4 @@ template<> inline EFeatureType CStringFeatures<DREAL>::get_feature_type()
 {
 	return F_DREAL;
 }
-
 #endif

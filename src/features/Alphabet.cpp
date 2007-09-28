@@ -376,6 +376,54 @@ void CAlphabet::add_string_to_histogram(CHAR* p, LONG len)
 		add_byte_to_histogram(p[i]);
 }
 
+void CAlphabet::add_string_to_histogram(WORD* p, LONG len)
+{
+	SG_WARNING("computing byte histogram over word strings\n");
+	BYTE* b= (BYTE*) p;
+	for (LONG i=0; i<sizeof(WORD)*len; i++)
+		add_byte_to_histogram(b[i]);
+}
+
+void CAlphabet::add_string_to_histogram(SHORT* p, LONG len)
+{
+	SG_WARNING("computing byte histogram over word strings\n");
+	BYTE* b= (BYTE*) p;
+	for (LONG i=0; i<sizeof(SHORT)*len; i++)
+		add_byte_to_histogram(b[i]);
+}
+
+void CAlphabet::add_string_to_histogram(INT* p, LONG len)
+{
+	SG_WARNING("computing byte histogram over word strings\n");
+	BYTE* b= (BYTE*) p;
+	for (LONG i=0; i<sizeof(INT)*len; i++)
+		add_byte_to_histogram(b[i]);
+}
+
+void CAlphabet::add_string_to_histogram(UINT* p, LONG len)
+{
+	SG_WARNING("computing byte histogram over word strings\n");
+	BYTE* b= (BYTE*) p;
+	for (LONG i=0; i<sizeof(UINT)*len; i++)
+		add_byte_to_histogram(b[i]);
+}
+
+void CAlphabet::add_string_to_histogram(LONG* p, LONG len)
+{
+	SG_WARNING("computing byte histogram over word strings\n");
+	BYTE* b= (BYTE*) p;
+	for (LONG i=0; i<sizeof(LONG)*len; i++)
+		add_byte_to_histogram(p[i]);
+}
+
+void CAlphabet::add_string_to_histogram(ULONG* p, LONG len)
+{
+	SG_WARNING("computing byte histogram over word strings\n");
+	BYTE* b= (BYTE*) p;
+	for (LONG i=0; i<sizeof(ULONG)*len; i++)
+		add_byte_to_histogram(p[i]);
+}
+
 INT CAlphabet::get_max_value_in_histogram()
 {
 	INT max_sym=-1;

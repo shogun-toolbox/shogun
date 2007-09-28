@@ -61,6 +61,12 @@ class CAlphabet : public CSGObject
 		/// make histogram for whole string
 		void add_string_to_histogram(CHAR* p, LONG len);
 		void add_string_to_histogram(BYTE* p, LONG len);
+		void add_string_to_histogram(SHORT* p, LONG len);
+		void add_string_to_histogram(WORD* p, LONG len);
+		void add_string_to_histogram(INT* p, LONG len);
+		void add_string_to_histogram(UINT* p, LONG len);
+		void add_string_to_histogram(LONG* p, LONG len);
+		void add_string_to_histogram(ULONG* p, LONG len);
 
 		/// add to histogram
 		inline void add_byte_to_histogram(BYTE p)

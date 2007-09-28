@@ -69,6 +69,7 @@ CONFIGURE_OPTIONS="configure options $@"
 GDB=gdb
 MAKE=make
 COMP_OPTS="-g -Wall -O9 -fexpensive-optimizations -frerun-cse-after-loop -fcse-follow-jumps -finline-functions -fschedule-insns2 -fthread-jumps -fforce-addr -fstrength-reduce -unroll-loops"
+COMP_NOOPTS="-g -Wall -O2"
 COMPFLAGS_C=
 COMPFLAGS_CPP=
 test "$CFLAGS" && COMPFLAGS_C="$COMPFLAGS_C $CFLAGS"
@@ -208,10 +209,9 @@ EOF
 		die "no C compiler detected - cannot do anything"
 	fi
 
-
-	if cygwin #cygwins gcc is buggy - so disable optimizations
-	then
-		COMP_OPTS="-g -Wall -O2"
+	#cygwins gcc is buggy - so disable -O9 optimizations
+	if cygwin || test "$_cpudetection" = no ; then
+		COMP_OPTS=$COMP_NOOPTS;
 	fi
 
 	echocheck "C Compiler flags"
@@ -512,6 +512,7 @@ Optional features:
   --disable-svm-light 	        disable building of SVM-light and thus result in pure GPLv2 code [enabled]
 
 Miscellaneous options:
+  --disable-cpudetection        disable cpu flags detection and corresponding optimization options [enabled]
   --enable-debug                enable debugging [disabled]
   --enable-path-debug	        enable viterbi path debugging [disabled]
   --enable-profile              compile profiling information into shogun [disable]
@@ -539,7 +540,7 @@ _ranlib=ranlib
 test "$CC" && COMP_C="$CC"
 test "$CXX" && COMP_CPP="$CXX"
 _as=auto
-_disable_cpudetection=no
+_cpudetection=yes
 
 for ac_option do
   case "$ac_option" in
@@ -559,10 +560,10 @@ for ac_option do
     COMP_CPP=`echo $ac_option | cut -d '=' -f 2`
     ;;
   --cflags=*)
-    COMPFLAGS_C=`echo $ac_option | cut -d '=' -f 2` ; _disable_cpudetection=yes ;
+    COMPFLAGS_C=`echo $ac_option | cut -d '=' -f 2` ;
     ;;
   --cxxflags=*)
-    COMPFLAGS_CPP=`echo $ac_option | cut -d '=' -f 2` ; _disable_cpudetection=yes ;
+    COMPFLAGS_CPP=`echo $ac_option | cut -d '=' -f 2` ;
     ;;
   --as=*)
     _as=`echo $ac_option | cut -d '=' -f 2`
@@ -625,6 +626,8 @@ for ac_option do
   --enable-path-debug)  _pathdebug=yes ;;
   --disable-profile) 	_profile=no ;;
   --enable-profile) 	_profile=yes ;;
+  --disable-cpudetection) 	_cpudetection=no ;;
+  --enable-cpudetection) 	_cpudetection=yes ;;
   --destdir=*)
     _destdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
@@ -768,6 +771,7 @@ determine_system_name()
 		  s390x) host_arch=s390x ;;
 		  mips) host_arch=mips ;;
 		  vax) host_arch=vax ;;
+		  m68|m68k) host_arch=m68 ;;
 		  *) host_arch=UNKNOWN ;;
 		esac
 		;;
@@ -1301,7 +1305,7 @@ case "$host_arch" in
 cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
-  if test "$_disable_cpudetection" = no ; then
+  if test "$_cpudetection" = no ; then
     if test "$proc" = "k8" -o "$proc" = "opteron" -o "$proc" = "athlon64" -o "$proc" = "athlon-fx" ; then
       cc_check -march=$proc $cpuopt=$proc || proc=athlon-xp
     fi
@@ -1346,7 +1350,7 @@ EOF
       _march="-march=$proc"
       _mcpu="$cpuopt=$proc"
     fi
-  else # if test "$_disable_cpudetection" = no
+  else # if test "$_cpudetection" = no
     # i686 is probably the most common CPU - optimize for it
     _mcpu="$cpuopt=i686"
     # at least i486 required, for bswap instruction
@@ -1417,7 +1421,7 @@ cat > $TMPC << EOF
 int main(void) { return 0; }
 EOF
     # This is a stripped-down version of the i386 fallback.
-    if test "$_disable_cpudetection" = no ; then
+    if test "$_cpudetection" = no ; then
       # --- AMD processors ---
       if test "$proc" = "k8" -o "$proc" = "opteron" -o "$proc" = "athlon64" -o "$proc" = "athlon-fx" ; then
         cc_check -march=$proc $cpuopt=$proc || proc=athlon-xp
@@ -1703,7 +1707,7 @@ EOF
   m68)
     _def_arch='#define ARCH_M68K 1'
     _target_arch='TARGET_ARCH_M68K = yes'
-    iproc='vax'
+    iproc=''
     proc=''
     _march=''
     _mcpu=''
@@ -1716,7 +1720,7 @@ EOF
     ;;
 esac # case "$host_arch" in
 
-if test "$_disable_cpudetection" = yes ; then
+if test "$_cpudetection" = yes ; then
   if x86; then
     _mmx=yes
     _3dnow=yes
@@ -1732,7 +1736,7 @@ if test "$_disable_cpudetection" = yes ; then
   fi
 fi
 
-if x86 || x86_64 && test "$_disable_cpudetection" = no ; then
+if x86 || x86_64 && test "$_cpudetection" = no ; then
   extcheck() {
     if test "$1" = yes ; then
       echocheck "compiler and kernel support of $2"
@@ -1810,8 +1814,12 @@ EOF
 fi
 
   DEFINES="$DEFINES -D$OS"
-  COMPFLAGS_C="$COMPFLAGS_C $_march $_mcpu"
-  COMPFLAGS_CPP="$COMPFLAGS_CPP $_march $_mcpu"
+
+  if test "$_cpudetection" = yes
+  then
+	  COMPFLAGS_C="$COMPFLAGS_C $_march $_mcpu"
+	  COMPFLAGS_CPP="$COMPFLAGS_CPP $_march $_mcpu"
+  fi
 
   if test "$_profile" = yes
   then

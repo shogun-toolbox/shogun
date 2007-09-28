@@ -49,7 +49,8 @@ class CWeightedCommWordStringKernel: public CCommWordStringKernel
   /// compute kernel function for features a and b
   /// idx_{a,b} denote the index of the feature vectors
   /// in the corresponding feature object
-  DREAL compute(INT idx_a, INT idx_b);
+  /// if do_sort==true does the sorting of kmers on the fly 
+  virtual DREAL compute_helper(INT idx_a, INT idx_b, bool do_sort);
 
   INT degree;
 
