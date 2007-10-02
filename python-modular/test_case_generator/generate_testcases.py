@@ -1,14 +1,16 @@
 from numpy.random import *
 from numpy import *
-from shogun.Features import RealFeatures
-from shogun.Features import CharFeatures
+from shogun.PreProc import *
+from shogun.Features import *
 from shogun.Features import Alphabet,DNA
 from shogun.Kernel import *
+from shogun.Library import NO_NORMALIZATION
 import m_print
 
 
 traindat = rand(11,13)
 testdat = rand(11,17)
+
 train_feat = RealFeatures(traindat)
 test_feat  = RealFeatures(testdat)
 
@@ -165,14 +167,81 @@ for i in range(len):
         testdat[i,:]=acgt[array(floor(4*random_sample(2*num_dat)),dtype=int)]
 
 
-ctrain_feat = CharFeatures(traindat, DNA)
-ctest_feat  = CharFeatures(testdat,  DNA)
+#ctrain_feat = CharFeatures(traindat, DNA)
+#ctest_feat  = CharFeatures(testdat,  DNA)
 
 
-k=WeightedDegreeCharKernel(ctrain_feat, ctrain_feat, 3)
+#k=WeightedDegreeCharKernel(ctrain_feat, ctrain_feat, 3)
 #k.init(ctrain_feat, ctrain_feat)
+#km_train=k.get_kernel_matrix()
+#k.init(ctrain_feat, ctest_feat)
+#km_test=k.get_kernel_matrix()
+
+#write_testcase(kernelname='WeightedDegreeCharKernel',fun_name='test_wdchar_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'size_':20,'degree':3, 'inhom':'True', 'use_norm':'True'})
+
+#write mfile for WeightedDegreePositionStringKernel datatype STRING
+seqlen=60;
+degree=20;
+acgt  = array(['A', 'C', 'G','T'])
+trainlen = 11
+testlen  = 17
+traindat = []
+testdat  = []
+for i in range(trainlen):
+	str1 = []
+	str2 = []
+	for j in range(seqlen):
+		str1.append(acgt[floor(4*rand())])
+		str2.append(acgt[floor(4*rand())])
+        traindat.append(''.join(str1))
+	testdat.append(''.join(str2))
+	
+for i in range(testlen-trainlen):
+        str1 = []
+	for j in range(seqlen):
+                str1.append(acgt[floor(4*rand())])
+	testdat.append(''.join(str1))
+
+#alpha = Alphabet(DNA);
+stringfeat = StringCharFeatures(DNA)
+stringfeat.set_string_features(traindat)
+
+stringtestfeat = StringCharFeatures(DNA)
+stringtestfeat.set_string_features(testdat)
+
+k= WeightedDegreePositionStringKernel(stringfeat, stringfeat, degree,  zeros(seqlen, dtype=int32))
 km_train=k.get_kernel_matrix()
-k.init(ctrain_feat, ctest_feat)
+k.init(stringfeat, stringtestfeat)
 km_test=k.get_kernel_matrix()
 
-write_testcase(kernelname='WeightedDegreeCharKernel',fun_name='test_wdchar_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'size_':20,'degree':3, 'inhom':'True', 'use_norm':'True'})
+write_testcase(kernelname='WeightedDegreePositionStringKernel',fun_name='test_wdps_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'degree':degree, 'seqlen':seqlen})
+
+#write mfile for CommWordStringKernel datatype STRING
+#--------------------------------------------------------------
+reverse=False
+gap=0
+order=3
+
+trainudat = StringWordFeatures(stringfeat.get_alphabet());
+trainudat.obtain_from_char(stringfeat, order-1, order, gap, reverse)
+testudat = StringWordFeatures(stringtestfeat.get_alphabet());
+testudat.obtain_from_char(stringtestfeat, order-1, order, gap, reverse)
+
+
+preproc = SortWordString();
+preproc.init(trainudat);
+
+trainudat.add_preproc(preproc)
+trainudat.apply_preproc()
+
+testudat.add_preproc(preproc)
+testudat.apply_preproc()
+
+k= CommWordStringKernel(trainudat,trainudat);# False, NO_NORMALIZATION, 10)
+km_train=k.get_kernel_matrix()
+
+k = CommWordStringKernel(testudat,testudat);
+km_test=k.get_kernel_matrix()
+
+write_testcase(kernelname='CommWordStringKernel',fun_name='test_cws_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'order':order, 'gap':gap, 'reverse':reverse})
+

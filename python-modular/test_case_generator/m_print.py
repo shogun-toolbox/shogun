@@ -9,7 +9,7 @@ def print_mat(km, fileobj, mat_name='km'):
 			if(isinstance(km[x,y],(int, long, float, complex))):
 				line.append('%.9g' %km[x,y])	
 			else:
-				line.append("'%c'" %km[x,y])
+				line.append("'%s'" %km[x,y])
 		lis.append(', '.join(line))
 		line = list()
 	kmstr = ';'.join(lis)
