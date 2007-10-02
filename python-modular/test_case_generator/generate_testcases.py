@@ -7,6 +7,7 @@ from shogun.Kernel import *
 from shogun.Library import NO_NORMALIZATION
 import m_print
 
+seed(19456)
 
 traindat = rand(11,13)
 testdat = rand(11,17)
