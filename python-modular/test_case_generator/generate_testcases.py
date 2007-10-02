@@ -234,13 +234,16 @@ preproc.init(trainudat);
 trainudat.add_preproc(preproc)
 trainudat.apply_preproc()
 
+preproc = SortWordString();
+preproc.init(testudat);
+
 testudat.add_preproc(preproc)
 testudat.apply_preproc()
 
 k= CommWordStringKernel(trainudat,trainudat);# False, NO_NORMALIZATION, 10)
 km_train=k.get_kernel_matrix()
 
-k = CommWordStringKernel(testudat,testudat);
+k.init(trainudat,testudat)
 km_test=k.get_kernel_matrix()
 
 write_testcase(kernelname='CommWordStringKernel',fun_name='test_cws_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'order':order, 'gap':gap, 'reverse':reverse})

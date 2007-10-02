@@ -1,5 +1,6 @@
-from shogun.Features import RealFeatures, CharFeatures, StringCharFeatures
+from shogun.Features import RealFeatures, CharFeatures, StringCharFeatures, StringWordFeatures
 from shogun.Kernel import *
+from shogun.PreProc import *
 from shogun.Features import Alphabet,DNA
 from numpy import array, zeros, int32
 acc = 1e-6
@@ -158,8 +159,6 @@ def test_wdchar_kernel(dict):
 def test_wdps_kernel(dict):
 	
 	try:
-		print "traindat: ",dict['traindat'][0]
-		print "testdat: ",dict['testdat'][0]
 		stringfeat = StringCharFeatures(eval(dict['alphabet']))
 		stringfeat.set_string_features(list(dict['traindat'][0]))
 
@@ -171,6 +170,54 @@ def test_wdps_kernel(dict):
 		max1 = max(abs(dict['km_train']-k.get_kernel_matrix()).flat)
 
 		k.init(stringfeat, stringtestfeat)		
+		max2 = max(abs(dict['km_test']-k.get_kernel_matrix()).flat)
+	
+	except KeyError:
+		print 'error in m-file'
+		return False	
+
+	#maximal pairwise difference must be smaler than acc
+	if max1<acc and max2<acc:
+		return True
+
+	return False
+
+
+
+
+def test_cws_kernel(dict):
+	
+	try:
+		stringfeat = StringCharFeatures(eval(dict['alphabet']))
+		stringfeat.set_string_features(list(dict['traindat'][0]))
+
+		stringtestfeat = StringCharFeatures(eval(dict['alphabet']))
+		stringtestfeat.set_string_features(list(dict['testdat'][0]))
+		
+ 
+		wordfeat = StringWordFeatures(stringfeat.get_alphabet());
+		wordfeat.obtain_from_char(stringfeat, dict['order']-1, dict['order'], dict['gap'], dict['reverse'])
+		
+		wordtestfeat = StringWordFeatures(stringtestfeat.get_alphabet());
+		wordtestfeat.obtain_from_char(stringtestfeat, dict['order']-1, dict['order'], dict['gap'], dict['reverse'] )
+
+		preproc = SortWordString();
+		preproc.init(wordfeat);
+
+		wordfeat.add_preproc(preproc)
+		wordfeat.apply_preproc()
+
+		preproc = SortWordString();
+		preproc.init(wordtestfeat);
+
+		wordtestfeat.add_preproc(preproc)
+		wordtestfeat.apply_preproc()
+
+		kernel_fun = eval(dict['kernelname'])
+		k= kernel_fun(wordfeat, wordfeat)
+		max1 = max(abs(dict['km_train']-k.get_kernel_matrix()).flat)
+
+		k.init(wordfeat, wordtestfeat)		
 		max2 = max(abs(dict['km_test']-k.get_kernel_matrix()).flat)
 	
 	except KeyError:
