@@ -217,35 +217,62 @@ km_test=k.get_kernel_matrix()
 write_testcase(kernelname='WeightedDegreePositionStringKernel',fun_name='test_wds_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'degree':degree, 'seqlen':seqlen})
 
 
-#write mfile for CommWordStringKernel datatype STRING
-#--------------------------------------------------------------
+#write mfile for LIK-Kernel datatype STRING
+#-------------------------------------------------
+size = 31
+length = 51
+inner_degree = 5
+outer_degree = 7
+#k = LocalityImprovedStringKernel(stringfeat, stringfeat, size, length, inner_degree, outer_degree)
+
+#write mfile for CommWordStringKernel/spectrum 
+#-------------------------------------------------
 reverse=False
 gap=0
 order=3
 
-trainudat = StringWordFeatures(stringfeat.get_alphabet());
-trainudat.obtain_from_char(stringfeat, order-1, order, gap, reverse)
-testudat = StringWordFeatures(stringtestfeat.get_alphabet());
-testudat.obtain_from_char(stringtestfeat, order-1, order, gap, reverse)
+wordfeat = StringWordFeatures(stringfeat.get_alphabet());
+wordfeat.obtain_from_char(stringfeat, order-1, order, gap, reverse)
+wordtestfeat = StringWordFeatures(stringtestfeat.get_alphabet());
+wordtestfeat.obtain_from_char(stringtestfeat, order-1, order, gap, reverse)
 
 
 preproc = SortWordString();
-preproc.init(trainudat);
+preproc.init(wordfeat);
 
-trainudat.add_preproc(preproc)
-trainudat.apply_preproc()
+wordfeat.add_preproc(preproc)
+wordfeat.apply_preproc()
 
 preproc = SortWordString();
-preproc.init(testudat);
+preproc.init(wordtestfeat);
 
-testudat.add_preproc(preproc)
-testudat.apply_preproc()
+wordtestfeat.add_preproc(preproc)
+wordtestfeat.apply_preproc()
 
-k= CommWordStringKernel(trainudat,trainudat);# False, NO_NORMALIZATION, 10)
+k= CommWordStringKernel(wordfeat,wordfeat);# False, NO_NORMALIZATION, 10)
 km_train=k.get_kernel_matrix()
 
-k.init(trainudat,testudat)
+k.init(wordfeat,wordtestfeat)
 km_test=k.get_kernel_matrix()
 
 write_testcase(kernelname='CommWordStringKernel',fun_name='test_cws_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'order':order, 'gap':gap, 'reverse':reverse})
+
+#write mfile for HammingWordKernel
+#---------------------------------------------------------------
+#size=50
+#width=10
+#use_sign=False
+#k = HammingWordKernel(wordfeat, wordfeat, size, width, use_sign)
+
+#write mfile for ManhattanWordKernel
+#---------------------------------------------------------------
+
+#k = ManhattanWordKernel(wordfeat, wordfeat, size, width)
+#km_train=k.get_kernel_matrix()
+
+#k.init(wordfeat,wordtestfeat)
+#km_test=k.get_kernel_matrix()
+
+#write_testcase(kernelname='CommWordStringKernel',fun_name='test_cws_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'order':order, 'gap':gap, 'reverse':reverse})
+
 
