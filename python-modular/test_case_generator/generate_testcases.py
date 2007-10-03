@@ -168,18 +168,6 @@ for i in range(len):
         testdat[i,:]=acgt[array(floor(4*random_sample(2*num_dat)),dtype=int)]
 
 
-#ctrain_feat = CharFeatures(traindat, DNA)
-#ctest_feat  = CharFeatures(testdat,  DNA)
-
-
-#k=WeightedDegreeCharKernel(ctrain_feat, ctrain_feat, 3)
-#k.init(ctrain_feat, ctrain_feat)
-#km_train=k.get_kernel_matrix()
-#k.init(ctrain_feat, ctest_feat)
-#km_test=k.get_kernel_matrix()
-
-#write_testcase(kernelname='WeightedDegreeCharKernel',fun_name='test_wdchar_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'size_':20,'degree':3, 'inhom':'True', 'use_norm':'True'})
-
 #write mfile for WeightedDegreePositionStringKernel datatype STRING
 seqlen=60;
 degree=20;
@@ -210,12 +198,24 @@ stringfeat.set_string_features(traindat)
 stringtestfeat = StringCharFeatures(DNA)
 stringtestfeat.set_string_features(testdat)
 
-k= WeightedDegreePositionStringKernel(stringfeat, stringfeat, degree,  zeros(seqlen, dtype=int32))
+weights = arange(1,degree+1,dtype=double)[::-1]/sum(arange(1,degree+1,dtype=double))
+k= WeightedDegreeStringKernel(stringfeat, stringfeat, degree, weights=weights)
 km_train=k.get_kernel_matrix()
 k.init(stringfeat, stringtestfeat)
 km_test=k.get_kernel_matrix()
 
-write_testcase(kernelname='WeightedDegreePositionStringKernel',fun_name='test_wdps_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'degree':degree, 'seqlen':seqlen})
+write_testcase(kernelname='WeightedDegreeStringKernel',fun_name='test_wd_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'degree':degree, 'seqlen':seqlen})
+
+
+#write mfile for WDS-Kernel datatype STRING
+
+k= WeightedDegreePositionStringKernel(stringfeat, stringfeat, degree,  ones(seqlen, dtype=int32))
+km_train=k.get_kernel_matrix()
+k.init(stringfeat, stringtestfeat)
+km_test=k.get_kernel_matrix()
+
+write_testcase(kernelname='WeightedDegreePositionStringKernel',fun_name='test_wds_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'degree':degree, 'seqlen':seqlen})
+
 
 #write mfile for CommWordStringKernel datatype STRING
 #--------------------------------------------------------------
