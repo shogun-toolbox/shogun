@@ -7,58 +7,40 @@ template <>
 void CTrie<POIMTrie>::POIMs_extract_W_helper( const INT nodeIdx, const int depth, const INT offset, const INT y0,
 				    DREAL* const* const W, const INT K )
 {
-  ASSERT( nodeIdx != NO_CHILD );
-  ASSERT( depth < K );
-  DREAL* const W_kiy = & W[ depth ][ offset + y0 ];
-  POIMTrie* const node = &TreeMem[ nodeIdx ];
-  INT sym;
-  if( depth < degree-1 ) {
-    const INT offset1 = offset * NUM_SYMS;
-    // the commented block is replaced by the following double-block for speed:
-    // the "if" clause is pulled out of the loop
-    //
-    //for( sym = 0; sym < NUM_SYMS; ++sym ) {
-    //  ASSERT( W_kiy[ sym ] == 0 );
-    //  const INT childIdx = node->children[ sym ];
-    //  if( childIdx != NO_CHILD ) {
-    //    const Trie* const child = &TreeMem[ childIdx ];
-    //    W_kiy[ sym ] = child->weight;
-    //    if( depth < K-1 ) {
-    //      const INT y1 = ( y0 + sym ) * NUM_SYMS;
-    //      POIMs_extract_W_helper( childIdx, depth+1, offset1, y1, W, K );
-    //    }
-    //  }
-    //}
-    if( depth < K-1 ) {
-      for( sym = 0; sym < NUM_SYMS; ++sym ) {
-	ASSERT( W_kiy[ sym ] == 0 );
-	const INT childIdx = node->children[ sym ];
-	if( childIdx != NO_CHILD ) {
-	  const INT y1 = ( y0 + sym ) * NUM_SYMS;
-	  W_kiy[ sym ] = TreeMem[ childIdx ].weight;
-	  //W_kiy[ sym ] = TreeMem[ childIdx ].R;  // DEBUG !!!
-	  POIMs_extract_W_helper( childIdx, depth+1, offset1, y1, W, K );
-	  //printf( "depth %d, offset %d, y0 %d, sym %d, y1 %d\n", depth, offset, y0, sym, y1 );
+	ASSERT( nodeIdx != NO_CHILD );
+	ASSERT( depth < K );
+	DREAL* const W_kiy = & W[ depth ][ offset + y0 ];
+	POIMTrie* const node = &TreeMem[ nodeIdx ];
+	INT sym;
+
+	if( depth < degree-1 )
+	{
+		const INT offset1 = offset * NUM_SYMS;
+		for( sym = 0; sym < NUM_SYMS; ++sym )
+		{
+			ASSERT( W_kiy[ sym ] == 0 );
+			const INT childIdx = node->children[ sym ];
+			if( childIdx != NO_CHILD )
+			{
+				W_kiy[ sym ] = TreeMem[ childIdx ].weight;
+
+				if (depth < K-1)
+				{
+					const INT y1 = ( y0 + sym ) * NUM_SYMS;
+					POIMs_extract_W_helper( childIdx, depth+1, offset1, y1, W, K );
+				}
+			}
+		}
 	}
-      }
-    } else {
-      ASSERT( depth == K-1 );
-      for( sym = 0; sym < NUM_SYMS; ++sym ) {
-	ASSERT( W_kiy[ sym ] == 0 );
-	const INT childIdx = node->children[ sym ];
-	if( childIdx != NO_CHILD ) {
-	  W_kiy[ sym ] = TreeMem[ childIdx ].weight;
-	  //W_kiy[ sym ] = TreeMem[ childIdx ].R;  // DEBUG !!!
+	else
+	{
+		ASSERT( depth == degree-1 );
+		for( sym = 0; sym < NUM_SYMS; ++sym )
+		{
+			ASSERT( W_kiy[ sym ] == 0 );
+			W_kiy[ sym ] = node->child_weights[ sym ];
+		}
 	}
-      }
-    }
-  } else {
-    ASSERT( depth == degree-1 );
-    for( sym = 0; sym < NUM_SYMS; ++sym ) {
-      ASSERT( W_kiy[ sym ] == 0 );
-      W_kiy[ sym ] = node->child_weights[ sym ];
-    }
-  }
 }
 
 template <>
