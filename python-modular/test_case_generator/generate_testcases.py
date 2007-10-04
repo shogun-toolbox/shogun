@@ -5,6 +5,7 @@ from shogun.Features import *
 from shogun.Features import Alphabet,DNA
 from shogun.Kernel import *
 from shogun.Library import NO_NORMALIZATION
+from shogun.Classifier import *
 import m_print
 
 seed(19456)
@@ -22,35 +23,16 @@ def write_testcase(kernelname=None,fun_name=None,arrays={},dict={} ):
 	value_str  = value_str.replace('.', '')
 	mfile = open('../testcases/mfiles/'+kernelname+'_'+value_str+'.m', mode='w')
 
-#	if(not(traindat==None)):
-#		m_print.print_mat(traindat,mfile, mat_name='traindat')
-#
-#	if(not(testdat==None)):
-#		m_print.print_mat(testdat,mfile, mat_name='testdat')
-#
-#	if(not(km_train==None)):
-#		m_print.print_mat(km_train, mfile, mat_name='km_train')
-#
-#	if(not(km_test==None)):
-#		m_print.print_mat(km_test,mfile,  mat_name='km_test') 
-#
 	if(not(testdat==None)):
 		mfile.write("functionname = '"+fun_name+"'\n")
 
 	if(not(kernelname==None)):
 		mfile.write("kernelname = '"+ kernelname+"'\n")
 	for key in arrays.keys():
-                if(type(arrays[key])==type(array(1))):
-			m_print.print_mat(arrays[key],mfile,mat_name=key)
-		else:
-			mfile.write(key+'= %r \n'%arrays[key])
+		m_print.print_mat(arrays[key],mfile,mat_name=key)
 
 	for key in dict.keys():
-                if(type(dict[key])==type(array(1))):
-			m_print.print_mat(dict[key],mfile,mat_name=key)
-		else:
-			mfile.write(key+'= %r \n'%dict[key])
-
+		mfile.write(key+'= %r \n'%dict[key])
 	mfile.close()
 
 
@@ -66,7 +48,6 @@ test_km=gk.get_kernel_matrix()
 
 write_testcase(kernelname='GaussianKernel',fun_name='test_gaussian_kernel', arrays={'km_train':km ,'km_test':test_km, 'traindat':traindat, 'testdat':testdat},dict={'size_':10, 'width_':1.3})
 
-exit()
 #write mfile for Linear Kernel
 
 
@@ -75,7 +56,7 @@ km_train=lk.get_kernel_matrix()
 lk.init(realfeat, realtestfeat)
 km_test=lk.get_kernel_matrix()
 
-write_testcase(kernelname='LinearKernel',fun_name='test_linear_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat,dict={'bool1':'True'})
+write_testcase(kernelname='LinearKernel',fun_name='test_linear_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':traindat, 'testdat':testdat},dict={'bool1':'True'})
 
 #write mfile for Linear Kernel
 
@@ -85,7 +66,7 @@ km_train=lk.get_kernel_matrix()
 lk.init(realfeat, realtestfeat)
 km_test=lk.get_kernel_matrix()
 
-write_testcase(kernelname='LinearKernel',fun_name='test_linear_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat,dict={'bool1':'False'})
+write_testcase(kernelname='LinearKernel',fun_name='test_linear_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':traindat, 'testdat':testdat},dict={'bool1':'False'})
 
 
 
@@ -97,7 +78,7 @@ km_train=k.get_kernel_matrix()
 k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
-write_testcase(kernelname='Chi2Kernel',fun_name='test_chi2_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10})
+write_testcase(kernelname='Chi2Kernel',fun_name='test_chi2_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':traindat, 'testdat':testdat}, dict={'size_':10})
 
 
 #write mfile for SigmoidKernel
@@ -108,7 +89,7 @@ km_train=k.get_kernel_matrix()
 k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
-write_testcase(kernelname='SigmoidKernel',fun_name='test_sigmoid_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10, 'gamma_':1.1, 'coef0':1.3})
+write_testcase(kernelname='SigmoidKernel',fun_name='test_sigmoid_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':traindat, 'testdat':testdat}, dict={'size_':10, 'gamma_':1.1, 'coef0':1.3})
 
 #write mfile for SigmoidKernel
 
@@ -118,7 +99,7 @@ km_train=k.get_kernel_matrix()
 k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
-write_testcase(kernelname='SigmoidKernel',fun_name='test_sigmoid_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10, 'gamma_':0.5, 'coef0':0.7})
+write_testcase(kernelname='SigmoidKernel',fun_name='test_sigmoid_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':traindat, 'testdat':testdat}, dict={'size_':10, 'gamma_':0.5, 'coef0':0.7})
 
 #write mfile for PolyKernel
 
@@ -128,7 +109,7 @@ km_train=k.get_kernel_matrix()
 k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
-write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10,'degree':3, 'inhom':'True', 'use_norm':'True'})
+write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':traindat, 'testdat':testdat}, dict={'size_':10,'degree':3, 'inhom':'True', 'use_norm':'True'})
 
 #write mfile for PolyKernel
 
@@ -138,7 +119,7 @@ km_train=k.get_kernel_matrix()
 k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
-write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10,'degree':3, 'inhom':'False', 'use_norm':'True'})
+write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':traindat, 'testdat':testdat}, dict={'size_':10,'degree':3, 'inhom':'False', 'use_norm':'True'})
 
 
 #write mfile for PolyKernel
@@ -149,7 +130,7 @@ km_train=k.get_kernel_matrix()
 k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
-write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10,'degree':3, 'inhom':'True', 'use_norm':'False'})
+write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':traindat, 'testdat':testdat}, dict={'size_':10,'degree':3, 'inhom':'True', 'use_norm':'False'})
 
 
 #write mfile for PolyKernel
@@ -160,7 +141,7 @@ km_train=k.get_kernel_matrix()
 k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
-write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10,'degree':3, 'inhom':'False', 'use_norm':'False'})
+write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':traindat, 'testdat':testdat}, dict={'size_':10,'degree':3, 'inhom':'False', 'use_norm':'False'})
 
 
 
@@ -213,7 +194,7 @@ km_train=k.get_kernel_matrix()
 k.init(stringfeat, stringtestfeat)
 km_test=k.get_kernel_matrix()
 
-write_testcase(kernelname='WeightedDegreeStringKernel',fun_name='test_wd_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'degree':degree, 'seqlen':seqlen})
+write_testcase(kernelname='WeightedDegreeStringKernel',fun_name='test_wd_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':matrix(traindat), 'testdat':matrix(testdat)}, dict={'alphabet':'DNA', 'degree':degree, 'seqlen':seqlen})
 
 
 #write mfile for WDS-Kernel datatype STRING
@@ -223,7 +204,7 @@ km_train=k.get_kernel_matrix()
 k.init(stringfeat, stringtestfeat)
 km_test=k.get_kernel_matrix()
 
-write_testcase(kernelname='WeightedDegreePositionStringKernel',fun_name='test_wds_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'degree':degree, 'seqlen':seqlen})
+write_testcase(kernelname='WeightedDegreePositionStringKernel',fun_name='test_wds_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':matrix(traindat), 'testdat':matrix(testdat)}, dict={'alphabet':'DNA', 'degree':degree, 'seqlen':seqlen})
 
 
 #write mfile for LIK-Kernel datatype STRING
@@ -232,7 +213,7 @@ size = 110
 length = 51
 inner_degree = 5
 outer_degree = 7
-k = LocalityImprovedStringKernel(int32(size), length, inner_degree, outer_degree)
+#k = LocalityImprovedStringKernel(int32(size), length, inner_degree, outer_degree)
 
 #write mfile for CommWordStringKernel/spectrum 
 #-------------------------------------------------
@@ -264,7 +245,7 @@ km_train=k.get_kernel_matrix()
 k.init(wordfeat,wordtestfeat)
 km_test=k.get_kernel_matrix()
 
-write_testcase(kernelname='CommWordStringKernel',fun_name='test_cws_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'order':order, 'gap':gap, 'reverse':reverse})
+write_testcase(kernelname='CommWordStringKernel',fun_name='test_cws_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':matrix(traindat), 'testdat':matrix(testdat)}, dict={'alphabet':'DNA', 'order':order, 'gap':gap, 'reverse':reverse})
 
 #write mfile for HammingWordKernel
 #---------------------------------------------------------------
@@ -282,7 +263,7 @@ write_testcase(kernelname='CommWordStringKernel',fun_name='test_cws_kernel', km_
 #k.init(wordfeat,wordtestfeat)
 #km_test=k.get_kernel_matrix()
 
-#write_testcase(kernelname='CommWordStringKernel',fun_name='test_cws_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'order':order, 'gap':gap, 'reverse':reverse})
+#write_testcase(kernelname='CommWordStringKernel',fun_name='test_cws_kernel', arrays={'km_train':km_train ,'km_test':km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'order':order, 'gap':gap, 'reverse':reverse})
 
 
 ##################################################################
@@ -299,9 +280,9 @@ realtestfeat  = RealFeatures(testdat)
 #----------------------------------
 k = GaussianKernel(realfeat, realfeat,1)
 numvec = realfeat.get_num_vectors();
-lab = rand(1,numvec).round()*2-1
+lab = Labels(rand(numvec).round()*2-1)
 svm = SVMLight(10,k,lab)
 svm.train()
 alphas = svm.get_alphas()
-write_testcase(kernelname='CommWordStringKernel',fun_name='test_cws_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={})
+#write_testcase(kernelname='svm_GaussianKernel',fun_name='test_svm', arrays={'alphas':alphas,'labels':lab, 'traindat':matrix(traindat), 'testdat':matrix(testdat)}, dict={})
 
