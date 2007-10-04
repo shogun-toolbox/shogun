@@ -15,29 +15,35 @@ testdat = rand(11,17)
 realfeat = RealFeatures(traindat)
 realtestfeat  = RealFeatures(testdat)
 
-def write_testcase(kernelname=None,fun_name=None, km_train=None,km_test=None, traindat=None, testdat=None, dict={} ):
+#def write_testcase(kernelname=None,fun_name=None, km_train=None,km_test=None, traindat=None, testdat=None, dict={} ):
+def write_testcase(kernelname=None,fun_name=None,arrays={},dict={} ):
 	value_list = dict.values()
 	value_str  = '_'.join([str(x) for x in value_list])
 	value_str  = value_str.replace('.', '')
 	mfile = open('../testcases/mfiles/'+kernelname+'_'+value_str+'.m', mode='w')
 
-	if(not(traindat==None)):
-		m_print.print_mat(traindat,mfile, mat_name='traindat')
-
-	if(not(testdat==None)):
-		m_print.print_mat(testdat,mfile, mat_name='testdat')
-
-	if(not(km_train==None)):
-		m_print.print_mat(km_train, mfile, mat_name='km_train')
-
-	if(not(km_test==None)):
-		m_print.print_mat(km_test,mfile,  mat_name='km_test') 
-
+#	if(not(traindat==None)):
+#		m_print.print_mat(traindat,mfile, mat_name='traindat')
+#
+#	if(not(testdat==None)):
+#		m_print.print_mat(testdat,mfile, mat_name='testdat')
+#
+#	if(not(km_train==None)):
+#		m_print.print_mat(km_train, mfile, mat_name='km_train')
+#
+#	if(not(km_test==None)):
+#		m_print.print_mat(km_test,mfile,  mat_name='km_test') 
+#
 	if(not(testdat==None)):
 		mfile.write("functionname = '"+fun_name+"'\n")
 
 	if(not(kernelname==None)):
 		mfile.write("kernelname = '"+ kernelname+"'\n")
+	for key in arrays.keys():
+                if(type(arrays[key])==type(array(1))):
+			m_print.print_mat(arrays[key],mfile,mat_name=key)
+		else:
+			mfile.write(key+'= %r \n'%arrays[key])
 
 	for key in dict.keys():
                 if(type(dict[key])==type(array(1))):
@@ -58,9 +64,9 @@ km=gk.get_kernel_matrix()
 gk.init(realfeat, realtestfeat)
 test_km=gk.get_kernel_matrix()
 
-write_testcase(kernelname='GaussianKernel',fun_name='test_gaussian_kernel', km_train=km ,km_test=test_km, traindat=traindat, testdat=testdat,dict={'size_':10, 'width_':1.3})
+write_testcase(kernelname='GaussianKernel',fun_name='test_gaussian_kernel', arrays={'km_train':km ,'km_test':test_km, 'traindat':traindat, 'testdat':testdat},dict={'size_':10, 'width_':1.3})
 
-
+exit()
 #write mfile for Linear Kernel
 
 
