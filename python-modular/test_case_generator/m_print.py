@@ -4,14 +4,23 @@ from numpy import*
 def print_mat(km, fileobj, mat_name='km'):
 	line= list()
 	lis = list()
-	for x in range(km.shape[0]):
-		for y in range(km.shape[1]):
-			if(isinstance(km[x,y],(int, long, float, complex))):
-				line.append('%.9g' %km[x,y])	
-			else:
-				line.append("'%s'" %km[x,y])
-		lis.append(', '.join(line))
-		line = list()
+        try:
+		for x in range(km.shape[0]):
+			for y in range(km.shape[1]):
+				if(isinstance(km[x,y],(int, long, float, complex))):
+					line.append('%.9g' %km[x,y])	
+				else:
+					line.append("'%s'" %km[x,y])
+			lis.append(', '.join(line))
+			line = list()
+        except IndexError:
+		for x in range(km.shape[0]):
+			if(isinstance(km[x],(int, long, float, complex))):
+                                        line.append('%.9g' %km[x])
+                        else:
+                        	line.append("'%s'" %km[x])
+                lis.append(', '.join(line))
+                line = list()
 	kmstr = ';'.join(lis)
 	kmstr = ''.join([mat_name,' = [',kmstr, ']'])
 	kmstr = kmstr.replace('\n','')

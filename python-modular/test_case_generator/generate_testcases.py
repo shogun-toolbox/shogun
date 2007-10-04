@@ -278,11 +278,12 @@ realtestfeat  = RealFeatures(testdat)
 
 #write mfile for SVM
 #----------------------------------
-k = GaussianKernel(realfeat, realfeat,1)
+k = GaussianKernel(realfeat, realfeat,1.5,10)
 numvec = realfeat.get_num_vectors();
-lab = Labels(rand(numvec).round()*2-1)
+labels = rand(numvec).round()*2-1
+lab = Labels(labels)
 svm = SVMLight(10,k,lab)
 svm.train()
 alphas = svm.get_alphas()
-#write_testcase(kernelname='svm_GaussianKernel',fun_name='test_svm', arrays={'alphas':alphas,'labels':lab, 'traindat':matrix(traindat), 'testdat':matrix(testdat)}, dict={})
+write_testcase(kernelname='svm_GaussianKernel',fun_name='test_svm', arrays={'alphas':alphas,'labels':labels, 'traindat':matrix(traindat), 'testdat':matrix(testdat)}, dict={'width_':1.5,'size_':10})
 

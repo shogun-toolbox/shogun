@@ -1,7 +1,8 @@
 from shogun.Features import RealFeatures, CharFeatures, StringCharFeatures, StringWordFeatures
 from shogun.Kernel import *
 from shogun.PreProc import *
-from shogun.Features import Alphabet,DNA
+from shogun.Features import Alphabet,DNA, Labels
+from shogun.Classifier import *
 from numpy import array, zeros, int32, arange, double, ones
 acc = 1e-6
 
@@ -260,3 +261,33 @@ def test_cws_kernel(dict):
 		return True
 
 	return False
+
+
+def test_svm(dict):
+	try:	
+		feat = RealFeatures(dict['traindat'])
+		#kernel_fun = eval(dict['kernelname'])
+		gk=GaussianKernel(feat,feat, dict['width_'], dict['size_'])
+		numvec = feat.get_num_vectors();
+		lab = Labels(double(dict['labels']))
+		svm = SVMLight(10,gk,lab)
+		svm.train()
+		alphas = svm.get_alphas()
+		
+		max1 = max(alphas-dict['alphas'])
+
+
+#		test_feat = RealFeatures(dict['testdat'])
+#		gk.init(feat, test_feat)
+#	
+#		max2 =  max(abs(dict['km_test']-gk.get_kernel_matrix()).flat)
+	except KeyError:
+		print 'error in m-file'
+		return False
+	#maximal pairwise difference must be smaler than acc
+        print('max %i'%max1)
+	if max1<acc:
+		return True
+
+	return False
+
