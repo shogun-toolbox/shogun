@@ -12,8 +12,8 @@ seed(19456)
 traindat = rand(11,13)
 testdat = rand(11,17)
 
-train_feat = RealFeatures(traindat)
-test_feat  = RealFeatures(testdat)
+realfeat = RealFeatures(traindat)
+realtestfeat  = RealFeatures(testdat)
 
 def write_testcase(kernelname=None,fun_name=None, km_train=None,km_test=None, traindat=None, testdat=None, dict={} ):
 	value_list = dict.values()
@@ -40,7 +40,10 @@ def write_testcase(kernelname=None,fun_name=None, km_train=None,km_test=None, tr
 		mfile.write("kernelname = '"+ kernelname+"'\n")
 
 	for key in dict.keys():
-		mfile.write(key+'= %r \n'%dict[key])
+                if(type(dict[key])==type(array(1))):
+			m_print.print_mat(dict[key],mfile,mat_name=key)
+		else:
+			mfile.write(key+'= %r \n'%dict[key])
 
 	mfile.close()
 
@@ -50,9 +53,9 @@ def write_testcase(kernelname=None,fun_name=None, km_train=None,km_test=None, tr
 
 #write mfile for GaussianKernel
 
-gk=GaussianKernel(train_feat,train_feat, 1.3, 10)
+gk=GaussianKernel(realfeat,realfeat, 1.3, 10)
 km=gk.get_kernel_matrix()
-gk.init(train_feat, test_feat)
+gk.init(realfeat, realtestfeat)
 test_km=gk.get_kernel_matrix()
 
 write_testcase(kernelname='GaussianKernel',fun_name='test_gaussian_kernel', km_train=km ,km_test=test_km, traindat=traindat, testdat=testdat,dict={'size_':10, 'width_':1.3})
@@ -61,9 +64,9 @@ write_testcase(kernelname='GaussianKernel',fun_name='test_gaussian_kernel', km_t
 #write mfile for Linear Kernel
 
 
-lk=LinearKernel(train_feat,train_feat, True)
+lk=LinearKernel(realfeat,realfeat, True)
 km_train=lk.get_kernel_matrix()
-lk.init(train_feat, test_feat)
+lk.init(realfeat, realtestfeat)
 km_test=lk.get_kernel_matrix()
 
 write_testcase(kernelname='LinearKernel',fun_name='test_linear_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat,dict={'bool1':'True'})
@@ -71,9 +74,9 @@ write_testcase(kernelname='LinearKernel',fun_name='test_linear_kernel', km_train
 #write mfile for Linear Kernel
 
 
-lk=LinearKernel(train_feat,train_feat, False)
+lk=LinearKernel(realfeat,realfeat, False)
 km_train=lk.get_kernel_matrix()
-lk.init(train_feat, test_feat)
+lk.init(realfeat, realtestfeat)
 km_test=lk.get_kernel_matrix()
 
 write_testcase(kernelname='LinearKernel',fun_name='test_linear_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat,dict={'bool1':'False'})
@@ -83,9 +86,9 @@ write_testcase(kernelname='LinearKernel',fun_name='test_linear_kernel', km_train
 #write mfile for Chi2Kernel
 
 
-k=Chi2Kernel(train_feat,train_feat, 10)
+k=Chi2Kernel(realfeat,realfeat, 10)
 km_train=k.get_kernel_matrix()
-k.init(train_feat, test_feat)
+k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
 write_testcase(kernelname='Chi2Kernel',fun_name='test_chi2_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10})
@@ -94,9 +97,9 @@ write_testcase(kernelname='Chi2Kernel',fun_name='test_chi2_kernel', km_train=km_
 #write mfile for SigmoidKernel
 
 
-k=SigmoidKernel(train_feat,train_feat, 10, 1.1, 1.3)
+k=SigmoidKernel(realfeat,realfeat, 10, 1.1, 1.3)
 km_train=k.get_kernel_matrix()
-k.init(train_feat, test_feat)
+k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
 write_testcase(kernelname='SigmoidKernel',fun_name='test_sigmoid_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10, 'gamma_':1.1, 'coef0':1.3})
@@ -104,9 +107,9 @@ write_testcase(kernelname='SigmoidKernel',fun_name='test_sigmoid_kernel', km_tra
 #write mfile for SigmoidKernel
 
 
-k=SigmoidKernel(train_feat,train_feat, 10, 0.5, 0.7)
+k=SigmoidKernel(realfeat,realfeat, 10, 0.5, 0.7)
 km_train=k.get_kernel_matrix()
-k.init(train_feat, test_feat)
+k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
 write_testcase(kernelname='SigmoidKernel',fun_name='test_sigmoid_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10, 'gamma_':0.5, 'coef0':0.7})
@@ -114,9 +117,9 @@ write_testcase(kernelname='SigmoidKernel',fun_name='test_sigmoid_kernel', km_tra
 #write mfile for PolyKernel
 
 
-k=PolyKernel(train_feat,train_feat, 10, 3, True, True)
+k=PolyKernel(realfeat,realfeat, 10, 3, True, True)
 km_train=k.get_kernel_matrix()
-k.init(train_feat, test_feat)
+k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
 write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10,'degree':3, 'inhom':'True', 'use_norm':'True'})
@@ -124,9 +127,9 @@ write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_
 #write mfile for PolyKernel
 
 
-k=PolyKernel(train_feat,train_feat, 10, 3, False, True)
+k=PolyKernel(realfeat,realfeat, 10, 3, False, True)
 km_train=k.get_kernel_matrix()
-k.init(train_feat, test_feat)
+k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
 write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10,'degree':3, 'inhom':'False', 'use_norm':'True'})
@@ -135,9 +138,9 @@ write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_
 #write mfile for PolyKernel
 
 
-k=PolyKernel(train_feat,train_feat, 10, 3, True, False)
+k=PolyKernel(realfeat,realfeat, 10, 3, True, False)
 km_train=k.get_kernel_matrix()
-k.init(train_feat, test_feat)
+k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
 write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10,'degree':3, 'inhom':'True', 'use_norm':'False'})
@@ -146,9 +149,9 @@ write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_
 #write mfile for PolyKernel
 
 
-k=PolyKernel(train_feat,train_feat, 10, 3, False, False)
+k=PolyKernel(realfeat,realfeat, 10, 3, False, False)
 km_train=k.get_kernel_matrix()
-k.init(train_feat, test_feat)
+k.init(realfeat, realtestfeat)
 km_test=k.get_kernel_matrix()
 
 write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_train ,km_test=km_test, traindat=traindat, testdat=testdat, dict={'size_':10,'degree':3, 'inhom':'False', 'use_norm':'False'})
@@ -156,16 +159,16 @@ write_testcase(kernelname='PolyKernel',fun_name='test_poly_kernel', km_train=km_
 
 
 #write mfile for WDKernel datatype CHAR
-acgt  = array(['A', 'C', 'G','T'])
-num_dat = 19
-len = 11  
-traindat = chararray((len,2*num_dat),1,order='FORTRAN')
-for i in range(len):
-        traindat[i,:]=acgt[array(floor(4*random_sample(2*num_dat)), dtype=int)]
-
-testdat = chararray((len,2*num_dat),1,order='FORTRAN')
-for i in range(len):
-        testdat[i,:]=acgt[array(floor(4*random_sample(2*num_dat)),dtype=int)]
+#acgt  = array(['A', 'C', 'G','T'])
+#num_dat = 19
+#len = 11  
+#traindat = chararray((len,2*num_dat),1,order='FORTRAN')
+#for i in range(len):
+#        traindat[i,:]=acgt[array(floor(4*random_sample(2*num_dat)), dtype=int)]
+#
+#testdat = chararray((len,2*num_dat),1,order='FORTRAN')
+#for i in range(len):
+#        testdat[i,:]=acgt[array(floor(4*random_sample(2*num_dat)),dtype=int)]
 
 
 #write mfile for WeightedDegreePositionStringKernel datatype STRING
@@ -219,11 +222,11 @@ write_testcase(kernelname='WeightedDegreePositionStringKernel',fun_name='test_wd
 
 #write mfile for LIK-Kernel datatype STRING
 #-------------------------------------------------
-size = 31
+size = 110
 length = 51
 inner_degree = 5
 outer_degree = 7
-#k = LocalityImprovedStringKernel(stringfeat, stringfeat, size, length, inner_degree, outer_degree)
+k = LocalityImprovedStringKernel(int32(size), length, inner_degree, outer_degree)
 
 #write mfile for CommWordStringKernel/spectrum 
 #-------------------------------------------------
@@ -275,4 +278,24 @@ write_testcase(kernelname='CommWordStringKernel',fun_name='test_cws_kernel', km_
 
 #write_testcase(kernelname='CommWordStringKernel',fun_name='test_cws_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={'alphabet':'DNA', 'order':order, 'gap':gap, 'reverse':reverse})
 
+
+##################################################################
+####  TEST CLASSIFIERS
+##################################################################
+
+traindat = rand(11,13)
+testdat = rand(11,17)
+
+realfeat = RealFeatures(traindat)
+realtestfeat  = RealFeatures(testdat)
+
+#write mfile for SVM
+#----------------------------------
+k = GaussianKernel(realfeat, realfeat,1)
+numvec = realfeat.get_num_vectors();
+lab = rand(1,numvec).round()*2-1
+svm = SVMLight(10,k,lab)
+svm.train()
+alphas = svm.get_alphas()
+write_testcase(kernelname='CommWordStringKernel',fun_name='test_cws_kernel', km_train=km_train ,km_test=km_test, traindat=matrix(traindat), testdat=matrix(testdat), dict={})
 
