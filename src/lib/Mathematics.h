@@ -516,6 +516,24 @@ public:
 			}
 		}
 	}
+	/** performs insertion sort of an array output of length size
+	 * it is sorted from in ascending (for type T) */
+	template <class T>
+	static void insertion_sort(T* output, INT size)
+	{
+		for (INT i=0; i<size-1; i++)
+		{
+			INT j=i-1;
+			T value=output[i];
+			while (j >= 0 && output[j] > value)
+			{
+				output[j+1] = output[j];
+				j--;
+			}
+			output[j+1]=value;
+		}
+	}
+	 
 
 	/** performs a quicksort on an array output of length size
 	 * it is sorted from in ascending (for type T) */
