@@ -1,3 +1,9 @@
+2007-10-10  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.4.3
+	* This release contains minor bugfixes for the
+	weighted spectrum kernel and poims
+
 2007-09-19  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.4.2

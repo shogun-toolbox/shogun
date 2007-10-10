@@ -129,7 +129,7 @@ targets:
 	@egrep '^[a-z]+:' Makefile | grep -v '\.o:' | sed -e 's/:.*//g' -e 's/out//g' -e 's/end//g' -e 's/^/     /g' | sort | uniq
 
 distclean: clean
-		rm -f .config tags lib/config.h lib/versionstring.h
+		rm -f .config tags lib/config.h
 swigclean:
 	rm -f $(shell find -name "*_wrap.h" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) 
 
@@ -189,11 +189,11 @@ endif
 endif
 
 dep:	depend
-depend:		.config lib/versionstring.h
+depend:		.config
 	makedepend $(DEFINES) $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_CPP)" | grep -v 'configure-' ) -o.$(EXT_OBJ_CPP) -f - >.depend || true
 	makedepend $(DEFINES) $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' | grep -v 'configure-' ) -o.$(EXT_OBJ_C) -f - >>.depend || true
 	find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -o -name "*.h" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" | grep -v 'configure-' |  cut -c 3- | $(PYTHON) .generate_link_dependencies.py $(EXT_LIB_SWIG) >>.depend
-.depend:	.config lib/versionstring.h
+.depend:	.config
 	makedepend $(DEFINES) $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_CPP)" | grep -v 'configure-*' ) -o.$(EXT_OBJ_CPP) -f - >.depend || true
 	makedepend $(DEFINES) $(INCLUDES) $(shell find $(SRCDIR) -name "*.h" -o -name "*.$(EXT_SRC_C)" | grep -v '.cpuinfo.c' | grep -v 'configure-' ) -o.$(EXT_OBJ_C) -f - >>.depend || true
 	find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -o -name "*.h" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" | grep -v 'configure-' |  cut -c 3- | $(PYTHON) .generate_link_dependencies.py $(EXT_LIB_SWIG) >>.depend
@@ -206,7 +206,7 @@ tests:
 ChangeLog:
 		@svn2cl --group-by-day --authors=.authors 2>/dev/null || true
 
-$(OBJFILES): .config .depend lib/versionstring.h ChangeLog
+$(OBJFILES): .config .depend ChangeLog
 
 ifeq (yes,$(USE_SWIG))
 $(TARGET): $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
