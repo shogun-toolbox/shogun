@@ -36,6 +36,7 @@ CFeatures::CFeatures(CHAR* fname) : cache_size(0), preproc(NULL), num_preproc(0)
 CFeatures::~CFeatures()
 {
 	SG_INFO( "Feature object destroyed (%lx)\n", this);
+	clean_preprocs();
 }
 
 /// set preprocessor
@@ -62,6 +63,9 @@ INT CFeatures::add_preproc(CPreProc* p)
 
 	for (i=0; i<num_preproc; i++)
 		SG_INFO( "preproc[%d]=%s %ld\n",i, preproc[i]->get_name(), preproc[i]) ;
+
+	SG_REF(p);
+
 	return num_preproc;
 }
 
@@ -136,6 +140,7 @@ CPreProc* CFeatures::del_preproc(INT num)
 			SG_INFO( "preproc[%d]=%s\n",i, preproc[i]->get_name()) ;
 	}
 
+	SG_UNREF(removed_preproc);
 	return removed_preproc;
 }
 

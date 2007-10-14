@@ -73,6 +73,9 @@ CKernel::~CKernel()
 	if (get_is_initialized()) 
       SG_ERROR( "COptimizableKernel still initialized on destruction");
 
+    SG_UNREF(lhs);
+    if (lhs!=rhs)
+        SG_UNREF(rhs);
 
 #ifdef USE_SVMLIGHT
 	kernel_cache_cleanup();

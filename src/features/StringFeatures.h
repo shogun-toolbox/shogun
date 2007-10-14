@@ -110,7 +110,6 @@ template <class ST> class CStringFeatures: public CFeatures
 		cleanup();
 
 		delete alphabet;
-		alphabet=NULL;
 	}
 
 	void cleanup()

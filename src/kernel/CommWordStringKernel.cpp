@@ -614,8 +614,6 @@ CHAR* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec,
 			{
 				WORD t=suffix | sym << (num_bits*(order-1));
 
-				//SG_PRINT("word:%x sym:%d, num_bits:%d, order:%d, suffix:%x t1:%x\n", t, sym, num_bits, order, suffix, t1);
-
 				//if (dictionary_weights[t]==0.0)
 				//	continue;
 
@@ -626,14 +624,8 @@ CHAR* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec,
 					max_score=sc;
 				}
 			}
-//			if (max_idx == -1)
-//			{
-//				max_idx=0;
-//
 			ASSERT(max_idx!=-1);
 
-			//SG_PRINT("score(%d,%d):%f ", i, t1, max_score);
-			//SG_PRINT("bt(%d,%d):%d\n", i, t1, max_idx);
 			score[num_words*i + t1]=max_score;
 			bt[num_words*i + t1]=max_idx;
 		}
@@ -655,20 +647,14 @@ CHAR* CCommWordStringKernel::compute_consensus(INT &result_len, INT num_suppvec,
 	SG_PRINT("max_idx:%i, max_score:%f\n", max_idx, max_score);
 	
 	for (INT i=result_len-1; i>=num_feat; i--)
-	{
 		result[i]=alpha->remap_to_char( (BYTE) str->get_masked_symbols( (WORD) max_idx >> (num_bits*(result_len-1-i)), 1) );
-		/* SG_PRINT("value:%x mask:%x shift:%d result:%x,%c\n", max_idx, str->get_masked_symbols(0xffff, 1), (num_bits*(result_len-1-i)),
-				str->get_masked_symbols( (WORD) max_idx >> (num_bits*(result_len-1-i)), 1), result[i]);*/
-	}
 
 	for (INT i=num_feat-1; i>=0; i--)
 	{
-		//SG_PRINT("score(%d,%d)=%f\n", i, max_idx, score[num_words*i+max_idx]);
 		result[i]=alpha->remap_to_char( (BYTE) str->get_masked_symbols( (WORD) max_idx >> (num_bits*(order-1)), 1) );
 		max_idx=bt[num_words*i + max_idx];
 	}
 
-	SG_UNREF(alpha);
 	delete[] bt;
 	delete[] score;
 	return result;
