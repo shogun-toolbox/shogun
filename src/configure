@@ -55,6 +55,7 @@ _datadir=""
 _mandir=""
 _confdir=""
 _libdir=""
+_incdir=""
 _pydir=""
 _octdir=""
 _inc_extra=""
@@ -479,7 +480,7 @@ Usage: $0 [OPTIONS]...
 Configuration:
   --interface=INTERFACE         configure shogun for interface
                                 cmdline, python-modular, python, R, R-modular
-								octave or matlab
+								octave, matlab or libshogun
   -h, -help, --help             display this help and exit
 
 Installation directories:
@@ -649,6 +650,9 @@ for ac_option do
   --libdir=*)
     _libdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
     ;;
+  --incdir=*)
+    _incdir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
+    ;;
   --pydir=*)
     _pydir=$(mangle_homedir_tilde "`echo $ac_option | cut -d '=' -f 2`")
 	;;
@@ -699,6 +703,9 @@ elif test "$_interface" = "matlab"; then
 	_matlab=yes
 	echo "Enabling Matlab(tm) interface"
 	_swig=no
+elif test "$_interface" = "libshogun"; then
+	echo "Enabling library interface"
+	_swig=no
 else
 	die "unknown interface, see ./configure --help for supported interfaces"
 fi
@@ -709,6 +716,7 @@ test -z "$_datadir" && _datadir="$_prefix/share/shogun"
 test -z "$_mandir" && _mandir="$_prefix/man"
 test -z "$_confdir" && _confdir="$_prefix/etc/shogun"
 test -z "$_libdir" && _libdir="$_prefix/lib"
+test -z "$_incdir" && _incdir="$_prefix/include"
 test -z "$_pydir" && _pydir="`$PYTHON -c 'import sys; print \"python\"+sys.version[0:3]'`/site-packages"
 
 determine_system_name()
@@ -2477,6 +2485,12 @@ EOF
 		GPL='#define GPL 1'
 		DEFINES="$DEFINES -DGPL"
 	fi
+
+	if test "$_interface" = libshogun
+	then
+		TARGET=libshogun.so
+		POSTLINKFLAGS="$POSTLINKFLAGS -shared"
+	fi
 }
 
 #write the actual config
@@ -2530,6 +2544,7 @@ BINDIR			= ${_bindir}
 DATADIR			= ${_datadir}
 MANDIR			= ${_mandir}
 CONFDIR			= ${_confdir}
+INCDIR			= ${_incdir}
 LIBDIR			= ${_libdir}
 PYDIR			= ${_libdir}/${_pydir}
 OCTDIR			= ${_octdir}

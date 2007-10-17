@@ -38,6 +38,8 @@ just-do-it:
 	@echo "              ./configure --interface=octave"
 	@echo for matlab interface: 
 	@echo "              ./configure --interface=matlab"
+	@echo for library interface:
+	@echo "              ./configure --interface=libshogun"
 	@echo
 	@echo For additional options see
 	@echo "              ./configure --help"
@@ -173,6 +175,17 @@ install: $(TARGET)
 	install -m755 $(TARGET) $(DESTDIR)$(PYDIR)
 # R, R-modular and matlab are done separately
 else
+ifeq (libshogun,$(INTERFACE))
+install: $(TARGET)
+	install -d -m755 $(DESTDIR)$(LIBDIR)
+	install -d -m755 "$(DESTDIR)$(INCDIR)/shogun"
+	install -m755 $(TARGET) $(DESTDIR)$(LIBDIR)
+
+	find ./ -mindepth 1 -type d ! -wholename '*.svn*' \
+		-exec install -d -m755 "$(DESTDIR)$(INCDIR)/shogun/"\{\} \;
+	find ./ -mindepth 1 -type d ! \( -wholename '*.svn*' -o -name '*wrap*' \) \
+		-exec sh -c "install -m644 {}/*.h -t $(DESTDIR)$(INCDIR)/shogun/{}" \;
+else
 install: 
 	@echo "The R, R-modular and matlab interface need to be installed"
 	@echo "using a different mechanism:"
@@ -183,10 +196,11 @@ install:
 	@echo "matlab - just copy the sg.mex* to a <dir> of your choice"
 	@echo "         and addpath <dir>"
 	@echo
-endif
-endif
-endif
-endif
+endif #libshogun
+endif #R
+endif #python
+endif #octave
+endif #python+swig
 
 dep:	depend
 depend:		.config lib/versionstring.h
