@@ -493,23 +493,24 @@ TYPEMAP_ARRAYOUT2(PyObject,      NPY_OBJECT)
  */
 %define TYPEMAP_ARGOUT1(type,typecode)
 %typemap(in, numinputs=0) (type** ARGOUT1, INT* DIM1) {
-	   $1 = (type**) malloc(sizeof(type*));
-	   $2 = (INT*) malloc(sizeof(INT));
+    $1 = (type**) malloc(sizeof(type*));
+    $2 = (INT*) malloc(sizeof(INT));
 }
 
 %typemap(argout) (type** ARGOUT1, INT* DIM1) {
-	npy_intp dims= (npy_intp) *$2;
+    npy_intp dims= (npy_intp) *$2;
 
-    PyObject* outArray = NULL;
     PyArray_Descr* descr=PyArray_DescrFromType(typecode);
     if (descr && $1)
-        outArray=PyArray_NewFromDescr(&PyArray_Type, descr, 1, &dims, 
-                NULL, (void*)*$1, NPY_FARRAY, NULL);
+    {
+        $result = PyArray_NewFromDescr(&PyArray_Type,
+                descr, 1, &dims, NULL, (void*)*$1, NPY_FARRAY, NULL);
+        ((PyArrayObject*) $result)->flags |= NPY_OWNDATA;
+    }
     else
         SWIG_fail;
 
-	free($2);
-	$result=outArray;
+    free($1); free($2);
 }
 %enddef
 
@@ -531,23 +532,24 @@ TYPEMAP_ARGOUT1(PyObject,      NPY_OBJECT)
 
 %define TYPEMAP_ARGOUT2(type,typecode)
 %typemap(in, numinputs=0) (type** ARGOUT2, INT* DIM1, INT* DIM2) {
-	   $1 = (type**) malloc(sizeof(type*));
-	   $2 = (INT*) malloc(sizeof(INT));
-	   $3 = (INT*) malloc(sizeof(INT));
+    $1 = (type**) malloc(sizeof(type*));
+    $2 = (INT*) malloc(sizeof(INT));
+    $3 = (INT*) malloc(sizeof(INT));
 }
 
 %typemap(argout) (type** ARGOUT2, INT* DIM1, INT* DIM2) {
-	npy_intp dims[2]= {(npy_intp) *$2, (npy_intp) *$3};
-    PyObject* outArray = NULL;
+    npy_intp dims[2]= {(npy_intp) *$2, (npy_intp) *$3};
     PyArray_Descr* descr=PyArray_DescrFromType(typecode);
     if (descr && $1)
-        outArray=PyArray_NewFromDescr(&PyArray_Type, descr, 2, dims, 
-                NULL, (void*)*$1, NPY_FARRAY, NULL);
+    {
+        $result=PyArray_NewFromDescr(&PyArray_Type,
+                descr, 2, dims, NULL, (void*)*$1, NPY_FARRAY, NULL);
+        ((PyArrayObject*) $result)->flags |= NPY_OWNDATA;
+    }
     else
         SWIG_fail;
 
-	free($2); free($3);
-	$result=outArray;
+    free($1); free($2); free($3);
 }
 %enddef
 
