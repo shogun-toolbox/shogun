@@ -145,23 +145,25 @@ class CGUIFeatures : public CSGObject
 		{
 			CHAR alph[256]="", embed[256]="", delim[256]="%20";
 			INT nlen = 0;
+			float maxv;
 
 			if (!src || !param) {
 				SG_ERROR( "invalid arguments: \"%s\"\n",param);
 				return NULL;
 			}
 
-			if (sscanf(param, "%*s %*s %*s %*s %*s %255s %255s %d %255s", 
-						alph, embed, &nlen, delim) < 4) {
+			if (sscanf(param, "%*s %*s %*s %*s %*s %255s %255s %d %255s %f", 
+						alph, embed, &nlen, delim, &maxv) < 5) {
 				SG_ERROR( "too few arguments\n");
 				return NULL;
 			}
 
 			SG_INFO( "Converting string to Mindy features "
-					"(a: %s, e: %s, n: %d, d: '%s')\n", alph, embed, nlen, delim);                
+					"(a: %s, e: %s, n: %d, d: '%s', m: %f)\n", alph, embed, nlen, delim, maxv);                
 
 			CMindyGramFeatures* mgf = new CMindyGramFeatures(alph, embed, delim, nlen);
 			mgf->import_features(src);
+			mgf->trim_max(maxv);
 			return mgf;
 		}
 #endif

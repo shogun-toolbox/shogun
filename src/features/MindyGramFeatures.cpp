@@ -1,3 +1,4 @@
+
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,6 +103,16 @@ INT CMindyGramFeatures::get_vector_length(INT i)
     ASSERT(vectors && i < num_vectors);
     return vectors[i]->num;
 }
+
+/**
+ * Trims the features to a maximum value
+ * @param i Maximum value
+ */
+void CMindyGramFeatures::trim_max(double max)
+{
+    for (INT i = 0; i < num_vectors; i++)
+        gram_trim_max(vectors[i], max);
+} 
 
 /**
  * Loads a set of strings and extracts corresponding gram vectors

@@ -324,8 +324,7 @@ DREAL CMindyGramKernel::compute(INT i, INT j)
                 result = 0.5 * (sdiag_lhs[i] + sdiag_rhs[j] - result);    
             } else {
                 /* Distance based norm  */
-                gram_t *zero = gram_extract(lm->get_feature_vector(i)->cfg, 
-                                            (byte_t *) "", 0);
+                gram_t *zero = gram_empty();
                 result = gram_cmp(kernel, lm->get_feature_vector(i), zero);
                 gram_destroy(zero);
             }  
@@ -361,14 +360,10 @@ void CMindyGramKernel::add_to_normal(INT i, DREAL w)
     
     /* Initialize empty normal vector if necessary */
     if (!normal) 
-        normal = gram_extract(lm->get_feature_vector(i)->cfg, (byte_t *) "", 0);
+        normal = gram_empty();
 
-    gram_t *new_normal = gram_add(normal, lm->get_feature_vector(i),
-                                  normalize_weight(w, i, norm));
-
-    /* Destroy old normal and exchange pointers */
-    gram_destroy(normal);
-    normal = new_normal;
+    gram_add(normal, lm->get_feature_vector(i),
+                     normalize_weight(w, i, norm));
 
     set_is_initialized(true);
 }
