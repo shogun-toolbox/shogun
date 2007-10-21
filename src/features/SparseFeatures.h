@@ -116,6 +116,16 @@ template <class ST> class CSparseFeatures: public CFeatures
 			return fv;
 		}
 
+		
+		inline INT get_num_sparse_vec_features(INT num)
+		{
+			bool vfree;
+			INT len;
+			TSparseEntry<ST>* sv = get_sparse_feature_vector(num, len, vfree);
+			free_sparse_feature_vector(sv, num, vfree);
+			return len;
+		}
+
 		/** get feature vector for sample num
 		  from the matrix as it is if matrix is
 		  initialized, else return

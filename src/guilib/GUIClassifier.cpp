@@ -53,7 +53,7 @@
 #include "classifier/svm/SVMLin.h"
 #include "classifier/svm/SubGradientSVM.h"
 #include "classifier/SubGradientLPM.h"
-#include "classifier/svm/SVMPerf.h"
+#include "classifier/svm/SVMOcas.h"
 
 
 CGUIClassifier::CGUIClassifier(CGUI* g) : CSGObject(), gui(g)
@@ -271,6 +271,24 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		((CSubGradientSVM*) classifier)->set_max_train_time(max_train_time);
 		SG_INFO( "created Subgradient SVM object\n") ;
 	}
+	else if (strcmp(param,"SVMOCAS")==0)
+	{
+		delete classifier;
+		classifier= new CSVMOcas(E_SVMOCAS);
+
+		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
+		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
+		SG_INFO( "created SVM Ocas object\n") ;
+	}
+	else if (strcmp(param,"SVMPERF")==0)
+	{
+		delete classifier;
+		classifier= new CSVMOcas(E_SVMPERF);
+
+		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
+		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
+		SG_INFO( "created SVM Ocas object\n") ;
+	}
 	else
 	{
 		SG_ERROR( "unknown classifier \"%s\"\n", param);
@@ -315,6 +333,7 @@ bool CGUIClassifier::train(CHAR* param)
 		case CT_SVMLIN:
 		case CT_SVMPERF:
 		case CT_SUBGRADIENTSVM:
+		case CT_SVMOCAS:
 		case CT_LPM:
 		case CT_LPBOOST:
 		case CT_SUBGRADIENTLPM:
@@ -994,6 +1013,7 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_SVMLIN:
 		case CT_SVMPERF:
 		case CT_SUBGRADIENTSVM:
+		case CT_SVMOCAS:
 		case CT_LPM:
 		case CT_LPBOOST:
 		case CT_SUBGRADIENTLPM:
@@ -1079,6 +1099,7 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &col
 		case CT_LPM:
 		case CT_LPBOOST:
 		case CT_SUBGRADIENTLPM:
+		case CT_SVMOCAS:
 		case CT_SVMLIN:
 		case CT_SVMPERF:
 		case CT_SUBGRADIENTSVM:

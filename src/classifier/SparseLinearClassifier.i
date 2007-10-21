@@ -13,6 +13,6 @@
 %include "classifier/svm/LibLinear.i"
 %include "classifier/svm/SubGradientSVM.i"
 %include "classifier/SubGradientLPM.i"
-%include "classifier/svm/SVMPerf.i"
+%include "classifier/svm/SVMOcas.i"
 %include "classifier/LPM.i"
 %include "classifier/LPBoost.i"

@@ -70,7 +70,6 @@ const DREAL CMath::ALMOST_NEG_INFTY =  -1000;
 CHAR CMath::rand_state[256];
 UINT CMath::seed = 0;
 
-
 CMath::CMath() : CSGObject()
 {
 #ifndef HAVE_SWIG

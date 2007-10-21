@@ -16,10 +16,12 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "base/SGObject.h"
+#include "base/Parallel.h"
 
 #include <math.h>
 #include <stdio.h>
 #include <float.h>
+#include <pthread.h>
 
 #ifdef HAVE_LAPACK
 extern "C" {
@@ -79,7 +81,15 @@ struct pair
 	int idx1,idx2;
 };
 
+struct thread_qsort
+{
+	DREAL* output;
+	INT* index;
+	INT size;
 
+	INT* qsort_threads;
+	INT sort_limit;
+};
 
 /** Mathematical Functions.
  * Class which collects generic mathematical functions
@@ -589,6 +599,9 @@ public:
 	template <class T1,class T2>
 	static void qsort_index(T1* output, T2* index, INT size);
 
+	template <class T1,class T2>
+	static void* parallel_qsort_index(void* p);
+
 	/** performs a quicksort on an array output of length size
 	 * it is sorted in ascending order
 	 * (for type T1) and returns the index (type T2)
@@ -806,6 +819,103 @@ protected:
 #endif
 	static CHAR rand_state[256];
 };
+
+template <class T1,class T2>
+void* CMath::parallel_qsort_index(void* p)
+{
+	struct thread_qsort* ps=(thread_qsort*) p;
+	T1* output=ps->output;
+	T2* index=ps->index;
+	INT size=ps->size;
+	INT* qsort_threads=ps->qsort_threads;
+	INT sort_limit=ps->sort_limit;
+
+	if (size==2)
+	{
+		if (output[0] > output [1])
+		{
+			swap(output[0], output[1]);
+			swap(index[0], index[1]);
+		}
+		return NULL;
+	}
+	/*double split=output[(((uint64_t) size)*rand())/(((uint64_t)RAND_MAX)+1)];*/
+	double split=output[size/2];
+
+	INT left=0;
+	INT right=size-1;
+
+	while (left<=right)
+	{
+		while (output[left] < split)
+			left++;
+		while (output[right] > split)
+			right--;
+
+		if (left<=right)
+		{
+			swap(output[left], output[right]);
+			swap(index[left], index[right]);
+			left++;
+			right--;
+		}
+	}
+	bool lthread_start=false;
+	bool rthread_start=false;
+	pthread_t lthread;
+	pthread_t rthread;
+	struct thread_qsort t1;
+	struct thread_qsort t2;
+
+	if (right+1> 1 && (right+1< sort_limit || *qsort_threads >= parallel.get_num_threads()-1))
+		qsort_index(output,index,right+1);
+	else if (right+1> 1)
+	{
+		*qsort_threads++;
+		lthread_start=true;
+		t1.output=output;
+		t1.index=index;
+		t1.size=right+1;
+		if (pthread_create(&lthread, NULL, parallel_qsort_index<T1,T2>, (void*) &t1) != 0)
+		{
+			lthread_start=false;
+			*qsort_threads--;
+			qsort_index(output,index,right+1);
+		}
+	}
+
+
+	if (size-left> 1 && (size-left< sort_limit || *qsort_threads >= parallel.get_num_threads()-1))
+		qsort_index(&output[left],&index[left], size-left);
+	else if (size-left> 1)
+	{
+		*qsort_threads++;
+		rthread_start=true;
+		t2.output=&output[left];
+		t2.index=&index[left];
+		t2.size=size-left;
+		if (pthread_create(&rthread, NULL, parallel_qsort_index<T1,T2>, (void*)&t2) != 0)
+		{
+			rthread_start=false;
+			*qsort_threads--;
+			qsort_index(&output[left],&index[left], size-left);
+		}
+	}
+
+	if (lthread_start)
+	{
+		pthread_join(lthread, NULL);
+		*qsort_threads--;
+	}
+
+	if (rthread_start)
+	{
+		pthread_join(rthread, NULL);
+		*qsort_threads--;
+	}
+
+	return NULL;
+}
 
 
 //implementations of template functions

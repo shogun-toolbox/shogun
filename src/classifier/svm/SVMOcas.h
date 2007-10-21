@@ -9,22 +9,28 @@
  * Copyright (C) 2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _SUBGRADIENTSVM_H___
-#define _SUBGRADIENTSVM_H___
+#ifndef _SVMOCAS_H___
+#define _SVMOCAS_H___
 
 #include "lib/common.h"
 #include "classifier/SparseLinearClassifier.h"
 #include "features/SparseFeatures.h"
 #include "features/Labels.h"
 
-class CSVMPerf : public CSparseLinearClassifier
+enum E_SVM_TYPE
+{
+	E_SVMOCAS = 1,
+	E_SVMPERF = 2
+};
+
+class CSVMOcas : public CSparseLinearClassifier
 {
 	public:
-		CSVMPerf();
-		CSVMPerf(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
-		virtual ~CSVMPerf();
+		CSVMOcas(E_SVM_TYPE);
+		CSVMOcas(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
+		virtual ~CSVMOcas();
 
-		virtual inline EClassifierType get_classifier_type() { return CT_SUBGRADIENTSVM; }
+		virtual inline EClassifierType get_classifier_type() { return CT_SVMOCAS; }
 		virtual bool train();
 
 		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
@@ -39,6 +45,7 @@ class CSVMPerf : public CSparseLinearClassifier
 		DREAL C1;
 		DREAL C2;
 		DREAL epsilon;
+		E_SVM_TYPE method;
 };
 #endif
 
