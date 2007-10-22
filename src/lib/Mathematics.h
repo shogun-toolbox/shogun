@@ -89,6 +89,7 @@ struct thread_qsort
 
 	INT* qsort_threads;
 	INT sort_limit;
+	INT num_threads;
 };
 
 /** Mathematical Functions.
@@ -829,6 +830,7 @@ void* CMath::parallel_qsort_index(void* p)
 	INT size=ps->size;
 	INT* qsort_threads=ps->qsort_threads;
 	INT sort_limit=ps->sort_limit;
+	INT num_threads=ps->num_threads;
 
 	if (size==2)
 	{
@@ -867,7 +869,7 @@ void* CMath::parallel_qsort_index(void* p)
 	struct thread_qsort t1;
 	struct thread_qsort t2;
 
-	if (right+1> 1 && (right+1< sort_limit || *qsort_threads >= parallel.get_num_threads()-1))
+	if (right+1> 1 && (right+1< sort_limit || *qsort_threads >= num_threads-1))
 		qsort_index(output,index,right+1);
 	else if (right+1> 1)
 	{
@@ -885,7 +887,7 @@ void* CMath::parallel_qsort_index(void* p)
 	}
 
 
-	if (size-left> 1 && (size-left< sort_limit || *qsort_threads >= parallel.get_num_threads()-1))
+	if (size-left> 1 && (size-left< sort_limit || *qsort_threads >= num_threads-1))
 		qsort_index(&output[left],&index[left], size-left);
 	else if (size-left> 1)
 	{

@@ -591,6 +591,7 @@ bool CSVMOcas::train()
 				qthr.size=num_hp;
 				qthr.qsort_threads=&qsort_threads;
 				qthr.sort_limit=4096;;
+				qthr.num_threads=parallel.get_num_threads();
 				CMath::parallel_qsort_index<DREAL,INT>((void*) &qthr);
 				sort_time+=CTime::get_curtime()-time_diff;
 
