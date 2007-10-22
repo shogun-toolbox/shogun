@@ -38,6 +38,7 @@
 %include "kernel/LinearKernel.i"
 %include "kernel/PolyKernel.i"
 %include "kernel/GaussianKernel.i"
+%include "kernel/GaussianShiftKernel.i"
 %include "kernel/SigmoidKernel.i"
 %include "kernel/SparseGaussianKernel.i"
 %include "kernel/SparseLinearKernel.i"
