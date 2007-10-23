@@ -19,8 +19,8 @@
 
 enum E_SVM_TYPE
 {
-	E_SVMOCAS = 1,
-	E_SVMPERF = 2
+	SVM_OCAS = 0,
+	SVM_BMRM = 1
 };
 
 class CSVMOcas : public CSparseLinearClassifier
@@ -41,6 +41,14 @@ class CSVMOcas : public CSparseLinearClassifier
 		inline void set_epsilon(DREAL eps) { epsilon=eps; }
 		inline DREAL get_epsilon() { return epsilon; }
 
+		void mul_sparse_col(double alpha, CSparseFeatures<DREAL>* sparse_mat, uint32_t col);
+		void add_sparse_col(double *full_vec, CSparseFeatures<DREAL>* sparse_mat, uint32_t col);
+		double dp_sparse_col(double *full_vec, CSparseFeatures<DREAL>* sparse_mat, uint32_t col);
+		static double sparse_update_W(double t );
+		static void sparse_add_new_cut( double *new_col_H, uint32_t *new_cut, uint32_t cut_length, uint32_t nSel );
+		static void sparse_compute_output( double *output );
+		static void sparse_compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, uint32_t nSel );
+
 	protected:
 		DREAL C1;
 		DREAL C2;
@@ -48,4 +56,3 @@ class CSVMOcas : public CSparseLinearClassifier
 		E_SVM_TYPE method;
 };
 #endif
-

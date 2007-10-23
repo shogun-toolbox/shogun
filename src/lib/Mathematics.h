@@ -598,7 +598,7 @@ public:
 	 * matlab alike [sorted,index]=sort(output) 
 	 */
 	template <class T1,class T2>
-	static void qsort_index(T1* output, T2* index, INT size);
+	static void qsort_index(T1* output, T2* index, UINT size);
 
 	template <class T1,class T2>
 	static void* parallel_qsort_index(void* p);
@@ -922,7 +922,7 @@ void* CMath::parallel_qsort_index(void* p)
 
 //implementations of template functions
 template <class T1,class T2>
-void CMath::qsort_index(T1* output, T2* index, INT size)
+void CMath::qsort_index(T1* output, T2* index, UINT size)
 {
 	if (size==2)
 	{

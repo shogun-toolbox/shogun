@@ -274,20 +274,20 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 	else if (strcmp(param,"SVMOCAS")==0)
 	{
 		delete classifier;
-		classifier= new CSVMOcas(E_SVMOCAS);
+		classifier= new CSVMOcas(SVM_OCAS);
 
 		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
 		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
-		SG_INFO( "created SVM Ocas object\n") ;
+		SG_INFO( "created SVM Ocas(OCAS) object\n") ;
 	}
-	else if (strcmp(param,"SVMPERF")==0)
+	else if (strcmp(param,"SVMBMRM")==0)
 	{
 		delete classifier;
-		classifier= new CSVMOcas(E_SVMPERF);
+		classifier= new CSVMOcas(SVM_BMRM);
 
 		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
 		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
-		SG_INFO( "created SVM Ocas object\n") ;
+		SG_INFO( "created SVM Ocas(BMRM) object\n") ;
 	}
 	else
 	{
