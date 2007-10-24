@@ -48,33 +48,39 @@ bool CSVMOcas::train()
 
 	INT num_train_labels=0;
 	lab=get_labels()->get_labels(num_train_labels);
-	num_features=features->get_num_features();
+	w_dim=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 	ASSERT(num_vec>0);
 
 	delete[] w;
-	w=new DREAL[num_features];
+	w=new DREAL[w_dim];
 	ASSERT(w);
-	memset(w, 0, num_features*sizeof(DREAL));
+	memset(w, 0, w_dim*sizeof(DREAL));
 
 	delete[] old_w;
-	old_w=new DREAL[num_features];
+	old_w=new DREAL[w_dim];
 	ASSERT(old_w);
-	memset(old_w, 0, num_features*sizeof(DREAL));
+	memset(old_w, 0, w_dim*sizeof(DREAL));
 	bias=0;
 
-	tmp_a_buf = new DREAL[num_features];
+	tmp_a_buf = new DREAL[w_dim];
 	ASSERT(tmp_a_buf);
+	memset(tmp_a_buf, 0, w_dim*sizeof(DREAL));
 
 	int BufSize=3000;
 	cp_value = new DREAL*[BufSize];
 	ASSERT(cp_value);
+	memset(cp_value, 0, BufSize*sizeof(DREAL*));
+
 	cp_index = new uint32_t*[BufSize];
 	ASSERT(cp_index);
+	memset(cp_index, 0, BufSize*sizeof(uint32_t*));
+
 	cp_nz_dims = new uint32_t[BufSize];
 	ASSERT(cp_nz_dims);
+	memset(cp_nz_dims, 0, BufSize*sizeof(uint32_t*));
 
 	double TolAbs=0;
 	double QPBound=0;
@@ -89,6 +95,7 @@ bool CSVMOcas::train()
 			&printf,
 			this);
 
+	CMath::display_vector(w, w_dim);
 	delete[] tmp_a_buf;
 
 	uint32_t num_cut_planes = result.nCutPlanes;
@@ -123,8 +130,7 @@ double CSVMOcas::update_W( double t, void* ptr )
 {
   double sq_norm_W = 0;         
   CSVMOcas* o = (CSVMOcas*) ptr;
-  CSparseFeatures<DREAL>* f=o->get_features();
-  uint32_t nDim = (uint32_t) f->get_num_features();
+  uint32_t nDim = (uint32_t) o->w_dim;
   double* W=o->w;
   double* oldW=o->old_w;
 
@@ -153,7 +159,7 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 {
 	CSVMOcas* o = (CSVMOcas*) ptr;
 	CSparseFeatures<DREAL>* f = o->get_features();
-	uint32_t nDim=(uint32_t) f->get_num_features();
+	uint32_t nDim=(uint32_t) o->w_dim;
 	DREAL* y = o->lab;
 
 	DREAL** c_val = o->cp_value;
@@ -168,7 +174,7 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 	memset(new_a, 0, sizeof(double)*nDim);
 
 	for(i=0; i < cut_length; i++) 
-		f->add_to_dense_vec(y[i], new_cut[i], new_a, nDim);
+		f->add_to_dense_vec(y[new_cut[i]], new_cut[i], new_a, nDim);
 
 	/* compute new_a'*new_a and count number of non-zerou dimensions */
 	nz_dims = 0; 
@@ -186,7 +192,9 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 	{
 		c_idx[nSel] = new uint32_t[nz_dims];
 		ASSERT(c_idx[nSel]);
+		memset(c_idx[nSel], 0, sizeof(uint32_t)*nz_dims);
 		c_val[nSel] = new double[nz_dims];
+		memset(c_val[nSel], 0, sizeof(double)*nz_dims);
 		ASSERT(c_val[nSel]);
 
 		uint32_t idx=0;
@@ -226,10 +234,9 @@ void CSVMOcas::compute_output( double *output, void* ptr )
 	CSVMOcas* o = (CSVMOcas*) ptr;
 	CSparseFeatures<DREAL>* f=o->get_features();
 	INT nData=f->get_num_vectors();
-	INT nDim=f->get_num_features();
 
 	DREAL* y = o->lab;
-	f->dense_dot_range(output, 0, nData, y, o->w, nDim, 0.0);
+	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);
 }
 
 /*----------------------------------------------------------------------
@@ -244,10 +251,12 @@ void CSVMOcas::compute_output( double *output, void* ptr )
 void CSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, uint32_t nSel, void* ptr )
 {
 	CSVMOcas* o = (CSVMOcas*) ptr;
-	uint32_t nDim= (uint32_t) o->num_features;
-	CMath::swap(o->w, o->old_w);
+	uint32_t nDim= (uint32_t) o->w_dim;
+	//CMath::swap(o->w, o->old_w);
 	double* W=o->w;
 	double* oldW=o->old_w;
+	memcpy(oldW, W, sizeof(double)*nDim ); 
+	//memset(W, 0, sizeof(double)*nDim);
 
 	DREAL** c_val = o->cp_value;
 	uint32_t** c_idx = o->cp_index;

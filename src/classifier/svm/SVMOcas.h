@@ -53,8 +53,6 @@ class CSVMOcas : public CSparseLinearClassifier
 		DREAL epsilon;
 		E_SVM_TYPE method;
 
-		INT num_features;
-
 		DREAL* old_w;
 		DREAL* tmp_a_buf; /// nDim big
 		DREAL* lab;
