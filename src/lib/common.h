@@ -183,7 +183,6 @@ enum EKernelType
 	K_MINDYGRAM = 240,
 	K_DISTANCE = 250,
 	K_LOCALALIGNMENT= 260,
-	K_GAUSSIANSHIFT= 270
 };
 
 enum EClassifierType
