@@ -20,11 +20,6 @@
 #include "classifier/svm/libocas_common.h"
 #include "classifier/svm/qpssvmlib.h"
 
-#ifndef OCAS_MATLAB
-#undef OCAS_ERRORMSG
-#define OCAS_ERRORMSG(x...) { printf(x); ocas.exitflag=-2; return(ocas); }
-#endif
-
 static const uint32_t QPSolverMaxIter = 10000000;
 
 static double *H;
@@ -33,9 +28,9 @@ static uint32_t BufSize;
 /*----------------------------------------------------------------------
  Returns pointer at i-th column of Hessian matrix.
   ----------------------------------------------------------------------*/
-static const void *get_col( uint32_t i )
+static const void *get_col( uint32_t i)
 {
-  return( &H[ ((uint64_t) BufSize)*i ] );
+  return( &H[ BufSize*i ] );
 } 
 
 /*----------------------------------------------------------------------
@@ -64,11 +59,14 @@ static double get_time()
   Method ... 0 ~ SVMperf/BMRM selection strategy
              1 ~ Ocas selection strategy
   
-  void compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, uint32_t nSel )
-  double update_W( double t )
-  void add_new_cut( double *new_col_H, uint32_t *new_cut, uint32_t cut_length, uint32_t nSel )
-  void compute_output( double *output )
-  void qsort_index(double* value, uint32_t* index, uint32_t size)
+            void (*compute_W)(double*, double*, double*, uint32_t, void*),
+            double (*update_W)(double, void*),
+            void (*add_new_cut)(double*, uint32_t*, uint32_t, uint32_t, void*),
+            void (*compute_output)(double*, void* ),
+            void (*sort)(double*, uint32_t*, uint32_t),
+			int (*ocas_print)(const char *format, ...),
+			void* user_data) 
+
 
   ----------------------------------------------------------------------*/
 ocas_return_value_T svm_ocas_solver(
@@ -79,11 +77,13 @@ ocas_return_value_T svm_ocas_solver(
             double QPBound,
             uint32_t _BufSize,
             uint8_t Method,
-            void (*compute_W)(double*, double*, double*, uint32_t),
-            double (*update_W)(double),
-            void (*add_new_cut)(double*, uint32_t*, uint32_t, uint32_t),
-            void (*compute_output)( double* ),
-            void (*sort)(double*, uint32_t*, uint32_t)) 
+            void (*compute_W)(double*, double*, double*, uint32_t, void*),
+            double (*update_W)(double, void*),
+            void (*add_new_cut)(double*, uint32_t*, uint32_t, uint32_t, void*),
+            void (*compute_output)(double*, void* ),
+            void (*sort)(double*, uint32_t*, uint32_t),
+			int (*ocas_print)(const char *format, ...),
+			void* user_data) 
 {
   ocas_return_value_T ocas;
   double *b, *alpha, *diag_H;
@@ -91,7 +91,7 @@ ocas_return_value_T svm_ocas_solver(
   double xi, sq_norm_W, QPSolverTolRel, dot_prod_WoldW, dummy, sq_norm_oldW;
   double A0, B0, Bsum, GradVal, t, t1, t2, *Ci, *Bi, *hpf;
   uint32_t *hpi;
-  uint32_t nSel, cut_length;
+  uint32_t cut_length;
   uint32_t i, *new_cut;
   uint16_t *I;
   int8_t qp_exitflag;
@@ -106,49 +106,111 @@ ocas_return_value_T svm_ocas_solver(
 
   QPSolverTolRel = TolRel*0.1;
 
+  H=NULL;
+  b=NULL;
+  alpha=NULL;
+  new_cut=NULL;
+  I=NULL;
+  diag_H=NULL;
+  output=NULL;
+  old_output=NULL;
+  hpf=NULL;
+  hpi=NULL;
+  Ci=NULL;
+  Bi=NULL;
+
   /* Hessian matrix contains dot product of normal vectors of selected cutting planes */
   H = (double*)OCAS_CALLOC(BufSize*BufSize,sizeof(double));
-  if(H == NULL) OCAS_ERRORMSG("Not enough memory for matrix H.");
+  if(H == NULL)
+  {
+	  ocas.exitflag=-2;
+	  goto cleanup;
+  }
   
   /* bias of cutting planes */
   b = (double*)OCAS_CALLOC(BufSize,sizeof(double));
-  if(b == NULL) OCAS_ERRORMSG("Not enough memory for vector b.");
+  if(b == NULL)
+  {
+	  ocas.exitflag=-2;
+	  goto cleanup;
+  }
 
   alpha = (double*)OCAS_CALLOC(BufSize,sizeof(double));
-  if(alpha == NULL) OCAS_ERRORMSG("Not enough memory for vector alpha.");
+  if(alpha == NULL)
+  {
+	  ocas.exitflag=-2;
+	  goto cleanup;
+  }
 
   /* indices of examples which define a new cut */
   new_cut = (uint32_t*)OCAS_CALLOC(nData,sizeof(uint32_t));
-  if(new_cut == NULL) OCAS_ERRORMSG("Not enough memory for vector new_cut.");
+  if(new_cut == NULL)
+  {
+	  ocas.exitflag=-2;
+	  goto cleanup;
+  }
 
   I = (uint16_t*)OCAS_CALLOC(BufSize,sizeof(uint16_t));
-  if(I == NULL) OCAS_ERRORMSG("Not enough memory for vector I.");  
+  if(I == NULL)
+  {
+	  ocas.exitflag=-2;
+	  goto cleanup;
+  }
+
   for(i=0; i< BufSize; i++) I[i] = 1;
 
   diag_H = (double*)OCAS_CALLOC(BufSize,sizeof(double));
-  if(diag_H == NULL) OCAS_ERRORMSG("Not enough memory for vector diag_H.");
+  if(diag_H == NULL)
+  {
+	  ocas.exitflag=-2;
+	  goto cleanup;
+  }
 
   output = (double*)OCAS_CALLOC(nData,sizeof(double));
-  if(output == NULL) OCAS_ERRORMSG("Not enough memory for vector output.");
+  if(output == NULL)
+  {
+	  ocas.exitflag=-2;
+	  goto cleanup;
+  }
 
   old_output = (double*)OCAS_CALLOC(nData,sizeof(double));
-  if(old_output == NULL) OCAS_ERRORMSG("Not enough memory for vector old_output.");
+  if(old_output == NULL)
+  {
+	  ocas.exitflag=-2;
+	  goto cleanup;
+  }
 
   /* array of hinge points used in line-serach  */
   hpf = (double*) OCAS_CALLOC(nData, sizeof(hpf[0]));
-  if(hpf == NULL) OCAS_ERRORMSG("Not enough memory for array hpf.");
+  if(hpf == NULL)
+  {
+	  ocas.exitflag=-2;
+	  goto cleanup;
+  }
 
   hpi = (uint32_t*) OCAS_CALLOC(nData, sizeof(hpi[0]));
-  if(hpi == NULL) OCAS_ERRORMSG("Not enough memory for array hpi.");
+  if(hpi == NULL)
+  {
+	  ocas.exitflag=-2;
+	  goto cleanup;
+  }
 
   /* vectors Ci, Bi are used in the line search procedure */
   Ci = (double*)OCAS_CALLOC(nData,sizeof(double));
-  if(Ci == NULL) OCAS_ERRORMSG("Not enough memory for vector Ci.");
+  if(Ci == NULL)
+  {
+	  ocas.exitflag=-2;
+	  goto cleanup;
+  }
 
   Bi = (double*)OCAS_CALLOC(nData,sizeof(double));
-  if(Bi == NULL) OCAS_ERRORMSG("Not enough memory for vector Bi.");
+  if(Bi == NULL)
+  {
+	  ocas.exitflag=-2;
+	  goto cleanup;
+  }
   
-  nSel = 0;
+  ocas.nCutPlanes = 0;
   ocas.exitflag = 0;
   ocas.nIter = 0;
 
@@ -163,8 +225,8 @@ ocas_return_value_T svm_ocas_solver(
   for(i=0; i < nData; i++)
     new_cut[i] = i;
     
-  OCAS_PRINT("%4d: nsel=%d, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f, xi=%f\n",
-          ocas.nIter,nSel,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P),xi);
+  ocas_print("%4d: nsel=%d, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f, xi=%f\n",
+          ocas.nIter,ocas.nCutPlanes,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P),xi);
   
   /* main loop */
   while( ocas.exitflag == 0 )
@@ -172,30 +234,30 @@ ocas_return_value_T svm_ocas_solver(
     ocas.nIter++;
 
     /* append new cut to buffer and update H */
-    b[nSel] = -(double)cut_length;
+    b[ocas.nCutPlanes] = -(double)cut_length;
 
-    add_new_cut( &H[INDEX2(0,nSel,BufSize)], new_cut, cut_length, nSel );
+    add_new_cut( &H[INDEX2(0,ocas.nCutPlanes,BufSize)], new_cut, cut_length, ocas.nCutPlanes, user_data );
 
-    /* copy new added row:  H(nSel,1:nSel-1) = H(1:nSel-1:nSel)' */
-    diag_H[nSel] = H[INDEX2(nSel,nSel,BufSize)];
-    for(i=0; i < nSel; i++) {
-      H[INDEX2(nSel,i,BufSize)] = H[INDEX2(i,nSel,BufSize)];
+    /* copy new added row:  H(ocas.nCutPlanes,ocas.nCutPlanes,1:ocas.nCutPlanes-1) = H(1:ocas.nCutPlanes-1:ocas.nCutPlanes)' */
+    diag_H[ocas.nCutPlanes] = H[INDEX2(ocas.nCutPlanes,ocas.nCutPlanes,BufSize)];
+    for(i=0; i < ocas.nCutPlanes; i++) {
+      H[INDEX2(ocas.nCutPlanes,i,BufSize)] = H[INDEX2(i,ocas.nCutPlanes,BufSize)];
     }
 
-    nSel++;    
+    ocas.nCutPlanes++;    
     
     /* call inner QP solver */
     start_time = get_time();
 
     qp_exitflag = qpssvm_solver( &get_col, diag_H, b, C, I, alpha, 
-                nSel, QPSolverMaxIter, 0.0, QPSolverTolRel, &ocas.Q_D, &dummy, 0 ); 
+                ocas.nCutPlanes, QPSolverMaxIter, 0.0, QPSolverTolRel, &ocas.Q_D, &dummy, ocas_print, 0 ); 
 
     ocas.solver_time += get_time() - start_time;
 
     ocas.Q_D = -ocas.Q_D;
 
     sq_norm_oldW = sq_norm_W;
-    compute_W( &sq_norm_W, &dot_prod_WoldW, alpha, nSel );
+    compute_W( &sq_norm_W, &dot_prod_WoldW, alpha, ocas.nCutPlanes, user_data );
     
     /* select a new cut */
     switch( Method )
@@ -203,7 +265,7 @@ ocas_return_value_T svm_ocas_solver(
       /* SVMperf ~~ BMRM strategy */
       case 0: 
 
-        compute_output( output );
+        compute_output( output, user_data );
 
         xi = 0;
         cut_length = 0;
@@ -220,7 +282,7 @@ ocas_return_value_T svm_ocas_solver(
         }
         ocas.Q_P = 0.5*sq_norm_W + C*xi;
 
-        OCAS_PRINT("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f, xi=%f, err=%.2f%%, qp_flag=%d\n",
+        ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f, xi=%f, err=%.2f%%, qp_flag=%d\n",
                   ocas.nIter,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P), 
                   xi, 100*(double)ocas.trn_err/(double)nData, qp_exitflag);
 
@@ -238,7 +300,7 @@ ocas_return_value_T svm_ocas_solver(
         memcpy( old_output, output, sizeof(double)*nData );
 
         start_time = get_time();
-        compute_output( output );
+        compute_output( output, user_data );
         ocas.output_time = get_time()-start_time;
 
         uint32_t num_hp = 0;
@@ -286,7 +348,7 @@ ocas_return_value_T svm_ocas_solver(
         t2 = MIN(t+(1.0-t)/10.0,1.0); /* new cutting plane */
 
         /* update W to be the best so far solution */
-        sq_norm_W = update_W( t1 );
+        sq_norm_W = update_W( t1, user_data );
 
         /* select a new cut */
         xi = 0;
@@ -309,7 +371,7 @@ ocas_return_value_T svm_ocas_solver(
 
         ocas.Q_P = 0.5*sq_norm_W + C*xi;
 
-        OCAS_PRINT("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f, xi=%f, err=%.2f%%, qp_flag=%d\n",
+        ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f, xi=%f, err=%.2f%%, qp_flag=%d\n",
                   ocas.nIter,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P),xi, 
                   100*(double)ocas.trn_err/(double)nData, qp_exitflag );
 
@@ -320,10 +382,11 @@ ocas_return_value_T svm_ocas_solver(
     if( ocas.Q_P - ocas.Q_D <= TolRel*ABS(ocas.Q_P)) ocas.exitflag = 1; 
     if( ocas.Q_P - ocas.Q_D <= TolAbs) ocas.exitflag = 2; 
     if( ocas.Q_P <= QPBound) ocas.exitflag = 3; 
-    if(nSel >= BufSize) ocas.exitflag = -1;
+    if(ocas.nCutPlanes >= BufSize) ocas.exitflag = -1;
          
   } /* end of the main loop */
 
+cleanup:
 
   OCAS_FREE(H);
   OCAS_FREE(b);
@@ -343,7 +406,7 @@ ocas_return_value_T svm_ocas_solver(
 
 
 /*----------------------------------------------------------------------
- Sort arrays value and index in asceding order according to value.
+ Sort array value and index in asceding order according to value.
   ----------------------------------------------------------------------*/
 static void swapf(double* a, double* b)
 {

@@ -66,7 +66,6 @@ extern CIO sg_io;
 #define SG_SABS_PROGRESS(x...) sg_io.absolute_progress(x)
 #endif
 
-
 #define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
 
 class CIO

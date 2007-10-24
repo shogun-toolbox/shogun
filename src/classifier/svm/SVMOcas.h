@@ -41,18 +41,29 @@ class CSVMOcas : public CSparseLinearClassifier
 		inline void set_epsilon(DREAL eps) { epsilon=eps; }
 		inline DREAL get_epsilon() { return epsilon; }
 
-		void mul_sparse_col(double alpha, CSparseFeatures<DREAL>* sparse_mat, uint32_t col);
-		void add_sparse_col(double *full_vec, CSparseFeatures<DREAL>* sparse_mat, uint32_t col);
-		double dp_sparse_col(double *full_vec, CSparseFeatures<DREAL>* sparse_mat, uint32_t col);
-		static double sparse_update_W(double t );
-		static void sparse_add_new_cut( double *new_col_H, uint32_t *new_cut, uint32_t cut_length, uint32_t nSel );
-		static void sparse_compute_output( double *output );
-		static void sparse_compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, uint32_t nSel );
+		static void compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, uint32_t nSel, void* ptr );
+		static double update_W(double t, void* ptr );
+		static void add_new_cut( double *new_col_H, uint32_t *new_cut, uint32_t cut_length, uint32_t nSel, void* ptr );
+		static void compute_output( double *output, void* ptr );
+		static void sort( double* vals, uint32_t* idx, uint32_t size);
 
 	protected:
 		DREAL C1;
 		DREAL C2;
 		DREAL epsilon;
 		E_SVM_TYPE method;
+
+		INT num_features;
+
+		DREAL* old_w;
+		DREAL* tmp_a_buf; /// nDim big
+		DREAL* lab;
+		
+		/** sparse representation of
+		 * cutting planes */
+		DREAL** cp_value;
+		uint32_t** cp_index;
+		uint32_t* cp_nz_dims;
+
 };
 #endif

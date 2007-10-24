@@ -87,6 +87,7 @@ int qpssvm_solver(const void* (*get_col)(uint32_t),
                   double tolrel,
                   double *QP,
                   double *QD,
+				  int (*qpssvmlib_print)(const char *format, ...),
                   uint32_t verb)
 {
   double *x_nequ;
@@ -116,19 +117,36 @@ int qpssvm_solver(const void* (*get_col)(uint32_t),
     Initialization                                               
   ------------------------------------------------------------ */
 
+  x_nequ=NULL;
+  inx=NULL;
+  nk=NULL;
+  d=NULL;
+
   /* count cumber of constraints */
   for( i=0, m=0; i < n; i++ ) m = MAX(m,I[i]);
 
   /* alloc and initialize x_nequ */
   x_nequ = (double*) OCAS_CALLOC(m, sizeof(double));
-  if( x_nequ == NULL ) OCAS_ERRORMSG("Not enough memory.");
+  if( x_nequ == NULL )
+  {
+	  exitflag=-2;
+	  goto cleanup;
+  }
 
   /* alloc Inx */
   inx = (uint32_t*) OCAS_CALLOC(m*n, sizeof(uint32_t));
-  if( inx == NULL ) OCAS_ERRORMSG("Not enough memory.");
+  if( inx == NULL )
+  {
+	  exitflag=-2;
+	  goto cleanup;
+  }
 
   nk = (uint32_t*) OCAS_CALLOC(m, sizeof(uint32_t));
-  if( nk == NULL ) OCAS_ERRORMSG("Not enough memory.");
+  if( nk == NULL )
+  {
+	  exitflag=-2;
+	  goto cleanup;
+  }
 
   for( i=0; i < m; i++ ) x_nequ[i] = b;
   for( i=0; i < n; i++ ) {
@@ -140,7 +158,11 @@ int qpssvm_solver(const void* (*get_col)(uint32_t),
     
   /* alloc d [n x 1] */
   d = (double*) OCAS_CALLOC(n, sizeof(double));
-  if( d == NULL ) OCAS_ERRORMSG("Not enough memory.");
+  if( d == NULL )
+  {
+	  exitflag=-2;
+	  goto cleanup;
+  }
  
   /* d = H*x + f; */
   for( i=0; i < n; i++ ) {
@@ -341,7 +363,7 @@ int qpssvm_solver(const void* (*get_col)(uint32_t),
     }
 
     if( verb > 0 && (exitflag > 0 || (t % verb)==0 )) {
-       OCAS_PRINT("%d: UB=%.10f, LB=%.10f, UB-LB=%.10f, (UB-LB)/|UB|=%.10f \n",
+       qpssvmlib_print("%d: UB=%.10f, LB=%.10f, UB-LB=%.10f, (UB-LB)/|UB|=%.10f \n",
         t, UB, LB, UB-LB, (UB!=0) ? (UB-LB)/ABS(UB) : 0);      
     }    
 
@@ -361,6 +383,7 @@ int qpssvm_solver(const void* (*get_col)(uint32_t),
   /*----------------------------------------------------------
     Clean up
   ---------------------------------------------------------- */
+cleanup:
   OCAS_FREE( d );
   OCAS_FREE( inx );
   OCAS_FREE( nk );
