@@ -22,11 +22,15 @@
 CSVMOcas::CSVMOcas(E_SVM_TYPE type) : CSparseLinearClassifier(), C1(1), C2(1),
 	epsilon(1e-3), method(type)
 {
+	w=NULL;
+	old_w=NULL;
 }
 
 CSVMOcas::CSVMOcas(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
 : CSparseLinearClassifier(), C1(C), C2(C), epsilon(1e-3)
 {
+	w=NULL;
+	old_w=NULL;
 	method=SVM_OCAS;
 	CSparseLinearClassifier::features=traindat;
 	CClassifier::labels=trainlab;
@@ -44,24 +48,24 @@ bool CSVMOcas::train()
 
 	INT num_train_labels=0;
 	lab=get_labels()->get_labels(num_train_labels);
-	INT num_feat=features->get_num_features();
+	num_features=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 	ASSERT(num_vec>0);
 
 	delete[] w;
-	w=new DREAL[num_feat];
+	w=new DREAL[num_features];
 	ASSERT(w);
-	memset(w, 0, num_feat*sizeof(DREAL));
+	memset(w, 0, num_features*sizeof(DREAL));
 
 	delete[] old_w;
-	old_w=new DREAL[num_feat];
+	old_w=new DREAL[num_features];
 	ASSERT(old_w);
-	memset(old_w, 0, num_feat*sizeof(DREAL));
+	memset(old_w, 0, num_features*sizeof(DREAL));
 	bias=0;
 
-	tmp_a_buf = new DREAL[num_feat];
+	tmp_a_buf = new DREAL[num_features];
 	ASSERT(tmp_a_buf);
 
 	int BufSize=3000;
@@ -242,8 +246,8 @@ void CSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, ui
 	CSVMOcas* o = (CSVMOcas*) ptr;
 	uint32_t nDim= (uint32_t) o->num_features;
 	CMath::swap(o->w, o->old_w);
-	double* oldW=o->w;
-	double* W=o->old_w;
+	double* W=o->w;
+	double* oldW=o->old_w;
 
 	DREAL** c_val = o->cp_value;
 	uint32_t** c_idx = o->cp_index;

@@ -255,7 +255,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 		{
 			ASSERT(output);
 			ASSERT(start>=0);
-			ASSERT(stop<num_vectors);
+			ASSERT(stop<=num_vectors);
 
 			for (INT i=start; i<stop; i++)
 				output[i]=dense_dot(alphas[i], i, vec, dim, b);
