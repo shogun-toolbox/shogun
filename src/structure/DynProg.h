@@ -24,6 +24,7 @@
 #include "lib/Array.h"
 #include "lib/Array2.h"
 #include "lib/Array3.h"
+#include "lib/Time.h"
 
 #include <stdio.h>
 
@@ -48,6 +49,18 @@ private:
 	DREAL **trans_list_forward_val ;
 	INT **trans_list_forward_id ;
 	bool mem_initialized ;
+
+	CTime MyTime ;
+	CTime MyTime2 ;
+	
+	DREAL segment_init_time ;
+	DREAL segment_pos_time ;
+	DREAL segment_clean_time ;
+	DREAL segment_extend_time ;
+	DREAL orf_time ;
+	DREAL svm_init_time ;
+	DREAL svm_pos_time ;
+	DREAL svm_clean_time ;
 	
 public:
 	CDynProg() ;
@@ -55,7 +68,6 @@ public:
 	
 	DREAL best_path_no_b(INT max_iter, INT & best_iter, INT *my_path) ;
 	void best_path_no_b_trans(INT max_iter, INT & max_best_iter, short int nbest, DREAL *prob_nbest, INT *my_paths) ;
-
 	
 	// model related functions
 	void set_N(INT p_N); // use this function to set N first

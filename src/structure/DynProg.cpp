@@ -31,8 +31,8 @@
 extern "C" int	finite(double);
 #endif
 
-#define USEORIGINALLIST 2
-#define USEFIXEDLENLIST 0
+#define USEORIGINALLIST 0
+#define USEFIXEDLENLIST 2
 //#define USE_TMP_ARRAYCLASS
 //#define DYNPROG_DEBUG
 
@@ -1198,7 +1198,7 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 								genestr_len*sizeof(bool))/(1024*1024)
 		 ;
     bool is_big = (mem_use>200) || (seq_len>5000) ;
-
+	
 	if (is_big)
 	{
 		SG_DEBUG("calling best_path_2struct: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
@@ -1266,8 +1266,9 @@ void CDynProg::best_path_2struct(const DREAL *seq_array, INT seq_len, const INT 
 	// recursion
 	for (INT t=1; t<seq_len; t++)
 	{
-		if (is_big && t%(seq_len/1000)==1)
+		if (is_big && t%(seq_len/10000)==1)
 			SG_PROGRESS(t, 0, seq_len);
+		//fprintf(stderr, "%i\n", t) ;
 		
 		for (T_STATES j=0; j<N; j++)
 		{
@@ -1461,6 +1462,8 @@ void CDynProg::extend_svm_values(WORD** wordstr, INT pos, INT *last_svm_pos, DRE
 
 void CDynProg::init_segment_loss(struct segment_loss_struct & loss, INT seqlen, INT howmuchlookback)
 {
+	MyTime.start() ;
+	
 	if (!loss.num_segment_id)
 	{
 		loss.segments_changed       = new INT[seqlen] ;
@@ -1468,7 +1471,7 @@ void CDynProg::init_segment_loss(struct segment_loss_struct & loss, INT seqlen, 
 		loss.length_segment_id      = new INT[(max_a_id+1)*seqlen] ;
 	}
 	
-	for (INT j=0; j<seqlen; j++)
+	for (INT j=0; j<howmuchlookback; j++)
 	{
 		loss.segments_changed[j]=0 ;
 		for (INT i=0; i<max_a_id+1; i++)       
@@ -1480,10 +1483,15 @@ void CDynProg::init_segment_loss(struct segment_loss_struct & loss, INT seqlen, 
 
 	loss.maxlookback = howmuchlookback ;
 	loss.seqlen = seqlen;
+
+	MyTime.stop() ;
+	segment_init_time += MyTime.time_diff_sec() ;
 }
 
 void CDynProg::clear_segment_loss(struct segment_loss_struct & loss) 
 {
+	MyTime.start() ;
+	
 	if (loss.num_segment_id != NULL)
 	{
 		delete[] loss.segments_changed ;
@@ -1493,10 +1501,14 @@ void CDynProg::clear_segment_loss(struct segment_loss_struct & loss)
 		loss.num_segment_id = NULL ;
 		loss.length_segment_id = NULL ;
 	}
+	MyTime.stop() ;
+	segment_clean_time += MyTime.time_diff_sec() ;
 }
 
 DREAL CDynProg::extend_segment_loss(struct segment_loss_struct & loss, const INT * pos_array, INT segment_id, INT pos, INT & last_pos, DREAL &last_value) 
 {
+	MyTime.start() ;
+	
 	if (pos==last_pos)
 		return last_value ;
 	ASSERT(pos<last_pos) ;
@@ -1540,11 +1552,16 @@ DREAL CDynProg::extend_segment_loss(struct segment_loss_struct & loss, const INT
 	}
 	last_pos = pos ;
 	last_value = ret ;
+
+	MyTime.stop() ;
+	segment_extend_time += MyTime.time_diff_sec() ;
 	return ret ;
 }
 
 void CDynProg::find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<INT>& segment_ids_mask, struct segment_loss_struct & loss) 
 {
+	MyTime.start() ;
+	
 	CArray2<INT> num_segment_id(loss.num_segment_id, loss.seqlen, max_a_id+1, false, false) ;
 	CArray2<INT> length_segment_id(loss.length_segment_id, loss.seqlen, max_a_id+1, false, false) ;
 	
@@ -1594,10 +1611,13 @@ void CDynProg::find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<IN
 
 		ts--;
 	}
+	MyTime.stop() ;
+	segment_pos_time += MyTime.time_diff_sec() ;
 }
 
 void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT maxlookback)
 {
+	MyTime.start() ;
 	/*
 	  See find_svm_values_till_pos for comments
 	  
@@ -1627,7 +1647,7 @@ void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, IN
 		svs.start_pos               = new INT[num_svms] ;
 	}
 	
-	for (INT i=0; i<seqlen*num_svms; i++)       // initializing this for safety, though we should be able to live without it
+	for (INT i=0; i<maxlookback*num_svms; i++)       // initializing this for safety, though we should be able to live without it
 		svs.svm_values[i] = 0;
 
 	for (INT j=0; j<num_degrees; j++)
@@ -1649,10 +1669,15 @@ void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, IN
 	
 	svs.maxlookback = maxlookback ;
 	svs.seqlen = seqlen;
+
+	MyTime.stop() ;
+	svm_init_time += MyTime.time_diff_sec() ;
 }
 
 void CDynProg::clear_svm_values(struct svm_values_struct & svs) 
 {
+	MyTime.start() ;
+	
 	if (NULL != svs.svm_values)
 	{
 		for (INT j=0; j<num_degrees; j++)
@@ -1676,11 +1701,16 @@ void CDynProg::clear_svm_values(struct svm_values_struct & svs)
 		svs.svm_values=NULL ;
 		svs.svm_values_unnormalized=NULL ;
 	}
+
+	MyTime.stop() ;
+	svm_clean_time += MyTime.time_diff_sec() ;
 }
 
 
 void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs)
 {
+	MyTime.start() ;
+	
 	/*
 	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 
 	  corresponding to the 6-mer in genestr(i-5:i) 
@@ -1776,10 +1806,15 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 			}
 		}
 	}
+
+	MyTime.stop() ;
+	svm_pos_time += MyTime.time_diff_sec() ;
 }
 
 bool CDynProg::extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to)
 {
+	MyTime.start() ;
+	
 	if (start<0) 
 		start=0 ;
 	if (to<0)
@@ -1803,6 +1838,8 @@ bool CDynProg::extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT or
 	
 	last_pos = CMath::min(pos+3,to-orf_to-3) ;
 
+	MyTime.stop() ;
+	orf_time += MyTime.time_diff_sec() ;
 	return true ;
 }
 
@@ -1815,6 +1852,16 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 							   DREAL *dictionary_weights, INT dict_len, bool use_orf)
 {
+	segment_init_time = 0.0 ;
+	segment_pos_time = 0.0 ;
+	segment_extend_time = 0.0 ;
+	segment_clean_time = 0.0 ;
+	orf_time = 0.0 ;
+	svm_init_time = 0.0 ;
+	svm_pos_time = 0.0 ;
+	svm_clean_time = 0.0 ;
+	MyTime2.start() ;
+	
 	//SG_PRINT( "best_path_trans:%x\n", seq_array);
 	if (!svm_arrays_clean)
 	{
@@ -2172,6 +2219,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	{
 		if (is_big && t%(1+(seq_len/1000))==1)
 			SG_PROGRESS(t, 0, seq_len);
+		//fprintf(stderr, "%i\n", t) ;
 		
 		init_svm_values(svs, pos[t], seq_len, max_look_back);
 		find_svm_values_till_pos(wordstr, pos, t, svs);  
@@ -2218,6 +2266,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							look_back=(INT) (CMath::ceil(pen->get_max_value()));
 						ASSERT(look_back<1e6);
 					}
+					
 					INT orf_from = orf_info.element(ii,0) ;
 					INT orf_to   = orf_info.element(j,1) ;
 					if((orf_from!=-1)!=(orf_to!=-1))
@@ -2381,6 +2430,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					}
 				}
 
+#ifdef PATHSAMPLING
 				ASSERT(oldtempvv2.get_dim1() > old_list_len) ;
 				CMath::qsort_index<DREAL,INT>(oldtempvv2.get_array(), oldtempii2.get_array(), old_list_len) ;
 				num_finite = 0 ;
@@ -2438,7 +2488,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 						ptable.element(t,j,k+nbest)   = 0 ;
 					}
 				}
-
+#endif // PATHSAMPLING
 
 			}
 		}
@@ -2567,6 +2617,11 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 			delete[] wordstr[k][j] ;
 		delete[] wordstr[k] ;
 	}
+
+	MyTime2.stop() ;
+	
+	if (is_big)
+		SG_PRINT("Timing:  orf=%1.2f s \n Segment_init=%1.2f s Segment_pos=%1.2f s  Segment_extend=%1.2f s Segment_clean=%1.2f s\nsvm_init=%1.2f s  svm_pos=%1.2f  svm_clean=%1.2f\n  total=%1.2f\n", orf_time, segment_init_time, segment_pos_time, segment_extend_time, segment_clean_time, svm_init_time, svm_pos_time, svm_clean_time, MyTime2.time_diff_sec()) ;
 
 #if USEFIXEDLENLIST > 0
 #ifndef USE_TMP_ARRAYCLASS
