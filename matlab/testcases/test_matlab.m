@@ -1,6 +1,4 @@
-
-
-function y = test_octave(filename)
+function y = test_matlab(filename)
   
   pos = max(findstr('/', filename));
   res = test_kernels(filename(pos+1:end));

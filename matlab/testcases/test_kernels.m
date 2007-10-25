@@ -1,4 +1,3 @@
-
 function y = test_kernels(filename)
   addpath ('../../src');
   addpath ('../../python-modular/testcases/mfiles');
