@@ -85,6 +85,8 @@ bool CSVMOcas::train()
 	double TolAbs=0;
 	double QPBound=0;
 	int Method=0;
+	if (method == SVM_OCAS)
+		Method = 1;
 	ocas_return_value_T result = svm_ocas_solver( get_C1(), num_vec, get_epsilon(),
 			TolAbs, QPBound, BufSize, Method, 
 			&CSVMOcas::compute_W,
@@ -176,6 +178,7 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 	for(i=0; i < cut_length; i++) 
 		f->add_to_dense_vec(y[new_cut[i]], new_cut[i], new_a, nDim);
 
+	CMath::display_vector(new_a, nDim, "new_a");
 	/* compute new_a'*new_a and count number of non-zerou dimensions */
 	nz_dims = 0; 
 	sq_norm_a = 0;
@@ -185,6 +188,8 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 			sq_norm_a += new_a[j]*new_a[j];
 		}
 	}
+
+	SG_PRINT("sqa:%f\n", sq_norm_a);
 
 	/* sparsify new_a and insert it to the last column of sparse_A */
 	c_nzd[nSel] = nz_dims;
@@ -217,6 +222,7 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 
 		new_col_H[i] = tmp;
 	}
+	CMath::display_vector(new_col_H, nSel, "new_col_H");
 }
 
 void CSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
@@ -236,7 +242,12 @@ void CSVMOcas::compute_output( double *output, void* ptr )
 	INT nData=f->get_num_vectors();
 
 	DREAL* y = o->lab;
-	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);
+//	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);
+
+	for (INT i=0; i<nData; i++)
+		output[i]=y[i]*f->dense_dot(1.0, i, o->w, o->w_dim, 0.0);
+	CMath::display_vector(output, nData);
+
 }
 
 /*----------------------------------------------------------------------
@@ -262,6 +273,7 @@ void CSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, ui
 	uint32_t** c_idx = o->cp_index;
 	uint32_t* c_nzd = o->cp_nz_dims;
 
+	CMath::display_vector(alpha, nSel, "alpha");
 	memset(W, 0, sizeof(double)*nDim);
 
 	for(uint32_t i=0; i<nSel; i++)
@@ -277,4 +289,7 @@ void CSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, ui
 
 	*sq_norm_W = CMath::dot(W,W, nDim);
 	*dp_WoldW = CMath::dot(W,oldW, nDim);;
+	SG_PRINT("sqn:%f dpW:%f\n", *sq_norm_W, *dp_WoldW);
+	CMath::display_vector(o->w, o->w_dim, "W");
+
 }
