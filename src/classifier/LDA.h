@@ -29,6 +29,11 @@ class CLDA : public CLinearClassifier
 			m_gamma=gamma;
 		}
 
+		inline DREAL get_gamma()
+		{
+			return m_gamma;
+		}
+
 		virtual bool train();
 
 		inline virtual EClassifierType get_classifier_type()

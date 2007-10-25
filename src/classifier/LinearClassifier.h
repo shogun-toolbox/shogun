@@ -52,6 +52,11 @@ class CLinearClassifier : public CClassifier
 			w_dim=src_w_dim;
 		}
 
+        inline void set_bias(DREAL b)
+        {
+            bias=b;
+        }
+
         inline DREAL get_bias()
         {
             return bias;

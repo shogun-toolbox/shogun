@@ -181,8 +181,9 @@ public:
 	template <class T>
 	static inline void swap(T & a,T &b)
 	{
-		T c=a ;
-		a=b; b=c ;
+		T c=a;
+		a=b;
+		b=c;
 	}
 
 	/// x^2

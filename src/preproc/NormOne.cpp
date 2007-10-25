@@ -66,10 +66,10 @@ DREAL* CNormOne::apply_to_feature_matrix(CFeatures* f)
 
 		for (j=0; j<num_feat; j++)
 		{
-		if (vec[j]>1e100)
-			vec[j]=0;
+			if (vec[j]>1e100)
+				vec[j]=0;
 			sqnorm+=vec[j]*vec[j];
-			}
+		}
 
 		norm=sqrt(sqnorm);
 		

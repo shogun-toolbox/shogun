@@ -78,7 +78,7 @@ public:
 	CParallel parallel;
 	CIO io;
 	CVersion version;
-#else
+#else // HAVE_SWIG
 public:
 	inline CSGObject()
 	{
