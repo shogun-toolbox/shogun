@@ -120,7 +120,8 @@ void CTextGUI::print_help()
 	SG_PRINT( "\033[1;31m%s\033[0m\t <LIGHT|LIBSVM> - creates SVM of type LIGHT or LIBSVM\n",N_NEW_SVM);
 	SG_PRINT( "\033[1;31m%s\033[0m [c-value]\t\t\t- changes svm_c value\n", N_C);
 	SG_PRINT( "\033[1;31m%s\033[0m [qpsize]\t\t\t- changes svm_qpsize value\n", N_SVMQPSIZE);
-	SG_PRINT( "\033[1;31m%s\033[0m [threads]\t\t\t- changes svm_threads value\n", N_SVMQPSIZE);
+	SG_PRINT( "\033[1;31m%s\033[0m [bufsize]\t\t\t- changes svm_bufsize value\n", N_SVMBUFSIZE);
+	SG_PRINT( "\033[1;31m%s\033[0m [threads]\t\t\t- changes number of threads\n", N_THREADS);
 	SG_PRINT( "\033[1;31m%s\033[0m [epsilon-value]\t\t\t- changes svm-epsilon value\n", N_SVM_EPSILON);
 	SG_PRINT( "\033[1;31m%s\033[0m [seconds]\t\t\t- changes svm max training time\n", N_SVM_MAX_TRAIN_TIME);
 	SG_PRINT( "\033[1;31m%s\033[0m [epsilon-value]\t\t\t- changes svr-tube-epsilon value\n", N_SVR_TUBE_EPSILON);
@@ -571,6 +572,10 @@ bool CTextGUI::parse_line(CHAR* p_input)
 	else if (!strncmp(p_input, N_SVMQPSIZE, strlen(N_SVMQPSIZE)))
 	{
 		guiclassifier.set_svm_qpsize(p_input+strlen(N_SVMQPSIZE));
+	} 
+	else if (!strncmp(p_input, N_SVMBUFSIZE, strlen(N_SVMBUFSIZE)))
+	{
+		guiclassifier.set_svm_bufsize(p_input+strlen(N_SVMBUFSIZE));
 	} 
 	else if (!strncmp(p_input, N_SVMMAXQPSIZE, strlen(N_SVMMAXQPSIZE)))
 	{

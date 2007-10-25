@@ -57,6 +57,7 @@ public:
 	/// SVM functions
 	bool set_svm_C(CHAR* param);
 	bool set_svm_qpsize(CHAR* param);
+	bool set_svm_bufsize(CHAR* param);
 	bool set_svm_max_qpsize(CHAR* param);
 	bool set_svm_mkl_enabled(CHAR* param);
 	bool set_svm_shrinking_enabled(CHAR* param);
@@ -85,6 +86,7 @@ public:
 	int perceptron_maxiter;
 
 	int svm_qpsize;
+	int svm_bufsize;
 	int svm_max_qpsize;
 	double svm_weight_epsilon;
 	double svm_epsilon;

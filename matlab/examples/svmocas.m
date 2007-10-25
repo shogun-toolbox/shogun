@@ -2,7 +2,7 @@ C=10;
 epsilon=1e-3;
 
 rand('state',17);
-num=17;
+num=16;
 dim=10;
 dist=0.001;
 traindat=[rand(dim,num/2)-dist, rand(dim,num/2)+dist];
@@ -16,7 +16,9 @@ sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('send_command', sprintf('c %f', C));
 sg('send_command', 'svm_use_bias 0');
-sg('send_command', 'new_classifier SVMBMRM');
+sg('send_command', 'svm_bufsize 1000');
+sg('send_command', sprintf('svm_epsilon %f', epsilon));
+sg('send_command', 'new_classifier SVMOCAS');
 tic;
 sg('send_command', 'train_classifier');
 timeocas=toc

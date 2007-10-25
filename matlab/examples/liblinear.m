@@ -14,6 +14,7 @@ sg('set_features', 'TRAIN', traindat);
 sg('set_labels', 'TRAIN', trainlab);
 sg('send_command', sprintf('c %f', C));
 sg('send_command', 'svm_use_bias 0');
+sg('send_command', sprintf('svm_epsilon %f', epsilon));
 sg('send_command', 'new_classifier LIBLINEAR_L2');
 tic;
 sg('send_command', 'train_classifier');

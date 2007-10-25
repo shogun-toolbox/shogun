@@ -249,13 +249,6 @@ ocas_return_value_T svm_ocas_solver(
     /* call inner QP solver */
     start_time = get_time();
 
- if (ocas.nIter == 2)
-{
-    ocas_print("H= [%f %f; %f %f]\n", H[INDEX2(0,0,BufSize)], H[INDEX2(0,1,BufSize)],H[INDEX2(1,0,BufSize)],H[INDEX2(1,1,BufSize)]);
-    ocas_print("b=[%f %f]\n", b[0],b[1]);
-    ocas_print("C=%f,alpha=%f,TolRel=%f\n", C, alpha[0], QPSolverTolRel);
-}
-
     qp_exitflag = qpssvm_solver( &get_col, diag_H, b, C, I, alpha, 
                 ocas.nCutPlanes, QPSolverMaxIter, 0.0, QPSolverTolRel, &ocas.Q_D, &dummy, ocas_print, 0 ); 
 
@@ -271,8 +264,6 @@ ocas_return_value_T svm_ocas_solver(
     {
       /* SVMperf ~~ BMRM strategy */
       case 0: 
-
-	printf("hallo bmrm...\n");
 
         compute_output( output, user_data );
 
@@ -378,11 +369,10 @@ ocas_return_value_T svm_ocas_solver(
 
         }
 
-	printf("hallo...\n");
         ocas.Q_P = 0.5*sq_norm_W + C*xi;
 
-        ocas_print("xi:%f sq_norm_W: %f %4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f, xi=%f, err=%.2f%%, qp_flag=%d\n",
-                  xi, sq_norm_W, ocas.nIter,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P),xi, 
+        ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f, xi=%f, err=%.2f%%, qp_flag=%d\n",
+                  ocas.nIter,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P),xi, 
                   100*(double)ocas.trn_err/(double)nData, qp_exitflag );
 
         break;

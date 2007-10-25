@@ -143,6 +143,7 @@
 #define N_LOGLEVEL						"loglevel"
 #define N_ECHO							"echo"
 #define N_SVMQPSIZE						"svm_qpsize"
+#define N_SVMBUFSIZE					"svm_bufsize"
 #define N_SVMMAXQPSIZE					"svm_max_qpsize"
 #define N_THREADS						"threads"
 #define N_MKL_PARAMETERS				"mkl_parameters"

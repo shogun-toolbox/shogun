@@ -67,6 +67,7 @@ CGUIClassifier::CGUIClassifier(CGUI* g) : CSGObject(), gui(g)
 
     // SVM parameters
 	svm_qpsize=41;
+	svm_bufsize=3000;
 	svm_max_qpsize=1000;
 	svm_C1=1;
 	svm_C2=1;
@@ -276,18 +277,20 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		delete classifier;
 		classifier= new CSVMOcas(SVM_OCAS);
 
-		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
-		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
+		((CSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
+		((CSVMOcas*) classifier)->set_epsilon(svm_epsilon);
+		((CSVMOcas*) classifier)->set_bufsize(svm_bufsize);
 		SG_INFO( "created SVM Ocas(OCAS) object\n") ;
 	}
-	else if (strcmp(param,"SVMBMRM")==0)
+	else if (strcmp(param,"SVMBMRM")==0 || (strcmp(param,"SVMPERF")==0))
 	{
 		delete classifier;
 		classifier= new CSVMOcas(SVM_BMRM);
 
-		((CSubGradientSVM*) classifier)->set_C(svm_C1, svm_C2);
-		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
-		SG_INFO( "created SVM Ocas(BMRM) object\n") ;
+		((CSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
+		((CSVMOcas*) classifier)->set_epsilon(svm_epsilon);
+		((CSVMOcas*) classifier)->set_bufsize(svm_bufsize);
+		SG_INFO( "created SVM Ocas(BMRM/PERF) object\n") ;
 	}
 	else
 	{
@@ -838,6 +841,22 @@ bool CGUIClassifier::set_svm_qpsize(CHAR* param)
 	SG_INFO( "Set qpsize to svm_qpsize=%d\n", svm_qpsize);
 	return true ;  
 }
+
+bool CGUIClassifier::set_svm_bufsize(CHAR* param)
+{
+	param=CIO::skip_spaces(param);
+
+	svm_bufsize=-1;
+
+	sscanf(param, "%d", &svm_bufsize) ;
+
+	if (svm_bufsize<0)
+		svm_bufsize=3000;
+
+	SG_INFO( "Set bufsize to svm_bufsize=%d\n", svm_bufsize);
+	return true ;  
+}
+
 
 bool CGUIClassifier::set_svm_max_qpsize(CHAR* param)
 {
