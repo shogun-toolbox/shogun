@@ -62,7 +62,7 @@ _inc_extra=""
 _ld_extra=""
 _optimizing=""
 _interface=""
-test -z "$INCLUDES" || _inc_extra="-L`echo $INCLUDES | sed 's,:, -I,g'`"
+test -z "$INCLUDES" || _inc_extra="-I`echo $INCLUDES | sed 's,:, -I,g'`"
 test -z "$LIBS" || _ld_extra="-L`echo $LIBS | sed 's,:, -L,g'`"
 
 # these ones will be autodetected
