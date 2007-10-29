@@ -18,7 +18,7 @@
 class CFixedDegreeStringKernel: public CStringKernel<CHAR>
 {
 public:
-	CFixedDegreeStringKernel(LONG size, INT degree);
+	CFixedDegreeStringKernel(INT size, INT degree);
 	~CFixedDegreeStringKernel();
 
 	virtual bool init(CFeatures* l, CFeatures* r);

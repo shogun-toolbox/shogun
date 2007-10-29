@@ -17,7 +17,7 @@
 class CPolyMatchWordKernel: public CSimpleKernel<WORD>
 {
  public:
-  CPolyMatchWordKernel(LONG size, INT degree, bool inhomogene, bool use_normalization=true);
+  CPolyMatchWordKernel(INT size, INT degree, bool inhomogene, bool use_normalization=true);
   ~CPolyMatchWordKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r);

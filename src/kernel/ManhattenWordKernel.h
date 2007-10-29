@@ -17,7 +17,7 @@
 class CManhattenWordKernel: public CSimpleKernel<WORD>
 {
  public:
-  CManhattenWordKernel(LONG size, DREAL width);
+  CManhattenWordKernel(INT size, DREAL width);
   ~CManhattenWordKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r);

@@ -19,7 +19,7 @@
 class CHistogramWordKernel: public CSimpleKernel<WORD>
 {
  public:
-  CHistogramWordKernel(LONG size, CPluginEstimate* pie);
+  CHistogramWordKernel(INT size, CPluginEstimate* pie);
   ~CHistogramWordKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r);

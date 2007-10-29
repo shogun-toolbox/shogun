@@ -18,7 +18,7 @@
 class CLinearByteKernel: public CSimpleKernel<BYTE>
 {
  public:
-  CLinearByteKernel(LONG size, bool do_rescale=true, DREAL scale=1.0);
+  CLinearByteKernel(INT size, bool do_rescale=true, DREAL scale=1.0);
   ~CLinearByteKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r);

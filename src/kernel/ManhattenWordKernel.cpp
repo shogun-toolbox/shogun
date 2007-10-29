@@ -14,7 +14,7 @@
 #include "features/WordFeatures.h"
 #include "lib/io.h"
 
-CManhattenWordKernel::CManhattenWordKernel(LONG size, DREAL w)
+CManhattenWordKernel::CManhattenWordKernel(INT size, DREAL w)
 	: CSimpleKernel<WORD>(size), width(w)
 {
 	SG_DEBUG( "CManhattenWordKernel with cache size: %d width: %f created\n", size, width);

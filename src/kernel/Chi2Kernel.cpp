@@ -14,7 +14,7 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-CChi2Kernel::CChi2Kernel(LONG size)
+CChi2Kernel::CChi2Kernel(INT size)
   : CSimpleKernel<DREAL>(size)
 {
 }

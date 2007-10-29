@@ -14,7 +14,7 @@
 #include "kernel/LinearWordKernel.h"
 #include "features/WordFeatures.h"
 
-CLinearWordKernel::CLinearWordKernel(LONG size, bool do_rescale_, DREAL scale_)
+CLinearWordKernel::CLinearWordKernel(INT size, bool do_rescale_, DREAL scale_)
   : CSimpleKernel<WORD>(size),scale(scale_),do_rescale(do_rescale_),initialized(false),
 	normal(NULL)
 {

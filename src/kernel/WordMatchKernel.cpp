@@ -14,7 +14,7 @@
 #include "kernel/WordMatchKernel.h"
 #include "features/WordFeatures.h"
 
-CWordMatchKernel::CWordMatchKernel(LONG size, INT d, bool do_rescale_, DREAL scale_)
+CWordMatchKernel::CWordMatchKernel(INT size, INT d, bool do_rescale_, DREAL scale_)
   : CSimpleKernel<WORD>(size),scale(scale_),do_rescale(do_rescale_), initialized(false),
 	degree(d)
 {

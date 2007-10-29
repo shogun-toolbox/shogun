@@ -15,7 +15,7 @@
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 
-CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(LONG size, INT l, INT d1, INT d2)
+CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(INT size, INT l, INT d1, INT d2)
   : CStringKernel<CHAR>(size),length(l),inner_degree(d1),outer_degree(d2),match(NULL)
 {
 	SG_INFO( "LIK with parms: l=%d, d1=%d, d2=%d created!\n", l, d1, d2);

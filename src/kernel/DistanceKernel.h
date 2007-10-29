@@ -23,7 +23,7 @@ class CDistanceKernel: public CKernel
 
     public:
         /* Constructors */
-        CDistanceKernel(LONG cache,DREAL width ,CDistance* dist );
+        CDistanceKernel(INT cache,DREAL width ,CDistance* dist );
         ~CDistanceKernel();
 
         /* Init and cleanup functions */

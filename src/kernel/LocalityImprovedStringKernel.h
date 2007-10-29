@@ -18,7 +18,7 @@
 class CLocalityImprovedStringKernel: public CStringKernel<CHAR>
 {
 public:
-	CLocalityImprovedStringKernel(LONG size, INT length, INT inner_degree,
+	CLocalityImprovedStringKernel(INT size, INT length, INT inner_degree,
 		INT outer_degree);
 	~CLocalityImprovedStringKernel();
 

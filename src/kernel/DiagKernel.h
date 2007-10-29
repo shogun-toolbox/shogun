@@ -17,7 +17,7 @@
 class CDiagKernel: public CKernel
 {
  public:
-  CDiagKernel(LONG size, DREAL diag=1.0);
+  CDiagKernel(INT size, DREAL diag=1.0);
   virtual ~CDiagKernel();
   
   virtual void cleanup();

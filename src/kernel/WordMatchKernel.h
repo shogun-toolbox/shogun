@@ -17,7 +17,7 @@
 class CWordMatchKernel: public CSimpleKernel<WORD>
 {
  public:
-  CWordMatchKernel(LONG size, INT d, bool do_rescale=true, DREAL scale=1.0);
+  CWordMatchKernel(INT size, INT d, bool do_rescale=true, DREAL scale=1.0);
   ~CWordMatchKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r);

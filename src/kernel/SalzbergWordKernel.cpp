@@ -16,7 +16,7 @@
 #include "features/Labels.h"
 #include "classifier/PluginEstimate.h"
 
-CSalzbergWordKernel::CSalzbergWordKernel(LONG size, CPluginEstimate* pie)
+CSalzbergWordKernel::CSalzbergWordKernel(INT size, CPluginEstimate* pie)
   : CSimpleKernel<WORD>(size),estimate(pie), mean(NULL), variance(NULL), 
     sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), 
     ld_mean_lhs(NULL), ld_mean_rhs(NULL),

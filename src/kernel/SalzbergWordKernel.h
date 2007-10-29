@@ -18,7 +18,7 @@
 class CSalzbergWordKernel: public CSimpleKernel<WORD>
 {
  public:
-  CSalzbergWordKernel(LONG size, CPluginEstimate* pie);
+  CSalzbergWordKernel(INT size, CPluginEstimate* pie);
   ~CSalzbergWordKernel() ;
   
   void set_prior_probs(DREAL pos_prior_, DREAL neg_prior_)

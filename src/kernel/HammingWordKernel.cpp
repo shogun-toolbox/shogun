@@ -14,7 +14,7 @@
 #include "features/WordFeatures.h"
 #include "lib/io.h"
 
-CHammingWordKernel::CHammingWordKernel(LONG size, DREAL w, bool sign)
+CHammingWordKernel::CHammingWordKernel(INT size, DREAL w, bool sign)
 	: CSimpleKernel<WORD>(size), width(w), use_sign(sign)
 {
 	SG_DEBUG( "CHammingWordKernel with cache size: %d width: %f sign: %d created\n", size, width, (sign) ? 1 : 0);

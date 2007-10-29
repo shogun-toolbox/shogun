@@ -21,7 +21,7 @@ class CCommWordStringKernel;
 class CWeightedCommWordStringKernel: public CCommWordStringKernel
 {
  public:
-  CWeightedCommWordStringKernel(LONG size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION );
+  CWeightedCommWordStringKernel(INT size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION );
   CWeightedCommWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool use_sign=false, ENormalizationType normalization_=FULL_NORMALIZATION, INT size=10);
   ~CWeightedCommWordStringKernel();
 

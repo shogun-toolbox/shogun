@@ -20,7 +20,7 @@ extern "C" {
 #include "kernel/DiagKernel.h"
 #include "lib/io.h"
 
-CDiagKernel::CDiagKernel(LONG size, DREAL d)
+CDiagKernel::CDiagKernel(INT size, DREAL d)
   : CKernel(size),diag(d)
 {
 }

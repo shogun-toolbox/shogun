@@ -16,7 +16,7 @@
 #include "classifier/PluginEstimate.h"
 #include "lib/io.h"
 
-CHistogramWordKernel::CHistogramWordKernel(LONG size, CPluginEstimate* pie)
+CHistogramWordKernel::CHistogramWordKernel(INT size, CPluginEstimate* pie)
   : CSimpleKernel<WORD>(size),estimate(pie), mean(NULL), variance(NULL), 
     sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), 
     ld_mean_lhs(NULL), ld_mean_rhs(NULL),

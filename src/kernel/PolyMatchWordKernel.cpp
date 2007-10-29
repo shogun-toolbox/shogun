@@ -14,7 +14,7 @@
 #include "features/Features.h"
 #include "features/WordFeatures.h"
 
-CPolyMatchWordKernel::CPolyMatchWordKernel(LONG size, INT d, bool inhom, bool use_norm)
+CPolyMatchWordKernel::CPolyMatchWordKernel(INT size, INT d, bool inhom, bool use_norm)
   : CSimpleKernel<WORD>(size),degree(d),inhomogene(inhom),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
 {

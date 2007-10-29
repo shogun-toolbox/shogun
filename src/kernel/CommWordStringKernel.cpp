@@ -13,7 +13,7 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CCommWordStringKernel::CCommWordStringKernel(LONG size, bool sign, ENormalizationType n)
+CCommWordStringKernel::CCommWordStringKernel(INT size, bool sign, ENormalizationType n)
   : CStringKernel<WORD>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), dictionary_size(0), dictionary_weights(NULL), use_sign(sign), normalization(n)
 {
 	properties |= KP_LINADD;

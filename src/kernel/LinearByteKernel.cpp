@@ -14,7 +14,7 @@
 #include "kernel/LinearByteKernel.h"
 #include "features/ByteFeatures.h"
 
-CLinearByteKernel::CLinearByteKernel(LONG size, bool do_rescale_, DREAL scale_)
+CLinearByteKernel::CLinearByteKernel(INT size, bool do_rescale_, DREAL scale_)
   : CSimpleKernel<BYTE>(size),scale(scale_),do_rescale(do_rescale_),initialized(false),
 	normal(NULL)
 {

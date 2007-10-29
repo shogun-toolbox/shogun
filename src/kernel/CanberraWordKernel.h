@@ -17,7 +17,7 @@
 class CCanberraWordKernel: public CSimpleKernel<WORD>
 {
  public:
-  CCanberraWordKernel(LONG size, DREAL width);
+  CCanberraWordKernel(INT size, DREAL width);
   ~CCanberraWordKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r);

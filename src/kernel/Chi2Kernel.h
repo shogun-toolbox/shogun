@@ -19,7 +19,7 @@
 class CChi2Kernel: public CSimpleKernel<DREAL>
 {
  public:
-  CChi2Kernel(LONG size);
+  CChi2Kernel(INT size);
 
   CChi2Kernel(CRealFeatures* l, CRealFeatures* r, INT size);
 

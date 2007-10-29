@@ -14,7 +14,7 @@
 #include "lib/io.h"
 #include "kernel/DistanceKernel.h"
 
-CDistanceKernel::CDistanceKernel(LONG cache,DREAL w ,CDistance* dist)
+CDistanceKernel::CDistanceKernel(INT cache,DREAL w ,CDistance* dist)
   :CKernel(cache),distance(dist),width(w)
 {
 }

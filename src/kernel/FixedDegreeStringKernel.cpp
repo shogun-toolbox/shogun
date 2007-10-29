@@ -14,7 +14,7 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CFixedDegreeStringKernel::CFixedDegreeStringKernel(LONG size, INT d)
+CFixedDegreeStringKernel::CFixedDegreeStringKernel(INT size, INT d)
   : CStringKernel<CHAR>(size),degree(d), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
 }

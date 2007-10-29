@@ -14,7 +14,7 @@
 #include "features/WordFeatures.h"
 #include "lib/io.h"
 
-CCanberraWordKernel::CCanberraWordKernel(LONG size, DREAL w)
+CCanberraWordKernel::CCanberraWordKernel(INT size, DREAL w)
 	: CSimpleKernel<WORD>(size), width(w)
 {
 	SG_DEBUG( "CCanberraWordKernel with cache size: %d width: %f created\n", size, width);

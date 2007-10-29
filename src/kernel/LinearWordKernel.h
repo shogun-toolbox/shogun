@@ -17,7 +17,7 @@
 class CLinearWordKernel: public CSimpleKernel<WORD>
 {
  public:
-  CLinearWordKernel(LONG size, bool do_rescale=true, DREAL scale=1.0);
+  CLinearWordKernel(INT size, bool do_rescale=true, DREAL scale=1.0);
   ~CLinearWordKernel() ;
   
   virtual bool init(CFeatures* l, CFeatures* r);

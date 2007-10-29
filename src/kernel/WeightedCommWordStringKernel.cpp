@@ -13,7 +13,7 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(LONG size, bool sign, ENormalizationType n)
+CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(INT size, bool sign, ENormalizationType n)
   : CCommWordStringKernel(size, sign, n), weights(NULL)
 {
 	init_dictionary(1<<(sizeof(WORD)*9));

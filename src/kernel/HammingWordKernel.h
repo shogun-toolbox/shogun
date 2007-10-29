@@ -17,7 +17,7 @@
 class CHammingWordKernel: public CSimpleKernel<WORD>
 {
  public:
-  CHammingWordKernel(LONG size, DREAL width, bool use_sign);
+  CHammingWordKernel(INT size, DREAL width, bool use_sign);
   ~CHammingWordKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r);

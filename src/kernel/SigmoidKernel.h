@@ -18,7 +18,7 @@
 class CSigmoidKernel: public CSimpleKernel<DREAL>
 {
  public:
-  CSigmoidKernel(LONG size, DREAL gamma, DREAL coef0);
+  CSigmoidKernel(INT size, DREAL gamma, DREAL coef0);
   CSigmoidKernel(CRealFeatures* l, CRealFeatures* r, INT size, DREAL g, DREAL c);
   virtual ~CSigmoidKernel();
   
