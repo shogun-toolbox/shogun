@@ -105,7 +105,6 @@ class CKernel : public CSGObject
 		// return the name of a kernel
 		virtual const CHAR* get_name()=0 ;
 
-
 		// return the size of the kernel cache
 		inline int get_cache_size() { return cache_size; }
 #ifdef USE_SVMLIGHT

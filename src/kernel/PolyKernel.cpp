@@ -20,7 +20,7 @@ CPolyKernel::CPolyKernel(INT size, INT d, bool inhom, bool use_norm)
 {
 }
 
-CPolyKernel::CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT size, INT d, bool inhom, bool use_norm)
+CPolyKernel::CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT d, bool inhom, bool use_norm, INT size)
   : CSimpleKernel<DREAL>(size),degree(d),inhomogene(inhom),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
 {

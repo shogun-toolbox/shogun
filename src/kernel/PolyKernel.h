@@ -19,7 +19,7 @@ class CPolyKernel: public CSimpleKernel<DREAL>
 {
  public:
 
-  CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT size, INT d, bool inhom, bool use_norm);
+  CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT d, bool inhom, bool use_norm, INT size=10);
   CPolyKernel(INT size, INT degree, bool inhomogene=true, bool use_normalization=true);
   ~CPolyKernel();
   

@@ -1858,12 +1858,6 @@ set_opts()
 		LINKFLAGS="$LINKFLAGS -Xlinker --no-undefined"
 	fi
 
-	if x86_64 && linux && `$COMP_C -print-search-dirs >/dev/null 2>&1`
-	then
-		# relies on gcc; necessary on Debian (pre)lenny amd64 to build
-		INCLUDES="-I`$COMP_C -print-search-dirs | grep 'install: ' | cut -d ' ' -f 2`include $INCLUDES "
-	fi
-
 cat > $TMPC << EOF
 #include <math.h>
 int main(void) { return 0; }
