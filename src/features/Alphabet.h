@@ -92,7 +92,6 @@ class CAlphabet : public CSGObject
 		/// get pointer to histogram
 		inline const LONG* get_histogram()
         {
-			//CMath::display_vector(histogram, 256, "histogram");
             return &histogram[0];
         }
 
