@@ -51,22 +51,22 @@ write_testcase(kernelname='GaussianKernel',fun_name='test_gaussian_kernel', arra
 #write mfile for Linear Kernel
 
 
-lk=LinearKernel(realfeat,realfeat, True)
+lk=LinearKernel(realfeat,realfeat, 1.0)
 km_train=lk.get_kernel_matrix()
 lk.init(realfeat, realtestfeat)
 km_test=lk.get_kernel_matrix()
 
-write_testcase(kernelname='LinearKernel',fun_name='test_linear_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':traindat, 'testdat':testdat},dict={'bool1':'True'})
+write_testcase(kernelname='LinearKernel',fun_name='test_linear_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':traindat, 'testdat':testdat},dict={'scale':'1.0'})
 
 #write mfile for Linear Kernel
 
 
-lk=LinearKernel(realfeat,realfeat, False)
+lk=LinearKernel(realfeat,realfeat, 0.0)
 km_train=lk.get_kernel_matrix()
 lk.init(realfeat, realtestfeat)
 km_test=lk.get_kernel_matrix()
 
-write_testcase(kernelname='LinearKernel',fun_name='test_linear_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':traindat, 'testdat':testdat},dict={'bool1':'False'})
+write_testcase(kernelname='LinearKernel',fun_name='test_linear_kernel', arrays={'km_train':km_train ,'km_test':km_test, 'traindat':traindat, 'testdat':testdat},dict={'scale':'0.0'})
 
 
 

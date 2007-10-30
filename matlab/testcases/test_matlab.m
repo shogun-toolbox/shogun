@@ -6,7 +6,7 @@ function y = test_matlab(filename)
   if(res == 0)
     sprintf('__OK__')
   else
-    sprintf( '__ERR__')
+    sprintf('__ERR__')
   end
 
 

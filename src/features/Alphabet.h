@@ -11,6 +11,7 @@
 #ifndef _CALPHABET__H__
 #define _CALPHABET__H__
 
+#include "lib/Mathematics.h"
 #include "base/SGObject.h"
 #include "lib/common.h"
 
@@ -91,6 +92,7 @@ class CAlphabet : public CSGObject
 		/// get pointer to histogram
 		inline const LONG* get_histogram()
         {
+			//CMath::display_vector(histogram, 256, "histogram");
             return &histogram[0];
         }
 

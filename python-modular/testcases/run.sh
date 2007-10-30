@@ -1,6 +1,6 @@
 # !/bin/bash
 
-for file in mfiles/*; do
+for file in ../../testsuite/data/*.m; do
 	echo -n $file
 	echo -n -e "\t\t"
 
