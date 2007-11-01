@@ -22,17 +22,17 @@ def test_mfile(file):
 		elif parname=='km_test':
 			param_dict['km_test'] = read_mfile.read_mat(line)	
 
-		elif parname=='traindat':
-			param_dict['traindat'] = read_mfile.read_mat(line)
+		elif parname=='data_train':
+			param_dict['data_train'] = read_mfile.read_mat(line)
 
-		elif parname=='testdat':
-			param_dict['testdat'] =  read_mfile.read_mat(line)
+		elif parname=='data_test':
+			param_dict['data_test'] =  read_mfile.read_mat(line)
 		else :
 			if(line.find("'")==-1):
 				param_dict[parname]= eval(line.split('=')[1])
 			else: 
 				param_dict[parname]= line.split('=')[1].strip().split("'")[1]
-	
+
 
 	mfile.close()
 
