@@ -29,8 +29,6 @@
 #include "classifier/svm/ssl.h"
 
 #define VERBOSE 1
-#define LOG2(x) 1.4426950408889634*log(x) 
-// for compatibility issues, not using log2
 
 void ssl_train(struct data *Data, 
 		struct options *Options, 
@@ -1070,7 +1068,7 @@ double entropy(const double *p, int u)
 	{
 		q=p[i];
 		if(q>0 && q<1)
-			h+= -(q*LOG2(q) + (1-q)*LOG2(1-q));
+			h+= -(q*CMath::log2(q) + (1-q)*CMath::log2(1-q));
 	}
 	return h/u;
 }
@@ -1088,7 +1086,7 @@ double KL(const double *p, const double *q, int u)
 		if(p1<1-1e-8) p1+=1e-8;
 		if(q1>1-1e-8) q1-=1e-8;
 		if(q1<1-1e-8) q1+=1e-8;
-		g= (p1*LOG2(p1/q1) + (1-p1)*LOG2((1-p1)/(1-q1)));
+		g= (p1*CMath::log2(p1/q1) + (1-p1)*CMath::log2((1-p1)/(1-q1)));
 		if(CMath::abs(g)<1e-12 || isnan(g)) g=0.0;
 		h+=g;
 	}

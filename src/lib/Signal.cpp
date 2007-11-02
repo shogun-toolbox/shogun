@@ -75,7 +75,9 @@ bool CSignal::set_handler()
 
 		sigemptyset(&st);
 
+#ifndef __INTERIX
 		act.sa_sigaction=NULL; //just in case
+#endif
 		act.sa_handler=CSignal::handler;
 		act.sa_mask = st;
 		act.sa_flags = 0;

@@ -225,6 +225,18 @@ public:
 		return ::log(v)/::log(10.0);
 	}
 
+#ifdef HAVE_LOG2
+	static inline DREAL log2(DREAL v)
+	{
+		return ::log2(v);
+	}
+#else
+	static inline DREAL log2(DREAL v)
+	{
+		return ::log(v)/::log(2.0);
+	}
+#endif //HAVE_LOG2
+
 	static inline DREAL log(DREAL v)
 	{
 		return ::log(v);
@@ -266,7 +278,7 @@ public:
 	
 	static LONG random()
 	{
-#ifdef CYGWIN
+#if defined(CYGWIN) || defined(__INTERIX)
 		return rand();
 #else
 		return ::random();

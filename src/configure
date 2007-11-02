@@ -124,6 +124,7 @@ hpux()    { issystem "HP-UX"   ; return "$?" ; }
 irix()    { issystem "IRIX"    ; return "$?" ; }
 aix()     { issystem "AIX"     ; return "$?" ; }
 cygwin()  { issystem "CYGWIN" ; return "$?" ; }
+interix() { issystem "Interix" ; return "$?" ; }
 freebsd() { issystem "FreeBSD" ; return "$?" ; }
 netbsd()  { issystem "NetBSD"  ; return "$?" ; }
 bsdos()   { issystem "BSD/OS"  ; return "$?" ; }
@@ -737,6 +738,9 @@ determine_system_name()
 	  [cC][yY][gG][wW][iI][nN]*)
 		system_name=CYGWIN
 		;;
+	  Interix)
+		system_name=INTERIX
+		;;
 	  *)
 		system_name="$system_name-UNKNOWN"
 		;;
@@ -865,6 +869,9 @@ typedef long long int64_t;
 #include <inttypes.h>
 #endif
 
+#ifdef __INTERIX
+#include <stdint.h>
+#endif
 
 typedef struct cpuid_regs {
   unsigned int eax;
@@ -1851,6 +1858,10 @@ set_opts()
 		else
 			LINKFLAGS="$LINKFLAGS -undefined error"
 		fi
+	elif interix
+	then
+		COMPFLAGS_C="$COMPFLAGS_C -D_ALL_SOURCE -D_REENTRANT"
+		COMPFLAGS_CPP="$COMPFLAGS_CPP -D_ALL_SOURCE -D_REENTRANT"
 	elif sunos
 	then
 		true #nop
@@ -1888,6 +1899,24 @@ EOF
 		echores "yes"
 	else
 		echores "no - resorting to pow()"
+	fi
+
+cat > $TMPC << EOF
+#include <math.h>
+int main(int argc, char** argv)
+{
+	double a=::log2((double) argc);
+	return (int) a;
+}
+EOF
+	echocheck "Math log2() support"
+	if cxx_check -lm
+	then
+		HAVE_LOG2='#define HAVE_LOG2 1'
+		DEFINES="$DEFINES -DHAVE_LOG2"
+		echores "yes"
+	else
+		echores "no - resorting to emulation()"
 	fi
 
 cat > $TMPC << EOF
@@ -2587,6 +2616,7 @@ $HAVE_LARGEFILE
 $HAVE_SWIG
 $HAVE_LAPACK
 $HAVE_POWL
+$HAVE_LOG2
 $USE_LOGCACHE
 $USE_SHORTREAL_KERNELCACHE
 $USE_TREEMEM

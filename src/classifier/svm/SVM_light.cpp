@@ -430,7 +430,7 @@ bool CSVMLight::train()
 	SG_DEBUG( "get_linadd_enabled() = %i\n", get_linadd_enabled()) ;
 	SG_DEBUG( "get_batch_computation_enabled() = %i\n", get_batch_computation_enabled()) ;
 	SG_DEBUG( "get_kernel()->get_num_subkernels() = %i\n", get_kernel()->get_num_subkernels()) ;
-	SG_DEBUG( "estimated time: %1.1f minutes\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(log2(1/weight_epsilon),2.52)/60) ;
+	SG_DEBUG( "estimated time: %1.1f minutes\n", 5e-11*pow(get_kernel()->get_num_subkernels(),2.22)*pow(get_kernel()->get_rhs()->get_num_vectors(),1.68)*pow(CMath::log2(1/weight_epsilon),2.52)/60) ;
 
 	use_kernel_cache = !(use_precomputed_subkernels || (get_kernel()->get_kernel_type() == K_CUSTOM) ||
 						 (get_linadd_enabled() && get_kernel()->has_property(KP_LINADD)) ||
