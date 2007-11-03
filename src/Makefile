@@ -207,9 +207,13 @@ depend:		.config lib/versionstring.h
 	$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
 		$(shell find $(SRCDIR) -name "*.h" -o \
 		-name "*.$(EXT_SRC_CPP)" | grep -v 'configure-' ) $(MAKEDEPENDOPTS) | \
-		sed 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend || true
+		sed -e 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend || true
+	$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
+		$(shell find $(SRCDIR) -name "*.h" -o \
+		-name "*.$(EXT_SRC_C)" | grep -v 'configure-' ) $(MAKEDEPENDOPTS) | \
+		sed -e 's/\.o:/.$(EXT_OBJ_C):/g' >>.depend || true
 	find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -o \
-		-name "*.h" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_C)" | \
+		-name "*.h" -o -name "*.$(EXT_SRC_CPP)" -o -name "*.$(EXT_SRC_CPP)" | \
 		grep -v 'configure-' |  \
 		cut -c 3- | \
 		$(PYTHON) .generate_link_dependencies.py $(EXT_LIB_SWIG) >>.depend
@@ -217,9 +221,13 @@ depend:		.config lib/versionstring.h
 	$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
 		$(shell find $(SRCDIR) -name "*.h" -o \
 		-name "*.$(EXT_SRC_CPP)" | grep -v 'configure-' ) $(MAKEDEPENDOPTS) | \
-		sed 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend || true
+		sed -e 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend || true
+	$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
+		$(shell find $(SRCDIR) -name "*.h" -o \
+		-name "*.$(EXT_SRC_C)" | grep -v 'configure-' ) $(MAKEDEPENDOPTS) | \
+		sed -e 's/\.o:/.$(EXT_OBJ_C):/g' >>.depend || true
 	find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -o \
-		-name "*.h" -o -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_C)" | \
+		-name "*.h" -o -name "*.$(EXT_SRC_CPP)" -o -name "*.$(EXT_SRC_CPP)" | \
 		grep -v 'configure-' |  \
 		cut -c 3- | \
 		$(PYTHON) .generate_link_dependencies.py $(EXT_LIB_SWIG) >>.depend
