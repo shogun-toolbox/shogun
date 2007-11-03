@@ -636,7 +636,7 @@ bool CGUIClassifier::test(CHAR* param)
 	((CKernelMachine*) classifier)->set_labels(testlabels);
 	((CKernelMachine*) classifier)->set_kernel(gui->guikernel.get_kernel()) ;
 	gui->guikernel.get_kernel()->set_precompute_matrix(false,false);
-	//svm->set_batch_computation_enabled(use_batch_computation);
+	((CKernelMachine*) classifier)->set_batch_computation_enabled(svm_use_batch_computation);
 
 	CLabels* predictions= classifier->classify();
 

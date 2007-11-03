@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # some hopefully reasonable defaults
+MAKEDEPEND="gcc -MM"
+MAKEDEPENDOPTS=""
 SRCDIR="`dirname $0`"
 EXT_SRC_HEADER=h
 EXT_SRC_C=c
@@ -300,15 +302,21 @@ check_python()
 check_makedepend()
 {
 	echocheck "makedepend"
-	touch ${TMPMAK}
-	if makedepend -f${TMPMAK} >/dev/null 2>&1
+
+cat > $TMPC << EOF
+int main(void) { return 0; }
+EOF
+	if $MAKEDEPEND $TMPC >/dev/null 2>&1
 	then
-		echores "yes"
-	 	rm -f ${TMPMAK} ${TMPMAK}.bak
+		echores "$MAKEDEPEND"
+	elif makedepend -f - $TMPC >/dev/null 2>&1
+	then
+		MAKEDEPEND=makedepend
+		MAKEDEPENDOPTS="-f -"
+		echores "$MAKEDEPEND"
 	else
 		echores "no"
-	 	rm -f ${TMPMAK} ${TMPMAK}.bak
-		die "makedepend not found, but required to proceed. please install xutils-dev"
+		die "neither gcc nor makedepend found, but required to proceed. please install gcc or xutils-dev"
 	fi
 }
 
@@ -2537,6 +2545,8 @@ fi
 cat > "$SRCDIR/.config" <<EOF
 INTERFACE		= ${_interface}
 MAKE 			= ${MAKE}
+MAKEDEPEND		= ${MAKEDEPEND}
+MAKEDEPENDOPTS	= ${MAKEDEPENDOPTS}
 SWIG 			= ${SWIG}
 PYTHON 			= ${PYTHON}
 USE_SWIG 		= ${USE_SWIG}
