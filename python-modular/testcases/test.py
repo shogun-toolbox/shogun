@@ -4,6 +4,15 @@ import sys
 from os import listdir
 
 
+def get_name_fun (name):
+	prefix_svm='svm_'
+	prefix=''
+
+	if (file.find(prefix_svm)>-1):
+		prefix=prefix_svm
+
+	return 'test_kernels.'+prefix+name[:-len('Kernel')].lower()
+
 def test_mfile (file):
 	mfile=open(file, mode='r')
 	input={}
@@ -13,7 +22,7 @@ def test_mfile (file):
 		
 		if param=='name':
 			name=line.split('=')[1].strip().split("'")[1]
-			name_fun='test_kernels.'+name[:-len('Kernel')].lower()
+			name_fun=get_name_fun(name)
 			input[param]=name
 		elif param=='km_train':
 			input['km_train']=read_matrix(line)
@@ -30,8 +39,8 @@ def test_mfile (file):
 				input[param]=line.split('=')[1].strip().split("'")[1]
 
 	mfile.close()
-
 	fun=eval(name_fun)
+
 	return fun(input)
 
 def read_matrix (line):

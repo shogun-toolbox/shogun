@@ -9,15 +9,91 @@ from shogun.Kernel import *
 from shogun.Library import NO_NORMALIZATION
 from shogun.Classifier import *
 
+ROWS=11
+LEN_TRAIN=11
+LEN_TEST=17
+LEN_SEQ=60
+
+STR_ALPHABET='DNA'
+
+STRING_DEGREE=20
+
+WORD_ORDER=3
+WORD_GAP=0
+WORD_REVERSE=False
+
 ##################################################################
 ## helpers
 ##################################################################
 
+def get_data_rand ():
+	return {'train':rand(ROWS, LEN_TRAIN), 'test':rand(ROWS, LEN_TEST)}
+
+def get_data_dna ():
+	acgt=array(['A', 'C', 'G','T'])
+	len_acgt=len(acgt)
+	train=[]
+	test=[]
+
+	for i in range(LEN_TRAIN):
+		str1=[]
+		str2=[]
+		for j in range(LEN_SEQ):
+			str1.append(acgt[floor(len_acgt*rand())])
+			str2.append(acgt[floor(len_acgt*rand())])
+		train.append(''.join(str1))
+	test.append(''.join(str2))
+	
+	for i in range(LEN_TEST-LEN_TRAIN):
+		str1=[]
+		for j in range(LEN_SEQ):
+			str1.append(acgt[floor(len_acgt*rand())])
+	test.append(''.join(str1))
+
+	return {'train': train, 'test': test}
+
+def get_feats_real (data):
+	return {'train':RealFeatures(data['train']),
+		'test':RealFeatures(data['test'])}
+
+def get_feats_string (data, alphabet=DNA):
+	feats={'train':StringCharFeatures(alphabet),
+		'test':StringCharFeatures(alphabet)}
+	feats['train'].set_string_features(data['train'])
+	feats['test'].set_string_features(data['test'])
+
+	return feats
+
+def get_feats_word (data, alphabet=DNA, order=3, gap=0, reverse=False):
+	feats={}
+
+	stringfeat=StringCharFeatures(alphabet)
+	stringfeat.set_string_features(data['train'])
+	wordfeat=StringWordFeatures(stringfeat.get_alphabet());
+	wordfeat.obtain_from_char(stringfeat, WORD_ORDER-1, WORD_ORDER,
+		WORD_GAP, WORD_REVERSE)
+	preproc = SortWordString();
+	preproc.init(wordfeat);
+	wordfeat.add_preproc(preproc)
+	wordfeat.apply_preproc()
+	feats['train']=wordfeat
+
+	stringfeat=StringCharFeatures(alphabet)
+	stringfeat.set_string_features(data['test'])
+	wordfeat=StringWordFeatures(stringfeat.get_alphabet());
+	wordfeat.obtain_from_char(stringfeat, WORD_ORDER-1, WORD_ORDER,
+		WORD_GAP, WORD_REVERSE)
+	wordfeat.add_preproc(preproc)
+	wordfeat.apply_preproc()
+	feats['test']=wordfeat
+
+	return feats
+
 def _func_name():
 	return sys._getframe(1).f_code.co_name
 
-def _kernel (feats, data, kernel, *args, **kwargs):
-	kfun=eval(kernel+'Kernel')
+def _kernel (feats, data, name, *args, **kwargs):
+	kfun=eval(name+'Kernel')
 	k=kfun(feats['train'], feats['train'], *args, **kwargs)
 	km_train=k.get_kernel_matrix()
 
@@ -31,14 +107,14 @@ def _kernel (feats, data, kernel, *args, **kwargs):
 		'data_test':matrix(data['test'])
 	}
 
-	return [kernel, mats]
+	return [name, mats]
 
-def _kernel_svm(feats, data, kernel, *args, **kwargs):
+def _kernel_svm(feats, data, name, *args, **kwargs):
 	if len(args) < 2:
 		print '%s::%s needs at least two variable arguments!' % (_func_name(), kernel)
 		return False
 
-	kfun=eval(kernel+'Kernel')
+	kfun=eval(name+'Kernel')
 	k=kfun(feats['train'], feats['train'], *args, **kwargs)
 	num_vec=feats['train'].get_num_vectors();
 	labels=rand(num_vec).round()*2-1
@@ -54,7 +130,7 @@ def _kernel_svm(feats, data, kernel, *args, **kwargs):
 		'labels':labels
 	}
 
-	return ['svm_'+kernel, mats]
+	return ['svm_'+name, mats]
 
 ##################################################################
 ## actual kernels
@@ -82,66 +158,40 @@ def poly (feats, data, inhom=True, use_norm=True, degree=3, size=10):
 	return _kernel(feats, data, 'Poly',
 		size, degree, inhom, use_norm)+[params]
 
-def weighted_degree_string (feats, data, seqlen=60, degree=20, alphabet='DNA'):
+def weighted_degree_string (feats, data, degree=STRING_DEGREE):
 	r=arange(1,degree+1,dtype=double)
 	weights = r[::-1]/sum(r)
-	params={'alphabet':alphabet, 'degree':degree, 'seqlen':seqlen}
+	params={'alphabet':STR_ALPHABET, 'seqlen':LEN_SEQ, 'degree':degree}
 	return _kernel(feats, data, 'WeightedDegreeString',
 		degree, weights=weights)+[params]
 
-def weighted_degree_position_string (feats, data, seqlen=60, degree=20, alphabet='DNA'):
-	params={'alphabet':alphabet, 'degree':degree, 'seqlen':seqlen}
-	return _kernel(feats, data, 'WeightedDegreePositionString',
-		degree, ones(seqlen, dtype=int32))+[params]
+def weighted_degree_position_string (feats, data, degree=STRING_DEGREE):
+	shift=ones(LEN_SEQ, dtype=int32)
+	params={'alphabet':STR_ALPHABET, 'seqlen':LEN_SEQ, 'degree':degree}
+	return _kernel(feats, data, 'WeightedDegreePositionString', degree,
+		shift)+[params]
 
-def locality_improved_string (feats, data):
-#size = 110
-#length = 51
-#inner_degree = 5
-#outer_degree = 7
-#k = LocalityImprovedStringKernel(int32(size), length, inner_degree, outer_degree)
-	pass
+def locality_improved_string (feats, data, size=110, length=51, idegree=5, odegree=7):
+	params={'size_':size, 'length':length, 'idegree':idegree, 'odegree':odegree}
+	return _kernel(feats, data, 'LocalityImprovedString', size, length,
+		idegree, odegree)+[params]
 
-def common_word_string (feats, data, seqlen=60, alphabet='DNA', order=3, gap=0, reverse=False):
-	wordfeat_train = StringWordFeatures(feats['train'].get_alphabet());
-	wordfeat_train.obtain_from_char(feats['train'], order-1, order, gap, reverse)
-	wordfeat_test = StringWordFeatures(feats['test'].get_alphabet());
-	wordfeat_test.obtain_from_char(feats['test'], order-1, order, gap, reverse)
-
-	preproc = SortWordString();
-	preproc.init(wordfeat_train);
-	wordfeat_train.add_preproc(preproc)
-	wordfeat_train.apply_preproc()
-
-	preproc = SortWordString();
-	preproc.init(wordfeat_test);
-	wordfeat_test.add_preproc(preproc)
-	wordfeat_test.apply_preproc()
-
-	feats['train'] = wordfeat_train
-	feats['test'] = wordfeat_test
+def common_word_string (feats, data):
 	# ASK: False, NO_NORMALIZATION, 10)
-	#'seqlen':seqlen, 
-	params={'alphabet':alphabet, 'order':order, 'gap':gap,
-		'reverse':str(reverse)}
+	params={'order':WORD_ORDER, 'gap':WORD_GAP,
+		'reverse':str(WORD_REVERSE), 'alphabet':STR_ALPHABET}
 	return _kernel(feats, data, 'CommWordString')+[params]
 
-def hamming_word (feats, data):
-#size=50
-#width=10
-#use_sign=False
-#k = HammingWordKernel(wordfeat, wordfeat, size, width, use_sign)
-	pass
-
 def manhattan_word (feats, data):
-#k = ManhattanWordKernel(wordfeat, wordfeat, size, width)
-#km_train=k.get_kernel_matrix()
+	params={'order':WORD_ORDER, 'gap':WORD_GAP,
+		'reverse':str(WORD_REVERSE), 'alphabet':STR_ALPHABET}
+	return _kernel(feats, data, 'ManhattanWord')+[params]
 
-#k.init(wordfeat,wordtestfeat)
-#km_test=k.get_kernel_matrix()
-
-#write_testcase('CommWordStringKernel','test_cws_kernel', {'km_train':km_train ,'km_test':km_test, data_train=matrix(data_train), data_test=matrix(data_test), {'alphabet':'DNA', 'order':order, 'gap':gap, 'reverse':reverse})
-	pass
+def hamming_word (feats, data, size=50, width=10, use_sign=False):
+	params={'order':WORD_ORDER, 'gap':WORD_GAP,
+		'reverse':str(WORD_REVERSE), 'alphabet':STR_ALPHABET,
+		'size_':size, 'width_':width, 'use_sign':str(use_sign)}
+	return _kernel(feats, data, 'HammingWord', size, width, use_sign)+[params]
 
 
 ##################################################################

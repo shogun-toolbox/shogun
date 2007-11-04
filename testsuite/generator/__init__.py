@@ -11,12 +11,9 @@ __url__='http://shogun-toolbox.org'
 
 from numpy.random import *
 from shogun.Features import *
-from kernels import *
+import kernels
 
 dir_output='data/'
-len_train=11
-len_test =17
-len_seq=60
 
 def _get_matrix(km, mat_name='km'):
 	line=list()
@@ -70,57 +67,37 @@ def _write (output):
 
 	mfile.close()
 
-def _get_data_dna ():
-	acgt=array(['A', 'C', 'G','T'])
-	len_acgt=len(acgt)
-	train=[]
-	test=[]
 
-	for i in range(len_train):
-		str1=[]
-		str2=[]
-		for j in range(len_seq):
-			str1.append(acgt[floor(len_acgt*rand())])
-			str2.append(acgt[floor(len_acgt*rand())])
-		train.append(''.join(str1))
-	test.append(''.join(str2))
-	
-	for i in range(len_test-len_train):
-		str1=[]
-		for j in range(len_seq):
-			str1.append(acgt[floor(len_acgt*rand())])
-	test.append(''.join(str1))
+def _run_realfeats ():
+	data=kernels.get_data_rand()
+	feats=kernels.get_feats_real(data)
 
-	return {'train': train, 'test': test}
+	_write(kernels.gaussian(feats, data))
+	_write(kernels.linear(feats, data))
+	_write(kernels.chi2(feats, data))
+	_write(kernels.sigmoid(feats, data, 1.1, 1.3))
+	_write(kernels.sigmoid(feats, data, 0.5, 0.7))
+	_write(kernels.poly(feats, data, True, True))
+	_write(kernels.poly(feats, data, False, True))
+	_write(kernels.poly(feats, data, True, False))
+	_write(kernels.poly(feats, data, False, False))
+	_write(kernels.svm_gaussian(feats, data, 1.5))
 
-def _run_realfeats (data={}, feats={}):
-	rows=11
-	data['train']=rand(rows, len_train)
-	data['test']=rand(rows, len_test)
-	feats['train']=RealFeatures(data['train'])
-	feats['test']=RealFeatures(data['test'])
+def _run_stringfeats ():
+	data=kernels.get_data_dna()
+	feats=kernels.get_feats_string(data)
 
-	_write(gaussian(feats, data))
-	_write(linear(feats, data))
-	_write(chi2(feats, data))
-	_write(sigmoid(feats, data, 1.1, 1.3))
-	_write(sigmoid(feats, data, 0.5, 0.7))
-	_write(poly(feats, data, True, True))
-	_write(poly(feats, data, False, True))
-	_write(poly(feats, data, True, False))
-	_write(poly(feats, data, False, False))
-	_write(svm_gaussian(feats, data, 1.5))
+	_write(kernels.weighted_degree_string(feats, data))
+	_write(kernels.weighted_degree_position_string(feats, data))
+	#_write(kernels.locality_improved_string(feats, data))
 
-def _run_stringfeats (data={}, feats={}):
-	data = _get_data_dna()
-	feats['train']=StringCharFeatures(DNA)
-	feats['train'].set_string_features(data['train'])
-	feats['test']=StringCharFeatures(DNA)
-	feats['test'].set_string_features(data['test'])
+def _run_wordfeats ():
+	data=kernels.get_data_dna()
+	feats=kernels.get_feats_word(data)
 
-	_write(weighted_degree_string(feats, data, len_seq))
-	_write(weighted_degree_position_string(feats, data, len_seq))
-	_write(common_word_string(feats, data, len_seq))
+	_write(kernels.common_word_string(feats, data))
+	#_write(kernels.manhattan_word(feats, data))
+	#_write(kernels.hamming_word(feats, data, 50, 10, False))
 
 def run ():
 	# ASK: really necessary to seed explicitely?
@@ -129,5 +106,6 @@ def run ():
 
 	_run_realfeats()
 	_run_stringfeats()
+	_run_wordfeats()
 
 
