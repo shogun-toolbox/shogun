@@ -6,31 +6,33 @@ from os import listdir
 
 def test_mfile (file):
 	mfile=open(file, mode='r')
-	params={}
+	input={}
 
 	for line in mfile:
 		param = line.split('=')[0].strip()
 		
-		if param=='functionname':
-			name_fun='test_kernels.'+line.split('=')[1].strip().split("'")[1]
+		if param=='name':
+			name=line.split('=')[1].strip().split("'")[1]
+			name_fun='test_kernels.'+name[:-len('Kernel')].lower()
+			input[param]=name
 		elif param=='km_train':
-			params['km_train']=read_matrix(line)
+			input['km_train']=read_matrix(line)
 		elif param=='km_test':
-			params['km_test']=read_matrix(line)
+			input['km_test']=read_matrix(line)
 		elif param=='data_train':
-			params['data_train']=read_matrix(line)
+			input['data_train']=read_matrix(line)
 		elif param=='data_test':
-			params['data_test']=read_matrix(line)
-		else :
+			input['data_test']=read_matrix(line)
+		else:
 			if (line.find("'")==-1):
-				params[param]=eval(line.split('=')[1])
+				input[param]=eval(line.split('=')[1])
 			else: 
-				params[param]=line.split('=')[1].strip().split("'")[1]
+				input[param]=line.split('=')[1].strip().split("'")[1]
 
 	mfile.close()
 
-	test_fun = eval(name_fun)
-	return test_fun(params)
+	fun=eval(name_fun)
+	return fun(input)
 
 def read_matrix (line):
 	str=(line.split('[')[1]).split(']')[0]
@@ -60,5 +62,3 @@ for file in sys.argv:
 		except KeyError:
 			print 'Error in input test data'
 			sys.exit(2)
-
-sys.exit(0)

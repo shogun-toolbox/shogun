@@ -22,8 +22,7 @@ def _realkernel (input, accuracy, *args, **kwargs):
 	feats={'train':RealFeatures(input['data_train']),
 		'test':RealFeatures(input['data_test'])}
 	kms={'train':input['km_train'], 'test':input['km_test']}
-	return _kernel(input['kernelname'], feats, kms, accuracy,
-		*args, **kwargs)
+	return _kernel(input['name'], feats, kms, accuracy, *args, **kwargs)
 
 def _stringkernel (input, accuracy, *args, **kwargs):
 	feats={'train':StringCharFeatures(eval(input['alphabet'])),
@@ -31,8 +30,7 @@ def _stringkernel (input, accuracy, *args, **kwargs):
 	feats['train'].set_string_features(list(input['data_train'][0]))
 	feats['test'].set_string_features(list(input['data_test'][0]))
 	kms={'train':input['km_train'], 'test':input['km_test']}
-	return _kernel(input['kernelname'], feats, kms, accuracy,
-		*args, **kwargs)
+	return _kernel(input['name'], feats, kms, accuracy, *args, **kwargs)
 
 def _wordkernel (input, accuracy, *args, **kwargs):
 	feats={'train':StringCharFeatures(eval(input['alphabet'])),
@@ -59,14 +57,13 @@ def _wordkernel (input, accuracy, *args, **kwargs):
 	feats['test']=wordfeat
 
 	kms={'train':input['km_train'], 'test':input['km_test']}
-	return _kernel(input['kernelname'], feats, kms, accuracy,
-		*args, **kwargs)
+	return _kernel(input['name'], feats, kms, accuracy, *args, **kwargs)
 
 def _kernel_svm (input, accuracy, *args, **kwargs):
 	feats={'train':RealFeatures(input['data_train']),
 		'test':RealFeatures(input['data_train'])}
 
-	kfun=eval(input['kernelname'])
+	kfun=eval(input['name'])
 	k=kfun(feats['train'],feats['train'], *args, **kwargs)
 	#numvec = feat.get_num_vectors();
 	l=Labels(double(input['labels']))
@@ -78,8 +75,8 @@ def _kernel_svm (input, accuracy, *args, **kwargs):
 	#gsv = svm.get_support_vectors()
 	#max2 = max(testgsv-dict['alphas']) # eigtl. 0/1 index
 
-	#test_feat = RealFeatures(dict['data_test'])
-	#gk.init(feat, test_feat)
+	#feat = RealFeatures(dict['data_test'])
+	#gk.init(feat, feat)
 	#out = svm.classify().get_labels() #e-4/5 precision
 
 	#bias = svm.get_bias() #e-4/5 precision
@@ -94,34 +91,34 @@ def _kernel_svm (input, accuracy, *args, **kwargs):
 
 	return False
 
-def test_gaussian (input):
+def gaussian (input):
 	return _realkernel(input, 1e-8, input['width_'], input['size_'])
 
-def test_linear (input):
+def linear (input):
 	return _realkernel(input, 1e-8, input['scale'])
 
-def test_chi2 (input):
+def chi2 (input):
 	return _realkernel(input, 1e-8, input['size_'])
 
-def test_sigmoid (input):
+def sigmoid (input):
 	return _realkernel(input, 1e-9, input['size_'], input['gamma_'],
 		input['coef0'])
 
-def test_poly (input):
+def poly (input):
 	return _realkernel(input, 1e-6, input['size_'], input['degree'],
 		eval(input['inhom']), eval(input['use_norm']))
 
-def test_weighteddegreestring (input):
+def weighteddegreestring (input):
 	degree=input['degree']
 	weights=arange(1,degree+1,dtype=double)[::-1]/sum(arange(1,degree+1,dtype=double))
 	return _stringkernel(input, 1e-10, degree, weights=weights)
 
-def test_weighteddegreepositionstring (input):
+def weighteddegreepositionstring (input):
 	return _stringkernel(input, 1e-8, input['degree'],
 		ones(input['seqlen'], dtype=int32))
 
-def test_commwordstring (input):
+def commwordstring (input):
 	return _wordkernel(input, 1e-9)
 
-def test_svm_gaussian (input):
+def svm_gaussian (input):
 	return _kernel_svm(input, 1e-8, input['width_'], input['size_'])

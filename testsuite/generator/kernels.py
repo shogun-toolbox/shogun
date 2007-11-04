@@ -24,8 +24,6 @@ def _kernel (feats, data, kernel, *args, **kwargs):
 	k.init(feats['train'], feats['test'])
 	km_test=k.get_kernel_matrix()
 
-	fun = 'test_' + kernel.lower()
-
 	mats={
 		'km_train':km_train,
 		'km_test':km_test,
@@ -33,7 +31,7 @@ def _kernel (feats, data, kernel, *args, **kwargs):
 		'data_test':matrix(data['test'])
 	}
 
-	return [kernel, fun, mats]
+	return [kernel, mats]
 
 def _kernel_svm(feats, data, kernel, *args, **kwargs):
 	if len(args) < 2:
@@ -49,8 +47,6 @@ def _kernel_svm(feats, data, kernel, *args, **kwargs):
 	svm.train()
 	alphas = svm.get_alphas()
 
-	fun = 'test_svm_' + kernel.lower()
-
 	mats={
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test']),
@@ -58,7 +54,7 @@ def _kernel_svm(feats, data, kernel, *args, **kwargs):
 		'labels':labels
 	}
 
-	return ['svm_'+kernel, fun, mats]
+	return ['svm_'+kernel, mats]
 
 ##################################################################
 ## actual kernels

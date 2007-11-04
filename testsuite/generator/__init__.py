@@ -51,22 +51,22 @@ def _write (output):
 	print 'Writing for kernel:', output[0]
 
 	prefix_svm='svm_'
-	value_list = output[3].values()
-	value_str  = '_'.join([str(x) for x in value_list])
-	value_str  = value_str.replace('.', '')
-
-	mfile = open(dir_output+output[0]+'Kernel_'+value_str+'.m', mode='w')
-	mfile.write("functionname = '"+output[1]+"'\n")
+	params='_'.join([str(x) for x in output[2].values()])
+	params=params.replace('.', '')
+	mfile=open(dir_output+output[0]+'Kernel_'+params+'.m', mode='w')
 	
 	if (output[0].startswith(prefix_svm)):
-		output[0]=output[0][len(prefix_svm):] # remove it for kernelname
-	mfile.write("kernelname = '"+output[0]+"Kernel'\n")
+		output[0]=output[0][len(prefix_svm):] # remove for kernel's name
+
+	# need suffix Kernel b/c matlab et al not as sophisticated as python
+	# in string processing
+	mfile.write("name = '"+output[0]+"Kernel'\n")
+
+	for key in output[1].keys():
+		mfile.write("%s\n" % _get_matrix(output[1][key], mat_name=key))
 
 	for key in output[2].keys():
-		mfile.write("%s\n" % _get_matrix(output[2][key], mat_name=key))
-
-	for key in output[3].keys():
-		mfile.write(key+' = %r\n' % output[3][key])
+		mfile.write(key+' = %r\n' % output[2][key])
 
 	mfile.close()
 
