@@ -1,54 +1,64 @@
 import test_kernels
-import read_mfile
+from numpy import *
 import sys
 from os import listdir
 
 
-def test_mfile(file):
-	mfile = open(file, mode='r')
-
-	param_dict = {}
+def test_mfile (file):
+	mfile=open(file, mode='r')
+	params={}
 
 	for line in mfile:
-		parname = line.split('=')[0].strip()
+		param = line.split('=')[0].strip()
 		
-		if parname=='functionname':
-			name =  line.split('=')[1].strip().split("'")[1]
-			functionname = 'test_kernels.'+name
-
-		elif parname=='km_train':
-			param_dict['km_train'] = read_mfile.read_mat(line)
-
-		elif parname=='km_test':
-			param_dict['km_test'] = read_mfile.read_mat(line)	
-
-		elif parname=='data_train':
-			param_dict['data_train'] = read_mfile.read_mat(line)
-
-		elif parname=='data_test':
-			param_dict['data_test'] =  read_mfile.read_mat(line)
+		if param=='functionname':
+			name_fun='test_kernels.'+line.split('=')[1].strip().split("'")[1]
+		elif param=='km_train':
+			params['km_train']=read_matrix(line)
+		elif param=='km_test':
+			params['km_test']=read_matrix(line)
+		elif param=='data_train':
+			params['data_train']=read_matrix(line)
+		elif param=='data_test':
+			params['data_test']=read_matrix(line)
 		else :
-			if(line.find("'")==-1):
-				param_dict[parname]= eval(line.split('=')[1])
+			if (line.find("'")==-1):
+				params[param]=eval(line.split('=')[1])
 			else: 
-				param_dict[parname]= line.split('=')[1].strip().split("'")[1]
-
+				params[param]=line.split('=')[1].strip().split("'")[1]
 
 	mfile.close()
 
-	test_fun = eval(functionname)
+	test_fun = eval(name_fun)
+	return test_fun(params)
 
-	return test_fun(param_dict )
+def read_matrix (line):
+	str=(line.split('[')[1]).split(']')[0]
+	lines=str.split(';')
+	lis2d=list()
 
+	for x in lines:
+		lis=list()
+		for y in x.split(','):
+			y=y.replace("'","").strip()
+			if(y.isalpha()):
+				lis.append(y)
+			else:
+				lis.append(float(y))
+		lis2d.append(lis)
 
-mfiles = sys.argv
-for file in mfiles:
-	if(file.endswith('.m',0,sys.maxint)):
-		res = test_mfile(file)
-		if res:
-			sys.exit(0)
-		else:
-			sys.exit(1)
+	return array(lis2d)
 
+for file in sys.argv:
+	if (file.endswith('.m')):
+		try:
+			res=test_mfile(file)
+			if res:
+				sys.exit(0)
+			else:
+				sys.exit(1)
+		except KeyError:
+			print 'Error in input test data'
+			sys.exit(2)
 
-sys.exit(1)
+sys.exit(0)

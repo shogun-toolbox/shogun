@@ -50,12 +50,16 @@ def _write (output):
 
 	print 'Writing for kernel:', output[0]
 
+	prefix_svm='svm_'
 	value_list = output[3].values()
 	value_str  = '_'.join([str(x) for x in value_list])
 	value_str  = value_str.replace('.', '')
 
 	mfile = open(dir_output+output[0]+'Kernel_'+value_str+'.m', mode='w')
 	mfile.write("functionname = '"+output[1]+"'\n")
+	
+	if (output[0].startswith(prefix_svm)):
+		output[0]=output[0][len(prefix_svm):] # remove it for kernelname
 	mfile.write("kernelname = '"+output[0]+"Kernel'\n")
 
 	for key in output[2].keys():
