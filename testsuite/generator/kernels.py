@@ -61,21 +61,34 @@ def _kernel_svm(feats, data, name, *args, **kwargs):
 
 	kfun=eval(name+'Kernel')
 	k=kfun(feats['train'], feats['train'], *args, **kwargs)
+	km_train=k.get_kernel_matrix()
+
 	num_vec=feats['train'].get_num_vectors();
 	labels=rand(num_vec).round()*2-1
 	l=Labels(labels)
 	svm=SVMLight(args[1], k, l) # assumes second vararg is size
 	svm.train()
-	alphas = svm.get_alphas()
+	alphas=svm.get_alphas()
+	bias=svm.get_bias()
+	support_vectors=svm.get_support_vectors()
 
-	mats={
+	k.init(feats['train'], feats['test'])
+	km_test=k.get_kernel_matrix()
+	classified=svm.classify().get_labels()
+
+	output={
 		'data_train':matrix(data['train']),
+		'km_train':km_train,
 		'data_test':matrix(data['test']),
+		'km_test':km_test,
 		'alphas':alphas,
-		'labels':labels
+		'labels':labels,
+		'bias':bias,
+		'support_vectors':support_vectors,
+		'classified':classified
 	}
 
-	return ['svm_'+name, mats]
+	return ['svm_'+name, output]
 
 ##################################################################
 ## public helpers

@@ -15,7 +15,7 @@ import kernels
 
 DIR_OUTPUT='data/'
 
-def _get_matrix(km, mat_name='km'):
+def _get_matrix (name, km):
 	line=list()
 	lis=list()
 
@@ -37,7 +37,7 @@ def _get_matrix(km, mat_name='km'):
 		lis.append(', '.join(line))
 		line=list()
 	kmstr=';'.join(lis)
-	kmstr=''.join([mat_name, ' = [', kmstr, ']'])
+	kmstr=''.join([name, ' = [', kmstr, ']'])
 
 	return kmstr.replace('\n', '')
 
@@ -68,18 +68,16 @@ def _write (output):
 	# in string processing
 	mfile.write("name = '"+output[0]+"Kernel'\n")
 
-	for k in output[1].keys():
-		mfile.write("%s\n"%_get_matrix(output[1][k], mat_name=k))
-
-	for k,v in output[2].iteritems():
+	data=output[1]
+	data.update(output[2])
+	for k,v in data.iteritems():
 		cn=v.__class__.__name__
 		if cn=='bool' or cn=='str':
 			mfile.write("%s = '%s'\n"%(k, v))
+		elif cn=='ndarray' or cn=='matrix':
+			mfile.write("%s\n"%_get_matrix(k, v))
 		else:
-			if cn=='ndarray':
-				mfile.write("%s\n"%_get_matrix(v, mat_name=k))
-			else:
-				mfile.write("%s = %s\n"%(k, v))
+			mfile.write("%s = %s\n"%(k, v))
 
 	mfile.close()
 

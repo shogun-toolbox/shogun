@@ -61,32 +61,31 @@ def _wordkernel (input, accuracy, *args, **kwargs):
 
 def _kernel_svm (input, accuracy, *args, **kwargs):
 	feats={'train':RealFeatures(input['data_train']),
-		'test':RealFeatures(input['data_train'])}
+		'test':RealFeatures(input['data_test'])}
 
 	kfun=eval(input['name'])
 	k=kfun(feats['train'],feats['train'], *args, **kwargs)
-	#numvec = feat.get_num_vectors();
+	train=max(abs(input['km_train']-k.get_kernel_matrix()).flat)
+
 	l=Labels(double(input['labels']))
 	svm=SVMLight(input['size_'], k, l) # labels: 0.1, 1, 10
 	svm.train()
-	alphas=svm.get_alphas()
-	train=max(alphas-input['alphas'])
+	check_alphas=max(abs(svm.get_alphas()-input['alphas']))
+	check_bias=abs(svm.get_bias()-input['bias'])
+	check_sv=max(abs(svm.get_support_vectors()-input['support_vectors']))
 
-	#gsv = svm.get_support_vectors()
-	#max2 = max(testgsv-dict['alphas']) # eigtl. 0/1 index
+	k.init(feats['train'], feats['test'])
+	test=max(abs(input['km_test']-k.get_kernel_matrix()).flat)
+	check_classified=max(abs(svm.classify().get_labels()-input['classified']))
 
-	#feat = RealFeatures(dict['data_test'])
-	#gk.init(feat, feat)
-	#out = svm.classify().get_labels() #e-4/5 precision
+	print "check_alphas: %e, check_bias: %e, check_sv: %e, check_classified: %e, train: %e, test: %e, accuracy: %e" % (check_alphas, check_bias, check_sv, check_classified, train, test, accuracy)
 
-	#bias = svm.get_bias() #e-4/5 precision
-
-	# checken gegen generierte referenz
-	#max2 = max(abs(dict['svm_out']-out))
-
-	print "train: %e, accuracy: %e" % (train, accuracy)
-
-	if train<accuracy:
+	if (check_alphas<accuracy and
+		check_bias<accuracy and
+		check_sv<accuracy and
+		check_classified<accuracy and
+		train<accuracy and
+		test<accuracy):
 		return True
 
 	return False
