@@ -105,20 +105,21 @@ def sigmoid (input):
 		input['coef0'])
 
 def poly (input):
-	return _realkernel(input, 1e-6, input['size_'], input['degree'],
-		eval(input['inhom']), eval(input['use_norm']))
+	return _realkernel(input, 1e-6, input['degree'],
+		eval(input['inhomogene']), eval(input['use_normalization']),
+		input['size_'])
 
 def weighteddegreestring (input):
-	degree=input['degree']
-	weights=arange(1,degree+1,dtype=double)[::-1]/sum(arange(1,degree+1,dtype=double))
-	return _stringkernel(input, 1e-10, degree, weights=weights)
+	return _stringkernel(input, 1e-10, input['degree'],
+		weights=input['weights'])
 
 def weighteddegreepositionstring (input):
-	return _stringkernel(input, 1e-8, input['degree'],
-		ones(input['seqlen'], dtype=int32))
+	shifts=ones(input['seqlen'], dtype=int32)
+	return _stringkernel(input, 1e-8, input['degree'], shifts)
 
 def commwordstring (input):
-	return _wordkernel(input, 1e-9)
+	return _wordkernel(input, 1e-9, eval(input['use_sign']),
+		input['normalization'], input['size_'])
 
 def svm_gaussian (input):
 	return _kernel_svm(input, 1e-8, input['width_'], input['size_'])

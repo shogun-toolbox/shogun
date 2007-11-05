@@ -13,7 +13,7 @@ from numpy.random import *
 from shogun.Features import *
 import kernels
 
-dir_output='data/'
+DIR_OUTPUT='data/'
 
 def _get_matrix(km, mat_name='km'):
 	line=list()
@@ -37,9 +37,20 @@ def _get_matrix(km, mat_name='km'):
 		lis.append(', '.join(line))
 		line=list()
 	kmstr=';'.join(lis)
-	kmstr=''.join([mat_name, ' = [',kmstr, ']'])
+	kmstr=''.join([mat_name, ' = [', kmstr, ']'])
 
 	return kmstr.replace('\n', '')
+
+def _get_filename (output):
+	params=[]
+
+	for v in output[2].itervalues():
+		cn=v.__class__.__name__
+		if cn!='ndarray' and cn!='matrix':
+			params.append(str(v))
+
+	params='_'.join(params).replace('.', '')
+	return DIR_OUTPUT+output[0]+'Kernel_'+params+'.m'
 
 def _write (output):
 	if output is False:
@@ -48,9 +59,7 @@ def _write (output):
 	print 'Writing for kernel:', output[0]
 
 	prefix_svm='svm_'
-	params='_'.join([str(x) for x in output[2].values()])
-	params=params.replace('.', '')
-	mfile=open(dir_output+output[0]+'Kernel_'+params+'.m', mode='w')
+	mfile=open(_get_filename(output), mode='w')
 	
 	if (output[0].startswith(prefix_svm)):
 		output[0]=output[0][len(prefix_svm):] # remove for kernel's name
@@ -59,11 +68,18 @@ def _write (output):
 	# in string processing
 	mfile.write("name = '"+output[0]+"Kernel'\n")
 
-	for key in output[1].keys():
-		mfile.write("%s\n" % _get_matrix(output[1][key], mat_name=key))
+	for k in output[1].keys():
+		mfile.write("%s\n"%_get_matrix(output[1][k], mat_name=k))
 
-	for key in output[2].keys():
-		mfile.write(key+' = %r\n' % output[2][key])
+	for k,v in output[2].iteritems():
+		cn=v.__class__.__name__
+		if cn=='bool' or cn=='str':
+			mfile.write("%s = '%s'\n"%(k, v))
+		else:
+			if cn=='ndarray':
+				mfile.write("%s\n"%_get_matrix(v, mat_name=k))
+			else:
+				mfile.write("%s = %s\n"%(k, v))
 
 	mfile.close()
 
@@ -77,10 +93,10 @@ def _run_realfeats ():
 	_write(kernels.chi2(feats, data))
 	_write(kernels.sigmoid(feats, data, 1.1, 1.3))
 	_write(kernels.sigmoid(feats, data, 0.5, 0.7))
-	_write(kernels.poly(feats, data, True, True))
-	_write(kernels.poly(feats, data, False, True))
-	_write(kernels.poly(feats, data, True, False))
-	_write(kernels.poly(feats, data, False, False))
+	_write(kernels.poly(feats, data, 3, True, True))
+	_write(kernels.poly(feats, data, 3, False, True))
+	_write(kernels.poly(feats, data, 3, True, False))
+	_write(kernels.poly(feats, data, 3, False, False))
 	_write(kernels.svm_gaussian(feats, data, 1.5))
 
 def _run_stringfeats ():
