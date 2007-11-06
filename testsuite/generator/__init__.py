@@ -5,8 +5,6 @@ A package to generate testcases for the shogun toolbox.
 """
 
 __license__='GPL v2'
-__status__='alpha'
-__version__='20071101'
 __url__='http://shogun-toolbox.org'
 
 from numpy.random import *

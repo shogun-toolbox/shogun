@@ -7,7 +7,14 @@ from numpy import array, zeros, int32, arange, double, ones
 
 def _kernel (name, feats, kms, accuracy, *args, **kwargs):
 	kfun=eval(name)
-	k=kfun(feats['train'], feats['train'], *args, **kwargs)
+
+	# FIXME temporary until interface to C is fixed
+	if name.find('Weighted') == -1:
+		k=kfun(*args, **kwargs)
+		k.init(feats['train'], feats['train'])
+	else:
+		k=kfun(feats['train'], feats['train'], *args, **kwargs)
+
 	train=max(abs(kms['train']-k.get_kernel_matrix()).flat)
 	k.init(feats['train'], feats['test'])
 	test=max(abs(kms['test']-k.get_kernel_matrix()).flat)
@@ -64,11 +71,12 @@ def _kernel_svm (input, accuracy, *args, **kwargs):
 		'test':RealFeatures(input['data_test'])}
 
 	kfun=eval(input['name'])
-	k=kfun(feats['train'],feats['train'], *args, **kwargs)
+	k=kfun(*args, **kwargs)
+	k.init(feats['train'], feats['train'])
 	train=max(abs(input['km_train']-k.get_kernel_matrix()).flat)
 
 	l=Labels(double(input['labels']))
-	svm=SVMLight(input['size_'], k, l) # labels: 0.1, 1, 10
+	svm=SVMLight(input['size_'], k, l)
 	svm.train()
 	check_alphas=max(abs(svm.get_alphas()-input['alphas']))
 	check_bias=abs(svm.get_bias()-input['bias'])
@@ -91,10 +99,10 @@ def _kernel_svm (input, accuracy, *args, **kwargs):
 	return False
 
 def gaussian (input):
-	return _realkernel(input, 1e-8, input['width_'], input['size_'])
+	return _realkernel(input, 1e-8, input['size_'], input['width_'])
 
 def linear (input):
-	return _realkernel(input, 1e-8, input['scale'])
+	return _realkernel(input, 1e-8, input['size_'], input['scale'])
 
 def chi2 (input):
 	return _realkernel(input, 1e-8, input['size_'])
@@ -104,21 +112,33 @@ def sigmoid (input):
 		input['coef0'])
 
 def poly (input):
-	return _realkernel(input, 1e-6, input['degree'],
-		eval(input['inhomogene']), eval(input['use_normalization']),
-		input['size_'])
+	return _realkernel(input, 1e-6, input['size_'], input['degree'],
+		eval(input['inhomogene']), eval(input['use_normalization']))
 
 def weighteddegreestring (input):
+	# FIXME temporary until interface to C is fixed
+#	return _stringkernel(input, 1e-10, input['size_'], input['weights'],
+#	input['degree'], input['max_mismatch'], input['use_normalization'],
+#	input['block_computation'], input['mkl_stepsize'],
+#	input['which_degree'])
 	return _stringkernel(input, 1e-10, input['degree'],
-		weights=input['weights'])
+		input['max_mismatch'], eval(input['use_normalization']),
+		eval(input['block_computation']), input['mkl_stepsize'],
+		input['which_degree'], input['weights'], input['size_'])
 
 def weighteddegreepositionstring (input):
-	shifts=ones(input['seqlen'], dtype=int32)
-	return _stringkernel(input, 1e-8, input['degree'], shifts)
+	# FIXME temporary until interface to C is fixed
+#	return _stringkernel(input, 1e-8, input['size_'], input['weights'],
+#		input['degree'], input['max_mismatch'], input['shift'],
+#		len(input['shift']), input['use_normalization'],
+#		input['mkl_stepsize'])
+	return _stringkernel(input, 1e-8, input['degree'], input['shift'],
+		eval(input['use_normalization']), input['max_mismatch'],
+		input['mkl_stepsize'], input['size_'])
 
 def commwordstring (input):
-	return _wordkernel(input, 1e-9, eval(input['use_sign']),
-		input['normalization'], input['size_'])
+	return _wordkernel(input, 1e-9, input['size_'],
+		eval(input['use_sign']), input['normalization'])
 
 def svm_gaussian (input):
-	return _kernel_svm(input, 1e-8, input['width_'], input['size_'])
+	return _kernel_svm(input, 1e-8, input['size_'], input['width_'])
