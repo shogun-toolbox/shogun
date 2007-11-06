@@ -127,6 +127,7 @@ def _run_wordfeats ():
 	feats=kernels.get_feats_word(data)
 
 	_write(kernels.common_word_string(feats, data))
+	_write(kernels.weighted_common_word_string(feats, data))
 	#_write(kernels.manhattan_word(feats, data))
 	#_write(kernels.hamming_word(feats, data, 50, 10, False))
 

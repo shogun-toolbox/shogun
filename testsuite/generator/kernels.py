@@ -41,7 +41,7 @@ def _kernel (name, feats, data, *args, **kwargs):
 	kfun=eval(name+'Kernel')
 
 	# FIXME temporary until interface to C is fixed
-	if name.find('Weighted') == -1:
+	if name.find('WeightedDegree') == -1:
 		k=kfun(*args, **kwargs)
 		k.init(feats['train'], feats['train'])
 	else:
@@ -268,6 +268,14 @@ def common_word_string (feats, data,
 	params={'use_sign':use_sign, 'normalization':normalization}
 	params.update(_get_params_word(size))
 	return _kernel('CommWordString', feats, data, size, use_sign,
+		normalization)+[params]
+
+def weighted_common_word_string (feats, data,
+	use_sign=False, normalization=FULL_NORMALIZATION, size=SIZE_CACHE):
+
+	params={'use_sign':use_sign, 'normalization':normalization}
+	params.update(_get_params_word(size))
+	return _kernel('WeightedCommWordString', feats, data, size, use_sign,
 		normalization)+[params]
 
 def manhattan_word (feats, data, width=0, size=SIZE_CACHE):

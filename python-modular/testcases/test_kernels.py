@@ -9,7 +9,7 @@ def _kernel (name, feats, kms, accuracy, *args, **kwargs):
 	kfun=eval(name)
 
 	# FIXME temporary until interface to C is fixed
-	if name.find('Weighted') == -1:
+	if name.find('WeightedDegree') == -1:
 		k=kfun(*args, **kwargs)
 		k.init(feats['train'], feats['train'])
 	else:
@@ -144,6 +144,10 @@ def fixeddegreestring (input):
 	return _stringkernel(input, 1e-10, input['size_'], input['degree'])
 
 def commwordstring (input):
+	return _wordkernel(input, 1e-9, input['size_'],
+		eval(input['use_sign']), input['normalization'])
+
+def weightedcommwordstring (input):
 	return _wordkernel(input, 1e-9, input['size_'],
 		eval(input['use_sign']), input['normalization'])
 
