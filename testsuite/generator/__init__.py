@@ -9,9 +9,25 @@ __url__='http://shogun-toolbox.org'
 
 from numpy.random import *
 from shogun.Features import *
+import os
 import kernels
 
-DIR_OUTPUT='data/'
+DIR_OUTPUT='data'+os.sep
+EXT_OUTPUT='.m'
+
+def _clean_dir_output ():
+	success=True
+
+	for fname in os.listdir(DIR_OUTPUT):
+		if not fname.endswith(EXT_OUTPUT):
+			continue
+
+		if not os.unlink(DIR_OUTPUT+fname):
+			print 'could not delete file ', fname
+			success=False
+
+	return success
+
 
 def _get_matrix (name, km):
 	line=list()
@@ -48,7 +64,7 @@ def _get_filename (output):
 			params.append(str(v))
 
 	params='_'.join(params).replace('.', '')
-	return DIR_OUTPUT+output[0]+'Kernel_'+params+'.m'
+	return DIR_OUTPUT+output[0]+'Kernel_'+params+EXT_OUTPUT
 
 def _write (output):
 	if output is False:
@@ -124,6 +140,7 @@ def run ():
 	#seed(None)
 	seed(42)
 
+	_clean_dir_output()
 	_run_realfeats()
 	_run_stringfeats()
 	_run_wordfeats()
