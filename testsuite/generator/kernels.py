@@ -262,6 +262,12 @@ def fixed_degree_string (feats, data, degree=3, size=SIZE_CACHE):
 	params.update(_get_params_string(size))
 	return _kernel('FixedDegreeString', feats, data, size, degree)+[params]
 
+def linear_string (feats, data, do_rescale=True, scale=1., size=SIZE_CACHE):
+	params={'do_rescale':do_rescale, 'scale':scale}
+	params.update(_get_params_string(size))
+	return _kernel('LinearString', feats, data, size, do_rescale,
+		scale)+[params]
+
 def common_word_string (feats, data,
 	use_sign=False, normalization=FULL_NORMALIZATION, size=SIZE_CACHE):
 

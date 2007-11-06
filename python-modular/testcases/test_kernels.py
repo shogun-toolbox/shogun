@@ -138,10 +138,14 @@ def weighteddegreepositionstring (input):
 
 def localityimprovedstring (input):
 	return _stringkernel(input, 1e-8, input['size_'], input['length'],
-	input['inner_degree'], input['outer_degree'])
+		input['inner_degree'], input['outer_degree'])
 
 def fixeddegreestring (input):
 	return _stringkernel(input, 1e-10, input['size_'], input['degree'])
+
+def linearstring (input):
+	return _stringkernel(input, 1e-8, input['size_'],
+		eval(input['do_rescale']) , input['scale'])
 
 def commwordstring (input):
 	return _wordkernel(input, 1e-9, input['size_'],
