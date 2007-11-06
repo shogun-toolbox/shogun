@@ -95,7 +95,9 @@ def _run_realfeats ():
 	_write(kernels.poly(feats, data, 3, False, True))
 	_write(kernels.poly(feats, data, 3, True, False))
 	_write(kernels.poly(feats, data, 3, False, False))
-	_write(kernels.svm_gaussian(feats, data, 1.5))
+	_write(kernels.svm_gaussian(feats, data, 1, 1.5))
+	_write(kernels.svm_gaussian(feats, data, 10, 1.5))
+	#_write(kernels.svm_gaussian(feats, data, 0.1, 1.5)) # invalid?
 
 def _run_stringfeats ():
 	data=kernels.get_data_dna()
@@ -114,7 +116,6 @@ def _run_wordfeats ():
 	#_write(kernels.hamming_word(feats, data, 50, 10, False))
 
 def run ():
-	# ASK: really necessary to seed explicitely?
 	#seed(None)
 	seed(42)
 

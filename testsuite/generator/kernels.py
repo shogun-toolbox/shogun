@@ -54,7 +54,7 @@ def _kernel (feats, data, name, *args, **kwargs):
 
 	return [name, mats]
 
-def _kernel_svm(feats, data, name, *args, **kwargs):
+def _kernel_svm(feats, data, name, multiplier_labels=1, *args, **kwargs):
 	if len(args)<2:
 		print '%s::%s needs at least two variable arguments!' % (_func_name(), name)
 		return False
@@ -64,7 +64,7 @@ def _kernel_svm(feats, data, name, *args, **kwargs):
 	km_train=k.get_kernel_matrix()
 
 	num_vec=feats['train'].get_num_vectors();
-	labels=rand(num_vec).round()*2-1
+	labels=(rand(num_vec).round()*2-1)*multiplier_labels
 	l=Labels(labels)
 	svm=SVMLight(args[1], k, l) # assumes second vararg is size
 	svm.train()
@@ -249,11 +249,12 @@ def hamming_word (feats, data, width=10, use_sign=False, size=SIZE_CACHE):
 ## classifiers
 ##################################################################
 
-def svm_gaussian (feats, data, width, size=SIZE_CACHE):
-	params={'width_':width}
+def svm_gaussian (feats, data, multiplier_labels=1, width=1.5, size=SIZE_CACHE):
+	params={'width_':width, 'multiplier_labels':multiplier_labels}
 	params.update(_get_params_real(size))
 	try:
-		return _kernel_svm(feats, data, 'Gaussian', width, size)+[params]
+		return _kernel_svm(feats, data, 'Gaussian', multiplier_labels, width,
+			size)+[params]
 	except TypeError:
 		return False
 
