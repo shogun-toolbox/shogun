@@ -140,6 +140,9 @@ def localityimprovedstring (input):
 	return _stringkernel(input, 1e-8, input['size_'], input['length'],
 	input['inner_degree'], input['outer_degree'])
 
+def fixeddegreestring (input):
+	return _stringkernel(input, 1e-10, input['size_'], input['degree'])
+
 def commwordstring (input):
 	return _wordkernel(input, 1e-9, input['size_'],
 		eval(input['use_sign']), input['normalization'])

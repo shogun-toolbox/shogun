@@ -257,6 +257,11 @@ def locality_improved_string (feats, data,
 	return _kernel('LocalityImprovedString', feats, data, size, length,
 		inner_degree, outer_degree)+[params]
 
+def fixed_degree_string (feats, data, degree=3, size=SIZE_CACHE):
+	params={'degree':degree}
+	params.update(_get_params_string(size))
+	return _kernel('FixedDegreeString', feats, data, size, degree)+[params]
+
 def common_word_string (feats, data,
 	use_sign=False, normalization=FULL_NORMALIZATION, size=SIZE_CACHE):
 

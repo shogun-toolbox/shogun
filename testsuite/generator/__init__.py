@@ -120,6 +120,7 @@ def _run_stringfeats ():
 	_write(kernels.weighted_degree_string(feats, data))
 	_write(kernels.weighted_degree_position_string(feats, data))
 	_write(kernels.locality_improved_string(feats, data))
+	_write(kernels.fixed_degree_string(feats, data))
 
 def _run_wordfeats ():
 	data=kernels.get_data_dna()
