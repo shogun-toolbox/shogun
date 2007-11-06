@@ -129,9 +129,13 @@ def get_data_dna ():
 
 	return {'train': train, 'test': test}
 
-def get_feats_real (data):
-	return {'train':RealFeatures(data['train']),
-		'test':RealFeatures(data['test'])}
+def get_feats_real (data, sparse=False):
+	if sparse:
+		return {'train':SparseRealFeatures(data['train']),
+			'test':SparseRealFeatures(data['test'])}
+	else:
+		return {'train':RealFeatures(data['train']),
+			'test':RealFeatures(data['test'])}
 
 def get_feats_string (data, alphabet=DNA):
 	feats={'train':StringCharFeatures(alphabet),
@@ -179,6 +183,11 @@ def linear (feats, data, scale=1.0, size=SIZE_CACHE):
 	params={'scale':scale}
 	params.update(_get_params_real(size))
 	return _kernel('Linear', feats, data, size, scale)+[params]
+
+def sparse_linear (feats, data, scale=1.0, size=SIZE_CACHE):
+	params={'scale':scale}
+	params.update(_get_params_real(size))
+	return _kernel('SparseLinear', feats, data, size, scale)+[params]
 
 def chi2 (feats, data, size=SIZE_CACHE):
 	params=_get_params_real(size)
@@ -243,7 +252,7 @@ def locality_improved_string (feats, data,
 	length=51, inner_degree=5, outer_degree=7, size=SIZE_CACHE):
 
 	params={'length':length, 'inner_degree':inner_degree,
-		'outer_degree':outer_odegree}
+		'outer_degree':outer_degree}
 	params.update(_get_params_string(size))
 	return _kernel('LocalityImprovedString', feats, data, size, length,
 		inner_degree, outer_degree)+[params]

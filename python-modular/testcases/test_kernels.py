@@ -136,6 +136,10 @@ def weighteddegreepositionstring (input):
 		eval(input['use_normalization']), input['max_mismatch'],
 		input['mkl_stepsize'], input['size_'])
 
+def localityimprovedstring (input):
+	return _stringkernel(input, 1e-8, input['size_'], input['length'],
+	input['inner_degree'], input['outer_degree'])
+
 def commwordstring (input):
 	return _wordkernel(input, 1e-9, input['size_'],
 		eval(input['use_sign']), input['normalization'])
