@@ -150,6 +150,10 @@ def linearstring (input):
 def localalignmentstring (input):
 	return _stringkernel(input, 1e-8, input['size_'])
 
+def polymatchstring (input):
+	return _stringkernel(input, 1e-10, input['size_'], input['degree'],
+		eval(input['inhomogene']), eval(input['use_normalization']))
+
 def commwordstring (input):
 	return _wordkernel(input, 1e-9, input['size_'],
 		eval(input['use_sign']), input['normalization'])

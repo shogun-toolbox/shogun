@@ -272,6 +272,15 @@ def local_alignment_string (feats, data, size=SIZE_CACHE):
 	params=_get_params_string(size)
 	return _kernel('LocalAlignmentString', feats, data, size)+[params]
 
+def poly_match_string (feats, data, degree=3, inhomogene=True,
+	use_normalization=True, size=SIZE_CACHE):
+
+	params={'degree':degree, 'inhomogene':inhomogene,
+		'use_normalization':use_normalization}
+	params.update(_get_params_string(size))
+	return _kernel('PolyMatchString', feats, data, size, degree,
+		inhomogene, use_normalization)+[params]
+
 def common_word_string (feats, data,
 	use_sign=False, normalization=FULL_NORMALIZATION, size=SIZE_CACHE):
 
