@@ -117,11 +117,13 @@ def _run_stringfeats ():
 	data=kernels.get_data_dna()
 	feats=kernels.get_feats_string(data)
 
-	_write(kernels.weighted_degree_string(feats, data))
-	_write(kernels.weighted_degree_position_string(feats, data))
-	_write(kernels.locality_improved_string(feats, data))
 	_write(kernels.fixed_degree_string(feats, data))
 	_write(kernels.linear_string(feats, data))
+	_write(kernels.local_alignment_string(feats, data))
+	_write(kernels.locality_improved_string(feats, data))
+	_write(kernels.weighted_degree_string(feats, data))
+	_write(kernels.weighted_degree_position_string(feats, data))
+
 
 def _run_wordfeats ():
 	data=kernels.get_data_dna()
@@ -129,6 +131,7 @@ def _run_wordfeats ():
 
 	_write(kernels.common_word_string(feats, data))
 	_write(kernels.weighted_common_word_string(feats, data))
+	#_write(kernels.linear_word(feats, data))
 	#_write(kernels.manhattan_word(feats, data))
 	#_write(kernels.hamming_word(feats, data, 50, 10, False))
 
@@ -137,7 +140,7 @@ def _run_sparsefeats ():
 	feats=kernels.get_feats_real(data, sparse=True)
 
 	# floating point exception not within Python
-	#_write(kernels.sparse_linear(feats, data))
+	_write(kernels.sparse_linear(feats, data))
 
 def run ():
 	#seed(None)
@@ -147,6 +150,6 @@ def run ():
 	_run_realfeats()
 	_run_stringfeats()
 	_run_wordfeats()
-	_run_sparsefeats()
+	#_run_sparsefeats()
 
 

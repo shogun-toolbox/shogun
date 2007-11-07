@@ -147,6 +147,9 @@ def linearstring (input):
 	return _stringkernel(input, 1e-8, input['size_'],
 		eval(input['do_rescale']) , input['scale'])
 
+def localalignmentstring (input):
+	return _stringkernel(input, 1e-8, input['size_'])
+
 def commwordstring (input):
 	return _wordkernel(input, 1e-9, input['size_'],
 		eval(input['use_sign']), input['normalization'])

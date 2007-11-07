@@ -148,22 +148,22 @@ def get_feats_string (data, alphabet=DNA):
 def get_feats_word (data, alphabet=DNA, order=3, gap=0, reverse=False):
 	feats={}
 
-	stringfeat=StringCharFeatures(alphabet)
-	stringfeat.set_string_features(data['train'])
-	wordfeat=StringWordFeatures(stringfeat.get_alphabet());
-	wordfeat.obtain_from_char(stringfeat, WORD_ORDER-1, WORD_ORDER,
-		WORD_GAP, WORD_REVERSE)
+	feat=StringCharFeatures(alphabet)
+	feat.set_string_features(data['train'])
+	wordfeat=StringWordFeatures(feat.get_alphabet());
+	wordfeat.obtain_from_char(feat,
+		WORD_ORDER-1, WORD_ORDER, WORD_GAP, WORD_REVERSE)
 	preproc = SortWordString();
 	preproc.init(wordfeat);
 	wordfeat.add_preproc(preproc)
 	wordfeat.apply_preproc()
 	feats['train']=wordfeat
 
-	stringfeat=StringCharFeatures(alphabet)
-	stringfeat.set_string_features(data['test'])
-	wordfeat=StringWordFeatures(stringfeat.get_alphabet());
-	wordfeat.obtain_from_char(stringfeat, WORD_ORDER-1, WORD_ORDER,
-		WORD_GAP, WORD_REVERSE)
+	feat=StringCharFeatures(alphabet)
+	feat.set_string_features(data['test'])
+	wordfeat=StringWordFeatures(feat.get_alphabet());
+	wordfeat.obtain_from_char(feat,
+		WORD_ORDER-1, WORD_ORDER, WORD_GAP, WORD_REVERSE)
 	wordfeat.add_preproc(preproc)
 	wordfeat.apply_preproc()
 	feats['test']=wordfeat
@@ -268,6 +268,10 @@ def linear_string (feats, data, do_rescale=True, scale=1., size=SIZE_CACHE):
 	return _kernel('LinearString', feats, data, size, do_rescale,
 		scale)+[params]
 
+def local_alignment_string (feats, data, size=SIZE_CACHE):
+	params=_get_params_string(size)
+	return _kernel('LocalAlignmentString', feats, data, size)+[params]
+
 def common_word_string (feats, data,
 	use_sign=False, normalization=FULL_NORMALIZATION, size=SIZE_CACHE):
 
@@ -283,6 +287,12 @@ def weighted_common_word_string (feats, data,
 	params.update(_get_params_word(size))
 	return _kernel('WeightedCommWordString', feats, data, size, use_sign,
 		normalization)+[params]
+
+def linear_word (feats, data, do_rescale=True, scale=1., size=SIZE_CACHE):
+	params={'do_rescale':do_rescale, 'scale':scale}
+	params.update(_get_params_word(size))
+	return _kernel('LinearWord', feats, data, size, do_rescale,
+		scale)+[params]
 
 def manhattan_word (feats, data, width=0, size=SIZE_CACHE):
 	params={'width_':width}
