@@ -140,6 +140,10 @@ def localityimprovedstring (input):
 	return _stringkernel(input, 1e-8, input['size_'], input['length'],
 		input['inner_degree'], input['outer_degree'])
 
+def simplelocalityimprovedstring (input):
+	return _stringkernel(input, 1e-15, input['size_'], input['length'],
+		input['inner_degree'], input['outer_degree'])
+
 def fixeddegreestring (input):
 	return _stringkernel(input, 1e-10, input['size_'], input['degree'])
 

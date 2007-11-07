@@ -257,6 +257,15 @@ def locality_improved_string (feats, data,
 	return _kernel('LocalityImprovedString', feats, data, size, length,
 		inner_degree, outer_degree)+[params]
 
+def simple_locality_improved_string (feats, data,
+	length=5, inner_degree=5, outer_degree=7, size=SIZE_CACHE):
+
+	params={'length':length, 'inner_degree':inner_degree,
+		'outer_degree':outer_degree}
+	params.update(_get_params_string(size))
+	return _kernel('SimpleLocalityImprovedString', feats, data, size, length,
+		inner_degree, outer_degree)+[params]
+
 def fixed_degree_string (feats, data, degree=3, size=SIZE_CACHE):
 	params={'degree':degree}
 	params.update(_get_params_string(size))

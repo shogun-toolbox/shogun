@@ -122,6 +122,7 @@ def _run_stringfeats ():
 	_write(kernels.local_alignment_string(feats, data))
 	_write(kernels.locality_improved_string(feats, data))
 	_write(kernels.poly_match_string(feats, data))
+	_write(kernels.simple_locality_improved_string(feats, data))
 	_write(kernels.weighted_degree_string(feats, data))
 	_write(kernels.weighted_degree_position_string(feats, data))
 
