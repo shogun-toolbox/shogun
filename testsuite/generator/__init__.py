@@ -142,7 +142,9 @@ def _run_sparsefeats ():
 	feats=kernels.get_feats_real(data, sparse=True)
 
 	# floating point exception not within Python
-	_write(kernels.sparse_linear(feats, data))
+	#_write(kernels.sparse_linear(feats, data))
+	#_write(kernels.sparse_poly(feats, data))
+	#_write(kernels.sparse_gaussian(feats, data))
 
 def run ():
 	#seed(None)

@@ -179,6 +179,11 @@ def gaussian (feats, data, width=1.3, size=SIZE_CACHE):
 	params.update(_get_params_real(size))
 	return _kernel('Gaussian', feats, data, size, width)+[params]
 
+def sparse_gaussian (feats, data, width=1.3, size=SIZE_CACHE):
+	params={'width_':width}
+	params.update(_get_params_real(size))
+	return _kernel('SparseGaussian', feats, data, size, width)+[params]
+
 def linear (feats, data, scale=1.0, size=SIZE_CACHE):
 	params={'scale':scale}
 	params.update(_get_params_real(size))
@@ -206,6 +211,16 @@ def poly (feats, data, degree=3,
 	params.update(_get_params_real(size))
 	return _kernel('Poly', feats, data, size, degree, inhomogene,
 		use_normalization)+[params]
+
+def sparse_poly (feats, data, degree=3,
+	inhomogene=True, use_normalization=True, size=SIZE_CACHE):
+
+	params={'degree':degree, 'inhomogene':inhomogene,
+		'use_normalization':use_normalization}
+	params.update(_get_params_real(size))
+	return _kernel('SparsePoly', feats, data, size, degree, inhomogene,
+		use_normalization)+[params]
+
 
 def weighted_degree_string (feats, data, degree=STRING_DEGREE,
 	max_mismatch=0, use_normalization=True, block_computation=False,
