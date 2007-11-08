@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+from sys import _getframe
 from numpy.random import *
 from numpy import *
 from shogun.PreProc import *
@@ -9,73 +9,69 @@ from shogun.Kernel import *
 from shogun.Library import FULL_NORMALIZATION
 from shogun.Classifier import *
 
+import fileops
+
+klist=open('klist.py', 'r')
+KLIST=eval(klist.read())
+klist.close()
+
 ROWS=11
 LEN_TRAIN=11
 LEN_TEST=17
 LEN_SEQ=60
 STR_ALPHABET='DNA'
 SIZE_CACHE=10
-STRING_DEGREE=20
 WORD_ORDER=3
 WORD_GAP=0
 WORD_REVERSE=False
+
 
 ##################################################################
 ## private helpers
 ##################################################################
 
-def _get_params_real (size):
-	return {'size_':size}
+def _get_params_real ():
+	return {}
 
-def _get_params_string (size):
-	return {'alphabet':STR_ALPHABET, 'seqlen':LEN_SEQ, 'size_':size}
+def _get_params_string ():
+	return {'alphabet':STR_ALPHABET, 'seqlen':LEN_SEQ}
 
-def _get_params_word (size):
+def _get_params_word ():
 	return {'order':WORD_ORDER, 'gap':WORD_GAP,
-		'reverse':WORD_REVERSE, 'alphabet':STR_ALPHABET, 'size_':size}
+		'reverse':WORD_REVERSE, 'alphabet':STR_ALPHABET, 'seqlen':LEN_SEQ}
 
 def _func_name():
-	return sys._getframe(1).f_code.co_name
+	return _getframe(1).f_code.co_name
 
-def _kernel (name, feats, data, *args, **kwargs):
+def _compute (name, feats, data, *args):
 	kfun=eval(name+'Kernel')
-
-	# FIXME temporary until interface to C is fixed
-	if name.find('WeightedDegree') == -1:
-		k=kfun(*args, **kwargs)
-		k.init(feats['train'], feats['train'])
-	else:
-		k=kfun(feats['train'], feats['train'], *args, **kwargs)
-
+	k=kfun(feats['train'], feats['train'], *args)
 	km_train=k.get_kernel_matrix()
-
 	k.init(feats['train'], feats['test'])
 	km_test=k.get_kernel_matrix()
 
-	mats={
+	params={
 		'km_train':km_train,
 		'km_test':km_test,
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test'])
 	}
+	params.update(eval('_get_params_'+KLIST[name][0]+'()'))
+	for i in range(0, len(KLIST[name][2])):
+		params[KLIST[name][2][i]]=args[i]
 
-	return [name, mats]
+	return [name, params]
 
-def _kernel_svm (name, feats, data, multiplier_labels=1, *args, **kwargs):
-	if len(args)<2:
-		print '%s::%s needs at least two variable arguments!' % (_func_name(), name)
-		return False
-
+def _compute_svm (name, feats, data, C, *args):
 	kfun=eval(name+'Kernel')
-	k=kfun(*args, **kwargs)
-	k.init(feats['train'], feats['train'])
-
+	k=kfun(feats['train'], feats['train'], *args)
 	km_train=k.get_kernel_matrix()
 
+
 	num_vec=feats['train'].get_num_vectors();
-	labels=(rand(num_vec).round()*2-1)*multiplier_labels
+	labels=rand(num_vec).round()*2-1
 	l=Labels(labels)
-	svm=SVMLight(args[0], k, l) # assumes first vararg is size
+	svm=SVMLight(C, k, l)
 	svm.train()
 	alphas=svm.get_alphas()
 	bias=svm.get_bias()
@@ -85,28 +81,32 @@ def _kernel_svm (name, feats, data, multiplier_labels=1, *args, **kwargs):
 	km_test=k.get_kernel_matrix()
 	classified=svm.classify().get_labels()
 
-	output={
-		'data_train':matrix(data['train']),
+	params={
 		'km_train':km_train,
-		'data_test':matrix(data['test']),
 		'km_test':km_test,
+		'data_train':matrix(data['train']),
+		'data_test':matrix(data['test']),
+		'C':C,
 		'alphas':alphas,
 		'labels':labels,
 		'bias':bias,
 		'support_vectors':support_vectors,
 		'classified':classified
 	}
+	params.update(eval('_get_params_'+KLIST[name][0]+'()'))
+	for i in range(0, len(KLIST[name][2])):
+		params[KLIST[name][2][i]]=args[i]
 
-	return ['svm_'+name, output]
+	return [fileops.SVM+name, params]
 
-##################################################################
-## public helpers
-##################################################################
+def _get_data_rand (want_int=False):
+	if want_int:
+		return {'train':randint(0, 42, (ROWS, LEN_TRAIN)),
+			'test':randint(0, 42, (ROWS, LEN_TEST))}
+	else:
+		return {'train':rand(ROWS, LEN_TRAIN), 'test':rand(ROWS, LEN_TEST)}
 
-def get_data_rand ():
-	return {'train':rand(ROWS, LEN_TRAIN), 'test':rand(ROWS, LEN_TEST)}
-
-def get_data_dna ():
+def _get_data_dna ():
 	acgt=array(['A', 'C', 'G','T'])
 	len_acgt=len(acgt)
 	train=[]
@@ -129,7 +129,7 @@ def get_data_dna ():
 
 	return {'train': train, 'test': test}
 
-def get_feats_real (data, sparse=False):
+def _get_feats_real (data, sparse=False):
 	if sparse:
 		return {'train':SparseRealFeatures(data['train']),
 			'test':SparseRealFeatures(data['test'])}
@@ -137,7 +137,7 @@ def get_feats_real (data, sparse=False):
 		return {'train':RealFeatures(data['train']),
 			'test':RealFeatures(data['test'])}
 
-def get_feats_string (data, alphabet=DNA):
+def _get_feats_string (data, alphabet=DNA):
 	feats={'train':StringCharFeatures(alphabet),
 		'test':StringCharFeatures(alphabet)}
 	feats['train'].set_string_features(data['train'])
@@ -145,7 +145,9 @@ def get_feats_string (data, alphabet=DNA):
 
 	return feats
 
-def get_feats_word (data, alphabet=DNA, order=3, gap=0, reverse=False):
+def _get_feats_word (data, alphabet=DNA, order=WORD_ORDER,
+	gap=WORD_GAP, reverse=WORD_REVERSE):
+
 	feats={}
 
 	feat=StringCharFeatures(alphabet)
@@ -171,46 +173,114 @@ def get_feats_word (data, alphabet=DNA, order=3, gap=0, reverse=False):
 	return feats
 
 ##################################################################
-## actual kernels
+## run funcs
 ##################################################################
 
-def gaussian (feats, data, width=1.3, size=SIZE_CACHE):
-	params={'width_':width}
-	params.update(_get_params_real(size))
-	return _kernel('Gaussian', feats, data, size, width)+[params]
+def _run_realfeats ():
+	data=_get_data_rand()
+	feats=_get_feats_real(data)
+
+#FIXME C++: optional size
+	fileops.write(_compute('Chi2', feats, data, 10))
+	fileops.write(_compute('Gaussian', feats, data, 1.3))
+	fileops.write(_compute('Linear', feats, data, 1.))
+	fileops.write(_compute('Poly', feats, data, 3, True, True))
+	#fileops.write(_compute('Poly', feats, data, 3, False, True))
+	#fileops.write(_compute('Poly', feats, data, 3, True, False))
+	#fileops.write(_compute('Poly', feats, data, 3, False, False))
+#FIXME C++: optional size
+	fileops.write(_compute('Sigmoid', feats, data, 10, 1.1, 1.3))
+	fileops.write(_compute('Sigmoid', feats, data, 10, 0.5, 0.7))
+
+	fileops.write(_compute_svm('Gaussian', feats, data, .017, 1.5))
+	#fileops.write(_compute_svm('Gaussian', feats, data, .23, 1.5))
+
+def _run_stringfeats ():
+	data=_get_data_dna()
+	feats=_get_feats_string(data)
+
+	#fileops.write(_compute('FixedDegreeString', feats, data, 3))
+	#fileops.write(_compute('LinearString', feats, data, 1.))
+	#fileops.write(_compute('LocalAlignmentString', feats, data))
+	#fileops.write(_compute('PolyMatchString', feats, data, 3, False, True))
+	#fileops.write(_compute('SimpleLocalityImprovedString', feats, data, 51, 7, 5))
+
+	r=arange(1,20+1, dtype=double)
+	weights=r[::-1]/sum(r)
+	fileops.write(_compute('WeightedDegreeString', feats, data, 20, 0, True, False, 1, -1, weights))
+	shift=ones(LEN_SEQ, dtype=int32)
+	fileops.write(_compute('WeightedDegreePositionString', feats, data, 20, shift, True, 0, 1))
+
+	# buggy:
+	#fileops.write(_compute('LocalityImprovedString', feats, data. 51, 5, 7))
+
+
+def _run_wordfeats ():
+	data=_get_data_dna()
+	feats=_get_feats_word(data)
+
+	fileops.write(_compute('CommWordString', feats, data, False, FULL_NORMALIZATION))
+	#fileops.write(_compute('HammingWord', feats, data, 10, False))
+	#fileops.write(_compute('LinearWord', feats, data, True, 1.))
+	#fileops.write(_compute('ManhattanWord', feats, data, 0))
+	fileops.write(_compute('WeightedCommWordString', feats, data, False, FULL_NORMALIZATION))
+	
+def _run_sparsefeats ():
+	data={'train':23, 'test':42}
+	feats=_get_feats_real(data, sparse=True)
+
+	# floating point exception not within Python
+	#fileops.write(sparse_linear(feats, data))
+	#fileops.write(sparse_poly(feats, data))
+	#fileops.write(sparse_gaussian(feats, data))
+
+def _run_feats_simpleword ():
+	data=_get_data_dna()
+	#data=_get_data_rand(want_int=True)
+	print data
+	#feats=_get_feats_simpleword(data)
+
+	# floating exception...
+	#fileops.write(linear_word(feats, data))
+
+
+def run ():
+	_run_realfeats()
+	_run_stringfeats()
+	_run_wordfeats()
+	#_run_sparsefeats()
+	#_run_feats_simpleword()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##################################################################
+## actual kernels
+##################################################################
 
 def sparse_gaussian (feats, data, width=1.3, size=SIZE_CACHE):
 	params={'width_':width}
 	params.update(_get_params_real(size))
 	return _kernel('SparseGaussian', feats, data, size, width)+[params]
 
-def linear (feats, data, scale=1.0, size=SIZE_CACHE):
-	params={'scale':scale}
-	params.update(_get_params_real(size))
-	return _kernel('Linear', feats, data, size, scale)+[params]
-
 def sparse_linear (feats, data, scale=1.0, size=SIZE_CACHE):
 	params={'scale':scale}
 	params.update(_get_params_real(size))
 	return _kernel('SparseLinear', feats, data, size, scale)+[params]
-
-def chi2 (feats, data, size=SIZE_CACHE):
-	params=_get_params_real(size)
-	return _kernel('Chi2', feats, data, size)+[params]
-
-def sigmoid (feats, data, gamma=1.1, coef0=1.3, size=SIZE_CACHE):
-	params={'gamma_':gamma, 'coef0':coef0}
-	params.update(_get_params_real(size))
-	return _kernel('Sigmoid', feats, data, size, gamma, coef0)+[params]
-
-def poly (feats, data, degree=3,
-	inhomogene=True, use_normalization=True, size=SIZE_CACHE):
-
-	params={'degree':degree, 'inhomogene':inhomogene,
-		'use_normalization':use_normalization}
-	params.update(_get_params_real(size))
-	return _kernel('Poly', feats, data, size, degree, inhomogene,
-		use_normalization)+[params]
 
 def sparse_poly (feats, data, degree=3,
 	inhomogene=True, use_normalization=True, size=SIZE_CACHE):
@@ -220,123 +290,6 @@ def sparse_poly (feats, data, degree=3,
 	params.update(_get_params_real(size))
 	return _kernel('SparsePoly', feats, data, size, degree, inhomogene,
 		use_normalization)+[params]
-
-
-def weighted_degree_string (feats, data, degree=STRING_DEGREE,
-	max_mismatch=0, use_normalization=True, block_computation=False,
-	mkl_stepsize=1, which_degree=-1, size=SIZE_CACHE):
-
-	r=arange(1,STRING_DEGREE+1,dtype=double)
-	weights=r[::-1]/sum(r)
-
-	params={'degree':degree, 'max_mismatch':max_mismatch,
-		'use_normalization':use_normalization,
-		'block_computation':block_computation,
-		'mkl_stepsize':mkl_stepsize, 'which_degree':which_degree,
-		'weights':weights}
-	params.update(_get_params_string(size))
-	# FIXME temporary until interface to C is fixed
-#	return _kernel(feats, data, 'WeightedDegreeString', size,
-#		weights, degree, max_mismatch, use_normalization,
-#		block_computation, mkl_stepsize, which_degree)+[params]
-	return _kernel('WeightedDegreeString', feats, data, degree,
-		max_mismatch, use_normalization, block_computation, mkl_stepsize,
-		which_degree, weights, size)+ [params]
-
-
-def weighted_degree_position_string (feats, data, degree=STRING_DEGREE,
-	use_normalization=True, max_mismatch=0, mkl_stepsize=1,
-	size=SIZE_CACHE):
-
-	shift=ones(LEN_SEQ, dtype=int32)
-	r=arange(1,STRING_DEGREE+1,dtype=double)
-	weights=r[::-1]/sum(r)
-
-	params={'degree':degree, 'use_normalization':use_normalization,
-		'max_mismatch':max_mismatch, 'mkl_stepsize':mkl_stepsize,
-		'shift':shift}
-	params.update(_get_params_string(size))
-	# FIXME temporary until interface to C is fixed
-#	return _kernel(feats, data, 'WeightedDegreePositionString', size,
-#		weights, degree, max_mismatch, shift, len(shift),
-#		use_normalization, mkl_stepsize)+[params]
-	return _kernel('WeightedDegreePositionString', feats, data, degree,
-		shift, use_normalization, max_mismatch, mkl_stepsize, size)+[params]
-
-def locality_improved_string (feats, data,
-	length=51, inner_degree=5, outer_degree=7, size=SIZE_CACHE):
-
-	params={'length':length, 'inner_degree':inner_degree,
-		'outer_degree':outer_degree}
-	params.update(_get_params_string(size))
-	return _kernel('LocalityImprovedString', feats, data, size, length,
-		inner_degree, outer_degree)+[params]
-
-def simple_locality_improved_string (feats, data,
-	length=5, inner_degree=5, outer_degree=7, size=SIZE_CACHE):
-
-	params={'length':length, 'inner_degree':inner_degree,
-		'outer_degree':outer_degree}
-	params.update(_get_params_string(size))
-	return _kernel('SimpleLocalityImprovedString', feats, data, size, length,
-		inner_degree, outer_degree)+[params]
-
-def fixed_degree_string (feats, data, degree=3, size=SIZE_CACHE):
-	params={'degree':degree}
-	params.update(_get_params_string(size))
-	return _kernel('FixedDegreeString', feats, data, size, degree)+[params]
-
-def linear_string (feats, data, do_rescale=True, scale=1., size=SIZE_CACHE):
-	params={'do_rescale':do_rescale, 'scale':scale}
-	params.update(_get_params_string(size))
-	return _kernel('LinearString', feats, data, size, do_rescale,
-		scale)+[params]
-
-def local_alignment_string (feats, data, size=SIZE_CACHE):
-	params=_get_params_string(size)
-	return _kernel('LocalAlignmentString', feats, data, size)+[params]
-
-def poly_match_string (feats, data, degree=3, inhomogene=True,
-	use_normalization=True, size=SIZE_CACHE):
-
-	params={'degree':degree, 'inhomogene':inhomogene,
-		'use_normalization':use_normalization}
-	params.update(_get_params_string(size))
-	return _kernel('PolyMatchString', feats, data, size, degree,
-		inhomogene, use_normalization)+[params]
-
-def common_word_string (feats, data,
-	use_sign=False, normalization=FULL_NORMALIZATION, size=SIZE_CACHE):
-
-	params={'use_sign':use_sign, 'normalization':normalization}
-	params.update(_get_params_word(size))
-	return _kernel('CommWordString', feats, data, size, use_sign,
-		normalization)+[params]
-
-def weighted_common_word_string (feats, data,
-	use_sign=False, normalization=FULL_NORMALIZATION, size=SIZE_CACHE):
-
-	params={'use_sign':use_sign, 'normalization':normalization}
-	params.update(_get_params_word(size))
-	return _kernel('WeightedCommWordString', feats, data, size, use_sign,
-		normalization)+[params]
-
-def linear_word (feats, data, do_rescale=True, scale=1., size=SIZE_CACHE):
-	params={'do_rescale':do_rescale, 'scale':scale}
-	params.update(_get_params_word(size))
-	return _kernel('LinearWord', feats, data, size, do_rescale,
-		scale)+[params]
-
-def manhattan_word (feats, data, width=0, size=SIZE_CACHE):
-	params={'width_':width}
-	params.update(_get_params_word(size))
-	return _kernel('ManhattanWord', feats, data, size, width)+[params]
-
-def hamming_word (feats, data, width=10, use_sign=False, size=SIZE_CACHE):
-	params={'width_':width, 'use_sign':use_sign}
-	params.update(_get_params_word(size))
-	return _kernel('HammingWord', feats, data, size, width, use_sign)+[params]
-
 
 ##################################################################
 ## classifiers

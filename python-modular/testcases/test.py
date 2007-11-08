@@ -1,19 +1,23 @@
 #!/usr/bin/env python
 
-import test_kernels
 from numpy import *
 import sys
 from os import listdir
 
+import kernels
+
+ID_KERNEL='Kernel'
 
 def get_name_fun (name):
-	prefix_svm='svm_'
 	prefix=''
 
-	if (file.find(prefix_svm)>-1):
-		prefix=prefix_svm
+	if file.find(ID_KERNEL)>-1:
+		module='kernels'
+	else:
+		print 'Modules like %s not supported yet!'%name
+		return None
 
-	return 'test_kernels.'+prefix+name[:-len('Kernel')].lower()
+	return module+'.test'+prefix
 
 def test_mfile (file):
 	mfile=open(file, mode='r')
@@ -64,12 +68,8 @@ def read_matrix (line):
 
 for file in sys.argv:
 	if (file.endswith('.m')):
-		try:
-			res=test_mfile(file)
-			if res:
-				sys.exit(0)
-			else:
-				sys.exit(1)
-		except KeyError:
-			print 'Error in input test data'
-			sys.exit(2)
+		res=test_mfile(file)
+		if res:
+			sys.exit(0)
+		else:
+			sys.exit(1)
