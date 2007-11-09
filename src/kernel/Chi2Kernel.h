@@ -19,7 +19,7 @@
 class CChi2Kernel: public CSimpleKernel<DREAL>
 {
  public:
-  CChi2Kernel(INT size);
+  CChi2Kernel(INT size, DREAL width);
 
   CChi2Kernel(CRealFeatures* l, CRealFeatures* r, INT size);
 
@@ -45,7 +45,7 @@ class CChi2Kernel: public CSimpleKernel<DREAL>
   virtual DREAL compute(INT idx_a, INT idx_b);
 
  protected:
-  bool initialized;
+  double width;
 };
 
 #endif

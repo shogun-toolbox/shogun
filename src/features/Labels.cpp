@@ -63,7 +63,7 @@ bool CLabels::is_two_class_labeling()
 
 	for (INT i=0; i<num_labels; i++)
 	{
-		if (labels[i] != -1.0 && labels[i] != -1.0)
+		if (labels[i] != +1.0 && labels[i] != -1.0)
 		{
 			SG_ERROR("Not a two class labeling label[%d]=%f (only +1/-1 allowed)\n", i, labels[i]);
 			return false;

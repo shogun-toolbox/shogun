@@ -14,12 +14,12 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-CGaussianKernel::CGaussianKernel(INT size, double w)
+CGaussianKernel::CGaussianKernel(INT size, DREAL w)
   : CSimpleKernel<DREAL>(size),width(w)
 {
 }
 
-CGaussianKernel::CGaussianKernel(CRealFeatures* l, CRealFeatures* r, double w, INT size)
+CGaussianKernel::CGaussianKernel(CRealFeatures* l, CRealFeatures* r, DREAL w, INT size)
   : CSimpleKernel<DREAL>(size),width(w)
 {
 	init(l,r);
@@ -54,8 +54,8 @@ DREAL CGaussianKernel::compute(INT idx_a, INT idx_b)
   INT alen, blen;
   bool afree, bfree;
 
-  double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+  DREAL* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+  DREAL* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
   
   ASSERT(alen==blen);
 

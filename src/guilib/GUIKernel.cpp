@@ -745,9 +745,11 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 		{
 			if (strcmp(data_type,"REAL")==0)
 			{
-				sscanf(param, "%s %s %d", kern_type, data_type, &size);
+				double width=1;
+
+				sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &width);
 				delete k;
-				k=new CChi2Kernel(size);
+				k=new CChi2Kernel(size, width);
 
 				if (k)
 				{

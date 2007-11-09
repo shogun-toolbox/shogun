@@ -18,8 +18,8 @@
 class CGaussianKernel: public CSimpleKernel<DREAL>
 {
  public:
-  CGaussianKernel(INT size, double width);
-  CGaussianKernel(CRealFeatures* l, CRealFeatures* r, double width, INT size=10);
+  CGaussianKernel(INT size, DREAL width);
+  CGaussianKernel(CRealFeatures* l, CRealFeatures* r, DREAL width, INT size=10);
   virtual ~CGaussianKernel();
   
   virtual bool init(CFeatures* l, CFeatures* r);
