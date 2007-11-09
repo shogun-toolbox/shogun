@@ -33,6 +33,8 @@ bool CGPBTSVM::train()
 
 	ASSERT(get_kernel());
 	ASSERT(get_labels() && get_labels()->get_num_labels());
+	ASSERT(get_labels()->is_two_class_labeling());
+
 	int num_lab = 0;
 	int* lab=get_labels()->get_int_labels(num_lab);
 	prob.KER=new sKernel(get_kernel(), num_lab);

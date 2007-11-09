@@ -31,6 +31,8 @@ bool CLibSVM::train()
 	struct svm_node* x_space;
 
 	ASSERT(get_labels() && get_labels()->get_num_labels());
+	ASSERT(get_labels()->is_two_class_labeling());
+
 	problem.l=get_labels()->get_num_labels();
 	SG_INFO( "%d trainlabels\n", problem.l);
 

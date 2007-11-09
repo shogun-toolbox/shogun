@@ -32,6 +32,8 @@ bool CLibLinear::train()
 {
 	ASSERT(get_labels());
 	ASSERT(get_features());
+	ASSERT(get_labels()->is_two_class_labeling());
+
 	CSparseFeatures<DREAL>* sfeat=(CSparseFeatures<DREAL>*) features;
 
 	INT num_train_labels=get_labels()->get_num_labels();

@@ -57,6 +57,21 @@ void CLabels::set_labels(DREAL* p_labels, INT len)
 		this->labels[i] = p_labels[i];
 }
 
+bool CLabels::is_two_class_labeling()
+{
+	ASSERT(this->labels);
+
+	for (INT i=0; i<num_labels; i++)
+	{
+		if (labels[i] != -1.0 && labels[i] != -1.0)
+		{
+			SG_ERROR("Not a two class labeling label[%d]=%f (only +1/-1 allowed)\n", i, labels[i]);
+			return false;
+		}
+	}
+	return true;
+}
+
 INT CLabels::get_num_classes()
 {
 	INT n=-1;

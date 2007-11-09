@@ -837,11 +837,20 @@ void CKernel::list_kernel()
 		case K_LINEAR:
 			SG_INFO( "K_LINEAR ");
 			break;
+		case K_SPARSELINEAR:
+			SG_INFO( "K_SPARSELINEAR ");
+			break;
 		case K_POLY:
 			SG_INFO( "K_POLY ");
 			break;
 		case K_GAUSSIAN:
 			SG_INFO( "K_GAUSSIAN ");
+			break;
+		case K_SPARSEGAUSSIAN:
+			SG_INFO( "K_SPARSEGAUSSIAN ");
+			break;
+		case K_GAUSSIANSHIFT:
+			SG_INFO( "K_GAUSSIANSHIFT ");
 			break;
 		case K_HISTOGRAM:
 			SG_INFO( "K_HISTOGRAM ");
@@ -879,17 +888,44 @@ void CKernel::list_kernel()
 		case K_COMMULONGSTRING:
 			SG_INFO( "K_COMMULONGSTRING ");
 			break;
-		case K_SPARSELINEAR:
-			SG_INFO( "K_SPARSELINEAR ");
-			break;
 		case K_COMBINED:
 			SG_INFO( "K_COMBINED ");
+			break;
+		case K_AUC:
+			SG_INFO( "K_AUC ");
 			break;
 		case K_CUSTOM:
 			SG_INFO( "K_CUSTOM ");
 			break;
+		case K_SIGMOID:
+			SG_INFO( "K_SIGMOID ");
+			break;
+		case K_CHI2:
+			SG_INFO( "K_CHI2 ");
+			break;
 		case K_DIAG:
 			SG_INFO( "K_DIAG ");
+			break;
+		case K_CONST:
+			SG_INFO( "K_CONST ");
+			break;
+		case K_HAMMINGWORD:
+			SG_INFO( "K_HAMMINGWORD ");
+			break;
+		case K_MANHATTENWORD:
+			SG_INFO( "K_MANHATTENWORD ");
+			break;
+		case K_CANBERRAWORD:
+			SG_INFO( "K_CANBERRAWORD ");
+			break;
+		case K_MINDYGRAM:
+			SG_INFO( "K_MINDYGRAM ");
+			break;
+		case K_DISTANCE:
+			SG_INFO( "K_DISTANCE ");
+			break;
+		case K_LOCALALIGNMENT:
+			SG_INFO( "K_LOCALALIGNMENT ");
 			break;
 		default:
          SG_ERROR( "ERROR UNKNOWN KERNEL TYPE");

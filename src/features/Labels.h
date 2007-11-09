@@ -70,6 +70,8 @@ class CLabels : public CSGObject
 				return -1;
 		}
 
+		bool is_two_class_labeling();
+
 		/// return number of classes (for multiclass)
 		/// labels have to be zero based 0,1,...C missing
 		/// labels are illegal

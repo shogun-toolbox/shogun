@@ -47,6 +47,7 @@ bool CSVMOcas::train()
 
 	ASSERT(get_labels());
 	ASSERT(get_features());
+	ASSERT(get_labels()->is_two_class_labeling());
 
 	INT num_train_labels=0;
 	lab=get_labels()->get_labels(num_train_labels);

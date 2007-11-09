@@ -401,6 +401,7 @@ bool CSVMLight::train()
         return false ;
     }
 	ASSERT(get_labels() && get_labels()->get_num_labels());
+	ASSERT(get_labels()->is_two_class_labeling());
     ASSERT(get_kernel()->get_lhs()->get_num_vectors()
             == get_labels()->get_num_labels());
 
