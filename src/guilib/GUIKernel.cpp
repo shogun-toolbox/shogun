@@ -43,6 +43,7 @@
 #include "kernel/HistogramWordKernel.h"
 #include "kernel/SalzbergWordKernel.h"
 #include "kernel/GaussianKernel.h"
+#include "kernel/GaussianShiftKernel.h"
 #include "kernel/SigmoidKernel.h"
 #include "kernel/SparseLinearKernel.h"
 #include "kernel/SparsePolyKernel.h"
