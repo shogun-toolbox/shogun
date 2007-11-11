@@ -1289,6 +1289,24 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 			}
 		}
+		else if (strcmp(kern_type,"GAUSSIANSHIFT")==0) // RBF
+		{
+			if (strcmp(data_type,"REAL")==0)
+			{
+				double width=1;
+				INT max_shift=0 ;
+				INT shift_step=1 ;
+
+				sscanf(param, "%s %s %d %lf %i %i", kern_type, data_type, &size, &width, &max_shift, &shift_step);
+				delete k;
+				k=new CGaussianShiftKernel(size, width, max_shift, shift_step);
+				if (k)
+				{
+					SG_INFO( "GaussianShift Kernel created\n");
+					return k;
+				}
+			}
+		}
 		else if (strcmp(kern_type,"CUSTOM")==0)
 		{
 			delete k;
