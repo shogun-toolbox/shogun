@@ -824,7 +824,7 @@ void CKernel::remove_rhs()
 
 void CKernel::list_kernel()
 {
-	SG_INFO( "0x%X - \"%s\" weight=%1.2f OPT:%s", this, get_name(),
+	SG_INFO( "0x%p - \"%s\" weight=%1.2f OPT:%s", this, get_name(),
 			get_combined_kernel_weight(),
 			get_optimization_type()==FASTBUTMEMHUNGRY ? "FASTBUTMEMHUNGRY" :
 			"SLOWBUTMEMEFFICIENT");

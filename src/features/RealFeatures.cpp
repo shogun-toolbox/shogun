@@ -147,6 +147,6 @@ bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, D
 	      feature_matrix[i+j*num_features] = Align(&fm_cf[j*num_cf_feat], &fm_ref[i*num_ref_feat], num_cf_feat, num_ref_feat, gapCost);
 	  } ;
 
-	SG_INFO( "created %i x %i matrix (%ld)\n", num_features, num_vectors, feature_matrix) ;
+	SG_INFO( "created %i x %i matrix (0x%p)\n", num_features, num_vectors, feature_matrix) ;
 	return true;
 }
