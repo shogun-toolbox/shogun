@@ -261,7 +261,7 @@ bool CGUIKernel::init_kernel(CHAR* param)
 					}
 					else
 					{
-						SG_INFO( "initialising kernel with TEST DATA, train: %d test %d\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
+						SG_INFO( "initialising kernel with TEST DATA, train: %p test %p\n",gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features() );
 						// lhs -> always train_features; rhs -> always test_features
 						kernel->init(gui->guifeatures.get_train_features(), gui->guifeatures.get_test_features());
 					} ;
