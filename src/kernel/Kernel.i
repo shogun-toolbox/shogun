@@ -61,12 +61,14 @@
 %include "kernel/LinearWordKernel.i"
 
 %include "kernel/LocalityImprovedStringKernel.i"
-%include "kernel/MindyGramKernel.i"
 %include "kernel/PolyMatchStringKernel.i"
 %include "kernel/PolyMatchWordKernel.i"
 %include "kernel/SalzbergWordKernel.i"
 %include "kernel/SimpleLocalityImprovedStringKernel.i"
 %include "kernel/WordMatchKernel.i"
+%include "kernel/HammingWordKernel.i"
+%include "kernel/ManhattenWordKernel.i"
+%include "kernel/CanberraWordKernel.i"
 
 %include "kernel/CombinedKernel.i"
 %include "kernel/CustomKernel.i"

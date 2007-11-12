@@ -14,13 +14,26 @@
 #include "features/WordFeatures.h"
 #include "lib/io.h"
 
-CHammingWordKernel::CHammingWordKernel(INT size, DREAL w, bool sign)
-	: CSimpleKernel<WORD>(size), width(w), use_sign(sign)
+CHammingWordKernel::CHammingWordKernel(INT size, DREAL w, bool us)
+	: CSimpleKernel<WORD>(size), width(w), use_sign(us)
 {
-	SG_DEBUG( "CHammingWordKernel with cache size: %d width: %f sign: %d created\n", size, width, (sign) ? 1 : 0);
+	SG_DEBUG( "CHammingWordKernel with cache size: %d width: %f sign: %d created\n", size, width, (use_sign) ? 1 : 0);
 	dictionary_size= 1<<(sizeof(WORD)*8);
 	dictionary_weights = new DREAL[dictionary_size];
 	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
+}
+
+
+CHammingWordKernel::CHammingWordKernel(
+	CWordFeatures* l, CWordFeatures* r, DREAL w, bool us)
+	: CSimpleKernel<WORD>(10), width(w), use_sign(us)
+{
+	SG_DEBUG( "CHammingWordKernel with cache size: %d width: %f sign: %d created\n", 10, width, (use_sign) ? 1 : 0);
+	dictionary_size= 1<<(sizeof(WORD)*8);
+	dictionary_weights = new DREAL[dictionary_size];
+	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
+
+	init(l, r);
 }
 
 CHammingWordKernel::~CHammingWordKernel() 

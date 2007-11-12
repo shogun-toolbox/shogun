@@ -20,41 +20,42 @@ class CCommWordStringKernel;
 
 class CWeightedCommWordStringKernel: public CCommWordStringKernel
 {
- public:
-  CWeightedCommWordStringKernel(INT size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION );
-  CWeightedCommWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool use_sign=false, ENormalizationType normalization_=FULL_NORMALIZATION, INT size=10);
-  ~CWeightedCommWordStringKernel();
+public:
+	CWeightedCommWordStringKernel(INT size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION );
+	CWeightedCommWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool use_sign=false, ENormalizationType normalization_=FULL_NORMALIZATION, INT size=10);
+	virtual ~CWeightedCommWordStringKernel();
 
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
 
-  virtual DREAL compute_optimized(INT idx);
-  virtual void add_to_normal(INT idx, DREAL weight);
-  void merge_normal();
-  
-  // init WD weighting
-  bool set_wd_weights();
+	virtual DREAL compute_optimized(INT idx);
+	virtual void add_to_normal(INT idx, DREAL weight);
+	void merge_normal();
+	
+	// init WD weighting
+	bool set_wd_weights();
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_WEIGHTEDCOMMWORDSTRING; }
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type() { return K_WEIGHTEDCOMMWORDSTRING; }
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "WeightedCommWordString"; }
-  inline virtual EFeatureType get_feature_type() { return F_WORD; }
+	// return the name of a kernel
+	virtual const CHAR* get_name() { return "WeightedCommWordString"; }
+	inline virtual EFeatureType get_feature_type() { return F_WORD; }
 
-  virtual DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, 
-		  DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, bool do_init=true);
-  
+	virtual DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, 
+			DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, bool do_init=true);
+	
  protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  /// if do_sort==true does the sorting of kmers on the fly 
-  virtual DREAL compute_helper(INT idx_a, INT idx_b, bool do_sort);
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	/// if do_sort==true does the sorting of kmers on the fly 
+	virtual DREAL compute_helper(INT idx_a, INT idx_b, bool do_sort);
 
-  INT degree;
+	INT degree;
 
-  /// weights for each of the subkernels of degree 1...d
-  DREAL* weights;
+	/// weights for each of the subkernels of degree 1...d
+	DREAL* weights;
 };
-#endif
+
+#endif /* _WEIGHTEDCOMMWORDSTRINGKERNEL_H__ */

@@ -13,43 +13,45 @@
 
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
+#include "features/WordFeatures.h"
 
 class CHammingWordKernel: public CSimpleKernel<WORD>
 {
- public:
-  CHammingWordKernel(INT size, DREAL width, bool use_sign);
-  ~CHammingWordKernel();
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+public:
+	CHammingWordKernel(INT size, DREAL width, bool use_sign);
+	CHammingWordKernel(CWordFeatures* l, CWordFeatures* r, DREAL width, bool use_sign);
+	virtual ~CHammingWordKernel();
 
-  /// load and save kernel init_data
-  bool load_init(FILE* src);
-  bool save_init(FILE* dest);
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_HAMMINGWORD; }
+	/// load and save kernel init_data
+	bool load_init(FILE* src);
+	bool save_init(FILE* dest);
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "HammingWord"; }
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type() { return K_HAMMINGWORD; }
 
-  void get_dictionary(INT& dsize, DREAL*& dweights) 
-  {
-	  dsize=dictionary_size;
-	  dweights = dictionary_weights;
-  }
+	// return the name of a kernel
+	virtual const CHAR* get_name() { return "HammingWord"; }
 
- protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  DREAL compute(INT idx_a, INT idx_b);
+	void get_dictionary(INT& dsize, DREAL*& dweights) 
+	{
+		dsize=dictionary_size;
+		dweights = dictionary_weights;
+	}
 
- protected:
+protected:
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	DREAL compute(INT idx_a, INT idx_b);
 
-  INT dictionary_size;
-  DREAL* dictionary_weights;
-  DREAL width;
-  bool use_sign;
+protected:
+	INT dictionary_size;
+	DREAL* dictionary_weights;
+	DREAL width;
+	bool use_sign;
 };
-#endif
+
+#endif /* _HAMMINGWORDKERNEL_H__ */

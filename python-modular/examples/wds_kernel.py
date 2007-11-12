@@ -15,14 +15,16 @@ strings=['ACTGAAGAAGATCTGAATAAATTTGAGTCTCTTACCATGGGGGCAAAGAAGAAGCTCAAG', seqlen*
 stringfeat = StringCharFeatures(DNA)
 stringfeat.set_string_features(strings)
 
-wdk = WeightedDegreePositionStringKernel(stringfeat, stringfeat, degree, zeros(seqlen, dtype=int32))
+wdk = WeightedDegreePositionStringKernel(stringfeat, stringfeat, degree)
 K = mat(wdk.get_kernel_matrix())
 print K
 
-wdk = WeightedDegreePositionStringKernel(stringfeat, stringfeat, degree, 20*ones(seqlen, dtype=int32))
+wdk.set_shifts(zeros(seqlen, dtype=int32))
 K = mat(wdk.get_kernel_matrix())
 print K
 
-wdk = WeightedDegreeStringKernel(stringfeat, stringfeat, degree)
+wdk.set_shifts(20*ones(seqlen, dtype=int32))
 K = mat(wdk.get_kernel_matrix())
 print K
+
+

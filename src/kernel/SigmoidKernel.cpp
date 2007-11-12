@@ -22,22 +22,22 @@ extern "C" {
 #endif
 
 CSigmoidKernel::CSigmoidKernel(INT size, DREAL g, DREAL c)
-  : CSimpleKernel<DREAL>(size),gamma(g), coef0(c)
+	: CSimpleKernel<DREAL>(size),gamma(g), coef0(c)
 {
 }
 
-CSigmoidKernel::CSigmoidKernel(CRealFeatures* l, CRealFeatures* r, INT size, DREAL g, DREAL c)
-  : CSimpleKernel<DREAL>(size),gamma(g), coef0(c)
-
+CSigmoidKernel::CSigmoidKernel(
+	CRealFeatures* l, CRealFeatures* r, INT size, DREAL g, DREAL c)
+	: CSimpleKernel<DREAL>(size),gamma(g), coef0(c)
 {
 	init(l,r);
 }
 
-CSigmoidKernel::~CSigmoidKernel() 
+CSigmoidKernel::~CSigmoidKernel()
 {
 	cleanup();
 }
-  
+
 bool CSigmoidKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<DREAL>::init(l, r);

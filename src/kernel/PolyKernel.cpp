@@ -14,24 +14,26 @@
 #include "kernel/PolyKernel.h"
 #include "features/RealFeatures.h"
 
-CPolyKernel::CPolyKernel(INT size, INT d, bool inhom, bool use_norm)
-  : CSimpleKernel<DREAL>(size), degree(d), inhomogene(inhom),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
+CPolyKernel::CPolyKernel(INT size, INT d, bool i, bool un)
+	: CSimpleKernel<DREAL>(size), degree(d), inhomogene(i),
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
+	use_normalization(un)
 {
 }
 
-CPolyKernel::CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT d, bool inhom, bool use_norm, INT size)
-  : CSimpleKernel<DREAL>(size),degree(d),inhomogene(inhom),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
+CPolyKernel::CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT d, bool i, bool un, INT size)
+	: CSimpleKernel<DREAL>(size),degree(d),inhomogene(i),
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
+	use_normalization(un)
 {
 	init(l,r);
 }
 
-CPolyKernel::~CPolyKernel() 
+CPolyKernel::~CPolyKernel()
 {
 	cleanup();
 }
-  
+
 bool CPolyKernel::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CSimpleKernel<DREAL>::init(l,r);

@@ -13,10 +13,18 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "kernel/DistanceKernel.h"
+#include "features/RealFeatures.h"
 
-CDistanceKernel::CDistanceKernel(INT cache,DREAL w ,CDistance* dist)
-  :CKernel(cache),distance(dist),width(w)
+CDistanceKernel::CDistanceKernel(INT size, DREAL w ,CDistance* d)
+	: CKernel(size), distance(d), width(w)
 {
+}
+
+CDistanceKernel::CDistanceKernel(
+	CFeatures *l, CFeatures *r, DREAL w , CDistance* d)
+	: CKernel(10), distance(d), width(w)
+{
+	init(l, r);
 }
 
 CDistanceKernel::~CDistanceKernel()

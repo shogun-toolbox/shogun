@@ -17,40 +17,39 @@
 
 class CPolyKernel: public CSimpleKernel<DREAL>
 {
- public:
+public:
+	CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT d, bool inhom, bool use_norm, INT size=10);
+	CPolyKernel(INT size, INT degree, bool inhomogene=true, bool use_normalization=true);
+	virtual ~CPolyKernel();
+	
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
 
-  CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT d, bool inhom, bool use_norm, INT size=10);
-  CPolyKernel(INT size, INT degree, bool inhomogene=true, bool use_normalization=true);
-  ~CPolyKernel();
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+	/// load and save kernel init_data
+	virtual bool load_init(FILE* src);
+	virtual bool save_init(FILE* dest);
 
-  /// load and save kernel init_data
-  virtual bool load_init(FILE* src);
-  virtual bool save_init(FILE* dest);
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type() { return K_POLY; }
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_POLY; }
+	// return the name of a kernel
+	virtual const CHAR* get_name() { return "Poly"; };
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "Poly"; };
+protected:
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	virtual DREAL compute(INT idx_a, INT idx_b);
 
- protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  virtual DREAL compute(INT idx_a, INT idx_b);
+protected:
+	INT degree;
+	bool inhomogene;
 
- protected:
-  INT degree;
-  bool inhomogene;
+	double* sqrtdiag_lhs;
+	double* sqrtdiag_rhs;
 
-  double* sqrtdiag_lhs;
-  double* sqrtdiag_rhs;
-
-  bool initialized;
-  bool use_normalization;
+	bool initialized;
+	bool use_normalization;
 };
 
-#endif
+#endif /* _POLYKERNEL_H__ */

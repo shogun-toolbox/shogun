@@ -15,12 +15,13 @@
 #include "lib/io.h"
 
 CGaussianKernel::CGaussianKernel(INT size, DREAL w)
-  : CSimpleKernel<DREAL>(size),width(w)
+	: CSimpleKernel<DREAL>(size), width(w)
 {
 }
 
-CGaussianKernel::CGaussianKernel(CRealFeatures* l, CRealFeatures* r, DREAL w, INT size)
-  : CSimpleKernel<DREAL>(size),width(w)
+CGaussianKernel::CGaussianKernel(
+	CRealFeatures* l, CRealFeatures* r, DREAL w, INT size)
+	: CSimpleKernel<DREAL>(size), width(w)
 {
 	init(l,r);
 }

@@ -17,8 +17,9 @@
 class CLinearStringKernel: public CStringKernel<CHAR>
 {
 public:
-	CLinearStringKernel(INT size, bool do_rescale = true, DREAL scale = 1.0);
-	~CLinearStringKernel();
+	CLinearStringKernel(INT size, bool do_rescale=true, DREAL scale=1.);
+	CLinearStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, bool do_rescale=true, DREAL scale=1.);
+	virtual ~CLinearStringKernel();
 
 	virtual bool init(CFeatures* l, CFeatures* r);
 	virtual void cleanup();
@@ -61,4 +62,5 @@ protected:
 	/// normal vector (used in case of optimized kernel)
 	double* normal;
 };
+
 #endif /* _LINEARSTRINGKERNEL_H___ */

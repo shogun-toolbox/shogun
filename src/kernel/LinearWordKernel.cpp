@@ -14,13 +14,21 @@
 #include "kernel/LinearWordKernel.h"
 #include "features/WordFeatures.h"
 
-CLinearWordKernel::CLinearWordKernel(INT size, bool do_rescale_, DREAL scale_)
-  : CSimpleKernel<WORD>(size),scale(scale_),do_rescale(do_rescale_),initialized(false),
+CLinearWordKernel::CLinearWordKernel(INT size, bool dr, DREAL s)
+	: CSimpleKernel<WORD>(size), scale(s), do_rescale(dr), initialized(false),
 	normal(NULL)
 {
 }
 
-CLinearWordKernel::~CLinearWordKernel() 
+CLinearWordKernel::CLinearWordKernel(
+	CWordFeatures* l, CWordFeatures* r, bool dr, DREAL s)
+	: CSimpleKernel<WORD>(10), scale(s), do_rescale(dr), initialized(false),
+	normal(NULL)
+{
+	init(l, r);
+}
+
+CLinearWordKernel::~CLinearWordKernel()
 {
 	cleanup();
 }

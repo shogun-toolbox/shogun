@@ -100,6 +100,16 @@ CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(INT size)
 	initialize();
 }
 
+CLocalAlignmentStringKernel::CLocalAlignmentStringKernel(
+	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r)
+	: CStringKernel<CHAR>(10), initialized(false)
+{
+	scaled_blosum=new int[sizeof(blosum)];
+	init_logsum();
+	initialize();
+	init(l, r);
+}
+
 CLocalAlignmentStringKernel::~CLocalAlignmentStringKernel()
 {
 	cleanup();

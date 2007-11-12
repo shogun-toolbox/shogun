@@ -17,9 +17,9 @@
 class CSimpleLocalityImprovedStringKernel: public CStringKernel<CHAR>
 {
 public:
-	CSimpleLocalityImprovedStringKernel(int size, INT length,
-		INT inner_degree, INT outer_degree);
-	~CSimpleLocalityImprovedStringKernel();
+	CSimpleLocalityImprovedStringKernel(int size, INT length, INT inner_degree, INT outer_degree);
+	CSimpleLocalityImprovedStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT length, INT inner_degree, INT outer_degree);
+	virtual ~CSimpleLocalityImprovedStringKernel();
 
 	virtual bool init(CFeatures *l, CFeatures *r);
 	virtual void cleanup();
@@ -59,4 +59,5 @@ protected:
 	CHAR *match;
 	DREAL *pyramid_weights;
 };
+
 #endif /* _SIMPLELOCALITYIMPROVEDSTRINGKERNEL_H___ */

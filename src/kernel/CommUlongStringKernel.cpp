@@ -13,18 +13,20 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CCommUlongStringKernel::CCommUlongStringKernel(INT size, bool use_sign_, 
-											 ENormalizationType normalization_) 
-  : CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
-	use_sign(use_sign_), normalization(normalization_)
+CCommUlongStringKernel::CCommUlongStringKernel(
+	INT size, bool us, ENormalizationType n)
+	: CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
+	initialized(false), use_sign(us), normalization(n)
 {
 	properties |= KP_LINADD;
 	clear_normal();
 }
 
-CCommUlongStringKernel::CCommUlongStringKernel(CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r, bool use_sign_, ENormalizationType normalization_, INT size)
-  : CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
-	use_sign(use_sign_), normalization(normalization_)
+CCommUlongStringKernel::CCommUlongStringKernel(
+	CStringFeatures<ULONG>* l, CStringFeatures<ULONG>* r, bool us,
+	ENormalizationType n, INT size)
+	: CStringKernel<ULONG>(size), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
+	initialized(false), use_sign(us), normalization(n)
 {
 	properties |= KP_LINADD;
 	clear_normal();
@@ -35,7 +37,7 @@ CCommUlongStringKernel::~CCommUlongStringKernel()
 {
 	cleanup();
 }
-  
+
 void CCommUlongStringKernel::remove_lhs() 
 { 
 	delete_optimization();

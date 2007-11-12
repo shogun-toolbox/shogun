@@ -18,36 +18,34 @@
 
 class CChi2Kernel: public CSimpleKernel<DREAL>
 {
- public:
-  CChi2Kernel(INT size, DREAL width);
+public:
+	CChi2Kernel(INT size, DREAL width);
+	CChi2Kernel(CRealFeatures* l, CRealFeatures* r, DREAL width, INT size);
+	virtual ~CChi2Kernel();
+	
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
 
-  CChi2Kernel(CRealFeatures* l, CRealFeatures* r, INT size);
+	/// load and save kernel init_data
+	virtual bool load_init(FILE* src);
+	virtual bool save_init(FILE* dest);
 
-  ~CChi2Kernel();
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type() { return K_CHI2; }
 
-  /// load and save kernel init_data
-  virtual bool load_init(FILE* src);
-  virtual bool save_init(FILE* dest);
+	// return the name of a kernel
+	virtual const CHAR* get_name() { return "Chi2"; };
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_CHI2; }
+protected:
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	virtual DREAL compute(INT idx_a, INT idx_b);
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "Chi2"; };
-
- protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  virtual DREAL compute(INT idx_a, INT idx_b);
-
- protected:
-  double width;
+protected:
+	DREAL width;
 };
 
-#endif
+#endif /* _CHI2KERNEL_H__ */
 
 

@@ -32,7 +32,7 @@ def gen_random_string():
 #train svm
 weights = arange(1,degree+1,dtype=double)[::-1]/sum(arange(1,degree+1,dtype=double))
 
-wdk=WeightedDegreeStringKernel(trainfeat,trainfeat, degree, weights=weights)
+wdk=WeightedDegreeStringKernel(trainfeat,trainfeat, degree, 0)
 svm = LibSVM(C, wdk, trainlab)
 svm.set_epsilon(1e-8)
 svm.train()
@@ -65,7 +65,7 @@ assert(max(abs(alphas0-balphas)) < 1e-16)
 wdk.init(trainfeat,testfeat)
 testout0=svm.classify().get_labels()
 K1 = wdk.get_kernel_matrix()
-wdk_test=WeightedDegreeStringKernel(trainfeat,testfeat, degree)
+wdk_test=WeightedDegreeStringKernel(trainfeat,testfeat, degree, 0)
 K2 = wdk_test.get_kernel_matrix()
 svm.set_kernel(wdk_test)
 testout1=svm.classify().get_labels()
@@ -78,7 +78,7 @@ ntrdat=[ trainstrs[i] for i in svs4 ]
 svs4=arange(len(alphas4))
 dat=StringCharFeatures(DNA)
 dat.set_string_features(ntrdat)
-wdk_test4=WeightedDegreeStringKernel(dat, testfeat,degree)
+wdk_test4=WeightedDegreeStringKernel(dat, testfeat,degree, 0)
 svm4=SVM(wdk_test4, alphas4, svs4, b4)
 print "out3"
 testout3=svm4.classify().get_labels()

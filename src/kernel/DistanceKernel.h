@@ -20,37 +20,34 @@
 
 class CDistanceKernel: public CKernel
 {
+public:
+	/* Constructors */
+	CDistanceKernel(INT cache, DREAL width, CDistance* dist);
+	CDistanceKernel(CFeatures *l, CFeatures *r, DREAL width, CDistance* dist);
+	virtual ~CDistanceKernel();
 
-    public:
-        /* Constructors */
-        CDistanceKernel(INT cache,DREAL width ,CDistance* dist );
-        ~CDistanceKernel();
+	/* Init and cleanup functions */
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
+	
+	/* Identification functions */
+	inline virtual EKernelType get_kernel_type() { return K_DISTANCE; }
+	inline virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
+	inline virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
+	inline virtual const CHAR* get_name() { return distance->get_name(); }
 
-        /* Init and cleanup functions */
-        virtual bool init(CFeatures* l, CFeatures* r);
-        virtual void cleanup();
-        
-        /* Identification functions */
-        inline virtual EKernelType get_kernel_type() { return K_DISTANCE; }
-        inline virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
-        inline virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
-        inline virtual const CHAR* get_name() { return distance->get_name(); }
+	/* Load and save functions */
+	bool load_init(FILE* src);
+	bool save_init(FILE* dest);
 
-        /* Load and save functions */
-        bool load_init(FILE* src);
-        bool save_init(FILE* dest);
-     
+protected:
+	/* Kernel function */
+	DREAL compute(INT idx_a, INT idx_b);
 
-    protected:
-
-        /* Kernel function */
-        DREAL compute(INT idx_a, INT idx_b);
-
-    private:
-
-        CDistance* distance;
-        DREAL width;
-
+private:
+	CDistance* distance;
+	DREAL width;
 };
-#endif
+
+#endif /* _DISTANCEKERNEL_H__ */
 

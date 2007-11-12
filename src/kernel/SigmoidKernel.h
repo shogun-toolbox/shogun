@@ -17,33 +17,34 @@
 
 class CSigmoidKernel: public CSimpleKernel<DREAL>
 {
- public:
-  CSigmoidKernel(INT size, DREAL gamma, DREAL coef0);
-  CSigmoidKernel(CRealFeatures* l, CRealFeatures* r, INT size, DREAL g, DREAL c);
-  virtual ~CSigmoidKernel();
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+public:
+	CSigmoidKernel(INT size, DREAL gamma, DREAL coef0);
+	CSigmoidKernel(CRealFeatures* l, CRealFeatures* r, INT size, DREAL gamma, DREAL coef0);
+	virtual ~CSigmoidKernel();
+	
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
 
-  /// load and save kernel init_data
-  virtual bool load_init(FILE* src);
-  virtual bool save_init(FILE* dest);
+	/// load and save kernel init_data
+	virtual bool load_init(FILE* src);
+	virtual bool save_init(FILE* dest);
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_SIGMOID; }
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type() { return K_SIGMOID; }
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "Sigmoid" ; } ;
-
- protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  virtual DREAL compute(INT idx_a, INT idx_b);
-  /*    compute_kernel*/
+	// return the name of a kernel
+	virtual const CHAR* get_name() { return "Sigmoid" ; } ;
 
  protected:
-  double gamma;
-  double coef0;
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	virtual DREAL compute(INT idx_a, INT idx_b);
+	/*		compute_kernel*/
+
+ protected:
+	double gamma;
+	double coef0;
 };
-#endif
+
+#endif /* _SIGMOIDKERNEL_H__ */

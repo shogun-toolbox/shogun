@@ -14,12 +14,12 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
-
 class CFixedDegreeStringKernel: public CStringKernel<CHAR>
 {
 public:
 	CFixedDegreeStringKernel(INT size, INT degree);
-	~CFixedDegreeStringKernel();
+	CFixedDegreeStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT degree);
+	virtual ~CFixedDegreeStringKernel();
 
 	virtual bool init(CFeatures* l, CFeatures* r);
 	virtual void cleanup();
@@ -50,4 +50,5 @@ protected:
 	DREAL *sqrtdiag_rhs;
 	bool initialized;
 };
+
 #endif /* _FIXEDDEGREESTRINGKERNEL_H___ */

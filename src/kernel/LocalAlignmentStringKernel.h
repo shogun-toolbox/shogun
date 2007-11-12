@@ -20,7 +20,8 @@ class CLocalAlignmentStringKernel: public CStringKernel<CHAR>
 {
 public:
 	CLocalAlignmentStringKernel(INT size);
-	~CLocalAlignmentStringKernel();
+	CLocalAlignmentStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r);
+	virtual ~CLocalAlignmentStringKernel();
 
 	virtual bool init(CFeatures* l, CFeatures* r);
 	virtual void cleanup();
@@ -67,5 +68,6 @@ protected:
 	static const int blosum[];
 	int* scaled_blosum;
 };
-#endif // _LOCALALIGNMENTKERNEL
+
+#endif /* _LOCALALIGNMENTSTRINGKERNEL_H__ */
 

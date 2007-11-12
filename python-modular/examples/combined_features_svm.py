@@ -46,8 +46,8 @@ def gen_random_string():
 (testfeat1, testfeat2, testfeat3, testlab)=gen_random_string()
 
 k=CombinedKernel()
-k.append_kernel(CWeightedDegreeStringKernel(10, 0, degree, 0))
-k.append_kernel(CWeightedDegreeStringKernel(10, 0, degree, 0))
+k.append_kernel(FixedDegreeStringKernel(10, 3))
+k.append_kernel(LinearStringKernel(10))
 k.append_kernel(GaussianKernel(10, 5.5))
 
 f=CombinedFeatures()

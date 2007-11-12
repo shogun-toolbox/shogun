@@ -14,12 +14,21 @@
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 
-CPolyMatchStringKernel::CPolyMatchStringKernel(INT size, INT d, bool inhom,
-		bool use_norm)
-: CStringKernel<CHAR>(size),degree(d),inhomogene(inhom),
+CPolyMatchStringKernel::CPolyMatchStringKernel(
+	INT size, INT d, bool i, bool un)
+	: CStringKernel<CHAR>(size), degree(d), inhomogene(i),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
-	use_normalization(use_norm)
+	use_normalization(un)
 {
+}
+
+CPolyMatchStringKernel::CPolyMatchStringKernel(
+	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT d, bool i, bool un)
+: CStringKernel<CHAR>(10), degree(d), inhomogene(i),
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
+	use_normalization(un)
+{
+    init(l, r);
 }
 
 CPolyMatchStringKernel::~CPolyMatchStringKernel()

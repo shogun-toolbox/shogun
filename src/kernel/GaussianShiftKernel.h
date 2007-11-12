@@ -32,10 +32,9 @@ protected:
 	/// idx_{a,b} denote the index of the feature vectors
 	/// in the corresponding feature object
 	virtual DREAL compute(INT idx_a, INT idx_b);
-	/*    compute_kernel*/
 	
 protected:
 	int max_shift, shift_step ;
 };
 
-#endif
+#endif /* _GAUSSIANSHIFTKERNEL_H__ */

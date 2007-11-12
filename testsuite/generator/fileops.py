@@ -39,7 +39,9 @@ def _get_filename (output):
 			params.append(str(v))
 
 	params='_'.join(params).replace('.', '')
-	return DIR_OUTPUT+os.sep+output[0]+'Kernel_'+params+EXT_OUTPUT
+	if len(params)>0:
+		params='_'+params
+	return DIR_OUTPUT+os.sep+output[0]+'Kernel'+params+EXT_OUTPUT
 
 def write (output):
 	if output is None:

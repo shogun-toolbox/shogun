@@ -9,3 +9,5 @@
 %template(StringCharKernel) CStringKernel<CHAR>;
 %template(StringIntKernel) CStringKernel<INT>;
 %template(StringUlongKernel) CStringKernel<ULONG>;
+%template(StringShortKernel) CStringKernel<SHORT>;
+%template(StringByteKernel) CStringKernel<BYTE>;

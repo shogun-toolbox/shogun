@@ -9,3 +9,5 @@
 %template(CharKernel) CSimpleKernel<CHAR>;
 %template(ByteKernel) CSimpleKernel<BYTE>;
 %template(IntKernel) CSimpleKernel<INT>;
+%template(ShortKernel) CSimpleKernel<SHORT>;
+%template(UlongKernel) CSimpleKernel<ULONG>;

@@ -79,6 +79,12 @@
     {
         self->CStringFeatures<ULONG>::get_string(dst,len);
     }
+
+    bool set_string_features(T_STRING<ULONG>* strings, INT num_strings, INT max_len)
+    {
+        return self->CStringFeatures<ULONG>::set_features(strings, num_strings, max_len);
+    }
+
 };
 
 %template(StringCharFeatures) CStringFeatures<CHAR>;

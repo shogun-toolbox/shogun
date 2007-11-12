@@ -18,36 +18,36 @@
 class CLocalityImprovedStringKernel: public CStringKernel<CHAR>
 {
 public:
-	CLocalityImprovedStringKernel(INT size, INT length, INT inner_degree,
-		INT outer_degree);
-	~CLocalityImprovedStringKernel();
+	CLocalityImprovedStringKernel(INT size, INT length, INT inner_degree, INT outer_degree);
+	CLocalityImprovedStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT length, INT inner_degree, INT outer_degree);
+	virtual ~CLocalityImprovedStringKernel();
 
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
 
-  /// load and save kernel init_data
-  bool load_init(FILE* src);
-  bool save_init(FILE* dest);
+	/// load and save kernel init_data
+	bool load_init(FILE* src);
+	bool save_init(FILE* dest);
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_LOCALITYIMPROVED; }
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type() { return K_LOCALITYIMPROVED; }
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "LocalityImproved" ; } ;
+	// return the name of a kernel
+	virtual const CHAR* get_name() { return "LocalityImproved" ; } ;
 
- protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  DREAL compute(INT idx_a, INT idx_b);
-  /*    compute_kernel*/
+protected:
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	DREAL compute(INT idx_a, INT idx_b);
+	/*	compute_kernel*/
 
- protected:
-  INT length;
-  INT inner_degree;
-  INT outer_degree;
-  CHAR* match;
+protected:
+	INT length;
+	INT inner_degree;
+	INT outer_degree;
+	CHAR* match;
 };
 
-#endif
+#endif /* _LOCALITYIMPROVEDSTRINGKERNEL_H__ */
 

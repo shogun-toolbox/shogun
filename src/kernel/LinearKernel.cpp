@@ -14,22 +14,22 @@
 #include "features/RealFeatures.h"
 #include "kernel/LinearKernel.h"
 
-CLinearKernel::CLinearKernel(INT size, DREAL scale_)
-  : CSimpleKernel<DREAL>(size),scale(scale_), initialized(false),
+CLinearKernel::CLinearKernel(INT size, DREAL s)
+	: CSimpleKernel<DREAL>(size), scale(s), initialized(false),
 	normal_length(0), normal(NULL)
 {
 	properties |= KP_LINADD;
 }
 
-CLinearKernel::CLinearKernel(CRealFeatures* l, CRealFeatures* r, DREAL scale_, INT size)
-  : CSimpleKernel<DREAL>(size),scale(scale_), initialized(false),
+CLinearKernel::CLinearKernel(CRealFeatures* l, CRealFeatures* r, DREAL s, INT size)
+	: CSimpleKernel<DREAL>(size), scale(s), initialized(false),
 	normal_length(0), normal(NULL)
 {
 	properties |= KP_LINADD;
 	init(l,r);
 }
 
-CLinearKernel::~CLinearKernel() 
+CLinearKernel::~CLinearKernel()
 {
 	cleanup();
 }

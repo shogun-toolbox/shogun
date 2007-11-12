@@ -17,9 +17,9 @@
 class CPolyMatchStringKernel: public CStringKernel<CHAR>
 {
 public:
-	CPolyMatchStringKernel(INT size, INT degree, bool inhomogene,
-		bool use_normalization = true);
-	~CPolyMatchStringKernel();
+	CPolyMatchStringKernel(INT size, INT degree, bool inhomogene, bool use_normalization=true);
+	CPolyMatchStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT degree, bool inhomogene, bool use_normalization=true);
+	virtual ~CPolyMatchStringKernel();
 
 	virtual bool init(CFeatures* l, CFeatures* r);
 	virtual void cleanup();
@@ -56,4 +56,5 @@ protected:
 	bool initialized;
 	bool use_normalization;
 };
+
 #endif /* _POLYMATCHSTRINGKERNEL_H___ */

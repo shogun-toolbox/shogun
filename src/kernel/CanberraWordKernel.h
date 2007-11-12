@@ -13,42 +13,44 @@
 
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
+#include "features/WordFeatures.h"
 
 class CCanberraWordKernel: public CSimpleKernel<WORD>
 {
- public:
-  CCanberraWordKernel(INT size, DREAL width);
-  ~CCanberraWordKernel();
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+public:
+	CCanberraWordKernel(INT size, DREAL width);
+	CCanberraWordKernel(CWordFeatures* l, CWordFeatures* r, DREAL width);
+	virtual ~CCanberraWordKernel();
+	
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
 
-  /// load and save kernel init_data
-  bool load_init(FILE* src);
-  bool save_init(FILE* dest);
+	/// load and save kernel init_data
+	bool load_init(FILE* src);
+	bool save_init(FILE* dest);
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_CANBERRAWORD; }
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type() { return K_CANBERRAWORD; }
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "CanberraWord"; }
+	// return the name of a kernel
+	virtual const CHAR* get_name() { return "CanberraWord"; }
 
-  void get_dictionary(INT& dsize, DREAL*& dweights) 
-  {
-	  dsize=dictionary_size;
-	  dweights = dictionary_weights;
-  }
+	void get_dictionary(INT& dsize, DREAL*& dweights) 
+	{
+		dsize=dictionary_size;
+		dweights = dictionary_weights;
+	}
 
- protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  DREAL compute(INT idx_a, INT idx_b);
+protected:
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	DREAL compute(INT idx_a, INT idx_b);
 
- protected:
-
-  INT dictionary_size;
-  DREAL* dictionary_weights;
-  DREAL width;
+protected:
+	INT dictionary_size;
+	DREAL* dictionary_weights;
+	DREAL width;
 };
-#endif
+
+#endif /* _CANBERRAWORDKERNEL_H__ */

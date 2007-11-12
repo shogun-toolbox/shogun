@@ -18,98 +18,99 @@
 
 class CCommWordStringKernel: public CStringKernel<WORD>
 {
- public:
-  CCommWordStringKernel(INT size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION );
-  CCommWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool use_sign=false, ENormalizationType normalization_=FULL_NORMALIZATION, INT size=10);
-  ~CCommWordStringKernel();
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+public:
+	CCommWordStringKernel(INT size, bool use_sign, ENormalizationType normalization_=FULL_NORMALIZATION );
+	CCommWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool use_sign=false, ENormalizationType normalization_=FULL_NORMALIZATION, INT size=10);
+	virtual ~CCommWordStringKernel();
 
-  /// load and save kernel init_data
-  bool load_init(FILE* src);
-  bool save_init(FILE* dest);
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_COMMWORDSTRING; }
+	/// load and save kernel init_data
+	bool load_init(FILE* src);
+	bool save_init(FILE* dest);
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "CommWordString"; }
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type() { return K_COMMWORDSTRING; }
 
-  virtual bool init_dictionary(INT size);
-  virtual bool init_optimization(INT count, INT *IDX, DREAL * weights);
-  virtual bool delete_optimization();
-  virtual DREAL compute_optimized(INT idx);
+	// return the name of a kernel
+	virtual const CHAR* get_name() { return "CommWordString"; }
 
-  virtual void add_to_normal(INT idx, DREAL weight);
-  virtual void clear_normal();
+	virtual bool init_dictionary(INT size);
+	virtual bool init_optimization(INT count, INT *IDX, DREAL * weights);
+	virtual bool delete_optimization();
+	virtual DREAL compute_optimized(INT idx);
 
-  virtual void remove_lhs();
-  virtual void remove_rhs();
+	virtual void add_to_normal(INT idx, DREAL weight);
+	virtual void clear_normal();
 
-  inline virtual EFeatureType get_feature_type() { return F_WORD; }
-  
-  void get_dictionary(INT& dsize, DREAL*& dweights) 
-  {
-	  dsize=dictionary_size;
-	  dweights = dictionary_weights;
-  }
+	virtual void remove_lhs();
+	virtual void remove_rhs();
 
-  virtual DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, 
-		  DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, bool do_init=true);
+	inline virtual EFeatureType get_feature_type() { return F_WORD; }
+	
+	void get_dictionary(INT& dsize, DREAL*& dweights) 
+	{
+		dsize=dictionary_size;
+		dweights = dictionary_weights;
+	}
 
-  CHAR* compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas);
+	virtual DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, 
+			DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, bool do_init=true);
 
- protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  inline virtual DREAL compute(INT idx_a, INT idx_b)
-  {
-	  return compute_helper(idx_a, idx_b, false);
-  }
+	CHAR* compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas);
 
-  virtual DREAL compute_helper(INT idx_a, INT idx_b, bool do_sort);
+protected:
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	inline virtual DREAL compute(INT idx_a, INT idx_b)
+	{
+		return compute_helper(idx_a, idx_b, false);
+	}
 
-  inline DREAL normalize_weight(DREAL* weights, DREAL value, INT seq_num, INT seq_len, ENormalizationType p_normalization)
-  {
-	  switch (p_normalization)
-	  {
-		  case NO_NORMALIZATION:
-			  return value;
-			  break;
-		  case SQRT_NORMALIZATION:
-			  return value/sqrt(weights[seq_num]);
-			  break;
-		  case FULL_NORMALIZATION:
-			  return value/weights[seq_num];
-			  break;
-		  case SQRTLEN_NORMALIZATION:
-			  return value/sqrt(sqrt((double) seq_len));
-			  break;
-		  case LEN_NORMALIZATION:
-			  return value/sqrt((double) seq_len);
-			  break;
-		  case SQLEN_NORMALIZATION:
-			  return value/seq_len;
-			  break;
-		  default:
-			  ASSERT(0);
-	  }
+	virtual DREAL compute_helper(INT idx_a, INT idx_b, bool do_sort);
 
-	  return -CMath::INFTY;
-  }
+	inline DREAL normalize_weight(DREAL* weights, DREAL value, INT seq_num, INT seq_len, ENormalizationType p_normalization)
+	{
+		switch (p_normalization)
+		{
+			case NO_NORMALIZATION:
+				return value;
+				break;
+			case SQRT_NORMALIZATION:
+				return value/sqrt(weights[seq_num]);
+				break;
+			case FULL_NORMALIZATION:
+				return value/weights[seq_num];
+				break;
+			case SQRTLEN_NORMALIZATION:
+				return value/sqrt(sqrt((double) seq_len));
+				break;
+			case LEN_NORMALIZATION:
+				return value/sqrt((double) seq_len);
+				break;
+			case SQLEN_NORMALIZATION:
+				return value/seq_len;
+				break;
+			default:
+				ASSERT(0);
+		}
 
- protected:
-  DREAL* sqrtdiag_lhs;
-  DREAL* sqrtdiag_rhs;
+		return -CMath::INFTY;
+	}
 
-  bool initialized;
+protected:
+	DREAL* sqrtdiag_lhs;
+	DREAL* sqrtdiag_rhs;
 
-  INT dictionary_size;
-  DREAL* dictionary_weights;
-  bool use_sign;
+	bool initialized;
 
-  ENormalizationType normalization;
+	INT dictionary_size;
+	DREAL* dictionary_weights;
+	bool use_sign;
+
+	ENormalizationType normalization;
 };
-#endif
+
+#endif /* _COMMWORDSTRINGKERNEL_H__ */

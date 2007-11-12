@@ -15,21 +15,21 @@
 #include "lib/io.h"
 
 CChi2Kernel::CChi2Kernel(INT size, DREAL w)
-  : CSimpleKernel<DREAL>(size), width(w)
+	: CSimpleKernel<DREAL>(size), width(w)
 {
 }
 
-CChi2Kernel::CChi2Kernel(CRealFeatures* l, CRealFeatures* r, INT size)
-  : CSimpleKernel<DREAL>(size)
+CChi2Kernel::CChi2Kernel(CRealFeatures* l, CRealFeatures* r, DREAL w, INT size)
+	: CSimpleKernel<DREAL>(size), width(w)
 {
 	init(l,r);
 }
 
-CChi2Kernel::~CChi2Kernel() 
+CChi2Kernel::~CChi2Kernel()
 {
 	cleanup();
 }
-  
+
 bool CChi2Kernel::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CSimpleKernel<DREAL>::init(l,r);

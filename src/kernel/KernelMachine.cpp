@@ -10,8 +10,9 @@
 
 #include "kernel/KernelMachine.h"
 
-CKernelMachine::CKernelMachine():CClassifier(), kernel(NULL),
-	use_batch_computation(true), use_linadd(true)
+CKernelMachine::CKernelMachine()
+	: CClassifier(), kernel(NULL), use_batch_computation(true),
+	use_linadd(true)
 {
 }
 

@@ -14,11 +14,20 @@
 #include "features/Features.h"
 #include "features/StringFeatures.h"
 
-CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(INT size,
-		INT l, INT d1, INT d2)
-: CStringKernel<CHAR>(size), length(l), inner_degree(d1), outer_degree(d2),
+CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
+	INT size, INT l, INT id, INT od)
+	: CStringKernel<CHAR>(size), length(l), inner_degree(id), outer_degree(od),
 	match(NULL), pyramid_weights(NULL)
 {
+}
+
+CSimpleLocalityImprovedStringKernel::CSimpleLocalityImprovedStringKernel(
+	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
+	INT len, INT id, INT od)
+	: CStringKernel<CHAR>(10), length(len), inner_degree(id), outer_degree(od),
+	match(NULL), pyramid_weights(NULL)
+{
+	init(l, r);
 }
 
 CSimpleLocalityImprovedStringKernel::~CSimpleLocalityImprovedStringKernel()

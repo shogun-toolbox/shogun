@@ -30,7 +30,7 @@ def gen_random_string():
 (testfeat,testlab)=gen_random_string()
 
 #train svm
-wdk = WeightedDegreeStringKernel(trainfeat,trainfeat, degree)
+wdk = WeightedDegreeStringKernel(trainfeat,trainfeat, degree, 0)
 svm = LibSVM(C, wdk, trainlab)
 svm.train()
 trainout=svm.classify().get_labels()

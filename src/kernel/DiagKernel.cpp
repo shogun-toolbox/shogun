@@ -21,14 +21,20 @@ extern "C" {
 #include "lib/io.h"
 
 CDiagKernel::CDiagKernel(INT size, DREAL d)
-  : CKernel(size),diag(d)
+	: CKernel(size), diag(d)
 {
 }
 
-CDiagKernel::~CDiagKernel() 
+CDiagKernel::CDiagKernel(CFeatures* l, CFeatures* r, DREAL d)
+	: CKernel(10), diag(d)
+{
+	init(l, r);
+}
+
+CDiagKernel::~CDiagKernel()
 {
 }
-  
+
 void CDiagKernel::cleanup()
 {
 }

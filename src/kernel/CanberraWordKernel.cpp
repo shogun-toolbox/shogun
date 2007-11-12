@@ -23,13 +23,25 @@ CCanberraWordKernel::CCanberraWordKernel(INT size, DREAL w)
 	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 }
 
-CCanberraWordKernel::~CCanberraWordKernel() 
+CCanberraWordKernel::CCanberraWordKernel(
+	CWordFeatures* l, CWordFeatures* r, DREAL w)
+	: CSimpleKernel<WORD>(10), width(w)
+{
+	SG_DEBUG( "CCanberraWordKernel with cache size: %d width: %f created\n", 10, width);
+	dictionary_size= 1<<(sizeof(WORD)*8);
+	dictionary_weights = new DREAL[dictionary_size];
+	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
+
+	init(l, r);
+}
+
+CCanberraWordKernel::~CCanberraWordKernel()
 {
 	cleanup();
 
 	delete[] dictionary_weights;
 }
-  
+
 bool CCanberraWordKernel::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CSimpleKernel<WORD>::init(l,r);

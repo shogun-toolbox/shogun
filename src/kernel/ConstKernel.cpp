@@ -17,7 +17,13 @@ CConstKernel::CConstKernel(DREAL c) : CKernel(0), const_value(c)
 {
 }
 
-CConstKernel::~CConstKernel() 
+CConstKernel::CConstKernel(CFeatures* l, CFeatures* r, DREAL c)
+	: CKernel(0), const_value(c)
+{
+	init(l, r);
+}
+
+CConstKernel::~CConstKernel()
 {
 }
 

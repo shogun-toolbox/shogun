@@ -13,41 +13,43 @@
 
 #include "lib/common.h"
 #include "kernel/SimpleKernel.h"
+#include "features/WordFeatures.h"
 
 class CWordMatchKernel: public CSimpleKernel<WORD>
 {
- public:
-  CWordMatchKernel(INT size, INT d, bool do_rescale=true, DREAL scale=1.0);
-  ~CWordMatchKernel() ;
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+public:
+	CWordMatchKernel(INT size, INT d, bool do_rescale=true, DREAL scale=1.);
+	CWordMatchKernel(CWordFeatures* l, CWordFeatures* r, INT degree, bool do_rescale=true, DREAL scale=1.);
+	virtual ~CWordMatchKernel() ;
+	
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
 
-  /// load and save kernel init_data
-  virtual bool load_init(FILE* src);
-  virtual bool save_init(FILE* dest);
+	/// load and save kernel init_data
+	virtual bool load_init(FILE* src);
+	virtual bool save_init(FILE* dest);
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_LINEAR; }
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type() { return K_LINEAR; }
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "Linear" ; } ;
+	// return the name of a kernel
+	virtual const CHAR* get_name() { return "Linear" ; } ;
 
- protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  virtual DREAL compute(INT idx_a, INT idx_b);
-  /*    compute_kernel*/
+protected:
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	virtual DREAL compute(INT idx_a, INT idx_b);
+	/*		compute_kernel*/
 
-  virtual void init_rescale();
-  
- protected:
-  double scale ;
-  bool do_rescale ;
-  bool initialized;
+	virtual void init_rescale();
 
-  INT degree;
+protected:
+	double scale ;
+	bool do_rescale ;
+	bool initialized;
+
+	INT degree;
 };
 
-#endif
+#endif /* _WORDMATCHKERNEL_H__ */

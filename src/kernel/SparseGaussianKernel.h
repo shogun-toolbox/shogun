@@ -17,39 +17,39 @@
 
 class CSparseGaussianKernel: public CSparseKernel<DREAL>
 {
- public:
-  CSparseGaussianKernel(INT size, double width);
-  ~CSparseGaussianKernel();
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+public:
+	CSparseGaussianKernel(INT size, double width);
+	CSparseGaussianKernel(CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, double width);
+	virtual ~CSparseGaussianKernel();
+	
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
 
-  /// load and save kernel init_data
-  virtual bool load_init(FILE* src);
-  virtual bool save_init(FILE* dest);
+	/// load and save kernel init_data
+	virtual bool load_init(FILE* src);
+	virtual bool save_init(FILE* dest);
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_SPARSEGAUSSIAN; }
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type() { return K_SPARSEGAUSSIAN; }
 
-  /** return feature type the kernel can deal with
-  */
-  inline virtual EFeatureType get_feature_type() { return F_DREAL; }
+	/** return feature type the kernel can deal with
+	*/
+	inline virtual EFeatureType get_feature_type() { return F_DREAL; }
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "SparseGaussian" ; } ;
+	// return the name of a kernel
+	virtual const CHAR* get_name() { return "SparseGaussian" ; } ;
 
- protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  virtual DREAL compute(INT idx_a, INT idx_b);
-  /*    compute_kernel*/
-  
- protected:
-  double width;
+protected:
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	virtual DREAL compute(INT idx_a, INT idx_b);
 
-  DREAL* sq_lhs;
-  DREAL* sq_rhs;
+protected:
+	double width;
+
+	DREAL* sq_lhs;
+	DREAL* sq_rhs;
 };
 
-#endif
+#endif /* _SPARSEGAUSSIANKERNEL_H__ */

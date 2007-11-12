@@ -61,7 +61,10 @@ def read_matrix (line):
 			if(y.isalpha()):
 				lis.append(y)
 			else:
-				lis.append(float(y))
+				if y.find('.')!=-1:
+					lis.append(float(y))
+				else:
+					lis.append(int(y))
 		lis2d.append(lis)
 
 	return array(lis2d)

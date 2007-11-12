@@ -17,53 +17,54 @@
 
 class CSparseLinearKernel: public CSparseKernel<DREAL>
 {
- public:
-  CSparseLinearKernel(INT size, DREAL scale=1.0);
-  CSparseLinearKernel(CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, DREAL scale=1.0, INT size=10);
-  ~CSparseLinearKernel();
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+public:
+	CSparseLinearKernel(INT size, DREAL scale=1.0);
+	CSparseLinearKernel(CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, DREAL scale=1.0, INT size=10);
+	virtual ~CSparseLinearKernel();
+	
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
 
-  /// load and save kernel init_data
-  virtual bool load_init(FILE* src);
-  virtual bool save_init(FILE* dest);
+	/// load and save kernel init_data
+	virtual bool load_init(FILE* src);
+	virtual bool save_init(FILE* dest);
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_SPARSELINEAR; }
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type() { return K_SPARSELINEAR; }
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "SparseLinear" ; } ;
+	// return the name of a kernel
+	virtual const CHAR* get_name() { return "SparseLinear" ; } ;
 
-  ///optimizable kernel, i.e. precompute normal vector and as phi(x)=x
-  ///do scalar product in input space
-  virtual bool init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas);
-  virtual bool delete_optimization();
-  virtual DREAL compute_optimized(INT idx);
+	///optimizable kernel, i.e. precompute normal vector and as phi(x)=x
+	///do scalar product in input space
+	virtual bool init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas);
+	virtual bool delete_optimization();
+	virtual DREAL compute_optimized(INT idx);
 
-  virtual void clear_normal();
-  virtual void add_to_normal(INT idx, DREAL weight);
+	virtual void clear_normal();
+	virtual void add_to_normal(INT idx, DREAL weight);
 
-  inline const double* get_normal(INT& len)
-  {
-	  len=normal_length;
-	  return normal;
-  }
- protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  virtual DREAL compute(INT idx_a, INT idx_b);
-  /*    compute_kernel*/
+	inline const double* get_normal(INT& len)
+	{
+		len=normal_length;
+		return normal;
+	}
 
-  virtual void init_rescale();
-  
- protected:
-  double scale ;
-  bool initialized;
+protected:
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	virtual DREAL compute(INT idx_a, INT idx_b);
 
-  /// normal vector (used in case of optimized kernel)
-  INT normal_length;
-  DREAL* normal;
+	virtual void init_rescale();
+
+protected:
+	double scale ;
+	bool initialized;
+
+	/// normal vector (used in case of optimized kernel)
+	INT normal_length;
+	DREAL* normal;
 };
-#endif
+
+#endif /* _SPARSELINEARKERNEL_H__ */

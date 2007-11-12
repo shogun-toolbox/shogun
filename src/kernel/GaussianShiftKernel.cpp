@@ -14,13 +14,14 @@
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-CGaussianShiftKernel::CGaussianShiftKernel(INT size, double w, int p_max_shift, int p_shift_step)
-	: CGaussianKernel(size, w), max_shift(p_max_shift), shift_step(p_shift_step)
+CGaussianShiftKernel::CGaussianShiftKernel(INT size, double w, int ms, int ss)
+	: CGaussianKernel(size, w), max_shift(ms), shift_step(ss)
 {
 }
 
-CGaussianShiftKernel::CGaussianShiftKernel(CRealFeatures* l, CRealFeatures* r, double w, int p_max_shift, int p_shift_step, INT size)
-	: CGaussianKernel(l, r, w, size), max_shift(p_max_shift), shift_step(p_shift_step)
+CGaussianShiftKernel::CGaussianShiftKernel(
+	CRealFeatures* l, CRealFeatures* r, double w, int ms, int ss, INT size)
+	: CGaussianKernel(l, r, w, size), max_shift(ms), shift_step(ss)
 {
 	init(l,r);
 }
@@ -28,7 +29,7 @@ CGaussianShiftKernel::CGaussianShiftKernel(CRealFeatures* l, CRealFeatures* r, d
 CGaussianShiftKernel::~CGaussianShiftKernel()
 {
 }
-  
+
 DREAL CGaussianShiftKernel::compute(INT idx_a, INT idx_b)
 {
   INT alen, blen;

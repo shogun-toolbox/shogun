@@ -14,10 +14,18 @@
 #include "kernel/LinearByteKernel.h"
 #include "features/ByteFeatures.h"
 
-CLinearByteKernel::CLinearByteKernel(INT size, bool do_rescale_, DREAL scale_)
-  : CSimpleKernel<BYTE>(size),scale(scale_),do_rescale(do_rescale_),initialized(false),
+CLinearByteKernel::CLinearByteKernel(INT size, bool dr, DREAL s)
+	: CSimpleKernel<BYTE>(size), scale(s), do_rescale(dr), initialized(false),
 	normal(NULL)
 {
+}
+
+CLinearByteKernel::CLinearByteKernel(
+	CByteFeatures* l, CByteFeatures* r, bool dr, DREAL s)
+	: CSimpleKernel<BYTE>(10), scale(s), do_rescale(dr), initialized(false),
+	normal(NULL)
+{
+	init(l, r);
 }
 
 CLinearByteKernel::~CLinearByteKernel() 

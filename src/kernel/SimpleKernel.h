@@ -17,39 +17,44 @@
 
 template <class ST> class CSimpleKernel : public CKernel
 {
-	public:
-		CSimpleKernel(INT cachesize) : CKernel(cachesize)
-		{
+public:
+	CSimpleKernel(INT cachesize) : CKernel(cachesize)
+	{
+	}
+
+	CSimpleKernel(CFeatures* l, CFeatures* r) : CKernel(10)
+	{
+		init(l, r);
+	}
+
+	/** initialize your kernel
+	 * where l are feature vectors to occur on left hand side
+	 * and r the feature vectors to occur on right hand side
+	 */
+	virtual bool init(CFeatures* l, CFeatures* r)
+	{
+		CKernel::init(l,r);
+
+		ASSERT(l->get_feature_class() == C_SIMPLE);
+		ASSERT(r->get_feature_class() == C_SIMPLE);
+		ASSERT(l->get_feature_type()==this->get_feature_type());
+		ASSERT(r->get_feature_type()==this->get_feature_type());
+
+		if ( ((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
+		{  
+			SG_ERROR( "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+					((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) r)->get_num_features());
 		}
+		return true;
+	}
 
-		/** initialize your kernel
-		 * where l are feature vectors to occur on left hand side
-		 * and r the feature vectors to occur on right hand side
-		 */
-		virtual bool init(CFeatures* l, CFeatures* r)
-		{
-			CKernel::init(l,r);
+	/** return feature class the kernel can deal with
+	  */
+	inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
 
-			ASSERT(l->get_feature_class() == C_SIMPLE);
-			ASSERT(r->get_feature_class() == C_SIMPLE);
-			ASSERT(l->get_feature_type()==this->get_feature_type());
-			ASSERT(r->get_feature_type()==this->get_feature_type());
-
-			if ( ((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
-			{  
-				SG_ERROR( "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
-						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) r)->get_num_features());
-			}
-			return true;
-		}
-
-		/** return feature class the kernel can deal with
-		  */
-		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
-
-		/** return feature type the kernel can deal with
-		  */
-		inline virtual EFeatureType get_feature_type();
+	/** return feature type the kernel can deal with
+	  */
+	inline virtual EFeatureType get_feature_type();
 };
 
 
@@ -68,4 +73,4 @@ template<> inline EFeatureType CSimpleKernel<BYTE>::get_feature_type() { return 
 template<> inline EFeatureType CSimpleKernel<CHAR>::get_feature_type() { return F_CHAR; }
 
 
-#endif
+#endif /* _SIMPLEKERNEL_H__ */

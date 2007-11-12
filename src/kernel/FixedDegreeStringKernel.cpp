@@ -15,8 +15,17 @@
 #include "lib/io.h"
 
 CFixedDegreeStringKernel::CFixedDegreeStringKernel(INT size, INT d)
-  : CStringKernel<CHAR>(size),degree(d), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
+	: CStringKernel<CHAR>(size), degree(d), sqrtdiag_lhs(NULL),
+	sqrtdiag_rhs(NULL), initialized(false)
 {
+}
+
+CFixedDegreeStringKernel::CFixedDegreeStringKernel(
+	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT d)
+	: CStringKernel<CHAR>(10), degree(d), sqrtdiag_lhs(NULL),
+	sqrtdiag_rhs(NULL), initialized(false)
+{
+	init(l, r);
 }
 
 CFixedDegreeStringKernel::~CFixedDegreeStringKernel()

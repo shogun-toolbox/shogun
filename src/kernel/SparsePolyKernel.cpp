@@ -13,15 +13,18 @@
 #include "kernel/SparsePolyKernel.h"
 #include "features/SparseFeatures.h"
 
-CSparsePolyKernel::CSparsePolyKernel(INT size, INT d, bool inhom, bool use_norm)
-  : CSparseKernel<DREAL>(size), degree(d), inhomogene(inhom), 
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
+CSparsePolyKernel::CSparsePolyKernel(INT size, INT d, bool i, bool un)
+	: CSparseKernel<DREAL>(size), degree(d), inhomogene(i),
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
+	use_normalization(un)
 {
 }
 
-CSparsePolyKernel::CSparsePolyKernel(CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, INT size, INT d, bool inhom, bool use_norm)
-  : CSparseKernel<DREAL>(size),degree(d),inhomogene(inhom),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(use_norm)
+CSparsePolyKernel::CSparsePolyKernel(
+	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r,
+	INT size, INT d, bool i, bool un)
+	: CSparseKernel<DREAL>(size),degree(d),inhomogene(i), sqrtdiag_lhs(NULL),
+	sqrtdiag_rhs(NULL), initialized(false), use_normalization(un)
 {
 	init(l,r);
 }

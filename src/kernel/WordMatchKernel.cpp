@@ -14,17 +14,25 @@
 #include "kernel/WordMatchKernel.h"
 #include "features/WordFeatures.h"
 
-CWordMatchKernel::CWordMatchKernel(INT size, INT d, bool do_rescale_, DREAL scale_)
-  : CSimpleKernel<WORD>(size),scale(scale_),do_rescale(do_rescale_), initialized(false),
+CWordMatchKernel::CWordMatchKernel(INT size, INT d, bool dr, DREAL s)
+	: CSimpleKernel<WORD>(size),scale(s),do_rescale(dr), initialized(false),
 	degree(d)
 {
 }
 
-CWordMatchKernel::~CWordMatchKernel() 
+CWordMatchKernel::CWordMatchKernel(
+	CWordFeatures* l, CWordFeatures* r, INT d, bool dr, DREAL s)
+	: CSimpleKernel<WORD>(10), scale(s), do_rescale(dr), initialized(false),
+	degree(d)
+{
+	init(l, r);
+}
+
+CWordMatchKernel::~CWordMatchKernel()
 {
 	cleanup();
 }
-  
+
 bool CWordMatchKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<WORD>::init(l, r);

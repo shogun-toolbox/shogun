@@ -59,16 +59,15 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(INT size, EWDKernType
 		set_wd_weights_by_type(type);
 }
 
-CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(INT size, double* w,
-		INT d, INT max_mismatch_, bool use_norm, bool block, INT mkl_stepsize_,
-		INT which_deg) 
+CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(
+	INT size, double* w, INT d, INT mm, bool un, bool bc, INT mkls, INT wd) 
 	: CStringKernel<CHAR>(size),weights(NULL),position_weights(NULL),weights_buffer(NULL),
-	mkl_stepsize(mkl_stepsize_), degree(d), length(0),
-	max_mismatch(max_mismatch_), seq_length(0), initialized(false),
-	block_computation(block), use_normalization(use_norm),
+	mkl_stepsize(mkls), degree(d), length(0),
+	max_mismatch(mm), seq_length(0), initialized(false),
+	block_computation(bc), use_normalization(un),
 	normalization_const(1.0), num_block_weights_external(0),
 	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
-	which_degree(which_deg), tries(d,max_mismatch_==0), tree_initialized(false)
+	which_degree(wd), tries(d, mm==0), tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
@@ -78,6 +77,24 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(INT size, double* w,
 	ASSERT(weights!=NULL);
 	for (INT i=0; i<d*(1+max_mismatch); i++)
 		weights[i]=w[i];
+}
+
+CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(
+	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT d, INT mm)
+	: CStringKernel<CHAR>(10),weights(NULL),position_weights(NULL),weights_buffer(NULL),
+	mkl_stepsize(1), degree(d), length(0),
+	max_mismatch(mm), seq_length(0), initialized(false),
+	block_computation(false), use_normalization(true),
+	normalization_const(1.0), num_block_weights_external(0),
+	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
+	which_degree(-1), tries(d, mm==0), tree_initialized(false)
+{
+	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
+
+	set_wd_weights_by_type(E_WD);
+	ASSERT(weights);
+
+	init(l, r);
 }
 
 CWeightedDegreeStringKernel::~CWeightedDegreeStringKernel() 

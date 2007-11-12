@@ -13,22 +13,26 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(INT size, bool sign, ENormalizationType n)
-  : CCommWordStringKernel(size, sign, n), weights(NULL)
+CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
+	INT size, bool us, ENormalizationType n)
+	: CCommWordStringKernel(size, us, n), weights(NULL)
 {
 	init_dictionary(1<<(sizeof(WORD)*9));
-	ASSERT(sign == false);
+	ASSERT(us == false);
 }
 
-CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool sign, ENormalizationType n, INT size)
-  : CCommWordStringKernel(size, sign, n), weights(NULL)
+CWeightedCommWordStringKernel::CWeightedCommWordStringKernel(
+	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
+	bool us, ENormalizationType n, INT size)
+	: CCommWordStringKernel(size, us, n), weights(NULL)
 {
 	init_dictionary(1<<(sizeof(WORD)*9));
-	ASSERT(sign == false);
+	ASSERT(us == false);
+
 	init(l,r);
 }
 
-CWeightedCommWordStringKernel::~CWeightedCommWordStringKernel() 
+CWeightedCommWordStringKernel::~CWeightedCommWordStringKernel()
 {
 }
 

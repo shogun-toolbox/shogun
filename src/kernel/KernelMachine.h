@@ -22,48 +22,48 @@ class CClassifier;
 
 class CKernelMachine : public CClassifier
 {
-	public:
-		CKernelMachine();
-		virtual ~CKernelMachine();
+public:
+	CKernelMachine();
+	virtual ~CKernelMachine();
 
-		inline void set_kernel(CKernel* k)
-		{
-            SG_REF(k);
-			kernel=k;
-		}
+	inline void set_kernel(CKernel* k)
+	{
+		SG_REF(k);
+		kernel=k;
+	}
 
-		inline CKernel* get_kernel()
-		{
-            SG_REF(kernel);
-			return kernel;
-		}
+	inline CKernel* get_kernel()
+	{
+		SG_REF(kernel);
+		return kernel;
+	}
 
-		inline void set_batch_computation_enabled(bool enable)
-		{
-			use_batch_computation=enable;
-		}
+	inline void set_batch_computation_enabled(bool enable)
+	{
+		use_batch_computation=enable;
+	}
 
-		inline bool get_batch_computation_enabled()
-		{
-			return use_batch_computation;
-		}
+	inline bool get_batch_computation_enabled()
+	{
+		return use_batch_computation;
+	}
 
-		inline void set_linadd_enabled(bool enable)
-		{
-			use_linadd=enable;
-		}
+	inline void set_linadd_enabled(bool enable)
+	{
+		use_linadd=enable;
+	}
 
-		inline bool get_linadd_enabled()
-		{
-			return use_linadd ;
-		}
+	inline bool get_linadd_enabled()
+	{
+		return use_linadd ;
+	}
 
+	virtual CLabels* classify(CLabels* output=NULL);
 
-		virtual CLabels* classify(CLabels* output=NULL);
-
-	protected:
-		CKernel* kernel;
-		bool use_batch_computation;
-		bool use_linadd;
+protected:
+	CKernel* kernel;
+	bool use_batch_computation;
+	bool use_linadd;
 };
-#endif
+
+#endif /* _KERNEL_MACHINE_H__ */

@@ -19,257 +19,255 @@
 
 class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 {
- public:
-  CWeightedDegreeStringKernel(INT size, EWDKernType type, INT degree, INT max_mismatch, 
-		  bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
-  CWeightedDegreeStringKernel(INT size, DREAL* weights, INT degree, INT max_mismatch, 
-		  bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
-  ~CWeightedDegreeStringKernel() ;
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+public:
+		CWeightedDegreeStringKernel(INT size, EWDKernType type, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
+			CWeightedDegreeStringKernel(INT size, DREAL* weights, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
+		CWeightedDegreeStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT degree, INT max_mismatch);
+	virtual ~CWeightedDegreeStringKernel();
 
-  /// load and save kernel init_data
-  bool load_init(FILE* src);
-  bool save_init(FILE* dest);
+	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual void cleanup();
 
-  // return what type of kernel we are Linear,Polynomial, Gaussian,...
-  virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREE; }
+	/// load and save kernel init_data
+	bool load_init(FILE* src);
+	bool save_init(FILE* dest);
 
-  // return the name of a kernel
-  virtual const CHAR* get_name() { return "WeightedDegree" ; } ;
+	// return what type of kernel we are Linear,Polynomial, Gaussian,...
+	virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREE; }
 
-  inline virtual bool init_optimization(INT count, INT *IDX, DREAL* alphas)
-  {
-	  return init_optimization(count, IDX, alphas, -1);
-  }
+	// return the name of a kernel
+	virtual const CHAR* get_name() { return "WeightedDegree" ; } ;
 
-  /// do initialization for tree_num up to upto_tree, use tree_num=-1 to construct all trees
-  virtual bool init_optimization(INT count, INT *IDX, DREAL* alphas, INT tree_num);
-  virtual bool delete_optimization() ;
-  virtual DREAL compute_optimized(INT idx) 
-  { 
-    if (get_is_initialized())
-      return compute_by_tree(idx); 
-    
-    SG_ERROR( "CWeightedDegreeStringKernel optimization not initialized\n") ;
-    return 0 ;
-  } ;
+	inline virtual bool init_optimization(INT count, INT *IDX, DREAL* alphas)
+	{
+		return init_optimization(count, IDX, alphas, -1);
+	}
 
-  static void* compute_batch_helper(void* p); 
-  virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
+	/// do initialization for tree_num up to upto_tree, use tree_num=-1 to construct all trees
+	virtual bool init_optimization(INT count, INT *IDX, DREAL* alphas, INT tree_num);
+	virtual bool delete_optimization() ;
+	virtual DREAL compute_optimized(INT idx) 
+	{ 
+		if (get_is_initialized())
+			return compute_by_tree(idx); 
+		
+		SG_ERROR( "CWeightedDegreeStringKernel optimization not initialized\n") ;
+		return 0 ;
+	} ;
 
-  // subkernel functionality
-  inline virtual void clear_normal()
-  {
-	  if (get_is_initialized())
-	  {
-		  tries.delete_trees(); 
-		  set_is_initialized(false);
-	  }
-  }
-  inline virtual void add_to_normal(INT idx, DREAL weight) 
-  {
-	  if (max_mismatch==0)
-		  add_example_to_tree(idx, weight);
-	  else
-		  add_example_to_tree_mismatch(idx, weight);
+	static void* compute_batch_helper(void* p); 
+	virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
 
-	  set_is_initialized(true);
-  }
+	// subkernel functionality
+	inline virtual void clear_normal()
+	{
+		if (get_is_initialized())
+		{
+			tries.delete_trees(); 
+			set_is_initialized(false);
+		}
+	}
+	inline virtual void add_to_normal(INT idx, DREAL weight) 
+	{
+		if (max_mismatch==0)
+			add_example_to_tree(idx, weight);
+		else
+			add_example_to_tree_mismatch(idx, weight);
 
-  inline virtual INT get_num_subkernels()
-  {
-	  if (position_weights!=NULL)
-		  return (INT) ceil(1.0*seq_length/mkl_stepsize) ;
-	  if (length==0)
-		  return (INT) ceil(1.0*get_degree()/mkl_stepsize);
-	  return (INT) ceil(1.0*get_degree()*length/mkl_stepsize) ;
-  }
+		set_is_initialized(true);
+	}
 
-  inline void compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
-  { 
-	  if (get_is_initialized())
-	  {
-		  compute_by_tree(idx, subkernel_contrib); 
-		  return ;
-	  }
-     
-	  SG_ERROR( "CWeightedDegreeStringKernel optimization not initialized\n") ;
-  }
+	inline virtual INT get_num_subkernels()
+	{
+		if (position_weights!=NULL)
+			return (INT) ceil(1.0*seq_length/mkl_stepsize) ;
+		if (length==0)
+			return (INT) ceil(1.0*get_degree()/mkl_stepsize);
+		return (INT) ceil(1.0*get_degree()*length/mkl_stepsize) ;
+	}
 
-  inline const DREAL* get_subkernel_weights(INT& num_weights)
-  {
-	  num_weights = get_num_subkernels() ;
+	inline void compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
+	{ 
+		if (get_is_initialized())
+		{
+			compute_by_tree(idx, subkernel_contrib); 
+			return ;
+		}
+		 
+		SG_ERROR( "CWeightedDegreeStringKernel optimization not initialized\n") ;
+	}
 
-	  delete[] weights_buffer ;
-	  weights_buffer = new DREAL[num_weights] ;
+	inline const DREAL* get_subkernel_weights(INT& num_weights)
+	{
+		num_weights = get_num_subkernels() ;
 
-	  if (position_weights!=NULL)
-		  for (INT i=0; i<num_weights; i++)
-			  weights_buffer[i] = position_weights[i*mkl_stepsize] ;
-	  else
-		  for (INT i=0; i<num_weights; i++)
-			  weights_buffer[i] = weights[i*mkl_stepsize] ;
+		delete[] weights_buffer ;
+		weights_buffer = new DREAL[num_weights] ;
 
-	  return weights_buffer ;
-  }
-  
-  inline void set_subkernel_weights(DREAL* weights2, INT num_weights2)
-  {
-	  INT num_weights = get_num_subkernels() ;
-	  if (num_weights!=num_weights2)
-		  SG_ERROR( "number of weights do not match\n") ;
+		if (position_weights!=NULL)
+			for (INT i=0; i<num_weights; i++)
+				weights_buffer[i] = position_weights[i*mkl_stepsize] ;
+		else
+			for (INT i=0; i<num_weights; i++)
+				weights_buffer[i] = weights[i*mkl_stepsize] ;
 
-	  if (position_weights!=NULL)
-	  {
-		  for (INT i=0; i<num_weights; i++)
-		  {
-			  for (INT j=0; j<mkl_stepsize; j++)
-			  {
-				  if (i*mkl_stepsize+j<seq_length)
-					  position_weights[i*mkl_stepsize+j] = weights2[i] ;
-			  }
-		  }
-	  }
-	  else if (length==0)
-	  {
-		  for (INT i=0; i<num_weights; i++)
-		  {
-			  for (INT j=0; j<mkl_stepsize; j++)
-			  {
-				  if (i*mkl_stepsize+j<get_degree())
-					  weights[i*mkl_stepsize+j] = weights2[i] ;
-			  }
-		  }
-	  }
-	  else
-	  {
-		  for (INT i=0; i<num_weights; i++)
-		  {
-			  for (INT j=0; j<mkl_stepsize; j++)
-			  {
-				  if (i*mkl_stepsize+j<get_degree()*length)
-					  weights[i*mkl_stepsize+j] = weights2[i] ;
-			  }
-		  }
-	  }
-  }
-  
-  // other kernel tree operations  
-  DREAL *compute_abs_weights(INT & len);
-  void compute_by_tree(INT idx, DREAL *LevelContrib);
+		return weights_buffer ;
+	}
+	
+	inline void set_subkernel_weights(DREAL* weights2, INT num_weights2)
+	{
+		INT num_weights = get_num_subkernels() ;
+		if (num_weights!=num_weights2)
+			SG_ERROR( "number of weights do not match\n") ;
 
-  bool is_tree_initialized() { return tree_initialized; }
+		if (position_weights!=NULL)
+		{
+			for (INT i=0; i<num_weights; i++)
+			{
+				for (INT j=0; j<mkl_stepsize; j++)
+				{
+					if (i*mkl_stepsize+j<seq_length)
+						position_weights[i*mkl_stepsize+j] = weights2[i] ;
+				}
+			}
+		}
+		else if (length==0)
+		{
+			for (INT i=0; i<num_weights; i++)
+			{
+				for (INT j=0; j<mkl_stepsize; j++)
+				{
+					if (i*mkl_stepsize+j<get_degree())
+						weights[i*mkl_stepsize+j] = weights2[i] ;
+				}
+			}
+		}
+		else
+		{
+			for (INT i=0; i<num_weights; i++)
+			{
+				for (INT j=0; j<mkl_stepsize; j++)
+				{
+					if (i*mkl_stepsize+j<get_degree()*length)
+						weights[i*mkl_stepsize+j] = weights2[i] ;
+				}
+			}
+		}
+	}
+	
+	// other kernel tree operations  
+	DREAL *compute_abs_weights(INT & len);
+	void compute_by_tree(INT idx, DREAL *LevelContrib);
 
-  inline INT get_max_mismatch() { return max_mismatch; }
-  inline INT get_degree() { return degree; }
-  inline DREAL get_normalization_const() { return normalization_const; }
-  inline DREAL *get_degree_weights(INT& d, INT& len)
-  {
-	  d=degree;
-	  len=length;
-	  return weights;
-  }
-  inline DREAL *get_weights(INT& num_weights)
-  {
-	  if (position_weights!=NULL)
-	  {
-		  num_weights = seq_length ;
-		  return position_weights ;
-	  }
-	  if (length==0)
-		  num_weights = degree ;
-	  else
-		  num_weights = degree*length ;
-	  return weights;
-  }
-  inline DREAL *get_position_weights(INT& len)
-  {
-	  len=seq_length;
-	  return position_weights;
-  }
+	bool is_tree_initialized() { return tree_initialized; }
 
-  bool set_wd_weights_by_type(EWDKernType type);
+	inline INT get_max_mismatch() { return max_mismatch; }
+	inline INT get_degree() { return degree; }
+	inline DREAL get_normalization_const() { return normalization_const; }
+	inline DREAL *get_degree_weights(INT& d, INT& len)
+	{
+		d=degree;
+		len=length;
+		return weights;
+	}
+	inline DREAL *get_weights(INT& num_weights)
+	{
+		if (position_weights!=NULL)
+		{
+			num_weights = seq_length ;
+			return position_weights ;
+		}
+		if (length==0)
+			num_weights = degree ;
+		else
+			num_weights = degree*length ;
+		return weights;
+	}
+	inline DREAL *get_position_weights(INT& len)
+	{
+		len=seq_length;
+		return position_weights;
+	}
 
-  void set_wd_weights(DREAL* p_weights, INT d)
-  {
-      set_weights(p_weights,d,0);
-  }
+	bool set_wd_weights_by_type(EWDKernType type);
 
-  bool set_weights(DREAL* weights, INT d, INT len);
-  bool set_position_weights(DREAL* position_weights, INT len=0);
+	void set_wd_weights(DREAL* p_weights, INT d)
+	{
+			set_weights(p_weights,d,0);
+	}
 
-  bool init_block_weights();
-  bool init_block_weights_from_wd();
-  bool init_block_weights_from_wd_external();
-  bool init_block_weights_const();
-  bool init_block_weights_linear();
-  bool init_block_weights_sqpoly();
-  bool init_block_weights_cubicpoly();
-  bool init_block_weights_exp();
-  bool init_block_weights_log();
-  bool init_block_weights_external();
+	bool set_weights(DREAL* weights, INT d, INT len);
+	bool set_position_weights(DREAL* position_weights, INT len=0);
 
-  bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
+	bool init_block_weights();
+	bool init_block_weights_from_wd();
+	bool init_block_weights_from_wd_external();
+	bool init_block_weights_const();
+	bool init_block_weights_linear();
+	bool init_block_weights_sqpoly();
+	bool init_block_weights_cubicpoly();
+	bool init_block_weights_exp();
+	bool init_block_weights_log();
+	bool init_block_weights_external();
 
-  inline bool get_use_normalization() { return use_normalization; }
+	bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
- protected:
-
-  void add_example_to_tree(INT idx, DREAL weight);
-  void add_example_to_single_tree(INT idx, DREAL weight, INT tree_num);
-  void add_example_to_tree_mismatch(INT idx, DREAL weight);
-  void add_example_to_single_tree_mismatch(INT idx, DREAL weight, INT tree_num);
-  void add_example_to_tree_mismatch_recursion(DNATrie *tree,  DREAL alpha,
-											  INT *vec, INT len_rem, 
-											  INT depth_rec, INT mismatch_rec) ;
-  
-  DREAL compute_by_tree(INT idx);
-
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  DREAL compute(INT idx_a, INT idx_b);
-  /*    compute_kernel*/
-  DREAL compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
-  DREAL compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
-  DREAL compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
-  DREAL compute_using_block(CHAR* avec, INT alen, CHAR* bvec, INT blen);
-
-  virtual void remove_lhs() ;
-  virtual void remove_rhs() ;
-
+	inline bool get_use_normalization() { return use_normalization; }
 
  protected:
-  ///degree*length weights
-  ///length must match seq_length if != 0
-  DREAL* weights;
-  DREAL* position_weights ;
-  DREAL* weights_buffer ;
-  INT mkl_stepsize ;
-  INT degree;
-  INT length;
-  
-  INT max_mismatch ;
-  INT seq_length ;
 
-  bool initialized ;
-  bool block_computation;
-  bool use_normalization ;
-  
-  DREAL normalization_const;
+	void add_example_to_tree(INT idx, DREAL weight);
+	void add_example_to_single_tree(INT idx, DREAL weight, INT tree_num);
+	void add_example_to_tree_mismatch(INT idx, DREAL weight);
+	void add_example_to_single_tree_mismatch(INT idx, DREAL weight, INT tree_num);
+	void add_example_to_tree_mismatch_recursion(DNATrie *tree,	DREAL alpha,
+												INT *vec, INT len_rem, 
+												INT depth_rec, INT mismatch_rec) ;
+	
+	DREAL compute_by_tree(INT idx);
 
-  INT num_block_weights_external;
-  DREAL* block_weights_external;
+	/// compute kernel function for features a and b
+	/// idx_{a,b} denote the index of the feature vectors
+	/// in the corresponding feature object
+	DREAL compute(INT idx_a, INT idx_b);
+	DREAL compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
+	DREAL compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
+	DREAL compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
+	DREAL compute_using_block(CHAR* avec, INT alen, CHAR* bvec, INT blen);
 
-  DREAL* block_weights;
-  EWDKernType type;
-  INT which_degree;
-  
-  CTrie<DNATrie> tries ;
-  bool tree_initialized ;
-  
+	virtual void remove_lhs() ;
+	virtual void remove_rhs() ;
+
+
+protected:
+	///degree*length weights
+	///length must match seq_length if != 0
+	DREAL* weights;
+	DREAL* position_weights ;
+	DREAL* weights_buffer ;
+	INT mkl_stepsize ;
+	INT degree;
+	INT length;
+	
+	INT max_mismatch ;
+	INT seq_length ;
+
+	bool initialized ;
+	bool block_computation;
+	bool use_normalization ;
+	
+	DREAL normalization_const;
+
+	INT num_block_weights_external;
+	DREAL* block_weights_external;
+
+	DREAL* block_weights;
+	EWDKernType type;
+	INT which_degree;
+	
+	CTrie<DNATrie> tries ;
+	bool tree_initialized ;
+	
 };
 
-#endif
+#endif /* _WEIGHTEDDEGREESTRINGKERNEL_H__ */

@@ -12,13 +12,24 @@
 #include "lib/common.h"
 #include "lib/io.h"
 #include "kernel/LocalityImprovedStringKernel.h"
-#include "features/Features.h"
 #include "features/StringFeatures.h"
 
-CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(INT size, INT l, INT d1, INT d2)
-  : CStringKernel<CHAR>(size),length(l),inner_degree(d1),outer_degree(d2),match(NULL)
+CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
+	INT size, INT l, INT id, INT od)
+	: CStringKernel<CHAR>(size), length(l), inner_degree(id),
+	outer_degree(od), match(NULL)
 {
-	SG_INFO( "LIK with parms: l=%d, d1=%d, d2=%d created!\n", l, d1, d2);
+	SG_INFO( "LIK with parms: l=%d, id=%d, od=%d created!\n", l, id, od);
+}
+
+CLocalityImprovedStringKernel::CLocalityImprovedStringKernel(
+	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT len, INT id, INT od)
+	: CStringKernel<CHAR>(10), length(len), inner_degree(id),
+	outer_degree(od), match(NULL)
+{
+	SG_INFO( "LIK with parms: l=%d, id=%d, od=%d created!\n", len, id, od);
+
+	init(l, r);
 }
 
 CLocalityImprovedStringKernel::~CLocalityImprovedStringKernel()

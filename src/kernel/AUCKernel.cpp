@@ -14,12 +14,18 @@
 #include "features/WordFeatures.h"
 #include "lib/io.h"
 
-CAUCKernel::CAUCKernel(INT size, CKernel * subkernel_)
-	: CSimpleKernel<WORD>(size),subkernel(subkernel_)
+CAUCKernel::CAUCKernel(INT size, CKernel* s)
+	: CSimpleKernel<WORD>(size),subkernel(s)
 {
 }
 
-CAUCKernel::~CAUCKernel() 
+CAUCKernel::CAUCKernel(CWordFeatures* l, CWordFeatures* r, CKernel* s)
+	: CSimpleKernel<WORD>(10),subkernel(s)
+{
+	init(l, r);
+}
+
+CAUCKernel::~CAUCKernel()
 {
 	cleanup();
 }

@@ -31,8 +31,8 @@
 #include <pthread.h>
 #endif
 
-CKernel::CKernel(INT size) 
-: CSGObject(), kernel_matrix(NULL), precomputed_matrix(NULL),
+CKernel::CKernel(INT size)
+	: CSGObject(), kernel_matrix(NULL), precomputed_matrix(NULL),
 	precompute_subkernel_matrix(false), precompute_matrix(false), lhs(NULL),
 	rhs(NULL), combined_kernel_weight(1), optimization_initialized(false),
 	opt_type(FASTBUTMEMHUNGRY), properties(KP_NONE)

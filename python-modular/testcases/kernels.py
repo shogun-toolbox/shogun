@@ -1,9 +1,10 @@
 from shogun.Features import RealFeatures, CharFeatures, StringCharFeatures, StringWordFeatures
 from shogun.Kernel import *
 from shogun.PreProc import *
-from shogun.Features import Alphabet,DNA, Labels
+from shogun.Features import *
+from shogun.Distance import *
 from shogun.Classifier import *
-from numpy import array, zeros, int32, arange, double, ones
+from numpy import *
 
 klist=open('../../testsuite/klist.py', 'r')
 KLIST=eval(klist.read())
@@ -11,11 +12,18 @@ klist.close()
 
 PREFIX_SVM='svm_'
 
+# numpy is picky about int data types
+ASTYPE={
+	'Real':double,
+	'Word':ushort,
+	'Byte':ubyte,
+}
+
 ########################################################################
 # kernel computation
 ########################################################################
 
-def _kernel (feats, input, accuracy, params):
+def _kernel (accuracy, params, input, feats):
 	kfun=eval(input['name']+'Kernel')
 	args=_get_args(input, params)
 
@@ -30,7 +38,7 @@ def _kernel (feats, input, accuracy, params):
 
 	return False
 
-def _kernel_svm (input, accuracy, params):
+def _kernel_svm (accuracy, params, input):
 	feats={'train':RealFeatures(input['data_train']),
 		'test':RealFeatures(input['data_test'])}
 	args=_get_args(input, params)
@@ -62,23 +70,50 @@ def _get_args (input, params):
 	for p in params:
 		try:
 			args.append(eval(input[p]))
-		except:
+		except TypeError: # no bool
 			args.append(input[p])
+		except KeyError: # does not exist in input
+			pass
 	return args
 
-def _realkernel (input, accuracy, params):
-	feats={'train':RealFeatures(input['data_train']),
-		'test':RealFeatures(input['data_test'])}
-	return _kernel(feats, input, accuracy, params)
+def _is_simple (type):
+	if type=='String' or type=='Wordstring':
+		return False
+	return True
 
-def _stringkernel (input, accuracy, params):
+def _feats_simple (type, accuracy, params, input):
+	input['data_train']=input['data_train'].astype(ASTYPE[type])
+	input['data_test']=input['data_test'].astype(ASTYPE[type])
+
+	if type=='Byte' or type=='Char':
+		alphabet=eval(input['alphabet'])
+		train=eval(type+"Features(input['data_train'], alphabet)")
+		test=eval(type+"Features(input['data_test'], alphabet)")
+	else:
+		train=eval(type+"Features(input['data_train'])")
+		test=eval(type+"Features(input['data_test'])")
+
+	if input['name'].find('Sparse')!=-1:
+		sparse_train=eval('Sparse'+type+'Features()')
+		sparse_train.obtain_from_simple(train)
+
+		sparse_test=eval('Sparse'+type+'Features()')
+		sparse_test.obtain_from_simple(test)
+
+		feats={'train':sparse_train, 'test':sparse_test}
+	else:
+		feats={'train':train, 'test':test}
+
+	return _kernel(accuracy, params, input, feats)
+
+def _feats_string (accuracy, params, input):
 	feats={'train':StringCharFeatures(eval(input['alphabet'])),
 		'test':StringCharFeatures(eval(input['alphabet']))}
 	feats['train'].set_string_features(list(input['data_train'][0]))
 	feats['test'].set_string_features(list(input['data_test'][0]))
-	return _kernel(feats, input, accuracy, params)
+	return _kernel(accuracy, params, input, feats)
 
-def _wordkernel (input, accuracy, params):
+def _feats_wordstring (accuracy, params, input):
 	feats={'train':StringCharFeatures(eval(input['alphabet'])),
 		'test':StringCharFeatures(eval(input['alphabet']))}
 	feats['train'].set_string_features(list(input['data_train'][0]))
@@ -102,7 +137,7 @@ def _wordkernel (input, accuracy, params):
 	wordfeat.apply_preproc()
 	feats['test']=wordfeat
 
-	return _kernel(feats, input, accuracy, params)
+	return _kernel(accuracy, params, input, feats)
 
 
 ########################################################################
@@ -113,8 +148,13 @@ def test (input):
 	if input['name'].startswith(PREFIX_SVM):
 		input['name']=input['name'][len(PREFIX_SVM):]
 		kernel=KLIST[input['name']]
-		return _kernel_svm(input, kernel[1], kernel[2])
+		return _kernel_svm(kernel[1], kernel[2], input)
 	else:
 		kernel=KLIST[input['name']]
-		fun=eval('_'+kernel[0]+'kernel')
-		return fun(input, kernel[1], kernel[2])
+
+		if _is_simple(kernel[0]):
+			return _feats_simple(kernel[0], kernel[1], kernel[2], input)
+		else:
+			fun=eval('_feats_'+kernel[0].lower())
+			return fun(kernel[1], kernel[2], input)
+

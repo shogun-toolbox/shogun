@@ -24,7 +24,7 @@
 #include <pthread.h>
 #endif
 
-struct S_THREAD_PARAM 
+struct S_THREAD_PARAM
 {
 	CKernel* kernel;
 	DREAL* result;
@@ -37,15 +37,29 @@ struct S_THREAD_PARAM
 	INT num_suppvec;
 };
 
-CCombinedKernel::CCombinedKernel(INT size, bool append_subkernel_weights_)
-	: CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL), 
-	  subkernel_weights_buffer(NULL), append_subkernel_weights(append_subkernel_weights_)
+CCombinedKernel::CCombinedKernel(INT size, bool asw)
+	: CKernel(size), sv_count(0), sv_idx(NULL), sv_weight(NULL),
+	  subkernel_weights_buffer(NULL), append_subkernel_weights(asw)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	kernel_list=new CList<CKernel*>(true);
 	SG_INFO( "combined kernel created\n") ;
 	if (append_subkernel_weights)
 		SG_INFO( "(subkernel weights are appended)\n") ;
+}
+
+CCombinedKernel::CCombinedKernel(CFeatures *l, CFeatures *r, bool asw)
+	: CKernel(10), sv_count(0), sv_idx(NULL), sv_weight(NULL),
+		subkernel_weights_buffer(NULL), append_subkernel_weights(asw)
+{
+	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
+	kernel_list=new CList<CKernel*>(true);
+	SG_INFO( "combined kernel created\n") ;
+	if (append_subkernel_weights) {
+		SG_INFO( "(subkernel weights are appended)\n") ;
+	}
+
+	init(l, r);
 }
 
 CCombinedKernel::~CCombinedKernel() 
