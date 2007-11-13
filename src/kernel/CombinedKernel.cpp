@@ -479,7 +479,7 @@ void CCombinedKernel::emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_id
 				params[t].IDX = IDX;
 				params[t].weights = weights;
 				params[t].num_suppvec = num_suppvec;
-				pthread_create(&threads[t], NULL, CCombinedKernel::compute_kernel_helper, (void*)&params[t]);
+				compute_kernel_help(&params[t]);
 
 				for (t=0; t<num_threads-1; t++)
 					pthread_join(threads[t], NULL);
