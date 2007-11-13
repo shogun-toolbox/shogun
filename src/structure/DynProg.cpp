@@ -31,8 +31,8 @@
 extern "C" int	finite(double);
 #endif
 
-#define USEORIGINALLIST 0
-#define USEFIXEDLENLIST 2
+#define USEORIGINALLIST 2
+#define USEFIXEDLENLIST 0
 //#define USE_TMP_ARRAYCLASS
 //#define DYNPROG_DEBUG
 
