@@ -103,7 +103,7 @@ PyObject* CGUIPython::py_get_svm(PyObject* self, PyObject* args)
 	if (svm && svm->get_num_support_vectors()>0)
 	{
 		PyArrayObject* py_alphas=NA_NewArray(NULL, tFloat64, 1, svm->get_num_support_vectors());
-		PyArrayObject* py_sv_idx=NA_NewArray(NULL, tInt32, 1, svm->get_num_support_vectors());
+		PyArrayObject* py_sv_idx=NA_NewArray(NULL, tInt64, 1, svm->get_num_support_vectors());
 		Float64 b=svm->get_bias();
 
 		SG_DEBUG("num_sv: %d\n", svm->get_num_support_vectors());
@@ -476,14 +476,14 @@ PyObject* CGUIPython::py_set_svm(PyObject* self, PyObject* args)
 		if (!PyDict_Check(py_dict))
 			return NULL;
 
-		PyObject* py_oalphas = PyDict_GetItemString(py_dict, "alphas");
+		PyObject* py_oalphas = PyDict_GetItemString(py_dict, "alpha");
 		PyObject* py_osv_idx = PyDict_GetItemString(py_dict, "sv_idx");
 		PyObject* py_bias = PyDict_GetItemString(py_dict, "b");
 
 		if (py_oalphas && py_osv_idx && py_bias)
 		{
 			PyArrayObject* py_alphas = NA_InputArray(py_oalphas, tFloat64, NUM_C_ARRAY);
-			PyArrayObject* py_sv_idx = NA_InputArray(py_oalphas, tInt64, NUM_C_ARRAY);
+			PyArrayObject* py_sv_idx = NA_InputArray(py_osv_idx, tInt64, NUM_C_ARRAY);
 
 			if (py_alphas && py_sv_idx && py_bias && (py_alphas->nd == 1) && (py_alphas->dimensions[0] > 0) && NA_ShapeEqual(py_alphas, py_sv_idx))
 			{
