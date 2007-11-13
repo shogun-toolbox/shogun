@@ -61,30 +61,29 @@ def _compute (name, feats, data, *args):
 
 	return [name, params]
 
-def _compute_svm (name, feats, data, C, *args):
+def _compute_svm (name, feats, data, C, num_threads, *args):
 	kfun=eval(name+'Kernel')
 	k=kfun(feats['train'], feats['train'], *args)
-	km_train=k.get_kernel_matrix()
+	k.parallel.set_num_threads(num_threads)
 
 	num_vec=feats['train'].get_num_vectors();
 	labels=rand(num_vec).round()*2-1
 	l=Labels(labels)
 	svm=SVMLight(C, k, l)
+	svm.parallel.set_num_threads(num_threads)
 	svm.train()
 	alphas=svm.get_alphas()
 	bias=svm.get_bias()
 	support_vectors=svm.get_support_vectors()
 
 	k.init(feats['train'], feats['test'])
-	km_test=k.get_kernel_matrix()
 	classified=svm.classify().get_labels()
 
 	params={
-		'km_train':km_train,
-		'km_test':km_test,
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test']),
 		'C':C,
+		'num_threads':num_threads,
 		'alphas':alphas,
 		'labels':labels,
 		'bias':bias,
@@ -246,8 +245,8 @@ def _run_feats_byte ():
 	data=_get_data_rand(dattype=ubyte)
 	feats=_get_feats_simple('Byte', data)
 
-	#fileops.write(_compute('Byte', feats, data))
-	fileops.write(_compute('LinearByte', feats, data))
+#	fileops.write(_compute('Byte', feats, data))
+#	fileops.write(_compute('LinearByte', feats, data))
 
 def _run_feats_char ():
 	data=_get_data_rand(dattype=character)
@@ -266,44 +265,47 @@ def _run_feats_real ():
 	data=_get_data_rand()
 	feats=_get_feats_simple('Real', data)
 
-	fileops.write(_compute('Chi2', feats, data, 1.2, 10))
-	fileops.write(_compute('Const', feats, data, 23.))
-	fileops.write(_compute('Diag', feats, data, 23.))
-	fileops.write(_compute('Gaussian', feats, data, 1.3))
-	fileops.write(_compute('GaussianShift', feats, data, 1.3, 2, 1))
-	fileops.write(_compute('Linear', feats, data, 1.))
-	fileops.write(_compute('Poly', feats, data, 3, True, True))
-	fileops.write(_compute('Poly', feats, data, 3, False, True))
-	fileops.write(_compute('Poly', feats, data, 3, True, False))
-	fileops.write(_compute('Poly', feats, data, 3, False, False))
-	#fileops.write(_compute('Real', feats, data))
-	fileops.write(_compute('Sigmoid', feats, data, 10, 1.1, 1.3))
-	fileops.write(_compute('Sigmoid', feats, data, 10, 0.5, 0.7))
-
-	fileops.write(_compute_svm('Gaussian', feats, data, .017, 1.5))
-	fileops.write(_compute_svm('Gaussian', feats, data, .23, 1.5))
-
-	feats=_get_feats_simple('Real', data, sparse=True)
-	fileops.write(_compute('SparseGaussian', feats, data, 1.3))
-	fileops.write(_compute('SparseLinear', feats, data, 1.))
-	fileops.write(_compute('SparsePoly', feats, data, 10, 3, True, True))
-	#fileops.write(_compute('SparseReal', feats, data))
+#	fileops.write(_compute('Chi2', feats, data, 1.2, 10))
+#	fileops.write(_compute('Const', feats, data, 23.))
+#	fileops.write(_compute('Diag', feats, data, 23.))
+#	fileops.write(_compute('Gaussian', feats, data, 1.3))
+#	fileops.write(_compute('GaussianShift', feats, data, 1.3, 2, 1))
+#	fileops.write(_compute('Linear', feats, data, 1.))
+#	fileops.write(_compute('Poly', feats, data, 3, True, True))
+#	fileops.write(_compute('Poly', feats, data, 3, False, True))
+#	fileops.write(_compute('Poly', feats, data, 3, True, False))
+#	fileops.write(_compute('Poly', feats, data, 3, False, False))
+#	fileops.write(_compute('Real', feats, data))
+#	fileops.write(_compute('Sigmoid', feats, data, 10, 1.1, 1.3))
+#	fileops.write(_compute('Sigmoid', feats, data, 10, 0.5, 0.7))
+#
+	fileops.write(_compute_svm('Gaussian', feats, data, .017, 1, 1.5))
+	fileops.write(_compute_svm('Gaussian', feats, data, .017, 16, 1.5))
+	fileops.write(_compute_svm('Gaussian', feats, data, .23, 1, 1.5))
+	fileops.write(_compute_svm('Gaussian', feats, data, 1.5, 1, 1.5))
+	fileops.write(_compute_svm('Gaussian', feats, data, 30, 1, 1.5))
+#
+#	feats=_get_feats_simple('Real', data, sparse=True)
+#	fileops.write(_compute('SparseGaussian', feats, data, 1.3))
+#	fileops.write(_compute('SparseLinear', feats, data, 1.))
+#	fileops.write(_compute('SparsePoly', feats, data, 10, 3, True, True))
+#	fileops.write(_compute('SparseReal', feats, data))
 
 def _run_feats_string ():
 	data=_get_data_dna()
 	feats=_get_feats_string('Char', data)
 
-	fileops.write(_compute('FixedDegreeString', feats, data, 3))
-	fileops.write(_compute('LinearString', feats, data))
-	fileops.write(_compute('LocalAlignmentString', feats, data))
-	fileops.write(_compute('PolyMatchString', feats, data, 3, True))
-	fileops.write(_compute('PolyMatchString', feats, data, 3, False))
-	fileops.write(_compute('SimpleLocalityImprovedString', feats, data, 5, 7, 5))
-	#fileops.write(_compute('StringReal', feats, data))
-
-	fileops.write(_compute('WeightedDegreeString', feats, data, 20, 0))
-	fileops.write(_compute('WeightedDegreePositionString', feats, data, 20))
-
+#	fileops.write(_compute('FixedDegreeString', feats, data, 3))
+#	fileops.write(_compute('LinearString', feats, data))
+#	fileops.write(_compute('LocalAlignmentString', feats, data))
+#	fileops.write(_compute('PolyMatchString', feats, data, 3, True))
+#	fileops.write(_compute('PolyMatchString', feats, data, 3, False))
+#	fileops.write(_compute('SimpleLocalityImprovedString', feats, data, 5, 7, 5))
+#	fileops.write(_compute('StringReal', feats, data))
+#
+#	fileops.write(_compute('WeightedDegreeString', feats, data, 20, 0))
+#	fileops.write(_compute('WeightedDegreePositionString', feats, data, 20))
+#
 	# buggy:
 	#fileops.write(_compute('LocalityImprovedString', feats, data, 51, 5, 7))
 
@@ -314,24 +316,24 @@ def _run_feats_word ():
 	data=_get_data_rand(dattype=ushort)
 	feats=_get_feats_simple('Word', data)
 
-	fileops.write(_compute('CanberraWord', feats, data, 1.7))
-	fileops.write(_compute('HammingWord', feats, data, 1.3, False))
-	fileops.write(_compute('LinearWord', feats, data))
-	fileops.write(_compute('ManhattenWord', feats, data, 1.5))
-	fileops.write(_compute('PolyMatchWord', feats, data, 3, True))
-	fileops.write(_compute('PolyMatchWord', feats, data, 3, False))
-	#fileops.write(_compute('Word', feats, data))
-	fileops.write(_compute('WordMatch', feats, data, 3))
-
-	feats=_get_feats_simple('Word', data, sparse=True)
-	#fileops.write(_compute('SparseWord', feats, data))
+#	fileops.write(_compute('CanberraWord', feats, data, 1.7))
+#	fileops.write(_compute('HammingWord', feats, data, 1.3, False))
+#	fileops.write(_compute('LinearWord', feats, data))
+#	fileops.write(_compute('ManhattenWord', feats, data, 1.5))
+#	fileops.write(_compute('PolyMatchWord', feats, data, 3, True))
+#	fileops.write(_compute('PolyMatchWord', feats, data, 3, False))
+#	fileops.write(_compute('Word', feats, data))
+#	fileops.write(_compute('WordMatch', feats, data, 3))
+#
+#	feats=_get_feats_simple('Word', data, sparse=True)
+#	fileops.write(_compute('SparseWord', feats, data))
 
 def _run_feats_wordstring ():
 	data=_get_data_dna()
 	feats=_get_feats_wordstring(data)
 
-	fileops.write(_compute('CommWordString', feats, data, False, FULL_NORMALIZATION))
-	fileops.write(_compute('WeightedCommWordString', feats, data, False, FULL_NORMALIZATION))
+#	fileops.write(_compute('CommWordString', feats, data, False, FULL_NORMALIZATION))
+#	fileops.write(_compute('WeightedCommWordString', feats, data, False, FULL_NORMALIZATION))
 
 def _run_pluginestimate ():
 	pass
