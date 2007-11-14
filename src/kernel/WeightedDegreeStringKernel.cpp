@@ -948,4 +948,8 @@ void CWeightedDegreeStringKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL
 #endif
 
 	delete[] vec;
+	delete_optimization();
+	//really also free memory as this can be huge on testing especially when
+	//using the combined kernel
+	tries.destroy(); 
 }

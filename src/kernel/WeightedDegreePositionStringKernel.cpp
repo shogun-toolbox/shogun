@@ -1319,6 +1319,10 @@ void CWeightedDegreePositionStringKernel::compute_batch(INT num_vec, INT* vec_id
 #endif
 
 	delete[] vec;
+	delete_optimization();
+	//really also free memory as this can be huge on testing especially when
+	//using the combined kernel
+	tries.destroy(); 
 }
 
 DREAL* CWeightedDegreePositionStringKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas)

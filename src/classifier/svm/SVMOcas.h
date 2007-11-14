@@ -44,14 +44,17 @@ class CSVMOcas : public CSparseLinearClassifier
 		inline void set_bias_enabled(bool enable_bias) { use_bias=enable_bias; }
 		inline bool get_bias_enabled() { return use_bias; }
 
+		inline void set_bufsize(INT sz) { bufsize=sz; }
+		inline INT get_bufsize() { return bufsize; }
+
+	protected:
+
 		static void compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, uint32_t nSel, void* ptr );
 		static double update_W(double t, void* ptr );
 		static void add_new_cut( double *new_col_H, uint32_t *new_cut, uint32_t cut_length, uint32_t nSel, void* ptr );
 		static void compute_output( double *output, void* ptr );
 		static void sort( double* vals, uint32_t* idx, uint32_t size);
 
-		inline void set_bufsize(INT sz) { bufsize=sz; }
-		inline INT get_bufsize() { return bufsize; }
 
 	protected:
 		bool use_bias;
