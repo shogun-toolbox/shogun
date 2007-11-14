@@ -161,6 +161,26 @@ void CWeightedDegreePositionStringKernel::remove_rhs()
 }
 
 
+void CWeightedDegreePositionStringKernel::create_empty_tries()
+{
+	seq_length = ((CStringFeatures<CHAR>*) lhs)->get_max_vector_length();
+
+	tries.destroy() ;
+	poim_tries.destroy() ;
+	if (opt_type==SLOWBUTMEMEFFICIENT)
+	{
+		tries.create(seq_length, true); 
+		poim_tries.create(seq_length, true); 
+	}
+	else if (opt_type==FASTBUTMEMHUNGRY)
+	{
+		tries.create(seq_length, false);  // still buggy
+		poim_tries.create(seq_length, false);  // still buggy
+	}
+	else
+		SG_ERROR( "unknown optimization type\n");
+}
+
 bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 {
 	INT lhs_changed = (lhs!=l) ;
@@ -178,24 +198,7 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 
 	if (lhs_changed) 
 	{
-		seq_length = ((CStringFeatures<CHAR>*) l)->get_max_vector_length();
-
-		tries.destroy() ;
-		poim_tries.destroy() ;
-		if (opt_type==SLOWBUTMEMEFFICIENT)
-		{
-			tries.create(seq_length, true); 
-			poim_tries.create(seq_length, true); 
-		}
-		else if (opt_type==FASTBUTMEMHUNGRY)
-		{
-			tries.create(seq_length, false);  // still buggy
-			poim_tries.create(seq_length, false);  // still buggy
-		}
-		else {
-			SG_ERROR( "unknown optimization type\n");
-		}
-
+		create_empty_tries();
 		init_block_weights();
 
 		normalization_const=1.0;
@@ -1319,10 +1322,10 @@ void CWeightedDegreePositionStringKernel::compute_batch(INT num_vec, INT* vec_id
 #endif
 
 	delete[] vec;
-	delete_optimization();
+
 	//really also free memory as this can be huge on testing especially when
 	//using the combined kernel
-	tries.destroy(); 
+	create_empty_tries();
 }
 
 DREAL* CWeightedDegreePositionStringKernel::compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas)

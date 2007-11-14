@@ -220,6 +220,8 @@ public:
 
 protected:
 
+	void create_empty_tries();
+
 	virtual void add_example_to_tree(INT idx, DREAL weight);
 	void add_example_to_single_tree(INT idx, DREAL weight, INT tree_num);
 

@@ -139,6 +139,13 @@ void CWeightedDegreeStringKernel::remove_rhs()
 	rhs = lhs ;
 }
 
+void CWeightedDegreeStringKernel::create_empty_tries()
+{
+	seq_length=((CStringFeatures<CHAR>*) lhs)->get_max_vector_length();
+
+	tries.destroy() ;
+	tries.create(seq_length, max_mismatch==0) ;
+}
   
 bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 {
@@ -157,12 +164,7 @@ bool CWeightedDegreeStringKernel::init(CFeatures* l, CFeatures* r)
 				 (((CStringFeatures<CHAR>*) r)->get_alphabet()->get_alphabet()==RNA)));
 	
 	if (lhs_changed) 
-	{
-		seq_length=((CStringFeatures<CHAR>*) l)->get_max_vector_length();
-
-		tries.destroy() ;
-		tries.create(seq_length, max_mismatch==0) ;
-	} 
+		create_empty_tries();
 
 	init_block_weights();
 
@@ -948,8 +950,8 @@ void CWeightedDegreeStringKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL
 #endif
 
 	delete[] vec;
-	delete_optimization();
+
 	//really also free memory as this can be huge on testing especially when
 	//using the combined kernel
-	tries.destroy(); 
+	create_empty_tries();
 }
