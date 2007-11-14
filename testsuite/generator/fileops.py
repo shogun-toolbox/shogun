@@ -33,9 +33,12 @@ def _get_matrix (name, km):
 def _get_filename (output):
 	params=[]
 
-	for v in output[1].itervalues():
+	for k, v in output[1].iteritems():
+		if (k.find('feature_')!=-1 or k.find('accuracy')!=-1 or
+			k.find('data_')!=-1):
+			continue
 		cn=v.__class__.__name__
-		if cn!='ndarray' and cn!='matrix':
+		if cn!='ndarray' and cn!='matrix' and cn!='list':
 			params.append(str(v))
 
 	params='_'.join(params).replace('.', '')
@@ -45,7 +48,7 @@ def _get_filename (output):
 
 def write (output):
 	if output is None:
-		return
+		return None
 
 	print 'Writing for kernel:', output[0]
 
@@ -62,6 +65,7 @@ def write (output):
 			mfile.write("%s = %s\n"%(k, v))
 
 	mfile.close()
+	return True
 
 def clean_dir_output ():
 	success=True

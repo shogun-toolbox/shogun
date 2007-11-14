@@ -34,10 +34,8 @@ def test_mfile (file):
 			input['km_train']=read_matrix(line)
 		elif param=='km_test':
 			input['km_test']=read_matrix(line)
-		elif param=='data_train':
-			input['data_train']=read_matrix(line)
-		elif param=='data_test':
-			input['data_test']=read_matrix(line)
+		elif param.find('data_train')!=-1 or param.find('data_test')!=-1:
+			input[param]=read_matrix(line)
 		else:
 			if (line.find("'")==-1):
 				input[param]=eval(line.split('=')[1])
