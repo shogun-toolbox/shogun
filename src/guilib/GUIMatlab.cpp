@@ -731,12 +731,21 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 				h->best_path_set_segment_ids_mask(zeros, 2, M) ;
 				delete[] zeros ;
 			} ;
-			
-			h->best_path_trans(seq, M, pos, orf_info,
-							   PEN_matrix, PEN_state_signal, seq_third_dimension, 
-							   genestr, L, genestr_num,
-							   nbest, nother, p_prob, my_path, my_pos, 
-							   dict_weights, dict_weigths_num*D, use_orf) ;
+
+			assert(nbest==1 || nbest==2) ;
+			assert(nother==0) ;
+			if (nbest==1)
+				h->best_path_trans<1>(seq, M, pos, orf_info,
+								   PEN_matrix, PEN_state_signal, seq_third_dimension, 
+								   genestr, L, genestr_num,
+								   p_prob, my_path, my_pos, 
+								   dict_weights, dict_weigths_num*D, use_orf) ;
+			else 
+				h->best_path_trans<2>(seq, M, pos, orf_info,
+								   PEN_matrix, PEN_state_signal, seq_third_dimension, 
+								   genestr, L, genestr_num,
+								   p_prob, my_path, my_pos, 
+								   dict_weights, dict_weigths_num*D, use_orf) ;
 
 			// clean up 
 			delete_penalty_struct(PEN, P) ;

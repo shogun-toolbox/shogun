@@ -314,6 +314,9 @@ DREAL CPlif::lookup_penalty_svm(DREAL p_value, DREAL *d_values) const
 	for (INT i=0; i<len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
+		else
+			break ; // assume it is monotonically increasing
+	 
 #ifdef PLIF_DEBUG
 	SG_PRINT("  -> idx = %i ", idx) ;
 #endif
@@ -396,6 +399,9 @@ DREAL CPlif::lookup_penalty(DREAL p_value, DREAL* svm_values) const
 	for (INT i=0; i<len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
+		else
+			break ; // assume it is monotonically increasing
+	
 #ifdef PLIF_DEBUG
 	SG_PRINT("  -> idx = %i ", idx) ;
 #endif
@@ -464,6 +470,8 @@ void CPlif::penalty_add_derivative(DREAL p_value, DREAL* svm_values)
 	for (INT i=0; i<len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
+		else
+			break ; // assume it is monotonically increasing
 	
 	if (idx==0)
 		cum_derivatives[0]+=1 ;
@@ -506,6 +514,8 @@ void CPlif::penalty_add_derivative_svm(DREAL p_value, DREAL *d_values)
 	for (INT i=0; i<len; i++)
 		if (limits[i]<=d_value)
 			idx++ ;
+		else
+			break ; // assume it is monotonically increasing
 	
 	if (idx==0)
 		cum_derivatives[0]+=1 ;

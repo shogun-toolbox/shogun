@@ -28,6 +28,8 @@
 
 #include <stdio.h>
 
+#define DYNPROG_TIMING
+
 #ifdef USE_BIGSTATES
 typedef WORD T_STATES ;
 #else
@@ -50,8 +52,10 @@ private:
 	INT **trans_list_forward_id ;
 	bool mem_initialized ;
 
+#ifdef DYNPROG_TIMING
 	CTime MyTime ;
-	CTime MyTime2 ;
+	CTime MyTime_total ;
+	CTime MyTime_penalty ;
 	
 	DREAL segment_init_time ;
 	DREAL segment_pos_time ;
@@ -61,7 +65,9 @@ private:
 	DREAL svm_init_time ;
 	DREAL svm_pos_time ;
 	DREAL svm_clean_time ;
-	
+	DREAL penalty_time ;
+#endif
+
 public:
 	CDynProg() ;
 	~CDynProg();
@@ -128,11 +134,11 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////
 
+	template<short int nbest>
 	void best_path_trans(const DREAL *seq, INT seq_len, const INT *pos, 
 						 const INT *orf_info, CPlifBase **PLif_matrix, 
 						 CPlifBase **Plif_state_signals, INT max_num_signals, 
 						 const char *genestr, INT genestr_len, INT genestr_num, 
-						 short int nbest, short int ngood,
 						 DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 						 DREAL *dictionary_weights, INT dict_len, bool use_orf) ;
 
@@ -259,9 +265,10 @@ protected:
 
 	//void reset_svm_values(INT pos, INT * last_svm_pos, DREAL * svm_value) ;
 	//void extend_svm_values(WORD** wordstr, INT pos, INT *last_svm_pos, DREAL* svm_value) ;
-	void init_svm_values(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT howmuchlookback) ;
+	void init_svm_values(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT howmuchlookback, bool clear_all=false) ;
 	void clear_svm_values(struct svm_values_struct & svs) ;
 	void find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs) ;
+	void find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs) ;
 	void find_svm_values_till_pos_new(WORD*** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs, INT max_num_positions) ;
 	void update_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t_end, INT prev_t_end, struct svm_values_struct &svs) ;
 	bool extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to) ;
