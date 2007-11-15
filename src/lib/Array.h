@@ -15,10 +15,8 @@
 
 //#define ARRAY_STATISTICS
 
-#ifdef ASSERT
-#undef ASSERT
-#endif
-#define ASSERT(x)
+//#define ARRAY_ASSERT(x) ASSERT(x)
+#define ARRAY_ASSERT(x)
 
 #include "lib/common.h"
 #include "base/SGObject.h"
@@ -81,7 +79,7 @@ public:
 		INIT_ARRAY_STATISTICS;
 		array_size = initial_size;
 		array = (T*) calloc(array_size, sizeof(T));
-		ASSERT(array);
+		ARRAY_ASSERT(array);
 	}
 
 	CArray(T* p_array, INT p_array_size, bool p_free_array=true,
@@ -139,7 +137,7 @@ public:
 	/// return array element at index
 	inline const T& get_element(INT index) const
 	{
-		ASSERT((array != NULL) && (index >= 0) && (index < array_size));
+		ARRAY_ASSERT((array != NULL) && (index >= 0) && (index < array_size));
 		INCREMENT_ARRAY_STATISTICS_VALUE(get_element);
 		return array[index];
 	}
@@ -147,7 +145,7 @@ public:
 	/// set array element at index 'index' return false in case of trouble
 	inline bool set_element(const T& p_element, INT index)
 	{
-		ASSERT((array != NULL) && (index >= 0) && (index < array_size));
+		ARRAY_ASSERT((array != NULL) && (index >= 0) && (index < array_size));
 		INCREMENT_ARRAY_STATISTICS_VALUE(set_element);
 		array[index]=p_element;
 		return true;
@@ -161,17 +159,17 @@ public:
 
 	inline T& element(INT index)
 	{
-		ASSERT(array != NULL);
-		ASSERT(index >= 0);
-		ASSERT(index < array_size);
+		ARRAY_ASSERT(array != NULL);
+		ARRAY_ASSERT(index >= 0);
+		ARRAY_ASSERT(index < array_size);
 		INCREMENT_ARRAY_STATISTICS_VALUE(element);
 		return array[index];
 	}
 
 	inline T& element(T* p_array, INT index)
 	{
-		ASSERT((array != NULL) && (index >= 0) && (index < array_size));
-		ASSERT(array == p_array);
+		ARRAY_ASSERT((array != NULL) && (index >= 0) && (index < array_size));
+		ARRAY_ASSERT(array == p_array);
 		INCREMENT_ARRAY_STATISTICS_VALUE(array_element);
 		return p_array[index];
 	}
@@ -179,7 +177,7 @@ public:
 	bool resize_array(INT n)
 	{
 		INCREMENT_ARRAY_STATISTICS_VALUE(resize_array);
-		ASSERT(free_array);
+		ARRAY_ASSERT(free_array);
 
 		T* p= (T*) realloc(array, sizeof(T)*n);
 		if (!p)

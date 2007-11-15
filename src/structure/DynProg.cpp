@@ -808,7 +808,7 @@ void CDynProg::best_path_get_positions(INT **positions, INT *m, INT *n)
 
 void CDynProg::best_path_get_losses(DREAL** losses, INT* seq_len)
 {
-	ASSERT(my_losses && seq_len);
+	ASSERT(losses && seq_len);
 	*losses=m_my_losses.get_array();
 	*seq_len=m_my_losses.get_dim1();
 }

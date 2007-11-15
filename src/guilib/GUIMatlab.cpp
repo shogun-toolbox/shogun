@@ -2151,16 +2151,21 @@ bool CGUIMatlab::from_position_list(const mxArray* vals[], int nrhs)
 	const mxArray* mx_winsz=vals[2];
 	const mxArray* mx_shift=vals[3];
 	const mxArray* mx_skip=NULL;
+
 	if (nrhs==5)
 		mx_skip=vals[4];
+
 	ASSERT(mx_winsz && mxIsDouble(mx_winsz) && 
 			mxGetN(mx_winsz) == 1 && mxGetM(mx_winsz) == 1);
-	ASSERT(mx_shift && mxIsDouble(mx_feat) && mxGetM(mx_shift) == 1);
+	ASSERT(mx_shift && mxIsDouble(mx_shift) && mxGetM(mx_shift) == 1);
+	SG_DEBUG("shifts: N:%d M:%d\n",mxGetN(mx_shift),mxGetM(mx_shift));
+
 	INT winsize= (INT) (*mxGetPr(mx_winsz));
 	INT num_shift=mxGetN(mx_shift);
 	if (mx_skip && mxIsDouble(mx_skip) && mxGetN(mx_skip) == 1 && mxGetM(mx_skip) == 1)
 		skip= (INT) (*mxGetPr(mx_skip));
 	SG_DEBUG("winsize: %d num_shifts:%d skip:%d\n", winsize, num_shift, skip);
+
 	double* shifts= mxGetPr(mx_shift);
 	ASSERT(shifts);
 	CDynamicArray<INT> positions(mxGetN(mx_shift)+1);
