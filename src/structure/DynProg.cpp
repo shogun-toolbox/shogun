@@ -31,8 +31,6 @@
 extern "C" int	finite(double);
 #endif
 
-#define USEORIGINALLIST 0
-#define USEFIXEDLENLIST 2
 //#define USE_TMP_ARRAYCLASS
 //#define DYNPROG_DEBUG
 
@@ -668,24 +666,25 @@ void CDynProg::best_path_call(INT nbest, bool use_orf)
 
 	m_call=1 ;
 
-	ASSERT(nbest==1 || nbest==2) ;
+	assert(nbest==1|nbest==2) ;
+	assert(m_genestr.get_dim2()==1) ;
 	
 	if (nbest==1)
-		best_path_trans<1>(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
-							   m_orf_info.get_array(), m_PEN.get_array(),
-							   m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
-							   m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
-							   m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
-							   m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2(),
-							   use_orf) ;
+		best_path_trans<1,false,false>(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
+								m_orf_info.get_array(), m_PEN.get_array(),
+								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
+								m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
+								m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
+								m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2(),
+								use_orf) ;
 	else
-		best_path_trans<2>(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
-							   m_orf_info.get_array(), m_PEN.get_array(),
-							   m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
-							   m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
-							   m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
-							   m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2(),
-							   use_orf) ;
+		best_path_trans<2,false,false>(m_seq.get_array(), m_seq.get_dim2(), m_pos.get_array(), 
+								m_orf_info.get_array(), m_PEN.get_array(),
+								m_PEN_state_signals.get_array(), m_PEN_state_signals.get_dim2(),
+								m_genestr.get_array(), m_genestr.get_dim1(), m_genestr.get_dim2(),
+								m_scores.get_array(), m_states.get_array(), m_positions.get_array(),
+								m_dict_weights.get_array(), m_dict_weights.get_dim1()*m_dict_weights.get_dim2(),
+								use_orf) ;
 
 	m_step=9 ;
 }
@@ -1472,7 +1471,7 @@ void CDynProg::extend_svm_values(WORD** wordstr, INT pos, INT *last_svm_pos, DRE
 
 void CDynProg::init_segment_loss(struct segment_loss_struct & loss, INT seqlen, INT howmuchlookback)
 {
-#ifdef DYNPROG_TIMING	
+#ifdef DYNPROG_TIMING
 	MyTime.start() ;
 #endif
 	
@@ -1483,7 +1482,7 @@ void CDynProg::init_segment_loss(struct segment_loss_struct & loss, INT seqlen, 
 		loss.length_segment_id      = new INT[(max_a_id+1)*seqlen] ;
 	}
 	
-	/*for (INT j=0; j<howmuchlookback; j++)
+	for (INT j=0; j<howmuchlookback; j++)
 	{
 		loss.segments_changed[j]=0 ;
 		for (INT i=0; i<max_a_id+1; i++)       
@@ -1491,13 +1490,6 @@ void CDynProg::init_segment_loss(struct segment_loss_struct & loss, INT seqlen, 
 			loss.num_segment_id[i*seqlen+j] = 0;
 			loss.length_segment_id[i*seqlen+j] = 0;
 		}
-		}*/
-
-	memset(loss.segments_changed, 0, howmuchlookback*sizeof(INT)) ;
-	for (INT i=0; i<max_a_id+1; i++)       
-	{
-		memset(&loss.num_segment_id[i*seqlen], 0, howmuchlookback*sizeof(INT)) ;
-		memset(&loss.length_segment_id[i*seqlen], 0, howmuchlookback*sizeof(INT)) ;
 	}
 
 	loss.maxlookback = howmuchlookback ;
@@ -1513,7 +1505,8 @@ void CDynProg::clear_segment_loss(struct segment_loss_struct & loss)
 {
 #ifdef DYNPROG_TIMING
 	MyTime.start() ;
-#endif	
+#endif
+	
 	if (loss.num_segment_id != NULL)
 	{
 		delete[] loss.segments_changed ;
@@ -1533,8 +1526,8 @@ DREAL CDynProg::extend_segment_loss(struct segment_loss_struct & loss, const INT
 {
 #ifdef DYNPROG_TIMING
 	MyTime.start() ;
-#endif	
-
+#endif
+	
 	if (pos==last_pos)
 		return last_value ;
 	ASSERT(pos<last_pos) ;
@@ -1583,7 +1576,6 @@ DREAL CDynProg::extend_segment_loss(struct segment_loss_struct & loss, const INT
 	MyTime.stop() ;
 	segment_extend_time += MyTime.time_diff_sec() ;
 #endif
-
 	return ret ;
 }
 
@@ -1591,8 +1583,7 @@ void CDynProg::find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<IN
 {
 #ifdef DYNPROG_TIMING
 	MyTime.start() ;
-#endif
-	
+#endif	
 	CArray2<INT> num_segment_id(loss.num_segment_id, loss.seqlen, max_a_id+1, false, false) ;
 	CArray2<INT> length_segment_id(loss.length_segment_id, loss.seqlen, max_a_id+1, false, false) ;
 	
@@ -1642,14 +1633,13 @@ void CDynProg::find_segment_loss_till_pos(const INT * pos, INT t_end, CArray2<IN
 
 		ts--;
 	}
-
 #ifdef DYNPROG_TIMING
 	MyTime.stop() ;
 	segment_pos_time += MyTime.time_diff_sec() ;
 #endif
 }
 
-void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT maxlookback, bool clear_all)
+void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, INT seqlen, INT maxlookback)
 {
 #ifdef DYNPROG_TIMING
 	MyTime.start() ;
@@ -1665,7 +1655,7 @@ void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, IN
 	
 	if (!svs.svm_values)
 	{
-		svs.svm_values              = new DREAL[seqlen*num_svms] ;
+		svs.svm_values              = new DREAL[maxlookback*num_svms] ;
 		svs.num_unique_words        = new INT*[num_degrees] ;
 		svs.svm_values_unnormalized = new DREAL*[num_degrees] ;
 		svs.word_used               = new bool**[num_degrees] ;
@@ -1683,41 +1673,34 @@ void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, IN
 		svs.start_pos               = new INT[num_svms] ;
 	}
 	
-
 	//for (INT i=0; i<maxlookback*num_svms; i++)       // initializing this for safety, though we should be able to live without it
-	//svs.svm_values[i] = 0;
-	if (clear_all)
-		memset(svs.svm_values, 0, seqlen*num_svms*sizeof(DREAL));
-	else
-	{
-		for (INT s=0; s<num_svms; s++)
-			memset(&svs.svm_values[s*seqlen], 0, maxlookback*sizeof(DREAL));
-	}
-	
+	//	svs.svm_values[i] = 0;
+	memset(svs.svm_values, 0, maxlookback*num_svms*sizeof(DREAL)) ;
+
 	for (INT j=0; j<num_degrees; j++)
 	{		
-		/*for (INT s=0; s<num_svms; s++)
-		  svs.svm_values_unnormalized[j][s] = 0 ;*/
-		memset(svs.svm_values_unnormalized[j], 0, num_svms*sizeof(INT)) ;
+		//for (INT s=0; s<num_svms; s++)
+		//	svs.svm_values_unnormalized[j][s] = 0 ;
+		memset(svs.svm_values_unnormalized[j], 0, num_svms*sizeof(DREAL)) ;
 
-		/*for (INT s=0; s<num_svms; s++)
-		  svs.num_unique_words[j][s] = 0 ;*/
+		//for (INT s=0; s<num_svms; s++)
+		//  svs.num_unique_words[j][s] = 0 ;
 		memset(svs.num_unique_words[j], 0, num_svms*sizeof(INT)) ;
 	}
 	
 	for (INT j=0; j<num_degrees; j++)
 		for (INT s=0; s<num_svms; s++)
 		{
-			/*for (INT i=0; i<num_words_array[j]; i++)
-			  svs.word_used[j][s][i] = false ;*/
+			//for (INT i=0; i<num_words_array[j]; i++)
+			//	svs.word_used[j][s][i] = false ;
 			memset(svs.word_used[j][s], 0, num_words_array[j]*sizeof(bool)) ;
 		}
-
+	
 	for (INT s=0; s<num_svms; s++)
 		svs.start_pos[s] = start_pos - mod_words.element(s,1) ;
 	
 	svs.maxlookback = maxlookback ;
-	svs.seqlen = maxlookback;
+	svs.seqlen = maxlookback ;
 
 #ifdef DYNPROG_TIMING
 	MyTime.stop() ;
@@ -1765,7 +1748,8 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 {
 #ifdef DYNPROG_TIMING
 	MyTime.start() ;
-#endif	
+#endif
+	
 	/*
 	  wordstr is a vector of L n-gram indices, with wordstr(i) representing a number betweeen 0 and 4095 
 	  corresponding to the 6-mer in genestr(i-5:i) 
@@ -1831,6 +1815,7 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 					}
 				}
 			}
+			offset = plen*num_svms ;
 			for (INT s=0; s<num_svms; s++)
 			{
 				double normalization_factor = 1.0;
@@ -1840,10 +1825,9 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 					else
 						normalization_factor = (double)my_num_unique_words[s];
 
-				offset = s*svs.seqlen;
 				if (j==0)
-					svs.svm_values[offset+plen]=0 ;
-				svs.svm_values[offset+plen] += my_svm_values_unnormalized[s] / normalization_factor;
+					svs.svm_values[offset+s]=0 ;
+				svs.svm_values[offset+s] += my_svm_values_unnormalized[s] / normalization_factor;
 			}
 			
 			if (posprev > poscurrent)         // remember posprev initially set to pos[t_end]-word_degree+1... pos[ts] could be e.g. pos[t_end]-2
@@ -1867,6 +1851,7 @@ void CDynProg::find_svm_values_till_pos(WORD*** wordstr,  const INT *pos,  INT t
 	svm_pos_time += MyTime.time_diff_sec() ;
 #endif
 }
+
 
 void CDynProg::find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_end, struct svm_values_struct &svs)
 {
@@ -1930,6 +1915,7 @@ void CDynProg::find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_
 					}
 				}
 			}
+			offset = plen*num_svms ;
 			for (INT s=0; s<num_svms; s++)
 			{
 				double normalization_factor = 1.0;
@@ -1939,10 +1925,9 @@ void CDynProg::find_svm_values_till_pos(WORD** wordstr,  const INT *pos,  INT t_
 					else
 						normalization_factor = (double)my_num_unique_words[s];
 
-				offset = s*svs.seqlen;
 				if (j==0)
-					svs.svm_values[offset+plen]=0 ;
-				svs.svm_values[offset+plen] += my_svm_values_unnormalized[s] / normalization_factor;
+					svs.svm_values[offset+s]=0 ;
+				svs.svm_values[offset+s] += my_svm_values_unnormalized[s] / normalization_factor;
 			}
 			
 			if (posprev > poscurrent)         // remember posprev initially set to pos[t_end]-word_degree+1... pos[ts] could be e.g. pos[t_end]-2
@@ -2003,8 +1988,7 @@ bool CDynProg::extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT or
 	return true ;
 }
 
-#ifdef XXXXXXX
-template<short int nbest>
+template <short int nbest, bool with_loss, bool with_multiple_sequences>
 void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *pos, 
 							   const INT *orf_info_array, CPlifBase **Plif_matrix, 
 							   CPlifBase **Plif_state_signals, INT max_num_signals,
@@ -2012,8 +1996,6 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 							   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
 							   DREAL *dictionary_weights, INT dict_len, bool use_orf)
 {
-	assert(nbest==1) ;
-	
 #ifdef DYNPROG_TIMING
 	segment_init_time = 0.0 ;
 	segment_pos_time = 0.0 ;
@@ -2023,10 +2005,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	svm_init_time = 0.0 ;
 	svm_pos_time = 0.0 ;
 	svm_clean_time = 0.0 ;
-	penalty_time = 0.0 ;
-
-	MyTime_total.start() ;
-	MyTime_penalty.stop() ;
+	MyTime2.start() ;
 #endif
 	
 	//SG_PRINT( "best_path_trans:%x\n", seq_array);
@@ -2092,16 +2071,7 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					{
 						// just one plif
 						if (finite(seq_input.element(i,j,k)))
-						{
-#ifdef DYNPROG_TIMING
-							MyTime_penalty.start() ;
-#endif
 							seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_input.element(i,j,k), svm_value) ;
-#ifdef DYNPROG_TIMING
-							MyTime_penalty.stop() ;
-							penalty_time += MyTime_penalty.time_diff_sec() ;
-#endif
-						}
 						else
 							// keep infinity values
 							seq.element(i,j) = seq_input.element(i, j, k) ;
@@ -2132,612 +2102,6 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	SG_DEBUG("use_svm=%i\n", use_svm) ;
 	
 	SG_DEBUG("maxlook: %d N: %d nbest: %d genestrlen:%d\n", max_look_back, N, nbest, genestr_len);
-	
-	const INT look_back_buflen = (max_look_back*N+1)*nbest ;
-	SG_DEBUG("look_back_buflen=%i\n", look_back_buflen) ;
-	const DREAL mem_use = (DREAL)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(short int)+sizeof(INT))+
-								  look_back_buflen*(2*sizeof(DREAL)+sizeof(INT))+
-								  seq_len*(sizeof(T_STATES)+sizeof(INT))+
-								  genestr_len*sizeof(bool))/(1024*1024);
-
-    bool is_big = (mem_use>200) || (seq_len>5000) ;
-
-	if (is_big)
-	{
-		SG_DEBUG("calling best_path_trans: seq_len=%i, N=%i, lookback=%i nbest=%i\n", 
-					 seq_len, N, max_look_back, nbest) ;
-		SG_DEBUG("allocating %1.2fMB of memory\n", 
-					 mem_use) ;
-	}
-	ASSERT(nbest<32000) ;
-	
-	//char* xx=strndup(genestr, genestr_len) ;
-	//fprintf(stderr, "genestr='%s'\n", xx) ;
-
-	CArray<bool> genestr_stop(genestr_len) ;
-	//genestr_stop.zero() ;
-	
-	CArray2<DREAL> delta(seq_len, N) ;
-	DREAL* delta_array = delta.get_array() ;
-	//delta.zero() ;
-	
-	CArray2<T_STATES> psi(seq_len, N) ;
-	//psi.zero() ;
-	
-	CArray2<INT> ptable(seq_len, N) ;
-	//ptable.zero() ;
-
-	DREAL delta_end ;
-	//delta_end.zero() ;
-	
-	T_STATES path_ends ;
-	//path_ends.zero() ;
-	
-#if USEFIXEDLENLIST > 0
-#ifdef USE_TMP_ARRAYCLASS
-	CArray<DREAL> fixedtempvv(look_back_buflen) ;
-	CArray<INT> fixedtempii(look_back_buflen) ;
-	//fixedtempvv.zero() ;
-	//fixedtempii.zero() ;
-#else
-	DREAL * fixedtempvv=new DREAL[look_back_buflen] ;
-	memset(fixedtempvv, 0, look_back_buflen*sizeof(DREAL)) ;
-	INT * fixedtempii=new INT[look_back_buflen] ;
-	memset(fixedtempii, 0, look_back_buflen*sizeof(INT)) ;
-#endif
-#endif
-
-	// we always use oldtempvv and oldtempii, even if USEORIGINALLIST is 0
-	// as i didnt change the backtracking stuff
-	
-	CArray<DREAL> oldtempvv(look_back_buflen) ;
-	CArray<DREAL> oldtempvv2(look_back_buflen) ;
-	//oldtempvv.zero() ;
-	//oldtempvv.display_size() ;
-	
-	CArray<INT> oldtempii(look_back_buflen) ;
-	CArray<INT> oldtempii2(look_back_buflen) ;
-	//oldtempii.zero() ;
-
-	CArray<T_STATES> state_seq(seq_len) ;
-	//state_seq.zero() ;
-	
-	CArray<INT> pos_seq(seq_len) ;
-	//pos_seq.zero() ;
-
-	
-	dict_weights.set_name("dict_weights") ;
-	word_degree.set_name("word_degree") ;
-	cum_num_words.set_name("cum_num_words") ;
-	num_words.set_name("num_words") ;
-	//word_used.set_name("word_used") ;
-	//svm_values_unnormalized.set_name("svm_values_unnormalized") ;
-	svm_pos_start.set_name("svm_pos_start") ;
-	num_unique_words.set_name("num_unique_words") ;
-
-	PEN.set_name("PEN") ;
-	seq.set_name("seq") ;
-	orf_info.set_name("orf_info") ;
-	
-	genestr_stop.set_name("genestr_stop") ;
-	delta.set_name("delta") ;
-	psi.set_name("psi") ;
-	ptable.set_name("ptable") ;
-	//delta_end.set_name("delta_end") ;
-    //path_ends.set_name("path_ends") ;
-
-#ifdef USE_TMP_ARRAYCLASS
-	fixedtempvv.set_name("fixedtempvv") ;
-	fixedtempii.set_name("fixedtempvv") ;
-#endif
-
-	oldtempvv.set_name("oldtempvv") ;
-	oldtempvv2.set_name("oldtempvv2") ;
-	oldtempii.set_name("oldtempii") ;
-	oldtempii2.set_name("oldtempii2") ;
-
-
-	//////////////////////////////////////////////////////////////////////////////// 
-
-#ifdef DYNPROG_DEBUG
-	state_seq.display_size() ;
-	pos_seq.display_size() ;
-
-	dict_weights.display_size() ;
-	word_degree.display_array() ;
-	cum_num_words.display_array() ;
-	num_words.display_array() ;
-	//word_used.display_size() ;
-	//svm_values_unnormalized.display_size() ;
-	svm_pos_start.display_array() ;
-	num_unique_words.display_array() ;
-
-	PEN.display_size() ;
-	PEN_state_signals.display_size() ;
-	seq.display_size() ;
-	orf_info.display_size() ;
-	
-	genestr_stop.display_size() ;
-	delta.display_size() ;
-	psi.display_size() ;
-	ptable.display_size() ;
-	delta_end.display_size() ;
-	path_ends.display_size() ;
-
-#ifdef USE_TMP_ARRAYCLASS
-	fixedtempvv.display_size() ;
-	fixedtempii.display_size() ;
-#endif
-
-	//oldtempvv.display_size() ;
-    //oldtempii.display_size() ;
-
-	state_seq.display_size() ;
-	pos_seq.display_size() ;
-
-	CArray<INT>pp = CArray<INT>(pos, seq_len) ;
-	pp.display_array() ;
-	
-	//seq.zero() ;
-	//seq_input.display_array() ;
-
-#endif //DYNPROG_DEBUG
-
-////////////////////////////////////////////////////////////////////////////////
-
-	{ // precompute stop codons
-		for (INT i=0; i<genestr_len-2; i++)
-			if ((genestr[i]=='t' || genestr[i]=='T') && 
-				(((genestr[i+1]=='a' || genestr[i+1]=='A') && 
-				  (genestr[i+2]=='a' || genestr[i+2]=='g' || genestr[i+2]=='A' || genestr[i+2]=='G')) ||
-				 ((genestr[i+1]=='g'||genestr[i+1]=='G') && (genestr[i+2]=='a' || genestr[i+2]=='A') )))
-				genestr_stop[i]=true ;
-			else
-				genestr_stop[i]=false ;
-		genestr_stop[genestr_len-1]=false ;
-		genestr_stop[genestr_len-1]=false ;
-	}
-
-	{
-		for (INT s=0; s<num_svms; s++)
-			ASSERT(string_words_array[s]<genestr_num)  ;
-	}
-
-	// translate to words, if svm is used
-	SG_DEBUG("genestr_num = %i, genestr_len = %i, num_degree=%i, use_svm=%i\n", genestr_num, genestr_len, num_degrees, use_svm) ;
-	
-	WORD* wordstr[num_degrees] ;
-	for (INT j=0; j<num_degrees; j++)
-	{
-		wordstr[j]=NULL ;
-		if (use_svm)
-		{
-			ASSERT(dictionary_weights!=NULL) ;
-			wordstr[j]=new WORD[genestr_len] ;
-			for (INT i=0; i<genestr_len; i++)
-				switch (genestr[i])
-				{
-				case 'A':
-				case 'a': wordstr[j][i]=0 ; break ;
-				case 'C':
-				case 'c': wordstr[j][i]=1 ; break ;
-				case 'G':
-				case 'g': wordstr[j][i]=2 ; break ;
-				case 'T':
-				case 't': wordstr[j][i]=3 ; break ;
-				default: ASSERT(0) ;
-				}
-			translate_from_single_order(wordstr[j], genestr_len,
-										word_degree[j]-1, word_degree[j]) ;
-		}
-	}
-  	
-	{ // initialization
-
-		for (T_STATES i=0; i<N; i++)
-		{
-			//delta.element(0, i, 0) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
-			delta.element(delta_array, 0, i, seq_len) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
-			psi.element(0,i)   = 0 ;
-			ptable.element(0,i)  = 0 ;
-			{
-				//INT dim1, dim2 ;
-				//delta.get_array_size(dim1, dim2) ;
-				//SG_DEBUG("i=%i, k=%i -- %i, %i, %i\n", i, k, dim1, dim2, dim3) ;
-				//delta.element(0, i, k)    = -CMath::INFTY ;
-				delta.element(delta_array, 0, i, seq_len)    = -CMath::INFTY ;
-				psi.element(0,i)      = 0 ;                  // <--- what's this for?
-				ptable.element(0,i)     = 0 ;
-			}
-		}
-	}
-
-	struct svm_values_struct svs;
-	svs.num_unique_words = NULL;
-	svs.svm_values = NULL;
-	svs.svm_values_unnormalized = NULL;
-	svs.word_used = NULL;
-
-	struct svm_values_struct svs2;
-	svs2.num_unique_words = NULL;
-	svs2.svm_values = NULL;
-	svs2.svm_values_unnormalized = NULL;
-	svs2.word_used = NULL;
-
-	struct svm_values_struct svs3;
-	svs3.num_unique_words = NULL;
-	svs3.svm_values = NULL;
-	svs3.svm_values_unnormalized = NULL;
-	svs3.word_used = NULL;
-
-	struct segment_loss_struct loss;
-	loss.segments_changed = NULL;
-	loss.num_segment_id = NULL;
-
-	// recursion
-	for (INT t=1; t<seq_len; t++)
-	{
-		if (is_big && t%(1+(seq_len/1000))==1)
-			SG_PROGRESS(t, 0, seq_len);
-		//fprintf(stderr, "%i\n", t) ;
-		
-		init_svm_values(svs, pos[t], seq_len, max_look_back, t==1);
-		find_svm_values_till_pos(wordstr, pos, t, svs);  
-
-		init_segment_loss(loss, seq_len, max_look_back);
-		find_segment_loss_till_pos(pos, t, m_segment_ids_mask, loss);  
-	
-		for (T_STATES j=0; j<N; j++)
-		{
-			if (seq.element(j,t)<=-1e20)
-			{ // if we cannot observe the symbol here, then we can omit the rest
-				{
-					delta.element(delta_array, t, j, seq_len)    = seq.element(j,t) ;
-					psi.element(t,j)      = 0 ;
-					ptable.element(t,j)     = 0 ;
-				}
-			}
-			else
-			{
-				const T_STATES num_elem   = trans_list_forward_cnt[j] ;
-				const T_STATES *elem_list = trans_list_forward[j] ;
-				const DREAL *elem_val      = trans_list_forward_val[j] ;
-				const INT *elem_id      = trans_list_forward_id[j] ;
-				
-#if USEFIXEDLENLIST > 0
-				INT fixed_list_len = 0 ;
-				DREAL fixedtempvv_ = -CMath::INFTY ;
-				DREAL fixedtempii_ = 0 ;
-				
-#endif
-				
-#if USEORIGINALLIST > 0
-				INT old_list_len = 0 ;
-#endif
-				
-				for (INT i=0; i<num_elem; i++)
-				{
-					T_STATES ii = elem_list[i] ;
-					
-					const CPlifBase * penalty = PEN.element(j,ii) ;
-					INT look_back = default_look_back ;
-					{ // find lookback length
-						CPlifBase *pen = (CPlifBase*) penalty ;
-						if (pen!=NULL)
-							look_back=(INT) (CMath::ceil(pen->get_max_value()));
-						ASSERT(look_back<1e6);
-					}
-					
-					INT orf_from = orf_info.element(ii,0) ;
-					INT orf_to   = orf_info.element(j,1) ;
-					if((orf_from!=-1)!=(orf_to!=-1))
-						SG_DEBUG("j=%i  ii=%i  orf_from=%i orf_to=%i p=%1.2f\n", j, ii, orf_from, orf_to, elem_val[i]) ;
-					ASSERT((orf_from!=-1)==(orf_to!=-1)) ;
-					
-					INT orf_target = -1 ;
-					if (orf_from!=-1)
-					{
-						orf_target=orf_to-orf_from ;
-						if (orf_target<0) orf_target+=3 ;
-						ASSERT(orf_target>=0 && orf_target<3) ;
-					}
-					
-					INT orf_last_pos = pos[t] ;
-					INT loss_last_pos = t ;
-					DREAL last_loss = 0.0 ;
-					for (INT ts=t-1; ts>=0 && pos[t]-pos[ts]<=look_back; ts--)
-					{
-						bool ok ;
-						int plen=t-ts;
-
-						/*for (INT s=0; s<num_svms; s++)
-							if ((fabs(svs.svm_values[s*svs.seqlen+plen]-svs2.svm_values[s*svs.seqlen+plen])>1e-6) ||
-								(fabs(svs.svm_values[s*svs.seqlen+plen]-svs3.svm_values[s*svs.seqlen+plen])>1e-6))
-							{
-								SG_DEBUG( "s=%i, t=%i, ts=%i, %1.5e, %1.5e, %1.5e\n", s, t, ts, svs.svm_values[s*svs.seqlen+plen], svs2.svm_values[s*svs.seqlen+plen], svs3.svm_values[s*svs.seqlen+plen]);
-								}*/
-						
-						if (orf_target==-1)
-							ok=true ;
-						else if (pos[ts]!=-1 && (pos[t]-pos[ts])%3==orf_target)
-						{
-							ok=(!use_orf) || extend_orf(genestr_stop, orf_from, orf_to, pos[ts], orf_last_pos, pos[t]) ;
-							if (!ok) 
-							{
-								//SG_DEBUG( "no orf from %i[%i] to %i[%i]\n", pos[ts], orf_from, pos[t], orf_to) ;
-								break ;
-							}
-						} else
-							ok=false ;
-						
-						if (ok)
-						{
-							DREAL segment_loss = extend_segment_loss(loss, pos, elem_id[i], ts, loss_last_pos, last_loss) ;
-
-							for (INT ss=0; ss<num_svms; ss++)
-						    {
-								INT offset = ss*svs.seqlen;
-								svm_value[ss]=svs.svm_values[offset+plen];
-						    }
-							
-							DREAL pen_val = 0.0 ;
-							if (penalty)
-							{
-#ifdef DYNPROG_TIMING
-								MyTime_penalty.start() ;
-#endif
-								pen_val = penalty->lookup_penalty(pos[t]-pos[ts], svm_value) ;
-#ifdef DYNPROG_TIMING
-								MyTime_penalty.stop() ;
-								penalty_time += MyTime_penalty.time_diff_sec() ;
-#endif
-							}
-							
-						    {
-								DREAL  val        = elem_val[i]  ;
-								val              += pen_val ;
-								val              += segment_loss ;
-								
-								DREAL mval = -(val + delta.element(delta_array, ts, ii, seq_len)) ;
-								DREAL mval2 = -val ;
-								// handle -inf -> don't allow transition
-								if (delta.element(delta_array, ts, ii, seq_len)<-1e20)
-									mval2 = mval ;
-								
-								if ((fixed_list_len==0) || (mval < fixedtempvv_))
-								{
-									fixedtempvv_ = mval ;
-									fixedtempii_ = ii + ts*N ;
-									fixed_list_len = 1 ;
-								}
-								
-						    }
-						}
-					}
-				}
-								
-				int numEnt = fixed_list_len;
-
-				{ // handle the case nbest==1 a bit more efficiently
-					double minusscore;
-					long int fromtjk;
-
-					if (numEnt>0)
-					{
-						minusscore = fixedtempvv_;
-						fromtjk = fixedtempii_;
-						
-						delta.element(delta_array, t, j, seq_len)    = -minusscore + seq.element(j,t);
-						psi.element(t,j)      = (fromtjk%N) ;
-						ptable.element(t,j)   = (fromtjk-(fromtjk%N))/N ;
-					}
-					else
-					{
-						delta.element(delta_array, t, j, seq_len)    = -CMath::INFTY ;
-						psi.element(t,j)      = 0 ;
-						ptable.element(t,j)     = 0 ;
-					}
-				}
-
-			}
-		}
-	}
-	
-	clear_segment_loss(loss);
-	clear_svm_values(svs);
-
-	{ //termination
-		INT list_len = 0 ;
-		for (short int diff=0; diff<nbest; diff++)
-		{
-			for (T_STATES i=0; i<N; i++)
-			{
-				oldtempvv[list_len] = -(delta.element(delta_array, (seq_len-1), i, seq_len)+get_q(i)) ;
-				oldtempii[list_len] = i + diff*N ;
-				list_len++ ;
-			}
-		}
-		
-		CMath::nmin(oldtempvv.get_array(), oldtempii.get_array(), list_len, nbest) ;
-		
-		for (short int k=0; k<nbest; k++)
-		{
-			delta_end = -oldtempvv[k] ;
-			path_ends = (oldtempii[k]%N) ;
-		}
-	}
-	
-	{ //state sequence backtracking		
-		for (short int k=0; k<nbest; k++)
-		{
-			prob_nbest[k]= delta_end ;
-			
-			INT i         = 0 ;
-			state_seq[i]  = path_ends ;
-			pos_seq[i]    = seq_len-1 ;
-
-			while (pos_seq[i]>0)
-			{
-				//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
-				state_seq[i+1] = psi.element(pos_seq[i], state_seq[i]);
-				pos_seq[i+1]   = ptable.element(pos_seq[i], state_seq[i]) ;
-				i++ ;
-			}
-			//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
-			INT num_states = i+1 ;
-			for (i=0; i<num_states;i++)
-			{
-				my_state_seq[i+k*seq_len] = state_seq[num_states-i-1] ;
-				my_pos_seq[i+k*seq_len]   = pos_seq[num_states-i-1] ;
-			}
-			my_state_seq[num_states+k*seq_len]=-1 ;
-			my_pos_seq[num_states+k*seq_len]=-1 ;
-		}
-	}
-	
-	if (is_big)
-		SG_PRINT( "DONE.     \n") ;
-
-	/*for (INT j=0; j<num_degrees; j++)
-	  delete[] wordstr[j] ;*/
-
-#ifdef DYNPROG_TIMING
-	MyTime_total.stop() ;
-	
-	if (is_big)
-		SG_PRINT("Timing:  orf=%1.2f s \n Segment_init=%1.2f s Segment_pos=%1.2f s  Segment_extend=%1.2f s Segment_clean=%1.2f s\nsvm_init=%1.2f s  svm_pos=%1.2f  svm_clean=%1.2f\n  penalty_time=%1.2f  total=%1.2f\n", orf_time, segment_init_time, segment_pos_time, segment_extend_time, segment_clean_time, svm_init_time, svm_pos_time, svm_clean_time, penalty_time, MyTime_total.time_diff_sec()) ;
-#endif
-
-}
-#endif
-
-template<short int nbest>
-void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *pos, 
-							   const INT *orf_info_array, CPlifBase **Plif_matrix, 
-							   CPlifBase **Plif_state_signals, INT max_num_signals,
-							   const char *genestr, INT genestr_len, INT genestr_num, 
-							   DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
-							   DREAL *dictionary_weights, INT dict_len, bool use_orf)
-{
-#ifdef DYNPROG_TIMING
-	segment_init_time = 0.0 ;
-	segment_pos_time = 0.0 ;
-	segment_extend_time = 0.0 ;
-	segment_clean_time = 0.0 ;
-	orf_time = 0.0 ;
-	svm_init_time = 0.0 ;
-	svm_pos_time = 0.0 ;
-	svm_clean_time = 0.0 ;
-	penalty_time = 0.0 ;
-
-	MyTime_total.start() ;
-	MyTime_penalty.stop() ;
-#endif
-	
-	//SG_PRINT( "best_path_trans:%x\n", seq_array);
-	if (!svm_arrays_clean)
-	{
-		SG_ERROR( "SVM arrays not clean") ;
-		return ;
-	}
-	
-#ifdef DYNPROG_DEBUG
-	transition_matrix_a.set_name("transition_matrix");
-	transition_matrix_a.display_array();
-	mod_words.display_array() ;
-	sign_words.display_array() ;
-	string_words.display_array() ;
-	fprintf(stderr, "use_orf = %i\n", use_orf) ;
-#endif
-	
-	const INT default_look_back = 30000 ;
-	INT max_look_back = default_look_back ;
-	bool use_svm = false ;
-	ASSERT(dict_len==num_svms*cum_num_words_array[num_degrees]) ;
-	dict_weights.set_array(dictionary_weights, cum_num_words_array[num_degrees], num_svms, false, false) ;
-	dict_weights_array=dict_weights.get_array() ;
-	
-	CArray2<CPlifBase*> PEN(Plif_matrix, N, N, false, false) ;
-	CArray2<CPlifBase*> PEN_state_signals(Plif_state_signals, N, max_num_signals, false, false) ;
-	CArray3<DREAL> seq_input(seq_array, N, seq_len, max_num_signals) ;
-	seq_input.set_name("seq_input") ;
-	//seq_input.display_array() ;
-	CArray2<DREAL> seq(N, seq_len) ;
-	seq.set_name("seq") ;
-	seq.zero() ;
-
-	CArray2<INT> orf_info(orf_info_array, N, 2) ;
-	orf_info.set_name("orf_info") ;
-	//g_orf_info = orf_info ;
-	//orf_info.display_array() ;
-
-	DREAL svm_value[num_svms] ;
-	{ // initialize svm_svalue
-		for (INT s=0; s<num_svms; s++)
-			svm_value[s]=0 ;
-	}
-
-	{ // convert seq_input to seq
-      // this is independent of the svm values 
-		for (INT i=0; i<N; i++)
-			for (INT j=0; j<seq_len; j++)
-				seq.element(i,j) = 0 ;
-
-		for (INT i=0; i<N; i++)
-			for (INT j=0; j<seq_len; j++)
-				for (INT k=0; k<max_num_signals; k++)
-				{
-					if ((PEN_state_signals.element(i,k)==NULL) && (k==0))
-					{
-						// no plif
-						seq.element(i,j) = seq_input.element(i,j,k) ;
-						break ;
-					}
-					if (PEN_state_signals.element(i,k)!=NULL)
-					{
-						// just one plif
-						if (finite(seq_input.element(i,j,k)))
-						{
-#ifdef DYNPROG_TIMING
-							MyTime_penalty.start() ;
-#endif
-							seq.element(i,j) += PEN_state_signals.element(i,k)->lookup_penalty(seq_input.element(i,j,k), svm_value) ;
-#ifdef DYNPROG_TIMING
-							MyTime_penalty.stop() ;
-							penalty_time += MyTime_penalty.time_diff_sec() ;
-#endif
-						}
-						else
-							// keep infinity values
-							seq.element(i,j) = seq_input.element(i, j, k) ;
-					} 
-					else
-						break ;
-				}
-	}
-
-	{ // determine maximal length of look-back
-		for (INT i=0; i<N; i++)
-			for (INT j=0; j<N; j++)
-			{
-				CPlifBase *penij=PEN.element(i,j) ;
-				if (penij==NULL)
-					continue ;
-				if (penij->get_max_value()>max_look_back)
-				{
-					SG_DEBUG( "%d %d -> value: %f\n", i,j,penij->get_max_value());
-					max_look_back=(INT) (CMath::ceil(penij->get_max_value()));
-				}
-				if (penij->uses_svm_values())
-					use_svm=true ;
-			}
-	}
-
-	max_look_back = CMath::min(genestr_len, max_look_back) ;
-	SG_DEBUG("use_svm=%i\n", use_svm) ;
-	
-	SG_DEBUG("maxlook: %d N: %d nbest: %d genestrlen:%d\n", max_look_back, N, nbest, genestr_len);
-	
 	const INT look_back_buflen = (max_look_back*N+1)*nbest ;
 	SG_DEBUG("look_back_buflen=%i\n", look_back_buflen) ;
 	const DREAL mem_use = (DREAL)(seq_len*N*nbest*(sizeof(T_STATES)+sizeof(short int)+sizeof(INT))+
@@ -2784,23 +2148,11 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	CArray<short int> ktable_end(nbest) ;
 	//ktable_end.zero() ;
 
-#if USEFIXEDLENLIST > 0
-#ifdef USE_TMP_ARRAYCLASS
-	CArray<DREAL> fixedtempvv(look_back_buflen) ;
-	CArray<INT> fixedtempii(look_back_buflen) ;
-	//fixedtempvv.zero() ;
-	//fixedtempii.zero() ;
-#else
 	DREAL * fixedtempvv=new DREAL[look_back_buflen] ;
 	memset(fixedtempvv, 0, look_back_buflen*sizeof(DREAL)) ;
 	INT * fixedtempii=new INT[look_back_buflen] ;
 	memset(fixedtempii, 0, look_back_buflen*sizeof(INT)) ;
-#endif
-#endif
 
-	// we always use oldtempvv and oldtempii, even if USEORIGINALLIST is 0
-	// as i didnt change the backtracking stuff
-	
 	CArray<DREAL> oldtempvv(look_back_buflen) ;
 	CArray<DREAL> oldtempvv2(look_back_buflen) ;
 	//oldtempvv.zero() ;
@@ -2956,9 +2308,10 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		for (T_STATES i=0; i<N; i++)
 		{
 			//delta.element(0, i, 0) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
-			delta.element(delta_array, 0, i, 0,seq_len, N) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
+			delta.element(delta_array, 0, i, 0, seq_len, N) = get_p(i) + seq.element(i,0) ;        // get_p defined in HMM.h to be equiv to initial_state_distribution
 			psi.element(0,i,0)   = 0 ;
-			ktable.element(0,i,0)  = 0 ;
+			if (nbest>1)
+				ktable.element(0,i,0)  = 0 ;
 			ptable.element(0,i,0)  = 0 ;
 			for (short int k=1; k<nbest; k++)
 			{
@@ -2968,7 +2321,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				//delta.element(0, i, k)    = -CMath::INFTY ;
 				delta.element(delta_array, 0, i, k, seq_len, N)    = -CMath::INFTY ;
 				psi.element(0,i,0)      = 0 ;                  // <--- what's this for?
-				ktable.element(0,i,k)     = 0 ;
+				if (nbest>1)
+					ktable.element(0,i,k)     = 0 ;
 				ptable.element(0,i,k)     = 0 ;
 			}
 		}
@@ -2980,18 +2334,6 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	svs.svm_values_unnormalized = NULL;
 	svs.word_used = NULL;
 
-	struct svm_values_struct svs2;
-	svs2.num_unique_words = NULL;
-	svs2.svm_values = NULL;
-	svs2.svm_values_unnormalized = NULL;
-	svs2.word_used = NULL;
-
-	struct svm_values_struct svs3;
-	svs3.num_unique_words = NULL;
-	svs3.svm_values = NULL;
-	svs3.svm_values_unnormalized = NULL;
-	svs3.word_used = NULL;
-
 	struct segment_loss_struct loss;
 	loss.segments_changed = NULL;
 	loss.num_segment_id = NULL;
@@ -3002,13 +2344,19 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		if (is_big && t%(1+(seq_len/1000))==1)
 			SG_PROGRESS(t, 0, seq_len);
 		//fprintf(stderr, "%i\n", t) ;
-		
-		init_svm_values(svs, pos[t], seq_len, max_look_back, t==1);
-		find_svm_values_till_pos(wordstr, pos, t, svs);  
 
-		init_segment_loss(loss, seq_len, max_look_back);
-		find_segment_loss_till_pos(pos, t, m_segment_ids_mask, loss);  
-	
+		init_svm_values(svs, pos[t], seq_len, max_look_back) ;
+		if (with_multiple_sequences)
+			find_svm_values_till_pos(wordstr, pos, t, svs);  
+		else
+			find_svm_values_till_pos(wordstr[0], pos, t, svs);  
+
+		if (with_loss)
+		{
+			init_segment_loss(loss, seq_len, max_look_back);
+			find_segment_loss_till_pos(pos, t, m_segment_ids_mask, loss);  
+		}
+		
 		for (T_STATES j=0; j<N; j++)
 		{
 			if (seq.element(j,t)<=-1e20)
@@ -3017,7 +2365,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				{
 					delta.element(delta_array, t, j, k, seq_len, N)    = seq.element(j,t) ;
 					psi.element(t,j,k)      = 0 ;
-					ktable.element(t,j,k)     = 0 ;
+					if (nbest>1)
+						ktable.element(t,j,k)     = 0 ;
 					ptable.element(t,j,k)     = 0 ;
 				}
 			}
@@ -3028,16 +2377,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				const DREAL *elem_val      = trans_list_forward_val[j] ;
 				const INT *elem_id      = trans_list_forward_id[j] ;
 				
-#if USEFIXEDLENLIST > 0
 				INT fixed_list_len = 0 ;
-				DREAL fixedtempvv_ = -CMath::INFTY ;
-				DREAL fixedtempii_ = 0 ;
-				
-#endif
-				
-#if USEORIGINALLIST > 0
-				INT old_list_len = 0 ;
-#endif
+				DREAL fixedtempvv_ = CMath::INFTY ;
+				INT fixedtempii_ = 0 ;
 				
 				for (INT i=0; i<num_elem; i++)
 				{
@@ -3062,13 +2404,15 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 					if (orf_from!=-1)
 					{
 						orf_target=orf_to-orf_from ;
-						if (orf_target<0) orf_target+=3 ;
+						if (orf_target<0) 
+							orf_target+=3 ;
 						ASSERT(orf_target>=0 && orf_target<3) ;
 					}
 					
 					INT orf_last_pos = pos[t] ;
 					INT loss_last_pos = t ;
 					DREAL last_loss = 0.0 ;
+
 					for (INT ts=t-1; ts>=0 && pos[t]-pos[ts]<=look_back; ts--)
 					{
 						bool ok ;
@@ -3084,76 +2428,54 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 						if (orf_target==-1)
 							ok=true ;
 						else if (pos[ts]!=-1 && (pos[t]-pos[ts])%3==orf_target)
-						{
 							ok=(!use_orf) || extend_orf(genestr_stop, orf_from, orf_to, pos[ts], orf_last_pos, pos[t]) ;
-							if (!ok) 
-							{
-								//SG_DEBUG( "no orf from %i[%i] to %i[%i]\n", pos[ts], orf_from, pos[t], orf_to) ;
-								break ;
-							}
-						} else
+						else
 							ok=false ;
 						
 						if (ok)
 						{
-							DREAL segment_loss = extend_segment_loss(loss, pos, elem_id[i], ts, loss_last_pos, last_loss) ;
+							
+							DREAL segment_loss = 0.0 ;
+							if (with_loss)
+								segment_loss = extend_segment_loss(loss, pos, elem_id[i], ts, loss_last_pos, last_loss) ;
 
+							INT offset = plen*num_svms ;
 							for (INT ss=0; ss<num_svms; ss++)
-						    {
-								INT offset = ss*svs.seqlen;
-								svm_value[ss]=svs.svm_values[offset+plen];
-						    }
+								svm_value[ss]=svs.svm_values[offset+ss];
 							
 							DREAL pen_val = 0.0 ;
 							if (penalty)
-							{
-#ifdef DYNPROG_TIMING
-								MyTime_penalty.start() ;
-#endif
 								pen_val = penalty->lookup_penalty(pos[t]-pos[ts], svm_value) ;
-#ifdef DYNPROG_TIMING
-								MyTime_penalty.stop() ;
-								penalty_time += MyTime_penalty.time_diff_sec() ;
-#endif
-							}
-							
-							for (short int diff=0; diff<nbest; diff++)
-						    {
-								DREAL  val        = elem_val[i]  ;
-								val              += pen_val ;
-								val              += segment_loss ;
+
+							if (nbest==1)
+							{
+								DREAL  val        = elem_val[i] + pen_val ;
+								if (with_loss)
+									val              += segment_loss ;
 								
-								DREAL mval = -(val + delta.element(delta_array, ts, ii, diff, seq_len, N)) ;
-								DREAL mval2 = -val ;
-								// handle -inf -> don't allow transition
-								if (delta.element(delta_array, ts, ii, diff, seq_len, N)<-1e20)
-									mval2 = mval ;
-								
-#if USEORIGINALLIST > 0
-								oldtempvv[old_list_len] = mval ;
-								oldtempvv2[old_list_len] = mval2 ;
-								oldtempii[old_list_len] = ii + diff*N + ts*N*nbest;
-								oldtempii2[old_list_len] = oldtempii[old_list_len] ;					
-								ASSERT(old_list_len<look_back_buflen) ;
-								old_list_len++ ;
-#endif
-								
-#if USEFIXEDLENLIST > 0
-								
-								/* only place -val in fixedtempvv if it is one of the nbest lowest values in there */
-								/* fixedtempvv[i], i=0:nbest-1, is sorted so that fixedtempvv[0] <= fixedtempvv[1] <= ...*/
-								/* fixed_list_len has the number of elements in fixedtempvv */
-								
-								if (nbest==1)
-								{ // handle the case nbest==1 a bit more efficiently
-									if ((fixed_list_len==0) || (mval < fixedtempvv_))
-									{
-										fixedtempvv_ = mval ;
-										fixedtempii_ = ii + ts*N ;
-										fixed_list_len = 1 ;
-									}
+								DREAL mval = -(val + delta.element(delta_array, ts, ii, 0, seq_len, N)) ;
+								if (mval<fixedtempvv_)
+								{
+									fixedtempvv_ = mval ;
+									fixedtempii_ = ii + ts*N;
+									fixed_list_len = 1 ;
 								}
-								else
+							}
+							else
+							{
+								for (short int diff=0; diff<nbest; diff++)
+								{
+									DREAL  val        = elem_val[i]  ;
+									val              += pen_val ;
+									if (with_loss)
+										val              += segment_loss ;
+									
+									DREAL mval = -(val + delta.element(delta_array, ts, ii, diff, seq_len, N)) ;
+									
+									/* only place -val in fixedtempvv if it is one of the nbest lowest values in there */
+									/* fixedtempvv[i], i=0:nbest-1, is sorted so that fixedtempvv[0] <= fixedtempvv[1] <= ...*/
+									/* fixed_list_len has the number of elements in fixedtempvv */
+									
 									if ((fixed_list_len < nbest) || ((0==fixed_list_len) || (mval < fixedtempvv[fixed_list_len-1])))
 									{
 										if ( (fixed_list_len<nbest) && ((0==fixed_list_len) || (mval>fixedtempvv[fixed_list_len-1])) )
@@ -3182,90 +2504,55 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 												fixed_list_len++;
 										}
 									}
-#endif
-								
+								}
 						    }
 						}
 					}
 				}
 				
-#if USEORIGINALLIST > 0
-				ASSERT(oldtempvv.get_dim1() > old_list_len) ;
-				CMath::qsort_index<DREAL,INT>(oldtempvv.get_array(), oldtempii.get_array(), old_list_len) ;
-				//CMath::nmin<INT>(oldtempvv.get_array(), oldtempii.get_array(), old_list_len, nbest) ;
-				INT num_finite = 0 ;
-				for (INT i=0; i<old_list_len; i++)
-					if (oldtempvv[i]<1e10)
-						num_finite++ ;
-#endif
 				
-				int numEnt = 0;
-#if USEORIGINALLIST == 2
-				numEnt = old_list_len;
-#elif USEFIXEDLENLIST == 2
-				numEnt = fixed_list_len;
-#endif
-
-				if (nbest==1)
-				{ // handle the case nbest==1 a bit more efficiently
-					double minusscore;
-					long int fromtjk;
-
-					if (numEnt>0)
-					{
-						minusscore = fixedtempvv_;
-						fromtjk = fixedtempii_;
-						
-						delta.element(delta_array, t, j, 0, seq_len, N)    = -minusscore + seq.element(j,t);
-						psi.element(t,j,0)      = (fromtjk%N) ;
-						ktable.element(t,j,0)   = 0 ;
-						ptable.element(t,j,0)   = (fromtjk-(fromtjk%N))/N ;
-					}
-					else
-					{
-						delta.element(delta_array, t, j, 0, seq_len, N)    = -CMath::INFTY ;
-						psi.element(t,j,0)      = 0 ;
-						ktable.element(t,j,0)     = 0 ;
-						ptable.element(t,j,0)     = 0 ;
-					}
-				}
-				else
+				int numEnt = fixed_list_len;
+				
+				double minusscore;
+				long int fromtjk;
+				
+				for (short int k=0; k<nbest; k++)
 				{
-					double minusscore;
-					long int fromtjk;
-					
-					for (short int k=0; k<nbest; k++)
+					if (k<numEnt)
 					{
-						if (k<numEnt)
+						if (nbest==1)
 						{
-#if (USEORIGINALLIST == 2)
-							minusscore = oldtempvv[k];
-							fromtjk = oldtempii[k];
-#elif (USEFIXEDLENLIST == 2)
-							minusscore = fixedtempvv[k];
-							fromtjk = fixedtempii[k];
-#endif
-							delta.element(delta_array, t, j, k, seq_len, N)    = -minusscore + seq.element(j,t);
-							psi.element(t,j,k)      = (fromtjk%N) ;
-							ktable.element(t,j,k)   = (fromtjk%(N*nbest)-psi.element(t,j,k))/N ;
-							ptable.element(t,j,k)   = (fromtjk-(fromtjk%(N*nbest)))/(N*nbest) ;
+							minusscore = fixedtempvv_ ;
+							fromtjk = fixedtempii_ ;
 						}
 						else
 						{
-							delta.element(delta_array, t, j, k, seq_len, N)    = -CMath::INFTY ;
-							psi.element(t,j,k)      = 0 ;
-							ktable.element(t,j,k)     = 0 ;
-							ptable.element(t,j,k)     = 0 ;
+							minusscore = fixedtempvv[k];
+							fromtjk = fixedtempii[k];
 						}
+						
+					    delta.element(delta_array, t, j, k, seq_len, N)    = -minusscore + seq.element(j,t);
+					    psi.element(t,j,k)      = (fromtjk%N) ;
+						if (nbest>1)
+							ktable.element(t,j,k)   = (fromtjk%(N*nbest)-psi.element(t,j,k))/N ;
+					    ptable.element(t,j,k)   = (fromtjk-(fromtjk%(N*nbest)))/(N*nbest) ;
+					}
+					else
+					{
+						delta.element(delta_array, t, j, k, seq_len, N)    = -CMath::INFTY ;
+						psi.element(t,j,k)      = 0 ;
+						if (nbest>1)
+							ktable.element(t,j,k)     = 0 ;
+						ptable.element(t,j,k)     = 0 ;
 					}
 				}
-
 			}
 		}
 	}
-	
-	clear_segment_loss(loss);
+
 	clear_svm_values(svs);
+	if (with_loss)
+		clear_segment_loss(loss);
 
 	{ //termination
 		INT list_len = 0 ;
@@ -3285,7 +2572,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 		{
 			delta_end.element(k) = -oldtempvv[k] ;
 			path_ends.element(k) = (oldtempii[k]%N) ;
-			ktable_end.element(k) = (oldtempii[k]-path_ends.element(k))/N ;
+			if (nbest>1)
+				ktable_end.element(k) = (oldtempii[k]-path_ends.element(k))/N ;
 		}
 	}
 	
@@ -3296,7 +2584,9 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 			
 			INT i         = 0 ;
 			state_seq[i]  = path_ends.element(k) ;
-			short int q   = ktable_end.element(k) ;
+			short int q   = 0 ;
+			if (nbest>1)
+				q=ktable_end.element(k) ;
 			pos_seq[i]    = seq_len-1 ;
 
 			while (pos_seq[i]>0)
@@ -3304,7 +2594,8 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 				//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
 				state_seq[i+1] = psi.element(pos_seq[i], state_seq[i], q);
 				pos_seq[i+1]   = ptable.element(pos_seq[i], state_seq[i], q) ;
-				q              = ktable.element(pos_seq[i], state_seq[i], q) ;
+				if (nbest>1)
+					q              = ktable.element(pos_seq[i], state_seq[i], q) ;
 				i++ ;
 			}
 			//SG_DEBUG("s=%i p=%i q=%i\n", state_seq[i], pos_seq[i], q) ;
@@ -3330,18 +2621,14 @@ void CDynProg::best_path_trans(const DREAL *seq_array, INT seq_len, const INT *p
 	}
 
 #ifdef DYNPROG_TIMING
-	MyTime_total.stop() ;
+	MyTime2.stop() ;
 	
 	if (is_big)
-		SG_PRINT("Timing:  orf=%1.2f s \n Segment_init=%1.2f s Segment_pos=%1.2f s  Segment_extend=%1.2f s Segment_clean=%1.2f s\nsvm_init=%1.2f s  svm_pos=%1.2f  svm_clean=%1.2f\n  penalty_time=%1.2f  total=%1.2f\n", orf_time, segment_init_time, segment_pos_time, segment_extend_time, segment_clean_time, svm_init_time, svm_pos_time, svm_clean_time, penalty_time, MyTime_total.time_diff_sec()) ;
+		SG_PRINT("Timing:  orf=%1.2f s \n Segment_init=%1.2f s Segment_pos=%1.2f s  Segment_extend=%1.2f s Segment_clean=%1.2f s\nsvm_init=%1.2f s  svm_pos=%1.2f  svm_clean=%1.2f\n  total=%1.2f\n", orf_time, segment_init_time, segment_pos_time, segment_extend_time, segment_clean_time, svm_init_time, svm_pos_time, svm_clean_time, MyTime2.time_diff_sec()) ;
 #endif
 
-#if USEFIXEDLENLIST > 0
-#ifndef USE_TMP_ARRAYCLASS
 	delete[] fixedtempvv ;
 	delete[] fixedtempii ;
-#endif
-#endif
 }
 
 void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *my_scores, DREAL* my_losses,
@@ -3528,10 +2815,10 @@ void CDynProg::best_path_trans_deriv(INT *my_state_seq, INT *my_pos_seq, DREAL *
 				find_svm_values_till_pos(wordstr, pos, to_pos, svs);  
 				INT plen = to_pos - from_pos ;
 				
+				INT offset = plen*num_svms ;
 				for (INT ss=0; ss<num_svms; ss++)
 				{
-					INT offset = ss*svs.seqlen;
-					svm_value[ss]=svs.svm_values[offset+plen];
+					svm_value[ss]=svs.svm_values[offset+ss];
 #ifdef DYNPROG_DEBUG
 					SG_DEBUG( "svm[%i]: %f\n", ss, svm_value[ss]) ;
 #endif

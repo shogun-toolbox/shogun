@@ -521,6 +521,8 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 	INT nother    = 0 ;
 	if (mxGetN(mx_nbest)==2)
 		nother = (INT) p_n[1] ;
+	ASSERT(nother==0) ;
+	
 	ASSERT(p_n[0]==nbest) ;
 	
 	if ( mx_p && mx_q && mx_a_trans && mx_seq && mx_pos && 
@@ -734,14 +736,16 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 
 			assert(nbest==1 || nbest==2) ;
 			assert(nother==0) ;
+			assert(genestr_num==1) ;
+			
 			if (nbest==1)
-				h->best_path_trans<1>(seq, M, pos, orf_info,
+				h->best_path_trans<1,false,false>(seq, M, pos, orf_info,
 								   PEN_matrix, PEN_state_signal, seq_third_dimension, 
 								   genestr, L, genestr_num,
 								   p_prob, my_path, my_pos, 
 								   dict_weights, dict_weigths_num*D, use_orf) ;
 			else 
-				h->best_path_trans<2>(seq, M, pos, orf_info,
+				h->best_path_trans<2,false,false>(seq, M, pos, orf_info,
 								   PEN_matrix, PEN_state_signal, seq_third_dimension, 
 								   genestr, L, genestr_num,
 								   p_prob, my_path, my_pos, 
