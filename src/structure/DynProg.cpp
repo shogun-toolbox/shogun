@@ -1474,15 +1474,19 @@ void CDynProg::init_segment_loss(struct segment_loss_struct & loss, INT seqlen, 
 #ifdef DYNPROG_TIMING
 	MyTime.start() ;
 #endif
+
+	INT clear_size = CMath::min(howmuchlookback,seqlen) ;
 	
 	if (!loss.num_segment_id)
 	{
 		loss.segments_changed       = new INT[seqlen] ;
 		loss.num_segment_id         = new INT[(max_a_id+1)*seqlen] ;
 		loss.length_segment_id      = new INT[(max_a_id+1)*seqlen] ;
+
+		clear_size = seqlen ;
 	}
 	
-	for (INT j=0; j<CMath::min(howmuchlookback,seqlen); j++)
+	for (INT j=0; j<clear_size; j++)
 	{
 		loss.segments_changed[j]=0 ;
 		for (INT i=0; i<max_a_id+1; i++)       
@@ -1652,6 +1656,7 @@ void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, IN
 	  
 	  where t_end is the end of all segments we are currently looking at
 	*/
+	INT clear_size = CMath::min(maxlookback,seqlen) ;
 	
 	if (!svs.svm_values)
 	{
@@ -1671,11 +1676,12 @@ void CDynProg::init_svm_values(struct svm_values_struct & svs, INT start_pos, IN
 			svs.num_unique_words[j]        = new INT[num_svms] ;
 		}
 		svs.start_pos               = new INT[num_svms] ;
+		clear_size = seqlen ;
 	}
 	
 	//for (INT i=0; i<maxlookback*num_svms; i++)       // initializing this for safety, though we should be able to live without it
 	//	svs.svm_values[i] = 0;
-	memset(svs.svm_values, 0, CMath::min(maxlookback,seqlen)*num_svms*sizeof(DREAL)) ;
+	memset(svs.svm_values, 0, clear_size*num_svms*sizeof(DREAL)) ;
 
 	for (INT j=0; j<num_degrees; j++)
 	{		
