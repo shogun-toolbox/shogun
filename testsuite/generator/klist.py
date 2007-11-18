@@ -3,7 +3,7 @@
 #		data_class + _type, feature_class + _type(s),
 #		available kernel parameters, accuracy
 KLIST={
-	'AUC':[['', ''], ['simple', 'word'], ['subkernel'], 1e-8],
+	'AUC':[['rand', 'ushort'], ['simple', 'word'], ['subkernel'], 1e-8],
 	'Byte':[['rand', 'ubyte'], ['simple', 'byte'], [], 1e-8],
 	'CanberraWord':[['rand', 'ushort'], ['simple', 'word'], ['width'], 1e-12],
 	'Char':[['rand', 'character'], ['simple', 'char'], [], 1e-8],

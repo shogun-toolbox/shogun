@@ -151,8 +151,8 @@ def _get_subkernels (input):
 		# get item's name
 		item=i[i.find('_')+1:]
 
-		# weird behaviour is subkernels is inited with {}, so have to do
-		# this:
+		# weird behaviour of python if subkernels is inited with {}, so
+		# have to do this:
 		if subkernels[idx] is None:
 			subkernels[idx]={}
 
@@ -163,27 +163,40 @@ def _get_subkernels (input):
 	return _add_subkernels(subkernels)
 
 def _kernel_combined (input):
-	k=CombinedKernel()
-	train=CombinedFeatures()
-	test=CombinedFeatures()
+	kernel=CombinedKernel()
+	feats={'train':CombinedFeatures(), 'test':CombinedFeatures()}
 
 	subkernels=_get_subkernels(input)
 	for sk in subkernels:
-		input['data_train']=sk['data_train']
-		input['data_test']=sk['data_test']
-		input['feature_type']=sk['feature_type']
-		feats=eval('_get_feats_'+sk['feature_class']+'(input)')
-		k.append_kernel(sk['kernel'])
-		train.append_feature_obj(feats['train'])
-		test.append_feature_obj(feats['test'])
+		sk['alphabet']=input['alphabet']
+		feats_sk=eval('_get_feats_'+sk['feature_class']+'(sk)')
+		kernel.append_kernel(sk['kernel'])
+		feats['train'].append_feature_obj(feats_sk['train'])
+		feats['test'].append_feature_obj(feats_sk['test'])
 
-	k.init(train, train)
-	res_train=max(abs(input['km_train']-k.get_kernel_matrix()).flat)
-	k.init(train, test)
-	res_test=max(abs(input['km_test']-k.get_kernel_matrix()).flat)
+	return _kernel_subkernels(input, feats, kernel)
+
+def _kernel_auc (input):
+	sk=_get_subkernels(input)[0]
+	sk['alphabet']=input['alphabet']
+	feats_sk=eval('_get_feats_'+sk['feature_class']+'(sk)')
+	sk['kernel'].init(feats_sk['train'], feats_sk['test'])
+
+	feats={
+		'train':WordFeatures(input['data_train'].astype(eval(input['data_type']))),
+		'test':WordFeatures(input['data_test'].astype(eval(input['data_type'])))}
+	kernel=AUCKernel(10, sk['kernel'])
+
+	return _kernel_subkernels(input, feats, kernel)
+
+def _kernel_subkernels (input, feats, kernel):
+	kernel.init(feats['train'], feats['train'])
+	train=max(abs(input['km_train']-kernel.get_kernel_matrix()).flat)
+	kernel.init(feats['train'], feats['test'])
+	test=max(abs(input['km_test']-kernel.get_kernel_matrix()).flat)
 
 	return _check_accuracy(input['accuracy'],
-		train=res_train, test=res_test)
+		train=train, test=test)
 
 def _kernel_svm (input):
 	feats={'train':RealFeatures(input['data_train']),
@@ -222,6 +235,8 @@ def _kernel_svm (input):
 def test (input):
 	if input['name']=='Combined':
 		return _kernel_combined(input)
+	elif input['name']=='AUC':
+		return _kernel_auc(input)
 	elif input['name'].startswith(PREFIX_SVM):
 		input['name']=input['name'][len(PREFIX_SVM):]
 		return _kernel_svm(input)
