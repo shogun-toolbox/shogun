@@ -27,6 +27,33 @@
 #include <time.h>
 #include <ctype.h>
 
+template void CDynProg::best_path_trans<1,true,false>(const DREAL *seq, INT seq_len, const INT *pos, 
+													  const INT *orf_info, CPlifBase **PLif_matrix, 
+													  CPlifBase **Plif_state_signals, INT max_num_signals, 
+													  const char *genestr, INT genestr_len, INT genestr_num, 
+													  DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
+													  DREAL *dictionary_weights, INT dict_len, bool use_orf) ;
+template void CDynProg::best_path_trans<2,true,false>(const DREAL *seq, INT seq_len, const INT *pos, 
+													  const INT *orf_info, CPlifBase **PLif_matrix, 
+													  CPlifBase **Plif_state_signals, INT max_num_signals, 
+													  const char *genestr, INT genestr_len, INT genestr_num, 
+													  DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
+													  DREAL *dictionary_weights, INT dict_len, bool use_orf) ;
+
+template void CDynProg::best_path_trans<1,false,false>(const DREAL *seq, INT seq_len, const INT *pos, 
+													  const INT *orf_info, CPlifBase **PLif_matrix, 
+													  CPlifBase **Plif_state_signals, INT max_num_signals, 
+													  const char *genestr, INT genestr_len, INT genestr_num, 
+													  DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
+													  DREAL *dictionary_weights, INT dict_len, bool use_orf) ;
+template void CDynProg::best_path_trans<2,false,false>(const DREAL *seq, INT seq_len, const INT *pos, 
+													  const INT *orf_info, CPlifBase **PLif_matrix, 
+													  CPlifBase **Plif_state_signals, INT max_num_signals, 
+													  const char *genestr, INT genestr_len, INT genestr_num, 
+													  DREAL *prob_nbest, INT *my_state_seq, INT *my_pos_seq,
+													  DREAL *dictionary_weights, INT dict_len, bool use_orf) ;
+
+
 #ifdef SUNOS
 extern "C" int	finite(double);
 #endif

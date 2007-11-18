@@ -712,13 +712,25 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			mxArray* mx_prob = mxCreateDoubleMatrix(1, (nbest+nother), mxREAL);
 			double* p_prob = mxGetPr(mx_prob);
 
+			bool segment_loss_nonzero = false ;
 			if (mx_segment_ids_mask!=NULL)
 			{
-				h->best_path_set_segment_loss(mxGetPr(mx_segment_loss), mxGetM(mx_segment_loss), mxGetN(mx_segment_loss)) ;
-				DREAL *dbuffer = mxGetPr(mx_segment_ids_mask) ;
+				// determine whether the loss should be used or not
+				DREAL *dbuffer = mxGetPr(mx_segment_loss) ;
+				for (INT i=0; i<mxGetM(mx_segment_loss)*mxGetN(mx_segment_loss); i++)
+					if (dbuffer[i]!=0.0)
+						segment_loss_nonzero = true ;
+				h->best_path_set_segment_loss(dbuffer, mxGetM(mx_segment_loss), mxGetN(mx_segment_loss)) ;
+
+				dbuffer = mxGetPr(mx_segment_ids_mask) ;
 				INT *ibuffer = new INT[2*M] ;
 				for (INT i=0; i<2*M; i++)
+				{
 					ibuffer[i] = (INT)dbuffer[i] ;
+					// determine whether the loss should be used or not
+					if (ibuffer[i])
+						segment_loss_nonzero = true ;
+				}
 				h->best_path_set_segment_ids_mask(ibuffer, mxGetM(mx_segment_ids_mask), mxGetN(mx_segment_ids_mask)) ;
 				delete[] ibuffer ;
 			}
@@ -738,19 +750,39 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			assert(nother==0) ;
 			assert(genestr_num==1) ;
 			
-			if (nbest==1)
-				h->best_path_trans<1,false,false>(seq, M, pos, orf_info,
-								   PEN_matrix, PEN_state_signal, seq_third_dimension, 
-								   genestr, L, genestr_num,
-								   p_prob, my_path, my_pos, 
-								   dict_weights, dict_weigths_num*D, use_orf) ;
+			if (segment_loss_nonzero)
+			{
+				SG_DEBUG("Using version with segment_loss\n") ;
+				if (nbest==1)
+					h->best_path_trans<1,true,false>(seq, M, pos, orf_info,
+													  PEN_matrix, PEN_state_signal, seq_third_dimension, 
+													  genestr, L, genestr_num,
+													  p_prob, my_path, my_pos, 
+													  dict_weights, dict_weigths_num*D, use_orf) ;
+				else 
+					h->best_path_trans<2,true,false>(seq, M, pos, orf_info,
+													  PEN_matrix, PEN_state_signal, seq_third_dimension, 
+													  genestr, L, genestr_num,
+													  p_prob, my_path, my_pos, 
+													  dict_weights, dict_weigths_num*D, use_orf) ;
+			}
 			else 
-				h->best_path_trans<2,false,false>(seq, M, pos, orf_info,
-								   PEN_matrix, PEN_state_signal, seq_third_dimension, 
-								   genestr, L, genestr_num,
-								   p_prob, my_path, my_pos, 
-								   dict_weights, dict_weigths_num*D, use_orf) ;
-
+			{
+				SG_DEBUG("Using version without segment_loss\n") ;
+				if (nbest==1)
+					h->best_path_trans<1,false,false>(seq, M, pos, orf_info,
+													  PEN_matrix, PEN_state_signal, seq_third_dimension, 
+													  genestr, L, genestr_num,
+													  p_prob, my_path, my_pos, 
+													  dict_weights, dict_weigths_num*D, use_orf) ;
+				else 
+					h->best_path_trans<2,false,false>(seq, M, pos, orf_info,
+													  PEN_matrix, PEN_state_signal, seq_third_dimension, 
+													  genestr, L, genestr_num,
+													  p_prob, my_path, my_pos, 
+													  dict_weights, dict_weigths_num*D, use_orf) ;
+			}
+			
 			// clean up 
 			delete_penalty_struct(PEN, P) ;
 			delete[] PEN_matrix ;
