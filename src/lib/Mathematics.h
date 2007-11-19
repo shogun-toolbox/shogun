@@ -703,6 +703,10 @@ public:
 		return -1;
 	}
 
+	/// align two sequences seq1 & seq2 of length l1 and l2 using gapCost
+	/// return alignment cost
+	static DREAL Align(CHAR * seq1, CHAR* seq2, INT l1, INT l2, DREAL gapCost);
+
 	/** calculates ROC into (fp,tp)
 	 * from output and label of length size 
 	 * returns index with smallest error=fp+fn

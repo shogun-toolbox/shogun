@@ -59,62 +59,6 @@ bool CRealFeatures::save(CHAR* fname)
 }
 
 
-static inline DREAL min( DREAL a, DREAL b )
-{
-  return a < b ? a : b;
-}
-
-
-static inline void swap( DREAL*& a, DREAL*& b )
-{
-  DREAL* temp = a;
-  a = b;
-  b = temp;
-}
-
-DREAL CRealFeatures::Align(CHAR * seq1, CHAR* seq2, INT l1, INT l2, DREAL gapCost)
-{
-  DREAL actCost=0 ;
-  INT i1, i2 ;
-  DREAL* const gapCosts1 = new DREAL[ l1 ];
-  DREAL* const gapCosts2 = new DREAL[ l2 ];
-  DREAL* costs2_0 = new DREAL[ l2 + 1 ];
-  DREAL* costs2_1 = new DREAL[ l2 + 1 ];
-
-  // initialize borders
-  for( i1 = 0; i1 < l1; ++i1 ) {
-    gapCosts1[ i1 ] = gapCost * i1;
-  }
-  costs2_1[ 0 ] = 0;
-  for( i2 = 0; i2 < l2; ++i2 ) {
-    gapCosts2[ i2 ] = gapCost * i2;
-    costs2_1[ i2+1 ] = costs2_1[ i2 ] + gapCosts2[ i2 ];
-  }
-  // compute alignment
-  for( i1 = 0; i1 < l1; ++i1 ) {
-    swap( costs2_0, costs2_1 );
-    actCost = costs2_0[ 0 ] + gapCosts1[ i1 ];
-    costs2_1[ 0 ] = actCost;
-    for( i2 = 0; i2 < l2; ++i2 ) {
-      const DREAL actMatch = costs2_0[ i2 ] + ( seq1[i1] == seq2[i2] );
-      const DREAL actGap1 = costs2_0[ i2+1 ] + gapCosts1[ i1 ];
-      const DREAL actGap2 = actCost + gapCosts2[ i2 ];
-      const DREAL actGap = min( actGap1, actGap2 );
-      actCost = min( actMatch, actGap );
-      costs2_1[ i2+1 ] = actCost;
-    }
-  }
-
-  delete [] gapCosts1;
-  delete [] gapCosts2;
-  delete [] costs2_0;
-  delete [] costs2_1;
-  
-  // return the final cost
-  return actCost;
-}
-
-
 bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, DREAL gapCost)
 {
 	ASSERT(cf);
@@ -144,7 +88,7 @@ bool CRealFeatures::Align_char_features(CCharFeatures* cf, CCharFeatures* Ref, D
 	    if (i%10==0)
 	      SG_PRINT( "%i..", i) ;
 	    for (INT j=0; j<num_cf_vec; j++)
-	      feature_matrix[i+j*num_features] = Align(&fm_cf[j*num_cf_feat], &fm_ref[i*num_ref_feat], num_cf_feat, num_ref_feat, gapCost);
+	      feature_matrix[i+j*num_features] = CMath::Align(&fm_cf[j*num_cf_feat], &fm_ref[i*num_ref_feat], num_cf_feat, num_ref_feat, gapCost);
 	  } ;
 
 	SG_INFO( "created %i x %i matrix (0x%p)\n", num_features, num_vectors, feature_matrix) ;

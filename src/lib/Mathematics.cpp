@@ -183,6 +183,48 @@ void CMath::sort(DREAL *a, INT* idx, INT N)
 	 
 } 
 
+DREAL CMath::Align(CHAR * seq1, CHAR* seq2, INT l1, INT l2, DREAL gapCost)
+{
+  DREAL actCost=0 ;
+  INT i1, i2 ;
+  DREAL* const gapCosts1 = new DREAL[ l1 ];
+  DREAL* const gapCosts2 = new DREAL[ l2 ];
+  DREAL* costs2_0 = new DREAL[ l2 + 1 ];
+  DREAL* costs2_1 = new DREAL[ l2 + 1 ];
+
+  // initialize borders
+  for( i1 = 0; i1 < l1; ++i1 ) {
+    gapCosts1[ i1 ] = gapCost * i1;
+  }
+  costs2_1[ 0 ] = 0;
+  for( i2 = 0; i2 < l2; ++i2 ) {
+    gapCosts2[ i2 ] = gapCost * i2;
+    costs2_1[ i2+1 ] = costs2_1[ i2 ] + gapCosts2[ i2 ];
+  }
+  // compute alignment
+  for( i1 = 0; i1 < l1; ++i1 ) {
+    swap( costs2_0, costs2_1 );
+    actCost = costs2_0[ 0 ] + gapCosts1[ i1 ];
+    costs2_1[ 0 ] = actCost;
+    for( i2 = 0; i2 < l2; ++i2 ) {
+      const DREAL actMatch = costs2_0[ i2 ] + ( seq1[i1] == seq2[i2] );
+      const DREAL actGap1 = costs2_0[ i2+1 ] + gapCosts1[ i1 ];
+      const DREAL actGap2 = actCost + gapCosts2[ i2 ];
+      const DREAL actGap = min( actGap1, actGap2 );
+      actCost = min( actMatch, actGap );
+      costs2_1[ i2+1 ] = actCost;
+    }
+  }
+
+  delete [] gapCosts1;
+  delete [] gapCosts2;
+  delete [] costs2_0;
+  delete [] costs2_1;
+  
+  // return the final cost
+  return actCost;
+}
+
 //plot x- axis false positives (fp) 1-Specificity
 //plot y- axis true positives (tp) Sensitivity
 INT CMath::calcroc(DREAL* fp, DREAL* tp, DREAL* output, INT* label, INT& size, INT& possize, INT& negsize, DREAL& tresh, FILE* rocfile)

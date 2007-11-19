@@ -9,25 +9,25 @@
  */
 
 #include "lib/common.h"
-#include "kernel/ManhattenWordKernel.h"
+#include "kernel/ManhattanWordKernel.h"
 #include "features/Features.h"
 #include "features/WordFeatures.h"
 #include "lib/io.h"
 
-CManhattenWordKernel::CManhattenWordKernel(INT size, DREAL w)
+CManhattanWordKernel::CManhattanWordKernel(INT size, DREAL w)
 	: CSimpleKernel<WORD>(size), width(w)
 {
-	SG_DEBUG( "CManhattenWordKernel with cache size: %d width: %f created\n", size, width);
+	SG_DEBUG( "CManhattanWordKernel with cache size: %d width: %f created\n", size, width);
 	dictionary_size= 1<<(sizeof(WORD)*8);
 	dictionary_weights = new DREAL[dictionary_size];
 	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 }
 
-CManhattenWordKernel::CManhattenWordKernel(
+CManhattanWordKernel::CManhattanWordKernel(
 	CWordFeatures* l, CWordFeatures* r, DREAL w)
 	: CSimpleKernel<WORD>(10), width(w)
 {
-	SG_DEBUG( "CManhattenWordKernel with cache size: %d width: %f created\n", 10, width);
+	SG_DEBUG( "CManhattanWordKernel with cache size: %d width: %f created\n", 10, width);
 	dictionary_size= 1<<(sizeof(WORD)*8);
 	dictionary_weights = new DREAL[dictionary_size];
 	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
@@ -35,34 +35,34 @@ CManhattenWordKernel::CManhattenWordKernel(
 	init(l, r);
 }
 
-CManhattenWordKernel::~CManhattenWordKernel()
+CManhattanWordKernel::~CManhattanWordKernel()
 {
 	cleanup();
 
 	delete[] dictionary_weights;
 }
   
-bool CManhattenWordKernel::init(CFeatures* l, CFeatures* r)
+bool CManhattanWordKernel::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CSimpleKernel<WORD>::init(l,r);
 	return result;
 }
 
-void CManhattenWordKernel::cleanup()
+void CManhattanWordKernel::cleanup()
 {
 }
 
-bool CManhattenWordKernel::load_init(FILE* src)
+bool CManhattanWordKernel::load_init(FILE* src)
 {
 	return false;
 }
 
-bool CManhattenWordKernel::save_init(FILE* dest)
+bool CManhattanWordKernel::save_init(FILE* dest)
 {
 	return false;
 }
   
-DREAL CManhattenWordKernel::compute(INT idx_a, INT idx_b)
+DREAL CManhattanWordKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
 	bool afree, bfree;

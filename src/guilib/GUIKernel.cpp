@@ -35,7 +35,7 @@
 #include "kernel/LocalAlignmentStringKernel.h"
 #include "kernel/WordMatchKernel.h"
 #include "kernel/HammingWordKernel.h"
-#include "kernel/ManhattenWordKernel.h"
+#include "kernel/ManhattanWordKernel.h"
 #include "kernel/CanberraWordKernel.h"
 #include "kernel/CommWordStringKernel.h"
 #include "kernel/WeightedCommWordStringKernel.h"
@@ -716,11 +716,11 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &width);
 				delete k;
-				k=new CManhattenWordKernel(size, width);
+				k=new CManhattanWordKernel(size, width);
 
 				if (k)
 				{
-					SG_INFO( "ManhattenWordKernel created\n");
+					SG_INFO( "ManhattanWordKernel created\n");
 					return k;
 				}
 			}

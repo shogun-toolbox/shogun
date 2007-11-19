@@ -15,12 +15,12 @@
 #include "kernel/SimpleKernel.h"
 #include "features/WordFeatures.h"
 
-class CManhattenWordKernel: public CSimpleKernel<WORD>
+class CManhattanWordKernel: public CSimpleKernel<WORD>
 {
 public:
-	CManhattenWordKernel(INT size, DREAL width);
-	CManhattenWordKernel(CWordFeatures* l, CWordFeatures* r, DREAL width);
-	virtual ~CManhattenWordKernel();
+	CManhattanWordKernel(INT size, DREAL width);
+	CManhattanWordKernel(CWordFeatures* l, CWordFeatures* r, DREAL width);
+	virtual ~CManhattanWordKernel();
 	
 	virtual bool init(CFeatures* l, CFeatures* r);
 	virtual void cleanup();
@@ -30,10 +30,10 @@ public:
 	bool save_init(FILE* dest);
 
 	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_MANHATTENWORD; }
+	virtual EKernelType get_kernel_type() { return K_MANHATTANWORD; }
 
 	// return the name of a kernel
-	virtual const CHAR* get_name() { return "ManhattenWord"; }
+	virtual const CHAR* get_name() { return "ManhattanWord"; }
 
 	void get_dictionary(INT& dsize, DREAL*& dweights) 
 	{

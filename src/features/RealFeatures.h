@@ -46,8 +46,5 @@ class CRealFeatures: public CSimpleFeatures<DREAL>
 
   virtual bool load(CHAR* fname);
   virtual bool save(CHAR* fname);
- protected:
-  DREAL Align(CHAR * seq1, CHAR* seq2, INT l1, INT l2, DREAL GapCost) ;
-
 };
 #endif

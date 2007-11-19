@@ -67,7 +67,7 @@
 %include "kernel/SimpleLocalityImprovedStringKernel.i"
 %include "kernel/WordMatchKernel.i"
 %include "kernel/HammingWordKernel.i"
-%include "kernel/ManhattenWordKernel.i"
+%include "kernel/ManhattanWordKernel.i"
 %include "kernel/CanberraWordKernel.i"
 
 %include "kernel/CombinedKernel.i"
