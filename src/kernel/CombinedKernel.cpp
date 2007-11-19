@@ -48,7 +48,7 @@ CCombinedKernel::CCombinedKernel(INT size, bool asw)
 		SG_INFO( "(subkernel weights are appended)\n") ;
 }
 
-CCombinedKernel::CCombinedKernel(CFeatures *l, CFeatures *r, bool asw)
+CCombinedKernel::CCombinedKernel(CCombinedFeatures *l, CCombinedFeatures *r, bool asw)
 	: CKernel(10), sv_count(0), sv_idx(NULL), sv_weight(NULL),
 		subkernel_weights_buffer(NULL), append_subkernel_weights(asw)
 {

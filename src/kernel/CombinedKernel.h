@@ -13,14 +13,18 @@
 #define _COMBINEDKERNEL_H___
 
 #include "lib/List.h"
-#include "kernel/Kernel.h"
 #include "lib/io.h"
+#include "kernel/Kernel.h"
+
+#include "features/Features.h"
+#include "features/CombinedFeatures.h"
 
 class CCombinedKernel : public CKernel
 {
 public:
 	CCombinedKernel(INT size=10, bool append_subkernel_weights=false);
-	CCombinedKernel(CFeatures* l, CFeatures* r, bool append_subkernel_weights=false);
+	CCombinedKernel(CCombinedFeatures* l, CCombinedFeatures* r,
+			bool append_subkernel_weights=false);
 	virtual ~CCombinedKernel();
 
 	/** initialize kernel lhs/rhs caches etc.
@@ -108,8 +112,8 @@ public:
 
 	inline bool insert_kernel(CKernel* k)
 	{
-            ASSERT(k);
-            SG_REF(k);
+		ASSERT(k);
+		SG_REF(k);
 
 		if (!(k->has_property(KP_LINADD)))
 			unset_property(KP_LINADD);
@@ -119,8 +123,8 @@ public:
 
 	inline bool append_kernel(CKernel* k)
 	{
-            ASSERT(k);
-            SG_REF(k);
+		ASSERT(k);
+		SG_REF(k);
 
 		if (!(k->has_property(KP_LINADD)))
 			unset_property(KP_LINADD);
@@ -130,13 +134,16 @@ public:
 
 	inline bool delete_kernel()
 	{
-		return kernel_list->delete_element();
+		CKernel* k=kernel_list->delete_element();
+		SG_UNREF(k);
+
+		return (k!=NULL);
 	}
 
 	inline bool get_append_subkernel_weights()
-		{
-			return append_subkernel_weights ;
-		}
+	{
+		return append_subkernel_weights;
+	}
 	
 	inline int get_num_subkernels()
 	{
@@ -164,7 +171,7 @@ public:
 	virtual bool init_optimization(INT count, INT *IDX, DREAL * weights);
 	virtual bool delete_optimization();
 	virtual DREAL compute_optimized(INT idx);
-    virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
+	virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
 	static void* compute_optimized_kernel_helper(void* p);
 	static void* compute_kernel_helper(void* p);
 	/// emulates batch computation, via linadd optimization w^t x or even down to \sum_i alpha_i K(x_i,x)

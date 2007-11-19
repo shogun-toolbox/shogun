@@ -19,6 +19,7 @@
 #endif
 
 %feature("director") CDistance;
+%rename(Distance) CDistance;
 %feature("autodoc","1");
 
 %include "lib/ShogunException.i"
@@ -29,6 +30,7 @@
 %include "distance/Distance.h"
 
 %include "distance/SimpleDistance.i"
+%include "distance/SparseDistance.i"
 %include "distance/RealDistance.i"
 %include "distance/StringDistance.i"
 %include "distance/Canberra.i"

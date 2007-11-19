@@ -406,6 +406,8 @@ def _run_combined ():
 		kernel.append_kernel(sk)
 		data_sk=eval('_get_data_'+kdata[0][0]+'('+kdata[0][1]+')')
 		feats_sk=eval('_get_feats_'+kdata[1][0]+"('"+kdata[1][1]+"', data_sk)")
+		feats_sk['train'].io.set_loglevel(M_DEBUG)
+		feats_sk['test'].io.set_loglevel(M_DEBUG)
 		feats['train'].append_feature_obj(feats_sk['train'])
 		feats['test'].append_feature_obj(feats_sk['test'])
 		output.update(_get_subkernel_params(subkernels[i], data_sk, str(i)))
@@ -413,7 +415,7 @@ def _run_combined ():
 	fileops.write(_compute_subkernels('Combined', feats, kernel, output))
 
 def _run_subkernels ():
-	_run_auc()
+	#_run_auc()
 	_run_combined()
 
 
