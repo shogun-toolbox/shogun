@@ -17,7 +17,6 @@ ROWS=11
 LEN_TRAIN=11
 LEN_TEST=17
 LEN_SEQ=60
-STR_ALPHABET='DNA'
 SIZE_CACHE=10
 WORDSTRING_ORDER=3
 WORDSTRING_GAP=0
@@ -35,16 +34,18 @@ def _get_params_global (name):
 	params['feature_class']=kdata[1][0]
 	params['feature_type']=kdata[1][1]
 	params['accuracy']=kdata[3]
-	if kdata[1][0]=='string' or (
-		kdata[1][0]=='simple' and (kdata[1][1]=='byte' or kdata[1][1]=='char')):
-		params['alphabet']=STR_ALPHABET
-		params['len_seq']=LEN_SEQ
+	if kdata[1][0]=='string' or (kdata[1][0]=='simple' and kdata[1][1]=='char'):
+		params['alphabet']='DNA'
+		params['seqlen']=LEN_SEQ
+	elif kdata[1][0]=='simple' and kdata[1][1]=='byte':
+		params['alphabet']='RAWBYTE'
+		params['seqlen']=LEN_SEQ
 	elif kdata[1][0]=='wordstring':
 		params['order']=WORDSTRING_ORDER
 		params['gap']=WORDSTRING_GAP
 		params['reverse']=WORDSTRING_REVERSE
-		params['alphabet']=STR_ALPHABET
-		params['len_seq']=LEN_SEQ
+		params['alphabet']='DNA'
+		params['seqlen']=LEN_SEQ
 
 	return params
 
@@ -236,7 +237,7 @@ def _run_distance ():
 
 def _run_feats_byte ():
 	data=_get_data_rand(type=ubyte)
-	feats=_get_feats_simple('Byte', data)
+	feats=_get_feats_simple('Byte', data, RAWBYTE)
 
 #	fileops.write(_compute('Byte', feats, data))
 	fileops.write(_compute('LinearByte', feats, data))
@@ -249,8 +250,8 @@ def _run_feats_char ():
 
 def _run_mindygram ():
 	data=_get_data_dna()
-	feats={'train':MindyGramFeatures(STR_ALPHABET, 'freq', '%20.,', 0),
-		'test':MindyGramFeatures(STR_ALPHABET, 'freq', '%20.,', 0)}
+	feats={'train':MindyGramFeatures('DNA', 'freq', '%20.,', 0),
+		'test':MindyGramFeatures('DNA', 'freq', '%20.,', 0)}
 
 	fileops.write(_compute('MindyGram', feats, data, 'MEASURE', 1.5))
 
@@ -282,7 +283,7 @@ def _run_feats_real ():
 	fileops.write(_compute('SparseGaussian', feats, data, 1.3))
 	fileops.write(_compute('SparseLinear', feats, data, 1.))
 	fileops.write(_compute('SparsePoly', feats, data, 10, 3, True, True))
-#	fileops.write(_compute('SparseReal', feats, data))
+	fileops.write(_compute('SparseReal', feats, data))
 
 def _run_feats_string ():
 	data=_get_data_dna()
@@ -415,8 +416,8 @@ def _run_combined ():
 	fileops.write(_compute_subkernels('Combined', feats, kernel, output))
 
 def _run_subkernels ():
-	#_run_auc()
-	_run_combined()
+	_run_auc()
+	#_run_combined()
 
 
 def run ():
@@ -424,9 +425,9 @@ def run ():
 	#_run_distance()
 	#_run_mindygram()
 	#_run_pluginestimate()
-	_run_subkernels()
+	#_run_subkernels()
 
-	#_run_feats_byte()
+	_run_feats_byte()
 	#_run_feats_char()
 	#_run_feats_real()
 	#_run_feats_string()
