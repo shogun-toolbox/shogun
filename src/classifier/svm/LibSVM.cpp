@@ -26,7 +26,6 @@ CLibSVM::~CLibSVM()
 
 bool CLibSVM::train()
 {
-	free(model);
 
 	struct svm_node* x_space;
 
@@ -108,6 +107,8 @@ bool CLibSVM::train()
 		delete[] problem.y;
 		delete[] x_space;
 
+		free(model);
+		model=NULL;
 		return true;
 	}
 	else
