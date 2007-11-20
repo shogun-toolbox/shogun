@@ -208,6 +208,8 @@ def _kernel_svm (input):
 	l=Labels(double(input['labels']))
 	svm=SVMLight(input['C'], k, l)
 	svm.parallel.set_num_threads(input['num_threads'])
+	svm.set_epsilon(input['epsilon'])
+	svm.set_tube_epsilon(input['tube_epsilon'])
 	svm.train()
 
 	if input['num_threads']==1:

@@ -74,16 +74,18 @@ def _compute (name, feats, data, *args):
 
 	return [name, output]
 
-def _compute_svm (name, feats, data, C, num_threads, *args):
+def _compute_svm (name, feats, data, params, *args):
 	kfun=eval(name+'Kernel')
 	k=kfun(feats['train'], feats['train'], *args)
-	k.parallel.set_num_threads(num_threads)
+	k.parallel.set_num_threads(params['num_threads'])
 
 	num_vec=feats['train'].get_num_vectors();
 	labels=rand(num_vec).round()*2-1
 	l=Labels(labels)
-	svm=SVMLight(C, k, l)
-	svm.parallel.set_num_threads(num_threads)
+	svm=SVMLight(params['C'], k, l)
+	svm.parallel.set_num_threads(params['num_threads'])
+	svm.set_epsilon(params['epsilon'])
+	svm.set_tube_epsilon(params['tube_epsilon'])
 	svm.train()
 	alphas=svm.get_alphas()
 	bias=svm.get_bias()
@@ -95,8 +97,10 @@ def _compute_svm (name, feats, data, C, num_threads, *args):
 	output={
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test']),
-		'C':C,
-		'num_threads':num_threads,
+		'C':params['C'],
+		'epsilon':params['epsilon'],
+		'tube_epsilon':params['tube_epsilon'],
+		'num_threads':params['num_threads'],
 		'alphas':alphas,
 		'labels':labels,
 		'bias':bias,
@@ -273,12 +277,6 @@ def _run_feats_real ():
 	fileops.write(_compute('Sigmoid', feats, data, 10, 1.1, 1.3))
 	fileops.write(_compute('Sigmoid', feats, data, 10, 0.5, 0.7))
 
-	fileops.write(_compute_svm('Gaussian', feats, data, .017, 1, 1.5))
-	fileops.write(_compute_svm('Gaussian', feats, data, .017, 16, 1.5))
-	fileops.write(_compute_svm('Gaussian', feats, data, .23, 1, 1.5))
-	fileops.write(_compute_svm('Gaussian', feats, data, 1.5, 1, 1.5))
-	fileops.write(_compute_svm('Gaussian', feats, data, 30, 1, 1.5))
-
 	feats=_get_feats_simple('Real', data, sparse=True)
 	fileops.write(_compute('SparseGaussian', feats, data, 1.3))
 	fileops.write(_compute('SparseLinear', feats, data, 1.))
@@ -305,6 +303,7 @@ def _run_feats_string ():
 
 #	feats=_get_feats_string('Ulong', data)
 #	fileops.write(_compute('CommUlongString', feats, data, False, FULL_NORMALIZATION))
+
 
 def _run_feats_word ():
 	#FIXME: greater max, lower variance?
@@ -423,16 +422,38 @@ def _run_subkernels ():
 	#_run_combined()
 
 
+def _run_svm ():
+	data=_get_data_rand()
+	feats=_get_feats_simple('Real', data)
+	width=1.5
+	params_svm={'C':.017, 'epsilon':1e-5, 'tube_epsilon':1e-2, 'num_threads':1}
+
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
+	params_svm['C']=.23
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
+	params_svm['C']=1.5
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
+	params_svm['C']=30
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
+	params_svm['epsilon']=1e-4
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
+	params_svm['tube_epsilon']=1e-3
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
+	params_svm['num_threads']=16
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
+
+
 def run ():
 	#_run_custom()
 	#_run_distance()
 	#_run_mindygram()
 	#_run_pluginestimate()
-	_run_subkernels()
+	#_run_subkernels()
+	_run_svm()
 
-	_run_feats_byte()
-	_run_feats_char()
+	#_run_feats_byte()
+	#_run_feats_char()
 	#_run_feats_real()
 	#_run_feats_string()
-	_run_feats_word()
+	#_run_feats_word()
 	#_run_feats_wordstring()
