@@ -62,7 +62,9 @@ DREAL CAUCKernel::compute(INT idx_a, INT idx_b)
   ASSERT(alen==2);
   ASSERT(blen==2);
 
-  ASSERT(subkernel!=NULL) ;
+  ASSERT(subkernel!=NULL);
+  ASSERT(subkernel->get_lhs()!=NULL);
+  ASSERT(subkernel->get_rhs()!=NULL);
   DREAL k11,k12,k21,k22 ;
   INT idx_a1=avec[0], idx_a2=avec[1], idx_b1=bvec[0], idx_b2=bvec[1] ;
   
