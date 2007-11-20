@@ -42,7 +42,7 @@ KLIST={
 	'PolyMatchString':[['dna', ''], ['string', 'char'],
 		['degree', 'inhomogene'], 1e-10],
 	'PolyMatchWord':[['rand', 'ushort'], ['simple', 'word'],
-		['degree', 'inhomogene'], 1e-11],
+		['degree', 'inhomogene'], 1e-10],
 	'Real':[['rand', 'double'], ['simple', 'real'], [], 1e-8],
 	'SalzbergWord':[['rand', 'ushort'], ['simple', 'word'],
 		['plugin_estimate'], 1e-6],

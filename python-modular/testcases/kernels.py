@@ -178,7 +178,6 @@ def _kernel_combined (input):
 
 def _kernel_auc (input):
 	sk=_get_subkernels(input)[0]
-	sk['alphabet']=input['alphabet']
 	feats_sk=eval('_get_feats_'+sk['feature_class']+'(sk)')
 	sk['kernel'].init(feats_sk['train'], feats_sk['test'])
 

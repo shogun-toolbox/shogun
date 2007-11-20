@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from sys import _getframe
+from sys import _getframe, maxint
 from numpy.random import *
 from numpy import *
 from shogun.PreProc import *
@@ -123,13 +123,13 @@ def _compute_subkernels (name, feats, kernel, output):
 ## feats and data funcs
 ##################################################################
 
-def _get_data_rand (type=double, rows=ROWS):
+def _get_data_rand (type=double, rows=ROWS, max_train=maxint, max_test=maxint):
 	if type==double:
 		return {'train':rand(rows, LEN_TRAIN), 'test':rand(rows, LEN_TEST)}
 	else:
 		# randint does not understand arg dtype
-		train=randint(0, 42, (rows, LEN_TRAIN))
-		test=randint(0, 42, (rows, LEN_TEST))
+		train=randint(0, max_train, (rows, LEN_TRAIN))
+		test=randint(0, max_test, (rows, LEN_TEST))
 		return {'train':train.astype(type), 'test':test.astype(type)}
 
 def _get_data_dna ():
@@ -307,13 +307,16 @@ def _run_feats_string ():
 #	fileops.write(_compute('CommUlongString', feats, data, False, FULL_NORMALIZATION))
 
 def _run_feats_word ():
-	data=_get_data_rand(type=ushort)
+	#FIXME: greater max, lower variance?
+	#max=2**16-1
+	max=42
+	data=_get_data_rand(type=ushort, max_train=max, max_test=max)
 	feats=_get_feats_simple('Word', data)
 
 	fileops.write(_compute('CanberraWord', feats, data, 1.7))
 	fileops.write(_compute('HammingWord', feats, data, 1.3, False))
 	fileops.write(_compute('LinearWord', feats, data))
-	fileops.write(_compute('ManhattenWord', feats, data, 1.5))
+	#fileops.write(_compute('ManhattenWord', feats, data, 1.5))
 	fileops.write(_compute('PolyMatchWord', feats, data, 3, True))
 	fileops.write(_compute('PolyMatchWord', feats, data, 3, False))
 #	fileops.write(_compute('Word', feats, data))
@@ -375,12 +378,12 @@ def _run_auc ():
 	width=1.5
 	subkernels=[['Gaussian', width]]
 	sk=GaussianKernel(feats['train'], feats['test'], width)
+	output=_get_subkernel_params(subkernels[0], data, '0')
 
-	data=_get_data_rand(type=ushort, rows=2)
+	data=_get_data_rand(ushort, 2, LEN_TRAIN, LEN_TEST)
 	feats=_get_feats_simple('Word', data)
 	#FIXME: size soon to be removed from constructor
 	kernel=AUCKernel(10, sk)
-	output=_get_subkernel_params(subkernels[0], data, '0')
 	output['data_train']=matrix(data['train'])
 	output['data_test']=matrix(data['test'])
 
@@ -425,11 +428,11 @@ def run ():
 	#_run_distance()
 	#_run_mindygram()
 	#_run_pluginestimate()
-	#_run_subkernels()
+	_run_subkernels()
 
 	_run_feats_byte()
-	#_run_feats_char()
+	_run_feats_char()
 	#_run_feats_real()
 	#_run_feats_string()
-	#_run_feats_word()
+	_run_feats_word()
 	#_run_feats_wordstring()
