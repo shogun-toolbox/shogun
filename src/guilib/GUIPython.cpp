@@ -36,7 +36,7 @@ extern CTextGUI* gui;
 
 CGUIPython::CGUIPython() : CSGObject()
 {
-	//import_libnumarray();
+	import_libnumarray();
 }
 
 CGUIPython::~CGUIPython()

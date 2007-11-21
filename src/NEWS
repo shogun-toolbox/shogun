@@ -1,3 +1,18 @@
+2007-11-23  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.4.4
+	* This release contains several bugfixes:
+		- Memory leak fix in libsvm wrapper
+		- Enable error checking in matlab interface
+		- Free memory after batch computation
+		- Parallel (num_threads>1) bug occurring with batch computation
+		- Several python-modular interface cleanups
+		- Fix for Chi2 kernel
+		- Use gcc now to generate build dependencies
+		- Test for existance of log2 (enables building on interix)
+		- Python build fix
+	* New methods: SVMOcas, GaussianShiftKernel
+
 2007-10-10  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.4.3
