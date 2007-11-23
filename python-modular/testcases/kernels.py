@@ -90,29 +90,30 @@ def _get_feats_string (input):
 
 	return feats
 
-def _get_feats_wordstring (input):
+def _get_feats_string_complex (input):
+	type=input['feature_type'].capitalize()
 	feats={'train':StringCharFeatures(eval(input['alphabet'])),
 		'test':StringCharFeatures(eval(input['alphabet']))}
 	feats['train'].set_string_features(list(input['data_train'][0]))
 	feats['test'].set_string_features(list(input['data_test'][0]))
 
-	wordfeat=StringWordFeatures(feats['train'].get_alphabet());
-	wordfeat.obtain_from_char(feats['train'], input['order']-1, input['order'],
+	feat=eval('String'+type+"Features(feats['train'].get_alphabet())");
+	feat.obtain_from_char(feats['train'], input['order']-1, input['order'],
 		input['gap'], eval(input['reverse']))
-	preproc = SortWordString();
-	preproc.init(wordfeat);
-	wordfeat.add_preproc(preproc)
-	wordfeat.apply_preproc()
-	feats['train']=wordfeat
+	if type=='Word':
+		preproc=SortWordString();
+		preproc.init(feat);
+		feat.add_preproc(preproc)
+		feat.apply_preproc()
+	feats['train']=feat
 
-	wordfeat=StringWordFeatures(feats['test'].get_alphabet());
-	wordfeat.obtain_from_char(feats['test'], input['order']-1, input['order'],
+	feat=eval('String'+type+"Features(feats['train'].get_alphabet())");
+	feat.obtain_from_char(feats['test'], input['order']-1, input['order'],
 		input['gap'], eval(input['reverse']))
-	#preproc = SortWordString();
-	#preproc.init(wordfeat);
-	wordfeat.add_preproc(preproc)
-	wordfeat.apply_preproc()
-	feats['test']=wordfeat
+	if type=='Word':
+		feat.add_preproc(preproc)
+		feat.apply_preproc()
+	feats['test']=feat
 
 	return feats
 

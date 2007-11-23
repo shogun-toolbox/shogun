@@ -25,12 +25,13 @@ def _get_params_global (name):
 	elif kdata[1][0]=='simple' and kdata[1][1]=='byte':
 		params['alphabet']='RAWBYTE'
 		params['seqlen']=dataops.LEN_SEQ
-	elif kdata[1][0]=='wordstring':
+	elif kdata[1][0]=='string_complex':
 		params['order']=featops.WORDSTRING_ORDER
 		params['gap']=featops.WORDSTRING_GAP
 		params['reverse']=featops.WORDSTRING_REVERSE
 		params['alphabet']='DNA'
 		params['seqlen']=dataops.LEN_SEQ
+		params['feature_obtain']=kdata[1][2]
 
 	return params
 
@@ -119,26 +120,11 @@ def _run_custom ():
 	return None
 	#fileops.write(compute('Custom', feats, data))
 
-#def _run_intfeats ():
-#def _run_shortfeats ():
-#def _run_ulongfeats ():
-#	data=dataops.get_rand(type=uint)
-#	feats=featops.get_simple('Int', data)
-#
-#	fileops.write(compute('Int', feats, data))
-
 def _run_feats_byte ():
 	data=dataops.get_rand(type=ubyte)
 	feats=featops.get_simple('Byte', data, RAWBYTE)
 
-#	fileops.write(compute('Byte', feats, data))
 	fileops.write(compute('LinearByte', feats, data))
-
-def _run_feats_char ():
-	data=dataops.get_rand(type=character)
-	feats=featops.get_simple('Char', data)
-
-	#fileops.write(compute('Char', feats, data))
 
 def _run_mindygram ():
 	data=dataops.get_dna()
@@ -161,7 +147,6 @@ def _run_feats_real ():
 	fileops.write(compute('Poly', feats, data, 3, False, True))
 	fileops.write(compute('Poly', feats, data, 3, True, False))
 	fileops.write(compute('Poly', feats, data, 3, False, False))
-#	fileops.write(compute('Real', feats, data))
 	fileops.write(compute('Sigmoid', feats, data, 10, 1.1, 1.3))
 	fileops.write(compute('Sigmoid', feats, data, 10, 0.5, 0.7))
 
@@ -169,7 +154,6 @@ def _run_feats_real ():
 	fileops.write(compute('SparseGaussian', feats, data, 1.3))
 	fileops.write(compute('SparseLinear', feats, data, 1.))
 	fileops.write(compute('SparsePoly', feats, data, 10, 3, True, True))
-	#fileops.write(compute('SparseReal', feats, data))
 
 def _run_feats_string ():
 	data=dataops.get_dna()
@@ -181,16 +165,12 @@ def _run_feats_string ():
 	fileops.write(compute('PolyMatchString', feats, data, 3, True))
 	fileops.write(compute('PolyMatchString', feats, data, 3, False))
 	fileops.write(compute('SimpleLocalityImprovedString', feats, data, 5, 7, 5))
-#	fileops.write(compute('StringReal', feats, data))
 
 	fileops.write(compute('WeightedDegreeString', feats, data, 20, 0))
 	fileops.write(compute('WeightedDegreePositionString', feats, data, 20))
 
 	# buggy:
 	#fileops.write(compute('LocalityImprovedString', feats, data, 51, 5, 7))
-
-#	feats=featops.get_string('Ulong', data)
-#	fileops.write(compute('CommUlongString', feats, data, False, FULL_NORMALIZATION))
 
 
 def _run_feats_word ():
@@ -206,18 +186,17 @@ def _run_feats_word ():
 	fileops.write(compute('ManhattanWord', feats, data, 1.5))
 	fileops.write(compute('PolyMatchWord', feats, data, 3, True))
 	fileops.write(compute('PolyMatchWord', feats, data, 3, False))
-#	fileops.write(compute('Word', feats, data))
 	fileops.write(compute('WordMatch', feats, data, 3))
 
-#	feats=featops.get_simple('Word', data, sparse=True)
-#	fileops.write(compute('SparseWord', feats, data))
-
-def _run_feats_wordstring ():
+def _run_feats_string_complex ():
 	data=dataops.get_dna()
-	feats=featops.get_wordstring(data)
+	feats=featops.get_string_complex('Word', data)
 
 	fileops.write(compute('CommWordString', feats, data, False, FULL_NORMALIZATION))
 	fileops.write(compute('WeightedCommWordString', feats, data, False, FULL_NORMALIZATION))
+
+	feats=featops.get_string_complex('Ulong', data)
+	fileops.write(compute('CommUlongString', feats, data, False, FULL_NORMALIZATION))
 
 def _run_pluginestimate ():
 	pass
@@ -333,13 +312,13 @@ def run ():
 	#_run_custom()
 	#_run_mindygram()
 	#_run_pluginestimate()
-	_run_subkernels()
-	_run_svm()
 
-	_run_feats_byte()
-	_run_feats_char()
-	_run_feats_real()
-	_run_feats_string()
-	_run_feats_word()
-	_run_feats_wordstring()
+	#_run_subkernels()
+	#_run_svm()
+
+	#_run_feats_byte()
+	#_run_feats_real()
+	#_run_feats_string()
+	_run_feats_string_complex()
+	#_run_feats_word()
 

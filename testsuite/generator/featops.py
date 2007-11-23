@@ -34,30 +34,32 @@ def get_string (type, data, alphabet=DNA):
 
 	return {'train':train, 'test':test}
 
-def get_wordstring (data, alphabet=DNA, order=WORDSTRING_ORDER,
+def get_string_complex (type, data, alphabet=DNA, order=WORDSTRING_ORDER,
 	gap=WORDSTRING_GAP, reverse=WORDSTRING_REVERSE):
 
 	feats={}
 
-	feat=StringCharFeatures(alphabet)
-	feat.set_string_features(data['train'])
-	wordfeat=StringWordFeatures(feat.get_alphabet());
-	wordfeat.obtain_from_char(feat, WORDSTRING_ORDER-1,
+	charfeat=StringCharFeatures(alphabet)
+	charfeat.set_string_features(data['train'])
+	feat=eval('String'+type+'Features(charfeat.get_alphabet())')
+	feat.obtain_from_char(charfeat, WORDSTRING_ORDER-1,
 		WORDSTRING_ORDER, WORDSTRING_GAP, WORDSTRING_REVERSE)
-	preproc = SortWordString();
-	preproc.init(wordfeat);
-	wordfeat.add_preproc(preproc)
-	wordfeat.apply_preproc()
-	feats['train']=wordfeat
+	if type=='Word':
+		preproc=SortWordString();
+		preproc.init(feat);
+		feat.add_preproc(preproc)
+		feat.apply_preproc()
+	feats['train']=feat
 
-	feat=StringCharFeatures(alphabet)
-	feat.set_string_features(data['test'])
-	wordfeat=StringWordFeatures(feat.get_alphabet());
-	wordfeat.obtain_from_char(feat, WORDSTRING_ORDER-1,
+	charfeat=StringCharFeatures(alphabet)
+	charfeat.set_string_features(data['test'])
+	feat=eval('String'+type+'Features(charfeat.get_alphabet())')
+	feat.obtain_from_char(charfeat, WORDSTRING_ORDER-1,
 		WORDSTRING_ORDER, WORDSTRING_GAP, WORDSTRING_REVERSE)
-	wordfeat.add_preproc(preproc)
-	wordfeat.apply_preproc()
-	feats['test']=wordfeat
+	if type=='Word':
+		feat.add_preproc(preproc)
+		feat.apply_preproc()
+	feats['test']=feat
 
 	return feats
 
