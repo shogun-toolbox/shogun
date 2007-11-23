@@ -56,8 +56,13 @@ public:
 		while (get_num_elements())
 		{
 			T d=delete_element();
+#ifdef HAVE_SWIG
+			if (delete_data)
+				SG_UNREF(d);
+#else
 			if (delete_data)
 				delete d;
+#endif
 		}
 	}
 
