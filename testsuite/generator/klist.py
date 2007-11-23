@@ -35,7 +35,7 @@ KLIST={
 	'LocalAlignmentString':[['dna', ''], ['string', 'char'], [], 1e-8],
 	'LocalityImprovedString':[['dna', ''], ['string', 'char'],
 		['length', 'inner_degree', 'outer_degree'], 1e-8],
-	'ManhattenWord':[['rand', 'ushort'], ['simple', 'word'], ['width'], 1e-13],
+	'ManhattanWord':[['rand', 'ushort'], ['simple', 'word'], ['width'], 1e-13],
 	'MindyGram':[['', ''], ['mindy', ''], ['measure', 'width'], 1e-8],
 	'Poly':[['rand', 'double'], ['simple', 'real'],
 		['degree', 'inhomogene', 'use_normalization'], 1e-6],

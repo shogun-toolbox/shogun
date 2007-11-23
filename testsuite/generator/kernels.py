@@ -120,7 +120,6 @@ def _compute_subkernels (name, feats, kernel, output):
 	kernel.init(feats['train'], feats['test'])
 	output['km_test']=kernel.get_kernel_matrix()
 	output.update(_get_params_global(name))
-
 	return [name, output]
 
 ##################################################################
@@ -315,7 +314,7 @@ def _run_feats_word ():
 	fileops.write(_compute('CanberraWord', feats, data, 1.7))
 	fileops.write(_compute('HammingWord', feats, data, 1.3, False))
 	fileops.write(_compute('LinearWord', feats, data))
-	#fileops.write(_compute('ManhattenWord', feats, data, 1.5))
+	fileops.write(_compute('ManhattanWord', feats, data, 1.5))
 	fileops.write(_compute('PolyMatchWord', feats, data, 3, True))
 	fileops.write(_compute('PolyMatchWord', feats, data, 3, False))
 #	fileops.write(_compute('Word', feats, data))
@@ -409,8 +408,6 @@ def _run_combined ():
 		kernel.append_kernel(sk)
 		data_sk=eval('_get_data_'+kdata[0][0]+'('+kdata[0][1]+')')
 		feats_sk=eval('_get_feats_'+kdata[1][0]+"('"+kdata[1][1]+"', data_sk)")
-		feats_sk['train'].io.set_loglevel(M_DEBUG)
-		feats_sk['test'].io.set_loglevel(M_DEBUG)
 		feats['train'].append_feature_obj(feats_sk['train'])
 		feats['test'].append_feature_obj(feats_sk['test'])
 		output.update(_get_subkernel_params(subkernels[i], data_sk, str(i)))
@@ -418,8 +415,8 @@ def _run_combined ():
 	fileops.write(_compute_subkernels('Combined', feats, kernel, output))
 
 def _run_subkernels ():
-	_run_auc()
-	#_run_combined()
+	#_run_auc()
+	_run_combined()
 
 
 def _run_svm ():
@@ -448,12 +445,13 @@ def run ():
 	#_run_distance()
 	#_run_mindygram()
 	#_run_pluginestimate()
-	#_run_subkernels()
-	_run_svm()
+	_run_subkernels()
+	#_run_svm()
 
 	#_run_feats_byte()
 	#_run_feats_char()
 	#_run_feats_real()
 	#_run_feats_string()
-	#_run_feats_word()
+	_run_feats_word()
 	#_run_feats_wordstring()
+

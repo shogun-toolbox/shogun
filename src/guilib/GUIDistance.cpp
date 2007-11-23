@@ -314,7 +314,7 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 
 				if (d)
 				{
-					SG_INFO( "ManhattenWordDistance created\n");
+					SG_INFO( "ManhattanWordDistance created\n");
 					return d;
 				}
 			}
