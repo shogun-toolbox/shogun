@@ -11,6 +11,7 @@
 		- Use gcc now to generate build dependencies
 		- Test for existance of log2 (enables building on interix)
 		- Python build fix
+		- Double free fix for combined kernel (python modular interface)
 	* New methods: SVMOcas, GaussianShiftKernel
 
 2007-10-10  Soeren Sonnenburg <debian@nn7.de>

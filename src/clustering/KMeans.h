@@ -5,7 +5,7 @@
  * (at your option) any later version.
  *
  * Written (W) 1999-2007 Gunnar Raetsch
- * Written (W) 1999-2007 Soeren Sonnenburg
+ * Written (W) 2007 Soeren Sonnenburg
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
