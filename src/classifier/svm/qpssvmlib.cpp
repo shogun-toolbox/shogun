@@ -1,6 +1,14 @@
-/*-----------------------------------------------------------------------
-qpssvmlib.c: Library of solvers for QP task required in StructSVM learning.
-
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Library of solvers for QP task required in StructSVM learning.
+ *
+ * Written (W) 1999-2007 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
+ * Copyright (C) 1999-2007 Center for Machine Perception, CTU FEL Prague 
+-------------------------------------------------------------------- 
 Synopsis:
 
   exitflag = qpssvm_solver( &get_col, diag_H, f, b, I, x, n, tmax, 
