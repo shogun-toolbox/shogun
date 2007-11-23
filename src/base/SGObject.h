@@ -45,7 +45,9 @@ public:
 
 	inline INT ref()
 	{
-		return ++refcount;
+		++refcount;
+		SG_DEBUG("ref():%ld obj:%p\n", refcount, this);
+		return refcount;
 	}
 
 	inline INT ref_count() const
@@ -56,19 +58,19 @@ public:
 
 	inline INT unref()
 	{
-		if (refcount == 0 || --refcount == 0 )
-        {
-            SG_DEBUG("unref():%ld obj:%p destroying\n", refcount, this);
+		if (refcount==0 || --refcount==0)
+		{
+			SG_DEBUG("unref():%ld obj:%p destroying\n", refcount, this);
 			//don't do this yet for static interfaces (as none is
 			//calling ref/unref properly)
 			delete this;
-            return 0;
-        }
-        else
-        {
-            SG_DEBUG("unref():%ld obj:%p decreased\n", refcount, this);
-            return refcount;
-        }
+			return 0;
+		}
+		else
+		{
+			SG_DEBUG("unref():%ld obj:%p decreased\n", refcount, this);
+			return refcount;
+		}
 	}
 
 private:

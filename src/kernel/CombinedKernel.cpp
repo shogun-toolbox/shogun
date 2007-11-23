@@ -43,7 +43,7 @@ CCombinedKernel::CCombinedKernel(INT size, bool asw)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	kernel_list=new CList<CKernel*>(true);
-	SG_INFO( "combined kernel created\n") ;
+	SG_INFO("Combined kernel created (%p)\n", this) ;
 	if (append_subkernel_weights)
 		SG_INFO( "(subkernel weights are appended)\n") ;
 }
@@ -54,9 +54,9 @@ CCombinedKernel::CCombinedKernel(CCombinedFeatures *l, CCombinedFeatures *r, boo
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	kernel_list=new CList<CKernel*>(true);
-	SG_INFO( "combined kernel created\n") ;
+	SG_INFO("Combined kernel created (%p)\n", this) ;
 	if (append_subkernel_weights) {
-		SG_INFO( "(subkernel weights are appended)\n") ;
+		SG_INFO("(subkernel weights are appended)\n") ;
 	}
 
 	init(l, r);
@@ -67,9 +67,10 @@ CCombinedKernel::~CCombinedKernel()
 	delete[] subkernel_weights_buffer ;
 	subkernel_weights_buffer=NULL ;
 	
-	SG_INFO( "combined kernel deleted\n");
 	cleanup();
 	delete kernel_list;
+
+	SG_INFO("Combined kernel deleted (%p)\n", this);
 }
 
 bool CCombinedKernel::init(CFeatures* l, CFeatures* r)

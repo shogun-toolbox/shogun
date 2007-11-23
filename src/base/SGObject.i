@@ -2,8 +2,8 @@
  #include "base/SGObject.h" 
 %}
 
-%feature("ref")   CSGObject "$this->ref();"
-%feature("unref") CSGObject "$this->unref();"
+%feature("ref")   CSGObject "SG_REF($this);"
+%feature("unref") CSGObject "SG_UNREF($this);"
 
 %rename(SGObject) CSGObject;
 

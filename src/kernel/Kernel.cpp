@@ -83,6 +83,8 @@ CKernel::~CKernel()
 
 	delete[] precomputed_matrix ;
 	precomputed_matrix=NULL ;
+
+	SG_INFO("Kernel deleted (%p)\n", this);
 }
 
 void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
