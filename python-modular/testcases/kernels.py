@@ -44,10 +44,13 @@ def _get_args (input, id='kparam'):
 		except ValueError:
 			raise ValueError, 'Wrong input data %s: "%s"!' % (id, i)
 
-		try:
-			args[idx]=eval(input[i])
-		except TypeError: # no bool
-			args[idx]=input[i]
+		if i.find('distance')!=-1:
+			args[idx]=eval(input[i]+'()')
+		else:
+			try:
+				args[idx]=eval(input[i])
+			except TypeError: # no bool
+				args[idx]=input[i]
 
 	# weed out superfluous Nones
 	return filter(lambda arg: arg is not None, args)

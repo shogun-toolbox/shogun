@@ -8,7 +8,10 @@ __license__='GPL v2'
 __url__='http://shogun-toolbox.org'
 
 from numpy.random import seed
-import fileops, kernels
+
+import fileops
+import kernels
+import distance
 
 
 def run ():
@@ -17,5 +20,6 @@ def run ():
 
 	fileops.clean_dir_output()
 	kernels.run()
+	distance.run()
 
 

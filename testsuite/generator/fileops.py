@@ -38,7 +38,7 @@ def _get_filename (output):
 			k.find('data_')!=-1):
 			continue
 		cn=v.__class__.__name__
-		if cn!='ndarray' and cn!='matrix' and cn!='list':
+		if cn=='bool' or cn=='float' or cn=='int' or cn=='str':
 			params.append(str(v))
 
 	params='_'.join(params).replace('.', '')
