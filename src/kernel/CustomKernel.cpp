@@ -31,7 +31,7 @@ CCustomKernel::~CCustomKernel()
 	cleanup();
 }
 
-SHORTREAL* CCustomKernel::get_kernel_matrix(int &num_vec1, int &num_vec2, SHORTREAL* target)
+SHORTREAL* CCustomKernel::get_kernel_matrix_shortreal(INT &num_vec1, INT &num_vec2, SHORTREAL* target)
 {
 	if (target == NULL)
 		return CKernel::get_kernel_matrix_shortreal(num_vec1, num_vec2, target);
@@ -80,10 +80,11 @@ bool CCustomKernel::load_init(FILE* src)
 
 bool CCustomKernel::save_init(FILE* dest)
 {
+
 	return false;
 }
 
-bool CCustomKernel::set_diag_kernel_matrix_from_diag(const DREAL* km, int cols)
+bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, int cols)
 {
 	cleanup();
 	SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
@@ -107,7 +108,7 @@ bool CCustomKernel::set_diag_kernel_matrix_from_diag(const DREAL* km, int cols)
 		return false;
 }
 
-bool CCustomKernel::set_diag_kernel_matrix_from_full(const DREAL* km, int cols)
+bool CCustomKernel::set_triangle_kernel_matrix_from_full(const DREAL* km, int cols)
 {
 	cleanup();
 	SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);

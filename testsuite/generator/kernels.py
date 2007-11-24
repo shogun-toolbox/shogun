@@ -10,30 +10,126 @@ import featops
 import dataops
 from klist import KLIST
 
-def _get_params_global (name):
+def _get_output (name, output, args=[], prefix='', offset=0):
 	kdata=KLIST[name]
-	params={}
 
-	params['data_class']=kdata[0][0]
-	params['data_type']=kdata[0][1]
-	params['feature_class']=kdata[1][0]
-	params['feature_type']=kdata[1][1]
-	params['accuracy']=kdata[3]
+	# for all kernels
+	output[prefix+'data_class']=kdata[0][0]
+	output[prefix+'data_type']=kdata[0][1]
+	output[prefix+'feature_class']=kdata[1][0]
+	output[prefix+'feature_type']=kdata[1][1]
+	output[prefix+'accuracy']=kdata[3]
+
+	# specialise a bit
 	if kdata[1][0]=='string' or (kdata[1][0]=='simple' and kdata[1][1]=='char'):
-		params['alphabet']='DNA'
-		params['seqlen']=dataops.LEN_SEQ
+		output[prefix+'alphabet']='DNA'
+		output[prefix+'seqlen']=dataops.LEN_SEQ
 	elif kdata[1][0]=='simple' and kdata[1][1]=='byte':
-		params['alphabet']='RAWBYTE'
-		params['seqlen']=dataops.LEN_SEQ
+		output[prefix+'alphabet']='RAWBYTE'
+		output[prefix+'seqlen']=dataops.LEN_SEQ
 	elif kdata[1][0]=='string_complex':
-		params['order']=featops.WORDSTRING_ORDER
-		params['gap']=featops.WORDSTRING_GAP
-		params['reverse']=featops.WORDSTRING_REVERSE
-		params['alphabet']='DNA'
-		params['seqlen']=dataops.LEN_SEQ
-		params['feature_obtain']=kdata[1][2]
+		output[prefix+'order']=featops.WORDSTRING_ORDER
+		output[prefix+'gap']=featops.WORDSTRING_GAP
+		output[prefix+'reverse']=featops.WORDSTRING_REVERSE
+		output[prefix+'alphabet']='DNA'
+		output[prefix+'seqlen']=dataops.LEN_SEQ
+		output[prefix+'feature_obtain']=kdata[1][2]
 
-	return params
+	# kernel arguments, if any
+	for i in range(0, len(args)):
+		pname=prefix+'kparam'+str(i+offset)+'_'+kdata[2][i]
+		# a bit awkward to have this specialised cond here:
+		if pname.find('distance')!=-1:
+			output[pname]=args[i].__class__.__name__
+		else:
+			output[pname]=args[i]
+
+	return output;
+
+##################################################################
+## subkernel funs
+##################################################################
+
+def compute_subkernels (name, feats, kernel, output):
+	kernel.init(feats['train'], feats['train'])
+	output['km_train']=kernel.get_kernel_matrix()
+	kernel.init(feats['train'], feats['test'])
+	output['km_test']=kernel.get_kernel_matrix()
+	output=_get_output(name, output)
+	return [name, output]
+
+def _get_subkernel_args (subkernel):
+	args=''
+	i=0
+	while 1:
+		try:
+			args+=', '+(str(subkernel[1+i]))
+			i+=1
+		except IndexError:
+			break
+
+	return args
+
+def _get_subkernel_output (subkernel, data, num):
+	prefix='subkernel'+num+'_'
+
+	output={}
+	output[prefix+'name']=subkernel[0]
+	#FIXME: size soon to be removed from constructor
+	output[prefix+'kparam0_size']='10'
+	output[prefix+'data_train']=matrix(data['train'])
+	output[prefix+'data_test']=matrix(data['test'])
+
+	return _get_output(subkernel[0], output, subkernel[1:], prefix, 1)
+
+def _run_auc ():
+	data=dataops.get_rand()
+	feats=featops.get_simple('Real', data)
+	width=1.5
+	subkernels=[['Gaussian', width]]
+	sk=GaussianKernel(feats['train'], feats['test'], width)
+	output=_get_subkernel_output(subkernels[0], data, '0')
+
+	data=dataops.get_rand(ushort, rows=2, max_train=dataops.LEN_TRAIN,
+		max_test=dataops.LEN_TEST)
+	feats=featops.get_simple('Word', data)
+	#FIXME: size soon to be removed from constructor
+	kernel=AUCKernel(10, sk)
+	output['data_train']=matrix(data['train'])
+	output['data_test']=matrix(data['test'])
+
+	fileops.write(compute_subkernels('AUC', feats, kernel, output))
+
+def _run_combined ():
+	kernel=CombinedKernel()
+	feats={'train':CombinedFeatures(), 'test':CombinedFeatures()}
+	subkernels=[
+		['FixedDegreeString', 3],
+		['PolyMatchString', 3, True],
+		['LinearString'],
+#		['Gaussian', 1.7],
+#		['CanberraWord', 1.7],
+	]
+	output={}
+
+	for i in range(0, len(subkernels)):
+		str_i=str(i)
+		kdata=KLIST[subkernels[i][0]]
+		args=_get_subkernel_args(subkernels[i])
+		#FIXME: size soon to be removed from constructor
+		sk=eval(subkernels[i][0]+'Kernel(10'+args+')')
+		kernel.append_kernel(sk)
+		data_sk=eval('dataops.get_'+kdata[0][0]+'('+kdata[0][1]+')')
+		feats_sk=eval('featops.get_'+kdata[1][0]+"('"+kdata[1][1]+"', data_sk)")
+		feats['train'].append_feature_obj(feats_sk['train'])
+		feats['test'].append_feature_obj(feats_sk['test'])
+		output.update(_get_subkernel_output(subkernels[i], data_sk, str(i)))
+
+	fileops.write(compute_subkernels('Combined', feats, kernel, output))
+
+def _run_subkernels ():
+	_run_auc()
+	_run_combined()
 
 ##################################################################
 ## compute/kernel funcs
@@ -46,21 +142,12 @@ def compute (name, feats, data, *args):
 	k.init(feats['train'], feats['test'])
 	km_test=k.get_kernel_matrix()
 
-	output={
+	output=_get_output(name, {
 		'km_train':km_train,
 		'km_test':km_test,
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test'])
-	}
-	output.update(_get_params_global(name))
-
-	for i in range(0, len(args)):
-		pname='kparam'+str(i)+'_'+KLIST[name][2][i]
-		# a bit awkward to have this specialised cond here:
-		if pname.find('distance')!=-1:
-			output[pname]=args[i].__class__.__name__
-		else:
-			output[pname]=args[i]
+	}, args)
 
 	return [name, output]
 
@@ -84,7 +171,7 @@ def compute_svm (name, feats, data, params, *args):
 	k.init(feats['train'], feats['test'])
 	classified=svm.classify().get_labels()
 
-	output={
+	output=_get_output(name, {
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test']),
 		'C':params['C'],
@@ -96,29 +183,37 @@ def compute_svm (name, feats, data, params, *args):
 		'bias':bias,
 		'support_vectors':support_vectors,
 		'classified':classified
-	}
-	output.update(_get_params_global(name))
-	for i in range(0, len(args)):
-		pname='kparam'+str(i)+'_'+KLIST[name][2][i]
-		output[pname]=args[i]
+	}, args)
 
 	return [fileops.SVM+name, output]
 
-def compute_subkernels (name, feats, kernel, output):
-	kernel.init(feats['train'], feats['train'])
-	output['km_train']=kernel.get_kernel_matrix()
-	kernel.init(feats['train'], feats['test'])
-	output['km_test']=kernel.get_kernel_matrix()
-	output.update(_get_params_global(name))
-	return [name, output]
-
 ##################################################################
-## special cases
+## standard run funcs
 ##################################################################
 
 def _run_custom ():
-	return None
-	#fileops.write(compute('Custom', feats, data))
+	cols=7
+	name='Custom'
+	data=dataops.get_rand(square=cols)
+	feats=featops.get_simple('Real', data)
+	data=data['train']
+
+	k=CustomKernel(feats['train'], feats['train'])
+	k.set_triangle_kernel_matrix_from_triangle(diag(data))
+	km_triangletriangle=k.get_kernel_matrix()
+	k.set_triangle_kernel_matrix_from_full(diag(data))
+	km_fulltriangle=k.get_kernel_matrix()
+	k.set_full_kernel_matrix_from_full(data)
+	km_fullfull=k.get_kernel_matrix()
+
+	output=_get_output(name, {
+		'km_triangletriangle':km_triangletriangle,
+		'km_fulltriangle':km_fulltriangle,
+		'km_fullfull':km_fullfull,
+		'data':matrix(data),
+		'cols':cols
+	})
+	fileops.write([name, output])
 
 def _run_feats_byte ():
 	data=dataops.get_rand(type=ubyte)
@@ -190,8 +285,8 @@ def _run_feats_word ():
 
 def _run_feats_string_complex ():
 	data=dataops.get_dna()
-	feats=featops.get_string_complex('Word', data)
 
+	feats=featops.get_string_complex('Word', data)
 	fileops.write(compute('CommWordString', feats, data, False, FULL_NORMALIZATION))
 	fileops.write(compute('WeightedCommWordString', feats, data, False, FULL_NORMALIZATION))
 
@@ -200,92 +295,6 @@ def _run_feats_string_complex ():
 
 def _run_pluginestimate ():
 	pass
-
-def _get_subkernel_args (subkernel):
-	args=''
-	i=0
-	while 1:
-		try:
-			args+=', '+(str(subkernel[1+i]))
-			i+=1
-		except IndexError:
-			break
-
-	return args
-
-def _get_subkernel_params (subkernel, data, num):
-	kdata=KLIST[subkernel[0]]
-	params={}
-
-	params['subkernel'+num+'_name']=subkernel[0]
-	#FIXME: size soon to be removed from constructor
-	params['subkernel'+num+'_kparam0_size']='10'
-	params['subkernel'+num+'_feature_class']=kdata[1][0]
-	params['subkernel'+num+'_feature_type']=kdata[1][1]
-	params['subkernel'+num+'_data_train']=matrix(data['train'])
-	params['subkernel'+num+'_data_test']=matrix(data['test'])
-	params['subkernel'+num+'_data_class']=kdata[0][0]
-	params['subkernel'+num+'_data_type']=kdata[0][1]
-
-	i=0
-	while 1:
-		try:
-			name='subkernel'+num+'_kparam'+str(i+1)+'_'+kdata[2][i]
-			params[name]=subkernel[1+i]
-			i+=1
-		except IndexError:
-			break
-
-	return params
-
-def _run_auc ():
-	data=dataops.get_rand()
-	feats=featops.get_simple('Real', data)
-	width=1.5
-	subkernels=[['Gaussian', width]]
-	sk=GaussianKernel(feats['train'], feats['test'], width)
-	output=_get_subkernel_params(subkernels[0], data, '0')
-
-	data=dataops.get_rand(ushort, 2, dataops.LEN_TRAIN, dataops.LEN_TEST)
-	feats=featops.get_simple('Word', data)
-	#FIXME: size soon to be removed from constructor
-	kernel=AUCKernel(10, sk)
-	output['data_train']=matrix(data['train'])
-	output['data_test']=matrix(data['test'])
-
-	fileops.write(compute_subkernels('AUC', feats, kernel, output))
-
-def _run_combined ():
-	kernel=CombinedKernel()
-	feats={'train':CombinedFeatures(), 'test':CombinedFeatures()}
-	subkernels=[
-		['FixedDegreeString', 3],
-		['PolyMatchString', 3, True],
-		['LinearString'],
-#		['Gaussian', 1.7],
-#		['CanberraWord', 1.7],
-	]
-	output={}
-
-	for i in range(0, len(subkernels)):
-		str_i=str(i)
-		kdata=KLIST[subkernels[i][0]]
-		args=_get_subkernel_args(subkernels[i])
-		#FIXME: size soon to be removed from constructor
-		sk=eval(subkernels[i][0]+'Kernel(10'+args+')')
-		kernel.append_kernel(sk)
-		data_sk=eval('dataops.get_'+kdata[0][0]+'('+kdata[0][1]+')')
-		feats_sk=eval('featops.get_'+kdata[1][0]+"('"+kdata[1][1]+"', data_sk)")
-		feats['train'].append_feature_obj(feats_sk['train'])
-		feats['test'].append_feature_obj(feats_sk['test'])
-		output.update(_get_subkernel_params(subkernels[i], data_sk, str(i)))
-
-	fileops.write(compute_subkernels('Combined', feats, kernel, output))
-
-def _run_subkernels ():
-	_run_auc()
-	_run_combined()
-
 
 def _run_svm ():
 	data=dataops.get_rand()
@@ -309,16 +318,16 @@ def _run_svm ():
 
 
 def run ():
-	#_run_custom()
+	_run_custom()
 	#_run_mindygram()
 	#_run_pluginestimate()
 
-	#_run_subkernels()
-	#_run_svm()
+	_run_subkernels()
+	_run_svm()
 
-	#_run_feats_byte()
-	#_run_feats_real()
-	#_run_feats_string()
+	_run_feats_byte()
+	_run_feats_real()
+	_run_feats_string()
 	_run_feats_string_complex()
-	#_run_feats_word()
+	_run_feats_word()
 

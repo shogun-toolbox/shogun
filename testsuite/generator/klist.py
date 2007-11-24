@@ -14,7 +14,7 @@ KLIST={
 	'CommWordString':[['dna', ''], ['string_complex', 'word', 'char'],
 		['use_sign', 'normalization'], 1e-9],
 	'Const':[['rand', 'double'], ['simple', 'real'], ['c'], 0],
-	'Custom':[['rand', 'double'], ['simple', 'real'], [], 1e-8],
+	'Custom':[['rand', 'double'], ['custom', ''], [], 0],
 	'Diag':[['rand', 'double'], ['simple', 'real'], ['diag'], 0],
 	'Distance':[['rand', 'double'], ['simple', 'real'], ['width', 'distance'], 1e-9],
 	'FixedDegreeString':[['dna', ''], ['string', 'char'], ['degree'], 1e-9],

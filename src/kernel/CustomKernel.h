@@ -23,7 +23,7 @@ public:
 	CCustomKernel(CFeatures* l, CFeatures* r);
 	virtual ~CCustomKernel();
 
-	virtual SHORTREAL* get_kernel_matrix(int &m, int &n, SHORTREAL* target=NULL);
+	virtual SHORTREAL* get_kernel_matrix_shortreal(INT &m, INT &n, SHORTREAL* target=NULL);
 	virtual bool init(CFeatures* l, CFeatures* r);
 	virtual void cleanup();
 
@@ -36,29 +36,23 @@ public:
 
 	/** return feature type the kernel can deal with
 	*/
-	inline virtual EFeatureType get_feature_type()
-	{
-		return F_ANY;
-	}
+	inline virtual EFeatureType get_feature_type() { return F_ANY; }
 
 	/** return feature class the kernel can deal with
 	*/
-	inline virtual EFeatureClass get_feature_class()
-	{
-		return C_ANY;
-	}
+	inline virtual EFeatureClass get_feature_class() { return C_ANY; }
 
 	// return the name of a kernel
 	virtual const CHAR* get_name() { return "Custom"; }
 
-	// set kernel matrix (only elements from main diagonal and above)
-	// from elements of maindiagonal and above (concat'd), while m is 
+	// set kernel matrix (only elements from upper triangle)
+	// from elements of upper triangle (concat'd), while m is 
 	// already given as diagonal
-	bool set_diag_kernel_matrix_from_diag(const DREAL* km, INT cols);
+	bool set_triangle_kernel_matrix_from_triangle(const DREAL* km, INT cols);
 
-	// set kernel matrix (only elements from main diagonal and above)
+	// set kernel matrix (only elements from upper triangle)
 	// from squared matrix
-	bool set_diag_kernel_matrix_from_full(const DREAL* km, INT cols);
+	bool set_triangle_kernel_matrix_from_full(const DREAL* km, INT cols);
 
 	// set full kernel matrix from full kernel matrix
 	bool set_full_kernel_matrix_from_full(const DREAL* km, INT rows, INT cols);
@@ -71,6 +65,7 @@ protected:
 	{
 		ASSERT(row < num_rows);
 		ASSERT(col < num_cols);
+		ASSERT(kmatrix);
 
 		if (upper_diagonal)
 		{

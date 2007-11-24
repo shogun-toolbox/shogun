@@ -172,7 +172,6 @@ def _kernel_combined (input):
 
 	subkernels=_get_subkernels(input)
 	for sk in subkernels:
-		sk['alphabet']=input['alphabet']
 		feats_sk=eval('_get_feats_'+sk['feature_class']+'(sk)')
 		kernel.append_kernel(sk['kernel'])
 		feats['train'].append_feature_obj(feats_sk['train'])
@@ -200,6 +199,22 @@ def _kernel_subkernels (input, feats, kernel):
 
 	return _check_accuracy(input['accuracy'],
 		train=train, test=test)
+
+def _kernel_custom (input):
+	feats={'train':RealFeatures(input['data']),
+		'test':RealFeatures(input['data'])}
+
+	k=CustomKernel(feats['train'], feats['train'])
+	k.set_triangle_kernel_matrix_from_triangle(diag(input['data']))
+	triangletriangle=max(abs(input['km_triangletriangle'], k.get_kernel_matrix()))
+	k.set_triangle_kernel_matrix_from_full(diag(input['data']))
+	fulltriangle=max(abs(input['km_fulltriangle'], k.get_kernel_matrix()))
+	k.set_full_kernel_matrix_from_full(input['data'])
+	fullfull=max(abs(input['km_fullfull'], k.get_kernel_matrix()))
+
+	return _check_accuracy(input['accuracy'],
+		triangletriangle=triangletriangle, fulltriangle=fulltriangle,
+		fullfull=full)
 
 def _kernel_svm (input):
 	feats={'train':RealFeatures(input['data_train']),
@@ -238,11 +253,12 @@ def _kernel_svm (input):
 ########################################################################
 
 def test (input):
-	if input['name']=='Combined':
-		return _kernel_combined(input)
-	elif input['name']=='AUC':
-		return _kernel_auc(input)
-	elif input['name'].startswith(PREFIX_SVM):
+	names=['Combined', 'AUC', 'Custom']
+	for n in names:
+		if input['name']==n:
+			return eval('_kernel_'+n.lower()+'(input)')
+
+	if input['name'].startswith(PREFIX_SVM):
 		input['name']=input['name'][len(PREFIX_SVM):]
 		return _kernel_svm(input)
 	else:

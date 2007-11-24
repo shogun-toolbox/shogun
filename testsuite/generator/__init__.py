@@ -20,6 +20,6 @@ def run ():
 
 	fileops.clean_dir_output()
 	kernels.run()
-	#distance.run()
+	distance.run()
 
 
