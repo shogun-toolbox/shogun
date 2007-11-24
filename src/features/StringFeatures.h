@@ -44,18 +44,19 @@ template <class ST> class CStringFeatures: public CFeatures
 	public:
 	CStringFeatures(E_ALPHABET alpha) : CFeatures(0), num_vectors(0), features(NULL), 
 		single_string(NULL),length_of_single_string(0),
-		max_string_length(0), order(0), symbol_mask_table(NULL),
-		selected_vector(0)
+		max_string_length(0), order(0), selected_vector(0),
+		symbol_mask_table(NULL)
 	{
 		alphabet=new CAlphabet(alpha);
 		ASSERT(alphabet);
 		num_symbols=alphabet->get_num_symbols();
 		original_num_symbols=num_symbols;
 	}
+
 	CStringFeatures(CAlphabet* alpha) : CFeatures(0), num_vectors(0), features(NULL), 
 		single_string(NULL),length_of_single_string(0),
-		max_string_length(0), order(0), symbol_mask_table(NULL),
-		selected_vector(0)
+		max_string_length(0), order(0), selected_vector(0),
+		symbol_mask_table(NULL)
 	{
         ASSERT(alpha);
 		alphabet=new CAlphabet(alpha);
@@ -99,8 +100,8 @@ template <class ST> class CStringFeatures: public CFeatures
 
 	CStringFeatures(char* fname, E_ALPHABET alpha=DNA) : CFeatures(fname), num_vectors(0), 
 		features(NULL), single_string(NULL), length_of_single_string(0),
-		max_string_length(0), order(0), symbol_mask_table(NULL),
-		selected_vector(0)
+		max_string_length(0), order(0), selected_vector(0),
+		symbol_mask_table(NULL)
 	{
 		alphabet=new CAlphabet(alpha);
 		num_symbols=alphabet->get_num_symbols();
