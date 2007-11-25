@@ -3,7 +3,7 @@
 #define SWIG_FILE_WITH_INIT
 %}
 
-#ifdef USE_DOXYGEN
+#ifdef HAVE_DOXYGEN
 %include "structure/Structure_doxygen.i"
 #endif
 

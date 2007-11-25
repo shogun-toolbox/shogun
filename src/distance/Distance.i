@@ -8,7 +8,7 @@
 #include "distance/Distance.h" 
 %}
 
-#ifdef USE_DOXYGEN
+#ifdef HAVE_DOXYGEN
 %include "distance/Distance_doxygen.i"
 #endif
 

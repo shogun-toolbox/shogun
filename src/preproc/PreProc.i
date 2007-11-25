@@ -11,7 +11,7 @@
 %rename(PreProc) CPreProc;
 %feature("autodoc","1");
 
-#ifdef USE_DOXYGEN
+#ifdef HAVE_DOXYGEN
 %include "preproc/PreProc_doxygen.i"
 #endif
 

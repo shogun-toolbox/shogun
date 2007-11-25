@@ -5,7 +5,7 @@
 %module(docstring=DOCSTR,directors="1") Library
 %feature("autodoc","1");
 
-#ifdef USE_DOXYGEN
+#ifdef HAVE_DOXYGEN
 %include "lib/Library_doxygen.i"
 #endif
 

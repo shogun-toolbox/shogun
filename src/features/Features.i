@@ -9,7 +9,7 @@
 #include "features/Features.h" 
 %}
 
-#ifdef USE_DOXYGEN
+#ifdef HAVE_DOXYGEN
 %include "features/Features_doxygen.i"
 #endif
 

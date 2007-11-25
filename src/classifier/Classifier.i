@@ -9,7 +9,7 @@
  #include "classifier/Classifier.h" 
 %}
 
-#ifdef USE_DOXYGEN
+#ifdef HAVE_DOXYGEN
 %include "classifier/Classifier_doxygen.i"
 #endif
 
