@@ -260,8 +260,13 @@ _%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG)
 %${EXT_OBJ_SWIG}:	%$(EXT_SRC_SWIG)
 	$(COMP_CPP) $(COMPFLAGS_SWIG_CPP) -c $(INCLUDES) -o $@ $<
 
+ifeq (yes,$(USE_DOXYGEN))
 %${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES) $*.$(EXT_INP_SWIG)
+else
+%${EXT_SRC_SWIG}: %.$(EXT_INP_SWIG)
+	$(SWIG) $(SWIGFLAGS) $(DEFINES) $*.$(EXT_INP_SWIG)
+endif
 
 %.$(EXT_OBJ_CPP):	%.$(EXT_SRC_CPP)
 	$(COMP_CPP) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<
@@ -269,6 +274,8 @@ _%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG)
 %.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
 	$(COMP_C) $(COMPFLAGS_C) -c $(INCLUDES) -o $@ $<
 
+ifeq (yes,$(USE_DOXYGEN))
 %$(EXT_SWIG_DOXY): %$(EXT_DOXY)
 	$(DOXYGEN) $<
 	$(PYTHON) .doxy2swig.py $(@D)/doxygen_xml/index.xml $@
+endif

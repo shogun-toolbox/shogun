@@ -526,6 +526,7 @@ Optional features:
   --disable-svm-light 	        disable building of SVM-light and thus result in pure GPLv2 code [enabled]
 
 Miscellaneous options:
+  --disable-doxygen             disable documentation generation via doxygen for python-modular interface [enabled]
   --disable-cpudetection        disable cpu flags detection and corresponding optimization options [enabled]
   --enable-debug                enable debugging [disabled]
   --enable-path-debug	        enable viterbi path debugging [disabled]
