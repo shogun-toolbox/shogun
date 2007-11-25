@@ -2199,10 +2199,10 @@ EOF
 
 		if darwin
 		then
-			LINKFLAGS="-bundle -Wl,-flat_namespace -L`octave-config -p OCTLIBDIR` -loctinterp -lcruft -loctave $LINKFLAGS"
+			LINKFLAGS="-bundle -Wl,-flat_namespace -L`octave-config -p OCTLIBDIR` -loctinterp -loctave $LINKFLAGS"
 		else
 			OCTLIBDIR=`octave-config -p OCTLIBDIR`
-			LINKFLAGS="-shared -L $OCTLIBDIR -loctinterp -lcruft -loctave $LINKFLAGS"
+			LINKFLAGS="-shared -L $OCTLIBDIR -loctinterp -loctave $LINKFLAGS"
 		fi
 		TARGET="sg.oct"
 		INCLUDES="$INCLUDES -I`octave-config -p OCTINCLUDEDIR` -I`octave-config -p INCLUDEDIR`"
@@ -2251,8 +2251,8 @@ EOF
 			LINKFLAGS="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $LINKFLAGS"
 			POSTLINKFLAGS="$_pylibpath -l$_pylibs -ldl -bundle -Wl,-flat_namespace $POSTLINKFLAGS"
 		else
-			LINKFLAGS="-shared $_pylibpath -l$_pylibs -ldl -lutil $LINKFLAGS"
-			POSTLINKFLAGS="-shared $_pylibpath -l$_pylibs -ldl -lutil $POSTLINKFLAGS"
+			LINKFLAGS="-shared $_pylibpath -l$_pylibs $LINKFLAGS"
+			POSTLINKFLAGS="-shared $_pylibpath -l$_pylibs $POSTLINKFLAGS"
 		fi
 
 		if win32
@@ -2470,7 +2470,7 @@ EOF
 				fi
 			fi
 
-			HAVE_SWIG='#define HAVE_DOXYGEN 1'
+			HAVE_DOXYGEN='#define HAVE_DOXYGEN 1'
 			DEFINES="$DEFINES -DHAVE_DOXYGEN"
 
 			USE_DOXYGEN='yes'
