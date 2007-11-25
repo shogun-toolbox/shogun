@@ -8,6 +8,10 @@
 #include "distance/Distance.h" 
 %}
 
+#ifdef USE_DOXYGEN
+%include "distance/Distance_doxygen.i"
+#endif
+
 #ifdef HAVE_PYTHON
 %init %{
 	  import_array();

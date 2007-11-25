@@ -11,6 +11,10 @@
 %rename(PreProc) CPreProc;
 %feature("autodoc","1");
 
+#ifdef USE_DOXYGEN
+%include "preproc/PreProc_doxygen.i"
+#endif
+
 %include "lib/common.i"
 %include "lib/ShogunException.i"
 %include "lib/io.i"

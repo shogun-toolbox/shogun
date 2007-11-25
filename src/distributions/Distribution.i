@@ -10,6 +10,11 @@
 %rename(Distribution) CDistribution;
 %feature("autodoc","1");
 
+#ifdef USE_DOXYGEN
+%include "distributions/Distribution_doxygen.i"
+#endif
+
+
 %include "lib/common.i"
 %include "lib/ShogunException.i"
 %include "lib/io.i" 

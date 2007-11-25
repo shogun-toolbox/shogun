@@ -9,6 +9,10 @@
  #include "classifier/Classifier.h" 
 %}
 
+#ifdef USE_DOXYGEN
+%include "classifier/Classifier_doxygen.i"
+#endif
+
 #ifdef HAVE_PYTHON
 %init %{
    import_array();

@@ -3,6 +3,9 @@
 #define SWIG_FILE_WITH_INIT
 %}
 
+#ifdef USE_DOXYGEN
+%include "structure/Structure_doxygen.i"
+#endif
 
 #ifdef HAVE_PYTHON
 %init %{

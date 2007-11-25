@@ -5,6 +5,10 @@
 %module(docstring=DOCSTR,directors="1") Library
 %feature("autodoc","1");
 
+#ifdef USE_DOXYGEN
+%include "lib/Library_doxygen.i"
+#endif
+
 %include "lib/common.i"
 %include "lib/ShogunException.i"
 %include "lib/io.i"

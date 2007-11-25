@@ -8,6 +8,10 @@
 #include "kernel/Kernel.h" 
 %}
 
+#ifdef HAVE_DOXYGEN
+%include "kernel/Kernel_doxygen.i"
+#endif
+
 #ifdef HAVE_PYTHON
 %init %{
 	  import_array();

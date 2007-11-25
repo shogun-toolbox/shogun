@@ -351,8 +351,10 @@ class Doxy2SWIG:
                 ret.extend(['Parameters:\n-----------', '\n\n'])
             elif i.find('// File:') > -1: # leave comments alone.
                 ret.extend([i, '\n'])
+            elif i.find('::') > -1: # leave classes alone
+                ret.extend([i, '\n'])
             else:
-                _tmp = textwrap.fill(i.strip())
+                _tmp = textwrap.fill(i.strip()) 
                 _tmp = self.lead_spc.sub(r'\1"\2', _tmp)
                 ret.extend([_tmp, '\n\n'])
         return ret

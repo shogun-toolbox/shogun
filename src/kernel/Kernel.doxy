@@ -1,0 +1,14 @@
+INPUT                  = kernel
+OUTPUT_DIRECTORY       = kernel
+XML_OUTPUT             = doxygen_xml
+CREATE_SUBDIRS         = NO
+OUTPUT_LANGUAGE        = English
+FILE_PATTERNS          = *.cpp \
+                         *.h \
+                         *.c
+RECURSIVE              = YES
+EXCLUDE_PATTERNS       = */.svn/*
+GENERATE_HTML          = NO
+GENERATE_LATEX         = NO
+GENERATE_XML           = YES
+ENABLE_PREPROCESSING   = YES

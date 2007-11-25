@@ -9,6 +9,10 @@
 #include "features/Features.h" 
 %}
 
+#ifdef USE_DOXYGEN
+%include "features/Features_doxygen.i"
+#endif
+
 #ifdef HAVE_PYTHON
 %init %{
 	  import_array();

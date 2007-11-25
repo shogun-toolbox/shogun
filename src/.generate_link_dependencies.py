@@ -10,9 +10,18 @@ deps=dict();
 deps['carrays.i']=[]
 deps['cpointer.i']=[]
 deps['exception.i']=[]
+deps['lib/Library_doxygen.i']=[]
+deps['features/Features_doxygen.i']=[]
+deps['classifier/Classifier_doxygen.i']=[]
+deps['structure/Structure_doxygen.i']=[]
+deps['regression/Regression_doxygen.i']=[]
+deps['kernel/Kernel_doxygen.i']=[]
+deps['preproc/PreProc_doxygen.i']=[]
+deps['distributions/Distribution_doxygen.i']=[]
+deps['classifier/Classifier_doxygen.i']=[]
+deps['distance/Distance_doxygen.i']=[]
 
 initial_deps=deps.copy()
-
 
 def get_deps(f):
 	global deps

@@ -7,6 +7,10 @@
 #define SWIG_FILE_WITH_INIT
 %}
 
+#ifdef USE_DOXYGEN
+%include "classifier/Classifier_doxygen.i"
+#endif
+
 #ifdef HAVE_PYTHON
 %init %{
 	  import_array();

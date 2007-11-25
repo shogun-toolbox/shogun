@@ -69,6 +69,7 @@ OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR)
 endif
 SWIGIFILES   	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)")
 SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
+SWIGDOCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SWIG_DOXY), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
 SWIGLIBFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/_\1$(EXT_LIB_SWIG)=')
 SWIGPYFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1py=')
 TAR:=../shogun-$(shell date +%Y-%m-%d).tar
@@ -135,7 +136,10 @@ distclean: clean
 swigclean:
 	rm -f $(shell find -name "*_wrap.h" -o -name "*_wrap.cxx.o" -o -name "*_wrap.cxx" 2>/dev/null) 
 
-clean: swigclean
+swigdocclean:
+	rm -rf $(shell find -name doxygen_xml 2>/dev/null) 
+
+clean: swigclean swigdocclean
 	rm -f $(shell find . -name "*.cpp.o" -o -name "*.c.o" -o -name "*.so" -o -name "*.dll" -o -name "*~" -o -name ".#*" 2>/dev/null) sg.oct sg.mex* shogun shogun.exe gmon.out .depend configure.log .cpuinfo ./configure-* $(shell find . -type f -name '*.py*' ! -name '__*.py' ! -name '.*.py' | grep -v svn) $(shell find . -type f -name '*.R')
 
 
@@ -149,7 +153,7 @@ dist:	distclean
 #
 # Python + Swig
 ifeq (python-modular,$(INTERFACE))
-install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
+install: $(OBJFILES) $(SRCFILES) $(SWIGDOCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
 	install -d -m755 "$(DESTDIR)$(PYDIR)/shogun"
 	install -m644 $(SWIGLIBFILES) $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)/shogun"
 	echo -n '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
@@ -243,7 +247,7 @@ ChangeLog:
 $(OBJFILES): .config .depend lib/versionstring.h ChangeLog
 
 ifeq (yes,$(USE_SWIG))
-$(TARGET): $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
+$(TARGET): $(OBJFILES) $(SRCFILES) $(SWIGDOCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
 else
 $(TARGET): $(OBJFILES) $(SRCFILES)
 	$(LINK) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" | grep -v '.cpuinfo' | grep -v 'configure-' 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
@@ -256,11 +260,15 @@ _%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG)
 %${EXT_OBJ_SWIG}:	%$(EXT_SRC_SWIG)
 	$(COMP_CPP) $(COMPFLAGS_SWIG_CPP) -c $(INCLUDES) -o $@ $<
 
-%${EXT_SRC_SWIG}:	%.$(EXT_INP_SWIG)
-	$(SWIG) $(SWIGFLAGS) $(DEFINES) $<
+%${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)
+	$(SWIG) $(SWIGFLAGS) $(DEFINES) $*.$(EXT_INP_SWIG)
 
 %.$(EXT_OBJ_CPP):	%.$(EXT_SRC_CPP)
 	$(COMP_CPP) $(COMPFLAGS_CPP) -c $(INCLUDES) -o $@ $<
 
 %.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
 	$(COMP_C) $(COMPFLAGS_C) -c $(INCLUDES) -o $@ $<
+
+%$(EXT_SWIG_DOXY): %$(EXT_DOXY)
+	$(DOXYGEN) $<
+	$(PYTHON) .doxy2swig.py $(@D)/doxygen_xml/index.xml $@
