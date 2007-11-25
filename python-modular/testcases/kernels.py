@@ -204,10 +204,14 @@ def _kernel_custom (input):
 	feats={'train':RealFeatures(input['data']),
 		'test':RealFeatures(input['data'])}
 
+	symdata=input['symdata']
+
+	lowertriangle = array([ symdata[(x,y)] for x in xrange(symdata.shape[1]) for y in xrange(symdata.shape[0]) if y<=x ])
+
 	k=CustomKernel(feats['train'], feats['train'])
-	k.set_triangle_kernel_matrix_from_triangle(diag(input['data']))
+	k.set_triangle_kernel_matrix_from_triangle(lowertriangle)
 	triangletriangle=max(abs(input['km_triangletriangle'], k.get_kernel_matrix()))
-	k.set_triangle_kernel_matrix_from_full(diag(input['data']))
+	k.set_triangle_kernel_matrix_from_full(input['symdata'])
 	fulltriangle=max(abs(input['km_fulltriangle'], k.get_kernel_matrix()))
 	k.set_full_kernel_matrix_from_full(input['data'])
 	fullfull=max(abs(input['km_fullfull'], k.get_kernel_matrix()))

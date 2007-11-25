@@ -197,11 +197,13 @@ def _run_custom ():
 	data=dataops.get_rand(square=cols)
 	feats=featops.get_simple('Real', data)
 	data=data['train']
+	symdata=data + data.T
 
+	lowertriangle = array([ symdata[(x,y)] for x in xrange(symdata.shape[1]) for y in xrange(symdata.shape[0]) if y<=x ])
 	k=CustomKernel(feats['train'], feats['train'])
-	k.set_triangle_kernel_matrix_from_triangle(diag(data))
+	k.set_triangle_kernel_matrix_from_triangle(lowertriangle)
 	km_triangletriangle=k.get_kernel_matrix()
-	k.set_triangle_kernel_matrix_from_full(diag(data))
+	k.set_triangle_kernel_matrix_from_full(symdata)
 	km_fulltriangle=k.get_kernel_matrix()
 	k.set_full_kernel_matrix_from_full(data)
 	km_fullfull=k.get_kernel_matrix()
@@ -211,6 +213,7 @@ def _run_custom ():
 		'km_fulltriangle':km_fulltriangle,
 		'km_fullfull':km_fullfull,
 		'data':matrix(data),
+		'symdata':matrix(symdata),
 		'cols':cols
 	})
 	fileops.write([name, output])

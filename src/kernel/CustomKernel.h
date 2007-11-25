@@ -46,13 +46,13 @@ public:
 	virtual const CHAR* get_name() { return "Custom"; }
 
 	// set kernel matrix (only elements from upper triangle)
-	// from elements of upper triangle (concat'd), while m is 
-	// already given as diagonal
-	bool set_triangle_kernel_matrix_from_triangle(const DREAL* km, INT cols);
+	// from elements of upper triangle (concat'd), including the main diagonal
+	// len denotes the size of the array and should match len=cols*(cols+1)/2
+	bool set_triangle_kernel_matrix_from_triangle(const DREAL* km, INT len);
 
 	// set kernel matrix (only elements from upper triangle)
 	// from squared matrix
-	bool set_triangle_kernel_matrix_from_full(const DREAL* km, INT cols);
+	bool set_triangle_kernel_matrix_from_full(const DREAL* km, INT rows, INT cols);
 
 	// set full kernel matrix from full kernel matrix
 	bool set_full_kernel_matrix_from_full(const DREAL* km, INT rows, INT cols);

@@ -84,14 +84,23 @@ bool CCustomKernel::save_init(FILE* dest)
 	return false;
 }
 
-bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, int cols)
+bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, int len)
 {
+	ASSERT(km);
+	ASSERT(len > 0);
+
+	INT cols = floor(-0.5 + CMath::sqrt(0.25+2*len));
+	if (cols*(cols+1)/2 != len)
+	{
+		SG_ERROR("km should be a vector containing a lower triangle matrix, with len=cols*(cols+1)/2 elements\n");
+		return false;
+	}
+
+
 	cleanup();
 	SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 
-	int num=cols*(cols+1)/2;
-
-	kmatrix= new SHORTREAL[num];
+	kmatrix= new SHORTREAL[len];
 
 	if (kmatrix)
 	{
@@ -99,7 +108,7 @@ bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, in
 		num_rows=cols;
 		num_cols=cols;
 
-		for (INT i=0; i<num; i++)
+		for (INT i=0; i<len; i++)
 			kmatrix[i]=km[i];
 
 		return true;
@@ -108,8 +117,10 @@ bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, in
 		return false;
 }
 
-bool CCustomKernel::set_triangle_kernel_matrix_from_full(const DREAL* km, int cols)
+bool CCustomKernel::set_triangle_kernel_matrix_from_full(const DREAL* km, INT rows, INT cols)
 {
+	ASSERT(rows == cols);
+
 	cleanup();
 	SG_DEBUG( "using custom kernel of size %dx%d\n", cols,cols);
 

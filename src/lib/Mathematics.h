@@ -193,6 +193,25 @@ public:
 		return x*x;
 	}
 
+	/// x^0.5
+	static inline SHORTREAL sqrt(SHORTREAL x)
+	{
+		return ::sqrtf(x);
+	}
+
+	/// x^0.5
+	static inline DREAL sqrt(DREAL x)
+	{
+		return ::sqrt(x);
+	}
+
+	/// x^0.5
+	static inline LONGREAL sqrt(LONGREAL x)
+	{
+		return ::sqrtl(x);
+	}
+
+
 	/// x^n
 	static inline long double powl(long double x, long double n)
 	{
