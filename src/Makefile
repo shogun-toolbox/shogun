@@ -145,7 +145,7 @@ dist:	distclean
 
 # installer for swig-python, python, standalone(readline), octave
 # matlab and R packages are installed using a different mechanism
-#  ( R CMD INSTALl sg and cp :-) 
+#  ( R CMD INSTALL sg and cp :-) 
 #
 # Python + Swig
 ifeq (python-modular,$(INTERFACE))

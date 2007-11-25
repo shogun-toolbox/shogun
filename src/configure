@@ -42,6 +42,7 @@ _treemem=yes
 _logsumarray=no
 _hmmparallel=no
 _largefile=yes
+_doxygen=auto
 _swig=no 
 _lapack=auto
 _bigstates=yes
@@ -620,6 +621,8 @@ for ac_option do
   --enable-largefile)	_largefile=yes	;;
   --enable-swig-python)	_swig=yes ; _python=yes	;;
   --disable-swig-python)_swig=no ; _python=no ;;
+  --enable-doxygen)		_doxygen=yes ;;
+  --disable-doxygen)	_doxygen=no ;;
   --disable-lapack)		_lapack=no	;;
   --enable-lapack)		_lapack=yes	;;
   --disable-cplex)		_cplex=no	;;
@@ -2424,6 +2427,7 @@ EOF
 		DEFINES="$DEFINES -DHAVE_LARGEFILE"
 	fi
 
+
 	if test "$_swig" = yes
 	then
 		echocheck "SWIG"
@@ -2447,6 +2451,32 @@ EOF
 		fi
 	else
 		USE_SWIG='no'
+	fi
+
+	if test "$USE_SWIG" = 'yes'
+	then
+		if test "$_doxygen" = yes || test "$_doxygen" = auto
+		then
+			echocheck "doxygen"
+			if doxygen --version >/dev/null 2>&1
+			then
+				echores "`doxygen --version 2>&1`"
+			else
+				echores "no"
+
+				if test "$_doxygen" = yes
+				then
+					die "cannot find doxygen executable in path"
+				fi
+			fi
+
+			HAVE_SWIG='#define HAVE_DOXYGEN 1'
+			DEFINES="$DEFINES -DHAVE_DOXYGEN"
+
+			USE_DOXYGEN='yes'
+		else
+			USE_DOXYGEN='no'
+		fi
 	fi
 
 	if test "$_logcache" = yes
@@ -2550,6 +2580,7 @@ MAKEDEPENDOPTS	= ${MAKEDEPENDOPTS}
 SWIG 			= ${SWIG}
 PYTHON 			= ${PYTHON}
 USE_SWIG 		= ${USE_SWIG}
+USE_DOXYGEN 	= ${USE_DOXYGEN}
 SWIGFLAGS		= ${SWIGFLAGS}
 EXT_INP_SWIG	= ${EXT_INP_SWIG}
 EXT_SRC_SWIG	= ${EXT_SRC_SWIG}
@@ -2624,6 +2655,7 @@ $HAVE_R
 $HAVE_OCTAVE
 $HAVE_LARGEFILE
 $HAVE_SWIG
+$HAVE_DOXYGEN
 $HAVE_LAPACK
 $HAVE_POWL
 $HAVE_LOG2

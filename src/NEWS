@@ -1,3 +1,10 @@
+XXXX-XX-XX  Soeren Sonnenburg <debian@nn7.de>
+
+	* SHOGUN Release version 0.5.0
+	* This release contains several major enhancements:
+		- Full fledged test suite for python-modular interface
+		- Doxygen generated documentation for python-modular interface
+
 2007-11-23  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.4.4
