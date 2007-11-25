@@ -30,11 +30,9 @@ def test_mfile (file):
 			name=line.split('=')[1].strip().split("'")[1]
 			name_fun=get_name_fun(name)
 			input[param]=name
-		elif param=='km_train':
-			input['km_train']=read_matrix(line)
-		elif param=='km_test':
-			input['km_test']=read_matrix(line)
-		elif param.find('data_train')!=-1 or param.find('data_test')!=-1:
+		elif param=='symdata' or param=='data':
+			input[param]=read_matrix(line)
+		elif param.find('data_train')!=-1 or param.find('data_test')!=-1 or param.find('km_')!=-1:
 			input[param]=read_matrix(line)
 		else:
 			if (line.find("'")==-1):

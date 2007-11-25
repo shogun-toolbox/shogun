@@ -7,9 +7,9 @@ LEN_TRAIN=11
 LEN_TEST=17
 LEN_SEQ=60
 
-def get_rand (type=double, rows=ROWS, square=False, max_train=maxint, max_test=maxint):
-	if square:
-		rows=cols_train=cols_test=square
+def get_rand (type=double, rows=ROWS, dim_square=False, max_train=maxint, max_test=maxint):
+	if dim_square:
+		rows=cols_train=cols_test=dim_square
 	else:
 		cols_train=LEN_TRAIN
 		cols_test=LEN_TEST

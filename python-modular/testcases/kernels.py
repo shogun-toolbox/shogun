@@ -210,15 +210,15 @@ def _kernel_custom (input):
 
 	k=CustomKernel(feats['train'], feats['train'])
 	k.set_triangle_kernel_matrix_from_triangle(lowertriangle)
-	triangletriangle=max(abs(input['km_triangletriangle'], k.get_kernel_matrix()))
+	triangletriangle=max(abs(input['km_triangletriangle']-k.get_kernel_matrix()).flat)
 	k.set_triangle_kernel_matrix_from_full(input['symdata'])
-	fulltriangle=max(abs(input['km_fulltriangle'], k.get_kernel_matrix()))
+	fulltriangle=max(abs(input['km_fulltriangle']-k.get_kernel_matrix()).flat)
 	k.set_full_kernel_matrix_from_full(input['data'])
-	fullfull=max(abs(input['km_fullfull'], k.get_kernel_matrix()))
+	fullfull=max(abs(input['km_fullfull']-k.get_kernel_matrix()).flat)
 
 	return _check_accuracy(input['accuracy'],
 		triangletriangle=triangletriangle, fulltriangle=fulltriangle,
-		fullfull=full)
+		fullfull=fullfull)
 
 def _kernel_svm (input):
 	feats={'train':RealFeatures(input['data_train']),

@@ -192,14 +192,14 @@ def compute_svm (name, feats, data, params, *args):
 ##################################################################
 
 def _run_custom ():
-	cols=7
+	dim_square=7
 	name='Custom'
-	data=dataops.get_rand(square=cols)
+	data=dataops.get_rand(dim_square=dim_square)
 	feats=featops.get_simple('Real', data)
 	data=data['train']
-	symdata=data + data.T
+	symdata=data+data.T
 
-	lowertriangle = array([ symdata[(x,y)] for x in xrange(symdata.shape[1]) for y in xrange(symdata.shape[0]) if y<=x ])
+	lowertriangle=array([ symdata[(x,y)] for x in xrange(symdata.shape[1]) for y in xrange(symdata.shape[0]) if y<=x ])
 	k=CustomKernel(feats['train'], feats['train'])
 	k.set_triangle_kernel_matrix_from_triangle(lowertriangle)
 	km_triangletriangle=k.get_kernel_matrix()
@@ -212,9 +212,9 @@ def _run_custom ():
 		'km_triangletriangle':km_triangletriangle,
 		'km_fulltriangle':km_fulltriangle,
 		'km_fullfull':km_fullfull,
-		'data':matrix(data),
 		'symdata':matrix(symdata),
-		'cols':cols
+		'data':matrix(data),
+		'dim_square':dim_square
 	})
 	fileops.write([name, output])
 
@@ -325,12 +325,12 @@ def run ():
 	#_run_mindygram()
 	#_run_pluginestimate()
 
-	_run_subkernels()
-	_run_svm()
+	#_run_subkernels()
+	#_run_svm()
 
-	_run_feats_byte()
-	_run_feats_real()
-	_run_feats_string()
-	_run_feats_string_complex()
-	_run_feats_word()
+	#_run_feats_byte()
+	#_run_feats_real()
+	#_run_feats_string()
+	#_run_feats_string_complex()
+	#_run_feats_word()
 
