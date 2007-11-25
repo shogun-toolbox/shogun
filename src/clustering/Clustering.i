@@ -8,7 +8,7 @@
 %}
 
 #ifdef HAVE_DOXYGEN
-%include "classifier/Classifier_doxygen.i"
+%include "clustering/Clustering_doxygen.i"
 #endif
 
 #ifdef HAVE_PYTHON

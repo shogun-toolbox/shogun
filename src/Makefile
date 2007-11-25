@@ -69,7 +69,11 @@ OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR)
 endif
 SWIGIFILES   	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)")
 SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
+ifeq (yes,$(USE_DOXYGEN))
 SWIGDOCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SWIG_DOXY), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
+else
+SWIGDOCFILES 	= 
+endif
 SWIGLIBFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/_\1$(EXT_LIB_SWIG)=')
 SWIGPYFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \; | sed 's=/\([^/]*\.\)$(EXT_INP_SWIG)=/\1py=')
 TAR:=../shogun-$(shell date +%Y-%m-%d).tar
@@ -153,7 +157,7 @@ dist:	distclean
 #
 # Python + Swig
 ifeq (python-modular,$(INTERFACE))
-install: $(OBJFILES) $(SRCFILES) $(SWIGDOCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
+install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES)
 	install -d -m755 "$(DESTDIR)$(PYDIR)/shogun"
 	install -m644 $(SWIGLIBFILES) $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)/shogun"
 	echo -n '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
@@ -247,7 +251,7 @@ ChangeLog:
 $(OBJFILES): .config .depend lib/versionstring.h ChangeLog
 
 ifeq (yes,$(USE_SWIG))
-$(TARGET): $(OBJFILES) $(SRCFILES) $(SWIGDOCFILES) $(SWIGSRCFILES) $(SWIGLIBFILES)
+$(TARGET): $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) 
 else
 $(TARGET): $(OBJFILES) $(SRCFILES)
 	$(LINK) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" | grep -v '.cpuinfo' | grep -v 'configure-' 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
@@ -263,6 +267,10 @@ _%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG)
 ifeq (yes,$(USE_DOXYGEN))
 %${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES) $*.$(EXT_INP_SWIG)
+
+%$(EXT_SWIG_DOXY): %$(EXT_DOXY)
+	$(DOXYGEN) $<
+	$(PYTHON) .doxy2swig.py $(@D)/doxygen_xml/index.xml $@
 else
 %${EXT_SRC_SWIG}: %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES) $*.$(EXT_INP_SWIG)
@@ -274,8 +282,3 @@ endif
 %.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
 	$(COMP_C) $(COMPFLAGS_C) -c $(INCLUDES) -o $@ $<
 
-ifeq (yes,$(USE_DOXYGEN))
-%$(EXT_SWIG_DOXY): %$(EXT_DOXY)
-	$(DOXYGEN) $<
-	$(PYTHON) .doxy2swig.py $(@D)/doxygen_xml/index.xml $@
-endif
