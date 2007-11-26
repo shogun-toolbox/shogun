@@ -37,7 +37,11 @@ def _get_output (name, output, args=[], prefix='', offset=0):
 
 	# kernel arguments, if any
 	for i in range(0, len(args)):
-		pname=prefix+'kparam'+str(i+offset)+'_'+kdata[2][i]
+		try:
+			pname=prefix+'kparam'+str(i+offset)+'_'+kdata[2][i]
+		except IndexError:
+			break
+
 		# a bit awkward to have this specialised cond here:
 		if pname.find('distance')!=-1:
 			output[pname]=args[i].__class__.__name__
@@ -187,6 +191,30 @@ def compute_svm (name, feats, data, params, *args):
 
 	return [fileops.SVM+name, output]
 
+def compute_pie (name, feats, data):
+	pie=PluginEstimate()
+	kfun=eval(name+'Kernel')
+
+	num_vec=feats['train'].get_num_vectors();
+	labels=rand(num_vec).round()*2-1
+	l=Labels(labels)
+	pie.train(feats['train'], l, .1, -.1)
+	k=kfun(feats['train'], feats['train'], pie)
+
+	k.init(feats['train'], feats['test'])
+	pie.set_testfeatures(feats['test'])
+	pie.test()
+	classified=pie.classify().get_labels()
+
+	output=_get_output(name, {
+		'data_train':matrix(data['train']),
+		'data_test':matrix(data['test']),
+		'labels':labels,
+		'classified':classified
+	})
+
+	return [name, output]
+
 ##################################################################
 ## standard run funcs
 ##################################################################
@@ -273,7 +301,6 @@ def _run_feats_string ():
 
 def _run_feats_word ():
 	#FIXME: greater max, lower variance?
-	#max=2**16-1
 	max=42
 	data=dataops.get_rand(type=ushort, max_train=max, max_test=max)
 	feats=featops.get_simple('Word', data)
@@ -296,8 +323,16 @@ def _run_feats_string_complex ():
 	feats=featops.get_string_complex('Ulong', data)
 	fileops.write(compute('CommUlongString', feats, data, False, FULL_NORMALIZATION))
 
-def _run_pluginestimate ():
-	pass
+def _run_pie ():
+	data=dataops.get_rand(type=chararray)
+	charfeats=featops.get_simple('Char', data)
+	data=dataops.get_rand(type=ushort)
+	feats=featops.get_simple('Word', data)
+	feats['train'].obtain_from_char_features(charfeats['train'], 0, 1)
+	feats['test'].obtain_from_char_features(charfeats['test'], 0, 1)
+
+	fileops.write(compute_pie('HistogramWord', feats, data))
+	#fileops.write(compute_pie('SalzbergWord', feats, data))
 
 def _run_svm ():
 	data=dataops.get_rand()
@@ -321,9 +356,9 @@ def _run_svm ():
 
 
 def run ():
-	_run_custom()
+	#_run_custom()
 	#_run_mindygram()
-	#_run_pluginestimate()
+	_run_pie()
 
 	#_run_subkernels()
 	#_run_svm()

@@ -15,9 +15,20 @@ def get_rand (type=double, rows=ROWS, dim_square=False, max_train=maxint, max_te
 		cols_test=LEN_TEST
 
 	if type==double:
-		return {'train':rand(rows, cols_train),
-			'test':rand(rows, cols_test)}
+		return {'train':rand(rows, cols_train), 'test':rand(rows, cols_test)}
+	elif type==chararray:
+		a=randint(65, 90, rows*cols_train)
+		b=randint(65, 90, rows*cols_test)
+		return {
+			'train':array(map(lambda x: chr(x), a)).reshape(rows, cols_train),
+			'test':array(map(lambda x: chr(x), b)).reshape(rows, cols_test)
+		}
 	else:
+		if type==ushort:
+			max=2**16-1
+			if max_train>max: max_train=max
+			if max_test>max: max_test=max
+
 		# randint does not understand arg dtype
 		train=randint(0, max_train, (rows, cols_train))
 		test=randint(0, max_test, (rows, cols_test))
