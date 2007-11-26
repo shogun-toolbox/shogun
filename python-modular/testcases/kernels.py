@@ -59,21 +59,20 @@ def _get_feats_simple (input):
 	# have to explicitely set data type for numpy if not real
 	data_train=input['data_train'].astype(eval(input['data_type']))
 	data_test=input['data_test'].astype(eval(input['data_type']))
-	feature_type=input['feature_type'].capitalize()
 
-	if feature_type=='Byte' or feature_type=='Char':
+	if input['feature_type']=='Byte' or input['feature_type']=='Char':
 		alphabet=eval(input['alphabet'])
-		train=eval(feature_type+"Features(data_train, alphabet)")
-		test=eval(feature_type+"Features(data_test, alphabet)")
+		train=eval(input['feature_type']+"Features(data_train, alphabet)")
+		test=eval(input['feature_type']+"Features(data_test, alphabet)")
 	else:
-		train=eval(feature_type+"Features(data_train)")
-		test=eval(feature_type+"Features(data_test)")
+		train=eval(input['feature_type']+"Features(data_train)")
+		test=eval(input['feature_type']+"Features(data_test)")
 
 	if input['name'].find('Sparse')!=-1:
-		sparse_train=eval('Sparse'+feature_type+'Features()')
+		sparse_train=eval('Sparse'+input['feature_type']+'Features()')
 		sparse_train.obtain_from_simple(train)
 
-		sparse_test=eval('Sparse'+feature_type+'Features()')
+		sparse_test=eval('Sparse'+input['feature_type']+'Features()')
 		sparse_test.obtain_from_simple(test)
 
 		feats={'train':sparse_train, 'test':sparse_test}
@@ -91,26 +90,25 @@ def _get_feats_string (input):
 	return feats
 
 def _get_feats_string_complex (input):
-	type=input['feature_type'].capitalize()
 	feats={'train':StringCharFeatures(eval(input['alphabet'])),
 		'test':StringCharFeatures(eval(input['alphabet']))}
 	feats['train'].set_string_features(list(input['data_train'][0]))
 	feats['test'].set_string_features(list(input['data_test'][0]))
 
-	feat=eval('String'+type+"Features(feats['train'].get_alphabet())");
+	feat=eval('String'+input['feature_type']+"Features(feats['train'].get_alphabet())");
 	feat.obtain_from_char(feats['train'], input['order']-1, input['order'],
 		input['gap'], eval(input['reverse']))
-	if type=='Word':
+	if input['feature_type']=='Word':
 		preproc=SortWordString();
 		preproc.init(feat);
 		feat.add_preproc(preproc)
 		feat.apply_preproc()
 	feats['train']=feat
 
-	feat=eval('String'+type+"Features(feats['train'].get_alphabet())");
+	feat=eval('String'+input['feature_type']+"Features(feats['train'].get_alphabet())");
 	feat.obtain_from_char(feats['test'], input['order']-1, input['order'],
 		input['gap'], eval(input['reverse']))
-	if type=='Word':
+	if input['feature_type']=='Word':
 		feat.add_preproc(preproc)
 		feat.apply_preproc()
 	feats['test']=feat

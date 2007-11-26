@@ -21,10 +21,10 @@ def _get_output (name, output, args=[], prefix='', offset=0):
 	output[prefix+'accuracy']=kdata[3]
 
 	# specialise a bit
-	if kdata[1][0]=='string' or (kdata[1][0]=='simple' and kdata[1][1]=='char'):
+	if kdata[1][0]=='string' or (kdata[1][0]=='simple' and kdata[1][1]=='Char'):
 		output[prefix+'alphabet']='DNA'
 		output[prefix+'seqlen']=dataops.LEN_SEQ
-	elif kdata[1][0]=='simple' and kdata[1][1]=='byte':
+	elif kdata[1][0]=='simple' and kdata[1][1]=='Byte':
 		output[prefix+'alphabet']='RAWBYTE'
 		output[prefix+'seqlen']=dataops.LEN_SEQ
 	elif kdata[1][0]=='string_complex':
@@ -356,16 +356,16 @@ def _run_svm ():
 
 
 def run ():
-	#_run_custom()
 	#_run_mindygram()
-	_run_pie()
+	#_run_pie()
 
-	#_run_subkernels()
-	#_run_svm()
+	_run_custom()
+	_run_subkernels()
+	_run_svm()
 
-	#_run_feats_byte()
-	#_run_feats_real()
-	#_run_feats_string()
-	#_run_feats_string_complex()
-	#_run_feats_word()
+	_run_feats_byte()
+	_run_feats_real()
+	_run_feats_string()
+	_run_feats_string_complex()
+	_run_feats_word()
 

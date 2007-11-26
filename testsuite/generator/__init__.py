@@ -19,7 +19,7 @@ def run ():
 	seed(42)
 
 	fileops.clean_dir_output()
-	kernels.run()
+	#kernels.run()
 	#distance.run()
 
 
