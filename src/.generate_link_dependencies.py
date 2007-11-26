@@ -19,6 +19,7 @@ deps['kernel/Kernel_doxygen.i']=[]
 deps['preproc/PreProc_doxygen.i']=[]
 deps['distributions/Distribution_doxygen.i']=[]
 deps['classifier/Classifier_doxygen.i']=[]
+deps['clustering/Clustering_doxygen.i']=[]
 deps['distance/Distance_doxygen.i']=[]
 
 initial_deps=deps.copy()
