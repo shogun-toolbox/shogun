@@ -3,10 +3,9 @@ OUTPUT_DIRECTORY       = regression
 XML_OUTPUT             = doxygen_xml
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
-FILE_PATTERNS          = *.cpp \
-                         *.h \
-                         *.c
+FILE_PATTERNS          = *.h
 RECURSIVE              = YES
+EXCLUDE                = *_wrap.h
 EXCLUDE_PATTERNS       = */.svn/*
 GENERATE_HTML          = NO
 GENERATE_LATEX         = NO
