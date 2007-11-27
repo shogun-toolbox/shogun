@@ -11,3 +11,5 @@ GENERATE_HTML          = NO
 GENERATE_LATEX         = NO
 GENERATE_XML           = YES
 ENABLE_PREPROCESSING   = YES
+VERBATIM_HEADERS       = NO
+QUIET                  = YES

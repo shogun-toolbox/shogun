@@ -78,8 +78,8 @@ public:
 		return ((((version_year)*12 + version_month)*30 + version_day)* 24 + version_hour)*60 + version_minute;
 	}
 
-	static const CHAR* version_release;
-	static const CHAR* version_extra;
+	static const CHAR version_release[128];
+	static const CHAR version_extra[128];
 
 	static const INT version_revision;
 	static const INT version_year;

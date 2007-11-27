@@ -55,12 +55,14 @@ bool CKNN::train()
 
 CLabels* CKNN::classify(CLabels* output)
 {
+	ASSERT(num_classes>0);
 	ASSERT(CDistanceMachine::get_distance());
 	ASSERT(CDistanceMachine::get_labels());
 	ASSERT(CDistanceMachine::get_labels()->get_num_labels());
 
 	int num_lab=CDistanceMachine::get_labels()->get_num_labels();
 	
+	ASSERT(k<=num_lab);
 	CDistance* _distance=CDistanceMachine::get_distance();
 
 	//distances to train data and working buffer of train_labels

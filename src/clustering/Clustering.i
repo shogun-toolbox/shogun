@@ -20,7 +20,6 @@
 %include "lib/python_typemaps.i"
 #endif
 
-/*%feature("director") CKernel;*/
 %feature("autodoc","1");
 
 %include "lib/ShogunException.i"
@@ -28,5 +27,8 @@
 %include "base/Version.i"
 %include "base/Parallel.i"
 %include "base/SGObject.i"
+
+%include "classifier/Classifier.h" 
+%include "distance/DistanceMachine.i" 
 %include "clustering/KMeans.i"
 %include "clustering/Hierarchical.i"

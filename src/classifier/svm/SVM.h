@@ -18,16 +18,35 @@
 
 class CKernelMachine;
 
+/// A generic Support Vector Machine Interface
 class CSVM : public CKernelMachine
 {
 	public:
+		/** Create an empty Support Vector Machine Object
+		 * @param num_sv with num_sv support vectors
+		 */
 		CSVM(INT num_sv=0);
+
+		/** Create a Support Vector Machine Object from a
+		 * trained SVM
+		 *
+		 * @param C the C parameter
+		 * @param k the Kernel object
+		 * @param lab the Label object
+		 */
 		CSVM(DREAL C, CKernel* k, CLabels* lab);
 		virtual ~CSVM();
 
 		void set_defaults(INT num_sv=0);
 
+		/** load a SVM from file
+		 * @param svm_file the file handle
+		 */
 		bool load(FILE* svm_file);
+
+		/** write a SVM to a file
+		 * @param svm_file the file handle
+		 */
 		bool save(FILE* svm_file);
 
 		inline void set_nu(DREAL nue) { nu=nue; }
@@ -210,8 +229,8 @@ class CSVM : public CKernelMachine
 		{
 			use_precomputed_subkernels = flag;
 		}
-	protected:
 
+	protected:
 		/// an SVM is defined by support vectors, their coefficients alpha
 		/// and the bias b ( + CKernelMachine::get_kernel())
 		struct TModel

@@ -48,9 +48,8 @@ bool CHistogram::train()
 		WORD* vector=((CWordFeatures*) features)->get_feature_vector(vec, len, to_free);
 
 		for (feat=0; feat<len ; feat++)
-		{
 			hist[vector[feat]]++;
-		}
+
 		((CWordFeatures*) features)->free_feature_vector(vector, len, to_free);
 	}
 
@@ -73,9 +72,7 @@ DREAL CHistogram::get_log_likelihood_example(INT num_example)
 	WORD* vector=((CWordFeatures*) features)->get_feature_vector(num_example, len, to_free);
 
 	for (INT i=0; i<len; i++)
-	{
 		loglik+=hist[vector[i]];
-	}
 
 	((CWordFeatures*) features)->free_feature_vector(vector, len, to_free);
 

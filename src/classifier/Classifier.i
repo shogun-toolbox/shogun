@@ -34,7 +34,6 @@
 %include "classifier/LinearClassifier.i"
 %include "classifier/SparseLinearClassifier.i"
 %include "classifier/PluginEstimate.i"
-%include "distance/DistanceMachine.i" 
 
 /* classifiers based on kernelmachine */
 %include "kernel/KernelMachine.i" 
@@ -45,3 +44,7 @@
 %include "classifier/svm/LibSVM_oneclass.i"
 %include "classifier/svm/GPBTSVM.i"
 %include "classifier/svm/GNPPSVM.i"
+
+/* classifiers based on distancemachine */
+%include "distance/DistanceMachine.i" 
+%include "classifier/KNN.i"
