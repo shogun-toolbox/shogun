@@ -4,6 +4,7 @@ from shogun.Features import *
 from shogun.Kernel import *
 from shogun.Library import FULL_NORMALIZATION
 from shogun.Classifier import *
+from shogun.Distance import *
 
 import fileops
 import featops
@@ -216,7 +217,7 @@ def compute_pie (name, feats, data):
 	return [name, output]
 
 ##################################################################
-## standard run funcs
+## run funcs
 ##################################################################
 
 def _run_custom ():
@@ -245,6 +246,15 @@ def _run_custom ():
 		'dim_square':dim_square
 	})
 	fileops.write([name, output])
+
+def _run_distance ():
+	data=dataops.get_rand()
+	feats=featops.get_simple('Real', data)
+	distance=CanberraMetric()
+	distance.init(feats['train'], feats['train'])
+
+	fileops.write(compute('Distance', feats, data, 1.5, distance))
+
 
 def _run_feats_byte ():
 	data=dataops.get_rand(type=ubyte)
@@ -359,13 +369,14 @@ def run ():
 	#_run_mindygram()
 	#_run_pie()
 
-	_run_custom()
-	_run_subkernels()
-	_run_svm()
+	#_run_custom()
+	_run_distance()
+	#_run_subkernels()
+	#_run_svm()
 
-	_run_feats_byte()
-	_run_feats_real()
-	_run_feats_string()
-	_run_feats_string_complex()
-	_run_feats_word()
+	#_run_feats_byte()
+	#_run_feats_real()
+	#_run_feats_string()
+	#_run_feats_string_complex()
+	#_run_feats_word()
 
