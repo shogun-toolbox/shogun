@@ -218,6 +218,10 @@ def _kernel_custom (input):
 		triangletriangle=triangletriangle, fulltriangle=fulltriangle,
 		fullfull=fullfull)
 
+def _kernel_pie (input):
+	print 'Not implemented yet!'
+	return True
+
 def _kernel_svm (input):
 	feats={'train':RealFeatures(input['data_train']),
 		'test':RealFeatures(input['data_test'])}
@@ -260,11 +264,16 @@ def test (input):
 		if input['name']==n:
 			return eval('_kernel_'+n.lower()+'(input)')
 
+	names=['HistogramWord', 'SalzbergWord']
+	for n in names:
+		if input['name']==n:
+			return _kernel_pie(input)
+
 	if input['name'].startswith(PREFIX_SVM):
 		input['name']=input['name'][len(PREFIX_SVM):]
 		return _kernel_svm(input)
-	else:
-		fun=eval('_get_feats_'+input['feature_class'])
-		feats=fun(input)
-		return _kernel(input, feats)
+
+	fun=eval('_get_feats_'+input['feature_class'])
+	feats=fun(input)
+	return _kernel(input, feats)
 
