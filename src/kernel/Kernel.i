@@ -70,9 +70,6 @@
 %include "kernel/SalzbergWordKernel.i"
 %include "kernel/SimpleLocalityImprovedStringKernel.i"
 %include "kernel/WordMatchKernel.i"
-%include "kernel/HammingWordKernel.i"
-%include "kernel/ManhattanWordKernel.i"
-%include "kernel/CanberraWordKernel.i"
 
 %include "kernel/CombinedKernel.i"
 %include "kernel/CustomKernel.i"

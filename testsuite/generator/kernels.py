@@ -251,9 +251,7 @@ def _run_distance ():
 	data=dataops.get_rand()
 	feats=featops.get_simple('Real', data)
 	distance=CanberraMetric()
-
 	fileops.write(_compute('Distance', feats, data, 1.7, distance))
-
 
 def _run_feats_byte ():
 	data=dataops.get_rand(type=ubyte)
@@ -360,28 +358,8 @@ def _run_svm ():
 	params_svm['num_threads']=16
 	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
 
-def test_canhamman ():
-	data=dataops.get_dna()
-	feats=feats_d=featops.get_string_complex('Word', data)
-
-	# should yield same result
-	fileops.write(_compute('CanberraWord', feats, data, 1.7))
-	distance=CanberraWordDistance()
-	fileops.write(_compute('Distance', feats, data, 1.7, distance))
-
-	fileops.write(_compute('HammingWord', feats, data, 1.3, False))
-	distance=HammingWordDistance(False)
-	fileops.write(_compute('Distance', feats, data, 1.3, distance))
-
-	fileops.write(_compute('ManhattanWord', feats, data, 1.5))
-	distance=ManhattanWordDistance()
-	fileops.write(_compute('Distance', feats, data, 1.5, distance))
-
-
 def run ():
 	fileops.TYPE='Kernel'
-
-	test_canhamman()
 
 	#_run_mindygram()
 	#_run_pie()
