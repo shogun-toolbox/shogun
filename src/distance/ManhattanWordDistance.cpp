@@ -11,11 +11,11 @@
 #include "lib/common.h"
 #include "distance/ManhattanWordDistance.h"
 #include "features/Features.h"
-#include "features/WordFeatures.h"
+#include "features/StringFeatures.h"
 #include "lib/io.h"
 
 CManhattanWordDistance::CManhattanWordDistance()
-	: CSimpleDistance<WORD>()
+	: CStringDistance<WORD>()
 {
         SG_DEBUG("CManhattanWordDistance created");
 	dictionary_size= 1<<(sizeof(WORD)*8);
@@ -32,7 +32,7 @@ CManhattanWordDistance::~CManhattanWordDistance()
   
 bool CManhattanWordDistance::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleDistance<WORD>::init(l,r);
+	bool result=CStringDistance<WORD>::init(l,r);
 	return result;
 }
 
@@ -53,10 +53,9 @@ bool CManhattanWordDistance::save_init(FILE* dest)
 DREAL CManhattanWordDistance::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
-	bool afree, bfree;
 
-	WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-	WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
+	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
 
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
@@ -105,9 +104,6 @@ DREAL CManhattanWordDistance::compute(INT idx_a, INT idx_b)
 	}
 	
 	result+=blen-right_idx + alen-left_idx;
-
-	((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

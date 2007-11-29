@@ -34,9 +34,12 @@ class CDistance : public CSGObject
 			if (idx_a < 0 || idx_b <0)
 				return 0;
 
+			ASSERT(lhs!=NULL);
+			ASSERT(rhs!=NULL);
+
 			if (lhs==rhs)
 			{
-				int num_vectors = lhs->get_num_vectors();
+				INT num_vectors = lhs->get_num_vectors();
 
 				if (idx_a>=num_vectors)
 					idx_a=2*num_vectors-1-idx_a;

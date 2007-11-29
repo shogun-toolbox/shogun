@@ -29,7 +29,7 @@ public:
 	/* Init and cleanup functions */
 	virtual bool init(CFeatures* l, CFeatures* r);
 	virtual void cleanup();
-	
+
 	/* Identification functions */
 	inline virtual EKernelType get_kernel_type() { return K_DISTANCE; }
 	inline virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }

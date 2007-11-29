@@ -118,7 +118,6 @@ void CDistance::do_precompute_matrix()
 {
 	INT num_left=get_lhs()->get_num_vectors();
 	INT num_right=get_rhs()->get_num_vectors();
-
 	SG_INFO( "precomputing distance matrix (%ix%i)\n", num_left, num_right) ;
 
 	ASSERT(num_left == num_right) ;
@@ -127,7 +126,6 @@ void CDistance::do_precompute_matrix()
 	
 	delete[] precomputed_matrix ;
 	precomputed_matrix=new SHORTREAL[num*(num+1)/2] ;
-
 	ASSERT(precomputed_matrix!=NULL) ;
 
 	for (INT i=0; i<num; i++)

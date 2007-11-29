@@ -12,14 +12,14 @@
 #define _HAMMINGWORDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
-#include "features/WordFeatures.h"
+#include "kernel/StringKernel.h"
+#include "features/StringFeatures.h"
 
-class CHammingWordKernel: public CSimpleKernel<WORD>
+class CHammingWordKernel: public CStringKernel<WORD>
 {
 public:
 	CHammingWordKernel(INT size, DREAL width, bool use_sign);
-	CHammingWordKernel(CWordFeatures* l, CWordFeatures* r, DREAL width, bool use_sign);
+	CHammingWordKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, DREAL width, bool use_sign);
 	virtual ~CHammingWordKernel();
 
 	virtual bool init(CFeatures* l, CFeatures* r);

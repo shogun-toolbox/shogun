@@ -11,11 +11,11 @@
 #include "lib/common.h"
 #include "kernel/ManhattanWordKernel.h"
 #include "features/Features.h"
-#include "features/WordFeatures.h"
+#include "features/StringFeatures.h"
 #include "lib/io.h"
 
 CManhattanWordKernel::CManhattanWordKernel(INT size, DREAL w)
-	: CSimpleKernel<WORD>(size), width(w)
+	: CStringKernel<WORD>(size), width(w)
 {
 	SG_DEBUG( "CManhattanWordKernel with cache size: %d width: %f created\n", size, width);
 	dictionary_size= 1<<(sizeof(WORD)*8);
@@ -24,8 +24,8 @@ CManhattanWordKernel::CManhattanWordKernel(INT size, DREAL w)
 }
 
 CManhattanWordKernel::CManhattanWordKernel(
-	CWordFeatures* l, CWordFeatures* r, DREAL w)
-	: CSimpleKernel<WORD>(10), width(w)
+	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, DREAL w)
+	: CStringKernel<WORD>(10), width(w)
 {
 	SG_DEBUG( "CManhattanWordKernel with cache size: %d width: %f created\n", 10, width);
 	dictionary_size= 1<<(sizeof(WORD)*8);
@@ -44,7 +44,7 @@ CManhattanWordKernel::~CManhattanWordKernel()
   
 bool CManhattanWordKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<WORD>::init(l,r);
+	bool result=CStringKernel<WORD>::init(l,r);
 	return result;
 }
 
@@ -65,10 +65,9 @@ bool CManhattanWordKernel::save_init(FILE* dest)
 DREAL CManhattanWordKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
-	bool afree, bfree;
 
-	WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-	WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
+	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
 
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
@@ -117,9 +116,6 @@ DREAL CManhattanWordKernel::compute(INT idx_a, INT idx_b)
 	}
 	
 	result+=blen-right_idx + alen-left_idx;
-
-	((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return exp(-result/width);
 }

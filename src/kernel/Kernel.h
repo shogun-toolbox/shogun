@@ -39,7 +39,7 @@ public:
 
 		if (lhs==rhs)
 		{
-			int num_vectors = lhs->get_num_vectors();
+			INT num_vectors = lhs->get_num_vectors();
 
 			if (idx_a>=num_vectors)
 				idx_a=2*num_vectors-1-idx_a;

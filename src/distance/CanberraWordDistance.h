@@ -13,9 +13,9 @@
 #define _CANBERRAWORDDISTANCE_H___
 
 #include "lib/common.h"
-#include "distance/SimpleDistance.h"
+#include "distance/StringDistance.h"
 
-class CCanberraWordDistance: public CSimpleDistance<WORD>
+class CCanberraWordDistance: public CStringDistance<WORD>
 {
  public:
   CCanberraWordDistance();

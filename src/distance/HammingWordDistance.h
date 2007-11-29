@@ -13,9 +13,9 @@
 #define _HAMMINGWORDDISTANCE_H___
 
 #include "lib/common.h"
-#include "distance/SimpleDistance.h"
+#include "distance/StringDistance.h"
 
-class CHammingWordDistance: public CSimpleDistance<WORD>
+class CHammingWordDistance: public CStringDistance<WORD>
 {
  public:
   CHammingWordDistance(bool use_sign);

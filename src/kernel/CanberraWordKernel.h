@@ -12,14 +12,14 @@
 #define _CANBERRAWORDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
-#include "features/WordFeatures.h"
+#include "kernel/StringKernel.h"
+#include "features/StringFeatures.h"
 
-class CCanberraWordKernel: public CSimpleKernel<WORD>
+class CCanberraWordKernel: public CStringKernel<WORD>
 {
 public:
 	CCanberraWordKernel(INT size, DREAL width);
-	CCanberraWordKernel(CWordFeatures* l, CWordFeatures* r, DREAL width);
+	CCanberraWordKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, DREAL width);
 	virtual ~CCanberraWordKernel();
 	
 	virtual bool init(CFeatures* l, CFeatures* r);

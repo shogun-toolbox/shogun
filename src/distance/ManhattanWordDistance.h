@@ -13,9 +13,9 @@
 #define _MANHATTANWORDDISTANCE_H___
 
 #include "lib/common.h"
-#include "distance/SimpleDistance.h"
+#include "distance/StringDistance.h"
 
-class CManhattanWordDistance: public CSimpleDistance<WORD>
+class CManhattanWordDistance: public CStringDistance<WORD>
 {
  public:
   CManhattanWordDistance();

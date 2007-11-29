@@ -12,11 +12,11 @@
 #include "lib/common.h"
 #include "distance/CanberraWordDistance.h"
 #include "features/Features.h"
-#include "features/WordFeatures.h"
+#include "features/StringFeatures.h"
 #include "lib/io.h"
 
 CCanberraWordDistance::CCanberraWordDistance()
-	: CSimpleDistance<WORD>()
+	: CStringDistance<WORD>()
 {
 	SG_DEBUG("CCanberraWordDistance created");
 	dictionary_size= 1<<(sizeof(WORD)*8);
@@ -33,8 +33,7 @@ CCanberraWordDistance::~CCanberraWordDistance()
   
 bool CCanberraWordDistance::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleDistance<WORD>::init(l,r);
-	return result;
+	return CStringDistance<WORD>::init(l,r);
 }
 
 void CCanberraWordDistance::cleanup()
@@ -54,13 +53,12 @@ bool CCanberraWordDistance::save_init(FILE* dest)
 DREAL CCanberraWordDistance::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
-	bool afree, bfree;
 
-	WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-	WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
+	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
 
-	// can only deal with strings of same length
-	ASSERT(alen==blen);
+	// can only deal with strings of same length -> not as WordString
+	//ASSERT(alen==blen);
 
 	DREAL result=0;
 
@@ -119,9 +117,6 @@ DREAL CCanberraWordDistance::compute(INT idx_a, INT idx_b)
 		while (right_idx< blen && bvec[right_idx]==sym)
 			right_idx++;
 	}
-
-	((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return result;
 }

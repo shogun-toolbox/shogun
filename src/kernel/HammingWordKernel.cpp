@@ -11,11 +11,11 @@
 #include "lib/common.h"
 #include "kernel/HammingWordKernel.h"
 #include "features/Features.h"
-#include "features/WordFeatures.h"
+#include "features/StringFeatures.h"
 #include "lib/io.h"
 
 CHammingWordKernel::CHammingWordKernel(INT size, DREAL w, bool us)
-	: CSimpleKernel<WORD>(size), width(w), use_sign(us)
+	: CStringKernel<WORD>(size), width(w), use_sign(us)
 {
 	SG_DEBUG( "CHammingWordKernel with cache size: %d width: %f sign: %d created\n", size, width, (use_sign) ? 1 : 0);
 	dictionary_size= 1<<(sizeof(WORD)*8);
@@ -25,8 +25,8 @@ CHammingWordKernel::CHammingWordKernel(INT size, DREAL w, bool us)
 
 
 CHammingWordKernel::CHammingWordKernel(
-	CWordFeatures* l, CWordFeatures* r, DREAL w, bool us)
-	: CSimpleKernel<WORD>(10), width(w), use_sign(us)
+	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, DREAL w, bool us)
+	: CStringKernel<WORD>(10), width(w), use_sign(us)
 {
 	SG_DEBUG( "CHammingWordKernel with cache size: %d width: %f sign: %d created\n", 10, width, (use_sign) ? 1 : 0);
 	dictionary_size= 1<<(sizeof(WORD)*8);
@@ -45,7 +45,7 @@ CHammingWordKernel::~CHammingWordKernel()
   
 bool CHammingWordKernel::init(CFeatures* l, CFeatures* r)
 {
-	bool result=CSimpleKernel<WORD>::init(l,r);
+	bool result=CStringKernel<WORD>::init(l,r);
 	return result;
 }
 
@@ -66,10 +66,9 @@ bool CHammingWordKernel::save_init(FILE* dest)
 DREAL CHammingWordKernel::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
-	bool afree, bfree;
 
-	WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-	WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
+	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
 
 	// can only deal with strings of same length
 	ASSERT(alen==blen);
@@ -165,9 +164,6 @@ DREAL CHammingWordKernel::compute(INT idx_a, INT idx_b)
 		while (right_idx< blen && bvec[right_idx]==sym)
 			right_idx++;
 	}
-
-	((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return exp(-result/width);
 }

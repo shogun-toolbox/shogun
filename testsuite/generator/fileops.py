@@ -3,6 +3,7 @@ import os
 DIR_OUTPUT='data'
 EXT_OUTPUT='.m'
 SVM='svm_'
+TYPE='Kernel'
 
 def _get_matrix (name, km):
 	line=list()
@@ -44,13 +45,13 @@ def _get_filename (output):
 	params='_'.join(params).replace('.', '')
 	if len(params)>0:
 		params='_'+params
-	return DIR_OUTPUT+os.sep+output[0]+'Kernel'+params+EXT_OUTPUT
+	return DIR_OUTPUT+os.sep+output[0]+TYPE+params+EXT_OUTPUT
 
 def write (output):
 	if output is None:
 		return None
 
-	print 'Writing for kernel:', output[0]
+	print 'Writing for '+TYPE+':', output[0]
 
 	mfile=open(_get_filename(output), mode='w')
 	mfile.write("name = '"+output[0]+"'\n")

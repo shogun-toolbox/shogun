@@ -15,27 +15,27 @@
 #include "kernel/DistanceKernel.h"
 #include "features/RealFeatures.h"
 
-CDistanceKernel::CDistanceKernel(INT size, DREAL w ,CDistance* d)
-	: CKernel(size), distance(d), width(w)
+	CDistanceKernel::CDistanceKernel(INT size, DREAL w ,CDistance* d)
+: CKernel(size), distance(d), width(w)
 {
 }
 
 CDistanceKernel::CDistanceKernel(
-	CFeatures *l, CFeatures *r, DREAL w , CDistance* d)
-	: CKernel(10), distance(d), width(w)
+		CFeatures *l, CFeatures *r, DREAL w , CDistance* d)
+: CKernel(10), distance(d), width(w)
 {
 	init(l, r);
 }
 
 CDistanceKernel::~CDistanceKernel()
 {
-    cleanup();
-    distance=NULL;
+	cleanup();
+	distance=NULL;
 }
 
 bool CDistanceKernel::init(CFeatures* l, CFeatures* r)
 {
-    return CKernel::init(l,r) && distance->init(l,r);
+	return CKernel::init(l,r) && distance->init(l,r);
 }
 
 void CDistanceKernel::cleanup()
@@ -44,15 +44,16 @@ void CDistanceKernel::cleanup()
 
 DREAL CDistanceKernel::compute(INT idx_a, INT idx_b)
 {
-  return exp(-distance->distance(idx_a,idx_b)/width);
+	DREAL result=distance->distance(idx_a, idx_b);
+	return exp(-result/width);
 }
 
 bool CDistanceKernel::load_init(FILE* src)
 {
-    return false;
+	return false;
 }
 
 bool CDistanceKernel::save_init(FILE* dest)
 {
-    return false;
+	return false;
 }

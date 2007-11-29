@@ -104,8 +104,6 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 
 		LONG total_num = num_vec1 * num_vec2;
 		INT num_done = 0;
-		SG_PRINT( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
-
 		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 
 		result=new DREAL[total_num];

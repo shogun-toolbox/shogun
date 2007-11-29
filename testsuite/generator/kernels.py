@@ -7,6 +7,7 @@ from shogun.Classifier import *
 from shogun.Distance import *
 
 import fileops
+
 import featops
 import dataops
 from klist import KLIST
@@ -55,7 +56,7 @@ def _get_output (name, output, args=[], prefix='', offset=0):
 ## subkernel funs
 ##################################################################
 
-def compute_subkernels (name, feats, kernel, output):
+def _compute_subkernels (name, feats, kernel, output):
 	kernel.init(feats['train'], feats['train'])
 	output['km_train']=kernel.get_kernel_matrix()
 	kernel.init(feats['train'], feats['test'])
@@ -103,7 +104,7 @@ def _run_auc ():
 	output['data_train']=matrix(data['train'])
 	output['data_test']=matrix(data['test'])
 
-	fileops.write(compute_subkernels('AUC', feats, kernel, output))
+	fileops.write(_compute_subkernels('AUC', feats, kernel, output))
 
 def _run_combined ():
 	kernel=CombinedKernel()
@@ -113,7 +114,6 @@ def _run_combined ():
 		['PolyMatchString', 3, True],
 		['LinearString'],
 #		['Gaussian', 1.7],
-#		['CanberraWord', 1.7],
 	]
 	output={}
 
@@ -130,7 +130,7 @@ def _run_combined ():
 		feats['test'].append_feature_obj(feats_sk['test'])
 		output.update(_get_subkernel_output(subkernels[i], data_sk, str(i)))
 
-	fileops.write(compute_subkernels('Combined', feats, kernel, output))
+	fileops.write(_compute_subkernels('Combined', feats, kernel, output))
 
 def _run_subkernels ():
 	_run_auc()
@@ -140,7 +140,7 @@ def _run_subkernels ():
 ## compute/kernel funcs
 ##################################################################
 
-def compute (name, feats, data, *args):
+def _compute (name, feats, data, *args):
 	kfun=eval(name+'Kernel')
 	k=kfun(feats['train'], feats['train'], *args)
 	km_train=k.get_kernel_matrix()
@@ -156,7 +156,7 @@ def compute (name, feats, data, *args):
 
 	return [name, output]
 
-def compute_svm (name, feats, data, params, *args):
+def _compute_svm (name, feats, data, params, *args):
 	kfun=eval(name+'Kernel')
 	k=kfun(feats['train'], feats['train'], *args)
 	k.parallel.set_num_threads(params['num_threads'])
@@ -192,7 +192,7 @@ def compute_svm (name, feats, data, params, *args):
 
 	return [fileops.SVM+name, output]
 
-def compute_pie (name, feats, data):
+def _compute_pie (name, feats, data):
 	pie=PluginEstimate()
 	kfun=eval(name+'Kernel')
 
@@ -251,62 +251,61 @@ def _run_distance ():
 	data=dataops.get_rand()
 	feats=featops.get_simple('Real', data)
 	distance=CanberraMetric()
-	distance.init(feats['train'], feats['train'])
 
-	fileops.write(compute('Distance', feats, data, 1.5, distance))
+	fileops.write(_compute('Distance', feats, data, 1.7, distance))
 
 
 def _run_feats_byte ():
 	data=dataops.get_rand(type=ubyte)
 	feats=featops.get_simple('Byte', data, RAWBYTE)
 
-	fileops.write(compute('LinearByte', feats, data))
+	fileops.write(_compute('LinearByte', feats, data))
 
 def _run_mindygram ():
 	data=dataops.get_dna()
 	feats={'train':MindyGramFeatures('DNA', 'freq', '%20.,', 0),
 		'test':MindyGramFeatures('DNA', 'freq', '%20.,', 0)}
 
-	fileops.write(compute('MindyGram', feats, data, 'MEASURE', 1.5))
+	fileops.write(_compute('MindyGram', feats, data, 'MEASURE', 1.5))
 
 def _run_feats_real ():
 	data=dataops.get_rand()
 	feats=featops.get_simple('Real', data)
 
-	fileops.write(compute('Chi2', feats, data, 1.2, 10))
-	fileops.write(compute('Const', feats, data, 23.))
-	fileops.write(compute('Diag', feats, data, 23.))
-	fileops.write(compute('Gaussian', feats, data, 1.3))
-	fileops.write(compute('GaussianShift', feats, data, 1.3, 2, 1))
-	fileops.write(compute('Linear', feats, data, 1.))
-	fileops.write(compute('Poly', feats, data, 3, True, True))
-	fileops.write(compute('Poly', feats, data, 3, False, True))
-	fileops.write(compute('Poly', feats, data, 3, True, False))
-	fileops.write(compute('Poly', feats, data, 3, False, False))
-	fileops.write(compute('Sigmoid', feats, data, 10, 1.1, 1.3))
-	fileops.write(compute('Sigmoid', feats, data, 10, 0.5, 0.7))
+	fileops.write(_compute('Chi2', feats, data, 1.2, 10))
+	fileops.write(_compute('Const', feats, data, 23.))
+	fileops.write(_compute('Diag', feats, data, 23.))
+	fileops.write(_compute('Gaussian', feats, data, 1.3))
+	fileops.write(_compute('GaussianShift', feats, data, 1.3, 2, 1))
+	fileops.write(_compute('Linear', feats, data, 1.))
+	fileops.write(_compute('Poly', feats, data, 3, True, True))
+	fileops.write(_compute('Poly', feats, data, 3, False, True))
+	fileops.write(_compute('Poly', feats, data, 3, True, False))
+	fileops.write(_compute('Poly', feats, data, 3, False, False))
+	fileops.write(_compute('Sigmoid', feats, data, 10, 1.1, 1.3))
+	fileops.write(_compute('Sigmoid', feats, data, 10, 0.5, 0.7))
 
 	feats=featops.get_simple('Real', data, sparse=True)
-	fileops.write(compute('SparseGaussian', feats, data, 1.3))
-	fileops.write(compute('SparseLinear', feats, data, 1.))
-	fileops.write(compute('SparsePoly', feats, data, 10, 3, True, True))
+	fileops.write(_compute('SparseGaussian', feats, data, 1.3))
+	fileops.write(_compute('SparseLinear', feats, data, 1.))
+	fileops.write(_compute('SparsePoly', feats, data, 10, 3, True, True))
 
 def _run_feats_string ():
 	data=dataops.get_dna()
 	feats=featops.get_string('Char', data)
 
-	fileops.write(compute('FixedDegreeString', feats, data, 3))
-	fileops.write(compute('LinearString', feats, data))
-	fileops.write(compute('LocalAlignmentString', feats, data))
-	fileops.write(compute('PolyMatchString', feats, data, 3, True))
-	fileops.write(compute('PolyMatchString', feats, data, 3, False))
-	fileops.write(compute('SimpleLocalityImprovedString', feats, data, 5, 7, 5))
+	fileops.write(_compute('FixedDegreeString', feats, data, 3))
+	fileops.write(_compute('LinearString', feats, data))
+	fileops.write(_compute('LocalAlignmentString', feats, data))
+	fileops.write(_compute('PolyMatchString', feats, data, 3, True))
+	fileops.write(_compute('PolyMatchString', feats, data, 3, False))
+	fileops.write(_compute('SimpleLocalityImprovedString', feats, data, 5, 7, 5))
 
-	fileops.write(compute('WeightedDegreeString', feats, data, 20, 0))
-	fileops.write(compute('WeightedDegreePositionString', feats, data, 20))
+	fileops.write(_compute('WeightedDegreeString', feats, data, 20, 0))
+	fileops.write(_compute('WeightedDegreePositionString', feats, data, 20))
 
 	# buggy:
-	#fileops.write(compute('LocalityImprovedString', feats, data, 51, 5, 7))
+	#fileops.write(_compute('LocalityImprovedString', feats, data, 51, 5, 7))
 
 
 def _run_feats_word ():
@@ -315,23 +314,20 @@ def _run_feats_word ():
 	data=dataops.get_rand(type=ushort, max_train=max, max_test=max)
 	feats=featops.get_simple('Word', data)
 
-	fileops.write(compute('CanberraWord', feats, data, 1.7))
-	fileops.write(compute('HammingWord', feats, data, 1.3, False))
-	fileops.write(compute('LinearWord', feats, data))
-	fileops.write(compute('ManhattanWord', feats, data, 1.5))
-	fileops.write(compute('PolyMatchWord', feats, data, 3, True))
-	fileops.write(compute('PolyMatchWord', feats, data, 3, False))
-	fileops.write(compute('WordMatch', feats, data, 3))
+	fileops.write(_compute('LinearWord', feats, data))
+	fileops.write(_compute('PolyMatchWord', feats, data, 3, True))
+	fileops.write(_compute('PolyMatchWord', feats, data, 3, False))
+	fileops.write(_compute('WordMatch', feats, data, 3))
 
 def _run_feats_string_complex ():
 	data=dataops.get_dna()
-
 	feats=featops.get_string_complex('Word', data)
-	fileops.write(compute('CommWordString', feats, data, False, FULL_NORMALIZATION))
-	fileops.write(compute('WeightedCommWordString', feats, data, False, FULL_NORMALIZATION))
+
+	fileops.write(_compute('CommWordString', feats, data, False, FULL_NORMALIZATION))
+	fileops.write(_compute('WeightedCommWordString', feats, data, False, FULL_NORMALIZATION))
 
 	feats=featops.get_string_complex('Ulong', data)
-	fileops.write(compute('CommUlongString', feats, data, False, FULL_NORMALIZATION))
+	fileops.write(_compute('CommUlongString', feats, data, False, FULL_NORMALIZATION))
 
 def _run_pie ():
 	data=dataops.get_rand(type=chararray)
@@ -341,8 +337,8 @@ def _run_pie ():
 	feats['train'].obtain_from_char_features(charfeats['train'], 0, 1)
 	feats['test'].obtain_from_char_features(charfeats['test'], 0, 1)
 
-	fileops.write(compute_pie('HistogramWord', feats, data))
-	#fileops.write(compute_pie('SalzbergWord', feats, data))
+	fileops.write(_compute_pie('HistogramWord', feats, data))
+	#fileops.write(_compute_pie('SalzbergWord', feats, data))
 
 def _run_svm ():
 	data=dataops.get_rand()
@@ -350,33 +346,53 @@ def _run_svm ():
 	width=1.5
 	params_svm={'C':.017, 'epsilon':1e-5, 'tube_epsilon':1e-2, 'num_threads':1}
 
-	fileops.write(compute_svm('Gaussian', feats, data, params_svm, width))
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
 	params_svm['C']=.23
-	fileops.write(compute_svm('Gaussian', feats, data, params_svm, width))
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
 	params_svm['C']=1.5
-	fileops.write(compute_svm('Gaussian', feats, data, params_svm, width))
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
 	params_svm['C']=30
-	fileops.write(compute_svm('Gaussian', feats, data, params_svm, width))
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
 	params_svm['epsilon']=1e-4
-	fileops.write(compute_svm('Gaussian', feats, data, params_svm, width))
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
 	params_svm['tube_epsilon']=1e-3
-	fileops.write(compute_svm('Gaussian', feats, data, params_svm, width))
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
 	params_svm['num_threads']=16
-	fileops.write(compute_svm('Gaussian', feats, data, params_svm, width))
+	fileops.write(_compute_svm('Gaussian', feats, data, params_svm, width))
+
+def test_canhamman ():
+	data=dataops.get_dna()
+	feats=feats_d=featops.get_string_complex('Word', data)
+
+	# should yield same result
+	fileops.write(_compute('CanberraWord', feats, data, 1.7))
+	distance=CanberraWordDistance()
+	fileops.write(_compute('Distance', feats, data, 1.7, distance))
+
+	fileops.write(_compute('HammingWord', feats, data, 1.3, False))
+	distance=HammingWordDistance(False)
+	fileops.write(_compute('Distance', feats, data, 1.3, distance))
+
+	fileops.write(_compute('ManhattanWord', feats, data, 1.5))
+	distance=ManhattanWordDistance()
+	fileops.write(_compute('Distance', feats, data, 1.5, distance))
 
 
 def run ():
+	fileops.TYPE='Kernel'
+
+	test_canhamman()
+
 	#_run_mindygram()
-	_run_pie()
+	#_run_pie()
 
-	_run_custom()
-	_run_distance()
-	_run_subkernels()
-	_run_svm()
+	#_run_custom()
+	#_run_distance()
+	#_run_subkernels()
+	#_run_svm()
 
-	_run_feats_byte()
-	_run_feats_real()
-	_run_feats_string()
-	_run_feats_string_complex()
-	_run_feats_word()
-
+	#_run_feats_byte()
+	#_run_feats_real()
+	#_run_feats_string()
+	#_run_feats_string_complex()
+	#_run_feats_word()

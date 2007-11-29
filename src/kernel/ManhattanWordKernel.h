@@ -12,14 +12,14 @@
 #define _MANHATTENWORDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
-#include "features/WordFeatures.h"
+#include "kernel/StringKernel.h"
+#include "features/StringFeatures.h"
 
-class CManhattanWordKernel: public CSimpleKernel<WORD>
+class CManhattanWordKernel: public CStringKernel<WORD>
 {
 public:
 	CManhattanWordKernel(INT size, DREAL width);
-	CManhattanWordKernel(CWordFeatures* l, CWordFeatures* r, DREAL width);
+	CManhattanWordKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, DREAL width);
 	virtual ~CManhattanWordKernel();
 	
 	virtual bool init(CFeatures* l, CFeatures* r);
