@@ -24,6 +24,17 @@ CCanberraWordDistance::CCanberraWordDistance()
 	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
 }
 
+CCanberraWordDistance::CCanberraWordDistance(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r)
+	: CStringDistance<WORD>()
+{
+	SG_DEBUG("CCanberraWordDistance created");
+	dictionary_size= 1<<(sizeof(WORD)*8);
+	dictionary_weights = new DREAL[dictionary_size];
+	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
+
+	init(l, r);
+}
+
 CCanberraWordDistance::~CCanberraWordDistance() 
 {
 	cleanup();

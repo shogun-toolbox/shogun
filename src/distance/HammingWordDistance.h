@@ -13,44 +13,45 @@
 #define _HAMMINGWORDDISTANCE_H___
 
 #include "lib/common.h"
+#include "features/Features.h"
+#include "features/StringFeatures.h"
 #include "distance/StringDistance.h"
 
 class CHammingWordDistance: public CStringDistance<WORD>
 {
- public:
-  CHammingWordDistance(bool use_sign);
-  ~CHammingWordDistance();
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+	public:
+		CHammingWordDistance(bool use_sign);
+		CHammingWordDistance(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool use_sign);
+		virtual ~CHammingWordDistance();
 
-  /// load and save kernel init_data
-  bool load_init(FILE* src);
-  bool save_init(FILE* dest);
+		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual void cleanup();
 
-  // return what type of distance we are CANBERRA,CHEBYSHEW, GEODESIC,...
-  virtual EDistanceType get_distance_type() { return D_HAMMINGWORD; }
+		/// load and save kernel init_data
+		bool load_init(FILE* src);
+		bool save_init(FILE* dest);
 
-  // return the name of a distance
-  virtual const CHAR* get_name() { return "HammingWord"; }
+		// return what type of distance we are CANBERRA,CHEBYSHEW, GEODESIC,...
+		virtual EDistanceType get_distance_type() { return D_HAMMINGWORD; }
 
-  void get_dictionary(INT& dsize, DREAL*& dweights) 
-  {
-	  dsize=dictionary_size;
-	  dweights = dictionary_weights;
-  }
+		// return the name of a distance
+		virtual const CHAR* get_name() { return "HammingWord"; }
 
- protected:
-  /// compute kernel function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  DREAL compute(INT idx_a, INT idx_b);
+		void get_dictionary(INT& dsize, DREAL*& dweights) 
+		{
+			dsize=dictionary_size;
+			dweights = dictionary_weights;
+		}
 
- protected:
+	protected:
+		/// compute kernel function for features a and b
+		/// idx_{a,b} denote the index of the feature vectors
+		/// in the corresponding feature object
+		DREAL compute(INT idx_a, INT idx_b);
 
-  INT dictionary_size;
-  DREAL* dictionary_weights;
- 
-  bool use_sign;
+	protected:
+		INT dictionary_size;
+		DREAL* dictionary_weights;
+		bool use_sign;
 };
-#endif
+#endif /* _HAMMINGWORDDISTANCE_H___ */

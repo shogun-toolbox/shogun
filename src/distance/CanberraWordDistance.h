@@ -13,42 +13,44 @@
 #define _CANBERRAWORDDISTANCE_H___
 
 #include "lib/common.h"
+#include "features/Features.h"
+#include "features/StringFeatures.h"
 #include "distance/StringDistance.h"
 
 class CCanberraWordDistance: public CStringDistance<WORD>
 {
- public:
-  CCanberraWordDistance();
-  ~CCanberraWordDistance();
-  
-  virtual bool init(CFeatures* l, CFeatures* r);
-  virtual void cleanup();
+	public:
+		CCanberraWordDistance();
+		CCanberraWordDistance(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r);
+		virtual ~CCanberraWordDistance();
 
-  /// load and save kernel init_data
-  bool load_init(FILE* src);
-  bool save_init(FILE* dest);
+		virtual bool init(CFeatures* l, CFeatures* r);
+		virtual void cleanup();
 
-  // return what type of distance we are CANBERRA,CHEBYSHEW, GEODESIC,...
-  virtual EDistanceType get_distance_type() { return D_CANBERRAWORD; }
+		/// load and save kernel init_data
+		bool load_init(FILE* src);
+		bool save_init(FILE* dest);
 
-  // return the name of a distance
-  virtual const CHAR* get_name() { return "CanberraWord"; }
+		// return what type of distance we are CANBERRA,CHEBYSHEW, GEODESIC,...
+		virtual EDistanceType get_distance_type() { return D_CANBERRAWORD; }
 
-  void get_dictionary(INT& dsize, DREAL*& dweights) 
-  {
-	  dsize=dictionary_size;
-	  dweights = dictionary_weights;
-  }
+		// return the name of a distance
+		virtual const CHAR* get_name() { return "CanberraWord"; }
 
- protected:
-  /// compute distance function for features a and b
-  /// idx_{a,b} denote the index of the feature vectors
-  /// in the corresponding feature object
-  DREAL compute(INT idx_a, INT idx_b);
+		void get_dictionary(INT& dsize, DREAL*& dweights) 
+		{
+			dsize=dictionary_size;
+			dweights = dictionary_weights;
+		}
 
- protected:
+	protected:
+		/// compute distance function for features a and b
+		/// idx_{a,b} denote the index of the feature vectors
+		/// in the corresponding feature object
+		DREAL compute(INT idx_a, INT idx_b);
 
-  INT dictionary_size;
-  DREAL* dictionary_weights;
+	protected:
+		INT dictionary_size;
+		DREAL* dictionary_weights;
 };
-#endif
+#endif /* _CANBERRAWORDDISTANCE_H___ */

@@ -16,12 +16,24 @@
 #include "lib/io.h"
 
 CHammingWordDistance::CHammingWordDistance(bool sign)
-	: CStringDistance<WORD>(), use_sign(sign)
+: CStringDistance<WORD>(), use_sign(sign)
 {
 	SG_DEBUG( "CHammingWordDistance with sign: %d created\n", (sign) ? 1 : 0);
 	dictionary_size= 1<<(sizeof(WORD)*8);
 	dictionary_weights = new DREAL[dictionary_size];
 	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
+}
+
+CHammingWordDistance::CHammingWordDistance(
+	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, bool sign)
+: CStringDistance<WORD>(), use_sign(sign)
+{
+	SG_DEBUG( "CHammingWordDistance with sign: %d created\n", (sign) ? 1 : 0);
+	dictionary_size= 1<<(sizeof(WORD)*8);
+	dictionary_weights = new DREAL[dictionary_size];
+	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
+
+	init(l, r);
 }
 
 CHammingWordDistance::~CHammingWordDistance() 

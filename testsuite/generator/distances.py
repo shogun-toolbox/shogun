@@ -17,6 +17,15 @@ def _get_output (name, output, args=[]):
 	output['feature_type']=ddata[1][1]
 	output['accuracy']=ddata[3]
 
+	# specialise a bit
+	if ddata[1][0]=='string_complex':
+		output['order']=featops.WORDSTRING_ORDER
+		output['gap']=featops.WORDSTRING_GAP
+		output['reverse']=featops.WORDSTRING_REVERSE
+		output['alphabet']='DNA'
+		output['seqlen']=dataops.LEN_SEQ
+		output['feature_obtain']=ddata[1][2]
+
 	# distance arguments, if any
 	for i in range(0, len(args)):
 		try:
@@ -48,7 +57,6 @@ def _compute (name, feats, data, *args):
 
 	return [name, output]
 
-
 def _run_feats_real ():
 	data=dataops.get_rand()
 	feats=featops.get_simple('Real', data)
@@ -56,10 +64,20 @@ def _run_feats_real ():
 	fileops.write(_compute('EuclidianDistance', feats, data))
 
 	feats=featops.get_simple('Real', data, sparse=True)
-	fileops.write(_compute('SparseEuclidianDistance', feats, data))
+	#fileops.write(_compute('SparseEuclidianDistance', feats, data))
+
+def _run_feats_string_complex ():
+	data=dataops.get_dna()
+	feats=featops.get_string_complex('Word', data)
+
+	fileops.write(_compute('CanberraWordDistance', feats, data))
+	fileops.write(_compute('HammingWordDistance', feats, data, False))
+	fileops.write(_compute('HammingWordDistance', feats, data, True))
+	fileops.write(_compute('ManhattanWordDistance', feats, data))
 
 def run ():
 	fileops.TYPE='Distance'
 
 	_run_feats_real()
+	_run_feats_string_complex()
 

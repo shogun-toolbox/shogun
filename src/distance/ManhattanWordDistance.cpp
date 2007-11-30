@@ -15,12 +15,24 @@
 #include "lib/io.h"
 
 CManhattanWordDistance::CManhattanWordDistance()
-	: CStringDistance<WORD>()
+: CStringDistance<WORD>()
 {
-        SG_DEBUG("CManhattanWordDistance created");
+	SG_DEBUG("CManhattanWordDistance created");
 	dictionary_size= 1<<(sizeof(WORD)*8);
 	dictionary_weights = new DREAL[dictionary_size];
 	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
+}
+
+CManhattanWordDistance::CManhattanWordDistance(
+	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r)
+: CStringDistance<WORD>()
+{
+	SG_DEBUG("CManhattanWordDistance created");
+	dictionary_size= 1<<(sizeof(WORD)*8);
+	dictionary_weights = new DREAL[dictionary_size];
+	SG_DEBUG( "using dictionary of %d bytes\n", dictionary_size);
+
+	init(l, r);
 }
 
 CManhattanWordDistance::~CManhattanWordDistance() 
@@ -29,7 +41,7 @@ CManhattanWordDistance::~CManhattanWordDistance()
 
 	delete[] dictionary_weights;
 }
-  
+
 bool CManhattanWordDistance::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CStringDistance<WORD>::init(l,r);
@@ -49,7 +61,7 @@ bool CManhattanWordDistance::save_init(FILE* dest)
 {
 	return false;
 }
-  
+
 DREAL CManhattanWordDistance::compute(INT idx_a, INT idx_b)
 {
 	INT alen, blen;
@@ -102,7 +114,7 @@ DREAL CManhattanWordDistance::compute(INT idx_a, INT idx_b)
 			}
 		}
 	}
-	
+
 	result+=blen-right_idx + alen-left_idx;
 
 	return result;

@@ -72,16 +72,20 @@ def write (output):
 def clean_dir_output ():
 	success=True
 
-	for fname in os.listdir(DIR_OUTPUT):
-		if not fname.endswith(EXT_OUTPUT):
+	for dname in os.listdir(DIR_OUTPUT):
+		if dname=='.svn' or not os.path.isdir(DIR_OUTPUT+os.sep+dname):
 			continue
 
-		target=DIR_OUTPUT+os.sep+fname
-		if os.path.exists(target):
-			os.remove(target)
-			# os.remove returns False on removal???
-			#print 'Could not remove file "%s"'%target
-			#success=False
+		for fname in os.listdir(DIR_OUTPUT+os.sep+dname):
+			if not fname.endswith(EXT_OUTPUT):
+				continue
+
+			target=DIR_OUTPUT+os.sep+dname+os.sep+fname
+			if os.path.exists(target):
+				os.remove(target)
+				# os.remove returns False on removal???
+				#print 'Could not remove file "%s"'%target
+				#success=False
 
 	return success
 
