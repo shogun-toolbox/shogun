@@ -45,7 +45,8 @@ def _get_filename (output):
 	params='_'.join(params).replace('.', '')
 	if len(params)>0:
 		params='_'+params
-	return DIR_OUTPUT+os.sep+output[0]+TYPE+params+EXT_OUTPUT
+
+	return DIR_OUTPUT+os.sep+TYPE.lower()+'s'+os.sep+output[0]+params+EXT_OUTPUT
 
 def write (output):
 	if output is None:

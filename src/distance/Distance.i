@@ -1,5 +1,5 @@
 %define DOCSTR
-"The `Disance` module gathers all distances available in the SHOGUN toolkit."
+"The `Distance` module gathers all distances available in the SHOGUN toolkit."
 %enddef
 
 %module(docstring=DOCSTR,directors="1") Distance

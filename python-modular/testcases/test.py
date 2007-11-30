@@ -2,38 +2,43 @@
 
 from numpy import *
 import sys
-from os import listdir
 
 import kernels
+import distances
 
-ID_KERNEL='Kernel'
+SUPPORTED=['kernels', 'distances']
 
-def get_name_fun (name):
-	prefix=''
+def _get_name_fun (fnam):
+	module=None
 
-	if file.find(ID_KERNEL)>-1:
-		module='kernels'
-	else:
-		print 'Modules like %s not supported yet!'%name
+	for s in SUPPORTED:
+		if fnam.find(s)>-1:
+			module=s
+			break
+
+	if module is None:
+		print 'Module %s not supported yet!'%name
 		return None
 
-	return module+'.test'+prefix
+	return module+'.test'
 
-def test_mfile (file):
-	mfile=open(file, mode='r')
+def _test_mfile (fnam):
+	mfile=open(fnam, mode='r')
 	input={}
 
+	name_fun=_get_name_fun(fnam)
 	for line in mfile:
 		param = line.split('=')[0].strip()
 		
 		if param=='name':
 			name=line.split('=')[1].strip().split("'")[1]
-			name_fun=get_name_fun(name)
 			input[param]=name
 		elif param=='symdata' or param=='data':
-			input[param]=read_matrix(line)
-		elif param.find('data_train')!=-1 or param.find('data_test')!=-1 or param.find('km_')!=-1:
-			input[param]=read_matrix(line)
+			input[param]=_read_matrix(line)
+		elif param.startswith('km_') or param.startswith('dm_'):
+			input[param]=_read_matrix(line)
+		elif param.find('data_train')>-1 or param.find('data_test')>-1:
+			input[param]=_read_matrix(line)
 		else:
 			if (line.find("'")==-1):
 				input[param]=eval(line.split('=')[1])
@@ -45,7 +50,7 @@ def test_mfile (file):
 
 	return fun(input)
 
-def read_matrix (line):
+def _read_matrix (line):
 	str=(line.split('[')[1]).split(']')[0]
 	lines=str.split(';')
 	lis2d=list()
@@ -65,9 +70,9 @@ def read_matrix (line):
 
 	return array(lis2d)
 
-for file in sys.argv:
-	if (file.endswith('.m')):
-		res=test_mfile(file)
+for fnam in sys.argv:
+	if (fnam.endswith('.m')):
+		res=_test_mfile(fnam)
 		if res:
 			sys.exit(0)
 		else:

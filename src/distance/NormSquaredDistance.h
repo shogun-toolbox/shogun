@@ -19,6 +19,7 @@ class CNormSquaredDistance: public CRealDistance
 {
  public:
   CNormSquaredDistance();
+  CNormSquaredDistance(CRealFeatures* l, CRealFeatures* r);
   ~CNormSquaredDistance();
   
   virtual bool init(CFeatures* l, CFeatures* r);

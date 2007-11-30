@@ -1,6 +1,6 @@
 """generator
 
-A package to generate testcases for the shogun toolbox.
+A package to generate testcases for the Shogun toolbox.
 
 """
 
@@ -28,6 +28,6 @@ def run ():
 
 	clean_dir_output()
 	kernels.run()
-	#distances.run()
+	distances.run()
 
 

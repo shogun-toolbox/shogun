@@ -1,4 +1,3 @@
-from numpy.random import *
 from numpy import *
 from shogun.Features import *
 from shogun.Kernel import *
@@ -7,7 +6,6 @@ from shogun.Classifier import *
 from shogun.Distance import *
 
 import fileops
-
 import featops
 import dataops
 from klist import KLIST
@@ -365,7 +363,7 @@ def run ():
 	#_run_pie()
 
 	#_run_custom()
-	#_run_distance()
+	_run_distance()
 	#_run_subkernels()
 	#_run_svm()
 

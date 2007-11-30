@@ -1,119 +1,13 @@
-from shogun.Features import RealFeatures, CharFeatures, StringCharFeatures, StringWordFeatures
+from shogun.Features import *
 from shogun.Kernel import *
 from shogun.PreProc import *
-from shogun.Features import *
 from shogun.Distance import *
 from shogun.Classifier import *
 from numpy import *
 
+import util
+
 PREFIX_SVM='svm_'
-
-########################################################################
-# helper
-########################################################################
-
-def _check_accuracy (accuracy, **kwargs):
-	a=double(accuracy)
-	output=[]
-
-	for k,v in kwargs.iteritems():
-		output.append('%s: %e' % (k, v))
-	output.append('accuracy: %e' % accuracy)
-	print ', '.join(output)
-
-	for v in kwargs.itervalues():
-		if v>a:
-			return False
-
-	return True
-
-def _get_args (input, id='kparam'):
-	# python dicts are not ordered, so we have to look at the number in
-	# the parameter's name and insert items appropriately into an
-	# ordered list
-
-	# need to pregenerate list for using indices in loop
-	args=len(input)*[None]
-
-	for i in input:
-		if i.find(id)==-1:
-			continue
-
-		try:
-			idx=int(i[len(id)])
-		except ValueError:
-			raise ValueError, 'Wrong input data %s: "%s"!' % (id, i)
-
-		if i.find('distance')!=-1:
-			args[idx]=eval(input[i]+'()')
-		else:
-			try:
-				args[idx]=eval(input[i])
-			except TypeError: # no bool
-				args[idx]=input[i]
-
-	# weed out superfluous Nones
-	return filter(lambda arg: arg is not None, args)
-
-def _get_feats_simple (input):
-	# have to explicitely set data type for numpy if not real
-	data_train=input['data_train'].astype(eval(input['data_type']))
-	data_test=input['data_test'].astype(eval(input['data_type']))
-
-	if input['feature_type']=='Byte' or input['feature_type']=='Char':
-		alphabet=eval(input['alphabet'])
-		train=eval(input['feature_type']+"Features(data_train, alphabet)")
-		test=eval(input['feature_type']+"Features(data_test, alphabet)")
-	else:
-		train=eval(input['feature_type']+"Features(data_train)")
-		test=eval(input['feature_type']+"Features(data_test)")
-
-	if input['name'].find('Sparse')!=-1:
-		sparse_train=eval('Sparse'+input['feature_type']+'Features()')
-		sparse_train.obtain_from_simple(train)
-
-		sparse_test=eval('Sparse'+input['feature_type']+'Features()')
-		sparse_test.obtain_from_simple(test)
-
-		feats={'train':sparse_train, 'test':sparse_test}
-	else:
-		feats={'train':train, 'test':test}
-
-	return feats
-
-def _get_feats_string (input):
-	feats={'train':StringCharFeatures(eval(input['alphabet'])),
-		'test':StringCharFeatures(eval(input['alphabet']))}
-	feats['train'].set_string_features(list(input['data_train'][0]))
-	feats['test'].set_string_features(list(input['data_test'][0]))
-
-	return feats
-
-def _get_feats_string_complex (input):
-	feats={'train':StringCharFeatures(eval(input['alphabet'])),
-		'test':StringCharFeatures(eval(input['alphabet']))}
-	feats['train'].set_string_features(list(input['data_train'][0]))
-	feats['test'].set_string_features(list(input['data_test'][0]))
-
-	feat=eval('String'+input['feature_type']+"Features(feats['train'].get_alphabet())");
-	feat.obtain_from_char(feats['train'], input['order']-1, input['order'],
-		input['gap'], eval(input['reverse']))
-	if input['feature_type']=='Word':
-		preproc=SortWordString();
-		preproc.init(feat);
-		feat.add_preproc(preproc)
-		feat.apply_preproc()
-	feats['train']=feat
-
-	feat=eval('String'+input['feature_type']+"Features(feats['train'].get_alphabet())");
-	feat.obtain_from_char(feats['test'], input['order']-1, input['order'],
-		input['gap'], eval(input['reverse']))
-	if input['feature_type']=='Word':
-		feat.add_preproc(preproc)
-		feat.apply_preproc()
-	feats['test']=feat
-
-	return feats
 
 ########################################################################
 # kernel computation
@@ -121,14 +15,14 @@ def _get_feats_string_complex (input):
 
 def _kernel (input, feats):
 	kfun=eval(input['name']+'Kernel')
-	args=_get_args(input)
+	args=util.get_args(input)
 
 	k=kfun(feats['train'], feats['train'], *args)
 	train=max(abs(input['km_train']-k.get_kernel_matrix()).flat)
 	k.init(feats['train'], feats['test'])
 	test=max(abs(input['km_test']-k.get_kernel_matrix()).flat)
 
-	return _check_accuracy(input['accuracy'], train=train, test=test)
+	return util.check_accuracy(input['accuracy'], train=train, test=test)
 
 def _add_subkernels (subkernels):
 	for idx, sk in enumerate(subkernels):
@@ -170,7 +64,7 @@ def _kernel_combined (input):
 
 	subkernels=_get_subkernels(input)
 	for sk in subkernels:
-		feats_sk=eval('_get_feats_'+sk['feature_class']+'(sk)')
+		feats_sk=eval('util.get_feats_'+sk['feature_class']+'(sk)')
 		kernel.append_kernel(sk['kernel'])
 		feats['train'].append_feature_obj(feats_sk['train'])
 		feats['test'].append_feature_obj(feats_sk['test'])
@@ -179,7 +73,7 @@ def _kernel_combined (input):
 
 def _kernel_auc (input):
 	sk=_get_subkernels(input)[0]
-	feats_sk=eval('_get_feats_'+sk['feature_class']+'(sk)')
+	feats_sk=eval('util.get_feats_'+sk['feature_class']+'(sk)')
 	sk['kernel'].init(feats_sk['train'], feats_sk['test'])
 
 	feats={
@@ -195,7 +89,7 @@ def _kernel_subkernels (input, feats, kernel):
 	kernel.init(feats['train'], feats['test'])
 	test=max(abs(input['km_test']-kernel.get_kernel_matrix()).flat)
 
-	return _check_accuracy(input['accuracy'],
+	return util.check_accuracy(input['accuracy'],
 		train=train, test=test)
 
 def _kernel_custom (input):
@@ -214,7 +108,7 @@ def _kernel_custom (input):
 	k.set_full_kernel_matrix_from_full(input['data'])
 	fullfull=max(abs(input['km_fullfull']-k.get_kernel_matrix()).flat)
 
-	return _check_accuracy(input['accuracy'],
+	return util.check_accuracy(input['accuracy'],
 		triangletriangle=triangletriangle, fulltriangle=fulltriangle,
 		fullfull=fullfull)
 
@@ -250,7 +144,7 @@ def _kernel_svm (input):
 	k.init(feats['train'], feats['test'])
 	check_classified=max(abs(svm.classify().get_labels()-input['classified']))
 
-	return _check_accuracy(input['accuracy'],
+	return util.check_accuracy(input['accuracy'],
 		alphas=check_alphas, bias=check_bias, sv=check_sv,
 		classified=check_classified)
 
@@ -273,7 +167,7 @@ def test (input):
 		input['name']=input['name'][len(PREFIX_SVM):]
 		return _kernel_svm(input)
 
-	fun=eval('_get_feats_'+input['feature_class'])
+	fun=eval('util.get_feats_'+input['feature_class'])
 	feats=fun(input)
 	return _kernel(input, feats)
 

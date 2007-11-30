@@ -19,6 +19,12 @@ CNormSquaredDistance::CNormSquaredDistance()
 {
 }
 
+CNormSquaredDistance::CNormSquaredDistance(CRealFeatures* l, CRealFeatures* r)
+  : CRealDistance()
+{
+	init(l, r);
+}
+
 CNormSquaredDistance::~CNormSquaredDistance() 
 {
 	cleanup();

@@ -156,8 +156,6 @@ void CDistance::get_distance_matrix(DREAL** dst, INT* m, INT* n)
 
 		LONG total_num = num_vec1 * num_vec2;
 		INT num_done = 0;
-		SG_PRINT( "returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
-
 		SG_DEBUG( "returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
 
 		result=new DREAL[total_num];

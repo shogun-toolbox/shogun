@@ -1,15 +1,27 @@
 # !/bin/bash
 
-for file in ../../testsuite/data/*.m; do
-	echo -n $file
-	echo -n -e "\t\t"
+DATAPATH='../../testsuite/data'
 
-	python test.py $file > /dev/null
-	ret=$? 
+function test_all () {
+	datapath="$1"
+	echo "*** Testing in $datapath"
+	sleep 1
+	for file in $datapath; do
+		echo -n "$file"
+		echo -n -e "\t\t"
 
-	if [ $ret -eq 0 ] ; then
-		echo 'OK'
-	else
-		echo 'ERROR'
-	fi
-done
+		python test.py "$file" > /dev/null
+		ret=$?
+
+		if [ $ret -eq 0 ] ; then
+			echo 'OK'
+		else
+			echo 'ERROR'
+		fi
+	done
+	sleep 1
+	echo
+}
+
+test_all "$DATAPATH/kernels/*.m"
+test_all "$DATAPATH/distances/*.m"
