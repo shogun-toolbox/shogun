@@ -27,7 +27,7 @@ def _kernel (input, feats):
 def _add_subkernels (subkernels):
 	for idx, sk in enumerate(subkernels):
 		fun=eval(sk['name']+'Kernel')
-		args=_get_args(sk)
+		args=util.get_args(sk)
 		subkernels[idx]['kernel']=fun(*args)
 	return subkernels
 
@@ -119,7 +119,7 @@ def _kernel_pie (input):
 def _kernel_svm (input):
 	feats={'train':RealFeatures(input['data_train']),
 		'test':RealFeatures(input['data_test'])}
-	args=_get_args(input)
+	args=util.get_args(input)
 
 	kfun=eval(input['name']+'Kernel')
 	k=kfun(feats['train'], feats['train'], *args)
