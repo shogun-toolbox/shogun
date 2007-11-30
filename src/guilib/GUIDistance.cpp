@@ -29,8 +29,8 @@
 #include "distance/CanberraWordDistance.h"
 #include "distance/ManhattanWordDistance.h"
 #include "distance/HammingWordDistance.h"
-#include "distance/NormSquaredDistance.h"
-#include "distance/SparseNormSquaredDistance.h"
+#include "distance/EuclidianDistance.h"
+#include "distance/SparseEuclidianDistance.h"
 
 #include "features/RealFileFeatures.h"
 #include "features/TOPFeatures.h"
@@ -407,30 +407,30 @@ CDistance* CGUIDistance::create_distance(CHAR* param)
 			else
 				SG_ERROR( "Jense-Distance expects REAL as data type \n") ;
 		}
-		else if (strcmp(dist_type,"NORMSQUARED")==0)
+		else if (strcmp(dist_type,"EUCLIDIAN")==0)
 		{
 			if (strcmp(data_type,"REAL")==0)
 			{
 				delete d;
-				d= new CNormSquaredDistance();
+				d= new CEuclidianDistance();
 				if (d)
-					SG_INFO( "NormSquared-Distance created\n");
+					SG_INFO( "Euclidian-Distance created\n");
 				return d;
 			}
 			else if (strcmp(data_type,"SPARSEREAL")==0)
 			{
 				delete d;
-				d= new CSparseNormSquaredDistance();
+				d= new CSparseEuclidianDistance();
 				if (d)
-					SG_INFO( "SparseNormSquared-Distance created\n");
+					SG_INFO( "SparseEuclidian-Distance created\n");
 				return d;
 			}
 			else
-				SG_ERROR( "NormSquared-Distance expects REAL or SPARSEREAL as data type \n") ;
+				SG_ERROR( "Euclidian-Distance expects REAL or SPARSEREAL as data type \n") ;
 
 		}
 		else
-			SG_ERROR( "in this format only CANBERRA, CHEBYSHEW, GEODESIC, JENSEN, MANHATTEN, MINKOWSKI, NORMSQUARED, SPARSENORMSQUARED is accepted \n") ;
+			SG_ERROR( "in this format only CANBERRA, CHEBYSHEW, GEODESIC, JENSEN, MANHATTEN, MINKOWSKI, EUCLIDIAN, SPARSEEUCLIDIAN is accepted \n") ;
 	} 
 	else 
 		SG_ERROR( "see help for params!\n");

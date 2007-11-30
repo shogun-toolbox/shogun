@@ -37,7 +37,7 @@ bool CKMeans::train()
 	ASSERT(CDistanceMachine::get_distance());
 	ASSERT(get_distance());
 	ASSERT(get_distance()->get_feature_type() == F_DREAL);
-	ASSERT(get_distance()->get_distance_type() == D_NORMSQUARED);
+	ASSERT(get_distance()->get_distance_type() == D_EUCLIDIAN);
 	CRealFeatures* lhs = (CRealFeatures*) get_distance()->get_lhs();
 	ASSERT(lhs);
 	INT num=lhs->get_num_vectors();
