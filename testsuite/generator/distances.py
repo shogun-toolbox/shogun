@@ -53,7 +53,10 @@ def _run_feats_real ():
 	data=dataops.get_rand()
 	feats=featops.get_simple('Real', data)
 
-	fileops.write(_compute('NormSquaredDistance', feats, data))
+	fileops.write(_compute('EuclidianDistance', feats, data))
+
+	feats=featops.get_simple('Real', data, sparse=True)
+	fileops.write(_compute('SparseEuclidianDistance', feats, data))
 
 def run ():
 	fileops.TYPE='Distance'
