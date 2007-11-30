@@ -909,15 +909,6 @@ void CKernel::list_kernel()
 		case K_CONST:
 			SG_INFO( "K_CONST ");
 			break;
-		case K_HAMMINGWORD:
-			SG_INFO( "K_HAMMINGWORD ");
-			break;
-		case K_MANHATTANWORD:
-			SG_INFO( "K_MANHATTANWORD ");
-			break;
-		case K_CANBERRAWORD:
-			SG_INFO( "K_CANBERRAWORD ");
-			break;
 		case K_MINDYGRAM:
 			SG_INFO( "K_MINDYGRAM ");
 			break;

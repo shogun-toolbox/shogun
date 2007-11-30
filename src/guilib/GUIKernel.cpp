@@ -34,9 +34,6 @@
 #include "kernel/PolyMatchStringKernel.h"
 #include "kernel/LocalAlignmentStringKernel.h"
 #include "kernel/WordMatchKernel.h"
-#include "kernel/HammingWordKernel.h"
-#include "kernel/ManhattanWordKernel.h"
-#include "kernel/CanberraWordKernel.h"
 #include "kernel/CommWordStringKernel.h"
 #include "kernel/WeightedCommWordStringKernel.h"
 #include "kernel/CommUlongStringKernel.h"
@@ -683,61 +680,6 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 						SG_INFO( "CommUlongStringKernel with sign(count) created\n");
 					else
 						SG_INFO( "CommUlongStringKernel with count created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"HAMMING")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				INT use_sign = 0 ;
-				double width=1.0;
-				
-				sscanf(param, "%s %s %d %lf %d", kern_type, data_type, &size, &width, &use_sign);
-				delete k;
-				k=new CHammingWordKernel(size, width, use_sign==1);
-
-				if (k)
-				{
-					if (use_sign)
-						SG_INFO( "HammingWordKernel with sign(count) created\n");
-					else
-						SG_INFO( "HammingWordKernel with count created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"MANHATTEN")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				double width=1.0;
-				
-				sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &width);
-				delete k;
-				k=new CManhattanWordKernel(size, width);
-
-				if (k)
-				{
-					SG_INFO( "ManhattanWordKernel created\n");
-					return k;
-				}
-			}
-		}
-		else if (strcmp(kern_type,"CANBERRA")==0)
-		{
-			if (strcmp(data_type,"WORD")==0)
-			{
-				double width=1.0;
-				
-				sscanf(param, "%s %s %d %lf", kern_type, data_type, &size, &width);
-				delete k;
-				k=new CCanberraWordKernel(size, width);
-
-				if (k)
-				{
-					SG_INFO( "CanberraWordKernel created\n");
 					return k;
 				}
 			}
