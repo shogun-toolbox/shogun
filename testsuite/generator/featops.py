@@ -6,7 +6,6 @@ WORDSTRING_GAP=0
 WORDSTRING_REVERSE=False
 
 def get_simple (type, data, alphabet=DNA, sparse=False):
-	type=type.capitalize()
 	if type=='Byte' or type=='Char':
 		train=eval(type+"Features(data['train'], alphabet)")
 		test=eval(type+"Features(data['test'], alphabet)")
@@ -26,7 +25,6 @@ def get_simple (type, data, alphabet=DNA, sparse=False):
 		return {'train':train, 'test':test}
 
 def get_string (type, data, alphabet=DNA):
-	type=type.capitalize()
 	train=eval('String'+type+"Features(alphabet)")
 	train.set_string_features(data['train'])
 	test=eval('String'+type+"Features(alphabet)")

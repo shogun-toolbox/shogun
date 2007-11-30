@@ -64,7 +64,7 @@ def _run_feats_real ():
 	fileops.write(_compute('EuclidianDistance', feats, data))
 
 	feats=featops.get_simple('Real', data, sparse=True)
-	#fileops.write(_compute('SparseEuclidianDistance', feats, data))
+	fileops.write(_compute('SparseEuclidianDistance', feats, data))
 
 def _run_feats_string_complex ():
 	data=dataops.get_dna()

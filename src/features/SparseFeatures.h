@@ -38,38 +38,38 @@ template <class ST> struct TSparseEntry
 
 template <class ST> struct TSparse
 {
-public:
-	INT vec_index;
-	INT num_feat_entries;
-	TSparseEntry<ST>* features;
+	public:
+		INT vec_index;
+		INT num_feat_entries;
+		TSparseEntry<ST>* features;
 };
 
 template <class ST> class CSparseFeatures: public CFeatures
 {
 	public:
 		CSparseFeatures(INT size=0) : CFeatures(size), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL)
-		{
-		}
+	{
+	}
 
 		CSparseFeatures(const CSparseFeatures & orig) : 
 			CFeatures(orig), num_vectors(orig.num_vectors), num_features(orig.num_features), sparse_feature_matrix(orig.sparse_feature_matrix), feature_cache(orig.feature_cache)
+	{
+		if (orig.sparse_feature_matrix)
 		{
-			if (orig.sparse_feature_matrix)
+			sparse_feature_matrix=new TSparse<ST>[num_vectors];
+			memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(TSparse<ST>)*num_vectors); 
+			for (INT i=0; i< num_vectors; i++)
 			{
-				sparse_feature_matrix=new TSparse<ST>[num_vectors];
-				memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(TSparse<ST>)*num_vectors); 
-				for (INT i=0; i< num_vectors; i++)
-				{
-					sparse_feature_matrix[i].features=new TSparseEntry<ST>[sparse_feature_matrix[i].num_feat_entries];
-					memcpy(sparse_feature_matrix[i].features, orig.sparse_feature_matrix[i].features, sizeof(TSparseEntry<ST>)*sparse_feature_matrix[i].num_feat_entries); 
+				sparse_feature_matrix[i].features=new TSparseEntry<ST>[sparse_feature_matrix[i].num_feat_entries];
+				memcpy(sparse_feature_matrix[i].features, orig.sparse_feature_matrix[i].features, sizeof(TSparseEntry<ST>)*sparse_feature_matrix[i].num_feat_entries); 
 
-				}
 			}
 		}
+	}
 
 		CSparseFeatures(CHAR* fname) : CFeatures(fname), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL)
-		{
-		}
+	{
+	}
 
 		virtual ~CSparseFeatures()
 		{
@@ -116,7 +116,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 			return fv;
 		}
 
-		
+
 		inline INT get_num_sparse_vec_features(INT num)
 		{
 			bool vfree;
@@ -597,13 +597,66 @@ template <class ST> class CSparseFeatures: public CFeatures
 				delete[] feat_vec ;
 		} 
 
-		long get_num_nonzero_entries()
+		LONG get_num_nonzero_entries()
 		{
-			long num=0;
-			for (int i=0; i<num_vectors; i++)
+			LONG num=0;
+			for (INT i=0; i<num_vectors; i++)
 				num+=sparse_feature_matrix[i].num_feat_entries;
 
 			return num;
+		}
+
+		/// compute (a-b)^2 (== a^2+b^2+2ab)
+		/// usually called by kernels'/distances' compute functions
+		DREAL compute_squared_norm(TSparseEntry<DREAL>* avec, INT alen, TSparseEntry<DREAL>* bvec, INT blen)
+		{
+			DREAL result=0;
+			INT i,j;
+			ASSERT(avec!=NULL);
+			ASSERT(bvec!=NULL);
+
+			for (i=0; i<alen; i++)
+				result+= avec[i].entry * avec[i].entry;
+
+			for (i=0; i<blen; i++)
+				result+= bvec[i].entry * bvec[i].entry;
+
+			if (alen<=blen)
+			{
+				j=0;
+				for (i=0; i<alen; i++)
+				{
+					INT a_feat_idx=avec[i].feat_index;
+
+					while ((j<blen) && (bvec[j].feat_index < a_feat_idx))
+						j++;
+
+					if ((j<blen) && (bvec[j].feat_index == a_feat_idx))
+					{
+						result-=2*(avec[i].entry*bvec[j].entry);
+						j++;
+					}
+				}
+			}
+			else
+			{
+				j=0;
+				for (i=0; i<blen; i++)
+				{
+					INT b_feat_idx=bvec[i].feat_index;
+
+					while ((j<alen) && (avec[j].feat_index<b_feat_idx))
+						j++;
+
+					if ((j<alen) && (avec[j].feat_index == b_feat_idx))
+					{
+						result-=2*(bvec[i].entry*avec[j].entry);
+						j++;
+					}
+				}
+			}
+
+			return CMath::abs(result);
 		}
 
 	protected:
@@ -683,4 +736,4 @@ template<> inline EFeatureType CSparseFeatures<LONGREAL>::get_feature_type()
 {
 	return F_LREAL;
 }
-#endif
+#endif /* _SPARSEFEATURES__H__ */
