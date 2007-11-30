@@ -1,4 +1,5 @@
 from numpy import *
+from numpy.random import *
 from shogun.Features import *
 from shogun.Kernel import *
 from shogun.Library import FULL_NORMALIZATION
@@ -362,13 +363,13 @@ def run ():
 	#_run_mindygram()
 	#_run_pie()
 
-	#_run_custom()
+	_run_custom()
 	_run_distance()
-	#_run_subkernels()
-	#_run_svm()
+	_run_subkernels()
+	_run_svm()
 
-	#_run_feats_byte()
-	#_run_feats_real()
-	#_run_feats_string()
-	#_run_feats_string_complex()
-	#_run_feats_word()
+	_run_feats_byte()
+	_run_feats_real()
+	_run_feats_string()
+	_run_feats_string_complex()
+	_run_feats_word()
