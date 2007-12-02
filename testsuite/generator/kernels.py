@@ -11,46 +11,6 @@ import featops
 import dataops
 from klist import KLIST
 
-def _get_output (name, output, args=[], prefix='', offset=0):
-	kdata=KLIST[name]
-
-	# for all kernels
-	output[prefix+'data_class']=kdata[0][0]
-	output[prefix+'data_type']=kdata[0][1]
-	output[prefix+'feature_class']=kdata[1][0]
-	output[prefix+'feature_type']=kdata[1][1]
-	output[prefix+'accuracy']=kdata[3]
-
-	# specialise a bit
-	if kdata[1][0]=='string' or (kdata[1][0]=='simple' and kdata[1][1]=='Char'):
-		output[prefix+'alphabet']='DNA'
-		output[prefix+'seqlen']=dataops.LEN_SEQ
-	elif kdata[1][0]=='simple' and kdata[1][1]=='Byte':
-		output[prefix+'alphabet']='RAWBYTE'
-		output[prefix+'seqlen']=dataops.LEN_SEQ
-	elif kdata[1][0]=='string_complex':
-		output[prefix+'order']=featops.WORDSTRING_ORDER
-		output[prefix+'gap']=featops.WORDSTRING_GAP
-		output[prefix+'reverse']=featops.WORDSTRING_REVERSE
-		output[prefix+'alphabet']='DNA'
-		output[prefix+'seqlen']=dataops.LEN_SEQ
-		output[prefix+'feature_obtain']=kdata[1][2]
-
-	# kernel arguments, if any
-	for i in range(0, len(args)):
-		try:
-			pname=prefix+'kparam'+str(i+offset)+'_'+kdata[2][i]
-		except IndexError:
-			break
-
-		# a bit awkward to have this specialised cond here:
-		if pname.find('distance')!=-1:
-			output[pname]=args[i].__class__.__name__
-		else:
-			output[pname]=args[i]
-
-	return output;
-
 ##################################################################
 ## subkernel funs
 ##################################################################
@@ -60,7 +20,8 @@ def _compute_subkernels (name, feats, kernel, output):
 	output['km_train']=kernel.get_kernel_matrix()
 	kernel.init(feats['train'], feats['test'])
 	output['km_test']=kernel.get_kernel_matrix()
-	output=_get_output(name, output)
+	output.update(fileops.get_output_params(name))
+
 	return [name, output]
 
 def _get_subkernel_args (subkernel):
@@ -75,17 +36,19 @@ def _get_subkernel_args (subkernel):
 
 	return args
 
-def _get_subkernel_output (subkernel, data, num):
+def _get_subkernel_output_params (subkernel, data, num):
 	prefix='subkernel'+num+'_'
-
 	output={}
+
 	output[prefix+'name']=subkernel[0]
 	#FIXME: size soon to be removed from constructor
 	output[prefix+'kparam0_size']='10'
 	output[prefix+'data_train']=matrix(data['train'])
 	output[prefix+'data_test']=matrix(data['test'])
+	output.update(fileops.get_output_params(
+		subkernel[0], subkernel[1:], prefix, 1))
 
-	return _get_output(subkernel[0], output, subkernel[1:], prefix, 1)
+	return output
 
 def _run_auc ():
 	data=dataops.get_rand()
@@ -93,7 +56,7 @@ def _run_auc ():
 	width=1.5
 	subkernels=[['Gaussian', width]]
 	sk=GaussianKernel(feats['train'], feats['test'], width)
-	output=_get_subkernel_output(subkernels[0], data, '0')
+	output=_get_subkernel_output_params(subkernels[0], data, '0')
 
 	data=dataops.get_rand(ushort, rows=2, max_train=dataops.LEN_TRAIN,
 		max_test=dataops.LEN_TEST)
@@ -127,7 +90,8 @@ def _run_combined ():
 		feats_sk=eval('featops.get_'+kdata[1][0]+"('"+kdata[1][1]+"', data_sk)")
 		feats['train'].append_feature_obj(feats_sk['train'])
 		feats['test'].append_feature_obj(feats_sk['test'])
-		output.update(_get_subkernel_output(subkernels[i], data_sk, str(i)))
+		output.update(_get_subkernel_output_params(
+			subkernels[i], data_sk, str(i)))
 
 	fileops.write(_compute_subkernels('Combined', feats, kernel, output))
 
@@ -146,12 +110,13 @@ def _compute (name, feats, data, *args):
 	k.init(feats['train'], feats['test'])
 	km_test=k.get_kernel_matrix()
 
-	output=_get_output(name, {
+	output={
 		'km_train':km_train,
 		'km_test':km_test,
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test'])
-	}, args)
+	}
+	output.update(fileops.get_output_params(name, args))
 
 	return [name, output]
 
@@ -175,7 +140,7 @@ def _compute_svm (name, feats, data, params, *args):
 	k.init(feats['train'], feats['test'])
 	classified=svm.classify().get_labels()
 
-	output=_get_output(name, {
+	output={
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test']),
 		'C':params['C'],
@@ -187,7 +152,8 @@ def _compute_svm (name, feats, data, params, *args):
 		'bias':bias,
 		'support_vectors':support_vectors,
 		'classified':classified
-	}, args)
+	}
+	output.update(fileops.get_output_params(name, args))
 
 	return [fileops.SVM+name, output]
 
@@ -236,14 +202,16 @@ def _run_custom ():
 	k.set_full_kernel_matrix_from_full(data)
 	km_fullfull=k.get_kernel_matrix()
 
-	output=_get_output(name, {
+	output={
 		'km_triangletriangle':km_triangletriangle,
 		'km_fulltriangle':km_fulltriangle,
 		'km_fullfull':km_fullfull,
 		'symdata':matrix(symdata),
 		'data':matrix(data),
 		'dim_square':dim_square
-	})
+	}
+	output.update(fileops.get_output_params(name))
+
 	fileops.write([name, output])
 
 def _run_distance ():

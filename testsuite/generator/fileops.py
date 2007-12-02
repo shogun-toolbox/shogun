@@ -1,5 +1,8 @@
 import os
 
+import featops
+import dataops
+
 DIR_OUTPUT='data'
 EXT_OUTPUT='.m'
 SVM='svm_'
@@ -89,5 +92,54 @@ def clean_dir_output ():
 
 	return success
 
+# prefix and offset are necessary for subkernels
+def get_output_params (name, args=[], prefix='', offset=0):
+	if TYPE=='Kernel':
+		from klist import KLIST
+		data=KLIST[name]
+		param='kparam'
+	elif TYPE=='Distance':
+		from dlist import DLIST
+		data=DLIST[name]
+		param='dparam'
+	else:
+		return None
 
+	output={}
 
+	# general params
+	output[prefix+'data_class']=data[0][0]
+	output[prefix+'data_type']=data[0][1]
+	output[prefix+'feature_class']=data[1][0]
+	output[prefix+'feature_type']=data[1][1]
+	output[prefix+'accuracy']=data[3]
+
+	# params wrt feature class & type
+	if data[1][0]=='string' or (data[1][0]=='simple' and data[1][1]=='Char'):
+		output[prefix+'alphabet']='DNA'
+		output[prefix+'seqlen']=dataops.LEN_SEQ
+	elif data[1][0]=='simple' and data[1][1]=='Byte':
+		output[prefix+'alphabet']='RAWBYTE'
+		output[prefix+'seqlen']=dataops.LEN_SEQ
+	elif data[1][0]=='string_complex':
+		output[prefix+'order']=featops.WORDSTRING_ORDER
+		output[prefix+'gap']=featops.WORDSTRING_GAP
+		output[prefix+'reverse']=featops.WORDSTRING_REVERSE
+		output[prefix+'alphabet']='DNA'
+		output[prefix+'seqlen']=dataops.LEN_SEQ
+		output[prefix+'feature_obtain']=data[1][2]
+
+	# arguments, if any
+	for i in range(0, len(args)):
+		try:
+			pname=prefix+param+str(i+offset)+'_'+data[2][i]
+		except IndexError:
+			break
+
+		cn=args[i].__class__.__name__
+		if cn=='int' or cn=='float' or cn=='bool':
+			output[pname]=args[i]
+		else:
+			output[pname]=cn
+
+	return output;
