@@ -11,7 +11,7 @@
 #include "lib/config.h"
 #include "lib/common.h"
 #include "lib/io.h"
-#include "distance/Jensen.h"
+#include "distance/JensenMetric.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
@@ -22,15 +22,21 @@ extern "C" {
 #endif
 
 CJensenMetric::CJensenMetric()
-  : CSimpleDistance<DREAL>()
+: CSimpleDistance<DREAL>()
 {
 }
 
-CJensenMetric::~CJensenMetric() 
+CJensenMetric::CJensenMetric(CRealFeatures* l, CRealFeatures* r)
+: CSimpleDistance<DREAL>()
+{
+	init(l, r);
+}
+
+CJensenMetric::~CJensenMetric()
 {
 	cleanup();
 }
-  
+
 bool CJensenMetric::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CSimpleDistance<DREAL>::init(l,r);
@@ -51,37 +57,35 @@ bool CJensenMetric::save_init(FILE* dest)
 {
 	return false;
 }
-  
+
 DREAL CJensenMetric::compute(INT idx_a, INT idx_b)
 {
-	
-  INT alen, blen;
-  bool afree, bfree;
+	INT alen, blen;
+	bool afree, bfree;
 
-  double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-  
-  ASSERT(alen==blen);
-  INT ialen=(int) alen;
+	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  DREAL absTmp = 0;
-  DREAL result=0;
-  {
-    for (INT i=0; i<ialen; i++)
+	ASSERT(alen==blen);
+	INT ialen=(int) alen;
+
+	DREAL absTmp = 0;
+	DREAL result=0;
 	{
-      	absTmp=0.5*(avec[i]+bvec[i]);
-	if(avec[i]>0)
-	 result+=avec[i]*log(avec[i]/absTmp);
-	if(bvec[i]>0)
-	 result+=bvec[i]*log(bvec[i]/absTmp);
+		for (INT i=0; i<ialen; i++)
+		{
+			absTmp=0.5*(avec[i]+bvec[i]);
+			if(avec[i]>0)
+				result+=avec[i]*log(avec[i]/absTmp);
+			if(bvec[i]>0)
+				result+=bvec[i]*log(bvec[i]/absTmp);
+		}
+
 	}
 
-  }
+	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  
-  return result;
+	return result;
 }
-

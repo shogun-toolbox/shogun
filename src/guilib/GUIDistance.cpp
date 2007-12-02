@@ -19,12 +19,12 @@
 #include "distance/Distance.h"
 #include "distance/SimpleDistance.h"
 
-#include "distance/Canberra.h"
-#include "distance/Chebyshew.h"
-#include "distance/Geodesic.h"
-#include "distance/Jensen.h"
-#include "distance/Manhattan.h"
-#include "distance/Minkowski.h"
+#include "distance/CanberraMetric.h"
+#include "distance/ChebyshewMetric.h"
+#include "distance/GeodesicMetric.h"
+#include "distance/JensenMetric.h"
+#include "distance/ManhattanMetric.h"
+#include "distance/MinkowskiMetric.h"
 
 #include "distance/CanberraWordDistance.h"
 #include "distance/ManhattanWordDistance.h"

@@ -11,7 +11,7 @@
 #include "lib/config.h"
 #include "lib/common.h"
 #include "lib/io.h"
-#include "distance/Manhattan.h"
+#include "distance/ManhattanMetric.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
@@ -22,15 +22,21 @@ extern "C" {
 #endif
 
 CManhattanMetric::CManhattanMetric()
-        :CSimpleDistance<DREAL>()
+: CSimpleDistance<DREAL>()
 {
 }
 
-CManhattanMetric::~CManhattanMetric() 
+CManhattanMetric::CManhattanMetric(CRealFeatures* l, CRealFeatures* r)
+: CSimpleDistance<DREAL>()
+{
+	init(l, r);
+}
+
+CManhattanMetric::~CManhattanMetric()
 {
 	cleanup();
 }
-  
+
 bool CManhattanMetric::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CSimpleDistance<DREAL>::init(l,r);
@@ -51,32 +57,30 @@ bool CManhattanMetric::save_init(FILE* dest)
 {
 	return false;
 }
-  
+
 DREAL CManhattanMetric::compute(INT idx_a, INT idx_b)
 {
-	
-  INT alen, blen;
-  bool afree, bfree;
+	INT alen, blen;
+	bool afree, bfree;
 
-  double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-  
-  ASSERT(alen==blen);
-  INT ialen=(int) alen;
+	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  DREAL result=0;
-  {
-    for (INT i=0; i<ialen; i++)
+	ASSERT(alen==blen);
+	INT ialen=(int) alen;
+
+	DREAL result=0;
 	{
-      	result+=fabs(avec[i]-bvec[i]);
+		for (INT i=0; i<ialen; i++)
+		{
+			result+=fabs(avec[i]-bvec[i]);
+		}
+
 	}
 
-  }
 
+	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
-
-  return result;
+	return result;
 }
-

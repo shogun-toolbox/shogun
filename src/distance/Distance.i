@@ -5,7 +5,7 @@
 %module(docstring=DOCSTR,directors="1") Distance
 %{
 #define SWIG_FILE_WITH_INIT
-#include "distance/Distance.h" 
+#include "distance/Distance.h"
 %}
 
 #ifdef HAVE_DOXYGEN
@@ -27,7 +27,7 @@
 %feature("autodoc","1");
 
 %include "lib/ShogunException.i"
-%include "lib/io.i" 
+%include "lib/io.i"
 %include "base/Version.i"
 %include "base/Parallel.i"
 %include "base/SGObject.i"
@@ -37,12 +37,12 @@
 %include "distance/SparseDistance.i"
 %include "distance/RealDistance.i"
 %include "distance/StringDistance.i"
-%include "distance/Canberra.i"
-%include "distance/Chebyshew.i"
-%include "distance/Geodesic.i"
-%include "distance/Jensen.i"
-%include "distance/Manhattan.i"
-%include "distance/Minkowski.i"
+%include "distance/CanberraMetric.i"
+%include "distance/ChebyshewMetric.i"
+%include "distance/GeodesicMetric.i"
+%include "distance/JensenMetric.i"
+%include "distance/ManhattanMetric.i"
+%include "distance/MinkowskiMetric.i"
 %include "distance/HammingWordDistance.i"
 %include "distance/ManhattanWordDistance.i"
 %include "distance/CanberraWordDistance.i"

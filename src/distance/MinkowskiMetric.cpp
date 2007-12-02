@@ -11,7 +11,7 @@
 #include "lib/config.h"
 #include "lib/common.h"
 #include "lib/io.h"
-#include "distance/Minkowski.h"
+#include "distance/MinkowskiMetric.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
@@ -21,16 +21,22 @@ extern "C" {
 }
 #endif
 
-CMinkowskiMetric::CMinkowskiMetric(DREAL p)
-  : CSimpleDistance<DREAL>(),k(p)
+CMinkowskiMetric::CMinkowskiMetric(DREAL k_)
+: CSimpleDistance<DREAL>(),k(k_)
 {
 }
 
-CMinkowskiMetric::~CMinkowskiMetric() 
+CMinkowskiMetric::CMinkowskiMetric(CRealFeatures* l, CRealFeatures* r, DREAL k_)
+: CSimpleDistance<DREAL>(),k(k_)
+{
+	init(l, r);
+}
+
+CMinkowskiMetric::~CMinkowskiMetric()
 {
 	cleanup();
 }
-  
+
 bool CMinkowskiMetric::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CSimpleDistance<DREAL>::init(l,r);
@@ -51,34 +57,31 @@ bool CMinkowskiMetric::save_init(FILE* dest)
 {
 	return false;
 }
-  
+
 DREAL CMinkowskiMetric::compute(INT idx_a, INT idx_b)
 {
-	
-  INT alen, blen;
-  bool afree, bfree;
+	INT alen, blen;
+	bool afree, bfree;
 
-  double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-  
-  ASSERT(alen==blen);
-  INT ialen=(int) alen;
+	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  DREAL absTmp = 0;
-  DREAL result=0;
-  {
-    for (INT i=0; i<ialen; i++)
+	ASSERT(alen==blen);
+	INT ialen=(int) alen;
+
+	DREAL absTmp = 0;
+	DREAL result=0;
 	{
-      	absTmp=fabs(avec[i]-bvec[i]);
-	result+=pow(absTmp,k);
+		for (INT i=0; i<ialen; i++)
+		{
+			absTmp=fabs(avec[i]-bvec[i]);
+			result+=pow(absTmp,k);
+		}
+
 	}
 
-  }
+	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
-  
-  
-  return pow(result,1/k);
+	return pow(result,1/k);
 }
-

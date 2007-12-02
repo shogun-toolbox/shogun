@@ -27,6 +27,12 @@ def _run_feats_real ():
 	feats=featops.get_simple('Real', data)
 
 	fileops.write(_compute('EuclidianDistance', feats, data))
+	fileops.write(_compute('CanberraMetric', feats, data))
+	fileops.write(_compute('ChebyshewMetric', feats, data))
+	fileops.write(_compute('GeodesicMetric', feats, data))
+	fileops.write(_compute('JensenMetric', feats, data))
+	fileops.write(_compute('ManhattanMetric', feats, data))
+	fileops.write(_compute('MinkowskiMetric', feats, data, 1.3))
 
 	feats=featops.get_simple('Real', data, sparse=True)
 	fileops.write(_compute('SparseEuclidianDistance', feats, data))

@@ -11,7 +11,7 @@
 #include "lib/config.h"
 #include "lib/common.h"
 #include "lib/io.h"
-#include "distance/Chebyshew.h"
+#include "distance/ChebyshewMetric.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
@@ -22,15 +22,21 @@ extern "C" {
 #endif
 
 CChebyshewMetric::CChebyshewMetric()
-  : CSimpleDistance<DREAL>()
+: CSimpleDistance<DREAL>()
 {
 }
 
-CChebyshewMetric::~CChebyshewMetric() 
+CChebyshewMetric::CChebyshewMetric(CRealFeatures* l, CRealFeatures* r)
+: CSimpleDistance<DREAL>()
+{
+	init(l, r);
+}
+
+CChebyshewMetric::~CChebyshewMetric()
 {
 	cleanup();
 }
-  
+
 bool CChebyshewMetric::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CSimpleDistance<DREAL>::init(l,r);
@@ -51,27 +57,25 @@ bool CChebyshewMetric::save_init(FILE* dest)
 {
 	return false;
 }
-  
+
 DREAL CChebyshewMetric::compute(INT idx_a, INT idx_b)
 {
-	
-  INT alen, blen;
-  bool afree, bfree;
+	INT alen, blen;
+	bool afree, bfree;
 
-  double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-  
-  ASSERT(alen==blen);
-  INT ialen=(int) alen;
+	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  DREAL result=DBL_MIN;
+	ASSERT(alen==blen);
+	INT ialen=(int) alen;
 
-  for (INT i=0; i<ialen; i++)
-	  result=CMath::max(result, fabs(avec[i]-bvec[i]));
+	DREAL result=DBL_MIN;
 
-  ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	for (INT i=0; i<ialen; i++)
+		result=CMath::max(result, fabs(avec[i]-bvec[i]));
 
-  return result;
+	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+
+	return result;
 }
-

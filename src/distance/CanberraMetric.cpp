@@ -11,7 +11,7 @@
 #include "lib/config.h"
 #include "lib/common.h"
 #include "lib/io.h"
-#include "distance/Canberra.h"
+#include "distance/CanberraMetric.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
@@ -22,15 +22,21 @@ extern "C" {
 #endif
 
 CCanberraMetric::CCanberraMetric()
-  :CSimpleDistance<DREAL>()
+: CSimpleDistance<DREAL>()
 {
 }
 
-CCanberraMetric::~CCanberraMetric() 
+CCanberraMetric::CCanberraMetric(CRealFeatures* l, CRealFeatures* r)
+: CSimpleDistance<DREAL>()
+{
+	init(l, r);
+}
+
+CCanberraMetric::~CCanberraMetric()
 {
 	cleanup();
 }
-  
+
 bool CCanberraMetric::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CSimpleDistance<DREAL>::init(l,r);
@@ -51,35 +57,33 @@ bool CCanberraMetric::save_init(FILE* dest)
 {
 	return false;
 }
-  
+
 DREAL CCanberraMetric::compute(INT idx_a, INT idx_b)
 {
-	
-  INT alen, blen;
-  bool afree, bfree;
 
-  double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-  
-  ASSERT(alen==blen);
-  INT ialen=(int) alen;
+	INT alen, blen;
+	bool afree, bfree;
 
-  DREAL absTmp = 0;
-  DREAL result=0;
-  {
-    for (INT i=0; i<ialen; i++)
+	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+
+	ASSERT(alen==blen);
+	INT ialen=(int) alen;
+
+	DREAL absTmp = 0;
+	DREAL result=0;
 	{
-      	absTmp=fabs(avec[i])+fabs(bvec[i]);
-	if(absTmp!=0)
-	result+=fabs(avec[i]-fabs(bvec[i]))/absTmp;
+		for (INT i=0; i<ialen; i++)
+		{
+			absTmp=fabs(avec[i])+fabs(bvec[i]);
+			if(absTmp!=0)
+				result+=fabs(avec[i]-fabs(bvec[i]))/absTmp;
+		}
+
 	}
 
-  }
+	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-
-  ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
-  
-  return result;
+	return result;
 }
-

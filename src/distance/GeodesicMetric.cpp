@@ -11,7 +11,7 @@
 #include "lib/config.h"
 #include "lib/common.h"
 #include "lib/io.h"
-#include "distance/Geodesic.h"
+#include "distance/GeodesicMetric.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
@@ -22,15 +22,21 @@ extern "C" {
 #endif
 
 CGeodesicMetric::CGeodesicMetric()
-  : CSimpleDistance<DREAL>()
+: CSimpleDistance<DREAL>()
 {
 }
 
-CGeodesicMetric::~CGeodesicMetric() 
+CGeodesicMetric::CGeodesicMetric(CRealFeatures* l, CRealFeatures* r)
+: CSimpleDistance<DREAL>()
+{
+	init(l, r);
+}
+
+CGeodesicMetric::~CGeodesicMetric()
 {
 	cleanup();
 }
-  
+
 bool CGeodesicMetric::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CSimpleDistance<DREAL>::init(l,r);
@@ -51,38 +57,36 @@ bool CGeodesicMetric::save_init(FILE* dest)
 {
 	return false;
 }
-  
+
 DREAL CGeodesicMetric::compute(INT idx_a, INT idx_b)
 {
-	
-  INT alen, blen;
-  bool afree, bfree;
+	INT alen, blen;
+	bool afree, bfree;
 
-  double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-  
-  ASSERT(alen==blen);
-  INT ialen=(int) alen;
+	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  DREAL s = 0;
-  DREAL d=0;
-  {
-    for (INT i=0; i<ialen; i++)
+	ASSERT(alen==blen);
+	INT ialen=(int) alen;
+
+	DREAL s=0;
+	DREAL d=0;
 	{
-      	d+=sqrt(fabs(avec[i])*fabs(bvec[i]));
-	s+=avec[i]+bvec[i];
+		for (INT i=0; i<ialen; i++)
+		{
+			d+=CMath::sqrt(fabs(avec[i])*fabs(bvec[i]));
+			s+=avec[i]+bvec[i];
+		}
 	}
-  }
 
-  ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 
-  if(s==0)
-	  return 0;
-  if(d>1)
-	  return 0;
-  
-  return acos(d);
+	if(s==0)
+		return 0;
+	if(d>1)
+		return 0;
+
+	return acos(d);
 }
-
