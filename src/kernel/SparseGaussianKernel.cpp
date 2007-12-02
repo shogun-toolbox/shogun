@@ -33,9 +33,6 @@ CSparseGaussianKernel::~CSparseGaussianKernel()
 
 bool CSparseGaussianKernel::init(CFeatures* l, CFeatures* r)
 {
-	INT len=0;;
-	bool do_free=false;
-
 	///free sq_{r,l}hs first
 	cleanup();
 
@@ -43,36 +40,14 @@ bool CSparseGaussianKernel::init(CFeatures* l, CFeatures* r)
 
 	sq_lhs= new DREAL[lhs->get_num_vectors()];
 	ASSERT(sq_lhs);
-
-
-	for (INT i=0; i<lhs->get_num_vectors(); i++)
-	{
-		sq_lhs[i]=0;
-		TSparseEntry<DREAL>* vec = ((CSparseFeatures<DREAL>*) lhs)->get_sparse_feature_vector(i, len, do_free);
-
-		for (INT j=0; j<len; j++)
-			sq_lhs[i] += vec[j].entry * vec[j].entry;
-
-		((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(vec, i, do_free);
-	}
-
+	sq_lhs=((CSparseFeatures<DREAL>*) lhs)->compute_squared(sq_lhs);
 	if (lhs==rhs)
 		sq_rhs=sq_lhs;
 	else
 	{
 		sq_rhs= new DREAL[rhs->get_num_vectors()];
 		ASSERT(sq_rhs);
-
-		for (INT i=0; i<rhs->get_num_vectors(); i++)
-		{
-			sq_rhs[i]=0;
-			TSparseEntry<DREAL>* vec = ((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(i, len, do_free);
-
-			for (INT j=0; j<len; j++)
-				sq_rhs[i] += vec[j].entry * vec[j].entry;
-
-			((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(vec, i, do_free);
-		}
+		sq_rhs=((CSparseFeatures<DREAL>*) rhs)->compute_squared(sq_rhs);
 	}
 
 	return true;
@@ -100,15 +75,7 @@ bool CSparseGaussianKernel::save_init(FILE* dest)
 
 DREAL CSparseGaussianKernel::compute(INT idx_a, INT idx_b)
 {
-	INT alen, blen;
-	bool afree, bfree;
-	TSparseEntry<DREAL>* avec=((CSparseFeatures<DREAL>*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
-	TSparseEntry<DREAL>* bvec=((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
 	//DREAL result = sq_lhs[idx_a] + sq_rhs[idx_b];
-	DREAL result=((CSparseFeatures<DREAL>*) lhs)->compute_squared_norm(avec, alen, bvec, blen);
-
-	((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
-
+	DREAL result=((CSparseFeatures<DREAL>*) lhs)->compute_squared_norm((CSparseFeatures<DREAL>*) lhs, sq_lhs, idx_a, (CSparseFeatures<DREAL>*) rhs, sq_rhs, idx_b);
 	return exp(-result/width);
 }

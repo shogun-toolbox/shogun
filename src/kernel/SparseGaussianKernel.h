@@ -47,7 +47,6 @@ protected:
 
 protected:
 	double width;
-
 	DREAL* sq_lhs;
 	DREAL* sq_rhs;
 };

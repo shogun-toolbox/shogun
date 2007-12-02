@@ -35,11 +35,29 @@ bool CSparseEuclidianDistance::init(CFeatures* l, CFeatures* r)
 {
 	CSparseDistance<DREAL>::init(l, r);
 
+	sq_lhs= new DREAL[lhs->get_num_vectors()];
+	ASSERT(sq_lhs);
+	sq_lhs=((CSparseFeatures<DREAL>*) lhs)->compute_squared(sq_lhs);
+	if (lhs==rhs)
+		sq_rhs=sq_lhs;
+	else
+	{
+		sq_rhs= new DREAL[rhs->get_num_vectors()];
+		ASSERT(sq_rhs);
+		sq_rhs=((CSparseFeatures<DREAL>*) rhs)->compute_squared(sq_rhs);
+	}
+
 	return true;
 }
 
 void CSparseEuclidianDistance::cleanup()
 {
+	if (sq_lhs != sq_rhs)
+		delete[] sq_rhs;
+	sq_rhs = NULL;
+
+	delete[] sq_lhs;
+	sq_lhs = NULL;
 }
 
 bool CSparseEuclidianDistance::load_init(FILE* src)
@@ -54,14 +72,7 @@ bool CSparseEuclidianDistance::save_init(FILE* dest)
 
 DREAL CSparseEuclidianDistance::compute(INT idx_a, INT idx_b)
 {
-	INT alen, blen;
-	bool afree, bfree;
-	TSparseEntry<DREAL>* avec=((CSparseFeatures<DREAL>*) lhs)->get_sparse_feature_vector(idx_a, alen, afree);
-	TSparseEntry<DREAL>* bvec=((CSparseFeatures<DREAL>*) rhs)->get_sparse_feature_vector(idx_b, blen, bfree);
-	DREAL result=((CSparseFeatures<DREAL>*) lhs)->compute_squared_norm(avec, alen, bvec, blen);
-
-	((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(avec, idx_a, afree);
-	((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	DREAL result=((CSparseFeatures<DREAL>*) lhs)->compute_squared_norm((CSparseFeatures<DREAL>*) lhs, sq_lhs, idx_a, (CSparseFeatures<DREAL>*) rhs, sq_rhs, idx_b);
 
 	return CMath::sqrt(result);
 }

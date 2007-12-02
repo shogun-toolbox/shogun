@@ -7,5 +7,5 @@ DLIST={
 	'EuclidianDistance':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
 	'HammingWordDistance':[['dna', ''], ['string_complex', 'Word', 'Char'], ['use_sign'], 0],
 	'ManhattanWordDistance':[['dna', ''], ['string_complex', 'Word', 'Char'], [], 0],
-	'SparseEuclidianDistance':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
+	'SparseEuclidianDistance':[['rand', 'double'], ['simple', 'Real'], [], 1e-7],
 }

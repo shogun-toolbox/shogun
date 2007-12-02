@@ -48,6 +48,9 @@ class CSparseEuclidianDistance: public CSparseDistance<DREAL>
 
 	protected:
 		double scale;
+		DREAL* sq_lhs;
+		DREAL* sq_rhs;
+
 };
 
 #endif /* _SPARSEEUCLIDIANDISTANCE_H__ */

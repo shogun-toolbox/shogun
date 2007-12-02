@@ -606,20 +606,46 @@ template <class ST> class CSparseFeatures: public CFeatures
 			return num;
 		}
 
-		/// compute (a-b)^2 (== a^2+b^2+2ab)
-		/// usually called by kernels'/distances' compute functions
-		DREAL compute_squared_norm(TSparseEntry<DREAL>* avec, INT alen, TSparseEntry<DREAL>* bvec, INT blen)
+		// compute a^2 on all feature vectors
+		DREAL* compute_squared(DREAL* sq)
 		{
-			DREAL result=0;
+			INT len=0;;
+			bool do_free=false;
+			ASSERT(sq!=NULL);
+
+			for (INT i=0; i<this->get_num_vectors(); i++)
+			{
+				sq[i]=0;
+				TSparseEntry<DREAL>* vec = ((CSparseFeatures<DREAL>*) this)->get_sparse_feature_vector(i, len, do_free);
+
+				for (INT j=0; j<len; j++)
+					sq[i] += vec[j].entry * vec[j].entry;
+
+				((CSparseFeatures<DREAL>*) this)->free_feature_vector(vec, i, do_free);
+			}
+
+			return sq;
+		}
+
+		/* compute (a-b)^2 (== a^2+b^2+2ab)
+			usually called by kernels'/distances' compute functions
+			works on two feature vectors, although it is a member of a single
+			feature: can either be called by lhs or rhs.
+		*/
+		DREAL compute_squared_norm(CSparseFeatures<DREAL>* lhs, DREAL* sq_lhs, INT idx_a, CSparseFeatures<DREAL>* rhs, DREAL* sq_rhs, INT idx_b)
+		{
 			INT i,j;
+			INT alen, blen;
+			bool afree, bfree;
+			ASSERT(lhs!=NULL);
+			ASSERT(rhs!=NULL);
+
+			TSparseEntry<DREAL>* avec=lhs->get_sparse_feature_vector(idx_a, alen, afree);
+			TSparseEntry<DREAL>* bvec=rhs->get_sparse_feature_vector(idx_b, blen, bfree);
 			ASSERT(avec!=NULL);
 			ASSERT(bvec!=NULL);
 
-			for (i=0; i<alen; i++)
-				result+= avec[i].entry * avec[i].entry;
-
-			for (i=0; i<blen; i++)
-				result+= bvec[i].entry * bvec[i].entry;
+			DREAL result=sq_lhs[idx_a]+sq_rhs[idx_b];
 
 			if (alen<=blen)
 			{
@@ -655,6 +681,9 @@ template <class ST> class CSparseFeatures: public CFeatures
 					}
 				}
 			}
+
+			((CSparseFeatures<DREAL>*) lhs)->free_feature_vector(avec, idx_a, afree);
+			((CSparseFeatures<DREAL>*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 			return CMath::abs(result);
 		}
