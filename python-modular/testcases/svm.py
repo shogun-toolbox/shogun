@@ -8,10 +8,10 @@ import util
 def _svm (input):
 	fun=eval('util.get_feats_'+input['feature_class'])
 	feats=fun(input)
-	args=util.get_args(input)
+	kargs=util.get_args(input)
 
 	kfun=eval(input['kname']+'Kernel')
-	k=kfun(feats['train'], feats['train'], *args)
+	k=kfun(feats['train'], feats['train'], *kargs)
 	k.parallel.set_num_threads(input['svmparam_num_threads'])
 	l=Labels(double(input['svmparam_labels']))
 	svm=SVMLight(input['svmparam_C'], k, l)

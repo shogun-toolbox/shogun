@@ -1,19 +1,20 @@
 from numpy import matrix
 from numpy.random import rand
-from shogun.Kernel import GaussianKernel
+from shogun.Kernel import *
 from shogun.Features import Labels
 from shogun.Classifier import *
+from shogun.Library import E_WD
 
 import fileop
 import featop
 import dataop
 from svmlist import SVMLIST
 
-def _get_output_params(name, data, params, kargs):
+def _get_output_params(name, kernel, params):
 	output={
-		'data_train':matrix(data['train']),
-		'data_test':matrix(data['test']),
-		'kname':'Gaussian',
+		'data_train':matrix(kernel['data']['train']),
+		'data_test':matrix(kernel['data']['test']),
+		'kname':kernel['name'],
 		'svmparam_C':params['C'],
 		'svmparam_epsilon':params['epsilon'],
 		'svmparam_tube_epsilon':params['tube_epsilon'],
@@ -25,20 +26,18 @@ def _get_output_params(name, data, params, kargs):
 		'svmparam_classified':params['classified'],
 		'svmparam_accuracy':SVMLIST[name][0],
 	}
-	output.update(fileop.get_output_params('Gaussian', kargs))
+	output.update(fileop.get_output_params(kernel['name'], kernel['args']))
 
 	return output
 
-def _compute (name, feats, data, params):
-	kargs=[1.5]
-	k=GaussianKernel(feats['train'], feats['train'], *kargs)
-	k.parallel.set_num_threads(params['num_threads'])
+def _compute (name, kernel, params):
+	kernel['k'].parallel.set_num_threads(params['num_threads'])
+	kernel['k'].init(kernel['feats']['train'], kernel['feats']['train'])
 
-	num_vec=feats['train'].get_num_vectors();
-	params['labels']=rand(num_vec).round()*2-1
+	params['labels']=rand(kernel['num_vec']).round()*2-1
 	l=Labels(params['labels'])
 	svmfun=eval(name)
-	svm=svmfun(params['C'], k, l)
+	svm=svmfun(params['C'], kernel['k'], l)
 	svm.parallel.set_num_threads(params['num_threads'])
 	svm.set_epsilon(params['epsilon'])
 	svm.set_tube_epsilon(params['tube_epsilon'])
@@ -47,35 +46,66 @@ def _compute (name, feats, data, params):
 	params['bias']=svm.get_bias()
 	params['support_vectors']=svm.get_support_vectors()
 
-	k.init(feats['train'], feats['test'])
+	kernel['k'].init(kernel['feats']['train'], kernel['feats']['test'])
 	params['classified']=svm.classify().get_labels()
 
-	return [name, _get_output_params(name, data, params, kargs)]
+	return [name, _get_output_params(name, kernel, params)]
 
-def _run (feats, data, params_svm):
-	fileop.write(_compute('SVMLight', feats, data, params_svm))
-	fileop.write(_compute('LibSVM', feats, data, params_svm))
-	fileop.write(_compute('GPBTSVM', feats, data, params_svm))
-	fileop.write(_compute('MPDSVM', feats, data, params_svm))
+def _run (svms, kernel):
+	kernel['num_vec']=kernel['feats']['train'].get_num_vectors();
+	kfun=eval(kernel['name']+'Kernel')
+	# FIXME: cache size has to go....
+	kernel['k']=kfun(10, *kernel['args'])
+	# FIXME: NASTY NASTY NASTY! but WeightedStringKernel is a bit inconsistent
+	# in constructors, so have to get rid of first arg EWDKernType
+	if kernel['name']=='WeightedDegreeString':
+		kernel['args']=kernel['args'][1:]
+
+	for name in svms:
+		params={'C':.017, 'epsilon':1e-5, 'tube_epsilon':1e-2, 'num_threads':1}
+		fileop.write(_compute(name, kernel, params))
+		params['C']=.23
+		fileop.write(_compute(name, kernel,  params))
+		params['C']=1.5
+		fileop.write(_compute(name, kernel, params))
+		#if not (name=='LibSVM' or name=='MPDSVM'):
+		params['C']=30
+		fileop.write(_compute(name, kernel, params))
+		params['epsilon']=1e-4
+		fileop.write(_compute(name, kernel, params))
+		params['tube_epsilon']=1e-3
+		fileop.write(_compute(name, kernel, params))
+		params['num_threads']=16
+		fileop.write(_compute(name, kernel, params))
 
 def run ():
 	fileop.TYPE='SVM'
+	kernel={}
 
-	data=dataop.get_rand()
-	feats=featop.get_simple('Real', data)
-	params_svm={'C':.017, 'epsilon':1e-5, 'tube_epsilon':1e-2, 'num_threads':1}
+	svms=['SVMLight', 'LibSVM', 'GPBTSVM', 'MPDSVM']
+	kernel['name']='Gaussian'
+	kernel['data']=dataop.get_rand()
+	kernel['args']=[1.5]
+	kernel['feats']=featop.get_simple('Real', kernel['data'])
+	_run(svms, kernel)
 
-	_run(feats, data, params_svm)
-	params_svm['C']=.23
-	_run(feats, data, params_svm)
-	params_svm['C']=1.5
-	_run(feats, data, params_svm)
-	params_svm['C']=30
-	_run(feats, data, params_svm)
-	params_svm['epsilon']=1e-4
-	_run(feats, data, params_svm)
-	params_svm['tube_epsilon']=1e-3
-	_run(feats, data, params_svm)
-	params_svm['num_threads']=16
-	_run(feats, data, params_svm)
+	svms=['SVMLight', 'GPBTSVM']
+	kernel['name']='Linear'
+	_run(svms, kernel)
 
+	kernel['data']=dataop.get_dna()
+	kernel['feats']=featop.get_string('Char', kernel['data'])
+	kernel['name']='WeightedDegreeString'
+	kernel['args']=[E_WD, 3, 0]
+	_run(svms, kernel)
+	kernel['name']='WeightedDegreePositionString'
+	kernel['args']=[20]
+	_run(svms, kernel)
+
+	kernel['args']=[False, FULL_NORMALIZATION]
+	kernel['name']='CommWordString'
+	kernel['feats']=featop.get_string_complex('Word', kernel['data'])
+	_run(svms, kernel)
+	kernel['name']='CommUlongString'
+	kernel['feats']=featop.get_string_complex('Ulong', kernel['data'])
+	_run(svms, kernel)

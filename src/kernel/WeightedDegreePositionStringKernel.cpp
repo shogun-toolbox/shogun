@@ -56,7 +56,6 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	set_wd_weights();
 	ASSERT(weights);
-
 }
 
 CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
@@ -64,7 +63,7 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	: CStringKernel<CHAR>(size), weights(NULL), position_weights(NULL),
 	position_weights_lhs(NULL), position_weights_rhs(NULL),
 	weights_buffer(NULL), mkl_stepsize(mkls), degree(d), length(0),
-	max_mismatch(mm), seq_length(0), shift(NULL),
+	max_mismatch(mm), seq_length(0), shift(NULL), shift_len(0),
 	initialized(false), use_normalization(un),
 	normalization_const(1.0), num_block_weights_external(0),
 	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
@@ -86,7 +85,7 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	: CStringKernel<CHAR>(10), weights(NULL), position_weights(NULL),
 	position_weights_lhs(NULL), position_weights_rhs(NULL),
 	weights_buffer(NULL), mkl_stepsize(1), degree(d), length(0),
-	max_mismatch(0), seq_length(0), shift(NULL),
+	max_mismatch(0), seq_length(0), shift(NULL), shift_len(0),
 	initialized(false), use_normalization(true),
 	normalization_const(1.0), num_block_weights_external(0),
 	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
@@ -95,15 +94,6 @@ CWeightedDegreePositionStringKernel::CWeightedDegreePositionStringKernel(
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	set_wd_weights();
 	ASSERT(weights);
-
-	shift_len=l->get_vector_length(0);
-	INT *shifts=new INT[shift_len];
-	ASSERT(shifts);
-	for (INT i=0; i<shift_len; i++) {
-		shifts[i]=1;
-	}
-	set_shifts(shifts, shift_len);
-	delete[] shifts;
 
 	init(l, r);
 }
@@ -188,6 +178,18 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 
 	bool result=CStringKernel<CHAR>::init(l,r);
 
+	/* set shift */
+	if (shift_len==0) {
+		shift_len=((CStringFeatures<CHAR>*) l)->get_vector_length(0);
+		INT *shifts=new INT[shift_len];
+		ASSERT(shifts);
+		for (INT i=0; i<shift_len; i++) {
+			shifts[i]=1;
+		}
+		set_shifts(shifts, shift_len);
+		delete[] shifts;
+	}
+
 	SG_DEBUG( "lhs_changed: %i\n", lhs_changed) ;
 	SG_DEBUG( "rhs_changed: %i\n", rhs_changed) ;
 
@@ -208,7 +210,6 @@ bool CWeightedDegreePositionStringKernel::init(CFeatures* l, CFeatures* r)
 
 	SG_DEBUG( "use normalization:%d (const:%f)\n", (use_normalization) ? 1 : 0,
 			normalization_const);
-
 
 	initialized = true ;
 	return result;
