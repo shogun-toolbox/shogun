@@ -3,10 +3,11 @@
 from numpy import *
 import sys
 
-import kernels
-import distances
+import kernel
+import distance
+import svm
 
-SUPPORTED=['kernels', 'distances']
+SUPPORTED=['kernel', 'distance', 'svm']
 
 def _get_name_fun (fnam):
 	module=None
@@ -17,7 +18,7 @@ def _get_name_fun (fnam):
 			break
 
 	if module is None:
-		print 'Module %s not supported yet!'%name
+		print 'Module required for %s not supported yet!'%fnam
 		return None
 
 	return module+'.test'
@@ -27,6 +28,9 @@ def _test_mfile (fnam):
 	input={}
 
 	name_fun=_get_name_fun(fnam)
+	if name_fun is None:
+		return False
+
 	for line in mfile:
 		param = line.split('=')[0].strip()
 		

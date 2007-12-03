@@ -23,5 +23,6 @@ function test_all () {
 	echo
 }
 
-test_all "$DATAPATH/kernels/*.m"
-test_all "$DATAPATH/distances/*.m"
+test_all "$DATAPATH/kernel/*.m"
+test_all "$DATAPATH/distance/*.m"
+test_all "$DATAPATH/svm/*.m"

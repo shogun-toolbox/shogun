@@ -9,9 +9,10 @@ __url__='http://shogun-toolbox.org'
 
 from numpy.random import seed
 
-from fileops import clean_dir_output
-import kernels
-import distances
+from fileop import clean_dir_output
+import kernel
+import distance
+import svm
 
 
 def run ():
@@ -27,7 +28,6 @@ def run ():
 #	print sum(numpy.random.get_state()[1])
 
 	clean_dir_output()
-	kernels.run()
-	distances.run()
-
-
+	kernel.run()
+	distance.run()
+	svm.run()
