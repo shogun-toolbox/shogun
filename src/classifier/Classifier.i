@@ -44,6 +44,7 @@
 %include "classifier/svm/LibSVM_oneclass.i"
 %include "classifier/svm/GPBTSVM.i"
 %include "classifier/svm/GNPPSVM.i"
+%include "classifier/svm/MPD.i"
 
 /* classifiers based on distancemachine */
 %include "distance/DistanceMachine.i" 

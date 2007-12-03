@@ -17,6 +17,10 @@ CMPDSVM::CMPDSVM() : CSVM()
 {
 }
 
+CMPDSVM::CMPDSVM(DREAL C, CKernel* k, CLabels* lab) : CSVM(C, k, lab)
+{
+}
+
 CMPDSVM::~CMPDSVM()
 {
 }
@@ -61,7 +65,7 @@ bool CMPDSVM::train()
 	bool dualcool;
 
 	//if (nustop)
-		//etas[1] = 1;
+	//etas[1] = 1;
 
 	for (int i=0; i<n; i++)
 	{
@@ -84,7 +88,7 @@ bool CMPDSVM::train()
 		bool free_alpha=false;
 
 		//if (CMath::abs(detas[1])> maxdviol)
-			//maxdviol=CMath::abs(detas[1]);
+		//maxdviol=CMath::abs(detas[1]);
 
 		// compute kkt violations with correct sign ...
 		for (int i=0; i<n; i++)
@@ -113,13 +117,13 @@ bool CMPDSVM::train()
 		}
 
 		if (maxpidx<0 || maxdviol<0)
-         SG_ERROR( "no violation no convergence, should not happen!\n");
+			SG_ERROR( "no violation no convergence, should not happen!\n");
 
 		// ... and evaluate stopping conditions
 		//if (nustop)
-			//stopfac = CMath::max(etas[1], 1e-10);    
+		//stopfac = CMath::max(etas[1], 1e-10);    
 		//else
-			//stopfac = 1;
+		//stopfac = 1;
 
 		if (niter%10000 == 0)
 		{
@@ -201,7 +205,7 @@ bool CMPDSVM::train()
 			// update dalphas
 			for (int i=0; i<n; i++)
 				dalphas[i]+= F[i] * etachange;
-				//dalphas[i]+= F[i] * etachange[0] + F[i+n] * etachange[1];
+			//dalphas[i]+= F[i] * etachange[0] + F[i+n] * etachange[1];
 		}
 	}
 

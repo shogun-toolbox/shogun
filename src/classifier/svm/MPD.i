@@ -1,7 +1,7 @@
 %{
- #include "classifier/svm/MPD.h" 
+ #include "classifier/svm/MPD.h"
 %}
 
-%rename(MPD) CMPD;
+%rename(MPDSVM) CMPDSVM;
 
 %include "classifier/svm/MPD.h"

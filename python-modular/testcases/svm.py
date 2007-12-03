@@ -33,7 +33,7 @@ def _svm (input):
 	k.init(feats['train'], feats['test'])
 	check_classified=max(abs(svm.classify().get_labels()-input['svmparam_classified']))
 
-	return util.check_accuracy(input['accuracy'],
+	return util.check_accuracy(input['svmparam_accuracy'],
 		alphas=check_alphas, bias=check_bias, sv=check_sv,
 		classified=check_classified)
 

@@ -18,10 +18,12 @@ class CMPDSVM : public CSVM
 {
 	public:
 		CMPDSVM();
+		CMPDSVM(DREAL C, CKernel* k, CLabels* lab);
 		virtual ~CMPDSVM();
 		virtual bool train();
 
 		virtual inline EClassifierType get_classifier_type() { return CT_MPD; }
+
 	protected:
 		inline DREAL compute_H(int i, int j)
 		{
@@ -38,7 +40,7 @@ class CMPDSVM : public CSVM
 				line=kernel_cache->lock_entry(i);
 				ASSERT(line);
 			}
-			
+
 			if (!line)
 			{
 				line=kernel_cache->set_entry(i);
@@ -61,4 +63,4 @@ class CMPDSVM : public CSVM
 		CCache<KERNELCACHE_ELEM>* kernel_cache;
 };
 
-#endif
+#endif  /* _MPDSVM_H___ */

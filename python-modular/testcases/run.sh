@@ -23,6 +23,10 @@ function test_all () {
 	echo
 }
 
-test_all "$DATAPATH/kernel/*.m"
-test_all "$DATAPATH/distance/*.m"
-test_all "$DATAPATH/svm/*.m"
+if [ -n "$1" ]; then
+	test_all "$DATAPATH/$1/*.m"
+else
+	test_all "$DATAPATH/kernel/*.m"
+	test_all "$DATAPATH/distance/*.m"
+	test_all "$DATAPATH/svm/*.m"
+fi
