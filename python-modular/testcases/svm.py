@@ -14,7 +14,13 @@ def _svm (input):
 	k=kfun(feats['train'], feats['train'], *kargs)
 	k.parallel.set_num_threads(input['svmparam_num_threads'])
 	l=Labels(double(input['svmparam_labels']))
-	svm=SVMLight(input['svmparam_C'], k, l)
+	svmfun=eval(input['name'])
+
+	if input['svmparam_labels'] is None:
+		svm=svmfun(input['svmparam_C'], k)
+	else:
+		svm=svmfun(input['svmparam_C'], k, l)
+
 	svm.parallel.set_num_threads(input['svmparam_num_threads'])
 	svm.set_epsilon(input['svmparam_epsilon'])
 	svm.set_tube_epsilon(input['svmparam_tube_epsilon'])

@@ -1,4 +1,4 @@
-from numpy import matrix
+from numpy import matrix, double
 from numpy.random import rand
 from shogun.Kernel import *
 from shogun.Features import Labels
@@ -9,6 +9,9 @@ import fileop
 import featop
 import dataop
 from svmlist import SVMLIST
+
+LABEL_RANDOM=0
+LABEL_SERIES=1
 
 def _get_output_params(name, kernel, params):
 	output={
@@ -34,10 +37,14 @@ def _compute (name, kernel, params):
 	kernel['k'].parallel.set_num_threads(params['num_threads'])
 	kernel['k'].init(kernel['feats']['train'], kernel['feats']['train'])
 
-	params['labels']=rand(kernel['num_vec']).round()*2-1
-	l=Labels(params['labels'])
 	svmfun=eval(name)
-	svm=svmfun(params['C'], kernel['k'], l)
+
+	if params['labels'] is None:
+		svm=svmfun(params['C'], kernel['k'])
+	else:
+		l=Labels(params['labels'])
+		svm=svmfun(params['C'], kernel['k'], l)
+
 	svm.parallel.set_num_threads(params['num_threads'])
 	svm.set_epsilon(params['epsilon'])
 	svm.set_tube_epsilon(params['tube_epsilon'])
@@ -51,8 +58,7 @@ def _compute (name, kernel, params):
 
 	return [name, _get_output_params(name, kernel, params)]
 
-def _run (svms, kernel):
-	kernel['num_vec']=kernel['feats']['train'].get_num_vectors();
+def _run (svms, kernel, labels=LABEL_RANDOM):
 	kfun=eval(kernel['name']+'Kernel')
 	# FIXME: cache size has to go....
 	kernel['k']=kfun(10, *kernel['args'])
@@ -61,14 +67,25 @@ def _run (svms, kernel):
 	if kernel['name']=='WeightedDegreeString':
 		kernel['args']=kernel['args'][1:]
 
+	num_vec=kernel['feats']['train'].get_num_vectors();
+	if labels==LABEL_RANDOM:
+		labels=rand(num_vec).round()*2-1
+	elif labels==LABEL_SERIES:
+		labels=[double(x) for x in xrange(num_vec)]
+
 	for name in svms:
-		params={'C':.017, 'epsilon':1e-5, 'tube_epsilon':1e-2, 'num_threads':1}
+		params={
+			'C':.017,
+			'epsilon':1e-5,
+			'tube_epsilon':1e-2,
+			'num_threads':1,
+			'labels':labels
+		}
 		fileop.write(_compute(name, kernel, params))
 		params['C']=.23
 		fileop.write(_compute(name, kernel,  params))
 		params['C']=1.5
 		fileop.write(_compute(name, kernel, params))
-		#if not (name=='LibSVM' or name=='MPDSVM'):
 		params['C']=30
 		fileop.write(_compute(name, kernel, params))
 		params['epsilon']=1e-4
@@ -78,34 +95,63 @@ def _run (svms, kernel):
 		params['num_threads']=16
 		fileop.write(_compute(name, kernel, params))
 
-def run ():
-	fileop.TYPE='SVM'
-	kernel={}
-
+def _run_feats_real ():
 	svms=['SVMLight', 'LibSVM', 'GPBTSVM', 'MPDSVM']
-	kernel['name']='Gaussian'
-	kernel['data']=dataop.get_rand()
-	kernel['args']=[1.5]
+	kernel={
+		'name':'Gaussian',
+		'data':dataop.get_rand(),
+		'args':[1.5]
+	}
 	kernel['feats']=featop.get_simple('Real', kernel['data'])
 	_run(svms, kernel)
+
+	svms=['LibSVMMultiClass', 'GMNPSVM']
+	_run(svms, kernel, LABEL_SERIES)
+
+#	svms=['LibSVMOneClass']
+#	_run(svms, kernel, None)
 
 	svms=['SVMLight', 'GPBTSVM']
 	kernel['name']='Linear'
 	_run(svms, kernel)
 
-	kernel['data']=dataop.get_dna()
+def _run_feats_string ():
+	svms=['SVMLight', 'GPBTSVM']
+	kernel={
+		'data':dataop.get_dna(),
+	}
 	kernel['feats']=featop.get_string('Char', kernel['data'])
+
 	kernel['name']='WeightedDegreeString'
 	kernel['args']=[E_WD, 3, 0]
 	_run(svms, kernel)
+
 	kernel['name']='WeightedDegreePositionString'
 	kernel['args']=[20]
 	_run(svms, kernel)
 
-	kernel['args']=[False, FULL_NORMALIZATION]
+
+def _run_feats_string_complex ():
+	svms=['SVMLight', 'GPBTSVM']
+	kernel={
+		'data':dataop.get_dna(),
+		'args':[False, FULL_NORMALIZATION]
+	}
+
 	kernel['name']='CommWordString'
 	kernel['feats']=featop.get_string_complex('Word', kernel['data'])
 	_run(svms, kernel)
+
 	kernel['name']='CommUlongString'
 	kernel['feats']=featop.get_string_complex('Ulong', kernel['data'])
 	_run(svms, kernel)
+
+def run ():
+	fileop.TYPE='SVM'
+
+	_run_feats_real()
+	_run_feats_string()
+	_run_feats_string_complex()
+
+
+
