@@ -31,7 +31,10 @@ def _svm (input):
 	svm.set_epsilon(input['svmparam_epsilon'])
 
 	if type=='linear':
-		svm.set_bias_enabled(False)
+		if input.has_key('svmparam_bias'):
+			svm.set_bias_enabled(True)
+		else:
+			svm.set_bias_enabled(False)
 	else:
 		svm.set_tube_epsilon(input['svmparam_tube_epsilon'])
 
@@ -41,7 +44,10 @@ def _svm (input):
 	check_bias=0
 	check_sv=0
 	if input['svmparam_num_threads']==1:
-		if type!='linear':
+		if type=='linear':
+			if input.has_key('svmparam_bias'):
+				check_bias=abs(svm.get_bias()-input['svmparam_bias'])
+		else:
 			check_alphas=max(abs(svm.get_alphas()-input['svmparam_alphas']))
 			check_bias=abs(svm.get_bias()-input['svmparam_bias'])
 			check_sv=max(abs(svm.get_support_vectors()-input['svmparam_support_vectors']))
