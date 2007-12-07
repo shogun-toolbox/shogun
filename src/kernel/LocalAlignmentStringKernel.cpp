@@ -330,11 +330,11 @@ DREAL CLocalAlignmentStringKernel::LAkernelcompute(int* aaX, int* aaY, /* Implem
   /*  kernel_value = LOGP( aux , aux2 );*/
 
   /* Memory release */
-  free( logM );
-  free( logX );
-  free( logY );
-  free( logX2 );
-  free( logY2 );
+	delete[] logM;
+	delete[] logX;
+	delete[] logY;
+	delete[] logX2;
+	delete[] logY2;
 
   /* Return the logarithm of the kernel */
   return (float)LOGP(aux,aux2)/INTSCALE;

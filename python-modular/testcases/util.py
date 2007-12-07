@@ -59,7 +59,8 @@ def get_feats_simple (input):
 		train=eval(input['feature_type']+"Features(data_train)")
 		test=eval(input['feature_type']+"Features(data_test)")
 
-	if input['name'].find('Sparse')!=-1:
+	if (input['name'].find('Sparse')!=-1 or (
+		input.has_key('svmparam_type') and input['svmparam_type']=='linear')):
 		sparse_train=eval('Sparse'+input['feature_type']+'Features()')
 		sparse_train.obtain_from_simple(train)
 

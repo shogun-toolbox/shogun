@@ -27,6 +27,7 @@ class CLibLinear : public CSparseLinearClassifier
 {
 	public:
 		CLibLinear(LIBLINEAR_LOSS loss);
+		CLibLinear(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
 		virtual ~CLibLinear();
 		virtual bool train();
 		virtual inline EClassifierType get_classifier_type() { return CT_LIBLINEAR; }

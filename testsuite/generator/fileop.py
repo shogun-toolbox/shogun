@@ -33,12 +33,21 @@ def _get_matrix (name, km):
 
 	return kmstr.replace('\n', '')
 
+def _is_excluded_from_filename (key):
+	if (key.find('feature_')!=-1 or
+		key.find('accuracy')!=-1 or
+		key.find('data_')!=-1 or
+		key=='svmparam_bias' or
+		key=='svmparam_type'):
+		return True
+	else:
+		return False
+
 def _get_filename (output):
 	params=[]
 
 	for k, v in output[1].iteritems():
-		if (k.find('feature_')!=-1 or k.find('accuracy')!=-1 or
-			k.find('data_')!=-1):
+		if _is_excluded_from_filename(k):
 			continue
 		cn=v.__class__.__name__
 		if cn=='bool' or cn=='float' or cn=='int' or cn=='str':
