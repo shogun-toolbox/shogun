@@ -18,7 +18,7 @@ def check_accuracy (accuracy, **kwargs):
 
 	return True
 
-def get_args (input, id='kparam'):
+def get_args (input, id):
 	# python dicts are not ordered, so we have to look at the number in
 	# the parameter's name and insert items appropriately into an
 	# ordered list
@@ -35,7 +35,7 @@ def get_args (input, id='kparam'):
 		except ValueError:
 			raise ValueError, 'Wrong input data %s: "%s"!' % (id, i)
 
-		if i.find('distance')!=-1:
+		if i.find('_distance')!=-1: # DistanceKernel
 			args[idx]=eval(input[i]+'()')
 		else:
 			try:
@@ -60,7 +60,7 @@ def get_feats_simple (input):
 		test=eval(input['feature_type']+"Features(data_test)")
 
 	if (input['name'].find('Sparse')!=-1 or (
-		input.has_key('svmparam_type') and input['svmparam_type']=='linear')):
+		input.has_key('classifier_type') and input['classifier_type']=='linear')):
 		sparse_train=eval('Sparse'+input['feature_type']+'Features()')
 		sparse_train.obtain_from_simple(train)
 

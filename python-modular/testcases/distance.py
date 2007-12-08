@@ -4,7 +4,7 @@ import util
 
 def _distance (input, feats):
 	dfun=eval(input['name'])
-	args=util.get_args(input, 'dparam')
+	args=util.get_args(input, 'distance_arg')
 
 	d=dfun(feats['train'], feats['train'], *args)
 	train=max(abs(input['dm_train']-d.get_distance_matrix()).flat)

@@ -5,7 +5,20 @@ import dataop
 
 DIR_OUTPUT='data'
 EXT_OUTPUT='.m'
-TYPE='Kernel'
+
+T_KERNEL=0
+T_DISTANCE=1
+T_CLASSIFIER=2
+
+def _get_typestr (type):
+	if type==T_KERNEL:
+		return 'kernel'
+	elif type==T_DISTANCE:
+		return 'distance'
+	elif type==T_CLASSIFIER:
+		return 'classifier'
+	else:
+		return 'unknown'
 
 def _get_matrix (name, km):
 	line=list()
@@ -37,16 +50,17 @@ def _is_excluded_from_filename (key):
 	if (key.find('feature_')!=-1 or
 		key.find('accuracy')!=-1 or
 		key.find('data_')!=-1 or
-		key=='svmparam_bias' or
-		key=='svmparam_type'):
+		key=='name' or
+		key=='classifier_bias' or
+		key=='classifier_type'):
 		return True
 	else:
 		return False
 
-def _get_filename (output):
+def _get_filename (type, output):
 	params=[]
 
-	for k, v in output[1].iteritems():
+	for k, v in output.iteritems():
 		if _is_excluded_from_filename(k):
 			continue
 		cn=v.__class__.__name__
@@ -57,18 +71,17 @@ def _get_filename (output):
 	if len(params)>0:
 		params='_'+params
 
-	return DIR_OUTPUT+os.sep+TYPE.lower()+os.sep+output[0]+params+EXT_OUTPUT
+	return DIR_OUTPUT+os.sep+_get_typestr(type)+os.sep+output['name']+params+EXT_OUTPUT
 
-def write (output):
-	if output is None:
-		return None
+############################################################################
+# public
+############################################################################
 
-	print 'Writing for '+TYPE+':', output[0]
+def write (type, output):
+	print 'Writing for '+_get_typestr(type).upper()+': '+output['name']
 
-	mfile=open(_get_filename(output), mode='w')
-	mfile.write("name = '"+output[0]+"'\n")
-
-	for k,v in output[1].iteritems():
+	mfile=open(_get_filename(type, output), mode='w')
+	for k,v in output.iteritems():
 		cn=v.__class__.__name__
 		if cn=='bool' or cn=='str':
 			mfile.write("%s = '%s'\n"%(k, v))
@@ -76,8 +89,8 @@ def write (output):
 			mfile.write("%s\n"%_get_matrix(k, v))
 		else:
 			mfile.write("%s = %s\n"%(k, v))
-
 	mfile.close()
+
 	return True
 
 def clean_dir_output ():
@@ -101,17 +114,17 @@ def clean_dir_output ():
 	return success
 
 # prefix and offset are necessary for subkernels
-def get_output_params (name, args=[], prefix='', offset=0):
-	if TYPE=='Kernel' or TYPE=='SVM':
+def get_output_params (name, type, args=[], prefix='', offset=0):
+	if type==T_KERNEL:
 		from klist import KLIST
 		data=KLIST[name]
-		param='kparam'
-	elif TYPE=='Distance':
+		argstr='kernel_arg'
+	elif type==T_DISTANCE:
 		from dlist import DLIST
 		data=DLIST[name]
-		param='dparam'
+		argstr='distance_arg'
 	else:
-		return None
+		return {}
 
 	output={}
 
@@ -140,14 +153,14 @@ def get_output_params (name, args=[], prefix='', offset=0):
 	# arguments, if any
 	for i in range(0, len(args)):
 		try:
-			pname=prefix+param+str(i+offset)+'_'+data[2][i]
+			argname=prefix+argstr+str(i+offset)+'_'+data[2][i]
 		except IndexError:
 			break
 
 		cn=args[i].__class__.__name__
 		if cn=='int' or cn=='float' or cn=='bool':
-			output[pname]=args[i]
+			output[argname]=args[i]
 		else:
-			output[pname]=cn
+			output[argname]=cn
 
 	return output;

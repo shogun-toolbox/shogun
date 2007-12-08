@@ -12,7 +12,7 @@ from numpy.random import seed
 from fileop import clean_dir_output
 import kernel
 import distance
-import svm
+import classifier
 
 
 def run ():
@@ -30,4 +30,4 @@ def run ():
 	clean_dir_output()
 	kernel.run()
 	distance.run()
-	svm.run()
+	classifier.run()

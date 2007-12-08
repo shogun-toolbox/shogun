@@ -18,6 +18,14 @@ CKNN::CKNN(): k(3), num_classes(0), num_train_labels(0), train_labels(NULL)
 {
 }
 
+CKNN::CKNN(DREAL k_, CDistance* d, CLabels* trainlab)
+ : k(k_), num_classes(0), train_labels(NULL)
+{
+    set_distance(d);
+    set_labels(trainlab);
+    num_train_labels=trainlab->get_num_labels();
+}
+
 
 CKNN::~CKNN()
 {

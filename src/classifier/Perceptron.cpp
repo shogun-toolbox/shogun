@@ -16,6 +16,12 @@ CPerceptron::CPerceptron() : CLinearClassifier(), learn_rate(0.1), max_iter(1000
 {
 }
 
+CPerceptron::CPerceptron(CRealFeatures* traindat, CLabels* trainlab)
+ : CLinearClassifier(), learn_rate(.1), max_iter(1000)
+{
+	CLinearClassifier::features=traindat;
+	CClassifier::labels=trainlab;
+}
 
 CPerceptron::~CPerceptron()
 {

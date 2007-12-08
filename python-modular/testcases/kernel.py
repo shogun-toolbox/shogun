@@ -12,7 +12,7 @@ import util
 
 def _kernel (input, feats):
 	kfun=eval(input['name']+'Kernel')
-	args=util.get_args(input)
+	args=util.get_args(input, 'kernel_arg')
 
 	k=kfun(feats['train'], feats['train'], *args)
 	train=max(abs(input['km_train']-k.get_kernel_matrix()).flat)
@@ -24,7 +24,7 @@ def _kernel (input, feats):
 def _add_subkernels (subkernels):
 	for idx, sk in enumerate(subkernels):
 		fun=eval(sk['name']+'Kernel')
-		args=util.get_args(sk)
+		args=util.get_args(sk, 'kernel_arg')
 		subkernels[idx]['kernel']=fun(*args)
 	return subkernels
 

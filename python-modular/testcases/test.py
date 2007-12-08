@@ -5,9 +5,9 @@ import sys
 
 import kernel
 import distance
-import svm
+import classifier
 
-SUPPORTED=['kernel', 'distance', 'svm']
+SUPPORTED=['kernel', 'distance', 'classifier']
 
 def _get_name_fun (fnam):
 	module=None

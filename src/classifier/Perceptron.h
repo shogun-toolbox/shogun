@@ -20,6 +20,7 @@ class CPerceptron : public CLinearClassifier
 {
 	public:
 		CPerceptron();
+		CPerceptron(CRealFeatures* traindat, CLabels* trainlab);
 		virtual ~CPerceptron();
 
 		virtual inline EClassifierType get_classifier_type() { return CT_PERCEPTRON; }
