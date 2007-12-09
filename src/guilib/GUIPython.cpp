@@ -566,7 +566,7 @@ PyObject* CGUIPython::py_set_custom_kernel(PyObject* self, PyObject* args)
 				{
 					if (source_is_diag && dest_is_diag && (py_akernel->nd == 2 && py_akernel->dimensions[0] == py_akernel->dimensions[1]) )
 					{
-						if (k->set_diag_kernel_matrix_from_diag(km, py_akernel->dimensions[0]))
+						if (k->set_triangle_kernel_matrix_from_triangle(km, py_akernel->dimensions[0]))
 						{
 							Py_INCREF(Py_None);
 							return Py_None;
@@ -574,7 +574,7 @@ PyObject* CGUIPython::py_set_custom_kernel(PyObject* self, PyObject* args)
 					}
 					else if (!source_is_diag && dest_is_diag && (py_akernel->nd == 2 && py_akernel->dimensions[0] == py_akernel->dimensions[1]) ) 
 					{
-						if (k->set_diag_kernel_matrix_from_full(km, py_akernel->dimensions[0]))
+						if (k->set_triangle_kernel_matrix_from_full(km, py_akernel->dimensions[0], py_akernel->dimensions[1]))
 						{
 							Py_INCREF(Py_None);
 							return Py_None;

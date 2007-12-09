@@ -689,9 +689,9 @@ bool CGUI_R::set_custom_kernel(SEXP args) {
 			if (k && k->get_kernel_type() == K_CUSTOM)
 			{
 				if (source_is_diag && dest_is_diag && (mxGetN(mx_kernel) == mxGetM(mx_kernel)) )
-					return k->set_diag_kernel_matrix_from_diag(km, mxGetN(mx_kernel));
+					return k->set_triangle_kernel_matrix_from_diag(km, mxGetN(mx_kernel));
 				else if (!source_is_diag && dest_is_diag && (mxGetN(mx_kernel) == mxGetM(mx_kernel)) )
-					return k->set_diag_kernel_matrix_from_full(km, mxGetN(mx_kernel));
+					return k->set_triangle_kernel_matrix_from_full(km, mxGetM(mx_kernel), mxGetN(mx_kernel));
 				else if (!source_is_diag && !dest_is_diag)
 					return k->set_full_kernel_matrix_from_full(km, mxGetM(mx_kernel), mxGetN(mx_kernel));
 				else
