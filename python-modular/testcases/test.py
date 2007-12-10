@@ -8,8 +8,10 @@ import distance
 import classifier
 import clustering
 import distribution
+import regression
 
-SUPPORTED=['kernel', 'distance', 'classifier', 'clustering', 'distribution']
+SUPPORTED=['kernel', 'distance', 'classifier', 'clustering', 'distribution',
+	'regression']
 
 def _get_name_fun (fnam):
 	module=None

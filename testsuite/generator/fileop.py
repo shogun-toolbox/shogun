@@ -11,20 +11,22 @@ T_DISTANCE=1
 T_CLASSIFIER=2
 T_CLUSTERING=3
 T_DISTRIBUTION=4
+T_REGRESSION=5
 
 def _get_typestr (type):
-	if type==T_KERNEL:
-		return 'kernel'
-	elif type==T_DISTANCE:
-		return 'distance'
-	elif type==T_CLASSIFIER:
-		return 'classifier'
-	elif type==T_CLUSTERING:
-		return 'clustering'
-	elif type==T_DISTRIBUTION:
-		return 'distribution'
-	else:
-		return 'unknown'
+	typemap={
+		T_KERNEL:'kernel',
+		T_DISTANCE:'distance',
+		T_CLASSIFIER:'classifier',
+		T_CLUSTERING:'clustering',
+		T_DISTRIBUTION:'distribution',
+		T_REGRESSION:'regression',
+	}
+
+	try:
+		return typemap[type]
+	except IndexError:
+		return False
 
 def _get_matrix (name, km):
 	line=list()
@@ -57,6 +59,7 @@ def _is_excluded_from_filename (key):
 		key.find('accuracy')!=-1 or
 		key.find('data_')!=-1 or
 		key=='name' or
+		key=='regression_type' or
 		key=='classifier_bias' or
 		key=='classifier_type'):
 		return True
@@ -84,9 +87,10 @@ def _get_filename (type, output):
 ############################################################################
 
 def write (type, output):
-	print 'Writing for '+_get_typestr(type).upper()+': '+output['name']
+	fnam=_get_filename(type, output)
+	print 'Writing for '+_get_typestr(type).upper()+': '+os.path.basename(fnam)
 
-	mfile=open(_get_filename(type, output), mode='w')
+	mfile=open(fnam, mode='w')
 	for k,v in output.iteritems():
 		cn=v.__class__.__name__
 		if cn=='bool' or cn=='str':

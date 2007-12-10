@@ -15,6 +15,7 @@ import distance
 import classifier
 import clustering
 import distribution
+import regression
 
 
 def run ():
@@ -35,3 +36,4 @@ def run ():
 	classifier.run()
 	clustering.run()
 	distribution.run()
+	regression.run()
