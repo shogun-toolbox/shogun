@@ -327,8 +327,6 @@ CHMM::CHMM(FILE* model_file, DREAL p_PSEUDO)
 
 CHMM::~CHMM()
 {
-	delete model ;
-
 	if (trans_list_forward_cnt)
 	  delete[] trans_list_forward_cnt ;
 	if (trans_list_backward_cnt)

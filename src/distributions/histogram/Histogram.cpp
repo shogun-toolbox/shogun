@@ -22,6 +22,14 @@ CHistogram::CHistogram()
 	ASSERT(hist);
 }
 
+CHistogram::CHistogram(CWordFeatures *f)
+{
+	hist=new DREAL[1<<16];
+	ASSERT(hist);
+
+	features=f;
+}
+
 CHistogram::~CHistogram()
 {
 	delete[] hist;

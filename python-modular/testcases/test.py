@@ -7,8 +7,9 @@ import kernel
 import distance
 import classifier
 import clustering
+import distribution
 
-SUPPORTED=['kernel', 'distance', 'classifier', 'clustering']
+SUPPORTED=['kernel', 'distance', 'classifier', 'clustering', 'distribution']
 
 def _get_name_fun (fnam):
 	module=None

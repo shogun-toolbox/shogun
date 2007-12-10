@@ -14,6 +14,7 @@ import kernel
 import distance
 import classifier
 import clustering
+import distribution
 
 
 def run ():
@@ -33,3 +34,4 @@ def run ():
 	distance.run()
 	classifier.run()
 	clustering.run()
+	distribution.run()

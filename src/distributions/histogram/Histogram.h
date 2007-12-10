@@ -18,6 +18,7 @@ class CHistogram : private CDistribution
 {
 	public:
 		CHistogram();
+		CHistogram(CWordFeatures* f);
 		~CHistogram();
 
 		virtual bool train();

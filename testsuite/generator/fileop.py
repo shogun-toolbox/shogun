@@ -10,6 +10,7 @@ T_KERNEL=0
 T_DISTANCE=1
 T_CLASSIFIER=2
 T_CLUSTERING=3
+T_DISTRIBUTION=4
 
 def _get_typestr (type):
 	if type==T_KERNEL:
@@ -20,6 +21,8 @@ def _get_typestr (type):
 		return 'classifier'
 	elif type==T_CLUSTERING:
 		return 'clustering'
+	elif type==T_DISTRIBUTION:
+		return 'distribution'
 	else:
 		return 'unknown'
 
