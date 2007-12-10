@@ -12,7 +12,7 @@ def _get_output_params (name, params, data):
 		'name':name,
 		'data_train':matrix(data['data']['train']),
 		'data_test':matrix(data['data']['test']),
-		'clustering_accuracy':CLUSTERINGLIST[name][0],
+		'accuracy':CLUSTERINGLIST[name][0],
 	}
 
 	for k, v in params.iteritems():
@@ -27,7 +27,6 @@ def _get_output_params (name, params, data):
 
 def _run (name, first_arg):
 	params={
-		'num_threads':1,
 		first_arg:3,
 	}
 	data={
@@ -41,7 +40,6 @@ def _run (name, first_arg):
 
 	fun=eval(name)
 	clustering=fun(params[first_arg], distance)
-	clustering.parallel.set_num_threads(params['num_threads'])
 	clustering.train()
 
 	distance.init(feats['train'], feats['test'])
