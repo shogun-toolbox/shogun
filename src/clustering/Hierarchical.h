@@ -24,6 +24,7 @@ class CHierarchical : public CDistanceMachine
 {
 	public:
 		CHierarchical();
+		CHierarchical(INT merges, CDistance* d);
 		virtual ~CHierarchical();
 
 		virtual inline EClassifierType get_classifier_type() { return CT_HIERARCHICAL; }

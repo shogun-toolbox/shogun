@@ -13,6 +13,7 @@ from fileop import clean_dir_output
 import kernel
 import distance
 import classifier
+import clustering
 
 
 def run ():
@@ -31,3 +32,4 @@ def run ():
 	kernel.run()
 	distance.run()
 	classifier.run()
+	clustering.run()

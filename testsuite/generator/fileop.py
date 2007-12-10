@@ -9,6 +9,7 @@ EXT_OUTPUT='.m'
 T_KERNEL=0
 T_DISTANCE=1
 T_CLASSIFIER=2
+T_CLUSTERING=3
 
 def _get_typestr (type):
 	if type==T_KERNEL:
@@ -17,6 +18,8 @@ def _get_typestr (type):
 		return 'distance'
 	elif type==T_CLASSIFIER:
 		return 'classifier'
+	elif type==T_CLUSTERING:
+		return 'clustering'
 	else:
 		return 'unknown'
 

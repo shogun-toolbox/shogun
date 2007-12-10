@@ -10,6 +10,7 @@
  */
 
 #include "clustering/Hierarchical.h"
+#include "distance/Distance.h"
 #include "features/Labels.h"
 #include "features/RealFeatures.h"
 #include "lib/Mathematics.h"
@@ -22,6 +23,12 @@
 CHierarchical::CHierarchical(): merges(3), dimensions(0), assignment(NULL),
 	table_size(0), pairs(NULL), merge_distance(NULL)
 {
+}
+
+CHierarchical::CHierarchical(INT merges_, CDistance* d): merges(merges_), dimensions(0), assignment(NULL),
+	table_size(0), pairs(NULL), merge_distance(NULL)
+{
+	set_distance(d);
 }
 
 CHierarchical::~CHierarchical()

@@ -11,6 +11,7 @@
  */
 
 #include "clustering/KMeans.h"
+#include "distance/Distance.h"
 #include "features/Labels.h"
 #include "features/RealFeatures.h"
 #include "lib/Mathematics.h"
@@ -26,6 +27,11 @@
 
 CKMeans::CKMeans(): max_iter(10000), k(3), dimensions(0), R(NULL), mus(NULL), Weights(NULL)
 {
+}
+
+CKMeans::CKMeans(INT k_, CDistance* d): max_iter(10000), k(k_), dimensions(0), R(NULL), mus(NULL), Weights(NULL)
+{
+	set_distance(d);
 }
 
 CKMeans::~CKMeans()

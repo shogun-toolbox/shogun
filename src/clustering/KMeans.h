@@ -25,6 +25,7 @@ class CKMeans : public CDistanceMachine
 {
 	public:
 		CKMeans();
+		CKMeans(INT k, CDistance* d);
 		virtual ~CKMeans();
 
 		virtual inline EClassifierType get_classifier_type() { return CT_KMEANS; }
