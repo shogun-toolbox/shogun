@@ -4,6 +4,7 @@ from shogun.Distance import *
 import fileop
 import dataop
 import featop
+from config import T_DISTANCE
 
 def _compute (name, feats, data, *args):
 	fun=eval(name)
@@ -19,9 +20,9 @@ def _compute (name, feats, data, *args):
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test'])
 	}
-	output.update(fileop.get_output_params(name, fileop.T_DISTANCE, args))
+	output.update(fileop.get_output_params(name, T_DISTANCE, args))
 
-	fileop.write(fileop.T_DISTANCE, output)
+	fileop.write(T_DISTANCE, output)
 
 def _run_feats_real ():
 	data=dataop.get_rand()

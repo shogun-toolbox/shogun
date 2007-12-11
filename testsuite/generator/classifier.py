@@ -9,7 +9,7 @@ from shogun.Library import E_WD
 import fileop
 import featop
 import dataop
-from config import CLASSIFIER
+from config import CLASSIFIER, T_KERNEL, T_DISTANCE, T_CLASSIFIER
 
 """
 some words about params + data:
@@ -37,12 +37,12 @@ def _get_output_params (name, params, data):
 	if type=='kernel':
 		output['kernel_name']=data['kname']
 		kparams=fileop.get_output_params(
-			data['kname'], fileop.T_KERNEL, data['kargs'])
+			data['kname'], T_KERNEL, data['kargs'])
 		output.update(kparams)
 	elif type=='distance':
 		output['distance_name']=data['dname']
 		dparams=fileop.get_output_params(
-			data['dname'], fileop.T_DISTANCE, data['dargs'])
+			data['dname'], T_DISTANCE, data['dargs'])
 		output.update(dparams)
 	else:
 		output['feature_class']='simple'
@@ -116,7 +116,7 @@ def _compute_svm (name, labels, params, data):
 	params['classified']=svm.classify().get_labels()
 
 	output=_get_output_params(name, params, data)
-	fileop.write(fileop.T_CLASSIFIER, output)
+	fileop.write(T_CLASSIFIER, output)
 
 def _loop_svm (svms, data):
 	for name in svms:
@@ -236,7 +236,7 @@ def _run_perceptron ():
 	params['classified']=p.classify().get_labels()
 
 	output=_get_output_params(name, params, data)
-	fileop.write(fileop.T_CLASSIFIER, output)
+	fileop.write(T_CLASSIFIER, output)
 
 def _run_knn ():
 	name='KNN'
@@ -263,7 +263,7 @@ def _run_knn ():
 	params['classified']=knn.classify().get_labels()
 
 	output=_get_output_params(name, params, data)
-	fileop.write(fileop.T_CLASSIFIER, output)
+	fileop.write(T_CLASSIFIER, output)
 
 ##########################################################################
 # public

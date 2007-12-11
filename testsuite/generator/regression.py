@@ -7,7 +7,7 @@ from shogun.Regression import *
 import fileop
 import featop
 import dataop
-from config import REGRESSION
+from config import REGRESSION, T_KERNEL, T_REGRESSION
 
 
 def _get_output_params (name, params, data):
@@ -25,7 +25,7 @@ def _get_output_params (name, params, data):
 
 	output['kernel_name']=data['kname']
 	kparams=fileop.get_output_params(
-		data['kname'], fileop.T_KERNEL, data['kargs'])
+		data['kname'], T_KERNEL, data['kargs'])
 	output.update(kparams)
 
 	return output
@@ -58,7 +58,7 @@ def _compute (name, params, data):
 	params['classified']=regression.classify().get_labels()
 
 	output=_get_output_params(name, params, data)
-	fileop.write(fileop.T_REGRESSION, output)
+	fileop.write(T_REGRESSION, output)
 
 def _loop (svrs, data):
 	num_vec=data['feats']['train'].get_num_vectors()

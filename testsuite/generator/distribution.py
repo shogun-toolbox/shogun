@@ -5,7 +5,7 @@ from shogun.Features import RealFeatures
 import fileop
 import featop
 import dataop
-from config import DISTRIBUTION
+from config import DISTRIBUTION, T_DISTRIBUTION
 
 def _get_output_params (name, params, data):
 	ddata=DISTRIBUTION[name]
@@ -38,7 +38,7 @@ def _run_histogram ():
 
 	params={}
 	output=_get_output_params('Histogram', params, data)
-	fileop.write(fileop.T_DISTRIBUTION, output)
+	fileop.write(T_DISTRIBUTION, output)
 
 def _run_hmm ():
 	data=dataop.get_dna()
@@ -55,7 +55,7 @@ def _run_hmm ():
 	hmm.train()
 
 	output=_get_output_params('HMM', params, data)
-	fileop.write(fileop.T_DISTRIBUTION, output)
+	fileop.write(T_DISTRIBUTION, output)
 
 def run ():
 	_run_histogram()

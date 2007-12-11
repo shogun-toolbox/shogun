@@ -7,21 +7,14 @@ import config
 DIR_OUTPUT='data'
 EXT_OUTPUT='.m'
 
-T_KERNEL=0
-T_DISTANCE=1
-T_CLASSIFIER=2
-T_CLUSTERING=3
-T_DISTRIBUTION=4
-T_REGRESSION=5
-
 def _get_typestr (type):
 	typemap={
-		T_KERNEL:'kernel',
-		T_DISTANCE:'distance',
-		T_CLASSIFIER:'classifier',
-		T_CLUSTERING:'clustering',
-		T_DISTRIBUTION:'distribution',
-		T_REGRESSION:'regression',
+		config.T_KERNEL:'kernel',
+		config.T_DISTANCE:'distance',
+		config.T_CLASSIFIER:'classifier',
+		config.T_CLUSTERING:'clustering',
+		config.T_DISTRIBUTION:'distribution',
+		config.T_REGRESSION:'regression',
 	}
 
 	try:
@@ -126,10 +119,10 @@ def clean_dir_output ():
 
 # prefix and offset are necessary for subkernels
 def get_output_params (name, type, args=[], prefix='', offset=0):
-	if type==T_KERNEL:
+	if type==config.T_KERNEL:
 		data=config.KERNEL[name]
 		argstr='kernel_arg'
-	elif type==T_DISTANCE:
+	elif type==config.T_DISTANCE:
 		data=config.DISTANCE[name]
 		argstr='distance_arg'
 	else:

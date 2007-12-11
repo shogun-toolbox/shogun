@@ -9,7 +9,7 @@ from shogun.Distance import *
 import fileop
 import featop
 import dataop
-from config import KERNEL
+from config import KERNEL, T_KERNEL
 
 ##################################################################
 ## subkernel funs
@@ -21,9 +21,9 @@ def _compute_subkernels (name, feats, kernel, output):
 	output['km_train']=kernel.get_kernel_matrix()
 	kernel.init(feats['train'], feats['test'])
 	output['km_test']=kernel.get_kernel_matrix()
-	output.update(fileop.get_output_params(name, fileop.T_KERNEL))
+	output.update(fileop.get_output_params(name, T_KERNEL))
 
-	fileop.write(fileop.T_KERNEL, output)
+	fileop.write(T_KERNEL, output)
 
 def _get_subkernel_args (subkernel):
 	args=''
@@ -47,7 +47,7 @@ def _get_subkernel_output_params (subkernel, data, num):
 	output[prefix+'data_train']=matrix(data['train'])
 	output[prefix+'data_test']=matrix(data['test'])
 	output.update(fileop.get_output_params(
-		subkernel[0], fileop.T_KERNEL, subkernel[1:], prefix, 1))
+		subkernel[0], T_KERNEL, subkernel[1:], prefix, 1))
 
 	return output
 
@@ -118,9 +118,9 @@ def _compute (name, feats, data, *args):
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test'])
 	}
-	output.update(fileop.get_output_params(name, fileop.T_KERNEL, args))
+	output.update(fileop.get_output_params(name, T_KERNEL, args))
 
-	fileop.write(fileop.T_KERNEL, output)
+	fileop.write(T_KERNEL, output)
 
 def _compute_pie (name, feats, data):
 	pie=PluginEstimate()
@@ -144,9 +144,9 @@ def _compute_pie (name, feats, data):
 		'labels':labels,
 		'classified':classified
 	}
-	output.update(fileop._get_output_params(name, fileop.T_KERNEL))
+	output.update(fileop._get_output_params(name, T_KERNEL))
 
-	fileop.write(fileop.T_KERNEL, output)
+	fileop.write(T_KERNEL, output)
 
 ##################################################################
 ## run funcs
@@ -178,9 +178,9 @@ def _run_custom ():
 		'data':matrix(data),
 		'dim_square':dim_square
 	}
-	output.update(fileop.get_output_params(name, fileop.T_KERNEL))
+	output.update(fileop.get_output_params(name, T_KERNEL))
 
-	fileop.write(fileop.T_KERNEL, output)
+	fileop.write(T_KERNEL, output)
 
 def _run_distance ():
 	data=dataop.get_rand()

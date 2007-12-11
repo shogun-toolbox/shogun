@@ -5,7 +5,7 @@ from shogun.Distance import EuclidianDistance
 import fileop
 import featop
 import dataop
-from config import CLUSTERING
+from config import CLUSTERING, T_CLUSTERING, T_DISTANCE
 
 def _get_output_params (name, params, data):
 	output={
@@ -20,7 +20,7 @@ def _get_output_params (name, params, data):
 
 	output['distance_name']=data['dname']
 	dparams=fileop.get_output_params(
-		data['dname'], fileop.T_DISTANCE, data['dargs'])
+		data['dname'], T_DISTANCE, data['dargs'])
 	output.update(dparams)
 
 	return output
@@ -46,7 +46,7 @@ def _run (name, first_arg):
 	#params['classified']=clustering.classify().get_labels()
 
 	output=_get_output_params(name, params, data)
-	fileop.write(fileop.T_CLUSTERING, output)
+	fileop.write(T_CLUSTERING, output)
 
 
 def run ():
