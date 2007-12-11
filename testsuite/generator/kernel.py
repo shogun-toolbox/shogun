@@ -9,7 +9,7 @@ from shogun.Distance import *
 import fileop
 import featop
 import dataop
-from klist import KLIST
+from config import KERNEL
 
 ##################################################################
 ## subkernel funs
@@ -82,7 +82,7 @@ def _run_combined ():
 
 	for i in range(0, len(subkernels)):
 		str_i=str(i)
-		kdata=KLIST[subkernels[i][0]]
+		kdata=KERNEL[subkernels[i][0]]
 		args=_get_subkernel_args(subkernels[i])
 		#FIXME: size soon to be removed from constructor
 		sk=eval(subkernels[i][0]+'Kernel(10'+args+')')
@@ -105,11 +105,11 @@ def _run_subkernels ():
 ##################################################################
 
 def _compute (name, feats, data, *args):
-	kfun=eval(name+'Kernel')
-	k=kfun(feats['train'], feats['train'], *args)
-	km_train=k.get_kernel_matrix()
-	k.init(feats['train'], feats['test'])
-	km_test=k.get_kernel_matrix()
+	fun=eval(name+'Kernel')
+	kernel=fun(feats['train'], feats['train'], *args)
+	km_train=kernel.get_kernel_matrix()
+	kernel.init(feats['train'], feats['test'])
+	km_test=kernel.get_kernel_matrix()
 
 	output={
 		'name':name,
@@ -124,15 +124,15 @@ def _compute (name, feats, data, *args):
 
 def _compute_pie (name, feats, data):
 	pie=PluginEstimate()
-	kfun=eval(name+'Kernel')
+	fun=eval(name+'Kernel')
 
 	num_vec=feats['train'].get_num_vectors();
 	labels=rand(num_vec).round()*2-1
 	l=Labels(labels)
 	pie.train(feats['train'], l, .1, -.1)
-	k=kfun(feats['train'], feats['train'], pie)
+	kernel=fun(feats['train'], feats['train'], pie)
 
-	k.init(feats['train'], feats['test'])
+	kernel.init(feats['train'], feats['test'])
 	pie.set_testfeatures(feats['test'])
 	pie.test()
 	classified=pie.classify().get_labels()
@@ -161,13 +161,13 @@ def _run_custom ():
 	symdata=data+data.T
 
 	lowertriangle=array([ symdata[(x,y)] for x in xrange(symdata.shape[1]) for y in xrange(symdata.shape[0]) if y<=x ])
-	k=CustomKernel(feats['train'], feats['train'])
-	k.set_triangle_kernel_matrix_from_triangle(lowertriangle)
-	km_triangletriangle=k.get_kernel_matrix()
-	k.set_triangle_kernel_matrix_from_full(symdata)
-	km_fulltriangle=k.get_kernel_matrix()
-	k.set_full_kernel_matrix_from_full(data)
-	km_fullfull=k.get_kernel_matrix()
+	kernel=CustomKernel(feats['train'], feats['train'])
+	kernel.set_triangle_kernel_matrix_from_triangle(lowertriangle)
+	km_triangletriangle=kernel.get_kernel_matrix()
+	kernel.set_triangle_kernel_matrix_from_full(symdata)
+	km_fulltriangle=kernel.get_kernel_matrix()
+	kernel.set_full_kernel_matrix_from_full(data)
+	km_fullfull=kernel.get_kernel_matrix()
 
 	output={
 		'name':name,

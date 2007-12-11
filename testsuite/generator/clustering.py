@@ -5,14 +5,14 @@ from shogun.Distance import EuclidianDistance
 import fileop
 import featop
 import dataop
-from clusteringlist import CLUSTERINGLIST
+from config import CLUSTERING
 
 def _get_output_params (name, params, data):
 	output={
 		'name':name,
 		'data_train':matrix(data['data']['train']),
 		'data_test':matrix(data['data']['test']),
-		'accuracy':CLUSTERINGLIST[name][0],
+		'accuracy':CLUSTERING[name][0],
 	}
 
 	for k, v in params.iteritems():

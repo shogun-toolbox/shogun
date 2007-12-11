@@ -7,16 +7,16 @@ from shogun.Regression import *
 import fileop
 import featop
 import dataop
-from regressionlist import REGRESSIONLIST
+from config import REGRESSION
 
 
 def _get_output_params (name, params, data):
-	type=REGRESSIONLIST[name][1]
+	type=REGRESSION[name][1]
 	output={
 		'name':name,
 		'data_train':matrix(data['data']['train']),
 		'data_test':matrix(data['data']['test']),
-		'regression_accuracy':REGRESSIONLIST[name][0],
+		'regression_accuracy':REGRESSION[name][0],
 		'regression_type':type,
 	}
 
@@ -31,17 +31,17 @@ def _get_output_params (name, params, data):
 	return output
 
 def _compute (name, params, data):
-	type=REGRESSIONLIST[name][1]
-	data['k'].parallel.set_num_threads(params['num_threads'])
-	data['k'].init(data['feats']['train'], data['feats']['train'])
+	type=REGRESSION[name][1]
+	data['kernel'].parallel.set_num_threads(params['num_threads'])
+	data['kernel'].init(data['feats']['train'], data['feats']['train'])
 	# essential to wrap in array(), will segfault sometimes otherwise
 	labels=Labels(array(params['labels']))
 
 	fun=eval(name)
 	if type=='svm':
-		regression=fun(params['C'], params['epsilon'], data['k'], labels)
+		regression=fun(params['C'], params['epsilon'], data['kernel'], labels)
 	else:
-		regression=fun(params['tau'], data['k'], labels)
+		regression=fun(params['tau'], data['kernel'], labels)
 	regression.parallel.set_num_threads(params['num_threads'])
 
 	if params.has_key('tube_epsilon'):
@@ -54,7 +54,7 @@ def _compute (name, params, data):
 		params['alphas']=regression.get_alphas()
 		params['support_vectors']=regression.get_support_vectors()
 
-	data['k'].init(data['feats']['train'], data['feats']['test'])
+	data['kernel'].init(data['feats']['train'], data['feats']['test'])
 	params['classified']=regression.classify().get_labels()
 
 	output=_get_output_params(name, params, data)
@@ -64,7 +64,7 @@ def _loop (svrs, data):
 	num_vec=data['feats']['train'].get_num_vectors()
 	labels=rand(num_vec).round()*2-1
 	for name in svrs:
-		type=REGRESSIONLIST[name][1]
+		type=REGRESSION[name][1]
 		if type=='svm':
 			params={'C':.017, 'epsilon':1e-5, 'tube_epsilon':1e-2,
 				'num_threads':1, 'labels':labels}
@@ -110,6 +110,6 @@ def run ():
 		'data':dataop.get_rand(),
 	}
 	data['feats']=featop.get_simple('Real', data['data'])
-	data['k']=GaussianKernel(10, *data['kargs'])
+	data['kernel']=GaussianKernel(10, *data['kargs'])
 	_loop(svrs, data)
 

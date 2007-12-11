@@ -9,7 +9,7 @@ from shogun.Library import E_WD
 import fileop
 import featop
 import dataop
-from classifierlist import CLASSIFIERLIST
+from config import CLASSIFIER
 
 """
 some words about params + data:
@@ -22,12 +22,12 @@ there might be a better solution...
 """
 
 def _get_output_params (name, params, data):
-	type=CLASSIFIERLIST[name][1]
+	type=CLASSIFIER[name][1]
 	output={
 		'name':name,
 		'data_train':matrix(data['data']['train']),
 		'data_test':matrix(data['data']['test']),
-		'classifier_accuracy':CLASSIFIERLIST[name][0],
+		'classifier_accuracy':CLASSIFIER[name][0],
 		'classifier_type':type,
 	}
 
@@ -71,20 +71,20 @@ def _get_labels (type, num):
 
 def _get_svm (name, labels, params, data):
 	svmfun=eval(name)
-	type=CLASSIFIERLIST[name][1]
+	type=CLASSIFIER[name][1]
 
 	if type=='kernel':
-		data['k'].parallel.set_num_threads(params['num_threads'])
-		data['k'].init(data['feats']['train'], data['feats']['train'])
+		data['kernel'].parallel.set_num_threads(params['num_threads'])
+		data['kernel'].init(data['feats']['train'], data['feats']['train'])
 		if labels is None:
-			return svmfun(params['C'], data['k'])
+			return svmfun(params['C'], data['kernel'])
 		else:
-			return svmfun(params['C'], data['k'], labels)
+			return svmfun(params['C'], data['kernel'], labels)
 	else:
 		return svmfun(params['C'], data['feats']['train'], labels)
 
 def _compute_svm (name, labels, params, data):
-	type=CLASSIFIERLIST[name][1]
+	type=CLASSIFIER[name][1]
 	svm=_get_svm(name, labels, params, data)
 	svm.parallel.set_num_threads(params['num_threads'])
 	svm.set_epsilon(params['epsilon'])
@@ -111,7 +111,7 @@ def _compute_svm (name, labels, params, data):
 			if len(support_vectors)>0:
 				params['support_vectors']=support_vectors
 
-			data['k'].init(data['feats']['train'], data['feats']['test'])
+			data['kernel'].init(data['feats']['train'], data['feats']['test'])
 
 	params['classified']=svm.classify().get_labels()
 
@@ -120,8 +120,8 @@ def _compute_svm (name, labels, params, data):
 
 def _loop_svm (svms, data):
 	for name in svms:
-		type=CLASSIFIERLIST[name][1]
-		ltype=CLASSIFIERLIST[name][2]
+		type=CLASSIFIER[name][1]
+		ltype=CLASSIFIER[name][2]
 
 		if type=='kernel':
 			params={'C':.017, 'epsilon':1e-5, 'tube_epsilon':1e-2, 'num_threads':1}
@@ -160,19 +160,19 @@ def _run_svm_kernel ():
 		'data':dataop.get_rand(),
 	}
 	data['feats']=featop.get_simple('Real', data['data'])
-	data['k']=GaussianKernel(10, *data['kargs'])
+	data['kernel']=GaussianKernel(10, *data['kargs'])
 	_loop_svm(svms, data)
 
 	svms=['SVMLight', 'GPBTSVM']
 	data['kname']='Linear'
-	data['k']=LinearKernel(10, *data['kargs'])
+	data['kernel']=LinearKernel(10, *data['kargs'])
 	_loop_svm(svms, data)
 
 	data['data']=dataop.get_dna()
 	data['feats']=featop.get_string('Char', data['data'])
 	data['kname']='WeightedDegreeString'
 	data['kargs']=[E_WD, 3, 0]
-	data['k']=WeightedDegreeStringKernel(10, *data['kargs'])
+	data['kernel']=WeightedDegreeStringKernel(10, *data['kargs'])
 	# WeightedStringKernel is a bit inconsistent in constructors: have to get
 	# rid of first arg EWDKernType in order to fit into scheme 
 	data['kargs']=data['kargs'][1:]
@@ -180,18 +180,18 @@ def _run_svm_kernel ():
 
 	data['kname']='WeightedDegreePositionString'
 	data['kargs']=[20]
-	data['k']=WeightedDegreePositionStringKernel(10, *data['kargs'])
+	data['kernel']=WeightedDegreePositionStringKernel(10, *data['kargs'])
 	_loop_svm(svms, data)
 
 	data['kargs']=[False, FULL_NORMALIZATION]
 	data['kname']='CommWordString'
 	data['feats']=featop.get_string_complex('Word', data['data'])
-	data['k']=CommWordStringKernel(10, *data['kargs'])
+	data['kernel']=CommWordStringKernel(10, *data['kargs'])
 	_loop_svm(svms, data)
 
 	data['kname']='CommUlongString'
 	data['feats']=featop.get_string_complex('Ulong', data['data'])
-	data['k']=CommUlongStringKernel(10, *data['kargs'])
+	data['kernel']=CommUlongStringKernel(10, *data['kargs'])
 	_loop_svm(svms, data)
 
 def _run_svm_linear ():
@@ -222,7 +222,7 @@ def _run_perceptron ():
 	data={'data':dataop.get_rand()}
 	feats=featop.get_simple('Real', data['data'])
 	num_vec=feats['train'].get_num_vectors()
-	params['labels'], labels=_get_labels(CLASSIFIERLIST[name][2], num_vec)
+	params['labels'], labels=_get_labels(CLASSIFIER[name][2], num_vec)
 	weights=rand(num_vec)
 
 	p=Perceptron(feats['train'], labels)
@@ -250,10 +250,10 @@ def _run_knn ():
 		'data':dataop.get_rand(),
 	}
 	feats=featop.get_simple('Real', data['data'])
-	dfun=eval(data['dname'])
-	distance=dfun(feats['train'], feats['train'], *data['dargs'])
+	fun=eval(data['dname'])
+	distance=fun(feats['train'], feats['train'], *data['dargs'])
 	params['labels'], labels=_get_labels(
-		CLASSIFIERLIST[name][2], feats['train'].get_num_vectors())
+		CLASSIFIER[name][2], feats['train'].get_num_vectors())
 
 	knn=KNN(params['k'], distance, labels)
 	knn.parallel.set_num_threads(params['num_threads'])

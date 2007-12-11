@@ -10,11 +10,11 @@ __url__='http://shogun-toolbox.org'
 from numpy.random import seed
 
 from fileop import clean_dir_output
-import kernel
-import distance
 import classifier
 import clustering
+import distance
 import distribution
+import kernel
 import regression
 
 

@@ -2,6 +2,7 @@ import os
 
 import featop
 import dataop
+import config
 
 DIR_OUTPUT='data'
 EXT_OUTPUT='.m'
@@ -126,12 +127,10 @@ def clean_dir_output ():
 # prefix and offset are necessary for subkernels
 def get_output_params (name, type, args=[], prefix='', offset=0):
 	if type==T_KERNEL:
-		from klist import KLIST
-		data=KLIST[name]
+		data=config.KERNEL[name]
 		argstr='kernel_arg'
 	elif type==T_DISTANCE:
-		from dlist import DLIST
-		data=DLIST[name]
+		data=config.DISTANCE[name]
 		argstr='distance_arg'
 	else:
 		return {}

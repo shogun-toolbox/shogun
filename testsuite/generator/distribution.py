@@ -5,10 +5,10 @@ from shogun.Features import RealFeatures
 import fileop
 import featop
 import dataop
-from distributionlist import DISTRIBUTIONLIST
+from config import DISTRIBUTION
 
 def _get_output_params (name, params, data):
-	ddata=DISTRIBUTIONLIST[name]
+	ddata=DISTRIBUTION[name]
 	output={
 		'name':name,
 		'data_train':matrix(data['train']),

@@ -6,11 +6,11 @@ import dataop
 import featop
 
 def _compute (name, feats, data, *args):
-	dfun=eval(name)
-	d=dfun(feats['train'], feats['train'], *args)
-	dm_train=d.get_distance_matrix()
-	d.init(feats['train'], feats['test'])
-	dm_test=d.get_distance_matrix()
+	fun=eval(name)
+	distance=fun(feats['train'], feats['train'], *args)
+	dm_train=distance.get_distance_matrix()
+	distance.init(feats['train'], feats['test'])
+	dm_test=distance.get_distance_matrix()
 
 	output={
 		'name':name,

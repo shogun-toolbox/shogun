@@ -1,8 +1,51 @@
-# format:
-#	name:
-#		data_class + _type, feature_class + _type(s),
-#		available kernel parameters, accuracy
-KLIST={
+# name: accuracy, classifier type, label type
+CLASSIFIER={
+	'SVMLight':[1e-7, 'kernel', 'twoclass'],
+	'LibLinear':[1e-8, 'linear', 'twoclass'],
+	'LibSVM':[1e-8, 'kernel', 'twoclass'],
+	'LibSVMMultiClass':[1e-8, 'kernel', 'series'],
+	'LibSVMOneClass':[1e-8, 'kernel', None],
+	'GMNPSVM':[1e-8, 'kernel', 'series'],
+	'GPBTSVM':[1e-7, 'kernel', 'twoclass'],
+	'KNN':[1e-8, 'distance', 'twoclass'],
+	'MPDSVM':[1e-8, 'kernel', 'twoclass'],
+	'Perceptron':[1e-8, 'perceptron', 'twoclass'],
+	'SubGradientSVM':[1e-8, 'linear', 'twoclass'],
+	'SVMLin':[1e-8, 'linear', 'twoclass'],
+	'SVMOcas':[1e-4, 'linear', 'twoclass'],
+}
+
+# name: accuracy
+CLUSTERING={
+	'Hierarchical':[1e-8],
+	'KMeans':[1e-8],
+}
+
+# name: data_class + _type, feature_class + _type(s), available distance
+#  parameters, accuracy
+DISTANCE={
+	'CanberraMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
+	'ChebyshewMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
+	'CanberraWordDistance':[['dna', ''], ['string_complex', 'Word', 'Char'], [], 1e-7],
+	'EuclidianDistance':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
+	'GeodesicMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
+	'HammingWordDistance':[['dna', ''], ['string_complex', 'Word', 'Char'], ['use_sign'], 0],
+	'JensenMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
+	'ManhattanMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
+	'ManhattanWordDistance':[['dna', ''], ['string_complex', 'Word', 'Char'], [], 0],
+	'MinkowskiMetric':[['rand', 'double'], ['simple', 'Real'], ['k'], 1e-8],
+	'SparseEuclidianDistance':[['rand', 'double'], ['simple', 'Real'], [], 1e-7],
+}
+
+# name: data_class + _type, feature_class + _type(s), accuracy
+DISTRIBUTION={
+	'Histogram':[['rand', 'ushort'], ['simple', 'Word'], 1e-8],
+	'HMM':[['dna', ''], ['string', 'Char'], 1e-9],
+}
+
+# name: data_class + _type, feature_class + _type(s), available kernel
+#  parameters, accuracy
+KERNEL={
 	'AUC':[['rand', 'ushort'], ['simple', 'Word'], ['subkernel'], 1e-8],
 	'Byte':[['rand', 'ubyte'], ['simple', 'Byte'], [], 1e-8],
 	'Char':[['rand', 'character'], ['simple', 'Char'], [], 1e-8],
@@ -74,3 +117,11 @@ KLIST={
 	'WordMatch':[['rand', 'ushort'], ['simple', 'Word'],
 		['degree', 'do_rescale', 'scale'], 1e-8],
 }
+
+# name: accuracy, classifier type
+REGRESSION={
+	'SVRLight':[1e-6, 'svm'],
+	'LibSVR':[1e-6, 'svm'],
+	'KRR':[1e-8, 'kernelmachine'],
+}
+
