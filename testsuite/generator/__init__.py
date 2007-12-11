@@ -5,11 +5,10 @@ A package to generate testcases for the Shogun toolbox.
 """
 
 __license__='GPL v2'
-__url__='http://shogun-toolbox.org'
 
 from numpy.random import seed
 
-from fileop import clean_dir_output
+from fileop import clean_dir_outdata
 import classifier
 import clustering
 import distance
@@ -30,7 +29,7 @@ def run ():
 #   import numpy
 #	print sum(numpy.random.get_state()[1])
 
-	clean_dir_output()
+	clean_dir_outdata()
 	kernel.run()
 	distance.run()
 	classifier.run()

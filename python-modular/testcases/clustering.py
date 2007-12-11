@@ -1,36 +1,41 @@
+"""
+Test Clustering
+"""
+
 from shogun.Distance import EuclidianDistance
 from shogun.Clustering import *
 
 import util
 
-def _clustering (input):
-	if input.has_key('clustering_k'):
-		first_arg=input['clustering_k']
-	elif input.has_key('clustering_merges'):
-		first_arg=input['clustering_merges']
+def _clustering (indata):
+	if indata.has_key('clustering_k'):
+		first_arg=indata['clustering_k']
+	elif indata.has_key('clustering_merges'):
+		first_arg=indata['clustering_merges']
 	else:
 		return False
 
-	fun=eval('util.get_feats_'+input['feature_class'])
-	feats=fun(input)
+	fun=eval('util.get_feats_'+indata['feature_class'])
+	feats=fun(indata)
 
-	dargs=util.get_args(input, 'distance_arg')
-	dfun=eval(input['distance_name'])
+	dargs=util.get_args(indata, 'distance_arg')
+	dfun=eval(indata['distance_name'])
 	distance=dfun(feats['train'], feats['train'], *dargs)
 
-	fun=eval(input['name'])
+	fun=eval(indata['name'])
 	clustering=fun(first_arg, distance)
 	clustering.train()
 
 	distance.init(feats['train'], feats['test'])
-	#classified=max(abs(clustering.classify().get_labels()-input['clustering_classified']))
+	#classified=max(abs(
+	#	clustering.classify().get_labels()-indata['clustering_classified']))
 
-	return util.check_accuracy(input['accuracy'])
+	return util.check_accuracy(indata['accuracy'])
 
 ########################################################################
 # public
 ########################################################################
 
-def test (input):
-	return _clustering(input)
+def test (indata):
+	return _clustering(indata)
 

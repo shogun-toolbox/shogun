@@ -1,3 +1,7 @@
+"""
+Generator for Regression
+"""
+
 from numpy import *
 from numpy.random import rand
 from shogun.Kernel import GaussianKernel
@@ -7,38 +11,38 @@ from shogun.Regression import *
 import fileop
 import featop
 import dataop
-from config import REGRESSION, T_KERNEL, T_REGRESSION
+from config import REGRESSION, C_KERNEL, C_REGRESSION
 
 
-def _get_output_params (name, params, data):
-	type=REGRESSION[name][1]
-	output={
+def _get_outdata_params (name, params, data):
+	rtype=REGRESSION[name][1]
+	outdata={
 		'name':name,
 		'data_train':matrix(data['data']['train']),
 		'data_test':matrix(data['data']['test']),
 		'regression_accuracy':REGRESSION[name][0],
-		'regression_type':type,
+		'regression_type':rtype,
 	}
 
-	for k, v in params.iteritems():
-		output['regression_'+k]=v
+	for key, val in params.iteritems():
+		outdata['regression_'+key]=val
 
-	output['kernel_name']=data['kname']
-	kparams=fileop.get_output_params(
-		data['kname'], T_KERNEL, data['kargs'])
-	output.update(kparams)
+	outdata['kernel_name']=data['kname']
+	kparams=fileop.get_outdata_params(
+		data['kname'], C_KERNEL, data['kargs'])
+	outdata.update(kparams)
 
-	return output
+	return outdata
 
 def _compute (name, params, data):
-	type=REGRESSION[name][1]
+	rtype=REGRESSION[name][1]
 	data['kernel'].parallel.set_num_threads(params['num_threads'])
 	data['kernel'].init(data['feats']['train'], data['feats']['train'])
 	# essential to wrap in array(), will segfault sometimes otherwise
 	labels=Labels(array(params['labels']))
 
 	fun=eval(name)
-	if type=='svm':
+	if rtype=='svm':
 		regression=fun(params['C'], params['epsilon'], data['kernel'], labels)
 	else:
 		regression=fun(params['tau'], data['kernel'], labels)
@@ -49,7 +53,7 @@ def _compute (name, params, data):
 
 	regression.train()
 
-	if type=='svm':
+	if rtype=='svm':
 		params['bias']=regression.get_bias()
 		params['alphas']=regression.get_alphas()
 		params['support_vectors']=regression.get_support_vectors()
@@ -57,25 +61,25 @@ def _compute (name, params, data):
 	data['kernel'].init(data['feats']['train'], data['feats']['test'])
 	params['classified']=regression.classify().get_labels()
 
-	output=_get_output_params(name, params, data)
-	fileop.write(T_REGRESSION, output)
+	outdata=_get_outdata_params(name, params, data)
+	fileop.write(C_REGRESSION, outdata)
 
 def _loop (svrs, data):
 	num_vec=data['feats']['train'].get_num_vectors()
 	labels=rand(num_vec).round()*2-1
 	for name in svrs:
-		type=REGRESSION[name][1]
-		if type=='svm':
+		rtype=REGRESSION[name][1]
+		if rtype=='svm':
 			params={'C':.017, 'epsilon':1e-5, 'tube_epsilon':1e-2,
 				'num_threads':1, 'labels':labels}
-		elif type=='kernelmachine':
+		elif rtype=='kernelmachine':
 			params={'tau':1e-6, 'num_threads':1, 'labels':labels}
 		else:
 			continue
 
 		_compute(name, params, data)
 
-		if type=='svm':
+		if rtype=='svm':
 			params['C']=.23
 			_compute(name, params, data)
 			params['C']=1.5
@@ -86,7 +90,7 @@ def _loop (svrs, data):
 			_compute(name, params, data)
 			params['tube_epsilon']=1e-3
 			_compute(name, params, data)
-		elif type=='kernelmachine':
+		elif rtype=='kernelmachine':
 			params['tau']=1e-5
 			_compute(name, params, data)
 		else:

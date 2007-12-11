@@ -1,3 +1,7 @@
+"""
+Global configuration parameters: lists and types
+"""
+
 # name: accuracy, classifier type, label type
 CLASSIFIER={
 	'SVMLight':[1e-7, 'kernel', 'twoclass'],
@@ -26,15 +30,19 @@ CLUSTERING={
 DISTANCE={
 	'CanberraMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
 	'ChebyshewMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
-	'CanberraWordDistance':[['dna', ''], ['string_complex', 'Word', 'Char'], [], 1e-7],
+	'CanberraWordDistance':[['dna', ''], ['string_complex', 'Word', 'Char'],
+		[], 1e-7],
 	'EuclidianDistance':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
 	'GeodesicMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
-	'HammingWordDistance':[['dna', ''], ['string_complex', 'Word', 'Char'], ['use_sign'], 0],
+	'HammingWordDistance':[['dna', ''], ['string_complex', 'Word', 'Char'],
+		['use_sign'], 0],
 	'JensenMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
 	'ManhattanMetric':[['rand', 'double'], ['simple', 'Real'], [], 1e-8],
-	'ManhattanWordDistance':[['dna', ''], ['string_complex', 'Word', 'Char'], [], 0],
+	'ManhattanWordDistance':[['dna', ''], ['string_complex', 'Word', 'Char'],
+		[], 0],
 	'MinkowskiMetric':[['rand', 'double'], ['simple', 'Real'], ['k'], 1e-8],
-	'SparseEuclidianDistance':[['rand', 'double'], ['simple', 'Real'], [], 1e-7],
+	'SparseEuclidianDistance':[['rand', 'double'], ['simple', 'Real'],
+		[], 1e-7],
 }
 
 # name: data_class + _type, feature_class + _type(s), accuracy
@@ -58,7 +66,8 @@ KERNEL={
 	'Const':[['rand', 'double'], ['simple', 'Real'], ['c'], 0],
 	'Custom':[['rand', 'double'], ['custom', ''], [], 1e-6],
 	'Diag':[['rand', 'double'], ['simple', 'Real'], ['diag'], 0],
-	'Distance':[['rand', 'double'], ['simple', 'Real'], ['width', 'distance'], 1e-9],
+	'Distance':[['rand', 'double'], ['simple', 'Real'],
+		['width', 'distance'], 1e-9],
 	'FixedDegreeString':[['dna', ''], ['string', 'Char'], ['degree'], 1e-9],
 	'Gaussian':[['rand', 'double'], ['simple', 'Real'], ['width'], 1e-6],
 	'GaussianShift':[['rand', 'double'], ['simple', 'Real'],
@@ -125,9 +134,9 @@ REGRESSION={
 	'KRR':[1e-8, 'kernelmachine'],
 }
 
-T_KERNEL=0
-T_DISTANCE=1
-T_CLASSIFIER=2
-T_CLUSTERING=3
-T_DISTRIBUTION=4
-T_REGRESSION=5
+C_KERNEL=0
+C_DISTANCE=1
+C_CLASSIFIER=2
+C_CLUSTERING=3
+C_DISTRIBUTION=4
+C_REGRESSION=5

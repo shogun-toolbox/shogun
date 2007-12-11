@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+"""
+Test one data file
+"""
 
 from numpy import *
 import sys
@@ -16,20 +19,20 @@ SUPPORTED=['kernel', 'distance', 'classifier', 'clustering', 'distribution',
 def _get_name_fun (fnam):
 	module=None
 
-	for s in SUPPORTED:
-		if fnam.find(s)>-1:
-			module=s
+	for supported in SUPPORTED:
+		if fnam.find(supported)>-1:
+			module=supported
 			break
 
 	if module is None:
-		print 'Module required for %s not supported yet!'%fnam
+		print 'Module required for %s not supported yet!' % fnam
 		return None
 
 	return module+'.test'
 
 def _test_mfile (fnam):
 	mfile=open(fnam, mode='r')
-	input={}
+	indata={}
 
 	name_fun=_get_name_fun(fnam)
 	if name_fun is None:
@@ -40,27 +43,27 @@ def _test_mfile (fnam):
 		
 		if param=='name':
 			name=line.split('=')[1].strip().split("'")[1]
-			input[param]=name
+			indata[param]=name
 		elif param=='symdata' or param=='data':
-			input[param]=_read_matrix(line)
+			indata[param]=_read_matrix(line)
 		elif param.startswith('km_') or param.startswith('dm_'):
-			input[param]=_read_matrix(line)
+			indata[param]=_read_matrix(line)
 		elif param.find('data_train')>-1 or param.find('data_test')>-1:
-			input[param]=_read_matrix(line)
+			indata[param]=_read_matrix(line)
 		else:
 			if (line.find("'")==-1):
-				input[param]=eval(line.split('=')[1])
+				indata[param]=eval(line.split('=')[1])
 			else: 
-				input[param]=line.split('=')[1].strip().split("'")[1]
+				indata[param]=line.split('=')[1].strip().split("'")[1]
 
 	mfile.close()
 	fun=eval(name_fun)
 
-	return fun(input)
+	return fun(indata)
 
 def _read_matrix (line):
-	str=(line.split('[')[1]).split(']')[0]
-	lines=str.split(';')
+	str_line=(line.split('[')[1]).split(']')[0]
+	lines=str_line.split(';')
 	lis2d=list()
 
 	for x in lines:
@@ -78,9 +81,9 @@ def _read_matrix (line):
 
 	return array(lis2d)
 
-for fnam in sys.argv:
-	if (fnam.endswith('.m')):
-		res=_test_mfile(fnam)
+for filename in sys.argv:
+	if (filename.endswith('.m')):
+		res=_test_mfile(filename)
 		if res:
 			sys.exit(0)
 		else:

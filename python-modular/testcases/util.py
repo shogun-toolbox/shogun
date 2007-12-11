@@ -1,106 +1,110 @@
+"""
+Utilities for testing
+"""
+
 from shogun.Features import *
 from shogun.PreProc import *
 from shogun.Distance import *
 from numpy import *
 
 def check_accuracy (accuracy, **kwargs):
-	a=double(accuracy)
+	acc=double(accuracy)
 	output=[]
 
-	for k,v in kwargs.iteritems():
-		output.append('%s: %e' % (k, v))
+	for key, val in kwargs.iteritems():
+		output.append('%s: %e' % (key, val))
 	output.append('accuracy: %e' % accuracy)
 	print ', '.join(output)
 
-	for v in kwargs.itervalues():
-		if v>a:
+	for val in kwargs.itervalues():
+		if val>acc:
 			return False
 
 	return True
 
-def get_args (input, id):
+def get_args (indata, ident):
 	# python dicts are not ordered, so we have to look at the number in
 	# the parameter's name and insert items appropriately into an
 	# ordered list
 
 	# need to pregenerate list for using indices in loop
-	args=len(input)*[None]
+	args=len(indata)*[None]
 
-	for i in input:
-		if i.find(id)==-1:
+	for i in indata:
+		if i.find(ident)==-1:
 			continue
 
 		try:
-			idx=int(i[len(id)])
+			idx=int(i[len(ident)])
 		except ValueError:
-			raise ValueError, 'Wrong input data %s: "%s"!' % (id, i)
+			raise ValueError, 'Wrong indata data %s: "%s"!' % (ident, i)
 
 		if i.find('_distance')!=-1: # DistanceKernel
-			args[idx]=eval(input[i]+'()')
+			args[idx]=eval(indata[i]+'()')
 		else:
 			try:
-				args[idx]=eval(input[i])
+				args[idx]=eval(indata[i])
 			except TypeError: # no bool
-				args[idx]=input[i]
+				args[idx]=indata[i]
 
 	# weed out superfluous Nones
 	return filter(lambda arg: arg is not None, args)
 
-def get_feats_simple (input):
+def get_feats_simple (indata):
 	# have to explicitely set data type for numpy if not real
-	data_train=input['data_train'].astype(eval(input['data_type']))
-	data_test=input['data_test'].astype(eval(input['data_type']))
+	data_train=indata['data_train'].astype(eval(indata['data_type']))
+	data_test=indata['data_test'].astype(eval(indata['data_type']))
 
-	if input['feature_type']=='Byte' or input['feature_type']=='Char':
-		alphabet=eval(input['alphabet'])
-		train=eval(input['feature_type']+"Features(data_train, alphabet)")
-		test=eval(input['feature_type']+"Features(data_test, alphabet)")
+	if indata['feature_type']=='Byte' or indata['feature_type']=='Char':
+		alphabet=eval(indata['alphabet'])
+		ftrain=eval(indata['feature_type']+"Features(data_train, alphabet)")
+		ftest=eval(indata['feature_type']+"Features(data_test, alphabet)")
 	else:
-		train=eval(input['feature_type']+"Features(data_train)")
-		test=eval(input['feature_type']+"Features(data_test)")
+		ftrain=eval(indata['feature_type']+"Features(data_train)")
+		ftest=eval(indata['feature_type']+"Features(data_test)")
 
-	if (input['name'].find('Sparse')!=-1 or (
-		input.has_key('classifier_type') and input['classifier_type']=='linear')):
-		sparse_train=eval('Sparse'+input['feature_type']+'Features()')
-		sparse_train.obtain_from_simple(train)
+	if (indata['name'].find('Sparse')!=-1 or (
+		indata.has_key('classifier_type') and indata['classifier_type']=='linear')):
+		sparse_train=eval('Sparse'+indata['feature_type']+'Features()')
+		sparse_train.obtain_from_simple(ftrain)
 
-		sparse_test=eval('Sparse'+input['feature_type']+'Features()')
-		sparse_test.obtain_from_simple(test)
+		sparse_test=eval('Sparse'+indata['feature_type']+'Features()')
+		sparse_test.obtain_from_simple(ftest)
 
-		feats={'train':sparse_train, 'test':sparse_test}
+		return {'train':sparse_train, 'test':sparse_test}
 	else:
-		feats={'train':train, 'test':test}
+		return {'train':ftrain, 'test':ftest}
+
+def get_feats_string (indata):
+	feats={'train':StringCharFeatures(eval(indata['alphabet'])),
+		'test':StringCharFeatures(eval(indata['alphabet']))}
+	feats['train'].set_string_features(list(indata['data_train'][0]))
+	feats['test'].set_string_features(list(indata['data_test'][0]))
 
 	return feats
 
-def get_feats_string (input):
-	feats={'train':StringCharFeatures(eval(input['alphabet'])),
-		'test':StringCharFeatures(eval(input['alphabet']))}
-	feats['train'].set_string_features(list(input['data_train'][0]))
-	feats['test'].set_string_features(list(input['data_test'][0]))
+def get_feats_string_complex (indata):
+	feats={'train':StringCharFeatures(eval(indata['alphabet'])),
+		'test':StringCharFeatures(eval(indata['alphabet']))}
+	feats['train'].set_string_features(list(indata['data_train'][0]))
+	feats['test'].set_string_features(list(indata['data_test'][0]))
 
-	return feats
-
-def get_feats_string_complex (input):
-	feats={'train':StringCharFeatures(eval(input['alphabet'])),
-		'test':StringCharFeatures(eval(input['alphabet']))}
-	feats['train'].set_string_features(list(input['data_train'][0]))
-	feats['test'].set_string_features(list(input['data_test'][0]))
-
-	feat=eval('String'+input['feature_type']+"Features(feats['train'].get_alphabet())");
-	feat.obtain_from_char(feats['train'], input['order']-1, input['order'],
-		input['gap'], eval(input['reverse']))
-	if input['feature_type']=='Word':
-		preproc=SortWordString();
-		preproc.init(feat);
+	feat=eval('String'+indata['feature_type']+ \
+		"Features(feats['train'].get_alphabet())")
+	feat.obtain_from_char(feats['train'], indata['order']-1, indata['order'],
+		indata['gap'], eval(indata['reverse']))
+	if indata['feature_type']=='Word':
+		preproc=SortWordString()
+		preproc.init(feat)
 		feat.add_preproc(preproc)
 		feat.apply_preproc()
 	feats['train']=feat
 
-	feat=eval('String'+input['feature_type']+"Features(feats['train'].get_alphabet())");
-	feat.obtain_from_char(feats['test'], input['order']-1, input['order'],
-		input['gap'], eval(input['reverse']))
-	if input['feature_type']=='Word':
+	feat=eval('String'+indata['feature_type']+ \
+		"Features(feats['train'].get_alphabet())")
+	feat.obtain_from_char(feats['test'], indata['order']-1, indata['order'],
+		indata['gap'], eval(indata['reverse']))
+	if indata['feature_type']=='Word':
 		feat.add_preproc(preproc)
 		feat.apply_preproc()
 	feats['test']=feat

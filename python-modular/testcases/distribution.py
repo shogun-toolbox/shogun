@@ -1,27 +1,31 @@
+"""
+Test Distribution
+"""
+
 from shogun.Distribution import *
 
 import util
 
-def _distribution (input):
-	fun=eval('util.get_feats_'+input['feature_class'])
-	feats=fun(input)
+def _distribution (indata):
+	fun=eval('util.get_feats_'+indata['feature_class'])
+	feats=fun(indata)
 
-	if input['name']=='HMM':
+	if indata['name']=='HMM':
 		model=Model()
-		distribution=HMM(input['distribution_N'], input['distribution_M'],
-			model, input['distribution_pseudo'])
+		distribution=HMM(indata['distribution_N'], indata['distribution_M'],
+			model, indata['distribution_pseudo'])
 	else:
-		fun=eval(input['name'])
+		fun=eval(indata['name'])
 		distribution=fun(feats['train'])
 
 	distribution.train()
 
-	return util.check_accuracy(input['accuracy'])
+	return util.check_accuracy(indata['accuracy'])
 
 ########################################################################
 # public
 ########################################################################
 
-def test (input):
-	return _distribution(input)
+def test (indata):
+	return _distribution(indata)
 

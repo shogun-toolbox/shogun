@@ -1,3 +1,7 @@
+"""
+Common operations related to file handling
+"""
+
 import os
 
 import featop
@@ -7,46 +11,46 @@ import config
 DIR_OUTPUT='data'
 EXT_OUTPUT='.m'
 
-def _get_typestr (type):
-	typemap={
-		config.T_KERNEL:'kernel',
-		config.T_DISTANCE:'distance',
-		config.T_CLASSIFIER:'classifier',
-		config.T_CLUSTERING:'clustering',
-		config.T_DISTRIBUTION:'distribution',
-		config.T_REGRESSION:'regression',
+def _get_str_category (category):
+	table={
+		config.C_KERNEL:'kernel',
+		config.C_DISTANCE:'distance',
+		config.C_CLASSIFIER:'classifier',
+		config.C_CLUSTERING:'clustering',
+		config.C_DISTRIBUTION:'distribution',
+		config.C_REGRESSION:'regression',
 	}
 
 	try:
-		return typemap[type]
+		return table[category]
 	except IndexError:
-		return False
+		return ''
 
-def _get_matrix (name, km):
+def _get_matrix (name, kmatrix):
 	line=list()
 	lis=list()
 
 	try:
-		for x in range(km.shape[0]):
-			for y in range(km.shape[1]):
-				if(isinstance(km[x,y],(int, long, float, complex))):
-					line.append('%.9g' %km[x,y])
+		for x in range(kmatrix.shape[0]):
+			for y in range(kmatrix.shape[1]):
+				if (isinstance(kmatrix[x, y], (int, long, float, complex))):
+					line.append('%.9g' %kmatrix[x, y])
 				else:
-					line.append("'%s'" %km[x,y])
+					line.append("'%s'" %kmatrix[x, y])
 			lis.append(', '.join(line))
 			line=list()
 	except IndexError:
-		for x in range(km.shape[0]):
-			if(isinstance(km[x],(int, long, float, complex))):
-				line.append('%.9g' %km[x])
+		for x in range(kmatrix.shape[0]):
+			if (isinstance(kmatrix[x], (int, long, float, complex))):
+				line.append('%.9g' %kmatrix[x])
 			else:
-				line.append("'%s'" %km[x])
+				line.append("'%s'" %kmatrix[x])
 		lis.append(', '.join(line))
 		line=list()
-	kmstr=';'.join(lis)
-	kmstr=''.join([name, ' = [', kmstr, ']'])
+	str_kmatrix=';'.join(lis)
+	str_kmatrix=''.join([name, ' = [', str_kmatrix, ']'])
 
-	return kmstr.replace('\n', '')
+	return str_kmatrix.replace('\n', '')
 
 def _is_excluded_from_filename (key):
 	if (key.find('feature_')!=-1 or
@@ -60,44 +64,46 @@ def _is_excluded_from_filename (key):
 	else:
 		return False
 
-def _get_filename (type, output):
+def _get_filename (category, outdata):
 	params=[]
 
-	for k, v in output.iteritems():
-		if _is_excluded_from_filename(k):
+	for key, val in outdata.iteritems():
+		if _is_excluded_from_filename(key):
 			continue
-		cn=v.__class__.__name__
-		if cn=='bool' or cn=='float' or cn=='int' or cn=='str':
-			params.append(str(v))
+		cname=val.__class__.__name__
+		if cname=='bool' or cname=='float' or cname=='int' or cname=='str':
+			params.append(str(val))
 
 	params='_'.join(params).replace('.', '')
 	if len(params)>0:
 		params='_'+params
 
-	return DIR_OUTPUT+os.sep+_get_typestr(type)+os.sep+output['name']+params+EXT_OUTPUT
+	return DIR_OUTPUT+os.sep+_get_str_category(category)+os.sep+ \
+		outdata['name']+params+EXT_OUTPUT
 
 ############################################################################
 # public
 ############################################################################
 
-def write (type, output):
-	fnam=_get_filename(type, output)
-	print 'Writing for '+_get_typestr(type).upper()+': '+os.path.basename(fnam)
+def write (category, outdata):
+	fnam=_get_filename(category, outdata)
+	print 'Writing for '+_get_str_category(category).upper()+': '+ \
+		os.path.basename(fnam)
 
 	mfile=open(fnam, mode='w')
-	for k,v in output.iteritems():
-		cn=v.__class__.__name__
-		if cn=='bool' or cn=='str':
-			mfile.write("%s = '%s'\n"%(k, v))
-		elif cn=='ndarray' or cn=='matrix':
-			mfile.write("%s\n"%_get_matrix(k, v))
+	for key, val in outdata.iteritems():
+		cname=val.__class__.__name__
+		if cname=='bool' or cname=='str':
+			mfile.write("%s = '%s'\n"%(key, val))
+		elif cname=='ndarray' or cname=='matrix':
+			mfile.write("%s\n"%_get_matrix(key, val))
 		else:
-			mfile.write("%s = %s\n"%(k, v))
+			mfile.write("%s = %s\n"%(key, val))
 	mfile.close()
 
 	return True
 
-def clean_dir_output ():
+def clean_dir_outdata ():
 	success=True
 
 	for dname in os.listdir(DIR_OUTPUT):
@@ -118,51 +124,51 @@ def clean_dir_output ():
 	return success
 
 # prefix and offset are necessary for subkernels
-def get_output_params (name, type, args=[], prefix='', offset=0):
-	if type==config.T_KERNEL:
+def get_outdata_params (name, category, args=[], prefix='', offset=0):
+	if category==config.C_KERNEL:
 		data=config.KERNEL[name]
 		argstr='kernel_arg'
-	elif type==config.T_DISTANCE:
+	elif category==config.C_DISTANCE:
 		data=config.DISTANCE[name]
 		argstr='distance_arg'
 	else:
 		return {}
 
-	output={}
+	outdata={}
 
 	# general params
-	output[prefix+'data_class']=data[0][0]
-	output[prefix+'data_type']=data[0][1]
-	output[prefix+'feature_class']=data[1][0]
-	output[prefix+'feature_type']=data[1][1]
-	output[prefix+'accuracy']=data[3]
+	outdata[prefix+'data_class']=data[0][0]
+	outdata[prefix+'data_type']=data[0][1]
+	outdata[prefix+'feature_class']=data[1][0]
+	outdata[prefix+'feature_type']=data[1][1]
+	outdata[prefix+'accuracy']=data[3]
 
 	# params wrt feature class & type
 	if data[1][0]=='string' or (data[1][0]=='simple' and data[1][1]=='Char'):
-		output[prefix+'alphabet']='DNA'
-		output[prefix+'seqlen']=dataop.LEN_SEQ
+		outdata[prefix+'alphabet']='DNA'
+		outdata[prefix+'seqlen']=dataop.LEN_SEQ
 	elif data[1][0]=='simple' and data[1][1]=='Byte':
-		output[prefix+'alphabet']='RAWBYTE'
-		output[prefix+'seqlen']=dataop.LEN_SEQ
+		outdata[prefix+'alphabet']='RAWBYTE'
+		outdata[prefix+'seqlen']=dataop.LEN_SEQ
 	elif data[1][0]=='string_complex':
-		output[prefix+'order']=featop.WORDSTRING_ORDER
-		output[prefix+'gap']=featop.WORDSTRING_GAP
-		output[prefix+'reverse']=featop.WORDSTRING_REVERSE
-		output[prefix+'alphabet']='DNA'
-		output[prefix+'seqlen']=dataop.LEN_SEQ
-		output[prefix+'feature_obtain']=data[1][2]
+		outdata[prefix+'order']=featop.WORDSTRING_ORDER
+		outdata[prefix+'gap']=featop.WORDSTRING_GAP
+		outdata[prefix+'reverse']=featop.WORDSTRING_REVERSE
+		outdata[prefix+'alphabet']='DNA'
+		outdata[prefix+'seqlen']=dataop.LEN_SEQ
+		outdata[prefix+'feature_obtain']=data[1][2]
 
 	# arguments, if any
-	for i in range(0, len(args)):
+	for i in xrange(len(args)):
 		try:
 			argname=prefix+argstr+str(i+offset)+'_'+data[2][i]
 		except IndexError:
 			break
 
-		cn=args[i].__class__.__name__
-		if cn=='int' or cn=='float' or cn=='bool':
-			output[argname]=args[i]
+		cname=args[i].__class__.__name__
+		if cname=='int' or cname=='float' or cname=='bool' or cname=='str':
+			outdata[argname]=args[i]
 		else:
-			output[argname]=cn
+			outdata[argname]=cname
 
-	return output;
+	return outdata

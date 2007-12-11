@@ -1,3 +1,7 @@
+"""
+Generator for Kernel
+"""
+
 from numpy import *
 from numpy.random import *
 from shogun.Features import *
@@ -9,21 +13,21 @@ from shogun.Distance import *
 import fileop
 import featop
 import dataop
-from config import KERNEL, T_KERNEL
+from config import KERNEL, C_KERNEL
 
 ##################################################################
 ## subkernel funs
 ##################################################################
 
-def _compute_subkernels (name, feats, kernel, output):
-	output['name']=name
+def _compute_subkernels (name, feats, kernel, outdata):
+	outdata['name']=name
 	kernel.init(feats['train'], feats['train'])
-	output['km_train']=kernel.get_kernel_matrix()
+	outdata['km_train']=kernel.get_kernel_matrix()
 	kernel.init(feats['train'], feats['test'])
-	output['km_test']=kernel.get_kernel_matrix()
-	output.update(fileop.get_output_params(name, T_KERNEL))
+	outdata['km_test']=kernel.get_kernel_matrix()
+	outdata.update(fileop.get_outdata_params(name, C_KERNEL))
 
-	fileop.write(T_KERNEL, output)
+	fileop.write(C_KERNEL, outdata)
 
 def _get_subkernel_args (subkernel):
 	args=''
@@ -37,37 +41,37 @@ def _get_subkernel_args (subkernel):
 
 	return args
 
-def _get_subkernel_output_params (subkernel, data, num):
+def _get_subkernel_outdata_params (subkernel, data, num):
 	prefix='subkernel'+num+'_'
-	output={}
+	outdata={}
 
-	output[prefix+'name']=subkernel[0]
+	outdata[prefix+'name']=subkernel[0]
 	#FIXME: size soon to be removed from constructor
-	output[prefix+'kernel_arg0_size']='10'
-	output[prefix+'data_train']=matrix(data['train'])
-	output[prefix+'data_test']=matrix(data['test'])
-	output.update(fileop.get_output_params(
-		subkernel[0], T_KERNEL, subkernel[1:], prefix, 1))
+	outdata[prefix+'kernel_arg0_size']='10'
+	outdata[prefix+'data_train']=matrix(data['train'])
+	outdata[prefix+'data_test']=matrix(data['test'])
+	outdata.update(fileop.get_outdata_params(
+		subkernel[0], C_KERNEL, subkernel[1:], prefix, 1))
 
-	return output
+	return outdata
 
 def _run_auc ():
 	data=dataop.get_rand()
 	feats=featop.get_simple('Real', data)
 	width=1.5
 	subkernels=[['Gaussian', width]]
-	sk=GaussianKernel(feats['train'], feats['test'], width)
-	output=_get_subkernel_output_params(subkernels[0], data, '0')
+	subk=GaussianKernel(feats['train'], feats['test'], width)
+	outdata=_get_subkernel_outdata_params(subkernels[0], data, '0')
 
 	data=dataop.get_rand(ushort, rows=2, max_train=dataop.LEN_TRAIN,
 		max_test=dataop.LEN_TEST)
 	feats=featop.get_simple('Word', data)
 	#FIXME: size soon to be removed from constructor
-	kernel=AUCKernel(10, sk)
-	output['data_train']=matrix(data['train'])
-	output['data_test']=matrix(data['test'])
+	kernel=AUCKernel(10, subk)
+	outdata['data_train']=matrix(data['train'])
+	outdata['data_test']=matrix(data['test'])
 
-	_compute_subkernels('AUC', feats, kernel, output)
+	_compute_subkernels('AUC', feats, kernel, outdata)
 
 def _run_combined ():
 	kernel=CombinedKernel()
@@ -78,23 +82,23 @@ def _run_combined ():
 		['LinearString'],
 #		['Gaussian', 1.7],
 	]
-	output={}
+	outdata={}
 
 	for i in range(0, len(subkernels)):
-		str_i=str(i)
 		kdata=KERNEL[subkernels[i][0]]
 		args=_get_subkernel_args(subkernels[i])
 		#FIXME: size soon to be removed from constructor
-		sk=eval(subkernels[i][0]+'Kernel(10'+args+')')
-		kernel.append_kernel(sk)
-		data_sk=eval('dataop.get_'+kdata[0][0]+'('+kdata[0][1]+')')
-		feats_sk=eval('featop.get_'+kdata[1][0]+"('"+kdata[1][1]+"', data_sk)")
-		feats['train'].append_feature_obj(feats_sk['train'])
-		feats['test'].append_feature_obj(feats_sk['test'])
-		output.update(_get_subkernel_output_params(
-			subkernels[i], data_sk, str(i)))
+		subk=eval(subkernels[i][0]+'Kernel(10'+args+')')
+		kernel.append_kernel(subk)
+		data_subk=eval('dataop.get_'+kdata[0][0]+'('+kdata[0][1]+')')
+		feats_subk=eval(
+			'featop.get_'+kdata[1][0]+"('"+kdata[1][1]+"', data_subk)")
+		feats['train'].append_feature_obj(feats_subk['train'])
+		feats['test'].append_feature_obj(feats_subk['test'])
+		outdata.update(_get_subkernel_outdata_params(
+			subkernels[i], data_subk, str(i)))
 
-	_compute_subkernels('Combined', feats, kernel, output)
+	_compute_subkernels('Combined', feats, kernel, outdata)
 
 def _run_subkernels ():
 	_run_auc()
@@ -111,25 +115,25 @@ def _compute (name, feats, data, *args):
 	kernel.init(feats['train'], feats['test'])
 	km_test=kernel.get_kernel_matrix()
 
-	output={
+	outdata={
 		'name':name,
 		'km_train':km_train,
 		'km_test':km_test,
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test'])
 	}
-	output.update(fileop.get_output_params(name, T_KERNEL, args))
+	outdata.update(fileop.get_outdata_params(name, C_KERNEL, args))
 
-	fileop.write(T_KERNEL, output)
+	fileop.write(C_KERNEL, outdata)
 
 def _compute_pie (name, feats, data):
 	pie=PluginEstimate()
 	fun=eval(name+'Kernel')
 
-	num_vec=feats['train'].get_num_vectors();
-	labels=rand(num_vec).round()*2-1
-	l=Labels(labels)
-	pie.train(feats['train'], l, .1, -.1)
+	num_vec=feats['train'].get_num_vectors()
+	lab=rand(num_vec).round()*2-1
+	labels=Labels(lab)
+	pie.train(feats['train'], labels, .1, -.1)
 	kernel=fun(feats['train'], feats['train'], pie)
 
 	kernel.init(feats['train'], feats['test'])
@@ -137,16 +141,16 @@ def _compute_pie (name, feats, data):
 	pie.test()
 	classified=pie.classify().get_labels()
 
-	output={
+	outdata={
 		'name':name,
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test']),
-		'labels':labels,
+		'labels':lab,
 		'classified':classified
 	}
-	output.update(fileop._get_output_params(name, T_KERNEL))
+	outdata.update(fileop.get_outdata_params(name, C_KERNEL))
 
-	fileop.write(T_KERNEL, output)
+	fileop.write(C_KERNEL, outdata)
 
 ##################################################################
 ## run funcs
@@ -160,7 +164,8 @@ def _run_custom ():
 	data=data['train']
 	symdata=data+data.T
 
-	lowertriangle=array([ symdata[(x,y)] for x in xrange(symdata.shape[1]) for y in xrange(symdata.shape[0]) if y<=x ])
+	lowertriangle=array([symdata[(x,y)] for x in xrange(symdata.shape[1])
+		for y in xrange(symdata.shape[0]) if y<=x])
 	kernel=CustomKernel(feats['train'], feats['train'])
 	kernel.set_triangle_kernel_matrix_from_triangle(lowertriangle)
 	km_triangletriangle=kernel.get_kernel_matrix()
@@ -169,7 +174,7 @@ def _run_custom ():
 	kernel.set_full_kernel_matrix_from_full(data)
 	km_fullfull=kernel.get_kernel_matrix()
 
-	output={
+	outdata={
 		'name':name,
 		'km_triangletriangle':km_triangletriangle,
 		'km_fulltriangle':km_fulltriangle,
@@ -178,9 +183,9 @@ def _run_custom ():
 		'data':matrix(data),
 		'dim_square':dim_square
 	}
-	output.update(fileop.get_output_params(name, T_KERNEL))
+	outdata.update(fileop.get_outdata_params(name, C_KERNEL))
 
-	fileop.write(T_KERNEL, output)
+	fileop.write(C_KERNEL, outdata)
 
 def _run_distance ():
 	data=dataop.get_rand()
@@ -189,7 +194,7 @@ def _run_distance ():
 	_compute('Distance', feats, data, 1.7, distance)
 
 def _run_feats_byte ():
-	data=dataop.get_rand(type=ubyte)
+	data=dataop.get_rand(dattype=ubyte)
 	feats=featop.get_simple('Byte', data, RAWBYTE)
 
 	_compute('LinearByte', feats, data)
@@ -242,9 +247,8 @@ def _run_feats_string ():
 
 
 def _run_feats_word ():
-	#FIXME: greater max, lower variance?
-	max=42
-	data=dataop.get_rand(type=ushort, max_train=max, max_test=max)
+	maxval=42
+	data=dataop.get_rand(dattype=ushort, max_train=maxval, max_test=maxval)
 	feats=featop.get_simple('Word', data)
 
 	_compute('LinearWord', feats, data)
@@ -263,9 +267,9 @@ def _run_feats_string_complex ():
 	_compute('CommUlongString', feats, data, False, FULL_NORMALIZATION)
 
 def _run_pie ():
-	data=dataop.get_rand(type=chararray)
+	data=dataop.get_rand(dattype=chararray)
 	charfeats=featop.get_simple('Char', data)
-	data=dataop.get_rand(type=ushort)
+	data=dataop.get_rand(dattype=ushort)
 	feats=featop.get_simple('Word', data)
 	feats['train'].obtain_from_char_features(charfeats['train'], 0, 1)
 	feats['test'].obtain_from_char_features(charfeats['test'], 0, 1)

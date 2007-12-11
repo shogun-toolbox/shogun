@@ -1,3 +1,7 @@
+"""
+Generator for Clustering
+"""
+
 from numpy import *
 from shogun.Clustering import *
 from shogun.Distance import EuclidianDistance
@@ -5,25 +9,25 @@ from shogun.Distance import EuclidianDistance
 import fileop
 import featop
 import dataop
-from config import CLUSTERING, T_CLUSTERING, T_DISTANCE
+from config import CLUSTERING, C_CLUSTERING, C_DISTANCE
 
-def _get_output_params (name, params, data):
-	output={
+def _get_outdata_params (name, params, data):
+	outdata={
 		'name':name,
 		'data_train':matrix(data['data']['train']),
 		'data_test':matrix(data['data']['test']),
 		'accuracy':CLUSTERING[name][0],
 	}
 
-	for k, v in params.iteritems():
-		output['clustering_'+k]=v
+	for key, val in params.iteritems():
+		outdata['clustering_'+key]=val
 
-	output['distance_name']=data['dname']
-	dparams=fileop.get_output_params(
-		data['dname'], T_DISTANCE, data['dargs'])
-	output.update(dparams)
+	outdata['distance_name']=data['dname']
+	dparams=fileop.get_outdata_params(
+		data['dname'], C_DISTANCE, data['dargs'])
+	outdata.update(dparams)
 
-	return output
+	return outdata
 
 def _run (name, first_arg):
 	params={
@@ -45,8 +49,8 @@ def _run (name, first_arg):
 	distance.init(feats['train'], feats['test'])
 	#params['classified']=clustering.classify().get_labels()
 
-	output=_get_output_params(name, params, data)
-	fileop.write(T_CLUSTERING, output)
+	outdata=_get_outdata_params(name, params, data)
+	fileop.write(C_CLUSTERING, outdata)
 
 
 def run ():

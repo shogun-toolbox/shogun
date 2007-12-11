@@ -1,15 +1,18 @@
+"""
+Generator for Distribution
+"""
+
 from numpy import *
 from shogun.Distribution import *
-from shogun.Features import RealFeatures
 
 import fileop
 import featop
 import dataop
-from config import DISTRIBUTION, T_DISTRIBUTION
+from config import DISTRIBUTION, C_DISTRIBUTION
 
-def _get_output_params (name, params, data):
+def _get_outdata_params (name, params, data):
 	ddata=DISTRIBUTION[name]
-	output={
+	outdata={
 		'name':name,
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test']),
@@ -21,28 +24,28 @@ def _get_output_params (name, params, data):
 	}
 
 	if ddata[1][0]=='string' or (ddata[1][0]=='simple' and ddata[1][1]=='Char'):
-		output['alphabet']='DNA'
-		output['seqlen']=dataop.LEN_SEQ
+		outdata['alphabet']='DNA'
+		outdata['seqlen']=dataop.LEN_SEQ
 
-	for k, v in params.iteritems():
-		output['distribution_'+k]=v
+	for key, val in params.iteritems():
+		outdata['distribution_'+key]=val
 
-	return output
+	return outdata
 
 def _run_histogram ():
-	data=dataop.get_rand(type=ushort)
+	data=dataop.get_rand(dattype=ushort)
 	feats=featop.get_simple('Word', data)
 
-	histogram=Histogram(feats['train'])
-	histogram.train()
+	histo=Histogram(feats['train'])
+	histo.train()
 
 	params={}
-	output=_get_output_params('Histogram', params, data)
-	fileop.write(T_DISTRIBUTION, output)
+	outdata=_get_outdata_params('Histogram', params, data)
+	fileop.write(C_DISTRIBUTION, outdata)
 
 def _run_hmm ():
 	data=dataop.get_dna()
-	feats=featop.get_string_complex('Word', data)
+	#feats=featop.get_string_complex('Word', data)
 	params={
 		'N':1,
 		'M':2,
@@ -54,8 +57,8 @@ def _run_hmm ():
 	#hmm.set_observations(feats['train'])
 	hmm.train()
 
-	output=_get_output_params('HMM', params, data)
-	fileop.write(T_DISTRIBUTION, output)
+	outdata=_get_outdata_params('HMM', params, data)
+	fileop.write(C_DISTRIBUTION, outdata)
 
 def run ():
 	_run_histogram()

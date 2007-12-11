@@ -1,10 +1,14 @@
+"""
+Generator for Distance
+"""
+
 from numpy import *
 from shogun.Distance import *
 
 import fileop
 import dataop
 import featop
-from config import T_DISTANCE
+from config import C_DISTANCE
 
 def _compute (name, feats, data, *args):
 	fun=eval(name)
@@ -13,16 +17,16 @@ def _compute (name, feats, data, *args):
 	distance.init(feats['train'], feats['test'])
 	dm_test=distance.get_distance_matrix()
 
-	output={
+	outdata={
 		'name':name,
 		'dm_train':dm_train,
 		'dm_test':dm_test,
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test'])
 	}
-	output.update(fileop.get_output_params(name, T_DISTANCE, args))
+	outdata.update(fileop.get_outdata_params(name, C_DISTANCE, args))
 
-	fileop.write(T_DISTANCE, output)
+	fileop.write(C_DISTANCE, outdata)
 
 def _run_feats_real ():
 	data=dataop.get_rand()
