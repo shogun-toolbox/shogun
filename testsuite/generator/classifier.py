@@ -97,6 +97,10 @@ def _compute_svm (name, labels, params, data):
 	if data.has_key('bias_enabled'):
 		svm.set_bias_enabled(data['bias_enabled'])
 
+	if data.has_key('max_train_time'):
+		svm.set_max_train_time(data['max_train_time'])
+		params['max_train_time']=data['max_train_time']
+
 	svm.train()
 
 	if data.has_key('bias_enabled') and data['bias_enabled']:
@@ -198,7 +202,6 @@ def _run_svm_kernel ():
 	_loop_svm(svms, data)
 
 def _run_svm_linear ():
-	#svms=['SubGradientSVM', 'SVMOcas']
 	svms=['SVMOcas']
 	data={
 		'data':dataop.get_rand(),
@@ -209,6 +212,12 @@ def _run_svm_linear ():
 
 	svms=['LibLinear', 'SVMLin']
 	data['bias_enabled']=True
+	_loop_svm(svms, data)
+
+	# SubGradientSVM needs max_train_time to terminate
+	svms=['SubGradientSVM']
+	data['bias_enabled']=False
+	data['max_train_time']=.5 # up to 2. does not improve test results :(
 	_loop_svm(svms, data)
 
 

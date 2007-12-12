@@ -87,6 +87,8 @@ def _classifier (indata):
 		classifier.set_epsilon(indata['classifier_epsilon'])
 	if indata.has_key('classifier_tube_epsilon'):
 		classifier.set_tube_epsilon(indata['classifier_tube_epsilon'])
+	if indata.has_key('classifier_max_train_time'):
+		classifier.set_max_train_time(indata['classifier_max_train_time'])
 
 	classifier.train()
 
