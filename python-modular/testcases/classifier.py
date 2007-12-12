@@ -16,7 +16,7 @@ def _get_machine (indata, feats):
 		kfun=eval(indata['kernel_name']+'Kernel')
 		machine=kfun(feats['train'], feats['train'], *kargs)
 		machine.parallel.set_num_threads(indata['classifier_num_threads'])
-	elif indata['classifier_type']=='distance':
+	elif indata['classifier_type']=='knn':
 		dargs=util.get_args(indata, 'distance_arg')
 		dfun=eval(indata['distance_name'])
 		machine=dfun(feats['train'], feats['train'], *dargs)
@@ -46,7 +46,7 @@ def _get_results (indata, classifier, machine=None, feats=None):
 		res['accuracy']=1e-4
 
 	if (indata['classifier_type']=='kernel' or
-		indata['classifier_type']=='distance'):
+		indata['classifier_type']=='knn'):
 		machine.init(feats['train'], feats['test'])
 
 	res['classified']=max(abs(
@@ -68,8 +68,10 @@ def _classifier (indata):
 			classifier=fun(indata['classifier_C'], machine, labels)
 		elif indata['classifier_type']=='linear':
 			classifier=fun(indata['classifier_C'], feats['train'], labels)
-		elif indata['classifier_type']=='distance':
+		elif indata['classifier_type']=='knn':
 			classifier=fun(indata['classifier_k'], machine, labels)
+		elif indata['classifier_type']=='lda':
+			classifier=fun(indata['classifier_gamma'], feats['train'], labels)
 		else:
 			return False
 	else:

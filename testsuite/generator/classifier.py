@@ -41,7 +41,7 @@ def _get_outdata_params (name, params, data):
 		kparams=fileop.get_outdata_params(
 			data['kname'], C_KERNEL, data['kargs'])
 		outdata.update(kparams)
-	elif ctype=='distance':
+	elif ctype=='knn':
 		outdata['distance_name']=data['dname']
 		dparams=fileop.get_outdata_params(
 			data['dname'], C_DISTANCE, data['dargs'])
@@ -126,7 +126,8 @@ def _loop_svm (svms, data):
 		ltype=CLASSIFIER[name][2]
 
 		if ctype=='kernel':
-			params={'C':.017, 'epsilon':1e-5, 'tube_epsilon':1e-2, 'num_threads':1}
+			params={'C':.017, 'epsilon':1e-5, 'tube_epsilon':1e-2,
+				'num_threads':1}
 		else:
 			params={'C':.017, 'epsilon':1e-5, 'num_threads':1}
 
@@ -211,6 +212,7 @@ def _run_svm_linear ():
 	data['bias_enabled']=True
 	_loop_svm(svms, data)
 
+
 ##########################################################################
 # other classifiers
 ##########################################################################
@@ -268,14 +270,38 @@ def _run_knn ():
 	outdata=_get_outdata_params(name, params, data)
 	fileop.write(C_CLASSIFIER, outdata)
 
+def _run_lda ():
+	name='LDA'
+
+	params={
+		'gamma':.1,
+		'num_threads':1,
+	}
+	data={
+		'data':dataop.get_rand(),
+	}
+	feats=featop.get_simple('Real', data['data'])
+	params['labels'], labels=_get_labels(
+		CLASSIFIER[name][2], feats['train'].get_num_vectors())
+
+	lda=LDA(params['gamma'], feats['train'], labels)
+	lda.parallel.set_num_threads(params['num_threads'])
+	lda.train()
+
+	params['classified']=lda.classify().get_labels()
+
+	outdata=_get_outdata_params(name, params, data)
+	fileop.write(C_CLASSIFIER, outdata)
+
 ##########################################################################
 # public
 ##########################################################################
 
 def run ():
-	_run_svm_kernel()
-	_run_svm_linear()
+	#_run_svm_kernel()
+	#_run_svm_linear()
 	_run_knn()
+	_run_lda()
 	#_run_perceptron()
 
 
