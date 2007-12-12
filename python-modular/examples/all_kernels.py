@@ -6,7 +6,7 @@
 
 from sys import maxint
 from numpy import ubyte, ushort, double, int, zeros, sum, floor, array, arange
-from numpy.random import randint, rand
+from numpy.random import randint, rand, seed
 from shogun.PreProc import SortWordString
 from shogun.Distance import EuclidianDistance
 from shogun.Kernel import *
@@ -40,7 +40,7 @@ def get_dna ():
 ###########################################################################
 
 def linear_byte ():
-	print "LinearByte"
+	print 'LinearByte'
 	
 	rows=11
 	data=randint(0, maxint, (rows, 11)).astype(ubyte)
@@ -59,7 +59,7 @@ def linear_byte ():
 ###########################################################################
 
 def chi2 ():
-	print "Chi2"
+	print 'Chi2'
 
 	rows=11
 	data=rand(rows, 11)
@@ -76,7 +76,7 @@ def chi2 ():
 	km_test=kernel.get_kernel_matrix()
 
 def const ():
-	print "Const"
+	print 'Const'
 
 	rows=11
 	data=rand(rows, 11)
@@ -92,7 +92,7 @@ def const ():
 	km_test=kernel.get_kernel_matrix()
 
 def diag ():
-	print "Diag"
+	print 'Diag'
 
 	rows=11
 	data=rand(rows, 11)
@@ -108,7 +108,7 @@ def diag ():
 	km_test=kernel.get_kernel_matrix()
 
 def gaussian ():
-	print "Gaussian"
+	print 'Gaussian'
 
 	rows=11
 	data=rand(rows, 11)
@@ -124,7 +124,7 @@ def gaussian ():
 	km_test=kernel.get_kernel_matrix()
 
 def gaussian_shift ():
-	print "GaussianShift"
+	print 'GaussianShift'
 
 	rows=11
 	data=rand(rows, 11)
@@ -143,7 +143,7 @@ def gaussian_shift ():
 	km_test=kernel.get_kernel_matrix()
 
 def linear ():
-	print "Linear"
+	print 'Linear'
 
 	rows=11
 	data=rand(rows, 11)
@@ -159,7 +159,7 @@ def linear ():
 	km_test=kernel.get_kernel_matrix()
 
 def poly ():
-	print "Poly"
+	print 'Poly'
 
 	rows=11
 	data=rand(rows, 11)
@@ -178,7 +178,7 @@ def poly ():
 	km_test=kernel.get_kernel_matrix()
 
 def sigmoid ():
-	print "Sigmoid"
+	print 'Sigmoid'
 
 	rows=11
 	data=rand(rows, 11)
@@ -200,7 +200,7 @@ def sigmoid ():
 ###########################################################################
 
 def sparse_gaussian ():
-	print "SparseGaussian"
+	print 'SparseGaussian'
 
 	rows=11
 	data=rand(rows, 11)
@@ -220,7 +220,7 @@ def sparse_gaussian ():
 	km_test=kernel.get_kernel_matrix()
 
 def sparse_linear ():
-	print "SparseLinear"
+	print 'SparseLinear'
 
 	rows=11
 	data=rand(rows, 11)
@@ -240,7 +240,7 @@ def sparse_linear ():
 	km_test=kernel.get_kernel_matrix()
 
 def sparse_poly ():
-	print "SparsePoly"
+	print 'SparsePoly'
 
 	rows=11
 	data=rand(rows, 11)
@@ -268,7 +268,7 @@ def sparse_poly ():
 ###########################################################################
 
 def linear_word ():
-	print "LinearWord"
+	print 'LinearWord'
 
 	maxval=2**16-1
 	rows=11
@@ -286,7 +286,7 @@ def linear_word ():
 	km_test=kernel.get_kernel_matrix()
 
 def poly_match_word ():
-	print "PolyMatchWord"
+	print 'PolyMatchWord'
 
 	maxval=2**16-1
 	rows=11
@@ -304,7 +304,7 @@ def poly_match_word ():
 	km_test=kernel.get_kernel_matrix()
 
 def word_match ():
-	print "WordMatch"
+	print 'WordMatch'
 
 	maxval=2**16-1
 	rows=11
@@ -327,7 +327,7 @@ def word_match ():
 ###########################################################################
 
 def fixed_degree_string ():
-	print "FixedDegreeString"
+	print 'FixedDegreeString'
 
 	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
@@ -343,7 +343,7 @@ def fixed_degree_string ():
 	km_test=kernel.get_kernel_matrix()
 
 def linear_string ():
-	print "LinearString"
+	print 'LinearString'
 
 	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
@@ -358,7 +358,7 @@ def linear_string ():
 	km_test=kernel.get_kernel_matrix()
 
 def local_alignment_string():
-	print "LocalAlignmentString"
+	print 'LocalAlignmentString'
 
 	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
@@ -373,7 +373,7 @@ def local_alignment_string():
 	km_test=kernel.get_kernel_matrix()
 
 def poly_match_string ():
-	print "PolyMatchString"
+	print 'PolyMatchString'
 
 	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
@@ -390,7 +390,7 @@ def poly_match_string ():
 	km_test=kernel.get_kernel_matrix()
 
 def simple_locality_improved_string ():
-	print "SimpleLocalityImprovedString"
+	print 'SimpleLocalityImprovedString'
 
 	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
@@ -409,7 +409,7 @@ def simple_locality_improved_string ():
 	km_test=kernel.get_kernel_matrix()
 
 def weighted_degree_string ():
-	print "WeightedDegreeString"
+	print 'WeightedDegreeString'
 
 	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
@@ -431,7 +431,7 @@ def weighted_degree_string ():
 	km_test=kernel.get_kernel_matrix()
 
 def weighted_degree_position_string ():
-	print "WeightedDegreePositionString"
+	print 'WeightedDegreePositionString'
 
 	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
@@ -449,7 +449,7 @@ def weighted_degree_position_string ():
 	km_test=kernel.get_kernel_matrix()
 
 def locality_improved_string ():
-	print "LocalityImprovedString"
+	print 'LocalityImprovedString'
 
 	data=get_dna()
 	feats_train=StringCharFeatures(DNA)
@@ -472,7 +472,7 @@ def locality_improved_string ():
 ###########################################################################
 
 def comm_word_string ():
-	print "CommWordString"
+	print 'CommWordString'
 
 	data=get_dna()
 	order=3
@@ -506,7 +506,7 @@ def comm_word_string ():
 	km_test=kernel.get_kernel_matrix()
 
 def weighted_comm_word_string ():
-	print "WeightedCommWordString"
+	print 'WeightedCommWordString'
 
 	data=get_dna()
 	order=3
@@ -540,7 +540,7 @@ def weighted_comm_word_string ():
 	km_test=kernel.get_kernel_matrix()
 
 def comm_ulong_string ():
-	print "CommWordString"
+	print 'CommWordString'
 
 	data=get_dna()
 	order=3
@@ -572,7 +572,7 @@ def comm_ulong_string ():
 ###########################################################################
 
 def custom ():
-	print "Custom"
+	print 'Custom'
 
 	dim=7
 	data=rand(dim, dim)
@@ -593,7 +593,7 @@ def custom ():
 	km_fullfull=kernel.get_kernel_matrix()
 
 def distance ():
-	print "Distance"
+	print 'Distance'
 
 	rows=10
 	data=rand(rows, 9)
@@ -610,7 +610,7 @@ def distance ():
 	km_test=kernel.get_kernel_matrix()
 
 def auc ():
-	print "AUC"
+	print 'AUC'
 
 	rows=23
 	data=rand(rows, 11)
@@ -635,7 +635,7 @@ def auc ():
 	km_test=kernel.get_kernel_matrix()
 
 def combined ():
-	print "Combined"
+	print 'Combined'
 
 	kernel=CombinedKernel()
 	feats_train=CombinedFeatures()
@@ -688,6 +688,8 @@ def mindygram ():
 ###########################################################################
 
 if __name__=='__main__':
+	seed(42)
+
 	linear_byte()
 
 	chi2()
