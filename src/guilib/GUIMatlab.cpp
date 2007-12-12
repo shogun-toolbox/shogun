@@ -717,9 +717,11 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			{
 				// determine whether the loss should be used or not
 				DREAL *dbuffer = mxGetPr(mx_segment_loss) ;
-				for (INT i=0; i<mxGetM(mx_segment_loss)*mxGetN(mx_segment_loss); i++)
+				for (INT i=0; i<((INT) mxGetM(mx_segment_loss))*((INT) mxGetN(mx_segment_loss)); i++)
+				{
 					if (dbuffer[i]!=0.0)
 						segment_loss_nonzero = true ;
+				}
 				h->best_path_set_segment_loss(dbuffer, mxGetM(mx_segment_loss), mxGetN(mx_segment_loss)) ;
 
 				dbuffer = mxGetPr(mx_segment_ids_mask) ;
