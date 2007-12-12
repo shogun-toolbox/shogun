@@ -21,6 +21,7 @@ class CLibSVMOneClass : public CSVM
 {
 	public:
 		CLibSVMOneClass();
+		CLibSVMOneClass(DREAL C, CKernel* k);
 		virtual ~CLibSVMOneClass();
 		virtual bool train();
 		virtual inline EClassifierType get_classifier_type() { return CT_LIBSVMONECLASS; }

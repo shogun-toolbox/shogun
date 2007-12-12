@@ -155,9 +155,8 @@ def _loop_svm (svms, data):
 		_compute_svm(name, labels, params, data)
 
 def _run_svm_kernel ():
-	svms=['SVMLight', 'LibSVM', 'GPBTSVM', 'MPDSVM', 'LibSVMMultiClass', 'GMNPSVM']
-	#svms=['SVMLight', 'LibSVM', 'GPBTSVM', 'MPDSVM', 'LibSVMMultiClass',
-	#	'GMNPSVM', 'LibSVMOneClass']
+	svms=['SVMLight', 'LibSVM', 'GPBTSVM', 'MPDSVM', 'LibSVMMultiClass',
+		'GMNPSVM', 'LibSVMOneClass']
 	data={
 		'kname':'Gaussian',
 		'kargs':[1.5],
@@ -298,8 +297,8 @@ def _run_lda ():
 ##########################################################################
 
 def run ():
-	#_run_svm_kernel()
-	#_run_svm_linear()
+	_run_svm_kernel()
+	_run_svm_linear()
 	_run_knn()
 	_run_lda()
 	#_run_perceptron()

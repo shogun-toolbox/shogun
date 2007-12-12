@@ -12,9 +12,14 @@
 #include "classifier/svm/LibSVM_oneclass.h"
 #include "lib/io.h"
 
-CLibSVMOneClass::CLibSVMOneClass() : CSVM()
+CLibSVMOneClass::CLibSVMOneClass()
+: CSVM(), model(NULL)
 {
-	model=NULL;
+}
+
+CLibSVMOneClass::CLibSVMOneClass(DREAL C, CKernel* k)
+: CSVM(C, k, NULL), model(NULL)
+{
 }
 
 CLibSVMOneClass::~CLibSVMOneClass()
