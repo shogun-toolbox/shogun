@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-
-############################################################################
-# explicit examples on how to use the different classifiers
-############################################################################
+"""
+Explicit examples on how to use the different classifiers
+"""
 
 from numpy import double, array, floor
 from numpy.random import rand, seed

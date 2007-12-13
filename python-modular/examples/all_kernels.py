@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-
-############################################################################
-# explicit examples on how to use the different kernels
-############################################################################
+"""
+Explicit examples on how to use the different kernels
+"""
 
 from sys import maxint
 from numpy import ubyte, ushort, double, int, zeros, sum, floor, array, arange
