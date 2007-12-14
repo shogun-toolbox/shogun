@@ -54,6 +54,7 @@
 #include "classifier/svm/SubGradientSVM.h"
 #include "classifier/SubGradientLPM.h"
 #include "classifier/svm/SVMOcas.h"
+#include "classifier/svm/WDSVMOcas.h"
 
 
 CGUIClassifier::CGUIClassifier(CGUI* g) : CSGObject(), gui(g)
@@ -271,6 +272,16 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		((CSubGradientSVM*) classifier)->set_epsilon(svm_epsilon);
 		((CSubGradientSVM*) classifier)->set_max_train_time(max_train_time);
 		SG_INFO( "created Subgradient SVM object\n") ;
+	}
+	else if (strcmp(param,"WDSVMOCAS")==0)
+	{
+		delete classifier;
+		classifier= new CWDSVMOcas(SVM_OCAS);
+
+		((CWDSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
+		((CWDSVMOcas*) classifier)->set_epsilon(svm_epsilon);
+		((CWDSVMOcas*) classifier)->set_bufsize(svm_bufsize);
+		SG_INFO( "created Weighted Degree Kernel SVM Ocas(OCAS) object\n") ;
 	}
 	else if (strcmp(param,"SVMOCAS")==0)
 	{

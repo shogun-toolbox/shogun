@@ -13,35 +13,35 @@
 #include "lib/Mathematics.h"
 #include "lib/Time.h"
 #include "base/Parallel.h"
-#include "classifier/SparseLinearClassifier.h"
-#include "classifier/svm/SVMOcas.h"
+#include "classifier/Classifier.h"
 #include "classifier/svm/libocas.h"
-#include "features/SparseFeatures.h"
+#include "classifier/svm/WDSVMOcas.h"
+#include "features/StringFeatures.h"
 #include "features/Labels.h"
 
-CSVMOcas::CSVMOcas(E_SVM_TYPE type) : CSparseLinearClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
+CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type) : CClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(type)
 {
 	w=NULL;
 	old_w=NULL;
 }
 
-CSVMOcas::CSVMOcas(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab) 
-: CSparseLinearClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3)
+CWDSVMOcas::CWDSVMOcas(DREAL C, CStringFeatures<BYTE>* traindat, CLabels* trainlab) 
+: CClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3)
 {
 	w=NULL;
 	old_w=NULL;
 	method=SVM_OCAS;
-	CSparseLinearClassifier::features=traindat;
+	features=traindat;
 	CClassifier::labels=trainlab;
 }
 
 
-CSVMOcas::~CSVMOcas()
+CWDSVMOcas::~CWDSVMOcas()
 {
 }
 
-bool CSVMOcas::train()
+bool CWDSVMOcas::train()
 {
 	SG_INFO("C=%f, epsilon=%f, bufsize=%d\n", get_C1(), get_epsilon(), bufsize);
 
@@ -51,7 +51,8 @@ bool CSVMOcas::train()
 
 	INT num_train_labels=0;
 	lab=get_labels()->get_labels(num_train_labels);
-	w_dim=features->get_num_features();
+	w_dim=17;
+	//w_dim=features->get_num_features();
 	INT num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
@@ -87,11 +88,11 @@ bool CSVMOcas::train()
 		Method = 1;
 	ocas_return_value_T result = svm_ocas_solver( get_C1(), num_vec, get_epsilon(),
 			TolAbs, QPBound, bufsize, Method, 
-			&CSVMOcas::compute_W,
-			&CSVMOcas::update_W, 
-			&CSVMOcas::add_new_cut, 
-			&CSVMOcas::compute_output,
-			&CSVMOcas::sort,
+			&CWDSVMOcas::compute_W,
+			&CWDSVMOcas::update_W, 
+			&CWDSVMOcas::add_new_cut, 
+			&CWDSVMOcas::compute_output,
+			&CWDSVMOcas::sort,
 			&printf,
 			this);
 
@@ -125,10 +126,10 @@ bool CSVMOcas::train()
   sq_norm_W = W'*W;
 
   ---------------------------------------------------------------------------------*/
-double CSVMOcas::update_W( double t, void* ptr )
+double CWDSVMOcas::update_W( double t, void* ptr )
 {
   double sq_norm_W = 0;         
-  CSVMOcas* o = (CSVMOcas*) ptr;
+  CWDSVMOcas* o = (CWDSVMOcas*) ptr;
   uint32_t nDim = (uint32_t) o->w_dim;
   double* W=o->w;
   double* oldW=o->old_w;
@@ -150,13 +151,13 @@ double CSVMOcas::update_W( double t, void* ptr )
     sparse_A(:,nSel+1) = new_a;
 
   ---------------------------------------------------------------------------------*/
-void CSVMOcas::add_new_cut( double *new_col_H, 
+void CWDSVMOcas::add_new_cut( double *new_col_H, 
                   uint32_t *new_cut, 
                   uint32_t cut_length, 
                   uint32_t nSel,
 				  void* ptr)
 {
-	CSVMOcas* o = (CSVMOcas*) ptr;
+	/*CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	CSparseFeatures<DREAL>* f = o->get_features();
 	uint32_t nDim=(uint32_t) o->w_dim;
 	DREAL* y = o->lab;
@@ -168,14 +169,14 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 	double sq_norm_a;
 	uint32_t i, j, nz_dims;
 
-	/* temporary vector */
+	// temporary vector
 	double* new_a = o->tmp_a_buf;
 	memset(new_a, 0, sizeof(double)*nDim);
 
 	for(i=0; i < cut_length; i++) 
 		f->add_to_dense_vec(y[new_cut[i]], new_cut[i], new_a, nDim);
 
-	/* compute new_a'*new_a and count number of non-zerou dimensions */
+	// compute new_a'*new_a and count number of non-zerou dimensions
 	nz_dims = 0; 
 	sq_norm_a = 0;
 	for(j=0; j < nDim; j++ ) {
@@ -185,7 +186,7 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 		}
 	}
 
-	/* sparsify new_a and insert it to the last column of sparse_A */
+	// sparsify new_a and insert it to the last column of sparse_A
 	c_nzd[nSel] = nz_dims;
 	if(nz_dims > 0)
 	{
@@ -213,10 +214,10 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 			tmp += new_a[c_idx[i][j]]*c_val[i][j];
 
 		new_col_H[i] = tmp;
-	}
+	}*/
 }
 
-void CSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
+void CWDSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
 {
 	CMath::qsort_index(vals, idx, size);
 }
@@ -226,14 +227,15 @@ void CSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
 
   output = data_X'*W;
   ----------------------------------------------------------------------*/
-void CSVMOcas::compute_output( double *output, void* ptr )
+void CWDSVMOcas::compute_output( double *output, void* ptr )
 {
-	CSVMOcas* o = (CSVMOcas*) ptr;
+	/*
+	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	CSparseFeatures<DREAL>* f=o->get_features();
 	INT nData=f->get_num_vectors();
 
 	DREAL* y = o->lab;
-	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);
+	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);*/
 }
 
 /*----------------------------------------------------------------------
@@ -245,9 +247,9 @@ void CSVMOcas::compute_output( double *output, void* ptr )
   dp_WoldW = W'*oldW';
 
   ----------------------------------------------------------------------*/
-void CSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, uint32_t nSel, void* ptr )
+void CWDSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, uint32_t nSel, void* ptr )
 {
-	CSVMOcas* o = (CSVMOcas*) ptr;
+	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	uint32_t nDim= (uint32_t) o->w_dim;
 	CMath::swap(o->w, o->old_w);
 	double* W=o->w;

@@ -9,28 +9,23 @@
  * Copyright (C) 2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#ifndef _SVMOCAS_H___
-#define _SVMOCAS_H___
+#ifndef _WDSVMOCAS_H___
+#define _WDSVMOCAS_H___
 
 #include "lib/common.h"
-#include "classifier/SparseLinearClassifier.h"
-#include "features/SparseFeatures.h"
+#include "classifier/Classifier.h"
+#include "classifier/svm/SVMOcas.h"
+#include "features/StringFeatures.h"
 #include "features/Labels.h"
 
-enum E_SVM_TYPE
-{
-	SVM_OCAS = 0,
-	SVM_BMRM = 1
-};
-
-class CSVMOcas : public CSparseLinearClassifier
+class CWDSVMOcas : public CClassifier
 {
 	public:
-		CSVMOcas(E_SVM_TYPE);
-		CSVMOcas(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
-		virtual ~CSVMOcas();
+		CWDSVMOcas(E_SVM_TYPE);
+		CWDSVMOcas(DREAL C, CStringFeatures<BYTE>* traindat, CLabels* trainlab);
+		virtual ~CWDSVMOcas();
 
-		virtual inline EClassifierType get_classifier_type() { return CT_SVMOCAS; }
+		virtual inline EClassifierType get_classifier_type() { return CT_WDSVMOCAS; }
 		virtual bool train();
 
 		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
@@ -40,6 +35,9 @@ class CSVMOcas : public CSparseLinearClassifier
 
 		inline void set_epsilon(DREAL eps) { epsilon=eps; }
 		inline DREAL get_epsilon() { return epsilon; }
+
+		inline void set_features(CStringFeatures<BYTE>* feat) { features=feat; }
+		inline CStringFeatures<BYTE>* get_features() { return features; }
 
 		inline void set_bias_enabled(bool enable_bias) { use_bias=enable_bias; }
 		inline bool get_bias_enabled() { return use_bias; }
@@ -57,6 +55,7 @@ class CSVMOcas : public CSparseLinearClassifier
 
 
 	protected:
+		CStringFeatures<BYTE>* features;
 		bool use_bias;
 		INT bufsize;
 		DREAL C1;
@@ -64,6 +63,9 @@ class CSVMOcas : public CSparseLinearClassifier
 		DREAL epsilon;
 		E_SVM_TYPE method;
 
+		DREAL bias;
+		INT w_dim;
+		DREAL* w;
 		DREAL* old_w;
 		DREAL* tmp_a_buf; /// nDim big
 		DREAL* lab;
