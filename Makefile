@@ -117,6 +117,9 @@ svn-tag-release: src/lib/versionstring.h
 	cd ../releases && svn add shogun_$(MAINVERSION)/src/lib/versionstring.h
 	cd ../releases && svn ci -m "Tagging shogun_$(MAINVERSION) release"
 
+svn-ignores: .svn_ignores
+	find . -name .svn -prune -o -type d -exec svn propset svn:ignore -F .svn_ignores {} \;
+
 clean:
 	rm -rf $(DESTDIR)
 
