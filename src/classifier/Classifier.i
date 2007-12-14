@@ -49,3 +49,6 @@
 /* classifiers based on distancemachine */
 %include "distance/DistanceMachine.i" 
 %include "classifier/KNN.i"
+
+/* classifiers using strings directly */
+%include "classifier/svm/WDSVMOcas.i"
