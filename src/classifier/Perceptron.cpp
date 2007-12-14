@@ -40,8 +40,10 @@ bool CPerceptron::train()
 
 	ASSERT(num_vec==num_train_labels);
 	delete[] w;
+	w_dim=num_feat;
 	w=new DREAL[num_feat];
 	ASSERT(w);
+
 	DREAL* output=new DREAL[num_vec];
 	ASSERT(output);
 

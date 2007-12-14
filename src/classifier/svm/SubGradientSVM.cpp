@@ -129,7 +129,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 
 	CMath::qsort_index(tmp_proj, tmp_proj_idx, num_vec);
 
-	autoselected_epsilon=tmp_proj[CMath::min(qpsize,num_vec)];
+	autoselected_epsilon=tmp_proj[CMath::min(qpsize,num_vec-1)];
 
 #ifdef DEBUG_SUBGRADIENTSVM
 	//SG_PRINT("autoseleps: %15.15f\n", autoselected_epsilon);
@@ -345,7 +345,7 @@ DREAL CSubGradientSVM::compute_min_subgradient(INT num_feat, INT num_vec, INT nu
 #ifdef USE_CPLEX
 			solver.set_solver(QPB_SOLVER_CPLEX);
 #else
-			solver.set_solver(QPB_SOLVER_SCA);
+			solver.set_solver(QPB_SOLVER_SCAS);
 #endif
 
 			solver.solve_qp(beta, num_bound);

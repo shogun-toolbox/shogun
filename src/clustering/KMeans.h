@@ -31,12 +31,6 @@ class CKMeans : public CDistanceMachine
 		virtual inline EClassifierType get_classifier_type() { return CT_KMEANS; }
 
 		virtual bool train();
-		virtual CLabels* classify(CLabels* output=NULL);
-		virtual DREAL classify_example(INT idx)
-		{
-			SG_ERROR( "for performance reasons use classify() instead of classify_example\n");
-			return 0;
-		}
 
 		virtual bool load(FILE* srcfile);
 		virtual bool save(FILE* dstfile);
@@ -75,6 +69,28 @@ class CKMeans : public CDistanceMachine
 			dim=dimensions;
 			num=k;
 		}
+
+		inline void get_radi(DREAL** radi, INT* num)
+		{
+			size_t sz=sizeof(R)*k;
+			*radi= (DREAL*) malloc(sz);
+			ASSERT(*radi);
+
+			memcpy(*radi, R, sz);
+			*num=k;
+		}
+
+		inline void get_centers(DREAL** centers, INT* dim, INT* num)
+		{
+			size_t sz=sizeof(mus)*dimensions*k;
+			*centers= (DREAL*) malloc(sz);
+			ASSERT(*centers);
+
+			memcpy(*centers, mus, sz);
+			*dim=dimensions;
+			*num=k;
+		}
+
 
 	protected:
 		void sqdist(double * x, CRealFeatures* y, double *z,

@@ -68,15 +68,11 @@ DREAL CCanberraWordDistance::compute(INT idx_a, INT idx_b)
 	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
 	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
 
-	// can only deal with strings of same length -> not as WordString
-	//ASSERT(alen==blen);
-
 	DREAL result=0;
 
 	INT left_idx=0;
 	INT right_idx=0;
 
-	//hamming of: if words appear in both vectors _the same number_ of times
 	while (left_idx < alen && right_idx < blen)
 	{
 		WORD sym=avec[left_idx];

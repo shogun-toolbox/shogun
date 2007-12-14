@@ -30,12 +30,6 @@ class CHierarchical : public CDistanceMachine
 		virtual inline EClassifierType get_classifier_type() { return CT_HIERARCHICAL; }
 
 		virtual bool train();
-		virtual CLabels* classify(CLabels* output=NULL);
-		virtual DREAL classify_example(INT idx)
-		{
-			SG_ERROR( "for performance reasons use classify() instead of classify_example\n");
-			return 0;
-		}
 
 		virtual bool load(FILE* srcfile);
 		virtual bool save(FILE* dstfile);

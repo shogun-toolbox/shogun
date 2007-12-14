@@ -58,11 +58,6 @@ bool CKMeans::train()
 	return true;
 }
 
-CLabels* CKMeans::classify(CLabels* output)
-{
-	return NULL;
-}
-
 bool CKMeans::load(FILE* srcfile)
 {
 	return false;
@@ -178,7 +173,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 	mus=new DREAL[XDimk];
 
 	int *ClList = (int*) calloc(XSize, sizeof(int));
-	double *SetWeigths = (double*) calloc(k, sizeof(double));
+	double *weights_set = (double*) calloc(k, sizeof(double));
 	double *oldmus = (double*) calloc(XDimk, sizeof(double));
 	double *dists = (double*) calloc(k*XSize, sizeof(double));
 
@@ -188,8 +183,8 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 
 	/* ClList=zeros(XSize,1) ; */
 	for (i=0; i<XSize; i++) ClList[i]=0;
-	/* SetWeigths=zeros(k,1) ; */
-	for (i=0; i<k; i++) SetWeigths[i]=0;
+	/* weights_set=zeros(k,1) ; */
+	for (i=0; i<k; i++) weights_set[i]=0;
 
 	/* mus=zeros(dimensions, k) ; */
 	for (i=0; i<XDimk; i++) mus[i]=0;
@@ -201,7 +196,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 		 *  for i=1:k,
 		 *	actks= (ks==i);
 		 *	c=sum(actks);
-		 *	SetWeigths(i)=c;
+		 *	weights_set(i)=c;
 		 *
 		 *	ClList(actks)=i*ones(1, c);
 		 *
@@ -220,7 +215,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 			int j;
 			double weight=Weights[i];
 
-			SetWeigths[Cl]+=weight;
+			weights_set[Cl]+=weight;
 			ClList[i]=Cl;
 
 			vec=lhs->get_feature_vector(i, vlen, vfree);
@@ -234,9 +229,9 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 		{
 			int j;
 
-			if (SetWeigths[i]!=0.0)
+			if (weights_set[i]!=0.0)
 				for (j=0; j<dimensions; j++)
-					mus[i*dimensions+j] /= SetWeigths[i];
+					mus[i*dimensions+j] /= weights_set[i];
 		}
 	}
 	else 
@@ -267,7 +262,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 		{
 			const int Cl = ClList[i];
 			double weight=Weights[i];
-			SetWeigths[Cl]+=weight;
+			weights_set[Cl]+=weight;
 #ifndef MUSRECALC
 			vec=lhs->get_feature_vector(i, vlen, vfree);
 
@@ -281,11 +276,11 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 		/* normalization to get the mean */ 
 		for (i=0; i<k; i++)
 		{
-			if (SetWeigths[i]!=0.0)
+			if (weights_set[i]!=0.0)
 			{
 				int j;
 				for (j=0; j<dimensions; j++)
-					mus[i*dimensions+j] /= SetWeigths[i];
+					mus[i*dimensions+j] /= weights_set[i];
 			}
 		}
 #endif
@@ -324,9 +319,9 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 		{
 			int j;
 
-			if (SetWeigths[i]!=0.0)
+			if (weights_set[i]!=0.0)
 				for (j=0; j<dimensions; j++)
-					mus[i*dimensions+j] /= SetWeigths[i];
+					mus[i*dimensions+j] /= weights_set[i];
 		}
 #endif
 
@@ -357,29 +352,29 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 			{
 				changed= changed + 1;
 
-				/* SetWeigths(imini) = SetWeigths(imini) + weight ; */
-				SetWeigths[imini]+= weight;
-				/* SetWeigths(j)     = SetWeigths(j)     - weight ; */
-				SetWeigths[ClList_Pat]-= weight;
+				/* weights_set(imini) = weights_set(imini) + weight ; */
+				weights_set[imini]+= weight;
+				/* weights_set(j)     = weights_set(j)     - weight ; */
+				weights_set[ClList_Pat]-= weight;
 
 				/* mu_new=mu_old + (x - mu_old)/(n+1) */
-				/* mus(:,imini)=mus(:,imini) + (XData(:,i) - mus(:,imini)) * (weight / SetWeigths(imini)) ; */
+				/* mus(:,imini)=mus(:,imini) + (XData(:,i) - mus(:,imini)) * (weight / weights_set(imini)) ; */
 				vec=lhs->get_feature_vector(Pat, vlen, vfree);
 
 				for (j=0; j<dimensions; j++)
-					mus[imini*dimensions+j]-=(vec[j]-mus[imini*dimensions+j])*(weight/SetWeigths[imini]);
+					mus[imini*dimensions+j]-=(vec[j]-mus[imini*dimensions+j])*(weight/weights_set[imini]);
 
 				lhs->free_feature_vector(vec, Pat, vfree);
 
 				/* mu_new = mu_old - (x - mu_old)/(n-1) */
-				/* if SetWeigths(j)~=0 */
-				if (SetWeigths[ClList_Pat]!=0.0)
+				/* if weights_set(j)~=0 */
+				if (weights_set[ClList_Pat]!=0.0)
 				{
-					/* mus(:,j)=mus(:,j) - (XData(:,i) - mus(:,j)) * (weight/SetWeigths(j)) ; */
+					/* mus(:,j)=mus(:,j) - (XData(:,i) - mus(:,j)) * (weight/weights_set(j)) ; */
 					vec=lhs->get_feature_vector(Pat, vlen, vfree);
 
 					for (j=0; j<dimensions; j++)
-						mus[ClList_Pat*dimensions+j]-=(vec[j]-mus[ClList_Pat*dimensions+j])*(weight/SetWeigths[ClList_Pat]);
+						mus[ClList_Pat*dimensions+j]-=(vec[j]-mus[ClList_Pat*dimensions+j])*(weight/weights_set[ClList_Pat]);
 					lhs->free_feature_vector(vec, Pat, vfree);
 				}
 				else
@@ -435,7 +430,7 @@ void CKMeans::clustknb(bool use_old_mus, double *mus_start)
 	}
 
 	free(ClList);
-	free(SetWeigths);
+	free(weights_set);
 	free(oldmus);
 	free(dists);
 } 

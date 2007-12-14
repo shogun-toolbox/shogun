@@ -107,7 +107,7 @@ void CLabels::get_labels(DREAL** p_labels, INT* len)
 
 	if (num_labels>0)
 	{
-		*p_labels=new DREAL[num_labels];
+		*p_labels=(DREAL*) malloc(sizeof(DREAL)*num_labels);
 
 		for (INT i=0; i<num_labels; i++)
 			(*p_labels)[i]=get_label(i);

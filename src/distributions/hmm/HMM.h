@@ -516,7 +516,7 @@ public:
 
 	virtual DREAL get_log_likelihood_example(INT num_example)
 	{
-		return 0;
+		return model_probability(num_example);
 	}
 
 	/** initialization function - gets called by constructors.
@@ -578,18 +578,18 @@ public:
 	
 	/// inline proxy for model probability.
 	inline DREAL model_probability(INT dimension=-1)
-	  {
-	    //for faster calculation cache model probability
-	    if (dimension==-1)
-	      {
-		if (mod_prob_updated)
-		  return mod_prob/p_observations->get_num_vectors();
+	{
+		//for faster calculation cache model probability
+		if (dimension==-1)
+		{
+			if (mod_prob_updated)
+				return mod_prob/p_observations->get_num_vectors();
+			else
+				return model_probability_comp()/p_observations->get_num_vectors();
+		}
 		else
-		  return model_probability_comp()/p_observations->get_num_vectors();
-	      }
-	    else
-	      return forward(p_observations->get_vector_length(dimension), 0, dimension);
-	  }
+			return forward(p_observations->get_vector_length(dimension), 0, dimension);
+	}
 	
 	/** calculates likelihood for linear model
 	 * on observations in MEMORY

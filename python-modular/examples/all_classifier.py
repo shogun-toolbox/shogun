@@ -293,7 +293,7 @@ def subgradient_svm ():
 	svm.set_epsilon(epsilon)
 	svm.parallel.set_num_threads(num_threads)
 	svm.set_bias_enabled(False)
-	svm.set_max_train_time(max_train_time)
+	#svm.set_max_train_time(max_train_time)
 	svm.train()
 
 	svm.classify().get_labels()
@@ -391,7 +391,6 @@ def perceptron ():
 	perceptron=Perceptron(feats, labels)
 	perceptron.set_learn_rate(learn_rate)
 	perceptron.set_max_iter(max_iter)
-	perceptron.set_w(weights, num_vec)
 	perceptron.parallel.set_num_threads(num_threads)
 	perceptron.train()
 
@@ -461,6 +460,6 @@ if __name__=='__main__':
 	liblinear()
 	svmlin()
 
-	#perceptron()
+	perceptron()
 	knn()
 	lda()

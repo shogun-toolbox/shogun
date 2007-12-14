@@ -33,6 +33,15 @@ class CMultiClassSVM : public CSVM
 
 		bool create_multiclass_svm(int num_classes);
 		bool set_svm(INT num, CSVM* svm);
+
+		CSVM* get_svm(INT num)
+		{
+			ASSERT(m_num_svms>0);
+			ASSERT(num>0 && num<m_num_svms);
+			SG_REF(m_svms[num]);
+			return m_svms[num];
+		}
+
 		void cleanup();
 
 		virtual CLabels* classify(CLabels* labels=NULL);

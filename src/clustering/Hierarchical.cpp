@@ -133,11 +133,6 @@ bool CHierarchical::train()
 	return true;
 }
 
-CLabels* CHierarchical::classify(CLabels* output)
-{
-	return NULL;
-}
-
 bool CHierarchical::load(FILE* srcfile)
 {
 	return false;
