@@ -68,12 +68,11 @@ DREAL CCanberraMetric::compute(INT idx_a, INT idx_b)
 	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==blen);
-	INT ialen=(int) alen;
 
 	DREAL absTmp = 0;
 	DREAL result=0;
 	{
-		for (INT i=0; i<ialen; i++)
+		for (INT i=0; i<alen; i++)
 		{
 			absTmp=fabs(avec[i])+fabs(bvec[i]);
 			if(absTmp!=0)

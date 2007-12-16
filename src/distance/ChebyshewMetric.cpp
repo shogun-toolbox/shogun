@@ -67,11 +67,10 @@ DREAL CChebyshewMetric::compute(INT idx_a, INT idx_b)
 	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
 	ASSERT(alen==blen);
-	INT ialen=(int) alen;
 
 	DREAL result=DBL_MIN;
 
-	for (INT i=0; i<ialen; i++)
+	for (INT i=0; i<alen; i++)
 		result=CMath::max(result, fabs(avec[i]-bvec[i]));
 
 	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);

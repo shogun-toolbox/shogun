@@ -15,7 +15,7 @@
 #include "features/WordFeatures.h"
 
 CPolyMatchWordKernel::CPolyMatchWordKernel(INT size, INT d, bool i, bool un)
-	: CSimpleKernel<WORD>(size),degree(d),inhomogene(i),
+: CSimpleKernel<WORD>(size),degree(d),inhomogene(i),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
 	use_normalization(un)
 {
@@ -23,7 +23,7 @@ CPolyMatchWordKernel::CPolyMatchWordKernel(INT size, INT d, bool i, bool un)
 
 CPolyMatchWordKernel::CPolyMatchWordKernel(
 	CWordFeatures* l, CWordFeatures* r, INT d, bool i, bool un)
-	: CSimpleKernel<WORD>(10),degree(d),inhomogene(i),
+: CSimpleKernel<WORD>(10),degree(d),inhomogene(i),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(un)
 {
 	init(l, r);
@@ -33,7 +33,7 @@ CPolyMatchWordKernel::~CPolyMatchWordKernel()
 {
 	cleanup();
 }
-  
+
 bool CPolyMatchWordKernel::init(CFeatures* l, CFeatures* r)
 {
 	bool result=CSimpleKernel<WORD>::init(l,r);
@@ -42,7 +42,7 @@ bool CPolyMatchWordKernel::init(CFeatures* l, CFeatures* r)
 	INT i;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
-	  delete[] sqrtdiag_rhs;
+		delete[] sqrtdiag_rhs;
 	sqrtdiag_rhs=NULL ;
 	delete[] sqrtdiag_lhs;
 	sqrtdiag_lhs=NULL ;
@@ -126,52 +126,50 @@ bool CPolyMatchWordKernel::save_init(FILE* dest)
 {
 	return false;
 }
-  
+
 DREAL CPolyMatchWordKernel::compute(INT idx_a, INT idx_b)
 {
-  INT alen, blen;
-  bool afree, bfree;
+	INT alen, blen;
+	bool afree, bfree;
 
-  //fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
-  WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-  
-  ASSERT(alen==blen);
+	//fprintf(stderr, "LinKernel.compute(%ld,%ld)\n", idx_a, idx_b) ;
+	WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  DREAL sqrt_a= 1 ;
-  DREAL sqrt_b= 1 ;
+	ASSERT(alen==blen);
 
-  if (initialized && use_normalization)
-    {
-      sqrt_a=sqrtdiag_lhs[idx_a] ;
-      sqrt_b=sqrtdiag_rhs[idx_b] ;
-    } ;
+	DREAL sqrt_a= 1 ;
+	DREAL sqrt_b= 1 ;
 
-  DREAL sqrt_both=sqrt_a*sqrt_b;
-
-  INT ialen=(int) alen;
-
-  INT sum=0;
-  {
-    for (INT i=0; i<ialen; i++)
+	if (initialized && use_normalization)
 	{
-	  sum+= (avec[i]==bvec[i]) ? 1 : 0;
+		sqrt_a=sqrtdiag_lhs[idx_a] ;
+		sqrt_b=sqrtdiag_rhs[idx_b] ;
+	} ;
+
+	DREAL sqrt_both=sqrt_a*sqrt_b;
+
+	INT sum=0;
+	{
+		for (INT i=0; i<alen; i++)
+		{
+			sum+= (avec[i]==bvec[i]) ? 1 : 0;
+		}
+
 	}
 
-  }
+	if (inhomogene)
+		sum+=1;
 
-  if (inhomogene)
-	  sum+=1;
+	DREAL result=sum;
 
-  DREAL result=sum;
+	for (INT j=1; j<degree; j++)
+		result*=sum;
 
-  for (INT j=1; j<degree; j++)
-	  result*=sum;
+	result/=sqrt_both;
 
-  result/=sqrt_both;
+	((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  ((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
-
-  return result;
+	return result;
 }

@@ -15,13 +15,13 @@
 #include "lib/io.h"
 
 CGaussianKernel::CGaussianKernel(INT size, DREAL w)
-	: CSimpleKernel<DREAL>(size), width(w)
+: CSimpleKernel<DREAL>(size), width(w)
 {
 }
 
 CGaussianKernel::CGaussianKernel(
 	CRealFeatures* l, CRealFeatures* r, DREAL w, INT size)
-	: CSimpleKernel<DREAL>(size), width(w)
+: CSimpleKernel<DREAL>(size), width(w)
 {
 	init(l,r);
 }
@@ -29,7 +29,7 @@ CGaussianKernel::CGaussianKernel(
 CGaussianKernel::~CGaussianKernel()
 {
 }
-  
+
 bool CGaussianKernel::init(CFeatures* l, CFeatures* r)
 {
 	CSimpleKernel<DREAL>::init(l, r);
@@ -49,27 +49,25 @@ bool CGaussianKernel::save_init(FILE* dest)
 {
 	return false;
 }
-  
+
 DREAL CGaussianKernel::compute(INT idx_a, INT idx_b)
 {
-  INT alen, blen;
-  bool afree, bfree;
+	INT alen, blen;
+	bool afree, bfree;
 
-  DREAL* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  DREAL* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-  
-  ASSERT(alen==blen);
+	DREAL* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	DREAL* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  INT ialen=(int) alen;
+	ASSERT(alen==blen);
 
-  DREAL result=0;
-  for (INT i=0; i<ialen; i++)
-	  result+=(avec[i]-bvec[i])*(avec[i]-bvec[i]);
+	DREAL result=0;
+	for (INT i=0; i<alen; i++)
+		result+=(avec[i]-bvec[i])*(avec[i]-bvec[i]);
 
-  result=exp(-result/width);
+	result=exp(-result/width);
 
-  ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-  return result;
+	return result;
 }

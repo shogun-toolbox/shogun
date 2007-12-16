@@ -22,13 +22,13 @@ extern "C" {
 #endif
 
 CSigmoidKernel::CSigmoidKernel(INT size, DREAL g, DREAL c)
-	: CSimpleKernel<DREAL>(size),gamma(g), coef0(c)
+: CSimpleKernel<DREAL>(size),gamma(g), coef0(c)
 {
 }
 
 CSigmoidKernel::CSigmoidKernel(
 	CRealFeatures* l, CRealFeatures* r, INT size, DREAL g, DREAL c)
-	: CSimpleKernel<DREAL>(size),gamma(g), coef0(c)
+: CSimpleKernel<DREAL>(size),gamma(g), coef0(c)
 {
 	init(l,r);
 }
@@ -60,29 +60,27 @@ bool CSigmoidKernel::save_init(FILE* dest)
 
 DREAL CSigmoidKernel::compute(INT idx_a, INT idx_b)
 {
-  INT alen, blen;
-  bool afree, bfree;
+	INT alen, blen;
+	bool afree, bfree;
 
-  double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
-  
-  ASSERT(alen==blen);
+	double* avec=((CRealFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
+	double* bvec=((CRealFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
 
-  INT ialen=(int) alen;
+	ASSERT(alen==blen);
 
 #ifndef HAVE_LAPACK
-  DREAL result=0;
-  {
-    for (INT i=0; i<ialen; i++)
-      result+=avec[i]*bvec[i];
-  }
+	DREAL result=0;
+	{
+		for (INT i=0; i<alen; i++)
+			result+=avec[i]*bvec[i];
+	}
 #else
-  INT skip=1;
-  DREAL result = cblas_ddot(ialen, avec, skip, bvec, skip);
+	INT skip=1;
+	DREAL result = cblas_ddot(alen, avec, skip, bvec, skip);
 #endif
 
-  ((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
+	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
+	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
 	return tanh(gamma*result+coef0);
 }
