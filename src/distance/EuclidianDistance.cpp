@@ -17,11 +17,13 @@
 CEuclidianDistance::CEuclidianDistance()
 : CRealDistance()
 {
+	disable_sqrt=false;
 }
 
 CEuclidianDistance::CEuclidianDistance(CRealFeatures* l, CRealFeatures* r)
 : CRealDistance()
 {
+	disable_sqrt=false;
 	init(l, r);
 }
 
@@ -67,5 +69,9 @@ DREAL CEuclidianDistance::compute(INT idx_a, INT idx_b)
 	((CRealFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
 	((CRealFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
 
-	return CMath::sqrt(result);
+	if (disable_sqrt) {
+		return result;
+	} else {
+		return CMath::sqrt(result);
+	}
 }

@@ -9,7 +9,7 @@ from shogun.Features import *
 from shogun.Distance import *
 from shogun.PreProc import SortWordString
 
-def get_dna ():
+def get_dna (len_seq_test_add=0):
 	acgt=array(['A', 'C', 'G','T'])
 	len_acgt=len(acgt)
 	dtrain=[]
@@ -26,7 +26,7 @@ def get_dna ():
 	
 	for i in xrange(6):
 		str1=[]
-		for j in range(60):
+		for j in range(60+len_seq_test_add):
 			str1.append(acgt[floor(len_acgt*rand())])
 	dtest.append(''.join(str1))
 
@@ -46,6 +46,22 @@ def euclidian_distance ():
 	feats_test=RealFeatures(data)
 
 	distance=EuclidianDistance(feats_train, feats_train)
+
+	dm_train=distance.get_distance_matrix()
+	distance.init(feats_train, feats_test)
+	dm_test=distance.get_distance_matrix()
+
+def norm_squared_distance ():
+	print 'EuclidianDistance - NormSquared'
+
+	rows=9
+	data=rand(rows, 11)
+	feats_train=RealFeatures(data)
+	data=rand(rows, 19)
+	feats_test=RealFeatures(data)
+
+	distance=EuclidianDistance(feats_train, feats_train)
+	distance.set_disable_sqrt(True)
 
 	dm_train=distance.get_distance_matrix()
 	distance.init(feats_train, feats_test)
@@ -169,7 +185,7 @@ def sparse_euclidian_distance ():
 def canberra_word_distance ():
 	print 'CanberraWordDistance'
 
-	data=get_dna()
+	data=get_dna(len_seq_test_add=12)
 	order=3
 	gap=0
 	reverse=False
@@ -231,7 +247,7 @@ def hamming_word_distance ():
 def manhattan_word_distance ():
 	print 'ManhattanWordDistance'
 
-	data=get_dna()
+	data=get_dna(len_seq_test_add=2)
 	order=3
 	gap=0
 	reverse=False
@@ -266,6 +282,7 @@ if __name__=='__main__':
 	seed(42)
 
 	euclidian_distance()
+	norm_squared_distance()
 	canberra_metric()
 	chebyshew_metric()
 	geodesic_metric()

@@ -39,6 +39,13 @@ class CEuclidianDistance: public CRealDistance
 		// return the name of a kernel
 		virtual const CHAR* get_name() { return "Euclidian" ; } ;
 
+		/*
+		 * disable application of sqrt on matrix computation
+		 * the matrix can then also be named norm squared
+		 */
+		virtual bool get_disable_sqrt() { return disable_sqrt; };
+		virtual void set_disable_sqrt(bool state) { disable_sqrt=state; };
+
 	protected:
 		/// compute kernel function for features a and b
 		/// idx_{a,b} denote the index of the feature vectors
@@ -48,6 +55,7 @@ class CEuclidianDistance: public CRealDistance
 
 	protected:
 		double scale;
+		bool disable_sqrt;
 };
 
 #endif /* _EUCLIDIANDISTANCE_H__ */
