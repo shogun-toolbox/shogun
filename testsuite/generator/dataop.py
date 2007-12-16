@@ -2,9 +2,10 @@
 Common operations on train and test data
 """
 
-from sys import maxint
-from numpy import *
-from numpy.random import *
+import sys
+import md5
+from numpy import double, chararray, ushort, array, floor
+from numpy.random import seed, rand, randint
 
 ROWS=11
 LEN_TRAIN=11
@@ -12,8 +13,19 @@ LEN_TEST=17
 LEN_SEQ=60
 LEN_SEQ_TEST_EXTEND=0
 
-def get_rand (dattype=double, rows=ROWS, dim_square=False, max_train=maxint,
-	max_test=maxint):
+# need a seed which is always the same for the current entity (kernel,
+# distance, etc) to be computed, but at least different between modules
+# the seed will only change if the module's filename or the name of the
+# function in which the entitity is computed will change.
+def _get_seed ():
+	fcode=sys._getframe(2).f_code
+	hash=reduce(lambda x,y:x+y, map(ord, fcode.co_name+fcode.co_filename))
+	return hash
+
+def get_rand (dattype=double, rows=ROWS, dim_square=False,
+	max_train=sys.maxint, max_test=sys.maxint):
+	seed(_get_seed())
+
 	if dim_square:
 		rows=cols_train=cols_test=dim_square
 	else:
@@ -45,6 +57,7 @@ def get_rand (dattype=double, rows=ROWS, dim_square=False, max_train=maxint,
 		return {'train':dtrain.astype(dattype), 'test':dtest.astype(dattype)}
 
 def get_dna ():
+	seed(_get_seed())
 	acgt=array(['A', 'C', 'G','T'])
 	len_acgt=len(acgt)
 	dtrain=[]
