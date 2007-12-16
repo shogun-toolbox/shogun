@@ -58,6 +58,7 @@ def _is_excluded_from_filename (key):
 		key.find('data_')!=-1 or
 		key=='name' or
 		key=='regression_type' or
+		key=='regression_bias' or
 		key=='classifier_bias' or
 		key=='classifier_type'):
 		return True
