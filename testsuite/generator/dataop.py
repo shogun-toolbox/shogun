@@ -11,7 +11,6 @@ ROWS=11
 LEN_TRAIN=11
 LEN_TEST=17
 LEN_SEQ=60
-LEN_SEQ_TEST_EXTEND=0
 
 # need a seed which is always the same for the current entity (kernel,
 # distance, etc) to be computed, but at least different between modules
@@ -56,7 +55,7 @@ def get_rand (dattype=double, rows=ROWS, dim_square=False,
 		dtest=randint(0, max_test, (rows, cols_test))
 		return {'train':dtrain.astype(dattype), 'test':dtest.astype(dattype)}
 
-def get_dna ():
+def get_dna (len_seq_test_add=0):
 	seed(_get_seed())
 	acgt=array(['A', 'C', 'G','T'])
 	len_acgt=len(acgt)
@@ -74,7 +73,7 @@ def get_dna ():
 	
 	for i in xrange(LEN_TEST-LEN_TRAIN):
 		str1=[]
-		for j in range(LEN_SEQ+LEN_SEQ_TEST_EXTEND):
+		for j in range(LEN_SEQ+len_seq_test_add):
 			str1.append(acgt[floor(len_acgt*rand())])
 	dtest.append(''.join(str1))
 
