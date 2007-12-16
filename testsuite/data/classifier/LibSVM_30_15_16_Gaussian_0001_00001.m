@@ -1,6 +1,6 @@
 accuracy = 1e-06
 classifier_C = 30
-classifier_accuracy = 1e-08
+classifier_accuracy = 0.001
 kernel_arg0_width = 1.5
 name = 'LibSVM'
 classifier_num_threads = 16

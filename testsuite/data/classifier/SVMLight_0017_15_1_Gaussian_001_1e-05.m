@@ -1,6 +1,6 @@
 accuracy = 1e-06
 classifier_C = 0.017
-classifier_accuracy = 1e-07
+classifier_accuracy = 1e-06
 kernel_arg0_width = 1.5
 name = 'SVMLight'
 classifier_num_threads = 1

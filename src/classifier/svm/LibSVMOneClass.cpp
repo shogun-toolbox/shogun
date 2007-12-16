@@ -9,7 +9,7 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "classifier/svm/LibSVM_oneclass.h"
+#include "classifier/svm/LibSVMOneClass.h"
 #include "lib/io.h"
 
 CLibSVMOneClass::CLibSVMOneClass()

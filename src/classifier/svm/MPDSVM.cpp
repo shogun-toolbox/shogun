@@ -8,7 +8,7 @@
  * Copyright (C) 1999-2007 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
-#include "classifier/svm/MPD.h"
+#include "classifier/svm/MPDSVM.h"
 #include "lib/io.h"
 #include "lib/common.h"
 #include "lib/Mathematics.h"

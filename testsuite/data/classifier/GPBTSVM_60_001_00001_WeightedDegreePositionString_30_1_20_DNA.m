@@ -1,4 +1,4 @@
-classifier_accuracy = 1e-07
+classifier_accuracy = 1e-06
 classifier_labels = [1, 1, -1, -1, -1, 1, 1, 1, 1, 1, 1]
 seqlen = 60
 classifier_tube_epsilon = 0.01

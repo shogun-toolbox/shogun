@@ -4,19 +4,19 @@ Global configuration parameters: lists and types
 
 # name: accuracy, classifier type, label type
 CLASSIFIER={
-	'SVMLight':[1e-7, 'kernel', 'twoclass'],
+	'SVMLight':[1e-6, 'kernel', 'twoclass'],
 	'LDA':[1e-7, 'lda', 'twoclass'],
 	'LibLinear':[1e-8, 'linear', 'twoclass'],
-	'LibSVM':[1e-8, 'kernel', 'twoclass'],
+	'LibSVM':[1e-3, 'kernel', 'twoclass'],
 	'LibSVMMultiClass':[1e-8, 'kernel', 'series'],
-	'LibSVMOneClass':[1e-8, 'kernel', None],
+	'LibSVMOneClass':[1e-5, 'kernel', None],
 	'GMNPSVM':[1e-8, 'kernel', 'series'],
-	'GPBTSVM':[1e-7, 'kernel', 'twoclass'],
+	'GPBTSVM':[1e-6, 'kernel', 'twoclass'],
 	'KNN':[1e-8, 'knn', 'twoclass'],
-	'MPDSVM':[1e-8, 'kernel', 'twoclass'],
+	'MPDSVM':[1e-6, 'kernel', 'twoclass'],
 	'Perceptron':[1e-8, 'perceptron', 'twoclass'],
 	'SubGradientSVM':[1e-6, 'linear', 'twoclass'],
-	'SVMLin':[1e-8, 'linear', 'twoclass'],
+	'SVMLin':[1e-7, 'linear', 'twoclass'],
 	'SVMOcas':[1e-4, 'linear', 'twoclass'],
 }
 

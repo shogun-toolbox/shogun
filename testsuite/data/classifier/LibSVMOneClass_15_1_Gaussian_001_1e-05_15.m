@@ -1,6 +1,6 @@
 accuracy = 1e-06
 classifier_C = 1.5
-classifier_accuracy = 1e-08
+classifier_accuracy = 1e-05
 name = 'LibSVMOneClass'
 classifier_num_threads = 1
 kernel_name = 'Gaussian'

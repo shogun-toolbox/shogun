@@ -40,13 +40,13 @@
 
 #include "classifier/svm/LibSVM.h"
 #include "classifier/svm/GPBTSVM.h"
-#include "classifier/svm/LibSVM_oneclass.h"
-#include "classifier/svm/LibSVM_multiclass.h"
+#include "classifier/svm/LibSVMOneClass.h"
+#include "classifier/svm/LibSVMMultiClass.h"
 
 #include "regression/svr/LibSVR.h"
 
 #include "classifier/svm/LibLinear.h"
-#include "classifier/svm/MPD.h"
+#include "classifier/svm/MPDSVM.h"
 #include "classifier/svm/GNPPSVM.h"
 #include "classifier/svm/GMNPSVM.h"
 

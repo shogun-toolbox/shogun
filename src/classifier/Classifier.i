@@ -41,10 +41,10 @@
 %include "classifier/svm/SVM.i"
 %include "classifier/svm/MultiClassSVM.i"
 %include "classifier/svm/LibSVM.i"
-%include "classifier/svm/LibSVM_oneclass.i"
+%include "classifier/svm/LibSVMOneClass.i"
 %include "classifier/svm/GPBTSVM.i"
 %include "classifier/svm/GNPPSVM.i"
-%include "classifier/svm/MPD.i"
+%include "classifier/svm/MPDSVM.i"
 
 /* classifiers based on distancemachine */
 %include "distance/DistanceMachine.i" 
