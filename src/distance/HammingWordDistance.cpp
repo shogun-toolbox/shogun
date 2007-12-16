@@ -70,9 +70,6 @@ DREAL CHammingWordDistance::compute(INT idx_a, INT idx_b)
 	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
 	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
 
-	// can only deal with strings of same length
-	ASSERT(alen==blen);
-
 	INT result=0;
 
 	INT left_idx=0;

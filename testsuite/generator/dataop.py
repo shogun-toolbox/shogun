@@ -10,6 +10,7 @@ ROWS=11
 LEN_TRAIN=11
 LEN_TEST=17
 LEN_SEQ=60
+LEN_SEQ_TEST_EXTEND=0
 
 def get_rand (dattype=double, rows=ROWS, dim_square=False, max_train=maxint,
 	max_test=maxint):
@@ -60,7 +61,7 @@ def get_dna ():
 	
 	for i in xrange(LEN_TEST-LEN_TRAIN):
 		str1=[]
-		for j in range(LEN_SEQ):
+		for j in range(LEN_SEQ+LEN_SEQ_TEST_EXTEND):
 			str1.append(acgt[floor(len_acgt*rand())])
 	dtest.append(''.join(str1))
 

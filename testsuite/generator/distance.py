@@ -44,6 +44,7 @@ def _run_feats_real ():
 	_compute('SparseEuclidianDistance', feats, data)
 
 def _run_feats_string_complex ():
+	dataop.LEN_SEQ_TEST_EXTEND=42
 	data=dataop.get_dna()
 	feats=featop.get_string_complex('Word', data)
 
