@@ -239,7 +239,7 @@ def _run_feats_string ():
 	_compute('PolyMatchString', feats, data, 3, False)
 	_compute('SimpleLocalityImprovedString', feats, data, 5, 7, 5)
 
-	_compute('WeightedDegreeString', feats, data, 20, 0)
+	_compute('WeightedDegreeString', feats, data, 20)
 	_compute('WeightedDegreePositionString', feats, data, 20)
 
 	# buggy:

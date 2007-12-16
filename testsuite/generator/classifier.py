@@ -178,11 +178,8 @@ def _run_svm_kernel ():
 	data['data']=dataop.get_dna()
 	data['feats']=featop.get_string('Char', data['data'])
 	data['kname']='WeightedDegreeString'
-	data['kargs']=[E_WD, 3, 0]
-	data['kernel']=WeightedDegreeStringKernel(10, *data['kargs'])
-	# WeightedStringKernel is a bit inconsistent in constructors: have to get
-	# rid of first arg EWDKernType in order to fit into scheme 
-	data['kargs']=data['kargs'][1:]
+	data['kargs']=[3]
+	data['kernel']=WeightedDegreeStringKernel(*data['kargs'])
 	_loop_svm(svms, data)
 
 	data['kname']='WeightedDegreePositionString'
@@ -219,7 +216,6 @@ def _run_svm_linear ():
 	data['bias_enabled']=False
 	data['max_train_time']=.5 # up to 2. does not improve test results :(
 	_loop_svm(svms, data)
-
 
 ##########################################################################
 # other classifiers

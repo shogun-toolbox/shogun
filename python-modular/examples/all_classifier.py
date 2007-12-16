@@ -46,10 +46,8 @@ def svm_light ():
 	feats_test=StringCharFeatures(DNA)
 	feats_test.set_string_features(data['test'])
 	degree=20
-	max_mismatch=0
 
-	kernel=WeightedDegreeStringKernel(
-		feats_train, feats_train, degree, max_mismatch)
+	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
 	C=0.017
 	epsilon=1e-5
@@ -240,10 +238,8 @@ def do_batch_linadd ():
 	feats_test=StringCharFeatures(DNA)
 	feats_test.set_string_features(data['test'])
 	degree=20
-	max_mismatch=0
 
-	kernel=WeightedDegreeStringKernel(
-		feats_train, feats_train, degree, max_mismatch)
+	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
 	C=0.017
 	epsilon=1e-5
@@ -293,7 +289,7 @@ def subgradient_svm ():
 	svm.set_epsilon(epsilon)
 	svm.parallel.set_num_threads(num_threads)
 	svm.set_bias_enabled(False)
-	#svm.set_max_train_time(max_train_time)
+	svm.set_max_train_time(max_train_time)
 	svm.train()
 
 	svm.classify().get_labels()

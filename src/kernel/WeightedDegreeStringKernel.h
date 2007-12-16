@@ -20,9 +20,9 @@
 class CWeightedDegreeStringKernel: public CStringKernel<CHAR>
 {
 public:
-	CWeightedDegreeStringKernel(INT size, EWDKernType type, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
-	CWeightedDegreeStringKernel(INT size, DREAL* weights, INT degree, INT max_mismatch, bool use_normalization=true, bool block_computation=false, INT mkl_stepsize=1, INT which_deg=-1) ;
-	CWeightedDegreeStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT degree, INT max_mismatch);
+	CWeightedDegreeStringKernel(INT degree, EWDKernType type=E_WD);
+	CWeightedDegreeStringKernel(DREAL* weights, INT degree) ;
+	CWeightedDegreeStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT degree);
 	virtual ~CWeightedDegreeStringKernel();
 
 	virtual bool init(CFeatures* l, CFeatures* r);

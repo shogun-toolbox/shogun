@@ -5,7 +5,6 @@ classifier_tube_epsilon = 0.01
 classifier_epsilon = 1e-05
 data_test = ['ATTGCTAAGTACCGGTTAGCAAACTATCCGCCAGGCCACGGCTCCAGGCATGGAATTTTT', 'ATTTGCTGATACCACGCGCCGACGAGTAACGGGGTGAGCACTTGCTGTGCTTGAGCGACA']
 data_type = ''
-kernel_arg1_max_mismatch = 0
 kernel_name = 'WeightedDegreeString'
 classifier_type = 'kernel'
 classifier_classified = [0.99424647, 0.992047146]

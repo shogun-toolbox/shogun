@@ -38,62 +38,58 @@ struct S_THREAD_PARAM
 	INT* vec_idx;
 };
 
-CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(INT size, EWDKernType
-		typ, INT deg, INT max_mismatch_, bool use_norm, bool block, INT
-		mkl_stepsize_, INT which_deg)
-	: CStringKernel<CHAR>(size),weights(NULL),position_weights(NULL),
-	weights_buffer(NULL), mkl_stepsize(mkl_stepsize_),degree(deg), length(0),
-	max_mismatch(max_mismatch_), seq_length(0), initialized(false),
-	block_computation(block), use_normalization(use_norm),
+CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
+	INT degree_, EWDKernType type_)
+: CStringKernel<CHAR>(10),weights(NULL),position_weights(NULL),
+	weights_buffer(NULL), mkl_stepsize(1),degree(degree_), length(0),
+	max_mismatch(0), seq_length(0), initialized(false),
+	block_computation(true), use_normalization(true),
 	normalization_const(1.0), num_block_weights_external(0),
-	block_weights_external(NULL), block_weights(NULL), type(typ),
-	which_degree(which_deg), tries(deg,max_mismatch_==0),
+	block_weights_external(NULL), block_weights(NULL), type(type_),
+	which_degree(-1), tries(degree_, true),
 	tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
 	rhs=NULL;
 
-	// weights will be set using set_wd_weights
-	if (typ != E_EXTERNAL)
+	if (type!=E_EXTERNAL)
 		set_wd_weights_by_type(type);
 }
 
-CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(
-	INT size, double* w, INT d, INT mm, bool un, bool bc, INT mkls, INT wd) 
-	: CStringKernel<CHAR>(size),weights(NULL),position_weights(NULL),weights_buffer(NULL),
-	mkl_stepsize(mkls), degree(d), length(0),
-	max_mismatch(mm), seq_length(0), initialized(false),
-	block_computation(bc), use_normalization(un),
+CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
+	DREAL *weights_, INT degree_)
+: CStringKernel<CHAR>(10), weights(NULL), position_weights(NULL),
+	weights_buffer(NULL), mkl_stepsize(1), degree(degree_), length(0),
+	max_mismatch(0), seq_length(0), initialized(false),
+	block_computation(true), use_normalization(true),
 	normalization_const(1.0), num_block_weights_external(0),
 	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
-	which_degree(wd), tries(d, mm==0), tree_initialized(false)
+	which_degree(-1), tries(degree_, true), tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
 	rhs=NULL;
 
-	weights=new DREAL[d*(1+max_mismatch)];
+	weights=new DREAL[degree*(1+max_mismatch)];
 	ASSERT(weights!=NULL);
-	for (INT i=0; i<d*(1+max_mismatch); i++)
-		weights[i]=w[i];
+	for (INT i=0; i<degree*(1+max_mismatch); i++)
+		weights[i]=weights_[i];
 }
 
 CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(
-	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT d, INT mm)
-	: CStringKernel<CHAR>(10),weights(NULL),position_weights(NULL),weights_buffer(NULL),
-	mkl_stepsize(1), degree(d), length(0),
-	max_mismatch(mm), seq_length(0), initialized(false),
-	block_computation(false), use_normalization(true),
+	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT degree_)
+: CStringKernel<CHAR>(10), weights(NULL), position_weights(NULL),
+	weights_buffer(NULL), mkl_stepsize(1), degree(degree_), length(0),
+	max_mismatch(0), seq_length(0), initialized(false),
+	block_computation(true), use_normalization(true),
 	normalization_const(1.0), num_block_weights_external(0),
-	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
-	which_degree(-1), tries(d, mm==0), tree_initialized(false)
+	block_weights_external(NULL), block_weights(NULL), type(E_WD),
+	which_degree(-1), tries(degree_, true), tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 
-	set_wd_weights_by_type(E_WD);
-	ASSERT(weights);
-
+	set_wd_weights_by_type(type);
 	init(l, r);
 }
 

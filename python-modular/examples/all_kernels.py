@@ -416,10 +416,8 @@ def weighted_degree_string ():
 	feats_test=StringCharFeatures(DNA)
 	feats_test.set_string_features(data['test'])
 	degree=20
-	max_mismatch=0
 
-	kernel=WeightedDegreeStringKernel(
-		feats_train, feats_train, degree, max_mismatch)
+	kernel=WeightedDegreeStringKernel(feats_train, feats_train, degree)
 
 	#weights=arange(1,degree+1,dtype=double)[::-1]/ \
 	#	sum(arange(1,degree+1,dtype=double))
