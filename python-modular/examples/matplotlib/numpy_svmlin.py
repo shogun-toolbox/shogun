@@ -1,10 +1,13 @@
-from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,axis
+from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,axis, connect
 from numpy import array,meshgrid,reshape,linspace,ones,min,max
 from numpy import concatenate,transpose,ravel,double,zeros
 from numpy.random import randn
 from shogun.Features import *
 from shogun.Classifier import *
 from shogun.Kernel import *
+import util
+
+util.set_title('SVM Linear 1')
 
 num_dat=4000
 distp=10
@@ -57,6 +60,7 @@ scatter(feat_neg[0,:], feat_neg[1,:],s=20, c='b')
 axis('tight')
 
 figure()
+util.set_title('SVM Linear 2')
 c=pcolor(x, y, zlight, shading='interp')
 contour(x, y, zlight, linewidths=1, colors='black', hold=True)
 colorbar(c)
@@ -64,5 +68,7 @@ colorbar(c)
 scatter(feat_neg[0,:], feat_neg[1,:],s=20, c='b')
 scatter(feat_pos[0,:], feat_pos[1,:],s=20, c='r')
 axis('tight')
+
+connect('key_press_event', util.quit)
 show()
 

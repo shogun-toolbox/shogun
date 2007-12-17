@@ -1,9 +1,12 @@
-from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot
+from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,connect
 from numpy import array,meshgrid,reshape,linspace,ones,min,max
 from numpy import concatenate,transpose,ravel,double,zeros
 from numpy.random import randn
 from shogun.Features import *
 from shogun.Classifier import *
+import util
+
+util.set_title('LDA')
 
 num_dat=1000
 dist=0.5;
@@ -36,5 +39,7 @@ z = lda.classify().get_labels().reshape((100,100))
 c=pcolor(x, y, z, shading='interp')
 contour(x, y, z, linewidths=1, colors='black', hold=True)
 colorbar(c)
+
+connect('key_press_event', util.quit)
 show()
 

@@ -1,10 +1,13 @@
-from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,legend
+from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,plot,legend,connect
 from numpy import array,meshgrid,reshape,linspace,ones,min,max
 from numpy import concatenate,transpose,ravel,double,sinc,pi
 from numpy.random import randn, rand
 from shogun.Features import *
 from shogun.Regression import *
 from shogun.Kernel import *
+import util
+
+util.set_title('KRR on Sinus')
 
 X = 4*rand(1, 100) - 2; X.sort()
 Y = sinc(pi*X) + 0.1*randn(1, 100)
@@ -33,4 +36,6 @@ YE200 = krr.classify_example(200)
 plot(XE[0], YE, hold=True, label='test output')
 plot([XE[0,200]], [YE200], '+', hold=True)
 print YE[200], YE200
+
+connect('key_press_event', util.quit)
 show()

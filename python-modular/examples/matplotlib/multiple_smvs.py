@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: latin-1 -*-
 
-from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot
+from pylab import figure,pcolor,scatter,contour,colorbar,show,subplot,connect
 from numpy import array,meshgrid,reshape,linspace,ones,min,max
 from numpy import concatenate,transpose,ravel
 from numpy.random import randn
 from shogun.Features import *
 from shogun.Classifier import *
 from shogun.Kernel import *
+import util
+
+util.set_title('Multiple SVMS')
 
 num_svms=6
 num_dat=100
@@ -46,4 +49,5 @@ for i in range(num_svms):
 	contour(x, y, z, linewidths=1, colors='black', hold=True)
 	scatter(traindatList[i][0,:],traindatList[i][1,:], s=20, marker='o', c=trainlabsList[i], hold=True)
 
+connect('key_press_event', util.quit)
 show()
