@@ -72,6 +72,8 @@ def _classifier (indata):
 			classifier=fun(indata['classifier_k'], machine, labels)
 		elif indata['classifier_type']=='lda':
 			classifier=fun(indata['classifier_gamma'], feats['train'], labels)
+		elif indata['classifier_type']=='perceptron':
+			classifier=fun(feats['train'], labels)
 		else:
 			return False
 	else:
@@ -83,6 +85,9 @@ def _classifier (indata):
 			classifier.set_bias_enabled(True)
 		else:
 			classifier.set_bias_enabled(False)
+	if indata['classifier_type']=='perceptron':
+		classifier.set_learn_rate=indata['classifier_learn_rate']
+		classifier.set_max_iter=indata['classifier_max_iter']
 	if indata.has_key('classifier_epsilon'):
 		classifier.set_epsilon(indata['classifier_epsilon'])
 	if indata.has_key('classifier_tube_epsilon'):

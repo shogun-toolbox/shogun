@@ -232,13 +232,11 @@ def _run_perceptron ():
 	feats=featop.get_simple('Real', data['data'])
 	num_vec=feats['train'].get_num_vectors()
 	params['labels'], labels=_get_labels(CLASSIFIER[name][2], num_vec)
-	weights=rand(num_vec)
 
 	perceptron=Perceptron(feats['train'], labels)
 	perceptron.parallel.set_num_threads(params['num_threads'])
 	perceptron.set_learn_rate(params['learn_rate'])
 	perceptron.set_max_iter(params['max_iter'])
-	perceptron.set_w(weights, num_vec)
 	perceptron.train()
 
 	params['bias']=perceptron.get_bias()
@@ -302,11 +300,11 @@ def _run_lda ():
 ##########################################################################
 
 def run ():
-	_run_svm_kernel()
-	_run_svm_linear()
+	#_run_svm_kernel()
+	#_run_svm_linear()
 	_run_knn()
 	_run_lda()
-	#_run_perceptron()
+	_run_perceptron()
 
 
 
