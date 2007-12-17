@@ -57,12 +57,34 @@ class CHierarchical : public CDistanceMachine
 			num=table_size;
 		}
 
+		inline void get_merge_distance(DREAL** dist, INT* num)
+		{
+			size_t sz=sizeof(merge_distance)*merges;
+			*dist=(DREAL*) malloc(sz);
+			ASSERT(*dist);
+
+			memcpy(*dist, merge_distance, sz);
+			*num=merges;
+		}
+
 		inline void get_pairs(INT*& tuples, INT& rows, INT& num)
 		{
 			tuples=pairs;
 			rows=2;
 			num=table_size;
 		}
+
+		inline void get_pairs(INT** tuples, INT* rows, INT* num)
+		{
+			*rows=2;
+			size_t sz=sizeof(pairs)*(*rows)*merges;
+			*tuples=(INT*) malloc(sz);
+			ASSERT(*tuples);
+
+			memcpy(*tuples, pairs, sz);
+			*num=merges;
+		}
+
 	protected:
 		/// the number of merges in hierarchical clustering
 		INT merges;

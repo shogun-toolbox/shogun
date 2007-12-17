@@ -50,6 +50,8 @@ def _test_mfile (fnam):
 			indata[param]=_read_matrix(line)
 		elif param.find('data_train')>-1 or param.find('data_test')>-1:
 			indata[param]=_read_matrix(line)
+		elif param=='clustering_centers' or param=='clustering_pairs':
+			indata[param]=_read_matrix(line)
 		else:
 			if (line.find("'")==-1):
 				indata[param]=eval(line.split('=')[1])

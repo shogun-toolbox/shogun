@@ -4,8 +4,8 @@ Common operations on train and test data
 
 import sys
 import md5
-from numpy import double, chararray, ushort, array, floor
-from numpy.random import seed, rand, randint
+from numpy import double, chararray, ushort, array, floor, concatenate
+from numpy.random import seed, rand, randint, permutation
 
 ROWS=11
 LEN_TRAIN=11
@@ -54,6 +54,20 @@ def get_rand (dattype=double, rows=ROWS, dim_square=False,
 		dtrain=randint(0, max_train, (rows, cols_train))
 		dtest=randint(0, max_test, (rows, cols_test))
 		return {'train':dtrain.astype(dattype), 'test':dtest.astype(dattype)}
+
+def get_clouds (num, rows=ROWS):
+	clouds={}
+	seed(_get_seed())
+
+	data=[rand(rows, LEN_TRAIN)+x/2 for x in xrange(num)]
+	clouds['train']=concatenate(data, axis=0)
+	clouds['train']=array([permutation(x) for x in clouds['train']])
+
+	data=[rand(rows, LEN_TEST)+x/2 for x in xrange(num)]
+	clouds['test']=concatenate(data, axis=0)
+	clouds['test']=array([permutation(x) for x in clouds['test']])
+
+	return clouds
 
 def get_dna (len_seq_test_add=0):
 	seed(_get_seed())

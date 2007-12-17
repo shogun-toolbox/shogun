@@ -36,7 +36,7 @@ def _run (name, first_arg):
 	data={
 		'dname':'EuclidianDistance',
 		'dargs':[],
-		'data':dataop.get_rand(),
+		'data':dataop.get_clouds(params[first_arg], 5),
 	}
 	feats=featop.get_simple('Real', data['data'])
 	dfun=eval(data['dname'])
@@ -47,7 +47,13 @@ def _run (name, first_arg):
 	clustering.train()
 
 	distance.init(feats['train'], feats['test'])
-	#params['classified']=clustering.classify().get_labels()
+
+	if name=='KMeans':
+		params['radi']=clustering.get_radi()
+		params['centers']=clustering.get_centers()
+	elif name=='Hierarchical':
+		params['merge_distance']=clustering.get_merge_distance()
+		params['pairs']=clustering.get_pairs()
 
 	outdata=_get_outdata_params(name, params, data)
 	fileop.write(C_CLUSTERING, outdata)

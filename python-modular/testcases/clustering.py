@@ -27,10 +27,22 @@ def _clustering (indata):
 	clustering.train()
 
 	distance.init(feats['train'], feats['test'])
-	#classified=max(abs(
-	#	clustering.classify().get_labels()-indata['clustering_classified']))
 
-	return util.check_accuracy(indata['accuracy'])
+	if indata.has_key('clustering_radi'):
+		radi=max(abs(clustering.get_radi()-indata['clustering_radi']))
+		centers=max(abs(clustering.get_centers()- \
+			indata['clustering_centers']).flat)
+		return util.check_accuracy(indata['accuracy'],
+			radi=radi, centers=centers)
+	elif indata.has_key('clustering_merge_distance'):
+		merge_distance=max(abs(clustering.get_merge_distance()- \
+			indata['clustering_merge_distance']))
+		pairs=max(abs(clustering.get_pairs()- \
+			indata['clustering_pairs']).flat)
+		return util.check_accuracy(indata['accuracy'],
+			merge_distance=merge_distance, pairs=pairs)
+	else:
+		return util.check_accuracy(indata['accuracy'])
 
 ########################################################################
 # public
