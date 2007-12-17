@@ -14,8 +14,8 @@ from shogun.Features import *
 def get_dna ():
 	acgt=array(['A', 'C', 'G','T'])
 	len_acgt=len(acgt)
-	dtrain=[]
-	dtest=[]
+	rand_train=[]
+	rand_test=[]
 
 	for i in xrange(11):
 		str1=[]
@@ -23,16 +23,16 @@ def get_dna ():
 		for j in range(60):
 			str1.append(acgt[floor(len_acgt*rand())])
 			str2.append(acgt[floor(len_acgt*rand())])
-		dtrain.append(''.join(str1))
-	dtest.append(''.join(str2))
+		rand_train.append(''.join(str1))
+	rand_test.append(''.join(str2))
 	
 	for i in xrange(6):
 		str1=[]
 		for j in range(60):
 			str1.append(acgt[floor(len_acgt*rand())])
-	dtest.append(''.join(str1))
+	rand_test.append(''.join(str1))
 
-	return {'train': dtrain, 'test': dtest}
+	return {'train': rand_train, 'test': rand_test}
 
 ###########################################################################
 # byte features
@@ -41,10 +41,10 @@ def get_dna ():
 def linear_byte ():
 	print 'LinearByte'
 	
-	rows=11
-	data=randint(0, maxint, (rows, 11)).astype(ubyte)
+	num_feats=11
+	data=randint(0, maxint, (num_feats, 11)).astype(ubyte)
 	feats_train=ByteFeatures(data, RAWBYTE)
-	data=randint(0, maxint, (rows, 17)).astype(ubyte)
+	data=randint(0, maxint, (num_feats, 17)).astype(ubyte)
 	feats_test=ByteFeatures(data, RAWBYTE)
 	
 	kernel=LinearByteKernel(feats_train, feats_train)
@@ -60,10 +60,10 @@ def linear_byte ():
 def chi2 ():
 	print 'Chi2'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	width=1.4
 	size_cache=10
@@ -77,10 +77,10 @@ def chi2 ():
 def const ():
 	print 'Const'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	c=23.
 
@@ -93,10 +93,10 @@ def const ():
 def diag ():
 	print 'Diag'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	diag=23.
 
@@ -109,10 +109,10 @@ def diag ():
 def gaussian ():
 	print 'Gaussian'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	width=1.9
 
@@ -125,10 +125,10 @@ def gaussian ():
 def gaussian_shift ():
 	print 'GaussianShift'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	width=1.8
 	max_shift=2
@@ -144,10 +144,10 @@ def gaussian_shift ():
 def linear ():
 	print 'Linear'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	scale=1.2
 
@@ -160,10 +160,10 @@ def linear ():
 def poly ():
 	print 'Poly'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	degree=4
 	inhomogene=False
@@ -179,10 +179,10 @@ def poly ():
 def sigmoid ():
 	print 'Sigmoid'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	size_cache=10
 	gamma=1.2
@@ -201,12 +201,12 @@ def sigmoid ():
 def sparse_gaussian ():
 	print 'SparseGaussian'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	feat=RealFeatures(data)
 	feats_train=SparseRealFeatures()
 	feats_train.obtain_from_simple(feat)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feat=RealFeatures(data)
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(feat)
@@ -221,12 +221,12 @@ def sparse_gaussian ():
 def sparse_linear ():
 	print 'SparseLinear'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	feat=RealFeatures(data)
 	feats_train=SparseRealFeatures()
 	feats_train.obtain_from_simple(feat)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feat=RealFeatures(data)
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(feat)
@@ -241,12 +241,12 @@ def sparse_linear ():
 def sparse_poly ():
 	print 'SparsePoly'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	feat=RealFeatures(data)
 	feats_train=SparseRealFeatures()
 	feats_train.obtain_from_simple(feat)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feat=RealFeatures(data)
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(feat)
@@ -270,10 +270,10 @@ def linear_word ():
 	print 'LinearWord'
 
 	maxval=2**16-1
-	rows=11
-	data=randint(0, maxval, (rows, 11)).astype(ushort)
+	num_feats=11
+	data=randint(0, maxval, (num_feats, 11)).astype(ushort)
 	feats_train=WordFeatures(data)
-	data=randint(0, maxval, (rows, 17)).astype(ushort)
+	data=randint(0, maxval, (num_feats, 17)).astype(ushort)
 	feats_test=WordFeatures(data)
 	do_rescale=True
 	scale=1.4
@@ -288,10 +288,10 @@ def poly_match_word ():
 	print 'PolyMatchWord'
 
 	maxval=2**16-1
-	rows=11
-	data=randint(0, maxval, (rows, 11)).astype(ushort)
+	num_feats=11
+	data=randint(0, maxval, (num_feats, 11)).astype(ushort)
 	feats_train=WordFeatures(data)
-	data=randint(0, maxval, (rows, 17)).astype(ushort)
+	data=randint(0, maxval, (num_feats, 17)).astype(ushort)
 	feats_test=WordFeatures(data)
 	degree=2
 	inhomogene=True
@@ -306,10 +306,10 @@ def word_match ():
 	print 'WordMatch'
 
 	maxval=2**16-1
-	rows=11
-	data=randint(0, maxval, (rows, 11)).astype(ushort)
+	num_feats=11
+	data=randint(0, maxval, (num_feats, 11)).astype(ushort)
 	feats_train=WordFeatures(data)
-	data=randint(0, maxval, (rows, 17)).astype(ushort)
+	data=randint(0, maxval, (num_feats, 17)).astype(ushort)
 	feats_test=WordFeatures(data)
 	degree=3
 	do_rescale=True
@@ -592,10 +592,10 @@ def custom ():
 def distance ():
 	print 'Distance'
 
-	rows=10
-	data=rand(rows, 9)
+	num_feats=10
+	data=rand(num_feats, 9)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 19)
+	data=rand(num_feats, 19)
 	feats_test=RealFeatures(data)
 	width=1.7
 	distance=EuclidianDistance()
@@ -609,20 +609,20 @@ def distance ():
 def auc ():
 	print 'AUC'
 
-	rows=23
-	data=rand(rows, 11)
+	num_feats=23
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 19)
+	data=rand(num_feats, 19)
 	feats_test=RealFeatures(data)
 	width=1.7
 	subkernel=GaussianKernel(feats_train, feats_test, width)
 
-	rows=2 # do not change!
+	num_feats=2 # do not change!
 	len_train=11
 	len_test=17
-	data=randint(0, len_train, (rows, len_train)).astype(ushort)
+	data=randint(0, len_train, (num_feats, len_train)).astype(ushort)
 	feats_train=WordFeatures(data)
-	data=randint(0, len_test, (rows, len_test)).astype(ushort)
+	data=randint(0, len_test, (num_feats, len_test)).astype(ushort)
 	feats_test=WordFeatures(data)
 
 	kernel=AUCKernel(feats_train, feats_test, subkernel)

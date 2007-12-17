@@ -22,6 +22,6 @@ def run ():
 	kernel.run()
 	distance.run()
 	classifier.run()
-	#clustering.run()
+	clustering.run()
 	distribution.run()
 	regression.run()

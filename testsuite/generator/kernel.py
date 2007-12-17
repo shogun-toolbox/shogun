@@ -63,8 +63,8 @@ def _run_auc ():
 	subk=GaussianKernel(feats['train'], feats['test'], width)
 	outdata=_get_subkernel_outdata_params(subkernels[0], data, '0')
 
-	data=dataop.get_rand(ushort, rows=2, max_train=dataop.LEN_TRAIN,
-		max_test=dataop.LEN_TEST)
+	data=dataop.get_rand(ushort, num_feats=2,
+		max_train=dataop.NUM_VEC_TRAIN, max_test=dataop.NUM_VEC_TEST)
 	feats=featop.get_simple('Word', data)
 	#FIXME: size soon to be removed from constructor
 	kernel=AUCKernel(10, subk)

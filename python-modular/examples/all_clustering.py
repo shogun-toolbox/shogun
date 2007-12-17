@@ -9,19 +9,19 @@ from shogun.Distance import EuclidianDistance
 from shogun.Features import RealFeatures
 from shogun.Clustering import *
 
-def get_cloud (num, num_vec, len):
-	data=[rand(num_vec, len)+x/2 for x in xrange(num)]
+def get_cloud (num, num_feats, num_vec):
+	data=[rand(num_feats, num_vec)+x/2 for x in xrange(num)]
 	cloud=concatenate(data, axis=1)
 	return array([permutation(x) for x in cloud])
 
 def kmeans ():
 	print 'KMeans'
 
-	num_vec=11
+	num_feats=11
 	k=3
-	data=get_cloud(k, num_vec, len=11)
+	data=get_cloud(k, num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=get_cloud(k, num_vec, len=17)
+	data=get_cloud(k, num_feats, 17)
 	feats_test=RealFeatures(data)
 	distance=EuclidianDistance(feats_train, feats_train)
 
@@ -35,11 +35,11 @@ def kmeans ():
 def hierarchical ():
 	print 'Hierarchical'
 
-	num_vec=5
+	num_feats=5
 	merges=3
-	data=get_cloud(merges, num_vec, 11)
+	data=get_cloud(merges, num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=get_cloud(merges, num_vec, 17)
+	data=get_cloud(merges, num_feats, 17)
 	feats_test=RealFeatures(data)
 	distance=EuclidianDistance(feats_train, feats_train)
 

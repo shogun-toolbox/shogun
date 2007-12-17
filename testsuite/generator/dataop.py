@@ -7,9 +7,9 @@ import md5
 from numpy import double, chararray, ushort, array, floor, concatenate
 from numpy.random import seed, rand, randint, permutation
 
-ROWS=11
-LEN_TRAIN=11
-LEN_TEST=17
+NUM_FEATS=11
+NUM_VEC_TRAIN=11
+NUM_VEC_TEST=17
 LEN_SEQ=60
 
 # need a seed which is always the same for the current entity (kernel,
@@ -21,26 +21,31 @@ def _get_seed ():
 	hash=reduce(lambda x,y:x+y, map(ord, fcode.co_name+fcode.co_filename))
 	return hash
 
-def get_rand (dattype=double, rows=ROWS, dim_square=False,
+def get_rand (dattype=double, num_feats=NUM_FEATS, dim_square=False,
 	max_train=sys.maxint, max_test=sys.maxint):
 	seed(_get_seed())
 
 	if dim_square:
-		rows=cols_train=cols_test=dim_square
+		num_feats=num_vec_train=num_vec_test=dim_square
 	else:
-		cols_train=LEN_TRAIN
-		cols_test=LEN_TEST
+		num_vec_train=NUM_VEC_TRAIN
+		num_vec_test=NUM_VEC_TEST
 
 	if dattype==double:
-		return {'train':rand(rows, cols_train), 'test':rand(rows, cols_test)}
-	elif dattype==chararray:
-		dtrain=randint(65, 90, rows*cols_train)
-		dtest=randint(65, 90, rows*cols_test)
 		return {
-			'train':
-				array(map(lambda x: chr(x), dtrain)).reshape(rows, cols_train),
-			'test':
-				array(map(lambda x: chr(x), dtest)).reshape(rows, cols_test)
+			'train':rand(num_feats, num_vec_train),
+			'test':rand(num_feats, num_vec_test)
+		}
+	elif dattype==chararray:
+		ord_a=ord('A')
+		ord_z=ord('Z')
+		rand_train=randint(ord_a, chr_z, num_feats*num_vec_train)
+		rand_test=randint(ord_a, chr_z, num_feats*num_vec_test)
+		return {
+			'train': array(map(lambda x: chr(x), rand_train)).reshape(
+				num_feats, num_vec_train),
+			'test': array(map(lambda x: chr(x), rand_test)).reshape(
+				num_feats, num_vec_train)
 		}
 	else:
 		if dattype==ushort:
@@ -51,19 +56,22 @@ def get_rand (dattype=double, rows=ROWS, dim_square=False,
 				max_test=maxval
 
 		# randint does not understand arg dtype
-		dtrain=randint(0, max_train, (rows, cols_train))
-		dtest=randint(0, max_test, (rows, cols_test))
-		return {'train':dtrain.astype(dattype), 'test':dtest.astype(dattype)}
+		rand_train=randint(0, max_train, (num_feats, num_vec_train))
+		rand_test=randint(0, max_test, (num_feats, num_vec_test))
+		return {
+			'train':rand_train.astype(dattype),
+			'test':rand_test.astype(dattype)
+		}
 
-def get_clouds (num, rows=ROWS):
-	clouds={}
+def get_clouds (num_clouds, num_feats=NUM_FEATS):
 	seed(_get_seed())
+	clouds={}
 
-	data=[rand(rows, LEN_TRAIN)+x/2 for x in xrange(num)]
+	data=[rand(num_feats, NUM_VEC_TRAIN)+x/2 for x in xrange(num_clouds)]
 	clouds['train']=concatenate(data, axis=0)
 	clouds['train']=array([permutation(x) for x in clouds['train']])
 
-	data=[rand(rows, LEN_TEST)+x/2 for x in xrange(num)]
+	data=[rand(num_feats, NUM_VEC_TEST)+x/2 for x in xrange(num_clouds)]
 	clouds['test']=concatenate(data, axis=0)
 	clouds['test']=array([permutation(x) for x in clouds['test']])
 
@@ -73,24 +81,24 @@ def get_dna (len_seq_test_add=0):
 	seed(_get_seed())
 	acgt=array(['A', 'C', 'G','T'])
 	len_acgt=len(acgt)
-	dtrain=[]
-	dtest=[]
+	rand_train=[]
+	rand_test=[]
 
-	for i in xrange(LEN_TRAIN):
+	for i in xrange(NUM_VEC_TRAIN):
 		str1=[]
 		str2=[]
 		for j in range(LEN_SEQ):
 			str1.append(acgt[floor(len_acgt*rand())])
 			str2.append(acgt[floor(len_acgt*rand())])
-		dtrain.append(''.join(str1))
-	dtest.append(''.join(str2))
+		rand_train.append(''.join(str1))
+	rand_test.append(''.join(str2))
 	
-	for i in xrange(LEN_TEST-LEN_TRAIN):
+	for i in xrange(NUM_VEC_TEST-NUM_VEC_TRAIN):
 		str1=[]
 		for j in range(LEN_SEQ+len_seq_test_add):
 			str1.append(acgt[floor(len_acgt*rand())])
-	dtest.append(''.join(str1))
+	rand_test.append(''.join(str1))
 
-	return {'train': dtrain, 'test': dtest}
+	return {'train': rand_train, 'test': rand_test}
 
 

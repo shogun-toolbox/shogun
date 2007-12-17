@@ -16,10 +16,10 @@ from shogun.Regression import *
 def svr_light ():
 	print 'SVRLight'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
@@ -42,10 +42,10 @@ def svr_light ():
 def libsvr ():
 	print 'LibSVR'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
@@ -72,10 +72,10 @@ def libsvr ():
 def krr ():
 	print 'KRR'
 
-	rows=13
-	data=rand(rows, 12)
+	num_feats=13
+	data=rand(num_feats, 12)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 19)
+	data=rand(num_feats, 19)
 	feats_test=RealFeatures(data)
 	width=0.8
 	kernel=GaussianKernel(feats_train, feats_train, width)

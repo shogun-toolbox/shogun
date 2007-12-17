@@ -13,8 +13,8 @@ from shogun.Classifier import *
 def get_dna ():
 	acgt=array(['A', 'C', 'G','T'])
 	len_acgt=len(acgt)
-	dtrain=[]
-	dtest=[]
+	rand_train=[]
+	rand_test=[]
 
 	for i in xrange(11):
 		str1=[]
@@ -22,16 +22,16 @@ def get_dna ():
 		for j in range(60):
 			str1.append(acgt[floor(len_acgt*rand())])
 			str2.append(acgt[floor(len_acgt*rand())])
-		dtrain.append(''.join(str1))
-	dtest.append(''.join(str2))
+		rand_train.append(''.join(str1))
+	rand_test.append(''.join(str2))
 	
 	for i in xrange(6):
 		str1=[]
 		for j in range(60):
 			str1.append(acgt[floor(len_acgt*rand())])
-	dtest.append(''.join(str1))
+	rand_test.append(''.join(str1))
 
-	return {'train': dtrain, 'test': dtest}
+	return {'train': rand_train, 'test': rand_test}
 
 ###########################################################################
 # kernel-based SVMs
@@ -68,10 +68,10 @@ def svm_light ():
 def libsvm ():
 	print 'LibSVM'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
@@ -95,10 +95,10 @@ def libsvm ():
 def gpbtsvm ():
 	print 'GPBTSVM'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
@@ -122,10 +122,10 @@ def gpbtsvm ():
 def mpdsvm ():
 	print 'MPDSVM'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
@@ -149,10 +149,10 @@ def mpdsvm ():
 def libsvm_multiclass ():
 	print 'LibSVMMultiClass'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
@@ -176,10 +176,10 @@ def libsvm_multiclass ():
 def libsvm_oneclass ():
 	print 'LibSVMOneClass'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
@@ -201,10 +201,10 @@ def libsvm_oneclass ():
 def gmnpsvm ():
 	print 'GMNPSVM'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	width=2.1
 	kernel=GaussianKernel(feats_train, feats_train, width)
@@ -272,8 +272,8 @@ def do_batch_linadd ():
 def subgradient_svm ():
 	print 'SubGradientSVM'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	realfeat=RealFeatures(data)
 	feats=SparseRealFeatures()
 	feats.obtain_from_simple(realfeat)
@@ -297,8 +297,8 @@ def subgradient_svm ():
 def svmocas ():
 	print 'SVMOcas'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	realfeat=RealFeatures(data)
 	feats=SparseRealFeatures()
 	feats.obtain_from_simple(realfeat)
@@ -320,8 +320,8 @@ def svmocas ():
 def liblinear ():
 	print 'LibLinear'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	realfeat=RealFeatures(data)
 	feats=SparseRealFeatures()
 	feats.obtain_from_simple(realfeat)
@@ -343,8 +343,8 @@ def liblinear ():
 def svmlin ():
 	print 'SVMLin'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	realfeat=RealFeatures(data)
 	feats=SparseRealFeatures()
 	feats.obtain_from_simple(realfeat)
@@ -372,8 +372,8 @@ def svmlin ():
 def perceptron ():
 	print 'Perceptron'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats=RealFeatures(data)
 
 	learn_rate=1.
@@ -395,10 +395,10 @@ def perceptron ():
 def knn ():
 	print 'KNN'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 	distance=EuclidianDistance()
 
@@ -417,8 +417,8 @@ def knn ():
 def lda ():
 	print 'LDA'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats=RealFeatures(data)
 
 	gamma=3

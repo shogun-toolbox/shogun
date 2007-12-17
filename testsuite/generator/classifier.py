@@ -300,8 +300,8 @@ def _run_lda ():
 ##########################################################################
 
 def run ():
-	#_run_svm_kernel()
-	#_run_svm_linear()
+	_run_svm_kernel()
+	_run_svm_linear()
 	_run_knn()
 	_run_lda()
 	_run_perceptron()

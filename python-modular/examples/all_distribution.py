@@ -11,8 +11,8 @@ from shogun.Distribution import *
 def get_dna ():
 	acgt=array(['A', 'C', 'G','T'])
 	len_acgt=len(acgt)
-	dtrain=[]
-	dtest=[]
+	rand_train=[]
+	rand_test=[]
 
 	for i in xrange(11):
 		str1=[]
@@ -20,16 +20,16 @@ def get_dna ():
 		for j in range(60):
 			str1.append(acgt[floor(len_acgt*rand())])
 			str2.append(acgt[floor(len_acgt*rand())])
-		dtrain.append(''.join(str1))
-	dtest.append(''.join(str2))
+		rand_train.append(''.join(str1))
+	rand_test.append(''.join(str2))
 	
 	for i in xrange(6):
 		str1=[]
 		for j in range(60):
 			str1.append(acgt[floor(len_acgt*rand())])
-	dtest.append(''.join(str1))
+	rand_test.append(''.join(str1))
 
-	return {'train': dtrain, 'test': dtest}
+	return {'train': rand_train, 'test': rand_test}
 
 ###########################################################################
 # distributions
@@ -39,8 +39,8 @@ def histogram ():
 	print 'Histogram'
 
 	maxval=2**16-1
-	rows=11
-	data=randint(0, maxval, (rows, 11)).astype(ushort)
+	num_feats=11
+	data=randint(0, maxval, (num_feats, 11)).astype(ushort)
 	feats=WordFeatures(data)
 
 	histo=Histogram(feats)

@@ -12,8 +12,8 @@ from shogun.PreProc import SortWordString
 def get_dna (len_seq_test_add=0):
 	acgt=array(['A', 'C', 'G','T'])
 	len_acgt=len(acgt)
-	dtrain=[]
-	dtest=[]
+	rand_train=[]
+	rand_test=[]
 
 	for i in xrange(11):
 		str1=[]
@@ -21,16 +21,16 @@ def get_dna (len_seq_test_add=0):
 		for j in range(60):
 			str1.append(acgt[floor(len_acgt*rand())])
 			str2.append(acgt[floor(len_acgt*rand())])
-		dtrain.append(''.join(str1))
-	dtest.append(''.join(str2))
+		rand_train.append(''.join(str1))
+	rand_test.append(''.join(str2))
 	
 	for i in xrange(6):
 		str1=[]
 		for j in range(60+len_seq_test_add):
 			str1.append(acgt[floor(len_acgt*rand())])
-	dtest.append(''.join(str1))
+	rand_test.append(''.join(str1))
 
-	return {'train': dtrain, 'test': dtest}
+	return {'train': rand_train, 'test': rand_test}
 
 ###########################################################################
 # real features
@@ -39,10 +39,10 @@ def get_dna (len_seq_test_add=0):
 def euclidian_distance ():
 	print 'EuclidianDistance'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 19)
+	data=rand(num_feats, 19)
 	feats_test=RealFeatures(data)
 
 	distance=EuclidianDistance(feats_train, feats_train)
@@ -54,10 +54,10 @@ def euclidian_distance ():
 def norm_squared_distance ():
 	print 'EuclidianDistance - NormSquared'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 19)
+	data=rand(num_feats, 19)
 	feats_test=RealFeatures(data)
 
 	distance=EuclidianDistance(feats_train, feats_train)
@@ -70,10 +70,10 @@ def norm_squared_distance ():
 def canberra_metric ():
 	print 'CanberaMetric'
 
-	rows=9
-	data=rand(rows, 10)
+	num_feats=9
+	data=rand(num_feats, 10)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 
 	distance=CanberraMetric(feats_train, feats_train)
@@ -85,10 +85,10 @@ def canberra_metric ():
 def chebyshew_metric ():
 	print 'ChebyshewMetric'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 
 	distance=ChebyshewMetric(feats_train, feats_train)
@@ -100,10 +100,10 @@ def chebyshew_metric ():
 def geodesic_metric ():
 	print 'GeodesicMetric'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 21)
+	data=rand(num_feats, 21)
 	feats_test=RealFeatures(data)
 
 	distance=GeodesicMetric(feats_train, feats_train)
@@ -115,10 +115,10 @@ def geodesic_metric ():
 def jensen_metric ():
 	print 'JensenMetric'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 
 	distance=JensenMetric(feats_train, feats_train)
@@ -130,10 +130,10 @@ def jensen_metric ():
 def manhattan_metric ():
 	print 'ManhattanMetric'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	feats_test=RealFeatures(data)
 
 	distance=ManhattanMetric(feats_train, feats_train)
@@ -145,10 +145,10 @@ def manhattan_metric ():
 def minkowski_metric ():
 	print 'MinkowskiMetric'
 
-	rows=9
-	data=rand(rows, 11)
+	num_feats=9
+	data=rand(num_feats, 11)
 	feats_train=RealFeatures(data)
-	data=rand(rows, 15)
+	data=rand(num_feats, 15)
 	feats_test=RealFeatures(data)
 	k=3
 
@@ -161,12 +161,12 @@ def minkowski_metric ():
 def sparse_euclidian_distance ():
 	print 'SparseEuclidianDistance'
 
-	rows=11
-	data=rand(rows, 11)
+	num_feats=11
+	data=rand(num_feats, 11)
 	realfeat=RealFeatures(data)
 	feats_train=SparseRealFeatures()
 	feats_train.obtain_from_simple(realfeat)
-	data=rand(rows, 17)
+	data=rand(num_feats, 17)
 	realfeat=RealFeatures(data)
 	feats_test=SparseRealFeatures()
 	feats_test.obtain_from_simple(realfeat)
