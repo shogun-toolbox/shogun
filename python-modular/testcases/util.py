@@ -13,8 +13,7 @@ def check_accuracy (accuracy, **kwargs):
 
 	for key, val in kwargs.iteritems():
 		output.append('%s: %e' % (key, val))
-	output.append('accuracy: %e' % accuracy)
-	print ', '.join(output)
+	print ', '.join(output)+' <--- accuracy: %e' % accuracy
 
 	for val in kwargs.itervalues():
 		if val>acc:

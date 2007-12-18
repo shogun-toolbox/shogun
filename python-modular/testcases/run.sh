@@ -10,13 +10,14 @@ function test_all () {
 		echo -n "$file"
 		echo -n -e "\t\t"
 
-		python test.py "$file" > /dev/null
+		output=`python test.py "$file"`
 		ret=$?
 
 		if [ $ret -eq 0 ] ; then
 			echo 'OK'
 		else
 			echo 'ERROR'
+			echo $output
 		fi
 	done
 	sleep 1

@@ -38,16 +38,19 @@ def _get_results (indata, classifier, machine=None, feats=None):
 		if indata.has_key('classifier_bias'):
 			res['bias']=abs(classifier.get_bias()-indata['classifier_bias'])
 		if indata.has_key('classifier_alphas'):
-			res['alphas']=max(abs(classifier.get_alphas()-indata['classifier_alphas']))
+			res['alphas']=max(abs(classifier.get_alphas()- \
+				indata['classifier_alphas']))
 		if indata.has_key('classifier_support_vectors'):
-			res['sv']=max(abs(
-				classifier.get_support_vectors()-indata['classifier_support_vectors']))
+			res['sv']=max(abs(classifier.get_support_vectors()- \
+				indata['classifier_support_vectors']))
 	else: # lower accuracy
 		res['accuracy']=1e-4
 
-	if (indata['classifier_type']=='kernel' or
-		indata['classifier_type']=='knn'):
+	ctype=indata['classifier_type']
+	if ctype=='kernel' or ctype=='knn':
 		machine.init(feats['train'], feats['test'])
+	elif ctype=='linear' or ctype=='perceptron' or ctype=='lda':
+		classifier.set_features(feats['test'])
 
 	res['classified']=max(abs(
 		classifier.classify().get_labels()-indata['classifier_classified']))

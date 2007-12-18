@@ -5,7 +5,6 @@ Generator for Regression
 from numpy import *
 from numpy.random import rand
 from shogun.Kernel import GaussianKernel
-from shogun.Features import Labels
 from shogun.Regression import *
 
 import fileop
@@ -38,8 +37,8 @@ def _compute (name, params, data):
 	rtype=REGRESSION[name][1]
 	data['kernel'].parallel.set_num_threads(params['num_threads'])
 	data['kernel'].init(data['feats']['train'], data['feats']['train'])
-	# essential to wrap in array(), will segfault sometimes otherwise
-	labels=Labels(array(params['labels']))
+	params['labels'], labels=dataop.get_labels(
+		data['feats']['train'].get_num_vectors())
 
 	fun=eval(name)
 	if rtype=='svm':
@@ -66,14 +65,13 @@ def _compute (name, params, data):
 
 def _loop (svrs, data):
 	num_vec=data['feats']['train'].get_num_vectors()
-	labels=rand(num_vec).round()*2-1
 	for name in svrs:
 		rtype=REGRESSION[name][1]
 		if rtype=='svm':
 			params={'C':.017, 'epsilon':1e-5, 'tube_epsilon':1e-2,
-				'num_threads':1, 'labels':labels}
+				'num_threads':1}
 		elif rtype=='kernelmachine':
-			params={'tau':1e-6, 'num_threads':1, 'labels':labels}
+			params={'tau':1e-6, 'num_threads':1}
 		else:
 			continue
 

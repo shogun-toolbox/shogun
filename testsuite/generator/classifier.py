@@ -53,20 +53,6 @@ def _get_outdata_params (name, params, data):
 
 	return outdata
 
-def _get_labels (ltype, num):
-	labels=[]
-	if ltype=='twoclass':
-		labels.append(rand(num).round()*2-1)
-	elif ltype=='series':
-		labels.append([double(x) for x in xrange(num)])
-	else:
-		return [None, None]
-
-	# essential to wrap in array(), will segfault sometimes otherwise
-	labels.append(Labels(array(labels[0])))
-
-	return labels
-
 ##########################################################################
 # svm
 ##########################################################################
@@ -103,21 +89,22 @@ def _compute_svm (name, labels, params, data):
 
 	svm.train()
 
-	if data.has_key('bias_enabled') and data['bias_enabled']:
+	if ((data.has_key('bias_enabled') and data['bias_enabled']) or
+		ctype=='kernel'):
 		params['bias']=svm.get_bias()
-	else:
-		if ctype=='kernel':
-			params['bias']=svm.get_bias()
 
-			alphas=svm.get_alphas()
-			if len(alphas)>0:
-				params['alphas']=alphas
+	if ctype=='kernel':
+		alphas=svm.get_alphas()
+		if len(alphas)>0:
+			params['alphas']=alphas
 
-			support_vectors=svm.get_support_vectors()
-			if len(support_vectors)>0:
-				params['support_vectors']=support_vectors
+		support_vectors=svm.get_support_vectors()
+		if len(support_vectors)>0:
+			params['support_vectors']=support_vectors
 
-			data['kernel'].init(data['feats']['train'], data['feats']['test'])
+		data['kernel'].init(data['feats']['train'], data['feats']['test'])
+	elif ctype=='linear':
+		svm.set_features(data['feats']['test'])
 
 	params['classified']=svm.classify().get_labels()
 
@@ -136,8 +123,8 @@ def _loop_svm (svms, data):
 			params={'C':.017, 'epsilon':1e-5, 'num_threads':1}
 
 		if ltype is not None:
-			params['labels'], labels=_get_labels(
-				ltype, data['feats']['train'].get_num_vectors())
+			params['labels'], labels=dataop.get_labels(
+				data['feats']['train'].get_num_vectors(), ltype)
 		else:
 			labels=None
 
@@ -159,15 +146,19 @@ def _loop_svm (svms, data):
 		_compute_svm(name, labels, params, data)
 
 def _run_svm_kernel ():
-	svms=['SVMLight', 'LibSVM', 'GPBTSVM', 'MPDSVM', 'LibSVMMultiClass',
-		'GMNPSVM', 'LibSVMOneClass']
+	svms=['SVMLight', 'LibSVM', 'GPBTSVM', 'MPDSVM', 'LibSVMOneClass']
 	data={
 		'kname':'Gaussian',
 		'kargs':[1.5],
-		'data':dataop.get_rand(),
+		'data':dataop.get_clouds(2),
 	}
 	data['feats']=featop.get_simple('Real', data['data'])
 	data['kernel']=GaussianKernel(10, *data['kargs'])
+	_loop_svm(svms, data)
+
+	svms=['LibSVMMultiClass', 'GMNPSVM']
+	data['data']=dataop.get_clouds(5)
+	data['feats']=featop.get_simple('Real', data['data'])
 	_loop_svm(svms, data)
 
 	svms=['SVMLight', 'GPBTSVM']
@@ -201,7 +192,7 @@ def _run_svm_kernel ():
 def _run_svm_linear ():
 	svms=['SVMOcas']
 	data={
-		'data':dataop.get_rand(),
+		'data':dataop.get_clouds(2),
 		'bias_enabled':False,
 	}
 	data['feats']=featop.get_simple('Real', data['data'], sparse=True)
@@ -228,10 +219,10 @@ def _run_perceptron ():
 		'learn_rate':.1,
 		'max_iter':1000,
 	}
-	data={'data':dataop.get_rand()}
+	data={'data':dataop.get_clouds(2)}
 	feats=featop.get_simple('Real', data['data'])
 	num_vec=feats['train'].get_num_vectors()
-	params['labels'], labels=_get_labels(CLASSIFIER[name][2], num_vec)
+	params['labels'], labels=dataop.get_labels(num_vec, CLASSIFIER[name][2])
 
 	perceptron=Perceptron(feats['train'], labels)
 	perceptron.parallel.set_num_threads(params['num_threads'])
@@ -240,6 +231,7 @@ def _run_perceptron ():
 	perceptron.train()
 
 	params['bias']=perceptron.get_bias()
+	perceptron.set_features(feats['test'])
 	params['classified']=perceptron.classify().get_labels()
 
 	outdata=_get_outdata_params(name, params, data)
@@ -254,13 +246,13 @@ def _run_knn ():
 	data={
 		'dname':'EuclidianDistance',
 		'dargs':[],
-		'data':dataop.get_rand(),
+		'data':dataop.get_clouds(2),
 	}
 	feats=featop.get_simple('Real', data['data'])
 	fun=eval(data['dname'])
 	distance=fun(feats['train'], feats['train'], *data['dargs'])
-	params['labels'], labels=_get_labels(
-		CLASSIFIER[name][2], feats['train'].get_num_vectors())
+	params['labels'], labels=dataop.get_labels(
+		feats['train'].get_num_vectors(), CLASSIFIER[name][2])
 
 	knn=KNN(params['k'], distance, labels)
 	knn.parallel.set_num_threads(params['num_threads'])
@@ -280,16 +272,17 @@ def _run_lda ():
 		'num_threads':1,
 	}
 	data={
-		'data':dataop.get_rand(),
+		'data':dataop.get_clouds(2),
 	}
 	feats=featop.get_simple('Real', data['data'])
-	params['labels'], labels=_get_labels(
-		CLASSIFIER[name][2], feats['train'].get_num_vectors())
+	params['labels'], labels=dataop.get_labels(
+		feats['train'].get_num_vectors(), CLASSIFIER[name][2])
 
 	lda=LDA(params['gamma'], feats['train'], labels)
 	lda.parallel.set_num_threads(params['num_threads'])
 	lda.train()
 
+	lda.set_features(feats['test'])
 	params['classified']=lda.classify().get_labels()
 
 	outdata=_get_outdata_params(name, params, data)

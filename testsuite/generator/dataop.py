@@ -6,6 +6,7 @@ import sys
 import md5
 from numpy import double, chararray, ushort, array, floor, concatenate
 from numpy.random import seed, rand, randint, permutation
+from shogun.Features import Labels
 
 NUM_FEATS=11
 NUM_VEC_TRAIN=11
@@ -68,14 +69,29 @@ def get_clouds (num_clouds, num_feats=NUM_FEATS):
 	clouds={}
 
 	data=[rand(num_feats, NUM_VEC_TRAIN)+x/2 for x in xrange(num_clouds)]
-	clouds['train']=concatenate(data, axis=0)
+	clouds['train']=concatenate(data, axis=1)
 	clouds['train']=array([permutation(x) for x in clouds['train']])
 
 	data=[rand(num_feats, NUM_VEC_TEST)+x/2 for x in xrange(num_clouds)]
-	clouds['test']=concatenate(data, axis=0)
+	clouds['test']=concatenate(data, axis=1)
 	clouds['test']=array([permutation(x) for x in clouds['test']])
 
 	return clouds
+
+def get_labels (num, ltype='twoclass'):
+	seed(_get_seed())
+	labels=[]
+	if ltype=='twoclass':
+		labels.append(rand(num).round()*2-1)
+	elif ltype=='series':
+		labels.append([double(x) for x in xrange(num)])
+	else:
+		return [None, None]
+
+	# essential to wrap in array(), will segfault sometimes otherwise
+	labels.append(Labels(array(labels[0])))
+
+	return labels
 
 def get_dna (len_seq_test_add=0):
 	seed(_get_seed())
