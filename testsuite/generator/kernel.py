@@ -25,7 +25,7 @@ def _compute_subkernels (name, feats, kernel, outdata):
 	outdata['km_train']=kernel.get_kernel_matrix()
 	kernel.init(feats['train'], feats['test'])
 	outdata['km_test']=kernel.get_kernel_matrix()
-	outdata.update(fileop.get_outdata_params(name, C_KERNEL))
+	outdata.update(fileop.get_outdata(name, C_KERNEL))
 
 	fileop.write(C_KERNEL, outdata)
 
@@ -41,7 +41,7 @@ def _get_subkernel_args (subkernel):
 
 	return args
 
-def _get_subkernel_outdata_params (subkernel, data, num):
+def _get_subkernel_outdata (subkernel, data, num):
 	prefix='subkernel'+num+'_'
 	outdata={}
 
@@ -50,7 +50,7 @@ def _get_subkernel_outdata_params (subkernel, data, num):
 	outdata[prefix+'kernel_arg0_size']='10'
 	outdata[prefix+'data_train']=matrix(data['train'])
 	outdata[prefix+'data_test']=matrix(data['test'])
-	outdata.update(fileop.get_outdata_params(
+	outdata.update(fileop.get_outdata(
 		subkernel[0], C_KERNEL, subkernel[1:], prefix, 1))
 
 	return outdata
@@ -61,7 +61,7 @@ def _run_auc ():
 	width=1.5
 	subkernels=[['Gaussian', width]]
 	subk=GaussianKernel(feats['train'], feats['test'], width)
-	outdata=_get_subkernel_outdata_params(subkernels[0], data, '0')
+	outdata=_get_subkernel_outdata(subkernels[0], data, '0')
 
 	data=dataop.get_rand(ushort, num_feats=2,
 		max_train=dataop.NUM_VEC_TRAIN, max_test=dataop.NUM_VEC_TEST)
@@ -95,7 +95,7 @@ def _run_combined ():
 			'featop.get_'+kdata[1][0]+"('"+kdata[1][1]+"', data_subk)")
 		feats['train'].append_feature_obj(feats_subk['train'])
 		feats['test'].append_feature_obj(feats_subk['test'])
-		outdata.update(_get_subkernel_outdata_params(
+		outdata.update(_get_subkernel_outdata(
 			subkernels[i], data_subk, str(i)))
 
 	_compute_subkernels('Combined', feats, kernel, outdata)
@@ -122,7 +122,7 @@ def _compute (name, feats, data, *args):
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test'])
 	}
-	outdata.update(fileop.get_outdata_params(name, C_KERNEL, args))
+	outdata.update(fileop.get_outdata(name, C_KERNEL, args))
 
 	fileop.write(C_KERNEL, outdata)
 
@@ -148,7 +148,7 @@ def _compute_pie (name, feats, data):
 		'labels':lab,
 		'classified':classified
 	}
-	outdata.update(fileop.get_outdata_params(name, C_KERNEL))
+	outdata.update(fileop.get_outdata(name, C_KERNEL))
 
 	fileop.write(C_KERNEL, outdata)
 
@@ -183,7 +183,7 @@ def _run_custom ():
 		'data':matrix(data),
 		'dim_square':dim_square
 	}
-	outdata.update(fileop.get_outdata_params(name, C_KERNEL))
+	outdata.update(fileop.get_outdata(name, C_KERNEL))
 
 	fileop.write(C_KERNEL, outdata)
 

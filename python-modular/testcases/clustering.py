@@ -32,17 +32,17 @@ def _clustering (indata):
 		radi=max(abs(clustering.get_radi()-indata['clustering_radi']))
 		centers=max(abs(clustering.get_centers()- \
 			indata['clustering_centers']).flat)
-		return util.check_accuracy(indata['accuracy'],
+		return util.check_accuracy(indata['clustering_accuracy'],
 			radi=radi, centers=centers)
 	elif indata.has_key('clustering_merge_distance'):
 		merge_distance=max(abs(clustering.get_merge_distance()- \
 			indata['clustering_merge_distance']))
 		pairs=max(abs(clustering.get_pairs()- \
 			indata['clustering_pairs']).flat)
-		return util.check_accuracy(indata['accuracy'],
+		return util.check_accuracy(indata['clustering_accuracy'],
 			merge_distance=merge_distance, pairs=pairs)
 	else:
-		return util.check_accuracy(indata['accuracy'])
+		return util.check_accuracy(indata['clustering_accuracy'])
 
 ########################################################################
 # public

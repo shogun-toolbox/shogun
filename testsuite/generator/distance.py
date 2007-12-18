@@ -24,7 +24,7 @@ def _compute (name, feats, data, *args):
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test'])
 	}
-	outdata.update(fileop.get_outdata_params(name, C_DISTANCE, args))
+	outdata.update(fileop.get_outdata(name, C_DISTANCE, args))
 
 	fileop.write(C_DISTANCE, outdata)
 

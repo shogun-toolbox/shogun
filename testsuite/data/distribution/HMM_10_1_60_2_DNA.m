@@ -9,5 +9,5 @@ data_test = ['CCATACTTCGTGAACGCGTTGGTGTGAGTTACCCGGTATCGCAGGATGGCAGGTCAAGTA', 'CC
 distribution_M = 2
 feature_type = 'Char'
 alphabet = 'DNA'
-accuracy = 1e-09
+distribution_accuracy = 1e-09
 data_class = 'dna'

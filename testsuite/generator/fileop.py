@@ -125,7 +125,7 @@ def clean_dir_outdata ():
 	return success
 
 # prefix and offset are necessary for subkernels
-def get_outdata_params (name, category, args=[], prefix='', offset=0):
+def get_outdata (name, category, args=[], prefix='', offset=0):
 	if category==config.C_KERNEL:
 		data=config.KERNEL[name]
 		argstr='kernel_arg'

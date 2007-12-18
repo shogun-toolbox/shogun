@@ -1,4 +1,4 @@
-classifier_accuracy = 1e-05
+classifier_accuracy = 0.0001
 classifier_labels = [-1, 1, 1, 1, 1, -1, -1, -1, 1, -1, 1]
 seqlen = 60
 classifier_tube_epsilon = 0.01
@@ -16,8 +16,8 @@ data_train = ['TGAGTACTGAGTTTTCCCGTCTCCGCACTGCCGTTATTTACCCCTCTTTCGATTTTCCTT', 'T
 feature_class = 'string'
 classifier_bias = 0.986157077043
 kernel_arg0_degree = 3
-classifier_support_vectors = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-alphabet = 'DNA'
 classifier_alphas = [-0.017, 0.017, 0.0123271672, 0.015277779, 0.0130625255, -0.017, -0.017, -0.017, 0.0137124724, -0.017, 0.0136200559]
+alphabet = 'DNA'
+classifier_support_vectors = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 accuracy = 1e-10
 data_class = 'dna'

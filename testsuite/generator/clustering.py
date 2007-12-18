@@ -11,20 +11,21 @@ import featop
 import dataop
 from config import CLUSTERING, C_CLUSTERING, C_DISTANCE
 
-def _get_outdata_params (name, params, data):
+def _get_outdata (name, params):
 	outdata={
 		'name':name,
-		'data_train':matrix(data['data']['train']),
-		'data_test':matrix(data['data']['test']),
-		'accuracy':CLUSTERING[name][0],
+		'data_train':matrix(params['data']['train']),
+		'data_test':matrix(params['data']['test']),
+		'clustering_accuracy':CLUSTERING[name][0],
 	}
 
-	for key, val in params.iteritems():
-		outdata['clustering_'+key]=val
+	optional=['k', 'radi', 'centers', 'merges', 'merge_distance', 'pairs']
+	for opt in optional:
+		if params.has_key(opt):
+			outdata['clustering_'+opt]=params[opt]
 
-	outdata['distance_name']=data['dname']
-	dparams=fileop.get_outdata_params(
-		data['dname'], C_DISTANCE, data['dargs'])
+	outdata['distance_name']=params['dname']
+	dparams=fileop.get_outdata(params['dname'], C_DISTANCE, params['dargs'])
 	outdata.update(dparams)
 
 	return outdata
@@ -32,15 +33,13 @@ def _get_outdata_params (name, params, data):
 def _run (name, first_arg):
 	params={
 		first_arg:3,
-	}
-	data={
 		'dname':'EuclidianDistance',
 		'dargs':[],
-		'data':dataop.get_clouds(params[first_arg], 5),
 	}
-	feats=featop.get_simple('Real', data['data'])
-	dfun=eval(data['dname'])
-	distance=dfun(feats['train'], feats['train'], *data['dargs'])
+	params['data']=dataop.get_clouds(params[first_arg], 5)
+	feats=featop.get_simple('Real', params['data'])
+	dfun=eval(params['dname'])
+	distance=dfun(feats['train'], feats['train'], *params['dargs'])
 
 	fun=eval(name)
 	clustering=fun(params[first_arg], distance)
@@ -55,7 +54,7 @@ def _run (name, first_arg):
 		params['merge_distance']=clustering.get_merge_distance()
 		params['pairs']=clustering.get_pairs()
 
-	outdata=_get_outdata_params(name, params, data)
+	outdata=_get_outdata(name, params)
 	fileop.write(C_CLUSTERING, outdata)
 
 

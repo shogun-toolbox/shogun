@@ -20,7 +20,7 @@ def _distribution (indata):
 
 	distribution.train()
 
-	return util.check_accuracy(indata['accuracy'])
+	return util.check_accuracy(indata['distribution_accuracy'])
 
 ########################################################################
 # public
