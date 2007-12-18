@@ -1105,9 +1105,7 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				}
 
 				delete k;
-				k=new CWeightedDegreeStringKernel(size, weights,
-					d, max_mismatch, use_normalization==1,
-					block_computation==1, mkl_stepsize);
+				k=new CWeightedDegreeStringKernel(weights, d);
 				delete[] weights ;
 				
 				if (k)
