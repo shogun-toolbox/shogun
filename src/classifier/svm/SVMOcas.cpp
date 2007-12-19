@@ -258,8 +258,6 @@ void CSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, ui
 	uint32_t** c_idx = o->cp_index;
 	uint32_t* c_nzd = o->cp_nz_dims;
 
-	memset(W, 0, sizeof(double)*nDim);
-
 	for(uint32_t i=0; i<nSel; i++)
 	{
 		uint32_t nz_dims = c_nzd[i];

@@ -63,18 +63,19 @@ class CWDSVMOcas : public CClassifier
 		DREAL epsilon;
 		E_SVM_TYPE method;
 
+		INT degree;
+		DREAL* wd_weights;
+		INT string_length;
+		INT alphabet_size;
+
 		DREAL bias;
+		INT w_dim_single_char;
 		INT w_dim;
 		DREAL* w;
 		DREAL* old_w;
 		DREAL* tmp_a_buf; /// nDim big
 		DREAL* lab;
-		
-		/** sparse representation of
-		 * cutting planes */
-		DREAL** cp_value;
-		uint32_t** cp_index;
-		uint32_t* cp_nz_dims;
 
+		DREAL** cuts;
 };
 #endif

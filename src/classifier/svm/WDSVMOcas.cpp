@@ -11,6 +11,7 @@
 
 #include "features/Labels.h"
 #include "lib/Mathematics.h"
+#include "lib/DynamicArray.h"
 #include "lib/Time.h"
 #include "base/Parallel.h"
 #include "classifier/Classifier.h"
@@ -49,10 +50,16 @@ bool CWDSVMOcas::train()
 	ASSERT(get_features());
 	ASSERT(get_labels()->is_two_class_labeling());
 
+	string_length=get_features()->get_max_vector_length();
 	INT num_train_labels=0;
 	lab=get_labels()->get_labels(num_train_labels);
-	w_dim=17;
-	//w_dim=features->get_num_features();
+
+	for (INT i=0; i<degree; i++)
+		wd_weights[i]=2*(degree-i)/(degree*(degree));
+
+	w_dim_single_char=((CMath::pow(alphabet_size,degree+1)-1)/(CMath::pow(alphabet_size,degree)-1)-1);
+	w_dim=string_length*w_dim_single_char;
+	SG_DEBUG("cutting plane has %d dims\n", w_dim);
 	INT num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
@@ -69,17 +76,9 @@ bool CWDSVMOcas::train()
 	memset(old_w, 0, w_dim*sizeof(DREAL));
 	bias=0;
 
-	tmp_a_buf = new DREAL[w_dim];
-	ASSERT(tmp_a_buf);
-
-	cp_value = new DREAL*[bufsize];
-	ASSERT(cp_value);
-
-	cp_index = new uint32_t*[bufsize];
-	ASSERT(cp_index);
-
-	cp_nz_dims = new uint32_t[bufsize];
-	ASSERT(cp_nz_dims);
+	cuts=new DREAL*[bufsize];
+	ASSERT(cuts);
+	memset(cuts, 0, sizeof(*cuts)*bufsize);
 
 	double TolAbs=0;
 	double QPBound=0;
@@ -96,22 +95,9 @@ bool CWDSVMOcas::train()
 			&printf,
 			this);
 
-	delete[] tmp_a_buf;
-
-	uint32_t num_cut_planes = result.nCutPlanes;
-
-	for (uint32_t i=0; i<num_cut_planes; i++)
-	{
-		delete[] cp_value[i];
-		delete[] cp_index[i];
-	}
-
-	delete[] cp_value;
-	cp_value=NULL;
-	delete[] cp_index;
-	cp_index=NULL;
-	delete[] cp_nz_dims;
-	cp_nz_dims=NULL;
+	for (INT i=bufsize-1; i>=0; i--)
+		delete[] cuts[i];
+	delete[] cuts;
 
 	delete[] lab;
 	lab=NULL;
@@ -157,64 +143,49 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
                   uint32_t nSel,
 				  void* ptr)
 {
-	/*CWDSVMOcas* o = (CWDSVMOcas*) ptr;
-	CSparseFeatures<DREAL>* f = o->get_features();
+	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
+	CStringFeatures<BYTE>* f = o->features;
+	INT string_length = o->string_length;
 	uint32_t nDim=(uint32_t) o->w_dim;
 	DREAL* y = o->lab;
+	INT alphabet_size = o->alphabet_size;
+	INT w_dim_single_char = o->w_dim_single_char;
+	DREAL* wd_weights = o->wd_weights;
+	INT degree = o->degree;
+	double** cuts=o->cuts;
 
-	DREAL** c_val = o->cp_value;
-	uint32_t** c_idx = o->cp_index;
-	uint32_t* c_nzd = o->cp_nz_dims;
-
-	double sq_norm_a;
-	uint32_t i, j, nz_dims;
+	uint32_t i;
 
 	// temporary vector
-	double* new_a = o->tmp_a_buf;
+	double* new_a = new DREAL[nDim];
 	memset(new_a, 0, sizeof(double)*nDim);
 
 	for(i=0; i < cut_length; i++) 
-		f->add_to_dense_vec(y[new_cut[i]], new_cut[i], new_a, nDim);
-
-	// compute new_a'*new_a and count number of non-zerou dimensions
-	nz_dims = 0; 
-	sq_norm_a = 0;
-	for(j=0; j < nDim; j++ ) {
-		if(new_a[j] != 0) {
-			nz_dims++;
-			sq_norm_a += new_a[j]*new_a[j];
-		}
-	}
-
-	// sparsify new_a and insert it to the last column of sparse_A
-	c_nzd[nSel] = nz_dims;
-	if(nz_dims > 0)
 	{
-		c_idx[nSel] = new uint32_t[nz_dims];
-		ASSERT(c_idx[nSel]);
-		c_val[nSel] = new double[nz_dims];
-		ASSERT(c_val[nSel]);
+		INT offs=0;
+		INT len=0;
+		BYTE* vec = f->get_feature_vector(new_cut[i], len);
+		ASSERT(len == string_length);
+		DREAL scalar=y[new_cut[i]];
 
-		uint32_t idx=0;
-		for(j=0; j < nDim; j++ )
+		for (INT j=0; j<len; j++)
 		{
-			if(new_a[j] != 0)
+			INT val=0;
+			for (INT k=0; (j+k<string_length) && (k<degree); k++)
 			{
-				c_idx[nSel][idx] = j;
-				c_val[nSel][idx++] = new_a[j];
+				val=val*alphabet_size + vec[j+k];
+				new_a[offs+val]+=wd_weights[k] * scalar;
 			}
+			offs+=w_dim_single_char;
 		}
 	}
 
-	new_col_H[nSel] = sq_norm_a;
+	// insert new_a into the last column of sparse_A
 	for(i=0; i < nSel; i++)
-	{
-		double tmp = 0;
-		for(j=0; j < c_nzd[i]; j++)
-			tmp += new_a[c_idx[i][j]]*c_val[i][j];
+		new_col_H[i] = CMath::dot(new_a, cuts[i], nDim);
+	new_col_H[nSel] = CMath::dot(new_a, new_a, nDim);
 
-		new_col_H[i] = tmp;
-	}*/
+	cuts[nSel]=new_a;
 }
 
 void CWDSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
@@ -229,15 +200,40 @@ void CWDSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
   ----------------------------------------------------------------------*/
 void CWDSVMOcas::compute_output( double *output, void* ptr )
 {
-	/*
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
-	CSparseFeatures<DREAL>* f=o->get_features();
+	CStringFeatures<BYTE>* f=o->get_features();
 	INT nData=f->get_num_vectors();
 
 	DREAL* y = o->lab;
-	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);*/
-}
+	INT degree = o->degree;
+	INT string_length = o->string_length;
+	INT alphabet_size = o->alphabet_size;
+	INT w_dim_single_char = o->w_dim_single_char;
+	DREAL* wd_weights = o->wd_weights;
+	DREAL* w= o->w;
+	INT len;
 
+	for (INT i=0; i<nData; i++)
+	{
+		DREAL sum=0;
+		INT offs=0;
+
+		BYTE* vec = f->get_feature_vector(i, len);
+		ASSERT(len == string_length);
+
+		for (INT j=0; j<string_length; j++)
+		{
+			INT val=0;
+			for (INT k=0; (j+k<string_length) && (k<degree); k++)
+			{
+				val=val*alphabet_size + vec[j+k];
+				sum+=wd_weights[k] * w[offs+val];
+			}
+			offs+=w_dim_single_char;
+		}
+		output[i]=y[i]*sum;
+	}
+}
 /*----------------------------------------------------------------------
   sq_norm_W = compute_W( alpha, nSel ) does the following:
 
@@ -253,24 +249,14 @@ void CWDSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, 
 	uint32_t nDim= (uint32_t) o->w_dim;
 	CMath::swap(o->w, o->old_w);
 	double* W=o->w;
+	double** cuts=o->cuts;
 	double* oldW=o->old_w;
 	memset(W, 0, sizeof(double)*nDim);
 
-	DREAL** c_val = o->cp_value;
-	uint32_t** c_idx = o->cp_index;
-	uint32_t* c_nzd = o->cp_nz_dims;
-
-	memset(W, 0, sizeof(double)*nDim);
-
-	for(uint32_t i=0; i<nSel; i++)
+	for (uint32_t i=0; i<nSel; i++)
 	{
-		uint32_t nz_dims = c_nzd[i];
-
-		if(nz_dims > 0 && alpha[i] > 0)
-		{
-			for(uint32_t j=0; j < nz_dims; j++)
-				W[c_idx[i][j]] += alpha[i]*c_val[i][j];
-		}
+		if (alpha[i] > 0)
+			CMath::vec1_plus_scalar_times_vec2(W, alpha[i], cuts[i], nDim);
 	}
 
 	*sq_norm_W = CMath::dot(W,W, nDim);
