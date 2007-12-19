@@ -26,8 +26,16 @@ def _get_outdata (name, params):
 	if ddata[1][0]=='string' or (ddata[1][0]=='simple' and ddata[1][1]=='Char'):
 		outdata['alphabet']='DNA'
 		outdata['seqlen']=dataop.LEN_SEQ
+	elif ddata[1][0]=='string_complex':
+		outdata['order']=featop.WORDSTRING_ORDER
+		outdata['gap']=featop.WORDSTRING_GAP
+		outdata['reverse']=featop.WORDSTRING_REVERSE
+		outdata['alphabet']='DNA'
+		outdata['seqlen']=dataop.LEN_SEQ
+		outdata['feature_obtain']=ddata[1][2]
 
-	optional=['N', 'M', 'pseudo']
+	optional=['N', 'M', 'pseudo',
+		'derivatives', 'likelihood']
 	for opt in optional:
 		if params.has_key(opt):
 			outdata['distribution_'+opt]=params[opt]
@@ -36,12 +44,21 @@ def _get_outdata (name, params):
 
 def _run_histogram ():
 	params={
-		'data':dataop.get_rand(dattype=ushort),
+		'data':dataop.get_dna(),
 	}
-	feats=featop.get_simple('Word', params['data'])
+	feats=featop.get_string_complex('Word', params['data'])
 
 	histo=Histogram(feats['train'])
 	histo.train()
+
+	num_examples=feats['train'].get_num_vectors()
+	num_param=histo.get_num_model_parameters()
+	params['derivatives']=0
+	params['likelihood']=0
+	for i in xrange(num_examples):
+		for j in xrange(num_param):
+			params['derivatives']+=histo.get_log_derivative(i, j)
+		params['likelihood']+=histo.get_log_likelihood_example(i)
 
 	outdata=_get_outdata('Histogram', params)
 	fileop.write(C_DISTRIBUTION, outdata)

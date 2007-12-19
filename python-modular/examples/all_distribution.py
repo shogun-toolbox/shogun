@@ -5,7 +5,8 @@ Explicit examples on how to use distributions
 
 from numpy import array, floor, ushort
 from numpy.random import randint, seed, rand
-from shogun.Features import WordFeatures, CharFeatures, StringCharFeatures
+from shogun.Features import StringWordFeatures, CharFeatures, StringCharFeatures
+from shogun.PreProc import SortWordString
 from shogun.Distribution import *
 
 def get_dna ():
@@ -38,13 +39,31 @@ def get_dna ():
 def histogram ():
 	print 'Histogram'
 
-	maxval=2**16-1
-	num_feats=11
-	data=randint(0, maxval, (num_feats, 11)).astype(ushort)
-	feats=WordFeatures(data)
+	data=get_dna()
+	order=3
+	gap=0
+	reverse=False
+
+	charfeat=StringCharFeatures(DNA)
+	charfeat.set_string_features(data['train'])
+	feats=StringWordFeatures(charfeat.get_alphabet())
+	feats.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	preproc=SortWordString()
+	preproc.init(feats)
+	feats.add_preproc(preproc)
+	feats.apply_preproc()
 
 	histo=Histogram(feats)
 	histo.train()
+
+	histo.get_histogram()
+
+	num_examples=feats.get_num_vectors()
+	num_param=histo.get_num_model_parameters()
+	for i in xrange(num_examples):
+		for j in xrange(num_param):
+			histo.get_log_derivative(i, j)
+		histo.get_log_likelihood_example(i)
 
 def hmm ():
 	print 'HMM'

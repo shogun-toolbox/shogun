@@ -4,7 +4,8 @@
 
 %module(docstring=DOCSTR,directors="1") Distribution
 %{
- #include "distributions/Distribution.h" 
+#define SWIG_FILE_WITH_INIT
+#include "distributions/Distribution.h"
 %}
 %feature("director") CDistribution;
 %rename(Distribution) CDistribution;
@@ -15,13 +16,23 @@
 #endif
 
 
+#ifdef HAVE_PYTHON
+%init %{
+	import_array();
+%}
+
 %include "lib/common.i"
+%include "lib/python_typemaps.i"
+#endif
+
+
 %include "lib/ShogunException.i"
-%include "lib/io.i" 
+%include "lib/io.i"
 %include "base/Version.i"
 %include "base/Parallel.i"
 %include "base/SGObject.i"
-%include "distributions/Distribution.h" 
+
+%include "distributions/Distribution.h"
 %include "distributions/histogram/Histogram.i"
 %include "distributions/hmm/HMM.i"
 %include "distributions/hmm/GHMM.i"

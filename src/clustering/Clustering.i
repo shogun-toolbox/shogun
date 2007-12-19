@@ -1,5 +1,5 @@
 %define DOCSTR
-"The `Kernel` module gathers all clustering methods available in the SHOGUN toolkit."
+"The `Clustering` module gathers all clustering methods available in the SHOGUN toolkit."
 %enddef
 
 %module(docstring=DOCSTR,directors="1") Clustering

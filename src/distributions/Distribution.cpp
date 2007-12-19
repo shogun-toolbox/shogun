@@ -31,7 +31,7 @@ DREAL CDistribution::get_log_likelihood_sample()
 	return sum/features->get_num_vectors();
 }
 
-DREAL* CDistribution::get_log_likelihood_all_examples()
+DREAL* CDistribution::get_log_likelihood()
 {
 	ASSERT(features);
 

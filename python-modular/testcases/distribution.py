@@ -20,7 +20,23 @@ def _distribution (indata):
 
 	distribution.train()
 
-	return util.check_accuracy(indata['distribution_accuracy'])
+	if indata['name']=='Histogram':
+		num_examples=feats['train'].get_num_vectors()
+		num_param=distribution.get_num_model_parameters()
+		derivatives=0
+		likelihood=0
+		for i in xrange(num_examples):
+			for j in xrange(num_param):
+				derivatives+=distribution.get_log_derivative(i, j)
+			likelihood+=distribution.get_log_likelihood_example(i)
+
+		derivatives=abs(derivatives-indata['distribution_derivatives'])
+		likelihood=abs(likelihood-indata['distribution_likelihood'])
+
+		return util.check_accuracy(indata['distribution_accuracy'],
+			derivatives=derivatives, likelihood=likelihood)
+	else:
+		return util.check_accuracy(indata['distribution_accuracy'])
 
 ########################################################################
 # public

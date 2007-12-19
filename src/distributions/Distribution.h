@@ -43,7 +43,7 @@ class CDistribution : public CSGObject
 		virtual DREAL get_log_likelihood_sample();
 
 		/// compute log likelihood for each example
-		virtual DREAL* get_log_likelihood_all_examples();
+		virtual DREAL* get_log_likelihood();
 
 		//get model parameter
 		virtual inline DREAL get_model_parameter(INT param_num)

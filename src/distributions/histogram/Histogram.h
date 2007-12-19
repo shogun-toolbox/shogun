@@ -11,14 +11,14 @@
 #ifndef _HISTOGRAM_H___
 #define _HISTOGRAM_H___
 
-#include "features/WordFeatures.h"
+#include "features/StringFeatures.h"
 #include "distributions/Distribution.h"
 
 class CHistogram : private CDistribution
 {
 	public:
 		CHistogram();
-		CHistogram(CWordFeatures* f);
+		CHistogram(CStringFeatures<WORD>* f);
 		~CHistogram();
 
 		virtual bool train();
@@ -27,13 +27,37 @@ class CHistogram : private CDistribution
 		{
 			return (1<<16);
 		}
-		virtual DREAL get_log_model_parameter(INT param_num);
+		virtual DREAL get_log_model_parameter(INT num_param);
 
 		virtual DREAL get_log_derivative(INT num_example, INT num_param);
 		virtual DREAL get_log_likelihood_example(INT num_example);
 
+		virtual inline bool set_histogram(DREAL* src, INT num)
+		{
+			ASSERT(num==get_num_model_parameters());
+
+			delete[] hist;
+			hist=new DREAL[num];
+			ASSERT(hist);
+
+			for (INT i=0; i<num; i++) {
+				hist[i]=src[i];
+			}
+
+			return true;
+		}
+
+		virtual inline void get_histogram(DREAL** dst, INT* num)
+		{
+			*num=get_num_model_parameters();
+			size_t sz=sizeof(hist)*(*num);
+			*dst=(DREAL*) malloc(sz);
+			ASSERT(dst);
+
+			memcpy(*dst, hist, sz);
+		}
+
 	protected:
 		DREAL* hist;
-		CWordFeatures* features;
 };
 #endif
