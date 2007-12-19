@@ -37,6 +37,7 @@ public:
 	CLabels* classify_distancemachine(CLabels* output=NULL);
 	CLabels* classify_linear(CLabels* output=NULL);
 	CLabels* classify_sparse_linear(CLabels* output=NULL);
+	CLabels* classify_byte_linear(CLabels* output=NULL);
 	bool classify_example(INT idx, DREAL& result);
 	inline CClassifier* get_classifier() { return classifier; }
 
@@ -75,7 +76,7 @@ public:
 	bool train_clustering(CHAR* param);
 	bool train_linear(CHAR* param);
 	bool train_sparse_linear(CHAR* param);
-
+	bool train_byte_linear(CHAR* param);
 
  protected:
 	CGUI* gui;

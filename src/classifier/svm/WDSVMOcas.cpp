@@ -49,10 +49,16 @@ bool CWDSVMOcas::train()
 	ASSERT(get_labels());
 	ASSERT(get_features());
 	ASSERT(get_labels()->is_two_class_labeling());
+	alphabet_size=4; //FIXME
+	degree=1; //FIXME
 
 	string_length=get_features()->get_max_vector_length();
 	INT num_train_labels=0;
 	lab=get_labels()->get_labels(num_train_labels);
+
+	ASSERT(degree>0 && degree<8);
+	wd_weights=new DREAL[degree];
+	ASSERT(wd_weights);
 
 	for (INT i=0; i<degree; i++)
 		wd_weights[i]=2*(degree-i)/(degree*(degree));

@@ -353,6 +353,8 @@ bool CGUIClassifier::train(CHAR* param)
 		case CT_SUBGRADIENTLPM:
 		case CT_LIBLINEAR:
 			return train_sparse_linear(param);
+		case CT_WDSVMOCAS:
+			return train_byte_linear(param);
 		default:
 			SG_ERROR( "unknown classifier type\n");
 			break;
@@ -541,6 +543,39 @@ bool CGUIClassifier::train_linear(CHAR* param)
 	return result;
 }
 
+bool CGUIClassifier::train_byte_linear(CHAR* param)
+{
+	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
+	CLabels* trainlabels=gui->guilabels.get_train_labels();
+
+	bool result=false;
+
+	if (!trainfeatures)
+	{
+		SG_ERROR( "no trainfeatures available\n") ;
+		return false ;
+	}
+
+	if (trainfeatures->get_feature_class() != C_STRING ||
+			trainfeatures->get_feature_type() != F_BYTE )
+	{
+		SG_ERROR( "trainfeatures not of class STRING type BYTE\n") ;
+		return false ;
+	}
+
+	if (!trainlabels)
+	{
+		SG_ERROR( "no labels available\n") ;
+		return false;
+	}
+
+	((CWDSVMOcas*) classifier)->set_labels(trainlabels);
+	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<BYTE>*) trainfeatures);
+	result=((CWDSVMOcas*) classifier)->train();
+
+	return result;
+}
+
 bool CGUIClassifier::train_sparse_linear(CHAR* param)
 {
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
@@ -569,7 +604,7 @@ bool CGUIClassifier::train_sparse_linear(CHAR* param)
 
 	((CSparseLinearClassifier*) classifier)->set_labels(trainlabels);
 	((CSparseLinearClassifier*) classifier)->set_features((CSparseFeatures<DREAL>*) trainfeatures);
-	result=((CLinearClassifier*) classifier)->train();
+	result=((CSparseLinearClassifier*) classifier)->train();
 
 	return result;
 }
@@ -1049,6 +1084,8 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_SUBGRADIENTLPM:
 		case CT_LIBLINEAR:
 			return classify_sparse_linear(output);
+		case CT_WDSVMOCAS:
+			return classify_byte_linear(output);
 		default:
 			SG_ERROR( "unknown classifier type\n");
 			break;
@@ -1319,6 +1356,32 @@ CLabels* CGUIClassifier::classify_linear(CLabels* output)
 	}
 
 	((CLinearClassifier*) classifier)->set_features((CRealFeatures*) testfeatures);
+	SG_INFO( "starting linear classifier testing\n") ;
+	return classifier->classify(output);
+}
+
+CLabels* CGUIClassifier::classify_byte_linear(CLabels* output)
+{
+	CFeatures* testfeatures=gui->guifeatures.get_test_features();
+
+	if (!classifier)
+	{
+		SG_ERROR( "no svm available\n") ;
+		return NULL;
+	}
+	if (!testfeatures)
+	{
+		SG_ERROR( "no test features available\n") ;
+		return NULL;
+	}
+	if (testfeatures->get_feature_class() != C_STRING ||
+			testfeatures->get_feature_type() != F_BYTE )
+	{
+		SG_ERROR( "testfeatures not of class STRING type BYTE\n") ;
+		return false ;
+	}
+
+	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<BYTE>*) testfeatures);
 	SG_INFO( "starting linear classifier testing\n") ;
 	return classifier->classify(output);
 }
