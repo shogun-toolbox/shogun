@@ -89,7 +89,7 @@ bool CCustomKernel::set_triangle_kernel_matrix_from_triangle(const DREAL* km, in
 	ASSERT(km);
 	ASSERT(len > 0);
 
-	INT cols = floor(-0.5 + CMath::sqrt(0.25+2*len));
+	INT cols = (INT) floor(-0.5 + CMath::sqrt(0.25+2*len));
 	if (cols*(cols+1)/2 != len)
 	{
 		SG_ERROR("km should be a vector containing a lower triangle matrix, with len=cols*(cols+1)/2 elements\n");

@@ -212,7 +212,10 @@ public:
 
 	bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
+	inline void set_use_normalization(bool opt) { use_normalization=opt; }
 	inline bool get_use_normalization() { return use_normalization; }
+	inline void set_use_block_computation(bool block) { block_computation=block; }
+	inline bool get_use_block_computation() { return block_computation; }
 
  protected:
 

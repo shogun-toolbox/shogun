@@ -79,8 +79,10 @@ class CWDSVMOcas : public CClassifier
 		{
 			ASSERT(features);
 			normalization_const=0;
+			SG_DEBUG("normalization_const:%f\n", normalization_const);
 			for (INT i=0; i<degree; i++)
-				normalization_const+=(string_length-i)*wd_weights[i];
+				normalization_const+=(string_length-i)*wd_weights[i]*wd_weights[i];
+
 			normalization_const=CMath::sqrt(normalization_const);
 			SG_DEBUG("normalization_const:%f\n", normalization_const);
 		}

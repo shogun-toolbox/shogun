@@ -1110,6 +1110,8 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				
 				if (k)
 				{
+					((CWeightedDegreeStringKernel*) k)->set_use_normalization(use_normalization==1);
+					((CWeightedDegreeStringKernel*) k)->set_use_block_computation(block_computation==1);
 					SG_INFO( "WeightedDegreeStringKernel created\n");
 					return k;
 				}

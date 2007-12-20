@@ -24,6 +24,7 @@
 CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type) : CClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(type)
 {
+	SG_PRINT("HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALLLLO\n");
 	w=NULL;
 	old_w=NULL;
 	degree=6;
