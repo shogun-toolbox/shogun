@@ -10,7 +10,7 @@
 
 #include "lib/common.h"
 #include "lib/io.h"
-#include "features/WordFeatures.h"
+#include "features/StringFeatures.h"
 #include "features/Labels.h"
 #include "distributions/hmm/LinearHMM.h"
 #include "classifier/PluginEstimate.h"
@@ -26,7 +26,7 @@ CPluginEstimate::~CPluginEstimate()
 	delete neg_model;
 }
 
-bool CPluginEstimate::train(CWordFeatures* features, CLabels* labels, DREAL pos_pseudo_count, DREAL neg_pseudo_count)
+bool CPluginEstimate::train(CStringFeatures<WORD>* features, CLabels* labels, DREAL pos_pseudo_count, DREAL neg_pseudo_count)
 {
 	delete pos_model;
 	delete neg_model;
@@ -34,8 +34,8 @@ bool CPluginEstimate::train(CWordFeatures* features, CLabels* labels, DREAL pos_
 	pos_model=new CLinearHMM(features);
 	neg_model=new CLinearHMM(features);
 
-	INT* pos_indizes=new INT[((CWordFeatures*) features)->get_num_vectors()];
-	INT* neg_indizes=new INT[((CWordFeatures*) features)->get_num_vectors()];
+	INT* pos_indizes=new INT[((CStringFeatures<WORD>*) features)->get_num_vectors()];
+	INT* neg_indizes=new INT[((CStringFeatures<WORD>*) features)->get_num_vectors()];
 
 	ASSERT(labels->get_num_labels() == features->get_num_vectors());
 
@@ -62,7 +62,7 @@ bool CPluginEstimate::train(CWordFeatures* features, CLabels* labels, DREAL pos_
 
 DREAL* CPluginEstimate::test()
 {
-	CWordFeatures* features=test_features;
+	CStringFeatures<WORD>* features=test_features;
 	ASSERT(features);
 
 	if ((!pos_model) || (!neg_model))
@@ -82,7 +82,7 @@ DREAL* CPluginEstimate::test()
 
 CLabels* CPluginEstimate::classify(CLabels* result)
 {
-	CWordFeatures* features=test_features;
+	CStringFeatures<WORD>* features=test_features;
 
 	ASSERT(features);
 
@@ -100,9 +100,8 @@ CLabels* CPluginEstimate::classify(CLabels* result)
 DREAL CPluginEstimate::classify_example(INT idx)
 {
 	INT len;
-	bool to_free;
 
-	WORD* vector=((CWordFeatures*) test_features)->get_feature_vector(idx, len, to_free);
+	WORD* vector=((CStringFeatures<WORD>*) test_features)->get_feature_vector(idx, len);
 
 	if ((!pos_model) || (!neg_model))
 	  {
@@ -111,6 +110,5 @@ DREAL CPluginEstimate::classify_example(INT idx)
 	  } ;
 	  
 	DREAL result=pos_model->get_log_likelihood_example(vector, len) - neg_model->get_log_likelihood_example(vector, len);
-	((CWordFeatures*) test_features)->free_feature_vector(vector, idx, to_free);
 	return result;
 }

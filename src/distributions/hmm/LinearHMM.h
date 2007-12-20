@@ -12,14 +12,14 @@
 #ifndef _LINEARHMM_H__
 #define _LINEARHMM_H__
 
-#include "features/WordFeatures.h"
+#include "features/StringFeatures.h"
 #include "features/Labels.h"
 #include "distributions/Distribution.h"
 
 class CLinearHMM : public CDistribution
 {
 	public:
-		CLinearHMM(CWordFeatures* f);
+		CLinearHMM(CStringFeatures<WORD>* f);
 		CLinearHMM(INT p_num_features, INT p_num_symbols);
 		~CLinearHMM();
 
@@ -31,7 +31,7 @@ class CLinearHMM : public CDistribution
 
 		virtual DREAL get_log_likelihood_example(INT num_example);
 
-		virtual DREAL get_log_derivative(INT param_num, INT num_example);
+		virtual DREAL get_log_derivative(INT num_param, INT num_example);
 
 		virtual inline DREAL get_log_derivative_obsolete(WORD obs, INT pos)
 		{
@@ -55,12 +55,12 @@ class CLinearHMM : public CDistribution
 			return log_hist[position*num_symbols+obs];
 		}
 
-		inline DREAL get_log_model_parameter(INT param_num)
+		inline DREAL get_log_model_parameter(INT num_param)
 		{
 			ASSERT(log_hist);
-			ASSERT(param_num<num_params);
+			ASSERT(num_param<num_params);
 
-			return log_hist[param_num];
+			return log_hist[num_param];
 		}
 
 		inline DREAL* get_log_hist() { return log_hist; }
@@ -75,6 +75,5 @@ class CLinearHMM : public CDistribution
 		INT num_params;
 		DREAL* hist;
 		DREAL* log_hist;
-		CWordFeatures* features;
 };
 #endif

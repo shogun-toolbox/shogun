@@ -31,10 +31,10 @@ class CDistribution : public CSGObject
 		virtual INT get_num_relevant_model_parameters();
 
 		//get model parameter (logarithmic)
-		virtual DREAL get_log_model_parameter(INT param_num)=0;
+		virtual DREAL get_log_model_parameter(INT num_param)=0;
 
 		//get derivative of likelihood function (logarithmic)
-		virtual DREAL get_log_derivative(INT param_num, INT num_example)=0;
+		virtual DREAL get_log_derivative(INT num_param, INT num_example)=0;
 		
 		/// compute log likelihood for example
 		virtual DREAL get_log_likelihood_example(INT num_example)=0;
@@ -46,15 +46,15 @@ class CDistribution : public CSGObject
 		virtual DREAL* get_log_likelihood();
 
 		//get model parameter
-		virtual inline DREAL get_model_parameter(INT param_num)
+		virtual inline DREAL get_model_parameter(INT num_param)
 		{
-			return exp(get_log_model_parameter(param_num));
+			return exp(get_log_model_parameter(num_param));
 		}
 
 		//get derivative of likelihood function
-		virtual inline DREAL get_derivative(INT param_num, INT num_example)
+		virtual inline DREAL get_derivative(INT num_param, INT num_example)
 		{
-			return exp(get_log_derivative(param_num, num_example));
+			return exp(get_log_derivative(num_param, num_example));
 		}
 
 		/// compute likelihood for example

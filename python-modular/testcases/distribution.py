@@ -27,7 +27,7 @@ def _distribution (indata):
 		likelihood=0
 		for i in xrange(num_examples):
 			for j in xrange(num_param):
-				derivatives+=distribution.get_log_derivative(i, j)
+				derivatives+=distribution.get_log_derivative(j, i)
 			likelihood+=distribution.get_log_likelihood_example(i)
 
 		derivatives=abs(derivatives-indata['distribution_derivatives'])

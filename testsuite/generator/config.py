@@ -49,6 +49,7 @@ DISTANCE={
 # name: data_class + _type, feature_class + _type(s), accuracy
 DISTRIBUTION={
 	'Histogram':[['dna', ''], ['string_complex', 'Word', 'Char'], 1e-8],
+	'LinearHMM':[['dna', ''], ['string_complex', 'Word', 'Char'], 1e-8],
 	'HMM':[['dna', ''], ['string', 'Char'], 1e-9],
 }
 

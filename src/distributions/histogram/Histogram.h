@@ -29,7 +29,7 @@ class CHistogram : private CDistribution
 		}
 		virtual DREAL get_log_model_parameter(INT num_param);
 
-		virtual DREAL get_log_derivative(INT num_example, INT num_param);
+		virtual DREAL get_log_derivative(INT num_param, INT num_example);
 		virtual DREAL get_log_likelihood_example(INT num_example);
 
 		virtual inline bool set_histogram(DREAL* src, INT num)

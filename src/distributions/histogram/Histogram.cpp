@@ -81,7 +81,7 @@ DREAL CHistogram::get_log_likelihood_example(INT num_example)
 	return loglik;
 }
 
-DREAL CHistogram::get_log_derivative(INT num_example, INT num_param)
+DREAL CHistogram::get_log_derivative(INT num_param, INT num_example)
 {
 	if (hist[num_param] < CMath::ALMOST_NEG_INFTY)
 		return -CMath::INFTY;

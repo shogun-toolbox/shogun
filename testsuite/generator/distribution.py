@@ -42,25 +42,27 @@ def _get_outdata (name, params):
 
 	return outdata
 
-def _run_histogram ():
+def _run (name):
 	params={
 		'data':dataop.get_dna(),
 	}
 	feats=featop.get_string_complex('Word', params['data'])
 
-	histo=Histogram(feats['train'])
-	histo.train()
+	fun=eval(name)
+	distribution=fun(feats['train'])
+	distribution.train()
 
 	num_examples=feats['train'].get_num_vectors()
-	num_param=histo.get_num_model_parameters()
+	num_param=distribution.get_num_model_parameters()
 	params['derivatives']=0
 	params['likelihood']=0
+
 	for i in xrange(num_examples):
 		for j in xrange(num_param):
-			params['derivatives']+=histo.get_log_derivative(i, j)
-		params['likelihood']+=histo.get_log_likelihood_example(i)
+			params['derivatives']+=distribution.get_log_derivative(j, i)
+		params['likelihood']+=distribution.get_log_likelihood_example(i)
 
-	outdata=_get_outdata('Histogram', params)
+	outdata=_get_outdata(name, params)
 	fileop.write(C_DISTRIBUTION, outdata)
 
 def _run_hmm ():
@@ -81,5 +83,6 @@ def _run_hmm ():
 	fileop.write(C_DISTRIBUTION, outdata)
 
 def run ():
-	_run_histogram()
+	_run('Histogram')
+	_run('LinearHMM')
 	_run_hmm()

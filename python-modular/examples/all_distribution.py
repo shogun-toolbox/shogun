@@ -62,8 +62,38 @@ def histogram ():
 	num_param=histo.get_num_model_parameters()
 	for i in xrange(num_examples):
 		for j in xrange(num_param):
-			histo.get_log_derivative(i, j)
+			histo.get_log_derivative(j, i)
 		histo.get_log_likelihood_example(i)
+
+def linear_hmm ():
+	print 'LinearHMM'
+
+	data=get_dna()
+	order=3
+	gap=0
+	reverse=False
+
+	charfeat=StringCharFeatures(DNA)
+	charfeat.set_string_features(data['train'])
+	feats=StringWordFeatures(charfeat.get_alphabet())
+	feats.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	preproc=SortWordString()
+	preproc.init(feats)
+	feats.add_preproc(preproc)
+	feats.apply_preproc()
+
+	hmm=LinearHMM(feats)
+	hmm.train()
+
+	#hmm.get_histogram()
+
+	num_examples=feats.get_num_vectors()
+	num_param=hmm.get_num_model_parameters()
+	for i in xrange(num_examples):
+		for j in xrange(num_param):
+			hmm.get_log_derivative(j, i)
+		hmm.get_log_likelihood_example(i)
+
 
 def hmm ():
 	print 'HMM'
@@ -90,5 +120,6 @@ if __name__=='__main__':
 	seed(42)
 
 	histogram()
+	linear_hmm()
 	hmm()
 

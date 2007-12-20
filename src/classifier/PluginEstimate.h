@@ -12,7 +12,7 @@
 #define _PLUGINESTIMATE_H___
 
 #include "base/SGObject.h"
-#include "features/WordFeatures.h"
+#include "features/StringFeatures.h"
 #include "features/Labels.h"
 #include "distributions/hmm/LinearHMM.h"
 
@@ -22,10 +22,10 @@ class CPluginEstimate: public CSGObject
 		CPluginEstimate();
 		~CPluginEstimate();
 
-		bool train(CWordFeatures* features, CLabels* labels, DREAL pos_pseudo, DREAL neg_pseudo);
+		bool train(CStringFeatures<WORD>* features, CLabels* labels, DREAL pos_pseudo, DREAL neg_pseudo);
 		DREAL* test();
 
-		void set_testfeatures(CWordFeatures* f) { test_features=f; }
+		void set_testfeatures(CStringFeatures<WORD>* f) { test_features=f; }
 
 		/// classify all test features
 		CLabels* classify(CLabels* output=NULL);
@@ -105,6 +105,6 @@ class CPluginEstimate: public CSGObject
 	protected:
 		CLinearHMM* pos_model;
 		CLinearHMM* neg_model;
-		CWordFeatures* test_features;
+		CStringFeatures<WORD>* test_features;
 };
 #endif
