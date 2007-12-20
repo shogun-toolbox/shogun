@@ -72,8 +72,20 @@ class CWDSVMOcas : public CClassifier
 					offs+=w_offsets[k];
 				}
 			}
-			return sum;
+			return sum/normalization_const;
 		}
+
+		inline void set_normalization_const()
+		{
+			ASSERT(features);
+			normalization_const=0;
+			for (INT i=0; i<degree; i++)
+				normalization_const+=(string_length-i)*wd_weights[i];
+			normalization_const=CMath::sqrt(normalization_const);
+			SG_DEBUG("normalization_const:%f\n", normalization_const);
+		}
+
+		inline DREAL get_normalization_const() { return normalization_const; }
 
 
 	protected:
@@ -100,6 +112,8 @@ class CWDSVMOcas : public CClassifier
 		DREAL* wd_weights;
 		INT string_length;
 		INT alphabet_size;
+
+		DREAL normalization_const;
 
 		DREAL bias;
 		INT* w_offsets;

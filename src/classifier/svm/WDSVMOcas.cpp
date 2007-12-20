@@ -30,6 +30,7 @@ CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type) : CClassifier(), use_bias(false), bufsiz
 	from_degree=40;
 	wd_weights=NULL;
 	w_offsets=NULL;
+	normalization_const=1.0;
 }
 
 CWDSVMOcas::CWDSVMOcas(DREAL C, INT d, INT from_d, CStringFeatures<BYTE>* traindat, CLabels* trainlab) 
@@ -43,6 +44,7 @@ CWDSVMOcas::CWDSVMOcas(DREAL C, INT d, INT from_d, CStringFeatures<BYTE>* traind
 	CClassifier::labels=trainlab;
 	wd_weights=NULL;
 	w_offsets=NULL;
+	normalization_const=1.0;
 }
 
 
@@ -53,6 +55,7 @@ CWDSVMOcas::~CWDSVMOcas()
 CLabels* CWDSVMOcas::classify(CLabels* output)
 {
 	set_wd_weights();
+	set_normalization_const();
 
 	if (features)
 	{
@@ -114,6 +117,7 @@ bool CWDSVMOcas::train()
 	SG_DEBUG("cutting plane has %d dims\n", w_dim);
 	INT num_vec=features->get_num_vectors();
 
+	set_normalization_const();
 	ASSERT(num_vec==num_train_labels);
 	ASSERT(num_vec>0);
 
@@ -206,6 +210,7 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 	DREAL* wd_weights = o->wd_weights;
 	INT degree = o->degree;
 	double** cuts=o->cuts;
+	DREAL normalization_const = o->normalization_const;
 
 	uint32_t i;
 
@@ -219,7 +224,7 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 		INT len=0;
 		BYTE* vec = f->get_feature_vector(new_cut[i], len);
 		ASSERT(len == string_length);
-		DREAL scalar=y[new_cut[i]];
+		DREAL scalar=y[new_cut[i]]/normalization_const;
 
 		for (INT j=0; j<len; j++)
 		{
@@ -266,6 +271,7 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 	INT* w_offsets = o->w_offsets;
 	DREAL* wd_weights = o->wd_weights;
 	DREAL* w= o->w;
+	DREAL normalization_const = o->normalization_const;
 	INT len;
 
 	for (INT i=0; i<nData; i++)
@@ -286,10 +292,8 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 				offs+=w_offsets[k];
 			}
 		}
-		output[i]=y[i]*sum;
+		output[i]=y[i]*sum/normalization_const;
 	}
-	//CMath::display_vector(o->w, o->w_dim, "w");
-	//CMath::display_vector(output, nData, "output");
 }
 /*----------------------------------------------------------------------
   sq_norm_W = compute_W( alpha, nSel ) does the following:
