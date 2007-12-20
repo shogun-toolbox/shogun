@@ -76,7 +76,7 @@ public:
 	bool train_clustering(CHAR* param);
 	bool train_linear(CHAR* param);
 	bool train_sparse_linear(CHAR* param);
-	bool train_byte_linear(CHAR* param);
+	bool train_wdocas(CHAR* param);
 
  protected:
 	CGUI* gui;

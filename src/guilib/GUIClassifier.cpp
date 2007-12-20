@@ -273,15 +273,22 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		((CSubGradientSVM*) classifier)->set_max_train_time(max_train_time);
 		SG_INFO( "created Subgradient SVM object\n") ;
 	}
-	else if (strcmp(param,"WDSVMOCAS")==0)
+	else if (strncmp(param,"WDSVMOCAS", strlen("WDSVMOCAS"))==0)
 	{
 		delete classifier;
 		classifier= new CWDSVMOcas(SVM_OCAS);
 
+		CHAR* args=&param[strlen("WDSVMOCAS")];
+		args=CIO::skip_spaces(args);
+		INT d=6;
+		INT from_d=40;
+		sscanf(args, "%d %d", &d, &from_d);
+
+		((CWDSVMOcas*) classifier)->set_degree(d, from_d);
 		((CWDSVMOcas*) classifier)->set_C(svm_C1, svm_C2);
 		((CWDSVMOcas*) classifier)->set_epsilon(svm_epsilon);
 		((CWDSVMOcas*) classifier)->set_bufsize(svm_bufsize);
-		SG_INFO( "created Weighted Degree Kernel SVM Ocas(OCAS) object\n") ;
+		SG_INFO( "created Weighted Degree Kernel SVM Ocas(OCAS) object of order %d (from order:%d)\n", d, from_d) ;
 	}
 	else if (strcmp(param,"SVMOCAS")==0)
 	{
@@ -354,7 +361,7 @@ bool CGUIClassifier::train(CHAR* param)
 		case CT_LIBLINEAR:
 			return train_sparse_linear(param);
 		case CT_WDSVMOCAS:
-			return train_byte_linear(param);
+			return train_wdocas(param);
 		default:
 			SG_ERROR( "unknown classifier type\n");
 			break;
@@ -543,7 +550,7 @@ bool CGUIClassifier::train_linear(CHAR* param)
 	return result;
 }
 
-bool CGUIClassifier::train_byte_linear(CHAR* param)
+bool CGUIClassifier::train_wdocas(CHAR* param)
 {
 	CFeatures* trainfeatures=gui->guifeatures.get_train_features();
 	CLabels* trainlabels=gui->guilabels.get_train_labels();
@@ -568,7 +575,6 @@ bool CGUIClassifier::train_byte_linear(CHAR* param)
 		SG_ERROR( "no labels available\n") ;
 		return false;
 	}
-
 	((CWDSVMOcas*) classifier)->set_labels(trainlabels);
 	((CWDSVMOcas*) classifier)->set_features((CStringFeatures<BYTE>*) trainfeatures);
 	result=((CWDSVMOcas*) classifier)->train();

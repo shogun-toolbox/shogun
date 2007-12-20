@@ -20,7 +20,7 @@ const BYTE CAlphabet::B_C=1;
 const BYTE CAlphabet::B_G=2;
 const BYTE CAlphabet::B_T=3;
 const BYTE CAlphabet::MAPTABLE_UNDEF=0xff;
-const CHAR* CAlphabet::alphabet_names[10]={"DNA", "RNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
+const CHAR* CAlphabet::alphabet_names[11]={"DNA", "RAWDNA", "RNA", "PROTEIN", "ALPHANUM", "CUBE", "RAW", "IUPAC_NUCLEIC_ACID", "IUPAC_AMINO_ACID", "NONE", "UNKNOWN"};
 
 CAlphabet::CAlphabet(CHAR* al, INT len) : CSGObject()
 {
@@ -28,6 +28,8 @@ CAlphabet::CAlphabet(CHAR* al, INT len) : CSGObject()
 
 	if (len>=(INT) strlen("DNA") && !strncmp(al, "DNA", strlen("DNA")))
 		alpha = DNA;
+	else if (len>=(INT) strlen("RAWDNA") && !strncmp(al, "RAWDNA", strlen("RAWDNA")))
+		alpha = RAWDNA;
 	else if (len>=(INT) strlen("RNA") && !strncmp(al, "RNA", strlen("RNA")))
 		alpha = RNA;
 	else if (len>=(INT) strlen("PROTEIN") && !strncmp(al, "PROTEIN", strlen("PROTEIN")))
@@ -73,6 +75,7 @@ bool CAlphabet::set_alphabet(E_ALPHABET alpha)
 	switch (alphabet)
 	{
 		case DNA:
+		case RAWDNA:
 			num_symbols = 4;
 			break;
 		case RNA:
@@ -209,6 +212,17 @@ void CAlphabet::init_map_table()
 			maptable_to_char[B_C]='C';
 			maptable_to_char[B_G]='G';
 			maptable_to_char[B_T]='T';
+			break;
+		case RAWDNA:
+			{
+				//identity
+				for (i=0; i<4; i++)
+				{
+					valid_chars[i]=1;
+					maptable_to_bin[i]=i;
+					maptable_to_char[i]=i;
+				}
+			}
 			break;
 
 		case RNA:

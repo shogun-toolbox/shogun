@@ -18,6 +18,7 @@
 #include "classifier/svm/libocas.h"
 #include "classifier/svm/WDSVMOcas.h"
 #include "features/StringFeatures.h"
+#include "features/Alphabet.h"
 #include "features/Labels.h"
 
 CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type) : CClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
@@ -25,21 +26,70 @@ CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type) : CClassifier(), use_bias(false), bufsiz
 {
 	w=NULL;
 	old_w=NULL;
+	degree=6;
+	from_degree=40;
+	wd_weights=NULL;
+	w_offsets=NULL;
 }
 
-CWDSVMOcas::CWDSVMOcas(DREAL C, CStringFeatures<BYTE>* traindat, CLabels* trainlab) 
-: CClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3)
+CWDSVMOcas::CWDSVMOcas(DREAL C, INT d, INT from_d, CStringFeatures<BYTE>* traindat, CLabels* trainlab) 
+: CClassifier(), use_bias(false), bufsize(3000), C1(C), C2(C), epsilon(1e-3), degree(d),
+	from_degree(from_d)
 {
 	w=NULL;
 	old_w=NULL;
 	method=SVM_OCAS;
 	features=traindat;
 	CClassifier::labels=trainlab;
+	wd_weights=NULL;
+	w_offsets=NULL;
 }
 
 
 CWDSVMOcas::~CWDSVMOcas()
 {
+}
+
+CLabels* CWDSVMOcas::classify(CLabels* output)
+{
+	set_wd_weights();
+
+	if (features)
+	{
+		INT num=features->get_num_vectors();
+		ASSERT(num>0);
+
+		if (!output)
+			output=new CLabels(num);
+
+		ASSERT(output);
+		for (INT i=0; i<num; i++)
+			output->set_label(i, classify_example(i));
+
+		return output;
+	}
+
+	return NULL;
+}
+
+INT CWDSVMOcas::set_wd_weights()
+{
+	ASSERT(degree>0 && degree<8);
+	delete[] wd_weights;
+	wd_weights=new DREAL[degree];
+	ASSERT(wd_weights);
+	delete[] w_offsets;
+	w_offsets=new INT[degree];
+	ASSERT(w_offsets);
+	INT w_dim_single_char=0;
+
+	for (INT i=0; i<degree; i++)
+	{
+		w_offsets[i]=CMath::pow(alphabet_size, i+1);
+		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
+		w_dim_single_char+=w_offsets[i];
+	}
+	return w_dim_single_char;
 }
 
 bool CWDSVMOcas::train()
@@ -49,27 +99,24 @@ bool CWDSVMOcas::train()
 	ASSERT(get_labels());
 	ASSERT(get_features());
 	ASSERT(get_labels()->is_two_class_labeling());
-	alphabet_size=4; //FIXME
-	degree=1; //FIXME
+	CAlphabet* alphabet=get_features()->get_alphabet();
+	ASSERT(alphabet && alphabet->get_alphabet()==RAWDNA);
 
+	alphabet_size=alphabet->get_num_symbols();
 	string_length=get_features()->get_max_vector_length();
 	INT num_train_labels=0;
 	lab=get_labels()->get_labels(num_train_labels);
 
-	ASSERT(degree>0 && degree<8);
-	wd_weights=new DREAL[degree];
-	ASSERT(wd_weights);
-
-	for (INT i=0; i<degree; i++)
-		wd_weights[i]=2*(degree-i)/(degree*(degree));
-
-	w_dim_single_char=((CMath::pow(alphabet_size,degree+1)-1)/(CMath::pow(alphabet_size,degree)-1)-1);
+	INT w_dim_single_char=set_wd_weights();
+	CMath::display_vector(wd_weights, degree, "wd_weights");
+	SG_DEBUG("w_dim_single_char=%d\n", w_dim_single_char);
 	w_dim=string_length*w_dim_single_char;
 	SG_DEBUG("cutting plane has %d dims\n", w_dim);
 	INT num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels);
 	ASSERT(num_vec>0);
+
 
 	delete[] w;
 	w=new DREAL[w_dim];
@@ -155,7 +202,7 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 	uint32_t nDim=(uint32_t) o->w_dim;
 	DREAL* y = o->lab;
 	INT alphabet_size = o->alphabet_size;
-	INT w_dim_single_char = o->w_dim_single_char;
+	INT* w_offsets = o->w_offsets;
 	DREAL* wd_weights = o->wd_weights;
 	INT degree = o->degree;
 	double** cuts=o->cuts;
@@ -181,8 +228,8 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 			{
 				val=val*alphabet_size + vec[j+k];
 				new_a[offs+val]+=wd_weights[k] * scalar;
+				offs+=w_offsets[k];
 			}
-			offs+=w_dim_single_char;
 		}
 	}
 
@@ -192,6 +239,8 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 	new_col_H[nSel] = CMath::dot(new_a, new_a, nDim);
 
 	cuts[nSel]=new_a;
+	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
+	//CMath::display_vector(cuts[nSel], nDim, "cut[nSel]");
 }
 
 void CWDSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
@@ -214,7 +263,7 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 	INT degree = o->degree;
 	INT string_length = o->string_length;
 	INT alphabet_size = o->alphabet_size;
-	INT w_dim_single_char = o->w_dim_single_char;
+	INT* w_offsets = o->w_offsets;
 	DREAL* wd_weights = o->wd_weights;
 	DREAL* w= o->w;
 	INT len;
@@ -234,11 +283,13 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 			{
 				val=val*alphabet_size + vec[j+k];
 				sum+=wd_weights[k] * w[offs+val];
+				offs+=w_offsets[k];
 			}
-			offs+=w_dim_single_char;
 		}
 		output[i]=y[i]*sum;
 	}
+	//CMath::display_vector(o->w, o->w_dim, "w");
+	//CMath::display_vector(output, nData, "output");
 }
 /*----------------------------------------------------------------------
   sq_norm_W = compute_W( alpha, nSel ) does the following:
@@ -267,4 +318,5 @@ void CWDSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, 
 
 	*sq_norm_W = CMath::dot(W,W, nDim);
 	*dp_WoldW = CMath::dot(W,oldW, nDim);;
+	SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW);
 }
