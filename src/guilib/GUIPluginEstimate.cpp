@@ -13,7 +13,7 @@
 
 #ifndef HAVE_SWIG
 #include "guilib/GUIPluginEstimate.h"
-#include "features/WordFeatures.h"
+#include "features/StringFeatures.h"
 #include "lib/io.h"
 #include "gui/GUI.h"
 
@@ -36,7 +36,7 @@ bool CGUIPluginEstimate::new_estimator(CHAR* param)
 bool CGUIPluginEstimate::train(CHAR* param)
 {
 	CLabels* trainlabels=gui->guilabels.get_train_labels();
-	CWordFeatures* trainfeatures=(CWordFeatures*) gui->guifeatures.get_train_features();
+	CStringFeatures<WORD>* trainfeatures=(CStringFeatures<WORD>*) gui->guifeatures.get_train_features();
 
 	bool result=false;
 
@@ -125,7 +125,7 @@ bool CGUIPluginEstimate::test(CHAR* param)
 	}
 
 	SG_INFO( "starting estimator testing\n") ;
-	estimator->set_testfeatures((CWordFeatures*) testfeatures);
+	estimator->set_testfeatures((CStringFeatures<WORD>*) testfeatures);
 	DREAL* output=estimator->test();
 
 	INT len=0;
@@ -176,7 +176,7 @@ CLabels* CGUIPluginEstimate::classify(CLabels* output)
 		return 0;
 	}
 
-	estimator->set_testfeatures((CWordFeatures*) testfeatures);
+	estimator->set_testfeatures((CStringFeatures<WORD>*) testfeatures);
 
 	return estimator->classify(output);
 }
@@ -197,7 +197,7 @@ DREAL CGUIPluginEstimate::classify_example(INT idx)
 		return 0;
 	}
 
-	estimator->set_testfeatures((CWordFeatures*) testfeatures);
+	estimator->set_testfeatures((CStringFeatures<WORD>*) testfeatures);
 
 	return estimator->classify_example(idx);
 }
