@@ -152,6 +152,17 @@ bool CWDSVMOcas::train()
 			&printf,
 			this);
 
+	SG_INFO("Ocas Converged after %d iterations\n"
+			"==================================\n"
+			"timing statistics:\n"
+			"output_time: %f s\n"
+			"sort_time: %f s\n"
+			"add_time: %f s\n"
+			"w_time: %f s\n"
+			"solver_time %f s\n"
+			"ocas_time %f s\n\n", result.nIter, result.output_time, result.sort_time,
+			result.add_time, result.w_time, result.solver_time, result.ocas_time);
+
 	for (INT i=bufsize-1; i>=0; i--)
 		delete[] cuts[i];
 	delete[] cuts;
