@@ -1112,6 +1112,9 @@ CKernel* CGUIKernel::create_kernel(CHAR* param)
 				{
 					((CWeightedDegreeStringKernel*) k)->set_use_normalization(use_normalization==1);
 					((CWeightedDegreeStringKernel*) k)->set_use_block_computation(block_computation==1);
+					((CWeightedDegreeStringKernel*) k)->set_max_mismatch(max_mismatch);
+					((CWeightedDegreeStringKernel*) k)->set_mkl_stepsize(mkl_stepsize);
+					((CWeightedDegreeStringKernel*) k)->set_which_degree(single_degree);
 					SG_INFO( "WeightedDegreeStringKernel created\n");
 					return k;
 				}

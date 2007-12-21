@@ -161,8 +161,6 @@ public:
 
 	bool is_tree_initialized() { return tree_initialized; }
 
-	inline INT get_max_mismatch() { return max_mismatch; }
-	inline INT get_degree() { return degree; }
 	inline DREAL get_normalization_const() { return normalization_const; }
 	inline DREAL *get_degree_weights(INT& d, INT& len)
 	{
@@ -212,10 +210,18 @@ public:
 
 	bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
+	inline void set_max_mismatch(INT max) { max_mismatch=max; }
+	inline INT get_max_mismatch() { return max_mismatch; }
+	inline void set_degree(INT deg) { degree=deg; }
+	inline INT get_degree() { return degree; }
 	inline void set_use_normalization(bool opt) { use_normalization=opt; }
 	inline bool get_use_normalization() { return use_normalization; }
 	inline void set_use_block_computation(bool block) { block_computation=block; }
 	inline bool get_use_block_computation() { return block_computation; }
+	inline void set_mkl_stepsize(INT step) { mkl_stepsize=step; }
+	inline INT get_mkl_stepsize() { return mkl_stepsize; }
+	inline void set_which_degree(INT which) { which_degree=which; }
+	inline INT get_which_degree() { return which_degree; }
 
  protected:
 
