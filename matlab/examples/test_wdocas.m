@@ -1,5 +1,5 @@
 C=1
-degree=4;
+degree=1;
 epsilon=1e-5;
 
 x=[zeros(1,10000), ones(1,10000), 2*ones(1,10000), 3*ones(1,10000)];
