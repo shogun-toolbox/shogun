@@ -5,8 +5,8 @@ rand('state',17')
 %load /home/sonne/Documents/work/first/teach/bioinfapps/data/splice_data.mat
 %traindat=data(70:130,1:1000);
 %trainlab=label(1:1000);
-traindat=acgt(ceil(4*rand(100,1000)));
-trainlab=[-ones(1,500), ones(1,500)];
+traindat=acgt(ceil(4*rand(100,100)));
+trainlab=[-ones(1,50), ones(1,50)];
 
 C=1;
 order=6;

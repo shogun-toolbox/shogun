@@ -268,7 +268,7 @@ ocas_return_value_T svm_ocas_solver(
 
         start_time = get_time();
         compute_output( output, user_data );
-        ocas.output_time = get_time()-start_time;
+        ocas.output_time += get_time()-start_time;
 
         xi = 0;
         cut_length = 0;
@@ -303,7 +303,7 @@ ocas_return_value_T svm_ocas_solver(
 
         start_time = get_time();
         compute_output( output, user_data );
-        ocas.output_time = get_time()-start_time;
+        ocas.output_time += get_time()-start_time;
 
         uint32_t num_hp = 0;
         Bsum = B0;

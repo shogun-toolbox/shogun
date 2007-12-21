@@ -296,9 +296,12 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 		for (INT j=0; j<string_length; j++)
 		{
 			INT val=0;
-			for (INT k=0; (j+k<string_length) && (k<degree); k++)
+			INT lim=CMath::min(degree, string_length-j);
+			BYTE* v=&vec[j];
+			
+			for (INT k=0; k<lim; k++)
 			{
-				val=val*alphabet_size + vec[j+k];
+				val=val*alphabet_size + v[k];
 				sum+=wd_weights[k] * w[offs+val];
 				offs+=w_offsets[k];
 			}
