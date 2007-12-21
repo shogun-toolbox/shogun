@@ -14,6 +14,7 @@
  * Modifications:
  * 23-oct-2007, VF
  * 10-oct-2007, VF, created.
+ * 14-nov-2007, VF, updates
  * ----------------------------------------------------------------------*/
 
 #include <stdlib.h>
@@ -55,27 +56,6 @@ static double get_time()
 
 /*----------------------------------------------------------------------
   SVM-Ocas solver.
-
-  Inputs:
-  C  ... regularization constant.
-  nData ... number of training examples
-  TolRel ... stop optimization if Q_P - Q_D <= abs(Q_P)*TolRel
-  TolAbs ... stop optimization if Q_P - Q_D <= TolAbs 
-  QPBound ... stop optimization if Q_P <= QPBound
-  _BufSize ... maximal number of constraints; currently, it also 
-               determines max. num. of iterations.
-  Method ... 0 ~ SVMperf/BMRM selection strategy
-             1 ~ Ocas selection strategy
-  
-            void (*compute_W)(double*, double*, double*, uint32_t, void*),
-            double (*update_W)(double, void*),
-            void (*add_new_cut)(double*, uint32_t*, uint32_t, uint32_t, void*),
-            void (*compute_output)(double*, void* ),
-            void (*sort)(double*, uint32_t*, uint32_t),
-			int (*ocas_print)(const char *format, ...),
-			void* user_data) 
-
-
   ----------------------------------------------------------------------*/
 ocas_return_value_T svm_ocas_solver(
             double C,
@@ -98,21 +78,23 @@ ocas_return_value_T svm_ocas_solver(
   double *output, *old_output;
   double xi, sq_norm_W, QPSolverTolRel, dot_prod_WoldW, dummy, sq_norm_oldW;
   double A0, B0, Bsum, GradVal, t, t1, t2, *Ci, *Bi, *hpf;
+  double start_time;
   uint32_t *hpi;
   uint32_t cut_length;
   uint32_t i, *new_cut;
   uint16_t *I;
   int8_t qp_exitflag;
 
-  double start_time;
-
+  ocas.ocas_time = get_time();
   ocas.solver_time = 0;
   ocas.output_time = 0;
   ocas.sort_time = 0;
+  ocas.add_time = 0;
+  ocas.w_time = 0;
 
   BufSize = _BufSize;
 
-  QPSolverTolRel = TolRel*0.1;
+  QPSolverTolRel = TolRel*0.5;
 
   H=NULL;
   b=NULL;
@@ -228,23 +210,27 @@ ocas_return_value_T svm_ocas_solver(
   ocas.Q_P = 0.5*sq_norm_W + C*xi;
   ocas.Q_D = 0;
 
-  /* Computed the initial cutting plane, */
+  /* Compute the initial cutting plane */
   cut_length = nData;
   for(i=0; i < nData; i++)
     new_cut[i] = i;
     
-  ocas_print("%4d: nsel=%d, Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f, xi=%f\n",
-          ocas.nIter,ocas.nCutPlanes,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P),xi);
+  ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f, xi=%f\n",
+          ocas.nIter,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P),xi);
   
   /* main loop */
   while( ocas.exitflag == 0 )
   {
     ocas.nIter++;
 
-    /* append new cut to buffer and update H */
+    /* append a new cut to the buffer and update H */
     b[ocas.nCutPlanes] = -(double)cut_length;
 
+    start_time = get_time();
+
     add_new_cut( &H[INDEX2(0,ocas.nCutPlanes,BufSize)], new_cut, cut_length, ocas.nCutPlanes, user_data );
+
+    ocas.add_time += get_time() - start_time;
 
     /* copy new added row:  H(ocas.nCutPlanes,ocas.nCutPlanes,1:ocas.nCutPlanes-1) = H(1:ocas.nCutPlanes-1:ocas.nCutPlanes)' */
     diag_H[ocas.nCutPlanes] = H[INDEX2(ocas.nCutPlanes,ocas.nCutPlanes,BufSize)];
@@ -264,16 +250,25 @@ ocas_return_value_T svm_ocas_solver(
 
     ocas.Q_D = -ocas.Q_D;
 
+    ocas.nNZAlpha = 0;
+    for(i=0; i < ocas.nCutPlanes; i++) {
+      if( alpha[i] != 0) ocas.nNZAlpha++;
+    }
+
     sq_norm_oldW = sq_norm_W;
+    start_time = get_time();
     compute_W( &sq_norm_W, &dot_prod_WoldW, alpha, ocas.nCutPlanes, user_data );
+    ocas.w_time += get_time() - start_time;
     
     /* select a new cut */
     switch( Method )
     {
-      /* SVMperf ~~ BMRM strategy */
+      /* cutting plane algorithm implemented in SVMperf and BMRM */
       case 0: 
 
+        start_time = get_time();
         compute_output( output, user_data );
+        ocas.output_time = get_time()-start_time;
 
         xi = 0;
         cut_length = 0;
@@ -282,7 +277,7 @@ ocas_return_value_T svm_ocas_solver(
         { 
           if(output[i] <= 0) ocas.trn_err++;
           
-          if(1 - output[i] >= 0) {
+          if(output[i] <= 1) {
             xi += 1 - output[i];
             new_cut[cut_length] = i; 
             cut_length++;
@@ -290,15 +285,14 @@ ocas_return_value_T svm_ocas_solver(
         }
         ocas.Q_P = 0.5*sq_norm_W + C*xi;
 
-        ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f, xi=%f, err=%.2f%%, qp_flag=%d\n",
+        ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, |W|^2=%f, xi=%f, err=%.2f%%, qpf=%d\n",
                   ocas.nIter,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P), 
-                  xi, 100*(double)ocas.trn_err/(double)nData, qp_exitflag);
-
+                  ocas.nNZAlpha, sq_norm_W, xi, 100*(double)ocas.trn_err/(double)nData, qp_exitflag);
 
         break;
 
 
-      /* Ocas */
+      /* Ocas strategy */
       case 1:
 
         /* Linesearch */
@@ -351,8 +345,7 @@ ocas_return_value_T svm_ocas_solver(
           i++;
         }
 
-        /*         t1 = MIN(MAX(t, 0.001),1.0); */             /* new W with "sanity check" */
-        t1 = t;                       /* new W */
+        t1 = t;                       /* new (best so far) W */
         t2 = MIN(t+(1.0-t)/10.0,1.0); /* new cutting plane */
 
         /* update W to be the best so far solution */
@@ -364,7 +357,7 @@ ocas_return_value_T svm_ocas_solver(
         ocas.trn_err = 0;
         for(i=0; i < nData; i++ ) {
 
-          if( 1 - (old_output[i]*(1-t2) + t2*output[i]) >=0 ) 
+          if( (old_output[i]*(1-t2) + t2*output[i]) <= 1 ) 
           {
             new_cut[cut_length] = i; 
             cut_length++;
@@ -372,16 +365,16 @@ ocas_return_value_T svm_ocas_solver(
 
           output[i] = old_output[i]*(1-t1) + t1*output[i];
 
-          if( 1-output[i]>=0 ) xi += 1-output[i];
+          if( output[i] <= 1) xi += 1-output[i];
           if( output[i] <= 0) ocas.trn_err++;
 
         }
 
         ocas.Q_P = 0.5*sq_norm_W + C*xi;
 
-        ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, Q_P-Q_D/abs(Q_P)=%f, xi=%f, err=%.2f%%, qp_flag=%d\n",
-                  ocas.nIter,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P),xi, 
-                  100*(double)ocas.trn_err/(double)nData, qp_exitflag );
+        ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, |W|^2=%f, xi=%f, err=%.2f%%, qpf=%d\n",
+                   ocas.nIter,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P),
+                   ocas.nNZAlpha, sq_norm_W,xi,100*(double)ocas.trn_err/(double)nData, qp_exitflag );
 
         break;
     }
@@ -408,6 +401,8 @@ cleanup:
   OCAS_FREE(hpi);
   OCAS_FREE(Ci);
   OCAS_FREE(Bi);
+
+  ocas.ocas_time = get_time() - ocas.ocas_time;
 
   return(ocas);
 }
@@ -467,6 +462,7 @@ void qsort_index(double* value, uint32_t* index, uint32_t size)
 
 	if (size-left> 1)
 		qsort_index(&value[left],&index[left], size-left);
+
 
     return;
 }
