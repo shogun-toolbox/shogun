@@ -217,6 +217,7 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 	}
 
 	new_col_H[nSel] = sq_norm_a;
+
 	for(i=0; i < nSel; i++)
 	{
 		double tmp = 0;
@@ -225,6 +226,9 @@ void CSVMOcas::add_new_cut( double *new_col_H,
 
 		new_col_H[i] = tmp;
 	}
+	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
+	//CMath::display_vector((INT*) c_idx[nSel], (INT) nz_dims, "c_idx");
+	//CMath::display_vector((DREAL*) c_val[nSel], nz_dims, "c_val");
 }
 
 void CSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
@@ -245,6 +249,8 @@ void CSVMOcas::compute_output( double *output, void* ptr )
 
 	DREAL* y = o->lab;
 	f->dense_dot_range(output, 0, nData, y, o->w, o->w_dim, 0.0);
+	//CMath::display_vector(o->w, o->w_dim, "w");
+	//CMath::display_vector(output, nData, "out");
 }
 
 /*----------------------------------------------------------------------
@@ -282,4 +288,5 @@ void CSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, ui
 
 	*sq_norm_W = CMath::dot(W,W, nDim);
 	*dp_WoldW = CMath::dot(W,oldW, nDim);;
+	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW);
 }

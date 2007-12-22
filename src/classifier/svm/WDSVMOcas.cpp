@@ -253,12 +253,12 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 		for (INT k=0; k<lim; k++)
 		{
 			BYTE* vec = f->get_feature_vector(j+k, len);
-			SHORTREAL wd = wd_weights[k];
+			SHORTREAL wd = wd_weights[k]/normalization_const;
 
 			for(i=0; i < cut_length; i++) 
 			{
 				val[i]=val[i]*alphabet_size + vec[new_cut[i]];
-				new_a[offs+val[i]]+=wd * y[new_cut[i]]/normalization_const;
+				new_a[offs+val[i]]+=wd * y[new_cut[i]];
 			}
 			offs+=w_offsets[k];
 		}
@@ -322,7 +322,7 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 			for (INT i=0; i<nData; i++) // quite fast 1.9s
 			{
 				val[i]=val[i]*alphabet_size + vec[i];
-				output[i]+=wd*w[offs+val[i]];
+				out[i]+=wd*w[offs+val[i]];
 			}
 
 			/*for (INT i=0; i<nData/4; i++) // slowest 2s
@@ -333,10 +333,10 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 				val[ii+1]=val[ii+1]*alphabet_size + ((x>>8)&255);
 				val[ii+2]=val[ii+2]*alphabet_size + ((x>>16)&255);
 				val[ii+3]=val[ii+3]*alphabet_size + (x>>24);
-				output[ii]+=wd*w[offs+val[ii]];
-				output[ii+1]+=wd*w[offs+val[ii+1]];
-				output[ii+2]+=wd*w[offs+val[ii+2]];
-				output[ii+3]+=wd*w[offs+val[ii+3]];
+				out[ii]+=wd*w[offs+val[ii]];
+				out[ii+1]+=wd*w[offs+val[ii+1]];
+				out[ii+2]+=wd*w[offs+val[ii+2]];
+				out[ii+3]+=wd*w[offs+val[ii+3]];
 			}*/
 
 			/*for (INT i=0; i<nData>>3; i++) // fastest on 64bit: 1.5s
@@ -367,6 +367,8 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 	for (INT i=0; i<nData; i++)
 		output[i]=out[i]*y[i]/normalization_const;
 
+	//CMath::display_vector(o->w, o->w_dim, "w");
+	//CMath::display_vector(output, nData, "out");
 	delete[] val;
 	delete[] out;
 }
