@@ -508,6 +508,16 @@ void CMath::display_vector(LONG* vector, INT n, const char* name)
 }
 
 template <>
+void CMath::display_vector(SHORTREAL* vector, INT n, const char* name)
+{
+	ASSERT(n>=0);
+	SG_SPRINT("%s=[", name);
+	for (INT i=0; i<n; i++)
+		SG_SPRINT("%10.10f%s", vector[i], i==n-1? "" : ",");
+	SG_SPRINT("]\n");
+}
+
+template <>
 void CMath::display_vector(DREAL* vector, INT n, const char* name)
 {
 	ASSERT(n>=0);

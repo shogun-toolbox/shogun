@@ -79,7 +79,7 @@ INT CWDSVMOcas::set_wd_weights()
 {
 	ASSERT(degree>0 && degree<8);
 	delete[] wd_weights;
-	wd_weights=new DREAL[degree];
+	wd_weights=new SHORTREAL[degree];
 	ASSERT(wd_weights);
 	delete[] w_offsets;
 	w_offsets=new INT[degree];
@@ -106,7 +106,7 @@ bool CWDSVMOcas::train()
 	ASSERT(alphabet && alphabet->get_alphabet()==RAWDNA);
 
 	alphabet_size=alphabet->get_num_symbols();
-	string_length=get_features()->get_max_vector_length();
+	string_length=features->get_num_vectors();
 	INT num_train_labels=0;
 	lab=get_labels()->get_labels(num_train_labels);
 
@@ -115,7 +115,7 @@ bool CWDSVMOcas::train()
 	SG_DEBUG("w_dim_single_char=%d\n", w_dim_single_char);
 	w_dim=string_length*w_dim_single_char;
 	SG_DEBUG("cutting plane has %d dims\n", w_dim);
-	INT num_vec=features->get_num_vectors();
+	num_vec=get_features()->get_max_vector_length();
 
 	set_normalization_const();
 	ASSERT(num_vec==num_train_labels);
@@ -123,30 +123,30 @@ bool CWDSVMOcas::train()
 
 
 	delete[] w;
-	w=new DREAL[w_dim];
+	w=new SHORTREAL[w_dim];
 	ASSERT(w);
-	memset(w, 0, w_dim*sizeof(DREAL));
+	memset(w, 0, w_dim*sizeof(SHORTREAL));
 
 	delete[] old_w;
-	old_w=new DREAL[w_dim];
+	old_w=new SHORTREAL[w_dim];
 	ASSERT(old_w);
-	memset(old_w, 0, w_dim*sizeof(DREAL));
+	memset(old_w, 0, w_dim*sizeof(SHORTREAL));
 	bias=0;
 
-	cuts=new DREAL*[bufsize];
+	cuts=new SHORTREAL*[bufsize];
 	ASSERT(cuts);
 	memset(cuts, 0, sizeof(*cuts)*bufsize);
 
 /////speed tests/////
-	double* tmp= new double[num_vec];
+	/*double* tmp = new double[num_vec];
 	ASSERT(tmp);
 	double start=CTime::get_curtime();
-	CMath::random_vector(w, w_dim, 0, 1000);
+	CMath::random_vector(w, w_dim, (SHORTREAL) 0, (SHORTREAL) 1000);
 	compute_output(tmp, this);
 	start=CTime::get_curtime()-start;
 	SG_PRINT("timing:%f\n", start);
 	delete[] tmp;
-	exit(1);
+	exit(1);*/
 /////speed tests/////
 	double TolAbs=0;
 	double QPBound=0;
@@ -196,8 +196,8 @@ double CWDSVMOcas::update_W( double t, void* ptr )
   double sq_norm_W = 0;         
   CWDSVMOcas* o = (CWDSVMOcas*) ptr;
   uint32_t nDim = (uint32_t) o->w_dim;
-  double* W=o->w;
-  double* oldW=o->old_w;
+  SHORTREAL* W=o->w;
+  SHORTREAL* oldW=o->old_w;
 
   for(uint32_t j=0; j <nDim; j++)
   {
@@ -229,34 +229,38 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 	DREAL* y = o->lab;
 	INT alphabet_size = o->alphabet_size;
 	INT* w_offsets = o->w_offsets;
-	DREAL* wd_weights = o->wd_weights;
+	SHORTREAL* wd_weights = o->wd_weights;
 	INT degree = o->degree;
-	double** cuts=o->cuts;
+	SHORTREAL** cuts=o->cuts;
 	DREAL normalization_const = o->normalization_const;
 
 	uint32_t i;
 
 	// temporary vector
-	double* new_a = new DREAL[nDim];
-	memset(new_a, 0, sizeof(double)*nDim);
+	SHORTREAL* new_a = new SHORTREAL[nDim];
+	memset(new_a, 0, sizeof(SHORTREAL)*nDim);
 
-	for(i=0; i < cut_length; i++) 
+	INT* val=new INT[cut_length];
+	ASSERT(val);
+
+	INT offs=0;
+	for (INT j=0; j<string_length; j++)
 	{
-		INT offs=0;
-		INT len=0;
-		BYTE* vec = f->get_feature_vector(new_cut[i], len);
-		ASSERT(len == string_length);
-		DREAL scalar=y[new_cut[i]]/normalization_const;
+		memset(val,0,sizeof(INT)*cut_length);
+		INT lim=CMath::min(degree, string_length-j);
+		INT len;
 
-		for (INT j=0; j<len; j++)
+		for (INT k=0; k<lim; k++)
 		{
-			INT val=0;
-			for (INT k=0; (j+k<string_length) && (k<degree); k++)
+			BYTE* vec = f->get_feature_vector(j+k, len);
+			SHORTREAL wd = wd_weights[k];
+
+			for(i=0; i < cut_length; i++) 
 			{
-				val=val*alphabet_size + vec[j+k];
-				new_a[offs+val]+=wd_weights[k] * scalar;
-				offs+=w_offsets[k];
+				val[i]=val[i]*alphabet_size + vec[new_cut[i]];
+				new_a[offs+val[i]]+=wd * y[new_cut[i]]/normalization_const;
 			}
+			offs+=w_offsets[k];
 		}
 	}
 
@@ -268,6 +272,7 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 	cuts[nSel]=new_a;
 	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
 	//CMath::display_vector(cuts[nSel], nDim, "cut[nSel]");
+	delete[] val;
 }
 
 void CWDSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
@@ -284,41 +289,86 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 {
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	CStringFeatures<BYTE>* f=o->get_features();
-	INT nData=f->get_num_vectors();
+	INT nData=o->num_vec;
 
-	DREAL* y = o->lab;
 	INT degree = o->degree;
 	INT string_length = o->string_length;
 	INT alphabet_size = o->alphabet_size;
 	INT* w_offsets = o->w_offsets;
-	DREAL* wd_weights = o->wd_weights;
-	DREAL* w= o->w;
+	SHORTREAL* wd_weights = o->wd_weights;
+	SHORTREAL* w= o->w;
+
+	DREAL* y = o->lab;
 	DREAL normalization_const = o->normalization_const;
-	INT len;
+
+	SHORTREAL* out=new SHORTREAL[nData];
+	ASSERT(out);
+	INT* val=new INT[nData];
+	ASSERT(val);
+	memset(out, 0, sizeof(SHORTREAL)*nData);
+
+	INT offs=0;
+	for (INT j=0; j<string_length; j++)
+	{
+		memset(val,0,sizeof(INT)*nData);
+		INT lim=CMath::min(degree, string_length-j);
+		INT len;
+
+		for (INT k=0; k<lim; k++)
+		{
+			BYTE* vec=f->get_feature_vector(j+k, len);
+			SHORTREAL wd = wd_weights[k];
+
+			for (INT i=0; i<nData; i++) // quite fast 1.9s
+			{
+				val[i]=val[i]*alphabet_size + vec[i];
+				output[i]+=wd*w[offs+val[i]];
+			}
+
+			/*for (INT i=0; i<nData/4; i++) // slowest 2s
+			{
+				UINT x=((UINT*) vec)[i];
+				INT ii=4*i;
+				val[ii]=val[ii]*alphabet_size + (x&255);
+				val[ii+1]=val[ii+1]*alphabet_size + ((x>>8)&255);
+				val[ii+2]=val[ii+2]*alphabet_size + ((x>>16)&255);
+				val[ii+3]=val[ii+3]*alphabet_size + (x>>24);
+				output[ii]+=wd*w[offs+val[ii]];
+				output[ii+1]+=wd*w[offs+val[ii+1]];
+				output[ii+2]+=wd*w[offs+val[ii+2]];
+				output[ii+3]+=wd*w[offs+val[ii+3]];
+			}*/
+
+			/*for (INT i=0; i<nData>>3; i++) // fastest on 64bit: 1.5s
+			{
+				ULONG x=((ULONG*) vec)[i];
+				INT ii=i<<3;
+				val[ii]=val[ii]*alphabet_size + (x&255);
+				val[ii+1]=val[ii+1]*alphabet_size + ((x>>8)&255);
+				val[ii+2]=val[ii+2]*alphabet_size + ((x>>16)&255);
+				val[ii+3]=val[ii+3]*alphabet_size + ((x>>24)&255);
+				val[ii+4]=val[ii+4]*alphabet_size + ((x>>32)&255);
+				val[ii+5]=val[ii+5]*alphabet_size + ((x>>40)&255);
+				val[ii+6]=val[ii+6]*alphabet_size + ((x>>48)&255);
+				val[ii+7]=val[ii+7]*alphabet_size + (x>>56);
+				out[ii]+=wd*w[offs+val[ii]];
+				out[ii+1]+=wd*w[offs+val[ii+1]];
+				out[ii+2]+=wd*w[offs+val[ii+2]];
+				out[ii+3]+=wd*w[offs+val[ii+3]];
+				out[ii+4]+=wd*w[offs+val[ii+4]];
+				out[ii+5]+=wd*w[offs+val[ii+5]];
+				out[ii+6]+=wd*w[offs+val[ii+6]];
+				out[ii+7]+=wd*w[offs+val[ii+7]];
+			}*/
+			offs+=w_offsets[k];
+		}
+	}
 
 	for (INT i=0; i<nData; i++)
-	{
-		DREAL sum=0;
-		INT offs=0;
+		output[i]=out[i]*y[i]/normalization_const;
 
-		BYTE* vec = f->get_feature_vector(i, len);
-		ASSERT(len == string_length);
-
-		for (INT j=0; j<string_length; j++)
-		{
-			INT val=0;
-			INT lim=CMath::min(degree, string_length-j);
-			BYTE* v=&vec[j];
-			
-			for (INT k=0; k<lim; k++)
-			{
-				val=val*alphabet_size + v[k];
-				sum+=wd_weights[k] * w[offs+val];
-				offs+=w_offsets[k];
-			}
-		}
-		output[i]=y[i]*sum/normalization_const;
-	}
+	delete[] val;
+	delete[] out;
 }
 /*----------------------------------------------------------------------
   sq_norm_W = compute_W( alpha, nSel ) does the following:
@@ -334,10 +384,10 @@ void CWDSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, 
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	uint32_t nDim= (uint32_t) o->w_dim;
 	CMath::swap(o->w, o->old_w);
-	double* W=o->w;
-	double** cuts=o->cuts;
-	double* oldW=o->old_w;
-	memset(W, 0, sizeof(double)*nDim);
+	SHORTREAL* W=o->w;
+	SHORTREAL* oldW=o->old_w;
+	SHORTREAL** cuts=o->cuts;
+	memset(W, 0, sizeof(SHORTREAL)*nDim);
 
 	for (uint32_t i=0; i<nSel; i++)
 	{

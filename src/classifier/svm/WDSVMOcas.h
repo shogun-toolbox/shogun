@@ -110,7 +110,8 @@ class CWDSVMOcas : public CClassifier
 
 		INT degree;
 		INT from_degree;
-		DREAL* wd_weights;
+		SHORTREAL* wd_weights;
+		INT num_vec;
 		INT string_length;
 		INT alphabet_size;
 
@@ -119,11 +120,11 @@ class CWDSVMOcas : public CClassifier
 		DREAL bias;
 		INT* w_offsets;
 		INT w_dim;
-		DREAL* w;
-		DREAL* old_w;
+		SHORTREAL* w;
+		SHORTREAL* old_w;
 		DREAL* tmp_a_buf; /// nDim big
 		DREAL* lab;
 
-		DREAL** cuts;
+		SHORTREAL** cuts;
 };
 #endif
