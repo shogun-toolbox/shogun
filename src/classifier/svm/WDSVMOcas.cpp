@@ -137,6 +137,15 @@ bool CWDSVMOcas::train()
 	ASSERT(cuts);
 	memset(cuts, 0, sizeof(*cuts)*bufsize);
 
+/////speed tests/////
+	double tmp[num_vec];
+	double start=CTime::get_curtime();
+	CMath::random_vector(w, w_dim, 0, 1000);
+	compute_output(tmp, this);
+	start=CTime::get_curtime()-start;
+	SG_PRINT("timing:%f\n", start);
+	exit(1);
+/////speed tests/////
 	double TolAbs=0;
 	double QPBound=0;
 	int Method=0;
