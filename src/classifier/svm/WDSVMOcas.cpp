@@ -138,12 +138,14 @@ bool CWDSVMOcas::train()
 	memset(cuts, 0, sizeof(*cuts)*bufsize);
 
 /////speed tests/////
-	double tmp[num_vec];
+	double* tmp= new double[num_vec];
+	ASSERT(tmp);
 	double start=CTime::get_curtime();
 	CMath::random_vector(w, w_dim, 0, 1000);
 	compute_output(tmp, this);
 	start=CTime::get_curtime()-start;
 	SG_PRINT("timing:%f\n", start);
+	delete[] tmp;
 	exit(1);
 /////speed tests/////
 	double TolAbs=0;

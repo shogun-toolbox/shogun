@@ -377,12 +377,32 @@ public:
 			vec1[i]+=scalar*vec2[i];
 	}
 
+	static inline void vec1_plus_scalar_times_vec2(SHORTREAL* vec1,
+			SHORTREAL scalar, const SHORTREAL* vec2, INT n)
+	{
+		for (INT i=0; i<n; i++)
+			vec1[i]+=scalar*vec2[i];
+	}
+
 	static inline DREAL dot(const DREAL* v1, const DREAL* v2, INT n)
 	{
 		DREAL r=0;
 #ifdef HAVE_LAPACK
 		INT skip=1;
 		r = cblas_ddot(n, v1, skip, v2, skip);
+#else
+		for (INT i=0; i<n; i++)
+			r+=v1[i]*v2[i];
+#endif
+		return r;
+	}
+
+	static inline SHORTREAL dot(const SHORTREAL* v1, const SHORTREAL* v2, INT n)
+	{
+		DREAL r=0;
+#ifdef HAVE_LAPACK
+		INT skip=1;
+		r = cblas_sdot(n, v1, skip, v2, skip);
 #else
 		for (INT i=0; i<n; i++)
 			r+=v1[i]*v2[i];
