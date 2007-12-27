@@ -4,7 +4,7 @@ Common operations on train and test data
 
 import sys
 import md5
-from numpy import double, chararray, ushort, array, floor, concatenate
+from numpy import *
 from numpy.random import seed, rand, randint, permutation
 from shogun.Features import Labels
 
@@ -77,6 +77,46 @@ def get_clouds (num_clouds, num_feats=NUM_FEATS):
 	clouds['test']=array([permutation(x) for x in clouds['test']])
 
 	return clouds
+
+def get_cubes (num=3):
+	leng=50
+	rep=5
+	weight=1
+
+	# generate a sequence with characters 1-6 drawn from 3 loaded cubes
+
+	# why the heck so complicated in matlab example?
+	#a=[]
+	#for i in xrange(3):
+	#	one=1*ones((1,ceil(leng*rand())))[0]
+	#	two=2*ones((1,ceil(leng*rand())))[0]
+	#	three=3*ones((1,ceil(leng*rand())))[0]
+	#	four=4*ones((1,ceil(leng*rand())))[0]
+	#	five=5*ones((1,ceil(leng*rand())))[0]
+	#	six=6*ones((1,ceil(leng*rand())))[0]
+	#	b=concatenate((one, two, three, four, five, six))
+	#	a.append(permutation(len(b))+1)
+
+	#s=[]
+	#for i in xrange(len(a[0][1])):
+	#	s.append(i*ones(1,ceil(rep*rand())))
+	#s=permutation(s)
+
+	#sequence={}
+	#for i in xrange(len(s)):
+	#	rn=rand();
+	#	f(i)=ceil(((1-weight)*rand()+weight)*length(a{s(i)}));
+	#	t=randperm(length(a{s(i)}));
+	#	r=a{s(i)}(t(1:f(i)));
+	#	sequence{1}=[sequence{1} char(r+'0')];
+	#end
+
+	sequence=[]
+	for i in xrange(num):
+		seq=permutation(6)+1
+		sequence.append(''.join([str(x) for x in seq]))
+
+	return {'train':sequence, 'test':sequence}
 
 def get_labels (num, ltype='twoclass'):
 	seed(_get_seed())

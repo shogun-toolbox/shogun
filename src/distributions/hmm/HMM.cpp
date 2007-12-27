@@ -168,6 +168,18 @@ CHMM::CHMM(INT p_N, INT p_M, CModel* p_model, DREAL p_PSEUDO)
 	status=initialize(p_model, p_PSEUDO);
 }
 
+CHMM::CHMM(CStringFeatures<WORD>* obs, INT p_N, INT p_M, DREAL p_PSEUDO)
+{
+	this->N=p_N;
+	this->M=p_M;
+	model=NULL ;
+
+	SG_INFO( "hmm is using %i separate tables\n",  parallel.get_num_threads()) ;
+
+	initialize(model, p_PSEUDO);
+	set_observations(obs);
+}
+
 CHMM::CHMM(INT p_N, double* p, double* q, double* a)
 {
 	this->N=p_N;
@@ -449,14 +461,12 @@ bool CHMM::alloc_state_dependend_arrays()
 #ifdef USE_HMMPARALLEL_STRUCTURES
 		if (alpha_cache[0].table!=NULL)
 #else //USE_HMMPARALLEL_STRUCTURES
-			if (alpha_cache.table!=NULL)
+		if (alpha_cache.table!=NULL)
 #endif //USE_HMMPARALLEL_STRUCTURES
-				set_observations(p_observations);
-			else
-				set_observation_nocache(p_observations);
+			set_observations(p_observations);
+		else
+			set_observation_nocache(p_observations);
 	}
-	else
-		set_observations(p_observations);
 
 	this->invalidate_model();
 
@@ -5436,7 +5446,7 @@ void CHMM::set_observation_nocache(CStringFeatures<WORD>* obs)
 
 	if (obs)
 		if (obs->get_num_symbols() > M)
-			SG_ERROR( "number of symbols (%d) larger than number of observation-symbols (%d)\n", obs->get_num_symbols(), M);
+			SG_ERROR( "number of symbols in obsevation (%d) larger than M (%d)\n", obs->get_num_symbols(), M);
 
 	if (!reused_caches)
 	{
@@ -5474,11 +5484,17 @@ void CHMM::set_observation_nocache(CStringFeatures<WORD>* obs)
 
 void CHMM::set_observations(CStringFeatures<WORD>* obs, CHMM* lambda)
 {
+	ASSERT(obs);
 	p_observations=obs;
 
+	SG_DEBUG("num symbols alphabet: %ld\n", obs->get_alphabet()->get_num_symbols());
+	SG_DEBUG("num symbols: %ld\n", obs->get_num_symbols());
+	SG_DEBUG("M: %d\n", M);
+
 	if (obs)
-		if (obs->get_num_symbols() > M)
-			SG_ERROR( "number of symbols (%d) larger than number of symbols (%d)\n", obs->get_num_symbols(), M);
+		if (obs->get_num_symbols() > M) {
+			SG_ERROR( "number of symbols in observation (%d) larger than M (%d)\n", obs->get_num_symbols(), M);
+		}
 
 	if (!reused_caches)
 	{

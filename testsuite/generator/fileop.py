@@ -61,6 +61,8 @@ def _is_excluded_from_filename (key):
 		key=='regression_bias' or
 		key=='distribution_likelihood' or
 		key=='distribution_derivatives' or
+		key=='distribution_best_path' or
+		key=='distribution_best_path_state' or
 		key=='classifier_bias' or
 		key=='classifier_type'):
 		return True

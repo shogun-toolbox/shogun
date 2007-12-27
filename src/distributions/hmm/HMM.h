@@ -451,7 +451,8 @@ public:
 	 * @param PSEUDO Pseudo Value
 	 */
 
-	CHMM(INT N, INT M,	CModel* model, DREAL PSEUDO);
+	CHMM(INT N, INT M, CModel* model, DREAL PSEUDO);
+	CHMM(CStringFeatures<WORD>* obs, INT N, INT M, DREAL PSEUDO);
 	CHMM(INT N, double* p, double* q, double* a) ;
 	CHMM(INT N, double* p, double* q, int num_trans, double* a_trans) ;
 
@@ -474,37 +475,37 @@ public:
 
 	virtual inline INT get_num_model_parameters() { return N*(N+M+2); }
 
-	virtual DREAL get_log_model_parameter(INT param_num)
+	virtual DREAL get_log_model_parameter(INT num_param)
 	{
-		if (param_num<N)
-			return get_p(param_num);
-		else if (param_num<2*N)
-			return get_q(param_num-N);
-		else if (param_num<N*(N+2))
-			return transition_matrix_a[param_num-2*N];
-		else if (param_num<N*(N+2+M))
-			return observation_matrix_b[param_num-N*(N+2)];
+		if (num_param<N)
+			return get_p(num_param);
+		else if (num_param<2*N)
+			return get_q(num_param-N);
+		else if (num_param<N*(N+2))
+			return transition_matrix_a[num_param-2*N];
+		else if (num_param<N*(N+2+M))
+			return observation_matrix_b[num_param-N*(N+2)];
 
 		ASSERT(false);
 		return -1;
 	}
 
-	virtual DREAL get_log_derivative(INT param_num, INT num_example)
+	virtual DREAL get_log_derivative(INT num_param, INT num_example)
 	{
-		if (param_num<N)
-			return model_derivative_p(param_num, num_example);
-		else if (param_num<2*N)
-			return model_derivative_q(param_num-N, num_example);
-		else if (param_num<N*(N+2))
+		if (num_param<N)
+			return model_derivative_p(num_param, num_example);
+		else if (num_param<2*N)
+			return model_derivative_q(num_param-N, num_example);
+		else if (num_param<N*(N+2))
 		{
-			INT k=param_num-2*N;
+			INT k=num_param-2*N;
 			INT i=(k/N)*N;
 			INT j=N*N-i;
 			return model_derivative_a(i,j, k);
 		}
-		else if (param_num<N*(N+2+M))
+		else if (num_param<N*(N+2+M))
 		{
-			INT k=param_num-N*(N+2);
+			INT k=num_param-N*(N+2);
 			INT i=(k/N)*M;
 			INT j=N*M-i;
 			return model_derivative_b(i,j, k);
