@@ -210,17 +210,22 @@ public:
 
 	bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
-	inline void set_max_mismatch(INT max) { max_mismatch=max; }
+	bool set_max_mismatch(INT max);
 	inline INT get_max_mismatch() { return max_mismatch; }
-	inline void set_degree(INT deg) { degree=deg; }
+
+	inline bool set_degree(INT deg) { degree=deg; return true; }
 	inline INT get_degree() { return degree; }
-	inline void set_use_normalization(bool opt) { use_normalization=opt; }
+
+	inline bool set_use_normalization(bool opt) { use_normalization=opt; return true; }
 	inline bool get_use_normalization() { return use_normalization; }
-	inline void set_use_block_computation(bool block) { block_computation=block; }
+
+	inline bool set_use_block_computation(bool block) { block_computation=block; return true; }
 	inline bool get_use_block_computation() { return block_computation; }
-	inline void set_mkl_stepsize(INT step) { mkl_stepsize=step; }
+
+	inline bool set_mkl_stepsize(INT step) { mkl_stepsize=step; return true; }
 	inline INT get_mkl_stepsize() { return mkl_stepsize; }
-	inline void set_which_degree(INT which) { which_degree=which; }
+
+	inline bool set_which_degree(INT which) { which_degree=which; return true; }
 	inline INT get_which_degree() { return which_degree; }
 
  protected:

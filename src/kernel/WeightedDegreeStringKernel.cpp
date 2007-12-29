@@ -46,8 +46,7 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 	block_computation(true), use_normalization(true),
 	normalization_const(1.0), num_block_weights_external(0),
 	block_weights_external(NULL), block_weights(NULL), type(type_),
-	which_degree(-1), tries(degree_, true),
-	tree_initialized(false)
+	which_degree(-1), tries(degree_, max_mismatch==0), tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
@@ -65,7 +64,7 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 	block_computation(true), use_normalization(true),
 	normalization_const(1.0), num_block_weights_external(0),
 	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
-	which_degree(-1), tries(degree_, true), tree_initialized(false)
+	which_degree(-1), tries(degree_, max_mismatch==0), tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 	lhs=NULL;
@@ -85,7 +84,7 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(
 	block_computation(true), use_normalization(true),
 	normalization_const(1.0), num_block_weights_external(0),
 	block_weights_external(NULL), block_weights(NULL), type(E_WD),
-	which_degree(-1), tries(degree_, true), tree_initialized(false)
+	which_degree(-1), tries(degree_, max_mismatch==0), tree_initialized(false)
 {
 	properties |= KP_LINADD | KP_KERNCOMBINATION | KP_BATCHEVALUATION;
 
@@ -594,21 +593,21 @@ bool CWeightedDegreeStringKernel::set_wd_weights_by_type(EWDKernType p_type)
 
 bool CWeightedDegreeStringKernel::set_weights(DREAL* ws, INT d, INT len)
 {
-	SG_DEBUG( "degree = %i  d=%i\n", degree, d) ;
-	degree = d ;
-	tries.set_degree(d);
+	SG_DEBUG("degree = %i  d=%i\n", degree, d);
+	degree=d;
+	tries.set_degree(degree);
 	length=len;
 	
-	if (len == 0)
-		len=1;
-	
+	if (length==0) length=1;
+	INT num_weights=degree*(length+max_mismatch);
 	delete[] weights;
-	weights=new DREAL[d*len];
-	
+	weights=new DREAL[num_weights];
 	if (weights)
 	{
-		for (int i=0; i<degree*len; i++)
-			weights[i]=ws[i];
+		for (INT i=0; i<num_weights; i++) {
+			if (ws[i]) // len(ws) might be != num_weights?
+				weights[i]=ws[i];
+		}
 		return true;
 	}
 	else
@@ -951,3 +950,16 @@ void CWeightedDegreeStringKernel::compute_batch(INT num_vec, INT* vec_idx, DREAL
 	//using the combined kernel
 	create_empty_tries();
 }
+
+bool CWeightedDegreeStringKernel::set_max_mismatch(INT max)
+{
+	if (type==E_EXTERNAL && max!=0) {
+		return false;
+	}
+
+	max_mismatch=max;
+	tries.set_use_compact_terminal_nodes(max_mismatch==0);
+
+	return true;
+}
+
