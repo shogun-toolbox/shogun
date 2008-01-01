@@ -45,22 +45,27 @@ def get_string_complex (ftype, data, alphabet=DNA, order=WORDSTRING_ORDER,
 	charfeat.set_string_features(data['train'])
 	feat=eval('String'+ftype+'Features(charfeat.get_alphabet())')
 	feat.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	if ftype=='Word':
-		preproc=SortWordString()
-		preproc.init(feat)
-		feat.add_preproc(preproc)
-		feat.apply_preproc()
 	feats['train']=feat
 
 	charfeat=StringCharFeatures(alphabet)
 	charfeat.set_string_features(data['test'])
 	feat=eval('String'+ftype+'Features(charfeat.get_alphabet())')
 	feat.obtain_from_char(charfeat, order-1, order, gap, reverse)
-	if ftype=='Word':
-		feat.add_preproc(preproc)
-		feat.apply_preproc()
 	feats['test']=feat
 
-	return feats
+	if ftype=='Word':
+		return add_preproc('SortWordString', feats)
+	else:
+		return feats
 
+def add_preproc (name, feats):
+	fun=eval(name)
+	preproc=fun()
+	preproc.init(feats['train'])
+	feats['train'].add_preproc(preproc)
+	feats['train'].apply_preproc()
+	feats['test'].add_preproc(preproc)
+	feats['test'].apply_preproc()
+
+	return feats
 

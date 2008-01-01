@@ -19,6 +19,7 @@ def _get_str_category (category):
 		config.C_CLUSTERING:'clustering',
 		config.C_DISTRIBUTION:'distribution',
 		config.C_REGRESSION:'regression',
+		config.C_PREPROC:'preproc',
 	}
 
 	try:

@@ -92,22 +92,27 @@ def get_feats_string_complex (indata):
 		"Features(feats['train'].get_alphabet())")
 	feat.obtain_from_char(feats['train'], indata['order']-1, indata['order'],
 		indata['gap'], eval(indata['reverse']))
-	if indata['feature_type']=='Word':
-		preproc=SortWordString()
-		preproc.init(feat)
-		feat.add_preproc(preproc)
-		feat.apply_preproc()
 	feats['train']=feat
 
 	feat=eval('String'+indata['feature_type']+ \
 		"Features(feats['train'].get_alphabet())")
 	feat.obtain_from_char(feats['test'], indata['order']-1, indata['order'],
 		indata['gap'], eval(indata['reverse']))
-	if indata['feature_type']=='Word':
-		feat.add_preproc(preproc)
-		feat.apply_preproc()
 	feats['test']=feat
 
-	return feats
+	if indata['feature_type']=='Word':
+		return add_preproc('SortWordString', feats)
+	else:
+		return feats
 
+def add_preproc (name, feats):
+	fun=eval(name)
+	preproc=fun()
+	preproc.init(feats['train'])
+	feats['train'].add_preproc(preproc)
+	feats['train'].apply_preproc()
+	feats['test'].add_preproc(preproc)
+	feats['test'].apply_preproc()
+
+	return feats
 

@@ -12,9 +12,10 @@ import classifier
 import clustering
 import distribution
 import regression
+import preproc
 
 SUPPORTED=['kernel', 'distance', 'classifier', 'clustering', 'distribution',
-	'regression']
+	'regression', 'preproc']
 
 def _get_name_fun (fnam):
 	module=None

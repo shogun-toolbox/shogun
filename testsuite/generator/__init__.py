@@ -15,6 +15,7 @@ import distance
 import distribution
 import kernel
 import regression
+import preproc
 
 
 def run ():
@@ -25,3 +26,4 @@ def run ():
 	clustering.run()
 	distribution.run()
 	regression.run()
+	preproc.run()
