@@ -6,7 +6,7 @@ Explicit examples on how to use the different kernels
 from sys import maxint
 from numpy import ubyte, ushort, double, int, zeros, sum, floor, array, arange
 from numpy.random import randint, rand, seed
-from shogun.PreProc import SortWordString
+from shogun.PreProc import SortWordString, SortUlongString
 from shogun.Distance import EuclidianDistance
 from shogun.Kernel import *
 from shogun.Features import *
@@ -537,7 +537,7 @@ def weighted_comm_word_string ():
 	km_test=kernel.get_kernel_matrix()
 
 def comm_ulong_string ():
-	print 'CommWordString'
+	print 'CommUlongString'
 
 	data=get_dna()
 	order=3
@@ -548,11 +548,18 @@ def comm_ulong_string ():
 	charfeat.set_string_features(data['train'])
 	feats_train=StringUlongFeatures(charfeat.get_alphabet())
 	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	preproc=SortUlongString()
+	preproc.init(feats_train)
+	feats_train.add_preproc(preproc)
+	feats_train.apply_preproc()
+
 
 	charfeat=StringCharFeatures(DNA)
 	charfeat.set_string_features(data['test'])
 	feats_test=StringUlongFeatures(charfeat.get_alphabet())
 	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	feats_test.add_preproc(preproc)
+	feats_test.apply_preproc()
 
 	use_sign=False
 	normalization=FULL_NORMALIZATION

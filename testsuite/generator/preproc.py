@@ -30,19 +30,13 @@ def _compute (name, name_kernel, feats, data, *kargs):
 	outdata.update(fileop.get_outdata(name_kernel, C_KERNEL, kargs))
 	return outdata
 
-def _run_string_complex ():
+def _run_string_complex (ftype):
 	data=dataop.get_dna()
-
-	name='SortWordString'
-	# featop.get_string_complex does SortWordString implicitely on Word feats
-	feats=featop.get_string_complex('Word', data)
-	outdata=_compute(name, 'CommWordString', feats, data, False, FULL_NORMALIZATION)
-	fileop.write(C_PREPROC, outdata)
-
-	name='SortUlongString'
-	feats=featop.get_string_complex('Ulong', data)
-	feats=featop.add_preproc(name, feats)
-	outdata=_compute(name, 'CommUlongString', feats, data, False, FULL_NORMALIZATION)
+	name='Sort'+ftype+'String'
+	# featop.get_string_complex adds preproc implicitely on Word/Ulong feats
+	feats=featop.get_string_complex(ftype, data)
+	outdata=_compute(name, 'Comm'+ftype+'String', feats, data,
+		False, FULL_NORMALIZATION)
 	fileop.write(C_PREPROC, outdata)
 
 def _run_word ():
@@ -70,7 +64,8 @@ def run():
 	_run_real('PruneVarSubMean', False)
 	_run_real('PruneVarSubMean', True)
 
-	_run_string_complex()
+	_run_string_complex('Word')
+	_run_string_complex('Ulong')
 	_run_word()
 
 #	_run_norm_derivative_lem3()

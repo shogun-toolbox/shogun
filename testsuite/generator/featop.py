@@ -53,8 +53,9 @@ def get_string_complex (ftype, data, alphabet=DNA, order=WORDSTRING_ORDER,
 	feat.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats['test']=feat
 
-	if ftype=='Word':
-		return add_preproc('SortWordString', feats)
+	if ftype=='Word' or ftype=='Ulong':
+		name='Sort'+ftype+'String'
+		return add_preproc(name, feats)
 	else:
 		return feats
 

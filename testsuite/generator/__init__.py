@@ -20,10 +20,10 @@ import preproc
 
 def run ():
 	clean_dir_outdata()
-#	kernel.run()
-#	distance.run()
-#	classifier.run()
-#	clustering.run()
-#	distribution.run()
-#	regression.run()
+	kernel.run()
+	distance.run()
+	classifier.run()
+	clustering.run()
+	distribution.run()
+	regression.run()
 	preproc.run()
