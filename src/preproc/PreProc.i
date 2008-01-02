@@ -4,7 +4,7 @@
 
 %module(docstring=DOCSTR,directors="1") PreProc
 %{
-#include "preproc/PreProc.h" 
+#include "preproc/PreProc.h"
 %}
 
 %feature("director") CPreProc;
@@ -21,12 +21,9 @@
 %include "base/Version.i"
 %include "base/Parallel.i"
 %include "base/SGObject.i"
-%include "preproc/PreProc.h" 
+%include "preproc/PreProc.h"
 
 %include "preproc/SimplePreProc.i"
-%include "preproc/RealPreProc.i"
-%include "preproc/ShortPreProc.i"
-%include "preproc/WordPreProc.i"
 %include "preproc/StringPreProc.i"
 
 %include "preproc/LogPlusOne.i"

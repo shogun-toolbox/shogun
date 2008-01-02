@@ -10,14 +10,15 @@
  */
 
 #include "preproc/PruneVarSubMean.h"
-#include "preproc/RealPreProc.h"
+#include "preproc/SimplePreProc.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 #include "lib/Mathematics.h"
 
 CPruneVarSubMean::CPruneVarSubMean(bool divide)
-  : CRealPreProc("PruneVarSubMean","PVSM"), idx(NULL), mean(NULL), std(NULL), num_idx(0), divide_by_std(divide), initialized(false)
+: CSimplePreProc<DREAL>("PruneVarSubMean","PVSM"), idx(NULL), mean(NULL),
+	std(NULL), num_idx(0), divide_by_std(divide), initialized(false)
 {
 }
 
@@ -125,12 +126,12 @@ bool CPruneVarSubMean::init(CFeatures* p_f)
 /// clean up allocated memory
 void CPruneVarSubMean::cleanup()
 {
-  delete[] idx;
-  idx=NULL;
-  delete[] mean;
-  mean=NULL;
-  delete[] std;
-  std=NULL;
+	delete[] idx;
+	idx=NULL;
+	delete[] mean;
+	mean=NULL;
+	delete[] std;
+	std=NULL;
 }
 
 /// apply preproc on feature matrix
@@ -140,13 +141,13 @@ DREAL* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
 {
 	ASSERT(initialized);
 
-    INT num_vectors=0;
-    INT num_features=0;
-    DREAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
+	INT num_vectors=0;
+	INT num_features=0;
+	DREAL* m=((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
 
-    SG_INFO( "get Feature matrix: %ix%i\n", num_vectors, num_features) ;
+	SG_INFO( "get Feature matrix: %ix%i\n", num_vectors, num_features) ;
 	SG_INFO( "Preprocessing feature matrix\n");
-    for (INT vec=0; vec<num_vectors; vec++)
+	for (INT vec=0; vec<num_vectors; vec++)
 	{
 		DREAL* v_src=&m[num_features*vec];
 		DREAL* v_dst=&m[num_idx*vec];
@@ -162,12 +163,12 @@ DREAL* CPruneVarSubMean::apply_to_feature_matrix(CFeatures* f)
 				v_dst[feat]=(v_src[idx[feat]]-mean[feat]);
 		}
 	}
-	
+
 	((CRealFeatures*) f)->set_num_features(num_idx);
 	((CRealFeatures*) f)->get_feature_matrix(num_features, num_vectors);
 	SG_INFO( "new Feature matrix: %ix%i\n", num_vectors, num_features);
-    
-    return m;
+
+	return m;
 }
 
 /// apply preproc on single feature vector
@@ -176,30 +177,30 @@ DREAL* CPruneVarSubMean::apply_to_feature_vector(DREAL* f, INT &len)
 {
 	DREAL* ret=NULL;
 
-  if (initialized)
-  {
-	  ret=new DREAL[num_idx] ;
+	if (initialized)
+	{
+		ret=new DREAL[num_idx] ;
 
-	  if (divide_by_std)
-	  {
-		  for (INT i=0; i<num_idx; i++)
-			  ret[i]=(f[idx[i]]-mean[i])/std[i];
-	  }
-	  else
-	  {
-		  for (INT i=0; i<num_idx; i++)
-			  ret[i]=(f[idx[i]]-mean[i]);
-	  }
-	  len=num_idx ;
-  }
-  else
-  {
-	  ret=new DREAL[len] ;
-	  for (INT i=0; i<len; i++)
-		  ret[i]=f[i];
-  }
+		if (divide_by_std)
+		{
+			for (INT i=0; i<num_idx; i++)
+				ret[i]=(f[idx[i]]-mean[i])/std[i];
+		}
+		else
+		{
+			for (INT i=0; i<num_idx; i++)
+				ret[i]=(f[idx[i]]-mean[i]);
+		}
+		len=num_idx ;
+	}
+	else
+	{
+		ret=new DREAL[len] ;
+		for (INT i=0; i<len; i++)
+			ret[i]=f[i];
+	}
 
-  return ret;
+	return ret;
 }
 
 /// initialize preprocessor from file
@@ -207,10 +208,10 @@ bool CPruneVarSubMean::load_init_data(FILE* src)
 {
 	bool result=false;
 	INT divide=0;
-	
 
-    ASSERT(fread(&divide, sizeof(int), 1, src)==1) ;
-    ASSERT(fread(&num_idx, sizeof(int), 1, src)==1) ;
+
+	ASSERT(fread(&divide, sizeof(int), 1, src)==1) ;
+	ASSERT(fread(&num_idx, sizeof(int), 1, src)==1) ;
 	SG_INFO( "divide:%d num_idx:%d\n", divide, num_idx);
 	delete[] mean;
 	delete[] idx;
@@ -219,9 +220,9 @@ bool CPruneVarSubMean::load_init_data(FILE* src)
 	mean=new DREAL[num_idx];
 	std=new DREAL[num_idx];
 	ASSERT (mean!=NULL && idx!=NULL && std!=NULL);
-    ASSERT(fread(idx, sizeof(int), num_idx, src)==(UINT) num_idx) ;
-    ASSERT(fread(mean, sizeof(DREAL), num_idx, src)==(UINT) num_idx) ;
-    ASSERT(fread(std, sizeof(DREAL), num_idx, src)==(UINT) num_idx) ;
+	ASSERT(fread(idx, sizeof(int), num_idx, src)==(UINT) num_idx) ;
+	ASSERT(fread(mean, sizeof(DREAL), num_idx, src)==(UINT) num_idx) ;
+	ASSERT(fread(std, sizeof(DREAL), num_idx, src)==(UINT) num_idx) ;
 	result=true;
 	divide_by_std=(divide==1);
 	initialized=true;

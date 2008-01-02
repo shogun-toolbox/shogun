@@ -23,8 +23,6 @@ public:
 	CSortUlongString();
 	virtual ~CSortUlongString();
 
-	virtual EFeatureType get_feature_type() { return F_ULONG; }
-
 	/// initialize preprocessor from features
 	virtual bool init(CFeatures* f);
 

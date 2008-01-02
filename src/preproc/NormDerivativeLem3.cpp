@@ -9,12 +9,12 @@
  */
 
 #include "preproc/NormDerivativeLem3.h"
-#include "preproc/RealPreProc.h"
+#include "preproc/SimplePreProc.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
 CNormDerivativeLem3::CNormDerivativeLem3()
-  : CRealPreProc("NormDerivativeLem3", "NDL3") 
+: CSimplePreProc<DREAL>("NormDerivativeLem3", "NDL3")
 {
 }
 

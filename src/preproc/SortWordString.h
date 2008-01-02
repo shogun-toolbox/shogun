@@ -23,8 +23,6 @@ public:
 	CSortWordString();
 	virtual ~CSortWordString();
 
-	virtual EFeatureType get_feature_type() { return F_WORD; }
-
 	/// initialize preprocessor from features
 	virtual bool init(CFeatures* f);
 

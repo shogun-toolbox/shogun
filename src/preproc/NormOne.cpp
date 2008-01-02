@@ -9,13 +9,12 @@
  */
 
 #include "preproc/NormOne.h"
-#include "preproc/RealPreProc.h"
+#include "preproc/SimplePreProc.h"
 #include "lib/Mathematics.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
-CNormOne::CNormOne()
-  : CRealPreProc("NormOne", "NRM1") 
+CNormOne::CNormOne() : CSimplePreProc<DREAL>("NormOne", "NRM1")
 {
 }
 
@@ -72,7 +71,7 @@ DREAL* CNormOne::apply_to_feature_matrix(CFeatures* f)
 		}
 
 		norm=sqrt(sqnorm);
-		
+
 		for (j=0; j<num_feat; j++)
 			vec[j]/=norm;
 	}
@@ -90,7 +89,7 @@ DREAL* CNormOne::apply_to_feature_vector(DREAL* f, INT& len)
 
 	for (i=0; i<len; i++)
 		sqnorm+=f[i]*f[i];
-	
+
 	norm=sqrt(sqnorm);
 
 	for (i=0; i<len; i++)

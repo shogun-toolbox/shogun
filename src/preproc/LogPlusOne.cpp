@@ -9,14 +9,15 @@
  */
 
 #include "preproc/LogPlusOne.h"
-#include "preproc/RealPreProc.h"
+#include "preproc/SimplePreProc.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/Mathematics.h"
 
-CLogPlusOne::CLogPlusOne() : CRealPreProc("LogPlusOne", "LG+1") 
+CLogPlusOne::CLogPlusOne() : CSimplePreProc<DREAL>("LogPlusOne", "LG+1")
 {
 }
+
 
 CLogPlusOne::~CLogPlusOne()
 {

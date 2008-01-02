@@ -16,30 +16,57 @@
 #include "lib/common.h"
 #include "preproc/PreProc.h"
 
-#include <stdio.h>
-
-
 template <class ST> class CSimpleFeatures;
 
 template <class ST> class CSimplePreProc : public CPreProc
 {
-public:
-	CSimplePreProc(const CHAR *name, const CHAR* id) : CPreProc(name,id)
-	{
-	}
+	public:
+		CSimplePreProc(const CHAR *name, const CHAR* id) : CPreProc(name,id) {}
 
-	/// apply preproc on feature matrix
-	/// result in feature matrix
-	/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-	virtual ST* apply_to_feature_matrix(CFeatures* f)=0;
+		/// apply preproc on feature matrix
+		/// result in feature matrix
+		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
+		virtual ST* apply_to_feature_matrix(CFeatures* f)=0;
 
-	/// apply preproc on single feature vector
-	/// result in feature matrix
+		/// apply preproc on single feature vector
+		/// result in feature matrix
 
-	virtual ST* apply_to_feature_vector(ST* f, INT &len)=0;
+		virtual ST* apply_to_feature_vector(ST* f, INT &len)=0;
 
-  /// return that we are simple minded features (just fixed size matrices)
-  inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
-  
+		/// return that we are simple features (just fixed size matrices)
+		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+		/// return feature type
+		inline virtual EFeatureType get_feature_type();
 };
+
+template<> inline EFeatureType CSimplePreProc<DREAL>::get_feature_type()
+{
+	return F_DREAL;
+}
+
+template<> inline EFeatureType CSimplePreProc<SHORT>::get_feature_type()
+{
+	return F_SHORT;
+}
+
+template<> inline EFeatureType CSimplePreProc<WORD>::get_feature_type()
+{
+	return F_WORD;
+}
+
+template<> inline EFeatureType CSimplePreProc<CHAR>::get_feature_type()
+{
+	return F_CHAR;
+}
+
+template<> inline EFeatureType CSimplePreProc<BYTE>::get_feature_type()
+{
+	return F_BYTE;
+}
+
+template<> inline EFeatureType CSimplePreProc<ULONG>::get_feature_type()
+{
+	return F_ULONG;
+}
+
 #endif

@@ -10,12 +10,12 @@
  */
 
 #include "preproc/SortWord.h"
-#include "preproc/WordPreProc.h"
+#include "preproc/SimplePreProc.h"
 #include "features/Features.h"
 #include "lib/Mathematics.h"
 #include "features/WordFeatures.h"
 
-CSortWord::CSortWord() : CWordPreProc("SortWord", "SRTW") 
+CSortWord::CSortWord() : CSimplePreProc<WORD>("SortWord", "SRTW")
 {
 }
 

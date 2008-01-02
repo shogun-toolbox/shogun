@@ -24,13 +24,14 @@ extern "C" {
 
 #include "lib/common.h"
 #include "preproc/PCACut.h"
-#include "preproc/RealPreProc.h"
+#include "preproc/SimplePreProc.h"
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 #include "lib/io.h"
 
-CPCACut::CPCACut(INT do_whitening_, double thresh_) : CRealPreProc("PCACut", "PCAC"), T(NULL),
-	num_dim(0), mean(NULL), initialized(false), do_whitening(do_whitening_), thresh(thresh_)
+CPCACut::CPCACut(INT do_whitening_, double thresh_)
+: CSimplePreProc<DREAL>("PCACut", "PCAC"), T(NULL), num_dim(0), mean(NULL),
+	initialized(false), do_whitening(do_whitening_), thresh(thresh_)
 {
 }
 
@@ -104,7 +105,7 @@ bool CPCACut::init(CFeatures* f)
 
 			/// A = 1.0*xy^T+A blas
 			cblas_dger(CblasColMajor, num_features,num_features, 1.0, vec, 1, 
-				 vec, 1, cov, (int)num_features) ;
+					vec, 1, cov, (int)num_features) ;
 
 			//for (INT k=0; k<num_features; k++)
 			//	for (INT l=0; l<num_features; l++)
@@ -124,21 +125,21 @@ bool CPCACut::init(CFeatures* f)
 		SG_INFO("Computing Eigenvalues ... ") ;
 		char V='V';
 		char U='U';
-//#ifdef DARWIN
-//		__CLPK_integer ord= (int) num_features;
-//		__CLPK_integer lda= (int) num_features;
-//		__CLPK_integer info;
-//		__CLPK_integer lwork=3*num_features ;
-//		__CLPK_doublereal* work=new __CLPK_doublereal[lwork] ;
-//		__CLPK_doublereal* eigenvalues=new __CLPK_doublereal[num_features] ;
-//#else
+		//#ifdef DARWIN
+		//		__CLPK_integer ord= (int) num_features;
+		//		__CLPK_integer lda= (int) num_features;
+		//		__CLPK_integer info;
+		//		__CLPK_integer lwork=3*num_features ;
+		//		__CLPK_doublereal* work=new __CLPK_doublereal[lwork] ;
+		//		__CLPK_doublereal* eigenvalues=new __CLPK_doublereal[num_features] ;
+		//#else
 		int info;
 		int ord= (int) num_features;
 		int lda= (int) num_features;
 		int lwork=3*num_features ;
 		double* work=new double[lwork] ;
 		double* eigenvalues=new double[num_features] ;
-//#endif
+		//#endif
 
 		for (i=0; i<num_features; i++)
 			eigenvalues[i]=0;
@@ -219,7 +220,7 @@ DREAL* CPCACut::apply_to_feature_matrix(CFeatures* f)
 				sub_mean[i]=m[num_features*vec+i]-mean[i] ;
 
 			cblas_dgemv(CblasColMajor, CblasNoTrans, num_dim, num_features, 1.0,
-				  T, num_dim, sub_mean, 1, 0, res, 1); 
+					T, num_dim, sub_mean, 1, 0, res, 1); 
 
 			DREAL* m_transformed=&m[num_dim*vec];
 			for (i=0; i<num_dim; i++)
@@ -246,12 +247,12 @@ DREAL* CPCACut::apply_to_feature_vector(DREAL* f, INT &len)
 		sub_mean[i]=f[i]-mean[i];
 
 	cblas_dgemv(CblasColMajor, CblasNoTrans, num_dim, len, 1.0 , T, num_dim, sub_mean, 1, 0, ret, 1) ;
-//void cblas_dgemv(const enum CBLAS_ORDER order,
-//                 const enum CBLAS_TRANSPOSE TransA, const int M, const int N,
-//                 const double alpha, const double *A, const int lda,
-//                 const double *X, const int incX, const double beta,
-//                 double *Y, const int incY);
-//
+	//void cblas_dgemv(const enum CBLAS_ORDER order,
+	//                 const enum CBLAS_TRANSPOSE TransA, const int M, const int N,
+	//                 const double alpha, const double *A, const int lda,
+	//                 const double *X, const int incX, const double beta,
+	//                 double *Y, const int incY);
+	//
 
 	delete[] sub_mean ;
 	len=num_dim ;

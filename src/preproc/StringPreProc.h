@@ -16,29 +16,45 @@
 #include "lib/common.h"
 #include "preproc/PreProc.h"
 
-#include <stdio.h>
-
-
 template <class ST> class CStringFeatures;
 
 template <class ST> class CStringPreProc : public CPreProc
 {
-public:
-	CStringPreProc(const CHAR *name, const CHAR* id) : CPreProc(name,id)
-	{
-	}
+	public:
+		CStringPreProc(const CHAR *name, const CHAR* id) : CPreProc(name,id) {}
 
-	/// apply preproc on feature matrix
-	/// result in feature matrix
-	/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
-	virtual bool apply_to_string_features(CFeatures* f)=0;
+		/// apply preproc on feature matrix
+		/// result in feature matrix
+		/// return pointer to feature_matrix, i.e. f->get_feature_matrix();
+		virtual bool apply_to_string_features(CFeatures* f)=0;
 
-	/// apply preproc on single feature vector
+		/// apply preproc on single feature vector
+		virtual ST* apply_to_string(ST* f, INT &len)=0;
 
-	virtual ST* apply_to_string(ST* f, INT &len)=0;
-
-  /// return that we are simple minded features (just fixed size matrices)
-  inline virtual EFeatureClass get_feature_class() { return C_STRING; }
-  
+		/// return that we are string features (just fixed size matrices)
+		inline virtual EFeatureClass get_feature_class() { return C_STRING; }
+		/// return feature type
+		inline virtual EFeatureType get_feature_type();
 };
+
+template<> inline EFeatureType CStringPreProc<ULONG>::get_feature_type()
+{
+	return F_ULONG;
+}
+
+template<> inline EFeatureType CStringPreProc<WORD>::get_feature_type()
+{
+	return F_WORD;
+}
+
+template<> inline EFeatureType CStringPreProc<BYTE>::get_feature_type()
+{
+	return F_BYTE;
+}
+
+template<> inline EFeatureType CStringPreProc<CHAR>::get_feature_type()
+{
+	return F_CHAR;
+}
+
 #endif
