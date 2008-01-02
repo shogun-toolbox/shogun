@@ -129,14 +129,31 @@ def clean_dir_outdata ():
 
 	return success
 
+def get_args (prefix, names, args, offset=0):
+	outdata={}
+
+	for i in xrange(len(args)):
+		try:
+			name=prefix+'_arg'+str(i+offset)+'_'+names[i]
+		except IndexError:
+			break
+
+		cname=args[i].__class__.__name__
+		if cname=='int' or cname=='float' or cname=='bool' or cname=='str':
+			outdata[name]=args[i]
+		else:
+			outdata[name]=cname
+
+	return outdata
+
 # prefix and offset are necessary for subkernels
-def get_outdata (name, category, args=[], prefix='', offset=0):
+def get_outdata (name, category, args=(), prefix='', offset=0):
 	if category==config.C_KERNEL:
 		data=config.KERNEL[name]
-		argstr='kernel_arg'
+		prefix_arg=prefix+'kernel'
 	elif category==config.C_DISTANCE:
 		data=config.DISTANCE[name]
-		argstr='distance_arg'
+		prefix_arg=prefix+'distance'
 	else:
 		return {}
 
@@ -164,17 +181,7 @@ def get_outdata (name, category, args=[], prefix='', offset=0):
 		outdata[prefix+'seqlen']=dataop.LEN_SEQ
 		outdata[prefix+'feature_obtain']=data[1][2]
 
-	# arguments, if any
-	for i in xrange(len(args)):
-		try:
-			argname=prefix+argstr+str(i+offset)+'_'+data[2][i]
-		except IndexError:
-			break
-
-		cname=args[i].__class__.__name__
-		if cname=='int' or cname=='float' or cname=='bool' or cname=='str':
-			outdata[argname]=args[i]
-		else:
-			outdata[argname]=cname
+	if args!=(): # arguments, if any
+		outdata.update(get_args(prefix_arg, data[2], args, offset))
 
 	return outdata

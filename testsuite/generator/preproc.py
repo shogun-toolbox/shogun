@@ -10,11 +10,11 @@ from shogun.PreProc import *
 import fileop
 import featop
 import dataop
-from config import C_PREPROC, C_KERNEL
+from config import C_PREPROC, PREPROC, C_KERNEL
 
-def _compute (name, name_kernel, feats, data, *args):
+def _compute (name, name_kernel, feats, data, *kargs):
 	fun=eval(name_kernel+'Kernel')
-	kernel=fun(feats['train'], feats['train'], *args)
+	kernel=fun(feats['train'], feats['train'], *kargs)
 	km_train=kernel.get_kernel_matrix()
 	kernel.init(feats['train'], feats['test'])
 	km_test=kernel.get_kernel_matrix()
@@ -27,8 +27,8 @@ def _compute (name, name_kernel, feats, data, *args):
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test'])
 	}
-	outdata.update(fileop.get_outdata(name_kernel, C_KERNEL, args))
-	fileop.write(C_PREPROC, outdata)
+	outdata.update(fileop.get_outdata(name_kernel, C_KERNEL, kargs))
+	return outdata
 
 def _run_string_complex ():
 	data=dataop.get_dna()
@@ -36,31 +36,42 @@ def _run_string_complex ():
 	name='SortWordString'
 	# featop.get_string_complex does SortWordString implicitely on Word feats
 	feats=featop.get_string_complex('Word', data)
-	_compute(name, 'CommWordString', feats, data, False, FULL_NORMALIZATION)
+	outdata=_compute(name, 'CommWordString', feats, data, False, FULL_NORMALIZATION)
+	fileop.write(C_PREPROC, outdata)
 
 	name='SortUlongString'
 	feats=featop.get_string_complex('Ulong', data)
 	feats=featop.add_preproc(name, feats)
-	_compute(name, 'CommUlongString', feats, data, False, FULL_NORMALIZATION)
+	outdata=_compute(name, 'CommUlongString', feats, data, False, FULL_NORMALIZATION)
+	fileop.write(C_PREPROC, outdata)
 
 def _run_word ():
 	name='SortWord'
 	data=dataop.get_rand(dattype=ushort)
 	feats=featop.get_simple('Word', data)
 	feats=featop.add_preproc(name, feats)
-	_compute(name, 'LinearWord', feats, data)
 
-def _run_real (name):
+	outdata=_compute(name, 'LinearWord', feats, data)
+	fileop.write(C_PREPROC, outdata)
+
+def _run_real (name, *args):
 	data=dataop.get_rand()
 	feats=featop.get_simple('Real', data)
-	feats=featop.add_preproc(name, feats)
-	_compute(name, 'Gaussian', feats, data, 1.2)
+	feats=featop.add_preproc(name, feats, *args)
+	
+	outdata=_compute(name, 'Gaussian', feats, data, 1.2)
+	if args!=():
+		outdata.update(fileop.get_args('preproc', PREPROC[name][0], args))
+	fileop.write(C_PREPROC, outdata)
 
 def run():
-	_run_string_complex()
 	_run_real('LogPlusOne')
 	_run_real('NormOne')
-	_run_real('PruneVarSubMean')
+	_run_real('PruneVarSubMean', False)
+	_run_real('PruneVarSubMean', True)
+
+	_run_string_complex()
 	_run_word()
+
 #	_run_norm_derivative_lem3()
 #	_run_pcacut()

@@ -105,9 +105,9 @@ def get_feats_string_complex (indata):
 	else:
 		return feats
 
-def add_preproc (name, feats):
+def add_preproc (name, feats, *args):
 	fun=eval(name)
-	preproc=fun()
+	preproc=fun(*args)
 	preproc.init(feats['train'])
 	feats['train'].add_preproc(preproc)
 	feats['train'].apply_preproc()

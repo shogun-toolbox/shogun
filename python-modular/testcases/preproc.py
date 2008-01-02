@@ -28,6 +28,8 @@ def _kernel (indata, feats):
 def test (indata):
 	fun=eval('util.get_feats_'+indata['feature_class'])
 	feats=fun(indata)
-	feats=util.add_preproc(indata['name'], feats)
+	args=util.get_args(indata, 'preproc_arg')
+	feats=util.add_preproc(indata['name'], feats, *args)
+
 	return _kernel(indata, feats)
 

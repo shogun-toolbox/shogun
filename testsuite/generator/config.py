@@ -133,6 +133,18 @@ REGRESSION={
 	'KRR':[1e-8, 'kernelmachine'],
 }
 
+# name: args
+PREPROC={
+	'LogPlusOne':[],
+	'NormOne':[],
+	'PruneVarSubMean':[['divide']],
+	'PCACut':[],
+	'NormDerivativeLem3':[],
+	'SortWord':[],
+	'SortWordString':[],
+	'SortUlongString':[],
+}
+
 C_KERNEL=0
 C_DISTANCE=1
 C_CLASSIFIER=2
