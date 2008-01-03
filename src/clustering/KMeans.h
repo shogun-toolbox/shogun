@@ -72,7 +72,7 @@ class CKMeans : public CDistanceMachine
 
 		inline void get_radi(DREAL** radi, INT* num)
 		{
-			size_t sz=sizeof(R)*k;
+			size_t sz=sizeof(*R)*k;
 			*radi= (DREAL*) malloc(sz);
 			ASSERT(*radi);
 
@@ -80,9 +80,14 @@ class CKMeans : public CDistanceMachine
 			*num=k;
 		}
 
+		inline INT get_dimensions()
+		{
+			return dimensions;
+		}
+
 		inline void get_centers(DREAL** centers, INT* dim, INT* num)
 		{
-			size_t sz=sizeof(mus)*dimensions*k;
+			size_t sz=sizeof(*mus)*dimensions*k;
 			*centers= (DREAL*) malloc(sz);
 			ASSERT(*centers);
 

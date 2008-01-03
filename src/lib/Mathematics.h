@@ -22,6 +22,10 @@
 #include <stdio.h>
 #include <float.h>
 #include <pthread.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <time.h>
 
 #ifdef HAVE_LAPACK
 extern "C" {
@@ -293,6 +297,21 @@ public:
 		for (int i=2; i<=n; i++)
 			res*=i ;
 		return res ;
+	}
+
+	static void init_random(UINT initseed=0)
+	{
+		if (initseed==0)
+		{
+			struct timeval tv;
+			gettimeofday(&tv, NULL);
+			seed=(UINT) (4223517*getpid()*tv.tv_sec*tv.tv_usec);
+		}
+		else
+			seed=initseed;
+#ifndef CYGWIN
+		initstate(seed, CMath::rand_state, sizeof(CMath::rand_state));
+#endif
 	}
 	
 	static LONG random()

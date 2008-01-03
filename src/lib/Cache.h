@@ -38,7 +38,7 @@ template<class T> class CCache : public CSGObject
 	{
 		if (cache_size==0 || obj_size==0 || num_entries==0)
 		{
-			SG_WARNING("doing without cache.\n");
+			SG_INFO("doing without cache.\n");
 			cache_block=NULL;
 			lookup_table=NULL;
 			cache_table=NULL;

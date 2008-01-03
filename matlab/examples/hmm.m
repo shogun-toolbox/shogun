@@ -17,7 +17,6 @@ end
 s=s(randperm(length(s)));
 sequence={''};
 for i = 1:length(s),
-    rn=rand;
     f(i)=ceil(((1-weight)*rand+weight)*length(a{s(i)}));
     t=randperm(length(a{s(i)}));
     r=a{s(i)}(t(1:f(i)));

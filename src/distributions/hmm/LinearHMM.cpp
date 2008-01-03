@@ -14,7 +14,7 @@
 #include "features/StringFeatures.h"
 #include "lib/io.h"
 
-CLinearHMM::CLinearHMM(CStringFeatures<WORD>* f) : hist(NULL), log_hist(NULL)
+CLinearHMM::CLinearHMM(CStringFeatures<WORD>* f) : CDistribution(), hist(NULL), log_hist(NULL)
 {
 	features=f;
 	sequence_length = f->get_vector_length(0);
@@ -22,7 +22,7 @@ CLinearHMM::CLinearHMM(CStringFeatures<WORD>* f) : hist(NULL), log_hist(NULL)
 	num_params      = sequence_length*num_symbols;
 }
 
-CLinearHMM::CLinearHMM(INT p_num_features, INT p_num_symbols) : hist(NULL), log_hist(NULL)
+CLinearHMM::CLinearHMM(INT p_num_features, INT p_num_symbols) : CDistribution(), hist(NULL), log_hist(NULL)
 {
 	sequence_length = p_num_features;
 	num_symbols     = p_num_symbols;
@@ -178,17 +178,12 @@ DREAL CLinearHMM::get_log_derivative(INT num_param, INT num_example)
 	INT len;
 	WORD* vector=((CStringFeatures<WORD>*) features)->get_feature_vector(num_example, len);
 	DREAL result=0;
-	WORD check=0;
 	INT position=num_param/num_symbols;
+	WORD sym=(WORD) (num_param-position*num_symbols);
+	ASSERT(position>0 && position<len);
 
-	if (position!=0) {
-		check=num_param/position;
-	}
-
-	if (vector[position]==check && hist[num_param]!=0)
-	{
+	if (vector[position]== sym && hist[num_param]!=0)
 		result=1.0/hist[num_param];
-	}
 
 	return result;
 }

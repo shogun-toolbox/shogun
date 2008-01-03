@@ -19,13 +19,9 @@
 #include "lib/lapack.h"
 #include "lib/io.h"
 
-#include <sys/time.h>
-#include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <time.h>
-#include <unistd.h>
 
 //#if defined(HAVE_LAPACK) && defined(DARWIN)
 //int clapack_dpotrf(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo,
@@ -75,12 +71,7 @@ CMath::CMath() : CSGObject()
 #ifndef HAVE_SWIG
 	CSGObject::version.print_version();
 #endif
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	seed=(UINT) (4223517*getpid()*tv.tv_sec*tv.tv_usec);
-#ifndef CYGWIN
-	initstate(seed, CMath::rand_state, sizeof(CMath::rand_state));
-#endif
+	init_random();
 #ifndef HAVE_SWIG
 	SG_PRINT( "( seeding random number generator with %u, ", seed);
 #endif

@@ -50,7 +50,7 @@ class CHistogram : private CDistribution
 		virtual inline void get_histogram(DREAL** dst, INT* num)
 		{
 			*num=get_num_model_parameters();
-			size_t sz=sizeof(hist)*(*num);
+			size_t sz=sizeof(*hist)*(*num);
 			*dst=(DREAL*) malloc(sz);
 			ASSERT(dst);
 
