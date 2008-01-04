@@ -2560,7 +2560,7 @@ EOF
 	if test "$_interface" = libshogun
 	then
 		TARGET=libshogun.so
-		POSTLINKFLAGS="$POSTLINKFLAGS -shared"
+		POSTLINKFLAGS="$POSTLINKFLAGS -shared -fPIC"
 	fi
 }
 

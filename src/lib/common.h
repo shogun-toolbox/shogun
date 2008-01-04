@@ -299,7 +299,10 @@ enum E_ALPHABET
 	IUPAC_AMINO_ACID=9,
 
 	/// NONE - type has no alphabet
-	NONE=10
+	NONE=10,
+
+	/// unknown alphabet
+	UNKNOWN=11,
 };
 
 //@}

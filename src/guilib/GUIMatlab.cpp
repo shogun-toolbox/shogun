@@ -2017,38 +2017,55 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 				{
 					INT len=0;
 					CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
-					CAlphabet* alpha = new CAlphabet(al, len);
-					ASSERT(alpha);
 
-					INT num_vec=mxGetN(mx_feat);
-					INT num_feat=mxGetM(mx_feat);
-					T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
-					ASSERT(sc);
-					mxChar* c=mxGetChars(mx_feat);
-					ASSERT(c);
-
-					int maxlen=num_feat;
-
-					for (int i=0; i<num_vec; i++)
+					if (!strncmp(al, "DNABINFILE", CMath::min(len, 7)))
 					{
-						sc[i].length=num_feat;
-						sc[i].string=new CHAR[num_feat];
-						ASSERT(sc[i].string)
+						f= new CStringFeatures<BYTE>(DNA);
+						ASSERT(f);
 
-						for (INT j=0; j<num_feat; j++)
-							sc[i].string[j]=(CHAR) c[((LONG) num_feat)*i+j];
+						CHAR* fname = CGUIMatlab::get_mxString(vals[2], len, true);
+						if (!((CStringFeatures<BYTE>*) f)->load_dna_file(fname))
+						{
+							delete f;
+							f=NULL;
+						}
 					}
-					f= new CStringFeatures<CHAR>(alpha);
-					ASSERT(f);
-
-					if (!((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen))
+					else
 					{
-						delete f;
-						f=NULL;
+						CAlphabet* alpha = new CAlphabet(al, len);
+						ASSERT(alpha);
+
+						INT num_vec=mxGetN(mx_feat);
+						INT num_feat=mxGetM(mx_feat);
+						T_STRING<CHAR>* sc=new T_STRING<CHAR>[num_vec];
+						ASSERT(sc);
+						mxChar* c=mxGetChars(mx_feat);
+						ASSERT(c);
+
+						int maxlen=num_feat;
+
+						for (int i=0; i<num_vec; i++)
+						{
+							sc[i].length=num_feat;
+							sc[i].string=new CHAR[num_feat];
+							ASSERT(sc[i].string)
+
+								for (INT j=0; j<num_feat; j++)
+									sc[i].string[j]=(CHAR) c[((LONG) num_feat)*i+j];
+						}
+						f= new CStringFeatures<CHAR>(alpha);
+						ASSERT(f);
+
+
+						if (!((CStringFeatures<CHAR>*) f)->set_features(sc, num_vec, maxlen))
+						{
+							delete f;
+							f=NULL;
+						}
 					}
 				}
 				else
-					SG_ERROR( "please specify alphabet!\n");
+					SG_ERROR( "please specify alphabet / type!\n");
 			}
 			else if (mxIsClass(mx_feat,"uint8") || mxIsClass(mx_feat, "int8"))
 			{

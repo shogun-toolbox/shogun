@@ -251,9 +251,9 @@ ChangeLog:
 $(OBJFILES): .config .depend lib/versionstring.h ChangeLog
 
 ifeq (yes,$(USE_SWIG))
-$(TARGET): $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) 
+$(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) 
 else
-$(TARGET): $(OBJFILES) $(SRCFILES)
+$(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES)
 	$(LINK) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" | grep -v '.cpuinfo' | grep -v 'configure-' 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
 	#removeconfighunk
 endif

@@ -118,6 +118,7 @@ bool CWDSVMOcas::train()
 	num_vec=get_features()->get_max_vector_length();
 
 	set_normalization_const();
+	SG_INFO("num_vec: %d num_lab: %d\n", num_vec, num_train_labels);
 	ASSERT(num_vec==num_train_labels);
 	ASSERT(num_vec>0);
 

@@ -307,6 +307,99 @@ template <class ST> class CStringFeatures: public CFeatures
 		return false;
 	}
 
+	bool load_dna_file(CHAR* fname, bool remap_to_bin=true)
+	{
+		bool result=false;
+
+		const size_t blocksize=1024*1024;
+		BYTE* dummy=new BYTE[blocksize];
+		ASSERT(dummy);
+
+		num_symbols=4;
+		cleanup();
+
+		CAlphabet* alpha=new CAlphabet(DNA);
+		ASSERT(alpha);
+
+		FILE* f=fopen(fname, "ro");
+
+		if (f)
+		{
+			num_vectors=0;
+			max_string_length=0;
+
+			size_t sz=blocksize;
+			while (sz == blocksize)
+			{
+				sz=fread(dummy, sizeof(BYTE), blocksize, f);
+				for (size_t i=0; i<sz; i++)
+				{
+					if (dummy[i]=='\n' || i==sz-1)
+						num_vectors++;
+				}
+			}
+
+			SG_INFO("found %d strings\n", num_vectors);
+
+			features=new T_STRING<ST>[num_vectors];
+			ASSERT(features);
+
+			rewind(f);
+			sz=blocksize;
+			INT lines=0;
+			while (sz == blocksize)
+			{
+				sz=fread(dummy, sizeof(BYTE), blocksize, f);
+				
+				size_t old_sz=0;
+				for (size_t i=0; i<sz; i++)
+				{
+					if (dummy[i]=='\n' || i==sz-1)
+					{
+						INT len=i-old_sz;
+						//SG_PRINT("i:%d len:%d old_sz:%d\n", i, len, old_sz);
+						max_string_length=CMath::max(max_string_length, len);
+
+						features[lines].length=len;
+						features[lines].string=new ST[len];
+						ASSERT(features[lines].string);
+
+						if (remap_to_bin)
+						{
+							for (INT j=0; j<len; j++)
+								features[lines].string[j]=alpha->remap_to_bin(dummy[old_sz+j]);
+						}
+						else
+						{
+							for (INT j=0; j<len; j++)
+								features[lines].string[j]=dummy[old_sz+j];
+						}
+
+						//CMath::display_vector(features[lines].string, len);
+						old_sz=i+1;
+						lines++;
+					}
+				}
+			}
+			result=true;
+			SG_INFO("file successfully read\n");
+		}
+
+		fclose(f);
+		delete alpha;
+		delete[] dummy;
+
+		delete alphabet;
+		if (remap_to_bin)
+			alphabet = new CAlphabet(RAWDNA);
+		else
+			alphabet = new CAlphabet(DNA);
+		ASSERT(alphabet);
+
+
+		return result;
+	}
+
 	bool load_from_directory(CHAR* dirname)
 	{
 		struct dirent **namelist;

@@ -479,6 +479,16 @@ DREAL* CMath::pinv(DREAL* matrix, INT rows, INT cols, DREAL* target)
 #endif
 
 template <>
+void CMath::display_vector(BYTE* vector, INT n, const char* name)
+{
+	ASSERT(n>=0);
+	SG_SPRINT("%s=[", name);
+	for (INT i=0; i<n; i++)
+		SG_SPRINT("%d%s", vector[i], i==n-1? "" : ",");
+	SG_SPRINT("]\n");
+}
+
+template <>
 void CMath::display_vector(INT* vector, INT n, const char* name)
 {
 	ASSERT(n>=0);

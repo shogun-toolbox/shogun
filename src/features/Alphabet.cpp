@@ -536,32 +536,35 @@ const CHAR* CAlphabet::get_alphabet_name(E_ALPHABET alphabet)
 		case DNA:
 			idx=0;
 			break;
-		case RNA:
+		case RAWDNA:
 			idx=1;
 			break;
-		case PROTEIN:
+		case RNA:
 			idx=2;
 			break;
-		case ALPHANUM:
+		case PROTEIN:
 			idx=3;
 			break;
-		case CUBE:
+		case ALPHANUM:
 			idx=4;
 			break;
-		case RAWBYTE:
+		case CUBE:
 			idx=5;
 			break;
-		case IUPAC_NUCLEIC_ACID:
+		case RAWBYTE:
 			idx=6;
 			break;
-		case IUPAC_AMINO_ACID:
+		case IUPAC_NUCLEIC_ACID:
 			idx=7;
 			break;
-		case NONE:
+		case IUPAC_AMINO_ACID:
 			idx=8;
 			break;
-		default:
+		case NONE:
 			idx=9;
+			break;
+		default:
+			idx=10;
 			break;
 	}
 	return alphabet_names[idx];
