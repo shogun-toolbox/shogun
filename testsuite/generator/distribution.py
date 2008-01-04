@@ -51,18 +51,18 @@ def _get_outdata (name, params):
 
 	return outdata
 
-def _get_derivatives_likelihood (distribution, feats):
+def _get_derivatives (distribution, feats):
 	num_examples=feats.get_num_vectors()
 	num_param=distribution.get_num_model_parameters()
 	derivatives=0
-	likelihood=0
 
 	for i in xrange(num_examples):
 		for j in xrange(num_param):
-			derivatives+=distribution.get_log_derivative(j, i)
-		likelihood+=distribution.get_log_likelihood_example(i)
+			val=distribution.get_log_derivative(j, i)
+			if val!=-inf and val!=nan: # only consider sparse matrix!
+				derivatives+=val
 
-	return (derivatives, likelihood)
+	return derivatives
 
 def _run (name):
 	params={
@@ -74,8 +74,8 @@ def _run (name):
 	distribution=fun(feats['train'])
 	distribution.train()
 
-	params['derivatives'], params['likelihood']= \
-		_get_derivatives_likelihood(distribution, feats['train'])
+	params['likelihood']=distribution.get_log_likelihood_sample()
+	params['derivatives']=_get_derivatives(distribution, feats['train'])
 
 	outdata=_get_outdata(name, params)
 	fileop.write(C_DISTRIBUTION, outdata)
@@ -114,4 +114,4 @@ def _run_hmm ():
 def run ():
 	_run('Histogram')
 	_run('LinearHMM')
-	_run_hmm()
+	#_run_hmm()

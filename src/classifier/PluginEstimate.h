@@ -54,14 +54,16 @@ class CPluginEstimate: public CSGObject
 
 		inline bool get_model_params(DREAL*& pos_params, DREAL*& neg_params, INT &seq_length, INT &num_symbols)
 		{
+			INT num;
+
 			if ((!pos_model) || (!neg_model))
 			{
 				SG_ERROR( "no model available\n");
 				return false;
 			}
 
-			pos_params = pos_model->get_log_hist();
-			neg_params = neg_model->get_log_hist();
+			pos_model->get_log_transition_probs(&pos_params, &num);
+			neg_model->get_log_transition_probs(&neg_params, &num);
 
 			seq_length = pos_model->get_sequence_length();
 			num_symbols = pos_model->get_num_symbols();
@@ -72,6 +74,8 @@ class CPluginEstimate: public CSGObject
 
 		inline void set_model_params(const DREAL* pos_params, const DREAL* neg_params, INT seq_length, INT num_symbols)
 		{
+			INT num_params;
+
 			if (pos_model)
 				delete pos_model;
 
@@ -85,11 +89,12 @@ class CPluginEstimate: public CSGObject
 			ASSERT(pos_model);
 			ASSERT(neg_model);
 
-			ASSERT(seq_length*num_symbols == pos_model->get_num_model_parameters());
-			ASSERT(pos_model->get_num_model_parameters() == neg_model->get_num_model_parameters());
+			num_params=pos_model->get_num_model_parameters();
+			ASSERT(seq_length*num_symbols == num_params);
+			ASSERT(num_params == neg_model->get_num_model_parameters());
 
-			pos_model->set_log_hist(pos_params);
-			neg_model->set_log_hist(neg_params);
+			pos_model->set_log_transition_probs(pos_params, num_params);
+			neg_model->set_log_transition_probs(neg_params, num_params);
 		}
 
 		inline INT get_num_params()

@@ -35,45 +35,45 @@ class CLinearHMM : public CDistribution
 
 		virtual inline DREAL get_log_derivative_obsolete(WORD obs, INT pos)
 		{
-			return 1.0/hist[pos*num_symbols+obs];
+			return 1.0/transition_probs[pos*num_symbols+obs];
 		}
 
 		virtual inline DREAL get_derivative_obsolete(WORD* vector, INT len, INT pos)
 		{
 			ASSERT(pos<len);
-			return get_likelihood_example(vector, len)/hist[pos*num_symbols+vector[pos]];
+			return get_likelihood_example(vector, len)/transition_probs[pos*num_symbols+vector[pos]];
 		}
 
-		inline INT get_sequence_length() { return sequence_length; }
+		virtual inline INT get_sequence_length() { return sequence_length; }
 
-		inline INT get_num_symbols() { return num_symbols; }
+		virtual inline INT get_num_symbols() { return num_symbols; }
 
-		inline INT get_num_model_parameters() { return num_params; }
+		virtual inline INT get_num_model_parameters() { return num_params; }
 
-		inline DREAL get_positional_log_parameter(WORD obs, INT position)
+		virtual inline DREAL get_positional_log_parameter(WORD obs, INT position)
 		{
-			return log_hist[position*num_symbols+obs];
+			return log_transition_probs[position*num_symbols+obs];
 		}
 
-		inline DREAL get_log_model_parameter(INT num_param)
+		virtual inline DREAL get_log_model_parameter(INT num_param)
 		{
-			ASSERT(log_hist);
+			ASSERT(log_transition_probs);
 			ASSERT(num_param<num_params);
 
-			return log_hist[num_param];
+			return log_transition_probs[num_param];
 		}
 
-		inline DREAL* get_log_hist() { return log_hist; }
-		inline DREAL* get_hist() { return hist; }
+		virtual void get_log_transition_probs(DREAL** dst, INT* num);
+		virtual bool set_log_transition_probs(const DREAL* src, INT num);
 
-		void set_log_hist(const DREAL* new_log_hist);
-		void set_hist(const DREAL* new_hist);
+		virtual void get_transition_probs(DREAL** dst, INT* num);
+		virtual bool set_transition_probs(const DREAL* src, INT num);
 
 	protected:
 		INT sequence_length;
 		INT num_symbols;
 		INT num_params;
-		DREAL* hist;
-		DREAL* log_hist;
+		DREAL* transition_probs;
+		DREAL* log_transition_probs;
 };
 #endif

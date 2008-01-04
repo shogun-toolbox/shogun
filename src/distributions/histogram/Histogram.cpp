@@ -119,3 +119,29 @@ DREAL CHistogram::get_log_model_parameter(INT num_param)
 {
 	return hist[num_param];
 }
+
+bool CHistogram::set_histogram(DREAL* src, INT num)
+{
+	ASSERT(num==get_num_model_parameters());
+
+	delete[] hist;
+	hist=new DREAL[num];
+	ASSERT(hist);
+
+	for (INT i=0; i<num; i++) {
+		hist[i]=src[i];
+	}
+
+	return true;
+}
+
+void CHistogram::get_histogram(DREAL** dst, INT* num)
+{
+	*num=get_num_model_parameters();
+	size_t sz=sizeof(*hist)*(*num);
+	*dst=(DREAL*) malloc(sz);
+	ASSERT(dst);
+
+	memcpy(*dst, hist, sz);
+}
+

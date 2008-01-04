@@ -1,7 +1,7 @@
 """
 Test Distribution
 """
-
+from numpy import inf, nan
 from shogun.Distribution import *
 
 import util
@@ -14,29 +14,28 @@ def _distribution (indata):
 		model=Model()
 		distribution=HMM(indata['distribution_N'], indata['distribution_M'],
 			model, indata['distribution_pseudo'])
+		distribution.train()
+		return util.check_accuracy(indata['distribution_accuracy'])
 	else:
 		fun=eval(indata['name'])
 		distribution=fun(feats['train'])
+		distribution.train()
 
-	distribution.train()
-
-	if indata['name']=='Histogram':
+		likelihood=distribution.get_log_likelihood_sample()
 		num_examples=feats['train'].get_num_vectors()
 		num_param=distribution.get_num_model_parameters()
 		derivatives=0
-		likelihood=0
 		for i in xrange(num_examples):
 			for j in xrange(num_param):
-				derivatives+=distribution.get_log_derivative(j, i)
-			likelihood+=distribution.get_log_likelihood_example(i)
+				val=distribution.get_log_derivative(j, i)
+				if val!=-inf and val!=nan: # only consider sparse matrix!
+					derivatives+=val
 
 		derivatives=abs(derivatives-indata['distribution_derivatives'])
 		likelihood=abs(likelihood-indata['distribution_likelihood'])
 
 		return util.check_accuracy(indata['distribution_accuracy'],
 			derivatives=derivatives, likelihood=likelihood)
-	else:
-		return util.check_accuracy(indata['distribution_accuracy'])
 
 ########################################################################
 # public

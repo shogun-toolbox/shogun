@@ -63,7 +63,8 @@ def histogram ():
 	for i in xrange(num_examples):
 		for j in xrange(num_param):
 			histo.get_log_derivative(j, i)
-		histo.get_log_likelihood_example(i)
+
+	histo.get_log_likelihood_sample()
 
 def linear_hmm ():
 	print 'LinearHMM'
@@ -85,15 +86,15 @@ def linear_hmm ():
 	hmm=LinearHMM(feats)
 	hmm.train()
 
-	#hmm.get_histogram()
+	hmm.get_transition_probs()
 
 	num_examples=feats.get_num_vectors()
 	num_param=hmm.get_num_model_parameters()
 	for i in xrange(num_examples):
 		for j in xrange(num_param):
 			hmm.get_log_derivative(j, i)
-		hmm.get_log_likelihood_example(i)
 
+	hmm.get_log_likelihood_sample()
 
 def hmm ():
 	print 'HMM'
