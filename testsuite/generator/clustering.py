@@ -5,6 +5,9 @@ Generator for Clustering
 from numpy import *
 from shogun.Clustering import *
 from shogun.Distance import EuclidianDistance
+from shogun.Library import Math_init_random
+
+INIT_RANDOM=42
 
 import fileop
 import featop
@@ -17,6 +20,7 @@ def _get_outdata (name, params):
 		'data_train':matrix(params['data']['train']),
 		'data_test':matrix(params['data']['test']),
 		'clustering_accuracy':CLUSTERING[name][0],
+		'clustering_init_random':INIT_RANDOM,
 	}
 
 	optional=['k', 'radi', 'centers', 'merges', 'merge_distance', 'pairs']
@@ -59,5 +63,7 @@ def _run (name, first_arg):
 
 
 def run ():
+	# init random to be constant
+	Math_init_random(INIT_RANDOM)
 	_run('KMeans', 'k')
 	_run('Hierarchical', 'merges')

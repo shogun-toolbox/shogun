@@ -59,7 +59,7 @@ class CHierarchical : public CDistanceMachine
 
 		inline void get_merge_distance(DREAL** dist, INT* num)
 		{
-			size_t sz=sizeof(merge_distance)*merges;
+			size_t sz=sizeof(*merge_distance)*merges;
 			*dist=(DREAL*) malloc(sz);
 			ASSERT(*dist);
 
@@ -77,7 +77,7 @@ class CHierarchical : public CDistanceMachine
 		inline void get_pairs(INT** tuples, INT* rows, INT* num)
 		{
 			*rows=2;
-			size_t sz=sizeof(pairs)*(*rows)*merges;
+			size_t sz=sizeof(*pairs)*(*rows)*merges;
 			*tuples=(INT*) malloc(sz);
 			ASSERT(*tuples);
 
