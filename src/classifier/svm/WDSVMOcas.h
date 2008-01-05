@@ -58,12 +58,12 @@ class CWDSVMOcas : public CClassifier
 
 			INT len=0;
 			DREAL sum=0;
-			INT offs=0;
 			BYTE* vec = features->get_feature_vector(num, len);
 			ASSERT(len == string_length);
 
 			for (INT j=0; j<string_length; j++)
 			{
+				INT offs=w_dim_single_char*j;
 				INT val=0;
 				for (INT k=0; (j+k<string_length) && (k<degree); k++)
 				{
@@ -94,7 +94,9 @@ class CWDSVMOcas : public CClassifier
 		INT set_wd_weights();
 		static void compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, uint32_t nSel, void* ptr );
 		static double update_W(double t, void* ptr );
+		static void* add_new_cut_helper(void* ptr);
 		static void add_new_cut( double *new_col_H, uint32_t *new_cut, uint32_t cut_length, uint32_t nSel, void* ptr );
+		static void* compute_output_helper(void* ptr);
 		static void compute_output( double *output, void* ptr );
 		static void sort( double* vals, uint32_t* idx, uint32_t size);
 
@@ -120,6 +122,7 @@ class CWDSVMOcas : public CClassifier
 		DREAL bias;
 		INT* w_offsets;
 		INT w_dim;
+		INT w_dim_single_char;
 		SHORTREAL* w;
 		SHORTREAL* old_w;
 		DREAL* tmp_a_buf; /// nDim big

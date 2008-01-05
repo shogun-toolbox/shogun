@@ -21,6 +21,27 @@
 #include "features/Alphabet.h"
 #include "features/Labels.h"
 
+
+struct wdocas_thread_params_output
+{
+	SHORTREAL* out;
+	INT* val;
+	double* output;
+	CWDSVMOcas* wdocas;
+	INT start;
+	INT end;
+};
+
+struct wdocas_thread_params_add
+{
+	CWDSVMOcas* wdocas;
+	SHORTREAL* new_a;
+	uint32_t* new_cut;
+	INT start;
+	INT end;
+	uint32_t cut_length;
+};
+
 CWDSVMOcas::CWDSVMOcas(E_SVM_TYPE type) : CClassifier(), use_bias(false), bufsize(3000), C1(1), C2(1),
 	epsilon(1e-3), method(type)
 {
@@ -84,15 +105,15 @@ INT CWDSVMOcas::set_wd_weights()
 	delete[] w_offsets;
 	w_offsets=new INT[degree];
 	ASSERT(w_offsets);
-	INT w_dim_single_char=0;
+	INT w_dim_single_c=0;
 
 	for (INT i=0; i<degree; i++)
 	{
 		w_offsets[i]=CMath::pow(alphabet_size, i+1);
 		wd_weights[i]=sqrt(2.0*(from_degree-i)/(from_degree*(from_degree+1)));
-		w_dim_single_char+=w_offsets[i];
+		w_dim_single_c+=w_offsets[i];
 	}
-	return w_dim_single_char;
+	return w_dim_single_c;
 }
 
 bool CWDSVMOcas::train()
@@ -110,7 +131,7 @@ bool CWDSVMOcas::train()
 	INT num_train_labels=0;
 	lab=get_labels()->get_labels(num_train_labels);
 
-	INT w_dim_single_char=set_wd_weights();
+	w_dim_single_char=set_wd_weights();
 	CMath::display_vector(wd_weights, degree, "wd_weights");
 	SG_DEBUG("w_dim_single_char=%d\n", w_dim_single_char);
 	w_dim=string_length*w_dim_single_char;
@@ -121,7 +142,6 @@ bool CWDSVMOcas::train()
 	SG_INFO("num_vec: %d num_lab: %d\n", num_vec, num_train_labels);
 	ASSERT(num_vec==num_train_labels);
 	ASSERT(num_vec>0);
-
 
 	delete[] w;
 	w=new SHORTREAL[w_dim];
@@ -217,36 +237,35 @@ double CWDSVMOcas::update_W( double t, void* ptr )
     sparse_A(:,nSel+1) = new_a;
 
   ---------------------------------------------------------------------------------*/
-void CWDSVMOcas::add_new_cut( double *new_col_H, 
-                  uint32_t *new_cut, 
-                  uint32_t cut_length, 
-                  uint32_t nSel,
-				  void* ptr)
+void* CWDSVMOcas::add_new_cut_helper( void* ptr)
 {
-	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
-	CStringFeatures<BYTE>* f = o->features;
+	wdocas_thread_params_add* p = (wdocas_thread_params_add*) ptr;
+	CWDSVMOcas* o = p->wdocas;
+	INT start = p->start;
+	INT end = p->end;
 	INT string_length = o->string_length;
-	uint32_t nDim=(uint32_t) o->w_dim;
+	//uint32_t nDim=(uint32_t) o->w_dim;
+	uint32_t cut_length=p->cut_length;
+	uint32_t* new_cut=p->new_cut;
+	INT* w_offsets = o->w_offsets;
 	DREAL* y = o->lab;
 	INT alphabet_size = o->alphabet_size;
-	INT* w_offsets = o->w_offsets;
 	SHORTREAL* wd_weights = o->wd_weights;
 	INT degree = o->degree;
-	SHORTREAL** cuts=o->cuts;
+	CStringFeatures<BYTE>* f = o->features;
 	DREAL normalization_const = o->normalization_const;
 
-	uint32_t i;
-
 	// temporary vector
-	SHORTREAL* new_a = new SHORTREAL[nDim];
-	memset(new_a, 0, sizeof(SHORTREAL)*nDim);
+	SHORTREAL* new_a = p->new_a;
+	//SHORTREAL* new_a = new SHORTREAL[nDim];
+	//memset(new_a, 0, sizeof(SHORTREAL)*nDim);
 
 	INT* val=new INT[cut_length];
 	ASSERT(val);
 
-	INT offs=0;
-	for (INT j=0; j<string_length; j++)
+	for (INT j=start; j<end; j++)
 	{
+		INT offs=o->w_dim_single_char*j;
 		memset(val,0,sizeof(INT)*cut_length);
 		INT lim=CMath::min(degree, string_length-j);
 		INT len;
@@ -256,13 +275,88 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 			BYTE* vec = f->get_feature_vector(j+k, len);
 			SHORTREAL wd = wd_weights[k]/normalization_const;
 
-			for(i=0; i < cut_length; i++) 
+			for(uint32_t i=0; i < cut_length; i++) 
 			{
 				val[i]=val[i]*alphabet_size + vec[new_cut[i]];
 				new_a[offs+val[i]]+=wd * y[new_cut[i]];
 			}
 			offs+=w_offsets[k];
 		}
+	}
+
+	//p->new_a=new_a;
+	delete[] val;
+	return NULL;
+}
+
+void CWDSVMOcas::add_new_cut( double *new_col_H, 
+                  uint32_t *new_cut, 
+                  uint32_t cut_length, 
+                  uint32_t nSel,
+				  void* ptr)
+{
+	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
+	INT string_length = o->string_length;
+	uint32_t nDim=(uint32_t) o->w_dim;
+	SHORTREAL** cuts=o->cuts;
+
+	uint32_t i;
+	wdocas_thread_params_add* params_add=new wdocas_thread_params_add[parallel.get_num_threads()];
+	ASSERT(params_add);
+	pthread_t* threads = new pthread_t[parallel.get_num_threads()];
+	ASSERT(threads);
+	SHORTREAL* new_a = new SHORTREAL[nDim];
+	memset(new_a, 0, sizeof(SHORTREAL)*nDim);
+
+	INT t;
+	INT nthreads=parallel.get_num_threads()-1;
+	INT end=0;
+	INT step= string_length/parallel.get_num_threads();
+
+	if (step<1)
+	{
+		nthreads=string_length-1;
+		step=1;
+	}
+
+	for (t=0; t<nthreads; t++)
+	{
+		params_add[t].wdocas=o;
+		//params_add[t].new_a=NULL;
+		params_add[t].new_a=new_a;
+		params_add[t].new_cut=new_cut;
+		params_add[t].start = step*t;
+		params_add[t].end = step*(t+1);
+		params_add[t].cut_length = cut_length;
+
+		if (pthread_create(&threads[t], NULL, &CWDSVMOcas::add_new_cut_helper, (void*)&params_add[t]) != 0)
+		{
+			nthreads=t;
+			SG_SWARNING("thread creation failed\n");
+			break;
+		}
+		end=params_add[t].end;
+	}
+
+	params_add[t].wdocas=o;
+	//params_add[t].new_a=NULL;
+	params_add[t].new_a=new_a;
+	params_add[t].new_cut=new_cut;
+	params_add[t].start = step*t;
+	params_add[t].end = string_length;
+	params_add[t].cut_length = cut_length;
+	add_new_cut_helper(&params_add[t]);
+	//SHORTREAL* new_a=params_add[t].new_a;
+
+	for (t=0; t<nthreads; t++)
+	{
+		if (pthread_join(threads[t], NULL) != 0)
+			SG_SWARNING( "pthread_join failed\n");
+
+		//SHORTREAL* a=params_add[t].new_a;
+		//for (i=0; i<nDim; i++)
+		//	new_a[i]+=a[i];
+		//delete[] a;
 	}
 
 	// insert new_a into the last column of sparse_A
@@ -273,7 +367,9 @@ void CWDSVMOcas::add_new_cut( double *new_col_H,
 	cuts[nSel]=new_a;
 	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
 	//CMath::display_vector(cuts[nSel], nDim, "cut[nSel]");
-	delete[] val;
+	//
+	delete[] threads;
+	delete[] params_add;
 }
 
 void CWDSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
@@ -286,11 +382,17 @@ void CWDSVMOcas::sort( double* vals, uint32_t* idx, uint32_t size)
 
   output = data_X'*W;
   ----------------------------------------------------------------------*/
-void CWDSVMOcas::compute_output( double *output, void* ptr )
+void* CWDSVMOcas::compute_output_helper(void* ptr)
 {
-	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
+	wdocas_thread_params_output* p = (wdocas_thread_params_output*) ptr;
+	CWDSVMOcas* o = p->wdocas;
+	INT start = p->start;
+	INT end = p->end;
+	SHORTREAL* out = p->out;
+	double* output = p->output;
+	INT* val = p->val;
+
 	CStringFeatures<BYTE>* f=o->get_features();
-	INT nData=o->num_vec;
 
 	INT degree = o->degree;
 	INT string_length = o->string_length;
@@ -302,16 +404,13 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 	DREAL* y = o->lab;
 	DREAL normalization_const = o->normalization_const;
 
-	SHORTREAL* out=new SHORTREAL[nData];
-	ASSERT(out);
-	INT* val=new INT[nData];
-	ASSERT(val);
-	memset(out, 0, sizeof(SHORTREAL)*nData);
 
-	INT offs=0;
 	for (INT j=0; j<string_length; j++)
 	{
-		memset(val,0,sizeof(INT)*nData);
+		INT offs=o->w_dim_single_char*j;
+		for (INT i=start ; i<end; i++)
+			val[i]=0;
+
 		INT lim=CMath::min(degree, string_length-j);
 		INT len;
 
@@ -320,7 +419,7 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 			BYTE* vec=f->get_feature_vector(j+k, len);
 			SHORTREAL wd = wd_weights[k];
 
-			for (INT i=0; i<nData; i++) // quite fast 1.9s
+			for (INT i=start; i<end; i++) // quite fast 1.9s
 			{
 				val[i]=val[i]*alphabet_size + vec[i];
 				out[i]+=wd*w[offs+val[i]];
@@ -365,11 +464,76 @@ void CWDSVMOcas::compute_output( double *output, void* ptr )
 		}
 	}
 
-	for (INT i=0; i<nData; i++)
+	for (INT i=start; i<end; i++)
 		output[i]=out[i]*y[i]/normalization_const;
 
 	//CMath::display_vector(o->w, o->w_dim, "w");
 	//CMath::display_vector(output, nData, "out");
+	return NULL;
+}
+
+void CWDSVMOcas::compute_output( double *output, void* ptr )
+{
+	wdocas_thread_params_output* params_output=new wdocas_thread_params_output[parallel.get_num_threads()];
+	ASSERT(params_output);
+	pthread_t* threads = new pthread_t[parallel.get_num_threads()];
+	ASSERT(threads);
+
+	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
+	INT nData=o->num_vec;
+
+	SHORTREAL* out=new SHORTREAL[nData];
+	ASSERT(out);
+	INT* val=new INT[nData];
+	ASSERT(val);
+	memset(out, 0, sizeof(SHORTREAL)*nData);
+
+	INT t;
+	INT nthreads=parallel.get_num_threads()-1;
+	INT end=0;
+	INT step= nData/parallel.get_num_threads();
+
+	if (step<1)
+	{
+		nthreads=nData-1;
+		step=1;
+	}
+
+	for (t=0; t<nthreads; t++)
+	{
+		params_output[t].wdocas=o;
+		params_output[t].output=output;
+		params_output[t].out=out;
+		params_output[t].val=val;
+		params_output[t].start = step*t;
+		params_output[t].end = step*(t+1);
+
+		//SG_SPRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, params_output[t].output);
+		if (pthread_create(&threads[t], NULL, &CWDSVMOcas::compute_output_helper, (void*)&params_output[t]) != 0)
+		{
+			nthreads=t;
+			SG_SWARNING("thread creation failed\n");
+			break;
+		}
+		end=params_output[t].end;
+	}
+
+	params_output[t].wdocas=o;
+	params_output[t].output=output;
+	params_output[t].out=out;
+	params_output[t].val=val;
+	params_output[t].start = step*t;
+	params_output[t].end = nData;
+	compute_output_helper(&params_output[t]);
+	//SG_SPRINT("t=%d start=%d end=%d output=%p\n", t, params_output[t].start, params_output[t].end, params_output[t].output);
+
+	for (t=0; t<nthreads; t++)
+	{
+		if (pthread_join(threads[t], NULL) != 0)
+			SG_SWARNING( "pthread_join failed\n");
+	}
+	delete[] threads;
+	delete[] params_output;
 	delete[] val;
 	delete[] out;
 }

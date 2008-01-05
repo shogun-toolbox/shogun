@@ -77,7 +77,7 @@ ocas_return_value_T svm_ocas_solver(
   double *b, *alpha, *diag_H;
   double *output, *old_output;
   double xi, sq_norm_W, QPSolverTolRel, dot_prod_WoldW, dummy, sq_norm_oldW;
-  double A0, B0, Bsum, GradVal, t, t1, t2, *Ci, *Bi, *hpf;
+  double A0, B0, Bsum, GradVal, t, t1=0, t2=0, *Ci, *Bi, *hpf;
   double start_time;
   uint32_t *hpi;
   uint32_t cut_length;
@@ -285,9 +285,13 @@ ocas_return_value_T svm_ocas_solver(
         }
         ocas.Q_P = 0.5*sq_norm_W + C*xi;
 
-        ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, |W|^2=%f, xi=%f, err=%.2f%%, qpf=%d\n",
+        /*ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, |W|^2=%f, xi=%f, err=%.2f%%, qpf=%d\n",
                   ocas.nIter,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P), 
-                  ocas.nNZAlpha, sq_norm_W, xi, 100*(double)ocas.trn_err/(double)nData, qp_exitflag);
+                  ocas.nNZAlpha, sq_norm_W, xi, 100*(double)ocas.trn_err/(double)nData, qp_exitflag);*/
+
+		ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, |W|^2=%f, xi=%f, err=%.2f%%, qpf=%d, t1=%f, t2=%f\n",
+				ocas.nIter,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P),
+				ocas.nNZAlpha, sq_norm_W,xi,100*(double)ocas.trn_err/(double)nData, qp_exitflag, t1,t2 );
 
         break;
 
@@ -372,9 +376,12 @@ ocas_return_value_T svm_ocas_solver(
 
         ocas.Q_P = 0.5*sq_norm_W + C*xi;
 
-        ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, |W|^2=%f, xi=%f, err=%.2f%%, qpf=%d\n",
-                   ocas.nIter,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P),
-                   ocas.nNZAlpha, sq_norm_W,xi,100*(double)ocas.trn_err/(double)nData, qp_exitflag );
+        //ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, |W|^2=%f, xi=%f, err=%.2f%%, qpf=%d\n",
+        //           ocas.nIter,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P),
+        //           ocas.nNZAlpha, sq_norm_W,xi,100*(double)ocas.trn_err/(double)nData, qp_exitflag );
+		ocas_print("%4d: Q_P=%f, Q_D=%f, Q_P-Q_D=%f, 1-Q_D/Q_P=%f, nza=%4d, |W|^2=%f, xi=%f, err=%.2f%%, qpf=%d, t1=%f, t2=%f\n",
+				ocas.nIter,ocas.Q_P,ocas.Q_D,ocas.Q_P-ocas.Q_D,(ocas.Q_P-ocas.Q_D)/ABS(ocas.Q_P),
+				ocas.nNZAlpha, sq_norm_W,xi,100*(double)ocas.trn_err/(double)nData, qp_exitflag, t1,t2 );
 
         break;
     }
