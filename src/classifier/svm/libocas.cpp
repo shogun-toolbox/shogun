@@ -345,7 +345,7 @@ ocas_return_value_T svm_ocas_solver(
           i++;
         }
 
-        t1 = t;                       /* new (best so far) W */
+        t1 = MIN(t,1);                /* new (best so far) W */
         t2 = MIN(t+(1.0-t)/10.0,1.0); /* new cutting plane */
 
         /* update W to be the best so far solution */
