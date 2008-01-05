@@ -61,11 +61,11 @@ SRCDIR = .
 # SRC/OBJFILES lie all in the subdir of SRCDIR
 SVNEntries = $(shell find $(SRCDIR) -name entries -type f)
 HEADERFILES	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_HEADER)" )
-SRCFILES 	= $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' | grep -v 'configure-')
+SRCFILES 	= $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)")
 ifeq (yes,$(USE_SWIG))
-OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' | grep -v 'configure-' )) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)"| grep -v '.cpuinfo.c' | grep -v 'configure-' )) $(patsubst %.$(EXT_INP_SWIG),%$(EXT_OBJ_SWIG), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
+OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_CPP)" )) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_C)" )) $(patsubst %.$(EXT_INP_SWIG),%$(EXT_OBJ_SWIG), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
 else
-OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_CPP)"| grep -v '.cpuinfo.c' | grep -v 'configure-')) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -name "*.$(EXT_SRC_C)"| grep -v '.cpuinfo.c' | grep -v 'configure-'))
+OBJFILES 	= $(patsubst %.$(EXT_SRC_CPP),%.$(EXT_OBJ_CPP), $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_CPP)")) $(patsubst %.$(EXT_SRC_C),%.$(EXT_OBJ_C), $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_C)"))
 endif
 SWIGIFILES   	= $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)")
 SWIGSRCFILES 	= $(patsubst %.$(EXT_INP_SWIG),%$(EXT_SRC_SWIG), $(shell find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -exec grep -le '^%module' {} \;))
@@ -212,31 +212,36 @@ endif #python+swig
 
 dep:	depend
 depend:		.config lib/versionstring.h
-	$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
-		$(shell find $(SRCDIR) -name "*.h" -o \
-		-name "*.$(EXT_SRC_CPP)" | grep -v 'configure-' ) $(MAKEDEPENDOPTS) | \
-		sed -e 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend || true
-	$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
-		$(shell find $(SRCDIR) -name "*.h" -o \
-		-name "*.$(EXT_SRC_C)" | grep -v 'configure-' ) $(MAKEDEPENDOPTS) | \
-		sed -e 's/\.o:/.$(EXT_OBJ_C):/g' >>.depend || true
-	find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -o \
+ifeq (makedepend,$(MAKEDEPEND))
+	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
+		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
+		sed -e 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend
+	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
+		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_C)" ) $(MAKEDEPENDOPTS) | \
+		sed -e 's/\.o:/.$(EXT_OBJ_C):/g' >>.depend
+else #gcc -MM
+	find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
+	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
+endif
+	find $(SRCDIR) -mindepth 2 -name "*.$(EXT_INP_SWIG)" -o \
 		-name "*.h" -o -name "*.$(EXT_SRC_CPP)" -o -name "*.$(EXT_SRC_CPP)" | \
-		grep -v 'configure-' |  \
 		cut -c 3- | \
 		$(PYTHON) .generate_link_dependencies.py $(EXT_LIB_SWIG) >>.depend
+
 .depend:	.config lib/versionstring.h
-	$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
-		$(shell find $(SRCDIR) -name "*.h" -o \
-		-name "*.$(EXT_SRC_CPP)" | grep -v 'configure-' ) $(MAKEDEPENDOPTS) | \
-		sed -e 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend || true
-	$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
-		$(shell find $(SRCDIR) -name "*.h" -o \
-		-name "*.$(EXT_SRC_C)" | grep -v 'configure-' ) $(MAKEDEPENDOPTS) | \
-		sed -e 's/\.o:/.$(EXT_OBJ_C):/g' >>.depend || true
-	find $(SRCDIR) -name "*.$(EXT_INP_SWIG)" -o \
+ifeq (makedepend,$(MAKEDEPEND))
+	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
+		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_CPP)" ) $(MAKEDEPENDOPTS) | \
+		sed -e 's/\.o:/.$(EXT_OBJ_CPP):/g' >.depend
+	-$(MAKEDEPEND) $(DEFINES) $(INCLUDES) \
+		$(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_C)" ) $(MAKEDEPENDOPTS) | \
+		sed -e 's/\.o:/.$(EXT_OBJ_C):/g' >>.depend
+else #gcc -MM
+	find $(SRCDIR) -mindepth 2 -name "*.$(EXT_SRC_C)" -o -name "*.$(EXT_SRC_CPP)" \
+	-exec $(MAKEDEPEND) $(DEFINES) $(INCLUDES) {} -MT {}.o \; >.depend
+endif
+	find $(SRCDIR) -mindepth 2 -name "*.$(EXT_INP_SWIG)" -o \
 		-name "*.h" -o -name "*.$(EXT_SRC_CPP)" -o -name "*.$(EXT_SRC_CPP)" | \
-		grep -v 'configure-' |  \
 		cut -c 3- | \
 		$(PYTHON) .generate_link_dependencies.py $(EXT_LIB_SWIG) >>.depend
 
@@ -246,7 +251,7 @@ tests:
 		cd ../$(INTERFACE)/testcases && ./run.sh	
 
 ChangeLog:
-		@svn2cl --group-by-day --authors=.authors 2>/dev/null || true
+		-@svn2cl --group-by-day --authors=.authors 2>/dev/null
 
 $(OBJFILES): .config .depend lib/versionstring.h ChangeLog
 
@@ -254,7 +259,7 @@ ifeq (yes,$(USE_SWIG))
 $(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES) 
 else
 $(TARGET): $(OBJFILES) $(SRCFILES) $(HEADERFILES)
-	$(LINK) $(shell find $(SRCDIR) -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" | grep -v '.cpuinfo' | grep -v 'configure-' 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
+	$(LINK) $(shell find $(SRCDIR) -mindepth 2 -name "*.$(EXT_OBJ_CPP)" -o -name "*.$(EXT_OBJ_C)" 2>/dev/null) $(LINKFLAGS) -o $@ $(POSTLINKFLAGS)
 	#removeconfighunk
 endif
 
@@ -281,4 +286,3 @@ endif
 
 %.$(EXT_OBJ_C):	%.$(EXT_SRC_C)
 	$(COMP_C) $(COMPFLAGS_C) -c $(INCLUDES) -o $@ $<
-
