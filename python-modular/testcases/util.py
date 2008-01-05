@@ -100,8 +100,9 @@ def get_feats_string_complex (indata):
 		indata['gap'], eval(indata['reverse']))
 	feats['test']=feat
 
-	if indata['feature_type']=='Word':
-		return add_preproc('SortWordString', feats)
+	if indata['feature_type']=='Word' or indata['feature_type']=='Ulong':
+		name='Sort'+indata['feature_type']+'String'
+		return add_preproc(name, feats)
 	else:
 		return feats
 
