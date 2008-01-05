@@ -19,7 +19,7 @@
 #include "features/SparseFeatures.h"
 #include "features/Labels.h"
 
-#define DEBUG_SUBGRADIENTSVM
+#undef DEBUG_SUBGRADIENTSVM
 
 extern double sparsity;
 double tim;
@@ -150,7 +150,7 @@ INT CSubGradientSVM::find_active(INT num_feat, INT num_vec, INT& num_active, INT
 
 		if (i>=qpsize_max && autoselected_epsilon>epsilon) //qpsize limit
 		{
-			SG_PRINT("qpsize limit (%d) reached\n", qpsize_max);
+			SG_INFO("qpsize limit (%d) reached\n", qpsize_max);
 			INT num_in_qp=i;
 			while (--i>=0 && num_in_qp>=qpsize_max)
 			{
@@ -616,9 +616,13 @@ bool CSubGradientSVM::train()
 			DREAL norm_grad=CMath::dot(grad_w, grad_w, num_feat) +
 				grad_b*grad_b;
 
+#ifdef DEBUG_SUBGRADIENTSVM
 			SG_PRINT("CHECKING OPTIMALITY CONDITIONS: "
 					"work_epsilon: %10.10f delta_active:%d alpha: %10.10f norm_grad: %10.10f a*norm_grad:%10.16f\n",
 					work_epsilon, delta_active, alpha, norm_grad, CMath::abs(alpha*norm_grad));
+#else
+			SG_ABS_PROGRESS(work_epsilon, -CMath::log10(work_epsilon), -CMath::log10(0.99999999), -CMath::log10(epsilon), 6);
+#endif
 
 			if (work_epsilon<=epsilon && delta_active==0 && CMath::abs(alpha*norm_grad)<1e-6)
 				break;
@@ -666,7 +670,7 @@ bool CSubGradientSVM::train()
 	CMath::display_vector(w, w_dim, "w");
 	SG_PRINT("bias: %f\n", bias);
 #endif
-	SG_PRINT("solver time:%f s\n", tim);
+	SG_INFO("solver time:%f s\n", tim);
 
 	cleanup();
 
