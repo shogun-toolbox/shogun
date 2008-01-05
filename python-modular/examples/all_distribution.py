@@ -64,6 +64,7 @@ def histogram ():
 		for j in xrange(num_param):
 			histo.get_log_derivative(j, i)
 
+	histo.get_log_likelihood()
 	histo.get_log_likelihood_sample()
 
 def linear_hmm ():
@@ -94,6 +95,7 @@ def linear_hmm ():
 		for j in xrange(num_param):
 			hmm.get_log_derivative(j, i)
 
+	hmm.get_log_likelihood()
 	hmm.get_log_likelihood_sample()
 
 def hmm ():

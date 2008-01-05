@@ -31,17 +31,17 @@ DREAL CDistribution::get_log_likelihood_sample()
 	return sum/features->get_num_vectors();
 }
 
-DREAL* CDistribution::get_log_likelihood()
+void CDistribution::get_log_likelihood(DREAL **dst, INT *num)
 {
 	ASSERT(features);
 
-	DREAL* output=new DREAL[features->get_num_vectors()];
-	ASSERT(output);
+	*num=features->get_num_vectors();
+	size_t sz=sizeof(DREAL)*(*num);
+	*dst=(DREAL*) malloc(sz);
+	ASSERT(dst);
 
-	for (INT i=0; i<features->get_num_vectors(); i++)
-		output[i]=get_log_likelihood_example(i);
-
-	return output;
+	for (INT i=0; i<(*num); i++)
+		*(*dst+i)=get_log_likelihood_example(i);
 }
 
 INT CDistribution::get_num_relevant_model_parameters()
