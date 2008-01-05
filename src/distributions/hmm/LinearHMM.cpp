@@ -18,7 +18,7 @@ CLinearHMM::CLinearHMM(CStringFeatures<WORD>* f) : CDistribution(), transition_p
 {
 	features=f;
 	sequence_length = f->get_vector_length(0);
-	num_symbols     = f->get_num_symbols();
+	num_symbols     = (INT) f->get_num_symbols();
 	num_params      = sequence_length*num_symbols;
 }
 
@@ -72,7 +72,7 @@ bool CLinearHMM::train()
 		{
 			DREAL sum=0;
 			INT offs=i*num_symbols+((CStringFeatures<WORD> *) features)->get_masked_symbols((WORD)j,(BYTE) 254);
-			INT original_num_symbols=((CStringFeatures<WORD> *) features)->get_original_num_symbols();
+			INT original_num_symbols=(INT) ((CStringFeatures<WORD> *) features)->get_original_num_symbols();
 
 			for (INT k=0; k<original_num_symbols; k++)
 				sum+=int_transition_probs[offs+k];
@@ -124,7 +124,7 @@ bool CLinearHMM::train(const INT* indizes, INT num_indizes, DREAL pseudo)
 		for (INT j=0; j<num_symbols; j++)
 		{
 			DREAL sum=0;
-			INT original_num_symbols=((CStringFeatures<WORD> *) features)->get_original_num_symbols();
+			INT original_num_symbols= (INT) ((CStringFeatures<WORD> *) features)->get_original_num_symbols();
 			for (INT k=0; k<original_num_symbols; k++)
 			{
 				sum+=int_transition_probs[i*num_symbols+

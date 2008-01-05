@@ -311,7 +311,8 @@ template <class ST> class CStringFeatures: public CFeatures
 	{
 		bool result=false;
 
-		const size_t blocksize=1024*1024;
+		size_t blocksize=1024*1024;
+		size_t required_blocksize=0;
 		BYTE* dummy=new BYTE[blocksize];
 		ASSERT(dummy);
 
@@ -328,18 +329,37 @@ template <class ST> class CStringFeatures: public CFeatures
 			num_vectors=0;
 			max_string_length=0;
 
+			SG_INFO("counting line numbers in file %s\n", fname);
 			size_t sz=blocksize;
+			size_t block_offs=0;
+			size_t old_block_offs=0;
+			fseek(f, 0, SEEK_END);
+			size_t fsize=ftell(f);
+			rewind(f);
+
 			while (sz == blocksize)
 			{
 				sz=fread(dummy, sizeof(BYTE), blocksize, f);
+				bool contains_cr=false;
 				for (size_t i=0; i<sz; i++)
 				{
-					if (dummy[i]=='\n' || i==sz-1)
+					block_offs++;
+					if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
+					{
 						num_vectors++;
+						contains_cr=true;
+						required_blocksize=CMath::max(required_blocksize, block_offs-old_block_offs);
+						old_block_offs=block_offs;
+					}
 				}
+				SG_PROGRESS(block_offs, 0, fsize, 1, "COUNTING:\t");
 			}
 
 			SG_INFO("found %d strings\n", num_vectors);
+			delete[] dummy;
+			blocksize=required_blocksize;
+			dummy = new BYTE[blocksize];
+			ASSERT(dummy);
 
 			features=new T_STRING<ST>[num_vectors];
 			ASSERT(features);
@@ -354,7 +374,7 @@ template <class ST> class CStringFeatures: public CFeatures
 				size_t old_sz=0;
 				for (size_t i=0; i<sz; i++)
 				{
-					if (dummy[i]=='\n' || i==sz-1)
+					if (dummy[i]=='\n' || (i==sz-1 && sz<blocksize))
 					{
 						INT len=i-old_sz;
 						//SG_PRINT("i:%d len:%d old_sz:%d\n", i, len, old_sz);
@@ -378,6 +398,7 @@ template <class ST> class CStringFeatures: public CFeatures
 						//CMath::display_vector(features[lines].string, len);
 						old_sz=i+1;
 						lines++;
+						SG_PROGRESS(lines, 0, num_vectors, 1, "LOADING:\t");
 					}
 				}
 			}
