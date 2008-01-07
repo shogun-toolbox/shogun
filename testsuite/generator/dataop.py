@@ -40,13 +40,13 @@ def get_rand (dattype=double, num_feats=NUM_FEATS, dim_square=False,
 	elif dattype==chararray:
 		ord_a=ord('A')
 		ord_z=ord('Z')
-		rand_train=randint(ord_a, chr_z, num_feats*num_vec_train)
-		rand_test=randint(ord_a, chr_z, num_feats*num_vec_test)
+		rand_train=randint(ord_a, ord_z, num_feats*num_vec_train)
+		rand_test=randint(ord_a, ord_z, num_feats*num_vec_test)
 		return {
 			'train': array(map(lambda x: chr(x), rand_train)).reshape(
 				num_feats, num_vec_train),
 			'test': array(map(lambda x: chr(x), rand_test)).reshape(
-				num_feats, num_vec_train)
+				num_feats, num_vec_test)
 		}
 	else:
 		if dattype==ushort:

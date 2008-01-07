@@ -130,10 +130,8 @@ def _compute_pie (name, feats, data):
 	pie=PluginEstimate()
 	fun=eval(name+'Kernel')
 
-	num_vec=feats['train'].get_num_vectors()
-	lab=rand(num_vec).round()*2-1
-	labels=Labels(lab)
-	pie.train(feats['train'], labels, .1, -.1)
+	lab, labels=dataop.get_labels(feats['train'].get_num_vectors())
+	pie.train(feats['train'], labels)
 	kernel=fun(feats['train'], feats['train'], pie)
 
 	kernel.init(feats['train'], feats['test'])
@@ -267,12 +265,15 @@ def _run_feats_string_complex ():
 	_compute('CommUlongString', feats, data, False, FULL_NORMALIZATION)
 
 def _run_pie ():
-	data=dataop.get_rand(dattype=chararray)
-	charfeats=featop.get_simple('Char', data)
 	data=dataop.get_rand(dattype=ushort)
 	feats=featop.get_simple('Word', data)
-	feats['train'].obtain_from_char_features(charfeats['train'], 0, 1)
-	feats['test'].obtain_from_char_features(charfeats['test'], 0, 1)
+
+#	data=dataop.get_rand(dattype=chararray)
+#	charfeats=featop.get_simple('Char', data)
+#	data=dataop.get_rand(dattype=ushort)
+#	feats=featop.get_simple('Word', data)
+#	feats['train'].obtain_from_char_features(charfeats['train'], 0, 1)
+#	feats['test'].obtain_from_char_features(charfeats['test'], 0, 1)
 
 	_compute_pie('HistogramWord', feats, data)
 	_compute_pie('SalzbergWord', feats, data)
