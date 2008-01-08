@@ -98,7 +98,7 @@ CLabels* CWDSVMOcas::classify(CLabels* output)
 
 INT CWDSVMOcas::set_wd_weights()
 {
-	ASSERT(degree>0 && degree<8);
+	ASSERT(degree>0 && degree<=8);
 	delete[] wd_weights;
 	wd_weights=new SHORTREAL[degree];
 	ASSERT(wd_weights);

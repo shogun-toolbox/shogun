@@ -2018,7 +2018,7 @@ CFeatures* CGUIMatlab::set_features(const mxArray* vals[], int nrhs)
 					INT len=0;
 					CHAR* al = CGUIMatlab::get_mxString(vals[3], len);
 
-					if (!strncmp(al, "DNABINFILE", CMath::min(len, 7)))
+					if (len==10 && !strncmp(al, "DNABINFILE", 10))
 					{
 						f= new CStringFeatures<BYTE>(DNA);
 						ASSERT(f);
