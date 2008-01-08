@@ -42,7 +42,7 @@ def _get_outdata (name, params):
 		outdata['seqlen']=dataop.LEN_SEQ
 		outdata['feature_obtain']=ddata[1][2]
 
-	optional=['N', 'M', 'pseudo',
+	optional=['N', 'M', 'pseudo', 'dimensions',
 		'derivatives', 'likelihood',
 		'best_path', 'best_path_state']
 	for opt in optional:
@@ -56,9 +56,13 @@ def _get_derivatives (distribution, feats):
 	num_param=distribution.get_num_model_parameters()
 	derivatives=0
 
-	for i in xrange(num_examples):
-		for j in xrange(num_param):
-			val=distribution.get_log_derivative(j, i)
+	#print 'num_examples ', num_examples
+	#print 'num_param ', num_param
+	for i in xrange(num_param):
+		#print "i ", i
+		for j in xrange(num_examples):
+			#print "j ", j
+			val=distribution.get_log_derivative(i, j)
 			if val!=-inf and val!=nan: # only consider sparse matrix!
 				derivatives+=val
 
@@ -84,34 +88,36 @@ def _run_hmm ():
 	params={
 		'N':3,
 		'M':6,
+		'dimensions':4,
 		'pseudo':1e-10,
 		'order':1,
 		'alphabet':'CUBE',
 	}
 
-	params['data']=dataop.get_cubes(params['N'])
+	params['data']=dataop.get_cubes(params['dimensions'])
 	feats=featop.get_string_complex(
 		'Word', params['data'], eval(params['alphabet']), params['order'])
 	#print feats['train'].get_num_symbols()
 	hmm=HMM(feats['train'], params['N'], params['M'], params['pseudo'])
 	hmm.train()
+	hmm.baum_welch_viterbi_train(BW_NORMAL)
 
+	params['likelihood']=hmm.get_log_likelihood_sample()
 	# ShogunException in get_log_derivatives after iteration 9; whatever
 	# that means
-	#params['derivatives'], params['likelihood']= \
-	#	_get_derivatives_likelihood(hmm, feats['train'])
+	#params['derivatives']=_get_derivatives(hmm, feats['train'])
 
 	params['best_path']=0
 	params['best_path_state']=0
-	for i in xrange(params['N']):
+	for i in xrange(params['dimensions']):
 		params['best_path']+=hmm.best_path(i)
-		for j in xrange(params['M']):
+		for j in xrange(params['N']):
 			params['best_path_state']+=hmm.get_best_path_state(i, j)
 
 	outdata=_get_outdata('HMM', params)
 	fileop.write(C_DISTRIBUTION, outdata)
 
 def run ():
-	_run('Histogram')
-	_run('LinearHMM')
-	#_run_hmm()
+	#_run('Histogram')
+	#_run('LinearHMM')
+	_run_hmm()

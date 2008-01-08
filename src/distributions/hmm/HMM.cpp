@@ -148,6 +148,7 @@ CModel::~CModel()
 }
 
 CHMM::CHMM(CHMM* h)
+: iterations(150), epsilon(1e-4), conv_it(5)
 {
 	SG_INFO( "hmm is using %i separate tables\n",  parallel.get_num_threads()) ;
 
@@ -158,6 +159,7 @@ CHMM::CHMM(CHMM* h)
 }
 
 CHMM::CHMM(INT p_N, INT p_M, CModel* p_model, DREAL p_PSEUDO)
+: iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
 	this->M=p_M;
@@ -169,6 +171,7 @@ CHMM::CHMM(INT p_N, INT p_M, CModel* p_model, DREAL p_PSEUDO)
 }
 
 CHMM::CHMM(CStringFeatures<WORD>* obs, INT p_N, INT p_M, DREAL p_PSEUDO)
+: iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
 	this->M=p_M;
@@ -181,6 +184,7 @@ CHMM::CHMM(CStringFeatures<WORD>* obs, INT p_N, INT p_M, DREAL p_PSEUDO)
 }
 
 CHMM::CHMM(INT p_N, double* p, double* q, double* a)
+: iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
 	this->M=0;
@@ -228,6 +232,7 @@ CHMM::CHMM(INT p_N, double* p, double* q, double* a)
 }
 
 CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
+: iterations(150), epsilon(1e-4), conv_it(5)
 {
 	model=NULL ;
 	
@@ -331,6 +336,7 @@ CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
 
 
 CHMM::CHMM(FILE* model_file, DREAL p_PSEUDO)
+: iterations(150), epsilon(1e-4), conv_it(5)
 {
 	SG_INFO( "hmm is using %i separate tables\n",  parallel.get_num_threads()) ;
 
@@ -5486,6 +5492,10 @@ void CHMM::set_observations(CStringFeatures<WORD>* obs, CHMM* lambda)
 {
 	ASSERT(obs);
 	p_observations=obs;
+	/* from Distribution, necessary for calls to base class methods, like
+	 * get_log_likelihood_sample():
+	 */
+	features=obs;
 
 	SG_DEBUG("num symbols alphabet: %ld\n", obs->get_alphabet()->get_num_symbols());
 	SG_DEBUG("num symbols: %ld\n", obs->get_num_symbols());
@@ -5675,3 +5685,121 @@ bool CHMM::permutation_entropy(INT window_width, INT sequence_number)
 	else
 		return false;
 }
+
+DREAL CHMM::get_log_derivative(INT num_param, INT num_example)
+{
+	if (num_param<N)
+		return model_derivative_p(num_param, num_example);
+	else if (num_param<2*N)
+		return model_derivative_q(num_param-N, num_example);
+	else if (num_param<N*(N+2))
+	{
+		INT k=num_param-2*N;
+		INT i=(k/N)*N;
+		INT j=N*N-i;
+		//SG_PRINT("k %d, i %d, j %d\n", k, i, j);
+		return model_derivative_a(i,j, k);
+	}
+	else if (num_param<N*(N+2+M))
+	{
+		INT k=num_param-N*(N+2);
+		INT i=(k/N)*M;
+		INT j=N*M-i;
+		return model_derivative_b(i,j, k);
+	}
+
+	ASSERT(false);
+	return -1;
+}
+
+DREAL CHMM::get_log_model_parameter(INT num_param)
+{
+	if (num_param<N)
+		return get_p(num_param);
+	else if (num_param<2*N)
+		return get_q(num_param-N);
+	else if (num_param<N*(N+2))
+		return transition_matrix_a[num_param-2*N];
+	else if (num_param<N*(N+2+M))
+		return observation_matrix_b[num_param-N*(N+2)];
+
+	ASSERT(false);
+	return -1;
+}
+
+
+//convergence criteria  -tobeadjusted-
+bool CHMM::converge(DREAL x, DREAL y)
+{
+	DREAL diff=y-x;
+	DREAL absdiff=fabs(diff);
+
+	SG_INFO( "\n #%03d\tbest result so far: %G (eps: %f)", iteration_count, y, diff);
+
+	if (iteration_count--==0 || (absdiff<epsilon && conv_it<=0))
+	{
+		iteration_count=iterations;
+		SG_INFO( "...finished\n");
+		conv_it=5;
+		return true;
+	}
+	else
+	{
+		if (absdiff<epsilon)
+			conv_it--;
+		else
+			conv_it=5;
+
+		return false;
+	}
+}
+
+//switch model and train model
+void CHMM::switch_model(CHMM** m1, CHMM** m2)
+{
+	CHMM* dummy=*m1;
+
+	*m1=*m2;
+	*m2=dummy;
+}
+
+bool CHMM::baum_welch_viterbi_train(BaumWelchViterbiType type)
+{
+	CHMM* estimate=new CHMM(this);
+	CHMM* working=this;
+	DREAL prob_max=-CMath::INFTY;
+	DREAL prob=-CMath::INFTY;
+	DREAL prob_train=CMath::ALMOST_NEG_INFTY;
+	iteration_count=iterations;
+
+	while (!converge(prob, prob_train))
+	{
+		switch_model(&working, &estimate);
+		prob=prob_train;
+		/* function pointer might be more efficient than switch, but works in
+		 * ISO C++ only with static members. :( but perhaps g++ is smart
+		 * enough to optimise this on its own...
+		 */
+		switch (type) {
+			case BW_NORMAL:
+				estimate_model_baum_welch(estimate); break;
+			case BW_TRANS:
+				estimate_model_baum_welch_trans(estimate); break;
+			case BW_DEFINED:
+				estimate_model_baum_welch_defined(estimate); break;
+			case VIT_NORMAL:
+				estimate_model_viterbi(estimate); break;
+			case VIT_DEFINED:
+				estimate_model_viterbi_defined(estimate); break;
+		}
+		prob_train=estimate->model_probability();
+		if (prob_max<prob_train)
+			prob_max=prob_train;
+	}
+
+	delete estimate;
+	estimate=NULL;
+
+	return true;
+}
+

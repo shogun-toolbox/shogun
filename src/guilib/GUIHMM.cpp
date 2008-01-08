@@ -29,11 +29,8 @@ CGUIHMM::CGUIHMM(CGUI * gui_): CSGObject(), gui(gui_)
 	neg=NULL;
 	test=NULL;
 
-	ITERATIONS=150;
-	EPSILON=1e-4;
 	PSEUDO=1e-10;
 	M=4;
-	conv_it=5;
 }
 
 CGUIHMM::~CGUIHMM()
@@ -64,37 +61,20 @@ bool CGUIHMM::new_hmm(CHAR* param)
 bool CGUIHMM::baum_welch_train(CHAR* param)
 {
 	if ((gui->guifeatures.get_train_features()->get_feature_type()
-	     !=F_WORD) ||
-	   (gui->guifeatures.get_train_features()->get_feature_class()
-	    !=C_STRING))
-	  {
-	    SG_ERROR( "Features must be STRING of type WORD\n") ;
-	    return false ;
-	  } ;
+				!=F_WORD) ||
+			(gui->guifeatures.get_train_features()->get_feature_class()
+			 !=C_STRING))
+	{
+		SG_ERROR( "Features must be STRING of type WORD\n") ;
+		return false ;
+	} ;
 	CStringFeatures<WORD>* sf = ((CStringFeatures<WORD>*) (gui->guifeatures.get_train_features()));
 	SG_DEBUG( "Stringfeatures have %ld orig_symbols %ld symbols %d order %ld max_symbols\n",  (LONG) sf->get_original_num_symbols(), (LONG) sf->get_num_symbols(), sf->get_order(), (LONG) sf->get_max_num_symbols());
 
-	double prob_max=-CMath::INFTY ;
-	iteration_count=ITERATIONS ;
-
-	if (working) 
+	if (working)
 	{
 		working->set_observations(sf);
-		CHMM* working_estimate=new CHMM(working);
-
-		double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
-
-		while (!converge(prob,prob_train))
-		{
-			switch_model(&working, &working_estimate);
-			prob=prob_train ;
-			working->estimate_model_baum_welch(working_estimate);
-			prob_train=working_estimate->model_probability();
-			if (prob_max<prob_train)
-				prob_max=prob_train ;
-		}
-		delete working_estimate;
-		working_estimate=NULL;
+		return working->baum_welch_viterbi_train(BW_NORMAL);
 	}
 	else
 		SG_ERROR( "create hmm first\n");
@@ -105,75 +85,39 @@ bool CGUIHMM::baum_welch_train(CHAR* param)
 
 bool CGUIHMM::baum_welch_trans_train(CHAR* param)
 {
-  if ((gui->guifeatures.get_train_features()->get_feature_type()
-       !=F_WORD) ||
-      (gui->guifeatures.get_train_features()->get_feature_class()
-       !=C_STRING))
-    {
-      SG_ERROR( "Features must be STRING of type WORD\n") ;
-      return false ;
-    } ;
-  
-  double prob_max=-CMath::INFTY ;
-  iteration_count=ITERATIONS ;
-
-  if (working) 
-    {
-      if (gui->guifeatures.get_train_features())
+	if ((gui->guifeatures.get_train_features()->get_feature_type()
+				!=F_WORD) ||
+			(gui->guifeatures.get_train_features()->get_feature_class()
+			 !=C_STRING))
 	{
-	  working->set_observations((CStringFeatures<WORD>*) gui->guifeatures.get_train_features());
-	  CHMM* working_estimate=new CHMM(working);
-	  
-	  double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
-	  
-	  while (!converge(prob,prob_train))
-	    {
-	      switch_model(&working, &working_estimate);
-	      prob=prob_train ;
-	      working->estimate_model_baum_welch_trans(working_estimate);
-	      prob_train=working_estimate->model_probability();
-	      if (prob_max<prob_train)
+		SG_ERROR( "Features must be STRING of type WORD\n") ;
+		return false ;
+	} ;
+
+	if (working)
+	{
+		if (gui->guifeatures.get_train_features())
 		{
-		  prob_max=prob_train ;
-		} ;
-	    }
-	  delete working_estimate;
-	  working_estimate=NULL;
+			working->set_observations((CStringFeatures<WORD>*) gui->guifeatures.get_train_features());
+			return working->baum_welch_viterbi_train(BW_TRANS);
+		}
+		else
+			SG_ERROR( "load train features first\n");
 	}
-      else
-	SG_ERROR( "load train features first\n");
-    }
-  else
-    SG_ERROR( "create model first\n");
-  
-  return false;
+	else
+		SG_ERROR( "create model first\n");
+
+	return false;
 }
 
 
 bool CGUIHMM::baum_welch_train_defined(CHAR* param)
 {
-	double prob_max=-CMath::INFTY ;
-	iteration_count=ITERATIONS ;
-
-	if (working) 
+	if (working)
 	{
 		if (working->get_observations())
 		{
-			CHMM* working_estimate=new CHMM(working);
-
-			double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
-
-			while (!converge(prob,prob_train))
-			{
-				switch_model(&working, &working_estimate);
-				prob=prob_train ;
-				working->estimate_model_baum_welch_defined(working_estimate);
-				prob_train=working_estimate->model_probability();
-				if (prob_max<prob_train)
-					prob_max=prob_train ;
-			}
-			delete working_estimate;
-			working_estimate=NULL;
+			return working->baum_welch_viterbi_train(BW_DEFINED);
 		}
 		else
 			SG_ERROR( "assign observation first\n");
@@ -186,29 +130,11 @@ bool CGUIHMM::baum_welch_train_defined(CHAR* param)
 
 bool CGUIHMM::viterbi_train(CHAR* param)
 {
-	double prob_max=-CMath::INFTY ;
-	iteration_count=ITERATIONS ;
-
-	if (working) 
+	if (working)
 	{
 		if (working->get_observations())
 		{
-			CHMM* working_estimate=new CHMM(working);
-
-			double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
-
-			while (!converge(prob,prob_train))
-			{
-				switch_model(&working, &working_estimate);
-				prob=prob_train ;
-				working->estimate_model_viterbi(working_estimate);
-				prob_train=working_estimate->best_path(-1);
-
-				if (prob_max<prob_train)
-					prob_max=prob_train ;
-			}
-			delete working_estimate;
-			working_estimate=NULL;
+			return working->baum_welch_viterbi_train(VIT_NORMAL);
 		}
 		else
 			SG_ERROR( "assign observation first\n");
@@ -221,29 +147,11 @@ bool CGUIHMM::viterbi_train(CHAR* param)
 
 bool CGUIHMM::viterbi_train_defined(CHAR* param)
 {
-	double prob_max=-CMath::INFTY ;
-	iteration_count=ITERATIONS ;
-
-	if (working) 
+	if (working)
 	{
 		if (working->get_observations())
 		{
-			CHMM* working_estimate=new CHMM(working);
-
-			double prob_train=CMath::ALMOST_NEG_INFTY, prob = -CMath::INFTY ;
-
-			while (!converge(prob,prob_train))
-			{
-				switch_model(&working, &working_estimate);
-				prob=prob_train ;
-				working->estimate_model_viterbi_defined(working_estimate);
-				prob_train=working_estimate->best_path(-1);
-
-				if (prob_max<prob_train)
-					prob_max=prob_train ;
-			}
-			delete working_estimate;
-			working_estimate=NULL;
+			return working->baum_welch_viterbi_train(VIT_DEFINED);
 		}
 		else
 			SG_ERROR( "assign observation first\n");
@@ -602,7 +510,7 @@ CLabels* CGUIHMM::one_class_classify(CLabels* result)
 	INT num_vec=obs->get_num_vectors();
 
 	if (!result)
-	  result=new CLabels(num_vec);
+		result=new CLabels(num_vec);
 
 	ASSERT(working);
 
@@ -770,16 +678,22 @@ bool CGUIHMM::convergence_criteria(CHAR* param)
 
 	if (sscanf(param, "%d %le", &j, &f) == 2)
 	{
-		ITERATIONS=j;
-		EPSILON=f;
+		if (working)
+		{
+			working->set_iterations(j);
+			working->set_epsilon(f);
+		}
+		else
+			SG_ERROR( "create hmm first\n");
+		return false;
 	}
 	else
 	{
-		SG_ERROR( "see help for parameters. current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
-		return false ;
+		SG_ERROR( "see help for parameters. current setting: iterations=%i, epsilon=%e\n", working->get_iterations(), working->get_epsilon());
+		return false;
 	}
-	SG_INFO( "current setting: iterations=%i, epsilon=%e\n",ITERATIONS,EPSILON);
-	return true ;
+	SG_INFO( "current setting: iterations=%i, epsilon=%e\n", working->get_iterations(), working->get_epsilon());
+	return true;
 } ;
 
 bool CGUIHMM::set_hmm_as(CHAR* param)
@@ -819,41 +733,6 @@ bool CGUIHMM::set_hmm_as(CHAR* param)
 		SG_ERROR( "target POS|NEG|TEST missing\n");
 
 	return false;
-}
-
-//convergence criteria  -tobeadjusted-
-bool CGUIHMM::converge(double x, double y)
-{
-	double diff=y-x;
-	double absdiff=fabs(diff);
-
-	SG_INFO( "\n #%03d\tbest result so far: %G (eps: %f)", iteration_count, y, diff);
-
-	if (iteration_count-- == 0 || (absdiff<EPSILON && conv_it<=0))
-	{
-		iteration_count=ITERATIONS;
-		SG_INFO( "...finished\n");
-		conv_it=5 ;
-		return true;
-	}
-	else
-	{
-		if (absdiff<EPSILON)
-			conv_it-- ;
-		else
-			conv_it=5;
-
-		return false;
-	}
-}
-
-//switch model and train model
-void CGUIHMM::switch_model(CHMM** m1, CHMM** m2)
-{
-	CHMM* dummy= *m1;
-
-	*m1= *m2;
-	*m2= dummy;
 }
 
 bool CGUIHMM::load(CHAR* param)
@@ -1000,37 +879,37 @@ bool CGUIHMM::save_path(CHAR* param)
 
 	if (working)
 	{
-	  if (sscanf(param, "%s %d", fname, &binary) >= 1)
-	    {
-	      FILE* file=fopen(fname, "w");
-	      if (file)
+		if (sscanf(param, "%s %d", fname, &binary) >= 1)
 		{
-		  /// ..future
-		  //if (binary)
-		  //	result=working->save_model_bin(file);
-		  //else
-		  CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
+			FILE* file=fopen(fname, "w");
+			if (file)
+			{
+				/// ..future
+				//if (binary)
+				//_train()/	result=working->save_model_bin(file);
+				//else
+				CStringFeatures<WORD>* obs= (CStringFeatures<WORD>*) gui->guifeatures.get_test_features();
 
-		  ASSERT(obs!=NULL);
-		  working->set_observations(obs);
-		  
-		  result=working->save_path(file);
+				ASSERT(obs!=NULL);
+				working->set_observations(obs);
+
+				result=working->save_path(file);
+			}
+
+			if (!file || !result)
+				printf("writing to file %s failed!\n", fname);
+			else
+				printf("successfully written path into \"%s\" !\n", fname);
+
+			if (file)
+				fclose(file);
 		}
-	      
-	      if (!file || !result)
-		printf("writing to file %s failed!\n", fname);
-	      else
-		printf("successfully written path into \"%s\" !\n", fname);
-	      
-	      if (file)
-		fclose(file);
-	    }
-	  else
-	    SG_ERROR( "see help for parameters\n");
+		else
+			SG_ERROR( "see help for parameters\n");
 	}
 	else
-	  SG_ERROR( "create model first\n");
-	
+		SG_ERROR( "create model first\n");
+
 	return result;
 }
 

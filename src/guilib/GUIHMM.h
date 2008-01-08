@@ -85,11 +85,6 @@ protected:
 
 	DREAL PSEUDO;
 	INT M;
-	DREAL EPSILON;
-
-	INT iteration_count;
-	INT ITERATIONS;
-	INT conv_it;
 
  protected:
 	CGUI* gui ;
