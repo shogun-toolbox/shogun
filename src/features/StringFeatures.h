@@ -147,7 +147,7 @@ template <class ST> class CStringFeatures: public CFeatures
 		return alphabet;
 	}
 
-	virtual CFeatures* duplicate() const 
+	virtual CFeatures* duplicate() const
 	{
 		return new CStringFeatures<ST>(*this);
 	}

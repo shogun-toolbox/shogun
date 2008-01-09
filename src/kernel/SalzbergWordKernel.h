@@ -12,15 +12,15 @@
 #define _SALZBERGWORDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
+#include "kernel/StringKernel.h"
 #include "classifier/PluginEstimate.h"
-#include "features/WordFeatures.h"
+#include "features/StringFeatures.h"
 
-class CSalzbergWordKernel: public CSimpleKernel<WORD>
+class CSalzbergWordKernel: public CStringKernel<WORD>
 {
 public:
 	CSalzbergWordKernel(INT size, CPluginEstimate* pie);
-	CSalzbergWordKernel(CWordFeatures* l, CWordFeatures* r, CPluginEstimate *pie);
+	CSalzbergWordKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, CPluginEstimate *pie);
 	virtual ~CSalzbergWordKernel() ;
 	
 	void set_prior_probs(DREAL pos_prior_, DREAL neg_prior_)
@@ -69,9 +69,9 @@ protected:
 
 	INT num_params;
 	INT num_symbols;
-	bool initialized ;
 	DREAL sum_m2_s2 ;
 	DREAL pos_prior, neg_prior ;
+	bool initialized ;
 };
 
 #endif /* _SALZBERGWORDKERNEL_H__ */

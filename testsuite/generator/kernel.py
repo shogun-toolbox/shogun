@@ -133,18 +133,22 @@ def _compute_pie (name, feats, data):
 	lab, labels=dataop.get_labels(feats['train'].get_num_vectors())
 	pie.train(feats['train'], labels)
 	kernel=fun(feats['train'], feats['train'], pie)
+	km_train=kernel.get_kernel_matrix()
 
 	kernel.init(feats['train'], feats['test'])
 	pie.set_testfeatures(feats['test'])
 	pie.test()
+	km_test=kernel.get_kernel_matrix()
 	classified=pie.classify().get_labels()
 
 	outdata={
 		'name':name,
+		'km_train':km_train,
+		'km_test':km_test,
 		'data_train':matrix(data['train']),
 		'data_test':matrix(data['test']),
-		'labels':lab,
-		'classified':classified
+		'classifier_labels':lab,
+		'classifier_classified':classified
 	}
 	outdata.update(fileop.get_outdata(name, C_KERNEL))
 
@@ -265,24 +269,16 @@ def _run_feats_string_complex ():
 	_compute('CommUlongString', feats, data, False, FULL_NORMALIZATION)
 
 def _run_pie ():
-	data=dataop.get_rand(dattype=ushort)
-	feats=featop.get_simple('Word', data)
-
-#	data=dataop.get_rand(dattype=chararray)
-#	charfeats=featop.get_simple('Char', data)
-#	data=dataop.get_rand(dattype=ushort)
-#	feats=featop.get_simple('Word', data)
-#	feats['train'].obtain_from_char_features(charfeats['train'], 0, 1)
-#	feats['test'].obtain_from_char_features(charfeats['test'], 0, 1)
+	data=dataop.get_dna()
+	feats=featop.get_string_complex('Word', data)
 
 	_compute_pie('HistogramWord', feats, data)
 	_compute_pie('SalzbergWord', feats, data)
 
-
 def run ():
 	#_run_mindygram()
-	#_run_pie()
 
+	_run_pie()
 	_run_custom()
 	_run_distance()
 	_run_subkernels()

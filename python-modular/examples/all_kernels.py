@@ -8,6 +8,7 @@ from numpy import ubyte, ushort, double, int, zeros, sum, floor, array, arange
 from numpy.random import randint, rand, seed
 from shogun.PreProc import SortWordString, SortUlongString
 from shogun.Distance import EuclidianDistance
+from shogun.Classifier import PluginEstimate
 from shogun.Kernel import *
 from shogun.Features import *
 
@@ -682,7 +683,37 @@ def combined ():
 	km_test=kernel.get_kernel_matrix()
 
 def plugin_estimate ():
-	pass
+	print 'PluginEstimate w/ HistogramWord'
+
+	data=get_dna()
+	order=3
+	gap=0
+	reverse=False
+
+	charfeat=StringCharFeatures(DNA)
+	charfeat.set_string_features(data['train'])
+	feats_train=StringWordFeatures(charfeat.get_alphabet())
+	feats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+
+	charfeat=StringCharFeatures(DNA)
+	charfeat.set_string_features(data['test'])
+	feats_test=StringWordFeatures(charfeat.get_alphabet())
+	feats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
+
+	pie=PluginEstimate()
+	lab=rand(feats_train.get_num_vectors()).round()*2-1
+	labels=Labels(array(lab))
+
+	pie.train(feats_train, labels)
+
+	kernel=HistogramWordKernel(feats_train, feats_train, pie)
+	km_train=kernel.get_kernel_matrix()
+
+	kernel.init(feats_train, feats_test)
+	pie.set_testfeatures(feats_test)
+	pie.test()
+	pie.classify().get_labels()
+	km_test=kernel.get_kernel_matrix()
 
 def mindygram ():
 	pass

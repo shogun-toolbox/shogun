@@ -12,43 +12,43 @@
 #include "lib/io.h"
 #include "kernel/SalzbergWordKernel.h"
 #include "features/Features.h"
-#include "features/WordFeatures.h"
+#include "features/StringFeatures.h"
 #include "features/Labels.h"
 #include "classifier/PluginEstimate.h"
 
 CSalzbergWordKernel::CSalzbergWordKernel(INT size, CPluginEstimate* pie)
-	: CSimpleKernel<WORD>(size), estimate(pie), mean(NULL), variance(NULL),
+: CStringKernel<WORD>(size), estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
 	num_params(0), num_symbols(0), sum_m2_s2(0), pos_prior(0.5),
-	neg_prior(0.5)
+	neg_prior(0.5), initialized(false)
 {
 }
 
 CSalzbergWordKernel::CSalzbergWordKernel(
-	CWordFeatures* l, CWordFeatures* r, CPluginEstimate* pie)
-	: CSimpleKernel<WORD>(10),estimate(pie), mean(NULL), variance(NULL),
+	CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, CPluginEstimate* pie)
+: CStringKernel<WORD>(10),estimate(pie), mean(NULL), variance(NULL),
 	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
 	ld_mean_lhs(NULL), ld_mean_rhs(NULL),
 	num_params(0), num_symbols(0), sum_m2_s2(0), pos_prior(0.5),
-	neg_prior(0.5)
+	neg_prior(0.5), initialized(false)
 {
 	init(l, r);
 }
 
-CSalzbergWordKernel::~CSalzbergWordKernel() 
+CSalzbergWordKernel::~CSalzbergWordKernel()
 {
 	cleanup();
 }
 
 bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 {
-	bool status=CSimpleKernel<WORD>::init(p_l,p_r);
-	CWordFeatures* l=(CWordFeatures*) p_l;
-	CWordFeatures* r=(CWordFeatures*) p_r;
+	bool status=CStringKernel<WORD>::init(p_l,p_r);
+	CStringFeatures<WORD>* l=(CStringFeatures<WORD>*) p_l;
+	CStringFeatures<WORD>* r=(CStringFeatures<WORD>*) p_r;
 	ASSERT(l);
 	ASSERT(r);
-	
+
 	INT i;
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
@@ -60,13 +60,13 @@ bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 	ld_mean_rhs=NULL ;
 	delete[] ld_mean_lhs ;
 	ld_mean_lhs=NULL ;
-	
+
 	sqrtdiag_lhs= new DREAL[l->get_num_vectors()];
 	ld_mean_lhs = new DREAL[l->get_num_vectors()];
-	
+
 	for (i=0; i<l->get_num_vectors(); i++)
 		sqrtdiag_lhs[i]=1;
-	
+
 	if (l==r)
 	{
 		sqrtdiag_rhs = sqrtdiag_lhs;
@@ -74,89 +74,76 @@ bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 	}
 	else
 	{
-		sqrtdiag_rhs= new DREAL[rhs->get_num_vectors()];
-		for (i=0; i<rhs->get_num_vectors(); i++)
+		sqrtdiag_rhs= new DREAL[r->get_num_vectors()];
+		for (i=0; i<r->get_num_vectors(); i++)
 			sqrtdiag_rhs[i]=1;
-		
-		ld_mean_rhs = new DREAL[rhs->get_num_vectors()];
+
+		ld_mean_rhs = new DREAL[r->get_num_vectors()];
 	}
-	
+
 	DREAL *l_ld_mean_lhs = ld_mean_lhs ;
 	DREAL *l_ld_mean_rhs = ld_mean_rhs ;
-	
+
 	ASSERT(sqrtdiag_lhs);
 	ASSERT(sqrtdiag_rhs);
-	
+
 	//from our knowledge first normalize variance to 1 and then norm=1 does the job
 	if (!initialized)
 	{
-	    INT num_vectors=l->get_num_vectors();
-	    num_symbols=l->get_num_symbols();
-	    num_params = l->get_num_features() * l->get_num_symbols() ;
-	    int num_params2=l->get_num_features() * l->get_num_symbols() +
-			r->get_num_features() * r->get_num_symbols();
-	    if ((!estimate) || (!estimate->check_models()))
+		INT num_vectors=l->get_num_vectors();
+		num_symbols=l->get_num_symbols();
+		INT llen=l->get_vector_length(0);
+		INT rlen=r->get_vector_length(0);
+		num_params=llen*l->get_num_symbols();
+		INT num_params2=llen*l->get_num_symbols()+rlen*r->get_num_symbols();
+		if ((!estimate) || (!estimate->check_models()))
 		{
-         SG_ERROR( "no estimate available\n");
+			SG_ERROR( "no estimate available\n");
 			return false ;
 		} ;
-	    if (num_params2!=estimate->get_num_params())
+		if (num_params2!=estimate->get_num_params())
 		{
-         SG_ERROR( "number of parameters of estimate and feature representation do not match\n");
+			SG_ERROR( "number of parameters of estimate and feature representation do not match\n");
 			return false ;
 		} ;
-	    
-	    delete[] variance;
-	    variance=NULL ;
-	    delete[] mean;
-	    mean=NULL ;
-	    mean= new DREAL[num_params];
-	    variance= new DREAL[num_params];
-	    
-	    ASSERT(mean);
-	    ASSERT(variance);
-	    
-	    
-	    for (i=0; i<num_params; i++)
-	      {
-			  mean[i]=0;
-			  variance[i]=0;
-	      }
-	    
-	    
-	    // compute mean
-	    for (i=0; i<num_vectors; i++)
+
+		delete[] variance;
+		delete[] mean;
+		mean=new DREAL[num_params];
+		ASSERT(mean);
+		variance=new DREAL[num_params];
+		ASSERT(variance);
+
+		for (i=0; i<num_params; i++)
+		{
+			mean[i]=0;
+			variance[i]=0;
+		}
+
+
+		// compute mean
+		for (i=0; i<num_vectors; i++)
 		{
 			INT len;
-			bool freevec;
-			
-			WORD* vec=l->get_feature_vector(i, len, freevec);
-			
-			ASSERT(len==l->get_num_features());
-			
+			WORD* vec=l->get_feature_vector(i, len);
+
 			for (INT j=0; j<len; j++)
 			{
 				INT idx=compute_index(j, vec[j]);
 				DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(vec[j], j) ;
 				DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(vec[j], j) ;
 				DREAL value   = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
-				
+
 				mean[idx]   += value/num_vectors ;
 			}
-			
-			l->free_feature_vector(vec, i, freevec);
 		}
-	    
-	    // compute variance
-	    for (i=0; i<num_vectors; i++)
+
+		// compute variance
+		for (i=0; i<num_vectors; i++)
 		{
 			INT len;
-			bool freevec;
-			
-			WORD* vec=l->get_feature_vector(i, len, freevec);
-			
-			ASSERT(len==l->get_num_features());
-			
+			WORD* vec=l->get_feature_vector(i, len);
+
 			for (INT j=0; j<len; j++)
 			{
 				for (INT k=0; k<4; k++)
@@ -169,86 +156,76 @@ bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 						DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(vec[j], j) ;
 						DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(vec[j], j) ;
 						DREAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
-						
+
 						variance[idx] += CMath::sq(value-mean[idx])/num_vectors;
 					}
 				}
-				
-				l->free_feature_vector(vec, i, freevec);
 			}
 		}
-		
-		
+
+
 		// compute sum_i m_i^2/s_i^2
 		sum_m2_s2=0 ;
-	    for (i=0; i<num_params; i++)
+		for (i=0; i<num_params; i++)
 		{
 			if (variance[i]<1e-14) // then it is likely to be numerical inaccuracy
 				variance[i]=1 ;
-			
+
 			//fprintf(stderr, "%i: mean=%1.2e  std=%1.2e\n", i, mean[i], std[i]) ;
 			sum_m2_s2 += mean[i]*mean[i]/(variance[i]) ;
 		} ;
 	} 
-	
+
 	// compute sum of 
 	//result -= feature*mean[a_idx]/variance[a_idx] ;
 
 	for (i=0; i<l->get_num_vectors(); i++)
 	{
-	    INT alen ;
-	    bool afree ;
-	    WORD* avec = l -> get_feature_vector(i, alen, afree);
-	    DREAL  result=0 ;
-	    for (INT j=0; j<alen; j++)
+		INT alen ;
+		WORD* avec=l->get_feature_vector(i, alen);
+		DREAL  result=0 ;
+		for (INT j=0; j<alen; j++)
 		{
 			INT a_idx = compute_index(j, avec[j]) ;
-			
 			DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(avec[j], j) ;
 			DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(avec[j], j) ;
 			DREAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
-			
-			result -= value*mean[a_idx]/variance[a_idx] ;
-		}
-	    ld_mean_lhs[i]=result ;
-		
-	    l->free_feature_vector(avec, i, afree);
-	}
-	
-	if (ld_mean_lhs!=ld_mean_rhs)
-	  {
-	    // compute sum of 
-	    //result -= feature*mean[b_idx]/variance[b_idx] ;
-	    for (i=0; i<r->get_num_vectors(); i++)
-	      {
-			  INT alen ;
-			  bool afree ;
-			  WORD* avec = r -> get_feature_vector(i, alen, afree);
-			  DREAL  result=0 ;
-			  for (INT j=0; j<alen; j++)
-			  {
-				  INT a_idx = compute_index(j, avec[j]) ;
 
-				  DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(avec[j], j) ;
-				  DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(avec[j], j) ;
-				  DREAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
-				  
-				  result -= value*mean[a_idx]/variance[a_idx] ;
-			  }
-			  ld_mean_rhs[i]=result ;
-			  
-			  // precompute posterior-log-odds
-			  r->free_feature_vector(avec, i, afree);
-	      } ;
-	  } ;
-	
+			if (variance[a_idx]!=0)
+				result-=value*mean[a_idx]/variance[a_idx];
+		}
+		ld_mean_lhs[i]=result ;
+	}
+
+	if (ld_mean_lhs!=ld_mean_rhs)
+	{
+		// compute sum of 
+		//result -= feature*mean[b_idx]/variance[b_idx] ;
+		for (i=0; i<r->get_num_vectors(); i++)
+		{
+			INT alen ;
+			WORD* avec=r->get_feature_vector(i, alen);
+			DREAL  result=0 ;
+			for (INT j=0; j<alen; j++)
+			{
+				INT a_idx = compute_index(j, avec[j]) ;
+				DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(avec[j], j) ;
+				DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(avec[j], j) ;
+				DREAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
+
+				result -= value*mean[a_idx]/variance[a_idx] ;
+			}
+			ld_mean_rhs[i]=result ;
+		} ;
+	} ;
+
 	//warning hacky
 	//
 	this->lhs=l;
 	this->rhs=l;
 	ld_mean_lhs = l_ld_mean_lhs ;
 	ld_mean_rhs = l_ld_mean_lhs ;
-	
+
 	//compute normalize to 1 values
 	for (i=0; i<lhs->get_num_vectors(); i++)
 	{
@@ -287,28 +264,28 @@ bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 	initialized = true ;
 	return status;
 }
-  
+
 void CSalzbergWordKernel::cleanup()
 {
-  delete[] variance;
-  variance=NULL;
+	delete[] variance;
+	variance=NULL;
 
-  delete[] mean;
-  mean=NULL;
+	delete[] mean;
+	mean=NULL;
 
-  if (sqrtdiag_lhs != sqrtdiag_rhs)
-    delete[] sqrtdiag_rhs;
-  sqrtdiag_rhs=NULL;
+	if (sqrtdiag_lhs != sqrtdiag_rhs)
+		delete[] sqrtdiag_rhs;
+	sqrtdiag_rhs=NULL;
 
-  delete[] sqrtdiag_lhs;
-  sqrtdiag_lhs=NULL;
+	delete[] sqrtdiag_lhs;
+	sqrtdiag_lhs=NULL;
 
-  if (ld_mean_lhs!=ld_mean_rhs)
-    delete[] ld_mean_rhs ;
-  ld_mean_rhs=NULL;
+	if (ld_mean_lhs!=ld_mean_rhs)
+		delete[] ld_mean_rhs ;
+	ld_mean_rhs=NULL;
 
-  delete[] ld_mean_lhs ;
-  ld_mean_lhs=NULL;
+	delete[] ld_mean_lhs ;
+	ld_mean_lhs=NULL;
 }
 
 bool CSalzbergWordKernel::load_init(FILE* src)
@@ -320,43 +297,38 @@ bool CSalzbergWordKernel::save_init(FILE* dest)
 {
 	return false;
 }
-  
+
 
 
 DREAL CSalzbergWordKernel::compute(INT idx_a, INT idx_b)
 {
-  INT alen, blen;
-  bool afree, bfree;
+	INT alen, blen;
+	WORD* avec=((CStringFeatures<WORD>*) lhs)->get_feature_vector(idx_a, alen);
+	WORD* bvec=((CStringFeatures<WORD>*) rhs)->get_feature_vector(idx_b, blen);
+	// can only deal with strings of same length
+	ASSERT(alen==blen);
 
-  WORD* avec=((CWordFeatures*) lhs)->get_feature_vector(idx_a, alen, afree);
-  WORD* bvec=((CWordFeatures*) rhs)->get_feature_vector(idx_b, blen, bfree);
+	DREAL result = sum_m2_s2 ; // does not contain 0-th element
 
-  // can only deal with strings of same length
-  ASSERT(alen==blen);
+	for (INT i=0; i<alen; i++)
+	{
+		if (avec[i]==bvec[i])
+		{
+			INT a_idx = compute_index(i, avec[i]) ;
 
-  double result = sum_m2_s2 ; // does not contain 0-th element
+			DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(avec[i], i) ;
+			DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(avec[i], i) ;
+			DREAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
 
-  for (INT i=0; i<alen; i++)
-  {
-    if (avec[i]==bvec[i])
-      {
-		  INT a_idx = compute_index(i, avec[i]) ;
+			result   += value*value/variance[a_idx] ;
+		} ;
+	}
+	result += ld_mean_lhs[idx_a] + ld_mean_rhs[idx_b] ;
 
-		  DREAL theta_p = 1/estimate->log_derivative_pos_obsolete(avec[i], i) ;
-		  DREAL theta_n = 1/estimate->log_derivative_neg_obsolete(avec[i], i) ;
-		  DREAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
 
-		  result   += value*value/variance[a_idx] ;
-      } ;
-  }
-  result += ld_mean_lhs[idx_a] + ld_mean_rhs[idx_b] ;
-  
-  ((CWordFeatures*) lhs)->free_feature_vector(avec, idx_a, afree);
-  ((CWordFeatures*) rhs)->free_feature_vector(bvec, idx_b, bfree);
-  
-  if (initialized)
-	  result /=  (sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]) ;
-  
-  //fprintf(stderr, "%ld : %ld -> %f\n",idx_a, idx_b, result) ;
-  return result;
+	if (initialized)
+		result /=  (sqrtdiag_lhs[idx_a]*sqrtdiag_rhs[idx_b]) ;
+
+	//fprintf(stderr, "%ld : %ld -> %f\n",idx_a, idx_b, result) ;
+	return result;
 }

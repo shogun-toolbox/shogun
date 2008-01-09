@@ -6,6 +6,7 @@ from shogun.Features import *
 from shogun.Kernel import *
 from shogun.PreProc import *
 from shogun.Distance import *
+from shogun.Classifier import PluginEstimate
 from numpy import array, ushort, ubyte, double
 
 import util
@@ -14,7 +15,10 @@ import util
 # kernel computation
 ########################################################################
 
-def _kernel (indata, feats):
+def _kernel (indata):
+	fun=eval('util.get_feats_'+indata['feature_class'])
+	feats=fun(indata)
+
 	fun=eval(indata['name']+'Kernel')
 	args=util.get_args(indata, 'kernel_arg')
 
@@ -115,8 +119,25 @@ def _kernel_custom (indata):
 		fullfull=fullfull)
 
 def _kernel_pie (indata):
-	print 'Not implemented yet!'
-	return True
+	pie=PluginEstimate()
+	fun=eval('util.get_feats_'+indata['feature_class'])
+	feats=fun(indata)
+	labels=Labels(double(indata['classifier_labels']))
+	pie.train(feats['train'], labels)
+
+	fun=eval(indata['name']+'Kernel')
+	kernel=fun(feats['train'], feats['train'], pie)
+	ktrain=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
+
+	kernel.init(feats['train'], feats['test'])
+	pie.set_testfeatures(feats['test'])
+	pie.test()
+	ktest=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)
+	classified=max(abs(
+		pie.classify().get_labels()-indata['classifier_classified']))
+
+	return util.check_accuracy(indata['accuracy'],
+		ktrain=ktrain, ktest=ktest, classified=classified)
 
 ########################################################################
 # public
@@ -133,7 +154,5 @@ def test (indata):
 		if indata['name']==name:
 			return _kernel_pie(indata)
 
-	fun=eval('util.get_feats_'+indata['feature_class'])
-	feats=fun(indata)
-	return _kernel(indata, feats)
+	return _kernel(indata)
 

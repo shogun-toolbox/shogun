@@ -22,7 +22,8 @@ class CPluginEstimate: public CSGObject
 		CPluginEstimate();
 		~CPluginEstimate();
 
-		bool train(CStringFeatures<WORD>* features, CLabels* labels, DREAL pos_pseudo, DREAL neg_pseudo);
+		bool train(CStringFeatures<WORD>* features, CLabels* labels,
+			DREAL pos_pseudo=1e-10, DREAL neg_pseudo=1e-10);
 		DREAL* test();
 
 		void set_testfeatures(CStringFeatures<WORD>* f) { test_features=f; }

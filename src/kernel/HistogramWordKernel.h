@@ -13,15 +13,15 @@
 #define _HISTOGRAMWORDKERNEL_H___
 
 #include "lib/common.h"
-#include "kernel/SimpleKernel.h"
+#include "kernel/StringKernel.h"
 #include "classifier/PluginEstimate.h"
-#include "features/WordFeatures.h"
+#include "features/StringFeatures.h"
 
-class CHistogramWordKernel: public CSimpleKernel<WORD>
+class CHistogramWordKernel: public CStringKernel<WORD>
 {
 public:
 	CHistogramWordKernel(INT size, CPluginEstimate* pie);
-	CHistogramWordKernel(CWordFeatures* l, CWordFeatures* r, CPluginEstimate* pie);
+	CHistogramWordKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, CPluginEstimate* pie);
 	virtual ~CHistogramWordKernel();
 	
 	virtual bool init(CFeatures* l, CFeatures* r);
@@ -65,7 +65,7 @@ protected:
 	DREAL* plo_rhs;
 
 	INT num_params;
-	INT num_params1;
+	INT num_params2;
 	INT num_symbols;
 	DREAL sum_m2_s2;
 

@@ -145,7 +145,6 @@ def get_dna (len_seq_test_add=0):
 			str1.append(acgt[floor(len_acgt*rand())])
 	rand_test.append(''.join(str1))
 
-	print rand_train
 	return {'train': rand_train, 'test': rand_test}
 
 
