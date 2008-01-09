@@ -62,8 +62,10 @@ INT CMath::LOGRANGE            = 0; // range for logtable: log(1+exp(x))  -25 <=
 const DREAL CMath::INFTY            =  -log(0.0);	// infinity
 const DREAL CMath::ALMOST_INFTY		=  +1e+20;		//a large number
 const DREAL CMath::ALMOST_NEG_INFTY =  -1000;	
-
-CHAR CMath::rand_state[256];
+#ifdef USE_LOGCACHE
+DREAL* CMath::logtable = NULL;
+#endif
+CHAR* CMath::rand_state = NULL;
 UINT CMath::seed = 0;
 
 CMath::CMath() : CSGObject()
@@ -71,6 +73,7 @@ CMath::CMath() : CSGObject()
 #ifndef HAVE_SWIG
 	CSGObject::version.print_version();
 #endif
+	CMath::rand_state=new CHAR[256];
 	init_random();
 #ifndef HAVE_SWIG
 	SG_PRINT( "( seeding random number generator with %u, ", seed);
@@ -98,8 +101,11 @@ CMath::CMath() : CSGObject()
 
 CMath::~CMath()
 {
+	delete[] CMath::rand_state;
+	CMath::rand_state=NULL;
 #ifdef USE_LOGCACHE
-	delete[] logtable;
+	delete[] CMath::logtable;
+	CMath::logtable=NULL;
 #endif
 }
 

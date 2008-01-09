@@ -77,7 +77,7 @@ ocas_return_value_T svm_ocas_solver(
   double *b, *alpha, *diag_H;
   double *output, *old_output;
   double xi, sq_norm_W, QPSolverTolRel, dot_prod_WoldW, dummy, sq_norm_oldW;
-  double A0, B0, Bsum, GradVal, t, t1=0, t2=0, *Ci, *Bi, *hpf;
+  double A0, B0, GradVal, t, t1=0, t2=0, *Ci, *Bi, *hpf;
   double start_time;
   uint32_t *hpi;
   uint32_t cut_length;

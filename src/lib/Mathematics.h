@@ -310,6 +310,8 @@ public:
 		else
 			seed=initseed;
 #ifndef CYGWIN
+		       char *initstate(unsigned int seed, char *state, size_t n);
+
 		initstate(seed, CMath::rand_state, sizeof(CMath::rand_state));
 #endif
 	}
@@ -904,7 +906,7 @@ protected:
 	///table with log-values
 	static DREAL* logtable;	
 #endif
-	static CHAR rand_state[256];
+	static CHAR* rand_state;
 };
 
 template <class T1,class T2>
