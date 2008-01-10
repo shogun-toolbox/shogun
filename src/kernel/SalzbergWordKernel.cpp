@@ -50,6 +50,8 @@ bool CSalzbergWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 	ASSERT(r);
 
 	INT i;
+	initialized=false;
+
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
 	sqrtdiag_rhs=NULL ;

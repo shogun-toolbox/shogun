@@ -61,6 +61,7 @@ bool CHistogramWordKernel::init(CFeatures* p_l, CFeatures* p_r)
 
 	SG_DEBUG( "init: lhs: %ld   rhs: %ld\n", l, r) ;
 	INT i;
+	initialized=false;
 
 	if (sqrtdiag_lhs != sqrtdiag_rhs)
 		delete[] sqrtdiag_rhs;
