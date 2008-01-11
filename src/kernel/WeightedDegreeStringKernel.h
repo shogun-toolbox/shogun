@@ -63,7 +63,7 @@ public:
 	{
 		if (get_is_initialized())
 		{
-			tries.delete_trees(); 
+			tries->delete_trees(max_mismatch==0);
 			set_is_initialized(false);
 		}
 	}
@@ -281,7 +281,7 @@ protected:
 	EWDKernType type;
 	INT which_degree;
 	
-	CTrie<DNATrie> tries ;
+	CTrie<DNATrie>* tries;
 	bool tree_initialized ;
 	
 };
