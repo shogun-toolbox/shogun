@@ -42,7 +42,7 @@ def _get_outdata (name, params):
 		outdata['seqlen']=dataop.LEN_SEQ
 		outdata['feature_obtain']=ddata[1][2]
 
-	optional=['N', 'M', 'pseudo', 'dimensions',
+	optional=['N', 'M', 'pseudo', 'examples',
 		'derivatives', 'likelihood',
 		'best_path', 'best_path_state']
 	for opt in optional:
@@ -88,16 +88,15 @@ def _run_hmm ():
 	params={
 		'N':3,
 		'M':6,
-		'dimensions':4,
+		'examples':4,
 		'pseudo':1e-10,
 		'order':1,
 		'alphabet':'CUBE',
 	}
 
-	params['data']=dataop.get_cubes(params['dimensions'])
+	params['data']=dataop.get_cubes(params['examples'])
 	feats=featop.get_string_complex(
 		'Word', params['data'], eval(params['alphabet']), params['order'])
-	#print feats['train'].get_num_symbols()
 	hmm=HMM(feats['train'], params['N'], params['M'], params['pseudo'])
 	hmm.train()
 	hmm.baum_welch_viterbi_train(BW_NORMAL)
@@ -105,14 +104,16 @@ def _run_hmm ():
 	params['likelihood']=hmm.get_log_likelihood_sample()
 	# ShogunException in get_log_derivatives after iteration 9; whatever
 	# that means
-	#params['derivatives']=_get_derivatives(hmm, feats['train'])
+	params['derivatives']=_get_derivatives(hmm, feats['train'])
 
 	params['best_path']=0
 	params['best_path_state']=0
-	for i in xrange(params['dimensions']):
+	for i in xrange(params['examples']):
 		params['best_path']+=hmm.best_path(i)
 		for j in xrange(params['N']):
 			params['best_path_state']+=hmm.get_best_path_state(i, j)
+
+	print hmm.check_model_derivatives()
 
 	outdata=_get_outdata('HMM', params)
 	fileop.write(C_DISTRIBUTION, outdata)

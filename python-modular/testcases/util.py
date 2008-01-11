@@ -83,10 +83,19 @@ def get_feats_string (indata):
 	return feats
 
 def get_feats_string_complex (indata):
-	feats={'train':StringCharFeatures(eval(indata['alphabet'])),
-		'test':StringCharFeatures(eval(indata['alphabet']))}
-	feats['train'].set_string_features(list(indata['data_train'][0]))
-	feats['test'].set_string_features(list(indata['data_test'][0]))
+	alphabet=eval(indata['alphabet'])
+	feats={'train':StringCharFeatures(alphabet),
+		'test':StringCharFeatures(alphabet)}
+
+	if alphabet==CUBE: # data_{train,test} ints due to test.py:_read_matrix
+		data_train=[str(x) for x in list(indata['data_train'][0])]
+		data_test=[str(x) for x in list(indata['data_test'][0])]
+	else:
+		data_train=list(indata['data_train'][0])
+		data_test=list(indata['data_test'][0])
+
+	feats['train'].set_string_features(data_train)
+	feats['test'].set_string_features(data_test)
 
 	feat=eval('String'+indata['feature_type']+ \
 		"Features(feats['train'].get_alphabet())")
