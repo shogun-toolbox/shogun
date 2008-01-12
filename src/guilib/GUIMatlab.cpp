@@ -579,7 +579,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			  ((INT) mxGetN(mx_state_signals))==seq_third_dimension))
 			SG_ERROR( "size of state_signals wrong (%i!=%i or %i!=%i)\n", mxGetM(mx_state_signals), N, mxGetN(mx_state_signals), seq_third_dimension);
 
-		if (!(((mxGetN(mx_dict_weights)==8) || (mxGetN(mx_dict_weights)==16)) && 
+		if (!(((mxGetN(mx_dict_weights)==6) || (mxGetN(mx_dict_weights)==8) || (mxGetN(mx_dict_weights)==16)) && 
 			  ((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			   || mxIsEmpty(mx_penalty_info))))
 			SG_ERROR( "size of dict_weights wrong\n");
@@ -904,7 +904,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			  mxGetM(mx_my_pos)==1))
 			SG_ERROR( "size of position and path don't match\n");
 
-		if (!(((mxGetN(mx_dict_weights)==8)||(mxGetN(mx_dict_weights)==16)) && 
+		if (!(((mxGetN(mx_dict_weights)==6)||(mxGetN(mx_dict_weights)==8)||(mxGetN(mx_dict_weights)==16)) && 
 			  ((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			   || mxIsEmpty(mx_penalty_info))))
 			SG_ERROR( "dict_weights or penalty_info wrong\n");
