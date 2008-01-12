@@ -142,7 +142,7 @@ class CSVM : public CKernelMachine
 
             if (nsv>0)
             {
-                *svs = new INT[nsv];
+                *svs = (INT*) malloc(sizeof(INT)*nsv);
                 for(int i=0; i<nsv; i++)
                     (*svs)[i] = get_support_vector(i);
             } 
@@ -158,7 +158,7 @@ class CSVM : public CKernelMachine
 
             if (nsv>0)
             {
-                *alphas = new DREAL[nsv];
+                *alphas = (DREAL*) malloc(nsv*sizeof(DREAL));
                 for(int i=0; i<nsv; i++)
                     (*alphas)[i] = get_alpha(i);
             } 

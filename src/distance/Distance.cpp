@@ -158,7 +158,7 @@ void CDistance::get_distance_matrix(DREAL** dst, INT* m, INT* n)
 		INT num_done = 0;
 		SG_DEBUG( "returning distance matrix of size %dx%d\n", num_vec1, num_vec2);
 
-		result=new DREAL[total_num];
+		result= (DREAL*) malloc(total_num*sizeof(DREAL));
 		ASSERT(result);
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )

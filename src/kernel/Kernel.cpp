@@ -106,7 +106,7 @@ void CKernel::get_kernel_matrix(DREAL** dst, INT* m, INT* n)
 		INT num_done = 0;
 		SG_DEBUG( "returning kernel matrix of size %dx%d\n", num_vec1, num_vec2);
 
-		result=(DREAL *) malloc(sizeof(DREAL)*total_num);
+		result=(DREAL*) malloc(sizeof(DREAL)*total_num);
 		ASSERT(result);
 
 		if ( (f1 == f2) && (num_vec1 == num_vec2) )
