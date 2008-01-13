@@ -75,7 +75,7 @@ static bool sign_words_default[16] = {true,true,true,true,true,true,true,true,
 static INT string_words_default[16] = {0,0,0,0,0,0,0,0,
 									   1,1,1,1,1,1,1,1} ; // which string should be used
 
-CDynProg::CDynProg()
+CDynProg::CDynProg(INT p_num_svms /*= 8 */)
 	: CSGObject(),transition_matrix_a_id(1,1), transition_matrix_a(1,1),
 	transition_matrix_a_deriv(1,1), initial_state_distribution_p(1),
 	initial_state_distribution_p_deriv(1), end_state_distribution_q(1),
@@ -84,7 +84,7 @@ CDynProg::CDynProg()
 
 	  // multi svm
 	  num_degrees(4), 
-	  num_svms(8), 
+	  num_svms(p_num_svms), 
 	  num_strings(1),
 	  word_degree(word_degree_default, num_degrees, true, true),
 	  cum_num_words(cum_num_words_default, num_degrees+1, true, true),

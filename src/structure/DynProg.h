@@ -65,7 +65,7 @@ private:
 #endif
 	
 public:
-	CDynProg() ;
+	CDynProg(INT p_num_svms = 8) ;
 	~CDynProg();
 	
 	DREAL best_path_no_b(INT max_iter, INT & best_iter, INT *my_path) ;

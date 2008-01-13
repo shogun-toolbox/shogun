@@ -579,12 +579,12 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			  ((INT) mxGetN(mx_state_signals))==seq_third_dimension))
 			SG_ERROR( "size of state_signals wrong (%i!=%i or %i!=%i)\n", mxGetM(mx_state_signals), N, mxGetN(mx_state_signals), seq_third_dimension);
 
-		if (!(((mxGetN(mx_dict_weights)==6) || (mxGetN(mx_dict_weights)==8) || (mxGetN(mx_dict_weights)==16)) && 
+		if (!(((mxGetN(mx_dict_weights)==3) || (mxGetN(mx_dict_weights)==8) || (mxGetN(mx_dict_weights)==16)) && 
 			  ((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			   || mxIsEmpty(mx_penalty_info))))
 			SG_ERROR( "size of dict_weights wrong\n");
 
-		if (!(((mxGetM(mx_mod_words)==6) || (mxGetM(mx_mod_words)==8) || (mxGetM(mx_mod_words)==16)) && mxGetN(mx_mod_words)==2))
+		if (!(((mxGetM(mx_mod_words)==3) || (mxGetM(mx_mod_words)==8) || (mxGetM(mx_mod_words)==16)) && mxGetN(mx_mod_words)==2))
 			SG_ERROR( "size of mod_words wrong (should be 6x2 or 8x2 or 16x2)\n");
 
 		if (mx_segment_loss!=NULL && (mxGetN(mx_segment_loss)!=2*mxGetM(mx_segment_loss)))
@@ -682,7 +682,7 @@ bool CGUIMatlab::best_path_trans(const mxArray* vals[], INT nrhs, mxArray* retva
 			char * genestr = mxArrayToString(mx_genestr) ;				
 			DREAL * dict_weights = mxGetPr(mx_dict_weights) ;
 			
-			CDynProg* h=new CDynProg();
+			CDynProg* h=new CDynProg( mxGetN(mx_dict_weights) /* = num_svms */ );
 			h->set_N(N) ;
 			h->set_p_vector(p, N) ;
 			h->set_q_vector(q, N) ;
@@ -904,12 +904,12 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			  mxGetM(mx_my_pos)==1))
 			SG_ERROR( "size of position and path don't match\n");
 
-		if (!(((mxGetN(mx_dict_weights)==6)||(mxGetN(mx_dict_weights)==8)||(mxGetN(mx_dict_weights)==16)) && 
+		if (!(((mxGetN(mx_dict_weights)==3)||(mxGetN(mx_dict_weights)==8)||(mxGetN(mx_dict_weights)==16)) && 
 			  ((mxIsCell(mx_penalty_info) && mxGetM(mx_penalty_info)==1)
 			   || mxIsEmpty(mx_penalty_info))))
 			SG_ERROR( "dict_weights or penalty_info wrong\n");
 
-		if (!(((mxGetM(mx_mod_words)==6) || (mxGetM(mx_mod_words)==8) || (mxGetM(mx_mod_words)==16)) && mxGetN(mx_mod_words)==2))
+		if (!(((mxGetM(mx_mod_words)==3) || (mxGetM(mx_mod_words)==8) || (mxGetM(mx_mod_words)==16)) && mxGetN(mx_mod_words)==2))
 			SG_ERROR( "size mod_words wrong (should be 6x2 or 8x2 or 16x2)\n");
 
 		if (mx_segment_loss!=NULL && (mxGetN(mx_segment_loss)!=2*mxGetM(mx_segment_loss)))
@@ -1017,7 +1017,7 @@ bool CGUIMatlab::best_path_trans_deriv(const mxArray* vals[], INT nrhs, mxArray*
 			char * genestr = mxArrayToString(mx_genestr) ;				
 			DREAL * dict_weights = mxGetPr(mx_dict_weights) ;
 			
-			CDynProg* h=new CDynProg();
+			CDynProg* h=new CDynProg( mxGetN(mx_dict_weights) /* = num_svms */ );
 			h->set_N(N) ;
 			h->set_p_vector(p, N) ;
 			h->set_q_vector(q, N) ;
