@@ -1,6 +1,4 @@
-"""
-Generator for Distribution
-"""
+"""Generator for Distribution"""
 
 from numpy import *
 from shogun.Distribution import *
@@ -11,6 +9,17 @@ import dataop
 from config import DISTRIBUTION, C_DISTRIBUTION
 
 def _get_outdata (name, params):
+	"""Return data to be written into the testcase's file.
+
+	After computations and such, the gathered data is structured and
+	put into one data structure which can conveniently be written to a
+	file that will represent the testcase.
+	
+	@param name Distribution method's name
+	@param params Gathered data
+	@return Dict containing testcase data to be written to file
+	"""
+
 	ddata=DISTRIBUTION[name]
 	outdata={
 		'name':name,
@@ -51,8 +60,14 @@ def _get_outdata (name, params):
 
 	return outdata
 
-def _get_derivatives (distribution, feats):
-	num_examples=feats.get_num_vectors()
+def _get_derivatives (distribution, num_vec):
+	"""Return the sum of all log_derivatives of a distribution.
+
+	@param distribution Distribution to query
+	@param num_vec Number of feature vectors
+	@return Sum of all log_derivatives
+	"""
+
 	num_param=distribution.get_num_model_parameters()
 	derivatives=0
 
@@ -60,7 +75,7 @@ def _get_derivatives (distribution, feats):
 	#print 'num_param ', num_param
 	for i in xrange(num_param):
 		#print "i ", i
-		for j in xrange(num_examples):
+		for j in xrange(num_vec):
 			#print "j ", j
 			val=distribution.get_log_derivative(i, j)
 			if val!=-inf and val!=nan: # only consider sparse matrix!
@@ -69,6 +84,11 @@ def _get_derivatives (distribution, feats):
 	return derivatives
 
 def _run (name):
+	"""Run generator for a specific distribution method.
+
+	@param name Name of the distribtuion method
+	"""
+
 	params={
 		'data':dataop.get_dna(),
 	}
@@ -79,12 +99,15 @@ def _run (name):
 	distribution.train()
 
 	params['likelihood']=distribution.get_log_likelihood_sample()
-	params['derivatives']=_get_derivatives(distribution, feats['train'])
+	params['derivatives']=_get_derivatives(
+		distribution, feats['train'].get_num_vectors())
 
 	outdata=_get_outdata(name, params)
 	fileop.write(C_DISTRIBUTION, outdata)
 
 def _run_hmm ():
+	"""Run generator for Hidden-Markov-Model."""
+
 	params={
 		'N':3,
 		'M':6,
@@ -104,7 +127,9 @@ def _run_hmm ():
 	params['likelihood']=hmm.get_log_likelihood_sample()
 	# ShogunException in get_log_derivatives after iteration 9; whatever
 	# that means
-	params['derivatives']=_get_derivatives(hmm, feats['train'])
+	params['derivatives']=_get_derivatives(
+		hmm, feats['train'].get_num_vectors())
+
 
 	params['best_path']=0
 	params['best_path_state']=0
@@ -113,12 +138,12 @@ def _run_hmm ():
 		for j in xrange(params['N']):
 			params['best_path_state']+=hmm.get_best_path_state(i, j)
 
-	print hmm.check_model_derivatives()
-
 	outdata=_get_outdata('HMM', params)
 	fileop.write(C_DISTRIBUTION, outdata)
 
 def run ():
+	"""Run generator for all distribution methods."""
+
 	#_run('Histogram')
 	#_run('LinearHMM')
 	_run_hmm()

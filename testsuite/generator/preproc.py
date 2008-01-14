@@ -1,6 +1,4 @@
-"""
-Generator for Preprocessors
-"""
+"""Generator for Preprocessors"""
 
 from numpy import matrix, ushort
 from shogun.Library import FULL_NORMALIZATION
@@ -13,6 +11,16 @@ import dataop
 from config import C_PREPROC, PREPROC, C_KERNEL
 
 def _compute (name, name_kernel, feats, data, *kargs):
+	"""Perform computations on kernel using preprocessors.
+
+	@param name Name of the preprocessor
+	@param name_kernel Name of the kernel
+	@param feats Features of the kernel
+	@param data Train and test data
+	@param *kargs Variable kernel argument list
+	@return Dict of testcase data ready to be written to file
+	"""
+
 	fun=eval(name_kernel+'Kernel')
 	kernel=fun(feats['train'], feats['train'], *kargs)
 	km_train=kernel.get_kernel_matrix()
@@ -31,6 +39,11 @@ def _compute (name, name_kernel, feats, data, *kargs):
 	return outdata
 
 def _run_string_complex (ftype):
+	"""Run preprocessor applied on complex StringFeatures.
+
+	@param ftype Feature type, like Word
+	"""
+
 	data=dataop.get_dna()
 	name='Sort'+ftype+'String'
 	# featop.get_string_complex adds preproc implicitely on Word/Ulong feats
@@ -40,6 +53,8 @@ def _run_string_complex (ftype):
 	fileop.write(C_PREPROC, outdata)
 
 def _run_word ():
+	"""Run preprocessor applied on WordFeatures."""
+
 	name='SortWord'
 	data=dataop.get_rand(dattype=ushort)
 	feats=featop.get_simple('Word', data)
@@ -49,6 +64,12 @@ def _run_word ():
 	fileop.write(C_PREPROC, outdata)
 
 def _run_real (name, *args):
+	"""Run preprocessor applied on RealFeatures.
+
+	@param name Name of the preprocessor
+	@param args Variable argument list for the preprocessor
+	"""
+
 	data=dataop.get_rand()
 	feats=featop.get_simple('Real', data)
 	feats=featop.add_preproc(name, feats, *args)
@@ -59,6 +80,8 @@ def _run_real (name, *args):
 	fileop.write(C_PREPROC, outdata)
 
 def run():
+	"""Run generator for all preprocessors."""
+
 	_run_real('LogPlusOne')
 	_run_real('NormOne')
 	_run_real('PruneVarSubMean', False)

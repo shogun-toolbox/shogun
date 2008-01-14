@@ -1,12 +1,12 @@
-"""generator
+"""A package to generate testcases for the Shogun toolbox
 
-A package to generate testcases for the Shogun toolbox.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation in version 3.
 
+Written (W) 2007-2008 Sebastian Henschel
+Copyright (C) 2007-2008 Fraunhofer Institute FIRST and Max-Planck-Society
 """
-
-__license__='GPL v2'
-
-from numpy.random import seed
 
 from fileop import clean_dir_outdata
 import classifier
@@ -19,6 +19,8 @@ import preproc
 
 
 def run ():
+	"""Run all the individual generators."""
+
 	clean_dir_outdata()
 	kernel.run()
 	distance.run()

@@ -1,6 +1,4 @@
-"""
-Common operations related to file handling
-"""
+"""Common operations related to file handling"""
 
 import os
 
@@ -12,6 +10,12 @@ DIR_OUTPUT='data'
 EXT_OUTPUT='.m'
 
 def _get_str_category (category):
+	"""Returns the string representation of given category.
+
+	@param category ID of a category
+	@return String of the category or empty string if ID was invalid
+	"""
+
 	table={
 		config.C_KERNEL:'kernel',
 		config.C_DISTANCE:'distance',
@@ -28,6 +32,13 @@ def _get_str_category (category):
 		return ''
 
 def _get_matrix (name, kmatrix):
+	"""Converts a numpy matrix into a matrix digestable by e.g. matlab.
+
+	@param name Name of the matrix
+	@param kmatrix The matrix
+	@return String which contains a matrix digestable by e.g. matlab
+	"""
+
 	line=list()
 	lis=list()
 
@@ -54,6 +65,12 @@ def _get_matrix (name, kmatrix):
 	return str_kmatrix.replace('\n', '')
 
 def _is_excluded_from_filename (key):
+	"""Determine if given key's value shall not be part of the filename.
+
+	@param key Name of the value to check for.
+	@return True if shall be excluded, false otherwise
+	"""
+
 	if (key.find('feature_')!=-1 or
 		key.find('accuracy')!=-1 or
 		key.find('data_')!=-1 or
@@ -71,6 +88,13 @@ def _is_excluded_from_filename (key):
 		return False
 
 def _get_filename (category, outdata):
+	"""Return filename for testcase data's output.
+
+	@param category ID of the category
+	@param outdata data to be written into file
+	@return String with the filename
+	"""
+
 	params=[]
 
 	for key, val in outdata.iteritems():
@@ -92,6 +116,13 @@ def _get_filename (category, outdata):
 ############################################################################
 
 def write (category, outdata):
+	"""Write given testcase data to a file.
+
+	@param category ID of the category, like C_KERNEL
+	@param outdata data to be written into file
+	@return Success of operation
+	"""
+
 	fnam=_get_filename(category, outdata)
 	print 'Writing for '+_get_str_category(category).upper()+': '+ \
 		os.path.basename(fnam)
@@ -110,6 +141,11 @@ def write (category, outdata):
 	return True
 
 def clean_dir_outdata ():
+	"""Remove all old testdata files.
+
+	@return Success of operation
+	"""
+
 	success=True
 
 	for dname in os.listdir(DIR_OUTPUT):
@@ -130,6 +166,15 @@ def clean_dir_outdata ():
 	return success
 
 def get_args (prefix, names, args, offset=0):
+	"""Return argument list for kernel/distance to be written to a file.
+
+	@param prefix Prefix for argument's name, like 'subkernel'
+	@param names Names of the arguments
+	@param args Values of the arguments
+	@param offset Offset from argument conter, used for e.g. subkernels
+	@return Dict with data on arguments ready to be written to file
+	"""
+
 	outdata={}
 
 	for i in xrange(len(args)):
@@ -148,6 +193,20 @@ def get_args (prefix, names, args, offset=0):
 
 # prefix and offset are necessary for subkernels
 def get_outdata (name, category, args=(), prefix='', offset=0):
+	"""Return data to be written into the testcase's file.
+
+	After computations and such, the gathered data is structured and
+	put into one data structure which can conveniently be written to a
+	file that will represent the testcase.
+	
+	@param name Kernel/Distance's name
+	@param category ID of the category, like C_DISTANCE
+	@param args argument list of the item in question
+	@param prefix Prefix for argument's name, like 'subkernel'
+	@param offset Offset from argument conter, used for e.g. subkernels
+	@return Dict containing testcase data ready to be written to file
+	"""
+
 	if category==config.C_KERNEL:
 		data=config.KERNEL[name]
 		prefix_arg=prefix+'kernel'

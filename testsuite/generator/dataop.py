@@ -1,6 +1,4 @@
-"""
-Common operations on train and test data
-"""
+"""Common operations on train and test data"""
 
 import sys
 import md5
@@ -13,17 +11,34 @@ NUM_VEC_TRAIN=11
 NUM_VEC_TEST=17
 LEN_SEQ=60
 
-# need a seed which is always the same for the current entity (kernel,
-# distance, etc) to be computed, but at least different between modules
-# the seed will only change if the module's filename or the name of the
-# function in which the entitity is computed will change.
 def _get_seed ():
+	"""Return a somewhat constant seed.
+
+	Need a seed which is always the same for the current entity (kernel,
+	distance, etc) to be computed, but at least different between modules
+	the seed will only change if the module's filename or the name of the
+	function in which the entitity is computed will change.
+	"""
+
 	fcode=sys._getframe(2).f_code
 	hash=reduce(lambda x,y:x+y, map(ord, fcode.co_name+fcode.co_filename))
 	return hash
 
 def get_rand (dattype=double, num_feats=NUM_FEATS, dim_square=False,
 	max_train=sys.maxint, max_test=sys.maxint):
+	"""Return random numbers.
+
+	Return random numbers, either float or integer, in a dict with elements
+	'train' and 'test'.
+
+	@param dattype (numpy) data type of the random numbers
+	@param num_feats number of features for in a train/test vector
+	@param dim_square Dimensions of the square of random numbers, implying that number of features and vectors in both train/test are all the same.
+	@param max_train Maximum value for data in train vectors
+	@param max_test Maximum value for data in test vectors
+	@return Dict which contains the random numbers
+	"""
+
 	seed(_get_seed())
 
 	if dim_square:
@@ -65,6 +80,16 @@ def get_rand (dattype=double, num_feats=NUM_FEATS, dim_square=False,
 		}
 
 def get_clouds (num_clouds, num_feats=NUM_FEATS):
+	"""Return random float numbers organised, but scrambled, in clouds.
+
+	The float numbers generated here are first created in number clouds, shifted from each other by a constant value. Then they are permutated to hide these clusters a bit when used in classifiers or clustering methods.
+	It is a specialised case of random float number generation.
+
+	@param num_clouds Number of clouds to generate
+	@param num_features Number of features in each cloud
+	@return Dict which contains the random numbers
+	"""
+
 	seed(_get_seed())
 	clouds={}
 
@@ -79,6 +104,14 @@ def get_clouds (num_clouds, num_feats=NUM_FEATS):
 	return clouds
 
 def get_cubes (num=4):
+	"""Return cubes of with random emissions.
+
+	Used by the Hidden-Markov-Model, it creates a seemingly random sequence of emissions of a 6-sided cube.
+
+	@param num Number of hidden cubes
+	@return Dict of tuples of emissions, representing a hidden cube
+	"""
+
 	leng=50
 	rep=5
 	weight=1
@@ -109,6 +142,13 @@ def get_cubes (num=4):
 	return {'train':sequence, 'test':sequence}
 
 def get_labels (num, ltype='twoclass'):
+	"""Return labels used for classification.
+
+	@param num Number of labels
+	@param ltype Type of labels, either twoclass or series.
+	@return Tuple to contain the labels as numbers in a tuple and labels as objects digestable for Shogun.
+	"""
+
 	seed(_get_seed())
 	labels=[]
 	if ltype=='twoclass':
@@ -124,6 +164,12 @@ def get_labels (num, ltype='twoclass'):
 	return labels
 
 def get_dna (len_seq_test_add=0):
+	"""Return a random DNA sequence.
+
+	@param len_seq_test_add Additional length of the sequence of characters in the test data, used by some distances.
+	@return Dict of tuples of DNA sequences.
+	"""
+
 	seed(_get_seed())
 	acgt=array(['A', 'C', 'G','T'])
 	len_acgt=len(acgt)

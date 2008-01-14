@@ -1,5 +1,4 @@
-"""
-Generator for Clustering
+"""Generator for Clustering
 """
 
 from numpy import *
@@ -15,6 +14,17 @@ import dataop
 from config import CLUSTERING, C_CLUSTERING, C_DISTANCE
 
 def _get_outdata (name, params):
+	"""Return data to be written into the testcase's file.
+
+	After computations and such, the gathered data is structured and
+	put into one data structure which can conveniently be written to a
+	file that will represent the testcase.
+	
+	@param name Clustering method's name
+	@param params Gathered data
+	@return Dict containing testcase data to be written to file
+	"""
+
 	outdata={
 		'name':name,
 		'data_train':matrix(params['data']['train']),
@@ -35,6 +45,12 @@ def _get_outdata (name, params):
 	return outdata
 
 def _run (name, first_arg):
+	"""Run generator for a specific clustering method.
+
+	@param name Name of the clustering method to run.
+	@param first_arg First argument to the clustering's constructor; so far, only this distinguishes the instantion of the different methods.
+	"""
+
 	params={
 		first_arg:3,
 		'dname':'EuclidianDistance',
@@ -63,7 +79,10 @@ def _run (name, first_arg):
 
 
 def run ():
+	"""Run all clustering methods."""
+
 	# init random to be constant
 	Math_init_random(INIT_RANDOM)
+
 	_run('KMeans', 'k')
 	_run('Hierarchical', 'merges')

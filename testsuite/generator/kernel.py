@@ -20,6 +20,14 @@ from config import KERNEL, C_KERNEL
 ##################################################################
 
 def _compute_subkernels (name, feats, kernel, outdata):
+	"""Compute for kernel handling subkernels.
+
+	@param name Name of the kernel
+	@param feats Features of the kernel
+	@param kernel Instantiated kernel
+	@param outdata Already gathered data for output into testcase file
+	"""
+
 	outdata['name']=name
 	kernel.init(feats['train'], feats['train'])
 	outdata['km_train']=kernel.get_kernel_matrix()
@@ -30,6 +38,11 @@ def _compute_subkernels (name, feats, kernel, outdata):
 	fileop.write(C_KERNEL, outdata)
 
 def _get_subkernel_args (subkernel):
+	"""Return argument list for a subkernel.
+
+	@param subkernel Tuple containing data relevant to a subkernel
+	"""
+
 	args=''
 	i=0
 	while 1:
@@ -42,6 +55,13 @@ def _get_subkernel_args (subkernel):
 	return args
 
 def _get_subkernel_outdata (subkernel, data, num):
+	"""Return data to be written into the testcase's file for a subkernel
+
+	@param subkernel Tuple containing data relevant to a subkernel
+	@param data Train and test data
+	@param num Index number of the subkernel for identification in file
+	"""
+
 	prefix='subkernel'+num+'_'
 	outdata={}
 
@@ -56,6 +76,8 @@ def _get_subkernel_outdata (subkernel, data, num):
 	return outdata
 
 def _run_auc ():
+	"""Run AUC kernel."""
+
 	data=dataop.get_rand()
 	feats=featop.get_simple('Real', data)
 	width=1.5
@@ -74,6 +96,8 @@ def _run_auc ():
 	_compute_subkernels('AUC', feats, kernel, outdata)
 
 def _run_combined ():
+	"""Run Combined kernel."""
+
 	kernel=CombinedKernel()
 	feats={'train':CombinedFeatures(), 'test':CombinedFeatures()}
 	subkernels=[
@@ -101,6 +125,8 @@ def _run_combined ():
 	_compute_subkernels('Combined', feats, kernel, outdata)
 
 def _run_subkernels ():
+	"""Run all kernels handling subkernels."""
+
 	_run_auc()
 	_run_combined()
 
@@ -109,6 +135,14 @@ def _run_subkernels ():
 ##################################################################
 
 def _compute (name, feats, data, *args):
+	"""Compute a kernel and gather data.
+
+	@param name Name of the kernel
+	@param feats Features of the kernel
+	@param data Train and test data
+	@param *args variable argument list for kernel's constructor
+	"""
+
 	fun=eval(name+'Kernel')
 	kernel=fun(feats['train'], feats['train'], *args)
 	km_train=kernel.get_kernel_matrix()
@@ -127,6 +161,13 @@ def _compute (name, feats, data, *args):
 	fileop.write(C_KERNEL, outdata)
 
 def _compute_pie (name, feats, data):
+	"""Compute a kernel with PluginEstimate.
+
+	@param name Name of the kernel
+	@param feats Features of the kernel
+	@param data Train and test data
+	"""
+
 	pie=PluginEstimate()
 	fun=eval(name+'Kernel')
 
@@ -159,6 +200,8 @@ def _compute_pie (name, feats, data):
 ##################################################################
 
 def _run_custom ():
+	"""Run Custom kernel."""
+
 	dim_square=7
 	name='Custom'
 	data=dataop.get_rand(dim_square=dim_square)
@@ -190,18 +233,25 @@ def _run_custom ():
 	fileop.write(C_KERNEL, outdata)
 
 def _run_distance ():
+	"""Run distance kernel."""
+
 	data=dataop.get_rand()
 	feats=featop.get_simple('Real', data)
 	distance=CanberraMetric()
 	_compute('Distance', feats, data, 1.7, distance)
 
 def _run_feats_byte ():
+	"""Run kernel with ByteFeatures."""
+
 	data=dataop.get_rand(dattype=ubyte)
 	feats=featop.get_simple('Byte', data, RAWBYTE)
 
 	_compute('LinearByte', feats, data)
 
 def _run_mindygram ():
+	"""Run Mindygram kernel."""
+	return
+
 	data=dataop.get_dna()
 	feats={'train':MindyGramFeatures('DNA', 'freq', '%20.,', 0),
 		'test':MindyGramFeatures('DNA', 'freq', '%20.,', 0)}
@@ -209,6 +259,8 @@ def _run_mindygram ():
 	_compute('MindyGram', feats, data, 'MEASURE', 1.5)
 
 def _run_feats_real ():
+	"""Run kernel with RealFeatures."""
+
 	data=dataop.get_rand()
 	feats=featop.get_simple('Real', data)
 
@@ -231,6 +283,8 @@ def _run_feats_real ():
 	_compute('SparsePoly', feats, data, 10, 3, True, True)
 
 def _run_feats_string ():
+	"""Run kernel with StringFeatures."""
+
 	data=dataop.get_dna()
 	feats=featop.get_string('Char', data)
 
@@ -249,6 +303,8 @@ def _run_feats_string ():
 
 
 def _run_feats_word ():
+	"""Run kernel with WordFeatures."""
+
 	maxval=42
 	data=dataop.get_rand(dattype=ushort, max_train=maxval, max_test=maxval)
 	feats=featop.get_simple('Word', data)
@@ -259,6 +315,8 @@ def _run_feats_word ():
 	_compute('WordMatch', feats, data, 3)
 
 def _run_feats_string_complex ():
+	"""Run kernel with complex StringFeatures."""
+
 	data=dataop.get_dna()
 	feats=featop.get_string_complex('Word', data)
 
@@ -269,6 +327,8 @@ def _run_feats_string_complex ():
 	_compute('CommUlongString', feats, data, False, FULL_NORMALIZATION)
 
 def _run_pie ():
+	"""Run kernel with PluginEstimate."""
+
 	data=dataop.get_dna()
 	feats=featop.get_string_complex('Word', data)
 
@@ -276,8 +336,9 @@ def _run_pie ():
 	_compute_pie('SalzbergWord', feats, data)
 
 def run ():
-	#_run_mindygram()
+	"""Run generator for all kernels."""
 
+	#_run_mindygram()
 	_run_pie()
 	_run_custom()
 	_run_distance()

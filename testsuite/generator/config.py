@@ -1,6 +1,4 @@
-"""
-Global configuration parameters: lists and types
-"""
+"""Global configuration parameters: lists and categories"""
 
 # name: accuracy, classifier type, label type
 CLASSIFIER={
@@ -145,6 +143,7 @@ PREPROC={
 	'SortUlongString':[],
 }
 
+# categories
 C_KERNEL=0
 C_DISTANCE=1
 C_CLASSIFIER=2

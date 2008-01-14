@@ -1,6 +1,4 @@
-"""
-Generator for Classifier
-"""
+"""Generator for Classifier"""
 
 from numpy import *
 from numpy.random import rand
@@ -16,6 +14,17 @@ import dataop
 from config import CLASSIFIER, C_KERNEL, C_DISTANCE, C_CLASSIFIER
 
 def _get_outdata (name, params):
+	"""Return data to be written into the testcase's file.
+
+	After computations and such, the gathered data is structured and
+	put into one data structure which can conveniently be written to a
+	file that will represent the testcase.
+	
+	@param name Classifier's name
+	@param params Gathered data
+	@return Dict containing testcase data to be written to file
+	"""
+
 	ctype=CLASSIFIER[name][1]
 	outdata={
 		'name':name,
@@ -59,6 +68,16 @@ def _get_outdata (name, params):
 ##########################################################################
 
 def _get_svm (name, labels, params):
+	"""Return an SVM object.
+
+	This function instantiates an SVM depending on the parameters.
+
+	@param name Name of the SVM to instantiate
+	@param labels Labels to be used for the SVM (if at all!)
+	@param params Misc parameters for the SVM's constructor
+	@return An SVM object
+	"""
+
 	svmfun=eval(name)
 	ctype=CLASSIFIER[name][1]
 
@@ -75,6 +94,15 @@ def _get_svm (name, labels, params):
 		return svmfun(params['C'], params['feats']['train'], labels)
 
 def _compute_svm (name, labels, params):
+	"""Perform computations on SVM.
+
+	Perform all necessary computations on SVM and gather the output.
+
+	@param name Name of the SVM to instantiate
+	@param labels Labels to be used for the SVM (if at all!)
+	@param params Misc parameters for the SVM's constructor
+	"""
+
 	ctype=CLASSIFIER[name][1]
 	svm=_get_svm(name, labels, params)
 	svm.parallel.set_num_threads(params['num_threads'])
@@ -114,6 +142,14 @@ def _compute_svm (name, labels, params):
 	fileop.write(C_CLASSIFIER, outdata)
 
 def _loop_svm (svms, params):
+	"""Loop through SVM computations, only slightly differing in parameters.
+
+	Loop through SVM computations with little variations in the parameters for the SVM. Not necessarily used by all SVMs in this generator.
+
+	@param svms Names of the svms to loop through
+	@param params Parameters to the SVM
+	"""
+
 	for name in svms:
 		ctype=CLASSIFIER[name][1]
 		ltype=CLASSIFIER[name][2]
@@ -152,6 +188,8 @@ def _loop_svm (svms, params):
 		_compute_svm(name, labels, parms)
 
 def _run_svm_kernel ():
+	"""Run all kernel-based SVMs."""
+
 	svms=['SVMLight', 'LibSVM', 'GPBTSVM', 'MPDSVM', 'LibSVMOneClass']
 	params={
 		'kname':'Gaussian',
@@ -196,6 +234,8 @@ def _run_svm_kernel ():
 	_loop_svm(svms, params)
 
 def _run_svm_linear ():
+	"""Run all SVMs based on (Sparse) Linear Classifiers."""
+
 	svms=['SVMOcas']
 	params={
 		'data':dataop.get_clouds(2),
@@ -219,6 +259,8 @@ def _run_svm_linear ():
 ##########################################################################
 
 def _run_perceptron ():
+	"""Run Perceptron classifier."""
+
 	name='Perceptron'
 	params={
 		'num_threads':1,
@@ -244,6 +286,9 @@ def _run_perceptron ():
 	fileop.write(C_CLASSIFIER, outdata)
 
 def _run_knn ():
+	"""Run K-Nearest-Neighbour classifier.
+	"""
+
 	name='KNN'
 	params={
 		'num_threads':1,
@@ -269,8 +314,9 @@ def _run_knn ():
 	fileop.write(C_CLASSIFIER, outdata)
 
 def _run_lda ():
-	name='LDA'
+	"""Run Linear Discriminant Analysis classifier."""
 
+	name='LDA'
 	params={
 		'gamma':.1,
 		'num_threads':1,
@@ -295,6 +341,8 @@ def _run_lda ():
 ##########################################################################
 
 def run ():
+	"""Run generator for all classifiers."""
+
 	_run_svm_kernel()
 	_run_svm_linear()
 	_run_knn()

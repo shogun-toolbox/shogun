@@ -1,6 +1,4 @@
-"""
-Generator for Distance
-"""
+"""Generator for Distance"""
 
 from numpy import *
 from shogun.Distance import *
@@ -11,6 +9,14 @@ import featop
 from config import C_DISTANCE
 
 def _compute (name, feats, data, *args):
+	"""Compute a distance and gather result data.
+
+	@param name Name of the distance
+	@param feats Train and test features
+	@param data Train and test data (for output)
+	@param *args variable argument list for distance's constructor
+	"""
+
 	fun=eval(name)
 	distance=fun(feats['train'], feats['train'], *args)
 	dm_train=distance.get_distance_matrix()
@@ -29,6 +35,8 @@ def _compute (name, feats, data, *args):
 	fileop.write(C_DISTANCE, outdata)
 
 def _run_feats_real ():
+	"""Run distances with RealFeatures."""
+
 	data=dataop.get_rand()
 	feats=featop.get_simple('Real', data)
 
@@ -44,6 +52,8 @@ def _run_feats_real ():
 	_compute('SparseEuclidianDistance', feats, data)
 
 def _run_feats_string_complex ():
+	"""Run distances with complex StringFeatures, like WordString."""
+
 	data=dataop.get_dna(len_seq_test_add=42)
 	feats=featop.get_string_complex('Word', data)
 
@@ -53,6 +63,8 @@ def _run_feats_string_complex ():
 	_compute('ManhattanWordDistance', feats, data)
 
 def run ():
+	"""Run generator for all distances."""
+
 	_run_feats_real()
 	_run_feats_string_complex()
 
