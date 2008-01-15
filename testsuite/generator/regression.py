@@ -1,14 +1,13 @@
 """Generator for Regression"""
 
-from numpy import matrix
-from numpy.random import rand
+import numpy
+import shogun.Regression as regression
 from shogun.Kernel import GaussianKernel
-from shogun.Regression import *
 
 import fileop
 import featop
 import dataop
-from config import REGRESSION, C_KERNEL, C_REGRESSION
+import config
 
 
 def _get_outdata (name, params):
@@ -23,12 +22,12 @@ def _get_outdata (name, params):
 	@return Dict containing testcase data to be written to file
 	"""
 
-	rtype=REGRESSION[name][1]
+	rtype=config.REGRESSION[name][1]
 	outdata={
 		'name':name,
-		'data_train':matrix(params['data']['train']),
-		'data_test':matrix(params['data']['test']),
-		'regression_accuracy':REGRESSION[name][0],
+		'data_train':numpy.matrix(params['data']['train']),
+		'data_test':numpy.matrix(params['data']['test']),
+		'regression_accuracy':config.REGRESSION[name][0],
 		'regression_type':rtype,
 	}
 
@@ -41,7 +40,8 @@ def _get_outdata (name, params):
 			outdata['regression_'+opt]=params[opt]
 
 	outdata['kernel_name']=params['kname']
-	kparams=fileop.get_outdata(params['kname'], C_KERNEL, params['kargs'])
+	kparams=fileop.get_outdata(params['kname'], config.C_KERNEL,
+		params['kargs'])
 	outdata.update(kparams)
 
 	return outdata
@@ -53,13 +53,13 @@ def _compute (name, params):
 	@param params Misc parameters for the regression method's constructor
 	"""
 
-	rtype=REGRESSION[name][1]
+	rtype=config.REGRESSION[name][1]
 	params['kernel'].parallel.set_num_threads(params['num_threads'])
 	params['kernel'].init(params['feats']['train'], params['feats']['train'])
 	params['labels'], labels=dataop.get_labels(
 		params['feats']['train'].get_num_vectors())
 
-	fun=eval(name)
+	fun=eval('regression.'+name)
 	if rtype=='svm':
 		regression=fun(params['C'], params['epsilon'], params['kernel'], labels)
 		regression.set_tube_epsilon(params['tube_epsilon'])
@@ -78,7 +78,7 @@ def _compute (name, params):
 	params['classified']=regression.classify().get_labels()
 
 	outdata=_get_outdata(name, params)
-	fileop.write(C_REGRESSION, outdata)
+	fileop.write(config.C_REGRESSION, outdata)
 
 def _loop (svrs, params):
 	"""Loop through regression computations, only slightly differing in parameters.
@@ -87,7 +87,7 @@ def _loop (svrs, params):
 	"""
 
 	for name in svrs:
-		rtype=REGRESSION[name][1]
+		rtype=config.REGRESSION[name][1]
 		parms={'num_threads':1}
 		parms.update(params)
 		if rtype=='svm':

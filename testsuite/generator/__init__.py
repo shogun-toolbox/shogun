@@ -22,10 +22,11 @@ def run ():
 	"""Run all the individual generators."""
 
 	clean_dir_outdata()
-	kernel.run()
-	distance.run()
+
 	classifier.run()
 	clustering.run()
+	distance.run()
 	distribution.run()
-	regression.run()
+	kernel.run()
 	preproc.run()
+	regression.run()

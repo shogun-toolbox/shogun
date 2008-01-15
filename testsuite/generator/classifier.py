@@ -1,17 +1,18 @@
 """Generator for Classifier"""
 
-from numpy import *
-from numpy.random import rand
-from shogun.Kernel import *
+import numpy
+import shogun.Library as library
+import shogun.Classifier as classifier
+from shogun.Kernel import GaussianKernel, WeightedDegreeStringKernel, \
+	LinearKernel, WeightedDegreePositionStringKernel, CommWordStringKernel, \
+	CommUlongStringKernel
 from shogun.Distance import EuclidianDistance
 from shogun.Features import Labels
-from shogun.Classifier import *
-from shogun.Library import E_WD
 
 import fileop
 import featop
 import dataop
-from config import CLASSIFIER, C_KERNEL, C_DISTANCE, C_CLASSIFIER
+import config
 
 def _get_outdata (name, params):
 	"""Return data to be written into the testcase's file.
@@ -25,12 +26,12 @@ def _get_outdata (name, params):
 	@return Dict containing testcase data to be written to file
 	"""
 
-	ctype=CLASSIFIER[name][1]
+	ctype=config.CLASSIFIER[name][1]
 	outdata={
 		'name':name,
-		'data_train':matrix(params['data']['train']),
-		'data_test':matrix(params['data']['test']),
-		'classifier_accuracy':CLASSIFIER[name][0],
+		'data_train':numpy.matrix(params['data']['train']),
+		'data_test':numpy.matrix(params['data']['test']),
+		'classifier_accuracy':config.CLASSIFIER[name][0],
 		'classifier_type':ctype,
 	}
 
@@ -50,12 +51,13 @@ def _get_outdata (name, params):
 
 	if ctype=='kernel':
 		outdata['kernel_name']=params['kname']
-		kparams=fileop.get_outdata(params['kname'], C_KERNEL, params['kargs'])
+		kparams=fileop.get_outdata(params['kname'],
+			config.C_KERNEL, params['kargs'])
 		outdata.update(kparams)
 	elif ctype=='knn':
 		outdata['distance_name']=params['dname']
 		dparams=fileop.get_outdata(
-			params['dname'], C_DISTANCE, params['dargs'])
+			params['dname'], config.C_DISTANCE, params['dargs'])
 		outdata.update(dparams)
 	else:
 		outdata['feature_class']='simple'
@@ -78,8 +80,8 @@ def _get_svm (name, labels, params):
 	@return An SVM object
 	"""
 
-	svmfun=eval(name)
-	ctype=CLASSIFIER[name][1]
+	svm=eval('classifier.'+name)
+	ctype=config.CLASSIFIER[name][1]
 
 	if ctype=='kernel':
 		params['kernel'].parallel.set_num_threads(params['num_threads'])
@@ -87,11 +89,11 @@ def _get_svm (name, labels, params):
 			params['feats']['train'], params['feats']['train'])
 
 		if labels is None:
-			return svmfun(params['C'], params['kernel'])
+			return svm(params['C'], params['kernel'])
 		else:
-			return svmfun(params['C'], params['kernel'], labels)
+			return svm(params['C'], params['kernel'], labels)
 	else:
-		return svmfun(params['C'], params['feats']['train'], labels)
+		return svm(params['C'], params['feats']['train'], labels)
 
 def _compute_svm (name, labels, params):
 	"""Perform computations on SVM.
@@ -103,7 +105,7 @@ def _compute_svm (name, labels, params):
 	@param params Misc parameters for the SVM's constructor
 	"""
 
-	ctype=CLASSIFIER[name][1]
+	ctype=config.CLASSIFIER[name][1]
 	svm=_get_svm(name, labels, params)
 	svm.parallel.set_num_threads(params['num_threads'])
 	svm.set_epsilon(params['epsilon'])
@@ -139,7 +141,7 @@ def _compute_svm (name, labels, params):
 	params['classified']=svm.classify().get_labels()
 
 	outdata=_get_outdata(name, params)
-	fileop.write(C_CLASSIFIER, outdata)
+	fileop.write(config.C_CLASSIFIER, outdata)
 
 def _loop_svm (svms, params):
 	"""Loop through SVM computations, only slightly differing in parameters.
@@ -151,8 +153,8 @@ def _loop_svm (svms, params):
 	"""
 
 	for name in svms:
-		ctype=CLASSIFIER[name][1]
-		ltype=CLASSIFIER[name][2]
+		ctype=config.CLASSIFIER[name][1]
+		ltype=config.CLASSIFIER[name][2]
 
 		parms={
 			'num_threads':1,
@@ -222,7 +224,7 @@ def _run_svm_kernel ():
 	params['kernel']=WeightedDegreePositionStringKernel(10, *params['kargs'])
 	_loop_svm(svms, params)
 
-	params['kargs']=[False, FULL_NORMALIZATION]
+	params['kargs']=[False, library.FULL_NORMALIZATION]
 	params['kname']='CommWordString'
 	params['feats']=featop.get_string_complex('Word', params['data'])
 	params['kernel']=CommWordStringKernel(10, *params['kargs'])
@@ -270,9 +272,10 @@ def _run_perceptron ():
 	}
 	feats=featop.get_simple('Real', params['data'])
 	num_vec=feats['train'].get_num_vectors()
-	params['labels'], labels=dataop.get_labels(num_vec, CLASSIFIER[name][2])
+	params['labels'], labels=dataop.get_labels(num_vec,
+		config.CLASSIFIER[name][2])
 
-	perceptron=Perceptron(feats['train'], labels)
+	perceptron=classifier.Perceptron(feats['train'], labels)
 	perceptron.parallel.set_num_threads(params['num_threads'])
 	perceptron.set_learn_rate(params['learn_rate'])
 	perceptron.set_max_iter(params['max_iter'])
@@ -283,7 +286,7 @@ def _run_perceptron ():
 	params['classified']=perceptron.classify().get_labels()
 
 	outdata=_get_outdata(name, params)
-	fileop.write(C_CLASSIFIER, outdata)
+	fileop.write(config.C_CLASSIFIER, outdata)
 
 def _run_knn ():
 	"""Run K-Nearest-Neighbour classifier.
@@ -301,9 +304,9 @@ def _run_knn ():
 	fun=eval(params['dname'])
 	distance=fun(feats['train'], feats['train'], *params['dargs'])
 	params['labels'], labels=dataop.get_labels(
-		feats['train'].get_num_vectors(), CLASSIFIER[name][2])
+		feats['train'].get_num_vectors(), config.CLASSIFIER[name][2])
 
-	knn=KNN(params['k'], distance, labels)
+	knn=classifier.KNN(params['k'], distance, labels)
 	knn.parallel.set_num_threads(params['num_threads'])
 	knn.train()
 
@@ -311,7 +314,7 @@ def _run_knn ():
 	params['classified']=knn.classify().get_labels()
 
 	outdata=_get_outdata(name, params)
-	fileop.write(C_CLASSIFIER, outdata)
+	fileop.write(config.C_CLASSIFIER, outdata)
 
 def _run_lda ():
 	"""Run Linear Discriminant Analysis classifier."""
@@ -324,9 +327,9 @@ def _run_lda ():
 	}
 	feats=featop.get_simple('Real', params['data'])
 	params['labels'], labels=dataop.get_labels(
-		feats['train'].get_num_vectors(), CLASSIFIER[name][2])
+		feats['train'].get_num_vectors(), config.CLASSIFIER[name][2])
 
-	lda=LDA(params['gamma'], feats['train'], labels)
+	lda=classifier.LDA(params['gamma'], feats['train'], labels)
 	lda.parallel.set_num_threads(params['num_threads'])
 	lda.train()
 
@@ -334,7 +337,7 @@ def _run_lda ():
 	params['classified']=lda.classify().get_labels()
 
 	outdata=_get_outdata(name, params)
-	fileop.write(C_CLASSIFIER, outdata)
+	fileop.write(config.C_CLASSIFIER, outdata)
 
 ##########################################################################
 # public

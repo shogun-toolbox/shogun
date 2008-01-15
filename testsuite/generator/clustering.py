@@ -1,12 +1,12 @@
 """Generator for Clustering
 """
 
-from numpy import *
-from shogun.Clustering import *
+from numpy import matrix
 from shogun.Distance import EuclidianDistance
 from shogun.Library import Math_init_random
+import shogun.Clustering as clustering
 
-INIT_RANDOM=42
+_INIT_RANDOM=42
 
 import fileop
 import featop
@@ -30,7 +30,7 @@ def _get_outdata (name, params):
 		'data_train':matrix(params['data']['train']),
 		'data_test':matrix(params['data']['test']),
 		'clustering_accuracy':CLUSTERING[name][0],
-		'clustering_init_random':INIT_RANDOM,
+		'clustering_init_random':_INIT_RANDOM,
 	}
 
 	optional=['k', 'radi', 'centers', 'merges', 'merge_distance', 'pairs']
@@ -61,18 +61,18 @@ def _run (name, first_arg):
 	dfun=eval(params['dname'])
 	distance=dfun(feats['train'], feats['train'], *params['dargs'])
 
-	fun=eval(name)
-	clustering=fun(params[first_arg], distance)
-	clustering.train()
+	fun=eval('clustering.'+name)
+	clust=fun(params[first_arg], distance)
+	clust.train()
 
 	distance.init(feats['train'], feats['test'])
 
 	if name=='KMeans':
-		params['radi']=clustering.get_radi()
-		params['centers']=clustering.get_centers()
+		params['radi']=clust.get_radi()
+		params['centers']=clust.get_centers()
 	elif name=='Hierarchical':
-		params['merge_distance']=clustering.get_merge_distance()
-		params['pairs']=clustering.get_pairs()
+		params['merge_distance']=clust.get_merge_distance()
+		params['pairs']=clust.get_pairs()
 
 	outdata=_get_outdata(name, params)
 	fileop.write(C_CLUSTERING, outdata)
@@ -82,7 +82,7 @@ def run ():
 	"""Run all clustering methods."""
 
 	# init random to be constant
-	Math_init_random(INIT_RANDOM)
+	Math_init_random(_INIT_RANDOM)
 
 	_run('KMeans', 'k')
 	_run('Hierarchical', 'merges')

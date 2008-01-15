@@ -2,14 +2,15 @@
 Common operations on features
 """
 
-from shogun.Features import *
-from shogun.PreProc import *
+import shogun.Features as features
+import shogun.PreProc as preproc
+import shogun.Library as library
 
 WORDSTRING_ORDER=3
 WORDSTRING_GAP=0
 WORDSTRING_REVERSE=False
 
-def get_simple (ftype, data, alphabet=DNA, sparse=False):
+def get_simple (ftype, data, alphabet=library.DNA, sparse=False):
 	"""Return SimpleFeatures.
 
 	@param ftype Feature type, e.g. Real, Byte
@@ -20,24 +21,24 @@ def get_simple (ftype, data, alphabet=DNA, sparse=False):
 	"""
 
 	if ftype=='Byte' or ftype=='Char':
-		train=eval(ftype+"Features(data['train'], alphabet)")
-		test=eval(ftype+"Features(data['test'], alphabet)")
+		train=eval('features.'+ftype+"Features(data['train'], alphabet)")
+		test=eval('features.'+ftype+"Features(data['test'], alphabet)")
 	else:
-		train=eval(ftype+"Features(data['train'])")
-		test=eval(ftype+"Features(data['test'])")
+		train=eval('features.'+ftype+"Features(data['train'])")
+		test=eval('features.'+ftype+"Features(data['test'])")
 
 	if sparse:
-		sparse_train=eval('Sparse'+ftype+'Features()')
+		sparse_train=eval('features.Sparse'+ftype+'Features()')
 		sparse_train.obtain_from_simple(train)
 
-		sparse_test=eval('Sparse'+ftype+'Features()')
+		sparse_test=eval('features.Sparse'+ftype+'Features()')
 		sparse_test.obtain_from_simple(test)
 
 		return {'train':sparse_train, 'test':sparse_test}
 	else:
 		return {'train':train, 'test':test}
 
-def get_string (ftype, data, alphabet=DNA):
+def get_string (ftype, data, alphabet=library.DNA):
 	"""Return StringFeatures.
 
 	@param ftype Feature type, e.g. Real, Byte
@@ -46,15 +47,15 @@ def get_string (ftype, data, alphabet=DNA):
 	@return Dict with StringFeatures train/test
 	"""
 
-	train=eval('String'+ftype+"Features(alphabet)")
+	train=eval('features.String'+ftype+"Features(alphabet)")
 	train.set_string_features(data['train'])
-	test=eval('String'+ftype+"Features(alphabet)")
+	test=eval('features.String'+ftype+"Features(alphabet)")
 	test.set_string_features(data['test'])
 
 	return {'train':train, 'test':test}
 
-def get_string_complex (ftype, data, alphabet=DNA, order=WORDSTRING_ORDER,
-	gap=WORDSTRING_GAP, reverse=WORDSTRING_REVERSE):
+def get_string_complex (ftype, data, alphabet=library.DNA,
+	order=WORDSTRING_ORDER, gap=WORDSTRING_GAP, reverse=WORDSTRING_REVERSE):
 	"""Return complex StringFeatures.
 
 	@param ftype Feature type, e.g. RealFeature, ByteFeature
@@ -68,15 +69,15 @@ def get_string_complex (ftype, data, alphabet=DNA, order=WORDSTRING_ORDER,
 
 	feats={}
 
-	charfeat=StringCharFeatures(alphabet)
+	charfeat=features.StringCharFeatures(alphabet)
 	charfeat.set_string_features(data['train'])
-	feat=eval('String'+ftype+'Features(charfeat.get_alphabet())')
+	feat=eval('features.String'+ftype+'Features(charfeat.get_alphabet())')
 	feat.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats['train']=feat
 
-	charfeat=StringCharFeatures(alphabet)
+	charfeat=features.StringCharFeatures(alphabet)
 	charfeat.set_string_features(data['test'])
-	feat=eval('String'+ftype+'Features(charfeat.get_alphabet())')
+	feat=eval('features.String'+ftype+'Features(charfeat.get_alphabet())')
 	feat.obtain_from_char(charfeat, order-1, order, gap, reverse)
 	feats['test']=feat
 
@@ -95,7 +96,7 @@ def add_preproc (name, feats, *args):
 	@return Dict with features having a preprocessor applied
 	"""
 
-	fun=eval(name)
+	fun=eval('preproc.'+name)
 	preproc=fun(*args)
 	preproc.init(feats['train'])
 	feats['train'].add_preproc(preproc)

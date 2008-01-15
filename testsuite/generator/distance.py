@@ -1,12 +1,12 @@
 """Generator for Distance"""
 
-from numpy import *
-from shogun.Distance import *
+import numpy
+import shogun.Distance as distance
 
 import fileop
 import dataop
 import featop
-from config import C_DISTANCE
+import config
 
 def _compute (name, feats, data, *args):
 	"""Compute a distance and gather result data.
@@ -17,22 +17,22 @@ def _compute (name, feats, data, *args):
 	@param *args variable argument list for distance's constructor
 	"""
 
-	fun=eval(name)
-	distance=fun(feats['train'], feats['train'], *args)
-	dm_train=distance.get_distance_matrix()
-	distance.init(feats['train'], feats['test'])
-	dm_test=distance.get_distance_matrix()
+	fun=eval('distance.'+name)
+	dist=fun(feats['train'], feats['train'], *args)
+	dm_train=dist.get_distance_matrix()
+	dist.init(feats['train'], feats['test'])
+	dm_test=dist.get_distance_matrix()
 
 	outdata={
 		'name':name,
 		'dm_train':dm_train,
 		'dm_test':dm_test,
-		'data_train':matrix(data['train']),
-		'data_test':matrix(data['test'])
+		'data_train':numpy.matrix(data['train']),
+		'data_test':numpy.matrix(data['test'])
 	}
-	outdata.update(fileop.get_outdata(name, C_DISTANCE, args))
+	outdata.update(fileop.get_outdata(name, config.C_DISTANCE, args))
 
-	fileop.write(C_DISTANCE, outdata)
+	fileop.write(config.C_DISTANCE, outdata)
 
 def _run_feats_real ():
 	"""Run distances with RealFeatures."""
