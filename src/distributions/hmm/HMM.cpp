@@ -148,7 +148,7 @@ CModel::~CModel()
 }
 
 CHMM::CHMM(CHMM* h)
-: iterations(150), epsilon(1e-4), conv_it(5)
+: iterations(150), epsilon(1e-4), conv_it(5), CDistribution()
 {
 	SG_INFO( "hmm is using %i separate tables\n",  parallel.get_num_threads()) ;
 
@@ -159,7 +159,7 @@ CHMM::CHMM(CHMM* h)
 }
 
 CHMM::CHMM(INT p_N, INT p_M, CModel* p_model, DREAL p_PSEUDO)
-: iterations(150), epsilon(1e-4), conv_it(5)
+: iterations(150), epsilon(1e-4), conv_it(5), CDistribution()
 {
 	this->N=p_N;
 	this->M=p_M;
@@ -171,7 +171,7 @@ CHMM::CHMM(INT p_N, INT p_M, CModel* p_model, DREAL p_PSEUDO)
 }
 
 CHMM::CHMM(CStringFeatures<WORD>* obs, INT p_N, INT p_M, DREAL p_PSEUDO)
-: iterations(150), epsilon(1e-4), conv_it(5)
+: iterations(150), epsilon(1e-4), conv_it(5), CDistribution()
 {
 	this->N=p_N;
 	this->M=p_M;
@@ -184,7 +184,7 @@ CHMM::CHMM(CStringFeatures<WORD>* obs, INT p_N, INT p_M, DREAL p_PSEUDO)
 }
 
 CHMM::CHMM(INT p_N, double* p, double* q, double* a)
-: iterations(150), epsilon(1e-4), conv_it(5)
+: iterations(150), epsilon(1e-4), conv_it(5), CDistribution()
 {
 	this->N=p_N;
 	this->M=0;
@@ -232,7 +232,7 @@ CHMM::CHMM(INT p_N, double* p, double* q, double* a)
 }
 
 CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
-: iterations(150), epsilon(1e-4), conv_it(5)
+: iterations(150), epsilon(1e-4), conv_it(5), CDistribution()
 {
 	model=NULL ;
 	
@@ -336,7 +336,7 @@ CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
 
 
 CHMM::CHMM(FILE* model_file, DREAL p_PSEUDO)
-: iterations(150), epsilon(1e-4), conv_it(5)
+: iterations(150), epsilon(1e-4), conv_it(5), CDistribution()
 {
 	SG_INFO( "hmm is using %i separate tables\n",  parallel.get_num_threads()) ;
 
