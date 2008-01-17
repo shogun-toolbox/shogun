@@ -1151,6 +1151,7 @@ class CHMM : public CDistribution
 			if ((line_>=N)||(column>=M))
 				SG_DEBUG("index out of range in get_b(%i,%i) [%i,%i]\n", line_, column,N,M) ;
 #endif
+			//SG_PRINT("idx %d\n", line_*M+column);
 			return observation_matrix_b[line_*M+column];
 		}
 
@@ -1398,9 +1399,14 @@ inline DREAL model_derivative_q(T_STATES i, INT dimension)
 inline DREAL model_derivative_a(T_STATES i, T_STATES j, INT dimension)
 {
 	DREAL sum=-CMath::INFTY;
-	//SG_PRINT("i: %d, j: %d, dim: %d\n", i, j, dimension);
 	for (INT t=0; t<p_observations->get_vector_length(dimension)-1; t++) {
-		sum= CMath::logarithmic_sum(sum, forward(t, i, dimension) + backward(t+1, j, dimension) + get_b(j, p_observations->get_feature(dimension,t+1)));
+		//SG_PRINT("feat %d, dim %d, t %d, getb %f\n", p_observations->get_feature(dimension,t+1), dimension, t, get_b(j, p_observations->get_feature(dimension,t+1)));
+		DREAL fw=forward(t, i, dimension);
+		DREAL bw=backward(t+1, j, dimension);
+		WORD feat=p_observations->get_feature(dimension,t+1);
+		DREAL getb=get_b(j,feat );
+		//SG_PRINT("sum: %f\n", fw+bw+getb);
+		sum= CMath::logarithmic_sum(sum, fw + bw + getb);
 	}
 
 	return sum;

@@ -148,7 +148,7 @@ CModel::~CModel()
 }
 
 CHMM::CHMM(CHMM* h)
-: iterations(150), epsilon(1e-4), conv_it(5), CDistribution()
+: CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	SG_INFO( "hmm is using %i separate tables\n",  parallel.get_num_threads()) ;
 
@@ -159,7 +159,7 @@ CHMM::CHMM(CHMM* h)
 }
 
 CHMM::CHMM(INT p_N, INT p_M, CModel* p_model, DREAL p_PSEUDO)
-: iterations(150), epsilon(1e-4), conv_it(5), CDistribution()
+: CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
 	this->M=p_M;
@@ -171,7 +171,7 @@ CHMM::CHMM(INT p_N, INT p_M, CModel* p_model, DREAL p_PSEUDO)
 }
 
 CHMM::CHMM(CStringFeatures<WORD>* obs, INT p_N, INT p_M, DREAL p_PSEUDO)
-: iterations(150), epsilon(1e-4), conv_it(5), CDistribution()
+: CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
 	this->M=p_M;
@@ -184,7 +184,7 @@ CHMM::CHMM(CStringFeatures<WORD>* obs, INT p_N, INT p_M, DREAL p_PSEUDO)
 }
 
 CHMM::CHMM(INT p_N, double* p, double* q, double* a)
-: iterations(150), epsilon(1e-4), conv_it(5), CDistribution()
+: CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	this->N=p_N;
 	this->M=0;
@@ -232,7 +232,7 @@ CHMM::CHMM(INT p_N, double* p, double* q, double* a)
 }
 
 CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
-: iterations(150), epsilon(1e-4), conv_it(5), CDistribution()
+: CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	model=NULL ;
 	
@@ -336,7 +336,7 @@ CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
 
 
 CHMM::CHMM(FILE* model_file, DREAL p_PSEUDO)
-: iterations(150), epsilon(1e-4), conv_it(5), CDistribution()
+: CDistribution(), iterations(150), epsilon(1e-4), conv_it(5)
 {
 	SG_INFO( "hmm is using %i separate tables\n",  parallel.get_num_threads()) ;
 
@@ -5061,6 +5061,7 @@ bool CHMM::append_model(CHMM* app_model)
 		DREAL* n_p=new DREAL[N+num_states];
 		DREAL* n_q=new DREAL[N+num_states];
 		DREAL* n_a=new DREAL[(N+num_states)*(N+num_states)];
+		//SG_PRINT("size n_b: %d\n", (N+num_states)*M);
 		DREAL* n_b=new DREAL[(N+num_states)*M];
 
 		//clear n_x 
@@ -5150,6 +5151,7 @@ bool CHMM::append_model(CHMM* app_model, DREAL* cur_out, DREAL* app_out)
 		DREAL* n_p=new DREAL[N+num_states];
 		DREAL* n_q=new DREAL[N+num_states];
 		DREAL* n_a=new DREAL[(N+num_states)*(N+num_states)];
+		//SG_PRINT("size n_b: %d\n", (N+num_states)*M);
 		DREAL* n_b=new DREAL[(N+num_states)*M];
 
 		//clear n_x 
@@ -5255,6 +5257,7 @@ void CHMM::add_states(INT num_states, DREAL default_value)
 	DREAL* n_p=new DREAL[N+num_states];
 	DREAL* n_q=new DREAL[N+num_states];
 	DREAL* n_a=new DREAL[(N+num_states)*(N+num_states)];
+	//SG_PRINT("size n_b: %d\n", (N+num_states)*M);
 	DREAL* n_b=new DREAL[(N+num_states)*M];
 
 	// warning pay attention to the ordering of 
@@ -5698,7 +5701,6 @@ DREAL CHMM::get_log_derivative(INT num_param, INT num_example)
 		INT k=num_example;
 		INT i=(k/N)*N;
 		INT j=N*N-i;
-		//SG_PRINT("k %d, i %d, j %d\n", k, i, j);
 		return model_derivative_a(i,j, k);
 	}
 	else if (num_param<N*(N+2+M))
