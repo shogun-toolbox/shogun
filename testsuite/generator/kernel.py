@@ -5,9 +5,10 @@ Generator for Kernel
 import numpy
 import shogun.Library as library
 import shogun.Kernel as kernel
-from shogun.Features import CombinedFeatures
+from shogun.Features import CombinedFeatures, TOPFeatures
 from shogun.Classifier import PluginEstimate
 from shogun.Distance import CanberraMetric
+from shogun.Distribution import HMM, Model
 
 import fileop
 import featop
@@ -336,10 +337,34 @@ def _run_pie ():
 	_compute_pie('HistogramWord', feats, data)
 	_compute_pie('SalzbergWord', feats, data)
 
+def _run_top_fisher ():
+	"""Run Linear Kernel with {Top,Fisher}Features."""
+
+	import pdb
+
+	N=3
+	M=6
+	pseudo=1e-10
+	order=1
+	data=dataop.get_cubes(2)
+	feats=featop.get_string_complex('Word', data, library.CUBE, order)
+	pos=HMM(feats['train'], N, M, pseudo)
+	neg=HMM(feats['train'], N, M, pseudo)
+
+	pos=HMM(3, 6, Model(), pseudo)
+	neg=HMM(3, 6, Model(), pseudo)
+	feats['train']=TOPFeatures(10, pos, neg, True, True)
+	feats['test']=TOPFeatures(10, pos, neg, True, True)
+
+	#pdb.set_trace()
+	_compute('Linear', feats, data, 1.)
+	#_compute('Linear', feats, data)
+
 def run ():
 	"""Run generator for all kernels."""
 
 	#_run_mindygram()
+	#_run_top_fisher()
 	_run_pie()
 	_run_custom()
 	_run_distance()
