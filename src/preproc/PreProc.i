@@ -9,7 +9,7 @@
 
 %feature("director") CPreProc;
 %rename(PreProc) CPreProc;
-%feature("autodoc","1");
+%feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN
 %include "preproc/PreProc_doxygen.i"

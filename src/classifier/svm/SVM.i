@@ -6,8 +6,9 @@
 
 #ifdef HAVE_PYTHON
 %include "lib/python_typemaps.i"
-
+%feature("autodoc", "get_support_vectors(self) -> [] of int") get_support_vectors;
 %apply (INT** ARGOUT1, INT* DIM1) {(INT** svs, INT* num)};
+%feature("autodoc", "get_alphas(self) -> [] of float") get_alphas;
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** alphas, INT* d1)};
 %apply (DREAL* IN_ARRAY1, INT DIM1) {(DREAL* alphas, INT d)};
 %apply (INT* IN_ARRAY1, INT DIM1) {(INT* svs, INT d)};

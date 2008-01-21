@@ -20,7 +20,7 @@
 %include "lib/python_typemaps.i"
 #endif
 
-%feature("autodoc","1");
+%feature("autodoc","0");
 
 %include "lib/ShogunException.i"
 %include "lib/io.i"

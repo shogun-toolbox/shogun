@@ -1,5 +1,5 @@
 %{
- #include "structure/DynProg.h" 
+ #include "structure/DynProg.h"
 %}
 
 %rename(DynProg) CDynProg;
@@ -41,13 +41,16 @@
 %apply (INT* IN_ARRAY2, INT DIM1, INT DIM2) {(INT* segment_ids_mask, INT m, INT n)}
 
 /* best_path result retrieval functions */
+%feature("autodoc", "best_path_get_scores(self) -> numpy 1dim array of float") best_path_get_scores;
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** scores, INT* n)};
+%feature("autodoc", "best_path_get_states(self) -> numpy 2dim array of int") best_path_get_states;
 %apply (INT** ARGOUT2, INT* DIM1, INT* DIM2) {(INT** states, INT* m, INT* n)};
+%feature("autodoc", "best_path_get_positions(self) -> numpy 2dim array of int") best_path_get_positions;
 %apply (INT** ARGOUT2, INT* DIM1, INT* DIM2) {(INT** positions, INT* m, INT* n)};
 
 /* best_path_trans_deriv result retrieval functions */
-%apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** my_scores, INT* seq_len)}
+%feature("autodoc", "best_path_get_losses(self) -> numpy 1dim array of float") best_path_get_losses;
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** my_losses, INT* seq_len)}
 #endif
 
-%include "structure/DynProg.h" 
+%include "structure/DynProg.h"

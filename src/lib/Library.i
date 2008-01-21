@@ -3,7 +3,7 @@
 %enddef
 
 %module(docstring=DOCSTR,directors="1") Library
-%feature("autodoc","1");
+%feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN
 %include "lib/Library_doxygen.i"

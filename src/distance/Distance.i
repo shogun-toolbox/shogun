@@ -19,12 +19,13 @@
 
 %include "lib/common.i"
 %include "lib/python_typemaps.i"
+%feature("autodoc", "get_distance_matrix(self) -> numpy 2dim array of float") get_distance_matrix;
 %apply (DREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** dst, INT* m, INT* n)};
 #endif
 
 %feature("director") CDistance;
 %rename(Distance) CDistance;
-%feature("autodoc","1");
+%feature("autodoc","0");
 
 %include "lib/ShogunException.i"
 %include "lib/io.i"

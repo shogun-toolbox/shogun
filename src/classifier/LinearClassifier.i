@@ -5,6 +5,7 @@
 
 #ifdef HAVE_PYTHON
 %include "lib/python_typemaps.i"
+%feature("autodoc", "get_w(self) -> [] of float") get_w;
 %apply (DREAL** ARGOUT1, INT* DIM1) {(DREAL** dst_w, INT* dst_dims)};
 #endif
 

@@ -21,7 +21,7 @@
 
 %newobject CClassifier::classify(CLabels* output);
 %feature("director");
-%feature("autodoc","1");
+%feature("autodoc","0");
 %rename(Classifier) CClassifier;
 
 %include "lib/common.i"

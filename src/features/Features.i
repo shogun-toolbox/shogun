@@ -21,7 +21,7 @@
 
 %feature("director") CFeatures;
 %rename(Features) CFeatures;
-%feature("autodoc","1");
+%feature("autodoc","0");
 
 %include "lib/common.i"
 %include "lib/ShogunException.i"

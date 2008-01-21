@@ -5,7 +5,7 @@
 %module(docstring=DOCSTR,directors="1") Kernel
 %{
 #define SWIG_FILE_WITH_INIT
-#include "kernel/Kernel.h" 
+#include "kernel/Kernel.h"
 %}
 
 #ifdef HAVE_DOXYGEN
@@ -19,12 +19,13 @@
 
 %include "lib/common.i"
 %include "lib/python_typemaps.i"
+%feature("autodoc", "get_kernel_matrix(self) -> numpy 2dim array of float") get_kernel_matrix;
 %apply (DREAL** ARGOUT2, INT* DIM1, INT* DIM2) {(DREAL** dst, INT* m, INT* n)};
 #endif
 
 %feature("director") CKernel;
 %rename(Kernel) CKernel;
-%feature("autodoc","1");
+%feature("autodoc","0");
 
 %include "lib/ShogunException.i"
 %include "lib/io.i"
