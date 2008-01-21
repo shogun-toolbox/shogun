@@ -1,26 +1,32 @@
 #!/usr/bin/env python
 """Doxygen XML to SWIG docstring converter.
 
+Usage:
+
+  doxy2swig.py [options] input.xml output.i
+
 Converts Doxygen generated XML files into a file containing docstrings
 that can be used by SWIG-1.3.x.  Note that you need to get SWIG
 version > 1.3.23 or use Robin Dunn's docstring patch to be able to use
 the resulting output.
 
-Usage:
-
-  doxy2swig.py input.xml output.i
-
 input.xml is your doxygen generated XML file and output.i is where the
 output will be written (the file will be clobbered).
 
 """
-
+######################################################################
+#
 # This code is implemented using Mark Pilgrim's code as a guideline:
 #   http://www.faqs.org/docs/diveintopython/kgp_divein.html
 #
 # Author: Prabhu Ramachandran
 # License: BSD style
-
+#
+# Thanks:
+#   Johan Hake:  the include_function_definition feature
+#   Bill Spotz:  bug reports and testing.
+#
+######################################################################
 
 from xml.dom import minidom
 import re
@@ -28,6 +34,7 @@ import textwrap
 import sys
 import types
 import os.path
+import optparse
 
 
 def my_open_read(source):
@@ -51,9 +58,13 @@ class Doxy2SWIG:
 
     """    
     
-    def __init__(self, src):
-        """Initialize the instance given a source object (file or
-        filename).
+    def __init__(self, src, include_function_definition=True):
+        """Initialize the instance given a source object.  `src` can
+        be a file or filename.  If you do not want to include function
+        definitions from doxygen then set
+        `include_function_definition` to `False`.  This is handy since
+        this allows you to use the swig generated function definition
+        using %feature("autodoc", [0,1]).
 
         """
         f = my_open_read(src)
@@ -68,14 +79,18 @@ class Doxy2SWIG:
         self.space_re = re.compile(r'\s+')
         self.lead_spc = re.compile(r'^(%feature\S+\s+\S+\s*?)"\s+(\S)')
         self.multi = 0
-        self.ignores = ('inheritancegraph', 'param', 'listofallmembers',
+        self.ignores = ['inheritancegraph', 'param', 'listofallmembers',
                         'innerclass', 'name', 'declname', 'incdepgraph',
                         'invincdepgraph', 'programlisting', 'type',
                         'references', 'referencedby', 'location',
                         'collaborationgraph', 'reimplements',
                         'reimplementedby', 'derivedcompoundref',
-                        'basecompoundref')
+                        'basecompoundref']
         #self.generics = []
+        self.include_function_definition = include_function_definition
+        if not include_function_definition:
+            self.ignores.append('argsstring')
+            
         
     def generate(self):
         """Parses the file set in the initialization.  The resulting
@@ -105,7 +120,7 @@ class Doxy2SWIG:
         if m and len(m.group()) == len(txt):
             pass
         else:
-            self.add_text(textwrap.fill(txt))
+            self.add_text(textwrap.fill(txt, break_long_words=False))
 
     def parse_Element(self, node):
         """Parse an `ELEMENT_NODE`.  This calls specific
@@ -125,6 +140,10 @@ class Doxy2SWIG:
         else:
             self.generic_parse(node)
             #if name not in self.generics: self.generics.append(name)
+
+    def parse_Comment(self, node):
+        """Parse a `COMMENT_NODE`.  This does nothing for now."""
+        return
 
     def add_text(self, value):
         """Adds text corresponding to `value` into `self.pieces`."""
@@ -244,7 +263,14 @@ class Doxy2SWIG:
             if name[:8] == 'operator': # Don't handle operators yet.
                 return
 
-            defn = first['definition'].firstChild.data
+            if not first.has_key('definition') or \
+                   kind in ['variable', 'typedef']:
+                return
+
+            if self.include_function_definition:
+                defn = first['definition'].firstChild.data
+            else:
+                defn = ""
             self.add_text('\n')
             self.add_text('%feature("docstring") ')
             
@@ -275,8 +301,27 @@ class Doxy2SWIG:
 
     def do_sectiondef(self, node):
         kind = node.attributes['kind'].value
-        if kind in ('public-func', 'func'):
+        if kind in ('public-func', 'func', 'user-defined', ''):
             self.generic_parse(node)
+
+    def do_header(self, node):
+        """For a user defined section def a header field is present
+        which should not be printed as such, so we comment it in the
+        output."""
+        data = node.firstChild.data
+        self.add_text('\n/*\n %s \n*/\n'%data)
+        # If our immediate sibling is a 'description' node then we
+        # should comment that out also and remove it from the parent
+        # node's children.
+        parent = node.parentNode
+        idx = parent.childNodes.index(node)
+        if len(parent.childNodes) >= idx + 2:
+            nd = parent.childNodes[idx+2]
+            if nd.nodeName == 'description':
+                nd = parent.removeChild(nd)
+                self.add_text('\n/*')
+                self.generic_parse(nd)
+                self.add_text('\n*/\n')
 
     def do_simplesect(self, node):
         kind = node.attributes['kind'].value
@@ -351,23 +396,33 @@ class Doxy2SWIG:
                 ret.extend(['Parameters:\n-----------', '\n\n'])
             elif i.find('// File:') > -1: # leave comments alone.
                 ret.extend([i, '\n'])
-            elif i.find('::') > -1: # leave classes alone
-                ret.extend([i, '\n'])
             else:
-                _tmp = textwrap.fill(i.strip()) 
+                _tmp = textwrap.fill(i.strip(), break_long_words=False)
                 _tmp = self.lead_spc.sub(r'\1"\2', _tmp)
                 ret.extend([_tmp, '\n\n'])
         return ret
 
 
-def main(input, output):
-    p = Doxy2SWIG(input)
+def convert(input, output, include_function_definition=True):
+    p = Doxy2SWIG(input, include_function_definition)
     p.generate()
     p.write(output)
 
+def main():
+    usage = __doc__
+    parser = optparse.OptionParser(usage)
+    parser.add_option("-n", '--no-function-definition',
+                      action='store_true',
+                      default=False,
+                      dest='func_def',
+                      help='do not include doxygen function definitions')
+    
+    options, args = parser.parse_args()
+    if len(args) != 2:
+        parser.error("error: no input and output specified")
+
+    convert(args[0], args[1], not options.func_def)
+    
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print __doc__
-        sys.exit(1)
-    main(sys.argv[1], sys.argv[2])
+    main()
