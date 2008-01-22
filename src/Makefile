@@ -272,6 +272,7 @@ _%.${EXT_LIB_SWIG}:	%$(EXT_OBJ_SWIG)
 ifeq (yes,$(USE_DOXYGEN))
 %${EXT_SRC_SWIG}:	%$(EXT_SWIG_DOXY) %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES) $*.$(EXT_INP_SWIG)
+	$(PYTHON) .scrub_docstrings.py $@
 
 %$(EXT_SWIG_DOXY): %$(EXT_DOXY)
 	$(DOXYGEN) $<
@@ -279,6 +280,7 @@ ifeq (yes,$(USE_DOXYGEN))
 else
 %${EXT_SRC_SWIG}: %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES) $*.$(EXT_INP_SWIG)
+	$(PYTHON) .scrub_docstrings.py $@
 endif
 
 %.$(EXT_OBJ_CPP):	%.$(EXT_SRC_CPP)
