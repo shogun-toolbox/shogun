@@ -1,4 +1,3 @@
-
 ====================
 SHOGUN - User manual
 ====================
@@ -31,8 +30,8 @@ with. However SHOGUN also implements a number of linear methods like Linear
 Discriminant Analysis (LDA), Linear Programming Machine (LPM), (Kernel)
 Perceptrons and features algorithms to train hidden markov models.
 The input feature-objects can be dense, sparse or strings and
-of type int/short/double/char and can be converted into different feature types. 
+of type int/short/double/char and can be converted into different feature types.
 Chains of "preprocessors" (e.g. substracting the mean) can be attached to
 each feature object allowing for on-the-fly pre-processing.
-License: GPL version 2 or newer
-URL: http://www.fml.tuebingen.mpg.de/raetsch/projects/shogun
+License: GPL version 3 or newer
+URL: http://shogun-toolbox.org

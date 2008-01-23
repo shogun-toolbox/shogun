@@ -1,12 +1,12 @@
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * Written (W) 2006 Fabio De Bona
- * Written (W) 2006 Soeren Sonnenburg
- * Copyright (C) 2006 Fraunhofer Institute FIRST and Max-Planck-Society
+ * Written (W) 2006-2008 Soeren Sonnenburg
+ * Copyright (C) 2006-2008 Fraunhofer Institute FIRST and Max-Planck-Society
  */
 
 #include "lib/config.h"

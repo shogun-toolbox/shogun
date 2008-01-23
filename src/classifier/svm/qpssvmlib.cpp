@@ -1,38 +1,38 @@
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * Library of solvers for QP task required in StructSVM learning.
  *
- * Written (W) 1999-2007 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
- * Copyright (C) 1999-2007 Center for Machine Perception, CTU FEL Prague 
--------------------------------------------------------------------- 
+ * Written (W) 1999-2008 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
+ * Copyright (C) 1999-2008 Center for Machine Perception, CTU FEL Prague
+--------------------------------------------------------------------
 Synopsis:
 
-  exitflag = qpssvm_solver( &get_col, diag_H, f, b, I, x, n, tmax, 
-             tolabs, tolrel, &t, &History, verb );   
+  exitflag = qpssvm_solver( &get_col, diag_H, f, b, I, x, n, tmax,
+             tolabs, tolrel, &t, &History, verb );
 
-  exitflag = qpssvm_solver( &get_col, diag_H, f, b, I, x, n, tmax, 
-             tolabs, tolrel, &QP, &QD, verb );   
+  exitflag = qpssvm_solver( &get_col, diag_H, f, b, I, x, n, tmax,
+             tolabs, tolrel, &QP, &QD, verb );
 Description:
- 
+
  It solves the following QP task:
-  
+
    min 0.5*x'*H*x + f'*x
     x
 
  subject to 
- 
+
    sum(x(find(I==k))) <= b   for all k=1:max(I)
    x >= 0
 
  where I is a set of positive indices from (1 to max(I)).
 
- A precision of the found solution is given by the parameters tmax, 
+ A precision of the found solution is given by the parameters tmax,
  tolabs and tolrel which define the stopping conditions:
- 
+
  UB-LB <= tolabs      ->  exitflag = 1   Abs. tolerance.
  UB-LB <= UB*tolrel   ->  exitflag = 2   Relative tolerance.
  t >= tmax            ->  exitflag = 0   Number of iterations.

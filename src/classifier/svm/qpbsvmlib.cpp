@@ -2,21 +2,21 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
- * Library for solving QP task required for learning SVM without bias term. 
+ * Library for solving QP task required for learning SVM without bias term.
  *
- * Written (W) 2006-2007 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
+ * Written (W) 2006-2008 Vojtech Franc, xfrancv@cmp.felk.cvut.cz
  * Written (W) 2007 Soeren Sonnenburg
- * Copyright (C) 2006-2007 Center for Machine Perception, CTU FEL Prague 
- * Copyright (C) 2007 Fraunhofer Institute FIRST
+ * Copyright (C) 2006-2008 Center for Machine Perception, CTU FEL Prague
+ * Copyright (C) 2007-2008 Fraunhofer Institute FIRST
  *
- *   
+ *
  *  min 0.5*x'*H*x + f'*x
  *
  *  subject to  C >= x(i) >= 0 for all i
- *  
+ *
  * H [dim x dim] is symmetric positive semi-definite matrix.
  * f [dim x 1] is an arbitrary vector.
  *

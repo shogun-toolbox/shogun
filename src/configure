@@ -523,7 +523,7 @@ Optional features:
   --disable-cplex    	        disable code using CPLEX  [auto]
   --disable-bigstates	        disable big (16bit) state [enabled]
   --disable-hmmcache 	        disable HMM cache [enabled]
-  --disable-svm-light 	        disable building of SVM-light and thus result in pure GPLv2 code [enabled]
+  --disable-svm-light 	        disable building of SVM-light and thus result in pure GPLv3 code [enabled]
 
 Miscellaneous options:
   --disable-doxygen             disable documentation generation via doxygen for python-modular interface [enabled]

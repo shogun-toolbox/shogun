@@ -12,17 +12,17 @@ Gaussian and Sigmoid Kernel but also comes with a number of recent string
 kernels as e.g. the Locality Improved[4], Fischer[5], TOP[6], Spectrum[7],
 Weighted Degree Kernel (with shifts)[8][9][10]. For the latter the efficient
 LINADD[10] optimizations are implemented.  Also SHOGUN offers the freedom of
-working with custom pre-computed kernels.  One of its key features is the 
+working with custom pre-computed kernels.  One of its key features is the
 ``combined kernel'' which can be constructed by a weighted linear combination
 of a number of sub-kernels, each of which not necessarily working on the same
 domain. An optimal sub-kernel weighting can be learned using Multiple Kernel
-Learning[11][12][16]. 
+Learning[11][12][16].
 Currently SVM 2-class classification and regression problems can be dealt
 with. However SHOGUN also implements a number of linear methods like Linear
 Discriminant Analysis (LDA), Linear Programming Machine (LPM), (Kernel)
 Perceptrons and features algorithms to train hidden markov models.
 The input feature-objects can be dense, sparse or strings and
-of type int/short/double/char and can be converted into different feature types. 
+of type int/short/double/char and can be converted into different feature types.
 Chains of ``preprocessors'' (e.g. substracting the mean) can be attached to
 each feature object allowing for on-the-fly pre-processing.
 
@@ -47,29 +47,29 @@ million training examples, others with 7 billion test examples.
 
 LICENSE
 
-Except for the files classifier/svm/Optimizer.{cpp,h}, 
+Except for the files classifier/svm/Optimizer.{cpp,h},
 classifier/svm/SVM_light.{cpp,h}, regression/svr/SVR_light.{cpp,h}
-and the kernel caching functions in kernel/Kernel.{cpp,h} 
+and the kernel caching functions in kernel/Kernel.{cpp,h}
 which are (C) Torsten Joachims and follow a different
 licensing scheme (cf. LICENSE.SVMLight) SHOGUN is licensed under the GPL
-version 2 or any later version (cf. LICENSE).
+version 3 or any later version (cf. LICENSE).
 
 AVAILABILITY
 
-SHOGUN can be downloaded at 
+SHOGUN can be downloaded at
 	http://www.shogun-toolbox.org
 
 REFERENCES
 
-[1] C.~Cortes and V.N. Vapnik.  Support-vector networks. 
+[1] C.~Cortes and V.N. Vapnik.  Support-vector networks.
 	Machine Learning, 20(3):273--297, 1995.
 
 [2] C.-C. Chang and C.-J. Lin.  Libsvm: Introduction and benchmarks.
 	Technical report, Department of Computer Science and Information
 	Engineering, National Taiwan University, Taipei, 2000.
 
-[3] T.Joachims. Making large-scale SVM learning practical. In B.~Schoelkopf, 
-	C.J.C. Burges, and A.J. Smola, editors, Advances in Kernel Methods - 
+[3] T.Joachims. Making large-scale SVM learning practical. In B.~Schoelkopf,
+	C.J.C. Burges, and A.J. Smola, editors, Advances in Kernel Methods -
 	Support Vector Learning, pages 169--184, Cambridge, MA, 1999. MIT Press.
 
 [4] A.Zien, G.Raetsch, S.Mika, B.Schoelkopf, T.Lengauer, and K.-R.
@@ -90,12 +90,12 @@ REFERENCES
 	K.Lauderdale, and T.E. Klein, editors, Proceedings of the Pacific
 	Symposium on Biocomputing, pages 564-575, Kaua'i, Hawaii, 2002.
 
-[8] G.Raetsch and S.Sonnenburg. Accurate Splice Site Prediction for 
+[8] G.Raetsch and S.Sonnenburg. Accurate Splice Site Prediction for
 	Caenorhabditis Elegans, pages 277-298. MIT Press series on Computational
 	Molecular Biology. MIT Press, 2004.
 
-[9] G.Raetsch, S.Sonnenburg, and B.Schoelkopf. RASE: recognition of 
-	alternatively spliced exons in c. elegans. Bioinformatics, 
+[9] G.Raetsch, S.Sonnenburg, and B.Schoelkopf. RASE: recognition of
+	alternatively spliced exons in c. elegans. Bioinformatics,
 	21:i369--i377, June 2005.
 
 [10] S.Sonnenburg, G.Raetsch, and B.Schoelkopf. Large scale genomic sequence
@@ -103,7 +103,7 @@ REFERENCES
 	Conference. ACM Press, 2005.
 
 [11] S.Sonnenburg, G.Raetsch, and C.Schaefer. Learning interpretable SVMs
-	for biological sequence classification. In RECOMB 2005, LNBI 3500, 
+	for biological sequence classification. In RECOMB 2005, LNBI 3500,
 	pages 389-407. Springer-Verlag Berlin Heidelberg, 2005.
 
 [12] G.Raetsch, S.Sonnenburg, and C.Schaefer. Learning Interpretable SVMs
@@ -112,7 +112,7 @@ REFERENCES
 	Whistler, Canada, 18 December 2004, 7:(Suppl. 1):S9, March 2006.
 
 [13] S.Sonnenburg.New methods for splice site recognition. Master's thesis,
-	Humboldt University, 2002. supervised by K.-R. Mueller H.-D. Burkhard and 
+	Humboldt University, 2002. supervised by K.-R. Mueller H.-D. Burkhard and
 	G.Raetsch.
 
 [14] S.Sonnenburg, G.Raetsch, A.Jagota, and K.-R. Mueller. New methods for
@@ -122,6 +122,6 @@ REFERENCES
 [15] S.Sonnenburg, A.Zien, and G.Raetsch. ARTS: Accurate Recognition of
 	Transcription Starts in Human. 2006.  (accepted).
 
-[16] S.Sonnenburg, G.Raetsch, C.Schaefer, and B.Schoelkopf,Large Scale 
+[16] S.Sonnenburg, G.Raetsch, C.Schaefer, and B.Schoelkopf,Large Scale
 	Multiple Kernel Learning, Journal of Machine Learning Research, 2006,
 	K.Bennett and E.P.-Hernandez Editors, (accepted)

@@ -4,6 +4,7 @@ XXXX-XX-XX  Soeren Sonnenburg <debian@nn7.de>
 	* This release contains several major enhancements:
 		- Full fledged test suite for python-modular interface
 		- Doxygen generated documentation for python-modular interface
+		- Switched licensing to GPL v3
 
 2007-11-23  Soeren Sonnenburg <debian@nn7.de>
 

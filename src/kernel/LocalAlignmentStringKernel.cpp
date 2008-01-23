@@ -1,21 +1,21 @@
 /*
  * Compute the local alignment kernel
  *
- * Largely based on LAkernel.c (version 0.3) 
+ * Largely based on LAkernel.c (version 0.3)
  *
  * Copyright 2003 Jean-Philippe Vert
  * Copyright 2005 Jean-Philippe Vert, Hiroto Saigo
  *
- * Shogun specific adjustments Written (W) 2007 Soeren Sonnenburg
+ * Shogun specific adjustments Written (W) 2007-2008 Soeren Sonnenburg
  * 
  * Reference:
- * H. Saigo, J.-P. Vert, T. Akutsu and N. Ueda, "Protein homology 
- * detection using string alignment kernels", Bioinformatics, 
+ * H. Saigo, J.-P. Vert, T. Akutsu and N. Ueda, "Protein homology
+ * detection using string alignment kernels", Bioinformatics,
  * vol.20, p.1682-1689, 2004.
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  */
 

@@ -1,7 +1,7 @@
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  *** Authors:                                                               ***
@@ -21,9 +21,9 @@
  ***      'Parallel Algorithms and Numerical Nonlinear Optimization'        ***
  ***      (grant RBAU01JYPN), http://dm.unife.it/pn2o                       ***
  ***                                                                        ***
- *** Copyright (C) 2004 by T. Serafini, G. Zanghirati, L. Zanni.            ***
+ *** Copyright (C) 2004-2008 by T. Serafini, G. Zanghirati, L. Zanni.       ***
  ***                                                                        ***
- *** SHOGUN adaptions  Written (W) 2006-2007 Soeren Sonnenburg              ***
+ *** SHOGUN adaptions  Written (W) 2006-2008 Soeren Sonnenburg              ***
  */
 int gpm_solver(int Solver, int Projector, int n, float *A, double *b, double c,
                double e, int *iy, double *x, double tol, 
