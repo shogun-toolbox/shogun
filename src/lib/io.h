@@ -107,12 +107,12 @@ public:
 
 	inline void enable_progress()
 	{
-		show_progress=false;
+		show_progress=true;
 	}
 
 	inline void disable_progress()
 	{
-		show_progress=true;
+		show_progress=false;
 	}
 
 	///set directory-name

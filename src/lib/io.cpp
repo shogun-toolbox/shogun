@@ -53,12 +53,12 @@ CHAR file_buffer[FBUFSIZE];
 CHAR directory_name[FBUFSIZE];
 
 CIO::CIO() : target(stdout), last_progress_time(0), progress_start_time(0),
-	last_progress(1), show_progress(false), loglevel(M_WARN)
+	last_progress(1), show_progress(true), loglevel(M_WARN)
 {
 }
 
 CIO::CIO(const CIO& orig) : target(orig.get_target()), last_progress_time(0),
-	progress_start_time(0), last_progress(1), show_progress(false),
+	progress_start_time(0), last_progress(1), show_progress(true),
 	loglevel(orig.get_loglevel())
 {
 }
