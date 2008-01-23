@@ -52,11 +52,14 @@ CHAR file_buffer[FBUFSIZE];
 /// directory name buffer
 CHAR directory_name[FBUFSIZE];
 
-CIO::CIO() : target(stdout), last_progress_time(0), progress_start_time(0), last_progress(1), loglevel(M_WARN)
+CIO::CIO() : target(stdout), last_progress_time(0), progress_start_time(0),
+	last_progress(1), disable_progress(false), loglevel(M_WARN)
 {
 }
 
-CIO::CIO(const CIO& orig) : target(orig.get_target()), last_progress_time(0), progress_start_time(0), last_progress(1), loglevel(orig.get_loglevel())
+CIO::CIO(const CIO& orig) : target(orig.get_target()), last_progress_time(0),
+	progress_start_time(0), last_progress(1), disable_progress(false),
+	loglevel(orig.get_loglevel())
 {
 }
 
@@ -232,6 +235,9 @@ void CIO::buffered_message(EMessageType prio, const CHAR *fmt, ... ) const
 
 void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, INT decimals, const char* prefix)
 {
+	if (disable_progress)
+		return;
+
 	LONG runtime = CTime::get_runtime() ;
 
 	char str[1000];
@@ -279,6 +285,9 @@ void CIO::progress(DREAL current_val, DREAL min_val, DREAL max_val, INT decimals
 
 void CIO::absolute_progress(DREAL current_val, DREAL val, DREAL min_val, DREAL max_val, INT decimals, const char* prefix)
 {
+	if (disable_progress)
+		return;
+
 	LONG runtime = CTime::get_runtime() ;
 
 	char str[1000];

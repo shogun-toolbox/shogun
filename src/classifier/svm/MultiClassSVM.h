@@ -42,6 +42,11 @@ class CMultiClassSVM : public CSVM
 			return m_svms[num];
 		}
 
+		INT inline get_num_svms()
+		{
+			return m_num_svms;
+		}
+
 		void cleanup();
 
 		virtual CLabels* classify(CLabels* labels=NULL);

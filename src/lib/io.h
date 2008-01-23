@@ -105,6 +105,16 @@ public:
 		set_target(stdout);
 	}
 
+	inline void enable_progress()
+	{
+		disable_progress=false;
+	}
+
+	inline void disable_progress()
+	{
+		disable_progress=true;
+	}
+
 	///set directory-name
 	inline void set_dirname(const CHAR* dirname)
 	{
@@ -125,8 +135,9 @@ protected:
 
 protected:
 	FILE* target;
-	LONG last_progress_time, progress_start_time ;
-	DREAL last_progress ;
+	LONG last_progress_time, progress_start_time;
+	DREAL last_progress;
+	bool disable_progress;
 
 	EMessageType loglevel;
 	static const EMessageType levels[NUM_LOG_LEVELS];
