@@ -108,11 +108,29 @@ public:
 	inline void enable_progress()
 	{
 		show_progress=true;
+
+// static functions like CSVM::classify_example_helper call SG_PROGRESS
+#ifndef HAVE_SWIG
+		if (sg_io!=this)
+			sg_io->enable_progress();
+#else
+		if (&sg_io!=this)
+			sg_io.disable_progress();
+#endif
 	}
 
 	inline void disable_progress()
 	{
 		show_progress=false;
+
+// static functions like CSVM::classify_example_helper call SG_PROGRESS
+#ifndef HAVE_SWIG
+		if (sg_io!=this)
+			sg_io->disable_progress();
+#else
+		if (&sg_io!=this)
+			sg_io.disable_progress();
+#endif
 	}
 
 	///set directory-name
