@@ -107,12 +107,12 @@ public:
 
 	inline void enable_progress()
 	{
-		disable_progress=false;
+		show_progress=false;
 	}
 
 	inline void disable_progress()
 	{
-		disable_progress=true;
+		show_progress=true;
 	}
 
 	///set directory-name
@@ -137,7 +137,7 @@ protected:
 	FILE* target;
 	LONG last_progress_time, progress_start_time;
 	DREAL last_progress;
-	bool disable_progress;
+	bool show_progress;
 
 	EMessageType loglevel;
 	static const EMessageType levels[NUM_LOG_LEVELS];
