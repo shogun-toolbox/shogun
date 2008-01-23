@@ -68,7 +68,7 @@ CLabels* CKNN::classify(CLabels* output)
 	ASSERT(CDistanceMachine::get_labels());
 	ASSERT(CDistanceMachine::get_labels()->get_num_labels());
 
-	int num_lab=CDistanceMachine::get_labels()->get_num_labels();
+	INT num_lab=CDistanceMachine::get_labels()->get_num_labels();
 	
 	ASSERT(k<=num_lab);
 	CDistance* _distance=CDistanceMachine::get_distance();
@@ -88,12 +88,12 @@ CLabels* CKNN::classify(CLabels* output)
 	ASSERT(classes);
 
 	SG_INFO( "%d test examples\n", num_lab);
-	for (int i=0; i<num_lab; i++)
+	for (INT i=0; i<num_lab; i++)
 	{
-		if ( (i% (num_lab/10+1))== 0)
-			SG_PRINT( "%i%%..",100*i/(num_lab+1));
+		if ((i%(num_lab/10+1))== 0)
+			SG_PROGRESS(i, 0, num_lab);
 
-		int j;
+		INT j;
 		for (j=0; j<num_train_labels; j++)
 		{
 			//copy back train labels and compute distance
