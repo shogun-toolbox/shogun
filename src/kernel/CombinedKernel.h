@@ -174,7 +174,7 @@ public:
 	virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
 	static void* compute_optimized_kernel_helper(void* p);
 	static void* compute_kernel_helper(void* p);
-	/// emulates batch computation, via linadd optimization w^t x or even down to \sum_i alpha_i K(x_i,x)
+	/// emulates batch computation, via linadd optimization w^t x or even down to sum_i alpha_i K(x_i,x)
 	void emulate_compute_batch(CKernel* k, INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
 
 	virtual void add_to_normal(INT idx, DREAL weight) ;

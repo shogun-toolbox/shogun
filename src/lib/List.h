@@ -19,11 +19,20 @@
 template <class T> class CListElement
 {
 public:
+	/** next element in list */
 	CListElement* next;
+	/** previous element in list */
 	CListElement* prev;
+	/** data of this element */
 	T data;
 	
 public:
+	/** constructor
+	 *
+	 * @param p_data data of this element
+	 * @param p_prev previous element
+	 * @param p_next next element
+	 */
 	CListElement(T p_data, CListElement* p_prev = NULL, CListElement* p_next = NULL)
 		{
 			this->data = p_data;

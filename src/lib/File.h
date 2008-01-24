@@ -37,41 +37,153 @@ public:
 	CFile(CHAR* fname, CHAR rw, EFeatureType type, CHAR fourcc[4]=NULL);
 	~CFile();
 
+	/** parse first header - defunct!
+	 *
+	 * @param type feature type
+	 * @return -1
+	 */
 	INT parse_first_header(EFeatureType &type);
+
+	/** parse next header - defunct!
+	 *
+	 * @param type feature type
+	 * @return -1
+	 */
 	INT parse_next_header(EFeatureType &type);
 
 	// set target to NULL to get it automagically allocated
 	// set num to 0 if whole file is to be read
+	/** load integer data
+	 *
+	 * @param target loaded data
+	 * @param num number of data elements
+	 * @return loaded data
+	 */
 	INT*   load_int_data(INT* target, LONG& num);
+
+	/** load real data
+	 *
+	 * @param target loaded data
+	 * @param num number of data elements
+	 * @return loaded data
+	 */
 	DREAL*  load_real_data(DREAL* target, LONG& num);
+
+	/** load char data
+	 *
+	 * @param target loaded data
+	 * @param num number of data elements
+	 * @return loaded data
+	 */
 	CHAR*  load_char_data(CHAR* target, LONG& num);
+
+	/** load byte data
+	 *
+	 * @param target loaded data
+	 * @param num number of data elements
+	 * @return loaded data
+	 */
 	BYTE*  load_byte_data(BYTE* target, LONG& num);
+
+	/** load word data
+	 *
+	 * @param target loaded data
+	 * @param num number of data elements
+	 * @return loaded data
+	 */
 	WORD*  load_word_data(WORD* target, LONG& num);
+
+	/** load short data
+	 *
+	 * @param target loaded data
+	 * @param num number of data elements
+	 * @return loaded data
+	 */
 	SHORT* load_short_data(SHORT* target, LONG& num);
 
+	/** save integer data
+	 *
+	 * @param src data to save
+	 * @param num number of data elements
+	 * @return whether operation was successful
+	 */
 	bool save_int_data(INT* src, LONG num);
+
+	/** save real data
+	 *
+	 * @param src data to save
+	 * @param num number of data elements
+	 * @return whether operation was successful
+	 */
 	bool save_real_data(DREAL* src, LONG num);
+
+	/** save char data
+	 *
+	 * @param src data to save
+	 * @param num number of data elements
+	 * @return whether operation was successful
+	 */
 	bool save_char_data(CHAR* src, LONG num);
+
+	/** save byte data
+	 *
+	 * @param src data to save
+	 * @param num number of data elements
+	 * @return whether operation was successful
+	 */
 	bool save_byte_data(BYTE* src, LONG num);
+
+	/** save word data
+	 *
+	 * @param src data to save
+	 * @param num number of data elements
+	 * @return whether operation was successful
+	 */
 	bool save_word_data(WORD* src, LONG num);
+
+	/** save short data
+	 *
+	 * @param src data to save
+	 * @param num number of data elements
+	 * @return whether operation was successful
+	 */
 	bool save_short_data(SHORT* src, LONG num);
 
+	/** check if status is ok
+	 *
+	 * @return whether status is ok
+	 */
 	inline bool is_ok()
 	{
 		return status;
 	}
 
-protected: 
+protected:
+	/** read header
+	 *
+	 * @return whether operation was successful
+	 */
 	bool read_header();
+	/** write header
+	 *
+	 * @return whether operation was successful
+	 */
 	bool write_header();
 
-protected: 
+protected:
+	/** file object */
 	FILE* file;
+	/** status */
 	bool status;
+	/** task */
 	CHAR task;
+	/** name of the handled file */
 	CHAR* filename;
+	/** expected feature type */
 	EFeatureType expected_type;
+	/** number of headers */
 	INT num_header;
+	/** fourcc */
 	CHAR fourcc[4];
 };
 #endif

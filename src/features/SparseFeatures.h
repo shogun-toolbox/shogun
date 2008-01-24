@@ -126,13 +126,15 @@ template <class ST> class CSparseFeatures: public CFeatures
 			return len;
 		}
 
-		/** get feature vector for sample num
-		  from the matrix as it is if matrix is
-		  initialized, else return
-		  preprocessed compute_feature_vector  
-		  @param num index of feature vector
-		  @param len number of sparse entries is returned by reference
-		  */
+		/** get sparse feature vector
+		 * for sample num from the matrix as it is if matrix is initialized,
+		 * else return preprocessed compute_feature_vector
+		 *
+		 * @param num index of feature vector
+		 * @param len number of sparse entries is returned by reference
+		 * @param vfree whether returned vector must be freed by caller via
+		 *              free_sparse_feature_vector
+		 */
 		TSparseEntry<ST>* get_sparse_feature_vector(INT num, INT& len, bool& vfree)
 		{
 			ASSERT(num<num_vectors);
@@ -243,13 +245,15 @@ template <class ST> class CSparseFeatures: public CFeatures
 		}
 
 		/** compute the dot product for a range of vectors
-		 *	alphas[i] * sparse[i]^T * w + b
+		 * alphas[i] * sparse[i]^T * w + b
 		 *
-		 @param alphas scalars to multiply with
-		 @param num index of feature vector
-		 @param vec dense vector to compute dot product with
-		 @param dim length of the dense vector
-		 @param b bias
+		 * @param output result for the given vector range
+		 * @param start start vector range from this idx
+		 * @param stop stop vector range at this idx
+		 * @param alphas scalars to multiply with
+		 * @param vec dense vector to compute dot product with
+		 * @param dim length of the dense vector
+		 * @param b bias
 		 */
 		void dense_dot_range(ST* output, INT start, INT stop, ST* alphas, ST* vec, INT dim, ST b)
 		{

@@ -186,9 +186,11 @@ template <class ST> class CStringFeatures: public CFeatures
 	}
 
 	/** set feature vector for sample num
-	  @param num index of feature vector
-	  @param len length of the string
-	  */
+	 *
+	 * @param num index of feature vector
+	 * @param string string with the feature vector's content
+	 * @param len length of the string
+	 */
 	virtual void set_feature_vector(INT num, ST* string, INT len)
 	{
 		ASSERT(features!=NULL);

@@ -220,7 +220,7 @@ protected:
 	virtual DREAL compute(INT x, INT y)=0;
 
 	/// matrix precomputation
-	void do_precompute_matrix() ;
+	void do_precompute_matrix();
 
 	void init_sqrt_diag(DREAL *v, INT num);
 
@@ -229,22 +229,34 @@ protected:
 	 */
 	//@{
 	struct KERNEL_CACHE {
-		INT   *index;  
+		/** index */
+		INT   *index;
+		/** inverse index */
 		INT   *invindex;
+		/** active2totdoc */
 		INT   *active2totdoc;
+		/** totdoc2active */
 		INT   *totdoc2active;
+		/** least recently used */
 		INT   *lru;
+		/** occu */
 		INT   *occu;
+		/** elements */
 		INT   elems;
+		/** max elements */
 		INT   max_elems;
+		/** time */
 		INT   time;
+		/** active num */
 		INT   activenum;
 
-		KERNELCACHE_ELEM  *buffer; 
+		/** buffer */
+		KERNELCACHE_ELEM  *buffer;
+		/** buffer size */
 		KERNELCACHE_IDX   buffsize;
 	};
 
-	struct S_KTHREAD_PARAM 
+	struct S_KTHREAD_PARAM
 	{
 		CKernel* kernel;
 		KERNEL_CACHE* kernel_cache;

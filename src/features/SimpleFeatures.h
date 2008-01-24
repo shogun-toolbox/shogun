@@ -65,14 +65,16 @@ template <class ST> class CSimpleFeatures: public CFeatures
 #endif
 		 delete feature_cache;
 	 }
-  
-  /** get feature vector for sample num
-      from the matrix as it is if matrix is
-      initialized, else return
-      preprocessed compute_feature_vector  
-      @param num index of feature vector
-      @param len length is returned by reference
-  */
+
+  /** get feature vector
+   * for sample num from the matrix as it is if matrix is
+   * initialized, else return preprocessed compute_feature_vector
+   *
+   * @param num index of feature vector
+   * @param len length is returned by reference
+   * @param free whether returned vector must be freed by caller via
+   *             free_feature_vector
+   */
   ST* get_feature_vector(INT num, INT& len, bool& free)
   {
 	  len=num_features; 

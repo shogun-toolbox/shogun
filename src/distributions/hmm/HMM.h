@@ -497,8 +497,6 @@ class CHMM : public CDistribution
 		}
 
 		/** initialization function - gets called by constructors.
-		 * @param N number of states
-		 * @param M number of emissions
 		 * @param model model which holds definitions of states to be learned + consts
 		 * @param PSEUDO Pseudo Value
 		 * @param model_file Filehandle to a hmm model file (*.mod)
@@ -627,7 +625,7 @@ class CHMM : public CDistribution
 		void ab_buf_comp(DREAL* p_buf, DREAL* q_buf, DREAL* a_buf, DREAL* b_buf, INT dim) ;
 #endif
 
-		/** uses baum-welch-algorithm to train the {\bf defined} transitions etc.
+		/** uses baum-welch-algorithm to train the defined transitions etc.
 		 * @param train model from which the new model is estimated
 		 */
 		void estimate_model_baum_welch_defined(CHMM* train);
@@ -637,7 +635,7 @@ class CHMM : public CDistribution
 		 */
 		void estimate_model_viterbi(CHMM* train);
 
-		/** uses viterbi training to train the {\bf defined} transitions etc.
+		/** uses viterbi training to train the defined transitions etc.
 		 * @param train model from which the new model is estimated
 		 */
 		void estimate_model_viterbi_defined(CHMM* train);
@@ -764,7 +762,7 @@ class CHMM : public CDistribution
 #endif	
 		//@}
 
-		/**@observation functions
+		/** observation functions
 		 * set/get observation matrix
 		 */
 		//@{
@@ -791,13 +789,12 @@ class CHMM : public CDistribution
 		 */
 		//@{
 		/** read definitions file (learn_x,const_x) used for training.
-		 * \begin{verbatim}
-		 -format specs: definition_file (train.def)
+		 * -format specs: definition_file (train.def)
 		 % HMM-TRAIN - specification
 		 % learn_a - elements in state_transition_matrix to be learned
 		 % learn_b - elements in oberservation_per_state_matrix to be learned
 		 %			note: each line stands for 
-		 %				<state>, <observation(0)>, observation(1)...observation(NOW)>
+		 %				state, observation(0), observation(1)...observation(NOW)
 		 % learn_p - elements in initial distribution to be learned
 		 % learn_q - elements in the end-state distribution to be learned
 		 %
@@ -805,52 +802,51 @@ class CHMM : public CDistribution
 		 %				rest is assumed to be 0.0
 		 %
 		 %	NOTE: IMPLICIT DEFINES:
-		 %		#define A 0
-		 %		#define C 1
-		 %		#define G 2
-		 %		#define T 3
-		 %
+		 %		define A 0
+		 %		define C 1
+		 %		define G 2
+		 %		define T 3
 
-		 learn_a=[ [<INT>,<INT>]; 
-		 [<INT>,<INT>]; 
-		 [<INT>,<INT>]; 
+		 learn_a=[ [INT,INT];
+		 [INT,INT];
+		 [INT,INT];
 		 ........
-		 [<INT>,<INT>]; 
+		 [INT,INT];
 		 [-1,-1];
 		 ];
 
-		 learn_b=[ [<INT>,<INT>,<INT>,...,<INT>]; 
-		 [<INT>,<INT>,<INT>,...,<INT>]; 
-		 [<INT>,<INT>,<INT>,...,<INT>]; 
+		 learn_b=[ [INT,INT,INT,...,INT];
+		 [INT,INT,INT,...,INT];
+		 [INT,INT,INT,...,INT];
 		 ........
-		 [<INT>,<INT>,<INT>,...,<INT>]; 
+		 [INT,INT,INT,...,INT];
 		 [-1,-1];
 		 ];
 
-		 learn_p= [ <INT>, ... , <INT>, -1 ];
+		 learn_p= [ INT, ... , INT, -1 ];
 
-		 learn_q= [ <INT>, ... , <INT>, -1 ];
+		 learn_q= [ INT, ... , INT, -1 ];
 
 
-		 const_a=[ [<INT>,<INT>,<DOUBLE>]; 
-		 [<INT>,<INT>,<DOUBLE>]; 
-		 [<INT>,<INT>,<DOUBLE>]; 
+		 const_a=[ [INT,INT,DREAL];
+		 [INT,INT,DREAL];
+		 [INT,INT,DREAL];
 		 ........
-		 [<INT>,<INT>,<DOUBLE>]; 
+		 [INT,INT,DREAL];
 		 [-1,-1,-1];
 		 ];
 
-		 const_b=[ [<INT>,<INT>,<INT>,...,<INT>,<DOUBLE>]; 
-		 [<INT>,<INT>,<INT>,...,<INT>,<DOUBLE>]; 
-		 [<INT>,<INT>,<INT>,...,<INT>,<DOUBLE]; 
+		 const_b=[ [INT,INT,INT,...,INT,DREAL];
+		 [INT,INT,INT,...,INT,DREAL];
+		 [INT,INT,INT,...,INT,<DOUBLE];
 		 ........
-		 [<INT>,<INT>,<INT>,...,<INT>,<DOUBLE>]; 
+		 [INT,INT,INT,...,INT,DREAL];
 		 [-1,-1,-1];
 		 ];
 
-		 const_p[]=[ [<INT>, <DOUBLE>], ... , [<INT>,<DOUBLE>], [-1,-1] ];
-		 const_q[]=[ [<INT>, <DOUBLE>], ... , [<INT>,<DOUBLE>], [-1,-1] ];
-		 \end{verbatim}	
+		 const_p[]=[ [INT, DREAL], ... , [INT,DREAL], [-1,-1] ];
+		 const_q[]=[ [INT, DREAL], ... , [INT,DREAL], [-1,-1] ];
+
 		 * @param file filehandle to definitions file
 		 * @param verbose true for verbose messages
 		 * @param initialize true to initialize to underlying HMM
@@ -858,7 +854,6 @@ class CHMM : public CDistribution
 		bool load_definitions(FILE* file, bool verbose, bool initialize=true);
 
 		/** read model from file.
-		 * \begin{verbatim}
 		 -format specs: model_file (model.hmm)
 		 % HMM - specification
 		 % N  - number of states
@@ -872,26 +867,25 @@ class CHMM : public CDistribution
 		 % p is initial distribution
 		 % size(p)= [1, N]
 
-		 N=<INT>;	
-		 M=<INT>;
+		 N=INT;
+		 M=INT;
 
-		 p=[<DREAL>,<DREAL>...<DOUBLE>];
-		 q=[<DOUBLE>,<DOUBLE>...<DOUBLE>];
+		 p=[DREAL,DREAL...DREAL];
+		 q=[DREAL,DREAL...DREAL];
 
-		 a=[ [<DOUBLE>,<DOUBLE>...<DOUBLE>];
-		 [<DOUBLE>,<DOUBLE>...<DOUBLE>];
-		 [<DOUBLE>,<DOUBLE>...<DOUBLE>];
-		 [<DOUBLE>,<DOUBLE>...<DOUBLE>];
-		 [<DOUBLE>,<DOUBLE>...<DOUBLE>];
+		 a=[ [DREAL,DREAL...DREAL];
+		 [DREAL,DREAL...DREAL];
+		 [DREAL,DREAL...DREAL];
+		 [DREAL,DREAL...DREAL];
+		 [DREAL,DREAL...DREAL];
 		 ];
 
-		 b=[ [<DOUBLE>,<DOUBLE>...<DOUBLE>];
-		 [<DOUBLE>,<DOUBLE>...<DOUBLE>];
-		 [<DOUBLE>,<DOUBLE>...<DOUBLE>];
-		 [<DOUBLE>,<DOUBLE>...<DOUBLE>];
-		 [<DOUBLE>,<DOUBLE>...<DOUBLE>];
+		 b=[ [DREAL,DREAL...DREAL];
+		 [DREAL,DREAL...DREAL];
+		 [DREAL,DREAL...DREAL];
+		 [DREAL,DREAL...DREAL];
+		 [DREAL,DREAL...DREAL];
 		 ];
-		 \end{verbatim}
 		 * @param file filehandle to model file
 		 */
 		bool load_model(FILE* file);
@@ -998,7 +992,7 @@ class CHMM : public CDistribution
 		}
 
 		/** access function for matrix A
-		 * @param line row in matrix 0...N-1
+		 * @param line_ row in matrix 0...N-1
 		 * @param column column in matrix 0...N-1
 		 * @param value value to be set
 		 */
@@ -1012,7 +1006,7 @@ class CHMM : public CDistribution
 		}
 
 		/** access function for matrix a 
-		 * @param line row in matrix 0...N-1
+		 * @param line_ row in matrix 0...N-1
 		 * @param column column in matrix 0...N-1
 		 * @param value value to be set
 		 */
@@ -1026,7 +1020,7 @@ class CHMM : public CDistribution
 		}
 
 		/** access function for matrix B
-		 * @param line row in matrix 0...N-1
+		 * @param line_ row in matrix 0...N-1
 		 * @param column column in matrix 0...M-1
 		 * @param value value to be set
 		 */
@@ -1040,7 +1034,7 @@ class CHMM : public CDistribution
 		}
 
 		/** access function for matrix b
-		 * @param line row in matrix 0...N-1
+		 * @param line_ row in matrix 0...N-1
 		 * @param column column in matrix 0...M-1
 		 * @param value value to be set
 		 */
@@ -1097,7 +1091,7 @@ class CHMM : public CDistribution
 		}
 
 		/** access function for matrix A
-		 * @param line row in matrix 0...N-1
+		 * @param line_ row in matrix 0...N-1
 		 * @param column column in matrix 0...N-1
 		 * @return value at position line colum
 		 */
@@ -1111,7 +1105,7 @@ class CHMM : public CDistribution
 		}
 
 		/** access function for matrix a
-		 * @param line row in matrix 0...N-1
+		 * @param line_ row in matrix 0...N-1
 		 * @param column column in matrix 0...N-1
 		 * @return value at position line colum
 		 */
@@ -1125,7 +1119,7 @@ class CHMM : public CDistribution
 		}
 
 		/** access function for matrix B
-		 * @param line row in matrix 0...N-1
+		 * @param line_ row in matrix 0...N-1
 		 * @param column column in matrix 0...M-1
 		 * @return value at position line colum
 		 */
@@ -1139,7 +1133,7 @@ class CHMM : public CDistribution
 		}
 
 		/** access function for matrix b
-		 * @param line row in matrix 0...N-1
+		 * @param line_ row in matrix 0...N-1
 		 * @param column column in matrix 0...M-1
 		 * @return value at position line colum
 		 */
@@ -1253,23 +1247,23 @@ class CHMM : public CDistribution
 		//@}
 
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		// array of size N*parallel.get_num_threads() for temporary calculations
+		/** array of size N*parallel.get_num_threads() for temporary calculations */
 		DREAL** arrayN1 /*[parallel.get_num_threads()]*/ ;
-		// array of size N*parallel.get_num_threads() for temporary calculations
+		/** array of size N*parallel.get_num_threads() for temporary calculations */
 		DREAL** arrayN2 /*[parallel.get_num_threads()]*/ ;
 #else //USE_HMMPARALLEL_STRUCTURES
-		// array of size N for temporary calculations
+		/** array of size N for temporary calculations */
 		DREAL* arrayN1;
-		// array of size N for temporary calculations
+		/** array of size N for temporary calculations */
 		DREAL* arrayN2;
 #endif //USE_HMMPARALLEL_STRUCTURES
 
 #ifdef USE_LOGSUMARRAY
 #ifdef USE_HMMPARALLEL_STRUCTURES
-		// array for for temporary calculations of log_sum
+		/** array for for temporary calculations of log_sum */
 		DREAL** arrayS /*[parallel.get_num_threads()]*/;
 #else
-		// array for for temporary calculations of log_sum
+		/** array for for temporary calculations of log_sum */
 		DREAL* arrayS;
 #endif // USE_HMMPARALLEL_STRUCTURES
 #endif // USE_LOGSUMARRAY
@@ -1318,21 +1312,36 @@ class CHMM : public CDistribution
 #endif //USE_HMMPARALLEL_STRUCTURES
 		//@}
 
+		/** GOTN */
 		static const INT GOTN;
+		/** GOTM */
 		static const INT GOTM;
+		/** GOTO */
 		static const INT GOTO;
+		/** GOTa */
 		static const INT GOTa;
+		/** GOTb */
 		static const INT GOTb;
+		/** GOTp */
 		static const INT GOTp;
+		/** GOTq */
 		static const INT GOTq;
 
+		/** GOTlearn_a */
 		static const INT GOTlearn_a;
+		/** GOTlearn_b */
 		static const INT GOTlearn_b;
+		/** GOTlearn_p */
 		static const INT GOTlearn_p;
+		/** GOTlearn_q */
 		static const INT GOTlearn_q;
+		/** GOTconst_a */
 		static const INT GOTconst_a;
+		/** GOTconst_b */
 		static const INT GOTconst_b;
+		/** GOTconst_p */
 		static const INT GOTconst_p;
+		/** GOTconst_q */
 		static const INT GOTconst_q;
 
 		public:
