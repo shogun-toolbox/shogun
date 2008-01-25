@@ -42,62 +42,94 @@ extern "C" {
 
 #include "kernel/Kernel.h"
 
+/** SVM node */
 struct svm_node
 {
+	/** index */
 	int index;
 };
 
+/** SVM problem */
 struct svm_problem
 {
+	/** l */
 	int l;
+	/** y */
 	double *y;
+	/** SVM node x */
 	struct svm_node **x;
 };
 
 enum { C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR };	/* svm_type */
 enum { LINEAR, POLY, RBF, SIGMOID, PRECOMPUTED }; /* kernel_type */
 
+/** SVM parameter */
 struct svm_parameter
 {
+	/** SVM type */
 	int svm_type;
+	/** kernel type */
 	int kernel_type;
+	/** kernel */
 	CKernel* kernel;
-	int degree;	/* for poly */
-	double gamma;	/* for poly/rbf/sigmoid */
-	double coef0;	/* for poly/sigmoid */
+	/** for poly */
+	int degree;
+	/** for poly/rbf/sigmoid */
+	double gamma;
+	/** for poly/sigmoid */
+	double coef0;
 
 	/* these are for training only */
-	double cache_size; /* in MB */
-	double eps;	/* stopping criteria */
-	double C;	/* for C_SVC, EPSILON_SVR and NU_SVR */
-	int nr_weight;		/* for C_SVC */
-	int *weight_label;	/* for C_SVC */
-	double* weight;		/* for C_SVC */
-	double nu;	/* for NU_SVC, ONE_CLASS, and NU_SVR */
-	double p;	/* for EPSILON_SVR */
-	int shrinking;	/* use the shrinking heuristics */
+	/** in MB */
+	double cache_size;
+	/** stopping criteria */
+	double eps;
+	/** for C_SVC, EPSILON_SVR and NU_SVR */
+	double C;
+	/** for C_SVC */
+	int nr_weight;
+	/** for C_SVC */
+	int *weight_label;
+	/** for C_SVC */
+	double* weight;
+	/** for NU_SVC, ONE_CLASS, and NU_SVR */
+	double nu;
+	/** for EPSILON_SVR */
+	double p;
+	/** use the shrinking heuristics */
+	int shrinking;
 };
 
-//
-// svm_model
-//
+/** svm_model */
 struct svm_model
 {
-	svm_parameter param;	// parameter
-	int nr_class;		// number of classes, = 2 in regression/one class svm
-	int l;			// total #SV
-	svm_node **SV;		// SVs (SV[l])
-	double **sv_coef;	// coefficients for SVs in decision functions (sv_coef[n-1][l])
-	double *rho;		// constants in decision functions (rho[n*(n-1)/2])
+	/** parameter */
+	svm_parameter param;
+	/** number of classes, = 2 in regression/one class svm */
+	int nr_class;
+	/** total #SV */
+	int l;
+	/** SVs (SV[l]) */
+	svm_node **SV;
+	/** coefficients for SVs in decision functions (sv_coef[n-1][l]) */
+	double **sv_coef;
+	/** constants in decision functions (rho[n*(n-1)/2]) */
+	double *rho;
 
 	// for classification only
 
-	int *label;		// label of each class (label[n])
-	int *nSV;		// number of SVs for each class (nSV[n])
-				// nSV[0] + nSV[1] + ... + nSV[n-1] = l
+	/** label of each class (label[n]) */
+	int *label;
+	/** number of SVs for each class (nSV[n])
+	 * nSV[0] + nSV[1] + ... + nSV[n-1] = l
+	 */
+	int *nSV;
 	// XXX
-	int free_sv;		// 1 if svm_model is created by svm_load_model
-				// 0 if svm_model is created by svm_train
+	/** 1 if svm_model is created by svm_load_model
+	    0 if svm_model is created by svm_train
+	*/
+	int free_sv;
+	/** objective */
 	double objective;
 };
 

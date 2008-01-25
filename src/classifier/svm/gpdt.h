@@ -78,38 +78,100 @@ enum {
   SOLVER_FLETCHER = 1
 };
 
+/** s kernel */
 class sKernel
 {
 public:
+  /** kernel type */
   int    ker_type;
+  /** lx */
   int    *lx;
+  /** ix */
   int    **ix;
+  /** x */
   float  **x;
+  /** nor */
   double *nor;
+  /** sigma */
   double sigma;
+  /** degree */
   double degree;
-  double norm;    // normalization factor
+  /** normalization factor */
+  double norm;
+  /** c poly */
   double c_poly;
+  /** kernel evaluations */
   double KernelEvaluations;
 
+  /** call kernel fun
+   *
+   * @param i
+   * @param j
+   * @return something floaty
+   */
   double (sKernel::*kernel_fun)(int i, int j);
 
+  /** constructor
+   *
+   * @param k kernel
+   * @param ell ell
+   */
   sKernel (CKernel* k, int ell);
   ~sKernel();
 
+  /** set data
+   *
+   * @param x_ new x
+   * @param ix_ new ix
+   * @param lx_ new lx
+   * @param ell new ell
+   * @param dim dim
+   */
   void   SetData       (float **x_, int **ix_, int *lx_, int ell, int dim);
+
+  /** set subproblem
+   *
+   * @param ker kernel
+   * @param len len
+   * @param perm perm
+   */
   void   SetSubproblem (sKernel* ker, int len, int *perm);
+
+  /** get an item from the kernel
+   *
+   * @param i index i
+   * @param j index j
+   * @return item from kernel at index i, j
+   */
   double Get(int i, int j)
   {
     KernelEvaluations += 1.0F;
     return kernel->kernel(i, j);
   }
+
+  /** add something
+   *
+   * @param v v
+   * @param j j
+   * @param mul mul
+   */
   void   Add           (double *v, int j, double mul);
+
+  /** prod something
+   *
+   * @param v v
+   * @param j j
+   * @return something floaty
+   */
   double Prod          (double *v, int j);
 
+  /** get kernel
+   *
+   * @return kernel
+   */
   inline CKernel* get_kernel()
   {
-	  return kernel;
+    return kernel;
   }
 
 private:

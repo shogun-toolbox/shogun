@@ -14,13 +14,30 @@
 #include "lib/common.h"
 #include "classifier/svm/SVM.h"
 
+/** class GNPPSVM */
 class CGNPPSVM : public CSVM
 {
 	public:
+		/** default constructor */
 		CGNPPSVM();
+
+		/** constructor
+		 *
+		 * @param C constant C
+		 * @param k kernel
+		 * @param lab labels
+		 */
 		CGNPPSVM(DREAL C, CKernel* k, CLabels* lab);
+
 		virtual ~CGNPPSVM();
+
+		/** train SVM */
 		virtual bool train();
+
+		/** get classifier type
+		 *
+		 * @return classifier type GNPPSVM
+		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_GNPPSVM; }
 
 };

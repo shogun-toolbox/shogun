@@ -23,14 +23,21 @@
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
+/** class GNPPLib */
 class CGNPPLib: public CSGObject
 {
  public:
+  /** constructor
+   *
+   * @param vector_y vector y
+   * @param kernel kernel
+   * @param num_data number of data
+   * @param reg_const reg const
+   */
   CGNPPLib(DREAL* vector_y, CKernel* kernel, INT num_data, DREAL reg_const);
-
   ~CGNPPLib();
 
-  /* --------------------------------------------------------------
+  /** --------------------------------------------------------------
      QP solver based on MDM algorithm.
 
      Usage: exitflag = gnpp_mdm(diag_H, vector_c, vector_y,
@@ -51,7 +58,7 @@ class CGNPPLib: public CSGObject
                double **ptr_History,
                INT verb);
 
-  /* --------------------------------------------------------------
+  /** --------------------------------------------------------------
      QP solver based on improved MDM algorithm (u fixed v optimized)
 
      Usage: exitflag = gnpp_imdm( diag_H, vector_c, vector_y,
@@ -73,14 +80,29 @@ class CGNPPLib: public CSGObject
                 INT verb);
 
  protected:
-  DREAL* get_col( long a, long b ); 
+  /** get col
+   *
+   * @param a a
+   * @param b b
+   * @return something floaty
+   */
+  DREAL* get_col( long a, long b );
+
+  /** kernel columns */
   DREAL** kernel_columns;
+  /** cache index */
   DREAL* cache_index;
+  /** first kernel inx */
   INT first_kernel_inx;
+  /** cache size */
   LONG Cache_Size;
+  /** num data */
   INT m_num_data;
+  /** reg const */
   DREAL m_reg_const;
+  /** vector y */
   DREAL* m_vector_y;
+  /** kernel */
   CKernel* m_kernel;
 
 };

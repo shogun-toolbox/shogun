@@ -21,32 +21,77 @@
 
 class CDistanceMachine;
 
+/** class KNN */
 class CKNN : public CDistanceMachine
 {
 	public:
+		/** default constructor */
 		CKNN();
+
+		/** constructor
+		 *
+		 * @param k k
+		 * @param d distance
+		 * @param trainlab labels for training
+		 */
 		CKNN(INT k, CDistance* d, CLabels* trainlab);
 		virtual ~CKNN();
 
+		/** get classifier type
+		 *
+		 * @return classifier type KNN
+		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_KNN; }
 		//inline EDistanceType get_distance_type() { return DT_KNN;}
+
+		/** train classifier
+		 *
+		 * @return if training was successful
+		 */
 		virtual bool train();
+
+		/** classify all examples
+		 *
+		 * @param output resulting labels
+		 * @return resulting labels
+		 */
 		virtual CLabels* classify(CLabels* output=NULL);
+
+		/// get output for example "idx"
 		virtual DREAL classify_example(INT idx)
 		{
 			SG_ERROR( "for performance reasons use classify() instead of classify_example\n");
 			return 0;
 		}
 
+		/** load from file
+		 *
+		 * @param srcfile file to load from
+		 * @return if loading was successful
+		 */
 		virtual bool load(FILE* srcfile);
+
+		/** save to file
+		 *
+		 * @param dstfile file to save to
+		 * @return if saving was successful
+		 */
 		virtual bool save(FILE* dstfile);
 
-		inline void set_k(DREAL p_k) 
+		/** set k
+		 *
+		 * @param p_k new k
+		 */
+		inline void set_k(DREAL p_k)
 		{
 			ASSERT(p_k>0);
 			this->k=p_k;
 		}
 
+		/** get k
+		 *
+		 * @return k
+		 */
 		inline DREAL get_k()
 		{
 			return k;

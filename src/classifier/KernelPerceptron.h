@@ -16,19 +16,42 @@
 #include "features/Features.h"
 #include "kernel/KernelMachine.h"
 
+/** class KernelPerceptron */
 class CKernelPerceptron : public CKernelMachine
 {
 	public:
+		/** constructor */
 		CKernelPerceptron();
 		virtual ~CKernelPerceptron();
 
+		/** train KernelPerceptron */
 		virtual bool train();
 
+		/** classify one specific example
+		 *
+		 * @param num which example to classify
+		 * @return classified value
+		 */
 		virtual DREAL classify_example(INT num);
 
+		/** load KernelPerceptron from file
+		 *
+		 * @param srcfile file to load from
+		 * @return if load was successful
+		 */
 		virtual bool load(FILE* srcfile);
+
+		/** save KernelPerceptron to file
+		 *
+		 * @param dstfile file to save to
+		 * @return if save was successful
+		 */
 		virtual bool save(FILE* dstfile);
 
+		/** get classifier type
+		 *
+		 * @return classifier type KERNELPERCEPTRON
+		 */
 		inline virtual EClassifierType get_classifier_type()
 		{
 			return CT_KERNELPERCEPTRON;

@@ -16,16 +16,36 @@
 
 #include <stdio.h>
 
+/** class GPBTSVM */
 class CGPBTSVM : public CSVM
 {
 	public:
+		/** default constructor */
 		CGPBTSVM();
+		
+		/** constructor
+		 *
+		 * @param C constant C
+		 * @param k kernel
+		 * @param lab labels
+		 */
 		CGPBTSVM(DREAL C, CKernel* k, CLabels* lab);
 		virtual ~CGPBTSVM();
+
+		/** train SVM
+		 *
+		 * @return if training was successful
+		 */
 		virtual bool train();
+
+		/** get classifier type
+		 *
+		 * @return classifier type GPBT
+		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_GPBT; }
 
 	protected:
+		/** SVM model */
 		struct svm_model* model;
 };
 #endif

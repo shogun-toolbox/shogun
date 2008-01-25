@@ -11,33 +11,54 @@
 extern "C" {
 #endif
 
+/** problem */
 struct problem
 {
-	int l, n;
-	int *y;
+	/** l */
+	INT l;
+	/** n */
+	INT n;
+	/** y */
+	INT *y;
+	/** sparse features x */
 	CSparseFeatures<DREAL>* x;
+	/** if bias shall be used */
 	bool use_bias;
 };
 
+/** parameter */
 struct parameter
 {
+	/** solver type */
 	int solver_type;
 
 	/* these are for training only */
-	double eps;	        /* stopping criteria */
+	/** stopping criteria */
+	double eps;
+	/** C */
 	double C;
+	/** number of weights */
 	int nr_weight;
+	/** weight label */
 	int *weight_label;
+	/** weight */
 	double* weight;
 };
 
+/** model */
 struct model
 {
+	/** parameter */
 	struct parameter param;
-	int nr_class;		/* number of classes */
+	/** number of classes */
+	int nr_class;
+	/** number of features */
 	int nr_feature;
+	/** w */
 	double *w;
-	int *label;		/* label of each class (label[n]) */
+	/** label of each class (label[n]) */
+	int *label;
+	/** bias */
 	double bias;
 };
 
@@ -63,16 +84,44 @@ const char *check_parameter(const struct problem *prob, const struct parameter *
 }
 #endif
 
+/** class l2loss_svm_vun */
 class l2loss_svm_fun : public function
 {
 public:
+	/** constructor
+	 *
+	 * @param prob prob
+	 * @param Cp Cp
+	 * @param Cn Cn
+	 */
 	l2loss_svm_fun(const problem *prob, double Cp, double Cn);
 	~l2loss_svm_fun();
 	
+	/** fun
+	 *
+	 * @param w w
+	 * @return something floaty
+	 */
 	double fun(double *w);
+	
+	/** grad
+	 *
+	 * @param w w
+	 * @param g g
+	 */
 	void grad(double *w, double *g);
+
+	/** Hv
+	 *
+	 * @param s s
+	 * @param Hs Hs
+	 */
 	void Hv(double *s, double *Hs);
 
+	/** get number of variables
+	 *
+	 * @return number of variables
+	 */
 	int get_nr_variable(void);
 
 private:
@@ -88,14 +137,38 @@ private:
 	const problem *prob;
 };
 
+/** class l2_lr_fun */
 class l2_lr_fun : public function
 {
 public:
+	/** constructor
+	 *
+	 * @param prob prob
+	 * @param Cp Cp
+	 * @param Cn Cn
+	 */
 	l2_lr_fun(const problem *prob, double Cp, double Cn);
 	~l2_lr_fun();
-	
+
+	/** fun
+	 *
+	 * @param w w
+	 * @return something floaty
+	 */
 	double fun(double *w);
+	
+	/** grad
+	 *
+	 * @param w w
+	 * @param g g
+	 */
 	void grad(double *w, double *g);
+
+	/** Hv
+	 *
+	 * @param s s
+	 * @param Hs Hs
+	 */
 	void Hv(double *s, double *Hs);
 
 	int get_nr_variable(void);

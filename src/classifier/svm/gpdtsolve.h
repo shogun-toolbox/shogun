@@ -28,44 +28,108 @@
 
 #include "base/SGObject.h"
 
+/** class QProblem */
 class QPproblem : public CSGObject
 {
 // ----------------- Public Data ---------------
 public:
+  /** chunk size */
   int     chunk_size;
+  /** ell */
   int     ell;
+  /** y */
   int    *y;
+  /** delta sv */
   double DELTAsv;
+  /** q */
   int     q;
+  /** max mw */
   int     maxmw;
+  /** c const */
   double  c_const;
+  /** bee */
   double  bee;
+  /** delta */
   double  delta;
+  /** linadd */
   bool linadd;
 
+  /** kernel */
   sKernel* KER;
+  /** kernel type */
   int     ker_type;
-  int     projection_solver, projection_projector; 
+  /** projection solver */
+  int     projection_solver;
+  /** projection projector */
+  int     projection_projector;
+  /** preprocess mode */
   int     PreprocessMode;
+  /** preprocess size */
   int     preprocess_size;
+  /** verbosity */
   int     verbosity;
+  /** tau proximal */
   double  tau_proximal;
+  /** objective value */
   double objective_value;
 
 // ----------------- Public Methods ---------------
+  /** constructor */
   QPproblem ();
   ~QPproblem();
+
+  /** read SVM file
+   *
+   * @param fInput input filename
+   * @return an int
+   */
   int  ReadSVMFile    (char *fInput);
+
+  /** read GPDT binary
+   *
+   * @param fName input filename
+   * @return an int
+   */
   int  ReadGPDTBinary(char *fName);
+
+  /** check if 2-class
+   *
+   * @return an int
+   */
   int  Check2Class    (void);
+
+  /** subproblem
+   *
+   * @param ker problem kernel
+   * @param len length
+   * @param perm perm
+   */
   void Subproblem     (QPproblem &ker, int len, int *perm);
+
+  /** PrepMP */
   void PrepMP         (void);
 
+  /** solve gpdt
+   *
+   * @param solution
+   * @return something floaty
+   */
   double  gpdtsolve      (double *solution);
+
+  /** solve pgpdt
+   *
+   * @param solution
+   * @return something floaty
+   */
   double  pgpdtsolve     (double *solution);
+
+  /** check if lineadd is enabled
+   *
+   * @return if lineadd is enabled
+   */
   inline bool get_linadd_enabled()
   {
-	  return linadd;
+    return linadd;
   }
 
 // ----------------- Private Data  ---------------

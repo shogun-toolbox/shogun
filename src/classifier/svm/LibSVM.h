@@ -17,19 +17,38 @@
 
 #include <stdio.h>
 
+/** LibSVM */
 class CLibSVM : public CSVM
 {
 	public:
+		/** constructor */
 		CLibSVM();
+		/** constructor
+		 *
+		 * @param C constant C
+		 * @param k kernel
+		 * @param lab labels
+		 */
 		CLibSVM(DREAL C, CKernel* k, CLabels* lab);
+
 		virtual ~CLibSVM();
+
+		/** train SVM */
 		virtual bool train();
+
+		/** get classifier type
+		 *
+		 * @return classifier type LIBSVM
+		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_LIBSVM; }
 
 	protected:
+		/** SVM problem */
 		svm_problem problem;
+		/** SVM param */
 		svm_parameter param;
 
+		/** SVM model */
 		struct svm_model* model;
 };
 #endif

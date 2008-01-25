@@ -14,13 +14,29 @@
 #include "lib/common.h"
 #include "classifier/svm/MultiClassSVM.h"
 
+/** class GMNPSVM */
 class CGMNPSVM : public CMultiClassSVM
 {
 	public:
+		/** default constructor */
 		CGMNPSVM();
+
+		/** constructor
+		 *
+		 * @param C constant C
+		 * @param k kernel
+		 * @param lab labels
+		 */
 		CGMNPSVM(DREAL C, CKernel* k, CLabels* lab);
 		virtual ~CGMNPSVM();
+
+		/** train SVM */
 		virtual bool train();
+
+		/** get classifier type
+		 *
+		 * @return classifier type GMNPSVM
+		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_GMNPSVM; }
 };
 #endif

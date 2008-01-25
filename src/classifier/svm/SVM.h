@@ -96,7 +96,7 @@ class CSVM : public CKernelMachine
 
 		/** set state of bias
 		 *
-		 * @param enable_bias whether bias shall be enabled
+		 * @param enable_bias if bias shall be enabled
 		 */
 		inline void set_bias_enabled(bool enable_bias) { use_bias=enable_bias; }
 
@@ -168,7 +168,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @param idx index of support vector
 		 * @param val new value of support vector
-		 * @return whether operation was successful
+		 * @return if operation was successful
 		 */
 		inline bool set_support_vector(INT idx, INT val)
 		{
@@ -184,7 +184,7 @@ class CSVM : public CKernelMachine
 		 *
 		 * @param idx index of alpha vector
 		 * @param val new value of alpha vector
-		 * @return whether operation was successful
+		 * @return if operation was successful
 		 */
 		inline bool set_alpha(INT idx, DREAL val)
 		{
@@ -321,7 +321,7 @@ class CSVM : public CKernelMachine
 
 		/** set state of shrinking
 		 *
-		 * @param enable whether shrinking will be enabled
+		 * @param enable if shrinking will be enabled
 		 */
 		inline void set_shrinking_enabled(bool enable)
 		{
@@ -330,7 +330,7 @@ class CSVM : public CKernelMachine
 
 		/** get state of shrinking
 		 *
-		 * @return whether shrinking is enabled
+		 * @return if shrinking is enabled
 		 */
 		inline bool get_shrinking_enabled()
 		{
@@ -339,7 +339,7 @@ class CSVM : public CKernelMachine
 
 		/** set state of mkl
 		 *
-		 * @param enable whether mkl shall be enabled
+		 * @param enable if mkl shall be enabled
 		 */
 		inline void set_mkl_enabled(bool enable)
 		{
@@ -348,7 +348,7 @@ class CSVM : public CKernelMachine
 
 		/** get state of mkl
 		 *
-		 * @return whether mkl is enabled
+		 * @return if mkl is enabled
 		 */
 		inline bool get_mkl_enabled()
 		{
@@ -381,7 +381,7 @@ class CSVM : public CKernelMachine
 
 		/** initialise kernel optimisation
 		 *
-		 * @return whether operation was successful
+		 * @return if operation was successful
 		 */
 		bool init_kernel_optimization();
 
@@ -408,7 +408,7 @@ class CSVM : public CKernelMachine
 
 		/** set state of precomputed subkernels
 		 *
-		 * @param flag whether precomputed subkernels shall be enabled
+		 * @param flag if precomputed subkernels shall be enabled
 		 */
 		void set_precomputed_subkernels_enabled(bool flag)
 		{
@@ -432,7 +432,7 @@ class CSVM : public CKernelMachine
 
 		/** SVM's model */
 		TModel svm_model;
-		/** whether SVM is loaded */
+		/** if SVM is loaded */
 		bool svm_loaded;
 		/** epsilon of weights */
 		DREAL weight_epsilon;
@@ -452,13 +452,13 @@ class CSVM : public CKernelMachine
 		DREAL objective;
 		/** qpsize */
 		int qpsize;
-		/** whether bias shall be used */
+		/** if bias shall be used */
 		bool use_bias;
-		/** whether shrinking shall be used */
+		/** if shrinking shall be used */
 		bool use_shrinking;
-		/** whether mkl shall be used */
+		/** if mkl shall be used */
 		bool use_mkl;
-		/** whether precomputed subkernels shall be used */
+		/** if precomputed subkernels shall be used */
 		bool use_precomputed_subkernels;
 };
 #endif

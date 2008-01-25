@@ -17,19 +17,41 @@
 
 #include <stdio.h>
 
+/** class LibSVMMultiClass */
 class CLibSVMMultiClass : public CMultiClassSVM
 {
 	public:
+		/** default constructor */
 		CLibSVMMultiClass();
+
+		/** constructor
+		 *
+		 * @param C constant C
+		 * @param k kernel
+		 * @param lab labels
+		 */
 		CLibSVMMultiClass(DREAL C, CKernel* k, CLabels* lab);
 		virtual ~CLibSVMMultiClass();
+
+		/** train SVM
+		 *
+		 * @return if training was successful
+		 */
 		virtual bool train();
+
+		/** get classifier type
+		 *
+		 * @return classifier type LIBSVMMULTICLASS
+		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_LIBSVMMULTICLASS; }
 
 	protected:
+		/** SVM problem */
 		svm_problem problem;
+		/** SVM parameter */
 		svm_parameter param;
 
+		/** SVM model */
 		struct svm_model* model;
 };
 #endif

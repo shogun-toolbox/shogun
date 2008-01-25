@@ -16,14 +16,31 @@
 #include "features/Features.h"
 #include "classifier/LinearClassifier.h"
 
+/** class Perceptron */
 class CPerceptron : public CLinearClassifier
 {
 	public:
+		/** default constructor */
 		CPerceptron();
+
+		/** constructor
+		 *
+		 * @param traindat training features
+		 * @param trainlab labels for training features
+		 */
 		CPerceptron(CRealFeatures* traindat, CLabels* trainlab);
 		virtual ~CPerceptron();
 
+		/** get classifier type
+		 *
+		 * @return classifier type PERCEPTRON
+		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_PERCEPTRON; }
+
+		/** train classifier
+		 *
+		 * @return if training was successful
+		 */
 		virtual bool train();
 
 		/// set learn rate of gradient descent training algorithm
@@ -37,8 +54,11 @@ class CPerceptron : public CLinearClassifier
 		{
 			max_iter=i;
 		}
+
 	protected:
+		/** learning rate */
 		DREAL learn_rate;
+		/** maximum number of iterations */
 		INT max_iter;
 };
 #endif

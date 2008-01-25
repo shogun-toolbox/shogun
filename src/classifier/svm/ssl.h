@@ -37,58 +37,91 @@
 #include "lib/common.h"
 #include "features/SparseFeatures.h"
 
-/* Data: Input examples are stored in sparse (Compressed Row Storage) format */
-struct data 
+/** Data: Input examples are stored in sparse (Compressed Row Storage) format */
+struct data
 {
-	int m; /* number of examples */
-	int l; /* number of labeled examples */
-	int u; /* number of unlabeled examples l+u = m */
-	int n; /* number of features */ 
-	int nz; /* number of non-zeros */
+	/** number of examples */
+	int m;
+	/** number of labeled examples */
+	int l;
+	/** number of unlabeled examples l+u = m */
+	int u;
+	/** number of features */
+	int n;
+	/** number of non-zeros */
+	int nz;
 
+	/** features */
 	CSparseFeatures<DREAL>* features;
-	double *Y;   /* labels */
-	double *C;   /* cost associated with each example */
+	/** labels */
+	double *Y;
+	/** cost associated with each example */
+	double *C;
 };
 
-struct vector_double /* defines a vector of doubles */
+/** defines a vector of doubles */
+struct vector_double
 {
-	int d; /* number of elements */
-	double *vec; /* ptr to vector elements*/
+	/** number of elements */
+	int d;
+	/** ptr to vector elements*/
+	double *vec;
 };
 
-struct vector_int /* defines a vector of ints for index subsets */
+/** defines a vector of ints for index subsets */
+struct vector_int
 {
-	int d; /* number of elements */
-	int *vec; /* ptr to vector elements */
+	/** number of elements */
+	int d;
+	/** ptr to vector elements */
+	int *vec;
 };
 
 enum { RLS, SVM, TSVM, DA_SVM }; /* currently implemented algorithms */
 
-struct options 
+/** various options user + internal optimisation */
+struct options
 {
 	/* user options */
-	int algo; /* 1 to 4 for RLS,SVM,TSVM,DASVM */
-	double lambda; /* regularization parameter */
-	double lambda_u; /* regularization parameter over unlabeled examples */
-	int S; /* maximum number of TSVM switches per fixed-weight label optimization */
-	double R; /* expected fraction of unlabeled examples in positive class */
-	double Cp; /* cost for positive examples */
-	double Cn; /* cost for negative examples */
-	/*  internal optimization options */    
-	double epsilon; /* all tolerances */
-	int cgitermax;  /* max iterations for CGLS */
-	int mfnitermax; /* max iterations for L2_SVM_MFN */
+	/** regularization parameter */
+	int algo;
+	/** regularization parameter */
+	double lambda;
+	/** regularization parameter over unlabeled examples */
+	double lambda_u;
+	/** maximum number of TSVM switches per fixed-weight label optimization */
+	int S;
+	/** expected fraction of unlabeled examples in positive class */
+	double R;
+	/** cost for positive examples */
+	double Cp;
+	/** cost for negative examples */
+	double Cn;
 
-	double bias; /* 1.0 if bias is to be used, 0.0 otherwise */
+	/*  internal optimization options */
+	/** all tolerances */
+	double epsilon;
+	/** max iterations for CGLS */
+	int cgitermax;
+	/** max iterations for L2_SVM_MFN */
+	int mfnitermax;
+
+	/** 1.0 if bias is to be used, 0.0 otherwise */
+	double bias;
 };
 
-class Delta { /* used in line search */
-	public: 
-		Delta() {delta=0.0; index=0;s=0;};  
-		double delta;   
+/** used in line search */
+class Delta {
+	public:
+		/** default constructor */
+		Delta() {delta=0.0; index=0;s=0;};
+
+		/** delta */
+		double delta;
+		/** index */
 		int index;
-		int s;   
+		/** s */
+		int s;
 };
 inline bool operator<(const Delta& a , const Delta& b) { return (a.delta < b.delta);};
 

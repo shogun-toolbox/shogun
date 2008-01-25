@@ -15,23 +15,38 @@
 
 #include <stdint.h>
 
+/** ocas return value */
 typedef struct {
-  uint32_t nIter;       /* number of iterations */
-  uint32_t nCutPlanes;  /* number of cutitng buffered planes */
-  uint32_t nNZAlpha;    /* number of non-zero Lagrangeans (effective number of CPs) */
-  double trn_err;       /* number of training errors */
-  double Q_P;           /* primal objective value */
-  double Q_D;           /* dual objective value */
-  double output_time;   /* time spent in computing outputs */
-  double sort_time;     /* time spent in sorting */
-  double add_time;      /* time spent in adding examples to compute cutting planes */
-  double w_time;        /* time spent in computing parameter vector  */
-  double solver_time;   /* time spend in inner QP solver  */
-  double ocas_time;     /* total time spent in svm_ocas_solver */
-  int8_t exitflag;      /*  1 .. ocas.Q_P - ocas.Q_D <= TolRel*ABS(ocas.Q_P) 
-                            2 .. ocas.Q_P - ocas.Q_D <= TolAbs 
-                            3 .. ocas.Q_P <= QPBound
-                           -1 .. ocas.nCutPlanes >= BufSize */
+  /** number of iterations */
+  uint32_t nIter;
+  /** number of cutitng buffered planes */
+  uint32_t nCutPlanes;
+  /** number of non-zero Lagrangeans (effective number of CPs) */
+  uint32_t nNZAlpha;
+  /** number of training errors */
+  double trn_err;
+  /** primal objective value */
+  double Q_P;
+  /** dual objective value */
+  double Q_D;
+  /** time spent in computing outputs */
+  double output_time;
+  /** time spent in sorting */
+  double sort_time;
+  /** time spent in adding examples to compute cutting planes */
+  double add_time;
+  /** time spent in computing parameter vector  */
+  double w_time;
+  /** time spend in inner QP solver  */
+  double solver_time;
+  /** total time spent in svm_ocas_solver */
+  double ocas_time;
+
+  /** 1 .. ocas.Q_P - ocas.Q_D <= TolRel*ABS(ocas.Q_P)
+   *  2 .. ocas.Q_P - ocas.Q_D <= TolAbs
+   *  3 .. ocas.Q_P <= QPBound -1 .. ocas.nCutPlanes >= BufSize
+   */
+  int8_t exitflag;
 } ocas_return_value_T;
 
 ocas_return_value_T svm_ocas_solver(

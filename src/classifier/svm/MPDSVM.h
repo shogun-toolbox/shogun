@@ -14,23 +14,49 @@
 #include "classifier/svm/SVM.h"
 #include "lib/Cache.h"
 
+/** class MPDSVM */
 class CMPDSVM : public CSVM
 {
 	public:
+		/** default constructor */
 		CMPDSVM();
+
+		/** constructor
+		 *
+		 * @param C constant C
+		 * @param k kernel
+		 * @param lab labels
+		 */
 		CMPDSVM(DREAL C, CKernel* k, CLabels* lab);
 		virtual ~CMPDSVM();
+
+		/** train SVM */
 		virtual bool train();
 
+		/** get classifier type
+		 *
+		 * @return classifier type MPD
+		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_MPD; }
 
 	protected:
+		/** compute H
+		 *
+		 * @param i index of H
+		 * @param j index of H
+		 * @return computed H at index i,j
+		 */
 		inline DREAL compute_H(int i, int j)
 		{
 			CLabels* l = CKernelMachine::get_labels();
 			return l->get_label(i)*l->get_label(j)*kernel->kernel(i,j);
 		}
 
+		/** lock kernel row
+		 *
+		 * @param i row to lock
+		 * @return locked row
+		 */
 		inline KERNELCACHE_ELEM* lock_kernel_row(int i)
 		{
 			KERNELCACHE_ELEM* line=NULL;
@@ -55,11 +81,16 @@ class CMPDSVM : public CSVM
 			return line;
 		}
 
+		/** unlock kernel row
+		 *
+		 * @param i row to unlock
+		 */
 		inline void unlock_kernel_row(int i)
 		{
 			kernel_cache->unlock_entry(i);
 		}
 
+		/** kernel cache */
 		CCache<KERNELCACHE_ELEM>* kernel_cache;
 };
 
