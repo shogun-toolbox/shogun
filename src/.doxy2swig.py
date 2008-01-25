@@ -238,7 +238,11 @@ class Doxy2SWIG:
 
     def do_parametername(self, node):
         self.add_text('\n')
-        self.add_text("%s: "%node.firstChild.data)
+        try:
+            data=node.firstChild.data
+        except AttributeError: # perhaps a <ref> tag in it
+            data=node.firstChild.firstChild.data
+        self.add_text("%s: "%data)
 
     def do_parameterdefinition(self, node):
         self.generic_parse(node, pad=1)
