@@ -16,16 +16,46 @@
 #include "distributions/Distribution.h"
 
 
+/** class GHMM */
 class CGHMM : public CDistribution
 {
 	public:
+		/** default constructor */
 		CGHMM();
 		~CGHMM();
 
+		/** train distribution
+		 *
+		 * @return if training was successful
+		 */
 		virtual bool train();
+
+		/** get number of model parameters
+		 *
+		 * @return number of model parameters
+		 */
 		virtual INT get_num_model_parameters();
+
+		/** get logarithm of given model parameter
+		 *
+		 * @param param_num which param
+		 * @result logarithm of given model parameter
+		 */
 		virtual DREAL get_log_model_parameter(INT param_num);
+
+		/** get logarithm of one example's derivative's likelihood
+		 *
+		 * @param param_num which example's param
+		 * @param num_example which example
+		 * @return logarithm of example's derivative's likelihood
+		 */
 		virtual DREAL get_log_derivative(INT param_num, INT num_example);
+
+		/** get logarithm of one example's likelihood
+		 *
+		 * @param num_example which example
+		 * @return logarithm of example's likelihood
+		 */
 		virtual DREAL get_log_likelihood_example(INT num_example);
 };
 #endif

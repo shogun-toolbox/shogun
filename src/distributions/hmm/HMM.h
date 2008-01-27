@@ -75,6 +75,7 @@ enum BaumWelchViterbiType
 };
 
 
+/** class Model */
 class CModel
 {
 	public:

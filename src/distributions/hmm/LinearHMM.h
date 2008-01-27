@@ -16,45 +16,127 @@
 #include "features/Labels.h"
 #include "distributions/Distribution.h"
 
+/** class LinearHMM */
 class CLinearHMM : public CDistribution
 {
 	public:
+		/** constructor
+		 *
+		 * @param f features to use
+		 */
 		CLinearHMM(CStringFeatures<WORD>* f);
+
+		/** constructor
+		 *
+		 * @param p_num_features number of features
+		 * @param p_num_symbols number of symbols in features
+		 */
 		CLinearHMM(INT p_num_features, INT p_num_symbols);
 		~CLinearHMM();
 
+		/** train distribution
+		 *
+		 * @return if training was successful
+		 */
 		bool train();
+
+		/** alternative train distribution
+		 *
+		 * @param indizes indices
+		 * @param num_indizes number of indices
+		 * @param pseudo_count pseudo count
+		 * @return if training was successful
+		 */
 		bool train(const INT* indizes, INT num_indizes, DREAL pseudo_count);
 
+		/** get logarithm of one example's likelihood
+		 *
+		 * @param vector the example
+		 * @param len length of vector
+		 * @return logarithm of likelihood
+		 */
 		DREAL get_log_likelihood_example(WORD* vector, INT len);
+
+		/** get one example's likelihood
+		 *
+		 * @param vector the example
+		 * @param len length of vector
+		 * @return likelihood
+		 */
 		DREAL get_likelihood_example(WORD* vector, INT len);
 
+		/** get logarithm of one example's likelihood
+		 *
+		 * @param num_example which example
+		 * @return logarithm of example's likelihood
+		 */
 		virtual DREAL get_log_likelihood_example(INT num_example);
 
+		/** get logarithm of one example's derivative's likelihood
+		 *
+		 * @param num_param which example's param
+		 * @param num_example which example
+		 * @return logarithm of example's derivative
+		 */
 		virtual DREAL get_log_derivative(INT num_param, INT num_example);
 
+		/** obsolete get logarithm of one example's derivative's
+		 *  likelihood
+		 *
+		 * @param obs observation
+		 * @param pos position
+		 */
 		virtual inline DREAL get_log_derivative_obsolete(WORD obs, INT pos)
 		{
 			return 1.0/transition_probs[pos*num_symbols+obs];
 		}
 
+		/** obsolete get one example's derivative
+		 *
+		 * @param vector vector
+		 * @param len length
+		 * @param pos position
+		 */
 		virtual inline DREAL get_derivative_obsolete(WORD* vector, INT len, INT pos)
 		{
 			ASSERT(pos<len);
 			return get_likelihood_example(vector, len)/transition_probs[pos*num_symbols+vector[pos]];
 		}
 
+		/** get sequence length of each example
+		 *
+		 * @return sequence length of each example
+		 */
 		virtual inline INT get_sequence_length() { return sequence_length; }
 
+		/** get number of symbols in examples
+		 *
+		 * @return number of symbols in examples
+		 */
 		virtual inline INT get_num_symbols() { return num_symbols; }
 
+		/** get number of model parameters
+		 *
+		 * @return number of model parameters
+		 */
 		virtual inline INT get_num_model_parameters() { return num_params; }
 
+		/** get positional log parameter
+		 *
+		 * @param obs observation
+		 * @param position position
+		 * @return positional log parameter
+		 */
 		virtual inline DREAL get_positional_log_parameter(WORD obs, INT position)
 		{
 			return log_transition_probs[position*num_symbols+obs];
 		}
 
+		/** get logarithm of given model parameter
+		 *
+		 * @param num_param which param
+		 * @result logarithm of given model parameter
+		 */
 		virtual inline DREAL get_log_model_parameter(INT num_param)
 		{
 			ASSERT(log_transition_probs);
@@ -63,17 +145,48 @@ class CLinearHMM : public CDistribution
 			return log_transition_probs[num_param];
 		}
 
+		/** get logarithm of all transition probs
+		 *
+		 * @param dst where logarithm of transition probs will be
+		 *        stored
+		 * @param num where number of logarithm of transition probs
+		 *        will be stored
+		 */
 		virtual void get_log_transition_probs(DREAL** dst, INT* num);
+
+		/** set logarithm of all transition probs
+		 *
+		 * @param src new logarithms of transition probs
+		 * @param num number of logarithms of transition probs
+		 * @return if setting was succesful
+		 */
 		virtual bool set_log_transition_probs(const DREAL* src, INT num);
 
+		/** get all transition probs
+		 *
+		 * @param dst where transition probs will be stored
+		 * @param num where number of transition probs will be stored
+		 */
 		virtual void get_transition_probs(DREAL** dst, INT* num);
+
+		/** set all transition probs
+		 *
+		 * @param src new transition probs
+		 * @param num number of transition probs
+		 * @return if setting was succesful
+		 */
 		virtual bool set_transition_probs(const DREAL* src, INT num);
 
 	protected:
+		/** examples' sequence length */
 		INT sequence_length;
+		/** number of symbols in examples */
 		INT num_symbols;
+		/** number of parameters */
 		INT num_params;
+		/** transition probs */
 		DREAL* transition_probs;
+		/** logarithm of transition probs */
 		DREAL* log_transition_probs;
 };
 #endif
