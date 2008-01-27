@@ -15,24 +15,56 @@
 #include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
+/** class GeodesicMetric */
 class CGeodesicMetric: public CSimpleDistance<DREAL>
 {
 	public:
+		/** default constructor */
 		CGeodesicMetric();
+
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 */
 		CGeodesicMetric(CRealFeatures* l, CRealFeatures* r);
 		virtual ~CGeodesicMetric();
 
+		/** init distance
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if init was successful
+		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
+
+		/** cleanup distance */
 		virtual void cleanup();
 
-		/// load and save distance init_data
+		/** load init data from file
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
 		virtual bool load_init(FILE* src);
+
+		/** save init data to file
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
 		virtual bool save_init(FILE* dest);
 
-		// return type of distance
+		/** get distance type we are
+		 *
+		 * @return distance type GEODESIC
+		 */
 		virtual EDistanceType get_distance_type() { return D_GEODESIC; }
 
-		// return the name of distance
+		/** get name of the distance
+		 *
+		 * @return name Chebyshew-Metric
+		 */
 		virtual const CHAR* get_name() { return "Geodesic-Metric"; };
 
 	protected:

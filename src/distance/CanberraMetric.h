@@ -15,24 +15,56 @@
 #include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
+/** class CanberraMetric */
 class CCanberraMetric: public CSimpleDistance<DREAL>
 {
 	public:
+		/** default constructor */
 		CCanberraMetric();
+
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 */
 		CCanberraMetric(CRealFeatures* l, CRealFeatures* r);
 		virtual ~CCanberraMetric();
 
+		/** init distance
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if init was successful
+		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
+
+		/** cleanup distance */
 		virtual void cleanup();
 
-		/// load and save distance init_data
+		/** load init data from file
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
 		virtual bool load_init(FILE* src);
+
+		/** save init data to file
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
 		virtual bool save_init(FILE* dest);
 
-		// return type of distance
+		/** get distance type we are
+		 *
+		 * @return distance type CANBERRA
+		 */
 		virtual EDistanceType get_distance_type() { return D_CANBERRA; }
 
-		// return the name of a distance
+		/** get name of the distance
+		 *
+		 * @return name Canberra-Metric
+		 */
 		virtual const CHAR* get_name() { return "Canberra-Metric"; };
 
 	protected:

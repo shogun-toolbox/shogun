@@ -19,16 +19,28 @@
 
 #include <stdio.h>
 
+/** class DistanceMachine */
 class CDistanceMachine : public CClassifier
 {
 	public:
+		/** default constructor */
 		CDistanceMachine();
 		virtual ~CDistanceMachine();
 
+		/** set distance
+		 *
+		 * @param d distance to set
+		 */
 		inline void set_distance(CDistance* d) { distance=d; }
+
+		/** get distance
+		 *
+		 * @return distance
+		 */
 		inline CDistance* get_distance() { return distance; }
 		
 	protected:
+		/** the distance */
 		CDistance* distance;
 };
 #endif

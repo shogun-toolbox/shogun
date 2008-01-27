@@ -15,24 +15,56 @@
 #include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
+/** class JensenMetric */
 class CJensenMetric: public CSimpleDistance<DREAL>
 {
 	public:
+		/** default constructor */
 		CJensenMetric();
+
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 */
 		CJensenMetric(CRealFeatures* l, CRealFeatures* r);
 		virtual ~CJensenMetric();
 
+		/** init distance
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if init was successful
+		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
+
+		/** cleanup distance */
 		virtual void cleanup();
 
-		/// load and save distance init_data
+		/** load init data from file
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
 		virtual bool load_init(FILE* src);
+
+		/** save init data to file
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
 		virtual bool save_init(FILE* dest);
 
-		// return type of distance
+		/** get distance type we are
+		 *
+		 * @return distance type JENSEN
+		 */
 		virtual EDistanceType get_distance_type() { return D_JENSEN; }
 
-		// return the name of distance
+		/** get name of the distance
+		 *
+		 * @return name Jensen-Metric
+		 */
 		virtual const CHAR* get_name() { return "Jensen-Metric"; };
 
 	protected:

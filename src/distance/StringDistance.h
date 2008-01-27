@@ -14,21 +14,22 @@
 #include "distance/Distance.h"
 #include "features/StringFeatures.h"
 
+/** template class StringDistance */
 template <class ST> class CStringDistance : public CDistance
 {
 	public:
-		CStringDistance() : CDistance()
-		{
-		}
+		/** default constructor */
+		CStringDistance() : CDistance() {}
 
-		/** initialize your distance
-		 * where l are feature vectors to occur on left hand side
-		 * and r the feature vectors to occur on right hand side
+		/** init distance
 		 *
-		 * when training data is supplied as both l and r do_init should
-		 * be true
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if init was successful
 		 */
-		
+		/* when training data is supplied as both l and r do_init
+		 * should be true
+		*/
 		virtual bool init(CFeatures* l, CFeatures* r)
 		{
 			CDistance::init(l,r);
@@ -40,26 +41,59 @@ template <class ST> class CStringDistance : public CDistance
 			return true;
 		}
 
-		/** return feature class the distance can deal with
-		  */
+		/** get feature class the distance can deal with
+		 *
+		 * @return feature class STRING
+		 */
 		inline virtual EFeatureClass get_feature_class() { return C_STRING; }
-		/** return feature type the distance can deal with
-		  */
+
+		/** get feature type the distance can deal with
+		 *
+		 * @return template-specific feature type
+		 */
 		virtual EFeatureType get_feature_type();
 };
 
+/** get feature type the DREAL distance can deal with
+ *
+ * @return feature type DREAL
+ */
 template<> inline EFeatureType CStringDistance<DREAL>::get_feature_type() { return F_DREAL; }
 
+/** get feature type the ULONG distance can deal with
+ *
+ * @return feature type ULONG
+ */
 template<> inline EFeatureType CStringDistance<ULONG>::get_feature_type() { return F_ULONG; }
 
+/** get feature type the INT distance can deal with
+ *
+ * @return feature type INT
+ */
 template<> inline EFeatureType CStringDistance<INT>::get_feature_type() { return F_INT; }
 
+/** get feature type the WORD distance can deal with
+ *
+ * @return feature type WORD
+ */
 template<> inline EFeatureType CStringDistance<WORD>::get_feature_type() { return F_WORD; }
 
+/** get feature type the SHORT distance can deal with
+ *
+ * @return feature type SHORT
+ */
 template<> inline EFeatureType CStringDistance<SHORT>::get_feature_type() { return F_SHORT; }
 
+/** get feature type the BYTE distance can deal with
+ *
+ * @return feature type BYTE
+ */
 template<> inline EFeatureType CStringDistance<BYTE>::get_feature_type() { return F_BYTE; }
 
+/** get feature type the CHAR distance can deal with
+ *
+ * @return feature type CHAR
+ */
 template<> inline EFeatureType CStringDistance<CHAR>::get_feature_type() { return F_CHAR; }
 
 #endif

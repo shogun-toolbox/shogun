@@ -15,24 +15,59 @@
 #include "distance/SimpleDistance.h"
 #include "features/RealFeatures.h"
 
+/** class MinkowskiMetric */
 class CMinkowskiMetric: public CSimpleDistance<DREAL>
 {
 	public:
+		/** constructor
+		 *
+		 * @param k parameter k
+		 */
 		CMinkowskiMetric(DREAL k);
+
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param k parameter k
+		 */
 		CMinkowskiMetric(CRealFeatures* l, CRealFeatures* r, DREAL k);
 		virtual ~CMinkowskiMetric();
 
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
+
+		/** cleanup distance */
 		virtual void cleanup();
 
-		/// load and save kernel init_data
+		/** load init data from file
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
 		virtual bool load_init(FILE* src);
+
+		/** save init data to file
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
 		virtual bool save_init(FILE* dest);
 
-		// return type of distance
+		/** get distance type we are
+		 *
+		 * @return distance type MINKOWSKI
+		 */
 		virtual EDistanceType get_distance_type() { return D_MINKOWSKI;}
 
-		// return the name of distance
+		/** get name of the distance
+		 *
+		 * @return name Minkowski-Metric
+		 */
 		virtual const CHAR* get_name() { return "Minkowski-Metric"; };
 
 	protected:
@@ -42,6 +77,7 @@ class CMinkowskiMetric: public CSimpleDistance<DREAL>
 		virtual DREAL compute(INT idx_a, INT idx_b);
 
 	protected:
+		/** parameter k */
 		DREAL k;
 };
 

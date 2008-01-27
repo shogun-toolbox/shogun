@@ -15,35 +15,76 @@
 #include "distance/RealDistance.h"
 #include "features/RealFeatures.h"
 
+/** class EuclidianDistance */
 class CEuclidianDistance: public CRealDistance
 {
 	public:
+		/** default constructor */
 		CEuclidianDistance();
+
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 */
 		CEuclidianDistance(CRealFeatures* l, CRealFeatures* r);
 		virtual ~CEuclidianDistance();
 
+		/** init distance
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if init was successful
+		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
+
+		/** cleanup distance */
 		virtual void cleanup();
 
-		/// load and save kernel init_data
+		/** load init data from file
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
 		virtual bool load_init(FILE* src);
+
+		/** save init data to file
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
 		virtual bool save_init(FILE* dest);
 
-		// return what type of kernel we are Linear,Polynomial, Gaussian,...
+		/** get distance type we are
+		 *
+		 * @return distance type EUCLIDIAN
+		 */
 		virtual EDistanceType get_distance_type() { return D_EUCLIDIAN; }
 
-		/** return feature type the kernel can deal with
-		*/
+		/** get feature type the distance can deal with
+		 *
+		 * @return feature type DREAL
+		 */
 		inline virtual EFeatureType get_feature_type() { return F_DREAL; }
 
-		// return the name of a kernel
+		/** get name of the distance
+		 *
+		 * @return name Euclidian
+		 */
 		virtual const CHAR* get_name() { return "Euclidian" ; } ;
 
-		/*
-		 * disable application of sqrt on matrix computation
+		/** disable application of sqrt on matrix computation
 		 * the matrix can then also be named norm squared
+		 *
+		 * @return if application of sqrt is disabled
 		 */
 		virtual bool get_disable_sqrt() { return disable_sqrt; };
+
+		/** disable application of sqrt on matrix computation
+		 * the matrix can then also be named norm squared
+		 *
+		 * @param state new disable_sqrt
+		 */
 		virtual void set_disable_sqrt(bool state) { disable_sqrt=state; };
 
 	protected:
@@ -54,7 +95,9 @@ class CEuclidianDistance: public CRealDistance
 		/*    compute_kernel*/
 
 	protected:
+		/** applied scaling factor */
 		double scale;
+		/** if application of sqrt on matrix computation is disabled */
 		bool disable_sqrt;
 };
 

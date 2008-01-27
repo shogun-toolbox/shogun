@@ -19,15 +19,28 @@
 
 #include <stdio.h>
 
+/** class Distance */
 class CDistance : public CSGObject
 {
 	public:
+		/** default constructor */
 		CDistance();
+
+		/** init distance
+		 *
+		 * @param lhs features of left-hand side
+		 * @param rhs features of right-hand side
+		 * @return if init was successful
+		 */
 		CDistance(CFeatures* lhs, CFeatures* rhs);
 		virtual ~CDistance();
 
-		/** get distance function for lhs feature vector a 
-		  and rhs feature vector b
+		/** get distance function for lhs feature vector a
+		  * and rhs feature vector b
+		  *
+		  * @param idx_a feature vector a at idx_a
+		  * @param idx_b feature vector b at idx_b
+		  * @return distance value
 		 */
 		inline DREAL distance(INT idx_a, INT idx_b)
 		{
@@ -61,33 +74,93 @@ class CDistance : public CSGObject
 
 			return compute(idx_a, idx_b);
 		}
-		
+
+		/** get distance matrix
+		 *
+		 * @param dst distance matrix is stored in here
+		 * @param m dimension m of matrix is stored in here
+		 * @param n dimension n of matrix is stored in here
+		 */
 		void get_distance_matrix(DREAL** dst,INT* m, INT* n);
 
+		/** get distance matrix real
+		 *
+		 * @param m dimension m
+		 * @param n dimension n
+		 * @param target target matrix
+		 * @return target matrix
+		 */
 		virtual DREAL* get_distance_matrix_real(int &m,int &n, DREAL* target);
 
+		/** get distance matrix short real
+		 *
+		 * @param m dimension m
+		 * @param n dimension n
+		 * @param target target matrix
+		 * @return target matrix
+		 */
 		virtual SHORTREAL* get_distance_matrix_shortreal(int &m,int &n,SHORTREAL* target);
 
-		/** initialize distance cache
+		/** init distance
+		 *
 		 *  make sure to check that your distance can deal with the
 		 *  supplied features (!)
-		*/
+		 *
+		 * @param lhs features of left-hand side
+		 * @param rhs features of right-hand side
+		 * @return if init was successful
+		 */
 		virtual bool init(CFeatures* lhs, CFeatures* rhs);
 
-		/// clean up your kernel
+		/** cleanup distance
+		 *
+		 * abstract base method
+		 */
 		virtual void cleanup()=0;
 
-		/// load and save the distance matrix
+		/** load distance matrix from file
+		 *
+		 * @param fname filename to load from
+		 * @return if loading was successful
+		 */
 		bool load(CHAR* fname);
+
+		/** save distance matrix to file
+		 *
+		 * @param fname filename to save to
+		 * @return if saving was successful
+		 */
 		bool save(CHAR* fname);
 
-		/// load and save distance init_data
+		/** load init data from file
+		 *
+		 * abstract base method
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
 		virtual bool load_init(FILE* src)=0;
+
+		/** save init data to file
+		 *
+		 * abstrace base method
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
 		virtual bool save_init(FILE* dest)=0;
 		
-		/// get left/right hand side of features used in distance matrix
-		inline CFeatures* get_lhs() { return lhs; } ;
-		inline CFeatures* get_rhs() { return rhs;  } ;
+		/** get left-hand side features used in distance matrix
+		 *
+		 * @return left-hand side features
+		 */
+		inline CFeatures* get_lhs() { return lhs; };
+
+		/** get right-hand side features used in distance matrix
+		 *
+		 * @return right-hand side features
+		 */
+		inline CFeatures* get_rhs() { return rhs; };
 
 		/// takes all necessary steps if the lhs is removed from distance matrix
 		virtual void remove_lhs();
@@ -95,32 +168,59 @@ class CDistance : public CSGObject
 		/// takes all necessary steps if the rhs is removed from distance matrix
 		virtual void remove_rhs();
 		
-		// return what type of distance we are using
+		/** get distance type we are
+		 *
+		 * abstrace base method
+		 *
+		 * @return distance type
+		 */
 		virtual EDistanceType get_distance_type()=0 ;
 
-		/** return feature type the distance can deal with
-		  */
+		/** get feature type the distance can deal with
+		 *
+		 * abstrace base method
+		 *
+		 * @return feature type
+		 */
 		virtual EFeatureType get_feature_type()=0;
 
-		/** return feature class the distance can deal with
-		  */
+		/** get feature class the distance can deal with
+		 *
+		 * abstract base method
+		 *
+		 * @return feature class
+		 */
 		virtual EFeatureClass get_feature_class()=0;
 
-		// return the name of a distance
+		/** get name of the distance
+		 *
+		 * abstrace base method
+		 *
+		 * @return name
+		 */
 		virtual const CHAR* get_name()=0 ;
 
 
-		//fixme: precompute matrix should be dropped, handling should be via customdistance
+		/** FIXME: precompute matrix should be dropped, handling
+		 * should be via customdistance
+		 *
+		 * @return if precompute_matrix
+		 */
 		inline bool get_precompute_matrix() { return precompute_matrix ;  }
-		
+
+		/** FIXME: precompute matrix should be dropped, handling
+		 * should be via customdistance
+		 *
+		 * @param flag if precompute_matrix
+		 */
 		inline virtual void set_precompute_matrix(bool flag)
 		{ 
-			precompute_matrix = flag ; 
+			precompute_matrix=flag;
 		
 			if (!precompute_matrix)
 			{
-				delete[] precomputed_matrix ;
-				precomputed_matrix = NULL ;
+				delete[] precomputed_matrix;
+				precomputed_matrix=NULL;
 			}
 		}
 
@@ -131,13 +231,18 @@ class CDistance : public CSGObject
 		virtual DREAL compute(INT x, INT y)=0;
 
 		/// matrix precomputation
-		void do_precompute_matrix() ;
+		void do_precompute_matrix();
 
 	protected:
-		
-		SHORTREAL * precomputed_matrix ;
+		/** FIXME: precompute matrix should be dropped, handling
+		 * should be via customdistance
+		 */
+		SHORTREAL * precomputed_matrix;
 
-		bool precompute_matrix ;
+		/** FIXME: precompute matrix should be dropped, handling
+		 * should be via customdistance
+		 */
+		bool precompute_matrix;
 
 		/// feature vectors to occur on left hand side
 		CFeatures* lhs;

@@ -17,27 +17,64 @@
 #include "features/StringFeatures.h"
 #include "distance/StringDistance.h"
 
+/** class ManhattanWordDistance */
 class CManhattanWordDistance: public CStringDistance<WORD>
 {
 	public:
+		/** default constructor */
 		CManhattanWordDistance();
+
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 */
 		CManhattanWordDistance(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r);
 		virtual ~CManhattanWordDistance();
 
+		/** init distance
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if init was successful
+		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
+
+		/** cleanup distance */
 		virtual void cleanup();
 
-		/// load and save kernel init_data
+		/** load init data from file
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
 		bool load_init(FILE* src);
+
+		/** save init data to file
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
 		bool save_init(FILE* dest);
 
-		// return what type of distance we are CANBERRA,CHEBYSHEW, GEODESIC,...
+		/** get distance type we are
+		 *
+		 * @return distance type MANHATTANWORD
+		 */
 		virtual EDistanceType get_distance_type() { return D_MANHATTANWORD; }
 
-		// return the name of a distance
+		/** get name of the distance
+		 *
+		 * @return name ManhattanWord
+		 */
 		virtual const CHAR* get_name() { return "ManhattanWord"; }
 
-		void get_dictionary(INT& dsize, DREAL*& dweights) 
+		/** get dictionary weights
+		 *
+		 * @param dsize size of the dictionary
+		 * @param dweights dictionary weights are stored in here
+		 */
+		void get_dictionary(INT& dsize, DREAL*& dweights)
 		{
 			dsize=dictionary_size;
 			dweights = dictionary_weights;
@@ -50,7 +87,9 @@ class CManhattanWordDistance: public CStringDistance<WORD>
 		DREAL compute(INT idx_a, INT idx_b);
 
 	protected:
+		/** size of the dictionary */
 		INT dictionary_size;
+		/** dictionary weights */
 		DREAL* dictionary_weights;
 };
 #endif /* _MANHATTANWORDDISTANCE_H___ */

@@ -15,28 +15,62 @@
 #include "distance/SparseDistance.h"
 #include "features/SparseFeatures.h"
 
+/** class SparseEucldianDistance */
 class CSparseEuclidianDistance: public CSparseDistance<DREAL>
 {
 	public:
+		/** default constructor */
 		CSparseEuclidianDistance();
+
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 */
 		CSparseEuclidianDistance(CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r);
 		virtual ~CSparseEuclidianDistance();
 
+		/** init distance
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if init was successful
+		 */
 		virtual bool init(CFeatures* l, CFeatures* r);
+
+		/** cleanup distance */
 		virtual void cleanup();
 
-		/// load and save kernel init_data
+		/** load init data from file
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
 		virtual bool load_init(FILE* src);
+
+		/** save init data to file
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
 		virtual bool save_init(FILE* dest);
 
-		// return what type of kernel we are Linear,Polynomial, Gaussian,...
+		/** get distance type we are
+		 *
+		 * @return distance type SPARSEEUCLIDIAN
+		 */
 		virtual EDistanceType get_distance_type() { return D_SPARSEEUCLIDIAN; }
 
-		/** return feature type the kernel can deal with
-		*/
+		/** get supported feature type
+		 *
+		 * @return feature type DREAL
+		 */
 		inline virtual EFeatureType get_feature_type() { return F_DREAL; }
 
-		// return the name of a kernel
+		/** get name of the distance
+		 *
+		 * @return name SparseEuclidian
+		 */
 		virtual const CHAR* get_name() { return "SparseEuclidian" ; } ;
 
 	protected:
@@ -47,8 +81,12 @@ class CSparseEuclidianDistance: public CSparseDistance<DREAL>
 		/*    compute_kernel*/
 
 	protected:
+		/** applied scaling factor */
 		double scale;
+
+		/** squared left-hand side */
 		DREAL* sq_lhs;
+		/** squared right-hand side */
 		DREAL* sq_rhs;
 
 };

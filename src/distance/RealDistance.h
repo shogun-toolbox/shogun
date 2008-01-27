@@ -14,13 +14,19 @@
 #include "distance/SimpleDistance.h"
 #include "lib/common.h"
 
+/** class RealDistance */
 class CRealDistance : public CSimpleDistance<DREAL>
 {
 	public:
-		CRealDistance() : CSimpleDistance<DREAL>()
-		{
-		}
+		/** default constructor */
+		CRealDistance() : CSimpleDistance<DREAL>() {}
 
+		/** init distance
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if init was successful
+		 */
 		virtual bool init(CFeatures* l, CFeatures* r)
 		{
 			CSimpleDistance<DREAL>::init(l,r);
@@ -31,8 +37,10 @@ class CRealDistance : public CSimpleDistance<DREAL>
 			return true;
 		}
 
-		/** return feature type the distance can deal with
-		  */
+		/** get feature type the distance can deal with
+		 *
+		 * @return feature type DREAL
+		 */
 		inline virtual EFeatureType get_feature_type() { return F_DREAL; }
 };
 #endif
