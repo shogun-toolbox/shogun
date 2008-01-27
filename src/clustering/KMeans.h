@@ -21,48 +21,102 @@
 
 class CDistanceMachine;
 
+/** class KMeans */
 class CKMeans : public CDistanceMachine
 {
 	public:
+		/** default constructor */
 		CKMeans();
+
+		/** constructor
+		 *
+		 * @param k parameter k
+		 * @param d distance
+		 */
 		CKMeans(INT k, CDistance* d);
 		virtual ~CKMeans();
 
+		/** get classifier type
+		 *
+		 * @return classifier type KMEANS
+		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_KMEANS; }
 
+		/** train distance machine
+		 *
+		 * @return if training was successful
+		 */
 		virtual bool train();
 
+		/** load distance machine from file
+		 *
+		 * @param srcfile file to load from
+		 * @return if loading was successful
+		 */
 		virtual bool load(FILE* srcfile);
+
+		/** save distance machine to file
+		 *
+		 * @param dstfile file to save to
+		 * @return if saving was successful
+		 */
 		virtual bool save(FILE* dstfile);
 
-		inline void set_k(INT p_k) 
+		/** set k
+		 *
+		 * @param p_k new k
+		 */
+		inline void set_k(INT p_k)
 		{
 			ASSERT(p_k>0);
 			this->k=p_k;
 		}
 
-		inline DREAL get_k()
+		/** get k
+		 *
+		 * @return the parameter k
+		 */
+		inline INT get_k()
 		{
 			return k;
 		}
 
-		inline void set_max_iter(INT iter) 
+		/** set maximum number of iterations
+		 *
+		 * @param iter the new maximum
+		 */
+		inline void set_max_iter(INT iter)
 		{
 			ASSERT(iter>0);
 			max_iter=iter;
 		}
 
+		/** get maximum number of iterations
+		 *
+		 * @return maximum number of iterations
+		 */
 		inline DREAL get_max_iter()
 		{
 			return max_iter;
 		}
 
+		/** get radi
+		 *
+		 * @param radi current radi are stored in here
+		 * @param num number of radi is stored in here
+		 */
 		inline void get_radi(DREAL*& radi, INT& num)
 		{
 			radi=R;
 			num=k;
 		}
 
+		/** get centers
+		 *
+		 * @param centers current centers are stored in here
+		 * @param dim dimensions are stored in here
+		 * @param num number of centers is stored in here
+		 */
 		inline void get_centers(DREAL*& centers, INT& dim, INT& num)
 		{
 			centers=mus;
@@ -70,6 +124,11 @@ class CKMeans : public CDistanceMachine
 			num=k;
 		}
 
+		/** get radi (swig compatible)
+		 *
+		 * @param radi current radi are stored in here
+		 * @param num number of radi is stored in here
+		 */
 		inline void get_radi(DREAL** radi, INT* num)
 		{
 			size_t sz=sizeof(*R)*k;
@@ -80,11 +139,12 @@ class CKMeans : public CDistanceMachine
 			*num=k;
 		}
 
-		inline INT get_dimensions()
-		{
-			return dimensions;
-		}
-
+		/** get centers (swig compatible)
+		 *
+		 * @param centers current centers are stored in here
+		 * @param dim dimensions are stored in here
+		 * @param num number of centers is stored in here
+		 */
 		inline void get_centers(DREAL** centers, INT* dim, INT* num)
 		{
 			size_t sz=sizeof(*mus)*dimensions*k;
@@ -96,11 +156,35 @@ class CKMeans : public CDistanceMachine
 			*num=k;
 		}
 
+		/** get dimensions
+		 *
+		 * @return number of dimensions
+		 */
+		inline INT get_dimensions()
+		{
+			return dimensions;
+		}
+
 
 	protected:
+		/** sqdist
+		 *
+		 * @param x x
+		 * @param y y
+		 * @param z z
+		 * @param n1 n1
+		 * @param offs offset
+		 * @param n2 n2
+		 * @param m m
+		 */
 		void sqdist(double * x, CRealFeatures* y, double *z,
 				int n1, int offs, int n2, int m);
 
+		/** clustknb
+		 *
+		 * @param use_old_mus if old mus shall be used
+		 * @param mus_start mus start
+		 */
 		void clustknb(bool use_old_mus, double *mus_start);
 
 	protected:

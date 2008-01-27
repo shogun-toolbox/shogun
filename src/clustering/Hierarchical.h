@@ -20,43 +20,93 @@
 
 class CDistanceMachine;
 
+/** class Hierarchical */
 class CHierarchical : public CDistanceMachine
 {
 	public:
+		/** default constructor */
 		CHierarchical();
+
+		/** constructor
+		 *
+		 * @param merges the merges
+		 * @param d distance
+		 */
 		CHierarchical(INT merges, CDistance* d);
 		virtual ~CHierarchical();
 
+		/** get classifier type
+		 *
+		 * @return classifier type HIERARCHICAL
+		 */
 		virtual inline EClassifierType get_classifier_type() { return CT_HIERARCHICAL; }
 
+		/** train distance machine
+		 *
+		 * @return if training was successful
+		 */
 		virtual bool train();
 
+		/** load distance machine from file
+		 *
+		 * @param srcfile file to load from
+		 * @return if loading was successful
+		 */
 		virtual bool load(FILE* srcfile);
+
+		/** save distance machine to file
+		 *
+		 * @param dstfile file to save to
+		 * @return if saving was successful
+		 */
 		virtual bool save(FILE* dstfile);
 
-		inline void set_merges(INT m) 
+		/** set merges
+		 *
+		 * @param m new merges
+		 */
+		inline void set_merges(INT m)
 		{
 			ASSERT(m>0);
 			merges=m;
 		}
 
-		inline DREAL get_merges()
+		/** get merges
+		 *
+		 * @return merges
+		 */
+		inline INT get_merges()
 		{
 			return merges;
 		}
 
+		/** get assignment
+		 *
+		 * @param assign current assignment is stored in here
+		 * @param num number of assignments is stored in here
+		 */
 		inline void get_assignment(INT*& assign, INT& num)
 		{
 			assign=assignment;
 			num=table_size;
 		}
 
+		/** get merge distance
+		 *
+		 * @param dist current merge distance is stored in here
+		 * @param num number of merge distances is stored in here
+		 */
 		inline void get_merge_distance(DREAL*& dist, INT& num)
 		{
 			dist=merge_distance;
 			num=table_size;
 		}
 
+		/** get merge distance (swig compatible)
+		 *
+		 * @param dist current merge distance is stored in here
+		 * @param num number of merge distances is stored in here
+		 */
 		inline void get_merge_distance(DREAL** dist, INT* num)
 		{
 			size_t sz=sizeof(*merge_distance)*merges;
@@ -67,6 +117,12 @@ class CHierarchical : public CDistanceMachine
 			*num=merges;
 		}
 
+		/** get pairs
+		 *
+		 * @param tuples current pairs are stored in here
+		 * @param rows number of rows is stored in here
+		 * @param num number of pairs is stored in here
+		 */
 		inline void get_pairs(INT*& tuples, INT& rows, INT& num)
 		{
 			tuples=pairs;
@@ -74,6 +130,12 @@ class CHierarchical : public CDistanceMachine
 			num=table_size;
 		}
 
+		/** get pairs (swig compatible)
+		 *
+		 * @param tuples current pairs are stored in here
+		 * @param rows number of rows is stored in here
+		 * @param num number of pairs is stored in here
+		 */
 		inline void get_pairs(INT** tuples, INT* rows, INT* num)
 		{
 			*rows=2;
