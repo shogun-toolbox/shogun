@@ -16,42 +16,92 @@
 #include "features/CharFeatures.h"
 #include "lib/common.h"
 
+/** class WordFeatures */
 class CWordFeatures: public CSimpleFeatures<WORD>
 {
 	public:
-		CWordFeatures(INT size=0, INT num_symbols=1<<16);
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param num_symbols number of symbols
+		 */
+		CWordFeatures(INT size=0, INT num_symbols=(1<<16));
+
+		/** copy constructor */
 		CWordFeatures(const CWordFeatures & orig);
 
-		/** load features from file
-		 * fname - filename
+		/** constructor
+		 *
+		 * @param fname filename to load features from
 		 */
-
 		CWordFeatures(CHAR* fname, INT num_symbols=1<<16);
 
 		virtual ~CWordFeatures();
 
+		/** obtain from char features
+		 *
+		 * @param cf char features
+		 * @param start start
+		 * @param order order
+		 * @param gap gap
+		 * @return if obtaining was successful
+		 */
 		bool obtain_from_char_features(CCharFeatures* cf, INT start, INT order, INT gap=0);
 
-        inline virtual void copy_feature_matrix(WORD* src, INT num_feat, INT num_vec)
-        {
-            CSimpleFeatures<WORD>::copy_feature_matrix(src, num_feat, num_vec);
-        }
+		/** copy feature matrix
+		 *
+		 * wrapper to base class' method
+		 *
+		 * @param src feature matrix to copy
+		 * @param num_feat number of features
+		 * @param num_vec number of vectors
+		 */
+		inline virtual void copy_feature_matrix(WORD* src, INT num_feat, INT num_vec)
+		{
+			CSimpleFeatures<WORD>::copy_feature_matrix(src, num_feat, num_vec);
+		}
 
+		/** load features from file
+		 *
+		 * @param fname filename to load from
+		 * @return if loading was successful
+		 */
 		virtual bool load(CHAR* fname);
+
+		/** save features to file
+		 *
+		 * @param fname filename to save to
+		 * @return if saving was successful
+		 */
 		virtual bool save(CHAR* fname);
 
+		/** get number of symbols
+		 *
+		 * @return number of symbols
+		 */
 		inline INT get_num_symbols() { return num_symbols; }
 
 		// these functions are necessary to find out about a former conversion process
 
-		// number of symbols before higher order mapping
+		/** number of symbols before higher order mapping
+		 *
+		 * @return original number of symbols
+		 */
 		inline INT get_original_num_symbols() { return original_num_symbols; }
 
-		// order used for higher order mapping
+		/** order used for higher order mapping
+		 *
+		 * @return order
+		 */
 		inline INT get_order() { return order; }
 
-		// a higher order mapped symbol will be shaped such that the symbols in
-		// specified by bits in the mask will be returned.
+		/** a higher order mapped symbol will be shaped such that the symbols in
+		 * specified by bits in the mask will be returned.
+		 *
+		 * @param symbol symbol to mask
+		 * @param mask mask to apply
+		 * @return masked symbol
+		 */
 		inline WORD get_masked_symbols(WORD symbol, BYTE mask)
 		{
 			ASSERT(symbol_mask_table);
@@ -59,7 +109,16 @@ class CWordFeatures: public CSimpleFeatures<WORD>
 		}
 
 	protected:
-		///max_val is how many bits does the largest symbol require to be stored without loss
+		/** translate from single order
+		 *
+		 * @param obs observation
+		 * @param sequence_length length of sequence
+		 * @param start start
+		 * @param order order
+		 * @param max_val how many bits does the largest symbol
+		 *                require to be stored without loss
+		 * @param gap gap
+		 */
 		void translate_from_single_order(WORD* obs, INT sequence_length, INT start, INT order, INT max_val, INT gap=0);
 
 	protected:

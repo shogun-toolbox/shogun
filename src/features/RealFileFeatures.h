@@ -14,37 +14,78 @@
 #include "lib/common.h"
 #include "features/RealFeatures.h"
 
+/** class RealFileFeatures */
 class CRealFileFeatures: public CRealFeatures
 {
- public:
-  CRealFileFeatures(INT size, FILE* file);
-  CRealFileFeatures(INT size, CHAR* filename);
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param file file to load features from
+		 */
+		CRealFileFeatures(INT size, FILE* file);
 
-  CRealFileFeatures(const CRealFileFeatures& orig);
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param filename filename to load features from
+		 */
+		CRealFileFeatures(INT size, CHAR* filename);
 
-  virtual ~CRealFileFeatures();
-  
-  virtual DREAL* load_feature_matrix();
+		/** copy constructor */
+		CRealFileFeatures(const CRealFileFeatures& orig);
 
-  INT get_label(INT idx);
+		virtual ~CRealFileFeatures();
 
-protected:
-  /// compute feature vector for sample num
-  /// len is returned by reference
-  virtual DREAL* compute_feature_vector(INT num, INT& len, DREAL* target=NULL);
+		/** load feature matrix
+		 *
+		 * @return loaded feature matrix
+		 */
+		virtual DREAL* load_feature_matrix();
 
-  bool load_base_data();
+		/** get label at given index
+		 *
+		 * @param idx index to look at
+		 * @return label at given index
+		 */
+		INT get_label(INT idx);
 
-  FILE* working_file;
-  CHAR* working_filename;
-  bool status;
-  INT* labels;
+	protected:
+		/** compute feature vector for sample num
+		 * len is returned by reference
+		 *
+		 * @param num num
+		 * @param len len
+		 * @param target target
+		 */
+		virtual DREAL* compute_feature_vector(INT num, INT& len, DREAL* target=NULL);
 
-  BYTE intlen;
-  BYTE doublelen;
-  UINT endian;
-  UINT fourcc;
-  UINT preprocd;
-  LONG filepos;
+		/** load base data
+		 *
+		 * @return if loading was successful
+		 */
+		bool load_base_data();
+
+		/** working file */
+		FILE* working_file;
+		/** working filename */
+		CHAR* working_filename;
+		/** status */
+		bool status;
+		/** labels */
+		INT* labels;
+
+		/** intlen */
+		BYTE intlen;
+		/** doublelen */
+		BYTE doublelen;
+		/** endian */
+		UINT endian;
+		/** fourcc */
+		UINT fourcc;
+		/** preprocd */
+		UINT preprocd;
+		/** filepos */
+		LONG filepos;
 };
 #endif

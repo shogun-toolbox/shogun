@@ -30,46 +30,60 @@
 
 template <class ST> class CSparsePreProc;
 
+/** template class TSparseEntry */
 template <class ST> struct TSparseEntry
 {
+	/** feature index */
 	INT feat_index;
+	/** entry */
 	ST entry;
 };
 
+/** template class TSparse */
 template <class ST> struct TSparse
 {
 	public:
+		/** vector index */
 		INT vec_index;
+		/** number of feature entries */
 		INT num_feat_entries;
+		/** features */
 		TSparseEntry<ST>* features;
 };
 
+/** template class SparseFeatures */
 template <class ST> class CSparseFeatures: public CFeatures
 {
 	public:
-		CSparseFeatures(INT size=0) : CFeatures(size), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL)
-	{
-	}
+		/** constructor
+		 *
+		 * @param size cache size
+		 */
+		CSparseFeatures(INT size=0) : CFeatures(size), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL) {}
 
-		CSparseFeatures(const CSparseFeatures & orig) : 
+		/** copy constructor */
+		CSparseFeatures(const CSparseFeatures & orig) :
 			CFeatures(orig), num_vectors(orig.num_vectors), num_features(orig.num_features), sparse_feature_matrix(orig.sparse_feature_matrix), feature_cache(orig.feature_cache)
 	{
 		if (orig.sparse_feature_matrix)
 		{
 			sparse_feature_matrix=new TSparse<ST>[num_vectors];
-			memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(TSparse<ST>)*num_vectors); 
+			memcpy(sparse_feature_matrix, orig.sparse_feature_matrix, sizeof(TSparse<ST>)*num_vectors);
 			for (INT i=0; i< num_vectors; i++)
 			{
 				sparse_feature_matrix[i].features=new TSparseEntry<ST>[sparse_feature_matrix[i].num_feat_entries];
-				memcpy(sparse_feature_matrix[i].features, orig.sparse_feature_matrix[i].features, sizeof(TSparseEntry<ST>)*sparse_feature_matrix[i].num_feat_entries); 
+				memcpy(sparse_feature_matrix[i].features, orig.sparse_feature_matrix[i].features, sizeof(TSparseEntry<ST>)*sparse_feature_matrix[i].num_feat_entries);
 
 			}
 		}
 	}
 
-		CSparseFeatures(CHAR* fname) : CFeatures(fname), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL)
-	{
-	}
+		/** constructor
+		 *
+		 * @param fname filename to load features from
+		 */
+		CSparseFeatures(CHAR* fname) :
+			CFeatures(fname), num_vectors(0), num_features(0), sparse_feature_matrix(NULL), feature_cache(NULL) {}
 
 		virtual ~CSparseFeatures()
 		{
@@ -78,16 +92,22 @@ template <class ST> class CSparseFeatures: public CFeatures
 			delete feature_cache;
 		}
 
+		/** duplicate feature object
+		 *
+		 * @return feature object
+		 */
 		virtual CFeatures* duplicate() const
 		{
 			return new CSparseFeatures<ST>(*this);
 		}
 
 		/** converts a sparse feature vector into a dense one
-		  preprocessed compute_feature_vector  
-		  caller cleans up
-		  @param num index of feature vector
-		  @param len length is returned by reference
+		  * preprocessed compute_feature_vector
+		  * caller cleans up
+		  *
+		  * @param num index of feature vector
+		  * @param len length is returned by reference
+		  * @return dense feature vector
 		  */
 		ST* get_full_feature_vector(INT num, INT& len)
 		{
@@ -117,6 +137,11 @@ template <class ST> class CSparseFeatures: public CFeatures
 		}
 
 
+		/** get number of sparse features in vector
+		 *
+		 * @param num which vector
+		 * @return number of sparse features in vector
+		 */
 		inline INT get_num_sparse_vec_features(INT num)
 		{
 			bool vfree;
@@ -134,6 +159,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 		 * @param len number of sparse entries is returned by reference
 		 * @param vfree whether returned vector must be freed by caller via
 		 *              free_sparse_feature_vector
+		 * @return sparse feature vector
 		 */
 		TSparseEntry<ST>* get_sparse_feature_vector(INT num, INT& len, bool& vfree)
 		{
@@ -194,7 +220,14 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 
 		/** compute the dot product between two sparse feature vectors
-		 *	alpha * vec^T * vec
+		 * alpha * vec^T * vec
+		 *
+		 * @param alpha scalar to multiply with
+		 * @param avec first sparse feature vector
+		 * @param alen avec's length
+		 * @param bvec second sparse feature vector
+		 * @param blen bvec's length
+		 * @return dot product between the two sparse feature vectors
 		 */
 		ST sparse_dot(ST alpha, TSparseEntry<ST>* avec, INT alen, TSparseEntry<ST>* bvec, INT blen)
 		{
@@ -266,13 +299,14 @@ template <class ST> class CSparseFeatures: public CFeatures
 		}
 
 		/** compute the dot product between dense weights and a sparse feature vector
-		 *	alpha * sparse^T * w + b
+		 * alpha * sparse^T * w + b
 		 *
-		 @param alpha scalar to multiply with
-		 @param num index of feature vector
-		 @param vec dense vector to compute dot product with
-		 @param dim length of the dense vector
-		 @param b bias
+		 * @param alpha scalar to multiply with
+		 * @param num index of feature vector
+		 * @param vec dense vector to compute dot product with
+		 * @param dim length of the dense vector
+		 * @param b bias
+		 * @return dot product between dense weights and a sparse feature vector
 		 */
 		ST dense_dot(ST alpha, INT num, ST* vec, INT dim, ST b)
 		{
@@ -295,7 +329,7 @@ template <class ST> class CSparseFeatures: public CFeatures
 		}
 
 		/** add a sparse feature vector onto a dense one
-		 *	dense+=alpha*sparse
+		 * dense+=alpha*sparse
 		 *
 		 @param alpha scalar to multiply with
 		 @param num index of feature vector
@@ -320,6 +354,12 @@ template <class ST> class CSparseFeatures: public CFeatures
 			free_sparse_feature_vector(sv, num, vfree);
 		}
 
+		/** free sparse feature vector
+		 *
+		 * @param feat_vec feature vector to free
+		 * @param num index of this vector in the cache
+		 * @param free if vector should be really deleted
+		 */
 		void free_sparse_feature_vector(TSparseEntry<ST>* feat_vec, INT num, bool free)
 		{
 			if (feature_cache)
@@ -329,8 +369,13 @@ template <class ST> class CSparseFeatures: public CFeatures
 				delete[] feat_vec ;
 		} 
 
-		/// get the pointer to the sparse feature matrix
-		/// num_feat,num_vectors are returned by reference
+		/** get the pointer to the sparse feature matrix
+		 * num_feat,num_vectors are returned by reference
+		 *
+		 * @param num_feat number of features in matrix
+		 * @param num_vec number of vectors in matrix
+		 * @return feature matrix
+		 */
 		TSparse<ST>* get_sparse_feature_matrix(INT &num_feat, INT &num_vec)
 		{
 			num_feat=num_features;
@@ -339,6 +384,11 @@ template <class ST> class CSparseFeatures: public CFeatures
 			return sparse_feature_matrix;
 		}
 
+		/** clean TSparse
+		 *
+		 * @param sfm sparse feature matrix
+		 * @param num_vec number of vectors in matrix
+		 */
 		void clean_tsparse(TSparse<ST>* sfm, INT num_vec)
 		{
 			if (sfm)
@@ -350,10 +400,15 @@ template <class ST> class CSparseFeatures: public CFeatures
 			}
 		}
 
-		/// compute and return the transpose of the sparse feature matrix
-		/// which will be prepocessed. 
-		/// num_feat, num_vectors are returned by reference
-		/// caller has to clean up
+		/** compute and return the transpose of the sparse feature matrix
+		 * which will be prepocessed.
+		 * num_feat, num_vectors are returned by reference
+		 * caller has to clean up
+		 *
+		 * @param num_feat number of features in matrix
+		 * @param num_vec number of vectors in matrix
+		 * @return transposed sparse feature matrix
+		 */
 		TSparse<ST>* get_transposed(INT &num_feat, INT &num_vec)
 		{
 			num_feat=num_vectors;
@@ -412,10 +467,14 @@ template <class ST> class CSparseFeatures: public CFeatures
 		}
 
 		/** set feature matrix
-		  necessary to set feature_matrix, num_features, num_vectors, where
-		  num_features is the column offset, and columns are linear in memory
-		  see below for definition of feature_matrix
-		  */
+		 * necessary to set feature_matrix, num_features, num_vectors, where
+		 * num_features is the column offset, and columns are linear in memory
+		 * see below for definition of feature_matrix
+		 *
+		 * @param sfm new sparse feature matrix
+		 * @param num_feat number of features in matrix
+		 * @param num_vec number of vectors in matrix
+		 */
 		virtual void set_sparse_feature_matrix(TSparse<ST>* sfm, INT num_feat, INT num_vec)
 		{
 			sparse_feature_matrix=sfm;
@@ -423,8 +482,13 @@ template <class ST> class CSparseFeatures: public CFeatures
 			num_vectors=num_vec;
 		}
 
-		/// gets a copy of a full  feature matrix
-		/// num_feat,num_vectors are returned by reference
+		/** gets a copy of a full  feature matrix
+		 * num_feat,num_vectors are returned by reference
+		 *
+		 * @param num_feat number of features in matrix
+		 * @param num_vec number of vectors in matrix
+		 * @return full feature matrix
+		 */
 		ST* get_full_feature_matrix(INT &num_feat, INT &num_vec)
 		{
 			SG_INFO( "converting sparse features to full feature matrix of %ld x %ld entries\n", num_vectors, num_features);
@@ -454,10 +518,14 @@ template <class ST> class CSparseFeatures: public CFeatures
 		}
 
 		/** creates a sparse feature matrix from a full dense feature matrix
-		  necessary to set feature_matrix, num_features and num_vectors
-		  where num_features is the column offset, and columns are linear in memory
-		  see above for definition of sparse_feature_matrix
-		  */
+		 * necessary to set feature_matrix, num_features and num_vectors
+		 * where num_features is the column offset, and columns are linear in memory
+		 * see above for definition of sparse_feature_matrix
+		 *
+		 * @param ffm full feature matrix
+		 * @param num_feat number of features in matrix
+		 * @param num_vec number of vectors in matrix
+		 */
 		virtual bool set_full_feature_matrix(ST* ffm, INT num_feat, INT num_vec)
 		{
 			bool result=true;
@@ -545,6 +613,11 @@ template <class ST> class CSparseFeatures: public CFeatures
 			return result;
 		}
 
+		/** apply preprocessor
+		 *
+		 * @param force_preprocessing if preprocssing shall be forced
+		 * @return if applying was successful
+		 */
 		virtual bool apply_preproc(bool force_preprocessing=false)
 		{
 			SG_INFO( "force: %d\n", force_preprocessing);
@@ -571,8 +644,17 @@ template <class ST> class CSparseFeatures: public CFeatures
 			}
 		}
 
+		/** get memory footprint of one feature
+		 *
+		 * @return memory footprint of one feature
+		 */
 		virtual INT get_size() { return sizeof(ST); }
 
+		/** obtain sparse features from simple features
+		 *
+		 * @param sf simple features
+		 * @return if obtaining was successful
+		 */
 		bool obtain_from_simple(CSimpleFeatures<ST>* sf)
 		{
 			INT num_feat=0;
@@ -583,15 +665,36 @@ template <class ST> class CSparseFeatures: public CFeatures
 			return set_full_feature_matrix(fm, num_feat, num_vec);
 		}
 
+		/** get number of feature vectors
+		 *
+		 * @return number of feature vectors
+		 */
 		virtual inline INT  get_num_vectors() { return num_vectors; }
+
+		/** get number of features
+		 *
+		 * @return number of features
+		 */
 		inline INT  get_num_features() { return num_features; }
 
-		/// return that we are sparse features
+		/** get feature class
+		 *
+		 * @return feature class SPARSE
+		 */
 		inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
 
-		/// return feature type
+		/** get feature type
+		 *
+		 * @return templated feature type
+		 */
 		inline virtual EFeatureType get_feature_type();
 
+		/** free feature vector
+		 *
+		 * @param feat_vec feature vector to free
+		 * @param num index of vector in cache
+		 * @param free if vector really should be deleted
+		 */
 		void free_feature_vector(TSparseEntry<ST>* feat_vec, INT num, bool free)
 		{
 			if (feature_cache)
@@ -599,8 +702,12 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 			if (free)
 				delete[] feat_vec ;
-		} 
+		}
 
+		/** get number of non-zero entries in sparse feature matrix
+		 *
+		 * @return number of non-zero entries in sparse feature matrix
+		 */
 		LONG get_num_nonzero_entries()
 		{
 			LONG num=0;
@@ -610,7 +717,11 @@ template <class ST> class CSparseFeatures: public CFeatures
 			return num;
 		}
 
-		// compute a^2 on all feature vectors
+		/** compute a^2 on all feature vectors
+		 *
+		 * @param sq the square for each vector is stored in here
+		 * @return the square for each vector
+		 */
 		DREAL* compute_squared(DREAL* sq)
 		{
 			INT len=0;;
@@ -631,11 +742,18 @@ template <class ST> class CSparseFeatures: public CFeatures
 			return sq;
 		}
 
-		/* compute (a-b)^2 (== a^2+b^2+2ab)
-			usually called by kernels'/distances' compute functions
-			works on two feature vectors, although it is a member of a single
-			feature: can either be called by lhs or rhs.
-		*/
+		/** compute (a-b)^2 (== a^2+b^2+2ab)
+		 * usually called by kernels'/distances' compute functions
+		 * works on two feature vectors, although it is a member of a single
+		 * feature: can either be called by lhs or rhs.
+		 *
+		 * @param lhs left-hand side features
+		 * @param sq_lhs squared values of left-hand side
+		 * @param idx_a index of left-hand side's vector to compute
+		 * @param rhs right-hand side features
+		 * @param sq_rhs squared values of right-hand side
+		 * @param idx_b index of right-hand side's vector to compute
+		 */
 		DREAL compute_squared_norm(CSparseFeatures<DREAL>* lhs, DREAL* sq_lhs, INT idx_a, CSparseFeatures<DREAL>* rhs, DREAL* sq_rhs, INT idx_b)
 		{
 			INT i,j;
@@ -693,9 +811,16 @@ template <class ST> class CSparseFeatures: public CFeatures
 		}
 
 	protected:
-		/// compute feature vector for sample num
-		/// if target is set the vector is written to target
-		/// len is returned by reference
+		/** compute feature vector for sample num
+		 * if target is set the vector is written to target
+		 * len is returned by reference
+		 *
+		 * NOT IMPLEMENTED!
+		 *
+		 * @param num num
+		 * @param len len
+		 * @param target target
+		 */
 		virtual TSparseEntry<ST>* compute_sparse_feature_vector(INT num, INT& len, TSparseEntry<ST>* target=NULL)
 		{
 			len=0;
@@ -711,60 +836,105 @@ template <class ST> class CSparseFeatures: public CFeatures
 		/// array of sparse vectors of size num_vectors
 		TSparse<ST>* sparse_feature_matrix;
 
+		/** feature cache */
 		CCache< TSparseEntry<ST> >* feature_cache;
 };
 
 
+/** get feature type the CHAR feature can deal with
+ *
+ * @return feature type CHAR
+ */
 template<> inline EFeatureType CSparseFeatures<CHAR>::get_feature_type()
 {
 	return F_CHAR;
 }
 
+/** get feature type the BYTE feature can deal with
+ *
+ * @return feature type BYTE
+ */
 template<> inline EFeatureType CSparseFeatures<BYTE>::get_feature_type()
 {
 	return F_BYTE;
 }
 
+/** get feature type the SHORT feature can deal with
+ *
+ * @return feature type SHORT
+ */
 template<> inline EFeatureType CSparseFeatures<SHORT>::get_feature_type()
 {
 	return F_SHORT;
 }
 
+/** get feature type the WORD feature can deal with
+ *
+ * @return feature type WORD
+ */
 template<> inline EFeatureType CSparseFeatures<WORD>::get_feature_type()
 {
 	return F_WORD;
 }
 
+/** get feature type the INT feature can deal with
+ *
+ * @return feature type INT
+ */
 template<> inline EFeatureType CSparseFeatures<INT>::get_feature_type()
 {
 	return F_INT;
 }
 
+/** get feature type the UINT feature can deal with
+ *
+ * @return feature type UINT
+ */
 template<> inline EFeatureType CSparseFeatures<UINT>::get_feature_type()
 {
 	return F_UINT;
 }
 
+/** get feature type the LONG feature can deal with
+ *
+ * @return feature type LONG
+ */
 template<> inline EFeatureType CSparseFeatures<LONG>::get_feature_type()
 {
 	return F_LONG;
 }
 
+/** get feature type the ULONG feature can deal with
+ *
+ * @return feature type ULONG
+ */
 template<> inline EFeatureType CSparseFeatures<ULONG>::get_feature_type()
 {
 	return F_ULONG;
 }
 
+/** get feature type the DREAL feature can deal with
+ *
+ * @return feature type DREAL
+ */
 template<> inline EFeatureType CSparseFeatures<DREAL>::get_feature_type()
 {
 	return F_DREAL;
 }
 
+/** get feature type the SHORTREAL feature can deal with
+ *
+ * @return feature type SHORTREAL
+ */
 template<> inline EFeatureType CSparseFeatures<SHORTREAL>::get_feature_type()
 {
 	return F_SREAL;
 }
 
+/** get feature type the LONGREAL feature can deal with
+ *
+ * @return feature type LONGREAL
+ */
 template<> inline EFeatureType CSparseFeatures<LONGREAL>::get_feature_type()
 {
 	return F_LREAL;

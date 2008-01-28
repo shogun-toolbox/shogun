@@ -16,50 +16,109 @@
 #include "features/RealFeatures.h"
 #include "distributions/hmm/HMM.h"
 
+/** HMM indices */
 struct T_HMM_INDIZES
 {
-    INT* idx_p;
-    INT* idx_q;
-    INT* idx_a_rows;
-    INT* idx_a_cols;
-    INT* idx_b_rows;
-    INT* idx_b_cols;
+	/** index p */
+	INT* idx_p;
+	/** index q */
+	INT* idx_q;
+	/** index a rows */
+	INT* idx_a_rows;
+	/** index a cols */
+	INT* idx_a_cols;
+	/** index b rows */
+	INT* idx_b_rows;
+	/** index b cols */
+	INT* idx_b_cols;
 
-    INT num_p;
-    INT num_q;
-    INT num_a;
-    INT num_b;
+	/** number p */
+	INT num_p;
+	/** number q */
+	INT num_q;
+	/** number a */
+	INT num_a;
+	/** number b */
+	INT num_b;
 };
 
+/** class TOPFeatures */
 class CTOPFeatures: public CRealFeatures
 {
-
 	public:
-	CTOPFeatures(INT size, CHMM* p, CHMM* n, bool neglin, bool poslin);
-	CTOPFeatures(const CTOPFeatures &orig);
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param p positive HMM
+		 * @param n negative HMM
+		 * @param neglin negativ linear
+		 * @param poslin positive linear
+		 */
+		CTOPFeatures(INT size, CHMM* p, CHMM* n, bool neglin, bool poslin);
 
-	virtual ~CTOPFeatures();
+		/** copy constructor */
+		CTOPFeatures(const CTOPFeatures &orig);
 
-	void set_models(CHMM* p, CHMM* n);
-	virtual DREAL* set_feature_matrix();
+		virtual ~CTOPFeatures();
 
-	INT compute_num_features();
+		/** set HMMs
+		 *
+		 * @param p positive HMM
+		 * @param n negative HMM
+		 */
+		void set_models(CHMM* p, CHMM* n);
 
-	bool compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx);
+		/** set feature matrix
+		 *
+		 * @return something floaty
+		 */
+		virtual DREAL* set_feature_matrix();
+
+		/** compute number of features
+		 *
+		 * @return number of features
+		 */
+		INT compute_num_features();
+
+		/** compute relevant indices
+		 *
+		 * @param hmm HMM to compute for
+		 * @param hmm_idx HMM index
+		 * @return if computing was successful
+		 */
+		bool compute_relevant_indizes(CHMM* hmm, T_HMM_INDIZES* hmm_idx);
 
 	protected:
-	virtual DREAL* compute_feature_vector(INT num, INT& len, DREAL* target=NULL);
+		/** compute feature vector
+		 *
+		 * @param num num
+		 * @param len len
+		 * @param target
+		 * @return something floaty
+		 */
+		virtual DREAL* compute_feature_vector(INT num, INT& len, DREAL* target=NULL);
 
-	/// computes the featurevector to the address addr
-	void compute_feature_vector(DREAL* addr, INT num, INT& len);
+		/** computes the feature vector to the address addr
+		 *
+		 * @param addr address
+		 * @param num num
+		 * @param len len
+		 */
+		void compute_feature_vector(DREAL* addr, INT num, INT& len);
 
 	protected:
-	CHMM* pos;
-	CHMM* neg;
-	bool neglinear;
-	bool poslinear;
+		/** positive HMM */
+		CHMM* pos;
+		/** negative HMM */
+		CHMM* neg;
+		/** negative linear */
+		bool neglinear;
+		/** positive linear */
+		bool poslinear;
 
-	T_HMM_INDIZES pos_relevant_indizes;
-	T_HMM_INDIZES neg_relevant_indizes;
+		/** positive relevant indices */
+		T_HMM_INDIZES pos_relevant_indizes;
+		/** negative relevant indices */
+		T_HMM_INDIZES neg_relevant_indizes;
 };
 #endif

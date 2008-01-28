@@ -15,42 +15,79 @@
 #include "base/SGObject.h"
 #include "lib/common.h"
 
+/** class Alphabet */
 class CAlphabet : public CSGObject
 {
 	public:
+		/** constructor
+		 *
+		 * @param alpha alphabet to use
+		 * @param len len
+		 */
 		CAlphabet(CHAR* alpha, INT len);
+
+		/** constructor
+		 *
+		 * @param alpha alphabet (type) to use
+		 */
 		CAlphabet(E_ALPHABET alpha);
+
+		/** constructor
+		 *
+		 * @param alpha alphabet to use
+		 */
 		CAlphabet(CAlphabet* alpha);
 		~CAlphabet();
 
-		/// set alphabet and initialize mapping table (for remap)
+		/** set alphabet and initialize mapping table (for remap)
+		 *
+		 * @param alpha new alphabet
+		 */
 		bool set_alphabet(E_ALPHABET alpha);
 
-		/// get alphabet type
+		/** get alphabet
+		 *
+		 * @return alphabet
+		 */
 		inline E_ALPHABET get_alphabet()
 		{
 			return alphabet;
 		}
 
-		/// get number of symbols in alphabet
+		/** get number of symbols in alphabet
+		 *
+		 * @return number of symbols
+		 */
 		inline INT get_num_symbols()
 		{
 			return num_symbols;
 		}
 
-		/// get number of bits necessary to store 
-		/// all symbols in alphabet
+		/** get number of bits necessary to store
+		 * all symbols in alphabet
+		 *
+		 * @return number of necessary storage bits
+		 */
 		inline INT get_num_bits()
 		{
-			return num_bits; 
+			return num_bits;
 		}
 
-		/// remap element e.g translate ACGT to 0123
+		/** remap element e.g translate ACGT to 0123
+		 *
+		 * @param c element to remap
+		 * @return remapped element
+		 */
 		inline BYTE remap_to_bin(BYTE c)
 		{
 			return maptable_to_bin[c];
 		}
-		/// remap element e.g translate 0123 to ACGT
+
+		/** remap element e.g translate 0123 to ACGT
+		 *
+		 * @param c element to remap
+		 * @return remapped element
+		 */
 		inline BYTE remap_to_char(BYTE c)
 		{
 			return maptable_to_char[c];
@@ -59,17 +96,66 @@ class CAlphabet : public CSGObject
 		/// clear histogram
 		void clear_histogram();
 
-		/// make histogram for whole string
+		/** make histogram for whole string
+		 *
+		 * @param p string
+		 * @param len length of string
+		 */
 		void add_string_to_histogram(CHAR* p, LONG len);
+
+		/** make histogram for whole string
+		 *
+		 * @param p string
+		 * @param len length of string
+		 */
 		void add_string_to_histogram(BYTE* p, LONG len);
+
+		/** make histogram for whole string
+		 *
+		 * @param p string
+		 * @param len length of string
+		 */
 		void add_string_to_histogram(SHORT* p, LONG len);
+
+		/** make histogram for whole string
+		 *
+		 * @param p string
+		 * @param len length of string
+		 */
 		void add_string_to_histogram(WORD* p, LONG len);
+
+		/** make histogram for whole string
+		 *
+		 * @param p string
+		 * @param len length of string
+		 */
 		void add_string_to_histogram(INT* p, LONG len);
+
+		/** make histogram for whole string
+		 *
+		 * @param p string
+		 * @param len length of string
+		 */
 		void add_string_to_histogram(UINT* p, LONG len);
+
+		/** make histogram for whole string
+		 *
+		 * @param p string
+		 * @param len length of string
+		 */
 		void add_string_to_histogram(LONG* p, LONG len);
+
+		/** make histogram for whole string
+		 *
+		 * @param p string
+		 * @param len length of string
+		 */
 		void add_string_to_histogram(ULONG* p, LONG len);
 
-		/// add to histogram
+		/** add element to histogram
+		 *
+		 * @param p element
+		 */
 		inline void add_byte_to_histogram(BYTE p)
 		{
 			histogram[(INT) p]++;
@@ -78,11 +164,16 @@ class CAlphabet : public CSGObject
 		/// print histogram
 		void print_histogram();
 
+		/** get histogram
+		 *
+		 * @param h where the histogram will be stored
+		 * @param len length of histogram
+		 */
 		inline void get_hist(LONG** h, INT* len)
 		{
 			INT hist_size=(1 << (sizeof(BYTE)*8));
 			ASSERT(h && len)
-			*h=(LONG*) malloc(sizeof(LONG)*hist_size);
+				*h=(LONG*) malloc(sizeof(LONG)*hist_size);
 			ASSERT(*h);
 			*len=hist_size;
 			ASSERT(*len);
@@ -91,47 +182,89 @@ class CAlphabet : public CSGObject
 
 		/// get pointer to histogram
 		inline const LONG* get_histogram()
-        {
-            return &histogram[0];
-        }
+		{
+			return &histogram[0];
+		}
 
-		/// check whether symbols in histogram are valid in alphabet
-		/// e.g. for DNA if only letters ACGT appear
+		/** check whether symbols in histogram are valid in alphabet
+		 * e.g. for DNA if only letters ACGT appear
+		 *
+		 * @param print_error if errors shall be printed
+		 * @return if symbols in histogram are valid in alphabet
+		 */
 		bool check_alphabet(bool print_error=true);
 
-		/// check whether symbols in histogram ALL fit in alphabet
+		/** check whether symbols in histogram ALL fit in alphabet
+		 *
+		 * @param print_error if errors shall be printed
+		 * @return if symbols in histogram ALL fit in alphabet
+		 */
 		bool check_alphabet_size(bool print_error=true);
 
-		/// return number of symbols in histogram
+		/** return number of symbols in histogram
+		 *
+		 * @return number of symbols in histogram
+		 */
 		INT get_num_symbols_in_histogram();
 
-		/// return maximum value in histogram
+		/** return maximum value in histogram
+		 *
+		 * @return maximum value in histogram
+		 */
 		INT get_max_value_in_histogram();
 
-		/// return number of bits required to store all symbols in histogram
+		/** return number of bits required to store all symbols in
+		 * histogram
+		 *
+		 * @return number of bits required to store all symbols in
+		 *         histogram
+		 */
 		INT get_num_bits_in_histogram();
 
-		/// return alphabet name
+		/** return alphabet name
+		 *
+		 * @param alphabet alphabet type to get name from
+		 */
 		static const CHAR* get_alphabet_name(E_ALPHABET alphabet);
 
 	protected:
+		/** init map table */
 		void init_map_table();
+
+		/** copy histogram
+		 *
+		 * @param src alphabet to copy histogram from
+		 */
 		void copy_histogram(CAlphabet* src);
 
 	public:
+		/** B_A */
 		static const BYTE B_A;
+		/** B_C */
 		static const BYTE B_C;
+		/** B_G */
 		static const BYTE B_G;
+		/** B_T */
 		static const BYTE B_T;
+		/** MAPTABLE UNDEF */
 		static const BYTE MAPTABLE_UNDEF;
+		/** alphabet names */
 		static const CHAR* alphabet_names[11];
+
 	protected:
+		/** alphabet */
 		E_ALPHABET alphabet;
+		/** number of symbols */
 		INT num_symbols;
+		/** number of bits */
 		INT num_bits;
+		/** valid chars */
 		BYTE valid_chars[1 << (sizeof(BYTE)*8)];
+		/** maptable to bin */
 		BYTE maptable_to_bin[1 << (sizeof(BYTE)*8)];
+		/** maptable to char */
 		BYTE maptable_to_char[1 << (sizeof(BYTE)*8)];
+		/** histogram */
 		LONG histogram[1 << (sizeof(BYTE)*8)];
 };
 #endif

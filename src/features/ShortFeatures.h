@@ -16,31 +16,77 @@
 #include "features/CharFeatures.h"
 #include "lib/common.h"
 
+/** class ShortFeatures */
 class CShortFeatures: public CSimpleFeatures<SHORT>
 {
 	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 */
 		CShortFeatures(INT size=0);
+
+		/** copy constructor */
 		CShortFeatures(const CShortFeatures & orig);
 
-		/** load features from file
-		 * fname - filename
+		/** constructor
+		 *
+		 * @param fname filename to load features from
 		 */
-
 		CShortFeatures(CHAR* fname);
 
+		/** obtain from char features
+		 *
+		 * @param cf char features
+		 * @param start start
+		 * @param order order
+		 * @param gap gap
+		 * @return if obtaining was successful
+		 */
 		bool obtain_from_char_features(CCharFeatures* cf, INT start, INT order, INT gap=0);
 
+		/** get feature type
+		 *
+		 * @return feature type SHORT
+		 */
 		virtual EFeatureType get_feature_type() { return F_SHORT; }
 
-        inline virtual void copy_feature_matrix(SHORT* src, INT num_feat, INT num_vec)
-        {
-            CSimpleFeatures<SHORT>::copy_feature_matrix(src, num_feat, num_vec);
-        }
+		/** copy feature matrix
+		 *
+		 * wrapper to base class' method
+		 *
+		 * @param src feature matrix to copy
+		 * @param num_feat number of features
+		 * @param num_vec number of vectors
+		 */
+		inline virtual void copy_feature_matrix(SHORT* src, INT num_feat, INT num_vec)
+		{
+			CSimpleFeatures<SHORT>::copy_feature_matrix(src, num_feat, num_vec);
+		}
 
+		/** load features from file
+		 *
+		 * @param fname filename to load from
+		 * @return if loading was successful
+		 */
 		virtual bool load(CHAR* fname);
+
+		/** save features to file
+		 *
+		 * @param fname filename to save to
+		 * @return if saving was successful
+		 */
 		virtual bool save(CHAR* fname);
 	protected:
+		/** translate from single order
+		 *
+		 * @param obs observation
+		 * @param sequence_length length of sequence
+		 * @param start start
+		 * @param order order
+		 * @param max_val maximum value
+		 * @param gap gap
+		 */
 		void translate_from_single_order(SHORT* obs, INT sequence_length, INT start, INT order, INT max_val, INT gap);
-
 };
 #endif
