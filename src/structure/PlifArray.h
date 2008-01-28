@@ -16,42 +16,93 @@
 #include "lib/DynamicArray.h"
 #include "structure/PlifBase.h"
 
+/** class PlifArray */
 class CPlifArray: public CPlifBase
 {
-public:
-	CPlifArray()  ;
-	virtual ~CPlifArray()  ;
-	
-	void add_plif(CPlifBase* new_plif) ;
-	void clear() ;
-	INT get_num_plifs()
+	public:
+		/** default constructor */
+		CPlifArray();
+		virtual ~CPlifArray();
+
+		/** add plif
+		 *
+		 * @param new_plif the new plif to be added
+		 */
+		void add_plif(CPlifBase* new_plif);
+
+		/** clear */
+		void clear();
+
+		/** get number of plifs
+		 *
+		 * @return number of plifs
+		 */
+		INT get_num_plifs()
 		{
-			return m_array.get_num_elements() ;
+			return m_array.get_num_elements();
 		}
-	
 
-	virtual DREAL lookup_penalty(DREAL p_value, DREAL* svm_values) const  ;
-	virtual DREAL lookup_penalty(INT p_value, DREAL* svm_values) const  ;
-	
-	virtual void penalty_clear_derivative() ;
-	virtual void penalty_add_derivative(DREAL p_value, DREAL* svm_values) ;
-	
-	virtual DREAL get_max_value() const 
-	{
-		return max_value ;
-	}
+		/** lookup penalty DREAL
+		 *
+		 * @param p_value value
+		 * @param svm_values SVM values
+		 */
+		virtual DREAL lookup_penalty(DREAL p_value, DREAL* svm_values) const;
 
-	virtual DREAL get_min_value() const 
-	{
-		return min_value ;
-	}
+		/** lookup penalty INT
+		 *
+		 * @param p_value value
+		 * @param svm_values SVM values
+		 */
+		virtual DREAL lookup_penalty(INT p_value, DREAL* svm_values) const;
 
-	virtual bool uses_svm_values() const ;
-	virtual INT get_max_id() const ;
+		/** penalty clear derivative */
+		virtual void penalty_clear_derivative();
 
-protected:
-	CDynamicArray<CPlifBase*> m_array ;
-	DREAL max_value, min_value ;
-} ;
+		/** penalty add derivative
+		 *
+		 * @param p_value value
+		 * @param svm_values SVM values
+		 */
+		virtual void penalty_add_derivative(DREAL p_value, DREAL* svm_values);
+
+		/** get maximum value
+		 *
+		 * @return maximum value
+		 */
+		virtual DREAL get_max_value() const
+		{
+			return max_value;
+		}
+
+		/** get minimum value
+		 *
+		 * @return minumum value
+		 */
+		virtual DREAL get_min_value() const
+		{
+			return min_value;
+		}
+
+		/** check if plif uses SVM values
+		 *
+		 * @return if plif uses SVM values
+		 */
+		virtual bool uses_svm_values() const;
+
+		/** get maximum ID
+		 *
+		 * @return maximum ID
+		 */
+		virtual INT get_max_id() const;
+
+	protected:
+		/** plif array */
+		CDynamicArray<CPlifBase*> m_array;
+		/** maximum value */
+		DREAL max_value;
+		/** minimum value */
+		DREAL min_value;
+};
 
 #endif

@@ -623,17 +623,25 @@ protected:
 	void extend_segment_sum_value(DREAL *segment_sum_weights, INT seqlen, INT num_states,
 								  INT pos, INT &last_segment_sum_pos, DREAL* segment_sum_value);
 
+	/** SVM values */
 	struct svm_values_struct
 	{
-		INT maxlookback ;
+		/** maximum lookback */
+		INT maxlookback;
+		/** sequence length */
 		INT seqlen;
-		
-		INT* start_pos ;
-		DREAL ** svm_values_unnormalized ;
-		DREAL * svm_values ;
-		bool *** word_used ;
-		INT **num_unique_words ;
-	} ;
+
+		/** start position */
+		INT* start_pos;
+		/** SVM values normalized */
+		DREAL ** svm_values_unnormalized;
+		/** SVM values */
+		DREAL * svm_values;
+		/** word used */
+		bool *** word_used;
+		/** number of unique words */
+		INT **num_unique_words;
+	};
 
 	//void reset_svm_values(INT pos, INT * last_svm_pos, DREAL * svm_value) ;
 	//void extend_svm_values(WORD** wordstr, INT pos, INT *last_svm_pos, DREAL* svm_value) ;
@@ -691,12 +699,18 @@ protected:
 	 */
 	bool extend_orf(const CArray<bool>& genestr_stop, INT orf_from, INT orf_to, INT start, INT &last_pos, INT to);
 
+	/** segment loss */
 	struct segment_loss_struct
 	{
-		INT maxlookback ;
+		/** maximum lookback */
+		INT maxlookback;
+		/** sequence length */
 		INT seqlen;
-		INT *segments_changed ;
-		INT *num_segment_id ;
+		/** segments changed */
+		INT *segments_changed;
+		/** numb segment ID */
+		INT *num_segment_id;
+		/** length of segmend ID */
 		INT *length_segment_id ;
 	} ;
 
