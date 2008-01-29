@@ -17,9 +17,11 @@
 
 #include <stdio.h>
 
+/** Preprocessor SortUlongString */
 class CSortUlongString : public CStringPreProc<ULONG>
 {
 public:
+	/** default constructor */
 	CSortUlongString();
 	virtual ~CSortUlongString();
 

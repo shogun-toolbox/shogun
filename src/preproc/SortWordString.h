@@ -17,9 +17,11 @@
 
 #include <stdio.h>
 
+/** Preprocessor SortWordString */
 class CSortWordString : public CStringPreProc<WORD>
 {
 public:
+	/** default constructor */
 	CSortWordString();
 	virtual ~CSortWordString();
 

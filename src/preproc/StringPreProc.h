@@ -18,9 +18,15 @@
 
 template <class ST> class CStringFeatures;
 
+/** template class StringPreProc */
 template <class ST> class CStringPreProc : public CPreProc
 {
 	public:
+		/** constructor
+		 *
+		 * @param name string preprocessor's name
+		 * @param id string preprocessor's id
+		 */
 		CStringPreProc(const CHAR *name, const CHAR* id) : CPreProc(name,id) {}
 
 		/// apply preproc on feature matrix

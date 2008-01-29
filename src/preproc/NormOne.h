@@ -17,9 +17,11 @@
 
 #include <stdio.h>
 
+/** Preprocessor NormOne */
 class CNormOne : public CSimplePreProc<DREAL>
 {
 	public:
+		/** default constructor */
 		CNormOne();
 		virtual ~CNormOne();
 

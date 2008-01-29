@@ -23,9 +23,15 @@
 #include "lib/common.h"
 
 
+/** Preprocessor PCACut */
 class CPCACut : public CSimplePreProc<DREAL>
 {
 	public:
+		/** constructor
+		 *
+		 * @param do_whitening do whitening
+		 * @param thresh threshold
+		 */
 		CPCACut(INT do_whitening=0, double thresh=1e-6);
 		virtual ~CPCACut();
 
@@ -48,16 +54,22 @@ class CPCACut : public CSimplePreProc<DREAL>
 		virtual DREAL* apply_to_feature_vector(DREAL* f, INT &len);
 
 	protected:
+		/** T */
 		double* T ;
+		/** num dim */
 		INT num_dim;
+		/** num old dim */
 		INT num_old_dim;
+		/** mean */
 		double *mean ;
 
 		/// true when already initialized
 		bool initialized;
 
+		/** do whitening */
 		INT do_whitening;
-		double thresh ;
+		/** thresh */
+		double thresh;
 };
 #endif
 #endif

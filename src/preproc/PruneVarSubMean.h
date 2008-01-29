@@ -19,9 +19,14 @@
 
 #include <stdio.h>
 
+/** Preprocessor PruneVarSubMean */
 class CPruneVarSubMean : public CSimplePreProc<DREAL>
 {
 	public:
+		/** constructor
+		 *
+		 * @param divide if division shall be made
+		 */
 		CPruneVarSubMean(bool divide=true);
 		virtual ~CPruneVarSubMean();
 
@@ -46,10 +51,15 @@ class CPruneVarSubMean : public CSimplePreProc<DREAL>
 		virtual DREAL* apply_to_feature_vector(DREAL* f, INT &len);
 
 	protected:
-		INT* idx ;
+		/** idx */
+		INT* idx;
+		/** mean */
 		DREAL* mean;
+		/** std */
 		DREAL* std;
-		INT num_idx ;
+		/** num idx */
+		INT num_idx;
+		/** divide by std */
 		bool divide_by_std;
 
 		/// true when already initialized

@@ -18,9 +18,15 @@
 
 template <class ST> class CSimpleFeatures;
 
+/** template class SimplePreProc */
 template <class ST> class CSimplePreProc : public CPreProc
 {
 	public:
+		/** constructor
+		 *
+		 * @param name simple preprocessor's name
+		 * @param id simple preprocessor's id
+		 */
 		CSimplePreProc(const CHAR *name, const CHAR* id) : CPreProc(name,id) {}
 
 		/// apply preproc on feature matrix

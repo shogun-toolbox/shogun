@@ -20,9 +20,15 @@
 template <class ST> class TSparse;
 template <class ST> class CSparseFeatures;
 
+/** template class SparsePreProc */
 template <class ST> class CSparsePreProc : public CPreProc
 {
 public:
+	/** constructor
+	 *
+	 * @param name sparse preprocessor's name
+	 * @param id sparse preprocessor's id
+	 */
 	CSparsePreProc(const CHAR *name, const CHAR* id) : CPreProc(name,id)
 	{
 	}

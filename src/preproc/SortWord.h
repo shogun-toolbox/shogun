@@ -17,9 +17,11 @@
 
 #include <stdio.h>
 
+/** Preprocessor SortWord */
 class CSortWord : public CSimplePreProc<WORD>
 {
 	public:
+		/** constructor */
 		CSortWord();
 		virtual ~CSortWord();
 

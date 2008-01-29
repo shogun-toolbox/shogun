@@ -17,9 +17,11 @@
 
 #include <stdio.h>
 
+/** preprocessor NormDerivativeLem3 */
 class CNormDerivativeLem3 : public CSimplePreProc<DREAL>
 {
 	public:
+		/** default constructor */
 		CNormDerivativeLem3();
 		virtual ~CNormDerivativeLem3();
 

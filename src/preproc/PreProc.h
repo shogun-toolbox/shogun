@@ -19,9 +19,15 @@
 class CPreProc;
 class CFeatures;
 
+/** class PreProc */
 class CPreProc : public CSGObject
 {
 public:
+	/** constructor
+	 *
+	 * @param name preprocessor's name
+	 * @param id preprocessor's id
+	 */
 	CPreProc(const CHAR* name, const CHAR* id);
 	virtual ~CPreProc();
 
@@ -53,7 +59,9 @@ public:
 	const CHAR * get_id() const { return preproc_id; }
 
  protected:
-	const CHAR* preproc_name ;
+ 	/** preprocessor name */
+	const CHAR* preproc_name;
+	/** preprocessor id */
 	const CHAR* preproc_id;
 };
 #endif

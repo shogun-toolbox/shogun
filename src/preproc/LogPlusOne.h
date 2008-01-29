@@ -17,9 +17,11 @@
 
 #include <stdio.h>
 
+/** Preprocessor LogPlusOne */
 class CLogPlusOne : public CSimplePreProc<DREAL>
 {
 	public:
+		/** default constructor */
 		CLogPlusOne();
 		virtual ~CLogPlusOne();
 
