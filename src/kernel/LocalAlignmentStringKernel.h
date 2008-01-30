@@ -14,59 +14,134 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
-#define LOGSUM_TBL 10000      /* span of the logsum table */ 
+#define LOGSUM_TBL 10000      /* span of the logsum table */
 
+/** kernel LocalAlignmentString */
 class CLocalAlignmentStringKernel: public CStringKernel<CHAR>
 {
-public:
-	CLocalAlignmentStringKernel(INT size);
-	CLocalAlignmentStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r);
-	virtual ~CLocalAlignmentStringKernel();
+	public:
+		/** constructor
+		 * @param size cache size
+		 */
+		CLocalAlignmentStringKernel(INT size);
 
-	virtual bool init(CFeatures* l, CFeatures* r);
-	virtual void cleanup();
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 */
+		CLocalAlignmentStringKernel(
+			CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r);
 
-	/// load and save kernel init_data
-	virtual bool load_init(FILE* src) { return false; }
-	virtual bool save_init(FILE* dest) { return false; }
+		virtual ~CLocalAlignmentStringKernel();
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type()
-	{
-		return K_LOCALALIGNMENT;
-	}
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-	// return the name of a kernel
-	virtual const CHAR* get_name()
-	{
-		return "LocalAlignment";
-	}
+		/** clean up kernel */
+		virtual void cleanup();
 
-private:
-	void init_logsum(void);
-	int LogSum(int p1, int p2);
-	float LogSum2(float p1, float p2);
-	void initialize(void);
-	DREAL LAkernelcompute(int* aaX, int* aaY, int nX, int nY);
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		virtual bool load_init(FILE* src) { return false; }
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	virtual DREAL compute(INT idx_a, INT idx_b);
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		virtual bool save_init(FILE* dest) { return false; }
 
-protected:
-	bool initialized;
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type LOCALALIGNMENT
+		 */
+		virtual EKernelType get_kernel_type()
+		{
+			return K_LOCALALIGNMENT;
+		}
 
-	int *isAA;                /* Indicates whether a char is an amino-acid */
+		/** return the kernel's name
+		 *
+		 * @return name LocalAlignment
+		 */
+		virtual const CHAR* get_name()
+		{
+			return "LocalAlignment";
+		}
 
-	int *aaIndex;             /* The correspondance between amino-acid letter and index */
+	private:
+		/** initialize logarithmic sum */
+		void init_logsum();
 
-	int opening,extension; /* Gap penalties */
+		/** logarithmic sum
+		 *
+		 * @param p1 parameter1
+		 * @param p2 parameter2
+		 * @return logarithmic sum as int
+		 */
+		int LogSum(int p1, int p2);
 
-	static int logsum_lookup[LOGSUM_TBL];
-	static const int blosum[];
-	int* scaled_blosum;
+		/** logarithmic sum 2
+		 *
+		 * @param p1 parameter 1
+		 * @param p2 parameter 2
+		 * @return logarithmic sum as float
+		 */
+		float LogSum2(float p1, float p2);
+
+		/** initialize */
+		void initialize();
+
+		/** LAkernel compute
+		 *
+		 * @param aaX aaX
+		 * @param aaY aaY
+		 * @param nX nX
+		 * @param nY nY
+		 * @return computed value
+		 */
+		DREAL LAkernelcompute(int* aaX, int* aaY, int nX, int nY);
+
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		virtual DREAL compute(INT idx_a, INT idx_b);
+
+	protected:
+		/** if kernel is initialized */
+		bool initialized;
+
+		/** indicates whether a char is an amino-acid */
+		int *isAA;
+		/** correspondance between amino-acid letter and index */
+		int *aaIndex;
+
+		/** gap penalty opening */
+		int opening;
+		/** gap penalty extension */
+		int extension;
+
+		/** static logsum lookup */
+		static int logsum_lookup[LOGSUM_TBL];
+		/** static blosum */
+		static const int blosum[];
+		/** scaled blosum */
+		int* scaled_blosum;
 };
 
 #endif /* _LOCALALIGNMENTSTRINGKERNEL_H__ */

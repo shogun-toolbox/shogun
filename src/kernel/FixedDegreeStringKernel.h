@@ -14,41 +14,90 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
+/** kernel FixedDegreeString */
 class CFixedDegreeStringKernel: public CStringKernel<CHAR>
 {
-public:
-	CFixedDegreeStringKernel(INT size, INT degree);
-	CFixedDegreeStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT degree);
-	virtual ~CFixedDegreeStringKernel();
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param degree the degree
+		 */
+		CFixedDegreeStringKernel(INT size, INT degree);
 
-	virtual bool init(CFeatures* l, CFeatures* r);
-	virtual void cleanup();
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param degree the degree
+		 */
+		CFixedDegreeStringKernel(
+			CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
+			INT degree);
 
-	/// load and save kernel init_data
-	bool load_init(FILE* src);
-	bool save_init(FILE* dest);
+		virtual ~CFixedDegreeStringKernel();
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type()
-	{
-		return K_FIXEDDEGREE;
-	}
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-	// return the name of a kernel
-	virtual const CHAR* get_name()
-	{
-		return "FixedDegree";
-	}
+		/** clean up kernel */
+		virtual void cleanup();
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	DREAL compute(INT idx_a, INT idx_b);
-	INT degree;
-	DREAL *sqrtdiag_lhs;
-	DREAL *sqrtdiag_rhs;
-	bool initialized;
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		bool load_init(FILE* src);
+
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		bool save_init(FILE* dest);
+
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type FIXEDDEGREE
+		 */
+		virtual EKernelType get_kernel_type()
+		{
+			return K_FIXEDDEGREE;
+		}
+
+		/** return the kernel's name
+		 *
+		 * @return name FixedDegree
+		 */
+		virtual const CHAR* get_name()
+		{
+			return "FixedDegree";
+		}
+
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		DREAL compute(INT idx_a, INT idx_b);
+		/** the degree */
+		INT degree;
+		/** sqrt diagonal of left-hand side */
+		DREAL *sqrtdiag_lhs;
+		/** sqrt diagonal of right-hand side */
+		DREAL *sqrtdiag_rhs;
+		/** if kernel is initialized */
+		bool initialized;
 };
 
 #endif /* _FIXEDDEGREESTRINGKERNEL_H___ */

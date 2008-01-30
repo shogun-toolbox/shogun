@@ -15,41 +15,96 @@
 #include "kernel/SimpleKernel.h"
 #include "features/RealFeatures.h"
 
+/** kernel Poly */
 class CPolyKernel: public CSimpleKernel<DREAL>
 {
-public:
-	CPolyKernel(CRealFeatures* l, CRealFeatures* r, INT d, bool inhom, bool use_norm, INT size=10);
-	CPolyKernel(INT size, INT degree, bool inhomogene=true, bool use_normalization=true);
-	virtual ~CPolyKernel();
-	
-	virtual bool init(CFeatures* l, CFeatures* r);
-	virtual void cleanup();
+	public:
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param d degree
+		 * @param inhom is inhomogeneous
+		 * @param use_norm use normalization
+		 * @param size cache size
+		 */
+		CPolyKernel(CRealFeatures* l, CRealFeatures* r,
+			INT d, bool inhom, bool use_norm, INT size=10);
 
-	/// load and save kernel init_data
-	virtual bool load_init(FILE* src);
-	virtual bool save_init(FILE* dest);
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param degree degree
+		 * @param inhomogene is inhomogeneous
+		 * @param use_normalization use normalization
+		 */
+		CPolyKernel(INT size, INT degree,
+			bool inhomogene=true, bool use_normalization=true);
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_POLY; }
+		virtual ~CPolyKernel();
 
-	// return the name of a kernel
-	virtual const CHAR* get_name() { return "Poly"; };
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	virtual DREAL compute(INT idx_a, INT idx_b);
+		/** clean up kernel */
+		virtual void cleanup();
 
-protected:
-	INT degree;
-	bool inhomogene;
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		virtual bool load_init(FILE* src);
 
-	double* sqrtdiag_lhs;
-	double* sqrtdiag_rhs;
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		virtual bool save_init(FILE* dest);
 
-	bool initialized;
-	bool use_normalization;
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type POLY
+		 */
+		virtual EKernelType get_kernel_type() { return K_POLY; }
+
+		/** return the kernel's name
+		 *
+		 * @return name Poly
+		 */
+		virtual const CHAR* get_name() { return "Poly"; };
+
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		virtual DREAL compute(INT idx_a, INT idx_b);
+
+	protected:
+		/** degree */
+		INT degree;
+		/** if kernel is inhomogeneous */
+		bool inhomogene;
+		/** if normalization is used */
+		bool use_normalization;
+
+		/** sqrt diagonal of left-hand side */
+		DREAL *sqrtdiag_lhs;
+		/** sqrt diagonal of right-hand side */
+		DREAL *sqrtdiag_rhs;
+		/** if kernel is initialized */
+		bool initialized;
 };
 
 #endif /* _POLYKERNEL_H__ */

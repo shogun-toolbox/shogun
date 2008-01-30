@@ -15,40 +15,90 @@
 #include "kernel/SparseKernel.h"
 #include "features/SparseFeatures.h"
 
+/** kernel SparseGaussian */
 class CSparseGaussianKernel: public CSparseKernel<DREAL>
 {
-public:
-	CSparseGaussianKernel(INT size, double width);
-	CSparseGaussianKernel(CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, double width);
-	virtual ~CSparseGaussianKernel();
-	
-	virtual bool init(CFeatures* l, CFeatures* r);
-	virtual void cleanup();
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param width width
+		 */
+		CSparseGaussianKernel(INT size, double width);
 
-	/// load and save kernel init_data
-	virtual bool load_init(FILE* src);
-	virtual bool save_init(FILE* dest);
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param width width
+		 */
+		CSparseGaussianKernel(
+			CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r,
+			double width);
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_SPARSEGAUSSIAN; }
+		virtual ~CSparseGaussianKernel();
 
-	/** return feature type the kernel can deal with
-	*/
-	inline virtual EFeatureType get_feature_type() { return F_DREAL; }
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-	// return the name of a kernel
-	virtual const CHAR* get_name() { return "SparseGaussian" ; } ;
+		/** clean up kernel */
+		virtual void cleanup();
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	virtual DREAL compute(INT idx_a, INT idx_b);
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		virtual bool load_init(FILE* src);
 
-protected:
-	double width;
-	DREAL* sq_lhs;
-	DREAL* sq_rhs;
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		virtual bool save_init(FILE* dest);
+
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type SPARSEGAUSSIAN
+		 */
+		virtual EKernelType get_kernel_type() { return K_SPARSEGAUSSIAN; }
+
+		/** return feature type the kernel can deal with
+		 *
+		 * @return feature type DREAL
+		 */
+		inline virtual EFeatureType get_feature_type() { return F_DREAL; }
+
+		/** return the kernel's name
+		 *
+		 * @return name SparseGaussian
+		 */
+		virtual const CHAR* get_name() { return "SparseGaussian" ; } ;
+
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		virtual DREAL compute(INT idx_a, INT idx_b);
+
+	protected:
+		/** width */
+		double width;
+		/** squared left-hand side */
+		DREAL* sq_lhs;
+		/** squared right-hand side */
+		DREAL* sq_rhs;
 };
 
 #endif /* _SPARSEGAUSSIANKERNEL_H__ */

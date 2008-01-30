@@ -17,264 +17,687 @@
 
 #include "lib/Trie.h"
 
+/** kernel WeightedDegreePositionString */
 class CWeightedDegreePositionStringKernel: public CStringKernel<CHAR>
 {
-public:
-	CWeightedDegreePositionStringKernel(INT size, INT degree, INT max_mismatch=0, bool use_norm=true, INT mkl_stepsize=1);
-	CWeightedDegreePositionStringKernel(INT size, DREAL* weights, INT degree, INT max_mismatch, INT* shift, INT shift_len, bool use_norm=true, INT mkl_stepsize=1);
-	CWeightedDegreePositionStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT degree);
-	virtual ~CWeightedDegreePositionStringKernel();
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param degree degree
+		 * @param max_mismatch maximum mismatch
+		 * @param use_norm if normalization shall be used
+		 * @param mkl_stepsize MKL stepsize
+		 */
+		CWeightedDegreePositionStringKernel(INT size, INT degree,
+			INT max_mismatch=0, bool use_norm=true, INT mkl_stepsize=1);
 
-	virtual bool init(CFeatures* l, CFeatures* r);
-	virtual void cleanup();
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param weights weights
+		 * @param degree degree
+		 * @param max_mismatch maximum mismatch
+		 * @param shift position shifts
+		 * @param shift_len number of shifts
+		 * @param use_norm if normalization shall be used
+		 * @param mkl_stepsize MKL stepsize
+		 */
+		CWeightedDegreePositionStringKernel(INT size, DREAL* weights,
+			INT degree, INT max_mismatch, INT* shift, INT shift_len,
+			bool use_norm=true, INT mkl_stepsize=1);
 
-	/// load and save kernel init_data
-	bool load_init(FILE* src);
-	bool save_init(FILE* dest);
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param degree degree
+		 */
+		CWeightedDegreePositionStringKernel(
+			CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
+			INT degree);
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREEPOS; }
+		virtual ~CWeightedDegreePositionStringKernel();
 
-	// return the name of a kernel
-	virtual const CHAR* get_name() { return "WeightedDegreePos" ; } ;
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-	inline virtual bool init_optimization(INT p_count, INT *IDX, DREAL * alphas)
-	{ 
-		return init_optimization(p_count, IDX, alphas, -1);
-	}
+		/** clean up kernel */
+		virtual void cleanup();
 
-	/// do initialization for tree_num up to upto_tree, use tree_num=-1 to construct all trees
-	virtual bool init_optimization(INT count, INT *IDX, DREAL * alphas, INT tree_num, INT upto_tree=-1);
-	virtual bool delete_optimization() ;
-	inline virtual DREAL compute_optimized(INT idx) 
-	{ 
-		ASSERT(get_is_initialized());
-		return compute_by_tree(idx); 
-	}
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		bool load_init(FILE* src);
 
-	static void* compute_batch_helper(void* p); 
-	virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		bool save_init(FILE* dest);
 
-	// subkernel functionality
-	inline virtual void clear_normal()
-	{
-		if ((opt_type==FASTBUTMEMHUNGRY) && (tries.get_use_compact_terminal_nodes())) 
-		{
-			tries.set_use_compact_terminal_nodes(false) ;
-			SG_DEBUG( "disabling compact trie nodes with FASTBUTMEMHUNGRY\n") ;
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type WEIGHTEDDEGREEPOS
+		 */
+		virtual EKernelType get_kernel_type() { return K_WEIGHTEDDEGREEPOS; }
+
+		/** return the kernel's name
+		 *
+		 * @return name WeightedDegreePos
+		 */
+		virtual const CHAR* get_name() { return "WeightedDegreePos" ; } ;
+
+		/** initialize optimization
+		 *
+		 * @param p_count count
+		 * @param IDX index
+		 * @param alphas alphas
+		 * @return if initializing was successful
+		 */
+		inline virtual bool init_optimization(INT p_count, INT *IDX, DREAL * alphas)
+		{ 
+			return init_optimization(p_count, IDX, alphas, -1);
 		}
 
-		if (get_is_initialized())
+		/** initialize optimization
+		 * do initialization for tree_num up to upto_tree, use
+		 * tree_num=-1 to construct all trees
+		 *
+		 * @param count count
+		 * @param IDX IDX
+		 * @param alphas alphas
+		 * @param tree_num which tree
+		 * @param upto_tree up to this tree
+		 * @return if initializing was successful
+		 */
+		virtual bool init_optimization(INT count, INT *IDX, DREAL * alphas,
+			INT tree_num, INT upto_tree=-1);
+
+		/** delete optimization
+		 *
+		 * @return if deleting was successful
+		 */
+		virtual bool delete_optimization();
+
+		/** compute optimized
+	 	*
+	 	* @param idx index to compute
+	 	* @return optimized value at given index
+	 	*/
+		inline virtual DREAL compute_optimized(INT idx)
+		{ 
+			ASSERT(get_is_initialized());
+			return compute_by_tree(idx);
+		}
+
+		/** helper for compute batch
+		 *
+		 * @param p thread parameter
+		 */
+		static void* compute_batch_helper(void* p);
+
+		/** compute batch
+		 *
+		 * @param num_vec number of vectors
+		 * @param vec_idx vector index
+		 * @param target target
+		 * @param num_suppvec number of support vectors
+		 * @param IDX IDX
+		 * @param alphas alphas
+		 * @param factor factor
+		 */
+		virtual void compute_batch(INT num_vec, INT* vec_idx, DREAL* target,
+			INT num_suppvec, INT* IDX, DREAL* alphas, DREAL factor=1.0);
+
+		/** clear normal
+		 * subkernel functionality
+		 */
+		inline virtual void clear_normal()
 		{
-			if (opt_type==SLOWBUTMEMEFFICIENT)
-				tries.delete_trees(true); 
-			else if (opt_type==FASTBUTMEMHUNGRY)
-				tries.delete_trees(false);  // still buggy
+			if ((opt_type==FASTBUTMEMHUNGRY) && (tries.get_use_compact_terminal_nodes()))
+			{
+				tries.set_use_compact_terminal_nodes(false) ;
+				SG_DEBUG( "disabling compact trie nodes with FASTBUTMEMHUNGRY\n") ;
+			}
+
+			if (get_is_initialized())
+			{
+				if (opt_type==SLOWBUTMEMEFFICIENT)
+					tries.delete_trees(true); 
+				else if (opt_type==FASTBUTMEMHUNGRY)
+					tries.delete_trees(false);  // still buggy
+				else
+					SG_ERROR( "unknown optimization type\n");
+
+				set_is_initialized(false);
+			}
+		}
+
+		/** add to normal
+		 *
+		 * @param idx where to add
+		 * @param weight what to add
+		 */
+		inline virtual void add_to_normal(INT idx, DREAL weight)
+		{
+			add_example_to_tree(idx, weight);
+			set_is_initialized(true);
+		}
+
+		/** get number of subkernels
+		 *
+		 * @return number of subkernels
+		 */
+		inline virtual INT get_num_subkernels()
+		{
+			if (position_weights!=NULL)
+				return (INT) ceil(1.0*seq_length/mkl_stepsize) ;
+			if (length==0)
+				return (INT) ceil(1.0*get_degree()/mkl_stepsize);
+			return (INT) ceil(1.0*get_degree()*length/mkl_stepsize) ;
+		}
+
+		/** compute by subkernel
+		 *
+		 * @param idx index
+		 * @param subkernel_contrib subkernel contribution
+		 */
+		inline void compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
+		{ 
+			if (get_is_initialized())
+			{
+				compute_by_tree(idx, subkernel_contrib);
+				return ;
+			}
+
+			SG_ERROR( "CWeightedDegreePositionStringKernel optimization not initialized\n") ;
+		}
+
+		/** get subkernel weights
+		 *
+		 * @param num_weights number of weights will be stored here
+		 * @return subkernel weights
+		 */
+		inline const DREAL* get_subkernel_weights(INT& num_weights)
+		{
+			num_weights = get_num_subkernels() ;
+
+			delete[] weights_buffer ;
+			weights_buffer = new DREAL[num_weights] ;
+
+			if (position_weights!=NULL)
+				for (INT i=0; i<num_weights; i++)
+					weights_buffer[i] = position_weights[i*mkl_stepsize] ;
 			else
-				SG_ERROR( "unknown optimization type\n");
+				for (INT i=0; i<num_weights; i++)
+					weights_buffer[i] = weights[i*mkl_stepsize] ;
 
-			set_is_initialized(false);
+			return weights_buffer ;
 		}
-	}
 
-	inline virtual void add_to_normal(INT idx, DREAL weight) 
-	{
-		add_example_to_tree(idx, weight);
-		set_is_initialized(true);
-	}
-
-	inline virtual INT get_num_subkernels()
-	{
-		if (position_weights!=NULL)
-			return (INT) ceil(1.0*seq_length/mkl_stepsize) ;
-		if (length==0)
-			return (INT) ceil(1.0*get_degree()/mkl_stepsize);
-		return (INT) ceil(1.0*get_degree()*length/mkl_stepsize) ;
-	}
-
-	inline void compute_by_subkernel(INT idx, DREAL * subkernel_contrib)
-	{ 
-		if (get_is_initialized())
+		/** set subkernel weights
+		 *
+		 * @param weights2 weights
+		 * @param num_weights2 number of weights
+		 */
+		inline void set_subkernel_weights(DREAL* weights2, INT num_weights2)
 		{
-			compute_by_tree(idx, subkernel_contrib); 
-			return ;
+			INT num_weights = get_num_subkernels() ;
+			if (num_weights!=num_weights2)
+				SG_ERROR( "number of weights do not match\n") ;
+
+			if (position_weights!=NULL)
+				for (INT i=0; i<num_weights; i++)
+					for (INT j=0; j<mkl_stepsize; j++)
+					{
+						if (i*mkl_stepsize+j<seq_length)
+							position_weights[i*mkl_stepsize+j] = weights2[i] ;
+					}
+			else if (length==0)
+			{
+				for (INT i=0; i<num_weights; i++)
+					for (INT j=0; j<mkl_stepsize; j++)
+						if (i*mkl_stepsize+j<get_degree())
+							weights[i*mkl_stepsize+j] = weights2[i] ;
+			}
+			else
+			{
+				for (INT i=0; i<num_weights; i++)
+					for (INT j=0; j<mkl_stepsize; j++)
+						if (i*mkl_stepsize+j<get_degree()*length)
+							weights[i*mkl_stepsize+j] = weights2[i] ;
+			}
 		}
 
-		SG_ERROR( "CWeightedDegreePositionStringKernel optimization not initialized\n") ;
-	}
+		// other kernel tree operations
+		/** compute abs weights
+		 *
+		 * @param len len
+		 * @return computed abs weights
+		 */
+		DREAL *compute_abs_weights(INT & len);
 
-	inline const DREAL* get_subkernel_weights(INT& num_weights)
-	{
-		num_weights = get_num_subkernels() ;
+		/** check if tree is initialized
+		 *
+		 * @return if tree is initialized
+		 */
+		bool is_tree_initialized() { return tree_initialized; }
 
-		delete[] weights_buffer ;
-		weights_buffer = new DREAL[num_weights] ;
+		/** get maximum mismatch
+		 *
+		 * @return maximum mismatch
+		 */
+		inline INT get_max_mismatch() { return max_mismatch; }
 
-		if (position_weights!=NULL)
-			for (INT i=0; i<num_weights; i++)
-				weights_buffer[i] = position_weights[i*mkl_stepsize] ;
-		else
-			for (INT i=0; i<num_weights; i++)
-				weights_buffer[i] = weights[i*mkl_stepsize] ;
+		/** get degree
+		 *
+		 * @return the degree
+		 */
+		inline INT get_degree() { return degree; }
 
-		return weights_buffer ;
-	}
+		/** get normalization constant
+		 *
+		 * @return normalization constant
+		 */
+		inline DREAL get_normalization_const() { return normalization_const; }
 
-	inline void set_subkernel_weights(DREAL* weights2, INT num_weights2)
-	{
-		INT num_weights = get_num_subkernels() ;
-		if (num_weights!=num_weights2)
-			SG_ERROR( "number of weights do not match\n") ;
-
-		if (position_weights!=NULL)
-			for (INT i=0; i<num_weights; i++)
-				for (INT j=0; j<mkl_stepsize; j++)
-				{
-					if (i*mkl_stepsize+j<seq_length)
-						position_weights[i*mkl_stepsize+j] = weights2[i] ;
-				}
-		else if (length==0)
+		/** get degree weights
+		 *
+		 * @param d degree weights will be stored here
+		 * @param len number of degree weights will be stored here
+		 */
+		inline DREAL *get_degree_weights(INT& d, INT& len)
 		{
-			for (INT i=0; i<num_weights; i++)
-				for (INT j=0; j<mkl_stepsize; j++)
-					if (i*mkl_stepsize+j<get_degree())
-						weights[i*mkl_stepsize+j] = weights2[i] ;
+			d=degree;
+			len=length;
+			return weights;
 		}
-		else
+
+		/** get weights
+		 *
+		 * @param num_weights number of weights will be stored here
+		 * @return weights
+		 */
+		inline DREAL *get_weights(INT& num_weights)
 		{
-			for (INT i=0; i<num_weights; i++)
-				for (INT j=0; j<mkl_stepsize; j++)
-					if (i*mkl_stepsize+j<get_degree()*length)
-						weights[i*mkl_stepsize+j] = weights2[i] ;
+			if (position_weights!=NULL)
+			{
+				num_weights = seq_length ;
+				return position_weights ;
+			}
+			if (length==0)
+				num_weights = degree ;
+			else
+				num_weights = degree*length ;
+			return weights;
 		}
-	}
 
-	// other kernel tree operations  
-	DREAL *compute_abs_weights(INT & len);
-
-	bool is_tree_initialized() { return tree_initialized; }
-
-	inline INT get_max_mismatch() { return max_mismatch; }
-	inline INT get_degree() { return degree; }
-	inline DREAL get_normalization_const() { return normalization_const; }
-
-	// weight setting/getting operations
-	inline DREAL *get_degree_weights(INT& d, INT& len)
-	{
-		d=degree;
-		len=length;
-		return weights;
-	}
-	inline DREAL *get_weights(INT& num_weights)
-	{
-		if (position_weights!=NULL)
+		/** get position weights
+		 *
+		 * @param len number of position weights will be stored here
+		 * @return position weights
+		 */
+		inline DREAL *get_position_weights(INT& len)
 		{
-			num_weights = seq_length ;
-			return position_weights ;
+			len=seq_length;
+			return position_weights;
 		}
-		if (length==0)
-			num_weights = degree ;
-		else
-			num_weights = degree*length ;
-		return weights;
-	}
-	inline DREAL *get_position_weights(INT& len)
-	{
-		len=seq_length;
-		return position_weights;
-	}
 
-	bool set_shifts(INT* shifts, INT len);
-	virtual bool set_weights(DREAL* weights, INT d, INT len=0);
-	virtual bool set_wd_weights();
-	virtual bool set_position_weights(DREAL* position_weights, INT len=0); 
-	bool set_position_weights_lhs(DREAL* pws, INT len, INT num);
-	bool set_position_weights_rhs(DREAL* pws, INT len, INT num);
+		/** set shifts
+		 *
+		 * @param shifts new shifts
+		 * @param len number of shifts
+		 */
+		bool set_shifts(INT* shifts, INT len);
 
-	bool init_block_weights();
-	bool init_block_weights_from_wd();
-	bool init_block_weights_from_wd_external();
-	bool init_block_weights_const();
-	bool init_block_weights_linear();
-	bool init_block_weights_sqpoly();
-	bool init_block_weights_cubicpoly();
-	bool init_block_weights_exp();
-	bool init_block_weights_log();
-	bool init_block_weights_external();
+		/** set weights
+		 *
+		 * @param weights new weights
+		 * @param d degree
+		 * @param len number of weights
+		 */
+		virtual bool set_weights(DREAL* weights, INT d, INT len=0);
 
-	bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
-	bool delete_position_weights_lhs() { delete[] position_weights_lhs ; position_weights_lhs=NULL ; return true ; } ;
-	bool delete_position_weights_rhs() { delete[] position_weights_rhs ; position_weights_rhs=NULL ; return true ; } ;
+		/** set wd weights
+		 *
+		 * @return if setting was successful
+		 */
+		virtual bool set_wd_weights();
 
-	inline bool get_use_normalization() { return use_normalization; }
-	virtual DREAL compute_by_tree(INT idx);
-	virtual void compute_by_tree(INT idx, DREAL* LevelContrib);
+		/** set position weights
+		 *
+		 * @param position_weights new position weights
+		 * @param len number of position weights
+		 * @return if setting was successful
+		 */
+		virtual bool set_position_weights(DREAL* position_weights, INT len=0);
 
-	/// compute positional scoring function, which assigns a weight per position, per symbol in the sequence
-	DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym, DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
+		/** set position weights for left-hand side
+		 *
+		 * @param pws new position weights
+		 * @param len len
+		 * @param num num
+		 * @return if setting was successful
+		 */
+		bool set_position_weights_lhs(DREAL* pws, INT len, INT num);
 
-	/// compute consensus string
-	CHAR* compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX, DREAL* alphas);
-	DREAL* extract_w( INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas);
-	DREAL* compute_POIM( INT max_degree, INT& num_feat, INT& num_sym, DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL* distrib );
+		/** set position weights for right-hand side
+		 *
+		 * @param pws new position weights
+		 * @param len len
+		 * @param num num
+		 * @return if setting was successful
+		 */
+		bool set_position_weights_rhs(DREAL* pws, INT len, INT num);
 
-protected:
+		/** initialize block weights
+		 *
+		 * @return if initialization was successful
+		 */
+		bool init_block_weights();
 
-	void create_empty_tries();
+		/** initialize block weights from weighted degree
+		 *
+		 * @return if initialization was successful
+		 */
+		bool init_block_weights_from_wd();
 
-	virtual void add_example_to_tree(INT idx, DREAL weight);
-	void add_example_to_single_tree(INT idx, DREAL weight, INT tree_num);
+		/** initialize block weights from external weighted degree
+		 *
+		 * @return if initialization was successful
+		 */
+		bool init_block_weights_from_wd_external();
 
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	virtual DREAL compute(INT idx_a, INT idx_b);
+		/** initialize block weights constant
+		 *
+		 * @return if initialization was successful
+		 */
+		bool init_block_weights_const();
 
-	DREAL compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
-	DREAL compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
-	DREAL compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
-	DREAL compute_without_mismatch_position_weights(CHAR* avec, DREAL *posweights_lhs, INT alen, CHAR* bvec, DREAL *posweights_rhs, INT blen) ;
+		/** initialize block weights linear
+		 *
+		 * @return if initialization was successful
+		 */
+		bool init_block_weights_linear();
 
-	virtual void remove_lhs() ;
-	virtual void remove_rhs() ;
+		/** initialize block weights squared polynomial
+		 *
+		 * @return if initialization was successful
+		 */
+		bool init_block_weights_sqpoly();
 
-protected:
-	DREAL* weights;
-	DREAL* position_weights ;
-	DREAL* position_weights_lhs ;
-	DREAL* position_weights_rhs ;
-	bool* position_mask ;
+		/** initialize block weights cubic polynomial
+		 *
+		 * @return if initialization was successful
+		 */
+		bool init_block_weights_cubicpoly();
 
-	DREAL* weights_buffer ;
-	INT mkl_stepsize ;
+		/** initialize block weights exponential
+		 *
+		 * @return if initialization was successful
+		 */
+		bool init_block_weights_exp();
 
-	INT degree;
-	INT length;
+		/** initialize block weights logarithmic
+		 *
+		 * @return if initialization was successful
+		 */
+		bool init_block_weights_log();
 
-	INT max_mismatch ;
-	INT seq_length ;
+		/** initialize block weights external
+		 *
+		 * @return if initialization was successful
+		 */
+		bool init_block_weights_external();
 
-	INT *shift ;
-	INT shift_len ;
-	INT max_shift ;
+		/** delete position weights
+		 *
+		 * @return if deleting was successful
+		 */
+		bool delete_position_weights() { delete[] position_weights ; position_weights=NULL ; return true ; } ;
 
-	bool initialized ;
-	bool use_normalization ;
-	bool block_computation;
+		/** delete position weights left-hand side
+		 *
+		 * @return if deleting was successful
+		 */
+		bool delete_position_weights_lhs() { delete[] position_weights_lhs ; position_weights_lhs=NULL ; return true ; } ;
 
-	DREAL normalization_const;
+		/** delete position weights right-hand side
+		 *
+		 * @return if deleting was successful
+		 */
+		bool delete_position_weights_rhs() { delete[] position_weights_rhs ; position_weights_rhs=NULL ; return true ; } ;
 
-	INT num_block_weights_external;
-	DREAL* block_weights_external;
+		/** check if normalization is used
+		 *
+		 * @return if normalization is used
+		 */
+		inline bool get_use_normalization() { return use_normalization; }
 
-	DREAL* block_weights;
-	EWDKernType type;
-	INT which_degree;
+		/** compute by tree
+		 *
+		 * @param idx index
+		 * @return computed value
+		 */
+		virtual DREAL compute_by_tree(INT idx);
 
-	CTrie<DNATrie> tries;
-	CTrie<POIMTrie> poim_tries;
+		/** compute by tree
+		 *
+		 * @param idx index
+		 * @param LevelContrib level contribution
+		 */
+		virtual void compute_by_tree(INT idx, DREAL* LevelContrib);
 
-	bool tree_initialized;
-	bool use_poim_tries; //makes add_example_to_tree (ONLY!) use POIMTrie
+		/** compute positional scoring function, which assigns a
+		 * weight per position, per symbol in the sequence
+		 *
+		 * @param max_degree maximum degree
+		 * @param num_feat number of features
+		 * @param num_sym number of symbols
+		 * @param target target
+		 * @param num_suppvec number of support vectors
+		 * @param IDX IDX
+		 * @param weights weights
+		 * @return computed scores
+		 */
+		DREAL* compute_scoring(INT max_degree, INT& num_feat, INT& num_sym,
+			DREAL* target, INT num_suppvec, INT* IDX, DREAL* weights);
+
+		/** compute consensus string
+		 *
+		 * @param num_feat number of features
+		 * @param num_suppvec number of support vectors
+		 * @param IDX IDX
+		 * @param alphas alphas
+		 * @return consensus string
+		 */
+		CHAR* compute_consensus(INT &num_feat, INT num_suppvec, INT* IDX,
+			DREAL* alphas);
+
+		/** extract w
+		 *
+		 * @param max_degree maximum degree
+		 * @param num_feat number of features
+		 * @param num_sym number of symbols
+		 * @param result result
+		 * @param num_suppvec number of support vectors
+		 * @param IDX IDX
+		 * @param alphas alphas
+		 * @return w
+		 */
+		DREAL* extract_w( INT max_degree, INT& num_feat, INT& num_sym,
+			DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas);
+
+		/** compute POIM
+		 *
+		 * @param max_degree maximum degree
+		 * @param num_feat number of features
+		 * @param num_sym number of symbols
+		 * @param result result
+		 * @param num_suppvec number of support vectors
+		 * @param IDX IDX
+		 * @param alphas alphas
+		 * @param distrib distribution
+		 * @return computed POIMs
+		 */
+		DREAL* compute_POIM( INT max_degree, INT& num_feat, INT& num_sym,
+			DREAL* result, INT num_suppvec, INT* IDX, DREAL* alphas, DREAL* distrib );
+
+	protected:
+		/** create emtpy tries */
+		void create_empty_tries();
+
+		/** add example to tree
+		 *
+		 * @param idx index
+		 * @param weight weight
+		 */
+		virtual void add_example_to_tree(INT idx, DREAL weight);
+
+		/** add example to single tree
+		 *
+		 * @param idx index
+		 * @param weight weight
+		 * @param tree_num which tree
+		 */
+		void add_example_to_single_tree(INT idx, DREAL weight, INT tree_num);
+
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		virtual DREAL compute(INT idx_a, INT idx_b);
+
+		/** compute with mismatch
+		 *
+		 * @param avec vector a
+		 * @param alen length of vector a
+		 * @param bvec vector b
+		 * @param blen length of vector b
+		 * @return computed value
+		 */
+		DREAL compute_with_mismatch(CHAR* avec, INT alen,
+			CHAR* bvec, INT blen);
+
+		/** compute without mismatch
+		 *
+		 * @param avec vector a
+		 * @param alen length of vector a
+		 * @param bvec vector b
+		 * @param blen length of vector b
+		 * @return computed value
+		 */
+		DREAL compute_without_mismatch(CHAR* avec, INT alen,
+			CHAR* bvec, INT blen);
+
+		/** compute without mismatch matrix
+		 *
+		 * @param avec vector a
+		 * @param alen length of vector a
+		 * @param bvec vector b
+		 * @param blen length of vector b
+		 * @return computed value
+		 */
+		DREAL compute_without_mismatch_matrix(CHAR* avec, INT alen,
+			CHAR* bvec, INT blen);
+
+		/** compute without mismatch position weights
+		 *
+		 * @param avec vector a
+		 * @param posweights_lhs position weights left-hand side
+		 * @param alen length of vector a
+		 * @param bvec vector b
+		 * @param posweights_rhs position weights right-hand side
+		 * @param blen length of vector b
+		 * @return computed value
+		 */
+		DREAL compute_without_mismatch_position_weights(
+			CHAR* avec, DREAL *posweights_lhs, INT alen,
+			CHAR* bvec, DREAL *posweights_rhs, INT blen);
+
+		/** remove lhs from kernel */
+		virtual void remove_lhs();
+
+		/** remove rhs from kernel */
+		virtual void remove_rhs();
+
+	protected:
+		/** weights */
+		DREAL* weights;
+		/** position weights */
+		DREAL* position_weights;
+		/** position weights left-hand side */
+		DREAL* position_weights_lhs;
+		/** position weights right-hand side */
+		DREAL* position_weights_rhs;
+		/** position mask */
+		bool* position_mask;
+
+		/** weights buffer */
+		DREAL* weights_buffer;
+		/** MKL stepsize */
+		INT mkl_stepsize;
+
+		/** degree */
+		INT degree;
+		/** length */
+		INT length;
+
+		/** maximum mismatch */
+		INT max_mismatch;
+		/** length of sequence */
+		INT seq_length;
+
+		/** shifts */
+		INT *shift;
+		/** length of shifts */
+		INT shift_len;
+		/** maximum shift */
+		INT max_shift;
+
+		/** if kernel is initialized */
+		bool initialized;
+		/** if normalization is used */
+		bool use_normalization;
+		/** if block computation is used */
+		bool block_computation;
+
+		/** normalization constant */
+		DREAL normalization_const;
+
+		/** number of external block weights */
+		INT num_block_weights_external;
+		/** external block weights */
+		DREAL* block_weights_external;
+
+		/** (internal) block weights */
+		DREAL* block_weights;
+		/** WeightedDegree kernel type */
+		EWDKernType type;
+		/** which degree */
+		INT which_degree;
+
+		/** tries */
+		CTrie<DNATrie> tries;
+		/** POIM tries */
+		CTrie<POIMTrie> poim_tries;
+
+		/** if tree is initialized */
+		bool tree_initialized;
+		/** makes add_example_to_tree (ONLY!) use POIMTrie */
+		bool use_poim_tries;
 };
 #endif /* _WEIGHTEDDEGREEPOSITIONSTRINGKERNEL_H__ */

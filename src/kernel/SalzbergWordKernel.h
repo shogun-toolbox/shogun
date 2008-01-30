@@ -16,62 +16,133 @@
 #include "classifier/PluginEstimate.h"
 #include "features/StringFeatures.h"
 
+/** kernel SalzbergWord */
 class CSalzbergWordKernel: public CStringKernel<WORD>
 {
-public:
-	CSalzbergWordKernel(INT size, CPluginEstimate* pie);
-	CSalzbergWordKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, CPluginEstimate *pie);
-	virtual ~CSalzbergWordKernel() ;
-	
-	void set_prior_probs(DREAL pos_prior_, DREAL neg_prior_)
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param pie the plugin estimate
+		 */
+		CSalzbergWordKernel(INT size, CPluginEstimate* pie);
+
+		/** constructor
+	 	 *
+	 	 * @param l features of left-hand side
+	 	 * @param r features of right-hand side
+		 * @param pie the plugin estimate
+		 */
+		CSalzbergWordKernel(
+			CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
+			CPluginEstimate *pie);
+
+		virtual ~CSalzbergWordKernel();
+
+		/** set prior probs
+		 *
+		 * @param pos_prior_ positive prior
+		 * @param neg_prior_ negative prior
+		 */
+		void set_prior_probs(DREAL pos_prior_, DREAL neg_prior_)
 		{
 			pos_prior=pos_prior_ ;
 			neg_prior=neg_prior_ ;
 			if (fabs(pos_prior+neg_prior-1)>1e-6)
 				SG_WARNING( "priors don't sum to 1: %f+%f-1=%f\n", pos_prior, neg_prior, pos_prior+neg_prior-1) ;
 		};
-	virtual bool init(CFeatures* l, CFeatures* r);
-	virtual void cleanup();
 
-	/// load and save kernel init_data
-	bool load_init(FILE* src);
-	bool save_init(FILE* dest);
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_SALZBERG; }
+		/** clean up kernel */
+		virtual void cleanup();
 
-	// return the name of a kernel
-	virtual const CHAR* get_name() { return "Salzberg" ; } ;
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		bool load_init(FILE* src);
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	DREAL compute(INT idx_a, INT idx_b);
-	//	DREAL compute_slow(LONG idx_a, LONG idx_b);
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		bool save_init(FILE* dest);
 
-	inline INT compute_index(INT position, WORD symbol)
-	{
-		return position*num_symbols+symbol;
-	}
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type SALZBERG
+		 */
+		virtual EKernelType get_kernel_type() { return K_SALZBERG; }
 
-protected:
-	CPluginEstimate* estimate;
+		/** return the kernel's name
+		 *
+		 * @return name Salzberg
+		 */
+		virtual const CHAR* get_name() { return "Salzberg" ; }
 
-	DREAL* mean;
-	DREAL* variance;
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		DREAL compute(INT idx_a, INT idx_b);
+		//	DREAL compute_slow(LONG idx_a, LONG idx_b);
 
-	DREAL* sqrtdiag_lhs;
-	DREAL* sqrtdiag_rhs;
+		/** compute index of given symbol at given position
+		 *
+		 * @param position position
+		 * @param symbol symbol
+		 * @return index
+		 */
+		inline INT compute_index(INT position, WORD symbol)
+		{
+			return position*num_symbols+symbol;
+		}
 
-	DREAL* ld_mean_lhs ;
-	DREAL* ld_mean_rhs ;
+	protected:
+		/** the plugin estimate */
+		CPluginEstimate* estimate;
 
-	INT num_params;
-	INT num_symbols;
-	DREAL sum_m2_s2 ;
-	DREAL pos_prior, neg_prior ;
-	bool initialized ;
+		/** mean */
+		DREAL* mean;
+		/** variance */
+		DREAL* variance;
+
+		/** sqrt diagonal of left-hand side */
+		DREAL* sqrtdiag_lhs;
+		/** sqrt diagonal of right-hand side */
+		DREAL* sqrtdiag_rhs;
+
+		/** ld mean left-hand side */
+		DREAL* ld_mean_lhs;
+		/** ld mean right-hand side */
+		DREAL* ld_mean_rhs;
+
+		/** number of params */
+		INT num_params;
+		/** number of symbols */
+		INT num_symbols;
+		/** sum m2 s2 */
+		DREAL sum_m2_s2;
+		/** positive prior */
+		DREAL pos_prior;
+		/** negative prior */
+		DREAL neg_prior;
+		/** if kernel is initialized */
+		bool initialized;
 };
 
 #endif /* _SALZBERGWORDKERNEL_H__ */

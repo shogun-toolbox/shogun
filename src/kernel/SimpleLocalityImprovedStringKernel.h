@@ -14,50 +14,117 @@
 #include "lib/common.h"
 #include "kernel/StringKernel.h"
 
+/** kernel SimpleLocalityImprovedString */
 class CSimpleLocalityImprovedStringKernel: public CStringKernel<CHAR>
 {
-public:
-	CSimpleLocalityImprovedStringKernel(int size, INT length, INT inner_degree, INT outer_degree);
-	CSimpleLocalityImprovedStringKernel(CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT length, INT inner_degree, INT outer_degree);
-	virtual ~CSimpleLocalityImprovedStringKernel();
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param length length
+		 * @param inner_degree inner degree
+		 * @param outer_degree outer degree
+		 */
+		CSimpleLocalityImprovedStringKernel(int size, INT length,
+			INT inner_degree, INT outer_degree);
 
-	virtual bool init(CFeatures *l, CFeatures *r);
-	virtual void cleanup();
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param length length
+		 * @param inner_degree inner degree
+		 * @param outer_degree outer degree
+		 */
+		CSimpleLocalityImprovedStringKernel(
+			CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r,
+			INT length, INT inner_degree, INT outer_degree);
 
-	/// load and save kernel init_data
-	bool load_init(FILE *src);
-	bool save_init(FILE *dest);
+		virtual ~CSimpleLocalityImprovedStringKernel();
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type()
-	{
-		return K_SIMPLELOCALITYIMPROVED;
-	}
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures *l, CFeatures *r);
 
-	// return the name of a kernel
-	virtual const CHAR *get_name()
-	{
-		return "SimpleLocalityImproved";
-	}
+		/** clean up kernel */
+		virtual void cleanup();
 
-private:
-	DREAL dot_pyr (const CHAR* const x1, const CHAR* const x2,
-		const INT NOF_NTS,
-	const INT NTWIDTH, const INT DEGREE1, const INT DEGREE2, CHAR *stage1,
-		DREAL *pyra);
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		bool load_init(FILE *src);
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	DREAL compute(INT idx_a, INT idx_b); /* compute_kernel*/
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		bool save_init(FILE *dest);
 
-protected:
-	INT length;
-	INT inner_degree;
-	INT outer_degree;
-	CHAR *match;
-	DREAL *pyramid_weights;
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type SIMPLELOCALITYIMPROVED
+		 */
+		virtual EKernelType get_kernel_type()
+		{
+			return K_SIMPLELOCALITYIMPROVED;
+		}
+
+		/** return the kernel's name
+		 *
+		 * @return name SimpleLocalityImproved
+		 */
+		virtual const CHAR *get_name()
+		{
+			return "SimpleLocalityImproved";
+		}
+
+	private:
+		/** dot pyr
+		 *
+		 * @param x1 x1
+		 * @param x2 x2
+		 * @param NOF_NTS NOF NTS
+		 * @param NTWIDTH NT width
+		 * @param DEGREE1 degree 1
+		 * @param DEGREE2 degree 2
+		 * @param stage1 stage 1
+		 * @param pyra pyramid
+		 * @return dot product of pyramid (?)
+		 */
+		DREAL dot_pyr (const CHAR* const x1, const CHAR* const x2,
+				const INT NOF_NTS, const INT NTWIDTH,
+				const INT DEGREE1, const INT DEGREE2, CHAR *stage1,
+				DREAL *pyra);
+
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		DREAL compute(INT idx_a, INT idx_b);
+
+	protected:
+		/** length */
+		INT length;
+		/** inner degree */
+		INT inner_degree;
+		/** outer degree */
+		INT outer_degree;
+		/** match */
+		CHAR* match;
+		/** pyramid weights */
+		DREAL *pyramid_weights;
 };
 
 #endif /* _SIMPLELOCALITYIMPROVEDSTRINGKERNEL_H___ */

@@ -14,41 +14,59 @@
 #include "kernel/Kernel.h"
 #include "features/StringFeatures.h"
 
+/** template class StringKernel */
 template <class ST> class CStringKernel : public CKernel
 {
-public:
-	CStringKernel(INT cachesize) : CKernel(cachesize)
-	{
-	}
+	public:
+		/** constructor
+		 *
+		 * @param cachesize cache size
+		 */
+		CStringKernel(INT cachesize) : CKernel(cachesize) {}
 
-	CStringKernel(CFeatures *l, CFeatures *r) : CKernel(10)
-	{
-		init(l, r);
-	}
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 */
+		CStringKernel(CFeatures *l, CFeatures *r) : CKernel(10)
+		{
+			init(l, r);
+		}
 
-	/** initialize your kernel
-	 * where l are feature vectors to occur on left hand side
-	 * and r the feature vectors to occur on right hand side
-	 */
-	virtual bool init(CFeatures* l, CFeatures* r)
-	{
-		CKernel::init(l,r);
+		/** initialize kernel
+		 *  e.g. setup lhs/rhs of kernel, precompute normalization
+		 *  constants etc.
+		 *  make sure to check that your kernel can deal with the
+		 *  supplied features (!)
+		 *
+		 *  @param l features for left-hand side
+		 *  @param r features for right-hand side
+		 *  @return if init was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r)
+		{
+			CKernel::init(l,r);
 
-		ASSERT(l->get_feature_class() == C_STRING);
-		ASSERT(r->get_feature_class() == C_STRING);
-		ASSERT(l->get_feature_type()==this->get_feature_type());
-		ASSERT(r->get_feature_type()==this->get_feature_type());
+			ASSERT(l->get_feature_class() == C_STRING);
+			ASSERT(r->get_feature_class() == C_STRING);
+			ASSERT(l->get_feature_type()==this->get_feature_type());
+			ASSERT(r->get_feature_type()==this->get_feature_type());
 
-		return true;
-	}
+			return true;
+		}
 
-	/** return feature class the kernel can deal with
-	  */
-	inline virtual EFeatureClass get_feature_class() { return C_STRING; }
+		/** return feature class the kernel can deal with
+		 *
+		 * @return feature class STRING
+		 */
+		inline virtual EFeatureClass get_feature_class() { return C_STRING; }
 
-	/** return feature type the kernel can deal with
-	  */
-	virtual EFeatureType get_feature_type();
+		/** return feature type the kernel can deal with
+		 *
+		 * @return templated feature type
+		 */
+		virtual EFeatureType get_feature_type();
 };
 
 template<> inline EFeatureType CStringKernel<DREAL>::get_feature_type() { return F_DREAL; }

@@ -20,50 +20,85 @@
 
 class CClassifier;
 
+/** class KernelMachine */
 class CKernelMachine : public CClassifier
 {
-public:
-	CKernelMachine();
-	virtual ~CKernelMachine();
+	public:
+		/** default constructor */
+		CKernelMachine();
 
-	inline void set_kernel(CKernel* k)
-	{
-		SG_REF(k);
-		kernel=k;
-	}
+		virtual ~CKernelMachine();
 
-	inline CKernel* get_kernel()
-	{
-		SG_REF(kernel);
-		return kernel;
-	}
+		/** set kernel
+		 *
+		 * @param k kernel
+		 */
+		inline void set_kernel(CKernel* k)
+		{
+			SG_REF(k);
+			kernel=k;
+		}
 
-	inline void set_batch_computation_enabled(bool enable)
-	{
-		use_batch_computation=enable;
-	}
+		/** get kernel
+		 *
+		 * @return kernel
+		 */
+		inline CKernel* get_kernel()
+		{
+			SG_REF(kernel);
+			return kernel;
+		}
 
-	inline bool get_batch_computation_enabled()
-	{
-		return use_batch_computation;
-	}
+		/** set batch computation enabled
+		 *
+		 * @param enable if batch computation shall be enabled
+		 */
+		inline void set_batch_computation_enabled(bool enable)
+		{
+			use_batch_computation=enable;
+		}
 
-	inline void set_linadd_enabled(bool enable)
-	{
-		use_linadd=enable;
-	}
+		/** check if batch computation is enabled
+		 *
+		 * @return if batch computation is enabled
+		 */
+		inline bool get_batch_computation_enabled()
+		{
+			return use_batch_computation;
+		}
 
-	inline bool get_linadd_enabled()
-	{
-		return use_linadd ;
-	}
+		/** set linadd enabled
+		 *
+		 * @param enable if linadd shall be enabled
+		 */
+		inline void set_linadd_enabled(bool enable)
+		{
+			use_linadd=enable;
+		}
 
-	virtual CLabels* classify(CLabels* output=NULL);
+		/** check if linadd is enabled
+		 *
+		 * @return if linadd is enabled
+		 */
+		inline bool get_linadd_enabled()
+		{
+			return use_linadd ;
+		}
 
-protected:
-	CKernel* kernel;
-	bool use_batch_computation;
-	bool use_linadd;
+		/** classify kernel machine
+		 *
+		 * @param output where resuling labels are stored
+		 * @return result labels
+		 */
+		virtual CLabels* classify(CLabels* output=NULL);
+
+	protected:
+		/** kernel */
+		CKernel* kernel;
+		/** if batch computation is enabled */
+		bool use_batch_computation;
+		/** if linadd is enabled */
+		bool use_linadd;
 };
 
 #endif /* _KERNEL_MACHINE_H__ */

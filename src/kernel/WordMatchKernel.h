@@ -15,41 +15,94 @@
 #include "kernel/SimpleKernel.h"
 #include "features/WordFeatures.h"
 
+/** kernel WordMatch */
 class CWordMatchKernel: public CSimpleKernel<WORD>
 {
-public:
-	CWordMatchKernel(INT size, INT d, bool do_rescale=true, DREAL scale=1.);
-	CWordMatchKernel(CWordFeatures* l, CWordFeatures* r, INT degree, bool do_rescale=true, DREAL scale=1.);
-	virtual ~CWordMatchKernel() ;
-	
-	virtual bool init(CFeatures* l, CFeatures* r);
-	virtual void cleanup();
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param d degree
+		 * @param do_rescale if rescaling shall be applied
+		 * @param scale scaling factor
+		 */
+		CWordMatchKernel(INT size, INT d,
+			bool do_rescale=true, DREAL scale=1.);
 
-	/// load and save kernel init_data
-	virtual bool load_init(FILE* src);
-	virtual bool save_init(FILE* dest);
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param degree degree
+		 * @param do_rescale if rescaling shall be applied
+		 * @param scale scaling factor
+		 */
+		CWordMatchKernel(CWordFeatures* l, CWordFeatures* r, INT degree,
+			bool do_rescale=true, DREAL scale=1.);
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_LINEAR; }
+		virtual ~CWordMatchKernel();
 
-	// return the name of a kernel
-	virtual const CHAR* get_name() { return "Linear" ; } ;
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	virtual DREAL compute(INT idx_a, INT idx_b);
-	/*		compute_kernel*/
+		/** clean up kernel */
+		virtual void cleanup();
 
-	virtual void init_rescale();
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		virtual bool load_init(FILE* src);
 
-protected:
-	double scale ;
-	bool do_rescale ;
-	bool initialized;
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		virtual bool save_init(FILE* dest);
 
-	INT degree;
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type LINEAR
+		 */
+		virtual EKernelType get_kernel_type() { return K_LINEAR; }
+
+		/** return the kernel's name
+		 *
+		 * @return name WordMatch
+		 */
+		virtual const CHAR* get_name() { return "WordMatch"; }
+
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		virtual DREAL compute(INT idx_a, INT idx_b);
+
+		/** initialize rescaling */
+		virtual void init_rescale();
+
+	protected:
+		/** scaling factor */
+		double scale;
+		/** if rescaling shall be applied */
+		bool do_rescale;
+		/** if kernel is initialized */
+		bool initialized;
+
+		/** degree */
+		INT degree;
 };
 
 #endif /* _WORDMATCHKERNEL_H__ */

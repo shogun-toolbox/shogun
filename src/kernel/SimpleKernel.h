@@ -15,46 +15,64 @@
 #include "features/SimpleFeatures.h"
 #include "lib/io.h"
 
+/** template class SimpleKernel */
 template <class ST> class CSimpleKernel : public CKernel
 {
-public:
-	CSimpleKernel(INT cachesize) : CKernel(cachesize)
-	{
-	}
+	public:
+		/** constructor
+		 *
+		 * @param cachesize cache size
+		 */
+		CSimpleKernel(INT cachesize) : CKernel(cachesize) {}
 
-	CSimpleKernel(CFeatures* l, CFeatures* r) : CKernel(10)
-	{
-		init(l, r);
-	}
-
-	/** initialize your kernel
-	 * where l are feature vectors to occur on left hand side
-	 * and r the feature vectors to occur on right hand side
-	 */
-	virtual bool init(CFeatures* l, CFeatures* r)
-	{
-		CKernel::init(l,r);
-
-		ASSERT(l->get_feature_class() == C_SIMPLE);
-		ASSERT(r->get_feature_class() == C_SIMPLE);
-		ASSERT(l->get_feature_type()==this->get_feature_type());
-		ASSERT(r->get_feature_type()==this->get_feature_type());
-
-		if ( ((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
-		{  
-			SG_ERROR( "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
-					((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) r)->get_num_features());
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 */
+		CSimpleKernel(CFeatures* l, CFeatures* r) : CKernel(10)
+		{
+			init(l, r);
 		}
-		return true;
-	}
 
-	/** return feature class the kernel can deal with
-	  */
-	inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+		/** initialize kernel
+		 *  e.g. setup lhs/rhs of kernel, precompute normalization
+		 *  constants etc.
+		 *  make sure to check that your kernel can deal with the
+		 *  supplied features (!)
+		 *
+		 *  @param l features for left-hand side
+		 *  @param r features for right-hand side
+		 *  @return if init was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r)
+		{
+			CKernel::init(l,r);
 
-	/** return feature type the kernel can deal with
-	  */
-	inline virtual EFeatureType get_feature_type();
+			ASSERT(l->get_feature_class() == C_SIMPLE);
+			ASSERT(r->get_feature_class() == C_SIMPLE);
+			ASSERT(l->get_feature_type()==this->get_feature_type());
+			ASSERT(r->get_feature_type()==this->get_feature_type());
+
+			if ( ((CSimpleFeatures<ST>*) l)->get_num_features() != ((CSimpleFeatures<ST>*) r)->get_num_features() )
+			{  
+				SG_ERROR( "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+						((CSimpleFeatures<ST>*) l)->get_num_features(),((CSimpleFeatures<ST>*) r)->get_num_features());
+			}
+			return true;
+		}
+
+		/** return feature class the kernel can deal with
+		 *
+		 * @return feature class SIMPLE
+		 */
+		inline virtual EFeatureClass get_feature_class() { return C_SIMPLE; }
+
+		/** return feature type the kernel can deal with
+		 *
+		 * @return templated feature type
+		 */
+		inline virtual EFeatureType get_feature_type();
 };
 
 

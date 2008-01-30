@@ -14,27 +14,62 @@
 #include "lib/common.h"
 #include "kernel/GaussianKernel.h"
 
+/** kernel GaussianShift */
 class CGaussianShiftKernel: public CGaussianKernel
 {
-public:
-	CGaussianShiftKernel(INT size, double width, int max_shift, int shift_step);
-	CGaussianShiftKernel(CRealFeatures* l, CRealFeatures* r, double width, int max_shift, int shift_step, INT size=10);
-	virtual ~CGaussianShiftKernel();
-	
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_GAUSSIANSHIFT; }
-	
-	// return the name of a kernel
-	virtual const CHAR* get_name() { return "GaussianShift" ; } ;
-	
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	virtual DREAL compute(INT idx_a, INT idx_b);
-	
-protected:
-	int max_shift, shift_step ;
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param width width
+		 * @param max_shift maximum shift
+		 * @param shift_step shift step
+		 */
+		CGaussianShiftKernel(INT size, double width, int max_shift,
+			int shift_step);
+
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param width width
+		 * @param max_shift maximum shift
+		 * @param shift_step shift step
+		 * @param size cache size
+		 */
+		CGaussianShiftKernel(CRealFeatures* l, CRealFeatures* r,
+			double width, int max_shift, int shift_step, INT size=10);
+
+		virtual ~CGaussianShiftKernel();
+
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type GAUSSIANSHIFT
+		 */
+		virtual EKernelType get_kernel_type() { return K_GAUSSIANSHIFT; }
+
+		/** return the kernel's name
+		 *
+		 * @return name GaussianShift
+		 */
+		virtual const CHAR* get_name() { return "GaussianShift"; }
+
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		virtual DREAL compute(INT idx_a, INT idx_b);
+
+	protected:
+		/** maximum shift */
+		int max_shift;
+		/** shift step */
+		int shift_step;
 };
 
 #endif /* _GAUSSIANSHIFTKERNEL_H__ */

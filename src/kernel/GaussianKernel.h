@@ -15,34 +15,80 @@
 #include "kernel/SimpleKernel.h"
 #include "features/RealFeatures.h"
 
+/** kernel Gaussian */
 class CGaussianKernel: public CSimpleKernel<DREAL>
 {
-public:
-	CGaussianKernel(INT size, DREAL width);
-	CGaussianKernel(CRealFeatures* l, CRealFeatures* r, DREAL width, INT size=10);
-	virtual ~CGaussianKernel();
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param width width
+		 */
+		CGaussianKernel(INT size, DREAL width);
 
-	virtual bool init(CFeatures* l, CFeatures* r);
-	virtual void cleanup();
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param width width
+		 * @param size cache size
+		 */
+		CGaussianKernel(CRealFeatures* l, CRealFeatures* r,
+			DREAL width, INT size=10);
 
-	/// load and save kernel init_data
-	virtual bool load_init(FILE* src);
-	virtual bool save_init(FILE* dest);
+		virtual ~CGaussianKernel();
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_GAUSSIAN; }
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-	// return the name of a kernel
-	virtual const CHAR* get_name() { return "Gaussian" ; } ;
+		/** clean up kernel */
+		virtual void cleanup();
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	virtual DREAL compute(INT idx_a, INT idx_b);
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		virtual bool load_init(FILE* src);
 
-protected:
-	DREAL width;
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		virtual bool save_init(FILE* dest);
+
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type GAUSSIAN
+		 */
+		virtual EKernelType get_kernel_type() { return K_GAUSSIAN; }
+
+		/** return the kernel's name
+		 *
+		 * @return name Gaussian
+		 */
+		virtual const CHAR* get_name() { return "Gaussian"; }
+
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		virtual DREAL compute(INT idx_a, INT idx_b);
+
+	protected:
+		/** width */
+		DREAL width;
 };
 
 #endif /* _GAUSSIANKERNEL_H__ */

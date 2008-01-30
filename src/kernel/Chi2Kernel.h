@@ -16,34 +16,80 @@
 #include "features/Features.h"
 #include "features/RealFeatures.h"
 
+/** kernel Chi2 */
 class CChi2Kernel: public CSimpleKernel<DREAL>
 {
-public:
-	CChi2Kernel(INT size, DREAL width);
-	CChi2Kernel(CRealFeatures* l, CRealFeatures* r, DREAL width, INT size);
-	virtual ~CChi2Kernel();
-	
-	virtual bool init(CFeatures* l, CFeatures* r);
-	virtual void cleanup();
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param width width
+		 */
+		CChi2Kernel(INT size, DREAL width);
 
-	/// load and save kernel init_data
-	virtual bool load_init(FILE* src);
-	virtual bool save_init(FILE* dest);
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param width width
+		 * @param size cache size
+		 */
+		CChi2Kernel(CRealFeatures* l, CRealFeatures* r,
+			DREAL width, INT size);
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_CHI2; }
+		virtual ~CChi2Kernel();
 
-	// return the name of a kernel
-	virtual const CHAR* get_name() { return "Chi2"; };
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	virtual DREAL compute(INT idx_a, INT idx_b);
+		/** clean up kernel */
+		virtual void cleanup();
 
-protected:
-	DREAL width;
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		virtual bool load_init(FILE* src);
+
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		virtual bool save_init(FILE* dest);
+
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type CHI2
+		 */
+		virtual EKernelType get_kernel_type() { return K_CHI2; }
+
+		/** return the kernel's name
+		 *
+		 * @return name Chi2
+		 */
+		virtual const CHAR* get_name() { return "Chi2"; };
+
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		virtual DREAL compute(INT idx_a, INT idx_b);
+
+	protected:
+		/** width */
+		DREAL width;
 };
 
 #endif /* _CHI2KERNEL_H__ */

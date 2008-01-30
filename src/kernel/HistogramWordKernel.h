@@ -17,59 +17,123 @@
 #include "classifier/PluginEstimate.h"
 #include "features/StringFeatures.h"
 
+/** kernel HistogramWord */
 class CHistogramWordKernel: public CStringKernel<WORD>
 {
-public:
-	CHistogramWordKernel(INT size, CPluginEstimate* pie);
-	CHistogramWordKernel(CStringFeatures<WORD>* l, CStringFeatures<WORD>* r, CPluginEstimate* pie);
-	virtual ~CHistogramWordKernel();
-	
-	virtual bool init(CFeatures* l, CFeatures* r);
-	virtual void cleanup();
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param pie plugin estimate
+		 */
+		CHistogramWordKernel(INT size, CPluginEstimate* pie);
 
-	/// load and save kernel init_data
-	bool load_init(FILE* src);
-	bool save_init(FILE* dest);
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param pie plugin estimate
+		 */
+		CHistogramWordKernel(
+			CStringFeatures<WORD>* l, CStringFeatures<WORD>* r,
+			CPluginEstimate* pie);
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_HISTOGRAM; }
+		virtual ~CHistogramWordKernel();
 
-	// return the name of a kernel
-	virtual const CHAR* get_name() { return "Histogram" ; } ;
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	DREAL compute(INT idx_a, INT idx_b);
-	//	DREAL compute_slow(LONG idx_a, LONG idx_b);
+		/** clean up kernel */
+		virtual void cleanup();
 
-	inline INT compute_index(INT position, WORD symbol)
-	{
-		return position*num_symbols+symbol+1;
-	}
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		bool load_init(FILE* src);
 
-protected:
-	CPluginEstimate* estimate;
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		bool save_init(FILE* dest);
 
-	DREAL* mean;
-	DREAL* variance;
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type HISTOGRAM
+		 */
+		virtual EKernelType get_kernel_type() { return K_HISTOGRAM; }
 
-	DREAL* sqrtdiag_lhs;
-	DREAL* sqrtdiag_rhs;
+		/** return the kernel's name
+		 *
+		 * @return name Histogram
+		 */
+		virtual const CHAR* get_name() { return "Histogram" ; } ;
 
-	DREAL* ld_mean_lhs;
-	DREAL* ld_mean_rhs;
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		DREAL compute(INT idx_a, INT idx_b);
 
-	DREAL* plo_lhs;
-	DREAL* plo_rhs;
+		/** compute index
+		 *
+		 * @param position position
+		 * @param symbol symbol
+		 * @return index at given position in given symbol
+		 */
+		inline INT compute_index(INT position, WORD symbol)
+		{
+			return position*num_symbols+symbol+1;
+		}
 
-	INT num_params;
-	INT num_params2;
-	INT num_symbols;
-	DREAL sum_m2_s2;
+	protected:
+		/** plugin estimate */
+		CPluginEstimate* estimate;
 
-	bool initialized;
+		/** mean */
+		DREAL* mean;
+		/** variance */
+		DREAL* variance;
+
+		/** sqrt diagonal of left-hand side */
+		DREAL* sqrtdiag_lhs;
+		/** sqrt diagonal of right-hand side */
+		DREAL* sqrtdiag_rhs;
+
+		/** ld mean left-hand side */
+		DREAL* ld_mean_lhs;
+		/** ld mean right-hand side */
+		DREAL* ld_mean_rhs;
+
+		/** plo left-hand side */
+		DREAL* plo_lhs;
+		/** plo right-hand side */
+		DREAL* plo_rhs;
+
+		/** number of parameters */
+		INT num_params;
+		/** number of parameters2 */
+		INT num_params2;
+		/** number of symbols */
+		INT num_symbols;
+		/** sum m2 s2 */
+		DREAL sum_m2_s2;
+
+		/** if kernel is initialized */
+		bool initialized;
 };
 
 #endif /* _HISTOGRAMWORDKERNEL_H__ */

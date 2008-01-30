@@ -14,44 +14,60 @@
 #include "kernel/Kernel.h"
 #include "features/SparseFeatures.h"
 
+/** template class SparseKernel */
 template <class ST> class CSparseKernel : public CKernel
 {
-public:
-	CSparseKernel(INT cachesize) : CKernel(cachesize)
-	{
-	}
+	public:
+		/** constructor
+		 *
+		 * @param cachesize cache size
+		 */
+		CSparseKernel(INT cachesize) : CKernel(cachesize) {}
 
-	CSparseKernel(CFeatures* l, CFeatures* r) : CKernel(10)
-	{
-		init(l, r);
-	}
-
-	/** initialize your kernel
-	 * where l are feature vectors to occur on left hand side
-	 * and r the feature vectors to occur on right hand side
-	 *
-	 */
-	virtual bool init(CFeatures* l, CFeatures* r)
-	{
-		CKernel::init(l,r);
-
-		ASSERT(l->get_feature_class() == C_SPARSE);
-		ASSERT(r->get_feature_class() == C_SPARSE);
-		ASSERT(l->get_feature_type()==this->get_feature_type());
-		ASSERT(r->get_feature_type()==this->get_feature_type());
-
-		if (((CSparseFeatures<ST>*) lhs)->get_num_features() != ((CSparseFeatures<ST>*) rhs)->get_num_features())
+		/** constructor
+		 *
+		 * @param l features for left-hand side
+		 * @param r features for right-hand side
+		 */
+		CSparseKernel(CFeatures* l, CFeatures* r) : CKernel(10)
 		{
-			SG_ERROR( "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
-					((CSparseFeatures<ST>*) lhs)->get_num_features(),((CSparseFeatures<ST>*)rhs)->get_num_features());
+			init(l, r);
 		}
-		return true;
-	}
 
-	/** return feature class the kernel can deal with
-	  */
-	inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
-	inline virtual EFeatureType get_feature_type();
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r)
+		{
+			CKernel::init(l,r);
+
+			ASSERT(l->get_feature_class() == C_SPARSE);
+			ASSERT(r->get_feature_class() == C_SPARSE);
+			ASSERT(l->get_feature_type()==this->get_feature_type());
+			ASSERT(r->get_feature_type()==this->get_feature_type());
+
+			if (((CSparseFeatures<ST>*) lhs)->get_num_features() != ((CSparseFeatures<ST>*) rhs)->get_num_features())
+			{
+				SG_ERROR( "train or test features #dimension mismatch (l:%d vs. r:%d)\n",
+						((CSparseFeatures<ST>*) lhs)->get_num_features(),((CSparseFeatures<ST>*)rhs)->get_num_features());
+			}
+			return true;
+		}
+
+		/** return feature class the kernel can deal with
+		 *
+		 * @return feature class SPARSE
+		 */
+		inline virtual EFeatureClass get_feature_class() { return C_SPARSE; }
+
+		/** return feature type the kernel can deal with
+		 *
+		 * @return templated feature type
+		 */
+		inline virtual EFeatureType get_feature_type();
 };
 
 template<> inline EFeatureType CSparseKernel<DREAL>::get_feature_type() { return F_DREAL; }

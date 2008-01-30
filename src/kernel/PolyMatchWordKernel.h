@@ -15,41 +15,95 @@
 #include "kernel/SimpleKernel.h"
 #include "features/WordFeatures.h"
 
+/** kernel PolyMatchWord */
 class CPolyMatchWordKernel: public CSimpleKernel<WORD>
 {
-public:
-	CPolyMatchWordKernel(INT size, INT degree, bool inhomogene, bool use_normalization=true);
-	CPolyMatchWordKernel(CWordFeatures* l, CWordFeatures* r, INT degree, bool inhomogene, bool use_normalization=true);
-	virtual ~CPolyMatchWordKernel();
-	
-	virtual bool init(CFeatures* l, CFeatures* r);
-	virtual void cleanup();
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param degree degree
+		 * @param inhomogene is inhomogeneous
+		 * @param use_normalization use normalization
+		 */
+		CPolyMatchWordKernel(INT size, INT degree, bool inhomogene,
+			bool use_normalization=true);
 
-	/// load and save kernel init_data
-	virtual bool load_init(FILE* src);
-	virtual bool save_init(FILE* dest);
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param degree degree
+		 * @param inhomogene is inhomogeneous
+		 * @param use_normalization use normalization
+		 */
+		CPolyMatchWordKernel(CWordFeatures* l, CWordFeatures* r,
+			INT degree, bool inhomogene, bool use_normalization=true);
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_POLYMATCH; }
+		virtual ~CPolyMatchWordKernel();
 
-	// return the name of a kernel
-	virtual const CHAR* get_name() { return "PolyMatchChar"; };
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	virtual DREAL compute(INT idx_a, INT idx_b);
+		/** clean up kernel */
+		virtual void cleanup();
 
-protected:
-	INT degree;
-	bool inhomogene;
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		virtual bool load_init(FILE* src);
 
-	double* sqrtdiag_lhs;
-	double* sqrtdiag_rhs;
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		virtual bool save_init(FILE* dest);
 
-	bool initialized;
-	bool use_normalization;
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type POLYMATCH
+		 */
+		virtual EKernelType get_kernel_type() { return K_POLYMATCH; }
+
+		/** return the kernel's name
+		 *
+		 * @return name PolyMatchWord
+		 */
+		virtual const CHAR* get_name() { return "PolyMatchWord"; }
+
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		virtual DREAL compute(INT idx_a, INT idx_b);
+
+	protected:
+		/** degree */
+		INT degree;
+		/** if kernel is inhomogeneous */
+		bool inhomogene;
+		/** if normalization is used */
+		bool use_normalization;
+
+		/** sqrt diagonal of left-hand side */
+		DREAL *sqrtdiag_lhs;
+		/** sqrt diagonal of right-hand side */
+		DREAL *sqrtdiag_rhs;
+		/** if kernel is initialized */
+		bool initialized;
 };
 
 #endif /* _POLYMATCHWORDKERNEL_H__ */

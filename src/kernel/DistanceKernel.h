@@ -18,35 +18,93 @@
 #include "kernel/Kernel.h"
 #include "distance/Distance.h"
 
+/** kernel Distance */
 class CDistanceKernel: public CKernel
 {
-public:
-	/* Constructors */
-	CDistanceKernel(INT cache, DREAL width, CDistance* dist);
-	CDistanceKernel(CFeatures *l, CFeatures *r, DREAL width, CDistance* dist);
-	virtual ~CDistanceKernel();
+	public:
+		/** constructor
+		 *
+		 * @param cache cache size
+		 * @param width width
+		 * @param dist distance
+		 */
+		CDistanceKernel(INT cache, DREAL width, CDistance* dist);
 
-	/* Init and cleanup functions */
-	virtual bool init(CFeatures* l, CFeatures* r);
-	virtual void cleanup();
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param width width
+		 * @param dist distance
+		 */
+		CDistanceKernel(CFeatures *l, CFeatures *r, DREAL width, CDistance* dist);
 
-	/* Identification functions */
-	inline virtual EKernelType get_kernel_type() { return K_DISTANCE; }
-	inline virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
-	inline virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
-	inline virtual const CHAR* get_name() { return distance->get_name(); }
+		virtual ~CDistanceKernel();
 
-	/* Load and save functions */
-	bool load_init(FILE* src);
-	bool save_init(FILE* dest);
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-protected:
-	/* Kernel function */
-	DREAL compute(INT idx_a, INT idx_b);
+		/** clean up kernel */
+		virtual void cleanup();
 
-private:
-	CDistance* distance;
-	DREAL width;
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type DISTANCE
+		 */
+		inline virtual EKernelType get_kernel_type() { return K_DISTANCE; }
+		/** return feature type the kernel can deal with
+		 *
+		 * @return feature type of distance used
+		 */
+		inline virtual EFeatureType get_feature_type() { return distance->get_feature_type(); }
+
+		/** return feature class the kernel can deal with
+		 *
+		 * @return feature class of distance used
+		 */
+		inline virtual EFeatureClass get_feature_class() { return distance->get_feature_class(); }
+
+		/** return the kernel's name
+		 *
+		 * @return name Distance
+		 */
+		inline virtual const CHAR* get_name() { return distance->get_name(); }
+
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		bool load_init(FILE* src);
+
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		bool save_init(FILE* dest);
+
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		DREAL compute(INT idx_a, INT idx_b);
+
+	private:
+		/** distance */
+		CDistance* distance;
+		/** width */
+		DREAL width;
 };
 
 #endif /* _DISTANCEKERNEL_H__ */

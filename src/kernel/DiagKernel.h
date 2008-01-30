@@ -14,53 +14,94 @@
 #include "lib/common.h"
 #include "kernel/Kernel.h"
 
+/** kernel Diag */
 class CDiagKernel: public CKernel
 {
-public:
-	CDiagKernel(INT size, DREAL diag=1.0);
-	CDiagKernel(CFeatures* l, CFeatures* r, DREAL diag=1.0);
-	virtual ~CDiagKernel();
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param diag diagonal
+		 */
+		CDiagKernel(INT size, DREAL diag=1.0);
 
-	virtual void cleanup();
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param diag diagonal
+		 */
+		CDiagKernel(CFeatures* l, CFeatures* r, DREAL diag=1.0);
 
-	/// load and save kernel init_data
-	virtual bool load_init(FILE* src);
-	virtual bool save_init(FILE* dest);
+		virtual ~CDiagKernel();
 
-	/** return feature type the kernel can deal with
-	*/
-	inline virtual EFeatureType get_feature_type()
-	{
-		return F_ANY;
-	}
+		/** clean up kernel */
+		virtual void cleanup();
 
-	/** return feature class the kernel can deal with
-	*/
-	inline virtual EFeatureClass get_feature_class()
-	{
-		return C_ANY;
-	}
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		virtual bool load_init(FILE* src);
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_DIAG; }
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		virtual bool save_init(FILE* dest);
 
-	// return the name of a kernel
-	virtual const CHAR* get_name() { return "Diagonal" ; } ;
+		/** return feature type the kernel can deal with
+		 *
+		 * @return feature type ANY
+		 */
+		inline virtual EFeatureType get_feature_type()
+		{
+			return F_ANY;
+		}
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	inline virtual DREAL compute(INT idx_a, INT idx_b)
-	{
-		if (idx_a==idx_b)
-			return diag;
-		else
-			return 0;
-	}
+		/** return feature class the kernel can deal with
+		 *
+		 * @return feature class ANY
+		 */
+		inline virtual EFeatureClass get_feature_class()
+		{
+			return C_ANY;
+		}
 
-protected:
-	double diag;
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type CUSTOM
+		 */
+		virtual EKernelType get_kernel_type() { return K_DIAG; }
+
+		/** return the kernel's name
+		 *
+		 * @return name Custom
+		 */
+		virtual const CHAR* get_name() { return "Diagonal"; }
+
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		inline virtual DREAL compute(INT idx_a, INT idx_b)
+		{
+			if (idx_a==idx_b)
+				return diag;
+			else
+				return 0;
+		}
+
+	protected:
+		/** diagonal */
+		double diag;
 };
 
 #endif /* _DIAGKERNEL_H__ */

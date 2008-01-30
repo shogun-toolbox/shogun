@@ -16,51 +16,96 @@
 #include "kernel/Kernel.h"
 #include "features/Features.h"
 
+/** kernel Const */
 class CConstKernel: public CKernel
 {
-public:
-	CConstKernel(DREAL c);
-	CConstKernel(CFeatures* l, CFeatures *r, DREAL c);
-	virtual ~CConstKernel();
+	public:
+		/** constructor
+		 *
+		 * @param c constant c
+		 */
+		CConstKernel(DREAL c);
 
-	inline virtual void cleanup() { }
-	virtual bool init(CFeatures* l, CFeatures* r);
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param c constant c
+		 */
+		CConstKernel(CFeatures* l, CFeatures *r, DREAL c);
 
-	/// load and save kernel init_data
-	virtual bool load_init(FILE* src);
-	virtual bool save_init(FILE* dest);
+		virtual ~CConstKernel();
 
-	// return what type of kernel we are Linear,Polynomial, Const,...
-	inline virtual EKernelType get_kernel_type() { return K_CONST; }
+		/** clean up kernel */
+		inline virtual void cleanup() {}
 
-	/** return feature type the kernel can deal with
-	*/
-	inline virtual EFeatureType get_feature_type()
-	{
-		return F_ANY;
-	}
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-	/** return feature class the kernel can deal with
-	*/
-	inline virtual EFeatureClass get_feature_class()
-	{
-		return C_ANY;
-	}
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		virtual bool load_init(FILE* src);
 
-	// return the name of a kernel
-	virtual const CHAR* get_name() { return "Const"; }
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		virtual bool save_init(FILE* dest);
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	inline virtual DREAL compute(INT row, INT col)
-	{
-		return const_value;
-	}
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type CONST
+		 */
+		inline virtual EKernelType get_kernel_type() { return K_CONST; }
 
-protected:
-	DREAL const_value;
+		/** return feature type the kernel can deal with
+		 *
+		 * @return feature type ANY
+		 */
+		inline virtual EFeatureType get_feature_type()
+		{
+			return F_ANY;
+		}
+
+		/** return feature class the kernel can deal with
+		 *
+		 * @return feature class ANY
+		 */
+		inline virtual EFeatureClass get_feature_class()
+		{
+			return C_ANY;
+		}
+
+		/** return the kernel's name
+		 *
+		 * @return name Const
+		 */
+		virtual const CHAR* get_name() { return "Const"; }
+
+	protected:
+		/** compute kernel function for features a and b
+		 *
+		 * @param row dummy row
+		 * @param col dummy col
+		 * @return computed kernel function (const value)
+		 */
+		inline virtual DREAL compute(INT row, INT col)
+		{
+			return const_value;
+		}
+
+	protected:
+		/** const value */
+		DREAL const_value;
 };
 
 #endif /* _CONSTKERNEL_H__ */

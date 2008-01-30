@@ -15,65 +15,141 @@
 #include "kernel/SimpleKernel.h"
 #include "features/RealFeatures.h"
 
+/** kernel Linear */
 class CLinearKernel: public CSimpleKernel<DREAL>
 {
-public:
-	CLinearKernel(INT size, DREAL scale=1.0);
-	CLinearKernel(CRealFeatures* l, CRealFeatures* r, DREAL scale=1.0, INT size=10);
-	virtual ~CLinearKernel();
+	public:
+		/** constructor
+		 *
+		 * @param size cache size
+		 * @param scale scaling factor
+		 */
+		CLinearKernel(INT size, DREAL scale=1.0);
 
-	virtual bool init(CFeatures* l, CFeatures* r);
-	virtual void cleanup();
+		/** constructor
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @param scale scaling factor
+		 * @param size cache size
+		 */
+		CLinearKernel(CRealFeatures* l, CRealFeatures* r,
+			DREAL scale=1.0, INT size=10);
 
-	/// load and save kernel init_data
-	virtual bool load_init(FILE* src);
-	virtual bool save_init(FILE* dest);
+		virtual ~CLinearKernel();
 
-	// return what type of kernel we are Linear,Polynomial, Gaussian,...
-	virtual EKernelType get_kernel_type() { return K_LINEAR; }
+		/** initialize kernel
+		 *
+		 * @param l features of left-hand side
+		 * @param r features of right-hand side
+		 * @return if initializing was successful
+		 */
+		virtual bool init(CFeatures* l, CFeatures* r);
 
-	// return the name of a kernel
-	virtual const CHAR* get_name() { return "Linear" ; } ;
+		/** clean up kernel */
+		virtual void cleanup();
 
-	///optimizable kernel, i.e. precompute normal vector and as phi(x)=x
-	///do scalar product in input space
-	virtual bool init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas);
-	virtual bool delete_optimization();
-	virtual DREAL compute_optimized(INT idx);
+		/** load kernel init_data
+		 *
+		 * @param src file to load from
+		 * @return if loading was successful
+		 */
+		virtual bool load_init(FILE* src);
 
-	virtual void clear_normal();
-	virtual void add_to_normal(INT idx, DREAL weight);
+		/** save kernel init_data
+		 *
+		 * @param dest file to save to
+		 * @return if saving was successful
+		 */
+		virtual bool save_init(FILE* dest);
 
-	inline const double* get_normal(INT& len)
-	{
-		if (lhs && normal)
+		/** return what type of kernel we are
+		 *
+		 * @return kernel type LINEAR
+		 */
+		virtual EKernelType get_kernel_type() { return K_LINEAR; }
+
+		/** return the kernel's name
+		 *
+		 * @return name Lineaer
+		 */
+		virtual const CHAR* get_name() { return "Linear"; }
+
+		/** optimizable kernel, i.e. precompute normal vector and as
+		 * phi(x) = x do scalar product in input space
+		 *
+		 * @param num_suppvec number of support vectors
+		 * @param sv_idx support vector index
+		 * @param alphas alphas
+		 * @return if optimization was successful
+		 */
+		virtual bool init_optimization(INT num_suppvec, INT* sv_idx, DREAL* alphas);
+
+		/** delete optimization
+		 *
+		 * @return if deleting was successful
+		 */
+		virtual bool delete_optimization();
+
+		/** compute optimized
+	 	*
+	 	* @param idx index to compute
+	 	* @return optimized value at given index
+	 	*/
+		virtual DREAL compute_optimized(INT idx);
+
+		/** clear normal vector */
+		virtual void clear_normal();
+
+		/** add to normal vector
+		 *
+		 * @param idx where to add
+		 * @param weight what to add
+		 */
+		virtual void add_to_normal(INT idx, DREAL weight);
+
+		/** get normal
+		 *
+		 * @param len where length of normal vector will be stored
+		 * @return normal vector
+		 */
+		inline const double* get_normal(INT& len)
 		{
-			len = ((CRealFeatures*) lhs)->get_num_features();
-			return normal;
+			if (lhs && normal)
+			{
+				len = ((CRealFeatures*) lhs)->get_num_features();
+				return normal;
+			}
+			else
+			{
+				len = 0;
+				return NULL;
+			}
 		}
-		else
-		{
-			len = 0;
-			return NULL;
-		}
-	}
 
-protected:
-	/// compute kernel function for features a and b
-	/// idx_{a,b} denote the index of the feature vectors
-	/// in the corresponding feature object
-	virtual DREAL compute(INT idx_a, INT idx_b);
-	/*		compute_kernel*/
+	protected:
+		/** compute kernel function for features a and b
+		 * idx_{a,b} denote the index of the feature vectors
+		 * in the corresponding feature object
+		 *
+		 * @param idx_a index a
+		 * @param idx_b index b
+		 * @return computed kernel function at indices a,b
+		 */
+		virtual DREAL compute(INT idx_a, INT idx_b);
 
-	virtual void init_rescale();
-	
-protected:
-	double scale ;
-	bool initialized;
+		/** initialize rescaling */
+		virtual void init_rescale();
 
-	/// normal vector (used in case of optimized kernel)
-	INT normal_length;
-	DREAL* normal;
+	protected:
+		/** scaling factor */
+		double scale;
+		/** if kernel is initialized */
+		bool initialized;
+		/** normal vector (used in case of optimized kernel) */
+		DREAL* normal;
+		/** length of normal vector */
+		INT normal_length;
 };
 
 #endif /* _LINEARKERNEL_H__ */
