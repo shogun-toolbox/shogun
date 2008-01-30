@@ -65,7 +65,8 @@ DREAL CChi2Kernel::compute(INT idx_a, INT idx_b)
 	{
 		DREAL n=avec[i]-bvec[i];
 		DREAL d=avec[i]+bvec[i];
-		result+=n*n/d;
+		if (d!=0)
+			result+=n*n/d;
 	}
 
 	result=exp(-result/width);
