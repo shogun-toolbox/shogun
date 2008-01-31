@@ -1,10 +1,27 @@
-XXXX-XX-XX  Soeren Sonnenburg <debian@nn7.de>
+2008-01-31  Soeren Sonnenburg <debian@nn7.de>
 
 	* SHOGUN Release version 0.5.0
 	* This release contains several major enhancements:
 		- Full fledged test suite for python-modular interface
+		- Toy examples describing the use of kernels, classifier,
+		distributions, features, distances, regression and preprocessors
+		for the python-modular interface
 		- Doxygen generated documentation for python-modular interface
-		- Switched licensing to GPL v3
+		- Many cleanups to make python-modular interface more consistent
+	* New methods:
+		- WDSVMOcas
+		- Update liblinear to version 1.22
+	* Bugfixes:
+		- StringFeatures may now directly read DNA strings from a single file
+		- Option to quieten progress output
+		- Several memory leaks and valgrind errors
+		- Fixed rarely ocurring convergence problem in OCAS
+		- Division by zero in Chi2Kernel
+		- WD kernel now dynamically allocates Tries
+		- Matlab clear sg ; sg crasher
+		- Salzberg/HistogramWordkernel crasher
+		- Fix build dependency generation using gcc -MM
+	* Switched license to GPL v3
 
 2007-11-23  Soeren Sonnenburg <debian@nn7.de>
 
