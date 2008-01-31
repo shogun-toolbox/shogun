@@ -16,15 +16,15 @@
 
 CPolyMatchWordKernel::CPolyMatchWordKernel(INT size, INT d, bool i, bool un)
 : CSimpleKernel<WORD>(size),degree(d),inhomogene(i),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
-	use_normalization(un)
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), 
+	use_normalization(un), initialized(false)
 {
 }
 
 CPolyMatchWordKernel::CPolyMatchWordKernel(
 	CWordFeatures* l, CWordFeatures* r, INT d, bool i, bool un)
-: CSimpleKernel<WORD>(10),degree(d),inhomogene(i),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false), use_normalization(un)
+: CSimpleKernel<WORD>(10),degree(d),inhomogene(i), sqrtdiag_lhs(NULL),
+	sqrtdiag_rhs(NULL), use_normalization(un), initialized(false)
 {
 	init(l, r);
 }

@@ -171,6 +171,9 @@ DREAL* CTOPFeatures::set_feature_matrix()
 	INT len=0;
 
 	num_features=get_num_features();
+	ASSERT(num_features);
+	ASSERT(pos);
+	ASSERT(pos->get_observeations());
 
 	num_vectors=pos->get_observations()->get_num_vectors();
 	SG_INFO( "allocating top feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);

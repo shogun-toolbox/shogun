@@ -43,7 +43,7 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 : CStringKernel<CHAR>(10),weights(NULL),position_weights(NULL),
 	weights_buffer(NULL), mkl_stepsize(1),degree(degree_), length(0),
 	max_mismatch(0), seq_length(0), initialized(false),
-	block_computation(true), use_normalization(true),
+	use_normalization(true),block_computation(true), 
 	normalization_const(1.0), num_block_weights_external(0),
 	block_weights_external(NULL), block_weights(NULL), type(type_),
 	which_degree(-1), tries(NULL), tree_initialized(false)
@@ -61,7 +61,7 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel (
 : CStringKernel<CHAR>(10), weights(NULL), position_weights(NULL),
 	weights_buffer(NULL), mkl_stepsize(1), degree(degree_), length(0),
 	max_mismatch(0), seq_length(0), initialized(false),
-	block_computation(true), use_normalization(true),
+	use_normalization(true), block_computation(true),
 	normalization_const(1.0), num_block_weights_external(0),
 	block_weights_external(NULL), block_weights(NULL), type(E_EXTERNAL),
 	which_degree(-1), tries(NULL), tree_initialized(false)
@@ -81,7 +81,7 @@ CWeightedDegreeStringKernel::CWeightedDegreeStringKernel(
 : CStringKernel<CHAR>(10), weights(NULL), position_weights(NULL),
 	weights_buffer(NULL), mkl_stepsize(1), degree(degree_), length(0),
 	max_mismatch(0), seq_length(0), initialized(false),
-	block_computation(true), use_normalization(true),
+	use_normalization(true), block_computation(true),
 	normalization_const(1.0), num_block_weights_external(0),
 	block_weights_external(NULL), block_weights(NULL), type(E_WD),
 	which_degree(-1), tries(NULL), tree_initialized(false)

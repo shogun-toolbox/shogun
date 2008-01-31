@@ -16,14 +16,14 @@
 
 CLinearKernel::CLinearKernel(INT size, DREAL s)
 	: CSimpleKernel<DREAL>(size), scale(s), initialized(false),
-	normal_length(0), normal(NULL)
+	normal(NULL), normal_length(0)
 {
 	properties |= KP_LINADD;
 }
 
 CLinearKernel::CLinearKernel(CRealFeatures* l, CRealFeatures* r, DREAL s, INT size)
 	: CSimpleKernel<DREAL>(size), scale(s), initialized(false),
-	normal_length(0), normal(NULL)
+	normal(NULL), normal_length(0)
 {
 	properties |= KP_LINADD;
 	init(l,r);

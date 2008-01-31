@@ -16,16 +16,16 @@
 #include "kernel/SparseKernel.h"
 
 CSparseLinearKernel::CSparseLinearKernel(INT size, DREAL s)
-	: CSparseKernel<DREAL>(size), scale(s), initialized(false),
-	normal_length(0), normal(NULL)
+	: CSparseKernel<DREAL>(size), scale(s), initialized(false), normal(NULL),
+	normal_length(0)
 {
 	properties |= KP_LINADD;
 }
 
 CSparseLinearKernel::CSparseLinearKernel(
 	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r, DREAL s, INT size)
-	: CSparseKernel<DREAL>(size), scale(s), initialized(false),
-	normal_length(0), normal(NULL)
+	: CSparseKernel<DREAL>(size), scale(s), initialized(false), normal(NULL),
+	normal_length(0)
 {
 	properties |= KP_LINADD;
 	init(l,r);

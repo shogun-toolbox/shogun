@@ -17,16 +17,15 @@
 CPolyMatchStringKernel::CPolyMatchStringKernel(
 	INT size, INT d, bool i, bool un)
 	: CStringKernel<CHAR>(size), degree(d), inhomogene(i),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
-	use_normalization(un)
+	use_normalization(un), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
+	initialized(false)
 {
 }
 
 CPolyMatchStringKernel::CPolyMatchStringKernel(
 	CStringFeatures<CHAR>* l, CStringFeatures<CHAR>* r, INT d, bool i, bool un)
-: CStringKernel<CHAR>(10), degree(d), inhomogene(i),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false),
-	use_normalization(un)
+: CStringKernel<CHAR>(10), degree(d), inhomogene(i), use_normalization(un)
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
     init(l, r);
 }

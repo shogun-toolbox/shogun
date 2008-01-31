@@ -138,8 +138,6 @@ class CSparseLinearKernel: public CSparseKernel<DREAL>
 	protected:
 		/** scaling factor */
 		double scale;
-		/** if rescaling shall be applied */
-		bool do_rescale;
 		/** if kernel is initialized */
 		bool initialized;
 
