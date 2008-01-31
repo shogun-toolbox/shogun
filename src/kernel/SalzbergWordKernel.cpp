@@ -323,7 +323,7 @@ DREAL CSalzbergWordKernel::compute(INT idx_a, INT idx_b)
 			DREAL value = (theta_p/(pos_prior*theta_p+neg_prior*theta_n)) ;
 
 			result   += value*value/variance[a_idx] ;
-		} ;
+		}
 	}
 	result += ld_mean_lhs[idx_a] + ld_mean_rhs[idx_b] ;
 
