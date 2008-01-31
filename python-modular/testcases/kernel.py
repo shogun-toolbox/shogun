@@ -144,6 +144,13 @@ def _kernel_pie (indata):
 ########################################################################
 
 def test (indata):
+	if indata.has_key('name_features'):
+		names_features=['TOPFeatures','FKFeatures']
+		if indata['name_features'] in names_features:
+			import sys
+			sys.stderr.write("No testing for TOP/FKFeatures yet. ")
+			return True
+
 	names=['Combined', 'AUC', 'Custom']
 	for name in names:
 		if indata['name']==name:

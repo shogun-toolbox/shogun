@@ -50,8 +50,8 @@ class CTOPFeatures: public CRealFeatures
 		 * @param size cache size
 		 * @param p positive HMM
 		 * @param n negative HMM
-		 * @param neglin negativ linear
-		 * @param poslin positive linear
+		 * @param neglin if negative HMM is a LinearHMM
+		 * @param poslin if positive HMM is a LinearHMM
 		 */
 		CTOPFeatures(INT size, CHMM* p, CHMM* n, bool neglin, bool poslin);
 
@@ -110,9 +110,9 @@ class CTOPFeatures: public CRealFeatures
 		CHMM* pos;
 		/** negative HMM */
 		CHMM* neg;
-		/** negative linear */
+		/** if negative HMM is a LinearHMM */
 		bool neglinear;
-		/** positive linear */
+		/** if positive HMM is a LinearHMM */
 		bool poslinear;
 
 		/** positive relevant indices */

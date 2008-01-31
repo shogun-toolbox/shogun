@@ -5,10 +5,10 @@ Generator for Kernel
 import numpy
 import shogun.Library as library
 import shogun.Kernel as kernel
-from shogun.Features import CombinedFeatures, TOPFeatures
+from shogun.Features import CombinedFeatures, TOPFeatures, FKFeatures
 from shogun.Classifier import PluginEstimate
 from shogun.Distance import CanberraMetric
-from shogun.Distribution import HMM, Model
+from shogun.Distribution import HMM, Model, LinearHMM
 
 import fileop
 import featop
@@ -144,13 +144,16 @@ def _compute (name, feats, data, *args):
 	"""
 
 	fun=eval('kernel.'+name+'Kernel')
-	kernel=fun(feats['train'], feats['train'], *args)
-	km_train=kernel.get_kernel_matrix()
-	kernel.init(feats['train'], feats['test'])
-	km_test=kernel.get_kernel_matrix()
+	kern=fun(feats['train'], feats['train'], *args)
+	kern.init(feats['train'], feats['train'])
+	km_train=kern.get_kernel_matrix()
+	kern.init(feats['train'], feats['test'])
+	km_test=kern.get_kernel_matrix()
 
 	outdata={
 		'name':name,
+		'name_features':
+			feats['train'].__class__.__name__.replace('Features', ''),
 		'km_train':km_train,
 		'km_test':km_test,
 		'data_train':numpy.matrix(data['train']),
@@ -173,13 +176,13 @@ def _compute_pie (name, feats, data):
 
 	lab, labels=dataop.get_labels(feats['train'].get_num_vectors())
 	pie.train(feats['train'], labels)
-	kernel=fun(feats['train'], feats['train'], pie)
-	km_train=kernel.get_kernel_matrix()
+	kern=fun(feats['train'], feats['train'], pie)
+	km_train=kern.get_kernel_matrix()
 
-	kernel.init(feats['train'], feats['test'])
+	kern.init(feats['train'], feats['test'])
 	pie.set_testfeatures(feats['test'])
 	pie.test()
-	km_test=kernel.get_kernel_matrix()
+	km_test=kern.get_kernel_matrix()
 	classified=pie.classify().get_labels()
 
 	outdata={
@@ -340,31 +343,39 @@ def _run_pie ():
 def _run_top_fisher ():
 	"""Run Linear Kernel with {Top,Fisher}Features."""
 
-	import pdb
-
 	N=3
 	M=6
 	pseudo=1e-10
 	order=1
 	data=dataop.get_cubes(2)
-	feats=featop.get_string_complex('Word', data, library.CUBE, order)
-	pos=HMM(feats['train'], N, M, pseudo)
-	neg=HMM(feats['train'], N, M, pseudo)
 
-	pos=HMM(3, 6, Model(), pseudo)
-	neg=HMM(3, 6, Model(), pseudo)
-	feats['train']=TOPFeatures(10, pos, neg, True, True)
-	feats['test']=TOPFeatures(10, pos, neg, True, True)
+	# pointer/reference handling is a bit fucked up, so we can't reuse
+	# variable names like feats, pos, neg
+	feats={}
+	pos={}
+	neg={}
+	feat=featop.get_string_complex('Word', data, library.CUBE, order)
 
-	#pdb.set_trace()
+	pos['train']=HMM(feat['train'], N, M, pseudo)
+	neg['train']=HMM(feat['train'], N, M, pseudo)
+	pos['test']=HMM(feat['test'], N, M, pseudo)
+	neg['test']=HMM(feat['test'], N, M, pseudo)
+
+	feats['train']=TOPFeatures(10, pos['train'], neg['train'],
+		False, False)
+	feats['test']=TOPFeatures(10, pos['test'], neg['test'],
+		False, False)
 	_compute('Linear', feats, data, 1.)
-	#_compute('Linear', feats, data)
+
+	feats['train']=FKFeatures(10, pos['train'], neg['train'])
+	feats['test']=FKFeatures(10, pos['test'], neg['test'])
+	_compute('Linear', feats, data, 1.)
 
 def run ():
 	"""Run generator for all kernels."""
 
 	#_run_mindygram()
-	#_run_top_fisher()
+	_run_top_fisher()
 	_run_pie()
 	_run_custom()
 	_run_distance()
