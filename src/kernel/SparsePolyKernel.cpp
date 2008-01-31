@@ -14,17 +14,17 @@
 #include "features/SparseFeatures.h"
 
 CSparsePolyKernel::CSparsePolyKernel(INT size, INT d, bool i, bool un)
-	: CSparseKernel<DREAL>(size), degree(d), inhomogene(i),
-	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), use_normalization(un),
-	initialized(false),
+	: CSparseKernel<DREAL>(size), degree(d),
+	inhomogene(i),use_normalization(un), sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL),
+	initialized(false)
 {
 }
 
 CSparsePolyKernel::CSparsePolyKernel(
 	CSparseFeatures<DREAL>* l, CSparseFeatures<DREAL>* r,
 	INT size, INT d, bool i, bool un)
-	: CSparseKernel<DREAL>(size),degree(d),inhomogene(i), sqrtdiag_lhs(NULL),
-	sqrtdiag_rhs(NULL), use_normalization(un), initialized(false)
+	: CSparseKernel<DREAL>(size),degree(d),inhomogene(i), use_normalization(un),
+	sqrtdiag_lhs(NULL), sqrtdiag_rhs(NULL), initialized(false)
 {
 	init(l,r);
 }
