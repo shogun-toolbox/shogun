@@ -1407,18 +1407,12 @@ inline DREAL model_derivative_q(T_STATES i, INT dimension)
 inline DREAL model_derivative_a(T_STATES i, T_STATES j, INT dimension)
 {
 	DREAL sum=-CMath::INFTY;
-	for (INT t=0; t<p_observations->get_vector_length(dimension)-1; t++) {
-		//SG_PRINT("feat %d, dim %d, t %d, getb %f\n", p_observations->get_feature(dimension,t+1), dimension, t, get_b(j, p_observations->get_feature(dimension,t+1)));
-		DREAL fw=forward(t, i, dimension);
-		DREAL bw=backward(t+1, j, dimension);
-		WORD feat=p_observations->get_feature(dimension,t+1);
-		DREAL getb=get_b(j,feat );
-		//SG_PRINT("sum: %f\n", fw+bw+getb);
-		sum= CMath::logarithmic_sum(sum, fw + bw + getb);
-	}
+	for (INT t=0; t<p_observations->get_vector_length(dimension)-1; t++)
+		sum= CMath::logarithmic_sum(sum, forward(t, i, dimension) + backward(t+1, j, dimension) + get_b(j, p_observations->get_feature(dimension,t+1)));
 
 	return sum;
 }
+
 
 /// computes log dp(lambda)/d b_ij. 
 inline DREAL model_derivative_b(T_STATES i, WORD j, INT dimension)

@@ -5702,19 +5702,17 @@ DREAL CHMM::get_log_derivative(INT num_param, INT num_example)
 		return model_derivative_q(num_param-N, num_example);
 	else if (num_param<N*(N+2))
 	{
-		//INT k=num_param-2*N;
-		INT k=num_example;
-		INT i=(k/N)*N;
-		INT j=N*N-i;
-		return model_derivative_a(i,j, k);
+		INT k=num_param-2*N;
+		INT i=k/N;
+		INT j=k%N;
+		return model_derivative_a(i,j, num_example);
 	}
 	else if (num_param<N*(N+2+M))
 	{
-		//INT k=num_param-N*(N+2);
-		INT k=num_example;
-		INT i=(k/N)*M;
-		INT j=N*M-i;
-		return model_derivative_b(i,j, k);
+		INT k=num_param-N*(N+2);
+		INT i=k/M;
+		INT j=k%M;
+		return model_derivative_b(i,j, num_example);
 	}
 
 	ASSERT(false);

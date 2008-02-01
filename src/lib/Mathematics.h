@@ -309,14 +309,15 @@ public:
 		}
 		else
 			seed=initseed;
-#ifndef CYGWIN
-		       char *initstate(unsigned int seed, char *state, size_t n);
+#if !defined(CYGWIN) && !defined(__INTERIX)
 
+		seed=42;
+		SG_SPRINT("initializing random number generator with %d\n", seed);
 		initstate(seed, CMath::rand_state, sizeof(CMath::rand_state));
 #endif
 	}
 	
-	static LONG random()
+	static inline LONG random()
 	{
 #if defined(CYGWIN) || defined(__INTERIX)
 		return rand();
@@ -325,14 +326,14 @@ public:
 #endif
 	}
 
-	static INT random(INT min_value, INT max_value)
+	static inline INT random(INT min_value, INT max_value)
 	{
 		INT ret = min_value + (INT) ((max_value-min_value+1) * (random() / (RAND_MAX+1.0)));
 		ASSERT(ret >= min_value && ret<=max_value);
 		return ret ;
 	}
 
-	static SHORTREAL random(SHORTREAL min_value, SHORTREAL max_value)
+	static inline SHORTREAL random(SHORTREAL min_value, SHORTREAL max_value)
 	{
 		SHORTREAL ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
 
@@ -342,7 +343,7 @@ public:
 		return ret;
 	}
 
-	static DREAL random(DREAL min_value, DREAL max_value)
+	static inline DREAL random(DREAL min_value, DREAL max_value)
 	{
 		DREAL ret = min_value + ((max_value-min_value) * (random() / (1.0*RAND_MAX)));
 
@@ -643,7 +644,7 @@ public:
 				swap(output[0],output[1]);
 			return;
 		}
-		T split=output[(size*rand())/(RAND_MAX+1)];
+		T split=output[random(0,size-1)];
 
 		INT left=0;
 		INT right=size-1;
