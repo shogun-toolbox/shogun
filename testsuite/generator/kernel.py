@@ -8,7 +8,7 @@ import shogun.Kernel as kernel
 from shogun.Features import CombinedFeatures, TOPFeatures, FKFeatures
 from shogun.Classifier import PluginEstimate
 from shogun.Distance import CanberraMetric
-from shogun.Distribution import HMM, Model, LinearHMM
+from shogun.Distribution import HMM, Model, LinearHMM, BW_NORMAL
 
 import fileop
 import featop
@@ -22,10 +22,10 @@ import config
 def _compute_subkernels (name, feats, kern, outdata):
 	"""Compute for kernel handling subkernels.
 
-	@param name Name of the kernel
-	@param feats Features of the kernel
-	@param kernel Instantiated kernel
-	@param outdata Already gathered data for output into testcase file
+	@param name name of the kernel
+	@param feats features of the kernel
+	@param kernel instantiated kernel
+	@param outdata already gathered data for output into testcase file
 	"""
 
 	outdata['name']=name
@@ -40,7 +40,7 @@ def _compute_subkernels (name, feats, kern, outdata):
 def _get_subkernel_args (subkernel):
 	"""Return argument list for a subkernel.
 
-	@param subkernel Tuple containing data relevant to a subkernel
+	@param subkernel tuple containing data relevant to a subkernel
 	"""
 
 	args=''
@@ -57,9 +57,10 @@ def _get_subkernel_args (subkernel):
 def _get_subkernel_outdata (subkernel, data, num):
 	"""Return data to be written into the testcase's file for a subkernel
 
-	@param subkernel Tuple containing data relevant to a subkernel
-	@param data Train and test data
-	@param num Index number of the subkernel for identification in file
+	@param subkernel tuple containing data relevant to a subkernel
+	@param data train and test data
+	@param num index number of the subkernel for identification in
+	           file
 	"""
 
 	prefix='subkernel'+num+'_'
@@ -137,9 +138,9 @@ def _run_subkernels ():
 def _compute (name, feats, data, *args):
 	"""Compute a kernel and gather data.
 
-	@param name Name of the kernel
-	@param feats Features of the kernel
-	@param data Train and test data
+	@param name name of the kernel
+	@param feats features of the kernel
+	@param data train and test data
 	@param *args variable argument list for kernel's constructor
 	"""
 
@@ -152,8 +153,6 @@ def _compute (name, feats, data, *args):
 
 	outdata={
 		'name':name,
-		'name_features':
-			feats['train'].__class__.__name__.replace('Features', ''),
 		'km_train':km_train,
 		'km_test':km_test,
 		'data_train':numpy.matrix(data['train']),
@@ -196,6 +195,41 @@ def _compute_pie (name, feats, data):
 	}
 	outdata.update(fileop.get_outdata(name, config.C_KERNEL))
 
+	fileop.write(config.C_KERNEL, outdata)
+
+def _compute_top_fisher (feats, params):
+	"""Compute LinearKernel with TOP or FKFeatures
+
+	@param feats features of the kernel
+	@param params various parameters necessary for feature creation
+	"""
+
+	name='Linear'
+	args=[1.]
+	kern=kernel.LinearKernel(feats['train'], feats['train'], *args)
+	kern.init(feats['train'], feats['train'])
+	km_train=kern.get_kernel_matrix()
+	kern.init(feats['train'], feats['test'])
+	km_test=kern.get_kernel_matrix()
+
+	outdata={
+		'name':name,
+		'name_features':
+			feats['train'].__class__.__name__.replace('Features', ''),
+		'km_train':km_train,
+		'km_test':km_test,
+		'data_train':numpy.matrix(params['data']['train']),
+		'data_test':numpy.matrix(params['data']['test'])
+	}
+
+	for key, value in params.iteritems():
+		if key!='data':
+			outdata[key]=value
+
+	outdata.update(fileop.get_outdata(name, config.C_KERNEL, args))
+	outdata['feature_type']='Word'
+	outdata['feature_class']='string_complex'
+	outdata['feature_obtain']='Char'
 	fileop.write(config.C_KERNEL, outdata)
 
 ##################################################################
@@ -343,33 +377,40 @@ def _run_pie ():
 def _run_top_fisher ():
 	"""Run Linear Kernel with {Top,Fisher}Features."""
 
-	N=3
-	M=6
-	pseudo=1e-10
-	order=1
-	data=dataop.get_cubes(2)
-
-	# pointer/reference handling is a bit fucked up, so we can't reuse
-	# variable names like feats, pos, neg
+	params={
+		'N':3,
+		'M':6,
+		'pseudo':1e-10,
+		'order':1,
+		'gap':0,
+		'reverse':False,
+		'alphabet':'CUBE'
+	}
+	params['data']=dataop.get_cubes(2)
 	feats={}
-	pos={}
-	neg={}
-	feat=featop.get_string_complex('Word', data, library.CUBE, order)
+	wordfeats=featop.get_string_complex('Word', params['data'],
+		eval('library.'+params['alphabet']),
+		params['order'], params['gap'], params['reverse'])
+	pos=HMM(wordfeats['train'],
+		params['N'], params['M'], params['pseudo'])
+	pos.train()
+	pos.baum_welch_viterbi_train(BW_NORMAL)
+	neg=HMM(wordfeats['train'],
+		params['N'], params['M'], params['pseudo'])
+	neg.train()
+	neg.baum_welch_viterbi_train(BW_NORMAL)
+	pos_clone=HMM(pos)
+	neg_clone=HMM(neg)
+	pos_clone.set_observations(wordfeats['test'])
+	neg_clone.set_observations(wordfeats['test'])
 
-	pos['train']=HMM(feat['train'], N, M, pseudo)
-	neg['train']=HMM(feat['train'], N, M, pseudo)
-	pos['test']=HMM(feat['test'], N, M, pseudo)
-	neg['test']=HMM(feat['test'], N, M, pseudo)
+	feats['train']=TOPFeatures(10, pos, neg, False, False)
+	feats['test']=TOPFeatures(10, pos_clone, neg_clone, False, False)
+	_compute_top_fisher(feats, params)
 
-	feats['train']=TOPFeatures(10, pos['train'], neg['train'],
-		False, False)
-	feats['test']=TOPFeatures(10, pos['test'], neg['test'],
-		False, False)
-	_compute('Linear', feats, data, 1.)
-
-	feats['train']=FKFeatures(10, pos['train'], neg['train'])
-	feats['test']=FKFeatures(10, pos['test'], neg['test'])
-	_compute('Linear', feats, data, 1.)
+	feats['train']=FKFeatures(10, pos, neg)
+	feats['test']=FKFeatures(10, pos_clone, neg_clone)
+	_compute_top_fisher(feats, params)
 
 def run ():
 	"""Run generator for all kernels."""

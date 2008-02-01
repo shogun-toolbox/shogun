@@ -7,6 +7,7 @@ from shogun.Kernel import *
 from shogun.PreProc import *
 from shogun.Distance import *
 from shogun.Classifier import PluginEstimate
+from shogun.Distribution import HMM, BW_NORMAL
 from numpy import array, ushort, ubyte, double
 
 import util
@@ -23,11 +24,11 @@ def _kernel (indata):
 	args=util.get_args(indata, 'kernel_arg')
 
 	kernel=fun(feats['train'], feats['train'], *args)
-	ktrain=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
+	km_train=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
 	kernel.init(feats['train'], feats['test'])
-	ktest=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)
+	km_test=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)
 
-	return util.check_accuracy(indata['accuracy'], ktrain=ktrain, ktest=ktest)
+	return util.check_accuracy(indata['accuracy'], km_train=km_train, km_test=km_test)
 
 def _add_subkernels (subkernels):
 	for idx, subk in enumerate(subkernels):
@@ -90,12 +91,12 @@ def _kernel_auc (indata):
 
 def _kernel_subkernels (indata, feats, kernel):
 	kernel.init(feats['train'], feats['train'])
-	ktrain=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
+	km_train=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
 	kernel.init(feats['train'], feats['test'])
-	ktest=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)
+	km_test=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)
 
 	return util.check_accuracy(indata['accuracy'],
-		ktrain=ktrain, ktest=ktest)
+		km_train=km_train, km_test=km_test)
 
 def _kernel_custom (indata):
 	feats={'train':RealFeatures(indata['data']),
@@ -127,29 +128,62 @@ def _kernel_pie (indata):
 
 	fun=eval(indata['name']+'Kernel')
 	kernel=fun(feats['train'], feats['train'], pie)
-	ktrain=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
+	km_train=max(abs(indata['km_train']-kernel.get_kernel_matrix()).flat)
 
 	kernel.init(feats['train'], feats['test'])
 	pie.set_testfeatures(feats['test'])
 	pie.test()
-	ktest=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)
+	km_test=max(abs(indata['km_test']-kernel.get_kernel_matrix()).flat)
 	classified=max(abs(
 		pie.classify().get_labels()-indata['classifier_classified']))
 
 	return util.check_accuracy(indata['accuracy'],
-		ktrain=ktrain, ktest=ktest, classified=classified)
+		km_train=km_train, km_test=km_test, classified=classified)
+
+def _kernel_top_fisher (indata):
+	feats={}
+	wordfeats=util.get_feats_string_complex(indata)
+
+	pos=HMM(wordfeats['train'], indata['N'], indata['M'],
+		indata['pseudo'])
+	pos.train()
+	pos.baum_welch_viterbi_train(BW_NORMAL)
+	neg=HMM(wordfeats['train'], indata['N'], indata['M'],
+		indata['pseudo'])
+	neg.train()
+	neg.baum_welch_viterbi_train(BW_NORMAL)
+	pos_clone=HMM(pos)
+	neg_clone=HMM(neg)
+	pos_clone.set_observations(wordfeats['test'])
+	neg_clone.set_observations(wordfeats['test'])
+
+	fun=eval(indata['name_features']+'Features')
+	if indata['name_features']=='TOP':
+		feats['train']=fun(10, pos, neg, False, False)
+		feats['test']=fun(10, pos_clone, neg_clone, False, False)
+	else:
+		feats['train']=fun(10, pos, neg)
+		feats['test']=fun(10, pos_clone, neg_clone)
+
+	args=util.get_args(indata, 'kernel_arg')
+	kernel=LinearKernel(feats['train'], feats['train'], *args)
+	km_train=max(abs(
+		indata['km_train']-kernel.get_kernel_matrix()).flat)
+	kernel.init(feats['train'], feats['test'])
+	km_test=max(abs(
+		indata['km_test']-kernel.get_kernel_matrix()).flat)
+
+	return util.check_accuracy(indata['accuracy'],
+		km_train=km_train, km_test=km_test)
 
 ########################################################################
 # public
 ########################################################################
 
 def test (indata):
+	# FIXME: name_features has to go away, a bit tricky, though
 	if indata.has_key('name_features'):
-		names_features=['TOPFeatures','FKFeatures']
-		if indata['name_features'] in names_features:
-			import sys
-			sys.stderr.write("No testing for TOP/FKFeatures yet. ")
-			return True
+		return _kernel_top_fisher(indata)
 
 	names=['Combined', 'AUC', 'Custom']
 	for name in names:
