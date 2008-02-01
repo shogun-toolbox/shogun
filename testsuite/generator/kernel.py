@@ -409,7 +409,10 @@ def _run_top_fisher ():
 	_compute_top_fisher(feats, params)
 
 	feats['train']=FKFeatures(10, pos, neg)
+	feats['train'].set_opt_a(-1) #estimate prior
+
 	feats['test']=FKFeatures(10, pos_clone, neg_clone)
+	feats['test'].set_a(feats['train'].get_a()) #use prior from training data
 	_compute_top_fisher(feats, params)
 
 def run ():
@@ -417,13 +420,13 @@ def run ():
 
 	#_run_mindygram()
 	_run_top_fisher()
-	_run_pie()
-	_run_custom()
-	_run_distance()
-	_run_subkernels()
+	#_run_pie()
+	#_run_custom()
+	#_run_distance()
+	#_run_subkernels()
 
-	_run_feats_byte()
-	_run_feats_real()
-	_run_feats_string()
-	_run_feats_string_complex()
-	_run_feats_word()
+	#_run_feats_byte()
+	#_run_feats_real()
+	#_run_feats_string()
+	#_run_feats_string_complex()
+	#_run_feats_word()
