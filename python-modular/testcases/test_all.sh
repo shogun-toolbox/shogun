@@ -10,7 +10,7 @@ function test_all () {
 		echo -n "$file"
 		echo -n -e "\t\t"
 
-		output=`python test.py "$file"`
+		output=`python test_one.py "$file"`
 		ret=$?
 
 		if [ $ret -eq 0 ] ; then

@@ -32,7 +32,12 @@ def _get_name_fun (fnam):
 	return module+'.test'
 
 def _test_mfile (fnam):
-	mfile=open(fnam, mode='r')
+	try:
+		mfile=open(fnam, mode='r')
+	except IOError, e:
+		print e
+		return False
+	
 	indata={}
 
 	name_fun=_get_name_fun(fnam)
