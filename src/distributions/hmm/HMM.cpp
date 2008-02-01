@@ -204,6 +204,7 @@ CHMM::CHMM(INT p_N, double* p, double* q, double* a)
 	this->end_state_distribution_q=NULL;
 	this->PSEUDO= PSEUDO;
 	this->model= model;
+	SG_UNREF(p_observations);
 	this->p_observations=NULL;
 	this->reused_caches=false;
 
@@ -253,6 +254,7 @@ CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
 	this->end_state_distribution_q=NULL;
 	this->PSEUDO= PSEUDO;
 	this->model= model;
+	SG_UNREF(p_observations);
 	this->p_observations=NULL;
 	this->reused_caches=false;
 
@@ -345,6 +347,8 @@ CHMM::CHMM(FILE* model_file, DREAL p_PSEUDO)
 
 CHMM::~CHMM()
 {
+	SG_UNREF(p_observations);
+
 	if (trans_list_forward_cnt)
 	  delete[] trans_list_forward_cnt ;
 	if (trans_list_backward_cnt)
@@ -535,6 +539,7 @@ bool CHMM::initialize(CModel* m, DREAL pseudo, FILE* modelfile)
 	this->end_state_distribution_q=NULL;
 	this->PSEUDO= pseudo;
 	this->model= m;
+	SG_UNREF(p_observations);
 	this->p_observations=NULL;
 	this->reused_caches=false;
 
@@ -5451,7 +5456,9 @@ bool CHMM::linear_train(bool right_align)
 
 void CHMM::set_observation_nocache(CStringFeatures<WORD>* obs)
 {
+	ASSERT(obs);
 	p_observations=obs;
+	SG_REF(obs);
 
 	if (obs)
 		if (obs->get_num_symbols() > M)
@@ -5495,6 +5502,7 @@ void CHMM::set_observations(CStringFeatures<WORD>* obs, CHMM* lambda)
 {
 	ASSERT(obs);
 	p_observations=obs;
+	SG_REF(obs);
 	/* from Distribution, necessary for calls to base class methods, like
 	 * get_log_likelihood_sample():
 	 */
