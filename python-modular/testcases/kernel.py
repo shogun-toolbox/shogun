@@ -163,7 +163,9 @@ def _kernel_top_fisher (indata):
 		feats['test']=fun(10, pos_clone, neg_clone, False, False)
 	else:
 		feats['train']=fun(10, pos, neg)
+		feats['train'].set_opt_a(-1) #estimate prior
 		feats['test']=fun(10, pos_clone, neg_clone)
+		feats['test'].set_a(feats['train'].get_a()) #use prior from training data
 
 	args=util.get_args(indata, 'kernel_arg')
 	kernel=LinearKernel(feats['train'], feats['train'], *args)
