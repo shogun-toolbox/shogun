@@ -23,6 +23,7 @@ subkernel1_kernel_arg1_degree = 3
 subkernel0_data_test = ['CTAGCCATAAAAACAGCTCCCGCCAGGTGTCCTCTATCAGCAAAATTCTACGGCTGCTTT', 'CCTCCGGGCTTACTCCTTCGGGACTGTTGCTACGACCTACTAATTCGGAGATCCGTAAGT']
 subkernel0_data_class = 'dna'
 accuracy = 1e-08
+init_random = 42
 data_type = ''
 subkernel1_alphabet = 'DNA'
 subkernel0_alphabet = 'DNA'

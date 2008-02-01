@@ -1,4 +1,5 @@
 accuracy = 1e-08
+init_random = 42
 kernel_arg0_scale = 1.0
 name = 'Linear'
 data_type = 'double'

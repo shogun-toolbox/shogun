@@ -27,6 +27,7 @@ def _get_outdata (name, params):
 		'name':name,
 		'data_train':numpy.matrix(params['data']['train']),
 		'data_test':numpy.matrix(params['data']['test']),
+		'init_random':dataop.INIT_RANDOM,
 		'regression_accuracy':config.REGRESSION[name][0],
 		'regression_type':rtype,
 	}

@@ -3,10 +3,7 @@
 
 from numpy import matrix
 from shogun.Distance import EuclidianDistance
-from shogun.Library import Math_init_random
 import shogun.Clustering as clustering
-
-_INIT_RANDOM=42
 
 import fileop
 import featop
@@ -30,7 +27,7 @@ def _get_outdata (name, params):
 		'data_train':matrix(params['data']['train']),
 		'data_test':matrix(params['data']['test']),
 		'clustering_accuracy':CLUSTERING[name][0],
-		'clustering_init_random':_INIT_RANDOM,
+		'init_random':dataop.INIT_RANDOM,
 	}
 
 	optional=['k', 'radi', 'centers', 'merges', 'merge_distance', 'pairs']
@@ -80,9 +77,6 @@ def _run (name, first_arg):
 
 def run ():
 	"""Run all clustering methods."""
-
-	# init random to be constant
-	Math_init_random(_INIT_RANDOM)
 
 	_run('KMeans', 'k')
 	_run('Hierarchical', 'merges')

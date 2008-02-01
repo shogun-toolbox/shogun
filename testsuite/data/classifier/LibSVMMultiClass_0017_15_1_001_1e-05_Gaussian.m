@@ -1,6 +1,7 @@
 accuracy = 1e-06
 classifier_C = 0.017
 classifier_accuracy = 0.0001
+init_random = 42
 kernel_arg0_width = 1.5
 name = 'LibSVMMultiClass'
 classifier_num_threads = 1

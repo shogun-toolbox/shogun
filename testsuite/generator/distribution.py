@@ -30,6 +30,7 @@ def _get_outdata (name, params):
 		'data_type':ddata[0][1],
 		'feature_class':ddata[1][0],
 		'feature_type':ddata[1][1],
+		'init_random':dataop.INIT_RANDOM,
 		'distribution_accuracy':ddata[2],
 	}
 

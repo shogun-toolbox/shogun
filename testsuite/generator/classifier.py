@@ -29,6 +29,7 @@ def _get_outdata (name, params):
 	ctype=config.CLASSIFIER[name][1]
 	outdata={
 		'name':name,
+		'init_random':dataop.INIT_RANDOM,
 		'data_train':numpy.matrix(params['data']['train']),
 		'data_test':numpy.matrix(params['data']['test']),
 		'classifier_accuracy':config.CLASSIFIER[name][0],

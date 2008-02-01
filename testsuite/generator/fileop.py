@@ -75,6 +75,7 @@ def _is_excluded_from_filename (key):
 		key.find('accuracy')!=-1 or
 		key.find('data_')!=-1 or
 		key=='name' or
+		key=='init_random' or
 		key=='regression_type' or
 		key=='regression_bias' or
 		key=='distribution_likelihood' or
@@ -242,5 +243,7 @@ def get_outdata (name, category, args=(), prefix='', offset=0):
 
 	if args!=(): # arguments, if any
 		outdata.update(get_args(prefix_arg, data[2], args, offset))
+
+	outdata['init_random']=dataop.INIT_RANDOM
 
 	return outdata

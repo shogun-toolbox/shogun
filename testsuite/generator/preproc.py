@@ -32,6 +32,7 @@ def _compute (name, name_kernel, feats, data, *kargs):
 		'name_kernel':name_kernel,
 		'km_train':km_train,
 		'km_test':km_test,
+		'init_random':dataop.INIT_RANDOM,
 		'data_train':numpy.matrix(data['train']),
 		'data_test':numpy.matrix(data['test'])
 	}

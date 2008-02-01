@@ -380,7 +380,7 @@ def _run_top_fisher ():
 	params={
 		'N':3,
 		'M':6,
-		'pseudo':1e-10,
+		'pseudo':1e-1,
 		'order':1,
 		'gap':0,
 		'reverse':False,

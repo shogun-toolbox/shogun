@@ -1,4 +1,5 @@
 classifier_accuracy = 0.001
+init_random = 42
 classifier_labels = [-1, 1, 1, 1, 1, -1, -1, -1, 1, -1, 1]
 seqlen = 60
 classifier_tube_epsilon = 0.001

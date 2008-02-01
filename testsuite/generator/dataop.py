@@ -5,12 +5,18 @@ import md5
 import numpy
 import numpy.random as random
 from shogun.Features import Labels
+from shogun.Library import Math_init_random
 
 NUM_VEC_TRAIN=11
 NUM_VEC_TEST=17
 LEN_SEQ=60
+INIT_RANDOM=42
 
 _NUM_FEATS=11
+
+# init random in Shogun to be constant
+Math_init_random(INIT_RANDOM)
+
 
 def _get_seed ():
 	"""Return a somewhat constant seed.

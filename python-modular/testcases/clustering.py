@@ -4,7 +4,6 @@ Test Clustering
 
 from shogun.Distance import EuclidianDistance
 from shogun.Clustering import *
-from shogun.Library import Math_init_random
 
 import util
 
@@ -50,6 +49,5 @@ def _clustering (indata):
 ########################################################################
 
 def test (indata):
-	Math_init_random(indata['clustering_init_random'])
 	return _clustering(indata)
 

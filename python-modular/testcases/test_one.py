@@ -13,6 +13,7 @@ import clustering
 import distribution
 import regression
 import preproc
+from shogun.Library import Math_init_random
 
 SUPPORTED=['kernel', 'distance', 'classifier', 'clustering', 'distribution',
 	'regression', 'preproc']
@@ -67,6 +68,9 @@ def _test_mfile (fnam):
 
 	mfile.close()
 	fun=eval(name_fun)
+
+	# init random in Shogun to be constant
+	Math_init_random(indata['init_random'])
 
 	return fun(indata)
 
