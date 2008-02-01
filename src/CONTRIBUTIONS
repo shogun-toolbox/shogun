@@ -20,6 +20,7 @@ We integrated the work of the following people:
 
  Vojtech Franc
  	- Generalized Nearest Point Problem Solver based L2 (slacks) SVM
+	- Optimized Cutting Plane Support Vector Machines (Ocas)
  
- Jean-Philippe Vert
+ Jean-Philippe Vert and Hiroto Saigo
  	- Local Alignment Kernel
