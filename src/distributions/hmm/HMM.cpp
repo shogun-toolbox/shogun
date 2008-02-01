@@ -204,7 +204,6 @@ CHMM::CHMM(INT p_N, double* p, double* q, double* a)
 	this->end_state_distribution_q=NULL;
 	this->PSEUDO= PSEUDO;
 	this->model= model;
-	SG_UNREF(p_observations);
 	this->p_observations=NULL;
 	this->reused_caches=false;
 
@@ -254,7 +253,6 @@ CHMM::CHMM(INT p_N, double* p, double* q, int num_trans, double* a_trans)
 	this->end_state_distribution_q=NULL;
 	this->PSEUDO= PSEUDO;
 	this->model= model;
-	SG_UNREF(p_observations);
 	this->p_observations=NULL;
 	this->reused_caches=false;
 
@@ -539,7 +537,6 @@ bool CHMM::initialize(CModel* m, DREAL pseudo, FILE* modelfile)
 	this->end_state_distribution_q=NULL;
 	this->PSEUDO= pseudo;
 	this->model= m;
-	SG_UNREF(p_observations);
 	this->p_observations=NULL;
 	this->reused_caches=false;
 
