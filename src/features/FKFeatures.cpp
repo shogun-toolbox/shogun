@@ -197,11 +197,17 @@ void CFKFeatures::compute_feature_vector(DREAL* featurevector, INT num, INT& len
 
 DREAL* CFKFeatures::set_feature_matrix()
 {
-	INT len=0;
+	ASSERT(pos);
+	ASSERT(pos->get_observations());
+	ASSERT(neg);
+	ASSERT(neg->get_observations());
 
+	INT len=0;
 	num_features=1+ pos->get_N()*(1+pos->get_N()+1+pos->get_M()) + neg->get_N()*(1+neg->get_N()+1+neg->get_M());
 
 	num_vectors=pos->get_observations()->get_num_vectors();
+	ASSERT(num_vectors);
+
 	SG_INFO( "allocating FK feature cache of size %.2fM\n", sizeof(double)*num_features*num_vectors/1024.0/1024.0);
 	delete[] feature_matrix;
 	feature_matrix=new DREAL[num_features*num_vectors];
