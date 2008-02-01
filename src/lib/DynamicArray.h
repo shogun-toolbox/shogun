@@ -130,9 +130,11 @@ public:
 
 			if ( num_elements - last_element_idx >= resize_granularity)
 				resize_array(last_element_idx);
+
+			return true;
 		}
-		else
-			return false;
+
+		return false;
 	}
 	
 	///resize the array 

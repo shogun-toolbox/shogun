@@ -310,9 +310,8 @@ public:
 		else
 			seed=initseed;
 #if !defined(CYGWIN) && !defined(__INTERIX)
-
-		seed=42;
-		SG_SPRINT("initializing random number generator with %d\n", seed);
+		//seed=42;
+		//SG_SPRINT("initializing random number generator with %d\n", seed);
 		initstate(seed, CMath::rand_state, sizeof(CMath::rand_state));
 #endif
 	}

@@ -41,11 +41,16 @@ CTOPFeatures::~CTOPFeatures()
 	delete[] neg_relevant_indizes.idx_a_rows;
 	delete[] neg_relevant_indizes.idx_b_cols;
 	delete[] neg_relevant_indizes.idx_b_rows;
+
+	SG_UNREF(pos);
+	SG_UNREF(neg);
 }
 
 void CTOPFeatures::set_models(CHMM* p, CHMM* n)
 {
 	ASSERT(p!=NULL && n!=NULL);
+	SG_REF(p);
+	SG_REF(n);
 
 	pos=p; 
 	neg=n;

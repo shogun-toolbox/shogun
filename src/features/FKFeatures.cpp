@@ -28,6 +28,8 @@ CFKFeatures::CFKFeatures(INT size, CHMM* p, CHMM* n) : CRealFeatures(size)
 
 CFKFeatures::~CFKFeatures()
 {
+	SG_UNREF(pos);
+	SG_UNREF(neg);
 }
 
 double CFKFeatures::deriv_a(double a, INT dimension)
@@ -96,7 +98,7 @@ double CFKFeatures::set_opt_a(double a)
 		double la=0;
 		double ua=1;
 		a=(la+ua)/2;
-		while (ua-la>1e-6)
+		while (CMath::abs(ua-la)>1e-6)
 		{
 			double da=deriv_a(a);
 			if (da>0)
@@ -120,6 +122,8 @@ double CFKFeatures::set_opt_a(double a)
 void CFKFeatures::set_models(CHMM* p, CHMM* n)
 {
 	ASSERT(p!=NULL && n!=NULL);
+	SG_REF(p);
+	SG_REF(n);
 
 	pos=p; 
 	neg=n;
