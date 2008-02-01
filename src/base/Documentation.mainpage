@@ -1,10 +1,10 @@
-/** \mainpage SHOGUN Project Documentation Index Page
+/** \mainpage SHOGUN Project Documentation
 
  
-  \section intro_sec Introduction
  
   \image html shogun_logo.png 
 
+  \section intro_sec Introduction
   SHOGUN is a large scale machine learning toolbox with focus on especially
   Support Vector Machines (SVM). It provides a generic SVM object interfacing
   to several different SVM implementations, among them the state of the art
@@ -37,11 +37,12 @@
   
   Depending on the interface you want to use install the package
   
+  \verbatim
   shogun-octave - for the static octave interface
   shogun-python - for the static python interface
   shogun-python-modular - for the modular python interface
   shogun-r - for the r interface
-  shogun-readline - for the command-line interface.
+  shogun-readline - for the command-line interface.\endverbatim
 
   \subsection from_source Installing SHOGUN from Source
 
@@ -60,13 +61,13 @@
   atlas/lapack is unavailable, don't worry shogun will work without, though
   slightly slower versions are used.
 
-  To compile the R interface you need to have the R developer files 
+  \li To compile the R interface you need to have the R developer files 
   (debian package r-base-dev) installed.
 
-  To compile the octave interface you need to have the octave developer files 
+  \li To compile the octave interface you need to have the octave developer files 
   (debian package octave2.1-headers or octave2.9-headers) installed.
 
-  To compile the python interface you need to have numpy version 1.x installed 
+  \li To compile the python interface you need to have numpy version 1.x installed 
   (debian package python-numpy and python-numpy-ext) installed.
 
   \subsection compiling_shogun: Compiling SHOGUN
@@ -74,19 +75,28 @@
   \subsubsection most_platforms: General
   On most platforms (Linux,MacOSX,cygwin) it is sufficient to issue
 
+  \verbatim
   ./configure --interface=<interface>
-  make
+  make \endverbatim
   
   where <interface> is one of the following
   
-  octave -- for octave (see http://www.octave.org)
-  matlab -- for matlab (see http://www.mathworks.com)
-  python or python-modular -- for python (see http://www.python.org)
-  R -- for R (see http://www.r-project.org).
+  \li octave -- for octave (see http://www.octave.org)
 
-  Just running ./configure will compile a stand-a-lone version.
+  \li matlab -- for matlab (see http://www.mathworks.com)
+
+  \li python or python-modular -- for python (see http://www.python.org)
+
+  \li R -- for R (see http://www.r-project.org).
+
+
+  Just running 
+  \verbatim ./configure\endverbatim
+  will configure for a stand-a-lone version.
   
-  See ./configure --help for additional options.
+  Call
+  \verbatim./configure --help \endverbatim
+  to get a list of additional options.
   
   If this does not work for you, consult the INSTALL file for platform specific
   build instructions.
