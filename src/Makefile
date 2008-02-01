@@ -247,6 +247,8 @@ endif
 
 lib/versionstring.h:	$(SVNEntries)
 		sh .version.sh > $@
+doc:
+		cd ../doc && make doxygen
 tests:
 		cd ../$(INTERFACE)/testcases && ./run.sh	
 
