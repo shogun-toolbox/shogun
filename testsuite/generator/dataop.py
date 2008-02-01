@@ -123,7 +123,9 @@ def get_cubes (num=4):
 	rep=5
 	weight=1
 
+	random.seed(_get_seed())
 	sequence=[]
+
 	for i in xrange(num):
 		# generate a sequence with characters 1-6 drawn from 3 loaded cubes
 		loaded=[]
