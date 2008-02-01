@@ -34,17 +34,14 @@ def _get_results (indata, classifier, machine=None, feats=None):
 		'accuracy':indata['classifier_accuracy'],
 	}
 
-	if indata['classifier_num_threads']==1:
-		if indata.has_key('classifier_bias'):
-			res['bias']=abs(classifier.get_bias()-indata['classifier_bias'])
-		if indata.has_key('classifier_alphas'):
-			res['alphas']=max(abs(classifier.get_alphas()- \
-				indata['classifier_alphas']))
-		if indata.has_key('classifier_support_vectors'):
-			res['sv']=max(abs(classifier.get_support_vectors()- \
-				indata['classifier_support_vectors']))
-	else: # lower accuracy
-		res['accuracy']=1e-4
+	if indata.has_key('classifier_bias'):
+		res['bias']=abs(classifier.get_bias()-indata['classifier_bias'])
+	if indata.has_key('classifier_alphas'):
+		res['alphas']=max(abs(classifier.get_alphas()- \
+			indata['classifier_alphas']))
+	if indata.has_key('classifier_support_vectors'):
+		res['sv']=max(abs(classifier.get_support_vectors()- \
+			indata['classifier_support_vectors']))
 
 	ctype=indata['classifier_type']
 	if ctype=='kernel' or ctype=='knn':

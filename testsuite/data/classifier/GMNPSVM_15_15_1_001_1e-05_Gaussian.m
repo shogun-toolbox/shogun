@@ -1,6 +1,6 @@
 accuracy = 1e-06
 classifier_C = 1.5
-classifier_accuracy = 1e-08
+classifier_accuracy = 0.0001
 kernel_arg0_width = 1.5
 name = 'GMNPSVM'
 classifier_num_threads = 1

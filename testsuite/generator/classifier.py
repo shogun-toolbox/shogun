@@ -161,6 +161,8 @@ def _loop_svm (svms, params):
 			'C':.017,
 			'epsilon':1e-5,
 		}
+		# FIXME: a bit hackish to set accuracy this way
+		config.CLASSIFIER[name][0]=parms['epsilon']*10
 		parms.update(params)
 
 		if ctype=='kernel':
@@ -180,6 +182,8 @@ def _loop_svm (svms, params):
 		parms['C']=30
 		_compute_svm(name, labels, parms)
 		parms['epsilon']=1e-4
+		# FIXME: a bit hackish to set accuracy this way
+		config.CLASSIFIER[name][0]=parms['epsilon']*10
 		_compute_svm(name, labels, parms)
 
 		if ctype=='kernel':
