@@ -48,7 +48,7 @@ DISTANCE={
 DISTRIBUTION={
 	'Histogram':[['dna', ''], ['string_complex', 'Word', 'Char'], 1e-8],
 	'LinearHMM':[['dna', ''], ['string_complex', 'Word', 'Char'], 1e-8],
-	'HMM':[['cube', ''], ['string_complex', 'Word', 'Char'], 1e-8],
+	'HMM':[['cube', ''], ['string_complex', 'Word', 'Char'], 1e-6],
 }
 
 # name: data_class + _type, feature_class + _type(s), available kernel
