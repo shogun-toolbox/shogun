@@ -157,18 +157,17 @@ def _kernel_top_fisher (indata):
 	pos_clone.set_observations(wordfeats['test'])
 	neg_clone.set_observations(wordfeats['test'])
 
-	fun=eval(indata['name_features']+'Features')
 	if indata['name_features']=='TOP':
-		feats['train']=fun(10, pos, neg, False, False)
-		feats['test']=fun(10, pos_clone, neg_clone, False, False)
+		feats['train']=TOPFeatures(10, pos, neg, False, False)
+		feats['test']=TOPFeatures(10, pos_clone, neg_clone, False, False)
 	else:
-		feats['train']=fun(10, pos, neg)
+		feats['train']=FKFeatures(10, pos, neg)
 		feats['train'].set_opt_a(-1) #estimate prior
-		feats['test']=fun(10, pos_clone, neg_clone)
+		feats['test']=FKFeatures(10, pos_clone, neg_clone)
 		feats['test'].set_a(feats['train'].get_a()) #use prior from training data
 
 	args=util.get_args(indata, 'kernel_arg')
-	kernel=LinearKernel(feats['train'], feats['train'], *args)
+	kernel=PolyKernel(feats['train'], feats['train'], *args)
 	km_train=max(abs(
 		indata['km_train']-kernel.get_kernel_matrix()).flat)
 	kernel.init(feats['train'], feats['test'])

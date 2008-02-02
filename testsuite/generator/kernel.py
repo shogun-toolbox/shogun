@@ -198,16 +198,15 @@ def _compute_pie (name, feats, data):
 	fileop.write(config.C_KERNEL, outdata)
 
 def _compute_top_fisher (feats, params):
-	"""Compute LinearKernel with TOP or FKFeatures
+	"""Compute PolyKernel with TOP or FKFeatures
 
 	@param feats features of the kernel
 	@param params various parameters necessary for feature creation
 	"""
 
-	name='Linear'
-	args=[1.]
-	kern=kernel.LinearKernel(feats['train'], feats['train'], *args)
-	kern.init(feats['train'], feats['train'])
+	name='Poly'
+	kern=kernel.PolyKernel(feats['train'], feats['train'],
+		*params['kargs'])
 	km_train=kern.get_kernel_matrix()
 	kern.init(feats['train'], feats['test'])
 	km_test=kern.get_kernel_matrix()
@@ -226,7 +225,8 @@ def _compute_top_fisher (feats, params):
 		if key!='data':
 			outdata[key]=value
 
-	outdata.update(fileop.get_outdata(name, config.C_KERNEL, args))
+	outdata.update(fileop.get_outdata(
+		name, config.C_KERNEL, params['kargs']))
 	outdata['feature_type']='Word'
 	outdata['feature_class']='string_complex'
 	outdata['feature_obtain']='Char'
@@ -387,6 +387,8 @@ def _run_top_fisher ():
 		'alphabet':'CUBE'
 	}
 	params['data']=dataop.get_cubes(2)
+	params['kargs']=[1, False, True]
+
 	feats={}
 	wordfeats=featop.get_string_complex('Word', params['data'],
 		eval('library.'+params['alphabet']),
@@ -420,13 +422,13 @@ def run ():
 
 	#_run_mindygram()
 	_run_top_fisher()
-	#_run_pie()
-	#_run_custom()
-	#_run_distance()
-	#_run_subkernels()
+	_run_pie()
+	_run_custom()
+	_run_distance()
+	_run_subkernels()
 
-	#_run_feats_byte()
-	#_run_feats_real()
-	#_run_feats_string()
-	#_run_feats_string_complex()
-	#_run_feats_word()
+	_run_feats_byte()
+	_run_feats_real()
+	_run_feats_string()
+	_run_feats_string_complex()
+	_run_feats_word()
