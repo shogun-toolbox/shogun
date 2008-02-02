@@ -384,9 +384,11 @@ def _run_top_fisher ():
 		'order':1,
 		'gap':0,
 		'reverse':False,
+		'num_train_examples':4,
+		'num_test_examples':8,
 		'alphabet':'CUBE'
 	}
-	params['data']=dataop.get_cubes(2)
+	params['data']=dataop.get_cubes(params['num_train_examples'], params['num_test_examples'])
 	params['kargs']=[1, False, True]
 
 	feats={}

@@ -115,7 +115,7 @@ def _run_hmm ():
 		'alphabet':'CUBE',
 	}
 
-	params['data']=dataop.get_cubes(params['num_examples'])
+	params['data']=dataop.get_cubes(params['num_examples'],1)
 	feats=featop.get_string_complex(
 		'Word', params['data'], eval('library.'+params['alphabet']),
 		params['order'])
@@ -125,8 +125,6 @@ def _run_hmm ():
 	hmm.baum_welch_viterbi_train(distribution.BW_NORMAL)
 
 	params['likelihood']=hmm.get_log_likelihood_sample()
-	# ShogunException in get_log_derivatives after iteration 9; whatever
-	# that means
 	params['derivatives']=_get_derivatives(
 		hmm, feats['train'].get_num_vectors())
 

@@ -110,10 +110,11 @@ def get_clouds (num_clouds, num_feats=_NUM_FEATS):
 
 	return clouds
 
-def get_cubes (num=4):
+def get_cubes (num_train=4, num_test=8):
 	"""Return cubes of with random emissions.
 
-	Used by the Hidden-Markov-Model, it creates a seemingly random sequence of emissions of a 6-sided cube.
+	Used by the Hidden-Markov-Model, it creates two
+	seemingly random sequences of emissions of a 6-sided cube.
 
 	@param num Number of hidden cubes
 	@return Dict of tuples of emissions, representing a hidden cube
@@ -124,34 +125,37 @@ def get_cubes (num=4):
 	weight=1
 
 	random.seed(_get_seed())
-	sequence=[]
 
-	for i in xrange(num):
-		# generate a sequence with characters 1-6 drawn from 3 loaded cubes
-		loaded=[]
-		for j in xrange(3):
-			draw=[x*numpy.ones((1, numpy.ceil(leng*random.rand())), int)[0] \
-				for x in xrange(1, 7)]
-			loaded.append(random.permutation(numpy.concatenate(draw)))
+	sequence={'train':list(), 'test':list()}
+	num={'train': num_train, 'test': num_test}
 
-		draws=[]
-		for j in xrange(len(loaded)):
-			ones=numpy.ones((1, numpy.ceil(rep*random.rand())), int)
-			draws=numpy.concatenate((j*ones[0], draws))
-		draws=random.permutation(draws)
+	for tgt in ('train', 'test'):
+		for i in xrange(num[tgt]):
+			# generate a sequence with characters 1-6 drawn from 3 loaded cubes
+			loaded=[]
+			for j in xrange(3):
+				draw=[x*numpy.ones((1, numpy.ceil(leng*random.rand())), int)[0] \
+					for x in xrange(1, 7)]
+				loaded.append(random.permutation(numpy.concatenate(draw)))
 
-		seq=[]
-		for j in xrange(len(draws)):
-			len_loaded=len(loaded[draws[j]])
-			weighted=int(numpy.ceil(
-				((1-weight)*random.rand()+weight)*len_loaded))
-			perm=random.permutation(len_loaded)
-			shuffled=[str(loaded[draws[j]][x]) for x in perm[:weighted]]
-			seq=numpy.concatenate((seq, shuffled))
+			draws=[]
+			for j in xrange(len(loaded)):
+				ones=numpy.ones((1, numpy.ceil(rep*random.rand())), int)
+				draws=numpy.concatenate((j*ones[0], draws))
+			draws=random.permutation(draws)
 
-		sequence.append(''.join(seq))
+			seq=[]
+			for j in xrange(len(draws)):
+				len_loaded=len(loaded[draws[j]])
+				weighted=int(numpy.ceil(
+					((1-weight)*random.rand()+weight)*len_loaded))
+				perm=random.permutation(len_loaded)
+				shuffled=[str(loaded[draws[j]][x]) for x in perm[:weighted]]
+				seq=numpy.concatenate((seq, shuffled))
 
-	return {'train':sequence, 'test':sequence}
+			sequence[tgt].append(''.join(seq))
+
+	return sequence
 
 def get_labels (num, ltype='twoclass'):
 	"""Return labels used for classification.
