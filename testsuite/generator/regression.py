@@ -60,7 +60,11 @@ def _compute (name, params):
 	params['labels'], labels=dataop.get_labels(
 		params['feats']['train'].get_num_vectors())
 
-	fun=eval('regression.'+name)
+	try:
+		fun=eval('regression.'+name)
+	except AttributeError:
+		return
+
 	if rtype=='svm':
 		regression=fun(params['C'], params['epsilon'], params['kernel'], labels)
 		regression.set_tube_epsilon(params['tube_epsilon'])

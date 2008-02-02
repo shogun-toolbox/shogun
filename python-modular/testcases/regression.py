@@ -18,7 +18,12 @@ def _regression (indata):
 	kernel=fun(feats['train'], feats['train'], *kargs)
 	kernel.parallel.set_num_threads(indata['regression_num_threads'])
 
-	fun=eval(indata['name'])
+	try:
+		fun=eval(indata['name'])
+	except NameError, e:
+		print "%s is disabled/unavailable!"%indata['name']
+		return False
+
 	labels=Labels(double(indata['regression_labels']))
 	if indata['regression_type']=='svm':
 		regression=fun(indata['regression_C'], indata['regression_epsilon'],

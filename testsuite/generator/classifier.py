@@ -81,9 +81,12 @@ def _get_svm (name, labels, params):
 	@return An SVM object
 	"""
 
-	svm=eval('classifier.'+name)
-	ctype=config.CLASSIFIER[name][1]
+	try:
+		svm=eval('classifier.'+name)
+	except AttributeError, e:
+		return False
 
+	ctype=config.CLASSIFIER[name][1]
 	if ctype=='kernel':
 		params['kernel'].parallel.set_num_threads(params['num_threads'])
 		params['kernel'].init(
@@ -106,8 +109,10 @@ def _compute_svm (name, labels, params):
 	@param params Misc parameters for the SVM's constructor
 	"""
 
-	ctype=config.CLASSIFIER[name][1]
 	svm=_get_svm(name, labels, params)
+	if svm is False:
+		return
+
 	svm.parallel.set_num_threads(params['num_threads'])
 	svm.set_epsilon(params['epsilon'])
 
@@ -121,6 +126,7 @@ def _compute_svm (name, labels, params):
 
 	svm.train()
 
+	ctype=config.CLASSIFIER[name][1]
 	if ((params.has_key('bias_enabled') and params['bias_enabled']) or
 		ctype=='kernel'):
 		params['bias']=svm.get_bias()

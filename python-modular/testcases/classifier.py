@@ -60,8 +60,13 @@ def _classifier (indata):
 
 	machine=_get_machine(indata, feats)
 
+	try:
+		fun=eval(indata['name'])
+	except NameError, e:
+		print "%s is disabled/unavailable!"%indata['name']
+		return False
+
 	# cannot refactor into function, because labels is unrefed otherwise
-	fun=eval(indata['name'])
 	if indata.has_key('classifier_labels'):
 		labels=Labels(double(indata['classifier_labels']))
 		if indata['classifier_type']=='kernel':
