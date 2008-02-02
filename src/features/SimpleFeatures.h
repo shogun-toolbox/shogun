@@ -185,6 +185,8 @@ template <class ST> class CSimpleFeatures: public CFeatures
 		 */
 		void get_fm(DREAL** dst, INT* d1, INT* d2)
 		{
+			ASSERT(feature_matrix);
+
 			LONG num=num_features*num_vectors;
 			*d1=num_features;
 			*d2=num_vectors;

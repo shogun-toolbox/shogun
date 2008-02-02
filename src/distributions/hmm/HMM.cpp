@@ -155,6 +155,7 @@ CHMM::CHMM(CHMM* h)
 	this->N=h->get_N();
 	this->M=h->get_M();
 	status=initialize(NULL, h->get_pseudo());
+	this->copy_model(h);
 	set_observations(h->get_observations());
 }
 
