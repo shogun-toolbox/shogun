@@ -74,7 +74,7 @@ DEFUN_DLD (sg, prhs, nlhs, "shogun.")
 		{
 			if (nrhs==1)
 			{
-				sg_octave.send_command("help");
+				sg_octave.send_command((CHAR*) "help");
 			}
 			else
 				SG_SERROR( "usage is sg('help')");
