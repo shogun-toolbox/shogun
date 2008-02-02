@@ -37,16 +37,13 @@ def _regression (indata):
 	alphas=0
 	bias=0
 	support_vectors=0
-	if indata['regression_num_threads']==1:
-		if indata.has_key('regression_bias'):
-			bias=abs(regression.get_bias()-indata['regression_bias'])
-		if indata.has_key('regression_alphas'):
-			alphas=max(abs(regression.get_alphas()-indata['regression_alphas']))
-		if indata.has_key('regression_support_vectors'):
-			support_vectors=max(abs(regression.get_support_vectors()-
-				indata['regression_support_vectors']))
-	else: # lower accuracy
-		indata['regression_accuracy']=1e-4
+	if indata.has_key('regression_bias'):
+		bias=abs(regression.get_bias()-indata['regression_bias'])
+	if indata.has_key('regression_alphas'):
+		alphas=max(abs(regression.get_alphas()-indata['regression_alphas']))
+	if indata.has_key('regression_support_vectors'):
+		support_vectors=max(abs(regression.get_support_vectors()-
+			indata['regression_support_vectors']))
 
 	kernel.init(feats['train'], feats['test'])
 	classified=max(abs(

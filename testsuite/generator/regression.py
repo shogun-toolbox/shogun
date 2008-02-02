@@ -81,19 +81,21 @@ def _compute (name, params):
 	outdata=_get_outdata(name, params)
 	fileop.write(config.C_REGRESSION, outdata)
 
-def _loop (svrs, params):
+def _loop (regressions, params):
 	"""Loop through regression computations, only slightly differing in parameters.
-	@param svrs Names of the regression methods to loop through
+	@param regressions Names of the regression methods to loop through
 	@param params Parameters of the regression method
 	"""
 
-	for name in svrs:
+	for name in regressions:
 		rtype=config.REGRESSION[name][1]
 		parms={'num_threads':1}
 		parms.update(params)
 		if rtype=='svm':
 			parms['C']=.017
 			parms['epsilon']=1e-5
+			# FIXME: a bit hackish to set accuracy this way
+			config.REGRESSION[name][0]=parms['epsilon']*10
 			parms['tube_epsilon']=1e-2
 			_compute(name, parms)
 			parms['C']=.23
@@ -103,6 +105,8 @@ def _loop (svrs, params):
 			parms['C']=30
 			_compute(name, parms)
 			parms['epsilon']=1e-4
+			# FIXME: a bit hackish to set accuracy this way
+			config.REGRESSION[name][0]=parms['epsilon']*10
 			_compute(name, parms)
 			parms['tube_epsilon']=1e-3
 			_compute(name, parms)
@@ -127,7 +131,7 @@ def _loop (svrs, params):
 def run ():
 	"""Run generator for all regression methods."""
 
-	svrs=['SVRLight', 'LibSVR', 'KRR']
+	regressions=['SVRLight', 'LibSVR', 'KRR']
 	params={
 		'kname':'Gaussian',
 		'kargs':[1.5],
@@ -135,5 +139,5 @@ def run ():
 	}
 	params['feats']=featop.get_simple('Real', params['data'])
 	params['kernel']=GaussianKernel(10, *params['kargs'])
-	_loop(svrs, params)
+	_loop(regressions, params)
 
