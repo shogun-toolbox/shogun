@@ -233,7 +233,7 @@ protected:
 	DREAL compute_with_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
 	DREAL compute_without_mismatch(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
 	DREAL compute_without_mismatch_matrix(CHAR* avec, INT alen, CHAR* bvec, INT blen) ;
-	DREAL compute_without_mismatch_position_weights(CHAR* avec, DREAL *posweights_lhs, INT alen, CHAR* bvec, DREAL *posweights_lhs, INT blen) ;
+	DREAL compute_without_mismatch_position_weights(CHAR* avec, DREAL *posweights_lhs, INT alen, CHAR* bvec, DREAL *posweights_rhs, INT blen) ;
 
 	virtual void remove_lhs() ;
 	virtual void remove_rhs() ;
