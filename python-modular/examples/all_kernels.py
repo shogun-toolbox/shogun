@@ -4,13 +4,49 @@ Explicit examples on how to use the different kernels
 """
 
 from sys import maxint
-from numpy import ubyte, ushort, double, int, zeros, sum, floor, array, arange
-from numpy.random import randint, rand, seed
+from numpy import ubyte, ushort, double, int, ones, zeros, sum, floor, array, arange, ceil, concatenate
+from numpy.random import randint, rand, seed, permutation
 from shogun.PreProc import SortWordString, SortUlongString
 from shogun.Distance import EuclidianDistance
 from shogun.Classifier import PluginEstimate
+from shogun.Distribution import HMM, BW_NORMAL
 from shogun.Kernel import *
 from shogun.Features import *
+
+def get_cubes (num=2):
+	leng=50
+	rep=5
+	weight=1
+
+	sequence=[]
+
+	for i in xrange(num):
+		# generate a sequence with characters 1-6 drawn from 3 loaded cubes
+		loaded=[]
+		for j in xrange(3):
+			draw=[x*ones((1, ceil(leng*rand())), int)[0] \
+				for x in xrange(1, 7)]
+			loaded.append(permutation(concatenate(draw)))
+
+		draws=[]
+		for j in xrange(len(loaded)):
+			data=ones((1, ceil(rep*rand())), int)
+			draws=concatenate((j*data[0], draws))
+		draws=permutation(draws)
+
+		seq=[]
+		for j in xrange(len(draws)):
+			len_loaded=len(loaded[draws[j]])
+			weighted=int(ceil(
+				((1-weight)*rand()+weight)*len_loaded))
+			perm=permutation(len_loaded)
+			shuffled=[str(loaded[draws[j]][x]) for x in perm[:weighted]]
+			seq=concatenate((seq, shuffled))
+
+		sequence.append(''.join(seq))
+
+	return {'train':sequence, 'test':sequence}
+
 
 def get_dna ():
 	acgt=array(['A', 'C', 'G','T'])
@@ -715,6 +751,61 @@ def plugin_estimate ():
 	pie.classify().get_labels()
 	km_test=kernel.get_kernel_matrix()
 
+def top_fisher ():
+	print "TOP/Fisher on PolyKernel"
+
+	N=3
+	M=6
+	pseudo=1e-1
+	order=1
+	gap=0
+	reverse=False
+	data=get_cubes(2)
+	kargs=[1, False, True]
+
+	charfeat=StringCharFeatures(CUBE)
+	charfeat.set_string_features(data['train'])
+	wordfeats_train=StringWordFeatures(charfeat.get_alphabet())
+	wordfeats_train.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	preproc=SortWordString()
+	preproc.init(wordfeats_train)
+	wordfeats_train.add_preproc(preproc)
+	wordfeats_train.apply_preproc()
+
+	charfeat=StringCharFeatures(CUBE)
+	charfeat.set_string_features(data['test'])
+	wordfeats_test=StringWordFeatures(charfeat.get_alphabet())
+	wordfeats_test.obtain_from_char(charfeat, order-1, order, gap, reverse)
+	wordfeats_test.add_preproc(preproc)
+	wordfeats_test.apply_preproc()
+
+	pos=HMM(wordfeats_train, N, M, pseudo)
+	pos.train()
+	pos.baum_welch_viterbi_train(BW_NORMAL)
+	neg=HMM(wordfeats_train, N, M, pseudo)
+	neg.train()
+	neg.baum_welch_viterbi_train(BW_NORMAL)
+	pos_clone=HMM(pos)
+	neg_clone=HMM(neg)
+	pos_clone.set_observations(wordfeats_test)
+	neg_clone.set_observations(wordfeats_test)
+
+	feats_train=TOPFeatures(10, pos, neg, False, False)
+	feats_test=TOPFeatures(10, pos_clone, neg_clone, False, False)
+	kernel=PolyKernel(feats_train, feats_train, *kargs)
+	km_train=kernel.get_kernel_matrix()
+	kernel.init(feats_train, feats_test)
+	km_test=kernel.get_kernel_matrix()
+
+	feats_train=FKFeatures(10, pos, neg)
+	feats_train.set_opt_a(-1) #estimate prior
+	feats_test=FKFeatures(10, pos_clone, neg_clone)
+	feats_test.set_a(feats_train.get_a()) #use prior from training data
+	kernel=PolyKernel(feats_train, feats_train, *kargs)
+	km_train=kernel.get_kernel_matrix()
+	kernel.init(feats_train, feats_test)
+	km_test=kernel.get_kernel_matrix()
+
 def mindygram ():
 	pass
 
@@ -762,4 +853,5 @@ if __name__=='__main__':
 	auc()
 	combined()
 	plugin_estimate()
+	top_fisher()
 	mindygram()

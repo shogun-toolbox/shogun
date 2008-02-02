@@ -36,7 +36,7 @@ def _distribution (indata):
 	if indata['name']=='HMM':
 		best_path=0
 		best_path_state=0
-		for i in xrange(indata['distribution_examples']):
+		for i in xrange(indata['distribution_num_examples']):
 			best_path+=distribution.best_path(i)
 			for j in xrange(indata['distribution_N']):
 				best_path_state+=distribution.get_best_path_state(i, j)

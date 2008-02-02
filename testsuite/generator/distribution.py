@@ -53,7 +53,7 @@ def _get_outdata (name, params):
 		outdata['seqlen']=dataop.LEN_SEQ
 		outdata['feature_obtain']=ddata[1][2]
 
-	optional=['N', 'M', 'pseudo', 'examples',
+	optional=['N', 'M', 'pseudo', 'num_examples',
 		'derivatives', 'likelihood',
 		'best_path', 'best_path_state']
 	for opt in optional:
@@ -73,12 +73,8 @@ def _get_derivatives (dist, num_vec):
 	num_param=dist.get_num_model_parameters()
 	derivatives=0
 
-	#print 'num_examples ', num_examples
-	#print 'num_param ', num_param
 	for i in xrange(num_param):
-		#print "i ", i
 		for j in xrange(num_vec):
-			#print "j ", j
 			val=dist.get_log_derivative(i, j)
 			if val!=-numpy.inf and val!=numpy.nan: # only sparse matrix!
 				derivatives+=val
@@ -113,13 +109,13 @@ def _run_hmm ():
 	params={
 		'N':3,
 		'M':6,
-		'examples':4,
+		'num_examples':4,
 		'pseudo':1e-10,
 		'order':1,
 		'alphabet':'CUBE',
 	}
 
-	params['data']=dataop.get_cubes(params['examples'])
+	params['data']=dataop.get_cubes(params['num_examples'])
 	feats=featop.get_string_complex(
 		'Word', params['data'], eval('library.'+params['alphabet']),
 		params['order'])
@@ -137,7 +133,7 @@ def _run_hmm ():
 
 	params['best_path']=0
 	params['best_path_state']=0
-	for i in xrange(params['examples']):
+	for i in xrange(params['num_examples']):
 		params['best_path']+=hmm.best_path(i)
 		for j in xrange(params['N']):
 			params['best_path_state']+=hmm.get_best_path_state(i, j)
