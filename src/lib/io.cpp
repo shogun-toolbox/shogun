@@ -58,7 +58,7 @@ CIO::CIO() : target(stdout), last_progress_time(0), progress_start_time(0),
 }
 
 CIO::CIO(const CIO& orig) : target(orig.get_target()), last_progress_time(0),
-	progress_start_time(0), last_progress(1), show_progress(true),
+	progress_start_time(0), last_progress(1), show_progress(orig.get_show_progress()),
 	loglevel(orig.get_loglevel())
 {
 }
@@ -355,6 +355,11 @@ EMessageType CIO::get_loglevel() const
 void CIO::set_loglevel(EMessageType level)
 {
 	loglevel=level;
+}
+
+bool CIO::get_show_progress() const
+{
+	return show_progress;
 }
 
 void CIO::set_target(FILE* t)

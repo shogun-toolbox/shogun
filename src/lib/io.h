@@ -76,6 +76,7 @@ public:
 
 	void set_loglevel(EMessageType level);
 	EMessageType get_loglevel() const;
+	bool get_show_progress() const;
 	void message(EMessageType prio, const char *fmt, ... ) const;
 	void progress(DREAL current_val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
 	void absolute_progress(DREAL current_val, DREAL val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
