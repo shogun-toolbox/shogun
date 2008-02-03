@@ -395,27 +395,16 @@ public:
 		return res/factorial(k) ;
 	}
 
-	static inline void scalar_times_vec(DREAL scalar, DREAL* vec, INT n)
-	{
-		for (INT i=0; i<n; i++)
-			vec[i]*=scalar;
-	}
-
 	/// x=x+alpha*y
-	static inline void vec1_plus_scalar_times_vec2(DREAL* vec1,
-			DREAL scalar, const DREAL* vec2, INT n)
+	template <class T>
+	static inline void vec1_plus_scalar_times_vec2(T* vec1,
+			T scalar, const T* vec2, INT n)
 	{
 		for (INT i=0; i<n; i++)
 			vec1[i]+=scalar*vec2[i];
 	}
 
-	static inline void vec1_plus_scalar_times_vec2(SHORTREAL* vec1,
-			SHORTREAL scalar, const SHORTREAL* vec2, INT n)
-	{
-		for (INT i=0; i<n; i++)
-			vec1[i]+=scalar*vec2[i];
-	}
-
+	/// compute dot product between v1 and v2 (blas optimized)
 	static inline DREAL dot(const DREAL* v1, const DREAL* v2, INT n)
 	{
 		DREAL r=0;
@@ -429,6 +418,7 @@ public:
 		return r;
 	}
 
+	/// compute dot product between v1 and v2 (blas optimized)
 	static inline SHORTREAL dot(const SHORTREAL* v1, const SHORTREAL* v2, INT n)
 	{
 		DREAL r=0;
@@ -443,26 +433,58 @@ public:
 	}
 
 	/// target=alpha*vec1 + beta*vec2
-	static inline void add(DREAL* target, DREAL alpha, const DREAL* v1, DREAL beta, const DREAL* v2, INT len)
+	template <class T>
+	static inline void add(T* target, T alpha, const T* v1, T beta, const T* v2, INT len)
 	{
 		for (INT i=0; i<len; i++)
 			target[i]=alpha*v1[i]+beta*v2[i];
 	}
 
-	/// return sum(vec)
-	static inline DREAL sum(DREAL* vec, INT len)
+	/// add scalar to vector inplace
+	template <class T>
+	static inline void add_scalar(T alpha, T* vec, INT len)
 	{
-		DREAL result=0;
+		for (INT i=0; i<len; i++)
+			vec[i]+=alpha;
+	}
+
+	/// scale vector inplace
+	template <class T>
+	static inline void scale_vector(T alpha, T* vec, INT len)
+	{
+		for (INT i=0; i<len; i++)
+			vec[i]*=alpha;
+	}
+
+	/// return sum(vec)
+	template <class T>
+	static inline T sum(T* vec, INT len)
+	{
+		T result=0;
 		for (INT i=0; i<len; i++)
 			result+=vec[i];
 
 		return result;
 	}
 
-	/// return sum(abs(vec))
-	static inline DREAL sum_abs(DREAL* vec, INT len)
+	/// return max(vec)
+	template <class T>
+	static inline T max(T* vec, INT len)
 	{
-		DREAL result=0;
+		ASSERT(len>0);
+		T maxv=vec[0];
+
+		for (INT i=1; i<len; i++)
+			maxv=CMath::max(vec[i], maxv);
+
+		return maxv;
+	}
+
+	/// return sum(abs(vec))
+	template <class T>
+	static inline T sum_abs(T* vec, INT len)
+	{
+		T result=0;
 		for (INT i=0; i<len; i++)
 			result+=CMath::abs(vec[i]);
 

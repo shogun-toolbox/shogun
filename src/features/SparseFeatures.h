@@ -335,8 +335,9 @@ template <class ST> class CSparseFeatures: public CFeatures
 		 @param num index of feature vector
 		 @param vec dense vector
 		 @param dim length of the dense vector
+		 @param abs_val if true, do dense+=alpha*abs(sparse)
 		 */
-		void add_to_dense_vec(ST alpha, INT num, ST* vec, INT dim)
+		void add_to_dense_vec(ST alpha, INT num, ST* vec, INT dim, bool abs_val=false)
 		{
 			ASSERT(vec);
 			ASSERT(dim==num_features);
@@ -347,8 +348,16 @@ template <class ST> class CSparseFeatures: public CFeatures
 
 			if (sv)
 			{
-				for (INT i=0; i<num_feat; i++)
-					vec[sv[i].feat_index]+= alpha*sv[i].entry;
+				if (abs_val)
+				{
+					for (INT i=0; i<num_feat; i++)
+						vec[sv[i].feat_index]+= alpha*CMath::abs(sv[i].entry);
+				}
+				else
+				{
+					for (INT i=0; i<num_feat; i++)
+						vec[sv[i].feat_index]+= alpha*sv[i].entry;
+				}
 			}
 
 			free_sparse_feature_vector(sv, num, vfree);

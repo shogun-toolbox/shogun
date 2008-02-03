@@ -559,7 +559,7 @@ void CWDSVMOcas::compute_W( double *sq_norm_W, double *dp_WoldW, double *alpha, 
 	for (uint32_t i=0; i<nSel; i++)
 	{
 		if (alpha[i] > 0)
-			CMath::vec1_plus_scalar_times_vec2(W, alpha[i], cuts[i], nDim);
+			CMath::vec1_plus_scalar_times_vec2(W, (SHORTREAL) alpha[i], cuts[i], nDim);
 	}
 
 	*sq_norm_W = CMath::dot(W,W, nDim);
