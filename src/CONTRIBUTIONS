@@ -24,3 +24,6 @@ We integrated the work of the following people:
  
  Jean-Philippe Vert and Hiroto Saigo
  	- Local Alignment Kernel
+
+ Leon Bottou
+ 	- Stochastic Gradient Descent (SGD) SVM 
