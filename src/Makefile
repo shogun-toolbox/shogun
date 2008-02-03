@@ -160,8 +160,8 @@ ifeq (python-modular,$(INTERFACE))
 install: $(OBJFILES) $(SRCFILES) $(SWIGSRCFILES) $(SWIGDOCFILES) $(SWIGLIBFILES)
 	install -d -m755 "$(DESTDIR)$(PYDIR)/shogun"
 	install -m644 $(SWIGLIBFILES) $(SWIGPYFILES) "$(DESTDIR)$(PYDIR)/shogun"
-	echo -n '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
-	for i in $(SWIGPYFILES) ; do echo -n $$i | sed -e 's=.*/="=' -e 's/\.py/", /' >>$(DESTDIR)$(PYDIR)/shogun/__init__.py; done
+	echo '__all__= [' > "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
+	for i in $(SWIGPYFILES) ; do echo $$i | sed -e 's=.*/="=' -e 's/\.py/", /' >>$(DESTDIR)$(PYDIR)/shogun/__init__.py; done
 	echo ']' >> "$(DESTDIR)$(PYDIR)/shogun/__init__.py"
 # Standalone
 else
@@ -251,8 +251,14 @@ lib/versionstring.h:	$(SVNEntries)
 
 doc:	lib/versionstring.h
 		cd ../doc && make doxygen
+
+ifeq (python-modular,$(INTERFACE))
 tests:
-		cd ../$(INTERFACE)/testcases && ./test_all.sh	
+		cd ../$(INTERFACE)/testcases && ( PYTHON=$(PYTHON) PYTHONPATH="$(DESTDIR)$(PYDIR)/shogun" ./test_all.sh	)
+else
+tests:
+		cd ../$(INTERFACE)/testcases && ./test_all.sh
+endif
 
 ChangeLog:
 		-@svn2cl --group-by-day --authors=.authors 2>/dev/null

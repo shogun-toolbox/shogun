@@ -1,5 +1,10 @@
 # !/bin/bash
 
+if test -z "$PYTHON" 
+then
+	PYTHON=python
+fi
+
 DATAPATH='../../testsuite/data'
 
 function test_all () {
@@ -10,7 +15,7 @@ function test_all () {
 		echo -n "$file"
 		echo -n -e "\t\t"
 
-		output=`python test_one.py "$file"`
+		output=`${PYTHON} test_one.py "$file"`
 		ret=$?
 
 		if [ $ret -eq 0 ] ; then
