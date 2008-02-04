@@ -94,7 +94,10 @@ def _classifier (indata):
 		classifier.set_learn_rate=indata['classifier_learn_rate']
 		classifier.set_max_iter=indata['classifier_max_iter']
 	if indata.has_key('classifier_epsilon'):
-		classifier.set_epsilon(indata['classifier_epsilon'])
+		try:
+			classifier.set_epsilon(indata['classifier_epsilon'])
+		except AttributeError:
+			pass
 	if indata.has_key('classifier_tube_epsilon'):
 		classifier.set_tube_epsilon(indata['classifier_tube_epsilon'])
 	if indata.has_key('classifier_max_train_time'):

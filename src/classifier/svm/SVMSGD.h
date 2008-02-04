@@ -1,5 +1,5 @@
-#ifndef _SVMOCAS_H___
-#define _SVMOCAS_H___
+#ifndef _SVMSGD_H___
+#define _SVMSGD_H___
 
 /*
    SVM with stochastic gradient
@@ -39,9 +39,24 @@ class CSVMSGD : public CSparseLinearClassifier
 		virtual bool train();
 
 
-		inline void set_lambda(DREAL l) { lambda=l; }
+		/** set C
+		 *
+		 * @param c1 new C1
+		 * @param c2 new C2
+		 */
+		inline void set_C(DREAL c1, DREAL c2) { C1=c1; C2=c2; }
 
-		inline DREAL get_lambda() { return lambda; }
+		/** get C1
+		 *
+		 * @return C1
+		 */
+		inline DREAL get_C1() { return C1; }
+
+		/** get C2
+		 *
+		 * @return C2
+		 */
+		inline DREAL get_C2() { return C2; }
 
 		inline void set_epochs(INT e) { epochs=e; }
 
@@ -76,7 +91,8 @@ class CSVMSGD : public CSparseLinearClassifier
 
 	private:
 		DREAL t;
-		DREAL lambda;
+		DREAL C1;
+		DREAL C2;
 		DREAL wscale;
 		DREAL bscale;
 		INT epochs;

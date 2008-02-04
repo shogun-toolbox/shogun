@@ -300,6 +300,12 @@ bool CGUIClassifier::new_classifier(CHAR* param)
 		((CSVMOcas*) classifier)->set_bufsize(svm_bufsize);
 		SG_INFO( "created SVM Ocas(OCAS) object\n") ;
 	}
+	else if (strcmp(param,"SVMSGD")==0)
+	{
+		delete classifier;
+		classifier= new CSVMSGD(svm_C1);
+		SG_INFO( "created SVM SGD object\n") ;
+	}
 	else if (strcmp(param,"SVMBMRM")==0 || (strcmp(param,"SVMPERF")==0))
 	{
 		delete classifier;
@@ -355,6 +361,7 @@ bool CGUIClassifier::train(CHAR* param)
 		case CT_SVMPERF:
 		case CT_SUBGRADIENTSVM:
 		case CT_SVMOCAS:
+		case CT_SVMSGD:
 		case CT_LPM:
 		case CT_LPBOOST:
 		case CT_SUBGRADIENTLPM:
@@ -1085,6 +1092,7 @@ CLabels* CGUIClassifier::classify(CLabels* output)
 		case CT_SVMPERF:
 		case CT_SUBGRADIENTSVM:
 		case CT_SVMOCAS:
+		case CT_SVMSGD:
 		case CT_LPM:
 		case CT_LPBOOST:
 		case CT_SUBGRADIENTLPM:
@@ -1173,6 +1181,7 @@ bool CGUIClassifier::get_trained_classifier(DREAL* &weights, INT &rows, INT &col
 		case CT_LPBOOST:
 		case CT_SUBGRADIENTLPM:
 		case CT_SVMOCAS:
+		case CT_SVMSGD:
 		case CT_SVMLIN:
 		case CT_SVMPERF:
 		case CT_SUBGRADIENTSVM:

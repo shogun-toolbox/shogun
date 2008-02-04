@@ -147,7 +147,7 @@ public:
 	template <class T>
 	static inline T abs(T a)
 	{
-		return ((a)>=(0))?(a):(-a);
+		return (a>=0)?(a):(-a);
 	}
 	//@}
 

@@ -332,6 +332,32 @@ def svmocas ():
 	svm.set_features(feats_test)
 	svm.classify().get_labels()
 
+def svmsgd ():
+	print 'SVMSGD'
+
+	num_feats=11
+	data=get_clouds(2, num_feats, 12)
+	realfeat=RealFeatures(data)
+	feats_test=SparseRealFeatures()
+	feats_test.obtain_from_simple(realfeat)
+	data=get_clouds(2, num_feats, 21)
+	realfeat=RealFeatures(data)
+	feats_test=SparseRealFeatures()
+	feats_test.obtain_from_simple(realfeat)
+
+	C=0.42
+	epsilon=1e-5
+	num_threads=1
+	lab=rand(feats_test.get_num_vectors()).round()*2-1
+	labels=Labels(array(lab))
+
+	svm=SVMSGD(C, feats_test, labels)
+	svm.io.set_loglevel(0)
+	svm.train()
+
+	svm.set_features(feats_test)
+	svm.classify().get_labels()
+
 def liblinear ():
 	print 'LibLinear'
 
@@ -470,6 +496,7 @@ def lda ():
 if __name__=='__main__':
 	seed(42)
 
+	svmsgd()
 	svm_light()
 	libsvm()
 	gpbtsvm()

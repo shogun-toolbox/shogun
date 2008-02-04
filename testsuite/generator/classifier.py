@@ -114,7 +114,10 @@ def _compute_svm (name, labels, params):
 		return
 
 	svm.parallel.set_num_threads(params['num_threads'])
-	svm.set_epsilon(params['epsilon'])
+	try:
+		svm.set_epsilon(params['epsilon'])
+	except AttributeError: #SGD does not have an accuracy parameter
+		pass
 
 	if params.has_key('tube_epsilon'):
 		svm.set_tube_epsilon(params['tube_epsilon'])
@@ -257,7 +260,7 @@ def _run_svm_linear ():
 	params['feats']=featop.get_simple('Real', params['data'], sparse=True)
 	_loop_svm(svms, params)
 
-	svms=['LibLinear', 'SVMLin']
+	svms=['LibLinear', 'SVMLin', 'SVMSGD']
 	params['bias_enabled']=True
 	_loop_svm(svms, params)
 

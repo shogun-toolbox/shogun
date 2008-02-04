@@ -16,6 +16,7 @@ CLASSIFIER={
 	'SubGradientSVM':[1e-6, 'linear', 'twoclass'],
 	'SVMLin':[1e-7, 'linear', 'twoclass'],
 	'SVMOcas':[1e-4, 'linear', 'twoclass'],
+	'SVMSGD':[1e-6, 'linear', 'twoclass'],
 }
 
 # name: accuracy
