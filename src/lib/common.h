@@ -207,6 +207,7 @@ enum EClassifierType
 	CT_HIERARCHICAL = 250,
 	CT_SVMOCAS = 260,
 	CT_WDSVMOCAS = 270,
+	CT_SVMSGD = 280,
 };
 
 enum EDistanceType

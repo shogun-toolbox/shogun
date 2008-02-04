@@ -50,7 +50,7 @@ class CSVMOcas : public CSparseLinearClassifier
 
 		/** train SVM
 		 *
-		 * @return if training was successful
+		 * @return true if training was successful
 		 */
 		virtual bool train();
 

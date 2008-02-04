@@ -31,13 +31,33 @@
 class CSVMSGD : public CSparseLinearClassifier
 {
 	public:
-		CSVMSGD(DREAL lambda);
-		CSVMSGD(DREAL lambda, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
+		/** constructor
+		 *
+		 * @param C constant C
+		 */
+		CSVMSGD(DREAL C);
+
+		/** constructor
+		 *
+		 * @param C constant C
+		 * @param traindat training features
+		 * @param trainlab labels for training features
+		 */
+		CSVMSGD(DREAL C, CSparseFeatures<DREAL>* traindat, CLabels* trainlab);
 
 		~CSVMSGD();
 
-		virtual bool train();
+		/** get classifier type
+		 *
+		 * @return classifier type SVMOCAS
+		 */
+		virtual inline EClassifierType get_classifier_type() { return CT_SVMSGD; }
 
+		/** train SVM
+		 *
+		 * @return true if training was successful
+		 */
+		virtual bool train();
 
 		/** set C
 		 *
@@ -58,8 +78,16 @@ class CSVMSGD : public CSparseLinearClassifier
 		 */
 		inline DREAL get_C2() { return C2; }
 
+		/** set epochs
+		 *
+		 * @param e new number of training epochs
+		 */
 		inline void set_epochs(INT e) { epochs=e; }
 
+		/** get epochs
+		 *
+		 * @return the number of training epochs
+		 */
 		inline INT get_epochs() { return epochs; }
 
 		/** set if bias shall be enabled
