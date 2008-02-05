@@ -66,7 +66,7 @@ class CMultiClassSVM : public CSVM
 		CSVM* get_svm(INT num)
 		{
 			ASSERT(m_num_svms>0);
-			ASSERT(num>0 && num<m_num_svms);
+			ASSERT(num>=0 && num<m_num_svms);
 			SG_REF(m_svms[num]);
 			return m_svms[num];
 		}
