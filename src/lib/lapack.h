@@ -44,8 +44,21 @@ int dtrmv_(char* uplo, char* trans, char* diag, int* n, double* a, int* lda, dou
 #define FDOUBLE double *
 #define FREAL float *
 
-typedef struct { float r; float i; } lw_complex_t;
-typedef struct { double r; double i; } lw_double_complex_t;
+/** lw complex type */
+typedef struct {
+	/** r */
+	float r;
+	/** i */
+	float i;
+} lw_complex_t;
+
+/** lw double complex type */
+typedef struct {
+	/** r */
+	double r;
+	/** i */
+	double i;
+} lw_double_complex_t;
 
 #define FCOMPLEX lw_complex_t *
 #define FDOUBLECOMPLEX lw_double_complex_t *

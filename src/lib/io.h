@@ -68,99 +68,183 @@ extern CIO sg_io;
 
 #define ASSERT(x) { if (!(x)) SG_SERROR("assertion %s failed in file %s line %d\n",#x, __FILE__, __LINE__);}
 
+/** class IO */
 class CIO
 {
-public:
-	CIO();
-	CIO(const CIO& orig);
+	public:
+		/** default constructor */
+		CIO();
+		/** copy constructor */
+		CIO(const CIO& orig);
 
-	void set_loglevel(EMessageType level);
-	EMessageType get_loglevel() const;
-	bool get_show_progress() const;
-	void message(EMessageType prio, const char *fmt, ... ) const;
-	void progress(DREAL current_val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
-	void absolute_progress(DREAL current_val, DREAL val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
+		/** set loglevel
+		 *
+		 * @param level level of log messages
+		 */
+		void set_loglevel(EMessageType level);
 
-	inline void not_implemented() const
-	{
-		message(M_ERROR, "Sorry, not yet implemented\n");
-	}
+		/** get loglevel
+		 *
+		 * @return level of log messages
+		 */
+		EMessageType get_loglevel() const;
 
-	void buffered_message(EMessageType prio, const CHAR *fmt, ... ) const;
-	static CHAR* skip_spaces(CHAR* str);
+		/** get show_progress
+		 *
+		 * @return if progress bar is shown
+		 */
+		bool get_show_progress() const;
 
-	inline FILE* get_target() const
-	{
-		return target;
-	}
+		/** print a message
+		 *
+		 * @param prio message priority
+		 * @param fmt format string
+		 */
+		void message(EMessageType prio, const char *fmt, ... ) const;
 
-	void set_target(FILE* target);
+		/** print progress bar
+		 *
+		 * @param current_val current value
+		 * @param min_val minimum value
+		 * @param max_val maximum value
+		 * @param decimals decimals
+		 * @param prefix message prefix
+		 */
+		void progress(DREAL current_val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
 
-	inline void set_target_to_stderr()
-	{
-		set_target(stderr);
-	}
+		/** print absolute progress bar
+		 *
+		 * @param current_val current value
+		 * @param val value
+		 * @param min_val minimum value
+		 * @param max_val maximum value
+		 * @param decimals decimals
+		 * @param prefix message prefix
+		 */
+		void absolute_progress(DREAL current_val, DREAL val, DREAL min_val=0.0, DREAL max_val=1.0, INT decimals=1, const char* prefix="PROGRESS:\t");
 
-	inline void set_target_to_stdout()
-	{
-		set_target(stdout);
-	}
+		/** print error message 'not implemented' */
+		inline void not_implemented() const
+		{
+			message(M_ERROR, "Sorry, not yet implemented\n");
+		}
 
-	inline void enable_progress()
-	{
-		show_progress=true;
+		/** print a buffered message
+		 *
+		 * @param prio message priority
+		 * @param fmt format string
+		 */
+		void buffered_message(EMessageType prio, const CHAR *fmt, ... ) const;
 
-// static functions like CSVM::classify_example_helper call SG_PROGRESS
+		/** skip leading spaces
+		 *
+		 * @param str string in which to look for spaces
+		 * @return string after after skipping leading spaces
+		 */
+		static CHAR* skip_spaces(CHAR* str);
+
+		/** get target
+		 *
+		 * @return file descriptor for target
+		 */
+		inline FILE* get_target() const
+		{
+			return target;
+		}
+
+		/** set target
+		 *
+		 * @param target file descriptor for target
+		 */
+		void set_target(FILE* target);
+
+		/** set target to stderr */
+		inline void set_target_to_stderr() { set_target(stderr); }
+
+		/** set target to stdout */
+		inline void set_target_to_stdout() { set_target(stdout); }
+
+		/** enable progress bar */
+		inline void enable_progress()
+		{
+			show_progress=true;
+
+			// static functions like CSVM::classify_example_helper call SG_PROGRESS
 #ifndef HAVE_SWIG
-		if (sg_io!=this)
-			sg_io->enable_progress();
+			if (sg_io!=this)
+				sg_io->enable_progress();
 #else
-		if (&sg_io!=this)
-			sg_io.disable_progress();
+			if (&sg_io!=this)
+				sg_io.disable_progress();
 #endif
-	}
+		}
 
-	inline void disable_progress()
-	{
-		show_progress=false;
+		/** disable progress bar */
+		inline void disable_progress()
+		{
+			show_progress=false;
 
-// static functions like CSVM::classify_example_helper call SG_PROGRESS
+			// static functions like CSVM::classify_example_helper call SG_PROGRESS
 #ifndef HAVE_SWIG
-		if (sg_io!=this)
-			sg_io->disable_progress();
+			if (sg_io!=this)
+				sg_io->disable_progress();
 #else
-		if (&sg_io!=this)
-			sg_io.disable_progress();
+			if (&sg_io!=this)
+				sg_io.disable_progress();
 #endif
-	}
+		}
 
-	///set directory-name
-	inline void set_dirname(const CHAR* dirname)
-	{
-		strncpy(directory_name, dirname, FBUFSIZE);
-	}
+		/** set directory name
+		 *
+		 * @param dirname new directory name
+		 */
+		inline void set_dirname(const CHAR* dirname)
+		{
+			strncpy(directory_name, dirname, FBUFSIZE);
+		}
 
-	///concatenate directory and filename
-	/// ( non thread safe )
-	static CHAR* concat_filename(const CHAR* filename);
+		/** concatenate directory and filename
+		 * ( non thread safe )
+		 *
+		 * @param filename new filename
+		 * @return concatenated directory and filename
+		 */
+		static CHAR* concat_filename(const CHAR* filename);
 
-	///concatenate directory and filename
-	/// ( non thread safe )
-	static int filter(CONST_DIRENT_T* d); 
+		/** filter
+		 *
+		 * @param d directory entry
+		 * @return if filtering was successful
+		 */
+		static int filter(CONST_DIRENT_T* d);
 
-protected:
-	//return index into levels array or -1 if message not to be printed
-	int get_prio_string(EMessageType prio) const;
+	protected:
+		/** get index into levels array
+		 *
+		 * @param prio message priority
+		 * @return index into levels array or -1 if message could
+		 *         not to be printed
+		 */
+		int get_prio_string(EMessageType prio) const;
 
-protected:
-	FILE* target;
-	LONG last_progress_time, progress_start_time;
-	DREAL last_progress;
-	bool show_progress;
+	protected:
+		/** target file */
+		FILE* target;
+		/** last progress time */
+		LONG last_progress_time;
+		/** progress start time */
+		LONG progress_start_time;
+		/** last progress */
+		DREAL last_progress;
+		/** if progress bar shall be shown */
+		bool show_progress;
 
-	EMessageType loglevel;
-	static const EMessageType levels[NUM_LOG_LEVELS];
-	static const char* message_strings[NUM_LOG_LEVELS];
+		/** log level */
+		EMessageType loglevel;
+		/** available log levels */
+		static const EMessageType levels[NUM_LOG_LEVELS];
+		/** message strings */
+		static const char* message_strings[NUM_LOG_LEVELS];
 };
 
 #endif // __CIO_H__

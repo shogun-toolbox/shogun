@@ -18,22 +18,31 @@
 
 #include <stdlib.h>
 
+/** template clas Cache */
 template<class T> class CCache : public CSGObject
 {
+	/** cache entry */
 	struct TEntry
 	{
+		/** usage count */
 		LONG usage_count;
+		/** if entry is locked */
 		bool locked;
+		/** cached object */
 		T* obj;
 	};
 
 	public:
-	/// create cache of cache_size Megabytes.
-	/// num_entries objects can be cached
-	/// whose lookup table of 
-	/// size: sizeof(LONG)*num_entries
-	/// must fit into memory
-	/// a chunk of size cache_size will be allocated
+	/** constructor
+	 *
+	 * create a cache in which num_entries objects can be cached
+	 * whose lookup table of sizeof(LONG)*num_entries
+	 * must fit into memory
+	 *
+	 * @param cache_size cache size in Megabytes
+	 * @param obj_size object size
+	 * @param num_entries number of cached objects
+	 */
 	CCache(LONG cache_size, LONG obj_size, LONG num_entries) : CSGObject()
 	{
 		if (cache_size==0 || obj_size==0 || num_entries==0)
@@ -84,12 +93,21 @@ template<class T> class CCache : public CSGObject
 		delete[] cache_table;
 	}
 
+	/** checks if an object is cached
+	 *
+	 * @param number number of object to check for
+	 * @return if an object is cached
+	 */
 	inline bool is_cached(LONG number)
 	{
 		return (lookup_table && lookup_table[number].obj);
 	}
 
-	/// returns a cache entry or NULL when not cached
+	/** lock and get a cache entry
+	 *
+	 * @param number number of object to lock and get
+	 * @return cache entry or NULL when not cached
+	 */
 	inline T* lock_entry(LONG number)
 	{
 		if (lookup_table)
@@ -101,17 +119,24 @@ template<class T> class CCache : public CSGObject
 		else
 			return NULL;
 	}
-	
-	/// unlocks a cache entry
+
+	/** unlock a cache entry
+	 *
+	 * @param number number of object to unlock
+	 */
 	inline void unlock_entry(LONG number)
 	{
 		if (lookup_table)
 			lookup_table[number].locked=false;
 	}
 
-	/// returns the address of a free cache entry
-	/// to where the data of size obj_size has to
-	/// be written
+	/** returns the address of a free cache entry
+	 * to where the data of size obj_size has to
+	 * be written
+	 *
+	 * @param number number of object to unlock
+	 * @return address of a free cache entry
+	 */
 	T* set_entry(LONG number)
 	{
 		if (lookup_table)
@@ -193,11 +218,17 @@ template<class T> class CCache : public CSGObject
 			return NULL;
 	}
 
+	/** if cache is full */
 	bool cache_is_full;
+	/** size of one entry */
 	LONG entry_size;
+	/** number of cache lines */
 	LONG nr_cache_lines;
+	/** lookup table */
 	TEntry* lookup_table;
+	/** cache table containing cached objects */
 	TEntry** cache_table;
+	/** cache block */
 	T* cache_block;
 };
 #endif

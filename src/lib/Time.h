@@ -18,47 +18,80 @@
 #include "lib/io.h"
 #include "base/SGObject.h"
 
+/** class Time */
 class CTime : public CSGObject
 {
 	public:
+		/** constructor
+		 *
+		 * @param start if time measurement shall be started
+		 */
 		CTime(bool start=true);
 		~CTime();
 
-		/// returns the cpu time
+		/** get current cpu runtime
+		 *
+		 * @param verbose if time shall be printed
+		 * @return current cpu runtime
+		 */
 		clock_t cur_runtime(bool verbose=false);
 
-		/// returns time difference between start and NOW
-		/// when verbose is set the time difference is printed
+		/** get time difference between start and NOW
+		 *
+		 * @param verbose if time difference shall be printed
+		 * @return time difference between start and NOW
+		 */
 		clock_t cur_runtime_diff(bool verbose=false);
 
-		/// returns time difference between start and NOW
-		/// when verbose is set the time difference is printed
+		/** get time difference between start and NOW in seconds
+		 *
+		 * @param verbose if time difference shall be printed
+		 * @return time difference between start and NOW in seconds
+		 */
 		double cur_runtime_diff_sec(bool verbose=false);
 
-		/// starts counter and returns start time in seconds
-		/// when verbose is set the start time is printed
+		/** start the counter
+		 *
+		 * @param verbose if start time shall be printed
+		 * @return start time in seconds
+		 */
 		double start(bool verbose=false);
 
-		/// returns time difference between start and NOW in seconds
-		/// when verbose is set the time difference is printed
+		/** get time difference between start and NOW in seconds
+		 *
+		 * @param verbose if time difference shall be printed
+		 * @return time difference between start and NOW in seconds
+		 */
 		double cur_time_diff(bool verbose=false);
 
-		/// returns time difference between start and stop in seconds
-		/// when verbose is set the time difference is printed
+		/** get time difference between start and stop in seconds
+		 *
+		 * @param verbose if time difference shall be printed
+		 * @return time difference between start and stop in seconds
+		 */
 		double time_diff_sec(bool verbose=false);
 
-		/// stops counter and returns stop time in seconds
-		/// when verbose is set the stop time is printed
+		/** stop the counter
+		 * @param verbose if stop time shall be printed
+		 * @return stop time in seconds
+		 */
 		double stop(bool verbose=false);
 
-		static LONG get_runtime() 
+		/** get runtime
+		 *
+		 * @return runtime
+		 */
+		static LONG get_runtime()
 		{
 			clock_t start_runtime = clock();
 			return((LONG)((double)start_runtime*100.0/(double)CLOCKS_PER_SEC));
 		}
 
-		/// return current time in seconds
-		static double get_curtime() 
+		/** get current time in seconds
+		 *
+		 * @return current time in seconds
+		 */
+		static double get_curtime()
 		{
 			timeval tv;
 			if (gettimeofday(&tv, NULL)==0)
@@ -68,9 +101,12 @@ class CTime : public CSGObject
 		}
 
 	protected:
+		/** start runtime */
 		clock_t start_runtime;
 
+		/** start time */
 		double start_time;
+		/** stop time */
 		double stop_time;
 };
 #endif

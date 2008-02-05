@@ -20,43 +20,73 @@
 
 #include "lib/python.h"
 
+/** class Signal */
 class CSignal : public CSGObject
 {
-public:
-	CSignal();
-	~CSignal();
+	public:
+		/** default constructor */
+		CSignal();
+		~CSignal();
 
-	static void handler(int);
+		/** handler
+		 *
+		 * @param signal signal number
+		 */
+		static void handler(int signal);
 
-	static bool set_handler();
-	static bool unset_handler();
-	static void clear();
-	static inline bool cancel_computations()
-	{
+		/** set handler
+		 *
+		 * @return if setting was successful
+		 */
+		static bool set_handler();
+		
+		/** unset handler
+		 *
+		 * @return if unsetting was successful
+		 */
+		static bool unset_handler();
+
+		/** clear signals */
+		static void clear();
+
+		/** cancel computations
+		 *
+		 * @return if computations could be cancelled
+		 */
+		static inline bool cancel_computations()
+		{
 #ifdef HAVE_PYTHON
-	  if (PyErr_CheckSignals())
-	  {
-		  SG_SPRINT("\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
-		  char answer=fgetc(stdin);
+			if (PyErr_CheckSignals())
+			{
+				SG_SPRINT("\nImmediately return to matlab prompt / Prematurely finish computations / Do nothing (I/P/D)? ");
+				char answer=fgetc(stdin);
 
-		  if (answer == 'I')
-			  SG_SERROR("shogun stopped by SIGINT\n");
-		  else if (answer == 'P')
-		  {
-			  PyErr_Clear();
-			  cancel_computation=true;
-		  }
-		  else
-			  SG_SPRINT("\n");
-	  }
+				if (answer == 'I')
+					SG_SERROR("shogun stopped by SIGINT\n");
+				else if (answer == 'P')
+				{
+					PyErr_Clear();
+					cancel_computation=true;
+				}
+				else
+					SG_SPRINT("\n");
+			}
 #endif
-		return cancel_computation;
-	}
-protected:
-	static int signals[NUMTRAPPEDSIGS];
-	static struct sigaction oldsigaction[NUMTRAPPEDSIGS];
-	static bool active;
-	static bool cancel_computation;
+			return cancel_computation;
+		}
+
+	protected:
+		/** signals */
+		static int signals[NUMTRAPPEDSIGS];
+
+		/** signal actions */
+		static struct sigaction oldsigaction[NUMTRAPPEDSIGS];
+
+		/** active signal */
+		static bool active;
+
+		/** if computation is cancelled */
+		static bool cancel_computation;
 };
 #endif // WIN32
 #endif // __SIGNAL__H_

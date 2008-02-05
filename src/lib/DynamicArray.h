@@ -15,208 +15,265 @@
 #include "lib/Mathematics.h"
 #include "base/SGObject.h"
 
-/** dynamic array, i.e. array that can be used like a list or an array.
-it grows and shrinks dynamically, while elements can be accessed via index
-performance tuned for simple types as float etc.
-for hi-level objects only store pointers
-*/
 template <class T> class CDynamicArray;
 
+/** dynamic array, i.e. array that can be used like a list or an array.
+ * it grows and shrinks dynamically, while elements can be accessed via index
+ * performance tuned for simple types as float etc.
+ * for hi-level objects only store pointers
+ */
 template <class T> class CDynamicArray : public CSGObject
 {
-public:
-	CDynamicArray(INT p_resize_granularity = 128) : CSGObject()
-	{
-		this->resize_granularity = p_resize_granularity;
-
-		array = (T*) calloc(p_resize_granularity, sizeof(T));
-		ASSERT(array);
-
-		num_elements = p_resize_granularity;
-		last_element_idx = -1;
-	}
-
-	~CDynamicArray()
-	{
-		free(array);
-	}
-
-	/// set the resize granularity and return what has been set (minimum is 128) 
-	inline INT set_granularity(INT g)
-	{
-		g=CMath::max(g,128);
-		this->resize_granularity = g;
-		return g;
-	}
-
-	/// return total array size (including granularity buffer)
-	inline INT get_array_size()
-	{
-		return num_elements;
-	}
-
-	/// return index of element which is at the end of the array
-	inline INT get_num_elements() const
-	{
-		return last_element_idx+1;
-	}
-
-	///return array element at index
-	inline T get_element(INT index) const
-	{
-		return array[index];
-	}
-
-	///set array element at index 'index' return false in case of trouble
-	inline bool set_element(T element, INT index)
-	{
-		if (index < 0)
+	public:
+		/** constructor
+		 *
+		 * @param p_resize_granularity resize granularity
+		 */
+		CDynamicArray(INT p_resize_granularity = 128) : CSGObject()
 		{
+			this->resize_granularity = p_resize_granularity;
+
+			array = (T*) calloc(p_resize_granularity, sizeof(T));
+			ASSERT(array);
+
+			num_elements = p_resize_granularity;
+			last_element_idx = -1;
+		}
+
+		~CDynamicArray() { free(array); }
+
+		/** set the resize granularity
+		 *
+		 * @param g new granularity
+		 * @return what has been set (minimum is 128)
+		 */
+		inline INT set_granularity(INT g)
+		{
+			g=CMath::max(g,128);
+			this->resize_granularity = g;
+			return g;
+		}
+
+		/** get array size (including granularity buffer)
+		 *
+		 * @return total array size (including granularity buffer)
+		 */
+		inline INT get_array_size()
+		{
+			return num_elements;
+		}
+
+		/** get number of elements
+		 *
+		 * @return index of last element
+		 */
+		inline INT get_num_elements() const
+		{
+			return last_element_idx+1;
+		}
+
+		/** get array element at index
+		 *
+		 *
+		 * @param index index
+		 * @return array element at index
+		 */
+		inline T get_element(INT index) const
+		{
+			return array[index];
+		}
+
+		/** set array element at index
+		 *
+		 * @param element element to set
+		 * @param index index
+		 * @return if setting was successful
+		 */
+		inline bool set_element(T element, INT index)
+		{
+			if (index < 0)
+			{
+				return false;
+			}
+			else if (index <= last_element_idx)
+			{
+				array[index]=element;
+				return true;
+			}
+			else if (index < num_elements)
+			{
+				array[index]=element;
+				last_element_idx=index;
+				return true;
+			}
+			else
+			{
+				if (resize_array(index))
+					return set_element(element, index);
+				else
+					return false;
+			}
+		}
+
+		/** insert array element at index
+		 *
+		 * @param element element to insert
+		 * @param index index
+		 * @return if setting was successful
+		 */
+		inline bool insert_element(T element, INT index)
+		{
+			if (append_element(get_element(last_element_idx)))
+			{
+				for (INT i=last_element_idx-1; i>index; i--)
+				{
+					array[i]=array[i-1];
+				}
+				array[index]=element;
+
+				return true;
+			}
+
 			return false;
 		}
-		else if (index <= last_element_idx)
+
+		/** append array element to the end of array
+		 *
+		 * @param element element to append
+		 * @return if setting was successful
+		 */
+		inline bool append_element(T element)
 		{
-			array[index]=element;
-			return true;
+			return set_element(element, last_element_idx+1);
 		}
-		else if (index < num_elements)
+
+		/** delete array element at idx
+		 * (does not call delete[] or the like)
+		 *
+		 * @param idx index
+		 * @return if deleting was successful
+		 */
+		inline bool delete_element(INT idx)
 		{
-			array[index]=element;
-			last_element_idx=index;
-			return true;
+			if (idx>=0 && idx<=last_element_idx)
+			{
+				for (INT i=idx; i<last_element_idx; i++)
+					array[i]=array[i+1];
+
+				array[last_element_idx]=0;
+				last_element_idx--;
+
+				if ( num_elements - last_element_idx >= resize_granularity)
+					resize_array(last_element_idx);
+
+				return true;
+			}
+
+			return false;
 		}
-		else
+
+		/** resize the array
+		 *
+		 * @param n new size
+		 * @return if resizing was successful
+		 */
+		bool resize_array(INT n)
 		{
-			if (resize_array(index))
-				return set_element(element, index);
+			INT new_num_elements= ((n/resize_granularity)+1)*resize_granularity;
+
+			T* p= (T*) realloc(array, sizeof(T)*new_num_elements);
+			if (p)
+			{
+				array=p;
+				if (new_num_elements > num_elements)
+					memset(&array[num_elements], 0, (new_num_elements-num_elements)*sizeof(T));
+				else if (n+1<new_num_elements)
+					memset(&array[n+1], 0, (new_num_elements-n-1)*sizeof(T));
+
+				//in case of shrinking we must adjust last element idx
+				if (n-1<last_element_idx)
+					last_element_idx=n-1;
+
+				num_elements=new_num_elements;
+				return true;
+			}
 			else
 				return false;
 		}
-	}
 
-	///set array element at index 'index' return false in case of trouble
-	inline bool insert_element(T element, INT index)
-	{
-		if (append_element(get_element(last_element_idx)))
+		/** get the array
+		 * call get_array just before messing with it DO NOT call any
+		 * [],resize/delete functions after get_array(), the pointer may
+		 * become invalid !
+		 *
+		 * @return the array
+		 */
+		inline T* get_array()
 		{
-			for (INT i=last_element_idx-1; i>index; i--)
-			{
-				array[i]=array[i-1];
-			}
-			array[index]=element;
-
-			return true;
+			return array;
 		}
 
-		return false;
-	}
-
-	///append array element at end of array
-	inline bool append_element(T element)
-	{
-		return set_element(element, last_element_idx+1);
-	}
-
-	///delete array element at idx (does not call delete[] or the like)
-	inline bool delete_element(INT idx)
-	{
-		if (idx>=0 && idx<=last_element_idx)
+		/** set the array pointer and free previously allocated memory
+		 *
+		 * @param p_array new array
+		 * @param p_num_elements last element index + 1
+		 * @param array_size number of elements in array
+		 */
+		inline void set_array(T* p_array, INT p_num_elements, INT array_size)
 		{
-			for (INT i=idx; i<last_element_idx; i++)
-				array[i]=array[i+1];
-
-			array[last_element_idx]=0;
-			last_element_idx--;
-
-			if ( num_elements - last_element_idx >= resize_granularity)
-				resize_array(last_element_idx);
-
-			return true;
+			free(this->array);
+			this->array=p_array;
+			this->num_elements=array_size;
+			this->last_element_idx=p_num_elements-1;
 		}
 
-		return false;
-	}
-	
-	///resize the array 
-	bool resize_array(INT n)
-	{
-		INT new_num_elements= ((n/resize_granularity)+1)*resize_granularity;
-
-		T* p= (T*) realloc(array, sizeof(T)*new_num_elements);
-		if (p)
+		/** clear the array (with zeros) */
+		inline void clear_array()
 		{
-			array=p;
-			if (new_num_elements > num_elements)
-				memset(&array[num_elements], 0, (new_num_elements-num_elements)*sizeof(T));
-			else if (n+1<new_num_elements)
-					memset(&array[n+1], 0, (new_num_elements-n-1)*sizeof(T));
-
-			//in case of shrinking we must adjust last element idx
-			if (n-1<last_element_idx)
-				last_element_idx=n-1;
-
-			num_elements=new_num_elements;
-			return true;
+			if (last_element_idx >= 0)
+				memset(array, 0, (last_element_idx+1)*sizeof(T));
 		}
-		else
-			return false;
-	}
 
-	/// get the array
-	/// call get_array just before messing with it DO NOT call any [],resize/delete functions after get_array(), the pointer may become invalid !
-	inline T* get_array()
-	{
-		return array;
-	}
+		/** operator overload for array read only access
+		 * use set_element() for write access (will also make the array
+		 * dynamically grow)
+		 *
+		 * DOES NOT DO ANY BOUNDS CHECKING
+		 *
+		 * @param index index
+		 * @return element at index
+		 */
+		inline T operator[](INT index) const
+		{
+			return array[index];
+		}
 
-	/// set the array pointer and free previously allocated memory
-	inline void set_array(T* p_array, INT p_num_elements, INT array_size)
-	{
-		free(this->array);
-		this->array=p_array;
-		this->num_elements=array_size;
-		this->last_element_idx=p_num_elements-1;
-	}
+		/** operator overload for array assignment
+		 *
+		 * @param orig original array
+		 * @return new array
+		 */
+		CDynamicArray<T>& operator=(CDynamicArray<T>& orig)
+		{
+			resize_granularity=orig.resize_granularity;
+			memcpy(array, orig.array, sizeof(T)*orig.num_elements);
+			num_elements=orig.num_elements;
+			last_element_idx=orig.last_element_idx;
 
-	/// clear the array (with zeros)
-	inline void clear_array()
-	{
-		if (last_element_idx >= 0)
-			memset(array, 0, (last_element_idx+1)*sizeof(T));
-	}
+			return *this;
+		}
 
+	protected:
+		/** shrink/grow step size */
+		INT resize_granularity;
 
-	/// operator overload for array read only access
-	/// use set_element() for write access (will also make the array dynamically grow)
-	///
-	/// DOES NOT DO ANY BOUNDS CHECKING
-	inline T operator[](INT index) const
-	{
-		return array[index];
-	}
+		/** memory for dynamic array */
+		T* array;
 
-	///// operator overload for array assignment
-	CDynamicArray<T>& operator=(CDynamicArray<T>& orig)
-	{
-		resize_granularity=orig.resize_granularity;
-		memcpy(array, orig.array, sizeof(T)*orig.num_elements);
-		num_elements=orig.num_elements;
-		last_element_idx=orig.last_element_idx;
+		/** the number of potentially used elements in array */
+		INT num_elements;
 
-		return *this;
-	}
-
-protected:
-	/// shrink/grow step size
-	INT resize_granularity;
-
-	/// memory for dynamic array
-	T* array;
-
-	/// the number of potentially used elements in array
-	INT num_elements;
-
-	/// the element in the array that has largest index
-	INT last_element_idx;
+		/** the element in the array that has largest index */
+		INT last_element_idx;
 };
 #endif
