@@ -115,6 +115,7 @@ class CSVMSGD : public CSparseLinearClassifier
 		inline bool get_regularized_bias_enabled() { return use_regularized_bias; }
 
 	protected:
+		/** calibrate */
 		void calibrate();
 
 	private:

@@ -161,7 +161,14 @@ class CMath : public CSGObject
 		template <class T>
 			static inline T abs(T a)
 			{
-				return (a>=0)?(a):(-a);
+				// can't be a>=0?(a):(-a), because compiler complains about
+				// 'comparison always true' when T is unsigned
+				if (a==0)
+					return 0;
+				else if (a>0)
+					return a;
+				else
+					return -a;
 			}
 		//@}
 

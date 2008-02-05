@@ -13,7 +13,7 @@
 
 #include "base/SGObject.h"
 
-/* class to implement various performance measures */
+/** class to implement various performance measures */
 class CPerformanceMeasures : public CSGObject
 {
 	public:
