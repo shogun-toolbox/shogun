@@ -21,6 +21,7 @@ deps['distributions/Distribution_doxygen.i']=[]
 deps['classifier/Classifier_doxygen.i']=[]
 deps['clustering/Clustering_doxygen.i']=[]
 deps['distance/Distance_doxygen.i']=[]
+deps['evaluation/Evaluation_doxygen.i']=[]
 
 initial_deps=deps.copy()
 
