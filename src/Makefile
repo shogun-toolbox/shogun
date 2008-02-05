@@ -286,7 +286,7 @@ ifeq (yes,$(USE_DOXYGEN))
 
 %$(EXT_SWIG_DOXY): %$(EXT_DOXY)
 	$(DOXYGEN) $<
-	$(PYTHON) .doxy2swig.py --no-function-definition $(@D)/doxygen_xml/index.xml $@
+	$(PYTHON) .doxy2swig.py --quiet --no-function-definition $(@D)/doxygen_xml/index.xml $@
 else
 %${EXT_SRC_SWIG}: %.$(EXT_INP_SWIG)
 	$(SWIG) $(SWIGFLAGS) $(DEFINES) $*.$(EXT_INP_SWIG)

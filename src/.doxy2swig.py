@@ -58,7 +58,7 @@ class Doxy2SWIG:
 
     """    
     
-    def __init__(self, src, include_function_definition=True):
+    def __init__(self, src, include_function_definition=True, quiet=False):
         """Initialize the instance given a source object.  `src` can
         be a file or filename.  If you do not want to include function
         definitions from doxygen then set
@@ -90,6 +90,8 @@ class Doxy2SWIG:
         self.include_function_definition = include_function_definition
         if not include_function_definition:
             self.ignores.append('argsstring')
+
+        self.quiet = quiet
             
         
     def generate(self):
@@ -358,8 +360,9 @@ class Doxy2SWIG:
             fname = refid + '.xml'
             if not os.path.exists(fname):
                 fname = os.path.join(self.my_dir,  fname)
-            print "parsing file: %s"%fname
-            p = Doxy2SWIG(fname, self.include_function_definition)
+            if not self.quiet:
+                print "parsing file: %s"%fname
+            p = Doxy2SWIG(fname, self.include_function_definition, self.quiet)
             p.generate()
             self.pieces.extend(self.clean_pieces(p.pieces))
 
@@ -407,8 +410,8 @@ class Doxy2SWIG:
         return ret
 
 
-def convert(input, output, include_function_definition=True):
-    p = Doxy2SWIG(input, include_function_definition)
+def convert(input, output, include_function_definition=True, quiet=False):
+    p = Doxy2SWIG(input, include_function_definition, quiet)
     p.generate()
     p.write(output)
 
@@ -420,12 +423,17 @@ def main():
                       default=False,
                       dest='func_def',
                       help='do not include doxygen function definitions')
+    parser.add_option("-q", '--quiet',
+                      action='store_true',
+                      default=False,
+                      dest='quiet',
+                      help='be quiet and minimise output')
     
     options, args = parser.parse_args()
     if len(args) != 2:
         parser.error("error: no input and output specified")
 
-    convert(args[0], args[1], not options.func_def)
+    convert(args[0], args[1], not options.func_def, options.quiet)
     
 
 if __name__ == '__main__':
