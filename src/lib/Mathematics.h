@@ -193,9 +193,9 @@ class CMath : public CSGObject
 			return ::ceil(d);
 		}
 
-		/// signum of type T variable a 
+		/// signum of type T variable a
 		template <class T>
-			static inline INT sign(DREAL a)
+			static inline T sign(T a)
 			{
 				if (a==0)
 					return 0;
