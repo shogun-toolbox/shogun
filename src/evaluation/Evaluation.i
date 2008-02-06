@@ -3,10 +3,22 @@
 %enddef
 
 %module(docstring=DOCSTR,directors="1") Evaluation
+%{
+#define SWIG_FILE_WITH_INIT
+%}
+
 %feature("autodoc","0");
 
 #ifdef HAVE_DOXYGEN
 %include "evaluation/Evaluation_doxygen.i"
+#endif
+
+#ifdef HAVE_PYTHON
+%init %{
+	  import_array();
+%}
+
+%include "lib/python_typemaps.i"
 #endif
 
 %include "lib/common.i"
