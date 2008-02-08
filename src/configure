@@ -38,6 +38,7 @@ else
   _gpl=yes
 fi
 _cplex=auto
+_doxygen=auto
 _wtiming=no
 _logcache=no
 _shortrealkernelcache=yes
@@ -321,6 +322,29 @@ EOF
 	else
 		echores "no"
 		die "neither gcc nor makedepend found, but required to proceed. please install gcc or xutils-dev"
+	fi
+}
+
+check_doxygen()
+{
+	echocheck "Doxygen"
+
+	if test "$_doxygen" = yes || test "$_doxygen" = auto
+	then
+		if doxygen --version 2>&1 >/dev/null 2>&1
+		then
+			echores "`doxygen --version`"
+			_doxygen=yes
+		else
+			if test "$_doxygen" = yes
+			then
+				die "doxygen not detected"
+			else
+				echores "doxygen not detected, for documentation please install"
+			fi
+		fi
+	else
+		echores "disabled"
 	fi
 }
 
@@ -631,6 +655,8 @@ for ac_option do
   --enable-lapack)		_lapack=yes	;;
   --disable-cplex)		_cplex=no	;;
   --enable-cplex)		_cplex=yes	;;
+  --disable-doxygen)	_doxygen=no	;;
+  --enable-doxygen)		_doxygen=yes	;;
   --disable-bigstates)	_bigstates=no	;;
   --enable-bigstates)	_bigstates=yes	;;
   --disable-hmmcache)	_hmmcache=no	;;
@@ -2459,21 +2485,8 @@ EOF
 
 	if test "$USE_SWIG" = 'yes'
 	then
-		if test "$_doxygen" = yes || test "$_doxygen" = auto
+		if test "$_doxygen" = yes
 		then
-			echocheck "doxygen"
-			if doxygen --version >/dev/null 2>&1
-			then
-				echores "`doxygen --version 2>&1`"
-			else
-				echores "no"
-
-				if test "$_doxygen" = yes
-				then
-					die "cannot find doxygen executable in path"
-				fi
-			fi
-
 			HAVE_DOXYGEN='#define HAVE_DOXYGEN 1'
 			DEFINES="$DEFINES -DHAVE_DOXYGEN"
 
@@ -2717,6 +2730,7 @@ detect_cc
 check_makedepend
 check_python
 check_make
+check_doxygen
 determine_march_mtune
 set_opts
 svmlight_warn_license
